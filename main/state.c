@@ -239,9 +239,9 @@ memset (m, 0, sizeof (m));
 for (i = 0; i < NUM_SAVES; i++)	{
 	sc_bmp [i] = NULL;
 	if (!bMulti)
-		sprintf (filename [i], "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
+		sprintf (filename [i], "%s.sg%x", LOCALPLAYER.callsign, i);
 	else
-		sprintf (filename [i], "%s.mg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
+		sprintf (filename [i], "%s.mg%x", LOCALPLAYER.callsign, i);
 	valid = 0;
 	fp = CFOpen (filename [i], gameFolders.szSaveDir, "rb", 0);
 	if (fp) {
@@ -307,9 +307,9 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	for (i = 0, j = 0; i < NUM_SAVES + 1; i++, j++) {
 		sc_bmp [i] = NULL;
 		if (!bMulti)
-			sprintf (filename [i], "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
+			sprintf (filename [i], "%s.sg%x", LOCALPLAYER.callsign, i);
 		else
-			sprintf (filename [i], "%s.mg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, i);
+			sprintf (filename [i], "%s.mg%x", LOCALPLAYER.callsign, i);
 		valid = 0;
 		fp = CFOpen (filename [i], gameFolders.szSaveDir, "rb", 0);
 		if (fp) {
@@ -381,7 +381,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	}
 
 	if (gameStates.video.nDisplayMode == 1)	//restore menu won't fit on 640x400
-		VR_screenFlags ^= VRF_COMPATIBLE_MENUS;
+		gameStates.render.vr.nScreenFlags ^= VRF_COMPATIBLE_MENUS;
 
 	sc_last_item = -1;
 
@@ -535,7 +535,7 @@ if (!pszFilenameOverride) {
 	if (tfp) {
 		char	newname [128];
 
-		sprintf (newname, "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, NUM_SAVES);
+		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		CFSeek (tfp, DESC_OFFSET, SEEK_SET);
 		CFWrite (" [autosave backup]", sizeof (char)*DESC_LENGTH, 1, tfp);
 		CFClose (tfp);
@@ -575,7 +575,7 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 		CFWrite (&gameData.multiplayer.players [i], sizeof (tPlayer), 1, fp);
 	}
 //Save tPlayer info
-CFWrite (&gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer], sizeof (tPlayer), 1, fp);
+CFWrite (&LOCALPLAYER, sizeof (tPlayer), 1, fp);
 // Save the current weapon info
 CFWrite (&gameData.weapons.nPrimary, sizeof (sbyte), 1, fp);
 CFWrite (&gameData.weapons.nSecondary, sizeof (sbyte), 1, fp);
@@ -1371,7 +1371,7 @@ return 1;
 //	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (void)
 {
-	int	nPlayerObj = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	int	nPlayerObj = LOCALPLAYER.nObject;
 
 COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [nPlayerObj].position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
@@ -1434,7 +1434,7 @@ if (!bSecretRestore && !(gameData.app.nGameMode & GM_MULTI)) {
 	//	Changed, 11/15/95, MK, don't to autosave if restoring from main menu.
 if ((filenum != (NUM_SAVES + 1)) && bInGame) {
 	char	temp_filename [128];
-	sprintf (temp_filename, "%s.sg%x", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, NUM_SAVES);
+	sprintf (temp_filename, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 	StateSaveAll (!bInGame, bSecretRestore, temp_filename);
 	}
 if (!bSecretRestore && bInGame) {
@@ -1487,7 +1487,7 @@ return 0;
 void StateRestoreMultiGame (char *pszOrgCallSign, int bMulti, int bSecretRestore)
 {
 if (bMulti)
-	strcpy (pszOrgCallSign, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);
 else {
 	gameData.app.nGameMode = GM_NORMAL;
 	SetFunctionMode (FMODE_GAME);
@@ -2107,7 +2107,7 @@ if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
 	CFClose (fp);
 	return 0;
 	}
-nLocalObjNum = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+nLocalObjNum = LOCALPLAYER.nObject;
 if (bSecretRestore != 1)	//either no secret restore, or tPlayer died in scret level
 	StateRestorePlayer (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, fp);
 else {
@@ -2115,11 +2115,11 @@ else {
 	StateRestorePlayer (&retPlayer, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject = nLocalObjNum;
-strcpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, szOrgCallSign);
+LOCALPLAYER.nObject = nLocalObjNum;
+strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 // Set the right level
 if (bBetweenLevels)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level = nNextLevel;
+	LOCALPLAYER.level = nNextLevel;
 // Restore the weapon states
 gameData.weapons.nPrimary = CFReadByte (fp);
 gameData.weapons.nSecondary = CFReadByte (fp);
@@ -2362,7 +2362,7 @@ if (!StartNewLevelSub (nCurrentLevel, 1, bSecretRestore, 1)) {
 	CFClose (fp);
 	return 0;
 	}
-nLocalObjNum = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+nLocalObjNum = LOCALPLAYER.nObject;
 if (bSecretRestore != 1)	//either no secret restore, or tPlayer died in scret level
 	CFRead (gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer, sizeof (tPlayer), 1, fp);
 else {
@@ -2370,11 +2370,11 @@ else {
 	CFRead (&retPlayer, sizeof (tPlayer), 1, fp);
 	StateAwardReturningPlayer (&retPlayer, xOldGameTime);
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject = nLocalObjNum;
-strcpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, szOrgCallSign);
+LOCALPLAYER.nObject = nLocalObjNum;
+strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 // Set the right level
 if (bBetweenLevels)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level = nNextLevel;
+	LOCALPLAYER.level = nNextLevel;
 // Restore the weapon states
 CFRead (&gameData.weapons.nPrimary, sizeof (sbyte), 1, fp);
 CFRead (&gameData.weapons.nSecondary, sizeof (sbyte), 1, fp);
@@ -2618,7 +2618,7 @@ else {
 	}
 gameData.objs.viewer = 
 gameData.objs.console = 
-	gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	gameData.objs.objects + LOCALPLAYER.nObject;
 StartTime ();
 return 1;
 }

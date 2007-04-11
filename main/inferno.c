@@ -177,8 +177,6 @@ extern int Network_allow_socket_changes;
 
 extern void vfx_set_palette_sub (ubyte *);
 
-extern int VR_low_res;
-
 #define LINE_LEN	100
 
 // ----------------------------------------------------------------------------
@@ -212,9 +210,9 @@ void D2SetCaption (void)
 	char	szCaption [200];
 
 strcpy (szCaption, DESCENT_VERSION);
-if (*gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign) {
+if (*LOCALPLAYER.callsign) {
 	strcat (szCaption, " [");
-	strcat (szCaption, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	strcat (szCaption, LOCALPLAYER.callsign);
 	strcat (szCaption, "]");
 	strupr (szCaption);
 	}
@@ -236,7 +234,7 @@ void PrintVersionInfo (void)
 		if (gameOpts->menus.altBg.bHave > 0)
 			yOffs = 8; //102
 		else {
-			yOffs = (88 * (nVRScreenMode % 65536)) / 480;
+			yOffs = (88 * (gameStates.render.vr.nScreenMode % 65536)) / 480;
 			if (yOffs < 88)
 				yOffs = 88;
 			}
@@ -474,7 +472,7 @@ int bDisableHires=0;
 
 void DoSelectPlayer (void)
 {
-	gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign[0] = '\0';
+	LOCALPLAYER.callsign[0] = '\0';
 
 if (!gameData.demo.bAuto) 	{
 	KeyFlush ();
@@ -986,6 +984,8 @@ if ((t = FindArg ("-render_quality")) && *Args [t+1]) {
 	else if (gameOpts->render.nQuality > 3)
 		gameOpts->render.nQuality = 3;
 	}
+if (t = FindArg ("-sort_smoke"))
+	gameOptions [0].render.smoke.bSort = NumArg (t, 1);
 if (t = FindArg ("-use_shaders"))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if (t = FindArg ("-shadows"))
@@ -1845,6 +1845,13 @@ gameStates.render.cockpit.nNextMode = -1;
 gameStates.render.cockpit.nModeSave = -1;
 gameStates.render.cockpit.bRedraw = 0;
 gameStates.render.cockpit.bBigWindowSwitch = 0;
+gameStates.render.cockpit.nLastDrawn [0] =
+gameStates.render.cockpit.nLastDrawn [1] = -1;
+gameStates.render.vr.xEyeWidth = F1_0;
+gameStates.render.vr.nRenderMode	= VR_NONE;
+gameStates.render.vr.nLowRes = 3;
+gameStates.render.vr.bShowHUD	= 1;
+gameStates.render.vr.nSensitivity = 1;
 gameStates.render.detail.nRenderDepth = DEFAULT_RENDER_DEPTH;
 gameStates.render.detail.nObjectComplexity = 2; 
 gameStates.render.detail.nObjectDetail = 2;
@@ -2968,7 +2975,7 @@ _3dfx_Init ();
 #endif
 
 /*---*/LogErr ("Initializing render buffers\n");
-if (!VR_offscreen_buffer)	//if hasn't been initialied (by headset init)
+if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
 S_MODE (&automap_mode, &gameStates.render.bAutomapUseGameRes);
 if ((i = FindArg ("-xcontrol")) > 0)

@@ -141,7 +141,6 @@ int	redbookVolume = 255;
 extern char bWaitForRefuseAnswer, bRefuseThisPlayer, bRefuseTeam;
 
 extern int	*Toggle_var;
-extern int	last_drawn_cockpit[2];
 extern int	Debug_pause;
 
 extern fix	ShowView_textTimer;
@@ -198,18 +197,18 @@ void TransferEnergyToShield(fix time)
 
 	if (time <= 0)
 		return;
-	e = min(min(time*CONVERTER_RATE, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy - INITIAL_ENERGY), 
-		         (MAX_SHIELDS-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields)*CONVERTER_SCALE);
+	e = min(min(time*CONVERTER_RATE, LOCALPLAYER.energy - INITIAL_ENERGY), 
+		         (MAX_SHIELDS-LOCALPLAYER.shields)*CONVERTER_SCALE);
 	if (e <= 0) {
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy <= INITIAL_ENERGY)
+		if (LOCALPLAYER.energy <= INITIAL_ENERGY)
 			HUDInitMessage(TXT_TRANSFER_ENERGY, f2i(INITIAL_ENERGY));
 		else
 			HUDInitMessage(TXT_TRANSFER_SHIELDS);
 		return;
 	}
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy  -= e;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields += e/CONVERTER_SCALE;
+	LOCALPLAYER.energy  -= e;
+	LOCALPLAYER.shields += e/CONVERTER_SCALE;
 	MultiSendShields ();
 	gameStates.app.bUsingConverter = 1;
 	if (last_playTime > gameData.time.xGame)
@@ -248,7 +247,7 @@ void update_vcrState(void)
 
 //------------------------------------------------------------------------------
 //returns which bomb will be dropped next time the bomb key is pressed
-int whichBomb()
+int ArmedBomb()
 {
 	int bomb, otherBomb;
 
@@ -260,11 +259,10 @@ if (gameData.app.nGameMode & GM_ENTROPY)
 if (gameData.app.nGameMode & GM_HOARD)
 	return SMART_MINE_INDEX;
 
-bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
+bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? SMART_MINE_INDEX : PROXIMITY_INDEX;
 otherBomb = SMART_MINE_INDEX + PROXIMITY_INDEX - bomb;
 
-if (!gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [bomb] &&
-	 gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [otherBomb]) {
+if (!LOCALPLAYER.secondaryAmmo [bomb] && LOCALPLAYER.secondaryAmmo [otherBomb]) {
 	bomb = otherBomb;
 	bLastSecondaryWasSuper [bomb % SUPER_WEAPON] = (bomb == SMART_MINE_INDEX);
 	}
@@ -301,7 +299,7 @@ if (Controls [0].cycleSecondaryCount) {
 	CycleSecondary ();
 	}
 if (Controls [0].headlightCount) {
-	for (i=0;i<Controls [0].headlightCount;i++)
+	for (i = 0; i < Controls [0].headlightCount; i++)
 	toggle_headlight_active ();
 	}
 if (gameData.missiles.nGlobalFiringCount < 0)
@@ -313,7 +311,7 @@ if (Controls [0].dropBombDownCount) {
 	else {
 		int ssw_save = gameData.weapons.nSecondary;
 		while (Controls [0].dropBombDownCount--) {
-			int ssw_save2 = gameData.weapons.nSecondary = whichBomb();
+			int ssw_save2 = gameData.weapons.nSecondary = ArmedBomb();
 			if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 				DropSecondaryWeapon (-1);
 			else
@@ -470,14 +468,14 @@ else if (gameData.app.nGameMode & GM_MULTI) {
 PauseGame ();
 SetPopupScreenMode();
 GrPaletteStepLoad (NULL);
-formatTime(totalTime, f2i(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeTotal) + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursTotal*3600);
-formatTime(xLevelTime, f2i(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel) + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursLevel*3600);
+formatTime(totalTime, f2i(LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal*3600);
+formatTime(xLevelTime, f2i(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
 	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-			  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board, xLevelTime, totalTime);
+			  LOCALPLAYER.hostages_on_board, xLevelTime, totalTime);
    else
 	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
-				  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board);
+				  LOCALPLAYER.hostages_on_board);
 
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
@@ -516,7 +514,7 @@ while (gameData.app.bGamePaused) {
 			}
 		}
 	GrabMouse (1, 0);
-	if (VR_screenFlags & VRF_COMPATIBLE_MENUS) {
+	if (gameStates.render.vr.nScreenFlags & VRF_COMPATIBLE_MENUS) {
 		ClearBoxedMessage();
 	}
 ResumeGame ();
@@ -647,8 +645,8 @@ void HandleEndlevelKey(int key)
 
 	if (key == KEY_ESC) {
 		StopEndLevelSequence();
-		last_drawn_cockpit[0]=-1;
-		last_drawn_cockpit[1]=-1;
+		gameStates.render.cockpit.nLastDrawn[0] =
+		gameStates.render.cockpit.nLastDrawn[1] = -1;
 		return;
 	}
 
@@ -938,14 +936,14 @@ dump_door_debugging_info()
 	FILE *dfile;
 	int wall_numn;
 
-	obj = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	obj = gameData.objs.objects + LOCALPLAYER.nObject;
 	VmVecScaleAdd(&new_pos, &objP->position.vPos, &objP->position.mOrient.fVec, i2f(100);
 
 	fq.p0						= &objP->position.vPos;
 	fq.startseg				= objP->nSegment;
 	fq.p1						= &new_pos;
 	fq.rad					= 0;
-	fq.thisobjnum			= gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	fq.thisobjnum			= LOCALPLAYER.nObject;
 	fq.ignore_obj_list	= NULL;
 	fq.flags					= 0;
 
@@ -1112,7 +1110,7 @@ int HandleSystemKey(int key)
 
 		case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
 			{
-				int scanline_save = Scanline_double;
+				int bScanlineSave = bScanlineDouble;
 
 				if (!(gameData.app.nGameMode&GM_MULTI)) {
 					PaletteSave(); 
@@ -1123,7 +1121,7 @@ int HandleSystemKey(int key)
 				ConfigMenu();
 				if (!(gameData.app.nGameMode&GM_MULTI)) 
 					PaletteRestore();
-				if (scanline_save != Scanline_double)   
+				if (bScanlineSave != bScanlineDouble)   
 					InitCockpit();	// reset the cockpit after changing...
 	         PA_DFX (InitCockpit());
 				break;
@@ -1306,19 +1304,19 @@ void HandleVRKey(int key)
 	switch( key )   {
 
 		case KEY_ALTED+KEY_F5:
-			if ( VR_render_mode != VR_NONE )	{
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
 				VRResetParams();
 				HUDInitMessage( TXT_VR_RESET );
-				HUDInitMessage( TXT_VR_SEPARATION, f2fl(VR_eye_width) );
-				HUDInitMessage( TXT_VR_BALANCE, (double)VR_eye_offset/30.0 );
+				HUDInitMessage( TXT_VR_SEPARATION, f2fl(gameStates.render.vr.xEyeWidth) );
+				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
 			}
 			break;
 
 		case KEY_ALTED+KEY_F6:
-			if ( VR_render_mode != VR_NONE )	{
-				VR_low_res++;
-				if ( VR_low_res > 3 ) VR_low_res = 0;
-				switch( VR_low_res )    {
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+				gameStates.render.vr.nLowRes++;
+				if ( gameStates.render.vr.nLowRes > 3 ) gameStates.render.vr.nLowRes = 0;
+				switch( gameStates.render.vr.nLowRes )    {
 					case 0: HUDInitMessage( TXT_VR_NORMRES ); break;
 					case 1: HUDInitMessage( TXT_VR_LOWVRES ); break;
 					case 2: HUDInitMessage( TXT_VR_LOWHRES ); break;
@@ -1328,10 +1326,10 @@ void HandleVRKey(int key)
 			break;
 
 		case KEY_ALTED+KEY_F7:
-			if ( VR_render_mode != VR_NONE )	{
-				VR_eye_switch = !VR_eye_switch;
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+				gameStates.render.vr.nEyeSwitch = !gameStates.render.vr.nEyeSwitch;
 				HUDInitMessage( TXT_VR_TOGGLE );
-				if ( VR_eye_switch )
+				if ( gameStates.render.vr.nEyeSwitch )
 					HUDInitMessage( TXT_VR_RLEYE );
 				else
 					HUDInitMessage( TXT_VR_LREYE );
@@ -1339,46 +1337,46 @@ void HandleVRKey(int key)
 			break;
 
 		case KEY_ALTED+KEY_F8:
-			if ( VR_render_mode != VR_NONE )	{
-			VR_sensitivity++;
-			if (VR_sensitivity > 2 )
-				VR_sensitivity = 0;
-			HUDInitMessage( TXT_VR_SENSITIVITY, VR_sensitivity );
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+			gameStates.render.vr.nSensitivity++;
+			if (gameStates.render.vr.nSensitivity > 2 )
+				gameStates.render.vr.nSensitivity = 0;
+			HUDInitMessage( TXT_VR_SENSITIVITY, gameStates.render.vr.nSensitivity );
 		 }
 			break;
 		case KEY_ALTED+KEY_F9:
-			if ( VR_render_mode != VR_NONE )	{
-				VR_eye_width -= F1_0/10;
-				if ( VR_eye_width < 0 ) VR_eye_width = 0;
-				HUDInitMessage( TXT_VR_SEPARATION, f2fl(VR_eye_width) );
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+				gameStates.render.vr.xEyeWidth -= F1_0/10;
+				if ( gameStates.render.vr.xEyeWidth < 0 ) gameStates.render.vr.xEyeWidth = 0;
+				HUDInitMessage( TXT_VR_SEPARATION, f2fl(gameStates.render.vr.xEyeWidth) );
 				HUDInitMessage( TXT_VR_DEFAULT, f2fl(VR_SEPARATION) );
 			}
 			break;
 		case KEY_ALTED+KEY_F10:
-			if ( VR_render_mode != VR_NONE )	{
-				VR_eye_width += F1_0/10;
-				if ( VR_eye_width > F1_0*4 )    VR_eye_width = F1_0*4;
-				HUDInitMessage( TXT_VR_SEPARATION, f2fl(VR_eye_width) );
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+				gameStates.render.vr.xEyeWidth += F1_0/10;
+				if ( gameStates.render.vr.xEyeWidth > F1_0*4 )    gameStates.render.vr.xEyeWidth = F1_0*4;
+				HUDInitMessage( TXT_VR_SEPARATION, f2fl(gameStates.render.vr.xEyeWidth) );
 				HUDInitMessage( TXT_VR_DEFAULT, f2fl(VR_SEPARATION) );
 			}
 			break;
 
 		case KEY_ALTED+KEY_F11:
-			if ( VR_render_mode != VR_NONE )	{
-				VR_eye_offset--;
-				if ( VR_eye_offset < -30 )	VR_eye_offset = -30;
-				HUDInitMessage( TXT_VR_BALANCE, (double)VR_eye_offset/30.0 );
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+				gameStates.render.vr.nEyeOffset--;
+				if ( gameStates.render.vr.nEyeOffset < -30 )	gameStates.render.vr.nEyeOffset = -30;
+				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
 				HUDInitMessage( TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0 );
-				VR_eye_offset_changed = 2;
+				gameStates.render.vr.bEyeOffsetChanged = 2;
 			}
 			break;
 		case KEY_ALTED+KEY_F12:
-			if ( VR_render_mode != VR_NONE )	{
-				VR_eye_offset++;
-				if ( VR_eye_offset > 30 )	 VR_eye_offset = 30;
-				HUDInitMessage( TXT_VR_BALANCE, (double)VR_eye_offset/30.0 );
+			if ( gameStates.render.vr.nRenderMode != VR_NONE )	{
+				gameStates.render.vr.nEyeOffset++;
+				if ( gameStates.render.vr.nEyeOffset > 30 )	 gameStates.render.vr.nEyeOffset = 30;
+				HUDInitMessage( TXT_VR_BALANCE, (double)gameStates.render.vr.nEyeOffset/30.0 );
 				HUDInitMessage( TXT_VR_DEFAULT, (double)VR_PIXEL_SHIFT/30.0 );
-				VR_eye_offset_changed = 2;
+				gameStates.render.vr.bEyeOffsetChanged = 2;
 			}
 			break;
 	}
@@ -1566,27 +1564,27 @@ void HandleTestKey(int key)
 
 
 		case KEYDBGGED+KEY_K:	
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = 1;	
+			LOCALPLAYER.shields = 1;	
 			MultiSendShields ();
 			break;				
 						//	a virtual kill
 		case KEYDBGGED+KEY_SHIFTED + KEY_K:  
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = -1;	 
+			LOCALPLAYER.shields = -1;	 
 			MultiSendShields ();
 			break;  //	an actual kill
 			
 		case KEYDBGGED+KEY_X: 
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives++; 
+			LOCALPLAYER.lives++; 
 			break; // Extra life cheat key.
 			
 		case KEYDBGGED+KEY_H:
 //				if (!(gameData.app.nGameMode & GM_MULTI) )   {
-				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags ^= PLAYER_FLAGS_CLOAKED;
-				if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+				LOCALPLAYER.flags ^= PLAYER_FLAGS_CLOAKED;
+				if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 					if (gameData.app.nGameMode & GM_MULTI)
 						MultiSendCloak();
 					AIDoCloakStuff();
-					gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame;
+					LOCALPLAYER.cloakTime = gameData.time.xGame;
 #if TRACE
 					con_printf (CONDBG, "You are cloaked!\n");
 #endif
@@ -1724,7 +1722,7 @@ void HandleTestKey(int key)
 //								if ( gameData.app.nGameMode & GM_MULTI )     {
 //									ExecMessageBox( NULL, 1, "Damn", "CHEATER!\nYou cannot use the\nmega-thing in network mode." );
 //									gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
-//									sprintf( gameData.multigame.msg.szMsg, "%s cheated!", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+//									sprintf( gameData.multigame.msg.szMsg, "%s cheated!", LOCALPLAYER.callsign);
 //								} else {
 //									DoMegaWowPowerup();
 //								}
@@ -1769,7 +1767,7 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED+KEY_D:
-			if ((Game_double_buffer = !Game_double_buffer)!=0)
+			if (bGameDoubleBuffer = !bGameDoubleBuffer)
 				InitCockpit();
 			break;
 #endif

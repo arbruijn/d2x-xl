@@ -627,7 +627,7 @@ int KCGetItemHeight (kcItem *item)
 
 //------------------------------------------------------------------------------
 
-#define kc_gr_scanline(_x1,_x2,_y)	gr_scanline ((_x1), (_x2), (_y))
+#define kc_gr_scanline(_x1,_x2,_y)	GrScanLine ((_x1), (_x2), (_y))
 #define kc_gr_pixel(_x,_y)	gr_pixel ((_x), (_y))
 #define KC_LHX(_x) (LHX (_x)+xOffs)
 #define KC_LHY(_y) (LHY (_y)+yOffs)
@@ -1578,8 +1578,6 @@ fix Last_angles_b = 0;
 fix Last_angles_h = 0;
 ubyte Last_angles_read = 0;
 
-extern int			VR_sensitivity;
-						
 int VR_sense_range [3] = { 25, 50, 75 };
 
 #if 0
@@ -1609,9 +1607,9 @@ read_head_tracker ()
 		else if ((yaw < (F1_0/4)) && (Last_angles_h > ((F1_0*3)/4)))	
 			yaw1 += F1_0;
 	
-		Controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
-		Controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
-		Controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [VR_sensitivity],gameData.time.xFrame);
+		Controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
+		Controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
+		Controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
 	}
 	Last_angles_read = 1;
 	Last_angles_p = pitch;
@@ -1674,9 +1672,9 @@ void KCInitExternalControls (int intno, int address)
 			temp_ptr += sizeof (vmsVector);
 			ship_orient = (vmsMatrix *)temp_ptr;
 			// Fill in ship postion...
-			*ship_pos = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.vPos;
+			*ship_pos = gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
 			// Fill in ship orientation...
-			*ship_orient = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient;
+			*ship_orient = gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient;
 		}
 	}
 
@@ -1690,8 +1688,8 @@ void KCInitExternalControls (int intno, int address)
   //		ReadOWL (kc_external_control);
 
 	if (gameData.multiplayer.nLocalPlayer > -1)	{
-		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
+		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.bAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
@@ -1703,8 +1701,8 @@ void KCInitExternalControls (int intno, int address)
 	
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient,&tempm);
-				gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient = ViewMatrix;		
+				VmMatMul (&ViewMatrix,&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient,&tempm);
+				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;		
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
@@ -1761,17 +1759,17 @@ void KCReadExternalControls ()
 			temp_ptr += sizeof (vmsVector);
 			ship_orient = (vmsMatrix *)temp_ptr;
 			// Fill in ship postion...
-			*ship_pos = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.vPos;
+			*ship_pos = gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
 			// Fill in ship orientation...
-			*ship_orient = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient;
+			*ship_orient = gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient;
 		}
     if (kc_external_version>=4)
 	  {
 	   advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
  
-      temp_ptr->headlightState= (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON);
-		temp_ptr->primaryWeaponFlags=gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags;
-		temp_ptr->secondaryWeaponFlags=gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags;
+      temp_ptr->headlightState= (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON);
+		temp_ptr->primaryWeaponFlags=LOCALPLAYER.primaryWeaponFlags;
+		temp_ptr->secondaryWeaponFlags=LOCALPLAYER.secondaryWeaponFlags;
       temp_ptr->currentPrimary_weapon=gameData.weapons.nPrimary;
       temp_ptr->currentSecondary_weapon=gameData.weapons.nSecondary;
 
@@ -1808,8 +1806,8 @@ void KCReadExternalControls ()
   #endif 
 
 	if (gameData.multiplayer.nLocalPlayer > -1)	{
-		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
+		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.bAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
@@ -1821,8 +1819,8 @@ void KCReadExternalControls ()
 	
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-				VmMatMul (&ViewMatrix,&gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient,&tempm);
-				gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.mOrient = ViewMatrix;		
+				VmMatMul (&ViewMatrix,&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient,&tempm);
+				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;		
 			}
 			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vmsAngVec));
 			if (oem_message [0] != '\0')

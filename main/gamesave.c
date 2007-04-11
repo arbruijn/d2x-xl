@@ -1813,7 +1813,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE PLAYER INFO ===========================
 
 	player.offset = ftell(SaveFile);
-	fwrite(&gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer], sizeof(tPlayer), 1, SaveFile);
+	fwrite(&LOCALPLAYER, sizeof(tPlayer), 1, SaveFile);
 
 	//==================== SAVE OBJECT INFO ===========================
 

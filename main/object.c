@@ -1737,7 +1737,7 @@ void RenderObject (tObject *objP, int nWindowNum)
 	int			oofIdx;
 #endif
 
-if ((OBJ_IDX (objP) == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) &&
+if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console)) {
 	if (bSpectate = (gameStates.app.bFreeCam && !nWindowNum)) {
 		savePos = objP->position;
@@ -2560,7 +2560,7 @@ gameData.objs.console->flags = nPlayerFlagsSave;
 Assert ((nControlTypeSave == CT_FLYING) || (nControlTypeSave == CT_SLEW));
 gameData.objs.console->controlType = nControlTypeSave;
 gameData.objs.console->renderType = nRenderTypeSave;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
+LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
 gameStates.app.bPlayerEggsDropped = 0;
 }
 
@@ -2634,7 +2634,7 @@ if (gameStates.app.bPlayerIsDead) {
 
 	//	If unable to create camera at time of death, create now.
 	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
-		tObject *player = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+		tObject *player = gameData.objs.objects + LOCALPLAYER.nObject;
 		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
 											 &player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
 		if (nObject != -1)
@@ -2651,9 +2651,9 @@ if (gameStates.app.bPlayerIsDead) {
 	VmVector2Matrix (&gameData.objs.deadPlayerCamera->position.mOrient, &fVec, NULL, NULL);
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board > 1)
-			HUDInitMessage (TXT_SHIP_DESTROYED_2, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board);
-		else if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board == 1)
+		if (LOCALPLAYER.hostages_on_board > 1)
+			HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages_on_board);
+		else if (LOCALPLAYER.hostages_on_board == 1)
 			HUDInitMessage (TXT_SHIP_DESTROYED_1);
 		else
 			HUDInitMessage (TXT_SHIP_DESTROYED_0);
@@ -2677,7 +2677,7 @@ if (gameStates.app.bPlayerIsDead) {
 			gameData.objs.console->flags &= ~OF_SHOULD_BE_DEAD;		//don't really kill tPlayer
 			gameData.objs.console->renderType = RT_NONE;				//..just make him disappear
 			gameData.objs.console->nType = OBJ_GHOST;						//..and kill intersections
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #if 0
 			if (gameOpts->gameplay.bFastRespawn)
 				gameStates.app.bDeathSequenceAborted = 1;
@@ -2716,9 +2716,9 @@ void AdjustMineSpawn ()
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]+=nProximityDropped;
+	LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]+=nProximityDropped;
 if (!(gameData.app.nGameMode & GM_ENTROPY))
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [SMART_MINE_INDEX]+=nSmartminesDropped;
+	LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX]+=nSmartminesDropped;
 nProximityDropped = 0;
 nSmartminesDropped = 0;
 }
@@ -2753,14 +2753,14 @@ nKilledInFrame = gameData.app.nFrameCount;
 nKilledObjNum = OBJ_IDX (player);
 gameStates.app.bDeathSequenceAborted = 0;
 if (gameData.app.nGameMode & GM_MULTI) {
-	MultiSendKill (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+	MultiSendKill (LOCALPLAYER.nObject);
 //		If Hoard, increase number of orbs by 1
 //    Only if you haven't killed yourself
 //		This prevents cheating
 	if (gameData.app.nGameMode & GM_HOARD)
 		if (!bMultiSuicide)
-			if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]<12)
-				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]++;
+			if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]<12)
+				LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]++;
 	}
 gameStates.ogl.palAdd.red = 40;
 gameStates.app.bPlayerIsDead = 1;
@@ -2768,7 +2768,7 @@ gameStates.app.bPlayerIsDead = 1;
    if (TactileStick)
 	Buffeting (70);
 #endif
-//gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
+//LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_AFTERBURNER);
 VmVecZero (&player->mType.physInfo.rotThrust);
 VmVecZero (&player->mType.physInfo.thrust);
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
@@ -2790,7 +2790,7 @@ nPlayerFlagsSave = player->flags;
 nControlTypeSave = player->controlType;
 nRenderTypeSave = player->renderType;
 player->flags &= ~OF_SHOULD_BE_DEAD;
-//	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+//	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 player->controlType = CT_NONE;
 if (!gameStates.entropy.bExitSequence) {
 	player->shields = F1_0*1000;
@@ -2915,7 +2915,7 @@ VmVecZero (&objP->mType.physInfo.rotVel);
 void StopPlayerMovement (void)
 {
 if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted) {
-	StopObjectMovement (gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+	StopObjectMovement (gameData.objs.objects + LOCALPLAYER.nObject);
 	memset (&playerThrust, 0, sizeof (playerThrust));
 //	gameData.time.xFrame = F1_0;
 	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;

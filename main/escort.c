@@ -968,9 +968,9 @@ void DoEscortFrame (tObject *objP, fix xDistToPlayer, int player_visibility)
 
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
-		if (f2i (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) < 40)
-			if ((f2i (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy)/2) & 2)
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
+		if (f2i (LOCALPLAYER.energy) < 40)
+			if ((f2i (LOCALPLAYER.energy)/2) & 2)
 				if (!gameStates.app.bPlayerIsDead)
 					BuddyMessage (TXT_HEADLIGHT_WARN);
 	}
@@ -1247,7 +1247,7 @@ void ShowEscortMenu (char *msg)
 
 	WINDOS (
 		DDGrSetCurrentCanvas (&dd_VR_screen_pages [0]),
-		GrSetCurrentCanvas (&VR_screen_pages [0])
+		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [0])
 	);
 
 	GrSetCurFont ( GAME_FONT );

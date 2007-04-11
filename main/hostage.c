@@ -55,7 +55,7 @@ void hostage_rescue(int blah)
 {
 	PALETTE_FLASH_ADD(0, 0, 25);		//small blue flash
 
-	gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].hostages_on_board++;
+	LOCALPLAYER.hostages_on_board++;
 
 	// Do an audio effect
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)

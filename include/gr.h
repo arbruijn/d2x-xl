@@ -448,7 +448,7 @@ int GrUCircle(fix x, fix y, fix r);
 void gr_box(int left, int top, int right, int bot);
 void GrUBox(int left, int top, int right, int bot);
 
-void gr_scanline( int x1, int x2, int y );
+void GrScanLine( int x1, int x2, int y );
 void gr_uscanline( int x1, int x2, int y );
 
 

@@ -426,7 +426,7 @@ con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 	sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMax, joy_axis_max[0], joy_axis_max[1], joy_axis_max[2], joy_axis_max[3] );
 	CFPutS(str, infile);
 
-	sprintf (str, "%s=%s\n", pszLastPlayer, gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign );
+	sprintf (str, "%s=%s\n", pszLastPlayer, LOCALPLAYER.callsign );
 	CFPutS(str, infile);
 	for (i = 0; gameConfig.szLastMission [i]; i++)
 		if (!isprint (gameConfig.szLastMission [i])) {

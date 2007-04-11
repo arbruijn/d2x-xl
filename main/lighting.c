@@ -746,8 +746,8 @@ if (!bKeepDynColoring)
 
 void toggle_headlight_active ()
 {
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) {
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT) {
+		LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);		
 	}
@@ -808,7 +808,7 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 // -- Unused --
 // -- Unused -- 	light = Beam_brightness;
 // -- Unused --
-// -- Unused -- 	if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) && gameData.objs.viewer==&gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject] && gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy > 0) {
+// -- Unused -- 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT) && (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON) && gameData.objs.viewer==&gameData.objs.objects [LOCALPLAYER.nObject] && LOCALPLAYER.energy > 0) {
 // -- Unused -- 		light *= HEADLIGHT_BOOST_SCALE;
 // -- Unused -- 		use_beam = 1;	//give us beam effect
 // -- Unused -- 	}

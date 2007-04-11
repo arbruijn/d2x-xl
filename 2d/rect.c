@@ -48,5 +48,5 @@ void GrRect(int left,int top,int right,int bot)
 		return;
 	}
 	for ( i=top; i<=bot; i++ )
-		gr_scanline( left, right, i );
+		GrScanLine( left, right, i );
 }

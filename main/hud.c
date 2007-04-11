@@ -70,7 +70,7 @@ extern grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsig
 
 void ClearBackgroundMessages (void)
 {
-if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (VR_render_sub_buffer [0].cv_bitmap.bm_props.y >= 6)) {
+if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y >= 6)) {
 	grs_canvas	*canv_save = grdCurCanv;
 
 WINDOS (
@@ -87,7 +87,7 @@ WINDOS (
 	);
 	nLastMsgYCrd = -1;
 	}
-szDisplayedBackgroundMsg [nVRCurrentPage][0] = 0;
+szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -152,13 +152,13 @@ if (pMsgs->nMessages > 0) {
 	if (pMsgs->nColor == -1)
 		pMsgs->nColor = GREEN_RGBA;
 
-	if ((VR_render_mode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
-		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (VR_render_sub_buffer [0].cv_bitmap.bm_props.y >= (max_window_h/8))) {
+	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
+		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y >= (max_window_h/8))) {
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
 
-		if (strcmp (szDisplayedBackgroundMsg [nVRCurrentPage], pszMsg)) {
+		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
 			int	ycrd;
 			WINDOS (
 				dd_grs_canvas *canv_save = dd_grd_curcanv,
@@ -185,10 +185,10 @@ if (pMsgs->nMessages > 0) {
 									  pMsgs->nColor);
 				if (nModexHUDMsgs > 0) {
 					nModexHUDMsgs--;
-					szDisplayedBackgroundMsg [nVRCurrentPage][0] = '!';
+					szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = '!';
 					}
 				else
-					strcpy (szDisplayedBackgroundMsg [nVRCurrentPage], pszMsg);
+					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
 			else {
 				WIN (DDGRLOCK (dd_grd_curcanv));
@@ -199,7 +199,7 @@ if (pMsgs->nMessages > 0) {
 					PA_DFX (GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg));
 					PA_DFX (pa_set_backbuffer_current ());
 					GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg);
-					strcpy (szDisplayedBackgroundMsg [nVRCurrentPage], pszMsg);
+					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				WIN (DDGRUNLOCK (dd_grd_curcanv));
 				}
 			WINDOS (
@@ -364,7 +364,7 @@ void PlayerDeadMessage (void)
 if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 	tHUDMessage	*pMsgs = gameData.hud.msgs;
 
-   if ( gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives < 2) {
+   if ( LOCALPLAYER.lives < 2) {
       int x, y, w, h, aw;
       GrSetCurFont ( HUGE_FONT);
       GrGetStringSize ( TXT_GAME_OVER, &w, &h, &aw);
@@ -397,7 +397,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 //------------------------------------------------------------------------------
 // void say_afterburner_status (void)
 // {
-// 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
+// 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 // 		InitHUDMessage ("Afterburner engaged.");
 // 	else
 // 		InitHUDMessage ("Afterburner disengaged.");

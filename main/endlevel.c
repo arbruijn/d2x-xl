@@ -276,7 +276,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 			ObjectCreateExplosion (gameData.objs.objects [i].nSegment, &gameData.objs.objects [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
 			gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
 		}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist = -F1_0; // Turn off homing sound.
+LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
 if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendEndLevelStart (0);

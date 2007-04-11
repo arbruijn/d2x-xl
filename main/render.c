@@ -1501,7 +1501,7 @@ if (!cc.and) {		//all off screen?
 			char		sideNums [6];
 			int		i; 
 			double	d, dMin, dx, dy, dz;
-			tObject	*objP = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+			tObject	*objP = gameData.objs.objects + LOCALPLAYER.nObject;
 
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 			sideNums [sn] = (char) sn;
@@ -3052,7 +3052,7 @@ void BuildSegList (void)
 	tSegment	*segP;
 
 memset (segDist, 0xFF, sizeof (segDist));
-segNum = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nSegment;
+segNum = gameData.objs.objects [LOCALPLAYER.nObject].nSegment;
 i = j = 0;
 segDist [segNum] = 0;
 segList [j++] = segNum;
@@ -3715,7 +3715,7 @@ int find_seg_side_face(short x, short y, int *seg, int *tSide, int *face, int *p
 		RenderFrame(0, 0);
 	}
 	else {
-		GrSetCurrentCanvas(&VR_render_sub_buffer [0]);	//render off-screen
+		GrSetCurrentCanvas(&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 		RenderFrame(0, 0);
 	}
 	bSearchMode = 0;

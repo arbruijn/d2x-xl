@@ -151,32 +151,11 @@ int gameData.time.xStopped,gameData.time.xStarted;
 #endif
 
 #ifndef MACINTOSH
-ubyte * Game_cockpit_copy_code = NULL;
+ubyte * bGameCockpitCopyCode = NULL;
 #else
-ubyte Game_cockpit_copy_code = 0;
-ubyte Scanline_double = 1;
+ubyte bGameCockpitCopyCode = 0;
+ubyte bScanlineDouble = 1;
 #endif
-
-u_int32_t	nVRScreenMode			= 0;
-ubyte			VR_screenFlags	= 0;		//see values in screens.h
-ubyte			nVRCurrentPage	= 0;
-fix			VR_eye_width		= F1_0;
-int			VR_render_mode		= VR_NONE;
-int			VR_low_res 			= 3;				// Default to low res
-int 			VR_show_hud = 1;
-int			VR_sensitivity     = 1;		// 0 - 2
-
-//NEWVR
-int			VR_eye_offset		 = 0;
-int			VR_eye_switch		 = 0;
-int			VR_eye_offset_changed = 0;
-int			VR_use_reg_code 	= 0;
-
-grs_canvas  *VR_offscreen_buffer	= NULL;		// The offscreen data buffer
-grs_canvas	VR_render_buffer[2];					//  Two offscreen buffers for left/right eyes.
-grs_canvas	VR_render_sub_buffer[2];			//  Two sub buffers for left/right eyes.
-grs_canvas	VR_screen_pages[2];					//  Two pages of VRAM if paging is available
-grs_canvas	VR_editor_canvas;						//  The canvas that the editor writes to.
 
 //do menus work in 640x480 or 320x200?
 //PC version sets this in main ().  Mac versios is always high-res, so set to 1 here
@@ -193,8 +172,8 @@ char faded_in;
 
 #ifdef _DEBUG                          //these only exist if debugging
 
-int Game_double_buffer = 1;     //double buffer by default
-fix fixed_frametime=0;          //if non-zero, set frametime to this
+int bGameDoubleBuffer = 1;     //double buffer by default
+fix xFixedFrameTime = 0;          //if non-zero, set frametime to this
 
 #endif
 
@@ -339,10 +318,8 @@ void InitCockpit ()
 
 if (gameData.demo.nState==ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nMode);
-if (VR_render_mode != VR_NONE)
+if (gameStates.render.vr.nRenderMode != VR_NONE)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-//if (!(VR_screenFlags & VRF_ALLOW_COCKPIT) && (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR || gameStates.render.cockpit.nMode==CM_REAR_VIEW))
-//	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 
@@ -352,9 +329,9 @@ WINDOS (
 	);
 GrSetCurFont (GAME_FONT);
 
-if (Game_cockpit_copy_code)
-	d_free (Game_cockpit_copy_code);
-Game_cockpit_copy_code  = NULL;
+if (bGameCockpitCopyCode)
+	d_free (bGameCockpitCopyCode);
+bGameCockpitCopyCode  = NULL;
 switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW:
@@ -370,10 +347,8 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_FULL_SCREEN:
 		max_window_h = grdCurScreen->sc_h;
-//		if (Game_window_h > max_window_h || VR_screenFlags&VRF_ALLOW_COCKPIT)
-			Game_window_h = max_window_h;
-//		if (Game_window_w > max_window_w || VR_screenFlags&VRF_ALLOW_COCKPIT)
-			Game_window_w = max_window_w;
+		Game_window_h = max_window_h;
+		Game_window_w = max_window_w;
 		Game_window_x = (max_window_w - Game_window_w)/2;
 		Game_window_y = (max_window_h - Game_window_h)/2;
 		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
@@ -381,26 +356,23 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_STATUS_BAR:
 		{
-		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex[CM_STATUS_BAR+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index].bm_props.h;
+		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].bm_props.h;
 		if (grdCurScreen->sc_h > 480)
 			h = (int) ((double) h * (double) grdCurScreen->sc_h / 480.0);
      	max_window_h = grdCurScreen->sc_h - h;
-//		if (Game_window_h > max_window_h || VR_screenFlags&VRF_ALLOW_COCKPIT)
-			Game_window_h = max_window_h;
-//		if (Game_window_w > max_window_w || VR_screenFlags&VRF_ALLOW_COCKPIT)
-			Game_window_w = max_window_w;
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
+		Game_window_h = max_window_h;
+		Game_window_w = max_window_w;
+		Game_window_x = (max_window_w - Game_window_w) / 2;
+		Game_window_y = (max_window_h - Game_window_h) / 2;
 		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
 		}
 		break;
 
-	case CM_LETTERBOX:	{
-		int x,y,w,h;
-
-		x = 0; w = VR_render_buffer[0].cv_bitmap.bm_props.w;		//VR_render_width;
-		h = (VR_render_buffer[0].cv_bitmap.bm_props.h * 7) / 10;
-		y = (VR_render_buffer[0].cv_bitmap.bm_props.h-h)/2;
+	case CM_LETTERBOX: {
+		int x = 0; 
+		int w = gameStates.render.vr.buffers.render[0].cv_bitmap.bm_props.w;		//VR_render_width;
+		int h = (int) ((gameStates.render.vr.buffers.render[0].cv_bitmap.bm_props.h * 7) / 10 / ((double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w / 0.75));
+		int y = (gameStates.render.vr.buffers.render[0].cv_bitmap.bm_props.h - h) / 2;
 		GameInitRenderSubBuffers (x, y, w, h);
 		break;
 		}
@@ -417,24 +389,22 @@ gameStates.gameplay.nShieldFlash = 0;
 //------------------------------------------------------------------------------
 
 //selects a given cockpit (or lack of one).  See types in game.h
-void SelectCockpit (int mode)
+void SelectCockpit (int nMode)
 {
-	if (mode != gameStates.render.cockpit.nMode) {		//new mode
-		gameStates.render.cockpit.nMode=mode;
-		InitCockpit ();
+if (nMode != gameStates.render.cockpit.nMode) {		//new nMode
+	gameStates.render.cockpit.nMode = nMode;
+	InitCockpit ();
 	}
 }
 
 //------------------------------------------------------------------------------
 
-extern int last_drawn_cockpit[2];
-
 //force cockpit redraw next time. call this if you've trashed the screen
 void ResetCockpit ()
 {
-	gameStates.render.cockpit.bRedraw=1;
-	last_drawn_cockpit[0] = -1;
-	last_drawn_cockpit[1] = -1;
+gameStates.render.cockpit.bRedraw = 1;
+gameStates.render.cockpit.nLastDrawn [0] =
+gameStates.render.cockpit.nLastDrawn [1] = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -442,19 +412,18 @@ void ResetCockpit ()
 //NEWVR
 void VRResetParams ()
 {
-	VR_eye_width = VR_SEPARATION;
-	VR_eye_offset = VR_PIXEL_SHIFT;
-	VR_eye_offset_changed = 2;
+gameStates.render.vr.xEyeWidth = VR_SEPARATION;
+gameStates.render.vr.nEyeOffset = VR_PIXEL_SHIFT;
+gameStates.render.vr.bEyeOffsetChanged = 2;
 }
 
 //------------------------------------------------------------------------------
 
 void GameInitRenderSubBuffers (int x, int y, int w, int h)
 {
-	if (Scanline_double) {
-	} else {
-		GrInitSubCanvas (&VR_render_sub_buffer[0], &VR_render_buffer[0], x, y, w, h);
-		GrInitSubCanvas (&VR_render_sub_buffer[1], &VR_render_buffer[1], x, y, w, h);
+if (!bScanlineDouble) {
+	GrInitSubCanvas (&gameStates.render.vr.buffers.subRender[0], &gameStates.render.vr.buffers.render[0], x, y, w, h);
+	GrInitSubCanvas (&gameStates.render.vr.buffers.subRender[1], &gameStates.render.vr.buffers.render[1], x, y, w, h);
 	}
 }
 
@@ -466,42 +435,39 @@ void GameInitRenderBuffers (int screen_mode, int render_w, int render_h, int ren
 //	if (vga_check_mode (screen_mode) != 0)
 //		Error ("Cannot set requested video mode");
 
-	nVRScreenMode		=	screen_mode;
-	VR_screenFlags	=  flags;
+gameStates.render.vr.nScreenMode	=	screen_mode;
+gameStates.render.vr.nScreenFlags	=  flags;
 //NEWVR
-	VRResetParams ();
-	VR_render_mode 	= render_method;
-	Game_window_w 		= render_w;
-	Game_window_h		= render_h;
-	if (VR_offscreen_buffer) {
-		GrFreeCanvas (VR_offscreen_buffer);
+VRResetParams ();
+gameStates.render.vr.nRenderMode 	= render_method;
+Game_window_w 		= render_w;
+Game_window_h		= render_h;
+if (gameStates.render.vr.buffers.offscreen) {
+	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
 	}
 
-	if ((VR_render_mode==VR_AREA_DET) || (VR_render_mode==VR_INTERLACED))	{
-		if (render_h*2 < 200)	{
-			VR_offscreen_buffer = GrCreateCanvas (render_w, 200);
+if ((gameStates.render.vr.nRenderMode==VR_AREA_DET) || (gameStates.render.vr.nRenderMode==VR_INTERLACED))	{
+	if (render_h*2 < 200)	{
+		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, 200);
 		}
-		else {
-			VR_offscreen_buffer = GrCreateCanvas (render_w, render_h*2);
-		}
-
-		GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, render_w, render_h);
-		GrInitSubCanvas (&VR_render_buffer[1], VR_offscreen_buffer, 0, render_h, render_w, render_h);
-	}
 	else {
-		if (render_h < 200) {
-			VR_offscreen_buffer = GrCreateCanvas (render_w, 200);
+		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, render_h*2);
 		}
-		else {
-            VR_offscreen_buffer = GrCreateCanvas (render_w, render_h);
-        }
-
-		VR_offscreen_buffer->cv_bitmap.bm_props.nType = BM_OGL;
-		GrInitSubCanvas (&VR_render_buffer[0], VR_offscreen_buffer, 0, 0, render_w, render_h);
-		GrInitSubCanvas (&VR_render_buffer[1], VR_offscreen_buffer, 0, 0, render_w, render_h);
+	GrInitSubCanvas (&gameStates.render.vr.buffers.render[0], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
+	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, render_h, render_w, render_h);
 	}
-
-	GameInitRenderSubBuffers (0, 0, render_w, render_h);
+else {
+	if (render_h < 200) {
+		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, 200);
+		}
+	else {
+		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, render_h);
+      }
+	gameStates.render.vr.buffers.offscreen->cv_bitmap.bm_props.nType = BM_OGL;
+	GrInitSubCanvas (&gameStates.render.vr.buffers.render[0], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
+	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
+	}
+GameInitRenderSubBuffers (0, 0, render_w, render_h);
 }
 
 //------------------------------------------------------------------------------
@@ -513,11 +479,8 @@ void SetPopupScreenMode (void)
 {
 	//WIN (LoadCursorWin (MOUSE_DEFAULT_CURSOR);
 
-	if (!gameOpts->menus.nStyle || (gameStates.video.nScreenMode < 0))
-	{
-//		gameStates.video.nLastScreenMode = -1;
-//		gameStates.app.bGameRunning = (gameStates.app.nFunctionMode == FMODE_GAME);
-		SetScreenMode (SCREEN_MENU);		//must switch to menu mode
+if (!gameOpts->menus.nStyle || (gameStates.video.nScreenMode < 0)) {
+	SetScreenMode (SCREEN_MENU);		//must switch to menu mode
 	}
 }
 
@@ -537,9 +500,9 @@ WIN (static int saved_window_h);
 		return 1;
 	}
 #endif
-if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) && 
-		(/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == nVRScreenMode))) {
-	GrSetCurrentCanvas (VR_screen_pages + nVRCurrentPage);
+if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenMode) && 
+		(/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == gameStates.render.vr.nScreenMode))) {
+	GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	OglSetScreenMode ();
 	return 1;
 	}
@@ -560,8 +523,8 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) &
 					gameStates.gfx.bOverride ?
 						gameStates.gfx.nStartScrMode
 						: gameStates.menus.bHires ?
-							 (nVRScreenMode >= SM (640,480)) ?
-								nVRScreenMode
+							 (gameStates.render.vr.nScreenMode >= SM (640,480)) ?
+								gameStates.render.vr.nScreenMode
 								: SM (640,480)
 							: SM (320,200);
 			gameStates.video.nLastScreenMode = -1;
@@ -575,10 +538,10 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) &
 			}
 
 			GrInitSubCanvas (
-				VR_screen_pages, &grdCurScreen->sc_canvas, 0, 0, 
+				gameStates.render.vr.buffers.screenPages, &grdCurScreen->sc_canvas, 0, 0, 
 				grdCurScreen->sc_w, grdCurScreen->sc_h);
 			GrInitSubCanvas (
-				VR_screen_pages + 1, &grdCurScreen->sc_canvas, 0, 0, 
+				gameStates.render.vr.buffers.screenPages + 1, &grdCurScreen->sc_canvas, 0, 0, 
 				grdCurScreen->sc_w, grdCurScreen->sc_h);
 
 			gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
@@ -587,8 +550,8 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) &
 		break;
 
 	case SCREEN_GAME:
-		if (nCurrentVGAMode != nVRScreenMode) {
-			if (GrSetMode (nVRScreenMode))	{
+		if (nCurrentVGAMode != gameStates.render.vr.nScreenMode) {
+			if (GrSetMode (gameStates.render.vr.nScreenMode))	{
 				Error ("Cannot set desired screen mode for game!");
 				//we probably should do something else here, like select a standard mode
 			}
@@ -613,24 +576,24 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) &
 	// If we designate through screenFlags to use paging, then do so.
 		WINDOS (
 			DDGrInitSubCanvas (&dd_VR_screen_pages[0], dd_grd_screencanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
-			GrInitSubCanvas (&VR_screen_pages[0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
 		);
 
-		if (VR_screenFlags&VRF_USE_PAGING) {
+		if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
 		WINDOS (
 			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_backcanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
-			GrInitSubCanvas (&VR_screen_pages[1], &grdCurScreen->sc_canvas, 0, grdCurScreen->sc_h, grdCurScreen->sc_w, grdCurScreen->sc_h)
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->sc_canvas, 0, grdCurScreen->sc_h, grdCurScreen->sc_w, grdCurScreen->sc_h)
 		);
 		}
 		else {
 		WINDOS (
 			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_screencanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
-			GrInitSubCanvas (&VR_screen_pages[1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
 		);
 		}
 		InitCockpit ();
 		gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-		if (VR_render_mode != VR_NONE)	{
+		if (gameStates.render.vr.nRenderMode != VR_NONE)	{
 			// for 640x480 or higher, use hires font.
 			if (gameStates.render.fonts.bHiresAvailable && (grdCurScreen->sc_h > 400))
 				gameStates.render.fonts.bHires = 1;
@@ -651,10 +614,10 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) &
 		}
 		GrPaletteStepLoad (NULL);
 
-		GrInitSubCanvas (&VR_editor_canvas, &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-		Canv_editor = &VR_editor_canvas;
-		GrInitSubCanvas (&VR_screen_pages[0], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
-		GrInitSubCanvas (&VR_screen_pages[1], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
+		GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
+		Canv_editor = &gameStates.render.vr.buffers.editorCanvas;
+		GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
+		GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
 		GrSetCurrentCanvas (Canv_editor);
 		init_editor_screen ();   //setup other editor stuff
 		break;
@@ -663,17 +626,17 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == nVRScreenMode) &
 		Error ("Invalid screen mode %d",sm);
 	}
 
-	nVRCurrentPage = 0;
+	gameStates.render.vr.nCurrentPage = 0;
 
 	WINDOS (
-		DDGrSetCurrentCanvas (&dd_VR_screen_pages[nVRCurrentPage]),
-		GrSetCurrentCanvas (&VR_screen_pages[nVRCurrentPage])
+		DDGrSetCurrentCanvas (&dd_VR_screen_pages[gameStates.render.vr.nCurrentPage]),
+		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage])
 	);
 
-	if (VR_screenFlags&VRF_USE_PAGING)	{
+	if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING)	{
 	WINDOS (
 		dd_gr_flip (),
-		GrShowCanvas (&VR_screen_pages[nVRCurrentPage])
+		GrShowCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage])
 	);
 	}
 	OglSetScreenMode ();
@@ -850,8 +813,8 @@ gameData.time.xLast = timerValue;
 if (gameData.time.xFrame < 0)						//if bogus frametimed:\temp\dm_test.
 	gameData.time.xFrame = last_frametime;		//d:\temp\dm_test.then use time from last frame
 #ifdef _DEBUG
-if (fixed_frametime) 
-	gameData.time.xFrame = fixed_frametime;
+if (xFixedFrameTime) 
+	gameData.time.xFrame = xFixedFrameTime;
 #endif
 #ifdef _DEBUG
 // Pause here!!!
@@ -1083,10 +1046,10 @@ int bFakingInvul=0;
 
 void DoInvulnerableStuff (void)
 {
-if ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) &&
-	 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime != 0x7fffffff)) {
-	if (gameData.time.xGame - gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime > INVULNERABLE_TIME_MAX) {
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags ^= PLAYER_FLAGS_INVULNERABLE;
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
+	 (LOCALPLAYER.invulnerableTime != 0x7fffffff)) {
+	if (gameData.time.xGame - LOCALPLAYER.invulnerableTime > INVULNERABLE_TIME_MAX) {
+		LOCALPLAYER.flags ^= PLAYER_FLAGS_INVULNERABLE;
 		if (!bFakingInvul) {
 			DigiPlaySample (SOUND_INVULNERABILITY_OFF, F1_0);
 #ifdef NETWORK
@@ -1132,10 +1095,10 @@ extern void MultiSendSoundFunction (char,char);
 
 void DoAfterburnerStuff (void)
 {
-if (!(gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER))
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	xAfterburnerCharge=0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
-	if (DigiKillSoundLinkedToObject (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject))
+	if (DigiKillSoundLinkedToObject (LOCALPLAYER.nObject))
 #ifdef NETWORK
 		MultiSendSoundFunction (0,0)
 #endif
@@ -1144,8 +1107,8 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfterburnerState)) || 
 	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !xAfterburnerCharge))) {
 	if (xAfterburnerCharge && Controls [0].afterburnerState && 
-		 (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)) {
-		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject, 
+		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
+		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) LOCALPLAYER.nObject, 
 										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -1153,8 +1116,8 @@ else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfter
 #endif
 		}
 	else {
-		DigiKillSoundLinkedToObject (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject);
-		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject, 
+		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) LOCALPLAYER.nObject, 
 										0, F1_0, i2f (256));
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
@@ -1170,11 +1133,11 @@ xLastAfterburnerCharge = xAfterburnerCharge;
 // -- //	if energy < F1_0/2, recharge up to F1_0/2
 // -- void recharge_energy_frame (void)
 // -- {
-// -- 	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy < gameData.weapons.info[0].energy_usage) {
-// -- 		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy += gameData.time.xFrame/4;
+// -- 	if (LOCALPLAYER.energy < gameData.weapons.info[0].energy_usage) {
+// -- 		LOCALPLAYER.energy += gameData.time.xFrame/4;
 // --
-// -- 		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy > gameData.weapons.info[0].energy_usage)
-// -- 			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = gameData.weapons.info[0].energy_usage;
+// -- 		if (LOCALPLAYER.energy > gameData.weapons.info[0].energy_usage)
+// -- 			LOCALPLAYER.energy = gameData.weapons.info[0].energy_usage;
 // -- 	}
 // -- }
 
@@ -1307,7 +1270,7 @@ extern void GrPaletteStepUpVR (int r, int g, int b, int white, int black);
 
 void GamePaletteStepUp (int r, int g, int b)
 {
-if (VR_use_reg_code)
+if (gameStates.render.vr.bUseRegCode)
 	;//GrPaletteStepUpVR (r, g, b, VR_WHITE_INDEX, VR_BLACK_INDEX);
 else
 	GrPaletteStepUp (r, g, b);
@@ -1352,7 +1315,7 @@ int AllowedToFireFlare (void)
 	if (NextFlare_fireTime > gameData.time.xGame)
 		if (NextFlare_fireTime < gameData.time.xGame + FLARE_BIG_DELAY)	//	In case time is bogus, never wait > 1 second.
 			return 0;
-	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy >= WI_energy_usage (FLARE_ID))
+	if (LOCALPLAYER.energy >= WI_energy_usage (FLARE_ID))
 		NextFlare_fireTime = gameData.time.xGame + F1_0/4;
 	else
 		NextFlare_fireTime = gameData.time.xGame + FLARE_BIG_DELAY;
@@ -1581,8 +1544,8 @@ void GameSetup (void)
 DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
-last_drawn_cockpit[0] = -1;				// Force cockpit to redraw next time a frame renders.
-last_drawn_cockpit[1] = -1;				// Force cockpit to redraw next time a frame renders.
+gameStates.render.cockpit.nLastDrawn[0] = -1;				// Force cockpit to redraw next time a frame renders.
+gameStates.render.cockpit.nLastDrawn[1] = -1;				// Force cockpit to redraw next time a frame renders.
 gameStates.app.bEndLevelSequence = 0;
 GrPaletteStepLoad (NULL);
 SetScreenMode (SCREEN_GAME);
@@ -1659,23 +1622,23 @@ for (;;) {
 		// GAME LOOP!
 	gameStates.app.bAutoMap = 0;
 	gameStates.app.bConfigMenu = 0;
-	if (gameData.objs.console != &gameData.objs.objects[gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject]) {
+	if (gameData.objs.console != &gameData.objs.objects[LOCALPLAYER.nObject]) {
 #if TRACE
-	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject);
+	    //con_printf (CONDBG,"gameData.multiplayer.nLocalPlayer=%d nObject=%d",gameData.multiplayer.nLocalPlayer,LOCALPLAYER.nObject);
 #endif
-	    //Assert (gameData.objs.console == &gameData.objs.objects[gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject]);
+	    //Assert (gameData.objs.console == &gameData.objs.objects[LOCALPLAYER.nObject]);
 		}
-	player_shields = gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields;
+	player_shields = LOCALPLAYER.shields;
 	gameStates.app.nExtGameStatus=GAMESTAT_RUNNING;
 	if (!GameLoop (1, 1))		// Do game loop with rendering and reading controls.
 		continue;
 	//if the tPlayer is taking damage, give up guided missile control
-	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields != player_shields)
+	if (LOCALPLAYER.shields != player_shields)
 		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();	// Handle RedBook Audio Repeating.
 	if (gameStates.app.bConfigMenu) {
-		int double_save = Scanline_double;
+		int double_save = bScanlineDouble;
 	//WIN (mouse_set_mode (0);
 		if (!(gameData.app.nGameMode&GM_MULTI)) {
 			PaletteSave (); 
@@ -1684,7 +1647,7 @@ for (;;) {
 			GrPaletteStepLoad (NULL); 
 			}
 		ConfigMenu ();
-		if (Scanline_double != double_save)	
+		if (bScanlineDouble != double_save)	
 			InitCockpit ();
 		if (!(gameData.app.nGameMode&GM_MULTI)) 
 			PaletteRestore ();
@@ -1701,8 +1664,8 @@ for (;;) {
 		Game_window_w=save_w; 
 		Game_window_h=save_h;
 		InitCockpit ();
-		last_drawn_cockpit[0] = -1;
-		last_drawn_cockpit[1] = -1;
+		gameStates.render.cockpit.nLastDrawn[0] = -1;
+		gameStates.render.cockpit.nLastDrawn[1] = -1;
 		}
 	if ((gameStates.app.nFunctionMode != FMODE_GAME) && 
 		 gameData.demo.bAuto && 
@@ -1850,17 +1813,17 @@ FreeInventoryIcons ();
 FreeObjTallyIcons ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
-if (VR_offscreen_buffer)	{
-	GrFreeCanvas (VR_offscreen_buffer);
-	VR_offscreen_buffer = NULL;
+if (gameStates.render.vr.buffers.offscreen)	{
+	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
+	gameStates.render.vr.buffers.offscreen = NULL;
 }
 LogErr ("unloading gauge data\n");
 CloseGaugeCanvases ();
 LogErr ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
-if (Game_cockpit_copy_code) {
-	d_free (Game_cockpit_copy_code);
-	Game_cockpit_copy_code = NULL;
+if (bGameCockpitCopyCode) {
+	d_free (bGameCockpitCopyCode);
+	bGameCockpitCopyCode = NULL;
 }
 if (bmBackground.bm_texBuf) {
 	LogErr ("unloading background bitmap\n");
@@ -1883,7 +1846,7 @@ if (fErr) {
 
 grs_canvas *GetCurrentGameScreen ()
 {
-return VR_screen_pages + nVRCurrentPage;
+return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage;
 }
 
 //-----------------------------------------------------------------------------
@@ -2172,7 +2135,7 @@ if (nDebugSlowdown) {
 
 #ifdef _DEBUG
 	if (FindArg ("-invulnerability")) {
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}
 #endif
@@ -2207,14 +2170,14 @@ if (nDebugSlowdown) {
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
 
-	if ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & 
+	if ((LOCALPLAYER.flags & 
 		  (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) == 
 		 (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) {
 		static int bTurnedOff=0;
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy -= (gameData.time.xFrame*3/8);
-		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy < i2f (10)) {
+		LOCALPLAYER.energy -= (gameData.time.xFrame*3/8);
+		if (LOCALPLAYER.energy < i2f (10)) {
 			if (!bTurnedOff) {
-				gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+				LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				bTurnedOff = 1;
 #ifdef NETWORK
 				if (gameData.app.nGameMode & GM_MULTI)
@@ -2225,9 +2188,9 @@ if (nDebugSlowdown) {
 		else
 			bTurnedOff = 0;
 
-		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy <= 0) {
-			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = 0;
-			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+		if (LOCALPLAYER.energy <= 0) {
+			LOCALPLAYER.energy = 0;
+			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #ifdef NETWORK
 			if (gameData.app.nGameMode & GM_MULTI) {
 //con_printf (CONDBG, "      MultiSendFlags\n");
@@ -2345,7 +2308,7 @@ if (nDebugSlowdown) {
 			}
 		}
 	else { // Note the link to above!
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
+		LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
 //LogErr ("MoveAllObjects\n");
 		if (!MoveAllObjects ())
 			return 0;
@@ -2367,7 +2330,7 @@ if (nDebugSlowdown) {
 			//	Don't cap here, gets capped in CreateNewLaser and is based on whether in multiplayer mode, MK, 3/27/95
 			// if (gameData.fusion.xCharge > F1_0*2)
 			// 	gameData.fusion.xCharge = F1_0*2;
-			gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject, gameData.weapons.nPrimary);
+			gameData.laser.nGlobalFiringCount -= LocalPlayerFireLaser ();	//LaserFireObject (LOCALPLAYER.nObject, gameData.weapons.nPrimary);
 			}
 		if (gameData.laser.nGlobalFiringCount < 0)
 			gameData.laser.nGlobalFiringCount = 0;
@@ -2377,8 +2340,8 @@ if (nDebugSlowdown) {
 		gameStates.render.bDoAppearanceEffect = 0;
 #ifdef NETWORK
 	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame-i2f (27);
+		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
+		LOCALPLAYER.invulnerableTime = gameData.time.xGame-i2f (27);
 		bFakingInvul = 1;
 		SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 		}
@@ -2396,29 +2359,6 @@ AutoScreenshot ();
 return 1;
 }
 
-//-----------------------------------------------------------------------------
-//!!extern int Goal_blue_segnum,Goal_red_segnum;
-//!!extern int Hoard_goal_eclip;
-//!!
-//!!//do cool pulsing lights in hoard goals
-//!!hoard_light_pulse ()
-//!!{
-//!!	if (gameData.app.nGameMode & GM_HOARD) {
-//!!		fix light;
-//!!		int frame;
-//!!
-//!!		frame = gameData.eff.pEffects[Hoard_goal_eclip]..nCurFrame;
-//!!
-//!!		frame++;
-//!!
-//!!		if (frame >= gameData.eff.pEffects[Hoard_goal_eclip].vc.nFrameCount)
-//!!			frame = 0;
-//!!
-//!!		light = abs (frame - 5) * f1_0 / 5;
-//!!
-//!!		gameData.segs.segment2s[Goal_red_segnum].xAvgSegLight = gameData.segs.segment2s[Goal_blue_segnum].xAvgSegLight = light;
-//!!	}
-//!!}
 
 void ComputeSlideSegs (void)
 {
@@ -2505,18 +2445,18 @@ void FireLaser ()
 
 gameData.laser.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
-	if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy < F1_0 * 2) && 
+	if ((LOCALPLAYER.energy < F1_0 * 2) && 
 		 (gameData.fusion.xAutoFireTime == 0)) {
 		gameData.laser.nGlobalFiringCount = 0;
 		} 
 	else {
 		flFrameTime += gameData.time.xFrame;
 		if (gameData.fusion.xCharge == 0)
-			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy -= F1_0*2;
+			LOCALPLAYER.energy -= F1_0*2;
 		gameData.fusion.xCharge += flFrameTime;
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy -= flFrameTime;
-		if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy <= 0) {
-			gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = 0;
+		LOCALPLAYER.energy -= flFrameTime;
+		if (LOCALPLAYER.energy <= 0) {
+			LOCALPLAYER.energy = 0;
 			gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!
 			} 
 		else

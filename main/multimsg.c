@@ -364,14 +364,14 @@ int HandicapPlayer (void)
 xStartingShields = atol (mytempbuf);
 if (xStartingShields < 10) {
 	xStartingShields = 10;
-	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, xStartingShields);
+	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, xStartingShields);
 	}
 else if (xStartingShields > 100) {
-	sprintf (gameData.multigame.msg.szMsg, TXT_CHEAT_ALERT, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	sprintf (gameData.multigame.msg.szMsg, TXT_CHEAT_ALERT, LOCALPLAYER.callsign);
 	xStartingShields = 100;
 	}
 else
-	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, xStartingShields);
+	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, xStartingShields);
 HUDInitMessage (TXT_HANDICAP_ALERT, xStartingShields);
 xStartingShields = i2f (xStartingShields);
 return 0;
@@ -616,7 +616,7 @@ return 0;
 
 static int IsMyPlayerId (char *bufP, int nLen)
 {
-return strnicmp (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, bufP, nLen) == 0;
+return strnicmp (LOCALPLAYER.callsign, bufP, nLen) == 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -632,8 +632,8 @@ if ((tilde = strchr (buf + bufP, '$'))) {
 	tloc = (int) (tilde - (buf + bufP));				
 	if (tloc > 0)
 		strncpy (msgBuf, buf + bufP, tloc);
-	strcpy (msgBuf + tloc, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
-	strcpy (msgBuf + strlen (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign) + tloc, buf + bufP + tloc + 1);
+	strcpy (msgBuf + tloc, LOCALPLAYER.callsign);
+	strcpy (msgBuf + strlen (LOCALPLAYER.callsign) + tloc, buf + bufP + tloc + 1);
 	strcpy (buf + bufP, msgBuf);
 	}
 if (colon = strrchr (buf + bufP, ':')) {	//message may be addressed to a certain team or tPlayer

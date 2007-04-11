@@ -264,25 +264,25 @@ void DoMegaWowPowerup (int quantity)
 	int i;
 
 PowerupBasic (30, 0, 30, 1, "MEGA-WOWIE-ZOWIE!");
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags = 0xffff;
+LOCALPLAYER.primaryWeaponFlags = 0xffff ^ HAS_FLAG (SUPER_LASER_INDEX);		//no super laser
+LOCALPLAYER.secondaryWeaponFlags = 0xffff;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo[i] = VULCAN_AMMO_MAX;
+	LOCALPLAYER.primaryAmmo[i] = VULCAN_AMMO_MAX;
 for (i = 0; i < 3; i++)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[i] = quantity;
+	LOCALPLAYER.secondaryAmmo[i] = quantity;
 for (i = 3; i < MAX_SECONDARY_WEAPONS; i++)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[i] = quantity/5;
+	LOCALPLAYER.secondaryAmmo[i] = quantity/5;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLaserLevel (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel, MAX_LASER_LEVEL);
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = F1_0 * 200;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = F1_0 * 200;
+	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
+LOCALPLAYER.energy = F1_0 * 200;
+LOCALPLAYER.shields = F1_0 * 200;
 MultiSendShields ();
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = MAX_SUPER_LASER_LEVEL;
+LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
+LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 12;
+	LOCALPLAYER.secondaryAmmo[PROXIMITY_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo[PROXIMITY_INDEX] = 15;
+	LOCALPLAYER.secondaryAmmo[PROXIMITY_INDEX] = 15;
 UpdateLaserWeaponInfo ();
 }
 //#endif
@@ -418,7 +418,7 @@ if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, nPlayer)) {
 	} 
 else {
 	max = nMaxPrimaryAmmo [VULCAN_INDEX];
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK)
 		max *= 2;
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %d %s!", TXT_ALREADY_HAVE,f2i ((unsigned) VULCAN_AMMO_SCALE * (unsigned) max), TXT_VULCAN_ROUNDS);

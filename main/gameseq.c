@@ -155,7 +155,6 @@ extern fix ThisLevelTime;
 
 // Extern from game.c to fix a bug in the cockpit!
 
-extern int last_drawn_cockpit [2];
 extern int nLastLevelPathCreated;
 extern int nTimeLastMoved;
 
@@ -177,8 +176,8 @@ extern int nLastMsgYCrd;
 void VerifyConsoleObject ()
 {
 	Assert (gameData.multiplayer.nLocalPlayer > -1);
-	Assert (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject > -1);
-	gameData.objs.console = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	Assert (LOCALPLAYER.nObject > -1);
+	gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
 	Assert (gameData.objs.console->nType == OBJ_PLAYER);
 	Assert (gameData.objs.console->id==gameData.multiplayer.nLocalPlayer);
 }
@@ -287,7 +286,7 @@ for (i = 0; i < nPlayers; i++) {
 		break;
 		}
 	}
-gameData.objs.viewer = gameData.objs.console = gameData.objs.objects; // + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+gameData.objs.viewer = gameData.objs.console = gameData.objs.objects; // + LOCALPLAYER.nObject;
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #ifdef _DEBUG
@@ -349,35 +348,35 @@ fix xStartingShields=INITIAL_SHIELDS;
 // Setup tPlayer for new game
 void InitPlayerStatsGame ()
 {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].last_score = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives = INITIAL_LIVES;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level = 1;
+	LOCALPLAYER.score = 0;
+	LOCALPLAYER.last_score = 0;
+	LOCALPLAYER.lives = INITIAL_LIVES;
+	LOCALPLAYER.level = 1;
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeTotal = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursTotal = 0;
+	LOCALPLAYER.timeLevel = 0;
+	LOCALPLAYER.timeTotal = 0;
+	LOCALPLAYER.hoursLevel = 0;
+	LOCALPLAYER.hoursTotal = 0;
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = INITIAL_ENERGY;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = xStartingShields;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nKillerObj = -1;
+	LOCALPLAYER.energy = INITIAL_ENERGY;
+	LOCALPLAYER.shields = xStartingShields;
+	LOCALPLAYER.nKillerObj = -1;
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].netKilledTotal = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].netKillsTotal = 0;
+	LOCALPLAYER.netKilledTotal = 0;
+	LOCALPLAYER.netKillsTotal = 0;
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numKillsLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numKillsTotal = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsTotal = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nKillGoalCount = 0;
+	LOCALPLAYER.numKillsLevel = 0;
+	LOCALPLAYER.numKillsTotal = 0;
+	LOCALPLAYER.numRobotsLevel = 0;
+	LOCALPLAYER.numRobotsTotal = 0;
+	LOCALPLAYER.nKillGoalCount = 0;
 	
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_rescuedTotal = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostagesLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostagesTotal = 0;
+	LOCALPLAYER.hostages_rescuedTotal = 0;
+	LOCALPLAYER.hostagesLevel = 0;
+	LOCALPLAYER.hostagesTotal = 0;
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags = 0;
+	LOCALPLAYER.laserLevel = 0;
+	LOCALPLAYER.flags = 0;
 	
 	InitPlayerStatsNewShip ();
 
@@ -390,20 +389,20 @@ void InitPlayerStatsGame ()
 
 void InitAmmoAndEnergy (void)
 {
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy < INITIAL_ENERGY)
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = INITIAL_ENERGY;
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < xStartingShields)
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = xStartingShields;
+	if (LOCALPLAYER.energy < INITIAL_ENERGY)
+		LOCALPLAYER.energy = INITIAL_ENERGY;
+	if (LOCALPLAYER.shields < xStartingShields)
+		LOCALPLAYER.shields = xStartingShields;
 
 //	for (i=0; i<MAX_PRIMARY_WEAPONS; i++)
-//		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i] < DefaultPrimaryAmmoLevel [i])
-//			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i] = DefaultPrimaryAmmoLevel [i];
+//		if (LOCALPLAYER.primaryAmmo [i] < DefaultPrimaryAmmoLevel [i])
+//			LOCALPLAYER.primaryAmmo [i] = DefaultPrimaryAmmoLevel [i];
 
 //	for (i=0; i<MAX_SECONDARY_WEAPONS; i++)
-//		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i] < DefaultSecondaryAmmoLevel [i])
-//			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i] = DefaultSecondaryAmmoLevel [i];
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
+//		if (LOCALPLAYER.secondaryAmmo [i] < DefaultSecondaryAmmoLevel [i])
+//			LOCALPLAYER.secondaryAmmo [i] = DefaultSecondaryAmmoLevel [i];
+	if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
+		LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
 }
 
 extern	ubyte	bLastAfterburnerState;
@@ -414,39 +413,39 @@ extern	ubyte	bLastAfterburnerState;
 void InitPlayerStatsLevel (int bSecret)
 {
 	// int	i;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].last_score = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level = gameData.missions.nCurrentLevel;
+LOCALPLAYER.last_score = LOCALPLAYER.score;
+LOCALPLAYER.level = gameData.missions.nCurrentLevel;
 if (!networkData.bRejoined) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursLevel = 0;
+	LOCALPLAYER.timeLevel = 0;
+	LOCALPLAYER.hoursLevel = 0;
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nKillerObj = -1;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numKillsLevel = 0;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsLevel = count_number_ofRobots ();
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsTotal += gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsLevel;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostagesLevel = count_number_of_hostages ();
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostagesTotal += gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostagesLevel;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board = 0;
+LOCALPLAYER.nKillerObj = -1;
+LOCALPLAYER.numKillsLevel = 0;
+LOCALPLAYER.numRobotsLevel = count_number_ofRobots ();
+LOCALPLAYER.numRobotsTotal += LOCALPLAYER.numRobotsLevel;
+LOCALPLAYER.hostagesLevel = count_number_of_hostages ();
+LOCALPLAYER.hostagesTotal += LOCALPLAYER.hostagesLevel;
+LOCALPLAYER.hostages_on_board = 0;
 if (!bSecret) {
 	InitAmmoAndEnergy ();
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &=  
+	LOCALPLAYER.flags &=  
 		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_MAP_ALL | KEY_BLUE | KEY_RED | KEY_GOLD);
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = 0;
+	LOCALPLAYER.cloakTime = 0;
+	LOCALPLAYER.invulnerableTime = 0;
 	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 		if ((gameData.app.nGameMode & GM_TEAM) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
+			LOCALPLAYER.flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
 		else
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+			LOCALPLAYER.flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
 	}
 else if (gameStates.app.bD1Mission)
 	InitAmmoAndEnergy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
+LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
 gameData.laser.xLastFiredTime = gameData.laser.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
 bLastAfterburnerState = 0;
-DigiKillSoundLinkedToObject (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 InitGauges ();
 #ifdef TACTILE
 if (TactileStick)
@@ -465,34 +464,34 @@ void InitPlayerStatsNewShip ()
 	int	i;
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	NDRecordLaserLevel (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel, 0);
+	NDRecordLaserLevel (LOCALPLAYER.laserLevel, 0);
 	NDRecordPlayerWeapon (0, 0);
 	NDRecordPlayerWeapon (1, 0);
 	}
 
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = INITIAL_ENERGY;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = xStartingShields;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel = 0;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nKillerObj = -1;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board = 0;
+LOCALPLAYER.energy = INITIAL_ENERGY;
+LOCALPLAYER.shields = xStartingShields;
+LOCALPLAYER.laserLevel = 0;
+LOCALPLAYER.nKillerObj = -1;
+LOCALPLAYER.hostages_on_board = 0;
 
 xAfterburnerCharge = 0;
 
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i] = 0;
+	LOCALPLAYER.primaryAmmo [i] = 0;
 	bLastPrimaryWasSuper [i] = 0;
 	}
 for (i = 1; i < MAX_SECONDARY_WEAPONS; i++) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i] = 0;
+	LOCALPLAYER.secondaryAmmo [i] = 0;
 	bLastSecondaryWasSuper [i] = 0;
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags = HAS_LASER_FLAG;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
+LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
+LOCALPLAYER.primaryWeaponFlags = HAS_LASER_FLAG;
+LOCALPLAYER.secondaryWeaponFlags = HAS_CONCUSSION_FLAG;
 gameData.weapons.nOverridden = 0;
 gameData.weapons.nPrimary = 0;
 gameData.weapons.nSecondary = 0;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~ 
+LOCALPLAYER.flags &= ~ 
 										  (PLAYER_FLAGS_QUAD_LASERS |
 											PLAYER_FLAGS_AFTERBURNER |
 											PLAYER_FLAGS_CLOAKED |
@@ -504,14 +503,14 @@ gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~
 											PLAYER_FLAGS_HEADLIGHT_ON |
 											PLAYER_FLAGS_FLAG);
 if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkness)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_HEADLIGHT;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = 0;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = 0;
+	LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
+LOCALPLAYER.cloakTime = 0;
+LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist = -F1_0; // Added by RH
+LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
 Controls [0].afterburnerState = 0;
 bLastAfterburnerState = 0;
-DigiKillSoundLinkedToObject (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 gameData.objs.missileViewer=NULL;		///reset missile camera if out there
 #ifdef TACTILE
 	if (TactileStick)
@@ -536,7 +535,7 @@ void editor_reset_stuff_onLevel ()
 	GameSeqInitNetworkPlayers ();
 	InitPlayerStatsLevel (0);
 	gameData.objs.viewer = gameData.objs.console;
-	gameData.objs.console = gameData.objs.viewer = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	gameData.objs.console = gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
 	gameData.objs.console->id=gameData.multiplayer.nLocalPlayer;
 	gameData.objs.console->controlType = CT_FLYING;
 	gameData.objs.console->movementType = MT_PHYSICS;
@@ -583,15 +582,15 @@ extern void do_save_game_menu ();
 //update various information about the tPlayer
 void UpdatePlayerStats ()
 {
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel += gameData.time.xFrame;	//the never-ending march of time...
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel > i2f (3600))	{
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel -= i2f (3600);
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursLevel++;
+LOCALPLAYER.timeLevel += gameData.time.xFrame;	//the never-ending march of time...
+if (LOCALPLAYER.timeLevel > i2f (3600))	{
+	LOCALPLAYER.timeLevel -= i2f (3600);
+	LOCALPLAYER.hoursLevel++;
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeTotal += gameData.time.xFrame;	//the never-ending march of time...
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeTotal > i2f (3600))	{
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeTotal -= i2f (3600);
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hoursTotal++;
+LOCALPLAYER.timeTotal += gameData.time.xFrame;	//the never-ending march of time...
+if (LOCALPLAYER.timeTotal > i2f (3600))	{
+	LOCALPLAYER.timeTotal -= i2f (3600);
+	LOCALPLAYER.hoursTotal++;
 	}
 }
 
@@ -693,7 +692,7 @@ int MakeNewPlayerFile (int allow_abort)
 	FILE *fp;
 #endif
 
-strncpy (text, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign,CALLSIGN_LEN);
+strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
 
 try_again:
 
@@ -719,7 +718,7 @@ if (CFExist (filename,gameFolders.szProfDir,0)) {
 	}
 if (!new_player_config ())
 	goto try_again;			// They hit Esc during New tPlayer config
-strncpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, text, CALLSIGN_LEN);
+strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
 WritePlayerFile ();
 return 1;
 }
@@ -735,7 +734,7 @@ int SelectPlayer ()
 	char	filespec [FILENAME_LEN];
 	int 	allow_abortFlag = !bStartup;
 
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign [0] == 0)	{
+if (LOCALPLAYER.callsign [0] == 0)	{
 	//---------------------------------------------------------------------
 	// Set default config options in case there is no config file
 	// kcKeyboard, kc_joystick, kcMouse are statically defined.
@@ -754,7 +753,7 @@ if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign [0
 	//----------------------------------------------------------------
 
 	// Read the last tPlayer's name from config file, not lastplr.txt
-	strncpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
+	strncpy (LOCALPLAYER.callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
 	if (gameConfig.szLastPlayer [0]==0)
 		allow_abortFlag = 0;
 	}
@@ -792,7 +791,7 @@ if (filename [0] == '<')	{
 		goto do_menu_again;
 	}
 else
-	strncpy (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, filename, CALLSIGN_LEN);
+	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);
 if (ReadPlayerFile (0) != EZERO)
 	goto do_menu_again;
 KCSetControls ();
@@ -885,7 +884,7 @@ DestroyAllSmoke ();
 Check (); /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 gameData.render.lights.flicker.nLights = 0;
-save_player = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer];	
+save_player = LOCALPLAYER;	
 Assert (gameStates.app.bAutoRunMission || 
 		  ((nLevel <= gameData.missions.nLastLevel) && 
 		   (nLevel >= gameData.missions.nLastSecretLevel) && 
@@ -965,7 +964,7 @@ Check (); /*---*/LogErr ("   gathering CTF+ flag goals\n");
 memset (gameData.render.lights.segDeltas, 0, sizeof (*gameData.render.lights.segDeltas) * MAX_SEGMENTS * 6);
 Check (); /*---*/LogErr ("   initializing door animations\n");
 InitDoorAnims ();
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer] = save_player;
+LOCALPLAYER = save_player;
 gameData.hoard.nMonsterballSeg = -1;
 Check (); /*---*/LogErr ("   initializing sound sources\n");
 SetSoundSources ();
@@ -1011,13 +1010,13 @@ void InitMultiPlayerObject ()
 {
 Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
 if (gameData.multiplayer.nLocalPlayer != 0)	{
-	gameData.multiplayer.players [0] = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer];
+	gameData.multiplayer.players [0] = LOCALPLAYER;
 	gameData.multiplayer.nLocalPlayer = 0;
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject = 0;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nInvuls =
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nCloaks = 0;
-gameData.objs.console = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+LOCALPLAYER.nObject = 0;
+LOCALPLAYER.nInvuls =
+LOCALPLAYER.nCloaks = 0;
+gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
 gameData.objs.console->nType = OBJ_PLAYER;
 gameData.objs.console->id = gameData.multiplayer.nLocalPlayer;
 gameData.objs.console->controlType	= CT_FLYING;
@@ -1048,7 +1047,7 @@ if (nStartLevel < 0)
 else
 	result = StartNewLevel (nStartLevel, 0);
 if (result) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].startingLevel = nStartLevel;		// Mark where they started
+	LOCALPLAYER.startingLevel = nStartLevel;		// Mark where they started
 	GameDisableCheats ();
 	InitSeismicDisturbances ();
 	}
@@ -1105,10 +1104,10 @@ if (TactileStick)
 #endif
 
 	//	Compute level tPlayer is on, deal with secret levels (negative numbers)
-mineLevel = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].level;
+mineLevel = LOCALPLAYER.level;
 if (mineLevel < 0)
 	mineLevel *= - (gameData.missions.nLastLevel/gameData.missions.nSecretLevels);
-level_points = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].last_score;
+level_points = LOCALPLAYER.score-LOCALPLAYER.last_score;
 if (!gameStates.app.cheats.bEnabled) {
 	if (gameStates.app.nDifficultyLevel > 1) {
 		skill_points = level_points* (gameStates.app.nDifficultyLevel)/4;
@@ -1116,9 +1115,9 @@ if (!gameStates.app.cheats.bEnabled) {
 		}
 	else
 		skill_points = 0;
-	shield_points = f2i (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields) * 5 * mineLevel;
-	energy_points = f2i (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) * 2 * mineLevel;
-	hostage_points = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board * 500 * (gameStates.app.nDifficultyLevel+1);
+	shield_points = f2i (LOCALPLAYER.shields) * 5 * mineLevel;
+	energy_points = f2i (LOCALPLAYER.energy) * 2 * mineLevel;
+	hostage_points = LOCALPLAYER.hostages_on_board * 500 * (gameStates.app.nDifficultyLevel+1);
 	shield_points -= shield_points % 50;
 	energy_points -= energy_points % 50;
 	}
@@ -1130,14 +1129,14 @@ else {
 	}
 all_hostage_text [0] = 0;
 endgame_text [0] = 0;
-if (!gameStates.app.cheats.bEnabled && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostagesLevel)) {
-	all_hostage_points = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board * 1000 * (gameStates.app.nDifficultyLevel+1);
+if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages_on_board == LOCALPLAYER.hostagesLevel)) {
+	all_hostage_points = LOCALPLAYER.hostages_on_board * 1000 * (gameStates.app.nDifficultyLevel+1);
 	sprintf (all_hostage_text, "%s%i\n", TXT_FULL_RESCUE_BONUS, all_hostage_points);
 	}
 else
 	all_hostage_points = 0;
-if (!gameStates.app.cheats.bEnabled && !(gameData.app.nGameMode & GM_MULTI) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
-	endgame_points = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives * 10000;
+if (!gameStates.app.cheats.bEnabled && !(gameData.app.nGameMode & GM_MULTI) && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
+	endgame_points = LOCALPLAYER.lives * 10000;
 	sprintf (endgame_text, "%s%i\n", TXT_SHIP_BONUS, endgame_points);
 	is_lastLevel=1;
 	}
@@ -1150,10 +1149,10 @@ sprintf (m_str [c++], "%s%i", TXT_ENERGY_BONUS, energy_points);
 sprintf (m_str [c++], "%s%i", TXT_HOSTAGE_BONUS, hostage_points);
 sprintf (m_str [c++], "%s%i", TXT_SKILL_BONUS, skill_points);
 sprintf (m_str [c++], "%s", all_hostage_text);
-if (!(gameData.app.nGameMode & GM_MULTI) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
+if (!(gameData.app.nGameMode & GM_MULTI) && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 	sprintf (m_str [c++], "%s", endgame_text);
 sprintf (m_str [c++], "%s%i\n", TXT_TOTAL_BONUS, shield_points+energy_points+hostage_points+skill_points+all_hostage_points+endgame_points);
-sprintf (m_str [c++], "%s%i", TXT_TOTAL_SCORE, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score);
+sprintf (m_str [c++], "%s%i", TXT_TOTAL_SCORE, LOCALPLAYER.score);
 memset (m, 0, sizeof (m));
 for (i=0; i<c; i++) {
 	m [i].nType = NM_TYPE_TEXT;
@@ -1207,10 +1206,10 @@ gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 if (gameStates.app.bD1Mission) {
-	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy < INITIAL_ENERGY)
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].energy = INITIAL_ENERGY;
-	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields < INITIAL_SHIELDS)
-		gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].shields = INITIAL_SHIELDS;
+	if (LOCALPLAYER.energy < INITIAL_ENERGY)
+		LOCALPLAYER.energy = INITIAL_ENERGY;
+	if (LOCALPLAYER.shields < INITIAL_SHIELDS)
+		LOCALPLAYER.shields = INITIAL_SHIELDS;
 	}
 }
 
@@ -1253,7 +1252,7 @@ GameSeqInitNetworkPlayers (); // Initialize the gameData.multiplayer.players arr
 HUDClearMessages ();
 AutomapClearVisited ();
 // --	InitPlayerStatsLevel ();
-gameData.objs.viewer = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
 GameSeqRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
@@ -1276,8 +1275,8 @@ ThisLevelTime=0;
 m [0].nType = NM_TYPE_TEXT;
 m [0].text = " ";
 
-last_drawn_cockpit [0] = -1;
-last_drawn_cockpit [1] = -1;
+gameStates.render.cockpit.nLastDrawn [0] = -1;
+gameStates.render.cockpit.nLastDrawn [1] = -1;
 
 if (gameData.demo.nState == ND_STATE_PAUSED)
 	gameData.demo.nState = ND_STATE_RECORDING;
@@ -1315,7 +1314,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	InitAllMatCens ();
 	ResetSpecialEffects ();
 	StartSecretLevel ();
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_ALL_KEYS;
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
 	}
 else {
 	if (CFExist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
@@ -1394,18 +1393,18 @@ else {
 //	be invulnerable or cloaked.
 void DoCloakInvulSecretStuff (fix xOldGameTime)
 {
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE) {
+if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 		fix	time_used;
 
-	time_used = xOldGameTime - gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame - time_used;
+	time_used = xOldGameTime - LOCALPLAYER.invulnerableTime;
+	LOCALPLAYER.invulnerableTime = gameData.time.xGame - time_used;
 	}
 
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		fix	time_used;
 
-	time_used = xOldGameTime - gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].cloakTime = gameData.time.xGame - time_used;
+	time_used = xOldGameTime - LOCALPLAYER.cloakTime;
+	LOCALPLAYER.cloakTime = gameData.time.xGame - time_used;
 	}
 }
 
@@ -1448,11 +1447,11 @@ void PlayerFinishedLevel (int bSecret)
 	Assert (!bSecret);
 
 	//credit the tPlayer for hostages
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_rescuedTotal += gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board;
+LOCALPLAYER.hostages_rescuedTotal += LOCALPLAYER.hostages_on_board;
 if (gameData.app.nGameMode & GM_NETWORK)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 2; // Finished but did not die
-last_drawn_cockpit [0] = -1;
-last_drawn_cockpit [1] = -1;
+	LOCALPLAYER.connected = 2; // Finished but did not die
+gameStates.render.cockpit.nLastDrawn [0] = -1;
+gameStates.render.cockpit.nLastDrawn [1] = -1;
 if (gameData.missions.nCurrentLevel < 0)
 	ExitSecretLevel ();
 else
@@ -1698,14 +1697,14 @@ GrPaletteStepLoad (NULL);
 DigiStopDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score = 
-	(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].score * (100 - nCoopPenalties [extraGameInfo [1].nCoopPenalty])) / 100;
+	LOCALPLAYER.score = 
+	(LOCALPLAYER.score * (100 - nCoopPenalties [extraGameInfo [1].nCoopPenalty])) / 100;
 if (gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] && (gameData.app.nGameMode & GM_MULTI))
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;
 #ifdef EDITOR
 if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
-	tObject * playerobj = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	tObject * playerobj = gameData.objs.objects + LOCALPLAYER.nObject;
 	//ExecMessageBox ("You're Dead!", 1, "Continue", "Not a real game, though.");
 	LoadLevelSub ("gamesave.lvl");
 	InitPlayerStatsNewShip ();
@@ -1716,28 +1715,28 @@ if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
 #endif
 
 if (gameData.app.nGameMode & GM_MULTI)
-	MultiDoDeath (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+	MultiDoDeath (LOCALPLAYER.nObject);
 else {				//Note link to above else!
-	if (!--gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives) {	
+	if (!--LOCALPLAYER.lives) {	
 		DoGameOver ();
 		return;
 		}
 	}
 if (gameData.reactor.bDestroyed) {
 	//clear out stuff so no bonus
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].hostages_on_board = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = 0;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 3;
+	LOCALPLAYER.hostages_on_board = 0;
+	LOCALPLAYER.energy = 0;
+	LOCALPLAYER.shields = 0;
+	LOCALPLAYER.connected = 3;
 	DiedInMineMessage (); // Give them some indication of what happened
 	}
 if (bSecret && !gameStates.app.bD1Mission) {
 	ExitSecretLevel ();
 	SetPosFromReturnSegment ();
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives--;	//	re-lose the life, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].lives got written over in restore.
+	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	InitPlayerStatsNewShip ();
-	last_drawn_cockpit [0] =
-	last_drawn_cockpit [1] = -1;
+	gameStates.render.cockpit.nLastDrawn [0] =
+	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
 else {
 	if (gameData.reactor.bDestroyed) {
@@ -1767,8 +1766,8 @@ int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret, int bRestore
 reloadLevel:
 
 if (!(gameData.app.nGameMode & GM_MULTI)) {
-	last_drawn_cockpit [0] = -1;
-	last_drawn_cockpit [1] = -1;
+	gameStates.render.cockpit.nLastDrawn [0] = -1;
+	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
  gameStates.render.cockpit.bBigWindowSwitch=0;
 if (gameData.demo.nState == ND_STATE_PAUSED)
@@ -1790,7 +1789,7 @@ GameSeqInitNetworkPlayers (); // Initialize the gameData.multiplayer.players arr
 InitHoardData ();
 SetMonsterballForces ();
 #endif
-//	gameData.objs.viewer = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+//	gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
 if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, "Too many players for this level.");
 	return 0;
@@ -1868,8 +1867,8 @@ if (!bRestore)
 	InitReactorForLevel (0);
 InitAIObjects ();
 #if 0
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nInvuls =
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nCloaks = 0;
+LOCALPLAYER.nInvuls =
+LOCALPLAYER.nCloaks = 0;
 #endif
 //	Say tPlayer can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
@@ -2203,7 +2202,7 @@ gameStates.render.bDoAppearanceEffect = 1;
 if (gameData.app.nGameMode & GM_MULTI) {
 	if (gameData.app.nGameMode & GM_MULTI_COOP)
 		MultiSendScore ();
-	MultiSendPosition (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject);
+	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendReappear ();
 	}		
 if (gameData.app.nGameMode & GM_NETWORK)

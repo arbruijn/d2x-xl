@@ -1274,7 +1274,7 @@ if (!(FindArg ("-pps") && FindArg ("-shortpackets")))
 	if (!NetworkChooseConnect ())
 		return -1;
 
-sprintf (name, "%s%s", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, TXT_S_GAME);	
+sprintf (name, "%s%s", LOCALPLAYER.callsign, TXT_S_GAME);	
 if (bAutoRun)
 	return 1;
 
@@ -1706,9 +1706,9 @@ for (i = 0; i< MAX_PLAYERS+4; i++) {
 	}
 m [0].value = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
-	sprintf (text [0], "%d. %-20s", 1, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	sprintf (text [0], "%d. %-20s", 1, LOCALPLAYER.callsign);
 else
-	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers.players [gameData.multiplayer.nLocalPlayer].rank], gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers.players [gameData.multiplayer.nLocalPlayer].rank], LOCALPLAYER.callsign);
 sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multiplayer.nMaxPlayers, TXT_TEAM_PRESS_ENTER);
 
 GetPlayersAgain:

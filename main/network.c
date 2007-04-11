@@ -310,7 +310,7 @@ memset (&netGame, 0, sizeof (tNetgameInfo));
 memset (&netPlayers, 0, sizeof (tAllNetPlayersInfo));
 memset (&networkData.mySeq, 0, sizeof (tSequencePacket));
 networkData.mySeq.nType = PID_REQUEST;
-memcpy (networkData.mySeq.player.callsign, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, CALLSIGN_LEN+1);
+memcpy (networkData.mySeq.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 networkData.mySeq.player.version_major=D2X_MAJOR;
 networkData.mySeq.player.version_minor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
 networkData.mySeq.player.rank=GetMyNetRanking ();	
@@ -501,7 +501,7 @@ if (!people) {
    }
 // Search to see if we were already in this closed netgame in progress
 for (i = 0; i < nNumPlayers; i++)
-	if (!CmpNetPlayers (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, 
+	if (!CmpNetPlayers (LOCALPLAYER.callsign, 
 							  people->players [i].callsign, 
 							  &networkData.mySeq.player.network, 
 							  &people->players [i].network))
@@ -1124,7 +1124,7 @@ for (j=0; j<MAX_PLAYERS; j++) {
 	netGame.playerKills [j] = gameData.multiplayer.players [j].netKillsTotal;
 	netGame.player_score [j] = gameData.multiplayer.players [j].score;
 	}       
-netGame.xLevelTime = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel;
+netGame.xLevelTime = LOCALPLAYER.timeLevel;
 netGame.monitor_vector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
@@ -1153,7 +1153,7 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 	netGame.playerKills [j] = gameData.multiplayer.players [j].netKillsTotal;
 	netGame.player_score [j] = gameData.multiplayer.players [j].score;
 	}       
-netGame.xLevelTime = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel;
+netGame.xLevelTime = LOCALPLAYER.timeLevel;
 netGame.monitor_vector = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
@@ -1254,7 +1254,7 @@ void NetworkDumpPlayer (ubyte * server, ubyte *node, int why)
 	tSequencePacket temp;
 
 temp.nType = PID_DUMP;
-memcpy (temp.player.callsign, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, CALLSIGN_LEN+1);
+memcpy (temp.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 temp.player.connected = why;
 if (gameStates.multi.nGameType >= IPX_GAME)
 	SendInternetSequencePacket (temp, server, node);
@@ -1274,7 +1274,7 @@ memset (&me, 0, sizeof (me));
 #endif
 me.nType = PID_GAME_LIST;
 memcpy (me.player.callsign, 
-		  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, 
+		  LOCALPLAYER.callsign, 
 		  CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
@@ -1313,7 +1313,7 @@ void NetworkSendAllInfoRequest (char nType, int which_security)
 me.nSecurity = which_security;
 me.nType = nType;
 memcpy (me.player.callsign, 
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, 
+			LOCALPLAYER.callsign, 
 			CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
@@ -2657,7 +2657,7 @@ if (netGame.segments_checksum != networkData.nMySegsCheckSum) {
 #endif
 	}
 // Discover my tPlayer number
-memcpy (szLocalCallSign, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, CALLSIGN_LEN+1);
+memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 gameData.multiplayer.nLocalPlayer = -1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	gameData.multiplayer.players [i].netKillsTotal = 0;
@@ -2713,11 +2713,11 @@ if (networkData.bRejoined) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].netKilledTotal = sp->killed [i];
 	NetworkProcessMonitorVector (sp->monitor_vector);
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel = sp->xLevelTime;
+	LOCALPLAYER.timeLevel = sp->xLevelTime;
 	}
 gameData.multigame.kills.nTeam [0] = sp->teamKills [0];
 gameData.multigame.kills.nTeam [1] = sp->teamKills [1];
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 1;
+LOCALPLAYER.connected = 1;
 netPlayers.players [gameData.multiplayer.nLocalPlayer].connected = 1;
 netPlayers.players [gameData.multiplayer.nLocalPlayer].rank=GetMyNetRanking ();
 if (!networkData.bRejoined) {
@@ -2735,7 +2735,7 @@ if (!networkData.bRejoined) {
 		RelinkObject (gameData.multiplayer.players [i].nObject, gameData.multiplayer.playerInit [j].nSegment);
 		}
 	}
-gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nType = OBJ_PLAYER;
+gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
 networkData.nStatus = NETSTAT_PLAYING;
 SetFunctionMode (FMODE_GAME);
 MultiSortKillList ();
@@ -2918,7 +2918,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL)
 con_printf (CONDBG, "Aborting join.\n");
 #endif
 me.nType = PID_QUIT_JOINING;
-memcpy (me.player.callsign, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, CALLSIGN_LEN+1);
+memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
@@ -2966,7 +2966,7 @@ m [0].nType=NM_TYPE_TEXT;
 m [0].text = TXT_NET_LEAVE;
 networkData.nStatus = NETSTAT_WAITING;
 NetworkFlush ();
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 1;
+LOCALPLAYER.connected = 1;
 
 do_menu:
 
@@ -3015,7 +3015,7 @@ else
 NetworkCountPowerupsInMine ();
 
 if (result < 0) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 0;
+	LOCALPLAYER.connected = 0;
 	NetworkSendEndLevelPacket ();
 	longjmp (gameExitPoint, 0);
 	}
@@ -3204,7 +3204,7 @@ if ((NetworkIAmMaster ())) {
 	NetworkSendGameInfo (NULL);
 	gameData.multiplayer.nPlayers=nsave;
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 0;
+LOCALPLAYER.connected = 0;
 NetworkSendEndLevelPacket ();
 ChangePlayerNumTo (0);
 gameData.app.nGameMode = GM_GAME_OVER;
@@ -3469,8 +3469,8 @@ xLastTimeoutCheck += gameData.time.xFrame;
 // Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 if ((xLastSendTime > F1_0 / netGame.nPacketsPerSec) || 
 	  (gameData.multigame.laser.bFired) || force || networkData.bPacketUrgent) {        
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected) {
-		int nObject = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	if (LOCALPLAYER.connected) {
+		int nObject = LOCALPLAYER.nObject;
 		networkData.bPacketUrgent = 0;
 		if (listen) {
 			MultiSendRobotFrame (0);
@@ -3534,7 +3534,7 @@ if ((xLastSendTime > F1_0 / netGame.nPacketsPerSec) ||
 		networkData.bD2XData = 0;
 		if (gameData.reactor.bDestroyed) {
 			if (gameStates.app.bPlayerIsDead)
-				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected=3;
+				LOCALPLAYER.connected=3;
 			if (TimerGetApproxSeconds () > (LastEndlevel+ (F1_0/2))) {
 				NetworkSendEndLevelPacket ();
 				LastEndlevel = TimerGetApproxSeconds ();

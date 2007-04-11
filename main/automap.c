@@ -274,7 +274,7 @@ basePoint.p3_index = -1;
 void DropMarker (char nPlayerMarker)
 {
 	ubyte nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
-	tObject *playerP = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	tObject *playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 
 gameData.marker.point [nMarker] = playerP->position.vPos;
 if (gameData.marker.objects [nMarker] != -1)
@@ -460,7 +460,7 @@ G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
 G3DrawSphere (&spherePoint, bRadar ? objP->size * 2 : objP->size, !bRadar);
 //G3DrawSphere3D (&spherePoint, bRadar ? 8 : 20, objP->size * (bRadar + 1));
 
-if (bRadar && (OBJ_IDX (objP) != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+if (bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
 VmVecScaleAdd (&arrow_pos, &objP->position.vPos, &objP->position.mOrient.fVec, size*3);
@@ -562,7 +562,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		color = gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 
 	GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g,player_rgb [color].b));
-	DrawPlayer (gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject, bRadar);
+	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject, bRadar);
 
 	if (!bRadar) {
 		DrawMarkers ();
@@ -887,7 +887,7 @@ if (bRadar)
 	amData.nViewDist = ZOOM_DEFAULT;
 else if (!amData.nViewDist)
 	amData.nViewDist = ZOOM_DEFAULT;
-playerP = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 amData.viewMatrix = playerP->position.mOrient;
 
 pvTAngles->p = PITCH_DEFAULT;
@@ -897,7 +897,7 @@ pvTAngles->b = 0;
 amData.viewTarget = playerP->position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
-//Fill in bAutomapVisited from gameData.objs.objects[gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject].nSegment
+//Fill in bAutomapVisited from gameData.objs.objects[LOCALPLAYER.nObject].nSegment
 if (bRadar) {
 #ifndef _DEBUG
 	if (!IsMultiGame)
@@ -908,7 +908,7 @@ if (bRadar) {
 *pnSegmentLimit =
 *pnMaxSegsAway = 
 	SetSegmentDepths (
-		gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nSegment, 
+		gameData.objs.objects [LOCALPLAYER.nObject].nSegment, 
 		bAutomapVisited);
 AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 #ifndef _DEBUG
@@ -922,7 +922,7 @@ return bPauseGame;
 
 int UpdateAutomap (vmsAngVec *pvTAngles)
 {
-	tObject		*playerP = gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject;
+	tObject		*playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 	vmsMatrix	m;
 
 if (Controls [0].firePrimaryDownCount)	{
@@ -1000,7 +1000,7 @@ while (c = KeyInKey ()) {
 				bAutomapVisited[i] = 1;
 			AutomapBuildEdgeList ();
 			*pnSegmentLimit = 
-			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nSegment, bAutomapVisited);
+			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, bAutomapVisited);
 			AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 			}
 			break;
@@ -1529,7 +1529,7 @@ if (nSegment == gameData.multiplayer.playerInit[gameData.multiplayer.nLocalPlaye
 
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
-		if ((gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_MAP_ALL) && 
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL) && 
 				!(gameStates.render.bAllVisited || bAutomapVisited[nSegment]))
 			color = automapColors.walls.nRevealed;
 
@@ -1584,7 +1584,7 @@ void AutomapBuildEdgeList ()
 
 	amData.bCheat = 0;
 
-	if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_MAP_ALL_CHEAT)
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL_CHEAT)
 		amData.bCheat = 1;		// Damn cheaters...
 
 	// clear edge list
@@ -1595,7 +1595,7 @@ void AutomapBuildEdgeList ()
 	nNumEdges = 0;
 	nHighestEdgeIndex = -1;
 
-	if (amData.bCheat || (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_MAP_ALL))	{
+	if (amData.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL))	{
 		// Cheating, add all edges as visited
 		for (s=0; s<=gameData.segs.nLastSegment; s++)
 			#ifdef EDITOR
@@ -1708,7 +1708,7 @@ void MarkerInputMessage (int key)
 	case KEY_ENTER:
 		strcpy (gameData.marker.szMessage[ (gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],gameData.marker.szInput);
 		if (gameData.app.nGameMode & GM_MULTI)
-		 strcpy (gameData.marker.nOwner[ (gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
+		 strcpy (gameData.marker.nOwner[ (gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],LOCALPLAYER.callsign);
 		DropMarker (nDefiningMarker);
 		nLastMarkerDropped = nDefiningMarker;
 		GameFlushInputs ();

@@ -805,7 +805,7 @@ if (endMask = masks.faceMask) { //on the back of at least one iFace
 					int widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject);
 					//LogErr ("done\n");
 					//if what we have hit is a door, check the adjoining segP
-					if ((nThisObject == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) && 
+					if ((nThisObject == LOCALPLAYER.nObject) && 
 						 (gameStates.app.cheats.bPhysics == 0xBADA55)) {
 						int childSide = segP->children [nSide];
 						if (childSide >= 0) {

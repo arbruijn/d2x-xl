@@ -140,7 +140,7 @@ void gr_uscanline( int x1, int x2, int y )
 	}
 }
 
-void gr_scanline( int x1, int x2, int y )
+void GrScanLine( int x1, int x2, int y )
 {
 	if ((y<0)||(y>MAXY)) return;
 

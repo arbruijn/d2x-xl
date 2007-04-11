@@ -270,7 +270,7 @@ extern int gauge_message_on;
 #ifndef NDEBUG      // if debugging, these are variables
 
 extern int Slew_on;                 // in slew or sim mode?
-extern int Game_double_buffer;      // double buffering?
+extern int bGameDoubleBuffer;      // double buffering?
 
 
 #else               // if not debugging, these are constants
@@ -280,7 +280,7 @@ extern int Game_double_buffer;      // double buffering?
 
 #endif
 
-#define Scanline_double     0       // PC doesn't do scanline doubling
+#define bScanlineDouble     0       // PC doesn't do scanline doubling
 
 // Suspend flags
 

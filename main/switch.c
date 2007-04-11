@@ -691,7 +691,7 @@ else {
 void UpdatePlayerOrient (void)
 {
 if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
-	TriggerSetObjOrient (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject, -1, -1, 0, gameStates.gameplay.nDirSteps--);
+	TriggerSetObjOrient (LOCALPLAYER.nObject, -1, -1, 0, gameStates.gameplay.nDirSteps--);
 }
 
 //------------------------------------------------------------------------------
@@ -740,7 +740,7 @@ trigP = triggers + nTrigger;
 if (trigP->flags & TF_DISABLED)
 	return 1;		//1 means don't send trigger hit to other players
 if (bIsPlayer) {
-	if (!IsMultiGame && (nObject != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+	if (!IsMultiGame && (nObject != LOCALPLAYER.nObject))
 		return 1;
 	}
 else {
@@ -777,7 +777,7 @@ switch (trigP->nType) {
 			StartEndLevelSequence (0);
 			} 
 		else if (gameData.missions.nCurrentLevel < 0) {
-			if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
+			if ((LOCALPLAYER.shields < 0) || 
 					gameStates.app.bPlayerIsDead)
 				break;
 			ExitSecretLevel ();
@@ -798,7 +798,7 @@ switch (trigP->nType) {
 
 		if (nPlayer != gameData.multiplayer.nLocalPlayer)
 			break;
-		if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
+		if ((LOCALPLAYER.shields < 0) || 
 				gameStates.app.bPlayerIsDead)
 			break;
 		if (gameData.app.nGameMode & GM_MULTI) {
@@ -906,7 +906,7 @@ switch (trigP->nType) {
 			if (bIsPlayer) {
 				if (nPlayer != gameData.multiplayer.nLocalPlayer)
 					break;
-				if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
+				if ((LOCALPLAYER.shields < 0) || 
 						gameStates.app.bPlayerIsDead)
 					break;
 				}
@@ -921,7 +921,7 @@ switch (trigP->nType) {
 		if (bIsPlayer) {
 			if (nPlayer != gameData.multiplayer.nLocalPlayer)
 				break;
-			if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
+			if ((LOCALPLAYER.shields < 0) || 
 				 gameStates.app.bPlayerIsDead)
 				break;
 			}
@@ -931,11 +931,11 @@ switch (trigP->nType) {
 		break;
 
 	case TT_SHIELD_DAMAGE:
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields += gameData.trigs.triggers [nTrigger].value;
+		LOCALPLAYER.shields += gameData.trigs.triggers [nTrigger].value;
 		break;
 
 	case TT_ENERGY_DRAIN:
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy += gameData.trigs.triggers [nTrigger].value;
+		LOCALPLAYER.energy += gameData.trigs.triggers [nTrigger].value;
 		break;
 
 	case TT_CHANGE_TEXTURE:

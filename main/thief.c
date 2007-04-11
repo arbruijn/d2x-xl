@@ -104,7 +104,7 @@ int ChooseThiefRecreationSegment(void)
 	cur_drop_depth = THIEF_DEPTH;
 
 	while ((nSegment == -1) && (cur_drop_depth > THIEF_DEPTH/2)) {
-		nSegment = PickConnectedSegment(&gameData.objs.objects[gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].nObject], cur_drop_depth);
+		nSegment = PickConnectedSegment(&gameData.objs.objects[LOCALPLAYER.nObject], cur_drop_depth);
 		if (gameData.segs.segment2s[nSegment].special == SEGMENT_IS_CONTROLCEN)
 			nSegment = -1;
 		cur_drop_depth--;
@@ -307,7 +307,7 @@ int MaybeStealFlagItem(int player_num, int flagval)
 				case PLAYER_FLAGS_HEADLIGHT:
 					powerup_index = POW_HEADLIGHT;
 					ThiefMessage("Headlight stolen!");
-				   gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+				   LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 					break;
 			}
 			Assert(powerup_index != -1);
@@ -337,7 +337,7 @@ int MaybeStealSecondaryWeapon(int player_num, int weapon_num)
 			}
 
 			ThiefMessage(TXT_WPN_STOLEN, baseGameTexts [114+weapon_num]);		//	Danger! Danger! Use of literal!  Danger!
-			if (gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].secondaryAmmo[weapon_num] == 0)
+			if (LOCALPLAYER.secondaryAmmo[weapon_num] == 0)
 				AutoSelectWeapon(1, 0);
 
 			// -- compress_stolen_items();

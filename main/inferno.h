@@ -378,6 +378,7 @@ typedef struct tGameplayStates {
 	int nReactorCount;
 	int nLastReactor;
 	int bMineMineCheat;
+	int bAfterburnerCheat;
 	fix nPlayerSpeed;
 	vmsVector vTgtDir;
 	int nDirSteps;
@@ -493,7 +494,32 @@ typedef struct tCockpitStates {
 	int nModeSave;
 	int bRedraw;
 	int bBigWindowSwitch;
+	int nLastDrawn [2];
 } tCockpitStates;
+
+typedef struct tVRBuffers {
+	grs_canvas  *offscreen;			// The offscreen data buffer
+	grs_canvas	render [2];			//  Two offscreen buffers for left/right eyes.
+	grs_canvas	subRender [2];		//  Two sub buffers for left/right eyes.
+	grs_canvas	screenPages [2];	//  Two pages of VRAM if paging is available
+	grs_canvas	editorCanvas;		//  The canvas that the editor writes to.
+} tVRBuffers;
+
+typedef struct tVRStates {
+	u_int32_t	nScreenMode;
+	ubyte			nScreenFlags;	//see values in screens.h
+	ubyte			nCurrentPage;
+	fix			xEyeWidth;
+	int			nRenderMode;
+	int			nLowRes;			// Default to low res
+	int 			bShowHUD;
+	int			nSensitivity;	// 0 - 2
+	int			nEyeOffset;
+	int			nEyeSwitch;
+	int			bEyeOffsetChanged;
+	int			bUseRegCode;
+	tVRBuffers	buffers;
+} tVRStates;
 
 typedef struct tFontStates {
 	int bHires;
@@ -565,6 +591,7 @@ typedef struct tRenderStates {
 	cvar_t frameRate;
 	tCameraStates cameras;
 	tCockpitStates cockpit;
+	tVRStates		vr;
 	tColorStates color;
 	tFontStates fonts;
 	tTextureStates textures;

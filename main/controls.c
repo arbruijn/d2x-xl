@@ -149,7 +149,7 @@ void ReadFlyingControls(tObject *objP)
 		objP->mType.physInfo.rotThrust.p.z = Controls [0].bankTime;
 		}
 	forwardThrustTime = Controls [0].forwardThrustTime;
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER)	{
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)	{
 		if (Controls [0].afterburnerState) {			//tPlayer has key down
 			//if (forwardThrustTime >= 0) { 		//..and isn't moving backward
 			{
@@ -160,7 +160,8 @@ void ReadFlyingControls(tObject *objP)
 				afterburner_scale = f1_0 + min (f1_0/2, xAfterburnerCharge) * 2;
 				forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
 				oldCount = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
-				xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
+				if (!gameStates.gameplay.bAfterburnerCheat)
+					xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
 				if (xAfterburnerCharge < 0)
 					xAfterburnerCharge = 0;
 				newCount = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
@@ -173,12 +174,12 @@ void ReadFlyingControls(tObject *objP)
 	
 			//charge up to full
 			charge_up = min(gameData.time.xFrame/8,f1_0 - xAfterburnerCharge);	//recharge over 8 seconds
-			cur_energy = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy - i2f (10);
+			cur_energy = LOCALPLAYER.energy - i2f (10);
 			cur_energy = max(cur_energy, 0);	//don't drop below 10
 			//maybe limit charge up by energy
 			charge_up = min (charge_up,cur_energy / 10);
 			xAfterburnerCharge += charge_up;
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
+			LOCALPLAYER.energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
 		}
 	}
 	// Set tObject's thrust vector for forward/backward

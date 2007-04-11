@@ -239,8 +239,8 @@ if (!gameOpts->menus.nStyle) {
 
 //if (!gameOpts->menus.nStyle) 
 {
-	if (gameStates.menus.bHires && !gameOpts->menus.nStyle && VR_offscreen_buffer->cv_w == 640)
-		CreditsOffscreenBuf = VR_offscreen_buffer;
+	if (gameStates.menus.bHires && !gameOpts->menus.nStyle && gameStates.render.vr.buffers.offscreen->cv_w == 640)
+		CreditsOffscreenBuf = gameStates.render.vr.buffers.offscreen;
 	else if (gameStates.menus.bHires)
 		CreditsOffscreenBuf = GrCreateCanvas(640,480);
 	else
@@ -435,7 +435,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 				);
 					SongsPlaySong(SONG_TITLE, 1);
 
-				if (CreditsOffscreenBuf != VR_offscreen_buffer)
+				if (CreditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
 					GrFreeCanvas(CreditsOffscreenBuf);
 				WIN(DEFINE_SCREEN(Menu_pcx_name));
 				glDisable (GL_BLEND);

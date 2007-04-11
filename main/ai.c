@@ -289,9 +289,9 @@ if (gameData.ai.vLastPlayerPosFiredAt.p.x ||
 else
 	gameData.ai.nDistToLastPlayerPosFiredAt = F1_0 * 10000;
 abState = xAfterburnerCharge && Controls [0].afterburnerState && 
-			  (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_AFTERBURNER);
-if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) || 
-	 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) || abState)
+			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || 
+	 (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON) || abState)
 	AIDoCloakStuff ();
 gameData.ai.nMaxAwareness = 0;
 }
@@ -588,7 +588,7 @@ if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
 		else {
 _exit_cheat:
 			bVisAndVecComputed = 0;
-			if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
+			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 				gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
 			else
 				gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [nObject & (MAX_AI_CLOAK_INFO-1)].vLastPos;
@@ -765,7 +765,7 @@ _exit_cheat:
 		rval = d_rand ();
 		sval = (gameData.ai.xDistToPlayer * (gameStates.app.nDifficultyLevel + 1)) / 64;
 
-		if ((FixMul (rval, sval) < gameData.time.xFrame) || (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
+		if ((FixMul (rval, sval) < gameData.time.xFrame) || (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
 			ailp->playerAwarenessType = PA_PLAYER_COLLISION;
 			ailp->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
 			ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_REACTION_DIST);
@@ -813,7 +813,7 @@ switch (ROBOTINFO (objP->id).bossFlag) {
 		ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_REACTION_DIST);
 		pv = gameData.ai.nPlayerVisibility;
 		// If tPlayer cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED) {
+		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			pv = 0;
 			dtp = VmVecDistQuick (&gameData.objs.console->position.vPos, &objP->position.vPos)/4;
 			}

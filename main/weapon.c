@@ -332,16 +332,16 @@ bCycling = 0;
 
 //	------------------------------------------------------------------------------------
 //if message flag set, print message saying selected
-void SelectWeapon(int weapon_num, int bSecondary, int print_message, int bWaitForRearm)
+void SelectWeapon(int nWeaponNum, int bSecondary, int print_message, int bWaitForRearm)
 {
 	char	*weapon_name;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordPlayerWeapon(bSecondary, weapon_num);
+	NDRecordPlayerWeapon(bSecondary, nWeaponNum);
 if (!bSecondary) {
-	if (gameData.weapons.nPrimary != weapon_num) {
+	if (gameData.weapons.nPrimary != nWeaponNum) {
 		if (bWaitForRearm) 
-			DigiPlaySampleOnce( SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+			DigiPlaySampleOnce(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 		if (gameData.app.nGameMode & GM_MULTI)	{
 			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
@@ -353,36 +353,36 @@ if (!bSecondary) {
 		// Select super version if available.
 		if (bWaitForRearm) {
 			if (!bCycling)
-				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- DigiPlaySampleOnce( SOUND_ALREADY_SELECTED, F1_0);
+				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- DigiPlaySampleOnce(SOUND_ALREADY_SELECTED, F1_0);
 			else
-				DigiPlaySampleOnce( SOUND_BAD_SELECTION, F1_0);
+				DigiPlaySampleOnce(SOUND_BAD_SELECTION, F1_0);
 			}
 		}
-	gameData.weapons.nOverridden = weapon_num;
+	gameData.weapons.nOverridden = nWeaponNum;
 	if (!bSecondary && extraGameInfo [IsMultiGame].bSmartWeaponSwitch && !gameStates.app.bD1Mission) {
-		switch (weapon_num) {
+		switch (nWeaponNum) {
 			case 1:
-				if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & (1 << 6))
-					weapon_num = 6;
+				if (LOCALPLAYER.primaryWeaponFlags & (1 << 6))
+					nWeaponNum = 6;
 				break;
 			case 2:
-				if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & (1 << 7))
-					weapon_num = 7;
+				if (LOCALPLAYER.primaryWeaponFlags & (1 << 7))
+					nWeaponNum = 7;
 				break;
 			}
 		}
-	gameData.weapons.nPrimary = (!bSecondary && (weapon_num == SUPER_LASER_INDEX)) ? LASER_INDEX : weapon_num;
-	weapon_name = PRIMARY_WEAPON_NAMES (weapon_num);
+	gameData.weapons.nPrimary = (!bSecondary && (nWeaponNum == SUPER_LASER_INDEX)) ? LASER_INDEX : nWeaponNum;
+	weapon_name = PRIMARY_WEAPON_NAMES (nWeaponNum);
    #if defined (TACTILE)
  	tactile_set_button_jolt();
 	#endif
 	//save flag for whether was super version
-	bLastPrimaryWasSuper[weapon_num % SUPER_WEAPON] = (weapon_num >= SUPER_WEAPON);
+	bLastPrimaryWasSuper[nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
 	}
 else {
-	if (gameData.weapons.nSecondary != weapon_num) {
+	if (gameData.weapons.nSecondary != nWeaponNum) {
 		if (bWaitForRearm) 
-			DigiPlaySampleOnce( SOUND_GOOD_SELECTION_SECONDARY, F1_0);
+			DigiPlaySampleOnce(SOUND_GOOD_SELECTION_SECONDARY, F1_0);
 		if (gameData.app.nGameMode & GM_MULTI) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
@@ -393,20 +393,20 @@ else {
 	else {
 		if (bWaitForRearm) {
 		 if (!bCycling)
-			DigiPlaySampleOnce( SOUND_ALREADY_SELECTED, F1_0);
+			DigiPlaySampleOnce(SOUND_ALREADY_SELECTED, F1_0);
 		 else
-			DigiPlaySampleOnce( SOUND_BAD_SELECTION, F1_0);
+			DigiPlaySampleOnce(SOUND_BAD_SELECTION, F1_0);
 		}
 	}
-	gameData.weapons.nSecondary = weapon_num;
-	weapon_name = SECONDARY_WEAPON_NAMES(weapon_num);
+	gameData.weapons.nSecondary = nWeaponNum;
+	weapon_name = SECONDARY_WEAPON_NAMES(nWeaponNum);
 	//save flag for whether was super version
-	bLastSecondaryWasSuper[weapon_num % SUPER_WEAPON] = (weapon_num >= SUPER_WEAPON);
+	bLastSecondaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
 	}
 
 if (print_message) {
-	if (weapon_num == LASER_INDEX && !bSecondary)
-		HUDInitMessage(TXT_WPN_LEVEL, weapon_name, gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel+1, TXT_SELECTED);
+	if (nWeaponNum == LASER_INDEX && !bSecondary)
+		HUDInitMessage (TXT_WPN_LEVEL, weapon_name, LOCALPLAYER.laserLevel + 1, TXT_SELECTED);
 	else
 		HUDInitMessage("%s %s", weapon_name, TXT_SELECTED);
 	}
@@ -423,17 +423,17 @@ void DoSelectWeapon(int nWeapon, int bSecondary)
 
 if (!bSecondary) {
 	current = gameData.weapons.nPrimary;
-	if ((current == LASER_INDEX) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel > MAX_LASER_LEVEL))
+	if ((current == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
 		current = SUPER_LASER_INDEX;
 	bLastWasSuper = bLastPrimaryWasSuper [nWeapon];
-	if ((nWeapon == LASER_INDEX) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel > MAX_LASER_LEVEL))
+	if ((nWeapon == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
 		nWeapon = SUPER_LASER_INDEX;
 	hasFlag = HAS_WEAPON_FLAG;
 	}
 else {
 	current = gameData.weapons.nSecondary;
 	bLastWasSuper = bLastSecondaryWasSuper [nWeapon];
-	hasFlag = HAS_WEAPON_FLAG+HAS_AMMO_FLAG;
+	hasFlag = HAS_WEAPON_FLAG + HAS_AMMO_FLAG;
 	}
 
 if ((current == nWeapon) || (current == nWeapon + SUPER_WEAPON)) {
@@ -468,11 +468,11 @@ if ((nWeaponStatus & hasFlag) != hasFlag) {
 		}
 	else
 		HUDInitMessage("%s %s%s",TXT_HAVE_NO, SECONDARY_WEAPON_NAMES(nWeapon), TXT_SX);
-	DigiPlaySample( SOUND_BAD_SELECTION, F1_0);
+	DigiPlaySample(SOUND_BAD_SELECTION, F1_0);
 	return;
 	}
 //now actually select the weapon
-SelectWeapon(nWeapon, bSecondary, 1, 1);
+SelectWeapon (nWeapon, bSecondary, 1, 1);
 }
 
 //	----------------------------------------------------------------------------------------
@@ -481,8 +481,7 @@ inline int WeaponId (int w)
 {
 if (w != LASER_INDEX)
 	return w;
-if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel <= MAX_LASER_LEVEL) || 
-	 !bLastPrimaryWasSuper [LASER_INDEX])
+if ((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) || !bLastPrimaryWasSuper [LASER_INDEX])
 	return LASER_INDEX;
 return SUPER_LASER_INDEX;
 }
@@ -624,23 +623,23 @@ void ShowWeaponStatus(void)
 	int	i;
 #if TRACE
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & (1 << i))
+	if (LOCALPLAYER.primaryWeaponFlags & (1 << i))
 		con_printf (CONDBG, "HAVE");
 	else
 		con_printf (CONDBG, "    ");
 	con_printf (CONDBG, 
 		"  Weapon: %20s, charges: %4i\n", 
-		PRIMARY_WEAPON_NAMES(i), gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [i]);
+		PRIMARY_WEAPON_NAMES(i), LOCALPLAYER.primaryAmmo [i]);
 	}
 	con_printf (CONDBG, "\n");
 	for (i=0; i<MAX_SECONDARY_WEAPONS; i++) {
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags & (1 << i))
+		if (LOCALPLAYER.secondaryWeaponFlags & (1 << i))
 			con_printf (CONDBG, "HAVE");
 		else
 			con_printf (CONDBG, "    ");
 		con_printf (CONDBG, 
 			"  Weapon: %20s, charges: %4i\n", 
-			SECONDARY_WEAPON_NAMES(i), gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [i]);
+			SECONDARY_WEAPON_NAMES(i), LOCALPLAYER.secondaryAmmo [i]);
 	}
 con_printf (CONDBG, "\n");
 con_printf (CONDBG, "\n");
@@ -832,7 +831,7 @@ return 0;
 int PickupPrimary (int nWeaponIndex, int nPlayer)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
-	//ushort oldFlags = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags;
+	//ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
 	ushort flag = 1 << nWeaponIndex;
 	int cutpoint;
 	int supposed_weapon = gameData.weapons.nPrimary;
@@ -863,7 +862,7 @@ return 1;
 
 int CheckToUsePrimary(int nWeaponIndex)
 {
-	ushort oldFlags = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags;
+	ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
 	ushort flag = 1 << nWeaponIndex;
 	int cutpoint;
 
@@ -1227,28 +1226,28 @@ void DropCurrentWeapon ()
 #if 0
 if (gameData.weapons.nPrimary == 0) {
 	if (extraGameInfo [IsMultiGame].nWeaponDropMode ||
-		((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel <= MAX_LASER_LEVEL) &&
-			!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS))) {
+		((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) &&
+			!(LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))) {
 	HUDInitMessage (TXT_CANT_DROP_PRIM);
 	return;
 	}
 #endif
 seed = d_rand ();
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) {
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
+		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		nObject = SpitPowerup (gameData.objs.console, POW_QUADLASER, seed);
 		if (nObject == -1) {
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_QUAD_LASERS;
+			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 			return;
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
-	else if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel > MAX_LASER_LEVEL) {
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel--;
+	else if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) {
+		LOCALPLAYER.laserLevel--;
 		nObject = SpitPowerup (gameData.objs.console, POW_SUPERLASER, seed);
 		if (nObject == -1) {
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel++;
+			LOCALPLAYER.laserLevel++;
 			return;
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
@@ -1257,24 +1256,24 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	// cannot drop standard lasers because picking up super lasers will automatically
 	// give you laser level 4, allowing an exploit by dropping all lasers, picking up
 	// the super lasers first, thus receiving laser level 4, etc.
-	else if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & 1) {
+	else if (LOCALPLAYER.primaryWeaponFlags & 1) {
 		if (0 > (nObject = SpitPowerup (gameData.objs.console, POW_LASER, seed)))
 			return;
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel)
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel--;
+		if (LOCALPLAYER.laserLevel)
+			LOCALPLAYER.laserLevel--;
 		else
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags &= ~1;
+			LOCALPLAYER.primaryWeaponFlags &= ~1;
 		HUDInitMessage(TXT_DROP_LASER);
 		}
 #endif
 	}
 else {
 	if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
+		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 	nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
 	if (nObject == -1) {
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
+			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
 		return;
 		}
 	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weapons.nPrimary));
@@ -1282,11 +1281,11 @@ else {
 DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
 if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 	//if it's one of these, drop some ammo with the weapon
-	ammo = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [VULCAN_INDEX];
-	if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && 
-		 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags & HAS_FLAG(GAUSS_INDEX)))
+	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
+	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && 
+		 (LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(GAUSS_INDEX)))
 		ammo /= 2;		//if both vulcan & gauss, drop half
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [VULCAN_INDEX] -= ammo;
+	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject != -1)
 		gameData.objs.objects [nObject].cType.powerupInfo.count = ammo;
 	}
@@ -1313,7 +1312,7 @@ void DropSecondaryWeapon (int nWeapon)
 
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon] == 0) {
+if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
 	HUDInitMessage(TXT_CANT_DROP_SEC);
 	return;
 	}
@@ -1321,7 +1320,7 @@ nPowerup = secondaryWeaponToPowerup[nWeapon];
 bHoardEntropy = (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) != 0;
 bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 if (!bHoardEntropy && bMine &&
-	  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon] < 4) {
+	  LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
 	return;
 	}
@@ -1330,16 +1329,16 @@ if (bHoardEntropy) {
 	return;
 	}
 if (bMine)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon] -= 4;
+	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
 else
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon]--;
+	LOCALPLAYER.secondaryAmmo [nWeapon]--;
 seed = d_rand();
 nObject = SpitPowerup (gameData.objs.console, nPowerup, seed);
 if (nObject == -1) {
 	if (bMine)
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon] += 4;
+		LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
 	else
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon]++;
+		LOCALPLAYER.secondaryAmmo [nWeapon]++;
 	return;
 	}
 HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
@@ -1348,8 +1347,8 @@ if (gameData.app.nGameMode & GM_MULTI) {
 	MultiSendDropWeapon (nObject, seed);
 	MultiSendWeapons (1);
 	}
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [nWeapon] == 0) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryWeaponFlags &= (~(1<<gameData.weapons.nSecondary));
+if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
+	LOCALPLAYER.secondaryWeaponFlags &= (~(1<<gameData.weapons.nSecondary));
 	AutoSelectWeapon (1, 0);
 	}
 }

@@ -1662,9 +1662,9 @@ void LoadGameTexts(void);
 #define TXT_OUT_OF_MEMORY			GT(878)
 #define TXT_LEVEL_TOO_LARGE		GT(879)
 #define TXT_SHOOT_MISSILES			GT(880)
+#define TXT_AB_CHEAT					GT(881)
 
 #if 0
-#define TXT_				GT(880)
 #define TXT_				GT(881)
 #define TXT_				GT(882)
 #define TXT_				GT(883)

@@ -185,7 +185,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 											damage /= 4;
 
 									if (ApplyDamageToRobot (obj0P, damage, parent))
-										if ((objP != NULL) && (parent == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+										if ((objP != NULL) && (parent == LOCALPLAYER.nObject))
 											AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
 								}
 
@@ -876,8 +876,8 @@ if (pbFixedPos)
 	*pbFixedPos = 0;
 d_srand (TimerGetFixedSeconds ());
 nCurDropDepth = BASE_NET_DROP_DEPTH + ((d_rand () * BASE_NET_DROP_DEPTH*2) >> 15);
-player_pos = &gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].position.vPos;
-player_seg = gameData.objs.objects [gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject].nSegment;
+player_pos = &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos;
+player_seg = gameData.objs.objects [LOCALPLAYER.nObject].nSegment;
 while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 	pnum = (d_rand () * gameData.multiplayer.nPlayers) >> 15;
 	count = 0;
@@ -1059,7 +1059,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) ||
 			DelDropInfo (nObject);
 			}
 		}
-	nObject = CallObjectCreateEgg (gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject, 
+	nObject = CallObjectCreateEgg (gameData.objs.objects + LOCALPLAYER.nObject, 
 											 1, OBJ_POWERUP, nPowerupType);
 	if (nObject < 0)
 		return 0;
@@ -1169,9 +1169,9 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 	}
 
 	//	Don't drop vulcan ammo if tPlayer maxed out.
-	if (( (weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	if (( (weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
-	else if (( (weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	else if (( (weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
 	else if (weapon_index != -1) {
 		if ((PlayerHasWeapon (weapon_index, 0, -1) & HAS_WEAPON_FLAG) || 
@@ -1191,7 +1191,7 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 			}
 		}
 	} else if (delObjP->containsId == POW_QUADLASER)
-		if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
 			if (d_rand () > 16384) {
 				delObjP->containsType = OBJ_POWERUP;
 				delObjP->containsId = POW_ENERGY;
@@ -1378,7 +1378,7 @@ int ObjectCreateEgg (tObject *objP)
 if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 	if (objP->containsType == OBJ_POWERUP) {
 		if (objP->containsId == POW_SHIELD_BOOST) {
-			if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields >= i2f (100)) {
+			if (LOCALPLAYER.shields >= i2f (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping shield!\n");
@@ -1386,7 +1386,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				} 
-			else  if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields >= i2f (150)) {
+			else  if (LOCALPLAYER.shields >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping shield!\n");
@@ -1396,7 +1396,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 				}
 			} 
 		else if (objP->containsId == POW_ENERGY) {
-			if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy >= i2f (100)) {
+			if (LOCALPLAYER.energy >= i2f (100)) {
 				if (d_rand () > 16384) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping energy!\n");
@@ -1404,7 +1404,7 @@ if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
 					return -1;
 					}
 				} 
-			else if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy >= i2f (150)) {
+			else if (LOCALPLAYER.energy >= i2f (150)) {
 				if (d_rand () > 8192) {
 #if TRACE
 					con_printf (CONDBG, "Not dropping energy!\n");
@@ -1912,7 +1912,7 @@ if (!(gameData.app.nGameMode & GM_MONSTERBALL))
 	return 0;
 if (!gameData.hoard.monsterballP)
 	return 0;
-if (gameData.hoard.nLastHitter != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject)
+if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 	return 0;
 special = gameData.segs.segment2s [gameData.hoard.monsterballP->nSegment].special;
 if ((special != SEGMENT_IS_GOAL_BLUE) && (special != SEGMENT_IS_GOAL_RED))

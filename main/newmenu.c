@@ -2782,8 +2782,8 @@ ReadFileNames:
 
 		bg.saved = NULL;
 		if (!gameOpts->menus.nStyle) {
-			if ((VR_offscreen_buffer->cv_w >= w_w) &&(VR_offscreen_buffer->cv_h >= w_h)) 
-				bg.background = &VR_offscreen_buffer->cv_bitmap;
+			if ((gameStates.render.vr.buffers.offscreen->cv_w >= w_w) &&(gameStates.render.vr.buffers.offscreen->cv_h >= w_h)) 
+				bg.background = &gameStates.render.vr.buffers.offscreen->cv_bitmap;
 			else
 				bg.background = GrCreateBitmap (w_w, w_h, 1);
 			Assert (bg.background != NULL);
@@ -2807,7 +2807,7 @@ ReadFileNames:
 	} else {
 		NMFileSort (NumFiles-1, filenames+ (FILENAME_LEN+1));		// Don't sort first one!
 		for (i=0; i<NumFiles; i++)	{
-			if (!stricmp (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign, filenames+i* (FILENAME_LEN+1)))	{
+			if (!stricmp (LOCALPLAYER.callsign, filenames+i* (FILENAME_LEN+1)))	{
 				bDblClick = 1;
 				cItem = i;
 			}
@@ -3165,7 +3165,7 @@ ExitFileMenu:
 			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, &grdCurCanv->cv_bitmap);
 			WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
 			}
-			if (bg.background != &VR_offscreen_buffer->cv_bitmap)
+			if (bg.background != &gameStates.render.vr.buffers.offscreen->cv_bitmap)
 				GrFreeBitmap (bg.background);
 #if 0
 		WINDOS (
@@ -3173,7 +3173,7 @@ ExitFileMenu:
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
 				dd_grd_curcanv, 
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-			GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(VR_offscreen_buffer->cv_bitmap), &(grdCurCanv->cv_bitmap))
+			GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cv_bitmap), &(grdCurCanv->cv_bitmap))
 		);
 #endif
 		GrUpdate (0);
@@ -3291,8 +3291,8 @@ WIN (int win_redraw=0);
 	bg.saved = NULL;
 
 	if (!gameOpts->menus.nStyle) {
-		if ((VR_offscreen_buffer->cv_w >= total_width) &&(VR_offscreen_buffer->cv_h >= total_height))
-			bg.background = &VR_offscreen_buffer->cv_bitmap;
+		if ((gameStates.render.vr.buffers.offscreen->cv_w >= total_width) &&(gameStates.render.vr.buffers.offscreen->cv_h >= total_height))
+			bg.background = &gameStates.render.vr.buffers.offscreen->cv_bitmap;
 		else
 			//bg.background = GrCreateBitmap (width, (height + title_height));
 			bg.background = GrCreateBitmap (total_width, total_height, 1);
@@ -3309,7 +3309,7 @@ WIN (int win_redraw=0);
 				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
 				dd_VR_offscreen_buffer, 0, 0, 
 				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(grdCurCanv->cv_bitmap), &(VR_offscreen_buffer->cv_bitmap))
+		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(grdCurCanv->cv_bitmap), &(gameStates.render.vr.buffers.offscreen->cv_bitmap))
 	);
 #endif
 
@@ -3615,7 +3615,7 @@ WIN (int win_redraw=0);
 		WIN (DDGRLOCK (dd_grd_curcanv));
 		GrBmBitBlt (total_width, total_height, wx-border_size, wy-title_height-border_size, 0, 0, bg.background, &grdCurCanv->cv_bitmap);
 		WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
-		if (bg.background != &VR_offscreen_buffer->cv_bitmap)
+		if (bg.background != &gameStates.render.vr.buffers.offscreen->cv_bitmap)
 			GrFreeBitmap (bg.background);
 		GrUpdate (0);
 		}
@@ -3627,7 +3627,7 @@ WIN (int win_redraw=0);
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
 				dd_grd_curcanv, 
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(VR_offscreen_buffer->cv_bitmap), &(grdCurCanv->cv_bitmap))
+		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cv_bitmap), &(grdCurCanv->cv_bitmap))
 	);
 #endif
 

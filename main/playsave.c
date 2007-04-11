@@ -211,7 +211,7 @@ int ReadPlayerFile(int bOnlyWindowSizes)
 
 Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 
-sprintf(filename, "%.8s.plr", gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
+sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!(fp = CFOpen(filename, gameFolders.szProfDir, "rb", 0))) {
 	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
 	return errno;
@@ -907,7 +907,7 @@ int WritePlayerFile()
 
 	errno_ret = WriteConfigFile();
 
-	sprintf(filename,"%s.plr",gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
+	sprintf(filename,"%s.plr",LOCALPLAYER.callsign);
 	fp = CFOpen(filename, gameFolders.szProfDir, "wb", 0);
 
 #if 0
@@ -917,7 +917,7 @@ int WritePlayerFile()
 		//if the callsign is the name of a tty device, prepend a char
 
 		fclose(fp);
-		sprintf(filename,"$%.7s.plr",gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign);
+		sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
 		fp			= fopen(filename,"wb");
 	}
 #endif

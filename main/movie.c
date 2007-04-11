@@ -415,8 +415,8 @@ int InitMovieBriefing()
 	else
 		GrSetMode(SM(320,200);
 
-	GrInitSubCanvas( &VR_screen_pages[0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h );
-	GrInitSubCanvas( &VR_screen_pages[1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h );
+	GrInitSubCanvas( &gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h );
+	GrInitSubCanvas( &gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h );
 #endif
 
 	return 1;

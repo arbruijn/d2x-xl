@@ -767,7 +767,7 @@ thief = buf [bufP];
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject))
 	return;
 rval = MultiExplodeRobotSub (nRobot, nKiller,thief);
-if (rval && (nKiller == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+if (rval && (nKiller == LOCALPLAYER.nObject))
 	AddPointsToScore (ROBOTINFO (gameData.objs.objects [nRobot].id).scoreValue);
 }
 

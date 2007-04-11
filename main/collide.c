@@ -116,7 +116,7 @@ if ((robot->id == ROBOT_BRAIN) ||
 		else if (botInfoP->companion && (wallP->nType == WALL_DOOR)) {
 			if ((ailp->mode == AIM_GOTO_PLAYER) || (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)) {
 				if (wallP->keys != KEY_NONE) {
-					if (wallP->keys & gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags)
+					if (wallP->keys & LOCALPLAYER.flags)
 						WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 					} 
 				else if (!(wallP->flags & WALL_DOOR_LOCKED))
@@ -125,7 +125,7 @@ if ((robot->id == ROBOT_BRAIN) ||
 			} 
 		else if (botInfoP->thief) {		//	Thief allowed to go through doors to which tPlayer has key.
 			if (wallP->keys != KEY_NONE)
-				if (wallP->keys & gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags)
+				if (wallP->keys & LOCALPLAYER.flags)
 					WallOpenDoor (gameData.segs.segments + hitseg, hitwall);
 			}
 		}
@@ -300,7 +300,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 			vRotForce.p.z = (fix) ((double) vForce->p.z * mq);
 			PhysApplyForce (objP, &vRotForce);
 			PhysApplyRot (objP, &vRotForce);
-			if (gameData.hoard.nLastHitter == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject)
+			if (gameData.hoard.nLastHitter == LOCALPLAYER.nObject)
 				MultiSendMonsterball (1, 0);
 			}
 		else
@@ -499,8 +499,8 @@ if (damage >= DAMAGE_THRESHOLD) {
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);	
 		}
-	if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields > f1_0*10 || ForceFieldHit)
+	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+		if (LOCALPLAYER.shields > f1_0*10 || ForceFieldHit)
 			ApplyDamageToPlayer (playerObjP, playerObjP, damage);
 	}
 return;
@@ -531,7 +531,7 @@ if (d > 0 || water) {
 			fix damage = FixMul (d, gameData.time.xFrame);
 			if (gameStates.app.nDifficultyLevel == 0)
 				damage /= 2;
-			if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE))
+			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 				ApplyDamageToPlayer (objP, objP, damage);
 
 #ifdef TACTILE
@@ -868,7 +868,7 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 
 #ifdef _DEBUG
 if (keyd_pressed [KEY_LAPOSTRO])
-	if (weapon->cType.laserInfo.nParentObj == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) {
+	if (weapon->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
 		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
 #if TRACE
 		con_printf (CONDBG, "Your laser hit at tSegment = %i, tSide = %i \n", hitseg, hitwall);
@@ -982,7 +982,7 @@ else {
 //	If weapon fired by tPlayer or companion...
 if ((weapon->cType.laserInfo.parentType== OBJ_PLAYER) || robot_escort) {
 	if (!(weapon->flags & OF_SILENT) && 
-		 (weapon->cType.laserInfo.nParentObj == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+		 (weapon->cType.laserInfo.nParentObj == LOCALPLAYER.nObject))
 		CreateAwarenessEvent (weapon, PA_WEAPON_WALL_COLLISION);			// tObject "weapon" can attract attention to tPlayer
 
 //		if (weapon->id != FLARE_ID) {
@@ -1198,9 +1198,9 @@ if (whotype != OBJ_PLAYER) {
 	return;
 	}
 if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP) && 
-	 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel < netGame.control_invulTime)) {
+	 (LOCALPLAYER.timeLevel < netGame.control_invulTime)) {
 	if (gameData.objs.objects [who].id == gameData.multiplayer.nLocalPlayer) {
-		int t = netGame.control_invulTime - gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].timeLevel;
+		int t = netGame.control_invulTime - LOCALPLAYER.timeLevel;
 		int secs = f2i (t) % 60;
 		int mins = f2i (t) / 60;
 		HUDInitMessage ("%s %d:%02d.", TXT_CNTRLCEN_INVUL, mins, secs);
@@ -1219,7 +1219,7 @@ if ((controlcen->shields < 0) && !(controlcen->flags & (OF_EXPLODING | OF_DESTRO
 		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (controlcen);
 	if (gameData.app.nGameMode & GM_MULTI) {
-		if (who == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject)
+		if (who == LOCALPLAYER.nObject)
 			AddPointsToScore (CONTROL_CEN_SCORE);
 		MultiSendDestroyReactor (OBJ_IDX (controlcen), gameData.objs.objects [who].id);
 		}
@@ -1376,16 +1376,16 @@ if (gameStates.app.bPlayerIsDead) {
 	Int3 ();		//	Uh-oh, tPlayer is dead.  Try to rescue him.
 	gameStates.app.bPlayerIsDead = 0;
 	}
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields <= 0)
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = 1;
+if (LOCALPLAYER.shields <= 0)
+	LOCALPLAYER.shields = 1;
 //	If you're not invulnerable, get invulnerable!
-if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].invulnerableTime = gameData.time.xGame;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
+	LOCALPLAYER.invulnerableTime = gameData.time.xGame;
+	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	}
 if (!(gameData.app.nGameMode & GM_MULTI))
-	BuddyMessage ("Nice job, %s!", gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].callsign);
+	BuddyMessage ("Nice job, %s!", LOCALPLAYER.callsign);
 gameStates.gameplay.bFinalBossIsDead = 1;
 }
 
@@ -1448,7 +1448,7 @@ if (ROBOTINFO (robot->id).bossFlag) {
 				}		
 			else
 				{	// NOTE LINK TO ABOVE!!!
-				if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < 0) || 
+				if ((LOCALPLAYER.shields < 0) || 
 					 gameStates.app.bPlayerIsDead)
 					robot->shields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
 				else
@@ -1480,8 +1480,8 @@ else
 }
 
 if (nKillerObj >= 0) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numKillsLevel++;
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numKillsTotal++;
+	LOCALPLAYER.numKillsLevel++;
+	LOCALPLAYER.numKillsTotal++;
 	}
 
 if (ROBOTINFO (robot->id).bossFlag) {
@@ -1699,7 +1699,7 @@ if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (botInfoP->energyBlobs
 		  (gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0)))) && 
 		 !(robot->flags & OF_EXPLODING))	{	
 		tObject *expl_obj = NULL;
-		if (weapon->cType.laserInfo.nParentObj == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) {
+		if (weapon->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
 			CreateAwarenessEvent (weapon, PA_WEAPON_ROBOT_COLLISION);			// tObject "weapon" can attract attention to tPlayer
 			DoAiRobotHit (robot, PA_WEAPON_ROBOT_COLLISION);
 			}
@@ -2045,19 +2045,19 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		}
 
 //--		//	Drop all the keys.
-//--		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_BLUE_KEY) {
+//--		if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY) {
 //--			playerObjP->containsCount = 1;
 //--			playerObjP->containsType = OBJ_POWERUP;
 //--			playerObjP->containsId = POW_KEY_BLUE;
 //--			ObjectCreateEgg (playerObjP);
 //--		}
-//--		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_RED_KEY) {
+//--		if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY) {
 //--			playerObjP->containsCount = 1;
 //--			playerObjP->containsType = OBJ_POWERUP;
 //--			playerObjP->containsId = POW_KEY_RED;
 //--			ObjectCreateEgg (playerObjP);
 //--		}
-//--		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_GOLD_KEY) {
+//--		if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) {
 //--			playerObjP->containsCount = 1;
 //--			playerObjP->containsType = OBJ_POWERUP;
 //--			playerObjP->containsId = POW_KEY_GOLD;
@@ -2079,16 +2079,16 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 // -- removed, 09/06/95, MK -- {
 // -- removed, 09/06/95, MK -- 	if (weapon_index == MAX_PRIMARY_WEAPONS) {
 // -- removed, 09/06/95, MK -- 		HUDInitMessage ("Quad lasers destroyed!");
-// -- removed, 09/06/95, MK -- 		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= ~PLAYER_FLAGS_QUAD_LASERS;
+// -- removed, 09/06/95, MK -- 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 // -- removed, 09/06/95, MK -- 		update_laserWeapon_info ();
 // -- removed, 09/06/95, MK -- 	} else if (weapon_index == 0) {
-// -- removed, 09/06/95, MK -- 		Assert (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel > 0);
+// -- removed, 09/06/95, MK -- 		Assert (LOCALPLAYER.laserLevel > 0);
 // -- removed, 09/06/95, MK -- 		HUDInitMessage ("%s degraded!", Text_string [104+weapon_index]);		//	Danger!Danger!Use of literal! Danger!
-// -- removed, 09/06/95, MK -- 		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel--;
+// -- removed, 09/06/95, MK -- 		LOCALPLAYER.laserLevel--;
 // -- removed, 09/06/95, MK -- 		update_laserWeapon_info ();
 // -- removed, 09/06/95, MK -- 	} else {
 // -- removed, 09/06/95, MK -- 		HUDInitMessage ("%s destroyed!", Text_string [104+weapon_index]);		//	Danger!Danger!Use of literal! Danger!
-// -- removed, 09/06/95, MK -- 		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryWeaponFlags &= ~ (1 << weapon_index);
+// -- removed, 09/06/95, MK -- 		LOCALPLAYER.primaryWeaponFlags &= ~ (1 << weapon_index);
 // -- removed, 09/06/95, MK -- 		AutoSelectWeapon (0);
 // -- removed, 09/06/95, MK -- 	}
 // -- removed, 09/06/95, MK -- 
@@ -2096,11 +2096,11 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 // -- removed, 09/06/95, MK -- 
 // -- removed, 09/06/95, MK -- void destroySecondaryWeapon (int weapon_index)
 // -- removed, 09/06/95, MK -- {
-// -- removed, 09/06/95, MK -- 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo <= 0)
+// -- removed, 09/06/95, MK -- 	if (LOCALPLAYER.secondaryAmmo <= 0)
 // -- removed, 09/06/95, MK -- 		return;
 // -- removed, 09/06/95, MK -- 
 // -- removed, 09/06/95, MK -- 	HUDInitMessage ("%s destroyed!", Text_string [114+weapon_index]);		//	Danger!Danger!Use of literal! Danger!
-// -- removed, 09/06/95, MK -- 	if (--gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [weapon_index] == 0)
+// -- removed, 09/06/95, MK -- 	if (--LOCALPLAYER.secondaryAmmo [weapon_index] == 0)
 // -- removed, 09/06/95, MK -- 		AutoSelectWeapon (1);
 // -- removed, 09/06/95, MK -- 
 // -- removed, 09/06/95, MK -- }
@@ -2118,7 +2118,7 @@ if (gameStates.app.bPlayerIsDead)
 
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [playerObjP->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return;
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)
+if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	return;
 if (killerObjP && (killerObjP->nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->id).companion)
 	return;
@@ -2204,7 +2204,7 @@ if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
 	weapon->cType.laserInfo.nLastHitObj = OBJ_IDX (playerObjP);
 }
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
-	if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_INVULNERABLE)) {
+	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 		DigiLinkSoundToPos (SOUND_PLAYER_GOT_HIT, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_GOT_HIT, F1_0);

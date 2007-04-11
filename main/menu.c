@@ -370,7 +370,7 @@ memset (nMenuChoice, 0, sizeof (nMenuChoice));
 memset (m, 0, sizeof (m));
 //LoadPalette (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
-if (!gameData.multiplayer.players[gameData.multiplayer.nLocalPlayer].callsign[0]) {
+if (!LOCALPLAYER.callsign[0]) {
 	SelectPlayer ();
 	return 0;
 }
@@ -869,7 +869,7 @@ void SetDisplayMode (int mode, int bOverride)
 {
 	dmi *dmi;
 
-if ((gameStates.video.nDisplayMode == -1) || (VR_render_mode != VR_NONE))	//special VR mode
+if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR mode
 	return;								//...don't change
 if (bOverride && gameStates.gfx.bOverride)
 	mode = gameStates.gfx.nStartScrSize;
@@ -990,7 +990,7 @@ void ScreenResMenu ()
 	char				szMode [NUM_DISPLAY_MODES][20];
 	char				cShortCut, szCustX [5], szCustY [5];
 
-if ((gameStates.video.nDisplayMode == -1) || (VR_render_mode != VR_NONE)) {				//special VR mode
+if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE)) {				//special VR mode
 	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, 
 			"You may not change screen\nresolution when VR modes enabled.");
 	return;

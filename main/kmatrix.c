@@ -205,7 +205,7 @@ if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIA
 	GrPrintF (CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected==7) {
+if (LOCALPLAYER.connected==7) {
    GrGetStringSize ("Waiting for other players...",&sw, &sh, &aw);
    GrPrintF (CENTERSCREEN- (sw/2), y,"Waiting for other players...");
    }
@@ -252,7 +252,7 @@ if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIA
    GrPrintF (CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected==7) {
+if (LOCALPLAYER.connected==7) {
 	GrGetStringSize ("Waiting for other players...",&sw, &sh, &aw);
 	GrPrintF (CENTERSCREEN- (sw/2), y,"Waiting for other players...");
 	}
@@ -394,7 +394,7 @@ void KMatrixQuit (bkg *bg, int bQuit, int bNetwork)
 if (bNetwork)
 	NetworkSendEndLevelPacket ();
 if (bQuit) {
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 0;
+	LOCALPLAYER.connected = 0;
 	MultiLeaveGame ();
 	}
 Kmatrix_nomovie_message = 0;
@@ -456,7 +456,7 @@ while (!done) {
 				KMatrixQuit (&bg, 1, bNetwork);
 				return;
 				}
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 7;
+			LOCALPLAYER.connected = 7;
 			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
@@ -467,7 +467,7 @@ while (!done) {
 				KMatrixQuit (&bg, 1, bNetwork);
 				return;	
 				}
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected=7;
+			LOCALPLAYER.connected=7;
 			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
@@ -517,7 +517,7 @@ while (!done) {
 			break;
 		}
 	if ((TimerGetApproxSeconds () >= entryTime + MAX_VIEW_TIME) && 
-		 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected != 7)) {
+		 (LOCALPLAYER.connected != 7)) {
 		if (LAST_OEM_LEVEL) {
 			KMatrixQuit (&bg, 1, bNetwork);
 			return;
@@ -526,7 +526,7 @@ while (!done) {
 			done=1;
 			break;
 			}
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 7;
+		LOCALPLAYER.connected = 7;
 		if (bNetwork)
 			NetworkSendEndLevelPacket ();
 		}	
@@ -568,7 +568,7 @@ while (!done) {
 			}
 		}
 	}
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].connected = 7;
+LOCALPLAYER.connected = 7;
 // Restore background and exit
 GrPaletteFadeOut (NULL, 32, 0);
 GameFlushInputs ();

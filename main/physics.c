@@ -895,7 +895,7 @@ if (objP->mType.physInfo.mass == 0)
 if (objP->movementType != MT_PHYSICS)
 	return;
 #ifdef TACTILE
-  if (TactileStick && (obj == gameData.objs.objects + gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+  if (TactileStick && (obj == gameData.objs.objects + LOCALPLAYER.nObject))
 	Tactile_apply_force (vForce, &objP->position.mOrient);
 #endif
 //Add in acceleration due to force

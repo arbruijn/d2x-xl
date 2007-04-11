@@ -465,7 +465,7 @@ if (gameStates.app.bPlayerIsDead)
 	return;
 if ((gameData.weapons.nPrimary == OMEGA_INDEX) && 
 		!gameData.laser.xOmegaCharge && 
-		!gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) {
+		!LOCALPLAYER.energy) {
 	gameData.weapons.nPrimary--;
 	AutoSelectWeapon (0, 1);
 	}
@@ -474,7 +474,7 @@ if ((gameData.laser.nLastOmegaFireFrame == gameData.app.nFrameCount) ||
 	 (gameData.laser.nLastOmegaFireFrame == gameData.app.nFrameCount-1))
 	return;
 
-if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) {
+if (LOCALPLAYER.energy) {
 	fix	xEnergyUsed;
 
 	xOldOmegaCharge = gameData.laser.xOmegaCharge;
@@ -486,9 +486,9 @@ if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy) {
 	if (gameStates.app.nDifficultyLevel < 2)
 		xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
 
-	gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy -= xEnergyUsed;
-	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy < 0)
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = 0;
+	LOCALPLAYER.energy -= xEnergyUsed;
+	if (LOCALPLAYER.energy < 0)
+		LOCALPLAYER.energy = 0;
 	}
 }
 
@@ -589,7 +589,7 @@ else if (gameStates.app.bD2XLevel &&
 			(gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return -1;
 #if 1
-if ((nParent == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) &&
+if ((nParent == LOCALPLAYER.nObject) &&
 		(nWeaponType == PROXMINE_ID) && 
 		(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 	nObject = CreateObject (OBJ_POWERUP, POW_HOARD_ORB, -1, nSegment, vPosition, &vmdIdentityMatrix, 
@@ -638,7 +638,7 @@ if (gameData.objs.objects [nParent].nType == OBJ_PLAYER) {
 				(gameData.multiplayer.players [gameData.objs.objects [nParent].id].flags & PLAYER_FLAGS_QUAD_LASERS))
 		objP->cType.laserInfo.multiplier = F1_0*3/4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
-		if (nParent==gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) {
+		if (nParent==LOCALPLAYER.nObject) {
 			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]= objP;
 			gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] = objP->nSignature;
 			if (gameData.demo.nState==ND_STATE_RECORDING)
@@ -840,8 +840,8 @@ if (IsCoopGame)
 	return 0;
 objP = gameData.objs.objects + nTrackGoal;
 //	Don't track tPlayer if he's cloaked.
-if ((nTrackGoal == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) && 
-	 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
+if ((nTrackGoal == LOCALPLAYER.nObject) && 
+	 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
 //	Can't track AI tObject if he's cloaked.
 if (objP->nType == OBJ_ROBOT) {
@@ -916,8 +916,8 @@ if ((tracker->nType == OBJ_WEAPON) && (tracker->id == OMEGA_ID))
 	cur_min_trackable_dot = OMEGA_MIN_TRACKABLE_DOT;
 
 //	Not in network mode.  If not fired by tPlayer, then track player.
-if (tracker->cType.laserInfo.nParentObj != gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) {
-	if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_CLOAKED))
+if (tracker->cType.laserInfo.nParentObj != LOCALPLAYER.nObject) {
+	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		nBestObj = OBJ_IDX (gameData.objs.console);
 	} 
 else {
@@ -948,7 +948,7 @@ else {
 		int			nObject = windowRenderedData [nWindow].renderedObjects [i];
 		tObject		*curObjP = gameData.objs.objects + nObject;
 
-		if (nObject == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject)
+		if (nObject == LOCALPLAYER.nObject)
 			continue;
 
 		//	Can't track AI tObject if he's cloaked.
@@ -1159,7 +1159,7 @@ int LaserPlayerFireSpreadDelay (
 	int			nObject;
 #if FULL_COCKPIT_OFFS
 	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) && (OBJ_IDX (objP) == 
-							gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject));
+							LOCALPLAYER.nObject));
 #else
 	int bLaserOffs = 0;
 #endif
@@ -1282,11 +1282,11 @@ void CreateFlare (tObject *objP)
 		energy_usage = FixMul (energy_usage, i2f (gameStates.app.nDifficultyLevel+2)/4);
 
 //	MK, 11/04/95: Allowed to fire flare even if no energy.
-// -- 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy >= energy_usage) {
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy -= energy_usage;
+// -- 	if (LOCALPLAYER.energy >= energy_usage) {
+		LOCALPLAYER.energy -= energy_usage;
 
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy <= 0) {
-			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = 0;	
+		if (LOCALPLAYER.energy <= 0) {
+			LOCALPLAYER.energy = 0;	
 			// -- AutoSelectWeapon (0);
 		}
 
@@ -1387,10 +1387,10 @@ if ((objP->nType == OBJ_WEAPON) &&
 
 		//	Make sure the tObject we are tracking is still trackable.
 		nTrackGoal = TrackTrackGoal (nTrackGoal, objP, &dot);
-		if (nTrackGoal == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject) {
+		if (nTrackGoal == LOCALPLAYER.nObject) {
 			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nTrackGoal].position.vPos);
-			if ((xDistToPlayer < gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist) || (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist < 0))
-				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].homingObjectDist = xDistToPlayer;
+			if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
+				LOCALPLAYER.homingObjectDist = xDistToPlayer;
 				
 			}
 		if (nTrackGoal != -1) {
@@ -1481,9 +1481,9 @@ if	 ((playerP->energy < xEnergyUsed) || (nPrimaryAmmo < nAmmoUsed))
 	AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
 #if 0
 if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX))
-	nAmmo = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].primaryAmmo [1];
+	nAmmo = LOCALPLAYER.primaryAmmo [1];
 else
-	nAmmo = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy;
+	nAmmo = LOCALPLAYER.energy;
 HUDMessage (0, "ammo: %d", nAmmo);
 if (nAmmo <= 0) {
 	gameData.laser.nGlobalFiringCount = 0;
@@ -1500,7 +1500,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 			gameData.laser.xNextFireTime += F1_0/25;
 		else
 			gameData.laser.xNextFireTime += WI_fire_wait (nWeaponIndex);
-		nLaserLevel = gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].laserLevel;
+		nLaserLevel = LOCALPLAYER.laserLevel;
 		if (gameData.weapons.nPrimary == SPREADFIRE_INDEX) {
 			if (nSpreadfireToggle)
 				flags |= LASER_SPREADFIRE_TOGGLED;
@@ -1510,9 +1510,9 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 			nHelixOrient++;
 			flags |= ((nHelixOrient & LASER_HELIX_MASK) << LASER_HELIX_SHIFT);
 			}
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
+		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
 			flags |= LASER_QUAD;
-		rVal += LaserFireObject ((short) gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nfires);
+		rVal += LaserFireObject ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nfires);
 		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
 			playerP->energy = 0;
@@ -1569,11 +1569,11 @@ return rVal;
 // -- 	vmsMatrix	m;
 // -- 	vmsVector	gun_pos2;
 // -- 
-// -- 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy > F1_0)
-// -- 		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy -= F1_0;
+// -- 	if (LOCALPLAYER.energy > F1_0)
+// -- 		LOCALPLAYER.energy -= F1_0;
 // -- 
-// -- 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy <= F1_0) {
-// -- 		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].energy = 0;	
+// -- 	if (LOCALPLAYER.energy <= F1_0) {
+// -- 		LOCALPLAYER.energy = 0;	
 // -- 		AutoSelectWeapon (0);
 // -- 		return -1;
 // -- 	}
@@ -1817,7 +1817,7 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 
 	// Set values to be recognized during comunication phase, if we are the
 	//  one shooting
-	if ((IsMultiGame) && (nObject == gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].nObject))
+	if ((IsMultiGame) && (nObject == LOCALPLAYER.nObject))
 	{
 		gameData.multigame.laser.bFired = nFires;
 		gameData.multigame.laser.nGun = nWeapon;

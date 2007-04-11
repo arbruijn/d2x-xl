@@ -434,8 +434,8 @@ tObject *CreateMorphRobot (tSegment *segP, vmsVector *vObjPosP, ubyte object_id)
 	tRobotInfo	*botInfoP;
 	ubyte			default_behavior;
 
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsLevel++;
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsTotal++;
+LOCALPLAYER.numRobotsLevel++;
+LOCALPLAYER.numRobotsTotal++;
 nObject = CreateObject ((ubyte) OBJ_ROBOT, object_id, -1, SEG_IDX (segP), vObjPosP,
 								&vmdIdentityMatrix, gameData.models.polyModels [ROBOTINFO (object_id).nModel].rad,
 				 				(ubyte) CT_AI, (ubyte) MT_PHYSICS, (ubyte) RT_POLYOBJ, 1);
@@ -686,8 +686,8 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 	return;
 
 // Wait until we have a d_free slot for this puppy...
-if ((gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numRobotsLevel - 
-	  gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].numKillsLevel) >= 
+if ((LOCALPLAYER.numRobotsLevel - 
+	  LOCALPLAYER.numKillsLevel) >= 
 	 (Gamesave_num_orgRobots + Num_extryRobots)) {
 #ifdef _DEBUG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
@@ -1165,12 +1165,12 @@ return amount;
 //--repair-- 	}
 //--repair--
 //--repair-- 	//update shields
-//--repair-- 	if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < MAX_SHIELDS) {	//if above max, don't mess with it
+//--repair-- 	if (LOCALPLAYER.shields < MAX_SHIELDS) {	//if above max, don't mess with it
 //--repair--
-//--repair-- 		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields += FixMul (gameData.time.xFrame,repair_rate);
+//--repair-- 		LOCALPLAYER.shields += FixMul (gameData.time.xFrame,repair_rate);
 //--repair--
-//--repair-- 		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields > MAX_SHIELDS)
-//--repair-- 			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = MAX_SHIELDS;
+//--repair-- 		if (LOCALPLAYER.shields > MAX_SHIELDS)
+//--repair-- 			LOCALPLAYER.shields = MAX_SHIELDS;
 //--repair-- 	}
 //--repair--
 //--repair-- 	currentTime += gameData.time.xFrame;
@@ -1245,8 +1245,8 @@ return amount;
 //--repair-- 	Assert (obj == RepairObj);
 //--repair--
 //--repair-- 	if (refuel_do_repair_effect (objP, 0, FuelStationSeg)) {
-//--repair-- 		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields < MAX_SHIELDS)
-//--repair-- 			gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields = MAX_SHIELDS;
+//--repair-- 		if (LOCALPLAYER.shields < MAX_SHIELDS)
+//--repair-- 			LOCALPLAYER.shields = MAX_SHIELDS;
 //--repair-- 		objP->controlType = save_controlType;
 //--repair-- 		objP->movementType = save_movementType;
 //--repair-- 		disable_repair_center=1;
@@ -1275,7 +1275,7 @@ return amount;
 //--repair-- 			RepairObj = obj;
 //--repair-- 			repair_save_uvec = objP->position.mOrient.uVec;
 //--repair--
-//--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].shields),MAX_SHIELDS);
+//--repair-- 			repair_rate = FixMulDiv (FULL_REPAIR_RATE, (MAX_SHIELDS - LOCALPLAYER.shields),MAX_SHIELDS);
 //--repair--
 //--repair-- 			save_controlType = objP->controlType;
 //--repair-- 			save_movementType = objP->movementType;
@@ -1439,13 +1439,13 @@ if (pSeg->special != nGoalId)
 	return 0;
 if (GetTeam (gameData.multiplayer.nLocalPlayer) != nTeamId)
 	return 0;
-if (!(gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return 0;
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF && 
 	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
 MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
-gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));
+LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG));
 MaybeDropNetPowerup (-1, nFlagId, FORCE_DROP);
 return 1;
 }
@@ -1465,26 +1465,26 @@ CheckFlagDrop (seg2p, TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 #else
 if (seg2p->special==SEGMENT_IS_GOAL_BLUE)	{
 	if ((GetTeam (gameData.multiplayer.nLocalPlayer)==TEAM_BLUE) && 
-		 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_FLAG))
+		 (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 		  FlagAtHome (POW_BLUEFLAG)) {		
 		{
 #if TRACE
 		con_printf (CONDBG,"In goal tSegment BLUE\n");
 #endif
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
+		LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
 else if (seg2p->special==SEGMENT_IS_GOAL_RED) {
 	if ((GetTeam (gameData.multiplayer.nLocalPlayer)==TEAM_RED) && 
-		 (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags & PLAYER_FLAGS_FLAG)) &&
+		 (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) &&
 		 FlagAtHome (POW_REDFLAG)) {		
 #if TRACE
 		con_printf (CONDBG,"In goal tSegment RED\n");
 #endif
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
-		gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG);
+		LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_BLUEFLAG, FORCE_DROP);
 		}
 	}
@@ -1505,14 +1505,14 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
 
 	if (seg2p->special==SEGMENT_IS_GOAL_BLUE || seg2p->special==SEGMENT_IS_GOAL_RED )	
 	{
-		if (gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX])
+		if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX])
 		{
 #if TRACE
 				con_printf (CONDBG,"In orb goal!\n");
 #endif
 				MultiSendOrbBonus ((char) gameData.multiplayer.nLocalPlayer);
-				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].flags &= (~ (PLAYER_FLAGS_FLAG));
-				gameData.multiplayer.players [gameData.multiplayer.nLocalPlayer].secondaryAmmo [PROXIMITY_INDEX]=0;
+				LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG));
+				LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]=0;
       }
 	}
 

@@ -92,8 +92,8 @@ return 0;
 int MenuGetValue (char *pszMsg)
 {
 	tMenuItem	m;
-	char				text[10] = "";
-	int				item;
+	char			text[10] = "";
+	int			item;
 
 memset (&m, 0, sizeof (m));
 m.nType = NM_TYPE_INPUT; 
@@ -305,12 +305,24 @@ if (gameStates.app.cheats.bAcid) {
 		HUDInitMessage (TXT_COMING_DOWN);
 	}
 else {
-	gameStates.app.cheats.bAcid=1;
+	gameStates.app.cheats.bAcid = 1;
 	old_IntMethod=gameStates.render.nInterpolationMethod;
-	gameStates.render.nInterpolationMethod=1;
+	gameStates.render.nInterpolationMethod = 1;
 	OglSetFOV (FISHEYE_FOV);
 	if (bVerbose)
 		HUDInitMessage (TXT_GOING_UP);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void AfterburnerCheat (int bVerbose)
+{
+if (!gameStates.app.bD1Mission)
+	gameStates.gameplay.bAfterburnerCheat = !gameStates.gameplay.bAfterburnerCheat;
+if (gameStates.gameplay.bAfterburnerCheat) {
+	LOCALPLAYER.flags |= PLAYER_FLAGS_AFTERBURNER;
+	HUDInitMessage (TXT_AB_CHEAT);
 	}
 }
 
@@ -697,7 +709,7 @@ else {
 		LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX] = 5 * h;
 		}
 	}
-
+bLastSecondaryWasSuper [PROXIMITY_INDEX] = 1;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 
@@ -793,6 +805,7 @@ extern char *jcrypt (char *);
 
 char szAccessoryCheat [9]			= "dWdz[kCK";    // al-ifalafel
 char szAcidCheat [9]					= "qPmwxz\"S";   // bit-tersweet
+char szAfterburnerCheat [9]		= "emontree";    // L-emontree ("The World's Fastest Indian" anybody? ;)
 char szAhimsaCheat [9]				= "!Uscq_yc";    // New for 1.1 / im-agespace 
 char szAllKeysCheat [9]				= "%v%MrgbU";    //only Matt knows / or-algroove
 char szBlueOrbCheat [8]				= "blueorb";
@@ -825,6 +838,7 @@ tCheat cheats [] = {
 	// Descent 2
 	{szAccessoryCheat, AccessoryCheat, 1, 1, 0}, 
 	{szAcidCheat, AcidCheat, 0, 1, 0}, 
+	{szAfterburnerCheat, AfterburnerCheat, 1, 0, 0}, 
 	{szAhimsaCheat, AhimsaCheat, -1, 1, 0}, 
 	{szAllKeysCheat, AllKeysCheat, 1, 1, 0}, 
 	{szBlueOrbCheat, BlueOrbCheat, 1, 0, 0}, 

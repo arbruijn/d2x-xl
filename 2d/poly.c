@@ -234,7 +234,7 @@ void gr_poly(int nverts, int *vert )
 					if (x1 < MINX ) x1 = MINX;
 					if (x2 > MAXX ) x2 = MAXX+1;
 					//gr_uscanline( x1, x2-1, stopy );
-					gr_scanline( x1, x2, stopy );
+					GrScanLine( x1, x2, stopy );
 				}
 			}
 		} else {
@@ -269,7 +269,7 @@ void gr_poly(int nverts, int *vert )
 						if (x1 < MINX ) x1 = MINX;
 						if (x2 > MAXX ) x2 = MAXX+1;
 						//gr_uscanline( x1, x2-1, starty );
-						gr_scanline( x1, x2, starty );
+						GrScanLine( x1, x2, starty );
 					}
 				}
 				startx += dx_dy;

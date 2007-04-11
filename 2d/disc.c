@@ -41,23 +41,23 @@ int gr_disk(fix xc1,fix yc1,fix r1)
 	while(x<y)
 	{
 		// Draw the first octant
-		gr_scanline( xc-y, xc+y, yc-x );
-		gr_scanline( xc-y, xc+y, yc+x );
+		GrScanLine( xc-y, xc+y, yc-x );
+		GrScanLine( xc-y, xc+y, yc+x );
 
 		if (p<0)
 			p=p+(x<<2)+6;
 		else {
 			// Draw the second octant
-			gr_scanline( xc-x, xc+x, yc-y );
-			gr_scanline( xc-x, xc+x, yc+y );
+			GrScanLine( xc-x, xc+x, yc-y );
+			GrScanLine( xc-x, xc+x, yc+y );
 			p=p+((x-y)<<2)+10;
 			y--;
 		}
 		x++;
 	}
 	if(x==y) {
-		gr_scanline( xc-x, xc+x, yc-y );
-		gr_scanline( xc-x, xc+x, yc+y );
+		GrScanLine( xc-x, xc+x, yc-y );
+		GrScanLine( xc-x, xc+x, yc+y );
 	}
 	return 0;
 }
