@@ -3393,8 +3393,8 @@ DestroyAllSmoke ();
 
 //	-----------------------------------------------------------------------------
 
-tObject DemoRightExtra, DemoLeftExtra;
-ubyte DemoDoRight=0, DemoDoLeft=0;
+tObject demoRightExtra, demoLeftExtra;
+ubyte nDemoDoRight=0, nDemoDoLeft=0;
 
 void NDRenderExtras (ubyte which, tObject *objP)
 {
@@ -3407,12 +3407,12 @@ if (which==255) {
 	return;
 	}
 if (w) {
-	memcpy (&DemoRightExtra, objP, sizeof (tObject));  
-	DemoDoRight=nType;
+	memcpy (&demoRightExtra, objP, sizeof (tObject));  
+	nDemoDoRight=nType;
 	}
 else {
-	memcpy (&DemoLeftExtra, objP, sizeof (tObject)); 
-	DemoDoLeft=nType;
+	memcpy (&demoLeftExtra, objP, sizeof (tObject)); 
+	nDemoDoLeft=nType;
 	}
 }
 

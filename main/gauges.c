@@ -62,10 +62,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SHOW_PLAYER_IP		0
 
-#define SHOW_COCKPIT	((gameStates.render.cockpit.nMode != CM_FULL_SCREEN) && (gameStates.render.cockpit.nMode != CM_LETTERBOX))
-#define SHOW_HUD		(gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT)
-
-
 void DrawAmmoInfo (int x, int y, int ammoCount, int primary);
 extern void DrawGuidedCrosshair (void);
 extern void DoAutomap (int key_code, int bRadar);
@@ -2852,14 +2848,16 @@ void DrawWeaponInfoSub (int info_index, gauge_box *box, int pic_x, int pic_y, ch
 	char *p;
 
 	//clear the window
+#if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_SCREEN) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 0));
 		GrRect ((int) (box->left * cmScaleX), (int) (box->top * cmScaleY), 
 				  (int) (box->right * cmScaleX), (int) (box->bot * cmScaleY));
 		}
+#endif
 	if ((gameData.pig.tex.nHamFileVersion >= 3) // !SHAREWARE
 		&& gameStates.video.nDisplayMode) {
-		bmP=gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].hires_picture.index;
+		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].hires_picture.index;
 		PIGGY_PAGE_IN (gameData.weapons.info [info_index].hires_picture, 0);
 		}
 	else {
@@ -3964,7 +3962,7 @@ void UpdateLaserWeaponInfo (void)
 }
 
 extern int Game_window_y;
-void fill_background (void);
+void FillBackground (void);
 
 int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 
@@ -4004,7 +4002,7 @@ if (!viewer) {								//this user is done
 	weapon_box_user [win] = user;
 	if (overlap_dirty [win]) {
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		fill_background ();
+		FillBackground ();
 		overlap_dirty [win] = 0;
 		}
 	return;

@@ -200,10 +200,10 @@ void shrink_window (void);
 
 // text functions
 
-void fill_background ();
+void FillBackground ();
 
 #ifdef _DEBUG
-void show_framerate (void);
+void ShowFrameRate (void);
 void ftoa (char *string, fix f);
 #endif
 
