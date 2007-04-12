@@ -835,6 +835,8 @@ if (FindArg ("-lowresmovies"))
 	gameOptions [0].movies.bHires = 0;
 if (gameData.multiplayer.autoNG.bValid)
 	gameOptions [0].movies.nLevel = 0;
+if (FindArg ("-mac_movies"))
+	gameStates.movies.bMac = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -1736,6 +1738,7 @@ void InitMovieStates (void)
 {
 gameStates.movies.nRobots = 0;
 gameStates.movies.bIntroPlayed = 0;
+gameStates.movies.bMac = 0;
 }
 
 // ----------------------------------------------------------------------------

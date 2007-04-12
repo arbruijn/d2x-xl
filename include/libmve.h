@@ -11,7 +11,7 @@ typedef struct{
 	int truecolor;
 } MVE_videoSpec;
 
-int  MVE_rmPrepMovie(void *stream, int x, int y, int track);
+int  MVE_rmPrepMovie(void *stream, int x, int y, int track, int bLittleEndian);
 int  MVE_rmStepMovie();
 void MVE_rmHoldMovie();
 void MVE_rmEndMovie();

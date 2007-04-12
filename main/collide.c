@@ -1398,7 +1398,7 @@ int ApplyDamageToRobot (tObject *robot, fix damage, int nKillerObj)
 {
 	char		bIsThief;
 	char		tempStolen [MAX_STOLEN_ITEMS];	
-	tObject	*killerObjP = gameData.objs.objects + nKillerObj;
+	tObject	*killerObjP = (nKillerObj < 0) ? NULL : gameData.objs.objects + nKillerObj;
 
 if (robot->flags & OF_EXPLODING) 
 	return 0;
@@ -1408,7 +1408,7 @@ if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robot)] < F1_0)
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	// guidebot may kill other bots
-	if ((killerObjP->nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->id).companion)
+	if (killerObjP && (killerObjP->nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->id).companion)
 		return 0;
 	}
 if (ROBOTINFO (robot->id).bossFlag) {

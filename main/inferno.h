@@ -414,6 +414,7 @@ typedef struct tMenuStates {
 typedef struct tMovieStates {
 	int nRobots;
 	int bIntroPlayed;
+	int bMac;
 } tMovieStates;
 
 typedef struct tMultiplayerStates {
