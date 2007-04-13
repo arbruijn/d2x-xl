@@ -725,124 +725,129 @@ return gameOpts->render.cockpit.bGuidedInMainView &&
 
 void HandleDemoKey(int key)
 {
-	switch (key) {
+if (gameOpts->demo.bRevertFormat)
+	return;
+switch (key) {
+	case KEY_F3:
+		 PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
+		 PA_DFX (break);
+		 if (!GuidedInMainView ())
+			ToggleCockpit();
+		 break;
 
-		case KEY_F3:
-			 PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
-			 PA_DFX (break);
-			 if (!GuidedInMainView ())
-				ToggleCockpit();
-			 break;
+	case KEY_SHIFTED+KEY_MINUS:
+	case KEY_MINUS:		
+		shrink_window(); 
+		break;
 
-		case KEY_SHIFTED+KEY_MINUS:
-		case KEY_MINUS:		
-			shrink_window(); 
-			break;
+	case KEY_SHIFTED+KEY_EQUAL:
+	case KEY_EQUAL:		
+		grow_window(); 
+		break;
 
-		case KEY_SHIFTED+KEY_EQUAL:
-		case KEY_EQUAL:		
-			grow_window(); 
-			break;
+	case KEY_F2:		
+		gameStates.app.bConfigMenu = 1; 
+		break;
 
-		case KEY_F2:		
-			gameStates.app.bConfigMenu = 1; 
-			break;
-
-		case KEY_F7:
-			gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
-			break;
+	case KEY_F7:
+		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
+		break;
 			
-		case KEY_CTRLED+KEY_F7:
-			if (gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats)
-				ResetPingStats ();
-			break;
-		case KEY_ESC:
-			SetFunctionMode (FMODE_MENU);
-			break;
-		case KEY_UP:
-			gameData.demo.nVcrState = ND_STATE_PLAYBACK;
-			break;
-		case KEY_DOWN:
-			gameData.demo.nVcrState = ND_STATE_PAUSED;
-			break;
-		case KEY_LEFT:
-			newdemo_single_frameTime = TimerGetFixedSeconds();
-			gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
-			break;
-		case KEY_RIGHT:
-			newdemo_single_frameTime = TimerGetFixedSeconds();
-			gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
-			break;
-		case KEY_CTRLED + KEY_RIGHT:
-			NDGotoEnd();
-			break;
-		case KEY_CTRLED + KEY_LEFT:
-			NDGotoBeginning();
-			break;
+	case KEY_CTRLED+KEY_F7:
+		if (gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats)
+			ResetPingStats ();
+		break;
 
-		case KEY_COMMAND+KEY_P:
-		case KEY_CTRLED+KEY_P:
-		case KEY_PAUSE:
-			DoGamePause();
-			break;
+	case KEY_ESC:
+		SetFunctionMode (FMODE_MENU);
+		break;
 
-		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
-		case KEY_PRINT_SCREEN: 
-		{
-			int oldState;
+	case KEY_UP:
+		gameData.demo.nVcrState = ND_STATE_PLAYBACK;
+		break;
 
-			oldState = gameData.demo.nVcrState;
-			gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
-			//GameRenderFrameMono();
-			bSaveScreenShot = 1;
-			SaveScreenShot (NULL, 0);
-			gameData.demo.nVcrState = oldState;
-			break;
+	case KEY_DOWN:
+		gameData.demo.nVcrState = ND_STATE_PAUSED;
+		break;
+
+	case KEY_LEFT:
+		newdemo_single_frameTime = TimerGetFixedSeconds();
+		gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
+		break;
+	
+	case KEY_RIGHT:
+		newdemo_single_frameTime = TimerGetFixedSeconds();
+		gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
+		break;
+
+	case KEY_CTRLED + KEY_RIGHT:
+		NDGotoEnd();
+		break;
+
+	case KEY_CTRLED + KEY_LEFT:
+		NDGotoBeginning();
+		break;
+
+	case KEY_COMMAND+KEY_P:
+	case KEY_CTRLED+KEY_P:
+	case KEY_PAUSE:
+		DoGamePause();
+		break;
+
+	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
+	case KEY_PRINT_SCREEN: {
+		int oldState = gameData.demo.nVcrState;
+		gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
+		//GameRenderFrameMono();
+		bSaveScreenShot = 1;
+		SaveScreenShot (NULL, 0);
+		gameData.demo.nVcrState = oldState;
+		break;
 		}
 
-		#ifdef _DEBUG
-		case KEY_BACKSP:
-			Int3();
-			break;
-		case KEYDBGGED + KEY_I:
-			gameData.demo.bInterpolate = !gameData.demo.bInterpolate;
+	#ifdef _DEBUG
+	case KEY_BACKSP:
+		Int3();
+		break;
+	case KEYDBGGED + KEY_I:
+		gameData.demo.bInterpolate = !gameData.demo.bInterpolate;
 #if TRACE
-			if (gameData.demo.bInterpolate)
-				con_printf (CONDBG, "demo playback interpolation now on\n");
-			else
-				con_printf (CONDBG, "demo playback interpolation now off\n");
+		if (gameData.demo.bInterpolate)
+			con_printf (CONDBG, "demo playback interpolation now on\n");
+		else
+			con_printf (CONDBG, "demo playback interpolation now off\n");
 #endif
-			break;
-		case KEYDBGGED + KEY_K: {
-			int how_many, c;
-			char filename[FILENAME_LEN], num[16];
-			tMenuItem m[6];
+		break;
+	case KEYDBGGED + KEY_K: {
+		int how_many, c;
+		char filename[FILENAME_LEN], num[16];
+		tMenuItem m[6];
 
-			filename[0] = '\0';
-			memset (m, 0, sizeof (m));
-			m[0].nType = NM_TYPE_TEXT; 
-			m[0].text = "output file name";
-			m[1].nType = NM_TYPE_INPUT;
-			m[1].text_len = 8; 
-			m[1].text = filename;
-			c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
-			if (c == -2)
-				break;
-			strcat(filename, ".dem");
-			num[0] = '\0';
-			m[ 0].nType = NM_TYPE_TEXT; m[ 0].text = "strip how many bytes";
-			m[ 1].nType = NM_TYPE_INPUT;m[ 1].text_len = 16; m[1].text = num;
-			c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
-			if (c == -2)
-				break;
-			how_many = atoi(num);
-			if (how_many <= 0)
-				break;
-			NewDemoStripFrames(filename, how_many);
-
+		filename[0] = '\0';
+		memset (m, 0, sizeof (m));
+		m[0].nType = NM_TYPE_TEXT; 
+		m[0].text = "output file name";
+		m[1].nType = NM_TYPE_INPUT;
+		m[1].text_len = 8; 
+		m[1].text = filename;
+		c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
+		if (c == -2)
 			break;
+		strcat(filename, ".dem");
+		num[0] = '\0';
+		m[ 0].nType = NM_TYPE_TEXT; m[ 0].text = "strip how many bytes";
+		m[ 1].nType = NM_TYPE_INPUT;m[ 1].text_len = 16; m[1].text = num;
+		c = ExecMenu( NULL, NULL, 2, m, NULL, NULL );
+		if (c == -2)
+			break;
+		how_many = atoi(num);
+		if (how_many <= 0)
+			break;
+		NewDemoStripFrames(filename, how_many);
+
+		break;
 		}
-		#endif
+#endif
 
 	}
 }

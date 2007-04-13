@@ -1663,10 +1663,9 @@ void LoadGameTexts(void);
 #define TXT_LEVEL_TOO_LARGE		GT(879)
 #define TXT_SHOOT_MISSILES			GT(880)
 #define TXT_AB_CHEAT					GT(881)
+#define TXT_DEMO_CONVERSION		GT(882)
 
 #if 0
-#define TXT_				GT(881)
-#define TXT_				GT(882)
 #define TXT_				GT(883)
 #define TXT_				GT(884)
 #define TXT_				GT(885)

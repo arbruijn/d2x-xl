@@ -320,7 +320,8 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		if (gameData.demo.nVcrState != ND_STATE_PRINTSCREEN) {
-			sprintf (message, "%s (%d%%%% %s)", TXT_DEMO_PLAYBACK, NDGetPercentDone (), TXT_DONE);
+			sprintf (message, "%s (%d%%%% %s)", 
+						gameOpts->demo.bRevertFormat ? TXT_DEMO_CONVERSION : TXT_DEMO_PLAYBACK, NDGetPercentDone (), TXT_DONE);
 			}
 		else {
 			sprintf (message, " ");

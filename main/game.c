@@ -1640,7 +1640,7 @@ for (;;) {
 	if (gameStates.app.bConfigMenu) {
 		int double_save = bScanlineDouble;
 	//WIN (mouse_set_mode (0);
-		if (!(gameData.app.nGameMode&GM_MULTI)) {
+		if (!IsMultiGame) {
 			PaletteSave (); 
 			ResetPaletteAdd ();	
 			ApplyModifiedPalette (); 
@@ -1649,26 +1649,27 @@ for (;;) {
 		ConfigMenu ();
 		if (bScanlineDouble != double_save)	
 			InitCockpit ();
-		if (!(gameData.app.nGameMode&GM_MULTI)) 
+		if (!IsMultiGame) 
 			PaletteRestore ();
 		//WIN (mouse_set_mode (1);
 		}
 	if (gameStates.app.bAutoMap) {
-		int save_w=Game_window_w,save_h=Game_window_h;
+		int	save_w = Game_window_w,
+				save_h = Game_window_h;
 		DoAutomap (0, 0);
 		gameStates.app.bEnterGame = 1;
 		//	FlushInput ();
 		//	StopPlayerMovement ();
-		gameStates.video.nScreenMode=-1; 
+		gameStates.video.nScreenMode = -1; 
 		SetScreenMode (SCREEN_GAME);
-		Game_window_w=save_w; 
-		Game_window_h=save_h;
+		Game_window_w = save_w; 
+		Game_window_h = save_h;
 		InitCockpit ();
-		gameStates.render.cockpit.nLastDrawn[0] = -1;
-		gameStates.render.cockpit.nLastDrawn[1] = -1;
+		gameStates.render.cockpit.nLastDrawn [0] =
+		gameStates.render.cockpit.nLastDrawn [1] = -1;
 		}
 	if ((gameStates.app.nFunctionMode != FMODE_GAME) && 
-		 gameData.demo.bAuto && 
+		 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat && 
 		 (gameData.demo.nState != ND_STATE_NORMAL))	{
 		int choice, fmode;
 		fmode = gameStates.app.nFunctionMode;
@@ -1677,7 +1678,7 @@ for (;;) {
 		ApplyModifiedPalette ();
 		ResetPaletteAdd ();
 		GrPaletteStepLoad (NULL);
-		choice=ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
+		choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
 		PaletteRestore ();
 		SetFunctionMode (fmode);
 		if (choice)
@@ -1739,9 +1740,9 @@ MultiLeaveGame ();
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
-if (gameStates.render.cockpit.nModeSave!=-1) {
-	gameStates.render.cockpit.nMode=gameStates.render.cockpit.nModeSave;
-	gameStates.render.cockpit.nModeSave=-1;
+if (gameStates.render.cockpit.nModeSave != -1) {
+	gameStates.render.cockpit.nMode = gameStates.render.cockpit.nModeSave;
+	gameStates.render.cockpit.nModeSave = -1;
 	}
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 	GrPaletteFadeOut (NULL,32,0);			// Fade out before going to menu

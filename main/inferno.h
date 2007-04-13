@@ -321,6 +321,7 @@ typedef struct tMenuOptions {
 
 typedef struct tDemoOptions {
 	int bOldFormat;
+	int bRevertFormat;
 } tDemoOptions;
 
 typedef struct tMultiplayerOptions {

@@ -975,6 +975,16 @@ if ((t = FindArg("-gl_gettexlevelparam_ok")))
 
 // ----------------------------------------------------------------------------
 
+void EvalDemoArgs (void)
+{
+	int	t;
+
+if (t = FindArg ("-revert_demos"))
+	gameOpts->demo.bRevertFormat = NumArg (t, 1);
+}
+
+// ----------------------------------------------------------------------------
+
 void EvalRenderArgs (void)
 {
 	int	t;
@@ -1150,6 +1160,7 @@ EvalOglArgs ();
 EvalRenderArgs ();
 EvalSoundArgs ();
 EvalMusicArgs ();
+EvalDemoArgs ();
 }
 
 //------------------------------------------------------------------------------
@@ -1556,6 +1567,7 @@ if (i)
 	gameOptions [i].demo.bOldFormat = 0;
 else
 	gameOptions [i].demo.bOldFormat = 1;
+gameOptions [i].demo.bRevertFormat = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -2633,7 +2645,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 	switch (gameStates.app.nFunctionMode)	{
 		case FMODE_MENU:
 			SetScreenMode (SCREEN_MENU);
-			if (gameData.demo.bAuto)	{
+			if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 				NDStartPlayback (NULL);		// Randomly pick a file
 				if (gameData.demo.nState != ND_STATE_PLAYBACK)	
 				Error ("No demo files were found for autodemo mode!");
@@ -3085,7 +3097,7 @@ if (gameStates.app.bAutoRunMission) {
 	gameStates.app.bAutoRunMission = 0;
 	}
 // handle automatic launch of a demo playback
-if (gameData.demo.bAuto)	{
+if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 	NDStartPlayback (gameData.demo.fnAuto);		
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);

@@ -104,6 +104,7 @@ void DoJasonInterpolate (fix xRecordedTime);
 //Does demo start automatically?
 
 static sbyte	bNDBadRead;
+static int		bRevertFormat = 0;
 
 #define	CATCH_BAD_READ				if (bNDBadRead) {bDone = -1; break;}
 
@@ -236,16 +237,6 @@ objP->mType.physInfo.velocity.p.z = (spp->velz << VEL_PRECISION);
 
 //	-----------------------------------------------------------------------------
 
-int NDRead (void *buffer, int elsize, int nelem)
-{
-int nRead = (int) CFRead (buffer, elsize, nelem, ndInFile);
-if (CFError (ndInFile) || CFEoF (ndInFile))
-	bNDBadRead = -1;
-return nRead;
-}
-
-//	-----------------------------------------------------------------------------
-
 int NDFindObject (int nSignature)
 {
 	int i;
@@ -260,6 +251,14 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
+void CHK (void)
+{
+if (gameData.demo.nWritten >= 750)
+	gameData.demo.nWritten = gameData.demo.nWritten;
+}
+
+//	-----------------------------------------------------------------------------
+
 int NDWrite (void *buffer, int elsize, int nelem)
 {
 	int nWritten, nTotalSize = elsize * nelem;
@@ -267,8 +266,9 @@ int NDWrite (void *buffer, int elsize, int nelem)
 gameData.demo.nFrameBytesWritten += nTotalSize;
 gameData.demo.nWritten += nTotalSize;
 Assert (ndOutFile != NULL);
+CHK();
 nWritten = CFWrite (buffer, elsize, nelem, ndOutFile);
-if ((gameData.demo.nWritten > gameData.demo.nSize) && !gameData.demo.bNoSpace)
+if ((bRevertFormat < 1) && (gameData.demo.nWritten > gameData.demo.nSize) && !gameData.demo.bNoSpace)
 	gameData.demo.bNoSpace = 1;
 if ((nWritten == nelem) && !gameData.demo.bNoSpace)
 	return nWritten;
@@ -289,6 +289,7 @@ static inline void NDWriteByte (sbyte b)
 {
 gameData.demo.nFrameBytesWritten += sizeof (b);
 gameData.demo.nWritten += sizeof (b);
+CHK();
 CFWriteByte (b, ndOutFile);
 }
 
@@ -298,6 +299,7 @@ static inline void NDWriteShort (short s)
 {
 gameData.demo.nFrameBytesWritten += sizeof (s);
 gameData.demo.nWritten += sizeof (s);
+CHK();
 CFWriteShort (s, ndOutFile);
 }
 
@@ -307,6 +309,7 @@ static void NDWriteInt (int i)
 {
 gameData.demo.nFrameBytesWritten += sizeof (i);
 gameData.demo.nWritten += sizeof (i);
+CHK();
 CFWriteInt (i, ndOutFile);
 }
 
@@ -325,6 +328,7 @@ static inline void NDWriteFix (fix f)
 {
 gameData.demo.nFrameBytesWritten += sizeof (f);
 gameData.demo.nWritten += sizeof (f);
+CHK();
 CFWriteFix (f, ndOutFile);
 }
 
@@ -334,7 +338,7 @@ static inline void NDWriteFixAng (fixang f)
 {
 gameData.demo.nFrameBytesWritten += sizeof (f);
 gameData.demo.nWritten += sizeof (f);
-CFWriteFix (f, ndOutFile);
+CFWriteFixAng (f, ndOutFile);
 }
 
 //	-----------------------------------------------------------------------------
@@ -343,6 +347,7 @@ static inline void NDWriteVector (vmsVector *v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (*v);
 gameData.demo.nWritten += sizeof (*v);
+CHK();
 CFWriteVector (v, ndOutFile);
 }
 
@@ -352,6 +357,7 @@ static inline void NDWriteAngVec (vmsAngVec *v)
 {
 gameData.demo.nFrameBytesWritten += sizeof (*v);
 gameData.demo.nWritten += sizeof (*v);
+CHK();
 CFWriteAngVec (v, ndOutFile);
 }
 
@@ -361,6 +367,7 @@ static inline void NDWriteMatrix (vmsMatrix *m)
 {
 gameData.demo.nFrameBytesWritten += sizeof (*m);
 gameData.demo.nWritten += sizeof (*m);
+CHK();
 CFWriteMatrix (m, ndOutFile);
 }
 
@@ -370,7 +377,7 @@ void NDWritePosition (tObject *objP)
 {
 	ubyte			renderType = objP->renderType;
 	tShortPos	sp;
-	int			bOldFormat = gameStates.app.bNostalgia || gameOpts->demo.bOldFormat;
+	int			bOldFormat = gameStates.app.bNostalgia || gameOpts->demo.bOldFormat || (bRevertFormat > 0);
 
 if (bOldFormat)
 	CreateShortPos (&sp, objP, 0);
@@ -406,8 +413,25 @@ else {
 
 //	-----------------------------------------------------------------------------
 
+int NDRead (void *buffer, int elsize, int nelem)
+{
+int nRead = (int) CFRead (buffer, elsize, nelem, ndInFile);
+if (CFError (ndInFile) || CFEoF (ndInFile))
+	bNDBadRead = -1;
+else if (bRevertFormat > 0)
+	NDWrite (buffer, elsize, nelem);
+return nRead;
+}
+
+//	-----------------------------------------------------------------------------
+
 static inline ubyte NDReadByte (void)
 {
+if (bRevertFormat > 0) {
+	ubyte	h = CFReadByte (ndInFile);
+	NDWriteByte (h);
+	return h;
+	}
 return CFReadByte (ndInFile);
 }
 
@@ -415,6 +439,11 @@ return CFReadByte (ndInFile);
 
 static inline short NDReadShort (void)
 {
+if (bRevertFormat > 0) {
+	short	h = CFReadShort (ndInFile);
+	NDWriteShort (h);
+	return h;
+	}
 return CFReadShort (ndInFile);
 }
 
@@ -422,6 +451,11 @@ return CFReadShort (ndInFile);
 
 static inline int NDReadInt ()
 {
+if (bRevertFormat > 0) {
+	int h = CFReadInt (ndInFile);
+	NDWriteInt (h);
+	return h;
+	}
 return CFReadInt (ndInFile);
 }
 
@@ -429,7 +463,9 @@ return CFReadInt (ndInFile);
 
 static inline char *NDReadString (char *str)
 {
-	sbyte len = NDReadByte ();
+	sbyte len;
+
+len = NDReadByte ();
 NDRead (str, len, 1);
 return str;
 }
@@ -438,6 +474,11 @@ return str;
 
 static inline fix NDReadFix (void)
 {
+if (bRevertFormat > 0) {
+	fix h = CFReadFix (ndInFile);
+	NDWriteFix (h);
+	return h;
+	}
 return CFReadFix (ndInFile);
 }
 
@@ -445,6 +486,11 @@ return CFReadFix (ndInFile);
 
 static inline fixang NDReadFixAng (void)
 {
+if (bRevertFormat > 0) {
+	fixang h = CFReadFixAng (ndInFile);
+	NDWriteFixAng (h);
+	return h;
+	}
 return CFReadFixAng (ndInFile);
 }
 
@@ -453,6 +499,8 @@ return CFReadFixAng (ndInFile);
 static inline void NDReadVector (vmsVector *v)
 {
 CFReadVector (v, ndInFile);
+if (bRevertFormat > 0)
+	NDWriteVector (v);
 }
 
 //	-----------------------------------------------------------------------------
@@ -460,6 +508,8 @@ CFReadVector (v, ndInFile);
 static inline void NDReadAngVec (vmsAngVec *v)
 {
 CFReadAngVec (v, ndInFile);
+if (bRevertFormat > 0)
+	NDWriteAngVec (v);
 }
 
 //	-----------------------------------------------------------------------------
@@ -467,6 +517,8 @@ CFReadAngVec (v, ndInFile);
 static inline void NDReadMatrix (vmsMatrix *m)
 {
 CFReadMatrix (m, ndInFile);
+if (bRevertFormat > 0)
+	NDWriteMatrix (m);
 }
 
 //	-----------------------------------------------------------------------------
@@ -476,18 +528,16 @@ static void NDReadPosition (tObject *objP)
 	tShortPos sp;
 	ubyte renderType;
 
+if (bRevertFormat > 0)
+	bRevertFormat = 0;	//temporarily suppress writing back data
 renderType = objP->renderType;
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
 	 (objP->nType == OBJ_CAMERA) ||
 	 ((renderType == RT_POWERUP) && (gameData.demo.nVersion > DEMO_VERSION + 1))) {
-	if (gameData.demo.bUseShortPos) {
-		int i;
-		for (i = 0; i < 9; i++)
-			sp.bytemat [i] = NDReadByte ();
-		}
-	else {
+	if (gameData.demo.bUseShortPos)
+		NDRead (sp.bytemat, sizeof (sp.bytemat [0]), sizeof (sp.bytemat) / sizeof (sp.bytemat [0]));
+	else
 		CFReadMatrix (&objP->position.mOrient, ndInFile);
-		}
 	}
 if (gameData.demo.bUseShortPos) {
 	sp.xo = NDReadShort ();
@@ -505,11 +555,14 @@ else {
 	NDReadVector (&objP->mType.physInfo.velocity);
 	}
 if ((objP->id == VCLIP_MORPHING_ROBOT) && 
-		 (renderType == RT_FIREBALL) && 
-		 (objP->controlType == CT_EXPLOSION))
+	 (renderType == RT_FIREBALL) && 
+	 (objP->controlType == CT_EXPLOSION))
 	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
+if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
+	bRevertFormat = 1;
+	NDWritePosition (objP);
+	}
 }
-
 
 //	-----------------------------------------------------------------------------
 
@@ -527,15 +580,15 @@ objP->nType = NDReadByte ();
 if ((objP->renderType == RT_NONE) && (objP->nType != OBJ_CAMERA))
 	return;
 objP->id = NDReadByte ();
+if (bRevertFormat > 0)
+	bRevertFormat = 0;
 if (gameData.demo.nVersion > DEMO_VERSION + 1)
 	objP->shields = NDReadFix ();
+if (!bRevertFormat)
+	bRevertFormat = gameOpts->demo.bRevertFormat;
 objP->flags = NDReadByte ();
 objP->nSignature = NDReadShort ();
 NDReadPosition (objP);
-if (objP->nType == OBJ_POWERUP && objP->id == POW_VULCAN) {
-	int h = CFTell (ndInFile);
-		objP = objP;
-	}
 if ((objP->nType == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 objP->attachedObj = -1;
@@ -716,10 +769,6 @@ switch (objP->renderType) {
 
 	default:
 		Int3 ();
-	}
-if (objP->nType == OBJ_POWERUP && objP->id == POW_VULCAN) {
-	int h = CFTell (ndInFile);
-	objP = objP;
 	}
 prevObjP = objP;
 }
@@ -1540,7 +1589,17 @@ if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
 	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 	return 1;
 	}
+if (bRevertFormat > 0)
+	bRevertFormat = 0;
 gameData.demo.nVersion = NDReadByte ();
+if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
+	if (gameData.demo.nVersion == DEMO_VERSION)
+		bRevertFormat = -1;
+	else {
+		NDWriteByte (DEMO_VERSION);
+		bRevertFormat = 1;
+		}
+	}
 gameType = NDReadByte ();
 if (gameType < DEMO_GAME_TYPE) {
 	tMenuItem m [2];
@@ -1738,8 +1797,7 @@ ResetObjects (1);
 LOCALPLAYER.homingObjectDist = -F1_0;
 prevObjP = NULL;
 while (!bDone) {
-	if (gameData.demo.nFrameCount == 890)
-		gameData.demo.nFrameCount = gameData.demo.nFrameCount;
+	i = CFTell (ndInFile);
 	c = NDReadByte ();
 	CATCH_BAD_READ
 	switch (c) {
@@ -2540,9 +2598,12 @@ while (!bDone) {
 				tMenuItem m [3];
 
 				memset (m, 0, sizeof (m));
-				m [0].nType = NM_TYPE_TEXT; m [0].text = TXT_CANT_PLAYBACK;
-				m [1].nType = NM_TYPE_TEXT; m [1].text = TXT_LEVEL_CANT_LOAD;
-				m [2].nType = NM_TYPE_TEXT; m [2].text = TXT_DEMO_OLD_CORRUPT;
+				m [0].nType = NM_TYPE_TEXT; 
+				m [0].text = TXT_CANT_PLAYBACK;
+				m [1].nType = NM_TYPE_TEXT; 
+				m [1].text = TXT_LEVEL_CANT_LOAD;
+				m [2].nType = NM_TYPE_TEXT; 
+				m [2].text = TXT_DEMO_OLD_CORRUPT;
 				ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 				return -1;
 				}
@@ -2563,7 +2624,7 @@ while (!bDone) {
 					}
 				if (gameData.demo.nGameMode & GM_CAPTURE)
 					MultiApplyGoalTextures ();
-				bJustStartedPlayback=0;
+				bJustStartedPlayback = 0;
 				}
 			ResetPaletteAdd ();                // get palette back to normal
 			StartTime ();
@@ -2590,8 +2651,10 @@ if (bNDBadRead) {
 	tMenuItem m [2];
 
 	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; m [0].text = TXT_DEMO_ERR_READING;
-	m [1].nType = NM_TYPE_TEXT; m [1].text = TXT_DEMO_OLD_CORRUPT;
+	m [0].nType = NM_TYPE_TEXT; 
+	m [0].text = TXT_DEMO_ERR_READING;
+	m [1].nType = NM_TYPE_TEXT; 
+	m [1].text = TXT_DEMO_OLD_CORRUPT;
 	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 	}
 else
@@ -2630,9 +2693,12 @@ if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.n
 	tMenuItem m [3];
 
 	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; m [0].text = TXT_CANT_PLAYBACK;
-	m [1].nType = NM_TYPE_TEXT; m [1].text = TXT_LEVEL_CANT_LOAD;
-	m [2].nType = NM_TYPE_TEXT; m [2].text = TXT_DEMO_OLD_CORRUPT;
+	m [0].nType = NM_TYPE_TEXT; 
+	m [0].text = TXT_CANT_PLAYBACK;
+	m [1].nType = NM_TYPE_TEXT; 
+	m [1].text = TXT_LEVEL_CANT_LOAD;
+	m [2].nType = NM_TYPE_TEXT; 
+	m [2].text = TXT_DEMO_OLD_CORRUPT;
 	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 	NDStopPlayback ();
 	return;
@@ -2852,7 +2918,7 @@ gameData.reactor.bDestroyed = 0;
 gameData.reactor.countdown.nSecsLeft = -1;
 PALETTE_FLASH_SET (0, 0, 0);       //clear flash
 if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
-		(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
+	 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 	level = gameData.missions.nCurrentLevel;
 	if (gameData.demo.nFrameCount == 0)
 		return;
@@ -3266,21 +3332,31 @@ if (!filename) {
 if (!filename)
 	return;
 strcpy (filename2, filename);
-ndInFile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0);
-if (ndInFile==NULL) {
+bRevertFormat = gameOpts->demo.bRevertFormat;
+if (!(ndInFile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0))) {
 #if TRACE				
 	con_printf (CONDBG, "Error reading '%s'\n", filename);
 #endif
 	return;
 	}
+if (bRevertFormat) {
+	strcat (filename2, ".v15");
+	if (!(ndOutFile = CFOpen (filename2, gameFolders.szDemoDir, "wb", 0)))
+		bRevertFormat = -1;
+	}
+else
+	ndOutFile = NULL;
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
 if (NDReadDemoStart (rnd_demo)) {
 	CFClose (ndInFile);
+	CFClose (ndOutFile);
 	return;
 	}
+if (gameOpts->demo.bRevertFormat && ndOutFile && (bRevertFormat < 0))
+	CFDelete (filename2, gameFolders.szDemoDir);
 gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
@@ -3304,6 +3380,7 @@ NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb 
 void NDStopPlayback ()
 {
 CFClose (ndInFile);
+CFClose (ndOutFile);
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);

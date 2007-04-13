@@ -1631,6 +1631,7 @@ char *defaultGameTexts [][2] = {
 	{"Der Level ist zu gross fuer D2X-XL.", "The level is too large for D2X-XL."},
 	{"Raketen ab~Schiessen", "~Shoot down Missiles"},
 	{"Rrrrrrreng-deng-deng-badabaaaaambambam-barrrraaaa-darrram-bam-bam!", "Rrrrrrreng-deng-deng-badabaaaaambambam-barrrraaaa-darrram-bam-bam!"},
+	{"Demo-Konvertierung", "Demo Conversion"},
 #if 0
 	{"", ""},
 #endif
