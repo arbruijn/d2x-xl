@@ -827,6 +827,8 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 
 Check (); /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
+gameData.physics.side.nSegment = -1;
+gameData.physics.side.nSide = -1;
 gameStates.gameplay.bKillBossCheat = 0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 #if 1
@@ -985,8 +987,6 @@ gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
-gameData.physics.side.nSegment =
-gameData.physics.side.nSide = -1;
 if (SHOW_DYN_LIGHT)
 	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
 memset (gameData.render.color.segments, 0, sizeof (*gameData.render.color.segments) * MAX_SEGMENTS);

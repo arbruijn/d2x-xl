@@ -505,7 +505,9 @@ void CreateAbsVertexLists (int *nFaces, int *vertices, int nSegment, int nSide)
 	tSide	*sideP = gameData.segs.segments [nSegment].sides + nSide;
 	int  *sv = sideToVertsInt [nSide];
 
-if ((gameData.physics.side.nSegment == nSegment) && (gameData.physics.side.nSide == nSide)) {
+if ((gameData.physics.side.nSegment == nSegment) && 
+	 (gameData.physics.side.nSide == nSide) &&
+	 gameData.physics.side.nFaces) {
 	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
 	*nFaces = gameData.physics.side.nFaces;
 	return;
@@ -1810,6 +1812,10 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 			tSide			*s;
 
 			CreateAbsVertexLists (&nFaces, vertexList, SEG_IDX (segP), nSide);
+#ifdef _DEBUG
+			if (nFaces != 2)
+				CreateAbsVertexLists (&nFaces, vertexList, SEG_IDX (segP), nSide);
+#endif
 			Assert (nFaces == 2);
 			s = segP->sides + nSide;
 			nVertex = min (vertexList [0], vertexList [2]);

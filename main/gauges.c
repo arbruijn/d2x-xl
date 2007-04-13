@@ -1649,14 +1649,18 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	}
 dx = (int) (10 * cmScaleX);
 if (nWeaponIcons < 3) {
+#if 0
 	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
+#endif
 		dy = (grdCurScreen->sc_h - grdCurCanv->cv_bitmap.bm_props.h);
 		y = nIconPos ? grdCurScreen->sc_h - dy - oy : oy + hIcon + 12;
+#if 0
 		}
 	else {
 		y = (2 - gameStates.app.bD1Mission) * (oy + hIcon) + 12;
 		nIconPos = 1;
 		}
+#endif
 	}
 for (i = 0; i < 2; i++) {
 	n = (gameStates.app.bD1Mission) ? 5 : 10;
@@ -1917,7 +1921,7 @@ void HUDShowInventoryIcons (void)
 	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0};
 
 dy = (grdCurScreen->sc_h - grdCurCanv->cv_bitmap.bm_props.h);
-if (!SHOW_COCKPIT)
+if (gameStates.render.cockpit.nMode != CM_STATUS_BAR) //(!SHOW_COCKPIT)
 	y = nIconPos ? grdCurScreen->sc_h - dy - oy : oy + hIcon + 12;
 else
 	y = oy + hIcon + 12;

@@ -523,7 +523,7 @@ if (bRevertFormat > 0)
 
 //	-----------------------------------------------------------------------------
 
-static void NDReadPosition (tObject *objP)
+static void NDReadPosition (tObject *objP, int bSkip)
 {
 	tShortPos sp;
 	ubyte renderType;
@@ -558,7 +558,7 @@ if ((objP->id == VCLIP_MORPHING_ROBOT) &&
 	 (renderType == RT_FIREBALL) && 
 	 (objP->controlType == CT_EXPLOSION))
 	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
-if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
+if (gameOpts->demo.bRevertFormat && !(bRevertFormat || bSkip)) {
 	bRevertFormat = 1;
 	NDWritePosition (objP);
 	}
@@ -570,25 +570,47 @@ tObject *prevObjP = NULL;      //ptr to last tObject read in
 
 void NDReadObject (tObject *objP)
 {
+	int	bSkip = 0;
+	int h = CFTell (ndOutFile);
+
 memset (objP, 0, sizeof (tObject));
 /*
  * Do render nType first, since with renderType == RT_NONE, we
  * blow by all other tObject information
  */
-objP->renderType = NDReadByte ();
-objP->nType = NDReadByte ();
-if ((objP->renderType == RT_NONE) && (objP->nType != OBJ_CAMERA))
-	return;
-objP->id = NDReadByte ();
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
-if (gameData.demo.nVersion > DEMO_VERSION + 1)
-	objP->shields = NDReadFix ();
-if (!bRevertFormat)
+objP->renderType = NDReadByte ();
+if ((objP->renderType <= RT_WEAPON_VCLIP) && !bRevertFormat) {
 	bRevertFormat = gameOpts->demo.bRevertFormat;
+	NDWriteByte ((sbyte) objP->renderType);
+	gameData.demo.nFrameBytesWritten--;
+	gameData.demo.nWritten--;
+	}
+#ifdef _DEBUG
+else {
+   bSkip = 1;
+	CFSeek (ndOutFile, -1, SEEK_CUR);
+	h = CFTell (ndOutFile);
+	}
+#endif
+objP->nType = NDReadByte ();
+if ((objP->renderType == RT_NONE) && (objP->nType != OBJ_CAMERA)) {
+	if (!bRevertFormat)
+		bRevertFormat = gameOpts->demo.bRevertFormat;
+	return;
+	}
+objP->id = NDReadByte ();
+if (gameData.demo.nVersion > DEMO_VERSION + 1) {
+	if (bRevertFormat > 0)
+		bRevertFormat = 0;
+	objP->shields = NDReadFix ();
+	if (!(bRevertFormat || bSkip))
+		bRevertFormat = gameOpts->demo.bRevertFormat;
+	}
 objP->flags = NDReadByte ();
 objP->nSignature = NDReadShort ();
-NDReadPosition (objP);
+NDReadPosition (objP, bSkip);
 if ((objP->nType == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 objP->attachedObj = -1;
@@ -649,7 +671,7 @@ else {
 	ubyte b;
 
 	b = NDReadByte ();
-	objP->lifeleft = (fix)b;
+	objP->lifeleft = (fix) b;
 	// MWA old way -- won't work with big endian machines       NDReadByte ((sbyte *) (ubyte *)&(objP->lifeleft);
 	objP->lifeleft = (fix) ((int) objP->lifeleft << 12);
 	}
@@ -750,15 +772,14 @@ switch (objP->renderType) {
 			objP->rType.polyObjInfo.nTexOverride = xlated_tmo;
 			}
 #endif
-
 		break;
 		}
 
 	case RT_POWERUP:
-	case RT_WEAPON_VCLIP:
 	case RT_FIREBALL:
-	case RT_THRUSTER:
 	case RT_HOSTAGE:
+	case RT_WEAPON_VCLIP:
+	case RT_THRUSTER:
 		objP->rType.vClipInfo.nClipIndex = NDReadInt ();
 		objP->rType.vClipInfo.xFrameTime = NDReadFix ();
 		objP->rType.vClipInfo.nCurFrame = NDReadByte ();
@@ -770,7 +791,10 @@ switch (objP->renderType) {
 	default:
 		Int3 ();
 	}
+h = CFTell (ndOutFile) - h;
 prevObjP = objP;
+if (!bRevertFormat)
+	bRevertFormat = gameOpts->demo.bRevertFormat;
 }
 
 //------------------------------------------------------------------------------
@@ -792,6 +816,8 @@ void NDWriteObject (tObject *objP)
 	int		life;
 	tObject	o = *objP;
 
+if ((o.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
+	return;
 if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
 // Do renderType first so on read, we can make determination of
@@ -911,10 +937,10 @@ switch (o.renderType) {
 		}
 
 	case RT_POWERUP:
-	case RT_WEAPON_VCLIP:
 	case RT_FIREBALL:
-	case RT_THRUSTER:
 	case RT_HOSTAGE:
+	case RT_WEAPON_VCLIP:
+	case RT_THRUSTER:
 		NDWriteInt (o.rType.vClipInfo.nClipIndex);
 		NDWriteFix (o.rType.vClipInfo.xFrameTime);
 		NDWriteByte (o.rType.vClipInfo.nCurFrame);
@@ -1787,9 +1813,9 @@ int NDReadFrameInfo ()
 	tObject extraobj;
 	static char LastReadValue=101;
 	tSegment *seg;
+	static int nFrames = 0;
 
-	bDone = 0;
-
+bDone = 0;
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		gameData.segs.segments [nSegment].objects = -1;
@@ -1797,7 +1823,7 @@ ResetObjects (1);
 LOCALPLAYER.homingObjectDist = -F1_0;
 prevObjP = NULL;
 while (!bDone) {
-	i = CFTell (ndInFile);
+	i = CFTell (ndOutFile);
 	c = NDReadByte ();
 	CATCH_BAD_READ
 	switch (c) {
@@ -2633,6 +2659,8 @@ while (!bDone) {
 
 		case ND_EVENT_EOF:
 			bDone = -1;
+			if (bRevertFormat > 0)
+				NDWriteByte (ND_EVENT_EOF);
 			CFSeek (ndInFile, -1, SEEK_CUR);        // get back to the EOF marker
 			gameData.demo.bEof = 1;
 			gameData.demo.nFrameCount++;
@@ -3101,22 +3129,15 @@ else
 
 //	-----------------------------------------------------------------------------
 
-char demoname_allowed_chars [] = "azAZ09__--";
-void NDStopRecording ()
+void NDFinishRecording (void)
 {
-	tMenuItem m [6];
-	int l, exit;
-	static char filename [15] = "", *s;
-	static ubyte tmpcnt = 0;
 	ubyte cloaked = 0;
-	char fullname [15+FILENAME_LEN] = "";
 	unsigned short byteCount = 0;
-
-	exit = 0;
+	int l;
 
 NDWriteByte (ND_EVENT_EOF);
 NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
 		if (gameData.multiplayer.players [l].flags & PLAYER_FLAGS_CLOAKED)
 			cloaked |= (1 << l);
@@ -3143,7 +3164,7 @@ for (l = 0; l < MAX_SECONDARY_WEAPONS; l++)
 byteCount += (sizeof (short) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
 NDWriteByte (LOCALPLAYER.laserLevel);
 byteCount++;
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
 	byteCount++;
 	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
@@ -3171,6 +3192,20 @@ NDWriteByte (ND_EVENT_EOF);
 l = CFTell (ndOutFile);
 CFClose (ndOutFile);
 ndOutFile = NULL;
+}
+
+//	-----------------------------------------------------------------------------
+
+char demoname_allowed_chars [] = "azAZ09__--";
+void NDStopRecording ()
+{
+	tMenuItem m [6];
+	int exit = 0;
+	static char filename [15] = "", *s;
+	static ubyte tmpcnt = 0;
+	char fullname [15+FILENAME_LEN] = "";
+
+NDFinishRecording ();
 gameData.demo.nState = ND_STATE_NORMAL;
 GrPaletteStepLoad (NULL);
 if (filename [0] != '\0') {
