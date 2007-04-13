@@ -970,13 +970,9 @@ void GameRenderFrameMono (void)
 		if (gameData.demo.nState == ND_STATE_PLAYBACK)
 			gameData.app.nGameMode = gameData.demo.nGameMode;
 		glDepthFunc (GL_ALWAYS);
-		if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-			ShowExtraViews ();		//missile view, buddy bot, etc.
+		if (SHOW_COCKPIT) {
 			UpdateCockpits (1);
-			}
-		else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 			ShowExtraViews ();		//missile view, buddy bot, etc.
-			UpdateCockpits (1);
 			}
 		RenderGauges ();
 		HUDShowIcons ();

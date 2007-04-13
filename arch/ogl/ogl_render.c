@@ -2099,8 +2099,10 @@ else
 		glDepthMask (1);
 		glColorMask (1,1,1,1);
 		glClearColor (0,0,0,0);
-		//glClearDepth (~0);
-		glClear (bResetColorBuf ? GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT : GL_DEPTH_BUFFER_BIT);
+		if (bResetColorBuf)
+			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		else
+			glClear (GL_DEPTH_BUFFER_BIT);
 		}
 	else if (gameStates.render.nRenderPass) {
 		glDepthMask (0);
