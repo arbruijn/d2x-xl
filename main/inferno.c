@@ -201,6 +201,7 @@ else if (nSignal == SIGTERM)
 	LogErr ("Termination request\n");
 else
 	LogErr ("Unknown signal\n");
+exit (1);
 }
 
 // ----------------------------------------------------------------------------
