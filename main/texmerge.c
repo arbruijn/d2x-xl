@@ -436,7 +436,7 @@ char *texMergeFS [3] = {
 	"uniform float grAlpha;" \
 	"void main(void)" \
 	"{vec4 topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"if(abs(topColor.a*255.0-1.0)<0.1)discard;" \
+	"if(abs(topColor.a*255.0-1.0)<0.25)discard;" \
 	"else{" \
 	"vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
 	"if(topColor.a==0.0)gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;" \

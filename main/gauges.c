@@ -1270,13 +1270,11 @@ if (!IsMultiGame || IsCoopGame) {
 		y = 3 * nLineSpacing;
 	else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 		y = 2 * nLineSpacing;
-	else if (SHOW_COCKPIT) {
+	else {//if (!SHOW_COCKPIT) {
 		y = 2 * nLineSpacing;
 		if (gameStates.render.fonts.bHires)
 			y += nLineSpacing;
 		}
-	else
-		Int3 ();		//what sort of cockpit?
 
 	x0 = grdCurCanv->cv_w;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
