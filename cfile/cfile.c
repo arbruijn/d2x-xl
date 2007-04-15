@@ -449,11 +449,11 @@ int CFMkDir(char *pathname)
 CFILE * CFOpen (char *filename, char *folder, char *mode, int bUseD1Hog) 
 {
 	int	length = -1;
-	FILE	*fp;
+	FILE	*fp = NULL;
 	CFILE *cfile = NULL;
 	char	*pszHogExt, *pszFileExt;
 
-if (! (filename && *filename))
+if (!(filename && *filename))
 	return NULL;
 if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
 	fp = CFGetFileHandle (filename, folder, mode);		// Check for non-hog file first...

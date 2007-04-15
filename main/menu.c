@@ -161,8 +161,8 @@ extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, 
 
 //------------------------------------------------------------------------------
 
-//ADD_MENU ("Start netgame...", MENU_START_NETGAME, -1 );
-//ADD_MENU ("Send net message...", MENU_SEND_NET_MESSAGE, -1 );
+//ADD_MENU ("Start netgame...", MENU_START_NETGAME, -1);
+//ADD_MENU ("Send net message...", MENU_SEND_NET_MESSAGE, -1);
 
 //unused - extern int last_joyTime;               //last time the joystick was used
 extern void SetFunctionMode (int);
@@ -192,10 +192,10 @@ int NDCountDemos ();
 //------------------------------------------------------------------------------
 
 dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
-	{SM ( 320,  200),  320,  200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 640,  400),  640,  400, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 640,  480),  640,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 800,  600),  800,  600, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	{SM (320,  200),  320,  200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	{SM (640,  400),  640,  400, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	{SM (640,  480),  640,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	{SM (800,  600),  800,  600, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (1024,  768), 1024,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 	
 	{SM (1152,  864), 1152,  864, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 	
 	{SM (1280,  960), 1280,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 	
@@ -205,7 +205,7 @@ dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 	//test>>>
 	{SM (4096, 3072), 4096, 3072, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	//<<<test
-	{SM ( 720,  480), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
+	{SM (720,  480), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  768), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  800), 1280,  800, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
 	{SM (1280,  854), 1280,  854, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
@@ -225,7 +225,7 @@ WIN (extern int DD_Emulation);
 
 // ------------------------------------------------------------------------
 
-void autodemo_menu_check (int nitems, tMenuItem * items, int *last_key, int citem )
+void autodemo_menu_check (int nitems, tMenuItem * items, int *last_key, int citem)
 {
 	int curtime;
 
@@ -234,9 +234,9 @@ PrintVersionInfo ();
 if (*last_key==KEY_ESC) 
 	*last_key = 0;
 
-if ( bAllowAutoDemo ) {
+if (bAllowAutoDemo) {
 	curtime = TimerGetApproxSeconds ();
-	if (( (keydTime_when_last_pressed+i2f (25)) < curtime)
+	if (((keydTime_when_last_pressed+i2f (25)) < curtime)
 #ifdef _DEBUG	
 		&& !gameData.speedtest.bOn
 #endif		
@@ -328,7 +328,7 @@ nMenuChoice [opt++] = MENU_SHOW_CREDITS;
 ADD_MENU (opt, TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 nMenuChoice [opt++] = MENU_QUIT;
 #ifdef _DEBUG
-if (!(gameData.app.nGameMode & GM_MULTI ))   {
+if (!(gameData.app.nGameMode & GM_MULTI))   {
 	//m [opt].nType=NM_TYPE_TEXT;
 	//m [opt++].text=" Debug options:";
 
@@ -339,7 +339,7 @@ if (!(gameData.app.nGameMode & GM_MULTI ))   {
 	#endif
 }
 
-//ADD_MENU ( "  Play song", MENU_PLAY_SONG, -1 );
+//ADD_MENU ("  Play song", MENU_PLAY_SONG, -1);
 #endif
 if (!gameStates.app.bNostalgia) {
 	ADD_TEXT (opt, "", 0);
@@ -388,7 +388,7 @@ LogErr ("launching main menu\n");
 do {
 	CreateMainMenu (m, nMenuChoice, &num_options); // may have to change, eg, maybe selected pilot and no save games.
 	keydTime_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!
-	if (main_menu_choice < 0 )
+	if (main_menu_choice < 0)
 		main_menu_choice = 0;
 	gameStates.menus.bDrawCopyright = 1;
 	i = ExecMenu2 ("", NULL, num_options, m, autodemo_menu_check, &main_menu_choice, Menu_pcx_name);
@@ -404,9 +404,9 @@ do {
 	WritePlayerFile ();
 	if ((i > -1) && (nMenuChoice[main_menu_choice] <= MENU_QUIT))
 		ExecMenuOption (nMenuChoice[main_menu_choice]);
-} while ( gameStates.app.nFunctionMode==FMODE_MENU);
-if ( gameStates.app.nFunctionMode==FMODE_GAME )
-	GrPaletteFadeOut (NULL, 32, 0 );
+} while (gameStates.app.nFunctionMode == FMODE_MENU);
+if (gameStates.app.nFunctionMode == FMODE_GAME)
+	GrPaletteFadeOut (NULL, 32, 0);
 FlushInput ();
 StopPlayerMovement ();
 return main_menu_choice;
@@ -504,7 +504,7 @@ switch (select) {
 	{
 		char demoPath [FILENAME_LEN], demoFile[FILENAME_LEN];
 		sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
-		if (ExecMenuFileSelector ( TXT_SELECT_DEMO, demoPath, demoFile, 1 ))
+		if (ExecMenuFileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 			NDStartPlayback (demoFile);
 		break;
 	}
@@ -519,7 +519,7 @@ switch (select) {
 		break;
 	#endif
 	case MENU_VIEW_SCORES:
-		GrPaletteFadeOut (NULL, 32, 0 );
+		GrPaletteFadeOut (NULL, 32, 0);
 		scoresView (-1);
 		break;
 #if 0
@@ -558,10 +558,10 @@ switch (select) {
 		int nNewLevel;
 
 		m.nType=NM_TYPE_INPUT; m.text_len = 10; m.text = text;
-		ExecMenu ( NULL, "Enter level to load", 1, &m, NULL, NULL );
+		ExecMenu (NULL, "Enter level to load", 1, &m, NULL, NULL);
 		nNewLevel = atoi (m.text);
 		if (nNewLevel!=0 && nNewLevel>=gameData.missions.nLastSecretLevel && nNewLevel<=gameData.missions.nLastLevel)  {
-			GrPaletteFadeOut (NULL, 32, 0 );
+			GrPaletteFadeOut (NULL, 32, 0);
 			StartNewGame (nNewLevel);
 		}
 
@@ -674,7 +674,7 @@ int DifficultyMenu ()
 memset (m, 0, sizeof (m));
 for (i = 0; i < 5; i++)
 	ADD_MENU (i, MENU_DIFFICULTY_TEXT (i), 0, "");
-i = ExecMenu1 ( NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
+i = ExecMenu1 (NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
 if (i <= -1)
 	return 0;
 if (choice != gameStates.app.nDifficultyLevel) {       
@@ -711,7 +711,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS-1) {
 	gameStates.render.detail.nMaxDebrisObjects = Max_debrisObjects_list[nDetailLevel];
 	gameStates.render.detail.nMaxObjectsOnScreenDetailed = MaxObjects_onscreen_detailed_list[nDetailLevel];
 	gameData.models.nSimpleModelThresholdScale = Smts_list[nDetailLevel];
-	DigiSetMaxChannels ( MaxSound_channels[ nDetailLevel ] );
+	DigiSetMaxChannels (MaxSound_channels[ nDetailLevel ]);
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
 	gameStates.render.detail.nWallRenderDepth = nDetailLevel;
@@ -745,7 +745,7 @@ for (i = 0; i < 5; i++)
 ADD_TEXT (5, "", 0);
 ADD_MENU (6, MENU_DETAIL_TEXT (5), KEY_C, HTX_ONLINE_MANUAL);
 ADD_CHECK (7, TXT_HIRES_MOVIES, gameOpts->movies.bHires, KEY_S, HTX_ONLINE_MANUAL);
-i = ExecMenu1 ( NULL, TXT_DETAIL_LEVEL , NDL+3, m, NULL, &choice);
+i = ExecMenu1 (NULL, TXT_DETAIL_LEVEL , NDL+3, m, NULL, &choice);
 if (i > -1) {
 	switch (choice) {
 		case 0:
@@ -767,7 +767,7 @@ gameOpts->movies.bHires = m [7].value;
 
 //      -----------------------------------------------------------------------------
 
-void CustomDetailsCallback (int nitems, tMenuItem * items, int *last_key, int citem )
+void CustomDetailsCallback (int nitems, tMenuItem * items, int *last_key, int citem)
 {
 	nitems = nitems;
 	*last_key = *last_key;
@@ -792,7 +792,7 @@ gameStates.render.detail.nMaxDebrisObjects = Max_debrisObjects_list[gameStates.r
 gameStates.render.detail.nMaxObjectsOnScreenDetailed = MaxObjects_onscreen_detailed_list[gameStates.render.detail.nObjectComplexity];
 gameData.models.nSimpleModelThresholdScale = Smts_list[gameStates.render.detail.nObjectComplexity];
 gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depthsObjects[gameStates.render.detail.nObjectDetail];
-DigiSetMaxChannels ( MaxSound_channels[gameStates.sound.nMaxSoundChannels ] );
+DigiSetMaxChannels (MaxSound_channels[gameStates.sound.nMaxSoundChannels ]);
 }
 
 #define	DL_MAX	10
@@ -1172,7 +1172,7 @@ do {
 while (!gameData.missions.list [nMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, m [nMission]);
 if (!LoadMission (nMission)) {
-	ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
 	return;
 }
 gameStates.app.bD1Mission = (gameData.missions.list [nMission].nDescentVersion == 1);
@@ -1201,13 +1201,13 @@ try_again:
 	nItems = 2;
 
 	strcpy (szNumber, "1");
-	choice = ExecMenu ( NULL, TXT_SELECT_START_LEV, nItems, m, NULL, NULL);
+	choice = ExecMenu (NULL, TXT_SELECT_START_LEV, nItems, m, NULL, NULL);
 	if ((choice == -1) || !m [1].text [0])
 		return;
 	nNewLevel = atoi (m [1].text);
 	if ((nNewLevel <= 0) || (nNewLevel > nHighestPlayerLevel)) {
 		m [0].text = TXT_ENTER_TO_CONT;
-		ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		goto try_again;
 	}
 }
@@ -1216,7 +1216,7 @@ gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 WritePlayerFile ();
 if (!DifficultyMenu ())
 	return;
-GrPaletteFadeOut (NULL, 32, 0 );
+GrPaletteFadeOut (NULL, 32, 0);
 if (!StartNewGame (nNewLevel))
 	SetFunctionMode (FMODE_MENU);
 }
@@ -1324,7 +1324,7 @@ for (;;) {
 	else if (choice == optLevel) {
 		i = atoi (m [optLevel].text);
 		if ((i <= 0) || (i > nPlayerMaxLevel))
-			ExecMessageBox ( NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)
 			break;
 		else
@@ -1352,14 +1352,14 @@ if (!StartNewGame (nLevel))
 
 //------------------------------------------------------------------------------
 
-extern void GameLoop (int, int );
+extern void GameLoop (int, int);
 
 static int optBrightness = -1;
 static int optContrast = -1;
 
 //------------------------------------------------------------------------------
 
-void options_menuset (int nitems, tMenuItem * items, int *last_key, int citem )
+void options_menuset (int nitems, tMenuItem * items, int *last_key, int citem)
 {
 if (gameStates.app.bNostalgia) {
 	if (citem == optBrightness)
@@ -3272,15 +3272,15 @@ WIN (static BOOL windigi_driver_off=FALSE);
 
 static int optDigiVol, optMusicVol, optRedbook;
 
-void SoundMenuCallback (int nitems, tMenuItem * items, int *last_key, int citem )
+void SoundMenuCallback (int nitems, tMenuItem * items, int *last_key, int citem)
 {
 	nitems=nitems;          
 	*last_key = *last_key;
 
-if ( gameConfig.nDigiVolume != items [optDigiVol].value )     {
+if (gameConfig.nDigiVolume != items [optDigiVol].value)     {
 	gameConfig.nDigiVolume = items [optDigiVol].value;
-	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8 );
-	DigiPlaySampleOnce ( SOUND_DROP_BOMB, F1_0 );
+	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8);
+	DigiPlaySampleOnce (SOUND_DROP_BOMB, F1_0);
 	}
 
 if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
@@ -3293,7 +3293,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
 			SongsPlaySong (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
-			PlayLevelSong ( gameData.missions.nCurrentLevel );
+			PlayLevelSong (gameData.missions.nCurrentLevel);
 		else
 			Int3 ();
 
@@ -3311,7 +3311,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 	}
 
 if (gameStates.sound.bRedbookEnabled) {
-	if (gameConfig.nRedbookVolume != items [optMusicVol].value )   {
+	if (gameConfig.nRedbookVolume != items [optMusicVol].value)   {
 		gameConfig.nRedbookVolume = items[optMusicVol].value;
 		SetRedbookVolume (gameConfig.nRedbookVolume);
 		}
@@ -3363,16 +3363,16 @@ do {
 	optRedbook = opt++;
 	ADD_CHECK (opt, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = opt++;
-	i = ExecMenu1 ( NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallback, &choice);
+	i = ExecMenu1 (NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [optRedbook].value;
 	gameConfig.bReverseChannels = m [optReverse].value;
 } while (i > -1);
 
-if ( gameConfig.nMidiVolume < 1 )   {
-		DigiPlayMidiSong ( NULL, NULL, NULL, 0, 0 );
+if (gameConfig.nMidiVolume < 1)   {
+		DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
 	}
 else if (!bSongPlaying)
-	SongsPlaySong ( gameStates.sound.nCurrentSong, 1);
+	SongsPlaySong (gameStates.sound.nCurrentSong, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -3912,10 +3912,10 @@ if (!FindArg ("-nonetwork")) {
 			con_printf (CON_VERBOSE, "%s 0x%x.\n", TXT_SOCKET_ERROR, IPX_DEFAULT_SOCKET + socket); 
 			break;
 		case IPX_NO_LOW_DOS_MEM: 
-			con_printf (CON_VERBOSE, "%s\n", TXT_MEMORY_IPX ); 
+			con_printf (CON_VERBOSE, "%s\n", TXT_MEMORY_IPX); 
 			break;
 		default: 
-			con_printf (CON_VERBOSE, "%s %d", TXT_ERROR_IPX, nIpxError );
+			con_printf (CON_VERBOSE, "%s %d", TXT_ERROR_IPX, nIpxError);
 		}
 		con_printf (CON_VERBOSE, "%s\n", TXT_NETWORK_DISABLED);
 #endif
@@ -3948,7 +3948,7 @@ void DoNewIPAddress ()
   m [1].text = IPText;
   IPText[0]=0;
 
-  choice = ExecMenu ( NULL, TXT_JOIN_TCP, 2, m, NULL, NULL );
+  choice = ExecMenu (NULL, TXT_JOIN_TCP, 2, m, NULL, NULL);
 
   if (choice==-1 || m [1].text[0]==0)
    return;

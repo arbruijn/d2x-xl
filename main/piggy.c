@@ -1921,7 +1921,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "ship1-2")) {
+	if (strstr (bmName, "rock260")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
@@ -1963,7 +1963,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
 			nOffset = CFTell (fp);
-			bitmapFlags [bD1][i] &= ~BM_FLAG_RLE;
+			bitmapFlags [bD1][i] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 			bitmapFlags [bD1][i] |= BM_FLAG_TGA;
 			if (bmP->bm_props.h > bmP->bm_props.w) {
 				eclip	*ecP = NULL;

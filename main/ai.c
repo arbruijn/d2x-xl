@@ -496,7 +496,10 @@ if (aip->SKIP_AI_COUNT) {
 
 botInfoP = &ROBOTINFO (objP->id);
 Assert (botInfoP->always_0xabcd == 0xabcd);
-
+#if 0//def _DEBUG
+if (!botInfoP->bossFlag)
+	return;
+#endif
 if (DoAnyRobotDyingFrame (objP))
 	return;
 
@@ -1136,7 +1139,9 @@ switch (ailp->mode) {
 			aip->GOAL_STATE = AIS_LOCK;
 		if (aip->behavior != AIB_RUN_FROM)
 			DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
-		if ((gameData.ai.nPlayerVisibility == 2) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && (aip->behavior != AIB_RUN_FROM) && (objP->id != ROBOT_BRAIN) && (botInfoP->companion != 1) && (botInfoP->thief != 1)) {
+		if ((gameData.ai.nPlayerVisibility == 2) && 
+			 (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && (aip->behavior != AIB_RUN_FROM) && (objP->id != ROBOT_BRAIN) && 
+			 (botInfoP->companion != 1) && (botInfoP->thief != 1)) {
 			if (botInfoP->attackType == 0)
 				ailp->mode = AIM_CHASE_OBJECT;
 			// This should not just be distance based, but also time-since-tPlayer-seen based.

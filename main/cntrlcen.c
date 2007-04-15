@@ -494,6 +494,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 
 	if (IS_BOSS (objP)) {
 		extraGameInfo [0].nBossCount++;
+		InitBossData (extraGameInfo [0].nBossCount - 1, OBJ_IDX (objP));
 		if (BOSS_COUNT > 1) {
 #if TRACE
 			con_printf (1, "Warning: Two or more bosses including %i and %i\n", i, nBossObj);

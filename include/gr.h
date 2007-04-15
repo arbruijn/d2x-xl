@@ -139,7 +139,7 @@ typedef struct _grs_bmProps {
 	short   w, h;		// width, height
 	short   rowsize;	// unsigned char offset to next row
 	sbyte	  nType;		// 0=Linear, 1=ModeX, 2=SVGA
-	sbyte	  flags;			
+	ubyte	  flags;			
 } grs_bmProps;
 
 typedef struct _grs_stdBmData {

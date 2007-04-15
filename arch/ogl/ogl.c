@@ -792,7 +792,7 @@ for (seg = 0; seg < gameData.segs.nSegments; seg++) {
 			continue;
 		bmP = LoadFaceBitmap (tmap1, sideP->nFrame);
 		if (tmap2 = sideP->nOvlTex) {
-			bm2 = LoadFaceBitmap (tmap1, sideP->nFrame);
+			bm2 = LoadFaceBitmap (tmap2, sideP->nFrame);
 			if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 				OglLoadBmTexture (bm2, 1, 0);

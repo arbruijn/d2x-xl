@@ -1424,8 +1424,7 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 	 (gameData.ai.nPlayerVisibility >= 1)) {
 	//	Now, if in robot's field of view, lock onto tPlayer
 	fix	dot = VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
-	if ((dot >= 7 * F1_0 / 8) || 
-		 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+	if ((dot >= 7 * F1_0 / 8) || (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 		tAIStatic	*aip = &objP->cType.aiInfo;
 		tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (objP);
 
@@ -2278,14 +2277,11 @@ return 0;
 
 int AIMultiplayerAwareness (tObject *objP, int awarenessLevel)
 {
-	int	rval=1;
-
-if (IsMultiGame) {
-	if (!awarenessLevel)
-		return 0;
-	rval = MultiCanRemoveRobot (OBJ_IDX (objP), awarenessLevel);
-}
-return rval;
+if (!IsMultiGame)
+	return 1;
+if (!awarenessLevel)
+	return 0;
+return MultiCanRemoveRobot (OBJ_IDX (objP), awarenessLevel);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -2326,8 +2322,8 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 	if (objP->cType.aiInfo.CLOAKED == 1) {
 		gameData.boss [i].nHitTime = gameData.time.xGame;	//	Keep the cloak:teleport process going.
 		if ((gameData.time.xGame - gameData.boss [i].nCloakStartTime > BOSS_CLOAK_DURATION/3) && 
-				(gameData.boss [i].nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && 
-				(gameData.time.xGame - gameData.boss [i].nLastTeleportTime > gameData.boss [i].nTeleportInterval)) {
+			 (gameData.boss [i].nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION/3) && 
+			 (gameData.time.xGame - gameData.boss [i].nLastTeleportTime > gameData.boss [i].nTeleportInterval)) {
 			if (AIMultiplayerAwareness (objP, 98)) {
 				TeleportBoss (objP);
 				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
@@ -2351,17 +2347,16 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 		objP->cType.aiInfo.CLOAKED = 0;
 		}
 	else if ((gameData.time.xGame - gameData.boss [i].nCloakEndTime > gameData.boss [i].nCloakInterval) || 
-					(gameData.time.xGame - gameData.boss [i].nCloakEndTime < -gameData.boss [i].nCloakDuration)) {
+				(gameData.time.xGame - gameData.boss [i].nCloakEndTime < -gameData.boss [i].nCloakDuration)) {
 		if (AIMultiplayerAwareness (objP, 95)) {
 			gameData.boss [i].nCloakStartTime = gameData.time.xGame;
-			gameData.boss [i].nCloakEndTime = gameData.time.xGame+gameData.boss [i].nCloakDuration;
+			gameData.boss [i].nCloakEndTime = gameData.time.xGame + gameData.boss [i].nCloakDuration;
 			objP->cType.aiInfo.CLOAKED = 1;
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				MultiSendBossActions (OBJ_IDX (objP), 2, 0, 0);
 			}
 		}
 	}
-
 }
 
 // --------------------------------------------------------------------------------------------------------------------
