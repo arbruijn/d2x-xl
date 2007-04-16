@@ -292,7 +292,7 @@ else
 		}
 	SDL_PauseAudio (0);
 	}
-atexit (DigiClose);
+//atexit (DigiClose);
 gameStates.sound.digi.bInitialized = 1;
 return 0;
 }

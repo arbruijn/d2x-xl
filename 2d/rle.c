@@ -358,7 +358,7 @@ rle_cache_element rle_cache[MAX_CACHE_BITMAPS];
 int rle_hits = 0;
 int rle_misses = 0;
 
-void _CDECL_ rle_cache_close (void)
+void _CDECL_ RLECacheClose (void)
 {
 if (rle_cache_initialized)	{
 	int i;
@@ -374,14 +374,15 @@ if (rle_cache_initialized)	{
 void RLECacheInit ()
 {
 	int i;
-	for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
-		rle_cache[i].rle_bitmap = NULL;
-		rle_cache[i].expanded_bitmap = GrCreateBitmap (64, 64, 1);
-		rle_cache[i].last_used = 0;
-		Assert (rle_cache[i].expanded_bitmap != NULL);
+	
+for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
+	rle_cache[i].rle_bitmap = NULL;
+	rle_cache[i].expanded_bitmap = GrCreateBitmap (64, 64, 1);
+	rle_cache[i].last_used = 0;
+	Assert (rle_cache[i].expanded_bitmap != NULL);
 	}
-	rle_cache_initialized = 1;
-	atexit (rle_cache_close);
+rle_cache_initialized = 1;
+//atexit (RLECacheClose);
 }
 
 //------------------------------------------------------------------------------
@@ -389,9 +390,10 @@ void RLECacheInit ()
 void RLECacheFlush ()
 {
 	int i;
-	for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
-		rle_cache [i].rle_bitmap = NULL;
-		rle_cache [i].last_used = 0;
+	
+for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
+	rle_cache [i].rle_bitmap = NULL;
+	rle_cache [i].last_used = 0;
 	}
 }
 

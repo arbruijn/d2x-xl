@@ -382,7 +382,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       if ( gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
                SetFunctionMode (FMODE_MENU);
                gameData.app.nGameMode = GM_GAME_OVER;
-               longjmp ( gameExitPoint, 1);        // Exit out of game loop
+               __asm int 3; longjmp ( gameExitPoint, 1);        // Exit out of game loop
 	      }
 #endif
 	   }

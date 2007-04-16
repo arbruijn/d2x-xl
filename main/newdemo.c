@@ -104,7 +104,7 @@ void DoJasonInterpolate (fix xRecordedTime);
 //Does demo start automatically?
 
 static sbyte	bNDBadRead;
-static int		bRevertFormat = 0;
+static int		bRevertFormat = -1;
 
 #define	CATCH_BAD_READ				if (bNDBadRead) {bDone = -1; break;}
 
@@ -166,7 +166,6 @@ static int		bRevertFormat = 0;
 #define INTERPOLATE_PLAYBACK    2
 #define INTERPOL_FACTOR         (F1_0 + (F1_0/5))
 
-#define DEMO_VERSION            15      // last D1 version was 13
 #define DEMO_VERSION_D2X        17      // last D1 version was 13
 #define DEMO_GAME_TYPE          3       // 1 was shareware, 2 registered
 
@@ -253,6 +252,7 @@ return -1;
 
 void CHK (void)
 {
+Assert (ndOutFile != NULL);
 if (gameData.demo.nWritten >= 750)
 	gameData.demo.nWritten = gameData.demo.nWritten;
 }
@@ -318,7 +318,8 @@ CFWriteInt (i, ndOutFile);
 static inline void NDWriteString (char *str)
 {
 	sbyte l = (int) strlen (str) + 1;
-NDWriteByte ((sbyte) l);
+
+NDWriteByte (l);
 NDWrite (str, (int) l, 1);
 }
 
@@ -384,14 +385,8 @@ if (bOldFormat)
 if ((renderType == RT_POLYOBJ) || (renderType == RT_HOSTAGE) || (renderType == RT_MORPH) || 
 	 (objP->nType == OBJ_CAMERA) ||
 	 (!bOldFormat && (renderType == RT_POWERUP))) {
-	if (bOldFormat) {
-		int	i;
-		for (i = 0; i < 9; i++)
-			NDWriteByte (sp.bytemat [i]);
-		for (i = 0; i < 9; i++)
-			if (sp.bytemat [i] != 0)
-				break;
-		}
+	if (bOldFormat)
+		NDWrite (sp.bytemat, sizeof (sp.bytemat [0]), sizeof (sp.bytemat) / sizeof (sp.bytemat [0]));
 	else
 		NDWriteMatrix (&objP->position.mOrient);
 	}
@@ -558,7 +553,7 @@ if ((objP->id == VCLIP_MORPHING_ROBOT) &&
 	 (renderType == RT_FIREBALL) && 
 	 (objP->controlType == CT_EXPLOSION))
 	ExtractOrientFromSegment (&objP->position.mOrient, gameData.segs.segments + objP->nSegment);
-if (gameOpts->demo.bRevertFormat && !(bRevertFormat || bSkip)) {
+if (!(bRevertFormat || bSkip)) {
 	bRevertFormat = 1;
 	NDWritePosition (objP);
 	}
@@ -571,7 +566,6 @@ tObject *prevObjP = NULL;      //ptr to last tObject read in
 void NDReadObject (tObject *objP)
 {
 	int	bSkip = 0;
-	int h = CFTell (ndOutFile);
 
 memset (objP, 0, sizeof (tObject));
 /*
@@ -581,19 +575,18 @@ memset (objP, 0, sizeof (tObject));
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
 objP->renderType = NDReadByte ();
-if ((objP->renderType <= RT_WEAPON_VCLIP) && !bRevertFormat) {
-	bRevertFormat = gameOpts->demo.bRevertFormat;
-	NDWriteByte ((sbyte) objP->renderType);
-	gameData.demo.nFrameBytesWritten--;
-	gameData.demo.nWritten--;
+if (!bRevertFormat) {
+	if (objP->renderType <= RT_WEAPON_VCLIP) {
+		bRevertFormat = gameOpts->demo.bRevertFormat;
+		NDWriteByte ((sbyte) objP->renderType);
+		}
+	else {
+		bSkip = 1;
+		CFSeek (ndOutFile, -1, SEEK_CUR);
+		gameData.demo.nFrameBytesWritten--;
+		gameData.demo.nWritten--;
+		}
 	}
-#ifdef _DEBUG
-else {
-   bSkip = 1;
-	CFSeek (ndOutFile, -1, SEEK_CUR);
-	h = CFTell (ndOutFile);
-	}
-#endif
 objP->nType = NDReadByte ();
 if ((objP->renderType == RT_NONE) && (objP->nType != OBJ_CAMERA)) {
 	if (!bRevertFormat)
@@ -791,7 +784,6 @@ switch (objP->renderType) {
 	default:
 		Int3 ();
 	}
-h = CFTell (ndOutFile) - h;
 prevObjP = objP;
 if (!bRevertFormat)
 	bRevertFormat = gameOpts->demo.bRevertFormat;
@@ -823,7 +815,6 @@ if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
 // Do renderType first so on read, we can make determination of
 // what else to read in
 if ((o.nType == OBJ_POWERUP) && (o.renderType == RT_POLYOBJ)) {
-	int h = CFTell (ndOutFile);
 	ConvertWeaponToPowerup (&o);
 	NDSetPowerupClip (&o);
 	}
@@ -968,17 +959,17 @@ NDWriteByte (ND_EVENT_START_DEMO);
 NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VERSION : DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	NDWriteInt (gameData.app.nGameMode | (gameData.multiplayer.nLocalPlayer << 16));
 else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
-if (gameData.app.nGameMode & GM_TEAM) {
+if (IsTeamGame) {
 	NDWriteByte (netGame.teamVector);
 	NDWriteString (netGame.team_name [0]);
 	NDWriteString (netGame.team_name [1]);
 	}
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDWriteString (gameData.multiplayer.players [i].callsign);
@@ -1007,14 +998,14 @@ NDWriteInt (LOCALPLAYER.flags);        // be sure players flags are set
 NDWriteByte ((sbyte)gameData.weapons.nPrimary);
 NDWriteByte ((sbyte)gameData.weapons.nSecondary);
 gameData.demo.nStartFrame = gameData.app.nFrameCount;
-bJustStartedRecording=1;
+bJustStartedRecording = 1;
 NDSetNewLevel (gameData.missions.nCurrentLevel);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordStartFrame (int frame_number, fix frameTime)
+void NDRecordStartFrame (int nFrameNumber, fix xFrameTime)
 {
 if (gameData.demo.bNoSpace) {
 	NDStopPlayback ();
@@ -1024,13 +1015,13 @@ StopTime ();
 memset (gameData.demo.bWasRecorded, 0, sizeof (*gameData.demo.bWasRecorded) * MAX_OBJECTS);
 memset (gameData.demo.bViewWasRecorded, 0, sizeof (*gameData.demo.bViewWasRecorded) * MAX_OBJECTS);
 memset (gameData.demo.bRenderingWasRecorded, 0, sizeof (gameData.demo.bRenderingWasRecorded));
-frame_number -= gameData.demo.nStartFrame;
-Assert (frame_number >= 0);
+nFrameNumber -= gameData.demo.nStartFrame;
+Assert (nFrameNumber >= 0);
 NDWriteByte (ND_EVENT_START_FRAME);
 NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));        // from previous frame
-gameData.demo.nFrameBytesWritten=3;
-NDWriteInt (frame_number);
-NDWriteInt (frameTime);
+gameData.demo.nFrameBytesWritten = 3;
+NDWriteInt (nFrameNumber);
+NDWriteInt (xFrameTime);
 StartTime ();
 }
 
@@ -1373,107 +1364,107 @@ StartTime ();
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordWallSetTMapNum1 (short seg, ubyte nSide, short cseg, ubyte cside, short tmap)
+void NDRecordWallSetTMapNum1 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_SET_TMAP_NUM1);
-NDWriteShort (seg);
+NDWriteShort (nSegment);
 NDWriteByte (nSide);
-NDWriteShort (cseg);
-NDWriteByte (cside);
+NDWriteShort (nConnSeg);
+NDWriteByte (nConnSide);
 NDWriteShort (tmap);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordWallSetTMapNum2 (short seg, ubyte nSide, short cseg, ubyte cside, short tmap)
+void NDRecordWallSetTMapNum2 (short nSegment, ubyte nSide, short nConnSeg, ubyte nConnSide, short tmap)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_WALL_SET_TMAP_NUM2);
-NDWriteShort (seg);
+NDWriteShort (nSegment);
 NDWriteByte (nSide);
-NDWriteShort (cseg);
-NDWriteByte (cside);
+NDWriteShort (nConnSeg);
+NDWriteByte (nConnSide);
 NDWriteShort (tmap);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiCloak (int pnum)
+void NDRecordMultiCloak (int nPlayer)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_CLOAK);
-NDWriteByte ((sbyte)pnum);
+NDWriteByte ((sbyte)nPlayer);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiDeCloak (int pnum)
+void NDRecordMultiDeCloak (int nPlayer)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DECLOAK);
-NDWriteByte ((sbyte)pnum);
+NDWriteByte ((sbyte)nPlayer);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiDeath (int pnum)
+void NDRecordMultiDeath (int nPlayer)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DEATH);
-NDWriteByte ((sbyte)pnum);
+NDWriteByte ((sbyte)nPlayer);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiKill (int pnum, sbyte kill)
+void NDRecordMultiKill (int nPlayer, sbyte kill)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_KILL);
-NDWriteByte ((sbyte)pnum);
+NDWriteByte ((sbyte)nPlayer);
 NDWriteByte (kill);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiConnect (int pnum, int new_player, char *new_callsign)
+void NDRecordMultiConnect (int nPlayer, int nNewPlayer, char *pszNewCallsign)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_CONNECT);
-NDWriteByte ((sbyte)pnum);
-NDWriteByte ((sbyte)new_player);
-if (!new_player) {
-	NDWriteString (gameData.multiplayer.players [pnum].callsign);
-	NDWriteInt (gameData.multiplayer.players [pnum].netKilledTotal);
-	NDWriteInt (gameData.multiplayer.players [pnum].netKillsTotal);
+NDWriteByte ((sbyte)nPlayer);
+NDWriteByte ((sbyte)nNewPlayer);
+if (!nNewPlayer) {
+	NDWriteString (gameData.multiplayer.players [nPlayer].callsign);
+	NDWriteInt (gameData.multiplayer.players [nPlayer].netKilledTotal);
+	NDWriteInt (gameData.multiplayer.players [nPlayer].netKillsTotal);
 	}
-NDWriteString (new_callsign);
+NDWriteString (pszNewCallsign);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiReconnect (int pnum)
+void NDRecordMultiReconnect (int nPlayer)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_RECONNECT);
-NDWriteByte ((sbyte)pnum);
+NDWriteByte ((sbyte)nPlayer);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiDisconnect (int pnum)
+void NDRecordMultiDisconnect (int nPlayer)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DISCONNECT);
-NDWriteByte ((sbyte)pnum);
+NDWriteByte ((sbyte)nPlayer);
 StartTime ();
 }
 
@@ -1489,40 +1480,40 @@ StartTime ();
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordMultiScore (int pnum, int score)
+void NDRecordMultiScore (int nPlayer, int score)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_SCORE);
-NDWriteByte ((sbyte)pnum);
-NDWriteInt (score - gameData.multiplayer.players [pnum].score);      // called before score is changed!!!!
+NDWriteByte ((sbyte)nPlayer);
+NDWriteInt (score - gameData.multiplayer.players [nPlayer].score);      // called before score is changed!!!!
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordPrimaryAmmo (int old_ammo, int new_ammo)
+void NDRecordPrimaryAmmo (int nOldAmmo, int nNewAmmo)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_PRIMARY_AMMO);
-if (old_ammo < 0)
-	NDWriteShort ((short)new_ammo);
+if (nOldAmmo < 0)
+	NDWriteShort ((short)nNewAmmo);
 else
-	NDWriteShort ((short)old_ammo);
-NDWriteShort ((short)new_ammo);
+	NDWriteShort ((short)nOldAmmo);
+NDWriteShort ((short)nNewAmmo);
 StartTime ();
 }
 
 //	-----------------------------------------------------------------------------
 
-void NDRecordSecondaryAmmo (int old_ammo, int new_ammo)
+void NDRecordSecondaryAmmo (int nOldAmmo, int nNewAmmo)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_SECONDARY_AMMO);
-if (old_ammo < 0)
-	NDWriteShort ((short)new_ammo);
+if (nOldAmmo < 0)
+	NDWriteShort ((short)nNewAmmo);
 else
-	NDWriteShort ((short)old_ammo);
-NDWriteShort ((short)new_ammo);
+	NDWriteShort ((short)nOldAmmo);
+NDWriteShort ((short)nNewAmmo);
 StartTime ();
 }
 
@@ -1573,7 +1564,7 @@ void NDSetNewLevel (int level_num)
 {
 	int i;
 	int nSide;
-	tSegment *seg;
+	tSegment *segP;
 
 StopTime ();
 NDWriteByte (ND_EVENT_NEW_LEVEL);
@@ -1586,10 +1577,10 @@ if (bJustStartedRecording==1) {
 		NDWriteByte (gameData.walls.walls [i].nType);
 		NDWriteByte (gameData.walls.walls [i].flags);
 		NDWriteByte (gameData.walls.walls [i].state);
-		seg = &gameData.segs.segments [gameData.walls.walls [i].nSegment];
+		segP = &gameData.segs.segments [gameData.walls.walls [i].nSegment];
 		nSide = gameData.walls.walls [i].nSide;
-		NDWriteShort (seg->sides [nSide].nBaseTex);
-		NDWriteShort (seg->sides [nSide].nOvlTex | (seg->sides [nSide].nOvlOrient << 14));
+		NDWriteShort (segP->sides [nSide].nBaseTex);
+		NDWriteShort (segP->sides [nSide].nOvlTex | (segP->sides [nSide].nOvlOrient << 14));
 		bJustStartedRecording=0;
 		}
 	}
@@ -1677,7 +1668,7 @@ if (gameData.demo.nGameMode & GM_TEAM) {
 	NDReadString (netGame.team_name [0]);
 	NDReadString (netGame.team_name [1]);
 	}
-if (gameData.demo.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	MultiNewGame ();
 	c = NDReadByte ();
 	gameData.multiplayer.nPlayers = (int)c;
@@ -1689,7 +1680,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 		gameData.multiplayer.players [i].invulnerableTime = 0;
 		NDReadString (gameData.multiplayer.players [i].callsign);
 		gameData.multiplayer.players [i].connected = (sbyte) NDReadByte ();
-		if (gameData.demo.nGameMode & GM_MULTI_COOP)
+		if (IsCoopGame)
 			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
 			gameData.multiplayer.players [i].netKilledTotal = NDReadShort ();
@@ -1752,22 +1743,22 @@ return 0;
 void NDPopCtrlCenTriggers ()
 {
 	short		anim_num, n, i;
-	short		side, cside;
-	tSegment *seg, *csegp;
+	short		side, nConnSide;
+	tSegment *segP, *connSegP;
 
 for (i = 0; i < gameData.reactor.triggers.nLinks; i++) {
-	seg = gameData.segs.segments + gameData.reactor.triggers.nSegment [i];
+	segP = gameData.segs.segments + gameData.reactor.triggers.nSegment [i];
 	side = gameData.reactor.triggers.nSide [i];
-	csegp = gameData.segs.segments + seg->children [side];
-	cside = FindConnectedSide (seg, csegp);
-	anim_num = gameData.walls.walls [WallNumP (seg, side)].nClip;
+	connSegP = gameData.segs.segments + segP->children [side];
+	nConnSide = FindConnectedSide (segP, connSegP);
+	anim_num = gameData.walls.walls [WallNumP (segP, side)].nClip;
 	n = gameData.walls.pAnims [anim_num].nFrameCount;
 	if (gameData.walls.pAnims [anim_num].flags & WCF_TMAP1)
-		seg->sides [side].nBaseTex = 
-		csegp->sides [cside].nBaseTex = gameData.walls.pAnims [anim_num].frames [n-1];
+		segP->sides [side].nBaseTex = 
+		connSegP->sides [nConnSide].nBaseTex = gameData.walls.pAnims [anim_num].frames [n-1];
 	else
-		seg->sides [side].nOvlTex = 
-		csegp->sides [cside].nOvlTex = gameData.walls.pAnims [anim_num].frames [n-1];
+		segP->sides [side].nOvlTex = 
+		connSegP->sides [nConnSide].nOvlTex = gameData.walls.pAnims [anim_num].frames [n-1];
 	}
 }
 
@@ -1812,8 +1803,7 @@ int NDReadFrameInfo ()
 	static sbyte saved_rearview_cockpit;
 	tObject extraobj;
 	static char LastReadValue=101;
-	tSegment *seg;
-	static int nFrames = 0;
+	tSegment *segP;
 
 bDone = 0;
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
@@ -1823,15 +1813,23 @@ ResetObjects (1);
 LOCALPLAYER.homingObjectDist = -F1_0;
 prevObjP = NULL;
 while (!bDone) {
-	i = CFTell (ndOutFile);
 	c = NDReadByte ();
 	CATCH_BAD_READ
 	switch (c) {
 		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.time.xFrame
-			short last_frame_length;
+			short nPrevFrameLength;
 
 			bDone = 1;
-			last_frame_length = NDReadShort ();
+			//LogErr ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (ndOutFile));
+			if (bRevertFormat > 0)
+				bRevertFormat = 0;
+			nPrevFrameLength = NDReadShort ();
+			if (!bRevertFormat) {
+				NDWriteShort (gameData.demo.nFrameBytesWritten - 1);
+				bRevertFormat = 1;
+				}
+			if (bRevertFormat > 0)
+				gameData.demo.nFrameBytesWritten = 3;
 			gameData.demo.nFrameCount = NDReadInt ();
 			gameData.demo.xRecordedTime = NDReadInt ();
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
@@ -1889,7 +1887,7 @@ while (!bDone) {
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
 				LinkObject (OBJ_IDX (objP), nSegment);
-				if ((objP->nType == OBJ_PLAYER) &&(gameData.demo.nGameMode & GM_MULTI)) {
+				if ((objP->nType == OBJ_PLAYER) &&(IsMultiGame)) {
 					int tPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->id) : objP->id;
 					if (tPlayer == 0)
 						break;
@@ -2299,106 +2297,106 @@ while (!bDone) {
 
 
 		case ND_EVENT_WALL_SET_TMAP_NUM1: {
-			short seg, cseg, tmap;
-			ubyte nSide, cside;
+			short segP, nConnSeg, tmap;
+			ubyte nSide, nConnSide;
 
-			seg = NDReadShort ();
+			segP = NDReadShort ();
 			nSide = NDReadByte ();
-			cseg = NDReadShort ();
-			cside = NDReadByte ();
+			nConnSeg = NDReadShort ();
+			nConnSide = NDReadByte ();
 			tmap = NDReadShort ();
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) && 
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD))
-				gameData.segs.segments [seg].sides [nSide].nBaseTex = 
-					gameData.segs.segments [cseg].sides [cside].nBaseTex = tmap;
+				gameData.segs.segments [segP].sides [nSide].nBaseTex = 
+					gameData.segs.segments [nConnSeg].sides [nConnSide].nBaseTex = tmap;
 			}
 			break;
 
 		case ND_EVENT_WALL_SET_TMAP_NUM2: {
-			short seg, cseg, tmap;
-			ubyte nSide, cside;
+			short segP, nConnSeg, tmap;
+			ubyte nSide, nConnSide;
 
-			seg = NDReadShort ();
+			segP = NDReadShort ();
 			nSide = NDReadByte ();
-			cseg = NDReadShort ();
-			cside = NDReadByte ();
+			nConnSeg = NDReadShort ();
+			nConnSide = NDReadByte ();
 			tmap = NDReadShort ();
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
-				Assert (tmap!=0 && gameData.segs.segments [seg].sides [nSide].nOvlTex!=0);
-				gameData.segs.segments [seg].sides [nSide].nOvlTex = 
-				gameData.segs.segments [cseg].sides [cside].nOvlTex = tmap & 0x3fff;
-				gameData.segs.segments [seg].sides [nSide].nOvlOrient = 
-				gameData.segs.segments [cseg].sides [cside].nOvlOrient = (tmap >> 14) & 3;
+				Assert (tmap!=0 && gameData.segs.segments [segP].sides [nSide].nOvlTex!=0);
+				gameData.segs.segments [segP].sides [nSide].nOvlTex = 
+				gameData.segs.segments [nConnSeg].sides [nConnSide].nOvlTex = tmap & 0x3fff;
+				gameData.segs.segments [segP].sides [nSide].nOvlOrient = 
+				gameData.segs.segments [nConnSeg].sides [nConnSide].nOvlOrient = (tmap >> 14) & 3;
 				}
 			}
 			break;
 
 		case ND_EVENT_MULTI_CLOAK: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [pnum].flags &= ~PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [pnum].cloakTime = 0;
-				gameData.demo.bPlayersCloaked &= ~ (1 << pnum);
+				gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [nPlayer].cloakTime = 0;
+				gameData.demo.bPlayersCloaked &= ~(1 << nPlayer);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [pnum].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
-				gameData.demo.bPlayersCloaked |= (1 << pnum);
+				gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.demo.bPlayersCloaked |= (1 << nPlayer);
 				}
 			}
 			break;
 
 		case ND_EVENT_MULTI_DECLOAK: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [pnum].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [pnum].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
-				gameData.demo.bPlayersCloaked |= (1 << pnum);
+				gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
+				gameData.demo.bPlayersCloaked |= (1 << nPlayer);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [pnum].flags &= ~PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [pnum].cloakTime = 0;
-				gameData.demo.bPlayersCloaked &= ~ (1 << pnum);
+				gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;
+				gameData.multiplayer.players [nPlayer].cloakTime = 0;
+				gameData.demo.bPlayersCloaked &= ~(1 << nPlayer);
 				}
 			}
 			break;
 
 		case ND_EVENT_MULTI_DEATH: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [pnum].netKilledTotal--;
+				gameData.multiplayer.players [nPlayer].netKilledTotal--;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [pnum].netKilledTotal++;
+				gameData.multiplayer.players [nPlayer].netKilledTotal++;
 			}
 			break;
 
 		case ND_EVENT_MULTI_KILL: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			sbyte kill = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [pnum].netKillsTotal -= kill;
+				gameData.multiplayer.players [nPlayer].netKillsTotal -= kill;
 				if (gameData.demo.nGameMode & GM_TEAM)
-					gameData.multigame.kills.nTeam [GetTeam (pnum)] -= kill;
+					gameData.multigame.kills.nTeam [GetTeam (nPlayer)] -= kill;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [pnum].netKillsTotal += kill;
+				gameData.multiplayer.players [nPlayer].netKillsTotal += kill;
 				if (gameData.demo.nGameMode & GM_TEAM)
-					gameData.multigame.kills.nTeam [GetTeam (pnum)] += kill;
+					gameData.multigame.kills.nTeam [GetTeam (nPlayer)] += kill;
 				}
 			gameData.app.nGameMode = gameData.demo.nGameMode;
 			MultiSortKillList ();
@@ -2407,25 +2405,25 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_MULTI_CONNECT: {
-			sbyte pnum, new_player;
+			sbyte nPlayer, nNewPlayer;
 			int killedTotal, killsTotal;
-			char new_callsign [CALLSIGN_LEN+1], old_callsign [CALLSIGN_LEN+1];
+			char pszNewCallsign [CALLSIGN_LEN+1], old_callsign [CALLSIGN_LEN+1];
 
-			pnum = NDReadByte ();
-			new_player = NDReadByte ();
-			if (!new_player) {
+			nPlayer = NDReadByte ();
+			nNewPlayer = NDReadByte ();
+			if (!nNewPlayer) {
 				NDReadString (old_callsign);
 				killedTotal = NDReadInt ();
 				killsTotal = NDReadInt ();
 				}
-			NDReadString (new_callsign);
+			NDReadString (pszNewCallsign);
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [pnum].connected = 0;
-				if (!new_player) {
-					memcpy (gameData.multiplayer.players [pnum].callsign, old_callsign, CALLSIGN_LEN+1);
-					gameData.multiplayer.players [pnum].netKilledTotal = killedTotal;
-					gameData.multiplayer.players [pnum].netKillsTotal = killsTotal;
+				gameData.multiplayer.players [nPlayer].connected = 0;
+				if (!nNewPlayer) {
+					memcpy (gameData.multiplayer.players [nPlayer].callsign, old_callsign, CALLSIGN_LEN+1);
+					gameData.multiplayer.players [nPlayer].netKilledTotal = killedTotal;
+					gameData.multiplayer.players [nPlayer].netKillsTotal = killsTotal;
 					}
 				else
 					gameData.multiplayer.nPlayers--;
@@ -2433,50 +2431,50 @@ while (!bDone) {
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [pnum].connected = 1;
-				gameData.multiplayer.players [pnum].netKillsTotal = 0;
-				gameData.multiplayer.players [pnum].netKilledTotal = 0;
-				memcpy (gameData.multiplayer.players [pnum].callsign, new_callsign, CALLSIGN_LEN+1);
-				if (new_player)
+				gameData.multiplayer.players [nPlayer].connected = 1;
+				gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
+				gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
+				memcpy (gameData.multiplayer.players [nPlayer].callsign, pszNewCallsign, CALLSIGN_LEN+1);
+				if (nNewPlayer)
 					gameData.multiplayer.nPlayers++;
 				}
 			}
 			break;
 
 		case ND_EVENT_MULTI_RECONNECT: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [pnum].connected = 0;
+				gameData.multiplayer.players [nPlayer].connected = 0;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [pnum].connected = 1;
+				gameData.multiplayer.players [nPlayer].connected = 1;
 			}
 			break;
 
 		case ND_EVENT_MULTI_DISCONNECT: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [pnum].connected = 1;
+				gameData.multiplayer.players [nPlayer].connected = 1;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [pnum].connected = 0;
+				gameData.multiplayer.players [nPlayer].connected = 0;
 			}
 			break;
 
 		case ND_EVENT_MULTI_SCORE: {
-			sbyte pnum = NDReadByte ();
+			sbyte nPlayer = NDReadByte ();
 			int score = NDReadInt ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [pnum].score -= score;
+				gameData.multiplayer.players [nPlayer].score -= score;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [pnum].score += score;
+				gameData.multiplayer.players [nPlayer].score += score;
 			gameData.app.nGameMode = gameData.demo.nGameMode;
 			MultiSortKillList ();
 			gameData.app.nGameMode = GM_NORMAL;
@@ -2496,28 +2494,28 @@ while (!bDone) {
 			break;
 
 		case ND_EVENT_PRIMARY_AMMO: {
-			short old_ammo = NDReadShort ();
-			short new_ammo = NDReadShort ();
+			short nOldAmmo = NDReadShort ();
+			short nNewAmmo = NDReadShort ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] = old_ammo;
+				LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] = nOldAmmo;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] = new_ammo;
+				LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] = nNewAmmo;
 			}
 			break;
 
 		case ND_EVENT_SECONDARY_AMMO: {
-			short old_ammo = NDReadShort ();
-			short new_ammo = NDReadShort ();
+			short nOldAmmo = NDReadShort ();
+			short nNewAmmo = NDReadShort ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] = old_ammo;
+				LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] = nOldAmmo;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] = new_ammo;
+				LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] = nNewAmmo;
 			}
 			break;
 
@@ -2527,19 +2525,19 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				int anim_num;
-				int cside;
-				tSegment *segp, *csegp;
+				int nConnSide;
+				tSegment *segP, *oppSegP;
 
-				segp = gameData.segs.segments + nSegment;
-				csegp = gameData.segs.segments + segp->children [nSide];
-				cside = FindConnectedSide (segp, csegp);
-				anim_num = gameData.walls.walls [WallNumP (segp, nSide)].nClip;
+				segP = gameData.segs.segments + nSegment;
+				oppSegP = gameData.segs.segments + segP->children [nSide];
+				nConnSide = FindConnectedSide (segP, oppSegP);
+				anim_num = gameData.walls.walls [WallNumP (segP, nSide)].nClip;
 				if (gameData.walls.pAnims [anim_num].flags & WCF_TMAP1)
-					segp->sides [nSide].nBaseTex = csegp->sides [cside].nBaseTex =
+					segP->sides [nSide].nBaseTex = oppSegP->sides [nConnSide].nBaseTex =
 						gameData.walls.pAnims [anim_num].frames [0];
 				else
-					segp->sides [nSide].nOvlTex = 
-					csegp->sides [cside].nOvlTex = gameData.walls.pAnims [anim_num].frames [0];
+					segP->sides [nSide].nOvlTex = 
+					oppSegP->sides [nConnSide].nOvlTex = gameData.walls.pAnims [anim_num].frames [0];
 				}
 			else
 				WallOpenDoor (gameData.segs.segments + nSegment, nSide);
@@ -2568,7 +2566,7 @@ while (!bDone) {
 		case ND_EVENT_CLOAKING_WALL: {
 			ubyte nBackWall, nFrontWall, nType, state, cloakValue;
 			short l0, l1, l2, l3;
-			tSegment *segp;
+			tSegment *segP;
 			int nSide;
 
 			nFrontWall = NDReadByte ();
@@ -2583,21 +2581,21 @@ while (!bDone) {
 			gameData.walls.walls [nFrontWall].nType = nType;
 			gameData.walls.walls [nFrontWall].state = state;
 			gameData.walls.walls [nFrontWall].cloakValue = cloakValue;
-			segp = gameData.segs.segments + gameData.walls.walls [nFrontWall].nSegment;
+			segP = gameData.segs.segments + gameData.walls.walls [nFrontWall].nSegment;
 			nSide = gameData.walls.walls [nFrontWall].nSide;
-			segp->sides [nSide].uvls [0].l = ((int) l0) << 8;
-			segp->sides [nSide].uvls [1].l = ((int) l1) << 8;
-			segp->sides [nSide].uvls [2].l = ((int) l2) << 8;
-			segp->sides [nSide].uvls [3].l = ((int) l3) << 8;
+			segP->sides [nSide].uvls [0].l = ((int) l0) << 8;
+			segP->sides [nSide].uvls [1].l = ((int) l1) << 8;
+			segP->sides [nSide].uvls [2].l = ((int) l2) << 8;
+			segP->sides [nSide].uvls [3].l = ((int) l3) << 8;
 			gameData.walls.walls [nBackWall].nType = nType;
 			gameData.walls.walls [nBackWall].state = state;
 			gameData.walls.walls [nBackWall].cloakValue = cloakValue;
-			segp = &gameData.segs.segments [gameData.walls.walls [nBackWall].nSegment];
+			segP = &gameData.segs.segments [gameData.walls.walls [nBackWall].nSegment];
 			nSide = gameData.walls.walls [nBackWall].nSide;
-			segp->sides [nSide].uvls [0].l = ((int) l0) << 8;
-			segp->sides [nSide].uvls [1].l = ((int) l1) << 8;
-			segp->sides [nSide].uvls [2].l = ((int) l2) << 8;
-			segp->sides [nSide].uvls [3].l = ((int) l3) << 8;
+			segP->sides [nSide].uvls [0].l = ((int) l0) << 8;
+			segP->sides [nSide].uvls [1].l = ((int) l1) << 8;
+			segP->sides [nSide].uvls [2].l = ((int) l2) << 8;
+			segP->sides [nSide].uvls [3].l = ((int) l3) << 8;
 			}
 			break;
 
@@ -2633,7 +2631,7 @@ while (!bDone) {
 				ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
 				return -1;
 				}
-			LoadLevel ((int)loadedLevel, 1, 0);
+			LoadLevel ((int) loadedLevel, 1, 0);
 			gameData.demo.bCtrlcenDestroyed = 0;
 			if (bJustStartedPlayback) {
 				gameData.walls.nWalls = NDReadInt ();
@@ -2641,12 +2639,12 @@ while (!bDone) {
 					gameData.walls.walls [i].nType = NDReadByte ();
 					gameData.walls.walls [i].flags = NDReadByte ();
 					gameData.walls.walls [i].state = NDReadByte ();
-					seg = &gameData.segs.segments [gameData.walls.walls [i].nSegment];
+					segP = &gameData.segs.segments [gameData.walls.walls [i].nSegment];
 					nSide = gameData.walls.walls [i].nSide;
-					seg->sides [nSide].nBaseTex = NDReadShort ();
+					segP->sides [nSide].nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
-					seg->sides [nSide].nOvlTex = nTexture & 0x3fff;
-					seg->sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
+					segP->sides [nSide].nOvlTex = nTexture & 0x3fff;
+					segP->sides [nSide].nOvlOrient = (nTexture >> 14) & 3;
 					}
 				if (gameData.demo.nGameMode & GM_CAPTURE)
 					MultiApplyGoalTextures ();
@@ -2659,8 +2657,6 @@ while (!bDone) {
 
 		case ND_EVENT_EOF:
 			bDone = -1;
-			if (bRevertFormat > 0)
-				NDWriteByte (ND_EVENT_EOF);
 			CFSeek (ndInFile, -1, SEEK_CUR);        // get back to the EOF marker
 			gameData.demo.bEof = 1;
 			gameData.demo.nFrameCount++;
@@ -2683,7 +2679,7 @@ if (bNDBadRead) {
 	m [0].text = TXT_DEMO_ERR_READING;
 	m [1].nType = NM_TYPE_TEXT; 
 	m [1].text = TXT_DEMO_OLD_CORRUPT;
-	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
+	ExecMenu (NULL, NULL, sizeof (m) / sizeof (*m), m, NULL, NULL);
 	}
 else
 	NDUpdateSmoke ();	
@@ -2710,7 +2706,7 @@ gameData.demo.bEof = 0;
 
 void NDGotoEnd ()
 {
-	short frame_length, byteCount, bshort;
+	short nFrameLength, byteCount, bshort;
 	sbyte level, bbyte, laserLevel;
 	ubyte energy, shield, c;
 	int i, loc, bint;
@@ -2737,9 +2733,9 @@ CFSeek (ndInFile, -4, SEEK_END);
 byteCount = NDReadShort ();
 CFSeek (ndInFile, -2 - byteCount, SEEK_CUR);
 
-frame_length = NDReadShort ();
+nFrameLength = NDReadShort ();
 loc = CFTell (ndInFile);
-if (gameData.demo.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	gameData.demo.bPlayersCloaked = NDReadByte ();
 else
 	bbyte = NDReadByte ();
@@ -2768,7 +2764,7 @@ if (laserLevel != LOCALPLAYER.laserLevel) {
 	LOCALPLAYER.laserLevel = laserLevel;
 	UpdateLaserWeaponInfo ();
 	}
-if (gameData.demo.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	c = NDReadByte ();
 	gameData.multiplayer.nPlayers = (int)c;
 	// see newdemo_read_start_demo for explanation of
@@ -2777,7 +2773,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDReadString (gameData.multiplayer.players [i].callsign);
 		gameData.multiplayer.players [i].connected = NDReadByte ();
-		if (gameData.demo.nGameMode & GM_MULTI_COOP)
+		if (IsCoopGame)
 			gameData.multiplayer.players [i].score = NDReadInt ();
 		else {
 			gameData.multiplayer.players [i].netKilledTotal = NDReadShort ();
@@ -2787,8 +2783,7 @@ if (gameData.demo.nGameMode & GM_MULTI) {
 	}
 else
 	LOCALPLAYER.score = NDReadInt ();
-CFSeek (ndInFile, loc, SEEK_SET);
-CFSeek (ndInFile, -frame_length, SEEK_CUR);
+CFSeek (ndInFile, loc - nFrameLength, SEEK_SET);
 gameData.demo.nFrameCount = NDReadInt ();            // get the frame count
 gameData.demo.nFrameCount--;
 CFSeek (ndInFile, 4, SEEK_CUR);
@@ -2800,24 +2795,30 @@ return;
 
 //	-----------------------------------------------------------------------------
 
-void NDBackFrames (int frames)
+inline void NDBackOneFrame (void)
 {
-	short last_frame_length;
-	int i;
+	short nPrevFrameLength;
 
-for (i = 0; i < frames; i++) {
-	CFSeek (ndInFile, -10, SEEK_CUR);
-	last_frame_length = NDReadShort ();
-	CFSeek (ndInFile, 8 - last_frame_length, SEEK_CUR);
-	if (!gameData.demo.bEof && NDReadFrameInfo () == -1) {
+CFSeek (ndInFile, -10, SEEK_CUR);
+nPrevFrameLength = NDReadShort ();
+CFSeek (ndInFile, 8 - nPrevFrameLength, SEEK_CUR);
+}
+
+//	-----------------------------------------------------------------------------
+
+void NDBackFrames (int nFrames)
+{
+	int	i;
+
+for (i = nFrames; i; i--) {
+	NDBackOneFrame ();
+	if (!gameData.demo.bEof && (NDReadFrameInfo () == -1)) {
 		NDStopPlayback ();
 		return;
 		}
 	if (gameData.demo.bEof)
 		gameData.demo.bEof = 0;
-	CFSeek (ndInFile, -10, SEEK_CUR);
-	last_frame_length = NDReadShort ();
-	CFSeek (ndInFile, 8 - last_frame_length, SEEK_CUR);
+	NDBackOneFrame ();
 	}
 }
 
@@ -2929,7 +2930,7 @@ gameData.objs.nLastObject = nCurObjs;
 
 void NDPlayBackOneFrame ()
 {
-	int frames_back, i, level;
+	int nFramesBack, i, level;
 	static fix base_interpolTime = 0;
 	static fix d_recorded = 0;
 
@@ -2950,18 +2951,15 @@ if ((gameData.demo.nVcrState == ND_STATE_REWINDING) ||
 	level = gameData.missions.nCurrentLevel;
 	if (gameData.demo.nFrameCount == 0)
 		return;
-	else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) &&(gameData.demo.nFrameCount < 10)) {
+	else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) && (gameData.demo.nFrameCount < 10)) {
 		NDGotoBeginning ();
 		return;
 		}
-	if (gameData.demo.nVcrState == ND_STATE_REWINDING)
-		frames_back = 10;
-	else
-		frames_back = 1;
+	nFramesBack = (gameData.demo.nVcrState == ND_STATE_REWINDING) ? 10 : 1;
 	if (gameData.demo.bEof) {
 		CFSeek (ndInFile, 11, SEEK_CUR);
 		}
-	NDBackFrames (frames_back);
+	NDBackFrames (nFramesBack);
 	if (level != gameData.missions.nCurrentLevel)
 		NDPopCtrlCenTriggers ();
 	if (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) {
@@ -3012,14 +3010,14 @@ else {
 		gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal;      // baseline total playback time
 	else
 		gameData.demo.xPlaybackTotal += gameData.time.xFrame;
-	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) &&(gameData.demo.nFrameCount > 10))
+	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) && (gameData.demo.nFrameCount > 10))
 		if ((gameData.demo.xPlaybackTotal * INTERPOL_FACTOR) < gameData.demo.xRecordedTotal) {
 			gameData.demo.nPlaybackStyle = INTERPOLATE_PLAYBACK;
 			gameData.demo.xPlaybackTotal = gameData.demo.xRecordedTotal + gameData.time.xFrame;  // baseline playback time
 			base_interpolTime = gameData.demo.xRecordedTotal;
 			d_recorded = gameData.demo.xRecordedTime;                      // baseline delta recorded
 			}
-	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) &&(gameData.demo.nFrameCount > 10))
+	if ((gameData.demo.nPlaybackStyle == NORMAL_PLAYBACK) && (gameData.demo.nFrameCount > 10))
 		if (gameData.demo.xPlaybackTotal > gameData.demo.xRecordedTotal)
 			gameData.demo.nPlaybackStyle = SKIP_PLAYBACK;
 	if ((gameData.demo.nPlaybackStyle == INTERPOLATE_PLAYBACK) && gameData.demo.bInterpolate) {
@@ -3189,7 +3187,6 @@ else {
 NDWriteShort (byteCount);
 NDWriteByte ((sbyte) gameData.missions.nCurrentLevel);
 NDWriteByte (ND_EVENT_EOF);
-l = CFTell (ndOutFile);
 CFClose (ndOutFile);
 ndOutFile = NULL;
 }
@@ -3367,14 +3364,14 @@ if (!filename) {
 if (!filename)
 	return;
 strcpy (filename2, filename);
-bRevertFormat = gameOpts->demo.bRevertFormat;
+bRevertFormat = gameOpts->demo.bRevertFormat ? 1 : -1;
 if (!(ndInFile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0))) {
 #if TRACE				
 	con_printf (CONDBG, "Error reading '%s'\n", filename);
 #endif
 	return;
 	}
-if (bRevertFormat) {
+if (bRevertFormat > 0) {
 	strcat (filename2, ".v15");
 	if (!(ndOutFile = CFOpen (filename2, gameFolders.szDemoDir, "wb", 0)))
 		bRevertFormat = -1;
@@ -3390,8 +3387,11 @@ if (NDReadDemoStart (rnd_demo)) {
 	CFClose (ndOutFile);
 	return;
 	}
-if (gameOpts->demo.bRevertFormat && ndOutFile && (bRevertFormat < 0))
+if (gameOpts->demo.bRevertFormat && ndOutFile && (bRevertFormat < 0)) {
+	CFClose (ndOutFile);
+	ndOutFile = NULL;
 	CFDelete (filename2, gameFolders.szDemoDir);
+	}
 gameData.app.nGameMode = GM_NORMAL;
 gameData.demo.nState = ND_STATE_PLAYBACK;
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
@@ -3414,8 +3414,23 @@ NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb 
 
 void NDStopPlayback ()
 {
+if (bRevertFormat > 0) {
+	int h = CFLength (ndInFile, 0) - CFTell (ndInFile);
+	char *p = (char *) d_malloc (h);
+	if (p) {
+		bRevertFormat = 0;
+		NDRead (p, h, 1);
+		//LogErr ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (ndOutFile));
+		NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
+		NDWrite (p + 3, h - 3, 1);
+		d_free (p);
+		}
+	CFClose (ndOutFile);
+	ndOutFile = NULL;
+	bRevertFormat = -1;
+	}
 CFClose (ndInFile);
-CFClose (ndOutFile);
+ndInFile = NULL;
 gameData.demo.nState = ND_STATE_NORMAL;
 ChangePlayerNumTo (0);             //this is reality
 strncpy (LOCALPLAYER.callsign, gameData.demo.callSignSave, CALLSIGN_LEN);
@@ -3438,7 +3453,7 @@ void NewDemoStripFrames (char *outname, int bytes_to_strip)
 	char *buf;
 	int nTotalSize, bytes_done, read_elems, bytes_back;
 	int trailer_start, loc1, loc2, stop_loc, bytes_to_read;
-	short last_frame_length;
+	short nPrevFrameLength;
 
 bytes_done = 0;
 nTotalSize = CFLength (ndInFile, 0);
@@ -3469,14 +3484,14 @@ bytes_back = 0;
 while (bytes_back < bytes_to_strip) {
 	loc1 = CFTell (ndInFile);
 	//CFSeek (ndInFile, -10, SEEK_CUR);
-	//NDReadShort (&last_frame_length);
-	//CFSeek (ndInFile, 8 - last_frame_length, SEEK_CUR);
+	//NDReadShort (&nPrevFrameLength);
+	//CFSeek (ndInFile, 8 - nPrevFrameLength, SEEK_CUR);
 	NDBackFrames (1);
 	loc2 = CFTell (ndInFile);
 	bytes_back += (loc1 - loc2);
 	}
 CFSeek (ndInFile, -10, SEEK_CUR);
-last_frame_length = NDReadShort ();
+nPrevFrameLength = NDReadShort ();
 CFSeek (ndInFile, -3, SEEK_CUR);
 stop_loc = CFTell (ndInFile);
 CFSeek (ndInFile, 0, SEEK_SET);
@@ -3495,7 +3510,7 @@ while ((read_elems = CFRead (buf, 1, BUF_SIZE, ndInFile)) != 0)
 	CFWrite (buf, 1, read_elems, ndOutFile);
 CFSeek (ndOutFile, stop_loc, SEEK_SET);
 CFSeek (ndOutFile, 1, SEEK_CUR);
-CFWrite (&last_frame_length, 2, 1, ndOutFile);
+CFWrite (&nPrevFrameLength, 2, 1, ndOutFile);
 CFClose (ndOutFile);
 NDStopPlayback ();
 DestroyAllSmoke ();

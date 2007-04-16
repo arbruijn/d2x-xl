@@ -378,7 +378,7 @@ int GrInit(int mode)
 
 	gameStates.gfx.bInstalled = 1;
 	// added on 980913 by adb to add cleanup
-	atexit(GrClose);
+	//atexit(GrClose);
 	// end changes by adb
 
 	return 0;

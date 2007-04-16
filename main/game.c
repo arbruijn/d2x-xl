@@ -109,6 +109,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "input.h"
 #include "interp.h"
 #include "cheats.h"
+#include "rle.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -228,25 +229,25 @@ GrRemapBitmapGood (&bmBackground, NULL, -1, -1);
 //this is called once per game
 void InitGame ()
 {
-	atexit (CloseGame);             //for cleanup
+atexit (CloseGame);             //for cleanup
 /*---*/LogErr ("Initializing game data\n  Objects ...\n");
-	InitObjects ();
+InitObjects ();
 /*---*/LogErr ("  Special effects...\n");
-	InitSpecialEffects ();
+InitSpecialEffects ();
 /*---*/LogErr ("  AI system...\n");
-	InitAISystem ();
+InitAISystem ();
 //*---*/LogErr ("  gauge canvases...\n");
 //	InitGaugeCanvases ();
 /*---*/LogErr ("  exploding wall...\n");
-	InitExplodingWalls ();
+InitExplodingWalls ();
 /*---*/LogErr ("  particle systems...\n");
-	InitSmoke ();
+InitSmoke ();
 /*---*/LogErr ("  loading background bitmap...\n");
-	LoadBackgroundBitmap ();
-	nClearWindow = 2;		//	do portal only window clear.
-	InitDetailLevels (gameStates.app.nDetailLevel);
+LoadBackgroundBitmap ();
+nClearWindow = 2;		//	do portal only window clear.
+InitDetailLevels (gameStates.app.nDetailLevel);
 //	BuildMissionList (0);
-	/* Register cvars */
+/* Register cvars */
 }
 
 //------------------------------------------------------------------------------
@@ -1713,15 +1714,9 @@ for (;;) {
 			if (choice)
 				SetFunctionMode (FMODE_GAME);
 			}
-#ifdef NETWORK
 	gameStates.multi.bIWasKicked = 0;
-#endif
 	if (gameStates.app.nFunctionMode != FMODE_GAME)
-		longjmp (gameExitPoint,0);
-#ifdef APPLE_DEMO
-		if ((keydTime_when_last_pressed + (F1_0 * 60)) < TimerGetFixedSeconds ())		// idle in game for 1 minutes means exit
-		longjmp (gameExitPoint,0);
-#endif
+		longjmp (gameExitPoint, 0);
 		}
 	}
 #ifdef MWPROFILE
@@ -1769,6 +1764,9 @@ for (i = 0; i < gameData.models.nHiresModels; i++)
 
 //-----------------------------------------------------------------------------
 //called at the end of the program
+
+void _CDECL_ sdl_close(void);
+
 void _CDECL_ CloseGame (void)
 {
 	static	int bGameClosed = 0;
@@ -1787,6 +1785,9 @@ if (gameStates.app.bMultiThreaded) {
 		}
 	}
 #endif
+GrClose ();
+DigiClose ();
+RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
 LogErr ("unloading hires animations\n");
@@ -1835,6 +1836,7 @@ LogErr ("unloading custom background data\n");
 NMFreeAltBg (1);
 SaveBanList ();
 FreeBanList ();
+sdl_close ();
 #if 0
 if (fErr) {
 	fclose (fErr);
@@ -2294,7 +2296,7 @@ if (nDebugSlowdown) {
 //LogErr ("TriggersFrameProcess\n");
 		TriggersFrameProcess ();
 		}
-	if (gameData.reactor.bDestroyed && (gameData.demo.nState==ND_STATE_RECORDING)) {
+	if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) {
 			NDRecordControlCenterDestroyed ();
 		}
 //LogErr ("FlashFrame\n");
@@ -2305,7 +2307,7 @@ if (nDebugSlowdown) {
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		NDPlayBackOneFrame ();
 		if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-			longjmp (gameExitPoint, 0);		// Go back to menu
+			 longjmp (gameExitPoint, 0);		// Go back to menu
 			}
 		}
 	else { // Note the link to above!

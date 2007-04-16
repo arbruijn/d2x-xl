@@ -17,6 +17,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef NEWDEMO
 
+#define DEMO_VERSION						15      // last D1 version was 13
+
 #define ND_STATE_NORMAL             0
 #define ND_STATE_RECORDING          1
 #define ND_STATE_PLAYBACK           2

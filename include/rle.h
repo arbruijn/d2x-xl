@@ -57,4 +57,6 @@ int rle_remap (grsBitmap *bmP, ubyte *colorMap, int maxLen);
 
 int rle_expand (grsBitmap *bmP, ubyte *colorMap, int bSwap0255);
 
+void _CDECL_ RLECacheClose (void);
+
 #endif

@@ -584,7 +584,7 @@ GrSetCurrentCanvas( &grdCurScreen->sc_canvas );
 
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
-atexit(GrClose);
+//atexit(GrClose);
 /***/LogErr ("   initializing OpenGL extensions\n");
 OglInitExtensions();
 return 0;

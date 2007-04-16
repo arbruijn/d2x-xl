@@ -52,5 +52,5 @@ if (!FindArg("-nomouse"))
 #endif
 //	if (!FindArg("-nosound"))
 //		DigiInit();
-atexit(sdl_close);
+//atexit(sdl_close);
 }

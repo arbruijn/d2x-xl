@@ -565,13 +565,11 @@ void editor_reset_stuff_onLevel ()
 void DoGameOver ()
 {
 //	ExecMessageBox (TXT_GAME_OVER, 1, TXT_OK, "");
-
-	if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
-		scores_maybe_add_player (0);
-
-	SetFunctionMode (FMODE_MENU);
-	gameData.app.nGameMode = GM_GAME_OVER;
-	longjmp (gameExitPoint, 0);		// Exit out of game loop
+if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
+	scores_maybe_add_player (0);
+SetFunctionMode (FMODE_MENU);
+gameData.app.nGameMode = GM_GAME_OVER;
+__asm {int 3}; longjmp (gameExitPoint, 0);		// Exit out of game loop
 
 }
 
@@ -1541,7 +1539,7 @@ if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
 	gameData.app.nGameMode |= GM_GAME_OVER;		//preserve modem setting so go back into modem menu
 else
 	gameData.app.nGameMode = GM_GAME_OVER;
-longjmp (gameExitPoint, 0);		// Exit out of game loop
+__asm {int 3}; longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
 //------------------------------------------------------------------------------
@@ -1597,14 +1595,6 @@ else {
 
 void LoadStars (bkg *bg, int bRedraw)
 {
-//@@	int pcx_error;
-//@@	ubyte pal [256*3];
-//@@
-//@@	pcx_error = PCXReadBitmap ("STARS.PCX",&grdCurCanv->cv_bitmap,grdCurCanv->cv_bitmap.bm_props.nType,pal);
-//@@	Assert (pcx_error == PCX_ERROR_NONE);
-//@@
-//@@	GrRemapBitmapGood (&grdCurCanv->cv_bitmap, pal, -1, -1);
-
 WIN (DEFINE_SCREEN (STARS_BACKGROUND));
 NMLoadBackground (STARS_BACKGROUND, bg, bRedraw);
 starsPalette = gameData.render.pal.pCurPal;

@@ -125,7 +125,7 @@ int DigiInit()
 }
 
 	if (!digi_atexit_initialised){
-		atexit(DigiClose);
+		//atexit(DigiClose);
 		digi_atexit_initialised=1;
 	}
  return 0;

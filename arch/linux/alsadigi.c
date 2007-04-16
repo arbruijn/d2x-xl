@@ -315,7 +315,7 @@ int DigiInit()
  pthread_create(&thread_id,&attr,mixer_thread,NULL);
  pthread_attr_destroy(&attr);
 
- atexit(DigiClose);
+ //atexit(DigiClose);
  gameStates.sound.digi.bInitialized = 1;
  return 0;
 }

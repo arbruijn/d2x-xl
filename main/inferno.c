@@ -3103,7 +3103,7 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);
 	}
-//do this here because the demo code can do a longjmp when trying to
+//do this here because the demo code can do a __asm int 3; longjmp when trying to
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
 /*---*/LogErr ("Invoking main menu\n");
