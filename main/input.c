@@ -481,7 +481,7 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.app.bAutoMap)) {
 			 (JoyGetButtonState (kcD2X [19].value) &&
 			 (d2xJoystickState [9] != d2xJoystick_ostate [9])))
 			DoSelectWeapon (4,1);
-		memcpy (d2xJoystick_ostate,d2xJoystickState,10*sizeof (int));
+		memcpy (d2xJoystick_ostate, d2xJoystickState, 10 * sizeof (int));
 	}
 	//end this section addition - VR
 }//end "if (!gameStates.app.bPlayerIsDead)" - WraithX

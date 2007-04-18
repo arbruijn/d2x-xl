@@ -332,19 +332,19 @@ bCycling = 0;
 
 //	------------------------------------------------------------------------------------
 //if message flag set, print message saying selected
-void SelectWeapon(int nWeaponNum, int bSecondary, int print_message, int bWaitForRearm)
+void SelectWeapon(int nWeaponNum, int bSecondary, int bPrintMessage, int bWaitForRearm)
 {
-	char	*weapon_name;
+	char	*szWeaponName;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordPlayerWeapon(bSecondary, nWeaponNum);
+	NDRecordPlayerWeapon (bSecondary, nWeaponNum);
 if (!bSecondary) {
 	if (gameData.weapons.nPrimary != nWeaponNum) {
 		if (bWaitForRearm) 
-			DigiPlaySampleOnce(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
-		if (gameData.app.nGameMode & GM_MULTI)	{
+			DigiPlaySampleOnce (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+		if (IsMultiGame)	{
 			if (bWaitForRearm) 
-				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
 		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.laser.nGlobalFiringCount = 0;
@@ -372,7 +372,7 @@ if (!bSecondary) {
 			}
 		}
 	gameData.weapons.nPrimary = (!bSecondary && (nWeaponNum == SUPER_LASER_INDEX)) ? LASER_INDEX : nWeaponNum;
-	weapon_name = PRIMARY_WEAPON_NAMES (nWeaponNum);
+	szWeaponName = PRIMARY_WEAPON_NAMES (nWeaponNum);
    #if defined (TACTILE)
  	tactile_set_button_jolt();
 	#endif
@@ -382,10 +382,10 @@ if (!bSecondary) {
 else {
 	if (gameData.weapons.nSecondary != nWeaponNum) {
 		if (bWaitForRearm) 
-			DigiPlaySampleOnce(SOUND_GOOD_SELECTION_SECONDARY, F1_0);
-		if (gameData.app.nGameMode & GM_MULTI) {
+			DigiPlaySampleOnce (SOUND_GOOD_SELECTION_SECONDARY, F1_0);
+		if (IsMultiGame) {
 			if (bWaitForRearm) 
-				MultiSendPlaySound(SOUND_GOOD_SELECTION_PRIMARY, F1_0);
+				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
 		gameData.missiles.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.missiles.nGlobalFiringCount = 0;
@@ -393,22 +393,23 @@ else {
 	else {
 		if (bWaitForRearm) {
 		 if (!bCycling)
-			DigiPlaySampleOnce(SOUND_ALREADY_SELECTED, F1_0);
+			DigiPlaySampleOnce (SOUND_ALREADY_SELECTED, F1_0);
 		 else
-			DigiPlaySampleOnce(SOUND_BAD_SELECTION, F1_0);
+			DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 		}
 	}
-	gameData.weapons.nSecondary = nWeaponNum;
-	weapon_name = SECONDARY_WEAPON_NAMES(nWeaponNum);
+	if (nWeaponNum % SUPER_WEAPON != PROXIMITY_INDEX)
+		gameData.weapons.nSecondary = nWeaponNum;
+	szWeaponName = SECONDARY_WEAPON_NAMES (nWeaponNum);
 	//save flag for whether was super version
 	bLastSecondaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
 	}
 
-if (print_message) {
+if (bPrintMessage) {
 	if (nWeaponNum == LASER_INDEX && !bSecondary)
-		HUDInitMessage (TXT_WPN_LEVEL, weapon_name, LOCALPLAYER.laserLevel + 1, TXT_SELECTED);
+		HUDInitMessage (TXT_WPN_LEVEL, szWeaponName, LOCALPLAYER.laserLevel + 1, TXT_SELECTED);
 	else
-		HUDInitMessage("%s %s", weapon_name, TXT_SELECTED);
+		HUDInitMessage ("%s %s", szWeaponName, TXT_SELECTED);
 	}
 }
 
@@ -432,7 +433,7 @@ if (!bSecondary) {
 	}
 else {
 	current = gameData.weapons.nSecondary;
-	bLastWasSuper = bLastSecondaryWasSuper [nWeapon];
+	bLastWasSuper = bLastSecondaryWasSuper [nWeapon % SUPER_WEAPON];
 	hasFlag = HAS_WEAPON_FLAG + HAS_AMMO_FLAG;
 	}
 
@@ -447,13 +448,13 @@ if ((current == nWeapon) || (current == nWeapon + SUPER_WEAPON)) {
 	}
 else {
 	//go to last-select version of requested missile
-	if (bLastWasSuper && (nWeapon < SUPER_WEAPON))
+	if (!bLastWasSuper && (nWeapon < SUPER_WEAPON))
 		nWeapon += SUPER_WEAPON;
 	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1);
 	//if don't have last-selected, try other version
 	if ((nWeaponStatus & hasFlag) != hasFlag) {
 		nWeapon = 2 * nWeaponSave + SUPER_WEAPON - nWeapon;
-		nWeaponStatus = PlayerHasWeapon(nWeapon, bSecondary, -1);
+		nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1);
 		if ((nWeaponStatus & hasFlag) != hasFlag)
 			nWeapon = 2 * nWeaponSave + SUPER_WEAPON - nWeapon;
 		}
@@ -464,11 +465,11 @@ if ((nWeaponStatus & hasFlag) != hasFlag) {
 	if (!bSecondary) {
 		if (nWeapon == SUPER_LASER_INDEX)
 			return; 		//no such thing as super laser, so no error
-		HUDInitMessage("%s %s!", TXT_DONT_HAVE, PRIMARY_WEAPON_NAMES(nWeapon));
+		HUDInitMessage ("%s %s!", TXT_DONT_HAVE, PRIMARY_WEAPON_NAMES (nWeapon));
 		}
 	else
-		HUDInitMessage("%s %s%s",TXT_HAVE_NO, SECONDARY_WEAPON_NAMES(nWeapon), TXT_SX);
-	DigiPlaySample(SOUND_BAD_SELECTION, F1_0);
+		HUDInitMessage ("%s %s%s",TXT_HAVE_NO, SECONDARY_WEAPON_NAMES (nWeapon), TXT_SX);
+	DigiPlaySample (SOUND_BAD_SELECTION, F1_0);
 	return;
 	}
 //now actually select the weapon
