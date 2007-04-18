@@ -1539,7 +1539,7 @@ if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
 	gameData.app.nGameMode |= GM_GAME_OVER;		//preserve modem setting so go back into modem menu
 else
 	gameData.app.nGameMode = GM_GAME_OVER;
-__asm {int 3}; longjmp (gameExitPoint, 0);		// Exit out of game loop
+longjmp (gameExitPoint, 0);		// Exit out of game loop
 }
 
 //------------------------------------------------------------------------------
