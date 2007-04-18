@@ -1819,8 +1819,12 @@ if (*vsP) {
 	glDeleteObject (*vsP);
 	*vsP = 0;
 	}
-vs = glCreateShaderObject (GL_VERTEX_SHADER_ARB); 
-fs = glCreateShaderObject (GL_FRAGMENT_SHADER_ARB); 
+if (!(vs = glCreateShaderObject (GL_VERTEX_SHADER)))
+	return 0;
+if (!(fs = glCreateShaderObject (GL_FRAGMENT_SHADER))) {
+	glDeleteObject (vs);
+	return 0;
+	}
 #if DBG_SHADERS	
 if (bFromFile) {
 	vsName = LoadShader (vsName); 
@@ -1895,6 +1899,13 @@ return 0;
 
 void InitShaders ()
 {
+	GLint	nTMUs;
+	
+glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
+if (gameStates.ogl.bShadersOk)
+	gameStates.ogl.bShadersOk = (nTMUs > 1);
+if (gameStates.render.color.bLightMapsOk)
+	gameStates.render.color.bLightMapsOk = (nTMUs > 2);
 DeleteShaderProg (NULL);
 #if LIGHTMAPS
 InitLightmapShaders ();
