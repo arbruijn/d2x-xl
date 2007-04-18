@@ -1365,11 +1365,14 @@ int OOF_ReadTGA (char *pszFile, grsBitmap *bmP)
 CFSplitPath (pszFile, NULL, fn, NULL);
 if (nShrinkFactor > 1) {
 	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
-	if (ReadTGA (fnShrunk, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0))
+	if (ReadTGA (fnShrunk, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0)) {
+		bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
 		return 1;
+		}
 	}
 if (!ReadTGA (pszFile, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0))
 	return 0;
+bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
 if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	if (gameStates.app.bCacheTextures) {
 		tTgaHeader	h;
