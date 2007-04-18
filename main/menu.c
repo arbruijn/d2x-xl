@@ -656,7 +656,7 @@ switch (select) {
 	case MENU_SHOW_CREDITS:
 		GrPaletteFadeOut (NULL, 32, 0);
 		SongsStopAll ();
-		credits_show (NULL); 
+		ShowCredits (NULL); 
 		break;
 	default:
 		Error ("Unknown option %d in ExecMenuOption", select);

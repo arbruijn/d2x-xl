@@ -991,7 +991,6 @@ memset (gameData.render.color.segments, 0, sizeof (*gameData.render.color.segmen
 memset (gameData.objs.speedBoost, 0, sizeof (*gameData.objs.speedBoost) * MAX_SEGMENTS);
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
-//	WIN (HideCursorW ();
 D2SetCaption ();
 if (!bRestore) {
 	ComputeNearestLights ();
@@ -1237,7 +1236,6 @@ SetFunctionMode (FMODE_MENU);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime ();
-WIN (DEFINE_SCREEN (NULL));
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1469,16 +1467,9 @@ void DoEndGame (void)
 SetFunctionMode (FMODE_MENU);
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
-
 SetScreenMode (SCREEN_MENU);
-
-WINDOS (
-	DDGrSetCurrentCanvas (NULL),
-	GrSetCurrentCanvas (NULL)
-);
-
+GrSetCurrentCanvas (NULL);
 KeyFlush ();
-
 if (!(gameData.app.nGameMode & GM_MULTI)) {
 	if (gameData.missions.nCurrentMission == (gameStates.app.bD1Mission ? gameData.missions.nD1BuiltinMission : gameData.missions.nBuiltinMission)) {
 		int played=MOVIE_NOT_PLAYED;	//default is not played
@@ -1511,7 +1502,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 
 		//try doing special credits
 		sprintf (tname,"%s.ctb",gameStates.app.szCurrentMissionFile);
-		credits_show (tname);
+		ShowCredits (tname);
 		}
 	}
 KeyFlush ();
@@ -1521,15 +1512,10 @@ else
 	// NOTE LINK TO ABOVE
 	DoEndLevelScoreGlitz (0);
 
-if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && !((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
-	WINDOS (
-		DDGrSetCurrentCanvas (NULL),
-		GrSetCurrentCanvas (NULL)
-	);
-	WINDOS (
-		dd_gr_clear_canvas (BLACK_RGBA),
-		GrClearCanvas (BLACK_RGBA)
-	);
+if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+	 !(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) {
+	GrSetCurrentCanvas (NULL);
+	GrClearCanvas (BLACK_RGBA);
 	GrPaletteStepClear ();
 	//LoadPalette (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
 	scores_maybe_add_player (0);
@@ -1567,12 +1553,10 @@ if (gameData.missions.nCurrentLevel == 0)
 	return;		//not a real level
 #endif
 if (gameData.app.nGameMode & GM_MULTI)	{
-	result = MultiEndLevel (&bSecret); // Wait for other players to reach this point
-	if (result) { // failed to sync
-		if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)		//tPlayer has finished the game!
-			longjmp (gameExitPoint, 0);		// Exit out of game loop
-		else
+	if (result = MultiEndLevel (&bSecret)) { // Wait for other players to reach this point
+		if (gameData.missions.nCurrentLevel != gameData.missions.nLastLevel)		//tPlayer has finished the game!
 			return;
+		longjmp (gameExitPoint, 0);		// Exit out of game loop
 		}
 	}
 if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) && 
@@ -1585,7 +1569,7 @@ else {
 			gameData.missions.nNextLevel = 1;
 		else
 			gameData.missions.nNextLevel = gameData.missions.nLastLevel;
-	if (!(gameData.app.nGameMode & GM_MULTI))
+	if (!IsMultiGame)
 		DoEndlevelMenu (); // Let user save their game
 	StartNewLevel (gameData.missions.nNextLevel, 0);
 	}
@@ -1595,7 +1579,6 @@ else {
 
 void LoadStars (bkg *bg, int bRedraw)
 {
-WIN (DEFINE_SCREEN (STARS_BACKGROUND));
 NMLoadBackground (STARS_BACKGROUND, bg, bRedraw);
 starsPalette = gameData.render.pal.pCurPal;
 }
@@ -1607,19 +1590,15 @@ void DiedInMineMessage (void)
 	// Tell the tPlayer he died in the mine, explain why
 	int old_fmode;
 
-	if (gameData.app.nGameMode & GM_MULTI)
-		return;
-	GrPaletteFadeOut (NULL, 32, 0);
-	SetScreenMode (SCREEN_MENU);		//go into menu mode
-	WINDOS (
-		DDGrSetCurrentCanvas (NULL),
-		GrSetCurrentCanvas (NULL)
-	);
-	old_fmode = gameStates.app.nFunctionMode;
-	SetFunctionMode (FMODE_MENU);
-	ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
-	SetFunctionMode (old_fmode);
-	WIN (DEFINE_SCREEN (NULL));
+if (gameData.app.nGameMode & GM_MULTI)
+	return;
+GrPaletteFadeOut (NULL, 32, 0);
+SetScreenMode (SCREEN_MENU);		//go into menu mode
+GrSetCurrentCanvas (NULL);
+old_fmode = gameStates.app.nFunctionMode;
+SetFunctionMode (FMODE_MENU);
+ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
+SetFunctionMode (old_fmode);
 }
 
 //------------------------------------------------------------------------------
@@ -1645,7 +1624,6 @@ else
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime ();
-WIN (DEFINE_SCREEN (NULL));
 }
 
 //------------------------------------------------------------------------------
@@ -1657,19 +1635,17 @@ void AdvancingToLevelMessage (void)
 	int old_fmode;
 
 	//	Only supposed to come here from a secret level.
-	Assert (gameData.missions.nCurrentLevel < 0);
-
-	if (gameData.app.nGameMode & GM_MULTI)
-		return;
-	GrPaletteFadeOut (NULL, 32, 0);
-	SetScreenMode (SCREEN_MENU);		//go into menu mode
-	GrSetCurrentCanvas (NULL);
-	old_fmode = gameStates.app.nFunctionMode;
-	SetFunctionMode (FMODE_MENU);
-	sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel+1);
-	ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
-	SetFunctionMode (old_fmode);
-	WIN (DEFINE_SCREEN (NULL));
+Assert (gameData.missions.nCurrentLevel < 0);
+if (gameData.app.nGameMode & GM_MULTI)
+	return;
+GrPaletteFadeOut (NULL, 32, 0);
+SetScreenMode (SCREEN_MENU);		//go into menu mode
+GrSetCurrentCanvas (NULL);
+old_fmode = gameStates.app.nFunctionMode;
+SetFunctionMode (FMODE_MENU);
+sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel+1);
+ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+SetFunctionMode (old_fmode);
 }
 
 //------------------------------------------------------------------------------
@@ -2016,7 +1992,6 @@ if ((nLevel > 0) && !bSecret)
 	MaybeSetFirstSecretVisit (nLevel);
 if (!gameStates.app.bAutoRunMission)
 	ShowLevelIntro (nLevel);
-WIN (DEFINE_SCREEN (NULL));		// ALT-TAB: no restore of background.
 return StartNewLevelSub (nLevel, 1, bSecret, 0);
 }
 

@@ -125,7 +125,7 @@ typedef struct box {
 #define cr_gr_printf(x,y,s)	GrPrintF((x) == 0x8000 ? (x) : (x), (y), s)
 
 //if filename passed is NULL, show normal credits
-void credits_show(char *credits_filename)
+void ShowCredits(char *credits_filename)
 {
 	int i, j, l, done;
 	CFILE * file;
