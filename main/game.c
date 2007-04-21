@@ -1630,7 +1630,7 @@ for (;;) {
 	    //Assert (gameData.objs.console == &gameData.objs.objects[LOCALPLAYER.nObject]);
 		}
 	player_shields = LOCALPLAYER.shields;
-	gameStates.app.nExtGameStatus=GAMESTAT_RUNNING;
+	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 	if (!GameLoop (1, 1))		// Do game loop with rendering and reading controls.
 		continue;
 	//if the tPlayer is taking damage, give up guided missile control
@@ -2069,6 +2069,7 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
+#ifndef _DEBUG
 		gameData.objs.console->mType.physInfo.rotVel.p.x += (d_rand () - 16384)/8;
 		gameData.objs.console->mType.physInfo.rotVel.p.z += (d_rand () - 16384)/8;
 		MakeRandomVector (&vRand);
@@ -2076,6 +2077,7 @@ if (gameData.fusion.xAutoFireTime) {
 		if (gameData.fusion.xCharge > F1_0*2)
 			xBump = gameData.fusion.xCharge*4;
 		BumpOneObject (gameData.objs.console, &vRand, xBump);
+#endif
 		}
 	}
 return 1;
@@ -2209,7 +2211,7 @@ if (nDebugSlowdown) {
 #endif
 
 #ifdef NETWORK
-	if (gameData.app.nGameMode & GM_MULTI) {
+	if (IsMultiGame) {
 		AddServerToTracker ();
       MultiDoFrame ();
 		CheckMonsterballScore ();
@@ -2223,7 +2225,7 @@ if (nDebugSlowdown) {
 	if (RenderFlag) {
 		if (gameStates.render.cockpit.bRedraw) {			//screen need redrawing?
 			InitCockpit ();
-			gameStates.render.cockpit.bRedraw=0;
+			gameStates.render.cockpit.bRedraw = 0;
 		}
 //LogErr ("GameRenderFrame\n");
 		GameRenderFrame ();
@@ -2444,7 +2446,7 @@ int flFrameTime = 0;
 
 void FireLaser ()
 {
-	int i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+	int h, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
 gameData.laser.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
@@ -2455,9 +2457,10 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 	else {
 		flFrameTime += gameData.time.xFrame;
 		if (gameData.fusion.xCharge == 0)
-			LOCALPLAYER.energy -= F1_0*2;
-		gameData.fusion.xCharge += flFrameTime;
-		LOCALPLAYER.energy -= flFrameTime;
+			LOCALPLAYER.energy -= F1_0 * 2;
+		h = (flFrameTime <= LOCALPLAYER.energy) ? flFrameTime : LOCALPLAYER.energy;
+		gameData.fusion.xCharge += h;
+		LOCALPLAYER.energy -= h;
 		if (LOCALPLAYER.energy <= 0) {
 			LOCALPLAYER.energy = 0;
 			gameData.fusion.xAutoFireTime = gameData.time.xGame - 1;	//	Fire now!

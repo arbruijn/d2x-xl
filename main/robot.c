@@ -254,7 +254,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP->nType == OBJ_CAMBOT) {
 		//objP->nType = OBJ_ROBOT;
 		objP->id	= gameData.bots.nCamBotId;
-		objP->size = G3PolyModelSize (gameData.models.polyModels [gameData.bots.nCamBotModel].modelData);
+		objP->size = G3PolyModelSize (gameData.models.polyModels + gameData.bots.nCamBotModel, gameData.bots.nCamBotModel);
 		objP->lifeleft = IMMORTAL_TIME;
 		objP->controlType = CT_CAMERA;
 		objP->movementType = MT_NONE;

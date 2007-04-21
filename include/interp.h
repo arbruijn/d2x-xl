@@ -17,7 +17,7 @@
 
 //Object functions:
 
-fix G3PolyModelSize (void *model_ptr);
+fix G3PolyModelSize (tPolyModel *pm, int nModel);
 
 //gives the interpreter an array of points to use
 void G3SetModelPoints(g3sPoint *pointlist);
@@ -32,7 +32,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 int G3FreePolyModelItems (tPOFObject *po);
 
 //init code for bitmap models
-void G3InitPolyModel(void *model_ptr);
+void G3InitPolyModel(tPolyModel *pm);
 
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);

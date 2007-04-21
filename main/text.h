@@ -1664,11 +1664,11 @@ void LoadGameTexts(void);
 #define TXT_SHOOT_MISSILES			GT(880)
 #define TXT_AB_CHEAT					GT(881)
 #define TXT_DEMO_CONVERSION		GT(882)
+#define TXT_HIT_SPHERES				GT(883)
+#define TXT_SIMPLE_HITBOXES		GT(884)
+#define TXT_COMPLEX_HITBOXES		GT(885)
 
 #if 0
-#define TXT_				GT(883)
-#define TXT_				GT(884)
-#define TXT_				GT(885)
 #define TXT_				GT(886)
 #define TXT_				GT(887)
 #define TXT_				GT(888)
@@ -2059,10 +2059,10 @@ void LoadGameTexts(void);
 #define HTX_MULTI2_CHECKPORT		HT(255)				
 #define HTX_COOP_PENALTY			HT(256)				
 #define HTX_GPLAY_SHOOTMISSILES	HT(257)				
+#define HTX_GPLAY_HITBOXES			HT(258)				
 
 #if 0
 				
-#define HTX_					HT(258)				
 #define HTX_					HT(259)				
 #define HTX_					HT(260)				
 #define HTX_					HT(261)				

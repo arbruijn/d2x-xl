@@ -569,7 +569,7 @@ if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
 	scores_maybe_add_player (0);
 SetFunctionMode (FMODE_MENU);
 gameData.app.nGameMode = GM_GAME_OVER;
-__asm {int 3}; longjmp (gameExitPoint, 0);		// Exit out of game loop
+longjmp (gameExitPoint, 0);		// Exit out of game loop
 
 }
 

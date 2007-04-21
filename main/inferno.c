@@ -201,7 +201,9 @@ else if (nSignal == SIGTERM)
 	LogErr ("Termination request\n");
 else
 	LogErr ("Unknown signal\n");
+#ifndef _DEBUG
 exit (1);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -2195,6 +2197,7 @@ GETMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLight, MAX_OBJECTS, 0);
 GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
 GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
+GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2350,6 +2353,7 @@ FREEMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLight, MAX_OBJECTS);
 FREEMEM (int, gameData.objs.nLightSig, MAX_OBJECTS);
 FREEMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS);
+FREEMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------

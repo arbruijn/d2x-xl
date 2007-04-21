@@ -505,15 +505,16 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+
 //walks through all submodels of a polymodel and determines the coordinate extremes
-void G3GetPolyModelMinMax (void *modelP, vmsVector *pvMin, vmsVector *pvMax)
+int G3GetPolyModelMinMax (void *modelP, vmsVector *pvMin, vmsVector *pvMax, vmsVector *pvOffs, int nSubModels)
 {
 	ubyte			*p = modelP;
 	int			i, n, nv;
-	vmsVector	*v, vMin, vMax;
+	vmsVector	*v, hv;
+	vmsVector	_vMin = *pvMin, 
+					_vMax = *pvMax;
 
-vMin = *pvMin;
-vMax = *pvMax;
 G3CheckAndSwap (modelP);
 for (;;)
 	switch (WORDVAL (p)) {
@@ -523,18 +524,19 @@ for (;;)
 			n = WORDVAL (p + 2);
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
-				if (vMin.p.x > v->p.x)
-					vMin.p.x = v->p.x;
-				else if (vMax.p.x < v->p.x)
-					vMax.p.x = v->p.x;
-				if (vMin.p.y > v->p.y)
-					vMin.p.y = v->p.y;
-				else if (vMax.p.y < v->p.y)
-					vMax.p.y = v->p.y;
-				if (vMin.p.z > v->p.z)
-					vMin.p.z = v->p.z;
-				else if (vMax.p.z < v->p.z)
-					vMax.p.z = v->p.z;
+				hv = *v;
+				if (_vMin.p.x > hv.p.x)
+					_vMin.p.x = hv.p.x;
+				else if (_vMax.p.x < hv.p.x)
+					_vMax.p.x = hv.p.x;
+				if (_vMin.p.y > hv.p.y)
+					_vMin.p.y = hv.p.y;
+				else if (_vMax.p.y < hv.p.y)
+					_vMax.p.y = hv.p.y;
+				if (_vMin.p.z > hv.p.z)
+					_vMin.p.z = hv.p.z;
+				else if (_vMax.p.z < hv.p.z)
+					_vMax.p.z = hv.p.z;
 				}
 			p += n * sizeof (vmsVector) + 4;
 			break;
@@ -543,18 +545,19 @@ for (;;)
 			n = WORDVAL (p + 2);
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
-				if (vMin.p.x > v->p.x)
-					vMin.p.x = v->p.x;
-				else if (vMax.p.x < v->p.x)
-					vMax.p.x = v->p.x;
-				if (vMin.p.y > v->p.y)
-					vMin.p.y = v->p.y;
-				else if (vMax.p.y < v->p.y)
-					vMax.p.y = v->p.y;
-				if (vMin.p.z > v->p.z)
-					vMin.p.z = v->p.z;
-				else if (vMax.p.z < v->p.z)
-					vMax.p.z = v->p.z;
+				hv = *v;
+				if (_vMin.p.x > hv.p.x)
+					_vMin.p.x = hv.p.x;
+				else if (_vMax.p.x < hv.p.x)
+					_vMax.p.x = hv.p.x;
+				if (_vMin.p.y > hv.p.y)
+					_vMin.p.y = hv.p.y;
+				else if (_vMax.p.y < hv.p.y)
+					_vMax.p.y = hv.p.y;
+				if (_vMin.p.z > hv.p.z)
+					_vMin.p.z = hv.p.z;
+				else if (_vMax.p.z < hv.p.z)
+					_vMax.p.z = hv.p.z;
 				}
 			p += n * sizeof (vmsVector) + 8;
 			break;
@@ -570,8 +573,18 @@ for (;;)
 			break;
 
 		case OP_SORTNORM:
-			G3GetPolyModelMinMax (p + WORDVAL (p+28), &vMin, &vMax);
-			G3GetPolyModelMinMax (p + WORDVAL (p+30), &vMin, &vMax);
+			*pvMin = _vMin;
+			*pvMax = _vMax;
+			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), pvMin, pvMax, pvOffs, nSubModels);
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), pvMin, pvMax, pvOffs, nSubModels);
+				}
+			else {
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), pvMin, pvMax, pvOffs, nSubModels);
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), pvMin, pvMax, pvOffs, nSubModels);
+				}
+			_vMin = *pvMin;
+			_vMax = *pvMax;
 			p += 32;
 			break;
 
@@ -581,7 +594,12 @@ for (;;)
 			break;
 
 		case OP_SUBCALL:
-			G3GetPolyModelMinMax (p + WORDVAL (p+16), &vMin, &vMax);
+#if 1
+			VmVecAdd (pvOffs + ++nSubModels, pvOffs, VECPTR (p+4));
+#else
+			pvOffs [nSubModels] = *VECPTR (p+4);
+#endif
+			nSubModels += G3GetPolyModelMinMax (p + WORDVAL (p+16), pvMin + nSubModels, pvMax + nSubModels, pvOffs + nSubModels, 0);
 			p += 20;
 			break;
 
@@ -596,27 +614,65 @@ for (;;)
 
 done:
 
-*pvMin = vMin;
-*pvMax = vMax;
+*pvMin = _vMin;
+*pvMax = _vMax;
+return nSubModels;
 }
 
 //------------------------------------------------------------------------------
 //walks through all submodels of a polymodel and determines the coordinate extremes
-fix G3PolyModelSize (void *modelP)
+fix G3PolyModelSize (tPolyModel *pm, int nModel)
 {
-	ubyte			*p = modelP;
-	vmsVector	vMin = {0x7fffffff, 0x7fffffff, 0x7fffffff}, 
-					vMax = {-0x7fffffff, -0x7fffffff, -0x7fffffff};
+	int			nSubModels = 1;
+	int			i;
+	vmsVector	*vMinP = gameData.models.hitboxes [nModel].mins;
+	vmsVector	*vMaxP = gameData.models.hitboxes [nModel].maxs;
+	vmsVector	*vSizeP = gameData.models.hitboxes [nModel].sizes;
+	vmsVector	*vOffsP = gameData.models.hitboxes [nModel].offsets;
+	vmsVector	hv;
+	double		dx, dy, dz;
 
-G3GetPolyModelMinMax (modelP, &vMin, &vMax);
-{
-	double	dx = (vMax.p.x - vMin.p.x) / 2;
-	double	dy = (vMax.p.y - vMin.p.y) / 2;
-	double	dz = (vMax.p.z - vMin.p.z) / 2;
-
-return (fix) (sqrt (dx * dx + dy * dy + dz + dz) * 1.33);
-}
-//return VmVecDist (&pMin, &pMax) / 2;
+memset (vSizeP, 0, sizeof (vmsVector) * (MAX_SUBMODELS + 1));
+memset (vOffsP, 0, sizeof (vmsVector) * (MAX_SUBMODELS + 1));
+for (i = 0; i <= MAX_SUBMODELS; i++) {
+	vMinP [i].p.x = vMinP [i].p.y = vMinP [i].p.z = 0x7fffffff;
+	vMaxP [i].p.x = vMaxP [i].p.y = vMaxP [i].p.z = -0x7fffffff;
+	}
+vOffsP->p.x = vOffsP->p.y = vOffsP->p.z = 0;
+vOffsP [1] = vOffsP [0];
+if (nModel == 25)
+	nModel = nModel;
+nSubModels = G3GetPolyModelMinMax ((void *) pm->modelData, vMinP + 1, vMaxP + 1, vOffsP + 1, 0) + 1;
+for (i = 1; i <= nSubModels; i++) {
+	dx = (vMaxP [i].p.x - vMinP [i].p.x) / 2;
+	dy = (vMaxP [i].p.y - vMinP [i].p.y) / 2;
+	dz = (vMaxP [i].p.z - vMinP [i].p.z) / 2;
+	vSizeP [i].p.x = (fix) dx;
+	vSizeP [i].p.y = (fix) dy;
+	vSizeP [i].p.z = (fix) dz;
+	VmVecAdd (&hv, vMinP + i, vOffsP + i);
+	if (vMinP [0].p.x > hv.p.x)
+		vMinP [0].p.x = hv.p.x;
+	if (vMinP [0].p.y > hv.p.y)
+		vMinP [0].p.y = hv.p.y;
+	if (vMinP [0].p.z > hv.p.z)
+		vMinP [0].p.z = hv.p.z;
+	VmVecAdd (&hv, vMaxP + i, vOffsP + i);
+	if (vMaxP [0].p.x < hv.p.x)
+		vMaxP [0].p.x = hv.p.x;
+	if (vMaxP [0].p.y < hv.p.y)
+		vMaxP [0].p.y = hv.p.y;
+	if (vMaxP [0].p.z < hv.p.z)
+		vMaxP [0].p.z = hv.p.z;
+	}
+dx = (vMaxP [0].p.x - vMinP [0].p.x) / 2;
+dy = (vMaxP [0].p.y - vMinP [0].p.y) / 2;
+dz = (vMaxP [0].p.z - vMinP [0].p.z) / 2;
+vSizeP [0].p.x = (fix) dx;
+vSizeP [0].p.y = (fix) dy;
+vSizeP [0].p.z = (fix) dz;
+gameData.models.hitboxes [nModel].nSubModels = nSubModels;
+return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
 }
 
 //------------------------------------------------------------------------------
@@ -1453,7 +1509,7 @@ int LineHitsFace (vmsVector *pHit, vmsVector *p0, vmsVector *p1, short nSegment,
 nFaces = GetNumFaces (segP->sides + nSide);
 nVerts = 5 - nFaces;
 for (i = 0; i < nFaces; i++)
-	if (CheckLineToFace (pHit, p0, p1, nSegment, nSide, i, nVerts, 0))
+	if (CheckLineToSegFace (pHit, p0, p1, nSegment, nSide, i, nVerts, 0))
 		return nSide;
 return -1;
 }
@@ -2185,7 +2241,7 @@ for (;;) {
 		G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 		G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
 		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
-		p+=36;
+		p += 36;
 		}
 	else if (h == OP_SUBCALL) {
 		vmsAngVec *a;
@@ -2193,7 +2249,7 @@ for (;;) {
 		if (pAnimAngles)
 			a = pAnimAngles + WORDVAL (p+2);
 		else
-			a = &zeroAngles;
+			a = NULL;
 		G3StartInstanceAngles (VECPTR (p+4), a);
 		G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 		G3DoneInstance ();
@@ -2414,15 +2470,16 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 //init code for bitmap models
-void G3InitPolyModel (void *modelP)
+void G3InitPolyModel (tPolyModel *pm)
 {
 	#ifdef _DEBUG
 	nestCount = 0;
 	#endif
 
 nHighestTexture = -1;
-G3CheckAndSwap (modelP);
-InitSubModel ((ubyte *) modelP);
+G3CheckAndSwap (pm->modelData);
+InitSubModel ((ubyte *) pm->modelData);
+G3PolyModelSize (pm, pm - gameData.models.polyModels);
 }
 
 //------------------------------------------------------------------------------

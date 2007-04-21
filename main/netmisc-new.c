@@ -504,6 +504,12 @@ switch (objP->controlType) {
 		objP->cType.laserInfo.nParentSig = INTEL_INT (objP->cType.laserInfo.nParentSig);
 		objP->cType.laserInfo.creationTime = INTEL_INT (objP->cType.laserInfo.creationTime);
 		objP->cType.laserInfo.nLastHitObj = INTEL_SHORT (objP->cType.laserInfo.nLastHitObj);
+		if (objP->cType.laserInfo.nLastHitObj < 0)
+			objP->cType.laserInfo.nLastHitObj = 0;
+		else {
+			gameData.objs.nHitObjects [OBJ_IDX (objP) * MAX_HIT_OBJECTS] = objP->cType.laserInfo.nLastHitObj;
+			objP->cType.laserInfo.nLastHitObj = 1;
+			}
 		objP->cType.laserInfo.nTrackGoal = INTEL_SHORT (objP->cType.laserInfo.nTrackGoal);
 		objP->cType.laserInfo.multiplier = INTEL_INT (objP->cType.laserInfo.multiplier);
 		break;

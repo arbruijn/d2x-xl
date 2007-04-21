@@ -337,6 +337,7 @@ if (fviResult == HIT_WALL)
 //	-----------------------------------------------------------------------------------------------------------
 
 extern tObject *monsterballP;
+extern int nWeaponObj;
 
 //Simulate a physics tObject for this frame
 
@@ -509,6 +510,8 @@ retryMove:
 	vSaveP0 = *fq.p0;
 	vSaveP1 = *fq.p1;
 	memset (&hi, 0, sizeof (hi));
+	if (objP->nType == OBJ_WEAPON)
+		objP = objP;
 	fviResult = FindVectorIntersection (&fq, &hi);
 #if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
@@ -538,9 +541,9 @@ retryMove:
 #endif
 	//	Matt: Mike's hack.
 	else if (fviResult == HIT_OBJECT) {
-		tObject	*objP = gameData.objs.objects + hi.hit.nObject;
+		tObject	*hitObjP = gameData.objs.objects + hi.hit.nObject;
 
-		if ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))
+		if ((hitObjP->nType == OBJ_WEAPON) && ((hitObjP->id == PROXMINE_ID) || (hitObjP->id == SMARTMINE_ID)))
 			nTries--;
 		}
 
@@ -616,6 +619,7 @@ retryMove:
 		//vmsVector vMoved;
 		vmsVector vMoveNormal;
 		fix attemptedDist, actualDist;
+
 		xOldSimTime = xSimTime;
 		actualDist = VmVecNormalizedDir (&vMoveNormal, &objP->position.vPos, &vSavePos);
 		if ((fviResult == HIT_WALL) && (VmVecDot (&vMoveNormal, &vFrame) < 0)) {		//moved backwards
@@ -683,7 +687,7 @@ retryMove:
 		if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 			int bForceFieldBounce;		//bounce off a forcefield
 
-			Assert (gameStates.app.cheats.bBouncingWeapons || !(objP->mType.physInfo.flags & PF_STICK && objP->mType.physInfo.flags & PF_BOUNCE));	//can't be bounce and stick
+			Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
 			bForceFieldBounce = (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nWallHitSeg].sides [nWallHitSide].nBaseTex].flags & TMI_FORCE_FIELD);
 			if (!bForceFieldBounce && (objP->mType.physInfo.flags & PF_STICK)) {		//stop moving
 				AddStuckObject (objP, nWallHitSeg, nWallHitSide);
@@ -737,9 +741,7 @@ retryMove:
 		size0 = gameData.objs.objects [hi.hit.nObject].size;
 		size1 = objP->size;
 		//	Calculcate the hit point between the two objects.
-		Assert (size0+size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		//VmVecScale (VmVecSub (&pos_hit, ppos1, ppos0), FixDiv (size0, size0 + size1);
-		//VmVecInc (&pos_hit, ppos0);
+		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
 		VmVecSub (&vHitPos, ppos1, ppos0);
 		VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
 		vOldVel = objP->mType.physInfo.velocity;
@@ -747,7 +749,7 @@ retryMove:
 		if (sbd.bBoosted && (objP == gameData.objs.console))
 			objP->mType.physInfo.velocity = vOldVel;
 
-		// Let tObject continue its movement
+		// Let object continue its movement
 		if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 			if ((objP->mType.physInfo.flags & PF_PERSISTENT) || 
 				 (vOldVel.p.x == objP->mType.physInfo.velocity.p.x && 
@@ -795,17 +797,16 @@ retryMove:
 	//is sliding, but I don't know
 	if (!(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
+
 		VmVecSub (&vMoved, &objP->position.vPos, &vStartPos);
+#if 0
 		VmVecCopyScale (&objP->mType.physInfo.velocity, &vMoved, 
 							 FixMulDiv (FixDiv (f1_0, gameData.physics.xTime), 100, xTimeScale));
+#endif
 #ifdef BUMP_HACK
 		if ((objP == gameData.objs.console) && 
-			 !(objP->mType.physInfo.velocity.p.x || 
-			   objP->mType.physInfo.velocity.p.y || 
-				objP->mType.physInfo.velocity.p.z) &&
-			 (objP->mType.physInfo.thrust.p.x || 
-			  objP->mType.physInfo.thrust.p.y ||
-			  objP->mType.physInfo.thrust.p.z)) {
+			 !(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
+			 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
 			vmsVector vCenter, vBump;
 			//bump tPlayer a little towards vCenter of tSegment to unstick
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
@@ -822,11 +823,8 @@ retryMove:
 #endif
 		}
 
-	//Assert (check_point_in_seg (&objP->position.vPos, objP->nSegment, 0).centerMask==0);
-	//if (objP->controlType == CT_FLYING)
 	if (objP->mType.physInfo.flags & PF_LEVELLING)
 		DoPhysicsAlignObject (objP);
-
 	//hack to keep tPlayer from going through closed doors
 	if ((objP->nType == OBJ_PLAYER) && (objP->nSegment != nOrigSegment) && 
 		 (gameStates.app.cheats.bPhysics != 0xBADA55)) {

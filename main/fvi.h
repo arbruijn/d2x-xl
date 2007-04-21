@@ -85,7 +85,7 @@ int ObjectIntersectsWall (tObject *objP);
 
 int PixelTranspType (short nTexture, short nOrient, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
-int CheckLineToFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
+int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
 							short nSegment, short nSide, short iFace, int nv, fix rad);
 
 int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);

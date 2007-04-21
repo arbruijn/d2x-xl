@@ -1169,6 +1169,7 @@ typedef struct tObjectData {
 	int					nChildFreeList;
 	int					nDrops;
 	int					nDeadControlCenter;
+	short					*nHitObjects;
 	tPowerupData		pwrUp;
 } tObjectData;
 
@@ -1385,6 +1386,16 @@ typedef struct tWeaponData {
 #define OOF_PYRO			0
 #define OOF_MEGA			1
 
+typedef struct tModelHitboxes {
+	ubyte					nSubModels;
+	vmsVector			mins [MAX_SUBMODELS + 1];
+	vmsVector			maxs [MAX_SUBMODELS + 1];
+	vmsVector			sizes [MAX_SUBMODELS + 1];
+	vmsVector			offsets [MAX_SUBMODELS + 1];
+	vmsAngVec			*angles [MAX_SUBMODELS + 1];
+	short					nParent [MAX_SUBMODELS + 1];
+} tModelHitboxes;
+
 typedef struct tModelData {
 	int					nHiresModels;
 	tOOFObject			hiresModels [MAX_POLYGON_MODELS];
@@ -1405,6 +1416,7 @@ typedef struct tModelData {
 	int					nCockpits;
 	int					nDyingModels [MAX_POLYGON_MODELS];
 	int					nDeadModels [MAX_POLYGON_MODELS];
+	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 } tModelData;
 
 #include "player.h"

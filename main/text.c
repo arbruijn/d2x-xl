@@ -1632,6 +1632,9 @@ char *defaultGameTexts [][2] = {
 	{"Raketen ab~Schiessen", "~Shoot down Missiles"},
 	{"Rrrrrrreng-deng-deng-badabaaaaambambam-barrrraaaa-darrram-bam-bam!", "Rrrrrrreng-deng-deng-badabaaaaambambam-barrrraaaa-darrram-bam-bam!"},
 	{"Demo-Konvertierung", "Demo Conversion"},
+	{"einfacher Test auf ~Treffer", "simple ~Weapon hit detection"},
+	{"verbesserter Test auf ~Treffer", "improved ~Weapon hit detection"},
+	{"genauer Test auf ~Treffer", "exact ~Weapon hit detection"},
 #if 0
 	{"", ""},
 #endif
@@ -2128,6 +2131,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann eingestellt werden, um wieviel Prozent der Punkte-\nstand eines Spielers in kooperativen Spielen verringert wird,\nwenn er abgeschossen wird.\n\nDamit soll den Spielern ein Anreiz gegeben werden, nicht\nblind drauflos zu stuermen, sondern wirklich zusammen\nzu spielen und einander zu unterstuetzen.", 
 	 "Here you can adjust by how many percent a player's score is\nreduced in cooperative games if the player gets killed.\n\nThat way you can give an incentive to actually play together\nand support each other instead of storming blindly\ninto enemy fire for the sake of gaining a higher score."},
 	{"Wenn angekreuzt koennen anfliegende Raketen abgeschossen werden.", "If checked incoming missiles can be shot down."},
+	{"Je nach Einstellung werden fuer die Treffererkennung Kugeln oder\nQuader um das komplette Ziel oder Quader um jeden Bestandteil\ndes Ziels verwendet.\nJe genauer der Treffertest, desto mehr Rechenzeit wird dafuer benoetigt.", 
+	 "Depending on the setting chosen, spheres or cuboids enclosing the\nentire target or cuboids around each part of the target are\nused. The better the hit detection, the more time it takes to compute a hit."},
 #if 0
 	{"", ""},
 #endif

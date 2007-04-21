@@ -3029,7 +3029,7 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
-			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1;
+			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1, optHitBoxes = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szSpeedBoost [50], szFusionPower [50], szMaxSmokeGrens [50],
 			szMslTurnSpeed [50];
@@ -3104,27 +3104,37 @@ do {
 		optIdleAnims = opt++;
 		ADD_CHECK (opt, TXT_AI_AWARENESS, gameOpts->gameplay.nAIAwareness, KEY_I, HTX_GPLAY_AWARENESS);
 		optAwareness = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
+		optHitBoxes = opt++;
+		ADD_RADIO (opt, TXT_SIMPLE_HITBOXES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
+		opt++;
+		ADD_RADIO (opt, TXT_COMPLEX_HITBOXES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
+		opt++;
+		m [optHitBoxes + NMCLAMP (extraGameInfo [0].nHitBoxes, 0, 2)].value = 1;
 		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	optAutoSel = opt;
-	ADD_RADIO (opt, TXT_WPNSEL_NEVER, 0, KEY_N, 1, HTX_GPLAY_WSELNEVER);
+	ADD_RADIO (opt, TXT_WPNSEL_NEVER, 0, KEY_N, 2, HTX_GPLAY_WSELNEVER);
 	opt++;
-	ADD_RADIO (opt, TXT_WPNSEL_EMPTY, 0, KEY_Y, 1, HTX_GPLAY_WSELEMPTY);
+	ADD_RADIO (opt, TXT_WPNSEL_EMPTY, 0, KEY_Y, 2, HTX_GPLAY_WSELEMPTY);
 	opt++;
-	ADD_RADIO (opt, TXT_WPNSEL_ALWAYS, 0, KEY_T, 1, HTX_GPLAY_WSELALWAYS);
+	ADD_RADIO (opt, TXT_WPNSEL_ALWAYS, 0, KEY_T, 2, HTX_GPLAY_WSELALWAYS);
 	opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	optSnipeMode = opt;
-	ADD_RADIO (opt, TXT_ZOOM_OFF, 0, KEY_D, 2, HTX_GPLAY_ZOOMOFF);
+	ADD_RADIO (opt, TXT_ZOOM_OFF, 0, KEY_D, 3, HTX_GPLAY_ZOOMOFF);
 	opt++;
-	ADD_RADIO (opt, TXT_ZOOM_FIXED, 0, KEY_X, 2, HTX_GPLAY_ZOOMFIXED);
+	ADD_RADIO (opt, TXT_ZOOM_FIXED, 0, KEY_X, 3, HTX_GPLAY_ZOOMFIXED);
 	opt++;
-	ADD_RADIO (opt, TXT_ZOOM_SMOOTH, 0, KEY_Z, 2, HTX_GPLAY_ZOOMSMOOTH);
+	ADD_RADIO (opt, TXT_ZOOM_SMOOTH, 0, KEY_Z, 3, HTX_GPLAY_ZOOMSMOOTH);
 	opt++;
 	m [optAutoSel + NMCLAMP (gameOpts->gameplay.nAutoSelectWeapon, 0, 2)].value = 1;
 	m [optSnipeMode + NMCLAMP (extraGameInfo [0].nZoomMode, 0, 2)].value = 1;
+	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice);
 		} while (i >= 0);
@@ -3142,6 +3152,11 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
+	for (i = 0; i < 3; i++)
+		if (m [optHitBoxes + i].value) {
+			extraGameInfo [0].nHitBoxes = i;
+			break;
+			}
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
 	GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
@@ -3158,6 +3173,7 @@ else {
 	extraGameInfo [0].bShootMissiles = 0;
 	extraGameInfo [0].bFluidPhysics = 1;
 	extraGameInfo [0].nWeaponDropMode = 1;
+	extraGameInfo [0].nHitBoxes = 0;
 	gameOpts->gameplay.bInventory = 0;
 #endif
 	}

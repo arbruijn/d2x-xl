@@ -698,7 +698,7 @@ PA_DFX (gameStates.render.nLighting = bSaveLight);
 
 //------------------------------------------------------------------------------
 
-void polyobj_find_min_max (tPolyModel *pm)
+void PolyObjFindMinMax (tPolyModel *pm)
 {
 	ushort nverts;
 	vmsVector *vp;
@@ -777,8 +777,8 @@ int LoadPolygonModel (char *filename, int nTextures, grsBitmap ***textures)
 	Assert (strlen (filename) <= 12);
 	strcpy (Pof_names [gameData.models.nPolyModels], filename);
 	ReadModelFile (gameData.models.polyModels+gameData.models.nPolyModels, filename, r);
-	polyobj_find_min_max (gameData.models.polyModels+gameData.models.nPolyModels);
-	G3InitPolyModel (gameData.models.polyModels [gameData.models.nPolyModels].modelData);
+	PolyObjFindMinMax (gameData.models.polyModels + gameData.models.nPolyModels);
+	G3InitPolyModel (gameData.models.polyModels + gameData.models.nPolyModels);
 	if (nHighestTexture + 1 != nTextures)
 		Error ("Model <%s> references %d textures but specifies %d.", filename, nHighestTexture+1, nTextures);
 	gameData.models.polyModels [gameData.models.nPolyModels].nTextures = nTextures;
@@ -931,7 +931,7 @@ AlignPolyModelData (pm);
 #endif
 G3CheckAndSwap (pm->modelData);
 //verify (pm->modelData);
-G3InitPolyModel (pm->modelData);
+G3InitPolyModel (pm);
 }
 
 //------------------------------------------------------------------------------

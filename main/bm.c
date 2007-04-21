@@ -1148,7 +1148,7 @@ if (bVertigoData) {
 	}
 
 t = CFReadInt (fp);
-gameData.bots.nJoints = N_D2_ROBOT_JOINTS+t;
+gameData.bots.nJoints = N_D2_ROBOT_JOINTS + t;
 if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
 	Warning ("Too many robot joints (%d) in <%s>.  Max is %d.",t,fname,MAX_ROBOT_JOINTS-N_D2_ROBOT_JOINTS);
 	return -1;
@@ -1190,11 +1190,11 @@ if (N_D2_OBJBITMAPS + t >= MAX_OBJ_BITMAPS) {
 BitmapIndexReadN (&gameData.pig.tex.objBmIndex [N_D2_OBJBITMAPS], t, fp);
 
 t = CFReadInt (fp);
-if (N_D2_OBJBITMAPPTRS+t >= MAX_OBJ_BITMAPS) {
+if (N_D2_OBJBITMAPPTRS + t >= MAX_OBJ_BITMAPS) {
 	Warning ("Too many tObject bitmap pointers (%d) in <%s>.  Max is %d.",t,fname,MAX_OBJ_BITMAPS-N_D2_OBJBITMAPPTRS);
 	return -1;
 	}
-for (i = N_D2_OBJBITMAPPTRS;i < (N_D2_OBJBITMAPPTRS + t);i++)
+for (i = N_D2_OBJBITMAPPTRS; i < (N_D2_OBJBITMAPPTRS + t); i++)
 	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 CFClose (fp);
 return 1;
@@ -1207,7 +1207,7 @@ extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
 {
 	CFILE			*fp;
-	tPolyModel	*po;
+	tPolyModel	*pm;
 	int			t, i, j;
 	int			nBotTypeSave = gameData.bots.nTypes [0], 
 					nBotJointSave = gameData.bots.nJoints, 
@@ -1315,12 +1315,11 @@ for (j = 0; j < t; j++) {
 			return -1;
 			}
 		}
-	po = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
-	FreeModel (po);
-	PolyModelRead (po, fp);
-	PolyModelDataRead (po, NULL, fp);
-	if (!bAltModels)
-		po->rad = G3PolyModelSize (po->modelData);
+	pm = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
+	FreeModel (pm);
+	PolyModelRead (pm, fp);
+	PolyModelDataRead (pm, NULL, fp);
+	pm->rad = G3PolyModelSize (pm, i);
 	if (bAltModels) {
 #if 0
 		ubyte	*p = gameData.models.defPolyModels [i].modelData;

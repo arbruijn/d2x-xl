@@ -1989,7 +1989,7 @@ void HUDShowIcons (void)
 if (gameStates.app.bNostalgia)
 	return;
 HUDToggleWeaponIcons ();
-if (SHOW_HUD) {
+if (gameOpts->render.cockpit.bHUD || SHOW_COCKPIT) {
 	HUDShowObjTally ();
 	if (EGI_FLAG (nWeaponIcons, 0, 1, 0)) {
 		cmScaleX *= HUD_ASPECT;

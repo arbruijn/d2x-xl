@@ -2546,6 +2546,7 @@ else
 		ADDFLAG (!AXI.bFriendlyFire, "no FF");
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
 		ADDFLAG (AXI.bShootMissiles, "shoot msls");
+		ADDFLAG (AXI.nHitBoxes, "hit boxes");
 		}
 	else
 		strcat (mTexts [opt], "Gameplay ext.: None");

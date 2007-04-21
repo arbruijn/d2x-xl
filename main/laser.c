@@ -688,7 +688,7 @@ if (gameData.objs.objects [nParent].nType == OBJ_WEAPON) {
 // Create orientation matrix so we can look from this pov
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->renderType == RT_POLYOBJ) || (WI_homingFlag (objP->id)))
-	VmVector2Matrix (&objP->position.mOrient,vDirection, &gameData.objs.objects [nParent].position.mOrient.uVec ,NULL);
+	VmVector2Matrix (&objP->position.mOrient, vDirection, &gameData.objs.objects [nParent].position.mOrient.uVec ,NULL);
 if (((gameData.objs.objects + nParent) != gameData.objs.viewer) && 
 		(gameData.objs.objects [nParent].nType != OBJ_WEAPON))	{
 	// Muzzle flash		
@@ -714,7 +714,7 @@ if ((gameData.objs.objects [nParent].nType == OBJ_PLAYER) && (gameData.weapons.i
 	vmsVector	vEndPos;
 	int			nEndSeg;
 
-	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset+ (xLaserLength/2));
+	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset + (xLaserLength / 2));
 	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment);
 	if (nEndSeg == objP->nSegment) 
 		objP->position.vPos = vEndPos;
@@ -766,7 +766,7 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 {
 	tVFIQuery	fq;
 	tFVIData		hit_data;
-	tObject		*parentObjP = &gameData.objs.objects [parent];
+	tObject		*parentObjP = gameData.objs.objects + parent;
 	int			fate;
 
 	//	Find tSegment containing laser fire vPosition.  If the robot is straddling a tSegment, the vPosition from
@@ -1727,16 +1727,12 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 
 			LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
 			LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
-
 			flags = (sbyte) (gameData.fusion.xCharge >> 12);
-
 			gameData.fusion.xCharge = 0;
-
-			vForce.p.x = - (objP->position.mOrient.fVec.p.x << 7);
-			vForce.p.y = - (objP->position.mOrient.fVec.p.y << 7);
-			vForce.p.z = - (objP->position.mOrient.fVec.p.z << 7);
+			vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
+			vForce.p.y = -(objP->position.mOrient.fVec.p.y << 7);
+			vForce.p.z = -(objP->position.mOrient.fVec.p.z << 7);
 			PhysApplyForce (objP, &vForce);
-
 			vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
 			vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
 			vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;

@@ -381,7 +381,7 @@ if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
-					  f2fl (objP->size) * 1.1f, red, green, blue, alpha, NULL);
+					  f2fl (objP->size) * 1.05f, red, green, blue, alpha, NULL);
 	G3DoneInstance ();
 	}
 }

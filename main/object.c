@@ -822,6 +822,134 @@ if (nSegment != -1) {
 	}
 }
 
+//------------------------------------------------------------------------------
+
+#if 0
+	static		fVector hitBoxOffsets [8] = {
+		{-1.0f, +0.95f, -0.8f}, 
+		{+1.0f, +0.95f, -0.8f}, 
+		{+1.0f, -1.05f, -0.8f}, 
+		{-1.0f, -1.05f, -0.8f}, 
+		{-1.0f, +0.95f, +1.2f}, 
+		{+1.0f, +0.95f, +1.2f}, 
+		{+1.0f, -1.05f, +1.2f}, 
+		{-1.0f, -1.05f, +1.2f}
+#else
+	static		vmsVector hitBoxOffsets [8] = {
+		{1, 0, 1}, 
+		{0, 0, 1}, 
+		{0, 1, 1}, 
+		{1, 1, 1}, 
+		{1, 0, 0}, 
+		{0, 0, 0}, 
+		{0, 1, 0}, 
+		{1, 1, 0}
+#endif
+		};
+
+
+void ComputeHitBox (tObject *objP, vmsVector *vertList, int iSubObj)
+{
+	vmsVector	vMin = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].mins [iSubObj];
+	vmsVector	vMax = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].maxs [iSubObj];
+	vmsVector	vOffset;
+	vmsVector	hv;
+	vmsMatrix	m;
+	int			i;
+
+VmVecAdd (&vOffset, &objP->position.vPos, gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].offsets + iSubObj);
+VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+for (i = 0; i < 8; i++) {
+	hv.p.x = hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x;
+	hv.p.y = hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y;
+	hv.p.z = hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z;
+	VmVecRotate (vertList + i, &hv, &m);
+	VmVecInc (vertList + i, &vOffset);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void ComputeHitBoxf (tObject *objP, fVector *vertList, int iSubObj)
+{
+
+	fVector		hv;
+	vmsVector	vMin = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].mins [iSubObj];
+	vmsVector	vMax = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].maxs [iSubObj];
+	int			i;
+
+for (i = 0; i < 8; i++) {
+	hv.p.x = f2fl (hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x);
+	hv.p.y = f2fl (hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y);
+	hv.p.z = f2fl (hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z);
+	G3TransformPointf (vertList + i, &hv, 0);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int hitBoxFaceVerts [6][4] = {
+	{0,1,2,3},
+	{0,3,7,4},
+	{5,6,2,1},
+	{4,7,6,5},
+	{4,5,1,0},
+	{6,7,3,2}
+	};
+
+extern vmsAngVec zeroAngles;
+
+#ifdef _DEBUG
+
+void RenderHitBox (tObject *objP, float red, float green, float blue, float alpha)
+{
+	fVector		vertList [8];
+	int			i, j, iModel, nModels;
+
+if (!EGI_FLAG (nHitBoxes, 0, 0, 0)) {
+	DrawShieldSphere (objP, red, green, blue, alpha);
+	return;
+	}
+else if (extraGameInfo [IsMultiGame].nHitBoxes == 1) {
+	iModel =
+	nModels = 0;
+	}
+else {
+	iModel = 1;
+	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
+	}
+glDepthFunc (GL_LEQUAL);
+glEnable (GL_BLEND);
+OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glDisable (GL_TEXTURE_2D);
+glDepthMask (0);
+glColor4f (red, green, blue, alpha / 2);
+G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+for (; iModel <= nModels; iModel++) {
+	G3StartInstanceAngles (gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].offsets + iModel, &zeroAngles);
+	ComputeHitBoxf (objP, vertList, iModel);
+	glBegin (GL_QUADS);
+	for (i = 0; i < 6; i++)
+		for (j = 0; j < 4; j++)
+			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
+	glEnd ();
+	glLineWidth (2);
+	for (i = 0; i < 6; i++) {
+		glBegin (GL_LINE_LOOP);
+		for (j = 0; j < 5; j++)
+			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j % 4]));
+		glEnd ();
+		}
+	glLineWidth (1);
+	G3DoneInstance ();
+	}
+G3DoneInstance ();
+glDepthMask (1);
+glDepthFunc (GL_LESS);
+}
+
+#endif
+
 // -----------------------------------------------------------------------------
 //	Render an tObject.  Calls one of several routines based on nType
 // -----------------------------------------------------------------------------
@@ -843,7 +971,11 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		glDisable (GL_STENCIL_TEST);
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
+#ifdef _DEBUG
+		RenderHitBox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
+#else
 		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 0.6f);
+#endif
 	else if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;
@@ -856,11 +988,19 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 			}
 		}
 	if (gameData.multiplayer.bWasHit [i])
+#ifdef _DEBUG
+		RenderHitBox (objP, 1.0f, 0.5f, 0.0f, 0.5f);
+#else
 		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 0.5f);
+#endif
 	else {
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
+#ifdef _DEBUG
+		RenderHitBox (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
+#else
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
+#endif
 		}
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
@@ -1785,11 +1925,17 @@ switch (objP->renderType) {
 			}
 		else if (objP->nType == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
+#ifdef _DEBUG
+			RenderHitBox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#endif
 			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
 			}
 		else if (objP->nType == OBJ_WEAPON) {
 			DrawPolygonObject (objP);
+#ifdef _DEBUG
+			DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#endif
 			if (bIsMissile [objP->id])
 				RenderThrusterFlames (objP);
 			else
@@ -2322,7 +2468,7 @@ return nOrgNumToFree - nToFree;
 //note that nSegment is really just a suggestion, since this routine actually
 //searches for the correct tSegment
 //returns the tObject number
-
+int nWeaponObj = -1;
 int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos, 
 					   vmsMatrix *orient, fix size, ubyte cType, ubyte mType, ubyte rType,
 						int bIgnoreLimits)
@@ -2380,6 +2526,8 @@ if (GetSegMasks (pos, nSegment, 0).centerMask)
 nObject = AllocObject ();
 if (nObject == -1)		//no d_free gameData.objs.objects
 	return -1;
+if (nType == OBJ_WEAPON)
+	nWeaponObj = nObject;
 Assert (gameData.objs.objects [nObject].nType == OBJ_NONE);		//make sure unused
 objP = gameData.objs.objects + nObject;
 Assert (objP->nSegment == -1);
@@ -2435,7 +2583,7 @@ if (objP->nType == OBJ_WEAPON) {
 	Assert (objP->controlType == CT_WEAPON);
 	objP->mType.physInfo.flags |= WI_persistent (objP->id) * PF_PERSISTENT;
 	objP->cType.laserInfo.creationTime = gameData.time.xGame;
-	objP->cType.laserInfo.nLastHitObj = -1;
+	objP->cType.laserInfo.nLastHitObj = 0;
 	objP->cType.laserInfo.multiplier = F1_0;
 	}
 if (objP->controlType == CT_POWERUP)
@@ -3162,6 +3310,8 @@ switch (objP->movementType) {
 		break;								//this doesn't move
 
 	case MT_PHYSICS:	
+		if (objP->nType != OBJ_PLAYER)
+			objP = objP;
 		DoPhysicsSim (objP);	
 		SetDynLightPos (OBJ_IDX (objP));
 		break;	//move by physics

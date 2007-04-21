@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECTS_D2  	350 // increased on 01/24/95 for multiplayer. --MK;  total number of objects in world
 #define MAX_OBJECTS_D2X	   700 
 #define MAX_OBJECTS     	MAX_SEGMENTS
+#define MAX_HIT_OBJECTS		20
 
 // Object types
 #define OBJ_NONE        255 // unused tObject
@@ -212,7 +213,7 @@ typedef struct tVClipInfo {
 
 typedef struct tPolyObjInfo {
 	int     		nModel;          // which polygon model
-	vmsAngVec 	animAngles[MAX_SUBMODELS]; // angles for each subobject
+	vmsAngVec 	animAngles [MAX_SUBMODELS]; // angles for each subobject
 	int     		nSubObjFlags;       // specify which subobjs to draw
 	int     		nTexOverride;      // if this is not -1, map all face to this
 	int     		nAltTextures;       // if not -1, use these textures instead
@@ -494,6 +495,7 @@ int FindBoss (int nObject);
 void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
+void ComputeHitBox (tObject *objP, vmsVector *vertList, int iSubObj);
 
 extern ubyte bIsMissile [];
 

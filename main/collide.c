@@ -1394,63 +1394,53 @@ void MultiSendFinishGame ();
 
 //	------------------------------------------------------------------------------------------------------
 //	Return 1 if robot died, else return 0
-int ApplyDamageToRobot (tObject *robot, fix damage, int nKillerObj)
+int ApplyDamageToRobot (tObject *robotP, fix damage, int nKillerObj)
 {
-	char		bIsThief;
-	char		tempStolen [MAX_STOLEN_ITEMS];	
+	char		bIsThief, bIsBoss;
+	char		tempStolen [MAX_STOLEN_ITEMS];
 	tObject	*killerObjP = (nKillerObj < 0) ? NULL : gameData.objs.objects + nKillerObj;
 
-if (robot->flags & OF_EXPLODING) 
+if (robotP->flags & OF_EXPLODING) 
 	return 0;
-if (robot->shields < 0) 
-	return 0;	//robot already dead...
-if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robot)] < F1_0)
+if (robotP->shields < 0) 
+	return 0;	//robotP already dead...
+if (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (robotP)] < F1_0)
 	return 0;
 if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0))) {
 	// guidebot may kill other bots
 	if (killerObjP && (killerObjP->nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->id).companion)
 		return 0;
 	}
-if (ROBOTINFO (robot->id).bossFlag) {
-	int i = FindBoss (OBJ_IDX (robot));
+if (bIsBoss = ROBOTINFO (robotP->id).bossFlag) {
+	int i = FindBoss (OBJ_IDX (robotP));
 	if (i >= 0)
 		gameData.boss [i].nHitTime = gameData.time.xGame;
 	}
 
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
-if (ROBOTINFO (robot->id).companion) {
+if (ROBOTINFO (robotP->id).companion) {
 //		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) || gameStates.app.cheats.bMadBuddy)
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
 	}
-
-//	if (robot->controlType == CT_REMOTE)
-//		return 0; // Can't damange a robot controlled by another tPlayer
-
-// -- MK, 10/21/95, unused!--	if (ROBOTINFO (objP->id).bossFlag)
-//		Boss_been_hit = 1;
-
-robot->shields -= damage;
-
+robotP->shields -= damage;
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
-if (ROBOTINFO (robot->id).bossFlag) {
+if (bIsBoss) {
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
-		if ((robot->shields < 0) && (extraGameInfo [0].nBossCount == 1)) {
+		if ((robotP->shields < 0) && (extraGameInfo [0].nBossCount == 1)) {
 			if (gameData.app.nGameMode & GM_MULTI) {
 				if (!MultiAllPlayersAlive ()) // everyones gotta be alive
-					robot->shields = 1;
+					robotP->shields = 1;
 				else {
 					MultiSendFinishGame ();
 					DoFinalBossHacks ();
 					}		
 				}		
-			else
-				{	// NOTE LINK TO ABOVE!!!
-				if ((LOCALPLAYER.shields < 0) || 
-					 gameStates.app.bPlayerIsDead)
-					robot->shields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
+			else {	// NOTE LINK TO ABOVE!!!
+				if ((LOCALPLAYER.shields < 0) || gameStates.app.bPlayerIsDead)
+					robotP->shields = 1;		//	Sorry, we can't allow you to kill the final boss after you've died.  Rough luck.
 				else
 					DoFinalBossHacks ();
 				}
@@ -1458,49 +1448,45 @@ if (ROBOTINFO (robot->id).bossFlag) {
 		}
 	}
 
-if (robot->shields >= 0) {
+if (robotP->shields >= 0) {
 	if (killerObjP == gameData.objs.console)
-		ExecObjTriggers (OBJ_IDX (robot), 1);
+		ExecObjTriggers (OBJ_IDX (robotP), 1);
 	return 0;
 	}
 if (IsMultiGame) {
-	bIsThief = (ROBOTINFO (robot->id).thief != 0);
+	bIsThief = (ROBOTINFO (robotP->id).thief != 0);
 	if (bIsThief)
 		memcpy (tempStolen, gameData.thief.stolenItems, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-	if (MultiExplodeRobotSub (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief)) {
+	if (MultiExplodeRobotSub (OBJ_IDX (robotP), nKillerObj, ROBOTINFO (robotP->id).thief)) {
 		if (bIsThief)	
 			memcpy (gameData.thief.stolenItems, tempStolen, sizeof (*tempStolen) * MAX_STOLEN_ITEMS);
-	MultiSendRobotExplode (OBJ_IDX (robot), nKillerObj, ROBOTINFO (robot->id).thief);
-	if (bIsThief)	
-		memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
-	return 1;
+		MultiSendRobotExplode (OBJ_IDX (robotP), nKillerObj, ROBOTINFO (robotP->id).thief);
+		if (bIsThief)	
+			memset (gameData.thief.stolenItems, 255, sizeof (gameData.thief.stolenItems));
+		return 1;
+		}
+	else
+		return 0;
 	}
-else
-	return 0;
-}
 
 if (nKillerObj >= 0) {
 	LOCALPLAYER.numKillsLevel++;
 	LOCALPLAYER.numKillsTotal++;
 	}
 
-if (ROBOTINFO (robot->id).bossFlag) {
-	StartBossDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
-	}
-else if (ROBOTINFO (robot->id).bDeathRoll) {
-	StartRobotDeathSequence (robot);	//DoReactorDestroyedStuff (NULL);
-	}
+if (bIsBoss)
+	StartBossDeathSequence (robotP);	//DoReactorDestroyedStuff (NULL);
+else if (ROBOTINFO (robotP->id).bDeathRoll)
+	StartRobotDeathSequence (robotP);	//DoReactorDestroyedStuff (NULL);
 else {
-	if (robot->id == SPECIAL_REACTOR_ROBOT)
+	if (robotP->id == SPECIAL_REACTOR_ROBOT)
 		SpecialReactorStuff ();
-//if (ROBOTINFO (objP->id).smartBlobs)
-//	CreateSmartChildren (robot, ROBOTINFO (objP->id).smartBlobs);
-//if (ROBOTINFO (objP->id).badass)
-//	ExplodeBadassObject (robot, F1_0*ROBOTINFO (objP->id).badass, F1_0*40, F1_0*150);
-	ExplodeObject (robot, ROBOTINFO (robot->id).kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
+	ExplodeObject (robotP, ROBOTINFO (robotP->id).kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
 	}
 return 1;
 }
+
+//	------------------------------------------------------------------------------------------------------
 
 extern int BossSpewRobot (tObject *objP, vmsVector *pos, short objType);
 
@@ -1508,7 +1494,6 @@ int	nBossInvulDot = 0;
 int	nBuddyGaveHintCount = 5;
 fix	xLastTimeBuddyGameHint = 0;
 
-//	------------------------------------------------------------------------------------------------------
 //	Return true if damage done to boss, else return false.
 int DoBossWeaponCollision (tObject *robot, tObject *weapon, vmsVector *vHitPt)
 {
@@ -1625,24 +1610,59 @@ return bDamage;
 
 //	------------------------------------------------------------------------------------------------------
 
-int CollideRobotAndWeapon (tObject * robot, tObject * weapon, vmsVector *vHitPt)
+int FindHitObject (tObject *objP, short nObject)
+{
+	short	*p = gameData.objs.nHitObjects + OBJ_IDX (objP) * MAX_HIT_OBJECTS;
+	int	i;
+	
+for (i = objP->cType.laserInfo.nLastHitObj; i; i--, p++)
+	if (*p == nObject)
+		return 1;
+return 0;
+}
+
+//	------------------------------------------------------------------------------------------------------
+
+int AddHitObject (tObject *objP, short nObject)
+{
+	short	*p;
+	int	i;
+	
+if (FindHitObject (objP, nObject))
+	return -1;
+p = gameData.objs.nHitObjects + OBJ_IDX (objP) * MAX_HIT_OBJECTS;
+i = objP->cType.laserInfo.nLastHitObj;
+if (i >= MAX_HIT_OBJECTS) {
+	memcpy (p + 1, p, (MAX_HIT_OBJECTS - 1) * sizeof (*p));
+	p [i - 1] = nObject;
+	}
+else {
+	p [i] = nObject;
+	objP->cType.laserInfo.nLastHitObj++;
+	}
+return 1;
+}
+
+//	------------------------------------------------------------------------------------------------------
+
+int CollideRobotAndWeapon (tObject *robotP, tObject *weaponP, vmsVector *vHitPt)
 { 
 	int	bDamage = 1;
 	int	bInvulBoss = 0;
-	tRobotInfo *botInfoP = &ROBOTINFO (robot->id);
-	tWeaponInfo *wInfoP = gameData.weapons.info + weapon->id;
+	tRobotInfo *botInfoP = &ROBOTINFO (robotP->id);
+	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->id;
 
-if ((weapon->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
+if ((weaponP->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;		
-if (weapon->id == OMEGA_ID)
-	if (!OkToDoOmegaDamage (weapon))
+if (weaponP->id == OMEGA_ID)
+	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 if (botInfoP->bossFlag) {
-	int i = FindBoss (OBJ_IDX (robot));
+	int i = FindBoss (OBJ_IDX (robotP));
 	if (i >= 0)
 		gameData.boss [i].nHitTime = gameData.time.xGame;
 	if (botInfoP->bossFlag >= BOSS_D2) {
-		bDamage = DoBossWeaponCollision (robot, weapon, vHitPt);
+		bDamage = DoBossWeaponCollision (robotP, weaponP, vHitPt);
 		bInvulBoss = !bDamage;
 		}
 	}
@@ -1650,104 +1670,103 @@ if (botInfoP->bossFlag) {
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
 //	MK has so much fun whacking his butt around the mine he never cared...
 if ((botInfoP->companion) && 
-	 (weapon->cType.laserInfo.parentType == OBJ_ROBOT) && 
+	 (weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && 
 	  !gameStates.app.cheats.bRobotsKillRobots)
 	return 1;
-if (weapon->id == EARTHSHAKER_ID)
+if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-//	If a persistent weapon hit robot most recently, quick abort, else we cream the same robot many times, 
+//	If a persistent weaponP hit robotP most recently, quick abort, else we cream the same robotP many times, 
 //	depending on frame rate.
-if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
-	if (weapon->cType.laserInfo.nLastHitObj == OBJ_IDX (robot))
+if (weaponP->mType.physInfo.flags & PF_PERSISTENT) {
+	if (AddHitObject (weaponP, OBJ_IDX (robotP)) < 0)
 		return 1;
-	weapon->cType.laserInfo.nLastHitObj = OBJ_IDX (robot);
 	}
-if (weapon->cType.laserInfo.nParentSig == robot->nSignature)
+if (weaponP->cType.laserInfo.nParentSig == robotP->nSignature)
 	return 1;
-//	Changed, 10/04/95, put out blobs based on skill level and power of weapon doing damage.
-//	Also, only a weapon hit from a tPlayer weapon causes smart blobs.
-if ((weapon->cType.laserInfo.parentType == OBJ_PLAYER) && (botInfoP->energyBlobs))
-	if ((robot->shields > 0) && bIsEnergyWeapon [weapon->id]) {
+//	Changed, 10/04/95, put out blobs based on skill level and power of weaponP doing damage.
+//	Also, only a weaponP hit from a tPlayer weaponP causes smart blobs.
+if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs)
+	if ((robotP->shields > 0) && bIsEnergyWeapon [weaponP->id]) {
 		int	num_blobs;
-		fix	probval = (gameStates.app.nDifficultyLevel+2) * min (weapon->shields, robot->shields);
+		fix	probval = (gameStates.app.nDifficultyLevel+2) * min (weaponP->shields, robotP->shields);
 		probval = botInfoP->energyBlobs * probval/ (NDL*32);
 		num_blobs = probval >> 16;
 		if (2*d_rand () < (probval & 0xffff))
 			num_blobs++;
 		if (num_blobs)
-			CreateSmartChildren (robot, num_blobs);
+			CreateSmartChildren (robotP, num_blobs);
 		}
 
-	//	Note: If weapon hits an invulnerable boss, it will still do badass damage, including to the boss, 
+	//	Note: If weaponP hits an invulnerable boss, it will still do badass damage, including to the boss, 
 	//	unless this is trapped elsewhere.
-	if (WI_damage_radius (weapon->id)) {
+	if (WI_damage_radius (weaponP->id)) {
 		if (bInvulBoss) {			//don't make badass sound
 			//this code copied from ExplodeBadassWeapon ()
-			ObjectCreateBadassExplosion (weapon, weapon->nSegment, vHitPt, 
+			ObjectCreateBadassExplosion (weaponP, weaponP->nSegment, vHitPt, 
 							wInfoP->impact_size, 
 							wInfoP->robot_hit_vclip, 
 							wInfoP->strength [gameStates.app.nDifficultyLevel], 
 							wInfoP->damage_radius, wInfoP->strength [gameStates.app.nDifficultyLevel], 
-							weapon->cType.laserInfo.nParentObj);
+							weaponP->cType.laserInfo.nParentObj);
 		
 			}
 		else		//normal badass explosion
-			ExplodeBadassWeapon (weapon, vHitPt);
+			ExplodeBadassWeapon (weaponP, vHitPt);
 		}
-	if (((weapon->cType.laserInfo.parentType == OBJ_PLAYER) || 
-		 ((weapon->cType.laserInfo.parentType == OBJ_ROBOT) &&
+	if (((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || 
+		 ((weaponP->cType.laserInfo.parentType == OBJ_ROBOT) &&
 		  (gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 0, 0)))) && 
-		 !(robot->flags & OF_EXPLODING))	{	
-		tObject *expl_obj = NULL;
-		if (weapon->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
-			CreateAwarenessEvent (weapon, PA_WEAPON_ROBOT_COLLISION);			// tObject "weapon" can attract attention to tPlayer
-			DoAiRobotHit (robot, PA_WEAPON_ROBOT_COLLISION);
+		 !(robotP->flags & OF_EXPLODING))	{	
+		tObject *explObjP = NULL;
+		if (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
+			CreateAwarenessEvent (weaponP, PA_WEAPON_ROBOT_COLLISION);			// tObject "weaponP" can attract attention to tPlayer
+			DoAiRobotHit (robotP, PA_WEAPON_ROBOT_COLLISION);
 			}
 	  	else
-			MultiRobotRequestChange (robot, gameData.objs.objects [weapon->cType.laserInfo.nParentObj].id);
+			MultiRobotRequestChange (robotP, gameData.objs.objects [weaponP->cType.laserInfo.nParentObj].id);
 		if (botInfoP->nExp1VClip > -1)
-			expl_obj = ObjectCreateExplosion (weapon->nSegment, vHitPt, (robot->size/2*3)/4, (ubyte) botInfoP->nExp1VClip);
-		else if (gameData.weapons.info [weapon->id].robot_hit_vclip > -1)
-			expl_obj = ObjectCreateExplosion (weapon->nSegment, vHitPt, wInfoP->impact_size, (ubyte) wInfoP->robot_hit_vclip);
-		if (expl_obj)
-			AttachObject (robot, expl_obj);
+			explObjP = ObjectCreateExplosion (weaponP->nSegment, vHitPt, (robotP->size/2*3)/4, (ubyte) botInfoP->nExp1VClip);
+		else if (gameData.weapons.info [weaponP->id].robot_hit_vclip > -1)
+			explObjP = ObjectCreateExplosion (weaponP->nSegment, vHitPt, wInfoP->impact_size, (ubyte) wInfoP->robot_hit_vclip);
+		if (explObjP)
+			AttachObject (robotP, explObjP);
 		if (bDamage && (botInfoP->nExp1Sound > -1))
-			DigiLinkSoundToPos (botInfoP->nExp1Sound, robot->nSegment, 0, vHitPt, 0, F1_0);
-		if (!(weapon->flags & OF_HARMLESS)) {
-			fix	damage = weapon->shields;
+			DigiLinkSoundToPos (botInfoP->nExp1Sound, robotP->nSegment, 0, vHitPt, 0, F1_0);
+		if (!(weaponP->flags & OF_HARMLESS)) {
+			fix	damage = weaponP->shields;
 			if (bDamage)
-				damage = FixMul (damage, weapon->cType.laserInfo.multiplier);
+				damage = FixMul (damage, weaponP->cType.laserInfo.multiplier);
 			else
 				damage = 0;
 			//	Cut Gauss damage on bosses because it just breaks the game.  Bosses are so easy to
-			//	hit, and missing a robot is what prevents the Gauss from being game-breaking.
-			if (weapon->id == GAUSS_ID) {
+			//	hit, and missing a robotP is what prevents the Gauss from being game-breaking.
+			if (weaponP->id == GAUSS_ID) {
 				if (botInfoP->bossFlag)
 					damage = damage * (2*NDL-gameStates.app.nDifficultyLevel)/ (2*NDL);
 				}
-			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
+			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weaponP->id == FUSION_ID))
 				damage *= extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
-			if (!ApplyDamageToRobot (robot, damage, weapon->cType.laserInfo.nParentObj))
-				BumpTwoObjects (robot, weapon, 0, vHitPt);		//only bump if not dead. no damage from bump
-			else if (weapon->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
+			if (!ApplyDamageToRobot (robotP, damage, weaponP->cType.laserInfo.nParentObj))
+				BumpTwoObjects (robotP, weaponP, 0, vHitPt);		//only bump if not dead. no damage from bump
+			else if (weaponP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
 				AddPointsToScore (botInfoP->scoreValue);
-				DetectEscortGoalAccomplished (OBJ_IDX (robot));
+				DetectEscortGoalAccomplished (OBJ_IDX (robotP));
 				}
 			}
-		//	If Gauss Cannon, spin robot.
-		if (robot && (!botInfoP->companion) && (!botInfoP->bossFlag) && (weapon->id == GAUSS_ID)) {
-			tAIStatic	*aip = &robot->cType.aiInfo;
+		//	If Gauss Cannon, spin robotP.
+		if (robotP && !(botInfoP->companion || botInfoP->bossFlag) && (weaponP->id == GAUSS_ID)) {
+			tAIStatic	*aip = &robotP->cType.aiInfo;
 
 			if (aip->SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
 				aip->SKIP_AI_COUNT++;
-				robot->mType.physInfo.rotThrust.p.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robot->mType.physInfo.rotThrust.p.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robot->mType.physInfo.rotThrust.p.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
-				robot->mType.physInfo.flags |= PF_USES_THRUST;
+				robotP->mType.physInfo.rotThrust.p.x = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.p.y = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.rotThrust.p.z = FixMul ((d_rand () - 16384), gameData.time.xFrame * aip->SKIP_AI_COUNT);
+				robotP->mType.physInfo.flags |= PF_USES_THRUST;
 				}
 			}
 		}
-MaybeKillWeapon (weapon, robot);
+MaybeKillWeapon (weaponP, robotP);
 return 1; 
 }
 
@@ -2195,13 +2214,12 @@ if (weapon->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 damage = FixMul (damage, weapon->cType.laserInfo.multiplier);
 if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weapon->id == FUSION_ID))
-	damage = damage * extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
+	damage *= extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
 if (IsMultiGame)
 	damage = FixMul (damage, gameData.weapons.info [weapon->id].multi_damage_scale);
 if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
-	if (weapon->cType.laserInfo.nLastHitObj == OBJ_IDX (playerObjP))
+	if (AddHitObject (weapon, OBJ_IDX (playerObjP)) < 0)
 		return 1;
-	weapon->cType.laserInfo.nLastHitObj = OBJ_IDX (playerObjP);
 }
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
@@ -2431,16 +2449,15 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CollideWeaponAndMonsterball (tObject * weapon, tObject * powerup, vmsVector *vHitPt) 
+int CollideWeaponAndMonsterball (tObject *weapon, tObject *powerup, vmsVector *vHitPt) 
 {
 if (weapon->cType.laserInfo.parentType == OBJ_PLAYER) {	
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT, weapon->nSegment , 0, vHitPt, 0, F1_0);
 	if (weapon->id == EARTHSHAKER_ID)
 		ShakerRockStuff ();
 	if (weapon->mType.physInfo.flags & PF_PERSISTENT) {
-		if (weapon->cType.laserInfo.nLastHitObj == OBJ_IDX (powerup))
+		if (AddHitObject (weapon, OBJ_IDX (powerup)) < 0)
 			return 1;
-		weapon->cType.laserInfo.nLastHitObj = OBJ_IDX (powerup);
 		}
 	ObjectCreateExplosion (powerup->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
 	if (WI_damage_radius (weapon->id))
