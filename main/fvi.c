@@ -64,7 +64,7 @@ num = VmVecDot (vPlaneNorm, &w) - rad;
 den = -VmVecDot (vPlaneNorm, &d);
 if (!den)
 	return 0;
-#if 1
+#if 0
 if (labs (num) > labs (den))
 	return 0;
 #else
@@ -716,7 +716,7 @@ for (; iModel <= nModels; iModel++) {
 		if (h) {
 			d = VmVecNormalize (VmVecSub (&v, &hitP, p0));
 			dot = VmVecDot (&vNormal, &v);
-			if (dot >= 0)
+			if (dot > 0)
 				continue;	//behind shield face
 #if 0
 			if (d > rad)

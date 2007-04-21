@@ -1372,6 +1372,7 @@ if (i) {
 	extraGameInfo [0].nWeaponDropMode = 0;
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].nZoomMode = 0;
+	extraGameInfo [0].nHitBoxes = 0;
 	gameOptions [1].gameplay.nAutoSelectWeapon = 2;
 	gameOptions [1].gameplay.bSecretSave = 0;
 	gameOptions [1].gameplay.bTurboMode = 0;

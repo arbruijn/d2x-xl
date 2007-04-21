@@ -1326,8 +1326,11 @@ if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject))
 	return h;
 if (!pc)
 	return -1;
-if ((pc->red == 0.0f) && (pc->green == 0.0f) && (pc->blue == 0.0f))
-	return -1;
+if ((pc->red == 0.0f) && (pc->green == 0.0f) && (pc->blue == 0.0f)) {
+	if (gameStates.app.bD2XLevel)
+		return -1;
+	pc->red = pc->green = pc->blue = 1.0f;
+	}
 if (gameData.render.lights.dynamic.nLights >= MAX_OGL_LIGHTS) {
 	gameStates.render.bHaveDynLights = 0;
 	return -1;	//too many lights
