@@ -906,6 +906,11 @@ void RenderHitBox (tObject *objP, float red, float green, float blue, float alph
 	fVector		vertList [8];
 	int			i, j, iModel, nModels;
 
+if (!SHOW_OBJ_FX)
+	return;
+if (!EGI_FLAG (bRenderShield, 0, 1, 0) ||
+	 ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)))
+	return;
 if (!EGI_FLAG (nHitBoxes, 0, 0, 0)) {
 	DrawShieldSphere (objP, red, green, blue, alpha);
 	return;
