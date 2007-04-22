@@ -1932,14 +1932,23 @@ switch (objP->renderType) {
 			SetRobotLocationInfo (objP);
 			}
 		else if (objP->nType == OBJ_WEAPON) {
-			DrawPolygonObject (objP);
+			//DrawPolygonObject (objP);
+			if (bIsMissile [objP->id]) {
 #ifdef _DEBUG
-			DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	if 0
+				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	else
+				RenderHitBox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#	endif
 #endif
-			if (bIsMissile [objP->id])
 				RenderThrusterFlames (objP);
-			else
+				}
+			else {
+#ifdef _DEBUG
+				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#endif
 				RenderLightTrail (objP);
+				}
 			}
 		else if (objP->nType == OBJ_CNTRLCEN) {
 			DrawPolygonObject (objP);
@@ -3245,6 +3254,8 @@ switch (objP->controlType) {
 	case CT_AI:
 		//NOTE LINK TO CT_MORPH ABOVE!!!
 		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
+			VmVecZero (&objP->mType.physInfo.velocity);
+			VmVecZero (&objP->mType.physInfo.thrust);
 			DoAnyRobotDyingFrame (objP);
 			return 1;
 			}

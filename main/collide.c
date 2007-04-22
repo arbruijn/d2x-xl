@@ -317,6 +317,9 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 //deal with two gameData.objs.objects bumping into each other.  Apply vForce from collision
 //to each robot.  The flags tells whether the objects should take damage from
 //the collision.
+
+#define SIGN(_i)	((_i) ? (_i) / labs (_i) : 1)
+
 int BumpTwoObjects (tObject *objP0, tObject *objP1, int bDamage, vmsVector *vHitPt)
 {
 	vmsVector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
@@ -382,11 +385,13 @@ if (!((m0 + m1) && FixMul (m0, m1))) {
 	}
 VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
+HUDMessage (0, "bump force: %c%d", (SIGN (vForce.p.x) * SIGN (vForce.p.y) * SIGN (vForce.p.z)) ? '-' : '+', mag);
 if (mag < (m0 + m1) / 200) {
 #if 0//def _DEBUG
 	HUDMessage (0, "bump force too low");
 #endif
-	return 0;	// don't bump if force too low
+	if (EGI_FLAG (bUseHitAngles, 0, 0, 0))
+		return 0;	// don't bump if force too low
 	}
 //HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo.mass) / 200);
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
