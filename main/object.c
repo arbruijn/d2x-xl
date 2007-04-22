@@ -1932,7 +1932,7 @@ switch (objP->renderType) {
 			SetRobotLocationInfo (objP);
 			}
 		else if (objP->nType == OBJ_WEAPON) {
-			//DrawPolygonObject (objP);
+			DrawPolygonObject (objP);
 			if (bIsMissile [objP->id]) {
 #ifdef _DEBUG
 #	if 0
