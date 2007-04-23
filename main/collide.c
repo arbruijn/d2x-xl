@@ -385,7 +385,9 @@ if (!((m0 + m1) && FixMul (m0, m1))) {
 	}
 VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
+#if 0//def _DEBUG
 HUDMessage (0, "bump force: %c%d", (SIGN (vForce.p.x) * SIGN (vForce.p.y) * SIGN (vForce.p.z)) ? '-' : '+', mag);
+#endif
 if (mag < (m0 + m1) / 200) {
 #if 0//def _DEBUG
 	HUDMessage (0, "bump force too low");
@@ -393,7 +395,9 @@ if (mag < (m0 + m1) / 200) {
 	if (EGI_FLAG (bUseHitAngles, 0, 0, 0))
 		return 0;	// don't bump if force too low
 	}
-//HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo.mass) / 200);
+#if 0//def _DEBUG
+HUDMessage (0, "%d %d", mag, (objP0->mType.physInfo.mass + objP1->mType.physInfo.mass) / 200);
+#endif
 if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 	// exert force in the direction of the hit point to the object's center
 	VmVecSub (&vh, vHitPt, &objP1->position.vPos);

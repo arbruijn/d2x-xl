@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int hitBoxFaceVerts [6][4];
 
-int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, int nVerts);
+int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *vNormal, int nVerts);
 
 //#define _DEBUG
 
@@ -138,7 +138,8 @@ if (VmVecDot (vn2, vn1) >= 0)	//only test opposing faces
 vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
 for (i = 0; i < nv; i++) {
 	if (FindPlaneLineIntersection (vHits + 1, p2, vn2, p1 + i, p1 + ((i + 1) % nv), 0)) {
-		 if (CheckSphereToFace (vHits + 1, 0, p2, nv)) {
+		if (CheckSphereToFace (vHits + 1, 0, p2, vn2, nv)) {
+			CheckSphereToFace (vHits + 1, 0, p2, vn2, nv);
 			VmVecInc (vHits, vHits + 1);
 			nHits++;
 			}
@@ -189,8 +190,6 @@ for (i = 0; i < 6; i++) {
 		fv1 [h] = hb1 [hitBoxFaceVerts [i][h]];
 	VmVecNormal (&vn1, fv1, fv1 + 1, fv1 + 2);
 	for (j = 0; j < 6; j++) {
-		for (h = 0; h < 4; h++)
-			fv2 [j][h] = hb2 [hitBoxFaceVerts [j][h]];
 		if (VmVecDot (&vn1, vn2 + j) >= 0)
 			continue;
 		if (FindPlanePlaneIntersection (vHits + 1, fv1, &vn1, 4, fv2 [j], vn2 + j, 4)) {
@@ -202,6 +201,7 @@ for (i = 0; i < 6; i++) {
 if (nHits) {
 	VmVecCopyScale (hitP, vHits, F1_0 / nHits);
 	}
+#if 0
 else { // check whether one hitbox is completely inside the other
 	vmsVector	v1, v2,
 					vMin [2] = {{0x7fffffff, 0x7fffffff, 0x7fffffff}, {0x7fffffff, 0x7fffffff, 0x7fffffff}},
@@ -245,6 +245,7 @@ else { // check whether one hitbox is completely inside the other
 		VmVecScale (hitP, F1_0 / 4);
 		}
 	}
+#endif
 return nHits;
 }
 
@@ -254,8 +255,8 @@ typedef struct vec2d {
 	fix i, j;
 } vec2d;
 
-//given largest componant of normal, return i & j
-//if largest componant is negative, swap i & j
+//given largest component of normal, return i & j
+//if largest component is negative, swap i & j
 int ijTable [3][2] = {
 	{2, 1},          //pos x biggest
 	{0, 2},          //pos y biggest
@@ -270,9 +271,9 @@ int ijTable [3][2] = {
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint CheckPointToFace (vmsVector *checkP, vmsVector *vertList, int nVerts)
+uint CheckPointToFace (vmsVector *checkP, vmsVector *vertList, vmsVector *vNormal, int nVerts)
 {
-	vmsVector	vNormal;
+//	vmsVector	vNormal;
 	vmsVector	t;
 	int			biggest;
 	int 			i, j, nEdge;
@@ -282,12 +283,12 @@ uint CheckPointToFace (vmsVector *checkP, vmsVector *vertList, int nVerts)
 	vec2d 		vEdge, vCheck;
 	fix 			d;
 
-VmVecNormal (&vNormal, vertList, vertList + 1, vertList + 2);
+//VmVecNormal (&vNormal, vertList, vertList + 1, vertList + 2);
 //now do 2d check to see if point is in tSide
 //project polygon onto plane by finding largest component of normal
-t.p.x = labs (vNormal.v [0]); 
-t.p.y = labs (vNormal.v [1]); 
-t.p.z = labs (vNormal.v [2]);
+t.p.x = labs (vNormal->v [0]); 
+t.p.y = labs (vNormal->v [1]); 
+t.p.z = labs (vNormal->v [2]);
 if (t.p.x > t.p.y) 
 	if (t.p.x > t.p.z) 
 		biggest = 0; 
@@ -297,7 +298,7 @@ else if (t.p.y > t.p.z)
 	biggest = 1; 
 else 
 	biggest = 2;
-if (vNormal.v [biggest] > 0) {
+if (vNormal->v [biggest] > 0) {
 	i = ijTable [biggest][0];
 	j = ijTable [biggest][1];
 	}
@@ -324,7 +325,7 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, int nVerts)
+int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *vNormal, int nVerts)
 {
 	vmsVector	checkP = *pnt;
 	vmsVector	vEdge, vCheck;            //this time, real 3d vectors
@@ -335,11 +336,9 @@ int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, int nVerts)
 	int			nEdge;
 	uint			nEdgeMask;
 
-//now do 2d check to see if point is in side
-nEdgeMask = CheckPointToFace (pnt, vertList, nVerts);
-//we've gone through all the sides, are we inside?
-if (nEdgeMask == 0)
-	return IT_FACE;
+//now do 2d check to see if point is inside
+if (!(nEdgeMask = CheckPointToFace (pnt, vertList, vNormal, nVerts)))
+	return IT_FACE;	//we've gone through all the sides, and are inside
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
@@ -397,7 +396,7 @@ hitP = *intP;
 //if rad != 0, project the point down onto the plane of the polygon
 if (rad)
 	VmVecScaleInc (&hitP, vNormal, -rad);
-if (pli = CheckSphereToFace (&hitP, rad, vertList, nVerts))
+if (pli = CheckSphereToFace (&hitP, rad, vertList, vNormal, nVerts))
 	return pli;
 #if 1
 if (bCheckRad) {
@@ -900,48 +899,53 @@ return xDist;
 //determine if a vector intersects with an tObject
 //if no intersects, returns 0, else fills in intP and returns dist
 fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad, 
-								 tObject *objP, tObject *otherObjP)
+								 tObject *thisObjP, tObject *otherObjP)
 {
 	fix			size, dist;
 	vmsVector	hitP;
+	int			bThisPoly, bOtherPoly;
 	
 if (rad < 0)
 	size = 0;
 else {
-	size = objP->size;
-	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).attackType)
+	size = thisObjP->size;
+	if ((thisObjP->nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->id).attackType)
 		size = (size * 3) / 4;
 	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
-	if (objP->nType == OBJ_PLAYER &&
+	if (thisObjP->nType == OBJ_PLAYER &&
 		 ((otherObjP->nType == OBJ_PLAYER) ||
  		 ((IsCoopGame) && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 		size /= 2;
 	}
-if (EGI_FLAG (nHitBoxes, 0, 0, 0) && ((objP->renderType == RT_POLYOBJ) || (otherObjP->renderType == RT_POLYOBJ))) {
+bThisPoly = (thisObjP->renderType == RT_POLYOBJ); // && ((thisObjP->nType != OBJ_WEAPON) || bIsMissile [thisObjP->id]);
+bOtherPoly = (otherObjP->renderType == RT_POLYOBJ); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
+if (EGI_FLAG (nHitBoxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 #if 1
 	// check hitbox collisions for all polygonal objects
-	if ((objP->renderType == RT_POLYOBJ) && (otherObjP->renderType == RT_POLYOBJ)) {
-		if (!(dist = CheckHitBoxToHitBox (&hitP, objP, otherObjP)))
+	if (OBJ_IDX (thisObjP) == 2)
+		thisObjP = thisObjP;
+	if (bThisPoly && bOtherPoly) {
+		if (!(dist = CheckHitBoxToHitBox (&hitP, thisObjP, otherObjP)))
 			return 0;
 		}
 	else {
-		if (0x7fffffff == (dist = CheckVectorToHitBox (&hitP, p0, p1, rad, objP)))
+		if (0x7fffffff == (dist = CheckVectorToHitBox (&hitP, p0, p1, rad, thisObjP)))
 			return 0;
 		}
 	FindPointLineIntersection (&hitP, p0, p1, &hitP);
 #else
 #	if 0
 	// check hitbox collisions for missiles only
-	if ((IS_MISSILE (objP) && (otherObjP->renderType == RT_POLYOBJ)) ||
-		 (IS_MISSILE (otherObjP) && (objP->renderType == RT_POLYOBJ))) {
-		if (!(dist = CheckHitBoxToHitBox (&hitP, objP, otherObjP)))
+	if ((IS_MISSILE (thisObjP) && (otherObjP->renderType == RT_POLYOBJ)) ||
+		 (IS_MISSILE (otherObjP) && (thisObjP->renderType == RT_POLYOBJ))) {
+		if (!(dist = CheckHitBoxToHitBox (&hitP, thisObjP, otherObjP)))
 			return 0;
 		}
 	else 
 #	endif
 		{
 		// check hit sphere with hitbox collisions
-		if (0x7fffffff == (dist = CheckVectorToHitBox (&hitP, p0, p1, rad, objP)))
+		if (0x7fffffff == (dist = CheckVectorToHitBox (&hitP, p0, p1, rad, thisObjP)))
 			return 0;
 		FindPointLineIntersection (&hitP, p0, p1, &hitP);
 		}
@@ -949,7 +953,7 @@ if (EGI_FLAG (nHitBoxes, 0, 0, 0) && ((objP->renderType == RT_POLYOBJ) || (other
 	}
 else
 	// check hit sphere collisions
-	if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &objP->position.vPos, size + rad)))
+	if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &thisObjP->position.vPos, size + rad)))
 		return 0;
 *intP = hitP;
 return dist;
@@ -965,7 +969,7 @@ fvi_hit_info fviHitData;
 
 int FVICompute (vmsVector *intP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1, 
 					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList, 
-					 short *nSegments, int entrySegP);
+					 short *nSegments, int nEntrySeg);
 
 //Find out if a vector intersects with anything.
 //Fills in hitData, an tFVIData structure (see header file).
@@ -1082,15 +1086,15 @@ int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace)
 
 int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1, 
 					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList, 
-					 short *nSegments, int entrySegP)
+					 short *nSegments, int nEntrySeg)
 {
 	tSegment		*segP;				//the tSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
-	//@@int sideMask;				//mask of sides - can be on back of face but not tSide
 	short			nObject;
 	segmasks		masks;
 	vmsVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit point
+	int			nObjSegList [7], nObjSegs, iObjSeg, nSegment, i;
 	int			nHitType = HIT_NONE;							//what sort of hit
 	int			nHitSegment = -1;
 	int			nHitNoneSegment = -1;
@@ -1107,71 +1111,86 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 if (flags & FQ_GET_SEGLIST)
 	*segList = nStartSeg;
 *nSegments = 1;
-segP = gameData.segs.segments + nStartSeg;
 fviHitData.nNestCount++;
 //first, see if vector hit any objects in this tSegment
 nThisType = (nThisObject < 0) ? -1 : gameData.objs.objects [nThisObject].nType;
 #if 1
 if (flags & FQ_CHECK_OBJS) {
 	//LogErr ("   checking objects...");
-	for (nObject = segP->objects; nObject != -1; nObject = otherObjP->next) {
-		otherObjP = gameData.objs.objects + nObject;
+	nObjSegList [0] = nStartSeg;
+	nObjSegs = 1;
+#if 1
+	segP = gameData.segs.segments + nStartSeg;
+	for (iObjSeg = 0; iObjSeg < 6; iObjSeg++) {
+		if (0 > (nSegment = segP->children [iObjSeg]))
+			continue;
+		for (i = 0; i < nSegsVisited && (nSegment != segsVisited [i]); i++)
+			;
+		if (i == nSegsVisited)
+			nObjSegList [nObjSegs++] = nSegment;
+		}
+#endif
+	for (iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
+		segP = gameData.segs.segments + nObjSegList [iObjSeg];
+		for (nObject = segP->objects; nObject != -1; nObject = otherObjP->next) {
+			otherObjP = gameData.objs.objects + nObject;
 #	ifdef _DEBUG
-		if ((thisObjP->nType == OBJ_WEAPON) && (otherObjP->nType == OBJ_WEAPON) && 
-			 bIsMissile [otherObjP->id] && !bIsMissile [thisObjP->id])
-			nObject = nObject;
+			if ((thisObjP->nType == OBJ_WEAPON) && (otherObjP->nType == OBJ_WEAPON) && 
+				bIsMissile [otherObjP->id] && !bIsMissile [thisObjP->id])
+				nObject = nObject;
 #	endif
-		nOtherType = otherObjP->nType;
-		if (otherObjP->flags & OF_SHOULD_BE_DEAD)
-			continue;
-		if (nThisObject == nObject)
-			continue;
-		if (ignoreObjList && ObjectInList (nObject, ignoreObjList))
-			continue;
-		if (LasersAreRelated (nObject, nThisObject))
-			continue;
-		if (nThisObject > -1) {
-			if ((CollisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
-				 (CollisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+			nOtherType = otherObjP->nType;
+			if (otherObjP->flags & OF_SHOULD_BE_DEAD)
 				continue;
-			}
-		nFudgedRad = radP1;
+			if (nThisObject == nObject)
+				continue;
+			if (ignoreObjList && ObjectInList (nObject, ignoreObjList))
+				continue;
+			if (LasersAreRelated (nObject, nThisObject))
+				continue;
+			if (nThisObject > -1) {
+				if ((CollisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
+					(CollisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+					continue;
+				}
+			nFudgedRad = radP1;
 
-		//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
-		if ((nOtherType == OBJ_POWERUP) && (flags & FQ_IGNORE_POWERUPS))
-			continue;
-		//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
-		if (nThisType == OBJ_ROBOT) {
-			if (nOtherType == OBJ_ROBOT)
+			//	If this is a powerup, don't do collision if flag FQ_IGNORE_POWERUPS is set
+			if ((nOtherType == OBJ_POWERUP) && (flags & FQ_IGNORE_POWERUPS))
 				continue;
-			if (ROBOTINFO (thisObjP->id).attackType)
-				nFudgedRad = (radP1 * 3) / 4;
-			}
-		//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
-		if ((nThisType == OBJ_PLAYER )&&
-			 ((nOtherType == OBJ_PLAYER) ||
-			  (IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
-			nFudgedRad = radP1 / 2;
-		d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
-		if (d && (d < dMin)) {
-			fviHitData.nObject = nObject;
-			Assert(fviHitData.nObject != -1);
-			dMin = d;
-			vClosestHitPoint = vHitPoint;
-			nHitType = HIT_OBJECT;
+			//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
+			if (nThisType == OBJ_ROBOT) {
+				if (nOtherType == OBJ_ROBOT)
+					continue;
+				if (ROBOTINFO (thisObjP->id).attackType)
+					nFudgedRad = (radP1 * 3) / 4;
+				}
+			//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
+			if ((nThisType == OBJ_PLAYER ) &&
+				((nOtherType == OBJ_PLAYER) ||
+				(IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
+				nFudgedRad = radP1 / 2;
+			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+			if (d && (d < dMin)) {
+				fviHitData.nObject = nObject;
+				Assert(fviHitData.nObject != -1);
+				dMin = d;
+				vClosestHitPoint = vHitPoint;
+				nHitType = HIT_OBJECT;
+				}
 			}
 		}
-	//LogErr ("done\n");
 	}
 #endif
+segP = gameData.segs.segments + nStartSeg;
 if ((nThisObject > -1) && (CollisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
-//now, check tSegment walls
+//now, check segment walls
 startMask = GetSegMasks (p0, nStartSeg, radP0).faceMask;
 masks = GetSegMasks (p1, nStartSeg, radP1);    //on back of which faces?
 if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
-if (endMask = masks.faceMask) { //on the back of at least one iFace
+if (endMask = masks.faceMask) { //on the back of at least one face
 	short nSide, iFace, bit;
 
 	//for each iFace we are on the back of, check if intersected
@@ -1183,7 +1202,7 @@ if (endMask = masks.faceMask) { //on the back of at least one iFace
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (endMask & bit) {            //on the back of this iFace
 				int nFaceHitType;      //in what way did we hit the iFace?
-				if (segP->children [nSide] == entrySegP)
+				if (segP->children [nSide] == nEntrySeg)
 					continue;		//don't go back through entry nSide
 				//did we go through this wall/door?
 				nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check

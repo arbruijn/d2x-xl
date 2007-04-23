@@ -850,14 +850,15 @@ if (nSegment != -1) {
 
 void ComputeHitBox (tObject *objP, vmsVector *vertList, int iSubObj)
 {
-	vmsVector	vMin = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].mins [iSubObj];
-	vmsVector	vMax = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].maxs [iSubObj];
-	vmsVector	vOffset;
-	vmsVector	hv;
-	vmsMatrix	m;
-	int			i;
+	tModelHitboxes	*phb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
+	vmsVector		vMin = phb->mins [iSubObj];
+	vmsVector		vMax = phb->maxs [iSubObj];
+	vmsVector		vOffset;
+	vmsVector		hv;
+	vmsMatrix		m;
+	int				i;
 
-VmVecAdd (&vOffset, &objP->position.vPos, gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].offsets + iSubObj);
+VmVecAdd (&vOffset, &objP->position.vPos, phb->offsets + iSubObj);
 VmCopyTransposeMatrix (&m, &objP->position.mOrient);
 for (i = 0; i < 8; i++) {
 	hv.p.x = hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x;
@@ -941,7 +942,7 @@ for (; iModel <= nModels; iModel++) {
 	glLineWidth (2);
 	for (i = 0; i < 6; i++) {
 		glBegin (GL_LINE_LOOP);
-		for (j = 0; j < 5; j++)
+		for (j = 0; j < 4; j++)
 			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j % 4]));
 		glEnd ();
 		}
@@ -2002,6 +2003,9 @@ switch (objP->renderType) {
 				}
 			else
 				DrawWeaponVClip (objP); 
+#ifdef _DEBUG
+			DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#endif
 			}
 		break;
 
@@ -3261,10 +3265,14 @@ switch (objP->controlType) {
 		if (gameStates.gameplay.bNoBotAI || (gameStates.app.bGameSuspended & SUSP_ROBOTS)) {
 			VmVecZero (&objP->mType.physInfo.velocity);
 			VmVecZero (&objP->mType.physInfo.thrust);
+			VmVecZero (&objP->mType.physInfo.rotThrust);
 			DoAnyRobotDyingFrame (objP);
+#if 1//ndef _DEBUG
 			return 1;
+#endif
 			}
-		DoAIFrame (objP);
+		else
+			DoAIFrame (objP);
 		break;
 
 	case CT_CAMERA:		
@@ -3326,8 +3334,10 @@ switch (objP->movementType) {
 		break;								//this doesn't move
 
 	case MT_PHYSICS:	
+#ifdef _DEBUG
 		if (objP->nType != OBJ_PLAYER)
 			objP = objP;
+#endif
 		DoPhysicsSim (objP);	
 		SetDynLightPos (OBJ_IDX (objP));
 		break;	//move by physics
