@@ -175,9 +175,10 @@ void InitAIObject (short nObject, short behavior, short nHideSegment)
 {
 	tObject		*objP = gameData.objs.objects + nObject;
 	tAIStatic	*aip = &objP->cType.aiInfo;
-	tAILocal		*ailp = &gameData.ai.localInfo [nObject];
+	tAILocal		*ailp = gameData.ai.localInfo + nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
 
+Assert (nObject >= 0);
 if (behavior == 0) {
 	behavior = AIB_NORMAL;
 	aip->behavior = (ubyte) behavior;
@@ -601,6 +602,7 @@ int DoSillyAnimation (tObject *objP)
 	int				attackType;
 	int				flinch_attack_scale = 1;
 
+	Assert (nObject >= 0);
 	robotType = objP->id;
 	num_guns = ROBOTINFO (robotType).nGuns;
 	attackType = ROBOTINFO (robotType).attackType;
@@ -700,7 +702,7 @@ int DoSillyAnimation (tObject *objP)
 
 		if (at_goal) {
 			//tAIStatic	*aip = &objP->cType.aiInfo;
-			tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
+			tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (objP);
 			ailp->achievedState [nGun] = ailp->goalState [nGun];
 			if (ailp->achievedState [nGun] == AIS_RECO)
 				ailp->goalState [nGun] = AIS_FIRE;
@@ -737,6 +739,7 @@ void AIFrameAnimation (tObject *objP)
 		vmsAngVec	*goalangp = &gameData.ai.localInfo [nObject].goalAngles [joint];
 		vmsAngVec	*deltaangp = &gameData.ai.localInfo [nObject].deltaAngles [joint];
 
+		Assert (nObject >= 0);
 		delta_to_goal = goalangp->p - curangp->p;
 		if (delta_to_goal > 32767)
 			delta_to_goal = delta_to_goal - 65536;
@@ -948,6 +951,7 @@ void AIFireLaserAtPlayer (tObject *objP, vmsVector *vFirePoint, int nGun, vmsVec
 	fix			aim, dot;
 	int			count, i;
 
+Assert (nObject >= 0);
 //	If this robot is only awake because a camera woke it up, don't fire.
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 	return;
@@ -1375,7 +1379,7 @@ void MakeRandomVector (vmsVector *vec)
 void mprintf_animation_info (tObject *objP)
 {
 	tAIStatic	*aip = &objP->cType.aiInfo;
-	tAILocal		*ailp = &gameData.ai.localInfo [OBJ_IDX (objP)];
+	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (objP);
 
 	if (!gameData.ai.bInfoEnabled)
 		return;
@@ -2122,7 +2126,8 @@ void TeleportBoss (tObject *objP)
 	vmsVector	vBossDir, vNewPos;
 
 //	Pick a random tSegment from the list of boss-teleportable-to segments.
-i = FindBoss (OBJ_IDX (objP));
+Assert (nObject >= 0);
+i = FindBoss (nObject);
 if (i < 0)
 	return;
 Assert (gameData.boss [i].nTeleportSegs > 0);

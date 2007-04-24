@@ -1190,6 +1190,10 @@ int HandleSystemKey(int key)
 				ResetPingStats ();
 			break;
 
+		case KEY_CTRLED+KEY_F8:
+			gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 4;
+			break;
+
 		case KEY_F8:
 			MultiSendMsgStart(-1);
 			bStopPlayerMovement = 0;

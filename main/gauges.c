@@ -1275,6 +1275,8 @@ if (!IsMultiGame || IsCoopGame) {
 		if (gameStates.render.fonts.bHires)
 			y += nLineSpacing;
 		}
+	if (gameOpts->render.cockpit.bPlayerStats)
+		y += 2 * nLineSpacing;
 
 	x0 = grdCurCanv->cv_w;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -1307,6 +1309,53 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void HUDShowPlayerStats (void)
+{
+	int		h, w, aw, y;
+	double	p [3], s [3];
+	char		szStats [50];
+
+if (!gameOpts->render.cockpit.bPlayerStats)
+	return;
+if (!SHOW_HUD)
+	return;
+if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
+	y = 3 * nLineSpacing;
+else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
+	y = 2 * nLineSpacing;
+else {//if (!SHOW_COCKPIT) {
+	y = 2 * nLineSpacing;
+	if (gameStates.render.fonts.bHires)
+		y += nLineSpacing;
+	}
+GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+y = 6 + 2 * nLineSpacing;
+h = gameData.stats.nDisplayMode / 2;
+if (gameData.stats.nDisplayMode % 2 == 0) {
+	sprintf (szStats, "%c:%d-%d %d-%d %d-%d", 
+				h ? 'T' : 'L', 
+				gameData.stats.player [h].nHits [0],
+				gameData.stats.player [h].nMisses [0],
+				gameData.stats.player [h].nHits [1],
+				gameData.stats.player [h].nMisses [1],
+				gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1],
+				gameData.stats.player [h].nMisses [0] + gameData.stats.player [h].nMisses [1]);
+	}
+else {
+	s [0] = gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nMisses [0];
+	s [1] = gameData.stats.player [h].nHits [1] + gameData.stats.player [h].nMisses [1];
+	s [2] = s [0] + s [1];
+	p [0] = s [0] ? (gameData.stats.player [h].nHits [0] / s [0]) * 100 : 0;
+	p [1] = s [1] ? (gameData.stats.player [h].nHits [1] / s [1]) * 100 : 0;
+	p [2] = s [2] ? ((gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1]) / s [2]) * 100 : 0;
+	sprintf (szStats, "%c:%1.1f%c %1.1f%c %1.1f%c", h ? 'T' : 'L', p [0], '%', p [1], '%', p [2], '%');
+	}
+GrGetStringSize (szStats, &w, &h, &aw);
+GrString (grdCurCanv->cv_w - w - LHX (2), y, szStats);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1990,6 +2039,7 @@ if (gameStates.app.bNostalgia)
 	return;
 HUDToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || SHOW_COCKPIT) {
+	HUDShowPlayerStats ();
 	HUDShowObjTally ();
 	if (EGI_FLAG (nWeaponIcons, 0, 1, 0)) {
 		cmScaleX *= HUD_ASPECT;

@@ -251,7 +251,7 @@ memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.mode
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [i].modelData = 
 	gameData.models.defPolyModels [i].modelData = NULL;
-	PolyModelDataRead (gameData.models.polyModels + i, gameData.models.defPolyModels + i, fp);
+	PolyModelDataRead (gameData.models.polyModels + i, i, gameData.models.defPolyModels + i, fp);
 	}
 
 for (i = 0; i < gameData.models.nPolyModels; i++)
@@ -1175,7 +1175,7 @@ if (bVertigoData) {
 for (i = j; i < gameData.models.nPolyModels; i++) {
 	gameData.models.defPolyModels [i].modelData =
 	gameData.models.polyModels [i].modelData = NULL;
-	PolyModelDataRead (gameData.models.polyModels + i, bVertigoData ? gameData.models.defPolyModels + i : NULL, fp);
+	PolyModelDataRead (gameData.models.polyModels + i, i, bVertigoData ? gameData.models.defPolyModels + i : NULL, fp);
 	}
 for (i = j; i < gameData.models.nPolyModels; i++)
 	gameData.models.nDyingModels [i] = CFReadInt (fp);
@@ -1323,7 +1323,7 @@ for (j = 0; j < t; j++) {
 	pm = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
 	FreeModel (pm);
 	PolyModelRead (pm, fp);
-	PolyModelDataRead (pm, NULL, fp);
+	PolyModelDataRead (pm, i, NULL, fp);
 	pm->rad = G3PolyModelSize (pm, i);
 	if (bAltModels) {
 #if 0
@@ -1479,8 +1479,8 @@ int LoadExitModels ()
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num + 3;
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].modelData = NULL;
-		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, NULL, exit_hamfile);
-		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, NULL, exit_hamfile);
+		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, gameData.endLevel.exit.nModel, NULL, exit_hamfile);
+		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, gameData.endLevel.exit.nDestroyedModel, NULL, exit_hamfile);
 		CFClose (exit_hamfile);
 		}
 	else if (CFExist ("exit01.pof", gameFolders.szDataDir, 0) && 
@@ -1524,8 +1524,8 @@ int LoadExitModels ()
 		CFSeek (exit_hamfile, offset2, SEEK_SET);
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].modelData = NULL;
-		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, NULL, exit_hamfile);
-		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, NULL, exit_hamfile);
+		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, gameData.endLevel.exit.nModel, NULL, exit_hamfile);
+		PolyModelDataRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, gameData.endLevel.exit.nDestroyedModel, NULL, exit_hamfile);
 		CFClose (exit_hamfile);
 	} else {
 #if TRACE

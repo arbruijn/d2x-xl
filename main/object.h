@@ -251,15 +251,15 @@ typedef struct tObject {
 	union {
 		tPhysicsInfo	physInfo; // a physics tObject
 		vmsVector   	spinRate; // for spinning objects
-		} mType __pack__ ;
+		} mType __pack__;
 	// control info, determined by CONTROL_TYPE
 	union {
-		tLaserInfo      laserInfo;
-		tExplosionInfo  explInfo;      // NOTE: debris uses this also
-		tAIStatic       aiInfo;
-		tObjLightInfo   lightInfo;     // why put this here?  Didn't know what else to do with it.
-		tPowerupInfo    powerupInfo;
-		} cType __pack__ ;
+		tLaserInfo		laserInfo;
+		tExplosionInfo explInfo;      // NOTE: debris uses this also
+		tAIStatic      aiInfo;
+		tObjLightInfo  lightInfo;     // why put this here?  Didn't know what else to do with it.
+		tPowerupInfo   powerupInfo;
+		} cType __pack__;
 	// render info, determined by RENDER_TYPE
 	union {
 		tPolyObjInfo   polyObjInfo;      // polygon model
@@ -447,7 +447,7 @@ void SpecialResetObjects(void);
 
 // attaches an tObject, such as a fireball, to another tObject, such as
 // a robot
-void AttachObject(tObject *parent,tObject *sub);
+void AttachObject(tObject *parent, tObject *sub);
 
 extern void CreateSmallFireballOnObject(tObject *objp, fix size_scale, int soundFlag);
 
@@ -495,7 +495,6 @@ int FindBoss (int nObject);
 void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
-void ComputeHitBox (tObject *objP, vmsVector *vPos, vmsVector *vertList, int iSubObj);
 
 extern ubyte bIsMissile [];
 

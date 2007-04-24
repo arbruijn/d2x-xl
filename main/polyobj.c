@@ -778,7 +778,7 @@ int LoadPolygonModel (char *filename, int nTextures, grsBitmap ***textures)
 	strcpy (Pof_names [gameData.models.nPolyModels], filename);
 	ReadModelFile (gameData.models.polyModels+gameData.models.nPolyModels, filename, r);
 	PolyObjFindMinMax (gameData.models.polyModels + gameData.models.nPolyModels);
-	G3InitPolyModel (gameData.models.polyModels + gameData.models.nPolyModels);
+	G3InitPolyModel (gameData.models.polyModels + gameData.models.nPolyModels, gameData.models.nPolyModels);
 	if (nHighestTexture + 1 != nTextures)
 		Error ("Model <%s> references %d textures but specifies %d.", filename, nHighestTexture+1, nTextures);
 	gameData.models.polyModels [gameData.models.nPolyModels].nTextures = nTextures;
@@ -912,7 +912,7 @@ return i;
 /*
  * routine which allocates, reads, and inits a tPolyModel's modelData
  */
-void PolyModelDataRead (tPolyModel *pm, tPolyModel *pdm, CFILE *fp)
+void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFILE *fp)
 {
 if (pm->modelData)
 	d_free (pm->modelData);
@@ -931,7 +931,7 @@ AlignPolyModelData (pm);
 #endif
 G3CheckAndSwap (pm->modelData);
 //verify (pm->modelData);
-G3InitPolyModel (pm);
+G3InitPolyModel (pm, nModel);
 }
 
 //------------------------------------------------------------------------------

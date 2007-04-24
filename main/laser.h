@@ -161,16 +161,16 @@ extern fix xOmegaCharge;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int LaserPlayerFireSpread (tObject *objP, ubyte laserType, int gun_num, fix spreadr, fix spreadu, int makeSound, int harmless)
+static inline int LaserPlayerFireSpread (tObject *objP, ubyte laserType, int nGun, fix spreadr, fix spreadu, int makeSound, int harmless)
 {
-return LaserPlayerFireSpreadDelay (objP, laserType, gun_num, spreadr, spreadu, 0, makeSound, harmless);
+return LaserPlayerFireSpreadDelay (objP, laserType, nGun, spreadr, spreadu, 0, makeSound, harmless);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int LaserPlayerFire (tObject *objP, ubyte laserType, int gun_num, int makeSound, int harmless)
+static int inline LaserPlayerFire (tObject *objP, ubyte laserType, int nGun, int makeSound, int harmless)
 {
-return LaserPlayerFireSpread (objP, laserType, gun_num, 0, 0, makeSound, harmless);
+return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

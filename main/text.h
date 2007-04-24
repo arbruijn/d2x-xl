@@ -1667,9 +1667,9 @@ void LoadGameTexts(void);
 #define TXT_HIT_SPHERES				GT(883)
 #define TXT_SIMPLE_HITBOXES		GT(884)
 #define TXT_COMPLEX_HITBOXES		GT(885)
+#define TXT_PLAYER_STATS			GT(886)
 
 #if 0
-#define TXT_				GT(886)
 #define TXT_				GT(887)
 #define TXT_				GT(888)
 #define TXT_				GT(889)
@@ -2060,10 +2060,10 @@ void LoadGameTexts(void);
 #define HTX_COOP_PENALTY			HT(256)				
 #define HTX_GPLAY_SHOOTMISSILES	HT(257)				
 #define HTX_GPLAY_HITBOXES			HT(258)				
+#define HTX_CPIT_PLAYERSTATS		HT(259)				
 
 #if 0
 				
-#define HTX_					HT(259)				
 #define HTX_					HT(260)				
 #define HTX_					HT(261)				
 #define HTX_					HT(262)				

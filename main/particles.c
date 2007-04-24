@@ -543,7 +543,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int RenderParticle (tParticle *pParticle)
+int RenderParticle (tParticle *pParticle, double brightness)
 {
 	vmsVector			hp;
 	GLdouble				u, v, x, y, z, h, w;
@@ -592,6 +592,9 @@ if (SHOW_DYN_LIGHT) {
 		pc.b *= (double) psc->color.blue;
 		}
 	}
+pc.r *= brightness;
+pc.g *= brightness;
+pc.b *= brightness;
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites) {
 #	if OGL_VERTEX_ARRAYS
@@ -1029,6 +1032,7 @@ int RenderCloud (tCloud *pCloud)
 				bSorted = gameOpts->render.smoke.bSort && (j > 1),
 				bReverse;
 	tPartIdx	*pPartIdx;
+	double	brightness = pCloud->brightness;
 
 if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
 	return 0;
@@ -1037,10 +1041,10 @@ if (bSorted) {
 	bReverse = SortParticles (pCloud->pParticles, pPartIdx, j);
 	if (bReverse)
 		for (i = j; i; )
-			RenderParticle (pCloud->pParticles + pPartIdx [--i].i);
+			RenderParticle (pCloud->pParticles + pPartIdx [--i].i, brightness);
 	else
 		for (i = 0; i < j; i++)
-			RenderParticle (pCloud->pParticles + pPartIdx [i].i);
+			RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness);
 	}
 for (i = 0; i < j; i++)
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
@@ -1050,7 +1054,7 @@ for (i = 0; i < j; i++)
 			nBuffer = iBuffer;
 			}
 #else
-	RenderParticle (pCloud->pParticles + i);
+	RenderParticle (pCloud->pParticles + i, brightness);
 #endif
 return EndRenderSmoke (pCloud);
 }
@@ -1078,6 +1082,13 @@ if (pCloud->bHaveDir = (pDir != NULL))
 void SetCloudLife (tCloud *pCloud, int nLife)
 {
 pCloud->nLife = nLife;
+}
+
+//------------------------------------------------------------------------------
+
+void SetCloudSpeed (tCloud *pCloud, int nSpeed)
+{
+pCloud->nSpeed = nSpeed;
 }
 
 //------------------------------------------------------------------------------
@@ -1370,6 +1381,8 @@ int CreateCloudList (void)
 	int			h, i, j, k;
 	vmsVector	vPos;
 	tSmoke		*pSmoke = gameData.smoke.smoke;
+	tObject		*objP;
+	double		brightness;
 
 h = CloudCount ();
 if (!h)
@@ -1383,7 +1396,10 @@ for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 		return 0;
 		}
 	if (pSmoke->pClouds) {
+		objP = gameData.objs.objects + pSmoke->nObject;
+		brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
 		for (j = 0; j < pSmoke->nClouds; j++, k++) {
+			pSmoke->pClouds [j].brightness = brightness;
 			pCloudList [k].pCloud = pSmoke->pClouds + j;
 			G3TransformPoint (&vPos, &pSmoke->pClouds [j].pos, 0);
 			pCloudList [k].xDist = VmVecMag (&vPos);
@@ -1400,6 +1416,8 @@ return h;
 int RenderSmoke (void)
 {
 	int		h, i, j;
+	tObject	*objP;
+	double	brightness;
 
 #if !EXTRA_VERTEX_ARRAYS
 nBuffer = 0;
@@ -1422,10 +1440,14 @@ else {
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
 				return 0;
+			objP = gameData.objs.objects + pSmoke->nObject;
+			brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
 			if (gameData.smoke.objects [pSmoke->nObject] < 0)
 				SetSmokeLife (i, 0);
-			for (j = 0; j < pSmoke->nClouds; j++)
+			for (j = 0; j < pSmoke->nClouds; j++) {
+				pSmoke->pClouds [j].brightness = brightness;
 				RenderCloud (pSmoke->pClouds + j);
+				}
 			}
 		}
 	}
@@ -1484,7 +1506,8 @@ if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds && (pSmoke->pClouds->nLife != nLife)) {
 		//LogErr ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
-		for (i = 0; i < pSmoke->nClouds; i++)
+		int j;
+		for (j = 0; j < pSmoke->nClouds; j++)
 			SetCloudLife (pSmoke->pClouds, nLife);
 		}
 	}
@@ -1499,6 +1522,18 @@ if (IsUsedSmoke (i)) {
 	pSmoke->nType = nType;
 	for (i = 0; i < pSmoke->nClouds; i++)
 		SetCloudType (pSmoke->pClouds + i, nType);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void SetSmokeSpeed (int i, int nSpeed)
+{
+if (IsUsedSmoke (i)) {
+	tSmoke *pSmoke = gameData.smoke.smoke + i;
+	pSmoke->nSpeed = nSpeed;
+	for (i = 0; i < pSmoke->nClouds; i++)
+		SetCloudSpeed (pSmoke->pClouds + i, nSpeed);
 	}
 }
 

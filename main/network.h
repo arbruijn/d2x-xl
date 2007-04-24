@@ -228,7 +228,7 @@ typedef struct tExtraGameInfo {
 	char		nMslTurnSpeed;
 	char		nCoopPenalty;
 	char		bShootMissiles;
-	char		nHitBoxes;
+	char		nHitboxes;
 	char		nSpotSize;
 	char		nSpotStrength;
 	int		nLightRange;

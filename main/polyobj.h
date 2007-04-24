@@ -104,6 +104,6 @@ extern int PolyModelReadN(tPolyModel *pm, int n, CFILE *fp);
 /*
  * routine which allocates, reads, and inits a tPolyModel's modelData
  */
-void PolyModelDataRead(tPolyModel *pm, tPolyModel *pdm, CFILE *fp);
+void PolyModelDataRead(tPolyModel *pm, int nModel, tPolyModel *pdm, CFILE *fp);
 
 #endif /* _POLYOBJ_H */

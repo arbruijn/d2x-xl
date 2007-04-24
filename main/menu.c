@@ -1574,7 +1574,7 @@ void GaugeOptionsMenu (void)
 {
 	tMenuItem m [10];
 	int	i, opt, choice = 0;
-	int	optScaleGauges, optFlashGauges, optShieldWarn, optObjectTally;
+	int	optScaleGauges, optFlashGauges, optShieldWarn, optObjectTally, optPlayerStats;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1595,6 +1595,8 @@ do {
 		optShieldWarn = -1;
 	ADD_CHECK (opt, TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	optObjectTally = opt++;
+	ADD_CHECK (opt, TXT_PLAYER_STATS, gameOpts->render.cockpit.bPlayerStats, KEY_S, HTX_CPIT_PLAYERSTATS);
+	optPlayerStats = opt++;
 	do {
 		i = ExecMenu1 (NULL, TXT_GAUGES_MENUTITLE, opt, m, &GaugeOptionsCallback, &choice);
 	} while (i >= 0);
@@ -1604,12 +1606,15 @@ do {
 			GET_VAL (gameOpts->render.cockpit.bFlashGauges, optFlashGauges);
 			GET_VAL (gameOpts->gameplay.bShieldWarning, optShieldWarn);
 			GET_VAL (gameOpts->render.cockpit.bObjectTally, optObjectTally);
+			GET_VAL (gameOpts->render.cockpit.bPlayerStats, optPlayerStats);
 			}
 		else {
 #if EXPMODE_DEFAULTS
 			gameOpts->render.cockpit.bScaleGauges = 1;
 			gameOpts->render.cockpit.bFlashGauges = 1;
 			gameOpts->gameplay.bShieldWarning = 0;
+			gameOpts->render.cockpit.bObjectTally = 0;
+			gameOpts->render.cockpit.bPlayerStats = 0;
 #endif
 			}
 		}
@@ -3029,7 +3034,7 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
-			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1, optHitBoxes = -1;
+			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1, optHitboxes = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szSpeedBoost [50], szFusionPower [50], szMaxSmokeGrens [50],
 			szMslTurnSpeed [50];
@@ -3107,12 +3112,12 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
-		optHitBoxes = opt++;
+		optHitboxes = opt++;
 		ADD_RADIO (opt, TXT_SIMPLE_HITBOXES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
 		opt++;
 		ADD_RADIO (opt, TXT_COMPLEX_HITBOXES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
 		opt++;
-		m [optHitBoxes + NMCLAMP (extraGameInfo [0].nHitBoxes, 0, 2)].value = 1;
+		m [optHitboxes + NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2)].value = 1;
 		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
@@ -3153,8 +3158,8 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
 	for (i = 0; i < 3; i++)
-		if (m [optHitBoxes + i].value) {
-			extraGameInfo [0].nHitBoxes = i;
+		if (m [optHitboxes + i].value) {
+			extraGameInfo [0].nHitboxes = i;
 			break;
 			}
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
@@ -3173,7 +3178,7 @@ else {
 	extraGameInfo [0].bShootMissiles = 0;
 	extraGameInfo [0].bFluidPhysics = 1;
 	extraGameInfo [0].nWeaponDropMode = 1;
-	extraGameInfo [0].nHitBoxes = 0;
+	extraGameInfo [0].nHitboxes = 0;
 	gameOpts->gameplay.bInventory = 0;
 #endif
 	}

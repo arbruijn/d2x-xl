@@ -55,6 +55,7 @@ typedef struct tCloud {
 	int			nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
 	int			nPartLimit;		//highest max. part. no ever set for this cloud
 	float			nPartScale;
+	double		brightness;
 	int			nMoved;			//time last moved
 	short			nSegment;
 	short			nObject;
@@ -93,6 +94,7 @@ void SetSmokePos (int i, vmsVector *pos);
 void SetSmokeDir (int i, vmsVector *pDir);
 void SetSmokeLife (int i, int nLife);
 void SetSmokeType (int i, int nType);
+void SetSmokeSpeed (int i, int nSpeed);
 tCloud *GetCloud (int i, int j);
 int GetSmokeType (int i);
 void FreeParticleImages (void);

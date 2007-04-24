@@ -336,6 +336,59 @@ if (fviResult == HIT_WALL)
 
 //	-----------------------------------------------------------------------------------------------------------
 
+void UpdateStats (tObject *objP, int nHitType)
+{
+	int	i;
+
+if (!nHitType)
+	return;
+if (objP->nType != OBJ_WEAPON)
+	return;
+if (objP->cType.laserInfo.nParentObj != OBJ_IDX (gameData.objs.console))
+	return;
+switch (objP->id) {
+	case FUSION_ID:
+		if (nHitType == HIT_OBJECT)
+			return;
+		if (objP->cType.laserInfo.nLastHitObj > 0)
+			nHitType = HIT_OBJECT;
+	case LASER_ID:
+	case LASER_ID + 1:
+	case LASER_ID + 2:
+	case LASER_ID + 3:
+	case VULCAN_ID:
+	case SPREADFIRE_ID:
+	case PLASMA_ID:
+	case SUPERLASER_ID:
+	case SUPERLASER_ID + 1:
+	case GAUSS_ID:
+	case HELIX_ID:
+	case PHOENIX_ID:
+		i = 0;
+		break;
+	case CONCUSSION_ID:
+	case FLASHMSL_ID:
+	case GUIDEDMSL_ID:
+	case MERCURYMSL_ID:
+		i = 1;
+		break;
+	default:
+		return;
+	}
+if (nHitType == HIT_WALL) {
+	gameData.stats.player [0].nMisses [i]++;
+	gameData.stats.player [1].nMisses [i]++;
+	}
+else if (nHitType == HIT_OBJECT) {
+	gameData.stats.player [0].nHits [i]++;
+	gameData.stats.player [1].nHits [i]++;
+	}
+else
+	return;
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 extern tObject *monsterballP;
 extern int nWeaponObj;
 
@@ -513,6 +566,7 @@ retryMove:
 	if (objP->nType == OBJ_WEAPON)
 		objP = objP;
 	fviResult = FindVectorIntersection (&fq, &hi);
+	UpdateStats (objP, fviResult);
 #if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
 		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, f2fl (VmVecMag (&objP->mType.physInfo.velocity)));
@@ -783,6 +837,7 @@ retryMove:
 	} while (bRetry);
 	//	Pass retry nTries info to AI.
 	if (objP->controlType == CT_AI) {
+		Assert (nObject >= 0);
 		if (nTries > 0) {
 			gameData.ai.localInfo [nObject].nRetryCount = nTries - 1;
 #ifdef _DEBUG

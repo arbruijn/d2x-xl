@@ -507,13 +507,12 @@ return 1;
 //------------------------------------------------------------------------------
 
 //walks through all submodels of a polymodel and determines the coordinate extremes
-int G3GetPolyModelMinMax (void *modelP, vmsVector *pvMin, vmsVector *pvMax, vmsVector *pvOffs, int nSubModels)
+int G3GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
 {
 	ubyte			*p = modelP;
 	int			i, n, nv;
 	vmsVector	*v, hv;
-	vmsVector	_vMin = *pvMin, 
-					_vMax = *pvMax;
+	tHitbox		hb = *phb;
 
 G3CheckAndSwap (modelP);
 for (;;)
@@ -525,18 +524,18 @@ for (;;)
 			v = VECPTR (p + 4);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (_vMin.p.x > hv.p.x)
-					_vMin.p.x = hv.p.x;
-				else if (_vMax.p.x < hv.p.x)
-					_vMax.p.x = hv.p.x;
-				if (_vMin.p.y > hv.p.y)
-					_vMin.p.y = hv.p.y;
-				else if (_vMax.p.y < hv.p.y)
-					_vMax.p.y = hv.p.y;
-				if (_vMin.p.z > hv.p.z)
-					_vMin.p.z = hv.p.z;
-				else if (_vMax.p.z < hv.p.z)
-					_vMax.p.z = hv.p.z;
+				if (hb.vMin.p.x > hv.p.x)
+					hb.vMin.p.x = hv.p.x;
+				else if (hb.vMax.p.x < hv.p.x)
+					hb.vMax.p.x = hv.p.x;
+				if (hb.vMin.p.y > hv.p.y)
+					hb.vMin.p.y = hv.p.y;
+				else if (hb.vMax.p.y < hv.p.y)
+					hb.vMax.p.y = hv.p.y;
+				if (hb.vMin.p.z > hv.p.z)
+					hb.vMin.p.z = hv.p.z;
+				else if (hb.vMax.p.z < hv.p.z)
+					hb.vMax.p.z = hv.p.z;
 				}
 			p += n * sizeof (vmsVector) + 4;
 			break;
@@ -546,18 +545,18 @@ for (;;)
 			v = VECPTR (p + 8);
 			for (i = n; i; i--, v++) {
 				hv = *v;
-				if (_vMin.p.x > hv.p.x)
-					_vMin.p.x = hv.p.x;
-				else if (_vMax.p.x < hv.p.x)
-					_vMax.p.x = hv.p.x;
-				if (_vMin.p.y > hv.p.y)
-					_vMin.p.y = hv.p.y;
-				else if (_vMax.p.y < hv.p.y)
-					_vMax.p.y = hv.p.y;
-				if (_vMin.p.z > hv.p.z)
-					_vMin.p.z = hv.p.z;
-				else if (_vMax.p.z < hv.p.z)
-					_vMax.p.z = hv.p.z;
+				if (hb.vMin.p.x > hv.p.x)
+					hb.vMin.p.x = hv.p.x;
+				else if (hb.vMax.p.x < hv.p.x)
+					hb.vMax.p.x = hv.p.x;
+				if (hb.vMin.p.y > hv.p.y)
+					hb.vMin.p.y = hv.p.y;
+				else if (hb.vMax.p.y < hv.p.y)
+					hb.vMax.p.y = hv.p.y;
+				if (hb.vMin.p.z > hv.p.z)
+					hb.vMin.p.z = hv.p.z;
+				else if (hb.vMax.p.z < hv.p.z)
+					hb.vMax.p.z = hv.p.z;
 				}
 			p += n * sizeof (vmsVector) + 8;
 			break;
@@ -573,18 +572,16 @@ for (;;)
 			break;
 
 		case OP_SORTNORM:
-			*pvMin = _vMin;
-			*pvMax = _vMax;
+			*phb = hb;
 			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), pvMin, pvMax, pvOffs, nSubModels);
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), pvMin, pvMax, pvOffs, nSubModels);
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), phb, nSubModels);
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), phb, nSubModels);
 				}
 			else {
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), pvMin, pvMax, pvOffs, nSubModels);
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), pvMin, pvMax, pvOffs, nSubModels);
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), phb, nSubModels);
+				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), phb, nSubModels);
 				}
-			_vMin = *pvMin;
-			_vMax = *pvMax;
+			hb = *phb;
 			p += 32;
 			break;
 
@@ -595,11 +592,11 @@ for (;;)
 
 		case OP_SUBCALL:
 #if 1
-			VmVecAdd (pvOffs + ++nSubModels, pvOffs, VECPTR (p+4));
+			VmVecAdd (&phb [++nSubModels].vOffset, &phb->vOffset, VECPTR (p+4));
 #else
 			pvOffs [nSubModels] = *VECPTR (p+4);
 #endif
-			nSubModels += G3GetPolyModelMinMax (p + WORDVAL (p+16), pvMin + nSubModels, pvMax + nSubModels, pvOffs + nSubModels, 0);
+			nSubModels += G3GetPolyModelMinMax (p + WORDVAL (p+16), phb + nSubModels, 0);
 			p += 20;
 			break;
 
@@ -614,9 +611,86 @@ for (;;)
 
 done:
 
-*pvMin = _vMin;
-*pvMax = _vMax;
+*phb = hb;
 return nSubModels;
+}
+
+//------------------------------------------------------------------------------
+
+#if 0
+	static		fVector hitBoxOffsets [8] = {
+		{-1.0f, +0.95f, -0.8f}, 
+		{+1.0f, +0.95f, -0.8f}, 
+		{+1.0f, -1.05f, -0.8f}, 
+		{-1.0f, -1.05f, -0.8f}, 
+		{-1.0f, +0.95f, +1.2f}, 
+		{+1.0f, +0.95f, +1.2f}, 
+		{+1.0f, -1.05f, +1.2f}, 
+		{-1.0f, -1.05f, +1.2f}
+#else
+	vmsVector hitBoxOffsets [8] = {
+		{1, 0, 1}, 
+		{0, 0, 1}, 
+		{0, 1, 1}, 
+		{1, 1, 1}, 
+		{1, 0, 0}, 
+		{0, 0, 0}, 
+		{0, 1, 0}, 
+		{1, 1, 0}
+#endif
+		};
+
+int hitboxFaceVerts [6][4] = {
+	{0,1,2,3},
+	{0,3,7,4},
+	{5,6,2,1},
+	{4,7,6,5},
+	{4,5,1,0},
+	{6,7,3,2}
+	};
+
+void ComputeHitbox (int nModel, int iSubObj)
+{
+	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iSubObj;
+	vmsVector		vMin = phb->vMin;
+	vmsVector		vMax = phb->vMax;
+	vmsVector		vOffset = phb->vOffset;
+	vmsVector		*pv = phb->vertices;
+	tQuad				*pf;
+	int				i;
+
+for (i = 0; i < 8; i++) {
+	pv [i].p.x = (hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x) + vOffset.p.x;
+	pv [i].p.y = (hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y) + vOffset.p.y;
+	pv [i].p.z = (hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z) + vOffset.p.z;
+	}
+for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
+	VmVecNormal (pf->n, pv + hitboxFaceVerts [i][0], pv + hitboxFaceVerts [i][1], pv + hitboxFaceVerts [i][2]);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj)
+{
+	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
+	tQuad				*pf = phb->faces;
+	vmsVector		rotVerts [8];
+	vmsMatrix		m;
+	int				i, j;
+
+if (!vPos)
+	vPos = &objP->position.vPos;
+VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+for (i = 0; i < 8; i++) {
+	VmVecRotate (rotVerts + i, phb->vertices + i, &m);
+	VmVecInc (rotVerts + i, vPos);
+	}
+for (i = 0; i < 6; i++, pf++) {
+	for (j = 0; j < 4; j++)
+		pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
+	VmVecRotate (pf->n + 1, pf->n, &m);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -625,53 +699,47 @@ fix G3PolyModelSize (tPolyModel *pm, int nModel)
 {
 	int			nSubModels = 1;
 	int			i;
-	vmsVector	*vMinP = gameData.models.hitboxes [nModel].mins;
-	vmsVector	*vMaxP = gameData.models.hitboxes [nModel].maxs;
-	vmsVector	*vSizeP = gameData.models.hitboxes [nModel].sizes;
-	vmsVector	*vOffsP = gameData.models.hitboxes [nModel].offsets;
+	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
 	vmsVector	hv;
 	double		dx, dy, dz;
 
-memset (vSizeP, 0, sizeof (vmsVector) * (MAX_SUBMODELS + 1));
-memset (vOffsP, 0, sizeof (vmsVector) * (MAX_SUBMODELS + 1));
 for (i = 0; i <= MAX_SUBMODELS; i++) {
-	vMinP [i].p.x = vMinP [i].p.y = vMinP [i].p.z = 0x7fffffff;
-	vMaxP [i].p.x = vMaxP [i].p.y = vMaxP [i].p.z = -0x7fffffff;
+	phb [i].vMin.p.x = phb [i].vMin.p.y = phb [i].vMin.p.z = 0x7fffffff;
+	phb [i].vMax.p.x = phb [i].vMax.p.y = phb [i].vMax.p.z = -0x7fffffff;
+	phb [i].vOffset.p.x = phb [i].vOffset.p.y = phb [i].vOffset.p.z = 0;
 	}
-vOffsP->p.x = vOffsP->p.y = vOffsP->p.z = 0;
-vOffsP [1] = vOffsP [0];
-if (nModel == 25)
-	nModel = nModel;
-nSubModels = G3GetPolyModelMinMax ((void *) pm->modelData, vMinP + 1, vMaxP + 1, vOffsP + 1, 0) + 1;
+nSubModels = G3GetPolyModelMinMax ((void *) pm->modelData, phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
-	dx = (vMaxP [i].p.x - vMinP [i].p.x) / 2;
-	dy = (vMaxP [i].p.y - vMinP [i].p.y) / 2;
-	dz = (vMaxP [i].p.z - vMinP [i].p.z) / 2;
-	vSizeP [i].p.x = (fix) dx;
-	vSizeP [i].p.y = (fix) dy;
-	vSizeP [i].p.z = (fix) dz;
-	VmVecAdd (&hv, vMinP + i, vOffsP + i);
-	if (vMinP [0].p.x > hv.p.x)
-		vMinP [0].p.x = hv.p.x;
-	if (vMinP [0].p.y > hv.p.y)
-		vMinP [0].p.y = hv.p.y;
-	if (vMinP [0].p.z > hv.p.z)
-		vMinP [0].p.z = hv.p.z;
-	VmVecAdd (&hv, vMaxP + i, vOffsP + i);
-	if (vMaxP [0].p.x < hv.p.x)
-		vMaxP [0].p.x = hv.p.x;
-	if (vMaxP [0].p.y < hv.p.y)
-		vMaxP [0].p.y = hv.p.y;
-	if (vMaxP [0].p.z < hv.p.z)
-		vMaxP [0].p.z = hv.p.z;
+	dx = (phb [i].vMax.p.x - phb [i].vMin.p.x) / 2;
+	dy = (phb [i].vMax.p.y - phb [i].vMin.p.y) / 2;
+	dz = (phb [i].vMax.p.z - phb [i].vMin.p.z) / 2;
+	phb [i].vSize.p.x = (fix) dx;
+	phb [i].vSize.p.y = (fix) dy;
+	phb [i].vSize.p.z = (fix) dz;
+	VmVecAdd (&hv, &phb [i].vMin, &phb [i].vOffset);
+	if (phb [0].vMin.p.x > hv.p.x)
+		phb [0].vMin.p.x = hv.p.x;
+	if (phb [0].vMin.p.y > hv.p.y)
+		phb [0].vMin.p.y = hv.p.y;
+	if (phb [0].vMin.p.z > hv.p.z)
+		phb [0].vMin.p.z = hv.p.z;
+	VmVecAdd (&hv, &phb [i].vMax, &phb [i].vOffset);
+	if (phb [0].vMax.p.x < hv.p.x)
+		phb [0].vMax.p.x = hv.p.x;
+	if (phb [0].vMax.p.y < hv.p.y)
+		phb [0].vMax.p.y = hv.p.y;
+	if (phb [0].vMax.p.z < hv.p.z)
+		phb [0].vMax.p.z = hv.p.z;
 	}
-dx = (vMaxP [0].p.x - vMinP [0].p.x) / 2;
-dy = (vMaxP [0].p.y - vMinP [0].p.y) / 2;
-dz = (vMaxP [0].p.z - vMinP [0].p.z) / 2;
-vSizeP [0].p.x = (fix) dx;
-vSizeP [0].p.y = (fix) dy;
-vSizeP [0].p.z = (fix) dz;
+dx = (phb [0].vMax.p.x - phb [0].vMin.p.x) / 2;
+dy = (phb [0].vMax.p.y - phb [0].vMin.p.y) / 2;
+dz = (phb [0].vMax.p.z - phb [0].vMin.p.z) / 2;
+phb [0].vSize.p.x = (fix) dx;
+phb [0].vSize.p.y = (fix) dy;
+phb [0].vSize.p.z = (fix) dz;
 gameData.models.hitboxes [nModel].nSubModels = nSubModels;
+for (i = 0; i <= nSubModels; i++)
+	ComputeHitbox (nModel, i);
 return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
 }
 
@@ -2470,16 +2538,16 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 //init code for bitmap models
-void G3InitPolyModel (tPolyModel *pm)
+void G3InitPolyModel (tPolyModel *pm, int nModel)
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	nestCount = 0;
-	#endif
+#endif
 
 nHighestTexture = -1;
 G3CheckAndSwap (pm->modelData);
 InitSubModel ((ubyte *) pm->modelData);
-G3PolyModelSize (pm, pm - gameData.models.polyModels);
+G3PolyModelSize (pm, nModel);
 }
 
 //------------------------------------------------------------------------------

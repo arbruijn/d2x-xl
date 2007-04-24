@@ -152,6 +152,7 @@ typedef struct tCockpitOptions {
 	int bMissileView;
 	int bGuidedInMainView;
 	int bObjectTally;
+	int bPlayerStats;
 	int nWindowPos;
 	int nWindowSize;
 	int nWindowZoom;
@@ -1386,14 +1387,26 @@ typedef struct tWeaponData {
 #define OOF_PYRO			0
 #define OOF_MEGA			1
 
+typedef struct tQuad {
+	vmsVector			v [4];	//corner vertices
+	vmsVector			n [2];	//normal, transformed normal
+} tQuad;
+
+typedef struct tHitbox {
+	vmsVector			vMin;
+	vmsVector			vMax;
+	vmsVector			vSize;
+	vmsVector			vOffset;
+	vmsVector			vertices [8];
+	vmsAngVec			angles;			//rotation angles
+	tQuad					faces [6];
+	tQuad					rotFaces [6];	//transformed faces
+	short					nParent;			//parent hitbox
+} tHitbox;
+
 typedef struct tModelHitboxes {
 	ubyte					nSubModels;
-	vmsVector			mins [MAX_SUBMODELS + 1];
-	vmsVector			maxs [MAX_SUBMODELS + 1];
-	vmsVector			sizes [MAX_SUBMODELS + 1];
-	vmsVector			offsets [MAX_SUBMODELS + 1];
-	vmsAngVec			*angles [MAX_SUBMODELS + 1];
-	short					nParent [MAX_SUBMODELS + 1];
+	tHitbox				hitboxes [MAX_SUBMODELS + 1];
 } tModelHitboxes;
 
 typedef struct tModelData {
@@ -1990,6 +2003,17 @@ typedef struct tCameraData {
 	char		*nSides;
 } tCameraData;
 
+typedef struct tPlayerStats {
+	int	nShots [2];
+	int	nHits [2];
+	int	nMisses [2];
+	} tPlayerStats;
+
+typedef struct tStatsData {
+	tPlayerStats	player [2];	//per level/per session
+	int				nDisplayMode;
+	} tStatsData;
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
@@ -2033,6 +2057,7 @@ typedef struct tGameData {
 	tFusionData			fusion;
 	tMissileData		missiles;
 	tCameraData			cameras;
+	tStatsData			stats;
 	tApplicationData	app;
 } tGameData;
 

@@ -32,7 +32,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 int G3FreePolyModelItems (tPOFObject *po);
 
 //init code for bitmap models
-void G3InitPolyModel(tPolyModel *pm);
+void G3InitPolyModel(tPolyModel *pm, int nModel);
 
 //un-initialize, i.e., convert color entries back to RGB15
 void g3_uninit_polygon_model(void *model_ptr);
@@ -84,4 +84,11 @@ void G3SetCullAndStencil (int bCullFront, int bZPass);
 void G3RenderShadowVolumeFace (tOOF_vector *pv);
 void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv);
 
+void ComputeHitbox (int nModel, int iSubObj);
+void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj);
+
+extern int hitboxFaceVerts [6][4];
+extern vmsVector hitBoxOffsets [8];
+
 #endif //_INTERP_H
+

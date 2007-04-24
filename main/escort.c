@@ -669,8 +669,9 @@ void EscortCreatePathToGoal (tObject *objP)
 	short			nGoalSeg = -1;
 	short			nObject = OBJ_IDX (objP);
 	tAIStatic	*aip = &objP->cType.aiInfo;
-	tAILocal		*ailp = &gameData.ai.localInfo [nObject];
+	tAILocal		*ailp = gameData.ai.localInfo + nObject;
 
+Assert (nObject >= 0);
 if (gameData.escort.nSpecialGoal != -1)
 	gameData.escort.nGoalObject = gameData.escort.nSpecialGoal;
 gameData.escort.nKillObject = -1;
@@ -962,10 +963,10 @@ void DoEscortFrame (tObject *objP, fix xDistToPlayer, int player_visibility)
 {
 	int			nObject = OBJ_IDX (objP);
 	tAIStatic	*aip = &objP->cType.aiInfo;
-	tAILocal		*ailp = &gameData.ai.localInfo [nObject];
+	tAILocal		*ailp = gameData.ai.localInfo + nObject;
 
-	gameData.escort.nObjNum = OBJ_IDX (objP);
-
+Assert (nObject >= 0);
+gameData.escort.nObjNum = nObject;
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON

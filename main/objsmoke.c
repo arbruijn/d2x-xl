@@ -78,8 +78,8 @@ for (i = 0; i < MAX_PLAYERS; i++)
 
 void InitObjectSmoke (void)
 {
-memset (gameData.smoke.objects, 0xff, sizeof (gameData.smoke.objects));
-memset (gameData.smoke.objExplTime, 0xff, sizeof (gameData.smoke.objExplTime));
+memset (gameData.smoke.objects, 0xff, sizeof (*gameData.smoke.objects) * MAX_OBJECTS);
+memset (gameData.smoke.objExplTime, 0xff, sizeof (*gameData.smoke.objExplTime) * MAX_OBJECTS);
 }
 
 //------------------------------------------------------------------------------
@@ -232,6 +232,9 @@ else {
 			SetSmokeType (h, nType);
 			SetSmokePartScale (h, nScale);
 			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
+			SetSmokeSpeed (gameData.smoke.objects [i], 
+								(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) ?
+								PLR_PART_SPEED : PLR_PART_SPEED * 3 / 4);
 			}
 		CalcShipThrusterPos (objP, vPos);
 		for (j = 0; j < 2; j++)
@@ -253,7 +256,7 @@ void DoRobotSmoke (tObject *objP)
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots))
 	return;
-i = (int) (objP - gameData.objs.objects);
+i = OBJ_IDX (objP);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
@@ -286,6 +289,9 @@ if (nParts > 0) {
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
 		SetSmokeDensity (gameData.smoke.objects [i], nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2]);
+		SetSmokeSpeed (gameData.smoke.objects [i], 
+							(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) ?
+							BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 2);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -303,7 +309,7 @@ void DoReactorSmoke (tObject *objP)
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots))
 	return;
-i = (int) (objP - gameData.objs.objects);
+i = OBJ_IDX (objP);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
@@ -345,7 +351,7 @@ void DoMissileSmoke (tObject *objP)
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bMissiles))
 	return;
-i = (int) (objP - gameData.objs.objects);
+i = OBJ_IDX (objP);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 
@@ -383,7 +389,7 @@ void DoDebrisSmoke (tObject *objP)
 
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bDebris))
 	return;
-i = (int) (objP - gameData.objs.objects);
+i = OBJ_IDX (objP);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 
@@ -409,7 +415,7 @@ void DoBombSmoke (tObject *objP)
 
 if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return;
-i = (int) (objP - gameData.objs.objects);
+i = OBJ_IDX (objP);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else 

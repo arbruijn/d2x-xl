@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 
 #include "lighting.h"
+#include "interp.h"
 #include "newdemo.h"
 #include "player.h"
 #include "weapon.h"
@@ -824,62 +825,13 @@ if (nSegment != -1) {
 
 //------------------------------------------------------------------------------
 
-#if 0
-	static		fVector hitBoxOffsets [8] = {
-		{-1.0f, +0.95f, -0.8f}, 
-		{+1.0f, +0.95f, -0.8f}, 
-		{+1.0f, -1.05f, -0.8f}, 
-		{-1.0f, -1.05f, -0.8f}, 
-		{-1.0f, +0.95f, +1.2f}, 
-		{+1.0f, +0.95f, +1.2f}, 
-		{+1.0f, -1.05f, +1.2f}, 
-		{-1.0f, -1.05f, +1.2f}
-#else
-	static		vmsVector hitBoxOffsets [8] = {
-		{1, 0, 1}, 
-		{0, 0, 1}, 
-		{0, 1, 1}, 
-		{1, 1, 1}, 
-		{1, 0, 0}, 
-		{0, 0, 0}, 
-		{0, 1, 0}, 
-		{1, 1, 0}
-#endif
-		};
-
-
-void ComputeHitBox (tObject *objP, vmsVector *vPos, vmsVector *vertList, int iSubObj)
-{
-	tModelHitboxes	*phb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
-	vmsVector		vMin = phb->mins [iSubObj];
-	vmsVector		vMax = phb->maxs [iSubObj];
-	vmsVector		vOffset;
-	vmsVector		hv;
-	vmsMatrix		m;
-	int				i;
-
-if (!vPos)
-	vPos = &objP->position.vPos;
-vOffset = phb->offsets [iSubObj];
-VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-for (i = 0; i < 8; i++) {
-	hv.p.x = hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x;
-	hv.p.y = hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y;
-	hv.p.z = hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z;
-	VmVecInc (&hv, &vOffset);
-	VmVecRotate (vertList + i, &hv, &m);
-	VmVecInc (vertList + i, vPos);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void ComputeHitBoxf (tObject *objP, fVector *vertList, int iSubObj)
+void TransformHitboxf (tObject *objP, fVector *vertList, int iSubObj)
 {
 
 	fVector		hv;
-	vmsVector	vMin = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].mins [iSubObj];
-	vmsVector	vMax = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].maxs [iSubObj];
+	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
+	vmsVector	vMin = phb->vMin;
+	vmsVector	vMax = phb->vMax;
 	int			i;
 
 for (i = 0; i < 8; i++) {
@@ -892,34 +844,26 @@ for (i = 0; i < 8; i++) {
 
 //------------------------------------------------------------------------------
 
-int hitBoxFaceVerts [6][4] = {
-	{0,1,2,3},
-	{0,3,7,4},
-	{5,6,2,1},
-	{4,7,6,5},
-	{4,5,1,0},
-	{6,7,3,2}
-	};
-
 extern vmsAngVec zeroAngles;
 
 #ifdef _DEBUG
 
-void RenderHitBox (tObject *objP, float red, float green, float blue, float alpha)
+void RenderHitbox (tObject *objP, float red, float green, float blue, float alpha)
 {
-	fVector		vertList [8], v, n;
+	fVector		vertList [8], v;
 	int			i, j, iModel, nModels;
+	tHitbox		*phb;
 
 if (!SHOW_OBJ_FX)
 	return;
 if (!EGI_FLAG (bRenderShield, 0, 1, 0) ||
 	 ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)))
 	return;
-if (!EGI_FLAG (nHitBoxes, 0, 0, 0)) {
+if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	DrawShieldSphere (objP, red, green, blue, alpha);
 	return;
 	}
-else if (extraGameInfo [IsMultiGame].nHitBoxes == 1) {
+else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
 	nModels = 0;
 	}
@@ -934,16 +878,18 @@ glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-for (; iModel <= nModels; iModel++) {
-	G3StartInstanceAngles (gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].offsets + iModel, &zeroAngles);
-	ComputeHitBoxf (objP, vertList, iModel);
+for (phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iModel; 
+	  iModel <= nModels; 
+	  iModel++, phb++) {
+	G3StartInstanceAngles (&phb->vOffset, &zeroAngles);
+	TransformHitboxf (objP, vertList, iModel);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++)
-			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
+			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
 #if 0
 		for (j = 5; j >= 0; j--)
-			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
+			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
 #endif
 		}
 	glEnd ();
@@ -952,15 +898,15 @@ for (; iModel <= nModels; iModel++) {
 		glBegin (GL_LINES);
 		v.p.x = v.p.y = v.p.z = 0;
 		for (j = 0; j < 4; j++) {
-			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
-			VmVecIncf (&v, vertList + hitBoxFaceVerts [i][j]);
+			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
+			VmVecIncf (&v, vertList + hitboxFaceVerts [i][j]);
 			}
 		glEnd ();
 #if 0
 		glBegin (GL_LINES);
 		VmVecScalef (&v, &v, 0.25);
 		glVertex3fv ((GLfloat *) (&v));
-		VmVecNormalf (&n, vertList + hitBoxFaceVerts [i][0], vertList + hitBoxFaceVerts [i][1], vertList + hitBoxFaceVerts [i][2]);
+		VmVecNormalf (&n, vertList + hitboxFaceVerts [i][0], vertList + hitboxFaceVerts [i][1], vertList + hitboxFaceVerts [i][2]);
 		VmVecScaleIncf3 (&v, &n, 2.0f);
 		glVertex3fv ((GLfloat *) (&v));
 		glEnd ();
@@ -998,7 +944,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 #ifdef _DEBUG
-		RenderHitBox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
+		RenderHitbox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
 #else
 		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 0.6f);
 #endif
@@ -1015,7 +961,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		}
 	if (gameData.multiplayer.bWasHit [i])
 #ifdef _DEBUG
-		RenderHitBox (objP, 1.0f, 0.5f, 0.0f, 0.5f);
+		RenderHitbox (objP, 1.0f, 0.5f, 0.0f, 0.5f);
 #else
 		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 0.5f);
 #endif
@@ -1023,7 +969,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
 #ifdef _DEBUG
-		RenderHitBox (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
+		RenderHitbox (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
 #else
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
 #endif
@@ -1952,7 +1898,7 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_ROBOT) {
 			DrawPolygonObject (objP);
 #ifdef _DEBUG
-			RenderHitBox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #endif
 			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);
@@ -1964,7 +1910,7 @@ switch (objP->renderType) {
 #	if 0
 				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #	else
-				RenderHitBox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
 				RenderThrusterFlames (objP);
@@ -2506,7 +2452,7 @@ return nOrgNumToFree - nToFree;
 //note that nSegment is really just a suggestion, since this routine actually
 //searches for the correct tSegment
 //returns the tObject number
-int nWeaponObj = -1;
+
 int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector *pos, 
 					   vmsMatrix *orient, fix size, ubyte cType, ubyte mType, ubyte rType,
 						int bIgnoreLimits)
@@ -2564,8 +2510,6 @@ if (GetSegMasks (pos, nSegment, 0).centerMask)
 nObject = AllocObject ();
 if (nObject == -1)		//no d_free gameData.objs.objects
 	return -1;
-if (nType == OBJ_WEAPON)
-	nWeaponObj = nObject;
 Assert (gameData.objs.objects [nObject].nType == OBJ_NONE);		//make sure unused
 objP = gameData.objs.objects + nObject;
 Assert (objP->nSegment == -1);
