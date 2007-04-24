@@ -129,17 +129,10 @@ int FindPlanePlaneIntersectionSub (vmsVector *hitP, vmsVector *p1, vmsVector *vn
 	int			i, nHits = 0;
 	vmsVector	vHits [2];
 
-#if 0
-if ((vn2.p.x == vn1.p.x) && (vn2.p.y == vn1.p.y) && (vn2.p.z == vn1.p.z))
-#else
-if (VmVecDot (vn2, vn1) >= 0)	//only test opposing faces
-	return 0;
-#endif
 vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
 for (i = 0; i < nv; i++) {
 	if (FindPlaneLineIntersection (vHits + 1, p2, vn2, p1 + i, p1 + ((i + 1) % nv), 0)) {
 		if (CheckSphereToFace (vHits + 1, 0, p2, vn2, nv)) {
-			CheckSphereToFace (vHits + 1, 0, p2, vn2, nv);
 			VmVecInc (vHits, vHits + 1);
 			nHits++;
 			}
@@ -157,10 +150,12 @@ int FindPlanePlaneIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, 
 	vmsVector	vHits [2];
 	int			nHits = 0;
 
+// test whether any edges of p1 penetrate p2
 if (FindPlanePlaneIntersectionSub (vHits, p1, vn1, nv1, p2, vn2))
 	nHits++;
 else
 	vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
+// test whether any edges of p2 penetrate p1
 if (FindPlanePlaneIntersectionSub (vHits + 1, p2, vn2, nv2, p1, vn1)) {
 	VmVecInc (vHits, vHits + 1);
 	nHits++;
@@ -190,8 +185,10 @@ for (i = 0; i < 6; i++) {
 		fv1 [h] = hb1 [hitBoxFaceVerts [i][h]];
 	VmVecNormal (&vn1, fv1, fv1 + 1, fv1 + 2);
 	for (j = 0; j < 6; j++) {
+#if 0
 		if (VmVecDot (&vn1, vn2 + j) >= 0)
 			continue;
+#endif
 		if (FindPlanePlaneIntersection (vHits + 1, fv1, &vn1, 4, fv2 [j], vn2 + j, 4)) {
 			nHits++;
 			VmVecInc (vHits, vHits + 1);
@@ -815,7 +812,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitBoxToHitBox (vmsVector *intP, tObject *objP1, tObject *objP2)
+fix CheckHitBoxToHitBox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVector *p1)
 {
 	vmsVector	hb1 [8], hb2 [8], vHits [2];
 	int			iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -834,9 +831,9 @@ else {
 	}
 vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
 for (; iModel1 <= nModels1; iModel1++) {
-	ComputeHitBox (objP1, hb1, iModel1);
+	ComputeHitBox (objP1, p1, hb1, iModel1);
 	for (; iModel2 <= nModels2; iModel2++) {
-		ComputeHitBox (objP2, hb2, iModel2);
+		ComputeHitBox (objP2, NULL, hb2, iModel2);
 		if (FindHitBoxIntersection (vHits + 1, hb1, hb2)) {
 			VmVecInc (vHits, vHits + 1);
 			nHits++;
@@ -865,7 +862,7 @@ else {
 	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
 	}
 for (; iModel <= nModels; iModel++) {
-	ComputeHitBox (objP, vertList, iModel);
+	ComputeHitBox (objP, NULL, vertList, iModel);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++) 
 			faceVerts [j] = vertList [hitBoxFaceVerts [i][j]];
@@ -922,10 +919,8 @@ bOtherPoly = (otherObjP->renderType == RT_POLYOBJ); // && ((otherObjP->nType != 
 if (EGI_FLAG (nHitBoxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 #if 1
 	// check hitbox collisions for all polygonal objects
-	if (OBJ_IDX (thisObjP) == 2)
-		thisObjP = thisObjP;
 	if (bThisPoly && bOtherPoly) {
-		if (!(dist = CheckHitBoxToHitBox (&hitP, thisObjP, otherObjP)))
+		if (!(dist = CheckHitBoxToHitBox (&hitP, otherObjP, thisObjP, p1)))
 			return 0;
 		}
 	else {

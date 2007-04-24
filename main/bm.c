@@ -1281,6 +1281,11 @@ for (j = 0; j < t; j++) {
 t = CFReadInt (fp);			//read number of polygon models
 for (j = 0; j < t; j++) {
 	i = CFReadInt (fp);		//read model number
+	if (bAltModels) {
+		i = i;
+		if (i == 50)
+			i = i;
+		}
 	if (bAddBots) {
 		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",

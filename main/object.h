@@ -495,7 +495,7 @@ int FindBoss (int nObject);
 void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
-void ComputeHitBox (tObject *objP, vmsVector *vertList, int iSubObj);
+void ComputeHitBox (tObject *objP, vmsVector *vPos, vmsVector *vertList, int iSubObj);
 
 extern ubyte bIsMissile [];
 

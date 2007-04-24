@@ -356,6 +356,10 @@ int VmTriangleHitTestQuick (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVecto
 
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
 
+fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1);
+fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
+fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
+
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
 #endif	/* 

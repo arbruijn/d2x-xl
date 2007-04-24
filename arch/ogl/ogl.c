@@ -970,20 +970,25 @@ for (y = 0; y < tHeight; y++) {
 						(*(texBuf++)) = 255;
 					break;
 
-				case GL_RGB: {
-					int j = c * 3;
-					int r = gameData.render.ogl.palette [j] * 4;
-					int g = gameData.render.ogl.palette [j + 1] * 4;
-					int b = gameData.render.ogl.palette [j + 2] * 4;
-					(*(texBuf++)) = r;
-					(*(texBuf++)) = g;
-					(*(texBuf++)) = b;
-					}
+				case GL_RGB:
+					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
+						nFormat = GL_RGBA;
+						goto restart;
+						}
+					else {
+						int j = c * 3;
+						int r = gameData.render.ogl.palette [j] * 4;
+						int g = gameData.render.ogl.palette [j + 1] * 4;
+						int b = gameData.render.ogl.palette [j + 2] * 4;
+						(*(texBuf++)) = r;
+						(*(texBuf++)) = g;
+						(*(texBuf++)) = b;
+						}
 					break;
 
 				case GL_RGBA:
 					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
-						if (bShaderMerge) {
+						if (0 && bShaderMerge) {
 							*((GLushort *) texBuf) = 0;
 							texBuf += 2; 
 							(*(texBuf++)) = 0;
@@ -991,7 +996,7 @@ for (y = 0; y < tHeight; y++) {
 							}
 						else {
 							(*(texBuf++)) = 120;
-							(*(texBuf++)) =  88;
+							(*(texBuf++)) = 88;
 							(*(texBuf++)) = 128;
 							(*(texBuf++)) = 0;
 							}
@@ -1110,12 +1115,18 @@ glTexImage2D (GL_PROXY_TEXTURE_2D, 0, texP->internalformat, texP->tw, texP->th, 
 glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &nFormat);
 switch (texP->format) {
 	case GL_RGBA:
-		if ((nFormat != GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) &&
-			 (nFormat != GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) &&
-			 (nFormat != GL_COMPRESSED_RGBA_S3TC_DXT5_EXT))
-			texP->internalformat = 4;
-		else
+#if TEXTURE_COMPRESSION
+		if ((nFormat == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ||
+			 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
+			 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT))
 			nFormat = texP->internalformat;
+		else
+#endif
+			texP->internalformat = 4;
+		break;
+
+	case GL_RGB:
+			texP->internalformat = 3;
 		break;
 
 	case GL_INTENSITY4:
@@ -1235,10 +1246,12 @@ switch (texP->format) {
 		nBits = 24;
 
 	case GL_RGBA:
+#if TEXTURE_COMPRESSION
 	case GL_COMPRESSED_RGBA:
 	case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 	case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
 	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+#endif
 		nBits = 32;
 		break;
 
@@ -1399,8 +1412,9 @@ if (texP->handle >= 0)
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		}
-//	bMipMap=0;//mipmaps aren't used in GL_NEAREST anyway, and making the mipmaps is pretty slow
-//however, if texturing mode becomes an ingame option, they would need to be made regardless, so it could switch to them later.  OTOH, texturing mode could just be made a command line arg.
+//	mipmaps aren't used in GL_NEAREST anyway, and making the mipmaps is pretty slow
+// however, if texturing mode becomes an ingame option, they would need to be made regardless, so it could switch to them later.  
+// OTOH, texturing mode could just be made a command line arg.
 #if TEXTURE_COMPRESSION
 	if (bmP->bm_compressed) {
 		glCompressedTexImage2D (

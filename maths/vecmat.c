@@ -671,6 +671,39 @@ return dest;
 }
 
 // ------------------------------------------------------------------------
+
+fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1)
+{
+dest->p.x = src0->p.y * src1->p.z - src0->p.z * src1->p.y;
+dest->p.y = src0->p.z * src1->p.x - src0->p.x * src1->p.z;
+dest->p.z = src0->p.x * src1->p.y - src0->p.y * src1->p.x;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+//computes non-normalized surface normal from three points. 
+//returns ptr to dest
+//dest CANNOT equal either source
+fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
+{
+	fVector t0, t1;
+
+VmVecSubf (&t0, p1, p0);
+VmVecSubf (&t1, p2, p1);
+return VmVecCrossProdf (dest, &t0, &t1);
+}
+
+// ------------------------------------------------------------------------
+//computes surface normal from three points. result is normalized
+//returns ptr to dest
+//dest CANNOT equal either source
+fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2)
+{
+VmVecNormalizef (dest, VmVecPerpf (dest, p0, p1, p2));
+return dest;
+}
+
+// ------------------------------------------------------------------------
 //make sure a vector is reasonably sized to go into a cross product
 void CheckVec(vmsVector *vp)
 {

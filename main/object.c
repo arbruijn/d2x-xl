@@ -848,7 +848,7 @@ if (nSegment != -1) {
 		};
 
 
-void ComputeHitBox (tObject *objP, vmsVector *vertList, int iSubObj)
+void ComputeHitBox (tObject *objP, vmsVector *vPos, vmsVector *vertList, int iSubObj)
 {
 	tModelHitboxes	*phb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
 	vmsVector		vMin = phb->mins [iSubObj];
@@ -858,14 +858,17 @@ void ComputeHitBox (tObject *objP, vmsVector *vertList, int iSubObj)
 	vmsMatrix		m;
 	int				i;
 
-VmVecAdd (&vOffset, &objP->position.vPos, phb->offsets + iSubObj);
+if (!vPos)
+	vPos = &objP->position.vPos;
+vOffset = phb->offsets [iSubObj];
 VmCopyTransposeMatrix (&m, &objP->position.mOrient);
 for (i = 0; i < 8; i++) {
 	hv.p.x = hitBoxOffsets [i].p.x ? vMin.p.x : vMax.p.x;
 	hv.p.y = hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y;
 	hv.p.z = hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z;
+	VmVecInc (&hv, &vOffset);
 	VmVecRotate (vertList + i, &hv, &m);
-	VmVecInc (vertList + i, &vOffset);
+	VmVecInc (vertList + i, vPos);
 	}
 }
 
@@ -904,7 +907,7 @@ extern vmsAngVec zeroAngles;
 
 void RenderHitBox (tObject *objP, float red, float green, float blue, float alpha)
 {
-	fVector		vertList [8];
+	fVector		vertList [8], v, n;
 	int			i, j, iModel, nModels;
 
 if (!SHOW_OBJ_FX)
@@ -935,16 +938,33 @@ for (; iModel <= nModels; iModel++) {
 	G3StartInstanceAngles (gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].offsets + iModel, &zeroAngles);
 	ComputeHitBoxf (objP, vertList, iModel);
 	glBegin (GL_QUADS);
-	for (i = 0; i < 6; i++)
+	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++)
 			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
+#if 0
+		for (j = 5; j >= 0; j--)
+			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
+#endif
+		}
 	glEnd ();
 	glLineWidth (2);
 	for (i = 0; i < 6; i++) {
-		glBegin (GL_LINE_LOOP);
-		for (j = 0; j < 4; j++)
-			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j % 4]));
+		glBegin (GL_LINES);
+		v.p.x = v.p.y = v.p.z = 0;
+		for (j = 0; j < 4; j++) {
+			glVertex3fv ((GLfloat *) (vertList + hitBoxFaceVerts [i][j]));
+			VmVecIncf (&v, vertList + hitBoxFaceVerts [i][j]);
+			}
 		glEnd ();
+#if 0
+		glBegin (GL_LINES);
+		VmVecScalef (&v, &v, 0.25);
+		glVertex3fv ((GLfloat *) (&v));
+		VmVecNormalf (&n, vertList + hitBoxFaceVerts [i][0], vertList + hitBoxFaceVerts [i][1], vertList + hitBoxFaceVerts [i][2]);
+		VmVecScaleIncf3 (&v, &n, 2.0f);
+		glVertex3fv ((GLfloat *) (&v));
+		glEnd ();
+#endif
 		}
 	glLineWidth (1);
 	G3DoneInstance ();

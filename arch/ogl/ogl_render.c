@@ -1424,31 +1424,29 @@ else
 			r_tpolyc++;
 		if (bShaderMerge) {	
 			GLint loc;
-			if (bShaderMerge) {
-				bmMask = BM_MASK (bmTop);
-				tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
-				glUseProgramObject (tmProg = tmShaderProgs [tmType]);
-				INIT_TMU (InitTMU0, bmBot);
-				glUniform1i (loc = glGetUniformLocation (tmProg, "btmTex"), 0);
-				INIT_TMU (InitTMU1, bmTop);
-				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
-				if (bmMask) {
-					INIT_TMU (InitTMU2, bmMask);
-					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
-					}
-#if 0 //failed attempt to properly handle overlay texture lighting
-				else {
-					OglActiveTexture (GL_TEXTURE2);
-					glEnable (GL_TEXTURE_2D);
-					glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-					glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-					glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
-					glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-					glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS);
-					glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-					}
-#endif
+			bmMask = BM_MASK (bmTop);
+			tmType = bSuperTransp ? bmMask ? 2 : 1 : 0;
+			glUseProgramObject (tmProg = tmShaderProgs [tmType]);
+			INIT_TMU (InitTMU0, bmBot);
+			glUniform1i (loc = glGetUniformLocation (tmProg, "btmTex"), 0);
+			INIT_TMU (InitTMU1, bmTop);
+			glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+			if (bmMask) {
+				INIT_TMU (InitTMU2, bmMask);
+				glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 				}
+#if 0 //failed attempt to properly handle overlay texture lighting
+			else {
+				OglActiveTexture (GL_TEXTURE2);
+				glEnable (GL_TEXTURE_2D);
+				glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+				glTexEnvf (GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+				glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
+				glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+				glTexEnvf (GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS);
+				glTexEnvf (GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+				}
+#endif
 			glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
 							 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 			}
