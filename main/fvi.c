@@ -121,29 +121,37 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
+
+int FindLineQuadIntersection (vmsVector *hitP, vmsVector *planeP, vmsVector *planeNormP, vmsVector *p0, vmsVector *p1)
+{
+	vmsVector	vHit, d [2];
+
+if (!FindPlaneLineIntersection (&vHit, planeP, planeNormP, p0, p1, 0))
+	return 0;
+VmVecSub (d, &vHit, p0);
+VmVecSub (d + 1, &vHit, p1);
+if (VmVecDot (d, d + 1) >= 0)
+	return 0;
+if (!CheckSphereToFace (&vHit, 0, planeP, planeNormP, 4))
+	return 0;
+VmVecInc (hitP, &vHit);
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
 int FindQuadQuadIntersectionSub (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2)
 {
 	int			i, nHits = 0;
-	vmsVector	vHits [2], d [2];
+	vmsVector	vHits;
 
-vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
-for (i = 0; i < 4; i++) {
-	if (FindPlaneLineIntersection (vHits + 1, p2, vn2, p1 + i, p1 + ((i + 1) % 4), 0)) {
-		VmVecSub (d, vHits + 1, p1 + i);
-		VmVecSub (d + 1, vHits + 1, p1 + ((i + 1) % 4));
-		if (VmVecDot (d, d + 1) >= 0)
-			continue;
-		if (CheckSphereToFace (vHits + 1, 0, p2, vn2, 4)) {
-			VmVecInc (vHits, vHits + 1);
-			nHits++;
-			}
-		}
-	}
+vHits.p.x = vHits.p.y = vHits.p.z = 0;
+for (i = 0; i < 4; i++)
+	nHits += FindLineQuadIntersection (&vHits, p2, vn2, p1 + i, p1 + ((i + 1) % 4));
 if (nHits)
-	VmVecCopyScale (hitP, vHits, F1_0 / nHits);
+	VmVecCopyScale (hitP, &vHits, F1_0 / nHits);
 return nHits;
 }
 
@@ -166,6 +174,24 @@ if (FindQuadQuadIntersectionSub (vHits + 1, p2, vn2, p1, vn1)) {
 	}
 if (nHits)
 	VmVecCopyScale (hitP, vHits, F1_0 / nHits);
+return nHits;
+}
+
+//	-----------------------------------------------------------------------------
+
+int FindLineHitboxIntersection (vmsVector *hitP, tHitbox *phb, vmsVector *p0, vmsVector *p1)
+{
+	int			i, nHits = 0;
+	vmsVector	vHits;
+	tQuad			*pf;
+
+vHits.p.x = vHits.p.y = vHits.p.z = 0;
+// create all faces of hitbox 2 and their normals before testing because they will 
+// be used multiple times
+for (i = 0, pf = phb->faces; i < 6; i++, pf++)
+	nHits += FindLineQuadIntersection (&vHits, pf->v, pf->n + 1, p0, p1);
+if (nHits)
+	VmVecCopyScale (hitP, &vHits, F1_0 / nHits);
 return nHits;
 }
 
@@ -809,7 +835,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckHitboxToHitbox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVector *p1)
+fix CheckHitboxToHitbox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVector *p0, vmsVector *p1)
 {
 	vmsVector		vHits [2];
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
@@ -834,6 +860,14 @@ for (; iModel1 <= nModels1; iModel1++) {
 	for (; iModel2 <= nModels2; iModel2++) {
 		TransformHitbox (objP2, NULL, iModel2);
 		if (FindHitboxIntersection (vHits + 1, pmhb1->hitboxes + iModel1, pmhb2->hitboxes + iModel2)) {
+			VmVecInc (vHits, vHits + 1);
+			nHits++;
+			}
+		}
+	}
+if (!nHits) {
+	for (; iModel2 <= nModels2; iModel2++) {
+		if (FindLineHitboxIntersection (vHits + 1, pmhb2->hitboxes + iModel2, p0, p1)) {
 			VmVecInc (vHits, vHits + 1);
 			nHits++;
 			}
@@ -918,7 +952,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 #if 1
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
-		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p1)))
+		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
 			return 0;
 		}
 	else {

@@ -161,8 +161,8 @@ t->numrend = 0;
 void OglInitTexture (ogl_texture *t, int bMask)
 {
 t->handle = 0;
-t->internalformat = gameOpts->ogl.bRgbaFormat;
-t->format = bMask ? GL_ALPHA : GL_RGBA;
+t->internalformat = bMask ? 1 : gameStates.ogl.bpp / 8;
+t->format = bMask ? GL_ALPHA : gameStates.ogl.nRGBAFormat;
 t->wrapstate = -1;
 t->w =
 t->h = 0;
@@ -911,9 +911,10 @@ int OglFillTexBuf (
 	int			superTransp)
 {
 //	GLushort *texP= (GLushort *)texBuf;
-	ubyte	*data = bmP->bm_texBuf;
-	int	x, y, c, i;
-	int	bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	ubyte		*data = bmP->bm_texBuf;
+	int		x, y, c, i, j;
+	ushort	r, g, b, a;
+	int		bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
 gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bm_palette : bmP->bm_palette);
 if (!gameData.render.ogl.palette)
@@ -948,13 +949,19 @@ for (y = 0; y < tHeight; y++) {
 					break;
 
 				case GL_RGB:
-					nFormat = GL_RGBA;
+				case GL_RGB5:
+					nFormat = gameStates.ogl.nRGBAFormat;
 					goto restart;
 					break;
 
 				case GL_RGBA:
 					*((GLuint *) texBuf) = 0;
 					texBuf += 4;
+					break;
+					
+				case GL_RGBA4:
+					*((GLushort *) texBuf) = 0;
+					texBuf += 2;
 					break;
 				}
 //				 (*(texP++)) = 0;
@@ -971,68 +978,76 @@ for (y = 0; y < tHeight; y++) {
 					break;
 
 				case GL_RGB:
+				case GL_RGB5:
 					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
-						nFormat = GL_RGBA;
+						nFormat = gameStates.ogl.nRGBAFormat;
 						goto restart;
 						}
 					else {
-						int j = c * 3;
-						int r = gameData.render.ogl.palette [j] * 4;
-						int g = gameData.render.ogl.palette [j + 1] * 4;
-						int b = gameData.render.ogl.palette [j + 2] * 4;
-						(*(texBuf++)) = r;
-						(*(texBuf++)) = g;
-						(*(texBuf++)) = b;
+						j = c * 3;
+						r = gameData.render.ogl.palette [j] * 4;
+						g = gameData.render.ogl.palette [j + 1] * 4;
+						b = gameData.render.ogl.palette [j + 2] * 4;
+						if (nFormat == GL_RGB) {
+							(*(texBuf++)) = (GLubyte) r;
+							(*(texBuf++)) = (GLubyte) g;
+							(*(texBuf++)) = (GLubyte) b;
+							}
+						else {
+							r >>= 3;
+							g >>= 2;
+							b >>= 3;
+							*((GLushort *) texBuf) = r + (g << 5) + (b << 11);
+							texBuf += 2;
+							}
 						}
 					break;
 
 				case GL_RGBA:
+				case GL_RGBA4: {
 					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
 						if (0 && bShaderMerge) {
-							*((GLushort *) texBuf) = 0;
-							texBuf += 2; 
-							(*(texBuf++)) = 0;
-							(*(texBuf++)) = 1;
+							r = g = b = 0;
+							a = 1;
 							}
 						else {
-							(*(texBuf++)) = 120;
-							(*(texBuf++)) = 88;
-							(*(texBuf++)) = 128;
-							(*(texBuf++)) = 0;
+							r = 120;
+							g = 88;
+							b = 128;
+							a = 0;
 							}
 						}
 					else {
-						int h = 0, i = 0, j = c * 3;
-						int r = gameData.render.ogl.palette [j] * 4;
-						int g = gameData.render.ogl.palette [j + 1] * 4;
-						int b = gameData.render.ogl.palette [j + 2] * 4;
-						(*(texBuf++)) = r;
-						(*(texBuf++)) = g;
-						(*(texBuf++)) = b;
+						j = c * 3;
+						r = gameData.render.ogl.palette [j] * 4;
+						g = gameData.render.ogl.palette [j + 1] * 4;
+						b = gameData.render.ogl.palette [j + 2] * 4;
 						if (nTransp == 1) {
-#if 0
-								(*(texBuf++)) =  (r + g + b) / 3;//transparency based on color intensity
-#else //chromatic intensity considered
-#	if 0 //non-linear formula
-							{
-							double a = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
-							a *= a;
-							(*(texBuf++)) = (ubyte) (a * 255.0);
-							}
-#	else
-							(*(texBuf++)) = (r * 3 + g * 5 + b * 2) / 10;//transparency based on color intensity
-#	endif
+#if 0 //non-linear formula
+							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
+							da *= da;
+							a = (ubyte) (da * 255.0);
+#else
+							a = (r * 3 + g * 5 + b * 2) / 10;	//transparency based on color intensity
 #endif
 							}
-#if 1
 						else if (nTransp == 2)
-							(*(texBuf++)) = c ? 255 : 0;
-#endif
+							a = c ? 255 : 0;
 						else
-							(*(texBuf++)) = 255;//not transparent
+							a = 255;	//not transparent
 						}
-					//				 (*(texP++)) =  (gameData.render.ogl.palette [c*3]>>1) + ((gameData.render.ogl.palette [c*3+1]>>1)<<5) + ((gameData.render.ogl.palette [c*3+2]>>1)<<10) + (1<<15);
+					if (nFormat == GL_RGBA) {
+						(*(texBuf++)) = (GLubyte) r;
+						(*(texBuf++)) = (GLubyte) g;
+						(*(texBuf++)) = (GLubyte) b;
+						(*(texBuf++)) = (GLubyte) a;
+						}
+					else {
+						*((GLushort *) texBuf) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
+						texBuf += 2;
+						}
 					break;
+					}
 				}
 			}
 		}
@@ -1074,7 +1089,7 @@ int TexFormatSupported (ogl_texture *texP)
 {
 	GLint nFormat = 0;
 
-if (!gameOpts->ogl.bGetTexLevelParam)
+if (!gameStates.ogl.bGetTexLevelParam)
 	return 1;
 
 switch (texP->format) {
@@ -1088,24 +1103,23 @@ switch (texP->format) {
 			return 1;
 		break;
 
+	case GL_RGB5:
+	case GL_RGBA4:
+		if (texP->internalformat == 2)
+			return 1;
+		break;
+		
 	case GL_INTENSITY4:
-		if (gameOpts->ogl.bIntensity4 == -1) 
+		if (gameStates.ogl.bIntensity4 == -1) 
 			return 1; 
-		if (!gameOpts->ogl.bIntensity4) 
+		if (!gameStates.ogl.bIntensity4) 
 			return 0; 
 		break;
 
 	case GL_LUMINANCE4_ALPHA4:
-		if (gameOpts->ogl.bLuminance4Alpha4 == -1) 
+		if (gameStates.ogl.bLuminance4Alpha4 == -1) 
 			return 1; 
-		if (!gameOpts->ogl.bLuminance4Alpha4) 
-			return 0; 
-		break;
-
-	case GL_RGBA2:
-		if (gameOpts->ogl.bRgba2 == -1) 
-			return 1;
-		if (!gameOpts->ogl.bRgba2) 
+		if (!gameStates.ogl.bLuminance4Alpha4) 
 			return 0; 
 		break;
 	}
@@ -1129,16 +1143,17 @@ switch (texP->format) {
 			texP->internalformat = 3;
 		break;
 
+	case GL_RGB5:
+	case GL_RGBA4:
+		texP->internalformat = 2;
+		break;
+		
 	case GL_INTENSITY4:
-		gameOpts->ogl.bIntensity4 = (nFormat == texP->internalformat) ? -1 : 0;
+		gameStates.ogl.bIntensity4 = (nFormat == texP->internalformat) ? -1 : 0;
 		break;
 
 	case GL_LUMINANCE4_ALPHA4:
-		gameOpts->ogl.bLuminance4Alpha4 = (nFormat == texP->internalformat) ? -1 : 0;
-		break;
-
-	case GL_RGBA2:
-		gameOpts->ogl.bRgba2 = (nFormat == texP->internalformat) ? -1 : 0;
+		gameStates.ogl.bLuminance4Alpha4 = (nFormat == texP->internalformat) ? -1 : 0;
 		break;
 
 	default:
@@ -1154,28 +1169,30 @@ int TexFormatVerify (ogl_texture *texP)
 while (!TexFormatSupported (texP)) {
 	switch (texP->format) {
 		case GL_INTENSITY4:
-			if (gameOpts->ogl.bLuminance4Alpha4) {
+			if (gameStates.ogl.bLuminance4Alpha4) {
 				texP->internalformat = 2;
 				texP->format = GL_LUMINANCE_ALPHA;
 				break;
 				}
 
 		case GL_LUMINANCE4_ALPHA4:
-			if (gameOpts->ogl.bRgba2) {
-				texP->internalformat = 4;
-				texP->format = GL_RGBA;
-				break;
-				}
-
-		case GL_RGBA2:
-		case GL_RGBA:
 			texP->internalformat = 4;
 			texP->format = GL_RGBA;
 			break;
 
 		case GL_RGB:
+			texP->internalformat = 4;
+			texP->format = GL_RGBA;
+			break;
+
+		case GL_RGB5:
 			texP->internalformat = 3;
 			texP->format = GL_RGB;
+			break;
+			
+		case GL_RGBA4:
+			texP->internalformat = 4;
+			texP->format = GL_RGBA;
 			break;
 
 		default:
@@ -1211,7 +1228,7 @@ void TexSetSize (ogl_texture *texP)
 	GLint	w, h;
 	int	nBits = 16, a = 0;
 
-if (gameOpts->ogl.bGetTexLevelParam) {
+if (gameStates.ogl.bGetTexLevelParam) {
 		GLint t;
 
 	glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
@@ -1253,6 +1270,11 @@ switch (texP->format) {
 	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 #endif
 		nBits = 32;
+		break;
+
+	case GL_RGB5:
+	case GL_RGBA4:
+		nBits = 16;
 		break;
 
 	case GL_ALPHA:
@@ -1394,6 +1416,8 @@ if (texP->handle >= 0)
 				texP->internalformat = 3;
 			else if (texP->format == GL_RGBA)
 				texP->internalformat = 4;
+			else if ((texP->format == GL_RGB5) || (texP->format == GL_RGBA4))
+				texP->internalformat = 2;
 			}
 		else
 			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
@@ -1655,7 +1679,7 @@ GLuint EmptyTexture (int Xsize, int Ysize)			// Create An Empty Texture
 memset (data, 0, nSize); 	// Clear Storage Memory
 glGenTextures (1, &texId); 					// Create 1 Texture
 OGL_BINDTEX (texId); 			// Bind The Texture
-glTexImage2D (GL_TEXTURE_2D, 0, 4, Xsize, Ysize, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
+glTexImage2D (GL_TEXTURE_2D, 0, 4, Xsize, Ysize, 0, gameStates.ogl.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
 d_free (data); 							// Release data

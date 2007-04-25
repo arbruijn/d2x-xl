@@ -1334,8 +1334,8 @@ else {//if (!SHOW_COCKPIT) {
 	}
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 y = 6 + 2 * nLineSpacing;
-h = gameData.stats.nDisplayMode / 2;
-if (gameData.stats.nDisplayMode % 2 == 0) {
+h = (gameData.stats.nDisplayMode - 1) / 2;
+if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
 	sprintf (szStats, "%c:%d-%d %d-%d %d-%d", 
 				h ? 'T' : 'L', 
 				gameData.stats.player [h].nHits [0],

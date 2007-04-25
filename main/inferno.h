@@ -231,19 +231,7 @@ typedef struct tOglOptions {
 	int bGlTexMerge;
 	int bLightObjects;
 	int nMaxLights;
-	int bRgbaFormat;
-	int bIntensity4;
-	int bLuminance4Alpha4;
-	int bRgba2;
-	int bReadPixels;
-	int bGetTexLevelParam;
 	int bVoodooHack;
-#ifdef GL_ARB_multitexture
-	int bArbMultiTexture;
-#endif
-#ifdef GL_SGIS_multitexture
-	int bSgisMultiTexture;
-#endif
 } tOglOptions;
 
 typedef struct tMovieOptions {
@@ -472,6 +460,19 @@ typedef struct tOglStates {
 	int nLastW;
 	int nLastH;
 	int nReticle;
+	int bpp;
+	int nRGBAFormat;
+	int nRGBFormat;
+	int bIntensity4;
+	int bLuminance4Alpha4;
+	int bReadPixels;
+	int bGetTexLevelParam;
+#ifdef GL_ARB_multitexture
+	int bArbMultiTexture;
+#endif
+#ifdef GL_SGIS_multitexture
+	int bSgisMultiTexture;
+#endif
 	tRgbColorb bright;
 	tRgbColorf fBright;
 	tRgbColors palAdd;

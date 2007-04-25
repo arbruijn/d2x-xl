@@ -962,18 +962,27 @@ void EvalOglArgs (void)
 
 if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
-if ((t = FindArg("-gl_16bittextures")))
-	gameOpts->ogl.bRgbaFormat = GL_RGB5_A1;
+if ((t = FindArg("-gl_16bittextures"))) {
+	gameStates.ogl.bpp = 16;
+	gameStates.ogl.nRGBAFormat = GL_RGBA4;
+	gameStates.ogl.nRGBFormat = GL_RGB5;
+	}
 if ((t=FindArg("-gl_intensity4_ok")))
-	gameOpts->ogl.bIntensity4 = NumArg (t, 1);
+	gameStates.ogl.bIntensity4 = NumArg (t, 1);
 if ((t = FindArg("-gl_luminance4_alpha4_ok")))
-	gameOpts->ogl.bLuminance4Alpha4 = NumArg (t, 1);
-if ((t = FindArg("-gl_rgba2_ok")))
-	gameOpts->ogl.bRgba2 = NumArg (t, 1);
+	gameStates.ogl.bLuminance4Alpha4 = NumArg (t, 1);
 if ((t = FindArg("-gl_readpixels_ok")))
-	gameOpts->ogl.bReadPixels = NumArg (t, 1);
+	gameStates.ogl.bReadPixels = NumArg (t, 1);
 if ((t = FindArg("-gl_gettexlevelparam_ok")))
-	gameOpts->ogl.bGetTexLevelParam = NumArg (t, 1);
+	gameStates.ogl.bGetTexLevelParam = NumArg (t, 1);
+#ifdef GL_ARB_multitexture
+if (t = FindArg ("-gl_arb_multitexture_ok"))
+	gameStates.ogl.bArbMultiTexture= NumArg (t, 1);
+#endif
+#ifdef GL_SGIS_multitexture
+if (t = FindArg ("-gl_sgis_multitexture_ok"))
+	gameStates.ogl.bSgisMultiTexture = NumArg (t, 1);
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1611,19 +1620,7 @@ if (i) {
 	gameOptions [1].ogl.bLightObjects = 0;
 	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
-	gameOptions [1].ogl.bRgbaFormat = 4;
-	gameOptions [1].ogl.bIntensity4 = 1;
-	gameOptions [1].ogl.bLuminance4Alpha4 = 1;
-	gameOptions [1].ogl.bRgba2 = 1;
-	gameOptions [1].ogl.bReadPixels = 1;
-	gameOptions [1].ogl.bGetTexLevelParam = 1;
 	gameOptions [1].ogl.bVoodooHack = 0;
-#ifdef GL_ARB_multitexture
-	gameOptions [1].ogl.bArbMultiTexture = 0;
-#endif
-#ifdef GL_SGIS_multitexture
-	gameOptions [1].ogl.bSgisMultiTexture = 0;
-#endif
 	gameOptions [1].ogl.bGlTexMerge = 0;
 	}
 else {
@@ -1635,19 +1632,7 @@ else {
 	gameOptions [0].ogl.bLightObjects = 0;
 	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
-	gameOptions [0].ogl.bRgbaFormat = 4;
-	gameOptions [0].ogl.bIntensity4 = 1;
-	gameOptions [0].ogl.bLuminance4Alpha4 = 1;
-	gameOptions [0].ogl.bRgba2 = 1;
-	gameOptions [0].ogl.bReadPixels = 1;
-	gameOptions [0].ogl.bGetTexLevelParam = 1;
 	gameOptions [0].ogl.bVoodooHack = 0;
-#ifdef GL_ARB_multitexture
-	gameOptions [0].ogl.bArbMultiTexture = 0;
-#endif
-#ifdef GL_SGIS_multitexture
-	gameOptions [0].ogl.bSgisMultiTexture = 0;
-#endif
 	gameOptions [0].ogl.bGlTexMerge = 0;
 	}
 }
@@ -1809,6 +1794,19 @@ gameStates.ogl.nLastW =
 gameStates.ogl.nLastH = 1;
 gameStates.ogl.bAntiAliasing = 0;
 gameStates.ogl.bAntiAliasingOk = 0;
+gameStates.ogl.bpp = 32;
+gameStates.ogl.nRGBAFormat = GL_RGBA;
+gameStates.ogl.nRGBFormat = GL_RGB;
+gameStates.ogl.bIntensity4 = 1;
+gameStates.ogl.bLuminance4Alpha4 = 1;
+gameStates.ogl.bReadPixels = 1;
+gameStates.ogl.bGetTexLevelParam = 1;
+#ifdef GL_ARB_multitexture
+gameStates.ogl.bArbMultiTexture = 0;
+#endif
+#ifdef GL_SGIS_multitexture
+gameStates.ogl.bSgisMultiTexture = 0;
+#endif
 }
 
 // ----------------------------------------------------------------------------

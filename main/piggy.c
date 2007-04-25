@@ -68,7 +68,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
 #ifdef _DEBUG
-#	define PIGGY_MEM_QUOTA	3
+#	define PIGGY_MEM_QUOTA	5
 #else
 #	define PIGGY_MEM_QUOTA	8
 #endif
@@ -332,7 +332,7 @@ else if (bReverse) {
 				p->blue = (ubyte) (c.b * brightness);
 				}
 			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-				if (bShaderMerge) { 
+				if (0 && bShaderMerge) { 
 					p->red =
 					p->green =
 					p->blue = 0;
@@ -383,7 +383,7 @@ else {
 				p->blue = (ubyte) (c.b * brightness);
 				}
 			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-				if (bShaderMerge) { 
+				if (0 && bShaderMerge) { 
 					p->red =
 					p->green =
 					p->blue = 0;
@@ -465,13 +465,13 @@ else {
 				c.r = 120;
 				c.g = 88;
 				c.b = 128;
-				c.a = 255;
+				c.a = 1;
 				}
 			else {
 				c.r = p->red;
 				c.g = p->green;
 				c.b = p->blue;
-				c.a = p->alpha;
+				c.a = ((p->red == 120) && (p->green == 88) && (p->blue == 128)) ? 255 : p->alpha;
 				}
 			if (CFWrite (&c, 1, 4, fp) != (size_t) 4)
 				return 0;
@@ -1997,8 +1997,10 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 
 reloadTextures:
 
-	if (bRedone)
+	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
+		return;
+		}
 	bRedone = 1;
 	if (CFSeek (fp, nOffset, SEEK_SET)) {
 		PiggyCriticalError ();

@@ -160,23 +160,20 @@ int arch_toggle_fullscreen_menu(void)
 {
 	unsigned char *buf=NULL;
 
-	if (gameOpts->ogl.bReadPixels){
-		MALLOC(buf,unsigned char,grdCurScreen->sc_w*grdCurScreen->sc_h*3);
-		glReadBuffer(GL_FRONT);
-		glReadPixels(0,0,grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
+if (gameStates.ogl.bReadPixels) {
+	MALLOC(buf,unsigned char,grdCurScreen->sc_w*grdCurScreen->sc_h*3);
+	glReadBuffer(GL_FRONT);
+	glReadPixels(0,0,grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
 	}
-
-	GrDoFullScreen(!gameStates.ogl.bFullScreen);
-
-	if (gameOpts->ogl.bReadPixels){
+GrDoFullScreen(!gameStates.ogl.bFullScreen);
+if (gameStates.ogl.bReadPixels){
 //		glWritePixels(0,0,grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
-		glRasterPos2f(0,0);
-		glDrawPixels(grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
-		d_free(buf);
+	glRasterPos2f(0,0);
+	glDrawPixels(grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
+	d_free(buf);
 	}
 	//	grdCurScreen->sc_mode=0;//hack to get it to reset screen mode
-
-	return gameStates.ogl.bFullScreen;
+return gameStates.ogl.bFullScreen;
 }
 
 //------------------------------------------------------------------------------
@@ -262,15 +259,15 @@ const char *gl_vendor,*gl_renderer,*gl_version,*gl_extensions;
 
 void OglGetVerInfo(void)
 {
-	gl_vendor= (char *) glGetString (GL_VENDOR);
-	gl_renderer= (char *) glGetString (GL_RENDERER);
-	gl_version= (char *) glGetString (GL_VERSION);
-	gl_extensions= (char *) glGetString (GL_EXTENSIONS);
+gl_vendor = (char *) glGetString (GL_VENDOR);
+gl_renderer = (char *) glGetString (GL_RENDERER);
+gl_version = (char *) glGetString (GL_VERSION);
+gl_extensions = (char *) glGetString (GL_EXTENSIONS);
 #if 0 //TRACE
-	con_printf(
-		CON_VERBOSE, 
-		"\ngl vendor:%s\nrenderer:%s\nversion:%s\nextensions:%s\n",
-		gl_vendor,gl_renderer,gl_version,gl_extensions);
+con_printf(
+	CON_VERBOSE, 
+	"\ngl vendor:%s\nrenderer:%s\nversion:%s\nextensions:%s\n",
+	gl_vendor,gl_renderer,gl_version,gl_extensions);
 #endif
 #if 0 //WGL only, I think
 	dglMultiTexCoord2fARB = (glMultiTexCoord2fARB_fp)wglGetProcAddress("glMultiTexCoord2fARB");
@@ -279,64 +276,52 @@ void OglGetVerInfo(void)
 	dglSelectTextureSGIS = (glSelectTextureSGIS_fp)wglGetProcAddress("glSelectTextureSGIS");
 #endif
 
-	//multitexturing doesn't work yet.
+//multitexturing doesn't work yet.
 #ifdef GL_ARB_multitexture
-	gameOpts->ogl.bArbMultiTexture=0;//(strstr(gl_extensions,"GL_ARB_multitexture")!=0 && glActiveTextureARB!=0 && 0);
-#if 0 //TRACE	
-	con_printf (CONDBG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
-#endif
+gameOpts->ogl.bArbMultiTexture=0;//(strstr(gl_extensions,"GL_ARB_multitexture")!=0 && glActiveTextureARB!=0 && 0);
+#	if 0 //TRACE	
+con_printf (CONDBG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
+#	endif
 #endif
 #ifdef GL_SGIS_multitexture
-	gameOpts->ogl.bSgisMultiTexture=0;//(strstr(gl_extensions,"GL_SGIS_multitexture")!=0 && glSelectTextureSGIS!=0 && 0);
-#if TRACE	
-	con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
-#endif	
+gameOpts->ogl.bSgisMultiTexture=0;//(strstr(gl_extensions,"GL_SGIS_multitexture")!=0 && glSelectTextureSGIS!=0 && 0);
+#	if TRACE	
+con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
+#	endif	
 #endif
 
-	//add driver specific hacks here.  whee.
-	if (gl_renderer) {
-		if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(gl_version,"1.2 Mesa 3.0")==0){
-			gameOpts->ogl.bIntensity4=0;//ignores alpha, always black background instead of transparent.
-			gameOpts->ogl.bReadPixels=0;//either just returns all black, or kills the X server entirely
-			gameOpts->ogl.bGetTexLevelParam=0;//returns random data..
+//add driver specific hacks here.  whee.
+if (gl_renderer) {
+	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(gl_version,"1.2 Mesa 3.0")==0){
+		gameStates.ogl.bIntensity4 = 0;	//ignores alpha, always black background instead of transparent.
+		gameStates.ogl.bReadPixels = 0;	//either just returns all black, or kills the X server entirely
+		gameStates.ogl.bGetTexLevelParam = 0;	//returns random data..
 		}
-		if (stricmp(gl_vendor,"Matrox Graphics Inc.")==0){
-			//displays garbage. reported by
-			//  redomen@crcwnet.com (render="Matrox G400" version="1.1.3 5.52.015")
-			//  orulz (Matrox G200)
-			gameOpts->ogl.bIntensity4=0;
+	if (stricmp(gl_vendor,"Matrox Graphics Inc.")==0){
+		//displays garbage. reported by
+		//  redomen@crcwnet.com (render="Matrox G400" version="1.1.3 5.52.015")
+		//  orulz (Matrox G200)
+		gameStates.ogl.bIntensity4=0;
 		}
 	}
-	//allow overriding of stuff.
-#ifdef GL_ARB_multitexture
-	if ((t=FindArg("-gl_arb_multitexture_ok"))){
-		gameOpts->ogl.bArbMultiTexture=atoi(Args[t+1]);
-	}
-#endif
-#ifdef GL_SGIS_multitexture
-	if ((t=FindArg("-gl_sgis_multitexture_ok"))){
-		gameOpts->ogl.bSgisMultiTexture=atoi(Args[t+1]);
-	}
-#endif
+//allow overriding of stuff.
 #if 0 //TRACE	
-	con_printf(CON_VERBOSE, 
-		"gl_arb_multitexture:%i, gl_sgis_multitexture:%i\n",
-		gameOpts->ogl.bArbMultiTexture,gameOpts->ogl.bSgisMultiTexture);
-	con_printf(CON_VERBOSE, 
-		"gl_intensity4:%i, gl_luminance4_alpha4:%i, gl_rgba2:%i, gl_readpixels:%i, gl_gettexlevelparam:%i\n",
-		gameOpts->ogl.bIntensity4,gameOpts->ogl.bLuminance4Alpha4,gameOpts->ogl.bRgba2,gameOpts->ogl.bReadPixels,gameOpts->ogl.bGetTexLevelParam);
+con_printf(CON_VERBOSE, 
+	"gl_arb_multitexture:%i, gl_sgis_multitexture:%i\n",
+	gameOpts->ogl.bArbMultiTexture,gameOpts->ogl.bSgisMultiTexture);
+con_printf(CON_VERBOSE, 
+	"gl_intensity4:%i, gl_luminance4_alpha4:%i, gl_readpixels:%i, gl_gettexlevelparam:%i\n",
+	gameStates.ogl.bIntensity4, gameStates.ogl.bLuminance4Alpha4, gameStates.ogl.bReadPixels, gameStates.ogl.bGetTexLevelParam);
 #endif
 }
 
 //------------------------------------------------------------------------------
 
-int GrVideoModeOK(u_int32_t mode)
+int GrVideoModeOK (u_int32_t mode)
 {
-	int w, h;
-
-	w = SM_W(mode);
-	h = SM_H(mode);
-	return OglVideoModeOK(w, h); // platform specific code
+int w = SM_W(mode);
+int h = SM_H(mode);
+return OglVideoModeOK (w, h); // platform specific code
 }
 
 //------------------------------------------------------------------------------
@@ -932,7 +917,7 @@ void SaveScreenShot (unsigned char *buf, int bAutomap)
 if (!bSaveScreenShot)
 	return;
 bSaveScreenShot = 0;
-if (!gameOpts->ogl.bReadPixels) {
+if (!gameStates.ogl.bReadPixels) {
 	if (!bAutomap)
 		HUDMessage (MSGC_GAME_FEEDBACK, "Screenshots not supported on your configuration");
 	return;

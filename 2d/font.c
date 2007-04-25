@@ -629,21 +629,17 @@ void ogl_init_font (grs_font * font)
 	}
 	if (!(font->ftFlags & FT_COLOR)) {
 		//use GL_INTENSITY instead of GL_RGB
-		if (gameOpts->ogl.bIntensity4){
+		if (gameStates.ogl.bIntensity4) {
 			font->ft_parent_bitmap.glTexture->internalformat = 1;
 			font->ft_parent_bitmap.glTexture->format = GL_LUMINANCE;
 			}
-		else if (gameOpts->ogl.bLuminance4Alpha4){
+		else if (gameStates.ogl.bLuminance4Alpha4){
 			font->ft_parent_bitmap.glTexture->internalformat = 1;
 			font->ft_parent_bitmap.glTexture->format = GL_LUMINANCE_ALPHA;
 			}
-		else if (gameOpts->ogl.bRgba2){
-			font->ft_parent_bitmap.glTexture->internalformat = 4;
-			font->ft_parent_bitmap.glTexture->format = GL_RGBA;
-			}
 		else {
-			font->ft_parent_bitmap.glTexture->internalformat = 4;
-			font->ft_parent_bitmap.glTexture->format = GL_RGBA;
+			font->ft_parent_bitmap.glTexture->internalformat = gameStates.ogl.bpp / 8;
+			font->ft_parent_bitmap.glTexture->format = gameStates.ogl.nRGBAFormat;
 			}
 	OglLoadBmTextureM (&font->ft_parent_bitmap, 0, 0, 0, NULL);
 	}

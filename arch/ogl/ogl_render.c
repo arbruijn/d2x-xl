@@ -1837,7 +1837,7 @@ bool OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy,
 w1=grdCurScreen->sc_w;
 h1=grdCurScreen->sc_h;
 
-if (gameOpts->ogl.bReadPixels > 0) {
+if (gameStates.ogl.bReadPixels > 0) {
 	glDisable (GL_TEXTURE_2D);
 	glReadBuffer (GL_FRONT);
 	if (bTGA)

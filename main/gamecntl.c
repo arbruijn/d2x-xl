@@ -1191,7 +1191,8 @@ int HandleSystemKey(int key)
 			break;
 
 		case KEY_CTRLED+KEY_F8:
-			gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 4;
+			gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
+			gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
 			break;
 
 		case KEY_F8:
