@@ -1629,6 +1629,8 @@ if (EGI_FLAG (bShockwaves, 1, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
+#define TRACER_WIDTH	3
+
 void RenderTracers (tObject *objP)
 {
 if (!SHOW_OBJ_FX)
@@ -1640,29 +1642,44 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
-		fVector			vPosf;
-		short				h;
+		fVector			vPosf [2], vDirf;
+		short				h, i;
 		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
+	VmsVecToFloat (vPosf, &objP->position.vPos);
+	VmsVecToFloat (vPosf + 1, &objP->vLastPos);
+	G3TransformPointf (vPosf, vPosf, 0);
+	G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+	VmVecSubf (&vDirf, vPosf, vPosf + 1);
+	if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z)) {
+		//return;
+		VmsVecToFloat (vPosf + 1, &gameData.objs.objects [objP->cType.laserInfo.nParentObj].position.vPos);
+		G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+		VmVecSubf (&vDirf, vPosf, vPosf + 1);
+		if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z))
+			return;
+		}
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	glDepthMask (0);
 	glEnable (GL_LINE_STIPPLE);
-	h = d_rand () % 4;
-	glLineStipple ((h + 1) * 4, patterns [h]);
-	glLineWidth (3);
-	glBegin (GL_LINES);
-	glColor4d (1, 1, 1, 1.0 / 3.0);
-	VmsVecToFloat (&vPosf, &objP->position.vPos);
-	G3TransformPointf (&vPosf, &vPosf, 0);
-	glVertex3fv ((GLfloat *) &vPosf);
-	vPosf.p.x =
-	vPosf.p.y =
-	vPosf.p.z = -100;
-	VmsVecToFloat (&vPosf, &objP->vLastPos);
-	G3TransformPointf (&vPosf, &vPosf, 0);
-	glVertex3fv ((GLfloat *) &vPosf);
-	glEnd ();
+	glEnable (GL_BLEND);
+	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	h = 3; //d_rand () % 4;
+	glLineStipple ((h + 1) * 4, 0x0303); //patterns [h]);
+	vDirf.p.x *= TRACER_WIDTH / 20.0f;
+	vDirf.p.y *= TRACER_WIDTH / 20.0f;
+	vDirf.p.z *= TRACER_WIDTH / 20.0f;
+	for (i = 1; i < 5; i++) {
+		glLineWidth ((GLfloat) (TRACER_WIDTH * i));
+		glBegin (GL_LINES);
+		glColor4d (1, 1, 1, 0.5 / i);
+		glVertex3fv ((GLfloat *) (vPosf + 1));
+		glVertex3fv ((GLfloat *) vPosf);
+		VmVecDecf (vPosf, &vDirf);
+		VmVecDecf (vPosf + 1, &vDirf);
+		glEnd ();
+		}
 	glLineWidth (1);
 	glDisable (GL_LINE_STIPPLE);
 	glDepthMask (1);
