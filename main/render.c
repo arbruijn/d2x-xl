@@ -1042,6 +1042,26 @@ extern int containsFlare(tSegment *segP, int nSide);
 extern fix	Obj_light_xlate [16];
 
 // -----------------------------------------------------------------------------------
+// The following code takes a face and renders a corona over it.
+// The corona is rendered as a billboard, i.e. always facing the viewer.
+// To do that, the center point of the corona's face is computed. Next, orthogonal
+// vectors from the vector (eye,center) pointing up and left are computed. Finally,
+// vectors orthogonal to the (eye,up) and (eye,left) vectors are computed. These
+// all lie in a plane orthogonal to the viewer eye are used to compute the billboard's 
+// coordinates.
+// To avoid the corona partially disappearing in the face it is rendered upon, it is 
+// moved forward to the foremost z coordinate of that face.
+// The corona's x and y dimensions are adjusted to the face's dimensions. To properly
+// do that, the face coordinates are rotated so that the face normal has a 90 degree 
+// angle towards the vertical (points up/down). Now the actual (unrotated) x and y 
+// dimensions of the face are determined.
+// The rotation matrix is determined by the face normal; the z axis is disregarded
+// during rotation (rotation around z axis).
+// With these x and y values and the orthogonal vectors the corona coordinates are computed.
+// To make it match with the actual orientation of its face, it is rotated with another
+// rotation matrix derived from the face's normal.
+
+#define ROTATE_CORONA	1
 
 typedef union uvlf {
 	float a [3];
@@ -1055,89 +1075,167 @@ void RenderCorona (short nSegment, short nSide)
 	fVector		vertList [4], sprite [4];
 	short			sideVerts [4];
 	uvlf			uvlList [4] = {{0,0,1},{1,0,1},{1,1,1},{0,1,1}};
-	fVector		d, n, v, vCenter = {0,0,0}, vx = {1,0,0}, vy = {0,1,0}, vDeltaX, vDeltaY, vEye;
-	int			i, t;
+	fVector		d, n, o, v, vCenter = {0,0,0}, vx = {1,0,0}, vy = {0,1,0}, vDeltaX, vDeltaY, vEye;
+	fMatrix		r;
+	int			i, j, t;
+	float			xMin = 1000000000.0f, xMax = -1000000000.0f;
+	float			yMin = 1000000000.0f, yMax = -1000000000.0f;
 	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
-	float			a, hm, m = 0, l = 0;
+	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim;
 	tFaceColor	*pf;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 
+#if 0//def _DEBUG
+if ((nSegment != 6) || (nSide != 2))
+	return;
+#endif
 GetSideVerts (sideVerts, nSegment, nSide);
+// get the transformed face coordinates and compute their center
 for (i = 0; i < 4; i++) {
 	vertList [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	VmVecIncf (&vCenter, vertList + i);
 	l += f2fl (sideP->uvls [i].l);
 	}
-VmVecNormalf (&n, vertList, vertList + 1, vertList + 2);
-VmVecScalef (&n, &n, 1.0f / 16.0f);
 VmVecScalef (&vCenter, &vCenter, 0.25);
+VmVecNormalf (&n, vertList, vertList + 1, vertList + 2);
+// o serves to slightly displace the corona from its face to avoid z fighting
+VmVecScalef (&o, &n, 1.0f / 10.0f);
+#if 1	//might remove z from normal 
+n.p.z = 0;
+VmVecNormalizef (&n, &n);
+#endif
+// compute rotation matrix to align transformed face
+r.rVec.p.x = n.p.y;
+r.rVec.p.y = -n.p.x;
+r.rVec.p.z = 0;
+r.uVec.p.x = n.p.x;
+r.uVec.p.y = n.p.y;
+r.uVec.p.z = 0;
+r.fVec.p.x = 
+r.fVec.p.y = 0;
+r.fVec.p.z = 1;
 
 for (i = 0; i < 4; i++) {
-	VmVecSubf (&d, vertList + i, &vCenter);
-#if 0
-	VmVecScalef (&d, &d, 1.5f);
-#endif
+	VmVecSubf (&d, vertList + i, &vCenter);	//compute face coordinate relative to pivot
+	VmVecRotatef (&v, &d, &r);	//align face coordinate
+	if (xMin > v.p.x)
+		xMin = v.p.x;
+	if (xMax < v.p.x)
+		xMax = v.p.x;
+	if (yMin > v.p.y)
+		yMin = v.p.y;
+	if (yMax < v.p.y)
+		yMax = v.p.y;
+	sprite [i] = v;
 	VmVecIncf (vertList + i, &d);
-	VmVecIncf (vertList + i, &n);
-	if (zMin > vertList [i].p.z)
-		zMin = vertList [i].p.z;
-	if (zMax < vertList [i].p.z)
-		zMax = vertList [i].p.z;
-#if 1
-	m += VmVecMagf (&d);
-#else
-	hm = VmVecMagf (&d);
-	if (m < hm)
-		m = hm;
-#endif
+	VmVecIncf (vertList + i, &o);
+	//determine depth extension of the face
+	v = vertList [i];
+	if (zMin > v.p.z)
+		zMin = v.p.z;
+	if (zMax < v.p.z)
+		zMax = v.p.z;
+	m += VmVecMagf (&d);	//accumulate face dimensions
 	}
-m /= 4;
+m /= 4;	//compute average face dimension
+// compute x and y dimensions of aligned face
+for (i = 0; i < 4; i++) {
+	j = (i + 1) % 4;
+	h = (float) fabs (sprite [i].p.x - sprite [j].p.x);
+	if (h > dx)
+		dx = h;
+	h = (float) fabs (sprite [i].p.y - sprite [j].p.y);
+	if (h > dy)
+		dy = h;
+	}
+
 VmVecNormalizef (&vEye, &vCenter);
-a = VmVecMagf (&vCenter); // - f2fl (gameData.objs.console->size);
-#if 1
-hm = ((zMax - zMin) / 2);
-if (a < hm)
-	hm = a * 0.9f;
-if (hm) {
-	VmVecScalef (&v, &vEye, hm);
-	VmVecDecf (&vCenter, &v);
-	a -= hm;
+a = VmVecMagf (&vCenter);
+// determine whether viewer has passed foremost z coordinate of corona's face
+// if so, push corona back
+h = ((zMax - zMin) / 2);
+if (a < h) {
+	dim = a / h;
+	dim *= dim;
+	h = a * 0.9f;
 	}
-#endif
+else
+	dim = 1.0f;
+if (h) {
+	VmVecScalef (&v, &vEye, h);
+	VmVecDecf (&vCenter, &v);
+	a -= h;
+	}
 if (m > a)
 	m = a;
-VmVecIncf (&vx, &vCenter);
-VmVecCrossProdf (&n, &vCenter, &vCenter);
-VmVecCrossProdf (&vDeltaY, &vx, &vEye);
+// compute orthogonal vectors for calculation of billboard coordinates
+VmVecIncf (&vx, &vCenter);	//1st orthonal vector
+VmVecCrossProdf (&vDeltaY, &vx, &vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
 VmVecIncf (&vy, &vCenter);
 VmVecCrossProdf (&vDeltaX, &vy, &vEye);
-VmVecScalef (&vDeltaX, &vDeltaX, m);
-VmVecScalef (&vDeltaY, &vDeltaY, m);
-VmVecSubf (sprite, &vCenter, &vDeltaX);
-VmVecDecf (sprite, &vDeltaY);
-VmVecAddf (sprite + 1, &vCenter, &vDeltaX);
-VmVecDecf (sprite + 1, &vDeltaY);
-VmVecAddf (sprite + 2, &vCenter, &vDeltaX);
-VmVecIncf (sprite + 2, &vDeltaY);
-VmVecSubf (sprite + 3, &vCenter, &vDeltaX);
-VmVecIncf (sprite + 3, &vDeltaY);
+
+#ifdef _DEBUG
+//HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
+#endif
+
+m = (float) sqrt (dx * dx + dy * dy) / 4;	//basic corona size to make it visible regardless of dx and dy
+h = dy / 3 * 2;
+VmVecScalef (&vDeltaX, &vDeltaX, m + h);
+h = dx / 3 * 2;
+VmVecScalef (&vDeltaY, &vDeltaY, m + h);
+
+//create rotation matrix to match corona with face
+r.rVec.p.x = n.p.x;
+r.rVec.p.y = -n.p.y;
+r.rVec.p.z = 0;
+r.uVec.p.x = n.p.y;
+r.uVec.p.y = n.p.x;
+r.uVec.p.z = 0;
+
+//compute corona coordinates
+v.p.x = v.p.y = v.p.z = 0;
+VmVecDecf (&v, &vDeltaX);
+VmVecDecf (&v, &vDeltaY);
+VmVecRotatef (sprite, &v, &r);
+VmVecIncf (sprite, &vCenter);
+v.p.x = v.p.y = v.p.z = 0;
+VmVecIncf (&v, &vDeltaX);
+VmVecDecf (&v, &vDeltaY);
+VmVecRotatef (sprite + 1, &v, &r);
+VmVecIncf (sprite + 1, &vCenter);
+v.p.x = v.p.y = v.p.z = 0;
+VmVecIncf (&v, &vDeltaX);
+VmVecIncf (&v, &vDeltaY);
+VmVecRotatef (sprite + 2, &v, &r);
+VmVecIncf (sprite + 2, &vCenter);
+v.p.x = v.p.y = v.p.z = 0;
+VmVecDecf (&v, &vDeltaX);
+VmVecIncf (&v, &vDeltaY);
+VmVecRotatef (sprite + 3, &v, &r);
+VmVecIncf (sprite + 3, &vCenter);
+
+VmVecNormalf (&o, sprite, sprite + 1, sprite + 2);
+VmVecScalef (&o, &o, 0.1f);
+for (i = 0; i < 4; i++)
+	VmVecIncf (sprite + i, &o);
 
 if (OglBindBmTex (bmpCorona, -1)) 
 	return;
 OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 t = (sideP->nOvlTex && IsLight (sideP->nOvlTex)) ? sideP->nOvlTex : sideP->nBaseTex;
 pf = gameData.render.color.textures + t;
-a = (float) sqrt ((pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 10) / 3 * 2;
+a = dim * (float) sqrt ((pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 10) / 3 * 2;
 l /= 4;
 glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
+//glColor4d (1, 0.8, 0, 1);
+//render the corona
 glBegin (GL_QUADS);
-#if 1
 for (i = 0; i < 4; i++) {
 	glTexCoord2fv ((GLfloat *) (uvlList + i));
 	glVertex3fv ((GLfloat *) (sprite + i));
 	}
-#endif
 #if 0
+//render corona again, this time parallel to its face
 for (i = 0; i < 4; i++) {
 	glTexCoord2fv ((GLfloat *) (uvlList + i));
 	glVertex3fv ((GLfloat *) (vertList + i));

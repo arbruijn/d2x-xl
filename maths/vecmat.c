@@ -1300,7 +1300,7 @@ vmsAngVec *VmExtractAnglesVecNorm (vmsAngVec *a, vmsVector *v)
 {
 a->b = 0;		//always zero bank
 a->p = fix_asin (-v->p.y);
-a->h = (v->p.x || v->p.z) ? fix_atan2(v->p.z, v->p.x) : 0;
+a->h = (v->p.x || v->p.z) ? fix_atan2 (v->p.z, v->p.x) : 0;
 return a;
 }
 
@@ -1310,7 +1310,7 @@ vmsAngVec *VmExtractAnglesVector (vmsAngVec *a, vmsVector *v)
 {
 	vmsVector t;
 
-if (VmVecCopyNormalize(&t, v) != 0)
+if (VmVecCopyNormalize (&t, v))
 	VmExtractAnglesVecNorm (a, &t);
 return a;
 }
