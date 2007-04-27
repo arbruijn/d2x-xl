@@ -116,23 +116,6 @@ gameData.smoke.iUsedSmoke = -1;
 
 //	-----------------------------------------------------------------------------
 
-grsBitmap *ReadParticleImage (char *szFile)
-{
-	grsBitmap	*bmP = NULL;
-
-if (!(bmP = GrCreateBitmap (0, 0, 4)))
-	return NULL;
-if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
-	bmP->bmType = BM_TYPE_ALT;
-	return bmP;
-	}
-bmP->bmType = BM_TYPE_ALT;
-GrFreeBitmap (bmP);
-return NULL;
-}
-
-//	-----------------------------------------------------------------------------
-
 int LoadParticleImage (int nType)
 {
 	int			*flagP = bHavePartImg [gameStates.render.bPointSprites] + nType;
@@ -143,7 +126,7 @@ if (*flagP < 0)
 if (*flagP > 0)
 	return 1;
 nType %= 3;
-bmP = ReadParticleImage (szParticleImg [gameStates.render.bPointSprites][nType]);
+bmP = CreateAndReadTGA (szParticleImg [gameStates.render.bPointSprites][nType]);
 *flagP = bmP ? 1 : -1;
 if (*flagP < 0)
 	return 0;

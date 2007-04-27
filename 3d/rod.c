@@ -44,7 +44,7 @@ int CalcRodCorners (g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix
 	int			i;
 
 //compute vector from one point to other, do cross product with vector
-//from eye to get perpendiclar
+//from eye to get perpendicular
 VmVecSub (&delta_vec, &bot_point->p3_vec, &top_point->p3_vec);
 //unscale for aspect
 //delta_vec.x = FixDiv (delta_vec.x, viewInfo.scale.x);

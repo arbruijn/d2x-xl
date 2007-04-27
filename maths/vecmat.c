@@ -664,7 +664,7 @@ return VmVecNormalize (VmVecSub (dest, end, start));
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
-vmsVector *VmVecNormal(vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
+vmsVector *VmVecNormal (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
 {
 VmVecNormalize (VmVecPerp (dest, p0, p1, p2));
 return dest;

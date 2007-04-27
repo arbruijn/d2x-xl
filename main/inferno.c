@@ -1205,6 +1205,7 @@ if (i) {
 	gameOptions [1].render.textures.bUseHires = 0;
 	if (gameStates.app.bNostalgia > 2)
 		gameOptions [1].render.nQuality = 0;
+	gameOptions [1].render.bCoronas = 0;
 	gameOptions [1].render.bWireFrame = 0;
 	gameOptions [1].render.bTextures = 1;
 	gameOptions [1].render.bObjects = 1;
@@ -1296,7 +1297,8 @@ else {
 	gameOptions [0].render.bAutoTransparency = 1;
 	gameOptions [0].render.nMathFormat = 0;
 	gameOptions [0].render.nDefMathFormat = 0;
-	gameOptions [1].render.bEnableSSE = 0;
+	gameOptions [0].render.bEnableSSE = 0;
+	gameOptions [0].render.bCoronas = 0;
 #ifdef _DEBUG
 	gameOptions [0].render.shadows.nLights = 1;
 #else
@@ -1856,6 +1858,7 @@ gameStates.render.bShadowMaps = 0;
 gameStates.render.bHeadlightOn = 0;
 gameStates.render.bPaletteFadedOut = 0;
 gameStates.render.nModelQuality = 3;
+gameStates.render.nType = -1;
 gameStates.render.cockpit.bShowPingStats = 0;
 gameStates.render.cockpit.nMode = CM_FULL_COCKPIT;
 gameStates.render.cockpit.nNextMode = -1;

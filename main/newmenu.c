@@ -2317,17 +2317,17 @@ launchOption:
 						else
 							continue;
 								;
-						if (((t==NM_TYPE_MENU) ||
-							  (t==NM_TYPE_CHECK) ||
-							  (t==NM_TYPE_RADIO) ||
-							  (t==NM_TYPE_NUMBER) ||
-							  (t==NM_TYPE_SLIDER))
-								&&(ascii==toupper (ch)))	{
+						if (((t == NM_TYPE_MENU) ||
+							  (t == NM_TYPE_CHECK) ||
+							  (t == NM_TYPE_RADIO) ||
+							  (t == NM_TYPE_NUMBER) ||
+							  (t == NM_TYPE_SLIDER))
+								&& (ascii == toupper (ch)))	{
 							k = 0;
 							choice = choice1;
 							if (old_choice>-1)
-								item [old_choice].redraw=1;
-							item [choice].redraw=1;
+								item [old_choice].redraw = 1;
+							item [choice].redraw = 1;
 							if (choice < ctrl.nScrollOffset) {
 								ctrl.nScrollOffset = choice;
 								REDRAW_ALL;
@@ -2341,11 +2341,11 @@ launchOption:
 									}
 								REDRAW_ALL;
 								}
-							if (t==NM_TYPE_CHECK)
+							if (t == NM_TYPE_CHECK)
 								goto checkOption;
-							else if (t==NM_TYPE_RADIO)
+							else if (t == NM_TYPE_RADIO)
 								goto radioOption;
-							else if (item [choice1].key != 0)
+							else if ((t != NM_TYPE_SLIDER) && (item [choice1].key != 0))
 								if (gameOpts->menus.nHotKeys > 0)
 									goto launchOption;
 						}

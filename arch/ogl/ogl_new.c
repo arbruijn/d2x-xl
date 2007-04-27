@@ -217,7 +217,7 @@ return g4_draw_tmap_2 (nv, pointlist, uvl_list, bm, NULL, 0);
 
 //------------------------------------------------------------------------------
 
-bool G3DrawBitMap(vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation)
+bool G3DrawBitmap(vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation)
 {
 	vmsVector pv,v1;
 	int i;

@@ -107,6 +107,7 @@ char *lightMapFS [3] = {
 	"void main(void){" \
 	"topColor=texture2D(topTex,vec2(gl_TexCoord[1]));" \
 	"if(abs(topColor.a-1.0/255.0)<0.25)discard;" \
+	"if((topColor.a==0.0)&&(abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
 	"else {btmColor=texture2D(btmTex,vec2(gl_TexCoord[0]));" \
 	"lMapColor=texture2D(lMapTex,vec2(gl_TexCoord[2]))+((gl_Color)-0.5);" \
 	"maxC=lMapColor.r;" \
@@ -203,6 +204,8 @@ int IsLight (int tMapNum)
 {
 if (gameStates.app.bD1Mission)
 	tMapNum = ConvertD1Texture (tMapNum, 1);
+if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
+	return 1;
 switch (tMapNum) {
 	case 275:
 	case 276:
@@ -289,7 +292,7 @@ switch (tMapNum) {
 	default:
 		break;
 	}
-return (gameData.pig.tex.pTMapInfo[tMapNum].lighting > 0);
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -320,7 +323,7 @@ for (segNum = 0, segP = gameData.segs.segments;
 			continue; 	//skip open sides
 #endif
 		if (IsLight (sideP->nBaseTex) || IsLight (sideP->nOvlTex) ||
-			 (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].index)) {
+			 (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum * 6 + sideNum].index)) {
 			nLights++;
 #ifdef _DEBUG
 			sideFlags [segNum * 6 + sideNum] = 1; 
@@ -751,11 +754,11 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++) {
 			//if (IsBigLight (tMapNum))
 				sideRad = SideRad (segNum, sideNum);
 			}
-		if (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].index) { 
+		if (gameStates.app.bD2XLevel && gameData.render.color.lights [segNum * 6 + sideNum].index) { 
 			bIsLight = 1;
-			tempLight.color [0] = (GLfloat) gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].color.red; 
-			tempLight.color [1] = (GLfloat) gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].color.green; 
-			tempLight.color [2] = (GLfloat) gameData.render.color.lights [segNum * MAX_SEGMENTS + sideNum].color.blue; 
+			tempLight.color [0] = (GLfloat) gameData.render.color.lights [segNum * 6 + sideNum].color.red; 
+			tempLight.color [1] = (GLfloat) gameData.render.color.lights [segNum * 6 + sideNum].color.green; 
+			tempLight.color [2] = (GLfloat) gameData.render.color.lights [segNum * 6 + sideNum].color.blue; 
 			tempLight.range = baseRange; 
 			}
 		//Process found light.

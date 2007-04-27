@@ -141,7 +141,7 @@ static int	nFPSopt, nRSDopt,
 				nFusionRampOpt, nLightRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
 				nUseSmokeOpt, nUseCamOpt, nMslTurnSpeedOpt,
-				nLightMapsOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, nDynLightOpt, 
+				nLightingMethodOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, 
 				nShadowReachOpt, nOglMaxLightsOpt,
 				optZPass, optShadowVolume, nSyncSmokeSizes,
 				nSmokeGrenadeOpt, nMaxSmokeGrenOpt;
@@ -1765,17 +1765,19 @@ return j;
 
 void EffectOptionsMenu ()
 {
-	tMenuItem m [30];
+	tMenuItem m [10];
 	int	i, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
-			optTracers, optShockwaves;
+			optTracers, optShockwaves, optCoronas;
 
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
 	optTranspExpl = opt++;
+	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_E, HTX_ADVRND_CORONAS);
+	optCoronas = opt++;
 	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
 	optLightTrails = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
@@ -1797,6 +1799,7 @@ do {
 		} 
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
+	gameOpts->render.bCoronas = m [optCoronas].value;
 	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
@@ -1807,6 +1810,7 @@ do {
 	if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.bTransparentEffects = 1;
 	gameOpts->render.bAutoTransparency = 1;
+	gameOpts->render.bCoronas = 0;
 	extraGameInfo [0].bLightTrails = 1;
 	extraGameInfo [0].bTracers = 1;
 	extraGameInfo [0].bShockwaves = 1;
@@ -2472,11 +2476,18 @@ void LightingOptionsCallback (int nitems, tMenuItem * menus, int * key, int cite
 	tMenuItem	*m;
 	int			v;
 
-if (nLightMapsOpt >= 0) {
-	m = menus + nLightMapsOpt;
-	v = m->value;
+if (nLightingMethodOpt >= 0) {
+	v = menus [nLightingMethodOpt + 1].value;
 	if (v != gameOpts->render.color.bUseLightMaps) {
 		gameOpts->render.color.bUseLightMaps = v;
+		gameOpts->render.bDynLighting = menus [nLightingMethodOpt + 2].value;
+		*key = -2;
+		return;
+		}
+	v = menus [nLightingMethodOpt + 2].value;
+	if (v != gameOpts->render.bDynLighting) {
+		gameOpts->render.bDynLighting = v;
+		gameOpts->render.color.bUseLightMaps = menus [nLightingMethodOpt + 1].value;
 		*key = -2;
 		return;
 		}
@@ -2487,15 +2498,6 @@ if (v != gameOpts->render.color.bGunLight) {
 	gameOpts->render.color.bGunLight = v;
 	*key = -2;
 	return;
-	}
-if (nDynLightOpt >= 0) {
-	m = menus + nDynLightOpt;
-	v = m->value;
-	if (v != gameOpts->render.bDynLighting) {
-		gameOpts->render.bDynLighting = v;
-		*key = -2;
-		return;
-		}
 	}
 if (nOglMaxLightsOpt >= 0) {
 	m = menus + nOglMaxLightsOpt;
@@ -2550,44 +2552,41 @@ void LightingOptionsMenu ()
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
-	if (gameStates.render.color.bLightMapsOk && !gameOpts->render.bDynLighting) {
-		ADD_CHECK (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_P, HTX_RENDER_LIGHTMAPS);
-		nLightMapsOpt = opt++;
-		if (gameOpts->render.color.bUseLightMaps) {
-			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
-			*szLightRange = *(TXT_LMAP_RANGE - 1);
-			ADD_SLIDER (opt, szLightRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_R, HTX_ADVRND_LMAPRANGE);
-			nLightRangeOpt = opt++;
-			ADD_TEXT (opt, "", 0);
-			opt++;
-			}
-		else
-			nLightRangeOpt = -1;
+	nLightingMethodOpt =
+	nLightRangeOpt =
+	nOglMaxLightsOpt = 
+	optObjectLight = -1;
+	if (!gameStates.app.bGameRunning) {
+		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
+		nLightingMethodOpt = opt++;
+		ADD_RADIO (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_M, 1, HTX_RENDER_LIGHTMAPS);
+		opt++;
+		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_G, 1, HTX_OGL_LIGHTING);
+		opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
 		}
-	else
-		nLightMapsOpt = -1;
-	if (gameStates.app.bGameRunning) 
-		nDynLightOpt = 
-		nOglMaxLightsOpt = 
-		optObjectLight = -1;
-	else if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
-		nDynLightOpt = -1;
-	else {
-		ADD_CHECK (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_O, HTX_OGL_LIGHTING);
-		nDynLightOpt = opt++;
+	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
+		char *psz = TXT_LMAP_RANGE;
+		sprintf (szLightRange + 1, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
+		*szLightRange = *(TXT_LMAP_RANGE - 1);
+		ADD_SLIDER (opt, szLightRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_R, HTX_ADVRND_LMAPRANGE);
+		nLightRangeOpt = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
 		}
-	if (gameOpts->render.bDynLighting) {
-		if (!gameStates.app.bGameRunning && (nDynLightOpt >= 0)) {
-			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange]);
+	if (!gameStates.app.bGameRunning && (nLightingMethodOpt >= 0)) {
+		if (gameOpts->render.bDynLighting) {
+			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
 			*szLightRange = *(TXT_LIGHT_RANGE - 1);
 			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 2, KEY_R, HTX_ADVRND_LIGHTRANGE);
 			nLightRangeOpt = opt++;
+#if 0
 			ADD_TEXT (opt, "", 0);
 			opt++;
-			}
-		ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
-		optObjectLight = opt++;
-		if (!gameStates.app.bGameRunning && (nDynLightOpt >= 0)) {
+#endif
+			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+			optObjectLight = opt++;
 			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
 			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
 			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
@@ -2595,14 +2594,7 @@ do {
 			ADD_TEXT (opt, "", 0);
 			opt++;
 			}
-		else
-			nOglMaxLightsOpt = 
-			nLightRangeOpt = -1;
 		}
-	else
-		nOglMaxLightsOpt = 
-		nLightRangeOpt = 
-		optObjectLight = -1;
 	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
 	optColoredLight = opt++;
 	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
@@ -2631,11 +2623,8 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	if (!gameStates.app.bGameRunning)
-		if (gameOpts->render.bDynLighting = m [nDynLightOpt].value) {
-			if (optObjectLight >= 0)
-				gameOpts->ogl.bLightObjects = m [optObjectLight].value;
-			}
+	if (gameOpts->render.bDynLighting && (optObjectLight >= 0))
+		gameOpts->ogl.bLightObjects = m [optObjectLight].value;
 	if (optColoredLight >= 0)
 		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
 	if (nGunColorOpt >= 0)

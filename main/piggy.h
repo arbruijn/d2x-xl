@@ -102,6 +102,7 @@ int LoadTGA (CFILE *fp, grsBitmap *pb, int alpha, double brightness,
 				 int bGrayScale, int bRedBlueFlip);
 int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *pb, int alpha, 
 				 double brightness, int bGrayScale, int bRedBlueFlip);
+grsBitmap *CreateAndReadTGA (char *szFile);
 
 extern int Pigfile_initialized;
 

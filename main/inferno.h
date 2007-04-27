@@ -207,6 +207,7 @@ typedef struct tRenderOptions {
 	int bWireFrame;
 	int bOptimize;
 	int bTransparentEffects;
+	int bCoronas;
 	int bUseShaders;
 	int bHiresModels;
 	int bAutoTransparency;
@@ -589,6 +590,7 @@ typedef struct tRenderStates {
 	int nFrameFlipFlop;
 	int nModelQuality;
 	int nState;	//0: render geometry, 1: render objects
+	int nType;
 	ubyte nRenderingType;
 	fix nFlashScale;
 	fix nFlashRate;

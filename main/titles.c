@@ -541,7 +541,7 @@ void ShowBitmapFrame (int bRedraw)
 		memcpy (&viewInfo.view [0], &temp_orient, sizeof (viewInfo.view [0]));
 		VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
 		temp_pos.p.z = w * F1_0;
-		G3DrawBitMap (&temp_pos, w * F1_0, h * F1_0, bitmap_ptr, 0, 1.0, 0, 0);
+		G3DrawBitmap (&temp_pos, w * F1_0, h * F1_0, bitmap_ptr, 0, 1.0, 0, 0);
 		G3EndFrame ();
 		if (!gameOpts->menus.nStyle)
 			GrUpdate (0);

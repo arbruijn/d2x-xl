@@ -80,6 +80,9 @@ extern int bWallShadows;
 extern int bZPass;
 #endif
 
+grsBitmap *bmpCorona = NULL;
+int bHaveCorona = 0;
+
 int _CDECL_ D2X_RenderThread (void *p);
 int _CDECL_ D2X_OpenGLThread (void *p);
 
@@ -100,7 +103,7 @@ extern int bShadowTest;
 unsigned int	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
-int nRLFrameCount=-1;
+int nRLFrameCount = -1;
 int nRotatedLast [MAX_VERTICES_D2X];
 
 // When any render function needs to know what's looking at it, it should 
@@ -108,7 +111,6 @@ int nRotatedLast [MAX_VERTICES_D2X];
 vmsVector viewerEye;  //valid during render
 
 int	nRenderSegs;
-static int renderState = -1;
 
 fix xRenderZoom = 0x9000;					//the player's zoom factor
 fix xRenderZoomScale = 1;					//the player's zoom factor
@@ -157,7 +159,29 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-void DrawOutline (int nv, g3sPoint **pointlist)
+inline int LoadCorona (void)
+{
+if (!bHaveCorona) {
+	bmpCorona = CreateAndReadTGA ("corona.tga");
+	bHaveCorona = bmpCorona ? 1 : -1;
+	}
+return bHaveCorona;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeCorona (void)
+{
+if (bmpCorona) {
+	GrFreeBitmap (bmpCorona);
+	bmpCorona = NULL;
+	bHaveCorona = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void DrawOutline (int nv, g3sPoint **pointList)
 {
 	int i;
 	GLint depthFunc; 
@@ -167,7 +191,7 @@ void DrawOutline (int nv, g3sPoint **pointlist)
 
 #if 1 //def RELEASE
 	if (gameStates.render.bQueryOcclusion) {
-		G3DrawPolyAlpha (nv, pointlist, 1, 1, 0, -1);
+		G3DrawPolyAlpha (nv, pointList, 1, 1, 0, -1);
 		return;
 		}
 #endif
@@ -177,20 +201,20 @@ glDepthFunc(GL_ALWAYS);
 GrSetColorRGB (255, 255, 255, 255);
 VmVecZero (&center.p3_vec);
 for (i = 0; i < nv; i++) {
-	G3DrawLine (pointlist [i], pointlist [(i + 1) % nv]);
-	VmVecInc (&center.p3_vec, &pointlist [i]->p3_vec);
-	nf = &pointlist [i]->p3_normal.vNormal;
+	G3DrawLine (pointList [i], pointList [(i + 1) % nv]);
+	VmVecInc (&center.p3_vec, &pointList [i]->p3_vec);
+	nf = &pointList [i]->p3_normal.vNormal;
 	n.p.x = (fix) (nf->p.x * 65536.0f);
 	n.p.y = (fix) (nf->p.y * 65536.0f);
 	n.p.z = (fix) (nf->p.z * 65536.0f);
 	G3RotatePoint (&n, &n, 0);
-	VmVecScaleAdd (&normal.p3_vec, &pointlist [i]->p3_vec, &n, F1_0 * 10);
-	G3DrawLine (pointlist [i], &normal);
+	VmVecScaleAdd (&normal.p3_vec, &pointList [i]->p3_vec, &n, F1_0 * 10);
+	G3DrawLine (pointList [i], &normal);
 	}
 VmVecNormal (&normal.p3_vec, 
-				 &pointlist [0]->p3_vec, 
-				 &pointlist [1]->p3_vec, 
-				 &pointlist [2]->p3_vec);
+				 &pointList [0]->p3_vec, 
+				 &pointList [1]->p3_vec, 
+				 &pointList [2]->p3_vec);
 VmVecInc (&normal.p3_vec, &center.p3_vec);
 VmVecScale (&normal.p3_vec, F1_0 * 10);
 G3DrawLine (&center, &normal);
@@ -220,7 +244,7 @@ void Draw3DReticle (fix nEyeOffset)
 {
 	g3sPoint 	reticlePoints [4];
 	uvl			uvl [4];
-	g3sPoint	*pointlist [4];
+	g3sPoint	*pointList [4];
 	int 			i;
 	vmsVector	v1, v2;
 	grs_canvas	*saved_canvas;
@@ -230,7 +254,7 @@ void Draw3DReticle (fix nEyeOffset)
 	
 for (i = 0; i < 4; i++) {
 	reticlePoints [i].p3_index = -1;
-	pointlist [i] = reticlePoints + i;
+	pointList [i] = reticlePoints + i;
 	uvl [i].l = MAX_LIGHT;
 	}
 uvl [0].u =
@@ -278,7 +302,7 @@ GrSetCurrentCanvas(saved_canvas);
 
 saved_interp_method=gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointlist, uvl, &reticle_canvas->cv_bitmap, NULL, 1);
+G3DrawTexPoly (4, pointList, uvl, &reticle_canvas->cv_bitmap, NULL, 1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -324,7 +348,7 @@ else {
 //	vp is a pointer to vertex ids.
 //	tmap1, tmap2 are texture map ids.  tmap2 is the pasty one.
 
-int RenderColoredSegment (int nSegment, int nSide, int nv, g3sPoint **pointlist)
+int RenderColoredSegment (int nSegment, int nSide, int nv, g3sPoint **pointList)
 {
 	short csegnum = gameData.segs.segments [nSegment].children [nSide];
 	int	funcRes = 1;
@@ -335,18 +359,18 @@ gameStates.render.grAlpha = 6;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (owner > 0)) {
 	if ((csegnum < 0) || (gameData.segs.xSegments [csegnum].owner != owner)) {
 		if (owner == 1)
-			G3DrawPolyAlpha (nv, pointlist, 0, 0, 0.5, -1);		//draw as flat poly
+			G3DrawPolyAlpha (nv, pointList, 0, 0, 0.5, -1);		//draw as flat poly
 		else
-			G3DrawPolyAlpha (nv, pointlist, 0.5, 0, 0, -1);		//draw as flat poly
+			G3DrawPolyAlpha (nv, pointList, 0.5, 0, 0, -1);		//draw as flat poly
 		}
 	}
 else if (special == SEGMENT_IS_WATER) {
 	if ((csegnum < 0) || (gameData.segs.segment2s [csegnum].special != SEGMENT_IS_WATER))
-		G3DrawPolyAlpha(nv, pointlist, 0, 1.0 / 16.0, 0.5, -1);		//draw as flat poly
+		G3DrawPolyAlpha(nv, pointList, 0, 1.0 / 16.0, 0.5, -1);		//draw as flat poly
 	}
 else if (special == SEGMENT_IS_LAVA) {
 	if ((csegnum < 0) || (gameData.segs.segment2s [csegnum].special != SEGMENT_IS_LAVA))
-		G3DrawPolyAlpha (nv, pointlist, 0.5, 0, 0, -1);		//draw as flat poly
+		G3DrawPolyAlpha (nv, pointList, 0.5, 0, 0, -1);		//draw as flat poly
 	}
 else
 	funcRes = 0;
@@ -367,7 +391,7 @@ typedef struct tFaceProps {
 	vmsVector	vNormal;
 	ubyte			nv;
 	ubyte			widFlags;
-	char			renderState;
+	char			nType;
 } tFaceProps;
 
 typedef struct tFaceListEntry {
@@ -417,7 +441,7 @@ if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) {
 else
 	memset (vertColors, 0, sizeof (vertColors));
 #else
-	tFaceColor *colorP = gameData.render.color.sides + nSegment * MAX_SEGMENTS + nSide;
+	tFaceColor *colorP = gameData.render.color.sides + nSegment * 6 + nSide;
 	if (colorP->index)
 		lightColor = *colorP;
 	else
@@ -621,19 +645,19 @@ return IsTransparentTexture (gameData.segs.segments [propsP->segNum].sides [prop
 
 //------------------------------------------------------------------------------
 
-int RenderWall (tFaceProps *propsP, g3sPoint **pointlist, int bIsMonitor)
+int RenderWall (tFaceProps *propsP, g3sPoint **pointList, int bIsMonitor)
 {
 short c, nWallNum = WallNumI (propsP->segNum, propsP->sideNum);
 
 if (IS_WALL (nWallNum)) {
 	if (propsP->widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)) {
 		if (!bIsMonitor) {
-			if (!RenderColoredSegment (propsP->segNum, propsP->sideNum, propsP->nv, pointlist)) {
+			if (!RenderColoredSegment (propsP->segNum, propsP->sideNum, propsP->nv, pointList)) {
 				c = gameData.walls.walls [nWallNum].cloakValue;
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < GR_ACTUAL_FADE_LEVELS) {
 						gameStates.render.grAlpha = (float) c;
-						G3DrawPolyAlpha (propsP->nv, pointlist, 0, 0, 0, -1);		//draw as flat poly
+						G3DrawPolyAlpha (propsP->nv, pointList, 0, 0, 0, -1);		//draw as flat poly
 						}
 					}
 				else {
@@ -646,7 +670,7 @@ if (IS_WALL (nWallNum)) {
 					else
 						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS)
-						G3DrawPolyAlpha (propsP->nv, pointlist, CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1);	//draw as flat poly
+						G3DrawPolyAlpha (propsP->nv, pointList, CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1);	//draw as flat poly
 					}
 				}
 			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
@@ -770,17 +794,17 @@ if (!bRender)
 	grsBitmap  *bmTop = NULL;
 
 	int			i, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
-	g3sPoint		*pointlist [8];
+	g3sPoint		*pointList [8];
 	tSegment		*segP = gameData.segs.segments + props.segNum;
 	tSide			*sideP = segP->sides + props.sideNum;
 	tCamera		*pc = NULL;
 
 	Assert(props.nv <= 4);
 	for (i = 0; i < props.nv; i++)
-		pointlist [i] = gameData.segs.points + props.vp [i];
+		pointList [i] = gameData.segs.points + props.vp [i];
 #if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion) {
-		DrawOutline(props.nv, pointlist);
+		DrawOutline(props.nv, pointList);
 		return;
 		}
 #endif
@@ -788,13 +812,13 @@ if (!bRender)
 		goto drawWireFrame;
 #if 1
 	if (gameStates.render.nShadowBlurPass == 1) {
-		G3DrawWhitePoly (props.nv, pointlist);
+		G3DrawWhitePoly (props.nv, pointList);
 		return;
 		}
 #endif
 	SetVertexColors (&props);
-	if (renderState == 2) {
-		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointlist);
+	if (gameStates.render.nType == 2) {
+		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointList);
 		return;
 		}
 	nCamNum = gameData.cameras.nSides  ? gameData.cameras.nSides [props.segNum * 6 + props.sideNum] : -1;
@@ -821,7 +845,7 @@ if (!bRender)
 	//handle cloaked walls
 	if (bIsMonitor)
 		pc->bVisible = 1;
-	if (RenderWall (&props, pointlist, bIsMonitor))
+	if (RenderWall (&props, pointList, bIsMonitor))
 		return;
 	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->position.mOrient.fVec, norm);
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
@@ -835,7 +859,19 @@ if (!bRender)
 		sideP->nBaseTex = 0;
 		}
 	if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
-		if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
+		if (gameStates.render.nType == 3) {
+			bmBot = bmpCorona;
+			bmTop = NULL;
+			props.uvls [0].u =
+			props.uvls [0].v =
+			props.uvls [1].v =
+			props.uvls [3].u = F1_0 / 4;
+			props.uvls [1].u =
+			props.uvls [2].u =
+			props.uvls [2].v =
+			props.uvls [3].v = F1_0 / 4 * 3;
+			}
+		else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 			bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
 			if (props.nOvlTex)
 				bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
@@ -876,13 +912,13 @@ if (!bRender)
 	SetFaceLight (&props);
 #ifdef EDITOR
 	if (Render_only_bottom && (nSide == WBOTTOM))
-		G3DrawTexPoly (props.nv, pointlist, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
+		G3DrawTexPoly (props.nv, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
 	else
 #endif
 	if (bmTop)
 		G3DrawTexPolyMulti (
 			props.nv, 
-			pointlist, 
+			pointList, 
 			props.uvls, 
 #if LIGHTMAPS
 			props.uvl_lMaps, 
@@ -898,7 +934,7 @@ if (!bRender)
 #if LIGHTMAPS == 0
 		G3DrawTexPoly (
 			props.nv, 
-			pointlist, 
+			pointList, 
 			props.uvls, 
 			bmBot, 
 			&props.vNormal, 
@@ -906,7 +942,7 @@ if (!bRender)
 #else
 		G3DrawTexPolyMulti (
 			props.nv, 
-			pointlist, 
+			pointList, 
 			props.uvls, 
 			props.uvl_lMaps, 
 			bmBot, 
@@ -922,11 +958,11 @@ gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 		//if (nSegment == gameData.objs.objects->nSegment) 
 #ifdef _DEBUG
 	if (bOutLineMode) 
-		DrawOutline (props.nv, pointlist);
+		DrawOutline (props.nv, pointList);
 #endif
 drawWireFrame:
 	if (gameOpts->render.bWireFrame && !IsMultiGame)
-		DrawOutline (props.nv, pointlist);
+		DrawOutline (props.nv, pointList);
 	}
 else {
 #if APPEND_LAYERED_TEXTURES
@@ -949,7 +985,7 @@ else {
 		faceListTails [t] = nFaceListSize++;
 		}
 #endif
-	props.renderState = (char) renderState;
+	props.nType = (char) gameStates.render.nType;
 #if APPEND_LAYERED_TEXTURES
 	flp->props = props;
 #endif
@@ -968,7 +1004,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
 		int save_lighting;
 		grsBitmap *bm;
 		uvl uvlCopy [8];
-		g3sPoint *pointlist [4];
+		g3sPoint *pointList [4];
 
 		if (tmap2 > 0)
 			bm = TexMergeGetCachedBitmap( tmap1, tmap2, nOrient);
@@ -977,7 +1013,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
 
 		for (i=0; i<nv; i++) {
 			uvlCopy [i] = uvlp [i];
-			pointlist [i] = gameData.segs.points + vp [i];
+			pointList [i] = gameData.segs.points + vp [i];
 		}
 
 		GrSetColor(0);
@@ -986,7 +1022,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
 		//G3DrawPoly(nv, vp);
-		G3DrawTexPoly(nv, pointlist, (uvl *)uvlCopy, bm, 1);
+		G3DrawTexPoly (nv, pointList, (uvl *)uvlCopy, bm, 1);
  gameStates.render.nLighting = save_lighting;
 
 		if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) == 1) {
@@ -1004,6 +1040,111 @@ fix	Min_n0_n1_dot	= (F1_0*15/16);
 
 extern int containsFlare(tSegment *segP, int nSide);
 extern fix	Obj_light_xlate [16];
+
+// -----------------------------------------------------------------------------------
+
+typedef union uvlf {
+	float a [3];
+	struct {
+		float	u, v, l;
+		} v;
+	} uvlf;
+
+void RenderCorona (short nSegment, short nSide)
+{
+	fVector		vertList [4], sprite [4];
+	short			sideVerts [4];
+	uvlf			uvlList [4] = {{0,0,1},{1,0,1},{1,1,1},{0,1,1}};
+	fVector		d, n, v, vCenter = {0,0,0}, vx = {1,0,0}, vy = {0,1,0}, vDeltaX, vDeltaY, vEye;
+	int			i, t;
+	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
+	float			a, hm, m = 0, l = 0;
+	tFaceColor	*pf;
+	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
+
+GetSideVerts (sideVerts, nSegment, nSide);
+for (i = 0; i < 4; i++) {
+	vertList [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
+	VmVecIncf (&vCenter, vertList + i);
+	l += f2fl (sideP->uvls [i].l);
+	}
+VmVecNormalf (&n, vertList, vertList + 1, vertList + 2);
+VmVecScalef (&n, &n, 1.0f / 16.0f);
+VmVecScalef (&vCenter, &vCenter, 0.25);
+
+for (i = 0; i < 4; i++) {
+	VmVecSubf (&d, vertList + i, &vCenter);
+#if 0
+	VmVecScalef (&d, &d, 1.5f);
+#endif
+	VmVecIncf (vertList + i, &d);
+	VmVecIncf (vertList + i, &n);
+	if (zMin > vertList [i].p.z)
+		zMin = vertList [i].p.z;
+	if (zMax < vertList [i].p.z)
+		zMax = vertList [i].p.z;
+#if 1
+	m += VmVecMagf (&d);
+#else
+	hm = VmVecMagf (&d);
+	if (m < hm)
+		m = hm;
+#endif
+	}
+m /= 4;
+VmVecNormalizef (&vEye, &vCenter);
+a = VmVecMagf (&vCenter); // - f2fl (gameData.objs.console->size);
+#if 1
+hm = ((zMax - zMin) / 2);
+if (a < hm)
+	hm = a * 0.9f;
+if (hm) {
+	VmVecScalef (&v, &vEye, hm);
+	VmVecDecf (&vCenter, &v);
+	a -= hm;
+	}
+#endif
+if (m > a)
+	m = a;
+VmVecIncf (&vx, &vCenter);
+VmVecCrossProdf (&n, &vCenter, &vCenter);
+VmVecCrossProdf (&vDeltaY, &vx, &vEye);
+VmVecIncf (&vy, &vCenter);
+VmVecCrossProdf (&vDeltaX, &vy, &vEye);
+VmVecScalef (&vDeltaX, &vDeltaX, m);
+VmVecScalef (&vDeltaY, &vDeltaY, m);
+VmVecSubf (sprite, &vCenter, &vDeltaX);
+VmVecDecf (sprite, &vDeltaY);
+VmVecAddf (sprite + 1, &vCenter, &vDeltaX);
+VmVecDecf (sprite + 1, &vDeltaY);
+VmVecAddf (sprite + 2, &vCenter, &vDeltaX);
+VmVecIncf (sprite + 2, &vDeltaY);
+VmVecSubf (sprite + 3, &vCenter, &vDeltaX);
+VmVecIncf (sprite + 3, &vDeltaY);
+
+if (OglBindBmTex (bmpCorona, -1)) 
+	return;
+OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+t = (sideP->nOvlTex && IsLight (sideP->nOvlTex)) ? sideP->nOvlTex : sideP->nBaseTex;
+pf = gameData.render.color.textures + t;
+a = (float) sqrt ((pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 10) / 3 * 2;
+l /= 4;
+glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
+glBegin (GL_QUADS);
+#if 1
+for (i = 0; i < 4; i++) {
+	glTexCoord2fv ((GLfloat *) (uvlList + i));
+	glVertex3fv ((GLfloat *) (sprite + i));
+	}
+#endif
+#if 0
+for (i = 0; i < 4; i++) {
+	glTexCoord2fv ((GLfloat *) (uvlList + i));
+	glVertex3fv ((GLfloat *) (vertList + i));
+	}
+#endif
+glEnd ();
+}
 
 // -----------------------------------------------------------------------------------
 //	Render a tSide.
@@ -1040,32 +1181,36 @@ void RenderSide (tSegment *segP, short nSide)
 	};
 #endif
 
-	props.segNum = SEG_IDX (segP);
-	props.sideNum = nSide;
-	props.widFlags = WALL_IS_DOORWAY (segP, props.sideNum, NULL);
-	if (!(gameOpts->render.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
+props.segNum = SEG_IDX (segP);
+props.sideNum = nSide;
+props.widFlags = WALL_IS_DOORWAY (segP, props.sideNum, NULL);
+if (!(gameOpts->render.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
+	return;
+switch (gameStates.render.nType) {
+	case -1:
+		if (!(props.widFlags & WID_RENDER_FLAG) && (gameData.segs.segment2s [props.segNum].special < SEGMENT_IS_WATER))		//if (WALL_IS_DOORWAY(segP, props.sideNum) == WID_NO_WALL)
+			return;
+		break;
+	case 0:
+		if (segP->children [props.sideNum] >= 0) //&& IS_WALL (WallNumP (segP, props.sideNum)))
+			return;
+		break;
+	case 1:
+		if (!IS_WALL (WallNumP (segP, props.sideNum))) 
+			return;
+		break;
+	case 2:
+		if ((gameData.segs.segment2s [props.segNum].special < SEGMENT_IS_WATER) &&
+			 (gameData.segs.xSegments [props.segNum].owner < 1))
+			return;
+		break;
+	case 3:
+		if (IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex)))
+			RenderCorona (props.segNum, props.sideNum);
 		return;
-	switch (renderState) {
-		case -1:
-			if (!(props.widFlags & WID_RENDER_FLAG) && (gameData.segs.segment2s [props.segNum].special < SEGMENT_IS_WATER))		//if (WALL_IS_DOORWAY(segP, props.sideNum) == WID_NO_WALL)
-				return;
-			break;
-		case 0:
-			if (segP->children [props.sideNum] >= 0) //&& IS_WALL (WallNumP (segP, props.sideNum)))
-				return;
-			break;
-		case 1:
-			if (!IS_WALL (WallNumP (segP, props.sideNum))) 
-				return;
-			break;
-		case 2:
-			if ((gameData.segs.segment2s [props.segNum].special < SEGMENT_IS_WATER) &&
-				 (gameData.segs.xSegments [props.segNum].owner < 1))
-				return;
-			break;
-		}
-	normals [0] = sideP->normals [0];
-	normals [1] = sideP->normals [1];
+	}
+normals [0] = sideP->normals [0];
+normals [1] = sideP->normals [1];
 #if LIGHTMAPS
 if (bDoLightMaps) {
 		float	Xs = 8;
@@ -1384,8 +1529,8 @@ int check_bWindowCheck=0;
 void RenderStartFrame()
 {
 if (!++nRLFrameCount) {		//wrap!
-	memset(nRotatedLast, 0, sizeof(nRotatedLast));		//clear all to zero
-	nRLFrameCount=1;											//and set this frame to 1
+	memset(nRotatedLast, 0, sizeof (nRotatedLast));		//clear all to zero
+	nRLFrameCount = 1;											//and set this frame to 1
 	}
 }
 
@@ -1395,27 +1540,27 @@ if (!++nRLFrameCount) {		//wrap!
 //by the vertices passed relative to the viewer
 g3s_codes RotateList (int nv, short *pointNumList)
 {
-	int			i, pnum;
+	int			i, j;
 	g3sPoint		*pnt;
 	g3s_codes	cc;
 
 cc.and = 0xff;  
 cc.or = 0;
 for (i = 0; i < nv; i++) {
-	pnum = pointNumList [i];
-	pnt = gameData.segs.points + pnum;
-	if (nRotatedLast [pnum] != nRLFrameCount) {
-		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + pnum);
+	j = pointNumList [i];
+	pnt = gameData.segs.points + j;
+	if (nRotatedLast [j] != nRLFrameCount) {
+		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + j);
 		if (!gameStates.ogl.bUseTransform) {
-			gameData.segs.fVertices [pnum].p.x = ((float) pnt->p3_vec.p.x) / 65536.0f;
-			gameData.segs.fVertices [pnum].p.y = ((float) pnt->p3_vec.p.y) / 65536.0f;
-			gameData.segs.fVertices [pnum].p.z = ((float) pnt->p3_vec.p.z) / 65536.0f;
+			gameData.segs.fVertices [j].p.x = f2fl (pnt->p3_vec.p.x);
+			gameData.segs.fVertices [j].p.y = f2fl (pnt->p3_vec.p.y);
+			gameData.segs.fVertices [j].p.z = f2fl (pnt->p3_vec.p.z);
 			}
-		nRotatedLast [pnum] = nRLFrameCount;
+		nRotatedLast [j] = nRLFrameCount;
 		}
 	cc.and &= pnt->p3_codes;
 	cc.or |= pnt->p3_codes;
-	pnt->p3_index = pnum;
+	pnt->p3_index = j;
 	}
 return cc;
 }
@@ -1470,7 +1615,7 @@ if (r > left)
 
 void RenderSegment (short nSegment, int nWindow)
 {
-	tSegment		*seg = gameData.segs.segments+nSegment;
+	tSegment		*segP = gameData.segs.segments+nSegment;
 	g3s_codes 	cc;
 	short			sn;
 
@@ -1489,7 +1634,7 @@ Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return;
 OglSetupTransform ();
-cc = RotateList (8, seg->verts);
+cc = RotateList (8, segP->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
 if (!cc.and) {		//all off screen?
@@ -1519,13 +1664,13 @@ if (!cc.and) {		//all off screen?
 			}
 		SortSidesByDist (sideDists, sideNums, 0, 5);
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
-			RenderSide (seg, sideNums [sn]);
+			RenderSide (segP, sideNums [sn]);
 		}
 	else 
 #endif
 		{
 		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
-			RenderSide (seg, sn);
+			RenderSide (segP, sn);
 		}
 	}
 OglResetTransform ();
@@ -3324,9 +3469,9 @@ void gl_buildObject_list (void)
 
 int GlRenderSegments (int nStartState, int nEndState, int nnRenderSegs, int nWindow)
 {
-for (renderState = nStartState; renderState < nEndState; renderState++) {
+for (gameStates.render.nType = nStartState; gameStates.render.nType < nEndState; gameStates.render.nType++) {
 	//if (gameStates.render.nShadowPass != 3)
-		switch (renderState) {
+		switch (gameStates.render.nType) {
 			case 0: //solid sides
 				glDepthFunc (GL_LESS);
 				break;
@@ -3341,7 +3486,7 @@ for (renderState = nStartState; renderState < nEndState; renderState++) {
 		RenderSegment (nRenderList [--nnRenderSegs], nWindow);
 	}
 glDepthFunc (GL_LESS);
-renderState = -1;
+gameStates.render.nType = -1;
 return 1;
 }
 
@@ -3425,9 +3570,9 @@ if (gameOpts->render.bOptimize) {
 		tSide				*sideP;
 		tFaceListEntry	*flp = faceList;
 
-	for (renderState = 0; renderState < 5; renderState++) {
+	for (gameStates.render.nType = 0; gameStates.render.nType < 5; gameStates.render.nType++) {
 #if 0
-		switch (renderState) {
+		switch (gameStates.render.nType) {
 			case 1: //walls
 				glDepthFunc (GL_LEQUAL);
 				break;
@@ -3445,7 +3590,7 @@ if (gameOpts->render.bOptimize) {
 			for (flp = faceList + faceListRoots [i]; ; flp = faceList + flp->nextFace) {
 				segP = gameData.segs.segments + flp->props.segNum;
 				sideP = segP->sides + flp->props.sideNum;
-				if (flp->props.renderState == renderState)
+				if (flp->props.nType == gameStates.render.nType)
 					RenderFace (&flp->props, 0, 1);
 				if (flp->nextFace < 0)
 					break;
@@ -3629,7 +3774,7 @@ void RenderSkyBox (int nWindow)
 
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bHaveSkyBox = 0;
-	renderState = 4;
+	gameStates.render.nType = 4;
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
 			gameStates.render.bHaveSkyBox = 1;
@@ -3654,9 +3799,9 @@ if ((nSegment != -1) && !VISITED (nSegment)) {
 	SetNearestDynamicLights (nSegment);
 	RenderSegment (nSegment, gameStates.render.nWindow);
 	VISIT (nSegment);
-	if (renderState == 0)
+	if (gameStates.render.nType == 0)
 		bAutomapVisited [nSegment] = bSetAutomapVisited;
-	else if (renderState == 1) {
+	else if (gameStates.render.nType == 1) {
 		SetNearestStaticLights (nSegment, 1);
 		RenderObjList (nn, gameStates.render.nWindow);
 		SetNearestStaticLights (nSegment, 0);
@@ -3673,21 +3818,35 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 
 gameStates.render.nWindow = nWindow;
 bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
-renderState = 0;	//render solid geometry front to back
+gameStates.render.nType = 0;	//render solid geometry front to back
 nVisited++;
 for (nn = 0; nn < nRenderSegs; )
 	RenderMineSegment (nn++);
 RenderSkyBox (nWindow);
-renderState = 1;	//render transparency back to front
+gameStates.render.nType = 1;	//render transparency back to front
 nVisited++;
 for (nn = nRenderSegs; nn; )
 	RenderMineSegment (--nn);
 if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
-	renderState = 2;
-	nVisited++;
 	glDepthFunc (GL_LEQUAL);
+	gameStates.render.nType = 2;
+	nVisited++;
 	for (nn = nRenderSegs; nn;)
 		RenderMineSegment (--nn);
+	glDepthFunc (GL_LESS);
+	if (gameOpts->render.bCoronas && LoadCorona ()) {
+		gameStates.render.nType = 3;
+		nVisited++;
+		glEnable (GL_TEXTURE_2D);
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDepthFunc (GL_LEQUAL);
+		glDepthMask (0);
+		for (nn = nRenderSegs; nn;)
+			RenderMineSegment (--nn);
+		glDepthMask (1);
+		glDisable (GL_TEXTURE_2D);
+		}
 	glDepthFunc (GL_LESS);
 	}
 }

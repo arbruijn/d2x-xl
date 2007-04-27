@@ -68,6 +68,7 @@ int bShadowTest = 0;
 #endif
 
 extern int bZPass;
+extern grsBitmap *bmpCorona;
 int bSingleStencil = 0;
 
 tRgbaColorf shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.25f}, {0.0f, 0.0f, 1.0f, 0.25f}};
@@ -1455,7 +1456,10 @@ else
 			if (OglBindBmTex (bmBot, 0))
 				return 1;
 			bmBot = BmCurFrame (bmBot);
-			OglTexWrap (bmBot->glTexture, GL_REPEAT);
+			if (bmBot == bmpCorona)
+				OglTexWrap (bmBot->glTexture, GL_CLAMP);
+			else
+				OglTexWrap (bmBot->glTexture, GL_REPEAT);
 			}
 #if USE_VERTNORMS
 		if (pvNormal)
@@ -1566,7 +1570,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawBitMap (
+bool G3DrawBitmap (
 	vmsVector	*pos, 
 	fix			width, 
 	fix			height, 

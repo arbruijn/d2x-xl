@@ -1332,12 +1332,12 @@ else {//if (!SHOW_COCKPIT) {
 	if (gameStates.render.fonts.bHires)
 		y += nLineSpacing;
 	}
-GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 y = 6 + 2 * nLineSpacing;
 h = (gameData.stats.nDisplayMode - 1) / 2;
 if ((gameData.stats.nDisplayMode - 1) % 2 == 0) {
-	sprintf (szStats, "%c:%d-%d %d-%d %d-%d", 
-				h ? 'T' : 'L', 
+	sprintf (szStats, "%s%d-%d %d-%d %d-%d", 
+				h ? "T:" : "", 
 				gameData.stats.player [h].nHits [0],
 				gameData.stats.player [h].nMisses [0],
 				gameData.stats.player [h].nHits [1],
@@ -1352,7 +1352,7 @@ else {
 	p [0] = s [0] ? (gameData.stats.player [h].nHits [0] / s [0]) * 100 : 0;
 	p [1] = s [1] ? (gameData.stats.player [h].nHits [1] / s [1]) * 100 : 0;
 	p [2] = s [2] ? ((gameData.stats.player [h].nHits [0] + gameData.stats.player [h].nHits [1]) / s [2]) * 100 : 0;
-	sprintf (szStats, "%c:%1.1f%c %1.1f%c %1.1f%c", h ? 'T' : 'L', p [0], '%', p [1], '%', p [2], '%');
+	sprintf (szStats, "%s%1.1f%c %1.1f%c %1.1f%c", h ? "T:" : "", p [0], '%', p [1], '%', p [2], '%');
 	}
 GrGetStringSize (szStats, &w, &h, &aw);
 GrString (grdCurCanv->cv_w - w - LHX (2), y, szStats);

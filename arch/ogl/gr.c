@@ -52,6 +52,7 @@
 #include "args.h"
 #include "key.h"
 #include "gauges.h"
+#include "render.h"
 #include "particles.h"
 
 #define DECLARE_VARS
@@ -486,6 +487,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		FreeObjTallyIcons ();
 		ResetHoardData ();
 		FreeParticleImages ();
+		FreeCorona ();
 		OOF_ReleaseTextures ();
 		if (bReload) {
 			OglCacheLevelTextures ();

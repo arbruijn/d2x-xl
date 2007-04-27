@@ -82,7 +82,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					151	//increment this every time the tPlayer file changes
+#define PLAYER_FILE_VERSION					152	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -819,6 +819,8 @@ for (j = 0; j < 2; j++) {
 		extraGameInfo [j].nHitboxes = CFReadByte (fp);
 	if (player_file_version >= 151)
 		gameOptions [j].render.cockpit.bPlayerStats = (int) CFReadByte (fp);
+	if (player_file_version >= 152)
+		gameOptions [j].render.bCoronas = (int) CFReadByte (fp);
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -1272,6 +1274,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) extraGameInfo [j].bShootMissiles, fp);
 	CFWriteByte ((sbyte) extraGameInfo [j].nHitboxes, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bPlayerStats, fp);
+	CFWriteByte ((sbyte) gameOptions [j].render.bCoronas, fp);
 // end of D2X-XL stuff
 	}
 

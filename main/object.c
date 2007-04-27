@@ -213,16 +213,16 @@ void ObjectGotoPrevViewer ()
 {
 	int i, nStartObj = 0;
 
-	nStartObj = OBJ_IDX (gameData.objs.viewer);		//get viewer tObject number
-	for (i = 0; i<=gameData.objs.nLastObject; i++) {
-		nStartObj--;
-		if (nStartObj < 0) nStartObj = gameData.objs.nLastObject;
-		if (gameData.objs.objects [nStartObj].nType != OBJ_NONE)	{
-			gameData.objs.viewer = gameData.objs.objects + nStartObj;
-			return;
+nStartObj = OBJ_IDX (gameData.objs.viewer);		//get viewer tObject number
+for (i = 0; i<=gameData.objs.nLastObject; i++) {
+	nStartObj--;
+	if (nStartObj < 0) nStartObj = gameData.objs.nLastObject;
+	if (gameData.objs.objects [nStartObj].nType != OBJ_NONE)	{
+		gameData.objs.viewer = gameData.objs.objects + nStartObj;
+		return;
 		}
 	}
-	Error ("Couldn't find a viewer tObject!");
+Error ("Couldn't find a viewer tObject!");
 }
 #endif
 
@@ -318,10 +318,10 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 
 xSize = objP->size;
 if (bmP->bm_props.w > bmP->bm_props.h)
-	G3DrawBitMap (&objP->position.vPos,  xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
+	G3DrawBitmap (&objP->position.vPos,  xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
 					  orientation, alpha, transp, bDepthInfo);
 else
-	G3DrawBitMap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
+	G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
 					  orientation, alpha, transp, bDepthInfo);
 if (color) {
 #if 1

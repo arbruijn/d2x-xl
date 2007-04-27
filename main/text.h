@@ -29,6 +29,13 @@ extern char **pszHelpTexts;
 
 //Symbolic constants for all the strings
 
+#ifdef _DEBUG
+
+char *GAMETEXT (int _i);
+char *HELPTEXT (int _i);
+
+#else
+
 static inline char *GAMETEXT (int _i) 
 {
 if (pszGameTexts)
@@ -46,6 +53,8 @@ if (pszHelpTexts)
 else
 	return defaultHelpTexts [_i][gameStates.app.bEnglish];
 }
+
+#endif
 
 #define TXT_VERTIGO	"Vertigo"
 
@@ -1668,10 +1677,10 @@ void LoadGameTexts(void);
 #define TXT_SIMPLE_HITBOXES		GT(884)
 #define TXT_COMPLEX_HITBOXES		GT(885)
 #define TXT_PLAYER_STATS			GT(886)
+#define TXT_RENDER_CORONAS			GT(887)
+#define TXT_STD_LIGHTING			GT(888)
 
 #if 0
-#define TXT_				GT(887)
-#define TXT_				GT(888)
 #define TXT_				GT(889)
 #define TXT_				GT(890)
 #define TXT_				GT(891)
@@ -2061,11 +2070,10 @@ void LoadGameTexts(void);
 #define HTX_GPLAY_SHOOTMISSILES	HT(257)				
 #define HTX_GPLAY_HITBOXES			HT(258)				
 #define HTX_CPIT_PLAYERSTATS		HT(259)				
+#define HTX_ADVRND_CORONAS			HT(260)				
 
 #if 0
 				
-#define HTX_					HT(260)				
-#define HTX_					HT(261)				
 #define HTX_					HT(262)				
 #define HTX_					HT(263)				
 #define HTX_					HT(264)				

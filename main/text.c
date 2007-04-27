@@ -1528,9 +1528,9 @@ char *defaultGameTexts [][2] = {
 	{"Tor-~Bonus: %d", "Goal ~Bonus: %d"},
 	{"Monsterball-~Groesse: %d.%d", "Monsterball ~Size: %d.%d"},
 	{"~Pyro-Kraft: x %d", "~Pyro Force: x %d"},
-	{"Echtzeit-OpenGL-~Beleuchtung", "real-time OpenGL ~Lighting"},
+	{"Echtzeit-OpenGL-~Beleuchtung", "real-time Open~GL Lighting"},
 	{"openGL ~Objekt-Beleuchtung", "openGL ~Object lighting"},
-	{"L~Ichter/Segment: %d", "l~Ights/segment: %d"},
+	{"~Lichter/Segment: %d", "~Lights/segment: %d"},
 	{"~Verdunkelung", "~Darkness game"},
 	{"~Team-Tueren", "~Team Doors"},
 	{"~Cheat Codes zulassen", "Enable ~Cheat Codes"},
@@ -1636,6 +1636,8 @@ char *defaultGameTexts [][2] = {
 	{"verbesserter Test auf ~Treffer", "improved ~Weapon hit detection"},
 	{"genauer Test auf ~Treffer", "exact ~Weapon hit detection"},
 	{"~Spielerstatistik zeigen", "show player ~Stats"},
+	{"Lichthoefe zeichnen", "render ~Coronas around lights"},
+	{"~Standard-Beleuchtung", "~Standard lighting"},
 #if 0
 	{"", ""},
 #endif
@@ -2136,6 +2138,7 @@ char *defaultHelpTexts [][2] = {
 	 "Depending on the setting chosen, spheres or cuboids enclosing the\nentire target or cuboids around each part of the target are\nused. The better the hit detection, the more time it takes to compute a hit."},
 	{"Wenn angekreuzt, werden erzielte Treffer und Fehlschuesse fuer\nPrimaer- und Sekundaer sowie gesamt angezeigt.\n\nMit Strg+F8 kann zwischen absoluter und prozentualer Anzeige\nsowie zwischen Anzeige pro Level und pro Spielsitzung\numgeschaltet werden.\nA\nbsolute Werte werden als T-F T-F T-F in der Reihenfolge\nPrimaerwaffen, Sekundaerwaffen, Gesamt angezeigt\n(z.B. '10-4 5-1 15-5'). Relativwerte zeigen die Trefferrate\n(z.B. '54% 68% 60%').\n\nZielsuchende Waffen werden von der Statistik ausgenommen.", 
 	"If checked, hits and misses for primary and secondary weapons\nand total hits and misses are displayed.\n\nYou can toggle between absolute and relative values\nand also between display per level and per gaming session\nby pressing Ctrl+F8.\n\nAbsolute values are displayed as H-M H-M H-M (Hit-Miss) in the\nsequence primary weapons, secondary weapons, total.\nRelavite values show the hit rate (e.g. '54% 68% 60%').\n\nHoming weapons are excluded from the statistics."},
+	{"Wenn angekreuzt, werden um Lichtquellen herum Lichthoefe gezeichnet.", "If checked, coronas are rendered around around light sources."},
 #if 0
 	{"", ""},
 #endif
@@ -2447,6 +2450,30 @@ fclose (fTxt);
 #endif
 InitGameTexts ();
 }
+
+//------------------------------------------------------------------------------
+
+#ifdef _DEBUG
+
+char *GAMETEXT (int _i) 
+{
+if (pszGameTexts)
+	return pszGameTexts [_i];
+else if (_i < N_BASE_TEXTS)
+	return d2GameTexts [_i];
+else
+	return defaultGameTexts [_i - N_BASE_TEXTS][gameStates.app.bEnglish];
+}
+
+char *HELPTEXT (int _i) 
+{
+if (pszHelpTexts)
+	return pszHelpTexts [_i];
+else
+	return defaultHelpTexts [_i][gameStates.app.bEnglish];
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 //eof
