@@ -359,7 +359,7 @@ void ResetObjects(int n_objs);
 void compressObjects(void);
 
 // Render an tObject.  Calls one of several routines based on nType
-void RenderObject(tObject *obj, int nWindowNum);
+int RenderObject(tObject *obj, int nWindowNum);
 
 // Draw a blob-nType tObject, like a fireball
 void DrawObjectBlob(tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame,

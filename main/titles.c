@@ -169,7 +169,7 @@ if (*c > -1) {
 int StartBriefingHum (int nChannel, int nLevel, int nScreen, int bExtraSounds)
 {
 if (bExtraSounds && (nScreen > 3)) {	//only play for the mission directives on a planet background
-	char	szWAV [10];
+	char	szWAV [20];
 
 	if (nLevel < 0)
 		nLevel = 27 - nLevel;
@@ -920,7 +920,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	int			rval=0;
 	int			flashing_cursor=0;
 	int			new_page=0,GotZ=0;
-	int			hum_channel = -1, printing_channel = -1, bot_channel = -1;
+	int			nHumChannel = -1, printing_channel = -1, bot_channel = -1;
 	int			LineAdjustment=1;
 	int			bHaveScreen = 0;
 	char			*pi, *pj;
@@ -944,7 +944,7 @@ bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission &&
 				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
 bOnlyRobots = gameStates.app.bHaveExtraMovies && bExtraSounds && (nLevel == 1) && (nScreen < 4);
 
-hum_channel = StartBriefingHum (hum_channel, nLevel, nScreen, bExtraSounds);
+nHumChannel = StartBriefingHum (nHumChannel, nLevel, nScreen, bExtraSounds);
 
 GrSetCurFont (GAME_FONT);
 
@@ -1037,7 +1037,7 @@ while (!done) {
 						bRobotPlaying=0;
 						}
 					InitSpinningRobot ();
-					StopBriefingSound (&hum_channel);
+					StopBriefingSound (&nHumChannel);
 					bot_channel = StartExtraBotSound (bot_channel, (short) nLevel, nBot++);
 					}
 				if (gameStates.app.bD1Mission) {
@@ -1356,7 +1356,7 @@ if (bRobotPlaying) {
 if (robotCanv != NULL)
 	{d_free (robotCanv); robotCanv=NULL;}
 
-StopBriefingSound (&hum_channel);
+StopBriefingSound (&nHumChannel);
 StopBriefingSound (&printing_channel);
 StopBriefingSound (&bot_channel);
 return rval;

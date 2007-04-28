@@ -1856,7 +1856,7 @@ return 1;
 
 bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
-void RenderObject (tObject *objP, int nWindowNum)
+int RenderObject (tObject *objP, int nWindowNum)
 {
 	int			mldSave, bSpectate = 0;
 	tPosition	savePos;
@@ -1883,14 +1883,14 @@ if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 #endif	 	
 		if (gameOpts->render.smoke.bPlayers)
 			DoPlayerSmoke (objP, -1);
-		return;		
+		return 0;		
 		}
 	}
 if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->nSegment);
 #endif
-	return;
+	return 0;
 	}
 mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
@@ -1898,10 +1898,14 @@ gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 switch (objP->renderType) {
 	case RT_NONE:	
+		if (gameStates.render.nType != 1)
+			return 0;
 		RenderTracers (objP);
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
+		if (gameStates.render.nType != 1)
+			return 0;
 		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			int bDynObjLight = gameOpts->ogl.bLightObjects;
@@ -1961,15 +1965,21 @@ switch (objP->renderType) {
 		break;
 
 	case RT_MORPH:	
+		if (gameStates.render.nType != 1)
+			return 0;
 		if (gameStates.render.nShadowPass != 2)
 			MorphDrawObject (objP); 
 		break;
 
 	case RT_THRUSTER: 
+		if (gameStates.render.nType != 1)
+			return 0;
 		if (nWindowNum && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;
 			
 	case RT_FIREBALL: 
+		if (gameStates.render.nType != 2)
+			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
 			if (objP->nType == OBJ_WEAPON)
@@ -1978,6 +1988,8 @@ switch (objP->renderType) {
 		break;
 
 	case RT_WEAPON_VCLIP: 
+		if (gameStates.render.nType != 1)
+			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			if (objP->nType == OBJ_WEAPON) {
 				RenderLightTrail (objP);
@@ -1993,11 +2005,15 @@ switch (objP->renderType) {
 		break;
 
 	case RT_HOSTAGE: 
+		if (gameStates.render.nType != 1)
+			return 0;
 		if (gameStates.render.nShadowPass != 2)
 			DrawHostage (objP); 
 		break;
 
 	case RT_POWERUP:
+		if (gameStates.render.nType != 1)
+			return 0;
 		if (ConvertPowerupToWeapon (objP))
 			DrawPolygonObject (objP);
 		else if (gameStates.render.nShadowPass != 2)
@@ -2005,6 +2021,8 @@ switch (objP->renderType) {
 		break;
 
 	case RT_LASER: 
+		if (gameStates.render.nType != 1)
+			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			RenderLaser (objP); 
 			if (objP->nType == OBJ_WEAPON)
@@ -2029,6 +2047,7 @@ if (objP->renderType != RT_NONE)
 gameStates.render.detail.nMaxLinearDepth = mldSave;
 if (bSpectate)
 	objP->position = savePos;
+return 1;
 }
 
 //------------------------------------------------------------------------------

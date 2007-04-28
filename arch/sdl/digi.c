@@ -461,8 +461,6 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 	struct tSoundSlot *ssp;
 	tDigiSound *gsp;
 
-if (nSound == 26)
-	nSound = nSound;
 if (!gameStates.app.bUseSound)
 	return -1;
 if (!gameStates.sound.digi.bInitialized) 

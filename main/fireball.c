@@ -418,7 +418,6 @@ void DrawFireball (tObject *objP)
 {
 if (objP->lifeleft > 0)
 	DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
-
 }
 
 // --------------------------------------------------------------------------------------------------------------------

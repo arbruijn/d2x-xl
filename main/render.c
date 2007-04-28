@@ -1155,9 +1155,13 @@ a = VmVecMagf (&vCenter);
 // if so, push corona back
 h = ((zMax - zMin) / 2);
 if (a < h) {
-	dim = a / h;
+	dim = a / (2 * h);
 	dim *= dim;
 	h = a * 0.9f;
+	}
+else if (a < 2 * h) {
+	dim = a / (2 * h);
+	dim *= dim;
 	}
 else
 	dim = 1.0f;
@@ -1178,11 +1182,16 @@ VmVecCrossProdf (&vDeltaX, &vy, &vEye);
 //HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
 #endif
 
+#if 0
+VmVecScalef (&vDeltaX, &vDeltaX, dy);
+VmVecScalef (&vDeltaY, &vDeltaY, dx);
+#else
 m = (float) sqrt (dx * dx + dy * dy) / 4;	//basic corona size to make it visible regardless of dx and dy
-h = dy / 3 * 2;
+h = dy / 2;
 VmVecScalef (&vDeltaX, &vDeltaX, m + h);
-h = dx / 3 * 2;
+h = dx / 2;
 VmVecScalef (&vDeltaY, &vDeltaY, m + h);
+#endif
 
 //create rotation matrix to match corona with face
 r.rVec.p.x = n.p.x;
@@ -1222,12 +1231,59 @@ for (i = 0; i < 4; i++)
 if (OglBindBmTex (bmpCorona, -1)) 
 	return;
 OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+#if 0
+t = sideP->nOvlTex;
+#else
 t = (sideP->nOvlTex && IsLight (sideP->nOvlTex)) ? sideP->nOvlTex : sideP->nBaseTex;
+#endif
+if (gameStates.app.bD1Mission) {
+	switch (t) {
+		case 289:	//empty light
+		case 328:	//energy sparks
+		case 334:	//reactor
+		case 335:
+		case 336:
+		case 337:
+		case 338:	//robot generators
+		case 339:
+			return;
+		default:
+			break;
+		}
+	}
+else {
+	switch (t) {
+		case 302:	//empty light
+		case 348:	//sliding walls
+		case 349:
+		case 353:	//energy sparks
+		case 356:	//reactor
+		case 357:
+		case 358:
+		case 359:
+		case 360:	//robot generators
+		case 361:
+		case 420:	//force field
+		case 426:	//teleport
+		case 432:	//force field
+		case 433:	//goals
+		case 434:
+			return;
+		default:
+			break;
+		}
+	}
 pf = gameData.render.color.textures + t;
-a = dim * (float) sqrt ((pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 10) / 3 * 2;
+a = (float) sqrt ((pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 10) / 3 * 2;
+if (dim != 1)
+	a *= dim;
 l /= 4;
-glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
-//glColor4d (1, 0.8, 0, 1);
+#if 0//def _DEBUG
+if (dim < 1)
+	glColor4d (1, 0.8, 0, a);
+else
+#endif
+	glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
 //render the corona
 glBegin (GL_QUADS);
 for (i = 0; i < 4; i++) {
@@ -1242,6 +1298,16 @@ for (i = 0; i < 4; i++) {
 	}
 #endif
 glEnd ();
+#if 0//def _DEBUG
+glDisable (GL_TEXTURE_2D);
+glColor4d (1,1,1,1);
+glLineWidth (2);
+glBegin (GL_LINE_LOOP);
+for (i = 0; i < 4; i++)
+	glVertex3fv ((GLfloat *) (sprite + i));
+glEnd ();
+glLineWidth (1);
+#endif
 }
 
 // -----------------------------------------------------------------------------------
@@ -1547,7 +1613,6 @@ void DoRenderObject(int nObject, int nWindow)
 		return;
 	}
 #endif
-	bObjectRendered [nObject] = 1;
    if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	  if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->nType == OBJ_PLAYER) {
 			// A nice fat hack: keeps the tPlayer ship from showing up in the
@@ -1588,8 +1653,7 @@ void DoRenderObject(int nObject, int nWindow)
 	else
 #endif
 		//NOTE LINK TO ABOVE
-		RenderObject(objP, nWindow);
-
+	bObjectRendered [nObject] = RenderObject(objP, nWindow);
 	for (n=objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
 		hObj = gameData.objs.objects + n;
 		Assert(hObj->nType == OBJ_FIREBALL);
@@ -3904,6 +3968,8 @@ if ((nSegment != -1) && !VISITED (nSegment)) {
 		RenderObjList (nn, gameStates.render.nWindow);
 		SetNearestStaticLights (nSegment, 0);
 		}	
+	else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
+		RenderObjList (nn, gameStates.render.nWindow);
 	}
 }
 
