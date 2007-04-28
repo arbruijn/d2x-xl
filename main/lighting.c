@@ -513,7 +513,7 @@ switch (nObjType) {
 		if ((objP->id != 0xff) && (objP->renderType != RT_THRUSTER)) {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
 			fix xLight = vcP->lightValue;
-#if 0
+#if 1
 			int i, j;
 			grsBitmap *bmP;
 			color->red =
@@ -535,12 +535,13 @@ switch (nObjType) {
 				color->blue /= j;
 				}
 			else 
-#endif
+#else
 				{
 				color->red = 0.75f;
 				color->green = 0.15f;
 				color->blue = 0.0f;
 				}
+#endif
 			*pbGotColor = 1;
 #if 0
 			if (objP->renderType != RT_THRUSTER)
