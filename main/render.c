@@ -1081,13 +1081,17 @@ void RenderCorona (short nSegment, short nSide)
 	float			xMin = 1000000000.0f, xMax = -1000000000.0f;
 	float			yMin = 1000000000.0f, yMax = -1000000000.0f;
 	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
-	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim;
+	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim = 1;
 	tFaceColor	*pf;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 
 #if 0//def _DEBUG
-if ((nSegment != 6) || (nSide != 2))
+if (nSegment != 16)
 	return;
+#	if 1
+if  (nSide != 0)
+	return;
+#	endif
 #endif
 GetSideVerts (sideVerts, nSegment, nSide);
 // get the transformed face coordinates and compute their center
@@ -1098,6 +1102,12 @@ for (i = 0; i < 4; i++) {
 	}
 VmVecScalef (&vCenter, &vCenter, 0.25);
 VmVecNormalf (&n, vertList, vertList + 1, vertList + 2);
+VmVecNormalizef (&vEye, &vCenter);
+if ((a = VmVecDotf (&n, &vEye)) > 0) {
+	if (a > 0.25f)
+		return;
+	dim = 1 - a / 0.25f;
+	}
 // o serves to slightly displace the corona from its face to avoid z fighting
 VmVecScalef (&o, &n, 1.0f / 10.0f);
 #if 1	//might remove z from normal 
@@ -1149,22 +1159,19 @@ for (i = 0; i < 4; i++) {
 		dy = h;
 	}
 
-VmVecNormalizef (&vEye, &vCenter);
 a = VmVecMagf (&vCenter);
 // determine whether viewer has passed foremost z coordinate of corona's face
 // if so, push corona back
 h = ((zMax - zMin) / 2);
 if (a < h) {
-	dim = a / (2 * h);
-	dim *= dim;
+	float d = a / (2 * h);
+	dim *= d * d;
 	h = a * 0.9f;
 	}
 else if (a < 2 * h) {
-	dim = a / (2 * h);
-	dim *= dim;
+	float d = a / (2 * h);
+	dim *= d * d;
 	}
-else
-	dim = 1.0f;
 if (h) {
 	VmVecScalef (&v, &vEye, h);
 	VmVecDecf (&vCenter, &v);
