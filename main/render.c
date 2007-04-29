@@ -1242,7 +1242,12 @@ OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 #if 0
 t = sideP->nOvlTex;
 #else
-t = (sideP->nOvlTex && IsLight (sideP->nOvlTex)) ? sideP->nOvlTex : sideP->nBaseTex;
+if (sideP->nOvlTex && IsLight (sideP->nOvlTex))
+	t = sideP->nOvlTex;
+else {
+	t = sideP->nBaseTex;
+	dim /= 2;
+	}
 #endif
 if (gameStates.app.bD1Mission) {
 	switch (t) {
@@ -1283,6 +1288,7 @@ else {
 	}
 pf = gameData.render.color.textures + t;
 a = (float) sqrt ((pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 10) / 3 * 2;
+a *= a;
 if (dim != 1)
 	a *= dim;
 l /= 4;
