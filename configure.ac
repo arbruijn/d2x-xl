@@ -209,8 +209,8 @@ else
    	AC_CHECK_LIB(
 			SDL_mixer, Mix_OpenAudio,
         	LIBS="-lSDL_mixer $LIBS",
-			AC_DEFINE(USE_SDL_MIXER,1,[Define if you have the SDL_mixer library])
-			)
+         [AC_MSG_ERROR([SDL_mixer not found]); USE_SDL_MIXER=false])
+ 			)
 
   # Check for libpng
     have_libpng=no

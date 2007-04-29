@@ -124,7 +124,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
-	if (-1 == Mix_PlayMusic (mixMusic, loop)) {
+	if (-1 == Mix_PlayMusic (mixMusic, loop ? -1 : 1)) {
 		LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 		return 0;
 		}
