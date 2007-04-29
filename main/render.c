@@ -165,7 +165,7 @@ if (!bHaveCorona) {
 	bmpCorona = CreateAndReadTGA ("corona.tga");
 	bHaveCorona = bmpCorona ? 1 : -1;
 	}
-return bHaveCorona;
+return bHaveCorona > 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1086,10 +1086,10 @@ void RenderCorona (short nSegment, short nSide)
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 
 #if 0//def _DEBUG
-if (nSegment != 16)
+if (nSegment != 9)
 	return;
 #	if 1
-if  (nSide != 0)
+if  (nSide != 1)
 	return;
 #	endif
 #endif
@@ -1108,6 +1108,10 @@ if ((a = VmVecDotf (&n, &vEye)) > 0) {
 		return;
 	dim = 1 - a / 0.25f;
 	}
+#if 0
+else	//brighten if facing directly
+	dim = 1.0f + 0.5f * -a / 1.0f;
+#endif
 // o serves to slightly displace the corona from its face to avoid z fighting
 VmVecScalef (&o, &n, 1.0f / 10.0f);
 #if 1	//might remove z from normal 
@@ -1162,15 +1166,12 @@ for (i = 0; i < 4; i++) {
 a = VmVecMagf (&vCenter);
 // determine whether viewer has passed foremost z coordinate of corona's face
 // if so, push corona back
-h = ((zMax - zMin) / 2);
+h = zMax - zMin;
 if (a < h) {
-	float d = a / (2 * h);
-	dim *= d * d;
-	h = a * 0.9f;
-	}
-else if (a < 2 * h) {
-	float d = a / (2 * h);
-	dim *= d * d;
+	dim *= a / h;
+	h /= 2;
+	if (a < h)
+		h = a * 0.9f;
 	}
 if (h) {
 	VmVecScalef (&v, &vEye, h);
@@ -1186,7 +1187,7 @@ VmVecIncf (&vy, &vCenter);
 VmVecCrossProdf (&vDeltaX, &vy, &vEye);
 
 #ifdef _DEBUG
-//HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
+HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
 #endif
 
 #if 0

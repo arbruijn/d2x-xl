@@ -434,6 +434,8 @@ int OglBindBmTex (grsBitmap *bmP, int nTransp)
 	int			bPBuffer;
 #endif
 
+if (!bmP)
+	return 1;
 bmP = BmOverride (bmP);
 texP = bmP->glTexture;
 #if RENDER2TEXTURE
