@@ -359,6 +359,7 @@ fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
 fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1);
 fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
+fMatrix *SinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
 
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))

@@ -1086,10 +1086,10 @@ void RenderCorona (short nSegment, short nSide)
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 
 #if 0//def _DEBUG
-if (nSegment != 9)
+if (nSegment != 3)
 	return;
 #	if 1
-if  (nSide != 1)
+if  (nSide != 2)
 	return;
 #	endif
 #endif
@@ -1166,10 +1166,11 @@ for (i = 0; i < 4; i++) {
 a = VmVecMagf (&vCenter);
 // determine whether viewer has passed foremost z coordinate of corona's face
 // if so, push corona back
-h = zMax - zMin;
-if (a < h) {
-	dim *= a / h;
-	h /= 2;
+h = (zMax - zMin) / 2;
+if (a < h)
+	return;
+if (a < 2 * h) {
+	dim *= (a - h) / h;
 	if (a < h)
 		h = a * 0.9f;
 	}
@@ -1181,10 +1182,19 @@ if (h) {
 if (m > a)
 	m = a;
 // compute orthogonal vectors for calculation of billboard coordinates
-VmVecIncf (&vx, &vCenter);	//1st orthonal vector
-VmVecCrossProdf (&vDeltaY, &vx, &vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
-VmVecIncf (&vy, &vCenter);
-VmVecCrossProdf (&vDeltaX, &vy, &vEye);
+h = vCenter.p.x * vCenter.p.x + vCenter.p.y * vCenter.p.y + vCenter.p.z * vCenter.p.z;
+v.p.x = v.p.z = 0;
+v.p.y = vCenter.p.y ? h / vCenter.p.y : 1;
+VmVecDecf (&v, &vCenter);
+VmVecNormalizef (&v, &v);
+//VmVecIncf (&vx, &vCenter);	//1st orthonal vector
+VmVecCrossProdf (&vDeltaX, &v, &vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
+v.p.x = v.p.y = 0;
+v.p.x = vCenter.p.x ? h / vCenter.p.x : 1;
+VmVecDecf (&v, &vCenter);
+VmVecNormalizef (&v, &v);
+//VmVecIncf (&vy, &vCenter);
+VmVecCrossProdf (&vDeltaY, &v, &vEye);
 
 #ifdef _DEBUG
 HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
@@ -1202,13 +1212,14 @@ VmVecScalef (&vDeltaY, &vDeltaY, m + h);
 #endif
 
 //create rotation matrix to match corona with face
+#if 1
 r.rVec.p.x = n.p.x;
 r.rVec.p.y = -n.p.y;
 r.rVec.p.z = 0;
 r.uVec.p.x = n.p.y;
 r.uVec.p.y = n.p.x;
 r.uVec.p.z = 0;
-
+#endif
 //compute corona coordinates
 v.p.x = v.p.y = v.p.z = 0;
 VmVecDecf (&v, &vDeltaX);
@@ -1299,10 +1310,20 @@ else
 #endif
 	glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
 //render the corona
+VmVecNormalf (&n, sprite, sprite + 1, sprite + 2);
+
 glBegin (GL_QUADS);
-for (i = 0; i < 4; i++) {
-	glTexCoord2fv ((GLfloat *) (uvlList + i));
-	glVertex3fv ((GLfloat *) (sprite + i));
+if (VmVecDotf (&n, &vEye) > 0) {
+	for (i = 0; i < 4; i++) {
+		glTexCoord2fv ((GLfloat *) (uvlList + i));
+		glVertex3fv ((GLfloat *) (sprite + 3 - i));
+		}
+	}
+else {
+	for (i = 0; i < 4; i++) {
+		glTexCoord2fv ((GLfloat *) (uvlList + i));
+		glVertex3fv ((GLfloat *) (sprite + i));
+		}
 	}
 #if 0
 //render corona again, this time parallel to its face
@@ -1311,7 +1332,7 @@ for (i = 0; i < 4; i++) {
 	glVertex3fv ((GLfloat *) (vertList + i));
 	}
 #endif
-glEnd ();
+glEnd	 ();
 #if 0//def _DEBUG
 glDisable (GL_TEXTURE_2D);
 glColor4d (1,1,1,1);

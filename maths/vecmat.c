@@ -883,6 +883,28 @@ return m;
 }
 
 // ------------------------------------------------------------------------
+
+fMatrix *SinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh)
+{
+	float sbsh, cbch, cbsh, sbch;
+
+sbsh = sinb * sinh;
+cbch = cosb * cosh;
+cbsh = cosb * sinh;
+sbch = sinb * cosh;
+m->rVec.p.x = cbch + sinp * sbsh;	//m1
+m->uVec.p.z = sbsh + sinp * cbch;	//m8
+m->uVec.p.x = sinp * cbsh - sbch;	//m2
+m->rVec.p.z = sinp * sbch - cbsh;	//m7
+m->fVec.p.x = sinh * cosp;				//m3
+m->rVec.p.y = sinb * cosp;				//m4
+m->uVec.p.y = cosb * cosp;				//m5
+m->fVec.p.z = cosh * cosp;				//m9
+m->fVec.p.y = -sinp;						//m6
+return m;
+}
+
+// ------------------------------------------------------------------------
 //computes a matrix from a set of three angles.  returns ptr to matrix
 vmsMatrix *VmAngles2Matrix (vmsMatrix *m, vmsAngVec *a)
 {
