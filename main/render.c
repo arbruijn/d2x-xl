@@ -1234,7 +1234,7 @@ VmVecNormalizef (&v, &v);
 VmVecCrossProdf (&vDeltaY, &v, &vEye);
 
 #ifdef _DEBUG
-HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
+//HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
 #endif
 
 #if 0

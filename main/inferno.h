@@ -1173,6 +1173,7 @@ typedef struct tObjectData {
 	int					nChildFreeList;
 	int					nDrops;
 	int					nDeadControlCenter;
+	int					nVertigoBotFlags;
 	short					*nHitObjects;
 	tPowerupData		pwrUp;
 } tObjectData;

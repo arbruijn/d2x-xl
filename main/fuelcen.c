@@ -388,38 +388,34 @@ void FuelCenDelete (tSegment * segP)
 
 Restart: ;
 
-	seg2p->special = 0;
+seg2p->special = 0;
 
-	for (i=0; i<gameData.matCens.nFuelCenters; i++)	{
-		if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP))	{
-
-			// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.botGens.
-			if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
-				gameData.matCens.nBotCenters--;
-				Assert (gameData.matCens.nBotCenters >= 0);
-
-				for (j = seg2p->nMatCen; j < gameData.matCens.nBotCenters; j++)
-					gameData.matCens.botGens [j] = gameData.matCens.botGens [j+1];
-
-				for (j=0; j<gameData.matCens.nFuelCenters; j++) {
-					if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
-						if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2p->nMatCen)
-							gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
+for (i = 0; i < gameData.matCens.nFuelCenters; i++) {
+	if (gameData.matCens.fuelCenters [i].nSegment == SEG_IDX (segP)) {
+		// If Robot maker is deleted, fix gameData.segs.segments and gameData.matCens.botGens.
+		if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
+			gameData.matCens.nBotCenters--;
+			Assert (gameData.matCens.nBotCenters >= 0);
+			for (j = seg2p->nMatCen; j < gameData.matCens.nBotCenters; j++)
+				gameData.matCens.botGens [j] = gameData.matCens.botGens [j+1];
+			for (j = 0; j < gameData.matCens.nFuelCenters; j++) {
+				if (gameData.matCens.fuelCenters [j].nType == SEGMENT_IS_ROBOTMAKER)
+					if (gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen > seg2p->nMatCen)
+						gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].nMatCen--;
 				}
 			}
+		//fix gameData.matCens.botGens so they point to correct fuelcenter
+		for (j = 0; j < gameData.matCens.nBotCenters; j++)
+			if (gameData.matCens.botGens [j].nFuelCen > i)		//this matCenPter's fuelcen is changing
+				gameData.matCens.botGens [j].nFuelCen--;
 
-			//fix gameData.matCens.botGens so they point to correct fuelcenter
-			for (j = 0; j < gameData.matCens.nBotCenters; j++)
-				if (gameData.matCens.botGens [j].nFuelCen > i)		//this matCenPter's fuelcen is changing
-					gameData.matCens.botGens [j].nFuelCen--;
-
-			gameData.matCens.nFuelCenters--;
-			Assert (gameData.matCens.nFuelCenters >= 0);
-			for (j = i; j < gameData.matCens.nFuelCenters; j++)	{
-				gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
-				gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].value = j;
+		gameData.matCens.nFuelCenters--;
+		Assert (gameData.matCens.nFuelCenters >= 0);
+		for (j = i; j < gameData.matCens.nFuelCenters; j++)	{
+			gameData.matCens.fuelCenters [j] = gameData.matCens.fuelCenters [j+1];
+			gameData.segs.segment2s [gameData.matCens.fuelCenters [j].nSegment].value = j;
 			}
-			goto Restart;
+		goto Restart;
 		}
 	}
 }
@@ -498,7 +494,7 @@ int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags)
 	sbyte				objTypes [64];
 
 memset (objTypes, 0, sizeof (objTypes));
-for (i = 0; i < 2; i++) {
+for (i = 0; i < 3; i++) {
 	nObjIndex = i * 32;
 	flags = (unsigned int) objFlags [i];
 	while (flags) {
@@ -642,6 +638,12 @@ else {
 	}
 }
 
+//	----------------------------------------------------------------------------------------------------------
+
+inline int VertigoObjFlags (tMatCenInfo *miP)
+{
+return miP->objFlags [2] = gameData.objs.nVertigoBotFlags;
+}
 
 //	----------------------------------------------------------------------------------------------------------
 
@@ -682,7 +684,8 @@ if (nMatCen == -1) {
 	return;
 	}
 if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
-		gameData.matCens.botGens [nMatCen].objFlags [1]))
+		gameData.matCens.botGens [nMatCen].objFlags [1] ||
+		VertigoObjFlags (gameData.matCens.botGens + nMatCen)))
 	return;
 
 // Wait until we have a d_free slot for this puppy...
@@ -874,57 +877,50 @@ return amount;
 
 fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 {
-	short		nSegment = SEG_IDX (segP);
+	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2p = gameData.segs.segment2s + nSegment;
-	xsegment	*xsegp = gameData.segs.xSegments + nSegment;
+	xsegment		*xsegp = gameData.segs.xSegments + nSegment;
+	fix			amount;
 
-	static fix last_playTime=0;
+	static fix last_playTime = 0;
 
-	Assert (segP != NULL);
-	gameData.matCens.playerSegP = segP;
-	if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
-		return 0;
-	if ((segP) && (seg2p->special==SEGMENT_IS_FUELCEN))	{
-		fix amount;
-		DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
-
-//		if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
-//			HUDInitMessage ("Fuelcenter %d is destroyed.", segP->value);
-//			return 0;
-//		}
-
-//		if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
-//			HUDInitMessage ("Fuelcenter %d is empty.", segP->value);
-//			return 0;
-//		}
-
-		if (MaxAmountCanTake <= 0)	{
-			return 0;
-		}
-		if (gameData.app.nGameMode & GM_ENTROPY)
-			amount = FixMul (gameData.time.xFrame, 
-								  gameData.matCens.xFuelGiveAmount * 
-								  extraGameInfo [IsMultiGame].entropy.nEnergyFillRate / 25);
-		else
-			amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
-		if (amount > MaxAmountCanTake)
-			amount = MaxAmountCanTake;
-		if (last_playTime > gameData.time.xGame)
-			last_playTime = 0;
-		if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
-			DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-			if (IsMultiGame)
-				MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
-			last_playTime = gameData.time.xGame;
-		}
-
-
-		//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].xCapacity),f2i (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
-		return amount;
-
-	} else {
-		return 0;
+Assert (segP != NULL);
+gameData.matCens.playerSegP = segP;
+if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
+	return 0;
+if (!segP || (seg2p->special != SEGMENT_IS_FUELCEN))
+	return 0;
+DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
+#if 0
+if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
+	HUDInitMessage ("Fuelcenter %d is destroyed.", segP->value);
+	return 0;
 	}
+if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
+	HUDInitMessage ("Fuelcenter %d is empty.", segP->value);
+	return 0;
+	}
+#endif
+if (MaxAmountCanTake <= 0)
+	return 0;
+if (gameData.app.nGameMode & GM_ENTROPY)
+	amount = FixMul (gameData.time.xFrame, 
+							gameData.matCens.xFuelGiveAmount * 
+							extraGameInfo [IsMultiGame].entropy.nEnergyFillRate / 25);
+else
+	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
+if (amount > MaxAmountCanTake)
+	amount = MaxAmountCanTake;
+if (last_playTime > gameData.time.xGame)
+	last_playTime = 0;
+if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
+	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+	if (IsMultiGame)
+		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+	last_playTime = gameData.time.xGame;
+	}
+//HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].xCapacity),f2i (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
+return amount;
 }
 
 //-------------------------------------------------------------
@@ -1299,6 +1295,7 @@ return amount;
 //--repair-- }
 
 //	--------------------------------------------------------------------------------------------
+
 void DisableMatCens (void)
 {
 	int	i;
@@ -1323,10 +1320,10 @@ void InitAllMatCens (void)
 
 for (i = 0; i < gameData.matCens.nFuelCenters; i++)
 	if (gameData.matCens.fuelCenters [i].nType == SEGMENT_IS_ROBOTMAKER) {
-		gameData.matCens.fuelCenters [i].nLives = 3;
-		gameData.matCens.fuelCenters [i].bEnabled = 0;
-		gameData.matCens.fuelCenters [i].xDisableTime = 0;
-		}
+		 gameData.matCens.fuelCenters [i].nLives = 3;
+		 gameData.matCens.fuelCenters [i].bEnabled = 0;
+		 gameData.matCens.fuelCenters [i].xDisableTime = 0;
+		 }
 
 #ifdef _DEBUG
 
@@ -1445,7 +1442,7 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF &&
 	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
 MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
-LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG));
+LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
 MaybeDropNetPowerup (-1, nFlagId, FORCE_DROP);
 return 1;
 }
@@ -1454,7 +1451,7 @@ return 1;
 
 void FuelCenCheckForGoal (tSegment *segP)
 {
-	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	tSegment2	*seg2p = gameData.segs.segment2s + SEG_IDX (segP);
 
 	Assert (segP != NULL);
 	Assert (gameData.app.nGameMode & GM_CAPTURE);
@@ -1463,28 +1460,19 @@ void FuelCenCheckForGoal (tSegment *segP)
 CheckFlagDrop (seg2p, TEAM_BLUE, POW_REDFLAG, SEGMENT_IS_GOAL_BLUE);
 CheckFlagDrop (seg2p, TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 #else
-if (seg2p->special==SEGMENT_IS_GOAL_BLUE)	{
-	if ((GetTeam (gameData.multiplayer.nLocalPlayer)==TEAM_BLUE) && 
-		 (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
-		  FlagAtHome (POW_BLUEFLAG)) {		
-		{
-#if TRACE
-		con_printf (CONDBG,"In goal tSegment BLUE\n");
-#endif
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
+	return;
+if (seg2p->special == SEGMENT_IS_GOAL_BLUE)	{
+	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {		
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
-		LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG);
+		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
-else if (seg2p->special==SEGMENT_IS_GOAL_RED) {
-	if ((GetTeam (gameData.multiplayer.nLocalPlayer)==TEAM_RED) && 
-		 (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) &&
-		 FlagAtHome (POW_REDFLAG)) {		
-#if TRACE
-		con_printf (CONDBG,"In goal tSegment RED\n");
-#endif
+else if (seg2p->special == SEGMENT_IS_GOAL_RED) {
+	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {		
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
-		LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG);
+		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_BLUEFLAG, FORCE_DROP);
 		}
 	}
@@ -1497,25 +1485,20 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
 {
 	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
-	Assert (segP != NULL);
-	Assert (gameData.app.nGameMode & GM_HOARD);
-
-   if (gameStates.app.bPlayerIsDead)
-		return;
-
-	if (seg2p->special==SEGMENT_IS_GOAL_BLUE || seg2p->special==SEGMENT_IS_GOAL_RED )	
-	{
-		if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX])
-		{
+Assert (segP != NULL);
+Assert (gameData.app.nGameMode & GM_HOARD);
+if (gameStates.app.bPlayerIsDead)
+	return;
+if ((seg2p->special != SEGMENT_IS_GOAL_BLUE) && (seg2p->special != SEGMENT_IS_GOAL_RED))
+	return;
+if (!LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX])
+	return;
 #if TRACE
-				con_printf (CONDBG,"In orb goal!\n");
+con_printf (CONDBG,"In orb goal!\n");
 #endif
-				MultiSendOrbBonus ((char) gameData.multiplayer.nLocalPlayer);
-				LOCALPLAYER.flags &= (~ (PLAYER_FLAGS_FLAG));
-				LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]=0;
-      }
-	}
-
+MultiSendOrbBonus ((char) gameData.multiplayer.nLocalPlayer);
+LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
+LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]=0;
 }
 
 //--------------------------------------------------------------------
@@ -1525,11 +1508,11 @@ void FuelCenCheckForHoardGoal (tSegment *segP)
  */
 void OldMatCenInfoRead (old_tMatCenInfo *mi, CFILE *fp)
 {
-	mi->objFlags = CFReadInt (fp);
-	mi->xHitPoints = CFReadFix (fp);
-	mi->xInterval = CFReadFix (fp);
-	mi->nSegment = CFReadShort (fp);
-	mi->nFuelCen = CFReadShort (fp);
+mi->objFlags = CFReadInt (fp);
+mi->xHitPoints = CFReadFix (fp);
+mi->xInterval = CFReadFix (fp);
+mi->nSegment = CFReadShort (fp);
+mi->nFuelCen = CFReadShort (fp);
 }
 
 /*
@@ -1537,11 +1520,11 @@ void OldMatCenInfoRead (old_tMatCenInfo *mi, CFILE *fp)
  */
 void MatCenInfoRead (tMatCenInfo *mi, CFILE *fp)
 {
-	mi->objFlags [0] = CFReadInt (fp);
-	mi->objFlags [1] = CFReadInt (fp);
-	mi->xHitPoints = CFReadFix (fp);
-	mi->xInterval = CFReadFix (fp);
-	mi->nSegment = CFReadShort (fp);
-	mi->nFuelCen = CFReadShort (fp);
+mi->objFlags [0] = CFReadInt (fp);
+mi->objFlags [1] = CFReadInt (fp);
+mi->xHitPoints = CFReadFix (fp);
+mi->xInterval = CFReadFix (fp);
+mi->nSegment = CFReadShort (fp);
+mi->nFuelCen = CFReadShort (fp);
 }
 #endif

@@ -1030,7 +1030,7 @@ for (y = 0; y < tHeight; y++) {
 							da *= da;
 							a = (ubyte) (da * 255.0);
 #else
-							a = (r * 3 + g * 5 + b * 2) / 10;	//transparency based on color intensity
+							a = (8 * (r * 3 + g * 5 + b * 2)) / 100;	//transparency based on color intensity
 #endif
 							}
 						else if (nTransp == 2)

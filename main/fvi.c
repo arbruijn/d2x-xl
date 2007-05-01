@@ -99,7 +99,7 @@ num = VmVecDot (vPlaneNorm, &w) - rad;
 den = -VmVecDot (vPlaneNorm, &d);
 if (!den)
 	return 0;
-#if 1
+#if 0
 if (labs (num) > labs (den))
 	return 0;
 #else
@@ -121,12 +121,40 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
+//find the point on the specified plane where the line intersects
+//returns true if point found, false if line parallel to plane
+//new_pnt is the found point on the plane
+//vPlanePoint & vPlaneNorm describe the plane
+//p0 & p1 are the ends of the line
+int FindLineQuadIntersectionSub (vmsVector *hitP, vmsVector *vPlanePoint, vmsVector *vPlaneNorm, 
+										   vmsVector *p0, vmsVector *p1, fix rad)
+{
+	vmsVector	d, w;
+	fix			num, den;
+
+VmVecSub (&w, p0, vPlanePoint);
+VmVecSub (&d, p1, p0);
+num = VmVecDot (vPlaneNorm, &w) - rad;
+den = -VmVecDot (vPlaneNorm, &d);
+if (!den)
+	return 0;
+if (labs (num) > labs (den))
+	return 0;
+//do check for potential overflow
+if (labs (num) / (f1_0 / 2) >= labs (den))	
+	return 0;
+VmVecScaleFrac (&d, num, den);
+VmVecAdd (hitP, p0, &d);
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
 
 int FindLineQuadIntersection (vmsVector *hitP, vmsVector *planeP, vmsVector *planeNormP, vmsVector *p0, vmsVector *p1)
 {
 	vmsVector	vHit, d [2];
 
-if (!FindPlaneLineIntersection (&vHit, planeP, planeNormP, p0, p1, 0))
+if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 VmVecSub (d, &vHit, p0);
 VmVecSub (d + 1, &vHit, p1);

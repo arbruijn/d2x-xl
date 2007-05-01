@@ -96,7 +96,7 @@ void CalcGunPoint(vmsVector *gun_point,tObject *objP,int gun_num)
 	int mn;				//submodel number
 
 Assert(objP->renderType==RT_POLYOBJ || objP->renderType==RT_MORPH);
-Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
+//Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
 r = &ROBOTINFO (objP->id);
 pm = gameData.models.polyModels + r->nModel;

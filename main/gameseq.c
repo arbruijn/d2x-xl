@@ -812,6 +812,19 @@ if (!p)
 	p = p;
 }
 
+//	------------------------------------------------------------------------------
+
+void SetVertigoRobotFlags (void)
+{
+	tObject	*objP;
+	int		i;
+
+gameData.objs.nVertigoBotFlags = 0;
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType == OBJ_ROBOT) && (objP->id >= 66) /*&& !IS_BOSS (objP)*/)
+		gameData.objs.nVertigoBotFlags |= (1 << (objP->id - 64));
+}
+
 //------------------------------------------------------------------------------
 //load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
 
@@ -998,6 +1011,7 @@ if (!bRestore) {
 	ComputeStaticDynLighting ();
 	SetEquipGenStates ();
 	}
+SetVertigoRobotFlags ();
 return 1;
 }
 
@@ -2094,7 +2108,7 @@ fix RobotDefaultShields (tObject *objP)
 
 Assert (objP->nType == OBJ_ROBOT);
 objId = objP->id;
-Assert (objId < gameData.bots.nTypes [0]);
+//Assert (objId < gameData.bots.nTypes [0]);
 i = gameStates.app.bD1Mission && (objId < gameData.bots.nTypes [1]);
 botInfoP = gameData.bots.info [i] + objId;
 //	Boost shield for Thief and Buddy based on level.

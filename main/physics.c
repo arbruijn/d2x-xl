@@ -273,7 +273,8 @@ if (!pxSideDists) {
 	GetSideDistsAll (&objP->position.vPos, hi.hit.nSideSegment, xSideDists);
 	pxSideDists = xSideDists;
 	}
-if ((0 <= (xSideDist = pxSideDists [hi.hit.nSide])) && 
+xSideDist = pxSideDists [hi.hit.nSide];
+if (/*(0 <= xSideDist) && */
 	 (xSideDist < objP->size - objP->size / 100)) {
 #if 0
 	objP->position.vPos = objP->vLastPos;
@@ -863,6 +864,7 @@ retryMove:
 			 !(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
 			 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
 			vmsVector vCenter, vBump;
+			HUDMessage (0, "BUMP HACK");
 			//bump tPlayer a little towards vCenter of tSegment to unstick
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 			//HUDMessage (0, "BUMP! %d %d", d1, d2);
