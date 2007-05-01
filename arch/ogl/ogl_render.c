@@ -639,7 +639,7 @@ if (EGI_FLAG (bShadows, 0, 1, 0)
 #endif
 //else
 //	s = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (SHOW_DYN_LIGHT)
+if (SHOW_DYN_OBJ_LIGHT)
 	OglColor4sf (1.0f, 1.0f, 1.0f, s);
 else if (tMapColor.index) {
 	ScaleColor (&tMapColor, l);
@@ -1288,7 +1288,7 @@ bool G3DrawTexPolyMulti (
 {
 	int			c, tmType, nFrame;
 	int			bLight = 1, 
-					bDynLight = SHOW_DYN_LIGHT, 
+					bDynLight = SHOW_DYN_OBJ_LIGHT, 
 					bDrawBM = 0;
 	grsBitmap	*bmP, *bmMask;
 	g3sPoint		*pl, **ppl;

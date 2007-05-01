@@ -288,9 +288,7 @@ if (objP && SHOW_DYN_LIGHT) {
 				HUDInitMessage (TXT_NO_HEADLIGHTS);
 				}
 			}
-#ifndef _DEBUG
 		if (bDarkness)
-#endif
 			return;
 		xObjIntensity /= 4;
 		}

@@ -2256,7 +2256,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tFaceColor		*pvc;
 	grsBitmap		*bmP;
 	int				h, i, j;
-	int				bDynLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects;
+	int				bDynLighting = SHOW_DYN_OBJ_LIGHT;
 	float				fl, r, g, b;
 
 #if DBG_SHADOWS

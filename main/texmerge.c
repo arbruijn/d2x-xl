@@ -441,7 +441,7 @@ char *texMergeFS [3] = {
 	"if((abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
 	"   else {" \
 	"      btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
-	"      gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha);}}" \
+	"      gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;}}" \
 	"else {" \
 	"   btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
 	"   gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}}"

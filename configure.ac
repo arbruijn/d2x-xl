@@ -2,7 +2,7 @@
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],9)
-define([D2X_MICRO],185)
+define([D2X_MICRO],186)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)
@@ -209,7 +209,7 @@ else
    	AC_CHECK_LIB(
 			SDL_mixer, Mix_OpenAudio,
         	LIBS="-lSDL_mixer $LIBS",
-         [AC_MSG_ERROR([SDL_mixer not found]); USE_SDL_MIXER=false])
+         AC_DEFINE(SDL_mixer,,[Define to enable MIDI playback using SDL_mixer]))
  			)
 
   # Check for libpng
