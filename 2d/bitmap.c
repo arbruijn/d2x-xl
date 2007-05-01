@@ -174,11 +174,11 @@ void decode_data_asm (ubyte *data, int num_pixels, ubyte *colormap, int *count)
 	int i;
 	ubyte mapped;
 
-	for (i = 0; i < num_pixels; i++) {
-		mapped = *data;
-		count  [mapped]++;
-		*data = colormap  [mapped];
-		data++;
+for (i = 0; i < num_pixels; i++) {
+	mapped = *data;
+	count [mapped]++;
+	*data = colormap  [mapped];
+	data++;
 	}
 }
 

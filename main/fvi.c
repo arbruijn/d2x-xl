@@ -1543,8 +1543,12 @@ if (bmP->bm_props.flags & BM_FLAG_TGA) {
 		return 0;
 	p = bmP->bm_texBuf + offs * bmP->bm_bpp;
 	// check super transparency color
+#if 1
+	if ((p[0] == 120) && (p[1] == 88) && (p[2] == 128))
+#else	
 	if ((gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) ?
 	    (p[3] == 1) : ((p[0] == 120) && (p[1] == 88) && (p[2] == 128)))
+#endif	    
 		return -1;
 	// check alpha
 	if (!p[3])
