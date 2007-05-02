@@ -1502,7 +1502,7 @@ LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]=0;
 }
 
 //--------------------------------------------------------------------
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads an old_tMatCenInfo structure from a CFILE
  */

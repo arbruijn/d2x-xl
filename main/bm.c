@@ -100,7 +100,7 @@ return GrFindClosestColor (palette, total_red, total_green, total_blue);
 
 //---------------- Variables for tObject textures ----------------
 
-#ifdef FAST_FILE_IO
+#if 0//def FAST_FILE_IO /*disabled for a reason!*/
 #define ReadTMapInfoN(ti, n, fp) CFRead (ti, sizeof (tTexMapInfo), n, fp)
 #else
 /*

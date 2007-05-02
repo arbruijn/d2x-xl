@@ -1,7 +1,7 @@
 uniform sampler2D btmTex,topTex,lMapTex;
 void main(void){
 vec4 topColor=texture2D(topTex,vec2(gl_TexCoord[1]));
-if(topColor.a==1.0/255.0)discard;
+if(abs(topColor.a-1.0/255.0)<0.25)discard;
 else {vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord[0]));
 vec4 lMapColor=texture2D(lMapTex,vec2(gl_TexCoord[2]))+((gl_Color)-0.5);
 float maxC=lMapColor.r;

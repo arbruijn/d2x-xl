@@ -388,7 +388,7 @@ gameData.eff.pEffects [effect_num].flags &= ~EF_STOPPED;
 }
 
 // ----------------------------------------------------------------------------
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads n eclip structs from a CFILE
  */

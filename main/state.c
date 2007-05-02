@@ -2470,7 +2470,10 @@ if (!bBetweenLevels)	{
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);
 	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters, fp))
 		return 0;
-	CFRead (gameData.matCens.botGens, sizeof (tMatCenInfo), gameData.matCens.nBotCenters, fp);
+	for (i = 0; i < gameData.matCens.nBotCenters; i++) {
+		CFRead (gameData.matCens.botGens [i].objFlags, sizeof (int), 2, fp);
+		CFRead (&gameData.matCens.botGens [i].xHitPoints, sizeof (tMatCenInfo) - ((char *) &gameData.matCens.botGens [i].xHitPoints - (char *) &gameData.matCens.botGens [i]), 1, fp);
+		}
 	CFRead (&gameData.reactor.triggers, sizeof (tReactorTriggers), 1, fp);
 	if (CFReadBoundedInt (MAX_FUEL_CENTERS, &gameData.matCens.nFuelCenters, fp))
 		return 0;

@@ -859,7 +859,7 @@ void DrawModelPicture (int mn, vmsAngVec *orient_angles)
 
 //------------------------------------------------------------------------------
 
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads a tPolyModel structure from a CFILE
  */

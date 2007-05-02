@@ -759,7 +759,7 @@ return nMasks;
 
 //------------------------------------------------------------------------------
 
-#ifdef FAST_FILE_IO
+#if 0//def FAST_FILE_IO /*disabled for a reason!*/
 
 #define DiskBitmapHeaderRead(dbh, fp) CFRead (dbh, sizeof (DiskBitmapHeader), 1, fp)
 #define DiskSoundHeader_read(dsh, fp) CFRead (dsh, sizeof (DiskSoundHeader), 1, fp)
@@ -2888,7 +2888,7 @@ return bmi;
 
 //------------------------------------------------------------------------------
 
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads a tBitmapIndex structure from a CFILE
  */

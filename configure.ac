@@ -209,8 +209,7 @@ else
    	AC_CHECK_LIB(
 			SDL_mixer, Mix_OpenAudio,
         	LIBS="-lSDL_mixer $LIBS",
-         AC_DEFINE(SDL_mixer,,[Define to enable MIDI playback using SDL_mixer]))
- 			)
+         AC_DEFINE(SDL_mixer,1,[Define to enable MIDI playback using SDL_mixer]))
 
   # Check for libpng
     have_libpng=no

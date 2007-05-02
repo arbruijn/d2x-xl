@@ -53,7 +53,7 @@ typedef struct {
 
 //------------------------------------------------------------------------------
 
-#ifdef FAST_FILE_IO
+#if 0//def FAST_FILE_IO /*disabled for a reason!*/
 #define PCXHeader_read_n(ph, n, fp) CFRead(ph, sizeof(PCXHeader), n, fp)
 #else
 /*

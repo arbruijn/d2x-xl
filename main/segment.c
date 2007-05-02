@@ -9,7 +9,7 @@
 static char rcsid[] = "$Id: tSegment.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 #endif
 
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
  * reads a tSegment2 structure from a CFILE
  */

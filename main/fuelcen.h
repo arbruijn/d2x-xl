@@ -114,7 +114,7 @@ typedef struct  {
 } __pack__ old_tMatCenInfo;
 
 typedef struct tMatCenInfo {
-	int     objFlags [3]; 	// Up to 92 different robots
+	int     objFlags [3]; 		// Up to 92 different robots
 	fix     xHitPoints;     	// How hard it is to destroy this particular matcen
 	fix     xInterval;       	// Interval between materializations
 	short   nSegment;         	// Segment this is attached to.

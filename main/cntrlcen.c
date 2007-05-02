@@ -541,7 +541,7 @@ if (gameData.reactor.bDestroyed) {
 	}
 }
 
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 //------------------------------------------------------------------------------
 /*
  * reads n reactor structs from a CFILE

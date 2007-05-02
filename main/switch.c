@@ -1135,7 +1135,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#ifndef FAST_FILE_IO
+#if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 #if 0
 	static char d2TriggerMap [10] = {
 		TT_OPEN_DOOR,
