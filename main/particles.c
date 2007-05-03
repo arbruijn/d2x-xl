@@ -466,19 +466,19 @@ if (iBuffer) {
 #else
 	glVertexPointer (3, GL_DOUBLE, 0, vertexBuffer);
 #	ifdef _DEBUG
-	if (i = glGetError ())
+	if ((i = glGetError ()))
 		HUDMessage (0, "glVertexPointer %d failed (%d)", iBuffer, i);
 #	endif
 	if (!gameStates.render.bPointSprites) {
 		glTexCoordPointer (2, GL_DOUBLE, 0, texCoordBuffer);
 #	ifdef _DEBUG
-		if (i = glGetError ())
+		if ((i = glGetError ()))
 			HUDMessage (0, "glTexCoordPointer %d failed (%d)", iBuffer, i);
 #	endif
 		}
 	glColorPointer (4, GL_DOUBLE, 0, colorBuffer);
 #	ifdef _DEBUG
-	if (i = glGetError ())
+	if ((i = glGetError ()))
 		HUDMessage (0, "glColorPointer %d failed (%d)", iBuffer, i);
 #	endif
 #endif
@@ -725,12 +725,12 @@ if (gameStates.render.bPointSprites) {
 #endif
 		glEnableClientState (GL_VERTEX_ARRAY);
 #	ifdef _DEBUG
-		if (i = glGetError ()) 
+		if ((i = glGetError ())) 
 			HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) %d failed (%d)", iBuffer, i);
 #	endif
 		glEnableClientState (GL_COLOR_ARRAY);
 #	ifdef _DEBUG
-		if (i = glGetError ()) 
+		if ((i = glGetError ())) 
 			HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) %d failed (%d)", iBuffer, i);
 #	endif
 		}
@@ -751,17 +751,17 @@ else
 		glDisableClientState (GL_VERTEX_ARRAY);
 		glEnableClientState (GL_VERTEX_ARRAY);
 #ifdef _DEBUG
-		if (i = glGetError ()) 
+		if ((i = glGetError ())) 
 			HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) failed (%d)", i);
 #endif
 		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 #ifdef _DEBUG
-		if (i = glGetError ()) 
+		if ((i = glGetError ())) 
 			HUDMessage (0, "glEnableClientState (GL_TEX_COORD_ARRAY) failed (%d)", i);
 #endif
 		glEnableClientState (GL_COLOR_ARRAY);
 #ifdef _DEBUG
-		if (i = glGetError ()) 
+		if ((i = glGetError ())) 
 			HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) failed (%d)", i);
 #endif
 		}

@@ -188,9 +188,8 @@ static int ipx_bsd_OpenSocket(ipx_socket_t *sk, int port)
 
 static void ipx_bsd_CloseSocket(ipx_socket_t *mysock) {
 	/* now close the file descriptor for the socket, and d_free it */
-	FAIL("IPX: closing file descriptor on socket %x\n", mysock->socket);
 	close(mysock->fd);
-	return 0;
+	FAIL("IPX: closing file descriptor on socket %x\n", mysock->socket);
 }
 
 static int ipx_bsd_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,

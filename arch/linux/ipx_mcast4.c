@@ -215,7 +215,7 @@ static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int outbufsi
 {
 	int size;
 	struct sockaddr_in fromaddr;
-	int fromaddrsize = sizeof(fromaddr);
+	unsigned int fromaddrsize = sizeof(fromaddr);
 
 size = recvfrom(sk->fd, outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize);
 if (size < 0)

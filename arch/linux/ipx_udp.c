@@ -502,6 +502,9 @@ static int addiflist (void)
 	unsigned 				cnt = MAX_BRDINTERFACES, i, j;
 	struct ifconf 			ifconf;
 	int 						sock;
+#ifdef _DEBUG
+	int						ioRes;
+#endif
 	struct sockaddr_in	*sinp, *sinmp;
 
 d_free (broads);

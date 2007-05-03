@@ -1781,7 +1781,7 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED+KEY_D:
-			if (bGameDoubleBuffer = !bGameDoubleBuffer)
+			if ((bGameDoubleBuffer = !bGameDoubleBuffer))
 				InitCockpit();
 			break;
 #endif

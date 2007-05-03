@@ -2061,15 +2061,15 @@ if (gameData.fusion.xAutoFireTime) {
 		gameData.laser.nGlobalFiringCount = 1;
 		}
 	else {
-		vmsVector	vRand;
 		fix			xBump;
+		vmsVector	vRand;
+		
 		static time_t t0 = 0;
 		time_t t = gameStates.app.nSDLTicks;
 		if (t - t0 < 30)
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-#ifndef _DEBUG
 		gameData.objs.console->mType.physInfo.rotVel.p.x += (d_rand () - 16384)/8;
 		gameData.objs.console->mType.physInfo.rotVel.p.z += (d_rand () - 16384)/8;
 		MakeRandomVector (&vRand);
@@ -2077,7 +2077,6 @@ if (gameData.fusion.xAutoFireTime) {
 		if (gameData.fusion.xCharge > F1_0*2)
 			xBump = gameData.fusion.xCharge*4;
 		BumpOneObject (gameData.objs.console, &vRand, xBump);
-#endif
 		}
 	}
 return 1;

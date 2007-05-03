@@ -68,9 +68,6 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 //adding an array and setting the pointer to the active ship.
 
 //---------------- Variables for wall textures ------------------
-static int	nTMaps [2] = {0,0};
-
-//---------------------------------------------------------------
 
 int ComputeAvgPixel (grsBitmap *newBm)
 {
@@ -529,6 +526,8 @@ wiP->picture.index = CFReadShort (fp);
 #define POLYMODEL_SIZE				734
 #define PLAYER_SHIP_SIZE			132
 #define MODEL_DATA_SIZE_OFFS		4
+
+static int	nTMaps [2] = {0,0};
 
 void BMReadGameDataD1 (CFILE * fp)
 {

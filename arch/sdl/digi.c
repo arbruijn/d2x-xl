@@ -157,6 +157,8 @@ SoundSlots [nChannel].playing = 0;
 
 //------------------------------------------------------------------------------
 
+#ifdef _WIN32
+
 static void MixSoundSlot (struct tSoundSlot *sl, Uint8 *sldata, Uint8 *stream, int len)
 {
 	Uint8 *streamend = stream + len;
@@ -192,6 +194,8 @@ while (sp < streamend) {
 	}
 sl->position = (int) (sldata - sl->samples);
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 /* Audio mixing callback */

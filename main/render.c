@@ -1879,7 +1879,6 @@ void OutlineSegSide(tSegment *seg, int _side, int edge, int vert)
 cc=RotateList(8, seg->verts);
 if (! cc.and) {		//all off screen?
 	g3sPoint *pnt;
-	tSide *s = seg->sides+_side;
 	//render curedge of curside of curseg in green
 	GrSetColorRGB (0, 255, 0, 255);
 	G3DrawLine(gameData.segs.points + seg->verts [sideToVerts [_side][edge]], 
@@ -3916,11 +3915,12 @@ if (((gameStates.render.nRenderPass <= 0) &&
 		}
 	for (i = 0; i < nRenderSegs;i++) {
 		short nSegment = nRenderList [i];
-		if (nSegment != -1)
+		if (nSegment != -1) {
 			if (visited2 [nSegment])
 				Int3();		//get Matt
 			else
 				visited2 [nSegment] = 1;
+			}
 		}
 #endif
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {

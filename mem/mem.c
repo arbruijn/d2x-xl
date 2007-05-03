@@ -517,7 +517,7 @@ char *mem_strdup (char *str, char *var, char *filename, int line)
 	char *newstr;
 	int l = (int) strlen (str) + 1;
 
-if (newstr = mem_malloc (l, var, filename, line, 0))
+if ((newstr = mem_malloc (l, var, filename, line, 0)))
 	memcpy (newstr, str, l);
 return newstr;
 }
