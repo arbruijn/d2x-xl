@@ -268,7 +268,7 @@ typedef struct tObject {
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
-	} /*__pack__*/ tObject;
+	} __pack__ tObject;
 
 typedef struct tObjPosition {
 	tPosition	position;
