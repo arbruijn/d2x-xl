@@ -1578,6 +1578,7 @@ bool G3DrawBitmap (
 	fix			height, 
 	grsBitmap	*bmP, 
 	int			orientation, 
+	tRgbColorf	*color,
 	float			alpha, 
 	int			transp, 
 	int			bDepthInfo)
@@ -1617,7 +1618,10 @@ else {
 		return 1;
 	bmP = BmOverride (bmP);
 	OglTexWrap (bmP->glTexture, GL_CLAMP);
-	glColor4f (1.0f, 1.0f, 1.0f, alpha);
+	if (color)
+		glColor4f (color->red, color->green, color->blue, alpha);
+	else
+		glColor4f (1.0f, 1.0f, 1.0f, alpha);
 	glBegin (GL_QUADS);
 	u = bmP->glTexture->u;
 	v = bmP->glTexture->v;

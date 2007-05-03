@@ -100,6 +100,11 @@ void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
 void SetPathPoint (tFlightPath *pPath, tObject *objP);
 tPathPoint *GetPathPoint (tFlightPath *pPath);
 int IsTransparentTexture (short nTexture);
+int LoadCorona (void);
 void FreeCorona (void);
+void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r);
+
+extern grsBitmap *bmpCorona;
+
 
 #endif /* _RENDER_H */

@@ -159,7 +159,7 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-inline int LoadCorona (void)
+int LoadCorona (void)
 {
 if (!bHaveCorona) {
 	bmpCorona = CreateAndReadTGA ("corona.tga");
@@ -1043,6 +1043,72 @@ extern int containsFlare(tSegment *segP, int nSide);
 extern fix	Obj_light_xlate [16];
 
 // -----------------------------------------------------------------------------------
+
+void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r)
+{
+	fVector	v, h, vdx, vdy;
+	float		d = vCenter->p.x * vCenter->p.x + vCenter->p.y * vCenter->p.y + vCenter->p.z * vCenter->p.z;
+	int		i;
+
+if (!vEye) {
+	vEye = &h;
+	VmVecNormalizef (vEye, vCenter);
+	}
+v.p.x = v.p.z = 0;
+v.p.y = vCenter->p.y ? d / vCenter->p.y : 1;
+VmVecDecf (&v, vCenter);
+VmVecNormalizef (&v, &v);
+VmVecCrossProdf (&vdx, &v, vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
+VmVecScalef (&vdx, &vdx, dx);
+v.p.y = v.p.z = 0;
+v.p.x = vCenter->p.x ? d / vCenter->p.x : 1;
+VmVecDecf (&v, vCenter);
+VmVecNormalizef (&v, &v);
+VmVecCrossProdf (&vdy, &v, vEye);
+if (r) {
+	VmVecScalef (&vdy, &vdy, dy);
+	v.p.x = -vdx.p.x - vdy.p.x;
+	v.p.y = -vdx.p.y - vdy.p.y;
+	v.p.z = -vdx.p.z - vdy.p.z;
+	VmVecRotatef (vSprite, &v, r);
+	VmVecIncf (vSprite, vCenter);
+	v.p.x = v.p.y = v.p.z = 0;
+	v.p.x = +vdx.p.x - vdy.p.x;
+	v.p.y = +vdx.p.y - vdy.p.y;
+	v.p.z = +vdx.p.z - vdy.p.z;
+	VmVecRotatef (vSprite + 1, &v, r);
+	VmVecIncf (vSprite + 1, vCenter);
+	v.p.x = v.p.y = v.p.z = 0;
+	v.p.x = +vdx.p.x + vdy.p.x;
+	v.p.y = +vdx.p.y + vdy.p.y;
+	v.p.z = +vdx.p.z + vdy.p.z;
+	VmVecRotatef (vSprite + 2, &v, r);
+	VmVecIncf (vSprite + 2, vCenter);
+	v.p.x = -vdx.p.x + vdy.p.x;
+	v.p.y = -vdx.p.y + vdy.p.y;
+	v.p.z = -vdx.p.z + vdy.p.z;
+	VmVecRotatef (vSprite + 3, &v, r);
+	VmVecIncf (vSprite + 3, vCenter);
+	}
+else {
+	vSprite [0].p.x = -vdx.p.x - vdy.p.x;
+	vSprite [0].p.y = -vdx.p.y - vdy.p.y;
+	vSprite [0].p.z = -vdx.p.z - vdy.p.z;
+	vSprite [1].p.x = +vdx.p.x - vdy.p.x;
+	vSprite [1].p.y = +vdx.p.y - vdy.p.y;
+	vSprite [1].p.z = +vdx.p.z - vdy.p.z;
+	vSprite [2].p.x = +vdx.p.x + vdy.p.x;
+	vSprite [2].p.y = +vdx.p.y + vdy.p.y;
+	vSprite [2].p.z = +vdx.p.z + vdy.p.z;
+	vSprite [3].p.x = -vdx.p.x + vdy.p.x;
+	vSprite [3].p.y = -vdx.p.y + vdy.p.y;
+	vSprite [3].p.z = -vdx.p.z + vdy.p.z;
+	for (i = 0; i < 4; i++)
+		VmVecIncf (vSprite + i, vCenter);
+	}
+}
+
+// -----------------------------------------------------------------------------------
 // The following code takes a face and renders a corona over it.
 // The corona is rendered as a billboard, i.e. always facing the viewer.
 // To do that, the center point of the corona's face is computed. Next, orthogonal
@@ -1064,19 +1130,15 @@ extern fix	Obj_light_xlate [16];
 
 #define ROTATE_CORONA	1
 
-typedef union uvlf {
-	float a [3];
-	struct {
-		float	u, v, l;
-		} v;
-	} uvlf;
-
 void RenderCorona (short nSegment, short nSide)
 {
 	fVector		vertList [4], sprite [4];
 	short			sideVerts [4];
 	uvlf			uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
-	fVector		d, n, o, v, vCenter = {{0,0,0}}, vDeltaX, vDeltaY, vEye;
+	fVector		d, n, o, v, vCenter = {{0,0,0}}, vEye;
+#if 0
+	fVector		vDeltaX, vDeltaY;
+#endif
 	fMatrix		r;
 	int			i, j, t;
 	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
@@ -1221,6 +1283,23 @@ if (h) {
 	}
 if (m > a)
 	m = a;
+
+//create rotation matrix to match corona with face
+r.rVec.p.x =
+r.uVec.p.y = n.p.x;
+r.rVec.p.y = -n.p.y;
+r.uVec.p.x = n.p.y;
+r.rVec.p.z =
+r.uVec.p.z = 0;
+
+#ifdef _DEBUG
+//HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
+#endif
+
+m = (float) sqrt (dx * dx + dy * dy) / 4;	//basic corona size to make it visible regardless of dx and dy
+#if 1
+CalcSpriteCoords (sprite, &vCenter, &vEye, m + dy / 2, m + dx / 2, &r);
+#else
 // compute orthogonal vectors for calculation of billboard coordinates
 h = vCenter.p.x * vCenter.p.x + vCenter.p.y * vCenter.p.y + vCenter.p.z * vCenter.p.z;
 v.p.x = v.p.z = 0;
@@ -1228,36 +1307,14 @@ v.p.y = vCenter.p.y ? h / vCenter.p.y : 1;
 VmVecDecf (&v, &vCenter);
 VmVecNormalizef (&v, &v);
 VmVecCrossProdf (&vDeltaX, &v, &vEye);	//orthogonal vector in plane through face center and perpendicular to viewer
+VmVecScalef (&vDeltaX, &vDeltaX, m + dy / 2);
 v.p.y = v.p.z = 0;
 v.p.x = vCenter.p.x ? h / vCenter.p.x : 1;
 VmVecDecf (&v, &vCenter);
 VmVecNormalizef (&v, &v);
 VmVecCrossProdf (&vDeltaY, &v, &vEye);
+VmVecScalef (&vDeltaY, &vDeltaY, m + dx / 2);
 
-#ifdef _DEBUG
-//HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
-#endif
-
-#if 0
-VmVecScalef (&vDeltaX, &vDeltaX, dy);
-VmVecScalef (&vDeltaY, &vDeltaY, dx);
-#else
-m = (float) sqrt (dx * dx + dy * dy) / 4;	//basic corona size to make it visible regardless of dx and dy
-h = dy / 2;
-VmVecScalef (&vDeltaX, &vDeltaX, m + h);
-h = dx / 2;
-VmVecScalef (&vDeltaY, &vDeltaY, m + h);
-#endif
-
-//create rotation matrix to match corona with face
-#if 1
-r.rVec.p.x =
-r.uVec.p.y = n.p.x;
-r.rVec.p.y = -n.p.y;
-r.uVec.p.x = n.p.y;
-r.rVec.p.z =
-r.uVec.p.z = 0;
-#endif
 //compute corona coordinates
 v.p.x = -vDeltaX.p.x - vDeltaY.p.x;
 v.p.y = -vDeltaX.p.y - vDeltaY.p.y;
@@ -1281,6 +1338,7 @@ v.p.y = -vDeltaX.p.y + vDeltaY.p.y;
 v.p.z = -vDeltaX.p.z + vDeltaY.p.z;
 VmVecRotatef (sprite + 3, &v, &r);
 VmVecIncf (sprite + 3, &vCenter);
+#endif
 
 VmVecNormalf (&o, sprite, sprite + 1, sprite + 2);
 VmVecScalef (&o, &o, 0.1f);

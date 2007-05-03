@@ -32,6 +32,13 @@ typedef struct uvl {
 	fix u,v,l;
 } uvl;
 
+typedef union uvlf {
+	float a [3];
+	struct {
+		float	u, v, l;
+		} v;
+	} uvlf;
+
 //Stucture to store clipping codes in a word
 typedef struct g3s_codes {
 	ubyte or,and;   //or is low byte, and is high byte
@@ -282,7 +289,7 @@ bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoi
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew
-bool G3DrawBitmap (vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation, float alpha, int transp, int bDepthInfo);
+bool G3DrawBitmap (vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation, tRgbColorf *color, float alpha, int transp, int bDepthInfo);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults

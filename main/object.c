@@ -318,11 +318,11 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 
 xSize = objP->size;
 if (bmP->bm_props.w > bmP->bm_props.h)
-	G3DrawBitmap (&objP->position.vPos,  xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
-					  orientation, alpha, transp, bDepthInfo);
+	G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
+					  orientation, NULL, alpha, transp, bDepthInfo);
 else
 	G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
-					  orientation, alpha, transp, bDepthInfo);
+					  orientation, NULL, alpha, transp, bDepthInfo);
 if (color) {
 #if 1
 	memcpy (color, bitmapColors + bmi.index, sizeof (*color));
@@ -1548,6 +1548,8 @@ for (h = 0; h < nThrusters; h++) {
 
 // -----------------------------------------------------------------------------
 
+extern vmsAngVec zeroAngles;
+
 void RenderShockwave (tObject *objP)
 {
 if (!SHOW_OBJ_FX)
@@ -1557,72 +1559,99 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bShockwaves, 1, 1, 0) && 
-	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
-		fVector			vPosf;
-		int				h, i, j, k, n;
-		float				r [4], l [4], alpha;
-		tRgbColorf		*pc = gameData.weapons.color + objP->id;
 
+	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
-	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
-	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
-	glDepthMask (0);
-	glDisable (GL_TEXTURE_2D);
-	//glCullFace (GL_FRONT);
-	glDisable (GL_CULL_FACE);		
-	r [3] = f2fl (objP->size);
-	if (r [3] >= 3.0f)
-		r [3] /= 1.5f;
-	else if (r [3] < 1)
-		r [3] *= 2;
-	else if (r [3] < 2)
-		r [3] *= 1.5f;
-	r [2] = r [3];
-	r [1] = r [2] / 4.0f * 3.0f;
-	r [0] = r [2] / 3;
-	l [3] = (r [3] < 1.0f) ? 10.0f : 20.0f;
-	l [2] = r [3] / 4;
-	l [1] = -r [3] / 6;
-	l [0] = -r [3] / 3;
-	alpha = 0.15f;
-	for (h = 0; h < 3; h++) {
-		glBegin (GL_QUAD_STRIP);
-		for (i = 0; i < RING_SIZE + 1; i++) {
-			j = i % RING_SIZE;
-			for (k = 0; k < 2; k++) {
-				n = h + k;
-				glColor4f (pc->red, pc->green, pc->blue, (n == 3) ? 0.0f : alpha);
-				vPosf = vRing [j];
-				vPosf.p.x *= r [n];
-				vPosf.p.y *= r [n];
-				vPosf.p.z = -l [n];
+	if (EGI_FLAG (bShockwaves, 1, 1, 0)) {
+			fVector			vPosf;
+			int				h, i, j, k, n;
+			float				r [4], l [4], alpha;
+			tRgbColorf		*pc = gameData.weapons.color + objP->id;
+
+		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
+		glDepthMask (0);
+		glDisable (GL_TEXTURE_2D);
+		//glCullFace (GL_FRONT);
+		glDisable (GL_CULL_FACE);		
+		r [3] = f2fl (objP->size);
+		if (r [3] >= 3.0f)
+			r [3] /= 1.5f;
+		else if (r [3] < 1)
+			r [3] *= 2;
+		else if (r [3] < 2)
+			r [3] *= 1.5f;
+		r [2] = r [3];
+		r [1] = r [2] / 4.0f * 3.0f;
+		r [0] = r [2] / 3;
+		l [3] = (r [3] < 1.0f) ? 10.0f : 20.0f;
+		l [2] = r [3] / 4;
+		l [1] = -r [3] / 6;
+		l [0] = -r [3] / 3;
+		alpha = 0.15f;
+		for (h = 0; h < 3; h++) {
+			glBegin (GL_QUAD_STRIP);
+			for (i = 0; i < RING_SIZE + 1; i++) {
+				j = i % RING_SIZE;
+				for (k = 0; k < 2; k++) {
+					n = h + k;
+					glColor4f (pc->red, pc->green, pc->blue, (n == 3) ? 0.0f : alpha);
+					vPosf = vRing [j];
+					vPosf.p.x *= r [n];
+					vPosf.p.y *= r [n];
+					vPosf.p.z = -l [n];
+					G3TransformPointf (&vPosf, &vPosf, 0);
+					glVertex3fv ((GLfloat *) &vPosf);
+					}
+				}
+			glEnd ();
+			}
+		glEnable (GL_CULL_FACE);		
+		for (h = 0; h < 3; h += 2) {
+			glCullFace (h ? GL_FRONT : GL_BACK);
+			glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
+			glBegin (GL_TRIANGLE_STRIP);
+			for (j = 0; j < RING_SIZE; j++) {
+				vPosf = vRing [nStripIdx [j]];
+				vPosf.p.x *= r [h];
+				vPosf.p.y *= r [h];
+				vPosf.p.z = -l [h];
 				G3TransformPointf (&vPosf, &vPosf, 0);
 				glVertex3fv ((GLfloat *) &vPosf);
 				}
+			glEnd ();
 			}
-		glEnd ();
+		glDepthMask (1);
+		glCullFace (GL_BACK);
+		G3DoneInstance ();
 		}
-	glEnable (GL_CULL_FACE);		
-	for (h = 0; h < 3; h += 2) {
-		glCullFace (h ? GL_FRONT : GL_BACK);
-		glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
-		glBegin (GL_TRIANGLE_STRIP);
-		for (j = 0; j < RING_SIZE; j++) {
-			vPosf = vRing [nStripIdx [j]];
-			vPosf.p.x *= r [h];
-			vPosf.p.y *= r [h];
-			vPosf.p.z = -l [h];
-			G3TransformPointf (&vPosf, &vPosf, 0);
-			glVertex3fv ((GLfloat *) &vPosf);
+	if (gameOpts->render.bCoronas && LoadCorona ()) {
+		fix xSize = objP->size * 4;
+		tRgbColorf	c = gameData.weapons.color [objP->id];
+#if 0
+		float			m = c.red;
+		if (m < c.green)
+			m = c.green;
+		if (m < c.blue)
+			m = c.blue;
+		if (m < 1) {
+			c.red /= m;
+			c.green /= m;
+			c.blue /= m;
 			}
-		glEnd ();
+#endif
+		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+			glDisable (GL_STENCIL_TEST);
+		glDepthMask (0);
+		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
+						  1, &c, 0.7f, 1, 0);
+		glDepthMask (1);
+		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+			glEnable (GL_STENCIL_TEST);
 		}
-	glDepthMask (1);
-	glCullFace (GL_BACK);
-	G3DoneInstance ();
+
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
 	}
@@ -1703,8 +1732,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bLightTrails, 1, 1, 0) && 
-	 (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		vmsVector		vPos;
 		fVector			vPosf, *vTrail;
 		int				i, j;
@@ -1769,8 +1797,8 @@ if (EGI_FLAG (bLightTrails, 1, 1, 0) &&
 	G3DoneInstance ();
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
-	RenderShockwave (objP);
 	}
+RenderShockwave (objP);
 }
 
 // -----------------------------------------------------------------------------
@@ -1939,7 +1967,8 @@ switch (objP->renderType) {
 				}
 			else {
 #ifdef _DEBUG
-				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+				if (EGI_FLAG (bRenderShield, 0, 1, 0))
+					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #endif
 				RenderLightTrail (objP);
 				}
@@ -1993,14 +2022,15 @@ switch (objP->renderType) {
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			if (objP->nType == OBJ_WEAPON) {
-				RenderLightTrail (objP);
 				if (!DoObjectSmoke (objP))
 					DrawWeaponVClip (objP); 
+				RenderLightTrail (objP);
 				}
 			else
 				DrawWeaponVClip (objP); 
 #ifdef _DEBUG
-			DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+			if (EGI_FLAG (bRenderShield, 0, 1, 0))
+				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #endif
 			}
 		break;
