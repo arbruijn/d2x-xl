@@ -1135,7 +1135,7 @@ void RenderCorona (short nSegment, short nSide)
 	fVector		vertList [4], sprite [4];
 	short			sideVerts [4];
 	uvlf			uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
-	fVector		d, n, o, v, vCenter = {{0,0,0}}, vEye;
+	fVector		d, n, o, v, vCenter = {{0,0,0}}, vEye, vMin, vMax;
 #if 0
 	fVector		vDeltaX, vDeltaY;
 #endif

@@ -1646,7 +1646,7 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 			glDisable (GL_STENCIL_TEST);
 		glDepthMask (0);
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						  1, &c, 0.7f, 1, 0);
+						  1, &c, 0.5f, 1, 0);
 		glDepthMask (1);
 		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 			glEnable (GL_STENCIL_TEST);
