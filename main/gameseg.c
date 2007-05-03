@@ -183,7 +183,7 @@ if (0) {
 void UncachedGetSideNormal (tSegment *segP, int nSide, int face_num, vmsVector * vm)
 {
 	int	vm0, vm1, vm2, vm3, bFlip;
-	char	*vs = sideToVerts [nSide];
+	sbyte	*vs = sideToVerts [nSide];
 
 switch (segP->sides [nSide].nType) {
 	case SIDE_IS_QUAD:
@@ -231,7 +231,7 @@ void GetSideNormals (tSegment *segP, int nSide, vmsVector * vm1, vmsVector * vm2
 #endif
 {
 	int	vvm0, vvm1, vvm2, vvm3, bFlip;
-	char	*vs = sideToVerts [nSide];
+	sbyte	*vs = sideToVerts [nSide];
 
 switch (segP->sides [nSide].nType)	{
 	case SIDE_IS_QUAD:

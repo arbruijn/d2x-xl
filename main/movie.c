@@ -188,7 +188,7 @@ strcpy (name, filename);
 if (!(p = strchr (name, '.')))		//add extension, if missing
 	strcat (name, ".mve");
 //check for escape already pressed & abort if so
-while (c = KeyInKey ())
+while ((c = KeyInKey ()))
 	if (c == KEY_ESC)
 		return MOVIE_ABORTED;
 // Stop all digital sounds currently playing.
@@ -508,9 +508,9 @@ return p;
 int InitSubTitles (char *filename)
 {
 	CFILE *ifile;
-	int size, readCount;
-	ubyte *p;
-	int have_binary = 0;
+	int 	size, readCount;
+	ubyte	*p;
+	int 	bHaveBinary = 0;
 
 subTitles.nCaptions = 0;
 if (!gameOpts->movies.bSubTitles)
@@ -522,7 +522,7 @@ if (!ifile) {								//no text version, try binary version
 	ifile = CFOpen (filename2, gameFolders.szDataDir, "rb", 0);
 	if (!ifile)
 		return 0;
-	have_binary = 1;
+	bHaveBinary = 1;
 	}
 
 size = CFLength (ifile, 0);
@@ -535,27 +535,29 @@ if (readCount != size) {
 	return 0;
 	}
 p = subTitles.rawDataP;
-while (p && p < subTitles.rawDataP+size) {
-	char *endp = strchr (p, '\n'); 
+while (p && (p < subTitles.rawDataP + size)) {
+	char *endp = strchr ((char *) p, '\n'); 
 	
 	if (endp) {
 		if (endp [-1] == '\r')
 			endp [-1] = 0;		//handle 0d0a pair
 		*endp = 0;			//string termintor
 		}
-	if (have_binary)
-		DecodeTextLine (p);
+	if (bHaveBinary)
+		DecodeTextLine ((char *) p);
 	if (*p != ';') {
-		subTitles.captions [subTitles.nCaptions].first_frame = atoi (p);
-		p = next_field (p); if (!p) continue;
-		subTitles.captions [subTitles.nCaptions].last_frame = atoi (p);
-		p = next_field (p); if (!p) continue;
-		subTitles.captions [subTitles.nCaptions].msg = p;
+		subTitles.captions [subTitles.nCaptions].first_frame = atoi ((char *) p);
+		if (!(p = next_field (p))) 
+			continue;
+		subTitles.captions [subTitles.nCaptions].last_frame = atoi ((char *) p);
+		if (!(p = next_field (p)))
+			continue;
+		subTitles.captions [subTitles.nCaptions].msg = (char *) p;
 		Assert (subTitles.nCaptions==0 || subTitles.captions [subTitles.nCaptions].first_frame >= subTitles.captions [subTitles.nCaptions-1].first_frame);
 		Assert (subTitles.captions [subTitles.nCaptions].last_frame >= subTitles.captions [subTitles.nCaptions].first_frame);
 		subTitles.nCaptions++;
 		}
-	p = endp+1;
+	p = (ubyte *) (endp + 1);
 	}
 return 1;
 }
@@ -1004,7 +1006,7 @@ if (nMovieLibs) {
 		iMovie = 0;
 		}
 	//InitSubTitles ("intro.tex");
-	if (pszMovieName = GetMovieName (iMovieLib, iMovie)) {
+	if ((pszMovieName = GetMovieName (iMovieLib, iMovie))) {
 		gameStates.video.nScreenMode = -1;
 		if (bPlayMovie)
 			PlayMovie (pszMovieName, 1, 1, gameOpts->movies.bResize);

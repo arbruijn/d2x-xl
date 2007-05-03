@@ -291,6 +291,15 @@ return pszIP;
 
 //------------------------------------------------------------------------------
 
+void ClipRank (char *rank)
+{
+ // This function insures no crashes when dealing with D2 1.0
+if ((*rank < 0) || (*rank > 9))
+	*rank = 0;
+ }
+
+//------------------------------------------------------------------------------
+
 void NetworkInit (void)
 {
 	int nPlayerSave = gameData.multiplayer.nLocalPlayer;
@@ -550,7 +559,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (pnum, pnum == gameData.multiplayer.nPlayers, their->player.callsign);
 memcpy (gameData.multiplayer.players [pnum].callsign, their->player.callsign, CALLSIGN_LEN+1);
 memcpy (netPlayers.players [pnum].callsign, their->player.callsign, CALLSIGN_LEN+1);
-ClipRank (&their->player.rank);
+ClipRank ((char *) &their->player.rank);
 netPlayers.players [pnum].rank = their->player.rank;
 netPlayers.players [pnum].version_major = their->player.version_major;
 netPlayers.players [pnum].version_minor = their->player.version_minor;
@@ -579,7 +588,7 @@ if (pnum == gameData.multiplayer.nPlayers) {
 	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
 	}
 DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-ClipRank (&their->player.rank);
+ClipRank ((char *) &their->player.rank);
 if (gameOpts->multi.bNoRankings)
 	HUDInitMessage ("'%s' %s\n", their->player.callsign, TXT_JOINING);
 else   
@@ -930,7 +939,7 @@ if (!CmpNetPlayers (networkData.playerRejoining.player.callsign, their->player.c
 
 //------------------------------------------------------------------------------
 
-sbyte object_buffer [IPX_MAX_DATA_SIZE];
+ubyte object_buffer [IPX_MAX_DATA_SIZE];
 
 void NetworkSendObjects (void)
 {
@@ -1202,7 +1211,7 @@ if (NetworkFindPlayer (&pkt->player) > -1)
 	return;
 playerP = netPlayers.players + gameData.multiplayer.nPlayers;
 memcpy (&playerP->network, &pkt->player.network, sizeof (network_info));
-ClipRank (&pkt->player.rank);
+ClipRank ((char *) &pkt->player.rank);
 memcpy (playerP->callsign, pkt->player.callsign, CALLSIGN_LEN+1);
 playerP->version_major = pkt->player.version_major;
 playerP->version_minor = pkt->player.version_minor;
@@ -1237,7 +1246,7 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	netPlayers.players [j].version_major = netPlayers.players [i].version_major;
 	netPlayers.players [j].version_minor = netPlayers.players [i].version_minor;
    netPlayers.players [j].rank=netPlayers.players [i].rank;
-	ClipRank (&netPlayers.players [j].rank);
+	ClipRank ((char *) &netPlayers.players [j].rank);
    NetworkCheckForOldVersion ((char) i);	
 	}
 gameData.multiplayer.nPlayers--;
@@ -1618,7 +1627,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected) && (i != gameData.multiplayer.nLocalPlayer)) {
 		if (gameStates.multi.nGameType >= IPX_GAME) {
 			LogErr ("   %s (%s)\n", netPlayers.players [i].callsign, 
-				iptos (szIP, netPlayers.players [i].network.ipx.node));
+				iptos (szIP, (char *) netPlayers.players [i].network.ipx.node));
 			SendLiteNetGamePacket (
 				netPlayers.players [i].network.ipx.server, 
 				netPlayers.players [i].network.ipx.node, 
@@ -2174,7 +2183,7 @@ switch (pid) {
 				char pszIP [30];
 				LogErr ("received netgame update from %s (%s)\n", 
 						  their->player.callsign,
-						  iptos (pszIP, their->player.network.ipx.node));
+						  iptos (pszIP, (char *) their->player.network.ipx.node));
 				ReceiveLiteNetGamePacket (data, &TempNetInfo);
 				}
 			else
@@ -2208,7 +2217,7 @@ switch (pid) {
    case PID_NAMES_RETURN:
 		if ((networkData.nStatus == NETSTAT_BROWSING) && 
 			 (networkData.nNamesInfoSecurity != -1))
-		  NetworkProcessNamesReturn (data);
+		  NetworkProcessNamesReturn ((char *) data);
 		break;
 
     //-------------------------------------------
@@ -2493,6 +2502,8 @@ if (gameData.app.nGameMode & GM_TEAM)
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 static time_t	nQueryTimeout;
 
 static void QueryPoll (int nItems, tMenuItem *m, int *key, int cItem)
@@ -2515,6 +2526,8 @@ else {
 	}
 return;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -3232,7 +3245,7 @@ int NetworkListen ()
 {
 	int size;
 	ubyte packet [IPX_MAX_DATA_SIZE];
-	int i, t, nPackets, loopmax = 999;
+	int i, t, nPackets = 0, loopmax = 999;
 
 CleanUploadDests ();
 AddServerToTracker ();
@@ -3720,7 +3733,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiMakeGhostPlayer (nTheirPlayer);
 	CreatePlayerAppearanceEffect (gameData.objs.objects + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-	ClipRank (&netPlayers.players [nTheirPlayer].rank);
+	ClipRank ((char *) &netPlayers.players [nTheirPlayer].rank);
 	if (gameOpts->multi.bNoRankings)      
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
@@ -3854,7 +3867,7 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	MultiMakeGhostPlayer (nTheirPlayer);
 	CreatePlayerAppearanceEffect (gameData.objs.objects + theirObjNum);
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
-	ClipRank (&netPlayers.players [nTheirPlayer].rank);
+	ClipRank ((char *) &netPlayers.players [nTheirPlayer].rank);
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
@@ -3954,7 +3967,7 @@ void DoRefuseStuff (tSequencePacket *their)
  {
   int i, new_player_num;
 
-ClipRank (&their->player.rank);
+ClipRank ((char *) &their->player.rank);
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (!strcmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
@@ -4190,15 +4203,6 @@ else if (rank > 8)
 con_printf (CONDBG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
 #endif
 return (rank+1);
- }
-
-//------------------------------------------------------------------------------
-
-void ClipRank (signed char *rank)
- {
-  // This function insures no crashes when dealing with D2 1.0
-if ((*rank < 0) || (*rank > 9))
-	*rank = 0;
  }
 
 //------------------------------------------------------------------------------

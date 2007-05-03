@@ -349,7 +349,7 @@ if (!p && (gameStates.app.bNostalgia < 3)) {       //try super-enhanced mission!
 
 if (p) {
 	char *t;
-	if (t = strchr (p, ';'))
+	if ((t = strchr (p, ';')))
 		*t-- = 0;
 	else
 		t = p + strlen (p) - 1;
@@ -689,7 +689,7 @@ char *MsnTrimComment (char *buf)
 {
 	char *ps;
 
-if (ps = strchr (buf, ';')) {
+if ((ps = strchr (buf, ';'))) {
 	while (ps > buf) {
 		--ps;
 		if (!isspace ((unsigned char) *ps)) {
@@ -742,7 +742,7 @@ while (MsnGetS (buf, 80, fp)) {
 		CFUseAltHogFile (bufP);
 		}
 	else if (MsnIsTok (buf, "briefing")) {
-		if (v = MsnGetValue (buf)) {
+		if ((v = MsnGetValue (buf))) {
 			MsnAddStrTerm (v);
 			if (strlen (v) < 13)
 				strcpy (szBriefingTextFilename, v);
@@ -751,7 +751,7 @@ while (MsnGetS (buf, 80, fp)) {
 			}
 		}
 	else if (MsnIsTok (buf, "ending")) {
-		if (v = MsnGetValue (buf)) {
+		if ((v = MsnGetValue (buf))) {
 			MsnAddStrTerm (v);
 			if (strlen (v) < 13)
 				strcpy (szEndingTextFilename, v);
@@ -760,7 +760,7 @@ while (MsnGetS (buf, 80, fp)) {
 			}
 		}
 	else if (MsnIsTok (buf, "num_levels")) {
-		if (v = MsnGetValue (buf)) {
+		if ((v = MsnGetValue (buf))) {
 			int nLevels = atoi (v);
 			if (nLevels)
 				LogErr ("      parsing level list\n");
@@ -779,7 +779,7 @@ while (MsnGetS (buf, 80, fp)) {
 		}
 	else if (MsnIsTok (buf,"num_secrets")) {
 		LogErr ("      parsing secret level list\n");
-		if (v = MsnGetValue (buf)) {
+		if ((v = MsnGetValue (buf))) {
 			gameData.missions.nSecretLevels = atoi (v);
 			Assert(gameData.missions.nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
 			for (i = 0; (i < gameData.missions.nSecretLevels) && MsnGetS (buf, 80, fp); i++) {
@@ -962,7 +962,7 @@ for (i = 0; i < n; i++)
 		return LoadMission (i);
 for (i = 0; i < n; i++)
 	if (!gameData.missions.list [i].nDescentVersion && strcmp (gameData.missions.list [i].szMissionName, "[..]")) {
-		if (j = LoadMissionByName (szMissionName, i))
+		if ((j = LoadMissionByName (szMissionName, i)))
 			return j;
 		MoveMsnFolderUp ();
 		n = BuildMissionList (1, -1);
@@ -986,7 +986,7 @@ for (i = 0; i < n; i++)
 for (i = 0; i < n; i++)
 	if (!gameData.missions.list [i].nDescentVersion && 
 			strcmp (gameData.missions.list [i].szMissionName, "[..]")) {
-		if (j = FindMissionByName (szMissionName, i))
+		if ((j = FindMissionByName (szMissionName, i)))
 			return j;
 		MoveMsnFolderUp ();
 		n = BuildMissionList (1, -1);

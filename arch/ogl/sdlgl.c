@@ -93,11 +93,8 @@ return 1;
 
 int OglInitWindow (int w, int h, int bForce)
 {
-	u_int32_t	sm = gameStates.video.nScreenMode;
 	int			bRebuild = 0;
 	GLint			i;
-
-	static int	bAllowToggleFullScreen = 1;
 
 if (gameStates.ogl.bInitialized) {
 	if (!bForce && (w == nCurWidth) && (h == nCurHeight) && (bCurFullScr == gameStates.ogl.bFullScreen))

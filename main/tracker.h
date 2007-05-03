@@ -7,7 +7,7 @@
 typedef unsigned char tUdpAddress [6];
 
 #define UDP_ADDR(_a)	*((unsigned int *) (_a))
-#define UDP_PORT(_a)	*((short *) (((char *) (_a)) + 4))
+#define UDP_PORT(_a)	*((unsigned short *) (((char *) (_a)) + 4))
 
 #define	MAX_TRACKER_SERVERS	(512 / sizeof (tUdpAddress))
 

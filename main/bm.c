@@ -68,7 +68,7 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 //adding an array and setting the pointer to the active ship.
 
 //---------------- Variables for wall textures ------------------
-static int	nTMaps [2];
+static int	nTMaps [2] = {0,0};
 
 //---------------------------------------------------------------
 

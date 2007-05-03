@@ -605,7 +605,7 @@ mpParams.bMarkerView = (ubyte) netGame.bAllowMarkerView;
 netGame.AlwaysLighting = m [optLight].value; 
 mpParams.bAlwaysBright = (ubyte) netGame.AlwaysLighting;
 mpParams.nDifficulty = gameStates.app.nDifficultyLevel = m [optDifficulty].value;
-if (mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].value)
+if ((mpParams.bShowPlayersOnAutomap = m [optPlayersOnMap].value))
 	netGame.gameFlags |= NETGAME_FLAG_SHOW_MAP;
 else
 	netGame.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
@@ -816,7 +816,7 @@ do {
   //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
 	if (optDarkness >= 0) {
-		if (mpParams.bDarkness = extraGameInfo [1].bDarkness) {
+		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
 			extraGameInfo [1].bHeadLights = !m [optHeadlights].value;
 			extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
 			}
@@ -1465,7 +1465,7 @@ else if (choice == optMission) {
 	}
 
 if (key != -1) {
-	int j, bHoard = HoardEquipped ();
+	int j;
 		   
 	gameData.multiplayer.nMaxPlayers = m [optMaxNet].value + 2;
 	netGame.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
@@ -1792,7 +1792,7 @@ for (i = 0; i < nSavePlayers; i++) {
 			netPlayers.players [gameData.multiplayer.nPlayers].version_major = netPlayers.players [i].version_major;
 			netPlayers.players [gameData.multiplayer.nPlayers].version_minor = netPlayers.players [i].version_minor;
 			netPlayers.players [gameData.multiplayer.nPlayers].rank = netPlayers.players [i].rank;
-			ClipRank (&netPlayers.players [gameData.multiplayer.nPlayers].rank);
+			ClipRank ((char *) &netPlayers.players [gameData.multiplayer.nPlayers].rank);
 			NetworkCheckForOldVersion ((char)i);
 			}
 		gameData.multiplayer.players [gameData.multiplayer.nPlayers].connected = 1;
@@ -1877,7 +1877,7 @@ if (gameOpts->menus.bShowLevelVersion && (nVersion >= 0)) {
 else
 	strncpy (pszDest, pszSrc, nSize);
 pszDest [nSize - 1] = '\0';
-if (psz = strchr (pszDest, '\t'))
+if ((psz = strchr (pszDest, '\t')))
 	*psz = '\0';
 grdCurCanv->cv_font = SMALL_FONT;
 GrGetStringSize ("... ", &lDots, &ty, &ta);
@@ -2089,12 +2089,13 @@ if (!bAutoRun) {
 	m [0].noscroll = 1;
 	m [0].x = (short) 0x8000;
 	//m [0].x = (short) 0x8000;
-	if (gameStates.multi.nGameType >= IPX_GAME)
+	if (gameStates.multi.nGameType >= IPX_GAME) {
 		if (networkData.bAllowSocketChanges)
 			sprintf (m [0].text, TXT_CURR_SOCK, 
 										 (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", networkData.nSocket);
 		else
 			*m [0].text = '\0';
+		}
 	i = 1;
 	if (gameStates.multi.bUseTracker) {
 		m [i].nType = NM_TYPE_TEXT;

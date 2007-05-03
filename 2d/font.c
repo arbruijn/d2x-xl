@@ -360,7 +360,7 @@ VideoOffset1 = y * ROWSIZE + x;
 		for (r=0; r<FHEIGHT; r++) {
 			text_ptr = text_ptr1;
 			VideoOffset = VideoOffset1;
-			while (c = *text_ptr) {
+			while ((c = *text_ptr)) {
 				if (c == '\n') {
 					next_row = &text_ptr[1];
 					break;
@@ -667,7 +667,7 @@ while (next_row != NULL) {
 	xx = x;
 	if (xx == 0x8000)			//centered
 		xx = GetCenteredX (text_ptr);
-	while (c = *text_ptr) {
+	while ((c = *text_ptr)) {
 		if (c == '\n') {
 			next_row = text_ptr + 1;
 			yy += FHEIGHT + 2;
@@ -763,7 +763,7 @@ while (next_row != NULL) {
 #else
 	x = bCentered ? (w - get_line_width (text_ptr)) / 2 : 0;
 #endif
-	while (c = *text_ptr) {
+	while ((c = *text_ptr)) {
 		if (c == '\n') {
 			next_row = text_ptr + 1;
 			y += FHEIGHT + 2;
@@ -814,7 +814,7 @@ while (next_row != NULL) {
 				}
 			continue;
 			}
-		if (bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey)))
+		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey))))
 			nKey = 0;
 		bmfP = (bHotKey && (FONT != SMALL_FONT)) ? SELECTED_FONT->ft_bitmaps + letter : FONT->ft_bitmaps + letter;
 		palP = BM_PARENT (bmfP) ? BM_PARENT (bmfP)->bm_palette : bmfP->bm_palette;
@@ -1223,7 +1223,7 @@ grs_font * GrInitFont (char * fontname)
 	if (font->ftFlags & FT_PROPORTIONAL) {
 
 		font->ft_widths = (short *) &font_data[ (size_t)font->ft_widths];
-		font->ft_data = &font_data[ (size_t)font->ft_data];
+		font->ft_data = (ubyte *) (font_data + (size_t)font->ft_data);
 		font->ft_chars = (unsigned char **)d_malloc (nchars * sizeof (unsigned char *));
 
 		ptr = font->ft_data;
@@ -1239,7 +1239,7 @@ grs_font * GrInitFont (char * fontname)
 
 	} else  {
 
-		font->ft_data   = font_data;
+		font->ft_data   = (ubyte *) font_data;
 		font->ft_chars  = NULL;
 		font->ft_widths = NULL;
 
@@ -1247,7 +1247,7 @@ grs_font * GrInitFont (char * fontname)
 	}
 
 	if (font->ftFlags & FT_KERNED)
-		font->ft_kerndata = &font_data[ (size_t)font->ft_kerndata];
+		font->ft_kerndata = (ubyte *) (font_data + (size_t)font->ft_kerndata);
 
 	memset (&font->ft_parent_bitmap, 0, sizeof (font->ft_parent_bitmap));
 	memset (freq, 0, sizeof (freq));
@@ -1318,7 +1318,6 @@ void GrRemapFont (grs_font *font, char * fontname, char *font_data)
 //	if (!(font->ftFlags & FT_COLOR))
 //		return;
 	fontfile = CFOpen (fontname, gameFolders.szDataDir, "rb", 0);
-//	CBRK (!strcmp (fontname, "font2-2h.fnt"));
 	if (!fontfile)
 		Error (TXT_FONT_FILE, fontname);
 	CFRead (file_id, 4, 1, fontfile);
@@ -1336,7 +1335,7 @@ void GrRemapFont (grs_font *font, char * fontname, char *font_data)
 	nchars = font->ft_maxchar - font->ft_minchar + 1;
 	if (font->ftFlags & FT_PROPORTIONAL) {
 		font->ft_widths = (short *) (font_data + (size_t)font->ft_widths);
-		font->ft_data = font_data + (size_t)font->ft_data;
+		font->ft_data = (ubyte *) (font_data + (size_t) font->ft_data);
 		font->ft_chars = (unsigned char **)d_malloc (nchars * sizeof (unsigned char *));
 		ptr = font->ft_data;
 		for (i=0; i< nchars; i++) {
@@ -1349,13 +1348,13 @@ void GrRemapFont (grs_font *font, char * fontname, char *font_data)
 			}
 		}
 	else  {
-		font->ft_data   = font_data;
+		font->ft_data   = (ubyte *) font_data;
 		font->ft_chars  = NULL;
 		font->ft_widths = NULL;
 		ptr = font->ft_data + (nchars * font->ft_w * font->ft_h);
 		}
 	if (font->ftFlags & FT_KERNED)
-		font->ft_kerndata = &font_data[ (size_t)font->ft_kerndata];
+		font->ft_kerndata = (ubyte *) (font_data + (size_t)font->ft_kerndata);
 	if (font->ftFlags & FT_COLOR) {		//remap palette
 		ubyte palette[256*3];
 		int freq[256];

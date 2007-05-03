@@ -197,7 +197,9 @@ int udpBasePort [2] = {UDP_BASEPORT, UDP_BASEPORT};
 #define D2XUDP "D2XUDP"
 
 static int nOpenSockets = 0;
+#if 0
 static int dynamic_socket = 0x401;
+#endif
 static const int val_one=1;
 
 /* OUR port. Can be changed by "@X [+=]..." argument (X is the shift value)
@@ -216,8 +218,9 @@ static const int val_one=1;
  * But right now we have hosts A and C, both new code equipped but
  * communicating wastefully by the OLD protocol! Bummer.
  */
-
+#if 0
 static char compatibility=0;
+#endif
 
 static int have_empty_address () {
 	int i;
@@ -229,9 +232,10 @@ static int have_empty_address () {
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+
 static void msg (const char *fmt,...)
 {
-#ifdef _DEBUG
 	va_list ap;
 
 	fputs (MSGHDR,stdout);
@@ -239,8 +243,9 @@ static void msg (const char *fmt,...)
 	vprintf (fmt,ap);
 	va_end (ap);
 	putchar ('\n');
-#endif
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -332,11 +337,16 @@ static int	destAddrNum = 0,
 static int broadnum,masksnum,broadsize;
 
 int ReportSafeMode (tDestListEntry *pdl);
+#if 0
 static void QuerySafeMode (tDestListEntry *pdl);
+#endif
 
 //------------------------------------------------------------------------------
 /* Dump raw form of IP address/port by fancy output to user
  */
+ 
+#ifdef _DEBUG
+
 static void dumpraddr (unsigned char *a)
 {
 unsigned short port;
@@ -348,10 +358,14 @@ if (port)
 LogErr ("]");
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 /* Like //dumpraddr () but for structure "sockaddr_in"
  */
 static unsigned char qhbuf [6];
+
+#ifdef _DEBUG
 
 static void dumpaddr (struct sockaddr_in *sinP)
 {
@@ -362,6 +376,8 @@ ports=htons (((short) ntohs (sinP->sin_port)));
 memcpy (qhbuf + 4, &ports, 2);
 dumpraddr (qhbuf);
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 /* We'll check whether the "broads" array of destination addresses is now
@@ -485,7 +501,7 @@ static int addiflist (void)
 {
 	unsigned 				cnt = MAX_BRDINTERFACES, i, j;
 	struct ifconf 			ifconf;
-	int 						sock, ioRes;
+	int 						sock;
 	struct sockaddr_in	*sinp, *sinmp;
 
 d_free (broads);
@@ -797,7 +813,7 @@ return 0;
 static int UDPOpenSocket (ipx_socket_t *sk, int port) 
 {
 	struct sockaddr_in sin;
-	u_long sockBlockMode = 1;	//non blocking
+//	u_long sockBlockMode = 1;	//non blocking
 
 udpBasePort [1] = UDP_BASEPORT + networkData.nSocket;
 port = gameStates.multi.bServer ? udpBasePort [1] : mpParams.udpClientPort;	//override with UDP port settings
@@ -938,13 +954,15 @@ return 1;
 static int UDPSendPacket (
 	ipx_socket_t *mysock, IPXPacket_t *ipxHeader, u_char *data, int dataLen) 
 {
-	int						iDest, extraDataLen = 0, j, nUdpRes, bBroadcast;
-	tDestListEntry 		*pdl;
-	tPacketProps			*ppp;
 	static ubyte			buf [MAX_PACKETSIZE + 14 + 4];
-	static ubyte			bCastAddr [] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
+	int						iDest, extraDataLen = 0, nUdpRes, bBroadcast;
+	tDestListEntry 		*pdl;
 	ubyte						*bufP = buf;
 	struct sockaddr_in	destAddr, *dest;
+#if UDP_SAFEMODE
+	tPacketProps			*ppp;
+#endif
 
 if ((dataLen < 0) || (dataLen > MAX_PACKETSIZE))
 	return -1;
@@ -1040,11 +1058,12 @@ for (; iDest < destAddrNum; iDest++) {
 #endif
 	nUdpRes = sendto (mysock->fd, bufP, dataLen + extraDataLen, 0, (struct sockaddr *) dest, sizeof (*dest));
 //msg ("sendto (%d) returned %d", dataLen + (gameStates.multi.bTrackerCall ? 0 : 14), iDest);
-	if (bBroadcast <= 0) 
+	if (bBroadcast <= 0) { 
 		if (gameStates.multi.bTrackerCall)
 			return ((nUdpRes < 1) ? -1 : nUdpRes);
 		else
 			return ((nUdpRes < extraDataLen + 8) ? -1 : nUdpRes - extraDataLen);
+		}
 	}
 return (dataLen);
 }
@@ -1132,7 +1151,9 @@ if (nFirst < (nDrop = ppp->id)) {
 	}
 nDrop = -1;
 t = SDL_GetTicks ();
+#ifdef _DEBUG
 //LogErr ("resending packets %d - %d to", nFirst, nLast); dumpaddr (&pdl->addr); //LogErr ("\n");
+#endif
 for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
 	j %= MAX_BUF_PACKETS;
 	ppp = pdl->packetProps + j;
@@ -1169,12 +1190,17 @@ static int UDPReceivePacket (
 	ipx_socket_t *s, char *outBuf, int outBufSize, struct ipx_recv_data *rd) 
 {
 	struct sockaddr_in 	fromAddr;
-	int						i, dataLen, packetId = -1, bTracker, bSafeMode, 
-								fromAddrSize = sizeof (fromAddr);
+	int						i, dataLen, bTracker, bSafeMode = 0;  
+	unsigned int			fromAddrSize = sizeof (fromAddr);
 	unsigned short 		srcPort;
-	char 						szIP [30];
+	//char 						szIP [30];
+#if UDP_SAFEMODE
+	tDestListEntry			pdl;
+	int						packetId = -1;
+#endif
 
-if (0 > (dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize))) {
+dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize);
+if (0 > dataLen) {
 		return -1;
 	}
 bTracker = IsTracker (* ((unsigned int *) &fromAddr.sin_addr), * ((ushort *) &fromAddr.sin_port));
@@ -1210,9 +1236,9 @@ if (!(bTracker
 	if (i < 0)
 		return -1;
 	if (i < destAddrNum) {	//i.e. sender already in list or successfully added to list
-		tDestListEntry *pdl = destList + i;
 		bSafeMode = 0;
 #if UDP_SAFEMODE
+		*pdl = destList + i;
 		pdl->fd = s->fd;
 		pdl->bOurSafeMode = (memcmp (outBuf + dataLen - 10, "SAFE", 4) == 0);
 		if (pdl->bOurSafeMode != extraGameInfo [0].bSafeUDP)

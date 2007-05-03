@@ -69,7 +69,6 @@ void GrInitBitmap  (
 	grsBitmap *bmP, int mode, int x, int y, int w, int h, int nBytesPerLine, 
 	unsigned char *data, int bpp) // TODO: virtualize
 {
-CBRK (!bpp);
 memset (bmP, 0, sizeof  (*bmP));
 bmP->bm_props.x = x;
 bmP->bm_props.y = y;

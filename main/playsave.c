@@ -207,7 +207,7 @@ int ReadPlayerFile(int bOnlyWindowSizes)
 	short player_file_version;
 	int	rewrite_it=0;
 	int	swap = 0;
-	int	gameOptsSize, nMaxControls;
+	int	gameOptsSize = 0, nMaxControls;
 
 Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 
@@ -638,8 +638,8 @@ for (j = 0; j < 2; j++) {
 			extraGameInfo [0].bUseSmoke = (int) CFReadByte (fp);
 		gameOptions [j].render.smoke.nDens [0] = CFReadInt (fp);
 		gameOptions [j].render.smoke.nSize [0] = CFReadInt (fp);
-		NMCLAMP (gameOptions [j].render.smoke.nDens [0], 0, 4);
-		NMCLAMP (gameOptions [j].render.smoke.nSize [0], 0, 3);
+		gameOptions [j].render.smoke.nDens [0] = NMCLAMP (gameOptions [j].render.smoke.nDens [0], 0, 4);
+		gameOptions [j].render.smoke.nSize [0] = NMCLAMP (gameOptions [j].render.smoke.nSize [0], 0, 3);
 		gameOptions [j].render.smoke.bPlayers = (int) CFReadByte (fp);
 		gameOptions [j].render.smoke.bRobots = (int) CFReadByte (fp);
 		gameOptions [j].render.smoke.bMissiles = (int) CFReadByte (fp);
@@ -661,7 +661,7 @@ for (j = 0; j < 2; j++) {
 #if SHADOWS
 			extraGameInfo [0].bShadows = CFReadByte (fp);
 		gameOptions [j].render.shadows.nLights = CFReadInt (fp);
-		NMCLAMP (gameOptions [j].render.shadows.nLights, 0, 8);
+		gameOptions [j].render.shadows.nLights = NMCLAMP (gameOptions [j].render.shadows.nLights, 0, 8);
 #else
 			CFReadByte (fp);
 		CFReadInt (fp);
@@ -1049,7 +1049,7 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) gameOptions [j].render.bAllSegs, fp);
 	if (!j)
 		CFWriteByte ((sbyte) extraGameInfo [0].grWallTransparency, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.mouseSensitivity, fp);
+	CFWriteByte ((sbyte) gameOptions [j].input.mouseSensitivity [0], fp);
 	CFWriteByte ((sbyte) gameOptions [j].multi.bUseMacros, fp);
 	if (!j)
 		CFWriteByte ((sbyte) extraGameInfo [0].bWiggle, fp);

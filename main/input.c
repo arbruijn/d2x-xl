@@ -235,7 +235,7 @@ int ControlsReadJoystick (int *joyAxis)
 	int	rawJoyAxis [JOY_MAX_AXES];
 	unsigned long channelMasks;
 	int	i, bUseJoystick = 0;
-	fix	ctime;
+	fix	ctime = 0;
 
 if (gameStates.limitFPS.bJoystick)
 	ctime = TimerGetFixedSeconds ();
@@ -250,7 +250,7 @@ if (gameStates.limitFPS.bJoystick) {
 		} 
 	else if (gameOpts->input.bUseJoystick) {
 		LastReadTime = ctime;
-		if	(channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis)) {
+		if	((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++) {
 #ifndef SDL_INPUT
 				if (channelMasks & (1 << i))	{
@@ -276,7 +276,7 @@ if (gameStates.limitFPS.bJoystick) {
 else {   // LIMIT_JOY_FPS
 	memset (joyAxis, 0, sizeof (joyAxis));
 	if (gameOpts->input.bUseJoystick) {
-		if (channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis)) {
+		if ((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++)	{
 				if (channelMasks & (1 << i))
 					joyAxis [i] = ControlsReadJoyAxis (i, rawJoyAxis);
@@ -553,7 +553,6 @@ void ControlsDoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *head
 {
 	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) && 
 									 (extraGameInfo [IsMultiGame].bFastPitch == 1)) ? 2 * PH_SCALE : 1;
-	fix	pitchTime = 0;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
 
@@ -774,60 +773,68 @@ for (i = 0; i < 60; i += 30) {
 			Controls [0].useInvulDownCount += JoyGetButtonDownCnt (v);
 
 		// Axis movements
-		if ((v = kcJoystick [i + 15].value) < 255)
+		if ((v = kcJoystick [i + 15].value) < 255) {
 			if (kcJoystick [62].value)		// If inverted...
 				Controls [0].sidewaysThrustTime += joyAxis [v];
 			else
 				Controls [0].sidewaysThrustTime -= joyAxis [v];
-		if ((v = kcJoystick [i + 16].value) < 255)
+			}
+		if ((v = kcJoystick [i + 16].value) < 255) {
 			if (kcJoystick [63].value)		// If inverted...
 				Controls [0].verticalThrustTime -= joyAxis [v];
 			else
 				Controls [0].verticalThrustTime += joyAxis [v];
-		if ((v = kcJoystick [i + 17].value) < 255)
+			}
+		if ((v = kcJoystick [i + 17].value) < 255) {
 			if (kcJoystick [64].value)		// If inverted...
 				Controls [2].bankTime += joyAxis [v];
 			else
 				Controls [2].bankTime -= joyAxis [v];
-		if ((v = kcJoystick [i + 18].value) < 255)
+			}
+		if ((v = kcJoystick [i + 18].value) < 255) {
 			if (kcJoystick [65].value)		// If inverted...
 				Controls [0].forwardThrustTime += joyAxis [v];
 			else
 				Controls [0].forwardThrustTime -= joyAxis [v];
-
+			}
 		// special continuous slide & bank handling
 		if (*bSlideOn) {
-			if ((v = kcJoystick [i + 13].value) < 255)
+			if ((v = kcJoystick [i + 13].value) < 255) {
 				if (kcJoystick [60].value)		// If inverted...
 					Controls [0].verticalThrustTime -= joyAxis [v];
 				else
 					Controls [0].verticalThrustTime += joyAxis [v];
-			if ((v = kcJoystick [i + 14].value) < 255)
+			}
+			if ((v = kcJoystick [i + 14].value) < 255) {
 				if (kcJoystick [61].value)		// If inverted...
 					Controls [0].sidewaysThrustTime -= joyAxis [v];
 				else
 					Controls [0].sidewaysThrustTime += joyAxis [v];
+				}
 			}
 		else {
-			if ((v = kcJoystick [i + 13].value) < 255)
+			if ((v = kcJoystick [i + 13].value) < 255) {
 				if (kcJoystick [60].value)		// If inverted...
 					Controls [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
 				else 
 					Controls [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+				}
 			if (!*bBankOn) {
-				if ((v = kcJoystick [i + 14].value) < 255)
+				if ((v = kcJoystick [i + 14].value) < 255) {
 					if (kcJoystick [61].value)		// If inverted...
 						Controls [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //kcFrameCount;
 					else
 						Controls [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // kcFrameCount;
+					}
 				}
 			}
 		if (*bBankOn) {
-			if ((v = kcJoystick [i + 14].value) < 255)
+			if ((v = kcJoystick [i + 14].value) < 255) {
 				if (kcJoystick [61].value)		// If inverted...
 					Controls [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
 				else
 					Controls [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+				}
 			}
 		}
 	}
@@ -891,38 +898,44 @@ if (bGetSlideBank == 2) {
 	if (((v = kcMouse [30].value) < 255) && MouseButtonState (v))
 		Controls [0].zoomDownCount += MouseButtonDownCount (v);
 	// Axis movements
-	if ((v = kcMouse [17].value) < 255)
+	if ((v = kcMouse [17].value) < 255) {
 		if (kcMouse [18].value)		// If inverted...
 			Controls [0].sidewaysThrustTime -= mouseAxis [v];
 		else
 			Controls [0].sidewaysThrustTime += mouseAxis [v];
-	if ((v = kcMouse [19].value) < 255)
+		}
+	if ((v = kcMouse [19].value) < 255) {
 		if (kcMouse [20].value)		// If inverted...
 			Controls [0].verticalThrustTime -= mouseAxis [v];
 		else
 			Controls [0].verticalThrustTime += mouseAxis [v];
-	if ((v = kcMouse [21].value) < 255)
+		}
+	if ((v = kcMouse [21].value) < 255) {
 		if (kcMouse [22].value)		// If inverted...
 			Controls [0].bankTime -= mouseAxis [v];
 		else
 			Controls [0].bankTime += mouseAxis [v];
-	if ((v = kcMouse [23].value) < 255)
+		}
+	if ((v = kcMouse [23].value) < 255) {
 		if (kcMouse [24].value)		// If inverted...
 			Controls [0].forwardThrustTime += mouseAxis [v];
 		else
 			Controls [0].forwardThrustTime -= mouseAxis [v];
+		}
 	// special continuous slide & bank handling
 	if (*bSlideOn) {
-		if ((v = kcMouse [13].value) < 255)
+		if ((v = kcMouse [13].value) < 255) {
 			if (kcMouse [14].value)		// If inverted...
 				Controls [0].verticalThrustTime += mouseAxis [v];
 			else
 				Controls [0].verticalThrustTime -= mouseAxis [v];
-		if ((v = kcMouse [15].value) < 255)	
+			}
+		if ((v = kcMouse [15].value) < 255)	{
 			if (kcMouse [16].value)		// If inverted...
 				Controls [0].sidewaysThrustTime -= mouseAxis [v];
 			else
 				Controls [0].sidewaysThrustTime += mouseAxis [v];
+			}
 		}
 	else {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
@@ -941,18 +954,20 @@ if (bGetSlideBank == 2) {
 			Controls [3].headingTime += (dx * gameOpts->input.mouseSensitivity [0]); // mouse_sens_mod;
 			}
 		else {
-			if ((v = kcMouse [13].value) < 255)
+			if ((v = kcMouse [13].value) < 255) {
 				if (kcMouse [14].value)		// If inverted...
 					Controls [3].pitchTime += (mouseAxis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
 				else
 					Controls [3].pitchTime -= (mouseAxis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
+				}
 			}
 		if (*bBankOn) {
-			if ((v = kcMouse [15].value) < 255)
+			if ((v = kcMouse [15].value) < 255) {
 				if (kcMouse [16].value)		// If inverted...
 					Controls [3].bankTime -= (mouseAxis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
 				else
 					Controls [3].bankTime += (mouseAxis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
+				}
 			}
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
@@ -970,11 +985,12 @@ if (bGetSlideBank == 2) {
 				Controls [3].pitchTime += (dy * gameOpts->input.mouseSensitivity [1]); // mouse_sens_mod;
 				}
 			else {
-				if ((v = kcMouse [15].value) < 255 && mouseAxis [v])
+				if ((v = kcMouse [15].value) < 255 && mouseAxis [v]) {
 					if (kcMouse [16].value)		// If inverted...
 						Controls [3].headingTime -= (mouseAxis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
 					else
 						Controls [3].headingTime += (mouseAxis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
+					}
 				}
 			}
 		}
@@ -1086,8 +1102,8 @@ return 0;
 
 void ControlsResetControls (void)
 {
-fix ht = Controls [0].headingTime;
-fix pt = Controls [0].pitchTime;
+//fix ht = Controls [0].headingTime;
+//fix pt = Controls [0].pitchTime;
 memset (&Controls, 0, sizeof (tControlInfo));
 //Controls [0].headingTime = ht;
 //Controls [0].pitchTime = pt;
@@ -1217,12 +1233,15 @@ KCCLAMP (Controls [0].verticalThrustTime, nMaxTurnRate);
 KCCLAMP (Controls [0].sidewaysThrustTime, nMaxTurnRate);
 KCCLAMP (Controls [0].forwardThrustTime, nMaxTurnRate);
 if (ControlsLimitTurnRate (bUseMouse)) {
-	if (Controls [1].headingTime || Controls [2].headingTime)
+	if (Controls [1].headingTime || Controls [2].headingTime) {
 		KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
-	if (Controls [1].pitchTime || Controls [2].pitchTime)
+		}
+	if (Controls [1].pitchTime || Controls [2].pitchTime) {
 		KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
-	if (Controls [1].bankTime || Controls [2].bankTime)
+		}
+	if (Controls [1].bankTime || Controls [2].bankTime) {
 		KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
+		}
 	}
 else {
 	KCCLAMP (Controls [0].headingTime, nMaxTurnRate);

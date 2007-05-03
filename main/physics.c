@@ -452,7 +452,7 @@ Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
 //if uses thrust, cannot have zero xDrag
 Assert (!(objP->mType.physInfo.flags & PF_USES_THRUST) || objP->mType.physInfo.drag);
 //do thrust & xDrag
-if (xDrag = objP->mType.physInfo.drag) {
+if ((xDrag = objP->mType.physInfo.drag)) {
 	vmsVector accel, *vel = &objP->mType.physInfo.velocity;
 	fix a;
 
@@ -558,7 +558,7 @@ retryMove:
 
 	if (objP->nType == OBJ_WEAPON)
 		fq.flags |= FQ_TRANSPOINT;
-	if (bGetPhysSegs = (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))
+	if ((bGetPhysSegs = (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)))
 		fq.flags |= FQ_GET_SEGLIST;
 
 	vSaveP0 = *fq.p0;
@@ -573,8 +573,8 @@ retryMove:
 		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, f2fl (VmVecMag (&objP->mType.physInfo.velocity)));
 #endif
 	if (fviResult == HIT_BAD_P0) {
-		static int nBadP0 = 0;
 #ifdef _DEBUG
+		static int nBadP0 = 0;
 		HUDMessage (0, "BAD P0 %d", nBadP0++);
 #endif
 #if 0

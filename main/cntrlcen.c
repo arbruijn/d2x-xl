@@ -464,7 +464,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 			{
 			//	Compute all gun positions.
 			objP = gameData.objs.objects + i;
-			if (bNew = (!bRestore || (0 > (j = FindReactor (objP)))))
+			if ((bNew = (!bRestore || (0 > (j = FindReactor (objP))))))
 				j = gameStates.gameplay.nReactorCount;
 			rStatP = gameData.reactor.states + j;
 			if (gameStates.gameplay.nLastReactor < j)

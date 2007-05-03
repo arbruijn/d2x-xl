@@ -247,11 +247,12 @@ gameStates.ogl.bLastFullScreen = gameStates.ogl.bFullScreen;
 
 void GrUpdate (int bClear)
 {
-if (gameStates.ogl.bInitialized)// && (gameStates.video.nScreenMode != SCREEN_GAME))
+if (gameStates.ogl.bInitialized) {// && (gameStates.video.nScreenMode != SCREEN_GAME))
 	if ((curDrawBuffer == GL_BACK) && (gameOpts->menus.nStyle || !gameStates.menus.nInMenu))
 		OglSwapBuffers (1, bClear);
 	else
 		glFlush ();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -333,7 +334,7 @@ int GrSetMode(u_int32_t mode)
 {
 	unsigned int w,h;
 	unsigned char *gr_bm_data;
-	int bForce = (nCurrentVGAMode < 0);
+	//int bForce = (nCurrentVGAMode < 0);
 
 #ifdef NOGRAPH
 return 0;
@@ -504,7 +505,7 @@ void OglInitExtensions (void);
 int GrInit (void)
 {
 	int mode = SM (640, 480);
-	int retcode, t, glt = 0;
+	int retcode, t;
 
 // Only do this function once!
 if (gameStates.gfx.bInstalled)
@@ -523,12 +524,12 @@ if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 	LogErr ("SDL library video initialisation failed: %s.\n", SDL_GetError());
 	Error("SDL library video initialisation failed: %s.", SDL_GetError());
 }
-if (t = FindArg ("-gl_voodoo")) {
+if ((t = FindArg ("-gl_voodoo"))) {
 	gameStates.ogl.bVoodooHack = 
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
 	}
-if (t = FindArg("-fullscreen")) {
+if ((t = FindArg("-fullscreen"))) {
 	/***/LogErr ("   switching to fullscreen\n");
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
@@ -687,7 +688,7 @@ void OglDoPalFx (void)
 	
 glDisable (GL_TEXTURE_2D);
 if (gameStates.render.bPaletteFadedOut) {
-	if (bBlend = glIsEnabled (GL_BLEND)) {
+	if ((bBlend = glIsEnabled (GL_BLEND))) {
 		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
 		glGetIntegerv (GL_BLEND_DST, &blendDest);
 		}
@@ -697,7 +698,7 @@ if (gameStates.render.bPaletteFadedOut) {
 	glColor3f (0,0,0);
 	}
 else if (gameStates.ogl.bDoPalStep) {
-	if (bBlend = glIsEnabled (GL_BLEND)) {
+	if ((bBlend = glIsEnabled (GL_BLEND))) {
 		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
 		glGetIntegerv (GL_BLEND_DST, &blendDest);
 		}
@@ -708,7 +709,7 @@ else if (gameStates.ogl.bDoPalStep) {
 	}
 else
 	return;
-if (bDepthTest = glIsEnabled (GL_DEPTH_TEST))
+if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
 	glDisable (GL_DEPTH_TEST);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
@@ -935,7 +936,7 @@ do {
 	nSaveNum %= 9999;
 	} while (!access (szSaveName, 0));
 
-if (bTmpBuf = (buf == NULL)) {
+if ((bTmpBuf = (buf == NULL))) {
 	buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
 	glDisable (GL_TEXTURE_2D);
 	glReadBuffer (GL_FRONT);

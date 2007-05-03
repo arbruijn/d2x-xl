@@ -2038,10 +2038,10 @@ void GetSlowTicks (void)
 {
 gameStates.app.nSDLTicks = SDL_GetTicks ();
 gameStates.app.tick40fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick40fps.nLastTick;
-if (gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25))
+if ((gameStates.app.tick40fps.bTick = (gameStates.app.tick40fps.nTime >= 25)))
 	gameStates.app.tick40fps.nLastTick = gameStates.app.nSDLTicks;
 gameStates.app.tick60fps.nTime = gameStates.app.nSDLTicks - gameStates.app.tick60fps.nLastTick;
-if (gameStates.app.tick60fps.bTick = (gameStates.app.tick60fps.nTime >= (50 + ++gameStates.app.tick60fps.nSlack) / 3)) {
+if ((gameStates.app.tick60fps.bTick = (gameStates.app.tick60fps.nTime >= (50 + ++gameStates.app.tick60fps.nSlack) / 3))) {
 	gameStates.app.tick60fps.nLastTick = gameStates.app.nSDLTicks;
 	gameStates.app.tick60fps.nSlack %= 3;
 	}

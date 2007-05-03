@@ -636,7 +636,7 @@ if ((tilde = strchr (buf + bufP, '$'))) {
 	strcpy (msgBuf + strlen (LOCALPLAYER.callsign) + tloc, buf + bufP + tloc + 1);
 	strcpy (buf + bufP, msgBuf);
 	}
-if (colon = strrchr (buf + bufP, ':')) {	//message may be addressed to a certain team or tPlayer
+if ((colon = strrchr (buf + bufP, ':'))) {	//message may be addressed to a certain team or tPlayer
 	l = (int) (colon - (buf + bufP));
 	if (l && (l <= CALLSIGN_LEN) &&
 		 ((IsTeamId (buf + bufP, l) && !IsMyTeamId (buf + bufP, l)) ||

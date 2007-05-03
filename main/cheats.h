@@ -9,7 +9,7 @@ void KillAllSnipers (int bVerbose);
 #endif
 void KillBuddy (int bVerbose);
 void FinalCheats (int key);
-SuperWowieCheat (int bVerbose);
+void SuperWowieCheat (int bVerbose);
 void WowieCheat (int bVerbose);
 void GasolineCheat (int bVerbose);
 

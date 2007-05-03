@@ -76,21 +76,18 @@ void com_do_frame()
 
 }
 
-com_send_data(char *ptr, int len, int repeat)
+void com_send_data(char *ptr, int len, int repeat)
 {
 }
 
-com_endlevel(int *secret)
+void com_endlevel(int *secret)
 {
-
 }
 
 void serial_leave_game()
 {
-
 }
 
 void network_dump_appletalk_player(ubyte node, ushort net, ubyte socket, int why)
 {
-
 }

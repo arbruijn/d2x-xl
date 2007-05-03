@@ -123,12 +123,12 @@ extern FILE *fErr;
 
 #ifdef _WIN32
 #	ifdef _DEBUG
-#		define	CBRK(_cond)	if (_cond) _asm int 3;
+#		define	CBP(_cond)	if (_cond) _asm int 3;
 #	else
-#		define	CBRK(_cond)
+#		define	CBP(_cond)
 #	endif
 #else
-#	define	CBRK(_cond)
+#	define	CBP(_cond)
 #endif
 
 #endif /* _ERROR_H */

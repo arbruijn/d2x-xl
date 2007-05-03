@@ -96,7 +96,7 @@ for (i = 0; i < Num_args; i++)
 
 // look for the ini file
 // for unix, allow both ~/.d2x-xl and <config dir>/d2x.ini
-if (i = FindArg ("-ini"))
+if ((i = FindArg ("-ini")))
 	strncpy (fnIni, Args [i + 1], sizeof (fnIni) - 1);
 else {
 #if defined(__unix__)

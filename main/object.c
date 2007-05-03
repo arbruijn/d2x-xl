@@ -530,7 +530,7 @@ short PowerupModel (int nId)
 {
 	short nModel;
 
-if (nModel = PowerupToModel (nId))
+if ((nModel = PowerupToModel (nId)))
 	return nModel;
 if (0 > (nId = PowerupToObject (nId)))
 	return 0;
@@ -543,7 +543,7 @@ short WeaponModel (tObject *objP)
 {
 	short	nModel;
 	
-if (nModel = WeaponToModel (objP->id))
+if ((nModel = WeaponToModel (objP->id)))
 	return nModel;
 return objP->rType.polyObjInfo.nModel;
 }
@@ -990,7 +990,7 @@ static inline tRgbColorf *ObjectFrameColor (tObject *objP, tRgbColorf *pc)
 
 if (pc)
 	return pc;
-if (objP)
+if (objP) {
 	if (objP->nType == OBJ_CNTRLCEN)
 		return &reactorDefColor;
 	else if (objP->nType == OBJ_ROBOT) {
@@ -1002,6 +1002,7 @@ if (objP)
 			return playerDefColors + GetTeam (objP->id) + 1;
 		return playerDefColors;
 		}
+	}
 return &defaultColor;
 }
 
@@ -1257,10 +1258,10 @@ RenderDamageIndicator (objP, pc);
 void RenderTowedFlag (tObject *objP)
 {
 	static fVector fVerts [4] = {
-		{0.0f, 2.0f / 3.0f, 0.0f, 1.0f},
-		{0.0f, 2.0f / 3.0f, -1.0f, 1.0f},
-		{0.0f, -(1.0f / 3.0f), -1.0f, 1.0f},
-		{0.0f, -(1.0f / 3.0f), 0.0f, 1.0f}
+		{{0.0f, 2.0f / 3.0f, 0.0f, 1.0f}},
+		{{0.0f, 2.0f / 3.0f, -1.0f, 1.0f}},
+		{{0.0f, -(1.0f / 3.0f), -1.0f, 1.0f}},
+		{{0.0f, -(1.0f / 3.0f), 0.0f, 1.0f}}
 	};
 
 	typedef struct uv {
@@ -1336,22 +1337,22 @@ static fVector	vFlame [THRUSTER_SEGS][RING_SIZE];
 static int			bHaveFlame = 0;
 
 static fVector	vRing [RING_SIZE] = {
-	{-0.5f, -0.5f, 0.0f, 1.0f},
-	{-0.6533f, -0.2706f, 0.0f, 1.0f},
-	{-0.7071f, 0.0f, 0.0f, 1.0f},
-	{-0.6533f, 0.2706f, 0.0f, 1.0f},
-	{-0.5f, 0.5f, 0.0f, 1.0f},
-	{-0.2706f, 0.6533f, 0.0f, 1.0f},
-	{0.0f, 0.7071f, 0.0f, 1.0f},
-	{0.2706f, 0.6533f, 0.0f, 1.0f},
-	{0.5f, 0.5f, 0.0f, 1.0f},
-	{0.6533f, 0.2706f, 0.0f, 1.0f},
-	{0.7071f, 0.0f, 0.0f, 1.0f},
-	{0.6533f, -0.2706f, 0.0f, 1.0f},
-	{0.5f, -0.5f, 0.0f, 1.0f},
-	{0.2706f, -0.6533f, 0.0f, 1.0f},
-	{0.0f, -0.7071f, 0.0f, 1.0f},
-	{-0.2706f, -0.6533f, 0.0f, 1.0f}
+	{{-0.5f, -0.5f, 0.0f, 1.0f}},
+	{{-0.6533f, -0.2706f, 0.0f, 1.0f}},
+	{{-0.7071f, 0.0f, 0.0f, 1.0f}},
+	{{-0.6533f, 0.2706f, 0.0f, 1.0f}},
+	{{-0.5f, 0.5f, 0.0f, 1.0f}},
+	{{-0.2706f, 0.6533f, 0.0f, 1.0f}},
+	{{0.0f, 0.7071f, 0.0f, 1.0f}},
+	{{0.2706f, 0.6533f, 0.0f, 1.0f}},
+	{{0.5f, 0.5f, 0.0f, 1.0f}},
+	{{0.6533f, 0.2706f, 0.0f, 1.0f}},
+	{{0.7071f, 0.0f, 0.0f, 1.0f}},
+	{{0.6533f, -0.2706f, 0.0f, 1.0f}},
+	{{0.5f, -0.5f, 0.0f, 1.0f}},
+	{{0.2706f, -0.6533f, 0.0f, 1.0f}},
+	{{0.0f, -0.7071f, 0.0f, 1.0f}},
+	{{-0.2706f, -0.6533f, 0.0f, 1.0f}}
 };
 
 static int		nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
@@ -1644,7 +1645,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
 		fVector			vPosf [2], vDirf;
 		short				h, i;
-		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
+//		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
 	VmsVecToFloat (vPosf, &objP->position.vPos);
 	VmsVecToFloat (vPosf + 1, &objP->vLastPos);
@@ -1690,8 +1691,8 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-static fVector vTrailVerts [2][4] = {{{0,0,0},{0,-1,-5},{0,-1,-50},{0,0,-50}},
-												  {{0,0,0},{0,1,-5},{0,1,-50},{0,0,-50}}};
+static fVector vTrailVerts [2][4] = {{{{0,0,0}},{{0,-1,-5}},{{0,-1,-50}},{{0,0,-50}}},
+												 {{{0,0,0}},{{0,1,-5}},{{0,1,-50}},{{0,0,-50}}}};
 
 void RenderLightTrail (tObject *objP)
 {
@@ -1868,7 +1869,7 @@ int RenderObject (tObject *objP, int nWindowNum)
 
 if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console)) {
-	if (bSpectate = (gameStates.app.bFreeCam && !nWindowNum)) {
+	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum))) {
 		savePos = objP->position;
 		objP->position = gameStates.app.playerPos;
 		}
@@ -3159,7 +3160,7 @@ if (sideMask) {
 			continue;
 		if (gameData.walls.walls [nWall].nType != WALL_ILLUSION)
 			continue;
-		if (nType = CheckVolatileWall (objP, objP->nSegment, nSide, &objP->position.vPos)) {
+		if ((nType = CheckVolatileWall (objP, objP->nSegment, nSide, &objP->position.vPos))) {
 			short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
@@ -3171,7 +3172,7 @@ if (sideMask) {
 		}
 	}
 if (bChkVolaSeg) {
-	if (nType=CheckVolatileSegment (objP, objP->nSegment)) {
+	if ((nType = CheckVolatileSegment (objP, objP->nSegment))) {
 		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		bUnderLavaFall = 1;
 		if (!nLavaFallHissPlaying [objP->id]) {

@@ -475,7 +475,7 @@ void DoAIFrame (tObject *objP)
 	fix         dot;
 	tRobotInfo  *botInfoP;
 	int         nObjRef;
-	int         bReturnFire = 0, bHaveGunPos = 0;
+	int         bHaveGunPos = 0;
 	int         nNewGoalState;
 	int         bVisAndVecComputed = 0;
 	int         nPrevVisibility;
@@ -1329,12 +1329,13 @@ if (!gameData.ai.nPlayerVisibility && (ailp->playerAwarenessType < PA_WEAPON_WAL
 #endif
 ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_REACTION_DIST);
 if ((gameData.ai.nPlayerVisibility == 2) && (aip->behavior != AIB_FOLLOW) && !botInfoP->thief) {
-	if (!ailp->playerAwarenessType)
+	if (!ailp->playerAwarenessType) {
 		if (aip->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE)
 			aip->SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 		else 
 			ailp->playerAwarenessType = PA_PLAYER_COLLISION;
 		}
+	}
 
 // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 if (!gameData.ai.bObjAnimates)
@@ -1948,10 +1949,10 @@ for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	CFWriteShort (gameData.boss [i].nGateSegs, fp);
 	}
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
-	if (h = gameData.boss [i].nGateSegs)
+	if ((h = gameData.boss [i].nGateSegs))
 		for (j = 0; j < h; j++)
 			CFWriteShort (gameData.boss [i].gateSegs [j], fp);
-	if (h = gameData.boss [i].nTeleportSegs)
+	if ((h = gameData.boss [i].nTeleportSegs))
 		for (j = 0; j < h; j++)
 			CFWriteShort (gameData.boss [i].teleportSegs [j], fp);
 	}
@@ -2102,10 +2103,10 @@ else {
 		gameData.boss [i].nGateSegs = CFReadShort (fp);
 		}
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
-		if (h = gameData.boss [i].nGateSegs)
+		if ((h = gameData.boss [i].nGateSegs))
 			for (j = 0; j < h; j++)
 				gameData.boss [i].gateSegs [j] = CFReadShort (fp);
-		if (h = gameData.boss [i].nTeleportSegs)
+		if ((h = gameData.boss [i].nTeleportSegs))
 			for (j = 0; j < h; j++)
 				gameData.boss [i].teleportSegs [j] = CFReadShort (fp);
 		}

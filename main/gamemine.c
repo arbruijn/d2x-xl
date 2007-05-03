@@ -892,11 +892,6 @@ else {
 	c = CFReadInt (loadFile);
 	pc->color.blue = (float) c / (float) 0x7fffffff;
 	}
-#if 0
-CBRK ((pc->color.red < 0) || (pc->color.red > 1.0f) ||
-		(pc->color.green < 0) || (pc->color.green > 1.0f) ||
-		(pc->color.blue < 0) || (pc->color.blue > 1.0f));
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1699,11 +1694,9 @@ int LoadMineSegmentsCompiled (CFILE *loadFile)
 {
 	int			i;
 	ubyte			nCompiledVersion;
-	ushort		temp_ushort = 0;
 	char			*psz;
 
 bD1PigPresent = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
-
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 //	For compiled levels, textures map to themselves, prevent nTexOverride always being gray, 

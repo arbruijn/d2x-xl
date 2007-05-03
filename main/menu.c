@@ -141,10 +141,12 @@ static int	nFPSopt, nRSDopt,
 				nFusionRampOpt, nLightRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
 				nUseSmokeOpt, nUseCamOpt, nMslTurnSpeedOpt,
-				nLightingMethodOpt, nShadowsOpt, nMaxLightsOpt, nShadowTestOpt, 
-				nShadowReachOpt, nOglMaxLightsOpt,
-				optZPass, optShadowVolume, nSyncSmokeSizes,
-				nSmokeGrenadeOpt, nMaxSmokeGrenOpt;
+				nLightingMethodOpt, nShadowsOpt, nMaxLightsOpt, nOglMaxLightsOpt, 
+				nShadowReachOpt, 
+				nSyncSmokeSizes, nSmokeGrenadeOpt, nMaxSmokeGrenOpt;
+#if DBG_SHADOWS
+static int	optZPass, optShadowVolume, nShadowTestOpt;
+#endif
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -428,7 +430,7 @@ if (!h)
 if (!(m = (char **) d_malloc (h * sizeof (char **))))
 	return;
 for (i = j = 0; i < h; i++)
-	if (ps = CycleThroughMovies (i == 0, 0)) {
+	if ((ps = CycleThroughMovies (i == 0, 0))) {
 		if (j && !strcmp (ps, m [0]))
 			break;
 		m [j++] = ps;
@@ -458,7 +460,7 @@ static void PlayMenuSong (void)
 
 m [j++] = szSongTitles [0];
 for (i = 0; i < gameData.songs.nSongs; i++) {
-	if (fp = CFOpen ((char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nD2Songs)) {
+	if ((fp = CFOpen ((char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nD2Songs))) {
 		CFClose (fp);
 		if (i == gameData.songs.nD2Songs)
 			m [j++] = szSongTitles [1];
@@ -1138,7 +1140,7 @@ void LegacyNewGameMenu (void)
 	int			nNewLevel, nHighestPlayerLevel;
 	int			nMissions;
 	char			*m [MAX_MISSIONS];
-	int			i, choice = 0, nFolder, nDefaultMission = 0;
+	int			i, choice = 0, nFolder = -1, nDefaultMission = 0;
 	static int	nMission = -1;
 	static char	*menuTitles [4];
 	
@@ -1152,7 +1154,6 @@ gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
 	gameFolders.szMsnSubFolder [0] = '\0';
-nFolder = -1;
 CFUseAltHogFile ("");
 do {
 	nMissions = BuildMissionList (0, nFolder);
@@ -1189,7 +1190,6 @@ if (nHighestPlayerLevel > 1) {
 	tMenuItem m [4];
 	char szInfo [80];
 	char szNumber [10];
-	int choice;
 	int nItems;
 
 try_again:
@@ -1246,7 +1246,7 @@ void NewGameMenu ()
 	tMenuItem	m [10];
 	int				opt, optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
-	int				i, choice = 0, nDefaultMission = 0;
+	int				i, choice = 0;
 	char				szDifficulty [50];
 	char				szLevelText [32];
 	char				szLevel [5];
@@ -1749,7 +1749,7 @@ return (gameStates.ogl.nContrast == 8) ? TXT_STANDARD :
 
 int FindTableFps (int nFps)
 {
-	int	i, j, d, dMin = 0x7fffffff;
+	int	i, j = 0, d, dMin = 0x7fffffff;
 
 for (i = 0; i < 16; i++) {
 	d = abs (nFps - fpsTable [i]);
@@ -2171,7 +2171,7 @@ do {
 		i = ExecMenu1 (NULL, TXT_CAMERA_MENUTITLE, opt, m, &CameraOptionsCallback, &choice);
 	} while (i >= 0);
 
-	if (extraGameInfo [0].bUseCameras = m [nUseCamOpt].value) {
+	if ((extraGameInfo [0].bUseCameras = m [nUseCamOpt].value)) {
 		GET_VAL (extraGameInfo [0].bTeleporterCams, optTeleCams);
 		GET_VAL (gameOpts->render.cameras.bFitToWall, optFSCameras);
 		}
@@ -2296,8 +2296,8 @@ void SmokeOptionsMenu ()
 	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, optStaticSmoke,
-			optSmokeColl, optSmokeDisp;
+	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, 
+			optStaticSmoke, optSmokeColl, optSmokeDisp;
 
 	pszSize [0] = TXT_SMALL;
 	pszSize [1] = TXT_MEDIUM;
@@ -2316,6 +2316,8 @@ void SmokeOptionsMenu ()
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
+	nOptSmokeLag = optBotSmoke = optMissSmoke = optDebrisSmoke = 
+	optStaticSmoke = optSmokeColl = optSmokeDisp = -1;
 
 	ADD_CHECK (opt, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
 	nUseSmokeOpt = opt++;
@@ -2404,7 +2406,7 @@ do {
 	do {
 		i = ExecMenu1 (NULL, TXT_SMOKE_MENUTITLE, opt, m, &SmokeOptionsCallback, &choice);
 		} while (i >= 0);
-	if (extraGameInfo [0].bUseSmoke = m [nUseSmokeOpt].value) {
+	if ((extraGameInfo [0].bUseSmoke = m [nUseSmokeOpt].value)) {
 		GET_VAL (gameOpts->render.smoke.bPlayers, nPlrSmokeOpt);
 		GET_VAL (gameOpts->render.smoke.bRobots, optBotSmoke);
 		GET_VAL (gameOpts->render.smoke.bMissiles, optMissSmoke);
@@ -2567,7 +2569,6 @@ do {
 		opt++;
 		}
 	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
-		char *psz = TXT_LMAP_RANGE;
 		sprintf (szLightRange + 1, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
 		*szLightRange = *(TXT_LMAP_RANGE - 1);
 		ADD_SLIDER (opt, szLightRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_R, HTX_ADVRND_LMAPRANGE);
@@ -2749,7 +2750,7 @@ void RenderOptionsMenu ()
 	int	h, i, choice = 0;
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
-			optAdvOpts, optEffectOpts, optPowerupOpts;
+			optAdvOpts, optEffectOpts, optPowerupOpts = -1;
 	int	optUseGamma, optColoredWalls;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
@@ -2761,7 +2762,6 @@ void RenderOptionsMenu ()
 	char szTexQual [50];
 	char szContrast [50];
 
-	int nLMapRange = gameOpts->render.color.nLightMapRange;
 	int nRendQualSave = gameOpts->render.nQuality;
 
 	pszRendQual [0] = TXT_QUALITY_LOW;
@@ -3198,6 +3198,7 @@ void ConfigMenu ()
 
 do {
 	memset (m, 0, sizeof (m));
+	optRender = optGameplay = optCockpit = -1;
 	opt = 0;
 	ADD_MENU (opt, TXT_SOUND_MUSIC, KEY_E, HTX_OPTIONS_SOUND);
 	optSound = opt++;
@@ -3299,7 +3300,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 		items[optRedbook].value = 0;
 		items[optRedbook].rebuild = 1;
 		}
-	else if (gameStates.sound.bRedbookEnabled = items [optRedbook].value) {
+	else if ((gameStates.sound.bRedbookEnabled = items [optRedbook].value)) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
 			SongsPlaySong (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
@@ -3462,8 +3463,8 @@ void MiscellaneousMenu ()
 #if 0
 			optFastResp, 
 #endif
-			optReticle, optMissileView, optGuided, optHeadlight, optEscort, optUseMacros, 
-			optWiggle, optSmartSearch, optLevelVer, optDemoFmt;
+			optHeadlight, optEscort, optUseMacros,	optWiggle, 
+			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
 #endif
@@ -3479,6 +3480,7 @@ pszCompSpeeds [4] = TXT_VERY_FAST;
 do {
 	i = opt = 0;
 	memset (m, 0, sizeof (m));
+	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
 	ADD_CHECK (0, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
 	opt++;
 	if (!gameStates.app.bNostalgia && gameOpts->app.bExpertMode) {

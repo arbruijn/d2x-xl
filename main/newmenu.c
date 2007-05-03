@@ -276,7 +276,7 @@ if (gameStates.app.bNostalgia || !gameOpts->menus.nStyle)
 else if (gameOpts->menus.altBg.bHave > 0)
 	gameOpts->menus.altBg.bHave++;
 else if (!gameOpts->menus.altBg.bHave) {
-	if (pAltBg = GrCreateBitmap (0, 0, 1)) {
+	if ((pAltBg = GrCreateBitmap (0, 0, 1))) {
 		memset (pAltBg, 0, sizeof (*pAltBg));
 		gameOpts->menus.altBg.bHave = 
 			ReadTGA (gameOpts->menus.altBg.szName, NULL, pAltBg, 
@@ -652,12 +652,12 @@ else
 
 if (!nDepth)
 	item->textSave = item->text;
-if (t = strchr (ps, '\n')) {
+if ((t = strchr (ps, '\n'))) {
 	strncpy (s, ps, sizeof (s));
 	item->text = s;
 	GrGetStringSize (s, &w, &h, &aw);
 	do {
-		if (t = strchr (item->text, '\n'))
+		if ((t = strchr (item->text, '\n')))
 			*t = '\0';
 		NMHotKeyString (item, 0, bTiny, 0, nDepth + 1);
 		if (!t)
@@ -668,12 +668,12 @@ if (t = strchr (ps, '\n')) {
 		nTabIndex = -1;
 		} while (*(item->text));
 	}
-else if (t = strchr (ps, '\t')) {
+else if ((t = strchr (ps, '\t'))) {
 	strncpy (s, ps, sizeof (s));
 	item->text = s;
 	GrGetStringSize (s, &w, &h, &aw);
 	do {
-		if (t = strchr (item->text, '\t'))
+		if ((t = strchr (item->text, '\t')))
 			*t = '\0';
 		NMHotKeyString (item, 0, bTiny, 0, nDepth + 1);
 		if (!t)
@@ -2531,7 +2531,7 @@ int _CDECL_ ExecMessageBox (char *title, char *filename, int nChoices, ...)
 
 if (!nChoices)
 	return -1;
-if (bTiny = (nChoices < 0))
+if ((bTiny = (nChoices < 0)))
 	nChoices = -nChoices;
 va_start (args, nChoices);
 memset (nmMsgItems, 0, h = nChoices * sizeof (tMenuItem));
@@ -3451,11 +3451,12 @@ WIN (int win_redraw=0);
 						}
 					do {
 						pszFn = items [cc];
-						if (items [cc][0] == '[')
+						if (items [cc][0] == '[') {
 							if (((items [cc][1] == '1') || (items [cc][1] == '2')) && (items [cc][2] == ']'))
 								pszFn += 4;
 							else
 								pszFn++;
+							}
 						strlwr (pszFn);
 						if (gameOpts->menus.bSmartFileSearch ? strstr (pszFn, szPattern) == pszFn : *pszFn == tolower (ascii)) {
 							cItem = cc;

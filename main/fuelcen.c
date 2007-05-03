@@ -654,9 +654,7 @@ void BotGenHandler (tFuelCenInfo * matCenP)
 	int			nMatCen, nSegment, nObject;
 	tObject		*objP;
 	fix			topTime;
-	ubyte			nVideoClip = VCLIP_MORPHING_ROBOT;
-	ubyte			nType;
-	int			nMyStation, nCount, i;
+	int			nType, nMyStation, nCount, i;
 
 if (!matCenP->bEnabled)
 	return;
@@ -765,7 +763,7 @@ else if (matCenP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
 	matCenP->xTimer = 0;
 	COMPUTE_SEGMENT_CENTER_I (&vPos, matCenP->nSegment);
 	// If this is the first materialization, set to valid robot.
-	nType = GetMatCenObjType (matCenP, gameData.matCens.botGens [nMatCen].objFlags);
+	nType = (int) GetMatCenObjType (matCenP, gameData.matCens.botGens [nMatCen].objFlags);
 	if (nType < 0)
 		return;
 #if TRACE

@@ -138,7 +138,7 @@ ubyte *d1Palette = NULL;
 #ifdef _DEBUG
 #	define PIGGY_BUFFER_SIZE ((unsigned int) (512*1024*1024))
 #else
-#	define PIGGY_BUFFER_SIZE ((unsigned int) (2048*1024*1024))
+#	define PIGGY_BUFFER_SIZE ((unsigned int) 0x7fffffff)
 #endif
 #define PIGGY_SMALL_BUFFER_SIZE (16*1024*1024)		// size of buffer when bLowMemory is set
 
@@ -570,7 +570,7 @@ if (ReadS3TC (bmP, pszFolder, pszFile))
 #endif
 if (!(psz = strstr (pszFile, ".tga"))) {
 	strcpy (fn, pszFile);
-	if (psz = strchr (fn, '.'))
+	if ((psz = strchr (fn, '.')))
 		*psz = '\0';
 	strcat (fn, ".tga");
 	pszFile = fn;
@@ -693,12 +693,12 @@ for (yDest = 0; yDest < yMax; yDest++) {
 		else {
 			for (i = 0; i < bpp; i++, pDest++) {
 				*pDest = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
-				if (i == 3)	//alpha treatment round to 0 or 255 depending on the average alpha
+				if (i == 3)	 {//alpha treatment round to 0 or 255 depending on the average alpha
 					if (*pDest < 128)
 						*pDest = 0;
 					else if (*pDest > 127)
 						*pDest = 255;
-				CBRK (pDest - pData > yMax * xMax * bpp);
+					}
 				}
 			}
 		}
@@ -1115,7 +1115,7 @@ if (bLowMemory)
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
 for (;;) {
-	if (bitmapBits [0] = d_malloc (bitmapCacheSize)) {
+	if ((bitmapBits [0] = d_malloc (bitmapCacheSize))) {
 		d_free (bitmapBits [0]);
 		break;
 		}
@@ -1348,8 +1348,6 @@ for (i=0; i<nSoundNum; i++) {
 		soundOffset [gameStates.app.bD1Data][gameData.pig.snd.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + sound_start;
 		memcpy (temp_name_read, sndh.name, 8);
 		temp_name_read [8] = 0;
-//		CBRK (strstr (temp_name_read, "lava"));
-//		CBRK (strstr (temp_name_read, "water"));
 		piggy_registerSound (&tempSound, temp_name_read, 1);
 		sbytes += sndh.length;
 	}
@@ -1778,7 +1776,7 @@ if (altBmP->bmType == BM_TYPE_FRAME)
 		return 1;
 if (altBmP->bmType != BM_TYPE_ALT)
 	return 0;	//actually this would be an error
-if (bmfP = BM_FRAMES (altBmP))
+if ((bmfP = BM_FRAMES (altBmP)))
 	for (i = BM_FRAMECOUNT (altBmP); i; i--, bmfP++)
 		PiggyFreeHiresFrame (bmfP, bD1);
 OglFreeBmTexture (altBmP);
@@ -1986,17 +1984,17 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 				eclip	*ecP = NULL;
 				tWallClip *wcP;
 				tVideoClip *vcP;
-				while (ecP = FindEffect (ecP, i)) {
+				while ((ecP = FindEffect (ecP, i))) {
 					//e->vc.nFrameCount = nFrames;
 					ecP->flags |= EF_ALTFMT;
 					//ecP->vc.flags |= WCF_ALTFMT;
 					}
 				if (!ecP) {
-					if (wcP = FindWallAnim (i)) {
+					if ((wcP = FindWallAnim (i))) {
 					//w->nFrameCount = nFrames;
 						wcP->flags |= WCF_ALTFMT;
 						}
-					else if (vcP = FindVClip (i)) {
+					else if ((vcP = FindVClip (i))) {
 						//v->nFrameCount = nFrames;
 						vcP->flags |= WCF_ALTFMT;
 						}
@@ -2029,7 +2027,6 @@ reloadTextures:
 	else 
 #endif
 		{
-		CBRK (bmP->bm_texBuf != NULL);
 		bmP->bm_texBuf = d_malloc (nSize);
 		if (bmP->bm_texBuf) 
 			bitmapCacheUsed += nSize;
@@ -2481,8 +2478,7 @@ void LoadBitmapReplacements (char *level_name)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			*fp;
-	int			i, j,
-					bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int			i, j;
 	grsBitmap	bm;
 
 	//first, d_free up data allocated for old bitmaps
@@ -2553,16 +2549,16 @@ if (fp) {
 				eclip	*ecP = NULL;
 				tWallClip *wcP;
 				tVideoClip *vcP;
-				while (ecP = FindEffect (ecP, indices [i])) {
+				while ((ecP = FindEffect (ecP, indices [i]))) {
 					//e->vc.nFrameCount = nFrames;
 					ecP->flags |= EF_ALTFMT | EF_FROMPOG;
 					}
 				if (!ecP) {
-					if (wcP = FindWallAnim (indices [i])) {
+					if ((wcP = FindWallAnim (indices [i]))) {
 						//w->nFrameCount = nFrames;
 						wcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
-					else if (vcP = FindVClip (i)) {
+					else if ((vcP = FindVClip (i))) {
 						//v->nFrameCount = nFrames;
 						vcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
@@ -2782,7 +2778,7 @@ void LoadD1BitmapReplacements ()
 	DiskBitmapHeader	bmh;
 	char					temp_name [16];
 	char					temp_name_read [16];
-	int					i, nBmHdrOffs, nBmDataOffs, nSoundNum, nBitmapNum, nTMapNum = 0;
+	int					i, nBmHdrOffs, nBmDataOffs, nSoundNum, nBitmapNum;
 
 if (piggyFP [1])
 	CFSeek (piggyFP [1], 0, SEEK_SET);

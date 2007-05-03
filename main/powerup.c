@@ -406,7 +406,6 @@ return bUsed;
 int PickUpVulcanAmmo (int nPlayer)
 {
 	int		bUsed=0, max;
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
 int	pwSave = gameData.weapons.nPrimary;		
 // Ugh, save selected primary weapon around the picking up of the ammo.  
@@ -434,7 +433,7 @@ void UsePowerup (int id)
 {
 	int	bApply;
 
-if (bApply = (id < 0))
+if ((bApply = (id < 0)))
 	id = -id;
 if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))

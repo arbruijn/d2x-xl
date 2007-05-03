@@ -141,7 +141,7 @@ void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, unsigned int num_pixels)
 {
 	double  *d = (double *)dest;
 	uint    *s = (uint *)src;
-	uint    doubletemp[2];
+	uint   doubletemp[2];
 	uint    temp, work;
 	unsigned int     i;
 
@@ -165,7 +165,7 @@ void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, unsigned int num_pixels)
 		work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
 		doubletemp[1] = work;
 
-		*d = *((double *) &(doubletemp[0]));
+		*d = *((double *) doubletemp);
 		d++;
 	}
 }

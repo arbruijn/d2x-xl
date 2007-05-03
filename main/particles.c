@@ -59,7 +59,9 @@
 static int bHavePartImg [2][3] = {{0, 0, 0},{0, 0, 0}};
 
 static grsBitmap *bmpParticle [2][3] = {{NULL, NULL, NULL},{NULL, NULL, NULL}};
+#if 0
 static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
+#endif
 
 static char *szParticleImg [2][3] = {
 #if 1
@@ -303,15 +305,15 @@ static int nPartSeg = -1;
 static int nFaces [6];
 static int vertexList [6][6];
 static int bSidePokesOut [6];
-static int nVert [6];
+//static int nVert [6];
 static vmsVector	*wallNorm;
 
 int CollideParticleAndWall (tParticle *pParticle)
 {
 	tSegment		*segP;
 	tSide			*sideP;
-	int			bInit, bRedo = 0, nSide, nVert, nChild, nFace, nInFront,
-					nRad = max (pParticle->nWidth, pParticle->nHeight) / 2;
+	int			bInit, nSide, nVert, nChild, nFace, nInFront;
+	//int			nRad = max (pParticle->nWidth, pParticle->nHeight) / 2;
 	fix			nDist;
 	int			*vlP;
 	vmsVector	pos = pParticle->pos;
@@ -319,7 +321,7 @@ int CollideParticleAndWall (tParticle *pParticle)
 //redo:
 
 segP = gameData.segs.segments + pParticle->nSegment;
-if (bInit = (pParticle->nSegment != nPartSeg)) 
+if ((bInit = (pParticle->nSegment != nPartSeg))) 
 	nPartSeg = pParticle->nSegment;
 for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 	vlP = vertexList [nSide];
@@ -823,7 +825,7 @@ pCloud->nLife = nLife;
 pCloud->nBirth = nCurTime;
 pCloud->nSpeed = nSpeed;
 pCloud->nType = nType;
-if (pCloud->bHaveDir = (pDir != NULL))
+if ((pCloud->bHaveDir = (pDir != NULL)))
 	pCloud->dir = *pDir;
 pCloud->prevPos =
 pCloud->pos = *pPos;
@@ -987,7 +989,7 @@ if (nParticles > 1) {
 	for (i = 0; i < nParticles; i++) {
 		pPartIdx [i].i = i;
 		pPartIdx [i].z = pParticles [i].transPos.p.z;
-		if (i)
+		if (i) {
 			if (z > pPartIdx [i].z)
 				nSortedUp++;
 			else if (z < pPartIdx [i].z)
@@ -996,6 +998,7 @@ if (nParticles > 1) {
 				nSortedUp++;
 				nSortedDown++;
 				}
+			}
 		z = pPartIdx [i].z;
 		}
 	if (nSortedDown >= 9 * nParticles / 10)
@@ -1056,7 +1059,7 @@ if (nNewSeg >= 0)
 
 void SetCloudDir (tCloud *pCloud, vmsVector *pDir)
 {
-if (pCloud->bHaveDir = (pDir != NULL))
+if ((pCloud->bHaveDir = (pDir != NULL)))
 	pCloud->dir = *pDir;
 }
 
@@ -1175,7 +1178,7 @@ if (pSmoke->pClouds) {
 	if (gameData.smoke.iUsedSmoke == iSmoke)
 		gameData.smoke.iUsedSmoke = i;
 	pSmoke->nNext = gameData.smoke.iFreeSmoke;
-	if (pSmoke = PrevSmoke (iSmoke))
+	if ((pSmoke = PrevSmoke (iSmoke)))
 		pSmoke->nNext = i;
 	gameData.smoke.iFreeSmoke = iSmoke;
 	}
@@ -1278,7 +1281,7 @@ else
 		if (gameData.objs.objects [pSmoke->nObject].nType == 255)
 			i = i;
 #endif
-		if (pCloud = pSmoke->pClouds)
+		if ((pCloud = pSmoke->pClouds))
 			for (h = j = 0; j < pSmoke->nClouds; ) {
 				if (!pSmoke->pClouds)
 					return 0;

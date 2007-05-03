@@ -56,7 +56,9 @@ float fInf;
 extern tRgbaColorf shadowColor [2], modelColor [2];
 extern vmsVector viewerEye;
 
-static tOOF_vector vLightPosf, vViewerPos, vCenter;
+static tOOF_vector	vLightPosf, 
+							//vViewerPos, 
+							vCenter;
 static vmsVector vLightPos;
 
 #define OP_EOF          0   //eof
@@ -96,7 +98,7 @@ extern int bSWCulling;
 extern int bZPass;
 #endif
 static int bTriangularize = 0;
-static int bIntrinsicFacing = 0;
+//static int bIntrinsicFacing = 0;
 static int bFlatPolys = 1;
 static int bTexPolys = 1;
 
@@ -629,14 +631,14 @@ return nSubModels;
 		{-1.0f, -1.05f, +1.2f}
 #else
 	vmsVector hitBoxOffsets [8] = {
-		{1, 0, 1}, 
-		{0, 0, 1}, 
-		{0, 1, 1}, 
-		{1, 1, 1}, 
-		{1, 0, 0}, 
-		{0, 0, 0}, 
-		{0, 1, 0}, 
-		{1, 1, 0}
+		{{1, 0, 1}}, 
+		{{0, 0, 1}}, 
+		{{0, 1, 1}}, 
+		{{1, 1, 1}}, 
+		{{1, 0, 0}}, 
+		{{0, 0, 0}}, 
+		{{0, 1, 0}}, 
+		{{1, 1, 0}}
 #endif
 		};
 
@@ -764,7 +766,7 @@ for (;;)
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			int s = WORDVAL (p+4);
+			//int s = (int) WORDVAL (p+4);
 			p += n * sizeof (vmsVector) + 8;
 			(*pnVerts) += n;
 			break;
@@ -889,8 +891,6 @@ return &c;
 
 vmsVector *G3CalcFaceCenter (tPOFObject *po, tPOF_face *pf)
 {
-	vmsVector	*pv = po->pvVerts;
-	short			*pfv = pf->pVerts;
 	tOOF_vector	cf;
 	static vmsVector c;
 
@@ -905,8 +905,7 @@ return &c;
 
 inline void G3AddPolyModelTri (tPOFObject *po, tPOF_face *pf, short v0, short v1, short v2)
 {
-	vmsVector	*pv = po->pvVerts;
-	short			*pfv = po->pFaceVerts + po->iFaceVert;
+	short	*pfv = po->pFaceVerts + po->iFaceVert;
 
 pf->pVerts = pfv;
 pf->nVerts = 3;
@@ -1600,10 +1599,10 @@ float NearestShadowedWallDist (short nObject, short nSegment, vmsVector *vPos, f
 	static		unsigned int bVisited [MAX_SEGMENTS_D2X];
 
 if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
-	return INFINITY;
+	return G3_INFINITY;
 VmVecSub (&v, vPos, &vLightPos);
 VmVecNormalize (&v);
-VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
+VmVecScale (&v, (fix) F1_0 * (fix) G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (unsigned int));
 #ifdef _DEBUG
@@ -1673,14 +1672,14 @@ for (;;) {
 		bHit = 1;
 		break;
 		}
-	if (fDist >= INFINITY)
+	if (fDist >= G3_INFINITY)
 		break;
 	nParent = nSegment;
 	nSegment = nChild;
 	}
 if (bHit)
 	return fDist * (/*fScale ? fScale :*/ fClip [gameOpts->render.shadows.nReach]);
-return INFINITY;
+return G3_INFINITY;
 
 #else //slower method
 
@@ -1689,13 +1688,13 @@ return INFINITY;
 	vmsVector	v;
 
 if (!gameOpts->render.shadows.nClip)
-	return INFINITY;
+	return G3_INFINITY;
 if (0 > (nSegment = FindSegByPoint (vPos, nSegment)))
-	return INFINITY;
+	return G3_INFINITY;
 fq.p0				  = vPos;
 VmVecSub (&v, fq.p0, &vLightPos);
 VmVecNormalize (&v);
-VmVecScale (&v, (fix) F1_0 * (fix) INFINITY);
+VmVecScale (&v, (fix) F1_0 * (fix) G3_INFINITY);
 fq.startSeg		  = nSegment;
 fq.p1				  = &v;
 fq.rad			  = 0;
@@ -1703,7 +1702,7 @@ fq.thisObjNum	  = nObject;
 fq.ignoreObjList = NULL;
 fq.flags			  = FQ_TRANSWALL;
 if (FindVectorIntersection (&fq, &fi) != HIT_WALL)
-	return INFINITY;
+	return G3_INFINITY;
 return //fScale ? f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fScale : 
 		 f2fl (VmVecDist (fq.p0, &fi.hit.vPoint)) * fClip [gameOpts->render.shadows.nReach];
 #endif
@@ -1734,7 +1733,7 @@ for (h = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces + i; i < h; i += incr,
 	pf = *ppf;
 	fClipDist = G3FaceClipDist (objP, pf);
 #ifdef _DEBUG
-	if (fClipDist == INFINITY)
+	if (fClipDist == G3_INFINITY)
 		fClipDist = G3FaceClipDist (objP, pf);
 #endif
 	if (fMaxDist < fClipDist)
@@ -1772,7 +1771,7 @@ for (m = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces + i; i < m; i += incr,
 				continue;
 			pfc [h] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #ifdef _DEBUG
-			if (fClipDist == INFINITY)
+			if (fClipDist == G3_INFINITY)
 				fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #endif
 			}
@@ -1812,7 +1811,7 @@ for (j = po->nVerts; i < j; i += incr, pvf += incr) {
 			continue;
 		pfc [i] = fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #ifdef _DEBUG
-		if (fClipDist == INFINITY)
+		if (fClipDist == G3_INFINITY)
 			fClipDist = NearestShadowedWallDist (nObject, nPointSeg, &v, 3.0f);
 #endif
 		}
@@ -1903,7 +1902,7 @@ else
 	if (gameOpts->render.shadows.nClip == 3)
 		fMaxDist = G3ClipDistByFaceVerts (objP, po, pso, fMaxDist, 0, 1);
 	}
-return pso->fClipDist = (fMaxDist ? fMaxDist : (fInf < INFINITY) ? fInf : INFINITY);
+return pso->fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INFINITY);
 }
 
 //------------------------------------------------------------------------------
@@ -2039,7 +2038,7 @@ if (pso - po->subObjs.pSubObjs == 8)
 #endif
 {
 G3GetLitFaces (po, pso);
-if (pso->nRenderFlipFlop = !pso->nRenderFlipFlop)
+if ((pso->nRenderFlipFlop = !pso->nRenderFlipFlop))
 	pso->fClipDist = G3SubModelClipDist (objP, po, pso);
 h = G3RenderSubModelShadowCaps (objP, po, pso, 0) &&
 	 G3RenderSubModelShadowCaps (objP, po, pso, 1) &&
@@ -2100,7 +2099,7 @@ int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, 
 #if SHADOWS
 	vmsVector		v, vLightDir;
 	short				*pnl;
-	int				h, i, j, bCalcCenter = 0;
+	int				h, i, j;
 	tPOFObject		*po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (objP->id < MAX_ROBOT_TYPES);
@@ -2143,7 +2142,7 @@ if (gameOpts->render.shadows.bFast) {
 				fInf = NearestShadowedWallDist (OBJ_IDX (objP), objP->nSegment, &v, 0);
 				}
 			else
-				fInf = INFINITY;
+				fInf = G3_INFINITY;
 			CHECK ();
 			G3PolyModelVerts2Float (po);
 			G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);

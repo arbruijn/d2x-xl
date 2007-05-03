@@ -444,11 +444,11 @@ hitP = *intP;
 //if rad != 0, project the point down onto the plane of the polygon
 if (rad)
 	VmVecScaleInc (&hitP, vNormal, -rad);
-if (pli = CheckSphereToFace (&hitP, rad, vertList, vNormal, nVerts))
+if ((pli = CheckSphereToFace (&hitP, rad, vertList, vNormal, nVerts)))
 	return pli;
 #if 1
 if (bCheckRad) {
-	int			i, d, dMin = 0x7fffffff;
+	int			i, d;
 	vmsVector	*a, *b;
 
 	b = vertList;
@@ -593,8 +593,6 @@ int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1,
 								short nSegment, short nSide, short iFace, int nv, fix rad)
 {
 	vmsVector	checkP, vNormal, v1;
-	tSegment		*segP = gameData.segs.segments + nSegment;
-	tSide			*sideP = segP->sides + nSide;
 	int			vertexList [6];
 	int			pli, nFaces, nVertex, bCheckRad = 0;
 
@@ -643,10 +641,10 @@ checkP = *newP;
 //if rad != 0, project the point down onto the plane of the polygon
 if (rad)
 	VmVecScaleInc (&checkP, &vNormal, -rad);
-if (pli = CheckSphereToSegFace (&checkP, nSegment, nSide, iFace, nv, rad, vertexList))
+if ((pli = CheckSphereToSegFace (&checkP, nSegment, nSide, iFace, nv, rad, vertexList)))
 	return pli;
 if (bCheckRad) {
-	int			i, d, dMin = 0x7fffffff;
+	int			i, d;
 	vmsVector	*a, *b;
 
 	b = gameData.segs.vertices + vertexList [0];
@@ -745,7 +743,6 @@ int SpecialCheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, sh
 	uint			nEdgeMask;
 	vmsVector	*edge_v0, *edge_v1, edge_vec;
 	tSegment		*segP = gameData.segs.segments + nSegment;
-	tSide			*sideP = segP->sides + nSide;
 	vmsVector	closest_point_edge, closest_point_move;
 
 if (bSimpleFVI) {
@@ -1245,7 +1242,7 @@ startMask = GetSegMasks (p0, nStartSeg, radP0).faceMask;
 masks = GetSegMasks (p1, nStartSeg, radP1);    //on back of which faces?
 if (!(centerMask = masks.centerMask))
 	nHitNoneSegment = nStartSeg;
-if (endMask = masks.faceMask) { //on the back of at least one face
+if ((endMask = masks.faceMask)) { //on the back of at least one face
 	short nSide, iFace, bit;
 
 	//for each iFace we are on the back of, check if intersected

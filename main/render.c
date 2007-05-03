@@ -600,7 +600,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int IsLava (tFaceProps *propsP)
+#if 0
+
+static inline int IsLava (tFaceProps *propsP)
 {
 	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
@@ -609,7 +611,7 @@ return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
 
 //------------------------------------------------------------------------------
 
-static int IsWater (tFaceProps *propsP)
+static inline int IsWater (tFaceProps *propsP)
 {
 	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
@@ -618,12 +620,14 @@ return ((nTexture >= 399) && (nTexture <= 403));
 
 //------------------------------------------------------------------------------
 
-static int IsWaterOrLava (tFaceProps *propsP)
+static inline int IsWaterOrLava (tFaceProps *propsP)
 {
 	short	nTexture = gameData.segs.segments [propsP->segNum].sides [propsP->sideNum].nBaseTex;
 
 return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -969,10 +973,7 @@ else {
 	tFaceListEntry	*flp = faceList + nFaceListSize;
 	short				t = props.nBaseTex;
 	if (!props.nOvlTex || (faceListRoots [props.nBaseTex] < 0)) {
-#else
-	short				t = props.nOvlTex ? props.nOvlTex : props.nBaseTex;
-#endif
-#if APPEND_LAYERED_TEXTURES
+		short	t = props.nOvlTex ? props.nOvlTex : props.nBaseTex;
 		flp->nextFace = faceListRoots [t];
 		if (faceListTails [t] < 0)
 			faceListTails [t] = nFaceListSize;
@@ -1074,8 +1075,8 @@ void RenderCorona (short nSegment, short nSide)
 {
 	fVector		vertList [4], sprite [4];
 	short			sideVerts [4];
-	uvlf			uvlList [4] = {{0,0,1},{1,0,1},{1,1,1},{0,1,1}};
-	fVector		d, n, o, v, vCenter = {0,0,0}, vx = {1,0,0}, vy = {0,1,0}, vDeltaX, vDeltaY, vEye;
+	uvlf			uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	fVector		d, n, o, v, vCenter = {{0,0,0}}, vDeltaX, vDeltaY, vEye;
 	fMatrix		r;
 	int			i, j, t;
 	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
@@ -2779,7 +2780,7 @@ glPopMatrix ();
 #define STB_SIZE_Y	2048
 
 grsBitmap	shadowBuf;
-char			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
+ubyte			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
 static int	bHaveShadowBuf = 0;
 
 void CreateShadowTexture (void)
@@ -3373,9 +3374,11 @@ if (left < r)
 
 static short segList [MAX_SEGMENTS_D2X];
 static short segDist [MAX_SEGMENTS_D2X];
+#if 0
 static char  bRenderSegObjs [MAX_SEGMENTS_D2X];
 static char  bRenderObjs [MAX_OBJECTS_D2X];
 static int nRenderObjs;
+#endif
 static short nSegListSize;
 
 void BuildSegList (void)

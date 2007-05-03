@@ -1673,7 +1673,6 @@ if (ROBOTINFO (objP->id).bossFlag) {
 //	If tSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 {
-	int			nSegment = objP->nSegment;
 	fix			xDistToGoal;
 	vmsVector	vGoalDir;
 
@@ -2293,7 +2292,7 @@ return MultiCanRemoveRobot (OBJ_IDX (objP), awarenessLevel);
 //	Do special stuff for a boss.
 void DoBossStuff (tObject *objP, int nPlayerVisibility)
 {
-	int	i, nBossId, nBossIndex, nObject, bBossAlive = 0;
+	int	i, nBossId, nBossIndex, nObject;
 
 nObject = OBJ_IDX (objP);
 i = FindBoss (nObject);

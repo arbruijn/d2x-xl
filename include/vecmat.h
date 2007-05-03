@@ -93,8 +93,8 @@ extern vmsMatrix vmdIdentityMatrix;
 
 //Here's a handy constant
 
-#define ZERO_VECTOR {0,0,0}
-#define IDENTITY_MATRIX { {f1_0,0,0}, {0,f1_0,0}, {0,0,f1_0} }
+#define ZERO_VECTOR {{0,0,0}}
+#define IDENTITY_MATRIX {{{f1_0,0,0}}, {{0,f1_0,0}}, {{0,0,f1_0}}}
 
 //negate a vector
 static inline vmsVector *VmVecNegate (vmsVector *v)

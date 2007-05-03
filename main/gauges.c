@@ -1512,7 +1512,7 @@ else {
 	time_t			t;
 	ubyte				c;
 
-	if (t = HUDShowFlashGauge (h, &bFlash, (int) tToggle)) {
+	if ((t = HUDShowFlashGauge (h, &bFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
@@ -1677,7 +1677,7 @@ void HUDShowWeaponIcons (void)
 			i, j, ll, n, 
 			ox = 6, 
 			oy = 6, 
-			x, dx, y, dy;
+			x, dx, y = 0, dy = 0;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
 	unsigned int nAmmoColor;
 	char	szAmmo [10];
@@ -1982,13 +1982,13 @@ for (j = firstItem; j < n; j++) {
 	//m = 9 - j;
 	*szCount = '\0';
 	if (j == INV_ITEM_INVUL) {
-		if (bHave = (LOCALPLAYER.nInvuls > 0))
+		if ((bHave = (LOCALPLAYER.nInvuls > 0)))
 			sprintf (szCount, "%d", LOCALPLAYER.nInvuls);
 		else
 			bHave = LOCALPLAYER.flags & nInvFlags [j];
 		}
 	else if (j == INV_ITEM_CLOAK) {
-		if (bHave = (LOCALPLAYER.nCloaks > 0))
+		if ((bHave = (LOCALPLAYER.nCloaks > 0)))
 			sprintf (szCount, "%d", LOCALPLAYER.nCloaks);
 		else
 			bHave = LOCALPLAYER.flags & nInvFlags [j];
@@ -2058,7 +2058,7 @@ if (gameOpts->render.cockpit.bHUD || SHOW_COCKPIT) {
 //	-----------------------------------------------------------------------------
 
 //convert '1' characters to special wide ones
-#define convert_1s(s) {char *p=s; while (p = strchr (p, '1')) *p= (char)132;}
+#define convert_1s(s) {char *p=s; while ((p = strchr (p, '1'))) *p = (char)132;}
 
 void HUDShowWeapons (void)
 {
@@ -2180,8 +2180,6 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 
 //	-----------------------------------------------------------------------------
 
-static int tBeepSpeed [2] = {F1_0 * 3 / 4, F1_0 * 5 / 8};
-
 void HUDShowShield (void)
 {
 	int	h, y;
@@ -2199,11 +2197,11 @@ if (gameOpts->render.cockpit.bTextGauges) {
 	}
 else {
 	static int		bShow = 1;
-	static time_t	tToggle = 0, tBeep = 0, nBeep = -1;
+	static time_t	tToggle = 0, nBeep = -1;
 	time_t			t = gameStates.app.nSDLTicks;
 	int				bLastFlash = gameStates.gameplay.nShieldFlash;
 
-	if (t = HUDShowFlashGauge (h, &gameStates.gameplay.nShieldFlash, (int) tToggle)) {
+	if ((t = HUDShowFlashGauge (h, &gameStates.gameplay.nShieldFlash, (int) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}

@@ -247,13 +247,13 @@ inline tRGBA *C (ubyte *palP, ubyte *b, int i, int bpp, int *pbST)
 
 if (bpp == 4) {
 	c = ((tRGBA *) (b)) [i];
-	if (*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128)))
+	if ((*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128))))
 		c.a = 0;
 	return &c;
 	}
 if (bpp == 3) {
 	*((tRGB *) &c) = ((tRGB *) (b)) [i];
-	if (*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128)))
+	if ((*pbST = ((c.r == 120) && (c.g == 88) && (c.b == 128))))
 		c.a = 0;
 	else
 		c.a = 255;
@@ -345,7 +345,6 @@ if (dw < tw) {
 	topScale.d = 1;
 	}
 else  {
-//		CBRK (dw > tw);
 	topScale.c = 1;
 	topScale.d = dw / tw;
 	}

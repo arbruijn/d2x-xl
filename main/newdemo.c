@@ -796,7 +796,6 @@ void NDSetPowerupClip (tObject *objP)
 //if (gameStates.app.tick40fps.bTick) 
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
-	int			i = OBJ_IDX (objP);
 
 vciP->nCurFrame = ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount;
 }
@@ -2406,7 +2405,7 @@ while (!bDone) {
 
 		case ND_EVENT_MULTI_CONNECT: {
 			sbyte nPlayer, nNewPlayer;
-			int killedTotal, killsTotal;
+			int killedTotal = 0, killsTotal = 0;
 			char pszNewCallsign [CALLSIGN_LEN+1], old_callsign [CALLSIGN_LEN+1];
 
 			nPlayer = NDReadByte ();

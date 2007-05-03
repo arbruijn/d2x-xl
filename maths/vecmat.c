@@ -32,10 +32,10 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #define ENABLE_SSE		0
 
 #ifndef ASM_VECMAT
-vmsVector vmdZeroVector = {0, 0, 0};
-vmsMatrix vmdIdentityMatrix = {{f1_0, 0, 0}, 
-                                {0, f1_0, 0}, 
-                                {0, 0, f1_0}};
+vmsVector vmdZeroVector = {{0, 0, 0}};
+vmsMatrix vmdIdentityMatrix = {{{f1_0, 0, 0}}, 
+                               {{0, f1_0, 0}}, 
+                               {{0, 0, f1_0}}};
 
 // ------------------------------------------------------------------------
 //adds two vectors, fills in dest, returns ptr to dest

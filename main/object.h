@@ -251,7 +251,7 @@ typedef struct tObject {
 	union {
 		tPhysicsInfo	physInfo; // a physics tObject
 		vmsVector   	spinRate; // for spinning objects
-		} mType __pack__;
+		} mType;
 	// control info, determined by CONTROL_TYPE
 	union {
 		tLaserInfo		laserInfo;
@@ -259,16 +259,16 @@ typedef struct tObject {
 		tAIStatic      aiInfo;
 		tObjLightInfo  lightInfo;     // why put this here?  Didn't know what else to do with it.
 		tPowerupInfo   powerupInfo;
-		} cType __pack__;
+		} cType;
 	// render info, determined by RENDER_TYPE
 	union {
 		tPolyObjInfo   polyObjInfo;      // polygon model
 		tVClipInfo     vClipInfo;     // tVideoClip
-		} rType __pack__ ;
+		} rType;
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
 #endif
-	} __pack__ tObject;
+	} /*__pack__*/ tObject;
 
 typedef struct tObjPosition {
 	tPosition	position;

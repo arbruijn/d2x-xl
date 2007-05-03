@@ -45,7 +45,7 @@ bool G3DrawMorphingModel(void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *an
 //be called whenever the palette changes
 void g3_remap_interp_colors(void);
 
-G3CheckAndSwap (void *modelP);
+int G3CheckAndSwap (void *modelP);
 
 void G3FreeAllPolyModelItems (void);
 

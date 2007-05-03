@@ -155,7 +155,6 @@ if (gameOpts->ogl.bGlTexMerge) {
 	for (i = 0; i < nFrames; i++) {
 		j = BM_INDEX (frameP, i, bIndirect, bObject);
 		hbmP = pBitmaps + j;
-		CBRK (hbmP->bm_bpp == 0);
 		if (BM_OVERRIDE (hbmP) != bmP)
 			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data && !bObject);
 		BM_OVERRIDE (hbmP) = bmP;
@@ -170,7 +169,7 @@ else {
 		OglLoadBmTexture (bmP, 1, 0);
 #endif
 	nBmFrames = BM_FRAMECOUNT (bmP);
-	if (bmfP = BM_FRAMES (bmP)) {
+	if ((bmfP = BM_FRAMES (bmP))) {
 		nFrameStep = (nBmFrames > nFrames) ? nBmFrames / nFrames : 1;
 		h = min (nFrames, nBmFrames);
 		for (i = 0; i < h; i++) {
@@ -203,7 +202,7 @@ void DoSpecialEffects()
 xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.tick40fps.bTick) 
 	{
-		grsBitmap		*bmP;
+		grsBitmap		*bmP = NULL;
 		eclip				*ecP;
 		tBitmapIndex	bmi;
 		fix				ft;

@@ -238,7 +238,7 @@ else {
 			}
 		CalcShipThrusterPos (objP, vPos);
 		for (j = 0; j < 2; j++)
-			if (pCloud = GetCloud (h, j))
+			if ((pCloud = GetCloud (h, j)))
 				SetCloudPos (pCloud, vPos + j);
 		return;
 		}
@@ -425,9 +425,9 @@ if (nParts) {
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts,
 																-PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 0, i);
 		}
-	offs.p.x = (F1_0 / 4 - d_rand ()) * (d_rand () & 15 + 16);
-	offs.p.y = (F1_0 / 4 - d_rand ()) * (d_rand () & 15 + 16);
-	offs.p.z = (F1_0 / 4 - d_rand ()) * (d_rand () & 15 + 16);
+	offs.p.x = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs.p.y = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
+	offs.p.z = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	VmVecAdd (&pos, &objP->position.vPos, &offs);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
 	}

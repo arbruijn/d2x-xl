@@ -316,7 +316,7 @@ extern tNetworkData networkData;
 
 #if 1
 
-static inline EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlagOn, int bAllowLocalFlagOff)
+static inline int EGIFlag (char bLocalFlag, char bMultiFlag, char bDefault, int bAllowLocalFlagOn, int bAllowLocalFlagOff)
 {
 if (!IsMultiGame)
 	return bLocalFlag;
@@ -504,7 +504,7 @@ int  NetworkChooseConnect();
 int  NetworkSendGameListRequest();
 void NetworkAddPlayer (tSequencePacket *p);
 void NetworkSendGameInfo(tSequencePacket *their);
-void ClipRank(signed char *rank);
+void ClipRank (char *rank);
 void NetworkCheckForOldVersion(char pnum);
 void NetworkInit(void);
 void NetworkFlush();

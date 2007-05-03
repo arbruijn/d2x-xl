@@ -58,6 +58,7 @@ int iDlTimeout = 4;
 #define	DL_SEND_MSN		3
 #define	DL_FINISH		4
 
+#if 0
 static char *szDlStates [] = {
 	"start",
 	"open file",
@@ -66,6 +67,7 @@ static char *szDlStates [] = {
 	"end",
 	"error"
 	};
+#endif
 
 typedef struct tUploadDest {
 	ipx_addr	addr;

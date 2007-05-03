@@ -209,26 +209,26 @@ ct2 = objP2->cType.laserInfo.creationTime;
 // See if o2 is the parent of o1
 if (objP1->nType == OBJ_WEAPON)
 	if ((objP1->cType.laserInfo.nParentObj == o2) && 
-		 (objP1->cType.laserInfo.nParentSig == objP2->nSignature))
+		 (objP1->cType.laserInfo.nParentSig == objP2->nSignature)) {
 		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is tPlayer, they are related only if o1 < 2.0 seconds old
 		if ((id1 == PHOENIX_ID && (gameData.time.xGame > ct1 + F1_0/4)) || 
 		   (id1 == GUIDEDMSL_ID && (gameData.time.xGame > ct1 + F1_0*2)) || 
 		   (((id1 == PROXMINE_ID) || (id1 == SMARTMINE_ID)) && (gameData.time.xGame > ct1 + F1_0*4)))
 			return 0;
-		else
-			return 1;
+		return 1;
+		}
 
 	// See if o1 is the parent of o2
 if (objP2->nType == OBJ_WEAPON)
 	if ((objP2->cType.laserInfo.nParentObj == o1) && 
-			 (objP2->cType.laserInfo.nParentSig == objP1->nSignature))
+		 (objP2->cType.laserInfo.nParentSig == objP1->nSignature)) {
 		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is tPlayer, they are related only if o1 < 2.0 seconds old
 		if ((id2 == PHOENIX_ID && (gameData.time.xGame > ct2 + F1_0/4)) || 
 			  (id2 == GUIDEDMSL_ID && (gameData.time.xGame > ct2 + F1_0*2)) || 
 				 (((id2 == PROXMINE_ID) || (id2 == SMARTMINE_ID)) && (gameData.time.xGame > ct2 + F1_0*4)))
 			return 0;
-		else
-			return 1;
+		return 1;
+		}
 
 // They must both be weapons
 if (objP1->nType != OBJ_WEAPON || objP2->nType != OBJ_WEAPON)	
@@ -687,7 +687,6 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) || 
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	objP->mType.physInfo.flags |= PF_BOUNCE;
-//CBRK (nWeaponType == ROBOT_MERCURY_ID);
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL)
 	xLaserLength = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
 if (nWeaponType == FLARE_ID)

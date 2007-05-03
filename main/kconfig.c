@@ -931,7 +931,6 @@ return code;
 int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, char *pszMsg)
 {
 	int k = 255;
-	ubyte code = 255;
 
 WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
@@ -1082,7 +1081,7 @@ WINDOS (
 );
 	grs_font * save_font;
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
-	int	close_x, close_y, close_size;
+	int	close_x = 0, close_y = 0, close_size = 0;
 
 	int	i,k,ocitem,cItem;
 	int	time_stopped = 0;
@@ -1637,11 +1636,11 @@ void KCInitExternalControls (int intno, int address)
 
 	i = FindArg ("-xname");
 	if (i)	
-		kc_external_name = Args [i+1];
+		kc_external_name = (ubyte *) Args [i+1];
 	else
-		kc_external_name = "External Controller";
+		kc_external_name = (ubyte *) "External Controller";
 
-   for (i=0;i<(int) strlen (kc_external_name);i++)
+   for (i = 0; i < (int) strlen ((char *) kc_external_name);i++)
     if (kc_external_name [i]=='_')
 	  kc_external_name [i]=' '; 
 

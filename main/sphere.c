@@ -40,8 +40,6 @@ tOOF_quad baseSphereCube [6] = {
 	{{{-1,-1,-1},{1,-1,-1},{1,-1,1},{-1,-1,1}},{0,0,0}}
 };
 
-static int bWireSphere = 0;
-
 //------------------------------------------------------------------------------
 
 tOOF_vector *OOF_TriangleCenter (tOOF_triangle *pt)

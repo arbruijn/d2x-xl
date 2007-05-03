@@ -226,7 +226,6 @@ void InitCamBots (int bReset)
 {
 	tObject		*objP = gameData.objs.objects;
 	int			i;
-	vmsVector	av = {DEG90,DEG90,DEG90};
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;
@@ -252,33 +251,12 @@ memset (gameData.bots.info [0][gameData.bots.nCamBotId].circleDistance, 0, sizeo
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].nRapidFireCount));
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 	if (objP->nType == OBJ_CAMBOT) {
-		//objP->nType = OBJ_ROBOT;
 		objP->id	= gameData.bots.nCamBotId;
 		objP->size = G3PolyModelSize (gameData.models.polyModels + gameData.bots.nCamBotModel, gameData.bots.nCamBotModel);
 		objP->lifeleft = IMMORTAL_TIME;
 		objP->controlType = CT_CAMERA;
 		objP->movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
-#if 0
-		VmExtractAnglesMatrix (&a, &objP->position.mOrient);
-		av.x = a.h;
-		av.y = a.b;
-		av.z = a.p;
-		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-		VmVecRotate (&objP->mType.spinRate, &av, &objP->position.mOrient);
-		G3DoneInstance ();
-		h = a.b + a.p;
-		objP->mType.spinRate.x = a.p; //(a.h < 0) ? (a.b < 0) ? -h : h : (a.b < 0) ? h : -h;
-		objP->mType.spinRate.y = a.h; //(a.b < 0) ? -(DEG90 + a.b) : DEG90 - a.b;
-		objP->mType.spinRate.z = a.b; //(a.p < 0) ? -(DEG90 + a.p) : DEG90 - a.p;
-		objP->mType.physInfo.brakes = -1;	// used as timeout counter
-		//if (!bReset) 
-			{
-			objP->mType.physInfo.turnRoll = 0;	// used as current heading angle rel. to start pos
-			objP->mType.physInfo.velocity.x = 0;
-			}
-		//objP->cType.aiInfo.behavior = AIB_NORMAL; //AIB_IDLING;
-#endif
 		gameData.ai.localInfo [i].mode = AIM_IDLING;
 		}
 	else if (objP->nType == OBJ_SMOKE) {

@@ -431,9 +431,9 @@ for (bRead = 0; bRead < 2; bRead++) {
 			if (bRead) {
 				if (bMP3)
 					gameData.songs.user.bMP3 = 1;
-				if (pszSong = strchr (szSong, '\r'))
+				if ((pszSong = strchr (szSong, '\r')))
 					*pszSong = '\0';
-				if (pszSong = strchr (szSong, '\n'))
+				if ((pszSong = strchr (szSong, '\n')))
 					*pszSong = '\0';
 				l = (int) strlen (szSong) + 1;
 				CFSplitPath (szSong, szSongFolder, NULL, NULL);

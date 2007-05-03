@@ -219,7 +219,7 @@ for (i = 0; i < pmP->nModels; i++)
 			mdP->nSubmodelsActive--;		//this one done animating
 			for (t = 0; t < pmP->nModels; t++)
 				if (pmP->subModels.parents [t] == i) 		//start this one
-					if (mdP->submodelActive [t] = MorphInitPoints (pmP, NULL, t, mdP))
+					if ((mdP->submodelActive [t] = MorphInitPoints (pmP, NULL, t, mdP)))
 						mdP->nSubmodelsActive++;
 			}
 		}
@@ -235,7 +235,7 @@ if (!mdP->nSubmodelsActive) {			//done morphing!
 
 //-------------------------------------------------------------
 
-vmsVector morph_rotvel = {0x4000, 0x2000, 0x1000};
+vmsVector morph_rotvel = {{0x4000, 0x2000, 0x1000}};
 
 void MorphInit ()
 {

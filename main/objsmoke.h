@@ -14,7 +14,7 @@ void KillPlayerSmoke (int i);
 void ResetPlayerSmoke (void);
 void InitObjectSmoke (void);
 void ResetObjectSmoke (void);
-static inline int RandN (int n);
+//static inline int RandN (int n);
 void CreateDamageExplosion (int h, int i);
 void DoPlayerSmoke (tObject *objP, int i);
 void DoRobotSmoke (tObject *objP);

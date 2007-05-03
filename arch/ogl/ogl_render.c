@@ -999,7 +999,7 @@ int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	float				fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
 	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
-						vertColor = {0.0f, 0.0f, 0.0f, 1.0f};
+						vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
 
 colorSum = *pColorSum;
@@ -1135,8 +1135,8 @@ return 0;
 
 void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor)
 {
-	fVector			matSpecular = {0.0f, 0.0f, 0.0f, 1.0f},
-						colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
+	fVector			matSpecular = {{0.0f, 0.0f, 0.0f, 1.0f}},
+						colorSum = {{0.0f, 0.0f, 0.0f, 1.0f}};
 #if !STATIC_LIGHT_TRANSFORM
 	fVector			vertPos;
 #endif
@@ -1290,7 +1290,7 @@ bool G3DrawTexPolyMulti (
 	int			bLight = 1, 
 					bDynLight = SHOW_DYN_OBJ_LIGHT, 
 					bDrawBM = 0;
-	grsBitmap	*bmP, *bmMask;
+	grsBitmap	*bmP = NULL, *bmMask;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
 	fVector		vNormal, vVertex;
@@ -1402,8 +1402,8 @@ else
 	else if (tmap_drawer_ptr == draw_tmap) {
 		// this controls merging of textures containing color keyed transparency 
 		// or transpareny in the bottom texture with an overlay texture present
-		int	bShaderMerge,
-				bTransparent = 0,
+		int	bShaderMerge = 0,
+				//bTransparent = 0,
 				bSuperTransp = 0;
 		if (bmTop) {
 			if (nFrame < 0)
@@ -1475,11 +1475,12 @@ else
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
 			pl = *ppl;
-			if (bLight)
+			if (bLight) {
 				if (bDynLight)
 					G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL);
 				else
 					SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
+				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [c].u), f2glf (uvlList [c].v));
 			if (bmTop && !bDrawBM)
 				SetTexCoord (uvlList + c, orient, 1);
@@ -1526,11 +1527,12 @@ else
 				glColor3i (0,0,0);
 			glBegin (GL_TRIANGLE_FAN);
 			for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
-				if (bLight)
+				if (bLight) {
 					if (bDynLight)
 						G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL);
 					else
 						SetTMapColor (uvlList + c, c, bmTop, 1);
+					}
 				SetTexCoord (uvlList + c, orient, 0);
 				OglVertex3f (*ppl);
 				}
@@ -1582,7 +1584,7 @@ bool G3DrawBitmap (
 {
 	vmsVector	pv, v1;
 	GLfloat		h, w, u, v, x, y, z;
-	GLuint		depthFunc;
+	GLint			depthFunc;
 
 r_bitmapc++;
 OglActiveTexture (GL_TEXTURE0_ARB);

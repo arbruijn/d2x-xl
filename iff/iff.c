@@ -609,7 +609,7 @@ int convert_ilbm_to_pbm(iff_bitmap_header *bmheader)
 	int bytes_per_row,byteofs;
 	ubyte checkmask,newbyte,setbit;
 
-	MALLOC(new_data, sbyte, bmheader->w * bmheader->h);
+	MALLOC(new_data, ubyte, bmheader->w * bmheader->h);
 	if (new_data == NULL) return IFF_NO_MEM;
 
 	destptr = new_data;

@@ -12,7 +12,6 @@ doesn't support shaders.  But since the menu option isn't
 there I just had it exit instead.
 */
 
-
 #ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
@@ -382,7 +381,7 @@ if (lightData) { //! =  NULL, comparison not explicitly required
 	lightData = NULL; //init to a defined value 
 	for (i = 0; i < MAX_SEGMENTS * 6; i++)
 		if (lightMaps [i].handle)
-			glDeleteTextures (1, &lightMaps [i].handle);
+			glDeleteTextures (1, (GLuint *) &lightMaps [i].handle);
 	memset (lightMaps, 0, sizeof (lightMaps));
 	} 
 }

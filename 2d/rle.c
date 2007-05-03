@@ -740,26 +740,28 @@ for (i = 0; i < bmP->bm_props.h; i++, pSrc += nLineSize) {
 		h = pSrc [j];
 		if (!IS_RLE_CODE (h)) {
 			c = colorMap ? colorMap [h] : h; // translate
-			if (bSwap0255)
+			if (bSwap0255) {
 				if (c == 0)
 					c = 255;
 				else if (c == 255)
 					c = 0;
+				}
 			if (pDest - expandBuf > bmP->bm_props.h * bmP->bm_props.rowsize) {
 				d_free (expandBuf);
 				return -1;
 				}	
 			*pDest++ = c;
 			}
-		else if (l = (h & NOT_RLE_CODE)) {
+		else if ((l = (h & NOT_RLE_CODE))) {
 			c = pSrc [++j];
 			if (colorMap)
 				c = colorMap [c];
-			if (bSwap0255)
+			if (bSwap0255) {
 				if (c == 0)
 					c = 255;
 				else if (c == 255)
 					c = 0;
+				}
 			if (pDest - expandBuf + l > bmP->bm_props.h * bmP->bm_props.rowsize) {
 				d_free (expandBuf);
 				return -1;

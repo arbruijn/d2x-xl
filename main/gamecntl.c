@@ -758,7 +758,7 @@ switch (key) {
 		break;
 			
 	case KEY_CTRLED+KEY_F7:
-		if (gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats)
+		if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
 			ResetPingStats ();
 		break;
 
@@ -1101,7 +1101,7 @@ int HandleSystemKey(int key)
 		case KEY_CTRLED + KEY_ALTED + KEY_S:
 			if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
 				return 0;
-			if (gameStates.app.bFreeCam = !gameStates.app.bFreeCam)
+			if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam))
 				gameStates.app.playerPos = gameData.objs.viewer->position;
 			else
 				gameData.objs.viewer->position = gameStates.app.playerPos;
@@ -1186,7 +1186,7 @@ int HandleSystemKey(int key)
 			break;
 
 		case KEY_CTRLED+KEY_F7:
-			if (gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats)
+			if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
 				ResetPingStats ();
 			break;
 

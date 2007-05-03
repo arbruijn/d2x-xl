@@ -432,11 +432,12 @@ if (!bSecret) {
 		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_MAP_ALL | KEY_BLUE | KEY_RED | KEY_GOLD);
 	LOCALPLAYER.cloakTime = 0;
 	LOCALPLAYER.invulnerableTime = 0;
-	if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
+	if (IsMultiGame && !IsCoopGame) {
 		if ((gameData.app.nGameMode & GM_TEAM) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
 			LOCALPLAYER.flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
 		else
 			LOCALPLAYER.flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
+		}
 	}
 else if (gameStates.app.bD1Mission)
 	InitAmmoAndEnergy ();
@@ -612,7 +613,7 @@ for (seg = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLast
 
 		if (!(WALL_IS_DOORWAY (seg,nSide, NULL) & WID_RENDER_FLAG))
 			continue;
-		if (tm = seg->sides [nSide].nOvlTex)
+		if ((tm = seg->sides [nSide].nOvlTex))
 			ec = gameData.pig.tex.pTMapInfo [tm].eclip_num;
 		else
 			ec = -1;
@@ -755,9 +756,9 @@ if (LOCALPLAYER.callsign [0] == 0)	{
 	if (gameConfig.szLastPlayer [0]==0)
 		allow_abortFlag = 0;
 	}
-if (bAutoPlr = gameData.multiplayer.autoNG.bValid)
+if ((bAutoPlr = gameData.multiplayer.autoNG.bValid))
 	strncpy (filename, gameData.multiplayer.autoNG.szPlayer, 8);
-else if (bAutoPlr = bStartup && (i = FindArg ("-player")) && *Args [++i])
+else if ((bAutoPlr = bStartup && (i = FindArg ("-player")) && *Args [++i]))
 	strncpy (filename, Args [i], 8);
 if (bAutoPlr) {
 	char *psz;
@@ -1568,7 +1569,7 @@ if (gameData.missions.nCurrentLevel == 0)
 	return;		//not a real level
 #endif
 if (gameData.app.nGameMode & GM_MULTI)	{
-	if (result = MultiEndLevel (&bSecret)) { // Wait for other players to reach this point
+	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
 		if (gameData.missions.nCurrentLevel != gameData.missions.nLastLevel)		//tPlayer has finished the game!
 			return;
 		longjmp (gameExitPoint, 0);		// Exit out of game loop
@@ -1579,11 +1580,12 @@ if ((gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) &&
 	DoEndGame ();
 else {
 	gameData.missions.nNextLevel = gameData.missions.nCurrentLevel + 1;		//assume go to next normal level
-	if (gameData.missions.nNextLevel > gameData.missions.nLastLevel)
+	if (gameData.missions.nNextLevel > gameData.missions.nLastLevel) {
 		if (extraGameInfo [IsMultiGame].bRotateLevels)
 			gameData.missions.nNextLevel = 1;
 		else
 			gameData.missions.nNextLevel = gameData.missions.nLastLevel;
+		}
 	if (!IsMultiGame)
 		DoEndlevelMenu (); // Let user save their game
 	StartNewLevel (gameData.missions.nNextLevel, 0);

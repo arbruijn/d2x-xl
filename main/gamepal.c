@@ -113,7 +113,7 @@ ubyte *LoadPalette (char *pszPaletteName, char *pszLevelName, int nUsedForLevel,
 						  int bNoScreenChange, int bForce)
 {
 	char	szPigName[FILENAME_LEN];
-	ubyte *palette;
+	ubyte *palette = NULL;
 
 	//special hack to tell that palette system about a pig that's been loaded elsewhere
 if (nUsedForLevel == -2) {

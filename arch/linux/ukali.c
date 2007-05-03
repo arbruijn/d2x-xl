@@ -64,11 +64,11 @@ int knix_Send(int hand, char *data, int len) {
 
 int knix_Recv(int hand, char *data, int len) {
 	struct sockaddr_in taddr;
-	int tlen;
+	unsigned int tlen;
 
 	tlen = sizeof(taddr);
 
-	return recvfrom(hand, data, len, 0, (struct sockaddr *)&taddr, &tlen);
+	return (int) recvfrom(hand, data, len, 0, (struct sockaddr *)&taddr, &tlen);
 
 }
 

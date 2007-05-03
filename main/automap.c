@@ -189,7 +189,7 @@ typedef struct tAutomapData {
 } tAutomapData;
 
 // Rendering variables
-static tAutomapData	amData = {0, 0, F1_0 * 20 * 100, 0x9000, {0,0,0}, {{0,0,0},{0,0,0},{0,0,0}}};
+static tAutomapData	amData = {0, 0, F1_0 * 20 * 100, 0x9000, ZERO_VECTOR, {{{0,0,0}},{{0,0,0}},{{0,0,0}}}};
 
 //	Function Prototypes
 void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited);
@@ -962,7 +962,7 @@ int AMReadControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsA
 ControlsReadAll ();		
 if (Controls [0].automapDownCount && !nLeaveMode)
 	return 1;
-while (c = KeyInKey ()) {
+while ((c = KeyInKey ())) {
 	if (!gameOpts->menus.nStyle)
 		MultiDoFrame();
 		switch (c) {
@@ -1008,14 +1008,14 @@ while (c = KeyInKey ()) {
 
 		case KEY_MINUS:
 			if (*pnSegmentLimit > 1) {
-				*pnSegmentLimit--;
+				(*pnSegmentLimit)--;
 				AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 			}
 			break;
 
 		case KEY_EQUAL:
 			if (*pnSegmentLimit < *pnMaxSegsAway) 	{
-				*pnSegmentLimit++;
+				(*pnSegmentLimit)++;
 				AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
 			}
 			break;
@@ -1100,14 +1100,13 @@ void DoAutomap (int nKeyCode, int bRadar)
 	int			bFirstTime = 1;
 	fix			xEntryTime;
 	int			bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
-	fix			t1, t2;
+	fix			t1 = 0, t2 = 0;
 	int			nMaxSegsAway = 0;
 	int			nSegmentLimit = 1;
-	int			bFreeCanvas = 0;
 	int			nContrast = gameStates.ogl.nContrast;
 	int			bRedrawScreen = 0;
 
-	static ubyte	automapPal [256*3];
+	//static ubyte	automapPal [256*3];
 
 bPauseGame = InitAutomap (bRadar, bPauseGame, &xEntryTime, &nMaxSegsAway, &nSegmentLimit, &vTAngles);
 bRedrawScreen = 0;
@@ -1322,7 +1321,6 @@ static int AutomapFindEdge (int v0,int v1,Edge_info **edge_ptr)
 			if (hash==oldhash) Error ("Edge list full!");
 		}
 	}
-CBRK (hash > MAX_EDGES);
 	*edge_ptr = &Edges[hash];
 
 	if (ret == 0)

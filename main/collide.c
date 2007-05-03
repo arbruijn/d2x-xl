@@ -220,7 +220,7 @@ short nMonsterballPyroForce;
 
 void SetMonsterballForces (void)
 {
-	int	i, h = IsMultiGame;
+	int	i;
 	tMonsterballForce *forceP = extraGameInfo [IsMultiGame].monsterball.forces;
 
 memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
@@ -325,7 +325,6 @@ int BumpTwoObjects (tObject *objP0, tObject *objP1, int bDamage, vmsVector *vHit
 	vmsVector	vForce, p0, p1, v0, v1, vh, vr, vn0, vn1;
 	fix			mag, dot, m0, m1;
 	tObject		*t;
-	int			bCollide = 0;
 
 if (objP0->movementType != MT_PHYSICS)
 	t = objP1;
@@ -348,7 +347,7 @@ v0 = objP0->mType.physInfo.velocity;
 v1 = objP1->mType.physInfo.velocity;
 m0 = VmVecCopyNormalize (&vn0, &v0);
 m1 = VmVecCopyNormalize (&vn1, &v1);
-if (m0 && m1)
+if (m0 && m1) {
 	if (m0 > m1) {
 		VmVecScaleFrac (&vn0, m1, m0);
 		VmVecScaleFrac (&vn1, m1, m0);
@@ -357,6 +356,7 @@ if (m0 && m1)
 		VmVecScaleFrac (&vn0, m0, m1);
 		VmVecScaleFrac (&vn1, m0, m1);
 		}
+	}
 VmVecSub (&vh, &p0, &p1);
 m0 = VmVecMag (&vh);
 if (m0 > ((objP0->size + objP1->size) * 3) / 4) {
@@ -683,12 +683,12 @@ int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, tObject *blo
 	int			tm, tmf, ec, nBitmap = 0;
 	int			nWall, nTrigger;
 	int			bOkToBlow = 0, nSwitchType = -1;
-	int			x = 0, y = 0;
+	//int			x = 0, y = 0;
 	short			nSound, bPermaTrigger;
 	ubyte			vc;
 	fix			u, v;
 	fix			xDestSize;
-	eclip			*ecP;
+	eclip			*ecP = NULL;
 	grsBitmap	*bmP;
 	//	If this wall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
 
@@ -1420,7 +1420,7 @@ if (!(gameStates.app.cheats.bRobotsKillRobots || EGI_FLAG (bRobotsHitRobots, 0, 
 	if (killerObjP && (killerObjP->nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->id).companion)
 		return 0;
 	}
-if (bIsBoss = ROBOTINFO (robotP->id).bossFlag) {
+if ((bIsBoss = ROBOTINFO (robotP->id).bossFlag)) {
 	int i = FindBoss (OBJ_IDX (robotP));
 	if (i >= 0)
 		gameData.boss [i].nHitTime = gameData.time.xGame;
@@ -1894,7 +1894,7 @@ void DropMissile1or4 (tObject *playerObjP, int nMissileIndex)
 {
 	int nMissiles, nPowerupId;
 
-if (nMissiles = gameData.multiplayer.players [playerObjP->id].secondaryAmmo [nMissileIndex]) {
+if ((nMissiles = gameData.multiplayer.players [playerObjP->id].secondaryAmmo [nMissileIndex])) {
 	nPowerupId = secondaryWeaponToPowerup [nMissileIndex];
 	if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
 		nMissiles = 10;
@@ -1981,7 +1981,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		if (playerP->flags & PLAYER_FLAGS_CONVERTER)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CONVERTER);
 		if ((playerP->flags & PLAYER_FLAGS_HEADLIGHT) && 
-			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame || extraGameInfo [1].bDarkness))
+			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HEADLIGHT);
 		// drop the other enemies flag if you have it
 

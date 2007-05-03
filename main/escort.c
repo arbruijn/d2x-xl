@@ -1073,7 +1073,7 @@ int ShowEscortHelp (char *pszGoal, char *tstr)
 	int				nItems;
 	tMenuItem	m [12];
 	char szGoal		 [40], szMsgs [40];
-
+#if 0
 	static char *szEscortHelp [12] = {
 		"0.  Next Goal: %s",
 		"1.  Find Energy Powerup",
@@ -1088,6 +1088,7 @@ int ShowEscortHelp (char *pszGoal, char *tstr)
 		"",
 		"T.  %s Messages"
 		};
+#endif
 
 sprintf (szGoal, TXT_GOAL_NEXT, pszGoal);
 sprintf (szMsgs, TXT_GOAL_MESSAGES, tstr);

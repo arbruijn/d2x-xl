@@ -52,7 +52,8 @@ void event_poll(Uint32 mask)
 {
 	SDL_Event event;
 #if TO_EVENT_POLL
-	time_t _t, t0 = SDL_GetTicks ();
+	time_t t0 = SDL_GetTicks ();
+	time_t _t = t0;
 #endif
 
 /*

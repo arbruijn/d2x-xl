@@ -32,7 +32,9 @@
 #endif
 
 static int bTestTracker = 0;
+#if 0
 static tUdpAddress testServer;
+#endif
 
 typedef struct tServerListTable {
 	struct tServerListTable	*nextList;
@@ -65,7 +67,7 @@ int FindTracker (tUdpAddress *addr)
 	short				p;
 
 a = UDP_ADDR (addr);
-p = (unsigned short) ntohs (UDP_PORT (addr));
+p = (short) ntohs (UDP_PORT (addr));
 for (i = 0; i < trackerList.nServers; i++)
 	if ((a == UDP_ADDR (trackerList.servers + i)) && 
 		 (p == UDP_PORT (trackerList.servers + i)))
@@ -324,7 +326,7 @@ void AddTrackersFromCmdLine (void)
 	char			szKwd [20];
 	tUdpAddress	tracker;
 
-if (t = FindArg ("-test_tracker"))
+if ((t = FindArg ("-test_tracker")))
 	bTestTracker = 1;
 if (!(t = FindArg ("-num_trackers")))
 	return;

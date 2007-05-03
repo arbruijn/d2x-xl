@@ -79,7 +79,7 @@ extern int MultiPowerupIsAllowed (int);
 
 int MultiCanRemoveRobot (int nObject, int agitation)
 {
-	int rval, nRemOwner = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_OWNER;
+	int rval = 0, nRemOwner = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_OWNER;
 
 	// Claim robot if necessary.
 if (gameStates.app.bPlayerExploded)
@@ -87,11 +87,9 @@ if (gameStates.app.bPlayerExploded)
 #ifdef _DEBUG
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {	
 	Int3 ();
-	rval = 0;
 	}
 else if (gameData.objs.objects [nObject].nType != OBJ_ROBOT) {
 	Int3 ();
-	rval = 0;
 	}
 #endif
 else if (ROBOTINFO (gameData.objs.objects [nObject].id).bossFlag) {
@@ -335,7 +333,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 			}
 		if (gameData.multigame.robots.fired [sending]) {
 			gameData.multigame.robots.fired [sending] = 0;
-			MultiSendData (gameData.multigame.robots.fireBuf [sending], 18, 1);
+			MultiSendData ((char *) gameData.multigame.robots.fireBuf [sending], 18, 1);
 			}
 		if (! (gameData.app.nGameMode & GM_NETWORK))
 			sent += 1;

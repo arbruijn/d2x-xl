@@ -640,7 +640,7 @@ for (i = 0; i < gameData.cameras.nCameras; i++, pc++) {
 		pCurCam = pc;
 		}
 	}
-if (pc = pCurCam) {
+if ((pc = pCurCam)) {
 	pc->nWaitFrames = 0;
 	pc->bTimedOut = 0;
 	pc->nTimeout = gameStates.app.nSDLTicks; //SDL_GetTicks ();

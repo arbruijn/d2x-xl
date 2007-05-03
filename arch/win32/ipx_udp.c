@@ -1083,12 +1083,9 @@ if (!(bTracker
 #endif
 #endif //UDP_SAFEMODE
 		}
-	else
-		CBRK (1);
 	gameStates.multi.bHaveLocalAddress = 1;
 	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
 	dataLen -= (bSafeMode ? 22 : 14);
-	CBRK (dataLen - (bTracker ? 0 : 4) > 542);
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker
 #ifdef _DEBUG

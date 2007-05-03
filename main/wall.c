@@ -237,14 +237,14 @@ if (nType == WALL_TRANSPARENT)
 		WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG;
 
 state = wallP->state;
-if (nType == WALL_DOOR) 
+if (nType == WALL_DOOR) { 
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
 	else if (CheckTransparency (segP, nSide))
 		return WID_TRANSPARENT_WALL;
 	else
 		return WID_WALL;
-
+	}
 // If none of the above flags are set, there is no doorway.
 if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || 
 	 CheckTransparency (segP, nSide))
@@ -961,7 +961,7 @@ void WallCloseDoor(tSegment *seg, short tSide)
 int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime)
 {
 	wall	*wallP;
-	int	i, nFrames, nWall, bFlags = 0;
+	int	i, nFrames, nWall;
 	fix	xTotalTime, xFrameTime;
 
 if (!segP || (nSide < 0))
@@ -1038,7 +1038,7 @@ if (bFlags & 1)
 int AnimateClosingDoor (tSegment *segP, short nSide, fix xElapsedTime)
 {
 	wall	*wallP;
-	int	i, nFrames, nWall, bFlags = 0;
+	int	i, nFrames, nWall;
 	fix	xTotalTime, xFrameTime;
 
 if (!segP || (nSide < 0))
@@ -1784,7 +1784,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 		vmsVector	pnt;
 
 		//	Process only walls which have glass.
-		if (tm = segp->sides[nSide].nOvlTex) {
+		if ((tm = segp->sides[nSide].nOvlTex)) {
 			int	ec, db;
 			eclip *ecP;
 

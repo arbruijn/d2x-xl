@@ -145,7 +145,6 @@ void con_resize(void)
  */
 
 static char buffer[65536];
-static int bInitLog = 1;
 
 void _CDECL_ con_printf(int priority, char *fmt, ...)
 {

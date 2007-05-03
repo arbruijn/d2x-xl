@@ -347,7 +347,7 @@ if (xObjIntensity) {
 		fix	maxHeadlightDist = F1_0*200;
 
 		if (objP && (objP->nType == OBJ_PLAYER))
-			if (gameStates.render.bHeadlightOn = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
+			if ((gameStates.render.bHeadlightOn = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON))) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
@@ -1473,7 +1473,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++)
 
 void SetDynLightMaterial (short nSegment, short nSide, short nObject)
 {
-	static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	//static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 
 	int nLight = FindDynLight (nSegment, nSide, nObject);
 
@@ -1582,7 +1582,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	else
 		G3TransformPointf (psl->pos + 1, psl->pos, 0);
 	psl->brightness = pl->brightness;
-	if (psl->bSpot = pl->bSpot) {
+	if ((psl->bSpot = pl->bSpot)) {
 		VmsVecToFloat (&psl->dir, &pl->vDir);
 		if (pl->bTransform && !gameStates.ogl.bUseTransform)
 			G3RotatePointf (&psl->dir, &psl->dir, 0);

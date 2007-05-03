@@ -14,13 +14,13 @@
 int FileFindNext (FILEFINDSTRUCT *ffsP, int nFlags)
 {
 	struct stat		statBuf;
-	struct	dirent	*deP;
-	char					szFile [FILENAME_LEN];
-	int					i;
+	struct dirent	*deP;
+	char				szFile [FILENAME_LEN];
+	int				i;
 
-while (deP = readdir (ffsP->dirP)) {
+while ((deP = readdir (ffsP->dirP))) {
 	//LogErr ("FileFindNext (readdir() = %s, %d)\n", deP->d_name, nFlags);
-	if (i = regexec (&ffsP->filter, deP->d_name, 0, 0, 0)) {
+	if ((i = regexec (&ffsP->filter, deP->d_name, 0, 0, 0))) {
 		//LogErr ("regexec = %d\n", i);
 		continue;
 		}
@@ -78,7 +78,7 @@ for (i = 0; pszFilter [j]; i++, j++) {
 	}
 szFilter [i] = '\0';
 //LogErr ("regcomp (%s)\n", szFilter);
-if (i = regcomp (&ffsP->filter, szFilter, flags)) {
+if ((i = regcomp (&ffsP->filter, szFilter, flags))) {
 	char szError [200];
 	regerror (i, &ffsP->filter, szError, 200);
 	//LogErr ("regcomp : error %s\n", szError);

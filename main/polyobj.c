@@ -820,7 +820,7 @@ void InitPolygonModels ()
 
 void DrawModelPicture (int mn, vmsAngVec *orient_angles)
 {
-	vmsVector	temp_pos=ZERO_VECTOR;
+	vmsVector	temp_pos = ZERO_VECTOR;
 	vmsMatrix	temp_orient = IDENTITY_MATRIX;
 #if TEMP_CANV
 	grs_canvas	*save_canv = grdCurCanv, *temp_canv;

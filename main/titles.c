@@ -250,15 +250,15 @@ int local_key_inkey (void)
 
 int LoadBriefImg (char *pszImg, grsBitmap *bmP, int bFullScr)
 {
-	char	*ps, c;
+	char	*ps, c = '0';
 	char	szImg [FILENAME_LEN+1];
 	int	pcxErr;
 
 strcpy (szImg, pszImg);
 strlwr (szImg);
-if (ps = strstr (szImg, "b.pcx"))
+if ((ps = strstr (szImg, "b.pcx")))
 	 c = 'b';
-else if (ps = strstr (szImg, ".pcx")) {
+else if ((ps = strstr (szImg, ".pcx"))) {
 	c = *--ps;
 	strcpy (--ps, "0b.pcx");
 	*ps = c;
@@ -532,8 +532,8 @@ void ShowBitmapFrame (int bRedraw)
 		//GrBitmapM (0, 0, bitmap_ptr);
 		//show_fullscr (bitmap_ptr);
 		{
-		#define DEFAULT_VIEW_DIST 0x60000
-		vmsVector	temp_pos=ZERO_VECTOR;
+#define DEFAULT_VIEW_DIST 0x60000
+		vmsVector	temp_pos = ZERO_VECTOR;
 		vmsMatrix	temp_orient = IDENTITY_MATRIX;
 		GrClearCanvas (0);
 		G3StartFrame (0,0);
@@ -930,7 +930,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	char			DumbAdjust=0;
 	char			chattering=0;
 	short 		nBot = 0;
-	char			*pEnd = strstr (message, "$S");
+	//char			*pEnd = strstr (message, "$S");
 	int			bOnlyRobots, bExtraSounds;
 	WIN (int wpage_done=0);
 
@@ -1562,10 +1562,10 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 	int	i;
 	char	fn [FILENAME_LEN], *psz;
 	for (i = 0; i < 2; i++) {
-		if (psz = strchr (fn, '.'))
+		if ((psz = strchr (fn, '.')))
 			*psz = '\0';
 		strcat (fn, i ? ".txb" : ".tex");
-		if	 (fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", fn, NULL)) {
+		if	 ((fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", fn, NULL))) {
 			fclose (fp);
 			break;
 			}

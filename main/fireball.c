@@ -579,7 +579,7 @@ tObject *FindInitObject (tObject *objP)
 if (!objCount)		//no gameData.objs.objects of this nType had initially been placed in the mine. 
 	return NULL;	//can happen with missile packs
 d_srand (TimerGetFixedSeconds ());
-if (bUseFree = (objCount < 0))
+if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
 h = d_rand () % objCount + 1;	
 for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
@@ -611,7 +611,7 @@ int ReturnFlagHome (tObject *objP)
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 	if (gameData.segs.segment2s [objP->nSegment].special == ((objP->id == POW_REDFLAG) ? SEGMENT_IS_GOAL_RED : SEGMENT_IS_GOAL_BLUE))
 		return objP->nSegment;
-	if (initObjP = FindInitObject (objP)) {
+	if ((initObjP = FindInitObject (objP))) {
 	//objP->nSegment = initObjP->nSegment;
 		objP->position.vPos = initObjP->position.vPos;
 		objP->position.mOrient = initObjP->position.mOrient;
@@ -856,9 +856,9 @@ int ChooseDropSegment (tObject *objP, int *pbFixedPos, int nDropState)
 	fix			nDist;
 	int			bUseInitSgm = 
 						objP &&
-						EGI_FLAG (bFixedRespawns, 0, 0, 0) || 
+						(EGI_FLAG (bFixedRespawns, 0, 0, 0) || 
 						 (EGI_FLAG (bEnhancedCTF, 0, 0, 0) && 
-						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG)));
+						 (objP->nType == OBJ_POWERUP) && ((objP->id == POW_BLUEFLAG) || (objP->id == POW_REDFLAG))));
 #if TRACE
 con_printf (CONDBG, "ChooseDropSegment:");
 #endif
@@ -1846,7 +1846,7 @@ int CreateMonsterball (void)
 {
 	short			nDropSeg, nObject;
 	vmsVector	vSegCenter;
-	vmsVector	vInitVel = {0, 0, 0};
+	vmsVector	vInitVel = ZERO_VECTOR;
 
 RemoveMonsterball ();
 #ifdef _DEBUG

@@ -688,7 +688,6 @@ if (playerP->secondaryAmmo [nWeaponIndex] > max) {
 	playerP->secondaryAmmo [nWeaponIndex] = max;
 	if ((nPickedUp < count) && (nWeaponIndex != PROXIMITY_INDEX) && (nWeaponIndex != SMART_MINE_INDEX)) {
 		short nObject = OBJ_IDX (objP);
-		CBRK (gameData.multiplayer.leftoverPowerups [nObject].nCount);
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = count - nPickedUp;
 		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [nWeaponIndex];
 		gameData.multiplayer.leftoverPowerups [nObject].spitterP = gameData.objs.objects + playerP->nObject;
@@ -762,7 +761,7 @@ memset (m, 0, sizeof (m));
 for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
 	m [i].nType = NM_TYPE_MENU;
 	if (primaryOrder [i] == 255)
-		m [i].text="ˆˆˆˆˆˆˆ Never autoselect ˆˆˆˆˆˆˆ";
+		m [i].text="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Never autoselect ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
 	else
 		m [i].text= (char *) PRIMARY_WEAPON_NAMES (primaryOrder [i]);
 	m [i].value = primaryOrder [i];
@@ -788,7 +787,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 {
 	m[i].nType = NM_TYPE_MENU;
 	if (secondaryOrder [i] == 255)
-		m[i].text = "ˆˆˆˆˆˆˆ Never autoselect ˆˆˆˆˆˆˆ";
+		m[i].text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Never autoselect ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
 	else
 		m[i].text = (char *) SECONDARY_WEAPON_NAMES (secondaryOrder[i]);
 	m[i].value=secondaryOrder[i];
@@ -906,7 +905,7 @@ if (playerP->primaryAmmo [nWeaponIndex] > max) {
 	ammoCount += (max - playerP->primaryAmmo [nWeaponIndex]);
 	playerP->primaryAmmo [nWeaponIndex] = max;
 	}
-if (nPlayer = gameData.multiplayer.nLocalPlayer) {
+if ((nPlayer = gameData.multiplayer.nLocalPlayer)) {
 	cutpoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && (playerP->laserLevel >= 4))
 		supposed_weapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser

@@ -28,13 +28,17 @@
 //------------------------------------------------------------------------------
 
 #define OOF_MEM_OPT	1
-#define GL_INFINITY	0
+#define GL_G3_INFINITY	0
 #define SHADOW_TEST	0
 #define NORM_INF		1
 
 #ifdef __unix
-#	define	stricmp	strcasecmp
-#	define	strnicmp	strncasecmp
+#	ifndef stricmp
+#		define	stricmp	strcasecmp
+#	endif
+#	ifndef strnicmp
+#		define	strnicmp	strncasecmp
+#	endif
 #endif
 
 #define oof_free(_p)	if (_p) {d_free (_p); (_p) = NULL;}
@@ -55,10 +59,10 @@ int bSWCulling = 0;
 int bZPass = 0;
 
 static tOOF_vector vPos;
-static tOOF_vector vLightPos;
 static tOOF_vector vrLightPos;
 static tOOF_matrix mView;
-static int bContourEdges = 1;
+//static tOOF_vector vLightPos;
+//static int bContourEdges = 1;
 
 int G3GetFaceWinding (tOOF_vector *v0, tOOF_vector *v1, tOOF_vector *v2);
 
@@ -414,7 +418,7 @@ void OOF_SetModelProps (tOOF_subObject *pso,char *pszProps)
 
 if (3 > (l = (int) strlen (pszProps)))
 	return;
-if (psz = strchr (pszProps, '='))
+if ((psz = strchr (pszProps, '=')))
 	l = (int) (psz - pszProps + 1);
 memcpy (command, pszProps, l);
 command [l] = '\0';
@@ -582,7 +586,7 @@ static tOOF_vector *OOF_ReadVertList (CFILE *fp, int nVerts, tOOF_vector *pvMin,
 	char			szId [20] = "";
 
 OOF_InitMinMax (pvMin, pvMax);
-if (pv = (tOOF_vector *) d_malloc (nVerts * sizeof (tOOF_vector))) {
+if ((pv = (tOOF_vector *) d_malloc (nVerts * sizeof (tOOF_vector)))) {
 	int	i;
 
 	for (i = 0; i < nVerts; i++) {
@@ -1127,7 +1131,7 @@ return OOF_VecNormal (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex,
 int OOF_ReadFace (CFILE *fp, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *pfv)
 {
 	tOOF_face	f;
-	int			i, v0;
+	int			i, v0 = 0;
 	tOOF_edge	e;
 
 nIndent += 2;
@@ -1228,10 +1232,9 @@ return 0;
 int OOF_ReadSubObject (CFILE *fp, tOOFObject *po)
 {
 	tOOF_subObject	so;
-	tOOF_faceVert	*pfv = NULL;
 	int				h, i;
 #if OOF_MEM_OPT
-	int				bReadData, nPos, nFaceVerts;
+	int				bReadData, nPos, nFaceVerts = 0;
 #endif
 	char				szId [20] = "";
 
@@ -1261,7 +1264,7 @@ OOF_SetModelProps (&so, so.pszProps);
 so.nMovementType = OOF_ReadInt (fp, "nMovementType");
 so.nMovementAxis = OOF_ReadInt (fp, "nMovementAxis");
 so.pFSList = NULL;
-if (so.nFSLists = OOF_ReadInt (fp, "nFSLists"))
+if ((so.nFSLists = OOF_ReadInt (fp, "nFSLists")))
 	CFSeek (fp, so.nFSLists * sizeof (int), SEEK_CUR);
 so.nVerts = OOF_ReadInt (fp, "nVerts");
 if (so.nVerts) {
@@ -1644,7 +1647,7 @@ void BuildPosTickRemapList (tOOFObject *po)
 for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 	nTicks = pso->posAnim.frameInfo.nLastFrame - pso->posAnim.frameInfo.nFirstFrame;
 	for (j = 0, t = pso->posAnim.frameInfo.nFirstFrame; j < nTicks; j++, t++)
-		if (k = pso->posAnim.frameInfo.nFrames - 1)
+		if ((k = pso->posAnim.frameInfo.nFrames - 1))
 			for (; k >= 0; k--)
 				if (t >= pso->posAnim.pFrames [k].nStartTime) {
 					pso->posAnim.pRemapTicks [j] = k;
@@ -1663,7 +1666,7 @@ void BuildRotTickRemapList (tOOFObject *po)
 for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 	nTicks = pso->rotAnim.frameInfo.nLastFrame - pso->rotAnim.frameInfo.nFirstFrame;
 	for (j = 0, t = pso->rotAnim.frameInfo.nFirstFrame; j < nTicks; j++, t++)
-		if (k = pso->rotAnim.frameInfo.nFrames - 1)
+		if ((k = pso->rotAnim.frameInfo.nFrames - 1))
 			for (; k >= 0; k--)
 				if (t >= pso->rotAnim.pFrames [k].nStartTime) {
 					pso->rotAnim.pRemapTicks [j] = k;
@@ -1787,7 +1790,7 @@ if (o.nVersion >= 22) {
 
 
 while (!CFEoF (fp)) {
-	unsigned char chunkId [4];
+	char chunkId [4];
 	
 	if (!CFRead (chunkId, sizeof (chunkId), 1, fp)) {
 		CFClose (fp);
@@ -2044,7 +2047,7 @@ OOF_GetLitFaces (pso);
 pv = pso->pvRotVerts;
 for (h = j = 0, i = pso->edges.nEdges, pe = pso->edges.pEdges; i; i--, pe++) {
 	if (pe->pf [0] && pe->pf [1]) {
-		if (pe->bContour = (pe->pf [0]->bFacingLight != pe->pf [1]->bFacingLight))
+		if ((pe->bContour = (pe->pf [0]->bFacingLight != pe->pf [1]->bFacingLight)))
 			h++;
 		}
 	else {
@@ -2136,11 +2139,11 @@ for (i = pso->edges.nContourEdges, pe = pso->edges.pEdges; i; pe++)
 			v [1] = pv [pe->v0 [j]];
 			OOF_VecSub (v+2, v+1, &vrLightPos);
 #if NORM_INF
-			OOF_VecScale (v+2, INFINITY / OOF_VecMag (v+2));
-			OOF_VecScale (v+3, INFINITY / OOF_VecMag (v+3));
+			OOF_VecScale (v+2, G3_INFINITY / OOF_VecMag (v+2));
+			OOF_VecScale (v+3, G3_INFINITY / OOF_VecMag (v+3));
 #else
-			OOF_VecScale (v+2, INFINITY);
-			OOF_VecScale (v+3, INFINITY);
+			OOF_VecScale (v+2, G3_INFINITY);
+			OOF_VecScale (v+3, G3_INFINITY);
 #endif
 			OOF_VecInc (v+2, v+1);
 			OOF_VecInc (v+3, v);
@@ -2202,9 +2205,9 @@ if (bCullFront) {
 			v0 = pv [pfv->nIndex];
 			OOF_VecSub (&v1, &v0, &vrLightPos);
 #	if NORM_INF
-			OOF_VecScale (&v1, INFINITY / OOF_VecMag (&v1));
+			OOF_VecScale (&v1, G3_INFINITY / OOF_VecMag (&v1));
 #	else
-			OOF_VecScale (&v1, INFINITY);
+			OOF_VecScale (&v1, G3_INFINITY);
 #	endif
 			OOF_VecInc (&v1, &v0);
 			glVertex3fv ((GLfloat *) &v1);

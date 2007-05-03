@@ -528,7 +528,7 @@ void PrintVersion (void)
 	char	fn [FILENAME_LEN];
 
 sprintf (fn, "%s%sd2x-xl-version.txt", gameFolders.szDataDir, *gameFolders.szDataDir ? "/" : "");
-if (f = fopen (fn, "wa")) {
+if ((f = fopen (fn, "wa"))) {
 	fprintf (f, "%s\n", VERSION);
 	fclose (f);
 	}
@@ -576,12 +576,13 @@ exit (0);
 
 void GetAppFolders (void)
 {
-#ifndef _WIN32
-	FFS	ffs;
-#endif
-	int	i, j;
+	int	i;
 	char	szDataRootDir [FILENAME_LEN];
-	char	*psz, c;
+	char	*psz;
+#ifdef _WIN32
+	int	j;
+	char	c;
+#endif
   
 *gameFolders.szHomeDir =
 *gameFolders.szGameDir =
@@ -731,7 +732,7 @@ if ((t = FindArg ("-ng_mission")) && (p = Args [t+1])) {
 	strncpy (gameData.multiplayer.autoNG.szMission, Args [t+1], 12);
 	gameData.multiplayer.autoNG.szMission [12] = '\0';
 	}
-if (t = FindArg ("-ngLevel"))
+if ((t = FindArg ("-ngLevel")))
 	gameData.multiplayer.autoNG.nLevel = NumArg (t, 1);
 else
 	gameData.multiplayer.autoNG.nLevel = 1;
@@ -761,7 +762,7 @@ if ((t = FindArg ("-ngType")) && (p = Args [t+1])) {
 			break;
 			}
 	}
-if (t = FindArg ("-ng_team"))
+if ((t = FindArg ("-ng_team")))
 	gameData.multiplayer.autoNG.bTeam = NumArg (t, 1);
 if (gameData.multiplayer.autoNG.bHost)
 	gameData.multiplayer.autoNG.bValid = 
@@ -783,13 +784,13 @@ void EvalMultiplayerArgs (void)
 {
 	int t;
 
-if (t = FindArg ("-friendlyfire"))
+if ((t = FindArg ("-friendlyfire")))
 	extraGameInfo [0].bFriendlyFire = NumArg (t, 1);
-if (t = FindArg ("-fixedrespawns"))
+if ((t = FindArg ("-fixedrespawns")))
 	extraGameInfo [0].bFixedRespawns = NumArg (t, 0);
-if (t = FindArg ("-immortalpowerups"))
+if ((t = FindArg ("-immortalpowerups")))
 	extraGameInfo [0].bImmortalPowerups = NumArg (t, 0);
-if (t = FindArg ("-spawndelay")) {
+if ((t = FindArg ("-spawndelay"))) {
 	extraGameInfo [0].nSpawnDelay = NumArg (t, 0);
 	if (extraGameInfo [0].nSpawnDelay < 0)
 		extraGameInfo [0].nSpawnDelay = 0;
@@ -808,11 +809,11 @@ if (FindArg ("-shortpackets"))
 	mpParams.bShortPackets = 1;
 if (FindArg ("-norankings"))
 	gameOptions [0].multi.bNoRankings = 1;
-if (t = FindArg ("-timeout"))
+if ((t = FindArg ("-timeout")))
 	gameOptions [0].multi.bTimeoutPlayers = NumArg (t, 1);
-if (t = FindArg ("-noredundancy"))
+if ((t = FindArg ("-noredundancy")))
 	gameOptions [0].multi.bNoRedundancy = NumArg (t, 1);
-if (t = FindArg ("-check_ports"))
+if ((t = FindArg ("-check_ports")))
 	gameStates.multi.bCheckPorts = NumArg (t, 1);
 EvalAutoNetGameArgs ();
 }
@@ -823,7 +824,7 @@ void EvalMovieArgs (void)
 {
 	int	t;
 
-if (t=FindArg ("-nomovies")) {
+if ((t = FindArg ("-nomovies"))) {
 	gameOptions [0].movies.nLevel = 2 - NumArg (t, 2);
 	if (gameOptions [0].movies.nLevel < 0)
 		gameOptions [0].movies.nLevel = 0;
@@ -832,7 +833,7 @@ if (t=FindArg ("-nomovies")) {
 	}
 if (FindArg ("-subtitles"))
 	gameOptions [0].movies.bSubTitles = 1;
-if (t=FindArg ("-movie_quality"))
+if ((t = FindArg ("-movie_quality")))
 	gameOptions [0].movies.nQuality = NumArg (t, 0);
 if (FindArg ("-lowresmovies"))
 	gameOptions [0].movies.bHires = 0;
@@ -857,12 +858,12 @@ else if (FindArg ("-sound11k"))
 else
 	gameOptions [0].sound.digiSampleRate = SAMPLE_RATE_22K;
 #if USE_SDL_MIXER
-if (t = FindArg ("-sdl_mixer"))
+if ((t = FindArg ("-sdl_mixer")))
 	gameOptions [0].sound.bUseSDLMixer = NumArg (t, 1);
 #endif
-if (t = FindArg ("-use_d1sounds"))
+if ((t = FindArg ("-use_d1sounds")))
 	gameOptions [0].sound.bUseD1Sounds = NumArg (t, 1);
-if (t = FindArg ("-noredbook"))
+if ((t = FindArg ("-noredbook")))
 	gameOptions [0].sound.bUseRedbook = 0;
 }
 
@@ -892,9 +893,9 @@ void EvalMenuArgs (void)
 	int	t;
 
 if (!gameStates.app.bNostalgia)
-	if (t = FindArg ("-menustyle"))
+	if ((t = FindArg ("-menustyle")))
 		gameOptions [0].menus.nStyle = NumArg (t, 1);
-if (t = FindArg ("-fastmenus"))
+if ((t = FindArg ("-fastmenus")))
 	gameOptions [0].menus.bFastMenus = NumArg (t, 1);
 if ((t = FindArg ("-altbg_alpha")) && *Args [t+1]) {
 	gameOptions [0].menus.altBg.alpha = atof (Args [t+1]);
@@ -908,11 +909,11 @@ if ((t = FindArg ("-altbg_brightness")) && *Args [t+1]) {
 	if ((gameOptions [0].menus.altBg.brightness <= 0) || (gameOptions [0].menus.altBg.brightness > 1.0))
 		gameOptions [0].menus.altBg.brightness = 1.0;
 	}
-if (t = FindArg ("-altbg_grayscale"))
+if ((t = FindArg ("-altbg_grayscale")))
 	gameOptions [0].menus.altBg.grayscale = NumArg (t, 1);
 if ((t = FindArg ("-altbg_name")) && *Args [t+1])
 	strncpy (gameOptions [0].menus.altBg.szName, Args [t+1], sizeof (gameOptions [0].menus.altBg.szName));
-if (t = FindArg ("-menu_hotkeys"))
+if ((t = FindArg ("-menu_hotkeys")))
 	gameOptions [0].menus.nHotKeys = NumArg (t, 1);
 else if (gameStates.app.bEnglish)
 	gameOptions [0].menus.nHotKeys = 1;
@@ -926,9 +927,9 @@ void EvalGameplayArgs (void)
 
 if (FindArg ("-noscreens"))
 	gameOpts->gameplay.bSkipBriefingScreens = 1;
-if (t = FindArg ("-secretsave"))
+if ((t = FindArg ("-secretsave")))
 	gameOptions [0].gameplay.bSecretSave = NumArg (t, 1);
-if (t = FindArg ("-nobotai"))
+if ((t = FindArg ("-nobotai")))
 	gameStates.gameplay.bNoBotAI = NumArg (t, 1);
 }
 
@@ -938,19 +939,19 @@ void EvalInputArgs (void)
 {
 	int	t, i;
 
-if (t = FindArg ("-mouselook"))
+if ((t = FindArg ("-mouselook")))
 	extraGameInfo [0].bMouseLook = NumArg (t, 1);
-if (t = FindArg ("-limitturnrate"))
+if ((t = FindArg ("-limitturnrate")))
 	gameOptions [0].input.bLimitTurnRate = NumArg (t, 1);
 #ifdef _DEBUG
-if (t = FindArg ("-minturnrate"))
+if ((t = FindArg ("-minturnrate")))
 	gameOptions [0].input.nMinTurnRate = NumArg (t, 20);
 #endif
 SetMaxPitch (gameOptions [0].input.nMinTurnRate);
-if (t = FindArg ("-joydeadzone"))
+if ((t = FindArg ("-joydeadzone")))
 	for (i = 0; i < 4; i++)
 		JoySetDeadzone (NumArg (t, 0), i);
-if (t = FindArg ("-grabmouse"))
+if ((t = FindArg ("-grabmouse")))
 	gameStates.input.bGrabMouse = NumArg (t, 1);
 }
 
@@ -976,11 +977,11 @@ if ((t = FindArg("-gl_readpixels_ok")))
 if ((t = FindArg("-gl_gettexlevelparam_ok")))
 	gameStates.ogl.bGetTexLevelParam = NumArg (t, 1);
 #ifdef GL_ARB_multitexture
-if (t = FindArg ("-gl_arb_multitexture_ok"))
+if (t = FindArg ("-gl_arb_multitexture_ok")))
 	gameStates.ogl.bArbMultiTexture= NumArg (t, 1);
 #endif
 #ifdef GL_SGIS_multitexture
-if (t = FindArg ("-gl_sgis_multitexture_ok"))
+if (t = FindArg ("-gl_sgis_multitexture_ok")))
 	gameStates.ogl.bSgisMultiTexture = NumArg (t, 1);
 #endif
 }
@@ -991,7 +992,7 @@ void EvalDemoArgs (void)
 {
 	int	t;
 
-if (t = FindArg ("-revert_demos"))
+if ((t = FindArg ("-revert_demos")))
 	gameOpts->demo.bRevertFormat = NumArg (t, 1);
 }
 
@@ -1008,25 +1009,25 @@ if ((t = FindArg ("-render_quality")) && *Args [t+1]) {
 	else if (gameOpts->render.nQuality > 3)
 		gameOpts->render.nQuality = 3;
 	}
-if (t = FindArg ("-sort_smoke"))
+if ((t = FindArg ("-sort_smoke")))
 	gameOptions [0].render.smoke.bSort = NumArg (t, 1);
-if (t = FindArg ("-use_shaders"))
+if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
-if (t = FindArg ("-shadows"))
+if ((t = FindArg ("-shadows")))
 	extraGameInfo [0].bShadows = NumArg (t, 0);
-if (t = FindArg ("-hires_textures"))
+if ((t = FindArg ("-hires_textures")))
 	gameOptions [0].render.textures.bUseHires = NumArg (t, 1);
-if (t = FindArg ("-hires_models"))
+if ((t = FindArg ("-hires_models")))
 	gameOptions [0].render.bHiresModels = NumArg (t, 1);
-if (t=FindArg ("-render_all_segs"))
+if ((t = FindArg ("-render_all_segs")))
 	gameOptions [0].render.bAllSegs = NumArg (t, 1);
-if (t = FindArg ("-enable_lightmaps"))
+if ((t = FindArg ("-enable_lightmaps")))
 	gameStates.render.color.bLightMapsOk = NumArg (t, 1);
-if (t=FindArg ("-blend_background"))
+if ((t = FindArg ("-blend_background")))
 	gameStates.render.bBlendBackground = NumArg (t, 1);
 if (FindArg ("-automap_gamesres"))
 	gameStates.render.bAutomapUseGameRes = 1;
-if ((t=FindArg ("-tmap")))
+if ((t = FindArg ("-tmap")))
 	select_tmap (Args [t+1]);
 else
 	select_tmap (NULL);
@@ -1039,35 +1040,35 @@ if ((t = FindArg ("-maxfps"))) {
 	gameOpts->render.nMaxFPS = t;
 	}
 #if RENDER2TEXTURE
-if (t = FindArg ("-render2texture"))
+if ((t = FindArg ("-render2texture")))
 	bUseRender2Texture = NumArg (t, 1);
 #endif
 #if OGL_POINT_SPRITES
-if (t = FindArg ("-point_sprites"))
+if ((t = FindArg ("-point_sprites")))
 	gameStates.render.bPointSprites = NumArg (t, 1);
 #endif
-if (t = FindArg ("-vertex_arrays"))
+if ((t = FindArg ("-vertex_arrays")))
 	gameStates.render.bVertexArrays = NumArg (t, 1);
-if (t = FindArg ("-nofade"))
+if ((t = FindArg ("-nofade")))
 	gameStates.render.bDisableFades = NumArg (t, 1);
-if (t = FindArg ("-mathformat"))
+if ((t = FindArg ("-mathformat")))
 	gameOpts->render.nDefMathFormat = NumArg (t, 2);
 #if defined (_WIN32) || defined (__unix__)
-if (t = FindArg ("-enable_sse"))
+if ((t = FindArg ("-enable_sse")))
 	gameOpts->render.bEnableSSE = NumArg (t, 1);
 #endif
-if (t = FindArg ("-render_opt"))
+if ((t = FindArg ("-render_opt")))
 	gameOptions [0].render.bOptimize = NumArg (t, 1);
 #ifdef _DEBUG
-if (t = FindArg ("-gl_transform"))
+if ((t = FindArg ("-gl_transform")))
 	gameStates.ogl.bUseTransform = NumArg (t, 1);
 #endif
-if (t = FindArg ("-cache_textures"))
+if ((t = FindArg ("-cache_textures")))
 	gameStates.app.bCacheTextures = NumArg (t, 1);
 if ((t = FindArg ("-model_quality")) && *Args [t+1])
 	gameStates.render.nModelQuality = NumArg (t, 3);
 #if 0
-if (t = FindArg ("-gl_texcompress"))
+if ((t = FindArg ("-gl_texcompress")))
 	gameStates.ogl.bTextureCompression = NumArg (t, 1);
 #endif
 }
@@ -1086,13 +1087,13 @@ if ((t = FindArg ("-max_segments")) && *Args [t+1]) {
 		t = MAX_SEGMENTS_D2X;
 	gameData.segs.nMaxSegments = t;
 	}
-if (t = FindArg ("-enable_shadows"))
+if ((t = FindArg ("-enable_shadows")))
 	gameStates.app.bEnableShadows = NumArg (t, 1);
-if (t = FindArg ("-enable_freecam"))
+if ((t = FindArg ("-enable_freecam")))
 	gameStates.app.bEnableFreeCam = NumArg (t, 1);
-if (t = FindArg ("-pured2"))
+if ((t = FindArg ("-pured2")))
 	gameStates.app.bNostalgia = 3;
-else if (t = FindArg ("-nostalgia"))
+else if ((t = FindArg ("-nostalgia"))) {
 	if (Args [t+1]) {
 		gameStates.app.bNostalgia = NumArg (t, 0);
 		if (gameStates.app.bNostalgia < 0)
@@ -1102,35 +1103,36 @@ else if (t = FindArg ("-nostalgia"))
 		}
 	else
 		gameStates.app.bNostalgia = 1;
+	}
 gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
 gameOpts = gameOptions + gameStates.app.iNostalgia;
 
 #if MULTI_THREADED
-if (t = FindArg ("-multithreaded"))
+if ((t = FindArg ("-multithreaded"))
 	gameStates.app.bMultiThreaded = NumArg (t, 1);
 #endif
-if (t = FindArg ("-nosound"))
+if ((t = FindArg ("-nosound")))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
-if (t = FindArg ("-progress_bars"))
+if ((t = FindArg ("-progress_bars")))
 	gameStates.app.bProgressBars = NumArg (t, 1);
-if (t = FindArg ("-fix_models"))
+if ((t = FindArg ("-fix_models")))
 	gameStates.app.bFixModels = NumArg (t, 1);
-if (t = FindArg ("-alt_models"))
+if ((t = FindArg ("-alt_models")))
 	gameStates.app.bAltModels = NumArg (t, 1);
-if (t = FindArg ("-lores_shadows"))
+if ((t = FindArg ("-lores_shadows")))
 	gameStates.render.bLoResShadows = NumArg (t, 1);
-if (t=FindArg ("-print_version"))
+if ((t = FindArg ("-print_version")))
 	PrintVersion ();
-if (t=FindArg ("-altLanguage"))
+if ((t = FindArg ("-altLanguage")))
 	gameStates.app.bEnglish = (NumArg (t, 1) == 0);
 
-if (t=FindArg ("-auto_hogfile")) {
+if ((t = FindArg ("-auto_hogfile"))) {
 	strcpy (szAutoHogFile, "missions/");
 	strcat (szAutoHogFile, Args [t+1]);
 	if (*szAutoHogFile && !strchr (szAutoHogFile, '.'))
 		strcat (szAutoHogFile, ".hog");
 	}
-if (t=FindArg ("-auto_mission")) {
+if ((t = FindArg ("-auto_mission"))) {
 	char	c = *Args [++t];
 	char	bDelim = ((c == '\'') || (c == '"'));
 
@@ -1146,7 +1148,7 @@ else if (FindArg ("-verbose"))
 	con_threshold.value = 1.0;
 else
 	con_threshold.value = -1.0;
-if (t = FindArg ("-autodemo")) {
+if ((t = FindArg ("-autodemo"))) {
 	gameData.demo.bAuto = 1;
 	strncpy (gameData.demo.fnAuto, *Args [t+1] ? Args [t+1] : "descent.dem", sizeof (gameData.demo.fnAuto));
 	}
@@ -2957,7 +2959,6 @@ CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
 /*---*/LogErr ("Loading main hog file\n");
 if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) || 
 	  (gameOpts->app.bDemoData = CFileInit ("d2demo.hog", gameFolders.szDataDir)))) {
-	  char *psz = TXT_NO_HOG2;
 	/*---*/LogErr ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
@@ -2986,7 +2987,7 @@ SetControlType ();
 /*---*/LogErr ("Initializing joystick\n");
 DoJoystickInit ();
 /*---*/LogErr ("Initializing graphics\n");
-if (t = GrInit ()) {		//doesn't do much
+if ((t = GrInit ())) {		//doesn't do much
 	LogErr ("Cannot initialize graphics\n");
 	Error (TXT_CANT_INIT_GFX, t);
 	return 1;
@@ -3154,8 +3155,8 @@ void check_joystick_calibration ()
 void show_order_form ()
 {
 #ifndef EDITOR
-	int pcx_error;
-	char titlePal[768];
+	int 	pcx_error;
+	ubyte titlePal [768];
 	char	exit_screen[16];
 
 	GrSetCurrentCanvas (NULL);
@@ -3177,7 +3178,8 @@ void show_order_form ()
 		//vfx_set_palette_sub (titlePal);
 		GrPaletteFadeIn (NULL, 32, 0);
 		GrUpdate (0);
-		while (!KeyInKey () && !MouseButtonState (0)) {} //key_getch ();
+		while (!(KeyInKey () || MouseButtonState (0)))
+			;
 		GrPaletteFadeOut (titlePal, 32, 0);
 	}
 	else

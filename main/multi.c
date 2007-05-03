@@ -250,14 +250,14 @@ extern fix ThisLevelTime;
 
 tPlayerShip defaultPlayerShip = {
 	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175, 
-	{{146013, -59748, 35756}, 
-	{-147477, -59892, 34430}, 
-	{222008, -118473, 148201}, 
-	{-223479, -118213, 148302}, 
-	{153026, -185, -91405}, 
-	{-156840, -185, -91405}, 
-	{1608, -87663, 184978}, 
-	{-1608, -87663, -190825}}};
+	{{{146013, -59748, 35756}}, 
+	 {{-147477, -59892, 34430}}, 
+	 {{222008, -118473, 148201}}, 
+	 {{-223479, -118213, 148302}}, 
+	 {{153026, -185, -91405}}, 
+	 {{-156840, -185, -91405}}, 
+	 {{1608, -87663, 184978}}, 
+	 {{-1608, -87663, -190825}}}};
 
 //-----------------------------------------------------------------------------
 // check protection
@@ -558,7 +558,7 @@ void ChoseTeam (int nPlayer)
 teamScore [0]  = 
 teamScore [1] = 0;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (t = GetTeam (i))
+	if ((t = GetTeam (i)))
 		h++;
 	teamScore [t] = gameData.multiplayer.players [i].score;
 	}
@@ -2029,12 +2029,14 @@ else
 	LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX] /= 4;
 
 for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
-	if (gameData.app.nGameMode & GM_HOARD)
+	if (gameData.app.nGameMode & GM_HOARD) {
 		if (nIndex == PROXIMITY_INDEX)
 			continue;
-	else if (gameData.app.nGameMode & GM_ENTROPY)
+		}
+	else if (gameData.app.nGameMode & GM_ENTROPY) {
 		if ((nIndex == PROXIMITY_INDEX) || (nIndex == SMART_MINE_INDEX))
 			continue;
+		}
 	nType = secondaryWeaponToPowerup [nIndex];
 	if ((LOCALPLAYER.secondaryAmmo [nIndex] +
 		  gameData.multiplayer.powerupsInMine [(int)nType]) > 

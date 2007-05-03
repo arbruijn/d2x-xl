@@ -90,11 +90,12 @@ criticalErrorCounterPtr = ptr;
 
 inline void CFCriticalError (int error)
 {
-if (*criticalErrorCounterPtr)
+if (*criticalErrorCounterPtr) {
 	if (error)
 		*criticalErrorCounterPtr += error;
 	else
 		*criticalErrorCounterPtr = 0;
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -334,20 +335,20 @@ FILE* CFFindLibFile (char *name, int *length, int bUseD1Hog)
 {
 	FILE* fp;
   
-if (fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", name, length))
+if ((fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", name, length)))
 	return fp;
-if (fp = CFFindHogFile (&gameHogFiles.XLHogFiles, gameFolders.szDataDir, name, length))
+if ((fp = CFFindHogFile (&gameHogFiles.XLHogFiles, gameFolders.szDataDir, name, length)))
 	return fp;
-if (fp = CFFindHogFile (&gameHogFiles.ExtraHogFiles, gameFolders.szDataDir, name, length))
+if ((fp = CFFindHogFile (&gameHogFiles.ExtraHogFiles, gameFolders.szDataDir, name, length)))
 	return fp;
 if (bUseD1Hog) {
-	if (fp = CFFindHogFile (&gameHogFiles.D1HogFiles, gameFolders.szDataDir, name, length))
+	if ((fp = CFFindHogFile (&gameHogFiles.D1HogFiles, gameFolders.szDataDir, name, length)))
 		return fp;
 	}
-if (!bUseD1Hog) {
-	if (fp = CFFindHogFile (&gameHogFiles.D2XHogFiles, gameFolders.szMissionDir, name, length))
+else {
+	if ((fp = CFFindHogFile (&gameHogFiles.D2XHogFiles, gameFolders.szMissionDir, name, length)))
 		return fp;
-	if (fp = CFFindHogFile (&gameHogFiles.D2HogFiles, gameFolders.szDataDir, name, length))
+	if ((fp = CFFindHogFile (&gameHogFiles.D2HogFiles, gameFolders.szDataDir, name, length)))
 		return fp;
 	}
 //LogErr ("File '%s' not found\n", name);
@@ -470,7 +471,7 @@ else {
 	}
 
 if (!fp) {
-	if (fp = CFFindLibFile (filename, &length, bUseD1Hog)) 
+	if ((fp = CFFindLibFile (filename, &length, bUseD1Hog)))
 		if (stricmp (mode, "rb")) {
 			Error ("Cannot read hog file\n(wrong file io mode).\n");
 			return NULL;
@@ -963,7 +964,7 @@ return pData;
 
 void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt)
 {
-	int	h, i, j, l = (int) strlen (szFullPath) - 1;
+	int	h = 0, i, j, l = (int) strlen (szFullPath) - 1;
 
 i = l;
 #ifdef _WIN32

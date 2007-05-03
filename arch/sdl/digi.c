@@ -334,7 +334,7 @@ for (i = 0; i < MAX_SOUND_SLOTS; i++)
 
 int DigiResampleSound (tDigiSound *gsp, struct tSoundSlot *ssp, int bD1Sound, int b16Bits)
 {
-	int h, i, j, k, l;
+	int h = 0, i, j, k, l;
 
 i = gsp->length;
 l = 2 * i;
@@ -459,7 +459,7 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 {
 	int i, starting_channel;
 	struct tSoundSlot *ssp;
-	tDigiSound *gsp;
+	tDigiSound *gsp = NULL;
 
 if (!gameStates.app.bUseSound)
 	return -1;

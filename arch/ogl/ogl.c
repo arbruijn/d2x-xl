@@ -253,7 +253,7 @@ glInitTMU [2] =
 glExitTMU = 0;
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 	if (t->handle > 0) {
-		glDeleteTextures (1, &t->handle);
+		glDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = -1;
 		}
 	t->w =
@@ -439,7 +439,7 @@ if (!bmP)
 bmP = BmOverride (bmP);
 texP = bmP->glTexture;
 #if RENDER2TEXTURE
-if (bPBuffer = texP && (texP->handle < 0)) {
+if ((bPBuffer = texP && (texP->handle < 0))) {
 	if (ogl_bindteximage (texP))
 		return 1;
 	}
@@ -639,12 +639,12 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 	if ((tMap1 < 0) || (tMap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 		continue;
 	bmP = LoadFaceBitmap (tMap1, sideP->nFrame);
-	if (tMap2 = sideP->nOvlTex) {
+	if ((tMap2 = sideP->nOvlTex)) {
 		bm2 = LoadFaceBitmap (tMap1, sideP->nFrame);
 		if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 			OglLoadBmTexture (bm2, 1, 0);
-		else if (bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient))
+		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient)))
 			bmP = bmm;
 		else
 			OglLoadBmTexture (bm2, 1, 0);
@@ -793,12 +793,12 @@ for (seg = 0; seg < gameData.segs.nSegments; seg++) {
 		if ((tmap1 < 0) || (tmap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
 		bmP = LoadFaceBitmap (tmap1, sideP->nFrame);
-		if (tmap2 = sideP->nOvlTex) {
+		if ((tmap2 = sideP->nOvlTex)) {
 			bm2 = LoadFaceBitmap (tmap2, sideP->nFrame);
 			if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
 				OglLoadBmTexture (bm2, 1, 0);
-			else if (bmm = TexMergeGetCachedBitmap (tmap1, tmap2, sideP->nOvlOrient))
+			else if ((bmm = TexMergeGetCachedBitmap (tmap1, tmap2, sideP->nOvlOrient)))
 				bmP = bmm;
 			else
 				OglLoadBmTexture (bm2, 1, 0);
@@ -1346,7 +1346,6 @@ int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *texP, int nTr
 	ogl_texture	tex;
 	int			bLocalTexture;
 
-CBRK (bmP && !bmP->bm_bpp);
 if (texP) {
 	bLocalTexture = 0;
 	//calculate smallest texture size that can accomodate us (must be multiples of 2)
@@ -1375,7 +1374,6 @@ else {
 	tex.handle = 0;
 	}
 if (bmP && (bmP->bm_bpp == 3)) {
-	CBRK (superTransp != 0);
 	texP->format = GL_RGB;
 	texP->internalformat = 3;
 	texP->lw = bmP->bm_bpp * texP->w;
@@ -1408,7 +1406,7 @@ if (texP->handle >= 0)
 #if TEXTURE_COMPRESSION
 	if (data && !bmP->bm_compressed)
 #else
-	if (data)
+	if (data) {
 #endif
 		if (nTransp >= 0) {
 			texP->format = 
@@ -1423,10 +1421,11 @@ if (texP->handle >= 0)
 			}
 		else
 			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
+		}
 	// Generate OpenGL texture IDs.
-	glGenTextures (1, &texP->handle);
+	glGenTextures (1, (GLuint *) &texP->handle);
 	//set priority
-	glPrioritizeTextures (1, &texP->handle, &texP->prio);
+	glPrioritizeTextures (1, (GLuint *) &texP->handle, &texP->prio);
 	// Give our data to OpenGL.
 	OGL_BINDTEX (texP->handle);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1468,7 +1467,7 @@ if (texP->handle >= 0)
 		TexSetSize (texP);
 		}
 	if (bLocalTexture)
-		glDeleteTextures (1, &texP->handle);
+		glDeleteTextures (1, (GLuint *) &texP->handle);
 	}
 r_texcount++; 
 return 0;
@@ -1606,8 +1605,6 @@ else if (!BM_FRAMES (bmP)) {
 			if (BM_MASK (bmfP))
 				OglLoadBmTextureM (BM_MASK (bmfP), 0, -1, 1, NULL);
 	}
-else
-	CBRK (!BM_CURFRAME (bmP));
 return 0;
 }
 
@@ -1616,7 +1613,7 @@ return 0;
 void OglFreeTexture (ogl_texture *t)
 {
 if (t) {
-	GLint	h = t->handle;
+	GLuint h = (GLuint) t->handle;
 	if (h) {
 		r_texcount--;
 		glDeleteTextures (1, &h);
@@ -1641,7 +1638,7 @@ if (BM_FRAMES (bmP)) {
 		BM_FRAMES (bmP) [i].glTexture = NULL;
 		}
 	}
-else if (t = bmP->glTexture) {
+else if ((t = bmP->glTexture)) {
 #if RENDER2TEXTURE == 2
 	if (t->handle < 0)
 		OGL_BINDTEX (0);
@@ -1692,10 +1689,13 @@ return texId; 						// Return The Texture ID
 
 char *LoadShader (char* fileName) //, char* Shadersource)
 {
-	FILE *fp; 
-	char *bufP = NULL; 
-	int f, fSize; 
-	char fn [FILENAME_LEN];
+	FILE	*fp; 
+	char	*bufP = NULL; 
+	int 	fSize;
+#ifdef _WIN32
+	int	f;
+#endif 
+	char 	fn [FILENAME_LEN];
 
 if (!(fileName && *fileName))
 	return NULL;	// no fileName
@@ -2034,7 +2034,10 @@ glMultiTexCoord2f			= (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress ("glMultiT
 glActiveTexture			= (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB");		
 glClientActiveTexture	= (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("glClientActiveTextureARB");
 bMultiTexturingOk =
-	glMultiTexCoord2d && glActiveTexture && glClientActiveTexture;
+#ifdef _WIN32
+	glMultiTexCoord2d &&
+#endif 
+	glActiveTexture && glClientActiveTexture;
 #	else
 bMultiTexturingOk = 1;
 #	endif
@@ -2085,7 +2088,7 @@ OglInitFBuffer ();
 #endif
 InitShaders ();
 glEnable (GL_STENCIL_TEST);
-if (gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST))
+if ((gameStates.render.bHaveStencilBuffer = glIsEnabled (GL_STENCIL_TEST)))
 	glDisable (GL_STENCIL_TEST);
 }
 

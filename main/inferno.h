@@ -2141,7 +2141,7 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 
 #define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == gameData.multiplayer.nLocalPlayer))
 
-#define INFINITY			fInfinity [gameOpts->render.shadows.nReach]
+#define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 
 #define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
 

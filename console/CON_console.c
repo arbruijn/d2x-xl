@@ -267,7 +267,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 	int loop;
 	int loop2;
 	int Screenlines;
-	grs_canvas *canv_save;
+	grs_canvas *canv_save = NULL;
 	grs_color	orig_color;
 	grs_font		*orig_font;
 
@@ -633,7 +633,7 @@ void DrawCommandLine() {
 	static int	LastBlinkTime = 0;	/* Last time the consoles cursor blinked */
 	static int	LastCursorPos = 0;		// Last Cursor Position
 	static int	bBlink = 0;			/* Is the cursor currently blinking */
-	grs_canvas	*canv_save;
+	grs_canvas	*canv_save = NULL;
 	grs_color	orig_color;
 	grs_font		*orig_font;
 

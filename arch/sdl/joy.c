@@ -287,7 +287,7 @@ if (gameOpts->legacy.bInput)
    event_poll(SDL_JOYEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
 for (i = 0; i < JOY_MAX_AXES; i++)
-	if (axis [i] = Joystick.axes [i].value) {
+	if ((axis [i] = Joystick.axes [i].value)) {
 		channel_masks |= (1 << i);
 		//Joystick.axes [i].value = 0;
 		}

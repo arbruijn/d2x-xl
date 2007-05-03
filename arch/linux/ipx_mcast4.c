@@ -60,14 +60,14 @@ static void msg (const char *fmt,...)
 }
 
 //------------------------------------------------------------------------------
-
+#if 0
 static void chk(void *p)
 {
-	if (p) return;
-	msg("FATAL: Virtual memory exhausted!");
-	exit(EXIT_FAILURE);
+if (p) return;
+msg("FATAL: Virtual memory exhausted!");
+exit(EXIT_FAILURE);
 }
-
+#endif
 //------------------------------------------------------------------------------
 
 static char szFailMsg [1024];
@@ -217,8 +217,9 @@ static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int outbufsi
 	struct sockaddr_in fromaddr;
 	int fromaddrsize = sizeof(fromaddr);
 
-	if((size = recvfrom(sk->fd, outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize)) < 0)
-		return -1;
+size = recvfrom(sk->fd, outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize);
+if (size < 0)
+	return -1;
 
 #ifdef IPX_MCAST4DBG
 	//printf(MSGHDR "Got packet from ");
