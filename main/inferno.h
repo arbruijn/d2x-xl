@@ -324,7 +324,6 @@ typedef struct tMultiplayerOptions {
 typedef struct tApplicationOptions {
 	int bAutoRunMission;
 	int nVersionFilter;
-	int bDemoData;
 	int bSinglePlayer;
 	int bExpertMode;
 	int nScreenShotInterval;
@@ -686,6 +685,7 @@ typedef struct tApplicationStates {
 	int bExit;
 	int bMultiThreaded;
 #endif
+	int bDemoData;
 	int nSDLTicks;
 	int nExtGameStatus;
 	int nFunctionMode;

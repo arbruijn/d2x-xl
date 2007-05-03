@@ -262,7 +262,7 @@ if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	return 1;
 	}
 memset (SoundSlots, 0, sizeof (SoundSlots));	
-if (gameOpts->app.bDemoData)
+if (gameStates.app.bDemoData)
 	gameOpts->sound.digiSampleRate = SAMPLE_RATE_11K;
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {

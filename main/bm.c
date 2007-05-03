@@ -1083,7 +1083,7 @@ while (gameData.models.nPolyModels > N_D2_POLYGON_MODELS) {
 	FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
 	FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);
 	}
-if (!gameOpts->app.bDemoData)
+if (!gameStates.app.bDemoData)
 	while (gameData.models.nPolyModels > gameData.endLevel.exit.nModel) {
 		FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
 		FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);

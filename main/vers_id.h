@@ -8,7 +8,7 @@
 #define _VERS_ID
 
 #ifndef VERSION
-#	define VERSION "1.9.188"
+#	define VERSION "1.9.189"
 #endif
 
 #define D2X_NAME		"D2X-XL "
@@ -20,7 +20,7 @@
 #define D2X_MINOR		9
 #endif
 #ifndef D2X_MICRO
-#define D2X_MICRO		188
+#define D2X_MICRO		189
 #endif
 
 #define VERSION_TYPE		"Full Version"

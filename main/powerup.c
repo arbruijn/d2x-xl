@@ -173,7 +173,7 @@ xPowerupTime = 0;
 
 void UpdateFlagClips (void)
 {
-if (!gameOpts->app.bDemoData) {
+if (!gameStates.app.bDemoData) {
 	UpdatePowerupClip (gameData.pig.flags [0].vcP, &gameData.pig.flags [0].vci, 0);
 	UpdatePowerupClip (gameData.pig.flags [1].vcP, &gameData.pig.flags [1].vci, 0);
 	}

@@ -314,7 +314,7 @@ if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
 	nShields = f2ir (gameData.bots.info [gameStates.app.bD1Mission][objP->id].strength);
-	h = f2ir (objP->shields) * 100 / nShields;
+	h = nShields ? f2ir (objP->shields) * 100 / nShields : 0;
 	}
 if (h < 0)
 	h = 0;	

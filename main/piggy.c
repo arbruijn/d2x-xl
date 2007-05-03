@@ -79,9 +79,9 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 #define DEFAULT_HAMFILE_SHAREWARE       "d2demo.ham"
 
 #define DEFAULT_PIGFILE \
-		  (gameOpts->app.bDemoData ? DEFAULT_PIGFILE_SHAREWARE : DEFAULT_PIGFILE_REGISTERED)
+		  (gameStates.app.bDemoData ? DEFAULT_PIGFILE_SHAREWARE : DEFAULT_PIGFILE_REGISTERED)
 #define DEFAULT_HAMFILE \
-		  (gameOpts->app.bDemoData ? DEFAULT_HAMFILE_SHAREWARE : DEFAULT_HAMFILE_REGISTERED)
+		  (gameStates.app.bDemoData ? DEFAULT_HAMFILE_SHAREWARE : DEFAULT_HAMFILE_REGISTERED)
 #define DEFAULT_SNDFILE \
 		  ((gameData.pig.tex.nHamFileVersion < 3) ? DEFAULT_HAMFILE_SHAREWARE : \
 			(gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) ? "descent2.s22" : "descent2.s11")
@@ -1576,7 +1576,7 @@ int PiggyInit (void)
 		snd_ok = ReadSoundFile ();
 		}
 	if (gameStates.app.bFixModels)
-		gameStates.app.bFixModels = LoadRobotReplacements ("d2x-xl", 0, 1) > 0;
+		gameStates.app.bFixModels = gameStates.app.bDemoData ? 0 : LoadRobotReplacements ("d2x-xl", 0, 1) > 0;
 	atexit (PiggyClose);
 	return (ham_ok && snd_ok);               //read ok
 }

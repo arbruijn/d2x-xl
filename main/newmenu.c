@@ -331,7 +331,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 	else if (!pszCurBg)
 		pszCurBg = filename;
 	if (!filename)
-		filename = gameOpts->app.bDemoData ? MENU_PCX_SHAREWARE : MENU_PCX_FULL;
+		filename = gameStates.app.bDemoData ? MENU_PCX_SHAREWARE : MENU_PCX_FULL;
 	if (!(filename && strcmp (filename, MENU_PCX_FULL) && strcmp (filename, MENU_PCX_SHAREWARE))) {
 		NMLoadAltBg ();
 		if (gameOpts->menus.altBg.bHave > 0)

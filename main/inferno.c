@@ -1647,14 +1647,12 @@ void InitAppOptions (int i)
 {
 if (i) {
 	gameOptions [1].app.nVersionFilter = 2;
-	gameOptions [1].app.bDemoData = 0;
 	gameOptions [1].app.bSinglePlayer = 0;
 	gameOptions [1].app.bExpertMode = 0;
 	gameOptions [1].app.nScreenShotInterval = 0;
 	}
 else {
 	gameOptions [0].app.nVersionFilter = 2;
-	gameOptions [0].app.bDemoData = 1;
 	gameOptions [0].app.bSinglePlayer = 0;
 	gameOptions [0].app.bExpertMode = 1;
 	gameOptions [0].app.nScreenShotInterval = 0;
@@ -2958,7 +2956,7 @@ CreateTrackerList ();
 CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
 /*---*/LogErr ("Loading main hog file\n");
 if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) || 
-	  (gameOpts->app.bDemoData = CFileInit ("d2demo.hog", gameFolders.szDataDir)))) {
+	  (gameStates.app.bDemoData = CFileInit ("d2demo.hog", gameFolders.szDataDir)))) {
 	/*---*/LogErr ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
