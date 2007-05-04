@@ -1635,13 +1635,8 @@ else {
 	glVertex3f (x - w, y - h, z);
 	glEnd ();
 	}
-//These next lines are important for later leave these here - Lehm 4/26/05
-//OglActiveTexture (GL_TEXTURE0_ARB);
-//glBindTexture (GL_TEXTURE_2D, 0);
-//glEnable (GL_DEPTH_TEST);
 if (!bDepthInfo)
 	glDepthFunc (depthFunc);
-//glDisable (GL_TEXTURE_2D);
 return 0;
 } 
 

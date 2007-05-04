@@ -49,7 +49,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 #define	FIREBALL_ALPHA		0.7
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
-#define	WEAPON_ALPHA		1.0
+#define	WEAPON_ALPHA		0.7
 
 void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {
@@ -74,7 +74,7 @@ else if (objP->nType == OBJ_WEAPON)
 	alpha = WEAPON_ALPHA;
 #if 1
 if (objP->nType == OBJ_FIREBALL)
-	glDepthMask (0);
+	glDepthMask (0);	//don't set z-buffer for transparent objects
 #endif
 if (pvc->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, pvc->frames [iFrame], lighted);

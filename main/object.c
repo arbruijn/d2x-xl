@@ -274,7 +274,7 @@ void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFr
 {
 	grsBitmap	*bmP;
 	int			id, orientation = 0;
-	int			transp = (objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
+	int			transp = 0; //(objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
 	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
 	fix			xSize;
 
@@ -674,6 +674,8 @@ else {
 					bmiAltTex, 
 					NULL /*gameData.weapons.color + objP->id*/);
 			}
+		if (!bBlendPolys && (objP->nType == OBJ_WEAPON))
+			gameStates.render.grAlpha = 4 * GR_ACTUAL_FADE_LEVELS / 5;
 		DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
 			(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
@@ -1565,7 +1567,8 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
-	if (EGI_FLAG (bShockwaves, 1, 1, 0)) {
+	if (EGI_FLAG (bShockwaves, 1, 1, 0) && 
+		 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
 			fVector			vPosf;
 			int				h, i, j, k, n;
 			float				r [4], l [4], alpha;
@@ -1632,8 +1635,8 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 			glDisable (GL_STENCIL_TEST);
 		glDepthMask (0);
-		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						  1, gameData.weapons.color + objP->id, 0.5f, 1, 0);
+		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
+						  1, gameData.weapons.color + objP->id, 0.5f, 1, 1);
 		glDepthMask (1);
 		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 			glEnable (GL_STENCIL_TEST);
@@ -1719,7 +1722,8 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
+if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id] &&
+	 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
 		vmsVector		vPos;
 		fVector			vPosf, *vTrail;
 		int				i, j;
@@ -4019,6 +4023,7 @@ bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 memset (bIsWeapon, 0, sizeof (bIsWeapon));
 bIsWeapon [VULCAN_ID] =
 bIsWeapon [GAUSS_ID] = 0;
+bIsWeapon [FLARE_ID] =
 bIsWeapon [LASER_ID] =
 bIsWeapon [LASER_ID + 1] =
 bIsWeapon [LASER_ID + 2] =

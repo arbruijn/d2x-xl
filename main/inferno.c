@@ -2800,8 +2800,9 @@ if (!(oofToModel [i].pszOOF && OOF_ReadFile (oofToModel [i].pszOOF, po)))
 	i++;
 else {
 	do {
+		CBP (!oofToModel [i].nModel);
 		gameData.models.modelToOOF [oofToModel [i].nModel] = po;
-		} while ((i < j) && !oofToModel [++i].pszOOF);
+		} while ((++i < j) && !oofToModel [i].pszOOF);
 	gameData.models.nHiresModels++;
 	po++;
 	}
