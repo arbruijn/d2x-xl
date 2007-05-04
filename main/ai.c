@@ -617,7 +617,7 @@ _exit_cheat:
 		if (ailp->nextPrimaryFire <= 0)
 			CalcGunPoint (&gameData.ai.vGunPoint, objP, aip->CURRENT_GUN);
 		else
-			CalcGunPoint (&gameData.ai.vGunPoint, objP, 
+			CalcGunPoint (&gameData.ai.vGunPoint, objP,
 							  (ROBOTINFO (objP->id).nGuns == 1) ? 0 : !aip->CURRENT_GUN);
 		bHaveGunPos = 1;
 		vVisPos = gameData.ai.vGunPoint;
@@ -1429,6 +1429,7 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 				AIMultiSendRobotPos (nObject, -1);
 				}
 			// Fire at tPlayer, if appropriate.
+#if 1
 			if (!bHaveGunPos) {
 				if (ailp->nextPrimaryFire <= 0)
 					CalcGunPoint (&gameData.ai.vGunPoint, objP, aip->CURRENT_GUN);
@@ -1437,6 +1438,7 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 				bHaveGunPos = 1;
 				vVisPos = gameData.ai.vGunPoint;
 				}
+#endif
 			AIDoActualFiringStuff (objP, aip, ailp, botInfoP, aip->CURRENT_GUN);
 			bHaveGunPos = 0;
 			break;
@@ -1468,8 +1470,8 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 
 	// Switch to next gun for next fire.
 if (!gameData.ai.nPlayerVisibility) {
-	if (++aip->CURRENT_GUN >= ROBOTINFO (objP->id).nGuns) {
-#if 1
+	if (++(aip->CURRENT_GUN) >= ROBOTINFO (objP->id).nGuns) {
+#if 0
 		aip->CURRENT_GUN = 0;
 #else			
 		if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))  // Two weapon types hack.

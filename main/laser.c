@@ -646,9 +646,8 @@ objP->cType.laserInfo.nParentSig = pParent->nSignature;
 //	not apply to the Omega Cannon.
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
-	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec ,NULL);
-	if ((gameData.objs.objects + nParent != gameData.objs.viewer) &&
-		 (pParent->nType != OBJ_WEAPON)) {
+	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec, NULL);
+	if ((gameData.objs.objects + nParent != gameData.objs.viewer) && (pParent->nType != OBJ_WEAPON)) {
 		// Muzzle flash		
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
 			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
@@ -657,12 +656,19 @@ if (nWeaponType == OMEGA_ID) {
 	DoOmegaStuff (gameData.objs.objects + nParent, vPosition, objP);
 	return nObject;
 	}
+else if (nWeaponType == FUSION_ID) {
+	static int nRotDir = 0;
+	nRotDir = !nRotDir;
+	objP->mType.physInfo.rotVel.p.x =
+	objP->mType.physInfo.rotVel.p.y = 0;
+	objP->mType.physInfo.rotVel.p.z = nRotDir ? -F1_0 : F1_0;
+	}
 if (pParent->nType == OBJ_PLAYER) {
 	if (nWeaponType == FUSION_ID) {
 		if (gameData.fusion.xCharge <= 0)
 			objP->cType.laserInfo.multiplier = F1_0;
 		else if (gameData.fusion.xCharge <= 4*F1_0)
-			objP->cType.laserInfo.multiplier = F1_0 + gameData.fusion.xCharge/2;
+			objP->cType.laserInfo.multiplier = F1_0 + gameData.fusion.xCharge / 2;
 		else
 			objP->cType.laserInfo.multiplier = 4*F1_0;
 		}
@@ -670,7 +676,7 @@ if (pParent->nType == OBJ_PLAYER) {
 				(gameData.multiplayer.players [pParent->id].flags & PLAYER_FLAGS_QUAD_LASERS))
 		objP->cType.laserInfo.multiplier = F1_0*3/4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
-		if (nParent==LOCALPLAYER.nObject) {
+		if (nParent == LOCALPLAYER.nObject) {
 			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]= objP;
 			gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] = objP->nSignature;
 			if (gameData.demo.nState==ND_STATE_RECORDING)
@@ -1188,6 +1194,7 @@ int LaserPlayerFireSpreadDelay (
 	vmsVector	gun_point;
 	vmsMatrix	m;
 	int			nObject;
+	tObject		*laserP;
 #if FULL_COCKPIT_OFFS
 	int bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) && 
 							(OBJ_IDX (objP) == LOCALPLAYER.nObject));
@@ -1259,43 +1266,44 @@ if ((laserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided) {
 }
 
 gameData.multigame.bIsGuided = 0;
-
+laserP = gameData.objs.objects + nObject;
 if (laserType == CONCUSSION_ID ||
-		laserType == HOMINGMSL_ID ||
-		laserType == SMARTMSL_ID ||
-		laserType == MEGAMSL_ID ||
-		laserType == FLASHMSL_ID ||
-		//laserType == GUIDEDMSL_ID ||
-		//laserType == SMARTMINE_ID ||
-		laserType == MERCURYMSL_ID ||
-		laserType == EARTHSHAKER_ID)
+	 laserType == HOMINGMSL_ID ||
+	 laserType == SMARTMSL_ID ||
+	 laserType == MEGAMSL_ID ||
+	 laserType == FLASHMSL_ID ||
+	 //laserType == GUIDEDMSL_ID ||
+	 //laserType == SMARTMINE_ID ||
+	 laserType == MERCURYMSL_ID ||
+	 laserType == EARTHSHAKER_ID) {
 	if (!gameData.objs.missileViewer && (objP->id == gameData.multiplayer.nLocalPlayer))
-		gameData.objs.missileViewer = gameData.objs.objects + nObject;
+		gameData.objs.missileViewer = laserP;
+	}
 
 //	If this weapon is supposed to be silent, set that bit!
 if (!bMakeSound)
-	gameData.objs.objects [nObject].flags |= OF_SILENT;
+	laserP->flags |= OF_SILENT;
 
 //	If this weapon is supposed to be silent, set that bit!
 if (harmless)
-	gameData.objs.objects [nObject].flags |= OF_HARMLESS;
+	laserP->flags |= OF_HARMLESS;
 
 //	If the tObject firing the laser is the tPlayer, then indicate the laser tObject so robots can dodge.
 //	New by MK on 6/8/95, don't let robots evade proximity bombs, thereby decreasing uselessness of bombs.
 if ((objP == gameData.objs.console) && 
-	 ((gameData.objs.objects [nObject].id != PROXMINE_ID) && 
-	  (gameData.objs.objects [nObject].id != SMARTMINE_ID)))
+	 ((laserP->id != PROXMINE_ID) && 
+	  (laserP->id != SMARTMINE_ID)))
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
 if (gameData.weapons.info [laserType].homingFlag) {
 	if (objP == gameData.objs.console) {
-		gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal = 
-			FindHomingObject (&vLaserPos, gameData.objs.objects + nObject);
-		gameData.multigame.laser.nTrack = gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal;
+		laserP->cType.laserInfo.nTrackGoal = 
+			FindHomingObject (&vLaserPos, laserP);
+		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nTrackGoal;
 		}
 	else {// Some other tPlayer shot the homing thing
 		Assert (IsMultiGame);
-		gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal = gameData.multigame.laser.nTrack;
+		laserP->cType.laserInfo.nTrackGoal = gameData.multigame.laser.nTrack;
 		}
 	}
 return nObject;
@@ -1748,7 +1756,6 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 
 		case FUSION_INDEX: {
 			vmsVector	vForce;
-
 			LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
 			LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
 			flags = (sbyte) (gameData.fusion.xCharge >> 12);
@@ -1761,8 +1768,7 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 			vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
 			vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
 			PhysApplyRot (objP, &vForce);
-
-		}
+			}
 			break;
 		case SUPER_LASER_INDEX: {
 			ubyte superLevel = 3;		//make some new kind of laser eventually

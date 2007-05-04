@@ -1067,6 +1067,14 @@ if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);
 	MultiSendRobotFire (nObject, objP->cType.aiInfo.CURRENT_GUN, &fire_vec);
 	}
+#if 1
+if (++(objP->cType.aiInfo.CURRENT_GUN) >= botInfoP->nGuns) {
+	if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))
+		objP->cType.aiInfo.CURRENT_GUN = 0;
+	else
+		objP->cType.aiInfo.CURRENT_GUN = 1;
+	}
+#endif
 CreateAwarenessEvent (objP, PA_NEARBY_ROBOT_FIRED);
 SetNextFireTime (objP, ailp, botInfoP, nGun);
 }
@@ -2405,7 +2413,6 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 		if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailp)) {
 			dot = VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
 			if ((dot >= 7*F1_0/8) || ((dot > F1_0/4) &&  botInfoP->bossFlag)) {
-
 				if (nGun < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
 						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->size + gameData.objs.console->size + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
@@ -2417,8 +2424,8 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 							return;
 						}
 					else {
-						if ((&gameData.ai.vGunPoint.p.x == 0) && (&gameData.ai.vGunPoint.p.y == 0) && (&gameData.ai.vGunPoint.p.z == 0))
-							;
+						if ((gameData.ai.vGunPoint.p.x == 0) && (gameData.ai.vGunPoint.p.y == 0) && (gameData.ai.vGunPoint.p.z == 0))
+							dot = dot;
 						else {
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 								return;
@@ -2453,7 +2460,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 
 				aip->GOAL_STATE = AIS_RECO;
 				ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
-
+#if 0
 				// Switch to next gun for next fire.  If has 2 gun types, select gun #1, if exists.
 				if (++(aip->CURRENT_GUN) >= botInfoP->nGuns) {
 					if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))
@@ -2461,6 +2468,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 					else
 						aip->CURRENT_GUN = 1;
 					}
+#endif
 				}
 			}
 		}

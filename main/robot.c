@@ -87,40 +87,40 @@ tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 //	-----------------------------------------------------------------------------------------------------------
 //given an tObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-void CalcGunPoint(vmsVector *gun_point,tObject *objP,int gun_num)
+void CalcGunPoint (vmsVector *vGunPoint, tObject *objP, int nGun)
 {
-	tPolyModel *pm;
-	tRobotInfo *r;
-	vmsVector pnt;
-	vmsMatrix m;
-	int mn;				//submodel number
+	tPolyModel	*pm;
+	tRobotInfo	*r;
+	vmsVector	pnt;
+	vmsMatrix	m;
+	int			mn;				//submodel number
 
 Assert(objP->renderType==RT_POLYOBJ || objP->renderType==RT_MORPH);
 //Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
 r = &ROBOTINFO (objP->id);
 pm = gameData.models.polyModels + r->nModel;
-if (gun_num >= r->nGuns) {
+if (nGun >= r->nGuns) {
 	//Int3();
-	gun_num = 0;
+	nGun = 0;
 	}
-//	Assert(gun_num < r->nGuns);
-pnt = r->gunPoints[gun_num];
-mn = r->gunSubModels[gun_num];
+//	Assert(nGun < r->nGuns);
+pnt = r->gunPoints [nGun];
+mn = r->gunSubModels [nGun];
 //instance up the tree for this gun
 while (mn != 0) {
 	vmsVector tpnt;
 
-	VmAngles2Matrix(&m,&objP->rType.polyObjInfo.animAngles[mn]);
-	VmTransposeMatrix(&m);
-	VmVecRotate(&tpnt,&pnt,&m);
-	VmVecAdd(&pnt,&tpnt,&pm->subModels.offsets[mn]);
-	mn = pm->subModels.parents[mn];
+	VmAngles2Matrix (&m, &objP->rType.polyObjInfo.animAngles [mn]);
+	VmTransposeMatrix (&m);
+	VmVecRotate (&tpnt, &pnt, &m);
+	VmVecAdd (&pnt, &tpnt, &pm->subModels.offsets [mn]);
+	mn = pm->subModels.parents [mn];
 	}
 //now instance for the entire tObject
-VmCopyTransposeMatrix(&m,&objP->position.mOrient);
-VmVecRotate(gun_point,&pnt,&m);
-VmVecInc(gun_point,&objP->position.vPos);
+VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+VmVecRotate (vGunPoint, &pnt, &m);
+VmVecInc (vGunPoint, &objP->position.vPos);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

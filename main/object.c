@@ -1629,24 +1629,11 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (gameOpts->render.bCoronas && LoadCorona ()) {
 		fix xSize = objP->size * 4;
-		tRgbColorf	c = gameData.weapons.color [objP->id];
-#if 0
-		float			m = c.red;
-		if (m < c.green)
-			m = c.green;
-		if (m < c.blue)
-			m = c.blue;
-		if (m < 1) {
-			c.red /= m;
-			c.green /= m;
-			c.blue /= m;
-			}
-#endif
 		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 			glDisable (GL_STENCIL_TEST);
 		glDepthMask (0);
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						  1, &c, 0.5f, 1, 0);
+						  1, gameData.weapons.color + objP->id, 0.5f, 1, 0);
 		glDepthMask (1);
 		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 			glEnable (GL_STENCIL_TEST);
