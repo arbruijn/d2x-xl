@@ -412,7 +412,7 @@ void ControlsDoD2XKeys (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headi
 //added on 2/4/99 by Victor Rachels for d1x keys
 //--------- Read primary weapon select -------------
 //the following "if" added by WraithX to stop deadies from switchin weapons, 4/14/00
-if (!(gameStates.app.bPlayerIsDead || gameStates.app.bAutoMap)) {
+if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) {
 	{
 		int i, d2xJoystickState [10];
 
@@ -494,7 +494,7 @@ int ControlsLimitTurnRate (int bUseMouse)
 {
 if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
-if (gameStates.app.bAutoMap || 
+if (gameStates.render.automap.bDisplay || 
 	 gameOpts->input.bJoyMouse ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||

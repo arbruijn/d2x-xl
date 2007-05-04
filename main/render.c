@@ -1453,7 +1453,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 3:
-		if (IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex)))
+		if (!gameStates.render.automap.bDisplay && (IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}
@@ -1861,7 +1861,7 @@ if (r > left)
 
 void RenderSegment (short nSegment, int nWindow)
 {
-	tSegment		*segP = gameData.segs.segments+nSegment;
+	tSegment		*segP = gameData.segs.segments + nSegment;
 	g3s_codes 	cc;
 	short			sn;
 
@@ -1883,7 +1883,7 @@ OglSetupTransform ();
 cc = RotateList (8, segP->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
-if (!cc.and) {		//all off screen?
+if (!cc.and || gameStates.render.automap.bDisplay) {		//all off screen?
 	gameStates.render.nState = 0;
 #if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion) {
@@ -2038,14 +2038,6 @@ int MattFindConnectedSide(int seg0, int seg1);
 #ifdef _DEBUG
 char visited2 [MAX_SEGMENTS_D2X];
 #endif
-
-typedef struct tSegZRef {
-	fix	z;
-	fix	d;
-	short	nSegment;
-} tSegZRef;
-
-static tSegZRef segZRef [MAX_SEGMENTS_D2X];
 
 ubyte bVisited [MAX_SEGMENTS_D2X];
 ubyte nVisited = 255;
@@ -3320,7 +3312,7 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 
 	extraGameInfo [1].bShadows = 0;
 if (SHOW_SHADOWS && 
-	 !(nWindow || gameStates.render.cameras.bActive || gameStates.app.bAutoMap)) {
+	 !(nWindow || gameStates.render.cameras.bActive || gameStates.render.automap.bDisplay)) {
 	if (!gameStates.render.bShadowMaps) {
 		gameStates.render.nShadowPass = 1;
 #if SOFT_SHADOWS
@@ -3391,38 +3383,6 @@ void UpdateRenderedData(int nWindow, tObject *viewer, int rearViewFlag, int user
 }
 
 //------------------------------------------------------------------------------
-//build a list of segments to be rendered
-//fills in nRenderList & nRenderSegs
-
-void QSortSegZRef (short left, short right)
-{
-	tSegZRef	m = segZRef  [(left + right) / 2];
-	tSegZRef	h;
-	short		l = left, 
-				r = right;
-do {
-	while ((segZRef [l].z > m.z) || ((segZRef [l].z == m.z) && (segZRef [l].d > m.d)))
-		l++;
-	while ((segZRef [r].z < m.z) || ((segZRef [r].z == m.z) && (segZRef [r].d < m.d)))
-		r--;
-	if (l <= r) {
-		if (l < r) {
-			h = segZRef [l];
-			segZRef [l] = segZRef [r];
-			segZRef [r] = h;
-			}
-		l++;
-		r--;
-		}
-	}
-while (l < r);
-if (l < right)
-	QSortSegZRef (l, right);
-if (left < r)
-	QSortSegZRef (left, r);
-}
-
-//------------------------------------------------------------------------------
 // sort segments by distance from tPlayer tSegment, where distance is the minimal
 // number of segments that have to be traversed to reach a tSegment, starting at
 // the tPlayer tSegment. If the entire mine is to be rendered, segments will then
@@ -3468,6 +3428,66 @@ nSegListSize = j;
 }
 
 //------------------------------------------------------------------------------
+//build a list of segments to be rendered
+//fills in nRenderList & nRenderSegs
+
+typedef struct tSegZRef {
+	fix	z;
+	//fix	d;
+	short	nSegment;
+} tSegZRef;
+
+static tSegZRef segZRef [MAX_SEGMENTS_D2X];
+
+void QSortSegZRef (short left, short right)
+{
+	tSegZRef	m = segZRef  [(left + right) / 2];
+	tSegZRef	h;
+	short		l = left, 
+				r = right;
+do {
+	while ((segZRef [l].z > m.z))// || ((segZRef [l].z == m.z) && (segZRef [l].d > m.d)))
+		l++;
+	while ((segZRef [r].z < m.z))// || ((segZRef [r].z == m.z) && (segZRef [r].d < m.d)))
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			h = segZRef [l];
+			segZRef [l] = segZRef [r];
+			segZRef [r] = h;
+			}
+		l++;
+		r--;
+		}
+	}
+while (l < r);
+if (l < right)
+	QSortSegZRef (l, right);
+if (left < r)
+	QSortSegZRef (left, r);
+}
+
+//------------------------------------------------------------------------------
+
+void SortRenderSegs (void)
+{
+	int			i;
+	vmsVector	v;
+
+if (nRenderSegs < 2)
+	return;
+for (i = 0; i < nRenderSegs; i++) {
+	COMPUTE_SEGMENT_CENTER_I (&v, nRenderList [i]);
+	G3TransformPoint (&v, &v, 0);
+	segZRef [i].z = v.p.z;
+	segZRef [i].nSegment = nRenderList [i];
+	}
+QSortSegZRef (0, nRenderSegs - 1);
+for (i = 0; i < nRenderSegs; i++)
+	nRenderList [i] = segZRef [i].nSegment;
+}
+
+//------------------------------------------------------------------------------
 
 void BuildSegmentList (short nStartSeg, int nWindow)
 {
@@ -3497,6 +3517,16 @@ memset (nRenderList, 0xff, sizeof (nRenderList));
 #ifdef _DEBUG
 memset(visited2, 0, sizeof(visited2 [0])*(gameData.segs.nLastSegment+1));
 #endif
+
+if (gameStates.render.automap.bDisplay) {
+	for (i = nRenderSegs = 0; i < gameData.segs.nSegments; i++)
+		if (gameStates.render.automap.bFull || bAutomapVisited [i]) {
+			nRenderList [nRenderSegs++] = i;
+			VISIT (i);
+			}
+	SortRenderSegs ();
+	return;
+	}
 
 nRenderList [0] = nStartSeg; 
 nSegDepth [0] = 0;
@@ -4034,12 +4064,13 @@ if (gameStates.render.bHaveSkyBox) {
 //------------------------------------------------------------------------------
 
 static ubyte bSetAutomapVisited;
+extern ubyte bAutomapVisited [];
 
-inline void RenderMineSegment (int nn)
+void RenderMineSegment (int nn)
 {
-	int nSegment = nRenderList [nn];
+	int nSegment = (nn < 0) ? -nn - 1 : nRenderList [nn];
 
-if ((nSegment != -1) && !VISITED (nSegment)) {
+if ((nSegment != -1) && (gameStates.render.automap.bDisplay ? gameStates.render.automap.bFull || bAutomapVisited [nSegment] : !VISITED (nSegment))) {
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
@@ -4072,7 +4103,8 @@ gameStates.render.nType = 0;	//render solid geometry front to back
 nVisited++;
 for (nn = 0; nn < nRenderSegs; )
 	RenderMineSegment (nn++);
-RenderSkyBox (nWindow);
+if (!gameStates.render.automap.bDisplay)
+	RenderSkyBox (nWindow);
 gameStates.render.nType = 1;	//render transparency back to front
 nVisited++;
 for (nn = nRenderSegs; nn; )

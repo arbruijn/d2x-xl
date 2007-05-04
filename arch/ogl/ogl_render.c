@@ -1475,7 +1475,9 @@ else
 		glBegin (GL_TRIANGLE_FAN);
 		for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
 			pl = *ppl;
-			if (bLight) {
+			if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bBright)
+				glColor3d (1,1,1);
+			else if (bLight) {
 				if (bDynLight)
 					G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL);
 				else

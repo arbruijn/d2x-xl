@@ -1951,7 +1951,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	if (Controls [0].automapDownCount && 
 		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
 		 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
-		gameStates.app.bAutoMap = 1;
+		gameStates.render.automap.bDisplay = 1;
 	DoWeaponStuff();
 	}
 if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {

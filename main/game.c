@@ -1621,7 +1621,7 @@ if (!setjmp (gameExitPoint)) {
 for (;;) {
 	int player_shields;
 		// GAME LOOP!
-	gameStates.app.bAutoMap = 0;
+	gameStates.render.automap.bDisplay = 0;
 	gameStates.app.bConfigMenu = 0;
 	if (gameData.objs.console != &gameData.objs.objects[LOCALPLAYER.nObject]) {
 #if TRACE
@@ -1654,7 +1654,7 @@ for (;;) {
 			PaletteRestore ();
 		//WIN (mouse_set_mode (1);
 		}
-	if (gameStates.app.bAutoMap) {
+	if (gameStates.render.automap.bDisplay) {
 		int	save_w = Game_window_w,
 				save_h = Game_window_h;
 		DoAutomap (0, 0);

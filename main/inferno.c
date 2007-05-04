@@ -1025,8 +1025,6 @@ if ((t = FindArg ("-enable_lightmaps")))
 	gameStates.render.color.bLightMapsOk = NumArg (t, 1);
 if ((t = FindArg ("-blend_background")))
 	gameStates.render.bBlendBackground = NumArg (t, 1);
-if (FindArg ("-automap_gamesres"))
-	gameStates.render.bAutomapUseGameRes = 1;
 if ((t = FindArg ("-tmap")))
 	select_tmap (Args [t+1]);
 else
@@ -1199,7 +1197,6 @@ if (i) {
 	gameOptions [1].render.shadows.bFast = 1;
 	gameOptions [1].render.shadows.nClip = 1;
 	gameOptions [1].render.shadows.nReach = 1;
-	gameOptions [1].render.bAutomapAlwaysHires = 0;
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bTransparentEffects = 0;
 	gameOptions [1].render.bAllSegs = 0;
@@ -1273,6 +1270,8 @@ if (i) {
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
 	gameOptions [1].render.powerups.b3D = 0;
 	gameOptions [1].render.powerups.nSpin = 0;
+	gameOptions [1].render.automap.bTextured = 0;
+	gameOptions [1].render.automap.bBright = 1;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -1284,7 +1283,6 @@ else {
 	gameOptions [0].render.shadows.bFast = 1;
 	gameOptions [0].render.shadows.nClip = 1;
 	gameOptions [0].render.shadows.nReach = 1;
-	gameOptions [0].render.bAutomapAlwaysHires = 0;
 	gameOptions [0].render.nMaxFPS = 150;
 	gameOptions [0].render.bTransparentEffects = 1;
 	gameOptions [0].render.bAllSegs = 1;
@@ -1364,6 +1362,8 @@ else {
 	gameOptions [0].render.smoke.bDecreaseLag = 1;
 	gameOptions [0].render.powerups.b3D = 0;
 	gameOptions [0].render.powerups.nSpin = 0;
+	gameOptions [0].render.automap.bTextured = 0;
+	gameOptions [0].render.automap.bBright = 1;
 	}
 }
 
@@ -1820,7 +1820,6 @@ gameStates.render.bPointSprites = 0;
 gameStates.render.bVertexArrays = 0;
 gameStates.render.bExternalView = 0;
 gameStates.render.bTopDownRadar = 0;
-gameStates.render.bAutomapUseGameRes = 1;
 gameStates.render.bDisableFades = 0;
 gameStates.render.bDropAfterburnerBlob = 0;
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
@@ -1962,7 +1961,7 @@ gameStates.app.bDeathSequenceAborted = 0;
 gameStates.app.bUseDefaults = 0;
 gameStates.app.nCompSpeed = 3;
 gameStates.app.bPlayerFiredLaserThisFrame = 0;
-gameStates.app.bAutoMap = 0;
+gameStates.render.automap.bDisplay = 0;
 gameStates.app.bConfigMenu = 0;
 gameStates.app.bAutoRunMission = 0;
 gameStates.entropy.bConquering = 0;
@@ -2999,7 +2998,6 @@ _3dfx_Init ();
 /*---*/LogErr ("Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
-S_MODE (&automap_mode, &gameStates.render.bAutomapUseGameRes);
 if ((i = FindArg ("-xcontrol")) > 0)
 	KCInitExternalControls (strtol (Args[i+1], NULL, 0), strtol (Args[i+2], NULL, 0));
 

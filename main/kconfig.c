@@ -1677,7 +1677,7 @@ void KCInitExternalControls (int intno, int address)
 		}
 	}
 
-        if (gameStates.app.bAutoMap)                    // (If in automap...)
+        if (gameStates.render.automap.bDisplay)                    // (If in automap...)
 		kc_external_control->automapState = 1;
 	memset (&r,0,sizeof (r);
 
@@ -1794,7 +1794,7 @@ void KCReadExternalControls ()
      }
 	}
 
-	if (gameStates.app.bAutoMap)			// (If in automap...)
+	if (gameStates.render.automap.bDisplay)			// (If in automap...)
 		kc_external_control->automapState = 1;
 	//memset (&r,0,sizeof (r);
 

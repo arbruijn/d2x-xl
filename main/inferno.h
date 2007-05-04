@@ -196,9 +196,13 @@ typedef struct tPowerupOptions {
 	int nSpin;
 } tPowerupOptions;
 
+typedef struct tAutomapOptions {
+	int bTextured;
+	int bBright;
+} tAutomapOptions;
+
 typedef struct tRenderOptions {
 	int bAllSegs;
-	int bAutomapAlwaysHires;
 	int bDynamicLight;
 	int bDynLighting;
 	int bObjects;
@@ -225,6 +229,7 @@ typedef struct tRenderOptions {
 	tSmokeOptions smoke;
 	tShadowOptions shadows;
 	tPowerupOptions powerups;
+	tAutomapOptions automap;
 } tRenderOptions;
 
 typedef struct tOglOptions {
@@ -550,13 +555,18 @@ typedef struct tRenderDetail {
 	sbyte nSoundChannels;
 } tRenderDetail;
 
+typedef struct tAutomapStates {
+	int bDisplay;
+	int bFull;
+	} tAutomapStates;
+
 typedef struct tRenderStates {
 	int bTopDownRadar;
 	int bExternalView;
 	int bQueryOcclusion;
 	int bPointSprites;
 	int bVertexArrays;
-	int bAutomapUseGameRes;
+	int bAutoMap;
 	int bDisableFades;
 	int bBlendBackground;
 	int bDropAfterburnerBlob;
@@ -608,6 +618,7 @@ typedef struct tRenderStates {
 	double glAspect;
 	float grAlpha;
 	tRenderDetail detail;
+	tAutomapStates automap;
 } tRenderStates;
 
 typedef struct tDigiStates {
@@ -718,7 +729,6 @@ typedef struct tApplicationStates {
 	int bEndLevelSequence;
 	int bFirstSecretVisit;
 	int bHaveExtraGameInfo [2];
-	int bAutoMap;
 	int bConfigMenu;
 	int nDifficultyLevel;
 	int nDetailLevel;

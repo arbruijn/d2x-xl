@@ -82,7 +82,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					152	//increment this every time the tPlayer file changes
+#define PLAYER_FILE_VERSION					153	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -272,7 +272,7 @@ gameOpts->gameplay.bHeadlightOn = CFReadByte (fp);
 gameOptions [0].render.cockpit.bGuidedInMainView = CFReadByte (fp);
 
 if (player_file_version >= 19)
-	gameOptions [0].render.bAutomapAlwaysHires = CFReadByte (fp);
+	CFReadByte (fp);	//skip obsolete byte value
 gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 
 //read new highest level info
@@ -821,6 +821,10 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].render.cockpit.bPlayerStats = (int) CFReadByte (fp);
 	if (player_file_version >= 152)
 		gameOptions [j].render.bCoronas = (int) CFReadByte (fp);
+	if (player_file_version >= 153) {
+		gameOptions [j].render.automap.bTextured = (int) CFReadByte (fp);
+		gameOptions [j].render.automap.bBright = (int) CFReadByte (fp);
+		}
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -948,7 +952,7 @@ int WritePlayerFile()
 	CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView, fp);
 	CFWriteByte ((sbyte) gameOptions [0].gameplay.bHeadlightOn, fp);
 	CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView, fp);
-	CFWriteByte ((sbyte) gameOptions [0].render.bAutomapAlwaysHires, fp);
+	CFWriteByte ((sbyte) 0, fp);	//place holder for an obsolete value
 
 	//write higest level info
 	Assert(nHighestLevels <= MAX_MISSIONS);
@@ -1275,6 +1279,8 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) extraGameInfo [j].nHitboxes, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bPlayerStats, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.bCoronas, fp);
+	CFWriteByte ((sbyte) gameOptions [j].render.automap.bTextured, fp);
+	CFWriteByte ((sbyte) gameOptions [j].render.automap.bBright, fp);
 // end of D2X-XL stuff
 	}
 

@@ -85,13 +85,9 @@ g3s_codes RotateList(int nv, short *pointnumlist);
 
 // Given a list of point numbers, project any that haven't been projected
 void ProjectList(int nv, short *pointnumlist);
-
-void RenderMine (short start_seg_num, fix eye_offset, int window_num);
-
+void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (int bWhite);
-
 int RenderShadowMap (tDynLight *pLight);
-
 void UpdateRenderedData (int window_num, tObject *viewer, int rearViewFlag, int user);
 
 extern tFlightPath externalView;
@@ -103,6 +99,7 @@ int IsTransparentTexture (short nTexture);
 int LoadCorona (void);
 void FreeCorona (void);
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r);
+void RenderMineSegment (int nn);
 
 extern grsBitmap *bmpCorona;
 

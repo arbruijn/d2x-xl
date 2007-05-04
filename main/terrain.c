@@ -125,7 +125,7 @@ if ((i == gameData.render.terrain.orgI-1) && (j == gameData.render.terrain.orgJ-
 
 if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 	RenderMine (gameData.endLevel.exit.nSegNum, 0, 0);
-	gameData.render.terrain.nMineTilesDrawn=-1;
+	gameData.render.terrain.nMineTilesDrawn = -1;
 	}
 }
 

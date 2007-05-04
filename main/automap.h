@@ -12,39 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Prototypes for auto-map stuff.
- *
- * Old Log:
- * Revision 1.2  1995/07/12  12:48:33  allender
- * moved edge_list structure into here for mallocing in mglobal
- *
- * Revision 1.1  1995/05/16  15:54:31  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:29:35  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.5  1994/12/09  00:41:21  mike
- * fix hang in automap print screen
- *
- * Revision 1.4  1994/07/14  11:25:29  john
- * Made control centers destroy better; made automap use Tab key.
- *
- * Revision 1.3  1994/07/12  15:45:51  john
- * Made paritial map.
- *
- * Revision 1.2  1994/07/07  18:35:05  john
- * First version of automap
- *
- * Revision 1.1  1994/07/07  15:12:13  john
- * Initial revision
- *
- *
- */
-
 #ifndef _AUTOMAP_H
 #define _AUTOMAP_H
 
@@ -55,11 +22,10 @@ extern void AutomapClearVisited();
 extern ubyte bAutomapVisited[MAX_SEGMENTS_D2X];
 void DropBuddyMarker(tObject *objp);
 
-//added on 9/30/98 by Matt Mueller for selectable automap modes
-extern u_int32_t automap_mode;
-#define AUTOMAP_MODE (gameStates.render.bAutomapUseGameRes ? grdCurScreen->sc_mode : automap_mode)
-//extern int automap_width;
-//extern int automap_height;
-//end addition -MM
-
+#define AM_RENDER_PLAYERS			((gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
+#define AM_RENDER_PLAYER(_i)		((gameData.app.nGameMode & GM_MULTI_COOP) || \
+											 (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
+											 (GetTeam (gameData.multiplayer.nLocalPlayer) == GetTeam (_i)))
+#define AM_RENDER_ROBOTS			EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
+#define AM_RENDER_POWERUPS			(EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) && !IsMultiGame)
 #endif

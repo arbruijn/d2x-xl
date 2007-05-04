@@ -86,6 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #include "ogl_init.h"
 #include "input.h"
+#include "automap.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -1929,6 +1930,8 @@ switch (objP->renderType) {
 		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			int bDynObjLight = gameOpts->ogl.bLightObjects;
+			if (gameStates.render.automap.bDisplay && !(AM_RENDER_PLAYERS && AM_RENDER_PLAYER (objP->id)))
+				return 0;
 			DrawPolygonObject (objP);
 			gameOpts->ogl.bLightObjects = bDynObjLight;
 			RenderThrusterFlames (objP);
@@ -1937,6 +1940,8 @@ switch (objP->renderType) {
 			RenderTowedFlag (objP);
 			}
 		else if (objP->nType == OBJ_ROBOT) {
+			if (gameStates.render.automap.bDisplay && !AM_RENDER_ROBOTS)
+				return 0;
 			DrawPolygonObject (objP);
 #ifdef _DEBUG
 			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
@@ -1945,6 +1950,8 @@ switch (objP->renderType) {
 			SetRobotLocationInfo (objP);
 			}
 		else if (objP->nType == OBJ_WEAPON) {
+			if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+				return 0;
 			DrawPolygonObject (objP);
 			if (bIsMissile [objP->id]) {
 #ifdef _DEBUG
@@ -1969,6 +1976,8 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
+			if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+				return 0;
 			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 				DrawPolygonObject (objP);
 				objP->mType.physInfo.mass = F1_0;
@@ -2012,6 +2021,8 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
+			if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+				return 0;
 			if (objP->nType == OBJ_WEAPON) {
 				if (!DoObjectSmoke (objP))
 					DrawWeaponVClip (objP); 
@@ -2034,6 +2045,8 @@ switch (objP->renderType) {
 		break;
 
 	case RT_POWERUP:
+		if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+			return 0;
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (ConvertPowerupToWeapon (objP))

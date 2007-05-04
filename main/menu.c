@@ -1653,7 +1653,7 @@ void CockpitOptionsMenu (void)
 {
 	tMenuItem m [25];
 	int	i, opt, choice = 0;
-	int	optPwrUpsOnRadar, optBotsOnRadar, optGauges, optHUD, optReticle, optGuided, 
+	int	optGauges, optHUD, optReticle, optGuided, 
 			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
 
 	char szCockpitWindowZoom [40];
@@ -1696,14 +1696,10 @@ do {
 		optReticle = -1;
 	ADD_CHECK (opt, TXT_EXTRA_PLRMSGS, gameOpts->render.cockpit.bSplitHUDMsgs, KEY_P, HTX_CPIT_SPLITMSGS);
 	optSplitMsgs = opt++;
-	ADD_CHECK (opt, TXTMSL_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
+	ADD_CHECK (opt, TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
 	optMissileView = opt++;
 	ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_F, HTX_CPIT_GUIDEDVIEW);
 	optGuided = opt++;
-	ADD_CHECK (opt, TXT_RADAR_PWRUPS, extraGameInfo [0].bPowerupsOnRadar, KEY_R, HTX_CPIT_RADARPWRUPS);
-	optPwrUpsOnRadar = opt++;
-	ADD_CHECK (opt, TXT_RADAR_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_B, HTX_CPIT_RADARBOTS);
-	optBotsOnRadar = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_MENU (opt, TXT_TGTIND_MENUCALL, KEY_T, "");
@@ -1728,8 +1724,6 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMissileView, optMissileView);
 	GET_VAL (gameOpts->render.cockpit.bGuidedInMainView, optGuided);
 	GET_VAL (gameOpts->render.cockpit.bMouseIndicator, optMouseInd);
-	extraGameInfo [0].bPowerupsOnRadar = m [optPwrUpsOnRadar].value;
-	extraGameInfo [0].bRobotsOnRadar = m [optBotsOnRadar].value;
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
@@ -1819,6 +1813,60 @@ do {
 	extraGameInfo [0].bRenderShield = 1;
 		}
 #endif
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+static int nOptTextured;
+
+void AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem * m;
+	int			v;
+
+m = menus + nOptTextured;
+v = m->value;
+if (v != gameOpts->render.automap.bTextured) {
+	gameOpts->render.automap.bTextured = v;
+	*key = -2;
+	return;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void AutomapOptionsMenu ()
+{
+	tMenuItem m [10];
+	int	i, choice = 0;
+	int	opt;
+	int	optBright, optShowRobots, optShowPowerups;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	ADD_CHECK (opt, TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured, KEY_T, HTX_AUTOMAP_TEXTURED);
+	nOptTextured = opt++;
+	if (gameOpts->render.automap.bTextured) {
+		ADD_CHECK (opt, TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
+		optBright = opt++;
+		}
+	else
+		optBright = -1;
+	ADD_CHECK (opt, TXT_AUTOMAP_POWERUPS, extraGameInfo [0].bPowerupsOnRadar, KEY_P, HTX_AUTOMAP_POWERUPS);
+	optShowPowerups = opt++;
+	ADD_CHECK (opt, TXT_AUTOMAP_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_R, HTX_AUTOMAP_ROBOTS);
+	optShowRobots = opt++;
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_AUTOMAP_MENUTITLE, opt, m, AutomapOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	gameOpts->render.automap.bTextured = m [nOptTextured].value;
+	GET_VAL (gameOpts->render.automap.bBright, optBright);
+	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;
+	extraGameInfo [0].bRobotsOnRadar = m [optShowRobots].value;
 	} while (i == -2);
 }
 
@@ -2750,7 +2798,7 @@ void RenderOptionsMenu ()
 	int	h, i, choice = 0;
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
-			optAdvOpts, optEffectOpts, optPowerupOpts = -1;
+			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts;
 	int	optUseGamma, optColoredWalls;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
@@ -2778,6 +2826,7 @@ void RenderOptionsMenu ()
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
+	optPowerupOpts = optAutomapOpts = -1;
 	if (!gameStates.app.bNostalgia) {
 		ADD_SLIDER (opt, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 		optBrightness = opt++;
@@ -2841,6 +2890,8 @@ do {
 		optCameraOpts = opt++;
 		ADD_MENU (opt, TXT_POWERUP_OPTIONS, KEY_P, HTX_RENDER_PRUPOPTS);
 		optPowerupOpts = opt++;
+		ADD_MENU (opt, TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
+		optAutomapOpts = opt++;
 		ADD_MENU (opt, TXT_MOVIE_OPTIONS, KEY_M, HTX_RENDER_MOVIEOPTS);
 		optMovieOpts = opt++;
 		}
@@ -2873,6 +2924,7 @@ do {
 	optDynLight = opt++;
 #endif
 
+	Assert (sizeofa (m) >= opt);
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_RENDER_OPTS, opt, m, &RenderOptionsCallback, &choice);
 		if (i < 0)
@@ -2890,6 +2942,8 @@ do {
 				CameraOptionsMenu ();
 			else if ((optPowerupOpts >= 0) && (i == optPowerupOpts))
 				PowerupOptionsMenu ();
+			else if ((optAutomapOpts >= 0) && (i == optAutomapOpts))
+				AutomapOptionsMenu ();
 			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
 				MovieOptionsMenu ();
 			}
@@ -3492,7 +3546,7 @@ do {
 	if (gameStates.app.bNostalgia) {
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;
-		ADD_CHECK (opt, TXTMSL_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
+		ADD_CHECK (opt, TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
 		optMissileView = opt++;
 		ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
 		optGuided = opt++;
