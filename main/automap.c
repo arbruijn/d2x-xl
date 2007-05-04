@@ -533,9 +533,9 @@ else
 	// Draw player...
 color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
 GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g,player_rgb [color].b));
-DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject, bRadar);
 
 if (!gameOpts->render.automap.bTextured) {
+	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject, bRadar);
 	if (!bRadar) {
 		DrawMarkers ();
 		if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {

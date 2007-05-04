@@ -1633,6 +1633,8 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (gameOpts->render.bCoronas && LoadCorona ()) {
 		fix xSize = objP->size * 4;
+		if (xSize < F1_0)
+			xSize = F1_0;
 		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 			glDisable (GL_STENCIL_TEST);
 		glDepthMask (0);
@@ -1888,7 +1890,8 @@ int RenderObject (tObject *objP, int nWindowNum)
 #endif
 
 if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
-	 (gameData.objs.viewer == gameData.objs.console)) {
+	 (gameData.objs.viewer == gameData.objs.console) &&
+	 !gameStates.render.automap.bDisplay) {
 	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum))) {
 		savePos = objP->position;
 		objP->position = gameStates.app.playerPos;

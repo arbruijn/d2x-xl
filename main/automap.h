@@ -22,8 +22,9 @@ extern void AutomapClearVisited();
 extern ubyte bAutomapVisited[MAX_SEGMENTS_D2X];
 void DropBuddyMarker(tObject *objp);
 
-#define AM_RENDER_PLAYERS			((gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
-#define AM_RENDER_PLAYER(_i)		((gameData.app.nGameMode & GM_MULTI_COOP) || \
+#define AM_RENDER_PLAYERS			(!IsMultiGame || (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
+#define AM_RENDER_PLAYER(_i)		(!IsMultiGame || \
+											 (gameData.app.nGameMode & GM_MULTI_COOP) || \
 											 (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
 											 (GetTeam (gameData.multiplayer.nLocalPlayer) == GetTeam (_i)))
 #define AM_RENDER_ROBOTS			EGI_FLAG (bRobotsOnRadar, 0, 1, 0)

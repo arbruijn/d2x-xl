@@ -1133,14 +1133,14 @@ return 0;
 
 #define STATIC_LIGHT_TRANSFORM	0
 
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor)
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale)
 {
 	fVector			matSpecular = {{0.0f, 0.0f, 0.0f, 1.0f}},
 						colorSum = {{0.0f, 0.0f, 0.0f, 1.0f}};
 #if !STATIC_LIGHT_TRANSFORM
 	fVector			vertPos;
 #endif
-	float				s;
+	//float				fScale;
 	tFaceColor		*pc = NULL;
 
 gameData.threads.vertColor.data.fMatShininess = 0.0f;
@@ -1151,11 +1151,13 @@ gameData.threads.vertColor.data.bExclusive = !gameOpts->render.shadows.bFast && 
 gameData.threads.vertColor.data.bNoShadow = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 4),
 gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 if (!gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
-	s = 1.0f;// / (float) gameData.render.shadows.nLights;
+	; //fScale = 1.0f;
 else if (gameOpts->render.shadows.bFast || (gameStates.render.nShadowPass != 1))
-	s = 1.0f;
+	; //fScale = 1.0f;
 else
-	s = gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
+	fScale *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
+if (fScale > 1)
+	fScale = 1;
 if (gameData.render.lights.dynamic.material.bValid) {
 #if 0
 	if (gameData.render.lights.dynamic.material.emissive.c.r ||
@@ -1182,7 +1184,7 @@ if (!(gameData.threads.vertColor.data.bExclusive ||
 	   gameData.threads.vertColor.data.bMatEmissive || pVertColor) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
-		OglColor4sf (pc->color.red * s, pc->color.green * s, pc->color.blue * s, 1.0);
+		OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
 		return;
 		}
 	}
@@ -1217,7 +1219,7 @@ if (gameStates.app.bMultiThreaded) {
 else
 #endif
 	G3AccumVertColor (0, 1, &colorSum);
-if (!(gameStates.render.nState && gameData.threads.vertColor.data.bDarkness)) {
+if ((nVertex >= 0) && !(gameStates.render.nState && gameData.threads.vertColor.data.bDarkness)) {
 	tRgbColorf	ambient = gameData.render.color.ambient [nVertex].color;
 	colorSum.c.r += ambient.red;
 	colorSum.c.g += ambient.green;
@@ -1238,7 +1240,7 @@ if (colorSum.c.g > 1.0)
 	colorSum.c.g = 1.0;
 if (colorSum.c.b > 1.0)
 	colorSum.c.b = 1.0;
-OglColor4sf (colorSum.c.r * s, colorSum.c.g * s, colorSum.c.b * s, 1.0);
+OglColor4sf (colorSum.c.r * fScale, colorSum.c.g * fScale, colorSum.c.b * fScale, 1.0);
 #if 1
 if (!gameData.threads.vertColor.data.bMatEmissive && pc) {
 	pc->index = gameStates.render.nFrameFlipFlop + 1;
@@ -1479,7 +1481,8 @@ else
 				glColor3d (1,1,1);
 			else if (bLight) {
 				if (bDynLight)
-					G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL);
+					G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL, 
+										gameStates.render.nState ? f2fl (uvlList [c].l) : 1);
 				else
 					SetTMapColor (uvlList + c, c, bmBot, !bDrawBM);
 				}
@@ -1531,7 +1534,7 @@ else
 			for (c = 0, ppl = pointList; c < nv; c++, ppl++) {
 				if (bLight) {
 					if (bDynLight)
-						G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL);
+						G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, 1);
 					else
 						SetTMapColor (uvlList + c, c, bmTop, 1);
 					}

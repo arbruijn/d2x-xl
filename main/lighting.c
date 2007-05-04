@@ -894,7 +894,7 @@ if (!rotated_pnt) {
 	//First, get static light for this tSegment
 if (gameOpts->render.bDynLighting && !gameOpts->ogl.bLightObjects) {
 	gameData.objs.color = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
-	light = -F1_0;
+	light = F1_0;
 	}
 else
 	light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
@@ -1862,7 +1862,7 @@ if (gameOpts->render.bDynLighting ||
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
-		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf);
+		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
 		}
 	}

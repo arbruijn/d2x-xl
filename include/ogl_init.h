@@ -387,7 +387,7 @@ return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlen
 #endif
 }
 void OglColor4sf (float r, float g, float b, float s);
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor);
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale);
 
 #define BINDTEX_OPT 0
 
