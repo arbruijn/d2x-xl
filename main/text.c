@@ -1642,6 +1642,7 @@ char *defaultGameTexts [][2] = {
 	{"Uebersichtskarte", "Automap options"},
 	{"~Uebersichtskarte...", "Auto~Map options..."},
 	{"~Helle Uebersichtskarte", "~Bright automap"},
+	{"~Lichthoefe zeichnen", "show light ~Coronas"},
 #if 0
 	{"", ""},
 #endif
@@ -2146,6 +2147,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, wird die Uebersichtskarte voll texturiert angezeigt.", "If checked, the automap is displayed fully textured."},
 	{"Hier koennen Einstellungen der Uebersichtskarte vorgenommen werden.", "Adjust automap rendering settings here."},
 	{"Ankreuzen, damit die texturierte Uebersichtskarte so hell wie\nmoeglich dargestellt wird.", "Check to have the textured automap rendered as bright as possible."},
+	{"Wenn angekreuzt, werden in der texturierten Uebersichtskarte\nauch Lichthoefe gezeichnet.", "If checked, light coronas will be rendered in the textured automap."},
 #if 0
 	{"", ""},
 #endif

@@ -199,6 +199,7 @@ typedef struct tPowerupOptions {
 typedef struct tAutomapOptions {
 	int bTextured;
 	int bBright;
+	int bCoronas;
 } tAutomapOptions;
 
 typedef struct tRenderOptions {

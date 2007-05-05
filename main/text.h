@@ -1683,9 +1683,9 @@ void LoadGameTexts(void);
 #define TXT_AUTOMAP_MENUTITLE		GT(890)
 #define TXT_AUTOMAP_OPTIONS		GT(891)
 #define TXT_AUTOMAP_BRIGHT			GT(892)
+#define TXT_AUTOMAP_CORONAS		GT(893)
 
 #if 0
-#define TXT_				GT(893)
 #define TXT_				GT(894)
 #define TXT_				GT(895)
 #define TXT_				GT(896)
@@ -2074,10 +2074,10 @@ void LoadGameTexts(void);
 #define HTX_AUTOMAP_TEXTURED		HT(261)				
 #define HTX_RENDER_AUTOMAPOPTS	HT(262)				
 #define HTX_AUTOMAP_BRIGHT			HT(263)				
+#define HTX_AUTOMAP_CORONAS		HT(264)				
 
 #if 0
 				
-#define HTX_					HT(264)				
 #define HTX_					HT(265)				
 #define HTX_					HT(266)				
 #define HTX_					HT(267)				

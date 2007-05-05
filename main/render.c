@@ -1453,7 +1453,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 3:
-		if (!gameStates.render.automap.bDisplay && (IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
+		if ((IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}
@@ -4116,7 +4116,7 @@ if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (game
 	for (nn = nRenderSegs; nn;)
 		RenderMineSegment (--nn);
 	glDepthFunc (GL_LESS);
-	if (gameOpts->render.bCoronas && LoadCorona ()) {
+	if ((!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.bCoronas && LoadCorona ()) {
 		gameStates.render.nType = 3;
 		nVisited++;
 		glEnable (GL_TEXTURE_2D);

@@ -1841,7 +1841,7 @@ void AutomapOptionsMenu ()
 	tMenuItem m [10];
 	int	i, choice = 0;
 	int	opt;
-	int	optBright, optShowRobots, optShowPowerups;
+	int	optBright, optShowRobots, optShowPowerups, optCoronas;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1851,8 +1851,11 @@ do {
 	if (gameOpts->render.automap.bTextured) {
 		ADD_CHECK (opt, TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
 		optBright = opt++;
+		ADD_CHECK (opt, TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
+		optBright = opt++;
 		}
 	else
+		optCoronas =
 		optBright = -1;
 	ADD_CHECK (opt, TXT_AUTOMAP_POWERUPS, extraGameInfo [0].bPowerupsOnRadar, KEY_P, HTX_AUTOMAP_POWERUPS);
 	optShowPowerups = opt++;
@@ -1865,6 +1868,7 @@ do {
 		} 
 	gameOpts->render.automap.bTextured = m [nOptTextured].value;
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
+	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
 	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optShowRobots].value;
 	} while (i == -2);

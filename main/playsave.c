@@ -68,7 +68,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # define strerror(x) "Unknown Error"
 #endif
 
-int get_lifetime_checksum (int a,int b);
+int GetLifetimeChecksum (int a,int b);
 
 typedef struct hli {
 	char	shortname[9];
@@ -82,7 +82,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					153	//increment this every time the tPlayer file changes
+#define PLAYER_FILE_VERSION					154	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -347,7 +347,7 @@ if (player_file_version>=23) {
 #if TRACE				
 	con_printf (CONDBG,"Reading: lifetime checksum is %d\n",i);
 #endif
-	if (i!=get_lifetime_checksum (networkData.nNetLifeKills,networkData.nNetLifeKilled)) {
+	if (i!=GetLifetimeChecksum (networkData.nNetLifeKills,networkData.nNetLifeKilled)) {
 		networkData.nNetLifeKills=0; networkData.nNetLifeKilled=0;
  		ExecMessageBox(NULL, NULL, 1, "Shame on me", "Trying to cheat eh?");
 		rewrite_it=1;
@@ -825,6 +825,8 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].render.automap.bTextured = (int) CFReadByte (fp);
 		gameOptions [j].render.automap.bBright = (int) CFReadByte (fp);
 		}
+	if (player_file_version >= 154)
+		gameOptions [j].render.automap.bCoronas = (int) CFReadByte (fp);
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -907,110 +909,89 @@ return i;
 //write out tPlayer's saved games.  returns errno (0 == no error)
 int WritePlayerFile()
 {
-	char filename[FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
-	CFILE *fp;
-	int errno_ret, h, i, j;
+	CFILE	*fp;
+	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
+	char	buf [128];
+	int	errno_ret, h, i, j;
 
 //	#ifdef APPLE_DEMO		// no saving of tPlayer files in Apple OEM version
 //	return 0;
 //	#endif
 
-	errno_ret = WriteConfigFile();
-
-	sprintf(filename,"%s.plr",LOCALPLAYER.callsign);
-	fp = CFOpen(filename, gameFolders.szProfDir, "wb", 0);
-
+errno_ret = WriteConfigFile();
+sprintf (filename,"%s.plr",LOCALPLAYER.callsign);
+fp = CFOpen (filename, gameFolders.szProfDir, "wb", 0);
 #if 0
-	//check filename
-	if (fp && isatty(fileno (fp)) {
-
-		//if the callsign is the name of a tty device, prepend a char
-
-		fclose(fp);
-		sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
-		fp			= fopen(filename,"wb");
+//check filename
+if (fp && isatty(fileno (fp)) {
+	//if the callsign is the name of a tty device, prepend a char
+	fclose(fp);
+	sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
+	fp = fopen(filename,"wb");
 	}
 #endif
-
-	if (!fp)
-              return errno;
-
-	errno_ret			= EZERO;
-
-	//Write out tPlayer's info
-	CFWriteInt(SAVE_FILE_ID, fp);
-	CFWriteShort(PLAYER_FILE_VERSION, fp);
-
-	CFWriteShort((short) Game_window_w, fp);
-	CFWriteShort((short) Game_window_h, fp);
-
-	CFWriteByte ((sbyte) playerDefaultDifficulty, fp);
-	CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
-	CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
-	CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
-	CFWriteByte ((sbyte) gameStates.video.nDefaultDisplayMode, fp);
-	CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView, fp);
-	CFWriteByte ((sbyte) gameOptions [0].gameplay.bHeadlightOn, fp);
-	CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView, fp);
-	CFWriteByte ((sbyte) 0, fp);	//place holder for an obsolete value
-
-	//write higest level info
-	Assert(nHighestLevels <= MAX_MISSIONS);
-	CFWriteShort(nHighestLevels, fp);
-	if ((CFWrite(highestLevels, sizeof(hli), nHighestLevels, fp) != nHighestLevels))
-	{
-		errno_ret			= errno;
-		CFClose(fp);
-		return errno_ret;
+if (!fp)
+	return errno;
+errno_ret = EZERO;
+//Write out tPlayer's info
+CFWriteInt(SAVE_FILE_ID, fp);
+CFWriteShort(PLAYER_FILE_VERSION, fp);
+CFWriteShort((short) Game_window_w, fp);
+CFWriteShort((short) Game_window_h, fp);
+CFWriteByte ((sbyte) playerDefaultDifficulty, fp);
+CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
+CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
+CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
+CFWriteByte ((sbyte) gameStates.video.nDefaultDisplayMode, fp);
+CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView, fp);
+CFWriteByte ((sbyte) gameOptions [0].gameplay.bHeadlightOn, fp);
+CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView, fp);
+CFWriteByte ((sbyte) 0, fp);	//place holder for an obsolete value
+//write higest level info
+Assert(nHighestLevels <= MAX_MISSIONS);
+CFWriteShort(nHighestLevels, fp);
+if ((CFWrite(highestLevels, sizeof(hli), nHighestLevels, fp) != nHighestLevels)) {
+	errno_ret = errno;
+	CFClose(fp);
+	return errno_ret;
 	}
 
-	if ((CFWrite(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4))
-	{
-		errno_ret			= errno;
-		CFClose(fp);
-		return errno_ret;
+if ((CFWrite(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4)) {
+	errno_ret = errno;
+	CFClose(fp);
+	return errno_ret;
 	}
 
-	//write KConfig info
-	{
+//write KConfig info
+controlType_dos = gameConfig.nControlType;
+if (CFWrite(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1, fp ) != 1)
+	errno_ret = errno;
+else if (CFWrite(&controlType_dos, sizeof(ubyte), 1, fp) != 1)
+	errno_ret = errno;
+else if (CFWrite(&controlType_win, sizeof(ubyte), 1, fp ) != 1)
+	errno_ret = errno;
+else if (CFWrite(gameOptions [0].input.joySensitivity, sizeof(ubyte), 1, fp) != 1)
+	errno_ret = errno;
 
-		controlType_dos = gameConfig.nControlType;
-		if (CFWrite(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1, fp ) != 1)
-			errno_ret=errno;
-		else if (CFWrite(&controlType_dos, sizeof(ubyte), 1, fp) != 1)
-			errno_ret=errno;
-		else if (CFWrite(&controlType_win, sizeof(ubyte), 1, fp ) != 1)
-			errno_ret=errno;
-		else if (CFWrite(gameOptions [0].input.joySensitivity, sizeof(ubyte), 1, fp) != 1)
-			errno_ret=errno;
-
-		for (i=0;i<11;i++)
-		{
-			CFWrite(&primaryOrder[i], sizeof(ubyte), 1, fp);
-			CFWrite(&secondaryOrder[i], sizeof(ubyte), 1, fp);
-		}
-
-		CFWriteInt(Cockpit_3dView[0], fp);
-		CFWriteInt(Cockpit_3dView[1], fp);
-
-		CFWriteInt(networkData.nNetLifeKills, fp);
-		CFWriteInt(networkData.nNetLifeKilled, fp);
-		i=get_lifetime_checksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+for (i = 0; i < 11; i++) {
+	CFWrite (primaryOrder + i, sizeof(ubyte), 1, fp);
+	CFWrite (secondaryOrder + i, sizeof(ubyte), 1, fp);
+	}
+CFWriteInt(Cockpit_3dView[0], fp);
+CFWriteInt(Cockpit_3dView[1], fp);
+CFWriteInt(networkData.nNetLifeKills, fp);
+CFWriteInt(networkData.nNetLifeKilled, fp);
+i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if TRACE				
-		con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
+con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
-		CFWriteInt(i,fp);
-	}
+CFWriteInt(i,fp);
+//write guidebot name
+CFWriteString(gameData.escort.szRealName, fp);
+strcpy(buf, "DOS joystick");
+CFWriteString(buf, fp);  // Write out current joystick for player.
 
-	//write guidebot name
-	CFWriteString(gameData.escort.szRealName, fp);
-	{
-		char buf[128];
-		strcpy(buf, "DOS joystick");
-		CFWriteString(buf, fp);  // Write out current joystick for player.
-	}
-
-	CFWrite(controlSettings.d2xCustom, MAX_D2X_CONTROLS, 1, fp);
+CFWrite(controlSettings.d2xCustom, MAX_D2X_CONTROLS, 1, fp);
 // write D2X-XL stuff
 CFWriteInt (sizeof (tGameOptions), fp);
 for (j = 0; j < 2; j++) {
@@ -1281,45 +1262,42 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) gameOptions [j].render.bCoronas, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.automap.bTextured, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.automap.bBright, fp);
+	CFWriteByte ((sbyte) gameOptions [j].render.automap.bCoronas, fp);
 // end of D2X-XL stuff
 	}
 
-	if (CFClose (fp))
-		errno_ret = errno;
-
-	if (errno_ret != EZERO) {
-		CFDelete(filename, gameFolders.szProfDir);         //delete bogus fp
-		ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(errno_ret));
+if (CFClose (fp))
+	errno_ret = errno;
+if (errno_ret != EZERO) {
+	CFDelete(filename, gameFolders.szProfDir);         //delete bogus fp
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(errno_ret));
 	}
-
-	return errno_ret;
-
+return errno_ret;
 }
 
+//------------------------------------------------------------------------------
 //update the tPlayer's highest level.  returns errno (0 == no error)
 int update_player_file()
 {
-	int ret;
+	int ret = ReadPlayerFile(0);
 
-	if ((ret=ReadPlayerFile(0)) != EZERO)
-		if (ret != ENOENT)		//if file doesn't exist, that's ok
-			return ret;
-
-	return WritePlayerFile();
+if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
+	return ret;
+return WritePlayerFile();
 }
 
-int get_lifetime_checksum (int a,int b)
+//------------------------------------------------------------------------------
+
+int GetLifetimeChecksum (int a,int b)
  {
   int num;
 
-  // confusing enough to beat amateur disassemblers? Lets hope so
-
-  num=(a<<8 ^ b);
-  num^=(a | b);
-  num*=num>>2;
-  return (num);
- }
+// confusing enough to beat amateur disassemblers? Lets hope so
+num = (a << 8 ^ b);
+num ^= (a | b);
+num *= num >> 2;
+return num;
+}
   
-
 //------------------------------------------------------------------------------
 
