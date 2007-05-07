@@ -4300,6 +4300,8 @@ if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (game
 		}
 	glDepthFunc (GL_LESS);
 	RenderRadar ();
+	if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bSmoke)
+		RenderSmoke ();
 	}
 }
 

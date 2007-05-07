@@ -1649,6 +1649,7 @@ char *defaultGameTexts [][2] = {
 	{"~Weisses Radar", "~White radar"},
 	{"~Schwarzes Radar", "b~Lack radar"},
 	{"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
+	{"R~Auch zeichnen", "render ~Smoke"},
 #if 0
 	{"", ""},
 #endif
@@ -1666,7 +1667,7 @@ char *defaultHelpTexts [][2] = {
 	 "Start a new single player game using a mission from the\nmissions subfolder 'single'."},
 	{"Gespeicherten Spielstand laden.", "Load a saved game."},
 	{"Mehrspieler-Netzwerkspiel starten.", "Start a multiplayer network game."},
-	{"Programmeinstellungen �ndern.", "Change program settings."},
+	{"Programmeinstellungen aendern.", "Change program settings."},
 	{"Anderen Piloten laden.", "Load a different pilot."},
 	{"Demoaufzeichnung abspielen.", "Playback a recorded demo."},
 	{"Highscore-Liste anzeigen.", "Display Highscore list."},
@@ -2157,6 +2158,7 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann das Radar ausgeschaltet oder am oberen oder unteren\nBildschimrand eingeblendet werden.\n\nRoboter sind lila und Powerups orange. Je nach Spieltyp\nwerden die Spieler in Schiffs- oder ihrer Teamfarbe angezeigt.\nDas Radar zeigt weiter entfernte Objekte abgedunkelt.\nObjekte oberhalb des Spielers haben im Radar einen Strich\nnach unten, Objekte unterhalb des Spielers einen Strich\nnach oben.", 
 	 "The radar can be turned off or displayed at the upper or lower\nscreen border here.\n\nRobots are magenta and powerups are orange. Depending on game\ntype, players are shown in their shop or their team's color.\nMore distant objects are dimmed. Objects above the player\nhave a line extending downward, objects below the player have\na line extending up to the radar's plane."},
 	{"Hier kann man einstellen, wie weit das Radar reicht.", "Here you can adjust the radar's range."},
+	{"Ankreuzen, damit in der texturierten Uebersichtskarte Rauch-\neffekte dargestellt werden.", "Check to have smoke effects rendered in the textured automap."},
 #if 0
 	{"", ""},
 #endif

@@ -1855,7 +1855,7 @@ void AutomapOptionsMenu ()
 	tMenuItem m [15];
 	int	i, j, choice = 0;
 	int	opt;
-	int	optBright, optShowRobots, optShowPowerups, optCoronas, optColor;
+	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optColor;
 	char	szRadarRange [50];
 
 pszRadarRange [0] = TXT_SHORT;
@@ -1872,8 +1872,11 @@ do {
 		optBright = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
 		optCoronas = opt++;
+		ADD_CHECK (opt, TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bSmoke, KEY_S, HTX_AUTOMAP_SMOKE);
+		optSmoke = opt++;
 		}
 	else
+		optSmoke =
 		optCoronas =
 		optBright = -1;
 	ADD_CHECK (opt, TXT_AUTOMAP_POWERUPS, extraGameInfo [0].bPowerupsOnRadar, KEY_P, HTX_AUTOMAP_POWERUPS);
@@ -1916,6 +1919,7 @@ do {
 	gameOpts->render.automap.bTextured = m [nOptTextured].value;
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
+	GET_VAL (gameOpts->render.automap.bSmoke, optSmoke);
 	if (nOptRadarRange >= 0)
 		gameOpts->render.automap.nRange = m [nOptRadarRange].value;
 	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;

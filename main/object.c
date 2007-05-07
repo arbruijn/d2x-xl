@@ -2794,36 +2794,35 @@ gameStates.app.bPlayerEggsDropped = 0;
 //------------------------------------------------------------------------------
 
 //	Camera is less than size of tPlayer away from
-void SetCameraPos (vmsVector *camera_pos, tObject *objP)
+void SetCameraPos (vmsVector *vCameraPos, tObject *objP)
 {
-	int	count = 0;
-	fix	xCameraPlayerDist;
-	fix	xFarScale;
+	vmsVector	vPlayerCameraOffs;
+	int			count = 0;
+	fix			xCameraPlayerDist;
+	fix			xFarScale;
 
-xCameraPlayerDist = VmVecDistQuick (camera_pos, &objP->position.vPos);
+xCameraPlayerDist = VmVecMag (VmVecSub (&vPlayerCameraOffs, vCameraPos, &objP->position.vPos));
 if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 	//	Camera is too close to tPlayer tObject, so move it away.
-	vmsVector	player_camera_vec;
 	tVFIQuery	fq;
 	tFVIData		hit_data;
 	vmsVector	local_p1;
 
-	VmVecSub (&player_camera_vec, camera_pos, &objP->position.vPos);
-	if ((player_camera_vec.p.x == 0) && (player_camera_vec.p.y == 0) && (player_camera_vec.p.z == 0))
-		player_camera_vec.p.x += F1_0/16;
+	if ((vPlayerCameraOffs.p.x == 0) && (vPlayerCameraOffs.p.y == 0) && (vPlayerCameraOffs.p.z == 0))
+		vPlayerCameraOffs.p.x += F1_0/16;
 
 	hit_data.hit.nType = HIT_WALL;
 	xFarScale = F1_0;
 
 	while ((hit_data.hit.nType != HIT_NONE) && (count++ < 6)) {
 		vmsVector	closer_p1;
-		VmVecNormalizeQuick (&player_camera_vec);
-		VmVecScale (&player_camera_vec, xCameraToPlayerDistGoal);
+		VmVecNormalize (&vPlayerCameraOffs);
+		VmVecScale (&vPlayerCameraOffs, xCameraToPlayerDistGoal);
 
 		fq.p0 = &objP->position.vPos;
-		VmVecAdd (&closer_p1, &objP->position.vPos, &player_camera_vec);		//	This is the actual point we want to put the camera at.
-		VmVecScale (&player_camera_vec, xFarScale);						//	...but find a point 50% further away...
-		VmVecAdd (&local_p1, &objP->position.vPos, &player_camera_vec);		//	...so we won't have to do as many cuts.
+		VmVecAdd (&closer_p1, &objP->position.vPos, &vPlayerCameraOffs);		//	This is the actual point we want to put the camera at.
+		VmVecScale (&vPlayerCameraOffs, xFarScale);						//	...but find a point 50% further away...
+		VmVecAdd (&local_p1, &objP->position.vPos, &vPlayerCameraOffs);		//	...so we won't have to do as many cuts.
 
 		fq.p1					= &local_p1;
 		fq.startSeg			= objP->nSegment;
@@ -2835,9 +2834,9 @@ if (xCameraPlayerDist < xCameraToPlayerDistGoal) { // 2*objP->size) {
 		FindVectorIntersection (&fq, &hit_data);
 
 		if (hit_data.hit.nType == HIT_NONE)
-			*camera_pos = closer_p1;
+			*vCameraPos = closer_p1;
 		else {
-			MakeRandomVector (&player_camera_vec);
+			MakeRandomVector (&vPlayerCameraOffs);
 			xFarScale = 3*F1_0 / 2;
 			}
 		}
@@ -2853,14 +2852,14 @@ extern int nProximityDropped, nSmartminesDropped;
 
 void DeadPlayerFrame (void)
 {
-	fix			xTimeDead;
+	fix			xTimeDead, h;
 	vmsVector	fVec;
 
 if (gameStates.app.bPlayerIsDead) {
 	xTimeDead = gameData.time.xGame - gameStates.app.nPlayerTimeOfDeath;
 
 	//	If unable to create camera at time of death, create now.
-	if (gameData.objs.deadPlayerCamera == viewerSaveP) {
+	if (!gameData.objs.deadPlayerCamera) {
 		tObject *player = gameData.objs.objects + LOCALPLAYER.nObject;
 		int nObject = CreateObject (OBJ_CAMERA, 0, -1, player->nSegment, &player->position.vPos, 
 											 &player->position.mOrient, 0, CT_NONE, MT_NONE, RT_NONE, 1);
@@ -2869,10 +2868,12 @@ if (gameStates.app.bPlayerIsDead) {
 		else
 			Int3 ();
 		}		
-	gameData.objs.console->mType.physInfo.rotVel.p.x = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/4;
-	gameData.objs.console->mType.physInfo.rotVel.p.y = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead) / 2;
-	gameData.objs.console->mType.physInfo.rotVel.p.z = max (0, DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead)/3;
-	xCameraToPlayerDistGoal = min (xTimeDead*8, F1_0*20) + gameData.objs.console->size;
+	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
+	h = max (0, h);
+	gameData.objs.console->mType.physInfo.rotVel.p.x = h / 4;
+	gameData.objs.console->mType.physInfo.rotVel.p.y = h / 2;
+	gameData.objs.console->mType.physInfo.rotVel.p.z = h / 3;
+	xCameraToPlayerDistGoal = min (xTimeDead * 8, F1_0 * 20) + gameData.objs.console->size;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->position.vPos, gameData.objs.console);
 	VmVecSub (&fVec, &gameData.objs.console->position.vPos, &gameData.objs.deadPlayerCamera->position.vPos);
 	VmVector2Matrix (&gameData.objs.deadPlayerCamera->position.mOrient, &fVec, NULL, NULL);
@@ -3006,7 +3007,7 @@ if (nObject != -1)
 	gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
 else {
 	Int3 ();
-	gameData.objs.deadPlayerCamera = gameData.objs.viewer;
+	gameData.objs.deadPlayerCamera = NULL;
 	}
 if (gameStates.render.cockpit.nModeSave == -1)		//if not already saved
 	gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;

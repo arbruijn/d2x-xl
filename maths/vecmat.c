@@ -784,6 +784,11 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
 #if 1//def _WIN32
+#	if 1
+dest->p.x = (fix) (((double) src0->p.y * (double) src1->p.z - (double) src0->p.z * (double) src1->p.y) / 65536.0);
+dest->p.y = (fix) (((double) src0->p.z * (double) src1->p.x - (double) src0->p.x * (double) src1->p.z) / 65536.0);
+dest->p.z = (fix) (((double) src0->p.x * (double) src1->p.y - (double) src0->p.y * (double) src1->p.x) / 65536.0);
+#	else
 QLONG q = mul64 (src0->p.y, src1->p.z);
 Assert(dest!=src0 && dest!=src1);
 q += mul64 (-src0->p.z, src1->p.y);
@@ -794,6 +799,7 @@ dest->p.y = (fix) (q >> 16);
 q = mul64 (src0->p.x, src1->p.y);
 q += mul64 (-src0->p.y, src1->p.x);
 dest->p.z = (fix) (q >> 16);
+#	endif
 #else
 quadint q;
 Assert(dest!=src0 && dest!=src1);
@@ -928,6 +934,13 @@ return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->p.x, cosp), FixDiv(v-
 }
 
 // ------------------------------------------------------------------------
+
+inline int VmVecSign (vmsVector *v)
+{
+return (v->p.x * v->p.y * v->p.z < 0) ? -1 : 1;
+}
+
+// ------------------------------------------------------------------------
 //computes a matrix from one or more vectors. The forward vector is required, 
 //with the other two being optional.  If both up & right vectors are passed, 
 //the up vector is used.  If only the forward vector is passed, a bank of
@@ -938,7 +951,8 @@ vmsMatrix *VmVector2Matrix (vmsMatrix *m, vmsVector *fVec, vmsVector *uVec, vmsV
 	vmsVector	*xvec = &m->rVec, 
 					*yvec = &m->uVec, 
 					*zvec = &m->fVec;
-	Assert(fVec != NULL);
+
+Assert(fVec != NULL);
 if (VmVecCopyNormalize (zvec, fVec) == 0) {
 	Int3();		//forward vec should not be zero-length
 	return m;
@@ -948,7 +962,7 @@ if (uVec == NULL) {
 
 bad_vector2:
 ;
-		if (zvec->p.x==0 && zvec->p.z==0) {		//forward vec is straight up or down
+		if ((zvec->p.x == 0) && (zvec->p.z == 0)) {		//forward vec is straight up or down
 			m->rVec.p.x = F1_0;
 			m->uVec.p.z = (zvec->p.y < 0) ? F1_0 : -F1_0;
 			m->rVec.p.y = m->rVec.p.z = m->uVec.p.x = m->uVec.p.y = 0;

@@ -16,6 +16,7 @@
 #include "newdemo.h"
 #include "object.h"
 #include "objsmoke.h"
+#include "automap.h"
 
 #define SHIP_MAX_PARTS				50
 #define PLR_PART_LIFE				-4000
@@ -158,7 +159,8 @@ void DoPlayerSmoke (tObject *objP, int i)
 
 if (i < 0)
 	i = objP->id;
-if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) {
+if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
+	 (gameStates.render.automap.bDisplay && IsMultiGame && !AM_SHOW_PLAYERS)) {
 	KillObjectSmoke (i);
 	return;
 	}

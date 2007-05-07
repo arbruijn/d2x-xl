@@ -200,6 +200,7 @@ typedef struct tAutomapOptions {
 	int bTextured;
 	int bBright;
 	int bCoronas;
+	int bSmoke;
 	int nColor;
 	int nRange;
 } tAutomapOptions;
