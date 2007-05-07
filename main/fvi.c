@@ -900,12 +900,6 @@ else {
 	nModels1 = pmhb1->nSubModels;
 	nModels2 = pmhb2->nSubModels;
 	}
-{
-	vmsVector d [2];
-	HUDMessage (0, "%1.2f %1.2f", 
-					f2fl (VmVecMag (VmVecSub (d, p0, p1))),
-					f2fl (VmVecMag (VmVecSub (d + 1, p0, &objP1->position.vPos))));
-	}
 TransformHitboxes (objP1, p1, hb1);
 TransformHitboxes (objP2, &vPos, hb2);
 for (; iModel1 <= nModels1; iModel1++) {
