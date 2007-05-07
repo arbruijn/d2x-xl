@@ -1818,7 +1818,8 @@ do {
 
 //------------------------------------------------------------------------------
 
-static int nOptTextured;
+static int nOptTextured, nOptRadar, nOptRadarRange;
+static char *pszRadarRange [3];
 
 void AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -1832,17 +1833,35 @@ if (v != gameOpts->render.automap.bTextured) {
 	*key = -2;
 	return;
 	}
+if (!m [nOptRadar + extraGameInfo [0].nRadar].value) {
+	*key = -2;
+	return;
+	}
+if (nOptRadarRange >= 0) {
+	m = menus + nOptRadarRange;
+	v = m->value;
+	if (v != gameOpts->render.automap.nRange) {
+		gameOpts->render.automap.nRange = v;
+		sprintf (m->text, TXT_RADAR_RANGE, pszRadarRange [v]);
+		m->rebuild = 1;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void AutomapOptionsMenu ()
 {
-	tMenuItem m [10];
-	int	i, choice = 0;
+	tMenuItem m [15];
+	int	i, j, choice = 0;
 	int	opt;
-	int	optBright, optShowRobots, optShowPowerups, optCoronas;
+	int	optBright, optShowRobots, optShowPowerups, optCoronas, optColor;
+	char	szRadarRange [50];
 
+pszRadarRange [0] = TXT_SHORT;
+pszRadarRange [1] = TXT_MEDIUM;
+pszRadarRange [2] = TXT_FAR;
+*szRadarRange = '\0';
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
@@ -1852,7 +1871,7 @@ do {
 		ADD_CHECK (opt, TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
 		optBright = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
-		optBright = opt++;
+		optCoronas = opt++;
 		}
 	else
 		optCoronas =
@@ -1861,6 +1880,34 @@ do {
 	optShowPowerups = opt++;
 	ADD_CHECK (opt, TXT_AUTOMAP_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_R, HTX_AUTOMAP_ROBOTS);
 	optShowRobots = opt++;
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_RADIO (opt, TXT_RADAR_OFF, 0, KEY_R, 1, HTX_AUTOMAP_RADAR);
+	nOptRadar = opt++;
+	ADD_RADIO (opt, TXT_RADAR_TOP, 0, KEY_T, 1, HTX_AUTOMAP_RADAR);
+	opt++;
+	ADD_RADIO (opt, TXT_RADAR_BOTTOM, 0, KEY_O, 1, HTX_AUTOMAP_RADAR);
+	opt++;
+	if (extraGameInfo [0].nRadar) {
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		sprintf (szRadarRange + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
+		*szRadarRange = *(TXT_RADAR_RANGE - 1);
+		ADD_SLIDER (opt, szRadarRange + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
+		nOptRadarRange = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_RADIO (opt, TXT_RADAR_WHITE, 0, KEY_W, 2, NULL);
+		optColor = opt++;
+		ADD_RADIO (opt, TXT_RADAR_BLACK, 0, KEY_L, 2, NULL);
+		opt++;
+		}
+	else
+		nOptRadarRange =
+		optColor = -1;
+	m [optColor + gameOpts->render.automap.nColor].value = 1;
+	m [nOptRadar + extraGameInfo [0].nRadar].value = 1;
+	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_AUTOMAP_MENUTITLE, opt, m, AutomapOptionsCallback, &choice);
 		if (i < 0)
@@ -1869,8 +1916,22 @@ do {
 	gameOpts->render.automap.bTextured = m [nOptTextured].value;
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
+	if (nOptRadarRange >= 0)
+		gameOpts->render.automap.nRange = m [nOptRadarRange].value;
 	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optShowRobots].value;
+	for (j = 0; j < 3; j++)
+		if (m [nOptRadar + j].value) {
+			extraGameInfo [0].nRadar = j;
+			break;
+			}
+	if (optColor >= 0) {
+		for (j = 0; j < 2; j++)
+			if (m [optColor + j].value) {
+				gameOpts->render.automap.nColor = j;
+				break;
+				}
+		}
 	} while (i == -2);
 }
 

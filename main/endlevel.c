@@ -274,7 +274,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
 		if (ROBOTINFO (gameData.objs.objects [i].id).companion) {
 			ObjectCreateExplosion (gameData.objs.objects [i].nSegment, &gameData.objs.objects [i].position.vPos, F1_0*7/2, VCLIP_POWERUP_DISAPPEARANCE);
-			gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
+			KillObject (gameData.objs.objects + i);
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
@@ -510,7 +510,7 @@ if (!gameStates.render.bOutsideMine) {
 			objP = ObjectCreateExplosion (gameData.endLevel.exit.nSegNum, &gameData.endLevel.exit.vSideExit, i2f (50), VCLIP_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				external_explosion = *objP;
-				objP->flags |= OF_SHOULD_BE_DEAD;
+				KillObject (objP);
 				gameStates.render.nFlashScale = 0;	//kill lights in mine
 				ext_expl_halflife = objP->lifeleft;
 				gameStates.render.bExtExplPlaying = 1;
@@ -845,7 +845,7 @@ DrawExitModel ();
 if (gameStates.render.bExtExplPlaying)
 	DrawFireball (&external_explosion);
 gameStates.render.nLighting=0;
-RenderObject (gameData.objs.console, 0);
+RenderObject (gameData.objs.console, 0, 0);
 gameStates.render.nLighting=1;
 }
 

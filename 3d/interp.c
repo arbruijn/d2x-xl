@@ -657,7 +657,7 @@ void ComputeHitbox (int nModel, int iSubObj)
 	vmsVector		vMin = phb->vMin;
 	vmsVector		vMax = phb->vMax;
 	vmsVector		vOffset = phb->vOffset;
-	vmsVector		*pv = phb->vertices;
+	vmsVector		*pv = phb->box.vertices;
 	tQuad				*pf;
 	int				i;
 
@@ -666,12 +666,14 @@ for (i = 0; i < 8; i++) {
 	pv [i].p.y = (hitBoxOffsets [i].p.y ? vMin.p.y : vMax.p.y) + vOffset.p.y;
 	pv [i].p.z = (hitBoxOffsets [i].p.z ? vMin.p.z : vMax.p.z) + vOffset.p.z;
 	}
-for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
+for (i = 0, pf = phb->box.faces; i < 6; i++, pf++) {
 	VmVecNormal (pf->n, pv + hitboxFaceVerts [i][0], pv + hitboxFaceVerts [i][1], pv + hitboxFaceVerts [i][2]);
 	}
 }
 
 //------------------------------------------------------------------------------
+
+#if 0
 
 void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj)
 {
@@ -694,6 +696,79 @@ for (i = 0; i < 6; i++, pf++) {
 	VmVecRotate (pf->n + 1, pf->n, &m);
 	}
 }
+
+#endif
+
+//------------------------------------------------------------------------------
+
+#define G3_HITBOX_TRANSFORM	0
+#define HITBOX_CACHE				0
+
+#if G3_HITBOX_TRANSFORM
+
+void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb)
+{
+	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	tQuad			*pf;
+	vmsVector	rotVerts [8];
+	int			i, j, iModel, nModels;
+
+if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+	iModel =
+	nModels = 0;
+	}
+else {
+	iModel = 1;
+	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
+	}
+G3StartInstanceMatrix (vPos ? vPos : &objP->position.vPos, &objP->position.mOrient);
+for (; iModel <= nModels; iModel++, phb++, pmhb++) {
+	for (i = 0; i < 8; i++)
+		G3TransformPoint (rotVerts + i, pmhb->box.vertices + i, 0);
+	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
+		for (j = 0; j < 4; j++)
+			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
+		VmVecNormal (pf->n + 1, pf->v, pf->v + 1, pf->v + 2);
+		}
+	}
+G3DoneInstance ();
+}
+
+#else //G3_HITBOX_TRANSFORM
+
+void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb)
+{
+	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	tQuad			*pf;
+	vmsVector	rotVerts [8];
+	vmsMatrix	m;
+	int			i, j, iModel, nModels;
+
+if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
+	iModel =
+	nModels = 0;
+	}
+else {
+	iModel = 1;
+	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
+	}
+if (!vPos)
+	vPos = &objP->position.vPos;
+VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+for (; iModel <= nModels; iModel++, phb++, pmhb++) {
+	for (i = 0; i < 8; i++) {
+		VmVecRotate (rotVerts + i, pmhb->box.vertices + i, &m);
+		VmVecInc (rotVerts + i, vPos);
+		}
+	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {
+		for (j = 0; j < 4; j++)
+			pf->v [j] = rotVerts [hitboxFaceVerts [i][j]];
+		VmVecNormal (pf->n + 1, pf->v, pf->v + 1, pf->v + 2);
+		}
+	}
+}
+
+#endif //G3_HITBOX_TRANSFORM
 
 //------------------------------------------------------------------------------
 //walks through all submodels of a polymodel and determines the coordinate extremes

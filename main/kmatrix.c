@@ -159,7 +159,7 @@ for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 	if (gameData.multiplayer.players [sorted [j]].connected==0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
-      GrSetFontColorRGBi (RGBA_PAL2 (player_rgb  [color].r, player_rgb  [color].g, player_rgb  [color].b), 1, 0, 0);
+      GrSetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors  [color].b), 1, 0, 0);
 	GrPrintF (x, LHY (40) + yOffs, "%c", gameData.multiplayer.players [sorted [j]].callsign [0]);
 	}
 x = LHX (72 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
@@ -232,7 +232,7 @@ void kmatrix_draw_coop_deaths (int *sorted)
 	char	reactor_message [50];
 	
 y = LHY (55 + gameData.multiplayer.nPlayers * 9) + yOffs;
-//	GrSetFontColor (gr_getcolor (player_rgb [j].r,player_rgb [j].g,player_rgb [j].b),-1);
+//	GrSetFontColor (gr_getcolor (playerColors [j].r,playerColors [j].g,playerColors [j].b),-1);
 GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 x = CENTERSCREEN+LHX (50) + xOffs;
 GrPrintF (x, y, TXT_DEATHS);
@@ -342,7 +342,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [sorted [i]].connected==0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb  [color].r, player_rgb  [color].g, player_rgb [color].b), 1, 0, 0);
+		GrSetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
 	kmatrix_draw_item (i, sorted);
 	}
 kmatrix_draw_deaths (sorted);
@@ -372,7 +372,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [sorted [i]].connected==0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
-		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb  [color].r, player_rgb  [color].g, player_rgb [color].b), 1, 0, 0);
+		GrSetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
 	kmatrix_draw_coop_item (i, sorted);
 	}
 kmatrix_draw_deaths (sorted);

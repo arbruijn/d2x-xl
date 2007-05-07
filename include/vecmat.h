@@ -87,9 +87,7 @@ vmsAngVec *VmAngVecMake (vmsAngVec * v, fixang p, fixang b, fixang h);
 //Global constants
 
 extern vmsVector vmdZeroVector;
-
 extern vmsMatrix vmdIdentityMatrix;
-
 
 //Here's a handy constant
 

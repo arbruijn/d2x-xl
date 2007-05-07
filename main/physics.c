@@ -564,8 +564,6 @@ retryMove:
 	vSaveP0 = *fq.p0;
 	vSaveP1 = *fq.p1;
 	memset (&hi, 0, sizeof (hi));
-	if (objP->nType == OBJ_WEAPON)
-		objP = objP;
 	fviResult = FindVectorIntersection (&fq, &hi);
 	UpdateStats (objP, fviResult);
 #if 0//def _DEBUG
@@ -631,7 +629,7 @@ retryMove:
 	nWallHitSeg = hi.hit.nSideSegment;
 	if (iSeg == -1) {		//some sort of horrible error
 		if (objP->nType == OBJ_WEAPON)
-			objP->flags |= OF_SHOULD_BE_DEAD;
+			KillObject (objP);
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
@@ -642,7 +640,7 @@ retryMove:
 	if (iSeg != objP->nSegment)
 		RelinkObject (nObject, iSeg);
 	//if start point not in tSegment, move tObject to center of tSegment
-	if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {	//tObject stuck
+	if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {	//object stuck
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
 			if (bGetPhysSegs)
@@ -662,7 +660,7 @@ retryMove:
 				VmVecDec (&objP->position.vPos, &vCenter);
 				}
 			if (objP->nType == OBJ_WEAPON) {
-				objP->flags |= OF_SHOULD_BE_DEAD;
+				KillObject (objP);
 				return;
 				}
 			}
@@ -928,7 +926,7 @@ retryMove:
 				objP->position.vPos.p.x += nObject;
 				}
 			if (objP->nType == OBJ_WEAPON)
-				objP->flags |= OF_SHOULD_BE_DEAD;
+				KillObject (objP);
 		}
 	}
 #if UNSTICK_OBJS

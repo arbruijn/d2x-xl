@@ -822,7 +822,7 @@ void SetVertigoRobotFlags (void)
 
 gameData.objs.nVertigoBotFlags = 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_ROBOT) && (objP->id >= 66) /*&& !IS_BOSS (objP)*/)
+	if ((objP->nType == OBJ_ROBOT) && (objP->id >= 66) && !IS_BOSS (objP))
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->id - 64));
 }
 

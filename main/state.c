@@ -601,7 +601,7 @@ if (!bBetweenLevels)	{
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
+				KillObject (gameData.objs.objects + i);
 				gameData.objs.objects [i].renderType = RT_POLYOBJ;
 				gameData.objs.objects [i].controlType = CT_NONE;
 				gameData.objs.objects [i].movementType = MT_NONE;
@@ -1151,7 +1151,7 @@ if (!bBetweenLevels)	{
 				md->objP = NULL;
 				} 
 			else {						//maybe loaded half-morphed from disk
-				gameData.objs.objects [i].flags |= OF_SHOULD_BE_DEAD;
+				KillObject (gameData.objs.objects + i);
 				gameData.objs.objects [i].renderType = RT_POLYOBJ;
 				gameData.objs.objects [i].controlType = CT_NONE;
 				gameData.objs.objects [i].movementType = MT_NONE;

@@ -1253,7 +1253,7 @@ for (i = 0; i < nRemoteCreated; i++) {
 	count += 2;
 	}
 for (i = nRemoteCreated; i < gameData.multigame.create.nLoc; i++)
-	gameData.objs.objects [gameData.multigame.create.nObjNums [i]].flags |= OF_SHOULD_BE_DEAD;
+	KillObject (gameData.objs.objects + gameData.multigame.create.nObjNums [i]);
 if (buf [0] == MULTI_PLAYER_EXPLODE) {
 	KillPlayerSmoke (nPlayer);
 	ExplodeBadassPlayer (objP);
@@ -1372,7 +1372,7 @@ if (gameData.objs.objects [nLocalObj].nType == OBJ_POWERUP)
 				gameData.multiplayer.powerupsInMine [id] -= 4;
 			}
 		}
-gameData.objs.objects [nLocalObj].flags |= OF_SHOULD_BE_DEAD; // quick and painless
+KillObject (gameData.objs.objects + nLocalObj); // quick and painless
 }
 
 //-----------------------------------------------------------------------------

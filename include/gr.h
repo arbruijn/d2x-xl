@@ -53,6 +53,13 @@ typedef struct tRgbColord {
 	double blue;
 } tRgbColord;
 
+typedef struct tRgbaColord {
+	double red;
+	double green;
+	double blue;
+	double alpha;
+} tRgbaColord;
+
 typedef struct tRgbColorf {
 	float red;
 	float green;

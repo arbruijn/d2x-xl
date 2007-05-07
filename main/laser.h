@@ -16,6 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _LASER_H
 
 #define LASER_ID        				0   //0..3 are lasers
+#define ROBOT_SLOW_PHOENIX_ID			5
 #define CONCUSSION_ID   				8
 #define FLARE_ID        				9   //  NOTE: This MUST correspond to the ID generated at bitmaps.tbl read time.
 #define ROBOT_BLUE_LASER_ID			10

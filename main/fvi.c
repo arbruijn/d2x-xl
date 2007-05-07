@@ -52,33 +52,85 @@ int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *
 
 //	-----------------------------------------------------------------------------
 
-void FindPointLineIntersection (vmsVector *intP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos)
+inline fix RegisterHit (vmsVector *vBestHit, vmsVector *vCurHit, vmsVector *vPos, fix dMax)
 {
-	vmsVector	d31, d21, v, d [2];
+	vmsVector	v;
+   fix d = VmVecMag (VmVecSub (&v, vPos, vCurHit));
+
+if (dMax < d) {
+	dMax = d;
+	*vBestHit = *vCurHit;
+	}
+return dMax;
+}
+
+//	-----------------------------------------------------------------------------
+// Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
+
+int FindPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos)
+{
+	vmsVector	d31, d21, h, v, d [2];
 	double		m, u;
 
 VmVecSub (&d21, p2, p1);
-if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z))
-	*intP = *p1;
-else {
-	VmVecSub (&d31, p3, p1);
-	u = (double) VmVecDot (&d31, &d21) / m;
-	intP->p.x = p1->p.x + (fix) (u * d21.p.x);
-	intP->p.y = p1->p.y + (fix) (u * d21.p.y);
-	intP->p.z = p1->p.z + (fix) (u * d21.p.z);
-	// limit the intersection to [p1,p2]
-	VmVecSub (&v, p1, intP);
-	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-	if (m < u) {
-		*intP = *p2;
-		}
-	else {
-		VmVecSub (&v, p2, intP);
-		u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-		if (m < u)
-			*intP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2))) ? *p2 : *p1;
-		}
+if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
+	if (hitP)
+		*hitP = *p1;
+	return 0;
 	}
+VmVecSub (&d31, p3, p1);
+u = (double) VmVecDot (&d31, &d21);
+u /= m;
+h.p.x = p1->p.x + (fix) (u * d21.p.x);
+h.p.y = p1->p.y + (fix) (u * d21.p.y);
+h.p.z = p1->p.z + (fix) (u * d21.p.z);
+// limit the intersection to [p1,p2]
+VmVecSub (&v, p1, &h);
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if (m < u) {
+	if (hitP)
+		*hitP = *p2;
+	return 1;	//clamped
+	}
+VmVecSub (&v, p2, &h);
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if (m < u) {
+	if (hitP)
+		*hitP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2))) ? *p2 : *p1;
+	return 1;	//clamped
+	}
+if (hitP)
+	*hitP = h;
+return 0;
+}
+
+//	-----------------------------------------------------------------------------
+// Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
+
+int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
+{
+	fVector	p1, p2, p3, d31, d21, h, v [2];
+	float		m, u;
+
+VmsVecToFloat (&p1, pv1);
+VmsVecToFloat (&p2, pv2);
+VmsVecToFloat (&p3, pv3);
+VmVecSubf (&d21, &p2, &p1);
+if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z))
+	return 0;
+VmVecSubf (&d31, &p3, &p1);
+u = VmVecDotf (&d31, &d21);
+u /= m;
+h.p.x = p1.p.x + u * d21.p.x;
+h.p.y = p1.p.y + u * d21.p.y;
+h.p.z = p1.p.z + u * d21.p.z;
+// limit the intersection to [p1,p2]
+VmVecSubf (v, &p1, &h);
+VmVecSubf (v + 1, &p2, &h);
+m = VmVecDotf (v, v + 1);
+if (m >= 1)
+	return 1;
+return 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -99,10 +151,6 @@ num = VmVecDot (vPlaneNorm, &w) - rad;
 den = -VmVecDot (vPlaneNorm, &d);
 if (!den)
 	return 0;
-#if 0
-if (labs (num) > labs (den))
-	return 0;
-#else
 if (den > 0) {
 	if ((num > den) || ((-num >> 15) >= den)) //frac greater than one
 		return 0;
@@ -111,7 +159,6 @@ else {
 	if (num < den)
 		return 0;
 	}
-#endif
 //do check for potential overflow
 if (labs (num) / (f1_0 / 2) >= labs (den))	
 	return 0;
@@ -132,10 +179,10 @@ int FindLineQuadIntersectionSub (vmsVector *hitP, vmsVector *vPlanePoint, vmsVec
 	vmsVector	d, w;
 	fix			num, den;
 
-VmVecSub (&w, p0, vPlanePoint);
+VmVecSub (&w, vPlanePoint, p0);
 VmVecSub (&d, p1, p0);
-num = VmVecDot (vPlaneNorm, &w) - rad;
-den = -VmVecDot (vPlaneNorm, &d);
+num = VmVecDot (vPlaneNorm, &w);
+den = VmVecDot (vPlaneNorm, &d);
 if (!den)
 	return 0;
 if (labs (num) > labs (den))
@@ -149,11 +196,26 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
+// if hitP is inside the quad planeP, the perpendicular from hitP to each edge
+// of the quad must hit each edge between the edge's end points (provided hitP
+// is in the quad's plane).
+
+int CheckLineHitsQuad (vmsVector *hitP, vmsVector *planeP)
+{
+	int	i;
+
+for (i = 0; i < 4; i++)
+	if (FindPointLineIntersectionf (planeP + i, planeP + ((i + 1) % 4), hitP))
+		return 0;	//doesn't hit
+return 1;	//hits
+}
+
+//	-----------------------------------------------------------------------------
 
 int FindLineQuadIntersection (vmsVector *hitP, vmsVector *planeP, vmsVector *planeNormP, vmsVector *p0, vmsVector *p1)
 {
 	vmsVector	vHit, d [2];
-
+	
 if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 VmVecSub (d, &vHit, p0);
@@ -162,7 +224,7 @@ if (VmVecDot (d, d + 1) >= 0)
 	return 0;
 if (!CheckSphereToFace (&vHit, 0, planeP, planeNormP, 4))
 	return 0;
-VmVecInc (hitP, &vHit);
+*hitP = vHit;
 return 1;
 }
 
@@ -170,68 +232,69 @@ return 1;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindQuadQuadIntersectionSub (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2)
+int FindQuadQuadIntersectionSub (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2, vmsVector *vPos)
 {
 	int			i, nHits = 0;
-	vmsVector	vHits;
+	fix			dMax = 0;
+	vmsVector	vHit;
 
-vHits.p.x = vHits.p.y = vHits.p.z = 0;
 for (i = 0; i < 4; i++)
-	nHits += FindLineQuadIntersection (&vHits, p2, vn2, p1 + i, p1 + ((i + 1) % 4));
-if (nHits)
-	VmVecCopyScale (hitP, &vHits, F1_0 / nHits);
+	if (FindLineQuadIntersection (&vHit, p2, vn2, p1 + i, p1 + ((i + 1) % 4))) {
+		dMax = RegisterHit (hitP, &vHit, vPos, dMax);
+		nHits++;
+		}
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
-int FindQuadQuadIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2)
+int FindQuadQuadIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *vn1, vmsVector *p2, vmsVector *vn2, vmsVector *vPos)
 {
-	vmsVector	vHits [2];
+	vmsVector	vHit;
 	int			nHits = 0;
+	fix			dMax = 0;
 
 // test whether any edges of p1 penetrate p2
-if (FindQuadQuadIntersectionSub (vHits, p1, vn1, p2, vn2))
-	nHits++;
-else
-	vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
-// test whether any edges of p2 penetrate p1
-if (FindQuadQuadIntersectionSub (vHits + 1, p2, vn2, p1, vn1)) {
-	VmVecInc (vHits, vHits + 1);
+if (FindQuadQuadIntersectionSub (&vHit, p1, vn1, p2, vn2, vPos)) {
+	dMax = RegisterHit (hitP, &vHit, vPos, dMax);
 	nHits++;
 	}
-if (nHits)
-	VmVecCopyScale (hitP, vHits, F1_0 / nHits);
+// test whether any edges of p2 penetrate p1
+if (FindQuadQuadIntersectionSub (&vHit, p2, vn2, p1, vn1, vPos)) {
+	dMax = RegisterHit (hitP, &vHit, vPos, dMax);
+	nHits++;
+	}
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
-int FindLineHitboxIntersection (vmsVector *hitP, tHitbox *phb, vmsVector *p0, vmsVector *p1)
+int FindLineHitboxIntersection (vmsVector *hitP, tBox *phb, vmsVector *p0, vmsVector *p1, vmsVector *vPos)
 {
 	int			i, nHits = 0;
-	vmsVector	vHits;
+	fix			dMax = 0;
+	vmsVector	vHit;
 	tQuad			*pf;
 
-vHits.p.x = vHits.p.y = vHits.p.z = 0;
 // create all faces of hitbox 2 and their normals before testing because they will 
 // be used multiple times
 for (i = 0, pf = phb->faces; i < 6; i++, pf++)
-	nHits += FindLineQuadIntersection (&vHits, pf->v, pf->n + 1, p0, p1);
-if (nHits)
-	VmVecCopyScale (hitP, &vHits, F1_0 / nHits);
+	if (FindLineQuadIntersection (&vHit, pf->v, pf->n + 1, p0, p1)) {
+		dMax = RegisterHit (hitP, &vHit, vPos, dMax);
+		nHits++;
+		}
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
-int FindHitboxIntersection (vmsVector *hitP, tHitbox *phb1, tHitbox *phb2)
+int FindHitboxIntersection (vmsVector *hitP, tBox *phb1, tBox *phb2, vmsVector *vPos)
 {
 	int			i, j, nHits = 0;
-	vmsVector	vHits [2];
+	fix			dMax = 0;
+	vmsVector	vHit;
 	tQuad			*pf1, *pf2;
 
-vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
 // create all faces of hitbox 2 and their normals before testing because they will 
 // be used multiple times
 for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
@@ -240,60 +303,15 @@ for (i = 0, pf1 = phb1->faces; i < 6; i++, pf1++) {
 		if (VmVecDot (pf1->n + 1, pf2->n + 1) >= 0)
 			continue;
 #endif
-		if (FindQuadQuadIntersection (vHits + 1, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1)) {
+		if (FindQuadQuadIntersection (&vHit, pf1->v, pf1->n + 1, pf2->v, pf2->n + 1, vPos)) {
+			dMax = RegisterHit (hitP, &vHit, vPos, dMax);
 			nHits++;
-			VmVecInc (vHits, vHits + 1);
+#ifdef _DEBUG
+			pf1->t = pf2->t = gameStates.app.nSDLTicks;
+#endif
 			}
 		}
 	}
-if (nHits) {
-	VmVecCopyScale (hitP, vHits, F1_0 / nHits);
-	}
-#if 0
-else { // check whether one hitbox is completely inside the other
-	vmsVector	v1, v2,
-					vMin [2] = {{0x7fffffff, 0x7fffffff, 0x7fffffff}, {0x7fffffff, 0x7fffffff, 0x7fffffff}},
-					vMax [2] = {{-0x7fffffff, -0x7fffffff, -0x7fffffff}, {-0x7fffffff, -0x7fffffff, -0x7fffffff}};
-
-	for (i = 0; i < 8; i++) {
-		if (vMin [0].p.x > hb1 [i].p.x)
-			vMin [0].p.x = hb1 [i].p.x;
-		if (vMin [0].p.y > hb1 [i].p.y)
-			vMin [0].p.y = hb1 [i].p.y;
-		if (vMin [0].p.z > hb1 [i].p.z)
-			vMin [0].p.z = hb1 [i].p.z;
-		if (vMax [0].p.x < hb1 [i].p.x)
-			vMax [0].p.x = hb1 [i].p.x;
-		if (vMax [0].p.y < hb1 [i].p.y)
-			vMax [0].p.y = hb1 [i].p.y;
-		if (vMax [0].p.z < hb1 [i].p.z)
-			vMax [0].p.z = hb1 [i].p.z;
-
-		if (vMin [1].p.x > hb2 [i].p.x)
-			vMin [1].p.x = hb2 [i].p.x;
-		if (vMin [1].p.y > hb2 [i].p.y)
-			vMin [1].p.y = hb2 [i].p.y;
-		if (vMin [1].p.z > hb2 [i].p.z)
-			vMin [1].p.z = hb2 [i].p.z;
-		if (vMax [1].p.x < hb2 [i].p.x)
-			vMax [1].p.x = hb2 [i].p.x;
-		if (vMax [1].p.y < hb2 [i].p.y)
-			vMax [1].p.y = hb2 [i].p.y;
-		if (vMax [1].p.z < hb2 [i].p.z)
-			vMax [1].p.z = hb2 [i].p.z;
-		}
-	VmVecSub (&v1, vMin, vMin + 1);
-	VmVecSub (&v2, vMax, vMax + 1);
-	if (VmVecDot (&v1, &v2) < 0) {
-		nHits = 1;
-		*hitP = *vMin;
-		VmVecInc (hitP, vMin + 1);
-		VmVecInc (hitP, vMax);
-		VmVecInc (hitP, vMax + 1);
-		VmVecScale (hitP, F1_0 / 4);
-		}
-	}
-#endif
 return nHits;
 }
 
@@ -862,10 +880,13 @@ return 0;
 
 fix CheckHitboxToHitbox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVector *p0, vmsVector *p1)
 {
-	vmsVector		vHits [2];
+	vmsVector		vHit, vPos = objP2->position.vPos;
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
 	tModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->rType.polyObjInfo.nModel;
 	tModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
+	tBox				hb1 [MAX_SUBMODELS + 1];
+	tBox				hb2 [MAX_SUBMODELS + 1];
+	fix				dMax = 0;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel1 =
@@ -879,39 +900,49 @@ else {
 	nModels1 = pmhb1->nSubModels;
 	nModels2 = pmhb2->nSubModels;
 	}
-vHits [0].p.x = vHits [0].p.y = vHits [0].p.z = 0;
+{
+	vmsVector d [2];
+	HUDMessage (0, "%1.2f %1.2f", 
+					f2fl (VmVecMag (VmVecSub (d, p0, p1))),
+					f2fl (VmVecMag (VmVecSub (d + 1, p0, &objP1->position.vPos))));
+	}
+TransformHitboxes (objP1, p1, hb1);
+TransformHitboxes (objP2, &vPos, hb2);
 for (; iModel1 <= nModels1; iModel1++) {
-	TransformHitbox (objP1, p1, iModel1);
 	for (; iModel2 <= nModels2; iModel2++) {
-		TransformHitbox (objP2, NULL, iModel2);
-		if (FindHitboxIntersection (vHits + 1, pmhb1->hitboxes + iModel1, pmhb2->hitboxes + iModel2)) {
-			VmVecInc (vHits, vHits + 1);
+		if (FindHitboxIntersection (&vHit, hb1 + iModel1, hb2 + iModel2, &vPos)) {
+			dMax = RegisterHit (intP, &vHit, &vPos, dMax);
 			nHits++;
 			}
 		}
 	}
 if (!nHits) {
 	for (; iModel2 <= nModels2; iModel2++) {
-		if (FindLineHitboxIntersection (vHits + 1, pmhb2->hitboxes + iModel2, p0, p1)) {
-			VmVecInc (vHits, vHits + 1);
+		if (FindLineHitboxIntersection (&vHit, hb2 + iModel2, p0, p1, &vPos)) {
+			dMax = RegisterHit (intP, &vHit, &vPos, dMax);
 			nHits++;
 			}
 		}
 	}
-if (nHits)
-	VmVecCopyScale (intP, vHits, F1_0 / nHits);
+#ifdef _DEBUG
+if (nHits) {
+	pmhb1->vHit = pmhb2->vHit = *intP;
+	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks;
+	}
+#endif
 return nHits;
 }
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad, tObject *objP)
+fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *pn, vmsVector *vPos, tObject *objP, fix rad)
 {
 	tQuad				*pf;
 	vmsVector		hitP, v;
 	int				i, iModel, nModels;
 	fix				h, d, dot, xDist = 0x7fffffff;
 	tModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
+	tBox				hb [MAX_SUBMODELS + 1];
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =
@@ -921,17 +952,18 @@ else {
 	iModel = 1;
 	nModels = pmhb->nSubModels;
 	}
+TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
-	TransformHitbox (objP, NULL, iModel);
-	for (i = 0, pf = pmhb->hitboxes [iModel].faces; i < 6; i++, pf++) {
-		VmVecNormalize (VmVecSub (&v, p1, p0));
-		dot = VmVecDot (pf->n + 1, &v);
+	for (i = 0, pf = hb [iModel].faces; i < 6; i++, pf++) {
+#if 0
+		dot = VmVecDot (pf->n + 1, pn);
 		if (dot >= 0)
 			continue;	//shield face facing away from vector
+#endif
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 		if (h) {
 			d = VmVecNormalize (VmVecSub (&v, &hitP, p0));
-			dot = VmVecDot (pf->n + 1, &v);
+			dot = VmVecDot (pf->n + 1, pn);
 			if (dot > 0)
 				continue;	//behind shield face
 #if 0
@@ -956,7 +988,7 @@ fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 								 tObject *thisObjP, tObject *otherObjP)
 {
 	fix			size, dist;
-	vmsVector	hitP;
+	vmsVector	hitP, v0, v1, vn;
 	int			bThisPoly, bOtherPoly;
 	
 if (rad < 0)
@@ -966,7 +998,7 @@ else {
 	if ((thisObjP->nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->id).attackType)
 		size = (size * 3) / 4;
 	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
-	if (thisObjP->nType == OBJ_PLAYER &&
+	if ((thisObjP->nType == OBJ_PLAYER) &&
 		 ((otherObjP->nType == OBJ_PLAYER) ||
  		 ((IsCoopGame) && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 		size /= 2;
@@ -979,12 +1011,32 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
 			return 0;
+		FindPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
 		}
 	else {
-		if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, rad, thisObjP)))
-			return 0;
+		if (bThisPoly) {
+		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere 
+		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
+			VmVecSub (&vn, &otherObjP->position.vPos, &thisObjP->position.vPos);
+			dist = VmVecMag (&vn);
+			if (dist < thisObjP->size + otherObjP->size)
+				dist = dist;
+			VmVecNormalize (VmVecSub (&vn, p1, p0));
+			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->size)))
+				return 0;
+			FindPointLineIntersection (&hitP, p0, p1, &hitP, &otherObjP->position.vPos);
+			}
+		else {
+		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere 
+		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
+			v0 = thisObjP->position.vPos;
+			VmVecNormalize (VmVecSub (&vn, &otherObjP->position.vPos, &v0));
+			VmVecScaleAdd (&v1, &v0, &vn, thisObjP->size);
+			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->size)))
+				return 0;
+			FindPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
+			}
 		}
-	FindPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
 #else
 #	if 0
 	// check hitbox collisions for missiles only

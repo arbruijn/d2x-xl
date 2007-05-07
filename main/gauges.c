@@ -3348,7 +3348,7 @@ extern int nMissileGun;
 extern int AllowedToFireLaser (void);
 extern int AllowedToFireMissile (void);
 
-rgb player_rgb [] = {
+rgb playerColors [] = {
 	{15, 15, 23}, 
 	{27, 0, 0}, 
 	{0, 23, 0}, 
@@ -3491,7 +3491,7 @@ if (gameStates.render.cockpit.bShowPingStats) {
 			xo = faw*8; //was +20;
 	}	
 for (i = 0; i < n_players; i++) {
-	int player_num;
+	int nPlayer;
 	char name [80], teamInd [2] = {127, 0};
 	int sw, sh, aw, indent =0;
 
@@ -3509,22 +3509,22 @@ for (i = 0; i < n_players; i++) {
 		}
 	else if (netGame.KillGoal || netGame.xPlayTimeAllowed) 
 		 x1 = LHX (43) - LHX (18);
-	player_num = (gameData.multigame.kills.bShowList == 3) ? i : player_list [i];
-	if (gameData.multigame.kills.bShowList == 1 || gameData.multigame.kills.bShowList==2) {
+	nPlayer = (gameData.multigame.kills.bShowList == 3) ? i : player_list [i];
+	if ((gameData.multigame.kills.bShowList == 1) || (gameData.multigame.kills.bShowList == 2)) {
 		int color;
 
-		if (gameData.multiplayer.players [player_num].connected != 1)
+		if (gameData.multiplayer.players [nPlayer].connected != 1)
 			GrSetFontColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
 			if (gameData.app.nGameMode & GM_TEAM)
-				color = GetTeam (player_num);
+				color = GetTeam (nPlayer);
 			else
-				color = player_num;
-			GrSetFontColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g, player_rgb [color].b), 1, 0, 0);
+				color = nPlayer;
+			GrSetFontColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b), 1, 0, 0);
 			}
 		}	
 	else 
-		GrSetFontColorRGBi (RGBA_PAL2 (player_rgb [player_num].r, player_rgb [player_num].g, player_rgb [player_num].b), 1, 0, 0);
+		GrSetFontColorRGBi (RGBA_PAL2 (playerColors [nPlayer].r, playerColors [nPlayer].g, playerColors [nPlayer].b), 1, 0, 0);
 	if (gameData.multigame.kills.bShowList == 3) {
 		if (GetTeam (gameData.multiplayer.nLocalPlayer) == i) {
 #if 0//def _DEBUG
@@ -3560,15 +3560,15 @@ for (i = 0; i < n_players; i++) {
 	else
 #if 0//def _DEBUG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d", 
-					gameData.multiplayer.players [player_num].callsign, 
-					netPlayers.players [player_num].network.ipx.node [0], 
-					netPlayers.players [player_num].network.ipx.node [1], 
-					netPlayers.players [player_num].network.ipx.node [2], 
-					netPlayers.players [player_num].network.ipx.node [3], 
-					netPlayers.players [player_num].network.ipx.node [5] +
-					 (unsigned) netPlayers.players [player_num].network.ipx.node [4] * 256);
+					gameData.multiplayer.players [nPlayer].callsign, 
+					netPlayers.players [nPlayer].network.ipx.node [0], 
+					netPlayers.players [nPlayer].network.ipx.node [1], 
+					netPlayers.players [nPlayer].network.ipx.node [2], 
+					netPlayers.players [nPlayer].network.ipx.node [3], 
+					netPlayers.players [nPlayer].network.ipx.node [5] +
+					 (unsigned) netPlayers.players [nPlayer].network.ipx.node [4] * 256);
 #else
-		strcpy (name, gameData.multiplayer.players [player_num].callsign);	// Note link to above if!!
+		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
 #endif
 #if 0//def _DEBUG
 	x1 += LHX (100);
@@ -3582,13 +3582,13 @@ for (i = 0; i < n_players; i++) {
 	GrPrintF (x0+indent, y, "%s", name);
 
 	if (gameData.multigame.kills.bShowList==2) {
-		if (gameData.multiplayer.players [player_num].netKilledTotal + gameData.multiplayer.players [player_num].netKillsTotal <= 0)
+		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
 			GrPrintF (x1, y, TXT_NOT_AVAIL);
 		else
 			GrPrintF (x1, y, "%d%%", 
-				 (int) ((double) gameData.multiplayer.players [player_num].netKillsTotal /
-						 ((double) gameData.multiplayer.players [player_num].netKilledTotal +
-						  (double) gameData.multiplayer.players [player_num].netKillsTotal) * 100.0));		
+				 (int) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
+						 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
+						  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));		
 		}
 	else if (gameData.multigame.kills.bShowList == 3) {
 		if (gameData.app.nGameMode & GM_ENTROPY)
@@ -3599,25 +3599,25 @@ for (i = 0; i < n_players; i++) {
 			GrPrintF (x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
 		}
 	else if (gameData.app.nGameMode & GM_MULTI_COOP)
-		GrPrintF (x1, y, "%-6d", gameData.multiplayer.players [player_num].score);
+		GrPrintF (x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
       GrPrintF (x1, y, "%3d (%d)", 
-					 gameData.multiplayer.players [player_num].netKillsTotal, 
-					 gameData.multiplayer.players [player_num].nKillGoalCount);
+					 gameData.multiplayer.players [nPlayer].netKillsTotal, 
+					 gameData.multiplayer.players [nPlayer].nKillGoalCount);
    else
-		GrPrintF (x1, y, "%3d", gameData.multiplayer.players [player_num].netKillsTotal);
-	if (gameStates.render.cockpit.bShowPingStats && (player_num != gameData.multiplayer.nLocalPlayer)) {
+		GrPrintF (x1, y, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
+	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != gameData.multiplayer.nLocalPlayer)) {
 		if (bGetPing)
-			PingPlayer (player_num);
-		if (pingStats [player_num].sent) {
+			PingPlayer (nPlayer);
+		if (pingStats [nPlayer].sent) {
 #if 0//def _DEBUG
 			GrPrintF (x1 + xo, y, "%lu %d %d", 
-						  pingStats [player_num].ping, 
-						  pingStats [player_num].sent, 
-						  pingStats [player_num].received);
+						  pingStats [nPlayer].ping, 
+						  pingStats [nPlayer].sent, 
+						  pingStats [nPlayer].received);
 #else
-			GrPrintF (x1 + xo, y, "%lu %i%%", pingStats [player_num].ping, 
-						 100 - ((pingStats [player_num].received * 100) / pingStats [player_num].sent));
+			GrPrintF (x1 + xo, y, "%lu %i%%", pingStats [nPlayer].ping, 
+						 100 - ((pingStats [nPlayer].received * 100) / pingStats [nPlayer].sent));
 #endif
 			}
 		}
@@ -3719,7 +3719,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 						}
 					else {
 						nColor = (gameData.app.nGameMode & GM_TEAM)? GetTeam (p) : p;
-						colorP = player_rgb + nColor;
+						colorP = playerColors + nColor;
 						}
 
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);

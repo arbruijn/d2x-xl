@@ -121,6 +121,7 @@ short idToOOF [100];
 //info on the various types of gameData.objs.objects
 #ifdef _DEBUG
 tObject	Object_minus_one;
+tObject	*dbgObjP = NULL;
 #endif
 
 //------------------------------------------------------------------------------
@@ -675,7 +676,7 @@ else {
 					bmiAltTex, 
 					NULL /*gameData.weapons.color + objP->id*/);
 			}
-		if (!bBlendPolys && (objP->nType == OBJ_WEAPON))
+		if (!bBlendPolys && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id])
 			gameStates.render.grAlpha = 4 * GR_ACTUAL_FADE_LEVELS / 5;
 		DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
@@ -847,6 +848,8 @@ for (i = 0; i < 8; i++) {
 
 //------------------------------------------------------------------------------
 
+void SetRenderView (fix nEyeOffset, short *pnStartSeg);
+
 extern vmsAngVec zeroAngles;
 
 #ifdef _DEBUG
@@ -854,8 +857,8 @@ extern vmsAngVec zeroAngles;
 void RenderHitbox (tObject *objP, float red, float green, float blue, float alpha)
 {
 	fVector		vertList [8], v;
-	int			i, j, iModel, nModels;
-	tHitbox		*phb;
+	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	int			i, j, iModel, nModels, bHit = 0;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -881,19 +884,13 @@ glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-for (phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iModel; 
-	  iModel <= nModels; 
-	  iModel++, phb++) {
-	G3StartInstanceAngles (&phb->vOffset, &zeroAngles);
+for (; iModel <= nModels; iModel++) {
+	G3StartInstanceAngles (&pmhb [iModel].vOffset, &zeroAngles);
 	TransformHitboxf (objP, vertList, iModel);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++)
 			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
-#if 0
-		for (j = 5; j >= 0; j--)
-			glVertex3fv ((GLfloat *) (vertList + hitboxFaceVerts [i][j]));
-#endif
 		}
 	glEnd ();
 	glLineWidth (2);
@@ -905,20 +902,22 @@ for (phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + 
 			VmVecIncf (&v, vertList + hitboxFaceVerts [i][j]);
 			}
 		glEnd ();
-#if 0
-		glBegin (GL_LINES);
-		VmVecScalef (&v, &v, 0.25);
-		glVertex3fv ((GLfloat *) (&v));
-		VmVecNormalf (&n, vertList + hitboxFaceVerts [i][0], vertList + hitboxFaceVerts [i][1], vertList + hitboxFaceVerts [i][2]);
-		VmVecScaleIncf3 (&v, &n, 2.0f);
-		glVertex3fv ((GLfloat *) (&v));
-		glEnd ();
-#endif
 		}
 	glLineWidth (1);
 	G3DoneInstance ();
 	}
 G3DoneInstance ();
+#if 0//def _DEBUG	//display collision point
+if (gameStates.app.nSDLTicks - gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].tHit < 500) {
+	tObject	o;
+
+	o.position.vPos = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].vHit;
+	o.position.mOrient = objP->position.mOrient;
+	o.size = F1_0 * 2;
+	//SetRenderView (0, NULL);
+	DrawShieldSphere (&o, 1, 0, 0, 0.33f);
+	}
+#endif
 glDepthMask (1);
 glDepthFunc (GL_LESS);
 }
@@ -1688,6 +1687,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glEnable (GL_LINE_STIPPLE);
 	glEnable (GL_BLEND);
 	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable (GL_LINE_SMOOTH);
 	h = 3; //d_rand () % 4;
 	glLineStipple ((h + 1) * 4, 0x0303); //patterns [h]);
 	vDirf.p.x *= TRACER_WIDTH / 20.0f;
@@ -1705,6 +1705,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		}
 	glLineWidth (1);
 	glDisable (GL_LINE_STIPPLE);
+	glDisable (GL_LINE_SMOOTH);
 	glDepthMask (1);
 	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glEnable (GL_STENCIL_TEST);
@@ -1879,7 +1880,7 @@ return 1;
 
 bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
-int RenderObject (tObject *objP, int nWindowNum)
+int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {
 	int			mldSave, bSpectate = 0;
 	tPosition	savePos;
@@ -1889,6 +1890,17 @@ int RenderObject (tObject *objP, int nWindowNum)
 	int			oofIdx;
 #endif
 
+#ifdef _DEBUG
+if (!dbgObjP && (objP->nType == OBJ_WEAPON) && (objP->id == SMARTMINE_BLOB_ID))
+	dbgObjP = objP;
+if (objP == dbgObjP) {
+	objP = objP;
+#if 0
+	vmsVector	v;
+	HUDMessage (0, "%1.2f", f2fl (VmVecMag (VmVecSub (&v, &objP->position.vPos, &gameData.objs.objects [2].position.vPos))));
+#endif
+	}
+#endif
 if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console) &&
 	 !gameStates.render.automap.bDisplay) {
@@ -1933,7 +1945,7 @@ switch (objP->renderType) {
 		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			int bDynObjLight = gameOpts->ogl.bLightObjects;
-			if (gameStates.render.automap.bDisplay && !(AM_RENDER_PLAYERS && AM_RENDER_PLAYER (objP->id)))
+			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)))
 				return 0;
 			DrawPolygonObject (objP);
 			gameOpts->ogl.bLightObjects = bDynObjLight;
@@ -1943,7 +1955,7 @@ switch (objP->renderType) {
 			RenderTowedFlag (objP);
 			}
 		else if (objP->nType == OBJ_ROBOT) {
-			if (gameStates.render.automap.bDisplay && !AM_RENDER_ROBOTS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
 			DrawPolygonObject (objP);
 #ifdef _DEBUG
@@ -1953,7 +1965,7 @@ switch (objP->renderType) {
 			SetRobotLocationInfo (objP);
 			}
 		else if (objP->nType == OBJ_WEAPON) {
-			if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
 				return 0;
 			DrawPolygonObject (objP);
 			if (bIsMissile [objP->id]) {
@@ -1979,7 +1991,7 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
-			if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
 				return 0;
 			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 				DrawPolygonObject (objP);
@@ -2011,7 +2023,7 @@ switch (objP->renderType) {
 			break;
 			
 	case RT_FIREBALL: 
-		if (gameStates.render.nType != 2)
+	if (!bForce && (gameStates.render.nType != 1))
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
@@ -2024,7 +2036,7 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
-			if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
 				return 0;
 			if (objP->nType == OBJ_WEAPON) {
 				if (!DoObjectSmoke (objP))
@@ -2048,7 +2060,7 @@ switch (objP->renderType) {
 		break;
 
 	case RT_POWERUP:
-		if (gameStates.render.automap.bDisplay && !AM_RENDER_POWERUPS)
+		if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
 			return 0;
 		if (gameStates.render.nType != 1)
 			return 0;
@@ -2422,6 +2434,10 @@ gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject)
 	while (gameData.objs.objects [--gameData.objs.nLastObject].nType == OBJ_NONE);
+#ifdef _DEBUG
+if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
+	dbgObjP = NULL;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2488,7 +2504,7 @@ for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if (objP->nType == OBJ_DEBRIS) {
 		nToFree--;
-		objP->flags |= OF_SHOULD_BE_DEAD;
+		KillObject (objP);
 		}
 	}
 if (!nToFree)
@@ -2497,7 +2513,7 @@ for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if ((objP->nType == OBJ_FIREBALL) && (objP->cType.explInfo.nDeleteObj == -1)) {
 		nToFree--;
-		objP->flags |= OF_SHOULD_BE_DEAD;
+		KillObject (objP);
 		}
 	}
 if (!nToFree)
@@ -2506,7 +2522,7 @@ for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
 		nToFree--;
-		objP->flags |= OF_SHOULD_BE_DEAD;
+		KillObject (objP);
 		}
 	}
 if (!nToFree)
@@ -2515,7 +2531,7 @@ for (i = 0; i < nToFree; i++) {
 	objP = gameData.objs.objects + objList [i];
 	if ((objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID)) {
 		nToFree--;
-		objP->flags |= OF_SHOULD_BE_DEAD;
+		KillObject (objP);
 		}
 	}
 return nOrgNumToFree - nToFree;
@@ -3025,7 +3041,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 #else
 		if (objP->shields >= 0)
 			continue;
-		objP->flags |= OF_SHOULD_BE_DEAD;
+		KillObject (objP);
 		if (objP->nType == OBJ_ROBOT) {
 			if (ROBOTINFO (objP->id).bossFlag)
 				StartBossDeathSequence (objP);
@@ -3499,7 +3515,7 @@ gameStates.render.bDropAfterburnerBlob = 0;
 if (HandleObjectControl (objP))
 	return 1;
 if (objP->lifeleft < 0) {		// We died of old age
-	objP->flags |= OF_SHOULD_BE_DEAD;
+	KillObject (objP);
 	if ((objP->nType == OBJ_WEAPON) && WI_damage_radius (objP->id))
 		ExplodeBadassWeapon (objP, &objP->position.vPos);
 	else if (objP->nType == OBJ_ROBOT)	//make robots explode
@@ -4039,11 +4055,12 @@ bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 memset (bIsWeapon, 0, sizeof (bIsWeapon));
 bIsWeapon [VULCAN_ID] =
 bIsWeapon [GAUSS_ID] = 0;
-bIsWeapon [FLARE_ID] =
 bIsWeapon [LASER_ID] =
 bIsWeapon [LASER_ID + 1] =
 bIsWeapon [LASER_ID + 2] =
 bIsWeapon [LASER_ID + 3] =
+bIsWeapon [ROBOT_SLOW_PHOENIX_ID] =
+bIsWeapon [FLARE_ID] =
 bIsWeapon [SPREADFIRE_ID] =
 bIsWeapon [PLASMA_ID] =
 bIsWeapon [FUSION_ID] =

@@ -947,7 +947,7 @@ for (i = 0; i < gameData.multigame.create.nLoc; i++) {
 	if (s != -1)
 		MapObjnumLocalToRemote ((short)gameData.multigame.create.nObjNums [i], s, nPlayer);
 	else
-		gameData.objs.objects [gameData.multigame.create.nObjNums [i]].flags |= OF_SHOULD_BE_DEAD; // Delete gameData.objs.objects other guy didn't create one of
+		KillObject (gameData.objs.objects + gameData.multigame.create.nObjNums [i]); // Delete gameData.objs.objects other guy didn't create one of
 	bufP += 2;
 	}
 }

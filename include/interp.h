@@ -85,7 +85,7 @@ void G3RenderShadowVolumeFace (tOOF_vector *pv);
 void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv);
 
 void ComputeHitbox (int nModel, int iSubObj);
-void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj);
+void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb);
 
 extern int hitboxFaceVerts [6][4];
 extern vmsVector hitBoxOffsets [8];

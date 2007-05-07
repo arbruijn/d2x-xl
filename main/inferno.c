@@ -1273,6 +1273,8 @@ if (i) {
 	gameOptions [1].render.automap.bTextured = 0;
 	gameOptions [1].render.automap.bBright = 1;
 	gameOptions [1].render.automap.bCoronas = 0;
+	gameOptions [1].render.automap.nColor = 0;
+	gameOptions [1].render.automap.nRange = 2;
 	}
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
@@ -1366,6 +1368,8 @@ else {
 	gameOptions [0].render.automap.bTextured = 0;
 	gameOptions [0].render.automap.bBright = 1;
 	gameOptions [0].render.automap.bCoronas = 0;
+	gameOptions [0].render.automap.nColor = 0;
+	gameOptions [0].render.automap.nRange = 2;
 	}
 }
 

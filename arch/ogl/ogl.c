@@ -133,8 +133,8 @@ tRenderQuality renderQualities [] = {
 	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1}	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
 	};
 	
-extern GLuint bsphereh;
-extern GLuint ssphereh;
+extern GLuint hBigSphere;
+extern GLuint hSmallSphere;
 extern GLuint circleh5;
 extern GLuint circleh10;
 extern GLuint cross_lh [2];
@@ -222,8 +222,8 @@ void OglSmashTextureListInternal (void)
 	ogl_texture *t;
 	grsBitmap	*bmP, *altBmP;
 
-OglDeleteLists (&bsphereh, 1);
-OglDeleteLists (&ssphereh, 1);
+OglDeleteLists (&hBigSphere, 1);
+OglDeleteLists (&hSmallSphere, 1);
 OglDeleteLists (&circleh5, 1);
 OglDeleteLists (&circleh10, 1);
 OglDeleteLists (cross_lh, sizeof (cross_lh) / sizeof (*cross_lh));
@@ -232,8 +232,8 @@ OglDeleteLists (secondary_lh, sizeof (secondary_lh) / sizeof (*secondary_lh));
 OglDeleteLists (glInitTMU, sizeof (glInitTMU) / sizeof (*glInitTMU));
 OglDeleteLists (&glExitTMU, 1);
 OglDeleteLists (&mouseIndList, 1);
-bsphereh =
-ssphereh =
+hBigSphere =
+hSmallSphere =
 circleh5 = 
 circleh10 =
 mouseIndList =
@@ -252,7 +252,7 @@ glInitTMU [1] =
 glInitTMU [2] =
 glExitTMU = 0;
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
-	if (t->handle > 0) {
+	if ((GLint) t->handle > 0) {
 		glDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = -1;
 		}
@@ -369,7 +369,7 @@ if (ogl_mem_target < 0) {
 bytes=ogl_texture_stats ();
 while (bytes>ogl_mem_target){
 	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
-		if (t->handle > 0) {
+		if ((GLint) t->handle > 0) {
 			if (t->lastrend + f1_0 * time < gameData.time.xGame) {
 				OglFreeTexture (t);
 				bytes -= t->bytes;
@@ -439,14 +439,14 @@ if (!bmP)
 bmP = BmOverride (bmP);
 texP = bmP->glTexture;
 #if RENDER2TEXTURE
-if ((bPBuffer = texP && (texP->handle < 0))) {
+if ((bPBuffer = texP && ((GLint) texP->handle < 0))) {
 	if (ogl_bindteximage (texP))
 		return 1;
 	}
 else
 #endif
 	{
-	if (!(texP && (texP->handle > 0))) {
+	if (!(texP && ((GLint) texP->handle > 0))) {
 		if (OglLoadBmTexture (bmP, 1, nTransp))
 			return 1;
 		bmP = BmOverride (bmP);
@@ -1400,7 +1400,7 @@ texP->u = (float) ((double) texP->w / (double) texP->tw);
 texP->v = (float) ((double) texP->h / (double) texP->th);
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if (texP->handle >= 0) 
+if ((GLint) texP->handle >= 0) 
 #endif
 	{
 #if TEXTURE_COMPRESSION
@@ -1516,7 +1516,7 @@ if (!(t = bmP->glTexture)) {
 #endif
 	}
 else {
-	if (t->handle > 0)
+	if ((GLint) t->handle > 0)
 		return 0;
 	if (!t->w) {
 		t->lw = bmP->bm_props.w;
@@ -1640,12 +1640,12 @@ if (BM_FRAMES (bmP)) {
 	}
 else if ((t = bmP->glTexture)) {
 #if RENDER2TEXTURE == 2
-	if (t->handle < 0)
+	if ((GLint) t->handle < 0)
 		OGL_BINDTEX (0);
 	else
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32
-	if (t->handle < 0) {
+	if ((GLint) t->handle < 0) {
 		if (t->pbuffer.bBound) {
 			if (wglReleaseTexImageARB (t->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))
 				t->pbuffer.bBound = 0;

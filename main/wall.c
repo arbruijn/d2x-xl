@@ -1626,7 +1626,7 @@ void AddStuckObject(tObject *objP, short nSegment, short nSide)
 
 	if (IS_WALL (wallnum)) {
 		if (gameData.walls.walls[wallnum].flags & WALL_BLASTED)
-			objP->flags |= OF_SHOULD_BE_DEAD;
+			KillObject (objP);
 
 		for (i=0, sto = StuckObjects; i<MAX_STUCK_OBJECTS; i++, sto++) {
 			if (sto->wallnum == -1) {

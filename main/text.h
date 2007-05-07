@@ -1684,14 +1684,14 @@ void LoadGameTexts(void);
 #define TXT_AUTOMAP_OPTIONS		GT(891)
 #define TXT_AUTOMAP_BRIGHT			GT(892)
 #define TXT_AUTOMAP_CORONAS		GT(893)
+#define TXT_RADAR_OFF				GT(894)
+#define TXT_RADAR_TOP				GT(895)
+#define TXT_RADAR_BOTTOM			GT(896)
+#define TXT_RADAR_WHITE				GT(897)
+#define TXT_RADAR_BLACK				GT(898)
+#define TXT_RADAR_RANGE				GT(899)
 
 #if 0
-#define TXT_				GT(894)
-#define TXT_				GT(895)
-#define TXT_				GT(896)
-#define TXT_				GT(897)
-#define TXT_				GT(898)
-#define TXT_				GT(899)
 
 #define TXT_				GT(900)
 #define TXT_				GT(901)
@@ -2075,11 +2075,11 @@ void LoadGameTexts(void);
 #define HTX_RENDER_AUTOMAPOPTS	HT(262)				
 #define HTX_AUTOMAP_BRIGHT			HT(263)				
 #define HTX_AUTOMAP_CORONAS		HT(264)				
+#define HTX_AUTOMAP_RADAR			HT(265)				
+#define HTX_RADAR_RANGE				HT(266)				
 
 #if 0
 				
-#define HTX_					HT(265)				
-#define HTX_					HT(266)				
 #define HTX_					HT(267)				
 #define HTX_					HT(268)				
 #define HTX_					HT(269)				

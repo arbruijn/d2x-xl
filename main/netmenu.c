@@ -1321,6 +1321,8 @@ if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 	}
 //	m [opt].nType = NM_TYPE_TEXT; m [opt].text = TXT_OPTIONS; opt++;
 
+ADD_TEXT (opt, "", 0); 
+opt++; 
 optGameTypes = opt;
 ADD_RADIO (opt, TXT_ANARCHY, 0, KEY_A, 0, HTX_MULTI_ANARCHY);
 optAnarchy = opt++;
@@ -2548,6 +2550,7 @@ else
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
 		ADDFLAG (AXI.bShootMissiles, "shoot msls");
 		ADDFLAG (AXI.nHitboxes, "hit boxes");
+		ADDFLAG (AXI.nRadar, "radar");
 		}
 	else
 		strcat (mTexts [opt], "Gameplay ext.: None");

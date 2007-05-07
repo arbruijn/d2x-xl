@@ -142,7 +142,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 								if (obj0P->id == PROXMINE_ID || obj0P->id == SMARTMINE_ID) {		//prox bombs have chance of blowing up
 									if (FixMul (dist, force) > i2f (8000)) {
-										obj0P->flags |= OF_SHOULD_BE_DEAD;
+										KillObject (obj0P);
 										ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
 									}
 								}
@@ -302,18 +302,11 @@ tObject *ObjectCreateBadassExplosion (
 	fix maxforce, 
 	short parent)
 {
-	tObject	*rval;
+	tObject	*rval = ObjectCreateExplosionSub (objP, nSegment, position, size, vclipType, maxdamage, maxdistance, maxforce, parent);
 
-	rval = ObjectCreateExplosionSub (objP, nSegment, position, size, vclipType, maxdamage, maxdistance, maxforce, parent);
-
-	if ((objP != NULL) && (objP->nType == OBJ_WEAPON))
-		CreateSmartChildren (objP, NUM_SMART_CHILDREN);
-
-// -- 	if (objP->nType == OBJ_ROBOT)
-// -- 		if (ROBOTINFO (objP->id).smartBlobs)
-// -- 			CreateSmartChildren (objP, ROBOTINFO (objP->id).smartBlobs);
-
-	return rval;
+if ((objP != NULL) && (objP->nType == OBJ_WEAPON))
+	CreateSmartChildren (objP, NUM_SMART_CHILDREN);
+return rval;
 }
 
 //------------------------------------------------------------------------------
@@ -323,20 +316,16 @@ tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *pos)
 {
 	tWeaponInfo *wi = &gameData.weapons.info [objP->id];
 
-	Assert (wi->damage_radius);
-
-	if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
-		ShakerRockStuff ();
-
-	DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0);
-
-	return ObjectCreateBadassExplosion (objP, objP->nSegment, pos, 
-	                                      wi->impact_size, 
-	                                      wi->robot_hit_vclip, 
-	                                      wi->strength [gameStates.app.nDifficultyLevel], 
-	                                      wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel], 
-	                                      objP->cType.laserInfo.nParentObj);
-
+Assert (wi->damage_radius);
+if ((objP->id == EARTHSHAKER_ID) || (objP->id == ROBOT_EARTHSHAKER_ID))
+	ShakerRockStuff ();
+DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F1_0);
+return ObjectCreateBadassExplosion (objP, objP->nSegment, pos, 
+                                    wi->impact_size, 
+                                    wi->robot_hit_vclip, 
+                                    wi->strength [gameStates.app.nDifficultyLevel], 
+                                    wi->damage_radius, wi->strength [gameStates.app.nDifficultyLevel], 
+                                    objP->cType.laserInfo.nParentObj);
 }
 
 //------------------------------------------------------------------------------
@@ -344,17 +333,13 @@ tObject *ExplodeBadassWeapon (tObject *objP, vmsVector *pos)
 tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix force)
 {
 
-	tObject 	*rval;
-
-	rval = ObjectCreateBadassExplosion (objP, objP->nSegment, &objP->position.vPos, objP->size, 
-					 (ubyte) GetExplosionVClip (objP, 0), 
-					damage, distance, force, 
-					OBJ_IDX (objP));
-	if (rval)
-		DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (rval), 0, F1_0);
-
-	return (rval);
-
+	tObject 	*rval = ObjectCreateBadassExplosion (objP, objP->nSegment, &objP->position.vPos, objP->size, 
+																 (ubyte) GetExplosionVClip (objP, 0), 
+																 damage, distance, force, 
+																 OBJ_IDX (objP));
+if (rval)
+	DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (rval), 0, F1_0);
+return rval;
 }
 
 //------------------------------------------------------------------------------
@@ -1506,7 +1491,7 @@ else {		//normal, multi-stage explosion
 	if (delObjP->nType == OBJ_PLAYER)
 		delObjP->renderType = RT_NONE;
 	else
-		delObjP->flags |= OF_SHOULD_BE_DEAD;
+		KillObject (delObjP);
 	}
 }
 
@@ -1590,7 +1575,7 @@ void DoExplosionSequence (tObject *obj)
 Assert (obj->controlType == CT_EXPLOSION);
 //See if we should die of old age
 if (obj->lifeleft <= 0) 	{	// We died of old age
-	obj->flags |= OF_SHOULD_BE_DEAD;
+	KillObject (obj);
 	obj->lifeleft = 0;
 	}
 //See if we should create a secondary explosion

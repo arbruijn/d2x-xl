@@ -359,7 +359,7 @@ void ResetObjects(int n_objs);
 void compressObjects(void);
 
 // Render an tObject.  Calls one of several routines based on nType
-int RenderObject(tObject *obj, int nWindowNum);
+int RenderObject(tObject *objP, int nWindowNum, int bForce);
 
 // Draw a blob-nType tObject, like a fireball
 void DrawObjectBlob(tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame,
@@ -512,5 +512,18 @@ extern ubyte bIsMissile [];
 #define	IS_BOSS_I(_i)		IS_BOSS (gameData.objs.objects + (_i))
 #define	IS_MISSILE(_objP)	(((_objP)->nType == OBJ_WEAPON) && bIsMissile [(_objP)->id])
 #define	IS_MISSILE_I(_i)	IS_MISSILE (gameData.objs.objects + (_i))
+
+#ifdef _DEBUG
+extern tObject *dbgObjP;
+#endif
+
+static inline void KillObject (tObject *objP)
+{
+objP->flags |= OF_SHOULD_BE_DEAD;
+#ifdef _DEBUG
+if (objP == dbgObjP)
+	objP = objP;
+#endif
+}
 
 #endif

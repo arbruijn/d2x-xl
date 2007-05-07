@@ -388,6 +388,8 @@ return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlen
 }
 void OglColor4sf (float r, float g, float b, float s);
 void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale);
+void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo);
+void OglDrawCircle (int nSides, int nType);
 
 #define BINDTEX_OPT 0
 

@@ -1643,6 +1643,12 @@ char *defaultGameTexts [][2] = {
 	{"~Uebersichtskarte...", "Auto~Map options..."},
 	{"~Helle Uebersichtskarte", "~Bright automap"},
 	{"~Lichthoefe zeichnen", "show light ~Coronas"},
+	{"~Radar aus", "~Radar off"},
+	{"Radar oben", "Radar at ~Top"},
+	{"Radar unten", "Radar at b~Ottom"},
+	{"~Weisses Radar", "~White radar"},
+	{"~Schwarzes Radar", "b~Lack radar"},
+	{"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2137,7 +2143,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden IP-Adresse und Portnummer der\nMitspieler dazu verwendet festzustellen, ob ein Spieler schon am Spiel\nteilnimmt. Das ist sinnvoll, wenn mehrere Teilnehmer die\nselbe IP-Adresse haben.\n\nIst die Option nicht angekreuzt, wird\nnur die IP-Adresse geprueft. Das ist sinnvoll, wenn andere\nSpieler Portnummer 0 verwenden, da sich dann u.U. staendig\nderen Port aendert.", 
 	 "If checked IP address and port number of the players\nwill be used to determine whether a player is already participating\nin the match. This makes sense when several players share an\nIP address.\n\nIf the option is unchecked, only the IP address\nis checked. This is recommendable if a participant is using\nport number 0, because that can cause his actual port number\nto constantly change."},
 	{"Hier kann eingestellt werden, um wieviel Prozent der Punkte-\nstand eines Spielers in kooperativen Spielen verringert wird,\nwenn er abgeschossen wird.\n\nDamit soll den Spielern ein Anreiz gegeben werden, nicht\nblind drauflos zu stuermen, sondern wirklich zusammen\nzu spielen und einander zu unterstuetzen.", 
-	 "Here you can adjust by how many percent a player's score is\nreduced in cooperative games if the player gets killed.\n\nThat way you can give an incentive to actually play together\nand support each other instead of storming blindly\ninto enemy fire for the sake of gaining a higher score."},
+	 "Adjust by how many percent a player's score isreduced\nin cooperative games if the player gets killed here.\n\nThat way you can give an incentive to actually play together\nand support each other instead of storming blindly\ninto enemy fire for the sake of gaining a higher score."},
 	{"Wenn angekreuzt koennen anfliegende Raketen abgeschossen werden.", "If checked incoming missiles can be shot down."},
 	{"Je nach Einstellung werden fuer die Treffererkennung Kugeln oder\nQuader um das komplette Ziel oder Quader um jeden Bestandteil\ndes Ziels verwendet.\nJe genauer der Treffertest, desto mehr Rechenzeit wird dafuer benoetigt.", 
 	 "Depending on the setting chosen, spheres or cuboids enclosing the\nentire target or cuboids around each part of the target are\nused. The better the hit detection, the more time it takes to compute a hit."},
@@ -2148,6 +2154,9 @@ char *defaultHelpTexts [][2] = {
 	{"Hier koennen Einstellungen der Uebersichtskarte vorgenommen werden.", "Adjust automap rendering settings here."},
 	{"Ankreuzen, damit die texturierte Uebersichtskarte so hell wie\nmoeglich dargestellt wird.", "Check to have the textured automap rendered as bright as possible."},
 	{"Wenn angekreuzt, werden in der texturierten Uebersichtskarte\nauch Lichthoefe gezeichnet.", "If checked, light coronas will be rendered in the textured automap."},
+	{"Hier kann das Radar ausgeschaltet oder am oberen oder unteren\nBildschimrand eingeblendet werden.\n\nRoboter sind lila und Powerups orange. Je nach Spieltyp\nwerden die Spieler in Schiffs- oder ihrer Teamfarbe angezeigt.\nDas Radar zeigt weiter entfernte Objekte abgedunkelt.\nObjekte oberhalb des Spielers haben im Radar einen Strich\nnach unten, Objekte unterhalb des Spielers einen Strich\nnach oben.", 
+	 "The radar can be turned off or displayed at the upper or lower\nscreen border here.\n\nRobots are magenta and powerups are orange. Depending on game\ntype, players are shown in their shop or their team's color.\nMore distant objects are dimmed. Objects above the player\nhave a line extending downward, objects below the player have\na line extending up to the radar's plane."},
+	{"Hier kann man einstellen, wie weit das Radar reicht.", "Here you can adjust the radar's range."},
 #if 0
 	{"", ""},
 #endif

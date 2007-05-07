@@ -86,8 +86,8 @@ extern int gr_badtexture;
 
 extern tRenderQuality renderQualities [];
 	
-GLuint bsphereh=0;
-GLuint ssphereh=0;
+GLuint hBigSphere=0;
+GLuint hSmallSphere=0;
 GLuint circleh5=0;
 GLuint circleh10=0;
 GLuint mouseIndList = 0;
@@ -171,8 +171,8 @@ bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_LINES);
-glVertex3x (p0->p3_vec.p.x, p0->p3_vec.p.y, p0->p3_vec.p.z);
-glVertex3x (p1->p3_vec.p.x, p1->p3_vec.p.y, p1->p3_vec.p.z);
+OglVertex3x (p0->p3_vec.p.x, p0->p3_vec.p.y, p0->p3_vec.p.z);
+OglVertex3x (p1->p3_vec.p.x, p1->p3_vec.p.y, p1->p3_vec.p.z);
 if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
@@ -181,7 +181,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglDrawCircle2 (int nSides, int nType, double xsc, double xo, double ysc, double yo)
+void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo)
 {
 	int i;
 	double ang;
@@ -200,24 +200,26 @@ void OglDrawCircle (int nSides, int nType)
 {
 	int i;
 	double ang;
-	glBegin (nType);
-	for (i = 0; i < nSides; i++) {
-		ang = 2.0 * M_PI * i / nSides;
-		glVertex2d (cos (ang), sin (ang));
+
+glBegin (nType);
+for (i = 0; i < nSides; i++) {
+	ang = 2.0 * M_PI * i / nSides;
+	glVertex2d (cos (ang), sin (ang));
 	}
-	glEnd ();
+glEnd ();
 }
 
 //------------------------------------------------------------------------------
 
 int CircleListInit (int nSides, int nType, int mode) 
 {
-	int hand=glGenLists (1);
-	glNewList (hand, mode);
-	/* draw a unit radius circle in xy plane centered on origin */
-	OglDrawCircle (nSides, nType);
-	glEndList ();
-	return hand;
+	int h = glGenLists (1);
+
+glNewList (h, mode);
+/* draw a unit radius circle in xy plane centered on origin */
+OglDrawCircle (nSides, nType);
+glEndList ();
+return h;
 }
 
 //------------------------------------------------------------------------------
@@ -242,7 +244,7 @@ else {
 	glColor3d (1.0, 0.8, 0.0);
 	glLineWidth (3);
 	glEnable (GL_SMOOTH);
-	OglDrawCircle2 (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0);
+	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0);
 	glDisable (GL_SMOOTH);
 	glLineWidth (1);
 #if 1
@@ -323,14 +325,14 @@ else {
 	glEnd ();
 	glColor3fv (primary ? bright_g : dark_g);
 	//left upper
-	OglDrawCircle2 (12, GL_POLYGON, 1.5, -7.0, 1.5, -5.0);
+	OglDrawEllipse (12, GL_POLYGON, 1.5, -7.0, 1.5, -5.0);
 	//right upper
-	OglDrawCircle2 (12, GL_POLYGON, 1.5, 7.0, 1.5, -5.0);
+	OglDrawEllipse (12, GL_POLYGON, 1.5, 7.0, 1.5, -5.0);
 	glColor3fv ((primary == 2) ? bright_g : dark_g);
 	//left lower
-	OglDrawCircle2 (8, GL_POLYGON, 1.0, -14.0, 1.0, -8.0);
+	OglDrawEllipse (8, GL_POLYGON, 1.0, -14.0, 1.0, -8.0);
 	//right lower
-	OglDrawCircle2 (8, GL_POLYGON, 1.0, 14.0, 1.0, -8.0);
+	OglDrawEllipse (8, GL_POLYGON, 1.0, 14.0, 1.0, -8.0);
 	glEndList ();
 	}
 //	if (nCanvasHeight>200)
@@ -344,15 +346,15 @@ else {
 	if (secondary <= 2) {
 		//left secondary
 		glColor3fv ((secondary == 1) ? bright_g : darker_g);
-		OglDrawCircle2 (16, GL_LINE_LOOP, 2.0, -10.0, 2.0, -1.0);
+		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, -10.0, 2.0, -1.0);
 		//right secondary
 		glColor3fv ((secondary == 2) ? bright_g : darker_g);
-		OglDrawCircle2 (16, GL_LINE_LOOP, 2.0, 10.0, 2.0, -1.0);
+		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, 10.0, 2.0, -1.0);
 		}
 	else {
 		//bottom/middle secondary
 		glColor3fv ((secondary == 4) ? bright_g : darker_g);
-		OglDrawCircle2 (16, GL_LINE_LOOP, 2.0, 0.0, 2.0, -7.0);
+		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, 0.0, 2.0, -7.0);
 		}
 	glEndList ();
 	}
@@ -370,20 +372,19 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glPushMatrix ();
-//	glTranslated (f2glf (0), f2glf (0), -f2glf (pnt->p3_vec.p.z));
 glTranslatef (f2glf (pnt->p3_vec.p.x), f2glf (pnt->p3_vec.p.y), f2glf (pnt->p3_vec.p.z));
 r = f2glf (rad);
 glScaled (r, r, r);
 if (bBigSphere)
-	if (bsphereh)
-		glCallList (bsphereh);
+	if (hBigSphere)
+		glCallList (hBigSphere);
 	else
-		bsphereh=CircleListInit (20, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
+		hBigSphere = CircleListInit (20, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
 else
-	if (ssphereh)
-		glCallList (ssphereh);
+	if (hSmallSphere)
+		glCallList (hSmallSphere);
 	else
-		ssphereh=CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
+		hSmallSphere = CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
 glPopMatrix ();
 if (grdCurCanv->cv_color.rgb)
 	glDisable (GL_BLEND);

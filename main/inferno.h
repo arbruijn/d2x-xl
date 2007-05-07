@@ -200,6 +200,8 @@ typedef struct tAutomapOptions {
 	int bTextured;
 	int bBright;
 	int bCoronas;
+	int nColor;
+	int nRange;
 } tAutomapOptions;
 
 typedef struct tRenderOptions {
@@ -1148,6 +1150,31 @@ typedef struct tSpeedBoostData {
 	vmsVector			vDest;
 } tSpeedBoostData;
 
+typedef struct tQuad {
+	vmsVector			v [4];	//corner vertices
+	vmsVector			n [2];	//normal, transformed normal
+#ifdef _DEBUG
+	time_t				t;
+#endif
+} tQuad;
+
+typedef struct tBox {
+	vmsVector			vertices [8];
+	tQuad					faces [6];
+	tQuad					rotFaces [6];	//transformed faces
+	short					nTransformed;
+	} tBox;
+
+typedef struct tHitbox {
+	vmsVector			vMin;
+	vmsVector			vMax;
+	vmsVector			vSize;
+	vmsVector			vOffset;
+	tBox					box;
+	vmsAngVec			angles;			//rotation angles
+	short					nParent;			//parent hitbox
+} tHitbox;
+
 typedef struct tObjectData {
 	tObjTypeData		types;
 	tObject				*objects;
@@ -1402,26 +1429,13 @@ typedef struct tWeaponData {
 #define OOF_PYRO			0
 #define OOF_MEGA			1
 
-typedef struct tQuad {
-	vmsVector			v [4];	//corner vertices
-	vmsVector			n [2];	//normal, transformed normal
-} tQuad;
-
-typedef struct tHitbox {
-	vmsVector			vMin;
-	vmsVector			vMax;
-	vmsVector			vSize;
-	vmsVector			vOffset;
-	vmsVector			vertices [8];
-	vmsAngVec			angles;			//rotation angles
-	tQuad					faces [6];
-	tQuad					rotFaces [6];	//transformed faces
-	short					nParent;			//parent hitbox
-} tHitbox;
-
 typedef struct tModelHitboxes {
 	ubyte					nSubModels;
 	tHitbox				hitboxes [MAX_SUBMODELS + 1];
+#ifdef _DEBUG
+	vmsVector			vHit;
+	time_t				tHit;
+#endif
 } tModelHitboxes;
 
 typedef struct tModelData {
@@ -2125,7 +2139,7 @@ void GrabMouse (int bGrab, int bForce);
 void InitGameOptions (int i);
 void SetDataVersion (int v);
 
-static inline void glVertex3x (fix x, fix y, fix z)
+static inline void OglVertex3x (fix x, fix y, fix z)
 {
 glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 }
@@ -2133,7 +2147,7 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 static inline void OglVertex3f (g3sPoint *p)
 {
 if (p->p3_index < 0)
-	glVertex3x (p->p3_vec.p.x, p->p3_vec.p.y, p->p3_vec.p.z);
+	OglVertex3x (p->p3_vec.p.x, p->p3_vec.p.y, p->p3_vec.p.z);
 else
 	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }
@@ -2170,6 +2184,9 @@ return (b == b1) ? 1 : (b == b0) ? -1 : 0;
 extern float fInfinity [];
 
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
+
+#define SEGMENTS							gameData.segs.segments
+#define OBJECTS							gameData.objs.objects
 
 void D2SetCaption (void);
 void PrintVersionInfo (void);

@@ -1239,7 +1239,7 @@ if (Fate == HIT_WALL)  {
 	}
 if (Fate == HIT_OBJECT) {
 //		if (gameData.objs.objects [hit_data.hitObject].nType == OBJ_ROBOT)
-//			gameData.objs.objects [hit_data.hitObject].flags |= OF_SHOULD_BE_DEAD;
+//			KillObject (gameData.objs.objects + hit_data.hitObject);
 //		if (gameData.objs.objects [hit_data.hitObject].nType != OBJ_POWERUP)
 //			return;		
 //as of 12/6/94, we don't care if the laser is stuck in an tObject. We
@@ -1375,7 +1375,7 @@ if (objP->lifeleft == ONE_FRAME_TIME) {
 	objP->renderType = RT_NONE;
 	}
 if (objP->lifeleft < 0) {		// We died of old age
-	objP->flags |= OF_SHOULD_BE_DEAD;
+	KillObject (objP);
 	if (WI_damage_radius (objP->id))
 		ExplodeBadassWeapon (objP,&objP->position.vPos);
 	return;

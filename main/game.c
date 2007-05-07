@@ -2506,7 +2506,7 @@ void PowerupGrabCheat (tObject *player, int nObject)
 Assert (gameData.objs.objects[nObject].nType == OBJ_POWERUP);
 dist = VmVecDistQuick (&gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
 if ((dist < 2 * (powerup_size + player_size)) && 
-	 !(gameData.objs.objects[nObject].flags & OF_SHOULD_BE_DEAD)) {
+	 !(gameData.objs.objects [nObject].flags & OF_SHOULD_BE_DEAD)) {
 	vmsVector	collision_point;
 	VmVecAvg (&collision_point, &gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
 	CollidePlayerAndPowerup (player, gameData.objs.objects + nObject, &collision_point);

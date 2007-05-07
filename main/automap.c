@@ -358,8 +358,6 @@ ClearMarkers ();
 
 grs_canvas *name_canv_left,*name_canv_right;
 
-extern void OglDrawCircle2 (int nsides,int nType,float xsc,float xo,float ysc,float yo);
-
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
 #endif
@@ -532,7 +530,7 @@ else
 	DrawAllEdges ();
 	// Draw player...
 color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
-GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g,player_rgb [color].b));
+GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g,playerColors [color].b));
 
 if (!gameOpts->render.automap.bTextured) {
 	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject, bRadar);
@@ -547,12 +545,12 @@ if (!gameOpts->render.automap.bTextured) {
 			}
 		}				
 	// Draw tPlayer (s)...
-	if (AM_RENDER_PLAYERS) {
+	if (AM_SHOW_PLAYERS) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((i != gameData.multiplayer.nLocalPlayer) && AM_RENDER_PLAYER (i)) {
+			if ((i != gameData.multiplayer.nLocalPlayer) && AM_SHOW_PLAYER (i)) {
 				if (gameData.objs.objects [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER)	{
 					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
-					GrSetColorRGBi (RGBA_PAL2 (player_rgb [color].r, player_rgb [color].g, player_rgb [color].b));
+					GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 					DrawPlayer (gameData.objs.objects + gameData.multiplayer.players [i].nObject, bRadar);
 					}
 				}
@@ -575,7 +573,7 @@ if (!gameOpts->render.automap.bTextured) {
 				break;
 
 			case OBJ_ROBOT:
-				if (bAutomapVisited [objP->nSegment] && AM_RENDER_ROBOTS) {
+				if (bAutomapVisited [objP->nSegment] && AM_SHOW_ROBOTS) {
 					static int c = 0;
 					static int t = 0;
 					int h = SDL_GetTicks ();
@@ -593,13 +591,13 @@ if (!gameOpts->render.automap.bTextured) {
 							GrSetColorRGB (123, 0, 135, 255); //gr_getcolor (47, 1, 47)); 
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
-					G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
-					G3DrawSphere (&spherePoint, (size*3)/2, !bRadar);	
+					G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
+					G3DrawSphere (&spherePoint, (size * 3) / 2, !bRadar);	
 					}
 				break;
 
 			case OBJ_POWERUP:
-				if (AM_RENDER_POWERUPS && 
+				if (AM_SHOW_POWERUPS && 
 					(gameStates.render.bAllVisited || bAutomapVisited [objP->nSegment]))	{
 					switch (objP->id) {
 						case POW_KEY_RED:		
@@ -653,49 +651,34 @@ grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int
 	grs_canvas *temp_canv;
 	grs_font *save_font;
 	int w,h,aw;
+	grs_canvas *save_canv;
+	save_canv = grdCurCanv;
 
-WINDOS (
-	dd_grs_canvas *save_canv,
-	grs_canvas *save_canv
-);
+save_font = grdCurCanv->cv_font;
+GrSetCurFont (font);					//set the font we're going to use
+GrGetStringSize (s,&w,&h,&aw);		//now get the string size
+GrSetCurFont (save_font);				//restore real font
 
-WINDOS (
-	save_canv = dd_grd_curcanv,
-	save_canv = grdCurCanv
-);
+//temp_canv = GrCreateCanvas (font->ft_w*strlen (s),font->ft_h*2);
+temp_canv = GrCreateCanvas (w,font->ft_h*2);
+temp_canv->cv_bitmap.bm_palette = gamePalette;
+GrSetCurrentCanvas (temp_canv);
+GrSetCurFont (font);
+GrClearCanvas (0);						//trans color
+GrSetFontColorRGBi (fc, 1, bc, bc != 0);
+GrPrintF (0,0,s);
+//now float it, since we're drawing to 400-line modex screen
+if (doubleFlag) {
+	data = temp_canv->cv_bitmap.bm_texBuf;
+	rs = temp_canv->cv_bitmap.bm_props.rowsize;
 
-	save_font = grdCurCanv->cv_font;
-	GrSetCurFont (font);					//set the font we're going to use
-	GrGetStringSize (s,&w,&h,&aw);		//now get the string size
-	GrSetCurFont (save_font);				//restore real font
-
-	//temp_canv = GrCreateCanvas (font->ft_w*strlen (s),font->ft_h*2);
-	temp_canv = GrCreateCanvas (w,font->ft_h*2);
-	temp_canv->cv_bitmap.bm_palette = gamePalette;
-	GrSetCurrentCanvas (temp_canv);
-	GrSetCurFont (font);
-	GrClearCanvas (0);						//trans color
-	GrSetFontColorRGBi (fc, 1, bc, bc != 0);
-	GrPrintF (0,0,s);
-
-	//now float it, since we're drawing to 400-line modex screen
-
-	if (doubleFlag) {
-		data = temp_canv->cv_bitmap.bm_texBuf;
-		rs = temp_canv->cv_bitmap.bm_props.rowsize;
-
-		for (y=temp_canv->cv_bitmap.bm_props.h/2;y--;) {
-			memcpy (data+ (rs*y*2),data+ (rs*y),temp_canv->cv_bitmap.bm_props.w);
-			memcpy (data+ (rs* (y*2+1)),data+ (rs*y),temp_canv->cv_bitmap.bm_props.w);
+	for (y=temp_canv->cv_bitmap.bm_props.h/2;y--;) {
+		memcpy (data+ (rs*y*2),data+ (rs*y),temp_canv->cv_bitmap.bm_props.w);
+		memcpy (data+ (rs* (y*2+1)),data+ (rs*y),temp_canv->cv_bitmap.bm_props.w);
 		}
 	}
-
-WINDOS (
-	DDGrSetCurrentCanvas (save_canv),
-	GrSetCurrentCanvas (save_canv)
-);
-
-	return temp_canv;
+GrSetCurrentCanvas (save_canv);
+return temp_canv;
 }
 
 //------------------------------------------------------------------------------
@@ -723,23 +706,19 @@ void CreateNameCanv ()
 {
 	char	nameLevel_left [128],nameLevel_right [128];
 
-	if (gameData.missions.nCurrentLevel > 0)
-		sprintf (nameLevel_left, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
-	else
-		sprintf (nameLevel_left, "Secret Level %i",-gameData.missions.nCurrentLevel);
-
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
-		 (gameData.missions.nCurrentLevel > 0))		//built-in mission
-		sprintf (nameLevel_right,"%s %d: ",system_name [ (gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
-	else
-		strcpy (nameLevel_right, " ");
-
-	strcat (nameLevel_right, gameData.missions.szCurrentLevel);
-
-	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	name_canv_left = PrintToCanvas (nameLevel_left, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
-	name_canv_right = PrintToCanvas (nameLevel_right,SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
-
+if (gameData.missions.nCurrentLevel > 0)
+	sprintf (nameLevel_left, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
+else
+	sprintf (nameLevel_left, "Secret Level %i",-gameData.missions.nCurrentLevel);
+if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+		(gameData.missions.nCurrentLevel > 0))		//built-in mission
+	sprintf (nameLevel_right,"%s %d: ",system_name [ (gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
+else
+	strcpy (nameLevel_right, " ");
+strcat (nameLevel_right, gameData.missions.szCurrentLevel);
+GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
+name_canv_left = PrintToCanvas (nameLevel_left, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
+name_canv_right = PrintToCanvas (nameLevel_right,SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
 }
 
 //------------------------------------------------------------------------------
