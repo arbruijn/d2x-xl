@@ -268,19 +268,20 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 			}
 		}
 	else {
+		fix h = (4 + gameStates.app.nDifficultyLevel);
 		if (objP->nType == OBJ_ROBOT) {
 			if (ROBOTINFO (objP->id).bossFlag)
 				return;
-			vRotForce.p.x = vForce->p.x / (4 + gameStates.app.nDifficultyLevel);
-			vRotForce.p.y = vForce->p.y / (4 + gameStates.app.nDifficultyLevel);
-			vRotForce.p.z = vForce->p.z / (4 + gameStates.app.nDifficultyLevel);
+			vRotForce.p.x = vForce->p.x / h;
+			vRotForce.p.y = vForce->p.y / h;
+			vRotForce.p.z = vForce->p.z / h;
 			PhysApplyForce (objP, vForce);
 			PhysApplyRot (objP, &vRotForce);
 			}
 		else if ((objP->nType == OBJ_CLUTTER) || (objP->nType == OBJ_CNTRLCEN)) {
-			vRotForce.p.x = vForce->p.x / (4 + gameStates.app.nDifficultyLevel);
-			vRotForce.p.y = vForce->p.y / (4 + gameStates.app.nDifficultyLevel);
-			vRotForce.p.z = vForce->p.z / (4 + gameStates.app.nDifficultyLevel);
+			vRotForce.p.x = vForce->p.x / h;
+			vRotForce.p.y = vForce->p.y / h;
+			vRotForce.p.z = vForce->p.z / h;
 			PhysApplyForce (objP, vForce);
 			PhysApplyRot (objP, &vRotForce);
 			}	
@@ -1140,16 +1141,14 @@ if (robot->flags & OF_EXPLODING)
 nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment);
 if (nCollisionSeg != -1)
 	ObjectCreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
-
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
 	if (ROBOTINFO (robot->id).companion)	//	Player and companion don't Collide.
 		return 1;
 	if (ROBOTINFO (robot->id).kamikaze) {
-		ApplyDamageToRobot (robot, robot->shields+1, OBJ_IDX (playerObjP));
+		ApplyDamageToRobot (robot, robot->shields + 1, OBJ_IDX (playerObjP));
 		if (playerObjP == gameData.objs.console)
 			AddPointsToScore (ROBOTINFO (robot->id).scoreValue);
 		}
-
 	if (ROBOTINFO (robot->id).thief) {
 		if (gameData.ai.localInfo [OBJ_IDX (robot)].mode == AIM_THIEF_ATTACK) {
 			xLastThiefHitTime = gameData.time.xGame;
@@ -1171,7 +1170,7 @@ else
 // added this if to remove the bump sound if it's the thief.
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 //	Changed by MK to make this sound unless the robot stole.
-if (!bTheftAttempt && !ROBOTINFO (robot->id).energyDrain)
+if (!(bTheftAttempt || ROBOTINFO (robot->id).energyDrain))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 BumpTwoObjects (robot, playerObjP, 1, vHitPt);
 return 1; 
@@ -1297,12 +1296,8 @@ if ((weaponP->id == PROXMINE_ID) || (weaponP->id == SMARTMINE_ID) || (weaponP->i
 //	Reason: Otherwise you can't use proxbombs to detonate incoming homing missiles (or mega missiles).
 if (weaponP->mType.physInfo.flags & PF_PERSISTENT) {
 	//	Weapons do a lot of damage to weapons, other gameData.objs.objects do much less.
-	if (!(weaponP->mType.physInfo.flags & PF_PERSISTENT)) {
-		if (otherObjP->nType == OBJ_WEAPON)
-			weaponP->shields -= otherObjP->shields/2;
-		else
-			weaponP->shields -= otherObjP->shields/4;
-
+	if (!(otherObjP->mType.physInfo.flags & PF_PERSISTENT)) {
+		weaponP->shields -= otherObjP->shields / ((otherObjP->nType == OBJ_WEAPON) ? 2 : 4);
 		if (weaponP->shields <= 0) {
 			weaponP->shields = 0;
 			KillObject (weaponP);	// weaponP->lifeleft = 1;
@@ -2581,6 +2576,7 @@ return 1;
 int CollideTwoObjects (tObject * A, tObject * B, vmsVector *vHitPt)
 {
 	int collisionType = COLLISION_OF (A->nType, B->nType);
+
 switch (collisionType)	{
 	NO_SAME_COLLISION (OBJ_FIREBALL, OBJ_FIREBALL,  CollideFireballAndFireball)
 	DO_SAME_COLLISION (OBJ_ROBOT, 	OBJ_ROBOT, 		CollideRobotAndRobot)

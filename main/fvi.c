@@ -67,46 +67,6 @@ return dMax;
 //	-----------------------------------------------------------------------------
 // Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
 
-int FindPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos)
-{
-	vmsVector	d31, d21, h, v, d [2];
-	double		m, u;
-
-VmVecSub (&d21, p2, p1);
-if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
-	if (hitP)
-		*hitP = *p1;
-	return 0;
-	}
-VmVecSub (&d31, p3, p1);
-u = (double) VmVecDot (&d31, &d21);
-u /= m;
-h.p.x = p1->p.x + (fix) (u * d21.p.x);
-h.p.y = p1->p.y + (fix) (u * d21.p.y);
-h.p.z = p1->p.z + (fix) (u * d21.p.z);
-// limit the intersection to [p1,p2]
-VmVecSub (&v, p1, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (m < u) {
-	if (hitP)
-		*hitP = *p2;
-	return 1;	//clamped
-	}
-VmVecSub (&v, p2, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (m < u) {
-	if (hitP)
-		*hitP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2))) ? *p2 : *p1;
-	return 1;	//clamped
-	}
-if (hitP)
-	*hitP = h;
-return 0;
-}
-
-//	-----------------------------------------------------------------------------
-// Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
-
 int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
 {
 	fVector	p1, p2, p3, d31, d21, h, v [2];
@@ -474,8 +434,17 @@ if (bCheckRad) {
 		a = b;
 		b = vertList + (i % nVerts);
 		d = VmLinePointDist (a, b, p0);
-		if (d < bCheckRad)
+		if (d < bCheckRad) {
+#if 0
+			vmsVector	h;
+			fix			m;
+
+			VmPointLineIntersection (&h, a, b, p0, NULL);
+			m = VmVecMag (VmVecDec (&h, p0));
+			VmLinePointDist (a, b, p0);
+#endif
 			return IT_POINT;
+			}
 		}
 	}
 #endif
@@ -900,6 +869,10 @@ else {
 	nModels1 = pmhb1->nSubModels;
 	nModels2 = pmhb2->nSubModels;
 	}
+#ifdef _DEBUG
+memset (hb1, 0, sizeof (hb1));
+memset (hb2, 0, sizeof (hb2));
+#endif
 TransformHitboxes (objP1, p1, hb1);
 TransformHitboxes (objP2, &vPos, hb2);
 for (; iModel1 <= nModels1; iModel1++) {
@@ -997,28 +970,30 @@ else {
  		 ((IsCoopGame) && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 		size /= 2;
 	}
-bThisPoly = (thisObjP->renderType == RT_POLYOBJ); // && ((thisObjP->nType != OBJ_WEAPON) || bIsMissile [thisObjP->id]);
-bOtherPoly = (otherObjP->renderType == RT_POLYOBJ); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
+bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || bIsMissile [thisObjP->id]);
+bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
 if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
-#if 1
+#if 1//def RELEASE
+	VmVecSub (&vn, p1, &thisObjP->position.vPos);
+	dist = VmVecMag (&vn);
+	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
+	if (dist > thisObjP->size + otherObjP->size)
+		return 0;
+#endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
 			return 0;
-		FindPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
+		VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
 		}
 	else {
 		if (bThisPoly) {
 		// *thisObjP (stationary) has hitboxes, *otherObjP (moving) a hit sphere. To detect whether the sphere 
 		// intersects with the hitbox, check whether the radius line of *thisObjP intersects any of the hitboxes.
-			VmVecSub (&vn, &otherObjP->position.vPos, &thisObjP->position.vPos);
-			dist = VmVecMag (&vn);
-			if (dist < thisObjP->size + otherObjP->size)
-				dist = dist;
 			VmVecNormalize (VmVecSub (&vn, p1, p0));
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->size)))
 				return 0;
-			FindPointLineIntersection (&hitP, p0, p1, &hitP, &otherObjP->position.vPos);
+			VmPointLineIntersection (&hitP, p0, p1, &hitP, &otherObjP->position.vPos);
 			}
 		else {
 		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere 
@@ -1028,26 +1003,9 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 			VmVecScaleAdd (&v1, &v0, &vn, thisObjP->size);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->size)))
 				return 0;
-			FindPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
+			VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
 			}
 		}
-#else
-#	if 0
-	// check hitbox collisions for missiles only
-	if ((IS_MISSILE (thisObjP) && (otherObjP->renderType == RT_POLYOBJ)) ||
-		 (IS_MISSILE (otherObjP) && (thisObjP->renderType == RT_POLYOBJ))) {
-		if (!(dist = CheckHitboxToHitbox (&hitP, thisObjP, otherObjP)))
-			return 0;
-		}
-	else 
-#	endif
-		{
-		// check hit sphere with hitbox collisions
-		if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, rad, thisObjP)))
-			return 0;
-		FindPointLineIntersection (&hitP, p0, p1, &hitP);
-		}
-#endif
 	}
 else
 	// check hit sphere collisions

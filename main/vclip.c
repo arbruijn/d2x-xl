@@ -49,7 +49,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 #define	FIREBALL_ALPHA		0.7
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
-#define	WEAPON_ALPHA		0.9
+#define	WEAPON_ALPHA		1.0
 
 void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {

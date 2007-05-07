@@ -807,38 +807,33 @@ else {
 // ----------------------------------------------------------------------------------
 //	When some robots collide with the tPlayer, they attack.
 //	If tPlayer is cloaked, then robot probably didn't actually collide, deal with that here.
-void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *collision_point)
+void DoAiRobotHitAttack (tObject *robot, tObject *playerobjP, vmsVector *vCollision)
 {
 	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (robot);
 	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
 
-//#ifdef _DEBUG
-	if (!gameStates.app.cheats.bRobotsFiring)
-		return;
-//#endif
-
-	//	If tPlayer is dead, stop firing.
-	if (gameData.objs.objects [LOCALPLAYER.nObject].nType == OBJ_GHOST)
-		return;
-
-	if (botInfoP->attackType == 1) {
-		if (ailp->nextPrimaryFire <= 0) {
-			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				if (VmVecDistQuick (&gameData.objs.console->position.vPos, &robot->position.vPos) < robot->size + gameData.objs.console->size + F1_0*2) {
-					CollidePlayerAndNastyRobot (playerobjP, robot, collision_point);
-					if (botInfoP->energyDrain && LOCALPLAYER.energy) {
-						LOCALPLAYER.energy -= botInfoP->energyDrain * F1_0;
-						if (LOCALPLAYER.energy < 0)
-							LOCALPLAYER.energy = 0;
-						// -- unused, use clawSound in bitmaps.tbl -- DigiLinkSoundToPos (SOUND_ROBOT_SUCKED_PLAYER, playerobjP->nSegment, 0, collision_point, 0, F1_0);
-					}
-				}
-
-			robot->cType.aiInfo.GOAL_STATE = AIS_RECO;
-			SetNextFireTime (robot, ailp, botInfoP, 1);	//	1 = nGun: 0 is special (uses nextSecondaryFire)
+if (!gameStates.app.cheats.bRobotsFiring)
+	return;
+//	If tPlayer is dead, stop firing.
+if (gameData.objs.objects [LOCALPLAYER.nObject].nType == OBJ_GHOST)
+	return;
+if (botInfoP->attackType != 1)
+	return;
+if (ailp->nextPrimaryFire > 0)
+	return;
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+	if (VmVecDistQuick (&gameData.objs.console->position.vPos, &robot->position.vPos) < 
+		 robot->size + gameData.objs.console->size + F1_0 * 2) {
+		CollidePlayerAndNastyRobot (playerobjP, robot, vCollision);
+		if (botInfoP->energyDrain && LOCALPLAYER.energy) {
+			LOCALPLAYER.energy -= botInfoP->energyDrain * F1_0;
+			if (LOCALPLAYER.energy < 0)
+				LOCALPLAYER.energy = 0;
+			}
 		}
 	}
-
+robot->cType.aiInfo.GOAL_STATE = AIS_RECO;
+SetNextFireTime (robot, ailp, botInfoP, 1);	//	1 = nGun: 0 is special (uses nextSecondaryFire)
 }
 
 #define	FIRE_K	8		//	Controls average accuracy of robot firing.  Smaller numbers make firing worse.  Being power of 2 doesn't matter.
@@ -1470,33 +1465,30 @@ if ((gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) 
 //	If a hiding robot gets bumped or hit, he decides to find another hiding place.
 void DoAiRobotHit (tObject *objP, int nType)
 {
-	if (objP->controlType == CT_AI) {
-		if ((nType == PA_WEAPON_ROBOT_COLLISION) || (nType == PA_PLAYER_COLLISION))
-			switch (objP->cType.aiInfo.behavior) {
-				case AIB_IDLING:
-				{
-					int	r;
+	int	r;
 
-					//	Attack robots (eg, green guy) shouldn't have behavior = still.
-					Assert (ROBOTINFO (objP->id).attackType == 0);
-
-					r = d_rand ();
-					//	1/8 time, charge tPlayer, 1/4 time create path, rest of time, do nothing
-					if (r < 4096) {
-						CreatePathToPlayer (objP, 10, 1);
-						objP->cType.aiInfo.behavior = AIB_STATION;
-						objP->cType.aiInfo.nHideSegment = objP->nSegment;
-						gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_CHASE_OBJECT;
-					} else if (r < 4096+8192) {
-						CreateNSegmentPath (objP, d_rand ()/8192 + 2, -1);
-						gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_FOLLOW_PATH;
-					}
-					break;
-				}
-			}
+if (objP->controlType != CT_AI)
+	return;
+if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
+	return;
+if (objP->cType.aiInfo.behavior != AIB_IDLING)
+	return;
+r = d_rand ();
+//	Attack robots (eg, green guy) shouldn't have behavior = still.
+Assert (ROBOTINFO (objP->id).attackType == 0);
+//	1/8 time, charge tPlayer, 1/4 time create path, rest of time, do nothing
+if (r < 4096) {
+	CreatePathToPlayer (objP, 10, 1);
+	objP->cType.aiInfo.behavior = AIB_STATION;
+	objP->cType.aiInfo.nHideSegment = objP->nSegment;
+	gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_CHASE_OBJECT;
 	}
-
+else if (r < 4096 + 8192) {
+	CreateNSegmentPath (objP, d_rand () / 8192 + 2, -1);
+	gameData.ai.localInfo [OBJ_IDX (objP)].mode = AIM_FOLLOW_PATH;
+	}
 }
+
 #ifdef _DEBUG
 int	bDoAIFlag=1;
 int	Cvv_test=0;

@@ -917,7 +917,7 @@ retryMove:
 		if (FindObjectSeg (objP) == -1) {
 			int n;
 
-			if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPoint (&objP->vLastPos, objP->nSegment))!= -1) {
+			if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPoint (&objP->vLastPos, objP->nSegment)) != -1) {
 				objP->position.vPos = objP->vLastPos;
 				RelinkObject (nObject, n);
 				}
@@ -1021,44 +1021,38 @@ void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 //	change in orientation.
 void PhysApplyRot (tObject *objP, vmsVector *vForce)
 {
-	fix	rate, vecmag;
+	fix	xRate, xMag;
 
-	if (objP->movementType != MT_PHYSICS)
-		return;
-
-	vecmag = VmVecMag (vForce)/8;
-	if (vecmag < F1_0/256)
-		rate = 4*F1_0;
-	else if (vecmag < objP->mType.physInfo.mass >> 14)
-		rate = 4*F1_0;
-	else {
-		rate = FixDiv (objP->mType.physInfo.mass, vecmag);
-		if (objP->nType == OBJ_ROBOT) {
-			if (rate < F1_0/4)
-				rate = F1_0/4;
-			//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
-			if (!ROBOTINFO (objP->id).thief && !ROBOTINFO (objP->id).attackType) {
-				if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
-					fix	tval = FixDiv (F1_0, 8*gameData.physics.xTime);
-					int	addval;
-
-					addval = f2i (tval);
-
-					if ((d_rand () * 2) < (tval & 0xffff))
-						addval++;
-					objP->cType.aiInfo.SKIP_AI_COUNT += addval;
+if (objP->movementType != MT_PHYSICS)
+	return;
+xMag = VmVecMag (vForce)/8;
+if (xMag < F1_0/256)
+	xRate = 4 * F1_0;
+else if (xMag < objP->mType.physInfo.mass >> 14)
+	xRate = 4 * F1_0;
+else {
+	xRate = FixDiv (objP->mType.physInfo.mass, xMag);
+	if (objP->nType == OBJ_ROBOT) {
+		if (xRate < F1_0/4)
+			xRate = F1_0/4;
+		//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
+		if (!(ROBOTINFO (objP->id).thief || ROBOTINFO (objP->id).attackType)) {
+			if (objP->cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < 3*F1_0/4) {
+				fix	tval = FixDiv (F1_0, 8 * gameData.physics.xTime);
+				int	addval = f2i (tval);
+				if ((d_rand () * 2) < (tval & 0xffff))
+					addval++;
+				objP->cType.aiInfo.SKIP_AI_COUNT += addval;
 				}
 			}
-		} else {
-			if (rate < F1_0/2)
-				rate = F1_0/2;
+		} 
+	else {
+		if (xRate < F1_0/2)
+			xRate = F1_0/2;
 		}
 	}
-
-	//	Turn amount inversely proportional to mass.  Third parameter is seconds to do 360 turn.
-	PhysicsTurnTowardsVector (vForce, objP, rate);
-
-
+//	Turn amount inversely proportional to mass.  Third parameter is seconds to do 360 turn.
+PhysicsTurnTowardsVector (vForce, objP, xRate);
 }
 
 

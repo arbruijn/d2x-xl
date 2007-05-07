@@ -755,7 +755,7 @@ else {
 if (!vPos)
 	vPos = &objP->position.vPos;
 VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-for (; iModel <= nModels; iModel++, phb++, pmhb++) {
+for (phb += iModel, pmhb += iModel; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		VmVecRotate (rotVerts + i, pmhb->box.vertices + i, &m);
 		VmVecInc (rotVerts + i, vPos);

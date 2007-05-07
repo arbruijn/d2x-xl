@@ -1461,20 +1461,69 @@ return !(VmBehindPlane (n, p1, p2, &i) ||
 			VmBehindPlane (n, p3, p1, &i));
 }
 
+//	-----------------------------------------------------------------------------
+// Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
+// If intersection is not between p1 and p2 and vPos is given, return
+// closer point of p1 and p2 to vPos. Otherwise return intersection.
+// returns 1 if intersection outside of p1,p2, otherwise 0.
+
+int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos)
+{
+	vmsVector	d31, d21, h, v, d [2];
+	double		m, u;
+
+VmVecSub (&d21, p2, p1);
+if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
+	if (hitP)
+		*hitP = *p1;
+	return 0;
+	}
+VmVecSub (&d31, p3, p1);
+u = (double) VmVecDot (&d31, &d21);
+u /= m;
+h.p.x = p1->p.x + (fix) (u * d21.p.x);
+h.p.y = p1->p.y + (fix) (u * d21.p.y);
+h.p.z = p1->p.z + (fix) (u * d21.p.z);
+// limit the intersection to [p1,p2]
+VmVecSub (&v, p1, &h);
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if (m < u) {
+	if (hitP)
+		*hitP = *p2;
+	return 1;	//clamped
+	}
+VmVecSub (&v, p2, &h);
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if ((m < u) && (vPos || !hitP)) {
+	if (hitP)
+		*hitP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2))) ? *p2 : *p1;
+	return 1;	//clamped
+	}
+if (hitP)
+	*hitP = h;
+return 0;
+}
+
 // ------------------------------------------------------------------------
 
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p)
 {
+#if 1
+	vmsVector	h;
+
+VmPointLineIntersection (&h, a, b, p, NULL);
+return VmVecMag (VmVecDec (&h, p));
+#else	//this is the original code, which doesn't always work?!
 	vmsVector	ab, ap, abxap;
-	fix			magab;
+	double		magab;
 
 VmVecSub (&ab, b, a);
 VmVecSub (&ap, p, a);
-magab = VmVecMag (&ab);
-if (magab == 0)
+if (!(magab = (double) VmVecMag (&ab)))
 	return VmVecMag (&ap);
 VmVecCrossProd (&abxap, &ab, &ap);
-return VmVecMag (&abxap) / magab * F1_0;
+return (fix) ((double) VmVecMag (&abxap) / magab * F1_0);
+#endif
 }
 
 // ------------------------------------------------------------------------

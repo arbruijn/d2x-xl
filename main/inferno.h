@@ -1161,8 +1161,10 @@ typedef struct tQuad {
 typedef struct tBox {
 	vmsVector			vertices [8];
 	tQuad					faces [6];
+#if 0
 	tQuad					rotFaces [6];	//transformed faces
 	short					nTransformed;
+#endif
 	} tBox;
 
 typedef struct tHitbox {

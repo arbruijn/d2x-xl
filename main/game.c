@@ -2343,7 +2343,7 @@ if (nDebugSlowdown) {
 		CreatePlayerAppearanceEffect (gameData.objs.console);
 		gameStates.render.bDoAppearanceEffect = 0;
 #ifdef NETWORK
-	if ((gameData.app.nGameMode & GM_MULTI) && netGame.invul) {
+	if (IsMultiGame && netGame.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame-i2f (27);
 		bFakingInvul = 1;

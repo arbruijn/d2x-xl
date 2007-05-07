@@ -386,9 +386,15 @@ return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNorm
 return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlend);
 #endif
 }
+
+typedef struct tSinCosd {
+	double	dSin, dCos;
+} tSinCosd;
+
+void OglComputeSinCos (int nSides, tSinCosd *sinCosP);
 void OglColor4sf (float r, float g, float b, float s);
 void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale);
-void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo);
+void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 
 #define BINDTEX_OPT 0

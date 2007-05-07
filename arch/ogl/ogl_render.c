@@ -181,15 +181,35 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo)
+void OglComputeSinCos (int nSides, tSinCosd *sinCosP)
+{
+	int 		i;
+	double	ang;
+
+for (i = 0; i < nSides; i++, sinCosP++) {
+	ang = 2.0 * M_PI * i / nSides;
+	sinCosP->dSin = sin (ang);
+	sinCosP->dCos = cos (ang);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP)
 {
 	int i;
 	double ang;
 
 glBegin (nType);
-for (i = 0; i < nSides; i++) {
-	ang = 2.0 * M_PI * i / nSides;
-	glVertex2d (cos (ang) * xsc + xo, sin (ang) * ysc + yo);
+if (sinCosP) {
+	for (i = 0; i < nSides; i++, sinCosP++)
+		glVertex2d (sinCosP->dCos * xsc + xo, sinCosP->dSin * ysc + yo);
+	}
+else {
+	for (i = 0; i < nSides; i++) {
+		ang = 2.0 * M_PI * i / nSides;
+		glVertex2d (cos (ang) * xsc + xo, sin (ang) * ysc + yo);
+		}
 	}
 glEnd ();
 }
@@ -226,8 +246,15 @@ return h;
 
 void OglDrawMouseIndicator (void)
 {
-	double scale = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
-
+	double 	scale = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
+	
+	static tSinCosd sinCos12 [12];
+	static int bInitSinCos = 1;
+	
+if (bInitSinCos) {
+	OglComputeSinCos (sizeofa (sinCos12), sinCos12);
+	bInitSinCos = 0;
+	}
 glPushMatrix ();
 glTranslated (
 	(double) (mouseData.x) / (double) SWIDTH, 
@@ -244,7 +271,7 @@ else {
 	glColor3d (1.0, 0.8, 0.0);
 	glLineWidth (3);
 	glEnable (GL_SMOOTH);
-	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0);
+	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos12);
 	glDisable (GL_SMOOTH);
 	glLineWidth (1);
 #if 1
@@ -264,6 +291,17 @@ void OglDrawReticle (int cross, int primary, int secondary)
 {
 	double scale = (double)nCanvasHeight/ (double)grdCurScreen->sc_h;
 
+	static tSinCosd sinCos8 [8];
+	static tSinCosd sinCos12 [12];
+	static tSinCosd sinCos16 [16];
+	static int bInitSinCos = 1;
+	
+if (bInitSinCos) {
+	OglComputeSinCos (sizeofa (sinCos8), sinCos8);
+	OglComputeSinCos (sizeofa (sinCos12), sinCos12);
+	OglComputeSinCos (sizeofa (sinCos16), sinCos16);
+	bInitSinCos = 0;
+	}
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
@@ -325,14 +363,14 @@ else {
 	glEnd ();
 	glColor3fv (primary ? bright_g : dark_g);
 	//left upper
-	OglDrawEllipse (12, GL_POLYGON, 1.5, -7.0, 1.5, -5.0);
+	OglDrawEllipse (12, GL_POLYGON, 1.5, -7.0, 1.5, -5.0, sinCos12);
 	//right upper
-	OglDrawEllipse (12, GL_POLYGON, 1.5, 7.0, 1.5, -5.0);
+	OglDrawEllipse (12, GL_POLYGON, 1.5, 7.0, 1.5, -5.0, sinCos12);
 	glColor3fv ((primary == 2) ? bright_g : dark_g);
 	//left lower
-	OglDrawEllipse (8, GL_POLYGON, 1.0, -14.0, 1.0, -8.0);
+	OglDrawEllipse (8, GL_POLYGON, 1.0, -14.0, 1.0, -8.0, sinCos8);
 	//right lower
-	OglDrawEllipse (8, GL_POLYGON, 1.0, 14.0, 1.0, -8.0);
+	OglDrawEllipse (8, GL_POLYGON, 1.0, 14.0, 1.0, -8.0, sinCos8);
 	glEndList ();
 	}
 //	if (nCanvasHeight>200)
@@ -346,15 +384,15 @@ else {
 	if (secondary <= 2) {
 		//left secondary
 		glColor3fv ((secondary == 1) ? bright_g : darker_g);
-		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, -10.0, 2.0, -1.0);
+		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, -10.0, 2.0, -1.0, sinCos16);
 		//right secondary
 		glColor3fv ((secondary == 2) ? bright_g : darker_g);
-		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, 10.0, 2.0, -1.0);
+		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, 10.0, 2.0, -1.0, sinCos16);
 		}
 	else {
 		//bottom/middle secondary
 		glColor3fv ((secondary == 4) ? bright_g : darker_g);
-		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, 0.0, 2.0, -7.0);
+		OglDrawEllipse (16, GL_LINE_LOOP, 2.0, 0.0, 2.0, -7.0, sinCos16);
 		}
 	glEndList ();
 	}

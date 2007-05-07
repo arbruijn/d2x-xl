@@ -597,6 +597,7 @@ void DrawPolygonObject (tObject *objP)
 	fix xEngineGlow [2];		//element 0 is for engine glow, 1 for headlight
 	int bBlendPolys = 0;
 	int bBrightPolys = 0;
+	int bEnergyWeapon = (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id] && !bIsMissile [objP->id];
 	//tRgbColorf color;
 
 #if SHADOWS
@@ -657,7 +658,7 @@ else {
 			if (objP->cType.aiInfo.behavior == AIB_SNIPE)
 				xLight = 2 * xLight + F1_0;
 		}
-		bBlendPolys = (objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].nInnerModel > -1);
+		bBlendPolys = bEnergyWeapon && (gameData.weapons.info [objP->id].nInnerModel > -1);
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
@@ -676,8 +677,12 @@ else {
 					bmiAltTex, 
 					NULL /*gameData.weapons.color + objP->id*/);
 			}
-		if (!bBlendPolys && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id])
-			gameStates.render.grAlpha = 4 * GR_ACTUAL_FADE_LEVELS / 5;
+		if (!bBlendPolys) {
+			if (bEnergyWeapon)
+				gameStates.render.grAlpha = 4 * (float) GR_ACTUAL_FADE_LEVELS / 5;
+			else
+				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
+			}
 		DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
 			(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
@@ -686,7 +691,7 @@ else {
 			bBrightPolys ? F1_0 : xLight, 
 			xEngineGlow, 
 			bmiAltTex, 
-			(objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+			bEnergyWeapon ? gameData.weapons.color + objP->id : NULL);
 		if (bBlendPolys && !gameOpts->legacy.bRender) {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1891,7 +1896,7 @@ int RenderObject (tObject *objP, int nWindowNum, int bForce)
 #endif
 
 #ifdef _DEBUG
-if (!dbgObjP && (objP->nType == OBJ_WEAPON) && (objP->id == SMARTMINE_BLOB_ID))
+if (!dbgObjP && (objP->nType == OBJ_WEAPON) && (objP->id == ROBOT_HOMINGMSL_ID))
 	dbgObjP = objP;
 if (objP == dbgObjP) {
 	objP = objP;
@@ -1980,8 +1985,11 @@ switch (objP->renderType) {
 				}
 			else {
 #ifdef _DEBUG
-				if (EGI_FLAG (bRenderShield, 0, 1, 0))
-					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	if 0
+				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	else
+				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#	endif
 #endif
 				RenderLightTrail (objP);
 				}
@@ -2046,7 +2054,6 @@ switch (objP->renderType) {
 			else
 				DrawWeaponVClip (objP); 
 #ifdef _DEBUG
-			if (EGI_FLAG (bRenderShield, 0, 1, 0))
 				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #endif
 			}

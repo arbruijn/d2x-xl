@@ -1115,6 +1115,8 @@ else {
 int radarRanges [] = {100, 150, 200};
 
 #define RADAR_RANGE	radarRanges [gameOpts->render.automap.nRange]
+#define RADAR_SLICES	40
+#define BLIP_SLICES	40
 
 static vmsAngVec	aRadar = {F1_0 / 4, 0, 0};
 static vmsMatrix	mRadar;
@@ -1126,6 +1128,15 @@ void RenderRadarBlip (tObject *objP, double r, double g, double b, double a)
 	fix			m;
 	double		h, s;
 
+	static tSinCosd sinCosRadar [RADAR_SLICES];
+	static tSinCosd sinCosBlip [BLIP_SLICES];
+	static int bInitSinCos = 1;
+	
+if (bInitSinCos) {
+	OglComputeSinCos (sizeofa (sinCosRadar), sinCosRadar);
+	OglComputeSinCos (sizeofa (sinCosBlip), sinCosBlip);
+	bInitSinCos = 0;
+	}
 n = objP->position.vPos;
 G3TransformPoint (&n, &n, 0);
 if ((m = VmVecMag (&n)) > RADAR_RANGE * F1_0)
@@ -1144,15 +1155,15 @@ else {
 	glTranslated (0, yRadar, 50);
 #if 0
 	glColor4d (r, g, b, a / 2);
- 	OglDrawEllipse (30, GL_POLYGON, 10, 0, 7.5, 0);
+ 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 7.5, 0, sinCosRadar);
 #endif
 	glColor4d (r, g, b, a);
- 	OglDrawEllipse (30, GL_POLYGON, 10, 0, 10.0 / 3.0, 0);
+ 	OglDrawEllipse (RADAR_SLICES, GL_POLYGON, 10, 0, 10.0 / 3.0, 0, sinCosRadar);
 	glColor4d (0.5, 0.5, 0.5, 0.8);
 	glEnable (GL_LINE_SMOOTH);
- 	OglDrawEllipse (30, GL_LINE_LOOP, 10, 0, 10.0 / 3.0, 0);
- 	OglDrawEllipse (30, GL_LINE_LOOP, 20.0 / 3.0, 0, 20.0 / 9.0, 0);
- 	OglDrawEllipse (30, GL_LINE_LOOP, 10.0 / 3.0, 0, 10.0 / 9.0, 0);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 10, 0, 10.0 / 3.0, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 20.0 / 3.0, 0, 20.0 / 9.0, 0, sinCosRadar);
+ 	OglDrawEllipse (RADAR_SLICES, GL_LINE_LOOP, 10.0 / 3.0, 0, 10.0 / 9.0, 0, sinCosRadar);
 	glBegin (GL_LINES);
 	glVertex2d (0, 10.0 / 3.0);
 	glVertex2d (0, -10.0 / 3.0);
@@ -1171,15 +1182,15 @@ glTranslated (0, yRadar + h * 10.0 / 3.0, 50);
 glPushMatrix ();
 s = 1.0 - fabs ((double) f2fl (m) / RADAR_RANGE);
 h = 3 * s;
-glColor4d (r + r * h, g + g * h, b + b * h, a + a * h);
+a += a * h;
+glColor4d (r + r * h, g + g * h, b + b * h, sqrt (a));
 glTranslatef (f2fl (v [0].p.x), f2fl (v [0].p.y), f2fl (v [0].p.z));
-OglDrawEllipse (20, GL_POLYGON, 0.33 + 0.33 * s, 0, 0.33 + 0.33 * s, 0);
+OglDrawEllipse (BLIP_SLICES, GL_POLYGON, 0.33 + 0.33 * s, 0, 0.33 + 0.33 * s, 0, sinCosBlip);
 glPopMatrix ();
 #if 1
 v [1] = v [0];
 v [1].p.y = 0;
 glBegin (GL_LINES);
-//OglVertex3x (0,0,0);
 OglVertex3x (v [0].p.x, v [0].p.y, v [0].p.z);
 OglVertex3x (v [1].p.x, v [1].p.y, v [1].p.z);
 glEnd ();
@@ -1220,6 +1231,8 @@ void RenderRadar (void)
 	tRgbColord	*pc;
 
 if (!SHOW_HUD)
+	return;
+if (gameStates.render.automap.bDisplay)
 	return;
 if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;
