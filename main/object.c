@@ -1880,7 +1880,7 @@ return nc;
 
 #define EXPAND_CORONA	2
 
-void RenderObjectCorona (tObject *objP, tRgbColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple)
+void RenderObjectCorona (tObject *objP, tRgbColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1899,19 +1899,23 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 						{{{0,0.5f,1}},{{0,0,1}},{{1,0,1}},{{1,0.5f,1}},
 						 {{0,1,1}},{{1,0.5f,1}},{{1,0.5f,1}},{{1,1,1}}};
 
+		vmsVector	vPos = objP->position.vPos;
+
+	if (xOffset) {
+		if (bViewerOffset) {
+			vmsVector o;
+			VmVecNormalize (VmVecSub (&o, &gameData.render.mine.viewerEye /*&gameData.objs.console->position.vPos*/, &vPos));
+			VmVecScaleInc (&vPos, &o, xOffset);
+			}
+		else
+			VmVecScaleInc (&vPos, &objP->position.mOrient.fVec, xOffset);
+		}
 	if (xSize < F1_0)
 		xSize = F1_0;
 	if (bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	glDepthMask (0);
 	if (bSimple) {
-		vmsVector	vPos = objP->position.vPos;
-
-		if (xOffset) {
-			vmsVector o;
-			VmVecNormalize (VmVecSub (&o, &gameData.render.mine.viewerEye /*&gameData.objs.console->position.vPos*/, &vPos));
-			VmVecScaleInc (&vPos, &o, xOffset);
-			}
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
 						1, colorP, alpha, 1, 1);
 		}
@@ -1930,7 +1934,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 		if (OglBindBmTex (bmpCorona, -1)) 
 			return;
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
-		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
 		TransformHitboxf (objP, verts, 0);
 		for (i = 0; i < 6; i++) {
 			vCenter.p.x = vCenter.p.y = vCenter.p.z = 0;
@@ -2080,7 +2084,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 		G3DoneInstance ();
 		//RenderHitbox (objP, colorP->red, colorP->green, colorP->blue, alpha);
 		}
-errorExit:
+
 	glDepthMask (1);
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
@@ -2172,8 +2176,10 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
-	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 
-							  (objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID));
+	if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
+		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
+	else
+		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.66f, -5 * objP->size / 2, 3, 0, 0);
 	}
 }
 
@@ -2420,7 +2426,7 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 2, 1);
+		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 2, 1, 1);
 #else
 	if (h < 0)
 		h = 0;
@@ -2431,7 +2437,7 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 2, 1);
+		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 2, 1, 1);
 		}
 #endif
 	}
