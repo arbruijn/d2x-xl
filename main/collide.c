@@ -1047,8 +1047,6 @@ int CollideDebrisAndWall (tObject * debris, fix hitspeed, short hitseg, short hi
 if (gameOpts->render.nDebrisLife) {
 	vmsVector	vDir = debris->mType.physInfo.velocity,
 					vNormal = gameData.segs.segments [hitseg].sides [hitwall].normals [0];
-	if (debris == dbgObjP)
-		HUDMessage (0, "reflecting debris");
 	VmVecReflect (&debris->mType.physInfo.velocity, &vDir, &vNormal);
 	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, F1_0 / 3);
 	}
