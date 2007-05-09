@@ -70,6 +70,25 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 int bFloorLeveling = 0;
 
 //	-----------------------------------------------------------------------------------------------------------
+
+#ifdef _DEBUG
+
+#define CATCH_OBJ(_objP,_cond)	{if (((_objP) == dbgObjP) && (_cond)) CatchDbgObj (_cond);}
+
+int CatchDbgObj (int cond)
+{
+if (cond)
+	return 1;
+return 0;
+}
+
+#else
+
+#define CATCH_OBJ(_objP,_cond)
+
+#endif
+
+//	-----------------------------------------------------------------------------------------------------------
 //make sure matrix is orthogonal
 void CheckAndFixMatrix (vmsMatrix *m)
 {
@@ -429,6 +448,7 @@ if (bDontMoveAIObjects)
 	if (objP->controlType == CT_AI)
 		return;
 #endif
+CATCH_OBJ (objP, objP->mType.physInfo.velocity.p.y == 0);
 DoPhysicsSimRot (objP);
 pi = &objP->mType.physInfo;
 #if 1
@@ -523,7 +543,7 @@ do {
 retryMove:
 
 	nTries++;
-	//	If retry nTries is getting large, then we are trying to do something stupid.
+	//	If retry count is getting large, then we are trying to do something stupid.
 	if (nTries > 3) {
 		if (objP->nType != OBJ_PLAYER)
 			break;
@@ -737,7 +757,7 @@ retryMove:
 #else
 		bRetry = 0;
 #endif
-		if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
+		if (!(objP->flags & OF_SHOULD_BE_DEAD) && (objP->nType != OBJ_DEBRIS)) {
 			int bForceFieldBounce;		//bounce off a forcefield
 
 			Assert (gameStates.app.cheats.bBouncingWeapons || ((objP->mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
@@ -929,6 +949,7 @@ retryMove:
 				KillObject (objP);
 		}
 	}
+CATCH_OBJ (objP, objP->mType.physInfo.velocity.p.y == 0);
 #if UNSTICK_OBJS
 UnstickObject (objP);
 #endif

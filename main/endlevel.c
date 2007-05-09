@@ -786,8 +786,6 @@ int find_exit_side (tObject *objP)
 
 extern fix xRenderZoom;							//the tPlayer's zoom factor
 
-extern vmsVector viewerEye;	//valid during render
-
 void DrawExitModel ()
 {
 	vmsVector model_pos;
@@ -817,9 +815,9 @@ void RenderExternalScene (fix xEyeOffset)
 	vmsVector delta;
 	g3sPoint p, top_pnt;
 
-viewerEye = gameData.objs.viewer->position.vPos;
+gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (xEyeOffset)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 G3SetViewMatrix (&gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 GrClearCanvas (BLACK_RGBA);
 G3StartInstanceMatrix (&vmdZeroVector, &surface_orient);
@@ -895,20 +893,20 @@ void RenderEndLevelMine (fix xEyeOffset, int nWindowNum)
 {
 	short nStartSeg;
 
-viewerEye = gameData.objs.viewer->position.vPos;
+gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (gameData.objs.viewer->nType == OBJ_PLAYER)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, (gameData.objs.viewer->size*3)/4);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, (gameData.objs.viewer->size*3)/4);
 if (xEyeOffset)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode==FMODE_EDITOR)
-	viewerEye = gameData.objs.viewer->position.vPos;
+	gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	nStartSeg = gameData.endLevel.exit.nSegNum;
 	}
 else {
-	nStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
+	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment);
 	if (nStartSeg==-1)
 		nStartSeg = gameData.objs.viewer->nSegment;
 	}
@@ -917,10 +915,10 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	vmsAngVec angles = {0, 0, 0x7fff};
 	VmAngles2Matrix (&headm, &angles);
 	VmMatMul (&viewm, &gameData.objs.viewer->position.mOrient, &headm);
-	G3SetViewMatrix (&viewerEye, &viewm, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &viewm, xRenderZoom);
 	}
 else
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 }
 

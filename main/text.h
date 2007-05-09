@@ -1691,10 +1691,10 @@ void LoadGameTexts(void);
 #define TXT_RADAR_BLACK				GT(898)
 #define TXT_RADAR_RANGE				GT(899)
 #define TXT_AUTOMAP_SMOKE			GT(900)
+#define TXT_DEBRIS_LIFE				GT(901)
 
 #if 0
 
-#define TXT_				GT(901)
 #define TXT_				GT(902)
 #define TXT_				GT(903)
 #define TXT_				GT(904)
@@ -2179,10 +2179,10 @@ void LoadGameTexts(void);
 #define HTX_AUTOMAP_RADAR			HT(265)				
 #define HTX_RADAR_RANGE				HT(266)				
 #define HTX_AUTOMAP_SMOKE			HT(267)				
+#define HTX_DEBRIS_LIFE				HT(268)				
 
 #if 0
 				
-#define HTX_					HT(268)				
 #define HTX_					HT(269)				
 #define HTX_					HT(270)				
 #define HTX_					HT(271)				

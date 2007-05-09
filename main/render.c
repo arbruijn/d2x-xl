@@ -110,9 +110,7 @@ int nRotatedLast [MAX_VERTICES_D2X];
 
 // When any render function needs to know what's looking at it, it should 
 // access gameData.objs.viewer members.
-vmsVector viewerEye;  //valid during render
 
-int	nRenderSegs;
 
 fix xRenderZoom = 0x9000;					//the player's zoom factor
 fix xRenderZoomScale = 1;					//the player's zoom factor
@@ -1646,7 +1644,7 @@ props.nOvlOrient = sideP->nOvlOrient;
 
 GetSideVerts (props.vp, props.segNum, props.sideNum);
 if (sideP->nType == SIDE_IS_QUAD) {
-	VmVecSub (&tvec, &viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
+	VmVecSub (&tvec, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
 	v_dot_n0 = VmVecDot (&tvec, normals);
 	if (v_dot_n0 < 0)
 		return;
@@ -1669,7 +1667,7 @@ if (sideP->nType == SIDE_IS_QUAD) {
 else {
 	//	Regardless of whether this tSide is comprised of a single quad, or two triangles, we need to know one normal, so
 	//	deal with it, get the dot product.
-	VmVecNormalizedDirQuick (&tvec, &viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][sideP->nType == SIDE_IS_TRI_13]]);
+	VmVecNormalizedDirQuick (&tvec, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][sideP->nType == SIDE_IS_TRI_13]]);
 	v_dot_n0 = VmVecDot (&tvec, normals);
 
 	//	========== Mark: The change ends here. ==========
@@ -2203,15 +2201,8 @@ int MattFindConnectedSide(int seg0, int seg1);
 char visited2 [MAX_SEGMENTS_D2X];
 #endif
 
-ubyte bVisited [MAX_SEGMENTS_D2X];
-ubyte nVisited = 255;
-short nRenderList [MAX_RENDER_SEGS];
-short nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
-ubyte nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
-int	lCntSave, sCntSave;
-
-#define VISITED(_ch)	(bVisited [_ch] == nVisited)
-#define VISIT(_ch) (bVisited [_ch] = nVisited)
+#define VISITED(_ch)	(gameData.render.mine.bVisited [_ch] == gameData.render.mine.nVisited)
+#define VISIT(_ch) (gameData.render.mine.bVisited [_ch] = gameData.render.mine.nVisited)
 //@@short *persp_ptr;
 short nRenderPos [MAX_SEGMENTS_D2X];	//where in render_list does this tSegment appear?
 //ubyte no_renderFlag [MAX_RENDER_SEGS];
@@ -2407,11 +2398,11 @@ Assert(c0 != -1 && c1 != -1);
 //find normals of adjoining sides
 FindAdjacentSideNorms (seg, c0, c1, s);
 
-VmVecSub (&temp, &viewerEye, s [0].p);
+VmVecSub (&temp, &gameData.render.mine.viewerEye, s [0].p);
 d0 = VmVecDot (s [0].n, &temp);
 if (s [0].t != 1)	// triangularized face -> 2 different normals
 	d0 |= VmVecDot (s [0].n + 1, &temp);	// we only need the sign, so a bitwise or does the trick
-VmVecSub (&temp, &viewerEye, s [1].p);
+VmVecSub (&temp, &gameData.render.mine.viewerEye, s [1].p);
 d1 = VmVecDot (s [1].n, &temp);
 if (s [1].t != 1) 
 	d1 |= VmVecDot (s [1].n + 1, &temp);
@@ -2699,7 +2690,7 @@ void BuildObjectLists(int n_segs)
 
 	for (nn=0;nn<n_segs;nn++) {
 		short nSegment;
-		nSegment = nRenderList [nn];
+		nSegment = gameData.render.mine.nRenderList [nn];
 		if (nSegment != -1) {
 			int nObject;
 			tObject *objP;
@@ -2731,7 +2722,7 @@ void BuildObjectLists(int n_segs)
 									int checknp;
 		
 									for (checknp=list_pos;checknp--;)
-										if (nRenderList [checknp] == child) {
+										if (gameData.render.mine.nRenderList [checknp] == child) {
 											new_segnum = child;
 											list_pos = checknp;
 											did_migrate = 1;
@@ -2750,7 +2741,7 @@ void BuildObjectLists(int n_segs)
 	for (nn=0;nn<n_segs;nn++) {
 		int nSegment;
 
-		nSegment = nRenderList [nn];
+		nSegment = gameData.render.mine.nRenderList [nn];
 
 		if (nSegment != -1) {
 			int t, lookn, i, n;
@@ -2766,7 +2757,7 @@ void BuildObjectLists(int n_segs)
 					if (nSortItems < SORT_LIST_SIZE-1) {		//add if room
 						sortList [nSortItems].nObject = t;
 						//NOTE: maybe use depth, not dist - quicker computation
-						sortList [nSortItems].dist = VmVecDistQuick(&gameData.objs.objects [t].position.vPos, &viewerEye);
+						sortList [nSortItems].dist = VmVecDistQuick(&gameData.objs.objects [t].position.vPos, &gameData.render.mine.viewerEye);
 						nSortItems++;
 					}
 					else {			//no room for tObject
@@ -2800,7 +2791,7 @@ void BuildObjectLists(int n_segs)
 
 							//replace debris & fireballs
 							if (nType == OBJ_DEBRIS || nType == OBJ_FIREBALL) {
-								fix dist = VmVecDistQuick(&gameData.objs.objects [t].position.vPos, &viewerEye);
+								fix dist = VmVecDistQuick(&gameData.objs.objects [t].position.vPos, &gameData.render.mine.viewerEye);
 
 								//don't replace same kind of tObject unless new 
 								//one is closer
@@ -2912,11 +2903,11 @@ void GetViewPoint (void)
 	tPathPoint		*p = GetPathPoint (&externalView);
 
 if (!p)
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
 else {
-	viewerEye = p->vPos;
-	VmVecScaleInc (&viewerEye, &p->mOrient.fVec, PP_DELTAZ * 2 / 3);
-	VmVecScaleInc (&viewerEye, &p->mOrient.uVec, PP_DELTAY * 2 / 3);
+	gameData.render.mine.viewerEye = p->vPos;
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &p->mOrient.fVec, PP_DELTAZ * 2 / 3);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &p->mOrient.uVec, PP_DELTAY * 2 / 3);
 	}
 }
 
@@ -3128,8 +3119,8 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 		RenderObject (objP, 0, 0);
 	else if ((objP->nType == OBJ_PLAYER) || 
 				(gameOpts->render.shadows.bRobots && (objP->nType == OBJ_ROBOT))) {
-		for (j = nRenderSegs; j--;) {
-			fakePlayerPos.nSegment = nRenderList [j];
+		for (j = gameData.render.mine.nRenderSegs; j--;) {
+			fakePlayerPos.nSegment = gameData.render.mine.nRenderList [j];
 			COMPUTE_SEGMENT_CENTER_I (&fakePlayerPos.position.vPos, fakePlayerPos.nSegment);
 			bSee = ObjectToObjectVisibility (objP, &fakePlayerPos, FQ_TRANSWALL);
 			if (bSee) {
@@ -3270,29 +3261,29 @@ void SetRenderView (fix nEyeOffset, short *pnStartSeg)
 	static int bStopZoom;
 	short nStartSeg;
 
-viewerEye = gameData.objs.viewer->position.vPos;
+gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (nEyeOffset) {
-	VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.rVec, nEyeOffset);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, nEyeOffset);
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR)
-	viewerEye = gameData.objs.viewer->position.vPos;
+	gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 #endif
 
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 	}
 else {
-	nStartSeg = FindSegByPoint (&viewerEye, gameData.objs.viewer->nSegment);
+	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment);
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&viewerEye, &mView, xRenderZoom);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, xRenderZoom);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer==gameData.objs.console)) {
 		vmsMatrix mHead, mView;
@@ -3301,7 +3292,7 @@ else {
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&viewerEye, &mView, FixDiv(xRenderZoom, gameStates.render.nZoomFactor));
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv(xRenderZoom, gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 #ifdef JOHN_ZOOM
@@ -3350,18 +3341,18 @@ else {
 			SetPathPoint (&externalView, gameData.objs.viewer);
 			GetViewPoint ();
 #else
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
-			VmVecScaleInc (&viewerEye, &gameData.objs.viewer->position.mOrient.uVec, PP_DELTAY);
+			VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
+			VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.uVec, PP_DELTAY);
 #endif
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
 			}
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
 		}
 	else
-		G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 #else
-	G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
 #endif
 	}
 if (pnStartSeg)
@@ -3398,9 +3389,9 @@ if (!bShadowTest)
 #else		
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 	
-			G3SetViewMatrix (&viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
 		else
-			G3SetViewMatrix (&viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
 	else {
@@ -3596,7 +3587,7 @@ nSegListSize = j;
 
 //------------------------------------------------------------------------------
 //build a list of segments to be rendered
-//fills in nRenderList & nRenderSegs
+//fills in gameData.render.mine.nRenderList & gameData.render.mine.nRenderSegs
 
 typedef struct tSegZRef {
 	fix	z;
@@ -3641,17 +3632,17 @@ void SortRenderSegs (void)
 	int			i;
 	vmsVector	v;
 
-if (nRenderSegs < 2)
+if (gameData.render.mine.nRenderSegs < 2)
 	return;
-for (i = 0; i < nRenderSegs; i++) {
-	COMPUTE_SEGMENT_CENTER_I (&v, nRenderList [i]);
+for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
+	COMPUTE_SEGMENT_CENTER_I (&v, gameData.render.mine.nRenderList [i]);
 	G3TransformPoint (&v, &v, 0);
 	segZRef [i].z = v.p.z;
-	segZRef [i].nSegment = nRenderList [i];
+	segZRef [i].nSegment = gameData.render.mine.nRenderList [i];
 	}
-QSortSegZRef (0, nRenderSegs - 1);
-for (i = 0; i < nRenderSegs; i++)
-	nRenderList [i] = segZRef [i].nSegment;
+QSortSegZRef (0, gameData.render.mine.nRenderSegs - 1);
+for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
+	gameData.render.mine.nRenderList [i] = segZRef [i].nSegment;
 }
 
 //------------------------------------------------------------------------------
@@ -3672,31 +3663,31 @@ void BuildSegmentList (short nStartSeg, int nWindow)
 	tSegment	*segP;
 
 bCheckBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
-if (!++nVisited) {
-	memset (bVisited, 0, sizeof (bVisited));
-	nVisited = 1;
+if (!++gameData.render.mine.nVisited) {
+	memset (gameData.render.mine.bVisited, 0, sizeof (gameData.render.mine.bVisited));
+	gameData.render.mine.nVisited = 1;
 	}
 memset (nRenderPos, -1, sizeof (nRenderPos [0]) * (gameData.segs.nSegments));
 //memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_RENDER_SEGS);
-memset (nProcessed, 0, sizeof (nProcessed));
-memset (nRenderList, 0xff, sizeof (nRenderList));
+memset (gameData.render.mine.nProcessed, 0, sizeof (gameData.render.mine.nProcessed));
+memset (gameData.render.mine.nRenderList, 0xff, sizeof (gameData.render.mine.nRenderList));
 
 #ifdef _DEBUG
 memset(visited2, 0, sizeof(visited2 [0])*(gameData.segs.nLastSegment+1));
 #endif
 
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured) {
-	for (i = nRenderSegs = 0; i < gameData.segs.nSegments; i++)
+	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
 		if (gameStates.render.automap.bFull || bAutomapVisited [i]) {
-			nRenderList [nRenderSegs++] = i;
+			gameData.render.mine.nRenderList [gameData.render.mine.nRenderSegs++] = i;
 			VISIT (i);
 			}
 	SortRenderSegs ();
 	return;
 	}
 
-nRenderList [0] = nStartSeg; 
-nSegDepth [0] = 0;
+gameData.render.mine.nRenderList [0] = nStartSeg; 
+gameData.render.mine.nSegDepth [0] = 0;
 VISIT (nStartSeg);
 nRenderPos [nStartSeg] = 0;
 sCnt = 0;
@@ -3718,10 +3709,10 @@ renderWindows [0].bot = grdCurCanv->cv_bitmap.bm_props.h - 1;
 for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 	//while (sCnt < eCnt) {
 	for (sCnt = 0; sCnt < eCnt; sCnt++) {
-		if (nProcessed [sCnt])
+		if (gameData.render.mine.nProcessed [sCnt])
 			continue;
-		nProcessed [sCnt] = 1;
-		nSegment = nRenderList [sCnt];
+		gameData.render.mine.nProcessed [sCnt] = 1;
+		nSegment = gameData.render.mine.nRenderList [sCnt];
 		checkWinP = renderWindows + sCnt;
 #ifdef _DEBUG
 		if (bDrawBoxes)
@@ -3771,7 +3762,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			if (nChild == nDbgSeg)
 				nChild = nChild;
 #endif
-			//if ( (bWindowCheck || !bVisited [nChild])&& (WALL_IS_DOORWAY(segP, c))) {
+			//if ( (bWindowCheck || !gameData.render.mine.bVisited [nChild])&& (WALL_IS_DOORWAY(segP, c))) {
 			{
 				if (bWindowCheck) {
 					int i;
@@ -3843,13 +3834,13 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 								pNewWin->bot   = max(pNewWin->bot, rwP->bot);
 								if (no_migrate_segs) {
 									//no_renderFlag [lCnt] = 1;
-									nRenderList [lCnt] = -1;
+									gameData.render.mine.nRenderList [lCnt] = -1;
 									*rwP = *pNewWin;		//get updated window
-									nProcessed [rp] = 0;		//force reprocess
+									gameData.render.mine.nProcessed [rp] = 0;		//force reprocess
 									goto no_add;
 								}
 								else
-									nRenderList [rp]=-1;
+									gameData.render.mine.nRenderList [rp]=-1;
 							}
 							else 
 								goto no_add;
@@ -3859,8 +3850,8 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							DrawWindowBox (5, pNewWin->left, pNewWin->top, pNewWin->right, pNewWin->bot);
 #endif
 						nRenderPos [nChild] = lCnt;
-						nRenderList [lCnt] = nChild;
-						nSegDepth [lCnt] = l;
+						gameData.render.mine.nRenderList [lCnt] = nChild;
+						gameData.render.mine.nSegDepth [lCnt] = l;
 						lCnt++;
 						if (lCnt >= MAX_RENDER_SEGS) {
 #if TRACE								
@@ -3879,8 +3870,8 @@ no_add:
 					}
 				}
 				else {
-					nRenderList [lCnt] = nChild;
-					nSegDepth [lCnt] = l;
+					gameData.render.mine.nRenderList [lCnt] = nChild;
+					gameData.render.mine.nSegDepth [lCnt] = l;
 					lCnt++;
 					if (lCnt >= MAX_RENDER_SEGS) {
 						LogErr ("Too many segments in tSegment render list!!!\n"); 
@@ -3896,10 +3887,10 @@ no_add:
 }
 done_list:
 
-lCntSave = lCnt;
-sCntSave = sCnt;
+gameData.render.mine.lCntSave = lCnt;
+gameData.render.mine.sCntSave = sCnt;
 nFirstTerminalSeg = sCnt;
-nRenderSegs = lCnt;
+gameData.render.mine.nRenderSegs = lCnt;
 }
 
 
@@ -3927,7 +3918,7 @@ for (gameStates.render.nType = nStartState; gameStates.render.nType < nEndState;
 				break;
 			}
 	while (nnRenderSegs)
-		RenderSegment (nRenderList [--nnRenderSegs], nWindow);
+		RenderSegment (gameData.render.mine.nRenderList [--nnRenderSegs], nWindow);
 	}
 glDepthFunc (GL_LESS);
 gameStates.render.nType = -1;
@@ -3992,10 +3983,10 @@ void RenderVisibleObjects (int nWindow)
 
 if (gameStates.render.nShadowPass == 2)
 	return;
-//memset (bVisited, 0, sizeof (bVisited [0]) * (gameData.segs.nLastSegment + 1));
-nVisited++;
-for (i = nRenderSegs; i--;)  {
-	j = nRenderList [i];
+//memset (gameData.render.mine.bVisited, 0, sizeof (gameData.render.mine.bVisited [0]) * (gameData.segs.nLastSegment + 1));
+gameData.render.mine.nVisited++;
+for (i = gameData.render.mine.nRenderSegs; i--;)  {
+	j = gameData.render.mine.nRenderList [i];
 	if ((j != -1) && !VISITED (j)) {
 		VISIT (j);
 		RenderObjList (i, nWindow);
@@ -4068,8 +4059,8 @@ void GatherVisibleLights (void)
 	tSide	*sideP;
 
 gameData.render.color.nVisibleLights = 0;
-for (i = 0; i < nRenderSegs;i++) {
-	nSegment = nRenderList [i];
+for (i = 0; i < gameData.render.mine.nRenderSegs;i++) {
+	nSegment = gameData.render.mine.nRenderList [i];
 	for (nSide = 0, sideP = gameData.segs.segments [nSegment].sides; nSide < 6; nSide++, sideP++) {
 		AddVisibleLight (nSegment, nSide, sideP->nBaseTex, 1);
 		AddVisibleLight (nSegment, nSide, sideP->nBaseTex, 0);
@@ -4153,7 +4144,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && 
 	  (gameStates.render.nShadowBlurPass < 2)) || 
 	 (gameStates.render.nShadowPass == 2)) {
-	BuildSegmentList (nStartSeg, nWindow);		//fills in nRenderList & nRenderSegs
+	BuildSegmentList (nStartSeg, nWindow);		//fills in gameData.render.mine.nRenderList & gameData.render.mine.nRenderSegs
 	//GatherVisibleLights ();
 #if OGL_QUERY
 	if (1 && !nWindow) {
@@ -4168,8 +4159,8 @@ if (((gameStates.render.nRenderPass <= 0) &&
 		nWindowClipRight = grdCurCanv->cv_bitmap.bm_props.w-1;
 		nWindowClipBot   = grdCurCanv->cv_bitmap.bm_props.h-1;
 		}
-	for (i = 0; i < nRenderSegs;i++) {
-		short nSegment = nRenderList [i];
+	for (i = 0; i < gameData.render.mine.nRenderSegs;i++) {
+		short nSegment = gameData.render.mine.nRenderList [i];
 		if (nSegment != -1) {
 			if (visited2 [nSegment])
 				Int3();		//get Matt
@@ -4179,20 +4170,20 @@ if (((gameStates.render.nRenderPass <= 0) &&
 		}
 #endif
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-		BuildObjectLists (nRenderSegs);
+		BuildObjectLists (gameData.render.mine.nRenderSegs);
 		if (nEyeOffset <= 0)	// Do for left eye or zero.
 			SetDynamicLight();
 		}
 	}
 if (nClearWindow == 2) {
-	if (nFirstTerminalSeg < nRenderSegs) {
+	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
 		int i;
 
 		if (nClearWindowColor == -1)
 			nClearWindowColor = BLACK_RGBA;
 		GrSetColor (nClearWindowColor);
-		for (i=nFirstTerminalSeg, rwP = renderWindows; i < nRenderSegs; i++, rwP++) {
-			if (nRenderList [i] != -1) {
+		for (i=nFirstTerminalSeg, rwP = renderWindows; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
+			if (gameData.render.mine.nRenderList [i] != -1) {
 #ifdef _DEBUG
 				if ((rwP->left == -1) || 
 					 (rwP->top == -1) || 
@@ -4235,7 +4226,7 @@ extern ubyte bAutomapVisited [];
 
 void RenderMineSegment (int nn)
 {
-	int nSegment = (nn < 0) ? -nn - 1 : nRenderList [nn];
+	int nSegment = (nn < 0) ? -nn - 1 : gameData.render.mine.nRenderList [nn];
 
 if ((nSegment != -1) && (gameStates.render.automap.bDisplay ? gameStates.render.automap.bFull || bAutomapVisited [nSegment] : !VISITED (nSegment))) {
 #ifdef _DEBUG
@@ -4267,31 +4258,31 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 gameStates.render.nWindow = nWindow;
 bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 gameStates.render.nType = 0;	//render solid geometry front to back
-nVisited++;
-for (nn = 0; nn < nRenderSegs; )
+gameData.render.mine.nVisited++;
+for (nn = 0; nn < gameData.render.mine.nRenderSegs; )
 	RenderMineSegment (nn++);
 if (!gameStates.render.automap.bDisplay)
 	RenderSkyBox (nWindow);
 gameStates.render.nType = 1;	//render transparency back to front
-nVisited++;
-for (nn = nRenderSegs; nn; )
+gameData.render.mine.nVisited++;
+for (nn = gameData.render.mine.nRenderSegs; nn; )
 	RenderMineSegment (--nn);
 if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
 	glDepthFunc (GL_LEQUAL);
 	gameStates.render.nType = 2;
-	nVisited++;
-	for (nn = nRenderSegs; nn;)
+	gameData.render.mine.nVisited++;
+	for (nn = gameData.render.mine.nRenderSegs; nn;)
 		RenderMineSegment (--nn);
 	glDepthFunc (GL_LESS);
 	if ((!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.bCoronas && LoadCorona ()) {
 		gameStates.render.nType = 3;
-		nVisited++;
+		gameData.render.mine.nVisited++;
 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthFunc (GL_LEQUAL);
 		glDepthMask (0);
-		for (nn = nRenderSegs; nn;)
+		for (nn = gameData.render.mine.nRenderSegs; nn;)
 			RenderMineSegment (--nn);
 		glDepthMask (1);
 		glDepthFunc (GL_LESS);

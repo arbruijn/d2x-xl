@@ -72,9 +72,6 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include <time.h>
 #endif
 
-extern int nSegsVisited;
-extern ubyte bVisited [];
-
 void TeleportBoss (tObject *objP);
 int BossFitsInSeg (tObject *bossObjP, int nSegment);
 
@@ -296,7 +293,7 @@ segListP [nSegments++] = nBossHomeSeg;
 Selected_segs [nSelectedSegs++] = nBossHomeSeg;
 #endif
 
-memset (bVisited, 0, gameData.segs.nSegments);
+memset (gameData.render.mine.bVisited, 0, gameData.segs.nSegments);
 
 while (tail != head) {
 	segP = gameData.segs.segments + seqQueue [tail++];
@@ -313,12 +310,12 @@ while (tail != head) {
 			continue;
 		if (bOneWallHack)
 			bOneWallHack--;
-		if (bVisited [childSeg])
+		if (gameData.render.mine.bVisited [childSeg])
 			continue;
 		if (nGroup != gameData.segs.xSegments [childSeg].group)
 			continue;
 		seqQueue [head++] = childSeg;
-		bVisited [childSeg] = 1;
+		gameData.render.mine.bVisited [childSeg] = 1;
 		head &= QUEUE_SIZE - 1;
 		if (head > tail) {
 			if (head == tail + QUEUE_SIZE-1)
@@ -2082,7 +2079,7 @@ int BossFitsInSeg (tObject *bossObjP, int nSegment)
 	int			nPos;
 	vmsVector	vSegCenter, vVertPos;
 
-nSegsVisited = 0;
+gameData.collisions.nSegsVisited = 0;
 COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nSegment);
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)

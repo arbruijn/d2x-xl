@@ -450,7 +450,7 @@ if ((current == nWeapon) || (current == nWeapon + SUPER_WEAPON)) {
 	}
 else {
 	//go to last-select version of requested missile
-	if (!bLastWasSuper && (nWeapon < SUPER_WEAPON))
+	if (bLastWasSuper && (nWeapon < SUPER_WEAPON))
 		nWeapon += SUPER_WEAPON;
 	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1);
 	//if don't have last-selected, try other version

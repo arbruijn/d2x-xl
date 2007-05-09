@@ -68,8 +68,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamecntl.h"
 #include "input.h"
 
-extern vmsVector viewerEye;
-
 #define EF_USED     1   // This edge is used
 #define EF_DEFINING 2   // A structure defining edge that should always draw.
 #define EF_FRONTIER 4   // An edge between the known and the unknown.
@@ -523,7 +521,7 @@ else {
 	G3SetViewMatrix (&amData.viewPos, &amData.viewMatrix, bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom);
 	}
 if (gameOpts->render.automap.bTextured) {
-	viewerEye = amData.viewPos;
+	gameData.render.mine.viewerEye = amData.viewPos;
 	RenderMine (gameData.objs.console->nSegment, 0, 0);
 	}
 else

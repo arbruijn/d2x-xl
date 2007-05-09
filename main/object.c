@@ -677,12 +677,10 @@ else {
 					bmiAltTex, 
 					NULL /*gameData.weapons.color + objP->id*/);
 			}
-		if (!bBlendPolys) {
-			if (bEnergyWeapon)
-				gameStates.render.grAlpha = 4 * (float) GR_ACTUAL_FADE_LEVELS / 5;
-			else
-				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
-			}
+		if (bEnergyWeapon)
+			gameStates.render.grAlpha = 4 * (float) GR_ACTUAL_FADE_LEVELS / 5;
+		else if (!bBlendPolys)
+			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 		DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
 			(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
@@ -935,7 +933,7 @@ glDepthFunc (GL_LESS);
 
 void RenderPlayerShield (tObject *objP)
 {
-	int i = objP->id;
+	int	bStencil, i = objP->id;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -946,7 +944,7 @@ if (SHOW_SHADOWS &&
 #endif
 if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	 !(gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
@@ -981,7 +979,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
 #endif
 		}
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1043,6 +1041,7 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector		fPos, fVerts [4];
 	float			r, r2, w;
+	int			bStencil;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -1055,7 +1054,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
@@ -1113,7 +1112,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	glVertex3fv ((GLfloat *) (fVerts + 3));
 	glEnd ();
 #endif
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1124,7 +1123,7 @@ void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector		fPos, fVerts [4];
 	float			r, r2, r3;
-	int			nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
+	int			bStencil, nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -1157,7 +1156,7 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 if (EGI_FLAG (bHitIndicators, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
@@ -1254,7 +1253,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		glEnd ();
 #endif
 		}
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
 RenderDamageIndicator (objP, pc);
@@ -1289,12 +1288,12 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		fVector			vPosf;
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->id);
 		tPathPoint		*pp = GetPathPoint (&pf->path);
-		int				i;
+		int				i, bStencil;
 		float				r;
 		grsBitmap		*bmP;
 
 	if (pp) {
-		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+		if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 			glDisable (GL_STENCIL_TEST);
 		OglActiveTexture (GL_TEXTURE0_ARB);
 		glEnable (GL_TEXTURE_2D);
@@ -1329,7 +1328,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		glEnd ();
 		G3DoneInstance ();
 		OGL_BINDTEX (0);
-		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+		if (bStencil)
 			glEnable (GL_STENCIL_TEST);
 		}
 	}
@@ -1421,7 +1420,7 @@ else {
 
 void RenderThrusterFlames (tObject *objP)
 {
-	int				h, i, j, k, l, nThrusters;
+	int				h, i, j, k, l, nThrusters, bStencil;
 	tRgbaColorf		c [2];
 	vmsVector		vPos [2];
 	fVector			v;
@@ -1497,7 +1496,7 @@ else {
 CreateThrusterFlame ();
 glLineWidth (3);
 
-if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	glDisable (GL_STENCIL_TEST);
 for (h = 0; h < nThrusters; h++) {
 	c [1].red = 0.5f + 0.05f * fPulse;
@@ -1548,7 +1547,542 @@ for (h = 0; h < nThrusters; h++) {
 	glCullFace (GL_BACK);
 	glDepthMask (1);
 	G3DoneInstance ();
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
+		glEnable (GL_STENCIL_TEST);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+typedef struct tVertRef {
+	float	dot;
+	int	i;
+} tVertRef;
+
+typedef struct fEdge {
+	int	v0, v1;
+	int	f0, f1;
+	int	bContour;
+	int	nPred, nSucc;	//previous and next connected contour edge
+} fEdge;
+
+// -----------------------------------------------------------------------------
+
+inline int VmVecEqualf (fVector *v0, fVector *v1)
+{
+return (v0->p.x == v1->p.x) && (v0->p.y == v1->p.y) && (v0->p.z == v1->p.z);
+}
+
+static int AddEdge (fEdge *edges, int nEdges, int v0, int v1, int nFace)
+{
+	int	i;
+
+for (i = 0; i < nEdges; i++, edges++)
+	if (((edges->v0 == v0) && (edges->v1 == v1)) || ((edges->v0 == v1) && (edges->v1 == v0))) {
+		edges->f1 = nFace;
+		return nEdges;
+		}
+edges->v0 = v0;
+edges->v1 = v1;
+edges->f0 = nFace;
+edges->f1 = -1;
+return nEdges + 1;
+}
+
+// -----------------------------------------------------------------------------
+// render corona by gathering the contour vertices of the objects simple, transformed hitbox.
+// To do that, get the hitbox's contour edges and walk through their vertices in their logical sequence.
+
+int ComputeHitboxContour (tObject *objP, fVector *verts, fVector *verts3D, fEdge *edges, int *contour, float fScale)
+{
+	fVector		n, faces [6][4], quad [4], vEye = {{0, 0, 0}}, vCenter = {{0, 0, 0}}, v, *v0, *v1, e [2];
+//	fEdge			edges [12];
+	float			offs, zMin, len, minLen, maxLen, dot, minDot;
+	int			h, i, j, k, nc, bFrontFaces [6], nEdges = 0, nContourEdges = -1;
+
+G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+TransformHitboxf (objP, verts3D, 0);
+//VmsVecToFloat (&vEye, &gameData.render.mine.viewerEye);
+// get smallest z coordinate and compute hitbox center
+zMin = 1000000000;
+for (i = 0; i < 8; i++) {
+	VmVecIncf (&vCenter, verts3D + i);
+	if (zMin > verts3D [i].p.z)
+		zMin = verts3D [i].p.z;
+	}
+VmVecScalef (&vCenter, &vCenter, 0.125f);
+// determine hitbox sides facing the viewer
+for (i = 0; i < 6; i++) {
+	for (j = 0; j < 4; j++)
+		quad [j] = verts3D [hitboxFaceVerts [i][j]];
+	VmVecNormalf (&n, quad, quad + 1, quad + 2);
+	bFrontFaces [i] = VmVecDotf (&n, quad) < 0;
+	}
+// resize hitbox if requested
+if (fScale != 1) {
+	for (i = 0; i < 8; i++) {
+		VmVecSubf (&v, verts3D + i, &vCenter);
+		VmVecScalef (&v, &v, fScale);
+		VmVecAddf (verts + i, &vCenter, &v);
+		}
+	}
+// move all hitbox vertices so close to the viewer that they line up on the same (minimal) z coordinate
+#if 1
+for (i = 0; i < 8; i++) {
+	if (offs = (verts [i].p.z - zMin)) {
+#	if 1
+#		if 1
+		VmVecScalef (verts + i, verts + i, zMin / verts [i].p.z);
+#		else
+		verts [i].p.z = zMin;
+#		endif
+#	else
+		VmVecNormalizef (&v, verts + i);
+		VmVecScalef (&v, &v, offs * 1 / v.p.z);
+		VmVecDecf (verts + i, &v);
+#	endif
+		}
+	}
+#endif
+// gather all hitbox edges
+for (i = 0; i < 6; i++) {
+	for (j = 0; j < 4; j++) {
+		h = hitboxFaceVerts [i][j];
+		faces [i][j] = verts [h];
+		nEdges = AddEdge (edges, nEdges, h, hitboxFaceVerts [i][(j + 1) % 4], i);
+		}
+	}
+// determine the contour edges, i.e. the edges between a side facing and a side not facing the viewer 
+for (i = 0, h = -1; i < nEdges; i++) {
+	if ((edges [i].f0 < 0) || (edges [i].f1 < 0))
+		i = i;
+	if (edges [i].bContour = bFrontFaces [edges [i].f0] != bFrontFaces [edges [i].f1]) {
+		edges [i].nPred = edges [i].nSucc = -1;
+		if (h < 0)
+			h = i;	//first contour edge
+		}	
+	}
+// create double linked circular list of all contour edges to make further processing easier and faster
+
+for (i = h, j = h + 1; j < nEdges; j++)
+	if (edges [j].bContour) {
+		edges [i].nSucc = j;
+		edges [j].nPred = i;
+		i = j;
+		nContourEdges++;
+		}
+// first contour edge is not in linked list, as it will be used as start right here
+if (h < 0)
+	return 0;
+j = edges [h].nSucc;
+edges [i].nSucc = j;
+edges [j].nPred = i;
+edges [h].nPred = edges [h].nSucc = -1;
+contour [0] = edges [h].v0;
+contour [1] = k = edges [h].v1;
+nc = 2;
+h = j;
+// now walk the contour edge list to create the polygon formed by the contour edges.
+// To do that, find the contour edge with a vertex common with the last vertex added to the vertex list.
+// Add that edge's other vertex to the vertex list and use it to find the next connected edge.
+while (nContourEdges) {
+	i = edges [h].nSucc;
+	if (edges [h].v0 == k) {
+		if (nc == 6)
+			nc = nc;
+		contour [nc++] = k = edges [h].v1;
+		j = edges [h].nPred;
+		edges [j].nSucc = i;
+		edges [i].nPred = j;
+		edges [h].nPred = edges [h].nSucc = -1;
+		nContourEdges--;
+		}
+	else if (edges [h].v1 == k) {
+		if (nc == 6)
+			nc = nc;
+		contour [nc++] = k = edges [h].v0;
+		j = edges [h].nPred;
+		edges [j].nSucc = i;
+		edges [i].nPred = j;
+		edges [h].nPred = edges [h].nSucc = -1;
+		nContourEdges--;
+		}
+	h = i;
+	}
+#if 1
+vCenter = verts [contour [0]];
+for (i = 1; i < nc; i++)
+	VmVecIncf (&vCenter, verts + contour [i]);
+VmVecScalef (&vCenter, &vCenter, 1.0f / nc);
+vCenter.p.z = zMin;
+minLen = (float) 1e30;
+maxLen = 0;
+for (i = 0; i < nc; i++) {
+#if 0
+	len = VmVecDistf (verts + contour [i], &vCenter);
+	if (maxLen < len) {
+		maxLen = len;
+		e [1] = verts [contour [i]];
+		}
+#endif
+	VmPointLineIntersectionf (&v, verts + contour [i], verts + contour [(i + 1) % nc], &vCenter, NULL);
+	len = VmVecDistf (&v, &vCenter);
+	if (minLen > len) {
+		minLen = len;
+		e [0] = v;
+		}
+	if (maxLen < len) {
+		maxLen = len;
+		e [1] = v;
+		}
+	}
+verts [0] = 
+verts [1] = e [1];
+VmVecSubf (verts + 2, &vCenter, e + 1);
+VmVecIncf (verts + 2, &vCenter);
+verts [3] = verts [2];
+VmVecDecf (e, &vCenter);
+VmVecIncf (verts, e);
+VmVecDecf (verts + 1, e);
+VmVecDecf (verts + 2, e);
+VmVecIncf (verts + 3, e);
+contour [0] = 0;
+contour [1] = 1;
+contour [2] = 2;
+contour [3] = 3;
+nc = 4;
+#elif 0
+if (nc == 6) {
+	maxLen = 0;
+#if 1
+	h = 0;
+#else
+	// find longest diagonal
+	for (i = 0; i < 3; i++) {
+		VmVecSubf (&v, verts + contour [i], verts + contour [i + 3]);
+		len = VmVecMagf (&v);
+		if (maxLen < len) {
+			maxLen = len;
+			h = i;
+			}
+		}
+#endif
+	glColor3d (1,0,0);
+	glLineWidth (7);
+	glBegin (GL_LINES);
+	glVertex3fv ((GLfloat *) (verts + contour [h]));
+	glVertex3fv ((GLfloat *) (verts + contour [h+3]));
+	glEnd ();
+#if 0
+	v0 = verts + contour [h];
+	v1 = verts + contour [(h ? h : nc) - 1];
+	VmPointLineIntersectionf (&v, v0, verts + contour [h + 3], v1, NULL);
+	VmVecSubf (&v, v1, &v);
+	VmVecAddf (v1, &v, v0);
+	v1 = verts + contour [(h + 1) % nc];
+	VmPointLineIntersectionf (&v, v0, verts + contour [h + 3], v1, NULL);
+	VmVecSubf (&v, v1, &v);
+	VmVecAddf (v1, &v, v0);
+	h += 3;
+	v0 = verts + contour [h];
+	v1 = verts + contour [(h ? h : nc) - 1];
+	VmPointLineIntersectionf (&v, verts + contour [h - 3], v0, v1, NULL);
+	VmVecSubf (&v, v1, &v);
+	VmVecAddf (v1, &v, v0);
+	v1 = verts + contour [(h + 1) % nc];
+	VmPointLineIntersectionf (&v, verts + contour [h - 3], v0, v1, NULL);
+	VmVecSubf (&v, v1, &v);
+	VmVecAddf (v1, &v, v0);
+	if (h < --nc)
+		memcpy (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
+	h -= 3;
+	if (h < --nc)
+		memcpy (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
+#endif
+	}
+#elif 0
+// Method 1: Remove vertices until 4 are left.
+// Remove those vertices whose edges form the biggest angle
+vCenter = verts [contour [0]];
+for (i = 1; i < nc; i++)
+	VmVecIncf (&vCenter, verts + contour [i]);
+VmVecScalef (&vCenter, &vCenter, 1.0f / nc);
+vCenter.p.z = zMin;
+while (nc > 4) {
+	minDot = 1;
+	for (i = 0; i < nc; i++) {
+		v = verts [contour [i]];
+		VmVecSubf (e, verts + contour [(i ? i : nc) - 1], &v);
+		VmVecSubf (e + 1, verts + contour [(i + 1) % nc], &v);
+		VmVecNormalizef (e, e);
+		VmVecNormalizef (e + 1, e + 1);
+		dot = VmVecDotf (e, e + 1);
+		if (minDot > dot) {
+			minDot = dot;
+			h = i;
+			}
+		}
+	// Remove vertex h
+	v0 = verts + contour [i = (h ? h : nc) - 1];
+	v1 = verts + contour [j = (h + 1) % nc];
+	VmPointLineIntersectionf (&v, v0, v1, verts + contour [h], NULL);
+	VmVecSubf (e, verts + contour [h], &vCenter);
+	VmVecSubf (e + 1, &v, &vCenter);
+#if 0
+	if (VmVecMagf (e) > VmVecMagf (e + 1)) {
+		// move vertices adjacent to vertex j out by distance from vertex j to line between adjacent vertices
+		len = VmVecMagf (VmVecSubf (e, verts + contour [h], &v));
+		len = VmVecMagf (VmVecSubf (e, verts + contour [h], &v));
+		VmVecSubf (&v, v0, verts + contour [(i ? i : nc) - 1]);
+		VmVecScalef (&v, &v, len / VmVecMagf (&v));
+		VmVecIncf (v0, &v);
+		VmVecSubf (&v, v1, verts + contour [(j + 1) % nc]);
+		VmVecScalef (&v, &v, len / VmVecMagf (&v));
+		VmVecIncf (v1, &v);
+		}
+#endif
+	if (h < --nc)
+		memmove (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
+	}
+#elif 0
+// Method 2: make sure the polygon can be rendered as one or two quads.
+// 4 vertices: bingo
+// 6 vertices: render 2 quads from vertices 1,2,3,6 and 3,4,5,6
+// 5 vertices: Insert 6th vertex in longest edge, proceed as for 6 vertices
+maxLen = 0;
+if (nc == 5) {
+	// find longest edge
+	v1 = verts + contour [i];
+	for (i = 0; i < nc; i++) {
+		v0 = v1;
+		v1 = verts + contour [(i + 1) % nc];
+		VmVecSubf (&v, v0, v1);
+		len = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;	//use squared length for test and save a sqrt() call
+		if (maxLen < len) {
+			maxLen = len;
+			h = i;
+			}
+		}
+	// insert new vertex between vertices j and j + 1
+	// verts [8] will be used for the extra vertex (now you know why it has 9 elements ;)
+	j = (h + 1) % nc;
+	VmVecAddf (verts + 8, verts + h, verts + (h + 1) % nc);
+	VmVecScalef (verts + 8, verts + 8, 0.5);
+	if (h < nc++)
+		memmove (contour + h, contour + h + 1, (nc - h - 1) * sizeof (*contour));
+	contour [h] = 9;
+	}
+#endif
+return nc;
+}
+
+// -----------------------------------------------------------------------------
+
+#define EXPAND_CORONA	2
+
+void RenderObjectCorona (tObject *objP, tRgbColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple)
+{
+if (!SHOW_OBJ_FX)
+	return;
+#if SHADOWS
+if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
+//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+	return;
+#endif
+if (gameOpts->render.bCoronas && LoadCorona ()) {
+	int			bStencil;
+	fix			xSize = (fix) (objP->size * fScale);
+
+	static uvlf	uvlList1 [4] =
+						{{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	uvlf	uvlList2 [8] =
+						{{{0,0.5f,1}},{{0,0,1}},{{1,0,1}},{{1,0.5f,1}},
+						 {{0,1,1}},{{1,0.5f,1}},{{1,0.5f,1}},{{1,1,1}}};
+
+	if (xSize < F1_0)
+		xSize = F1_0;
+	if (bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+		glDisable (GL_STENCIL_TEST);
+	glDepthMask (0);
+	if (bSimple) {
+		vmsVector	vPos = objP->position.vPos;
+
+		if (xOffset) {
+			vmsVector o;
+			VmVecNormalize (VmVecSub (&o, &gameData.render.mine.viewerEye /*&gameData.objs.console->position.vPos*/, &vPos));
+			VmVecScaleInc (&vPos, &o, xOffset);
+			}
+		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
+						1, colorP, alpha, 1, 1);
+		}
+	else {
+#if 1
+		fVector	quad [4], verts [8], vCenter, vNormal, v;
+		float		dot;
+		int		i, j;
+
+		//glEnable (GL_BLEND);
+		glDisable (GL_CULL_FACE);
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDepthFunc (GL_LEQUAL);
+		glDepthMask (0);
+		glEnable (GL_TEXTURE_2D);
+		if (OglBindBmTex (bmpCorona, -1)) 
+			return;
+		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+		TransformHitboxf (objP, verts, 0);
+		for (i = 0; i < 6; i++) {
+			vCenter.p.x = vCenter.p.y = vCenter.p.z = 0;
+			for (j = 0; j < 4; j++) {
+				quad [j] = verts [hitboxFaceVerts [i][j]];
+				VmVecIncf (&vCenter, quad + j);
+				}
+			VmVecScalef (&vCenter, &vCenter, 0.25f);
+			VmVecNormalf (&vNormal, quad, quad + 1, quad + 2);
+			VmVecNormalizef (&v, &vCenter);
+			dot = VmVecDotf (&vNormal, &v);
+			if (dot >= 0)
+				continue;
+			glColor4f (colorP->red, colorP->green, colorP->blue, alpha * sqrt (-dot));
+			glBegin (GL_QUADS);
+			for (j = 0; j < 4; j++) {
+				VmVecSubf (&v, quad + j, &vCenter);
+				VmVecScaleIncf3 (quad + j, &v, fScale);
+ 				glTexCoord2fv ((GLfloat *) (uvlList1 + j));
+				glVertex3fv ((GLfloat *) (quad + j));
+				}
+			glEnd ();
+			}
+		G3DoneInstance ();
+		glDepthMask (1);
+		glDepthFunc (GL_LESS);
+		glDisable (GL_TEXTURE_2D);
+		glEnable (GL_CULL_FACE);
+#else
+			fVector	verts [9], verts3D [9], v;
+			fEdge		edges [12];
+			int		contour [8];
+			int		i, nc = ComputeHitboxContour (objP, verts, verts3D, edges, contour, 2);
+			float		s, s1, s2;
+
+		if (!nc)
+			goto errorExit;
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_SRC_ALPHA, GL_DST_ALPHA); //GL_ONE_MINUS_SRC_ALPHA);
+		glDepthFunc (GL_LEQUAL);
+		glDepthMask (0);
+#if 1
+		glDisable (GL_CULL_FACE);
+		glEnable (GL_TEXTURE_2D);
+		if (OglBindBmTex (bmpCorona, -1)) 
+			return;
+		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
+		glLineWidth (5);
+		glColor3d (1,0,1);
+		if (nc == 4) {
+			glBegin (GL_QUADS);
+			for (i = 0; i < nc; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList1 + i % 4));
+				glVertex3fv ((GLfloat *) (verts + contour [i]));
+				}
+			glEnd ();
+			}
+		else {
+			contour [7] = contour [0];
+			contour [6] = contour [5];
+			contour [5] = contour [4];
+			contour [4] = contour [3];
+			nc += 2;
+			s1 = s2 = 0;
+			s1 = VmVecMagf (VmVecSubf (&v, verts + contour [0], verts + contour [2])) * 
+				  VmVecMagf (VmVecSubf (&v, verts + contour [1], verts + contour [3]));
+			s2 = VmVecMagf (VmVecSubf (&v, verts + contour [4], verts + contour [6])) *
+				  VmVecMagf (VmVecSubf (&v, verts + contour [5], verts + contour [7]));
+			s = s1 + s2;
+			s1 = s1 / s;
+			s2 = s2 / s;
+			uvlList2 [0].v.v =
+			uvlList2 [4].v.v = s1;
+			uvlList2 [5].v.v =
+			uvlList2 [6].v.v = s2;
+			glBegin (GL_QUADS);
+			for (i = 0; i < nc / 2; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList2 + i % 4));
+				glVertex3fv ((GLfloat *) (verts + contour [i]));
+				}
+			glEnd ();
+			glColor3d (1,1,0);
+			glBegin (GL_QUADS);
+			for (; i < nc; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList2 + i % 4));
+				glVertex3fv ((GLfloat *) (verts + contour [i]));
+				}
+			glEnd ();
+			}
+		glDisable (GL_TEXTURE_2D);
+		glEnable (GL_CULL_FACE);
+
+		glDisable (GL_CULL_FACE);
+		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
+		glLineWidth (3);
+		glColor3d (1,0,1);
+		if (nc == 4) {
+			glBegin (GL_LINE_LOOP);
+			for (i = 0; i < nc; i++) {
+				glVertex3fv ((GLfloat *) (verts3D + contour [i]));
+				}
+			glEnd ();
+			}
+		else {
+			glBegin (GL_LINE_LOOP);
+			for (i = 0; i < nc / 2; i++) {
+				glVertex3fv ((GLfloat *) (verts3D + contour [i]));
+				}
+			glEnd ();
+			glColor3d (1,1,0);
+			glBegin (GL_LINE_LOOP);
+			for (; i < nc; i++) {
+				glVertex3fv ((GLfloat *) (verts3D + contour [i]));
+				}
+			glEnd ();
+			}
+		glDisable (GL_TEXTURE_2D);
+		glEnable (GL_CULL_FACE);
+#endif
+#if 1
+		glColor3d (1,1,1);
+		for (i = 0; i < 12; i++) {
+			if (edges [i].bContour) {
+				glLineWidth (4);
+				glBegin (GL_LINES);
+				glVertex3fv ((GLfloat *) (verts3D + edges [i].v0));
+				glVertex3fv ((GLfloat *) (verts3D + edges [i].v1));
+				glEnd ();
+				}
+	#	if 1
+			else {
+				glLineWidth (1);
+				glBegin (GL_LINES);
+				glVertex3fv ((GLfloat *) (verts3D + edges [i].v0));
+				glVertex3fv ((GLfloat *) (verts3D + edges [i].v1));
+				glEnd ();
+				}
+	#	endif
+#endif
+			}
+#endif
+		glLineWidth (1);
+		glDepthMask (1);
+		glDepthFunc (GL_LESS);
+		glDisable (GL_TEXTURE_2D);
+		G3DoneInstance ();
+		//RenderHitbox (objP, colorP->red, colorP->green, colorP->blue, alpha);
+		}
+errorExit:
+	glDepthMask (1);
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1567,10 +2101,11 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
-		vmsVector		vPos;
+		vmsVector	vPos;
+		int			bStencil;
 
 	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	if (EGI_FLAG (bShockwaves, 1, 1, 0) && 
 		 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
@@ -1635,22 +2170,9 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		glCullFace (GL_BACK);
 		G3DoneInstance ();
 		}
-	if (gameOpts->render.bCoronas && LoadCorona ()) {
-		fix xSize = objP->size * 4;
-		if (xSize < F1_0)
-			xSize = F1_0;
-		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
-			glDisable (GL_STENCIL_TEST);
-		glDepthMask (0);
-		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						  1, gameData.weapons.color + objP->id, 0.5f, 1, 1);
-		glDepthMask (1);
-		if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
-			glEnable (GL_STENCIL_TEST);
-		}
-
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
+	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.66f, 0, 4, 0);
 	}
 }
 
@@ -1671,6 +2193,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
 		fVector			vPosf [2], vDirf;
 		short				h, i;
+		int				bStencil;
 //		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
 	VmsVecToFloat (vPosf, &objP->position.vPos);
@@ -1686,7 +2209,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z))
 			return;
 		}
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	glDepthMask (0);
 	glEnable (GL_LINE_STIPPLE);
@@ -1712,7 +2235,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glDisable (GL_LINE_STIPPLE);
 	glDisable (GL_LINE_SMOOTH);
 	glDepthMask (1);
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
 }
@@ -1735,7 +2258,7 @@ if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon
 	 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
 		vmsVector		vPos;
 		fVector			vPosf, *vTrail;
-		int				i, j;
+		int				i, j, bStencil;
 		float				h, r = f2fl (objP->size);
 		tRgbColorf		*pc = gameData.weapons.color + objP->id;
 
@@ -1751,7 +2274,7 @@ if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon
 		r *= 2;
 	else if (r < 2)
 		r *= 1.5f;
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
 	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
@@ -1795,7 +2318,7 @@ if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon
 	glDepthMask (1);
 	glCullFace (GL_BACK);
 	G3DoneInstance ();
-	if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
 RenderShockwave (objP);
@@ -1883,6 +2406,25 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
+void DrawDebrisCorona (tObject *objP)
+{
+	static	tRgbColorf	debrisGlow = {1, 0, 0};
+
+if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
+	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
+#ifdef _DEBUG
+		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 2, 1);
+#else
+	if (h < 10) {
+		h = (10 - h) / 20.0f;
+		RenderObjectCorona (objP, &debrisGlow, h * h, 5 * objP->size / 2, 2, 1);
+		}
+#endif
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 int RenderObject (tObject *objP, int nWindowNum, int bForce)
@@ -1895,14 +2437,14 @@ int RenderObject (tObject *objP, int nWindowNum, int bForce)
 	int			oofIdx;
 #endif
 
-#ifdef _DEBUG
-if (!dbgObjP && (objP->nType == OBJ_WEAPON) && (objP->id == ROBOT_HOMINGMSL_ID))
-	dbgObjP = objP;
+#if 0//def _DEBUG
 if (objP == dbgObjP) {
 	objP = objP;
-#if 0
-	vmsVector	v;
-	HUDMessage (0, "%1.2f", f2fl (VmVecMag (VmVecSub (&v, &objP->position.vPos, &gameData.objs.objects [2].position.vPos))));
+#if 1
+	HUDMessage (0, "%1.2f %1.2f %1.2f", 
+					f2fl (objP->mType.physInfo.velocity.p.x), 
+					f2fl (objP->mType.physInfo.velocity.p.y), 
+					f2fl (objP->mType.physInfo.velocity.p.z));
 #endif
 	}
 #endif
@@ -2013,8 +2555,10 @@ switch (objP->renderType) {
 			else
 				ConvertWeaponToPowerup (objP);
 			}
-		else
+		else {
 			DrawPolygonObject (objP);
+			DrawDebrisCorona (objP);
+			}
 		break;
 
 	case RT_MORPH:	

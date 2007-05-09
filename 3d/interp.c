@@ -54,7 +54,6 @@ float fInfinity [4] = {100.0f, 100.0f, 200.0f, 400.0f};	//5, 10, 20 standard cub
 float fInf;
 
 extern tRgbaColorf shadowColor [2], modelColor [2];
-extern vmsVector viewerEye;
 
 static tOOF_vector	vLightPosf, 
 							//vViewerPos, 

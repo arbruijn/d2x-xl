@@ -415,7 +415,7 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		VmVecNormalize (&v1);
 		dot = VmVecDot (&v1, &vr);
 		VmVecScale (&vr, 2 * dot);
-		VmVecDec (&vr, &v0);
+		VmVecNegate (VmVecDec (&vr, &v0));
 		VmVecNormalize (&vr);
 		VmVecScale (&vr, mag);
 		VmVecNegate (&vr);
@@ -626,14 +626,11 @@ return 0;
 //this gets called when an tObject is scraping along the wall
 void ScrapeObjectOnWall (tObject *objP, short hitseg, short hitside, vmsVector * vHitPt)
 {
-	switch (objP->nType) {
-
+switch (objP->nType) {
 		case OBJ_PLAYER:
-
-			if (objP->id==gameData.multiplayer.nLocalPlayer) {
-				int nType=CheckVolatileWall (objP, hitseg, hitside, vHitPt);
-
-				if (nType!=0) {
+			if (objP->id == gameData.multiplayer.nLocalPlayer) {
+				int nType = CheckVolatileWall (objP, hitseg, hitside, vHitPt);
+				if (nType != 0) {
 					vmsVector	hit_dir, rand_vec;
 
 					if ((gameData.time.xGame > Last_volatile_scrapeSoundTime + F1_0/4) || 
@@ -645,21 +642,14 @@ void ScrapeObjectOnWall (tObject *objP, short hitseg, short hitside, vmsVector *
 						DigiLinkSoundToPos (sound, hitseg, 0, vHitPt, 0, F1_0);
 						if (gameData.app.nGameMode & GM_MULTI)
 							MultiSendPlaySound (sound, F1_0);
-					}
+						}
 					hit_dir = gameData.segs.segments [hitseg].sides [hitside].normals [0];
 					MakeRandomVector (&rand_vec);
 					VmVecScaleInc (&hit_dir, &rand_vec, F1_0/8);
 					VmVecNormalizeQuick (&hit_dir);
 					BumpOneObject (objP, &hit_dir, F1_0*8);
-				}
-
-				//@@} else {
-				//@@	//what scrape sound
-				//@@	//PLAY_SOUND (SOUND_PLAYER_SCRAPE_WALL);
-				//@@}
-		
+					}
 			}
-
 			break;
 
 		//these two kinds of gameData.objs.objects below shouldn't really slide, so
@@ -1054,7 +1044,15 @@ return 1;
 
 int CollideDebrisAndWall (tObject * debris, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)	
 {	
-ExplodeObject (debris, 0);
+if (gameOpts->render.nDebrisLife) {
+	vmsVector	vDir = debris->mType.physInfo.velocity,
+					vNormal = gameData.segs.segments [hitseg].sides [hitwall].normals [0];
+	if (debris == dbgObjP)
+		HUDMessage (0, "reflecting debris");
+	VmVecReflect (&debris->mType.physInfo.velocity, &vDir, &vNormal);
+	}
+else
+	ExplodeObject (debris, 0);
 return 1;
 }
 
@@ -1738,12 +1736,8 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 			explObjP = ObjectCreateExplosion (weaponP->nSegment, vHitPt, (robotP->size/2*3)/4, (ubyte) botInfoP->nExp1VClip);
 		else if (gameData.weapons.info [weaponP->id].robot_hit_vclip > -1)
 			explObjP = ObjectCreateExplosion (weaponP->nSegment, vHitPt, wInfoP->impact_size, (ubyte) wInfoP->robot_hit_vclip);
-		if (explObjP) {
+		if (explObjP)
 			AttachObject (robotP, explObjP);
-#ifdef _DEBUG
-			dbgObjP = explObjP;
-#endif
-			}
 		if (bDamage && (botInfoP->nExp1Sound > -1))
 			DigiLinkSoundToPos (botInfoP->nExp1Sound, robotP->nSegment, 0, vHitPt, 0, F1_0);
 		if (!(weaponP->flags & OF_HARMLESS)) {

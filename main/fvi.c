@@ -1015,12 +1015,6 @@ else
 return dist;
 }
 
-
-int nSegsVisited;
-short segsVisited [MAX_SEGS_VISITED];
-
-fvi_hit_info fviHitData;
-
 //	-----------------------------------------------------------------------------
 
 int FVICompute (vmsVector *intP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1, 
@@ -1048,9 +1042,9 @@ int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
 Assert(fq->ignoreObjList != (short *)(-1));
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
 
-fviHitData.nSegment = -1;
-fviHitData.nSide = -1;
-fviHitData.nObject = -1;
+gameData.collisions.hitData.nSegment = -1;
+gameData.collisions.hitData.nSide = -1;
+gameData.collisions.hitData.nObject = -1;
 
 //check to make sure start point is in seg its supposed to be in
 //Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start point not in seg
@@ -1067,10 +1061,10 @@ if (masks.centerMask) {
 	hitData->nSegments = 0;
 	return hitData->hit.nType;
 	}
-segsVisited [0] = fq->startSeg;
-nSegsVisited = 1;
-fviHitData.nNestCount = 0;
-nHitSegment2 = fviHitData.nSegment2 = -1;
+gameData.collisions.segsVisited [0] = fq->startSeg;
+gameData.collisions.nSegsVisited = 1;
+gameData.collisions.hitData.nNestCount = 0;
+nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
 							  hitData->segList, &hitData->nSegments, -2);
@@ -1082,8 +1076,8 @@ else {
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
-	if ((fviHitData.nSegment2 != -1) && !GetSegMasks (&vHitPoint, fviHitData.nSegment2, 0).centerMask)
-		nHitSegment = fviHitData.nSegment2;
+	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (&vHitPoint, gameData.collisions.hitData.nSegment2, 0).centerMask)
+		nHitSegment = gameData.collisions.hitData.nSegment2;
 
 if (nHitSegment == -1) {
 	//int nNewHitType;
@@ -1113,8 +1107,8 @@ if ((nHitSegment != -1) && (fq->flags & FQ_GET_SEGLIST))
 			hitData->nSegments = i + 1;
 			break;
 		}
-Assert ((nHitType != HIT_OBJECT) || (fviHitData.nObject != -1));
-hitData->hit = fviHitData;
+Assert ((nHitType != HIT_OBJECT) || (gameData.collisions.hitData.nObject != -1));
+hitData->hit = gameData.collisions.hitData;
 hitData->hit.nType = nHitType;
 hitData->hit.vPoint = vHitPoint;
 hitData->hit.nSegment = nHitSegment;
@@ -1156,7 +1150,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	int			nHitNoneSegment = -1;
 	int			nHitNoneSegs = 0;
 	int			hitNoneSegList [MAX_FVI_SEGS];
-	int			nCurNestLevel = fviHitData.nNestCount;
+	int			nCurNestLevel = gameData.collisions.hitData.nNestCount;
 #if FVI_NEWCODE
 	int			nFudgedRad;
 	int			nThisType, nOtherType;
@@ -1167,7 +1161,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 if (flags & FQ_GET_SEGLIST)
 	*segList = nStartSeg;
 *nSegments = 1;
-fviHitData.nNestCount++;
+gameData.collisions.hitData.nNestCount++;
 //first, see if vector hit any objects in this tSegment
 nThisType = (nThisObject < 0) ? -1 : gameData.objs.objects [nThisObject].nType;
 #if 1
@@ -1180,9 +1174,9 @@ if (flags & FQ_CHECK_OBJS) {
 	for (iObjSeg = 0; iObjSeg < 6; iObjSeg++) {
 		if (0 > (nSegment = segP->children [iObjSeg]))
 			continue;
-		for (i = 0; i < nSegsVisited && (nSegment != segsVisited [i]); i++)
+		for (i = 0; i < gameData.collisions.nSegsVisited && (nSegment != gameData.collisions.segsVisited [i]); i++)
 			;
-		if (i == nSegsVisited)
+		if (i == gameData.collisions.nSegsVisited)
 			nObjSegList [nObjSegs++] = nSegment;
 		}
 #endif
@@ -1228,8 +1222,8 @@ if (flags & FQ_CHECK_OBJS) {
 				nFudgedRad = radP1 / 2;
 			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
-				fviHitData.nObject = nObject;
-				Assert(fviHitData.nObject != -1);
+				gameData.collisions.hitData.nObject = nObject;
+				Assert(gameData.collisions.hitData.nObject != -1);
 				dMin = d;
 				vClosestHitPoint = vHitPoint;
 				nHitType = HIT_OBJECT;
@@ -1286,19 +1280,19 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, iFace))))) {
 
 						int			i, nNewSeg, subHitType;
-						short			subHitSeg, nSaveHitObj = fviHitData.nObject;
-						vmsVector	subHitPoint, vSaveWallNorm = fviHitData.vNormal;
+						short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
+						vmsVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
 
 						//do the check recursively on the next tSegment.p.
 						nNewSeg = segP->children [nSide];
 						//LogErr ("   check next seg (%d)\n", nNewSeg);
-						for (i = 0; i < nSegsVisited && (nNewSeg != segsVisited [i]); i++)
+						for (i = 0; i < gameData.collisions.nSegsVisited && (nNewSeg != gameData.collisions.segsVisited [i]); i++)
 							;
-						if (i == nSegsVisited) {                //haven't visited here yet
+						if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
 							short tempSegList [MAX_FVI_SEGS], nTempSegs;
-							if (nSegsVisited >= MAX_SEGS_VISITED)
+							if (gameData.collisions.nSegsVisited >= MAX_SEGS_VISITED)
 								goto quit_looking;		//we've looked a long time, so give up
-							segsVisited [nSegsVisited++] = nNewSeg;
+							gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
 							subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg, 
 															 p1, radP0, radP1, nThisObject, ignoreObjList, flags, 
 															 tempSegList, &nTempSegs, nStartSeg);
@@ -1329,12 +1323,12 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 									Assert (*nSegments < MAX_FVI_SEGS);
 									}
 								else {
-									fviHitData.vNormal = vSaveWallNorm;     //global could be trashed
-									fviHitData.nObject = nSaveHitObj;
+									gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
+									gameData.collisions.hitData.nObject = nSaveHitObj;
  									}
 								}
 							else {
-								fviHitData.vNormal = vSaveWallNorm;     //global could be trashed
+								gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
 								if (subHitSeg != -1) 
 									nHitNoneSegment = subHitSeg;
 								//copy segList
@@ -1363,14 +1357,14 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 							dMin = d;
 							vClosestHitPoint = vHitPoint;
 							nHitType = HIT_WALL;
-							fviHitData.vNormal = segP->sides [nSide].normals [iFace];	
+							gameData.collisions.hitData.vNormal = segP->sides [nSide].normals [iFace];	
 							if (!GetSegMasks (&vHitPoint, nStartSeg, radP1).centerMask)
 								nHitSegment = nStartSeg;             //hit in this tSegment
 							else
-								fviHitData.nSegment2 = nStartSeg;
-							fviHitData.nSegment = nHitSegment;
-							fviHitData.nSide = nSide;
-							fviHitData.nSideSegment = nStartSeg;
+								gameData.collisions.hitData.nSegment2 = nStartSeg;
+							gameData.collisions.hitData.nSegment = nHitSegment;
+							gameData.collisions.hitData.nSide = nSide;
+							gameData.collisions.hitData.nSideSegment = nStartSeg;
 							}
 						}
 					}
@@ -1409,14 +1403,14 @@ if (nHitType == HIT_NONE) {     //didn't hit anything, return end point
 else {
 	*vIntP = vClosestHitPoint;
 	if (nHitSegment == -1)
-		if (fviHitData.nSegment2 != -1)
-			*intS = fviHitData.nSegment2;
+		if (gameData.collisions.hitData.nSegment2 != -1)
+			*intS = gameData.collisions.hitData.nSegment2;
 		else
 			*intS = nHitNoneSegment;
 	else
 		*intS = nHitSegment;
 	}
-Assert(!(nHitType==HIT_OBJECT && fviHitData.nObject==-1));
+Assert(!(nHitType==HIT_OBJECT && gameData.collisions.hitData.nObject==-1));
 //LogErr ("Exit FVICompute\n");
 return nHitType;
 }
@@ -1595,7 +1589,7 @@ return nTranspType;
 
 //	-----------------------------------------------------------------------------
 //new function for Mike
-//note: nSegsVisited must be set to zero before this is called
+//note: gameData.collisions.nSegsVisited must be set to zero before this is called
 int SphereIntersectsWall (vmsVector *vPoint, short nSegment, fix rad)
 {
 	int		faceMask;
@@ -1605,9 +1599,9 @@ if (nSegment == -1) {
 	Error("nSegment == -1 in SphereIntersectsWall()");
 	return 0;
 	}
-if ((nSegsVisited < 0) || (nSegsVisited > MAX_SEGS_VISITED))
-	nSegsVisited = 0;
-segsVisited [nSegsVisited++] = nSegment;
+if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
+	gameData.collisions.nSegsVisited = 0;
+gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
 faceMask = GetSegMasks (vPoint, nSegment, rad).faceMask;
 segP = gameData.segs.segments + nSegment;
 if (faceMask != 0) {				//on the back of at least one face
@@ -1626,9 +1620,9 @@ if (faceMask != 0) {				//on the back of at least one face
 				if (nFaceHitType) {            //through this wall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->children [nSide];
-					for (i = 0; (i < nSegsVisited) && (nChild != segsVisited [i]); i++)
+					for (i = 0; (i < gameData.collisions.nSegsVisited) && (nChild != gameData.collisions.segsVisited [i]); i++)
 						;
-					if (i == nSegsVisited) {                //haven't visited here yet
+					if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
 						if (!IS_CHILD (nChild))
 							return 1;
 						if (SphereIntersectsWall (vPoint, nChild, rad))

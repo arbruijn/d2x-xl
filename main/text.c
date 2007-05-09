@@ -1650,6 +1650,7 @@ char *defaultGameTexts [][2] = {
 	{"~Schwarzes Radar", "b~Lack radar"},
 	{"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
 	{"R~Auch zeichnen", "render ~Smoke"},
+	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d sec"},
 #if 0
 	{"", ""},
 #endif
@@ -2159,6 +2160,7 @@ char *defaultHelpTexts [][2] = {
 	 "The radar can be turned off or displayed at the upper or lower\nscreen border here.\n\nRobots are magenta and powerups are orange. Depending on game\ntype, players are shown in their shop or their team's color.\nMore distant objects are dimmed. Objects above the player\nhave a line extending downward, objects below the player have\na line extending up to the radar's plane."},
 	{"Hier kann man einstellen, wie weit das Radar reicht.", "Here you can adjust the radar's range."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Rauch-\neffekte dargestellt werden.", "Check to have smoke effects rendered in the textured automap."},
+	{"Abhaengig von der hier vorgenommenen Einstellungen verbleiben\nExplosionstruemmer laenger und treiben herum.", "Depending on the setting made here, debris from explosions\nwill stay longer and keep floating around."},
 #if 0
 	{"", ""},
 #endif

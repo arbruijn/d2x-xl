@@ -1520,6 +1520,45 @@ return 0;
 
 // ------------------------------------------------------------------------
 
+int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos)
+{
+	fVector	d31, d21, h, v, d [2];
+	double	m, u;
+
+VmVecSubf (&d21, p2, p1);
+if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
+	if (hitP)
+		*hitP = *p1;
+	return 0;
+	}
+VmVecSubf (&d31, p3, p1);
+u = (double) VmVecDotf (&d31, &d21);
+u /= m;
+h.p.x = p1->p.x + (fix) (u * d21.p.x);
+h.p.y = p1->p.y + (fix) (u * d21.p.y);
+h.p.z = p1->p.z + (fix) (u * d21.p.z);
+// limit the intersection to [p1,p2]
+VmVecSubf (&v, p1, &h);
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if (m < u) {
+	if (hitP)
+		*hitP = *p2;
+	return 1;	//clamped
+	}
+VmVecSubf (&v, p2, &h);
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if ((m < u) && (vPos || !hitP)) {
+	if (hitP)
+		*hitP = (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) ? *p2 : *p1;
+	return 1;	//clamped
+	}
+if (hitP)
+	*hitP = h;
+return 0;
+}
+
+// ------------------------------------------------------------------------
+
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p)
 {
 #if 1
@@ -1538,6 +1577,41 @@ if (!(magab = (double) VmVecMag (&ab)))
 VmVecCrossProd (&abxap, &ab, &ap);
 return (fix) ((double) VmVecMag (&abxap) / magab * F1_0);
 #endif
+}
+
+// ------------------------------------------------------------------------
+
+float VmLinePointDistf (fVector *a, fVector *b, fVector *p)
+{
+	fVector	h;
+
+VmPointLineIntersectionf (&h, a, b, p, NULL);
+return VmVecMagf (VmVecDecf (&h, p));
+}
+
+//------------------------------------------------------------------------------
+// Reflect vDir at surface with normal vNormal. Return result in vReflect
+// 2 * n * (l dot n) - l
+
+vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNormal)
+{
+	fix	mag, dot = VmVecDot (vDir, vNormal);
+
+VmVecCopyScale (vReflect, vNormal, 2 * dot);
+VmVecNegate (VmVecDec (vReflect, vDir));
+#ifdef _DEBUG
+{
+	vmsVector	d, r;
+mag = VmVecCopyNormalize (&d, vDir);
+dot = VmVecDot (&d, vNormal);
+if (dot < 0)
+	dot = F1_0 - dot;
+VmVecCopyScale (&r, vNormal, 2 * dot);
+VmVecDec (&r, &d);
+VmVecScale (&r, mag);
+}
+#endif
+return vReflect;
 }
 
 // ------------------------------------------------------------------------

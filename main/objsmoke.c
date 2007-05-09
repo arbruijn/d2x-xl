@@ -34,7 +34,7 @@
 #define BOMB_PART_LIFE				-16000
 #define BOMB_PART_SPEED				200
 
-#define DEBRIS_MAX_PARTS			50
+#define DEBRIS_MAX_PARTS			25
 #define DEBRIS_PART_LIFE			-2000
 #define DEBRIS_PART_SPEED			30
 
@@ -392,7 +392,8 @@ void DoDebrisSmoke (tObject *objP)
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bDebris))
 	return;
 i = OBJ_IDX (objP);
-if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)) ||
+	 (gameOpts->render.nDebrisLife && (nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 - objP->lifeleft > 10 * F1_0)))
 	nParts = 0;
 else 
 	nParts = -DEBRIS_MAX_PARTS;

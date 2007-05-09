@@ -19,10 +19,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "object.h"
 
-#define MAX_RENDER_SEGS     MAX_SEGMENTS_D2X
-#define OBJS_PER_SEG        5
-#define N_EXTRA_OBJ_LISTS   50
-
 #define	APPEND_LAYERED_TEXTURES 0
 
 extern int nClearWindow;    // 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
@@ -58,8 +54,8 @@ extern fix xRenderZoom;     // the tPlayer's zoom factor
 
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.
-extern int nRenderSegs;
-extern short nRenderList[MAX_RENDER_SEGS];
+
+extern short nRenderList [MAX_RENDER_SEGS];
 
 #ifdef EDITOR
 extern int Render_only_bottom;

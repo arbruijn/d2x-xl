@@ -1757,6 +1757,24 @@ return j;
 
 //------------------------------------------------------------------------------
 
+static int nOptDebrisLife;
+
+void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+m = menus + nOptDebrisLife;
+v = m->value;
+if (gameOpts->render.nDebrisLife != v) {
+	gameOpts->render.nDebrisLife = v;
+	sprintf (m->text, TXT_DEBRIS_LIFE, nDebrisLife [v]);
+	m->rebuild = -1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void EffectOptionsMenu ()
 {
 	tMenuItem m [10];
@@ -1764,21 +1782,22 @@ void EffectOptionsMenu ()
 	int	opt;
 	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
 			optTracers, optShockwaves, optCoronas;
+	char	szDebrisLife [50];
 
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
 	optTranspExpl = opt++;
-	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_E, HTX_ADVRND_CORONAS);
+	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
 	optCoronas = opt++;
-	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_T, HTX_RENDER_SHKWAVES);
+	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
 	optShockwaves = opt++;
-	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
+	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_L, HTX_RENDER_LGTTRAILS);
 	optLightTrails = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
-	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_I, HTX_RENDER_AUTOTRANSP);
+	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
@@ -1786,8 +1805,13 @@ do {
 	optThrustFlame = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
 	optRenderShields = opt++;
+	sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
+	*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
+	ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 6, KEY_D, HTX_DEBRIS_LIFE);
+	nOptDebrisLife = opt++;
+	Assert (opt <= sizeofa (m));
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, NULL, &choice);
+		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 

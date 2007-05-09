@@ -225,6 +225,7 @@ typedef struct tRenderOptions {
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
+	int nDebrisLife;
 	tCameraOptions cameras;
 	tColorOptions color;
 	tCockpitOptions cockpit;
@@ -1046,6 +1047,22 @@ typedef struct tThrusterData {
 	time_t					tPulse;
 } tThrusterData;
 
+#define MAX_RENDER_SEGS     MAX_SEGMENTS_D2X
+#define OBJS_PER_SEG        5
+#define N_EXTRA_OBJ_LISTS   50
+
+typedef struct tMineRenderData {
+	vmsVector				viewerEye;
+	short 					nRenderList [MAX_RENDER_SEGS];
+	int						nRenderSegs;
+	ubyte 					bVisited [MAX_RENDER_SEGS];
+	ubyte 					nVisited;
+	short 					nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
+	ubyte 					nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
+	int						lCntSave;
+	int						sCntSave;
+} tMineRenderData;
+
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
@@ -1063,6 +1080,7 @@ typedef struct tRenderData {
 	tOglData					ogl;
 	tTerrainRenderData	terrain;
 	tThrusterData			thrusters [MAX_PLAYERS];
+	tMineRenderData		mine;
 } tRenderData;
 
 typedef struct tSecretData {
@@ -2046,6 +2064,13 @@ typedef struct tStatsData {
 	int				nDisplayMode;
 	} tStatsData;
 
+typedef struct tCollisionData {
+	int			nSegsVisited;
+	short			segsVisited [MAX_SEGS_VISITED];
+	tFVIHitInfo hitData;
+} tCollisionData;
+
+
 typedef struct tGameData {
 	tSegmentData		segs;
 	tWallData			walls;
@@ -2089,6 +2114,7 @@ typedef struct tGameData {
 	tFusionData			fusion;
 	tMissileData		missiles;
 	tCameraData			cameras;
+	tCollisionData		collisions;
 	tStatsData			stats;
 	tApplicationData	app;
 } tGameData;
@@ -2183,8 +2209,8 @@ b = gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] & b1;
 return (b == b1) ? 1 : (b == b0) ? -1 : 0;
 }
 
-
 extern float fInfinity [];
+extern fix nDebrisLife [];
 
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 

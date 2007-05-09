@@ -1216,6 +1216,7 @@ if (i) {
 	gameOptions [1].render.nMathFormat = 0;
 	gameOptions [1].render.nDefMathFormat = 0;
 	gameOptions [1].render.bEnableSSE = 0;
+	gameOptions [1].render.nDebrisLife = 0;
 	gameOptions [1].render.shadows.nLights = 0;
 	gameOptions [1].render.cameras.bFitToWall = 0;
 	gameOptions [1].render.cameras.nFPS = 0;
@@ -1301,6 +1302,7 @@ else {
 	gameOptions [0].render.nMathFormat = 0;
 	gameOptions [0].render.nDefMathFormat = 0;
 	gameOptions [0].render.bEnableSSE = 0;
+	gameOptions [0].render.nDebrisLife = 3;
 	gameOptions [0].render.bCoronas = 0;
 #ifdef _DEBUG
 	gameOptions [0].render.shadows.nLights = 1;
@@ -2078,6 +2080,7 @@ gameData.reactor.countdown.nTotalTime = 0;
 gameData.render.transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
 gameData.render.shield.nFaceNodes = 4; //tesselate using quads
 gameData.render.monsterball.nFaceNodes = 4; //tesselate using quads
+gameData.render.mine.nVisited = 255;
 for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	gameData.boss [i].nCloakStartTime = 0;
 	gameData.boss [i].nCloakEndTime = 0;

@@ -412,76 +412,64 @@ void ControlsDoD2XKeys (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headi
 //added on 2/4/99 by Victor Rachels for d1x keys
 //--------- Read primary weapon select -------------
 //the following "if" added by WraithX to stop deadies from switchin weapons, 4/14/00
-if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) {
-	{
+if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) { {
 		int i, d2xJoystickState [10];
 
-		for (i=0;i<10;i++)
-			d2xJoystickState [i] = JoyGetButtonState (kcD2X [i*2+1].value);
+	for (i = 0; i < 10; i++)
+		d2xJoystickState [i] = JoyGetButtonState (kcD2X [i*2+1].value);
 
+	//----------------Weapon 1----------------
+	if (HaveD2XKey (kcD2X, 0) ||
+			(JoyGetButtonState (kcD2X [1].value) && (d2xJoystickState [0] != d2xJoystick_ostate [0])))
+	{
+		//int i, valu=0;
+		DoSelectWeapon (0,0);
+		/*
+		for (i=MAX_PRIMARY_WEAPONS;i<MAX_PRIMARY_WEAPONS+NEWPRIMS;i++)
+			if (primary_order [i]>primary_order [valu]&&PlayerHasWeapon (i,0))
+				valu = i;
+		LaserPowSelected = valu;
+		*/
+	}
+	//----------------Weapon 2----------------
+	if (HaveD2XKey (kcD2X, 2) ||
+			(JoyGetButtonState (kcD2X [3].value) && (d2xJoystickState [1] != d2xJoystick_ostate [1])))
+		DoSelectWeapon (1,0);
+	//----------------Weapon 3----------------
+	if (HaveD2XKey (kcD2X, 4) ||
+			(JoyGetButtonState (kcD2X [5].value) && (d2xJoystickState [2] != d2xJoystick_ostate [2])))
+		DoSelectWeapon (2,0);
+	//----------------Weapon 4----------------
+	if (HaveD2XKey (kcD2X, 6) ||
+			(JoyGetButtonState (kcD2X [7].value) && (d2xJoystickState [3] != d2xJoystick_ostate [3])))
+		DoSelectWeapon (3,0);
+	//----------------Weapon 5----------------
+	if (HaveD2XKey (kcD2X, 8) ||
+			(JoyGetButtonState (kcD2X [9].value) && (d2xJoystickState [4] != d2xJoystick_ostate [4])))
+		DoSelectWeapon (4,0);
 
-		//----------------Weapon 1----------------
-		if ((HaveD2XKey (kcD2X, 0)) ||
-			 (JoyGetButtonState (kcD2X [1].value) &&
-			 (d2xJoystickState [0] != d2xJoystick_ostate [0])))
-		{
-			//int i, valu=0;
-			DoSelectWeapon (0,0);
-			/*
-			for (i=MAX_PRIMARY_WEAPONS;i<MAX_PRIMARY_WEAPONS+NEWPRIMS;i++)
-				if (primary_order [i]>primary_order [valu]&&PlayerHasWeapon (i,0))
-					valu = i;
-			LaserPowSelected = valu;
-			*/
-		}
-		//----------------Weapon 2----------------
-		if ((HaveD2XKey (kcD2X, 2)) ||
-			 (JoyGetButtonState (kcD2X [3].value) &&
-			 (d2xJoystickState [1] != d2xJoystick_ostate [1])))
-			DoSelectWeapon (1,0);
-		//----------------Weapon 3----------------
-		if ((HaveD2XKey (kcD2X, 4)) ||
-			 (JoyGetButtonState (kcD2X [5].value) &&
-			 (d2xJoystickState [2] != d2xJoystick_ostate [2])))
-			DoSelectWeapon (2,0);
-		//----------------Weapon 4----------------
-		if ((HaveD2XKey (kcD2X, 6)) ||
-			 (JoyGetButtonState (kcD2X [7].value) &&
-			 (d2xJoystickState [3] != d2xJoystick_ostate [3])))
-			DoSelectWeapon (3,0);
-		//----------------Weapon 5----------------
-		if ((HaveD2XKey (kcD2X, 8)) ||
-			 (JoyGetButtonState (kcD2X [9].value) &&
-			 (d2xJoystickState [4] != d2xJoystick_ostate [4])))
-			DoSelectWeapon (4,0);
-
-		//--------- Read secondary weapon select ----------
-		//----------------Weapon 6----------------
-		if ((HaveD2XKey (kcD2X, 10)) ||
-			 (JoyGetButtonState (kcD2X [11].value) &&
-			 (d2xJoystickState [5] != d2xJoystick_ostate [5])))
-			DoSelectWeapon (0,1);
-		//----------------Weapon 7----------------
-		if ((HaveD2XKey (kcD2X, 12)) ||
-			 (JoyGetButtonState (kcD2X [13].value) &&
-			 (d2xJoystickState [6] != d2xJoystick_ostate [6])))
-			DoSelectWeapon (1,1);
-		//----------------Weapon 8----------------
-		if ((HaveD2XKey (kcD2X, 14)) ||
-			 (JoyGetButtonState (kcD2X [15].value) &&
-			 (d2xJoystickState [7] != d2xJoystick_ostate [7])))
-			DoSelectWeapon (2,1);
-		//----------------Weapon 9----------------
-		if ((HaveD2XKey (kcD2X, 16)) ||
-			 (JoyGetButtonState (kcD2X [17].value) &&
-			 (d2xJoystickState [8] != d2xJoystick_ostate [8])))
-			DoSelectWeapon (3,1);
-		//----------------Weapon 0----------------
-		if ((HaveD2XKey (kcD2X, 18)) ||
-			 (JoyGetButtonState (kcD2X [19].value) &&
-			 (d2xJoystickState [9] != d2xJoystick_ostate [9])))
-			DoSelectWeapon (4,1);
-		memcpy (d2xJoystick_ostate, d2xJoystickState, 10 * sizeof (int));
+	//--------- Read secondary weapon select ----------
+	//----------------Weapon 6----------------
+	if (HaveD2XKey (kcD2X, 10) ||
+			(JoyGetButtonState (kcD2X [11].value) && (d2xJoystickState [5] != d2xJoystick_ostate [5])))
+		DoSelectWeapon (0,1);
+	//----------------Weapon 7----------------
+	if (HaveD2XKey (kcD2X, 12) ||
+			(JoyGetButtonState (kcD2X [13].value) && (d2xJoystickState [6] != d2xJoystick_ostate [6])))
+		DoSelectWeapon (1,1);
+	//----------------Weapon 8----------------
+	if (HaveD2XKey (kcD2X, 14) ||
+			(JoyGetButtonState (kcD2X [15].value) && (d2xJoystickState [7] != d2xJoystick_ostate [7])))
+		DoSelectWeapon (2,1);
+	//----------------Weapon 9----------------
+	if (HaveD2XKey (kcD2X, 16) ||
+			(JoyGetButtonState (kcD2X [17].value) && (d2xJoystickState [8] != d2xJoystick_ostate [8])))
+		DoSelectWeapon (3,1);
+	//----------------Weapon 0----------------
+	if (HaveD2XKey (kcD2X, 18) ||
+			(JoyGetButtonState (kcD2X [19].value) && (d2xJoystickState [9] != d2xJoystick_ostate [9])))
+		DoSelectWeapon (4,1);
+	memcpy (d2xJoystick_ostate, d2xJoystickState, 10 * sizeof (int));
 	}
 	//end this section addition - VR
 }//end "if (!gameStates.app.bPlayerIsDead)" - WraithX

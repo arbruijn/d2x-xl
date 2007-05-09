@@ -351,12 +351,15 @@ tObject *ExplodeBadassPlayer (tObject *objP)
 }
 
 //------------------------------------------------------------------------------
+
 #define DEBRIS_LIFE (f1_0 * 2)		//lifespan in seconds
+
+fix nDebrisLife [] = {2, 15, 30, 60, 120, 180, 300};
 
 tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 {
 	int nObject;
-	tObject *debrisObjP;
+	tObject *debrisP;
 	tPolyModel *po;
 
 Assert ((parentObjP->nType == OBJ_ROBOT) || (parentObjP->nType == OBJ_PLAYER));
@@ -373,28 +376,37 @@ if ((nObject < 0) && (gameData.objs.nLastObject >= MAX_OBJECTS - 1)) {
 	}
 if (nObject < 0)
 	return NULL;				// Not enough debris slots!
-debrisObjP = gameData.objs.objects + nObject;
+debrisP = gameData.objs.objects + nObject;
 Assert (nSubObj < 32);
 //Set polygon-tObject-specific data
-debrisObjP->rType.polyObjInfo.nModel = parentObjP->rType.polyObjInfo.nModel;
-debrisObjP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
-debrisObjP->rType.polyObjInfo.nTexOverride = parentObjP->rType.polyObjInfo.nTexOverride;
+debrisP->rType.polyObjInfo.nModel = parentObjP->rType.polyObjInfo.nModel;
+debrisP->rType.polyObjInfo.nSubObjFlags = 1 << nSubObj;
+debrisP->rType.polyObjInfo.nTexOverride = parentObjP->rType.polyObjInfo.nTexOverride;
 //Set physics data for this tObject
-po = gameData.models.polyModels + debrisObjP->rType.polyObjInfo.nModel;
-debrisObjP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand ();
-debrisObjP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand ();
-debrisObjP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand ();
-VmVecNormalizeQuick (&debrisObjP->mType.physInfo.velocity);
-VmVecScale (&debrisObjP->mType.physInfo.velocity, i2f (10 + (30 * d_rand () / RAND_MAX)));
-VmVecInc (&debrisObjP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
-// -- used to be: Notice, not random!VmVecMake (&debrisObjP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
-VmVecMake (&debrisObjP->mType.physInfo.rotVel, d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
-VmVecZero (&debrisObjP->mType.physInfo.rotThrust);
-debrisObjP->lifeleft = 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
-debrisObjP->mType.physInfo.mass = 
-	FixMulDiv (parentObjP->mType.physInfo.mass, debrisObjP->size, parentObjP->size);
-debrisObjP->mType.physInfo.drag = 0; //fl2f (0.2);		//parentObjP->mType.physInfo.drag;
-return debrisObjP;
+po = gameData.models.polyModels + debrisP->rType.polyObjInfo.nModel;
+debrisP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand ();
+debrisP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand ();
+debrisP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand ();
+VmVecScale (&debrisP->mType.physInfo.velocity, F1_0 * 10);
+VmVecNormalizeQuick (&debrisP->mType.physInfo.velocity);
+VmVecScale (&debrisP->mType.physInfo.velocity, i2f (10 + (30 * d_rand () / RAND_MAX)));
+VmVecInc (&debrisP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
+// -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);
+#if 0//def _DEBUG
+VmVecZero (&debrisP->mType.physInfo.rotVel);
+#else
+VmVecMake (&debrisP->mType.physInfo.rotVel, d_rand () + 0x1000, d_rand ()*2 + 0x4000, d_rand ()*3 + 0x2000);
+#endif
+VmVecZero (&debrisP->mType.physInfo.rotThrust);
+debrisP->lifeleft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
+debrisP->mType.physInfo.mass = 
+	FixMulDiv (parentObjP->mType.physInfo.mass, debrisP->size, parentObjP->size);
+debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //fl2f (0.2);		//parentObjP->mType.physInfo.drag;
+if (gameOpts->render.nDebrisLife) {
+	debrisP->mType.physInfo.flags |= PF_FREE_SPINNING;
+	VmVecScaleFrac (&debrisP->mType.physInfo.rotVel, 1, 3);
+	}
+return debrisP;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1642,7 +1654,7 @@ if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
 	obj->cType.explInfo.nSpawnTime = -1;
 	//make debris
-	if (delObjP->renderType==RT_POLYOBJ)
+	if (delObjP->renderType == RT_POLYOBJ)
 		ExplodePolyModel (delObjP);		//explode a polygon model
 	//set some parm in explosion
 	if (explObjP) {

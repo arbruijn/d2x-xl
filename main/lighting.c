@@ -639,8 +639,8 @@ if (gameData.render.lights.bInitDynColoring) {
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
 if (!gameOpts->render.bDynLighting) {
-	for (iRenderSeg = 0; iRenderSeg < nRenderSegs; iRenderSeg++) {
-		nSegment = nRenderList [iRenderSeg];
+	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
+		nSegment = gameData.render.mine.nRenderList [iRenderSeg];
 		if (nSegment != -1) {
 			short	*vp = gameData.segs.segments [nSegment].verts;
 			for (v=0; v < MAX_VERTICES_PER_SEGMENT; v++) {
@@ -678,8 +678,8 @@ memset (newLightingObjects, 0, sizeof (newLightingObjects));
 //	one or two segments if we notice light changing as gameData.objs.objects go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
 #if 0
-for (iRenderSeg = 0; iRenderSeg < nRenderSegs; iRenderSeg++) {
-	nSegment = nRenderList [iRenderSeg];
+for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
+	nSegment = gameData.render.mine.nRenderList [iRenderSeg];
 	nObject = gameData.segs.segments [nSegment].objects;
 
 	while (nObject != -1) {
@@ -867,13 +867,13 @@ return sum >> 3;
 // ----------------------------------------------------------------------------------------------
 
 tObject *oldViewer;
-int reset_lighting_hack;
+int bResetLightingHack;
 
 #define LIGHT_RATE i2f (4)		//how fast the light ramps up
 
 void StartLightingFrame (tObject *viewer)
 {
-reset_lighting_hack = (viewer != oldViewer);
+bResetLightingHack = (viewer != oldViewer);
 oldViewer = viewer;
 }
 
@@ -881,15 +881,15 @@ oldViewer = viewer;
 //compute the lighting for an tObject.  Takes a pointer to the tObject,
 //and possibly a rotated 3d point.  If the point isn't specified, the
 //object's center point is rotated.
-fix ComputeObjectLight (tObject *objP, vmsVector *rotated_pnt)
+fix ComputeObjectLight (tObject *objP, vmsVector *vRotated)
 {
 	fix light;
 	g3sPoint objpnt;
 	int nObject = OBJ_IDX (objP);
 
-if (!rotated_pnt) {
+if (!vRotated) {
 	G3TransformAndEncodePoint (&objpnt, &objP->position.vPos);
-	rotated_pnt = &objpnt.p3_vec;
+	vRotated = &objpnt.p3_vec;
 	}
 	//First, get static light for this tSegment
 if (gameOpts->render.bDynLighting && !gameOpts->ogl.bLightObjects) {
@@ -900,7 +900,7 @@ else
 	light = gameData.segs.segment2s [objP->nSegment].xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
-if (!reset_lighting_hack && (gameData.objs.nLightSig [nObject] == objP->nSignature)) {
+if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->nSignature)) {
 	fix xDeltaLight, xFrameDelta;
 
 	xDeltaLight = light - gameData.objs.xLight [nObject];
@@ -918,7 +918,7 @@ else {		//new tObject, initialize
 	gameData.objs.xLight [nObject] = light;
 	}
 //Next, add in headlight on this tObject
-// -- Matt code: light += compute_headlight_light (rotated_pnt,f1_0);
+// -- Matt code: light += compute_headlight_light (vRotated,f1_0);
 light += ComputeHeadlightLightOnObject (objP);
 //Finally, add in dynamic light for this tSegment
 light += ComputeSegDynamicLight (objP->nSegment);

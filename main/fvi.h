@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_FVI_SEGS 200
 
-typedef struct fvi_hit_info {
+typedef struct tFVIHitInfo {
 	int 			nType;						//what sort of intersection
 	short 		nSegment;					//what tSegment hit_pnt is in
 	short			nSegment2;
@@ -37,11 +37,11 @@ typedef struct fvi_hit_info {
 	vmsVector	vPoint;						//where we hit
 	vmsVector 	vNormal;						//if hit wall, ptr to its surface normal
 	int			nNestCount;
-} fvi_hit_info;
+} tFVIHitInfo;
 
 //this data structure gets filled in by FindVectorIntersection()
 typedef struct tFVIData {
-	fvi_hit_info	hit;
+	tFVIHitInfo	hit;
 	short 			nSegments;					//how many segs we went through
 	short 			segList [MAX_FVI_SEGS];	//list of segs vector went through
 } tFVIData;
