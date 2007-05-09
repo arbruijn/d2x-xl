@@ -422,21 +422,21 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawPlayer (tObject * objP, int bRadar)
+void DrawPlayer (tObject * objP)
 {
 	vmsVector	vArrowPos, vHeadPos;
 	g3sPoint	spherePoint, arrowPoint, headPoint;
-	int size = objP->size * (bRadar ? 2 : 1);
+	int size = objP->size * (gameStates.render.automap.bRadar ? 2 : 1);
 
 headPoint.p3_index =
 arrowPoint.p3_index =
 spherePoint.p3_index = -1;
 // Draw Console tPlayer -- shaped like a ellipse with an arrow.
 G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
-G3DrawSphere (&spherePoint, bRadar ? objP->size * 2 : objP->size, !bRadar);
-//G3DrawSphere3D (&spherePoint, bRadar ? 8 : 20, objP->size * (bRadar + 1));
+G3DrawSphere (&spherePoint, gameStates.render.automap.bRadar ? objP->size * 2 : objP->size, !gameStates.render.automap.bRadar);
+//G3DrawSphere3D (&spherePoint, gameStates.render.automap.bRadar ? 8 : 20, objP->size * (gameStates.render.automap.bRadar + 1));
 
-if (bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
+if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
 	return;
 // Draw shaft of arrow
 VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*3);
@@ -473,7 +473,7 @@ int automap_height = 480;
 #define RESCALE_X(x) ((x) * automap_width / 640)
 #define RESCALE_Y(y) ((y) * automap_height / 480)
 
-void DrawAutomap (int bRadar)
+void DrawAutomap (void)
 {
 	int			i, color, size;
 	tObject		*objP;
@@ -481,7 +481,7 @@ void DrawAutomap (int bRadar)
 	vmsMatrix	vmRadar;
 
 gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_MAP_ALL_CHEAT | PLAYER_FLAGS_MAP_ALL)) != 0;
-if (bRadar && gameStates.render.bTopDownRadar) {
+if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	vmsMatrix *po = &gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 	vmRadar.rVec.p.x = po->rVec.p.x;
 	vmRadar.rVec.p.y = po->rVec.p.y;
@@ -494,7 +494,7 @@ if (bRadar && gameStates.render.bTopDownRadar) {
 	vmRadar.uVec.p.z = po->fVec.p.z;
 	}
 GrClearCanvas (RGBA_PAL2 (0,0,0));
-if (!bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
+if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	WIN (DDGRLOCK (dd_grd_curcanv));
 	show_fullscr (&bmAutomapBackground);
 	GrSetCurFont (HUGE_FONT);
@@ -508,19 +508,19 @@ if (!bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	//GrUpdate (0);
 	}
-G3StartFrame (bRadar || !gameOpts->render.automap.bTextured, 0); //!bRadar);
-if (!bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
+G3StartFrame (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured, 0); //!gameStates.render.automap.bRadar);
+if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
 	OGL_VIEWPORT (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
-if (bRadar && gameStates.render.bTopDownRadar) {
+if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	VmVecScaleAdd (&amData.viewPos, &amData.viewTarget, &vmRadar.fVec, -amData.nViewDist);
 	G3SetViewMatrix (&amData.viewPos, &vmRadar, amData.nZoom * 2);
 	}
 else {
-	VmVecScaleAdd (&amData.viewPos, &amData.viewTarget, &amData.viewMatrix.fVec, bRadar ? -amData.nViewDist : -amData.nViewDist);
-	G3SetViewMatrix (&amData.viewPos, &amData.viewMatrix, bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom);
+	VmVecScaleAdd (&amData.viewPos, &amData.viewTarget, &amData.viewMatrix.fVec, gameStates.render.automap.bRadar ? -amData.nViewDist : -amData.nViewDist);
+	G3SetViewMatrix (&amData.viewPos, &amData.viewMatrix, gameStates.render.automap.bRadar ? (amData.nZoom * 3) / 2 : amData.nZoom);
 	}
-if (gameOpts->render.automap.bTextured) {
+if (!gameStates.render.automap.bRadar && gameOpts->render.automap.bTextured) {
 	gameData.render.mine.viewerEye = amData.viewPos;
 	RenderMine (gameData.objs.console->nSegment, 0, 0);
 	}
@@ -531,8 +531,8 @@ color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.mult
 GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g,playerColors [color].b));
 
 if (!gameOpts->render.automap.bTextured) {
-	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject, bRadar);
-	if (!bRadar) {
+	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject);
+	if (!gameStates.render.automap.bRadar) {
 		DrawMarkers ();
 		if ((gameData.marker.nHighlight > -1) && (gameData.marker.szMessage [gameData.marker.nHighlight][0] != 0)) {
 			char msg [10+MARKER_MESSAGE_LEN+1];
@@ -549,7 +549,7 @@ if (!gameOpts->render.automap.bTextured) {
 				if (gameData.objs.objects [gameData.multiplayer.players [i].nObject].nType == OBJ_PLAYER)	{
 					color = (gameData.app.nGameMode & GM_TEAM) ? GetTeam (i) : i;
 					GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
-					DrawPlayer (gameData.objs.objects + gameData.multiplayer.players [i].nObject, bRadar);
+					DrawPlayer (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
 					}
 				}
 			}
@@ -561,13 +561,13 @@ if (!gameOpts->render.automap.bTextured) {
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
 				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
-				G3DrawSphere (&spherePoint,size, !bRadar);	
+				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);	
 				break;
 
 			case OBJ_MONSTERBALL:
 				GrSetColorRGBi (automapColors.nMonsterball);
 				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
-				G3DrawSphere (&spherePoint,size, !bRadar);	
+				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);	
 				break;
 
 			case OBJ_ROBOT:
@@ -590,7 +590,7 @@ if (!gameOpts->render.automap.bTextured) {
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
 					G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
-					G3DrawSphere (&spherePoint, (size * 3) / 2, !bRadar);	
+					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);	
 					}
 				break;
 
@@ -615,14 +615,14 @@ if (!gameOpts->render.automap.bTextured) {
 							//Error ("Illegal key nType: %i", objP->id);
 						}
 					G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
-					G3DrawSphere (&spherePoint, size, !bRadar);	
+					G3DrawSphere (&spherePoint, size, !gameStates.render.automap.bRadar);	
 					}
 				break;
 			}
 		}
 	}
 G3EndFrame ();
-if (bRadar) {
+if (gameStates.render.automap.bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
 	}
@@ -760,8 +760,7 @@ extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
 				((amData.bHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0))?"MAPB.PCX":"MAP.PCX")
 #endif
 
-int InitAutomap (int bRadar, int bPauseGame, fix *pxEntryTime, 
-					  int *pnMaxSegsAway, int *pnSegmentLimit, vmsAngVec *pvTAngles)
+int InitAutomap (int bPauseGame, fix *pxEntryTime, int *pnMaxSegsAway, int *pnSegmentLimit, vmsAngVec *pvTAngles)
 {
 		int	nPCXError;
 		fix	t1, t2;
@@ -770,7 +769,7 @@ int InitAutomap (int bRadar, int bPauseGame, fix *pxEntryTime,
 gameStates.render.automap.bDisplay = 1;
 gameStates.ogl.nContrast = 8;
 InitAutomapColors ();
-if (bRadar || 
+if (gameStates.render.automap.bRadar || 
 	 ((gameData.app.nGameMode & GM_MULTI) && 
 	  (gameStates.app.nFunctionMode == FMODE_GAME) && 
 	  (!gameStates.app.bEndLevelSequence)))
@@ -778,9 +777,9 @@ if (bRadar ||
 if (bPauseGame)
 	PauseGame ();
 nMaxEdges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MAX_EDGES);			//make maybe smaller than max
-if (bRadar || (gameStates.video.nDisplayMode > 1)) {
+if (gameStates.render.automap.bRadar || (gameStates.video.nDisplayMode > 1)) {
 	//GrSetMode (gameStates.video.nLastScreenMode);
-	if (bRadar) {
+	if (gameStates.render.automap.bRadar) {
 		automap_width = grdCurCanv->cv_bitmap.bm_props.w;
 		automap_height = grdCurCanv->cv_bitmap.bm_props.h;
 		}
@@ -795,20 +794,20 @@ else {
 	amData.bHires = 0;
 	}
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && amData.bHires;
-if (!bRadar) {
+if (!gameStates.render.automap.bRadar) {
 	CreateNameCanv ();
 	GrPaletteStepClear ();
 	}
-if (!bRadar) {
+if (!gameStates.render.automap.bRadar) {
 	GrInitBitmapData (&bmAutomapBackground);
 	nPCXError = PCXReadBitmap (MAP_BACKGROUND_FILENAME, &bmAutomapBackground, BM_LINEAR, 0);
 	if (nPCXError != PCX_ERROR_NONE)
 		Error ("File %s - PCX error: %s", MAP_BACKGROUND_FILENAME, pcx_errormsg (nPCXError));
 	GrRemapBitmapGood (&bmAutomapBackground, NULL, -1, -1);
 	}
-if (bRadar || !gameOpts->render.automap.bTextured)
+if (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured)
 	AutomapBuildEdgeList ();
-if (bRadar)
+if (gameStates.render.automap.bRadar)
 	amData.nViewDist = ZOOM_DEFAULT;
 else if (!amData.nViewDist)
 	amData.nViewDist = ZOOM_DEFAULT;
@@ -823,8 +822,8 @@ amData.viewTarget = playerP->position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
 //Fill in bAutomapVisited from gameData.objs.objects [LOCALPLAYER.nObject].nSegment
-if (bRadar) {
-#ifndef _DEBUG
+if (gameStates.render.automap.bRadar) {
+#if 1//ndef _DEBUG
 	if (!IsMultiGame)
 		memcpy (bRadarVisited, bAutomapVisited, sizeof (bRadarVisited));
 #endif
@@ -836,8 +835,8 @@ if (bRadar) {
 		gameData.objs.objects [LOCALPLAYER.nObject].nSegment, 
 		bAutomapVisited);
 AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
-#ifndef _DEBUG
-if (bRadar && !IsMultiGame)
+#if 1//ndef _DEBUG
+if (gameStates.render.automap.bRadar && !IsMultiGame)
 	memcpy (bAutomapVisited, bRadarVisited, sizeof (bRadarVisited));
 #endif
 return bPauseGame;
@@ -1031,10 +1030,11 @@ void DoAutomap (int nKeyCode, int bRadar)
 
 	//static ubyte	automapPal [256*3];
 
-bPauseGame = InitAutomap (bRadar, bPauseGame, &xEntryTime, &nMaxSegsAway, &nSegmentLimit, &vTAngles);
+gameStates.render.automap.bRadar = bRadar;
+bPauseGame = InitAutomap (bPauseGame, &xEntryTime, &nMaxSegsAway, &nSegmentLimit, &vTAngles);
 bRedrawScreen = 0;
 if (bRadar) {
-	DrawAutomap (1);
+	DrawAutomap ();
 	gameStates.ogl.nContrast = nContrast;
 	gameStates.render.automap.bDisplay = 0;
 	return;
@@ -1049,7 +1049,7 @@ while (!bDone)	{
 	SongsCheckRedbookRepeat ();
 	bDone = AMReadControls (nLeaveMode, bDone, &bPauseGame, &nMaxSegsAway, &nSegmentLimit);
 	UpdateAutomap (&vTAngles);
-	DrawAutomap (0);
+	DrawAutomap ();
 	if (bFirstTime) {
 		bFirstTime = 0;
 		GrPaletteStepLoad (NULL);

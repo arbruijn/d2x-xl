@@ -563,6 +563,7 @@ typedef struct tRenderDetail {
 typedef struct tAutomapStates {
 	int bDisplay;
 	int bFull;
+	int bRadar;
 	} tAutomapStates;
 
 typedef struct tRenderStates {

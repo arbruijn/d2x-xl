@@ -1944,7 +1944,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 			dot = VmVecDotf (&vNormal, &v);
 			if (dot >= 0)
 				continue;
-			glColor4f (colorP->red, colorP->green, colorP->blue, alpha * sqrt (-dot));
+			glColor4f (colorP->red, colorP->green, colorP->blue, alpha * (float) sqrt (-dot));
 			glBegin (GL_QUADS);
 			for (j = 0; j < 4; j++) {
 				VmVecSubf (&v, quad + j, &vCenter);
@@ -2172,7 +2172,8 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
-	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.66f, 0, 4, 0);
+	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 
+							  (objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID));
 	}
 }
 
@@ -2408,16 +2409,29 @@ return 1;
 
 void DrawDebrisCorona (tObject *objP)
 {
-	static	tRgbColorf	debrisGlow = {1, 0, 0};
+	static	tRgbColorf	debrisGlow = {0.66f, 0, 0};
+	static	time_t t0 = 0;
 
 if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
-#ifdef _DEBUG
-		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 2, 1);
+#if 0//def _DEBUG
+		if (gameStates.app.nSDLTicks - t0 > 50) {
+			t0 = gameStates.app.nSDLTicks;
+			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
+			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
+			}
+		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 1.5f, 1);
 #else
+	if (h < 0)
+		h = 0;
 	if (h < 10) {
 		h = (10 - h) / 20.0f;
-		RenderObjectCorona (objP, &debrisGlow, h * h, 5 * objP->size / 2, 2, 1);
+		if (gameStates.app.nSDLTicks - t0 > 50) {
+			t0 = gameStates.app.nSDLTicks;
+			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
+			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
+			}
+		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1);
 		}
 #endif
 	}
@@ -2598,6 +2612,7 @@ switch (objP->renderType) {
 			else
 				DrawWeaponVClip (objP); 
 #ifdef _DEBUG
+			if (EGI_FLAG (bRenderShield, 0, 1, 0))
 				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #endif
 			}

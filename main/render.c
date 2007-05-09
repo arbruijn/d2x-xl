@@ -3676,7 +3676,7 @@ memset (gameData.render.mine.nRenderList, 0xff, sizeof (gameData.render.mine.nRe
 memset(visited2, 0, sizeof(visited2 [0])*(gameData.segs.nLastSegment+1));
 #endif
 
-if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured) {
+if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
 		if (gameStates.render.automap.bFull || bAutomapVisited [i]) {
 			gameData.render.mine.nRenderList [gameData.render.mine.nRenderSegs++] = i;
@@ -4236,7 +4236,7 @@ if ((nSegment != -1) && (gameStates.render.automap.bDisplay ? gameStates.render.
 	SetNearestDynamicLights (nSegment);
 	RenderSegment (nSegment, gameStates.render.nWindow);
 	VISIT (nSegment);
-	if (gameStates.render.nType == 0)
+	if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
 		bAutomapVisited [nSegment] = bSetAutomapVisited;
 	else if (gameStates.render.nType == 1) {
 		SetNearestStaticLights (nSegment, 1);

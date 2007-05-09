@@ -872,7 +872,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_RADAR_HEADSUP:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
 				DoCockpitWindowView (w, gameData.objs.console, 0, 
-					(Cockpit_3dView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "RADAR");
+					(Cockpit_3dView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
 			else
 				Cockpit_3dView [w] = CV_NONE;
 			break;

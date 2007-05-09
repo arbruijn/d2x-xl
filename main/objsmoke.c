@@ -400,7 +400,7 @@ else
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts / 2,
-																-PARTICLE_SIZE (3, 1), -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
+																-PARTICLE_SIZE (3, 2), -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i);
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
