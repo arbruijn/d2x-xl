@@ -347,7 +347,7 @@ return bMultiFlag;
 					extraGameInfo [1]._bFlag ? \
 						_bLocal ? \
 							extraGameInfo [0]._bFlag \
-							: 1 \
+							: extraGameInfo [1]._bFlag \
 						: 0 \
 					: _bDefault \
 				: extraGameInfo [0]._bFlag)

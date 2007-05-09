@@ -1692,10 +1692,11 @@ void LoadGameTexts(void);
 #define TXT_RADAR_RANGE				GT(899)
 #define TXT_AUTOMAP_SMOKE			GT(900)
 #define TXT_DEBRIS_LIFE				GT(901)
+#define TXT_RADAR_POWERUPS			GT(902)
+#define TXT_AUTOMAP_NO_POWERUPS	GT(903)
 
 #if 0
 
-#define TXT_				GT(902)
 #define TXT_				GT(903)
 #define TXT_				GT(904)
 #define TXT_				GT(905)

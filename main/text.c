@@ -761,8 +761,8 @@ char *defaultGameTexts [][2] = {
 	{"Skalen blinken wenn fast ~Leer", "Flash gauges on low values"},
 	{"~Raketensicht zeigen", "Show MIssile View"},
 	{"~Vollbild-Lenkraketensicht", "~Fullscreen Guided Missile View"},
-	{"~Powerups in Uebersichtskarte zeigen", "Show ~Powerups on automap"},
-	{"~Robots in Uebersichtskarte zeigen", "Show ~Robots on automap"},
+	{"~Powerups auf Uebersichtskarte zeigen", "Show ~Powerups on automap"},
+	{"~Robots auf Uebersichtskarte zeigen", "Show ~Robots on automap"},
 	{"~Waffensymbole anzeigen", "show Weapon icons"},
 	{"~Ausruestungssymbole anzeigen", "show eQuipment icons"},
 	{"~Kleine Waffensymbole", "small Weapon Icons"},
@@ -1651,6 +1651,8 @@ char *defaultGameTexts [][2] = {
 	{"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
 	{"R~Auch zeichnen", "render ~Smoke"},
 	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d sec"},
+	{"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},
+	{"~Keine Powerups anzeigen", "~Don't show powerups"},
 #if 0
 	{"", ""},
 #endif

@@ -2420,7 +2420,7 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 1.5f, 1);
+		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 2, 1);
 #else
 	if (h < 0)
 		h = 0;
@@ -2431,7 +2431,7 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1);
+		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 2, 1);
 		}
 #endif
 	}
@@ -2526,7 +2526,7 @@ switch (objP->renderType) {
 			SetRobotLocationInfo (objP);
 			}
 		else if (objP->nType == OBJ_WEAPON) {
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			DrawPolygonObject (objP);
 			if (bIsMissile [objP->id]) {
@@ -2555,7 +2555,7 @@ switch (objP->renderType) {
 			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
 				DrawPolygonObject (objP);
@@ -2602,7 +2602,7 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
-			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
+			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (objP->nType == OBJ_WEAPON) {
 				if (!DoObjectSmoke (objP))
@@ -2626,7 +2626,7 @@ switch (objP->renderType) {
 		break;
 
 	case RT_POWERUP:
-		if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS)
+		if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 			return 0;
 		if (gameStates.render.nType != 1)
 			return 0;

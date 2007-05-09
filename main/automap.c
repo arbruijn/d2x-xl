@@ -595,7 +595,7 @@ if (!gameOpts->render.automap.bTextured) {
 				break;
 
 			case OBJ_POWERUP:
-				if (AM_SHOW_POWERUPS && 
+				if (AM_SHOW_POWERUPS (1) && 
 					(gameStates.render.bAllVisited || bAutomapVisited [objP->nSegment]))	{
 					switch (objP->id) {
 						case POW_KEY_RED:		

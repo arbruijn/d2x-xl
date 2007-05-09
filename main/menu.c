@@ -1903,10 +1903,17 @@ do {
 		optSmoke =
 		optCoronas =
 		optBright = -1;
-	ADD_CHECK (opt, TXT_AUTOMAP_POWERUPS, extraGameInfo [0].bPowerupsOnRadar, KEY_P, HTX_AUTOMAP_POWERUPS);
-	optShowPowerups = opt++;
 	ADD_CHECK (opt, TXT_AUTOMAP_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_R, HTX_AUTOMAP_ROBOTS);
 	optShowRobots = opt++;
+	ADD_RADIO (opt, TXT_AUTOMAP_NO_POWERUPS, 0, KEY_D, 3, HTX_AUTOMAP_POWERUPS);
+	optShowPowerups = opt++;
+	ADD_RADIO (opt, TXT_AUTOMAP_POWERUPS, 0, KEY_P, 3, HTX_AUTOMAP_POWERUPS);
+	opt++;
+	if (extraGameInfo [0].nRadar) {
+		ADD_RADIO (opt, TXT_RADAR_POWERUPS, 0, KEY_A, 3, HTX_AUTOMAP_POWERUPS);
+		opt++;
+		}
+	m [optShowPowerups + extraGameInfo [0].bPowerupsOnRadar].value = 1;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_RADIO (opt, TXT_RADAR_OFF, 0, KEY_R, 1, HTX_AUTOMAP_RADAR);
@@ -1948,6 +1955,11 @@ do {
 		gameOpts->render.automap.nRange = m [nOptRadarRange].value;
 	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optShowRobots].value;
+	for (j = 0; j < 2 + extraGameInfo [0].nRadar; j++)
+		if (m [optShowPowerups + j].value) {
+			extraGameInfo [0].bPowerupsOnRadar = j;
+			break;
+			}
 	for (j = 0; j < 3; j++)
 		if (m [nOptRadar + j].value) {
 			extraGameInfo [0].nRadar = j;

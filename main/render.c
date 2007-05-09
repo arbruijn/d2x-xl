@@ -1261,7 +1261,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 				RenderRadarBlip (objP, robotColor.red, robotColor.green, robotColor.blue, 0.9 / 4);
 		}
 	else if (objP->nType == OBJ_POWERUP) {
-		if (AM_SHOW_POWERUPS)
+		if (AM_SHOW_POWERUPS (2))
 			RenderRadarBlip (objP, powerupColor.red, powerupColor.green, powerupColor.blue, 0.9 / 4);
 		}
 	}

@@ -635,7 +635,7 @@ switch (objP->nType) {
 
 					if ((gameData.time.xGame > Last_volatile_scrapeSoundTime + F1_0/4) || 
 						 (gameData.time.xGame < Last_volatile_scrapeSoundTime)) {
-						short sound = (nType==1)?SOUND_VOLATILE_WALL_HISS:SOUND_SHIP_IN_WATER;
+						short sound = (nType == 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
 
 						Last_volatile_scrapeSoundTime = gameData.time.xGame;
 
@@ -922,7 +922,7 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 	//we've hit a volatile wall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, hitseg, 0, vHitPt, 0, F1_0);
 	//for most weapons, use volatile wall hit.  For mega, use its special tVideoClip
-	tVideoClip = (weaponP->id == MEGAMSL_ID)?wInfoP->robot_hit_vclip:VCLIP_VOLATILE_WALL_HIT;
+	tVideoClip = (weaponP->id == MEGAMSL_ID) ? wInfoP->robot_hit_vclip : VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
 	if (wInfoP->damage_radius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
 		ExplodeBadassWeapon (weaponP, vHitPt);
@@ -1050,6 +1050,7 @@ if (gameOpts->render.nDebrisLife) {
 	if (debris == dbgObjP)
 		HUDMessage (0, "reflecting debris");
 	VmVecReflect (&debris->mType.physInfo.velocity, &vDir, &vNormal);
+	DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, F1_0 / 3);
 	}
 else
 	ExplodeObject (debris, 0);

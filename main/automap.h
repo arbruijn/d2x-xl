@@ -28,5 +28,5 @@ void DropBuddyMarker(tObject *objp);
 										 (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
 										 (GetTeam (gameData.multiplayer.nLocalPlayer) == GetTeam (_i)))
 #define AM_SHOW_ROBOTS			EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
-#define AM_SHOW_POWERUPS		(EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) && !IsMultiGame)
+#define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && !IsMultiGame)
 #endif
