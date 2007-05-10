@@ -443,7 +443,7 @@ int LastKillGoal;
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight, optPlayersOnMap;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optFriendlyInd, optHitInd;
+int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optTrkGoalInd, optFriendlyInd, optHitInd;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
@@ -797,8 +797,10 @@ do {
 			optFriendlyInd = -1;
 		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 		optDmgInd = opt++;
+		ADD_CHECK (opt, TXT_TRKGOAL_INDICATOR, extraGameInfo [1].bTrackGoalIndicators, KEY_G, HTX_CPIT_TRKGOALIND);
+		optTrkGoalInd = opt++;
 		if (extraGameInfo [1].bTargetIndicators || extraGameInfo [1].bDamageIndicators) {
-			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
+			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
 			optHitInd = opt++;
 			}
 		else {
@@ -811,7 +813,8 @@ do {
 		}
 	else
 		optTgtInd =
-		optDmgInd = -1;
+		optDmgInd =
+		optTrkGoalInd = -1;
 	i = ExecMenu1 (NULL, TXT_D2XOPTIONS_TITLE, opt, m, NetworkD2XOptionsPoll, &choice);
   //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
@@ -850,7 +853,8 @@ do {
 			GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
 			}
 		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
-		GET_VAL (extraGameInfo [1].bHitIndicators, optHitInd);
+		GET_VAL (extraGameInfo [1].bTrackGoalIndicators, optTrkGoalInd);
+		GET_VAL (extraGameInfo [1].bTagOnlyHitObjs, optHitInd);
 		}
 	} while (i == -2);
 }
@@ -1533,7 +1537,8 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bTargetIndicators = 0;
 	extraGameInfo [1].bFriendlyIndicators = 0;
 	extraGameInfo [1].bDamageIndicators = 0;
-	extraGameInfo [1].bHitIndicators = 0;
+	extraGameInfo [1].bTrackGoalIndicators = 0;
+	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
 netGame.szMissionName [sizeof (netGame.szMissionName) - 1] = '\0';
 strcpy (netGame.szMissionTitle, gameData.missions.list [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0));
@@ -2516,6 +2521,7 @@ else
 		ADDFLAG (AXI.nWeaponIcons != 0, "Icons");
 		ADDFLAG (!AXI.bCompetition && AXI.bTargetIndicators, "Tgt indicators");
 		ADDFLAG (!AXI.bCompetition && AXI.bDamageIndicators, "Dmg indicators");
+		ADDFLAG (!AXI.bCompetition && AXI.bTrackGoalIndicators, "Trk indicators");
 		}
 	else
 		strcat (mTexts [opt], "HUD extensions: None");
@@ -2523,6 +2529,7 @@ else
 	if (!AXI.bCompetition && AXI.bRadarEnabled) {
 		INITFLAGS ("Radar: ");
 		ADDFLAG ((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0, "Players");
+		ADDFLAG (AXI.nRadar, "Radar");
 		ADDFLAG (AXI.bPowerupsOnRadar, "Powerups");
 		ADDFLAG (AXI.bRobotsOnRadar, "Robots");
 		}
@@ -2550,7 +2557,6 @@ else
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
 		ADDFLAG (AXI.bShootMissiles, "shoot msls");
 		ADDFLAG (AXI.nHitboxes, "hit boxes");
-		ADDFLAG (AXI.nRadar, "radar");
 		}
 	else
 		strcat (mTexts [opt], "Gameplay ext.: None");

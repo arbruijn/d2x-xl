@@ -1169,6 +1169,10 @@ if (flags & FQ_CHECK_OBJS) {
 	//LogErr ("   checking objects...");
 	nObjSegList [0] = nStartSeg;
 	nObjSegs = 1;
+#	ifdef _DEBUG
+	if ((thisObjP->nType == OBJ_WEAPON) && (thisObjP->nSegment == gameData.objs.console->nSegment))
+		flags = flags;
+#	endif
 #if 1
 	segP = gameData.segs.segments + nStartSeg;
 	for (iObjSeg = 0; iObjSeg < 6; iObjSeg++) {
@@ -1184,11 +1188,6 @@ if (flags & FQ_CHECK_OBJS) {
 		segP = gameData.segs.segments + nObjSegList [iObjSeg];
 		for (nObject = segP->objects; nObject != -1; nObject = otherObjP->next) {
 			otherObjP = gameData.objs.objects + nObject;
-#	ifdef _DEBUG
-			if ((thisObjP->nType == OBJ_WEAPON) && (otherObjP->nType == OBJ_WEAPON) && 
-				bIsMissile [otherObjP->id] && !bIsMissile [thisObjP->id])
-				nObject = nObject;
-#	endif
 			nOtherType = otherObjP->nType;
 			if (otherObjP->flags & OF_SHOULD_BE_DEAD)
 				continue;

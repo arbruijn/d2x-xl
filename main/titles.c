@@ -585,7 +585,7 @@ void show_briefing_bitmap (grsBitmap *bmp)
 bitmap_canv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->bm_props.w, bmp->bm_props.h);
 curCanvSave = grdCurCanv;
 GrSetCurrentCanvas (bitmap_canv);
-GrBitmapM (0, 0, bmp);
+GrBitmapM (0, 0, bmp, 0);
 GrSetCurrentCanvas (curCanvSave);
 d_free (bitmap_canv);
 }

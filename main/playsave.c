@@ -82,7 +82,7 @@ hli highestLevels [MAX_MISSIONS];
 #define COMPATIBLE_PLAYER_FILE_VERSION    17
 #define D2W95_PLAYER_FILE_VERSION			24
 #define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					158	//increment this every time the tPlayer file changes
+#define PLAYER_FILE_VERSION					159	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -758,7 +758,7 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 128)
 		gameOptions [j].render.smoke.bDisperse = (int) CFReadByte (fp);
 	if (player_file_version >= 129)
-		extraGameInfo [j].bHitIndicators = (int) CFReadByte (fp);
+		extraGameInfo [j].bTagOnlyHitObjs = (int) CFReadByte (fp);
 	if (player_file_version >= 130)
 		for (i = 0; i < 4; i++)
 			gameOptions [j].render.smoke.nLife [i] = CFReadInt (fp);
@@ -838,6 +838,10 @@ for (j = 0; j < 2; j++) {
 		gameOptions [j].render.automap.bSmoke = (int) CFReadByte (fp);
 	if (player_file_version >= 158)
 		gameOptions [j].render.nDebrisLife = CFReadInt (fp);
+	if (player_file_version >= 159) {
+		extraGameInfo [j].bTrackGoalIndicators = CFReadByte (fp);
+		gameOpts->render.cockpit.bRotateIndicators = CFReadByte (fp);
+		}
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
@@ -1236,7 +1240,7 @@ for (j = 0; j < 2; j++) {
 		CFWriteByte (extraGameInfo [j].bShockwaves, fp);
 		}
 	CFWriteByte (gameOptions [j].render.smoke.bDisperse, fp);
-	CFWriteByte (extraGameInfo [j].bHitIndicators, fp);
+	CFWriteByte (extraGameInfo [j].bTagOnlyHitObjs, fp);
 	for (i = 0; i < 4; i++)
 		CFWriteInt (gameOptions [j].render.smoke.nLife [i], fp);
 	CFWriteByte (gameOptions [j].render.shadows.bRobots, fp);
@@ -1280,6 +1284,8 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) gameOptions [j].render.automap.nRange, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.automap.bSmoke, fp);
 	CFWriteInt (gameOptions [j].render.nDebrisLife, fp);
+	CFWriteByte ((sbyte) extraGameInfo [j].bTrackGoalIndicators, fp);
+	CFWriteByte ((sbyte) gameOpts->render.cockpit.bRotateIndicators, fp);
 // end of D2X-XL stuff
 	}
 

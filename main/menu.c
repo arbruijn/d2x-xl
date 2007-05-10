@@ -1372,7 +1372,7 @@ last_key++;		//kill warning
 //------------------------------------------------------------------------------
 
 static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, 
-				optIconAlpha, optTgtInd, optDmgInd, optHitInd;
+				optIconAlpha, optTgtInd, optDmgInd, optHitInd, optTrkGoalInd;
 
 static char *szCWS [4];
 
@@ -1401,15 +1401,22 @@ if (v != extraGameInfo [0].bDamageIndicators) {
 	*key = -2;
 	return;
 	}
+m = menus + optTrkGoalInd;
+v = m->value;
+if (v != extraGameInfo [0].bTrackGoalIndicators) {
+	extraGameInfo [0].bTrackGoalIndicators = v;
+	*key = -2;
+	return;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void TgtIndOptionsMenu ()
 {
-	tMenuItem m [10];
+	tMenuItem m [15];
 	int	i, j, opt, choice = 0;
-	int	optCloakedInd;
+	int	optCloakedInd, optRotateInd;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1431,15 +1438,19 @@ do {
 	ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [0].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 	optDmgInd = opt++;
 	if (extraGameInfo [0].bTargetIndicators || extraGameInfo [0].bDamageIndicators) {
-		ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [0].bHitIndicators, KEY_T, HTX_HIT_INDICATOR);
+		ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [0].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
 		optHitInd = opt++;
 		}
 	else
 		optHitInd = -1;
-	if (bShowWeaponIcons && gameOpts->app.bExpertMode) {
-		ADD_TEXT (opt, "", 0);
-		opt++;
+	ADD_CHECK (opt, TXT_TRKGOAL_INDICATOR, extraGameInfo [0].bTrackGoalIndicators, KEY_G, HTX_CPIT_TRKGOALIND);
+	optTrkGoalInd = opt++;
+	if (extraGameInfo [0].bTrackGoalIndicators) {
+		ADD_CHECK (opt, TXT_ROTATE_INDICATORS, gameOpts->render.cockpit.bRotateIndicators, KEY_R, HTX_ROTATE_INDICATORS);
+		optRotateInd = opt++;
 		}
+	else
+		optRotateInd = -1;
 	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, TXT_TGTIND_MENUTITLE, opt, m, &TgtIndOptionsCallback, &choice);
@@ -1453,7 +1464,9 @@ do {
 		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
 		}
 	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
-	GET_VAL (extraGameInfo [0].bHitIndicators, optHitInd);
+	GET_VAL (extraGameInfo [0].bTrackGoalIndicators, optTrkGoalInd);
+	GET_VAL (gameOpts->render.cockpit.bRotateIndicators, optRotateInd);
+	GET_VAL (extraGameInfo [0].bTagOnlyHitObjs, optHitInd);
 	} while (i == -2);
 }
 
@@ -1876,7 +1889,7 @@ if (nOptRadarRange >= 0) {
 
 void AutomapOptionsMenu ()
 {
-	tMenuItem m [15];
+	tMenuItem m [20];
 	int	i, j, choice = 0;
 	int	opt;
 	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optColor;

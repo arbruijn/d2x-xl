@@ -211,6 +211,7 @@ for (i = 0; i < nv; i++) {
 	VmVecScaleAdd (&normal.p3_vec, &pointList [i]->p3_vec, &n, F1_0 * 10);
 	G3DrawLine (pointList [i], &normal);
 	}
+#if 0
 VmVecNormal (&normal.p3_vec, 
 				 &pointList [0]->p3_vec, 
 				 &pointList [1]->p3_vec, 
@@ -218,6 +219,7 @@ VmVecNormal (&normal.p3_vec,
 VmVecInc (&normal.p3_vec, &center.p3_vec);
 VmVecScale (&normal.p3_vec, F1_0 * 10);
 G3DrawLine (&center, &normal);
+#endif
 glDepthFunc (depthFunc);
 }
 
@@ -1507,7 +1509,7 @@ VmVecScalef (&o, &o, 0.1f);
 for (i = 0; i < 4; i++)
 	VmVecIncf (sprite + i, &o);
 
-if (OglBindBmTex (bmpCorona, -1)) 
+if (OglBindBmTex (bmpCorona, 1, -1)) 
 	return;
 OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 pf = gameData.render.color.textures + t;
@@ -3058,7 +3060,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 glEnable (GL_TEXTURE_2D);
 OglActiveTexture (GL_TEXTURE0_ARB);
-if (OglBindBmTex (&shadowBuf, 0))
+if (OglBindBmTex (&shadowBuf, 0, 0))
 	return;
 glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 #if 0
@@ -4099,6 +4101,44 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 #endif
 
+// -----------------------------------------------------------------------------
+
+int AllowedToFireMissile (void);
+
+void GetPlayerTrackGoal (void)
+{
+	int			nWeapon, nObject, nGun, h, i, j;
+	vmsVector	vGunPos;
+	vmsMatrix	m;
+
+gameData.objs.trackGoals [0] =
+gameData.objs.trackGoals [1] = NULL;
+if (!AllowedToFireMissile ())
+	return;
+if (!EGI_FLAG (bTrackGoalIndicators, 0, 1, 0) || COMPETITION)
+	return;
+if (gameStates.app.bPlayerIsDead)
+	return;
+nWeapon = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] <= 0)
+	return;
+if (!gameStates.app.cheats.bHomingWeapons &&
+	 (nWeapon != HOMINGMSL_ID) && (nWeapon != MEGAMSL_ID) && (nWeapon != GUIDEDMSL_ID))
+	return;
+//pnt = gameData.pig.ship.player->gunPoints [nGun];
+j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
+h = gameData.laser.nMissileGun & 1;
+VmCopyTransposeMatrix (&m, &gameData.objs.console->position.mOrient);
+for (i = 0; i < j; i++, h = !h) {
+	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
+	vGunPos = gameData.pig.ship.player->gunPoints [nGun];
+	VmVecRotate (&vGunPos, &vGunPos, &m);
+	VmVecInc (&vGunPos, &gameData.objs.console->position.vPos);
+	nObject = FindHomingObject (&vGunPos, gameData.objs.console);
+	gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	}
+}
+
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
@@ -4109,6 +4149,7 @@ int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 	int		i;
 #endif
 
+GetPlayerTrackGoal ();
 windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;
@@ -4291,8 +4332,10 @@ if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (game
 		}
 	glDepthFunc (GL_LESS);
 	RenderRadar ();
-	if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bSmoke)
-		RenderSmoke ();
+	if (gameStates.render.automap.bDisplay) {
+		if (gameOpts->render.automap.bSmoke)
+			RenderSmoke ();
+		}
 	}
 }
 

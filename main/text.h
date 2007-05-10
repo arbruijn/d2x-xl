@@ -1694,12 +1694,11 @@ void LoadGameTexts(void);
 #define TXT_DEBRIS_LIFE				GT(901)
 #define TXT_RADAR_POWERUPS			GT(902)
 #define TXT_AUTOMAP_NO_POWERUPS	GT(903)
+#define TXT_TRKGOAL_INDICATOR		GT(904)
+#define TXT_ROTATE_INDICATORS		GT(905)
 
 #if 0
 
-#define TXT_				GT(903)
-#define TXT_				GT(904)
-#define TXT_				GT(905)
 #define TXT_				GT(906)
 #define TXT_				GT(907)
 #define TXT_				GT(908)
@@ -2181,11 +2180,11 @@ void LoadGameTexts(void);
 #define HTX_RADAR_RANGE				HT(266)				
 #define HTX_AUTOMAP_SMOKE			HT(267)				
 #define HTX_DEBRIS_LIFE				HT(268)				
+#define HTX_CPIT_TRKGOALIND		HT(269)				
+#define HTX_ROTATE_INDICATORS		HT(270)				
 
 #if 0
 				
-#define HTX_					HT(269)				
-#define HTX_					HT(270)				
 #define HTX_					HT(271)				
 #define HTX_					HT(272)				
 #define HTX_					HT(273)				

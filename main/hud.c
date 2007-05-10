@@ -114,7 +114,7 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 void HUDModexMessage (int x, int y, char *s, grs_font *font, unsigned int color)
 {
 grs_canvas *temp_canv = PrintToCanvas (s, font, color, 0, 1);
-GrBitmapM (x, y, &temp_canv->cv_bitmap);
+GrBitmapM (x, y, &temp_canv->cv_bitmap, 2);
 GrFreeCanvas (temp_canv);
 }
 

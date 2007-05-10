@@ -1653,6 +1653,8 @@ char *defaultGameTexts [][2] = {
 	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d sec"},
 	{"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},
 	{"~Keine Powerups anzeigen", "~Don't show powerups"},
+	{"~Zielsuch-Anzeige", "show track ~Goal indicator"},
+	{"Zielsuch-Anzeige ~Rotieren", "~Rotate track goal indicator"},
 #if 0
 	{"", ""},
 #endif
@@ -2163,6 +2165,7 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann man einstellen, wie weit das Radar reicht.", "Here you can adjust the radar's range."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Rauch-\neffekte dargestellt werden.", "Check to have smoke effects rendered in the textured automap."},
 	{"Abhaengig von der hier vorgenommenen Einstellungen verbleiben\nExplosionstruemmer laenger und treiben herum.", "Depending on the setting made here, debris from explosions\nwill stay longer and keep floating around."},
+	{"Wenn angekreuzt, rotiert die Zielsuch-Anzeige langsam um\ndas Ziel.", "If checked the track goal indicator will rotate slowly around\nthe target."},
 #if 0
 	{"", ""},
 #endif

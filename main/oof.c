@@ -2292,7 +2292,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
 		if (bmP->glTexture && (bmP->glTexture->handle < 0))
 			bmP->glTexture->handle = 0;
-		if (OglBindBmTex (bmP, 0))
+		if (OglBindBmTex (bmP, 1, 0))
 			return 0;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
 		if (pso->nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {

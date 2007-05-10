@@ -304,7 +304,7 @@ if (sdP->nFaceNodes == 3)
 else if (bmP) {
 	OglActiveTexture (GL_TEXTURE0_ARB);
 	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmP, 1))
+	if (OglBindBmTex (bmP, 1, 1))
 		bmP = NULL;
 	else if (BM_CURFRAME (bmP))
 		bmP = BM_CURFRAME (bmP);

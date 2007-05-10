@@ -98,6 +98,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LIMIT_PHYSICS_FPS	0
 
+#define IS_TRACK_GOAL(_objP)	(((_objP) == gameData.objs.trackGoals [0]) || ((_objP) == gameData.objs.trackGoals [1]))
+
 extern vmsVector playerThrust;
 extern int bSpeedBost;
 
@@ -1119,6 +1121,133 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
+static tRgbColorf	trackGoalColor = {1, 0.5f, 0};
+static int	nTrackGoalColor = 0;
+static int	nTrackGoalColorIncr = -1;
+
+void RenderTrackGoalIndicator (tObject *objP)
+{
+	#define INDICATOR_POSITIONS	60
+
+	static tSinCosd	sinCosInd [INDICATOR_POSITIONS];
+	static int			bInitSinCos = 1;
+	static int			nTrackGoalIndPos = 0;
+	static time_t		t0 = 0;
+
+	fVector				fPos, fVerts [3];
+	float					r, r2;
+	int					nTgtInd, bHasDmg;
+
+if (!EGI_FLAG (bTrackGoalIndicators, 0, 1, 0))
+	return;
+if (!IS_TRACK_GOAL (objP))
+	return;
+if (gameStates.app.nSDLTicks - t0 > 25) {
+	t0 = gameStates.app.nSDLTicks;
+	if (!nTrackGoalColor || (nTrackGoalColor == 15))
+		nTrackGoalColorIncr = -nTrackGoalColorIncr;
+	nTrackGoalColor += nTrackGoalColorIncr;
+	trackGoalColor.green = 0.65f + (float) nTrackGoalColor / 100.0f;
+	nTrackGoalIndPos = (nTrackGoalIndPos + 1) % INDICATOR_POSITIONS;
+	}
+VmsVecToFloat (&fPos, &objP->position.vPos);
+G3TransformPointf (&fPos, &fPos, 0);
+r = f2fl (objP->size);
+r2 = r / 4;
+
+glDisable (GL_CULL_FACE);
+glEnableClientState (GL_VERTEX_ARRAY);
+glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
+if (gameOpts->render.cockpit.bRotateIndicators) {
+	fVector	rotVerts [3];
+	fMatrix	m;
+	int		i, j;
+
+	if (bInitSinCos) {
+		OglComputeSinCos (sizeofa (sinCosInd), sinCosInd);
+		bInitSinCos = 0;
+		}
+	m.rVec.p.x =
+	m.uVec.p.y = (float) sinCosInd [nTrackGoalIndPos].dCos;
+	m.uVec.p.x = (float) sinCosInd [nTrackGoalIndPos].dSin;
+	m.rVec.p.y = -m.uVec.p.x;
+	m.rVec.p.z =
+	m.uVec.p.z =
+	m.fVec.p.x = 
+	m.fVec.p.y = 0;
+	m.fVec.p.z = 1;
+
+	fVerts [0].p.z =
+	fVerts [1].p.z =
+	fVerts [2].p.z = 0;
+	rotVerts [0].p.w = 
+	rotVerts [1].p.w = 
+	rotVerts [2].p.w = 1;
+	fVerts [0].p.x = -r2;
+	fVerts [1].p.x = +r2;
+	fVerts [2].p.x = 0;
+	fVerts [0].p.y = 
+	fVerts [1].p.y = +r;
+	fVerts [2].p.y = +r - r2;
+	glVertexPointer (4, GL_FLOAT, 0, rotVerts);
+	for (j = 0; j < 4; j++) {
+		for (i = 0; i < 3; i++) {
+			VmVecRotatef (rotVerts + i, fVerts + i, &m);
+			fVerts [i] = rotVerts [i];
+			VmVecIncf (rotVerts + i, &fPos);
+			}	
+		glDrawArrays (GL_TRIANGLES, 0, 3);
+		if (!j) {	//now rotate by 90 degrees
+			m.rVec.p.x =
+			m.uVec.p.y = 0;
+			m.uVec.p.x = 1;
+			m.rVec.p.y = -1;
+			}
+		}
+	}
+else {
+	fVerts [0].p.z =
+	fVerts [1].p.z =
+	fVerts [2].p.z = fPos.p.z;
+	fVerts [0].p.w = 
+	fVerts [1].p.w = 
+	fVerts [2].p.w = 1;
+	fVerts [0].p.x = fPos.p.x - r2;
+	fVerts [1].p.x = fPos.p.x + r2;
+	fVerts [2].p.x = fPos.p.x;
+	glVertexPointer (4, GL_FLOAT, 0, fVerts);
+	nTgtInd = extraGameInfo [IsMultiGame].bTargetIndicators;
+	bHasDmg = !EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) | (ObjectDamage (objP) < 1);
+	if (!nTgtInd ||
+		 ((nTgtInd == 1) && (!EGI_FLAG (bDamageIndicators, 0, 1, 0) || !bHasDmg)) ||
+		 ((nTgtInd == 2) && !bHasDmg)) {
+		fVerts [0].p.y = 
+		fVerts [1].p.y = fPos.p.y + r;
+		fVerts [2].p.y = fPos.p.y + r - r2;
+		glDrawArrays (GL_TRIANGLES, 0, 3);
+		}
+	fVerts [0].p.y = 
+	fVerts [1].p.y = fPos.p.y - r;
+	fVerts [2].p.y = fPos.p.y - r + r2;
+	glDrawArrays (GL_TRIANGLES, 0, 3);
+	fVerts [0].p.x = 
+	fVerts [1].p.x = fPos.p.x + r;
+	fVerts [2].p.x = fPos.p.x + r - r2;
+	fVerts [0].p.y = fPos.p.y + r2;
+	fVerts [1].p.y = fPos.p.y - r2;
+	fVerts [2].p.y = fPos.p.y;
+	glDrawArrays (GL_TRIANGLES, 0, 3);
+	fVerts [0].p.x = 
+	fVerts [1].p.x = fPos.p.x - r;
+	fVerts [2].p.x = fPos.p.x - r + r2;
+	glDrawArrays (GL_TRIANGLES, 0, 3);
+	}
+glDisableClientState (GL_VERTEX_ARRAY);
+glEnable (GL_CULL_FACE);
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector		fPos, fVerts [4];
@@ -1153,18 +1282,21 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 		pc = ObjectFrameColor (NULL, NULL);
 		}
 	}
-if (EGI_FLAG (bHitIndicators, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
+RenderTrackGoalIndicator (objP);
+if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
-	pc = ObjectFrameColor (objP, pc);
+	glDisable (GL_TEXTURE_2D);
+	pc = (EGI_FLAG (bTrackGoalIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && !gameOpts->render.cockpit.bRotateIndicators) ? 
+		  &trackGoalColor : ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
-	glDisable (GL_TEXTURE_2D);
 	glColor3fv ((GLfloat *) pc);
 	fVerts [0].p.w = fVerts [1].p.w = fVerts [2].p.w = fVerts [3].p.w = 1;
+	glVertexPointer (4, GL_FLOAT, 0, fVerts);
 	if (extraGameInfo [IsMultiGame].bTargetIndicators == 1) {	//square brackets
 		r2 = r * 2 / 3;
 		fVerts [0].p.x = fVerts [3].p.x = fPos.p.x - r2;
@@ -1178,7 +1310,6 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 
 #if 1
 		glEnableClientState (GL_VERTEX_ARRAY);
-		glVertexPointer (4, GL_FLOAT, 0, fVerts);
 		glDrawArrays (GL_LINE_STRIP, 0, 4);
 		//glDisableClientState (GL_VERTEX_ARRAY);
 #else
@@ -1193,7 +1324,6 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + r;
 #if 1
 		//glEnableClientState (GL_VERTEX_ARRAY);
-		glVertexPointer (4, GL_FLOAT, 0, fVerts);
 		glDrawArrays (GL_LINE_STRIP, 0, 4);
 		glDisableClientState (GL_VERTEX_ARRAY);
 #else
@@ -1217,7 +1347,6 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [2].p.z = fPos.p.z;
 #if 1
 		glEnableClientState (GL_VERTEX_ARRAY);
-		glVertexPointer (4, GL_FLOAT, 0, fVerts);
 		glDrawArrays (GL_LINE_LOOP, 0, 3);
 		//glDisableClientState (GL_VERTEX_ARRAY);
 #else
@@ -1242,7 +1371,6 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 #if 1
 		//glEnableClientState (GL_VERTEX_ARRAY);
-		glVertexPointer (4, GL_FLOAT, 0, fVerts);
 		glDrawArrays (GL_TRIANGLES, 0, 3);
 		glDisableClientState (GL_VERTEX_ARRAY);
 #else
@@ -1300,7 +1428,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		PIGGY_PAGE_IN (pf->bmi, 0);
 		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
-		if (OglBindBmTex (bmP, 0))
+		if (OglBindBmTex (bmP, 1, 0))
 			return;
 		bmP = BmCurFrame (bmP);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
@@ -1600,6 +1728,9 @@ int ComputeHitboxContour (tObject *objP, fVector *verts, fVector *verts3D, fEdge
 	float			offs, zMin, len, minLen, maxLen, dot, minDot;
 	int			h, i, j, k, nc, bFrontFaces [6], nEdges = 0, nContourEdges = -1;
 
+#ifdef _DEBUG
+fScale = 1;
+#endif
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 TransformHitboxf (objP, verts3D, 0);
 //VmsVecToFloat (&vEye, &gameData.render.mine.viewerEye);
@@ -1619,12 +1750,10 @@ for (i = 0; i < 6; i++) {
 	bFrontFaces [i] = VmVecDotf (&n, quad) < 0;
 	}
 // resize hitbox if requested
-if (fScale != 1) {
-	for (i = 0; i < 8; i++) {
-		VmVecSubf (&v, verts3D + i, &vCenter);
-		VmVecScalef (&v, &v, fScale);
-		VmVecAddf (verts + i, &vCenter, &v);
-		}
+for (i = 0; i < 8; i++) {
+	VmVecSubf (&v, verts3D + i, &vCenter);
+	VmVecScalef (&v, &v, fScale);
+	VmVecAddf (verts + i, &vCenter, &v);
 	}
 // move all hitbox vertices so close to the viewer that they line up on the same (minimal) z coordinate
 #if 1
@@ -1709,7 +1838,7 @@ while (nContourEdges) {
 		}
 	h = i;
 	}
-#if 1
+#if 0
 vCenter = verts [contour [0]];
 for (i = 1; i < nc; i++)
 	VmVecIncf (&vCenter, verts + contour [i]);
@@ -1844,7 +1973,7 @@ while (nc > 4) {
 	if (h < --nc)
 		memmove (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
 	}
-#elif 0
+#elif 1
 // Method 2: make sure the polygon can be rendered as one or two quads.
 // 4 vertices: bingo
 // 6 vertices: render 2 quads from vertices 1,2,3,6 and 3,4,5,6
@@ -1871,6 +2000,40 @@ if (nc == 5) {
 	if (h < nc++)
 		memmove (contour + h, contour + h + 1, (nc - h - 1) * sizeof (*contour));
 	contour [h] = 9;
+	}
+if (nc == 6) {
+	int c [8];
+	minLen = (float) 1e30;
+	for (i = 0; i < 3; i++) {
+		len = VmVecDistf (verts + contour [i], verts + contour [i + 3]);
+		if (minLen > len) {
+			minLen = len;
+			h = i;
+			}
+		}
+#if 1
+	h = (h + 3) % nc;
+	if (h < --nc)
+		memcpy (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
+	h = (h + 2) % nc;
+	if (h < --nc)
+		memcpy (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
+	nc = 4;
+#else
+	h -= 2;
+	if (h < 0)
+		h += nc;
+	c [0] = contour [h];
+	c [1] = contour [(h + 1) % nc];
+	c [2] = contour [(h + 2) % nc];
+	c [3] = contour [(h + 3) % nc];
+	c [4] = contour [(h + 3) % nc];
+	c [5] = contour [(h + 4) % nc];
+	c [6] = contour [(h + 5) % nc];
+	c [7] = contour [h];
+	memcpy (contour, c, 8 * sizeof (*contour));
+	nc = 8;
+#endif
 	}
 #endif
 return nc;
@@ -1931,7 +2094,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 		glDepthFunc (GL_LEQUAL);
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmpCorona, -1)) 
+		if (OglBindBmTex (bmpCorona, 1, -1)) 
 			return;
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
@@ -1979,7 +2142,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 #if 1
 		glDisable (GL_CULL_FACE);
 		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmpCorona, -1)) 
+		if (OglBindBmTex (bmpCorona, 1, -1)) 
 			return;
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
@@ -1994,11 +2157,6 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 			glEnd ();
 			}
 		else {
-			contour [7] = contour [0];
-			contour [6] = contour [5];
-			contour [5] = contour [4];
-			contour [4] = contour [3];
-			nc += 2;
 			s1 = s2 = 0;
 			s1 = VmVecMagf (VmVecSubf (&v, verts + contour [0], verts + contour [2])) * 
 				  VmVecMagf (VmVecSubf (&v, verts + contour [1], verts + contour [3]));
@@ -2065,7 +2223,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 				glVertex3fv ((GLfloat *) (verts3D + edges [i].v1));
 				glEnd ();
 				}
-	#	if 1
+	#	if 0
 			else {
 				glLineWidth (1);
 				glBegin (GL_LINES);
@@ -2084,6 +2242,8 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 		G3DoneInstance ();
 		//RenderHitbox (objP, colorP->red, colorP->green, colorP->blue, alpha);
 		}
+
+errorExit:
 
 	glDepthMask (1);
 	if (bStencil)
@@ -2426,7 +2586,11 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 2, 1, 1);
+		objP->lifeleft = F1_0 * 10000;
+		objP->mType.physInfo.rotVel.p.x = 
+		objP->mType.physInfo.rotVel.p.y = 
+		objP->mType.physInfo.rotVel.p.z = 0;
+		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 1.5f, 1, 1);
 #else
 	if (h < 0)
 		h = 0;
@@ -2437,7 +2601,7 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 2, 1, 1);
+		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1);
 		}
 #endif
 	}
@@ -2931,11 +3095,11 @@ if (objP->next != -1)
 //list_segObjects (nSegment);
 //check_duplicateObjects ();
 
-Assert (gameData.objs.objects [0].next != 0);
+//Assert (gameData.objs.objects [0].next != 0);
 if (gameData.objs.objects [0].next == 0)
 	gameData.objs.objects [0].next = -1;
 
-Assert (gameData.objs.objects [0].prev != 0);
+//Assert (gameData.objs.objects [0].prev != 0);
 if (gameData.objs.objects [0].prev == 0)
 	gameData.objs.objects [0].prev = -1;
 }

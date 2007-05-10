@@ -47,7 +47,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 //----------------- Variables for video clips -------------------
 //draw an tObject which renders as a tVideoClip
 
-#define	FIREBALL_ALPHA		0.7
+#define	FIREBALL_ALPHA		0.8
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
 #define	WEAPON_ALPHA		1.0
 

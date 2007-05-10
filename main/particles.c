@@ -716,7 +716,7 @@ if (gameStates.render.bPointSprites) {
 	glPointSize ((maxSize > partSize) ? partSize : maxSize);
 	glPointParameterfARB (GL_POINT_SIZE_MIN_ARB, 1.0f);
 	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, 100 * maxSize);
-	if (OglBindBmTex (bmP, 1))
+	if (OglBindBmTex (bmP, 1, 1))
 		return 0;
 #	if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {
@@ -741,7 +741,7 @@ if (gameStates.render.bPointSprites) {
 else
 #endif
 	{
-	if (OglBindBmTex (bmP, 1))
+	if (OglBindBmTex (bmP, 1, 1))
 		return 0;
 #if OGL_VERTEX_ARRAYS
 	if (gameStates.render.bVertexArrays) {

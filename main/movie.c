@@ -235,7 +235,7 @@ if (gameOpts->movies.bFullScreen) {
 	OglUBitBltI (grdCurCanv->cv_bitmap.bm_props.w, dh, 0, yOffs, 
 					  bufw, bufh, sx, sy, 
 					  &bmFrame, &grdCurCanv->cv_bitmap, 
-					  gameOpts->movies.nQuality);
+					  gameOpts->movies.nQuality, 1);
 	glEnable (GL_BLEND);
 	}
 else {
@@ -254,7 +254,7 @@ else {
 		GrUBox (dstx-1, dsty, dstx+w, dsty+h+1);
 		}
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, &grdCurCanv->cv_bitmap);
+	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, &grdCurCanv->cv_bitmap, 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 }

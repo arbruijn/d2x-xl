@@ -770,7 +770,7 @@ void CalcFrameTime ()
 {
 	fix 	timerValue,
 			last_frametime = gameData.time.xFrame,
-			minFrameTime = (gameOpts->render.nMaxFPS ? f1_0 / gameOpts->render.nMaxFPS : 1);
+			minFrameTime = (MAXFPS ? f1_0 / MAXFPS : 1);
 
 if (gameData.app.bGamePaused) {
 	gameData.time.xLast = TimerGetFixedSeconds ();
@@ -785,7 +785,7 @@ do {
 	timerValue = TimerGetFixedSeconds ();
    gameData.time.xFrame = timerValue - gameData.time.xLast;
 	timer_delay (1);
-	if (gameOpts->render.nMaxFPS < 2)
+	if (MAXFPS < 2)
 		break;
 	} while (gameData.time.xFrame < minFrameTime);
 #if defined (TIMER_TEST) && defined (_DEBUG)
@@ -900,7 +900,7 @@ void modex_clear_box (int x,int y,int w,int h)
 	GrSetCurrentCanvas (temp_canv);
 	GrClearCanvas (BLACK_RGBA);
 	GrSetCurrentCanvas (save_canv);
-	GrBitmapM (x,y,&temp_canv->cv_bitmap);
+	GrBitmapM (x,y,&temp_canv->cv_bitmap, 0);
 	GrFreeCanvas (temp_canv);
 
 }

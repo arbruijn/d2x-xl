@@ -306,14 +306,14 @@ void DrawMarkers ()
 nMaxDrop = IsMultiGame ? 2 : 9;
 spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
-	if (gameData.marker.objects [ (gameData.multiplayer.nLocalPlayer*2)+i] != -1) {
+	if (gameData.marker.objects [(gameData.multiplayer.nLocalPlayer*2)+i] != -1) {
 		G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects [gameData.marker.objects [ (gameData.multiplayer.nLocalPlayer*2)+i]].position.vPos);
 		GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
-		G3DrawSphere (&spherePoint,MARKER_SPHERE_SIZE, 1);
+		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE, 1);
 		GrSetColorRGB (PAL2RGBA (20), 0, 0, 255);
-		G3DrawSphere (&spherePoint,MARKER_SPHERE_SIZE/2, 1);
+		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE / 2, 1);
 		GrSetColorRGB (PAL2RGBA (30), 0, 0, 255);
-		G3DrawSphere (&spherePoint,MARKER_SPHERE_SIZE/4, 1);
+		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE / 4, 1);
 		DrawMarkerNumber (i);
 		}
 if (cycdir) {
@@ -354,7 +354,7 @@ ClearMarkers ();
 
 //------------------------------------------------------------------------------
 
-grs_canvas *name_canv_left,*name_canv_right;
+grs_canvas *levelNumCanv, *levelNameCanv;
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -627,8 +627,13 @@ if (gameStates.render.automap.bRadar) {
 	return;
 	}
 else {
-	GrBitmapM (amData.bHires?10:5, amData.bHires?10:5, &name_canv_left->cv_bitmap);
-	GrBitmapM (grdCurCanv->cv_bitmap.bm_props.w- (amData.bHires?10:5)-name_canv_right->cv_bitmap.bm_props.w,amData.bHires?10:5,&name_canv_right->cv_bitmap);
+	int offs = amData.bHires ? 10 : 5;
+
+	GrBitmapM (offs, offs, &levelNumCanv->cv_bitmap, 2);
+	GrBitmapM (grdCurCanv->cv_bitmap.bm_props.w - offs - levelNameCanv->cv_bitmap.bm_props.w, 
+				  offs, &levelNameCanv->cv_bitmap, 2);
+	if (gameOpts->render.automap.bTextured)
+		ShowFrameRate ();
 	}
 OglSwapBuffers (0, 0);
 }
@@ -686,7 +691,7 @@ void ModexPrintF (int x,int y,char *s,grs_font *font, unsigned int color)
 	grs_canvas *temp_canv;
 
 temp_canv = PrintToCanvas (s, font, color, 0, !amData.bHires);
-GrBitmapM (x,y,&temp_canv->cv_bitmap);
+GrBitmapM (x,y,&temp_canv->cv_bitmap, 2);
 GrFreeCanvas (temp_canv);
 }
 
@@ -702,21 +707,21 @@ char *system_name [] = {
 
 void CreateNameCanv ()
 {
-	char	nameLevel_left [128],nameLevel_right [128];
+	char	szLevelNum [128],szLevelName [128];
 
 if (gameData.missions.nCurrentLevel > 0)
-	sprintf (nameLevel_left, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
+	sprintf (szLevelNum, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
 else
-	sprintf (nameLevel_left, "Secret Level %i",-gameData.missions.nCurrentLevel);
+	sprintf (szLevelNum, "Secret Level %i",-gameData.missions.nCurrentLevel);
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
 		(gameData.missions.nCurrentLevel > 0))		//built-in mission
-	sprintf (nameLevel_right,"%s %d: ",system_name [ (gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
+	sprintf (szLevelName,"%s %d: ",system_name [(gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
 else
-	strcpy (nameLevel_right, " ");
-strcat (nameLevel_right, gameData.missions.szCurrentLevel);
+	strcpy (szLevelName, " ");
+strcat (szLevelName, gameData.missions.szCurrentLevel);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-name_canv_left = PrintToCanvas (nameLevel_left, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
-name_canv_right = PrintToCanvas (nameLevel_right,SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
+levelNumCanv = PrintToCanvas (szLevelNum, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
+levelNameCanv = PrintToCanvas (szLevelName, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
 }
 
 //------------------------------------------------------------------------------
@@ -1060,8 +1065,8 @@ while (!bDone)	{
 	t1 = t2;
 	}
 
-GrFreeCanvas (name_canv_left);  name_canv_left=NULL;
-GrFreeCanvas (name_canv_right);  name_canv_right=NULL;
+GrFreeCanvas (levelNumCanv);  levelNumCanv=NULL;
+GrFreeCanvas (levelNameCanv);  levelNameCanv=NULL;
 GameFlushInputs ();
 if (gameData.app.bGamePaused)
 	ResumeGame ();

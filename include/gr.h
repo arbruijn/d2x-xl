@@ -369,13 +369,13 @@ void GrInitBitmapData (grsBitmap *bm);
 // Free the bitmap, but not the pixel data buffer
 void GrFreeSubBitmap(grsBitmap *bm);
 
-void gr_bm_pixel( grsBitmap * bm, int x, int y, unsigned char color );
-void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color );
-void GrBmBitBlt(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
-void GrBmUBitBlt( int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
-void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+void gr_bm_pixel (grsBitmap * bm, int x, int y, unsigned char color );
+void gr_bm_upixel (grsBitmap * bm, int x, int y, unsigned char color );
+void GrBmBitBlt (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+void GrBmUBitBlt (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bTransp);
+void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bTransp);
 
-void gr_update_buffer( void * sbuf1, void * sbuf2, void * dbuf, int size );
+void gr_update_buffer (void * sbuf1, void * sbuf2, void * dbuf, int size);
 
 //=========================================================================
 // Color functions:
@@ -436,8 +436,8 @@ void GrBitmapScaleTo(grsBitmap *src, grsBitmap *dst);
 void show_fullscr(grsBitmap *bm);
 
 // bitmap function with transparency
-void GrBitmapM( int x, int y, grsBitmap *bm );
-void GrUBitmapM( int x, int y, grsBitmap *bm );
+void GrBitmapM (int x, int y, grsBitmap *bmP, int bTransp);
+void GrUBitmapM (int x, int y, grsBitmap *bmP);
 
 // Draw a rectangle into the current canvas.
 void GrRect(int left, int top, int right, int bot);
@@ -511,7 +511,7 @@ int _CDECL_ GrPrintF( int x, int y, char * format, ... );
 int _CDECL_ GrUPrintf( int x, int y, char * format, ... );
 void GrGetStringSize(char *s, int *string_width, int *string_height, int *average_width);
 void GrGetStringSizeTabbed (char *s, int *string_width, int *string_height, int *average_width, int *nTabs, int nMaxWidth);
-grsBitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int nTabs [], int bCentered, int nMaxWidth);
+grsBitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth);
 int GetCenteredX (char *s);
 
 //  From roller.c
@@ -638,5 +638,18 @@ char *ScrSizeArg (int x, int y);
 int SCREENMODE (int x, int y, int c);
 int S_MODE (u_int32_t *VV, int *VG);
 int GrBitmapHasTransparency (grsBitmap *bmP);
+
+#define FONT			grdCurCanv->cv_font
+#define FG_COLOR		grdCurCanv->cv_font_fg_color
+#define BG_COLOR		grdCurCanv->cv_font_bg_color
+#define FWIDTH       FONT->ft_w
+#define FHEIGHT      FONT->ft_h
+#define FBASELINE    FONT->ft_baseline
+#define FFLAGS       FONT->ftFlags
+#define FMINCHAR     FONT->ft_minchar
+#define FMAXCHAR     FONT->ft_maxchar
+#define FDATA        FONT->ft_data
+#define FCHARS       FONT->ft_chars
+#define FWIDTHS      FONT->ft_widths
 
 #endif /* def _GR_H */

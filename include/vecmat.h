@@ -324,6 +324,7 @@ vmsMatrix *VmTransposeMatrix (vmsMatrix * m);
 //copy and transpose a matrix. returns ptr to matrix
 //dest CANNOT equal source. use VmTransposeMatrix() if this is the case
 vmsMatrix *VmCopyTransposeMatrix (vmsMatrix * dest, vmsMatrix * src);
+fMatrix *VmCopyTransposeMatrixf (fMatrix *dest, fMatrix *src);
 
 #define VmCopyTranspose(dest,src) VmCopyTransposeMatrix((dest),(src))
 
@@ -362,6 +363,7 @@ fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1);
 fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fMatrix *SinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
+fMatrix *SinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh);
 
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))

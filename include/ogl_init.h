@@ -100,7 +100,7 @@ typedef struct _ogl_texture {
 	int 			wrapstate;
 	fix 			lastrend;
 	unsigned		long numrend;
-	char 			wantmip;
+	char 			bMipMaps;
 #if RENDER2TEXTURE == 1
 	ogl_pbuffer	pbuffer;
 #elif RENDER2TEXTURE == 2
@@ -133,7 +133,7 @@ void OglDoFullScreenInternal(int);
 int OglSetBrightnessInternal (void);
 void InitGammaRamp (void);
 
-int OglBindBmTex (grsBitmap *bm, int nTransp);
+int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp);
 
 extern int ogl_brightness_ok;
 extern int ogl_brightness_r, ogl_brightness_g, ogl_brightness_b;
@@ -278,7 +278,7 @@ int OglCacheLevelTextures (void);
 
 void OglURect(int left,int top,int right,int bot);
 bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grs_color *c, int scale, int orient);
-bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grsBitmap * src, grsBitmap * dest, int wantmip);
+bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp);
 bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 void OglUPixelC (int x, int y, grs_color *c);
@@ -367,9 +367,9 @@ extern PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTexture;
 
 //------------------------------------------------------------------------------
 
-static inline int OglUBitBlt (int w,int h,int dx,int dy, int sx, int sy, grsBitmap *src, grsBitmap *dest)
+static inline int OglUBitBlt (int w,int h,int dx,int dy, int sx, int sy, grsBitmap *src, grsBitmap *dest, int bTransp)
 {
-return OglUBitBltI (w,h,dx,dy,w,h,sx,sy,src,dest, 0);
+return OglUBitBltI (w, h, dx, dy, w, h, sx, sy, src, dest, 0, bTransp);
 }
 
 static inline int OglUBitMapM (int x, int y,grsBitmap *bm)

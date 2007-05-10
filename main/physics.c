@@ -882,7 +882,9 @@ retryMove:
 			 !(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
 			 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
 			vmsVector vCenter, vBump;
+#ifdef _DEBUG
 			HUDMessage (0, "BUMP HACK");
+#endif
 			//bump tPlayer a little towards vCenter of tSegment to unstick
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 			//HUDMessage (0, "BUMP! %d %d", d1, d2);

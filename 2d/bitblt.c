@@ -365,7 +365,7 @@ extern void gr_lbitblt(grsBitmap * source, grsBitmap * dest, int height, int wid
 
 //------------------------------------------------------------------------------
 
-void GrBitmap(int x, int y, grsBitmap *bm)
+void GrBitmap (int x, int y, grsBitmap *bm)
 {
 	grsBitmap * const scr = &grdCurCanv->cv_bitmap;
 	int dx1=x, dx2=x+bm->bm_props.w-1;
@@ -391,7 +391,7 @@ void GrBitmap(int x, int y, grsBitmap *bm)
 
 	// Draw bitmap bm[x,y] into (dx1,dy1)-(dx2,dy2)
 
-	GrBmUBitBlt(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap);
+	GrBmUBitBlt(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap, 1);
 
 }
 
@@ -591,7 +591,7 @@ void gr_bm_ubitblt0xm_rle(int w, int h, int dx, int dy, int sx, int sy, grsBitma
 
 //------------------------------------------------------------------------------
 
-void GrBmUBitBlt(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
+void GrBmUBitBlt (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bTransp)
 {
 	register int x1, y1;
 
@@ -604,19 +604,19 @@ if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_LINEAR)) {
 	}
 
 if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_OGL)) {
-	OglUBitBlt(w, h, dx, dy, sx, sy, src, dest);
+	OglUBitBlt (w, h, dx, dy, sx, sy, src, dest, bTransp);
 	return;
 	}
 if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_LINEAR)) {
-	OglUBitBltToLinear(w, h, dx, dy, sx, sy, src, dest);
+	OglUBitBltToLinear (w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
 if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_OGL)) {
-	OglUBitBltCopy(w, h, dx, dy, sx, sy, src, dest);
+	OglUBitBltCopy (w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
 if ((src->bm_props.flags & BM_FLAG_RLE) && (src->bm_props.nType == BM_LINEAR)) {
-	gr_bm_ubitblt0x_rle(w, h, dx, dy, sx, sy, src, dest);
+	gr_bm_ubitblt0x_rle (w, h, dx, dy, sx, sy, src, dest);
 	return;
 	}
 for (y1=0; y1 < h; y1++)  
@@ -682,8 +682,7 @@ if (sx2-sx1+1 < w)
 	w = sx2-sx1+1;
 if (sy2-sy1+1 < h)
 	h = sy2-sy1+1;
-
-GrBmUBitBlt(w,h, dx1, dy1, sx1, sy1, src, dest);
+GrBmUBitBlt(w,h, dx1, dy1, sx1, sy1, src, dest, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -751,55 +750,54 @@ void GrUBitmapM(int x, int y, grsBitmap *bmP)
 
 //------------------------------------------------------------------------------
 
-void GrBitmapM(int x, int y, grsBitmap *bmP)
+void GrBitmapM(int x, int y, grsBitmap *bmP, int bTransp)
 {
 	int dx1=x, dx2=x+bmP->bm_props.w-1;
 	int dy1=y, dy2=y+bmP->bm_props.h-1;
 	int sx=0, sy=0;
 
-	if ((dx1 >= grdCurCanv->cv_bitmap.bm_props.w) || (dx2 < 0)) 
-		return;
-	if ((dy1 >= grdCurCanv->cv_bitmap.bm_props.h) || (dy2 < 0)) 
-		return;
-	if (dx1 < 0) { 
-		sx = -dx1; 
-		dx1 = 0; 
-		}
-	if (dy1 < 0) { 
-		sy = -dy1; 
-		dy1 = 0; 
-		}
-	if (dx2 >= grdCurCanv->cv_bitmap.bm_props.w)
-		dx2 = grdCurCanv->cv_bitmap.bm_props.w-1;
-	if (dy2 >= grdCurCanv->cv_bitmap.bm_props.h)
-		dy2 = grdCurCanv->cv_bitmap.bm_props.h-1; 
-	// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
-
-	if ((bmP->bm_props.nType == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.nType == BM_LINEAR)) {
-		if (bmP->bm_props.flags & BM_FLAG_RLE)
-			gr_bm_ubitblt00m_rle(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
-		else
-			gr_bm_ubitblt00m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
-		return;
+if ((dx1 >= grdCurCanv->cv_bitmap.bm_props.w) || (dx2 < 0)) 
+	return;
+if ((dy1 >= grdCurCanv->cv_bitmap.bm_props.h) || (dy2 < 0)) 
+	return;
+if (dx1 < 0) { 
+	sx = -dx1; 
+	dx1 = 0; 
 	}
-	GrBmUBitBltM(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
+if (dy1 < 0) { 
+	sy = -dy1; 
+	dy1 = 0; 
+	}
+if (dx2 >= grdCurCanv->cv_bitmap.bm_props.w)
+	dx2 = grdCurCanv->cv_bitmap.bm_props.w-1;
+if (dy2 >= grdCurCanv->cv_bitmap.bm_props.h)
+	dy2 = grdCurCanv->cv_bitmap.bm_props.h-1; 
+// Draw bitmap bmP[x,y] into (dx1,dy1)-(dx2,dy2)
 
+if ((bmP->bm_props.nType == BM_LINEAR) && (grdCurCanv->cv_bitmap.bm_props.nType == BM_LINEAR)) {
+	if (bmP->bm_props.flags & BM_FLAG_RLE)
+		gr_bm_ubitblt00m_rle(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
+	else
+		gr_bm_ubitblt00m(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap);
+	return;
+	}
+GrBmUBitBltM (dx2-dx1 + 1,dy2-dy1 + 1, dx1, dy1, sx, sy, bmP, &grdCurCanv->cv_bitmap, bTransp);
 }
 
 //------------------------------------------------------------------------------
 
-void GrBmUBitBltM(int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
+void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bTransp)
 {
 	register int x1, y1;
 	ubyte c;
 
-	if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_OGL))
-		OglUBitBlt(w, h, dx, dy, sx, sy, src, dest);
-	else if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_LINEAR))
-		OglUBitBltToLinear(w, h, dx, dy, sx, sy, src, dest);
-	else if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_OGL))
-		OglUBitBltCopy(w, h, dx, dy, sx, sy, src, dest);
-	else
+if ((src->bm_props.nType == BM_LINEAR) && (dest->bm_props.nType == BM_OGL))
+	OglUBitBlt (w, h, dx, dy, sx, sy, src, dest, bTransp);
+else if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_LINEAR))
+	OglUBitBltToLinear (w, h, dx, dy, sx, sy, src, dest);
+else if ((src->bm_props.nType == BM_OGL) && (dest->bm_props.nType == BM_OGL))
+	OglUBitBltCopy (w, h, dx, dy, sx, sy, src, dest);
+else
 	for (y1=0; y1 < h; y1++) {
 		for (x1=0; x1 < w; x1++) {
 			if ((c=gr_gpixel(src,sx+x1,sy+y1))!=TRANSPARENCY_COLOR)
@@ -859,14 +857,14 @@ void GrBitmapScaleTo(grsBitmap *src, grsBitmap *dst)
 
 //------------------------------------------------------------------------------
 
-void show_fullscr(grsBitmap *src)
+void show_fullscr (grsBitmap *src)
 {
 	grsBitmap * const dest = &grdCurCanv->cv_bitmap;
 
 if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_OGL) {
 	if (!gameStates.render.bBlendBackground)
 		glDisable(GL_BLEND);
-	OglUBitBltI (dest->bm_props.w, dest->bm_props.h, 0, 0, src->bm_props.w, src->bm_props.h, 0, 0, src, dest, 0);//use opengl to scale, faster and saves ram. -MPM
+	OglUBitBltI (dest->bm_props.w, dest->bm_props.h, 0, 0, src->bm_props.w, src->bm_props.h, 0, 0, src, dest, 0, 0);
 	if (!gameStates.render.bBlendBackground)
 		glEnable(GL_BLEND);
 	return;

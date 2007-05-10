@@ -639,7 +639,7 @@ if (/*!strchr (item->text, '\t') &&*/ bCreateTextBms && gameOpts->menus.bFastMen
 												 gameData.menu.keyColor,
 												 nTabs, item->centered, item->w)))) {
 	OglUBitBltI (bm->bm_props.w, bm->bm_props.h, item->x, item->y, bm->bm_props.w, bm->bm_props.h, 0, 0, 
-						bm, &grdCurCanv->cv_bitmap, 0);
+						bm, &grdCurCanv->cv_bitmap, 0, 1);
 	item->text_bm [bIsCurrent] = bm;
 	}
 else 

@@ -2819,7 +2819,7 @@ void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y)
 	GrBmUBitBltM (
 		 (int) (bm->bm_props.w * cmScaleX), (int) (bm->bm_props.h * cmScaleY), 
 		 (int) (x * cmScaleX), (int) (y * cmScaleY), x, y, 
-		&gameStates.render.vr.buffers.render [0].cv_bitmap, &grdCurCanv->cv_bitmap);
+		&gameStates.render.vr.buffers.render [0].cv_bitmap, &grdCurCanv->cv_bitmap, 1);
 }
 
 #define INV_FRAME_TIME	 (f1_0/10)		//how long for each frame
@@ -3344,9 +3344,8 @@ else
 
 //	-----------------------------------------------------------------------------
 
-extern int nMissileGun;
-extern int AllowedToFireLaser (void);
-extern int AllowedToFireMissile (void);
+int AllowedToFireLaser (void);
+int AllowedToFireMissile (void);
 
 rgb playerColors [] = {
 	{15, 15, 23}, 
@@ -3398,7 +3397,7 @@ if (nPrimaryBm && (gameData.weapons.nPrimary==LASER_INDEX) &&
 
 if (secondaryWeaponToGunNum [gameData.weapons.nSecondary]==7)
 	nSecondaryBm += 3;		//now value is 0, 1 or 3, 4
-else if (nSecondaryBm && !(nMissileGun&1))
+else if (nSecondaryBm && !(gameData.laser.nMissileGun&1))
 		nSecondaryBm++;
 
 nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));
@@ -4202,6 +4201,57 @@ abort:;
 gameData.objs.viewer = viewer_save;
 GrSetCurrentCanvas (save_canv);
 gameStates.render.bRearView = rearView_save;
+}
+
+//------------------------------------------------------------------------------
+
+void ftoa (char *string, fix f)
+{
+	int decimal, fractional;
+	
+	decimal = f2i (f);
+	fractional = ((f & 0xffff)*100)/65536;
+	if (fractional < 0)
+		fractional *= -1;
+	if (fractional > 99) fractional = 99;
+	sprintf (string, "%d.%02d", decimal, fractional);
+}
+
+//------------------------------------------------------------------------------
+
+fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
+fix frameTimeTotal = 0;
+int frameTimeCounter = 0;
+
+void ShowFrameRate ()
+{
+if (gameStates.render.frameRate.value) {
+		char szRate [50];
+		static time_t t, t0 = -1;
+		static fix rate = 0;
+		int x = 8, y = 6; // position measured from lower right corner
+	   //static int q;
+	
+	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
+	frameTimeList [frameTimeCounter] = gameData.time.xRealFrame;
+	frameTimeCounter = (frameTimeCounter + 1) % 8;
+	t = SDL_GetTicks ();
+	if ((t0 < 0) || (t - t0 >= 500)) {
+		t0 = t;
+		rate = frameTimeTotal ? FixDiv (f1_0 * 8, frameTimeTotal) : 0;
+		}
+	GrSetCurFont (GAME_FONT);	
+	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+	
+	ftoa (szRate, rate);	// Convert fixed to string
+	if (gameStates.render.automap.bDisplay)
+		y = 2;
+	if (IsMultiGame)
+		y = 7;
+	GrPrintF (grdCurCanv->cv_w - (x * GAME_FONT->ft_w), 
+				 grdCurCanv->cv_h - y * (GAME_FONT->ft_h + GAME_FONT->ft_h / 4), 
+				 "FPS: %s", szRate);
+	}
 }
 
 //	-----------------------------------------------------------------------------

@@ -1228,8 +1228,6 @@ if (gameStates.app.bD1Mission) {
 
 //------------------------------------------------------------------------------
 
-extern void SetPosFromReturnSegment (void);
-
 //	Returns true if secret level has been destroyed.
 int PSecretLevelDestroyed (void)
 {
@@ -1715,7 +1713,7 @@ if (gameData.reactor.bDestroyed) {
 	}
 if (bSecret && !gameStates.app.bD1Mission) {
 	ExitSecretLevel ();
-	SetPosFromReturnSegment ();
+	SetPosFromReturnSegment (1);
 	LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	InitPlayerStatsNewShip ();
 	gameStates.render.cockpit.nLastDrawn [0] =

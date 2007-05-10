@@ -42,10 +42,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	Cheat functions ------------------------------------------------------------
 
-char old_IntMethod;
-char OldHomingState[20];
+char nInterpolationMethodSave;
+char bOldHomingStates [20];
 
-char szCheatBuf[]="AAAAAAAAAAAAAAA";
+char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 
 //------------------------------------------------------------------------------
 
@@ -302,14 +302,14 @@ void AcidCheat (int bVerbose)
 {
 if (gameStates.app.cheats.bAcid) {
 	gameStates.app.cheats.bAcid = 0;
-	gameStates.render.nInterpolationMethod = old_IntMethod;
+	gameStates.render.nInterpolationMethod = nInterpolationMethodSave;
 	OglSetFOV (DEFAULT_FOV);
 	if (bVerbose)
 		HUDInitMessage (TXT_COMING_DOWN);
 	}
 else {
 	gameStates.app.cheats.bAcid = 1;
-	old_IntMethod=gameStates.render.nInterpolationMethod;
+	nInterpolationMethodSave=gameStates.render.nInterpolationMethod;
 	gameStates.render.nInterpolationMethod = 1;
 	OglSetFOV (FISHEYE_FOV);
 	if (bVerbose)
@@ -492,16 +492,20 @@ if (bVerbose)
 
 void HomingCheat (int bVerbose)
 {
-if (!gameStates.app.cheats.bHomingWeapons) {
 	int	i;
 
+if (gameStates.app.cheats.bHomingWeapons = !gameStates.app.cheats.bHomingWeapons) {
 	gameStates.app.cheats.bHomingWeapons = 1;
-	for (i = 0;i < 20;i++) {
-		OldHomingState [i] = WI_homingFlag (i);
+	for (i = 0; i < 20; i++) {
+		bOldHomingStates [i] = WI_homingFlag (i);
 		WI_set_homingFlag (i, 1);
 		}
 	if (bVerbose)
 		HUDInitMessage (TXT_WPN_HOMING);
+	}
+else {
+	for (i = 0; i < 20; i++) 
+		WI_set_homingFlag (i, bOldHomingStates [i]);
 	}
 }
 

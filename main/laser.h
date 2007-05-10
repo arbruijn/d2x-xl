@@ -146,8 +146,10 @@ int CreateWeaponObject(ubyte weaponType, short nSegment,vmsVector *position);
 // give up control of the guided missile
 void ReleaseGuidedMissile(int player_num);
 
-extern void CreateSmartChildren(tObject *objp, int count);
-extern int ObjectToObjectVisibility(tObject *obj1, tObject *obj2, int transType);
+void CreateSmartChildren(tObject *objp, int count);
+int ObjectToObjectVisibility(tObject *obj1, tObject *obj2, int transType);
+int FindHomingObject (vmsVector *curpos, tObject *tracker);
+
 
 typedef struct tMuzzleInfo {
 	fix         createTime;

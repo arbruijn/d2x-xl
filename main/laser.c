@@ -70,8 +70,6 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_obj
 extern void NDRecordGuidedEnd ();
 extern void NDRecordGuidedStart ();
 
-int FindHomingObject (vmsVector *curpos, tObject *tracker);
-
 extern int bDoingLightingHack;
 
 //	-------------------------------------------------------------------------------------------------------------------------------
@@ -838,25 +836,24 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 {
 	tVFIQuery	fq;
 	tFVIData		hit_data;
-	int			fate;
+	int			fate, nTries = 0;
 
-fq.p0					= &objP1->position.vPos;
-fq.startSeg			= objP1->nSegment;
-fq.p1					= &objP2->position.vPos;
-fq.radP0				= 
-fq.radP1				= 0x10;
-fq.thisObjNum		= OBJ_IDX (objP1);
-fq.ignoreObjList	= NULL;
-fq.flags				= transType;
-fate = FindVectorIntersection (&fq, &hit_data);
-if (fate == HIT_WALL)
-	return 0;
-else if (fate == HIT_NONE)
-	return 1;
-else
-	Int3 ();		//	Contact Mike: Oops, what happened?  What is fate?
-					// 2 = hit tObject (impossible), 3 = bad starting point (bad)
-return 0;
+do {
+	if (nTries++)
+		fq.startSeg		= FindSegByPoint (&objP1->position.vPos, objP1->nSegment);
+	else
+		fq.startSeg		= objP1->nSegment;
+	fq.p0					= &objP1->position.vPos;
+	fq.p1					= &objP2->position.vPos;
+	fq.radP0				= 
+	fq.radP1				= 0x10;
+	fq.thisObjNum		= OBJ_IDX (objP1);
+	fq.ignoreObjList	= NULL;
+	fq.flags				= transType;
+	fate = FindVectorIntersection (&fq, &hit_data);
+	}
+while ((fate == HIT_BAD_P0) && (nTries < 2));
+return fate == HIT_NONE;
 }
 
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
@@ -941,7 +938,7 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 
 
 //	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-Assert ((WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
+Assert ((tracker->nType == OBJ_PLAYER) || (WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
 
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
 
@@ -953,7 +950,7 @@ if ((tracker->nType == OBJ_WEAPON) && (tracker->id == OMEGA_ID))
 	cur_min_trackable_dot = OMEGA_MIN_TRACKABLE_DOT;
 
 //	Not in network mode.  If not fired by tPlayer, then track player.
-if (tracker->cType.laserInfo.nParentObj != LOCALPLAYER.nObject) {
+if ((tracker->nType != OBJ_PLAYER) && (tracker->cType.laserInfo.nParentObj != LOCALPLAYER.nObject)) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		nBestObj = OBJ_IDX (gameData.objs.console);
 	} 
@@ -993,7 +990,8 @@ else {
 			if (curObjP->cType.aiInfo.CLOAKED)
 				continue;
 			//	Your missiles don't track your escort.
-			if (ROBOTINFO (curObjP->id).companion && (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
+			if (ROBOTINFO (curObjP->id).companion && 
+				 ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OBJ_PLAYER)))
 				continue;
 			}
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
@@ -1045,7 +1043,7 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_obj
 	fix	min_trackable_dot;
 
 	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-Assert ((WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
+//Assert ((WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
 
 max_trackableDist = MAX_TRACKABLE_DIST;
 min_trackable_dot = MIN_TRACKABLE_DOT;
@@ -2024,24 +2022,19 @@ void CreateSmartChildren (tObject *objP, int num_smart_children)
 
 //	-------------------------------------------------------------------------------------------
 
-int nMissileGun = 0;
-
 //give up control of the guided missile
-void ReleaseGuidedMissile (int player_num)
+void ReleaseGuidedMissile (int nPlayer)
 {
-	if (player_num == gameData.multiplayer.nLocalPlayer)
-	 {			
-	  if (gameData.objs.guidedMissile [player_num]==NULL)
-			return;
-	
-		gameData.objs.missileViewer = gameData.objs.guidedMissile [player_num];
-		if (IsMultiGame)
-		 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer],1);
-		if (gameData.demo.nState==ND_STATE_RECORDING)
-		 	NDRecordGuidedEnd ();
+if (nPlayer == gameData.multiplayer.nLocalPlayer) {			
+	if (!gameData.objs.guidedMissile [nPlayer])
+		return;
+	gameData.objs.missileViewer = gameData.objs.guidedMissile [nPlayer];
+	if (IsMultiGame)
+	 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer], 1);
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+	 	NDRecordGuidedEnd ();
 	 }	
-
-	gameData.objs.guidedMissile [player_num] = NULL;
+gameData.objs.guidedMissile [nPlayer] = NULL;
 }
 
 int nProximityDropped=0,nSmartminesDropped=0;
@@ -2055,7 +2048,7 @@ void DoMissileFiring (int bAutoSelect)
 	int		h, i, gunFlag = 0;
 	short		nObject;
 	ubyte		nWeaponId;
-	int		nWeaponGun;
+	int		nGun;
 	tObject	*gmP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 
@@ -2078,17 +2071,17 @@ if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 	gameData.missiles.xNextFireTime = gameData.time.xGame + WI_fire_wait (nWeaponId);
 else
 	gameData.missiles.xNextFireTime = gameData.time.xGame + F1_0/25;
-nWeaponGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
+nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
 h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 0); i++) {
 	playerP->secondaryAmmo [gameData.weapons.nSecondary]--;
 	if (IsMultiGame)
 		MultiSendWeapons (1);
-	if (nWeaponGun == 4) {		//alternate left/right
-		nWeaponGun += (gunFlag = (nMissileGun & 1));
-		nMissileGun++;
+	if (nGun == 4) {		//alternate left/right
+		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
+		gameData.laser.nMissileGun++;
 		}
-	nObject = LaserPlayerFire (gameData.objs.console, nWeaponId, nWeaponGun, 1, 0);
+	nObject = LaserPlayerFire (gameData.objs.console, nWeaponId, nGun, 1, 0);
 	if (gameData.weapons.nSecondary == PROXIMITY_INDEX) {
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			if (++nProximityDropped == 4) {

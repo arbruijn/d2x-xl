@@ -427,7 +427,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglBindBmTex (grsBitmap *bmP, int nTransp)
+int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp)
 {
 	ogl_texture	*texP;
 #if RENDER2TEXTURE
@@ -447,7 +447,7 @@ else
 #endif
 	{
 	if (!(texP && ((GLint) texP->handle > 0))) {
-		if (OglLoadBmTexture (bmP, 1, nTransp))
+		if (OglLoadBmTexture (bmP, bMipMaps, nTransp))
 			return 1;
 		bmP = BmOverride (bmP);
 		texP = bmP->glTexture;
@@ -940,6 +940,7 @@ for (y = 0; y < tHeight; y++) {
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
 		if ((int) c == TRANSPARENCY_COLOR) {
+			bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
 			switch (nFormat) {
 				case GL_LUMINANCE:
 					(*(texBuf++)) = 0;
@@ -1008,6 +1009,7 @@ for (y = 0; y < tHeight; y++) {
 				case GL_RGBA:
 				case GL_RGBA4: {
 					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
+						bmP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
 						if (0 && bShaderMerge) {
 							r = g = b = 0;
 							a = 1;
@@ -1346,6 +1348,8 @@ int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *texP, int nTr
 	ogl_texture	tex;
 	int			bLocalTexture;
 
+if (!bmP)
+	return 1;
 if (texP) {
 	bLocalTexture = 0;
 	//calculate smallest texture size that can accomodate us (must be multiples of 2)
@@ -1429,7 +1433,7 @@ if ((GLint) texP->handle >= 0)
 	// Give our data to OpenGL.
 	OGL_BINDTEX (texP->handle);
 	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	if (texP->wantmip) {
+	if (texP->bMipMaps) {
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gameStates.ogl.texMagFilter);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gameStates.ogl.texMinFilter);
 		}
@@ -1449,7 +1453,7 @@ if ((GLint) texP->handle >= 0)
 	else 
 #endif
 		{
-		if (texP->wantmip && gameStates.ogl.bNeedMipMaps)
+		if (texP->bMipMaps && gameStates.ogl.bNeedMipMaps)
 			gluBuild2DMipmaps (
 				GL_TEXTURE_2D, texP->internalformat, 
 				texP->tw, texP->th, texP->format, 
@@ -1502,7 +1506,7 @@ if (!(t = bmP->glTexture)) {
 		t->lw *= bmP->bm_bpp;
 	t->w = bmP->bm_props.w;
 	t->h = bmP->bm_props.h;
-	t->wantmip = bMipMap && !bMask;
+	t->bMipMaps = bMipMap && !bMask;
 #if RENDER2TEXTURE == 1
 	if (pb) {
 		t->pbuffer = *pb;

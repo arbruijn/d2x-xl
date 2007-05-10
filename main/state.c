@@ -1372,13 +1372,14 @@ return 1;
 
 //	-----------------------------------------------------------------------------------
 //	Set the tPlayer's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
-void SetPosFromReturnSegment (void)
+void SetPosFromReturnSegment (int bRelink)
 {
 	int	nPlayerObj = LOCALPLAYER.nObject;
 
 COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [nPlayerObj].position.vPos, 
 							     gameData.segs.secret.nReturnSegment);
-RelinkObject (nPlayerObj, gameData.segs.secret.nReturnSegment);
+if (bRelink)
+	RelinkObject (nPlayerObj, gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
 gameData.objs.objects [nPlayerObj].position.mOrient = gameData.segs.secret.returnOrient;
 }
@@ -1619,7 +1620,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		}
 	objP->next = objP->prev = objP->nSegment = -1;
 	if (objP->nType != OBJ_NONE) {
-		LinkObject (i,nSegment);
+		LinkObject (i, nSegment);
 		if (objP->nSignature > gameData.objs.nNextSignature)
 			gameData.objs.nNextSignature = objP->nSignature;
 		}
@@ -2161,7 +2162,7 @@ if (!bBetweenLevels)	{
 	//	1 = Didn't die on secret level.
 	//	2 = Died on secret level.
 	if (bSecretRestore && (gameData.missions.nCurrentLevel >= 0)) {
-		SetPosFromReturnSegment ();
+		SetPosFromReturnSegment (0);
 		if (bSecretRestore == 2)
 			InitPlayerStatsNewShip ();
 		}
@@ -2412,7 +2413,7 @@ if (!bBetweenLevels)	{
 	//	1 = Didn't die on secret level.
 	//	2 = Died on secret level.
 	if (bSecretRestore && (gameData.missions.nCurrentLevel >= 0)) {
-		SetPosFromReturnSegment ();
+		SetPosFromReturnSegment (0);
 		if (bSecretRestore == 2)
 			InitPlayerStatsNewShip ();
 		}

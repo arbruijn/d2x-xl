@@ -165,51 +165,6 @@ void GameDrawMultiMessage ()
 #define cv_w  cv_bitmap.bm_props.w
 #define cv_h  cv_bitmap.bm_props.h
 
-fix frameTime_list [8] = {0, 0, 0, 0, 0, 0, 0, 0};
-fix frameTimeTotal=0;
-int frameTime_cntr=0;
-
-void ftoa (char *string, fix f)
-{
-	int decimal, fractional;
-	
-	decimal = f2i (f);
-	fractional = ((f & 0xffff)*100)/65536;
-	if (fractional < 0)
-		fractional *= -1;
-	if (fractional > 99) fractional = 99;
-	sprintf (string, "%d.%02d", decimal, fractional);
-}
-
-//------------------------------------------------------------------------------
-
-void ShowFrameRate ()
-{
-	char temp [50];
-	static time_t t, t0 = -1;
-	static fix rate = 0;
-	int x = 8, y = 6; // position measured from lower right corner
-   //static int q;
-
-frameTimeTotal += gameData.time.xRealFrame - frameTime_list [frameTime_cntr];
-frameTime_list [frameTime_cntr] = gameData.time.xRealFrame;
-frameTime_cntr = (frameTime_cntr+1)%8;
-t = SDL_GetTicks ();
-if ((t0 < 0) || (t - t0 >= 500)) {
-	t0 = t;
-	rate = frameTimeTotal ? FixDiv (f1_0*8, frameTimeTotal) : 0;
-	}
-GrSetCurFont (GAME_FONT);	
-GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
-
-ftoa (temp, rate);	// Convert fixed to string
-if (gameData.app.nGameMode & GM_MULTI)
-	y = 7;
-GrPrintF (grdCurCanv->cv_w - (x * GAME_FONT->ft_w), 
-				grdCurCanv->cv_h - y * (GAME_FONT->ft_h + GAME_FONT->ft_h / 4), 
-				"FPS: %s ", temp);
-}
-
 //------------------------------------------------------------------------------
 #ifdef _DEBUG
 
@@ -376,8 +331,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 			}
 		}
 	}
-if (gameStates.render.frameRate.value)
-	ShowFrameRate ();
+ShowFrameRate ();
 if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 	gameData.app.nGameMode = gameData.demo.nGameMode;
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) 
@@ -960,7 +914,7 @@ void GameRenderFrameMono (void)
 		if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{	
 			gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 			GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-			GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.x, gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
+			GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.x, gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap, 1);
 			gr_wait_for_retrace = 0;
 			GrShowCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 			gr_wait_for_retrace = 1;
@@ -1115,25 +1069,18 @@ WIN (DDGRLOCK (dd_grd_curcanv))
 
 		//h = (bot < dest_y+bm->bm_props.h)? (bot-dest_y+1): (bm->bm_props.h-ofs_y);
 		h = min (bot-dest_y+1, bm->bm_props.h-ofs_y);
-
 		for (x=tile_left;x<=tile_right;x++) {
-
 			//w = (right < dest_x+bm->bm_props.w)? (right-dest_x+1): (bm->bm_props.w-ofs_x);
 			w = min (right-dest_x+1, bm->bm_props.w-ofs_x);
-		
-			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, 
-					&bmBackground, &grdCurCanv->cv_bitmap);
-
+			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, &bmBackground, &grdCurCanv->cv_bitmap, 1);
 			ofs_x = 0;
 			dest_x += w;
-		}
-
+			}
 		ofs_y = 0;
 		dest_y += h;
-	}
-} 
+		}
+	} 
 WIN (DDGRUNLOCK (dd_grd_curcanv));
-
 }
 
 //------------------------------------------------------------------------------
@@ -1390,7 +1337,7 @@ void ShowBoxedMessage (char *msg)
 	if (!gameOpts->menus.nStyle) {
 		bg.bmp = GrCreateBitmap (w+BOX_BORDER, h+BOX_BORDER, 1);
 		WIN (DDGRLOCK (dd_grd_curcanv));
-		GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cv_bitmap), bg.bmp);
+		GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cv_bitmap), bg.bmp, 1);
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	NMDrawBackground (&bg, x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1, 0);

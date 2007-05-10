@@ -152,6 +152,7 @@ typedef struct tCockpitOptions {
 	int bMissileView;
 	int bGuidedInMainView;
 	int bObjectTally;
+	int bRotateIndicators;
 	int bPlayerStats;
 	int nWindowPos;
 	int nWindowSize;
@@ -1222,6 +1223,7 @@ typedef struct tObjectData {
 	int					guidedMissileSig [MAX_PLAYERS];
 	tObject				*console;
 	tObject				*viewer;
+	tObject				*trackGoals [2];
 	tObject				*missileViewer;
 	tObject				*deadPlayerCamera;
 	tObject				*endLevelCamera;
@@ -2034,6 +2036,7 @@ typedef struct tLaserData {
 	fix		xOmegaCharge;
 	int		nLastOmegaFireFrame;
 	int		nGlobalFiringCount;
+	int		nMissileGun;
 } tLaserData;
 
 typedef struct tFusionData {
@@ -2215,8 +2218,10 @@ extern fix nDebrisLife [];
 
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 
-#define SEGMENTS							gameData.segs.segments
-#define OBJECTS							gameData.objs.objects
+#define SEGMENTS	gameData.segs.segments
+#define OBJECTS	gameData.objs.objects
+
+#define MAXFPS		((gameStates.render.automap.bDisplay && !gameStates.render.automap.bRadar) ? 40 : gameOpts->render.nMaxFPS)
 
 void D2SetCaption (void);
 void PrintVersionInfo (void);

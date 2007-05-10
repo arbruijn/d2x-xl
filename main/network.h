@@ -214,7 +214,8 @@ typedef struct tExtraGameInfo {
 	char		bDamageIndicators;
 	char		bFriendlyIndicators;
 	char		bCloakedIndicators;
-	char		bHitIndicators;
+	char		bTrackGoalIndicators;
+	char		bTagOnlyHitObjs;
 	char		bTowFlags;
 	char		bUseHitAngles;
 	char		bLightTrails;

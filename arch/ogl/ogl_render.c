@@ -97,7 +97,7 @@ GLuint secondary_lh [5]={0, 0, 0, 0, 0};
 GLuint glInitTMU [4]= {0, 0, 0, 0};
 GLuint glExitTMU = 0;
 
-int OglBindBmTex (grsBitmap *bm, int transp);
+int OglBindBmTex (grsBitmap *bm, int szLevelName, int nTransp);
 void ogl_clean_texture_cache (void);
 /*inline*/ void SetTMapColor (uvl *uvlList, int i, grsBitmap *bm, int bResetColor);
 
@@ -916,7 +916,7 @@ if (bmP || (nTexId >= 0)) {
 	if (nTexId >= 0)
 		OGL_BINDTEX (nTexId);
 	else {
-		if (OglBindBmTex (bmP, 0))
+		if (OglBindBmTex (bmP, 1, 0))
 			return 1;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
 		}
@@ -1300,7 +1300,7 @@ if (pVertColor) {
 
 #define	INIT_TMU(_initTMU,_bm) \
 			_initTMU (); \
-			if (OglBindBmTex (_bm, 0)) \
+			if (OglBindBmTex (_bm, 1, 0)) \
 				return 1; \
 			(_bm) = BmCurFrame (_bm); \
 			OglTexWrap ((_bm)->glTexture, GL_REPEAT);
@@ -1387,7 +1387,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		return 1;
 #else
 	InitTMU0 ();	// use render pipeline 0 for bottom texture
-	if (OglBindBmTex (bmBot, 0))
+	if (OglBindBmTex (bmBot, 1, 0))
 		return 1;
 	bmBot = BmCurFrame (bmBot);
 	OglTexWrap (bmBot->glTexture, GL_REPEAT);
@@ -1395,7 +1395,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 	if (bmTop) { // use render pipeline 0 for overlay texture
 		InitTMU1 ();
-		if (OglBindBmTex (bmTop, 0))
+		if (OglBindBmTex (bmTop, 1, 0))
 			return 1;
 		bmTop = BmCurFrame (bmTop);
 		OglTexWrap (bmTop->glTexture, GL_REPEAT);
@@ -1494,7 +1494,7 @@ else
 			}
 		else {
 			InitTMU0 ();
-			if (OglBindBmTex (bmBot, 0))
+			if (OglBindBmTex (bmBot, 1, 0))
 				return 1;
 			bmBot = BmCurFrame (bmBot);
 			if (bmBot == bmpCorona)
@@ -1563,7 +1563,7 @@ else
 			r_tpolyc++;
 			OglActiveTexture (GL_TEXTURE0_ARB);
 			glEnable (GL_TEXTURE_2D);
-			if (OglBindBmTex (bmTop, 0))
+			if (OglBindBmTex (bmTop, 1, 0))
 				return 1;
 			bmTop = BmCurFrame (bmTop);
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
@@ -1658,7 +1658,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 else {
 	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmP, transp)) 
+	if (OglBindBmTex (bmP, 1, transp)) 
 		return 1;
 	bmP = BmOverride (bmP);
 	OglTexWrap (bmP->glTexture, GL_CLAMP);
@@ -1749,14 +1749,14 @@ yo = 1.0f - dy - y / ((float) gameStates.ogl.nLastH * h);
 yf = 1.0f - dy - (dh + y) / ((float) gameStates.ogl.nLastH * h);
 
 OglActiveTexture (GL_TEXTURE0_ARB);
-if (OglBindBmTex (bmP, 0))
+if (OglBindBmTex (bmP, 0, 2))
 	return 1;
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 
 glEnable (GL_TEXTURE_2D);
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
-glEnable (GL_ALPHA_TEST);
+//glEnable (GL_ALPHA_TEST);
 if (!(bBlend = glIsEnabled (GL_BLEND)))
 	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1796,7 +1796,7 @@ BmSetTexCoord (u1, v2, a, orient);
 glVertex2f (xo, yf);
 glEnd ();
 glDepthFunc (depthFunc);
-glDisable (GL_ALPHA_TEST);
+//glDisable (GL_ALPHA_TEST);
 if (!bBlend)
 	glDisable (GL_BLEND);
 OglActiveTexture (GL_TEXTURE0_ARB);
@@ -1811,13 +1811,13 @@ bool OglUBitBltI (
 	int dw, int dh, int dx, int dy, 
 	int sw, int sh, int sx, int sy, 
 	grsBitmap *src, grsBitmap *dest, 
-	int wantmip)
+	int bMipMaps, int bTransp)
 {
 	GLdouble xo, yo, xs, ys;
 	GLdouble u1, v1;//, u2, v2;
 	ogl_texture tex, *texP;
 	GLint curFunc; 
-	int transp = (src->bm_props.flags & BM_FLAG_TGA) ? -1 : (src->bm_props.flags & BM_FLAG_TRANSPARENT) ? 2 : 0;
+	int nTransp = GrBitmapHasTransparency (src) ? (src->bm_props.flags & BM_FLAG_TGA) ? -1 : 2 : 0;
 
 //	unsigned char *oldpal;
 r_ubitbltc++;
@@ -1837,15 +1837,15 @@ if (!(texP = src->glTexture)) {
 	texP->w = sw;
 	texP->h = sh;
 	texP->prio = 0.0;
-	texP->wantmip = wantmip;
+	texP->bMipMaps = bMipMaps;
 	texP->lw = src->bm_props.rowsize;
-	OglLoadTexture (src, sx, sy, texP, transp, 0);
+	OglLoadTexture (src, sx, sy, texP, nTransp, 0);
 	}
 OGL_BINDTEX (texP->handle);
 OglTexWrap (texP, GL_CLAMP);
 glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
 glDepthFunc (GL_ALWAYS); 
-if (transp) {
+if (bTransp && nTransp) {
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glColor4f (1.0, 1.0, 1.0, 1.0);
@@ -1864,7 +1864,7 @@ glVertex2d (xo + xs, yo-ys);
 glTexCoord2d (u1, texP->v); 
 glVertex2d (xo, yo - ys);
 glEnd ();
-if (transp)
+if (bTransp && nTransp)
 	glDisable (GL_BLEND);
 glDisable (GL_TEXTURE_2D);
 glDepthFunc (curFunc);

@@ -1230,6 +1230,7 @@ if (i) {
 	gameOptions [1].render.cockpit.bScaleGauges = 1;
 	gameOptions [1].render.cockpit.bFlashGauges = 1;
 	gameOptions [1].render.cockpit.bReticle = 1;
+	gameOptions [1].render.cockpit.bRotateIndicators = 0;
 	gameOptions [1].render.cockpit.nWindowSize = 0;
 	gameOptions [1].render.cockpit.nWindowZoom = 0;
 	gameOptions [1].render.cockpit.nWindowPos = 1;
@@ -1302,7 +1303,7 @@ else {
 	gameOptions [0].render.nMathFormat = 0;
 	gameOptions [0].render.nDefMathFormat = 0;
 	gameOptions [0].render.bEnableSSE = 0;
-	gameOptions [0].render.nDebrisLife = 3;
+	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.bCoronas = 0;
 #ifdef _DEBUG
 	gameOptions [0].render.shadows.nLights = 1;
@@ -1320,6 +1321,7 @@ else {
 	gameOptions [0].render.cockpit.bObjectTally = 1;
 	gameOptions [0].render.cockpit.bScaleGauges = 1;
 	gameOptions [0].render.cockpit.bFlashGauges = 1;
+	gameOptions [0].render.cockpit.bRotateIndicators = 0;
 	gameOptions [0].render.cockpit.bReticle = 1;
 	gameOptions [0].render.cockpit.nWindowSize = 0;
 	gameOptions [0].render.cockpit.nWindowZoom = 0;

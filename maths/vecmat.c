@@ -890,6 +890,31 @@ return m;
 
 // ------------------------------------------------------------------------
 
+fMatrix *SinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh)
+{
+#if 0
+	double sbsh, cbch, cbsh, sbch;
+
+sbsh = sinb * sinh;
+cbch = cosb * cosh;
+cbsh = cosb * sinh;
+sbch = sinb * cosh;
+m->rVec.p.x = (float) (cbch + sinp * sbsh);		
+m->uVec.p.z = (float) (sbsh + sinp * cbch);		
+m->uVec.p.x = (float) (sinp * cbsh - sbch);		
+m->rVec.p.z = (float) (sinp * sbch - cbsh);		
+m->fVec.p.x = (float) (sinh * cosp);				
+m->rVec.p.y = (float) (sinb * cosp);				
+m->uVec.p.y = (float) (cosb * cosp);				
+m->fVec.p.z = (float) (cosh * cosp);				
+m->fVec.p.y = (float) (-sinp);						
+#else
+#endif
+return m;
+}
+
+// ------------------------------------------------------------------------
+
 fMatrix *SinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh)
 {
 	float sbsh, cbch, cbsh, sbch;
@@ -1252,6 +1277,23 @@ return m;
 //copy and transpose a matrix. returns ptr to matrix
 //dest CANNOT equal source. use VmTransposeMatrix() if this is the case
 vmsMatrix *VmCopyTransposeMatrix (vmsMatrix *dest, vmsMatrix *src)
+{
+Assert(dest != src);
+dest->rVec.p.x = src->rVec.p.x;
+dest->rVec.p.y = src->uVec.p.x;
+dest->rVec.p.z = src->fVec.p.x;
+dest->uVec.p.x = src->rVec.p.y;
+dest->uVec.p.y = src->uVec.p.y;
+dest->uVec.p.z = src->fVec.p.y;
+dest->fVec.p.x = src->rVec.p.z;
+dest->fVec.p.y = src->uVec.p.z;
+dest->fVec.p.z = src->fVec.p.z;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+fMatrix *VmCopyTransposeMatrixf (fMatrix *dest, fMatrix *src)
 {
 Assert(dest != src);
 dest->rVec.p.x = src->rVec.p.x;

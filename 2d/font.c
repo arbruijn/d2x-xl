@@ -61,23 +61,10 @@ typedef struct openfont {
 //list of open fonts, for use (for now) for palette remapping
 openfont open_font[MAX_OPEN_FONTS];
 
-#define FONT			grdCurCanv->cv_font
-#define FG_COLOR		grdCurCanv->cv_font_fg_color
-#define BG_COLOR		grdCurCanv->cv_font_bg_color
-#define FWIDTH       FONT->ft_w
-#define FHEIGHT      FONT->ft_h
-#define FBASELINE    FONT->ft_baseline
-#define FFLAGS       FONT->ftFlags
-#define FMINCHAR     FONT->ft_minchar
-#define FMAXCHAR     FONT->ft_maxchar
-#define FDATA        FONT->ft_data
-#define FCHARS       FONT->ft_chars
-#define FWIDTHS      FONT->ft_widths
-
 #define BITS_TO_BYTES(x)    (( (x)+7)>>3)
 
-int gr_internal_string_clipped (int x, int y, char *s);
-int gr_internal_string_clipped_m (int x, int y, char *s);
+int GrInternalStringClipped (int x, int y, char *s);
+int GrInternalStringClippedM (int x, int y, char *s);
 
 //------------------------------------------------------------------------------
 
@@ -708,7 +695,7 @@ while (next_row != NULL) {
 		bmf = FONT->ft_bitmaps + letter;
 		bmf->bm_props.flags |= BM_FLAG_TRANSPARENT;
 		if (FFLAGS & FT_COLOR)
-			GrBitmapM (xx, yy, bmf); // credits need clipping
+			GrBitmapM (xx, yy, bmf, 2); // credits need clipping
 		else {
 			if (grdCurCanv->cv_bitmap.bm_props.nType == BM_OGL)
 				OglUBitMapMC (xx, yy, 0, 0, bmf, &FG_COLOR, F1_0, 0);
@@ -726,7 +713,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 grsBitmap *CreateStringBitmap (
-	char *s, int nKey, unsigned int nKeyColor, int nTabs [], int bCentered, int nMaxWidth)
+	char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth)
 {
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
@@ -747,6 +734,7 @@ if (!bmP->bm_texBuf) {
 	return NULL;
 	}
 memset (bmP->bm_texBuf, 0, w * h * bmP->bm_bpp);
+bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
 next_row = s;
 y = 0;
 nTab = 0;
@@ -772,7 +760,7 @@ while (next_row != NULL) {
 			}
 		if (c == '\t') {
 			text_ptr++;
-			if (nTab < 6) {
+			if (nTabs && (nTab < 6)) {
 				int	w, h, aw;
 
 				GrGetStringSize (text_ptr, &w, &h, &aw);
@@ -882,84 +870,73 @@ int GrInternalColorString (int x, int y, char *s)
 int GrString (int x, int y, char *s)
 {
 	int w, h, aw;
-	int clipped=0;
+	int clipped = 0;
 
-	Assert (FONT != NULL);
-
-	if (x == 0x8000)	{
-		if (y < 0)
-			clipped |= 1;
-		GrGetStringSize (s, &w, &h, &aw);
-		// for x, since this will be centered, only look at
-		// width.
-		if (w > grdCurCanv->cv_bitmap.bm_props.w) 
-			clipped |= 1;
-		if (y > grdCurCanv->cv_bitmap.bm_props.h) 
-			clipped |= 3;
-		else if ((y+h) > grdCurCanv->cv_bitmap.bm_props.h)
-			clipped |= 1;
-		else if ((y+h) < 0) 
-			clipped |= 2;
-		}
-	else {
-		if ((x<0) || (y<0)) 
-			clipped |= 1;
-		GrGetStringSize (s, &w, &h, &aw);
-		if (x > grdCurCanv->cv_bitmap.bm_props.w) 
-			clipped |= 3;
-		else if ((x+w) > grdCurCanv->cv_bitmap.bm_props.w) 
-			clipped |= 1;
-		else if ((x+w) < 0) 
-			clipped |= 2;
-		if (y > grdCurCanv->cv_bitmap.bm_props.h) 
-			clipped |= 3;
-		else if ((y+h) > grdCurCanv->cv_bitmap.bm_props.h) 
-			clipped |= 1;
-		else if ((y+h) < 0) 
-			clipped |= 2;
+Assert (FONT != NULL);
+if (x == 0x8000)	{
+	if (y < 0)
+		clipped |= 1;
+	GrGetStringSize (s, &w, &h, &aw);
+	// for x, since this will be centered, only look at
+	// width.
+	if (w > grdCurCanv->cv_bitmap.bm_props.w) 
+		clipped |= 1;
+	if (y > grdCurCanv->cv_bitmap.bm_props.h) 
+		clipped |= 3;
+	else if ((y+h) > grdCurCanv->cv_bitmap.bm_props.h)
+		clipped |= 1;
+	else if ((y+h) < 0) 
+		clipped |= 2;
 	}
-
-	if (!clipped)
-		return GrUString (x, y, s);
-
-	if (clipped & 2)	{
-		// Completely clipped...
-		return 0;
+else {
+	if ((x < 0) || (y < 0)) 
+		clipped |= 1;
+	GrGetStringSize (s, &w, &h, &aw);
+	if (x > grdCurCanv->cv_bitmap.bm_props.w) 
+		clipped |= 3;
+	else if ((x + w) > grdCurCanv->cv_bitmap.bm_props.w) 
+		clipped |= 1;
+	else if ((x + w) < 0) 
+		clipped |= 2;
+	if (y > grdCurCanv->cv_bitmap.bm_props.h) 
+		clipped |= 3;
+	else if ((y + h) > grdCurCanv->cv_bitmap.bm_props.h) 
+		clipped |= 1;
+	else if ((y + h) < 0) 
+		clipped |= 2;
 	}
-
-	if (clipped & 1)	{
-		// Partially clipped...
+if (!clipped)
+	return GrUString (x, y, s);
+if (clipped & 2) {
+	// Completely clipped...
+	return 0;
 	}
-
+if (clipped & 1) {
 	// Partially clipped...
-	if (TYPE==BM_OGL)
-		return OglInternalString (x, y, s);
-	if (FFLAGS & FT_COLOR)
-		return GrInternalColorString (x, y, s);
-	if (BG_COLOR.index == -1)
-		return gr_internal_string_clipped_m (x, y, s);
-	return gr_internal_string_clipped (x, y, s);
+	}
+// Partially clipped...
+if (TYPE == BM_OGL)
+	return OglInternalString (x, y, s);
+if (FFLAGS & FT_COLOR)
+	return GrInternalColorString (x, y, s);
+if (BG_COLOR.index == -1)
+	return GrInternalStringClippedM (x, y, s);
+return GrInternalStringClipped (x, y, s);
 }
 
 //------------------------------------------------------------------------------
 
 int GrUString (int x, int y, char *s)
 {
-	if (TYPE==BM_OGL)
-		return OglInternalString (x, y, s);
-	if (FFLAGS & FT_COLOR) {
-		return GrInternalColorString (x, y, s);
-	}
-	else
-		switch (TYPE)
-		{
-		case BM_LINEAR:
-			if (BG_COLOR.index == -1)
-				return GrInternalString0m (x, y, s);
-			else
-				return GrInternalString0 (x, y, s);
-		}
+if (TYPE == BM_OGL)
+	return OglInternalString (x, y, s);
+if (FFLAGS & FT_COLOR)
+	return GrInternalColorString (x, y, s);
+else if (TYPE != BM_LINEAR)
 	return 0;
+if (BG_COLOR.index == -1)
+	return GrInternalString0m (x, y, s);
+return GrInternalString0 (x, y, s);
 }
 
 //------------------------------------------------------------------------------
@@ -1016,7 +993,7 @@ void GrGetStringSize (char *s, int *string_width, int *string_height, int *avera
 //------------------------------------------------------------------------------
 
 void GrGetStringSizeTabbed (char *s, int *string_width, int *string_height, int *average_width, 
-										  int *nTabs, int nMaxWidth)
+									 int *nTabs, int nMaxWidth)
 {
 	char	*pi, *pj;
 	int	w = 0, nTab = 0;
@@ -1031,7 +1008,7 @@ do {
 	if (pj)
 		*pj = '\0';
 	GrGetStringSize (pi, &w, string_height, average_width);
-	if (nTab) {
+	if (nTab && nTabs) {
 		*string_width = LHX (nTabs [nTab - 1]);
 		if (gameStates.multi.bSurfingNet)
 			*string_width += w;
@@ -1066,9 +1043,9 @@ int _CDECL_ GrPrintF (int x, int y, char * format, ...)
 	static char buffer[1000];
 	va_list args;
 
-	va_start (args, format);
-	vsprintf (buffer, format, args);
-	return GrString (x, y, buffer);
+va_start (args, format);
+vsprintf (buffer, format, args);
+return GrString (x, y, buffer);
 }
 
 //------------------------------------------------------------------------------
@@ -1446,7 +1423,7 @@ void GrSetCurFont (grs_font * newFont)
 
 //------------------------------------------------------------------------------
 
-int gr_internal_string_clipped (int x, int y, char *s)
+int GrInternalStringClipped (int x, int y, char *s)
 {
 	unsigned char * fp;
 	char * text_ptr, * next_row, * text_ptr1;
@@ -1548,7 +1525,7 @@ int gr_internal_string_clipped (int x, int y, char *s)
 
 //------------------------------------------------------------------------------
 
-int gr_internal_string_clipped_m (int x, int y, char *s)
+int GrInternalStringClippedM (int x, int y, char *s)
 {
 	unsigned char * fp;
 	char * text_ptr, * next_row, * text_ptr1;
