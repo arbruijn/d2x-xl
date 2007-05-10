@@ -1289,7 +1289,8 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	glDisable (GL_TEXTURE_2D);
-	pc = (EGI_FLAG (bTrackGoalIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && !gameOpts->render.cockpit.bRotateIndicators) ? 
+	pc = (EGI_FLAG (bTrackGoalIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
+			!gameOpts->render.cockpit.bRotateIndicators && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
 		  &trackGoalColor : ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
