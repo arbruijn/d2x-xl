@@ -797,7 +797,7 @@ do {
 			optFriendlyInd = -1;
 		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 		optDmgInd = opt++;
-		ADD_CHECK (opt, TXT_TRKGOAL_INDICATOR, extraGameInfo [1].bMslLockIndicators, KEY_G, HTX_CPIT_TRKGOALIND);
+		ADD_CHECK (opt, TXT_MSLLOCK_INDICATOR, extraGameInfo [1].bMslLockIndicators, KEY_G, HTX_CPIT_MSLLOCKIND);
 		optMslLockInd = opt++;
 		if (extraGameInfo [1].bTargetIndicators || extraGameInfo [1].bDamageIndicators) {
 			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);

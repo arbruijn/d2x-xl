@@ -1637,22 +1637,10 @@ return VmVecMagf (VmVecDecf (&h, p));
 
 vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNormal)
 {
-	fix	mag, dot = VmVecDot (vDir, vNormal);
+	fix	dot = VmVecDot (vDir, vNormal);
 
 VmVecCopyScale (vReflect, vNormal, 2 * dot);
 VmVecNegate (VmVecDec (vReflect, vDir));
-#ifdef _DEBUG
-{
-	vmsVector	d, r;
-mag = VmVecCopyNormalize (&d, vDir);
-dot = VmVecDot (&d, vNormal);
-if (dot < 0)
-	dot = F1_0 - dot;
-VmVecCopyScale (&r, vNormal, 2 * dot);
-VmVecDec (&r, &d);
-VmVecScale (&r, mag);
-}
-#endif
 return vReflect;
 }
 

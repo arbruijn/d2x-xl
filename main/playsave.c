@@ -57,6 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "weapon.h"
 #include "autodl.h"
 #include "args.h"
+#include "collide.h"
 
 //------------------------------------------------------------------------------
 
