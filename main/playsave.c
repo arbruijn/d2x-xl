@@ -839,8 +839,8 @@ for (j = 0; j < 2; j++) {
 	if (player_file_version >= 158)
 		gameOptions [j].render.nDebrisLife = CFReadInt (fp);
 	if (player_file_version >= 159) {
-		extraGameInfo [j].bTrackGoalIndicators = CFReadByte (fp);
-		gameOpts->render.cockpit.bRotateIndicators = CFReadByte (fp);
+		extraGameInfo [j].bMslLockIndicators = CFReadByte (fp);
+		gameOpts->render.cockpit.bRotateMslLockInd = CFReadByte (fp);
 		}
 	}
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
@@ -1285,8 +1285,8 @@ for (j = 0; j < 2; j++) {
 	CFWriteByte ((sbyte) gameOptions [j].render.automap.nRange, fp);
 	CFWriteByte ((sbyte) gameOptions [j].render.automap.bSmoke, fp);
 	CFWriteInt (gameOptions [j].render.nDebrisLife, fp);
-	CFWriteByte ((sbyte) extraGameInfo [j].bTrackGoalIndicators, fp);
-	CFWriteByte ((sbyte) gameOpts->render.cockpit.bRotateIndicators, fp);
+	CFWriteByte ((sbyte) extraGameInfo [j].bMslLockIndicators, fp);
+	CFWriteByte ((sbyte) gameOpts->render.cockpit.bRotateMslLockInd, fp);
 // end of D2X-XL stuff
 	}
 

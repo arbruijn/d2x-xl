@@ -443,7 +443,7 @@ int LastKillGoal;
 // Jeez -- mac compiler can't handle all of these on the same decl line.
 int optSetPower, optPlayTime, optKillGoal, optSocket, optMarkerView, optLight, optPlayersOnMap;
 int optDifficulty, optPPS, optShortPkts, optBrightPlayers, optStartInvul;
-int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optTrkGoalInd, optFriendlyInd, optHitInd;
+int optDarkness, optTeamDoors, optMultiCheats, optTgtInd, optDmgInd, optMslLockInd, optFriendlyInd, optHitInd;
 int optHeadlights, optPowerupLights, optSpotSize;
 int optShowNames, optEnhancedCTF, optAutoTeams, optDualMiss, optRotateLevels, optDisableReactor;
 int optMouseLook, optFastPitch, optSafeUDP, optTowFlags, optCompetition, optPenalty;
@@ -797,8 +797,8 @@ do {
 			optFriendlyInd = -1;
 		ADD_CHECK (opt, TXT_DMG_INDICATOR, extraGameInfo [1].bDamageIndicators, KEY_D, HTX_CPIT_DMGIND);
 		optDmgInd = opt++;
-		ADD_CHECK (opt, TXT_TRKGOAL_INDICATOR, extraGameInfo [1].bTrackGoalIndicators, KEY_G, HTX_CPIT_TRKGOALIND);
-		optTrkGoalInd = opt++;
+		ADD_CHECK (opt, TXT_TRKGOAL_INDICATOR, extraGameInfo [1].bMslLockIndicators, KEY_G, HTX_CPIT_TRKGOALIND);
+		optMslLockInd = opt++;
 		if (extraGameInfo [1].bTargetIndicators || extraGameInfo [1].bDamageIndicators) {
 			ADD_CHECK (opt, TXT_HIT_INDICATOR, extraGameInfo [1].bTagOnlyHitObjs, KEY_T, HTX_HIT_INDICATOR);
 			optHitInd = opt++;
@@ -814,7 +814,7 @@ do {
 	else
 		optTgtInd =
 		optDmgInd =
-		optTrkGoalInd = -1;
+		optMslLockInd = -1;
 	i = ExecMenu1 (NULL, TXT_D2XOPTIONS_TITLE, opt, m, NetworkD2XOptionsPoll, &choice);
   //mpParams.nReactorLife = atoi (szInvul)*60*F1_0;
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
@@ -853,7 +853,7 @@ do {
 			GET_VAL (extraGameInfo [1].bFriendlyIndicators, optFriendlyInd);
 			}
 		GET_VAL (extraGameInfo [1].bDamageIndicators, optDmgInd);
-		GET_VAL (extraGameInfo [1].bTrackGoalIndicators, optTrkGoalInd);
+		GET_VAL (extraGameInfo [1].bMslLockIndicators, optMslLockInd);
 		GET_VAL (extraGameInfo [1].bTagOnlyHitObjs, optHitInd);
 		}
 	} while (i == -2);
@@ -1537,7 +1537,7 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bTargetIndicators = 0;
 	extraGameInfo [1].bFriendlyIndicators = 0;
 	extraGameInfo [1].bDamageIndicators = 0;
-	extraGameInfo [1].bTrackGoalIndicators = 0;
+	extraGameInfo [1].bMslLockIndicators = 0;
 	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
 netGame.szMissionName [sizeof (netGame.szMissionName) - 1] = '\0';
@@ -2521,7 +2521,7 @@ else
 		ADDFLAG (AXI.nWeaponIcons != 0, "Icons");
 		ADDFLAG (!AXI.bCompetition && AXI.bTargetIndicators, "Tgt indicators");
 		ADDFLAG (!AXI.bCompetition && AXI.bDamageIndicators, "Dmg indicators");
-		ADDFLAG (!AXI.bCompetition && AXI.bTrackGoalIndicators, "Trk indicators");
+		ADDFLAG (!AXI.bCompetition && AXI.bMslLockIndicators, "Trk indicators");
 		}
 	else
 		strcat (mTexts [opt], "HUD extensions: None");

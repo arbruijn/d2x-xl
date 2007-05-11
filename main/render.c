@@ -4105,7 +4105,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 int AllowedToFireMissile (void);
 
-void GetPlayerTrackGoal (void)
+void GetPlayerMslLock (void)
 {
 	int			nWeapon, nObject, nGun, h, i, j;
 	vmsVector	vGunPos;
@@ -4115,7 +4115,7 @@ gameData.objs.trackGoals [0] =
 gameData.objs.trackGoals [1] = NULL;
 if (!AllowedToFireMissile ())
 	return;
-if (!EGI_FLAG (bTrackGoalIndicators, 0, 1, 0) || COMPETITION)
+if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0) || COMPETITION)
 	return;
 if (gameStates.app.bPlayerIsDead)
 	return;
@@ -4149,7 +4149,7 @@ int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 	int		i;
 #endif
 
-GetPlayerTrackGoal ();
+GetPlayerMslLock ();
 windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;

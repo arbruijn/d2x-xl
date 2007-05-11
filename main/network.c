@@ -1519,7 +1519,7 @@ extraGameInfo [1].bEnableCheats = egi1Save.bEnableCheats;
 extraGameInfo [1].bTargetIndicators = egi1Save.bTargetIndicators;
 extraGameInfo [1].bDamageIndicators = egi1Save.bDamageIndicators;
 extraGameInfo [1].bFriendlyIndicators = egi1Save.bFriendlyIndicators;
-extraGameInfo [1].bTrackGoalIndicators = egi1Save.bTrackGoalIndicators;
+extraGameInfo [1].bMslLockIndicators = egi1Save.bMslLockIndicators;
 extraGameInfo [1].bTagOnlyHitObjs = egi1Save.bTagOnlyHitObjs;
 extraGameInfo [1].bTowFlags = egi1Save.bTowFlags;
 extraGameInfo [1].bDualMissileLaunch = egi1Save.bDualMissileLaunch;
@@ -4502,7 +4502,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDamageIndicators = 0;
 	extraGameInfo [i].bFriendlyIndicators = 0;
 	extraGameInfo [i].bCloakedIndicators = 0;
-	extraGameInfo [i].bTrackGoalIndicators = 0;
+	extraGameInfo [i].bMslLockIndicators = 0;
 	extraGameInfo [i].bTagOnlyHitObjs = 0;
 	extraGameInfo [i].bTowFlags = 1;
 	extraGameInfo [i].bUseHitAngles = 0;
@@ -4628,7 +4628,7 @@ else {
 	LogErr ("   bDamageIndicators: %d\n", extraGameInfo [1].bDamageIndicators);
 	LogErr ("   bFriendlyIndicators: %d\n", extraGameInfo [1].bFriendlyIndicators);
 	LogErr ("   bCloakedIndicators: %d\n", extraGameInfo [1].bCloakedIndicators);
-	LogErr ("   bTrackGoalIndicators: %d\n", extraGameInfo [1].bTrackGoalIndicators);
+	LogErr ("   bMslLockIndicators: %d\n", extraGameInfo [1].bMslLockIndicators);
 	LogErr ("   bTagOnlyHitObjs: %d\n", extraGameInfo [1].bTagOnlyHitObjs);
 	LogErr ("   bTowFlags: %d\n", extraGameInfo [1].bTowFlags);
 	LogErr ("   bUseHitAngles: %d\n", extraGameInfo [1].bUseHitAngles);

@@ -83,6 +83,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "particles.h"
 #include "vers_id.h"
 #include "input.h"
+#include "collide.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -1372,7 +1373,7 @@ last_key++;		//kill warning
 //------------------------------------------------------------------------------
 
 static int	nCWSopt, nCWZopt, optTextGauges, optWeaponIcons, bShowWeaponIcons, 
-				optIconAlpha, optTgtInd, optDmgInd, optHitInd, optTrkGoalInd;
+				optIconAlpha, optTgtInd, optDmgInd, optHitInd, optMslLockInd;
 
 static char *szCWS [4];
 
@@ -1401,10 +1402,10 @@ if (v != extraGameInfo [0].bDamageIndicators) {
 	*key = -2;
 	return;
 	}
-m = menus + optTrkGoalInd;
+m = menus + optMslLockInd;
 v = m->value;
-if (v != extraGameInfo [0].bTrackGoalIndicators) {
-	extraGameInfo [0].bTrackGoalIndicators = v;
+if (v != extraGameInfo [0].bMslLockIndicators) {
+	extraGameInfo [0].bMslLockIndicators = v;
 	*key = -2;
 	return;
 	}
@@ -1443,10 +1444,10 @@ do {
 		}
 	else
 		optHitInd = -1;
-	ADD_CHECK (opt, TXT_TRKGOAL_INDICATOR, extraGameInfo [0].bTrackGoalIndicators, KEY_G, HTX_CPIT_TRKGOALIND);
-	optTrkGoalInd = opt++;
-	if (extraGameInfo [0].bTrackGoalIndicators) {
-		ADD_CHECK (opt, TXT_ROTATE_INDICATORS, gameOpts->render.cockpit.bRotateIndicators, KEY_R, HTX_ROTATE_INDICATORS);
+	ADD_CHECK (opt, TXT_MSLLOCK_INDICATOR, extraGameInfo [0].bMslLockIndicators, KEY_M, HTX_CPIT_MSLLOCKIND);
+	optMslLockInd = opt++;
+	if (extraGameInfo [0].bMslLockIndicators) {
+		ADD_CHECK (opt, TXT_ROTATE_MSLLOCKIND, gameOpts->render.cockpit.bRotateMslLockInd, KEY_R, HTX_ROTATE_MSLLOCKIND);
 		optRotateInd = opt++;
 		}
 	else
@@ -1464,8 +1465,8 @@ do {
 		GET_VAL (extraGameInfo [0].bCloakedIndicators, optCloakedInd);
 		}
 	GET_VAL (extraGameInfo [0].bDamageIndicators, optDmgInd);
-	GET_VAL (extraGameInfo [0].bTrackGoalIndicators, optTrkGoalInd);
-	GET_VAL (gameOpts->render.cockpit.bRotateIndicators, optRotateInd);
+	GET_VAL (extraGameInfo [0].bMslLockIndicators, optMslLockInd);
+	GET_VAL (gameOpts->render.cockpit.bRotateMslLockInd, optRotateInd);
 	GET_VAL (extraGameInfo [0].bTagOnlyHitObjs, optHitInd);
 	} while (i == -2);
 }

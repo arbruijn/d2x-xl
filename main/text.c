@@ -1653,8 +1653,8 @@ char *defaultGameTexts [][2] = {
 	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d sec"},
 	{"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},
 	{"~Keine Powerups anzeigen", "~Don't show powerups"},
-	{"~Zielsuch-Anzeige", "show track ~Goal indicator"},
-	{"Zielsuch-Anzeige ~Rotieren", "~Rotate track goal indicator"},
+	{"~Zielsuch-Anzeige", "show ~Missile lock indicator"},
+	{"Zielsuch-Anzeige ~Rotieren", "~Rotate missile lock indicator"},
 #if 0
 	{"", ""},
 #endif

@@ -178,7 +178,7 @@ typedef struct tLaserInfo  {
 	int     nParentSig;			// The tObject's parent's nSignature...
 	fix     creationTime;      // Absolute time of creation.
 	short   nLastHitObj;        // For persistent weapons (survive tObject collision), tObject it most recently hit.
-	short   nTrackGoal;         // Object this tObject is tracking.
+	short   nMslLock;         // Object this tObject is tracking.
 	fix     multiplier;         // Power if this is a fusion bolt (or other super weapon to be added).
 } __pack__ tLaserInfo;
 

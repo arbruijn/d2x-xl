@@ -1230,7 +1230,7 @@ if (i) {
 	gameOptions [1].render.cockpit.bScaleGauges = 1;
 	gameOptions [1].render.cockpit.bFlashGauges = 1;
 	gameOptions [1].render.cockpit.bReticle = 1;
-	gameOptions [1].render.cockpit.bRotateIndicators = 0;
+	gameOptions [1].render.cockpit.bRotateMslLockInd = 0;
 	gameOptions [1].render.cockpit.nWindowSize = 0;
 	gameOptions [1].render.cockpit.nWindowZoom = 0;
 	gameOptions [1].render.cockpit.nWindowPos = 1;
@@ -1321,7 +1321,7 @@ else {
 	gameOptions [0].render.cockpit.bObjectTally = 1;
 	gameOptions [0].render.cockpit.bScaleGauges = 1;
 	gameOptions [0].render.cockpit.bFlashGauges = 1;
-	gameOptions [0].render.cockpit.bRotateIndicators = 0;
+	gameOptions [0].render.cockpit.bRotateMslLockInd = 0;
 	gameOptions [0].render.cockpit.bReticle = 1;
 	gameOptions [0].render.cockpit.nWindowSize = 0;
 	gameOptions [0].render.cockpit.nWindowZoom = 0;

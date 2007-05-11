@@ -152,7 +152,7 @@ typedef struct tCockpitOptions {
 	int bMissileView;
 	int bGuidedInMainView;
 	int bObjectTally;
-	int bRotateIndicators;
+	int bRotateMslLockInd;
 	int bPlayerStats;
 	int nWindowPos;
 	int nWindowSize;

@@ -1122,33 +1122,33 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 // -----------------------------------------------------------------------------
 
 static tRgbColorf	trackGoalColor = {1, 0.5f, 0};
-static int	nTrackGoalColor = 0;
-static int	nTrackGoalColorIncr = -1;
+static int	nMslLockColor = 0;
+static int	nMslLockColorIncr = -1;
 
-void RenderTrackGoalIndicator (tObject *objP)
+void RenderMslLockIndicator (tObject *objP)
 {
 	#define INDICATOR_POSITIONS	60
 
 	static tSinCosd	sinCosInd [INDICATOR_POSITIONS];
 	static int			bInitSinCos = 1;
-	static int			nTrackGoalIndPos = 0;
+	static int			nMslLockIndPos = 0;
 	static time_t		t0 = 0;
 
 	fVector				fPos, fVerts [3];
 	float					r, r2;
 	int					nTgtInd, bHasDmg;
 
-if (!EGI_FLAG (bTrackGoalIndicators, 0, 1, 0))
+if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0))
 	return;
 if (!IS_TRACK_GOAL (objP))
 	return;
 if (gameStates.app.nSDLTicks - t0 > 25) {
 	t0 = gameStates.app.nSDLTicks;
-	if (!nTrackGoalColor || (nTrackGoalColor == 15))
-		nTrackGoalColorIncr = -nTrackGoalColorIncr;
-	nTrackGoalColor += nTrackGoalColorIncr;
-	trackGoalColor.green = 0.65f + (float) nTrackGoalColor / 100.0f;
-	nTrackGoalIndPos = (nTrackGoalIndPos + 1) % INDICATOR_POSITIONS;
+	if (!nMslLockColor || (nMslLockColor == 15))
+		nMslLockColorIncr = -nMslLockColorIncr;
+	nMslLockColor += nMslLockColorIncr;
+	trackGoalColor.green = 0.65f + (float) nMslLockColor / 100.0f;
+	nMslLockIndPos = (nMslLockIndPos + 1) % INDICATOR_POSITIONS;
 	}
 VmsVecToFloat (&fPos, &objP->position.vPos);
 G3TransformPointf (&fPos, &fPos, 0);
@@ -1158,7 +1158,7 @@ r2 = r / 4;
 glDisable (GL_CULL_FACE);
 glEnableClientState (GL_VERTEX_ARRAY);
 glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
-if (gameOpts->render.cockpit.bRotateIndicators) {
+if (gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVector	rotVerts [3];
 	fMatrix	m;
 	int		i, j;
@@ -1168,8 +1168,8 @@ if (gameOpts->render.cockpit.bRotateIndicators) {
 		bInitSinCos = 0;
 		}
 	m.rVec.p.x =
-	m.uVec.p.y = (float) sinCosInd [nTrackGoalIndPos].dCos;
-	m.uVec.p.x = (float) sinCosInd [nTrackGoalIndPos].dSin;
+	m.uVec.p.y = (float) sinCosInd [nMslLockIndPos].dCos;
+	m.uVec.p.x = (float) sinCosInd [nMslLockIndPos].dSin;
 	m.rVec.p.y = -m.uVec.p.x;
 	m.rVec.p.z =
 	m.uVec.p.z =
@@ -1282,15 +1282,15 @@ if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 		pc = ObjectFrameColor (NULL, NULL);
 		}
 	}
-RenderTrackGoalIndicator (objP);
+RenderMslLockIndicator (objP);
 if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 		glDisable (GL_STENCIL_TEST);
 	glDisable (GL_TEXTURE_2D);
-	pc = (EGI_FLAG (bTrackGoalIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
-			!gameOpts->render.cockpit.bRotateIndicators && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
+	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
+			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
 		  &trackGoalColor : ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);

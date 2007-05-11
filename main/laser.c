@@ -859,22 +859,22 @@ return fate == HIT_NONE;
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 
 //	-----------------------------------------------------------------------------------------------------------
-//	Return true if weapon *tracker is able to track tObject gameData.objs.objects [nTrackGoal], else return false.
+//	Return true if weapon *tracker is able to track tObject gameData.objs.objects [nMslLock], else return false.
 //	In order for the tObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a wall.
-int ObjectIsTrackeable (int nTrackGoal, tObject *tracker, fix *xDot)
+int ObjectIsTrackeable (int nMslLock, tObject *tracker, fix *xDot)
 {
 	vmsVector	vGoal;
 	tObject		*objP;
 
-if (nTrackGoal == -1)
+if (nMslLock == -1)
 	return 0;
 
 if (IsCoopGame)
 	return 0;
-objP = gameData.objs.objects + nTrackGoal;
+objP = gameData.objs.objects + nMslLock;
 //	Don't track tPlayer if he's cloaked.
-if ((nTrackGoal == LOCALPLAYER.nObject) && 
+if ((nMslLock == LOCALPLAYER.nObject) && 
 	 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
 //	Can't track AI tObject if he's cloaked.
@@ -1113,7 +1113,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 //	See if legal to keep tracking currently tracked tObject.  If not, see if another tObject is trackable.  If not, return -1,
 //	else return tObject number of tracking tObject.
 //	Computes and returns a fairly precise dot product.
-int TrackTrackGoal (int nTrackGoal, tObject *tracker, fix *dot)
+int TrackMslLock (int nMslLock, tObject *tracker, fix *dot)
 {
 	int	rVal = -2;
 	int	nFrame;
@@ -1122,21 +1122,21 @@ int TrackTrackGoal (int nTrackGoal, tObject *tracker, fix *dot)
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each tObject, scan all gameData.objs.objects.
 nFrame = OBJ_IDX (tracker) ^ gameData.app.nFrameCount;
-if (ObjectIsTrackeable (nTrackGoal, tracker, dot)) {
+if (ObjectIsTrackeable (nMslLock, tracker, dot)) {
 	if (gameOpts->legacy.bHomers) {
 		if (nFrame % 8)
-			return nTrackGoal;
+			return nMslLock;
 		}
 	else {
 		if (gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
-			return nTrackGoal;
+			return nMslLock;
 		}
 	}
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If tPlayer fired missile, then search for an tObject, if not, then give up.
 	if (gameData.objs.objects [tracker->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) {
-		if (nTrackGoal == -1) {
+		if (nMslLock == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
 					rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_ROBOT, -1);
@@ -1149,7 +1149,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 				rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, OBJ_ROBOT);
 			} 
 		else {
-			goalType = gameData.objs.objects [tracker->cType.laserInfo.nTrackGoal].nType;
+			goalType = gameData.objs.objects [tracker->cType.laserInfo.nMslLock].nType;
 			if ((goalType == OBJ_PLAYER) || (goalType == OBJ_ROBOT))
 				rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, goalType, -1);
 			else
@@ -1159,10 +1159,10 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	else {
 		if (gameStates.app.cheats.bRobotsKillRobots)
 			goal2Type = OBJ_ROBOT;
-		if (nTrackGoal == -1)
+		if (nMslLock == -1)
 			rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, OBJ_PLAYER, goal2Type);
 		else {
-			goalType = gameData.objs.objects [tracker->cType.laserInfo.nTrackGoal].nType;
+			goalType = gameData.objs.objects [tracker->cType.laserInfo.nMslLock].nType;
 			rVal = FindHomingObjectComplete (&tracker->position.vPos, tracker, goalType, goal2Type);
 			}
 		}
@@ -1295,13 +1295,13 @@ if ((objP == gameData.objs.console) &&
 
 if (gameData.weapons.info [laserType].homingFlag) {
 	if (objP == gameData.objs.console) {
-		laserP->cType.laserInfo.nTrackGoal = 
+		laserP->cType.laserInfo.nMslLock = 
 			FindHomingObject (&vLaserPos, laserP);
-		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nTrackGoal;
+		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nMslLock;
 		}
 	else {// Some other tPlayer shot the homing thing
 		Assert (IsMultiGame);
-		laserP->cType.laserInfo.nTrackGoal = gameData.multigame.laser.nTrack;
+		laserP->cType.laserInfo.nMslLock = gameData.multigame.laser.nTrack;
 		}
 	}
 return nObject;
@@ -1403,7 +1403,7 @@ if ((objP->nType == OBJ_WEAPON) &&
 
 	//	For first 1/2 second of life, missile flies straight.
 	if (objP->cType.laserInfo.creationTime + HOMINGMSL_STRAIGHT_TIME < gameData.time.xGame) {
-		int	nTrackGoal = objP->cType.laserInfo.nTrackGoal;
+		int	nMslLock = objP->cType.laserInfo.nMslLock;
 		int	id = objP->id;
 
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
@@ -1416,15 +1416,15 @@ if ((objP->nType == OBJ_WEAPON) &&
 		}
 
 		//	Make sure the tObject we are tracking is still trackable.
-		nTrackGoal = TrackTrackGoal (nTrackGoal, objP, &dot);
-		if (nTrackGoal == LOCALPLAYER.nObject) {
-			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nTrackGoal].position.vPos);
+		nMslLock = TrackMslLock (nMslLock, objP, &dot);
+		if (nMslLock == LOCALPLAYER.nObject) {
+			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nMslLock].position.vPos);
 			if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 				LOCALPLAYER.homingObjectDist = xDistToPlayer;
 				
 			}
-		if (nTrackGoal != -1) {
-			VmVecSub (&vVecToObject, &gameData.objs.objects [nTrackGoal].position.vPos, &objP->position.vPos);
+		if (nMslLock != -1) {
+			VmVecSub (&vVecToObject, &gameData.objs.objects [nMslLock].position.vPos, &objP->position.vPos);
 			VmVecNormalizeQuick (&vVecToObject);
 			vTemp = objP->mType.physInfo.velocity;
 			speed = VmVecNormalizeQuick (&vTemp);
@@ -1881,7 +1881,7 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 //	gameData.objs.objects [nObject].cType.laserInfo.parentType = objP->cType.laserInfo.parentType;
 //	gameData.objs.objects [nObject].cType.laserInfo.nParentSig = objP->cType.laserInfo.nParentSig;
 
-	gameData.objs.objects [nObject].cType.laserInfo.nTrackGoal = nGoalObj;
+	gameData.objs.objects [nObject].cType.laserInfo.nMslLock = nGoalObj;
 
 	return nObject;
 }
