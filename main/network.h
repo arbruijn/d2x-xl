@@ -327,11 +327,11 @@ if (!gameStates.app.bHaveExtraGameInfo [1])	//host doesn't use d2x-xl or runs in
 if (bLocalFlag == bMultiFlag)
 	return bMultiFlag;
 if (bLocalFlag) {
-	if (bAllowLocalFlagOn)
+	if (bAllowLocalFlagOn || IsCoopGame)
 		return bLocalFlag;
 	}
 else {
-	if (bAllowLocalFlagOff)
+	if (bAllowLocalFlagOff || IsCoopGame)
 		return bLocalFlag;
 	}
 return bMultiFlag;
@@ -536,6 +536,6 @@ extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 extern int nCoopPenalties [10];
 
 
-#define COMPETITION	(IsMultiGame && extraGameInfo [1].bCompetition)
+#define COMPETITION	(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
 
 #endif /* _NETWORK_H */
