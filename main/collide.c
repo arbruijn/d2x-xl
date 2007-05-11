@@ -278,7 +278,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 			PhysApplyForce (objP, vForce);
 			PhysApplyRot (objP, &vRotForce);
 			}
-		else if ((objP->nType == OBJ_CLUTTER) || (objP->nType == OBJ_CNTRLCEN)) {
+		else if ((objP->nType == OBJ_CLUTTER) || (objP->nType == OBJ_DEBRIS) || (objP->nType == OBJ_CNTRLCEN)) {
 			vRotForce.p.x = vForce->p.x / h;
 			vRotForce.p.y = vForce->p.y / h;
 			vRotForce.p.z = vForce->p.z / h;
@@ -415,7 +415,7 @@ if (EGI_FLAG (bUseHitAngles, 0, 0, 0)) {
 		VmVecNormalize (&v1);
 		dot = VmVecDot (&v1, &vr);
 		VmVecScale (&vr, 2 * dot);
-		VmVecNegate (VmVecDec (&vr, &v0));
+		//VmVecNegate (VmVecDec (&vr, &v0));
 		VmVecNormalize (&vr);
 		VmVecScale (&vr, mag);
 		VmVecNegate (&vr);
@@ -2385,13 +2385,13 @@ return 1;
 //##	return; 
 //##}
 
-int CollidePlayerAndClutter (tObject * playerObjP, tObject * clutter, vmsVector *vHitPt) 
+int CollideActorAndClutter (tObject * actor, tObject * clutter, vmsVector *vHitPt) 
 { 
 if (gameStates.app.bD2XLevel && 
-	 (gameData.segs.segment2s [playerObjP->nSegment].special == SEGMENT_IS_NODAMAGE))
+	 (gameData.segs.segment2s [actor->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 1;
-if (BumpTwoObjects (clutter, playerObjP, 1, vHitPt))
-	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
+if (!(actor->flags & OF_EXPLODING) && BumpTwoObjects (clutter, actor, 1, vHitPt))
+	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, actor->nSegment, 0, vHitPt, 0, F1_0);
 return 1;
 }
 
@@ -2566,6 +2566,8 @@ return 1;
 		break;
 #endif
 
+//	-----------------------------------------------------------------------------
+
 int CollideTwoObjects (tObject * A, tObject * B, vmsVector *vHitPt)
 {
 	int collisionType = COLLISION_OF (A->nType, B->nType);
@@ -2592,7 +2594,7 @@ switch (collisionType)	{
 	DO_COLLISION		(OBJ_ROBOT, 	OBJ_WEAPON, 	CollideRobotAndWeapon)
 	NO_COLLISION		(OBJ_ROBOT, 	OBJ_CAMERA, 	CollideRobotAndCamera)
 	NO_COLLISION		(OBJ_ROBOT, 	OBJ_POWERUP, 	CollideRobotAndPowerup)
-	NO_COLLISION		(OBJ_ROBOT, 	OBJ_DEBRIS, 	CollideRobotAndDebris)
+	DO_COLLISION		(OBJ_ROBOT, 	OBJ_DEBRIS, 	CollideActorAndClutter)
 	DO_COLLISION		(OBJ_ROBOT, 	OBJ_CNTRLCEN, 	CollideRobotAndReactor)
 	DO_COLLISION		(OBJ_HOSTAGE, 	OBJ_PLAYER, 	CollideHostageAndPlayer)
 	NO_COLLISION		(OBJ_HOSTAGE, 	OBJ_WEAPON, 	CollideHostageAndWeapon)
@@ -2602,9 +2604,9 @@ switch (collisionType)	{
 	DO_COLLISION		(OBJ_PLAYER, 	OBJ_WEAPON, 	CollidePlayerAndWeapon)
 	NO_COLLISION		(OBJ_PLAYER, 	OBJ_CAMERA, 	CollidePlayerAndCamera)
 	DO_COLLISION		(OBJ_PLAYER, 	OBJ_POWERUP, 	CollidePlayerAndPowerup)
-	NO_COLLISION		(OBJ_PLAYER, 	OBJ_DEBRIS, 	CollidePlayerAndDebris)
+	DO_COLLISION		(OBJ_PLAYER, 	OBJ_DEBRIS, 	CollideActorAndClutter)
 	DO_COLLISION		(OBJ_PLAYER, 	OBJ_CNTRLCEN, 	CollidePlayerAndReactor)
-	DO_COLLISION		(OBJ_PLAYER, 	OBJ_CLUTTER, 	CollidePlayerAndClutter)
+	DO_COLLISION		(OBJ_PLAYER, 	OBJ_CLUTTER, 	CollideActorAndClutter)
 	DO_COLLISION		(OBJ_PLAYER, 	OBJ_MONSTERBALL, 	CollidePlayerAndMonsterball)
 	NO_COLLISION		(OBJ_WEAPON, 	OBJ_CAMERA, 	CollideWeaponAndCamera)
 	NO_COLLISION		(OBJ_WEAPON, 	OBJ_POWERUP, 	CollideWeaponAndPowerup)
@@ -2633,13 +2635,7 @@ switch (collisionType)	{
 return 1;
 }
 
-#define ENABLE_COLLISION(type1, type2) \
-	CollisionResult [type1][type2] = RESULT_CHECK; \
-	CollisionResult [type2][type1] = RESULT_CHECK;
-
-#define DISABLE_COLLISION(type1, type2) \
-	CollisionResult [type1][type2] = RESULT_NOTHING; \
-	CollisionResult [type2][type1] = RESULT_NOTHING;
+//	-----------------------------------------------------------------------------
 
 void CollideInit ()	
 {
@@ -2712,6 +2708,8 @@ void CollideInit ()
 
 }
 
+//	-----------------------------------------------------------------------------
+
 int CollideObjectWithWall (tObject * A, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
 switch (A->nType)	{
@@ -2750,4 +2748,12 @@ switch (A->nType)	{
 return 1;
 }
 
+//	-----------------------------------------------------------------------------
 
+void SetDebrisCollisions (void)
+{
+	int	h = gameOpts->render.nDebrisLife ? RESULT_CHECK : RESULT_NOTHING;
+
+SET_COLLISION (OBJ_PLAYER, OBJ_DEBRIS, h);
+SET_COLLISION (OBJ_ROBOT, OBJ_DEBRIS, h);
+}

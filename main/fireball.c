@@ -20,6 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #include "error.h"
 #include "fix.h"
@@ -352,6 +353,41 @@ tObject *ExplodeBadassPlayer (tObject *objP)
 
 //------------------------------------------------------------------------------
 
+inline double VectorVolume (vmsVector *vMin, vmsVector *vMax)
+{
+return fabs (f2fl (vMax->p.x - vMin->p.x)) *
+		 fabs (f2fl (vMax->p.y - vMin->p.y)) *
+		 fabs (f2fl (vMax->p.z - vMin->p.z));
+}
+
+//------------------------------------------------------------------------------
+
+double ObjectVolume (tObject *objP)
+{
+	tPolyModel	*pm;
+	int			i, j;
+	double		size;
+
+if (objP->renderType != RT_POLYOBJ)
+	size = 4 * Pi * pow (f2fl (objP->size), 3) / 3;
+else {
+	size = 0;
+	pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	if (i = objP->rType.polyObjInfo.nSubObjFlags) {
+		for (j = 0; i && (j < pm->nModels); i >>= 1, j++)
+			if (i & 1)
+				size += VectorVolume (pm->subModels.mins + j, pm->subModels.maxs + j);
+		}
+	else {
+		for (j = 0; j < pm->nModels; j++)
+			size += VectorVolume (pm->subModels.mins + j, pm->subModels.maxs + j);
+		}
+	}
+return sqrt (size);
+}
+
+//------------------------------------------------------------------------------
+
 #define DEBRIS_LIFE (f1_0 * 2)		//lifespan in seconds
 
 fix nDebrisLife [] = {2, 15, 30, 60, 120, 180, 300};
@@ -399,8 +435,12 @@ VmVecMake (&debrisP->mType.physInfo.rotVel, d_rand () + 0x1000, d_rand ()*2 + 0x
 #endif
 VmVecZero (&debrisP->mType.physInfo.rotThrust);
 debrisP->lifeleft = nDebrisLife [gameOpts->render.nDebrisLife] * F1_0 + 3*DEBRIS_LIFE/4 + FixMul (d_rand (), DEBRIS_LIFE);	//	Some randomness, so they don't all go away at the same time.
-debrisP->mType.physInfo.mass = 
+debrisP->mType.physInfo.mass =
+#if 0
+	(fix) ((double) parentObjP->mType.physInfo.mass * ObjectVolume (debrisP) / ObjectVolume (parentObjP));
+#else
 	FixMulDiv (parentObjP->mType.physInfo.mass, debrisP->size, parentObjP->size);
+#endif
 debrisP->mType.physInfo.drag = gameOpts->render.nDebrisLife ? 256 : 0; //fl2f (0.2);		//parentObjP->mType.physInfo.drag;
 if (gameOpts->render.nDebrisLife) {
 	debrisP->mType.physInfo.flags |= PF_FREE_SPINNING;

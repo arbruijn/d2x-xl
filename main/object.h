@@ -306,7 +306,6 @@ extern tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
  * VARIABLES
  */
 
-extern ubyte CollisionResult[MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 // ie CollisionResult[a][b]==  what happens to a when it collides with b
 
 extern char *robot_names[];         // name of each robot
@@ -525,5 +524,15 @@ if (objP == dbgObjP)
 	objP = objP;
 #endif
 }
+
+extern ubyte CollisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
+
+#define SET_COLLISION(type1, type2, result) \
+	CollisionResult [type1][type2] = result; \
+	CollisionResult [type2][type1] = result;
+
+#define ENABLE_COLLISION(type1, type2)		SET_COLLISION(type1, type2, RESULT_CHECK)
+
+#define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
 #endif

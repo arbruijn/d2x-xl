@@ -854,6 +854,7 @@ if (CFClose(fp))
 extraGameInfo [1].bDisableReactor = 0;
 if (rewrite_it)
 	WritePlayerFile();
+SetDebrisCollisions ();
 return errno_ret;
 }
 

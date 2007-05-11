@@ -1199,7 +1199,7 @@ if (flags & FQ_CHECK_OBJS) {
 				continue;
 			if (nThisObject > -1) {
 				if ((CollisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
-					(CollisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+					 (CollisionResult [nOtherType][nThisType] == RESULT_NOTHING))
 					continue;
 				}
 			nFudgedRad = radP1;

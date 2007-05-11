@@ -1013,6 +1013,7 @@ if (!bRestore) {
 	SetEquipGenStates ();
 	}
 SetVertigoRobotFlags ();
+SetDebrisCollisions ();
 return 1;
 }
 
