@@ -234,8 +234,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.render.cockpit.nMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
-		RP (gameOpts->render.cockpit.bMissileView, 0, 0);
-		RP (gameOpts->gameplay.bHeadlightOn, 0, 0);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
 		RP (networkData.nNetLifeKills, 0, 0);
 		RP (networkData.nNetLifeKilled, 0, 0);
@@ -464,6 +462,7 @@ for (i = 0; i < 2; i++) {
 
 	RP (gameOptions [i].gameplay.bDefaultLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
+	RP (gameOptions [i].gameplay.bHeadlightOn, 0, 0);
 	RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
 	RP (gameOptions [i].gameplay.bInventory, i, 0);
 	RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
@@ -485,6 +484,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].render.bAllSegs, i, 0);
 	RP (gameOptions [i].render.bOptimize, i, 0);
 
+	RP (gameOptions [i].render.cockpit.bMissileView, i, 0);
 	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
 	RP (gameOptions [i].render.cockpit.bReticle, i, 0);
 	}
