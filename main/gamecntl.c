@@ -862,47 +862,47 @@ int select_next_window_function(int w)
 {
 	Assert(w==0 || w==1);
 
-	switch (Cockpit_3dView[w]) {
+	switch (gameStates.render.cockpit.n3DView[w]) {
 		case CV_NONE:
-			Cockpit_3dView[w] = CV_REAR;
+			gameStates.render.cockpit.n3DView[w] = CV_REAR;
 			break;
 		case CV_REAR:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-				Cockpit_3dView[w] = CV_RADAR_TOPDOWN;
+				gameStates.render.cockpit.n3DView[w] = CV_RADAR_TOPDOWN;
 				break;
 				}
 		case CV_RADAR_TOPDOWN:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
 			    (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
-				Cockpit_3dView[w] = CV_RADAR_HEADSUP;
+				gameStates.render.cockpit.n3DView[w] = CV_RADAR_HEADSUP;
 				break;
 				}
 		case CV_RADAR_HEADSUP:
 			if (find_escort()) {
-				Cockpit_3dView[w] = CV_ESCORT;
+				gameStates.render.cockpit.n3DView[w] = CV_ESCORT;
 				break;
 			}
 			//if no ecort, fall through
 		case CV_ESCORT:
-			CoopView_player[w] = -1;		//force first tPlayer
+			gameStates.render.cockpit.nCoopPlayerView[w] = -1;		//force first tPlayer
 			//fall through
 		case CV_COOP:
 			gameData.marker.viewers[w] = -1;
 			if ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)) {
-				Cockpit_3dView[w] = CV_COOP;
+				gameStates.render.cockpit.n3DView[w] = CV_COOP;
 				while (1) {
-					CoopView_player[w]++;
-					if (CoopView_player[w] == gameData.multiplayer.nPlayers) {
-						Cockpit_3dView[w] = CV_MARKER;
+					gameStates.render.cockpit.nCoopPlayerView[w]++;
+					if (gameStates.render.cockpit.nCoopPlayerView[w] == gameData.multiplayer.nPlayers) {
+						gameStates.render.cockpit.n3DView[w] = CV_MARKER;
 						goto case_marker;
 					}
-					if (CoopView_player[w]==gameData.multiplayer.nLocalPlayer)
+					if (gameStates.render.cockpit.nCoopPlayerView[w]==gameData.multiplayer.nLocalPlayer)
 						continue;
 
 					if (gameData.app.nGameMode & GM_MULTI_COOP)
 						break;
-					else if (GetTeam(CoopView_player[w]) == GetTeam(gameData.multiplayer.nLocalPlayer))
+					else if (GetTeam(gameStates.render.cockpit.nCoopPlayerView[w]) == GetTeam(gameData.multiplayer.nLocalPlayer))
 						break;
 				}
 				break;
@@ -911,16 +911,16 @@ int select_next_window_function(int w)
 		case CV_MARKER:
 		case_marker:;
 			if (!(gameData.app.nGameMode & GM_MULTI) || (gameData.app.nGameMode & GM_MULTI_COOP) || netGame.bAllowMarkerView) {	//anarchy only
-				Cockpit_3dView[w] = CV_MARKER;
+				gameStates.render.cockpit.n3DView[w] = CV_MARKER;
 				if (gameData.marker.viewers [w] == -1)
 					gameData.marker.viewers [w] = gameData.multiplayer.nLocalPlayer * 2;
 				else if (gameData.marker.viewers [w] == gameData.multiplayer.nLocalPlayer * 2)
 					gameData.marker.viewers [w]++;
 				else
-					Cockpit_3dView[w] = CV_NONE;
+					gameStates.render.cockpit.n3DView[w] = CV_NONE;
 			}
 			else
-				Cockpit_3dView[w] = CV_NONE;
+				gameStates.render.cockpit.n3DView[w] = CV_NONE;
 			break;
 	}
 	WritePlayerFile();
@@ -972,22 +972,22 @@ dump_door_debugging_info()
 		fprintf(dfile, "nWall = %d\n", nWall);
 	
 		if (IS_WALL (nWall)) {
-			wall *wall = gameData.walls.walls + nWall;
+			tWall *tWall = gameData.walls.walls + nWall;
 			tActiveDoor *d;
 			int i;
 	
-			fprintf(dfile, "    nSegment = %d\n", wall->nSegment);
-			fprintf(dfile, "    nSide = %d\n", wall->nSide);
-			fprintf(dfile, "    hps = %x\n", wall->hps);
-			fprintf(dfile, "    nLinkedWall = %d\n", wall->nLinkedWall);
-			fprintf(dfile, "    nType = %d\n", wall->nType);
-			fprintf(dfile, "    flags = %x\n", wall->flags);
-			fprintf(dfile, "    state = %d\n", wall->state);
-			fprintf(dfile, "    tTrigger = %d\n", wall->nTrigger);
-			fprintf(dfile, "    nClip = %d\n", wall->nClip);
-			fprintf(dfile, "    keys = %x\n", wall->keys);
-			fprintf(dfile, "    controllingTrigger = %d\n", wall->controllingTrigger);
-			fprintf(dfile, "    cloakValue = %d\n", wall->cloakValue);
+			fprintf(dfile, "    nSegment = %d\n", tWall->nSegment);
+			fprintf(dfile, "    nSide = %d\n", tWall->nSide);
+			fprintf(dfile, "    hps = %x\n", tWall->hps);
+			fprintf(dfile, "    nLinkedWall = %d\n", tWall->nLinkedWall);
+			fprintf(dfile, "    nType = %d\n", tWall->nType);
+			fprintf(dfile, "    flags = %x\n", tWall->flags);
+			fprintf(dfile, "    state = %d\n", tWall->state);
+			fprintf(dfile, "    tTrigger = %d\n", tWall->nTrigger);
+			fprintf(dfile, "    nClip = %d\n", tWall->nClip);
+			fprintf(dfile, "    keys = %x\n", tWall->keys);
+			fprintf(dfile, "    controllingTrigger = %d\n", tWall->controllingTrigger);
+			fprintf(dfile, "    cloakValue = %d\n", tWall->cloakValue);
 			fprintf(dfile, "\n");
 	
 	

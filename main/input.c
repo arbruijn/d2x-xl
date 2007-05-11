@@ -416,11 +416,11 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) { {
 		int i, d2xJoystickState [10];
 
 	for (i = 0; i < 10; i++)
-		d2xJoystickState [i] = JoyGetButtonState (kcD2X [i*2+1].value);
+		d2xJoystickState [i] = JoyGetButtonState (kcHotkeys [i*2+1].value);
 
 	//----------------Weapon 1----------------
-	if (HaveD2XKey (kcD2X, 0) ||
-			(JoyGetButtonState (kcD2X [1].value) && (d2xJoystickState [0] != d2xJoystick_ostate [0])))
+	if (HaveD2XKey (kcHotkeys, 0) ||
+			(JoyGetButtonState (kcHotkeys [1].value) && (d2xJoystickState [0] != d2xJoystick_ostate [0])))
 	{
 		//int i, valu=0;
 		DoSelectWeapon (0,0);
@@ -432,42 +432,42 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) { {
 		*/
 	}
 	//----------------Weapon 2----------------
-	if (HaveD2XKey (kcD2X, 2) ||
-			(JoyGetButtonState (kcD2X [3].value) && (d2xJoystickState [1] != d2xJoystick_ostate [1])))
+	if (HaveD2XKey (kcHotkeys, 2) ||
+			(JoyGetButtonState (kcHotkeys [3].value) && (d2xJoystickState [1] != d2xJoystick_ostate [1])))
 		DoSelectWeapon (1,0);
 	//----------------Weapon 3----------------
-	if (HaveD2XKey (kcD2X, 4) ||
-			(JoyGetButtonState (kcD2X [5].value) && (d2xJoystickState [2] != d2xJoystick_ostate [2])))
+	if (HaveD2XKey (kcHotkeys, 4) ||
+			(JoyGetButtonState (kcHotkeys [5].value) && (d2xJoystickState [2] != d2xJoystick_ostate [2])))
 		DoSelectWeapon (2,0);
 	//----------------Weapon 4----------------
-	if (HaveD2XKey (kcD2X, 6) ||
-			(JoyGetButtonState (kcD2X [7].value) && (d2xJoystickState [3] != d2xJoystick_ostate [3])))
+	if (HaveD2XKey (kcHotkeys, 6) ||
+			(JoyGetButtonState (kcHotkeys [7].value) && (d2xJoystickState [3] != d2xJoystick_ostate [3])))
 		DoSelectWeapon (3,0);
 	//----------------Weapon 5----------------
-	if (HaveD2XKey (kcD2X, 8) ||
-			(JoyGetButtonState (kcD2X [9].value) && (d2xJoystickState [4] != d2xJoystick_ostate [4])))
+	if (HaveD2XKey (kcHotkeys, 8) ||
+			(JoyGetButtonState (kcHotkeys [9].value) && (d2xJoystickState [4] != d2xJoystick_ostate [4])))
 		DoSelectWeapon (4,0);
 
 	//--------- Read secondary weapon select ----------
 	//----------------Weapon 6----------------
-	if (HaveD2XKey (kcD2X, 10) ||
-			(JoyGetButtonState (kcD2X [11].value) && (d2xJoystickState [5] != d2xJoystick_ostate [5])))
+	if (HaveD2XKey (kcHotkeys, 10) ||
+			(JoyGetButtonState (kcHotkeys [11].value) && (d2xJoystickState [5] != d2xJoystick_ostate [5])))
 		DoSelectWeapon (0,1);
 	//----------------Weapon 7----------------
-	if (HaveD2XKey (kcD2X, 12) ||
-			(JoyGetButtonState (kcD2X [13].value) && (d2xJoystickState [6] != d2xJoystick_ostate [6])))
+	if (HaveD2XKey (kcHotkeys, 12) ||
+			(JoyGetButtonState (kcHotkeys [13].value) && (d2xJoystickState [6] != d2xJoystick_ostate [6])))
 		DoSelectWeapon (1,1);
 	//----------------Weapon 8----------------
-	if (HaveD2XKey (kcD2X, 14) ||
-			(JoyGetButtonState (kcD2X [15].value) && (d2xJoystickState [7] != d2xJoystick_ostate [7])))
+	if (HaveD2XKey (kcHotkeys, 14) ||
+			(JoyGetButtonState (kcHotkeys [15].value) && (d2xJoystickState [7] != d2xJoystick_ostate [7])))
 		DoSelectWeapon (2,1);
 	//----------------Weapon 9----------------
-	if (HaveD2XKey (kcD2X, 16) ||
-			(JoyGetButtonState (kcD2X [17].value) && (d2xJoystickState [8] != d2xJoystick_ostate [8])))
+	if (HaveD2XKey (kcHotkeys, 16) ||
+			(JoyGetButtonState (kcHotkeys [17].value) && (d2xJoystickState [8] != d2xJoystick_ostate [8])))
 		DoSelectWeapon (3,1);
 	//----------------Weapon 0----------------
-	if (HaveD2XKey (kcD2X, 18) ||
-			(JoyGetButtonState (kcD2X [19].value) && (d2xJoystickState [9] != d2xJoystick_ostate [9])))
+	if (HaveD2XKey (kcHotkeys, 18) ||
+			(JoyGetButtonState (kcHotkeys [19].value) && (d2xJoystickState [9] != d2xJoystick_ostate [9])))
 		DoSelectWeapon (4,1);
 	memcpy (d2xJoystick_ostate, d2xJoystickState, 10 * sizeof (int));
 	}

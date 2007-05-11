@@ -34,9 +34,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_ILLUSION_ON      6   // Turn an illusion on
 #define TT_UNLOCK_DOOR      7   // Unlock a door
 #define TT_LOCK_DOOR        8   // Lock a door
-#define TT_OPEN_WALL        9   // Makes a wall open
-#define TT_CLOSE_WALL       10  // Makes a wall closed
-#define TT_ILLUSORY_WALL    11  // Makes a wall illusory
+#define TT_OPEN_WALL        9   // Makes a tWall open
+#define TT_CLOSE_WALL       10  // Makes a tWall closed
+#define TT_ILLUSORY_WALL    11  // Makes a tWall illusory
 #define TT_LIGHT_OFF        12  // Turn a light off
 #define TT_LIGHT_ON         13  // Turn s light on
 #define TT_TELEPORT			 14
@@ -100,9 +100,9 @@ typedef struct v30_trigger {
 #define TRIGGER_SECRET_EXIT      256    // Exit to secret level
 #define TRIGGER_ILLUSION_ON      512    // Switch Illusion ON tTrigger
 #define TRIGGER_UNLOCK_DOORS    1024    // Unlocks a door
-#define TRIGGER_OPEN_WALL       2048    // Makes a wall open
-#define TRIGGER_CLOSE_WALL      4096    // Makes a wall closed
-#define TRIGGER_ILLUSORY_WALL   8192    // Makes a wall illusory
+#define TRIGGER_OPEN_WALL       2048    // Makes a tWall open
+#define TRIGGER_CLOSE_WALL      4096    // Makes a tWall closed
+#define TRIGGER_ILLUSORY_WALL   8192    // Makes a tWall illusory
 
 //the tTrigger really should have both a nType & a flags, since most of the
 //flags bits are exclusive of the others.

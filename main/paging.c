@@ -333,7 +333,7 @@ void PagingTouchSegment (tSegment * segp)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchWall (wall *wallP)
+void PagingTouchWall (tWall *wallP)
 {
 	int	j;
 	tWallClip *anim;

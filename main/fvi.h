@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //return values for FindVectorIntersection() - what did we hit?
 #define HIT_NONE		0		//we hit nothing
-#define HIT_WALL		1		//we hit - guess - a wall
+#define HIT_WALL		1		//we hit - guess - a tWall
 #define HIT_OBJECT	2		//we hit an tObject - which one?  no way to tell...
 #define HIT_BAD_P0	3		//start point is not in specified tSegment
 
@@ -31,11 +31,11 @@ typedef struct tFVIHitInfo {
 	int 			nType;						//what sort of intersection
 	short 		nSegment;					//what tSegment hit_pnt is in
 	short			nSegment2;
-	short 		nSide;						//if hit wall, which tSide
+	short 		nSide;						//if hit tWall, which tSide
 	short 		nSideSegment;				//what tSegment the hit tSide is in
 	short 		nObject;						//if tObject hit, which tObject
 	vmsVector	vPoint;						//where we hit
-	vmsVector 	vNormal;						//if hit wall, ptr to its surface normal
+	vmsVector 	vNormal;						//if hit tWall, ptr to its surface normal
 	int			nNestCount;
 } tFVIHitInfo;
 
@@ -49,7 +49,7 @@ typedef struct tFVIData {
 //flags for fvi query
 #define FQ_CHECK_OBJS	1		//check against objects?
 #define FQ_TRANSWALL		2		//go through transparent walls
-#define FQ_TRANSPOINT	4		//go through trans wall if hit point is transparent
+#define FQ_TRANSPOINT	4		//go through trans tWall if hit point is transparent
 #define FQ_GET_SEGLIST	8		//build a list of segments
 #define FQ_IGNORE_POWERUPS	16		//ignore powerups
 #define FQ_SEE_OBJS		32

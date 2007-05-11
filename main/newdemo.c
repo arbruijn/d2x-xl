@@ -152,7 +152,7 @@ static int		bRevertFormat = -1;
 #define ND_EVENT_DOOR_OPENING       41  // with tSegment/nSide
 #define ND_EVENT_LASER_LEVEL        42  // no data
 #define ND_EVENT_PLAYER_AFTERBURNER 43  // followed by byte old ab, current ab
-#define ND_EVENT_CLOAKING_WALL      44  // info changing while wall cloaking
+#define ND_EVENT_CLOAKING_WALL      44  // info changing while tWall cloaking
 #define ND_EVENT_CHANGE_COCKPIT     45  // change the cockpit
 #define ND_EVENT_START_GUIDED       46  // switch to guided view
 #define ND_EVENT_END_GUIDED         47  // stop guided view/return to ship
@@ -1590,9 +1590,10 @@ StartTime ();
 
 int NDReadDemoStart (int rnd_demo)
 {
-	sbyte i, gameType, laserLevel;
-	char c, energy, shield;
-	char text [128], szCurrentMission [FILENAME_LEN];
+	sbyte	i, gameType, laserLevel;
+	char	c, energy, shield;
+	int	nVersionFilter;
+	char	text [128], szCurrentMission [FILENAME_LEN];
 
 c = NDReadByte ();
 if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
@@ -1703,7 +1704,11 @@ if (laserLevel != LOCALPLAYER.laserLevel) {
 	}
 // Support for missions
 NDReadString (szCurrentMission);
-if (!LoadMissionByName (szCurrentMission, -1)) {
+nVersionFilter = gameOpts->app.nVersionFilter;
+gameOpts->app.nVersionFilter = 3;	//make sure mission will be loaded
+i = LoadMissionByName (szCurrentMission, -1);
+gameOpts->app.nVersionFilter = nVersionFilter;
+if (!i) {
 	if (!rnd_demo) {
 		tMenuItem m [1];
 
@@ -2638,7 +2643,7 @@ while (!bDone) {
 					gameData.walls.walls [i].nType = NDReadByte ();
 					gameData.walls.walls [i].flags = NDReadByte ();
 					gameData.walls.walls [i].state = NDReadByte ();
-					segP = &gameData.segs.segments [gameData.walls.walls [i].nSegment];
+					segP = gameData.segs.segments + gameData.walls.walls [i].nSegment;
 					nSide = gameData.walls.walls [i].nSide;
 					segP->sides [nSide].nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
@@ -3336,7 +3341,7 @@ if (!filename) {
 	sprintf (searchName, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : "");
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
-			if (nFiles==nRandFiles) {
+			if (nFiles == nRandFiles) {
 				filename = (char *)&ffs.name;
 				break;
 				}
@@ -3402,8 +3407,8 @@ gameData.demo.nFrameCount = 0;
 gameData.demo.bPlayersCloaked = 0;
 gameData.demo.nPlaybackStyle = NORMAL_PLAYBACK;
 SetFunctionMode (FMODE_GAME);
-Cockpit_3dView [0] = CV_NONE;       //turn off 3d views on cockpit
-Cockpit_3dView [1] = CV_NONE;       //turn off 3d views on cockpit
+gameStates.render.cockpit.n3DView [0] = CV_NONE;       //turn off 3d views on cockpit
+gameStates.render.cockpit.n3DView [1] = CV_NONE;       //turn off 3d views on cockpit
 SDL_ShowCursor (0);
 NDPlayBackOneFrame ();       // this one loads new level
 NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb game

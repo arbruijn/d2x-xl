@@ -1374,7 +1374,7 @@ AIPathGarbageCollect ();
 }
 
 //	---------------------------------------------------------------------------------------------------------
-//	Probably called because a robot bashed a wall, getting a bunch of retries.
+//	Probably called because a robot bashed a tWall, getting a bunch of retries.
 //	Try to resume path.
 void AttemptToResumePath (tObject *objP)
 {

@@ -1,4 +1,4 @@
-/* $Id: wall.c,v 1.10 2003/10/04 03:14:48 btb Exp $ */
+/* $Id: tWall.c,v 1.10 2003/10/04 03:14:48 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef RCS
-static char rcsid[] = "$Id: wall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
+static char rcsid[] = "$Id: tWall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 #endif
 
 #include <stdio.h>
@@ -46,7 +46,7 @@ static char rcsid[] = "$Id: wall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 #include "newdemo.h"
 #include "multi.h"
 #include "gameseq.h"
-#include "laser.h"		//	For seeing if a flare is stuck in a wall.
+#include "laser.h"		//	For seeing if a flare is stuck in a tWall.
 #include "collide.h"
 #include "effects.h"
 #include "ogl_init.h"
@@ -155,11 +155,11 @@ return gameOpts->render.bAutoTransparency && IsTransparentTexture (sideP->nBaseT
 
 //define these here so I don't have to change WallIsDoorWay and run
 //the risk of screwing it up.
-#define WID_WALL						2	// 0/1/0		wall
-#define WID_TRANSPARENT_WALL		6	//	0/1/1		transparent wall
-#define WID_ILLUSORY_WALL			3	//	1/1/0		illusory wall
-#define WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory wall
-#define WID_NO_WALL					5	//	1/0/1		no wall, can fly through
+#define WID_WALL						2	// 0/1/0		tWall
+#define WID_TRANSPARENT_WALL		6	//	0/1/1		transparent tWall
+#define WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
+#define WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
+#define WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
 #define WID_EXTERNAL					8	// 0/0/0/1	don't see it, dont fly through it
 
 //-----------------------------------------------------------------
@@ -170,16 +170,16 @@ return gameOpts->render.bAutoTransparency && IsTransparentTexture (sideP->nBaseT
 //		WID_RENDER_FLAG			2
 //		WID_RENDPAST_FLAG			4
 //	 Return values:
-//		WID_WALL						2	// 0/1/0		wall
-//		WID_TRANSPARENT_WALL		6	//	0/1/1		transparent wall
-//		WID_ILLUSORY_WALL			3	//	1/1/0		illusory wall
-//		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory wall
-//		WID_NO_WALL					5	//	1/0/1		no wall, can fly through
+//		WID_WALL						2	// 0/1/0		tWall
+//		WID_TRANSPARENT_WALL		6	//	0/1/1		transparent tWall
+//		WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
+//		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
+//		WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
 int WallIsDoorWay (tSegment * segP, short nSide)
 {
 	int flags, nType;
 	int state;
-	wall * wallP = gameData.walls.walls + WallNumP (segP, nSide);
+	tWall * wallP = gameData.walls.walls + WallNumP (segP, nSide);
 #ifdef _DEBUG
 	short nSegment = SEG_IDX (segP);
 
@@ -193,7 +193,7 @@ Assert(nSide>=0 && nSide<6);
 //--Covered by macro	if (segP->children[nSide] == -2)
 //--Covered by macro		return WID_EXTERNAL_FLAG;
 
-//--Covered by macro // No wall present.
+//--Covered by macro // No tWall present.
 //--Covered by macro	if (!IS_WALL (WallNumP (segP, nSide)))
 //--Covered by macro		return WID_NO_WALL;
 
@@ -287,7 +287,7 @@ return WallIsDoorWay (segP, nSide);
 void WallInit ()
 {
 	int i;
-	wall *w = gameData.walls.walls;
+	tWall *w = gameData.walls.walls;
 
 	gameData.walls.nWalls = 0;
 	for (i = 0; i < MAX_WALLS; i++, w++) {
@@ -306,10 +306,10 @@ void WallInit ()
 }
 
 //-----------------------------------------------------------------
-// Initializes one wall.
+// Initializes one tWall.
 void WallReset (tSegment *seg, short tSide)
 {
-	wall *w;
+	tWall *w;
 	int i = WallNumP (seg, tSide);
 
 if (!IS_WALL (i)) {
@@ -331,7 +331,7 @@ w->nLinkedWall = NO_WALL;
 #endif
 
 //-----------------------------------------------------------------
-//set the nBaseTex or nOvlTex field for a wall/door
+//set the nBaseTex or nOvlTex field for a tWall/door
 void WallSetTMapNum (tSegment *seg, short tSide, tSegment *cSegP, short cSide, int anim_num, int nFrame)
 {
 tWallClip *anim = gameData.walls.pAnims + anim_num;
@@ -390,14 +390,14 @@ if (cSegP)
 
 
 // -------------------------------------------------------------------------------
-//when the wall has used all its hitpoints, this will destroy it
+//when the tWall has used all its hitpoints, this will destroy it
 void BlastBlastableWall (tSegment *seg, short tSide)
 {
 	short Connectside;
 	tSegment *cSegP;
 	int a, n;
 	short nWall, cwall_num;
-	wall *w;
+	tWall *w;
 
 nWall = WallNumP (seg, tSide);
 Assert(IS_WALL (nWall));
@@ -422,7 +422,7 @@ KillStuckObjects(WallNumP (seg, tSide));
 if (IS_WALL (cwall_num))
 	KillStuckObjects(cwall_num);
 
-//if this is an exploding wall, explode it
+//if this is an exploding tWall, explode it
 if (gameData.walls.pAnims[w->nClip].flags & WCF_EXPLODES)
 	ExplodeWall(SEG_IDX (seg),tSide);
 else {
@@ -438,7 +438,7 @@ else {
 
 
 //-----------------------------------------------------------------
-// Destroys a blastable wall.
+// Destroys a blastable tWall.
 void WallDestroy (tSegment *seg, short tSide)
 {
 Assert(IS_WALL (WallNumP (seg, tSide)));
@@ -447,20 +447,20 @@ Assert(SEG_IDX (seg) != 0);
 if (gameData.walls.walls[WallNumP (seg, tSide)].nType == WALL_BLASTABLE)
 	BlastBlastableWall(seg, tSide);
 else
-	Error("Hey bub, you are trying to destroy an indestructable wall.");
+	Error("Hey bub, you are trying to destroy an indestructable tWall.");
 }
 
 //-----------------------------------------------------------------
-// Deteriorate appearance of wall. (Changes bitmap (paste-ons))
+// Deteriorate appearance of tWall. (Changes bitmap (paste-ons))
 void WallDamage (tSegment *seg, short tSide, fix damage)
 {
 	int a, i, n;
 	short cwall_num, nWall = WallNumP (seg, tSide);
-	wall *w;
+	tWall *w;
 
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CONDBG, "Damaging illegal wall\n");
+	con_printf (CONDBG, "Damaging illegal tWall\n");
 #endif
 	return;
 	}
@@ -512,13 +512,13 @@ else {
 // Opens a door
 void WallOpenDoor (tSegment *seg, short tSide)
 {
-	wall *w;
+	tWall *w;
 	tActiveDoor *d;
 	short  Connectside, nWall, cwall_num;
 	tSegment *cSegP;
 
 nWall = WallNumP (seg, tSide);
-Assert(IS_WALL (nWall)); 	//Opening door on illegal wall
+Assert(IS_WALL (nWall)); 	//Opening door on illegal tWall
 if (!IS_WALL (nWall))
 	return;
 
@@ -592,7 +592,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening(SEG_IDX (seg), tSide);
 
 if (IS_WALL (w->nLinkedWall) && IS_WALL (cwall_num) && (w->nLinkedWall == cwall_num)) {
-	wall *w2;
+	tWall *w2;
 	tSegment *seg2;
 
 	w2		= gameData.walls.walls + w->nLinkedWall;
@@ -627,10 +627,10 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 }
 
 //-----------------------------------------------------------------
-// start the transition from closed -> open wall
+// start the transition from closed -> open tWall
 void StartWallCloak (tSegment *seg, short tSide)
 {
-	wall *w;
+	tWall *w;
 	tCloakingWall *d;
 	short Connectside;
 	tSegment *cSegP;
@@ -639,7 +639,7 @@ void StartWallCloak (tSegment *seg, short tSide)
 
 	if (gameData.demo.nState==ND_STATE_PLAYBACK) return;
 
-	Assert(IS_WALL (WallNumP (seg, tSide))); 	//Opening door on illegal wall
+	Assert(IS_WALL (WallNumP (seg, tSide))); 	//Opening door on illegal tWall
 
 	w = gameData.walls.walls + WallNumP (seg, tSide);
 	if (w->nType == WALL_OPEN || w->state == WALL_DOOR_CLOAKING)		//already open or cloaking
@@ -669,7 +669,7 @@ void StartWallCloak (tSegment *seg, short tSide)
 		d = gameData.walls.cloaking + gameData.walls.nCloaking;
 		d->time = 0;
 		if (gameData.walls.nCloaking >= MAX_CLOAKING_WALLS) {		//no more!
-			Int3();		//ran out of cloaking wall slots
+			Int3();		//ran out of cloaking tWall slots
 			w->nType = WALL_OPEN;
 			if (IS_WALL (cwall_num))
 				gameData.walls.walls[cwall_num].nType = WALL_OPEN;
@@ -678,7 +678,7 @@ void StartWallCloak (tSegment *seg, short tSide)
 		gameData.walls.nCloaking++;
 	}
 	else {
-		Int3();		//unexpected wall state
+		Int3();		//unexpected tWall state
 		return;
 	}
 
@@ -707,10 +707,10 @@ void StartWallCloak (tSegment *seg, short tSide)
 }
 
 //-----------------------------------------------------------------
-// start the transition from open -> closed wall
+// start the transition from open -> closed tWall
 void StartWallDecloak (tSegment *seg, short tSide)
 {
-	wall *w;
+	tWall *w;
 	tCloakingWall *d;
 	short Connectside;
 	tSegment *cSegP;
@@ -719,7 +719,7 @@ void StartWallDecloak (tSegment *seg, short tSide)
 
 	if (gameData.demo.nState==ND_STATE_PLAYBACK) return;
 
-	Assert(IS_WALL (WallNumP (seg, tSide))); 	//Opening door on illegal wall
+	Assert(IS_WALL (WallNumP (seg, tSide))); 	//Opening door on illegal tWall
 
 	w = gameData.walls.walls + WallNumP (seg, tSide);
 	if (w->nType == WALL_CLOSED || w->state == WALL_DOOR_DECLOAKING)		//already closed or decloaking
@@ -741,7 +741,7 @@ void StartWallDecloak (tSegment *seg, short tSide)
 		d = gameData.walls.cloaking + gameData.walls.nCloaking;
 		d->time = 0;
 		if (gameData.walls.nCloaking >= MAX_CLOAKING_WALLS) {		//no more!
-			Int3();		//ran out of cloaking wall slots
+			Int3();		//ran out of cloaking tWall slots
 			/* what is this _doing_ here?
 			w->nType = WALL_CLOSED;
 			gameData.walls.walls[WallNumP (cSegP, Connectside)].nType = WALL_CLOSED;
@@ -751,7 +751,7 @@ void StartWallDecloak (tSegment *seg, short tSide)
 		gameData.walls.nCloaking++;
 	}
 	else {
-		Int3();		//unexpected wall state
+		Int3();		//unexpected tWall state
 		return;
 	}
 
@@ -802,13 +802,13 @@ void WallCloseDoorNum (int nDoor)
 
 d = gameData.walls.activeDoors + nDoor;
 for (p = 0; p < d->nPartCount; p++) {
-	wall *w;
+	tWall *w;
 	short Connectside, tSide;
 	tSegment *cSegP, *seg;
 	w = gameData.walls.walls + d->nFrontWall[p];
 	seg = gameData.segs.segments + w->nSegment;
 	tSide = w->nSide;
-	Assert(IS_WALL (WallNumP (seg, tSide)));		//Closing door on illegal wall
+	Assert(IS_WALL (WallNumP (seg, tSide)));		//Closing door on illegal tWall
 	cSegP = gameData.segs.segments + seg->children[tSide];
 	Connectside = FindConnectedSide(seg, cSegP);
 	Assert(Connectside != -1);
@@ -874,12 +874,12 @@ int IsDoorFree (tSegment *seg,short tSide)
 // Closes a door
 void WallCloseDoor(tSegment *seg, short tSide)
 {
-	wall *w;
+	tWall *w;
 	tActiveDoor *d;
 	short Connectside, nWall, cwall_num;
 	tSegment *cSegP;
 
-	Assert(IS_WALL (WallNumP (seg, tSide))); 	//Opening door on illegal wall
+	Assert(IS_WALL (WallNumP (seg, tSide))); 	//Opening door on illegal tWall
 
 	w = &gameData.walls.walls[WallNumP (seg, tSide)];
 	nWall = WALL_IDX (w);
@@ -960,14 +960,14 @@ void WallCloseDoor(tSegment *seg, short tSide)
 
 int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime)
 {
-	wall	*wallP;
+	tWall	*wallP;
 	int	i, nFrames, nWall;
 	fix	xTotalTime, xFrameTime;
 
 if (!segP || (nSide < 0))
 	return 3;
 nWall = WallNumP (segP, nSide);
-Assert(IS_WALL (nWall));		//Trying to DoDoorOpen on illegal wall
+Assert(IS_WALL (nWall));		//Trying to DoDoorOpen on illegal tWall
 wallP = gameData.walls.walls + nWall;
 nFrames = AnimFrameCount (gameData.walls.pAnims + wallP->nClip);
 if (!nFrames)
@@ -1006,7 +1006,7 @@ void DoDoorOpen(int nDoor)
 
 d = gameData.walls.activeDoors + nDoor;
 for (p = 0; p < d->nPartCount; p++) {
-	wall		*w;
+	tWall		*w;
 	short		cSide, tSide;
 	tSegment	*cSegP, *seg;
 	int		wn;
@@ -1019,7 +1019,7 @@ for (p = 0; p < d->nPartCount; p++) {
 	seg = gameData.segs.segments + w->nSegment;
 	tSide = w->nSide;
 	wn = WallNumP (seg, tSide);
-	Assert(IS_WALL (wn));		//Trying to DoDoorOpen on illegal wall
+	Assert(IS_WALL (wn));		//Trying to DoDoorOpen on illegal tWall
 	bFlags &= AnimateOpeningDoor (seg, tSide, d->time);
 	cSegP = gameData.segs.segments + seg->children[tSide];
 	cSide = FindConnectedSide(seg, cSegP);
@@ -1037,14 +1037,14 @@ if (bFlags & 1)
 
 int AnimateClosingDoor (tSegment *segP, short nSide, fix xElapsedTime)
 {
-	wall	*wallP;
+	tWall	*wallP;
 	int	i, nFrames, nWall;
 	fix	xTotalTime, xFrameTime;
 
 if (!segP || (nSide < 0))
 	return 3;
 nWall = WallNumP (segP, nSide);
-Assert(IS_WALL (nWall));		//Trying to DoDoorOpen on illegal wall
+Assert(IS_WALL (nWall));		//Trying to DoDoorOpen on illegal tWall
 wallP = gameData.walls.walls + nWall;
 nFrames = AnimFrameCount (gameData.walls.pAnims + wallP->nClip);
 if (!nFrames)
@@ -1067,7 +1067,7 @@ return 0;
 void DoDoorClose (int nDoor)
 {
 	tActiveDoor *d;
-	wall			*w;
+	tWall			*w;
 	int			p, bFlags = 1;
 
 Assert(nDoor != -1);		//Trying to DoDoorOpen on illegal door
@@ -1091,7 +1091,7 @@ for (p = 0; p < d->nPartCount; p++) {
 	tSide = w->nSide;
 	if (!IS_WALL (WallNumP (seg, tSide))) {
 #if TRACE
-		con_printf (CONDBG, "Trying to DoDoorClose on Illegal wall\n");
+		con_printf (CONDBG, "Trying to DoDoorClose on Illegal tWall\n");
 #endif
 		return;
 		}
@@ -1127,8 +1127,8 @@ else
 
 
 //-----------------------------------------------------------------
-// Turns off an illusionary wall (This will be used primarily for
-//  wall switches or triggers that can turn on/off illusionary walls.)
+// Turns off an illusionary tWall (This will be used primarily for
+//  tWall switches or triggers that can turn on/off illusionary walls.)
 void WallIllusionOff(tSegment *seg, short tSide)
 {
 	tSegment *cSegP;
@@ -1148,7 +1148,7 @@ void WallIllusionOff(tSegment *seg, short tSide)
 
 	if (!IS_WALL (WallNumP (seg, tSide))) {
 #if TRACE
-		con_printf (CONDBG, "Trying to shut off illusion illegal wall\n");
+		con_printf (CONDBG, "Trying to shut off illusion illegal tWall\n");
 #endif
 		return;
 	}
@@ -1163,8 +1163,8 @@ void WallIllusionOff(tSegment *seg, short tSide)
 }
 
 //-----------------------------------------------------------------
-// Turns on an illusionary wall (This will be used primarily for
-//  wall switches or triggers that can turn on/off illusionary walls.)
+// Turns on an illusionary tWall (This will be used primarily for
+//  tWall switches or triggers that can turn on/off illusionary walls.)
 void WallIllusionOn (tSegment *seg, short tSide)
 {
 	tSegment *cSegP;
@@ -1184,7 +1184,7 @@ else {
 nWall = WallNumP (seg, tSide);
 if (!IS_WALL (nWall)) {
 #if TRACE
-	con_printf (CONDBG, "Trying to turn on illusion illegal wall\n");
+	con_printf (CONDBG, "Trying to turn on illusion illegal tWall\n");
 #endif
 	return;
 	}
@@ -1212,7 +1212,7 @@ return 0;
 void UnlockAllWalls (int bOnlyDoors)
 {
 	int	i;
-	wall	*w;
+	tWall	*w;
 
 for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 	if (w->nType == WALL_DOOR) {
@@ -1236,7 +1236,7 @@ for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 void InitDoorAnims (void)
 {
 	int		h, i;
-	wall		*w;
+	tWall		*w;
 	tSegment	*segP;
 	tWallClip		*animP;
 
@@ -1260,20 +1260,20 @@ for (i = 0, w = gameData.walls.walls; i < gameData.walls.nWalls; w++, i++) {
 }
 
 //-----------------------------------------------------------------
-// Determines what happens when a wall is shot
-//returns info about wall.  see wall.h for codes
+// Determines what happens when a tWall is shot
+//returns info about tWall.  see wall.h for codes
 //obj is the tObject that hit...either a weapon or the tPlayer himself
-//playernum is the number the tPlayer who hit the wall or fired the weapon,
+//playernum is the number the tPlayer who hit the tWall or fired the weapon,
 //or -1 if a robot fired the weapon
 int WallHitProcess (tSegment *seg, short tSide, fix damage, int playernum, tObject *objP)
 {
-	wall	*w;
+	tWall	*w;
 	short	nWall;
 	fix	show_message;
 
 Assert (SEG_IDX (seg) != -1);
 
-// If it is not a "wall" then just return.
+// If it is not a "tWall" then just return.
 nWall = WallNumP (seg, tSide);
 if (!IS_WALL (nWall))
 	return WHP_NOT_SPECIAL;
@@ -1346,11 +1346,11 @@ if (w->nType == WALL_DOOR) {
 
 		}
 	}
-return WHP_NOT_SPECIAL;		//default is treat like normal wall
+return WHP_NOT_SPECIAL;		//default is treat like normal tWall
 }
 
 //-----------------------------------------------------------------
-// Opens doors/destroys wall/shuts off triggers.
+// Opens doors/destroys tWall/shuts off triggers.
 void WallToggle(tSegment *seg, short tSide)
 {
 	int nWall;
@@ -1391,7 +1391,7 @@ void WallToggle(tSegment *seg, short tSide)
 void ResetWalls()
 {
 	int i;
-	wall *pWall = gameData.walls.walls+gameData.walls.nWalls;
+	tWall *pWall = gameData.walls.walls+gameData.walls.nWalls;
 
 	if (gameData.walls.nWalls < 0) {
 #if TRACE
@@ -1414,7 +1414,7 @@ void ResetWalls()
 void DoCloakingWallFrame(int cloaking_wall_num)
 {
 	tCloakingWall *d;
-	wall *wfront,*wback;
+	tWall *wfront,*wback;
 
 	if (gameData.demo.nState==ND_STATE_PLAYBACK) 
 		return;
@@ -1487,7 +1487,7 @@ void DoCloakingWallFrame(int cloaking_wall_num)
 void DoDecloakingWallFrame (int cloaking_wall_num)
 {
 	tCloakingWall *d;
-	wall *wfront,*wback;
+	tWall *wfront,*wback;
 
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) 
 		return;
@@ -1555,7 +1555,7 @@ void WallFrameProcess ()
 	tActiveDoor *d = gameData.walls.activeDoors;
 
 for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
-	wall	*wb = NULL,
+	tWall	*wb = NULL,
 			*w = gameData.walls.walls + d->nFrontWall [0];
 
 	if (w->state == WALL_DOOR_OPENING)
@@ -1584,7 +1584,7 @@ for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
 			}
 		}
 	else if (w->state == WALL_DOOR_CLOSED || w->state == WALL_DOOR_OPEN) {
-		//this shouldn't happen.  if the wall is in one of these states,
+		//this shouldn't happen.  if the tWall is in one of these states,
 		//there shouldn't be an activedoor entry for it.  So we'll kill
 		//the activedoor entry.  Tres simple.
 		int t;
@@ -1604,7 +1604,7 @@ for (i = 0; i < gameData.walls.nCloaking; i++, cw++) {
 		DoDecloakingWallFrame (i);
 #ifdef _DEBUG
 	else
-		Int3();	//unexpected wall state
+		Int3();	//unexpected tWall state
 #endif
 	}
 }
@@ -1640,7 +1640,7 @@ void AddStuckObject(tObject *objP, short nSegment, short nSide)
 #if TRACE
 		if (i == MAX_STUCK_OBJECTS)
 			con_printf (1, 
-				"Warning: Unable to add tObject %i which got stuck in wall %i to StuckObjects\n", 
+				"Warning: Unable to add tObject %i which got stuck in tWall %i to StuckObjects\n", 
 				OBJ_IDX (objP), wallnum);
 #endif
 	}
@@ -1676,7 +1676,7 @@ void RemoveObsoleteStuckObjects(void)
 extern void FlushFCDCache(void);
 
 //	----------------------------------------------------------------------------------------------------
-//	Door with wall index wallnum is opening, kill all gameData.objs.objects stuck in it.
+//	Door with tWall index wallnum is opening, kill all gameData.objs.objects stuck in it.
 void KillStuckObjects(int wallnum)
 {
 	int	i;
@@ -1694,10 +1694,10 @@ void KillStuckObjects(int wallnum)
 			} else
 #if TRACE
 				con_printf (1, 
-					"Warning: Stuck tObject of nType %i, expected to be of nType %i, see wall.c\n", 
+					"Warning: Stuck tObject of nType %i, expected to be of nType %i, see tWall.c\n", 
 					gameData.objs.objects[StuckObjects[i].nObject].nType, OBJ_WEAPON);
 #endif
-				// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a wall!
+				// Int3();	//	What?  This looks bad.  Object is not a weapon and it is stuck in a tWall!
 			StuckObjects[i].wallnum = -1;
 		} else if (StuckObjects[i].wallnum != -1) {
 			Num_stuckObjects++;
@@ -1913,9 +1913,9 @@ extern void v19_wall_read(v19_wall *w, CFILE *fp)
 }
 
 /*
- * reads a wall structure from a CFILE
+ * reads a tWall structure from a CFILE
  */
-extern void wall_read(wall *w, CFILE *fp)
+extern void wall_read(tWall *w, CFILE *fp)
 {
 	w->nSegment = CFReadInt(fp);
 	w->nSide = CFReadInt(fp);

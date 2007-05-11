@@ -643,7 +643,7 @@ return (float) ((c < 0.5) ? pow (c, 1.0f / b) : pow (c, b));
 
 void OglColor4sf (float r, float g, float b, float s)
 {
-if (IsMultiGame || (gameStates.ogl.nContrast == 8))
+if (IsMultiGame || (gameStates.ogl.nContrast == 8) || gameStates.app.bNostalgia)
 	glColor4f (r * s, g * s, b * s, gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 else {
 	float c = (float) gameStates.ogl.nContrast - 8.0f;

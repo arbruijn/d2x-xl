@@ -104,7 +104,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 9 - Save palette with screen shot
 // 12- Saved last_was_super array
 // 13- Saved palette flash stuff
-// 14- Save cloaking wall stuff
+// 14- Save cloaking tWall stuff
 // 15- Save additional ai info
 // 16- Save gameData.render.lights.subtracted
 // 17- New marker save
@@ -612,11 +612,11 @@ if (!bBetweenLevels)	{
 	i = gameData.objs.nLastObject + 1;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.objs.objects, sizeof (tObject), i, fp);
-//Save wall info
+//Save tWall info
 	i = gameData.walls.nWalls;
 	CFWrite (&i, sizeof (int), 1, fp);
-	CFWrite (gameData.walls.walls, sizeof (wall), i, fp);
-//Save exploding wall info
+	CFWrite (gameData.walls.walls, sizeof (tWall), i, fp);
+//Save exploding tWall info
 	i = MAX_EXPLODING_WALLS;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.walls.explWalls, sizeof (*gameData.walls.explWalls), i, fp);
@@ -624,7 +624,7 @@ if (!bBetweenLevels)	{
 	i = gameData.walls.nOpenDoors;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.walls.activeDoors, sizeof (tActiveDoor), i, fp);
-//Save cloaking wall info
+//Save cloaking tWall info
 	i = gameData.walls.nCloaking;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.walls.cloaking, sizeof (tCloakingWall), i, fp);
@@ -972,7 +972,7 @@ switch (objP->renderType) {
 
 //------------------------------------------------------------------------------
 
-void StateSaveWall (wall *wallP, CFILE *fp)
+void StateSaveWall (tWall *wallP, CFILE *fp)
 {
 CFWriteInt (wallP->nSegment, fp);
 CFWriteInt (wallP->nSide, fp);
@@ -1165,13 +1165,13 @@ if (!bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		StateSaveObject (gameData.objs.objects + j, fp);
 	//fpos = CFTell (fp);
-//Save wall info
+//Save tWall info
 	i = gameData.walls.nWalls;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
 		StateSaveWall (gameData.walls.walls + j, fp);
 	//fpos = CFTell (fp);
-//Save exploding wall info
+//Save exploding tWall info
 	i = MAX_EXPLODING_WALLS;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
@@ -1183,7 +1183,7 @@ if (!bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		StateSaveActiveDoor (gameData.walls.activeDoors + j, fp);
 	//fpos = CFTell (fp);
-//Save cloaking wall info
+//Save cloaking tWall info
 	i = gameData.walls.nCloaking;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
@@ -1944,7 +1944,7 @@ switch (objP->renderType) {
 
 //------------------------------------------------------------------------------
 
-void StateRestoreWall (wall *wallP, CFILE *fp)
+void StateRestoreWall (tWall *wallP, CFILE *fp)
 {
 wallP->nSegment = CFReadInt (fp);
 wallP->nSide = CFReadInt (fp);
@@ -2076,7 +2076,7 @@ int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRe
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		bBetweenLevels;
 	int		nCurrentLevel, nNextLevel;
-	wall		*wallP;
+	tWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		h, i, j;
 	short		nTexture;
@@ -2166,7 +2166,7 @@ if (!bBetweenLevels)	{
 		if (bSecretRestore == 2)
 			InitPlayerStatsNewShip ();
 		}
-	//Restore wall info
+	//Restore tWall info
 	if (CFReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls, fp))
 		return 0;
 	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
@@ -2175,7 +2175,7 @@ if (!bBetweenLevels)	{
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
 	//fpos = CFTell (fp);
-	//Restore exploding wall info
+	//Restore exploding tWall info
 	if (CFReadBoundedInt (MAX_EXPLODING_WALLS, &h, fp))
 		return 0;
 	for (i = 0; i < h; i++)
@@ -2334,7 +2334,7 @@ int StateRestoreBinGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRe
 	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1, nSavedLocalPlayer = -1;
 	int		bBetweenLevels;
 	int		nCurrentLevel, nNextLevel;
-	wall		*wallP;
+	tWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
 	int		i, j;
 	short		nTexture;
@@ -2417,16 +2417,16 @@ if (!bBetweenLevels)	{
 		if (bSecretRestore == 2)
 			InitPlayerStatsNewShip ();
 		}
-	//Restore wall info
+	//Restore tWall info
 	if (CFReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls, fp))
 		return 0;
-	CFRead (gameData.walls.walls, sizeof (wall), gameData.walls.nWalls, fp);
+	CFRead (gameData.walls.walls, sizeof (tWall), gameData.walls.nWalls, fp);
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
 	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
-	//Restore exploding wall info
+	//Restore exploding tWall info
 	if (sgVersion >= 10) {
 		CFRead (&i, sizeof (int), 1, fp);
 		CFRead (gameData.walls.explWalls, sizeof (*gameData.walls.explWalls), i, fp);
@@ -2435,7 +2435,7 @@ if (!bBetweenLevels)	{
 	if (CFReadBoundedInt (MAX_DOORS, &gameData.walls.nOpenDoors, fp))
 		return 0;
 	CFRead (gameData.walls.activeDoors, sizeof (tActiveDoor), gameData.walls.nOpenDoors, fp);
-	if (sgVersion >= 14) {		//Restore cloaking wall info
+	if (sgVersion >= 14) {		//Restore cloaking tWall info
 		if (CFReadBoundedInt (MAX_WALLS, &gameData.walls.nCloaking, fp))
 			return 0;
 		CFRead (gameData.walls.cloaking, sizeof (tCloakingWall), gameData.walls.nCloaking, fp);

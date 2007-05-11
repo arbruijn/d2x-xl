@@ -547,7 +547,7 @@ if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLeve
 		vmsVector tpnt;
 		tVFIQuery fq;
 		tFVIData hit_data;
-		//create little explosion on wall
+		//create little explosion on tWall
 		VmVecCopyScale (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()-RAND_MAX/2)*100);
 		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.uVec, (d_rand ()-RAND_MAX/2)*100);
 		VmVecInc (&tpnt, &gameData.objs.console->position.vPos);
@@ -555,7 +555,7 @@ if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLeve
 			VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.fVec, d_rand ()*200);
 		else
 			VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.fVec, d_rand ()*60);
-		//find hit point on wall
+		//find hit point on tWall
 		fq.p0					= &gameData.objs.console->position.vPos;
 		fq.p1					= &tpnt;
 		fq.startSeg			= gameData.objs.console->nSegment;

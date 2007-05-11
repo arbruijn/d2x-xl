@@ -108,13 +108,13 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 		int i, t, id;
 		tObject * obj0P = gameData.objs.objects;
 					 
-		// -- now legal for xBadAss explosions on a wall. Assert (objP != NULL);
+		// -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
 
 		for (i=0; i<=gameData.objs.nLastObject; i++)	{
 			t = obj0P->nType;
 			id = obj0P->id;
 			//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
-			//	When a smart bomb blows up, if one of its children goes right towards a nearby wall, it will
+			//	When a smart bomb blows up, if one of its children goes right towards a nearby tWall, it will
 			//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
 			if ((obj0P != objP) && !(obj0P->flags & OF_SHOULD_BE_DEAD) && 
 			    ((t==OBJ_WEAPON && (id==PROXMINE_ID || id==SMARTMINE_ID || id==SMALLMINE_ID)) || 
@@ -467,7 +467,7 @@ int PlayerCanOpenDoor (tSegment *segP, short nSide)
 	nWall = WallNumP (segP, nSide);
 
 	if (!IS_WALL (nWall))
-		return 0;						//	no wall here.
+		return 0;						//	no tWall here.
 
 	wallType = gameData.walls.walls [nWall].nType;
 	//	Can't open locked doors.
@@ -1592,8 +1592,8 @@ else {
 		return;
 		}
 	//don't make debris explosions have physics, because they often
-	//happen when the debris has hit the wall, so the fireball is trying
-	//to move into the wall, which shows off FVI problems.   	
+	//happen when the debris has hit the tWall, so the fireball is trying
+	//to move into the tWall, which shows off FVI problems.   	
 	if ((hitObjP->nType != OBJ_DEBRIS) && (hitObjP->movementType == MT_PHYSICS)) {
 		explObjP->movementType = MT_PHYSICS;
 		explObjP->mType.physInfo = hitObjP->mType.physInfo;
@@ -1738,7 +1738,7 @@ for (i = 0; i < MAX_EXPLODING_WALLS; i++)
 }
 
 //------------------------------------------------------------------------------
-//explode the given wall
+//explode the given tWall
 void ExplodeWall (short nSegment, short nSide)
 {
 	int i;
@@ -1750,7 +1750,7 @@ void ExplodeWall (short nSegment, short nSide)
 
 	if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-		con_printf (CONDBG, "Couldn't find d_free slot for exploding wall!\n");
+		con_printf (CONDBG, "Couldn't find d_free slot for exploding tWall!\n");
 #endif
 		Int3 ();
 		return;
@@ -1760,7 +1760,7 @@ void ExplodeWall (short nSegment, short nSide)
 	gameData.walls.explWalls [i].nSide = nSide;
 	gameData.walls.explWalls [i].time = 0;
 
-	//play one long sound for whole door wall explosion
+	//play one long sound for whole door tWall explosion
 	COMPUTE_SIDE_CENTER (&pos, &gameData.segs.segments [nSegment], nSide);
 	DigiLinkSoundToPos (SOUND_EXPLODING_WALL, nSegment, nSide, &pos, 0, F1_0);
 
@@ -1768,7 +1768,7 @@ void ExplodeWall (short nSegment, short nSide)
 
 //------------------------------------------------------------------------------
 //handle walls for this frame
-//note: this wall code assumes the wall is not triangulated
+//note: this tWall code assumes the tWall is not triangulated
 void DoExplodingWallFrame ()
 {
 	int i;

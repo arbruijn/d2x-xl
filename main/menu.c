@@ -180,7 +180,6 @@ ubyte bAllowAutoDemo = 0;                 // Flag used to enable auto demo start
 #else
 ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo starting in main menu.
 #endif
-int playerDefaultDifficulty; // Last difficulty level chosen by the tPlayer
 
 // Function Prototypes added after LINTING
 void ExecMenuOption (int select);
@@ -277,7 +276,7 @@ try_again:;
 //static int FirstTime = 1;
 static int main_menu_choice = 0;
 
-int nD1Opt = -1, nD2Opt = -1;
+static int nD1Opt = -1, nD2Opt = -1;
 
 //      Create the main menu.
 void CreateMainMenu (tMenuItem *m, int *nMenuChoice, int *nCallerOptions)
@@ -344,14 +343,16 @@ if (!(gameData.app.nGameMode & GM_MULTI))   {
 
 //ADD_MENU ("  Play song", MENU_PLAY_SONG, -1);
 #endif
+#if 0
 if (!gameStates.app.bNostalgia) {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
 	nMenuChoice [nD2Opt = opt++] = MENU_D2_MISSIONS;
 	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	nMenuChoice [nD1Opt = opt++] = MENU_D2_MISSIONS;
+	nMenuChoice [nD1Opt = opt++] = MENU_D1_MISSIONS;
 	}
+#endif
 *nCallerOptions = opt;
 }
 
@@ -503,8 +504,7 @@ switch (select) {
 		break;
 	case MENU_GAME:
 		break;
-	case MENU_DEMO_PLAY:
-	{
+	case MENU_DEMO_PLAY:	{
 		char demoPath [FILENAME_LEN], demoFile[FILENAME_LEN];
 		sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
 		if (ExecMenuFileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
@@ -1238,13 +1238,14 @@ if (gameStates.app.nDifficultyLevel != v) {
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
 	m->rebuild = 1;
 	}
+gameOpts->app.nVersionFilter = menus [nD1Opt].value | (menus [nD2Opt].value << 1);
 }
 
 //------------------------------------------------------------------------------
 
 void NewGameMenu ()
 {
-	tMenuItem	m [10];
+	tMenuItem		m [10];
 	int				opt, optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0;
@@ -1289,6 +1290,12 @@ for (;;) {
 		}
 	else
 		optLevel = -1;
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
+	nD1Opt = opt++;
+	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
+	nD2Opt = opt++;
 	ADD_TEXT (opt, "                              ", 0);
 	opt++;
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
@@ -1304,7 +1311,7 @@ for (;;) {
 		}
 	else
 		optLaunch = -1;
-
+	Assert (opt <= sizeofa (m));
 	i = ExecMenu1 (NULL, TXT_SELECT_START_LEV, opt, m, &NewGameMenuCallback, &choice);
 	if (i < 0) {
 		SetFunctionMode (FMODE_MENU);
@@ -2214,7 +2221,7 @@ do {
 			ADD_CHECK (opt, "render back faces", bBackFaces, 0, NULL);
 			optBackFaces = opt++;
 			}
-		ADD_CHECK (opt, "render wall shadows", bWallShadows, 0, NULL);
+		ADD_CHECK (opt, "render tWall shadows", bWallShadows, 0, NULL);
 		optWallShadows = opt++;
 		ADD_CHECK (opt, "software culling", bSWCulling, 0, NULL);
 		optSWCulling = opt++;

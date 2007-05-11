@@ -11,5 +11,6 @@ int DownloadMission (char *pszMission);
 void CleanUploadDests (void);
 
 extern int bDownloading [];
+extern int iDlTimeout;
 
 #endif //__autodl_h

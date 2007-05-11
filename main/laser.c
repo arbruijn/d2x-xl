@@ -683,7 +683,7 @@ if (pParent->nType == OBJ_PLAYER) {
 		}
 	}
 
-//	Make children of smart bomb bounce so if they hit a wall right away, they
+//	Make children of smart bomb bounce so if they hit a tWall right away, they
 //	won't detonate.  The frame xInterval code will clear this bit after 1/2 second.
 if ((nWeaponType == SMARTMSL_BLOB_ID) || 
 	 (nWeaponType == SMARTMINE_BLOB_ID) || 
@@ -861,7 +861,7 @@ fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 //	-----------------------------------------------------------------------------------------------------------
 //	Return true if weapon *tracker is able to track tObject gameData.objs.objects [nMslLock], else return false.
 //	In order for the tObject to be trackable, it must be within a reasonable turning radius for the missile
-//	and it must not be obstructed by a wall.
+//	and it must not be obstructed by a tWall.
 int ObjectIsTrackeable (int nMslLock, tObject *tracker, fix *xDot)
 {
 	vmsVector	vGoal;

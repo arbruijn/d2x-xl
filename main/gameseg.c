@@ -1653,10 +1653,10 @@ void AddSideAsTwoTriangles (tSegment *segP, int nSide)
 	tSide	*sideP = segP->sides + nSide;
 
 	//	Choose how to triangulate.
-	//	If a wall, then
+	//	If a tWall, then
 	//		Always triangulate so tSegment is convex.
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on tSide, a is face formed by A, B, C, Na is normal from face a.
-	//	If not a wall, then triangulate so whatever is on the other tSide is triangulated the same (ie, between the same absoluate vertices)
+	//	If not a tWall, then triangulate so whatever is on the other tSide is triangulated the same (ie, between the same absoluate vertices)
 #if 0
 VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
 VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);

@@ -252,7 +252,7 @@ int CreateCameras (void)
 {
 	int		h, i, j, k;
 	ubyte		t;
-	wall		*wallP;
+	tWall		*wallP;
 	tObject	*objP;
 	tTrigger	*triggerP;
 

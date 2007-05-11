@@ -197,26 +197,27 @@ typedef struct kcItem {
 
 
 // added on 2/4/99 by Victor Rachels to add new keys menu
-#define NUM_D2X_CONTROLS    20
-#define MAX_D2X_CONTROLS    40
+#define NUM_HOTKEY_CONTROLS	KcHotkeySize () //20
+#define MAX_HOTKEY_CONTROLS	40
 
-#define NUM_KEY_CONTROLS    64
-#define NUM_JOY_CONTROLS	 66
-#define NUM_MOUSE_CONTROLS	 31
-#define MAX_CONTROLS        64		// there are actually 48, so this leaves room for more
+#define NUM_KEY_CONTROLS		KcKeyboardSize () //64
+#define NUM_JOY_CONTROLS		KcJoystickSize () //66
+#define NUM_SUPERJOY_CONTROLS	KcSuperJoySize () //66
+#define NUM_MOUSE_CONTROLS		KcMouseSize () //31
+#define MAX_CONTROLS				64		// there are actually 48, so this leaves room for more
 
 typedef struct tControlSettings {
 	ubyte		custom [CONTROL_MAX_TYPES][MAX_CONTROLS];
 	ubyte		defaults [CONTROL_MAX_TYPES][MAX_CONTROLS];
-	ubyte		d2xCustom [MAX_D2X_CONTROLS];
-	ubyte		d2xDefaults [MAX_D2X_CONTROLS];
+	ubyte		d2xCustom [MAX_HOTKEY_CONTROLS];
+	ubyte		d2xDefaults [MAX_HOTKEY_CONTROLS];
 } tControlSettings;
 
 extern tControlSettings controlSettings;
 
 extern char *control_text[CONTROL_MAX_TYPES];
 
-extern void KCSetControls();
+void KCSetControls (int bGet);
 
 // Tries to use vfx1 head tracking.
 void kconfig_sense_init();
@@ -227,8 +228,6 @@ extern int kconfig_is_axes_used(int axis);
 
 extern void KCInitExternalControls(int intno, int address);
 
-extern kcItem kcKeyboard [NUM_KEY_CONTROLS];
-
 extern ubyte nExtGameStatus;
 void KConfig(int n, char *title);
 void SetControlType (void);
@@ -236,15 +235,12 @@ void SetControlType (void);
 extern ubyte system_keys [];
 
 extern tControlSettings controlSettings;
-extern kcItem kcKeyboard [NUM_KEY_CONTROLS];
-extern ubyte kc_kbdFlags [NUM_KEY_CONTROLS];
-extern kcItem kcJoystick [NUM_JOY_CONTROLS];
-extern kcItem kcMouse [NUM_MOUSE_CONTROLS];
-extern kcItem kcSuperJoy [NUM_JOY_CONTROLS];
-#ifdef D2X_KEYS
-extern
- kcItem kcD2X [NUM_D2X_CONTROLS];
-#endif
+extern kcItem kcKeyboard []; //NUM_KEY_CONTROLS];
+extern ubyte kc_kbdFlags []; //NUM_KEY_CONTROLS];
+extern kcItem kcJoystick []; //NUM_JOY_CONTROLS];
+extern kcItem kcMouse [];	//NUM_MOUSE_CONTROLS];
+extern kcItem kcHotkeys [];	//NUM_HOTKEY_CONTROLS];
+extern kcItem kcSuperJoy []; //NUM_JOY_CONTROLS];
 extern ext_control_info	*kc_external_control;
 
 #define BT_NONE				-1
@@ -254,5 +250,11 @@ extern ext_control_info	*kc_external_control;
 #define BT_JOY_BUTTON 		3
 #define BT_JOY_AXIS			4
 #define BT_INVERT				5
+
+int KcKeyboardSize (void);
+int KcMouseSize (void);
+int KcJoystickSize (void);
+int KcSuperJoySize (void);
+int KcHotkeySize (void);
 
 #endif /* _KCONFIG_H */

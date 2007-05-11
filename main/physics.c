@@ -768,12 +768,12 @@ retryMove:
 				bObjStopped = 1;
 				bRetry = 0;
 				}
-			else {				// Slide tObject along wall
+			else {				// Slide tObject along tWall
 				int bCheckVel = 0;
-				//We're constrained by wall, so subtract wall part from velocity vector
+				//We're constrained by tWall, so subtract tWall part from velocity vector
 				xWallPart = VmVecDot (&hi.hit.vNormal, &objP->mType.physInfo.velocity);
-				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off wall
-					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
+				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off tWall
+					xWallPart *= 2;	//Subtract out tWall part twice to achieve bounce
 					if (bForceFieldBounce) {
 						bCheckVel = 1;				//check for max velocity
 						if (objP->nType == OBJ_PLAYER)
@@ -919,7 +919,7 @@ retryMove:
 				if (nOrigSegment==-1)
 					Error ("nOrigSegment == -1 in physics");
 				CreateAbsVertexLists (&nFaces, vertex_list, nOrigSegment, nSide);
-				//let'sideP pretend this wall is not triangulated
+				//let'sideP pretend this tWall is not triangulated
 				nVertex = vertex_list [0];
 				if (nVertex > vertex_list [1])
 					nVertex = vertex_list [1];

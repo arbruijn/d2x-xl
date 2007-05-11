@@ -86,7 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * changed homing sound
  *
  * Revision 1.22  1994/10/23  00:27:34  matt
- * Made exploding wall do one long sound, instead of lots of small ones
+ * Made exploding tWall do one long sound, instead of lots of small ones
  *
  * Revision 1.21  1994/10/22  14:12:35  mike
  * Add sound for missile tracking tPlayer.
@@ -95,7 +95,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added "hot rocks" that create badass explosion when hit by weapons
  *
  * Revision 1.19  1994/10/10  20:57:50  matt
- * Added sound for exploding wall (hostage door)
+ * Added sound for exploding tWall (hostage door)
  *
  * Revision 1.18  1994/10/04  15:33:31  john
  * Took out the old PLAY_SOUND??? code and replaced it
@@ -137,7 +137,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  * Revision 1.7  1994/06/15  19:01:35  john
  * Added the capability to make 3d sounds play just once for the
- * laser hit wall effects.
+ * laser hit tWall effects.
  *
  * Revision 1.6  1994/06/08  11:43:03  john
  * Enable 3D sound.
@@ -271,7 +271,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SOUND_LIGHT_BLOWNUP                     157
 
-#define SOUND_WALL_REMOVED                      246 // Wall removed, probably due to a wall switch.
+#define SOUND_WALL_REMOVED                      246 // Wall removed, probably due to a tWall switch.
 #define SOUND_AFTERBURNER_IGNITE                247
 #define SOUND_AFTERBURNER_PLAY                  248
 

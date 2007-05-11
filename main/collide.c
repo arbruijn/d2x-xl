@@ -104,7 +104,7 @@ if ((robot->id == ROBOT_BRAIN) ||
 	 (robot->cType.aiInfo.behavior == AIB_SNIPE)) {
 	int	nWall = WallNumI (hitseg, hitwall);
 	if (nWall != -1) {
-		wall *wallP = gameData.walls.walls + nWall;
+		tWall *wallP = gameData.walls.walls + nWall;
 		if ((wallP->nType == WALL_DOOR) &&
 			 (wallP->keys == KEY_NONE) && 
 			 (wallP->state == WALL_DOOR_CLOSED) && 
@@ -457,7 +457,7 @@ void CollidePlayerAndWall (tObject * playerObjP, fix hitspeed, short hitseg, sho
 if (playerObjP->id != gameData.multiplayer.nLocalPlayer) // Execute only for local tPlayer
 	return;
 nBaseTex = gameData.segs.segments [hitseg].sides [hitwall].nBaseTex;
-//	If this wall does damage, don't make *BONK* sound, we'll be making another sound.
+//	If this tWall does damage, don't make *BONK* sound, we'll be making another sound.
 if (gameData.pig.tex.pTMapInfo [nBaseTex].damage > 0)
 	return;
 if (gameData.pig.tex.pTMapInfo [nBaseTex].flags & TMI_FORCE_FIELD) {
@@ -492,12 +492,12 @@ else {
 	}
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [hitseg].special == SEGMENT_IS_NODAMAGE))
 	return;
-//	** Damage from hitting wall **
+//	** Damage from hitting tWall **
 //	If the tPlayer has less than 10% shields, don't take damage from bump
 // Note: Does quad damage if hit a vForce field - JL
 damage = (hitspeed / DAMAGE_SCALE) * (ForceFieldHit * 8 + 1);
 nOvlTex = gameData.segs.segments [hitseg].sides [hitwall].nOvlTex;
-//don't do wall damage and sound if hit lava or water
+//don't do tWall damage and sound if hit lava or water
 if ((gameData.pig.tex.pTMapInfo [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) || 
 		(nOvlTex && (gameData.pig.tex.pTMapInfo [nOvlTex].flags & (TMI_WATER|TMI_VOLATILE))))
 	damage = 0;
@@ -525,7 +525,7 @@ fix	Last_volatile_scrapeSoundTime = 0;
 int CollideWeaponAndWall (tObject * weapon, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt);
 int CollideDebrisAndWall (tObject * debris, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt);
 
-//see if wall is volatile or water
+//see if tWall is volatile or water
 //if volatile, cause damage to tPlayer  
 //returns 1=lava, 2=water
 int CheckVolatileWall (tObject *objP, int nSegment, int nSide, vmsVector *vHitPt)
@@ -623,7 +623,7 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//this gets called when an tObject is scraping along the wall
+//this gets called when an tObject is scraping along the tWall
 void ScrapeObjectOnWall (tObject *objP, short hitseg, short hitside, vmsVector * vHitPt)
 {
 switch (objP->nType) {
@@ -655,7 +655,7 @@ switch (objP->nType) {
 		//these two kinds of gameData.objs.objects below shouldn't really slide, so
 		//if this scrape routine gets called (which it might if the
 		//tObject (such as a fusion blob) was created already poking
-		//through the wall) call the Collide routine.
+		//through the tWall) call the Collide routine.
 
 		case OBJ_WEAPON:
 			CollideWeaponAndWall (objP, 0, hitseg, hitside, vHitPt); 
@@ -683,7 +683,7 @@ int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, tObject *blo
 	fix			xDestSize;
 	eclip			*ecP = NULL;
 	grsBitmap	*bmP;
-	//	If this wall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
+	//	If this tWall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
 
 if (blower->cType.laserInfo.parentType == OBJ_ROBOT)
 	if (ROBOTINFO (gameData.objs.objects [blower->cType.laserInfo.nParentObj].id).companion)
@@ -818,7 +818,7 @@ int OkToDoOmegaDamage (tObject *weapon)
 }
 
 //	-----------------------------------------------------------------------------
-//these gets added to the weapon's values when the weapon hits a volitle wall
+//these gets added to the weapon's values when the weapon hits a volitle tWall
 #define VOLATILE_WALL_EXPL_STRENGTH i2f (10)
 #define VOLATILE_WALL_IMPACT_SIZE	i2f (3)
 #define VOLATILE_WALL_DAMAGE_FORCE	i2f (5)
@@ -884,7 +884,7 @@ if (keyd_pressed [KEY_LAPOSTRO])
 if ((weaponP->mType.physInfo.velocity.p.x == 0) && 
 	 (weaponP->mType.physInfo.velocity.p.y == 0) && 
 	 (weaponP->mType.physInfo.velocity.p.z == 0)) {
-	Int3 ();	//	Contact Matt: This is impossible.  A weaponP with 0 velocity hit a wall, which doesn't move.
+	Int3 ();	//	Contact Matt: This is impossible.  A weaponP with 0 velocity hit a tWall, which doesn't move.
 	return 1;
 	}
 #endif
@@ -904,9 +904,9 @@ else {
 	else
 		playernum = -1;		//not a tPlayer (thus a robot)
 	}
-if (bBlewUp) {		//could be a wall switch
-	//for wall triggers, always say that the tPlayer shot it out.  This is
-	//because robots can shoot out wall triggers, and so the tTrigger better
+if (bBlewUp) {		//could be a tWall switch
+	//for tWall triggers, always say that the tPlayer shot it out.  This is
+	//because robots can shoot out tWall triggers, and so the tTrigger better
 	//take effect  
 	//	NO -- Changed by MK, 10/18/95.  We don't want robots blowing puzzles.  Only tPlayer or buddy can open!
 	CheckTrigger (segP, hitwall, weaponP->cType.laserInfo.nParentObj, 1);
@@ -919,9 +919,9 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 		(sideP->nOvlTex && 
 		(gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
-	//we've hit a volatile wall
+	//we've hit a volatile tWall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, hitseg, 0, vHitPt, 0, F1_0);
-	//for most weapons, use volatile wall hit.  For mega, use its special tVideoClip
+	//for most weapons, use volatile tWall hit.  For mega, use its special tVideoClip
 	tVideoClip = (weaponP->id == MEGAMSL_ID) ? wInfoP->robot_hit_vclip : VCLIP_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful badass, explode as badass, not due to lava, fixes megas being wimpy in lava.
 	if (wInfoP->damage_radius >= VOLATILE_WALL_DAMAGE_RADIUS/2)
@@ -968,7 +968,7 @@ else {
 		}
 	else {
 		//if it's not the tPlayer's weaponP, or it is the tPlayer's and there
-		//is no wall, and no blowing up monitor, then play sound
+		//is no tWall, and no blowing up monitor, then play sound
 		if ((weaponP->cType.laserInfo.parentType != OBJ_PLAYER) ||	
 				((!IS_WALL (WallNumS (sideP)) || wallType==WHP_NOT_SPECIAL) && !bBlewUp))
 			if ((wInfoP->wall_hitSound > -1) && (!(weaponP->flags & OF_SILENT)))
@@ -1014,7 +1014,7 @@ if ((weaponP->cType.laserInfo.parentType== OBJ_PLAYER) || robot_escort) {
 				break;
 
 			case WHP_BLASTABLE:
-				//play special blastable wall sound (if/when we get it)
+				//play special blastable tWall sound (if/when we get it)
 				if ((wInfoP->wall_hitSound > -1) && (!(weaponP->flags & OF_SILENT)))
 					DigiLinkSoundToPos (SOUND_WEAPON_HIT_BLASTABLE, weaponP->nSegment, 0, &weaponP->position.vPos, 0, F1_0);
 				break;
@@ -2714,7 +2714,7 @@ int CollideObjectWithWall (tObject * A, fix hitspeed, short hitseg, short hitwal
 {
 switch (A->nType)	{
 	case OBJ_NONE:
-		Error ("A tObject of nType NONE hit a wall! \n");
+		Error ("A tObject of nType NONE hit a tWall! \n");
 		break;
 	case OBJ_PLAYER:		
 		CollidePlayerAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
@@ -2743,7 +2743,7 @@ switch (A->nType)	{
 	case OBJ_MONSTERBALL:		
 		break;		//CollidePowerupAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
 	default:
-		Error ("Unhandled tObject nType hit wall in Collide.c \n");
+		Error ("Unhandled tObject nType hit tWall in Collide.c \n");
 	}
 return 1;
 }

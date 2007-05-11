@@ -2340,7 +2340,7 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 	if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
 		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
 	else
-		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.66f, -5 * objP->size / 2, 3, 0, 0);
+		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.66f, objP->size, 3, 0, 0);
 	}
 }
 
@@ -3208,7 +3208,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 				break;
 			case OBJ_WALL:
 			case OBJ_FLARE:
-				Int3 ();		//	This is curious.  What is an tObject that is a wall?
+				Int3 ();		//	This is curious.  What is an tObject that is a tWall?
 				break;
 			case OBJ_FIREBALL:
 			case OBJ_WEAPON:
@@ -3843,7 +3843,7 @@ CheckAndFixMatrix (&objP->position.mOrient);
 extern void MultiSendDropBlobs (char);
 extern void FuelCenCheckForGoal (tSegment *);
 
-//see if wall is volatile, and if so, cause damage to tPlayer
+//see if tWall is volatile, and if so, cause damage to tPlayer
 //returns true if tPlayer is in lava
 int CheckVolatileWall (tObject *objP, int nSegment, int nSide, vmsVector *hitpt);
 int CheckVolatileSegment (tObject *objP, int nSegment);

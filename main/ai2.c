@@ -305,7 +305,7 @@ while (tail != head) {
 			if (!(w & WID_FLY_FLAG))
 				continue;
 			}
-		//	If we get here and w == WID_WALL, then we want to process through this wall, else not.
+		//	If we get here and w == WID_WALL, then we want to process through this tWall, else not.
 		if (!IS_CHILD (childSeg))
 			continue;
 		if (bOneWallHack)
@@ -972,10 +972,10 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		return;
 		}
 	}
-//	Handle problem of a robot firing through a wall because its gun tip is on the other
-//	tSide of the wall than the robot's center.  For speed reasons, we normally only compute
+//	Handle problem of a robot firing through a tWall because its gun tip is on the other
+//	tSide of the tWall than the robot's center.  For speed reasons, we normally only compute
 //	the vector from the gun point to the player.  But we need to know whether the gun point
-//	is separated from the robot's center by a wall.  If so, don't fire!
+//	is separated from the robot's center by a tWall.  If so, don't fire!
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different tSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
@@ -1007,7 +1007,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 
 		fate = FindVectorIntersection (&fq, &hit_data);
 		if (fate != HIT_NONE) {
-			Int3 ();		//	This bot's gun is poking through a wall, so don't fire.
+			Int3 ();		//	This bot's gun is poking through a tWall, so don't fire.
 			MoveTowardsSegmentCenter (objP);		//	And decrease chances it will happen again.
 			return;
 			}
@@ -1622,7 +1622,7 @@ return xDistToGoal;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-//	Move the tObject objP to a spot in which it doesn't intersect a wall.
+//	Move the tObject objP to a spot in which it doesn't intersect a tWall.
 //	It might mean moving it outside its current tSegment.
 void MoveObjectToLegalSpot (tObject *objP, int bMoveToCenter)
 {
@@ -1723,7 +1723,7 @@ return MoveTowardsPoint (objP, &vSegCenter, 0);
 int AIDoorIsOpenable (tObject *objP, tSegment *segP, short nSide)
 {
 	short nWall;
-	wall	*wallP;
+	tWall	*wallP;
 
 if (!IS_CHILD (segP->children [nSide]))
 	return 0;		//trap -2 (exit tSide)
@@ -1843,7 +1843,7 @@ int OpenableDoorsInSegment (short nSegment)
 	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++) {
 		int	nWall = WallNumI (nSegment, i);
 		if (IS_WALL (nWall)) {
-			wall	*wallP = gameData.walls.walls + nWall;
+			tWall	*wallP = gameData.walls.walls + nWall;
 			if ((wallP->nType == WALL_DOOR) && 
 				 (wallP->keys == KEY_NONE) && 
 				 (wallP->state == WALL_DOOR_CLOSED) && 

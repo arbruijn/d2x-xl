@@ -221,13 +221,6 @@ void DrawWindowLabel ()
 
 //------------------------------------------------------------------------------
 
-extern int Game_window_x;
-extern int Game_window_y;
-extern int Game_window_w;
-extern int Game_window_h;
-extern int max_window_w;
-extern int max_window_h;
-
 void RenderCountdownGauge ()
 {
 if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameData.reactor.countdown.nSecsLeft>-1)) { // && (gameData.reactor.countdown.nSecsLeft<127))	{
@@ -765,7 +758,7 @@ else {
 	}
 for (w = 0; w < 2 - bDidMissileView; w++) {
 	//show special views if selected
-	switch (Cockpit_3dView [w]) {
+	switch (gameStates.render.cockpit.n3DView [w]) {
 		case CV_NONE:
 			gameStates.render.nRenderingType=255;
 			DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
@@ -786,7 +779,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			tObject *buddy = find_escort ();
 			if (!buddy) {
 				DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
-				Cockpit_3dView [w] = CV_NONE;
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				}
 			else {
 				gameStates.render.nRenderingType=4+ (w<<4);
@@ -796,15 +789,15 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			}
 
 		case CV_COOP: {
-			int nPlayer = CoopView_player [w];
+			int nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
 	      gameStates.render.nRenderingType = 255; // don't handle coop stuff			
 			if ((nPlayer != -1) && 
 				 gameData.multiplayer.players [nPlayer].connected && 
 				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
-				DoCockpitWindowView (w, &gameData.objs.objects [gameData.multiplayer.players [CoopView_player [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [CoopView_player [w]].callsign);
+				DoCockpitWindowView (w, &gameData.objs.objects [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
 			else {
 				DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
-				Cockpit_3dView [w] = CV_NONE;
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				}
 			break;
 			}
@@ -814,7 +807,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			short v = gameData.marker.viewers [w];
 			gameStates.render.nRenderingType=5+ (w<<4);
 			if ((v == -1) || (gameData.marker.objects [v] == -1)) {
-				Cockpit_3dView [w] = CV_NONE;
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				break;
 				}
 			sprintf (label, "Marker %d", gameData.marker.viewers [w]+1);
@@ -826,9 +819,9 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_RADAR_HEADSUP:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
 				DoCockpitWindowView (w, gameData.objs.console, 0, 
-					(Cockpit_3dView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
+					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
 			else
-				Cockpit_3dView [w] = CV_NONE;
+				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 			break;
 		default:
 			Int3 ();		//invalid window nType
@@ -984,18 +977,18 @@ WritePlayerFile ();
 
 //------------------------------------------------------------------------------
 
-#define WINDOW_W_DELTA	 ((max_window_w / 16)&~1)	//24	//20
-#define WINDOW_H_DELTA	 ((max_window_h / 16)&~1)	//12	//10
+#define WINDOW_W_DELTA	 ((gameData.render.window.wMax / 16)&~1)	//24	//20
+#define WINDOW_H_DELTA	 ((gameData.render.window.hMax / 16)&~1)	//12	//10
 
-#define WINDOW_MIN_W		 ((max_window_w * 10) / 22)	//160
-#define WINDOW_MIN_H		 ((max_window_h * 10) / 22)
+#define WINDOW_MIN_W		 ((gameData.render.window.wMax * 10) / 22)	//160
+#define WINDOW_MIN_H		 ((gameData.render.window.hMax * 10) / 22)
 
 void grow_window ()
 {
 	StopTime ();
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		Game_window_h = max_window_h;
-		Game_window_w = max_window_w;
+		gameData.render.window.h = gameData.render.window.hMax;
+		gameData.render.window.w = gameData.render.window.wMax;
 		ToggleCockpit ();
 		HUDInitMessage (TXT_COCKPIT_F3);
 		StartTime ();
@@ -1007,26 +1000,26 @@ void grow_window ()
 		return;
 		}
 
-	if (Game_window_h>=max_window_h || Game_window_w>=max_window_w) {
-		//Game_window_w = max_window_w;
-		//Game_window_h = max_window_h;
+	if (gameData.render.window.h>=gameData.render.window.hMax || gameData.render.window.w>=gameData.render.window.wMax) {
+		//gameData.render.window.w = gameData.render.window.wMax;
+		//gameData.render.window.h = gameData.render.window.hMax;
 		SelectCockpit (CM_FULL_SCREEN);
 	} else {
 		//int x, y;
 
-		Game_window_w += WINDOW_W_DELTA;
-		Game_window_h += WINDOW_H_DELTA;
+		gameData.render.window.w += WINDOW_W_DELTA;
+		gameData.render.window.h += WINDOW_H_DELTA;
 
-		if (Game_window_h > max_window_h)
-			Game_window_h = max_window_h;
+		if (gameData.render.window.h > gameData.render.window.hMax)
+			gameData.render.window.h = gameData.render.window.hMax;
 
-		if (Game_window_w > max_window_w)
-			Game_window_w = max_window_w;
+		if (gameData.render.window.w > gameData.render.window.wMax)
+			gameData.render.window.w = gameData.render.window.wMax;
 
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 
-		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
+		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 	}
 
 	HUDClearMessages ();	//	@mk, 11/11/94
@@ -1089,10 +1082,10 @@ void FillBackground ()
 {
 	int x, y, w, h, dx, dy;
 
-	x = Game_window_x;
-	y = Game_window_y;
-	w = Game_window_w;
-	h = Game_window_h;
+	x = gameData.render.window.x;
+	y = gameData.render.window.y;
+	w = gameData.render.window.w;
+	h = gameData.render.window.h;
 
 	dx = x;
 	dy = y;
@@ -1123,8 +1116,8 @@ void shrink_window ()
 {
 	StopTime ();
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
-		Game_window_h = max_window_h;
-		Game_window_w = max_window_w;
+		gameData.render.window.h = gameData.render.window.hMax;
+		gameData.render.window.w = gameData.render.window.wMax;
 		//!!ToggleCockpit ();
 		gameStates.render.cockpit.nNextMode = CM_FULL_COCKPIT;
 		SelectCockpit (CM_STATUS_BAR);
@@ -1138,8 +1131,8 @@ void shrink_window ()
 
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT))
 	{
-		//Game_window_w = max_window_w;
-		//Game_window_h = max_window_h;
+		//gameData.render.window.w = gameData.render.window.wMax;
+		//gameData.render.window.h = gameData.render.window.hMax;
 		SelectCockpit (CM_STATUS_BAR);
 		WritePlayerFile ();
 		StartTime ();
@@ -1154,27 +1147,27 @@ void shrink_window ()
 #if TRACE
    con_printf (CONDBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nMode);
 #endif
-	if (Game_window_w > WINDOW_MIN_W) {
+	if (gameData.render.window.w > WINDOW_MIN_W) {
 		//int x, y;
 
-      Game_window_w -= WINDOW_W_DELTA;
-		Game_window_h -= WINDOW_H_DELTA;
+      gameData.render.window.w -= WINDOW_W_DELTA;
+		gameData.render.window.h -= WINDOW_H_DELTA;
 
 #if TRACE
-  con_printf (CONDBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", Game_window_w, Game_window_h, max_window_w, max_window_h);
+  con_printf (CONDBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.window.w, gameData.render.window.h, gameData.render.window.wMax, gameData.render.window.hMax);
 #endif                  
-		if (Game_window_w < WINDOW_MIN_W)
-			Game_window_w = WINDOW_MIN_W;
+		if (gameData.render.window.w < WINDOW_MIN_W)
+			gameData.render.window.w = WINDOW_MIN_W;
 
-		if (Game_window_h < WINDOW_MIN_H)
-			Game_window_h = WINDOW_MIN_H;
+		if (gameData.render.window.h < WINDOW_MIN_H)
+			gameData.render.window.h = WINDOW_MIN_H;
 			
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 
 		FillBackground ();
 
-		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
+		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 		HUDClearMessages ();
 		WritePlayerFile ();
 	}
@@ -1231,15 +1224,15 @@ switch (gameStates.render.cockpit.nMode)	{
 		break;
 
 	case CM_FULL_SCREEN:
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 		FillBackground ();
 		break;
 
 	case CM_STATUS_BAR:
-		DrawCockpit (gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0), max_window_h);
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
+		DrawCockpit (gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0), gameData.render.window.hMax);
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 		FillBackground ();
 		break;
 

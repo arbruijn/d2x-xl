@@ -23,14 +23,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SEGMENTS_PER_PATH       20
 
 #define PA_NEARBY_ROBOT_FIRED       1   // Level of robot awareness after nearby robot fires a weapon
-#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after tPlayer weapon hits nearby wall
+#define PA_WEAPON_WALL_COLLISION    2   // Level of robot awareness after tPlayer weapon hits nearby tWall
 //#define PA_PLAYER_VISIBLE         2   // Level of robot awareness if robot is looking towards tPlayer, and tPlayer not hidden
 #define PA_PLAYER_COLLISION         3   // Level of robot awareness after tPlayer bumps into robot
 #define PA_RETURN_FIRE					4	 // Level of robot awareness while firing back after having been hit by player
 #define PA_WEAPON_ROBOT_COLLISION   5   // Level of robot awareness after tPlayer weapon hits nearby robot
 
-//#define PAE_WEAPON_HIT_WALL         1   // weapon hit wall, create tPlayer awareness
-//#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit wall, create tPlayer awareness
+//#define PAE_WEAPON_HIT_WALL         1   // weapon hit tWall, create tPlayer awareness
+//#define PAE_WEAPON_HIT_ROBOT        2   // weapon hit tWall, create tPlayer awareness
 
 // Constants indicating currently moving forward or backward through
 // path.  Note that you can add aip->direction to aip_path_index to

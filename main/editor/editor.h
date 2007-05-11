@@ -569,7 +569,7 @@ extern int MacroStatus;
 extern	int	LockView_to_cursegp;			// !0 means whenever cursegp changes, view it
 
 //	eglobal.c
-extern	int	Num_tilings;						// number of tilings/wall
+extern	int	Num_tilings;						// number of tilings/tWall
 extern	int	Degenerate_segment_found;
 
 extern	byte	Been_visited[];					//	List of segments visited in a recursive search, if element n set, tSegment n done been visited

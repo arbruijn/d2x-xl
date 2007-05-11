@@ -277,7 +277,7 @@ extern int SortSelectedList(void);
 extern int SelectNextFoundSeg(void);
 extern int SelectPreviousFoundSeg(void);
 
-// In wall.c
+// In tWall.c
 extern int wall_add_blastable(void);
 extern int wall_add_door(void);
 extern int wall_add_closed_wall(void);

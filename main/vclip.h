@@ -121,7 +121,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * (And structures)
  *
  * Revision 1.4  1994/03/04  17:09:43  yuan
- * New wall stuff
+ * New tWall stuff
  *
  * Revision 1.3  1994/01/11  10:59:01  yuan
  * Added effects

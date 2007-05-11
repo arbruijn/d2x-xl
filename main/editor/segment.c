@@ -129,7 +129,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * causing physics bugs.
  * 
  * Revision 1.161  1994/06/08  18:14:16  mike
- * Fix triangulation of sides in hallways (ie, where there is no wall),
+ * Fix triangulation of sides in hallways (ie, where there is no tWall),
  * so they get triangulated the same way, so find_new_seg doesn't get
  * stuck in an infinite recursion.
  * 
@@ -462,7 +462,7 @@ void med_move_vertex(tSegment *sp, int pi, vmsVector *vofs)
 }
 
 // -------------------------------------------------------------------------------
-//	Move a d_free wall in the tSegment by adding the vector *vofs to its coordinates.
+//	Move a d_free tWall in the tSegment by adding the vector *vofs to its coordinates.
 //	Wall indices: 0/1/2/3/4/5 = left/top/right/bottom/back/front
 void med_move_wall(tSegment *sp,int wi, vmsVector *vofs)
 {
@@ -1348,7 +1348,7 @@ int med_delete_segment(tSegment *sp)
 
 	gameData.segs.nSegments--;
 
-	// If deleted tSegment has walls on any tSide, wipe out the wall.
+	// If deleted tSegment has walls on any tSide, wipe out the tWall.
 	for (tSide=0; tSide < MAX_SIDES_PER_SEGMENT; tSide++)
 		if (IS_WALL (WallNumP (sp, tSide))) 
 			wall_remove_side(sp, tSide);
@@ -1624,7 +1624,7 @@ int med_form_joint(tSegment *seg1, int side1, tSegment *seg2, int side2)
 	if (IS_CHILD(seg1->children[side1]) || IS_CHILD(seg2->children[side2]))
 		return 2;
 
-	// Make sure there is no wall there 
+	// Make sure there is no tWall there 
 	if (IS_WALL (WallNumP (seg1, side1)) || IS_WALL (WallNumP (seg2, side2)))
 		return 2;
 

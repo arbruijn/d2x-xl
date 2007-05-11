@@ -389,6 +389,7 @@ typedef struct tGameplayStates {
 #define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount)
 
 typedef struct tInputStates {
+	int		nPlrFileVersion;
 	int		nMouseType;
 	int		nJoyType;
 	int		bGrabMouse;
@@ -510,6 +511,8 @@ typedef struct tCockpitStates {
 	int bRedraw;
 	int bBigWindowSwitch;
 	int nLastDrawn [2];
+	int n3DView [2];
+	int nCoopPlayerView [2];
 } tCockpitStates;
 
 typedef struct tVRBuffers {
@@ -1065,6 +1068,12 @@ typedef struct tMineRenderData {
 	int						sCntSave;
 } tMineRenderData;
 
+typedef struct tGameWindowData {
+	int						x, y;
+	int						w, h;
+	int						wMax, hMax;
+} tGameWindowData;
+
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
@@ -1083,6 +1092,7 @@ typedef struct tRenderData {
 	tTerrainRenderData	terrain;
 	tThrusterData			thrusters [MAX_PLAYERS];
 	tMineRenderData		mine;
+	tGameWindowData		window;
 } tRenderData;
 
 typedef struct tSecretData {
@@ -1127,7 +1137,7 @@ typedef struct tSegmentData {
 } tSegmentData;
 
 typedef struct tWallData {
-	wall					walls [MAX_WALLS];
+	tWall					walls [MAX_WALLS];
 	tExplWall			explWalls [MAX_EXPLODING_WALLS];
 	tActiveDoor			activeDoors [MAX_DOORS];
 	tCloakingWall		cloaking [MAX_CLOAKING_WALLS];
@@ -1661,6 +1671,8 @@ typedef struct tApplicationData {
 	int					nGameMode;
 	int					bGamePaused;
 	uint					nStateGameId;
+	int					playerDefaultDifficulty;
+int						nLifetimeChecksum;
 } tApplicationData;
 
 #define MAX_SEGS_VISITED			1000
@@ -2220,6 +2232,7 @@ extern fix nDebrisLife [];
 
 #define SEGMENTS	gameData.segs.segments
 #define OBJECTS	gameData.objs.objects
+#define WALLS		gameData.walls.walls
 
 #define MAXFPS		((gameStates.render.automap.bDisplay && !gameStates.render.automap.bRadar) ? 40 : gameOpts->render.nMaxFPS)
 

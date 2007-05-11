@@ -105,8 +105,8 @@ int SCREENMODE (int x, int y, int c)
 
 if (i && (i < Num_args)) {
 	gameStates.gfx.bOverride = 1; 
-	Game_window_w = x;
-	Game_window_h = y;
+	gameData.render.window.w = x;
+	gameData.render.window.h = y;
 	return gameStates.gfx.nStartScrMode = GetDisplayMode (SM (x, y)); 
 	}
 return -1;

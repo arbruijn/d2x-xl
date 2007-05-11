@@ -625,9 +625,9 @@ for (seg = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLast
 			continue;
 		csegnum = seg->children [nSide];
 
-		//check for sound on other tSide of wall.  Don't add on
-		//both walls if sound travels through wall.  If sound
-		//does travel through wall, add sound for lower-numbered
+		//check for sound on other tSide of tWall.  Don't add on
+		//both walls if sound travels through tWall.  If sound
+		//does travel through tWall, add sound for lower-numbered
 		//tSegment.
 
 		if (IS_CHILD (csegnum) && (csegnum < nSegment) &&
@@ -715,7 +715,7 @@ if (CFExist (filename,gameFolders.szProfDir,0)) {
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
 	goto try_again;
 	}
-if (!new_player_config ())
+if (!NewPlayerConfig ())
 	goto try_again;			// They hit Esc during New tPlayer config
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
 WritePlayerFile ();
@@ -747,8 +747,8 @@ if (LOCALPLAYER.callsign [0] == 0)	{
 	gameConfig.nControlType =CONTROL_NONE;
 	for (i=0; i<CONTROL_MAX_TYPES; i++)
 		for (j=0; j<MAX_CONTROLS; j++)
-			controlSettings.custom [i] [j] = controlSettings.defaults [i] [j];
-	KCSetControls ();
+			controlSettings.custom [i][j] = controlSettings.defaults [i][j];
+	KCSetControls (0);
 	//----------------------------------------------------------------
 
 	// Read the last tPlayer's name from config file, not lastplr.txt
@@ -793,7 +793,7 @@ else
 	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);
 if (ReadPlayerFile (0) != EZERO)
 	goto do_menu_again;
-KCSetControls ();
+KCSetControls (0);
 gameOpts->gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);
 WriteConfigFile ();		// Update lastplr

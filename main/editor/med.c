@@ -106,7 +106,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Fixed problem I said I fixed last time
  * 
  * Revision 1.170  1994/08/04  00:27:57  matt
- * When viewing a wall, update the gameData.objs.objects nSegment if moved out of the tSegment
+ * When viewing a tWall, update the gameData.objs.objects nSegment if moved out of the tSegment
  * 
  * Revision 1.169  1994/08/02  14:18:12  mike
  * Clean up dialog boxes.

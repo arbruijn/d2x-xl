@@ -453,7 +453,7 @@ int load_mine_data (CFILE *loadFile)
  	mine_fileinfo.texture_sizeof    =   FILENAME_LEN;  // num characters in a name
  	mine_fileinfo.walls.offset		  =	-1;
 	mine_fileinfo.walls.count	  =	0;
-	mine_fileinfo.walls.size		  =	sizeof (wall);  
+	mine_fileinfo.walls.size		  =	sizeof (tWall);  
  	mine_fileinfo.triggers.offset	  =	-1;
 	mine_fileinfo.triggers.count  =	0;
 	mine_fileinfo.triggers.size	  =	sizeof (tTrigger);  
@@ -1761,14 +1761,15 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-if (!(gameStates.render.bColored = HasColoredLight ()))
+if (!(gameStates.app.bNostalgia || (gameStates.render.bColored = HasColoredLight ())))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 #if !SHADOWS
-if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel) 
+if (SHOW_DYN_LIGHT || !gameStates.app.bD2XLevel)
 #endif
 	{
-	AddDynLights ();
+	if (!gameStates.app.bNostalgia)
+		AddDynLights ();
 	}
 return 0;
 }

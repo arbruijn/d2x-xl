@@ -174,7 +174,7 @@ void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 	//		case	CONTROL_CYBERMAN:
 				joydefs_calibrateFlag = 1;
 		}
-		KCSetControls();
+		KCSetControls(0);
 	}
 
 }

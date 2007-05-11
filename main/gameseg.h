@@ -82,7 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Removed switch code... Now we just have Walls, Triggers, and Links...
  *
  * Revision 1.6  1994/02/22  18:14:44  yuan
- * Added new wall system
+ * Added new tWall system
  *
  * Revision 1.5  1994/02/17  11:33:22  matt
  * Changes in tObject system

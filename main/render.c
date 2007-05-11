@@ -921,6 +921,10 @@ if (!bRender)
 		G3DrawTexPoly (props.nv, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
 	else
 #endif
+#ifdef _DEBUG //convenient place for a debug breakpoint
+if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
+	props.segNum = props.segNum;
+#endif
 	if (bmTop)
 		G3DrawTexPolyMulti (
 			props.nv, 
@@ -1298,6 +1302,7 @@ void RenderCorona (short nSegment, short nSide)
 {
 	fVector		vertList [4], sprite [4];
 	short			sideVerts [4];
+	ushort		nWall;
 	uvlf			uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 	fVector		d, n, o, v, vCenter = {{0,0,0}}, vEye;
 #if 0
@@ -1318,6 +1323,19 @@ if  (nSide != 2)
 	return;
 #	endif
 #endif
+nWall = gameData.segs.segments [nSegment].sides [nSide].nWall;
+if (IS_WALL (nWall)) {
+	tWall *wallP = gameData.walls.walls + nWall;
+	ubyte nType = wallP->nType;
+
+	if ((nType == WALL_BLASTABLE) || 
+		 (nType == WALL_DOOR) ||
+		 (nType == WALL_OPEN) ||
+		 (nType == WALL_CLOAKED))
+		return;
+	if (wallP->flags & (WALL_BLASTED | WALL_ILLUSION_OFF))
+		return;
+	}
 // get and check the corona emitting texture
 #if 0
 t = sideP->nOvlTex;
@@ -4315,7 +4333,8 @@ if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (game
 	for (nn = gameData.render.mine.nRenderSegs; nn;)
 		RenderMineSegment (--nn);
 	glDepthFunc (GL_LESS);
-	if ((!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.bCoronas && LoadCorona ()) {
+	if (!gameStates.app.bNostalgia &&
+		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.bCoronas && LoadCorona ()) {
 		gameStates.render.nType = 3;
 		gameData.render.mine.nVisited++;
 		glEnable (GL_TEXTURE_2D);

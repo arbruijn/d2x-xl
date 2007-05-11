@@ -61,9 +61,6 @@ int nModexHUDMsgs;
 #define LHX (x)      (gameStates.render.fonts.bHires?2* (x):x)
 #define LHY (y)      (gameStates.render.fonts.bHires? (24* (y))/10:y)
 
-extern int max_window_h;
-extern int max_window_w;
-
 extern grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int bc, int doubleFlag);
 
 // ----------------------------------------------------------------------------
@@ -153,7 +150,7 @@ if (pMsgs->nMessages > 0) {
 		pMsgs->nColor = GREEN_RGBA;
 
 	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
-		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y >= (max_window_h/8))) {
+		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y >= (gameData.render.window.hMax/8))) {
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
@@ -214,7 +211,7 @@ if (pMsgs->nMessages > 0) {
 		GrSetCurFont ( SMALL_FONT);
 		if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
-			if (Game_window_w == max_window_w)
+			if (gameData.render.window.w == gameData.render.window.wMax)
 				yStart = SMALL_FONT->ft_h / 2;
 			else
 				yStart= SMALL_FONT->ft_h * 2;

@@ -228,15 +228,15 @@ void write_exit_text(FILE *my_file)
 			if (gameData.trigs.triggers[i].nLinks != 0)
 				err_printf(my_file, "Error: Exit triggers must have 0 links, this one has %i links.\n", gameData.trigs.triggers[i].nLinks);
 
-			//	Find wall pointing to this tTrigger.
+			//	Find tWall pointing to this tTrigger.
 			count2 = 0;
 			for (j=0; j<gameData.walls.nWalls; j++)
 				if (gameData.walls.walls[j].nTrigger == i) {
 					count2++;
-					fprintf(my_file, "Exit tTrigger %i is in tSegment %i, on tSide %i, bound to wall %i\n", i, gameData.walls.walls[j].nSegment, gameData.walls.walls[j].nSide, j);
+					fprintf(my_file, "Exit tTrigger %i is in tSegment %i, on tSide %i, bound to tWall %i\n", i, gameData.walls.walls[j].nSegment, gameData.walls.walls[j].nSide, j);
 				}
 			if (count2 == 0)
-				err_printf(my_file, "Error: Trigger %i is not bound to any wall.\n", i);
+				err_printf(my_file, "Error: Trigger %i is not bound to any tWall.\n", i);
 			else if (count2 > 1)
 				err_printf(my_file, "Error: Trigger %i is bound to %i walls.\n", i, count2);
 
@@ -259,7 +259,7 @@ void write_exit_text(FILE *my_file)
 			}
 
 	if (count == 0)
-		err_printf(my_file, "Error: No external wall in this mine.\n");
+		err_printf(my_file, "Error: No external tWall in this mine.\n");
 	else if (count != 1) {
 		// -- warning_printf(my_file, "Warning: %i external walls in this mine.\n", count);
 		// -- warning_printf(my_file, "(If %i are secret exits, then no problem.)\n", count-1);
@@ -536,7 +536,7 @@ void write_wall_text(FILE *my_file)
 	byte	wallFlags[MAX_WALLS];
 	tSegment *segp;
 	tSide *sideP;
-	wall	*wallP;
+	tWall	*wallP;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.walls.walls:\n");
@@ -617,7 +617,7 @@ void write_player_text(FILE *my_file)
 void write_trigger_text(FILE *my_file)
 {
 	int	i, j, w;
-	wall	*wallP;
+	tWall	*wallP;
 
 	fprintf(my_file, "-----------------------------------------------------------------------------\n");
 	fprintf(my_file, "gameData.trigs.triggers:\n");
@@ -628,15 +628,15 @@ void write_trigger_text(FILE *my_file)
 		for (j=0; j<gameData.trigs.triggers[i].nLinks; j++)
 			fprintf(my_file, "[%03i:%i] ", gameData.trigs.triggers[i].seg[j], gameData.trigs.triggers[i].nSide[j]);
 
-		//	Find which wall this tTrigger is connected to.
+		//	Find which tWall this tTrigger is connected to.
 		for (w=gameData.walls.nWalls, wallP = gameData.walls.walls; w; w--, wallP++)
 			if (wallP->nTrigger == i)
 				break;
 
 		if (w == gameData.walls.nWalls)
-			err_printf(my_file, "\nError: Trigger %i is not connected to any wall, so it can never be triggered.\n", i);
+			err_printf(my_file, "\nError: Trigger %i is not connected to any tWall, so it can never be triggered.\n", i);
 		else
-			fprintf(my_file, "Attached to seg:tSide = %i:%i, wall %i\n", 
+			fprintf(my_file, "Attached to seg:tSide = %i:%i, tWall %i\n", 
 				wallP->nSegment, wallP->nSide, WallNumI (wallP->nSegment, wallP->nSide));
 
 	}

@@ -427,7 +427,7 @@ void PrintCmdLineHelp ()
 	con_printf ((int) con_threshold.value, "  -legacyrender     %s\n", "Turn off colored tSegment rendering");
 	con_printf ((int) con_threshold.value, "  -legacyzbuf       %s\n", "Turn off OpenGL depth buffer");
 	con_printf ((int) con_threshold.value, "  -legacyswitches   %s\n", "Turn off fault-tolerant switch handling");
-	con_printf ((int) con_threshold.value, "  -legacywalls      %s\n", "Turn off fault-tolerant wall handling");
+	con_printf ((int) con_threshold.value, "  -legacywalls      %s\n", "Turn off fault-tolerant tWall handling");
 	con_printf ((int) con_threshold.value, "  -legacymode       %s\n", "Turn off all of the above non-legacy behaviour\n");
 	con_printf ((int) con_threshold.value, "  -joydeadzone <n>  %s\n", "Set joystick deadzone to <n> percent (0 <= n <= 100)\n");
 	con_printf ((int) con_threshold.value, "  -limitturnrate    %s\n", "Limit max. turn speed in single player mode like in multiplayer\n");
@@ -1876,6 +1876,10 @@ gameStates.render.cockpit.bRedraw = 0;
 gameStates.render.cockpit.bBigWindowSwitch = 0;
 gameStates.render.cockpit.nLastDrawn [0] =
 gameStates.render.cockpit.nLastDrawn [1] = -1;
+gameStates.render.cockpit.nCoopPlayerView [0] = 
+gameStates.render.cockpit.nCoopPlayerView [1] = -1;
+gameStates.render.cockpit.n3DView [0] =
+gameStates.render.cockpit.n3DView [1] = CV_NONE;
 gameStates.render.vr.xEyeWidth = F1_0;
 gameStates.render.vr.nRenderMode	= VR_NONE;
 gameStates.render.vr.nLowRes = 3;
@@ -3073,6 +3077,7 @@ WriteConfigFile ();
 WritePlayerFile ();
 /*---*/LogErr ("Releasing tracker list\n");
 DestroyTrackerList ();
+FreeParams ();
 #ifdef _DEBUG
 if (!FindArg ("-notitles"))
 #endif

@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Took out references to unused constant
  *
  * Revision 1.10  1994/09/29  14:15:00  matt
- * Added sounds for eclips (wall effects)
+ * Added sounds for eclips (tWall effects)
  *
  * Revision 1.9  1994/09/25  00:40:24  matt
  * Added the ability to make eclips (monitors, fans) which can be blown up

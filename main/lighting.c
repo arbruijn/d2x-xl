@@ -197,7 +197,7 @@ Cache_lookups++;
 			distDist = VmVecDistQuick (&hit_data.hit.vPoint, vObjPos);
 			if (distDist < F1_0/4) {
 				bApplyLight = 1;
-				// -- Int3 ();	//	Curious, did fvi detect intersection with wall containing vertex?
+				// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
 			}
 		}
 		Lighting_cache [ ((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
@@ -1700,7 +1700,7 @@ if (gameOpts->render.bDynLighting) {
 			psl->bState = 1;
 		else {
 			nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
-			if (!SEGVIS (nLightSeg, nSegment)) 
+			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				psl->bState = 0;
 			else {
 				VmVecSub (&d, &c, &pl->vPos);

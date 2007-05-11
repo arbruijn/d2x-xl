@@ -71,7 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_USED     1   // This edge is used
 #define EF_DEFINING 2   // A structure defining edge that should always draw.
 #define EF_FRONTIER 4   // An edge between the known and the unknown.
-#define EF_SECRET   8   // An edge that is part of a secret wall.
+#define EF_SECRET   8   // An edge that is part of a secret tWall.
 #define EF_GRATE    16  // A grate... draw it all the time.
 #define EF_NO_FADE  32  // An edge that doesn't fade with distance
 #define EF_TOO_FAR  64  // An edge that is too far away
@@ -1371,7 +1371,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 		}
 
 	if (IS_WALL (wn = WallNumP (segP, sn))) {
-		wall	*wallP = gameData.walls.walls + wn;
+		tWall	*wallP = gameData.walls.walls + wn;
 		nTrigger = wallP->nTrigger;
 		ttype = gameData.trigs.triggers [nTrigger].nType;
 		if (ttype==TT_SECRET_EXIT)	{

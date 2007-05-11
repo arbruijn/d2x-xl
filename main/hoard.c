@@ -167,7 +167,7 @@ if (!gameData.hoard.bInitialized) {
 	ptP->hitSound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
 	ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size;
 	ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
-	//Create orb goal wall effect
+	//Create orb goal tWall effect
 	gameData.hoard.goal.nClip = gameData.eff.nEffects [0]++;
 	Assert (gameData.eff.nEffects [0] < MAX_EFFECTS);
 	ecP = gameData.eff.pEffects + gameData.hoard.goal.nClip;

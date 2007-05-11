@@ -1472,7 +1472,7 @@ void MultiDoDoorOpen (char *buf)
 	int nSegment;
 	sbyte tSide;
 	tSegment *segP;
-	wall *wallP;
+	tWall *wallP;
 	ubyte flag;
 
 nSegment = GET_INTEL_SHORT (buf + 1);
@@ -1484,7 +1484,7 @@ if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment) || (tSide < 0) || 
 	return;
 	}
 segP = gameData.segs.segments + nSegment;
-if (!IS_WALL (WallNumP (segP, tSide))) {  //Opening door on illegal wall
+if (!IS_WALL (WallNumP (segP, tSide))) {  //Opening door on illegal tWall
 	Int3 ();
 	return;
 	}
@@ -1705,7 +1705,7 @@ strcpy (gameData.marker.nOwner [(nPlayer*2)+msgNum], gameData.multiplayer.player
 
 void MultiDoHostageDoorStatus (char *buf)
 {
-	wall	*wallP;
+	tWall	*wallP;
 	fix	hps;
 	short	wallnum;
 
@@ -3358,7 +3358,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte flags, ubyte state)
 {
-	// Send wall states a specific rejoining tPlayer
+	// Send tWall states a specific rejoining tPlayer
 	short count = 0;
 
 Assert (gameData.app.nGameMode & GM_NETWORK);

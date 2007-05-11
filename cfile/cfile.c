@@ -830,7 +830,7 @@ return CFWrite (&b, sizeof (b), 1, file);
 
 // ----------------------------------------------------------------------------
 
-int cfile_write_float (float f, CFILE *file)
+int CFWriteFloat (float f, CFILE *file)
 {
 f = INTEL_FLOAT (f);
 return CFWrite (&f, sizeof (f), 1, file);

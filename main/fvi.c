@@ -1085,7 +1085,7 @@ if (nHitSegment == -1) {
 	vmsVector vNewHitPoint;
 
 	//because of code that deal with tObject with non-zero radius has
-	//problems, try using zero radius and see if we hit a wall
+	//problems, try using zero radius and see if we hit a tWall
 	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
 								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList, 
 									  &hitData->nSegments, -2);
@@ -1253,11 +1253,11 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				int nFaceHitType;      //in what way did we hit the iFace?
 				if (segP->children [nSide] == nEntrySeg)
 					continue;		//don't go back through entry nSide
-				//did we go through this wall/door?
+				//did we go through this tWall/door?
 				nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
 					SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
 					CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1);
-				if (nFaceHitType) { //through this wall/door
+				if (nFaceHitType) { //through this tWall/door
 					int widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject);
 					//LogErr ("done\n");
 					//if what we have hit is a door, check the adjoining segP
@@ -1349,7 +1349,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 								}
 							}
 						}
-					else {          //a wall
+					else {          //a tWall
 						//is this the closest hit?
 						d = VmVecDist (&vHitPoint, p0);
 						if (d < dMin) {
@@ -1452,7 +1452,7 @@ if (nSegment == -1) {
 CreateAbsVertexLists (&num_faces, vertList, nSegment, nSide);
 CreateAllVertNumLists (&num_faces, vertnum_list, nSegment, nSide);
 //now the hard work.
-//1. find what plane to project this wall onto to make it a 2d case
+//1. find what plane to project this tWall onto to make it a 2d case
 memcpy (&normal_array, sideP->normals + iFace, sizeof (vmsVector));
 biggest = 0;
 if (abs (normal_array.v [1]) > abs (normal_array.v [biggest])) 
@@ -1559,8 +1559,8 @@ return 0;
 }
 
 //	-----------------------------------------------------------------------------
-//check if a particular point on a wall is a transparent pixel
-//returns 1 if can pass though the wall, else 0
+//check if a particular point on a tWall is a transparent pixel
+//returns 1 if can pass though the tWall, else 0
 int CheckTransWall (vmsVector *pnt, tSegment *seg, short nSide, short iFace)
 {
 	tSide *sideP = seg->sides + nSide;
@@ -1612,11 +1612,11 @@ if (faceMask != 0) {				//on the back of at least one face
 	for (nSide = 0, bit = 1; (nSide < 6) && (faceMask >= bit); nSide++) {
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (faceMask & bit) {            //on the back of this iFace
-				//did we go through this wall/door?
+				//did we go through this tWall/door?
 				CreateAbsVertexLists (&nFaces, vertList, SEG_IDX (segP), nSide);
 				nFaceHitType = CheckSphereToSegFace (vPoint, nSegment, nSide, iFace, 
 															 (nFaces == 1) ? 4 : 3, rad, vertList);
-				if (nFaceHitType) {            //through this wall/door
+				if (nFaceHitType) {            //through this tWall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->children [nSide];
 					for (i = 0; (i < gameData.collisions.nSegsVisited) && (nChild != gameData.collisions.segsVisited [i]); i++)

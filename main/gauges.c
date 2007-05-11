@@ -1170,7 +1170,6 @@ else {
 
 #define MAX_SHOWN_LIVES 4
 
-extern int Game_window_y;
 extern int SW_y [2];
 
 void HUDShowHomingWarning (void)
@@ -1182,7 +1181,7 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 		int x=0x8000, y=grdCurCanv->cv_h-nLineSpacing;
 		if (weapon_box_user [0] != WBU_WEAPON || weapon_box_user [1] != WBU_WEAPON) {
 			int wy = (weapon_box_user [0] != WBU_WEAPON)?SW_y [0]:SW_y [1];
-			y = min (y, (wy - nLineSpacing - Game_window_y));
+			y = min (y, (wy - nLineSpacing - gameData.render.window.y));
 			}
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
@@ -3357,8 +3356,6 @@ rgb playerColors [] = {
 	{14, 21, 12}, 
 	{29, 29, 0}};
 
-extern int max_window_w;
-
 typedef struct {
 	sbyte x, y;
 } xy;
@@ -3417,7 +3414,7 @@ if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cv_bit
   } 
 else {
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);
-	bSmallReticle = !(grdCurCanv->cv_bitmap.bm_props.w * 3 > max_window_w*2 || force_big_one);
+	bSmallReticle = !(grdCurCanv->cv_bitmap.bm_props.w * 3 > gameData.render.window.wMax*2 || force_big_one);
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm;
@@ -4010,7 +4007,6 @@ void UpdateLaserWeaponInfo (void)
 			old_weapon [0][gameStates.render.vr.nCurrentPage] = -1;
 }
 
-extern int Game_window_y;
 void FillBackground (void);
 
 int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
@@ -4164,7 +4160,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
-	big_window_bottom = Game_window_y + Game_window_h - 1;
+	big_window_bottom = gameData.render.window.y + gameData.render.window.h - 1;
 	if (window_y > big_window_bottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen

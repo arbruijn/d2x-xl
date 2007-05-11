@@ -86,7 +86,7 @@ void joydef_menu_callback (int nitems, tMenuItem * items, int *last_key, int cit
 	//		case	CONTROL_CYBERMAN:
 				joydefs_calibrateFlag = 1;
 		}
-		KCSetControls();
+		KCSetControls(0);
 	}
 
 if (items [nUseMouseOpt].value != gameOpts->input.bUseMouse)

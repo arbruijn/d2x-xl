@@ -831,7 +831,7 @@ gameFileInfo.objects.count		=	0;
 gameFileInfo.objects.size		=	sizeof(tObject);  
 gameFileInfo.walls.offset		=	-1;
 gameFileInfo.walls.count		=	0;
-gameFileInfo.walls.size			=	sizeof(wall);  
+gameFileInfo.walls.size			=	sizeof(tWall);  
 gameFileInfo.doors.offset		=	-1;
 gameFileInfo.doors.count		=	0;
 gameFileInfo.doors.size			=	sizeof(tActiveDoor);  
@@ -990,7 +990,7 @@ gameData.objs.nFreeDropped = 0;
 
 if (gameFileInfo.walls.offset > -1) {
 #if TRACE
-	con_printf(CONDBG, "   loading wall data ...\n");
+	con_printf(CONDBG, "   loading tWall data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.walls.offset,SEEK_SET))	{
 		for (i=0;i<gameFileInfo.walls.count;i++) {
@@ -1329,7 +1329,7 @@ for (i = 0; i < gameData.segs.nSegments; i++) {
 	tSide	*sidep = gameData.segs.segments [i].sides;
 	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++, sidep++) {
 		short nWall = WallNumS (sidep);
-		wall  *w;
+		tWall  *w;
 		if (!IS_WALL (nWall))
 			continue;
 		w = gameData.walls.walls + nWall;
@@ -1352,7 +1352,7 @@ gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 for (i=0;i<gameData.walls.nWalls;i++)
 	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
-		con_printf (CONDBG,"Removing reference to invalid tTrigger %d from wall %d\n",gameData.walls.walls [i].nTrigger,i);
+		con_printf (CONDBG,"Removing reference to invalid tTrigger %d from tWall %d\n",gameData.walls.walls [i].nTrigger,i);
 #endif
 		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 	}
@@ -1361,7 +1361,7 @@ for (i=0;i<gameData.walls.nWalls;i++)
 for (i=0;i<gameData.trigs.nTriggers;) {
 	int w;
 
-	//	Find which wall this tTrigger is connected to.
+	//	Find which tWall this tTrigger is connected to.
 	for (w=0; w<gameData.walls.nWalls; w++)
 		if (gameData.walls.walls [w].nTrigger == i)
 			break;
@@ -1395,7 +1395,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 		// -- if (gameData.walls.walls [nWall].controllingTrigger != -1)
 		// -- 	Int3();
 
-		//check to see that if a tTrigger requires a wall that it has one,
+		//check to see that if a tTrigger requires a tWall that it has one,
 		//and if it requires a botGen that it has one
 
 		if (gameData.trigs.triggers [t].nType == TT_MATCEN) {
@@ -1404,7 +1404,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 		}
 		else if (gameData.trigs.triggers [t].nType != TT_LIGHT_OFF && gameData.trigs.triggers [t].nType != TT_LIGHT_ON) {	//light triggers don't require walls
 			if (!IS_WALL (nWall))
-				Int3();	//	This is illegal.  This tTrigger requires a wall
+				Int3();	//	This is illegal.  This tTrigger requires a tWall
 			else
 				gameData.walls.walls [nWall].controllingTrigger = t;
 		}
@@ -1413,7 +1413,7 @@ for (t=0; t<gameData.trigs.nTriggers; t++) {
 }
 
 gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
-//fix old wall structs
+//fix old tWall structs
 if (gameTopFileInfo.fileinfo_version < 17) {
 	short nSegment,nSide,wallnum;
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
@@ -1779,7 +1779,7 @@ int SaveGameData(FILE * SaveFile)
 	gameFileInfo.objects.size		=	sizeof(tObject);
 	gameFileInfo.walls.offset			=	-1;
 	gameFileInfo.walls.count		=	gameData.walls.nWalls;
-	gameFileInfo.walls.size			=	sizeof(wall);
+	gameFileInfo.walls.size			=	sizeof(tWall);
 	gameFileInfo.doors.offset			=	-1;
 	gameFileInfo.doors.count		=	gameData.walls.nOpenDoors;
 	gameFileInfo.doors.size			=	sizeof(tActiveDoor);
@@ -1828,7 +1828,7 @@ int SaveGameData(FILE * SaveFile)
 	//==================== SAVE WALL INFO =============================
 
 	walls.offset = ftell(SaveFile);
-	fwrite(gameData.walls.walls, sizeof(wall), gameFileInfo.walls.count, SaveFile);
+	fwrite(gameData.walls.walls, sizeof(tWall), gameFileInfo.walls.count, SaveFile);
 
 	//==================== SAVE DOOR INFO =============================
 

@@ -12,78 +12,40 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header for playsave.c
- *
- * Old Log:
- * Revision 1.1  1995/05/16  16:01:19  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:31:24  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.10  1995/01/22  18:57:04  matt
- * Made tPlayer highest level work with missions
- *
- * Revision 1.9  1994/12/12  11:37:15  matt
- * Fixed auto leveling defaults & saving
- *
- * Revision 1.8  1994/12/08  10:01:37  john
- * Changed the way the tPlayer callsign stuff works.
- *
- * Revision 1.7  1994/11/25  22:46:56  matt
- * Made saved game descriptions longer
- *
- * Revision 1.6  1994/10/24  20:00:02  john
- * Added prototype for ReadPlayerFile.
- *
- * Revision 1.5  1994/10/17  13:07:12  john
- * Moved the descent.cfg info into the tPlayer config file.
- *
- * Revision 1.4  1994/10/09  14:54:32  matt
- * Made tPlayer cockpit state & window size save/restore with saved games & automap
- *
- * Revision 1.3  1994/10/08  23:08:09  matt
- * Added error check & handling for game load/save disk io
- *
- * Revision 1.2  1994/09/28  17:25:06  matt
- * Added first draft of game save/load system
- *
- * Revision 1.1  1994/09/27  15:47:23  matt
- * Initial revision
- *
- *
- */
-
-
 #ifndef _PLAYSAVE_H
 #define _PLAYSAVE_H
+
+#define COMPATIBLE_PLAYER_FILE_VERSION    17
+#define D2W95_PLAYER_FILE_VERSION			24
+#define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
+#define D2XXL_PLAYER_FILE_VERSION			160
+#define PLAYER_FILE_VERSION					160	//increment this every time the tPlayer file changes
 
 #define N_SAVE_SLOTS    10
 #define GAME_NAME_LEN   25      // +1 for terminating zero = 26
 
 #ifndef EZERO
-#define EZERO 0
+#	define EZERO 0
 #endif
 
 extern int DefaultLeveling_on;
 
 // update the tPlayer's highest level.  returns errno (0 == no error)
-int update_player_file();
+int update_player_file ();
 
 // Used to save KConfig values to disk.
-int WritePlayerFile();
+int WritePlayerFile ();
 
-int new_player_config();
+int NewPlayerConfig ();
 
-int ReadPlayerFile(int bOnlyWindowSizes);
+int ReadPlayerFile (int bOnlyWindowSizes);
 
 // set a new highest level for tPlayer for this mission
-void SetHighestLevel(int levelnum);
+void SetHighestLevel (ubyte nLevel);
 
 // gets the tPlayer's highest level from the file for this mission
 int GetHighestLevel(void);
+
+void FreeParams (void);
 
 #endif /* _PLAYSAVE_H */

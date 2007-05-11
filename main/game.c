@@ -238,7 +238,7 @@ InitSpecialEffects ();
 InitAISystem ();
 //*---*/LogErr ("  gauge canvases...\n");
 //	InitGaugeCanvases ();
-/*---*/LogErr ("  exploding wall...\n");
+/*---*/LogErr ("  exploding tWall...\n");
 InitExplodingWalls ();
 /*---*/LogErr ("  particle systems...\n");
 InitSmoke ();
@@ -298,13 +298,6 @@ if (grdCurScreen) {
 #define cv_w  cv_bitmap.bm_props.w
 #define cv_h  cv_bitmap.bm_props.h
 
-int Game_window_x = 0;
-int Game_window_y = 0;
-int Game_window_w = 0;
-int Game_window_h = 0;
-int max_window_w = 0;
-int max_window_h = 0;
-
 extern void NDRecordCockpitChange (int);
 
 //------------------------------------------------------------------------------
@@ -336,23 +329,23 @@ bGameCockpitCopyCode  = NULL;
 switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW:
-     	max_window_h = (grdCurScreen->sc_h * 2) / 3;
-		if (Game_window_h > max_window_h)
-			Game_window_h = max_window_h;
-		if (Game_window_w > max_window_w)
-			Game_window_w = max_window_w;
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
-		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
+     	gameData.render.window.hMax = (grdCurScreen->sc_h * 2) / 3;
+		if (gameData.render.window.h > gameData.render.window.hMax)
+			gameData.render.window.h = gameData.render.window.hMax;
+		if (gameData.render.window.w > gameData.render.window.wMax)
+			gameData.render.window.w = gameData.render.window.wMax;
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 		break;
 
 	case CM_FULL_SCREEN:
-		max_window_h = grdCurScreen->sc_h;
-		Game_window_h = max_window_h;
-		Game_window_w = max_window_w;
-		Game_window_x = (max_window_w - Game_window_w)/2;
-		Game_window_y = (max_window_h - Game_window_h)/2;
-		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
+		gameData.render.window.hMax = grdCurScreen->sc_h;
+		gameData.render.window.h = gameData.render.window.hMax;
+		gameData.render.window.w = gameData.render.window.wMax;
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 		break;
 
 	case CM_STATUS_BAR:
@@ -360,12 +353,12 @@ switch (gameStates.render.cockpit.nMode) {
 		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].bm_props.h;
 		if (grdCurScreen->sc_h > 480)
 			h = (int) ((double) h * (double) grdCurScreen->sc_h / 480.0);
-     	max_window_h = grdCurScreen->sc_h - h;
-		Game_window_h = max_window_h;
-		Game_window_w = max_window_w;
-		Game_window_x = (max_window_w - Game_window_w) / 2;
-		Game_window_y = (max_window_h - Game_window_h) / 2;
-		GameInitRenderSubBuffers (Game_window_x, Game_window_y, Game_window_w, Game_window_h);
+     	gameData.render.window.hMax = grdCurScreen->sc_h - h;
+		gameData.render.window.h = gameData.render.window.hMax;
+		gameData.render.window.w = gameData.render.window.wMax;
+		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
+		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h) / 2;
+		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
 		}
 		break;
 
@@ -441,8 +434,8 @@ gameStates.render.vr.nScreenFlags	=  flags;
 //NEWVR
 VRResetParams ();
 gameStates.render.vr.nRenderMode 	= render_method;
-Game_window_w 		= render_w;
-Game_window_h		= render_h;
+gameData.render.window.w 		= render_w;
+gameData.render.window.h		= render_h;
 if (gameStates.render.vr.buffers.offscreen) {
 	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
 	}
@@ -563,12 +556,12 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 			ResetCockpit ();
 		}
 			{
-			max_window_w = grdCurScreen->sc_w;
-			max_window_h = grdCurScreen->sc_h;
-	      if (!Game_window_h || (Game_window_h > max_window_h) || 
-				 !Game_window_w || (Game_window_w > max_window_w)) {
-				Game_window_w = max_window_w;
-				Game_window_h = max_window_h;
+			gameData.render.window.wMax = grdCurScreen->sc_w;
+			gameData.render.window.hMax = grdCurScreen->sc_h;
+	      if (!gameData.render.window.h || (gameData.render.window.h > gameData.render.window.hMax) || 
+				 !gameData.render.window.w || (gameData.render.window.w > gameData.render.window.wMax)) {
+				gameData.render.window.w = gameData.render.window.wMax;
+				gameData.render.window.h = gameData.render.window.hMax;
 				}
 			}
 		InitCockpit ();
@@ -1655,16 +1648,16 @@ for (;;) {
 		//WIN (mouse_set_mode (1);
 		}
 	if (gameStates.render.automap.bDisplay) {
-		int	save_w = Game_window_w,
-				save_h = Game_window_h;
+		int	save_w = gameData.render.window.w,
+				save_h = gameData.render.window.h;
 		DoAutomap (0, 0);
 		gameStates.app.bEnterGame = 1;
 		//	FlushInput ();
 		//	StopPlayerMovement ();
 		gameStates.video.nScreenMode = -1; 
 		SetScreenMode (SCREEN_GAME);
-		Game_window_w = save_w; 
-		Game_window_h = save_h;
+		gameData.render.window.w = save_w; 
+		gameData.render.window.h = save_h;
 		InitCockpit ();
 		gameStates.render.cockpit.nLastDrawn [0] =
 		gameStates.render.cockpit.nLastDrawn [1] = -1;
@@ -1865,9 +1858,6 @@ extern void player_follow_path (tObject *objP);
 extern void check_create_player_path (void);
 
 #endif
-
-int CoopView_player[2]={-1,-1};
-int Cockpit_3dView[2]={CV_NONE,CV_NONE};
 
 //returns ptr to escort robot, or NULL
 tObject *find_escort ()

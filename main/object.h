@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Object types
 #define OBJ_NONE        255 // unused tObject
-#define OBJ_WALL        0   // A wall... not really an tObject, but used for collisions
+#define OBJ_WALL        0   // A tWall... not really an tObject, but used for collisions
 #define OBJ_FIREBALL    1   // a fireball, part of an explosion
 #define OBJ_ROBOT       2   // an evil enemy
 #define OBJ_HOSTAGE     3   // a hostage you need to rescue
@@ -102,7 +102,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OF_EXPLODING        1   // this tObject is exploding
 #define OF_SHOULD_BE_DEAD   2   // this tObject should be dead, so next time we can, we should delete this tObject.
 #define OF_DESTROYED        4   // this has been killed, and is showing the dead version
-#define OF_SILENT           8   // this makes no sound when it hits a wall.  Added by MK for weapons, if you extend it to other types, do it completely!
+#define OF_SILENT           8   // this makes no sound when it hits a tWall.  Added by MK for weapons, if you extend it to other types, do it completely!
 #define OF_ATTACHED         16  // this tObject is a fireball attached to another tObject
 #define OF_HARMLESS         32  // this tObject does no damage.  Added to make quad lasers do 1.5 damage as normal lasers.
 #define OF_PLAYER_DROPPED   64  // this tObject was dropped by the tPlayer...
@@ -121,7 +121,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PF_LEVELLING        0x02    // level tObject with closest tSide
 #define PF_BOUNCE           0x04    // bounce (not slide) when hit will
 #define PF_WIGGLE           0x08    // wiggle while flying
-#define PF_STICK            0x10    // tObject sticks (stops moving) when hits wall
+#define PF_STICK            0x10    // tObject sticks (stops moving) when hits tWall
 #define PF_PERSISTENT       0x20    // tObject keeps going even after it hits another tObject (eg, fusion cannon)
 #define PF_USES_THRUST      0x40    // this tObject uses its thrust
 #define PF_BOUNCED_ONCE     0x80    // Weapon has bounced once.

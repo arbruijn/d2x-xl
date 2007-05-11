@@ -265,7 +265,7 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 }
 
 //------------------------------------------------------------------------------
-// Return tTrigger number if door is controlled by a wall switch, else return -1.
+// Return tTrigger number if door is controlled by a tWall switch, else return -1.
 int DoorIsWallSwitched (int nWall)
 {
 	int i, nTrigger;
@@ -352,7 +352,7 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 	nWall = WallNumP (segP, nSide);
 	if (!IS_WALL (nWall)) {
 #ifdef _DEBUG
-		LogErr ("WARNING: Wall trigger %d targets non-existant wall @ %d,%d\n", 
+		LogErr ("WARNING: Wall trigger %d targets non-existant tWall @ %d,%d\n", 
 				  trigP - gameData.trigs.triggers, SEG_IDX (segP), nSide);
 #endif
 		continue;
@@ -557,7 +557,7 @@ if (trigP->nLinks > 0) {
 
 //------------------------------------------------------------------------------
 
-wall *TriggerParentWall (short nTrigger)
+tWall *TriggerParentWall (short nTrigger)
 {
 	int	i;
 
@@ -699,7 +699,7 @@ if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 void DoSpeedBoost (tTrigger *trigP, short nObject)
 {
 if (COMPETITION || extraGameInfo [IsMultiGame].nSpeedBoost) {
-	wall *w = TriggerParentWall (TRIG_IDX (trigP));
+	tWall *w = TriggerParentWall (TRIG_IDX (trigP));
 	gameData.objs.speedBoost [nObject].bBoosted = (trigP->value && (trigP->nLinks > 0));
 	SetSpeedBoostVelocity ((short) nObject, trigP->value, 
 								  (short) (w ? w->nSegment : -1), (short) (w ? w->nSide : -1),
@@ -1053,7 +1053,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-wall *FindTriggerWall (short nTrigger)
+tWall *FindTriggerWall (short nTrigger)
 {
 	int	i;
 
@@ -1067,7 +1067,7 @@ return NULL;
 
 int FindTriggerSegSide (short nTrigger)
 {
-	wall	*wallP = FindTriggerWall (nTrigger);
+	tWall	*wallP = FindTriggerWall (nTrigger);
 
 return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
 }

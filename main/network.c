@@ -813,7 +813,7 @@ void NetworkSendDoorUpdates (int pnum)
 	// Send door status when new tPlayer joins
 	
 	int i;
-	wall *wallP;
+	tWall *wallP;
    
 //   Assert (pnum>-1 && pnum<gameData.multiplayer.nPlayers);
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {

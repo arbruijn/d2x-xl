@@ -67,7 +67,7 @@ fix	gameData.objs.types.nType.nStrength [MAX_OBJTYPE];
 //right now there's only one tPlayer ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
 
-//---------------- Variables for wall textures ------------------
+//---------------- Variables for tWall textures ------------------
 
 int ComputeAvgPixel (grsBitmap *newBm)
 {
@@ -214,7 +214,7 @@ EClipReadN (gameData.eff.effects [0], gameData.eff.nEffects [0], fp);
 gameData.eff.effects [0][32].vc.xTotalTime *= 10;
 gameData.eff.effects [0][32].vc.xFrameTime *= 10;
 gameData.walls.nAnims [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d wall animations\n", gameData.walls.nAnims [0]);
+/*---*/LogErr ("      Loading %d tWall animations\n", gameData.walls.nAnims [0]);
 WClipReadN (gameData.walls.anims [0], gameData.walls.nAnims [0], fp);
 
 gameData.bots.nTypes [0] = CFReadInt (fp);
@@ -584,7 +584,7 @@ gameData.eff.nEffects [1] = CFReadInt (fp);
 /*---*/LogErr ("         Loading %d animation descriptions\n", gameData.eff.nClips [1]);
 EClipReadN (gameData.eff.effects [1], D1_MAX_EFFECTS, fp);
 gameData.walls.nAnims [1] = CFReadInt (fp);
-/*---*/LogErr ("         Loading %d wall animations\n", gameData.walls.nAnims [1]);
+/*---*/LogErr ("         Loading %d tWall animations\n", gameData.walls.nAnims [1]);
 for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++) {
 	//CFRead (&w, sizeof (w), 1, fp);
 	pw->xTotalTime = CFReadFix (fp);

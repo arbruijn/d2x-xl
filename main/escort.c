@@ -172,7 +172,7 @@ while ((head != tail) && (head < max_segs)) {
 
 //	-----------------------------------------------------------------------------
 //	Return true if ok for buddy to talk, else return false.
-//	Buddy is allowed to talk if the tSegment he is in does not contain a blastable wall that has not been blasted
+//	Buddy is allowed to talk if the tSegment he is in does not contain a blastable tWall that has not been blasted
 //	AND he has never yet, since being initialized for level, been allowed to talk.
 int BuddyMayTalk (void)
 {
@@ -535,7 +535,7 @@ return -1;
 //	Return nearest tObject of interest.
 //	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any tObject spewed by player.
 //	-1 means tObject does not exist in mine.
-//	-2 means tObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered wall)
+//	-2 means tObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered tWall)
 int ExistsInMine (int start_seg, int objtype, int objid, int special)
 {
 	int	nSegIdx, nSegment;

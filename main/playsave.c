@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _WIN32_WCE
 #include <errno.h>
 #endif
+#include <limits.h>
 
 #include "error.h"
 
@@ -58,6 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "args.h"
 #include "collide.h"
+#include "u_mem.h"
 
 //------------------------------------------------------------------------------
 
@@ -73,17 +75,12 @@ int GetLifetimeChecksum (int a,int b);
 
 typedef struct hli {
 	char	shortname[9];
-	ubyte	level_num;
+	ubyte	nLevel;
 } hli;
 
 short nHighestLevels;
 
 hli highestLevels [MAX_MISSIONS];
-
-#define COMPATIBLE_PLAYER_FILE_VERSION    17
-#define D2W95_PLAYER_FILE_VERSION			24
-#define D2XW32_PLAYER_FILE_VERSION			45		// first flawless D2XW32 tPlayer file version
-#define PLAYER_FILE_VERSION					159	//increment this every time the tPlayer file changes
 
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
@@ -111,7 +108,539 @@ extern void InitWeaponOrdering();
 
 //------------------------------------------------------------------------------
 
-int new_player_config()
+typedef struct tParam {
+	struct tParam	*next;
+	char				*valP;
+	short				nValues;
+	ubyte				nSize;
+	char				szTag [1];
+} tParam;
+
+tParam	*paramList = NULL;
+tParam	*lastParam = NULL;
+
+//------------------------------------------------------------------------------
+
+void FreeParams (void)
+{
+	tParam	*pp;
+
+while (paramList) {
+	pp = paramList;
+	paramList = paramList->next;
+	d_free (pp);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+char *MakeTag (char *pszTag, char *pszIdent, int i, int j)
+{
+	char	*pi, *ph;
+	int	h = 0, l;
+
+for (pi = pszTag; *pszIdent; h++) {
+	if (!((ph = strstr (pszIdent, " [")) || (ph = strchr (pszIdent, '[')))) {
+		strcpy (pi, pszIdent);
+		break;
+		}
+	memcpy (pi, pszIdent, l = ph - pszIdent);
+	sprintf (pi + l, "[%d]", h ? j : i);
+	pi = pszTag + strlen (pszTag);
+	strcat (pszTag, pszIdent = strchr (ph + 1, ']') + 1);
+	}
+return pszTag;
+}
+
+//------------------------------------------------------------------------------
+
+int RegisterParam (void *valP, char *pszIdent, int i, int j, ubyte nSize)
+{
+	char		szTag [200];
+	int		l;
+	tParam	*pp;
+
+l = strlen (MakeTag (szTag, pszIdent, i, j));
+pp = (tParam *) d_malloc (sizeof (tParam) + l);
+if (!pp)
+	return 0;
+memcpy (pp->szTag, szTag, l + 1);
+pp->valP = valP;
+pp->nSize = nSize;
+pp->nValues = 1;
+pp->next = NULL;
+if (lastParam)
+	lastParam->next = pp;
+else
+	paramList = pp;
+lastParam = pp;
+return 1;
+}
+
+#define RP(_v,_i,_j)	RegisterParam ((void *) &(_v), #_v, _i, _j, sizeof (_v))
+
+//------------------------------------------------------------------------------
+
+void RegisterConfigParams (kcItem *cfgP, int nItems, char *pszId)
+{
+	char	szTag [200], *p;
+	int	bDuplicate = 0;
+
+strcpy (szTag, pszId);
+p = szTag + strlen (szTag);
+
+for (; nItems; nItems--, cfgP++) {
+#if 0
+	sprintf (p, "%s.type", cfgP->text);
+	RegisterParam (&cfgP->nType, szTag, 0, 0, sizeof (cfgP->nType));
+#endif
+	if (bDuplicate) {
+		sprintf (p, "%s[1].value", cfgP->text);
+		RegisterParam (&cfgP->value, szTag, 1, 0, sizeof (cfgP->value));
+		bDuplicate = 0;
+		}
+	else if ((nItems > 1) && !strcmp (cfgP->text, (cfgP + 1)->text)) {
+		bDuplicate = 1;
+		sprintf (p, "%s[0].value", cfgP->text);
+		RegisterParam (&cfgP->value, szTag, 0, 0, sizeof (cfgP->value));
+		}
+	else {
+		sprintf (p, "%s.value", cfgP->text);
+		RegisterParam (&cfgP->value, szTag, 0, 0, sizeof (cfgP->value));
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RegisterParams (void)
+{
+	int	i, j;
+
+	static int bRegistered = 0;
+
+if (bRegistered)
+	return;
+bRegistered = 1;
+
+for (i = 0; i < 2; i++) {
+	if (!i) {	// i == 1: nostalgia/pure D2 mode
+		RP (gameData.render.window.w, 0, 0);
+		RP (gameData.render.window.h, 0, 0);
+
+		RP (iDlTimeout, 0, 0);
+		
+		RP (gameData.app.playerDefaultDifficulty, 0, 0);
+		RP (gameStates.render.cockpit.nMode, 0, 0);
+		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
+		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
+		RP (gameOpts->render.cockpit.bMissileView, 0, 0);
+		RP (gameOpts->gameplay.bHeadlightOn, 0, 0);
+		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
+		RP (networkData.nNetLifeKills, 0, 0);
+		RP (networkData.nNetLifeKilled, 0, 0);
+		RP (gameData.app.nLifetimeChecksum, 0, 0);
+		RP (gameData.escort.szName, 0, 0);
+		for (j = 0; j < 4; j++)
+			RP (gameData.multigame.msg.szMacro [j], j, 0);
+
+		RP (displayModeInfo [NUM_DISPLAY_MODES].w, NUM_DISPLAY_MODES, 0);
+		RP (displayModeInfo [NUM_DISPLAY_MODES].h, NUM_DISPLAY_MODES, 0);
+
+		RP (gameStates.app.nDifficultyLevel, 0, 0);
+		RP (gameStates.ogl.nContrast, 0, 0);
+		RP (gameStates.multi.nConnection, 0, 0);
+		RP (gameStates.multi.bUseTracker, 0, 0);
+
+		RP (mpParams.nLevel, 0, 0);
+		RP (mpParams.nGameType, 0, 0);
+		RP (mpParams.nGameMode, 0, 0);
+		RP (mpParams.nGameAccess, 0, 0);
+		RP (mpParams.bShowPlayersOnAutomap, 0, 0);
+		RP (mpParams.nDifficulty, 0, 0);
+		RP (mpParams.nWeaponFilter, 0, 0);
+		RP (mpParams.nReactorLife, 0, 0);
+		RP (mpParams.nMaxTime, 0, 0);
+		RP (mpParams.nKillGoal, 0, 0);
+		RP (mpParams.bInvul, 0, 0);
+		RP (mpParams.bMarkerView, 0, 0);
+		RP (mpParams.bAlwaysBright, 0, 0);
+		RP (mpParams.bBrightPlayers, 0, 0);
+		RP (mpParams.bShowAllNames, 0, 0);
+		RP (mpParams.bShortPackets, 0, 0);
+		RP (mpParams.nPPS, 0, 0);
+		RP (mpParams.udpClientPort, 0, 0);
+		RP (mpParams.szServerIpAddr, 0, 0);
+
+		RP (extraGameInfo [i].bAutoBalanceTeams, 0, 0);
+		RP (extraGameInfo [i].bAutoDownload, 0, 0);
+		RP (extraGameInfo [i].bDamageExplosions, 0, 0);
+		RP (extraGameInfo [1].bDisableReactor, 0, 0);
+		RP (extraGameInfo [i].bDropAllMissiles, 0, 0);
+		RP (extraGameInfo [i].bEnhancedCTF, 0, 0);
+		RP (extraGameInfo [i].bFixedRespawns, 0, 0);
+		RP (extraGameInfo [i].bFluidPhysics, 0, 0);
+		RP (extraGameInfo [i].bFriendlyFire, 0, 0);
+		RP (extraGameInfo [i].bImmortalPowerups, 0, 0);
+		RP (extraGameInfo [i].bLightTrails, 0, 0);
+		RP (extraGameInfo [i].bMultiBosses, 0, 0);
+		RP (extraGameInfo [i].bPowerupsOnRadar, 0, 0);
+		RP (extraGameInfo [i].bRenderShield, 0, 0);
+		RP (extraGameInfo [i].bRobotsHitRobots, 0, 0);
+		RP (extraGameInfo [i].bRobotsOnRadar, 0, 0);
+		RP (extraGameInfo [i].bRotateLevels, 0, 0);
+		RP (extraGameInfo [i].bSafeUDP, 0, 0);
+		RP (extraGameInfo [i].bShadows, 0, 0);
+		RP (extraGameInfo [i].bTeleporterCams, i, 0);
+		RP (extraGameInfo [i].bSmartWeaponSwitch, 0, 0);
+		RP (extraGameInfo [i].bSmokeGrenades, 0, 0);
+		RP (extraGameInfo [i].bThrusterFlames, 0, 0);
+		RP (extraGameInfo [i].bTracers, 0, 0);
+		RP (extraGameInfo [i].bUseCameras, 0, 0);
+		RP (extraGameInfo [i].bUseSmoke, 0, 0);
+		RP (extraGameInfo [i].bShockwaves, 0, 0);
+		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
+		RP (extraGameInfo [i].bWiggle, 0, 0);
+
+		RP (extraGameInfo [i].grWallTransparency, 0, 0);
+
+		RP (extraGameInfo [i].nFusionPowerMod, 0, 0);
+		RP (extraGameInfo [i].nLightRange, 0, 0);
+		RP (extraGameInfo [i].nMaxSmokeGrenades, 0, 0);
+		RP (extraGameInfo [i].nMslTurnSpeed, 0, 0);
+		RP (extraGameInfo [i].nRadar, 0, 0);
+		RP (extraGameInfo [i].nSpawnDelay, 0, 0); // / 1000
+		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
+		RP (extraGameInfo [i].nWeaponDropMode, 0, 0);
+		RP (extraGameInfo [i].nWeaponIcons, 0, 0);
+		RP (extraGameInfo [i].nZoomMode, 0, 0);
+
+		RP (extraGameInfo [i].entropy.nCaptureVirusLimit, 0, 0);
+		RP (extraGameInfo [i].entropy.nCaptureTimeLimit, 0, 0);
+		RP (extraGameInfo [i].entropy.nMaxVirusCapacity, 0, 0);
+		RP (extraGameInfo [i].entropy.nBumpVirusCapacity, 0, 0);
+		RP (extraGameInfo [i].entropy.nBashVirusCapacity, 0, 0);
+		RP (extraGameInfo [i].entropy.nVirusGenTime, 0, 0);
+		RP (extraGameInfo [i].entropy.nVirusLifespan, 0, 0);
+		RP (extraGameInfo [i].entropy.nVirusStability, 0, 0); 
+		RP (extraGameInfo [i].entropy.nEnergyFillRate, 0, 0);
+		RP (extraGameInfo [i].entropy.nShieldFillRate, 0, 0);
+		RP (extraGameInfo [i].entropy.nShieldDamageRate, 0, 0);
+		RP (extraGameInfo [i].entropy.bRevertRooms, 0, 0);
+		RP (extraGameInfo [i].entropy.bDoConquerWarning, 0, 0);
+		RP (extraGameInfo [i].entropy.nOverrideTextures, 0, 0);
+		RP (extraGameInfo [i].entropy.bBrightenRooms, 0, 0);
+		RP (extraGameInfo [i].entropy.bPlayerHandicap, 0, 0);
+
+		RP (extraGameInfo [i].monsterball.nBonus, 0, 0);
+		RP (extraGameInfo [i].monsterball.nSizeMod, 0, 0);
+		for (j = 0; j < MAX_MONSTERBALL_FORCES; j++) {
+			RP (extraGameInfo [i].monsterball.forces [j].nWeaponId, 0, j);
+			RP (extraGameInfo [i].monsterball.forces [j].nForce, 0, j);
+			}
+		for (j = 0; j < 3; j++) {
+			RP (gameOptions [i].input.bRampKeys [j], i, j);
+			RP (gameOptions [i].input.mouseSensitivity [j], 0, j);
+			}
+		for (j = 0; j < 4; j++) {
+			RP (gameOptions [i].render.smoke.nDens [j], i, j);
+			RP (gameOptions [i].render.smoke.nSize [j], i, j);
+			RP (gameOptions [i].render.smoke.nLife [j], i, j);
+			}
+		for (j = 0; j < 5; j++) {
+			RP (gameOptions [i].input.joyDeadZones [j], 0, j);
+			RP (gameOptions [i].input.joySensitivity [j], 0, j);
+			}
+		RP (gameOptions [i].input.bJoyMouse, i, 0);
+		RP (gameOptions [i].input.bLinearJoySens, i, 0);
+		RP (gameOptions [i].input.bSyncJoyAxes, i, 0);
+		RP (gameOptions [i].input.bSyncMouseAxes, i, 0);
+		RP (gameOptions [i].input.bUseHotKeys, i, 0);
+		RP (gameOptions [i].input.keyRampScale, i, 0);
+
+		RP (gameOptions [i].ogl.bLightObjects, i, 0);
+		RP (gameOptions [i].ogl.nMaxLights, i, 0);
+		RP (gameOptions [i].render.bDynLighting, i, 0);
+		RP (gameOptions [i].render.nDebrisLife, i, 0);
+
+		RP (gameOptions [i].render.textures.nQuality, i, 0);
+		RP (gameOptions [i].render.bAutoTransparency, i, 0);
+		RP (gameOptions [i].render.bCoronas, i, 0);
+		RP (gameOptions [i].render.bTransparentEffects, i, 0);
+
+		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
+		RP (gameOptions [i].render.cameras.nFPS, i, 0);
+		RP (gameOptions [i].render.cameras.nSpeed, i, 0);
+
+		RP (gameOptions [i].render.automap.bBright, i, 0);
+		RP (gameOptions [i].render.automap.bCoronas, i, 0);
+		RP (gameOptions [i].render.automap.bSmoke, i, 0);
+		RP (gameOptions [i].render.automap.bTextured, i, 0);
+		RP (gameOptions [i].render.automap.nColor, i, 0);
+		RP (gameOptions [i].render.automap.nRange, i, 0);
+
+		RP (gameOptions [i].render.cockpit.bMouseIndicator, i, 0);
+		RP (gameOptions [i].render.cockpit.bObjectTally, i, 0);
+		RP (gameOptions [i].render.cockpit.bPlayerStats, i, 0);
+		RP (gameOptions [i].render.cockpit.bRotateMslLockInd, i, 0);
+		RP (gameOptions [i].render.cockpit.bScaleGauges, i, 0);
+		RP (gameOptions [i].render.cockpit.bSplitHUDMsgs, i, 0);
+		RP (gameOptions [i].render.cockpit.bTextGauges, i, 0);
+		RP (gameOptions [i].render.cockpit.nWindowPos, i, 0);
+		RP (gameOptions [i].render.cockpit.nWindowSize, i, 0);
+		RP (gameOptions [i].render.cockpit.nWindowZoom, i, 0);
+
+		RP (gameOptions [i].render.color.bAmbientLight, i, 0);
+		RP (gameOptions [i].render.color.bCap, i, 0);
+		RP (gameOptions [i].render.color.bGunLight, i, 0);
+		RP (gameOptions [i].render.color.bMix, i, 0);
+		RP (gameOptions [i].render.color.bWalls, i, 0);
+		RP (gameOptions [i].render.color.bUseLightMaps, i, 0);
+		RP (gameOptions [i].render.color.nLightMapRange, i, 0);
+
+		RP (gameOptions [i].render.powerups.b3D, i, 0);
+		RP (gameOptions [i].render.powerups.nSpin, i, 0);
+
+		RP (gameOptions [i].render.shadows.bFast, i, 0);
+		RP (gameOptions [i].render.shadows.bMissiles, i, 0);
+		RP (gameOptions [i].render.shadows.bPlayers, i, 0);
+		RP (gameOptions [i].render.shadows.bReactors, i, 0);
+		RP (gameOptions [i].render.shadows.bRobots, i, 0);
+		RP (gameOptions [i].render.shadows.nClip, i, 0);
+		RP (gameOptions [i].render.shadows.nLights, i, 0);
+		RP (gameOptions [i].render.shadows.nReach, i, 0);
+
+		RP (gameOptions [i].render.smoke.bCollisions, i, 0);
+		RP (gameOptions [i].render.smoke.bDecreaseLag, i, 0);
+		RP (gameOptions [i].render.smoke.bDebris, i, 0);
+		RP (gameOptions [i].render.smoke.bDisperse, i, 0);
+		RP (gameOptions [i].render.smoke.bMissiles, i, 0);
+		RP (gameOptions [i].render.smoke.bPlayers, i, 0);
+		RP (gameOptions [i].render.smoke.bRobots, i, 0);
+		RP (gameOptions [i].render.smoke.bStatic, i, 0);
+		RP (gameOptions [i].render.smoke.bSyncSizes, i, 0);
+
+		RP (gameOptions [i].render.weaponIcons.alpha, i, 0);
+		RP (gameOptions [i].render.weaponIcons.bEquipment, i, 0);
+		RP (gameOptions [i].render.weaponIcons.bShowAmmo, i, 0);
+		RP (gameOptions [i].render.weaponIcons.bSmall, i, 0);
+		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
+		RP (gameOptions [i].render.nMaxFPS, i, 0);
+		RP (gameOptions [i].render.nQuality, i, 0);
+		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
+		RP (gameOptions [i].app.bExpertMode, i, 0);
+		RP (gameOptions [i].app.nVersionFilter, i, 0);
+		RP (gameOptions [i].demo.bOldFormat, i, 0);
+		}
+	// options applicable for both enhanced and pure D2 mode
+	for (j = 0; j < sizeofa (nWeaponOrder [i]); j++)
+		RP (nWeaponOrder [i][j], i, j);
+	RP (gameStates.render.cockpit.n3DView [i], i, 0);
+	if (i)
+		RP (extraGameInfo [i].bCompetition, i, 0);
+	RP (extraGameInfo [i].bCloakedIndicators, i, 0);
+	RP (extraGameInfo [i].bDamageIndicators, i, 0);
+	RP (extraGameInfo [i].bDarkness, i, 0);
+	RP (extraGameInfo [i].bDualMissileLaunch, i, 0);
+	RP (extraGameInfo [i].bEnableCheats, i, 0);
+	RP (extraGameInfo [i].bFastPitch, i, 0);
+	RP (extraGameInfo [i].bFlickerLights, i, 0);
+	RP (extraGameInfo [i].bFriendlyIndicators, i, 0);
+	RP (extraGameInfo [i].bHeadLights, i, 0);
+	RP (extraGameInfo [i].bMslLockIndicators, i, 0);
+	RP (extraGameInfo [i].bMouseLook, i, 0);
+	RP (extraGameInfo [i].bPowerupLights, i, 0);
+	RP (extraGameInfo [i].bShootMissiles, i, 0);
+	RP (extraGameInfo [i].bTagOnlyHitObjs, i, 0);
+	RP (extraGameInfo [i].bTargetIndicators, i, 0);
+	RP (extraGameInfo [i].bTowFlags, i, 0);
+	RP (extraGameInfo [i].bTeamDoors, i, 0);
+	RP (extraGameInfo [i].nCoopPenalty, i, 0);
+	RP (extraGameInfo [i].nHitboxes, i, 0);
+	RP (extraGameInfo [i].nSpotSize, i, 0);
+
+	RP (gameOptions [i].input.bUseJoystick, i, 0);
+	RP (gameOptions [i].input.bUseMouse, i, 0);
+
+	RP (gameOptions [i].gameplay.bDefaultLeveling, i, 0);
+	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
+	RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
+	RP (gameOptions [i].gameplay.bInventory, i, 0);
+	RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
+	RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
+	RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
+	RP (gameOptions [i].gameplay.nPlayerDifficultyLevel, i, 0);
+
+	RP (gameOptions [i].movies.bResize, i, 0);
+	RP (gameOptions [i].movies.bSubTitles, i, 0);
+	RP (gameOptions [i].movies.nQuality, i, 0);
+
+	RP (gameOptions [i].menus.bShowLevelVersion, i, 0);
+	RP (gameOptions [i].menus.bSmartFileSearch, i, 0);
+
+	RP (gameOptions [i].multi.bUseMacros, i, 0);
+
+	RP (gameOptions [i].ogl.bSetGammaRamp, i, 0);
+
+	RP (gameOptions [i].render.bAllSegs, i, 0);
+	RP (gameOptions [i].render.bOptimize, i, 0);
+
+	RP (gameOptions [i].render.cockpit.bHUD, i, 0);
+	RP (gameOptions [i].render.cockpit.bReticle, i, 0);
+	}
+RegisterConfigParams (kcKeyboard, KcKeyboardSize (), "keyboard.");
+RegisterConfigParams (kcMouse, KcMouseSize (), "mouse.");
+RegisterConfigParams (kcJoystick, KcJoystickSize (), "joystick.");
+RegisterConfigParams (kcSuperJoy, KcSuperJoySize (), "superjoy.");
+RegisterConfigParams (kcHotkeys, KcHotkeySize (), "hotkeys.");
+}
+
+//------------------------------------------------------------------------------
+
+int WriteParam (CFILE *fp, tParam *pp)
+{
+	char	szVal [200];
+#if 1 
+switch (pp->nSize) {
+	case 1:
+		sprintf (szVal, "=%d\n", *((sbyte *) (pp->valP)));
+		break;
+	case 2:
+		sprintf (szVal, "=%d\n", *((short *) (pp->valP)));
+		break;
+	case 4:
+		sprintf (szVal, "=%d\n", *((int *) (pp->valP)));
+		break;
+	default:
+		sprintf (szVal, "=%s\n", pp->valP);
+		break;
+	}
+#else
+	char	*valP = pp->valP, *p;
+	short	nValues, nSize = pp->nSize;
+
+strcpy (szVal, "=");
+for (nValues = pp->nValues; nValues; nValues--, valP += nSize) {
+	p = szVal + strlen (szVal);
+	switch (nSize) {
+		case 1:
+			sprintf (p, "%d ", *((sbyte *) (pp->valP)));
+			break;
+		case 2:
+			sprintf (p, "%d ", *((short *) (pp->valP)));
+			break;
+		case 4:
+			sprintf (p, "%d ", *((int *) (pp->valP)));
+			break;
+		default:
+			sprintf (p, "%s", (char *) (pp->valP));
+			goto done;
+		}
+	}
+
+done:
+
+strcat (szVal, "\n");
+#endif
+CFWrite (pp->szTag, 1, strlen (pp->szTag), fp);
+CFWrite (szVal, 1, strlen (szVal), fp);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int WriteParams (void)
+{
+	CFILE			*fp;
+	char			fn [FILENAME_LEN];
+	tParam		*pp;
+
+RegisterParams ();
+sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
+if (!(fp = CFOpen (fn, gameFolders.szProfDir, "wt", 0)))
+	return 0;
+for (pp = paramList; pp; pp = pp->next)
+	WriteParam (fp, pp);
+return CFClose (fp);
+}
+
+//------------------------------------------------------------------------------
+
+tParam *FindParam (char *pszTag)
+{
+	tParam	*pp;
+
+for (pp = paramList; pp; pp = pp->next)
+	if (!stricmp (pszTag, pp->szTag))
+		return pp;
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+#define issign(_c)	(((_c) == '-') || ((_c) == '+'))
+
+int ReadParam (CFILE *fp)
+{
+	tParam	*pp;
+	char		szParam	[200], *p;
+	int		nVal;
+
+fgets (szParam, sizeof (szParam), fp->file);
+if (p = strchr (szParam, '\n'))
+	*p = '\0';
+if (!(p = strchr (szParam, '=')))
+	return 0;
+*p++ = '\0';
+if (!(pp = FindParam (szParam))) {
+#ifdef _DEBUG
+	FindParam (szParam);
+#endif
+	return 0;
+	}
+nVal = atoi (p);
+switch (pp->nSize) {
+	case 1:
+		if (!(isdigit (*p) || issign (*p)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
+			return 0;
+		*((sbyte *) pp->valP) = (sbyte) nVal;
+		break;
+	case 2:
+		if (!(isdigit (*p) || issign (*p))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
+			return 0;
+		*((short *) pp->valP) = (short) nVal;
+		break;
+	case 4:
+		if (!(isdigit (*p) || issign (*p)))
+			return 0;
+		*((int *) pp->valP) = (int) nVal;
+		break;
+	default:
+		strncpy ((char *) pp->valP, p, pp->nSize);
+		break;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int ReadParams (void)
+{
+	CFILE			*fp;
+	char			fn [FILENAME_LEN];
+
+RegisterParams ();
+sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
+if (!(fp = CFOpen (fn, gameFolders.szProfDir, "rt", 0)))
+	return 0;
+while (!feof (fp->file))
+	ReadParam (fp);
+return CFClose (fp);
+}
+
+//------------------------------------------------------------------------------
+
+int NewPlayerConfig()
 {
 	int nitems;
 	int i,j,choice;
@@ -143,10 +672,10 @@ RetrySelection:
 		for (j = 0; j < MAX_CONTROLS; j++)
 			controlSettings.custom [i][j] = controlSettings.defaults [i][j];
 	//added on 2/4/99 by Victor Rachels for new keys
-	for(i = 0; i < MAX_D2X_CONTROLS; i++)
+	for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
 		controlSettings.d2xCustom[i] = controlSettings.d2xDefaults[i];
 	//end this section addition - VR
-	KCSetControls();
+	KCSetControls(0);
 
 	gameConfig.nControlType = choice;
 
@@ -160,20 +689,21 @@ RetrySelection:
 		joydefs_calibrate();
 	}
 	
-playerDefaultDifficulty = 1;
+gameData.app.playerDefaultDifficulty = 1;
 gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling = 1;
 nHighestLevels = 1;
 highestLevels[0].shortname[0] = 0;			//no name for mission 0
-highestLevels[0].level_num = 1;				//was highest level in old struct
+highestLevels[0].nLevel = 1;				//was highest level in old struct
 gameOpts->input.joySensitivity [0] =
 gameOpts->input.joySensitivity [1] =
 gameOpts->input.joySensitivity [2] =
-gameOpts->input.joySensitivity [3] = 8;
+gameOpts->input.joySensitivity [3] =
+gameOpts->input.joySensitivity [4] = 8;
 gameOpts->input.mouseSensitivity [0] =
 gameOpts->input.mouseSensitivity [1] =
 gameOpts->input.mouseSensitivity [2] = 8;
-Cockpit_3dView[0]=CV_NONE;
-Cockpit_3dView[1]=CV_NONE;
+gameStates.render.cockpit.n3DView[0]=CV_NONE;
+gameStates.render.cockpit.n3DView[1]=CV_NONE;
 
 // Default taunt macros
 strcpy(gameData.multigame.msg.szMacro[0], TXT_GET_ALONG);
@@ -192,346 +722,155 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-//this length must match the value in escort.c
-#define GUIDEBOT_NAME_LEN 9
-WIN(extern char win95_current_joyname[]);
-
-ubyte controlType_dos,controlType_win;
-
-//read in the tPlayer's saved games.  returns errno (0 == no error)
-int ReadPlayerFile(int bOnlyWindowSizes)
+void ReadBinD2XParams (CFILE *fp)
 {
-	char	filename[FILENAME_LEN];
-	CFILE *fp;
-	int	errno_ret = EZERO;
-	int	id, h, i, j;
-	short player_file_version;
-	int	rewrite_it=0;
-	int	swap = 0;
-	int	gameOptsSize = 0, nMaxControls;
+	int	i, j, gameOptsSize;
 
-Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
-
-sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
-if (!(fp = CFOpen(filename, gameFolders.szProfDir, "rb", 0))) {
-	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
-	return errno;
-	}
-id = CFReadInt(fp);
-// SWAPINT added here because old versions of d2x
-// used the wrong byte order.
-if (nCFileError || (id!=SAVE_FILE_ID && id!=SWAPINT(SAVE_FILE_ID))) {
-	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, "Invalid tPlayer file");
-	CFClose(fp);
-	return -1;
-	}
-
-player_file_version = CFReadShort(fp);
-if (player_file_version > 255) // bigendian fp?
-	swap = 1;
-nMaxControls = (player_file_version < 108) ? 60 : MAX_CONTROLS;
-if (swap)
-	player_file_version = SWAPSHORT(player_file_version);
-
-if ((player_file_version < COMPATIBLE_PLAYER_FILE_VERSION) ||
-	 ((player_file_version > D2W95_PLAYER_FILE_VERSION) && 
-	  (player_file_version < D2XW32_PLAYER_FILE_VERSION))) {
-	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
-	CFClose(fp);
-	return -1;
-	}
-
-{
-	short w, h;
-	w = CFReadShort(fp);
-	h = CFReadShort(fp);
-	if (!gameStates.gfx.bOverride) {
-		Game_window_w = w;
-		Game_window_h = h;
-		if (swap) {
-			Game_window_w = SWAPSHORT (Game_window_w);
-			Game_window_h = SWAPSHORT (Game_window_h);
-			}
-		}
-}
-if (bOnlyWindowSizes) {
-	CFClose (fp);
-	return 0;
-	}
-
-playerDefaultDifficulty = CFReadByte (fp);
-gameOpts->gameplay.bDefaultLeveling = CFReadByte (fp);
-gameOpts->render.cockpit.bReticle = CFReadByte (fp);
-gameStates.render.cockpit.nMode = CFReadByte (fp);
-{
-	unsigned char m = CFReadByte (fp);
-	if (!gameStates.gfx.bOverride)
-		gameStates.video.nDefaultDisplayMode = m;
-}
-gameOpts->render.cockpit.bMissileView = CFReadByte (fp);
-gameOpts->gameplay.bHeadlightOn = CFReadByte (fp);
-gameOptions [0].render.cockpit.bGuidedInMainView = CFReadByte (fp);
-
-if (player_file_version >= 19)
-	CFReadByte (fp);	//skip obsolete byte value
-gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
-
-//read new highest level info
-
-nHighestLevels = CFReadShort(fp);
-if (swap)
-	nHighestLevels = SWAPSHORT(nHighestLevels);
-Assert(nHighestLevels <= MAX_MISSIONS);
-
-if (CFRead(highestLevels, sizeof(hli), nHighestLevels, fp) != (size_t) nHighestLevels) {
-	errno_ret = errno;
-	CFClose(fp);
-	return errno_ret;
-	}
-
-//read taunt macros
-{
-	int len = MAX_MESSAGE_LEN;
-
-	for (i = 0; i < 4; i++)
-		if (CFRead(gameData.multigame.msg.szMacro[i], len, 1, fp) != 1)
-			{errno_ret			= errno; break;}
-}
-
-//read KConfig data
-{
-	int nControlTypes = (player_file_version<20)?7:CONTROL_MAX_TYPES;
-
-	if (CFRead (controlSettings.custom, nMaxControls * nControlTypes, 1, fp ) != 1)
-		errno_ret = errno;
-	else if (CFRead((ubyte *)&controlType_dos, sizeof (ubyte), 1, fp ) != 1)
-		errno_ret = errno;
-	else if (player_file_version >= 21 && CFRead ((ubyte *) &controlType_win, sizeof (ubyte), 1, fp ) != 1)
-		errno_ret = errno;
-	else if (CFRead (gameOptions [0].input.joySensitivity, sizeof (ubyte), 1, fp ) != 1)
-		errno_ret = errno;
-	gameConfig.nControlType = controlType_dos;
-	for (i=0;i<11;i++) {
-		primaryOrder[i]   = CFReadByte (fp);
-		secondaryOrder[i] = CFReadByte (fp);
-		}
-	ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
-	ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
-	if (player_file_version>=16) {
-		Cockpit_3dView[0] = CFReadInt(fp);
-		Cockpit_3dView[1] = CFReadInt(fp);
-		if (swap) {
-			Cockpit_3dView[0] = SWAPINT(Cockpit_3dView[0]);
-			Cockpit_3dView[1] = SWAPINT(Cockpit_3dView[1]);
-			}
-		}
-}
-
-if (player_file_version>=22) {
-	networkData.nNetLifeKills = CFReadInt(fp);
-	networkData.nNetLifeKilled = CFReadInt(fp);
-	if (swap) {
-		networkData.nNetLifeKills = SWAPINT(networkData.nNetLifeKills);
-		networkData.nNetLifeKilled = SWAPINT(networkData.nNetLifeKilled);
-		}
-	}
-else
-	{
-	networkData.nNetLifeKills=0; 
-	networkData.nNetLifeKilled=0;
-	}
-
-if (player_file_version>=23) {
-  i = CFReadInt(fp);
-  if (swap)
-	  i = SWAPINT(i);
-#if TRACE				
-	con_printf (CONDBG,"Reading: lifetime checksum is %d\n",i);
-#endif
-	if (i!=GetLifetimeChecksum (networkData.nNetLifeKills,networkData.nNetLifeKilled)) {
-		networkData.nNetLifeKills=0; networkData.nNetLifeKilled=0;
- 		ExecMessageBox(NULL, NULL, 1, "Shame on me", "Trying to cheat eh?");
-		rewrite_it=1;
-		}
-	}
-
-//read guidebot name
-if (player_file_version >= 18)
-	CFReadString(gameData.escort.szName, GUIDEBOT_NAME_LEN, fp);
-else
-	strcpy(gameData.escort.szName, "GUIDE-BOT");
-gameData.escort.szName [sizeof (gameData.escort.szName) - 1] = '\0';
-for (i = 0; i < sizeof (gameData.escort.szName); i++) {
-	if (!gameData.escort.szName [i])
-		break;
-	if (!isprint (gameData.escort.szName [i])) {
-		strcpy(gameData.escort.szName, "GUIDE-BOT");
-		break;
-		}
-	}
-strcpy(gameData.escort.szRealName, gameData.escort.szName);
-
-{
-	char buf[128];
-
-	if (player_file_version >= D2W95_PLAYER_FILE_VERSION) 
-		CFReadString(buf, 127, fp);      // Just read it in fpr DPS.
-}
-
-if (player_file_version >= 25)
-	CFRead(controlSettings.d2xCustom, MAX_D2X_CONTROLS, 1, fp);
-else
-	for(i=0; i < MAX_D2X_CONTROLS; i++)
-		controlSettings.d2xCustom[i] = controlSettings.d2xDefaults[i];
-
-// read D2X-XL stuff
-if (player_file_version >= 97)
+if (gameStates.input.nPlrFileVersion >= 97)
 	gameOptsSize = CFReadInt (fp);
-for (j = 0; j < 2; j++) {
-	if (j && (gameOptsSize > sizeof (tGameOptions)))
+for (i = 0; i < 2; i++) {
+	if (i && (gameOptsSize > sizeof (tGameOptions)))
 		CFSeek (fp, gameOptsSize - sizeof (tGameOptions), SEEK_CUR);
-	if (!j) {
-		if (player_file_version >= 26)
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 26)
 			extraGameInfo [0].bFixedRespawns = (int) CFReadByte (fp);
-		if (player_file_version >= 27)
+		if (gameStates.input.nPlrFileVersion >= 27)
 			/*extraGameInfo [0].bFriendlyFire = (int)*/ CFReadByte (fp);
 		}
-	if (player_file_version >= 28) {
-		gameOptions [j].render.nMaxFPS = (int) CFReadByte (fp);
-		if (gameOptions [j].render.nMaxFPS < 0) {
-			gameOptions [j].render.nMaxFPS += 256;
-			if (gameOptions [j].render.nMaxFPS < 0)
-				gameOptions [j].render.nMaxFPS = 250;
+	if (gameStates.input.nPlrFileVersion >= 28) {
+		gameOptions [i].render.nMaxFPS = (int) CFReadByte (fp);
+		if (gameOptions [i].render.nMaxFPS < 0) {
+			gameOptions [i].render.nMaxFPS += 256;
+			if (gameOptions [i].render.nMaxFPS < 0)
+				gameOptions [i].render.nMaxFPS = 250;
 			}
-		if (!j)
-			extraGameInfo [0].nSpawnDelay = (int) CFReadByte (fp) * 1000;
+		if (!i)
+			extraGameInfo [0].nSpawnDelay = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 29)
-		gameOptions [j].input.joyDeadZones [0] = (int) CFReadByte (fp);
-	if (player_file_version >= 30)
-		gameOptions [j].render.cockpit.nWindowSize = (int) CFReadByte (fp);
-	if (player_file_version >= 31)
-		gameOptions [j].render.cockpit.nWindowPos = (int) CFReadByte (fp);
-	if (player_file_version >= 32)
-		gameOptions [j].render.cockpit.nWindowZoom = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 33))
+	if (gameStates.input.nPlrFileVersion >= 29)
+		gameOptions [i].input.joyDeadZones [0] = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 30)
+		gameOptions [i].render.cockpit.nWindowSize = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 31)
+		gameOptions [i].render.cockpit.nWindowPos = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 32)
+		gameOptions [i].render.cockpit.nWindowZoom = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 33))
 		extraGameInfo [0].bPowerupsOnRadar = (int) CFReadByte (fp);
-	if (player_file_version >= 34) {
-		gameOptions [j].input.keyRampScale = (int) CFReadByte (fp);
-		if (gameOptions [j].input.keyRampScale < 10)
-			gameOptions [j].input.keyRampScale = 10;
-		else if (gameOptions [j].input.keyRampScale > 100)
-			gameOptions [j].input.keyRampScale = 100;
+	if (gameStates.input.nPlrFileVersion >= 34) {
+		gameOptions [i].input.keyRampScale = (int) CFReadByte (fp);
+		if (gameOptions [i].input.keyRampScale < 10)
+			gameOptions [i].input.keyRampScale = 10;
+		else if (gameOptions [i].input.keyRampScale > 100)
+			gameOptions [i].input.keyRampScale = 100;
 		}
-	if (player_file_version >= 35)
-		gameOptions [j].render.color.bAmbientLight = (int) CFReadByte (fp);
-	if (player_file_version >= 36)
-		gameOptions [j].ogl.bSetGammaRamp = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 37))
+	if (gameStates.input.nPlrFileVersion >= 35)
+		gameOptions [i].render.color.bAmbientLight = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 36)
+		gameOptions [i].ogl.bSetGammaRamp = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 37))
 		extraGameInfo [0].nZoomMode = (int) CFReadByte (fp);
-	if (player_file_version >= 38)
-		for (i = 0; i < 3; i++)
-			gameOptions [j].input.bRampKeys [i] = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 39))
+	if (gameStates.input.nPlrFileVersion >= 38)
+		for (j = 0; j < 3; j++)
+			gameOptions [i].input.bRampKeys [j] = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 39))
 #if 0
 		extraGameInfo [0].bEnhancedCTF = (int) CFReadByte (fp);
 #else
 		CFReadByte (fp);
 #endif
-	if (!j && (player_file_version >= 40))
+	if (!i && (gameStates.input.nPlrFileVersion >= 40))
 		extraGameInfo [0].bRobotsHitRobots = (int) CFReadByte (fp);
-	if (player_file_version >= 41)
-		gameOptions [j].gameplay.nAutoSelectWeapon = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 42))
+	if (gameStates.input.nPlrFileVersion >= 41)
+		gameOptions [i].gameplay.nAutoSelectWeapon = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 42))
 		extraGameInfo [0].bAutoDownload = (int) CFReadByte (fp);
-	if (player_file_version >= 43)
-		gameOptions [j].render.color.bGunLight = (int) CFReadByte (fp);
-	if (player_file_version >= 44)
+	if (gameStates.input.nPlrFileVersion >= 43)
+		gameOptions [i].render.color.bGunLight = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 44)
 		gameStates.multi.bUseTracker = (int) CFReadByte (fp);
-	if (player_file_version >= 45)
-		gameOptions [j].gameplay.bFastRespawn = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 46))
+	if (gameStates.input.nPlrFileVersion >= 45)
+		gameOptions [i].gameplay.bFastRespawn = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 46))
 		extraGameInfo [0].bDualMissileLaunch = (int) CFReadByte (fp);
-	if (player_file_version >= 47) {
-		gameOptions [j].gameplay.nPlayerDifficultyLevel = (int) CFReadByte (fp);
-		gameOptions [j].gameplay.nPlayerDifficultyLevel = NMCLAMP (gameOptions [j].gameplay.nPlayerDifficultyLevel, 0, 4);
+	if (gameStates.input.nPlrFileVersion >= 47) {
+		gameOptions [i].gameplay.nPlayerDifficultyLevel = (int) CFReadByte (fp);
+		gameOptions [i].gameplay.nPlayerDifficultyLevel = NMCLAMP (gameOptions [i].gameplay.nPlayerDifficultyLevel, 0, 4);
 		}
-	if (player_file_version >= 48)
-		gameOptions [j].render.bTransparentEffects = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 49))
+	if (gameStates.input.nPlrFileVersion >= 48)
+		gameOptions [i].render.bTransparentEffects = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 49))
 		extraGameInfo [0].bRobotsOnRadar = (int) CFReadByte (fp);
-	if (player_file_version >= 50)
-		gameOptions [j].render.bAllSegs = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 51))
+	if (gameStates.input.nPlrFileVersion >= 50)
+		gameOptions [i].render.bAllSegs = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 51))
 		extraGameInfo [0].grWallTransparency = (int) CFReadByte (fp);
-	if (player_file_version >= 52)
-		gameOptions [j].input.mouseSensitivity [0] = (int) CFReadByte (fp);
-	if (player_file_version >= 53) {
-		gameOptions [j].multi.bUseMacros = (int) CFReadByte (fp);
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 52)
+		gameOptions [i].input.mouseSensitivity [0] = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 53) {
+		gameOptions [i].multi.bUseMacros = (int) CFReadByte (fp);
+		if (!i)
 			extraGameInfo [0].bWiggle = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 54)
-		gameOptions [j].movies.nQuality = (int) CFReadByte (fp);
-	if (player_file_version >= 55)
-		gameOptions [j].render.color.bWalls = (int) CFReadByte (fp);
-	if (player_file_version >= 56)
-		gameOptions [j].input.bLinearJoySens = (int) CFReadByte (fp);
-	if (!j) {
-		if (player_file_version >= 57)
+	if (gameStates.input.nPlrFileVersion >= 54)
+		gameOptions [i].movies.nQuality = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 55)
+		gameOptions [i].render.color.bWalls = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 56)
+		gameOptions [i].input.bLinearJoySens = (int) CFReadByte (fp);
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 57)
 			extraGameInfo [0].nSpeedBoost = (int) CFReadByte (fp);
-		if (player_file_version >= 58) {
+		if (gameStates.input.nPlrFileVersion >= 58) {
 			extraGameInfo [0].bDropAllMissiles = (int) CFReadByte (fp);
 			extraGameInfo [0].bImmortalPowerups = (int) CFReadByte (fp);
 			}
-		if (player_file_version >= 59)
+		if (gameStates.input.nPlrFileVersion >= 59)
 			extraGameInfo [0].bUseCameras = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 60) {
-		gameOptions [j].render.cameras.bFitToWall = (int) CFReadByte (fp);
-		gameOptions [j].render.cameras.nFPS = (int) CFReadByte (fp);
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 60) {
+		gameOptions [i].render.cameras.bFitToWall = (int) CFReadByte (fp);
+		gameOptions [i].render.cameras.nFPS = (int) CFReadByte (fp);
+		if (!i)
 			extraGameInfo [0].nFusionPowerMod = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 62)
-		gameOptions [j].render.color.bUseLightMaps = (int) CFReadByte (fp);
-	if (player_file_version >= 63)
-		gameOptions [j].render.cockpit.bHUD = (int) CFReadByte (fp);
-	if (player_file_version >= 64)
-		gameOptions [j].render.color.nLightMapRange = (int) CFReadByte (fp);
-	if (!j) {
-		if (player_file_version >= 65)
+	if (gameStates.input.nPlrFileVersion >= 62)
+		gameOptions [i].render.color.bUseLightMaps = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 63)
+		gameOptions [i].render.cockpit.bHUD = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 64)
+		gameOptions [i].render.color.nLightMapRange = (int) CFReadByte (fp);
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 65)
 			extraGameInfo [0].bMouseLook = (int) CFReadByte (fp);
-		if	(player_file_version >= 66)
+		if	(gameStates.input.nPlrFileVersion >= 66)
 			extraGameInfo [0].bMultiBosses = (int) CFReadByte (fp);
 		}	
-	if (player_file_version >= 67)
-		gameOptions [j].app.nVersionFilter = (int) CFReadByte (fp);
-	if (!j) {
-		if (player_file_version >= 68)
+	if (gameStates.input.nPlrFileVersion >= 67)
+		gameOptions [i].app.nVersionFilter = (int) CFReadByte (fp);
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 68)
 			extraGameInfo [0].bSmartWeaponSwitch = (int) CFReadByte (fp);
-		if (player_file_version >= 69)
+		if (gameStates.input.nPlrFileVersion >= 69)
 			extraGameInfo [0].bFluidPhysics = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 70) {
-		gameOptions [j].render.nQuality = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 70) {
+		gameOptions [i].render.nQuality = (int) CFReadByte (fp);
 		SetRenderQuality ();
 		}
-	if (player_file_version >= 71)
-		gameOptions [j].movies.bSubTitles = (int) CFReadByte (fp);
-	if (player_file_version >= 72)
-		gameOptions [j].render.textures.nQuality = (int) CFReadByte (fp);
-	if (player_file_version >= 73)
-		gameOptions [j].render.cameras.nSpeed = CFReadInt(fp);
-	if (!j && (player_file_version >= 74))
+	if (gameStates.input.nPlrFileVersion >= 71)
+		gameOptions [i].movies.bSubTitles = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 72)
+		gameOptions [i].render.textures.nQuality = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 73)
+		gameOptions [i].render.cameras.nSpeed = CFReadInt(fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 74))
 		extraGameInfo [0].nWeaponDropMode = CFReadByte (fp);
-	if (player_file_version >= 75)
-		gameOptions [j].menus.bSmartFileSearch = CFReadInt (fp);
-	if (player_file_version >= 76) {
-		int h = CFReadInt (fp);
-		SetDlTimeout (h);
-		}
-	if (!j && (player_file_version >= 79)) {
+	if (gameStates.input.nPlrFileVersion >= 75)
+		gameOptions [i].menus.bSmartFileSearch = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 76)
+		SetDlTimeout (CFReadInt (fp));
+	if (!i && (gameStates.input.nPlrFileVersion >= 79)) {
 		extraGameInfo [0].entropy.nCaptureVirusLimit = CFReadByte (fp);
 		extraGameInfo [0].entropy.nCaptureTimeLimit = CFReadByte (fp);
 		extraGameInfo [0].entropy.nMaxVirusCapacity = CFReadByte (fp);
@@ -569,294 +908,464 @@ for (j = 0; j < 2; j++) {
 		mpParams.udpClientPort = CFReadInt(fp);
 		CFRead(mpParams.szServerIpAddr, 16, 1, fp);
 		}
-	if (player_file_version >= 80)
-		gameOptions [j].render.bOptimize = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 81)) {
+	if (gameStates.input.nPlrFileVersion >= 80)
+		gameOptions [i].render.bOptimize = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 81)) {
 		extraGameInfo [1].bRotateLevels = (int) CFReadByte (fp);
 		extraGameInfo [1].bDisableReactor = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 82) {
-		for (i = 0; i < 4; i++)
-			gameOptions [j].input.joyDeadZones [i] = (int) CFReadByte (fp);
-		for (i = 0; i < 4; i++)
-			gameOptions [j].input.joySensitivity [i] = CFReadByte (fp);
-		gameOptions [j].input.bSyncJoyAxes = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 82) {
+		for (j = 0; j < 4; j++)
+			gameOptions [i].input.joyDeadZones [j] = (int) CFReadByte (fp);
+		for (j = 0; j < 4; j++)
+			gameOptions [i].input.joySensitivity [j] = CFReadByte (fp);
+		gameOptions [i].input.bSyncJoyAxes = (int) CFReadByte (fp);
 		}
-	if (!j && (player_file_version >= 83)) 
+	if (!i && (gameStates.input.nPlrFileVersion >= 83)) 
 		extraGameInfo [1].bDualMissileLaunch = (int) CFReadByte (fp);
-	if (player_file_version >= 84) {
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 84) {
+		if (!i)
 			extraGameInfo [1].bMouseLook = (int) CFReadByte (fp);
-		for (i = 0; i < 3; i++)
-			gameOptions [j].input.mouseSensitivity [i] = (int) CFReadByte (fp);
-		gameOptions [j].input.bSyncMouseAxes = (int) CFReadByte (fp);
-		gameOptions [j].render.color.bMix = (int) CFReadByte (fp);
-		gameOptions [j].render.color.bCap = (int) CFReadByte (fp);
+		for (j = 0; j < 3; j++)
+			gameOptions [i].input.mouseSensitivity [j] = (int) CFReadByte (fp);
+		gameOptions [i].input.bSyncMouseAxes = (int) CFReadByte (fp);
+		gameOptions [i].render.color.bMix = (int) CFReadByte (fp);
+		gameOptions [i].render.color.bCap = (int) CFReadByte (fp);
 		}
-	if (!j && (player_file_version >= 85))
+	if (!i && (gameStates.input.nPlrFileVersion >= 85))
 		extraGameInfo [0].nWeaponIcons = (ubyte) CFReadByte (fp);
-	if (player_file_version >= 86)
-		gameOptions [j].render.weaponIcons.bSmall = (ubyte) CFReadByte (fp);
-	if (!j && (player_file_version >= 87))
+	if (gameStates.input.nPlrFileVersion >= 86)
+		gameOptions [i].render.weaponIcons.bSmall = (ubyte) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 87))
 		extraGameInfo [0].bAutoBalanceTeams = CFReadByte (fp);
-	if (player_file_version >= 88) {
-		gameOptions [j].movies.bResize = (int) CFReadByte (fp);
-		gameOptions [j].menus.bShowLevelVersion = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 88) {
+		gameOptions [i].movies.bResize = (int) CFReadByte (fp);
+		gameOptions [i].menus.bShowLevelVersion = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 89)
-		gameOptions [j].render.weaponIcons.nSort = (ubyte) CFReadByte (fp);
-	if (player_file_version >= 90)
-		gameOptions [j].render.weaponIcons.bShowAmmo = (ubyte) CFReadByte (fp);
-	if (player_file_version >= 91) {
-		gameOptions [j].input.bUseMouse = (ubyte) CFReadByte (fp);
-		gameOptions [j].input.bUseJoystick = (ubyte) CFReadByte (fp);
-		gameOptions [j].input.bUseHotKeys = (ubyte) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 89)
+		gameOptions [i].render.weaponIcons.nSort = (ubyte) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 90)
+		gameOptions [i].render.weaponIcons.bShowAmmo = (ubyte) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 91) {
+		gameOptions [i].input.bUseMouse = (ubyte) CFReadByte (fp);
+		gameOptions [i].input.bUseJoystick = (ubyte) CFReadByte (fp);
+		gameOptions [i].input.bUseHotKeys = (ubyte) CFReadByte (fp);
 		}
-	if (!j) {
-		if (player_file_version >= 92)
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 92)
 			extraGameInfo [0].bSafeUDP = (char) CFReadByte (fp);
-		if (player_file_version >= 93)
+		if (gameStates.input.nPlrFileVersion >= 93)
 			CFRead(mpParams.szServerIpAddr + 16, 6, 1, fp);
 		}
-	if (player_file_version >= 95) {
-		gameOptions [j].render.cockpit.bTextGauges = (int) CFReadByte (fp);
-		gameOptions [j].render.cockpit.bScaleGauges = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 95) {
+		gameOptions [i].render.cockpit.bTextGauges = (int) CFReadByte (fp);
+		gameOptions [i].render.cockpit.bScaleGauges = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 96) {
-		gameOptions [j].render.weaponIcons.bEquipment = (int) CFReadByte (fp);
-		gameOptions [j].render.weaponIcons.alpha = (ubyte) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 96) {
+		gameOptions [i].render.weaponIcons.bEquipment = (int) CFReadByte (fp);
+		gameOptions [i].render.weaponIcons.alpha = (ubyte) CFReadByte (fp);
 		}
-	if (player_file_version >= 97)
-		gameOptions [j].render.cockpit.bFlashGauges = (int) CFReadByte (fp);
-	if (!j && (player_file_version >= 98))
-		for (i = 0; i < 2; i++) 
-			if (!(extraGameInfo [i].bFastPitch = (int) CFReadByte (fp)))
-				extraGameInfo [i].bFastPitch = 2;
-	if (!j && (player_file_version >= 99))
+	if (gameStates.input.nPlrFileVersion >= 97)
+		gameOptions [i].render.cockpit.bFlashGauges = (int) CFReadByte (fp);
+	if (!i && (gameStates.input.nPlrFileVersion >= 98))
+		for (j = 0; j < 2; j++) 
+			if (!(extraGameInfo [j].bFastPitch = (int) CFReadByte (fp)))
+				extraGameInfo [j].bFastPitch = 2;
+	if (!i && (gameStates.input.nPlrFileVersion >= 99))
 		gameStates.multi.nConnection = CFReadInt (fp);
-	if (player_file_version >= 100) {
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 100) {
+		if (!i)
 			extraGameInfo [0].bUseSmoke = (int) CFReadByte (fp);
-		gameOptions [j].render.smoke.nDens [0] = CFReadInt (fp);
-		gameOptions [j].render.smoke.nSize [0] = CFReadInt (fp);
-		gameOptions [j].render.smoke.nDens [0] = NMCLAMP (gameOptions [j].render.smoke.nDens [0], 0, 4);
-		gameOptions [j].render.smoke.nSize [0] = NMCLAMP (gameOptions [j].render.smoke.nSize [0], 0, 3);
-		gameOptions [j].render.smoke.bPlayers = (int) CFReadByte (fp);
-		gameOptions [j].render.smoke.bRobots = (int) CFReadByte (fp);
-		gameOptions [j].render.smoke.bMissiles = (int) CFReadByte (fp);
+		gameOptions [i].render.smoke.nDens [0] = CFReadInt (fp);
+		gameOptions [i].render.smoke.nSize [0] = CFReadInt (fp);
+		gameOptions [i].render.smoke.nDens [0] = NMCLAMP (gameOptions [i].render.smoke.nDens [0], 0, 4);
+		gameOptions [i].render.smoke.nSize [0] = NMCLAMP (gameOptions [i].render.smoke.nSize [0], 0, 3);
+		gameOptions [i].render.smoke.bPlayers = (int) CFReadByte (fp);
+		gameOptions [i].render.smoke.bRobots = (int) CFReadByte (fp);
+		gameOptions [i].render.smoke.bMissiles = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 101) {
-		if (!j) {
+	if (gameStates.input.nPlrFileVersion >= 101) {
+		if (!i) {
 			extraGameInfo [0].bDamageExplosions = (int) CFReadByte (fp);
 			extraGameInfo [0].bThrusterFlames = (int) CFReadByte (fp);
 			}
 		}
-	if (player_file_version >= 102)
-		gameOptions [j].render.smoke.bCollisions = (int) CFReadByte (fp);
-	if (player_file_version >= 103)
-		gameOptions [j].gameplay.bShieldWarning = (int) CFReadByte (fp);
-	if (player_file_version >= 104)
-		gameOptions [j].app.bExpertMode = (int) CFReadByte (fp);
-	if (player_file_version >= 105) {
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 102)
+		gameOptions [i].render.smoke.bCollisions = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 103)
+		gameOptions [i].gameplay.bShieldWarning = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 104)
+		gameOptions [i].app.bExpertMode = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 105) {
+		if (!i)
 #if SHADOWS
 			extraGameInfo [0].bShadows = CFReadByte (fp);
-		gameOptions [j].render.shadows.nLights = CFReadInt (fp);
-		gameOptions [j].render.shadows.nLights = NMCLAMP (gameOptions [j].render.shadows.nLights, 0, 8);
+		gameOptions [i].render.shadows.nLights = CFReadInt (fp);
+		gameOptions [i].render.shadows.nLights = NMCLAMP (gameOptions [i].render.shadows.nLights, 0, 8);
 #else
 			CFReadByte (fp);
 		CFReadInt (fp);
 #endif
 		}
-	if (player_file_version >= 106)
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 106)
+		if (!i)
 			gameStates.ogl.nContrast = CFReadInt (fp);
-	if (player_file_version >= 107)
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 107)
+		if (!i)
 			extraGameInfo [0].bRenderShield = CFReadByte (fp);
-	if (player_file_version >= 108)
-		gameOptions [j].gameplay.bInventory = (int) CFReadByte (fp);
-	if (player_file_version >= 109)
-		gameOptions [j].input.bJoyMouse = CFReadInt (fp);
-	if (player_file_version >= 110)
-		if (!j) {
+	if (gameStates.input.nPlrFileVersion >= 108)
+		gameOptions [i].gameplay.bInventory = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 109)
+		gameOptions [i].input.bJoyMouse = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 110)
+		if (!i) {
 			int	w, h;
 			w = CFReadInt (fp);
 			h = CFReadInt (fp);
 			if (!gameStates.gfx.bOverride && (gameStates.video.nDefaultDisplayMode == NUM_DISPLAY_MODES))
 				SetCustomDisplayMode (w, h);
 			}
-	if (player_file_version >= 111)
-		gameOptions [j].render.cockpit.bMouseIndicator = CFReadInt (fp);
-	if (player_file_version >= 112)
-		extraGameInfo [j].bTeleporterCams = CFReadInt (fp);
-	if (player_file_version >= 113)
-		gameOptions [j].render.cockpit.bSplitHUDMsgs = CFReadInt (fp);
-	if (player_file_version >= 114) {
-		gameOptions [j].input.joyDeadZones [4] = (int) CFReadByte (fp);
-		gameOptions [j].input.joySensitivity [4] = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 111)
+		gameOptions [i].render.cockpit.bMouseIndicator = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 112)
+		extraGameInfo [i].bTeleporterCams = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 113)
+		gameOptions [i].render.cockpit.bSplitHUDMsgs = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 114) {
+		gameOptions [i].input.joyDeadZones [4] = (int) CFReadByte (fp);
+		gameOptions [i].input.joySensitivity [4] = CFReadByte (fp);
 		}
-	if (player_file_version >= 115)
-		if (!j) {
+	if (gameStates.input.nPlrFileVersion >= 115)
+		if (!i) {
 			tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
 			extraGameInfo [0].monsterball.nBonus = CFReadByte (fp);
-			for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
+			for (j = 0; j < MAX_MONSTERBALL_FORCES; j++, pf++) {
 				pf->nWeaponId = CFReadByte (fp);
 				pf->nForce = CFReadByte (fp);
 				}
 			}
-	if (player_file_version >= 116)
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 116)
+		if (!i)
 			extraGameInfo [0].monsterball.nSizeMod = CFReadByte (fp);
-	if (player_file_version >= 117) {
-		gameOptions [j].render.bDynLighting = CFReadInt (fp);
-		gameOptions [j].ogl.bLightObjects = CFReadInt (fp);
-		gameOptions [j].ogl.nMaxLights = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 117) {
+		gameOptions [i].render.bDynLighting = CFReadInt (fp);
+		gameOptions [i].ogl.bLightObjects = CFReadInt (fp);
+		gameOptions [i].ogl.nMaxLights = CFReadInt (fp);
 		}
-	if (player_file_version >= 118)
-		extraGameInfo [j].bDarkness = CFReadByte (fp);
-	if (player_file_version >= 119) {
-		extraGameInfo [j].bTeamDoors = CFReadByte (fp);
-		extraGameInfo [j].bEnableCheats = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 118)
+		extraGameInfo [i].bDarkness = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 119) {
+		extraGameInfo [i].bTeamDoors = CFReadByte (fp);
+		extraGameInfo [i].bEnableCheats = CFReadByte (fp);
 		}
-	if (player_file_version >= 120) {
-		extraGameInfo [j].bTargetIndicators = CFReadByte (fp);
-		extraGameInfo [j].bDamageIndicators = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 120) {
+		extraGameInfo [i].bTargetIndicators = CFReadByte (fp);
+		extraGameInfo [i].bDamageIndicators = CFReadByte (fp);
 		}
-	if (player_file_version >= 121) {
-		extraGameInfo [j].bCloakedIndicators = CFReadByte (fp);
-		extraGameInfo [j].bFriendlyIndicators = CFReadByte (fp);
-		extraGameInfo [j].bHeadLights = CFReadByte (fp);
-		extraGameInfo [j].bPowerupLights = CFReadByte (fp);
-		extraGameInfo [j].nSpotSize = CFReadByte (fp);
-		extraGameInfo [j].nSpotStrength = extraGameInfo [j].nSpotSize;
+	if (gameStates.input.nPlrFileVersion >= 121) {
+		extraGameInfo [i].bCloakedIndicators = CFReadByte (fp);
+		extraGameInfo [i].bFriendlyIndicators = CFReadByte (fp);
+		extraGameInfo [i].bHeadLights = CFReadByte (fp);
+		extraGameInfo [i].bPowerupLights = CFReadByte (fp);
+		extraGameInfo [i].nSpotSize = CFReadByte (fp);
+		extraGameInfo [i].nSpotStrength = extraGameInfo [i].nSpotSize;
 		}
-	if (player_file_version >= 122)
-		extraGameInfo [j].bTowFlags = CFReadByte (fp);
-	if (player_file_version >= 123)
-		gameOptions [j].render.smoke.bDecreaseLag = CFReadByte (fp);
-	if (player_file_version >= 124)
-		gameOptions [j].render.bAutoTransparency = CFReadByte (fp);
-	if (!j) {
-		if (player_file_version >= 125)
-			extraGameInfo [j].bUseHitAngles = CFReadByte (fp);
-		if (player_file_version >= 126)
-			extraGameInfo [j].bLightTrails = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 122)
+		extraGameInfo [i].bTowFlags = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 123)
+		gameOptions [i].render.smoke.bDecreaseLag = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 124)
+		gameOptions [i].render.bAutoTransparency = CFReadByte (fp);
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 125)
+			extraGameInfo [i].bUseHitAngles = CFReadByte (fp);
+		if (gameStates.input.nPlrFileVersion >= 126)
+			extraGameInfo [i].bLightTrails = CFReadByte (fp);
 		}
-	if (player_file_version >= 126) {
-		gameOptions [j].render.smoke.bSyncSizes = CFReadInt (fp);
-		for (i = 1; i < 4; i++) {
-			gameOptions [j].render.smoke.nDens [i] = CFReadInt (fp);
-			gameOptions [j].render.smoke.nSize [i] = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 126) {
+		gameOptions [i].render.smoke.bSyncSizes = CFReadInt (fp);
+		for (j = 1; j < 4; j++) {
+			gameOptions [i].render.smoke.nDens [j] = CFReadInt (fp);
+			gameOptions [i].render.smoke.nSize [j] = CFReadInt (fp);
 			}
 		}
-	if (!j) {
-		if (player_file_version >= 127) {
-			extraGameInfo [j].bTracers = CFReadByte (fp);
-			extraGameInfo [j].bShockwaves = CFReadByte (fp);
+	if (!i) {
+		if (gameStates.input.nPlrFileVersion >= 127) {
+			extraGameInfo [i].bTracers = CFReadByte (fp);
+			extraGameInfo [i].bShockwaves = CFReadByte (fp);
 			}
 		}
-	if (player_file_version >= 128)
-		gameOptions [j].render.smoke.bDisperse = (int) CFReadByte (fp);
-	if (player_file_version >= 129)
-		extraGameInfo [j].bTagOnlyHitObjs = (int) CFReadByte (fp);
-	if (player_file_version >= 130)
-		for (i = 0; i < 4; i++)
-			gameOptions [j].render.smoke.nLife [i] = CFReadInt (fp);
-	if (player_file_version >= 131) {
-		gameOptions [j].render.shadows.bRobots = (int) CFReadByte (fp);
-		gameOptions [j].render.shadows.bMissiles = (int) CFReadByte (fp);
-		gameOptions [j].render.shadows.bReactors = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 128)
+		gameOptions [i].render.smoke.bDisperse = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 129)
+		extraGameInfo [i].bTagOnlyHitObjs = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 130)
+		for (j = 0; j < 4; j++)
+			gameOptions [i].render.smoke.nLife [j] = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 131) {
+		gameOptions [i].render.shadows.bRobots = (int) CFReadByte (fp);
+		gameOptions [i].render.shadows.bMissiles = (int) CFReadByte (fp);
+		gameOptions [i].render.shadows.bReactors = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 132)
-		gameOptions [j].render.shadows.bPlayers = (int) CFReadByte (fp);
-	if (player_file_version >= 133)
-		gameOptions [j].render.shadows.bFast = (int) CFReadByte (fp);
-	if (player_file_version >= 134)
-		gameOptions [j].render.shadows.nReach = (int) CFReadByte (fp);
-	if (player_file_version >= 135)
-		gameOptions [j].render.shadows.nClip = (int) CFReadByte (fp);
-	if (player_file_version >= 136) {
-		gameOptions [j].render.powerups.b3D = (int) CFReadByte (fp);
-		gameOptions [j].render.powerups.nSpin = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 132)
+		gameOptions [i].render.shadows.bPlayers = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 133)
+		gameOptions [i].render.shadows.bFast = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 134)
+		gameOptions [i].render.shadows.nReach = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 135)
+		gameOptions [i].render.shadows.nClip = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 136) {
+		gameOptions [i].render.powerups.b3D = (int) CFReadByte (fp);
+		gameOptions [i].render.powerups.nSpin = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 137)
-		gameOptions [j].gameplay.bIdleAnims = (int) CFReadByte (fp);
-	if (player_file_version >= 138)
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 137)
+		gameOptions [i].gameplay.bIdleAnims = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 138)
+		if (!i)
 			gameStates.app.nDifficultyLevel = (int) CFReadByte (fp);
-	if (player_file_version >= 139)
-		gameOptions [j].demo.bOldFormat = (int) CFReadByte (fp);
-	if (player_file_version >= 140)
-		gameOptions [j].render.cockpit.bObjectTally = (int) CFReadByte (fp);
-	if (player_file_version >= 141)
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 139)
+		gameOptions [i].demo.bOldFormat = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 140)
+		gameOptions [i].render.cockpit.bObjectTally = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 141)
+		if (!i)
 			extraGameInfo [0].nLightRange = CFReadByte (fp);
-	if (player_file_version >= 142)
-		if (j)
-			extraGameInfo [j].bCompetition = CFReadByte (fp);
-	if (player_file_version >= 143)
-		extraGameInfo [j].bFlickerLights = CFReadByte (fp);
-	if (player_file_version >= 144)
-		if (!j)
-			extraGameInfo [j].bSmokeGrenades = CFReadByte (fp);
-	if (player_file_version >= 145)
-		if (!j)
-			extraGameInfo [j].nMaxSmokeGrenades = CFReadByte (fp);
-	if (player_file_version >= 146)
-		if (!j)
-			extraGameInfo [j].nMslTurnSpeed = CFReadByte (fp);
-	if (player_file_version >= 147) {
-		gameOptions [j].render.smoke.bDebris = (int) CFReadByte (fp);
-		gameOptions [j].render.smoke.bStatic = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 142)
+		if (i)
+			extraGameInfo [i].bCompetition = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 143)
+		extraGameInfo [i].bFlickerLights = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 144)
+		if (!i)
+			extraGameInfo [i].bSmokeGrenades = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 145)
+		if (!i)
+			extraGameInfo [i].nMaxSmokeGrenades = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 146)
+		if (!i)
+			extraGameInfo [i].nMslTurnSpeed = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 147) {
+		gameOptions [i].render.smoke.bDebris = (int) CFReadByte (fp);
+		gameOptions [i].render.smoke.bStatic = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 148)
-		gameOptions [j].gameplay.nAIAwareness = (int) CFReadByte (fp);
-	if (player_file_version >= 149) {
-		extraGameInfo [j].nCoopPenalty = CFReadByte (fp);
-		extraGameInfo [j].bShootMissiles = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 148)
+		gameOptions [i].gameplay.nAIAwareness = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 149) {
+		extraGameInfo [i].nCoopPenalty = CFReadByte (fp);
+		extraGameInfo [i].bShootMissiles = CFReadByte (fp);
 		}
-	if (player_file_version >= 150)
-		extraGameInfo [j].nHitboxes = CFReadByte (fp);
-	if (player_file_version >= 151)
-		gameOptions [j].render.cockpit.bPlayerStats = (int) CFReadByte (fp);
-	if (player_file_version >= 152)
-		gameOptions [j].render.bCoronas = (int) CFReadByte (fp);
-	if (player_file_version >= 153) {
-		gameOptions [j].render.automap.bTextured = (int) CFReadByte (fp);
-		gameOptions [j].render.automap.bBright = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 150)
+		extraGameInfo [i].nHitboxes = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 151)
+		gameOptions [i].render.cockpit.bPlayerStats = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 152)
+		gameOptions [i].render.bCoronas = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 153) {
+		gameOptions [i].render.automap.bTextured = (int) CFReadByte (fp);
+		gameOptions [i].render.automap.bBright = (int) CFReadByte (fp);
 		}
-	if (player_file_version >= 154)
-		gameOptions [j].render.automap.bCoronas = (int) CFReadByte (fp);
-	if (player_file_version >= 155) {
-		gameOptions [j].render.automap.nColor = (int) CFReadByte (fp);
-		if (!j)
+	if (gameStates.input.nPlrFileVersion >= 154)
+		gameOptions [i].render.automap.bCoronas = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 155) {
+		gameOptions [i].render.automap.nColor = (int) CFReadByte (fp);
+		if (!i)
 			extraGameInfo [0].nRadar = CFReadByte (fp);
 		}
-	if (player_file_version >= 156)
-		gameOptions [j].render.automap.nRange = (int) CFReadByte (fp);
-	if (player_file_version >= 157)
-		gameOptions [j].render.automap.bSmoke = (int) CFReadByte (fp);
-	if (player_file_version >= 158)
-		gameOptions [j].render.nDebrisLife = CFReadInt (fp);
-	if (player_file_version >= 159) {
-		extraGameInfo [j].bMslLockIndicators = CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 156)
+		gameOptions [i].render.automap.nRange = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 157)
+		gameOptions [i].render.automap.bSmoke = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 158)
+		gameOptions [i].render.nDebrisLife = CFReadInt (fp);
+	if (gameStates.input.nPlrFileVersion >= 159) {
+		extraGameInfo [i].bMslLockIndicators = CFReadByte (fp);
 		gameOpts->render.cockpit.bRotateMslLockInd = CFReadByte (fp);
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+//this length must match the value in escort.c
+#define GUIDEBOT_NAME_LEN 9
+WIN(extern char win95_current_joyname[]);
+
+ubyte dosControlType,winControlType;
+
+//read in the tPlayer's saved games.  returns errno (0 == no error)
+int ReadPlayerFile (int bOnlyWindowSizes)
+{
+	CFILE		*fp;
+	char		filename [FILENAME_LEN], buf [128];
+	ubyte		nDisplayMode;
+	short		nControlTypes, gameWindowW, gameWindowH;
+	int		funcRes = EZERO;
+	int		id, i;
+	int		bRewriteIt = 0, gameOptsSize = 0, nMaxControls;
+
+Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
+
+sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
+if (!(fp = CFOpen(filename, gameFolders.szProfDir, "rb", 0))) {
+	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
+	return errno;
+	}
+id = CFReadInt(fp);
+// SWAPINT added here because old versions of d2x
+// used the wrong byte order.
+if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "Invalid player file");
+	CFClose(fp);
+	return -1;
+	}
+
+gameStates.input.nPlrFileVersion = CFReadShort (fp);
+if (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION)
+	nMaxControls = 48;
+else if (gameStates.input.nPlrFileVersion < 108)
+	nMaxControls = 60;
+else if (gameStates.input.nPlrFileVersion < D2XXL_PLAYER_FILE_VERSION)
+	nMaxControls = 64;
+else
+	nMaxControls = 64;	//MAX_CONTROLS
+
+if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
+	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) && 
+	  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
+	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
+	CFClose(fp);
+	return -1;
+	}
+
+gameWindowW = gameData.render.window.w;
+gameWindowH = gameData.render.window.h;
+gameData.render.window.w = CFReadShort (fp);
+gameData.render.window.h = CFReadShort (fp);
+if (bOnlyWindowSizes)
+	goto done;
+
+gameData.app.playerDefaultDifficulty = CFReadByte (fp);
+gameOpts->gameplay.bDefaultLeveling = CFReadByte (fp);
+gameOpts->render.cockpit.bReticle = CFReadByte (fp);
+gameStates.render.cockpit.nMode = CFReadByte (fp);
+nDisplayMode = gameStates.video.nDefaultDisplayMode;
+gameStates.video.nDefaultDisplayMode = CFReadByte (fp);
+gameOpts->render.cockpit.bMissileView = CFReadByte (fp);
+gameOpts->gameplay.bHeadlightOn = CFReadByte (fp);
+gameOptions [0].render.cockpit.bGuidedInMainView = CFReadByte (fp);
+if (gameStates.input.nPlrFileVersion >= 19)
+	CFReadByte (fp);	//skip obsolete byte value
+//read new highest level info
+nHighestLevels = CFReadShort (fp);
+Assert(nHighestLevels <= MAX_MISSIONS);
+if (CFRead (highestLevels, sizeof (hli), nHighestLevels, fp) != (size_t) nHighestLevels) {
+	funcRes = errno;
+	CFClose(fp);
+	return funcRes;
+	}
+//read taunt macros
+for (i = 0; i < 4; i++)
+	if (CFRead (gameData.multigame.msg.szMacro [i], MAX_MESSAGE_LEN, 1, fp) != 1) {
+		funcRes = errno; 
+		break;
+	}
+//read KConfig data
+nControlTypes = (gameStates.input.nPlrFileVersion < 20) ? 7 : CONTROL_MAX_TYPES;
+if (CFRead (controlSettings.custom, nMaxControls * nControlTypes, 1, fp ) != 1)
+	funcRes = errno;
+else if (CFRead ((ubyte *) &dosControlType, sizeof (ubyte), 1, fp ) != 1)
+	funcRes = errno;
+else if ((gameStates.input.nPlrFileVersion >= 21) && CFRead ((ubyte *) &winControlType, sizeof (ubyte), 1, fp ) != 1)
+	funcRes = errno;
+else if (CFRead (gameOptions [0].input.joySensitivity, sizeof (ubyte), 1, fp) != 1)
+	funcRes = errno;
+gameConfig.nControlType = dosControlType;
+for (i = 0; i < 11; i++) {
+	nWeaponOrder [0][i] = CFReadByte (fp);
+	nWeaponOrder [1][i] = CFReadByte (fp);
+	}
+if (gameStates.input.nPlrFileVersion >= 16) {
+	gameStates.render.cockpit.n3DView [0] = CFReadInt (fp);
+	gameStates.render.cockpit.n3DView [1] = CFReadInt (fp);
+	}
+
+if (gameStates.input.nPlrFileVersion >= 22) {
+	networkData.nNetLifeKills = CFReadInt (fp);
+	networkData.nNetLifeKilled = CFReadInt (fp);
+	}
+else {
+	networkData.nNetLifeKills = 0; 
+	networkData.nNetLifeKilled = 0;
+	}
+
+if (gameStates.input.nPlrFileVersion >= 23)
+  gameData.app.nLifetimeChecksum = CFReadInt (fp);
+
+//read guidebot name
+if (gameStates.input.nPlrFileVersion >= 18)
+	CFReadString (gameData.escort.szName, GUIDEBOT_NAME_LEN, fp);
+else
+	strcpy (gameData.escort.szName, "GUIDE-BOT");
+gameData.escort.szName [sizeof (gameData.escort.szName) - 1] = '\0';
+if (gameStates.input.nPlrFileVersion >= D2W95_PLAYER_FILE_VERSION) 
+	CFReadString (buf, 127, fp);
+if (gameStates.input.nPlrFileVersion >= 25)
+	CFRead (controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1, fp);
+else {
+	for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
+		controlSettings.d2xCustom [i] = controlSettings.d2xDefaults [i];
+	}
+if (gameStates.input.nPlrFileVersion >= D2XXL_PLAYER_FILE_VERSION) {
+	ReadParams ();
+	KCSetControls (1);
+	}
+else {
+	ReadBinD2XParams (fp);
+	KCSetControls (0);
+	}
+
+done:
+
+//post processing of parameters
+if (gameStates.input.nPlrFileVersion >= 23) {
+	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
+		networkData.nNetLifeKills = 
+		networkData.nNetLifeKilled = 0;
+ 		ExecMessageBox (NULL, NULL, 1, "Shame on me", "Trying to cheat eh?");
+		bRewriteIt = 1;
+		}
+	}
+if (gameStates.gfx.bOverride) {
+	gameStates.video.nDefaultDisplayMode = nDisplayMode;
+	gameData.render.window.w = gameWindowW;
+	gameData.render.window.h = gameWindowH;
+	}
+for (i = 0; i < sizeof (gameData.escort.szName); i++) {
+	if (!gameData.escort.szName [i])
+		break;
+	if (!isprint (gameData.escort.szName [i])) {
+		strcpy(gameData.escort.szName, "GUIDE-BOT");
+		break;
+		}
+	}
+strcpy (gameData.escort.szRealName, gameData.escort.szName);
 mpParams.bDarkness = extraGameInfo [1].bDarkness;
 mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
-if (errno_ret == EZERO)
-	KCSetControls();
-if (CFClose(fp)) 
-	if (errno_ret == EZERO)
-		errno_ret = errno;
+extraGameInfo [0].nSpawnDelay *= 1000;
 extraGameInfo [1].bDisableReactor = 0;
-if (rewrite_it)
-	WritePlayerFile();
+gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
+ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
+ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 SetDebrisCollisions ();
-return errno_ret;
+
+if (CFClose (fp)) 
+	if (funcRes == EZERO)
+		funcRes = errno;
+if (bRewriteIt)
+	WritePlayerFile ();
+return funcRes;
 }
 
 //------------------------------------------------------------------------------
@@ -867,37 +1376,33 @@ int FindHLIEntry()
 {
 	int i;
 
-	for (i=0;i<nHighestLevels;i++)
-		if (!stricmp(highestLevels[i].shortname,gameData.missions.list[gameData.missions.nCurrentMission].filename))
-			break;
-
-	if (i==nHighestLevels) {		//not found.  create entry
-
-		if (i==MAX_MISSIONS)
+for (i = 0; i <nHighestLevels; i++)
+	if (!stricmp (highestLevels [i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename))
+		break;
+	if (i == nHighestLevels) {		//not found.  create entry
+		if (i == MAX_MISSIONS)
 			i--;		//take last entry
 		else
 			nHighestLevels++;
-
-		strcpy(highestLevels[i].shortname,gameData.missions.list[gameData.missions.nCurrentMission].filename);
-		highestLevels[i].level_num			= 0;
-	}
-
-	return i;
+		strcpy (highestLevels[i].shortname, gameData.missions.list [gameData.missions.nCurrentMission].filename);
+		highestLevels [i].nLevel = 0;
+		}
+return i;
 }
 
 //------------------------------------------------------------------------------
 //set a new highest level for tPlayer for this mission
-void SetHighestLevel(int levelnum)
+void SetHighestLevel (ubyte nLevel)
 {
-	int ret,i;
+	int ret, i;
 
-if ((ret=ReadPlayerFile(0)) != EZERO)
-	if (ret != ENOENT)		//if file doesn't exist, that's ok
-		return;
-i = FindHLIEntry();
-if (levelnum > highestLevels[i].level_num)
-	highestLevels[i].level_num	= levelnum;
-WritePlayerFile();
+ret = ReadPlayerFile (0);
+if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
+	return;
+i = FindHLIEntry ();
+if (nLevel > highestLevels [i].nLevel)
+	highestLevels [i].nLevel = nLevel;
+WritePlayerFile ();
 }
 
 //------------------------------------------------------------------------------
@@ -905,190 +1410,107 @@ WritePlayerFile();
 int GetHighestLevel(void)
 {
 	int i;
-	int highest_saturnLevel = 0;
+	int nHighestSaturnLevel = 0;
 
-ReadPlayerFile(0);
+ReadPlayerFile (0);
 #ifndef SATURN
 if (strlen (gameData.missions.list [gameData.missions.nCurrentMission].filename) == 0)	{
 	for (i = 0; i < nHighestLevels; i++)
-		if (!stricmp(highestLevels [i].shortname, "DESTSAT")) 	//	Destination Saturn.
-		 	highest_saturnLevel	= highestLevels[i].level_num; 
+		if (!stricmp (highestLevels [i].shortname, "DESTSAT")) 	//	Destination Saturn.
+		 	nHighestSaturnLevel = highestLevels [i].nLevel; 
 }
 #endif
-i = highestLevels [FindHLIEntry()].level_num;
-if (highest_saturnLevel > i)
-   i = highest_saturnLevel;
+i = highestLevels [FindHLIEntry()].nLevel;
+if (nHighestSaturnLevel > i)
+   i = nHighestSaturnLevel;
 return i;
 }
 
 //------------------------------------------------------------------------------
-
-//write out tPlayer's saved games.  returns errno (0 == no error)
-int WritePlayerFile()
-{
-	CFILE	*fp;
-	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
-	char	buf [128];
-	int	errno_ret, h, i, j;
-
-//	#ifdef APPLE_DEMO		// no saving of tPlayer files in Apple OEM version
-//	return 0;
-//	#endif
-
-errno_ret = WriteConfigFile();
-sprintf (filename,"%s.plr",LOCALPLAYER.callsign);
-fp = CFOpen (filename, gameFolders.szProfDir, "wb", 0);
 #if 0
-//check filename
-if (fp && isatty(fileno (fp)) {
-	//if the callsign is the name of a tty device, prepend a char
-	fclose(fp);
-	sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
-	fp = fopen(filename,"wb");
-	}
-#endif
-if (!fp)
-	return errno;
-errno_ret = EZERO;
-//Write out tPlayer's info
-CFWriteInt(SAVE_FILE_ID, fp);
-CFWriteShort(PLAYER_FILE_VERSION, fp);
-CFWriteShort((short) Game_window_w, fp);
-CFWriteShort((short) Game_window_h, fp);
-CFWriteByte ((sbyte) playerDefaultDifficulty, fp);
-CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
-CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
-CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
-CFWriteByte ((sbyte) gameStates.video.nDefaultDisplayMode, fp);
-CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView, fp);
-CFWriteByte ((sbyte) gameOptions [0].gameplay.bHeadlightOn, fp);
-CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView, fp);
-CFWriteByte ((sbyte) 0, fp);	//place holder for an obsolete value
-//write higest level info
-Assert(nHighestLevels <= MAX_MISSIONS);
-CFWriteShort(nHighestLevels, fp);
-if ((CFWrite(highestLevels, sizeof(hli), nHighestLevels, fp) != nHighestLevels)) {
-	errno_ret = errno;
-	CFClose(fp);
-	return errno_ret;
-	}
+void WriteBinD2XParams (CFILE *fp)
+{
+	int	i, j;
 
-if ((CFWrite(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4)) {
-	errno_ret = errno;
-	CFClose(fp);
-	return errno_ret;
-	}
-
-//write KConfig info
-controlType_dos = gameConfig.nControlType;
-if (CFWrite(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1, fp ) != 1)
-	errno_ret = errno;
-else if (CFWrite(&controlType_dos, sizeof(ubyte), 1, fp) != 1)
-	errno_ret = errno;
-else if (CFWrite(&controlType_win, sizeof(ubyte), 1, fp ) != 1)
-	errno_ret = errno;
-else if (CFWrite(gameOptions [0].input.joySensitivity, sizeof(ubyte), 1, fp) != 1)
-	errno_ret = errno;
-
-for (i = 0; i < 11; i++) {
-	CFWrite (primaryOrder + i, sizeof(ubyte), 1, fp);
-	CFWrite (secondaryOrder + i, sizeof(ubyte), 1, fp);
-	}
-CFWriteInt(Cockpit_3dView[0], fp);
-CFWriteInt(Cockpit_3dView[1], fp);
-CFWriteInt(networkData.nNetLifeKills, fp);
-CFWriteInt(networkData.nNetLifeKilled, fp);
-i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-#if TRACE				
-con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
-#endif
-CFWriteInt(i,fp);
-//write guidebot name
-CFWriteString(gameData.escort.szRealName, fp);
-strcpy(buf, "DOS joystick");
-CFWriteString(buf, fp);  // Write out current joystick for player.
-
-CFWrite(controlSettings.d2xCustom, MAX_D2X_CONTROLS, 1, fp);
-// write D2X-XL stuff
 CFWriteInt (sizeof (tGameOptions), fp);
-for (j = 0; j < 2; j++) {
-	if (!j) {
+for (i = 0; i < 2; i++) {
+	if (!i) {
 		CFWriteByte (extraGameInfo [0].bFixedRespawns, fp);
 		CFWriteByte (extraGameInfo [0].bFriendlyFire, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.nMaxFPS, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.nMaxFPS, fp);
+	if (!i)
 		CFWriteByte ((sbyte) (extraGameInfo [0].nSpawnDelay / 1000), fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.joyDeadZones [0], fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.nWindowSize, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.nWindowPos, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.nWindowZoom, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].input.joyDeadZones [0], fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowSize, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowPos, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowZoom, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bPowerupsOnRadar, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.keyRampScale, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.bAmbientLight, fp);
-	CFWriteByte ((sbyte) gameOptions [j].ogl.bSetGammaRamp, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].input.keyRampScale, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bAmbientLight, fp);
+	CFWriteByte ((sbyte) gameOptions [i].ogl.bSetGammaRamp, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nZoomMode, fp);
-	for (i = 0; i < 3; i++)
-		CFWriteByte ((sbyte) gameOptions [j].input.bRampKeys [i], fp);
-	if (!j) {
+	for (j = 0; j < 3; j++)
+		CFWriteByte ((sbyte) gameOptions [i].input.bRampKeys [j], fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bEnhancedCTF, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bRobotsHitRobots, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].gameplay.nAutoSelectWeapon, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].gameplay.nAutoSelectWeapon, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bAutoDownload, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.bGunLight, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bGunLight, fp);
 	CFWriteByte ((sbyte) gameStates.multi.bUseTracker, fp);
-	CFWriteByte ((sbyte) gameOptions [j].gameplay.bFastRespawn, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].gameplay.bFastRespawn, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bDualMissileLaunch, fp);
-	CFWriteByte ((sbyte) gameOptions [j].gameplay.nPlayerDifficultyLevel, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.bTransparentEffects, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].gameplay.nPlayerDifficultyLevel, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.bTransparentEffects, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bRobotsOnRadar, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.bAllSegs, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.bAllSegs, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].grWallTransparency, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.mouseSensitivity [0], fp);
-	CFWriteByte ((sbyte) gameOptions [j].multi.bUseMacros, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].input.mouseSensitivity [0], fp);
+	CFWriteByte ((sbyte) gameOptions [i].multi.bUseMacros, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bWiggle, fp);
-	CFWriteByte ((sbyte) gameOptions [j].movies.nQuality, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.bWalls, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.bLinearJoySens, fp);
-	if (!j) {
+	CFWriteByte ((sbyte) gameOptions [i].movies.nQuality, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bWalls, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.bLinearJoySens, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].nSpeedBoost, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bDropAllMissiles, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bImmortalPowerups, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bUseCameras, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.cameras.bFitToWall, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cameras.nFPS, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.cameras.bFitToWall, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cameras.nFPS, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nFusionPowerMod, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.bUseLightMaps, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bHUD, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.nLightMapRange, fp);
-	if (!j) {
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bUseLightMaps, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bHUD, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.nLightMapRange, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bMouseLook, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bMultiBosses, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].app.nVersionFilter, fp);
-	if (!j) {
+	CFWriteByte ((sbyte) gameOptions [i].app.nVersionFilter, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bSmartWeaponSwitch, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bFluidPhysics, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.nQuality, fp);
-	CFWriteByte ((sbyte) gameOptions [j].movies.bSubTitles, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.textures.nQuality, fp);
-	CFWriteInt (gameOptions [j].render.cameras.nSpeed, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.nQuality, fp);
+	CFWriteByte ((sbyte) gameOptions [i].movies.bSubTitles, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.textures.nQuality, fp);
+	CFWriteInt (gameOptions [i].render.cameras.nSpeed, fp);
+	if (!i)
 		CFWriteByte (extraGameInfo [0].nWeaponDropMode, fp);
-	CFWriteInt (gameOptions [j].menus.bSmartFileSearch, fp);
+	CFWriteInt (gameOptions [i].menus.bSmartFileSearch, fp);
 	CFWriteInt (GetDlTimeout (), fp);
-	if (!j) {
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nCaptureVirusLimit, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nCaptureTimeLimit, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].entropy.nMaxVirusCapacity, fp);
@@ -1126,83 +1548,83 @@ for (j = 0; j < 2; j++) {
 		CFWriteInt(mpParams.udpClientPort, fp);
 		CFWrite(mpParams.szServerIpAddr, 16, 1, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.bOptimize, fp);
-	if (!j) {
+	CFWriteByte ((sbyte) gameOptions [i].render.bOptimize, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [1].bRotateLevels, fp);
 		CFWriteByte ((sbyte) extraGameInfo [1].bDisableReactor, fp);
 		}
-	for (i = 0; i < 4; i++)
-		CFWriteByte ((sbyte) gameOptions [0].input.joyDeadZones [i], fp);
-	for (i = 0; i < 4; i++)
-		CFWriteByte ((sbyte) gameOptions [0].input.joySensitivity [i], fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.bSyncJoyAxes, fp);
-	if (!j) {
+	for (j = 0; j < 4; j++)
+		CFWriteByte ((sbyte) gameOptions [0].input.joyDeadZones [j], fp);
+	for (j = 0; j < 4; j++)
+		CFWriteByte ((sbyte) gameOptions [0].input.joySensitivity [j], fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.bSyncJoyAxes, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [1].bDualMissileLaunch, fp);
 		CFWriteByte ((sbyte) extraGameInfo [1].bMouseLook, fp);
 		}
-	for (i = 0; i < 3; i++)
-		CFWriteByte ((sbyte) gameOptions [0].input.mouseSensitivity [i], fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.bSyncMouseAxes, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.bMix, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.color.bCap, fp);
-	if (!j)
+	for (j = 0; j < 3; j++)
+		CFWriteByte ((sbyte) gameOptions [0].input.mouseSensitivity [j], fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.bSyncMouseAxes, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bMix, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.color.bCap, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nWeaponIcons, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.weaponIcons.bSmall, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.bSmall, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bAutoBalanceTeams, fp);
-	CFWriteByte ((sbyte) gameOptions [j].movies.bResize, fp);
-	CFWriteByte ((sbyte) gameOptions [j].menus.bShowLevelVersion, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.weaponIcons.nSort, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.weaponIcons.bShowAmmo, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.bUseMouse, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.bUseJoystick, fp);
-	CFWriteByte ((sbyte) gameOptions [j].input.bUseHotKeys, fp);
-	if (!j) {
+	CFWriteByte ((sbyte) gameOptions [i].movies.bResize, fp);
+	CFWriteByte ((sbyte) gameOptions [i].menus.bShowLevelVersion, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.nSort, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.bShowAmmo, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.bUseMouse, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.bUseJoystick, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.bUseHotKeys, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bSafeUDP, fp);
 		CFWrite(mpParams.szServerIpAddr + 16, 6, 1, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bTextGauges, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bScaleGauges, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.weaponIcons.bEquipment, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.weaponIcons.alpha, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bFlashGauges, fp);
-	if (!j) {
-		for (i = 0; i < 2; i++)
-			CFWriteByte ((sbyte) extraGameInfo [i].bFastPitch, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bTextGauges, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bScaleGauges, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.bEquipment, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.alpha, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bFlashGauges, fp);
+	if (!i) {
+		for (j = 0; j < 2; j++)
+			CFWriteByte ((sbyte) extraGameInfo [j].bFastPitch, fp);
 		CFWriteInt (gameStates.multi.nConnection, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bUseSmoke, fp);
 		}
-	CFWriteInt (gameOptions [j].render.smoke.nDens [0], fp);
-	CFWriteInt (gameOptions [j].render.smoke.nSize [0], fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bPlayers, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bRobots, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bMissiles, fp);
-	if (!j) {
+	CFWriteInt (gameOptions [i].render.smoke.nDens [0], fp);
+	CFWriteInt (gameOptions [i].render.smoke.nSize [0], fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bPlayers, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bRobots, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bMissiles, fp);
+	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bDamageExplosions, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bThrusterFlames, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bCollisions, fp);
-	CFWriteByte ((sbyte) gameOptions [j].gameplay.bShieldWarning, fp);
-	CFWriteByte ((sbyte) gameOptions [j].app.bExpertMode, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bCollisions, fp);
+	CFWriteByte ((sbyte) gameOptions [i].gameplay.bShieldWarning, fp);
+	CFWriteByte ((sbyte) gameOptions [i].app.bExpertMode, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bShadows, fp);
-	CFWriteInt (gameOptions [j].render.shadows.nLights, fp);
-	if (!j) {
+	CFWriteInt (gameOptions [i].render.shadows.nLights, fp);
+	if (!i) {
 		CFWriteInt (gameStates.ogl.nContrast, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bRenderShield, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].gameplay.bInventory, fp);
-	CFWriteInt (gameOptions [j].input.bJoyMouse, fp);
-	if (!j) {
+	CFWriteByte ((sbyte) gameOptions [i].gameplay.bInventory, fp);
+	CFWriteInt (gameOptions [i].input.bJoyMouse, fp);
+	if (!i) {
 		CFWriteInt (displayModeInfo [NUM_DISPLAY_MODES].w, fp);
 		CFWriteInt (displayModeInfo [NUM_DISPLAY_MODES].h, fp);
 		}
-	CFWriteInt (gameOptions [j].render.cockpit.bMouseIndicator, fp);
-	CFWriteInt (extraGameInfo [j].bTeleporterCams, fp);
-	CFWriteInt (gameOptions [j].render.cockpit.bSplitHUDMsgs, fp);
-	CFWriteByte (gameOptions [j].input.joyDeadZones [4], fp);
-	CFWriteByte (gameOptions [j].input.joySensitivity [4], fp);
-	if (!j) {
+	CFWriteInt (gameOptions [i].render.cockpit.bMouseIndicator, fp);
+	CFWriteInt (extraGameInfo [i].bTeleporterCams, fp);
+	CFWriteInt (gameOptions [i].render.cockpit.bSplitHUDMsgs, fp);
+	CFWriteByte (gameOptions [i].input.joyDeadZones [4], fp);
+	CFWriteByte (gameOptions [i].input.joySensitivity [4], fp);
+	if (!i) {
 		tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
 		CFWriteByte (extraGameInfo [0].monsterball.nBonus, fp);
 		for (h = 0; h < MAX_MONSTERBALL_FORCES; h++, pf++) {
@@ -1210,94 +1632,186 @@ for (j = 0; j < 2; j++) {
 			CFWriteByte (pf->nForce, fp);
 			}
 		}
-	if (!j)
+	if (!i)
 		CFWriteByte (extraGameInfo [0].monsterball.nSizeMod, fp);
-	CFWriteInt (gameOptions [j].render.bDynLighting, fp);
-	CFWriteInt (gameOptions [j].ogl.bLightObjects, fp);
-	CFWriteInt (gameOptions [j].ogl.nMaxLights, fp);
-	CFWriteByte (extraGameInfo [j].bDarkness, fp);
-	CFWriteByte (extraGameInfo [j].bTeamDoors, fp);
-	CFWriteByte (extraGameInfo [j].bEnableCheats, fp);
-	CFWriteByte (extraGameInfo [j].bTargetIndicators, fp);
-	CFWriteByte (extraGameInfo [j].bDamageIndicators, fp);
-	CFWriteByte (extraGameInfo [j].bFriendlyIndicators, fp);
-	CFWriteByte (extraGameInfo [j].bCloakedIndicators, fp);
-	CFWriteByte (extraGameInfo [j].bHeadLights, fp);
-	CFWriteByte (extraGameInfo [j].bPowerupLights, fp);
-	CFWriteByte (extraGameInfo [j].nSpotSize, fp);
-	CFWriteByte (extraGameInfo [j].bTowFlags, fp);
-	CFWriteByte (gameOptions [j].render.smoke.bDecreaseLag, fp);
-	CFWriteByte (gameOptions [j].render.bAutoTransparency, fp);
-	if (!j) {
-		CFWriteByte (extraGameInfo [j].bUseHitAngles, fp);
-		CFWriteByte (extraGameInfo [j].bLightTrails, fp);
+	CFWriteInt (gameOptions [i].render.bDynLighting, fp);
+	CFWriteInt (gameOptions [i].ogl.bLightObjects, fp);
+	CFWriteInt (gameOptions [i].ogl.nMaxLights, fp);
+	CFWriteByte (extraGameInfo [i].bDarkness, fp);
+	CFWriteByte (extraGameInfo [i].bTeamDoors, fp);
+	CFWriteByte (extraGameInfo [i].bEnableCheats, fp);
+	CFWriteByte (extraGameInfo [i].bTargetIndicators, fp);
+	CFWriteByte (extraGameInfo [i].bDamageIndicators, fp);
+	CFWriteByte (extraGameInfo [i].bFriendlyIndicators, fp);
+	CFWriteByte (extraGameInfo [i].bCloakedIndicators, fp);
+	CFWriteByte (extraGameInfo [i].bHeadLights, fp);
+	CFWriteByte (extraGameInfo [i].bPowerupLights, fp);
+	CFWriteByte (extraGameInfo [i].nSpotSize, fp);
+	CFWriteByte (extraGameInfo [i].bTowFlags, fp);
+	CFWriteByte (gameOptions [i].render.smoke.bDecreaseLag, fp);
+	CFWriteByte (gameOptions [i].render.bAutoTransparency, fp);
+	if (!i) {
+		CFWriteByte (extraGameInfo [i].bUseHitAngles, fp);
+		CFWriteByte (extraGameInfo [i].bLightTrails, fp);
 		}
-	CFWriteInt (gameOptions [j].render.smoke.bSyncSizes, fp);
-	for (i = 1; i < 4; i++) {
-		CFWriteInt (gameOptions [j].render.smoke.nDens [i], fp);
-		CFWriteInt (gameOptions [j].render.smoke.nSize [i], fp);
+	CFWriteInt (gameOptions [i].render.smoke.bSyncSizes, fp);
+	for (j = 1; j < 4; j++) {
+		CFWriteInt (gameOptions [i].render.smoke.nDens [j], fp);
+		CFWriteInt (gameOptions [i].render.smoke.nSize [j], fp);
 		}
-	if (!j) {
-		CFWriteByte (extraGameInfo [j].bTracers, fp);
-		CFWriteByte (extraGameInfo [j].bShockwaves, fp);
+	if (!i) {
+		CFWriteByte (extraGameInfo [i].bTracers, fp);
+		CFWriteByte (extraGameInfo [i].bShockwaves, fp);
 		}
-	CFWriteByte (gameOptions [j].render.smoke.bDisperse, fp);
-	CFWriteByte (extraGameInfo [j].bTagOnlyHitObjs, fp);
-	for (i = 0; i < 4; i++)
-		CFWriteInt (gameOptions [j].render.smoke.nLife [i], fp);
-	CFWriteByte (gameOptions [j].render.shadows.bRobots, fp);
-	CFWriteByte (gameOptions [j].render.shadows.bMissiles, fp);
-	CFWriteByte (gameOptions [j].render.shadows.bReactors, fp);
-	CFWriteByte (gameOptions [j].render.shadows.bPlayers, fp);
-	CFWriteByte (gameOptions [j].render.shadows.bFast, fp);
-	CFWriteByte (gameOptions [j].render.shadows.nReach, fp);
-	CFWriteByte (gameOptions [j].render.shadows.nClip, fp);
-	CFWriteByte (gameOptions [j].render.powerups.b3D, fp);
-	CFWriteByte (gameOptions [j].render.powerups.nSpin, fp);
-	CFWriteByte (gameOptions [j].gameplay.bIdleAnims, fp);
-	if (!j)
+	CFWriteByte (gameOptions [i].render.smoke.bDisperse, fp);
+	CFWriteByte (extraGameInfo [i].bTagOnlyHitObjs, fp);
+	for (j = 0; j < 4; j++)
+		CFWriteInt (gameOptions [i].render.smoke.nLife [j], fp);
+	CFWriteByte (gameOptions [i].render.shadows.bRobots, fp);
+	CFWriteByte (gameOptions [i].render.shadows.bMissiles, fp);
+	CFWriteByte (gameOptions [i].render.shadows.bReactors, fp);
+	CFWriteByte (gameOptions [i].render.shadows.bPlayers, fp);
+	CFWriteByte (gameOptions [i].render.shadows.bFast, fp);
+	CFWriteByte (gameOptions [i].render.shadows.nReach, fp);
+	CFWriteByte (gameOptions [i].render.shadows.nClip, fp);
+	CFWriteByte (gameOptions [i].render.powerups.b3D, fp);
+	CFWriteByte (gameOptions [i].render.powerups.nSpin, fp);
+	CFWriteByte (gameOptions [i].gameplay.bIdleAnims, fp);
+	if (!i)
 		CFWriteByte (gameStates.app.nDifficultyLevel, fp);
-	CFWriteByte (gameOptions [j].demo.bOldFormat, fp);
-	CFWriteByte (gameOptions [j].render.cockpit.bObjectTally, fp);
-	if (!j)
+	CFWriteByte (gameOptions [i].demo.bOldFormat, fp);
+	CFWriteByte (gameOptions [i].render.cockpit.bObjectTally, fp);
+	if (!i)
 		CFWriteByte (extraGameInfo [0].nLightRange, fp);
-	if (j)
-		CFWriteByte (extraGameInfo [j].bCompetition, fp);
-	CFWriteByte (extraGameInfo [j].bFlickerLights, fp);
-	if (!j) {
-		CFWriteByte (extraGameInfo [j].bSmokeGrenades, fp);
-		CFWriteByte (extraGameInfo [j].nMaxSmokeGrenades, fp);
-		CFWriteByte (extraGameInfo [j].nMslTurnSpeed, fp);
+	if (i)
+		CFWriteByte (extraGameInfo [i].bCompetition, fp);
+	CFWriteByte (extraGameInfo [i].bFlickerLights, fp);
+	if (!i) {
+		CFWriteByte (extraGameInfo [i].bSmokeGrenades, fp);
+		CFWriteByte (extraGameInfo [i].nMaxSmokeGrenades, fp);
+		CFWriteByte (extraGameInfo [i].nMslTurnSpeed, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bDebris, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.smoke.bStatic, fp);
-	CFWriteByte ((sbyte) gameOptions [j].gameplay.nAIAwareness, fp);
-	CFWriteByte ((sbyte) extraGameInfo [j].nCoopPenalty, fp);
-	CFWriteByte ((sbyte) extraGameInfo [j].bShootMissiles, fp);
-	CFWriteByte ((sbyte) extraGameInfo [j].nHitboxes, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.cockpit.bPlayerStats, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.bCoronas, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.automap.bTextured, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.automap.bBright, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.automap.bCoronas, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.automap.nColor, fp);
-	if (!j)
+	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bDebris, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bStatic, fp);
+	CFWriteByte ((sbyte) gameOptions [i].gameplay.nAIAwareness, fp);
+	CFWriteByte ((sbyte) extraGameInfo [i].nCoopPenalty, fp);
+	CFWriteByte ((sbyte) extraGameInfo [i].bShootMissiles, fp);
+	CFWriteByte ((sbyte) extraGameInfo [i].nHitboxes, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bPlayerStats, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.bCoronas, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.bTextured, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.bBright, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.bCoronas, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.nColor, fp);
+	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nRadar, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.automap.nRange, fp);
-	CFWriteByte ((sbyte) gameOptions [j].render.automap.bSmoke, fp);
-	CFWriteInt (gameOptions [j].render.nDebrisLife, fp);
-	CFWriteByte ((sbyte) extraGameInfo [j].bMslLockIndicators, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.nRange, fp);
+	CFWriteByte ((sbyte) gameOptions [i].render.automap.bSmoke, fp);
+	CFWriteInt (gameOptions [i].render.nDebrisLife, fp);
+	CFWriteByte ((sbyte) extraGameInfo [i].bMslLockIndicators, fp);
 	CFWriteByte ((sbyte) gameOpts->render.cockpit.bRotateMslLockInd, fp);
 // end of D2X-XL stuff
 	}
+}
+#endif
+//------------------------------------------------------------------------------
+
+//write out tPlayer's saved games.  returns errno (0 == no error)
+int WritePlayerFile (void)
+{
+	CFILE	*fp;
+	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
+	char	buf [128];
+	int	funcRes, i;
+
+funcRes = WriteConfigFile ();
+sprintf (filename,"%s.plr",LOCALPLAYER.callsign);
+fp = CFOpen (filename, gameFolders.szProfDir, "wb", 0);
+#if 0
+//check filename
+if (fp && isatty(fileno (fp)) {
+	//if the callsign is the name of a tty device, prepend a char
+	fclose(fp);
+	sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
+	fp = fopen(filename,"wb");
+	}
+#endif
+if (!fp)
+	return errno;
+funcRes = EZERO;
+//Write out tPlayer's info
+CFWriteInt(SAVE_FILE_ID, fp);
+CFWriteShort(PLAYER_FILE_VERSION, fp);
+CFWriteShort((short) gameData.render.window.w, fp);
+CFWriteShort((short) gameData.render.window.h, fp);
+CFWriteByte ((sbyte) gameData.app.playerDefaultDifficulty, fp);
+CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
+CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
+CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
+CFWriteByte ((sbyte) gameStates.video.nDefaultDisplayMode, fp);
+CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView, fp);
+CFWriteByte ((sbyte) gameOptions [0].gameplay.bHeadlightOn, fp);
+CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView, fp);
+CFWriteByte ((sbyte) 0, fp);	//place holder for an obsolete value
+//write higest level info
+Assert(nHighestLevels <= MAX_MISSIONS);
+CFWriteShort (nHighestLevels, fp);
+if ((CFWrite (highestLevels, sizeof (hli), nHighestLevels, fp) != nHighestLevels)) {
+	funcRes = errno;
+	CFClose(fp);
+	return funcRes;
+	}
+
+if ((CFWrite(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4)) {
+	funcRes = errno;
+	CFClose(fp);
+	return funcRes;
+	}
+
+//write KConfig info
+dosControlType = gameConfig.nControlType;
+if (CFWrite(controlSettings.custom, MAX_CONTROLS * CONTROL_MAX_TYPES, 1, fp ) != 1)
+	funcRes = errno;
+else if (CFWrite(&dosControlType, sizeof(ubyte), 1, fp) != 1)
+	funcRes = errno;
+else if (CFWrite(&winControlType, sizeof(ubyte), 1, fp ) != 1)
+	funcRes = errno;
+else if (CFWrite(gameOptions [0].input.joySensitivity, sizeof(ubyte), 1, fp) != 1)
+	funcRes = errno;
+
+for (i = 0; i < 11; i++) {
+	CFWrite (primaryOrder + i, sizeof(ubyte), 1, fp);
+	CFWrite (secondaryOrder + i, sizeof(ubyte), 1, fp);
+	}
+CFWriteInt(gameStates.render.cockpit.n3DView [0], fp);
+CFWriteInt(gameStates.render.cockpit.n3DView [1], fp);
+CFWriteInt(networkData.nNetLifeKills, fp);
+CFWriteInt(networkData.nNetLifeKilled, fp);
+i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+#if TRACE				
+con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
+#endif
+CFWriteInt(i,fp);
+//write guidebot name
+CFWriteString(gameData.escort.szRealName, fp);
+strcpy(buf, "DOS joystick");
+CFWriteString(buf, fp);  // Write out current joystick for player.
+
+CFWrite(controlSettings.d2xCustom, MAX_HOTKEY_CONTROLS, 1, fp);
+// write D2X-XL stuff
+#if 1
+WriteParams ();
+#else
+WriteBinD2XParams (fp);
+#endif
 
 if (CFClose (fp))
-	errno_ret = errno;
-if (errno_ret != EZERO) {
+	funcRes = errno;
+if (funcRes != EZERO) {
 	CFDelete(filename, gameFolders.szProfDir);         //delete bogus fp
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(errno_ret));
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "%s\n\n%s",TXT_ERROR_WRITING_PLR, strerror(funcRes));
 	}
-return errno_ret;
+return funcRes;
 }
 
 //------------------------------------------------------------------------------

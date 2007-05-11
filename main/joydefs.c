@@ -807,7 +807,7 @@ void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 	//		case	CONTROL_CYBERMAN:
 				joydefs_calibrateFlag = 1;
 		}
-		KCSetControls();
+		KCSetControls (0);
 	}
 
 }
@@ -860,7 +860,7 @@ void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 			case	CONTROL_GRAVIS_GAMEPAD:		// this really means a firebird or mousestick
 				joydefs_calibrateFlag = 1;
 		}
-		KCSetControls();
+		KCSetControls (0);
 		joydefs_setType( gameConfig.nControlType );
 	}
 
@@ -1124,7 +1124,7 @@ void joydef_menuset_win(int nitems, tMenuItem * items, int *last_key, int citem 
 	//		case	CONTROL_CYBERMAN:
 				joydefs_calibrateFlag = 1;
 		}
-		KCSetControls();
+		KCSetControls (0);
 	}
 
 }
