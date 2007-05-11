@@ -1325,8 +1325,6 @@ else {
 	KCSetControls (0);
 	}
 
-done:
-
 //post processing of parameters
 if (gameStates.input.nPlrFileVersion >= 23) {
 	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
@@ -1359,6 +1357,8 @@ gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 SetDebrisCollisions ();
+
+done:
 
 if (CFClose (fp)) 
 	if (funcRes == EZERO)
