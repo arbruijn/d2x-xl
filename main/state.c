@@ -1477,9 +1477,13 @@ return 0;
 int StateLoadMission (CFILE *fp)
 {
 	char	szMission [16];
+	int	i, nVersionFilter = gameOpts->app.nVersionFilter;
 
 CFRead (szMission, sizeof (char), 9, fp);
-if (LoadMissionByName (szMission, -1))
+gameOpts->app.nVersionFilter = 3;
+i = LoadMissionByName (szMission, -1);
+gameOpts->app.nVersionFilter = nVersionFilter;
+if (i)
 	return 1;
 ExecMessageBox (NULL, NULL, 1, "Ok", TXT_MSN_LOAD_ERROR, szMission);
 //CFClose (fp);

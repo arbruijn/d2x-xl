@@ -647,48 +647,43 @@ int NewPlayerConfig()
 	tMenuItem m[8];
    int mct=CONTROL_MAX_TYPES;
  
- 	 mct--;
-   InitWeaponOrdering ();		//setup default weapon priorities 
+mct--;
+InitWeaponOrdering ();		//setup default weapon priorities 
 
 RetrySelection:
-		memset (m, 0, sizeof (m));
-		for (i=0; i<mct; i++ )	{
-			m[i].nType = NM_TYPE_MENU; m[i].text = CONTROL_TEXT(i); m[i].key = -1;
-		}
-		nitems = i;
-		m[0].text = TXT_CONTROL_KEYBOARD;
-	
-			choice = gameConfig.nControlType;				// Assume keyboard
-		#ifndef APPLE_DEMO
-			i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );
-		#else
-			choice = 0;
-		#endif
-		
-		if ( i < 0 )
-			return 0;
 
-	for (i = 0; i < CONTROL_MAX_TYPES; i++)
-		for (j = 0; j < MAX_CONTROLS; j++)
-			controlSettings.custom [i][j] = controlSettings.defaults [i][j];
-	//added on 2/4/99 by Victor Rachels for new keys
-	for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
-		controlSettings.d2xCustom[i] = controlSettings.d2xDefaults[i];
-	//end this section addition - VR
-	KCSetControls(0);
-
-	gameConfig.nControlType = choice;
-
-	if ( gameConfig.nControlType==CONTROL_THRUSTMASTER_FCS)	{
-		i = ExecMessageBox( TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS );
-		if (i==0) 
-			goto RetrySelection;
+memset (m, 0, sizeof (m));
+for (i=0; i<mct; i++ )	{
+	m[i].nType = NM_TYPE_MENU; 
+	m[i].text = CONTROL_TEXT(i); 
+	m[i].key = -1;
 	}
-	
-	if ( (gameConfig.nControlType>0) && 	(gameConfig.nControlType<5))	{
-		joydefs_calibrate();
+nitems = i;
+m[0].text = TXT_CONTROL_KEYBOARD;
+choice = gameConfig.nControlType;				// Assume keyboard
+#ifndef APPLE_DEMO
+i = ExecMenu1( NULL, TXT_CHOOSE_INPUT, i, m, NULL, &choice );
+#else
+choice = 0;
+#endif
+if (i < 0)
+	return 0;
+for (i = 0; i < CONTROL_MAX_TYPES; i++)
+	for (j = 0; j < MAX_CONTROLS; j++)
+		controlSettings.custom [i][j] = controlSettings.defaults [i][j];
+//added on 2/4/99 by Victor Rachels for new keys
+for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
+	controlSettings.d2xCustom[i] = controlSettings.d2xDefaults[i];
+//end this section addition - VR
+KCSetControls (0);
+gameConfig.nControlType = choice;
+if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
+	i = ExecMessageBox (TXT_IMPORTANT_NOTE, NULL, 2, "Choose another", TXT_OK, TXT_FCS);
+	if (i == 0) 
+		goto RetrySelection;
 	}
-	
+if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5))
+	joydefs_calibrate();
 gameData.app.playerDefaultDifficulty = 1;
 gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling = 1;
 nHighestLevels = 1;
@@ -710,8 +705,9 @@ strcpy(gameData.multigame.msg.szMacro[0], TXT_GET_ALONG);
 strcpy(gameData.multigame.msg.szMacro[1], TXT_GOT_PRESENT);
 strcpy(gameData.multigame.msg.szMacro[2], TXT_HANKERING);
 strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
-networkData.nNetLifeKills=0; 
-networkData.nNetLifeKilled=0;	
+networkData.nNetLifeKills = 0; 
+networkData.nNetLifeKilled = 0;	
+gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 #if 0
 InitGameOptions (0);
 InitArgs (0, NULL);

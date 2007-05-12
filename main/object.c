@@ -1722,7 +1722,7 @@ return nEdges + 1;
 // render corona by gathering the contour vertices of the objects simple, transformed hitbox.
 // To do that, get the hitbox's contour edges and walk through their vertices in their logical sequence.
 
-int ComputeHitboxContour (tObject *objP, fVector *verts, fVector *verts3D, fEdge *edges, int *contour, float fScale)
+int ComputeHitboxContour (tObject *objP, fVector *verts, fVector *vPos, fVector *verts3D, fEdge *edges, int *contour, float fScale)
 {
 	fVector		n, faces [6][4], quad [4], vEye = {{0, 0, 0}}, vCenter = {{0, 0, 0}}, v, *v0, *v1, e [2];
 //	fEdge			edges [12];
@@ -1732,6 +1732,8 @@ int ComputeHitboxContour (tObject *objP, fVector *verts, fVector *verts3D, fEdge
 #ifdef _DEBUG
 fScale = 1;
 #endif
+VmsVecToFloat (vPos, &objP->position.vPos);
+G3TransformPointf (vPos, vPos, 0);
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 TransformHitboxf (objP, verts3D, 0);
 //VmsVecToFloat (&vEye, &gameData.render.mine.viewerEye);
@@ -1748,7 +1750,7 @@ for (i = 0; i < 6; i++) {
 	for (j = 0; j < 4; j++)
 		quad [j] = verts3D [hitboxFaceVerts [i][j]];
 	VmVecNormalf (&n, quad, quad + 1, quad + 2);
-	bFrontFaces [i] = VmVecDotf (&n, quad) < 0;
+	bFrontFaces [i] = VmVecDotf (&n, quad) <= 0;
 	}
 // resize hitbox if requested
 for (i = 0; i < 8; i++) {
@@ -1773,6 +1775,7 @@ for (i = 0; i < 8; i++) {
 #	endif
 		}
 	}
+VmVecScalef (vPos, vPos, zMin / vPos->p.z);
 #endif
 // gather all hitbox edges
 for (i = 0; i < 6; i++) {
@@ -1974,7 +1977,7 @@ while (nc > 4) {
 	if (h < --nc)
 		memmove (contour + h, contour + h + 1, (nc - h) * sizeof (*contour));
 	}
-#elif 1
+#elif 0
 // Method 2: make sure the polygon can be rendered as one or two quads.
 // 4 vertices: bingo
 // 6 vertices: render 2 quads from vertices 1,2,3,6 and 3,4,5,6
@@ -2057,11 +2060,11 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 
-	static uvlf	uvlList1 [4] =
-						{{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
-	uvlf	uvlList2 [8] =
-						{{{0,0.5f,1}},{{0,0,1}},{{1,0,1}},{{1,0.5f,1}},
-						 {{0,1,1}},{{1,0.5f,1}},{{1,0.5f,1}},{{1,1,1}}};
+	static uvlf	uvlList1 [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+#ifdef RELEASE
+	static 
+#endif
+		uvlf	uvlList2 [5] = {{{0.5f,0.5f,1}},{{0.5f,0,1}},{{0.5f,0.5f,1}},{{0.5f,1,1}}};
 
 		vmsVector	vPos = objP->position.vPos;
 
@@ -2128,11 +2131,11 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
 #else
-			fVector	verts [9], verts3D [9], v;
+			fVector	verts [9], verts3D [9], vCenter, v, v0, v1;
 			fEdge		edges [12];
 			int		contour [8];
-			int		i, nc = ComputeHitboxContour (objP, verts, verts3D, edges, contour, 2);
-			float		s, s1, s2;
+			int		i, nc = ComputeHitboxContour (objP, verts, &vCenter, verts3D, edges, contour, 2);
+			float		s, s1, s2, dot;
 
 		if (!nc)
 			goto errorExit;
@@ -2147,12 +2150,85 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 			return;
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
-		glLineWidth (5);
+		glLineWidth (3);
 		glColor3d (1,0,1);
+#if 1
+		glEnable (GL_TEXTURE_2D);
+#if 1
+		for (i = 0; i < nc; i++) {
+			glBegin (GL_QUADS);
+#if 0
+			VmVecSubf (&v0, verts + contour [i], &vCenter);
+			VmVecSubf (&v1, verts + contour [(i + 1) % nc], &vCenter);
+			VmVecNormalizef (&v0, &v0);
+			VmVecNormalizef (&v1, &v1);
+			dot = (1 - fabs (VmVecDotf (&v0, &v1))) / 2;
+			uvlList2 [1].v.v = dot;
+			uvlList2 [2].v.v = dot;
+#else
+			VmVecAddf (&v, verts + contour [i], verts + contour [(i + 1) % nc]);
+			VmVecScalef (&v, &v, 0.5);
+#endif
+			glTexCoord2fv ((GLfloat *) uvlList2);
+			glVertex3fv ((GLfloat *) &vCenter);
+			glTexCoord2fv ((GLfloat *) uvlList2 + 1);
+			glVertex3fv ((GLfloat *) &v);
+			glTexCoord2fv ((GLfloat *) uvlList2 + 2);
+			glVertex3fv ((GLfloat *) (verts + contour [i]));
+			glTexCoord2fv ((GLfloat *) uvlList2 + 3);
+			glVertex3fv ((GLfloat *) (verts + contour [(i + 1) % nc]));
+			glEnd ();
+			}
+#else
 		if (nc == 4) {
 			glBegin (GL_QUADS);
 			for (i = 0; i < nc; i++) {
-				glTexCoord2fv ((GLfloat *) (uvlList1 + i % 4));
+				glTexCoord2fv ((GLfloat *) (uvlList2 + i));
+				glVertex3fv ((GLfloat *) (verts + contour [i]));
+				}
+			glEnd ();
+			}
+		else if (nc == 6) {
+			glBegin (GL_QUADS);
+			glTexCoord2fv ((GLfloat *) uvlList2);
+			glVertex3fv ((GLfloat *) &vCenter);
+			for (i = 0; i < 3; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList2 + i + 1));
+				glVertex3fv ((GLfloat *) (verts + contour [i]));
+				}
+			glEnd ();
+			glBegin (GL_QUADS);
+			glTexCoord2fv ((GLfloat *) uvlList2);
+			glVertex3fv ((GLfloat *) &vCenter);
+			for (i = 0; i < 3; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList2 + i + 1));
+				glVertex3fv ((GLfloat *) (verts + contour [i + 2]));
+				}
+			glEnd ();
+			glBegin (GL_QUADS);
+			glTexCoord2fv ((GLfloat *) uvlList2);
+			glVertex3fv ((GLfloat *) &vCenter);
+			for (i = 0; i < 3; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList2 + i + 1));
+				glVertex3fv ((GLfloat *) (verts + contour [(i + 4) % nc]));
+				}
+			glEnd ();
+			}
+#endif
+		glDisable (GL_TEXTURE_2D);
+		glColor3d (0, 0.25, 1);
+		glBegin (GL_LINE_LOOP);
+		for (i = 0; i < nc; i++) {
+			glVertex3fv ((GLfloat *) &vCenter);
+			glVertex3fv ((GLfloat *) (verts + contour [i]));
+			glVertex3fv ((GLfloat *) (verts + contour [(i + 1) % nc]));
+			}
+		glEnd ();
+#else
+		if (nc == 4) {
+			glBegin (GL_QUADS);
+			for (i = 0; i < nc; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlList1 + i));
 				glVertex3fv ((GLfloat *) (verts + contour [i]));
 				}
 			glEnd ();
@@ -2184,9 +2260,10 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 				}
 			glEnd ();
 			}
+#endif
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
-
+#if 0
 		glDisable (GL_CULL_FACE);
 		glColor4f (colorP->red, colorP->green, colorP->blue, alpha);
 		glLineWidth (3);
@@ -2214,7 +2291,8 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
 #endif
-#if 1
+#endif
+#if 0
 		glColor3d (1,1,1);
 		for (i = 0; i < 12; i++) {
 			if (edges [i].bContour) {
@@ -2224,7 +2302,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 				glVertex3fv ((GLfloat *) (verts3D + edges [i].v1));
 				glEnd ();
 				}
-	#	if 0
+#		if 0
 			else {
 				glLineWidth (1);
 				glBegin (GL_LINES);
@@ -2232,9 +2310,9 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 				glVertex3fv ((GLfloat *) (verts3D + edges [i].v1));
 				glEnd ();
 				}
-	#	endif
-#endif
+#		endif
 			}
+#	endif
 #endif
 		glLineWidth (1);
 		glDepthMask (1);
@@ -2581,7 +2659,7 @@ void DrawDebrisCorona (tObject *objP)
 
 if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
-#if 0//def _DEBUG
+#ifdef _DEBUG
 		if (gameStates.app.nSDLTicks - t0 > 50) {
 			t0 = gameStates.app.nSDLTicks;
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
@@ -2591,7 +2669,7 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 		objP->mType.physInfo.rotVel.p.x = 
 		objP->mType.physInfo.rotVel.p.y = 
 		objP->mType.physInfo.rotVel.p.z = 0;
-		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 1.5f, 1, 1);
+		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 1.5f, 0, 1);
 #else
 	if (h < 0)
 		h = 0;
@@ -2741,7 +2819,9 @@ switch (objP->renderType) {
 				ConvertWeaponToPowerup (objP);
 			}
 		else {
+#ifndef _DEBUG
 			DrawPolygonObject (objP);
+#endif
 			DrawDebrisCorona (objP);
 			}
 		break;

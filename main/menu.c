@@ -1290,12 +1290,6 @@ for (;;) {
 		}
 	else
 		optLevel = -1;
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	nD1Opt = opt++;
-	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
-	nD2Opt = opt++;
 	ADD_TEXT (opt, "                              ", 0);
 	opt++;
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
@@ -1311,6 +1305,13 @@ for (;;) {
 		}
 	else
 		optLaunch = -1;
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
+	nD1Opt = opt++;
+	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
+	nD2Opt = opt++;
+
 	Assert (opt <= sizeofa (m));
 	i = ExecMenu1 (NULL, TXT_SELECT_START_LEV, opt, m, &NewGameMenuCallback, &choice);
 	if (i < 0) {
