@@ -355,7 +355,7 @@ int VmTriangleHitTestQuick (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVecto
 
 int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos);
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
-int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos);
+int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp);
 float VmLinePointDistf (fVector *a, fVector *b, fVector *p);
 vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNormal);
 

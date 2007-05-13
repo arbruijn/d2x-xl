@@ -1562,7 +1562,7 @@ return 0;
 
 // ------------------------------------------------------------------------
 
-int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos)
+int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp)
 {
 	fVector	d31, d21, h, v, d [2];
 	double	m, u;
@@ -1581,18 +1581,20 @@ h.p.y = p1->p.y + (fix) (u * d21.p.y);
 h.p.z = p1->p.z + (fix) (u * d21.p.z);
 // limit the intersection to [p1,p2]
 VmVecSubf (&v, p1, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (m < u) {
-	if (hitP)
-		*hitP = *p2;
-	return 1;	//clamped
-	}
-VmVecSubf (&v, p2, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if ((m < u) && (vPos || !hitP)) {
-	if (hitP)
-		*hitP = (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) ? *p2 : *p1;
-	return 1;	//clamped
+if (bClamp) {
+	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+	if (m < u) {
+		if (hitP)
+			*hitP = *p2;
+		return 1;	//clamped
+		}
+	VmVecSubf (&v, p2, &h);
+	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+	if ((m < u) && (vPos || !hitP)) {
+		if (hitP)
+			*hitP = (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) ? *p2 : *p1;
+		return 1;	//clamped
+		}
 	}
 if (hitP)
 	*hitP = h;
@@ -1627,7 +1629,7 @@ float VmLinePointDistf (fVector *a, fVector *b, fVector *p)
 {
 	fVector	h;
 
-VmPointLineIntersectionf (&h, a, b, p, NULL);
+VmPointLineIntersectionf (&h, a, b, p, NULL, 1);
 return VmVecMagf (VmVecDecf (&h, p));
 }
 

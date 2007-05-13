@@ -181,32 +181,46 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int FindConfigParam (kcItem *cfgP, int nItems, int iItem, char *pszText)
+{
+	int	h, i;
+
+if (strstr ("joystick.Pitch U/D", pszText))
+	i = 0;
+for (h = i = 0; i < nItems; i++) {
+	if (!strcmp (pszText, cfgP [i].text)) {
+		if (i < iItem)
+			h++;
+		else if (i > iItem)
+			return h;
+		}
+	}
+return h ? h : -1;
+}
+
+//------------------------------------------------------------------------------
+
 void RegisterConfigParams (kcItem *cfgP, int nItems, char *pszId)
 {
 	char	szTag [200], *p;
-	int	bDuplicate = 0;
+	int	i, j = 0;
 
 strcpy (szTag, pszId);
 p = szTag + strlen (szTag);
 
-for (; nItems; nItems--, cfgP++) {
+for (i = 0; i < nItems; i++) {
 #if 0
-	sprintf (p, "%s.type", cfgP->text);
-	RegisterParam (&cfgP->nType, szTag, 0, 0, sizeof (cfgP->nType));
+	sprintf (p, "%s.type", cfgP [i].text);
+	RegisterParam (&cfgP [i].nType, szTag, 0, 0, sizeof (cfgP [i].nType));
 #endif
-	if (bDuplicate) {
-		sprintf (p, "%s[1].value", cfgP->text);
-		RegisterParam (&cfgP->value, szTag, 1, 0, sizeof (cfgP->value));
-		bDuplicate = 0;
-		}
-	else if ((nItems > 1) && !strcmp (cfgP->text, (cfgP + 1)->text)) {
-		bDuplicate = 1;
-		sprintf (p, "%s[0].value", cfgP->text);
-		RegisterParam (&cfgP->value, szTag, 0, 0, sizeof (cfgP->value));
+	j = FindConfigParam (cfgP, nItems, i, cfgP [i].text);
+	if (j < 0) {
+		sprintf (p, "%s.value", cfgP [i].text);
+		RegisterParam (&cfgP [i].value, szTag, 0, 0, sizeof (cfgP [i].value));
 		}
 	else {
-		sprintf (p, "%s.value", cfgP->text);
-		RegisterParam (&cfgP->value, szTag, 0, 0, sizeof (cfgP->value));
+		sprintf (p, "%s[0].value", cfgP [i].text, j);
+		RegisterParam (&cfgP [i].value, szTag, j, 0, sizeof (cfgP [i].value));
 		}
 	}
 }
@@ -580,46 +594,56 @@ return NULL;
 
 #define issign(_c)	(((_c) == '-') || ((_c) == '+'))
 
-int ReadParam (CFILE *fp)
+//------------------------------------------------------------------------------
+
+int SetParam (char *pszIdent, char *pszValue)
 {
 	tParam	*pp;
-	char		szParam	[200], *p;
 	int		nVal;
 
-fgets (szParam, sizeof (szParam), fp->file);
-if (p = strchr (szParam, '\n'))
-	*p = '\0';
-if (!(p = strchr (szParam, '=')))
-	return 0;
-*p++ = '\0';
-if (!(pp = FindParam (szParam))) {
+if (!(pp = FindParam (pszIdent))) {
 #ifdef _DEBUG
-	FindParam (szParam);
+	FindParam (pszIdent);
 #endif
 	return 0;
 	}
-nVal = atoi (p);
+nVal = atoi (pszValue);
 switch (pp->nSize) {
 	case 1:
-		if (!(isdigit (*p) || issign (*p)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
+		if (!(isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
 			return 0;
 		*((sbyte *) pp->valP) = (sbyte) nVal;
 		break;
 	case 2:
-		if (!(isdigit (*p) || issign (*p))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
+		if (!(isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
 			return 0;
 		*((short *) pp->valP) = (short) nVal;
 		break;
 	case 4:
-		if (!(isdigit (*p) || issign (*p)))
+		if (!(isdigit (*pszValue) || issign (*pszValue)))
 			return 0;
 		*((int *) pp->valP) = (int) nVal;
 		break;
 	default:
-		strncpy ((char *) pp->valP, p, pp->nSize);
+		strncpy ((char *) pp->valP, pszValue, pp->nSize);
 		break;
 	}
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int ReadParam (CFILE *fp)
+{
+	char		szParam	[200], *pszValue;
+
+fgets (szParam, sizeof (szParam), fp->file);
+if (pszValue = strchr (szParam, '\n'))
+	*pszValue = '\0';
+if (!(pszValue = strchr (szParam, '=')))
+	return 0;
+*pszValue++ = '\0';
+return SetParam (szParam, pszValue);
 }
 
 //------------------------------------------------------------------------------
@@ -640,7 +664,601 @@ return CFClose (fp);
 
 //------------------------------------------------------------------------------
 
-int NewPlayerConfig()
+typedef struct tParamValue {
+	char	*pszIdent;
+	char	*pszValue;
+	} tParamValue;
+
+tParamValue defaultParams [] = {
+	{"gameData.render.window.w", "640"},
+	{"gameData.render.window.h", "480"},
+	{"iDlTimeout", "1"},
+	{"gameData.app.playerDefaultDifficulty", "0"},
+	{"gameStates.render.cockpit.nMode", "3"},
+	{"gameStates.video.nDefaultDisplayMode", "3"},
+	{"gameStates.video.nDefaultDisplayMode", "3"},
+	{"gameOptions[0].render.cockpit.bGuidedInMainView", "1"},
+	{"networkData.nNetLifeKills", "157"},
+	{"networkData.nNetLifeKilled", "181"},
+	{"gameData.app.nLifetimeChecksum", "404010000"},
+	{"gameData.escort.szName", "GUIDE-BOT"},
+	{"gameData.multigame.msg.szMacro[0]", "Why can't we all just get along?"},
+	{"gameData.multigame.msg.szMacro[1]", "Hey, I got a present for ya"},
+	{"gameData.multigame.msg.szMacro[2]", "I got a hankerin' for a spankerin'"},
+	{"gameData.multigame.msg.szMacro[3]", "This one's headed for Uranus"},
+	{"displayModeInfo[21].w", "0"},
+	{"displayModeInfo[21].h", "0"},
+	{"gameStates.app.nDifficultyLevel", "2"},
+	{"gameStates.ogl.nContrast", "8"},
+	{"gameStates.multi.nConnection", "2"},
+	{"gameStates.multi.bUseTracker", "0"},
+	{"mpParams.nLevel", "1"},
+	{"mpParams.nGameType", "9"},
+	{"mpParams.nGameMode", "8"},
+	{"mpParams.nGameAccess", "0"},
+	{"mpParams.bShowPlayersOnAutomap", "0"},
+	{"mpParams.nDifficulty", "2"},
+	{"mpParams.nWeaponFilter", "67108863"},
+	{"mpParams.nReactorLife", "2"},
+	{"mpParams.nMaxTime", "0"},
+	{"mpParams.nKillGoal", "2"},
+	{"mpParams.bInvul", "-1"},
+	{"mpParams.bMarkerView", "0"},
+	{"mpParams.bAlwaysBright", "0"},
+	{"mpParams.bBrightPlayers", "0"},
+	{"mpParams.bShowAllNames", "0"},
+	{"mpParams.bShortPackets", "0"},
+	{"mpParams.nPPS", "10"},
+	{"mpParams.udpClientPort", "28342"},
+	{"mpParams.szServerIpAddr", "127.0.0.1"},
+	{"extraGameInfo[0].bAutoBalanceTeams", "0"},
+	{"extraGameInfo[0].bAutoDownload", "0"},
+	{"extraGameInfo[0].bDamageExplosions", "0"},
+	{"extraGameInfo[0].bDisableReactor", "0"},
+	{"extraGameInfo[0].bDropAllMissiles", "1"},
+	{"extraGameInfo[0].bEnhancedCTF", "0"},
+	{"extraGameInfo[0].bFixedRespawns", "0"},
+	{"extraGameInfo[0].bFluidPhysics", "1"},
+	{"extraGameInfo[0].bFriendlyFire", "1"},
+	{"extraGameInfo[0].bImmortalPowerups", "0"},
+	{"extraGameInfo[0].bLightTrails", "1"},
+	{"extraGameInfo[0].bMultiBosses", "1"},
+	{"extraGameInfo[0].bPowerupsOnRadar", "1"},
+	{"extraGameInfo[0].bRenderShield", "0"},
+	{"extraGameInfo[0].bRobotsHitRobots", "1"},
+	{"extraGameInfo[0].bRobotsOnRadar", "1"},
+	{"extraGameInfo[0].bRotateLevels", "0"},
+	{"extraGameInfo[0].bSafeUDP", "0"},
+	{"extraGameInfo[0].bShadows", "0"},
+	{"extraGameInfo[0].bTeleporterCams", "0"},
+	{"extraGameInfo[0].bSmartWeaponSwitch", "1"},
+	{"extraGameInfo[0].bSmokeGrenades", "0"},
+	{"extraGameInfo[0].bThrusterFlames", "1"},
+	{"extraGameInfo[0].bTracers", "1"},
+	{"extraGameInfo[0].bUseCameras", "1"},
+	{"extraGameInfo[0].bUseSmoke", "1"},
+	{"extraGameInfo[0].bShockwaves", "1"},
+	{"extraGameInfo[0].bUseHitAngles", "0"},
+	{"extraGameInfo[0].bWiggle", "1"},
+	{"extraGameInfo[0].grWallTransparency", "19"},
+	{"extraGameInfo[0].nFusionPowerMod", "2"},
+	{"extraGameInfo[0].nLightRange", "0"},
+	{"extraGameInfo[0].nMaxSmokeGrenades", "0"},
+	{"extraGameInfo[0].nMslTurnSpeed", "2"},
+	{"extraGameInfo[0].nRadar", "0"},
+	{"extraGameInfo[0].nSpawnDelay", "0"},
+	{"extraGameInfo[0].nSpeedBoost", "0"},
+	{"extraGameInfo[0].nWeaponDropMode", "1"},
+	{"extraGameInfo[0].nWeaponIcons", "3"},
+	{"extraGameInfo[0].nZoomMode", "1"},
+	{"extraGameInfo[0].entropy.nCaptureVirusLimit", "1"},
+	{"extraGameInfo[0].entropy.nCaptureTimeLimit", "1"},
+	{"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},
+	{"extraGameInfo[0].entropy.nBumpVirusCapacity", "2"},
+	{"extraGameInfo[0].entropy.nBashVirusCapacity", "1"},
+	{"extraGameInfo[0].entropy.nVirusGenTime", "2"},
+	{"extraGameInfo[0].entropy.nVirusLifespan", "0"},
+	{"extraGameInfo[0].entropy.nVirusStability", "0"},
+	{"extraGameInfo[0].entropy.nEnergyFillRate", "25"},
+	{"extraGameInfo[0].entropy.nShieldFillRate", "11"},
+	{"extraGameInfo[0].entropy.nShieldDamageRate", "11"},
+	{"extraGameInfo[0].entropy.bRevertRooms", "0"},
+	{"extraGameInfo[0].entropy.bDoConquerWarning", "0"},
+	{"extraGameInfo[0].entropy.nOverrideTextures", "2"},
+	{"extraGameInfo[0].entropy.bBrightenRooms", "0"},
+	{"extraGameInfo[0].entropy.bPlayerHandicap", "0"},
+	{"extraGameInfo[0].monsterball.nBonus", "1"},
+	{"extraGameInfo[0].monsterball.nSizeMod", "7"},
+	{"extraGameInfo[0].monsterball.forces[0].nWeaponId", "0"},
+	{"extraGameInfo[0].monsterball.forces[0].nForce", "10"},
+	{"extraGameInfo[0].monsterball.forces[1].nWeaponId", "1"},
+	{"extraGameInfo[0].monsterball.forces[1].nForce", "15"},
+	{"extraGameInfo[0].monsterball.forces[2].nWeaponId", "2"},
+	{"extraGameInfo[0].monsterball.forces[2].nForce", "20"},
+	{"extraGameInfo[0].monsterball.forces[3].nWeaponId", "3"},
+	{"extraGameInfo[0].monsterball.forces[3].nForce", "25"},
+	{"extraGameInfo[0].monsterball.forces[4].nWeaponId", "12"},
+	{"extraGameInfo[0].monsterball.forces[4].nForce", "20"},
+	{"extraGameInfo[0].monsterball.forces[5].nWeaponId", "11"},
+	{"extraGameInfo[0].monsterball.forces[5].nForce", "10"},
+	{"extraGameInfo[0].monsterball.forces[6].nWeaponId", "13"},
+	{"extraGameInfo[0].monsterball.forces[6].nForce", "30"},
+	{"extraGameInfo[0].monsterball.forces[7].nWeaponId", "14"},
+	{"extraGameInfo[0].monsterball.forces[7].nForce", "100"},
+	{"extraGameInfo[0].monsterball.forces[8].nWeaponId", "30"},
+	{"extraGameInfo[0].monsterball.forces[8].nForce", "50"},
+	{"extraGameInfo[0].monsterball.forces[9].nWeaponId", "31"},
+	{"extraGameInfo[0].monsterball.forces[9].nForce", "60"},
+	{"extraGameInfo[0].monsterball.forces[10].nWeaponId", "33"},
+	{"extraGameInfo[0].monsterball.forces[10].nForce", "40"},
+	{"extraGameInfo[0].monsterball.forces[11].nWeaponId", "32"},
+	{"extraGameInfo[0].monsterball.forces[11].nForce", "30"},
+	{"extraGameInfo[0].monsterball.forces[12].nWeaponId", "34"},
+	{"extraGameInfo[0].monsterball.forces[12].nForce", "60"},
+	{"extraGameInfo[0].monsterball.forces[13].nWeaponId", "35"},
+	{"extraGameInfo[0].monsterball.forces[13].nForce", "30"},
+	{"extraGameInfo[0].monsterball.forces[14].nWeaponId", "9"},
+	{"extraGameInfo[0].monsterball.forces[14].nForce", "5"},
+	{"extraGameInfo[0].monsterball.forces[15].nWeaponId", "8"},
+	{"extraGameInfo[0].monsterball.forces[15].nForce", "-6"},
+	{"extraGameInfo[0].monsterball.forces[16].nWeaponId", "15"},
+	{"extraGameInfo[0].monsterball.forces[16].nForce", "50"},
+	{"extraGameInfo[0].monsterball.forces[17].nWeaponId", "17"},
+	{"extraGameInfo[0].monsterball.forces[17].nForce", "50"},
+	{"extraGameInfo[0].monsterball.forces[18].nWeaponId", "18"},
+	{"extraGameInfo[0].monsterball.forces[18].nForce", "80"},
+	{"extraGameInfo[0].monsterball.forces[19].nWeaponId", "36"},
+	{"extraGameInfo[0].monsterball.forces[19].nForce", "-106"},
+	{"extraGameInfo[0].monsterball.forces[20].nWeaponId", "37"},
+	{"extraGameInfo[0].monsterball.forces[20].nForce", "30"},
+	{"extraGameInfo[0].monsterball.forces[21].nWeaponId", "39"},
+	{"extraGameInfo[0].monsterball.forces[21].nForce", "40"},
+	{"extraGameInfo[0].monsterball.forces[22].nWeaponId", "40"},
+	{"extraGameInfo[0].monsterball.forces[22].nForce", "70"},
+	{"extraGameInfo[0].monsterball.forces[23].nWeaponId", "54"},
+	{"extraGameInfo[0].monsterball.forces[23].nForce", "-56"},
+	{"extraGameInfo[0].monsterball.forces[24].nWeaponId", "-1"},
+	{"extraGameInfo[0].monsterball.forces[24].nForce", "4"},
+	{"gameOptions[0].input.bRampKeys[0]", "0"},
+	{"gameOptions[0].input.mouseSensitivity[0]", "16"},
+	{"gameOptions[0].input.bRampKeys[1]", "0"},
+	{"gameOptions[0].input.mouseSensitivity[1]", "16"},
+	{"gameOptions[0].input.bRampKeys[2]", "0"},
+	{"gameOptions[0].input.mouseSensitivity[2]", "16"},
+	{"gameOptions[0].render.smoke.nDens[0]", "1"},
+	{"gameOptions[0].render.smoke.nSize[0]", "1"},
+	{"gameOptions[0].render.smoke.nLife[0]", "5145327"},
+	{"gameOptions[0].render.smoke.nDens[1]", "1"},
+	{"gameOptions[0].render.smoke.nSize[1]", "1"},
+	{"gameOptions[0].render.smoke.nLife[1]", "5145327"},
+	{"gameOptions[0].render.smoke.nDens[2]", "1"},
+	{"gameOptions[0].render.smoke.nSize[2]", "1"},
+	{"gameOptions[0].render.smoke.nLife[2]", "5145327"},
+	{"gameOptions[0].render.smoke.nDens[3]", "1"},
+	{"gameOptions[0].render.smoke.nSize[3]", "1"},
+	{"gameOptions[0].render.smoke.nLife[3]", "5145327"},
+	{"gameOptions[0].input.joyDeadZones[0]", "1"},
+	{"gameOptions[0].input.joySensitivity[0]", "8"},
+	{"gameOptions[0].input.joyDeadZones[1]", "1"},
+	{"gameOptions[0].input.joySensitivity[1]", "8"},
+	{"gameOptions[0].input.joyDeadZones[2]", "1"},
+	{"gameOptions[0].input.joySensitivity[2]", "8"},
+	{"gameOptions[0].input.joyDeadZones[3]", "1"},
+	{"gameOptions[0].input.joySensitivity[3]", "8"},
+	{"gameOptions[0].input.joyDeadZones[4]", "1"},
+	{"gameOptions[0].input.joySensitivity[4]", "8"},
+	{"gameOptions[0].input.bJoyMouse", "0"},
+	{"gameOptions[0].input.bLinearJoySens", "0"},
+	{"gameOptions[0].input.bSyncJoyAxes", "1"},
+	{"gameOptions[0].input.bSyncMouseAxes", "1"},
+	{"gameOptions[0].input.bUseHotKeys", "1"},
+	{"gameOptions[0].input.keyRampScale", "50"},
+	{"gameOptions[0].ogl.bLightObjects", "1"},
+	{"gameOptions[0].ogl.nMaxLights", "4"},
+	{"gameOptions[0].render.bDynLighting", "0"},
+	{"gameOptions[0].render.nDebrisLife", "0"},
+	{"gameOptions[0].render.textures.nQuality", "2"},
+	{"gameOptions[0].render.bAutoTransparency", "1"},
+	{"gameOptions[0].render.bCoronas", "1"},
+	{"gameOptions[0].render.bTransparentEffects", "1"},
+	{"gameOptions[0].render.cameras.bFitToWall", "0"},
+	{"gameOptions[0].render.cameras.nFPS", "0"},
+	{"gameOptions[0].render.cameras.nSpeed", "5000"},
+	{"gameOptions[0].render.automap.bBright", "0"},
+	{"gameOptions[0].render.automap.bCoronas", "1"},
+	{"gameOptions[0].render.automap.bSmoke", "1"},
+	{"gameOptions[0].render.automap.bTextured", "0"},
+	{"gameOptions[0].render.automap.nColor", "0"},
+	{"gameOptions[0].render.automap.nRange", "1"},
+	{"gameOptions[0].render.cockpit.bMouseIndicator", "5143698"},
+	{"gameOptions[0].render.cockpit.bObjectTally", "1"},
+	{"gameOptions[0].render.cockpit.bPlayerStats", "1"},
+	{"gameOptions[0].render.cockpit.bRotateMslLockInd", "1"},
+	{"gameOptions[0].render.cockpit.bScaleGauges", "1"},
+	{"gameOptions[0].render.cockpit.bSplitHUDMsgs", "1"},
+	{"gameOptions[0].render.cockpit.bTextGauges", "0"},
+	{"gameOptions[0].render.cockpit.nWindowPos", "1"},
+	{"gameOptions[0].render.cockpit.nWindowSize", "0"},
+	{"gameOptions[0].render.cockpit.nWindowZoom", "1"},
+	{"gameOptions[0].render.color.bAmbientLight", "1"},
+	{"gameOptions[0].render.color.bCap", "0"},
+	{"gameOptions[0].render.color.bGunLight", "1"},
+	{"gameOptions[0].render.color.bMix", "1"},
+	{"gameOptions[0].render.color.bWalls", "1"},
+	{"gameOptions[0].render.color.bUseLightMaps", "1"},
+	{"gameOptions[0].render.color.nLightMapRange", "5"},
+	{"gameOptions[0].render.powerups.b3D", "1"},
+	{"gameOptions[0].render.powerups.nSpin", "1"},
+	{"gameOptions[0].render.shadows.bFast", "0"},
+	{"gameOptions[0].render.shadows.bMissiles", "1"},
+	{"gameOptions[0].render.shadows.bPlayers", "1"},
+	{"gameOptions[0].render.shadows.bReactors", "0"},
+	{"gameOptions[0].render.shadows.bRobots", "1"},
+	{"gameOptions[0].render.shadows.nClip", "0"},
+	{"gameOptions[0].render.shadows.nLights", "2"},
+	{"gameOptions[0].render.shadows.nReach", "1"},
+	{"gameOptions[0].render.smoke.bCollisions", "0"},
+	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},
+	{"gameOptions[0].render.smoke.bDebris", "1"},
+	{"gameOptions[0].render.smoke.bDisperse", "1"},
+	{"gameOptions[0].render.smoke.bMissiles", "1"},
+	{"gameOptions[0].render.smoke.bPlayers", "1"},
+	{"gameOptions[0].render.smoke.bRobots", "1"},
+	{"gameOptions[0].render.smoke.bStatic", "1"},
+	{"gameOptions[0].render.smoke.bSyncSizes", "1"},
+	{"gameOptions[0].render.weaponIcons.alpha", "3"},
+	{"gameOptions[0].render.weaponIcons.bEquipment", "1"},
+	{"gameOptions[0].render.weaponIcons.bShowAmmo", "1"},
+	{"gameOptions[0].render.weaponIcons.bSmall", "1"},
+	{"gameOptions[0].render.weaponIcons.nSort", "1"},
+	{"gameOptions[0].render.nMaxFPS", "250"},
+	{"gameOptions[0].render.nQuality", "3"},
+	{"gameOptions[0].render.cockpit.bFlashGauges", "1"},
+	{"gameOptions[0].app.bExpertMode", "1"},
+	{"gameOptions[0].app.nVersionFilter", "3"},
+	{"gameOptions[0].demo.bOldFormat", "0"},
+	{"nWeaponOrder[0][0]", "6"},
+	{"nWeaponOrder[0][1]", "5"},
+	{"nWeaponOrder[0][2]", "8"},
+	{"nWeaponOrder[0][3]", "3"},
+	{"nWeaponOrder[0][4]", "4"},
+	{"nWeaponOrder[0][5]", "9"},
+	{"nWeaponOrder[0][6]", "7"},
+	{"nWeaponOrder[0][7]", "0"},
+	{"nWeaponOrder[0][8]", "1"},
+	{"nWeaponOrder[0][9]", "2"},
+	{"nWeaponOrder[0][10]", "-1"},
+	{"gameStates.render.cockpit.n3DView[0]", "0"},
+	{"extraGameInfo[0].bCloakedIndicators", "0"},
+	{"extraGameInfo[0].bDamageIndicators", "1"},
+	{"extraGameInfo[0].bDarkness", "0"},
+	{"extraGameInfo[0].bDualMissileLaunch", "0"},
+	{"extraGameInfo[0].bEnableCheats", "0"},
+	{"extraGameInfo[0].bFastPitch", "2"},
+	{"extraGameInfo[0].bFlickerLights", "1"},
+	{"extraGameInfo[0].bFriendlyIndicators", "0"},
+	{"extraGameInfo[0].bHeadLights", "0"},
+	{"extraGameInfo[0].bMslLockIndicators", "1"},
+	{"extraGameInfo[0].bMouseLook", "0"},
+	{"extraGameInfo[0].bPowerupLights", "1"},
+	{"extraGameInfo[0].bShootMissiles", "0"},
+	{"extraGameInfo[0].bTagOnlyHitObjs", "1"},
+	{"extraGameInfo[0].bTargetIndicators", "1"},
+	{"extraGameInfo[0].bTowFlags", "0"},
+	{"extraGameInfo[0].bTeamDoors", "0"},
+	{"extraGameInfo[0].nCoopPenalty", "0"},
+	{"extraGameInfo[0].nHitboxes", "1"},
+	{"extraGameInfo[0].nSpotSize", "0"},
+	{"gameOptions[0].input.bUseJoystick", "1"},
+	{"gameOptions[0].input.bUseMouse", "1"},
+	{"gameOptions[0].gameplay.bDefaultLeveling", "0"},
+	{"gameOptions[0].gameplay.bFastRespawn", "0"},
+	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
+	{"gameOptions[0].gameplay.bIdleAnims", "1"},
+	{"gameOptions[0].gameplay.bInventory", "1"},
+	{"gameOptions[0].gameplay.bShieldWarning", "0"},
+	{"gameOptions[0].gameplay.nAIAwareness", "0"},
+	{"gameOptions[0].gameplay.nAutoSelectWeapon", "1"},
+	{"gameOptions[0].gameplay.nPlayerDifficultyLevel", "2"},
+	{"gameOptions[0].movies.bResize", "1"},
+	{"gameOptions[0].movies.bSubTitles", "0"},
+	{"gameOptions[0].movies.nQuality", "0"},
+	{"gameOptions[0].menus.bShowLevelVersion", "1"},
+	{"gameOptions[0].menus.bSmartFileSearch", "1"},
+	{"gameOptions[0].multi.bUseMacros", "1"},
+	{"gameOptions[0].ogl.bSetGammaRamp", "0"},
+	{"gameOptions[0].render.bAllSegs", "0"},
+	{"gameOptions[0].render.bOptimize", "0"},
+	{"gameOptions[0].render.cockpit.bMissileView", "0"},
+	{"gameOptions[0].render.cockpit.bHUD", "1"},
+	{"gameOptions[0].render.cockpit.bReticle", "1"},
+	{"nWeaponOrder[1][0]", "9"},
+	{"nWeaponOrder[1][1]", "4"},
+	{"nWeaponOrder[1][2]", "8"},
+	{"nWeaponOrder[1][3]", "3"},
+	{"nWeaponOrder[1][4]", "1"},
+	{"nWeaponOrder[1][5]", "5"},
+	{"nWeaponOrder[1][6]", "0"},
+	{"nWeaponOrder[1][7]", "6"},
+	{"nWeaponOrder[1][8]", "-1"},
+	{"nWeaponOrder[1][9]", "7"},
+	{"nWeaponOrder[1][10]", "2"},
+	{"gameStates.render.cockpit.n3DView[1]", "0"},
+	{"extraGameInfo[1].bCompetition", "1"},
+	{"extraGameInfo[1].bCloakedIndicators", "1"},
+	{"extraGameInfo[1].bDamageIndicators", "1"},
+	{"extraGameInfo[1].bDarkness", "0"},
+	{"extraGameInfo[1].bDualMissileLaunch", "0"},
+	{"extraGameInfo[1].bEnableCheats", "0"},
+	{"extraGameInfo[1].bFastPitch", "2"},
+	{"extraGameInfo[1].bFlickerLights", "0"},
+	{"extraGameInfo[1].bFriendlyIndicators", "1"},
+	{"extraGameInfo[1].bHeadLights", "1"},
+	{"extraGameInfo[1].bMslLockIndicators", "1"},
+	{"extraGameInfo[1].bMouseLook", "0"},
+	{"extraGameInfo[1].bPowerupLights", "0"},
+	{"extraGameInfo[1].bShootMissiles", "0"},
+	{"extraGameInfo[1].bTagOnlyHitObjs", "0"},
+	{"extraGameInfo[1].bTargetIndicators", "1"},
+	{"extraGameInfo[1].bTowFlags", "1"},
+	{"extraGameInfo[1].bTeamDoors", "0"},
+	{"extraGameInfo[1].nCoopPenalty", "1"},
+	{"extraGameInfo[1].nHitboxes", "0"},
+	{"extraGameInfo[1].nSpotSize", "0"},
+	{"gameOptions[1].input.bUseJoystick", "0"},
+	{"gameOptions[1].input.bUseMouse", "1"},
+	{"gameOptions[1].gameplay.bDefaultLeveling", "0"},
+	{"gameOptions[1].gameplay.bFastRespawn", "0"},
+	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
+	{"gameOptions[1].gameplay.bIdleAnims", "0"},
+	{"gameOptions[1].gameplay.bInventory", "0"},
+	{"gameOptions[1].gameplay.bShieldWarning", "0"},
+	{"gameOptions[1].gameplay.nAIAwareness", "0"},
+	{"gameOptions[1].gameplay.nAutoSelectWeapon", "0"},
+	{"gameOptions[1].gameplay.nPlayerDifficultyLevel", "2"},
+	{"gameOptions[1].movies.bResize", "0"},
+	{"gameOptions[1].movies.bSubTitles", "0"},
+	{"gameOptions[1].movies.nQuality", "0"},
+	{"gameOptions[1].menus.bShowLevelVersion", "0"},
+	{"gameOptions[1].menus.bSmartFileSearch", "1"},
+	{"gameOptions[1].multi.bUseMacros", "0"},
+	{"gameOptions[1].ogl.bSetGammaRamp", "0"},
+	{"gameOptions[1].render.bAllSegs", "0"},
+	{"gameOptions[1].render.bOptimize", "0"},
+	{"gameOptions[1].render.cockpit.bMissileView", "0"},
+	{"gameOptions[1].render.cockpit.bHUD", "0"},
+	{"gameOptions[1].render.cockpit.bReticle", "0"},
+	{"keyboard.Pitch forward[0].value", "-56"},
+	{"keyboard.Pitch forward[1].value", "72"},
+	{"keyboard.Pitch backward[0].value", "-48"},
+	{"keyboard.Pitch backward[1].value", "80"},
+	{"keyboard.Turn left[0].value", "-53"},
+	{"keyboard.Turn left[1].value", "75"},
+	{"keyboard.Turn right[0].value", "-51"},
+	{"keyboard.Turn right[1].value", "77"},
+	{"keyboard.Slide on[0].value", "56"},
+	{"keyboard.Slide on[1].value", "-1"},
+	{"keyboard.Slide left[0].value", "-1"},
+	{"keyboard.Slide left[1].value", "79"},
+	{"keyboard.Slide right[0].value", "-1"},
+	{"keyboard.Slide right[1].value", "81"},
+	{"keyboard.Slide up[0].value", "-1"},
+	{"keyboard.Slide up[1].value", "74"},
+	{"keyboard.Slide down[0].value", "-1"},
+	{"keyboard.Slide down[1].value", "78"},
+	{"keyboard.Bank on[0].value", "-1"},
+	{"keyboard.Bank on[1].value", "-1"},
+	{"keyboard.Bank left[0].value", "16"},
+	{"keyboard.Bank left[1].value", "71"},
+	{"keyboard.Bank right[0].value", "18"},
+	{"keyboard.Bank right[1].value", "73"},
+	{"keyboard.Fire primary[0].value", "29"},
+	{"keyboard.Fire primary[1].value", "-99"},
+	{"keyboard.Fire secondary[0].value", "57"},
+	{"keyboard.Fire secondary[1].value", "-1"},
+	{"keyboard.Fire flare[0].value", "33"},
+	{"keyboard.Fire flare[1].value", "-1"},
+	{"keyboard.Accelerate[0].value", "30"},
+	{"keyboard.Accelerate[1].value", "-1"},
+	{"keyboard.reverse[0].value", "44"},
+	{"keyboard.reverse[1].value", "-1"},
+	{"keyboard.Drop Bomb[0].value", "48"},
+	{"keyboard.Drop Bomb[1].value", "-1"},
+	{"keyboard.Rear View[0].value", "19"},
+	{"keyboard.Rear View[1].value", "-1"},
+	{"keyboard.Cruise Faster[0].value", "-1"},
+	{"keyboard.Cruise Faster[1].value", "-1"},
+	{"keyboard.Cruise Slower[0].value", "-1"},
+	{"keyboard.Cruise Slower[1].value", "-1"},
+	{"keyboard.Cruise Off[0].value", "-1"},
+	{"keyboard.Cruise Off[1].value", "-1"},
+	{"keyboard.Automap[0].value", "15"},
+	{"keyboard.Automap[1].value", "-1"},
+	{"keyboard.Afterburner[0].value", "31"},
+	{"keyboard.Afterburner[1].value", "-1"},
+	{"keyboard.Cycle Primary[0].value", "51"},
+	{"keyboard.Cycle Primary[1].value", "-1"},
+	{"keyboard.Cycle Second[0].value", "52"},
+	{"keyboard.Cycle Second[1].value", "-1"},
+	{"keyboard.Zoom In[0].value", "35"},
+	{"keyboard.Zoom In[1].value", "-1"},
+	{"keyboard.Headlight[0].value", "20"},
+	{"keyboard.Headlight[1].value", "-1"},
+	{"keyboard.Energy->Shield[0].value", "-1"},
+	{"keyboard.Energy->Shield[1].value", "-1"},
+	{"keyboard.Toggle Bomb.value", "83"},
+	{"keyboard.Toggle Icons.value", "17"},
+	{"keyboard.Use Cloak[0].value", "0"},
+	{"keyboard.Use Cloak[1].value", "0"},
+	{"keyboard.Use Invul[0].value", "0"},
+	{"keyboard.Use Invul[1].value", "0"},
+	{"mouse.Fire primary.value", "0"},
+	{"mouse.Fire secondary.value", "1"},
+	{"mouse.Accelerate.value", "-1"},
+	{"mouse.reverse.value", "-1"},
+	{"mouse.Fire flare.value", "-1"},
+	{"mouse.Slide on.value", "-1"},
+	{"mouse.Slide left.value", "-1"},
+	{"mouse.Slide right.value", "-1"},
+	{"mouse.Slide up.value", "-1"},
+	{"mouse.Slide down.value", "-1"},
+	{"mouse.Bank on.value", "-1"},
+	{"mouse.Bank left.value", "-1"},
+	{"mouse.Bank right.value", "-1"},
+	{"mouse.Pitch U/D[0].value", "1"},
+	{"mouse.Pitch U/D[1].value", "0"},
+	{"mouse.Turn L/R[0].value", "0"},
+	{"mouse.Turn L/R[1].value", "0"},
+	{"mouse.Slide L/R[0].value", "-1"},
+	{"mouse.Slide L/R[1].value", "0"},
+	{"mouse.Slide U/D[0].value", "-1"},
+	{"mouse.Slide U/D[1].value", "0"},
+	{"mouse.Bank L/R[0].value", "-1"},
+	{"mouse.Bank L/R[1].value", "0"},
+	{"mouse.Throttle[0].value", "-1"},
+	{"mouse.Throttle[1].value", "0"},
+	{"mouse.Rear View.value", "-1"},
+	{"mouse.Drop Bomb.value", "-1"},
+	{"mouse.Afterburner.value", "2"},
+	{"mouse.Cycle Primary.value", "3"},
+	{"mouse.Cycle Second.value", "4"},
+	{"mouse.Zoom in.value", "-1"},
+	{"joystick.Fire primary[0].value", "-1"},
+	{"joystick.Fire secondary[0].value", "-1"},
+	{"joystick.Accelerate[0].value", "-1"},
+	{"joystick.reverse[0].value", "-1"},
+	{"joystick.Fire flare[0].value", "-1"},
+	{"joystick.Slide on[0].value", "-1"},
+	{"joystick.Slide left[0].value", "-1"},
+	{"joystick.Slide right[0].value", "-1"},
+	{"joystick.Slide up[0].value", "-1"},
+	{"joystick.Slide down[0].value", "-1"},
+	{"joystick.Bank on[0].value", "-1"},
+	{"joystick.Bank left[0].value", "-1"},
+	{"joystick.Bank right[0].value", "-1"},
+	{"joystick.Pitch U/D[0].value", "-1"},
+	{"joystick.Turn L/R[0].value", "-1"},
+	{"joystick.Slide L/R[0].value", "-1"},
+	{"joystick.Slide U/D[0].value", "-1"},
+	{"joystick.Bank L/R[0].value", "-1"},
+	{"joystick.throttle[0].value", "-1"},
+	{"joystick.Rear View[0].value", "-1"},
+	{"joystick.Drop Bomb[0].value", "-1"},
+	{"joystick.Afterburner[0].value", "-1"},
+	{"joystick.Cycle Primary[0].value", "-1"},
+	{"joystick.Cycle Secondary[0].value", "-1"},
+	{"joystick.Headlight[0].value", "-1"},
+	{"joystick.Toggle Bomb[0].value", "-1"},
+	{"joystick.Toggle Icons[0].value", "-1"},
+	{"joystick.Automap[0].value", "-1"},
+	{"joystick.Use Cloak[0].value", "-1"},
+	{"joystick.Use Invul[0].value", "-1"},
+	{"joystick.Fire primary[1].value", "-1"},
+	{"joystick.Fire secondary[1].value", "-1"},
+	{"joystick.Accelerate[1].value", "-1"},
+	{"joystick.reverse[1].value", "-1"},
+	{"joystick.Fire flare[1].value", "-1"},
+	{"joystick.Slide on[1].value", "-1"},
+	{"joystick.Slide left[1].value", "-1"},
+	{"joystick.Slide right[1].value", "-1"},
+	{"joystick.Slide up[1].value", "-1"},
+	{"joystick.Slide down[1].value", "-1"},
+	{"joystick.Bank on[1].value", "-1"},
+	{"joystick.Bank left[1].value", "-1"},
+	{"joystick.Bank right[1].value", "-1"},
+	{"joystick.Pitch U/D[1].value", "-1"},
+	{"joystick.Turn L/R[1].value", "-1"},
+	{"joystick.Slide L/R[1].value", "-1"},
+	{"joystick.Slide U/D[1].value", "-1"},
+	{"joystick.Bank L/R[1].value", "-1"},
+	{"joystick.throttle[1].value", "-1"},
+	{"joystick.Rear View[1].value", "-1"},
+	{"joystick.Drop Bomb[1].value", "-1"},
+	{"joystick.Afterburner[1].value", "-1"},
+	{"joystick.Cycle Primary[1].value", "-1"},
+	{"joystick.Cycle Secondary[1].value", "-1"},
+	{"joystick.Headlight[1].value", "-1"},
+	{"joystick.Toggle Bomb[1].value", "-1"},
+	{"joystick.Toggle Icons[1].value", "-1"},
+	{"joystick.Automap[1].value", "-1"},
+	{"joystick.Use Cloak[1].value", "-1"},
+	{"joystick.Use Invul[1].value", "-1"},
+	{"joystick.Pitch U/D[2].value", "0"},
+	{"joystick.Turn L/R[2].value", "0"},
+	{"joystick.Slide L/R[2].value", "0"},
+	{"joystick.Slide U/D[2].value", "0"},
+	{"joystick.Bank L/R[2].value", "0"},
+	{"joystick.throttle[2].value", "0"},
+	{"superjoy.Fire primary.value", "-1"},
+	{"superjoy.Fire secondary.value", "-1"},
+	{"superjoy.Accelerate.value", "-1"},
+	{"superjoy.reverse.value", "-1"},
+	{"superjoy.Fire flare.value", "-1"},
+	{"superjoy.Slide on.value", "-1"},
+	{"superjoy.Slide left.value", "-1"},
+	{"superjoy.Slide right.value", "-1"},
+	{"superjoy.Slide up.value", "-1"},
+	{"superjoy.Slide down.value", "-1"},
+	{"superjoy.Bank on.value", "-1"},
+	{"superjoy.Bank left.value", "-1"},
+	{"superjoy.Bank right.value", "-1"},
+	{"superjoy.Pitch U/D[0].value", "-1"},
+	{"superjoy.Pitch U/D[1].value", "-1"},
+	{"superjoy.Turn L/R[0].value", "-1"},
+	{"superjoy.Turn L/R[1].value", "-1"},
+	{"superjoy.Slide L/R[0].value", "-1"},
+	{"superjoy.Slide L/R[1].value", "-1"},
+	{"superjoy.Slide U/D[0].value", "-1"},
+	{"superjoy.Slide U/D[1].value", "-1"},
+	{"superjoy.Bank L/R[0].value", "-1"},
+	{"superjoy.Bank L/R[1].value", "-1"},
+	{"superjoy.throttle[0].value", "-1"},
+	{"superjoy.throttle[1].value", "-1"},
+	{"superjoy.Rear View.value", "-1"},
+	{"superjoy.Drop Bomb.value", "-1"},
+	{"superjoy.Afterburner.value", "-1"},
+	{"superjoy.Cycle Primary.value", "-1"},
+	{"superjoy.Cycle Secondary.value", "-1"},
+	{"superjoy.Headlight.value", "-1"},
+	{"superjoy.Toggle Bomb.value", "-1"},
+	{"superjoy.Toggle Icons.value", "-1"},
+	{"superjoy.Automap.value", "-1"},
+	{"hotkeys.Weapon 1[0].value", "2"},
+	{"hotkeys.Weapon 1[1].value", "-1"},
+	{"hotkeys.Weapon 2[0].value", "3"},
+	{"hotkeys.Weapon 2[1].value", "-1"},
+	{"hotkeys.Weapon 3[0].value", "4"},
+	{"hotkeys.Weapon 3[1].value", "-1"},
+	{"hotkeys.Weapon 4[0].value", "5"},
+	{"hotkeys.Weapon 4[1].value", "-1"},
+	{"hotkeys.Weapon 5[0].value", "6"},
+	{"hotkeys.Weapon 5[1].value", "-1"},
+	{"hotkeys.Weapon 6[0].value", "7"},
+	{"hotkeys.Weapon 6[1].value", "-1"},
+	{"hotkeys.Weapon 7[0].value", "8"},
+	{"hotkeys.Weapon 7[1].value", "-1"},
+	{"hotkeys.Weapon 8[0].value", "9"},
+	{"hotkeys.Weapon 8[1].value", "-1"},
+	{"hotkeys.Weapon 9[0].value", "10"},
+	{"hotkeys.Weapon 9[1].value", "-1"},
+	{"hotkeys.Weapon 10[0].value", "11"},
+	{"hotkeys.Weapon 10[1].value", "-1"}
+	};
+
+//------------------------------------------------------------------------------
+
+void InitGameParams (void)
+{
+	tParamValue	*pv;
+	int			i;
+
+for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++)
+	SetParam (pv->pszIdent, pv->pszValue);
+}
+
+//------------------------------------------------------------------------------
+
+int NewPlayerConfig (void)
 {
 	int nitems;
 	int i,j,choice;
@@ -708,6 +1326,7 @@ strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills = 0; 
 networkData.nNetLifeKilled = 0;	
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
+InitGameParams ();
 #if 0
 InitGameOptions (0);
 InitArgs (0, NULL);

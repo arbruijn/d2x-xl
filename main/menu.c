@@ -1245,7 +1245,7 @@ gameOpts->app.nVersionFilter = menus [nD1Opt].value | (menus [nD2Opt].value << 1
 
 void NewGameMenu ()
 {
-	tMenuItem		m [10];
+	tMenuItem		m [15];
 	int				opt, optSelMsn, optMsnName, optLevelText, optLevel, optLaunch;
 	int				nMission = gameData.missions.nLastMission, bMsnLoaded = 0;
 	int				i, choice = 0;
