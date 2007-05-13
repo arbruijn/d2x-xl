@@ -1919,7 +1919,7 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 			for (j = 0; j < 4; j++) {
 				VmVecSubf (&v, quad + j, &vCenter);
 				VmVecScaleIncf3 (quad + j, &v, fScale);
- 				glTexCoord2fv ((GLfloat *) (uvlList1 + j));
+ 				glTexCoord2fv ((GLfloat *) (uvlList + j));
 				glVertex3fv ((GLfloat *) (quad + j));
 				}
 			glEnd ();
