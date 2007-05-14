@@ -1096,6 +1096,8 @@ tParamValue defaultParams [] = {
 	{"keyboard.Use Cloak[1].value", "46"},
 	{"keyboard.Use Invul[0].value", "0"},
 	{"keyboard.Use Invul[1].value", "23"},
+	{"keyboard.Slowmo/Speed[0].value", "50"},
+	{"keyboard.Slowmo/Speed[1].value", "31"},
 	{"mouse.Fire primary.value", "0"},
 	{"mouse.Fire secondary.value", "1"},
 	{"mouse.Accelerate.value", "-1"},

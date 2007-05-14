@@ -1815,8 +1815,6 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 		glEnable (GL_CULL_FACE);
 		}
 
-errorExit:
-
 	glDepthMask (1);
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
@@ -3940,9 +3938,8 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER)) {
 		InitBulletTime (-1);
 	}
 else
-#else
-	{
 #endif
+	{
 	if (Controls [0].bulletTimeCount) {
 #ifdef RELEASE
 		if (!gameStates.gameplay.bBulletTime && bSlowMotion && (LOCALPLAYER.energy <= F1_0 * 110))
