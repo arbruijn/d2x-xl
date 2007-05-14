@@ -1939,9 +1939,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 			}
 		else { // full version
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
-				InitSubTitles ("intro.tex");
-				PlayMovie ("intro.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-				CloseSubTitles ();
+				PlayIntroMovie ();
 				}
 			for (i=0;i<NUM_INTRO_MOVIES;i++) {
 				if (intro_movie [i].nLevel == nLevel) {

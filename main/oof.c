@@ -2314,9 +2314,9 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			phv = pv + (h = pfv->nIndex);
 			if (bDynLighting) {
 				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
-					OglColor4sf (pvc [h].color.red, pvc [h].color.green, pvc [h].color.blue, fl);
+					OglColor4sf (pvc [h].color.red, pvc [h].color.green, pvc [h].color.blue, 1);
 				else
-					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, fl);
+					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);

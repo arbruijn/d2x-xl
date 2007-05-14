@@ -126,6 +126,8 @@ tObject	Object_minus_one;
 tObject	*dbgObjP = NULL;
 #endif
 
+#define fabsf(_f)	(float) fabs (_f)
+
 //------------------------------------------------------------------------------
 // grsBitmap *robot_bms [MAX_ROBOT_BITMAPS];	//all bitmaps for all robots
 
@@ -696,6 +698,7 @@ else {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
+		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 		}
 	}
 gameStates.render.nInterpolationMethod = imSave;
@@ -1733,121 +1736,6 @@ return 0;
 }
 
 // -----------------------------------------------------------------------------
-// render corona by gathering the contour vertices of the objects simple, transformed hitbox.
-// To do that, get the hitbox's contour edges and walk through their vertices in their logical sequence.
-
-int ComputeCoronaQuad (tObject *objP, fVector *verts, float fScale, float fOffset)
-{
-	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + ObjectModelIndex (objP);
-	fVector			v, vMinMax [6], vCenter;
-	float				xMin, xMax, yMin, yMax, zMin, dx, dy, d;
-	int				i, j;
-
-VmsVecToFloat (vMinMax, &phb->vMin);
-VmsVecToFloat (vMinMax + 1, &phb->vMax);
-VmVecSubf (&v, vMinMax + 1, vMinMax);
-memset (vMinMax, 0, sizeof (vMinMax));
-vMinMax [0].p.x = -v.p.x;
-vMinMax [1].p.y = -v.p.y;
-vMinMax [2].p.z = -v.p.z;
-vMinMax [3].p.x = v.p.x;
-vMinMax [4].p.y = v.p.y;
-vMinMax [5].p.z = v.p.z;
-zMin = 1000000000;
-G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-for (i = 0; i < 6; i++) {
-	G3TransformPointf (vMinMax + i, vMinMax + i, 0);
-	if (zMin > vMinMax [i].p.z)
-		zMin = vMinMax [i].p.z;
-	}
-zMin += fOffset;
-G3DoneInstance ();
-for (i = 0; i < 6; i++)
-	VmVecScalef (vMinMax + i, vMinMax + i, zMin / vMinMax [i].p.z);
-xMin = yMin = 1000000000;
-xMax = yMax = -1000000000;
-for (i = 0; i < 6; i++) {
-	if ((i == 2) || (i == 5))
-		continue;
-	if (xMin > vMinMax [i].p.x)
-		xMin = vMinMax [i].p.x;
-	if (xMax < vMinMax [i].p.x)
-		xMax = vMinMax [i].p.x;
-	if (yMin > vMinMax [i].p.y)
-		yMin = vMinMax [i].p.y;
-	if (yMax < vMinMax [i].p.y)
-		yMax = vMinMax [i].p.y;
-	}
-dx = (xMax - xMin) / 2;
-dy = (yMax - yMin) / 2;
-d = (float) sqrt (dx * dx + dy * dy);
-if (vMinMax [2].p.x < vMinMax [5].p.x) {
-	i = 2;
-	j = 5;
-	xMin = vMinMax [2].p.x;
-	xMax = vMinMax [5].p.x;
-	}
-else {
-	i = 5;
-	j = 2;
-	xMin = vMinMax [5].p.x;
-	xMax = vMinMax [2].p.x;
-	}
-if (vMinMax [2].p.y < vMinMax [5].p.y) {
-	yMin = vMinMax [2].p.y;
-	yMax = vMinMax [5].p.y;
-	}
-else {
-	yMin = vMinMax [5].p.y;
-	yMax = vMinMax [2].p.y;
-	}
-verts [0].p.x = vMinMax [i].p.x - d;
-verts [0].p.y = vMinMax [i].p.y - d;
-verts [1].p.x = vMinMax [i].p.x - d;
-verts [1].p.y = vMinMax [i].p.y + d;
-verts [2].p.x = vMinMax [j].p.x + d;
-verts [2].p.y = vMinMax [j].p.y + d;
-verts [3].p.x = vMinMax [j].p.x + d;
-verts [3].p.y = vMinMax [j].p.y - d;
-verts [0].p.z =
-verts [1].p.z =
-verts [2].p.z =
-verts [3].p.z = zMin;
-
-if (fScale != 1) {
-	vCenter.p.x = vCenter.p.y = vCenter.p.z = 0;
-	for (i = 0; i < 4; i++)
-		VmVecIncf (&vCenter, verts + i);
-	VmVecScalef (&vCenter, &vCenter, 0.25);
-	for (i = 0; i < 4; i++) {
-		VmVecSubf (&v, verts + i, &vCenter);
-		VmVecScalef (&v, &v, fScale);
-		VmVecAddf (verts + i, &vCenter, &v);
-		}
-	}
-
-glDisable (GL_TEXTURE_2D);
-glLineWidth (3);
-glBegin (GL_LINES);
-glColor3d (0.5,0,0);
-glVertex3fv ((GLfloat *) (vMinMax + 3)); 
-glVertex3fv ((GLfloat *) (vMinMax + 0)); 
-glColor3d (0,0.5,0);
-glVertex3fv ((GLfloat *) (vMinMax + 4)); 
-glVertex3fv ((GLfloat *) (vMinMax + 1)); 
-glColor3d (0,0,0.5);
-glVertex3fv ((GLfloat *) (vMinMax + 5)); 
-glVertex3fv ((GLfloat *) (vMinMax + 2)); 
-glEnd ();
-glBegin (GL_LINE_LOOP);
-glColor3d (1,1,1);
-for (i = 0; i < 4; i++)
-	glVertex3fv ((GLfloat *) (verts + i));
-glEnd ();
-return 4;
-}
-
-// -----------------------------------------------------------------------------
 
 #define EXPAND_CORONA	2
 
@@ -1860,7 +1748,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (gameOpts->render.bCoronas && LoadCorona ()) {
+if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 
@@ -1886,14 +1774,11 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 						1, colorP, alpha, 1, 1);
 		}
 	else {
-#ifdef RELEASE
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
 		float		dot;
 		int		i, j;
 
-		//glEnable (GL_BLEND);
 		glDisable (GL_CULL_FACE);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthFunc (GL_LEQUAL);
 		glDepthMask (0);
 		glEnable (GL_TEXTURE_2D);
@@ -1925,33 +1810,6 @@ if (gameOpts->render.bCoronas && LoadCorona ()) {
 			glEnd ();
 			G3DoneInstance ();
 			}
-#else
-			fVector	verts [4];
-			int		i, nc = ComputeCoronaQuad (objP, verts, 1, 0); //fScale, -f2fl (xOffset));
-
-//		if (!nc)
-			goto errorExit;
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_DST_ALPHA); 
-		glDepthFunc (GL_LEQUAL);
-		glDepthMask (0);
-		glDisable (GL_CULL_FACE);
-		glEnable (GL_TEXTURE_2D);
-		if (OglBindBmTex (bmpCorona, 1, -1)) 
-			return;
-		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
-		glColor4f (colorP->red, colorP->green, colorP->blue, 1); //alpha);
-		//G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++) {
-			glTexCoord2fv ((GLfloat *) (uvlList + i));
-			glVertex3fv ((GLfloat *) (verts + i));
-			}
-		glEnd ();
-		//G3DoneInstance ();
-#endif
-		glLineWidth (1);
-		glDepthMask (1);
 		glDepthFunc (GL_LESS);
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
@@ -2050,10 +1908,12 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
+#if 0
 	if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
 		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
 	else
-		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.66f, objP->size, 3, 0, 0);
+#endif
+		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.75f, 0, 3, 0, 0);
 	}
 }
 
@@ -2292,20 +2152,12 @@ void DrawDebrisCorona (tObject *objP)
 	static	tRgbColorf	debrisGlow = {0.66f, 0, 0};
 	static	time_t t0 = 0;
 
-if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
-	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
 #ifdef _DEBUG
-		if (gameStates.app.nSDLTicks - t0 > 50) {
-			t0 = gameStates.app.nSDLTicks;
-			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
-			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
-			}
-		objP->lifeleft = F1_0 * 10000;
-		objP->mType.physInfo.rotVel.p.x = 
-		objP->mType.physInfo.rotVel.p.y = 
-		objP->mType.physInfo.rotVel.p.z = 0;
-		RenderObjectCorona (objP, &debrisGlow, 0.5f, 5 * objP->size / 2, 1.5f, 0, 1);
+if (objP->nType == OBJ_DEBRIS) {
 #else
+if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
+#endif
+	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
 	if (h < 0)
 		h = 0;
 	if (h < 10) {
@@ -2317,7 +2169,6 @@ if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			}
 		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1);
 		}
-#endif
 	}
 }
 
@@ -2412,7 +2263,9 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_WEAPON) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
+#if 1//def RELEASE
 			DrawPolygonObject (objP);
+#endif
 			if (bIsMissile [objP->id]) {
 #ifdef _DEBUG
 #	if 0
@@ -3730,7 +3583,7 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.nLocalPlayer == objP->i
 		}
 	else {
 		StopConquerWarning ();
-		fuel=FuelCenGiveFuel (segP, INITIAL_ENERGY - playerP->energy);
+		fuel = FuelCenGiveFuel (segP, INITIAL_ENERGY - playerP->energy);
 		if (fuel > 0)
 			playerP->energy += fuel;
 		shields = RepairCenGiveShields (segP, INITIAL_SHIELDS - playerP->shields);
@@ -3967,7 +3820,7 @@ HandleSpecialSegments (objP);
 if ((objP->lifeleft != IMMORTAL_TIME) && 
 	 (objP->lifeleft != ONE_FRAME_TIME)&& 
 	 (gameData.physics.xTime != F1_0))
-	objP->lifeleft -= gameData.physics.xTime;		//...inevitable countdown towards death
+	objP->lifeleft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
 if (HandleObjectControl (objP))
 	return 1;
@@ -4035,6 +3888,117 @@ return 1;
 
 }
 
+//	-----------------------------------------------------------------------------------------------------------
+
+void InitSlowMotion (int i)
+{
+if (gameStates.gameplay.slowmo [i].nState)
+	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
+else if (gameStates.gameplay.slowmo [i].fSpeed > 1) {
+	gameStates.gameplay.slowmo [i].nState = -1;
+	}
+else {
+	gameStates.gameplay.slowmo [i].nState = 1;
+	}
+if ((gameStates.gameplay.slowmo [i].nState < 0) == (i == 0))
+	HUDInitMessage (TXT_SLOWING_DOWN);
+else
+	HUDInitMessage (TXT_SPEEDING_UP);
+gameStates.gameplay.slowmo [0].tUpdate = gameStates.app.nSDLTicks;
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void InitBulletTime (int nState)
+{
+if (!gameStates.gameplay.slowmo [0].nState && (gameStates.gameplay.slowmo [0].fSpeed == 1))
+	return;
+gameStates.gameplay.slowmo [1].nState = nState;
+InitSlowMotion (1);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void ToggleSlowMotion (void)
+{
+	int	bSlowMotion = (gameStates.gameplay.slowmo [0].fSpeed > 1);
+
+#ifdef RELEASE
+if (bSlowMotion) {
+	LOCALPLAYER.energy -= FixMul (gameData.time.xFrame, F1_0 * (gameStates.gameplay.bBulletTime + 1));
+	if (LOCALPLAYER.energy <= F1_0 * 100) {
+		InitSlowMotion (0);
+		if (!gameStates.gameplay.bBulletTime)
+			InitBulletTime (1);
+		}
+	return;
+	}
+if (LOCALPLAYER.energy <= F1_0 * 100)
+	return;
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER)) {
+	if (gameStates.gameplay.bBulletTime && bSlowMotion)
+		InitBulletTime (-1);
+	}
+else
+#else
+	{
+#endif
+	if (Controls [0].bulletTimeCount) {
+#ifdef RELEASE
+		if (!gameStates.gameplay.bBulletTime && bSlowMotion && (LOCALPLAYER.energy <= F1_0 * 110))
+			return;
+#endif
+		Controls [0].bulletTimeCount = 0;
+		gameStates.gameplay.bBulletTime = !gameStates.gameplay.bBulletTime;
+		if (gameStates.gameplay.bBulletTime && bSlowMotion)
+			InitBulletTime (1);
+		else if (!gameStates.gameplay.bBulletTime && (gameStates.gameplay.slowmo [1].fSpeed < gameStates.gameplay.slowmo [0].fSpeed))
+			InitBulletTime (-1);
+		}
+	}
+if (Controls [0].slowMotionCount) {
+	Controls [0].slowMotionCount = 0;
+#ifdef RELEASE
+	if (!bSlowMotion && (LOCALPLAYER.energy <= F1_0 * (gameStates.gameplay.bBulletTime ? 110 : 105)))	//need at least energy for 5 secs
+		return;
+#endif
+	InitSlowMotion (0);
+	if (!gameStates.gameplay.bBulletTime)
+		InitBulletTime (-gameStates.gameplay.slowmo [0].nState);
+	}
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void DoSlowMotionFrame (void)
+{
+	int	i;
+
+if (gameStates.app.bNostalgia || IsMultiGame)
+	return;
+ToggleSlowMotion ();
+for (i = 0; i < 2; i++) {
+	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].nState > 10)) {
+		gameStates.gameplay.slowmo [i].fSpeed += gameStates.gameplay.slowmo [i].nState * 0.02f;
+		if (gameStates.gameplay.slowmo [i].fSpeed >= 4) {
+			gameStates.gameplay.slowmo [i].fSpeed = 4;
+			gameStates.gameplay.slowmo [i].nState = 0;
+			}
+		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
+			gameStates.gameplay.slowmo [i].fSpeed = 1;
+			gameStates.gameplay.slowmo [i].nState = 0;
+			}
+		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
+		}
+	}
+#if 0
+HUDMessage (0, "%1.2f %1.2f %d", 
+				gameStates.gameplay.slowmo [0].fSpeed, gameStates.gameplay.slowmo [1].fSpeed,
+				gameStates.gameplay.bBulletTime);
+#endif
+}
+
+//	-----------------------------------------------------------------------------------------------------------
 
 //--unused-- // -----------------------------------------------------------
 //--unused-- //	Moved here from eobject.c on 02/09/94 by MK.
@@ -4199,7 +4163,9 @@ void ClearTransientObjects (int clear_all)
 			#ifdef _DEBUG
 #if TRACE				
 			if (gameData.objs.objects [nObject].lifeleft > i2f (2))
-				con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
+				con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
+								nObject, gameData.objs.objects [nObject].nType, 
+								gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
 #endif
 			#endif
 			ReleaseObject (nObject);
@@ -4207,7 +4173,9 @@ void ClearTransientObjects (int clear_all)
 		#ifdef _DEBUG
 #if TRACE				
 		 else if (gameData.objs.objects [nObject].nType!=OBJ_NONE && gameData.objs.objects [nObject].lifeleft < i2f (2))
-			con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
+			con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
+							nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, 
+							gameData.objs.objects [nObject].lifeleft);
 #endif
 		#endif
 }

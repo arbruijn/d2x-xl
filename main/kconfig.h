@@ -53,6 +53,8 @@ typedef struct _control_info {
 	ubyte zoomDownCount;
 	ubyte useCloakDownCount;
 	ubyte useInvulDownCount;
+	ubyte slowMotionCount;
+	ubyte bulletTimeCount;
 } tControlInfo;
 
 typedef struct ext_control_info {

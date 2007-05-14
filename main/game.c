@@ -2341,6 +2341,7 @@ if (nDebugSlowdown) {
 		}
 #endif
 	}
+DoSlowMotionFrame ();
 CheckInventory ();
 //LogErr ("OmegaChargeFrame \n");
 OmegaChargeFrame ();

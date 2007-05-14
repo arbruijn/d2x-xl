@@ -857,7 +857,7 @@ if (!segP)
 xsegP = gameData.segs.xSegments + SEG_IDX (segP);
 if ((xsegP->owner < 1) || (xsegP->owner == GetTeam (gameData.multiplayer.nLocalPlayer) + 1))
 	return 0;
-amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount * extraGameInfo [1].entropy.nShieldDamageRate / 25);
+amount = FixMul (gameData.time.xFrame, extraGameInfo [1].entropy.nShieldDamageRate * F1_0);
 if (amount > MaxAmountCanGive)
 	amount = MaxAmountCanGive;
 if (last_playTime > gameData.time.xGame)
@@ -884,17 +884,18 @@ fix FuelCenGiveFuel (tSegment *segP, fix MaxAmountCanTake)
 
 Assert (segP != NULL);
 gameData.matCens.playerSegP = segP;
-if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
+if ((gameData.app.nGameMode & GM_ENTROPY) && ((xsegp->owner < 0) || 
+	 ((xsegp->owner > 0) && (xsegp->owner != GetTeam (gameData.multiplayer.nLocalPlayer) + 1))))
 	return 0;
 if (!segP || (seg2p->special != SEGMENT_IS_FUELCEN))
 	return 0;
 DetectEscortGoalAccomplished (-4);	//	UGLY!Hack!-4 means went through fuelcen.
 #if 0
-if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity<=0)	{
+if (gameData.matCens.fuelCenters [segP->value].xMaxCapacity <= 0) {
 	HUDInitMessage ("Fuelcenter %d is destroyed.", segP->value);
 	return 0;
 	}
-if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
+if (gameData.matCens.fuelCenters [segP->value].xCapacity <= 0) {
 	HUDInitMessage ("Fuelcenter %d is empty.", segP->value);
 	return 0;
 	}
@@ -902,19 +903,17 @@ if (gameData.matCens.fuelCenters [segP->value].xCapacity<=0)	{
 if (MaxAmountCanTake <= 0)
 	return 0;
 if (gameData.app.nGameMode & GM_ENTROPY)
-	amount = FixMul (gameData.time.xFrame, 
-							gameData.matCens.xFuelGiveAmount * 
-							extraGameInfo [IsMultiGame].entropy.nEnergyFillRate / 25);
+	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount * F1_0);
 else
 	amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount);
 if (amount > MaxAmountCanTake)
 	amount = MaxAmountCanTake;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
-if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
-	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
+	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0 / 2);
 	if (IsMultiGame)
-		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
+		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0 / 2);
 	last_playTime = gameData.time.xGame;
 	}
 //HUDInitMessage ("Fuelcen %d has %d/%d fuel", segP->value,f2i (gameData.matCens.fuelCenters [segP->value].xCapacity),f2i (gameData.matCens.fuelCenters [segP->value].xMaxCapacity));
@@ -956,12 +955,12 @@ if (seg2p->special != SEGMENT_IS_REPAIRCEN)
 if (MaxAmountCanTake <= 0)	{
 	return 0;
 }
-amount = FixMul (gameData.time.xFrame, gameData.matCens.xFuelGiveAmount * extraGameInfo [IsMultiGame].entropy.nShieldFillRate / 25);
+amount = FixMul (gameData.time.xFrame, extraGameInfo [IsMultiGame].entropy.nShieldFillRate * F1_0);
 if (amount > MaxAmountCanTake)
 	amount = MaxAmountCanTake;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;
-if (gameData.time.xGame > last_playTime+FUELCEN_SOUND_DELAY) {
+if (gameData.time.xGame > last_playTime + FUELCEN_SOUND_DELAY) {
 	DigiPlaySample (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);
 	if (IsMultiGame)
 		MultiSendPlaySound (SOUND_REFUEL_STATION_GIVING_FUEL, F1_0/2);

@@ -1566,6 +1566,7 @@ int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *
 {
 	fVector	d31, d21, h, v, d [2];
 	double	m, u;
+	int		bClamped = 0;
 
 VmVecSubf (&d21, p2, p1);
 if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
@@ -1576,29 +1577,41 @@ if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
 VmVecSubf (&d31, p3, p1);
 u = (double) VmVecDotf (&d31, &d21);
 u /= m;
-h.p.x = p1->p.x + (fix) (u * d21.p.x);
-h.p.y = p1->p.y + (fix) (u * d21.p.y);
-h.p.z = p1->p.z + (fix) (u * d21.p.z);
+h.p.x = p1->p.x + (float) (u * d21.p.x);
+h.p.y = p1->p.y + (float) (u * d21.p.y);
+h.p.z = p1->p.z + (float) (u * d21.p.z);
 // limit the intersection to [p1,p2]
 VmVecSubf (&v, p1, &h);
-if (bClamp) {
-	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-	if (m < u) {
-		if (hitP)
-			*hitP = *p2;
-		return 1;	//clamped
-		}
+u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+if (m < u) {
+	bClamped = 2;
+	if (bClamp && hitP)
+		*hitP = *p2;
+	}
+else {
 	VmVecSubf (&v, p2, &h);
 	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-	if ((m < u) && (vPos || !hitP)) {
-		if (hitP)
-			*hitP = (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) ? *p2 : *p1;
-		return 1;	//clamped
+	if (m < u) {
+		bClamped = 1;
+		if (bClamp && hitP)
+			*hitP = *p1;
 		}
 	}
-if (hitP)
-	*hitP = h;
-return 0;
+if (hitP) {
+	if (bClamp && bClamped && vPos) {	//chose the end point that is further away from vPos
+		if (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) {
+			bClamped = 2;
+			*hitP = *p2;
+			}
+		else {
+			bClamped = 1;
+			*hitP = *p1;
+			}
+		}
+	else
+		*hitP = h;
+	}
+return bClamped;
 }
 
 // ------------------------------------------------------------------------
@@ -1625,12 +1638,12 @@ return (fix) ((double) VmVecMag (&abxap) / magab * F1_0);
 
 // ------------------------------------------------------------------------
 
-float VmLinePointDistf (fVector *a, fVector *b, fVector *p)
+float VmLinePointDistf (fVector *a, fVector *b, fVector *p, int bClamp)
 {
 	fVector	h;
 
-VmPointLineIntersectionf (&h, a, b, p, NULL, 1);
-return VmVecMagf (VmVecDecf (&h, p));
+VmPointLineIntersectionf (&h, a, b, p, NULL, bClamp);
+return VmVecDistf (&h, p);
 }
 
 //------------------------------------------------------------------------------

@@ -390,7 +390,7 @@ CFClose (filehndl);                           // Close Movie File
 // Restore old graphic state
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 GrPaletteStepLoad (NULL);
-return (aborted?MOVIE_ABORTED:MOVIE_PLAYED_FULL);
+return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);
 }
 
 //-----------------------------------------------------------------------
@@ -1044,6 +1044,20 @@ if (nMovieLibs) {
 		}
 	}
 return NULL;
+}
+
+//-----------------------------------------------------------------------
+
+void PlayIntroMovie (void)
+{
+	static	int bHaveIntroMovie = 1;
+
+if (bHaveIntroMovie) {
+	InitSubTitles ("intro.tex");
+	if (PlayMovie ("intro.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) == MOVIE_NOT_PLAYED)
+		bHaveIntroMovie = 0;
+	CloseSubTitles ();
+	}
 }
 
 //-----------------------------------------------------------------------

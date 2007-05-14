@@ -994,6 +994,8 @@ void EvalDemoArgs (void)
 
 if ((t = FindArg ("-revert_demos")))
 	gameOpts->demo.bRevertFormat = NumArg (t, 1);
+if ((t = FindArg ("-auto_demos")))
+	gameStates.app.bAutoDemos = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -1205,6 +1207,7 @@ if (i) {
 	if (gameStates.app.bNostalgia > 2)
 		gameOptions [1].render.nQuality = 0;
 	gameOptions [1].render.bCoronas = 0;
+	gameOptions [1].render.bObjectCoronas = 0;
 	gameOptions [1].render.bWireFrame = 0;
 	gameOptions [1].render.bTextures = 1;
 	gameOptions [1].render.bObjects = 1;
@@ -1273,6 +1276,7 @@ if (i) {
 	gameOptions [1].render.powerups.b3D = 0;
 	gameOptions [1].render.powerups.nSpin = 0;
 	gameOptions [1].render.automap.bTextured = 0;
+	gameOptions [1].render.automap.bSkybox = 0;
 	gameOptions [1].render.automap.bBright = 1;
 	gameOptions [1].render.automap.bCoronas = 0;
 	gameOptions [1].render.automap.nColor = 0;
@@ -1305,6 +1309,7 @@ else {
 	gameOptions [0].render.bEnableSSE = 0;
 	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.bCoronas = 0;
+	gameOptions [0].render.bObjectCoronas = 0;
 #ifdef _DEBUG
 	gameOptions [0].render.shadows.nLights = 1;
 #else
@@ -1370,6 +1375,7 @@ else {
 	gameOptions [0].render.powerups.b3D = 0;
 	gameOptions [0].render.powerups.nSpin = 0;
 	gameOptions [0].render.automap.bTextured = 0;
+	gameOptions [0].render.automap.bSkybox = 0;
 	gameOptions [0].render.automap.bBright = 1;
 	gameOptions [0].render.automap.bCoronas = 0;
 	gameOptions [0].render.automap.nColor = 0;
@@ -1712,6 +1718,13 @@ gameStates.gameplay.seismic.nShakeDuration = 0;
 gameStates.gameplay.seismic.nSound = SOUND_SEISMIC_DISTURBANCE_START;
 gameStates.gameplay.seismic.bSound = 0;
 gameStates.gameplay.seismic.nVolume = 0;
+gameStates.gameplay.slowmo [0].nState = 0;
+gameStates.gameplay.slowmo [0].fSpeed = 1;
+gameStates.gameplay.slowmo [0].tUpdate = 0;
+gameStates.gameplay.slowmo [1].nState = 0;
+gameStates.gameplay.slowmo [1].fSpeed = 1;
+gameStates.gameplay.slowmo [1].tUpdate = 0;
+gameOpts->gameplay.bBulletTime = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -2520,9 +2533,6 @@ else
 	{	//NOTE LINK TO ABOVE!
 	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
 	int bSongPlaying = 0;
-
-#define MOVIE_REQUIRED 1
-
 	if (gameStates.app.bHaveExtraMovies) {
 		nPlayed = PlayMovie ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
@@ -2531,10 +2541,8 @@ else
 			nPlayed = PlayMovie ("startb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		}
 	else {
-		InitSubTitles ("intro.tex");
-		nPlayed = PlayMovie ("intro.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+		PlayIntroMovie ();
 		}
-	CloseSubTitles ();
 
 	if (!bSongPlaying)
 		SongsPlaySong (SONG_TITLE, 1);

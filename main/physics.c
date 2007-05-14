@@ -261,6 +261,14 @@ if (objP->mType.physInfo.turnRoll) {
 tangles.p = (fixang) FixMul (objP->mType.physInfo.rotVel.p.x, gameData.physics.xTime);
 tangles.h = (fixang) FixMul (objP->mType.physInfo.rotVel.p.y, gameData.physics.xTime);
 tangles.b = (fixang) FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.xTime);
+if (!IsMultiGame) {
+	int i = (objP != gameData.objs.console) ? 0 : 1;
+	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
+		tangles.p = (fix) (tangles.p / gameStates.gameplay.slowmo [i].fSpeed);
+		tangles.h = (fix) (tangles.h / gameStates.gameplay.slowmo [i].fSpeed);
+		tangles.b = (fix) (tangles.b / gameStates.gameplay.slowmo [i].fSpeed);
+		}
+	}
 VmAngles2Matrix (&mRotate, &tangles);
 VmMatMul (&mNewOrient, &objP->position.mOrient, &mRotate);
 objP->position.mOrient = mNewOrient;
@@ -537,6 +545,16 @@ do {
 		&vFrame, 
 		&objP->mType.physInfo.velocity, 
 		FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
+	if (!IsMultiGame) {
+		int i = (objP != gameData.objs.console) ? 0 : 1;
+		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
+		if (!i)
+			i = i;
+			vFrame.p.x = (fix) (vFrame.p.x / gameStates.gameplay.slowmo [i].fSpeed / 4);
+			vFrame.p.y = (fix) (vFrame.p.y / gameStates.gameplay.slowmo [i].fSpeed / 4);
+			vFrame.p.z = (fix) (vFrame.p.z / gameStates.gameplay.slowmo [i].fSpeed / 4);
+			}
+		}
 	if (!(vFrame.p.x || vFrame.p.y || vFrame.p.z))
 		break;
 
@@ -987,13 +1005,15 @@ if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.obj
 //		and	they are of different signs.
 void PhysicsSetRotVelAndSaturate (fix *dest, fix delta)
 {
-	if ((delta ^ *dest) < 0) {
-		if (abs (delta) < F1_0/8) {
-			*dest = delta/4;
-		} else
-			*dest = delta;
-	} else {
+if ((delta ^ *dest) < 0) {
+	if (abs (delta) < F1_0/8) {
+		*dest = delta/4;
+		} 
+	else
 		*dest = delta;
+		}
+else {
+	*dest = delta;
 	}
 }
 
@@ -1006,37 +1026,42 @@ void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 	fix			delta_p, delta_h;
 	vmsVector	*pvRotVel = &objP->mType.physInfo.rotVel;
 
-	// Make this tObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
-	// If no one moves, will be facing vGoal in 1 second.
+// Make this tObject turn towards the vGoal.  Changes orientation, doesn't change direction of movement.
+// If no one moves, will be facing vGoal in 1 second.
 
-	//	Detect null vector.
-	if ((vGoal->p.x == 0) && (vGoal->p.y == 0) && (vGoal->p.z == 0))
-		return;
+//	Detect null vector.
+if ((vGoal->p.x == 0) && (vGoal->p.y == 0) && (vGoal->p.z == 0))
+	return;
+//	Make morph gameData.objs.objects turn more slowly.
+if (objP->controlType == CT_MORPH)
+	rate *= 2;
 
-	//	Make morph gameData.objs.objects turn more slowly.
-	if (objP->controlType == CT_MORPH)
-		rate *= 2;
-
-	VmExtractAnglesVector (&dest_angles, vGoal);
-	VmExtractAnglesVector (&cur_angles, &objP->position.mOrient.fVec);
-
-	delta_p = (dest_angles.p - cur_angles.p);
-	delta_h = (dest_angles.h - cur_angles.h);
-
-	if (delta_p > F1_0/2) delta_p = dest_angles.p - cur_angles.p - F1_0;
-	if (delta_p < -F1_0/2) delta_p = dest_angles.p - cur_angles.p + F1_0;
-	if (delta_h > F1_0/2) delta_h = dest_angles.h - cur_angles.h - F1_0;
-	if (delta_h < -F1_0/2) delta_h = dest_angles.h - cur_angles.h + F1_0;
-
-	delta_p = FixDiv (delta_p, rate);
-	delta_h = FixDiv (delta_h, rate);
-
-	if (abs (delta_p) < F1_0/16) delta_p *= 4;
-	if (abs (delta_h) < F1_0/16) delta_h *= 4;
-
-	PhysicsSetRotVelAndSaturate (&pvRotVel->p.x, delta_p);
-	PhysicsSetRotVelAndSaturate (&pvRotVel->p.y, delta_h);
-	pvRotVel->p.z = 0;
+VmExtractAnglesVector (&dest_angles, vGoal);
+VmExtractAnglesVector (&cur_angles, &objP->position.mOrient.fVec);
+delta_p = (dest_angles.p - cur_angles.p);
+delta_h = (dest_angles.h - cur_angles.h);
+if (delta_p > F1_0/2) 
+	delta_p = dest_angles.p - cur_angles.p - F1_0;
+if (delta_p < -F1_0/2) 
+	delta_p = dest_angles.p - cur_angles.p + F1_0;
+if (delta_h > F1_0/2) 
+	delta_h = dest_angles.h - cur_angles.h - F1_0;
+if (delta_h < -F1_0/2) 
+	delta_h = dest_angles.h - cur_angles.h + F1_0;
+delta_p = FixDiv (delta_p, rate);
+delta_h = FixDiv (delta_h, rate);
+if (abs (delta_p) < F1_0/16) delta_p *= 4;
+if (abs (delta_h) < F1_0/16) delta_h *= 4;
+if (!IsMultiGame) {
+	int i = (objP != gameData.objs.console) ? 0 : 1;
+	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
+		delta_p = (fix) (delta_p / gameStates.gameplay.slowmo [i].fSpeed);
+		delta_h = (fix) (delta_h / gameStates.gameplay.slowmo [i].fSpeed);
+		}
+	}
+PhysicsSetRotVelAndSaturate (&pvRotVel->p.x, delta_p);
+PhysicsSetRotVelAndSaturate (&pvRotVel->p.y, delta_h);
+pvRotVel->p.z = 0;
 }
 
 //	-----------------------------------------------------------------------------

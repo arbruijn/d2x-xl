@@ -1655,6 +1655,13 @@ char *defaultGameTexts [][2] = {
 	{"~Keine Powerups anzeigen", "~Don't show powerups"},
 	{"~Zielsuch-Anzeige", "show ~Missile lock indicator"},
 	{"Zielsuch-Anzeige ~Rotieren", "~Rotate missile lock indicator"},
+	{"~Alle missionen spielen", "play ~All missions"},
+	{"Neues Spiel", "New Game"},
+	{"~Objekte mit Lichthoefen zeichnen", "render coronas for ~Objects"},
+	{"~Skybox anzeigen", "show ~Skybox"},
+	{"Zeitlupe/-raffer", "Slowmo/Speed"},
+	{"beschleunige...", "speeding up..."},
+	{"verzoegere...", "slowing down..."},
 #if 0
 	{"", ""},
 #endif
@@ -1680,10 +1687,9 @@ char *defaultHelpTexts [][2] = {
 	{"Ein Lied aus Descent 2 spielen.", "Play a Descent 2 song."},
 	{"Abspann abspielen.", "Show credits."},
 	{"Programm verlassen.", "Quit program."},
-	{"Ankreuzen um Descent 2-Missionen in der Missionsliste anzuzeigen", 
-	 "Check to display Descent 2 missions in the mission list."},
-	{"Ankreuzen um Descent 2-Missionen in der Missionsliste anzuzeigen", 
-	 "Check to display Descent 1 missions in the mission list."},
+	{"Hier kann eingestellt werden, ob nur Descent 1- oder nur Descent 2- oder alle Missionen zur Auswahl angeboten werden sollen.", 
+	 "Select whether only Descent 1, only Descent 2, or all missions can be chosen for playing."},
+	{"(keine Hilfe verfuegbar)", "(no help available)"},
 	//controls configuration menu
 	{"Ankreuzen, um die Steuerung des Schiffs per Maus zu ermoeglichen.", 
 	 "Check to enable control of the ship using a mouse."},
@@ -2166,6 +2172,8 @@ char *defaultHelpTexts [][2] = {
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Rauch-\neffekte dargestellt werden.", "Check to have smoke effects rendered in the textured automap."},
 	{"Abhaengig von der hier vorgenommenen Einstellungen verbleiben\nExplosionstruemmer laenger und treiben herum.", "Depending on the setting made here, debris from explosions\nwill stay longer and keep floating around."},
 	{"Wenn angekreuzt, rotiert die Zielsuch-Anzeige langsam um\ndas Ziel.", "If checked the track goal indicator will rotate slowly around\nthe target."},
+	{"Wenn angekreuzt, erhalten Energieschuesse und Truemmer Lichthoefe.", "If checked, debris and shot from energy weapons are rendered with\ncoronas."},
+	{"Wenn angekreuzt, wird die Umgebung der Mine ('Skybox') in der Ueber-\nsichtskarte gezeichnet.", "If checked, the mine's environment ('skybox') is rendered in the\nautomap."},
 #if 0
 	{"", ""},
 #endif

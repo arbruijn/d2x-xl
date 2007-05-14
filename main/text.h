@@ -1696,16 +1696,16 @@ void LoadGameTexts(void);
 #define TXT_AUTOMAP_NO_POWERUPS	GT(903)
 #define TXT_MSLLOCK_INDICATOR		GT(904)
 #define TXT_ROTATE_MSLLOCKIND		GT(905)
+#define TXT_PLAY_ALL_MISSIONS		GT(906)
+#define TXT_NEWGAME_MENUTITLE		GT(907)
+#define TXT_RENDER_OBJCORONAS		GT(908)
+#define TXT_AUTOMAP_SKYBOX			GT(909)
+#define TXT_INPUT_SLOWMOTION		GT(910)
+#define TXT_SPEEDING_UP				GT(911)
+#define TXT_SLOWING_DOWN			GT(912)
 
 #if 0
 
-#define TXT_				GT(906)
-#define TXT_				GT(907)
-#define TXT_				GT(908)
-#define TXT_				GT(909)
-#define TXT_				GT(910)
-#define TXT_				GT(911)
-#define TXT_				GT(912)
 #define TXT_				GT(913)
 #define TXT_				GT(914)
 #define TXT_				GT(915)
@@ -1910,8 +1910,8 @@ void LoadGameTexts(void);
 #define HTX_MAIN_SONGS				HT(9)				
 #define HTX_MAIN_CREDITS			HT(10)				
 #define HTX_MAIN_QUIT				HT(11)				
-#define HTX_MAIN_D2					HT(12)				
-#define HTX_MAIN_D1					HT(13)
+#define HTX_LEVEL_VERSION_FILTER	HT(12)				
+#define HTX_UNUSED1					HT(13)
 
 #define HTX_CONF_USEMOUSE			HT(14)				
 #define HTX_CONF_CUSTMOUSE			HT(15)				
@@ -2182,11 +2182,11 @@ void LoadGameTexts(void);
 #define HTX_DEBRIS_LIFE				HT(268)				
 #define HTX_CPIT_MSLLOCKIND		HT(269)				
 #define HTX_ROTATE_MSLLOCKIND		HT(270)				
+#define HTX_ADVRND_OBJCORONAS		HT(271)				
+#define HTX_AUTOMAP_SKYBOX			HT(272)				
 
 #if 0
 				
-#define HTX_					HT(271)				
-#define HTX_					HT(272)				
 #define HTX_					HT(273)				
 #define HTX_					HT(274)				
 #define HTX_					HT(275)				

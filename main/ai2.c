@@ -493,7 +493,7 @@ else {
 #define	BABY_SPIDER_ID	14
 #define	FIRE_AT_NEARBY_PLAYER_THRESHOLD	 (F1_0 * 40) //(F1_0*40)
 
-extern void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate);
+void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate);
 
 //-------------------------------------------------------------------------------------------
 
@@ -511,9 +511,12 @@ if ((objP->id == BABY_SPIDER_ID) && (objP->nType == OBJ_ROBOT)) {
 	}
 new_fvec = *vGoal;
 dot = VmVecDot (vGoal, &objP->position.mOrient.fVec);
+if (!IsMultiGame)
+	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed / 4);
 if (dot < (F1_0 - gameData.time.xFrame/2)) {
-	fix	mag;
-	fix	new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
+	fix mag, new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
+	if (!IsMultiGame)
+		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
 	VmVecScale (&new_fvec, new_scale);
 	VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
 	mag = VmVecNormalizeQuick (&new_fvec);

@@ -24,9 +24,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MOVIE_ABORT_ON  1
 #define MOVIE_ABORT_OFF 0
 
-#define MOVIE_NOT_PLAYED    0   // movie wasn't present
-#define MOVIE_PLAYED_FULL   1   // movie was played all the way through
-#define MOVIE_ABORTED       2   // movie started by was aborted
+#define MOVIE_NOT_PLAYED    0		// movie wasn't present
+#define MOVIE_PLAYED_FULL   1		// movie was played all the way through
+#define MOVIE_ABORTED       2		// movie started by was aborted
+
+#define MOVIE_REQUIRED		 1		//true
+
 
 #	define ENDMOVIE		"end"
 #	define D1_ENDMOVIE	"final"
@@ -37,6 +40,7 @@ int InitRobotMovie(char *filename);
 int RotateRobot();
 void DeInitRobotMovie(void);
 void InitExtraRobotMovie(char *filename);
+void PlayIntroMovie (void);
 
 // find and initialize the movie libraries
 void InitMovies();

@@ -635,11 +635,12 @@ return (nTexture == 378) || ((nTexture >= 399) && (nTexture <= 409));
 
 int IsTransparentTexture (short nTexture)
 {
-return (nTexture == 378) || 
-		 (nTexture == 353) || 
-		 (nTexture == 420) || 
-		 (nTexture == 432) || 
-		 ((nTexture >= 399) && (nTexture <= 409));
+return !gameStates.app.bD1Mission &&
+		 ((nTexture == 378) || 
+		  (nTexture == 353) || 
+		  (nTexture == 420) || 
+		  (nTexture == 432) || 
+		  ((nTexture >= 399) && (nTexture <= 409)));
 }
 
 //------------------------------------------------------------------------------
@@ -810,7 +811,7 @@ if (!bRender)
 		pointList [i] = gameData.segs.points + props.vp [i];
 #if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion) {
-		DrawOutline(props.nv, pointList);
+		DrawOutline (props.nv, pointList);
 		return;
 		}
 #endif
@@ -1405,7 +1406,7 @@ else	//brighten if facing directly
 	dim = 1.0f + 0.5f * -a / 1.0f;
 #endif
 // o serves to slightly displace the corona from its face to avoid z fighting
-VmVecScalef (&o, &n, 1.0f / 10.0f);
+//VmVecScalef (&o, &n, 1.0f / 10.0f);
 #if 1	//might remove z from normal 
 n.p.z = 0;
 VmVecNormalizef (&n, &n);
@@ -1543,18 +1544,35 @@ else
 //render the corona
 VmVecNormalf (&n, sprite, sprite + 1, sprite + 2);
 
-glBegin (GL_QUADS);
+	glColor4f (1,1,1,0.5f);
+glBegin (GL_TRIANGLES);
 if (VmVecDotf (&n, &vEye) > 0) {
-	for (i = 0; i < 4; i++) {
-		glTexCoord2fv ((GLfloat *) (uvlList + i));
-		glVertex3fv ((GLfloat *) (sprite + 3 - i));
-		}
+	glTexCoord2fv ((GLfloat *) (uvlList + 2));
+	glVertex3fv ((GLfloat *) (sprite + 2));
+	glTexCoord2fv ((GLfloat *) (uvlList + 1));
+	glVertex3fv ((GLfloat *) (sprite + 1));
+	glTexCoord2fv ((GLfloat *) (uvlList + 0));
+	glVertex3fv ((GLfloat *) (sprite + 0));
+	glTexCoord2fv ((GLfloat *) (uvlList + 0));
+	glVertex3fv ((GLfloat *) (sprite + 0));
+	glTexCoord2fv ((GLfloat *) (uvlList + 3));
+	glVertex3fv ((GLfloat *) (sprite + 3));
+	glTexCoord2fv ((GLfloat *) (uvlList + 2));
+	glVertex3fv ((GLfloat *) (sprite + 2));
 	}
 else {
-	for (i = 0; i < 4; i++) {
-		glTexCoord2fv ((GLfloat *) (uvlList + i));
-		glVertex3fv ((GLfloat *) (sprite + i));
-		}
+	glTexCoord2fv ((GLfloat *) (uvlList + 0));
+	glVertex3fv ((GLfloat *) (sprite + 0));
+	glTexCoord2fv ((GLfloat *) (uvlList + 1));
+	glVertex3fv ((GLfloat *) (sprite + 1));
+	glTexCoord2fv ((GLfloat *) (uvlList + 2));
+	glVertex3fv ((GLfloat *) (sprite + 2));
+	glTexCoord2fv ((GLfloat *) (uvlList + 2));
+	glVertex3fv ((GLfloat *) (sprite + 2));
+	glTexCoord2fv ((GLfloat *) (uvlList + 3));
+	glVertex3fv ((GLfloat *) (sprite + 3));
+	glTexCoord2fv ((GLfloat *) (uvlList + 0));
+	glVertex3fv ((GLfloat *) (sprite + 0));
 	}
 #if 0
 //render corona again, this time parallel to its face
@@ -4287,24 +4305,34 @@ void RenderMineSegment (int nn)
 {
 	int nSegment = (nn < 0) ? -nn - 1 : gameData.render.mine.nRenderList [nn];
 
-if ((nSegment != -1) && (gameStates.render.automap.bDisplay ? gameStates.render.automap.bFull || bAutomapVisited [nSegment] : !VISITED (nSegment))) {
-#ifdef _DEBUG
-	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
-#endif
-	SetNearestDynamicLights (nSegment);
-	RenderSegment (nSegment, gameStates.render.nWindow);
-	VISIT (nSegment);
-	if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
-		bAutomapVisited [nSegment] = bSetAutomapVisited;
-	else if (gameStates.render.nType == 1) {
-		SetNearestStaticLights (nSegment, 1);
-		RenderObjList (nn, gameStates.render.nWindow);
-		SetNearestStaticLights (nSegment, 0);
-		}	
-	else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
-		RenderObjList (nn, gameStates.render.nWindow);
+if (nSegment == -1)
+	return;
+if (gameStates.render.automap.bDisplay) {
+	if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
+		return;
+	if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+		return;
 	}
+else {
+	if (VISITED (nSegment))
+		return;
+	}
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nSegment = nSegment;
+#endif
+SetNearestDynamicLights (nSegment);
+RenderSegment (nSegment, gameStates.render.nWindow);
+VISIT (nSegment);
+if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
+	bAutomapVisited [nSegment] = bSetAutomapVisited;
+else if (gameStates.render.nType == 1) {
+	SetNearestStaticLights (nSegment, 1);
+	RenderObjList (nn, gameStates.render.nWindow);
+	SetNearestStaticLights (nSegment, 0);
+	}	
+else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
+	RenderObjList (nn, gameStates.render.nWindow);
 }
 
 //------------------------------------------------------------------------------

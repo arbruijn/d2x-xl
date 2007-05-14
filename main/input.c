@@ -616,6 +616,8 @@ if (bGetSlideBank == 2) {
 	Controls [0].useCloakDownCount += HaveKeyCount (kcKeyboard, 61);
 	Controls [0].useInvulDownCount += HaveKeyCount (kcKeyboard, 62);
 	Controls [0].useInvulDownCount += HaveKeyCount (kcKeyboard, 63);
+	Controls [0].slowMotionCount += HaveKeyCount (kcKeyboard, 64);
+	Controls [0].bulletTimeCount += HaveKeyCount (kcKeyboard, 65);
 
 	// toggle bomb
 	if (((v = HaveKey (kcKeyboard, 58)) < 255) && keyDownCount (v))

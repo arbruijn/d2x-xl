@@ -125,7 +125,7 @@ if (lightmapping) {//lightmapping enabled
 	cap_tmap_color (uvl_list, nv, bmbot);
 	for (c = 0; c < nv; c++, pp++) {
 		set_tmap_color (uvl_list + c,c, bmbot);
-		glMultiTexCoord2fARB(GL_TEXTURE0_ARB,f2glf(uvl_list[c].u),f2glf(uvl_list[c].v));
+		glTexCoord2f (f2glf(uvl_list[c].u),f2glf(uvl_list[c].v));
 		set_texcoord (uvl_list + c, orient, 1);
 		glColor3d (1, 1, 1);
 		p = *pp;
@@ -238,22 +238,22 @@ for (i = 0; i < 4; i++) {
 	VmVecRotate(&pv,&v1,&viewInfo.view [0]);
 	switch (i) {
 		case 0:
-			glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0.0, 0.0);
+			glTexCoord2f ( 0.0, 0.0);
 			pv.x+=-width;
 			pv.y+=height;
 			break;
 		case 1:
-			glMultiTexCoord2fARB(GL_TEXTURE0_ARB, bm->glTexture->u, 0.0);
+			glTexCoord2f ( bm->glTexture->u, 0.0);
 			pv.x+=width;
 			pv.y+=height;
 			break;
 		case 2:
-			glMultiTexCoord2fARB(GL_TEXTURE0_ARB, bm->glTexture->u, bm->glTexture->v);
+			glTexCoord2f ( bm->glTexture->u, bm->glTexture->v);
 			pv.x+=width;
 			pv.y+=-height;
 			break;
 		case 3:
-			glMultiTexCoord2fARB(GL_TEXTURE0_ARB,0.0, bm->glTexture->v);
+			glTexCoord2f (0.0, bm->glTexture->v);
 			pv.x+=-width;
 			pv.y+=-height;
 			break;
@@ -324,14 +324,14 @@ if (c < 0)
 	glColor3d (1.0,1.0,1.0);
 else
 	glColor3d (CPAL2Tr (bmP->bm_palette, c), CPAL2Tg (bmP->bm_palette, c), CPAL2Tb (bmP->bm_palette, c));
-glMultiTexCoord2fARB(GL_TEXTURE0_ARB,u1, v1);
-glVertex2d(xo, yo);
-glMultiTexCoord2fARB(GL_TEXTURE0_ARB,u2, v1);
-glVertex2d(xf, yo);
-glMultiTexCoord2fARB(GL_TEXTURE0_ARB,u2, v2);
-glVertex2d(xf, yf);
-glMultiTexCoord2fARB(GL_TEXTURE0_ARB,u1, v2);
-glVertex2d(xo, yf);
+glTexCoord2f (u1, v1);
+glVertex2d (xo, yo);
+glTexCoord2f (u2, v1);
+glVertex2d (xf, yo);
+glTexCoord2f (u2, v2);
+glVertex2d (xf, yf);
+glTexCoord2f (u1, v2);
+glVertex2d (xo, yf);
 glEnd();
 glDepthFunc(curFunc);
 glDisable (GL_ALPHA_TEST);

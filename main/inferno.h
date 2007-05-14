@@ -202,6 +202,7 @@ typedef struct tAutomapOptions {
 	int bBright;
 	int bCoronas;
 	int bSmoke;
+	int bSkybox;
 	int nColor;
 	int nRange;
 } tAutomapOptions;
@@ -217,6 +218,7 @@ typedef struct tRenderOptions {
 	int bOptimize;
 	int bTransparentEffects;
 	int bCoronas;
+	int bObjectCoronas;
 	int bUseShaders;
 	int bHiresModels;
 	int bAutoTransparency;
@@ -269,6 +271,8 @@ typedef struct tGameplayOptions {
 	int bShieldWarning;
 	int bInventory;
 	int bIdleAnims;
+	int bBulletTime;
+	int bSlowMotion;
 	int nAIAwareness;
 } tGameplayOptions;
 
@@ -367,6 +371,12 @@ typedef struct tSeismicStates {
 	int	nVolume;
 } tSeismicStates;
 
+typedef struct tSlowMotionStates {
+	float fSpeed;
+	int	nState;
+	time_t tUpdate;
+	} tSlowMotionStates;
+
 typedef struct tGameplayStates {
 	int bMultiBosses;
 	int bFinalBossIsDead;
@@ -381,9 +391,11 @@ typedef struct tGameplayStates {
 	int bMineMineCheat;
 	int bAfterburnerCheat;
 	fix nPlayerSpeed;
+	int bBulletTime;
 	vmsVector vTgtDir;
 	int nDirSteps;
 	tSeismicStates seismic;
+	tSlowMotionStates slowmo [2];
 } tGameplayStates;
 
 #define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount)
@@ -757,6 +769,7 @@ typedef struct tApplicationStates {
 	int bEnableShadows;
 	int bEnableFreeCam;
 	int bCacheTextures;
+	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;

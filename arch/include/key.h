@@ -11,23 +11,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- * $Source: /cvs/cvsroot/d2x/arch/include/key.h,v $
- * $Revision: 1.2 $
- * $Author: bradleyb $
- * $Date: 2001/01/28 16:21:54 $
- *
- * Header for keyboard functions
- *
- * $Log: key.h,v $
- * Revision 1.2  2001/01/28 16:21:54  bradleyb
- * More header unification...
- *
- * Revision 1.1  2001/01/28 05:46:33  bradleyb
- * Unified arch headers
- *
- */
-
 #ifndef _KEY_H
 #define _KEY_H 
 

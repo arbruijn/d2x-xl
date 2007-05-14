@@ -175,12 +175,6 @@ extern unsigned char ipx_ServerAddress [10];
 void SoundMenu ();
 void MiscellaneousMenu ();
 
-#ifdef _DEBUG
-ubyte bAllowAutoDemo = 0;                 // Flag used to enable auto demo starting in main menu.
-#else
-ubyte bAllowAutoDemo = 1;                 // Flag used to enable auto demo starting in main menu.
-#endif
-
 // Function Prototypes added after LINTING
 void ExecMenuOption (int select);
 void CustomDetailsMenu (void);
@@ -225,9 +219,7 @@ WIN (extern int DD_Emulation);
 
 // ------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------
-
-void autodemo_menu_check (int nitems, tMenuItem * items, int *last_key, int citem)
+void AutoDemoMenuCheck (int nitems, tMenuItem * items, int *last_key, int citem)
 {
 	int curtime;
 
@@ -236,9 +228,9 @@ PrintVersionInfo ();
 if (*last_key==KEY_ESC) 
 	*last_key = 0;
 
-if (bAllowAutoDemo) {
+if (gameStates.app.bAutoDemos) {
 	curtime = TimerGetApproxSeconds ();
-	if (((keydTime_when_last_pressed+i2f (25)) < curtime)
+	if (((keydTime_when_last_pressed + i2f (/*2*/5)) < curtime)
 #ifdef _DEBUG	
 		&& !gameData.speedtest.bOn
 #endif		
@@ -251,8 +243,7 @@ try_again:;
 
 		if ((d_rand () % (n_demos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
-				InitSubTitles ("intro.tex");
-				PlayMovie ("intro.mve", 0, 1, gameOpts->movies.bResize);
+				PlayIntroMovie ();
 				SongsPlaySong (SONG_TITLE, 1);
 				*last_key = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
 				SetScreenMode (SCREEN_MENU);
@@ -395,7 +386,8 @@ do {
 	if (main_menu_choice < 0)
 		main_menu_choice = 0;
 	gameStates.menus.bDrawCopyright = 1;
-	i = ExecMenu2 ("", NULL, num_options, m, autodemo_menu_check, &main_menu_choice, Menu_pcx_name);
+	i = ExecMenu2 ("", NULL, num_options, m, AutoDemoMenuCheck, &main_menu_choice, Menu_pcx_name);
+#if 0
 	gameOpts->app.nVersionFilter = 0;
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
@@ -405,6 +397,7 @@ do {
 		if (m [nD1Opt].value)
 			gameOpts->app.nVersionFilter |= 1;
 		}
+#endif
 	WritePlayerFile ();
 	if ((i > -1) && (nMenuChoice[main_menu_choice] <= MENU_QUIT))
 		ExecMenuOption (nMenuChoice[main_menu_choice]);
@@ -1224,10 +1217,12 @@ if (!StartNewGame (nNewLevel))
 
 //------------------------------------------------------------------------------
 
+static int nOptVerFilter = -1;
+
 void NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
-	int			v;
+	int			i, v;
 
 m = menus + nDiffOpt;
 v = m->value;
@@ -1238,7 +1233,11 @@ if (gameStates.app.nDifficultyLevel != v) {
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
 	m->rebuild = 1;
 	}
-gameOpts->app.nVersionFilter = menus [nD1Opt].value | (menus [nD2Opt].value << 1);
+for (i = 0; i < 3; i++)
+	if (menus [nOptVerFilter + i].value) {
+		gameOpts->app.nVersionFilter = i + 1;
+		break;
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -1296,6 +1295,15 @@ for (;;) {
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 	nDiffOpt = opt++;
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_RADIO (opt, TXT_PLAY_D1MISSIONS, 0, KEY_1, 1, HTX_LEVEL_VERSION_FILTER);
+	nOptVerFilter = opt++;
+	ADD_RADIO (opt, TXT_PLAY_D2MISSIONS, 0, KEY_2, 1, HTX_LEVEL_VERSION_FILTER);
+	opt++;
+	ADD_RADIO (opt, TXT_PLAY_ALL_MISSIONS, 0, KEY_A, 1, HTX_LEVEL_VERSION_FILTER);
+	opt++;
+	m [nOptVerFilter + gameOpts->app.nVersionFilter - 1].value = 1;
 	if (nMission >= 0) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -1305,15 +1313,9 @@ for (;;) {
 		}
 	else
 		optLaunch = -1;
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	nD1Opt = opt++;
-	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
-	nD2Opt = opt++;
 
 	Assert (opt <= sizeofa (m));
-	i = ExecMenu1 (NULL, TXT_SELECT_START_LEV, opt, m, &NewGameMenuCallback, &choice);
+	i = ExecMenu1 (NULL, TXT_NEWGAME_MENUTITLE, opt, m, &NewGameMenuCallback, &choice);
 	if (i < 0) {
 		SetFunctionMode (FMODE_MENU);
 		return;
@@ -1799,11 +1801,11 @@ if (gameOpts->render.nDebrisLife != v) {
 
 void EffectOptionsMenu ()
 {
-	tMenuItem m [10];
+	tMenuItem m [15];
 	int	i, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
-			optTracers, optShockwaves, optCoronas;
+			optTracers, optShockwaves, optCoronas, optObjCoronas;
 	char	szDebrisLife [50];
 
 do {
@@ -1813,6 +1815,8 @@ do {
 	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
 	optCoronas = opt++;
+	ADD_CHECK (opt, TXT_RENDER_OBJCORONAS, gameOpts->render.bObjectCoronas, KEY_O, HTX_ADVRND_OBJCORONAS);
+	optObjCoronas = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
 	optShockwaves = opt++;
 	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_L, HTX_RENDER_LGTTRAILS);
@@ -1840,6 +1844,7 @@ do {
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bCoronas = m [optCoronas].value;
+	gameOpts->render.bObjectCoronas = m [optObjCoronas].value;
 	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
@@ -1851,6 +1856,7 @@ do {
 		gameOpts->render.bTransparentEffects = 1;
 	gameOpts->render.bAutoTransparency = 1;
 	gameOpts->render.bCoronas = 0;
+	gameOpts->render.bObjectCoronas = 0;
 	extraGameInfo [0].bLightTrails = 1;
 	extraGameInfo [0].bTracers = 1;
 	extraGameInfo [0].bShockwaves = 1;
@@ -1902,7 +1908,7 @@ void AutomapOptionsMenu ()
 	tMenuItem m [20];
 	int	i, j, choice = 0;
 	int	opt;
-	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optColor;
+	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optColor, optSkybox;
 	char	szRadarRange [50];
 
 pszRadarRange [0] = TXT_SHORT;
@@ -1921,10 +1927,13 @@ do {
 		optCoronas = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bSmoke, KEY_S, HTX_AUTOMAP_SMOKE);
 		optSmoke = opt++;
+		ADD_CHECK (opt, TXT_AUTOMAP_SKYBOX, gameOpts->render.automap.bSkybox, KEY_B, HTX_AUTOMAP_SKYBOX);
+		optSkybox = opt++;
 		}
 	else
 		optSmoke =
 		optCoronas =
+		optSkybox =
 		optBright = -1;
 	ADD_CHECK (opt, TXT_AUTOMAP_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_R, HTX_AUTOMAP_ROBOTS);
 	optShowRobots = opt++;
@@ -1974,6 +1983,7 @@ do {
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
 	GET_VAL (gameOpts->render.automap.bSmoke, optSmoke);
+	GET_VAL (gameOpts->render.automap.bSkybox, optSkybox);
 	if (nOptRadarRange >= 0)
 		gameOpts->render.automap.nRange = m [nOptRadarRange].value;
 	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;
@@ -2656,18 +2666,20 @@ void LightingOptionsCallback (int nitems, tMenuItem * menus, int * key, int cite
 
 if (nLightingMethodOpt >= 0) {
 	v = menus [nLightingMethodOpt + 1].value;
-	if (v != gameOpts->render.color.bUseLightMaps) {
-		gameOpts->render.color.bUseLightMaps = v;
-		gameOpts->render.bDynLighting = menus [nLightingMethodOpt + 2].value;
-		*key = -2;
-		return;
-		}
-	v = menus [nLightingMethodOpt + 2].value;
 	if (v != gameOpts->render.bDynLighting) {
 		gameOpts->render.bDynLighting = v;
 		gameOpts->render.color.bUseLightMaps = menus [nLightingMethodOpt + 1].value;
 		*key = -2;
 		return;
+		}
+	if (gameStates.render.color.bLightMapsOk) {
+		v = menus [nLightingMethodOpt + 2].value;
+		if (v != gameOpts->render.color.bUseLightMaps) {
+			gameOpts->render.color.bUseLightMaps = v;
+			gameOpts->render.bDynLighting = menus [nLightingMethodOpt + 2].value;
+			*key = -2;
+			return;
+			}
 		}
 	}
 m = menus + nGunColorOpt;
@@ -2737,10 +2749,12 @@ do {
 	if (!gameStates.app.bGameRunning) {
 		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
 		nLightingMethodOpt = opt++;
-		ADD_RADIO (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_M, 1, HTX_RENDER_LIGHTMAPS);
-		opt++;
 		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_G, 1, HTX_OGL_LIGHTING);
 		opt++;
+		if (gameStates.render.color.bLightMapsOk) {
+			ADD_RADIO (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_M, 1, HTX_RENDER_LIGHTMAPS);
+			opt++;
+			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
