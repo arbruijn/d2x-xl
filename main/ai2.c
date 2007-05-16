@@ -512,7 +512,7 @@ if ((objP->id == BABY_SPIDER_ID) && (objP->nType == OBJ_ROBOT)) {
 new_fvec = *vGoal;
 dot = VmVecDot (vGoal, &objP->position.mOrient.fVec);
 if (!IsMultiGame)
-	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed / 4);
+	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
 if (dot < (F1_0 - gameData.time.xFrame/2)) {
 	fix mag, new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
 	if (!IsMultiGame)
@@ -1035,10 +1035,11 @@ if (d_rand () < 16384) {
 
 dot = 0;
 count = 0;			//	Don't want to sit in this loop foreverd:\temp\dm_test.
+i = (NDL - gameStates.app.nDifficultyLevel - 1) * 4;
 while ((count < 4) && (dot < F1_0/4)) {
-	bpp_diff.p.x = vBelievedPlayerPos->p.x + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
-	bpp_diff.p.y = vBelievedPlayerPos->p.y + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
-	bpp_diff.p.z = vBelievedPlayerPos->p.z + FixMul ((d_rand ()-16384) * (NDL-gameStates.app.nDifficultyLevel-1) * 4, aim);
+	bpp_diff.p.x = vBelievedPlayerPos->p.x + FixMul ((d_rand ()-16384) * i, aim);
+	bpp_diff.p.y = vBelievedPlayerPos->p.y + FixMul ((d_rand ()-16384) * i, aim);
+	bpp_diff.p.z = vBelievedPlayerPos->p.z + FixMul ((d_rand ()-16384) * i, aim);
 	VmVecNormalizedDirQuick (&fire_vec, &bpp_diff, vFirePoint);
 	dot = VmVecDot (&objP->position.mOrient.fVec, &fire_vec);
 	count++;

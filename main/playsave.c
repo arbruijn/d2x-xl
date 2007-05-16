@@ -445,6 +445,13 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].app.bExpertMode, i, 0);
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
+
+		RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
+		RP (gameOptions [i].gameplay.bInventory, i, 0);
+		RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
+		RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
+		RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
+		RP (gameOptions [i].gameplay.nSlowMotionSpeedup, i, 0);
 		}
 	// options applicable for both enhanced and pure D2 mode
 	for (j = 0; j < sizeofa (nWeaponOrder [i]); j++)
@@ -479,11 +486,6 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].gameplay.bDefaultLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
 	RP (gameOptions [i].gameplay.bHeadlightOn, 0, 0);
-	RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
-	RP (gameOptions [i].gameplay.bInventory, i, 0);
-	RP (gameOptions [i].gameplay.bShieldWarning, i, 0);
-	RP (gameOptions [i].gameplay.nAIAwareness, i, 0);
-	RP (gameOptions [i].gameplay.nAutoSelectWeapon, i, 0);
 	RP (gameOptions [i].gameplay.nPlayerDifficultyLevel, i, 0);
 
 	RP (gameOptions [i].movies.bResize, i, 0);
@@ -639,7 +641,8 @@ int ReadParam (CFILE *fp)
 {
 	char		szParam	[200], *pszValue;
 
-fgets (szParam, sizeof (szParam), fp->file);
+CFGetS (szParam, sizeof (szParam), fp);
+szParam [sizeof (szParam) - 1] = '\0';
 if (pszValue = strchr (szParam, '\n'))
 	*pszValue = '\0';
 if (!(pszValue = strchr (szParam, '=')))
@@ -659,7 +662,7 @@ RegisterParams ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!(fp = CFOpen (fn, gameFolders.szProfDir, "rt", 0)))
 	return 0;
-while (!feof (fp->file))
+while (!CFEoF (fp))
 	ReadParam (fp);
 return CFClose (fp);
 }
@@ -964,6 +967,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].gameplay.nAIAwareness", "0"},
 	{"gameOptions[0].gameplay.nAutoSelectWeapon", "1"},
 	{"gameOptions[0].gameplay.nPlayerDifficultyLevel", "2"},
+	{"gameOptions[0].gameplay.nSlowMotionSpeedup", "6"},
 	{"gameOptions[0].movies.bResize", "1"},
 	{"gameOptions[0].movies.bSubTitles", "0"},
 	{"gameOptions[0].movies.nQuality", "0"},

@@ -141,7 +141,7 @@ static int	nFPSopt, nRSDopt,
 				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
 				nFusionRampOpt, nLightRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
 				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
-				nUseSmokeOpt, nUseCamOpt, nMslTurnSpeedOpt,
+				nUseSmokeOpt, nUseCamOpt, nMslTurnSpeedOpt, nSlowmoSpeedupOpt,
 				nLightingMethodOpt, nShadowsOpt, nMaxLightsOpt, nOglMaxLightsOpt, 
 				nShadowReachOpt, 
 				nSyncSmokeSizes, nSmokeGrenadeOpt, nMaxSmokeGrenOpt;
@@ -3149,7 +3149,7 @@ m = menus + nDiffOpt;
 v = m->value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = v;
-	if (!(gameData.app.nGameMode & GM_MULTI)) {
+	if (!IsMultiGame) {
 		gameStates.app.nDifficultyLevel = v;
 		InitGateIntervals ();
 		}
@@ -3196,6 +3196,14 @@ if (gameOpts->app.bExpertMode) {
 		*key = -2;
 		return;
 		}
+	m = menus + nSlowmoSpeedupOpt;
+	v = m->value + 4;
+	if (gameOpts->gameplay.nSlowMotionSpeedup != v) {
+		gameOpts->gameplay.nSlowMotionSpeedup = v;
+		sprintf (m->text, TXT_SLOWMOTION_SPEEDUP, (float) v / 2);
+		m->rebuild = 1;
+		return;
+		}
 	if (nMaxSmokeGrenOpt >= 0) {
 		m = menus + nMaxSmokeGrenOpt;
 		v = m->value + 1;
@@ -3222,7 +3230,7 @@ void GameplayOptionsMenu ()
 			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1, optHitboxes = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szSpeedBoost [50], szFusionPower [50], szMaxSmokeGrens [50],
-			szMslTurnSpeed [50];
+			szMslTurnSpeed [50], szSlowmoSpeedup [50];
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
@@ -3249,9 +3257,13 @@ do {
 		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
 		nFusionRampOpt = opt++;
 		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [extraGameInfo [0].nMslTurnSpeed]);
-		*szMslTurnSpeed = *(TXT_FUSION_PWR - 1);
+		*szMslTurnSpeed = *(TXT_MSL_TURNSPEED - 1);
 		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		nMslTurnSpeedOpt = opt++;
+		sprintf (szSlowmoSpeedup + 1, TXT_SLOWMOTION_SPEEDUP, (float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
+		*szSlowmoSpeedup = *(TXT_SLOWMOTION_SPEEDUP - 1);
+		ADD_SLIDER (opt, szSlowmoSpeedup + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
+		nSlowmoSpeedupOpt = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
@@ -3377,6 +3389,12 @@ for (j = 0; j < 3; j++)
 		extraGameInfo [0].nZoomMode = j;
 		break;
 		}
+for (i = 0; i < 2; i++)
+	if (gameStates.gameplay.slowmo [i].fSpeed > (float) gameOpts->gameplay.nSlowMotionSpeedup / 2)
+		gameStates.gameplay.slowmo [i].fSpeed = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
+	else if ((gameStates.gameplay.slowmo [i].fSpeed > 1) && 
+				(gameStates.gameplay.slowmo [i].fSpeed < (float) gameOpts->gameplay.nSlowMotionSpeedup / 2))
+		gameStates.gameplay.slowmo [i].fSpeed = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
 if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 4;
 if (IsMultiGame)

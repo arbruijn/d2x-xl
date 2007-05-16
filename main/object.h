@@ -536,4 +536,6 @@ extern ubyte CollisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
+//	-----------------------------------------------------------------------------------------------------------
+
 #endif

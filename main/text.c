@@ -1662,6 +1662,7 @@ char *defaultGameTexts [][2] = {
 	{"Zeitlupe/-raffer", "Slowmo/Speed"},
 	{"beschleunige...", "speeding up..."},
 	{"verzoegere...", "slowing down..."},
+	{"Zeitlupen-Beschleunigung: x%1.1f", "Slow ~Motion speedup: x%1.1f"},
 #if 0
 	{"", ""},
 #endif
@@ -2174,6 +2175,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, rotiert die Zielsuch-Anzeige langsam um\ndas Ziel.", "If checked the track goal indicator will rotate slowly around\nthe target."},
 	{"Wenn angekreuzt, erhalten Energieschuesse und Truemmer Lichthoefe.", "If checked, debris and shot from energy weapons are rendered with\ncoronas."},
 	{"Wenn angekreuzt, wird die Umgebung der Mine ('Skybox') in der Ueber-\nsichtskarte gezeichnet.", "If checked, the mine's environment ('skybox') is rendered in the\nautomap."},
+	{"Hier kann die maximale Zeitlupen-Beschleunigung eingestellt werden.", "Adjust the maximal slow motion speedup here."},
 #if 0
 	{"", ""},
 #endif

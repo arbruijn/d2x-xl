@@ -512,7 +512,7 @@ if (pnum == gameData.multiplayer.nLocalPlayer) {
 	if (gameData.laser.xOmegaCharge < 0)
 		gameData.laser.xOmegaCharge = 0;
 	//	Ensure that the lightning cannon can be fired next frame.
-	gameData.laser.xNextFireTime = gameData.time.xGame+1;
+	gameData.laser.xNextFireTime = gameData.time.xGame + 1;
 	gameData.laser.nLastOmegaFireFrame = gameData.app.nFrameCount;
 	}
 
@@ -1527,7 +1527,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 	if	((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)) {
 		int	nLaserLevel, flags = 0;
 		if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
-			gameData.laser.xNextFireTime += F1_0/25;
+			gameData.laser.xNextFireTime += F1_0 / 25;
 		else
 			gameData.laser.xNextFireTime += WI_fire_wait (nWeaponIndex);
 		nLaserLevel = LOCALPLAYER.laserLevel;
@@ -2071,6 +2071,7 @@ if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 	gameData.missiles.xNextFireTime = gameData.time.xGame + WI_fire_wait (nWeaponId);
 else
 	gameData.missiles.xNextFireTime = gameData.time.xGame + F1_0/25;
+gameData.missiles.xLastFiredTime = gameData.time.xGame;
 nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
 h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 0); i++) {

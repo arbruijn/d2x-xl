@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				32
+#define STATE_VERSION				33
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -1133,6 +1133,10 @@ CFWriteByte (gameData.weapons.nSecondary, fp);
 CFWriteInt (gameStates.app.nDifficultyLevel, fp);
 // Save cheats enabled
 CFWriteInt (gameStates.app.cheats.bEnabled, fp);
+for (i = 0; i < 2; i++) {
+	CFWriteInt (fl2f (gameStates.gameplay.slowmo [i].fSpeed), fp);
+	CFWriteInt (gameStates.gameplay.slowmo [i].nState, fp);
+	}
 if (!bBetweenLevels)	{
 //Finish all morph gameData.objs.objects
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
@@ -2144,6 +2148,16 @@ gameStates.app.nDifficultyLevel = CFReadInt (fp);
 gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 // Restore the cheats enabled flag
 gameStates.app.cheats.bEnabled = CFReadInt (fp);
+for (i = 0; i < 2; i++) {
+	if (sgVersion < 33) {
+		gameStates.gameplay.slowmo [i].fSpeed = 1;
+		gameStates.gameplay.slowmo [i].nState = 0;
+		}
+	else {
+		gameStates.gameplay.slowmo [i].fSpeed = f2fl (CFReadInt (fp));
+		gameStates.gameplay.slowmo [i].nState = CFReadInt (fp);
+		}
+	}
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the objects from the lvl file
@@ -2282,9 +2296,10 @@ if (!bBetweenLevels)	{
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
 	gameData.fusion.xAutoFireTime = 0;
-	gameData.laser.xNextFireTime = gameData.time.xGame;
+	gameData.laser.xNextFireTime = 
 	gameData.missiles.xNextFireTime = gameData.time.xGame;
-	gameData.laser.xLastFiredTime = gameData.time.xGame;
+	gameData.laser.xLastFiredTime = 
+	gameData.missiles.xLastFiredTime = gameData.time.xGame;
 	}
 gameData.app.nStateGameId = 0;
 gameData.app.nStateGameId = (uint) CFReadInt (fp);
@@ -2498,10 +2513,10 @@ if (!bBetweenLevels)	{
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
 	gameData.fusion.xAutoFireTime = 0;
-	gameData.laser.xNextFireTime = gameData.time.xGame;
+	gameData.laser.xNextFireTime = 
 	gameData.missiles.xNextFireTime = gameData.time.xGame;
-	gameData.laser.xLastFiredTime = gameData.time.xGame;
-
+	gameData.laser.xLastFiredTime = 
+	gameData.missiles.xLastFiredTime = gameData.time.xGame;
 }
 gameData.app.nStateGameId = 0;
 

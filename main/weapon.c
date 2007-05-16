@@ -346,7 +346,7 @@ if (!bSecondary) {
 			if (bWaitForRearm) 
 				MultiSendPlaySound (SOUND_GOOD_SELECTION_PRIMARY, F1_0);
 			}
-		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
+		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [1].fSpeed * REARM_TIME) : 0;
 		gameData.laser.nGlobalFiringCount = 0;
 		} 
 	else {

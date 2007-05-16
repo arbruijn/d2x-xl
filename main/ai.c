@@ -542,11 +542,11 @@ if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
 	Assert (objP->nSegment != -1);
 	//Assert (objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
 	nObjRef = nObject ^ gameData.app.nFrameCount;
-	if (ailp->nextPrimaryFire > -F1_0 * 8)
-		ailp->nextPrimaryFire -= gameData.time.xFrame;
+	if (ailp->nextPrimaryFire > -F1_0 * 8 * gameStates.gameplay.slowmo [0].fSpeed)
+		ailp->nextPrimaryFire -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed);
 	if (botInfoP->nSecWeaponType != -1) {
-		if (ailp->nextSecondaryFire > -F1_0 * 8)
-			ailp->nextSecondaryFire -= gameData.time.xFrame;
+		if (ailp->nextSecondaryFire > -F1_0 * 8 * gameStates.gameplay.slowmo [0].fSpeed)
+			ailp->nextSecondaryFire -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed);
 		}
 	else
 		ailp->nextSecondaryFire = F1_0 * 8;

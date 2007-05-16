@@ -287,7 +287,7 @@ if (Controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare())
 		CreateFlare(gameData.objs.console);
 if (AllowedToFireMissile()) {
-	i = secondaryWeaponToWeaponInfo[gameData.weapons.nSecondary];
+	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
 	}
 if (gameData.missiles.nGlobalFiringCount) {

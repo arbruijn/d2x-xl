@@ -271,9 +271,8 @@ typedef struct tGameplayOptions {
 	int bShieldWarning;
 	int bInventory;
 	int bIdleAnims;
-	int bBulletTime;
-	int bSlowMotion;
 	int nAIAwareness;
+	int nSlowMotionSpeedup;
 } tGameplayOptions;
 
 #define UNIQUE_JOY_AXES	5
@@ -2072,6 +2071,7 @@ typedef struct tFusionData {
 } tFusionData;
 
 typedef struct tMissileData {
+	fix		xLastFiredTime;
 	fix		xNextFireTime;
 	int		nGlobalFiringCount;
 } tMissileData;
@@ -2228,6 +2228,8 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 
 #define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
 
+//	-----------------------------------------------------------------------------------------------------------
+
 static inline int VERTVIS (short nSegment, short nVertex)
 {
 	ubyte	b = (nVertex & 3) * 2,
@@ -2237,6 +2239,8 @@ static inline int VERTVIS (short nSegment, short nVertex)
 b = gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] & b1;
 return (b == b1) ? 1 : (b == b0) ? -1 : 0;
 }
+
+//	-----------------------------------------------------------------------------------------------------------
 
 extern float fInfinity [];
 extern fix nDebrisLife [];

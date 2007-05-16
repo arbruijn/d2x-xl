@@ -1906,11 +1906,9 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
-#if 0
 	if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
 		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
 	else
-#endif
 		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.75f, 0, 3, 0, 0);
 	}
 }
@@ -1955,8 +1953,8 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glEnable (GL_BLEND);
 	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_LINE_SMOOTH);
-	h = 3; //d_rand () % 4;
-	glLineStipple ((h + 1) * 4, 0x0303); //patterns [h]);
+	h = 0; //d_rand () % 4;
+	glLineStipple ((h + 1) * 4, 0x00FF); //patterns [h]);
 	vDirf.p.x *= TRACER_WIDTH / 20.0f;
 	vDirf.p.y *= TRACER_WIDTH / 20.0f;
 	vDirf.p.z *= TRACER_WIDTH / 20.0f;
@@ -3809,10 +3807,6 @@ int MoveOneObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
-#ifdef _DEBUG
-if (objP->nType == OBJ_WEAPON)
-	return 1;
-#endif
 objP->vLastPos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if ((objP->lifeleft != IMMORTAL_TIME) && 
@@ -3970,15 +3964,18 @@ if (Controls [0].slowMotionCount) {
 void DoSlowMotionFrame (void)
 {
 	int	i;
+	float	f, h;
 
 if (gameStates.app.bNostalgia || IsMultiGame)
 	return;
 ToggleSlowMotion ();
+f = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
+h = (f - 1) / 120;
 for (i = 0; i < 2; i++) {
-	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].nState > 10)) {
-		gameStates.gameplay.slowmo [i].fSpeed += gameStates.gameplay.slowmo [i].nState * 0.02f;
-		if (gameStates.gameplay.slowmo [i].fSpeed >= 4) {
-			gameStates.gameplay.slowmo [i].fSpeed = 4;
+	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].nState > 25)) {
+		gameStates.gameplay.slowmo [i].fSpeed += gameStates.gameplay.slowmo [i].nState * h;
+		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
+			gameStates.gameplay.slowmo [i].fSpeed = f;
 			gameStates.gameplay.slowmo [i].nState = 0;
 			}
 		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
@@ -3988,7 +3985,7 @@ for (i = 0; i < 2; i++) {
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
 		}
 	}
-#if 0
+#if 1
 HUDMessage (0, "%1.2f %1.2f %d", 
 				gameStates.gameplay.slowmo [0].fSpeed, gameStates.gameplay.slowmo [1].fSpeed,
 				gameStates.gameplay.bBulletTime);

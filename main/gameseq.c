@@ -443,7 +443,10 @@ else if (gameStates.app.bD1Mission)
 	InitAmmoAndEnergy ();
 gameStates.app.bPlayerIsDead = 0; // Added by RH
 LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
-gameData.laser.xLastFiredTime = gameData.laser.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
+gameData.laser.xLastFiredTime = 
+gameData.laser.xNextFireTime = 
+gameData.missiles.xLastFiredTime = 
+gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
 bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
@@ -1008,6 +1011,10 @@ if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
 D2SetCaption ();
 if (!bRestore) {
+	gameStates.gameplay.slowmo [0].fSpeed =
+	gameStates.gameplay.slowmo [1].fSpeed = 1;
+	gameStates.gameplay.slowmo [0].nState =
+	gameStates.gameplay.slowmo [1].nState = 0;
 	ComputeNearestLights ();
 	ComputeStaticDynLighting ();
 	SetEquipGenStates ();

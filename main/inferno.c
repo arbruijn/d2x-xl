@@ -1724,7 +1724,8 @@ gameStates.gameplay.slowmo [0].tUpdate = 0;
 gameStates.gameplay.slowmo [1].nState = 0;
 gameStates.gameplay.slowmo [1].fSpeed = 1;
 gameStates.gameplay.slowmo [1].tUpdate = 0;
-gameOpts->gameplay.bBulletTime = 0;
+gameStates.gameplay.bBulletTime = 0;
+gameOpts->gameplay.nSlowMotionSpeedup = 6;	//max slow motion delay
 }
 
 // ----------------------------------------------------------------------------

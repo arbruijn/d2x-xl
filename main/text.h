@@ -1703,10 +1703,10 @@ void LoadGameTexts(void);
 #define TXT_INPUT_SLOWMOTION		GT(910)
 #define TXT_SPEEDING_UP				GT(911)
 #define TXT_SLOWING_DOWN			GT(912)
+#define TXT_SLOWMOTION_SPEEDUP	GT(913)
 
 #if 0
 
-#define TXT_				GT(913)
 #define TXT_				GT(914)
 #define TXT_				GT(915)
 #define TXT_				GT(916)
@@ -2184,10 +2184,10 @@ void LoadGameTexts(void);
 #define HTX_ROTATE_MSLLOCKIND		HT(270)				
 #define HTX_ADVRND_OBJCORONAS		HT(271)				
 #define HTX_AUTOMAP_SKYBOX			HT(272)				
+#define HTX_SLOWMOTION_SPEEDUP	HT(273)				
 
 #if 0
 				
-#define HTX_					HT(273)				
 #define HTX_					HT(274)				
 #define HTX_					HT(275)				
 #define HTX_					HT(276)				

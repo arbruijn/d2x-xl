@@ -548,11 +548,7 @@ do {
 	if (!IsMultiGame) {
 		int i = (objP != gameData.objs.console) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-		if (!i)
-			i = i;
-			vFrame.p.x = (fix) (vFrame.p.x / gameStates.gameplay.slowmo [i].fSpeed / 4);
-			vFrame.p.y = (fix) (vFrame.p.y / gameStates.gameplay.slowmo [i].fSpeed / 4);
-			vFrame.p.z = (fix) (vFrame.p.z / gameStates.gameplay.slowmo [i].fSpeed / 4);
+			VmVecScale (&vFrame, (fix) (F1_0 / gameStates.gameplay.slowmo [i].fSpeed));
 			}
 		}
 	if (!(vFrame.p.x || vFrame.p.y || vFrame.p.z))
