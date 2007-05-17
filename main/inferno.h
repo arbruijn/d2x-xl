@@ -693,6 +693,7 @@ typedef struct tCheatStates {
 	int bMadBuddy;
 	int bAcid;
 	int bPhysics;
+	int bSpeed;
 	int bD1CheatsEnabled;
 	int nUnlockLevel;
 } tCheatStates;

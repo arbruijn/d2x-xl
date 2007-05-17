@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				33
+#define STATE_VERSION				34
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -1137,6 +1137,8 @@ for (i = 0; i < 2; i++) {
 	CFWriteInt (fl2f (gameStates.gameplay.slowmo [i].fSpeed), fp);
 	CFWriteInt (gameStates.gameplay.slowmo [i].nState, fp);
 	}
+for (i = 0; i < MAX_PLAYERS; i++)
+	CFWriteInt (gameStates.players [i].bTripleFusion, fp);
 if (!bBetweenLevels)	{
 //Finish all morph gameData.objs.objects
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
@@ -2157,6 +2159,10 @@ for (i = 0; i < 2; i++) {
 		gameStates.gameplay.slowmo [i].fSpeed = f2fl (CFReadInt (fp));
 		gameStates.gameplay.slowmo [i].nState = CFReadInt (fp);
 		}
+	}
+if (sgVersion > 33) {
+	for (i = 0; i < MAX_PLAYERS; i++)
+		gameStates.players [i].bTripleFusion = CFReadInt (fp);
 	}
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.

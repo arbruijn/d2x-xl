@@ -3965,17 +3965,39 @@ return gameStates.gameplay.slowmo [1].bActive =
 
 //	-----------------------------------------------------------------------------------------------------------
 
+void SlowMotionOff (void)
+{
+if (SlowMotionActive ()) {
+	InitSlowMotion (1);
+	if (!BulletTimeActive ())
+		InitBulletTime (1);
+	}
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void BulletTimeOn (void)
+{
+if (!BulletTimeActive ())
+	InitBulletTime (1);
+if (!SlowMotionActive ())
+	InitSlowMotion (-1);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 void ToggleSlowMotion (void)
 {
-	int	bSlowMotionOk = (LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER);
-	int	bBulletTimeOk = (LOCALPLAYER.energy > F1_0 * 20) && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
+	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER));
+	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER));
 	int	bSlowMotion = bSlowMotionOk && (Controls [0].slowMotionCount > 0);
 	int	bBulletTime = bBulletTimeOk && (Controls [0].bulletTimeCount > 0);
 	
 Controls [0].bulletTimeCount =
 Controls [0].slowMotionCount = 0;
 #ifdef RELEASE
-LOCALPLAYER.energy -= FixMul (gameData.time.xFrame, F1_0 * (BulletTimeActive () ? 20 : 10));
+if (!(gameStates.cheats.bSpeed)
+	LOCALPLAYER.energy -= FixMul (gameData.time.xFrame, F1_0 * (BulletTimeActive () ? 20 : 10));
 if (SlowMotionActive ()) {
 	if (!bSlowMotionOk) {
 		InitSlowMotion (1);

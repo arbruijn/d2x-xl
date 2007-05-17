@@ -1222,7 +1222,7 @@ for (;;) {
 #ifdef D2X_KEYS
 				}
 			else if (items == kcHotkeys) {
-				for (i=0;i<NUM_HOTKEY_CONTROLS;i++) {
+				for (i = 0; i < NUM_HOTKEY_CONTROLS; i++) {
 					items [i].value=controlSettings.d2xDefaults [i];
 					KCDrawItem (items + i, 0);
 					}
@@ -1235,7 +1235,7 @@ for (;;) {
 					}
 				}
 			else {
-				for (i=0; i < NUM_JOY_CONTROLS; i++)	{
+				for (i = 0; i < NUM_JOY_CONTROLS; i++)	{
 					items [i].value = controlSettings.defaults [gameConfig.nControlType][i];
 					KCDrawItem (items + i, 0);
 					}
@@ -1243,13 +1243,13 @@ for (;;) {
 			KCDrawItem (items + cItem, 1);
 			break;
 		case KEY_DELETE:
-			items [cItem].value=255;
+			items [cItem].value = 255;
 			KCDrawItem (items + cItem, 1);
 			break;
 		case KEY_UP: 		
 		case KEY_PAD8:
 #ifdef TABLE_CREATION
-			if (items [cItem].u==-1) 
+			if (items [cItem].u == -1) 
 				items [cItem].u=FindNextItemUp (items,nItems, cItem);
 #endif
 			cItem = items [cItem].u; 
@@ -1258,7 +1258,7 @@ for (;;) {
 		case KEY_DOWN: 	
 		case KEY_PAD2:
 #ifdef TABLE_CREATION
-			if (items [cItem].d==-1) 
+			if (items [cItem].d == -1) 
 				items [cItem].d=FindNextItemDown (items,nItems, cItem);
 #endif
 			cItem = items [cItem].d; 
@@ -1266,7 +1266,7 @@ for (;;) {
 		case KEY_LEFT: 	
 		case KEY_PAD4:
 #ifdef TABLE_CREATION
-			if (items [cItem].l==-1) 
+			if (items [cItem].l == -1) 
 				items [cItem].l=FindNextItemLeft (items,nItems, cItem);
 #endif
 			cItem = items [cItem].l; 
@@ -1274,7 +1274,7 @@ for (;;) {
 		case KEY_RIGHT: 	
 		case KEY_PAD6:
 #ifdef TABLE_CREATION
-			if (items [cItem].r==-1) 
+			if (items [cItem].r == -1) 
 				items [cItem].r=FindNextItemRight (items,nItems, cItem);
 #endif
 			cItem = items [cItem].r; 
@@ -1297,10 +1297,10 @@ for (;;) {
 			LinkTableEntries (1 | 2 | 4 | 8);
 			fp = fopen ("KConfig.cod", "wt");
 			fprintf (fp, "ubyte controlSettings.defaults [CONTROL_MAX_TYPES][MAX_CONTROLS] = {\n");
-			for (i=0; i<CONTROL_MAX_TYPES; i++)	{
+			for (i = 0; i < CONTROL_MAX_TYPES; i++)	{
 				int j;
 				fprintf (fp, "{0x%x", controlSettings.custom [i][0]);
-				for (j=1; j<MAX_CONTROLS; j++)
+				for (j = 1; j < MAX_CONTROLS; j++)
 					fprintf (fp, ",0x%x", controlSettings.custom [i][j]);
 				fprintf (fp, "},\n");
 				}
@@ -1505,9 +1505,8 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 void KConfig (int n, char * title)
 {
-	int i;
-	grsBitmap *bmSave;
-	int	b = gameOpts->legacy.bInput;
+	grsBitmap	*bmSave;
+	int			i, j, b = gameOpts->legacy.bInput;
 
 	xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
 	yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
@@ -1558,30 +1557,28 @@ void KConfig (int n, char * title)
 	ResetCockpit ();		//force cockpit redraw next time
 	// Update save values...
 	if (n == 0) {
-		for (i = 0; i < NUM_KEY_CONTROLS; i++)	
+		for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)	
 			controlSettings.custom [0][i] = kcKeyboard [i].value;
 		}
 	else if (n == 1) {
 		if (gameOpts->input.bUseJoystick)
-			for (i = 0; i < NUM_JOY_CONTROLS; i++)	
+			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)	
 				controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
 		}
 	else if (n == 2) {
 		if (gameOpts->input.bUseMouse)
-			for (i = 0; i < NUM_MOUSE_CONTROLS; i++)	
+			for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	
 				controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;
 		}
 	else if (n == 3) {
 		if (gameConfig.nControlType == CONTROL_WINJOYSTICK)
-			for (i = 0; i < NUM_JOY_CONTROLS; i++)	
+			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)	
 				controlSettings.custom [gameConfig.nControlType][i] = kcSuperJoy [i].value;
 		}
-#ifdef D2X_KEYS
 	else if (n == 4) {
-		for (i=0; i < NUM_HOTKEY_CONTROLS; i++)
+		for (i=0, j = NUM_HOTKEY_CONTROLS; i < j; i++)
 			controlSettings.d2xCustom [i] = kcHotkeys [i].value;
 		}
-#endif
 gameOpts->legacy.bInput = b;
 }
 
@@ -1901,6 +1898,7 @@ void KCSetControls (int bGet)
 	int i, j;
 
 SetControlType ();
+return;
 for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++) {
 	if (bGet)
 		controlSettings.custom [0][i] = kcKeyboard [i].value;

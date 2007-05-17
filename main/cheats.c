@@ -641,6 +641,32 @@ else {
 
 //------------------------------------------------------------------------------
 
+void SpeedCheat (int bVerbose)
+{
+if (gameStates.app.cheats.bSpeed = !gameStates.app.cheats.bSpeed) {
+	BulletTimeOn ();
+	DoCheatPenalty ();
+	}
+else
+	SlowMotionOff ();
+}
+
+//------------------------------------------------------------------------------
+
+void TriFusionCheat (int bVerbose)
+{
+	tPlayer	*playerP = &LOCALPLAYER;
+
+if (gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+	return;
+playerP->primaryWeaponFlags |= 1 << FUSION_INDEX;
+gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 1;
+SelectWeapon (4, 0, 1, 1);
+DoCheatPenalty ();
+}
+
+//------------------------------------------------------------------------------
+
 void TurboCheat (int bVerbose)
 {
 gameStates.app.cheats.bTurboMode = !gameStates.app.cheats.bTurboMode;
@@ -810,36 +836,38 @@ extern char *jcrypt (char *);
 
 #define N_LAMER_CHEATS (sizeof (LamerCheats) / sizeof (*LamerCheats))
 
-char szAccessoryCheat [9]			= "dWdz[kCK";    // al-ifalafel
-char szAcidCheat [9]					= "qPmwxz\"S";   // bit-tersweet
-char szAfterburnerCheat [9]		= "emontree";    // L-emontree ("The World's Fastest Indian" anybody? ;)
-char szAhimsaCheat [9]				= "!Uscq_yc";    // New for 1.1 / im-agespace 
-char szAllKeysCheat [9]				= "%v%MrgbU";    //only Matt knows / or-algroove
+char szAccessoryCheat [9]			= "dWdz[kCK";		// al-ifalafel
+char szAcidCheat [9]					= "qPmwxz\"S";		// bit-tersweet
+char szAfterburnerCheat [9]		= "emontree";		// L-emontree ("The World's Fastest Indian" anybody? ;)
+char szAhimsaCheat [9]				= "!Uscq_yc";		// New for 1.1 / im-agespace 
+char szAllKeysCheat [9]				= "%v%MrgbU";		//only Matt knows / or-algroove
 char szBlueOrbCheat [8]				= "blueorb";
-char szBouncyCheat [9]				= "bGbiChQJ";    //only Matt knows / duddaboo
-char szBuddyDudeCheat [9]			= "u#uzIr%e";    //only Matt knows / g-owingnut
-char szBuddyLifeCheat [9]			= "%A-BECuY";    //only Matt knows / he-lpvishnu
+char szBouncyCheat [9]				= "bGbiChQJ";		//only Matt knows / duddaboo
+char szBuddyDudeCheat [9]			= "u#uzIr%e";		//only Matt knows / g-owingnut
+char szBuddyLifeCheat [9]			= "%A-BECuY";		//only Matt knows / he-lpvishnu
 char szCloakCheat [9]				= "itsarock";
-char szCubeWarpCheat [9]			= "subspace";   // subspace
+char szCubeWarpCheat [9]			= "subspace";		// subspace
 char szElectroCheat [8]				= "electro";
-char szFinishLevelCheat [9]		= "%bG_bZ<D";    //only Matt knows / d-elshiftb
-char szFramerateCheat [9]			= "rQ60#ZBN";    // f-rametime
-char szFullMapCheat [9]				= "PI<XQHRI";    //only Matt knows / rockrgrl
-char szGasolineCheat [9]			= "?:w8t]M'";		 // pumpmeup / New for D2X-XL
-char szHomingCheat [9]				= "t\\LIhSB[";   //only Matt knows / l-pnlizard
-char szInvulCheat [9]				= "Wv_\\JJ\\Z";  //only Matt knows / almighty
-char szJohnHeadCheat [9]			= "ou]];H:%";    // p-igfarmer
-char szKillBossCheat [9]			= "odgethis";	  //d-odgethis
-char szKillBuddyCheat [9]			= "pitapita";	  //
-char szKillThiefCheat [9]			= "dgedredd";	  //ju-dgedredd
-char szKillRobotsCheat [9]			= "&wxbs:5O";    //only Matt knows / spaniard
-char szLevelWarpCheat [9]			= "ZQHtqbb\"";   //only Matt knows / f-reespace
-char szMonsterCheat [9]				= "nfpEfRQp";    //only Matt knows / godzilla
-char szRapidFireCheat [9]			= "*jLgHi'J";    //only Matt knows / wildfire
-char szRobotsKillRobotsCheat [9] = "rT6xD__S"; // New for 1.1 / silkwing
-char szUnlockAllCheat [9]			= "vsx[%o, H";	 // cr-yptonite / New for D2X-XL
-char szWowieCheat [9]				= "F_JMO3CV";    //only Matt knows / h-onestbob
+char szFinishLevelCheat [9]		= "%bG_bZ<D";		//only Matt knows / d-elshiftb
+char szFramerateCheat [9]			= "rQ60#ZBN";		// f-rametime
+char szFullMapCheat [9]				= "PI<XQHRI";		//only Matt knows / rockrgrl
+char szGasolineCheat [9]			= "?:w8t]M'";		// pumpmeup / New for D2X-XL
+char szHomingCheat [9]				= "t\\LIhSB[";		//only Matt knows / l-pnlizard
+char szInvulCheat [9]				= "Wv_\\JJ\\Z";	//only Matt knows / almighty
+char szJohnHeadCheat [9]			= "ou]];H:%";		// p-igfarmer
+char szKillBossCheat [9]			= "odgethis";		//d-odgethis
+char szKillBuddyCheat [9]			= "pitapita";		//
+char szKillThiefCheat [9]			= "dgedredd";		//ju-dgedredd
+char szKillRobotsCheat [9]			= "&wxbs:5O";		//only Matt knows / spaniard
+char szLevelWarpCheat [9]			= "ZQHtqbb\"";		//only Matt knows / f-reespace
+char szMonsterCheat [9]				= "nfpEfRQp";		//only Matt knows / godzilla
+char szRapidFireCheat [9]			= "*jLgHi'J";		//only Matt knows / wildfire
+char szRobotsKillRobotsCheat [9] = "rT6xD__S";		// New for 1.1 / silkwing
+char szUnlockAllCheat [9]			= "vsx[%o, H";		// cr-yptonite / New for D2X-XL
+char szWowieCheat [9]				= "F_JMO3CV";		//only Matt knows / h-onestbob
 char szSuperWowieCheat [9]			= "minemine";
+char szSpeedCheat [9]				= "estheone";		//h-estheone
+char szTriFusionCheat [9]			= "cottmeup";		//s-cottmeup (Scott me up, beamy!)
 
 tCheat cheats [] = {
 	// Descent 2
@@ -870,6 +898,8 @@ tCheat cheats [] = {
 	{szMonsterCheat, MonsterCheat, 1, 1, 0}, 
 	{szRapidFireCheat, RapidFireCheat, -1, 1, 0}, 
 	{szRobotsKillRobotsCheat, RobotsKillRobotsCheat, -1, 1, 0}, 
+	{szSpeedCheat, SpeedCheat, -1, 0, 0}, 
+	{szTriFusionCheat, TriFusionCheat, -1, 0, 0}, 
 	{/*szUnlockAllCheat*/"yptonite", UnlockAllCheat, 1, 0, 0}, 
 	{szSuperWowieCheat, SuperWowieCheat, 1, 0, 0}, 
 	{szWowieCheat, WowieCheat, 1, 1, 0}, 

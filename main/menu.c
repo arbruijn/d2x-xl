@@ -1610,13 +1610,12 @@ do {
 		optScaleGauges = opt++;
 		ADD_CHECK (opt, TXT_FLASH_GAUGES, gameOpts->render.cockpit.bFlashGauges, KEY_F, HTX_CPIT_FLASHGAUGES);
 		optFlashGauges = opt++;
-		ADD_CHECK (opt, TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
-		optShieldWarn = opt++;
 		}
 	else
 		optScaleGauges =
-		optFlashGauges =
-		optShieldWarn = -1;
+		optFlashGauges = -1;
+	ADD_CHECK (opt, TXT_SHIELD_WARNING, gameOpts->gameplay.bShieldWarning, KEY_W, HTX_CPIT_SHIELDWARN);
+	optShieldWarn = opt++;
 	ADD_CHECK (opt, TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	optObjectTally = opt++;
 	ADD_CHECK (opt, TXT_PLAYER_STATS, gameOpts->render.cockpit.bPlayerStats, KEY_S, HTX_CPIT_PLAYERSTATS);

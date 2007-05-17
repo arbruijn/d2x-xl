@@ -774,8 +774,10 @@ int InitAutomap (int bPauseGame, fix *pxEntryTime, int *pnMaxSegsAway, int *pnSe
 gameStates.render.automap.bDisplay = 1;
 gameStates.ogl.nContrast = 8;
 InitAutomapColors ();
+if (!gameStates.render.automap.bRadar)
+	SlowMotionOff ();
 if (gameStates.render.automap.bRadar || 
-	 ((gameData.app.nGameMode & GM_MULTI) && 
+	 (IsMultiGame && 
 	  (gameStates.app.nFunctionMode == FMODE_GAME) && 
 	  (!gameStates.app.bEndLevelSequence)))
 	bPauseGame = 0;

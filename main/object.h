@@ -497,6 +497,8 @@ void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
 int SlowMotionActive (void);
 int BulletTimeActive (void);
+void SlowMotionOff (void);
+void BulletTimeOn (void);
 
 extern ubyte bIsMissile [];
 
