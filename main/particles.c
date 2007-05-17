@@ -902,8 +902,10 @@ if (CloudLives (pCloud, nCurTime)) {
 		h = 1;
 	if (h > c.nMaxParts - i)
 		h = c.nMaxParts - i;
+#ifdef _DEBUG
 	//LogErr ("   creating %vDelta particles\n", h);
-	HUDMessage (0, "have %d/%d particles, creating %d, moved %1.2f\n", i, c.nMaxParts, h, fDist);
+	//HUDMessage (0, "have %d/%d particles, creating %d, moved %1.2f\n", i, c.nMaxParts, h, fDist);
+#endif
 	if (!h)
 		return c.nMaxParts;
 	else if (h == 1)
