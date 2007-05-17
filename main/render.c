@@ -1406,7 +1406,7 @@ else	//brighten if facing directly
 	dim = 1.0f + 0.5f * -a / 1.0f;
 #endif
 // o serves to slightly displace the corona from its face to avoid z fighting
-//VmVecScalef (&o, &n, 1.0f / 10.0f);
+VmVecScalef (&o, &n, 1.0f / 10.0f);
 #if 1	//might remove z from normal 
 n.p.z = 0;
 VmVecNormalizef (&n, &n);
