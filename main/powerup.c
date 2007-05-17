@@ -349,7 +349,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	playerP->flags |= nKey;
 	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
-	return (gameData.app.nGameMode & GM_MULTI) == 0;
+	return IsMultiGame == 0;
 	}
 return 0;
 }
@@ -386,7 +386,7 @@ int PickupEquipment (tObject *objP, int nEquipment, char *pszHave, char *pszGot,
 if (playerP->flags & nEquipment) {
 	if (ISLOCALPLAYER (nPlayer))
 		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, pszHave);
-	if (!(gameData.app.nGameMode & GM_MULTI))
+	if (!IsMultiGame)
 		bUsed = PickupEnergy (nPlayer);
 	} 
 else {
@@ -438,7 +438,7 @@ if ((bApply = (id < 0)))
 if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;
-	if (gameData.app.nGameMode & GM_MULTI) // Added by Rob, take this out if it turns out to be not good for net games!
+	if (IsMultiGame) // Added by Rob, take this out if it turns out to be not good for net games!
 		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hitSound, F1_0);
 	DigiPlaySample ((short) gameData.objs.pwrUp.info[id].hitSound, F1_0 );
 	}
@@ -463,7 +463,7 @@ if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame))
 if (ISLOCALPLAYER (nPlayer)) {
 	playerP->invulnerableTime = gameData.time.xGame;
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
-	if (gameData.app.nGameMode & GM_MULTI)
+	if IsMultiGame
 		MultiSendInvul ();
 	PowerupBasic (7, 14, 21, INVULNERABILITY_SCORE, "%s!", TXT_INVULNERABILITY);
 	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
@@ -491,7 +491,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like tPlayer fires laser).
 	playerP->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
-	if (gameData.app.nGameMode & GM_MULTI)
+	if IsMultiGame
 		MultiSendCloak ();
 	PowerupBasic (-10,-10,-10, CLOAK_SCORE, "%s!", TXT_CLOAKING_DEVICE);
 	UsePowerup (-POW_CLOAK);
@@ -558,7 +558,7 @@ switch (objP->id) {
 			PickupPrimary (LASER_INDEX, nPlayer);
 			bUsed = 1;
 			}
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
@@ -591,7 +591,7 @@ switch (objP->id) {
 			}
 		else
 			HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE, TXT_QUAD_LASERS);
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
@@ -606,7 +606,7 @@ switch (objP->id) {
 		//and remove the powerup.  If multi-tPlayer take ammo in excess of
 		//the amount in a powerup, and leave the rest.
 		if (!bUsed)
-			if ((gameData.app.nGameMode & GM_MULTI))
+			if (IsMultiGame)
 				ammo -= VULCAN_AMMO_AMOUNT;	//don't let take all ammo
 		if (ammo > 0) {
 			int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, ammo, nPlayer);
@@ -626,31 +626,31 @@ switch (objP->id) {
 
 	case POW_SPREADFIRE:
 		bUsed = PickupPrimary (SPREADFIRE_INDEX, nPlayer);
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
 	case POW_PLASMA:
 		bUsed = PickupPrimary (PLASMA_INDEX, nPlayer);
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
 	case POW_FUSION:
 		bUsed = PickupPrimary (FUSION_INDEX, nPlayer);
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
 	case POW_HELIX:
 		bUsed = PickupPrimary (HELIX_INDEX, nPlayer);
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
 	case POW_PHOENIX:
 		bUsed = PickupPrimary (PHOENIX_INDEX, nPlayer);
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
@@ -658,7 +658,7 @@ switch (objP->id) {
 		bUsed = PickupPrimary (OMEGA_INDEX, nPlayer);
 		if (bUsed)
 			gameData.laser.xOmegaCharge = objP->cType.powerupInfo.count;
-		else if (!(gameData.app.nGameMode & GM_MULTI))
+		else if (!IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
@@ -789,7 +789,7 @@ switch (objP->id) {
 				}
 			bUsed = 1;
 			}
-		if (!bUsed && !(gameData.app.nGameMode & GM_MULTI))
+		if (!bUsed && !IsMultiGame)
 			bUsed = PickupEnergy (nPlayer);
 		break;
 
@@ -813,7 +813,7 @@ switch (objP->id) {
 			if (ISLOCALPLAYER (nPlayer)) {
 				if (gameOpts->gameplay.bHeadlightOn && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (bHeadLights, 0, 0, 0)))
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
-				if (gameData.app.nGameMode & GM_MULTI)
+				if IsMultiGame
 					MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 				}
 			bUsed = 1;

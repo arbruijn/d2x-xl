@@ -374,6 +374,7 @@ typedef struct tSlowMotionStates {
 	float fSpeed;
 	int	nState;
 	time_t tUpdate;
+	int	bActive;
 	} tSlowMotionStates;
 
 typedef struct tGameplayStates {
@@ -389,8 +390,8 @@ typedef struct tGameplayStates {
 	int nLastReactor;
 	int bMineMineCheat;
 	int bAfterburnerCheat;
+	int bTripleFusion;
 	fix nPlayerSpeed;
-	int bBulletTime;
 	vmsVector vTgtDir;
 	int nDirSteps;
 	tSeismicStates seismic;
@@ -786,6 +787,10 @@ typedef struct tLimitFPSStates {
 	ubyte bOmega;
 } tLimitFPSStates;
 
+typedef struct tPlayerStates {
+	int bTripleFusion;
+} tPlayerStates;
+
 typedef struct tGameStates {
 	tGameplayStates		gameplay;
 	tInputStates			input;
@@ -800,6 +805,7 @@ typedef struct tGameStates {
 	tApplicationStates	app;
 	tEntropyStates			entropy;
 	tLimitFPSStates		limitFPS;
+	tPlayerStates			players [MAX_PLAYERS];
 } tGameStates;
 
 extern tGameOptions	gameOptions [2];

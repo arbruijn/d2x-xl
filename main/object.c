@@ -3882,84 +3882,151 @@ return 1;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void InitSlowMotion (int i)
+static int nSlowMotionChannel = -1;
+
+void SetSlowMotionState (int i)
 {
-if (gameStates.gameplay.slowmo [i].nState)
+	int	nState = 0;
+
+if (gameStates.gameplay.slowmo [i].nState) {
 	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
+	if (nSlowMotionChannel>= 0) {
+		DigiStopSound (nSlowMotionChannel);
+		nSlowMotionChannel= -1;
+		}
+	}
 else if (gameStates.gameplay.slowmo [i].fSpeed > 1) {
 	gameStates.gameplay.slowmo [i].nState = -1;
 	}
 else {
 	gameStates.gameplay.slowmo [i].nState = 1;
 	}
-if ((gameStates.gameplay.slowmo [i].nState < 0) == (i == 0))
+gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void SlowMotionMessage (void)
+{
+if (gameStates.gameplay.slowmo [0].nState > 0) {
+	if (gameOpts->sound.bUseSDLMixer)
+		nSlowMotionChannel= DigiPlayWAV ("slowdown.wav", F1_0);
 	HUDInitMessage (TXT_SLOWING_DOWN);
-else
+	}
+else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
+	 ((gameStates.gameplay.slowmo [0].nState == 0) &&
+	  (gameStates.gameplay.slowmo [0].fSpeed == 1)) || 
+	 (gameStates.gameplay.slowmo [1].nState < 0) || 
+	 ((gameStates.gameplay.slowmo [1].nState == 0) &&
+	  (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
+	if (gameOpts->sound.bUseSDLMixer)
+		nSlowMotionChannel= DigiPlayWAV ("speedup.wav", F1_0);
 	HUDInitMessage (TXT_SPEEDING_UP);
-gameStates.gameplay.slowmo [0].tUpdate = gameStates.app.nSDLTicks;
+	}
+else {
+	if (gameOpts->sound.bUseSDLMixer)
+		nSlowMotionChannel= DigiPlayWAV ("slowdown.wav", F1_0);
+	HUDInitMessage (TXT_SLOWING_DOWN);
+	}
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 void InitBulletTime (int nState)
 {
-if (!gameStates.gameplay.slowmo [0].nState && (gameStates.gameplay.slowmo [0].fSpeed == 1))
-	return;
 gameStates.gameplay.slowmo [1].nState = nState;
-InitSlowMotion (1);
+SetSlowMotionState (1);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+void InitSlowMotion (int nState)
+{
+gameStates.gameplay.slowmo [0].nState = nState;
+SetSlowMotionState (0);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+int SlowMotionActive (void)
+{
+return gameStates.gameplay.slowmo [0].bActive =
+		 (gameStates.gameplay.slowmo [0].nState > 0) || (gameStates.gameplay.slowmo [0].fSpeed > 1);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+int BulletTimeActive (void)
+{
+return gameStates.gameplay.slowmo [1].bActive =
+		 SlowMotionActive () && 
+		 ((gameStates.gameplay.slowmo [1].nState < 0) || (gameStates.gameplay.slowmo [1].fSpeed == 1));
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 void ToggleSlowMotion (void)
 {
-	int	bSlowMotion = (gameStates.gameplay.slowmo [0].fSpeed > 1);
-
+	int	bSlowMotionOk = (LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER);
+	int	bBulletTimeOk = (LOCALPLAYER.energy > F1_0 * 20) && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
+	int	bSlowMotion = bSlowMotionOk && (Controls [0].slowMotionCount > 0);
+	int	bBulletTime = bBulletTimeOk && (Controls [0].bulletTimeCount > 0);
+	
+Controls [0].bulletTimeCount =
+Controls [0].slowMotionCount = 0;
 #ifdef RELEASE
-if (bSlowMotion) {
-	LOCALPLAYER.energy -= FixMul (gameData.time.xFrame, F1_0 * (gameStates.gameplay.bBulletTime + 1));
-	if (LOCALPLAYER.energy <= F1_0 * 100) {
-		InitSlowMotion (0);
-		if (!gameStates.gameplay.bBulletTime)
+LOCALPLAYER.energy -= FixMul (gameData.time.xFrame, F1_0 * (BulletTimeActive () ? 20 : 10));
+if (SlowMotionActive ()) {
+	if (!bSlowMotionOk) {
+		InitSlowMotion (1);
+		if (!BulletTimeActive ())
+			InitBulletTime (1);
+		SlowMotionMessage ();
+		return;
+		}
+	if (!bBulletTimeOk) {
+		InitBulletTime (-1);
+		bBulletTime = 0;
+		}
+	}
+#endif
+if (!(bSlowMotion || bBulletTime))
+	return;
+if (bBulletTime) {	//toggle bullet time and slow motion
+	if (SlowMotionActive ()) {
+		if (BulletTimeActive ())
+			InitSlowMotion (1);
+		InitBulletTime (1);
+		}
+	else {
+		InitSlowMotion (-1);
+		if (!BulletTimeActive ())
 			InitBulletTime (1);
 		}
-	return;
 	}
-if (LOCALPLAYER.energy <= F1_0 * 100)
-	return;
-if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER)) {
-	if (gameStates.gameplay.bBulletTime && bSlowMotion)
-		InitBulletTime (-1);
-	}
-else
-#endif
-	{
-	if (Controls [0].bulletTimeCount) {
-#ifdef RELEASE
-		if (!gameStates.gameplay.bBulletTime && bSlowMotion && (LOCALPLAYER.energy <= F1_0 * 110))
-			return;
-#endif
-		Controls [0].bulletTimeCount = 0;
-		gameStates.gameplay.bBulletTime = !gameStates.gameplay.bBulletTime;
-		if (gameStates.gameplay.bBulletTime && bSlowMotion)
-			InitBulletTime (1);
-		else if (!gameStates.gameplay.bBulletTime && (gameStates.gameplay.slowmo [1].fSpeed < gameStates.gameplay.slowmo [0].fSpeed))
+else {
+	if (SlowMotionActive ()) {
+		if (BulletTimeActive ())
+			InitBulletTime (-1);
+		else {
+			InitSlowMotion (1);
+			if (!BulletTimeActive ())
+				InitBulletTime (1);
+			}
+		}
+	else {
+		InitSlowMotion (-1);
+		if (BulletTimeActive ())
 			InitBulletTime (-1);
 		}
 	}
-if (Controls [0].slowMotionCount) {
-	Controls [0].slowMotionCount = 0;
-#ifdef RELEASE
-	if (!bSlowMotion && (LOCALPLAYER.energy <= F1_0 * (gameStates.gameplay.bBulletTime ? 110 : 105)))	//need at least energy for 5 secs
-		return;
-#endif
-	InitSlowMotion (0);
-	if (!gameStates.gameplay.bBulletTime)
-		InitBulletTime (-gameStates.gameplay.slowmo [0].nState);
-	}
+SlowMotionMessage ();
 }
 
 //	-----------------------------------------------------------------------------------------------------------
+
+#define SLOWDOWN_SECS	2
+#define SLOWDOWN_FPS		40
 
 void DoSlowMotionFrame (void)
 {
@@ -3970,9 +4037,9 @@ if (gameStates.app.bNostalgia || IsMultiGame)
 	return;
 ToggleSlowMotion ();
 f = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
-h = (f - 1) / 120;
+h = (f - 1) / (SLOWDOWN_SECS * SLOWDOWN_FPS);
 for (i = 0; i < 2; i++) {
-	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].nState > 25)) {
+	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].tUpdate > 25)) {
 		gameStates.gameplay.slowmo [i].fSpeed += gameStates.gameplay.slowmo [i].nState * h;
 		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
 			gameStates.gameplay.slowmo [i].fSpeed = f;
@@ -3985,10 +4052,10 @@ for (i = 0; i < 2; i++) {
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
 		}
 	}
-#if 1
+#if 0//def _DEBUG
 HUDMessage (0, "%1.2f %1.2f %d", 
 				gameStates.gameplay.slowmo [0].fSpeed, gameStates.gameplay.slowmo [1].fSpeed,
-				gameStates.gameplay.bBulletTime);
+				gameStates.gameplay.slowmo [1].bActive);
 #endif
 }
 

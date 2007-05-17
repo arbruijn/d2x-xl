@@ -472,6 +472,7 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].bMouseLook, i, 0);
 	RP (extraGameInfo [i].bPowerupLights, i, 0);
 	RP (extraGameInfo [i].bShootMissiles, i, 0);
+	RP (extraGameInfo [i].bTripleFusion, i, 0);
 	RP (extraGameInfo [i].bTagOnlyHitObjs, i, 0);
 	RP (extraGameInfo [i].bTargetIndicators, i, 0);
 	RP (extraGameInfo [i].bTowFlags, i, 0);

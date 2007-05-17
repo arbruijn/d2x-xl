@@ -3225,7 +3225,7 @@ void GameplayOptionsMenu ()
 	tMenuItem m [35];
 	int	i, j, opt = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optRobHits = -1, optAutoSel = -1, optInventory = -1, 
-			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, 
+			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optSmartWeaponSwitch = -1, optFluidPhysics = -1, optWeaponDrop = -1, optHitAngles = -1,
 			optIdleAnims = -1, optAwareness = -1, optShootMissiles = -1, optHitboxes = -1;
 	char	szRespawnDelay [60];
@@ -3288,6 +3288,8 @@ do {
 		optImmortal = opt++;
 		ADD_CHECK (opt, TXT_DROP_QUADSUPER, extraGameInfo [0].nWeaponDropMode, KEY_Q, HTX_GPLAY_DROPQUAD);
 		optWeaponDrop = opt++;
+		ADD_CHECK (opt, TXT_TRIPLE_FUSION, extraGameInfo [0].bTripleFusion, KEY_U, HTX_GPLAY_TRIFUSION);
+		optTripleFusion = opt++;
 		ADD_CHECK (opt, TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_V, HTX_GPLAY_INVENTORY);
 		optInventory = opt++;
 		ADD_CHECK (opt, TXT_BOTS_HIT_BOTS, extraGameInfo [0].bRobotsHitRobots, KEY_O, HTX_GPLAY_BOTSHITBOTS);
@@ -3351,6 +3353,7 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bMultiBosses = m [optMultiBosses].value;
 	extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].value;
 	extraGameInfo [0].bShootMissiles = m [optShootMissiles].value;
+	extraGameInfo [0].bTripleFusion = m [optTripleFusion].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
@@ -3414,7 +3417,7 @@ do {
 	memset (m, 0, sizeof (m));
 	optRender = optGameplay = optCockpit = -1;
 	opt = 0;
-	ADD_MENU (opt, TXT_SOUND_MUSIC, KEY_E, HTX_OPTIONS_SOUND);
+	ADD_MENU (opt, TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
 	optSound = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;

@@ -911,7 +911,7 @@ extern fix ThisLevelTime;
 
 void HUDShowScore ()
 {
-	char	score_str [20];
+	char	szScore [40];
 	int	w, h, aw;
 
 if (!SHOW_HUD)
@@ -920,13 +920,29 @@ if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 GrSetCurFont (GAME_FONT);
-if ((IsMultiGame && !IsCoopGame))
-	sprintf (score_str, "%s: %5d", TXT_KILLS, LOCALPLAYER.netKillsTotal);
+szScore [0] = (char) 1;
+szScore [1] = (char) (127 + 128);
+szScore [2] = (char) (127 + 128);
+szScore [3] = (char) (0 + 128);
+#ifdef RELEASE
+if (!SlowMotionActive ())
+	strcpy (szScore + 4, "          ");
 else
-	sprintf (score_str, "%s: %5d", TXT_SCORE, LOCALPLAYER.score);
-GrGetStringSize (score_str, &w, &h, &aw);
+#endif
+	sprintf (szScore + 4, "M%1.1f S%1.1f ", 
+				gameStates.gameplay.slowmo [0].fSpeed,
+				gameStates.gameplay.slowmo [1].fSpeed);
+szScore [14] = (char) 1;
+szScore [15] = (char) (0 + 128);
+szScore [16] = (char) (127 + 128);
+szScore [17] = (char) (0 + 128);
+if ((IsMultiGame && !IsCoopGame))
+	sprintf (szScore + 18, "   %s: %5d", TXT_KILLS, LOCALPLAYER.netKillsTotal);
+else
+	sprintf (szScore + 18, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
+GrGetStringSize (szScore, &w, &h, &aw);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-GrPrintF (grdCurCanv->cv_w-w-LHX (2), 3, score_str);
+GrPrintF (grdCurCanv->cv_w-w-LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1460,9 +1476,7 @@ inline int HUDShowFlashGauge (int h, int *bFlash, int tToggle)
 	time_t t = gameStates.app.nSDLTicks;
 	int b = *bFlash;
 
-if (gameStates.app.bPlayerIsDead || 
-	 gameStates.app.bPlayerExploded || 
-	 !gameOpts->render.cockpit.bFlashGauges)
+if (gameStates.app.bPlayerIsDead || gameStates.app.bPlayerExploded)
 	b = 0;
 else if (b == 2) {
 	if (h > 20)
@@ -1530,7 +1544,7 @@ else {
 
 skipGauge:
 
-if (gameData.demo.nState==ND_STATE_RECORDING) {
+if (gameData.demo.nState == ND_STATE_RECORDING) {
 	int energy = f2ir (LOCALPLAYER.energy);
 
 	if (energy != old_energy [gameStates.render.vr.nCurrentPage]) {
@@ -2181,57 +2195,57 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 
 void HUDShowShield (void)
 {
-	int	h, y;
+	static int		bShow = 1;
+	static time_t	tToggle = 0, nBeep = -1;
+	time_t			t = gameStates.app.nSDLTicks;
+	int				bLastFlash = gameStates.gameplay.nShieldFlash;
+	int				h, y;
 
 if (!SHOW_HUD)
 	return;
 //	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
-
 h = (LOCALPLAYER.shields >= 0) ? f2ir (LOCALPLAYER.shields) : 0; 
+if ((t = HUDShowFlashGauge (h, &gameStates.gameplay.nShieldFlash, (int) tToggle))) {
+	tToggle = t;
+	bShow = !bShow;
+	}
 if (gameOpts->render.cockpit.bTextGauges) {
-	y = grdCurCanv->cv_h - ((gameData.app.nGameMode & GM_MULTI) ? 6 : 2) * nLineSpacing;
+	y = grdCurCanv->cv_h - (IsMultiGame ? 6 : 2) * nLineSpacing;
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (2, y, "%s: %i", TXT_SHIELD, h);
 	}
 else {
-	static int		bShow = 1;
-	static time_t	tToggle = 0, nBeep = -1;
-	time_t			t = gameStates.app.nSDLTicks;
-	int				bLastFlash = gameStates.gameplay.nShieldFlash;
-
-	if ((t = HUDShowFlashGauge (h, &gameStates.gameplay.nShieldFlash, (int) tToggle))) {
-		tToggle = t;
-		bShow = !bShow;
-		}
-	y = grdCurCanv->cv_h - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 6 : 2) * nLineSpacing - 1) * yScale);
+	y = grdCurCanv->cv_h - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * yScale);
 	GrSetColorRGB (0, (ubyte) ((h > 100) ? 255 : 64), 255, 255);
 	GrUBox (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
-	if (gameStates.gameplay.nShieldFlash) {
-		if (gameOpts->gameplay.bShieldWarning) {
-			if ((nBeep < 0) || (bLastFlash != gameStates.gameplay.nShieldFlash)) {
-				if (nBeep >= 0)
-					DigiStopSound ((int) nBeep);
-				nBeep = DigiStartSound (DigiXlatSound (SOUND_HUD_MESSAGE), F1_0 * 2 / 3, 0xFFFF / 2, 
-												  -1, -1, -1, -1, (gameStates.gameplay.nShieldFlash == 1) ? F1_0 * 3 / 4 : F1_0 / 2, NULL);
-				}
-			}
-		else if (nBeep >= 0) {
-			DigiStopSound ((int) nBeep);
-			nBeep = -1;
-			}
-		if (!bShow)
-			goto skipGauge;
-		h = 100;
+	if (bShow) {
+		GrSetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
+		GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
 		}
-	else {
-		if (nBeep >= 0) {
-			DigiStopSound ((int) nBeep);
-			nBeep = -1;
+	}
+if (gameStates.gameplay.nShieldFlash) {
+	if (gameOpts->gameplay.bShieldWarning && gameOpts->sound.bUseSDLMixer) {
+		if ((nBeep < 0) || (bLastFlash != gameStates.gameplay.nShieldFlash)) {
+			if (nBeep >= 0)
+				DigiStopSound ((int) nBeep);
+			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0, 
+											(gameStates.gameplay.nShieldFlash == 1) ? "lowping.wav" : "highping.wav");
 			}
 		}
-	GrSetColorRGB (0, (ubyte) ((h > 100) ? 224 : 64), 224, 128);
-	GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
+	else if (nBeep >= 0) {
+		DigiStopSound ((int) nBeep);
+		nBeep = -1;
+		}
+	if (!bShow)
+		goto skipGauge;
+	h = 100;
+	}
+else {
+	if (nBeep >= 0) {
+		DigiStopSound ((int) nBeep);
+		nBeep = -1;
+		}
 	}
 
 skipGauge:

@@ -824,7 +824,7 @@ char *defaultGameTexts [][2] = {
 	{"Feste ~Zoomstufen", "FiXed Zoom Stages"},
 	{"St~ufenloser Zoom", "Smooth Zoom"},
 	{"Spiel-Optionen", "Gameplay options"},
-	{"~Klaenge und Musik...", "Sound ~Effects & Music..."},
+	{"~Klaenge und Musik...", "Sound Effects & ~Music..."},
 	{"~Bildschirm-Aufloesung...", "Screen ~Resolution..."},
 	{"~Primaerwaffen-Rang", "~PRIMARY AUTOSELECT ORDERING..."},
 	{"~Sekundaerwaffen-Rang", "S~ECONDARY AUTOSELECT ORDERING..."},
@@ -1663,6 +1663,7 @@ char *defaultGameTexts [][2] = {
 	{"beschleunige...", "speeding up..."},
 	{"verzoegere...", "slowing down..."},
 	{"Zeitlupen-Beschleunigung: x%1.1f", "Slow ~Motion speedup: x%1.1f"},
+	{"Dreifach-F~Usion zulassen", "allow triple f~Usion"},
 #if 0
 	{"", ""},
 #endif
@@ -2176,6 +2177,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erhalten Energieschuesse und Truemmer Lichthoefe.", "If checked, debris and shot from energy weapons are rendered with\ncoronas."},
 	{"Wenn angekreuzt, wird die Umgebung der Mine ('Skybox') in der Ueber-\nsichtskarte gezeichnet.", "If checked, the mine's environment ('skybox') is rendered in the\nautomap."},
 	{"Hier kann die maximale Zeitlupen-Beschleunigung eingestellt werden.", "Adjust the maximal slow motion speedup here."},
+	{"Wenn angekreuzt, kann der Spieler nach Aufnahme einer zweiten Fusions-\nkanone drei statt zwei Fusionsschuesse auf einmal abfeuern.", 
+	 "If checked, the player can fire three instead of two fusion blobs after\nhaving picked up a second Fusion Gun."},
 #if 0
 	{"", ""},
 #endif

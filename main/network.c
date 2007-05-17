@@ -4516,6 +4516,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nCoopPenalty = 0;
 	extraGameInfo [i].bShootMissiles = 0;
+	extraGameInfo [i].bTripleFusion = 0;
 	extraGameInfo [i].nHitboxes = 0;
 	extraGameInfo [i].nRadar = 0;
 	extraGameInfo [i].nSpotSize = 2 - i;
@@ -4644,6 +4645,7 @@ else {
 	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
 	LogErr ("   nCoopPenalty: %d\n", nCoopPenalties [extraGameInfo [1].nCoopPenalty]);
 	LogErr ("   bShootMissiles: %d\n", extraGameInfo [1].bShootMissiles);
+	LogErr ("   bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	LogErr ("   nHitboxes: %d\n", extraGameInfo [1].nHitboxes);
 	LogErr ("   nRadar: %d\n", extraGameInfo [1].nRadar);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);

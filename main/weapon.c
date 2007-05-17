@@ -837,15 +837,19 @@ int PickupPrimary (int nWeaponIndex, int nPlayer)
 	ushort flag = 1 << nWeaponIndex;
 	int cutpoint;
 	int supposed_weapon = gameData.weapons.nPrimary;
+	int bTripleFusion = !gameStates.players [nPlayer].bTripleFusion && (nWeaponIndex == FUSION_INDEX) && EGI_FLAG (bTripleFusion, 0, 0, 0);
 
-if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag)) {		//already have
+if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag) && !bTripleFusion) {
 	if (ISLOCALPLAYER (nPlayer))
-		HUDInitMessage("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
+		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
 	return 0;
 	}
-playerP->primaryWeaponFlags |= flag;
+if (!(playerP->primaryWeaponFlags & flag))
+	playerP->primaryWeaponFlags |= flag;
+else if (bTripleFusion)
+	gameStates.players [nPlayer].bTripleFusion = 1;
 if (ISLOCALPLAYER (nPlayer)) {
-	cutpoint=POrderList (255);
+	cutpoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && 
 		(playerP->laserLevel >= 4))
 		supposed_weapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
@@ -855,7 +859,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 		SelectWeapon (nWeaponIndex, 0, 0, 1);
 	PALETTE_FLASH_ADD (7,14,21);
 	if (nWeaponIndex != LASER_INDEX)
-  		HUDInitMessage("%s!", PRIMARY_WEAPON_NAMES (nWeaponIndex));
+  		HUDInitMessage ("%s!", PRIMARY_WEAPON_NAMES (nWeaponIndex));
 	}
 return 1;
 }
@@ -1270,7 +1274,9 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 #endif
 	}
 else {
-	if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
+	if ((gameData.weapons.nPrimary == 4) && gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+		gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+	else if (gameData.weapons.nPrimary)	//if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 	nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
 	if (nObject == -1) {
@@ -1315,7 +1321,7 @@ void DropSecondaryWeapon (int nWeapon)
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
 if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
-	HUDInitMessage(TXT_CANT_DROP_SEC);
+	HUDInitMessage (TXT_CANT_DROP_SEC);
 	return;
 	}
 nPowerup = secondaryWeaponToPowerup[nWeapon];

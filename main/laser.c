@@ -1185,7 +1185,7 @@ int LaserPlayerFireSpreadDelay (
 	int harmless)
 {
 	short			nLaserSeg;
-	int			Fate; 
+	int			nFate; 
 	vmsVector	vLaserPos, vLaserDir, pnt;
 	tVFIQuery	fq;
 	tFVIData		hit_data;
@@ -1201,9 +1201,15 @@ int LaserPlayerFireSpreadDelay (
 #endif
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
-pnt = gameData.pig.ship.player->gunPoints [nGun];
-if (bLaserOffs)
-	VmVecScaleInc (&pnt, &objP->position.mOrient.uVec, LASER_OFFS);
+if (nGun >= 0) {
+	pnt = gameData.pig.ship.player->gunPoints [nGun];
+	if (bLaserOffs)
+		VmVecScaleInc (&pnt, &objP->position.mOrient.uVec, LASER_OFFS);
+	}
+else {
+	VmVecScale (VmVecAdd (&pnt, gameData.pig.ship.player->gunPoints - nGun, gameData.pig.ship.player->gunPoints - nGun - 1), F1_0 / 2);
+	VmVecScaleInc (&pnt, &gameData.objs.console->position.mOrient.uVec, -2 * VmVecMag (&pnt));
+	}
 VmCopyTransposeMatrix (&m, &objP->position.mOrient);
 VmVecRotate (&gun_point, &pnt, &m);
 memcpy (&m, &objP->position.mOrient, sizeof (vmsMatrix));
@@ -1223,7 +1229,7 @@ fq.radP1				= 0x10;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_CHECK_OBJS | FQ_IGNORE_POWERUPS;
-Fate = FindVectorIntersection (&fq, &hit_data);
+nFate = FindVectorIntersection (&fq, &hit_data);
 nLaserSeg = hit_data.hit.nSegment;
 if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
@@ -1232,10 +1238,10 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 if (VmVecDistQuick (&vLaserPos, &objP->position.vPos) > 0x50000) {
 	return -1;
 	}
-if (Fate == HIT_WALL)  {
+if (nFate == HIT_WALL)  {
 	return -1;
 	}
-if (Fate == HIT_OBJECT) {
+if (nFate == HIT_OBJECT) {
 //		if (gameData.objs.objects [hit_data.hitObject].nType == OBJ_ROBOT)
 //			KillObject (gameData.objs.objects + hit_data.hitObject);
 //		if (gameData.objs.objects [hit_data.hitObject].nType != OBJ_POWERUP)
@@ -1756,6 +1762,8 @@ int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFi
 			vmsVector	vForce;
 			LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
 			LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
+			if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameStates.players [objP->id].bTripleFusion)
+				LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
 			flags = (sbyte) (gameData.fusion.xCharge >> 12);
 			gameData.fusion.xCharge = 0;
 			vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);

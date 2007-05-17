@@ -182,34 +182,50 @@ DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, F1_0, NULL);
 
 //------------------------------------------------------------------------------
 
-int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops)
+int DigiPlaySampleSpeed (short nSound, fix maxVolume, int nSpeed, int nLoops, char *pszWAV)
 {
+if (!pszWAV) {
 #ifdef NEWDEMO
-if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordSound (nSound);
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordSound (nSound);
 #endif
-nSound = (nSound < 0) ? - nSound : DigiXlatSound (nSound);
-if (nSound < 0) 
-	return -1;
+	nSound = (nSound < 0) ? - nSound : DigiXlatSound (nSound);
+	if (nSound < 0) 
+		return -1;
+	}
 // start the sample playing
 if (nLoops > 0)
-	return DigiStartSound (nSound, maxVolume, 0xffff/2, 0, 0, nLoops - 1, -1, nSpeed, NULL);
+	return DigiStartSound (nSound, maxVolume, 0xffff/2, 0, 0, nLoops - 1, -1, nSpeed, pszWAV);
 else
-	return DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, nSpeed, NULL);
+	return DigiStartSound (nSound, maxVolume, 0xffff/2, 0, -1, -1, -1, nSpeed, pszWAV);
 }
 
 //------------------------------------------------------------------------------
 
 int DigiPlaySample (short nSound, fix maxVolume)
 {
-return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0);
+return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0, NULL);
 }
 
 //------------------------------------------------------------------------------
 
 int DigiPlaySampleLooped (short nSound, fix maxVolume, int nLoops)
 {
-return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, nLoops);
+return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, nLoops, NULL);
+}
+
+//------------------------------------------------------------------------------
+
+int DigiPlayWAV (char *pszWAV, fix maxVolume)
+{
+return DigiPlaySampleSpeed (-1, maxVolume, F1_0, 0, pszWAV);
+}
+
+//------------------------------------------------------------------------------
+
+int DigiPlayWAVLooped (char *pszWAV, fix maxVolume, int nLoops)
+{
+return DigiPlaySampleSpeed (-1, maxVolume, F1_0, nLoops, pszWAV);
 }
 
 //------------------------------------------------------------------------------

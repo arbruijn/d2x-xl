@@ -64,6 +64,8 @@ extern inline fix FixMul (fix x, fix y) { return do_fixmul (x,y); }
 #define SOUND_BUFFER_SIZE 512
 
 #define MIN_VOLUME 10
+#define SOUND_FORMAT	AUDIO_U8	//AUDIO_S16LSB
+
 
 /* This table is used to add two sound values together and pin
  * the value to avoid overflow.  (used with permission from ARDI)
@@ -268,8 +270,8 @@ if (gameStates.app.bDemoData)
 if (gameOpts->sound.bUseSDLMixer) {
 	if (0 > (gameData.songs.user.bMP3 ?
 				Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10) :
-				Mix_OpenAudio (gameOpts->sound.digiSampleRate, AUDIO_U8, 2, 
-									SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K)))) {
+				Mix_OpenAudio (gameOpts->sound.digiSampleRate, SOUND_FORMAT, 2, 
+									2 * SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K)))) {
 		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;
@@ -284,7 +286,7 @@ else
 	{
 	WaveSpec.freq = gameOpts->sound.digiSampleRate;
 	//added/changed by Sam Lantinga on 12/01/98 for new SDL version
-	WaveSpec.format = AUDIO_U8;
+	WaveSpec.format = AUDIO_S16LSB;
 	WaveSpec.channels = 2;
 	//end this section addition/change - SL
 	WaveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K);
@@ -335,73 +337,111 @@ for (i = 0; i < MAX_SOUND_SLOTS; i++)
 }
 
 //------------------------------------------------------------------------------
+// resample to 16 bit stereo
 
-int DigiResampleSound (tDigiSound *gsp, struct tSoundSlot *ssp, int bD1Sound, int b16Bits)
+int DigiResampleSound (tDigiSound *gsp, struct tSoundSlot *ssp, int bD1Sound, int bMP3)
 {
-	int h = 0, i, j, k, l;
+	int		h = 0, i, k, l;
+	ushort	*ps, *ph;
 
 i = gsp->length;
 l = 2 * i;
 if (bD1Sound)
 	l *= 2;
-if (b16Bits)
+if (bMP3)
 	l = l * 32 / 11;	//sample up to approx. 32 kHz
-if (! (ssp->samples = (ubyte *) d_malloc (l)))
+#if SOUND_FORMAT == AUDIO_S16LSB
+else
+	l *= 2;
+#endif
+if (!(ssp->samples = (ubyte *) d_malloc (l)))
 	return -1;
 ssp->bResampled = 1;
-j = b16Bits ? l / 2 : l;
+ph = (ushort *) ssp->samples;
+ps = (ushort *) (ssp->samples + l);
 k = 0;
 for (;;) {
 	if (i) 
 		h = gsp->data [--i];
-	if (b16Bits) {
+	if (bMP3) { //get as close to 32.000 Hz as possible
 		if (k < 700)
 			h <<= k / 100;
 		else if (i < 700)
 			h <<= i / 100;
 		else
-			h <<= 7;
-		*((ushort *) ssp->samples + --j) = (ushort) h;
-		if (!j)
+			h = (h - 1) << 8;
+		*(--ps) = (ushort) h;
+		if (ps <= ph)
 			break;
-		*((ushort *) ssp->samples + --j) = (ushort) h;
-		if (!j)
+		*(--ps) = (ushort) h;
+		if (ps <= ph)
 			break;
 		if (++k % 11) {
-			*((ushort *) ssp->samples + --j) = (ushort) h;
-			if (!j)
+			*(--ps) = (ushort) h;
+			if (ps <= ph)
 				break;
 			}
 		}
 	else {
-		ssp->samples [--j] = h;
-		ssp->samples [--j] = h;
-		if (!j)
+#if SOUND_FORMAT == AUDIO_S16LSB
+		h = (((h + 1) << 7) - 1);
+		*(--ps) = (ushort) h;
+#else
+		h |= h << 8;
+#endif
+		*(--ps) = (ushort) h;
+		if (ps <= ph)
 			break;
 		}
 	if (bD1Sound) {
-		if (b16Bits) {
-			*((ushort *) ssp->samples + --j) = (ushort) h;
-			if (!j)
+		if (bMP3) {
+			*(--ps) = (ushort) h;
+			if (ps <= ph)
 				break;
-			*((ushort *) ssp->samples + --j) = (ushort) h;
-			if (!j)
+			*(--ps) = (ushort) h;
+			if (ps <= ph)
 				break;
 			if (k % 11) {
-				*((ushort *) ssp->samples + --j) = (ushort) h;
-				if (!j)
+				*(--ps) = (ushort) h;
+				if (ps <= ph)
 					break;
 				}
 			}
 		else {
-			ssp->samples [--j] = h;
-			ssp->samples [--j] = h;
-			if (!j)
+#if SOUND_FORMAT == AUDIO_S16LSB
+			*(--ps) = (ushort) h;
+#endif
+			*(--ps) = (ushort) h;
+			if (ps <= ph)
 				break;
 			}
 		}
 	}
+Assert (ps == ph);
 return ssp->length = l;
+}
+
+//------------------------------------------------------------------------------
+
+int DigiReadWAV (struct tSoundSlot *ssp)
+{
+	CFILE	*fp;
+	int	l;
+
+if (!(fp = CFOpen ("d2x-temp.wav", gameFolders.szDataDir, "rb", 0)))
+	return 0;
+if (0 >= (l = CFLength (fp, 0)))
+	l = -1;
+else if (!(ssp->samples = (ubyte *) d_malloc (l)))
+	l = -1;
+else if (CFRead (ssp->samples, 1, l, fp) != l)
+	l = -1;
+CFClose (fp);
+if ((l < 0) && ssp->samples) {
+	d_free (ssp->samples);
+	ssp->samples = NULL;
+	}
+return l > 0;
 }
 
 //------------------------------------------------------------------------------

@@ -495,6 +495,8 @@ void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
+int SlowMotionActive (void);
+int BulletTimeActive (void);
 
 extern ubyte bIsMissile [];
 

@@ -1402,6 +1402,8 @@ if (i) {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].nZoomMode = 0;
 	extraGameInfo [0].nHitboxes = 0;
+	extraGameInfo [0].bTripleFusion = 0;
+	extraGameInfo [0].bShootMissiles = 0;
 	gameOptions [1].gameplay.nAutoSelectWeapon = 2;
 	gameOptions [1].gameplay.bSecretSave = 0;
 	gameOptions [1].gameplay.bTurboMode = 0;
@@ -1721,10 +1723,11 @@ gameStates.gameplay.seismic.nVolume = 0;
 gameStates.gameplay.slowmo [0].nState = 0;
 gameStates.gameplay.slowmo [0].fSpeed = 1;
 gameStates.gameplay.slowmo [0].tUpdate = 0;
+gameStates.gameplay.slowmo [0].bActive = 0;
 gameStates.gameplay.slowmo [1].nState = 0;
 gameStates.gameplay.slowmo [1].fSpeed = 1;
 gameStates.gameplay.slowmo [1].tUpdate = 0;
-gameStates.gameplay.bBulletTime = 0;
+gameStates.gameplay.slowmo [1].bActive = 0;
 gameOpts->gameplay.nSlowMotionSpeedup = 6;	//max slow motion delay
 }
 

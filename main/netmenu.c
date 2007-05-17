@@ -2556,6 +2556,7 @@ else
 		ADDFLAG (!AXI.bFriendlyFire, "no FF");
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
 		ADDFLAG (AXI.bShootMissiles, "shoot msls");
+		ADDFLAG (AXI.bTripleFusion, "tri fusion");
 		ADDFLAG (AXI.nHitboxes, "hit boxes");
 		}
 	else
