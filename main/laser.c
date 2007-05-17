@@ -1353,7 +1353,7 @@ if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.
 	return;
 frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 new_fvec = *norm_vel;
-VmVecScale (&new_fvec, /*gameData.time.xFrame*/ frameTime * HOMINGMSL_SCALE);
+VmVecScale (&new_fvec, /*gameData.time.xFrame*/ (fix) (frameTime * HOMINGMSL_SCALE / gameStates.gameplay.slowmo [0].fSpeed));
 VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
 VmVecNormalizeQuick (&new_fvec);
 //	if ((norm_vel->x == 0) && (norm_vel->y == 0) && (norm_vel->z == 0))

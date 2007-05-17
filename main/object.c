@@ -3996,8 +3996,6 @@ void ToggleSlowMotion (void)
 Controls [0].bulletTimeCount =
 Controls [0].slowMotionCount = 0;
 #ifdef RELEASE
-if (!gameStates.app.cheats.bSpeed)
-	LOCALPLAYER.energy -= FixMul (gameData.time.xFrame, F1_0 * (BulletTimeActive () ? 20 : 10));
 if (SlowMotionActive ()) {
 	if (!bSlowMotionOk) {
 		InitSlowMotion (1);
@@ -4012,6 +4010,8 @@ if (SlowMotionActive ()) {
 		}
 	}
 #endif
+if (!gameStates.app.cheats.bSpeed)
+	LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
 if (!(bSlowMotion || bBulletTime))
 	return;
 if (bBulletTime) {	//toggle bullet time and slow motion
