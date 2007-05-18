@@ -1186,10 +1186,9 @@ int LaserPlayerFireSpreadDelay (
 {
 	short			nLaserSeg;
 	int			nFate; 
-	vmsVector	vLaserPos, vLaserDir, pnt;
+	vmsVector	v, vLaserPos, vLaserDir,  vGunPoint;
 	tVFIQuery	fq;
 	tFVIData		hit_data;
-	vmsVector	gun_point;
 	vmsMatrix	m;
 	int			nObject;
 	tObject		*laserP;
@@ -1202,18 +1201,19 @@ int LaserPlayerFireSpreadDelay (
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
 if (nGun >= 0) {
-	pnt = gameData.pig.ship.player->gunPoints [nGun];
+	v = gameData.pig.ship.player->gunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (&pnt, &objP->position.mOrient.uVec, LASER_OFFS);
+		VmVecScaleInc (&v, &objP->position.mOrient.uVec, LASER_OFFS);
 	}
 else {
-	VmVecScale (VmVecAdd (&pnt, gameData.pig.ship.player->gunPoints - nGun, gameData.pig.ship.player->gunPoints - nGun - 1), F1_0 / 2);
-	VmVecScaleInc (&pnt, &gameData.objs.console->position.mOrient.uVec, -2 * VmVecMag (&pnt));
+	VmVecScale (VmVecAdd (&v, gameData.pig.ship.player->gunPoints - nGun, gameData.pig.ship.player->gunPoints - nGun - 1), F1_0 / 2);
 	}
 VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-VmVecRotate (&gun_point, &pnt, &m);
+VmVecRotate (&vGunPoint, &v, &m);
 memcpy (&m, &objP->position.mOrient, sizeof (vmsMatrix));
-VmVecAdd (&vLaserPos, &objP->position.vPos, &gun_point);
+if (nGun < 0)
+	VmVecScaleInc (&vGunPoint, &m.uVec, -2 * VmVecMag (&v));
+VmVecAdd (&vLaserPos, &objP->position.vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (delayTime), then move this point backwards.
 if (delayTime)
 	VmVecScaleInc (&vLaserPos, &m.fVec, -FixMul (delayTime, WI_speed (laserType,gameStates.app.nDifficultyLevel)));
