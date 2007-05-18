@@ -4015,7 +4015,7 @@ if (SlowMotionActive ()) {
 if (!(bSlowMotion || bBulletTime))
 	return;
 if (!gameStates.app.cheats.bSpeed)
-	LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
+	LOCALPLAYER.energy -= 2 * gameData.time.xFrame * (1 + BulletTimeActive ());
 if (bBulletTime) {	//toggle bullet time and slow motion
 	if (SlowMotionActive ()) {
 		if (BulletTimeActive ())
