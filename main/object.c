@@ -3967,7 +3967,7 @@ return gameStates.gameplay.slowmo [1].bActive =
 
 void SlowMotionOff (void)
 {
-if (SlowMotionActive ()) {
+if (SlowMotionActive () && (gameStates.gameplay.slowmo [0].nState != -1)) {
 	InitSlowMotion (1);
 	if (!BulletTimeActive ())
 		InitBulletTime (1);
@@ -3997,25 +3997,28 @@ void ToggleSlowMotion (void)
 	
 Controls [0].bulletTimeCount =
 Controls [0].slowMotionCount = 0;
-#ifdef RELEASE
+#if 1//def RELEASE
 if (SlowMotionActive ()) {
+	if (!gameStates.app.cheats.bSpeed)
+		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 4;
 	if (!bSlowMotionOk) {
-		InitSlowMotion (1);
-		if (!BulletTimeActive ())
-			InitBulletTime (1);
-		SlowMotionMessage ();
+		if (gameStates.gameplay.slowmo [0].nState != -1) {
+			InitSlowMotion (1);
+			if (!BulletTimeActive () && (gameStates.gameplay.slowmo [1].nState != -1))
+				InitBulletTime (1);
+			SlowMotionMessage ();
+			}
 		return;
 		}
 	if (!bBulletTimeOk) {
-		InitBulletTime (-1);
+		if (gameStates.gameplay.slowmo [1].nState != -1)
+			InitBulletTime (-1);
 		bBulletTime = 0;
 		}
 	}
 #endif
 if (!(bSlowMotion || bBulletTime))
 	return;
-if (!gameStates.app.cheats.bSpeed)
-	LOCALPLAYER.energy -= 2 * gameData.time.xFrame * (1 + BulletTimeActive ());
 if (bBulletTime) {	//toggle bullet time and slow motion
 	if (SlowMotionActive ()) {
 		if (BulletTimeActive ())
