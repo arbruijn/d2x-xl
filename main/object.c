@@ -3971,6 +3971,7 @@ if (SlowMotionActive ()) {
 	InitSlowMotion (1);
 	if (!BulletTimeActive ())
 		InitBulletTime (1);
+	SlowMotionMessage ();
 	}
 }
 
@@ -3982,6 +3983,7 @@ if (!BulletTimeActive ())
 	InitBulletTime (1);
 if (!SlowMotionActive ())
 	InitSlowMotion (-1);
+SlowMotionMessage ();
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -4010,10 +4012,10 @@ if (SlowMotionActive ()) {
 		}
 	}
 #endif
-if (!gameStates.app.cheats.bSpeed)
-	LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
 if (!(bSlowMotion || bBulletTime))
 	return;
+if (!gameStates.app.cheats.bSpeed)
+	LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
 if (bBulletTime) {	//toggle bullet time and slow motion
 	if (SlowMotionActive ()) {
 		if (BulletTimeActive ())

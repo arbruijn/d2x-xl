@@ -984,6 +984,8 @@ if (objP->mType.physInfo.mass == 0)
 	return;
 if (objP->movementType != MT_PHYSICS)
 	return;
+if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
+	return;
 #ifdef TACTILE
   if (TactileStick && (obj == gameData.objs.objects + LOCALPLAYER.nObject))
 	Tactile_apply_force (vForce, &objP->position.mOrient);
@@ -1026,6 +1028,8 @@ void PhysicsTurnTowardsVector (vmsVector *vGoal, tObject *objP, fix rate)
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
+if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
+	return;
 if ((vGoal->p.x == 0) && (vGoal->p.y == 0) && (vGoal->p.z == 0))
 	return;
 //	Make morph gameData.objs.objects turn more slowly.

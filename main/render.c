@@ -1338,7 +1338,7 @@ if (IS_WALL (nWall)) {
 		return;
 	}
 // get and check the corona emitting texture
-#if 0
+#if 1
 t = sideP->nOvlTex;
 #else
 if (sideP->nOvlTex && IsLight (sideP->nOvlTex))
@@ -1653,7 +1653,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 3:
-		if ((IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
+		if ((/*IsLight (sideP->nBaseTex) ||*/ (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}
