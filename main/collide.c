@@ -520,7 +520,7 @@ return;
 
 //	-----------------------------------------------------------------------------
 
-fix	Last_volatile_scrapeSoundTime = 0;
+fix	xLastVolatileScrapeSoundTime = 0;
 
 int CollideWeaponAndWall (tObject * weapon, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt);
 int CollideDebrisAndWall (tObject * debris, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt);
@@ -627,43 +627,41 @@ return 0;
 void ScrapeObjectOnWall (tObject *objP, short hitseg, short hitside, vmsVector * vHitPt)
 {
 switch (objP->nType) {
-		case OBJ_PLAYER:
-			if (objP->id == gameData.multiplayer.nLocalPlayer) {
-				int nType = CheckVolatileWall (objP, hitseg, hitside, vHitPt);
-				if (nType != 0) {
-					vmsVector	hit_dir, rand_vec;
+	case OBJ_PLAYER:
+		if (objP->id == gameData.multiplayer.nLocalPlayer) {
+			int nType = CheckVolatileWall (objP, hitseg, hitside, vHitPt);
+			if (nType != 0) {
+				vmsVector	vHit, vRand;
 
-					if ((gameData.time.xGame > Last_volatile_scrapeSoundTime + F1_0/4) || 
-						 (gameData.time.xGame < Last_volatile_scrapeSoundTime)) {
-						short sound = (nType == 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
-
-						Last_volatile_scrapeSoundTime = gameData.time.xGame;
-
-						DigiLinkSoundToPos (sound, hitseg, 0, vHitPt, 0, F1_0);
-						if (gameData.app.nGameMode & GM_MULTI)
-							MultiSendPlaySound (sound, F1_0);
-						}
-					hit_dir = gameData.segs.segments [hitseg].sides [hitside].normals [0];
-					MakeRandomVector (&rand_vec);
-					VmVecScaleInc (&hit_dir, &rand_vec, F1_0/8);
-					VmVecNormalizeQuick (&hit_dir);
-					BumpOneObject (objP, &hit_dir, F1_0*8);
+				if ((gameData.time.xGame > xLastVolatileScrapeSoundTime + F1_0/4) || 
+						(gameData.time.xGame < xLastVolatileScrapeSoundTime)) {
+					short sound = (nType == 1) ? SOUND_VOLATILE_WALL_HISS : SOUND_SHIP_IN_WATER;
+					xLastVolatileScrapeSoundTime = gameData.time.xGame;
+					DigiLinkSoundToPos (sound, hitseg, 0, vHitPt, 0, F1_0);
+					if (IsMultiGame)
+						MultiSendPlaySound (sound, F1_0);
 					}
+				vHit = gameData.segs.segments [hitseg].sides [hitside].normals [0];
+				MakeRandomVector (&vRand);
+				VmVecScaleInc (&vHit, &vRand, F1_0/8);
+				VmVecNormalizeQuick (&vHit);
+				BumpOneObject (objP, &vHit, F1_0*8);
+				}
 			}
-			break;
+		break;
 
-		//these two kinds of gameData.objs.objects below shouldn't really slide, so
-		//if this scrape routine gets called (which it might if the
-		//tObject (such as a fusion blob) was created already poking
-		//through the tWall) call the Collide routine.
+	//these two kinds of gameData.objs.objects below shouldn't really slide, so
+	//if this scrape routine gets called (which it might if the
+	//tObject (such as a fusion blob) was created already poking
+	//through the tWall) call the Collide routine.
 
-		case OBJ_WEAPON:
-			CollideWeaponAndWall (objP, 0, hitseg, hitside, vHitPt); 
-			break;
+	case OBJ_WEAPON:
+		CollideWeaponAndWall (objP, 0, hitseg, hitside, vHitPt); 
+		break;
 
-		case OBJ_DEBRIS:		
-			CollideDebrisAndWall (objP, 0, hitseg, hitside, vHitPt); 
-			break;
+	case OBJ_DEBRIS:		
+		CollideDebrisAndWall (objP, 0, hitseg, hitside, vHitPt); 
+		break;
 	}
 
 }

@@ -784,10 +784,10 @@ retryMove:
 				}
 			else {				// Slide tObject along tWall
 				int bCheckVel = 0;
-				//We're constrained by tWall, so subtract tWall part from velocity vector
+				//We're constrained by a wall, so subtract wall part from velocity vector
 				xWallPart = VmVecDot (&hi.hit.vNormal, &objP->mType.physInfo.velocity);
 				if (bForceFieldBounce || (objP->mType.physInfo.flags & PF_BOUNCE)) {		//bounce off tWall
-					xWallPart *= 2;	//Subtract out tWall part twice to achieve bounce
+					xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 					if (bForceFieldBounce) {
 						bCheckVel = 1;				//check for max velocity
 						if (objP->nType == OBJ_PLAYER)
@@ -796,7 +796,7 @@ retryMove:
 					if (objP->mType.physInfo.flags & PF_BOUNCES_TWICE) {
 						Assert (objP->mType.physInfo.flags & PF_BOUNCE);
 						if (objP->mType.physInfo.flags & PF_BOUNCED_ONCE)
-							objP->mType.physInfo.flags &= ~ (PF_BOUNCE+PF_BOUNCED_ONCE+PF_BOUNCES_TWICE);
+							objP->mType.physInfo.flags &= ~(PF_BOUNCE | PF_BOUNCED_ONCE | PF_BOUNCES_TWICE);
 						else
 							objP->mType.physInfo.flags |= PF_BOUNCED_ONCE;
 						}
@@ -869,25 +869,25 @@ retryMove:
 #endif
 	} while (bRetry);
 	//	Pass retry nTries info to AI.
-	if (objP->controlType == CT_AI) {
-		Assert (nObject >= 0);
-		if (nTries > 0) {
-			gameData.ai.localInfo [nObject].nRetryCount = nTries - 1;
+if (objP->controlType == CT_AI) {
+	Assert (nObject >= 0);
+	if (nTries > 0) {
+		gameData.ai.localInfo [nObject].nRetryCount = nTries - 1;
 #ifdef _DEBUG
-			Total_retries += nTries - 1;
-			Total_sims++;
+		Total_retries += nTries - 1;
+		Total_sims++;
 #endif
-			}
 		}
+	}
 
-	//I'm not sure why we do this.  I wish there were a comment that
-	//explained it.  I think maybe it only needs to be done if the tObject
-	//is sliding, but I don't know
+	// If the ship has thrust, but the velocity is zero or the current position equals the start position
+	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to 
+	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
 	if (!(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
 
 		VmVecSub (&vMoved, &objP->position.vPos, &vStartPos);
-#if 0
+#if 1
 		VmVecCopyScale (&objP->mType.physInfo.velocity, &vMoved, 
 							 FixMulDiv (FixDiv (f1_0, gameData.physics.xTime), 100, xTimeScale));
 #endif
