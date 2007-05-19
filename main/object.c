@@ -4003,7 +4003,7 @@ if (SlowMotionActive ()) {
 #if 0
 		LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
 #else
-		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 8;
+		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 6;
 #endif
 	if (!bSlowMotionOk) {
 		if (gameStates.gameplay.slowmo [0].nState != -1) {
