@@ -434,7 +434,7 @@ if (0 >= (l = CFLength (fp, 0)))
 	l = -1;
 else if (!(ssp->samples = (ubyte *) d_malloc (l)))
 	l = -1;
-else if (CFRead (ssp->samples, 1, l, fp) != l)
+else if (CFRead (ssp->samples, 1, l, fp) != (size_t) l)
 	l = -1;
 CFClose (fp);
 if ((l < 0) && ssp->samples) {
