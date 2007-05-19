@@ -868,7 +868,7 @@ return a;
 
 // ------------------------------------------------------------------------
 
-vmsMatrix *SinCos2Matrix (vmsMatrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
+vmsMatrix *VmSinCos2Matrix (vmsMatrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
 {
 	fix sbsh, cbch, cbsh, sbch;
 
@@ -890,7 +890,7 @@ return m;
 
 // ------------------------------------------------------------------------
 
-fMatrix *SinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh)
+fMatrix *VmSinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh)
 {
 #if 0
 	double sbsh, cbch, cbsh, sbch;
@@ -915,7 +915,7 @@ return m;
 
 // ------------------------------------------------------------------------
 
-fMatrix *SinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh)
+fMatrix *VmSinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh)
 {
 	float sbsh, cbch, cbsh, sbch;
 
@@ -943,7 +943,7 @@ fix sinp, cosp, sinb, cosb, sinh, cosh;
 FixSinCos (a->p, &sinp, &cosp);
 FixSinCos (a->b, &sinb, &cosb);
 FixSinCos (a->h, &sinh, &cosh);
-return SinCos2Matrix (m, sinp, cosp, sinb, cosb, sinh, cosh);
+return VmSinCos2Matrix (m, sinp, cosp, sinb, cosb, sinh, cosh);
 }
 
 // ------------------------------------------------------------------------
@@ -955,7 +955,7 @@ vmsMatrix *VmVecAng2Matrix (vmsMatrix *m, vmsVector *v, fixang a)
 FixSinCos (a, &sinb, &cosb);
 sinp = -v->p.y;
 cosp = fix_sqrt (f1_0 - FixMul (sinp, sinp));
-return SinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->p.x, cosp), FixDiv(v->p.z, cosp));
+return VmSinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->p.x, cosp), FixDiv(v->p.z, cosp));
 }
 
 // ------------------------------------------------------------------------

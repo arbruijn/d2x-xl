@@ -4000,7 +4000,11 @@ Controls [0].slowMotionCount = 0;
 #if 1//def RELEASE
 if (SlowMotionActive ()) {
 	if (!gameStates.app.cheats.bSpeed)
-		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 4;
+#if 0
+		LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
+#else
+		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 8;
+#endif
 	if (!bSlowMotionOk) {
 		if (gameStates.gameplay.slowmo [0].nState != -1) {
 			InitSlowMotion (1);

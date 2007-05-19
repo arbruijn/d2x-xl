@@ -2701,7 +2701,7 @@ if (nOglMaxLightsOpt >= 0) {
 if (nLightRangeOpt >= 0) {
 	m = menus + nLightRangeOpt;
 	v = m->value;
-	if (gameOpts->render.color.bUseLightMaps) {
+	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
 		if (gameOpts->render.color.nLightMapRange != v) {
 			gameOpts->render.color.nLightMapRange = v;
 			sprintf (m->text, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');

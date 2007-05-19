@@ -1338,7 +1338,7 @@ if (IS_WALL (nWall)) {
 		return;
 	}
 // get and check the corona emitting texture
-#if 1
+#if 0
 t = sideP->nOvlTex;
 #else
 if (sideP->nOvlTex && IsLight (sideP->nOvlTex))
@@ -1544,7 +1544,6 @@ else
 //render the corona
 VmVecNormalf (&n, sprite, sprite + 1, sprite + 2);
 
-	glColor4f (1,1,1,0.5f);
 glBegin (GL_TRIANGLES);
 if (VmVecDotf (&n, &vEye) > 0) {
 	glTexCoord2fv ((GLfloat *) (uvlList + 2));
@@ -1653,7 +1652,7 @@ switch (gameStates.render.nType) {
 			return;
 		break;
 	case 3:
-		if ((/*IsLight (sideP->nBaseTex) ||*/ (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
+		if ((IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}

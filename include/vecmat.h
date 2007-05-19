@@ -353,6 +353,7 @@ int VmTriangleHitTest (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *p3
 
 int VmTriangleHitTestQuick (vmsVector *n, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *a);
 
+vmsMatrix *VmSinCos2Matrix (vmsMatrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh);
 int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos);
 fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
 int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp);
@@ -362,8 +363,8 @@ vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNorma
 fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1);
 fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
-fMatrix *SinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
-fMatrix *SinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh);
+fMatrix *VmSinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
+fMatrix *VmSinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh);
 
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
