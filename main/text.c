@@ -2384,7 +2384,7 @@ fclose (fTxt);
 if ((i = FindArg ("-text")))
 	filename = Args [i+1];
 if (!(tfile = CFOpen (filename, gameFolders.szDataDir, "rt", 0))) {
-	filename= "descent.txb";
+	filename = "descent.txb";
 	if (!(ifile = CFOpen (filename, gameFolders.szDataDir, "rb", 0))) {
 		Warning (TXT_NO_TEXTFILES);
 		return;
@@ -2431,7 +2431,9 @@ for (h = i = 0, psz = text; (i < j) && (psz - text < len); i++) {
 #if DUMP_TEXTS 
 		fclose (fTxt);
 #endif
-		Error ("Wrong number of strings in text file - expecting %d, found %d\n", N_BASE_TEXTS, i);
+		if (gameStates.app.bEnglish)
+			Error ("Wrong number of strings in text file - expecting %d, found %d\n", N_BASE_TEXTS, i);
+		break;
 		}
 	*psz++ = 0;
 	if (!bBinary && ((*ph == ';') || ((*ph == '/') && ph [1] == '/')))
