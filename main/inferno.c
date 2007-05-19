@@ -605,6 +605,7 @@ if (!*gameFolders.szGameDir) {
 		}
 	}
 strcpy (szDataRootDir, gameFolders.szGameDir);
+strcpy (gameFolders.szHomeDir, gameFolders.szGameDir);
 #else // Linux, OS X
 #	ifdef __unix__
 if (getenv ("HOME"))
