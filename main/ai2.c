@@ -2137,7 +2137,7 @@ do {
 	nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
 	nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendBossActions (nObject, 1, nRandSeg, 0);
 	COMPUTE_SEGMENT_CENTER_I (&vNewPos, nRandSeg);
 	if (IsValidTeleportDest (&vNewPos, objP->size))
@@ -2378,10 +2378,10 @@ if (IsMultiGame)
 //	Returns true if this tObject should be allowed to fire at the player.
 int AIMaybeDoActualFiringStuff (tObject *objP, tAIStatic *aip)
 {
-if (IsMultiGame)
-	if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN))
-		if (aip->CURRENT_STATE == AIS_FIRE)
-			return 1;
+if (IsMultiGame &&
+	 (aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN) &&
+	 (aip->CURRENT_STATE == AIS_FIRE))
+	return 1;
 return 0;
 }
 

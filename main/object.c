@@ -1906,10 +1906,6 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
-	if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
-		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
-	else
-		RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.75f, 0, 3, 0, 0);
 	}
 }
 
@@ -2059,6 +2055,10 @@ if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon
 		glEnable (GL_STENCIL_TEST);
 	}
 RenderShockwave (objP);
+if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
+	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
+else
+	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.75f, 0, 3, 0, 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -4589,6 +4589,7 @@ bIsWeapon [OMEGA_ID] =
 bIsWeapon [ROBOT_PLASMA_ID] =
 bIsWeapon [ROBOT_PHOENIX_ID] =
 bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
+bIsWeapon [ROBOT_PHASE_ENERGY_ID] =
 bIsWeapon [ROBOT_VERTIGO_FLASHMSL_ID] =
 bIsWeapon [ROBOT_VERTIGO_FLASHMSL_ID + 1] =
 bIsWeapon [ROBOT_VERTIGO_FIREBALL_ID] =

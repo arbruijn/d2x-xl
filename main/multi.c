@@ -991,7 +991,10 @@ if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameSt
 
 void MultiSendData (char *buf, int len, int repeat)
 {
-Assert (len == multiMessageLengths [(int)buf [0]]);
+#ifdef _DEBUG
+if (len != multiMessageLengths [(int)buf [0]])
+	len = len;
+#endif
 Assert (buf [0] <= MULTI_MAX_TYPE);
 //      Assert (buf [0]  >= 0);
 

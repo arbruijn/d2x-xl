@@ -484,6 +484,7 @@ void DoAIFrame (tObject *objP)
 	int         nNewGoalState;
 	int         bVisAndVecComputed = 0;
 	int         nPrevVisibility;
+	int			bMultiGame = !IsRobotGame;
 	vmsVector	vVisPos;
 
 gameData.ai.nPlayerVisibility = -1;
@@ -634,7 +635,7 @@ _exit_cheat:
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - 
 	// Occasionally make non-still robots make a path to the player.  Based on agitation and distance from player.
 	if ((aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_IDLING) && 
-		 !(IsMultiGame || botInfoP->companion || botInfoP->thief))
+		 !(bMultiGame || botInfoP->companion || botInfoP->thief))
 		if (gameData.ai.nOverallAgitation > 70) {
 			if ((gameData.ai.xDistToPlayer < MAX_REACTION_DIST) && (d_rand () < gameData.time.xFrame/4)) {
 				if (d_rand () * (gameData.ai.nOverallAgitation - 40) > F1_0 * 5) {
@@ -650,7 +651,7 @@ _exit_cheat:
 	// This is largely a hack to speed up physics and deal with stupid
 	// AI.  This is low level communication between systems of a sort
 	// that should not be done.
-	if ((ailp->nRetryCount) && !IsMultiGame) {
+	if (ailp->nRetryCount && !bMultiGame) {
 		ailp->nConsecutiveRetries += ailp->nRetryCount;
 		ailp->nRetryCount = 0;
 		if (ailp->nConsecutiveRetries > 3) {
@@ -679,7 +680,7 @@ _exit_cheat:
 						AttemptToResumePath (objP);
 					break;
 				case AIM_FOLLOW_PATH:
-					if (IsMultiGame) {
+					if (bMultiGame) {
 						ailp->mode = AIM_IDLING;
 					} else
 						AttemptToResumePath (objP);
@@ -718,7 +719,7 @@ _exit_cheat:
 
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 	// If in materialization center, exit
-	if (!IsMultiGame && (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_ROBOTMAKER)) {
+	if (!bMultiGame && (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_ROBOTMAKER)) {
 		if (gameData.matCens.fuelCenters [gameData.segs.segment2s [objP->nSegment].value].bEnabled) {
 			AIFollowPath (objP, 1, 1, NULL);    // 1 = tPlayer is visible, which might be a lie, but it works.
 			goto funcExit;
@@ -791,7 +792,7 @@ _exit_cheat:
 
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 	// Note: Should only do these two function calls for gameData.objs.objects which animate
-	if (gameData.ai.bEnableAnimation && (gameData.ai.xDistToPlayer > MAX_WAKEUP_DIST / 2)) { // && !(IsMultiGame)) {
+	if (gameData.ai.bEnableAnimation && (gameData.ai.xDistToPlayer > MAX_WAKEUP_DIST / 2)) { // && !bMultiGame)) {
 		gameData.ai.bObjAnimates = DoSillyAnimation (objP);
 		if (gameData.ai.bObjAnimates)
 			AIFrameAnimation (objP);
@@ -906,7 +907,7 @@ if (objP->id == ROBOT_BRAIN) {
 	}
 
 if (aip->behavior == AIB_SNIPE) {
-	if ((IsMultiGame) && !botInfoP->thief) {
+	if (bMultiGame && !botInfoP->thief) {
 		aip->behavior = AIB_NORMAL;
 		ailp->mode = AIM_CHASE_OBJECT;
 		goto funcExit;
@@ -1002,7 +1003,7 @@ switch (ailp->mode) {
 			CreatePathToPlayer (objP, 8, 1);
 			AIMultiSendRobotPos (nObject, -1);
 			}
-		else if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > MAX_CHASE_DIST) && !IsMultiGame) {
+		else if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > MAX_CHASE_DIST) && !bMultiGame) {
 			// If pretty far from the tPlayer, tPlayer cannot be seen
 			// (obstructed) and in chase mode, switch to follow path mode.
 			// This has one desirable benefit of avoiding physics retries.
@@ -1025,7 +1026,7 @@ switch (ailp->mode) {
 			}
 
 		if (gameData.time.xGame - ailp->timePlayerSeen > CHASE_TIME_LENGTH) {
-			if (IsMultiGame)
+			if (bMultiGame)
 				if (!gameData.ai.nPlayerVisibility && (gameData.ai.xDistToPlayer > F1_0 * 70)) {
 					ailp->mode = AIM_IDLING;
 					goto funcExit;
@@ -1067,7 +1068,7 @@ switch (ailp->mode) {
 				ailp->playerAwarenessType = PA_RETURN_FIRE;
 			}
 		// If in multiplayer, only do if tPlayer visible.  If not multiplayer, do always.
-		if (!(IsMultiGame) || gameData.ai.nPlayerVisibility)
+		if (!(bMultiGame) || gameData.ai.nPlayerVisibility)
 			if (AIMultiplayerAwareness (objP, 75)) {
 				AIFollowPath (objP, gameData.ai.nPlayerVisibility, nPrevVisibility, &gameData.ai.vVecToPlayer);
 				AIMultiSendRobotPos (nObject, -1);
@@ -1099,7 +1100,7 @@ switch (ailp->mode) {
 			else
 				CreateNewLaserEasy ( &fire_vec, &fire_pos, OBJ_IDX (objP), PROXMINE_ID, 1);
 			ailp->nextPrimaryFire = (F1_0/2)* (NDL+5 - gameStates.app.nDifficultyLevel);      // Drop a proximity bomb every 5 seconds.
-			if (IsMultiGame) {
+			if (bMultiGame) {
 				AIMultiSendRobotPos (OBJ_IDX (objP), -1);
 				if (aip->SUB_FLAGS & SUB_FLAGS_SPROX)
 					MultiSendRobotFire (OBJ_IDX (objP), -2, &fire_vec);
@@ -1221,7 +1222,7 @@ switch (ailp->mode) {
 
 			// turn towards vector if visible this time or last time, or rand
 			// new!
-			if ((gameData.ai.nPlayerVisibility == 2) || (nPrevVisibility == 2)) { // -- MK, 06/09/95:  || ((d_rand () > 0x4000) && !(IsMultiGame))) {
+			if ((gameData.ai.nPlayerVisibility == 2) || (nPrevVisibility == 2)) { // -- MK, 06/09/95:  || ((d_rand () > 0x4000) && !(bMultiGame))) {
 				if (!AIMultiplayerAwareness (objP, 71)) {
 					if (AIMaybeDoActualFiringStuff (objP, aip))
 						AIDoActualFiringStuff (objP, aip, ailp, botInfoP, aip->CURRENT_GUN);
@@ -1263,7 +1264,7 @@ switch (ailp->mode) {
 						AIMultiSendRobotPos (nObject, -1);
 					}
 				}
-			else if ((objP->nSegment != aip->nHideSegment) && (gameData.ai.xDistToPlayer > MAX_CHASE_DIST) && (!(IsMultiGame))) {
+			else if ((objP->nSegment != aip->nHideSegment) && (gameData.ai.xDistToPlayer > MAX_CHASE_DIST) && !bMultiGame) {
 				// If pretty far from the tPlayer, tPlayer cannot be
 				// seen (obstructed) and in chase mode, switch to
 				// follow path mode.
@@ -1411,7 +1412,7 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 
 		case AIS_LOCK:
 			ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_WAKEUP_DIST);
-			if (!(IsMultiGame) || (gameData.ai.nPlayerVisibility)) {
+			if (!bMultiGame || (gameData.ai.nPlayerVisibility)) {
 				if (!AIMultiplayerAwareness (objP, 68))
 					goto funcExit;
 				if (gameData.ai.nPlayerVisibility == 2) {   // @mk, 09/21/95, require that they be looking towards you to turn towards you.
@@ -1425,7 +1426,7 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 			ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_REACTION_DIST);
 			if (gameData.ai.nPlayerVisibility == 2) {
 				if (!AIMultiplayerAwareness (objP, (ROBOT_FIRE_AGITATION-1))) {
-					if (IsMultiGame) {
+					if (bMultiGame) {
 						AIDoActualFiringStuff (objP, aip, ailp, botInfoP, aip->CURRENT_GUN);
 						goto funcExit;
 						}
@@ -1456,7 +1457,7 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 						goto funcExit;
 					AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 					AIMultiSendRobotPos (nObject, -1);
-					} // -- MK, 06/09/95: else if (!(IsMultiGame)) {
+					} // -- MK, 06/09/95: else if (!(bMultiGame)) {
 				}
 			break;
 
@@ -1549,7 +1550,7 @@ int AddAwarenessEvent (tObject *objP, int nType)
 void CreateAwarenessEvent (tObject *objP, int nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
-if (!IsMultiGame || (gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
+if (IsRobotGame) {
 	if (AddAwarenessEvent (objP, nType)) {
 		if (((d_rand () * (nType+4)) >> 15) > 4)
 			gameData.ai.nOverallAgitation++;
@@ -1587,7 +1588,7 @@ void ProcessAwarenessEvents (void)
 {
 	int i;
 
-if (!IsMultiGame || (gameData.app.nGameMode & GM_MULTI_ROBOTS)) {
+if (IsRobotGame) {
 	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segs.nSegments);
 	for (i = 0; i < gameData.ai.nAwarenessEvents; i++)
 		pae_aux (gameData.ai.awarenessEvents [i].nSegment, gameData.ai.awarenessEvents [i].nType, 1);

@@ -906,7 +906,7 @@ return 0;
 int CallFindHomingObjectComplete (tObject *tracker, vmsVector *curpos)
 {
 if (IsMultiGame) {
-	if (tracker->cType.laserInfo.parentType == OBJ_PLAYER) {
+	if ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OBJ_PLAYER)) {
 		//	It's fired by a tPlayer, so if robots present, track robot, else track player.
 		if (IsCoopGame)
 			return FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1);
@@ -918,7 +918,10 @@ if (IsMultiGame) {
 
 		if (gameStates.app.cheats.bRobotsKillRobots)
 			goal2Type = OBJ_ROBOT;
-		Assert (tracker->cType.laserInfo.parentType == OBJ_ROBOT);
+#ifdef _DEBUG
+		if ((tracker->cType.laserInfo.parentType != OBJ_ROBOT) && (tracker->cType.laserInfo.parentType != OBJ_PLAYER))
+			tracker = tracker;
+#endif
 		return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, goal2Type);
 		}		
 	} 

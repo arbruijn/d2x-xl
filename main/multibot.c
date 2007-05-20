@@ -79,7 +79,7 @@ extern int MultiPowerupIsAllowed (int);
 
 int MultiCanRemoveRobot (int nObject, int agitation)
 {
-	int rval = 0, nRemOwner = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_OWNER;
+	int nRemOwner;
 
 	// Claim robot if necessary.
 if (gameStates.app.bPlayerExploded)
@@ -87,37 +87,36 @@ if (gameStates.app.bPlayerExploded)
 #ifdef _DEBUG
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {	
 	Int3 ();
+	return 0;
 	}
 else if (gameData.objs.objects [nObject].nType != OBJ_ROBOT) {
 	Int3 ();
+	return 0;
 	}
 #endif
 else if (ROBOTINFO (gameData.objs.objects [nObject].id).bossFlag) {
 	int i = FindBoss (nObject);
 	if ((i >= 0) && gameData.boss [i].nDying == 1)
 		return 0;
+	return 1;
 	}
-else if (nRemOwner == gameData.multiplayer.nLocalPlayer) { // Already my robot!
+nRemOwner = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_OWNER;
+if (nRemOwner == gameData.multiplayer.nLocalPlayer) { // Already my robot!
 	int nSlot = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
    if ((nSlot < 0) || (nSlot >= MAX_ROBOTS_CONTROLLED))
 		return 0;
 	if (gameData.multigame.robots.fired [nSlot])
-		rval = 0;
-	else {
-		gameData.multigame.robots.agitation [nSlot] = agitation;
-		gameData.multigame.robots.lastMsgTime [nSlot] = gameData.time.xGame;
-		rval = 1;
-		}
+		return 0;
+	gameData.multigame.robots.agitation [nSlot] = agitation;
+	gameData.multigame.robots.lastMsgTime [nSlot] = gameData.time.xGame;
+	return 1;
 	}
-else if ((nRemOwner != -1) || (agitation < MIN_TO_ADD)) {
-		if (agitation == ROBOT_FIRE_AGITATION) // Special case for firing at non-tPlayer
-			rval = 1; // Try to vFire at tPlayer even tho we're not in control!
-		else
-			rval = 0;
+if ((nRemOwner != -1) || (agitation < MIN_TO_ADD)) {
+	if (agitation == ROBOT_FIRE_AGITATION) // Special case for firing at non-tPlayer
+		return 1; // Try to vFire at tPlayer even tho we're not in control!
+	return 0;
 	}
-else
-	rval = MultiAddControlledRobot (nObject, agitation);
-return rval;
+return MultiAddControlledRobot (nObject, agitation);
 }
 
 //-----------------------------------------------------------------------------
@@ -510,9 +509,11 @@ else
 
 if (action == 1) { // Teleport releases robot
 	// Boss is up for grabs after teleporting
+#if 0
 	Assert (
 		 (gameData.objs.objects [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM >= 0) && 
 		 (gameData.objs.objects [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM < MAX_ROBOTS_CONTROLLED));
+#endif
 	MultiDeleteControlledRobot (bossobjnum);
 //		gameData.multigame.robots.controlled [gameData.objs.objects [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM] = -1;
 //		gameData.objs.objects [bossobjnum].cType.aiInfo.REMOTE_OWNER = -1;

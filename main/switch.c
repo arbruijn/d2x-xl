@@ -698,7 +698,7 @@ if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 
 void DoSpeedBoost (tTrigger *trigP, short nObject)
 {
-if (COMPETITION || extraGameInfo [IsMultiGame].nSpeedBoost) {
+if (!(COMPETITION || IsCoopGame) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	tWall *w = TriggerParentWall (TRIG_IDX (trigP));
 	gameData.objs.speedBoost [nObject].bBoosted = (trigP->value && (trigP->nLinks > 0));
 	SetSpeedBoostVelocity ((short) nObject, trigP->value, 
