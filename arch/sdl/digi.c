@@ -286,7 +286,7 @@ else
 	{
 	WaveSpec.freq = gameOpts->sound.digiSampleRate;
 	//added/changed by Sam Lantinga on 12/01/98 for new SDL version
-	WaveSpec.format = AUDIO_S16LSB;
+	WaveSpec.format = AUDIO_U8;
 	WaveSpec.channels = 2;
 	//end this section addition/change - SL
 	WaveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K);

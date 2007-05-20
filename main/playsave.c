@@ -759,7 +759,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].nMslTurnSpeed", "2"},
 	{"extraGameInfo[0].nRadar", "1"},
 	{"extraGameInfo[0].nSpawnDelay", "0"},
-	{"extraGameInfo[0].nSpeedBoost", "0"},
+	{"extraGameInfo[0].nSpeedBoost", "10"},
 	{"extraGameInfo[0].nWeaponDropMode", "1"},
 	{"extraGameInfo[0].nWeaponIcons", "3"},
 	{"extraGameInfo[0].nZoomMode", "1"},
