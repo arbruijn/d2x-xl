@@ -930,17 +930,19 @@ if (bGetSlideBank == 2) {
 	else {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
-			int	dx = mouseData.x - SWIDTH / 2;
+			int dx = mouseData.x - SWIDTH / 2;
 			if (dx < 0)
 				if (dx > -16)
 					dx = 0;
 				else
 					dx += 16;
-			else
-				if (dx < 16)
+			else {
+				int r = 16 * grdCurScreen->sc_w / grdCurScreen->sc_h;
+				if (dx < r)
 					dx = 0;
 				else
-					dx -= 16;
+					dx -= r;
+				}
 			Controls [3].headingTime += (dx * gameOpts->input.mouseSensitivity [0]); // mouse_sens_mod;
 			}
 		else {

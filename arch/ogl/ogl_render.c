@@ -248,33 +248,40 @@ void OglDrawMouseIndicator (void)
 {
 	double 	scale = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
 	
+	static tSinCosd sinCos30 [30];
 	static tSinCosd sinCos12 [12];
 	static int bInitSinCos = 1;
 	
 if (bInitSinCos) {
+	OglComputeSinCos (sizeofa (sinCos30), sinCos30);
 	OglComputeSinCos (sizeofa (sinCos12), sinCos12);
 	bInitSinCos = 0;
 	}
-glPushMatrix ();
-glTranslated (
-	(double) (mouseData.x) / (double) SWIDTH, 
-	1.0 - (double) (mouseData.y) / (double) SHEIGHT, 
-	0);
-glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
 glDisable (GL_TEXTURE_2D);
-#if 1
+#if 0
 if (mouseIndList)
-	glCallList (mouseIndList);
+glCallList (mouseIndList);
 else {
 	glNewList (mouseIndList, GL_COMPILE_AND_EXECUTE);
 #endif
-	glColor3d (1.0, 0.8, 0.0);
-	glLineWidth (3);
 	glEnable (GL_SMOOTH);
+	glColor4d (1.0, 0.8, 0.0, 0.9);
+	glPushMatrix ();
+	glTranslated ((double) (mouseData.x) / (double) SWIDTH, 1.0 - (double) (mouseData.y) / (double) SHEIGHT, 0);
+	glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
+	glLineWidth (3);
 	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos12);
+	glPopMatrix ();
+	glColor4d (1.0, 0.8, 0.0, 1.0 / 3.0);
+	glPushMatrix ();
+	glTranslated (0.5, 0.5, 0);
+	glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
+	glLineWidth (6);
+	OglDrawEllipse (30, GL_LINE_LOOP, 8, 0, 8 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos30);
+	glPopMatrix ();
 	glDisable (GL_SMOOTH);
 	glLineWidth (1);
-#if 1
+#if 0
 	glEndList ();
    }
 #endif
