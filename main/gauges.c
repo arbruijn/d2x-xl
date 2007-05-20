@@ -1514,7 +1514,7 @@ if (!SHOW_HUD)
 	return;
 h = LOCALPLAYER.energy ? f2ir (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
-	y = grdCurCanv->cv_h - ((gameData.app.nGameMode & GM_MULTI) ? 5 : 1) * nLineSpacing;
+	y = grdCurCanv->cv_h - (IsMultiGame ? 5 : 1) * nLineSpacing;
 	GrSetCurFont (GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (2, y, "%s: %i", TXT_ENERGY, h);
@@ -1529,7 +1529,7 @@ else {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	y = grdCurCanv->cv_h - (int) ((((gameData.app.nGameMode & GM_MULTI) ? 5 : 1) * nLineSpacing - 1) * yScale);
+	y = grdCurCanv->cv_h - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * yScale);
 	GrSetColorRGB (255, 255, (ubyte) ((h > 100) ? 255 : 0), 255);
 	GrUBox (6, y, 6 + (int) (100 * xScale), y + (int) (9 * yScale));
 	if (bFlash) {
@@ -1537,6 +1537,8 @@ else {
 			goto skipGauge;
 		h = 100;
 		}
+	else
+		bShow = 1;
 	c = (h > 100) ? 224 : 224;
 	GrSetColorRGB (c, c, (ubyte) ((h > 100) ? c : 0), 128);
 	GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
@@ -2198,14 +2200,14 @@ void HUDShowShield (void)
 	static int		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
 	time_t			t = gameStates.app.nSDLTicks;
-	int				bLastFlash = gameStates.gameplay.nShieldFlash;
+	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 	int				h, y;
 
 if (!SHOW_HUD)
 	return;
 //	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 h = (LOCALPLAYER.shields >= 0) ? f2ir (LOCALPLAYER.shields) : 0; 
-if ((t = HUDShowFlashGauge (h, &gameStates.gameplay.nShieldFlash, (int) tToggle))) {
+if ((t = HUDShowFlashGauge (h, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
 	tToggle = t;
 	bShow = !bShow;
 	}
@@ -2224,13 +2226,13 @@ else {
 		GrURect (6, y, 6 + (int) (((h > 100) ? h - 100 : h) * xScale), y + (int) (9 * yScale));
 		}
 	}
-if (gameStates.gameplay.nShieldFlash) {
+if (gameStates.render.cockpit.nShieldFlash) {
 	if (gameOpts->gameplay.bShieldWarning && gameOpts->sound.bUseSDLMixer) {
-		if ((nBeep < 0) || (bLastFlash != gameStates.gameplay.nShieldFlash)) {
+		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
 				DigiStopSound ((int) nBeep);
 			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0, 
-											(gameStates.gameplay.nShieldFlash == 1) ? "lowping.wav" : "highping.wav");
+											(gameStates.render.cockpit.nShieldFlash == 1) ? "lowping.wav" : "highping.wav");
 			}
 		}
 	else if (nBeep >= 0) {
@@ -2242,6 +2244,7 @@ if (gameStates.gameplay.nShieldFlash) {
 	h = 100;
 	}
 else {
+	bShow = 1;
 	if (nBeep >= 0) {
 		DigiStopSound ((int) nBeep);
 		nBeep = -1;

@@ -887,13 +887,14 @@ if (objP->controlType == CT_AI) {
 		vmsVector vMoved;
 
 		VmVecSub (&vMoved, &objP->position.vPos, &vStartPos);
+		VmVecScale (&vMoved, FixMulDiv (FixDiv (f1_0, gameData.physics.xTime), 100, xTimeScale));
 #if 1
-		VmVecCopyScale (&objP->mType.physInfo.velocity, &vMoved, 
-							 FixMulDiv (FixDiv (f1_0, gameData.physics.xTime), 100, xTimeScale));
+		if (!bDoSpeedBoost)
+			objP->mType.physInfo.velocity = vMoved;
 #endif
 #ifdef BUMP_HACK
 		if ((objP == gameData.objs.console) && 
-			 !(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
+			 !(vMoved.p.x || vMoved.p.y || vMoved.p.z) &&
 			 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
 			vmsVector vCenter, vBump;
 #ifdef _DEBUG

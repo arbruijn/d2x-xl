@@ -385,7 +385,6 @@ typedef struct tGameplayStates {
 	int bKillBossCheat;
 	int bNoBotAI;
 	int bTagFlag;
-	int nShieldFlash;
 	int nReactorCount;
 	int nLastReactor;
 	int bMineMineCheat;
@@ -520,6 +519,7 @@ typedef struct tCockpitStates {
 	int nMode;
 	int nNextMode;
 	int nModeSave;
+	int nShieldFlash;
 	int bRedraw;
 	int bBigWindowSwitch;
 	int nLastDrawn [2];

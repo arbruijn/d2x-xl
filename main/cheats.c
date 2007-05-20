@@ -766,8 +766,10 @@ if (gameStates.gameplay.bMineMineCheat)
 else {
 	AccessoryCheat (bVerbose);
 	WowieCheat (bVerbose);
-	InvulCheat (bVerbose);
-	CloakCheat (bVerbose);
+	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE;
+	gameStates.app.cheats.bSpeed = 1;
+	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
+	gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
 	}
 }

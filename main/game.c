@@ -377,7 +377,7 @@ WINDOS (
 	DDGrSetCurrentCanvas (NULL),
 	GrSetCurrentCanvas (NULL)
 );
-gameStates.gameplay.nShieldFlash = 0;
+gameStates.render.cockpit.nShieldFlash = 0;
 }
 
 //------------------------------------------------------------------------------
