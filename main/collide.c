@@ -2348,7 +2348,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 			MultiSendRemObj (OBJ_IDX (powerup));
 		}
 	}
-else if ((gameData.app.nGameMode & GM_MULTI_COOP) && (playerObjP->id != gameData.multiplayer.nLocalPlayer)) {
+else if (IsCoopGame && (playerObjP->id != gameData.multiplayer.nLocalPlayer)) {
 	switch (powerup->id) {
 		case POW_KEY_BLUE:	
 			gameData.multiplayer.players [playerObjP->id].flags |= PLAYER_FLAGS_BLUE_KEY;
@@ -2363,6 +2363,7 @@ else if ((gameData.app.nGameMode & GM_MULTI_COOP) && (playerObjP->id != gameData
 			break;
 		}
 	}
+DetectEscortGoalAccomplished (OBJ_IDX (powerup));
 return 1; 
 }
 

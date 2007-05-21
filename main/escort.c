@@ -188,7 +188,7 @@ if (gameData.escort.bMayTalk)
 if ((gameData.objs.objects [gameData.escort.nObjNum].nType == OBJ_ROBOT) && 
 	 (gameData.escort.nObjNum <= gameData.objs.nLastObject) && 
 	!ROBOTINFO (gameData.objs.objects [gameData.escort.nObjNum].id).companion) {
-	for (i=0; i<=gameData.objs.nLastObject; i++)
+	for (i = 0; i <= gameData.objs.nLastObject; i++)
 		if (ROBOTINFO (gameData.objs.objects [i].id).companion)
 			break;
 	if (i > gameData.objs.nLastObject)
@@ -199,22 +199,21 @@ if ((gameData.objs.objects [gameData.escort.nObjNum].nType == OBJ_ROBOT) &&
 segP = gameData.segs.segments + gameData.objs.objects [gameData.escort.nObjNum].nSegment;
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++) {
 	short	nWall = WallNumP (segP, (short) i);
-	if (IS_WALL (nWall)) {
-		if ((gameData.walls.walls [nWall].nType == WALL_BLASTABLE) && 
-			! (gameData.walls.walls [nWall].flags & WALL_BLASTED))
-			return 0;
-		}
+	if (IS_WALL (nWall) &&
+		 (gameData.walls.walls [nWall].nType == WALL_BLASTABLE) && 
+		 !(gameData.walls.walls [nWall].flags & WALL_BLASTED))
+		return 0;
 	//	Check one level deeper.
 	if (IS_CHILD (segP->children [i])) {
 		int		j;
-		tSegment	*csegp = &gameData.segs.segments [segP->children [i]];
+		tSegment	*connSegP = gameData.segs.segments + segP->children [i];
 
-		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++) {
-			short	wall2 = WallNumP (csegp, (short) j);
-			if (IS_WALL (wall2)) {
-				if ((gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && ! (gameData.walls.walls [wall2].flags & WALL_BLASTED))
-					return 0;
-				}
+		for (j = 0; j<MAX_SIDES_PER_SEGMENT; j++) {
+			short	wall2 = WallNumP (connSegP, (short) j);
+			if (IS_WALL (wall2) &&
+				 (gameData.walls.walls [wall2].nType == WALL_BLASTABLE) && 
+				 !(gameData.walls.walls [wall2].flags & WALL_BLASTED))
+				return 0;
 			}
 		}
 	}
@@ -223,18 +222,16 @@ return 1;
 }
 
 //	--------------------------------------------------------------------------------------------
+
 void DetectEscortGoalAccomplished (int index)
 {
 	int		i,j;
 	int		bDetected = 0;
 	tObject	*objP;
 
-	if (!gameData.escort.bMayTalk)
-		return;
-
-	//	If goal is to go away, how can it be achieved?
-	if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)
-		return;
+//	If goal is to go away, how can it be achieved?
+if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)
+	return;
 
 //	See if goal found was a key.  Need to handle default goals differently.
 //	Note, no buddy_met_goal sound when blow up reactor or exit.  Not great, but ok
@@ -242,7 +239,7 @@ void DetectEscortGoalAccomplished (int index)
 if ((gameData.escort.nSpecialGoal == -1) && (gameData.escort.nGoalIndex == index)) {
 	bDetected = 1;
 	goto dega_ok;
-}
+	}
 
 if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0)) {
 	objP = gameData.objs.objects + index;
@@ -268,42 +265,44 @@ if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0)) {
 			}
 		}
 	}
-	if (gameData.escort.nSpecialGoal != -1){
-		if (gameData.escort.nSpecialGoal == ESCORT_GOAL_ENERGYCEN) {
-			if (index == -4)
-				bDetected = 1;
-			else {
-				for (i=0; i<MAX_SIDES_PER_SEGMENT; i++)
-					if (gameData.segs.segments [index].children [i] == gameData.escort.nGoalIndex) {
-						bDetected = 1;
-						goto dega_ok;
-						}
-					else {
-						for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
-							if (gameData.segs.segments [i].children [j] == gameData.escort.nGoalIndex) {
-								bDetected = 1;
-								goto dega_ok;
-							}
-					}
-			}
-		} else if ((gameData.objs.objects [index].nType == OBJ_POWERUP) && 
-					  (gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
-			bDetected = 1;	//	Any nType of powerup picked up will do.
-		else if ((gameData.objs.objects [index].nType == gameData.objs.objects [gameData.escort.nGoalIndex].nType) && 
-					 (gameData.objs.objects [index].id == gameData.objs.objects [gameData.escort.nGoalIndex].id)) {
-			//	Note: This will help a little bit in making the buddy believe a goal is satisfied.  Won't work for a general goal like "find any powerup"
-			// because of the insistence of both nType and id matching.
+if (gameData.escort.nSpecialGoal != -1){
+	if (gameData.escort.nSpecialGoal == ESCORT_GOAL_ENERGYCEN) {
+		if (index == -4)
 			bDetected = 1;
+		else {
+			for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+				if (gameData.segs.segments [index].children [i] == gameData.escort.nGoalIndex) {
+					bDetected = 1;
+					goto dega_ok;
+					}
+				else {
+					for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
+						if (gameData.segs.segments [i].children [j] == gameData.escort.nGoalIndex) {
+							bDetected = 1;
+							goto dega_ok;
+					}
+				}
+			}
+		} 
+	else if ((gameData.objs.objects [index].nType == OBJ_POWERUP) && 
+				(gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
+		bDetected = 1;	//	Any nType of powerup picked up will do.
+	else if ((gameData.objs.objects [index].nType == gameData.objs.objects [gameData.escort.nGoalIndex].nType) && 
+					(gameData.objs.objects [index].id == gameData.objs.objects [gameData.escort.nGoalIndex].id)) {
+		//	Note: This will help a little bit in making the buddy believe a goal is satisfied.  Won't work for a general goal like "find any powerup"
+		// because of the insistence of both nType and id matching.
+		bDetected = 1;
 		}
 	}
 
 dega_ok: ;
-	if (bDetected && BuddyMayTalk ()) {
+if (bDetected) {
+	if (!BuddyMayTalk ())
 		DigiPlaySampleOnce (SOUND_BUDDY_MET_GOAL, F1_0);
-		gameData.escort.nGoalIndex = -1;
-		gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
-		gameData.escort.nSpecialGoal = -1;
-		gameData.escort.bSearchingMarker = -1;
+	gameData.escort.nGoalIndex = -1;
+	gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
+	gameData.escort.nSpecialGoal = -1;
+	gameData.escort.bSearchingMarker = -1;
 	}
 }
 
@@ -814,13 +813,13 @@ int EscortSetGoalObject (void)
 {
 if (gameData.escort.nSpecialGoal != -1)
 	return ESCORT_GOAL_UNSPECIFIED;
-else if (! (gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) && 
+else if (!(gameData.objs.console->flags & PLAYER_FLAGS_BLUE_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_BLUE, -1) != -1))
 	return ESCORT_GOAL_BLUE_KEY;
-else if (! (gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) && 
+else if (!(gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_GOLD, -1) != -1))
 	return ESCORT_GOAL_GOLD_KEY;
-else if (! (gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
+else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
 else if (gameData.reactor.bDestroyed == 0) {
@@ -969,7 +968,7 @@ Assert (nObject >= 0);
 gameData.escort.nObjNum = nObject;
 if (player_visibility) {
 	xBuddyLastSeenPlayer = gameData.time.xGame;
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN! MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
+	if (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON)	//	DAMN!MK, stupid bug, fixed 12/08/95, changed PLAYER_FLAGS_HEADLIGHT to PLAYER_FLAGS_HEADLIGHT_ON
 		if (f2i (LOCALPLAYER.energy) < 40)
 			if ((f2i (LOCALPLAYER.energy)/2) & 2)
 				if (!gameStates.app.bPlayerIsDead)
