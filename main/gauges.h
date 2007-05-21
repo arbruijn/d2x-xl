@@ -70,16 +70,16 @@ typedef struct {
 
 extern rgb playerColors[];
 
-#define WBU_WEAPON      0       // the weapons display
-#define WBUMSL     1       // the missile view
-#define WBU_ESCORT      2       // the "buddy bot"
-#define WBU_REAR        3       // the rear view
-#define WBU_COOP        4       // coop or team member view
-#define WBU_GUIDED      5       // the guided missile
-#define WBU_MARKER      6       // a dropped marker
-#define WBU_STATIC      7       // playing static after missile hits
-#define WBU_RADAR_TOPDOWN 8
-#define WBU_RADAR_HEADSUP 9
+#define WBU_WEAPON			0       // the weapons display
+#define WBUMSL					1       // the missile view
+#define WBU_ESCORT			2       // the "buddy bot"
+#define WBU_REAR				3       // the rear view
+#define WBU_COOP				4       // coop or team member view
+#define WBU_GUIDED			5       // the guided missile
+#define WBU_MARKER			6       // a dropped marker
+#define WBU_STATIC			7       // playing static after missile hits
+#define WBU_RADAR_TOPDOWN	8
+#define WBU_RADAR_HEADSUP	9
 
 // draws a 3d view into one of the cockpit windows.  win is 0 for
 // left, 1 for right.  viewer is tObject.  NULL tObject means give up
@@ -95,5 +95,6 @@ void ShowFrameRate (void);
 
 #define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
 #define SHOW_HUD		(gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT)
+#define HIDE_HUD		(!gameOpts->render.cockpit.bHUD && (gameStates.render.cockpit.nMode == CM_FULL_SCREEN))
 
 #endif /* _GAUGES_H */

@@ -988,7 +988,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
 			return 0;
-		VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
+		VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
 		}
 	else {
 		if (bThisPoly) {
@@ -997,7 +997,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 			VmVecNormalize (VmVecSub (&vn, p1, p0));
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, otherObjP->size)))
 				return 0;
-			VmPointLineIntersection (&hitP, p0, p1, &hitP, &otherObjP->position.vPos);
+			VmPointLineIntersection (&hitP, p0, p1, &hitP, &otherObjP->position.vPos, 1);
 			}
 		else {
 		// *otherObjP (moving) has hitboxes, *thisObjP (stationary) a hit sphere. To detect whether the sphere 
@@ -1007,7 +1007,7 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 			VmVecScaleAdd (&v1, &v0, &vn, thisObjP->size);
 			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, &v0, &v0, &vn, p1, otherObjP, thisObjP->size)))
 				return 0;
-			VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos);
+			VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
 			}
 		}
 	}

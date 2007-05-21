@@ -914,7 +914,7 @@ void HUDShowScore ()
 	char	szScore [40];
 	int	w, h, aw;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if ((gameData.hud.msgs [0].nMessages > 0) && 
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
@@ -953,7 +953,7 @@ void HUDShowTimerCount ()
 	int	w, h, aw, i;
 	fix timevar=0;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
@@ -980,7 +980,7 @@ void HUDShowScoreAdded ()
 	int	w, h, aw;
 	char	score_str [20];
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) 
 	return;
@@ -1190,7 +1190,7 @@ extern int SW_y [2];
 
 void HUDShowHomingWarning (void)
 {
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if (LOCALPLAYER.homingObjectDist >= 0) {
 	if (gameData.time.xGame & 0x4000) {
@@ -1213,7 +1213,7 @@ void HUDShowKeys (void)
 	int y = 3*nLineSpacing;
 	int dx = GAME_FONT->ft_w+GAME_FONT->ft_w/2;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))
 	return;
@@ -1275,7 +1275,7 @@ void HUDShowObjTally (void)
 
 if (!gameOpts->render.cockpit.bObjectTally)
 	return;
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if (!IsMultiGame || IsCoopGame) {
 	int	x, x0 = 0, y = 0, w, h, aw, i, bmW, bmH;
@@ -1336,7 +1336,7 @@ void HUDShowPlayerStats (void)
 
 if (!gameOpts->render.cockpit.bPlayerStats)
 	return;
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT)
 	y = 3 * nLineSpacing;
@@ -1377,7 +1377,7 @@ GrString (grdCurCanv->cv_w - w - LHX (2), y, szStats);
 
 void HUDShowOrbs (void)
 {
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	int x = 0, y = 0;
@@ -1441,7 +1441,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 
 void HUDShowFlag (void)
 {
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if ((gameData.app.nGameMode & GM_CAPTURE) && (LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
 	int x = 0, y = 0, icon;
@@ -1510,7 +1510,7 @@ void HUDShowEnergy (void)
 	int h, y;
 
 	//GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 h = LOCALPLAYER.energy ? f2ir (LOCALPLAYER.energy) : 0;
 if (gameOpts->render.cockpit.bTextGauges) {
@@ -1562,7 +1562,7 @@ void HUDShowAfterburner (void)
 {
 	int h, y;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
@@ -2082,7 +2082,7 @@ void HUDShowWeapons (void)
 	char	*weapon_name;
 	char	weapon_str [32];
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 #if 0
 HUDShowIcons ();
@@ -2167,7 +2167,7 @@ ShowBombCount (grdCurCanv->cv_bitmap.bm_props.w- (3*GAME_FONT->ft_w+ (gameStates
 
 void HUDShowCloakInvul (void)
 {
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 
@@ -2203,7 +2203,7 @@ void HUDShowShield (void)
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 	int				h, y;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 //	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);	//render off-screen
 h = (LOCALPLAYER.shields >= 0) ? f2ir (LOCALPLAYER.shields) : 0; 
@@ -2268,7 +2268,7 @@ if (gameData.demo.nState==ND_STATE_RECORDING) {
 //draw the icons for number of lives
 void HUDShowLives ()
 {
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
@@ -3468,7 +3468,7 @@ void HUDShowKillList ()
 	int bGetPing = gameStates.render.cockpit.bShowPingStats && (!networkData.tLastPingStat || (t - networkData.tLastPingStat >= 1000));
 	static int faw = -1;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 // ugly hack since placement of netgame players and kills is based off of
 // menuhires (which is always 1 for mac).  This throws off placement of
@@ -3778,7 +3778,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 void DrawHUD ()
 {
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 if (gameStates.render.cockpit.nMode==CM_STATUS_BAR) {
 	gameStates.render.cockpit.nLastDrawn [0] =
@@ -3875,7 +3875,7 @@ void RenderGauges ()
 	int cloak = ((LOCALPLAYER.flags&PLAYER_FLAGS_CLOAKED) != 0);
 	int frc=0;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 
 cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
@@ -4052,7 +4052,7 @@ void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, 
 	int w, h, dx;
 	fix nZoomSave;
 
-if (!SHOW_HUD)
+if (HIDE_HUD)
 	return;
 box = NULL;
 if (!viewer) {								//this user is done

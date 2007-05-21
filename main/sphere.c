@@ -214,7 +214,7 @@ return nFaces;
 
 //------------------------------------------------------------------------------
 
-tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vector *pPos, float fRad)
+tOOF_triangle *RotateSphere (tSphereData *sdP, tOOF_vector *pRotSphere, tOOF_vector *pPos, float xScale, float yScale, float zScale)
 {
 	tOOF_matrix	m;
 	tOOF_vector	h, v, p, 
@@ -226,7 +226,9 @@ OOF_MatVms2Oof (&m, viewInfo.view);
 OOF_VecVms2Oof (&p, &viewInfo.pos);
 for (nFaces = sdP->nFaces * (sdP->nFaceNodes + 1); nFaces; nFaces--, pSphere++, pRotSphere++) {
 	v = *pSphere;
-	OOF_VecScale (&v, fRad);
+	v.x *= xScale;
+	v.y *= yScale;
+	v.z *= zScale;
 	OOF_VecRot (pRotSphere, OOF_VecSub (&h, &v, &p), &m);
 	}
 return (tOOF_triangle *) s;
@@ -264,7 +266,7 @@ return pSphere;
 
 //------------------------------------------------------------------------------
 
-int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float fRad,
+int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
 					   float red, float green, float blue, float alpha, grsBitmap *bmP)
 {
 	static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
@@ -292,9 +294,9 @@ if (sdP->pPulse) {
 	fScale = sdP->pPulse->fScale;
 	}
 #if 1
-pSphere = (tOOF_vector *) RotateSphere (sdP, pRotSphere, pPos, fRad);
+pSphere = (tOOF_vector *) RotateSphere (sdP, pRotSphere, pPos, xScale, yScale, zScale);
 #else
-pSphere = (tOOF_vector *) SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, fRad), 0, nFaces - 1);
+pSphere = (tOOF_vector *) SortSphere (RotateSphere (pSphere, pRotSphere, pPos, nFaces, xScale, yScale, zScale), 0, nFaces - 1);
 #endif
 glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
@@ -377,9 +379,10 @@ if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
+	float	r = f2fl (objP->size) * 1.05f;
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
-					  f2fl (objP->size) * 1.05f, red, green, blue, alpha, NULL);
+					  r, r, r, red, green, blue, alpha, NULL);
 	G3DoneInstance ();
 	}
 }
@@ -394,9 +397,10 @@ if (!gameData.render.monsterball.pSphere) {
 	}
 if (gameData.render.monsterball.nFaces > 0) {
 	tOOF_vector	p;
+	float r = f2fl (objP->size);
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
-					  f2fl (objP->size), red, green, blue, alpha, &gameData.hoard.monsterball.bm);
+					  r, r, r, red, green, blue, alpha, &gameData.hoard.monsterball.bm);
 	G3DoneInstance ();
 	}
 }

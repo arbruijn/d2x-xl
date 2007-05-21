@@ -430,7 +430,7 @@ fix fix_sqrt(fix a)
 //either of the pointers can be NULL
 //with interpolation
 
-void FixSinCos(fix a,fix *s,fix *c)
+void FixSinCos (fix a, fix *s, fix *c)
 {
 if (gameOpts->render.nMathFormat == 2) {
 	double d = (double) (a * 2.0 * Pi) / F1_0;
@@ -461,7 +461,7 @@ else
 //compute sine and cosine of an angle, filling in the variables
 //either of the pointers can be NULL
 //no interpolation
-void FixFastSinCos(fix a,fix *s,fix *c)
+void FixFastSinCos (fix a,fix *s,fix *c)
 {
 	int i;
 

@@ -1520,10 +1520,10 @@ return !(VmBehindPlane (n, p1, p2, &i) ||
 //	-----------------------------------------------------------------------------
 // Find intersection of perpendicular on p1,p2 through p3 with p1,p2.
 // If intersection is not between p1 and p2 and vPos is given, return
-// closer point of p1 and p2 to vPos. Otherwise return intersection.
+// further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
 
-int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos)
+int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos, int bClampToFarthest)
 {
 	vmsVector	d31, d21, h, v, d [2];
 	double		m, u;
@@ -1543,16 +1543,16 @@ h.p.z = p1->p.z + (fix) (u * d21.p.z);
 // limit the intersection to [p1,p2]
 VmVecSub (&v, p1, &h);
 u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (m < u) {
+if (fabs (m) < fabs (u)) {
 	if (hitP)
-		*hitP = *p2;
+		*hitP = bClampToFarthest ? *p1 : *p2;
 	return 1;	//clamped
 	}
 VmVecSub (&v, p2, &h);
 u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if ((m < u) && (vPos || !hitP)) {
+if ((fabs (m) < fabs (u)) && (vPos || !hitP)) {
 	if (hitP)
-		*hitP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2))) ? *p2 : *p1;
+		*hitP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2)) == bClampToFarthest) ? *p2 : *p1;
 	return 1;	//clamped
 	}
 if (hitP)
@@ -1583,18 +1583,18 @@ h.p.z = p1->p.z + (float) (u * d21.p.z);
 // limit the intersection to [p1,p2]
 VmVecSubf (&v, p1, &h);
 u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (m < u) {
+if (fabs (m) < fabs (u)) {
 	bClamped = 2;
 	if (bClamp && hitP)
-		*hitP = *p2;
+		*hitP = *p1;
 	}
 else {
 	VmVecSubf (&v, p2, &h);
 	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-	if (m < u) {
+	if (fabs (m) < fabs (u)) {
 		bClamped = 1;
 		if (bClamp && hitP)
-			*hitP = *p1;
+			*hitP = *p2;
 		}
 	}
 if (hitP) {
@@ -1621,7 +1621,7 @@ fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p)
 #if 1
 	vmsVector	h;
 
-VmPointLineIntersection (&h, a, b, p, NULL);
+VmPointLineIntersection (&h, a, b, p, NULL, 0);
 return VmVecMag (VmVecDec (&h, p));
 #else	//this is the original code, which doesn't always work?!
 	vmsVector	ab, ap, abxap;
