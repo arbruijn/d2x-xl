@@ -54,7 +54,7 @@ main(int argc, char *argv[])
 	if (bigendian)
 		nfiles = SWAPINT(nfiles);
 	//printf("Extracting from: %s\n", argv[1]);
-	d_free(buf);
+	D2_FREE(buf);
 	for (i = 0; i < nfiles; i++) {
 		fread(filename[i], 13, 1, mvlfile);
 		fread(&len[i], 4, 1, mvlfile);
@@ -81,7 +81,7 @@ main(int argc, char *argv[])
 					writefile = fopen(filename[i], "wb");
 					fwrite(buf, len[i], 1, writefile);
 					fclose(writefile);
-					d_free(buf);
+					D2_FREE(buf);
 				}
 			}
 		}

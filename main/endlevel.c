@@ -205,11 +205,11 @@ void _CDECL_ FreeEndLevelData (void)
 LogErr ("unloading endlevel data\n");
 if (gameData.endLevel.terrain.bmInstance.bm_texBuf) {
 	OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-	d_free (gameData.endLevel.terrain.bmInstance.bm_texBuf);
+	D2_FREE (gameData.endLevel.terrain.bmInstance.bm_texBuf);
 	}
 if (gameData.endLevel.satellite.bmInstance.bm_texBuf) {
 	OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-	d_free (gameData.endLevel.satellite.bmInstance.bm_texBuf);
+	D2_FREE (gameData.endLevel.satellite.bmInstance.bm_texBuf);
 	}
 }
 
@@ -1233,7 +1233,7 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 			LogErr ("         loading terrain bitmap\n");
 			if (gameData.endLevel.terrain.bmInstance.bm_texBuf) {
 				OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-				d_free (gameData.endLevel.terrain.bmInstance.bm_texBuf);
+				D2_FREE (gameData.endLevel.terrain.bmInstance.bm_texBuf);
 				}
 			Assert (gameData.endLevel.terrain.bmInstance.bm_texBuf == NULL);
 			iff_error = iff_read_bitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
@@ -1270,7 +1270,7 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 			LogErr ("         loading satellite bitmap\n");
 			if (gameData.endLevel.satellite.bmInstance.bm_texBuf) {
 				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-				d_free (gameData.endLevel.satellite.bmInstance.bm_texBuf);
+				D2_FREE (gameData.endLevel.satellite.bmInstance.bm_texBuf);
 				}
 			iff_error = iff_read_bitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {

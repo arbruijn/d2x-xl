@@ -26,13 +26,13 @@ int AddPlayerToBanList (char *szPlayer)
 if (!*szPlayer)
 	return 1;
 if (!pBanList) {
-	pBanList = (pBanListEntry) d_malloc (100 * sizeof (tBanListEntry));
+	pBanList = (pBanListEntry) D2_ALLOC (100 * sizeof (tBanListEntry));
 	if (!pBanList)
 		return 0;
 	nBanListSize = 1;
 	}
 else if (!(++nBanListSize % 100))
-	pBanList = (pBanListEntry) d_realloc (pBanList, nBanListSize + 100 * sizeof (tBanListEntry));
+	pBanList = (pBanListEntry) D2_REALLOC (pBanList, nBanListSize + 100 * sizeof (tBanListEntry));
 if (!pBanList) {
 	nBanListSize = 0;
 	return 0;
@@ -97,7 +97,7 @@ return 0;
 void FreeBanList (void)
 {
 if (pBanList) {
-	d_free (pBanList);
+	D2_FREE (pBanList);
 	pBanList = NULL;
 	nBanListSize = 0;
 	}

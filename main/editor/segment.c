@@ -431,9 +431,9 @@ int is_free_vertex(int vi)
 
 
 // -------------------------------------------------------------------------------
-// Move a d_free vertex in the tSegment by adding the vector *vofs to its coordinates.
+// Move a D2_FREE vertex in the tSegment by adding the vector *vofs to its coordinates.
 //	Error handling:
-// 	If the point is not d_free then:
+// 	If the point is not D2_FREE then:
 //		If the point is not valid (probably valid = in 0..7) then:
 //		If adding *vofs will cause a degenerate tSegment then:
 //	Note, pi is the point index relative to the tSegment, not an absolute point index.
@@ -446,7 +446,7 @@ void med_move_vertex(tSegment *sp, int pi, vmsVector *vofs)
 
 	abspi = sp->verts[pi];
 
-	// Make sure vertex abspi is d_free.  If it is d_free, it appears exactly once in gameData.segs.vertices
+	// Make sure vertex abspi is D2_FREE.  If it is D2_FREE, it appears exactly once in gameData.segs.vertices
 	Assert(med_vertexCount(abspi) == 1);
 
 	Assert(abspi <= MAX_SEGMENT_VERTICES);			// Make sure vertex id is not bogus.
@@ -462,7 +462,7 @@ void med_move_vertex(tSegment *sp, int pi, vmsVector *vofs)
 }
 
 // -------------------------------------------------------------------------------
-//	Move a d_free tWall in the tSegment by adding the vector *vofs to its coordinates.
+//	Move a D2_FREE tWall in the tSegment by adding the vector *vofs to its coordinates.
 //	Wall indices: 0/1/2/3/4/5 = left/top/right/bottom/back/front
 void med_move_wall(tSegment *sp,int wi, vmsVector *vofs)
 {
@@ -515,7 +515,7 @@ int med_add_vertex(vmsVector *vp)
 				return v;
 			}
 		} else if (free_index == -1)
-			free_index = v;					// we want free_index to be the first d_free slot to add a vertex
+			free_index = v;					// we want free_index to be the first D2_FREE slot to add a vertex
 
 	if (free_index == -1)
 		free_index = gameData.segs.nVertices;
@@ -537,7 +537,7 @@ int med_add_vertex(vmsVector *vp)
 }
 
 // ------------------------------------------------------------------------------------------
-//	Returns the index of a d_free tSegment.
+//	Returns the index of a D2_FREE tSegment.
 //	Scans the gameData.segs.segments array.
 int get_free_segment_number(void)
 {
@@ -1163,7 +1163,7 @@ int med_attach_segment_rotated(tSegment *destseg, tSegment *newseg, int destside
 	COMPUTE_SIDE_CENTER(&vc,newseg,newside);
 	VmVecRotate(&vr,&vc,&rotmat2);
 
-	// Now rotate the d_free vertices in the tSegment
+	// Now rotate the D2_FREE vertices in the tSegment
 	for (v=0; v<4; v++)
 		VmVecRotate(&tvs[v],&gameData.segs.vertices[newseg->verts[v+4]],&rotmat2);
 
@@ -1250,7 +1250,7 @@ int med_attach_segment(tSegment *destseg, tSegment *newseg, int destside, int ne
 
 // -------------------------------------------------------------------------------
 //	Delete a vertex, sort of.
-//	Decrement the vertex count.  If the count goes to 0, then the vertex is d_free (has been deleted).
+//	Decrement the vertex count.  If the count goes to 0, then the vertex is D2_FREE (has been deleted).
 void delete_vertex(short v)
 {
 	Assert(v < MAX_VERTICES);			// abort if vertex is not in array gameData.segs.vertices
@@ -1439,7 +1439,7 @@ void copy_tmaps_to_segment(tSegment *dseg, tSegment *sseg)
 
 // ------------------------------------------------------------------------------------------
 // Rotate the tSegment *seg by the pitch, bank, heading defined by *rot, destructively
-// modifying its four d_free vertices in the global array gameData.segs.vertices.
+// modifying its four D2_FREE vertices in the global array gameData.segs.vertices.
 // It is illegal to rotate a tSegment which has connectivity != 1.
 // Pitch, bank, heading are about the point which is the average of the four points
 // forming the tSide of connection.
@@ -1611,7 +1611,7 @@ void assign_default_uvs_to_curseg(void)
 //	deleted.
 //	Return code:
 //		0			joint formed
-//		1			-- no, this is legal! -- unable to form joint because one or more vertices of side2 is not d_free
+//		1			-- no, this is legal! -- unable to form joint because one or more vertices of side2 is not D2_FREE
 //		2			unable to form joint because side1 is already used
 int med_form_joint(tSegment *seg1, int side1, tSegment *seg2, int side2)
 {

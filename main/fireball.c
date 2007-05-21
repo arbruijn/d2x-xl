@@ -1744,13 +1744,13 @@ void ExplodeWall (short nSegment, short nSide)
 	int i;
 	vmsVector pos;
 
-	//find a d_free slot
+	//find a D2_FREE slot
 
 	for (i=0;i<MAX_EXPLODING_WALLS && gameData.walls.explWalls [i].nSegment != -1;i++);
 
 	if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-		con_printf (CONDBG, "Couldn't find d_free slot for exploding tWall!\n");
+		con_printf (CONDBG, "Couldn't find D2_FREE slot for exploding tWall!\n");
 #endif
 		Int3 ();
 		return;
@@ -1834,7 +1834,7 @@ void DoExplodingWallFrame ()
 					);
 			}
 			if (gameData.walls.explWalls [i].time >= EXPL_WALL_TIME)
-				gameData.walls.explWalls [i].nSegment = -1;	//flag this slot as d_free
+				gameData.walls.explWalls [i].nSegment = -1;	//flag this slot as D2_FREE
 		}
 	}
 }

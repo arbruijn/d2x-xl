@@ -118,10 +118,10 @@ void InitAISystem (void)
 	int	i;
 
 #if TRACE	
-	con_printf (CONDBG, "Trying to d_malloc %i bytes for gameData.bots.pInfo.\n", 
+	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.pInfo.\n", 
 					gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #endif
-	gameData.bots.pInfo = (tRobotInfo *) d_malloc (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
+	gameData.bots.pInfo = (tRobotInfo *) D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #if TRACE	
 	con_printf (CONDBG, "gameData.bots.pInfo = %i\n", gameData.bots.pInfo);
 #endif
@@ -786,7 +786,7 @@ void AIFrameAnimation (tObject *objP)
 // ----------------------------------------------------------------------------------
 void SetNextFireTime (tObject *objP, tAILocal *ailp, tRobotInfo *botInfoP, int nGun)
 {
-	//	For guys in snipe mode, they have a 50% shot of getting this shot in d_free.
+	//	For guys in snipe mode, they have a 50% shot of getting this shot in D2_FREE.
 if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
 	if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (d_rand () > 16384))
 		ailp->nRapidFireCount++;

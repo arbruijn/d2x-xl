@@ -45,15 +45,15 @@ size = ht->size;
 ht->and_mask = ht->size - 1;
 if (ht->size==0)
 	Error( "Hashtable has size of 0" );
-ht->key = (char **)d_malloc( size * sizeof(char *) );
+ht->key = (char **)D2_ALLOC( size * sizeof(char *) );
 if (ht->key==NULL)
 	Error( "Not enough memory to create a hash table of size %d", size );
 for (i=0; i<size; i++ )
 	ht->key[i] = NULL;
 // Use calloc cause we want zero'd array.
-ht->value = d_malloc( size*sizeof(int) );
+ht->value = D2_ALLOC( size*sizeof(int) );
 if (ht->value==NULL)	{
-	d_free(ht->key);
+	D2_FREE(ht->key);
 	Error( "Not enough memory to create a hash table of size %d\n", size );
 	}
 ht->nitems = 0;
@@ -64,9 +64,9 @@ return 0;
 void hashtable_free( hashtable *ht )	
 {
 if (ht->key != NULL)
-	d_free( ht->key);
+	D2_FREE( ht->key);
 if (ht->value != NULL)
-	d_free( ht->value);
+	D2_FREE( ht->value);
 ht->size = 0;
 }
 

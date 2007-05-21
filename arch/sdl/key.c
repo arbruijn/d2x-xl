@@ -533,7 +533,7 @@ int KeyInKey()
 		if (key == KEY_CTRLED+KEY_ALTED+KEY_ENTER)
 			exit (0);
 	}
-//added 9/3/98 by Matt Mueller to d_free cpu time instead of hogging during menus and such
+//added 9/3/98 by Matt Mueller to D2_FREE cpu time instead of hogging during menus and such
 	else timer_delay(1);
 //end addition - Matt Mueller
 	gameOpts->legacy.bInput = b;

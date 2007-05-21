@@ -136,7 +136,7 @@ bool MustClipFlatFace (int nv, g3s_codes cc)
 	else 
 		ret=1;
 
-	//d_free temp points
+	//D2_FREE temp points
 free_points:
 	;
 

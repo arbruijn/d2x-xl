@@ -27,33 +27,33 @@ extern int bShowMemInfo;
 
 #define D2X_MEM_HANDLER
 
-void _CDECL_ mem_display_blocks(void);
-void * mem_malloc( unsigned int size, char * var, char * file, int line, int fill_zero );
-void * mem_realloc( void * buffer, unsigned int size, char * var, char * file, int line );
-void mem_free( void * buffer );
-char * mem_strdup(char * str, char * var, char * file, int line );
-void mem_init();
+void _CDECL_ MemDisplayBlocks (void);
+void * MemAlloc (unsigned int size, char * var, char * file, int line, int fill_zero);
+void * MemRealloc (void * buffer, unsigned int size, char * var, char * file, int line);
+void MemFree (void * buffer);
+char * MemStrDup (char * str, char * var, char * file, int line);
+void MemInit ();
 
 /* DPH: Changed malloc, etc. to d_malloc. Overloading system calls is very evil and error prone */
-#define d_malloc(size)      mem_malloc((size),"Unknown", __FILE__,__LINE__, 0 )
-#define d_calloc(n,size)    mem_malloc((n*size),"Unknown", __FILE__,__LINE__, 1 )
-#define d_realloc(ptr,size) mem_realloc((ptr),(size),"Unknown", __FILE__,__LINE__ )
-#define d_free(ptr)         { mem_free(ptr); ptr=NULL; } 
-#define d_strdup(str)       mem_strdup((str),"Unknown",__FILE__,__LINE__)
+#define D2_ALLOC(size)			MemAlloc ((size), "Unknown", __FILE__, __LINE__, 0)
+#define D2_CALLOC(n,size)		MemAlloc ((n*size), "Unknown", __FILE__, __LINE__, 1)
+#define D2_REALLOC(ptr,size)	MemRealloc ((ptr), (size), "Unknown", __FILE__, __LINE__)
+#define D2_FREE(ptr)				{MemFree(ptr); ptr = NULL;} 
+#define D2_STRDUP(str)			MemStrDup ((str), "Unknown", __FILE__, __LINE__)
 
-#define MALLOC( var, nType, count )   (var=(nType *)mem_malloc((count)*sizeof(nType),#var, __FILE__,__LINE__,0 ))
+#define MALLOC(_var, _type, _count)   ((_var) = (_type *) MemAlloc ((_count) * sizeof (_type), #_var, __FILE__, __LINE__, 0))
 
 // Checks to see if any blocks are overwritten
-void mem_validate_heap();
+void MemValidateHeap ();
 
 #else
 
-#define d_malloc(size)      malloc(size)
-#define d_calloc(n, size)   calloc(n, size)
-#define d_realloc(ptr,size) realloc(ptr,size)
-#define d_free(ptr)         { free(ptr); ptr=NULL; }
-#define d_strdup(str)       strdup(str)
+#define D2_ALLOC(size)			malloc (size)
+#define D2_CALLOC(n, size)		calloc (n, size)
+#define D2_REALLOC(ptr,size)	realloc (ptr,size)
+#define D2_FREE(ptr)				{free (ptr); ptr = NULL;}
+#define D2_STRDUP(str)			strdup (str)
 
-#define MALLOC( var, nType, count )   (var=(nType *)malloc((count)*sizeof(nType)))
+#define MALLOC(_var, _type, _count)   ((_var) = (_type *) malloc ((_count) * sizeof (_type)))
 
 #endif

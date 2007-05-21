@@ -4629,7 +4629,7 @@ void MultiQuickSoundHack (int num)
 
 num = DigiXlatSound ((short) num);
 length = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound][num].length;
-ReversedSound.data = (ubyte *)d_malloc (length);
+ReversedSound.data = (ubyte *)D2_ALLOC (length);
 ReversedSound.length = length;
 for (i = 0; i < length; i++)
 	ReversedSound.data [i] = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound][num].data [length-i-1];

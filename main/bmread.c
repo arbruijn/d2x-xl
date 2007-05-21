@@ -250,7 +250,7 @@ tBitmapIndex bm_load_sub( char * filename )
 	new->bm_avgColor = ComputeAvgPixel(new);
 
 	bitmap_num = PiggyRegisterBitmap( new, fname, 0 );
-	d_free( new );
+	D2_FREE( new );
 	return bitmap_num;
 }
 
@@ -306,7 +306,7 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 		bm[i]->bm_avgColor = ComputeAvgPixel(bm[i]);
 
 		new_bmp = PiggyRegisterBitmap( bm[i], tempname, 0 );
-		d_free( bm[i] );
+		D2_FREE( bm[i] );
 		bmp[i] = new_bmp;
 #if TRACE
 		if (!i)

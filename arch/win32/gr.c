@@ -245,7 +245,7 @@ int GrSetMode(u_int32_t mode)
             lpDDSPrimary=NULL;
         }
 
-        if (backbuffer) d_free(backbuffer);
+        if (backbuffer) D2_FREE(backbuffer);
 
 
 	//changed 07/11/99 by adb - nonfullscreen mode now option
@@ -308,7 +308,7 @@ int GrSetMode(u_int32_t mode)
 		 grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
        grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
 
-       backbuffer = d_malloc(w*h);
+       backbuffer = D2_ALLOC(w*h);
        memset(backbuffer, 0, w*h);
        grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)backbuffer;
 
@@ -389,8 +389,8 @@ void GrClose(void)
 	if (gameStates.gfx.bInstalled==1)
 	{
 		gameStates.gfx.bInstalled = 0;
-		d_free(grdCurScreen);
-		d_free(backbuffer);
+		D2_FREE(grdCurScreen);
+		D2_FREE(backbuffer);
 	}
 }
 

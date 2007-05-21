@@ -320,11 +320,11 @@ static int ChkDestListSize(void)
 if (destAddrNum < destListSize)
 	return 1;
 destListSize = destListSize ? destListSize * 2 : 8;
-if (!(b = (tDestListEntry *) d_malloc (sizeof (*destList) * destListSize)))
+if (!(b = (tDestListEntry *) D2_ALLOC (sizeof (*destList) * destListSize)))
 	 return -1;
 if (destList) {
 	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
-	d_free (destList);
+	D2_FREE (destList);
 	}
 destList = b;
 return 1;
@@ -388,7 +388,7 @@ return i;
 void FreeDestList (void)
 {
 if (destList) {
-	d_free (destList);
+	D2_FREE (destList);
 	destList = NULL;
 	}
 destAddrNum =
@@ -413,7 +413,7 @@ static int addiflist(void)
 	SOCKET sock;
 	struct sockaddr_in *sinp,*sinmp;
 
-	d_free(destList);
+	D2_FREE(destList);
 	if ((sock=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP))<0)
 		FAIL("Creating socket() failure during broadcast detection.");
 
@@ -425,7 +425,7 @@ static int addiflist(void)
 #endif
 
 	memset(&ifo[0], 0, sizeof(ifo);
-	chk(ifo = d_malloc(cnt * sizeof(INTERFACE_INFO));
+	chk(ifo = D2_ALLOC(cnt * sizeof(INTERFACE_INFO));
 
 	if (wsaioctl(sock, SIO_GET_INTERFACE_LIST, NULL, 0, &ifo[0], cnt * sizeof(INTERFACE_INFO), &br, NULL, NULL)) != 0) {
 		closesocket(sock);
@@ -434,7 +434,7 @@ static int addiflist(void)
 #if 0
 	cnt=ifconf.ifc_len/sizeof(struct ifreq);
 #endif
-	chk(destList=d_malloc(cnt*sizeof(*destList));
+	chk(destList=D2_ALLOC(cnt*sizeof(*destList));
 	destListSize=cnt;
 	for (i=j=0;i<cnt;i++) {
 		if (ioctl(sock,SIOCGIFFLAGS,ifconf.ifc_req+i)) {
@@ -614,12 +614,12 @@ else {
 			break;
 		for (s2 = s; *s2 && *s2 != ','; s2++)
 			;
-		chk(ns=d_malloc( s2 - s + 1));
+		chk(ns=D2_ALLOC( s2 - s + 1));
 		memcpy(ns,s,s2-s);
 		ns[s2-s]='\0';
 		if (!queryhost(ns)) 
 			msg ("Ignored broadcast-destination \"%s\" as being invalid", ns);
-		d_free(ns);
+		D2_FREE(ns);
 		sin = &destList [destAddrNum].addr;
 		sin->sin_family = AF_INET;
 		memcpy(&sin->sin_addr, qhbuf, 4);

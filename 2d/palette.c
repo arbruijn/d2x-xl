@@ -274,7 +274,7 @@ if (!palette)
 	return NULL;
 if (FindPalette (palette))
 	return gameData.render.pal.pCurPal;
-if (!(plP = d_malloc (sizeof (tPaletteList))))
+if (!(plP = D2_ALLOC (sizeof (tPaletteList))))
 	return NULL;
 plP->pNextPal = gameData.render.pal.palettes;
 gameData.render.pal.palettes = plP;
@@ -293,7 +293,7 @@ void FreePalettes (void)
 
 for (pi = gameData.render.pal.palettes; pi; pi = pj) {
 	pj = pi->pNextPal;
-	d_free (pi);
+	D2_FREE (pi);
 	}
 gameData.render.pal.palettes = NULL;
 gameData.render.pal.nPalettes = 0;

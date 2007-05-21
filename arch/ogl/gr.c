@@ -171,7 +171,7 @@ if (gameStates.ogl.bReadPixels){
 //		glWritePixels(0,0,grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
 	glRasterPos2f(0,0);
 	glDrawPixels(grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
-	d_free(buf);
+	D2_FREE(buf);
 	}
 	//	grdCurScreen->sc_mode=0;//hack to get it to reset screen mode
 return gameStates.ogl.bFullScreen;
@@ -368,7 +368,7 @@ return 0;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
 	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_OGL;
 	//grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = d_realloc(gr_bm_data,w*h);
+	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = D2_REALLOC(gr_bm_data,w*h);
 	GrSetCurrentCanvas(NULL);
 	//gr_enable_default_palette_loading();
 /***/LogErr ("   initializing OpenGL window\n");
@@ -586,8 +586,8 @@ LogErr ("shutting down graphics subsystem\n");
 OglClose();//platform specific code
 if (grdCurScreen) {
 	if (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf)
-		d_free (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf);
-	d_free (grdCurScreen);
+		D2_FREE (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf);
+	D2_FREE (grdCurScreen);
 	}
 #ifdef OGL_RUNTIME_LOAD
 if (ogl_rt_loaded)
@@ -857,7 +857,7 @@ if (!f) {
 else {
 		tTgaHeader	hdr;
 		int			i, j, r;
-		tBGR			*outBuf = (tBGR *) d_malloc (w * h * sizeof (tBGR));
+		tBGR			*outBuf = (tBGR *) D2_ALLOC (w * h * sizeof (tBGR));
 		tBGR			*bgrP;
 		tRGB			*rgbP;
 
@@ -937,7 +937,7 @@ do {
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
+	buf = D2_ALLOC (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
 	glDisable (GL_TEXTURE_2D);
 	glReadBuffer (GL_FRONT);
 	glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
@@ -954,7 +954,7 @@ if (glErrCode == GL_NO_ERROR) {
 		}
 	}
 if (bTmpBuf)
-	d_free (buf);
+	D2_FREE (buf);
 //KeyFlush ();
 StartTime ();
 }

@@ -923,7 +923,7 @@ if ((aip->nHideIndex == -1) || (aip->nPathLength == 0)) {
 	}
 
 if ((aip->nHideIndex + aip->nPathLength > gameData.ai.freePointSegs - gameData.ai.pointSegs) && (aip->nPathLength>0)) {
-	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be d_free space.p.
+	Int3 ();	//	Contact Mike: Bad.  Path goes into what is believed to be D2_FREE space.p.
 	//	This is debugging code.p.  Figure out why garbage collection
 	//	didn't compress this tObject's path information.
 	AIPathGarbageCollect ();
@@ -1305,7 +1305,7 @@ for (objind=0; objind < nPathObjects; objind++) {
 	}
 gameData.ai.freePointSegs = gameData.ai.pointSegs + nFreePathIdx;
 
-////printf ("After garbage collection, d_free index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
+////printf ("After garbage collection, D2_FREE index = %i\n", gameData.ai.freePointSegs - gameData.ai.pointSegs);
 #ifdef _DEBUG
 force_dump_aiObjects_all ("***** Finish AIPathGarbageCollect *****");
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {

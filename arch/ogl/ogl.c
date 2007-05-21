@@ -1310,8 +1310,8 @@ if (nParam) {
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
 		 (nFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
 		glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB, &nParam);
-		if (nParam && (data = (ubyte *) d_malloc (nParam))) {
-			d_free (bmP->bm_texBuf);
+		if (nParam && (data = (ubyte *) D2_ALLOC (nParam))) {
+			D2_FREE (bmP->bm_texBuf);
 			glGetCompressedTexImage (GL_TEXTURE_2D, 0, (GLvoid *) data);
 			bmP->bm_texBuf = data;
 			bmP->bm_bufSize = nParam;
@@ -1588,7 +1588,7 @@ if (!(bmP->bm_props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	}
 else if (!BM_FRAMES (bmP)) {
 	grsBitmap	*bmfP;
-	bmfP = (grsBitmap *) d_malloc (nFrames * sizeof (struct _grsBitmap));
+	bmfP = (grsBitmap *) D2_ALLOC (nFrames * sizeof (struct _grsBitmap));
 	memset (bmfP, 0, nFrames * sizeof (struct _grsBitmap));
 	BM_FRAMES (bmP) = bmfP;
 	for (i = 0; i < nFrames; i++, bmfP++) {
@@ -1677,7 +1677,7 @@ GLuint EmptyTexture (int Xsize, int Ysize)			// Create An Empty Texture
 	GLuint texId; 						// Texture ID
 	int nSize = Xsize * Ysize * 4 * sizeof (unsigned int); 
 	// Create Storage Space For Texture Data (128x128x4)
-	unsigned int *data = (unsigned int*) d_malloc (nSize); 
+	unsigned int *data = (unsigned int*) D2_ALLOC (nSize); 
 
 memset (data, 0, nSize); 	// Clear Storage Memory
 glGenTextures (1, &texId); 					// Create 1 Texture
@@ -1685,7 +1685,7 @@ OGL_BINDTEX (texId); 			// Bind The Texture
 glTexImage2D (GL_TEXTURE_2D, 0, 4, Xsize, Ysize, 0, gameStates.ogl.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-d_free (data); 							// Release data
+D2_FREE (data); 							// Release data
 return texId; 						// Return The Texture ID
 }
 
@@ -1726,7 +1726,7 @@ if (fSize <= 0) {
 	}
 #endif
 
-if (!(bufP = (char *) d_malloc (sizeof (char) *(fSize + 1)))) {
+if (!(bufP = (char *) D2_ALLOC (sizeof (char) *(fSize + 1)))) {
 	fclose (fp);
 	return NULL;	// out of memory
 	}
@@ -1748,21 +1748,21 @@ void PrintShaderInfoLog (GLuint handle, int bProgram)
 
 if (bProgram) {
 	glGetProgramiv (handle, GL_INFO_LOG_LENGTH, &nLogLen);
-	if ((nLogLen > 0) && (infoLog = (char *) d_malloc (nLogLen))) {
-		infoLog = (char *) d_malloc (nLogLen);
+	if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
+		infoLog = (char *) D2_ALLOC (nLogLen);
 		glGetProgramInfoLog (handle, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			LogErr ("\n%s\n\n", infoLog);
-		d_free (infoLog);
+		D2_FREE (infoLog);
 		}
 	}
 else {
 	glGetShaderiv (handle, GL_INFO_LOG_LENGTH, &nLogLen);
-	if ((nLogLen > 0) && (infoLog = (char *) d_malloc (nLogLen))) {
+	if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
 		glGetShaderInfoLog (handle, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
 			LogErr ("\n%s\n\n", infoLog);
-		d_free (infoLog);
+		D2_FREE (infoLog);
 		}
 	}
 }
@@ -1776,11 +1776,11 @@ void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
    char *infoLog;
 
 glGetObjectParameteriv (handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
-if ((nLogLen > 0) && (infoLog = (char *) d_malloc (nLogLen))) {
+if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
 	glGetInfoLog (handle, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
 		LogErr ("\n%s\n\n", infoLog);
-	d_free (infoLog);
+	D2_FREE (infoLog);
 	}
 }
 
@@ -1881,8 +1881,8 @@ glShaderSource (vs, 1, (const GLcharARB **) &vsName, NULL);
 glShaderSource (fs, 1, (const GLcharARB **) &fsName, NULL); 
 #if DBG_SHADERS	
 if (bFromFile) {
-	d_free (vsName); 
-	d_free (fsName); 
+	D2_FREE (vsName); 
+	D2_FREE (fsName); 
 	}
 #endif
 glCompileShader (vs); 

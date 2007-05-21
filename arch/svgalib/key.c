@@ -271,7 +271,7 @@ int KeyInKey()
 		key = key_data.keybuffer[key_data.keyhead];
 		key_data.keyhead = add_one(key_data.keyhead);
 	}
-//added 9/3/98 by Matt Mueller to d_free cpu time instead of hogging during menus and such
+//added 9/3/98 by Matt Mueller to D2_FREE cpu time instead of hogging during menus and such
 //	else timer_delay(1);
 //end addition - Matt Mueller
         return key;

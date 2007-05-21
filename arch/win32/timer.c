@@ -68,4 +68,4 @@ void timer_init()
 }
 
 // NOTE: This C file has been "neutered" by dph-man. If someone wants to work
-// on this, feel d_free. I don't use joystick :-)
+// on this, feel D2_FREE. I don't use joystick :-)

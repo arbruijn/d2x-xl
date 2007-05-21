@@ -439,7 +439,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				CFSplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
-				if (!(pszSong = (char *) d_malloc (l))) {
+				if (!(pszSong = (char *) D2_ALLOC (l))) {
 					CFClose (fp);
 					return nSongs = nSongs;
 					}
@@ -454,7 +454,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 		}
 	CFClose (fp);
 	if (!bRead) {
-		if (!(gameData.songs.user.pszLevelSongs = (char **) d_malloc (nSongs * sizeof (char **))))
+		if (!(gameData.songs.user.pszLevelSongs = (char **) D2_ALLOC (nSongs * sizeof (char **))))
 			return 0;
 		}
 	}

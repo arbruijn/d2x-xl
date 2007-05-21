@@ -2455,7 +2455,7 @@ idToOOF [MEGAMSL_ID] = OOF_MEGA;
 }
 
 //------------------------------------------------------------------------------
-//sets up the d_free list & init tPlayer & whatever else
+//sets up the D2_FREE list & init tPlayer & whatever else
 void InitObjects ()
 {
 	int i;
@@ -2487,7 +2487,7 @@ InitIdToOOF ();
 //------------------------------------------------------------------------------
 //after calling initObject (), the network code has grabbed specific
 //tObject slots without allocating them.  Go though the gameData.objs.objects & build
-//the d_free list, then set the apporpriate globals
+//the D2_FREE list, then set the apporpriate globals
 void SpecialResetObjects (void)
 {
 	int i;
@@ -2693,10 +2693,10 @@ Assert (gameData.objs.objects [0].prev != 0);
 int nDebrisObjectCount = 0;
 int nUnusedObjectsSlots;
 
-//returns the number of a d_free tObject, updating gameData.objs.nLastObject.
+//returns the number of a D2_FREE tObject, updating gameData.objs.nLastObject.
 //Generally, CreateObject () should be called to get an tObject, since it
 //fills in important fields and does the linking.
-//returns -1 if no d_free gameData.objs.objects
+//returns -1 if no D2_FREE gameData.objs.objects
 int AllocObject (void)
 {
 	int nObject;
@@ -2797,7 +2797,7 @@ nToFree = MAX_OBJECTS - num_used - nAlreadyFree;
 nOrgNumToFree = nToFree;
 if (nToFree > olind) {
 #if TRACE				
-	con_printf (1, "Warning: Asked to d_free %i gameData.objs.objects, but can only d_free %i.\n", nToFree, olind);
+	con_printf (1, "Warning: Asked to D2_FREE %i gameData.objs.objects, but can only D2_FREE %i.\n", nToFree, olind);
 #endif
 	nToFree = olind;
 	}
@@ -2897,9 +2897,9 @@ if (GetSegMasks (pos, nSegment, 0).centerMask)
 #endif
 		return -1;		//don't create this tObject
 	}
-// Find next d_free tObject
+// Find next D2_FREE tObject
 nObject = AllocObject ();
-if (nObject == -1)		//no d_free gameData.objs.objects
+if (nObject == -1)		//no D2_FREE gameData.objs.objects
 	return -1;
 Assert (gameData.objs.objects [nObject].nType == OBJ_NONE);		//make sure unused
 objP = gameData.objs.objects + nObject;
@@ -2990,7 +2990,7 @@ int CreateObjectCopy (int nObject, vmsVector *new_pos, int newsegnum)
 	tObject *objP;
 	int newObjNum = AllocObject ();
 
-// Find next d_free tObject
+// Find next D2_FREE tObject
 if (newObjNum == -1)
 	return -1;
 obj = gameData.objs.objects + newObjNum;
@@ -4159,7 +4159,7 @@ return h;
 
 //------------------------------------------------------------------------------
 //called after load.  Takes number of gameData.objs.objects,  and gameData.objs.objects should be
-//compressed.  resets d_free list, marks unused gameData.objs.objects as unused
+//compressed.  resets D2_FREE list, marks unused gameData.objs.objects as unused
 void ResetObjects (int n_objs)
 {
 	int i;

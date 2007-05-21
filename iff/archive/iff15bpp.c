@@ -47,7 +47,7 @@ BITMAP15 * IFF_To_15BPP(char * ifilename)
 
 	////printf( "%d, %d\n", Process_width, Process_height );
 
-	new = (BITMAP15 *)d_malloc( sizeof(BITMAP15)+ (Process_width * Process_height * 2 );
+	new = (BITMAP15 *)D2_ALLOC( sizeof(BITMAP15)+ (Process_width * Process_height * 2 );
 	if (new==NULL) exit(1);
 
 	new->Width = Process_width;
@@ -85,7 +85,7 @@ line_done: ;
 				break;
 		}
 	}
-	d_free( my_bh->raw_data );
+	D2_FREE( my_bh->raw_data );
 	return new;
 }
 

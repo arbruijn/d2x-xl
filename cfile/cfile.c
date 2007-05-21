@@ -478,7 +478,7 @@ if (!fp) {
 			}
 	}
 if (fp) {
-	if (!(cfile = d_malloc (sizeof (CFILE))))
+	if (!(cfile = D2_ALLOC (sizeof (CFILE))))
 		fclose (fp);
 	else {
 		cfile->file = fp;
@@ -676,7 +676,7 @@ int CFClose(CFILE *fp)
 if (!fp)
 	return 0;
 result = fclose (fp->file);
-d_free (fp);
+D2_FREE (fp);
 return result;
 }
 
@@ -950,10 +950,10 @@ char *CFReadData (char *filename, char *folder, int bUseD1Hog)
 if (!fp)
 	return NULL;
 nSize = CFLength (fp, bUseD1Hog);
-if (!(pData = (char *) d_malloc (nSize)))
+if (!(pData = (char *) D2_ALLOC (nSize)))
 	return NULL;
 if (!CFRead (pData, nSize, 1, fp)) {
-	d_free (pData);
+	D2_FREE (pData);
 	pData = NULL;
 	}
 CFClose (fp);

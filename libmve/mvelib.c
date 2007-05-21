@@ -284,13 +284,13 @@ return file;
 }
 
 //-----------------------------------------------------------------------
-// d_free an MVE file
+// D2_FREE an MVE file
 
 static void _mvefile_free (MVEFILE *movie)
 {
-// d_free the stream
+// D2_FREE the stream
 movie->stream = NULL;
-// d_free the buffer
+// D2_FREE the buffer
 if (movie->cur_chunk)
 	mve_free (movie->cur_chunk);
 movie->cur_chunk = NULL;
@@ -298,7 +298,7 @@ movie->cur_chunk = NULL;
 movie->buf_size = 0;
 movie->cur_fill = 0;
 movie->next_segment = 0;
-// d_free the struct
+// D2_FREE the struct
 mve_free (movie);
 }
 
@@ -368,7 +368,7 @@ new_buffer = (unsigned char *)mve_alloc (new_len);
 // copy old data
 if (movie->cur_chunk  &&  movie->cur_fill)
    memcpy (new_buffer, movie->cur_chunk, movie->cur_fill);
-// d_free old buffer
+// D2_FREE old buffer
 if (movie->cur_chunk) {
    mve_free (movie->cur_chunk);
    movie->cur_chunk = 0;
@@ -437,7 +437,7 @@ return movie;
 }
 
 //-----------------------------------------------------------------------
-// d_free an MVESTREAM
+// D2_FREE an MVESTREAM
 
 static void _mvestream_free (MVESTREAM *movie)
 {
@@ -448,7 +448,7 @@ movie->movie = NULL;
 // clear context and handlers
 movie->context = NULL;
 memset (movie->handlers, 0, sizeof (movie->handlers));
-// d_free the struct
+// D2_FREE the struct
 mve_free (movie);
 }
 

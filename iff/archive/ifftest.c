@@ -92,10 +92,10 @@ main(int argc,char **argv)
 		GrClose();
 
 		for (i=0;i<n_bitmaps;i++) {
-			d_free(bm_list[i]->bm_texBuf);
+			D2_FREE(bm_list[i]->bm_texBuf);
 			bm_list[i]->bm_texBuf = NULL;
 			#ifdef ANIM_TEST
-				d_free(bm_list[i]);
+				D2_FREE(bm_list[i]);
 			#endif
 
 		}

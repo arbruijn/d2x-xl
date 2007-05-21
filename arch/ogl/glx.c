@@ -200,12 +200,12 @@ int OglInitWindow(int x, int y){
 			unsigned char *blankdata;
 			int w,h;
 			XQueryBestCursor(dpy,win,1,1,&w,&h);
-			blankdata=d_malloc(w*h/8);
+			blankdata=D2_ALLOC(w*h/8);
 			memset(blankdata,0,w*h/8);
 			memset(&blankcolor,0,sizeof(XColor);
 			blankpixmap=XCreateBitmapFromData(dpy,win,blankdata,w,h);
 			blankcursor=XCreatePixmapCursor(dpy,blankpixmap,blankpixmap,&blankcolor,&blankcolor,w,h);
-			d_free(blankdata);
+			D2_FREE(blankdata);
 //			sleep(1);
 		}
 		

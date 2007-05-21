@@ -56,16 +56,16 @@ void _CDECL_ free_text(void)
 LogErr ("unloading game texts\n");
 if (pszGameTexts && pszGameTexts [0]) {
 	p = pszGameTexts [0] - 1;
-	d_free (text);
-	d_free (p);
-	d_free (pszGameTexts);
+	D2_FREE (text);
+	D2_FREE (p);
+	D2_FREE (pszGameTexts);
 	pszGameTexts = NULL;
 	}
 if (pszHelpTexts && pszHelpTexts [0]) {
 	p = pszHelpTexts [0] - 1;
-	d_free (text);
-	d_free (p);
-	d_free (pszHelpTexts);
+	D2_FREE (text);
+	D2_FREE (p);
+	D2_FREE (pszHelpTexts);
 	pszHelpTexts = NULL;
 	}
 }
@@ -2220,11 +2220,11 @@ char **InitTexts (char *szTextFile, int bInitHotKeys)
 #endif
 
 j = N_BASE_TEXTS + GameTextCount ();
-if (!(pszTexts = (char **) d_malloc ((j + 1) * sizeof (char *))))
+if (!(pszTexts = (char **) D2_ALLOC ((j + 1) * sizeof (char *))))
 	return NULL;
 h = GameTextSize ();
-if (!(*pszTexts = (char *) d_malloc (h))) {
-	d_free (pszTexts);
+if (!(*pszTexts = (char *) D2_ALLOC (h))) {
+	D2_FREE (pszTexts);
 	return NULL;
 	}
 for (i = 0; i < j; i++) {

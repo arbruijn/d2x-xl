@@ -113,7 +113,7 @@ char pszMovieLibs [][FILENAME_LEN] = {
 	"extra5-l.mvl"};
 
 #define MLF_ON_CD						1
-#define MAX_MOVIES_PER_LIB			50    //determines size of d_malloc
+#define MAX_MOVIES_PER_LIB			50    //determines size of D2_ALLOC
 
 #define	FIRST_EXTRA_MOVIE_LIB	4
 #define N_EXTRA_MOVIE_LIBS			5
@@ -150,14 +150,14 @@ tMovieLib *FindMovieLib (char *pszTargetMovie);
 
 void *MPlayAlloc (unsigned size)
 {
-return d_malloc (size);
+return D2_ALLOC (size);
 }
 
 // ----------------------------------------------------------------------
 
 void MPlayFree (void *p)
 {
-d_free (p);
+D2_FREE (p);
 }
 
 
@@ -531,7 +531,7 @@ readCount = (int) CFRead (subTitles.rawDataP, 1, size, ifile);
 CFClose (ifile);
 subTitles.rawDataP [size] = 0;
 if (readCount != size) {
-	d_free (subTitles.rawDataP);
+	D2_FREE (subTitles.rawDataP);
 	return 0;
 	}
 p = subTitles.rawDataP;
@@ -567,7 +567,7 @@ return 1;
 void CloseSubTitles ()
 {
 if (subTitles.rawDataP)
-	d_free (subTitles.rawDataP);
+	D2_FREE (subTitles.rawDataP);
 subTitles.rawDataP = NULL;
 subTitles.nCaptions = 0;
 }
@@ -640,7 +640,7 @@ if (nFiles > 255) {
 	gameStates.app.bLittleEndian = 0;
 	nFiles = SWAPINT (nFiles);
 	}
-//table = d_malloc (sizeof (*table) + sizeof (ml_entry)*nFiles);
+//table = D2_ALLOC (sizeof (*table) + sizeof (ml_entry)*nFiles);
 MALLOC (table, tMovieLib, 1);
 MALLOC (table->movies, ml_entry, nFiles);
 strcpy (table->name, filename);
@@ -673,7 +673,7 @@ tMovieLib *InitOldMovieLib (char *filename, CFILE *fp)
 	nFiles = 0;
 
 	//allocate big table
-table = d_malloc (sizeof (*table) + sizeof (ml_entry) * MAX_MOVIES_PER_LIB);
+table = D2_ALLOC (sizeof (*table) + sizeof (ml_entry) * MAX_MOVIES_PER_LIB);
 while (1) {
 	i = (int) CFRead (table->movies [nFiles].name, 13, 1, fp);
 	if (i != 1)
@@ -690,9 +690,9 @@ while (1) {
 	}
 	//allocate correct-sized table
 size = sizeof (*table) + sizeof (ml_entry) * nFiles;
-table2 = d_malloc (size);
+table2 = D2_ALLOC (size);
 memcpy (table2, table, size);
-d_free (table);
+D2_FREE (table);
 table = table2;
 strcpy (table->name, filename);
 table->n_movies = nFiles;
@@ -840,8 +840,8 @@ void init_movie (char *filename, int libnum, int isRobots, int required)
 void close_movie (int i)
 {
 	if (movies.libs [i]) {
-		d_free (movies.libs [i]->movies);
-		d_free (movies.libs [i]);
+		D2_FREE (movies.libs [i]->movies);
+		D2_FREE (movies.libs [i]);
 	}
 }
 

@@ -39,7 +39,7 @@ main(int argc, char *argv[])
 	strncpy(buf, "DHF", 3);
 	fwrite(buf, 3, 1, hogfile);
 	//printf("Creating: %s\n", argv[1]);
-	d_free(buf);
+	D2_FREE(buf);
 	dp = opendir("./");
 	if (dp != NULL) {
 		while ((ep = readdir(dp))) {

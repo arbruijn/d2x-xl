@@ -813,10 +813,10 @@ int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, int nCurTime)
 {
-if (!(pCloud->pParticles = (tParticle *) d_malloc (nMaxParts * sizeof (tParticle))))
+if (!(pCloud->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
 	return 0;
 if (gameOpts->render.smoke.bSort) {
-	if (!(pCloud->pPartIdx = (tPartIdx *) d_malloc (nMaxParts * sizeof (tPartIdx))))
+	if (!(pCloud->pPartIdx = (tPartIdx *) D2_ALLOC (nMaxParts * sizeof (tPartIdx))))
 		gameOpts->render.smoke.bSort = 0;
 	}
 else
@@ -847,9 +847,9 @@ return 1;
 int DestroyCloud (tCloud *pCloud)
 {
 if (pCloud->pParticles) {
-	d_free (pCloud->pParticles);
+	D2_FREE (pCloud->pParticles);
 	pCloud->pParticles = NULL;
-	d_free (pCloud->pPartIdx);
+	D2_FREE (pCloud->pPartIdx);
 	pCloud->pPartIdx = NULL;
 	}
 pCloud->nParts =
@@ -1096,11 +1096,11 @@ if (pCloud->nMaxParts == nMaxParts)
 	return 1;
 if (nMaxParts > pCloud->nPartLimit) {
 	pCloud->nPartLimit = nMaxParts;
-	if (!(p = d_malloc (nMaxParts * sizeof (tParticle))))
+	if (!(p = D2_ALLOC (nMaxParts * sizeof (tParticle))))
 		return 0;
 	if (pCloud->pParticles) {
 		memcpy (p, pCloud->pParticles, pCloud->nParts * sizeof (tParticle));
-		d_free (pCloud->pParticles);
+		D2_FREE (pCloud->pParticles);
 		}
 	pCloud->pParticles = p;
 	}
@@ -1174,7 +1174,7 @@ pSmoke = gameData.smoke.smoke + iSmoke;
 if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);
-	d_free (pSmoke->pClouds);
+	D2_FREE (pSmoke->pClouds);
 	pSmoke->pClouds = NULL;
 	i = pSmoke->nNext;
 	if (gameData.smoke.iUsedSmoke == iSmoke)
@@ -1228,7 +1228,7 @@ else {
 		nMaxParts *= 2;
 	srand (SDL_GetTicks ());
 	pSmoke = gameData.smoke.smoke + gameData.smoke.iFreeSmoke;
-	if (!(pSmoke->pClouds = (tCloud *) d_malloc (nMaxClouds * sizeof (tCloud)))) {
+	if (!(pSmoke->pClouds = (tCloud *) D2_ALLOC (nMaxClouds * sizeof (tCloud)))) {
 		//LogErr ("cannot create gameData.smoke.smoke\n");
 		return 0;
 		}
@@ -1375,12 +1375,12 @@ int CreateCloudList (void)
 h = CloudCount ();
 if (!h)
 	return 0;
-if (!(pCloudList = d_malloc (h * sizeof (tCloudList))))
+if (!(pCloudList = D2_ALLOC (h * sizeof (tCloudList))))
 	return -1;
 for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.smoke + i;
 	if (!LoadParticleImage (pSmoke->nType)) {
-		d_free (pCloudList);
+		D2_FREE (pCloudList);
 		return 0;
 		}
 	if (pSmoke->pClouds) {
@@ -1417,7 +1417,7 @@ else if (h > 0) {
 	do {
 		RenderCloud (pCloudList [--h].pCloud);
 		} while (h);
-	d_free (pCloudList);
+	D2_FREE (pCloudList);
 	pCloudList = NULL;
 	}
 else {

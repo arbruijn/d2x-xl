@@ -512,7 +512,7 @@ void medkey_init()
 		}
 		fclose(keyfile);
 	}
-	d_free( LispCommand );
+	D2_FREE( LispCommand );
 }
 
 void init_editor()

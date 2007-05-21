@@ -61,7 +61,7 @@ main(int argc, char *argv[])
 	buf = (char *)malloc(4);
 	strncpy(buf, "DMVL", 4);
 	fwrite(buf, 4, 1, mvlfile);
-	d_free(buf);
+	D2_FREE(buf);
 
 	tmp = nfiles;
 #ifdef WORDS_BIGENDIAN

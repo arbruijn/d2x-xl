@@ -46,7 +46,7 @@ main(int argc, char *argv[])
 	buf = (char *)malloc(3);
 	fread(buf, 3, 1, hogfile);
 	//printf("Extracting from: %s\n", argv[1]);
-	d_free(buf);
+	D2_FREE(buf);
 	while(ftell(hogfile)<statbuf.st_size) {
 		fread(filename, 13, 1, hogfile);
 		fread(&len, 1, 4, hogfile);
@@ -68,7 +68,7 @@ main(int argc, char *argv[])
 					writefile = fopen(filename, "wb");
 					fwrite(buf, len, 1, writefile);
 					fclose(writefile);
-					d_free(buf);
+					D2_FREE(buf);
 				}
 			}
 		}

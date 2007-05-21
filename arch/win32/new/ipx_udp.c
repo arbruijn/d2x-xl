@@ -216,7 +216,7 @@ static int addiflist(void)
 	SOCKET sock;
 	struct sockaddr_in *sinp,*sinmp;
 
-	d_free(broads);
+	D2_FREE(broads);
 	if ((sock=socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP))<0)
 		FAIL("Creating socket() failure during broadcast detection: %m");
 
@@ -237,7 +237,7 @@ static int addiflist(void)
 #if 0
 	cnt=ifconf.ifc_len/sizeof(struct ifreq);
 #endif
-	chk(broads=d_malloc(cnt*sizeof(*broads));
+	chk(broads=D2_ALLOC(cnt*sizeof(*broads));
 	broadsize=cnt;
 	for (i=j=0;i<cnt;i++) {
 		if (ioctl(sock,SIOCGIFFLAGS,ifconf.ifc_req+i)) {
@@ -419,12 +419,12 @@ char *s,*s2,*ns;
 				break;
 			for (s2=s;*s2 && *s2!=',';s2++)
 				;
-			chk(ns=d_malloc(s2-s+1));
+			chk(ns=D2_ALLOC(s2-s+1));
 			memcpy(ns,s,s2-s);
 			ns[s2-s]='\0';
 			if (!queryhost(ns)) 
 				msg("Ignored broadcast-destination \"%s\" as being invalid",ns);
-			d_free(ns);
+			D2_FREE(ns);
 			chkbroadsize();
 			sin=broads+(broadnum++);
 			sin->sin_family=AF_INET;

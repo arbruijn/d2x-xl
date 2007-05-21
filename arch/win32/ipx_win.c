@@ -189,7 +189,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
 //------------------------------------------------------------------------------
 
 static void ipx_win_CloseSocket(ipx_socket_t *mysock) {
-  /* now close the file descriptor for the socket, and d_free it */
+  /* now close the file descriptor for the socket, and D2_FREE it */
 #if TRACE	
   con_printf (1,"IPX: closing file descriptor on socket %x\n", mysock->socket);
 #endif

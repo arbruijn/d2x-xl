@@ -41,7 +41,7 @@ bmP->bm_texBuf = data;
 
 void *GrAllocBitmapData (int w, int h, int bpp)
 {
-return (w * h) ? d_malloc ((bpp > 1) ? w * h * bpp : MAX_BMP_SIZE (w, h)) : NULL;
+return (w * h) ? D2_ALLOC ((bpp > 1) ? w * h * bpp : MAX_BMP_SIZE (w, h)) : NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ grsBitmap *GrCreateBitmapSub (int w, int h, unsigned char *data, int bpp)
 {
     grsBitmap *bmP;
 
-bmP = (grsBitmap *) d_malloc (sizeof (grsBitmap));
+bmP = (grsBitmap *) D2_ALLOC (sizeof (grsBitmap));
 if (bmP)
 	GrInitBitmap (bmP, 0, 0, 0, w, h, w, data, bpp);
 return bmP;
@@ -105,7 +105,7 @@ grsBitmap *GrCreateSubBitmap(grsBitmap *bmP, int x, int y, int w, int h)
 {
     grsBitmap *newBM;
 
-if  (!(newBM = (grsBitmap *)d_malloc(sizeof(grsBitmap))))
+if  (!(newBM = (grsBitmap *)D2_ALLOC(sizeof(grsBitmap))))
 	return NULL;
 memset (newBM, 0, sizeof  (*newBM));
 GrInitSubBitmap (newBM, bmP, x, y, w, h);
@@ -118,8 +118,8 @@ void GrFreeBitmap (grsBitmap *bmP)
 {
 if (bmP) {
 	GrFreeBitmapData (bmP);
-	d_free (BM_FRAMES (bmP));
-	d_free (bmP);
+	D2_FREE (BM_FRAMES (bmP));
+	D2_FREE (bmP);
 	}
 }
 
@@ -128,7 +128,7 @@ if (bmP) {
 void GrFreeSubBitmap(grsBitmap *bmP)
 {
 if (bmP) {
-	d_free(bmP);
+	D2_FREE(bmP);
 	}
 }
 
@@ -139,7 +139,7 @@ void GrFreeBitmapData (grsBitmap *bmP) // TODO: virtulize
 if (bmP) {
 	OglFreeBmTexture (bmP);
 	if (bmP->bm_texBuf) 
-		d_free (bmP->bm_texBuf);
+		D2_FREE (bmP->bm_texBuf);
 	}
 }
 

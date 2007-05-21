@@ -324,7 +324,7 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 	}
 	if (GrPaletteFadeOut (NULL, 32, allow_keys))
 		return 1;
-	d_free (title_bm.bm_texBuf);
+	D2_FREE (title_bm.bm_texBuf);
 	return 0;
 }
 
@@ -552,7 +552,7 @@ void ShowBitmapFrame (int bRedraw)
 			dd_grd_curcanv = curCanvSave,
 			grdCurCanv = curCanvSave
 		);
-		d_free (bitmap_canv);
+		D2_FREE (bitmap_canv);
 		if (!(bRedraw || Door_divCount)) {
 #if 1
 		Door_divCount = DOOR_DIV_INIT;
@@ -587,7 +587,7 @@ curCanvSave = grdCurCanv;
 GrSetCurrentCanvas (bitmap_canv);
 GrBitmapM (0, 0, bmp, 0);
 GrSetCurrentCanvas (curCanvSave);
-d_free (bitmap_canv);
+D2_FREE (bitmap_canv);
 }
 
 //-----------------------------------------------------------------------------
@@ -1029,7 +1029,7 @@ while (!done) {
 			else if (ch == 'R') {
 				if (message > pj) {
 					if (robotCanv != NULL) {
-						d_free (robotCanv);
+						D2_FREE (robotCanv);
 						robotCanv=NULL;
 						}
 					if (bRobotPlaying) {
@@ -1066,7 +1066,7 @@ while (!done) {
 				if (message > pj) {
 				//--grsBitmap *bitmap_ptr;
 					if (robotCanv != NULL) {
-						d_free (robotCanv);
+						D2_FREE (robotCanv);
 						robotCanv=NULL;
 						}
 					StopBriefingSound (&bot_channel);
@@ -1079,7 +1079,7 @@ while (!done) {
 			else if (ch == 'O') {
 				if (message > pj) {
 					if (robotCanv != NULL) {
-						d_free (robotCanv);
+						D2_FREE (robotCanv);
 						robotCanv=NULL;
 						}
 					get_message_name (&message, Bitmap_name);
@@ -1124,7 +1124,7 @@ while (!done) {
 
 				if (message > pj) {
 					if (robotCanv != NULL) {
-						d_free (robotCanv);
+						D2_FREE (robotCanv);
 						robotCanv=NULL;
 						}
 					}
@@ -1135,13 +1135,13 @@ while (!done) {
 				Assert (iff_error == IFF_NO_ERROR);
 
 				show_briefing_bitmap (&guy_bitmap);
-				d_free (guy_bitmap.bm_texBuf);
+				D2_FREE (guy_bitmap.bm_texBuf);
 				prev_ch = 10;
 //			} else if (ch==EOF) {
 //				done=1;
 //			} else if (ch == 'B') {
 //				if (robotCanv != NULL)	{
-//					d_free (robotCanv);
+//					D2_FREE (robotCanv);
 //					robotCanv=NULL;
 //				}
 //
@@ -1354,7 +1354,7 @@ if (bRobotPlaying) {
 	}
 
 if (robotCanv != NULL)
-	{d_free (robotCanv); robotCanv=NULL;}
+	{D2_FREE (robotCanv); robotCanv=NULL;}
 
 StopBriefingSound (&nHumChannel);
 StopBriefingSound (&printing_channel);
@@ -1604,7 +1604,7 @@ if (gameStates.app.bD1Mission) {
 	}
 else
 	ShowBriefingScreen (level_num, 0, (short) level_num);
-d_free (Briefing_text);
+D2_FREE (Briefing_text);
 Briefing_text = NULL;
 KeyFlush ();
 return;

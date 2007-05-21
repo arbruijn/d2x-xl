@@ -422,7 +422,7 @@ for (h = j = 0; j < i; j++)
 		h += GetNumMovies (j);
 if (!h)
 	return;
-if (!(m = (char **) d_malloc (h * sizeof (char **))))
+if (!(m = (char **) D2_ALLOC (h * sizeof (char **))))
 	return;
 for (i = j = 0; i < h; i++)
 	if ((ps = CycleThroughMovies (i == 0, 0))) {
@@ -440,7 +440,7 @@ if (i > -1) {
 	PlayMovie (m [i], 1, 1, gameOpts->movies.bResize);
 	SDL_ShowCursor (1);
 	}
-d_free (m);
+D2_FREE (m);
 SongsPlayCurrentSong (1);
 }
 

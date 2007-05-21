@@ -198,16 +198,16 @@ else {
 for (i = 0; i < sdP->nTessDepth; i++)
 	nFaces *= j;
 for (i = 0; i < 2; i++) {
-	if (!(buf [i] = (tOOF_vector *) d_malloc (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)))) {
+	if (!(buf [i] = (tOOF_vector *) D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector)))) {
 		if (i)
-			d_free (buf [i - 1]);
+			D2_FREE (buf [i - 1]);
 		return -1;
 		}
 	}
 j = (sdP->nFaceNodes == 3) ? 
 	 BuildSphereTri ((tOOF_triangle **) buf, &nFaces, sdP->nTessDepth) : 
 	 BuildSphereQuad ((tOOF_quad **) buf, &nFaces, sdP->nTessDepth);
-d_free (buf [!j]);
+D2_FREE (buf [!j]);
 sdP->pSphere = buf [j];
 return nFaces;
 }
@@ -274,7 +274,7 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScal
 	int			i, j, nFaces = sdP->nFaces;
 	tOOF_vector *ps,
 					*pSphere = sdP->pSphere, 
-					*pRotSphere = (tOOF_vector *) d_malloc (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector));
+					*pRotSphere = (tOOF_vector *) D2_ALLOC (nFaces * (sdP->nFaceNodes + 1) * sizeof (tOOF_vector));
 	float			fScale = 1.0;
 
 if (!pRotSphere)
@@ -362,7 +362,7 @@ else {
 	}
 glDepthMask (1);
 glDepthFunc (GL_LESS);
-d_free (pRotSphere);
+D2_FREE (pRotSphere);
 return 0;
 }
 
@@ -410,7 +410,7 @@ if (gameData.render.monsterball.nFaces > 0) {
 void DestroySphere (tSphereData *sdP)
 {
 if (sdP) {
-	d_free (sdP->pSphere);
+	D2_FREE (sdP->pSphere);
 	sdP->nFaces = 0;
 	}
 }

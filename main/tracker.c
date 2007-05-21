@@ -212,7 +212,7 @@ if (trackerList.nServers >= MAX_TRACKER_SERVERS)
 	return -1;
 if (0 < (i = FindTracker (addr)))
 	return i;
-if (!(pslt = (tServerListTable *) d_malloc (sizeof (tServerListTable))))
+if (!(pslt = (tServerListTable *) D2_ALLOC (sizeof (tServerListTable))))
 	return -1;
 memset (pslt, 0, sizeof (*pslt));
 pslt->nextList = serverListTable;
@@ -376,7 +376,7 @@ void DestroyTrackerList (void)
 while (serverListTable) {
 	pslt = serverListTable;
 	serverListTable = serverListTable->nextList;
-	d_free (pslt);
+	D2_FREE (pslt);
 	}
 ResetTrackerList ();
 }

@@ -41,7 +41,7 @@
 #	endif
 #endif
 
-#define oof_free(_p)	if (_p) {d_free (_p); (_p) = NULL;}
+#define oof_free(_p)	if (_p) {D2_FREE (_p); (_p) = NULL;}
 
 #if DBG_SHADOWS
 extern int bShadowTest;
@@ -131,7 +131,7 @@ char *OOF_ReadString (CFILE *fp, char *pszIdent)
 	int	l;
 
 l = OOF_ReadInt (fp, "string length");
-if (!(psz = d_malloc (l + 1)))
+if (!(psz = D2_ALLOC (l + 1)))
 	return NULL;
 if (CFRead (psz, l, 1, fp)) {
 	psz [l] = '\0';
@@ -467,7 +467,7 @@ if (!stricmp (command,"$glow=")) {
 	nValues = sscanf (data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	Assert (nValues == 4);
 	pso->nFlags |= OOF_SOF_GLOW;
-	//pso->glowInfo = (tOOF_glowInfo *) d_malloc (sizeof(tOOF_glowInfo));
+	//pso->glowInfo = (tOOF_glowInfo *) D2_ALLOC (sizeof(tOOF_glowInfo));
 	pso->glowInfo.color.r = r;
 	pso->glowInfo.color.g = g;
 	pso->glowInfo.color.b = b;
@@ -484,7 +484,7 @@ if (!stricmp (command,"$thruster=")) {
 	nValues = sscanf(data, " %f, %f, %f, %f", &r,&g,&b,&size);
 	Assert(nValues == 4);
 	pso->nFlags |= OOF_SOF_THRUSTER;
-	//pso->glowInfo = (tOOF_glowInfo *) d_malloc (sizeof (tOOF_glowInfo));
+	//pso->glowInfo = (tOOF_glowInfo *) D2_ALLOC (sizeof (tOOF_glowInfo));
 	pso->glowInfo.color.r = r;
 	pso->glowInfo.color.g = g;
 	pso->glowInfo.color.b = b;
@@ -586,7 +586,7 @@ static tOOF_vector *OOF_ReadVertList (CFILE *fp, int nVerts, tOOF_vector *pvMin,
 	char			szId [20] = "";
 
 OOF_InitMinMax (pvMin, pvMax);
-if ((pv = (tOOF_vector *) d_malloc (nVerts * sizeof (tOOF_vector)))) {
+if ((pv = (tOOF_vector *) D2_ALLOC (nVerts * sizeof (tOOF_vector)))) {
 	int	i;
 
 	for (i = 0; i < nVerts; i++) {
@@ -664,11 +664,11 @@ int OOF_ReadRotAnim (CFILE *fp, tOOFObject *po, tOOF_rotAnim *pa, int bTimed)
 
 memset (&a, 0, sizeof (a));
 OOF_ReadFrameInfo (fp, po, &a.frameInfo, bTimed);
-if (!(a.pFrames = (tOOF_rotFrame *) d_malloc (a.frameInfo.nFrames * sizeof (tOOF_rotFrame))))
+if (!(a.pFrames = (tOOF_rotFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_rotFrame))))
 	return 0;
 if (bTimed &&
 	 (a.nTicks = a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) &&
-	 !(a.pRemapTicks = (ubyte *) d_malloc (a.nTicks * sizeof (ubyte))))
+	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
 	return OOF_FreeRotAnim (&a);
 if (a.nTicks)
 for (i = 0; i < a.frameInfo.nFrames; i++)
@@ -711,9 +711,9 @@ memset (&a, 0, sizeof (a));
 OOF_ReadFrameInfo (fp, po, &a.frameInfo, bTimed);
 if (bTimed &&
 	 (a.nTicks = a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) &&
-	 !(a.pRemapTicks = (ubyte *) d_malloc (a.nTicks * sizeof (ubyte))))
+	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
 	return OOF_FreePosAnim (&a);
-if (!(a.pFrames = (tOOF_posFrame *) d_malloc (a.frameInfo.nFrames * sizeof (tOOF_posFrame))))
+if (!(a.pFrames = (tOOF_posFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_posFrame))))
 	return OOF_FreePosAnim (pa);
 for (i = 0; i < a.frameInfo.nFrames; i++)
 	if (!OOF_ReadPosFrame (fp, a.pFrames + i, bTimed))
@@ -776,7 +776,7 @@ int OOF_ReadSpecialList (CFILE *fp, tOOF_specialList *pList)
 pList->nVerts = OOF_ReadInt (fp, "nVerts");
 if (!pList->nVerts)
 	return 1;
-if (!(pList->pVerts = (tOOF_specialPoint *) d_malloc (pList->nVerts * sizeof (tOOF_specialPoint))))
+if (!(pList->pVerts = (tOOF_specialPoint *) D2_ALLOC (pList->nVerts * sizeof (tOOF_specialPoint))))
 	return 0;
 for (i = 0; i < pList->nVerts; i++)
 	OOF_ReadSpecialPoint (fp, pList->pVerts + i);
@@ -813,7 +813,7 @@ int OOF_ReadPointList (CFILE *fp, tOOF_pointList *pList, int bParent)
 nIndent += 2;
 OOF_PrintLog ("reading point list\n");
 pList->nPoints = OOF_ReadInt (fp, "nPoints");
-if (!(pList->pPoints = (tOOF_point *) d_malloc (pList->nPoints * sizeof (tOOF_point)))) {
+if (!(pList->pPoints = (tOOF_point *) D2_ALLOC (pList->nPoints * sizeof (tOOF_point)))) {
 	nIndent -= 2;
 	return OOF_FreePointList (pList);
 	}
@@ -843,7 +843,7 @@ int OOF_ReadAttachList (CFILE *fp, tOOF_attachList *pList)
 nIndent += 2;
 OOF_PrintLog ("reading attach list\n");
 pList->nPoints = OOF_ReadInt (fp, "nPoints");
-if (!(pList->pPoints = (tOOF_attachPoint *) d_malloc (pList->nPoints * sizeof (tOOF_attachPoint)))) {
+if (!(pList->pPoints = (tOOF_attachPoint *) D2_ALLOC (pList->nPoints * sizeof (tOOF_attachPoint)))) {
 	nIndent -= 2;
 	return OOF_FreeAttachList (pList);
 	}
@@ -890,7 +890,7 @@ if (!(nList = OOF_ReadInt (fp, "nList"))) {
 	*ppList = NULL;
 	return 0;
 	}
-if (!(pList = (int *) d_malloc (nList * sizeof (int))))
+if (!(pList = (int *) D2_ALLOC (nList * sizeof (int))))
 	return -1;
 for (i = 0; i < nList; i++) {
 	if (bLogOOF)
@@ -954,7 +954,7 @@ if (!(pa->nBatts = OOF_ReadInt (fp, "nBatts"))) {
 	nIndent -= 2;
 	return 1;
 	}
-if (!(pa->pBatts = (tOOF_battery *) d_malloc (pa->nBatts * sizeof (tOOF_battery)))) {
+if (!(pa->pBatts = (tOOF_battery *) D2_ALLOC (pa->nBatts * sizeof (tOOF_battery)))) {
 	nIndent -= 2;
 	return OOF_FreeArmament (pa);
 	}
@@ -1161,7 +1161,7 @@ else {
 if (pfv) {
 	f.pVerts = pfv;
 #else
-	if (!(f.pVerts = (tOOF_faceVert *) d_malloc (f.nVerts * sizeof (tOOF_faceVert)))) {
+	if (!(f.pVerts = (tOOF_faceVert *) D2_ALLOC (f.nVerts * sizeof (tOOF_faceVert)))) {
 		nIndent -= 2;
 		return OOF_FreeFace (&f);
 		}	
@@ -1274,11 +1274,11 @@ if (so.nVerts) {
 		OOF_VecAdd (&so.vCenter, &so.vMin, &so.vMax);
 		OOF_VecScale (&so.vCenter, 0.5f);
 		}
-	if (!(so.pvRotVerts = (tOOF_vector *) d_malloc (so.nVerts * sizeof (tOOF_vector)))) {
+	if (!(so.pvRotVerts = (tOOF_vector *) D2_ALLOC (so.nVerts * sizeof (tOOF_vector)))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
-	if (!(so.pVertColors = (tFaceColor *) d_malloc (so.nVerts * sizeof (tFaceColor)))) {
+	if (!(so.pVertColors = (tFaceColor *) D2_ALLOC (so.nVerts * sizeof (tFaceColor)))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1287,7 +1287,7 @@ if (so.nVerts) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
-	if (!(so.pfAlpha = (float *) d_malloc (so.nVerts * sizeof (float)))) {
+	if (!(so.pfAlpha = (float *) D2_ALLOC (so.nVerts * sizeof (float)))) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1303,7 +1303,7 @@ if (so.nVerts) {
 			}
 	}
 so.faces.nFaces = OOF_ReadInt (fp, "nFaces");
-if (!(so.faces.pFaces = (tOOF_face *) d_malloc (so.faces.nFaces * sizeof (tOOF_face)))) {
+if (!(so.faces.pFaces = (tOOF_face *) D2_ALLOC (so.faces.nFaces * sizeof (tOOF_face)))) {
 	nIndent -= 2;
 	return OOF_FreeSubObject (&so);
 	}
@@ -1313,11 +1313,11 @@ so.edges.nEdges = 0;
 for (bReadData = 0; bReadData < 2; bReadData++) {
 	CFSeek (fp, nPos, SEEK_SET);
 	if (bReadData) {
-		if (!(so.faces.pFaceVerts = d_malloc (nFaceVerts * sizeof (tOOF_faceVert)))) {
+		if (!(so.faces.pFaceVerts = D2_ALLOC (nFaceVerts * sizeof (tOOF_faceVert)))) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
-		if (!(so.edges.pEdges = (tOOF_edge *) d_malloc (nFaceVerts * sizeof (tOOF_edge)))) {
+		if (!(so.edges.pEdges = (tOOF_edge *) D2_ALLOC (nFaceVerts * sizeof (tOOF_edge)))) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
@@ -1439,13 +1439,13 @@ o.textures.nTextures = OOF_ReadInt (fp, "nTextures");
 #if OOF_TEST_CUBE
 /*!!!*/o.textures.nTextures = 6;
 #endif
-if (!(o.textures.pszNames = (char **) d_malloc (o.textures.nTextures * sizeof (char **)))) {
+if (!(o.textures.pszNames = (char **) D2_ALLOC (o.textures.nTextures * sizeof (char **)))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
 memset (o.textures.pszNames, 0, o.textures.nTextures * sizeof (char **));
 i = o.textures.nTextures * sizeof (grsBitmap);
-if (!(o.textures.pBitmaps = (grsBitmap *) d_malloc (i))) {
+if (!(o.textures.pBitmaps = (grsBitmap *) D2_ALLOC (i))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
@@ -1463,7 +1463,7 @@ if (!i)	//cube.oof only contains one texture
 #if OOF_TEST_CUBE
 if (!i)
 	oof_free (o.textures.pszNames [i]);
-o.textures.pszNames [i] = d_malloc (20);
+o.textures.pszNames [i] = D2_ALLOC (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
 	if (!OOF_ReadTGA (o.textures.pszNames [i], o.textures.pBitmaps + i)) {
@@ -1518,7 +1518,7 @@ OOF_ReadVector (fp, &o.vMax, "vMax");
 o.nDetailLevels = OOF_ReadInt (fp, "nDetailLevels");
 nIndent -= 2;
 CFSeek (fp, o.nDetailLevels * sizeof (int), SEEK_CUR);
-if (!(o.pSubObjects = (tOOF_subObject *) d_malloc (o.nSubObjects * sizeof (tOOF_subObject))))
+if (!(o.pSubObjects = (tOOF_subObject *) D2_ALLOC (o.nSubObjects * sizeof (tOOF_subObject))))
 	return 0;
 *po = o;
 return 1;

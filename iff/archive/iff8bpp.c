@@ -45,7 +45,7 @@ BITMAP8 * IFF_To_8BPP(char * ifilename)
 
     //printf( "%d, %d\n", Process_width, Process_height );
 
-	new = (BITMAP8 *)d_malloc( sizeof(BITMAP8)+ (Process_width * Process_height ) );
+	new = (BITMAP8 *)D2_ALLOC( sizeof(BITMAP8)+ (Process_width * Process_height ) );
     if (new==NULL) exit(1);
 
 	new->Width = Process_width;
@@ -87,7 +87,7 @@ line_done: ;
 				break;
 		}
 	}
-	d_free( my_bh->raw_data );
+	D2_FREE( my_bh->raw_data );
     fclose(ifile);
     return new;
 }

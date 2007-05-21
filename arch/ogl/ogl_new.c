@@ -60,7 +60,7 @@ GLuint EmptyTexture(int Xsize, int Ysize)			// Create An Empty Texture
 	//unsigned int* data;						// Stored Data
 
 	// Create Storage Space For Texture Data (128x128x4)
-	unsigned int *data = (unsigned int*)d_malloc(((Xsize * Ysize)* 4 * sizeof(unsigned int)));
+	unsigned int *data = (unsigned int*)D2_ALLOC(((Xsize * Ysize)* 4 * sizeof(unsigned int)));
 
 	ZeroMemory(data,((Xsize * Ysize)* 4 * sizeof(unsigned int)));	// Clear Storage Memory
 
@@ -72,7 +72,7 @@ GLuint EmptyTexture(int Xsize, int Ysize)			// Create An Empty Texture
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-	d_free(data);							// Release data
+	D2_FREE(data);							// Release data
 
 	return txtnumber;						// Return The Texture ID
 }

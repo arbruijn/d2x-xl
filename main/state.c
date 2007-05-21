@@ -1325,12 +1325,12 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 		RenderFrame (0, 0);
 		PA_DFX (pa_alpha_always ());
 			
-		//buf = d_malloc (THUMBNAIL_LW * THUMBNAIL_LH * 3);
+		//buf = D2_ALLOC (THUMBNAIL_LW * THUMBNAIL_LH * 3);
 		if (curDrawBuffer == GL_BACK)
 			GameRenderFrame ();
 		glReadBuffer (GL_FRONT);
 		bm.bm_bpp = 3;
-		buf = d_malloc (grdCurScreen->sc_w * grdCurScreen->sc_h * bm.bm_bpp);
+		buf = D2_ALLOC (grdCurScreen->sc_w * grdCurScreen->sc_h * bm.bm_bpp);
 		glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
 		bm.bm_props.w = grdCurScreen->sc_w;
 		bm.bm_props.h = grdCurScreen->sc_h;
@@ -1347,7 +1347,7 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 					GrFindClosestColor (gamePalette, buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
 				}
 		GrPaletteStepLoad (NULL);
-		d_free (buf);
+		D2_FREE (buf);
 		CFWrite (cnv->cv_bitmap.bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
 	WINDOS (
 		DDGrSetCurrentCanvas (cnv_save),

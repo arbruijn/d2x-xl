@@ -128,7 +128,7 @@ void FreeParams (void)
 while (paramList) {
 	pp = paramList;
 	paramList = paramList->next;
-	d_free (pp);
+	D2_FREE (pp);
 	}
 }
 
@@ -161,7 +161,7 @@ int RegisterParam (void *valP, char *pszIdent, int i, int j, ubyte nSize)
 	tParam	*pp;
 
 l = strlen (MakeTag (szTag, pszIdent, i, j));
-pp = (tParam *) d_malloc (sizeof (tParam) + l);
+pp = (tParam *) D2_ALLOC (sizeof (tParam) + l);
 if (!pp)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
@@ -1492,7 +1492,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 72)
 		gameOptions [i].render.textures.nQuality = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 73)
-		gameOptions [i].render.cameras.nSpeed = CFReadInt(fp);
+		gameOptions [i].render.cameras.nSpeed = CFReadInt (fp);
 	if (!i && (gameStates.input.nPlrFileVersion >= 74))
 		extraGameInfo [0].nWeaponDropMode = CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 75)
@@ -1508,9 +1508,9 @@ for (i = 0; i < 2; i++) {
 		extraGameInfo [0].entropy.nVirusGenTime = CFReadByte (fp);
 		extraGameInfo [0].entropy.nVirusLifespan = CFReadByte (fp);
 		extraGameInfo [0].entropy.nVirusStability = CFReadByte (fp); 
-		extraGameInfo [0].entropy.nEnergyFillRate = CFReadShort(fp);
-		extraGameInfo [0].entropy.nShieldFillRate = CFReadShort(fp);
-		extraGameInfo [0].entropy.nShieldDamageRate = CFReadShort(fp);
+		extraGameInfo [0].entropy.nEnergyFillRate = CFReadShort (fp);
+		extraGameInfo [0].entropy.nShieldFillRate = CFReadShort (fp);
+		extraGameInfo [0].entropy.nShieldDamageRate = CFReadShort (fp);
 		extraGameInfo [0].entropy.bRevertRooms = CFReadByte (fp);
 		extraGameInfo [0].entropy.bDoConquerWarning = CFReadByte (fp);
 		extraGameInfo [0].entropy.nOverrideTextures = CFReadByte (fp);
@@ -1523,8 +1523,8 @@ for (i = 0; i < 2; i++) {
 		mpParams.nGameAccess = CFReadByte (fp);
 		mpParams.bShowPlayersOnAutomap = CFReadByte (fp);
 		mpParams.nDifficulty = CFReadByte (fp);
-		mpParams.nWeaponFilter = CFReadInt(fp);
-		mpParams.nReactorLife = CFReadInt(fp);
+		mpParams.nWeaponFilter = CFReadInt (fp);
+		mpParams.nReactorLife = CFReadInt (fp);
 		mpParams.nMaxTime = CFReadByte (fp);
 		mpParams.nKillGoal = CFReadByte (fp);
 		mpParams.bInvul = CFReadByte (fp);
@@ -1534,7 +1534,7 @@ for (i = 0; i < 2; i++) {
 		mpParams.bShowAllNames = CFReadByte (fp);
 		mpParams.bShortPackets = CFReadByte (fp);
 		mpParams.nPPS = CFReadByte (fp);
-		mpParams.udpClientPort = CFReadInt(fp);
+		mpParams.udpClientPort = CFReadInt (fp);
 		CFRead(mpParams.szServerIpAddr, 16, 1, fp);
 		}
 	if (gameStates.input.nPlrFileVersion >= 80)
@@ -1836,16 +1836,16 @@ int ReadPlayerFile (int bOnlyWindowSizes)
 Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 
 sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
-if (!(fp = CFOpen(filename, gameFolders.szProfDir, "rb", 0))) {
+if (!(fp = CFOpen (filename, gameFolders.szProfDir, "rb", 0))) {
 	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
 	return errno;
 	}
-id = CFReadInt(fp);
+id = CFReadInt (fp);
 // SWAPINT added here because old versions of d2x
 // used the wrong byte order.
 if (nCFileError || ((id != SAVE_FILE_ID) && (id != SWAPINT (SAVE_FILE_ID)))) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, "Invalid player file");
-	CFClose(fp);
+	CFClose (fp);
 	return -1;
 	}
 
@@ -1863,7 +1863,7 @@ if ((gameStates.input.nPlrFileVersion < COMPATIBLE_PLAYER_FILE_VERSION) ||
 	 ((gameStates.input.nPlrFileVersion > D2W95_PLAYER_FILE_VERSION) && 
 	  (gameStates.input.nPlrFileVersion < D2XW32_PLAYER_FILE_VERSION))) {
 	ExecMessageBox(TXT_ERROR, NULL, 1, TXT_OK, TXT_ERROR_PLR_VERSION);
-	CFClose(fp);
+	CFClose (fp);
 	return -1;
 	}
 
@@ -1890,7 +1890,7 @@ nHighestLevels = CFReadShort (fp);
 Assert(nHighestLevels <= MAX_MISSIONS);
 if (CFRead (highestLevels, sizeof (hli), nHighestLevels, fp) != (size_t) nHighestLevels) {
 	funcRes = errno;
-	CFClose(fp);
+	CFClose (fp);
 	return funcRes;
 	}
 //read taunt macros
@@ -2360,7 +2360,7 @@ fp = CFOpen (filename, gameFolders.szProfDir, "wb", 0);
 //check filename
 if (fp && isatty(fileno (fp)) {
 	//if the callsign is the name of a tty device, prepend a char
-	fclose(fp);
+	fclose (fp);
 	sprintf(filename,"$%.7s.plr",LOCALPLAYER.callsign);
 	fp = fopen(filename,"wb");
 	}
@@ -2387,13 +2387,13 @@ Assert(nHighestLevels <= MAX_MISSIONS);
 CFWriteShort (nHighestLevels, fp);
 if ((CFWrite (highestLevels, sizeof (hli), nHighestLevels, fp) != nHighestLevels)) {
 	funcRes = errno;
-	CFClose(fp);
+	CFClose (fp);
 	return funcRes;
 	}
 
 if ((CFWrite(gameData.multigame.msg.szMacro, MAX_MESSAGE_LEN, 4, fp) != 4)) {
 	funcRes = errno;
-	CFClose(fp);
+	CFClose (fp);
 	return funcRes;
 	}
 

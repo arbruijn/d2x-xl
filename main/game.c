@@ -215,7 +215,7 @@ void LoadBackgroundBitmap ()
 	int pcx_error;
 
 if (bmBackground.bm_texBuf)
-	d_free (bmBackground.bm_texBuf);
+	D2_FREE (bmBackground.bm_texBuf);
 bmBackground.bm_texBuf=NULL;
 pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? "johnhead.pcx" : BACKGROUND_NAME,
 									  &bmBackground, BM_LINEAR,0);
@@ -324,7 +324,7 @@ WINDOS (
 GrSetCurFont (GAME_FONT);
 
 if (bGameCockpitCopyCode)
-	d_free (bGameCockpitCopyCode);
+	D2_FREE (bGameCockpitCopyCode);
 bGameCockpitCopyCode  = NULL;
 switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
@@ -1823,6 +1823,8 @@ DestroySphere (&gameData.render.monsterball);
 LogErr ("unloading HUD icons\n");
 FreeInventoryIcons ();
 FreeObjTallyIcons ();
+LogErr ("unloading corona data\n");
+FreeCorona ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
 if (gameStates.render.vr.buffers.offscreen)	{
@@ -1834,12 +1836,12 @@ CloseGaugeCanvases ();
 LogErr ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 if (bGameCockpitCopyCode) {
-	d_free (bGameCockpitCopyCode);
+	D2_FREE (bGameCockpitCopyCode);
 	bGameCockpitCopyCode = NULL;
 }
 if (bmBackground.bm_texBuf) {
 	LogErr ("unloading background bitmap\n");
-	d_free (bmBackground.bm_texBuf);
+	D2_FREE (bmBackground.bm_texBuf);
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 LogErr ("unloading custom background data\n");
@@ -1967,7 +1969,7 @@ void toggle_movie_saving ()
 
 
 		if (!Movie_frame_buffer) {
-			Movie_frame_buffer = d_malloc (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE);
+			Movie_frame_buffer = D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE);
 			if (!Movie_frame_buffer) {
 				Int3 ();
 				Saving_movie_frames=0;

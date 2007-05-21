@@ -22,12 +22,12 @@ char *fsplitword (CFILE *f, char splitchar)
 	char	c, *buf;
 
 mem = 256;
-buf = (char *) d_malloc (sizeof (char) * mem);
+buf = (char *) D2_ALLOC (sizeof (char) * mem);
 c = CFGetC (f);
 for (i = 0; (c != splitchar) && !CFEoF (f); i++) {
 	if (i == mem) {
 		mem += 256;
-		buf = d_realloc (buf, mem);
+		buf = D2_REALLOC (buf, mem);
 		}
 	buf [i] = c;
 	c = CFGetC (f);
@@ -47,7 +47,7 @@ char *splitword (char *s, char splitchar)
 l = (int) strlen (s);
 p = strchr (s, splitchar);
 lw = p ? (int) (p - s) : l;
-buf = d_malloc (lw + 1);
+buf = D2_ALLOC (lw + 1);
 memcpy (buf, s, lw + 1);
 buf [lw] = '\0';
 if (p)

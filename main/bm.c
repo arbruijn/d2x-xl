@@ -855,7 +855,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, fp);
 
 	for (i=0;i<gameData.models.nPolyModels;i++)	{
-		gameData.models.polyModels [i].modelData = d_malloc (gameData.models.polyModels [i].nDataSize);
+		gameData.models.polyModels [i].modelData = D2_ALLOC (gameData.models.polyModels [i].nDataSize);
 		Assert (gameData.models.polyModels [i].modelData != NULL);
 		CFRead (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].nDataSize, fp);
 	}
@@ -925,7 +925,7 @@ if (d2_Textures_backup) {
 	int i;
 	for (i = 0;i < D1_LAST_STATIC_TMAP_NUM;i++)
 		gameData.pig.tex.bmIndex [0][i].index = d2_Textures_backup [i];
-	d_free (d2_Textures_backup);
+	D2_FREE (d2_Textures_backup);
 	d2_Textures_backup = NULL;
 	}
 }
@@ -1066,7 +1066,7 @@ for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i;
 	gameData.pig.tex.nObjBitmaps--;
 	OglFreeBmTexture (bmP);
 	if (bmP->bm_texBuf) {
-		d_free (bmP->bm_texBuf);
+		D2_FREE (bmP->bm_texBuf);
 		bitmapCacheUsed -= bmP->bm_props.h * bmP->bm_props.rowsize;
 		}
 	}
@@ -1408,7 +1408,7 @@ tBitmapIndex ReadExtraBitmapIFF (char * filename)
 	newBm->bm_avgColor = ComputeAvgPixel (newBm);
 	bitmap_num.index = gameData.pig.tex.nExtraBitmaps;
 	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
-	//d_free (new);
+	//D2_FREE (new);
 	return bitmap_num;
 }
 
@@ -1423,10 +1423,10 @@ grsBitmap *BMLoadExtraBitmap (char *name)
 
 *bip = ReadExtraBitmapIFF (name);
 if (!bip->index) {
-	char *name2 = d_strdup (name);
+	char *name2 = D2_STRDUP (name);
 	*strrchr (name2, '.') = '\0';
 	*bip = ReadExtraBitmapD1Pig (name2);
-	d_free (name2);
+	D2_FREE (name2);
 	}
 if (!(i = bip->index))
 	return NULL;
@@ -1552,19 +1552,19 @@ memcpy (gameData.bots.joints, gameData.bots.defaultJoints, gameData.bots.nDefaul
 for (i = 0; i < gameData.models.nDefPolyModels; i++) {
 	p = gameData.models.polyModels [i].modelData;
 	if (gameData.models.defPolyModels [i].nDataSize != gameData.models.polyModels [i].nDataSize) {
-		d_free (p);
+		D2_FREE (p);
 		p = NULL;
 		}
 	memcpy (gameData.models.polyModels + i, gameData.models.defPolyModels + i, sizeof (*gameData.models.defPolyModels));
 	if (gameData.models.defPolyModels [i].modelData) {
 		if (!p)
-			p = d_malloc (gameData.models.defPolyModels [i].nDataSize);
+			p = D2_ALLOC (gameData.models.defPolyModels [i].nDataSize);
 		Assert (p != NULL);
 		memcpy (p, gameData.models.defPolyModels [i].modelData, gameData.models.defPolyModels [i].nDataSize);
 		gameData.models.polyModels [i].modelData = p;
 		}
 	else if (p) {
-		d_free (p);
+		D2_FREE (p);
 		gameData.models.polyModels [i].modelData = NULL;
 		}
 	}

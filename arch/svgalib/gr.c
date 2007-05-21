@@ -161,7 +161,7 @@ void GrClose ()
 	if (gameStates.gfx.bInstalled==1)
 	{
 		gameStates.gfx.bInstalled = 0;
-		d_free(grdCurScreen);
+		D2_FREE(grdCurScreen);
 		gl_freecontext(screenbuffer);
 		gl_freecontext(physicalscreen);
 	}

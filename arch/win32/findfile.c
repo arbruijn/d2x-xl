@@ -32,11 +32,11 @@ static char *UnicodeToAsc(const wchar_t *w_str)
 	if (w_str != NULL)
     {
 		int len = wcslen(w_str) + 1;
-		str = (char *)d_malloc(len);
+		str = (char *)D2_ALLOC(len);
 
 		if (WideCharToMultiByte(CP_ACP, 0, w_str, -1, str, len, NULL, NULL) == 0)
 		{   //Conversion failed
-			d_free(str);
+			D2_FREE(str);
 			return NULL;
 		}
 		else
@@ -56,10 +56,10 @@ static wchar_t *AscToUnicode(const char *str)
 	if (str != NULL)
 	{
 		int len = (int) strlen(str) + 1;
-		w_str = (wchar_t *)d_malloc(sizeof(wchar_t) * len);
+		w_str = (wchar_t *)D2_ALLOC(sizeof(wchar_t) * len);
 		if (MultiByteToWideChar(CP_ACP, 0, str, -1, w_str, len) == 0)
 		{
-			d_free(w_str);
+			D2_FREE(w_str);
 			return NULL;
 		}
 		else

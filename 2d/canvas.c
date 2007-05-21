@@ -37,7 +37,7 @@ grs_canvas *GrCreateCanvas(int w, int h)
 {
 	grs_canvas *newCanv;
 	
-	newCanv = (grs_canvas *)d_malloc( sizeof(grs_canvas) );
+	newCanv = (grs_canvas *)D2_ALLOC( sizeof(grs_canvas) );
 	GrInitBitmapAlloc (&newCanv->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 1);
 
 	newCanv->cv_color.index = 0;
@@ -57,7 +57,7 @@ grs_canvas *GrCreateSubCanvas(grs_canvas *canv, int x, int y, int w, int h)
 {
 	grs_canvas *newCanv;
 
-newCanv = (grs_canvas *)d_malloc( sizeof(grs_canvas) );
+newCanv = (grs_canvas *)D2_ALLOC( sizeof(grs_canvas) );
 GrInitSubBitmap (&newCanv->cv_bitmap, &canv->cv_bitmap, x, y, w, h);
 newCanv->cv_color = canv->cv_color;
 newCanv->cv_drawmode = canv->cv_drawmode;
@@ -106,7 +106,7 @@ void GrFreeCanvas(grs_canvas *canv)
 {
 if (canv) {
 	GrFreeBitmapData (&canv->cv_bitmap);
-	d_free(canv);
+	D2_FREE(canv);
 	}
 }
 
@@ -115,7 +115,7 @@ if (canv) {
 void GrFreeSubCanvas(grs_canvas *canv)
 {
 if (canv)
-    d_free(canv);
+    D2_FREE(canv);
 }
 
 //	-----------------------------------------------------------------------------

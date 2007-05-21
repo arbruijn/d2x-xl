@@ -60,7 +60,7 @@ void _CDECL_ args_exit (void)
 LogErr ("unloading program arguments\n");
 for (i = 0; i < Num_args; i++)
 	if (Args [i])
-		d_free (Args [i]);
+		D2_FREE (Args [i]);
 memset (Args, 0, sizeof (Args));
 Num_args = 0;
 }
@@ -88,7 +88,7 @@ else
 LogErr ("Loading program arguments\n");
 args_exit ();
 for (i = 0; i < argc; i++)
-	Args [Num_args++] = d_strdup (argv [i]);
+	Args [Num_args++] = D2_STRDUP (argv [i]);
 
 for (i = 0; i < Num_args; i++)
 	if (Args [i] [0] == '-')
@@ -138,10 +138,10 @@ if (f) {
 					LogErr ("too many program arguments\n");
 					break;
 					}
-				Args [Num_args++] = *pszLine ? d_strdup (pszLine) : NULL;
+				Args [Num_args++] = *pszLine ? D2_STRDUP (pszLine) : NULL;
 				}
 			}
-		d_free (pszLine); 
+		D2_FREE (pszLine); 
 		}
 	CFClose (f);
 	}

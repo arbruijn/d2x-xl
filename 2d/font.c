@@ -542,13 +542,13 @@ void ogl_init_font (grs_font * font)
 	int gap=0;//having a gap just wastes ram, since we don't filter text textures at all.
 	//	char s[2];
 	ogl_font_choose_size (font, gap, &tw, &th);
-	data=d_malloc (tw*th);
+	data=D2_ALLOC (tw*th);
 	palette = font->ft_parent_bitmap.bm_palette;
 	GrInitBitmap (&font->ft_parent_bitmap, BM_LINEAR, 0, 0, tw, th, tw, data, 1);
 	font->ft_parent_bitmap.bm_palette = palette;
 	if (!(font->ftFlags & FT_COLOR))
 		font->ft_parent_bitmap.glTexture = OglGetFreeTexture ();
-	font->ft_bitmaps = (grsBitmap*) d_malloc (nchars * sizeof (grsBitmap));
+	font->ft_bitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
 	memset (font->ft_bitmaps, 0, nchars * sizeof (grsBitmap));
 #if TRACE	
 //	con_printf (CONDBG, "ogl_init_font %s, %s, nchars=%i, (%ix%i tex)\n", 
@@ -1062,19 +1062,19 @@ void GrCloseFont (grs_font * font)
 		;
 	Assert (fontnum<MAX_OPEN_FONTS);	//did we find slot?
 	font_data = open_font[fontnum].dataptr;
-	d_free (font_data);
+	D2_FREE (font_data);
 	open_font[fontnum].ptr = NULL;
 	open_font[fontnum].dataptr = NULL;
 	if (font->ft_chars) {
-		d_free (font->ft_chars);
+		D2_FREE (font->ft_chars);
 		font->ft_chars = NULL;
 		}
 	if (font->ft_bitmaps) {
-		d_free (font->ft_bitmaps);
+		D2_FREE (font->ft_bitmaps);
 		font->ft_bitmaps = NULL;
 		}
 	GrFreeBitmapData (&font->ft_parent_bitmap);
-	d_free (font);
+	D2_FREE (font);
 	font = NULL;
 	}
 }
@@ -1155,7 +1155,7 @@ grs_font * GrInitFont (char * fontname)
 		firstTime=0;
 	}
 
-	//find d_free font slot
+	//find D2_FREE font slot
 	for (fontnum=0;fontnum<MAX_OPEN_FONTS && open_font[fontnum].ptr!=NULL;fontnum++);
 	Assert (fontnum<MAX_OPEN_FONTS);	//did we find one?
 
@@ -1201,7 +1201,7 @@ grs_font * GrInitFont (char * fontname)
 
 		font->ft_widths = (short *) &font_data[ (size_t)font->ft_widths];
 		font->ft_data = (ubyte *) (font_data + (size_t)font->ft_data);
-		font->ft_chars = (unsigned char **)d_malloc (nchars * sizeof (unsigned char *));
+		font->ft_chars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
 
 		ptr = font->ft_data;
 
@@ -1302,7 +1302,7 @@ void GrRemapFont (grs_font *font, char * fontname, char *font_data)
 		Error (TXT_FONT_FILETYPE, fontname);
 	datasize = CFReadInt (fontfile);
 	datasize -= GRS_FONT_SIZE; // subtract the size of the header.
-	d_free (font->ft_chars);
+	D2_FREE (font->ft_chars);
 	grs_font_read (font, fontfile); // have to reread in case mission hogfile overrides font.
 	CFRead (font_data, 1, datasize, fontfile);  //read raw data
 	// make these offsets relative to font_data
@@ -1313,7 +1313,7 @@ void GrRemapFont (grs_font *font, char * fontname, char *font_data)
 	if (font->ftFlags & FT_PROPORTIONAL) {
 		font->ft_widths = (short *) (font_data + (size_t)font->ft_widths);
 		font->ft_data = (ubyte *) (font_data + (size_t) font->ft_data);
-		font->ft_chars = (unsigned char **)d_malloc (nchars * sizeof (unsigned char *));
+		font->ft_chars = (unsigned char **)D2_ALLOC (nchars * sizeof (unsigned char *));
 		ptr = font->ft_data;
 		for (i=0; i< nchars; i++) {
 			font->ft_widths[i] = INTEL_SHORT (font->ft_widths[i]);
@@ -1361,7 +1361,7 @@ void GrRemapFont (grs_font *font, char * fontname, char *font_data)
 	}
 	CFClose (fontfile);
 	if (font->ft_bitmaps) {
-		d_free (font->ft_bitmaps);
+		D2_FREE (font->ft_bitmaps);
 		font->ft_bitmaps = NULL;
 		}
 	GrFreeBitmapData (&font->ft_parent_bitmap);

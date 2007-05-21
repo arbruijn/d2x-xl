@@ -389,7 +389,7 @@ static void chkbroadsize (void)
 if (broadnum < broadsize)
 	return;
 broadsize = broadsize ? broadsize * 2 : 8;
-chk (broads = d_realloc (broads, sizeof (*broads) * broadsize));
+chk (broads = D2_REALLOC (broads, sizeof (*broads) * broadsize));
 }
 
 //------------------------------------------------------------------------------
@@ -403,11 +403,11 @@ static int ChkDestListSize (void)
 if (destAddrNum < destListSize)
 	return 1;
 destListSize = destListSize ? destListSize * 2 : 8;
-if (!(b = (tDestListEntry *) d_malloc (sizeof (*destList) * destListSize)))
+if (!(b = (tDestListEntry *) D2_ALLOC (sizeof (*destList) * destListSize)))
 	 return -1;
 if (destList) {
 	memcpy (b, destList, sizeof (*destList) * destListSize / 2);
-	d_free (destList);
+	D2_FREE (destList);
 	}
 destList = b;
 return 1;
@@ -472,7 +472,7 @@ return i;
 void FreeDestList (void)
 {
 if (destList) {
-	d_free (destList);
+	D2_FREE (destList);
 	destList = NULL;
 	}
 destAddrNum =
@@ -507,7 +507,7 @@ static int addiflist (void)
 #endif
 	struct sockaddr_in	*sinp, *sinmp;
 
-d_free (broads);
+D2_FREE (broads);
 #ifdef __macosx__
 /* This code is for Mac OS X, whose BSD layer does bizarre things with variable-length
 * structures when calling ioctl using SIOCGIFCOUNT. Or any other architecture that
@@ -528,7 +528,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 	j++;
 	}
 broadsize = j;
-chk (broads = d_malloc (j * sizeof (*broads)));
+chk (broads = D2_ALLOC (j * sizeof (*broads)));
 // Second loop to copy the addresses
 j = 0;
 for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
@@ -549,7 +549,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 		cnt = cnt * 2 + 2;
 #	endif
 	ifconf.ifc_len = cnt * sizeof (struct ifreq);
-	chk (ifconf.ifc_req = d_malloc (ifconf.ifc_len));
+	chk (ifconf.ifc_req = D2_ALLOC (ifconf.ifc_len));
 #ifdef _DEBUG
 	memset (ifconf.ifc_req, 0, ifconf.ifc_len);
 	ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
@@ -565,7 +565,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 		FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
 		}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
-chk (broads = d_malloc (cnt * sizeof (*broads)));
+chk (broads = D2_ALLOC (cnt * sizeof (*broads)));
 broadsize = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
@@ -787,12 +787,12 @@ else {
 			break;
 		for (s2=s;*s2 && *s2!=',';s2++)
 			;
-		chk (ns=d_malloc (s2-s+1));
+		chk (ns=D2_ALLOC (s2-s+1));
 		memcpy (ns,s,s2-s);
 		ns [s2-s]='\0';
 		if (!queryhost (ns)) 
 			//msg ("Ignored IP interface-destination \"%s\" as being invalid",ns);
-		d_free (ns);
+		D2_FREE (ns);
 		chkbroadsize ();
 		sin=broads + broadnum++;
 		sin->sin_family=AF_INET;

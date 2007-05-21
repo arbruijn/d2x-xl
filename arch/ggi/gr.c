@@ -103,8 +103,8 @@ int GrSetMode(u_int32_t mode)
 	}
 	else
 	{
-		d_free(screenbuffer);
-		screenbuffer = d_malloc (w * h);
+		D2_FREE(screenbuffer);
+		screenbuffer = D2_ALLOC (w * h);
 		grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = screenbuffer;
 		grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
 	}
@@ -153,7 +153,7 @@ void GrClose ()
 		ggiClose(screenvis);
 		ggiExit();
 		gameStates.gfx.bInstalled = 0;
-		d_free(grdCurScreen);
+		D2_FREE(grdCurScreen);
 	}
 }
 

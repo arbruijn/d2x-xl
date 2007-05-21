@@ -253,7 +253,7 @@ if ((CFRead (&bmP->bm_props.w, sizeof (bmP->bm_props.w), 1, fp) != 1) ||
 	CFClose (fp);
 	return 0;
 	}
-if (!(bmP->bm_texBuf = (ubyte *) d_malloc (bmP->bm_bufSize))) {
+if (!(bmP->bm_texBuf = (ubyte *) D2_ALLOC (bmP->bm_bufSize))) {
 	CFClose (fp);
 	return 0;
 	}
@@ -277,11 +277,11 @@ int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP, int alpha,
 	int				h = bmP->bm_props.h;
 	int				w = bmP->bm_props.w;
 
-if (!(bmP->bm_texBuf || (bmP->bm_texBuf = d_malloc (ph->height * w * nBytes))))
+if (!(bmP->bm_texBuf || (bmP->bm_texBuf = D2_ALLOC (ph->height * w * nBytes))))
 	 return 0;
 if (!bmP->bm_texBuf) {
 	int nSize = ph->width * ph->height * nBytes;
-	if (!(bmP->bm_texBuf = d_malloc (nSize)))
+	if (!(bmP->bm_texBuf = D2_ALLOC (nSize)))
 		return 0;
 	}
 bmP->bm_bpp = nBytes;
@@ -648,7 +648,7 @@ nFactor2 = xFactor * yFactor;
 if (!bRealloc)
 	pDest = pData = bmP->bm_texBuf;
 else {
-	if (!(pData = d_malloc (xMax * yMax * bpp)))
+	if (!(pData = D2_ALLOC (xMax * yMax * bpp)))
 		return 0;
 	bitmapCacheUsed -= bmP->bm_props.h * bmP->bm_props.rowsize;
 	pDest = pData;
@@ -704,7 +704,7 @@ for (yDest = 0; yDest < yMax; yDest++) {
 		}
 	}
 if (bRealloc) {
-	d_free (bmP->bm_texBuf);
+	D2_FREE (bmP->bm_texBuf);
 	bmP->bm_texBuf = pData;
 	}
 bmP->bm_props.w = xMax;
@@ -1115,8 +1115,8 @@ if (bLowMemory)
 // until memory could be allocated, and then once more to leave enough memory
 // for other parts of the program
 for (;;) {
-	if ((bitmapBits [0] = d_malloc (bitmapCacheSize))) {
-		d_free (bitmapBits [0]);
+	if ((bitmapBits [0] = D2_ALLOC (bitmapCacheSize))) {
+		D2_FREE (bitmapBits [0]);
 		break;
 		}
 	bitmapCacheSize = (bitmapCacheSize / 10) * PIGGY_MEM_QUOTA;
@@ -1162,7 +1162,7 @@ void piggy_new_pigfile (char *pigname)
 	}
 	else
 		PiggyCloseFile ();             //close old pig if still open
-	bitmapCacheNext [0] = 0;            //d_free up cache
+	bitmapCacheNext [0] = 0;            //D2_FREE up cache
 	strncpy (szCurrentPigFile[0],pigname,sizeof (szCurrentPigFile));
 	piggyFP [0] = CFOpen (pigname, gameFolders.szDataDir, "rb", 0);
 
@@ -1209,7 +1209,7 @@ void piggy_new_pigfile (char *pigname)
 			bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0)<<4);
 			bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
 			bmTemp.bm_avgColor = bmh.bm_avgColor;
-			bmTemp.bm_texBuf = d_malloc (bmTemp.bm_props.w * bmTemp.bm_props.h);
+			bmTemp.bm_texBuf = D2_ALLOC (bmTemp.bm_props.w * bmTemp.bm_props.h);
 			bitmapCacheUsed += bmTemp.bm_props.w * bmTemp.bm_props.h;
 			bitmapFlags [0][i] = bmh.flags & BM_FLAGS_TO_COPY;
 			bitmapOffsets [0][i] = bmh.offset + nDataStart;
@@ -1270,7 +1270,7 @@ void piggy_new_pigfile (char *pigname)
 					else
 						size = bm [fnum]->bm_props.w * bm [fnum]->bm_props.h;
 					gameData.pig.tex.bitmaps [0][i+fnum] = *bm [fnum];
-					d_free (bm [fnum]);
+					D2_FREE (bm [fnum]);
 				}
 				i += nframes - 1;         //filled in multiple bitmaps
 			}
@@ -1307,7 +1307,7 @@ void piggy_new_pigfile (char *pigname)
 				else
 					size = newBm->bm_props.w * newBm->bm_props.h;
 				gameData.pig.tex.bitmaps [0][i] = *newBm;
-				d_free (newBm);
+				D2_FREE (newBm);
 			}
 		}
 
@@ -1352,7 +1352,7 @@ for (i=0; i<nSoundNum; i++) {
 		sbytes += sndh.length;
 	}
 
-	SoundBits [gameStates.app.bD1Data] = d_malloc (sbytes + 16);
+	SoundBits [gameStates.app.bD1Data] = D2_ALLOC (sbytes + 16);
 	if (SoundBits [gameStates.app.bD1Data] == NULL)
 		Error ("Not enough memory to load sounds\n");
 
@@ -1741,7 +1741,7 @@ if (bmP->bm_texBuf) {
 #ifdef _DEBUG
 	unsigned int h = bitmapCacheUsed;
 #endif
-	d_free (bmP->bm_texBuf);
+	D2_FREE (bmP->bm_texBuf);
 	bitmapCacheUsed -= bmP->bm_props.h * bmP->bm_props.rowsize;
 #ifdef _DEBUG
 	if (bitmapCacheUsed > h)
@@ -1780,7 +1780,7 @@ if ((bmfP = BM_FRAMES (altBmP)))
 	for (i = BM_FRAMECOUNT (altBmP); i; i--, bmfP++)
 		PiggyFreeHiresFrame (bmfP, bD1);
 OglFreeBmTexture (altBmP);
-d_free (BM_FRAMES (altBmP));
+D2_FREE (BM_FRAMES (altBmP));
 altBmP->bm_data.alt.bm_frameCount = 0;
 PiggyFreeBitmapData (altBmP);
 altBmP->bm_palette = NULL;
@@ -2027,7 +2027,7 @@ reloadTextures:
 	else 
 #endif
 		{
-		bmP->bm_texBuf = d_malloc (nSize);
+		bmP->bm_texBuf = D2_ALLOC (nSize);
 		if (bmP->bm_texBuf) 
 			bitmapCacheUsed += nSize;
 		}
@@ -2293,9 +2293,9 @@ void PiggyDumpAll ()
 		if (nBitmapFilesNew)
 			PiggyWritePigFile (DEFAULT_PIGFILE);
 	
-		//d_free up memeory used by new bitmaps
+		//D2_FREE up memeory used by new bitmaps
 		for (i=gameData.pig.tex.nBitmaps-nBitmapFilesNew;i<gameData.pig.tex.nBitmaps;i++)
-			d_free (gameData.pig.tex.bitmaps [i].bm_texBuf);
+			D2_FREE (gameData.pig.tex.bitmaps [i].bm_texBuf);
 	
 		//next thing must be done after pig written
 		fseek (ham_fp, xlatOffset, SEEK_SET);
@@ -2380,7 +2380,7 @@ LogErr ("unloading textures\n");
 PiggyCloseFile ();
 for (i = 0; i < 2; i++) {
 	if (SoundBits [i])
-		d_free (SoundBits [i]);
+		D2_FREE (SoundBits [i]);
 	hashtable_free (bitmapNames + i);
 	hashtable_free (soundNames + i);
 	}
@@ -2481,7 +2481,7 @@ void LoadBitmapReplacements (char *level_name)
 	int			i, j;
 	grsBitmap	bm;
 
-	//first, d_free up data allocated for old bitmaps
+	//first, D2_FREE up data allocated for old bitmaps
 LogErr ("   loading replacement textures\n");
 FreeBitmapReplacements ();
 ChangeFilenameExtension (szFilename, level_name, ".pog");
@@ -2540,7 +2540,7 @@ if (fp) {
 			h.height = bm.bm_props.h;
 			h.bits = 32;
 			if (!ReadTGAImage (fp, &h, &bm, -1, 1.0, 0, 1)) {
-				d_free (bm.bm_texBuf);
+				D2_FREE (bm.bm_texBuf);
 				break;
 				}
 			bm.bm_props.rowsize *= bm.bm_bpp;
@@ -2569,7 +2569,7 @@ if (fp) {
 		else {
 			int nSize = bm.bm_props.w * bm.bm_props.h;
 			if (nSize != (int) CFRead (bm.bm_texBuf, 1, nSize, fp)) {
-				d_free (bm.bm_texBuf);
+				D2_FREE (bm.bm_texBuf);
 				break;
 				}
 			bm.bm_palette = gamePalette;
@@ -2585,8 +2585,8 @@ if (fp) {
 		BM_OVERRIDE (gameData.pig.tex.pBitmaps + j) = gameData.pig.tex.pAltBitmaps + j;
 		bitmapCacheUsed += bm.bm_props.h * bm.bm_props.rowsize;
 		}
-	d_free (indices);
-	d_free (bmh);
+	D2_FREE (indices);
+	D2_FREE (bmh);
 	CFClose (fp);
 	szLastPalettePig [0] = 0;  //force pig re-load
 	TexMergeFlush ();       //for re-merging with new textures
@@ -2620,7 +2620,7 @@ void PiggyBitmapReadD1 (
    CFILE					*piggyFP, /* read from this file */
 	int					nBmDataOffs, /* specific to file */
    DiskBitmapHeader	*bmh, /* header info for bmP */
-   ubyte					**pNextBmP, /* where to write it (if 0, use d_malloc) */
+   ubyte					**pNextBmP, /* where to write it (if 0, use D2_ALLOC) */
 	ubyte					*palette, /* what palette the bmP has */
    ubyte					*colorMap) /* how to translate bmP's colors */
 {
@@ -2645,7 +2645,7 @@ if (pNextBmP) {
 	*pNextBmP += zSize;
 	}
 else {
-	bmP->bm_texBuf = d_malloc (bmP->bm_props.h * bmP->bm_props.rowsize);
+	bmP->bm_texBuf = D2_ALLOC (bmP->bm_props.h * bmP->bm_props.rowsize);
 	bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
 	}
 CFRead (bmP->bm_texBuf, 1, zSize, piggyFP);
@@ -2675,7 +2675,7 @@ void _CDECL_ FreeD1TMapNums (void)
 {
 if (d1_tmap_nums) {
 	LogErr ("unloading D1 texture ids\n");
-	d_free (d1_tmap_nums);
+	D2_FREE (d1_tmap_nums);
 	d1_tmap_nums = NULL;
 	}
 }
@@ -2822,7 +2822,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
 		bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
 		bmTemp.bm_avgColor = bmh.bm_avgColor;
-		bmTemp.bm_texBuf = d_malloc (bmTemp.bm_props.w * bmTemp.bm_props.h);
+		bmTemp.bm_texBuf = D2_ALLOC (bmTemp.bm_props.w * bmTemp.bm_props.h);
 		bitmapCacheUsed += bmTemp.bm_props.h * bmTemp.bm_props.w;
 		bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 		bitmapOffsets [1][i+1] = bmh.offset + nBmDataOffs;

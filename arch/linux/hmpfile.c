@@ -33,7 +33,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 
 	if (!(fp = CFOpen((char *)filename, gameFolders.szDataDir, "rb", bUseD1Hog)))
 		return NULL;
-	hmp = d_malloc(sizeof(hmp_file));
+	hmp = D2_ALLOC(sizeof(hmp_file));
 	if (!hmp) {
 		CFClose(fp);
 		return NULL;
@@ -65,7 +65,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 		    data += sizeof(hmp_tempo);
 #endif
 		hmp->trks [i].len = data;
-		if (!(p = hmp->trks [i].data = d_malloc(data)))
+		if (!(p = hmp->trks [i].data = D2_ALLOC(data)))
 			goto err;
 #if 0
 		if (i == 0) { /* track 0: add tempo */
@@ -98,8 +98,8 @@ void hmp_close(hmp_file *hmp)
 #endif
 	for (i = 0; i < hmp->num_trks; i++)
 		if (hmp->trks [i].data)
-			d_free(hmp->trks [i].data);
-	d_free(hmp);
+			D2_FREE(hmp->trks [i].data);
+	D2_FREE(hmp);
 }
 
 //------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void hmp_stop(hmp_file *hmp)
 	while ((mhdr = hmp->evbuf)) {
 		midiOutUnprepareHeader((HMIDIOUT)hmp->hmidi, mhdr, sizeof(MIDIHDR));
 		hmp->evbuf = mhdr->lpNext;
-		d_free(mhdr);
+		D2_FREE(mhdr);
 	}
 	
 	if (hmp->hmidi) {
@@ -291,7 +291,7 @@ static int setup_buffers(hmp_file *hmp)
 
 	lastbuf = NULL;
 	for (i = 0; i < HMP_BUFFERS; i++) {
-		if (!(buf = d_malloc(HMP_BUFSIZE + sizeof(MIDIHDR))))
+		if (!(buf = D2_ALLOC(HMP_BUFSIZE + sizeof(MIDIHDR))))
 			return HMP_OUT_OF_MEM;
 		memset(buf, 0, sizeof(MIDIHDR));
 		buf->lpData = (unsigned char *)buf + sizeof(MIDIHDR);

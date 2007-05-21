@@ -276,7 +276,7 @@ void _CDECL_ FreeTerrainHeightMap (void)
 {
 if (gameData.render.terrain.pHeightMap) {
 	LogErr ("unloading terrain height map\n");
-	d_free (gameData.render.terrain.pHeightMap);
+	D2_FREE (gameData.render.terrain.pHeightMap);
 	}
 }
 
@@ -298,7 +298,7 @@ if (iff_error != IFF_NO_ERROR) {
 	Error ("File %s - IFF error: %s", filename, iff_errormsg (iff_error));
 }
 if (gameData.render.terrain.pHeightMap)
-	d_free (gameData.render.terrain.pHeightMap)
+	D2_FREE (gameData.render.terrain.pHeightMap)
 else
 	atexit (FreeTerrainHeightMap);		//first time
 gameData.render.terrain.nGridW = bmHeight.bm_props.w;
@@ -321,13 +321,13 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 		HEIGHT (i, j) -= hMin;
 		}
 	}
-//	d_free (bmHeight.bm_texBuf);
+//	D2_FREE (bmHeight.bm_texBuf);
 gameData.render.terrain.bmP = gameData.endLevel.terrain.bmP;
 #if 0 //the following code turns the (palettized) terrain texture into a white TGA texture for testing
 gameData.render.terrain.bmP->bm_props.rowsize *= 4;
 gameData.render.terrain.bmP->bm_props.flags |= BM_FLAG_TGA;
-d_free (gameData.render.terrain.bmP->bm_texBuf);
-gameData.render.terrain.bmP->bm_texBuf = d_malloc (gameData.render.terrain.bmP->bm_props.h * gameData.render.terrain.bmP->bm_props.rowsize);
+D2_FREE (gameData.render.terrain.bmP->bm_texBuf);
+gameData.render.terrain.bmP->bm_texBuf = D2_ALLOC (gameData.render.terrain.bmP->bm_props.h * gameData.render.terrain.bmP->bm_props.rowsize);
 memset (gameData.render.terrain.bmP->bm_texBuf, 0xFF, gameData.render.terrain.bmP->bm_props.h * gameData.render.terrain.bmP->bm_props.rowsize);
 #endif
 LogErr ("            building terrain light map\n");
@@ -395,7 +395,7 @@ void _CDECL_ FreeTerrainLightMap ()
 {
 if (gameData.render.terrain.pLightMap) {
 	LogErr ("unloading terrain light map\n");
-	d_free (gameData.render.terrain.pLightMap);
+	D2_FREE (gameData.render.terrain.pLightMap);
 	}
 }
 
@@ -408,7 +408,7 @@ void BuildTerrainLightMap ()
 
 
 if (gameData.render.terrain.pLightMap)
-	d_free (gameData.render.terrain.pLightMap)
+	D2_FREE (gameData.render.terrain.pLightMap)
 else
 	atexit (FreeTerrainLightMap);		//first time
 

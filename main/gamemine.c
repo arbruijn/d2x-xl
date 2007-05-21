@@ -969,7 +969,7 @@ int ComputeNearestSegmentLights (int i)
 
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
-if (!(pDists = d_malloc (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
+if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
 	gameOpts->render.bDynLighting = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
@@ -1001,7 +1001,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.dynamic.nNearestSegLights [k + l] = -1;
 	}
-d_free (pDists);
+D2_FREE (pDists);
 return 1;
 }
 
@@ -1021,7 +1021,7 @@ int ComputeNearestVertexLights (int i)
 
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
-if (!(pDists = d_malloc (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
+if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
 	gameOpts->render.bDynLighting = 0;
 	gameData.render.shadows.nLights = 0;
 	return 0;
@@ -1056,7 +1056,7 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 	for (; l < MAX_NEAREST_LIGHTS; l++)
 		gameData.render.lights.dynamic.nNearestVertLights [k + l] = -1;
 	}
-d_free (pDists);
+D2_FREE (pDists);
 return 1;
 }
 

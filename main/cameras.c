@@ -184,12 +184,12 @@ if (!OglCreateCamBuf (pc))
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(pc->texBuf.bm_texBuf = (char *) d_malloc (pc->texBuf.bm_props.w * pc->texBuf.bm_props.h * 4)))
+	if (!(pc->texBuf.bm_texBuf = (char *) D2_ALLOC (pc->texBuf.bm_props.w * pc->texBuf.bm_props.h * 4)))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || pc->bTeleport)
 		pc->screenBuf = pc->texBuf.bm_texBuf;
 	else {
-		pc->screenBuf = d_malloc (grdCurCanv->cv_bitmap.bm_props.w * grdCurCanv->cv_bitmap.bm_props.h * 4);
+		pc->screenBuf = D2_ALLOC (grdCurCanv->cv_bitmap.bm_props.w * grdCurCanv->cv_bitmap.bm_props.h * 4);
 		if (!pc->screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
 			pc->screenBuf = pc->texBuf.bm_texBuf;
@@ -297,9 +297,9 @@ void DestroyCamera (tCamera *pc)
 OglFreeBmTexture (&pc->texBuf);
 glDeleteTextures (1, &pc->glTexId);
 if (pc->screenBuf && (pc->screenBuf != (char *) pc->texBuf.bm_texBuf))
-	d_free (pc->screenBuf);
+	D2_FREE (pc->screenBuf);
 if (pc->texBuf.bm_texBuf) {
-	d_free (pc->texBuf.bm_texBuf);
+	D2_FREE (pc->texBuf.bm_texBuf);
 	pc->texBuf.bm_texBuf = NULL;
 	}
 #if RENDER2TEXTURE

@@ -202,7 +202,7 @@ int seq_init()
 	else
 #endif
 	{
-		voices = d_malloc(sizeof(Voice_info)*card_info.nr_voices);
+		voices = D2_ALLOC(sizeof(Voice_info)*card_info.nr_voices);
 		for (i=0;i<card_info.nr_voices;i++)
 		{
 			voices[i].note = -1;
@@ -218,7 +218,7 @@ void seq_close()
 	SEQ_DUMPBUF();
 	ioctl(seqfd,SNDCTL_SEQ_SYNC);
 	close(seqfd);
-	d_free(voices);
+	D2_FREE(voices);
 }
 
 void set_program(int channel, int pgm)
@@ -534,7 +534,7 @@ void send_ipc(char *message)
 	{
 		ipc_queue_id=msgget ((key_t) ('l'<<24) | ('d'<<16) | ('e'<<8) | 's', 
 				     IPC_CREAT | 0660);
-		snd=d_malloc(sizeof(long) + 32);
+		snd=D2_ALLOC(sizeof(long) + 32);
 		snd->mType=1;
 		player_thread=SDL_CreateThread(play_hmi, NULL);
 //		player_pid = play_hmi();
@@ -551,7 +551,7 @@ void kill_ipc()
 //	send_ipc("q");
 //	kill(player_pid,SIGTERM);
 	msgctl( ipc_queue_id, IPC_RMID, 0);
-	d_free(snd);
+	D2_FREE(snd);
 	ipc_queue_id = -1;
 //	player_pid = 0;
 }
@@ -639,7 +639,7 @@ void play_hmi (void * arg)
 	}*/
 	
 //	signal(SIGTERM, my_quit);
-	rcv=d_malloc(sizeof(long) + 16);
+	rcv=D2_ALLOC(sizeof(long) + 16);
 	
 	rcv->mType=1;
 	rcv->mtext[0]='0';
@@ -665,7 +665,7 @@ void play_hmi (void * arg)
 	
 	n_chunks=data[0x30];
 	
-	t_info = d_malloc(sizeof(Track_info)*n_chunks);
+	t_info = D2_ALLOC(sizeof(Track_info)*n_chunks);
 	
 	while(1)
 	{
@@ -763,9 +763,9 @@ void play_hmi (void * arg)
 		}
 		pos=0x308;
 	}
-	d_free(data);
-	d_free(t_info);
-	d_free(rcv);
+	D2_FREE(data);
+	D2_FREE(t_info);
+	D2_FREE(rcv);
 	
 }
 

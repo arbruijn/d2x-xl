@@ -231,8 +231,8 @@ void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticle_canvas)	{
 	LogErr ("unloading reticle data\n");
-	d_free( reticle_canvas->cv_bitmap.bm_texBuf);
-	d_free( reticle_canvas);
+	D2_FREE( reticle_canvas->cv_bitmap.bm_texBuf);
+	D2_FREE( reticle_canvas);
 	reticle_canvas	= NULL;
 	}
 }
@@ -290,7 +290,7 @@ G3TransformAndEncodePoint(reticlePoints + 3, &v2);
 if ( reticle_canvas == NULL)	{
 	reticle_canvas = GrCreateCanvas(64, 64);
 	if ( !reticle_canvas)
-		Error( "Couldn't d_malloc reticle_canvas");
+		Error( "Couldn't D2_ALLOC reticle_canvas");
 	atexit( FreeReticleCanvas);
 	//reticle_canvas->cv_bitmap.bm_handle = 0;
 	reticle_canvas->cv_bitmap.bm_props.flags = BM_FLAG_TRANSPARENT;
@@ -1310,7 +1310,6 @@ int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short *pSid
 {
 	short			sideVerts [4];
 	fix			d, d1, d2, dMax = 0;
-	vmsVector	v;
 	int			i, j;
 
 if (!pSideVerts) {
@@ -1374,10 +1373,10 @@ void RenderCorona (short nSegment, short nSide)
 #if ROTATE_CORONA
 	fVector		vDeltaX, vDeltaY;
 #endif
-	fMatrix		r, hr;
+	fMatrix		r;
 	int			i, j, t;
 	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
-	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim = 1, dot;
+	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim = 1;
 	tFaceColor	*pf;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 
@@ -1486,7 +1485,6 @@ n.p.z = 0;
 #endif
 VmVecNormalizef (&n, &n);
 // compute rotation matrix to align transformed face
-#if 1
 r.rVec.p.x =
 r.uVec.p.y = n.p.y;
 r.uVec.p.x = n.p.x;
@@ -1496,10 +1494,6 @@ r.uVec.p.z =
 r.fVec.p.x = 
 r.fVec.p.y = 0;
 r.fVec.p.z = 1;
-#else
-VmSinCos2Matrixf (&hr, 0, 1, n.p.y, 1 - n.p.y, n.p.x, 1 - n.p.x); //pitch, bank, heading
-VmCopyTransposeMatrixf (&r, &hr);
-#endif
 for (i = 0; i < 4; i++) {
 	VmVecSubf (&d, vertList + i, &vCenter);	//compute face coordinate relative to pivot
 	VmVecRotatef (&v, &d, &r);	//align face coordinate
@@ -1515,56 +1509,8 @@ for (i = 0; i < 4; i++) {
 	m += VmVecMagf (&d);	//accumulate face dimensions
 	}
 
-#if 0//def _DEBUG
-glDisable (GL_TEXTURE_2D);
-glColor4d (1,0.5,0,1);
-glLineWidth (4);
-glBegin (GL_LINE_LOOP);
-for (i = 0; i < 4; i++) {
-	VmVecAddf (&v, sprite + i, &vCenter);
-	glVertex3fv ((GLfloat *) &v);
-	}
-glEnd ();
-#if 1
-glBegin (GL_LINES);
-glVertex3fv ((GLfloat *) &vCenter);
-VmVecScaleAddf (&v, &vCenter, &n, 5);
-glVertex3fv ((GLfloat *) &v);
-#endif
-#if 0
-glColor3d (1, 0.8, 0);
-glVertex3fv ((GLfloat *) &vCenter);
-VmVecScaleAddf (&v, &vCenter, &vEye, -5);
-glVertex3fv ((GLfloat *) &v);
-#endif
-glEnd ();
-glLineWidth (1);
-//return;
-#endif
-
 m /= 4;	//compute average face dimension
 // compute x and y dimensions of aligned face
-#if 0
-{ 
-fix	w, h;
-i = CalcFaceDimensions (nSegment, nSide, &w, &h, sideVerts);
-if (i & 1) {
-	dx = f2fl (h);
-	dy = f2fl (w);
-	}
-else {
-	dx = f2fl (w);
-	dy = f2fl (h);
-	}
-}
-#if 0
-dx /= 4;
-dx = dx + 3 * dx * (1 - n.p.x);
-dy /= 4;
-dy = dy + 3 * dy * (1 - n.p.y);
-#endif
-m = 0;
-#else
 for (i = 0; i < 4; i++) {
 	j = (i + 1) % 4;
 	h = (float) fabs (sprite [i].p.x - sprite [j].p.x);
@@ -1575,7 +1521,6 @@ for (i = 0; i < 4; i++) {
 		dy = h;
 	}
 m = (float) sqrt (dx * dx + dy * dy) / 4;	//basic corona size to make it visible regardless of dx and dy
-#endif
 
 a = VmVecMagf (&vCenter);
 // determine whether viewer has passed foremost z coordinate of corona's face
@@ -1597,38 +1542,12 @@ if (m > a)
 	m = a;
 
 //create rotation matrix to match corona with face
-#if 0
-VmVecSubf (&n, vertList + i, vertList + i + 1);
-#else
-VmVecNormalf (&n, vertList, vertList + 1, vertList + 2);
-n.p.z = 0;
-VmVecNormalizef (&n, &n);
-#endif
-if (abs (gameData.objs.console->position.mOrient.uVec.p.y) > F1_0 / 2) {
-	r.rVec.p.x =
-	r.uVec.p.y = n.p.x;
-	r.rVec.p.y = -n.p.y;
-	r.uVec.p.x = n.p.y;
-	r.rVec.p.z =
-	r.uVec.p.z = 0;
-	}	
-else {
-	r.rVec.p.x =
-	r.uVec.p.y = n.p.x;
-	r.rVec.p.y = -n.p.y;
-	r.uVec.p.x = n.p.y;
-	r.rVec.p.z =
-	r.uVec.p.z = 0;
-	}
-r.fVec.p.x = 
-r.fVec.p.y = 0;
-r.fVec.p.z = 1;
-
-#ifdef _DEBUG
-//HUDMessage (0, "%1.2f %1.2f %1.2f", dx, dy, sqrt (dx * dx + dy * dy));
-//VmsVecToFloat (&v, &gameData.objs.console->position.mOrient.uVec);
-//HUDMessage (0, "%1.2f %1.2f %1.2f ", v.p.x, v.p.y, v.p.z);
-#endif
+r.rVec.p.x =
+r.uVec.p.y = n.p.x;
+r.rVec.p.y = -n.p.y;
+r.uVec.p.x = n.p.y;
+r.rVec.p.z =
+r.uVec.p.z = 0;
 
 #if !ROTATE_CORONA
 CalcSpriteCoords (sprite, &vCenter, &vEye, m + dy / 2, m + dx / 2, &r);
@@ -1693,10 +1612,6 @@ VmVecNormalf (&o, sprite, sprite + 1, sprite + 2);
 VmVecScalef (&o, &o, 0.1f);
 for (i = 0; i < 4; i++)
 	VmVecIncf (sprite + i, &o);
-glEnable (GL_TEXTURE_2D);
-if (OglBindBmTex (bmpCorona, 1, -1)) 
-	return;
-OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 pf = gameData.render.color.textures + t;
 a = (float) (pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 30 * 2;
 a *= dim;
@@ -1704,6 +1619,10 @@ l /= 4;
 glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
 //render the corona
 VmVecNormalf (&n, sprite, sprite + 1, sprite + 2);
+glEnable (GL_TEXTURE_2D);
+if (OglBindBmTex (bmpCorona, 1, -1)) 
+	return;
+OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 glDisable (GL_CULL_FACE);
 glBegin (GL_QUADS);
 for (i = 0; i < 4; i++) {
@@ -1712,14 +1631,6 @@ for (i = 0; i < 4; i++) {
 	}
 glEnd ();
 glEnable (GL_CULL_FACE);
-#if 0
-//render corona again, this time parallel to its face
-for (i = 0; i < 4; i++) {
-	glTexCoord2fv ((GLfloat *) (uvlList + i));
-	glVertex3fv ((GLfloat *) (vertList + i));
-	}
-#endif
-glEnd	 ();
 #if 0//def _DEBUG
 glDisable (GL_TEXTURE_2D);
 glColor4d (1,1,1,1);

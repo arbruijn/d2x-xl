@@ -219,9 +219,9 @@ void _CDECL_ NewMenuClose (void)
 {
 LogErr ("unloading menu data\n");
 if (nm_background.bm_texBuf)
-	d_free (nm_background.bm_texBuf);
+	D2_FREE (nm_background.bm_texBuf);
 if (nm_background_save.bm_texBuf)
-	d_free (nm_background_save.bm_texBuf);
+	D2_FREE (nm_background_save.bm_texBuf);
 bNewMenuFirstTime = 1;
 }
 
@@ -233,7 +233,7 @@ void NMRemapBackground ()
 {
 if (!bNewMenuFirstTime) {
 	if (!nm_background.bm_texBuf)
-		nm_background.bm_texBuf = d_malloc (nm_background.bm_props.w * nm_background.bm_props.h);
+		nm_background.bm_texBuf = D2_ALLOC (nm_background.bm_props.w * nm_background.bm_props.h);
 	memcpy (nm_background.bm_texBuf, nm_background_save.bm_texBuf, nm_background.bm_props.w * nm_background.bm_props.h);
 	//GrRemapBitmapGood (&nm_background, bgPalette, -1, -1);
 	}
@@ -408,9 +408,9 @@ else {
 			}
 		else {
 			if (nm_background_save.bm_texBuf)
-				d_free (nm_background_save.bm_texBuf);
+				D2_FREE (nm_background_save.bm_texBuf);
 			if (nm_background.bm_texBuf)
-				d_free (nm_background.bm_texBuf);
+				D2_FREE (nm_background.bm_texBuf);
 			}
 		pcx_error = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
 		Assert (pcx_error == PCX_ERROR_NONE);
@@ -1530,7 +1530,7 @@ else {
 		GrBitmap (0, 0, bg->saved); 	
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		GrFreeBitmap (bg->saved);
-		d_free (bg->background);
+		D2_FREE (bg->background);
 		} 
 	else {
 		if (!bDontRestore) {	//info passed back from subfunction
@@ -2636,7 +2636,7 @@ WIN (int win_redraw=0);
 	w_x = w_y = w_w = w_h = title_height = 0;
 	box_x = box_y = box_w = box_h = 0;
 
-	if (! (filenames = d_malloc (MAX_FILES * (FILENAME_LEN + 1))))
+	if (! (filenames = D2_ALLOC (MAX_FILES * (FILENAME_LEN + 1))))
 		return 0;
 
 	memset (&bg, 0, sizeof (bg));
@@ -3182,7 +3182,7 @@ ExitFileMenu:
 	}
 
 	if (filenames)
-		d_free (filenames);
+		D2_FREE (filenames);
 
 	WIN (mouse_set_mode (1));				//re-enable centering mode
 	WIN (SDL_ShowCursor (0));
@@ -3205,7 +3205,7 @@ ExitFileMenu:
 // 				items [i] = items [i+1];
 // 			}
 // 			*nItems = *nItems - 1;
-// 			d_free (items [*nItems]);
+// 			D2_FREE (items [*nItems]);
 // 			items [*nItems] = NULL;
 // 			return 1;	// redraw;
 // 		}
@@ -3712,7 +3712,7 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 	char *wordptr;
 	char *tbuf;
 
-	tbuf = (char *)d_malloc ((int) strlen (sbuf)+1);
+	tbuf = (char *)D2_ALLOC ((int) strlen (sbuf)+1);
 	strcpy (tbuf, sbuf);
 
 	wordptr = strtok (tbuf, " ");
@@ -3733,7 +3733,7 @@ void NMWrapText (char *dbuf, char *sbuf, int line_length)
 		wordptr = strtok (NULL, " ");
 	}
 
-	d_free (tbuf);
+	D2_FREE (tbuf);
 }
 
 //------------------------------------------------------------------------------

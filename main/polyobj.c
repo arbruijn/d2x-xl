@@ -236,7 +236,7 @@ void AlignPolyModelData (tPolyModel *pm)
 	chunk ch_list [MAX_CHUNKS];
 	int no_chunks = 0;
 	int tmp_size = pm->nDataSize + SHIFT_SPACE;
-	ubyte *tmp = d_malloc (tmp_size); // where we build the aligned version of pm->modelData
+	ubyte *tmp = D2_ALLOC (tmp_size); // where we build the aligned version of pm->modelData
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
@@ -278,12 +278,12 @@ void AlignPolyModelData (tPolyModel *pm)
 			    && pm->modelData + pm->subModels.ptrs [i] < cur_old + chunk_len)
 				pm->subModels.ptrs [i] += (cur_new - tmp) - (cur_old - pm->modelData);
  	}
-	d_free (pm->modelData);
+	D2_FREE (pm->modelData);
 	pm->nDataSize += total_correction;
-	pm->modelData = d_malloc (pm->nDataSize);
+	pm->modelData = D2_ALLOC (pm->nDataSize);
 	Assert (pm->modelData != NULL);
 	memcpy (pm->modelData, tmp, pm->nDataSize);
-	d_free (tmp);
+	D2_FREE (tmp);
 }
 #endif //def WORDS_NEED_ALIGNMENT
 
@@ -297,7 +297,7 @@ tPolyModel *ReadModelFile (tPolyModel *pm, char *filename, tRobotInfo *r)
 	int animFlag = 0;
 	ubyte *model_buf;
 
-if (!(model_buf = (ubyte *)d_malloc (MODEL_BUF_SIZE * sizeof (ubyte))))
+if (!(model_buf = (ubyte *)D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte))))
 	Error ("Can't allocate space to read model %s\n", filename);
 if (!(ifile=CFOpen (filename, gameFolders.szDataDir, "rb", 0)))
 	Error ("Can't open file <%s>", filename);
@@ -406,7 +406,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			}
 
 		case ID_IDTA:		//Interpreter data
-			pm->modelData = d_malloc (len);
+			pm->modelData = D2_ALLOC (len);
 			pm->nDataSize = len;
 			pof_cfread (pm->modelData, 1, len, model_buf);
 			break;
@@ -428,7 +428,7 @@ if (FindArg ("-bspgen")) {
 	//printf (" %s.3ds\n", filename);
 	*p = '.';
 	}
-d_free (model_buf);
+D2_FREE (model_buf);
 #ifdef WORDS_NEED_ALIGNMENT
 G3AlignPolyModelData (pm);
 #endif
@@ -450,7 +450,7 @@ int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, 
 	int nGuns=0;
 	ubyte	*model_buf;
 
-	model_buf = (ubyte *)d_malloc (MODEL_BUF_SIZE * sizeof (ubyte));
+	model_buf = (ubyte *)D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte));
 	if (!model_buf)
 		Error ("Can't allocate space to read model %s\n", filename);
 
@@ -506,19 +506,17 @@ int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, 
 
 	}
 
-	d_free (model_buf);
+	D2_FREE (model_buf);
 	
 	return nGuns;
 }
 
 //------------------------------------------------------------------------------
-//d_free up a model, getting rid of all its memory
+//D2_FREE up a model, getting rid of all its memory
 void FreeModel (tPolyModel *po)
 {
-if (po->modelData) {
-	d_free (po->modelData);
-	po->modelData = NULL;
-	}
+if (po->modelData)
+	D2_FREE (po->modelData);
 }
 
 //------------------------------------------------------------------------------
@@ -799,16 +797,17 @@ LogErr ("unloading poly models\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	FreeModel (gameData.models.polyModels + i);
 	FreeModel (gameData.models.defPolyModels + i);
-	FreeModel (gameData.models.altPolyModels + i);
 	}
+for (i = 0; i < MAX_POLYGON_MODELS; i++)
+	FreeModel (gameData.models.altPolyModels + i);
 }
 
 //------------------------------------------------------------------------------
 
 void InitPolygonModels ()
 {
-	gameData.models.nPolyModels = 0;
-	atexit (FreePolygonModels);
+gameData.models.nPolyModels = 0;
+atexit (FreePolygonModels);
 }
 
 //------------------------------------------------------------------------------
@@ -915,14 +914,14 @@ return i;
 void PolyModelDataRead (tPolyModel *pm, int nModel, tPolyModel *pdm, CFILE *fp)
 {
 if (pm->modelData)
-	d_free (pm->modelData);
-pm->modelData = d_malloc (pm->nDataSize);
+	D2_FREE (pm->modelData);
+pm->modelData = D2_ALLOC (pm->nDataSize);
 Assert (pm->modelData != NULL);
 CFRead (pm->modelData, sizeof (ubyte), pm->nDataSize, fp);
 if (pdm) {
 	if (pdm->modelData)
-		d_free (pdm->modelData);
-	pdm->modelData = d_malloc (pm->nDataSize);
+		D2_FREE (pdm->modelData);
+	pdm->modelData = D2_ALLOC (pm->nDataSize);
 	Assert (pdm->modelData != NULL);
 	memcpy (pdm->modelData, pm->modelData, pm->nDataSize);
 	}

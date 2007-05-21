@@ -276,9 +276,9 @@ while (mve_audio_bufhead != mve_audio_buftail                                   
 	total += length;
 	stream += length;                                                               /* advance output */
 	len -= length;                                                                  /* decrement avail ospace */
-	mve_free (mve_audio_buffers[mve_audio_bufhead]);                                 /* d_free the buffer */
-	mve_audio_buffers[mve_audio_bufhead]=NULL;                                      /* d_free the buffer */
-	mve_audio_buflens[mve_audio_bufhead]=0;                                         /* d_free the buffer */
+	mve_free (mve_audio_buffers[mve_audio_bufhead]);                                 /* D2_FREE the buffer */
+	mve_audio_buffers[mve_audio_bufhead]=NULL;                                      /* D2_FREE the buffer */
+	mve_audio_buflens[mve_audio_bufhead]=0;                                         /* D2_FREE the buffer */
 	if (++mve_audio_bufhead == TOTAL_AUDIO_BUFFERS)                                 /* next buffer */
 		mve_audio_bufhead = 0;
 	mve_audio_curbuf_curpos = 0;
@@ -291,7 +291,7 @@ if ((len > 0) && (mve_audio_bufhead != mve_audio_buftail)) {								/* ospace re
 	stream += len;                                                                  /* advance output (unnecessary) */
 	len -= len;                                                                     /* advance output (unnecessary) */
 	if (mve_audio_curbuf_curpos >= mve_audio_buflens[mve_audio_bufhead]) {          /* if this ends the current chunk */
-		mve_free (mve_audio_buffers[mve_audio_bufhead]);                             /* d_free buffer */
+		mve_free (mve_audio_buffers[mve_audio_bufhead]);                             /* D2_FREE buffer */
 		mve_audio_buffers[mve_audio_bufhead]=NULL;
 		mve_audio_buflens[mve_audio_bufhead]=0;
 		if (++mve_audio_bufhead == TOTAL_AUDIO_BUFFERS)                             /* next buffer */
@@ -457,7 +457,7 @@ truecolor = (minor > 1) ? get_short (data+6) : 0;
 g_width = w << 3;
 g_height = h << 3;
 /* TODO: * 4 causes crashes on some files */
-/* only d_malloc once */
+/* only D2_ALLOC once */
 if (g_vBuffers == NULL)
 	g_vBackBuf1 = g_vBuffers = mve_alloc (g_width * g_height * 8);
 if (truecolor)
@@ -576,10 +576,10 @@ mve_read = io_read;
 
 //-----------------------------------------------------------------------
 
-void MVE_memCallbacks (mve_cb_Alloc mem_alloc, mve_cb_Free mem_free)
+void MVE_memCallbacks (mve_cb_Alloc mem_alloc, mve_cb_Free MemFree)
 {
 mve_alloc = mem_alloc;
-mve_free = mem_free;
+mve_free = MemFree;
 }
 
 //-----------------------------------------------------------------------

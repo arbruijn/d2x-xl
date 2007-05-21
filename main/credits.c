@@ -427,7 +427,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 					GrCloseFont(names_font);
 					GrPaletteFadeOut(NULL, 32, 0);
 					GrUsePaletteTable(D2_DEFAULT_PALETTE, NULL);
-					d_free(bmBackdrop.bm_texBuf);
+					D2_FREE(bmBackdrop.bm_texBuf);
 					CFClose(file);
 				WINDOS(
 					DDGrSetCurrentCanvas(save_canv),

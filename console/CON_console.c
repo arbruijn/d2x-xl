@@ -3,7 +3,7 @@
  *  Code Cleanup and heavily extended by: Clemens Wacha <reflex-2000@gmx.net>
  *  Ported to use native Descent interfaces by: Bradley Bell <btb@icculus.org>
  *
- *  This is d_free, just be sure to give us credit when using it
+ *  This is D2_FREE, just be sure to give us credit when using it
  *  in any of your programs.
  */
 
@@ -414,7 +414,7 @@ ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int line
 
 
 	/* Create a new console struct and init it. */
-	if((newinfo = (ConsoleInformation *) d_malloc(sizeof(ConsoleInformation))) == NULL) {
+	if((newinfo = (ConsoleInformation *) D2_ALLOC(sizeof(ConsoleInformation))) == NULL) {
 		//PRINT_ERROR("Could not allocate the space for a new console info struct.\n");
 		return NULL;
 	}
@@ -487,11 +487,11 @@ ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int line
 		newinfo->LineBuffer = lines;
 
 
-	newinfo->ConsoleLines = (char **)d_malloc(sizeof(char *) * newinfo->LineBuffer);
-	newinfo->CommandLines = (char **)d_malloc(sizeof(char *) * newinfo->LineBuffer);
+	newinfo->ConsoleLines = (char **)D2_ALLOC(sizeof(char *) * newinfo->LineBuffer);
+	newinfo->CommandLines = (char **)D2_ALLOC(sizeof(char *) * newinfo->LineBuffer);
 	for(loop = 0; loop < newinfo->LineBuffer; loop++) {
-		newinfo->ConsoleLines[loop] = (char *)d_calloc(CON_CHARS_PER_LINE, sizeof(char));
-		newinfo->CommandLines[loop] = (char *)d_calloc(CON_CHARS_PER_LINE, sizeof(char));
+		newinfo->ConsoleLines[loop] = (char *)D2_CALLOC(CON_CHARS_PER_LINE, sizeof(char));
+		newinfo->CommandLines[loop] = (char *)D2_CALLOC(CON_CHARS_PER_LINE, sizeof(char));
 	}
 	memset(newinfo->Command, 0, CON_CHARS_PER_LINE);
 	memset(newinfo->LCommand, 0, CON_CHARS_PER_LINE);
@@ -545,11 +545,11 @@ void CON_Free(ConsoleInformation *console) {
 
 	//CON_DestroyCommands();
 	for(i = 0; i <= console->LineBuffer - 1; i++) {
-		d_free(console->ConsoleLines[i]);
-		d_free(console->CommandLines[i]);
+		D2_FREE(console->ConsoleLines[i]);
+		D2_FREE(console->CommandLines[i]);
 	}
-	d_free(console->ConsoleLines);
-	d_free(console->CommandLines);
+	D2_FREE(console->ConsoleLines);
+	D2_FREE(console->CommandLines);
 
 	console->ConsoleLines = NULL;
 	console->CommandLines = NULL;
@@ -564,7 +564,7 @@ void CON_Free(ConsoleInformation *console) {
 	GrFreeBitmap(console->InputBackground);
 	console->InputBackground = NULL;
 
-	d_free(console);
+	D2_FREE(console);
 }
 
 //------------------------------------------------------------------------------
@@ -739,7 +739,7 @@ void DrawCommandLine() {
 /* Outputs text to the console (in game), up to CON_CHARS_PER_LINE chars can be entered */
 void _CDECL_ CON_Out(ConsoleInformation *console, const char *str, ...) {
 	va_list marker;
-	//keep some space d_free for stuff like CON_Out(console, "blablabla %s", console->Command);
+	//keep some space D2_FREE for stuff like CON_Out(console, "blablabla %s", console->Command);
 	char temp[CON_CHARS_PER_LINE + 128];
 	char* ptemp;
 
@@ -950,7 +950,7 @@ void CON_SetPrompt(ConsoleInformation *console, char* newprompt) {
 
 	//check length so we can still see at least 1 char :-)
 	if(strlen(newprompt) < (size_t) console->VChars)
-		console->Prompt = d_strdup(newprompt);
+		console->Prompt = D2_STRDUP(newprompt);
 	else
 		CON_Out(console, "prompt too long. (max. %i chars)", console->VChars - 1);
 }
@@ -1001,7 +1001,7 @@ void CON_TabCompletion(ConsoleInformation *console) {
 	if(!console)
 		return;
 
-	command = d_strdup(console->LCommand);
+	command = D2_STRDUP(console->LCommand);
 	command = console->TabFunction(command);
 
 	if(!command)

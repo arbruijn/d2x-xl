@@ -377,7 +377,7 @@ void DestroyLightMaps (void)
 if (lightData) { //! =  NULL, comparison not explicitly required 
 		int	i;
 
-	d_free (lightData); 
+	D2_FREE (lightData); 
 	lightData = NULL; //init to a defined value 
 	for (i = 0; i < MAX_SEGMENTS * 6; i++)
 		if (lightMaps [i].handle)
@@ -721,10 +721,10 @@ int InitLightData (void)
 //first step find all the lights in the level.  By iterating through every surface in the level.
 if (!(numLightMaps = CountLights ()))
 	return 0;
-if (!(lightData = d_malloc (sizeof (tLightMap) * numLightMaps)))
+if (!(lightData = D2_ALLOC (sizeof (tLightMap) * numLightMaps)))
 	return numLightMaps = 0; 
-if (!(lightMaps = (ogl_texture *) d_malloc (MAX_SEGMENTS * 6 * sizeof (*lightMaps)))) {
-	d_free (lightData);
+if (!(lightMaps = (ogl_texture *) D2_ALLOC (MAX_SEGMENTS * 6 * sizeof (*lightMaps)))) {
+	D2_FREE (lightData);
 	return numLightMaps = 0; 
 	}
 memset (lightMaps, 0, sizeof (*lightMaps) * MAX_SEGMENTS * 6); 

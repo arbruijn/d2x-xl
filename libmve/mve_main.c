@@ -222,7 +222,7 @@ static int doPlay(const char *filename)
 	memset(g_palette, 0, 768);
 
 	MVE_sndInit(1);
-	MVE_memCallbacks(d_malloc, d_free);
+	MVE_memCallbacks(D2_ALLOC, D2_FREE);
 	MVE_ioCallbacks(fileRead);
 	MVE_sfCallbacks(showFrame);
 	MVE_palCallbacks(setPalette);

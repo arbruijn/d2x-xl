@@ -639,7 +639,7 @@ int convert_ilbm_to_pbm(iff_bitmap_header *bmheader)
 
 	}
 
-	d_free(bmheader->raw_data);
+	D2_FREE(bmheader->raw_data);
 	bmheader->raw_data = new_data;
 
 	bmheader->nType = TYPE_PBM;
@@ -657,7 +657,7 @@ int convert_rgb15(grsBitmap *bm,iff_bitmap_header *bmheader)
 	pal_entry *palptr;
 
 	palptr = bmheader->palette;
-//        if ((new_data = d_malloc(bm->bm_props.w * bm->bm_props.h * 2)) == NULL)
+//        if ((new_data = D2_ALLOC(bm->bm_props.w * bm->bm_props.h * 2)) == NULL)
 //            {ret=IFF_NO_MEM; goto done;}
        MALLOC(new_data, ushort, bm->bm_props.w * bm->bm_props.h * 2);
        if (new_data == NULL)
@@ -666,7 +666,7 @@ int convert_rgb15(grsBitmap *bm,iff_bitmap_header *bmheader)
 		for (x=0; x<bmheader->w; x++)
 			new_data[newptr++] = INDEX_TO_15BPP(bmheader->raw_data[y*bmheader->w+x]);
 	}
-	d_free(bm->bm_texBuf);				//get rid of old-style data
+	D2_FREE(bm->bm_texBuf);				//get rid of old-style data
 	bm->bm_texBuf = (ubyte *) new_data;			//..and point to new data
 	bm->bm_props.rowsize *= 2;				//two bytes per row
 	return IFF_NO_ERROR;
@@ -698,7 +698,7 @@ int open_fake_file(char *ifilename,FFILE *ffile)
 void close_fake_file(FFILE *f)
 {
 	if (f->data)
-		d_free(f->data);
+		D2_FREE(f->data);
 
 	f->data = NULL;
 }
@@ -751,7 +751,7 @@ int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *pre
 		ret = IFF_UNKNOWN_FORM;
 
 	if (ret != IFF_NO_ERROR) {		//got an error parsing
-		if (bmheader.raw_data) d_free(bmheader.raw_data);
+		if (bmheader.raw_data) D2_FREE(bmheader.raw_data);
 		return ret;
 	}
 
@@ -794,7 +794,7 @@ int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType)
 		ret = iff_parse_bitmap(&ifile,bm,bitmapType,NULL);
 	}
 	if (ifile.data) 
-		d_free(ifile.data);
+		D2_FREE(ifile.data);
 	close_fake_file(&ifile);
 	return ret;
 }
@@ -811,7 +811,7 @@ int iff_read_into_bitmap(char *ifilename, grsBitmap *bm)
 		ret = iff_parse_bitmap(&ifile,bm,bm->bm_props.nType,NULL);
 	}
 
-	if (ifile.data) d_free(ifile.data);
+	if (ifile.data) D2_FREE(ifile.data);
 
 	close_fake_file(&ifile);
 
@@ -955,7 +955,7 @@ int write_body(FILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)
 	save_pos = ftell(ofile);
 	put_long(len,ofile);
 
-    //if (! (new_span = d_malloc(bitmap_header->w+(bitmap_header->w/128+2)*2))) return IFF_NO_MEM;
+    //if (! (new_span = D2_ALLOC(bitmap_header->w+(bitmap_header->w/128+2)*2))) return IFF_NO_MEM;
 	MALLOC( new_span, ubyte, bitmap_header->w + (bitmap_header->w/128+2)*2);
 	if (new_span == NULL) return IFF_NO_MEM;
 
@@ -978,7 +978,7 @@ int write_body(FILE *ofile,iff_bitmap_header *bitmap_header,int compression_on)
 		if (total_len&1) fputc(0,ofile);		//pad to even
 	}
 
-	d_free(new_span);
+	D2_FREE(new_span);
 
 	return ((compression_on) ? (EVEN(total_len)+8) : (len+8));
 

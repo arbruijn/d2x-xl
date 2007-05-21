@@ -857,15 +857,15 @@ int IsDoorFree (tSegment *seg,short tSide)
 		if (gameData.objs.objects[nObject].nType!=OBJ_WEAPON && 
 			 gameData.objs.objects[nObject].nType!=OBJ_FIREBALL && 
 			CheckPoke(nObject,SEG_IDX (seg),tSide))
-			return 0;	//not d_free
+			return 0;	//not D2_FREE
 
 	for (nObject=cSegP->objects;nObject!=-1;nObject=gameData.objs.objects[nObject].next)
 		if (gameData.objs.objects[nObject].nType!=OBJ_WEAPON && 
 			 gameData.objs.objects[nObject].nType!=OBJ_FIREBALL && 
 			CheckPoke(nObject,(short) (SEG_IDX (cSegP)),Connectside))
-			return 0;	//not d_free
+			return 0;	//not D2_FREE
 
-	return 1; 	//doorway is d_free!
+	return 1; 	//doorway is D2_FREE!
 }
 
 

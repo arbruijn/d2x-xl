@@ -70,7 +70,7 @@ memcpy (&gameData.eff.vClips [0][gameData.hoard.monsterball.nClip],
 		  &gameData.eff.vClips [0][gameData.hoard.orb.nClip],
 		  sizeof (tVideoClip));
 if (!ReadTGA ("monsterball.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0)) {
-	altBmP = (grsBitmap *) d_malloc (sizeof (grsBitmap));
+	altBmP = (grsBitmap *) D2_ALLOC (sizeof (grsBitmap));
 	if (altBmP && 
 		(ReadTGA ("mballgold#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0) ||
 		 ReadTGA ("mballred#0.tga", gameFolders.szTextureDir [0], &gameData.hoard.monsterball.bm, -1, 1.0, 0, 0))) {
@@ -150,7 +150,7 @@ if (!gameData.hoard.bInitialized) {
 	vcP->flags = 0;
 	vcP->nSound = -1;
 	vcP->lightValue = F1_0;
-	bmDataP = gameData.hoard.orb.bm.bm_texBuf = (ubyte *) d_malloc (gameData.hoard.orb.nSize);
+	bmDataP = gameData.hoard.orb.bm.bm_texBuf = (ubyte *) D2_ALLOC (gameData.hoard.orb.nSize);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		vcP->frames [i].index = nBitmap;
@@ -182,7 +182,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.pig.tex.pTMapInfo [i].flags = TMI_GOAL_HOARD;
 	gameData.pig.tex.nTextures [0]++;
 	Assert (gameData.pig.tex.nTextures [0] < MAX_TEXTURES);
-	bmDataP = gameData.hoard.goal.bm.bm_texBuf = (ubyte *) d_malloc (gameData.hoard.goal.nSize);
+	bmDataP = gameData.hoard.goal.bm.bm_texBuf = (ubyte *) D2_ALLOC (gameData.hoard.goal.nSize);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vc.frames [i].index = nBitmap;
@@ -227,7 +227,7 @@ for (i = 0; i < 2; i++) {
 	gameData.hoard.icon [i].nWidth = CFReadShort (fp);
 	CalcHoardItemSizes (gameData.hoard.icon [i]);
 	if (!gameData.hoard.bInitialized) {
-		gameData.hoard.icon [i].bm.bm_texBuf = (ubyte *) d_malloc (gameData.hoard.icon [i].nSize);
+		gameData.hoard.icon [i].bm.bm_texBuf = (ubyte *) D2_ALLOC (gameData.hoard.icon [i].nSize);
 		InitHoardBitmap (&gameData.hoard.icon [i].bm, 
 							  gameData.hoard.icon [i].nHeight, 
 							  gameData.hoard.icon [i].nWidth, 
@@ -249,7 +249,7 @@ if (!gameData.hoard.bInitialized) {
 			len = CFReadInt (fp);    //get 22k len
 			}
 		gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].length = len;
-		gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].data = d_malloc (len);
+		gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].data = D2_ALLOC (len);
 		CFRead (gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].data, 1, len, fp);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = CFReadInt (fp);    //get 22k len
@@ -289,22 +289,22 @@ void FreeHoardData (void)
 
 if (!gameData.hoard.bInitialized)
 	return;
-d_free (gameData.hoard.orb.bm.bm_texBuf);
+D2_FREE (gameData.hoard.orb.bm.bm_texBuf);
 gameData.hoard.orb.bm.bm_texBuf = NULL;
-d_free (gameData.hoard.goal.bm.bm_texBuf);
+D2_FREE (gameData.hoard.goal.bm.bm_texBuf);
 gameData.hoard.goal.bm.bm_texBuf = NULL;
 bmP = &gameData.hoard.monsterball.bm;
 bmP = BM_OVERRIDE (&gameData.hoard.monsterball.bm) ? BM_OVERRIDE (&gameData.hoard.monsterball.bm) : &gameData.hoard.monsterball.bm;
-d_free (bmP->bm_texBuf);
+D2_FREE (bmP->bm_texBuf);
 if (BM_OVERRIDE (&gameData.hoard.monsterball.bm))
-	d_free (bmP);
+	D2_FREE (bmP);
 memset (&gameData.hoard.orb.bm, 0, sizeof (grsBitmap));
 for (i = 0; i < 2; i++) {
-	d_free (gameData.hoard.icon [i].bm.bm_texBuf);
+	D2_FREE (gameData.hoard.icon [i].bm.bm_texBuf);
 	gameData.hoard.icon [i].bm.bm_texBuf = NULL;
 	}
 for (i = 0; i < 4; i++) {
-	d_free (gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].data);
+	D2_FREE (gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].data);
 	gameData.pig.snd.sounds [0][gameData.pig.snd.nSoundFiles [0] + i].data = NULL;
 	}
 }

@@ -242,7 +242,7 @@ unsigned char *createdib(void)
 	unsigned char *p;
 	unsigned char *buffer;
 	
-	if (!(bmHdr = d_malloc(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD))))
+	if (!(bmHdr = D2_ALLOC(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD))))
 		return NULL;
 
 	memset(bmHdr, 0, sizeof(*bmHdr);
@@ -273,7 +273,7 @@ unsigned char *createdib(void)
 			MessageBox(g_hWnd, buf, NULL, MB_OK);
 	}
 	DeleteDC(hdc);
-	d_free(bmHdr);
+	D2_FREE(bmHdr);
 	return buffer;
 }
 

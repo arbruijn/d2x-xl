@@ -3034,7 +3034,7 @@ else {
 				int i, j, nObjects, nLevel, nSig;
 
 				nObjects = gameData.objs.nLastObject;
-				curObjs = (tObject *) d_malloc (sizeof (tObject) * (nObjects + 1));
+				curObjs = (tObject *) D2_ALLOC (sizeof (tObject) * (nObjects + 1));
 				if (!
 					curObjs) {
 					Warning (TXT_INTERPOLATE_BOTS, sizeof (tObject) * nObjects);
@@ -3044,12 +3044,12 @@ else {
 					memcpy (curObjs, gameData.objs.objects, (nObjects + 1) * sizeof (tObject));
 				nLevel = gameData.missions.nCurrentLevel;
 				if (NDReadFrameInfo () == -1) {
-					d_free (curObjs);
+					D2_FREE (curObjs);
 					NDStopPlayback ();
 					return;
 					}
 				if (nLevel != gameData.missions.nCurrentLevel) {
-					d_free (curObjs);
+					D2_FREE (curObjs);
 					if (NDReadFrameInfo () == -1)
 						NDStopPlayback ();
 					break;
@@ -3069,7 +3069,7 @@ else {
 							}
 						}
 					}
-				d_free (curObjs);
+				D2_FREE (curObjs);
 				d_recorded += gameData.demo.xRecordedTime;
 				base_interpolTime = gameData.demo.xPlaybackTotal - gameData.time.xFrame;
 				}
@@ -3420,14 +3420,14 @@ void NDStopPlayback ()
 {
 if (bRevertFormat > 0) {
 	int h = CFLength (ndInFile, 0) - CFTell (ndInFile);
-	char *p = (char *) d_malloc (h);
+	char *p = (char *) D2_ALLOC (h);
 	if (p) {
 		bRevertFormat = 0;
 		NDRead (p, h, 1);
 		//LogErr ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (ndOutFile));
 		NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
 		NDWrite (p + 3, h - 3, 1);
-		d_free (p);
+		D2_FREE (p);
 		}
 	CFClose (ndOutFile);
 	ndOutFile = NULL;
@@ -3471,11 +3471,11 @@ if (!ndOutFile) {
 	NDStopPlayback ();
 	return;
 	}
-buf = d_malloc (BUF_SIZE);
+buf = D2_ALLOC (BUF_SIZE);
 if (buf == NULL) {
 	tMenuItem m [1];
 
-	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't d_malloc output buffer";
+	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't D2_ALLOC output buffer";
 	ExecMenu (NULL, NULL, 1, m, NULL, NULL);
 	CFClose (ndOutFile);
 	NDStopPlayback ();

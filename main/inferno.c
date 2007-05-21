@@ -2181,7 +2181,7 @@ SetDataVersion (-1);
 
 void *GetMem (size_t size, char filler)
 {
-	void	*p = d_malloc (size);
+	void	*p = D2_ALLOC (size);
 
 if (p) {
 	memset (p, filler, size);
@@ -2347,7 +2347,7 @@ AllocDemoData ();
 
 // ----------------------------------------------------------------------------
 
-#define FREEMEM(_t,_p,_s) {d_free (_p); (_p) = (_t *) NULL; }
+#define FREEMEM(_t,_p,_s) {D2_FREE (_p); (_p) = (_t *) NULL; }
 
 void FreeSegmentData (void)
 {
@@ -2647,11 +2647,11 @@ if (FindArg ("-hoarddata")) {
 		ifile = fopen (sounds[i], "rb");
 		Assert (ifile != NULL);
 		size = ffilelength (ifile);
-		buf = d_malloc (size);
+		buf = D2_ALLOC (size);
 		fread (buf, 1, size, ifile);
 		fwrite (&size, sizeof (size), 1, ofile);
 		fwrite (buf, 1, size, ofile);
-		d_free (buf);
+		D2_FREE (buf);
 		fclose (ifile);
 		}
 	fclose (ofile);
@@ -2971,7 +2971,7 @@ InitArgs (argc, argv);
 GetAppFolders ();
 con_init ();  // Initialise the console
 #ifdef D2X_MEM_HANDLER
-mem_init ();
+MemInit ();
 #endif
 error_init (NULL, NULL);
 *szAutoHogFile =
