@@ -963,7 +963,7 @@ if (rad < 0)
 else {
 	size = thisObjP->size;
 	if ((thisObjP->nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->id).attackType)
-		size = (size * 3) / 4;
+		size = 3 * size / 4;
 	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
 	if ((thisObjP->nType == OBJ_PLAYER) &&
 		 ((otherObjP->nType == OBJ_PLAYER) ||
@@ -977,8 +977,12 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 	VmVecSub (&vn, p1, &thisObjP->position.vPos);
 	dist = VmVecMag (&vn);
 	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
-	if (dist > thisObjP->size + otherObjP->size)
+	if (dist > (size = thisObjP->size + otherObjP->size))
 		return 0;
+	if (dist < size / 4) {	// objects probably already stuck in each other
+		VmVecCopyScale (intP, &vn, F1_0 / 2);
+		return 1;
+		}
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
