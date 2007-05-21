@@ -979,7 +979,12 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
 	if (dist > (size = thisObjP->size + otherObjP->size))
 		return 0;
-	if (dist < size / 4) {	// objects probably already stuck in each other
+	if (((thisObjP->nType == OBJ_PLAYER) || (thisObjP->nType == OBJ_ROBOT)) && 
+		 ((otherObjP->nType == OBJ_PLAYER) || (otherObjP->nType == OBJ_ROBOT)))
+		size /= 2;
+	else
+		size /= 4;
+	if (dist < size) {	// objects probably already stuck in each other
 		VmVecCopyScale (intP, &vn, F1_0 / 2);
 		return 1;
 		}
