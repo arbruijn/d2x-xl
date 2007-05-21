@@ -380,7 +380,7 @@ if (gameStates.app.cheats.bMadBuddy) {
 else {
 	strcpy (gameData.escort.szName, gameData.escort.szRealName);
 	if (bVerbose)
-		HUDInitMessage (TXT_GB_CALM, gameData.escort.bMayTalk);
+		HUDInitMessage (TXT_GB_CALM, gameData.escort.szName);
 	}
 }
 
