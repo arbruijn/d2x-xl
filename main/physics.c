@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 //#define _DEBUG
 #define FLUID_PHYSICS	0
-#define UNSTICK_OBJS		0
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
