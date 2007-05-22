@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "interp.h"
 #include "network.h"
+#include "sphere.h"
 
 #define faceType_num(nfaces, face_num, tri_edge) ((nfaces==1)?0:(tri_edge*2 + face_num))
 
@@ -54,8 +55,7 @@ int CheckSphereToFace (vmsVector *pnt, fix rad, vmsVector *vertList, vmsVector *
 
 inline fix RegisterHit (vmsVector *vBestHit, vmsVector *vCurHit, vmsVector *vPos, fix dMax)
 {
-	vmsVector	v;
-   fix d = VmVecMag (VmVecSub (&v, vPos, vCurHit));
+   fix d = VmVecDist (vPos, vCurHit);
 
 if (dMax < d) {
 	dMax = d;
@@ -434,17 +434,8 @@ if (bCheckRad) {
 		a = b;
 		b = vertList + (i % nVerts);
 		d = VmLinePointDist (a, b, p0);
-		if (d < bCheckRad) {
-#if 0
-			vmsVector	h;
-			fix			m;
-
-			VmPointLineIntersection (&h, a, b, p0, NULL);
-			m = VmVecMag (VmVecDec (&h, p0));
-			VmLinePointDist (a, b, p0);
-#endif
+		if (d < bCheckRad)
 			return IT_POINT;
-			}
 		}
 	}
 #endif
@@ -897,7 +888,7 @@ if (nHits) {
 	pmhb1->tHit = pmhb2->tHit = gameStates.app.nSDLTicks;
 	}
 #endif
-return nHits;
+return nHits ? dMax ? dMax : 1 : 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -979,15 +970,17 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
 	if (dist > (size = thisObjP->size + otherObjP->size))
 		return 0;
+#	if 0
 	if (((thisObjP->nType == OBJ_PLAYER) || (thisObjP->nType == OBJ_ROBOT)) && 
 		 ((otherObjP->nType == OBJ_PLAYER) || (otherObjP->nType == OBJ_ROBOT)))
 		size /= 2;
 	else
 		size /= 4;
 	if (dist < size) {	// objects probably already stuck in each other
-		VmVecCopyScale (intP, &vn, F1_0 / 2);
+		VmVecScaleFrac (VmVecAdd (intP, &thisObjP->position.vPos, &otherObjP->position.vPos), 1, 2);
 		return 1;
 		}
+#	endif
 #endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {

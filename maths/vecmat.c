@@ -295,7 +295,7 @@ else {
 	QLONG q = mul64 (v0->p.x, v1->p.x);
 	q += mul64 (v0->p.y, v1->p.y);
 	q += mul64 (v0->p.z, v1->p.z);
-	return (fix) (q / 65536); //>> 16);
+	return (fix) (q >> 16); /// 65536); //>> 16);
 	}
 }
 
@@ -1523,10 +1523,12 @@ return !(VmBehindPlane (n, p1, p2, &i) ||
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
 
-int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos, int bClampToFarthest)
+int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos, 
+									  int bClampToFarthest)
 {
 	vmsVector	d31, d21, h, v, d [2];
 	double		m, u;
+	int			bClamped = 0;
 
 VmVecSub (&d21, p2, p1);
 if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z)) {
@@ -1541,23 +1543,25 @@ h.p.x = p1->p.x + (fix) (u * d21.p.x);
 h.p.y = p1->p.y + (fix) (u * d21.p.y);
 h.p.z = p1->p.z + (fix) (u * d21.p.z);
 // limit the intersection to [p1,p2]
-VmVecSub (&v, p1, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (fabs (m) < fabs (u)) {
-	if (hitP)
-		*hitP = bClampToFarthest ? *p1 : *p2;
-	return 1;	//clamped
-	}
-VmVecSub (&v, p2, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if ((fabs (m) < fabs (u)) && (vPos || !hitP)) {
-	if (hitP)
-		*hitP = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2)) == bClampToFarthest) ? *p2 : *p1;
-	return 1;	//clamped
-	}
-if (hitP)
-	*hitP = h;
-return 0;
+if (hitP) {
+	if ((u < 0) || (u > 1)) {
+		VmVecSub (&v, p1, &h);
+		u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+		VmVecSub (&v, p2, &h);
+		m = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+		if (vPos)
+			bClamped = (VmVecMag (VmVecSub (d, vPos, p1)) < VmVecMag (VmVecSub (d, vPos, p2))) ? 1 : 2;
+		else
+			bClamped = (fabs (m) < fabs (u)) ? 2 : 1;
+		if (bClampToFarthest)
+			*hitP = (bClamped == 1) ? *p2 : *p1;
+		else
+			*hitP = (bClamped == 1) ? *p1 : *p2;
+		}
+	else 
+		*hitP = h;
+	}	
+return bClamped;
 }
 
 // ------------------------------------------------------------------------
@@ -1581,32 +1585,17 @@ h.p.x = p1->p.x + (float) (u * d21.p.x);
 h.p.y = p1->p.y + (float) (u * d21.p.y);
 h.p.z = p1->p.z + (float) (u * d21.p.z);
 // limit the intersection to [p1,p2]
-VmVecSubf (&v, p1, &h);
-u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-if (fabs (m) < fabs (u)) {
-	bClamped = 2;
-	if (bClamp && hitP)
-		*hitP = *p1;
-	}
-else {
-	VmVecSubf (&v, p2, &h);
-	u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
-	if (fabs (m) < fabs (u)) {
-		bClamped = 1;
-		if (bClamp && hitP)
-			*hitP = *p2;
-		}
-	}
 if (hitP) {
-	if (bClamp && bClamped && vPos) {	//chose the end point that is further away from vPos
-		if (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) {
-			bClamped = 2;
-			*hitP = *p2;
-			}
-		else {
-			bClamped = 1;
-			*hitP = *p1;
-			}
+	if (bClamp && ((u < 0) || (u > 1))) {
+		VmVecSubf (&v, p1, &h);
+		u = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+		VmVecSubf (&v, p2, &h);
+		m = v.p.x * v.p.x + v.p.y * v.p.y + v.p.z * v.p.z;
+		if (vPos)
+			bClamped = (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) ? 2 : 1;
+		else
+			bClamped = (fabs (m) < fabs (u)) ? 1 : 2;
+		*hitP = (bClamped == 1) ? *p1 : * p2;
 		}
 	else
 		*hitP = h;

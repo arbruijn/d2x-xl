@@ -442,6 +442,9 @@ nMallocSize [id] = size;
 szVarname [id] = var;
 szFilename [id] = filename;
 nLineNum [id] = line;
+if (nMemId == 20199)
+	nMemId = nMemId;
+nId [id] = nMemId++;
 #if DBG_MALLOC
 if (id == CHECKID1)
 	id = CHECKID1;

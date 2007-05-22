@@ -372,27 +372,25 @@ void GrBitmap (int x, int y, grsBitmap *bm)
 	int dy1=y, dy2=y+bm->bm_props.h-1;
 	int sx=0, sy=0;
 
-	if ((dx1 >= scr->bm_props.w) || (dx2 < 0)) 
-		return;
-	if ((dy1 >= scr->bm_props.h) || (dy2 < 0)) 
-		return;
-	if (dx1 < 0) { 
-		sx = -dx1; 
-		dx1 = 0; 
-		}
-	if (dy1 < 0) { 
-		sy = -dy1; 
-		dy1 = 0; 
-		}
-	if (dx2 >= scr->bm_props.w)
-		dx2 = scr->bm_props.w-1;
-	if (dy2 >= scr->bm_props.h)
-		dy2 = scr->bm_props.h-1;
+if ((dx1 >= scr->bm_props.w) || (dx2 < 0)) 
+	return;
+if ((dy1 >= scr->bm_props.h) || (dy2 < 0)) 
+	return;
+if (dx1 < 0) { 
+	sx = -dx1; 
+	dx1 = 0; 
+	}
+if (dy1 < 0) { 
+	sy = -dy1; 
+	dy1 = 0; 
+	}
+if (dx2 >= scr->bm_props.w)
+	dx2 = scr->bm_props.w-1;
+if (dy2 >= scr->bm_props.h)
+	dy2 = scr->bm_props.h-1;
 
-	// Draw bitmap bm[x,y] into (dx1,dy1)-(dx2,dy2)
-
-	GrBmUBitBlt(dx2-dx1+1,dy2-dy1+1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap, 1);
-
+// Draw bitmap bm[x,y] into (dx1,dy1)-(dx2,dy2)
+GrBmUBitBlt (dx2 - dx1 + 1, dy2 - dy1 + 1, dx1, dy1, sx, sy, bm, &grdCurCanv->cv_bitmap, 0);
 }
 
 //-NOT-used // From linear to SVGA

@@ -155,15 +155,8 @@ void state_callback (int nitems, tMenuItem *items, int *last_key, int citem)
 {
 	int x, y, i = citem - NM_IMG_SPACE;
 
-//if ((citem == 1) && (items [1].value != bShowTime))
-//	*last_key = -2;
 if (citem < 2)
 	return;
-/*
-for (citem = -1; i; i--)
-	if (items [i].nType == NM_TYPE_MENU)
-		citem++;
-*/
 if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, szTime [i])) {
 	items [NM_IMG_SPACE - 1].text = szTime [i];
 	items [NM_IMG_SPACE - 1].rebuild = 1;
@@ -171,39 +164,18 @@ if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, szT
 if (!sc_bmp [i])
 	return;
 if (gameStates.menus.bHires) {
-#if 0
-	WINDOS (
-		dd_grs_canvas *save_canv = dd_grd_curcanv,
-		grs_canvas *save_canv = grdCurCanv
-		);
-	grs_canvas *temp_canv = GrCreateCanvas (THUMBNAIL_W*2, (THUMBNAIL_H*24/10));
-	grs_point vertbuf [3] = {{0,0}, {0,0}, {i2f (THUMBNAIL_W*2),i2f (THUMBNAIL_H*24/10)} };
-	GrSetCurrentCanvas (temp_canv);
-	scale_bitmap (sc_bmp [citem], vertbuf, 0);
-	WINDOS (
-		DDGrSetCurrentCanvas (save_canv),
-		GrSetCurrentCanvas (save_canv)
-		);
-#endif
-	WIN (DDGRLOCK (dd_grd_curcanv));
-	x = (grdCurCanv->cv_bitmap.bm_props.w - sc_bmp [i]->bm_props.w/*THUMBNAIL_W*2*/)/2;
+	x = (grdCurCanv->cv_bitmap.bm_props.w - sc_bmp [i]->bm_props.w) / 2;
 	y = items [0].y - 16;
-//	GrBitmap (x, y, &temp_canv->cv_bitmap);
 	if (gameStates.app.bGameRunning)
 		GrPaletteStepLoad (NULL);
 	GrBitmap (x, y, sc_bmp [i]);
-	//if (gameStates.app.bGameRunning)
-	//	GrPaletteStepLoad (gamePalette);
 	if (gameOpts->menus.nStyle) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (x - 1, y - 1, 
-					x + sc_bmp [i]->bm_props.w/*THUMBNAIL_W*2*/ + 1, y + sc_bmp [i]->bm_props.h/*THUMBNAIL_H*24/10*/ + 1);
+		GrUBox (x - 1, y - 1, x + sc_bmp [i]->bm_props.w + 1, y + sc_bmp [i]->bm_props.h + 1);
 		}
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-//	GrFreeCanvas (temp_canv);
 	}
 else {
-	GrBitmap ((grdCurCanv->cv_bitmap.bm_props.w-THUMBNAIL_W)/2,items [0].y-5, sc_bmp [citem-1]);
+	GrBitmap ((grdCurCanv->cv_bitmap.bm_props.w-THUMBNAIL_W) / 2,items [0].y - 5, sc_bmp [citem - 1]);
 	}
 }
 

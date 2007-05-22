@@ -835,7 +835,8 @@ int CollideWeaponAndWall (
 	int bBlewUp;
 	int wallType;
 	int playernum;
-	int	robot_escort;
+	int robot_escort;
+	fix nStrength = WI_strength (weaponP->id, gameStates.app.nDifficultyLevel);
 
 if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
@@ -928,9 +929,9 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) ||
 		ObjectCreateBadassExplosion (weaponP, hitseg, vHitPt, 
 			wInfoP->impact_size + VOLATILE_WALL_IMPACT_SIZE, 
 			tVideoClip, 
-			wInfoP->strength [gameStates.app.nDifficultyLevel]/4+VOLATILE_WALL_EXPL_STRENGTH, 	//	diminished by mk on 12/08/94, i was doing 70 damage hitting lava on lvl 1.
+			nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, 	//	diminished by mk on 12/08/94, i was doing 70 damage hitting lava on lvl 1.
 			wInfoP->damage_radius+VOLATILE_WALL_DAMAGE_RADIUS, 
-			wInfoP->strength [gameStates.app.nDifficultyLevel]/2+VOLATILE_WALL_DAMAGE_FORCE, 
+			nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, 
 			weaponP->cType.laserInfo.nParentObj);
 	KillObject (weaponP);		//make flares die in lava
 	}
@@ -946,9 +947,9 @@ else if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_WATER) ||
 			ObjectCreateBadassExplosion (weaponP, hitseg, vHitPt, 
 				wInfoP->impact_size/2, 
 				wInfoP->robot_hit_vclip, 
-				wInfoP->strength [gameStates.app.nDifficultyLevel]/4, 
+				nStrength / 4, 
 				wInfoP->damage_radius, 
-				wInfoP->strength [gameStates.app.nDifficultyLevel]/2, 
+				nStrength / 2, 
 				weaponP->cType.laserInfo.nParentObj);
 			}
 		else
@@ -1654,6 +1655,7 @@ int CollideRobotAndWeapon (tObject *robotP, tObject *weaponP, vmsVector *vHitPt)
 { 
 	int	bDamage = 1;
 	int	bInvulBoss = 0;
+	fix	nStrength = WI_strength (weaponP->id, gameStates.app.nDifficultyLevel);
 	tRobotInfo *botInfoP = &ROBOTINFO (robotP->id);
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->id;
 
@@ -1710,8 +1712,9 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 			ObjectCreateBadassExplosion (weaponP, weaponP->nSegment, vHitPt, 
 							wInfoP->impact_size, 
 							wInfoP->robot_hit_vclip, 
-							wInfoP->strength [gameStates.app.nDifficultyLevel], 
-							wInfoP->damage_radius, wInfoP->strength [gameStates.app.nDifficultyLevel], 
+							nStrength, 
+							wInfoP->damage_radius, 
+							nStrength,
 							weaponP->cType.laserInfo.nParentObj);
 		
 			}

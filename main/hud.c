@@ -309,11 +309,19 @@ strcat (con_message, pszMsg);
 con_printf (CON_NORMAL, "%s\n", con_message);
 #endif
 // Added by Leighton
-if ((gameData.app.nGameMode & GM_MULTI) && gameOpts->multi.bNoRedundancy)
-	if (!strnicmp ("You already", pszMsg, 11))
+if (IsMultiGame) {
+	if (gameOpts->multi.bNoRedundancy && !strnicmp ("You already", pszMsg, 11))
 		return 0;
-if ((gameData.app.nGameMode & GM_MULTI) && FindArg ("-PlayerMessages") && !gameData.hud.bPlayerMessage)
-	return 0;
+	if (!gameData.hud.bPlayerMessage && FindArg ("-PlayerMessages"))
+		return 0;
+	}
+if (pMsgs->nMessages > 1) {
+	pszLastMsg = pMsgs->szMsgs [((pMsgs->nLast - 1) ? pMsgs->nLast : HUD_MAX_MSGS) - 2];
+	if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
+		pMsgs->xTimer = F1_0 * 3;		// 1 second per 5 characters
+		return 0;	// ignore since it is the same as the last one
+		}
+	}
 if (pMsgs->nMessages > 0)
 	pszLastMsg = pMsgs->szMsgs [(pMsgs->nLast ? pMsgs->nLast : HUD_MAX_MSGS) - 1];
 temp = (pMsgs->nLast + 1) % HUD_MAX_MSGS;
@@ -322,7 +330,7 @@ if (temp == pMsgs->nFirst)	{ // If too many messages, remove oldest pszMsg to ma
 	pMsgs->nMessages--;
 	}
 if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
-	pMsgs->xTimer = F1_0*3;		// 1 second per 5 characters
+	pMsgs->xTimer = F1_0 * 3;		// 1 second per 5 characters
 	return 0;	// ignore since it is the same as the last one
 	}
 pMsgs->nLast = temp;

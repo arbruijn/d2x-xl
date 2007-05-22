@@ -518,7 +518,7 @@ int GetCenteredX (char *s);
 void RotateBitmap(grsBitmap *bp, grs_point *vertbuf, int lightValue);
 
 // From scale.c
-void scale_bitmap(grsBitmap *bp, grs_point *vertbuf, int orientation );
+void ScaleBitmap(grsBitmap *bp, grs_point *vertbuf, int orientation );
 
 //===========================================================================
 // Global variables

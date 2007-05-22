@@ -65,7 +65,7 @@ void scale_row_c( ubyte * sbits, ubyte * dbits, int width, fix u, fix du )
 #define FIND_SCALED_NUM(x,x0,x1,y0,y1) (FixMulDiv((x)-(x0),(y1)-(y0),(x1)-(x0))+(y0))
 
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
-void scale_bitmap(grsBitmap *bp, grs_point *vertbuf ,int orientation)
+void ScaleBitmap(grsBitmap *bp, grs_point *vertbuf ,int orientation)
 {
 	grsBitmap * dbp = &grdCurCanv->cv_bitmap;
 	fix x0, y0, x1, y1;

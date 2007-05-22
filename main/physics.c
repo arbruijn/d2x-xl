@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 //#define _DEBUG
 #define FLUID_PHYSICS	0
-#define UNSTICK_OBJS		1
+#define UNSTICK_OBJS		0
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -65,7 +65,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 
 #define MAX_OBJECT_VEL i2f (100)
 
-#define BUMP_HACK	1		//if defined, bump tPlayer when he gets stuck
+#define BUMP_HACK	0	//if defined, bump tPlayer when he gets stuck
 
 int bFloorLeveling = 0;
 
@@ -427,7 +427,7 @@ void DoPhysicsSim (tObject *objP)
 	short					nIgnoreObjs;
 	int					iSeg, i;
 	int					bRetry;
-	int					fviResult;
+	int					fviResult = 0;
 	vmsVector			vFrame;				//movement in this frame
 	vmsVector			vNewPos, iPos;		//position after this frame
 	int					nTries = 0;
@@ -448,7 +448,7 @@ void DoPhysicsSim (tObject *objP)
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 	int					bDoSpeedBoost = sbd.bBoosted; // && (objP == gameData.objs.console);
-
+	static int qqq = 0;
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
 #ifdef _DEBUG
@@ -459,23 +459,22 @@ if (bDontMoveAIObjects)
 CATCH_OBJ (objP, objP->mType.physInfo.velocity.p.y == 0);
 DoPhysicsSimRot (objP);
 pi = &objP->mType.physInfo;
-#if 1
+nPhysSegs = 0;
+nIgnoreObjs = 0;
+xSimTime = gameData.physics.xTime;
+bSimpleFVI = (objP->nType != OBJ_PLAYER);
+vStartPos = objP->position.vPos;
 if (!(pi->velocity.p.x || pi->velocity.p.y || pi->velocity.p.z)) {
-#if UNSTICK_OBJS
+#	if UNSTICK_OBJS
 	UnstickObject (objP);
-#endif
+#	endif
 	if (objP == gameData.objs.console)
 		gameData.objs.speedBoost [nObject].bBoosted = sbd.bBoosted = 0;
 	if (!(pi->thrust.p.x || pi->thrust.p.y || pi->thrust.p.z))
 		return;
 	}
-#endif
 
-nPhysSegs = 0;
-bSimpleFVI = (objP->nType != OBJ_PLAYER);
-xSimTime = gameData.physics.xTime;
-vStartPos = objP->position.vPos;
-nIgnoreObjs = 0;
+
 Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
 //if uses thrust, cannot have zero xDrag
 Assert (!(objP->mType.physInfo.flags & PF_USES_THRUST) || objP->mType.physInfo.drag);
@@ -528,6 +527,9 @@ if ((xDrag = objP->mType.physInfo.drag)) {
 		VmVecScale (&objP->mType.physInfo.velocity, xTotalDrag);
 		}
 	}
+
+//moveIt:
+
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_WATER)
 		xTimeScale = 75;
@@ -600,6 +602,8 @@ retryMove:
 	memset (&hi, 0, sizeof (hi));
 	fviResult = FindVectorIntersection (&fq, &hi);
 	UpdateStats (objP, fviResult);
+	vSavePos = objP->position.vPos;			//save the tObject's position
+	nSaveSeg = objP->nSegment;
 #if 0//def _DEBUG
 	if (objP->nType == OBJ_PLAYER)
 		HUDMessage (0, "FVI: %d (%1.2f)", fviResult, f2fl (VmVecMag (&objP->mType.physInfo.velocity)));
@@ -615,11 +619,15 @@ retryMove:
 		memset (&hi, 0, sizeof (hi));
 		fviResult = FindVectorIntersection (&fq, &hi);
 		fq.startSeg = FindSegByPoint (&vNewPos, objP->nSegment);
-		if ((fq.startSeg < 0) || (fq.startSeg == objP->nSegment))
-			return;
+		if ((fq.startSeg < 0) || (fq.startSeg == objP->nSegment)) {
+			objP->position.vPos = vSavePos;
+			break;
+			}
 		fviResult = FindVectorIntersection (&fq, &hi);
-		if (fviResult == HIT_BAD_P0)
-			return;
+		if (fviResult == HIT_BAD_P0) {
+			objP->position.vPos = vSavePos;
+			break;
+			}
 #endif
 		}
 #ifdef _DEBUG
@@ -667,8 +675,6 @@ retryMove:
 		break;
 		}
 	Assert ((fviResult != HIT_WALL) || ((nWallHitSeg > -1) && (nWallHitSeg <= gameData.segs.nLastSegment)));
-	vSavePos = objP->position.vPos;			//save the tObject's position
-	nSaveSeg = objP->nSegment;
 	// update tObject's position and tSegment number
 	objP->position.vPos = iPos;
 	if (iSeg != objP->nSegment)
@@ -829,13 +835,16 @@ retryMove:
 		size1 = objP->size;
 		//	Calculcate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		VmVecSub (&vHitPos, ppos1, ppos0);
-		VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
+		if (0 && EGI_FLAG (nHitboxes, 0, 0, 0)) 
+			vHitPos = hi.hit.vPoint;
+		else {
+			VmVecSub (&vHitPos, ppos1, ppos0);
+			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
+			}
 		vOldVel = objP->mType.physInfo.velocity;
 		CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &vHitPos);
 		if (sbd.bBoosted && (objP == gameData.objs.console))
 			objP->mType.physInfo.velocity = vOldVel;
-
 		// Let object continue its movement
 		if (!(objP->flags & OF_SHOULD_BE_DEAD)) {
 			if ((objP->mType.physInfo.flags & PF_PERSISTENT) || 
@@ -883,11 +892,14 @@ if (objP->controlType == CT_AI) {
 	// If the ship has thrust, but the velocity is zero or the current position equals the start position
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to 
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
-	if (!(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
+	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
+		 !(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
+		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);
 
 		VmVecSub (&vMoved, &objP->position.vPos, &vStartPos);
-		VmVecScale (&vMoved, FixMulDiv (FixDiv (f1_0, gameData.physics.xTime), 100, xTimeScale));
+		s = VmVecMag (&vMoved);
+		VmVecScale (&vMoved, FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100));
 #if 1
 		if (!bDoSpeedBoost)
 			objP->mType.physInfo.velocity = vMoved;
@@ -903,7 +915,7 @@ if (objP->controlType == CT_AI) {
 			//bump tPlayer a little towards vCenter of tSegment to unstick
 			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 			//HUDMessage (0, "BUMP! %d %d", d1, d2);
-			//don't bump tPlayer toward vCenter of reactor tSegment
+			//don't bump tPlayer towards center of reactor tSegment
 			VmVecNormalizedDirQuick (&vBump, &vCenter, &objP->position.vPos);
 			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
 				VmVecNegate (&vBump);
@@ -931,7 +943,7 @@ if (objP->controlType == CT_AI) {
 
 				//bump tObject back
 				sideP = gameData.segs.segments [nOrigSegment].sides + nSide;
-				if (nOrigSegment==-1)
+				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
 				CreateAbsVertexLists (&nFaces, vertex_list, nOrigSegment, nSide);
 				//let'sideP pretend this tWall is not triangulated
@@ -949,21 +961,21 @@ if (objP->controlType == CT_AI) {
 			}
 		}
 
-	//if end point not in tSegment, move tObject to last pos, or tSegment center
-	if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {
-		if (FindObjectSeg (objP) == -1) {
-			int n;
+//if end point not in tSegment, move tObject to last pos, or tSegment center
+if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {
+	if (FindObjectSeg (objP) == -1) {
+		int n;
 
-			if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPoint (&objP->vLastPos, objP->nSegment)) != -1) {
-				objP->position.vPos = objP->vLastPos;
-				RelinkObject (nObject, n);
-				}
-			else {
-				COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
-				objP->position.vPos.p.x += nObject;
-				}
-			if (objP->nType == OBJ_WEAPON)
-				KillObject (objP);
+		if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPoint (&objP->vLastPos, objP->nSegment)) != -1) {
+			objP->position.vPos = objP->vLastPos;
+			RelinkObject (nObject, n);
+			}
+		else {
+			COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
+			objP->position.vPos.p.x += nObject;
+			}
+		if (objP->nType == OBJ_WEAPON)
+			KillObject (objP);
 		}
 	}
 CATCH_OBJ (objP, objP->mType.physInfo.velocity.p.y == 0);
