@@ -1664,6 +1664,8 @@ char *defaultGameTexts [][2] = {
 	{"verzoegere...", "slowing down..."},
 	{"Zeitlupen-Beschleunigung: x%1.1f", "Slow ~Motion speedup: x%1.1f"},
 	{"Dreifach-F~Usion zulassen", "allow triple f~Usion"},
+	{"Ph~Ysik-Einstellungen...", "ph~Ysics options..."},
+	{"Physik-Einstellungen", "Physics Options"},
 #if 0
 	{"", ""},
 #endif
@@ -2179,6 +2181,7 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die maximale Zeitlupen-Beschleunigung eingestellt werden.", "Adjust the maximal slow motion speedup here."},
 	{"Wenn angekreuzt, kann der Spieler nach Aufnahme einer zweiten Fusions-\nkanone drei statt zwei Fusionsschuesse auf einmal abfeuern.", 
 	 "If checked, the player can fire three instead of two fusion blobs after\nhaving picked up a second Fusion Gun."},
+	{"Hier koennen diverse Einstellungen der Spielphysik geaendert werden.", "Here you can adjust various settings of the game's physics."},
 #if 0
 	{"", ""},
 #endif

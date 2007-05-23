@@ -755,7 +755,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].grWallTransparency", "19"},
 	{"extraGameInfo[0].nFusionPowerMod", "2"},
 	{"extraGameInfo[0].nLightRange", "0"},
-	{"extraGameInfo[0].nMaxSmokeGrenades", "0"},
+	{"extraGameInfo[0].nMaxSmokeGrenades", "1"},
 	{"extraGameInfo[0].nMslTurnSpeed", "2"},
 	{"extraGameInfo[0].nRadar", "1"},
 	{"extraGameInfo[0].nSpawnDelay", "0"},

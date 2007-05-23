@@ -1705,12 +1705,11 @@ void LoadGameTexts(void);
 #define TXT_SLOWING_DOWN			GT(912)
 #define TXT_SLOWMOTION_SPEEDUP	GT(913)
 #define TXT_TRIPLE_FUSION			GT(914)
+#define TXT_PHYSICS_MENUCALL		GT(915)
+#define TXT_PHYSICS_MENUTITLE		GT(916)
 
 #if 0
 
-#define TXT_				GT(914)
-#define TXT_				GT(915)
-#define TXT_				GT(916)
 #define TXT_				GT(917)
 #define TXT_				GT(918)
 #define TXT_				GT(919)
@@ -2187,10 +2186,10 @@ void LoadGameTexts(void);
 #define HTX_AUTOMAP_SKYBOX			HT(272)				
 #define HTX_SLOWMOTION_SPEEDUP	HT(273)				
 #define HTX_GPLAY_TRIFUSION		HT(274)				
+#define HTX_OPTIONS_PHYSICS		HT(275)				
 
 #if 0
 				
-#define HTX_					HT(275)				
 #define HTX_					HT(276)				
 #define HTX_					HT(277)				
 #define HTX_					HT(278)				
