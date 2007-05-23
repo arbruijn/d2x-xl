@@ -3411,7 +3411,7 @@ do {
 		nSlowmoSpeedupOpt = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (0, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
+		ADD_CHECK (opt, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
 		optAutoLevel = opt++;
 		ADD_CHECK (opt, TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
 		optWiggle = opt++;
