@@ -2211,7 +2211,7 @@ do {
 		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_R, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
 #if DBG_SHADOWS
-		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
+		ADD_CHECK (opt, TXT_gameOpts->render.shadows.bFast, gameOpts->render.shadows.bFast, KEY_F, HTX_gameOpts->render.shadows.bFast);
 		optFastShadows = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;

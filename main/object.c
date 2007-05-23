@@ -605,7 +605,7 @@ void DrawPolygonObject (tObject *objP)
 	//tRgbColorf color;
 
 #if SHADOWS
-if (gameOpts->render.shadows.bFast && 
+if (FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
 	 (gameStates.render.nShadowPass == 3))
 	return;
@@ -944,7 +944,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS &&
-	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
@@ -1054,7 +1054,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameOpts->demo.bOldFormat)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
@@ -1261,7 +1261,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 #if 0
@@ -1412,7 +1412,7 @@ if (gameStates.app.bNostalgia)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_FLAG)) {
@@ -1567,7 +1567,7 @@ if (gameStates.app.bNostalgia)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 #if 1//ndef _DEBUG
@@ -1745,7 +1745,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
@@ -1831,7 +1831,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
@@ -1919,7 +1919,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (EGI_FLAG (bTracers, 0, 1, 0) &&
@@ -1984,7 +1984,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
-//	 (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
 if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id] &&

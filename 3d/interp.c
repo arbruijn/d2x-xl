@@ -2186,7 +2186,7 @@ OglActiveTexture (GL_TEXTURE0_ARB);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
-if (gameOpts->render.shadows.bFast) {
+if (FAST_SHADOWS) {
 	for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
 		gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 		if (!gameData.render.shadows.pLight->bState)

@@ -2260,6 +2260,12 @@ extern fix nDebrisLife [];
 
 #define MAXFPS		((gameStates.render.automap.bDisplay && !gameStates.render.automap.bRadar) ? 40 : gameOpts->render.nMaxFPS)
 
+#ifdef RELEASE
+#	define FAST_SHADOWS	1
+#else
+#	define FAST_SHADOWS	gameOpts->render.shadows.bFast
+#endif
+
 void D2SetCaption (void);
 void PrintVersionInfo (void);
 

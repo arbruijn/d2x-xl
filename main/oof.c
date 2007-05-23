@@ -2485,7 +2485,7 @@ for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) 
 	memcpy (&vrLightPos, gameData.render.shadows.pLight->pos + 1, sizeof (tOOF_vector));
 	if (!OOF_RenderModel (objP, po, fLight))
 		return 0;
-	if (gameOpts->render.shadows.bFast)
+	if (FAST_SHADOWS)
 		RenderShadowQuad (0);
 	}
 return 1;
@@ -2498,7 +2498,7 @@ int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked)
 	float	dt;
 
 #if SHADOWS
-if (gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
+if (FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 	return 1;
 #endif
 if (po->bCloaked != bCloaked) {

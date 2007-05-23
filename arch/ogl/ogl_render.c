@@ -676,7 +676,7 @@ if (!gameStates.render.nRenderPass)
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 1, 0) 
 	 && (gameStates.render.nShadowPass < 3)
-	 && !gameOpts->render.shadows.bFast
+	 && !FAST_SHADOWS
 #	if DBG_SHADOWS
 	 && !bShadowTest
 #	endif
@@ -1193,12 +1193,12 @@ gameData.threads.vertColor.data.fMatShininess = 0.0f;
 gameData.threads.vertColor.data.bMatSpecular = 0;
 gameData.threads.vertColor.data.bMatEmissive = 0; 
 gameData.threads.vertColor.data.nMatLight = -1;
-gameData.threads.vertColor.data.bExclusive = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3),
-gameData.threads.vertColor.data.bNoShadow = !gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 4),
+gameData.threads.vertColor.data.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
+gameData.threads.vertColor.data.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4),
 gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
-if (!gameOpts->render.shadows.bFast && (gameStates.render.nShadowPass == 3))
+if (!FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 	; //fScale = 1.0f;
-else if (gameOpts->render.shadows.bFast || (gameStates.render.nShadowPass != 1))
+else if (FAST_SHADOWS || (gameStates.render.nShadowPass != 1))
 	; //fScale = 1.0f;
 else
 	fScale *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
@@ -1352,7 +1352,7 @@ if (!bmBot)
 	return 1;
 //if (gameStates.render.nShadowPass != 3)
 	glDepthFunc (GL_LEQUAL);
-if (!gameOpts->render.shadows.bFast) {
+if (!FAST_SHADOWS) {
 	if (gameStates.render.nShadowPass == 1)
 		bLight = !bDynLight;
 	else if (gameStates.render.nShadowPass == 3) {
@@ -2020,7 +2020,7 @@ if (gameStates.render.nShadowPass) {
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);		
 			glCullFace (GL_BACK);
-			if (!gameOpts->render.shadows.bFast)
+			if (!FAST_SHADOWS)
 				glColorMask (0,0,0,0);
 			}
 		}
@@ -2100,7 +2100,7 @@ if (gameStates.render.nShadowPass) {
 #endif
 			if (gameStates.render.nShadowBlurPass == 2)
 				glDisable (GL_STENCIL_TEST);
-         else if (gameOpts->render.shadows.bFast) {
+         else if (FAST_SHADOWS) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
 				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
 				}

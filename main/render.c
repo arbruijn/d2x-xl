@@ -2125,7 +2125,7 @@ void RenderSegment (short nSegment, int nWindow)
 
 #if SHADOWS
 if (EGI_FLAG (bShadows, 0, 1, 0) && 
-	 gameOpts->render.shadows.bFast && 
+	 FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
 	 (gameStates.render.nShadowPass >= 2))
 	return;
@@ -3581,7 +3581,7 @@ if (SHOW_SHADOWS &&
 #ifdef RELEASE
 		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 #else
-		if (gameOpts->render.shadows.bFast)
+		if (FAST_SHADOWS)
 			RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 		else
 			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
@@ -4414,7 +4414,7 @@ gameStates.render.nType = 1;	//render transparency back to front
 gameData.render.mine.nVisited++;
 for (nn = gameData.render.mine.nRenderSegs; nn; )
 	RenderMineSegment (--nn);
-if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
+if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
 	glDepthFunc (GL_LEQUAL);
 	gameStates.render.nType = 2;
 	gameData.render.mine.nVisited++;
