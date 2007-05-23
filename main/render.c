@@ -1323,7 +1323,8 @@ for (j = 0; j < 4; j++) {
 		i = j;
 		}
 	}
-*w = dMax;
+if (w)
+	*w = dMax;
 if (i > 2)
 	i--;
 j = i + 1;
@@ -1337,7 +1338,8 @@ d2 = VmLinePointDist (gameData.segs.vertices + pSideVerts [i],
 							 gameData.segs.vertices + pSideVerts [(j + 2) % 4]);
 d = VmVecDist (gameData.segs.vertices + pSideVerts [i], gameData.segs.vertices + pSideVerts [(j + 2) % 4]);
 d = VmVecDist (gameData.segs.vertices + pSideVerts [j], gameData.segs.vertices + pSideVerts [(j + 2) % 4]);
-*h = d1 > d2 ? d1 : d2;
+if (h)
+	*h = d1 > d2 ? d1 : d2;
 return i;
 }
 
@@ -1485,6 +1487,13 @@ n.p.z = 0;
 #endif
 VmVecNormalizef (&n, &n);
 // compute rotation matrix to align transformed face
+//n.p.x = 1 - n.p.y;
+#if 0
+i = CalcFaceDimensions (nSegment, nSide, NULL, NULL, sideVerts);
+m = VmVecDistf (vertList + i, vertList + i + 1);
+n.p.x = (vertList [i].p.y - vertList [i + 1].p.y) / m;
+n.p.y = (vertList [i].p.x - vertList [i + 1].p.x) / m;
+#endif
 r.rVec.p.x =
 r.uVec.p.y = n.p.y;
 r.uVec.p.x = n.p.x;
@@ -3569,7 +3578,9 @@ if (SHOW_SHADOWS &&
 		OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
-#if 1
+#ifdef RELEASE
+		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
+#else
 		if (gameOpts->render.shadows.bFast)
 			RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 		else
@@ -4411,7 +4422,8 @@ if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (game
 		RenderMineSegment (--nn);
 	glDepthFunc (GL_LESS);
 	if (!gameStates.app.bNostalgia &&
-		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && gameOpts->render.bCoronas && LoadCorona ()) {
+		 (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bCoronas) && 
+		 gameOpts->render.bCoronas && LoadCorona ()) {
 		gameStates.render.nType = 3;
 		gameData.render.mine.nVisited++;
 		glEnable (GL_TEXTURE_2D);
@@ -4423,7 +4435,6 @@ if (gameOpts->render.shadows.bFast ? (gameStates.render.nShadowPass < 2) : (game
 			RenderMineSegment (--nn);
 		glDepthMask (1);
 		glDepthFunc (GL_LESS);
-		//glDisable (GL_BLEND);
 		glDisable (GL_TEXTURE_2D);
 		}
 	glDepthFunc (GL_LESS);

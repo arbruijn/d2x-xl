@@ -1808,8 +1808,8 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 				glVertex3fv ((GLfloat *) (quad + j));
 				}
 			glEnd ();
-			G3DoneInstance ();
 			}
+		G3DoneInstance ();
 		glDepthFunc (GL_LESS);
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
@@ -2146,12 +2146,15 @@ return 1;
 void DrawDebrisCorona (tObject *objP)
 {
 	static	tRgbColorf	debrisGlow = {0.66f, 0, 0};
+	static	tRgbColorf	markerGlow = {0, 0.66f, 0};
 	static	time_t t0 = 0;
 
+if (objP->nType == OBJ_MARKER)
+	RenderObjectCorona (objP, &markerGlow, 0.75f, 0, 3, 1, 1);
 #ifdef _DEBUG
-if (objP->nType == OBJ_DEBRIS) {
+else if (objP->nType == OBJ_DEBRIS) {
 #else
-if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
+else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 #endif
 	float	h = (float) nDebrisLife [gameOpts->render.nDebrisLife] - f2fl (objP->lifeleft);
 	if (h < 0)
@@ -2342,7 +2345,8 @@ switch (objP->renderType) {
 			if (objP->nType == OBJ_WEAPON) {
 				if (!DoObjectSmoke (objP))
 					DrawWeaponVClip (objP); 
-				RenderLightTrail (objP);
+				if ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID) && (objP->id != SMALLMINE_ID)) 
+					RenderLightTrail (objP);
 				}
 			else
 				DrawWeaponVClip (objP); 

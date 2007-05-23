@@ -903,7 +903,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.nLightMapRange", "5"},
 	{"gameOptions[0].render.powerups.b3D", "1"},
 	{"gameOptions[0].render.powerups.nSpin", "1"},
-	{"gameOptions[0].render.shadows.bFast", "0"},
+	{"gameOptions[0].render.shadows.bFast", "1"},
 	{"gameOptions[0].render.shadows.bMissiles", "1"},
 	{"gameOptions[0].render.shadows.bPlayers", "1"},
 	{"gameOptions[0].render.shadows.bReactors", "0"},
