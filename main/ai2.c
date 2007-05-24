@@ -603,7 +603,6 @@ if (!(vGun->p.x || vGun->p.y || vGun->p.z))
 if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
 	return 1;
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
-fq.p0	= vGun;
 if ((vGun->p.x == objP->position.vPos.p.x) && 
 	 (vGun->p.y == objP->position.vPos.p.y) && 
 	 (vGun->p.z == objP->position.vPos.p.z))
@@ -620,8 +619,9 @@ h = VmVecDist (vGun, &objP->position.vPos);
 h = VmVecDist (vGun, vPlayer);
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->size;
-objP->rType.polyObjInfo.nModel = -1;
-objP->size = F1_0 * 2;
+objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
+objP->size = F1_0 * 2;						//chose some meaningful small size to simulate a weapon
+fq.p0					= vGun;
 fq.p1					= vPlayer;
 fq.radP0				= 
 fq.radP1				= F1_0;

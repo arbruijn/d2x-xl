@@ -68,7 +68,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
 #ifdef _DEBUG
-#	define PIGGY_MEM_QUOTA	5
+#	define PIGGY_MEM_QUOTA	2
 #else
 #	define PIGGY_MEM_QUOTA	8
 #endif
@@ -2014,7 +2014,9 @@ reloadTextures:
 
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
+#ifndef _DEBUG
 		return;
+#endif
 		}
 	bRedone = 1;
 	if (CFSeek (fp, nOffset, SEEK_SET)) {

@@ -219,6 +219,7 @@ typedef struct tRenderOptions {
 	int bTransparentEffects;
 	int bCoronas;
 	int bObjectCoronas;
+	int nCoronaIntensity;
 	int bUseShaders;
 	int bHiresModels;
 	int bAutoTransparency;

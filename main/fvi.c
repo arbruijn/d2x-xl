@@ -898,7 +898,7 @@ fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVecto
 	tQuad				*pf;
 	vmsVector		hitP, v;
 	int				i, iModel, nModels;
-	fix				h, d, dot, xDist = 0x7fffffff;
+	fix				h, d, xDist = 0x7fffffff;
 	tModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
 	tBox				hb [MAX_SUBMODELS + 1];
 
@@ -1528,11 +1528,14 @@ if (l)
 
 //	-----------------------------------------------------------------------------
 
-int PixelTranspType (short nTexture, short nOrient, fix u, fix v)
+grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
+
+int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
 {
 	grsBitmap *bmP;
 	int bmx, bmy, w, h, offs;
 	unsigned char	c;
+#if 0
 	tBitmapIndex *bmiP;
 
 //	Assert(WALL_IS_DOORWAY(seg, nSide) == WID_TRANSPARENT_WALL);
@@ -1540,6 +1543,9 @@ int PixelTranspType (short nTexture, short nOrient, fix u, fix v)
 bmiP = gameData.pig.tex.pBmIndex + (nTexture);
 PIGGY_PAGE_IN (*bmiP, gameStates.app.bD1Data);
 bmP = BmOverride (gameData.pig.tex.pBitmaps + bmiP->index);
+#else
+bmP = LoadFaceBitmap (nTexture, nFrame);
+#endif
 if (bmP->bm_props.flags & BM_FLAG_RLE)
 	bmP = rle_expand_texture (bmP);
 w = bmP->bm_props.w;
@@ -1592,19 +1598,21 @@ return 0;
 //	-----------------------------------------------------------------------------
 //check if a particular point on a tWall is a transparent pixel
 //returns 1 if can pass though the tWall, else 0
-int CheckTransWall (vmsVector *pnt, tSegment *seg, short nSide, short iFace)
+int CheckTransWall (vmsVector *pnt, tSegment *segP, short nSide, short iFace)
 {
-	tSide *sideP = seg->sides + nSide;
+	tSide *sideP = segP->sides + nSide;
 	fix	u, v;
 	int	nTranspType;
 
-//	Assert(WALL_IS_DOORWAY(seg, nSide) == WID_TRANSPARENT_WALL);
+//	Assert(WALL_IS_DOORWAY(segP, nSide) == WID_TRANSPARENT_WALL);
 //LogErr ("      FindHitPointUV (%d)...", iFace);
-FindHitPointUV (&u, &v, NULL, pnt, seg, nSide, iFace);	//	Don't compute light value.
+if ((SEG_IDX (segP) == 519) && (nSide == 0))
+	segP = segP;
+FindHitPointUV (&u, &v, NULL, pnt, segP, nSide, iFace);	//	Don't compute light value.
 //LogErr ("done\n");
 if (sideP->nOvlTex)	{
 	//LogErr ("      PixelTranspType...");
-	nTranspType = PixelTranspType (sideP->nOvlTex, sideP->nOvlOrient,u, v);
+	nTranspType = PixelTranspType (sideP->nOvlTex, sideP->nOvlOrient, sideP->nFrame, u, v);
 	//LogErr ("done\n");
 	if (nTranspType < 0)
 		return 1;
@@ -1612,7 +1620,7 @@ if (sideP->nOvlTex)	{
 		return 0;
 	}
 //LogErr ("      PixelTranspType...");
-nTranspType = PixelTranspType (sideP->nBaseTex, 0, u, v) != 0;
+nTranspType = PixelTranspType (sideP->nBaseTex, 0, sideP->nFrame, u, v) != 0;
 //LogErr ("done\n");
 return nTranspType;
 }

@@ -720,7 +720,7 @@ PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tm], gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
 	FindHitPointUV (&u, &v, NULL, pnt, segP, nSide, 0);	//evil: always say face zero
-	bForceBlowup = !PixelTranspType (tm, tmf, u, v);
+	bForceBlowup = !PixelTranspType (tm, tmf,  segP->sides [nSide].nFrame, u, v);
 	}
 if (!bForceBlowup) 
 	return 0;

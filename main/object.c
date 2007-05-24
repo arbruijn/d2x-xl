@@ -2283,7 +2283,8 @@ switch (objP->renderType) {
 				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
-				RenderLightTrail (objP);
+				if (objP->id != SMALLMINE_ID)
+					RenderLightTrail (objP);
 				}
 			}
 		else if (objP->nType == OBJ_CNTRLCEN) {

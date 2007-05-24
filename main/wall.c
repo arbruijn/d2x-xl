@@ -344,6 +344,8 @@ int nFrames;
 
 if (cSide < 0)
 	connSegP = NULL;
+if ((SEG_IDX (segP) == 519) && (nSide == 0))
+	segP = segP;
 if (anim->flags & WCF_ALTFMT) {
 	nFrames = anim->nFrameCount;
 	bmP = SetupHiresAnim ((short *) anim->frames, nFrames, -1, 1, 0, &nFrames);

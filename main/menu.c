@@ -1780,19 +1780,35 @@ return j;
 
 //------------------------------------------------------------------------------
 
-static int nOptDebrisLife;
+int nCoronaIntOpt = -1, nCoronasOpt = -1, nObjCoronasOpt = -1;
+
+char *pszCoronaInt [3];
 
 void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
 	int			v;
 
-m = menus + nOptDebrisLife;
+m = menus + nCoronasOpt;
 v = m->value;
-if (gameOpts->render.nDebrisLife != v) {
-	gameOpts->render.nDebrisLife = v;
-	sprintf (m->text, TXT_DEBRIS_LIFE, nDebrisLife [v]);
-	m->rebuild = -1;
+if (gameOpts->render.bCoronas != v) {
+	gameOpts->render.bCoronas = v;
+	*key = -2;
+	}	
+m = menus + nObjCoronasOpt;
+v = m->value;
+if (gameOpts->render.bObjectCoronas != v) {
+	gameOpts->render.bObjectCoronas = v;
+	*key = -2;
+	}	
+if (nCoronaIntOpt >= 0) {
+	m = menus + nCoronaIntOpt;
+	v = m->value;
+	if (gameOpts->render.nCoronaIntensity != v) {
+		gameOpts->render.nCoronaIntensity = v;
+		sprintf (m->text, TXT_CORONA_INTENSITY, pszCoronaInt [v]);
+		m->rebuild = -1;
+		}
 	}
 }
 
@@ -1800,22 +1816,36 @@ if (gameOpts->render.nDebrisLife != v) {
 
 void EffectOptionsMenu ()
 {
-	tMenuItem m [15];
+	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
 			optTracers, optShockwaves, optCoronas, optObjCoronas;
-	char	szDebrisLife [50];
+	char	szCoronaInt [50];
+
+pszCoronaInt [0] = TXT_LOW;
+pszCoronaInt [1] = TXT_MEDIUM;
+pszCoronaInt [2] = TXT_HIGH;
 
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
-	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
-	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
 	optCoronas = opt++;
 	ADD_CHECK (opt, TXT_RENDER_OBJCORONAS, gameOpts->render.bObjectCoronas, KEY_O, HTX_ADVRND_OBJCORONAS);
 	optObjCoronas = opt++;
+	if (gameOpts->render.bCoronas || gameOpts->render.bObjectCoronas) {
+		sprintf (szCoronaInt + 1, TXT_DEBRIS_LIFE, szCoronaInt [gameOpts->render.nCoronaIntensity]);
+		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
+		ADD_SLIDER (opt, szCoronaInt, gameOpts->render.nCoronaIntensity, 0, 6, KEY_I, HTX_CORONA_INTENSITY);
+		nCoronaIntOpt = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		}
+	else	
+		nCoronaIntOpt = -1;
+	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
+	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
 	optShockwaves = opt++;
 	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_L, HTX_RENDER_LGTTRAILS);
@@ -1830,13 +1860,9 @@ do {
 	optThrustFlame = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
 	optRenderShields = opt++;
-	sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
-	*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
-	ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 6, KEY_D, HTX_DEBRIS_LIFE);
-	nOptDebrisLife = opt++;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
+		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, NULL, &choice);
 		if (i < 0)
 			break;
 		} 
@@ -3329,6 +3355,8 @@ if (IsMultiGame)
 
 //------------------------------------------------------------------------------
 
+static int nOptDebrisLife;
+
 static char *pszMslTurnSpeeds [3];
 
 void PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
@@ -3370,6 +3398,14 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		return;
 		}
+
+	m = menus + nOptDebrisLife;
+	v = m->value;
+	if (gameOpts->render.nDebrisLife != v) {
+		gameOpts->render.nDebrisLife = v;
+		sprintf (m->text, TXT_DEBRIS_LIFE, nDebrisLife [v]);
+		m->rebuild = -1;
+		}
 	}
 }
 
@@ -3383,7 +3419,7 @@ void PhysicsOptionsMenu ()
 	int	i, opt = 0, choice = 0;
 	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
 			optFluidPhysics = -1, optHitAngles = -1, optShootMissiles = -1, optHitboxes = -1;
-	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionPower [50];
+	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionPower [50], szDebrisLife [50];
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
@@ -3409,6 +3445,10 @@ do {
 		*szSlowmoSpeedup = *(TXT_SLOWMOTION_SPEEDUP - 1);
 		ADD_SLIDER (opt, szSlowmoSpeedup + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
 		nSlowmoSpeedupOpt = opt++;
+		sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
+		*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
+		ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 6, KEY_D, HTX_DEBRIS_LIFE);
+		nOptDebrisLife = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);

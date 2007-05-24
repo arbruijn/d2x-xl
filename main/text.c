@@ -1666,6 +1666,7 @@ char *defaultGameTexts [][2] = {
 	{"Dreifach-F~Usion zulassen", "allow triple f~Usion"},
 	{"Ph~Ysik-Einstellungen...", "ph~Ysics options..."},
 	{"Physik-Einstellungen", "Physics Options"},
+	{"Lichthof-Staerke: %s", "corona ~Intensity: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2182,6 +2183,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, kann der Spieler nach Aufnahme einer zweiten Fusions-\nkanone drei statt zwei Fusionsschuesse auf einmal abfeuern.", 
 	 "If checked, the player can fire three instead of two fusion blobs after\nhaving picked up a second Fusion Gun."},
 	{"Hier koennen diverse Einstellungen der Spielphysik geaendert werden.", "Here you can adjust various settings of the game's physics."},
+	{"Hier kann die Intensitaet der Lichthoefe veraendert werden.", "Adjust the light coronas' intensity here."},
 #if 0
 	{"", ""},
 #endif

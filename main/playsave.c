@@ -379,6 +379,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bAutoTransparency, i, 0);
 		RP (gameOptions [i].render.bCoronas, i, 0);
 		RP (gameOptions [i].render.bObjectCoronas, i, 0);
+		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
 
 		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
@@ -873,6 +874,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bAutoTransparency", "1"},
 	{"gameOptions[0].render.bCoronas", "1"},
 	{"gameOptions[0].render.bObjectCoronas", "1"},
+	{"gameOptions[0].render.nCoronaIntensity", "2"},
 	{"gameOptions[0].render.bTransparentEffects", "1"},
 	{"gameOptions[0].render.cameras.bFitToWall", "0"},
 	{"gameOptions[0].render.cameras.nFPS", "0"},

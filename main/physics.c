@@ -334,6 +334,27 @@ return 0;
 
 //	-----------------------------------------------------------------------------------------------------------
 
+void DoBumpHack (tObject *objP)
+{
+	vmsVector vCenter, vBump;
+#ifdef _DEBUG
+HUDMessage (0, "BUMP HACK");
+#endif
+//bump tPlayer a little towards vCenter of tSegment to unstick
+COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
+//HUDMessage (0, "BUMP! %d %d", d1, d2);
+//don't bump tPlayer towards center of reactor tSegment
+VmVecNormalizedDirQuick (&vBump, &vCenter, &objP->position.vPos);
+if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
+	VmVecNegate (&vBump);
+VmVecScaleInc (&objP->position.vPos, &vBump, objP->size / 5);
+//if moving away from seg, might move out of seg, so update
+if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
+	UpdateObjectSeg (objP);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 void UnstickObject (tObject *objP)
 {
 	tFVIData			hi;
@@ -354,7 +375,11 @@ fq.flags = 0;
 fviResult = FindVectorIntersection (&fq, &hi);
 if (fviResult == HIT_WALL)
 #if 1
+#	if 0
+	DoBumpHack (objP);
+#	else
 	BounceObject (objP, hi, 0.1f, NULL);
+#	endif
 #else
 	BounceObject (objP, hi, f2fl (objP->size - VmVecDist (&objP->position.vPos, &hi.hit.vPoint)) /*0.25f*/, NULL);
 #endif
@@ -912,21 +937,7 @@ if (objP->controlType == CT_AI) {
 		if ((objP == gameData.objs.console) && 
 			 !(vMoved.p.x || vMoved.p.y || vMoved.p.z) &&
 			 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
-			vmsVector vCenter, vBump;
-#ifdef _DEBUG
-			HUDMessage (0, "BUMP HACK");
-#endif
-			//bump tPlayer a little towards vCenter of tSegment to unstick
-			COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
-			//HUDMessage (0, "BUMP! %d %d", d1, d2);
-			//don't bump tPlayer towards center of reactor tSegment
-			VmVecNormalizedDirQuick (&vBump, &vCenter, &objP->position.vPos);
-			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-				VmVecNegate (&vBump);
-			VmVecScaleInc (&objP->position.vPos, &vBump, objP->size / 5);
-			//if moving away from seg, might move out of seg, so update
-			if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-				UpdateObjectSeg (objP);
+			DoBumpHack (objP);
 			}
 #endif
 		}

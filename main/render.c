@@ -1365,6 +1365,8 @@ return i;
 
 #define ROTATE_CORONA	0
 
+float coronaIntensities [] = {0.6f, 0.8f, 1};
+
 void RenderCorona (short nSegment, short nSide)
 {
 	fVector		vertList [4], sprite [4];
@@ -1378,7 +1380,7 @@ void RenderCorona (short nSegment, short nSide)
 	fMatrix		r;
 	int			i, j, t;
 	float			zMin = 1000000000.0f, zMax = -1000000000.0f;
-	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim = 1;
+	float			a, h, m = 0, l = 0, dx = 0, dy = 0, dim = coronaIntensities [gameOpts->render.nCoronaIntensity];
 	tFaceColor	*pf;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 

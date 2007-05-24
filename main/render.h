@@ -23,6 +23,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern int nClearWindow;    // 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
+extern float coronaIntensities [];
+
 void GameRenderFrame (void);
 void RenderFrame (fix eye_offset, int window_num);  //draws the world into the current canvas
 

@@ -84,7 +84,7 @@ void FindHitPointUV(fix *u,fix *v,fix *l, vmsVector *pnt,tSegment *seg,int nSide
 //Returns true if the tObject is through any walls
 int ObjectIntersectsWall (tObject *objP);
 
-int PixelTranspType (short nTexture, short nOrient, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
+int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v);	//-1: supertransp., 0: opaque, 1: transparent
 
 int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, 
 							short nSegment, short nSide, short iFace, int nv, fix rad);

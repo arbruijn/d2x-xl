@@ -1209,6 +1209,7 @@ if (i) {
 		gameOptions [1].render.nQuality = 0;
 	gameOptions [1].render.bCoronas = 0;
 	gameOptions [1].render.bObjectCoronas = 0;
+	gameOptions [1].render.nCoronaIntensity = 2;
 	gameOptions [1].render.bWireFrame = 0;
 	gameOptions [1].render.bTextures = 1;
 	gameOptions [1].render.bObjects = 1;
@@ -1311,6 +1312,7 @@ else {
 	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.bCoronas = 0;
 	gameOptions [0].render.bObjectCoronas = 0;
+	gameOptions [0].render.nCoronaIntensity = 2;
 #ifdef _DEBUG
 	gameOptions [0].render.shadows.nLights = 1;
 #else

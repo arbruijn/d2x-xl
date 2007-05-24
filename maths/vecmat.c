@@ -1526,7 +1526,7 @@ return !(VmBehindPlane (n, p1, p2, &i) ||
 int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsVector *p3, vmsVector *vPos, 
 									  int bClampToFarthest)
 {
-	vmsVector	d31, d21, h, v, d [2];
+	vmsVector	d31, d21;
 	double		m, u;
 	int			bClamped = 0;
 
@@ -1567,7 +1567,7 @@ return bClamped;
 
 int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp)
 {
-	fVector	d31, d21, h, v, d [2];
+	fVector	d31, d21;
 	double	m, u;
 	int		bClamped = 0;
 
@@ -1591,7 +1591,7 @@ else
 if (hitP) {
 	if (bClamp && bClamped) {
 		if (vPos)
-			bClamped = (VmVecMagf (VmVecSubf (d, vPos, p1)) < VmVecMagf (VmVecSubf (d, vPos, p2))) ? 2 : 1;
+			bClamped = (VmVecDistf (vPos, p1) < VmVecDistf (vPos, p2)) ? 2 : 1;
 		*hitP = (bClamped == 1) ? *p1 : * p2;
 		}
 	else {
