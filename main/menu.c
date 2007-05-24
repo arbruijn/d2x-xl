@@ -1820,7 +1820,7 @@ void EffectOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
-			optTracers, optShockwaves, optCoronas, optObjCoronas;
+			optTracers, optShockwaves;
 	char	szCoronaInt [50];
 
 pszCoronaInt [0] = TXT_LOW;
@@ -1831,13 +1831,13 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
-	optCoronas = opt++;
+	nCoronasOpt = opt++;
 	ADD_CHECK (opt, TXT_RENDER_OBJCORONAS, gameOpts->render.bObjectCoronas, KEY_O, HTX_ADVRND_OBJCORONAS);
-	optObjCoronas = opt++;
+	nObjCoronasOpt = opt++;
 	if (gameOpts->render.bCoronas || gameOpts->render.bObjectCoronas) {
-		sprintf (szCoronaInt + 1, TXT_DEBRIS_LIFE, szCoronaInt [gameOpts->render.nCoronaIntensity]);
+		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
-		ADD_SLIDER (opt, szCoronaInt, gameOpts->render.nCoronaIntensity, 0, 6, KEY_I, HTX_CORONA_INTENSITY);
+		ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 2, KEY_I, HTX_CORONA_INTENSITY);
 		nCoronaIntOpt = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -1862,14 +1862,14 @@ do {
 	optRenderShields = opt++;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, NULL, &choice);
+		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
-	gameOpts->render.bCoronas = m [optCoronas].value;
-	gameOpts->render.bObjectCoronas = m [optObjCoronas].value;
+	gameOpts->render.bCoronas = m [nCoronasOpt].value;
+	gameOpts->render.bObjectCoronas = m [nObjCoronasOpt].value;
 	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;

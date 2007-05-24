@@ -1650,7 +1650,7 @@ char *defaultGameTexts [][2] = {
 	{"~Schwarzes Radar", "b~Lack radar"},
 	{"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
 	{"R~Auch zeichnen", "render ~Smoke"},
-	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d sec"},
+	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d secs"},
 	{"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},
 	{"~Keine Powerups anzeigen", "~Don't show powerups"},
 	{"~Zielsuch-Anzeige", "show ~Missile lock indicator"},
@@ -1666,7 +1666,7 @@ char *defaultGameTexts [][2] = {
 	{"Dreifach-F~Usion zulassen", "allow triple f~Usion"},
 	{"Ph~Ysik-Einstellungen...", "ph~Ysics options..."},
 	{"Physik-Einstellungen", "Physics Options"},
-	{"Lichthof-Staerke: %s", "corona ~Intensity: %s"},
+	{"Lichthof-~Intensitaet: %s", "corona ~Intensity: %s"},
 #if 0
 	{"", ""},
 #endif
