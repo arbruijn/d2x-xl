@@ -575,7 +575,7 @@ else
 	fq.startSeg	= objP->nSegment;
 fq.p1					= &gameData.ai.vBelievedPlayerPos;
 fq.radP0				= 
-fq.radP1				= F1_0/4;
+fq.radP1				= F1_0 / 4;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
 fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
@@ -587,6 +587,57 @@ if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
 dot = VmVecDot (vVecToPlayer, &objP->position.mOrient.fVec);
 return (dot > fieldOfView - (gameData.ai.nOverallAgitation << 9)) ? 2 : 1;
+}
+
+// ------------------------------------------------------------------------------------------------------------------
+
+int AICanFireAtPlayer (tObject *objP, vmsVector *vGun, vmsVector *vPlayer)
+{
+	tVFIQuery	fq;
+	fix			nSize, h;
+	short			nModel, ignoreObjs [2] = {OBJ_IDX (gameData.objs.console), -1};
+
+//	Assume that robot's gun tip is in same tSegment as robot's center.
+if (!(vGun->p.x || vGun->p.y || vGun->p.z))
+	return 0;
+if (!extraGameInfo [IsMultiGame].bRobotsHitRobots)
+	return 1;
+objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
+fq.p0	= vGun;
+if ((vGun->p.x == objP->position.vPos.p.x) && 
+	 (vGun->p.y == objP->position.vPos.p.y) && 
+	 (vGun->p.z == objP->position.vPos.p.z))
+	fq.startSeg	= objP->nSegment;
+else {
+	short nSegment = FindSegByPoint (vGun, objP->nSegment);
+	if (nSegment == -1)
+		return -1;
+	if (nSegment != objP->nSegment)
+		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
+	fq.startSeg = nSegment;
+	}
+h = VmVecDist (vGun, &objP->position.vPos);
+h = VmVecDist (vGun, vPlayer);
+nModel = objP->rType.polyObjInfo.nModel;
+nSize = objP->size;
+objP->rType.polyObjInfo.nModel = -1;
+objP->size = F1_0 * 2;
+fq.p1					= vPlayer;
+fq.radP0				= 
+fq.radP1				= F1_0;
+fq.thisObjNum		= OBJ_IDX (objP);
+fq.ignoreObjList	= ignoreObjs;
+fq.flags				= FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS;		//what about trans walls???
+gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
+#ifdef _DEBUG
+if (gameData.ai.nHitType == 0)
+	FindVectorIntersection (&fq, &gameData.ai.hitData);
+#endif
+gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
+gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
+objP->rType.polyObjInfo.nModel = nModel;
+objP->size = nSize;
+return (gameData.ai.nHitType != HIT_OBJECT);
 }
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -2405,7 +2456,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 		//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 		if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailp)) {
 			dot = VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
-			if ((dot >= 7*F1_0/8) || ((dot > F1_0/4) &&  botInfoP->bossFlag)) {
+			if ((dot >= 7 * F1_0 / 8) || ((dot > F1_0 / 4) &&  botInfoP->bossFlag)) {
 				if (nGun < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
 						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->size + gameData.objs.console->size + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
@@ -2417,9 +2468,11 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 							return;
 						}
 					else {
-						if ((gameData.ai.vGunPoint.p.x == 0) && (gameData.ai.vGunPoint.p.y == 0) && (gameData.ai.vGunPoint.p.z == 0))
-							dot = dot;
-						else {
+#if 1
+						if (AICanFireAtPlayer (objP, &gameData.ai.vGunPoint, &vFirePos)) {
+#else
+						if (gameData.ai.vGunPoint.p.x || gameData.ai.vGunPoint.p.y || gameData.ai.vGunPoint.p.z) {
+#endif
 							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
 								return;
 							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)

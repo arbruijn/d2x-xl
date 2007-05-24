@@ -266,6 +266,7 @@ extern void RemoveObsoleteStuckObjects(void);
 extern void WallSetTMapNum(tSegment *seg,short tSide,tSegment *csegp, short cside,int anim_num,int nFrame);
 
 extern void InitDoorAnims (void);
+int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime);
 
 // Remove any flares from a tWall
 void KillStuckObjects(int wallnum);

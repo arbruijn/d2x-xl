@@ -47,12 +47,13 @@ typedef struct tFVIData {
 } tFVIData;
 
 //flags for fvi query
-#define FQ_CHECK_OBJS	1		//check against objects?
-#define FQ_TRANSWALL		2		//go through transparent walls
-#define FQ_TRANSPOINT	4		//go through trans tWall if hit point is transparent
-#define FQ_GET_SEGLIST	8		//build a list of segments
+#define FQ_CHECK_OBJS		1		//check against objects?
+#define FQ_TRANSWALL			2		//go through transparent walls
+#define FQ_TRANSPOINT		4		//go through trans tWall if hit point is transparent
+#define FQ_GET_SEGLIST		8		//build a list of segments
 #define FQ_IGNORE_POWERUPS	16		//ignore powerups
-#define FQ_SEE_OBJS		32
+#define FQ_SEE_OBJS			32
+#define FQ_ANY_OBJECT		64
 
 //this data contains the parms to fvi()
 typedef struct tVFIQuery {

@@ -2220,6 +2220,10 @@ if (!bBetweenLevels)	{
 		}
 	//fpos = CFTell (fp);
 	//Restore the fuelcen info
+	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
+		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
+			AnimateOpeningDoor (SEGMENTS + wallP->nSegment, wallP->nSide, -1);
+		}
 	gameData.reactor.bDestroyed = CFReadInt (fp);
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);
 	if (CFReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.matCens.nBotCenters, fp))

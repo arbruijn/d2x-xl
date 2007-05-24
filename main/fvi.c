@@ -921,10 +921,10 @@ for (; iModel <= nModels; iModel++) {
 		h = CheckLineToFace (&hitP, p0, p1, pf->v, pf->n + 1, 4, rad);
 		if (h) {
 			d = VmVecNormalize (VmVecSub (&v, &hitP, p0));
+#if 0
 			dot = VmVecDot (pf->n + 1, pn);
 			if (dot > 0)
 				continue;	//behind shield face
-#if 0
 			if (d > rad)
 				continue;
 #endif
@@ -965,8 +965,25 @@ bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo
 bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
 if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
 #if 1//def RELEASE
-	VmVecSub (&vn, p1, &thisObjP->position.vPos);
-	dist = VmVecMag (&vn);
+#	ifdef _DEBUG
+	if ((thisObjP->id == 15) && (otherObjP->rType.polyObjInfo.nModel < 0)) {
+		vmsVector hv [2];
+		fix dist0, dist1, dot;
+		size = size;
+		dist0 = VmVecDist (p0, &thisObjP->position.vPos);
+		dist1 = VmVecDist (p1, &thisObjP->position.vPos);
+		dot = VmVecDot (VmVecSub (hv, p0, &thisObjP->position.vPos), VmVecSub (hv + 1, p1, &thisObjP->position.vPos));
+		dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
+		if (dist == ((dist0 > dist1) ? dist0 : dist1))
+			dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
+		if (dist > (size = thisObjP->size + otherObjP->size)) {
+			dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
+			return 0;
+			}
+		}
+	else
+#	endif
+	dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
 	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
 	if (dist > (size = thisObjP->size + otherObjP->size))
 		return 0;
@@ -1211,8 +1228,16 @@ if (flags & FQ_CHECK_OBJS) {
 				continue;
 			//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
 			if (nThisType == OBJ_ROBOT) {
+				if (flags & FQ_ANY_OBJECT) {
+					if (nOtherType != OBJ_ROBOT)
+						continue;
+					}
+				else {
+					if (nOtherType == OBJ_ROBOT)
+						continue;
+					}
 				if (nOtherType == OBJ_ROBOT)
-					continue;
+					nOtherType = OBJ_ROBOT;
 				if (ROBOTINFO (thisObjP->id).attackType)
 					nFudgedRad = (radP1 * 3) / 4;
 				}
@@ -1221,6 +1246,9 @@ if (flags & FQ_CHECK_OBJS) {
 				((nOtherType == OBJ_PLAYER) ||
 				(IsCoopGame && (nOtherType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 				nFudgedRad = radP1 / 2;
+			if (flags & FQ_ANY_OBJECT)
+				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+			else
 			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
 				gameData.collisions.hitData.nObject = nObject;
@@ -1228,6 +1256,8 @@ if (flags & FQ_CHECK_OBJS) {
 				dMin = d;
 				vClosestHitPoint = vHitPoint;
 				nHitType = HIT_OBJECT;
+				if (flags & FQ_ANY_OBJECT)
+					goto quit_looking;
 				}
 			}
 		}

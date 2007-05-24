@@ -1390,6 +1390,11 @@ if  (nSide != 0)
 	return;
 #	endif
 #endif
+if (gameOpts->render.bDynamicLight) {
+	i = FindDynLight (nSegment, nSide, -1);
+	if ((i >= 0) && !gameData.render.lights.dynamic.lights [i].bOn)
+		return;
+	}
 nWall = gameData.segs.segments [nSegment].sides [nSide].nWall;
 if (IS_WALL (nWall)) {
 	tWall *wallP = gameData.walls.walls + nWall;
@@ -1624,7 +1629,11 @@ for (i = 0; i < 4; i++)
 pf = gameData.render.color.textures + t;
 a = (float) (pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 30 * 2;
 a *= dim;
+if (a < 0.01)
+	return;
 l /= 4;
+if (l < 0.01)
+	return;
 glColor4f (pf->color.red * l, pf->color.green * l, pf->color.blue * l, a);
 //render the corona
 VmVecNormalf (&n, sprite, sprite + 1, sprite + 2);

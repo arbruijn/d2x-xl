@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 //#define _DEBUG
 #define FLUID_PHYSICS	0
-#define UNSTICK_OBJS		0
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -65,7 +65,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 
 #define MAX_OBJECT_VEL i2f (100)
 
-#define BUMP_HACK	0	//if defined, bump tPlayer when he gets stuck
+#define BUMP_HACK	1	//if defined, bump tPlayer when he gets stuck
 
 int bFloorLeveling = 0;
 
@@ -752,6 +752,10 @@ retryMove:
 #endif
 		VmVecSub (&vMoved, &objP->position.vPos, &vSavePos);
 		xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal);
+#ifdef _DEBUG
+		if (objP->nType == OBJ_ROBOT)
+			objP = objP;
+#endif
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
