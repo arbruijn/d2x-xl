@@ -3041,10 +3041,6 @@ extern int nTotalPixels;
 
 void StartLightingFrame (tObject *viewer);
 
-#ifndef JOHN_ZOOM
-#	define JOHN_ZOOM
-#endif
-
 //------------------------------------------------------------------------------
 
 void RenderShadowQuad (int bWhite)
@@ -3398,7 +3394,6 @@ else {
 		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv(gameStates.render.xZoom, gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
-#ifdef JOHN_ZOOM
 		gameStates.render.nMinZoomFactor = (fix) (F1_0 * gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
 		gameStates.render.nMaxZoomFactor = gameStates.render.nMinZoomFactor * 5;
 		if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
@@ -3440,23 +3435,19 @@ else {
 #else		
 			 gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))) {
 #endif			 	
-#if 1
 			SetPathPoint (&externalView, gameData.objs.viewer);
 			GetViewPoint ();
-#else
-			VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
-			VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.uVec, PP_DELTAY);
-#endif
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
+			G3SetViewMatrix (&gameData.render.mine.viewerEye,
+								  externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, 
+								  gameStates.render.xZoom);
 			}
 		else
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, 
+								  &gameData.objs.viewer->position.mOrient, FixDiv (gameStates.render.xZoom, 
+								  gameStates.render.nZoomFactor));
 		}
 	else
 		G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
-#else
-	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
-#endif
 	}
 if (pnStartSeg)
 	*pnStartSeg = nStartSeg;

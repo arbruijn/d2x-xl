@@ -1844,7 +1844,7 @@ gameStates.ogl.bSgisMultiTexture = 0;
 
 void InitRenderStates (void)
 {
-gameStates.render.xZoom = 9 * F1_0;
+gameStates.render.xZoom = 0x9000;
 gameStates.render.xZoomScale = 1;
 gameStates.render.nFrameCount = -1;
 gameStates.render.bQueryOcclusion = 0;
