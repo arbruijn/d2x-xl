@@ -100,7 +100,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "cheats.h"
 #include "input.h"
+#ifdef _DEBUG
 #include "trackir.h"
+#endif
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
@@ -1209,10 +1211,12 @@ int HandleSystemKey(int key)
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
 
+#ifdef _DEBUG
 		case KEY_CTRLED + KEY_F12:
 			TIRCenter ();
 			break;
-			
+#endif
+
 		case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		
 			if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
