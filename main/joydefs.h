@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _JOYDEFS_H
 
 void joydefs_calibrate();
-void joydefs_config();
+void InputDeviceConfig();
 
 extern int joydefs_calibrateFlag;
 

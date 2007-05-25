@@ -367,6 +367,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.bLinearJoySens, i, 0);
 		RP (gameOptions [i].input.bSyncJoyAxes, i, 0);
 		RP (gameOptions [i].input.bSyncMouseAxes, i, 0);
+		RP (gameOptions [i].input.nMouseDeadzone, i, 0);
 		RP (gameOptions [i].input.bUseHotKeys, i, 0);
 		RP (gameOptions [i].input.keyRampScale, i, 0);
 
@@ -864,6 +865,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.bLinearJoySens", "0"},
 	{"gameOptions[0].input.bSyncJoyAxes", "1"},
 	{"gameOptions[0].input.bSyncMouseAxes", "1"},
+	{"gameOptions[0].input.nMouseDeadzone", "0"},
 	{"gameOptions[0].input.bUseHotKeys", "1"},
 	{"gameOptions[0].input.keyRampScale", "100"},
 	{"gameOptions[0].ogl.bLightObjects", "1"},

@@ -55,6 +55,7 @@
 #include "mouse.h"
 #include "gameseg.h"
 #include "lighting.h"
+#include "input.h"
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -68,7 +69,7 @@ int bShadowTest = 0;
 #endif
 
 extern int bZPass;
-extern grsBitmap *bmpCorona;
+extern grsBitmap *bmpDeadzone;
 int bSingleStencil = 0;
 
 tRgbaColorf shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.25f}, {0.0f, 0.0f, 1.0f, 0.25f}};
@@ -244,6 +245,31 @@ return h;
 
 //------------------------------------------------------------------------------
 
+grsBitmap *bmpDeadzone = NULL;
+int bHaveDeadzone = 0;
+
+int LoadDeadzone (void)
+{
+if (!bHaveDeadzone) {
+	bmpDeadzone = CreateAndReadTGA ("deadzone.tga");
+	bHaveDeadzone = bmpDeadzone ? 1 : -1;
+	}
+return bHaveDeadzone > 0;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeDeadzone (void)
+{
+if (bmpDeadzone) {
+	GrFreeBitmap (bmpDeadzone);
+	bmpDeadzone = NULL;
+	bHaveDeadzone = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void OglDrawMouseIndicator (void)
 {
 	double 	scale = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
@@ -251,6 +277,8 @@ void OglDrawMouseIndicator (void)
 	static tSinCosd sinCos30 [30];
 	static tSinCosd sinCos12 [12];
 	static int bInitSinCos = 1;
+
+	double	r, w, h;
 	
 if (bInitSinCos) {
 	OglComputeSinCos (sizeofa (sinCos30), sinCos30);
@@ -272,12 +300,39 @@ else {
 	glLineWidth (3);
 	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos12);
 	glPopMatrix ();
-	glColor4d (1.0, 0.8, 0.0, 1.0 / 3.0);
 	glPushMatrix ();
 	glTranslated (0.5, 0.5, 0);
-	glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
-	glLineWidth (6);
-	OglDrawEllipse (30, GL_LINE_LOOP, 8, 0, 8 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos30);
+	if (LoadDeadzone ()) {
+		grs_color c = {1, 255, 255, 255, 128};
+		OglUBitMapMC (0, 0, 16, 16, bmpDeadzone, &c, 1, 0);
+		r = MouseDeadzone (0);
+		w = r / (double) grdCurScreen->sc_w;
+		h = r / (double) grdCurScreen->sc_h;
+		glEnable (GL_TEXTURE_2D);
+		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
+			return;
+		OglTexWrap (bmpDeadzone->glTexture, GL_CLAMP);
+		glColor4d (1.0, 1.0, 1.0, 0.8 / (gameOpts->input.nMouseDeadzone + 1));
+		glBegin (GL_QUADS);
+		glTexCoord2d (0, 0);
+		glVertex2d (-w, -h);
+		glTexCoord2d (1, 0);
+		glVertex2d (w, -h);
+		glTexCoord2d (1, 1);
+		glVertex2d (w, h);
+		glTexCoord2d (0, 1);
+		glVertex2d (-w, h);
+		glEnd ();
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+		}
+	else {
+		glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
+		glColor4d (1.0, 0.8, 0.0, 1.0 / (3.0 + 0.5 * gameOpts->input.nMouseDeadzone));
+		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.nMouseDeadzone));
+		r = MouseDeadzone (0) / 4;
+		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos30);
+		}
 	glPopMatrix ();
 	glDisable (GL_SMOOTH);
 	glLineWidth (1);
@@ -1504,7 +1559,7 @@ else
 			if (OglBindBmTex (bmBot, 1, 3))
 				return 1;
 			bmBot = BmCurFrame (bmBot);
-			if (bmBot == bmpCorona)
+			if (bmBot == bmpDeadzone)
 				OglTexWrap (bmBot->glTexture, GL_CLAMP);
 			else
 				OglTexWrap (bmBot->glTexture, GL_REPEAT);
@@ -1683,7 +1738,7 @@ else {
 	glTexCoord2d (u, v);
 	glVertex3d (x + w, y - h, z);
 	glTexCoord2d (0, v);
-	glVertex3f (x - w, y - h, z);
+	glVertex3d (x - w, y - h, z);
 	glEnd ();
 	}
 if (!bDepthInfo)

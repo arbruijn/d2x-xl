@@ -875,7 +875,7 @@ extern ubyte *kc_external_name;
 #ifdef MACINTOSH
 
 //NOTE: MAC VERSION
-void joydefs_config()
+void InputDeviceConfig()
 {
 	int i, old_masks, masks,nitems;
 	tMenuItem m[14];
@@ -996,7 +996,7 @@ void joydefs_setType(ubyte nType)
 #else		// #ifdef MACINTOSH
 
 //NOTE: UNIX/DOS VERSION
-void joydefs_config()
+void InputDeviceConfig()
 {
 	int i, old_masks, masks,nitems;
 	tMenuItem m[14];
@@ -1130,7 +1130,7 @@ void joydef_menuset_win(int nitems, tMenuItem * items, int *last_key, int citem 
 }
 
 //NOTE: WINDOWS VERSION
-void joydefs_config()
+void InputDeviceConfig()
 {
 	int i, old_masks, masks,nitems;
 	tMenuItem m[14];

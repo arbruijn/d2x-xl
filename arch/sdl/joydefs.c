@@ -28,7 +28,7 @@
 
 int	nDeadZoneOpt, nRampOpt, nRampKeyOpt, nJoySensOpt, nMouseSensOpt, aboveCustOpt, 
 		kbdCustOpt, nLinSensOpt, nMouseLookOpt, nSyncJoyAxesOpt, nSyncMouseAxesOpt,
-		nUseMouseOpt, nUseJoyOpt, nUseHotKeysOpt;
+		nUseMouseOpt, nUseJoyOpt, nUseHotKeysOpt, nJoyMouseOpt, nMouseDZoneOpt;
 
 int nJoyDeadzones [] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 30, 40, 50};
 
@@ -57,7 +57,9 @@ void joydefs_calibrate()
 
 //------------------------------------------------------------------------------
 
-void joydef_menu_callback (int nitems, tMenuItem * items, int *last_key, int citem)
+static char *szMouseDeadzones [4];
+
+void InputMenuCallback (int nitems, tMenuItem * items, int *key, int citem)
 {
 	int h, i, v;
 	int ocType = gameConfig.nControlType;
@@ -70,23 +72,23 @@ void joydef_menu_callback (int nitems, tMenuItem * items, int *last_key, int cit
 	if (gameConfig.nControlType == 2) 
 		gameConfig.nControlType = CONTROL_MOUSE;
 */
-	SetControlType ();
-	if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-		ExecMessageBox( TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS );
+SetControlType ();
+if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
+	ExecMessageBox( TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS );
 	}
 
-	if (ocType != gameConfig.nControlType) {
-		switch (gameConfig.nControlType) {
-	//		case	CONTROL_NONE:
-			case	CONTROL_JOYSTICK:
-			case	CONTROL_FLIGHTSTICK_PRO:
-			case	CONTROL_THRUSTMASTER_FCS:
-			case	CONTROL_GRAVIS_GAMEPAD:
-	//		case	CONTROL_MOUSE:
-	//		case	CONTROL_CYBERMAN:
-				joydefs_calibrateFlag = 1;
+if (ocType != gameConfig.nControlType) {
+	switch (gameConfig.nControlType) {
+//		case	CONTROL_NONE:
+		case	CONTROL_JOYSTICK:
+		case	CONTROL_FLIGHTSTICK_PRO:
+		case	CONTROL_THRUSTMASTER_FCS:
+		case	CONTROL_GRAVIS_GAMEPAD:
+//		case	CONTROL_MOUSE:
+//		case	CONTROL_CYBERMAN:
+			joydefs_calibrateFlag = 1;
 		}
-		KCSetControls(0);
+	KCSetControls(0);
 	}
 
 if (items [nUseMouseOpt].value != gameOpts->input.bUseMouse)
@@ -109,7 +111,7 @@ if (h >= 0) {
 		}
 	else {
 		items [h].rebuild = 1;
-		*last_key = -2;
+		*key = -2;
 		}
 	return;
 	}
@@ -127,8 +129,23 @@ if (gameOpts->input.bUseMouse) {
 				for (i = 1; i < 3; i++)
 					gameOpts->input.mouseSensitivity [i] = gameOpts->input.mouseSensitivity [0];
 			m->rebuild = 1;
-			*last_key = -2;
+			*key = -2;
 			return;
+			}
+		if (gameOpts->input.bJoyMouse && (nMouseDZoneOpt >= 0)) {
+			m = items + nMouseDZoneOpt;
+			v = m->value;
+			if (gameOpts->input.nMouseDeadzone != v) {
+				gameOpts->input.nMouseDeadzone = v;
+				sprintf (m->text, TXT_MOUSE_DEADZONE, szMouseDeadzones [v]);
+				m->rebuild = 1;
+				}
+			}
+		m = items + nJoyMouseOpt;
+		v = m->value;
+		if (gameOpts->input.bJoyMouse != v) {
+			gameOpts->input.bJoyMouse = v;
+			*key = -2;
 			}
 		}
 	h = gameOpts->input.bSyncMouseAxes ? 1 : 3;
@@ -150,7 +167,7 @@ if (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick) {
 					gameOpts->input.joySensitivity [i] = gameOpts->input.joySensitivity [0];
 					}
 			m->rebuild = 1;
-			*last_key = -2;
+			*key = -2;
 			return;
 			}
 		}
@@ -171,7 +188,7 @@ if (gameOpts->input.nJoysticks && gameOpts->input.bUseJoystick) {
 			else
 				sprintf (m->text, TXT_JOY_DEADZONE_N, szJoyAxis [i], gameOpts->input.joyDeadZones [i]);
 			m->rebuild = 1;
-			*last_key = -2;
+			*key = -2;
 			}
 		}
 	for (i = h; i < UNIQUE_JOY_AXES; i++)
@@ -182,7 +199,7 @@ if (gameOpts->app.bExpertMode) {
 	v = m->value * 10;
 	if (gameOpts->input.keyRampScale != v) {
 		if (!(gameOpts->input.keyRampScale && v))
-			*last_key = -2;
+			*key = -2;
 		gameOpts->input.keyRampScale = v;
 		sprintf(m->text, TXT_KBD_RAMP, gameOpts->input.keyRampScale);
 		m->rebuild = 1;
@@ -201,16 +218,22 @@ if (gameOpts->app.bExpertMode) {
 
 //------------------------------------------------------------------------------
 
-void joydefs_config()
+void InputDeviceConfig (void)
 {
-	tMenuItem m [40];
+	tMenuItem m [50];
 	int	h, i, j, opt = 0, choice = 0;
 	int	nCustKbdOpt, nCustMouseOpt, nCustJoyOpt, nCustHotKeysOpt, nMouseTypeOpt, nJoyTypeOpt, 
-			nFastPitchOpt, nJoyMouseOpt;
-	char	szKeyRampScale [40];
-	char	szMouseSens [3][40];
-	char	szJoySens [UNIQUE_JOY_AXES][40];
-	char	szJoyDeadzone [UNIQUE_JOY_AXES][40];
+			nFastPitchOpt;
+	char	szKeyRampScale [50];
+	char	szMouseSens [3][50];
+	char	szMouseDeadzone [50];
+	char	szJoySens [UNIQUE_JOY_AXES][50];
+	char	szJoyDeadzone [UNIQUE_JOY_AXES][50];
+
+szMouseDeadzones [0] = TXT_SMALL;
+szMouseDeadzones [1] = TXT_MEDIUM;
+szMouseDeadzones [2] = TXT_LARGE;
+szMouseDeadzones [3] = TXT_VERY_LARGE;
 
 rebuild_menu:
 
@@ -221,6 +244,7 @@ rebuild_menu:
 	SetControlType ();
 	ADD_CHECK (opt, TXT_USE_MOUSE, gameOpts->input.bUseMouse, KEY_M, HTX_CONF_USEMOUSE);
 	nUseMouseOpt = opt++;
+	nMouseDZoneOpt = -1;
 	if (gameOpts->input.bUseMouse || gameStates.app.bNostalgia) {
 		ADD_MENU (opt, TXT_CUST_MOUSE, KEY_O, HTX_CONF_CUSTMOUSE);
 		nCustMouseOpt = opt++;
@@ -231,6 +255,12 @@ rebuild_menu:
 				nMouseLookOpt = opt++;
 				ADD_CHECK (opt, TXT_JOYMOUSE, gameOpts->input.bJoyMouse, KEY_Y, HTX_CONF_JOYMOUSE);
 				nJoyMouseOpt = opt++;
+				if (gameOpts->input.bJoyMouse) {
+					sprintf (szMouseDeadzone + 1, TXT_MOUSE_DEADZONE, szMouseDeadzones [gameOpts->input.nMouseDeadzone]);
+					*szMouseDeadzone = *(TXT_MOUSE_DEADZONE - 1);
+					ADD_SLIDER (opt, szMouseDeadzone + 1, gameOpts->input.nMouseDeadzone, 0, 3, KEY_U, HTX_MOUSE_DEADZONE);
+					nMouseDZoneOpt = opt++;
+					}
 				}
 			}
 		else {
@@ -238,6 +268,12 @@ rebuild_menu:
 			nMouseLookOpt = opt++;
 			ADD_CHECK (opt, TXT_JOYMOUSE, gameOpts->input.bJoyMouse, KEY_Y, HTX_CONF_JOYMOUSE);
 			nJoyMouseOpt = opt++;
+			if (gameOpts->input.bJoyMouse) {
+				sprintf (szMouseDeadzone + 1, TXT_MOUSE_DEADZONE, szMouseDeadzones [gameOpts->input.nMouseDeadzone]);
+				*szMouseDeadzone = *(TXT_MOUSE_DEADZONE - 1);
+				ADD_SLIDER (opt, szMouseDeadzone + 1, gameOpts->input.nMouseDeadzone, 0, 3, KEY_U, HTX_MOUSE_DEADZONE);
+				nMouseDZoneOpt = opt++;
+				}
 			ADD_CHECK (opt, TXT_SYNC_MOUSE_AXES, gameOpts->input.bSyncMouseAxes, KEY_Y, HTX_CONF_SYNCMOUSE);
 			nSyncMouseAxesOpt = opt++;
 			}
@@ -380,7 +416,7 @@ rebuild_menu:
 	else
 		nFastPitchOpt = -1;
 	do {
-		i = ExecMenu1 (NULL, TXT_CONTROLS, opt, m, joydef_menu_callback, &choice);
+		i = ExecMenu1 (NULL, TXT_CONTROLS, opt, m, InputMenuCallback, &choice);
 /*
 		h = gameOpts->input.bSyncMouseAxes ? 1 : 3;
 		for (j = 0; j < h; j++)

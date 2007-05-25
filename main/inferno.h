@@ -286,6 +286,7 @@ typedef struct tInputOptions {
 	int bUseKeyboard;
 	int bSyncMouseAxes;
 	int bSyncJoyAxes;
+	int nMouseDeadzone;
 	int keyRampScale;
 	int bRampKeys [3];
 	int bLinearJoySens;

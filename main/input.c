@@ -832,6 +832,14 @@ for (i = 0; i < 60; i += 30) {
 
 //------------------------------------------------------------------------------
 
+int MouseDeadzone (int d)
+{
+double	r = 32 + 32 * gameOpts->input.nMouseDeadzone;
+return (int) (d ? sqrt (r * r - d * d) : r);
+}
+
+//------------------------------------------------------------------------------
+
 void ControlsDoMouse (int *mouseAxis, int nMouseButtons, 
 							 int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, 
 							 int bGetSlideBank)
@@ -931,17 +939,18 @@ if (bGetSlideBank == 2) {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
 			int dx = mouseData.x - SWIDTH / 2;
+			int dz = MouseDeadzone (mouseData.y - SHEIGHT / 2);
 			if (dx < 0)
-				if (dx > -16)
+				if (dx > -dz)
 					dx = 0;
 				else
-					dx += 16;
+					dx += dz;
 			else {
-				int r = 16 * grdCurScreen->sc_w / grdCurScreen->sc_h;
-				if (dx < r)
+				//dz = dz * grdCurScreen->sc_w / grdCurScreen->sc_h;
+				if (dx < dz)
 					dx = 0;
 				else
-					dx -= r;
+					dx -= dz;
 				}
 			Controls [3].headingTime += (dx * gameOpts->input.mouseSensitivity [0]); // mouse_sens_mod;
 			}
@@ -964,16 +973,17 @@ if (bGetSlideBank == 2) {
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
 				int	dy = mouseData.y - SHEIGHT / 2;
+				int	dz = MouseDeadzone (mouseData.x - SWIDTH / 2);
 				if (dy < 0)
-					if (dy > -16)
+					if (dy > -dz)
 						dy = 0;
 					else
-						dy += 16;
+						dy += dz;
 				else
-					if (dy < 16)
+					if (dy < dz)
 						dy = 0;
 					else
-						dy -= 16;
+						dy -= dz;
 				Controls [3].pitchTime += (dy * gameOpts->input.mouseSensitivity [1]); // mouse_sens_mod;
 				}
 			else {

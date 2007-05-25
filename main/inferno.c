@@ -1522,6 +1522,7 @@ if (i) {
 		gameOptions [1].input.bUseMouse = 0;
 	gameOptions [1].input.bSyncMouseAxes = 1;
 	gameOptions [1].input.bJoyMouse = 0;
+	gameOptions [1].input.nMouseDeadzone = 0;
 	gameOptions [1].input.bSyncJoyAxes = 1;
 	gameOptions [1].input.bUseKeyboard = 1;
 	gameOptions [1].input.bUseHotKeys = 1;
@@ -1554,6 +1555,7 @@ else {
 	gameOptions [0].input.bUseMouse = 1;
 	gameOptions [0].input.bUseJoystick = 0;
 	gameOptions [0].input.bSyncMouseAxes = 1;
+	gameOptions [0].input.nMouseDeadzone = 0;
 	gameOptions [0].input.bJoyMouse = 0;
 	gameOptions [0].input.bSyncJoyAxes = 1;
 	gameOptions [0].input.bUseKeyboard = 1;

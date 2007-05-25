@@ -24,7 +24,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
+				AdditionalIncludeDirectories="..\..\trackir,..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
 				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -2719,6 +2719,9 @@
 					RelativePath="..\..\main\tracker.c">
 				</File>
 				<File
+					RelativePath="..\..\trackir\trackir.c">
+				</File>
+				<File
 					RelativePath="..\..\main\vclip.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -3279,10 +3282,10 @@
 				RelativePath="..\..\main\reorder.h">
 			</File>
 			<File
-				RelativePath="..\..\resource.h">
+				RelativePath=".\resource.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath="..\..\resource.h">
 			</File>
 			<File
 				RelativePath="..\..\include\rle.h">
@@ -3394,10 +3397,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

@@ -96,6 +96,8 @@ tPathPoint *GetPathPoint (tFlightPath *pPath);
 int IsTransparentTexture (short nTexture);
 int LoadCorona (void);
 void FreeCorona (void);
+int LoadDeadzone (void);
+void FreeDeadzone (void);
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r);
 void RenderMineSegment (int nn);
 

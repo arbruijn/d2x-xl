@@ -1667,6 +1667,7 @@ char *defaultGameTexts [][2] = {
 	{"Ph~Ysik-Einstellungen...", "ph~Ysics options..."},
 	{"Physik-Einstellungen", "Physics Options"},
 	{"Lichthof-~Intensitaet: %s", "corona ~Intensity: %s"},
+	{"Maus-N~Ullbereich: %s", "mo~Use deadzone: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2184,6 +2185,8 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, the player can fire three instead of two fusion blobs after\nhaving picked up a second Fusion Gun."},
 	{"Hier koennen diverse Einstellungen der Spielphysik geaendert werden.", "Here you can adjust various settings of the game's physics."},
 	{"Hier kann die Intensitaet der Lichthoefe veraendert werden.", "Adjust the light coronas' intensity here."},
+	{"Wenn die Joystick-Emulation per Maus aktiviert ist, kann hier\ndie Groesse des Bereichs in der Bildschirmmitte ein-\ngestellt werden, innerhalb dessen die Maus keine\nRichtungsaenderungen bewirkt.", 
+	 "If joystick emulation by mouse is activated, you can adjust\nthe size of the area in the middle of the screen\nin which the mouse does not cause the ship to turn."},
 #if 0
 	{"", ""},
 #endif

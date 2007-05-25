@@ -102,7 +102,7 @@ extern ubyte kc_use_external_control;
 extern ubyte kc_enable_external_control;
 extern ubyte *kc_external_name;
 
-void joydefs_config()
+void InputDeviceConfig()
 {
         tMenuItem m[13];
         int i, j, i1=0, nitems=7;

@@ -3574,7 +3574,7 @@ do {
 		if (i == optSound)
 			SoundMenu ();			
 		else if (i == optConfig)
-			joydefs_config ();			
+			InputDeviceConfig ();			
 		else if (i == optJoyCal)
 			joydefs_calibrate ();		
 		else if (i == optDetails)

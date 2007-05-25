@@ -183,7 +183,7 @@ extern ubyte kc_use_external_control;
 extern ubyte kc_enable_external_control;
 extern ubyte *kc_external_name;
 
-void joydefs_config()
+void InputDeviceConfig()
 {
 //added/changed/killed on 10/17/98 by Hans de Goede for joystick/mouse # fix
 //-killed-        char xtext[128];

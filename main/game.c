@@ -1825,6 +1825,8 @@ FreeInventoryIcons ();
 FreeObjTallyIcons ();
 LogErr ("unloading corona data\n");
 FreeCorona ();
+LogErr ("unloading deadzone indicator data\n");
+FreeDeadzone ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
 if (gameStates.render.vr.buffers.offscreen)	{

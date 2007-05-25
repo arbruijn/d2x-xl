@@ -100,6 +100,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "cheats.h"
 #include "input.h"
+#include "trackir.h"
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
@@ -1207,6 +1208,10 @@ int HandleSystemKey(int key)
 			MultiSendMacro(key);
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
+
+		case KEY_CTRLED + KEY_F12:
+			TIRCenter ();
+			break;
 			
 		case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		
