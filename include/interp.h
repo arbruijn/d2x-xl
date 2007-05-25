@@ -89,6 +89,9 @@ void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb);
 
 extern int hitboxFaceVerts [6][4];
 extern vmsVector hitBoxOffsets [8];
+extern vmsAngVec avZero;
+extern vmsVector vZero;
+extern vmsMatrix mIdentity;
 
 #endif //_INTERP_H
 

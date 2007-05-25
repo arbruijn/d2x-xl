@@ -306,7 +306,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 			GrSetCurrentCanvas(NULL)
 		);
 		WIN(DDGRLOCK(dd_grd_curcanv));
-		show_fullscr (&bmBackdrop);
+		ShowFullscreenImage (&bmBackdrop);
 //			GrUpdate (0);
 #if 0
 		if ((grdCurCanv->cv_bitmap.bm_props.w > 640) || (grdCurCanv->cv_bitmap.bm_props.h > 480)) {

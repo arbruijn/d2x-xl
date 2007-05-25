@@ -115,6 +115,7 @@ int PCXReadBitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Miss
 	int i, row, col, count, xsize, ysize;
 	ubyte data, *pixdata;
     ubyte palette [768];
+
 PCXfile = CFOpen( filename, gameFolders.szDataDir, "rb", bD1Mission );
 if ( !PCXfile )
 	return PCX_ERROR_OPENING;
@@ -388,7 +389,7 @@ BM_MASK (&bm) = NULL;
 pcx_error = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
 if (pcx_error == PCX_ERROR_NONE) {
 	GrPaletteStepLoad (NULL);
-	show_fullscr (&bm);
+	ShowFullscreenImage (&bm);
 	GrFreeBitmapData (&bm);
 	}
 return pcx_error;

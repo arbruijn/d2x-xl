@@ -854,9 +854,9 @@ void _CDECL_ HUDPrintF (int x, int y, char *pszFmt, ...)
 	static char szBuf [1000];
 	va_list args;
 
-	va_start (args, pszFmt);
-	vsprintf (szBuf, pszFmt, args);
-	GrString (HUD_SCALE_X (x), HUD_SCALE_Y (y), szBuf);
+va_start (args, pszFmt);
+vsprintf (szBuf, pszFmt, args);
+GrString (HUD_SCALE_X (x), HUD_SCALE_Y (y), szBuf);
 }
 
 //	-----------------------------------------------------------------------------

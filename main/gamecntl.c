@@ -1760,10 +1760,10 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED+KEY_COMMA: 
-			xRenderZoom = FixMul(xRenderZoom, 62259); 
+			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 62259); 
 			break;
 		case KEYDBGGED+KEY_PERIOD: 
-			xRenderZoom = FixMul(xRenderZoom, 68985); 
+			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 68985); 
 			break;
 
 		case KEYDBGGED+KEY_P+KEY_SHIFTED: 

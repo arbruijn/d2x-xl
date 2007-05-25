@@ -236,11 +236,11 @@ next_row = s;
 while (next_row != NULL) {
 	text_ptr1 = next_row;
 	next_row = NULL;
-	if (x==0x8000) {			//centered
+	if (x == 0x8000) {			//centered
 		int xx = GetCenteredX (text_ptr1);
 		VideoOffset1 = y * ROWSIZE + xx;
 		}
-	for (r=0; r<FHEIGHT; r++) {
+	for (r = 0; r < FHEIGHT; r++) {
 		text_ptr = text_ptr1;
 		VideoOffset = VideoOffset1;
 		while (*text_ptr) {
@@ -249,7 +249,7 @@ while (next_row != NULL) {
 				break;
 				}
 			if (*text_ptr == CC_COLOR) {
-				FG_COLOR.index = * (text_ptr+1);
+				FG_COLOR.index = *(text_ptr+1);
 				FG_COLOR.rgb = 0;
 				text_ptr += 2;
 				continue;
@@ -261,29 +261,29 @@ while (next_row != NULL) {
 				}
 			underline = 0;
 			if (*text_ptr == CC_UNDERLINE) {
-				if ((r==FBASELINE+2) || (r==FBASELINE+3))
+				if ((r == FBASELINE + 2) || (r == FBASELINE + 3))
 					underline = 1;
 				text_ptr++;
 				}	
 			get_char_width (text_ptr[0], text_ptr[1], &width, &spacing);
-			letter = *text_ptr-FMINCHAR;
+			letter = *text_ptr - FMINCHAR;
 			if (!INFONT (letter)) {	//not in font, draw as space
 				VideoOffset += spacing;
 				text_ptr++;
 				continue;
 				}
 			if (FFLAGS & FT_PROPORTIONAL)
-				fp = FCHARS[letter];
+				fp = FCHARS [letter];
 			else
 				fp = FDATA + letter * BITS_TO_BYTES (width)*FHEIGHT;
 			if (underline)
-				for (i=0; i< width; i++)
+				for (i = 0; i < width; i++)
 					DATA[VideoOffset++] = (unsigned char) FG_COLOR.index;
 				else {
 					fp += BITS_TO_BYTES (width)*r;
 					BitMask = 0;
-					for (i=0; i< width; i++) {
-						if (BitMask==0) {
+					for (i = 0; i < width; i++) {
+						if (BitMask == 0) {
 							bits = *fp++;
 							BitMask = 0x80;
 							}
@@ -555,65 +555,59 @@ void ogl_init_font (grs_font * font)
 //		 (font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth", (font->ftFlags & FT_COLOR)?"color":"mono", nchars, tw, th);
 #endif		
 	//	s[1]=0;
-	h=font->ft_h;
+	h = font->ft_h;
 	//	sleep (5);
 
-	for (i=0;i<nchars;i++){
+	for (i = 0; i < nchars; i++) {
 		//		s[0]=font->ft_minchar+i;
 		//		GrGetStringSize (s, &w, &h, &aw);
 		if (font->ftFlags & FT_PROPORTIONAL)
-			w = font->ft_widths[i];
+			w = font->ft_widths [i];
 		else
 			w = font->ft_w;
-		if (w<1 || w>256){
+		if (w < 1 || w > 256)
 			continue;
-		}
-		if (curx+w+gap>tw){
-			cury+=h+gap;
-			curx=0;
-		}
-		if (cury+h>th)
+		if (curx + w + gap > tw) {
+			cury += h + gap;
+			curx = 0;
+			}
+		if (cury + h > th)
 			Error (TXT_FONT_SIZE, i, nchars);
 		if (font->ftFlags & FT_COLOR) {
 			if (font->ftFlags & FT_PROPORTIONAL)
 				fp = font->ft_chars[i];
 			else
 				fp = font->ft_data + i * w*h;
-			for (y=0;y<h;y++)
-				for (x=0;x<w;x++){
-					font->ft_parent_bitmap.bm_texBuf[curx+x+ (cury+y)*tw]=fp[x+y*w];
+			for (y = 0; y < h; y++)
+				for (x = 0; x < w; x++){
+					font->ft_parent_bitmap.bm_texBuf [curx + x + (cury + y) * tw] = fp [x + y * w];
 				}
 
 			//			GrInitBitmap (&font->ft_bitmaps[i], BM_LINEAR, 0, 0, w, h, w, font->);
-		}else{
-			int BitMask, bits=0, white=GrFindClosestColor (palette, 63, 63, 63);
+			}
+		else {
+			int BitMask, bits = 0, white = GrFindClosestColor (palette, 63, 63, 63);
 			//			if (w*h>sizeof (data))
 			//				Error ("ogl_init_font: toobig\n");
 			if (font->ftFlags & FT_PROPORTIONAL)
-				fp = font->ft_chars[i];
+				fp = font->ft_chars [i];
 			else
-				fp = font->ft_data + i * BITS_TO_BYTES (w)*h;
-			for (y=0;y<h;y++){
-				BitMask=0;
-				for (x=0; x< w; x++)
-				{
-					if (BitMask==0) {
+				fp = font->ft_data + i * BITS_TO_BYTES (w) * h;
+			for (y = 0; y < h; y++) {
+				BitMask = 0;
+				for (x = 0; x < w; x++) {
+					if (BitMask == 0) {
 						bits = *fp++;
 						BitMask = 0x80;
-					}
-
-					if (bits & BitMask)
-						font->ft_parent_bitmap.bm_texBuf[curx+x+ (cury+y)*tw]=white;
-					else
-						font->ft_parent_bitmap.bm_texBuf[curx+x+ (cury+y)*tw]=255;
+						}
+					font->ft_parent_bitmap.bm_texBuf [curx + x + (cury + y) * tw] = (bits & BitMask) ? white : 255;
 					BitMask >>= 1;
+					}
 				}
 			}
-		}
 		GrInitSubBitmap (&font->ft_bitmaps[i], &font->ft_parent_bitmap, curx, cury, w, h);
-
-		curx+=w+gap;
-	}
+		curx += w + gap;
+		}
 	if (!(font->ftFlags & FT_COLOR)) {
 		//use GL_INTENSITY instead of GL_RGB
 		if (gameStates.ogl.bIntensity4) {
@@ -628,7 +622,7 @@ void ogl_init_font (grs_font * font)
 			font->ft_parent_bitmap.glTexture->internalformat = gameStates.ogl.bpp / 8;
 			font->ft_parent_bitmap.glTexture->format = gameStates.ogl.nRGBAFormat;
 			}
-	OglLoadBmTextureM (&font->ft_parent_bitmap, 0, 0, 0, NULL);
+	OglLoadBmTextureM (&font->ft_parent_bitmap, 0, 2, 0, NULL);
 	}
 }
 
@@ -854,7 +848,7 @@ while (next_row != NULL) {
 		}
 	}
 bmP->bm_palette = palP;
-OglLoadBmTexture (bmP, 0, 0);
+OglLoadBmTexture (bmP, 0, 2);
 return bmP;
 }
 
@@ -1407,9 +1401,10 @@ if (bSetFG) {
 	}
 if (bSetBG) {
 	BG_COLOR.rgb = 1;
-	BG_COLOR.color.green = RGBA_GREEN (fg);
-	BG_COLOR.color.blue = RGBA_BLUE (fg);
-	BG_COLOR.color.alpha = RGBA_ALPHA (fg);
+	BG_COLOR.color.red = RGBA_RED (bg);
+	BG_COLOR.color.green = RGBA_GREEN (bg);
+	BG_COLOR.color.blue = RGBA_BLUE (bg);
+	BG_COLOR.color.alpha = RGBA_ALPHA (bg);
 	}
 }
 

@@ -368,7 +368,7 @@ if (!bmp)
 	return;
 WIN (DDGRLOCK (dd_grd_curcanv));
 if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle))
-	show_fullscr (bmp);
+	ShowFullscreenImage (bmp);
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (bg)
 	bg->background = bmp;

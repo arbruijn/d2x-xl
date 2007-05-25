@@ -150,7 +150,7 @@ grsBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndire
 if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
 if (gameOpts->ogl.bGlTexMerge) {
-	OglLoadBmTexture (bmP, 1, 0);
+	OglLoadBmTexture (bmP, 1, 3);
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.pBitmaps;
 	for (i = 0; i < nFrames; i++) {
 		j = BM_INDEX (frameP, i, bIndirect, bObject);
@@ -163,10 +163,10 @@ if (gameOpts->ogl.bGlTexMerge) {
 else {
 	grsBitmap *bmfP, *hbmP;
 
-	OglLoadBmTexture (bmP, 1, 0);
+	OglLoadBmTexture (bmP, 1, 3);
 #ifdef _DEBUG
 	if (!BM_FRAMES (bmP))
-		OglLoadBmTexture (bmP, 1, 0);
+		OglLoadBmTexture (bmP, 1, 3);
 #endif
 	nBmFrames = BM_FRAMECOUNT (bmP);
 	if ((bmfP = BM_FRAMES (bmP))) {
@@ -263,9 +263,9 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.pBmIndex [t] = bmi;
 			}
 		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && (BM_FRAMECOUNT (bmP) > 1)) {
-			OglLoadBmTexture (bmP, 1, 0);
+			OglLoadBmTexture (bmP, 1, 3);
 			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + min (ecP->nCurFrame, BM_FRAMECOUNT (bmP) - 1);
-			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 0);
+			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3);
 			}
 		else {
 			if ((ecP->flags & EF_ALTFMT) && (ecP->nCurFrame >= nFrames))
@@ -317,10 +317,10 @@ xEffectTime += gameData.time.xFrame;
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
 		else if ((ecP->flags & EF_ALTFMT) && BM_FRAMES (bmP)) {
-			OglLoadBmTexture (bmP, 1, 0);
+			OglLoadBmTexture (bmP, 1, 3);
 			if (BM_FRAMES (bmP)) {
 				BM_CURFRAME (bmP) = BM_FRAMES (bmP) + ecP->nCurFrame;
-				OglLoadBmTexture (BM_CURFRAME (bmP), 1, 0);
+				OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3);
 				}
 			}
 		else {

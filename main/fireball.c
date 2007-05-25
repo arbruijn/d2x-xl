@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "text.h"
 #include "hudmsg.h"
+#include "interp.h"
 //#define _DEBUG
 #define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this 
 
@@ -1883,7 +1884,6 @@ int CreateMonsterball (void)
 {
 	short			nDropSeg, nObject;
 	vmsVector	vSegCenter;
-	vmsVector	vInitVel = ZERO_VECTOR;
 
 RemoveMonsterball ();
 #ifdef _DEBUG
@@ -1894,7 +1894,7 @@ nDropSeg = (gameData.hoard.nMonsterballSeg >= 0) ?
 #endif
 if (nDropSeg >= 0) {
 	COMPUTE_SEGMENT_CENTER_I (&vSegCenter, nDropSeg);
-	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vInitVel, &vSegCenter, nDropSeg);
+	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, &vZero, &vSegCenter, nDropSeg);
 	if (nObject >= 0) {
 		gameData.hoard.monsterballP = gameData.objs.objects + nObject;
 		gameData.hoard.monsterballP->nType = OBJ_MONSTERBALL;

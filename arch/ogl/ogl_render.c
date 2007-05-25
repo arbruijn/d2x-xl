@@ -923,7 +923,7 @@ if (bmP || (nTexId >= 0)) {
 	if (nTexId >= 0)
 		OGL_BINDTEX (nTexId);
 	else {
-		if (OglBindBmTex (bmP, 1, 0))
+		if (OglBindBmTex (bmP, 1, 3))
 			return 1;
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
 		}
@@ -1307,7 +1307,7 @@ if (pVertColor) {
 
 #define	INIT_TMU(_initTMU,_bm) \
 			_initTMU (); \
-			if (OglBindBmTex (_bm, 1, 0)) \
+			if (OglBindBmTex (_bm, 1, 3)) \
 				return 1; \
 			(_bm) = BmCurFrame (_bm); \
 			OglTexWrap ((_bm)->glTexture, GL_REPEAT);
@@ -1394,7 +1394,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		return 1;
 #else
 	InitTMU0 ();	// use render pipeline 0 for bottom texture
-	if (OglBindBmTex (bmBot, 1, 0))
+	if (OglBindBmTex (bmBot, 1, 3))
 		return 1;
 	bmBot = BmCurFrame (bmBot);
 	OglTexWrap (bmBot->glTexture, GL_REPEAT);
@@ -1402,7 +1402,7 @@ if (gameStates.render.color.bLightMapsOk &&
 		glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
 	if (bmTop) { // use render pipeline 0 for overlay texture
 		InitTMU1 ();
-		if (OglBindBmTex (bmTop, 1, 0))
+		if (OglBindBmTex (bmTop, 1, 3))
 			return 1;
 		bmTop = BmCurFrame (bmTop);
 		OglTexWrap (bmTop->glTexture, GL_REPEAT);
@@ -1501,7 +1501,7 @@ else
 			}
 		else {
 			InitTMU0 ();
-			if (OglBindBmTex (bmBot, 1, 0))
+			if (OglBindBmTex (bmBot, 1, 3))
 				return 1;
 			bmBot = BmCurFrame (bmBot);
 			if (bmBot == bmpCorona)
@@ -1570,7 +1570,7 @@ else
 			r_tpolyc++;
 			OglActiveTexture (GL_TEXTURE0_ARB);
 			glEnable (GL_TEXTURE_2D);
-			if (OglBindBmTex (bmTop, 1, 0))
+			if (OglBindBmTex (bmTop, 1, 3))
 				return 1;
 			bmTop = BmCurFrame (bmTop);
 			OglTexWrap (bmTop->glTexture, GL_REPEAT);
@@ -1635,7 +1635,7 @@ bool G3DrawBitmap (
 	int			bDepthInfo)
 {
 	vmsVector	pv, v1;
-	GLfloat		h, w, u, v, x, y, z;
+	GLdouble		h, w, u, v, x, y, z;
 	GLint			depthFunc;
 
 r_bitmapc++;
@@ -1648,19 +1648,19 @@ if (!bDepthInfo) {
 	}
 VmVecSub (&v1, pos, &viewInfo.pos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
-x = (float) f2glf (pv.p.x);
-y = (float) f2glf (pv.p.y);
-z = (float) f2glf (pv.p.z);
-w = (float) f2glf (width); //FixMul (width, viewInfo.scale.x));
-h = (float) f2glf (height); //FixMul (height, viewInfo.scale.y));
+x = (double) f2glf (pv.p.x);
+y = (double) f2glf (pv.p.y);
+z = (double) f2glf (pv.p.z);
+w = (double) f2glf (width); //FixMul (width, viewInfo.scale.x));
+h = (double) f2glf (height); //FixMul (height, viewInfo.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);
 	glBegin (GL_QUADS);
-	glVertex3f (x - w, y + h, z);
-	glVertex3f (x + w, y + h, z);
-	glVertex3f (x + w, y - h, z);
-	glVertex3f (x - w, y - h, z);
+	glVertex3d (x - w, y + h, z);
+	glVertex3d (x + w, y + h, z);
+	glVertex3d (x + w, y - h, z);
+	glVertex3d (x - w, y - h, z);
 	glEnd ();
 	}
 else {
@@ -1672,17 +1672,17 @@ else {
 	if (color)
 		glColor4f (color->red, color->green, color->blue, alpha);
 	else
-		glColor4f (1.0f, 1.0f, 1.0f, alpha);
+		glColor4d (1, 1, 1, (double) alpha);
 	glBegin (GL_QUADS);
 	u = bmP->glTexture->u;
 	v = bmP->glTexture->v;
-	glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, 0);
-	glVertex3f (x - w, y + h, z);
-	glMultiTexCoord2f (GL_TEXTURE0_ARB, u, 0);
-	glVertex3f (x + w, y + h, z);
-	glMultiTexCoord2f (GL_TEXTURE0_ARB, u, v);
-	glVertex3f (x + w, y - h, z);
-	glMultiTexCoord2f (GL_TEXTURE0_ARB, 0, v);
+	glTexCoord2d (0, 0);
+	glVertex3d (x - w, y + h, z);
+	glTexCoord2d (u, 0);
+	glVertex3d (x + w, y + h, z);
+	glTexCoord2d (u, v);
+	glVertex3d (x + w, y - h, z);
+	glTexCoord2d (0, v);
 	glVertex3f (x - w, y - h, z);
 	glEnd ();
 	}
@@ -1756,7 +1756,7 @@ yo = 1.0f - dy - y / ((float) gameStates.ogl.nLastH * h);
 yf = 1.0f - dy - (dh + y) / ((float) gameStates.ogl.nLastH * h);
 
 OglActiveTexture (GL_TEXTURE0_ARB);
-if (OglBindBmTex (bmP, 0, 2))
+if (OglBindBmTex (bmP, 0, 3))
 	return 1;
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 

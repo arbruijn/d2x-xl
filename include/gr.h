@@ -433,7 +433,7 @@ int gr_uaaline(fix x0, fix y0, fix x1, fix y1);
 void GrBitmap(int x, int y, grsBitmap *bm);
 void gr_ubitmap(int x, int y, grsBitmap *bm);
 void GrBitmapScaleTo(grsBitmap *src, grsBitmap *dst);
-void show_fullscr(grsBitmap *bm);
+void ShowFullscreenImage(grsBitmap *bm);
 
 // bitmap function with transparency
 void GrBitmapM (int x, int y, grsBitmap *bmP, int bTransp);

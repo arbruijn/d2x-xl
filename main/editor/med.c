@@ -689,7 +689,7 @@ int SetPlayerFromCursegMinusOne()
 
 	GrSetCurrentCanvas(Canv_editor_game);
 	G3StartFrame();
-	G3SetViewMatrix(&gameData.objs.console->position.vPos,&gameData.objs.console->position.mOrient,xRenderZoom);
+	G3SetViewMatrix(&gameData.objs.console->position.vPos,&gameData.objs.console->position.mOrient,gameStates.render.xZoom);
 
 	for (i=max=0;i<4;i++) {
 		corner_v[i] = gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][i]]];
@@ -833,14 +833,14 @@ int ToggleOutlineMode()
 
 int GameZoomOut()
 {
-	xRenderZoom = FixMul(xRenderZoom,68985);
+	gameStates.render.xZoom = FixMul(gameStates.render.xZoom,68985);
 	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 	return 1;
 }
 
 int GameZoomIn()
 {
-	xRenderZoom = FixMul(xRenderZoom,62259);
+	gameStates.render.xZoom = FixMul(gameStates.render.xZoom,62259);
 	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 	return 1;
 }

@@ -855,16 +855,16 @@ void GrBitmapScaleTo(grsBitmap *src, grsBitmap *dst)
 
 //------------------------------------------------------------------------------
 
-void show_fullscr (grsBitmap *src)
+void ShowFullscreenImage (grsBitmap *src)
 {
 	grsBitmap * const dest = &grdCurCanv->cv_bitmap;
 
 if(src->bm_props.nType == BM_LINEAR && dest->bm_props.nType == BM_OGL) {
 	if (!gameStates.render.bBlendBackground)
-		glDisable(GL_BLEND);
+		glDisable (GL_BLEND);
 	OglUBitBltI (dest->bm_props.w, dest->bm_props.h, 0, 0, src->bm_props.w, src->bm_props.h, 0, 0, src, dest, 0, 0);
 	if (!gameStates.render.bBlendBackground)
-		glEnable(GL_BLEND);
+		glEnable (GL_BLEND);
 	return;
 	}
 if(dest->bm_props.nType != BM_LINEAR) {

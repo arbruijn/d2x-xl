@@ -784,8 +784,6 @@ int find_exit_side (tObject *objP)
 
 //------------------------------------------------------------------------------
 
-extern fix xRenderZoom;							//the tPlayer's zoom factor
-
 void DrawExitModel ()
 {
 	vmsVector model_pos;
@@ -818,7 +816,7 @@ void RenderExternalScene (fix xEyeOffset)
 gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (xEyeOffset)
 	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
-G3SetViewMatrix (&gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+G3SetViewMatrix (&gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 GrClearCanvas (BLACK_RGBA);
 G3StartInstanceMatrix (&vmdZeroVector, &surface_orient);
 DrawStars ();
@@ -915,10 +913,10 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	vmsAngVec angles = {0, 0, 0x7fff};
 	VmAngles2Matrix (&headm, &angles);
 	VmMatMul (&viewm, &gameData.objs.viewer->position.mOrient, &headm);
-	G3SetViewMatrix (&gameData.render.mine.viewerEye, &viewm, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &viewm, gameStates.render.xZoom);
 	}
 else
-	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 }
 

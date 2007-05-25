@@ -1,4 +1,4 @@
-/* $Id: titles.c,v 1.29 2003/11/27 09:16:58 btb Exp $ */
+/* $Id: titles.c, v 1.29 2003/11/27 09:16:58 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "globvars.h"
 #include "strutil.h"
 #include "vecmat.h"
+#include "interp.h"
 
 #include "ogl_init.h"
 #ifdef __macosx__
@@ -69,7 +70,7 @@ typedef struct {
 	char    bs_name[14];                //  filename, eg merc01.  Assumes .lbm suffix.
 	sbyte   level_num;
 	sbyte   message_num;
-	short   text_ulx, text_uly;         //  upper left x,y of text window
+	short   text_ulx, text_uly;         //  upper left x, y of text window
 	short   text_width, text_height;    //  width and height of text window
 } briefing_screen;
 
@@ -78,7 +79,7 @@ void DoBriefingColorStuff ();
 int get_new_message_num (char **message);
 int DefineBriefingBox (char **buf, briefing_screen *pBriefBuf);
 
-extern unsigned RobSX,RobSY,RobDX,RobDY; // Robot movie coords
+extern unsigned RobSX, RobSY, RobDX, RobDY; // Robot movie coords
 
 //static ubyte brief_palette [256*3];
 //static ubyte robot_palette [256*3];
@@ -107,16 +108,16 @@ int	Current_color = 0;
 unsigned int nEraseColor = BLACK_RGBA;
 
 grs_rgba briefFgColors [2][MAX_BRIEFING_COLORS] = {
-	{{0,160,0,255},{160,132,140,255},{32,124,216,255},{0,0,216,255},{56,56,56,255},{216,216,0,255},{0,216,216,255},{255,255,255,255}},
-	{{0,216,0,255},{168,152,128,255},{252,0,0,255},{0,0,216,255},{56,56,56,255},{216,216,0,255},{0,216,216,255},{255,255,255,255}}
+	{{0, 160, 0, 255}, {160, 132, 140, 255}, {32, 124, 216, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}, 
+	{{0, 216, 0, 255}, {168, 152, 128, 255}, {252, 0, 0, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}
 	};
 
 grs_rgba briefBgColors [2][MAX_BRIEFING_COLORS] = {
-	{{0,24,255},{20,20,20,255},{4,16,28,255},{0,0,76,255},{0,0,0,255},{76,76,0,255},{0,76,76,255},{255,255,255,255}},
-	{{0,76,0,255},{56,56,56,255},{124,0,0,255},{0,0,76,255},{0,0,0,255},{76,76,0,255},{0,76,76,255},{255,255,255,255}}
+	{{0, 24, 255}, {20, 20, 20, 255}, {4, 16, 28, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}, 
+	{{0, 76, 0, 255}, {56, 56, 56, 255}, {124, 0, 0, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}
 	};
 
-grs_rgba eraseColorRgb = {0,0,0,255};
+grs_rgba eraseColorRgb = {0, 0, 0, 255};
 
 typedef struct tD1ExtraBotSound {
 	char	*pszName;
@@ -125,19 +126,19 @@ typedef struct tD1ExtraBotSound {
 } tD1ExtraBotSound;
 
 tD1ExtraBotSound extraBotSounds [] = {
-	{"enemy01.wav", 1, 0},
-	{"enemy02.wav", 1, 1},
-	{"enemy03.wav", 1, 2},
-	{"enemy04.wav", 1, 3},
-	{"enemy05.wav", 1, 4},
-	{"enemy06.wav", 1, 5},
-	{"enemy07.wav", 6, 0},
-	{"enemy08.wav", 8, 0},
-	{"enemy09.wav", 8, 1},
-	{"enemy10.wav", 8, 2},
-	{"enemy11.wav", 10, 0},
-	{"enemy12.wav", 13, 0},
-	{"enemy13.wav", 16, 0},
+	{"enemy01.wav", 1, 0}, 
+	{"enemy02.wav", 1, 1}, 
+	{"enemy03.wav", 1, 2}, 
+	{"enemy04.wav", 1, 3}, 
+	{"enemy05.wav", 1, 4}, 
+	{"enemy06.wav", 1, 5}, 
+	{"enemy07.wav", 6, 0}, 
+	{"enemy08.wav", 8, 0}, 
+	{"enemy09.wav", 8, 1}, 
+	{"enemy10.wav", 8, 2}, 
+	{"enemy11.wav", 10, 0}, 
+	{"enemy12.wav", 13, 0}, 
+	{"enemy13.wav", 16, 0}, 
 	{"enemy14.wav", 17, 0}
 };
 
@@ -281,51 +282,45 @@ return pcxErr;
 
 //-----------------------------------------------------------------------------
 
-int show_title_screen (char * filename, int allow_keys, int from_hog_only)
+int ShowBriefingImage (char * filename, int allow_keys, int from_hog_only)
 {
 	fix timer;
 	int pcx_error;
 	grsBitmap title_bm;
 	char new_filename [FILENAME_LEN+1] = "";
 
-	#ifndef _DEBUG
-	if (from_hog_only)
-		strcpy (new_filename,"\x01");	//only read from hog file
-	#endif
-
-	strcat (new_filename,filename);
-	filename = new_filename;
-
-	title_bm.bm_texBuf=NULL;
-	if ((pcx_error = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
-#if TRACE
-		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n",filename, pcx_errormsg (pcx_error), pcx_error);
+#ifndef _DEBUG
+if (from_hog_only)
+	strcpy (new_filename, "\x01");	//only read from hog file
 #endif
-		Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n",filename, pcx_errormsg (pcx_error), pcx_error);
-	}
-	//vfx_set_palette_sub (brief_palette);
-	GrPaletteStepLoad (NULL);
-	WINDOS (
-		DDGrSetCurrentCanvas (NULL),
-		GrSetCurrentCanvas (NULL)
-	);
-	WIN (DDGRLOCK (dd_grd_curcanv));
-	show_fullscr (&title_bm);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	WIN (DDGRRESTORE);
-	if (GrPaletteFadeIn (NULL, 32, allow_keys))
-		return 1;
 
-	GrPaletteStepLoad (NULL);
-	timer	= TimerGetFixedSeconds () + i2f (3);
-	while (1) {
-		if (local_key_inkey () && allow_keys) break;
-		if (TimerGetFixedSeconds () > timer) break;
-	}
-	if (GrPaletteFadeOut (NULL, 32, allow_keys))
-		return 1;
-	D2_FREE (title_bm.bm_texBuf);
-	return 0;
+strcat (new_filename, filename);
+filename = new_filename;
+
+title_bm.bm_texBuf=NULL;
+if ((pcx_error = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
+#if TRACE
+	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcx_error), pcx_error);
+#endif
+	Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n", filename, pcx_errormsg (pcx_error), pcx_error);
+}
+//vfx_set_palette_sub (brief_palette);
+GrPaletteStepLoad (NULL);
+GrSetCurrentCanvas (NULL);
+ShowFullscreenImage (&title_bm);
+if (GrPaletteFadeIn (NULL, 32, allow_keys))
+	return 1;
+
+GrPaletteStepLoad (NULL);
+timer	= TimerGetFixedSeconds () + i2f (3);
+while (1) {
+	if (local_key_inkey () && allow_keys) break;
+	if (TimerGetFixedSeconds () > timer) break;
+}
+if (GrPaletteFadeOut (NULL, 32, allow_keys))
+	return 1;
+D2_FREE (title_bm.bm_texBuf);
+return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -342,13 +337,13 @@ int show_title_screen (char * filename, int allow_keys, int from_hog_only)
 
 #if 0
 briefing_screen Briefing_screens[MAX_BRIEFING_SCREENS]=
- {{"brief03.pcx",0,3,8,8,257,177}}; // default=0!!!
+ {{"brief03.pcx", 0, 3, 8, 8, 257, 177}}; // default=0!!!
 #else
 briefing_screen Briefing_screens[] = {
-	{ "brief01.pcx",   0,  1,  13, 140, 290,  59 },
-	{ "brief02.pcx",   0,  2,  27,  34, 257, 177 },
-	{ "brief03.pcx",   0,  3,  20,  22, 257, 177 },
-	{ "brief02.pcx",   0,  4,  27,  34, 257, 177 },
+	{ "brief01.pcx",   0,  1,  13, 140, 290,  59 }, 
+	{ "brief02.pcx",   0,  2,  27,  34, 257, 177 }, 
+	{ "brief03.pcx",   0,  3,  20,  22, 257, 177 }, 
+	{ "brief02.pcx",   0,  4,  27,  34, 257, 177 }, 
 
 	{ "moon01.pcx",    1,  5,  10,  10, 300, 170 }, // level 1
 	{ "moon01.pcx",    2,  6,  10,  10, 300, 170 }, // level 2
@@ -357,26 +352,26 @@ briefing_screen Briefing_screens[] = {
 	{ "venus01.pcx",   4,  8,  15, 15, 300,  200 }, // level 4
 	{ "venus01.pcx",   5,  9,  15, 15, 300,  200 }, // level 5
 
-	{ "brief03.pcx",   6, 10,  20,  22, 257, 177 },
+	{ "brief03.pcx",   6, 10,  20,  22, 257, 177 }, 
 	{ "merc01.pcx",    6, 11,  10, 15, 300, 200 },  // level 6
 	{ "merc01.pcx",    7, 12,  10, 15, 300, 200 },  // level 7
 
-	{ "brief03.pcx",   8, 13,  20,  22, 257, 177 },
+	{ "brief03.pcx",   8, 13,  20,  22, 257, 177 }, 
 	{ "mars01.pcx",    8, 14,  10, 100, 300,  200 }, // level 8
 	{ "mars01.pcx",    9, 15,  10, 100, 300,  200 }, // level 9
-	{ "brief03.pcx",  10, 16,  20,  22, 257, 177 },
+	{ "brief03.pcx",  10, 16,  20,  22, 257, 177 }, 
 	{ "mars01.pcx",   10, 17,  10, 100, 300,  200 }, // level 10
 
 	{ "jup01.pcx",    11, 18,  10, 40, 300,  200 }, // level 11
 	{ "jup01.pcx",    12, 19,  10, 40, 300,  200 }, // level 12
-	{ "brief03.pcx",  13, 20,  20,  22, 257, 177 },
+	{ "brief03.pcx",  13, 20,  20,  22, 257, 177 }, 
 	{ "jup01.pcx",    13, 21,  10, 40, 300,  200 }, // level 13
 	{ "jup01.pcx",    14, 22,  10, 40, 300,  200 }, // level 14
 
 	{ "saturn01.pcx", 15, 23,  10, 40, 300,  200 }, // level 15
-	{ "brief03.pcx",  16, 24,  20,  22, 257, 177 },
+	{ "brief03.pcx",  16, 24,  20,  22, 257, 177 }, 
 	{ "saturn01.pcx", 16, 25,  10, 40, 300,  200 }, // level 16
-	{ "brief03.pcx",  17, 26,  20,  22, 257, 177 },
+	{ "brief03.pcx",  17, 26,  20,  22, 257, 177 }, 
 	{ "saturn01.pcx", 17, 27,  10, 40, 300,  200 }, // level 17
 
 	{ "uranus01.pcx", 18, 28,  100, 100, 300,  200 }, // level 18
@@ -435,8 +430,9 @@ Briefing_text_y = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8
 void ShowBitmapFrame (int bRedraw)
 {
 	grs_canvas *curCanvSave, *bitmap_canv=0;
+	vmsVector p = ZERO_VECTOR;
 
-	grsBitmap *bitmap_ptr;
+	grsBitmap *bmP;
 	int x = rescale_x (138);
 	int y = rescale_y (55);
 	int w = rescale_x (166);
@@ -452,29 +448,21 @@ void ShowBitmapFrame (int bRedraw)
 	if (Bitmap_name[0] != 0) {
 		char		*pound_signp;
 		int		num, dig1, dig2;
-
 		//	Set supertransparency color to black
 		switch (Animating_bitmapType) {
 			case 0: 
-				WINDOS (
-					bitmap_canv = DDGrCreateSubCanvas (dd_grd_curcanv, x, y, w, h);/*rescale_x (220), rescale_x (45), 64, 64);*/	break,
-					bitmap_canv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);/*rescale_x (220), rescale_x (45), 64, 64);*/	break
-					);
+				bitmap_canv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+				break;
 			case 1:
-				WINDOS (
-					bitmap_canv = DDGrCreateSubCanvas (dd_grd_curcanv, x, y, w, h);/*rescale_x (220), rescale_x (45), 64, 64);*/	break,
-					bitmap_canv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);/*rescale_x (220), rescale_x (45), 64, 64);*/	break
-					);
-
+				bitmap_canv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+				break;
 			// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 			default:
 				Int3 (); // Impossible, illegal value for Animating_bitmapType
 			}
-
-		WINDOS (
-			curCanvSave = dd_grd_curcanv; dd_grd_curcanv = bitmap_canv,
-			curCanvSave = grdCurCanv; grdCurCanv = bitmap_canv
-		);
+		curCanvSave = grdCurCanv; 
+		grdCurCanv = bitmap_canv;
+		GrClearCanvas (0);
 		if (!bRedraw) {	//extract current bitmap number from bitmap name (<name>#<number>)
 			pound_signp = strchr (Bitmap_name, '#');
 			Assert (pound_signp != NULL);
@@ -521,37 +509,22 @@ void ShowBitmapFrame (int bRedraw)
 
 		LoadPalette ("", "", 0, 0, 1);
 		{
-		tBitmapIndex bi;
-		bi = piggy_find_bitmap (Bitmap_name, 0);
-		bitmap_ptr = gameData.pig.tex.bitmaps [0] + bi.index;
-		PIGGY_PAGE_IN (bi, 0);
-//			OglLoadBmTexture (gameData.pig.tex.bitmaps + bi.index);
+		tBitmapIndex bmi = piggy_find_bitmap (Bitmap_name, 0);
+		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+		PIGGY_PAGE_IN (bmi, 0);
 		}
 
-		WIN (DDGRLOCK (dd_grd_curcanv));
-		//GrBitmapM (0, 0, bitmap_ptr);
-		//show_fullscr (bitmap_ptr);
 		{
-#define DEFAULT_VIEW_DIST 0x60000
-		vmsVector	temp_pos = ZERO_VECTOR;
-		vmsMatrix	temp_orient = IDENTITY_MATRIX;
-		GrClearCanvas (0);
-		G3StartFrame (0,0);
-		G3SetViewMatrix (&temp_pos,&temp_orient,0);
-		memcpy (&viewInfo.view [0], &temp_orient, sizeof (viewInfo.view [0]));
-		VmsMatToFloat (&viewInfo.viewf [0], &viewInfo.view [0]);
-		temp_pos.p.z = w * F1_0;
-		G3DrawBitmap (&temp_pos, w * F1_0, h * F1_0, bitmap_ptr, 0, NULL, 1.0, 0, 0);
+		G3StartFrame (1, 0);
+		G3SetViewMatrix (&p, &mIdentity, gameStates.render.xZoom);
+		p.p.z = 2 * w * F1_0;
+		G3DrawBitmap (&p, w * F1_0, h * F1_0, bmP, 0, NULL, 1.0, 3, 0);
 		G3EndFrame ();
 		if (!gameOpts->menus.nStyle)
 			GrUpdate (0);
 		}
 		GrPaletteStepLoad (NULL);
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
-		WINDOS (
-			dd_grd_curcanv = curCanvSave,
-			grdCurCanv = curCanvSave
-		);
+		grdCurCanv = curCanvSave;
 		D2_FREE (bitmap_canv);
 		if (!(bRedraw || Door_divCount)) {
 #if 1
@@ -596,24 +569,21 @@ void ShowSpinningRobotFrame (int nRobot)
 {
 	grs_canvas	*curCanvSave;
 
-	if (nRobot != -1) {
-		Robot_angles.h += 150;
+if (nRobot != -1) {
+	Robot_angles.h += 150;
 
-		curCanvSave = grdCurCanv;
-		grdCurCanv = robotCanv;
-		Assert (ROBOTINFO (nRobot).nModel != -1);
-		if (bInitRobot) 
-			{
-//			GrPaletteStepLoad (robot_palette);
-			LoadPalette ("", "", 0, 0, 1);
-			OglCachePolyModelTextures (ROBOTINFO (nRobot).nModel);
-			GrPaletteStepLoad (NULL);
-			bInitRobot = 0;
-			}
- 		DrawModelPicture (ROBOTINFO (nRobot).nModel, &Robot_angles);
-		grdCurCanv = curCanvSave;
+	curCanvSave = grdCurCanv;
+	grdCurCanv = robotCanv;
+	Assert (ROBOTINFO (nRobot).nModel != -1);
+	if (bInitRobot) {
+		LoadPalette ("", "", 0, 0, 1);
+		OglCachePolyModelTextures (ROBOTINFO (nRobot).nModel);
+		GrPaletteStepLoad (NULL);
+		bInitRobot = 0;
+		}
+	DrawModelPicture (ROBOTINFO (nRobot).nModel, &Robot_angles);
+	grdCurCanv = curCanvSave;
 	}
-
 }
 
 //-----------------------------------------------------------------------------
@@ -624,12 +594,11 @@ grs_canvas	*curCanvSave = grdCurCanv;
 grdCurCanv = robotCanv;
 RotateRobot ();
 grdCurCanv = curCanvSave;
-
 }
 
 //-----------------------------------------------------------------------------
 
-void InitSpinningRobot (void) // (int x,int y,int w,int h)
+void InitSpinningRobot (void) // (int x, int y, int w, int h)
 {
 	//Robot_angles.p += 0;
 	//Robot_angles.b += 0;
@@ -675,7 +644,7 @@ if (cursorFlag && !bRedraw) {
 }
 
 if (delay > 0)
-	delay=FixDiv (F1_0,i2f (15));
+	delay=FixDiv (F1_0, i2f (15));
 
 if ((delay > 0) && !bRedraw) {
 	if (Bitmap_name[0] != 0)
@@ -739,7 +708,7 @@ if (*szBriefScreen) {
 	if ((pcx_error = pcx_read_fullscr (szBriefScreen, gameStates.app.bD1Mission)) != PCX_ERROR_NONE) {
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef _DEBUG
-		Error ("Error loading briefing screen <%s>,\nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcx_error), pcx_error);
+		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcx_error), pcx_error);
 #endif
 		}
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
@@ -755,28 +724,23 @@ int LoadNewBriefingScreen (char *szBriefScreen, int bRedraw)
 	int pcx_error;
 
 #if TRACE
-	con_printf (CONDBG,"Loading new briefing <%s>\n",szBriefScreen);
+con_printf (CONDBG, "Loading new briefing <%s>\n", szBriefScreen);
 #endif
-	strcpy (curBriefScreenName,szBriefScreen);
-	//WIN (DEFINE_SCREEN (curBriefScreenName);
-	if (GrPaletteFadeOut (NULL, 32, 0))
-		return 0;
-	WIN (DDGRLOCK (dd_grd_curcanv));
-	if ((pcx_error = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
+strcpy (curBriefScreenName, szBriefScreen);
+if (GrPaletteFadeOut (NULL, 32, 0))
+	return 0;
+WIN (DDGRLOCK (dd_grd_curcanv));
+if ((pcx_error = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
+	WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef _DEBUG
-		Error ("Error loading briefing screen <%s>,\nPCX load error: %s (%i)\n",
-				szBriefScreen, pcx_errormsg (pcx_error), pcx_error);
+	Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", 
+			szBriefScreen, pcx_errormsg (pcx_error), pcx_error);
 #endif
 	}
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	WIN (DDGRRESTORE);
-	//GrUpdate (0);
-	if (GrPaletteFadeIn (NULL, 32, 0))
-		return 0;
-	DoBriefingColorStuff ();
-	//GrUpdate (1);
-	return 1;
+if (GrPaletteFadeIn (NULL, 32, 0))
+	return 0;
+DoBriefingColorStuff ();
+return 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -874,12 +838,12 @@ while (*message && (!pEnd || (message < pEnd))) {
 	ch = *message++;
 	if (ch == '$') {
 		ch = *message++;
-		if (ch=='D') {
+		if (ch == 'D') {
 			nScreen = DefineBriefingBox (&message, pBriefBuf);
 			x = Briefing_text_x;
 			y = Briefing_text_y;
 			}
-		else if (ch=='U') {
+		else if (ch == 'U') {
 			nScreen = get_message_num (&message);
 			*pBriefBuf = Briefing_screens [nScreen];
 			init_char_pos (pBriefBuf, 1);
@@ -913,21 +877,21 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 
 	briefing_screen	*bsp, briefBuf;
 	int			prev_ch=-1;
-	int			ch, done=0,i;
+	int			ch, done=0, i;
 	int			delayCount = KEY_DELAY_DEFAULT;
 	int			key_check;
 	int			nRobot=-1;
 	int			rval=0;
 	int			flashing_cursor=0;
-	int			new_page=0,GotZ=0;
-	int			nHumChannel = -1, printing_channel = -1, bot_channel = -1;
+	int			new_page=0, GotZ=0;
+	int			nHumChannel = -1, nPrintingChannel = -1, nBotChannel = -1;
 	int			LineAdjustment=1;
 	int			bHaveScreen = 0;
 	char			*pi, *pj;
 	int			x, y, bRedraw, bPageDone;
-	char			spinRobotName[]="rba.mve",kludge;  // matt don't change this!
+	char			spinRobotName[]="rba.mve", kludge;  // matt don't change this!
 	char			szBriefScreen[15], szBriefScreenB[15];
-	char			DumbAdjust=0;
+	char			bDumbAdjust=0;
 	char			chattering=0;
 	short 		nBot = 0;
 	//char			*pEnd = strstr (message, "$S");
@@ -973,7 +937,7 @@ while (!done) {
 		pi = message;
 	else {
 		GrUpdate (0);
-		//StopBriefingSound (&printing_channel);
+		//StopBriefingSound (&nPrintingChannel);
 		message = pi;
 		Briefing_text_x = x;
 		Briefing_text_y = y;
@@ -991,18 +955,18 @@ while (!done) {
 		ch = *message++;
 		if (ch == '$') {
 			ch = *message++;
-			if (ch=='D') {
-				nScreen=DefineBriefingBox (&message, &briefBuf);
+			if (ch == 'D') {
+				nScreen = DefineBriefingBox (&message, &briefBuf);
 		    	//LoadNewBriefingScreen (Briefing_screens[nScreen].bs_name);
 
 				bsp = &briefBuf;
 				x = Briefing_text_x;
 				y = Briefing_text_y;
-				LineAdjustment=0;
+				LineAdjustment = 0;
 				prev_ch = 10;                                   // read to eoln
 				}
-			else if (ch=='U') {
-				nScreen=get_message_num (&message);
+			else if (ch == 'U') {
+				nScreen = get_message_num (&message);
 				briefBuf = Briefing_screens [nScreen];
 				bsp = &briefBuf;
 				init_char_pos (bsp, 1);
@@ -1011,7 +975,7 @@ while (!done) {
 				prev_ch = 10;                                   // read to eoln
 				}
 			else if (ch == 'C') {
-				Current_color = get_message_num (&message)-1;
+				Current_color = get_message_num (&message) - 1;
 				Assert ((Current_color >= 0) && (Current_color < MAX_BRIEFING_COLORS));
 				prev_ch = 10;
 				}
@@ -1022,23 +986,23 @@ while (!done) {
 					;
 				}
 			else if (ch == 'T') {
-				tab_stop = get_message_num (&message);
-				tab_stop*= (1+gameStates.menus.bHires);
+				tab_stop = get_message_num (&message) * (1 + gameStates.menus.bHires);
 				prev_ch = 10;							//	read to eoln
 				}
 			else if (ch == 'R') {
 				if (message > pj) {
 					if (robotCanv != NULL) {
 						D2_FREE (robotCanv);
-						robotCanv=NULL;
+						robotCanv = NULL;
 						}
 					if (bRobotPlaying) {
 						DeInitRobotMovie ();
-						bRobotPlaying=0;
+						bRobotPlaying = 0;
 						}
 					InitSpinningRobot ();
-					StopBriefingSound (&nHumChannel);
-					bot_channel = StartExtraBotSound (bot_channel, (short) nLevel, nBot++);
+					nBotChannel = StartExtraBotSound (nBotChannel, (short) nLevel, nBot++);
+					if (nBotChannel >= 0)
+						StopBriefingSound (&nHumChannel);
 					}
 				if (gameStates.app.bD1Mission) {
 					nRobot = get_message_num (&message);
@@ -1046,14 +1010,13 @@ while (!done) {
 						;
 					}
 				else {
-					kludge=*message++;
-					spinRobotName[2]=kludge; // ugly but proud
+					kludge = *message++;
+					spinRobotName[2] = kludge; // ugly but proud
 					if (message > pj) {
-						grs_canvas	*curCanvSave = grdCurCanv;
+						grs_canvas *curCanvSave = grdCurCanv;
 						grdCurCanv = robotCanv;
 						bRobotPlaying = InitRobotMovie (spinRobotName);
 						grdCurCanv = curCanvSave;
-						// GrRemapBitmapGood (&grdCurCanv->cv_bitmap, pal, -1, -1);
 						if (bRobotPlaying) {
 							RotateBriefingRobot ();
 							DoBriefingColorStuff ();
@@ -1064,12 +1027,10 @@ while (!done) {
 				}
 			else if (ch == 'N') {
 				if (message > pj) {
-				//--grsBitmap *bitmap_ptr;
-					if (robotCanv != NULL) {
+				//--grsBitmap *bmP;
+					if (robotCanv != NULL)
 						D2_FREE (robotCanv);
-						robotCanv=NULL;
-						}
-					StopBriefingSound (&bot_channel);
+					StopBriefingSound (&nBotChannel);
 					get_message_name (&message, Bitmap_name);
 					strcat (Bitmap_name, "#0");
 					Animating_bitmapType = 0;
@@ -1078,22 +1039,20 @@ while (!done) {
 				}
 			else if (ch == 'O') {
 				if (message > pj) {
-					if (robotCanv != NULL) {
+					if (robotCanv != NULL)
 						D2_FREE (robotCanv);
-						robotCanv=NULL;
-						}
 					get_message_name (&message, Bitmap_name);
 					strcat (Bitmap_name, "#0");
 					Animating_bitmapType = 1;
 					}
 				prev_ch = 10;
 				}
-			else if (ch=='A') {
+			else if (ch == 'A') {
 				LineAdjustment=1-LineAdjustment;
 				}
-			else if (ch=='Z') {
-				GotZ=1;
-				DumbAdjust=1;
+			else if (ch == 'Z') {
+				GotZ = 1;
+				bDumbAdjust = 1;
 				i = 0;
 				while ((szBriefScreen [i] = *message) != '\n') {
 					i++;
@@ -1104,21 +1063,18 @@ while (!done) {
 					while (*message++ != 10)    //  Get and drop eoln
 						;
 				for (i = 0; szBriefScreen [i] != '.'; i++)
-					szBriefScreenB[i] = szBriefScreen[i];
+					szBriefScreenB [i] = szBriefScreen [i];
 				memcpy (szBriefScreenB + i, "b.pcx", sizeof ("b.pcx"));
 				i += sizeof ("b.pcx");
-				if ((gameStates.menus.bHires && CFExist (szBriefScreenB,gameFolders.szDataDir,0)) || 
-					 !CFExist (szBriefScreen,gameFolders.szDataDir,0))
+				if ((gameStates.menus.bHires && CFExist (szBriefScreenB, gameFolders.szDataDir, 0)) || 
+					 !CFExist (szBriefScreen, gameFolders.szDataDir, 0))
 					LoadNewBriefingScreen (szBriefScreenB, message <= pj);
 				else
 					LoadNewBriefingScreen (szBriefScreen, message <= pj);
 				bHaveScreen = 1;
-
-				//LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx");
-
 				}
 			else if (ch == 'B') {
-				char        bitmap_name[32];
+				char        bitmap_name [32];
 				grsBitmap  guy_bitmap;
 				int         iff_error;
 
@@ -1137,29 +1093,17 @@ while (!done) {
 				show_briefing_bitmap (&guy_bitmap);
 				D2_FREE (guy_bitmap.bm_texBuf);
 				prev_ch = 10;
-//			} else if (ch==EOF) {
-//				done=1;
-//			} else if (ch == 'B') {
-//				if (robotCanv != NULL)	{
-//					D2_FREE (robotCanv);
-//					robotCanv=NULL;
-//				}
-//
-//				bitmap_num = get_message_num (&message);
-//				if (bitmap_num != -1)
-//					show_briefing_bitmap (gameData.pig.tex.pBmIndex[bitmap_num]);
-//				prev_ch = 10;                           // read to eoln
 				}
 			else if (ch == 'S') {
 				int keypress = 0;
 				fix StartTime;
 
 				chattering=0;
-				StopBriefingSound (&printing_channel);
+				StopBriefingSound (&nPrintingChannel);
 
 				StartTime = TimerGetFixedSeconds ();
 				do {		//	Wait for a key
-					while (TimerGetFixedSeconds () < StartTime + KEY_DELAY_DEFAULT/2)
+					while (TimerGetFixedSeconds () < StartTime + KEY_DELAY_DEFAULT / 2)
 						;
 					flash_cursor (flashing_cursor);
 					if (bRobotPlaying)
@@ -1222,22 +1166,22 @@ while (!done) {
 		else if (ch == 10) {
 			if (prev_ch != '\\') {
 				prev_ch = ch;
-				if (DumbAdjust==0)
+				if (bDumbAdjust == 0)
 					Briefing_text_y += (8* (gameStates.menus.bHires+1));
 				else
-					DumbAdjust--;
+					bDumbAdjust--;
 				Briefing_text_x = bsp->text_ulx;
 				if (Briefing_text_y > bsp->text_uly + bsp->text_height) {
 					LoadBriefingScreen (nScreen);
 					Briefing_text_x = bsp->text_ulx;
 					Briefing_text_y = bsp->text_uly;
+					}
 				}
-			} else {
+			else {
 				if (*message == 13)		//Can this happen? Above says ch==10
 					message++;
 				prev_ch = ch;
-			}
-
+				}
 			}
 		else {
 			if (!GotZ) {
@@ -1247,28 +1191,24 @@ while (!done) {
 					LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx", message <= pj);
 				}
 			prev_ch = ch;
-			WIN (if (GRMODEINFO (emul)) delayCount = 0);
 			bRedraw = !delayCount || (message <= pj);
 			if (!bRedraw) {
-		 		printing_channel = StartBriefingSound (printing_channel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
-				chattering=1;
-			}
+		 		nPrintingChannel = StartBriefingSound (nPrintingChannel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
+				chattering = 1;
+				}
 			Briefing_text_x += PrintCharDelayed ((char) ch, delayCount, nRobot, flashing_cursor, bRedraw);
-		}
+			}
 
 		//	Check for Esc -> abort.
 		if (!bRedraw) {
-			if (delayCount)
-				key_check=local_key_inkey ();
-			else
-				key_check=0;
+			key_check = delayCount ? local_key_inkey () : 0;
 			if (key_check == KEY_ESC) {
 				rval = 1;
 				done = 1;
 				goto done;
 				}
 			if ((key_check == KEY_SPACEBAR) || (key_check == KEY_ENTER)) {
-				StopBriefingSound (&bot_channel);
+				StopBriefingSound (&nBotChannel);
 				delayCount = 0;
 				bRedraw = 1;
 				}
@@ -1286,7 +1226,7 @@ while (!done) {
 			int	keypress = 0;
 
 			new_page = 0;
-			StopBriefingSound (&printing_channel);
+			StopBriefingSound (&nPrintingChannel);
 			chattering=0;
 			{
 				StartTime = TimerGetFixedSeconds ();
@@ -1300,12 +1240,12 @@ while (!done) {
 						ShowSpinningRobotFrame (nRobot);
 					if (Bitmap_name[0] != 0)
 						ShowBitmapFrame (0);
-					StartTime += KEY_DELAY_DEFAULT/2;
+					StartTime += KEY_DELAY_DEFAULT / 2;
 					keypress = local_key_inkey ();
 					if (curDrawBuffer == GL_BACK)
 						break;
  					GrUpdate (0);
-				} while (!keypress);
+					} while (!keypress);
 				if (keypress) {
 					if (bRobotPlaying)
 						DeInitRobotMovie ();
@@ -1350,15 +1290,13 @@ done:
 
 if (bRobotPlaying) {
 	DeInitRobotMovie ();
-	bRobotPlaying=0;
+	bRobotPlaying = 0;
 	}
-
-if (robotCanv != NULL)
-	{D2_FREE (robotCanv); robotCanv=NULL;}
-
+if (robotCanv)
+	D2_FREE (robotCanv);
 StopBriefingSound (&nHumChannel);
-StopBriefingSound (&printing_channel);
-StopBriefingSound (&bot_channel);
+StopBriefingSound (&nPrintingChannel);
+StopBriefingSound (&nBotChannel);
 return rval;
 }
 
@@ -1397,7 +1335,7 @@ int load_screen_text (char *filename, char **buf)
 	char	*bufP;
 
 if ((tfile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) == NULL) {
-	char nfilename[30], *ptr;
+	char nfilename [30], *ptr;
 
 	strcpy (nfilename, filename);
 	if ((ptr = strrchr (nfilename, '.')))
@@ -1405,15 +1343,15 @@ if ((tfile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mi
 	strcat (nfilename, ".txb");
 	if ((ifile = CFOpen (nfilename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) == NULL) {
 #if TRACE
-		con_printf (CONDBG,"can't open %s!\n",nfilename);
+		con_printf (CONDBG, "can't open %s!\n", nfilename);
 #endif
 		return (0);
 		}
 	have_binary = 1;
-	len = CFLength (ifile,0);
+	len = CFLength (ifile, 0);
 	MALLOC (bufP, char, len);
 	*buf = bufP;
-	for (i=0; i < len; i++,bufP++) {
+	for (i = 0; i < len; i++, bufP++) {
 		CFRead (bufP, 1, 1, ifile);
 			if (*bufP == 13)
 				bufP--;
@@ -1421,10 +1359,10 @@ if ((tfile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mi
 	CFClose (ifile);
 	}
 else {
-	len = CFLength (tfile,0);
+	len = CFLength (tfile, 0);
 	MALLOC (bufP, char, len+500);
 	*buf = bufP;
-	for (i=0; i < len; i++, bufP++) {
+	for (i = 0; i < len; i++, bufP++) {
 		CFRead (bufP, 1, 1, tfile);
 			if (*bufP == 13)
 				bufP--;
@@ -1528,7 +1466,7 @@ if (gameStates.app.bD1Mission) {
 		}
 	GrPaletteStepLoad (bmBriefing.bm_palette);
 	GrSetCurrentCanvas (NULL);
-	show_fullscr (&bmBriefing);
+	ShowFullscreenImage (&bmBriefing);
 	GrUpdate (0);
 	GrFreeBitmapData (&bmBriefing);
 	if (GrPaletteFadeIn (NULL, 32, allow_keys))
@@ -1549,11 +1487,12 @@ void DoBriefingScreens (char *filename, int level_num)
 	int	cur_briefing_screen = 0;
 	int	bEnding = (strstr (filename, "endreg") != NULL);
 
+RebuildGfxFx (1, 1);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	return;
 	}
-con_printf (CONDBG,"Trying briefing screen <%s>\n",filename);
+con_printf (CONDBG, "Trying briefing screen <%s>\n", filename);
 LogErr ("Looking for briefing screen '%s'\n", filename);
 if (!filename)
 	return;
@@ -1578,14 +1517,11 @@ if (!load_screen_text (filename, &Briefing_text))
 DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
-WINDOS (
-	DDGrSetCurrentCanvas (NULL),
-	GrSetCurrentCanvas (NULL)
-	);
-con_printf (CONDBG,"Playing briefing screen <%s>, level %d\n",filename,level_num);
+GrSetCurrentCanvas (NULL);
+con_printf (CONDBG, "Playing briefing screen <%s>, level %d\n", filename, level_num);
 KeyFlush ();
 if (gameStates.app.bD1Mission) {
-	gamePalette = LoadPalette (NULL,NULL,1,1,1);
+	gamePalette = LoadPalette (NULL, NULL, 1, 1, 1);
 	LoadD1BitmapReplacements ();
 	if (level_num == 1) {
 		while ((!abort_briefing_screens) && (Briefing_screens[cur_briefing_screen].level_num == ((gameStates.app.bD1Mission && bEnding) ? level_num : 0))) {
@@ -1614,7 +1550,7 @@ return;
 
 int DefineBriefingBox (char **buf, briefing_screen *pBriefBuf)
 {
-	int n,i=0;
+	int n, i=0;
 	char name[20];
 
 	n=get_new_message_num (buf);
@@ -1627,7 +1563,7 @@ int DefineBriefingBox (char **buf, briefing_screen *pBriefBuf)
 		}
 	name[i]='\0';   // slap a delimiter on this guy
 	*pBriefBuf = Briefing_screens [n];
-	strcpy (pBriefBuf->bs_name,name);
+	strcpy (pBriefBuf->bs_name, name);
 	pBriefBuf->level_num=get_new_message_num (buf);
 	pBriefBuf->message_num=get_new_message_num (buf);
 	pBriefBuf->text_ulx=get_new_message_num (buf);

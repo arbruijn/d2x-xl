@@ -688,10 +688,6 @@ glEnd ();
 glLineWidth (1);
 }
 #endif
-#ifdef _3DFX
-_3dfx_rendering_poly_obj = 0;
-#endif
-PA_DFX (gameStates.render.nLighting = bSaveLight);
 }
 
 //------------------------------------------------------------------------------
@@ -817,43 +813,24 @@ atexit (FreePolygonModels);
 //into an off-screen canvas that it creates, then copies to the current
 //canvas.
 
-void DrawModelPicture (int mn, vmsAngVec *orient_angles)
+void DrawModelPicture (int nModel, vmsAngVec *orient_angles)
 {
-	vmsVector	temp_pos = ZERO_VECTOR;
-	vmsMatrix	temp_orient = IDENTITY_MATRIX;
-#if TEMP_CANV
-	grs_canvas	*save_canv = grdCurCanv, *temp_canv;
-#endif
-	Assert (mn>=0 && mn<gameData.models.nPolyModels);
-#if TEMP_CANV
-	temp_canv = GrCreateCanvas (save_canv->cv_bitmap.bm_props.w, save_canv->cv_bitmap.bm_props.h);
-	temp_canv->cv_bitmap.bm_props.p.x = grdCurCanv->cv_bitmap.bm_props.p.x;
-	temp_canv->cv_bitmap.bm_props.p.y = grdCurCanv->cv_bitmap.bm_props.p.y;
-	GrSetCurrentCanvas (temp_canv);
-#endif
-	GrClearCanvas (0);
-	G3StartFrame (1, 0);
-	glDisable (GL_BLEND);
-	G3SetViewMatrix (&temp_pos, &temp_orient, 0x9000);
-	if (gameData.models.polyModels [mn].rad != 0)
-		temp_pos.p.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [mn].rad, BASE_MODEL_SIZE);
-	else
-		temp_pos.p.z = DEFAULT_VIEW_DIST;
-	VmAngles2Matrix (&temp_orient, orient_angles);
-	PA_DFX (bSaveLight = gameStates.render.nLighting);
-	PA_DFX (gameStates.render.nLighting = 0);
-	DrawPolygonModel (NULL, &temp_pos, &temp_orient, NULL, mn, 0, f1_0, NULL, NULL, NULL);
-	PA_DFX (gameStates.render.nLighting = bSaveLight);
-#if TEMP_CANV
-	GrSetCurrentCanvas (save_canv);
-	glDisable (GL_BLEND);
-	GrBitmap (0, 0, &temp_canv->cv_bitmap);
-	glEnable (GL_BLEND);
-	GrFreeCanvas (temp_canv);
-#endif
-	G3EndFrame ();
-	if (curDrawBuffer != GL_BACK)
-		GrUpdate (0);
+	vmsVector	p = ZERO_VECTOR;
+	vmsMatrix	o = IDENTITY_MATRIX;
+
+Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
+G3StartFrame (0, 0);
+glDisable (GL_BLEND);
+G3SetViewMatrix (&p, &o, gameStates.render.xZoom);
+if (gameData.models.polyModels [nModel].rad != 0)
+	p.p.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
+else
+	p.p.z = DEFAULT_VIEW_DIST;
+VmAngles2Matrix (&o, orient_angles);
+DrawPolygonModel (NULL, &p, &o, NULL, nModel, 0, f1_0, NULL, NULL, NULL);
+G3EndFrame ();
+if (curDrawBuffer != GL_BACK)
+	GrUpdate (0);
 }
 
 //------------------------------------------------------------------------------

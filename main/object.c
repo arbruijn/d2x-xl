@@ -280,14 +280,12 @@ void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFr
 {
 	grsBitmap	*bmP;
 	int			id, orientation = 0;
-	int			transp = 0; //(objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
+	int			transp = 2; //(objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
 	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
 	fix			xSize;
 
 if (gameOpts->render.bTransparentEffects) {
-	if (transp)
-		alpha = 1.0;
-	else if (!alpha) {
+	if (!alpha) {
 		if (objP->nType == OBJ_POWERUP) {
 			id = objP->id;
 			if ((id == POW_EXTRA_LIFE) ||
@@ -310,7 +308,7 @@ if (gameOpts->render.bTransparentEffects) {
 		}
 	}
 else {
-	transp = 0;
+	transp = 2;
 	alpha = 1.0f;
 	}
 orientation = global_orientation;
@@ -687,7 +685,7 @@ else {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 		DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
-			(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+			(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
 			objP->rType.polyObjInfo.nModel, 
 			objP->rType.polyObjInfo.nSubObjFlags, 
 			bBrightPolys ? F1_0 : xLight, 
@@ -858,7 +856,7 @@ for (i = 0; i < 8; i++) {
 
 void SetRenderView (fix nEyeOffset, short *pnStartSeg);
 
-extern vmsAngVec zeroAngles;
+extern vmsAngVec avZero;
 
 #ifdef _DEBUG
 
@@ -893,7 +891,7 @@ glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 for (; iModel <= nModels; iModel++) {
-	G3StartInstanceAngles (&pmhb [iModel].vOffset, &zeroAngles);
+	G3StartInstanceAngles (&pmhb [iModel].vOffset, &avZero);
 	TransformHitboxf (objP, vertList, iModel);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
@@ -1432,7 +1430,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		PIGGY_PAGE_IN (pf->bmi, 0);
 		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
-		if (OglBindBmTex (bmP, 1, 0))
+		if (OglBindBmTex (bmP, 1, 2))
 			return;
 		bmP = BmCurFrame (bmP);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
@@ -1823,7 +1821,7 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 
 // -----------------------------------------------------------------------------
 
-extern vmsAngVec zeroAngles;
+extern vmsAngVec avZero;
 
 void RenderShockwave (tObject *objP)
 {

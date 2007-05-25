@@ -105,15 +105,11 @@ extern int bShadowTest;
 unsigned int	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
-int nRLFrameCount = -1;
 int nRotatedLast [MAX_VERTICES_D2X];
 
 // When any render function needs to know what's looking at it, it should 
 // access gameData.objs.viewer members.
 
-
-fix xRenderZoom = 0x9000;					//the player's zoom factor
-fix xRenderZoomScale = 1;					//the player's zoom factor
 
 ubyte bObjectRendered [MAX_OBJECTS_D2X];
 
@@ -2043,9 +2039,9 @@ int check_bWindowCheck=0;
 //This must be called at the start of the frame if RotateList() will be used
 void RenderStartFrame()
 {
-if (!++nRLFrameCount) {		//wrap!
+if (!++gameStates.render.nFrameCount) {		//wrap!
 	memset(nRotatedLast, 0, sizeof (nRotatedLast));		//clear all to zero
-	nRLFrameCount = 1;											//and set this frame to 1
+	gameStates.render.nFrameCount = 1;											//and set this frame to 1
 	}
 }
 
@@ -2064,14 +2060,14 @@ cc.or = 0;
 for (i = 0; i < nv; i++) {
 	j = pointNumList [i];
 	pnt = gameData.segs.points + j;
-	if (nRotatedLast [j] != nRLFrameCount) {
+	if (nRotatedLast [j] != gameStates.render.nFrameCount) {
 		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + j);
 		if (!gameStates.ogl.bUseTransform) {
 			gameData.segs.fVertices [j].p.x = f2fl (pnt->p3_vec.p.x);
 			gameData.segs.fVertices [j].p.y = f2fl (pnt->p3_vec.p.y);
 			gameData.segs.fVertices [j].p.z = f2fl (pnt->p3_vec.p.z);
 			}
-		nRotatedLast [j] = nRLFrameCount;
+		nRotatedLast [j] = gameStates.render.nFrameCount;
 		}
 	cc.and &= pnt->p3_codes;
 	cc.or |= pnt->p3_codes;
@@ -3380,7 +3376,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 	}
 else {
 	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment);
@@ -3390,7 +3386,7 @@ else {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, xRenderZoom);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, gameStates.render.xZoom);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer==gameData.objs.console)) {
 		vmsMatrix mHead, mView;
@@ -3399,7 +3395,7 @@ else {
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv(xRenderZoom, gameStates.render.nZoomFactor));
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv(gameStates.render.xZoom, gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 #ifdef JOHN_ZOOM
@@ -3451,15 +3447,15 @@ else {
 			VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, PP_DELTAZ);
 			VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.uVec, PP_DELTAY);
 #endif
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 			}
 		else
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor));
 		}
 	else
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 #else
-	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, xRenderZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 #endif
 	}
 if (pnStartSeg)
@@ -3496,9 +3492,9 @@ if (!bShadowTest)
 #else		
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 	
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, xRenderZoom);
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 		else
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (xRenderZoom, gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor));
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
 	else {

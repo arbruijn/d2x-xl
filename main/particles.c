@@ -134,7 +134,7 @@ if (*flagP < 0)
 	return 0;
 bmpParticle [gameStates.render.bPointSprites][nType] = bmP;
 BM_FRAMECOUNT (bmP) = bmP->bm_props.h / bmP->bm_props.w;
-OglLoadBmTexture (bmP, 0, 1);
+OglLoadBmTexture (bmP, 0, 3);
 nParticleFrames [gameStates.render.bPointSprites][nType] = BM_FRAMECOUNT ((bmP));
 return *flagP > 0;
 }

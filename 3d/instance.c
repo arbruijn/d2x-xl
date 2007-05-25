@@ -24,6 +24,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "ogl_init.h"
 #include "vecmat.h"
+#include "interp.h"
 #include "oof.h"
 
 #define MAX_INSTANCE_DEPTH	10
@@ -150,14 +151,10 @@ if (gameStates.ogl.bUseTransform) {
 //if angles==NULL, don't modify matrix.  This will be like doing an offset
 void G3StartInstanceAngles (vmsVector *pos, vmsAngVec *angles)
 {
-if (!(angles /*&& (angles->b || angles->h || angles->p)*/))
-	G3StartInstanceMatrix (pos, NULL);
-else {
 	vmsMatrix tm;
 
-	VmAngles2Matrix (&tm, angles);
-	G3StartInstanceMatrix (pos, &tm);
-	}
+VmAngles2Matrix (&tm, angles ? angles : &avZero);
+G3StartInstanceMatrix (pos, &tm);
 }
 
 //------------------------------------------------------------------------------

@@ -623,13 +623,16 @@ typedef struct tRenderStates {
 	int nModelQuality;
 	int nState;	//0: render geometry, 1: render objects
 	int nType;
+	int nFrameCount;
+	fix xZoom;
+	fix xZoomScale;
 	ubyte nRenderingType;
 	fix nFlashScale;
 	fix nFlashRate;
 	cvar_t frameRate;
 	tCameraStates cameras;
 	tCockpitStates cockpit;
-	tVRStates		vr;
+	tVRStates vr;
 	tColorStates color;
 	tFontStates fonts;
 	tTextureStates textures;

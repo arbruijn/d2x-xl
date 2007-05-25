@@ -559,7 +559,7 @@ for (i = po->nTextures, j = po->nFirstTexture; i; i--, j++) {
 	h = gameData.pig.tex.pObjBmIndex [j];
 	bmi = gameData.pig.tex.objBmIndex [h];
 	PIGGY_PAGE_IN (bmi, 0);
-	OglLoadBmTexture (gameData.pig.tex.bitmaps [0] + bmi.index, 1, 0);
+	OglLoadBmTexture (gameData.pig.tex.bitmaps [0] + bmi.index, 1, 3);
 	}
 }
 
@@ -611,13 +611,13 @@ if (BM_OVERRIDE (bmP)) {
 	if (bmP->bm_wallAnim) {
 		nFrames = BM_FRAMECOUNT (bmP);
 		if (nFrames > 1) {
-			OglLoadBmTexture (bmP, 1, 0);
+			OglLoadBmTexture (bmP, 1, 3);
 			if (BM_FRAMES (bmP)) {
 				if ((nFrameNum >= 0) || (-nFrames > nFrameNum))
 					BM_CURFRAME (bmP) = BM_FRAMES (bmP);
 				else
 					BM_CURFRAME (bmP) = BM_FRAMES (bmP) - nFrameNum - 1;
-				OglLoadBmTexture (BM_CURFRAME (bmP), 1, 0);
+				OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3);
 				}
 			}
 		}
@@ -643,13 +643,13 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 		bm2 = LoadFaceBitmap (tMap1, sideP->nFrame);
 		if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 			 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
-			OglLoadBmTexture (bm2, 1, 0);
+			OglLoadBmTexture (bm2, 1, 3);
 		else if ((bmm = TexMergeGetCachedBitmap (tMap1, tMap2, sideP->nOvlOrient)))
 			bmP = bmm;
 		else
-			OglLoadBmTexture (bm2, 1, 0);
+			OglLoadBmTexture (bm2, 1, 3);
 		}
-	OglLoadBmTexture (bmP, 1, 0);
+	OglLoadBmTexture (bmP, 1, 3);
 	}
 }
 
@@ -797,13 +797,13 @@ for (seg = 0; seg < gameData.segs.nSegments; seg++) {
 			bm2 = LoadFaceBitmap (tmap2, sideP->nFrame);
 			if (!(bm2->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) ||
 				 (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk))
-				OglLoadBmTexture (bm2, 1, 0);
+				OglLoadBmTexture (bm2, 1, 3);
 			else if ((bmm = TexMergeGetCachedBitmap (tmap1, tmap2, sideP->nOvlOrient)))
 				bmP = bmm;
 			else
-				OglLoadBmTexture (bm2, 1, 0);
+				OglLoadBmTexture (bm2, 1, 3);
 			}
-		OglLoadBmTexture (bmP, 1, 0);
+		OglLoadBmTexture (bmP, 1, 3);
 		}
 	}
 ResetSpecialEffects ();
@@ -815,7 +815,7 @@ InitSpecialEffects ();
 	OglCacheWeaponTextures (gameData.weapons.info + secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]);
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
 		if (gameData.objs.objects [i].renderType == RT_POWERUP) {
-			OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 0);
+			OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 3);
 			switch (gameData.objs.objects [i].id) {
 /*					case POW_LASER:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [LASER_INDEX]]);
@@ -898,6 +898,7 @@ return (minColor + maxColor) / 2;
 
 //------------------------------------------------------------------------------
 //GLubyte gameData.render.ogl.texBuf [512*512*4];
+
 int OglFillTexBuf (
 	grsBitmap	*bmP,
 	GLubyte		*texBuf,
@@ -928,7 +929,10 @@ if (tWidth * tHeight * 4 > sizeof (gameData.render.ogl.texBuf))//shouldn't happe
 
 if ((tWidth <= width) && (tHeight <= height) && !GrBitmapHasTransparency (bmP))
 	nFormat = GL_RGB;
-
+#ifdef _DEBUG
+if (!nTransp)
+	nTransp = 0;
+#endif
 restart:
 
 i = 0;
@@ -940,7 +944,8 @@ for (y = 0; y < tHeight; y++) {
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
 		if ((int) c == TRANSPARENCY_COLOR) {
-			bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
+			if (nTransp)
+				bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
 			switch (nFormat) {
 				case GL_LUMINANCE:
 					(*(texBuf++)) = 0;
@@ -958,12 +963,12 @@ for (y = 0; y < tHeight; y++) {
 					break;
 
 				case GL_RGBA:
-					*((GLuint *) texBuf) = 0;
+					*((GLuint *) texBuf) = nTransp ? 0 : 0xffffffff;
 					texBuf += 4;
 					break;
 					
 				case GL_RGBA4:
-					*((GLushort *) texBuf) = 0;
+					*((GLushort *) texBuf) = nTransp ? 0 : 0xffff;
 					texBuf += 2;
 					break;
 				}
@@ -1010,11 +1015,14 @@ for (y = 0; y < tHeight; y++) {
 				case GL_RGBA4: {
 					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
 						bmP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
-						if (0 && bShaderMerge) {
+#if 0
+						if (bShaderMerge) {
 							r = g = b = 0;
 							a = 1;
 							}
-						else {
+						else
+#endif
+							{
 							r = 120;
 							g = 88;
 							b = 128;

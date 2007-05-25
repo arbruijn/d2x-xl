@@ -101,7 +101,9 @@ static int bTriangularize = 0;
 static int bFlatPolys = 1;
 static int bTexPolys = 1;
 
-vmsAngVec zeroAngles = {0, 0, 0};
+vmsAngVec avZero = {0, 0, 0};
+vmsVector vZero = ZERO_VECTOR;
+vmsMatrix mIdentity = IDENTITY_MATRIX;
 
 g3sPoint *pointList [MAX_POINTS_PER_POLY];
 
@@ -1387,7 +1389,7 @@ for (;;)
 			if (pAnimAngles)
 				a = &pAnimAngles [WORDVAL (p+2)];
 			else
-				a = &zeroAngles;
+				a = &avZero;
 			nChild = ++po->iSubObj;
 			po->subObjs.pSubObjs [nChild].vPos = *VECPTR (p+4);
 			po->subObjs.pSubObjs [nChild].vAngles = *a;
@@ -2278,7 +2280,7 @@ if (bShadowTest)
 #endif
 G3CheckAndSwap (modelP);
 if (SHOW_DYN_LIGHT && 
-	 objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) && !po) {
+	 !po && objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))) {
 	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
@@ -2337,7 +2339,7 @@ for (;;) {
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
 				l = -VmVecDot (&viewInfo.view [0].fVec, VECPTR (p+16));
-				l = f1_0/4 + (l * 3) / 4;
+				l = f1_0 / 4 + (l * 3) / 4;
 				l = FixMul (l, xModelLight);
 				}
 			else {				//yes glow
@@ -2387,10 +2389,7 @@ for (;;) {
 	else if (h == OP_SUBCALL) {
 		vmsAngVec *a;
 
-		if (pAnimAngles)
-			a = pAnimAngles + WORDVAL (p+2);
-		else
-			a = NULL;
+		a = pAnimAngles ? pAnimAngles + WORDVAL (p+2) : NULL;
 		G3StartInstanceAngles (VECPTR (p+4), a);
 		G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
 		G3DoneInstance ();
@@ -2524,7 +2523,7 @@ for (;;) {
 			if (pAnimAngles)
 				a = &pAnimAngles [WORDVAL (p+2)];
 			else
-				a = &zeroAngles;
+				a = &avZero;
 			G3StartInstanceAngles (VECPTR (p+4), a);
 			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL, NULL, nModel);
 			G3DoneInstance ();

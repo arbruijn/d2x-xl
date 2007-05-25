@@ -203,23 +203,10 @@ void OglSetScreenMode (void)
 
 if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) && 
 	 (gameStates.ogl.bLastFullScreen == gameStates.ogl.bFullScreen) &&
-	 (gameStates.app.bGameRunning || 
-	  (gameStates.video.nScreenMode == SCREEN_GAME) || 
-	  (curDrawBuffer == GL_FRONT)))
+	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (curDrawBuffer == GL_FRONT)))
 	return;
-#if 0
-if (gameStates.app.bGameRunning) {
-//	gameStates.ogl.nLastW = gameStates.ogl.nLastH = 0;
-	OGL_VIEWPORT (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-	}
-else {
-	OGL_VIEWPORT (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-	}
-#endif
-//	OGL_VIEWPORT(grdCurCanv->cv_bitmap.bm_props.x,grdCurCanv->cv_bitmap.bm_props.y,grdCurCanv->cv_bitmap.bm_props.w,grdCurCanv->cv_bitmap.bm_props.h);
-if (gameStates.video.nScreenMode == SCREEN_GAME) {
+if (gameStates.video.nScreenMode == SCREEN_GAME)
 	glDrawBuffer (curDrawBuffer = GL_BACK);
-	}
 else {
 	glDrawBuffer (curDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT));
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
@@ -228,7 +215,6 @@ else {
 		glClear (GL_COLOR_BUFFER_BIT);
 		glMatrixMode (GL_PROJECTION);
 		glLoadIdentity ();//clear matrix
-		//glFrustum (-1.0f, 1.0f, -1.0f, 1.0f, 1.5f, 20.0f);
 		glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();//clear matrix
@@ -259,7 +245,7 @@ if (gameStates.ogl.bInitialized) {// && (gameStates.video.nScreenMode != SCREEN_
 
 const char *gl_vendor,*gl_renderer,*gl_version,*gl_extensions;
 
-void OglGetVerInfo(void)
+void OglGetVerInfo (void)
 {
 gl_vendor = (char *) glGetString (GL_VENDOR);
 gl_renderer = (char *) glGetString (GL_RENDERER);
@@ -339,49 +325,42 @@ int GrSetMode(u_int32_t mode)
 #ifdef NOGRAPH
 return 0;
 #endif
-//	mode=0;
-	if (mode<=0)
-		return 0;
-
-	w=SM_W(mode);
-	h=SM_H(mode);
-	nCurrentVGAMode = mode;
-
-	//if (screen != NULL) GrPaletteStepClear();
-
-//	OglInitState();
-	
-	gr_bm_data = grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf;//since we use realloc, we want to keep this pointer around.
-	memset( grdCurScreen, 0, sizeof(grs_screen));
-	grdCurScreen->sc_mode = mode;
-	grdCurScreen->sc_w = w;
-	grdCurScreen->sc_h = h;
-	//grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
-	grdCurScreen->sc_aspect = FixDiv (grdCurScreen->sc_w, (fix) (grdCurScreen->sc_h * ((double) w / (double) h)));
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_palette = defaultPalette; //just need some valid palette here
-	//grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_OGL;
-	//grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = D2_REALLOC(gr_bm_data,w*h);
-	GrSetCurrentCanvas(NULL);
-	//gr_enable_default_palette_loading();
-/***/LogErr ("   initializing OpenGL window\n");
-	if (!OglInitWindow (w,h,0))	//platform specific code
-		return 0;
-	OglGetVerInfo ();
-/***/LogErr ("   initializing OpenGL view port\n");
-	OGL_VIEWPORT (0,0,w,h);
-/***/LogErr ("   initializing OpenGL screen mode\n");
-	OglSetScreenMode();
-	GrUpdate (0);
-//	gamefont_choose_game_font(w,h);
+if (mode<=0)
 	return 0;
+w=SM_W(mode);
+h=SM_H(mode);
+nCurrentVGAMode = mode;
+gr_bm_data = grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf;//since we use realloc, we want to keep this pointer around.
+memset( grdCurScreen, 0, sizeof(grs_screen));
+grdCurScreen->sc_mode = mode;
+grdCurScreen->sc_w = w;
+grdCurScreen->sc_h = h;
+//grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
+grdCurScreen->sc_aspect = FixDiv (grdCurScreen->sc_w, (fix) (grdCurScreen->sc_h * ((double) w / (double) h)));
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
+grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
+grdCurScreen->sc_canvas.cv_bitmap.bm_palette = defaultPalette; //just need some valid palette here
+//grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
+grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_OGL;
+//grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
+grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = D2_REALLOC(gr_bm_data,w*h);
+GrSetCurrentCanvas(NULL);
+//gr_enable_default_palette_loading();
+/***/LogErr ("   initializing OpenGL window\n");
+if (!OglInitWindow (w,h,0))	//platform specific code
+	return 0;
+OglGetVerInfo ();
+/***/LogErr ("   initializing OpenGL view port\n");
+OGL_VIEWPORT (0,0,w,h);
+/***/LogErr ("   initializing OpenGL screen mode\n");
+OglSetScreenMode();
+GrUpdate (0);
+//	gamefont_choose_game_font(w,h);
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -390,13 +369,13 @@ return 0;
 
 int ogl_atotexfilti(char *a,int min)
 {
-	GLstrcmptestr(a,NEAREST);
-	GLstrcmptestr(a,LINEAR);
-	if (min){//mipmaps are valid only for the min filter
-		GLstrcmptestr(a,NEAREST_MIPMAP_NEAREST);
-		GLstrcmptestr(a,NEAREST_MIPMAP_LINEAR);
-		GLstrcmptestr(a,LINEAR_MIPMAP_NEAREST);
-		GLstrcmptestr(a,LINEAR_MIPMAP_LINEAR);
+GLstrcmptestr(a,NEAREST);
+GLstrcmptestr(a,LINEAR);
+if (min){//mipmaps are valid only for the min filter
+	GLstrcmptestr(a,NEAREST_MIPMAP_NEAREST);
+	GLstrcmptestr(a,NEAREST_MIPMAP_LINEAR);
+	GLstrcmptestr(a,LINEAR_MIPMAP_NEAREST);
+	GLstrcmptestr(a,LINEAR_MIPMAP_LINEAR);
 	}
 Error("unknown/invalid texture filter %s\n",a);
 return GL_NEAREST;
@@ -404,16 +383,17 @@ return GL_NEAREST;
 
 //------------------------------------------------------------------------------
 
-int ogl_testneedmipmaps(int i){
-	switch (i){
-		case GL_NEAREST:
-		case GL_LINEAR:
-			return 0;
-		case GL_NEAREST_MIPMAP_NEAREST:
-		case GL_NEAREST_MIPMAP_LINEAR:
-		case GL_LINEAR_MIPMAP_NEAREST:
-		case GL_LINEAR_MIPMAP_LINEAR:
-			return 1;
+int ogl_testneedmipmaps(int i)
+{
+switch (i){
+	case GL_NEAREST:
+	case GL_LINEAR:
+		return 0;
+	case GL_NEAREST_MIPMAP_NEAREST:
+	case GL_NEAREST_MIPMAP_LINEAR:
+	case GL_LINEAR_MIPMAP_NEAREST:
+	case GL_LINEAR_MIPMAP_LINEAR:
+		return 1;
 	}
 Error("unknown texture filter %x\n",i);
 return -1;
@@ -430,30 +410,28 @@ char *OglLibPath="libGL.so";
 #endif
 
 int ogl_rt_loaded=0;
+
 int OglInitLoadLibrary(void)
 {
-	int retcode=0;
-	if (!ogl_rt_loaded) {
-		int t;
-		if ((t=FindArg("-gl_library")))
-			OglLibPath=Args[t+1];
+	int t, retcode = 0;
 
-		retcode = OpenGL_LoadLibrary(true);
-		if(retcode)
-		{
+if (ogl_rt_loaded)
+	return 0;
+
+if ((t = FindArg ("-gl_library")))
+	OglLibPath = Args [t + 1];
+retcode = OpenGL_LoadLibrary(true);
+if (retcode) {
 #if TRACE	
-			con_printf (CONDBG,"OpenGL successfully loaded\n");
+	con_printf (CONDBG,"OpenGL successfully loaded\n");
 #endif	
-			if(!glEnd)
-			{
-				Error("Opengl: Functions not imported\n");
-			}
-		}else{
-			Error("Opengl: error loading %s\n",OglLibPath);
-		}
-		ogl_rt_loaded=1;
+	if(!glEnd)
+		Error("Opengl: Functions not imported\n");
+	else
+		Error("Opengl: error loading %s\n",OglLibPath);
+	ogl_rt_loaded = 1;
 	}
-	return retcode;
+return retcode;
 }
 #endif
 
