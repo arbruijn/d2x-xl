@@ -71,9 +71,15 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
  #include "tactile.h"
 #endif
 #include "collide.h"
+#include "weapon.h"
 
 #ifdef USE_LINUX_JOY
 #include "joystick.h"
+#endif
+#ifdef WIN32
+#	include "trackir.h"
+
+tTIRInfo	tirInfo;
 #endif
 
 tControlInfo Controls [4];
@@ -91,6 +97,7 @@ tControlInfo Controls [4];
 static int	kcFrameCount = 0;
 static int	nMaxTurnRate;
 
+#define JOYMOUSE_SENSITIVITY	2
 
 //------------------------------------------------------------------------------
 
@@ -180,7 +187,7 @@ static double dMaxAxis = 127.0;
 
 int AttenuateAxis (double a, int nAxis)
 {
-if (gameOpts->input.bLinearJoySens)
+if (gameOpts->input.joystick.bLinearSens)
 	return (int) a;
 else if (!a)
 	return 0;
@@ -216,7 +223,7 @@ inline int ControlsReadJoyAxis (int i, int rawJoyAxis [])
 {
 int joyDeadzoneScaled = joyDeadzone [i % 4] / 128;
 int h = JoyGetScaledReading (rawJoyAxis [i], i);
-if (gameOpts->input.bSyncJoyAxes && 
+if (gameOpts->input.joystick.bSyncAxes && 
 	 ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	joyDeadzoneScaled *= 2;				// Then use a larger dead-zone
 if (h > joyDeadzoneScaled) 
@@ -241,14 +248,14 @@ if (gameStates.limitFPS.bJoystick)
 	ctime = TimerGetFixedSeconds ();
 
 for (i = 0; i < 4; i++)
-	joy_sens_mod [i] = 128 - 7 * gameOpts->input.joySensitivity [i];
+	joy_sens_mod [i] = 128 - 7 * gameOpts->input.joystick.sensitivity [i];
 if (gameStates.limitFPS.bJoystick) {
 	if ((LastReadTime + JOYSTICK_READ_TIME > ctime) && (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)) {
 		if ((ctime < 0) && (LastReadTime >= 0))
 			LastReadTime = ctime;
 		bUseJoystick=1;
 		} 
-	else if (gameOpts->input.bUseJoystick) {
+	else if (gameOpts->input.joystick.bUse) {
 		LastReadTime = ctime;
 		if	((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++) {
@@ -275,7 +282,7 @@ if (gameStates.limitFPS.bJoystick) {
 	}
 else {   // LIMIT_JOY_FPS
 	memset (joyAxis, 0, sizeof (joyAxis));
-	if (gameOpts->input.bUseJoystick) {
+	if (gameOpts->input.joystick.bUse) {
 		if ((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++)	{
 				if (channelMasks & (1 << i))
@@ -306,16 +313,15 @@ if (JoyGetButtonState (btn)) {
 		upcount=1;
 	}
 else {
-	if (btn==button) {
+	if (btn == button) {
 		state = 1;
 		timeDown = gameData.time.xFrame;
-		downcount=1;
+		downcount = 1;
 		}
 	else
 		upcount=1;
 	}				
-JoySetBtnValues (btn, state, timeDown, downcount, upcount);
-					
+JoySetBtnValues (btn, state, timeDown, downcount, upcount);			
 }
 
 //------------------------------------------------------------------------------
@@ -483,7 +489,7 @@ int ControlsLimitTurnRate (int bUseMouse)
 if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
 if (gameStates.render.automap.bDisplay || 
-	 gameOpts->input.bJoyMouse ||
+	 gameOpts->input.mouse.bJoystick ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
@@ -492,28 +498,6 @@ if (gameStates.render.automap.bDisplay ||
 	}
 KCCLAMP (Controls [0].bankTime, gameStates.input.kcFrameTime);
 return 1;
-}
-
-//------------------------------------------------------------------------------
-
-void KCToggleBomb (void)
-{
-int bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
-if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
-	 (!LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] &&
-	  !LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX])) {
-	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
-	HUDInitMessage (TXT_NOBOMBS);
-	}
-else if (!LOCALPLAYER.secondaryAmmo [bomb]) {
-	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
-	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMART_MINE_INDEX)? TXT_SMART_MINES : 
-						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
-	}
-else {
-	bLastSecondaryWasSuper [PROXIMITY_INDEX] = !bLastSecondaryWasSuper [PROXIMITY_INDEX];
-	DigiPlaySampleOnce (SOUND_GOOD_SELECTION_SECONDARY, F1_0);
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -529,13 +513,13 @@ if (v == 255)
 h = speedFactor * KeyDownTime (v);
 if (!h)
 	return 0;
-if (gameOpts->input.bRampKeys [i])
+if (gameOpts->input.keyboard.bRamp [i])
 	return h / key_ramp (v);
 return h;
 }
 
 
-#define DELTACTRL(_i,_b)	DeltaCtrl (kcKeyboard [_i].value, speedFactor, gameOpts->input.keyRampScale, _b)
+#define DELTACTRL(_i,_b)	DeltaCtrl (kcKeyboard [_i].value, speedFactor, gameOpts->input.keyboard.nRamp, _b)
 
 void ControlsDoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
@@ -621,7 +605,7 @@ if (bGetSlideBank == 2) {
 
 	// toggle bomb
 	if (((v = HaveKey (kcKeyboard, 58)) < 255) && keyDownCount (v))
-		KCToggleBomb ();
+		ToggleBomb ();
 
 	// cruise speed
 	for (i = 0; i < 4; i++)
@@ -686,12 +670,12 @@ return h;
 inline int DeltaAxis (int v)
 {
 #ifdef _DEBUG
-int a = gameOpts->input.bLinearJoySens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
+int a = gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
 if (a)
 	HUDMessage (0, "%d", a);
 return a;
 #else
-return gameOpts->input.bLinearJoySens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
+return gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
 #endif
 }
 
@@ -752,7 +736,7 @@ for (i = 0; i < 60; i += 30) {
 		if ((v = kcJoystick [i + 24].value) < 255) 
 			Controls [0].headlightCount += JoyGetButtonDownCnt (v);
 		if (((v = kcJoystick [i + 25].value) < 255) && JoyGetButtonDownCnt (v))
-			KCToggleBomb ();
+			ToggleBomb ();
 		if ((v = kcJoystick [i + 26].value) < 255) 
 			Controls [0].toggleIconsCount += JoyGetButtonDownCnt (v);
 		if ((v = kcJoystick [i + 27].value) < 255) 
@@ -834,8 +818,8 @@ for (i = 0; i < 60; i += 30) {
 
 int MouseDeadzone (int d)
 {
-double	r = 32 + 32 * gameOpts->input.nMouseDeadzone;
-return (int) (d ? sqrt (r * r - d * d) : r);
+double	r = 32 * gameOpts->input.mouse.nDeadzone;
+return (int) (r ? (d ? sqrt (r * r - d * d) : r) : 0);
 }
 
 //------------------------------------------------------------------------------
@@ -937,14 +921,15 @@ if (bGetSlideBank == 2) {
 		}
 	else {
 		SDL_GetMouseState(&mouseData.x, &mouseData.y);
-		if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
+		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 			int dx = mouseData.x - SWIDTH / 2;
 			int dz = MouseDeadzone (mouseData.y - SHEIGHT / 2);
-			if (dx < 0)
+			if (dx < 0) {
 				if (dx > -dz)
 					dx = 0;
 				else
 					dx += dz;
+				}
 			else {
 				//dz = dz * grdCurScreen->sc_w / grdCurScreen->sc_h;
 				if (dx < dz)
@@ -952,46 +937,50 @@ if (bGetSlideBank == 2) {
 				else
 					dx -= dz;
 				}
-			Controls [3].headingTime += (dx * gameOpts->input.mouseSensitivity [0]); // mouse_sens_mod;
+			dx = 640 * dx / (SWIDTH / gameOpts->input.mouse.sensitivity [0]);
+			Controls [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // mouse_sens_mod;
 			}
 		else {
 			if ((v = kcMouse [13].value) < 255) {
 				if (kcMouse [14].value)		// If inverted...
-					Controls [3].pitchTime += (mouseAxis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
+					Controls [3].pitchTime += (mouseAxis [v]*gameOpts->input.mouse.sensitivity [1])/mouse_sens_mod;
 				else
-					Controls [3].pitchTime -= (mouseAxis [v]*gameOpts->input.mouseSensitivity [1])/mouse_sens_mod;
+					Controls [3].pitchTime -= (mouseAxis [v]*gameOpts->input.mouse.sensitivity [1])/mouse_sens_mod;
 				}
 			}
 		if (*bBankOn) {
 			if ((v = kcMouse [15].value) < 255) {
 				if (kcMouse [16].value)		// If inverted...
-					Controls [3].bankTime -= (mouseAxis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
+					Controls [3].bankTime -= (mouseAxis [v]*gameOpts->input.mouse.sensitivity [2])/mouse_sens_mod;
 				else
-					Controls [3].bankTime += (mouseAxis [v]*gameOpts->input.mouseSensitivity [2])/mouse_sens_mod;
+					Controls [3].bankTime += (mouseAxis [v]*gameOpts->input.mouse.sensitivity [2])/mouse_sens_mod;
 				}
 			}
 		else {
-			if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse) {
+			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 				int	dy = mouseData.y - SHEIGHT / 2;
 				int	dz = MouseDeadzone (mouseData.x - SWIDTH / 2);
-				if (dy < 0)
+				if (dy < 0) {
 					if (dy > -dz)
 						dy = 0;
 					else
 						dy += dz;
-				else
+				}
+				else {
 					if (dy < dz)
 						dy = 0;
 					else
 						dy -= dz;
-				Controls [3].pitchTime += (dy * gameOpts->input.mouseSensitivity [1]); // mouse_sens_mod;
+					}
+				dy = 480 * dy / (SHEIGHT / gameOpts->input.mouse.sensitivity [1]);
+				Controls [3].pitchTime += dy; // * gameOpts->input.mouse.sensitivity [1]); // mouse_sens_mod;
 				}
 			else {
 				if ((v = kcMouse [15].value) < 255 && mouseAxis [v]) {
 					if (kcMouse [16].value)		// If inverted...
-						Controls [3].headingTime -= (mouseAxis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
+						Controls [3].headingTime -= (mouseAxis [v]*gameOpts->input.mouse.sensitivity [0])/mouse_sens_mod;
 					else
-						Controls [3].headingTime += (mouseAxis [v]*gameOpts->input.mouseSensitivity [0])/mouse_sens_mod;
+						Controls [3].headingTime += (mouseAxis [v]*gameOpts->input.mouse.sensitivity [0])/mouse_sens_mod;
 					}
 				}
 			}
@@ -1029,6 +1018,78 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 		}
 	}
 }
+
+//------------------------------------------------------------------------------
+
+#ifdef WIN32
+
+int ControlsReadTrackIR (void)
+{
+if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
+	return 0;
+if (!pfnTIRQuery (&tirInfo)) {
+	pfnTIRExit ();
+	if (gameStates.input.bHaveTrackIR = pfnTIRInit (SDL_GetWindowHandle ()))
+		pfnTIRStart ();
+	return 0;
+	}
+#ifdef _DEBUG
+HUDMessage (0, "%1.2f %1.2f %1.2f", tirInfo.fvTrans.x, tirInfo.fvTrans.y, tirInfo.fvTrans.z);
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void ControlsDoTrackIR (void)
+{
+int	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f);
+int	dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f);
+int	dz = MouseDeadzone (dy);
+if (dx < 0) {
+	if (dx > -dz)
+		dx = 0;
+	else
+		dx += dz;
+}
+else {
+	if (dx < dz)
+		dx = 0;
+	else
+		dx -= dz;
+	}
+dz = MouseDeadzone (dx);
+if (dy < 0) {
+	if (dy > -dz)
+		dy = 0;
+	else
+		dy += dz;
+}
+else {
+	if (dy < dz)
+		dy = 0;
+	else
+		dy -= dz;
+	}
+#ifdef _DEBUG
+HUDMessage (0, "%d %d", dx, dy);
+#endif
+dx = 640 * dx / (SWIDTH / gameOpts->input.trackIR.sensitivity [0]);
+dy = 480 * dy / (SHEIGHT / gameOpts->input.trackIR.sensitivity [1]);
+if (gameOpts->input.trackIR.bMove [0]) {
+	Controls [0].headingTime -= dx;
+	Controls [0].pitchTime += dy;
+	Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 65536.0f * gameOpts->input.trackIR.sensitivity [2]);
+	}
+if (gameOpts->input.trackIR.bMove [1]) {
+	Controls [0].sidewaysThrustTime -= (int) (tirInfo.fvTrans.x * gameStates.input.kcPollTime / 16384.0f * gameOpts->input.trackIR.sensitivity [0]);
+	Controls [0].verticalThrustTime -= (int) (tirInfo.fvTrans.z * gameStates.input.kcPollTime / 16384.0f * gameOpts->input.trackIR.sensitivity [1]);
+	}
+if (gameOpts->input.trackIR.bMove [2])
+	Controls [0].forwardThrustTime -= (int) (tirInfo.fvTrans.y * gameStates.input.kcPollTime / 16384.0f * gameOpts->input.trackIR.sensitivity [1]);
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1109,7 +1170,7 @@ void ControlsResetControls (void)
 memset (&Controls, 0, sizeof (tControlInfo));
 //Controls [0].headingTime = ht;
 //Controls [0].pitchTime = pt;
-ControlsLimitTurnRate (gameOpts->input.bUseMouse && !gameStates.input.bCybermouseActive);
+ControlsLimitTurnRate (gameOpts->input.mouse.bUse && !gameStates.input.bCybermouseActive);
 }
 
 //------------------------------------------------------------------------------
@@ -1120,9 +1181,9 @@ if (gameStates.input.nMouseType < 0)
 	gameStates.input.nMouseType = (gameConfig.nControlType == CONTROL_CYBERMAN) ? CONTROL_CYBERMAN : CONTROL_MOUSE;
 if (gameStates.input.nJoyType < 0)
 	gameStates.input.nJoyType = ((gameConfig.nControlType >= CONTROL_FLIGHTSTICK_PRO) && (gameConfig.nControlType <= CONTROL_GRAVIS_GAMEPAD)) ? gameConfig.nControlType : CONTROL_JOYSTICK;
-if (gameOpts->input.bUseJoystick)
+if (gameOpts->input.joystick.bUse)
 	gameConfig.nControlType = gameStates.input.nJoyType;
-else if (gameOpts->input.bUseMouse)
+else if (gameOpts->input.mouse.bUse)
 	gameConfig.nControlType = gameStates.input.nMouseType;
 else
 	gameConfig.nControlType = CONTROL_NONE;
@@ -1166,8 +1227,8 @@ if (!gameOpts->legacy.bInput)
 #endif
 
 SetControlType ();
-bUseJoystick = gameOpts->input.bUseJoystick && ControlsReadJoystick (joyAxis);
-if (gameOpts->input.bUseMouse)
+bUseJoystick = gameOpts->input.joystick.bUse && ControlsReadJoystick (joyAxis);
+if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
 //		ReadOWL (kc_external_control);
 //		CybermouseAdjust ();
@@ -1183,7 +1244,6 @@ else {
 	nMouseButtons = 0;
 	bUseMouse = 0;
 	}
-
 pitchTime = headingTime = 0;
 memset (Controls + 1, 0, 3 * sizeof (tControlInfo));
 for (i = 0; i < 3; i++) {
@@ -1201,7 +1261,10 @@ for (i = 0; i < 3; i++) {
 	}
 if (gameOpts->input.bUseHotKeys)
 	ControlsDoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
-
+#ifdef WIN32
+if (ControlsReadTrackIR ())
+	ControlsDoTrackIR ();
+#endif
 if (gameStates.input.nCruiseSpeed > i2f (100)) 
 	gameStates.input.nCruiseSpeed = i2f (100);
 else if (gameStates.input.nCruiseSpeed < 0) 

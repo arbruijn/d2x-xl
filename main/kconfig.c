@@ -881,14 +881,14 @@ ubyte KCJoyAxisCtrlFunc (void)
 {
 	int cur_axis [JOY_MAX_AXES];
 	int i, hd, dd;
-	int bLinJoySensSave = gameOpts->input.bLinearJoySens;
+	int bLinJoySensSave = gameOpts->input.joystick.bLinearSens;
 	ubyte code = 255;
 
 memset (cur_axis, 0, sizeof (cur_axis));
-gameOpts->input.bLinearJoySens = 1;
+gameOpts->input.joystick.bLinearSens = 1;
 gameStates.input.kcPollTime = 128;
 ControlsReadJoystick (cur_axis);
-gameOpts->input.bLinearJoySens = bLinJoySensSave;
+gameOpts->input.joystick.bLinearSens = bLinJoySensSave;
 for (i = dd = 0; i < JOY_MAX_AXES; i++) {
 	hd = abs (cur_axis [i] - start_axis [i]);
   	if ((hd > (128 * 3 / 4)) && (hd > dd)) {
@@ -1561,12 +1561,12 @@ void KConfig (int n, char * title)
 			controlSettings.custom [0][i] = kcKeyboard [i].value;
 		}
 	else if (n == 1) {
-		if (gameOpts->input.bUseJoystick)
+		if (gameOpts->input.joystick.bUse)
 			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)	
 				controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
 		}
 	else if (n == 2) {
-		if (gameOpts->input.bUseMouse)
+		if (gameOpts->input.mouse.bUse)
 			for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	
 				controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;
 		}
@@ -1906,7 +1906,7 @@ for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++) {
 		kcKeyboard [i].value = controlSettings.custom [0][i];
 	}
 //if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5)) {
-if (gameOpts->input.bUseJoystick) {
+if (gameOpts->input.joystick.bUse) {
 	for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
 		if (bGet)
 			controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
@@ -1921,7 +1921,7 @@ if (gameOpts->input.bUseJoystick) {
 		}
 	}
 //else if (gameConfig.nControlType > 4 && gameConfig.nControlType < CONTROL_WINJOYSTICK) {
-if (gameOpts->input.bUseMouse) {
+if (gameOpts->input.mouse.bUse) {
 	for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
 		if (bGet)
 			controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;

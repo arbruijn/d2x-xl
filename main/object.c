@@ -3241,9 +3241,9 @@ void AdjustMineSpawn ()
 if (!(gameData.app.nGameMode & GM_NETWORK))
 	return;  // No need for this function in any other mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]+=nProximityDropped;
+	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]+=nProximityDropped;
 if (!(gameData.app.nGameMode & GM_ENTROPY))
-	LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX]+=nSmartminesDropped;
+	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]+=nSmartminesDropped;
 nProximityDropped = 0;
 nSmartminesDropped = 0;
 }
@@ -3284,8 +3284,8 @@ if (gameData.app.nGameMode & GM_MULTI) {
 //		This prevents cheating
 	if (gameData.app.nGameMode & GM_HOARD)
 		if (!bMultiSuicide)
-			if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]<12)
-				LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]++;
+			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]<12)
+				LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]++;
 	}
 gameStates.ogl.palAdd.red = 40;
 gameStates.app.bPlayerIsDead = 1;

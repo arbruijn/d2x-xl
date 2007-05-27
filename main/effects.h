@@ -134,7 +134,7 @@ void StopEffect(int effect_num);
 //restart a stopped effect
 void RestartEffect(int effect_num);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define EClipReadN(ec, n, fp) CFRead(ec, sizeof(eclip), n, fp)
 #else
 /*

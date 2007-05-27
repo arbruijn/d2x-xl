@@ -1705,7 +1705,7 @@ do {
 		optHUDMsgs = opt++;
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;
-		if (gameOpts->input.bJoyMouse) {
+		if (gameOpts->input.mouse.bJoystick) {
 			ADD_CHECK (opt, TXT_SHOW_MOUSEIND, gameOpts->render.cockpit.bMouseIndicator, KEY_O, HTX_CPIT_MOUSEIND);
 			optMouseInd = opt++;
 			}
@@ -3348,7 +3348,7 @@ for (j = 0; j < 3; j++)
 		break;
 		}
 if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
-	LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 4;
+	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 }

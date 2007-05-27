@@ -132,7 +132,7 @@ void LoadBitmapReplacements(char *level_name);
 //if descent.pig exists, loads descent 1 texture bitmaps
 void LoadD1BitmapReplacements();
 
-#ifdef FAST_FILE_IO
+#if 0
 #define BitmapIndexRead(bi, fp) CFRead(bi, sizeof(tBitmapIndex), 1, fp)
 #define BitmapIndexReadN(bi, n, fp) CFRead(bi, sizeof(tBitmapIndex), n, fp)
 #else

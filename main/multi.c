@@ -878,10 +878,10 @@ else {
 				bMultiSuicide = 1;
 			}
 		else {
-			pKiller->secondaryAmmo [SMART_MINE_INDEX] += extraGameInfo [1].entropy.nBumpVirusCapacity;
+			pKiller->secondaryAmmo [SMARTMINE_INDEX] += extraGameInfo [1].entropy.nBumpVirusCapacity;
 			if (extraGameInfo [1].entropy.nMaxVirusCapacity)
-				if (gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMART_MINE_INDEX] > extraGameInfo [1].entropy.nMaxVirusCapacity)
-					gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMART_MINE_INDEX] = extraGameInfo [1].entropy.nMaxVirusCapacity;
+				if (gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nMaxVirusCapacity)
+					gameData.multiplayer.players [nKillerPlayer].secondaryAmmo [SMARTMINE_INDEX] = extraGameInfo [1].entropy.nMaxVirusCapacity;
 			}
 		}
 	else if (gameData.app.nGameMode & GM_TEAM) {
@@ -922,9 +922,9 @@ else {
 		HUDInitMessage ("%s %s %s!", szKiller, TXT_KILLED, TXT_YOU);
 		MultiAddLifetimeKilled ();
 		if (gameData.app.nGameMode & GM_HOARD) {
-			if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]>3)
+			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]>3)
 				MultiSendPlayByPlay (1, nKillerPlayer, gameData.multiplayer.nLocalPlayer);
-			else if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]>0)
+			else if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]>0)
 				MultiSendPlayByPlay (0, nKillerPlayer, gameData.multiplayer.nLocalPlayer);
 			}
 		}
@@ -1226,10 +1226,10 @@ playerP->secondaryAmmo [HOMING_INDEX] = buf [count++];
 playerP->secondaryAmmo [CONCUSSION_INDEX] = buf [count++];
 playerP->secondaryAmmo [SMART_INDEX] = buf [count++];         
 playerP->secondaryAmmo [MEGA_INDEX] = buf [count++];          
-playerP->secondaryAmmo [PROXIMITY_INDEX] = buf [count++]; 
+playerP->secondaryAmmo [PROXMINE_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [FLASHMSL_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [GUIDED_INDEX] = buf [count++]; 
-playerP->secondaryAmmo [SMART_MINE_INDEX] = buf [count++]; 
+playerP->secondaryAmmo [SMARTMINE_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [MERCURY_INDEX] = buf [count++]; 
 playerP->secondaryAmmo [EARTHSHAKER_INDEX] = buf [count++]; 
 playerP->primaryAmmo [VULCAN_INDEX] = GET_INTEL_SHORT (buf + count); 
@@ -1966,10 +1966,10 @@ gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [HOMING_I
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX];
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [SMART_INDEX];
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [MEGA_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX];
+gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX];
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [FLASHMSL_INDEX];
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [GUIDED_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX];
+gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX];
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [MERCURY_INDEX];
 gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX];
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
@@ -2025,19 +2025,19 @@ for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
 	}
 // Don't do the adjustment stuff for Hoard mode
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] /= 4;
+	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] /= 4;
 if (gameData.app.nGameMode & GM_ENTROPY)
-	LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX] = 0;
+	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] = 0;
 else
-	LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX] /= 4;
+	LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] /= 4;
 
 for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 	if (gameData.app.nGameMode & GM_HOARD) {
-		if (nIndex == PROXIMITY_INDEX)
+		if (nIndex == PROXMINE_INDEX)
 			continue;
 		}
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		if ((nIndex == PROXIMITY_INDEX) || (nIndex == SMART_MINE_INDEX))
+		if ((nIndex == PROXMINE_INDEX) || (nIndex == SMARTMINE_INDEX))
 			continue;
 		}
 	nType = secondaryWeaponToPowerup [nIndex];
@@ -3480,9 +3480,9 @@ if (t == 2)	// no team as at least one room -> this is probably not an entropy e
 	return;
 for (h = i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (GetTeam (i) != t) {
-		if (gameData.multiplayer.players [i].secondaryAmmo [PROXIMITY_INDEX]  >= extraGameInfo [1].entropy.nCaptureVirusLimit)
+		if (gameData.multiplayer.players [i].secondaryAmmo [PROXMINE_INDEX]  >= extraGameInfo [1].entropy.nCaptureVirusLimit)
 			return;
-		h += gameData.multiplayer.players [i].secondaryAmmo [PROXIMITY_INDEX];
+		h += gameData.multiplayer.players [i].secondaryAmmo [PROXMINE_INDEX];
 		}
 if ((h  >= extraGameInfo [1].entropy.nCaptureVirusLimit) && extraGameInfo [1].entropy.nVirusStability)
 	return;
@@ -3906,7 +3906,7 @@ void MultiSendOrbBonus (char nPlayer)
 Assert (gameData.app.nGameMode & GM_HOARD);
 gameData.multigame.msg.buf [0] = MULTI_ORB_BONUS;
 gameData.multigame.msg.buf [1] = nPlayer;
-gameData.multigame.msg.buf [2] = (char) LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX];
+gameData.multigame.msg.buf [2] = (char) LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX];
 MultiSendData (gameData.multigame.msg.buf, 3, 1);
 MultiDoOrbBonus (gameData.multigame.msg.buf);
 }
@@ -4153,7 +4153,7 @@ void DropOrb ()
 
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 	Int3 (); // How did we get here? Get Leighton!
-if (!LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]) {
+if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]) {
 	HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_NO_ORBS : TXT_NO_VIRUS);
 	return;
 	}
@@ -4167,7 +4167,7 @@ if (nObject > -1)
 	if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 		MultiSendDropFlag (nObject, seed);
 // If empty, tell everyone to stop drawing the box around me
-if (!--LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX])
+if (!--LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 }
 

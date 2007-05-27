@@ -58,6 +58,6 @@ extern int pcx_write_bitmap( char * filename, grsBitmap * bmp);
 
 extern char *pcx_errormsg(int error_number);
 
-int pcx_read_fullscr(char * filename, int bD1Mission);
+int PcxReadFullScrImage(char * filename, int bD1Mission);
 
 #endif

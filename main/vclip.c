@@ -143,7 +143,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DrawWeaponVClip(tObject *objP)
+void DrawWeaponVClip (tObject *objP)
 {
 	int	nVClip;
 	fix	modtime, playTime;

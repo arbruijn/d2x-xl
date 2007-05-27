@@ -1488,14 +1488,14 @@ if (gameStates.app.bPlayerIsDead)
 	return;
 if ((seg2p->special != SEGMENT_IS_GOAL_BLUE) && (seg2p->special != SEGMENT_IS_GOAL_RED))
 	return;
-if (!LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX])
+if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 	return;
 #if TRACE
 con_printf (CONDBG,"In orb goal!\n");
 #endif
 MultiSendOrbBonus ((char) gameData.multiplayer.nLocalPlayer);
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
-LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]=0;
+LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]=0;
 }
 
 //--------------------------------------------------------------------

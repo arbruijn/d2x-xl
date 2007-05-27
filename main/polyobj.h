@@ -86,7 +86,7 @@ void FreeModel (tPolyModel *po);
 
 #define MAX_POLYOBJ_TEXTURES 100
 
-#ifdef FAST_FILE_IO
+#if 0
 #define PolyModelRead(pm, fp) CFRead(pm, sizeof(tPolyModel), 1, fp)
 #define PolyModelReadN(pm, n, fp) CFRead(pm, sizeof(tPolyModel), n, fp)
 #else

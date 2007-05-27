@@ -110,6 +110,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "interp.h"
 #include "cheats.h"
 #include "rle.h"
+#include "trackir.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -674,6 +675,7 @@ int GrToggleFullScreenMenu (void)
 
 void StopTime ()
 {
+pfnTIRStop ();
 if (++gameData.time.nPaused == 1) {
 	fix xTime = TimerGetFixedSeconds ();
 	gameData.time.xSlack = xTime - gameData.time.xLast;
@@ -711,6 +713,7 @@ if (!--gameData.time.nPaused) {
 #if defined (TIMER_TEST) && defined (_DEBUG)
 gameData.time.xStarts++;
 #endif
+pfnTIRStart ();
 }
 
 //------------------------------------------------------------------------------
@@ -1442,7 +1445,7 @@ void CheckRearView ()
 #endif
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
-			if (gameStates.render.cockpit.nMode==CM_REAR_VIEW) {
+			if (gameStates.render.cockpit.nMode == CM_REAR_VIEW) {
 				SelectCockpit (gameStates.render.cockpit.nModeSave);
 				gameStates.render.cockpit.nModeSave = -1;
 			}
@@ -1487,20 +1490,17 @@ void CheckRearView ()
 
 void ResetRearView (void)
 {
-	if (gameStates.render.bRearView) {
-		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordRestoreRearView ();
+if (gameStates.render.bRearView) {
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRestoreRearView ();
 	}
-
-	gameStates.render.bRearView = 0;
-
-	if ((gameStates.render.cockpit.nMode < 0) || (gameStates.render.cockpit.nMode > 4)) {
-		if (!(gameStates.render.cockpit.nModeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nModeSave == CM_STATUS_BAR || gameStates.render.cockpit.nModeSave == CM_FULL_SCREEN))
-			gameStates.render.cockpit.nModeSave = CM_FULL_COCKPIT;
-		SelectCockpit (gameStates.render.cockpit.nModeSave);
-		gameStates.render.cockpit.nModeSave	= -1;
+gameStates.render.bRearView = 0;
+if ((gameStates.render.cockpit.nMode < 0) || (gameStates.render.cockpit.nMode > 4)) {
+	if (!(gameStates.render.cockpit.nModeSave == CM_FULL_COCKPIT || gameStates.render.cockpit.nModeSave == CM_STATUS_BAR || gameStates.render.cockpit.nModeSave == CM_FULL_SCREEN))
+		gameStates.render.cockpit.nModeSave = CM_FULL_COCKPIT;
+	SelectCockpit (gameStates.render.cockpit.nModeSave);
+	gameStates.render.cockpit.nModeSave	= -1;
 	}
-
 }
 
 //------------------------------------------------------------------------------
@@ -1627,6 +1627,7 @@ GameSetup ();								// Replaces what was here earlier.
 ProfilerSetStatus (1);
 #endif
 
+pfnTIRStart ();
 if (!setjmp (gameExitPoint)) {
 for (;;) {
 	int player_shields;
@@ -1760,6 +1761,7 @@ UnloadCamBot ();
 #ifdef APPLE_DEMO
 SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 #endif
+pfnTIRStop ();
 }
 
 // ----------------------------------------------------------------------------

@@ -2094,7 +2094,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		gameData.laser.nMissileGun++;
 		}
 	nObject = LaserPlayerFire (gameData.objs.console, nWeaponId, nGun, 1, 0);
-	if (gameData.weapons.nSecondary == PROXIMITY_INDEX) {
+	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			if (++nProximityDropped == 4) {
 				nProximityDropped = 0;
@@ -2103,7 +2103,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 			}
 		break; //no dual prox bomb drop
 		}
-	else if (gameData.weapons.nSecondary == SMART_MINE_INDEX) {
+	else if (gameData.weapons.nSecondary == SMARTMINE_INDEX) {
 		if (!(gameData.app.nGameMode & GM_ENTROPY)) {
 			if (++nSmartminesDropped == 4) {
 				nSmartminesDropped = 0;

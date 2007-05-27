@@ -831,7 +831,7 @@ if (playerP->shields < 0) {
 	StopConquerWarning ();
 	return 0;
 	}
-if (playerP->secondaryAmmo [PROXIMITY_INDEX] < extraGameInfo [1].nCaptureVirusLimit) {
+if (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].nCaptureVirusLimit) {
 	HUDMessage (0, "too few viruses");
 	StopConquerWarning ();
 	return 0;
@@ -849,7 +849,7 @@ if (segP->owner == team) {
 #else
 if ((gameStates.entropy.nTimeLastMoved < 0) || 
 	 (playerP->shields < 0) || 
-	 (playerP->secondaryAmmo [PROXIMITY_INDEX] < extraGameInfo [1].entropy.nCaptureVirusLimit) ||
+	 (playerP->secondaryAmmo [PROXMINE_INDEX] < extraGameInfo [1].entropy.nCaptureVirusLimit) ||
 	 (segP->owner < 0) || 
 	 (segP->owner == team)) {
 	StopConquerWarning ();
@@ -868,11 +868,11 @@ if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTi
 StopConquerWarning ();
 if (segP->owner)
 	MultiSendCaptureBonus ((char) gameData.multiplayer.nLocalPlayer);
-playerP->secondaryAmmo [PROXIMITY_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusLimit;
-if (playerP->secondaryAmmo [SMART_MINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
-	playerP->secondaryAmmo [SMART_MINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
+playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusLimit;
+if (playerP->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
+	playerP->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;
 else
-	playerP->secondaryAmmo [SMART_MINE_INDEX] = 0;
+	playerP->secondaryAmmo [SMARTMINE_INDEX] = 0;
 MultiSendConquerRoom ((char) team, (char) segP->owner, (char) segP->group);
 ConquerRoom ((char) team, (char) segP->owner, (char) segP->group);
 return 1;

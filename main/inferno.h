@@ -62,6 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "console.h"
 #include "vecmat.h"
+#include "trackir.h"
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
@@ -278,26 +279,46 @@ typedef struct tGameplayOptions {
 
 #define UNIQUE_JOY_AXES	5
 
+typedef struct tMouseInputOptions {
+	int bUse;
+	int bSyncAxes;
+	int bJoystick;
+	int nDeadzone;
+	int sensitivity [3];
+	} tMouseInputOptions;
+
+typedef struct tJoystickInputOptions {
+	int bUse;
+	int bSyncAxes;
+	int bLinearSens;
+	int sensitivity [UNIQUE_JOY_AXES];
+	int deadzones [UNIQUE_JOY_AXES];
+	} tJoystickInputOptions;
+
+typedef struct tTrackIRInputOptions {
+	int bPresent;
+	int bUse;
+	int bMove [3];
+	int nDeadzone;
+	int sensitivity [3];
+	int bSyncAxes;
+	} tTrackIRInputOptions;
+
+typedef struct tKeyboardInputOptions {
+	int bUse;
+	int nRamp;
+	int bRamp [3];
+	} tKeyboardInputOptions;
+
 typedef struct tInputOptions {
-	int bUseJoystick;
-	int bUseMouse;
-	int bJoyMouse;
-	int bUseHotKeys;
-	int bUseKeyboard;
-	int bSyncMouseAxes;
-	int bSyncJoyAxes;
-	int nMouseDeadzone;
-	int keyRampScale;
-	int bRampKeys [3];
-	int bLinearJoySens;
-	int nJoysticks;
-	int bJoyPresent;
 	int bLimitTurnRate;
 	int nMinTurnRate;
 	int nMaxPitch;
-	ubyte mouseSensitivity [3];
-	ubyte joySensitivity [UNIQUE_JOY_AXES];
-	int joyDeadZones [UNIQUE_JOY_AXES];
+	int bUseHotKeys;
+	tMouseInputOptions mouse;
+	tJoystickInputOptions joystick;
+	tTrackIRInputOptions trackIR;
+	tKeyboardInputOptions keyboard;
 } tInputOptions;
 
 typedef struct tSoundOptions {
@@ -405,7 +426,9 @@ typedef struct tInputStates {
 	int		nPlrFileVersion;
 	int		nMouseType;
 	int		nJoyType;
+	int		nJoysticks;
 	int		bGrabMouse;
+	int		bHaveTrackIR;
 	ubyte		bCybermouseActive;
 	int		bSkipControls;
 	int		bControlsSkipFrame;
@@ -1640,6 +1663,8 @@ typedef struct tMissionData {
 	int					nD1BuiltinHogSize;
 	char					szBuiltinMissionFilename [9];
 	char					szD1BuiltinMissionFilename [9];
+	char					szBriefingFilename [13];
+	char					szEndingFilename [13];
 	tMsnListEntry		list [MAX_MISSIONS + 1];
 	char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 	char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
@@ -2273,6 +2298,24 @@ extern fix nDebrisLife [];
 
 void D2SetCaption (void);
 void PrintVersionInfo (void);
+
+//	-----------------------------------------------------------------------------------------------------------
+
+typedef int (WINAPI *tpfnTIRInit) (HWND);
+typedef int (WINAPI *tpfnTIRExit) (void);
+typedef int (WINAPI *tpfnTIRStart) (void);
+typedef int (WINAPI *tpfnTIRStop) (void);
+typedef int (WINAPI *tpfnTIRCenter) (void);
+typedef int (WINAPI *tpfnTIRQuery) (tTIRInfo *);
+
+extern tpfnTIRInit	pfnTIRInit;
+extern tpfnTIRExit	pfnTIRExit;
+extern tpfnTIRStart	pfnTIRStart;
+extern tpfnTIRStop	pfnTIRStop;
+extern tpfnTIRCenter	pfnTIRCenter;
+extern tpfnTIRQuery	pfnTIRQuery;
+
+//	-----------------------------------------------------------------------------------------------------------
 
 #endif
 

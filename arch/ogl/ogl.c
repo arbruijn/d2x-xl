@@ -585,7 +585,7 @@ void OglCacheWeaponTextures (tWeaponInfo *w)
 	OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
 	OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
 	if (w->renderType == WEAPON_RENDER_VCLIP)
-		OglCacheVClipTexturesN (w->weapon_vclip, 0);
+		OglCacheVClipTexturesN (w->weapon_vclip, 3);
 	else if (w->renderType == WEAPON_RENDER_POLYMODEL)
 		OglCachePolyModelTextures (w->nModel);
 }
@@ -690,7 +690,7 @@ else if (gameData.objs.objects [nObj].renderType == RT_POWERUP) {
 			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]]);
 			break;*/
 		case POW_PROXMINE:
-			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXIMITY_INDEX]]);
+			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXMINE_INDEX]]);
 			break;
 		case POW_HOMINGMSL_1:
 		case POW_HOMINGMSL_4:
@@ -839,12 +839,12 @@ InitSpecialEffects ();
 				case POW_FUSION:
 					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [FUSION_INDEX]]);
 					break;
-/*					case POW_CONCUSSION_1:
+				case POW_CONCUSSION_1:
 				case POW_CONCUSSION_4:
 					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]]);
-					break;*/
+					break;
 				case POW_PROXMINE:
-					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXIMITY_INDEX]]);
+					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXMINE_INDEX]]);
 					break;
 				case POW_HOMINGMSL_1:
 				case POW_HOMINGMSL_4:

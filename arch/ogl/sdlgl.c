@@ -114,6 +114,9 @@ D2SetCaption ();
 OglInitAttributes ();
 /***/LogErr ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
+#ifdef RELEASE
+SDL_putenv ("SDL_VIDEO_CENTERED=1");
+#endif
 if (!OglVideoModeOK (w, h) ||
 	 !SDL_SetVideoMode (w, h, gameStates.ogl.nColorBits, SDL_VIDEO_FLAGS)) {
 	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, gameStates.ogl.nColorBits);

@@ -132,7 +132,7 @@ int joy_init()
 #if TRACE	
 	con_printf(CON_VERBOSE, "sdl-joystick: found %d joysticks\n", n);
 #endif
-	for (i = 0; (i < n) && (gameOpts->input.nJoysticks < MAX_JOYSTICKS); i++) {
+	for (i = 0; (i < n) && (gameStates.input.nJoysticks < MAX_JOYSTICKS); i++) {
 #if TRACE	
 		con_printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
 #endif
@@ -171,7 +171,7 @@ int joy_init()
 				joybutton_text [Joystick.n_buttons++] = i ? TNUM_HAT2_L : TNUM_HAT_L;
 				}
 			jp++;
-			gameOpts->input.nJoysticks++;
+			gameStates.input.nJoysticks++;
 			}
 		else {
 #if TRACE	
@@ -190,8 +190,8 @@ return joy_present;
 
 void joy_close()
 {
-	while (gameOpts->input.nJoysticks)
-		SDL_JoystickClose(SDL_Joysticks [--gameOpts->input.nJoysticks].handle);
+	while (gameStates.input.nJoysticks)
+		SDL_JoystickClose(SDL_Joysticks [--gameStates.input.nJoysticks].handle);
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +200,7 @@ void JoyGetPos(int *x, int *y)
 {
 	int axis [JOY_MAX_AXES];
 
-	if (!gameOpts->input.nJoysticks) {
+	if (!gameStates.input.nJoysticks) {
 		*x=*y=0;
 		return;
 	}
@@ -238,7 +238,7 @@ int JoyGetButtonDownCnt (int nButton)
 {
 	int numDowns;
 
-if (!gameOpts->input.nJoysticks)
+if (!gameStates.input.nJoysticks)
 	return 0;
 #ifndef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
@@ -255,7 +255,7 @@ fix JoyGetButtonDownTime(int nButton)
 {
 	fix time = F0_0;
 
-if (!gameOpts->input.nJoysticks)
+if (!gameStates.input.nJoysticks)
 	return 0;
 #ifndef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
@@ -280,7 +280,7 @@ unsigned int JoyReadRawAxis (unsigned int mask, int * axis )
 	int i;
 	unsigned int channel_masks = 0;
 
-if (!gameOpts->input.nJoysticks)
+if (!gameStates.input.nJoysticks)
 	return 0;
 #ifndef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
@@ -298,7 +298,7 @@ void JoyFlush()
 {
 	int i;
 
-	if (!gameOpts->input.nJoysticks)
+	if (!gameStates.input.nJoysticks)
 		return;
 
 	for (i = 0; i < MAX_JOYSTICKS * JOY_MAX_BUTTONS; i++) {
@@ -312,7 +312,7 @@ void JoyFlush()
 
 int JoyGetButtonState (int nButton )
 {
-	if (!gameOpts->input.nJoysticks)
+	if (!gameStates.input.nJoysticks)
 		return 0;
 
 if(nButton >= JOY_MAX_BUTTONS)
@@ -396,8 +396,8 @@ void JoySetSlowReading (int flag )
 int JoySetDeadzone (int nRelZone, int nAxis)
 {
 nAxis %= 4;
-gameOpts->input.joyDeadZones [nAxis] = (nRelZone > 100) ? 100 : (nRelZone < 0) ? 0 : nRelZone;
-return joyDeadzone [nAxis] = (32767 * gameOpts->input.joyDeadZones [nAxis] / 2) / 100;
+gameOpts->input.joystick.deadzones [nAxis] = (nRelZone > 100) ? 100 : (nRelZone < 0) ? 0 : nRelZone;
+return joyDeadzone [nAxis] = (32767 * gameOpts->input.joystick.deadzones [nAxis] / 2) / 100;
 }
 
 //------------------------------------------------------------------------------

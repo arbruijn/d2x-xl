@@ -332,7 +332,7 @@ bCycling = 0;
 
 //	------------------------------------------------------------------------------------
 //if message flag set, print message saying selected
-void SelectWeapon(int nWeaponNum, int bSecondary, int bPrintMessage, int bWaitForRearm)
+void SelectWeapon (int nWeaponNum, int bSecondary, int bPrintMessage, int bWaitForRearm)
 {
 	char	*szWeaponName;
 
@@ -398,7 +398,7 @@ else {
 			DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 		}
 	}
-	if (nWeaponNum % SUPER_WEAPON != PROXIMITY_INDEX)
+	if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX)
 		gameData.weapons.nSecondary = nWeaponNum;
 	szWeaponName = SECONDARY_WEAPON_NAMES (nWeaponNum);
 	//save flag for whether was super version
@@ -413,10 +413,32 @@ if (bPrintMessage) {
 	}
 }
 
+//------------------------------------------------------------------------------
+
+void ToggleBomb (void)
+{
+int bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
+if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
+	 (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] &&
+	  !LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
+	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
+	HUDInitMessage (TXT_NOBOMBS);
+	}
+else if (!LOCALPLAYER.secondaryAmmo [bomb]) {
+	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
+	HUDInitMessage (TXT_NOBOMB_ANY, (bomb == SMARTMINE_INDEX)? TXT_SMART_MINES : 
+						 !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) ? TXT_SMOKE_GRENADES : TXT_PROX_BOMBS);
+	}
+else {
+	bLastSecondaryWasSuper [PROXMINE_INDEX] = !bLastSecondaryWasSuper [PROXMINE_INDEX];
+	DigiPlaySampleOnce (SOUND_GOOD_SELECTION_SECONDARY, F1_0);
+	}
+}
+
 //flags whether the last time we use this weapon, it was the 'super' version
 //	------------------------------------------------------------------------------------
 //	Select a weapon, primary or secondary.
-void DoSelectWeapon(int nWeapon, int bSecondary)
+void DoSelectWeapon (int nWeapon, int bSecondary)
 {
 	int	nWeaponSave = nWeapon;
 	int	nWeaponStatus, current, hasFlag;
@@ -432,6 +454,10 @@ if (!bSecondary) {
 	hasFlag = HAS_WEAPON_FLAG;
 	LOCALPLAYER.energy += gameData.fusion.xCharge;
 	gameData.fusion.xCharge = 0;
+	}
+else if (nWeapon == 2) {
+	ToggleBomb ();
+	return;
 	}
 else {
 	current = gameData.weapons.nSecondary;
@@ -662,7 +688,7 @@ int PickupSecondary (tObject *objP, int nWeaponIndex, int count, int nPlayer)
 	int		cutpoint, bEmpty = 0, bSmokeGrens;
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 
-if ((nWeaponIndex == PROXIMITY_INDEX) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
+if ((nWeaponIndex == PROXMINE_INDEX) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
 	bSmokeGrens = 1;
 	max = 4;
 	}
@@ -686,7 +712,7 @@ nPickedUp = count;
 if (playerP->secondaryAmmo [nWeaponIndex] > max) {
 	nPickedUp = count - (playerP->secondaryAmmo [nWeaponIndex] - max);
 	playerP->secondaryAmmo [nWeaponIndex] = max;
-	if ((nPickedUp < count) && (nWeaponIndex != PROXIMITY_INDEX) && (nWeaponIndex != SMART_MINE_INDEX)) {
+	if ((nPickedUp < count) && (nWeaponIndex != PROXMINE_INDEX) && (nWeaponIndex != SMARTMINE_INDEX)) {
 		short nObject = OBJ_IDX (objP);
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = count - nPickedUp;
 		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [nWeaponIndex];
@@ -707,11 +733,11 @@ if (ISLOCALPLAYER (nPlayer)) {
 		else {
 			//if we don't auto-select this weapon, but it's a proxbomb or smart mine,
 			//we want to do a mini-auto-selection that applies to the drop bomb key
-			if ((nWeaponIndex == PROXIMITY_INDEX || nWeaponIndex == SMART_MINE_INDEX) &&
-				!(gameData.weapons.nSecondary == PROXIMITY_INDEX || gameData.weapons.nSecondary == SMART_MINE_INDEX)) {
-				int cur = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? PROXIMITY_INDEX : SMART_MINE_INDEX;
+			if ((nWeaponIndex == PROXMINE_INDEX || nWeaponIndex == SMARTMINE_INDEX) &&
+				!(gameData.weapons.nSecondary == PROXMINE_INDEX || gameData.weapons.nSecondary == SMARTMINE_INDEX)) {
+				int cur = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 				if (SOrderList (nWeaponIndex) < SOrderList (cur))
-					bLastSecondaryWasSuper[PROXIMITY_INDEX] = (nWeaponIndex == SMART_MINE_INDEX);
+					bLastSecondaryWasSuper[PROXMINE_INDEX] = (nWeaponIndex == SMARTMINE_INDEX);
 				}
 			}
 		}

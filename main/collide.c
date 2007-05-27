@@ -1927,7 +1927,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 	//	If the tPlayer had smart mines, maybe arm one of them.
 	rthresh = 30000;
-	while ((playerP->secondaryAmmo [SMART_MINE_INDEX]%4==1) && (d_rand () < rthresh)) {
+	while ((playerP->secondaryAmmo [SMARTMINE_INDEX]%4==1) && (d_rand () < rthresh)) {
 		short			newseg;
 		vmsVector	tvec;
 
@@ -1942,7 +1942,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		//	If the tPlayer had proximity bombs, maybe arm one of them.
 		if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			rthresh = 30000;
-			while ((playerP->secondaryAmmo [PROXIMITY_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
+			while ((playerP->secondaryAmmo [PROXMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
 				short			newseg;
 				vmsVector	tvec;
 	
@@ -2003,9 +2003,9 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			
 			int maxCount, i;
 #if TRACE
-			con_printf (CONDBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXIMITY_INDEX]);
+			con_printf (CONDBG, "HOARD MODE: Dropping %d orbs \n", playerP->secondaryAmmo [PROXMINE_INDEX]);
 #endif	
-			maxCount = playerP->secondaryAmmo [PROXIMITY_INDEX];
+			maxCount = playerP->secondaryAmmo [PROXMINE_INDEX];
 			if ((gameData.app.nGameMode & GM_HOARD) && (maxCount > 12))
 				maxCount = 12;
 			for (i = 0; i < maxCount; i++)
@@ -2038,11 +2038,11 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		//	Drop the secondary weapons
 		//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-			MaybeDropSecondaryWeaponEgg (playerObjP, PROXIMITY_INDEX, (playerP->secondaryAmmo [PROXIMITY_INDEX])/4);
+			MaybeDropSecondaryWeaponEgg (playerObjP, PROXMINE_INDEX, (playerP->secondaryAmmo [PROXMINE_INDEX])/4);
 		MaybeDropSecondaryWeaponEgg (playerObjP, SMART_INDEX, playerP->secondaryAmmo [SMART_INDEX]);
 		MaybeDropSecondaryWeaponEgg (playerObjP, MEGA_INDEX, playerP->secondaryAmmo [MEGA_INDEX]);
 		if (!(gameData.app.nGameMode & GM_ENTROPY))
-			MaybeDropSecondaryWeaponEgg (playerObjP, SMART_MINE_INDEX, (playerP->secondaryAmmo [SMART_MINE_INDEX])/4);
+			MaybeDropSecondaryWeaponEgg (playerObjP, SMARTMINE_INDEX, (playerP->secondaryAmmo [SMARTMINE_INDEX])/4);
 		MaybeDropSecondaryWeaponEgg (playerObjP, EARTHSHAKER_INDEX, playerP->secondaryAmmo [EARTHSHAKER_INDEX]);
 		//	Drop the tPlayer's missiles in packs of 1 and/or 4
 		DropMissile1or4 (playerObjP, HOMING_INDEX);

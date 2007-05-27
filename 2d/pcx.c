@@ -379,7 +379,7 @@ return p;
 //------------------------------------------------------------------------------
 // fullscreen loading, 10/14/99 Jan Bobrowski
 
-int pcx_read_fullscr(char * filename, int bD1Mission)
+int PcxReadFullScrImage(char * filename, int bD1Mission)
 {
 	int			pcx_error;
 	grsBitmap	bm;

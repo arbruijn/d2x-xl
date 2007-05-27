@@ -897,7 +897,7 @@ void InputDeviceConfig()
 
 		m[6].nType = NM_TYPE_MENU;   m[6].text=TXT_CUST_ABOVE;
 		m[7].nType = NM_TYPE_TEXT;   m[7].text="";
-		m[8].nType = NM_TYPE_SLIDER; m[8].text=TXT_JOYS_SENSITIVITY; m[8].value=gameOpts->input.joySensitivity; m[8].minValue =0; m[8].maxValue = 8;
+		m[8].nType = NM_TYPE_SLIDER; m[8].text=TXT_JOYS_SENSITIVITY; m[8].value=gameOpts->input.joystick.sensitivity; m[8].minValue =0; m[8].maxValue = 8;
 		m[9].nType = NM_TYPE_TEXT;   m[9].text="";
 		m[10].nType = NM_TYPE_MENU;  m[10].text=TXT_CUST_KEYBOARD;
 		nitems=11;
@@ -905,8 +905,8 @@ void InputDeviceConfig()
 		m[gameConfig.nControlType].value = 1;
 
 		i1 = ExecMenu1( NULL, TXT_CONTROLS, nitems, m, joydef_menuset_1, i1 );
-		gameOpts->input.mouseSensitivity =
-		gameOpts->input.joySensitivity = m[8].value;
+		gameOpts->input.mouse.sensitivity =
+		gameOpts->input.joystick.sensitivity = m[8].value;
 
 		switch(i1)	{
 		case 6: {
@@ -1016,7 +1016,7 @@ void InputDeviceConfig()
 
 		m[ 7].nType = NM_TYPE_MENU;		m[ 7].text=TXT_CUST_ABOVE;
 		m[ 8].nType = NM_TYPE_TEXT;		m[ 8].text="";
-		m[ 9].nType = NM_TYPE_SLIDER;	m[ 9].text=TXT_JOYS_SENSITIVITY; m[9].value=gameOpts->input.joySensitivity; m[9].minValue =0; m[9].maxValue = 8;
+		m[ 9].nType = NM_TYPE_SLIDER;	m[ 9].text=TXT_JOYS_SENSITIVITY; m[9].value=gameOpts->input.joystick.sensitivity; m[9].minValue =0; m[9].maxValue = 8;
 		m[10].nType = NM_TYPE_TEXT;		m[10].text="";
 		m[11].nType = NM_TYPE_MENU;		m[11].text=TXT_CUST_KEYBOARD;
 
@@ -1031,8 +1031,8 @@ void InputDeviceConfig()
 		m[nitems].nType = NM_TYPE_MENU; m[nitems].text="CUSTOMIZE D2X KEYS"; nitems++;
 
 		i1 = ExecMenu1( NULL, TXT_CONTROLS, nitems, m, joydef_menuset_1, i1 );
-		gameOpts->input.mouseSensitivity =
-		gameOpts->input.joySensitivity = m[9].value;
+		gameOpts->input.mouse.sensitivity =
+		gameOpts->input.joystick.sensitivity = m[9].value;
 
 		switch(i1)	{
 		case 7: {
@@ -1153,7 +1153,7 @@ void InputDeviceConfig()
 
 		m[8].nType = NM_TYPE_MENU; m[8].text=TXT_CUST_ABOVE;
 		m[9].nType = NM_TYPE_TEXT;   m[9].text="";
-		m[10].nType = NM_TYPE_SLIDER; m[10].text=TXT_JOYS_SENSITIVITY; m[10].value=gameOpts->input.joySensitivity; m[10].minValue =0; m[10].maxValue = 8;
+		m[10].nType = NM_TYPE_SLIDER; m[10].text=TXT_JOYS_SENSITIVITY; m[10].value=gameOpts->input.joystick.sensitivity; m[10].minValue =0; m[10].maxValue = 8;
 		m[11].nType = NM_TYPE_TEXT;   m[11].text="";
 		m[12].nType = NM_TYPE_MENU; m[12].text=TXT_CUST_KEYBOARD;
 
@@ -1166,8 +1166,8 @@ void InputDeviceConfig()
 		}
 
 		i1 = ExecMenu1( NULL, TXT_CONTROLS, nitems, m, joydef_menuset_win, i1 );
-		gameOpts->input.mouseSensitivity =
-		gameOpts->input.joySensitivity = m[10].value;
+		gameOpts->input.mouse.sensitivity =
+		gameOpts->input.joystick.sensitivity = m[10].value;
 
 		switch(i1)	{
 		case 8: {

@@ -74,6 +74,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libmad", "..\..\libmad-0.15
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "d2x-trackir", "d2x-trackir\d2x-trackir.vcproj", "{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ACM debug = ACM debug
@@ -402,6 +406,42 @@ Global
 		{0FF59DD8-9902-4DE8-898D-F2F08322CCD0}.Release NASM.Build.0 = Release|Win32
 		{0FF59DD8-9902-4DE8-898D-F2F08322CCD0}.Release_NoSTDIO.ActiveCfg = Release|Win32
 		{0FF59DD8-9902-4DE8-898D-F2F08322CCD0}.Release_NoSTDIO.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.ACM debug.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.ACM debug.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.ACM release.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.ACM release.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.ACM release Nasm.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.ACM release Nasm.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Debug.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Debug.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Debug GTK.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Debug GTK.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Debug NASM.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Debug NASM.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Demo.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Demo.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.dll debug.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.dll debug.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.dll release.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.dll release.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.dll release Nasm.ActiveCfg = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.dll release Nasm.Build.0 = Debug|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.LAME debug.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.LAME debug.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.LAME release.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.LAME release.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.LAME release Nasm.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.LAME release Nasm.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Mp3X debug.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Mp3X debug.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release GTK.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release GTK.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release NASM.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release NASM.Build.0 = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release_NoSTDIO.ActiveCfg = Release|Win32
+		{CE17E0B1-3327-4BCE-93E4-D7B74F5A1A7A}.Release_NoSTDIO.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

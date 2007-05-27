@@ -280,9 +280,9 @@ MultiSendShields ();
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 if (gameData.app.nGameMode & GM_HOARD)
-	LOCALPLAYER.secondaryAmmo[PROXIMITY_INDEX] = 12;
+	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 12;
 else if (gameData.app.nGameMode & GM_ENTROPY)
-	LOCALPLAYER.secondaryAmmo[PROXIMITY_INDEX] = 15;
+	LOCALPLAYER.secondaryAmmo[PROXMINE_INDEX] = 15;
 UpdateLaserWeaponInfo ();
 }
 //#endif
@@ -663,7 +663,7 @@ switch (objP->id) {
 		break;
 
 	case POW_PROXMINE:
-		bUsed = PickupSecondary (objP, PROXIMITY_INDEX, 4, nPlayer);
+		bUsed = PickupSecondary (objP, PROXMINE_INDEX, 4, nPlayer);
 		break;
 
 	case POW_SMARTMSL:
@@ -691,7 +691,7 @@ switch (objP->id) {
 		break;
 
 	case POW_SMARTMINE:
-		bUsed = PickupSecondary (objP, SMART_MINE_INDEX, 4, nPlayer);
+		bUsed = PickupSecondary (objP, SMARTMINE_INDEX, 4, nPlayer);
 		break;
 
 	case POW_MERCURYMSL_1:
@@ -830,12 +830,12 @@ switch (objP->id) {
 
 	case POW_HOARD_ORB:
 		if (gameData.app.nGameMode & GM_HOARD) {	
-			if (playerP->secondaryAmmo [PROXIMITY_INDEX] < 12) {
+			if (playerP->secondaryAmmo [PROXMINE_INDEX] < 12) {
 				if (ISLOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 					}
-				playerP->secondaryAmmo [PROXIMITY_INDEX]++;
+				playerP->secondaryAmmo [PROXMINE_INDEX]++;
 				playerP->flags |= PLAYER_FLAGS_FLAG;
 				bUsed = 1;
 				}
@@ -849,12 +849,12 @@ switch (objP->id) {
 					objP->lifeleft = -1;	//make orb disappear if touched by opposing team tPlayer
 				}
 			else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
-						(playerP->secondaryAmmo [PROXIMITY_INDEX] < playerP->secondaryAmmo [SMART_MINE_INDEX])) {
+						(playerP->secondaryAmmo [PROXMINE_INDEX] < playerP->secondaryAmmo [SMARTMINE_INDEX])) {
 				if (ISLOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
 					PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 					}
-				playerP->secondaryAmmo [PROXIMITY_INDEX]++;
+				playerP->secondaryAmmo [PROXMINE_INDEX]++;
 				playerP->flags |= PLAYER_FLAGS_FLAG;
 				bUsed = 1;
 				}
@@ -952,14 +952,14 @@ powerupToWeapon [POW_OMEGA] = OMEGA_INDEX;
 powerupToWeapon [POW_SUPERLASER] = SUPER_LASER_INDEX;
 powerupToWeapon [POW_CONCUSSION_1] = CONCUSSION_INDEX;
 powerupToWeapon [POW_CONCUSSION_4] = CONCUSSION_INDEX;
-powerupToWeapon [POW_PROXMINE] = PROXIMITY_INDEX;
+powerupToWeapon [POW_PROXMINE] = PROXMINE_INDEX;
 powerupToWeapon [POW_SMARTMSL] = SMART_INDEX;
 powerupToWeapon [POW_MEGAMSL] = MEGA_INDEX;
 powerupToWeapon [POW_FLASHMSL_1] = FLASHMSL_INDEX;
 powerupToWeapon [POW_FLASHMSL_4] = FLASHMSL_INDEX;
 powerupToWeapon [POW_GUIDEDMSL_1] = GUIDED_INDEX;
 powerupToWeapon [POW_GUIDEDMSL_4] = GUIDED_INDEX;
-powerupToWeapon [POW_SMARTMINE] = SMART_MINE_INDEX;
+powerupToWeapon [POW_SMARTMINE] = SMARTMINE_INDEX;
 powerupToWeapon [POW_MERCURYMSL_1] = MERCURY_INDEX;
 powerupToWeapon [POW_MERCURYMSL_4] = MERCURY_INDEX;
 powerupToWeapon [POW_EARTHSHAKER] = EARTHSHAKER_INDEX;

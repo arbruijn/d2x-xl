@@ -89,6 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lighting.h"
 #include "ipx.h"
 #include "gr.h"
+#include "trackir.h"
 
 #define STATE_VERSION				34
 #define STATE_COMPATIBLE_VERSION 20

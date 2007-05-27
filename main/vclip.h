@@ -178,7 +178,7 @@ extern tVideoClip Vclip [2][VCLIP_MAXNUM];
 void DrawVClipObject(tObject *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
 extern void DrawWeaponVClip(tObject *obj);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define vclip_read_n(vc, n, fp) CFRead(vc, sizeof(tVideoClip), n, fp)
 #else
 /*

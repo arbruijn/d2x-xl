@@ -224,12 +224,12 @@ typedef struct D2D1_weapon_info {
 
 #define CONCUSSION_INDEX    0
 #define HOMING_INDEX        1
-#define PROXIMITY_INDEX     2
+#define PROXMINE_INDEX		 2
 #define SMART_INDEX         3
 #define MEGA_INDEX          4
 #define FLASHMSL_INDEX      5
 #define GUIDED_INDEX        6
-#define SMART_MINE_INDEX    7
+#define SMARTMINE_INDEX     7
 #define MERCURY_INDEX		 8
 #define EARTHSHAKER_INDEX   9
 
@@ -322,5 +322,6 @@ extern ubyte nDefaultWeaponOrder [2][11];
 
 void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n);
 void SetLastSuperWeaponStates (void);
+void ToggleBomb (void);
 
 #endif

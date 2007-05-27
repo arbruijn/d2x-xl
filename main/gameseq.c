@@ -740,13 +740,13 @@ if (LOCALPLAYER.callsign [0] == 0)	{
 	//---------------------------------------------------------------------
 	// Set default config options in case there is no config file
 	// kcKeyboard, kc_joystick, kcMouse are statically defined.
-	gameOpts->input.joySensitivity [0] =
-	gameOpts->input.joySensitivity [1] =
-	gameOpts->input.joySensitivity [2] =
-	gameOpts->input.joySensitivity [3] = 8;
-	gameOpts->input.mouseSensitivity [0] =
-	gameOpts->input.mouseSensitivity [1] =
-	gameOpts->input.mouseSensitivity [2] = 8;
+	gameOpts->input.joystick.sensitivity [0] =
+	gameOpts->input.joystick.sensitivity [1] =
+	gameOpts->input.joystick.sensitivity [2] =
+	gameOpts->input.joystick.sensitivity [3] = 8;
+	gameOpts->input.mouse.sensitivity [0] =
+	gameOpts->input.mouse.sensitivity [1] =
+	gameOpts->input.mouse.sensitivity [2] = 8;
 	gameConfig.nControlType =CONTROL_NONE;
 	for (i=0; i<CONTROL_MAX_TYPES; i++)
 		for (j=0; j<MAX_CONTROLS; j++)
@@ -1966,7 +1966,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}			
-			DoBriefingScreens (szBriefingTextFilename, nLevel);
+			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
 			}
 		else {
 			char tname [FILENAME_LEN];

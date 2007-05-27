@@ -67,9 +67,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define KEY_DELAY_DEFAULT       ((F1_0*20)/1000)
 
 typedef struct {
-	char    bs_name[14];                //  filename, eg merc01.  Assumes .lbm suffix.
-	sbyte   level_num;
-	sbyte   message_num;
+	char    bs_name [14];                //  filename, eg merc01.  Assumes .lbm suffix.
+	sbyte   nLevel;
+	sbyte   nMessage;
 	short   text_ulx, text_uly;         //  upper left x, y of text window
 	short   text_width, text_height;    //  width and height of text window
 } briefing_screen;
@@ -86,8 +86,8 @@ extern unsigned RobSX, RobSY, RobDX, RobDY; // Robot movie coords
 static int	brief_palette_254_bash;
 static int  bInitRobot;
 
-char curBriefScreenName[15] = "";
-char	* Briefing_text = NULL;
+char curBriefScreenName [15] = "";
+char	* szBriefingText = NULL;
 int briefingTextLen;
 char bRobotPlaying=0;
 
@@ -96,14 +96,11 @@ char bRobotPlaying=0;
 //End D1X modification
 
 // Descent 1 briefings
-char szEndingTextFilename[13] = "endreg.txt";
-char szBriefingTextFilename[13] = "briefing.txt";
-
 #define	SHAREWARE_ENDING_FILENAME	"ending.tex"
 
 //	Can be set by -noscreens command line option.  Causes bypassing of all briefing screens.
-int	briefFgColorIndex[MAX_BRIEFING_COLORS], 
-		briefBgColorIndex[MAX_BRIEFING_COLORS];
+int	briefFgColorIndex [MAX_BRIEFING_COLORS], 
+		briefBgColorIndex [MAX_BRIEFING_COLORS];
 int	Current_color = 0;
 unsigned int nEraseColor = BLACK_RGBA;
 
@@ -267,7 +264,7 @@ else if ((ps = strstr (szImg, ".pcx"))) {
 
 for (;;) {
 	pcxErr = bFullScr ?
-		pcx_read_fullscr (szImg, gameStates.app.bD1Mission) :
+		PcxReadFullScrImage (szImg, gameStates.app.bD1Mission) :
 		PCXReadBitmap (szImg, bmP, BM_LINEAR, gameStates.app.bD1Mission);
 	if (pcxErr == PCX_ERROR_NONE)
 		break;
@@ -282,10 +279,10 @@ return pcxErr;
 
 //-----------------------------------------------------------------------------
 
-int ShowBriefingImage (char * filename, int allow_keys, int from_hog_only)
+int ShowBriefingImage (char * filename, int bAllowKeys, int from_hog_only)
 {
 	fix timer;
-	int pcx_error;
+	int pcxResult;
 	grsBitmap title_bm;
 	char new_filename [FILENAME_LEN+1] = "";
 
@@ -298,26 +295,26 @@ strcat (new_filename, filename);
 filename = new_filename;
 
 title_bm.bm_texBuf=NULL;
-if ((pcx_error = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
+if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 #if TRACE
-	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcx_error), pcx_error);
+	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
 #endif
-	Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n", filename, pcx_errormsg (pcx_error), pcx_error);
+	Error ("Error loading briefing screen <%s>, PCX load error: %s (%i)\n", filename, pcx_errormsg (pcxResult), pcxResult);
 }
 //vfx_set_palette_sub (brief_palette);
 GrPaletteStepLoad (NULL);
 GrSetCurrentCanvas (NULL);
 ShowFullscreenImage (&title_bm);
-if (GrPaletteFadeIn (NULL, 32, allow_keys))
+if (GrPaletteFadeIn (NULL, 32, bAllowKeys))
 	return 1;
 
 GrPaletteStepLoad (NULL);
 timer	= TimerGetFixedSeconds () + i2f (3);
 while (1) {
-	if (local_key_inkey () && allow_keys) break;
+	if (local_key_inkey () && bAllowKeys) break;
 	if (TimerGetFixedSeconds () > timer) break;
 }
-if (GrPaletteFadeOut (NULL, 32, allow_keys))
+if (GrPaletteFadeOut (NULL, 32, bAllowKeys))
 	return 1;
 D2_FREE (title_bm.bm_texBuf);
 return 0;
@@ -336,10 +333,10 @@ return 0;
 #define MAX_BRIEFING_SCREENS 60
 
 #if 0
-briefing_screen Briefing_screens[MAX_BRIEFING_SCREENS]=
+briefing_screen briefingScreens [MAX_BRIEFING_SCREENS]=
  {{"brief03.pcx", 0, 3, 8, 8, 257, 177}}; // default=0!!!
 #else
-briefing_screen Briefing_screens[] = {
+briefing_screen briefingScreens [] = {
 	{ "brief01.pcx",   0,  1,  13, 140, 290,  59 }, 
 	{ "brief02.pcx",   0,  2,  27,  34, 257, 177 }, 
 	{ "brief03.pcx",   0,  3,  20,  22, 257, 177 }, 
@@ -405,7 +402,7 @@ int	Briefing_text_x, Briefing_text_y;
 grs_canvas	*robotCanv = NULL;
 vmsAngVec	Robot_angles;
 
-char    Bitmap_name[32] = "";
+char    Bitmap_name [32] = "";
 #define EXIT_DOOR_MAX   14
 #define OTHER_THING_MAX 10      //  Adam: This is the number of frames in your new animating thing.
 #define DOOR_DIV_INIT   6
@@ -445,7 +442,7 @@ void ShowBitmapFrame (int bRedraw)
 			return;
 	}
 
-	if (Bitmap_name[0] != 0) {
+	if (Bitmap_name [0] != 0) {
 		char		*pound_signp;
 		int		num, dig1, dig2;
 		//	Set supertransparency color to black
@@ -620,11 +617,11 @@ void InitSpinningRobot (void) // (int x, int y, int w, int h)
 int PrintCharDelayed (char the_char, int delay, int nRobot, int cursorFlag, int bRedraw)
 {
 	int w, h, aw;
-	char message[2];
+	char message [2];
 	static fix	t, t0, StartTime=0;
 
-	message[0] = the_char;
-	message[1] = 0;
+	message [0] = the_char;
+	message [1] = 0;
 
 	if (StartTime==0 && TimerGetFixedSeconds ()<0)
 		StartTime=TimerGetFixedSeconds ();
@@ -647,7 +644,7 @@ if (delay > 0)
 	delay=FixDiv (F1_0, i2f (15));
 
 if ((delay > 0) && !bRedraw) {
-	if (Bitmap_name[0] != 0)
+	if (Bitmap_name [0] != 0)
 		ShowBitmapFrame (0);
 	if (bRobotPlaying)
 		RotateBriefingRobot ();
@@ -656,7 +653,7 @@ if ((delay > 0) && !bRedraw) {
 		if (bRobotPlaying)
 			RotateBriefingRobot ();
 		if (t >= t0 + KEY_DELAY_DEFAULT/2) {
-			if ((Bitmap_name[0] != 0) && (delay != 0))
+			if ((Bitmap_name [0] != 0) && (delay != 0))
 				ShowBitmapFrame (0);
 			if (nRobot != -1)
 				ShowSpinningRobotFrame (nRobot);
@@ -695,20 +692,20 @@ return w;
 
 int LoadBriefingScreen (int nScreen)
 {
-	int	pcx_error;
+	int	pcxResult;
 	char *szBriefScreen;
 
 if (gameStates.app.bD1Mission)
-	szBriefScreen = Briefing_screens[nScreen].bs_name;
+	szBriefScreen = briefingScreens [nScreen].bs_name;
 else
 	szBriefScreen = curBriefScreenName;
 if (*szBriefScreen) {
 	glClear (GL_COLOR_BUFFER_BIT);
 	WIN (DDGRLOCK (dd_grd_curcanv));
-	if ((pcx_error = pcx_read_fullscr (szBriefScreen, gameStates.app.bD1Mission)) != PCX_ERROR_NONE) {
+	if ((pcxResult = PcxReadFullScrImage (szBriefScreen, gameStates.app.bD1Mission)) != PCX_ERROR_NONE) {
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef _DEBUG
-		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcx_error), pcx_error);
+		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
 #endif
 		}
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
@@ -721,7 +718,7 @@ return 0;
 
 int LoadNewBriefingScreen (char *szBriefScreen, int bRedraw)
 {
-	int pcx_error;
+	int pcxResult;
 
 #if TRACE
 con_printf (CONDBG, "Loading new briefing <%s>\n", szBriefScreen);
@@ -730,11 +727,11 @@ strcpy (curBriefScreenName, szBriefScreen);
 if (GrPaletteFadeOut (NULL, 32, 0))
 	return 0;
 WIN (DDGRLOCK (dd_grd_curcanv));
-if ((pcx_error = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
+if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef _DEBUG
 	Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", 
-			szBriefScreen, pcx_errormsg (pcx_error), pcx_error);
+			szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
 #endif
 	}
 if (GrPaletteFadeIn (NULL, 32, 0))
@@ -745,7 +742,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int get_message_num (char **message)
+int GetMessageNum (char **message)
 {
 	int	num=0;
 	char	*psz = *message;
@@ -844,8 +841,8 @@ while (*message && (!pEnd || (message < pEnd))) {
 			y = Briefing_text_y;
 			}
 		else if (ch == 'U') {
-			nScreen = get_message_num (&message);
-			*pBriefBuf = Briefing_screens [nScreen];
+			nScreen = GetMessageNum (&message);
+			*pBriefBuf = briefingScreens [nScreen];
 			init_char_pos (pBriefBuf, 1);
 			x = Briefing_text_x;
 			y = Briefing_text_y;
@@ -889,8 +886,8 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	int			bHaveScreen = 0;
 	char			*pi, *pj;
 	int			x, y, bRedraw, bPageDone;
-	char			spinRobotName[]="rba.mve", kludge;  // matt don't change this!
-	char			szBriefScreen[15], szBriefScreenB[15];
+	char			spinRobotName []="rba.mve", kludge;  // matt don't change this!
+	char			szBriefScreen [15], szBriefScreenB [15];
 	char			bDumbAdjust=0;
 	char			chattering=0;
 	short 		nBot = 0;
@@ -898,7 +895,7 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	int			bOnlyRobots, bExtraSounds;
 	WIN (int wpage_done=0);
 
-Bitmap_name[0] = 0;
+Bitmap_name [0] = 0;
 Current_color = 0;
 bRobotPlaying=0;
 
@@ -912,7 +909,7 @@ nHumChannel = StartBriefingHum (nHumChannel, nLevel, nScreen, bExtraSounds);
 
 GrSetCurFont (GAME_FONT);
 
-briefBuf = Briefing_screens [nScreen];
+briefBuf = briefingScreens [nScreen];
 bsp = &briefBuf;
 if (gameStates.app.bD1Mission)
 	GotZ = 1;
@@ -943,7 +940,7 @@ while (!done) {
 		Briefing_text_y = y;
 		//if (bHaveScreen)
 		LoadBriefingScreen (nScreen);
-		briefBuf = Briefing_screens [nScreen];
+		briefBuf = briefingScreens [nScreen];
 		bsp = &briefBuf;
 		init_char_pos (bsp, 1);
 		}
@@ -957,7 +954,7 @@ while (!done) {
 			ch = *message++;
 			if (ch == 'D') {
 				nScreen = DefineBriefingBox (&message, &briefBuf);
-		    	//LoadNewBriefingScreen (Briefing_screens[nScreen].bs_name);
+		    	//LoadNewBriefingScreen (briefingScreens [nScreen].bs_name);
 
 				bsp = &briefBuf;
 				x = Briefing_text_x;
@@ -966,8 +963,8 @@ while (!done) {
 				prev_ch = 10;                                   // read to eoln
 				}
 			else if (ch == 'U') {
-				nScreen = get_message_num (&message);
-				briefBuf = Briefing_screens [nScreen];
+				nScreen = GetMessageNum (&message);
+				briefBuf = briefingScreens [nScreen];
 				bsp = &briefBuf;
 				init_char_pos (bsp, 1);
 				x = Briefing_text_x;
@@ -975,7 +972,7 @@ while (!done) {
 				prev_ch = 10;                                   // read to eoln
 				}
 			else if (ch == 'C') {
-				Current_color = get_message_num (&message) - 1;
+				Current_color = GetMessageNum (&message) - 1;
 				Assert ((Current_color >= 0) && (Current_color < MAX_BRIEFING_COLORS));
 				prev_ch = 10;
 				}
@@ -986,7 +983,7 @@ while (!done) {
 					;
 				}
 			else if (ch == 'T') {
-				tab_stop = get_message_num (&message) * (1 + gameStates.menus.bHires);
+				tab_stop = GetMessageNum (&message) * (1 + gameStates.menus.bHires);
 				prev_ch = 10;							//	read to eoln
 				}
 			else if (ch == 'R') {
@@ -1005,13 +1002,13 @@ while (!done) {
 						StopBriefingSound (&nHumChannel);
 					}
 				if (gameStates.app.bD1Mission) {
-					nRobot = get_message_num (&message);
+					nRobot = GetMessageNum (&message);
 					while (*message++ != 10)
 						;
 					}
 				else {
 					kludge = *message++;
-					spinRobotName[2] = kludge; // ugly but proud
+					spinRobotName [2] = kludge; // ugly but proud
 					if (message > pj) {
 						grs_canvas *curCanvSave = grdCurCanv;
 						grdCurCanv = robotCanv;
@@ -1110,7 +1107,7 @@ while (!done) {
 						RotateBriefingRobot ();
 					if (nRobot != -1)
 						ShowSpinningRobotFrame (nRobot);
-					if (Bitmap_name[0] != 0)
+					if (Bitmap_name [0] != 0)
 						ShowBitmapFrame (0);
 					StartTime += KEY_DELAY_DEFAULT/2;
 					//GrUpdate (0);
@@ -1238,7 +1235,7 @@ while (!done) {
 						RotateBriefingRobot ();
 					if (nRobot != -1)
 						ShowSpinningRobotFrame (nRobot);
-					if (Bitmap_name[0] != 0)
+					if (Bitmap_name [0] != 0)
 						ShowBitmapFrame (0);
 					StartTime += KEY_DELAY_DEFAULT / 2;
 					keypress = local_key_inkey ();
@@ -1302,10 +1299,10 @@ return rval;
 
 //-----------------------------------------------------------------------------
 // Return a pointer to the start of text for screen #nScreen.
-char * get_briefing_message (int nScreen)
+char * GetBriefingMessage (int nScreen)
 {
-	char *tptr = Briefing_text;
-	int	cur_screen=0;
+	char *tptr = szBriefingText;
+	int	nCurScreen=0;
 	int	ch, i;
 
 Assert (nScreen >= 0);
@@ -1317,8 +1314,8 @@ for (i = 0; *tptr && (i < briefingTextLen); i++) {
 	ch = *tptr++;
 	if (ch != 'S')
 		continue;
-	cur_screen = get_message_num (&tptr);
-	if (cur_screen == nScreen)
+	nCurScreen = GetMessageNum (&tptr);
+	if (nCurScreen == nScreen)
 		return tptr;
 	}
 return (NULL);
@@ -1326,56 +1323,42 @@ return (NULL);
 
 //-----------------------------------------------------------------------------
 //	Load Descent briefing text.
-int load_screen_text (char *filename, char **buf)
+int LoadScreenText (char *filename, char **buf)
 {
-	CFILE *tfile;
-	CFILE *ifile;
+	CFILE *fp;
 	int	len, i;
-	int	have_binary = 0;
+	int	bHaveBinary = (strstr (filename, ".txb") != NULL);
 	char	*bufP;
 
-if ((tfile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) == NULL) {
-	char nfilename [30], *ptr;
-
-	strcpy (nfilename, filename);
-	if ((ptr = strrchr (nfilename, '.')))
-		*ptr = '\0';
-	strcat (nfilename, ".txb");
-	if ((ifile = CFOpen (nfilename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) == NULL) {
-#if TRACE
-		con_printf (CONDBG, "can't open %s!\n", nfilename);
-#endif
-		return (0);
-		}
-	have_binary = 1;
-	len = CFLength (ifile, 0);
+if (!(fp = CFOpen (filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission))) {
+	LogErr ("can't open briefing '%s'!\n", filename);
+	return (0);
+	}
+if (bHaveBinary) {
+	len = CFLength (fp, 0);
 	MALLOC (bufP, char, len);
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
-		CFRead (bufP, 1, 1, ifile);
+		CFRead (bufP, 1, 1, fp);
 			if (*bufP == 13)
 				bufP--;
 		}
-	CFClose (ifile);
+	CFClose (fp);
+	for (i = 0, bufP = *buf; i < len; i++, bufP++)
+		if (*bufP != '\n')
+			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
 	}
 else {
-	len = CFLength (tfile, 0);
+	len = CFLength (fp, 0);
 	MALLOC (bufP, char, len+500);
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
-		CFRead (bufP, 1, 1, tfile);
+		CFRead (bufP, 1, 1, fp);
 			if (*bufP == 13)
 				bufP--;
 		}
 	*bufP = 0;
-	//CFRead (*buf, 1, len, tfile);
-	CFClose (tfile);
-	}
-if (have_binary) {
-	for (i = 0, bufP = *buf; i < len; i++, bufP++)
-		if (*bufP != '\n')
-			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
-	//*bufP = '\0';
+	CFClose (fp);
 	}
 briefingTextLen = (int) (bufP - *buf);
 return (1);
@@ -1385,17 +1368,15 @@ return (1);
 // Return true if message got aborted, else return false.
 int ShowBriefingText (int nScreen, short nLevel)
 {
-	char	*message_ptr;
+	char	*pszMsg;
 	int i;
 
-message_ptr = (gameStates.app.bD1Mission) ?
-				  get_briefing_message (Briefing_screens[nScreen].message_num) :
-				  get_briefing_message (nScreen);
-if (!message_ptr)
+pszMsg = GetBriefingMessage (gameStates.app.bD1Mission ? briefingScreens [nScreen].nMessage : nScreen);
+if (!pszMsg)
 	return (0);
 DoBriefingColorStuff ();
 glEnable (GL_TEXTURE_2D);
-i = ShowBriefingMessage (nScreen, message_ptr, nLevel);
+i = ShowBriefingMessage (nScreen, pszMsg, nLevel);
 glDisable (GL_TEXTURE_2D);
 return i;
 }
@@ -1408,59 +1389,59 @@ GrPaletteStepLoad (NULL);
 
 if (gameStates.app.bD1Mission) {
   //green
-	briefFgColorIndex[0] = GrFindClosestColorCurrent (0, 54, 0);
-	briefBgColorIndex[0] = GrFindClosestColorCurrent (0, 19, 0);
+	briefFgColorIndex [0] = GrFindClosestColorCurrent (0, 54, 0);
+	briefBgColorIndex [0] = GrFindClosestColorCurrent (0, 19, 0);
   //white
-	briefFgColorIndex[1] = GrFindClosestColorCurrent (42, 38, 32);
-	briefBgColorIndex[1] = GrFindClosestColorCurrent (14, 14, 14);
+	briefFgColorIndex [1] = GrFindClosestColorCurrent (42, 38, 32);
+	briefBgColorIndex [1] = GrFindClosestColorCurrent (14, 14, 14);
 	//Begin D1X addition
 	//red
-	briefFgColorIndex[2] = GrFindClosestColorCurrent (63, 0, 0);
-	briefBgColorIndex[2] = GrFindClosestColorCurrent (31, 0, 0);
+	briefFgColorIndex [2] = GrFindClosestColorCurrent (63, 0, 0);
+	briefBgColorIndex [2] = GrFindClosestColorCurrent (31, 0, 0);
 	}
 else {
-	briefFgColorIndex[0] = GrFindClosestColorCurrent (0, 40, 0);
-	briefBgColorIndex[0] = GrFindClosestColorCurrent (0, 6, 0);
-	briefFgColorIndex[1] = GrFindClosestColorCurrent (40, 33, 35);
-	briefBgColorIndex[1] = GrFindClosestColorCurrent (5, 5, 5);
-	briefFgColorIndex[2] = GrFindClosestColorCurrent (8, 31, 54);
-	briefBgColorIndex[2] = GrFindClosestColorCurrent (1, 4, 7);
+	briefFgColorIndex [0] = GrFindClosestColorCurrent (0, 40, 0);
+	briefBgColorIndex [0] = GrFindClosestColorCurrent (0, 6, 0);
+	briefFgColorIndex [1] = GrFindClosestColorCurrent (40, 33, 35);
+	briefBgColorIndex [1] = GrFindClosestColorCurrent (5, 5, 5);
+	briefFgColorIndex [2] = GrFindClosestColorCurrent (8, 31, 54);
+	briefBgColorIndex [2] = GrFindClosestColorCurrent (1, 4, 7);
 	}
 //blue
-briefFgColorIndex[3] = GrFindClosestColorCurrent (0, 0, 54);
-briefBgColorIndex[3] = GrFindClosestColorCurrent (0, 0, 19);
+briefFgColorIndex [3] = GrFindClosestColorCurrent (0, 0, 54);
+briefBgColorIndex [3] = GrFindClosestColorCurrent (0, 0, 19);
 //gray
-briefFgColorIndex[4] = GrFindClosestColorCurrent (14, 14, 14);
-briefBgColorIndex[4] = GrFindClosestColorCurrent (0, 0, 0);
+briefFgColorIndex [4] = GrFindClosestColorCurrent (14, 14, 14);
+briefBgColorIndex [4] = GrFindClosestColorCurrent (0, 0, 0);
 //yellow
-briefFgColorIndex[5] = GrFindClosestColorCurrent (54, 54, 0);
-briefBgColorIndex[5] = GrFindClosestColorCurrent (19, 19, 0);
+briefFgColorIndex [5] = GrFindClosestColorCurrent (54, 54, 0);
+briefBgColorIndex [5] = GrFindClosestColorCurrent (19, 19, 0);
 //purple
-briefFgColorIndex[6] = GrFindClosestColorCurrent (0, 54, 54);
-briefBgColorIndex[6] = GrFindClosestColorCurrent (0, 19, 19);
+briefFgColorIndex [6] = GrFindClosestColorCurrent (0, 54, 54);
+briefBgColorIndex [6] = GrFindClosestColorCurrent (0, 19, 19);
 //End D1X addition
 }
 
 //-----------------------------------------------------------------------------
 // Return true if screen got aborted by user, else return false.
-int ShowBriefingScreen (int nScreen, int allow_keys, short nLevel)
+int ShowBriefingScreen (int nScreen, int bAllowKeys, short nLevel)
 {
 brief_palette_254_bash = 0;
 if (gameOpts->gameplay.bSkipBriefingScreens) {
-	con_printf (CONDBG, "Skipping briefing screen [%s]\n", &Briefing_screens[nScreen].bs_name);
+	con_printf (CONDBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen].bs_name);
 	return 0;
 	}
 if (gameStates.app.bD1Mission) {
-	int pcx_error;
+	int pcxResult;
 #if 1
 	grsBitmap bmBriefing;
 
 	GrInitBitmapData (&bmBriefing);
-	if ((pcx_error=LoadBriefImg (Briefing_screens[nScreen].bs_name, &bmBriefing, 0))!=PCX_ERROR_NONE) {
+	if ((pcxResult = LoadBriefImg (briefingScreens [nScreen].bs_name, &bmBriefing, 0)) != PCX_ERROR_NONE) {
 #else
-	if ((pcx_error=pcx_read_fullscr (Briefing_screens[nScreen].bs_name, 1))!=PCX_ERROR_NONE) {
+	if ((pcxResult = PcxReadFullScrImage (briefingScreens [nScreen].bs_name, 1)) != PCX_ERROR_NONE) {
 #endif
-		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", Briefing_screens[nScreen].bs_name, pcx_errormsg (pcx_error), pcx_error);
+		con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", briefingScreens [nScreen].bs_name, pcx_errormsg (pcxResult), pcxResult);
 		Int3 ();
 		return 0;
 		}
@@ -1469,42 +1450,45 @@ if (gameStates.app.bD1Mission) {
 	ShowFullscreenImage (&bmBriefing);
 	GrUpdate (0);
 	GrFreeBitmapData (&bmBriefing);
-	if (GrPaletteFadeIn (NULL, 32, allow_keys))
+	if (GrPaletteFadeIn (NULL, 32, bAllowKeys))
 		return 1;
 	}
 if (!ShowBriefingText (nScreen, nLevel))
 	return 0;
-if (GrPaletteFadeOut (NULL, 32, allow_keys))
+if (GrPaletteFadeOut (NULL, 32, bAllowKeys))
 	return 1;
 return 1;
 }
 
 //-----------------------------------------------------------------------------
 
-void DoBriefingScreens (char *filename, int level_num)
+void DoBriefingScreens (char *filename, int nLevel)
 {
-	int	abort_briefing_screens = 0;
-	int	cur_briefing_screen = 0;
-	int	bEnding = (strstr (filename, "endreg") != NULL);
+	int	bAbortBriefing = 0;
+	int	nCurBriefingScreen = 0;
+	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, gameData.missions.szEndingFilename);
+	char	fnBriefing [FILENAME_LEN];
 
 RebuildGfxFx (1, 1);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	return;
 	}
-con_printf (CONDBG, "Trying briefing screen <%s>\n", filename);
-LogErr ("Looking for briefing screen '%s'\n", filename);
-if (!filename)
+strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : fnBriefing);
+con_printf (CONDBG, "Trying briefing screen <%s>\n", fnBriefing);
+LogErr ("Looking for briefing screen '%s'\n", fnBriefing);
+if (!fnBriefing)
 	return;
 if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.missions.nD1BuiltinMission)) {
 	FILE	*fp;
 	int	i;
-	char	fn [FILENAME_LEN], *psz;
+	char	*psz;
+
 	for (i = 0; i < 2; i++) {
-		if ((psz = strchr (fn, '.')))
+		if ((psz = strchr (fnBriefing, '.')))
 			*psz = '\0';
-		strcat (fn, i ? ".txb" : ".tex");
-		if	 ((fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", fn, NULL))) {
+		strcat (fnBriefing, i ? ".txb" : ".tex");
+		if	 ((fp = CFFindHogFile (&gameHogFiles.AltHogFiles, "", fnBriefing, NULL))) {
 			fclose (fp);
 			break;
 			}
@@ -1512,36 +1496,36 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 	if (i == 2)
 		return;
 	}
-if (!load_screen_text (filename, &Briefing_text))
+if (!LoadScreenText (fnBriefing, &szBriefingText))
 	return;
 DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
 GrSetCurrentCanvas (NULL);
-con_printf (CONDBG, "Playing briefing screen <%s>, level %d\n", filename, level_num);
+con_printf (CONDBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
 KeyFlush ();
 if (gameStates.app.bD1Mission) {
 	gamePalette = LoadPalette (NULL, NULL, 1, 1, 1);
 	LoadD1BitmapReplacements ();
-	if (level_num == 1) {
-		while ((!abort_briefing_screens) && (Briefing_screens[cur_briefing_screen].level_num == ((gameStates.app.bD1Mission && bEnding) ? level_num : 0))) {
-			abort_briefing_screens = ShowBriefingScreen (cur_briefing_screen, 0, (short) level_num);
-			cur_briefing_screen++;
+	if (nLevel == 1) {
+		while (!bAbortBriefing && (briefingScreens [nCurBriefingScreen].nLevel == ((gameStates.app.bD1Mission && bEnding) ? nLevel : 0))) {
+			bAbortBriefing = ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel);
+			nCurBriefingScreen++;
 			if (gameStates.app.bD1Mission && bEnding)
 				break;
 			}
 		}
-	if (!abort_briefing_screens) {
-		for (cur_briefing_screen = 0; cur_briefing_screen < MAX_BRIEFING_SCREENS; cur_briefing_screen++)
-			if (Briefing_screens[cur_briefing_screen].level_num == level_num)
-				if (ShowBriefingScreen (cur_briefing_screen, 0, (short) level_num))
+	if (!bAbortBriefing) {
+		for (nCurBriefingScreen = 0; nCurBriefingScreen < MAX_BRIEFING_SCREENS; nCurBriefingScreen++)
+			if (briefingScreens [nCurBriefingScreen].nLevel == nLevel)
+				if (ShowBriefingScreen (nCurBriefingScreen, 0, (short) nLevel))
 					break;
 		}
 	}
 else
-	ShowBriefingScreen (level_num, 0, (short) level_num);
-D2_FREE (Briefing_text);
-Briefing_text = NULL;
+	ShowBriefingScreen (nLevel, 0, (short) nLevel);
+D2_FREE (szBriefingText);
+szBriefingText = NULL;
 KeyFlush ();
 return;
 }
@@ -1551,25 +1535,25 @@ return;
 int DefineBriefingBox (char **buf, briefing_screen *pBriefBuf)
 {
 	int n, i=0;
-	char name[20];
+	char name [20];
 
 	n=get_new_message_num (buf);
 
 	Assert (n < MAX_BRIEFING_SCREENS);
 
 	while (**buf!=' ') {
-		name[i++]=**buf;
+		name [i++]=**buf;
 		 (*buf)++;
 		}
-	name[i]='\0';   // slap a delimiter on this guy
-	*pBriefBuf = Briefing_screens [n];
+	name [i]='\0';   // slap a delimiter on this guy
+	*pBriefBuf = briefingScreens [n];
 	strcpy (pBriefBuf->bs_name, name);
-	pBriefBuf->level_num=get_new_message_num (buf);
-	pBriefBuf->message_num=get_new_message_num (buf);
+	pBriefBuf->nLevel=get_new_message_num (buf);
+	pBriefBuf->nMessage=get_new_message_num (buf);
 	pBriefBuf->text_ulx=get_new_message_num (buf);
 	pBriefBuf->text_uly=get_new_message_num (buf);
 	pBriefBuf->text_width=get_new_message_num (buf);
-	pBriefBuf->text_height=get_message_num (buf);  // NOTICE!!!
+	pBriefBuf->text_height=GetMessageNum (buf);  // NOTICE!!!
 	init_char_pos (pBriefBuf, 1);
 	return (n);
 }

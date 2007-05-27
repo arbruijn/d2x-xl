@@ -279,7 +279,9 @@ void OglDrawMouseIndicator (void)
 	static int bInitSinCos = 1;
 
 	double	r, w, h;
-	
+
+if (!gameOpts->input.mouse.nDeadzone)
+	return;
 if (bInitSinCos) {
 	OglComputeSinCos (sizeofa (sinCos30), sinCos30);
 	OglComputeSinCos (sizeofa (sinCos12), sinCos12);
@@ -312,7 +314,7 @@ else {
 		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
 			return;
 		OglTexWrap (bmpDeadzone->glTexture, GL_CLAMP);
-		glColor4d (1.0, 1.0, 1.0, 0.8 / (gameOpts->input.nMouseDeadzone + 1));
+		glColor4d (1.0, 1.0, 1.0, 0.8 / gameOpts->input.mouse.nDeadzone);
 		glBegin (GL_QUADS);
 		glTexCoord2d (0, 0);
 		glVertex2d (-w, -h);
@@ -328,8 +330,8 @@ else {
 		}
 	else {
 		glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
-		glColor4d (1.0, 0.8, 0.0, 1.0 / (3.0 + 0.5 * gameOpts->input.nMouseDeadzone));
-		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.nMouseDeadzone));
+		glColor4d (1.0, 0.8, 0.0, 1.0 / (3.0 + 0.5 * gameOpts->input.mouse.nDeadzone));
+		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = MouseDeadzone (0) / 4;
 		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos30);
 		}
@@ -367,7 +369,7 @@ if (bInitSinCos) {
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
-	(grdCurCanv->cv_bitmap.bm_props.w/2+grdCurCanv->cv_bitmap.bm_props.x)/ (double) gameStates.ogl.nLastW, 
+	(grdCurCanv->cv_bitmap.bm_props.w/2+grdCurCanv->cv_bitmap.bm_props.x) / (double) gameStates.ogl.nLastW, 
 	1.0 - (grdCurCanv->cv_bitmap.bm_props.h/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2)+grdCurCanv->cv_bitmap.bm_props.y)/ (double)gameStates.ogl.nLastH, 
 	0);
 glScaled (scale/320.0, scale/200.0, scale);//the positions are based upon the standard reticle at 320x200 res.

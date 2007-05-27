@@ -54,7 +54,7 @@ void DoReactorDestroyedStuff(tObject *objp);
 void DoReactorDeadFrame(void);
 fix ReactorStrength (void);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define ReactorReadN(r, n, fp) CFRead(r, sizeof(reactor), n, fp)
 #define ControlCenterTriggersReadN(cct, n, fp) CFRead(cct, sizeof(tReactorTriggers), n, fp)
 #else

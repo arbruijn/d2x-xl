@@ -262,23 +262,23 @@ int ArmedBomb()
 	//the other if there are any
    // If hoard game, only let the tPlayer drop smart mines
 if (gameData.app.nGameMode & GM_ENTROPY)
-   return PROXIMITY_INDEX; //allow for dropping orbs
+   return PROXMINE_INDEX; //allow for dropping orbs
 if (gameData.app.nGameMode & GM_HOARD)
-	return SMART_MINE_INDEX;
+	return SMARTMINE_INDEX;
 
-bomb = bLastSecondaryWasSuper [PROXIMITY_INDEX] ? SMART_MINE_INDEX : PROXIMITY_INDEX;
-otherBomb = SMART_MINE_INDEX + PROXIMITY_INDEX - bomb;
+bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? SMARTMINE_INDEX : PROXMINE_INDEX;
+otherBomb = SMARTMINE_INDEX + PROXMINE_INDEX - bomb;
 
 if (!LOCALPLAYER.secondaryAmmo [bomb] && LOCALPLAYER.secondaryAmmo [otherBomb]) {
 	bomb = otherBomb;
-	bLastSecondaryWasSuper [bomb % SUPER_WEAPON] = (bomb == SMART_MINE_INDEX);
+	bLastSecondaryWasSuper [bomb % SUPER_WEAPON] = (bomb == SMARTMINE_INDEX);
 	}
 return bomb;
 }
 
 //------------------------------------------------------------------------------
 
-void DoWeaponStuff(void)
+void DoWeaponStuff (void)
 {
   int i;
 
@@ -287,9 +287,9 @@ if (Controls [0].useCloakDownCount)
 if (Controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
 if (Controls [0].fireFlareDownCount)
-	if (AllowedToFireFlare())
+	if (AllowedToFireFlare ())
 		CreateFlare(gameData.objs.console);
-if (AllowedToFireMissile()) {
+if (AllowedToFireMissile ()) {
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].fireSecondaryState || Controls [0].fireSecondaryDownCount);
 	}
@@ -1210,12 +1210,6 @@ int HandleSystemKey(int key)
 			MultiSendMacro(key);
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
-
-#ifdef _DEBUG
-		case KEY_CTRLED + KEY_F12:
-			TIRCenter ();
-			break;
-#endif
 
 		case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		

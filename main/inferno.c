@@ -1518,59 +1518,67 @@ if (i) {
 	extraGameInfo [0].bMouseLook = 0;
 	gameOptions [1].input.bLimitTurnRate = 1;
 	gameOptions [1].input.nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
-	if (gameOptions [1].input.bUseJoystick)
-		gameOptions [1].input.bUseMouse = 0;
-	gameOptions [1].input.bSyncMouseAxes = 1;
-	gameOptions [1].input.bJoyMouse = 0;
-	gameOptions [1].input.nMouseDeadzone = 0;
-	gameOptions [1].input.bSyncJoyAxes = 1;
-	gameOptions [1].input.bUseKeyboard = 1;
+	if (gameOptions [1].input.joystick.bUse)
+		gameOptions [1].input.mouse.bUse = 0;
+	gameOptions [1].input.mouse.bSyncAxes = 1;
+	gameOptions [1].input.mouse.bJoystick = 0;
+	gameOptions [1].input.mouse.nDeadzone = 0;
+	gameOptions [1].input.joystick.bSyncAxes = 1;
+	gameOptions [1].input.keyboard.bUse = 1;
 	gameOptions [1].input.bUseHotKeys = 1;
-	gameOptions [1].input.keyRampScale = 100;
-	gameOptions [1].input.bRampKeys [0] =
-	gameOptions [1].input.bRampKeys [1] =
-	gameOptions [1].input.bRampKeys [2] = 0;
-	gameOptions [1].input.bLinearJoySens = 1;
-	gameOptions [1].input.mouseSensitivity [0] =
-	gameOptions [1].input.mouseSensitivity [1] =
-	gameOptions [1].input.mouseSensitivity [2] = 8;
-	gameOptions [1].input.joySensitivity [0] =
-	gameOptions [1].input.joySensitivity [1] =
-	gameOptions [1].input.joySensitivity [2] =
-	gameOptions [1].input.joySensitivity [3] = 8;
-	gameOptions [1].input.joyDeadZones [0] =
-	gameOptions [1].input.joyDeadZones [1] =
-	gameOptions [1].input.joyDeadZones [2] =
-	gameOptions [1].input.joyDeadZones [3] = 10;
+	gameOptions [1].input.keyboard.nRamp = 100;
+	gameOptions [1].input.keyboard.bRamp [0] =
+	gameOptions [1].input.keyboard.bRamp [1] =
+	gameOptions [1].input.keyboard.bRamp [2] = 0;
+	gameOptions [1].input.joystick.bLinearSens = 1;
+	gameOptions [1].input.mouse.sensitivity [0] =
+	gameOptions [1].input.mouse.sensitivity [1] =
+	gameOptions [1].input.mouse.sensitivity [2] = 8;
+	gameOptions [1].input.joystick.sensitivity [0] =
+	gameOptions [1].input.joystick.sensitivity [1] =
+	gameOptions [1].input.joystick.sensitivity [2] =
+	gameOptions [1].input.joystick.sensitivity [3] = 8;
+	gameOptions [1].input.joystick.deadzones [0] =
+	gameOptions [1].input.joystick.deadzones [1] =
+	gameOptions [1].input.joystick.deadzones [2] =
+	gameOptions [1].input.joystick.deadzones [3] = 10;
 	}
 else {
 	gameOptions [0].input.bLimitTurnRate = 1;
 	gameOptions [0].input.nMinTurnRate = 20;	//turn time for a 360 deg rotation around a single ship axis in 1/10 sec units
 	gameOptions [0].input.nMaxPitch = 0;
-	gameOptions [0].input.bLinearJoySens = 0;
-	gameOptions [0].input.keyRampScale = 100;
-	gameOptions [0].input.bRampKeys [0] =
-	gameOptions [0].input.bRampKeys [1] =
-	gameOptions [0].input.bRampKeys [2] = 0;
-	gameOptions [0].input.bUseMouse = 1;
-	gameOptions [0].input.bUseJoystick = 0;
-	gameOptions [0].input.bSyncMouseAxes = 1;
-	gameOptions [0].input.nMouseDeadzone = 0;
-	gameOptions [0].input.bJoyMouse = 0;
-	gameOptions [0].input.bSyncJoyAxes = 1;
-	gameOptions [0].input.bUseKeyboard = 1;
+	gameOptions [0].input.joystick.bLinearSens = 0;
+	gameOptions [0].input.keyboard.nRamp = 100;
+	gameOptions [0].input.keyboard.bRamp [0] =
+	gameOptions [0].input.keyboard.bRamp [1] =
+	gameOptions [0].input.keyboard.bRamp [2] = 0;
+	gameOptions [0].input.mouse.bUse = 1;
+	gameOptions [0].input.joystick.bUse = 0;
+	gameOptions [0].input.mouse.bSyncAxes = 1;
+	gameOptions [0].input.mouse.nDeadzone = 0;
+	gameOptions [0].input.mouse.bJoystick = 0;
+	gameOptions [0].input.joystick.bSyncAxes = 1;
+	gameOptions [0].input.keyboard.bUse = 1;
 	gameOptions [0].input.bUseHotKeys = 1;
-	gameOptions [0].input.mouseSensitivity [0] =
-	gameOptions [0].input.mouseSensitivity [1] =
-	gameOptions [0].input.mouseSensitivity [2] = 8;
-	gameOptions [0].input.joySensitivity [0] =
-	gameOptions [0].input.joySensitivity [1] =
-	gameOptions [0].input.joySensitivity [2] =
-	gameOptions [0].input.joySensitivity [3] = 8;
-	gameOptions [0].input.joyDeadZones [0] =
-	gameOptions [0].input.joyDeadZones [1] =
-	gameOptions [0].input.joyDeadZones [2] =
-	gameOptions [0].input.joyDeadZones [3] = 10;
+	gameOptions [0].input.mouse.nDeadzone = 2;
+	gameOptions [0].input.mouse.sensitivity [0] =
+	gameOptions [0].input.mouse.sensitivity [1] =
+	gameOptions [0].input.mouse.sensitivity [2] = 8;
+	gameOptions [0].input.trackIR.nDeadzone = 0;
+	gameOptions [0].input.trackIR.bMove [0] =
+	gameOptions [0].input.trackIR.bMove [1] = 1;
+	gameOptions [0].input.trackIR.bMove [2] = 0;
+	gameOptions [0].input.trackIR.sensitivity [0] =
+	gameOptions [0].input.trackIR.sensitivity [1] =
+	gameOptions [0].input.trackIR.sensitivity [2] = 8;
+	gameOptions [0].input.joystick.sensitivity [0] =
+	gameOptions [0].input.joystick.sensitivity [1] =
+	gameOptions [0].input.joystick.sensitivity [2] =
+	gameOptions [0].input.joystick.sensitivity [3] = 8;
+	gameOptions [0].input.joystick.deadzones [0] =
+	gameOptions [0].input.joystick.deadzones [1] =
+	gameOptions [0].input.joystick.deadzones [2] =
+	gameOptions [0].input.joystick.deadzones [3] = 10;
 	}
 }
 
@@ -2099,6 +2107,8 @@ gameData.marker.nHighlight = -1;
 gameData.marker.viewers [0] =
 gameData.marker.viewers [1] = -1;
 gameData.missions.nEnteredFromLevel = -1;
+strcpy (gameData.missions.szEndingFilename, "endreg.txt");
+strcpy (gameData.missions.szBriefingFilename, "briefing.txt");
 gameData.marker.fScale = 2.0f;
 gameData.time.xFrame = 0x1000;
 gameData.app.nGameMode = GM_GAME_OVER;
@@ -2587,7 +2597,7 @@ GrSetMode (
 		: SM (320, 200));
 SetScreenMode (SCREEN_MENU);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-if ((pcx_error = pcx_read_fullscr (filename, 0))==PCX_ERROR_NONE)	{
+if ((pcx_error = PcxReadFullScrImage (filename, 0))==PCX_ERROR_NONE)	{
 	GrPaletteStepClear ();
 	GrPaletteFadeIn (gameData.render.pal.pCurPal, 32, 0);
 	} 
@@ -2941,6 +2951,47 @@ gameData.threads.vertColor.data.matSpecular.c.b = 0.0f;
 gameData.threads.vertColor.data.matSpecular.c.a = 1.0f;
 }
 
+// ------------------------------------------------------------------------------------------
+
+tpfnTIRInit		pfnTIRInit = NULL;
+tpfnTIRExit		pfnTIRExit = NULL;
+tpfnTIRStart	pfnTIRStart = NULL;
+tpfnTIRStop		pfnTIRStop = NULL;
+tpfnTIRCenter	pfnTIRCenter = NULL;
+tpfnTIRQuery	pfnTIRQuery = NULL;
+
+#define	LOAD_TIR_FUNC(_t,_f) \
+			if (!((pfn ## _f) = (_t) GetProcAddress (hTIRDll, #_f))) \
+				return TIRUnload ();
+
+static HINSTANCE hTIRDll = 0;
+
+// ------------------------------------------------------------------------------------------
+
+static int TIRUnload (void)
+{
+if (hTIRDll)
+   FreeLibrary (hTIRDll);
+hTIRDll = 0;
+return 0;
+}
+
+// ------------------------------------------------------------------------------------------
+
+static int TIRLoad (void)
+{
+hTIRDll = LoadLibrary ("d2x-trackir.dll");
+if ((size_t) hTIRDll < HINSTANCE_ERROR)
+	return 0;
+LOAD_TIR_FUNC (tpfnTIRInit, TIRInit)
+LOAD_TIR_FUNC (tpfnTIRExit, TIRExit)
+LOAD_TIR_FUNC (tpfnTIRStart, TIRStart)
+LOAD_TIR_FUNC (tpfnTIRStop, TIRStop)
+LOAD_TIR_FUNC (tpfnTIRCenter, TIRCenter)
+LOAD_TIR_FUNC (tpfnTIRQuery, TIRQuery)
+return pfnTIRInit (SDL_GetWindowHandle ());
+}
+
 // ----------------------------------------------------------------------------
 
 int Initialize (int argc, char *argv[])
@@ -3082,6 +3133,8 @@ InitGame ();
 InitThreads ();
 /*---*/LogErr ("Loading hires models\n");
 LoadHiresModels ();
+/*---*/LogErr ("Enabling TrackIR support\n");
+gameStates.input.bHaveTrackIR = TIRLoad ();
 return 0;
 }
 
@@ -3089,6 +3142,10 @@ return 0;
 
 int CleanUp (void)
 {
+if (gameStates.input.bHaveTrackIR) {
+	pfnTIRExit ();
+	TIRUnload ();
+	}
 SongsStopAll ();
 DigiStopCurrentSong ();
 /*---*/LogErr ("Saving configuration file\n");
@@ -3207,7 +3264,7 @@ void show_order_form ()
 	if (! CFExist (exit_screen, gameFolders.szDataDir, 0))
 		return; // D2 registered
 
-	if ((pcx_error=pcx_read_fullscr (exit_screen, 0))==PCX_ERROR_NONE) {
+	if ((pcx_error=PcxReadFullScrImage (exit_screen, 0))==PCX_ERROR_NONE) {
 		//vfx_set_palette_sub (titlePal);
 		GrPaletteFadeIn (NULL, 32, 0);
 		GrUpdate (0);

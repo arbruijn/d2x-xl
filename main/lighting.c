@@ -486,12 +486,12 @@ switch (nObjType) {
 				Headlights [nHeadLights++] = objP;
 			return HEADLIGHT_SCALE;
 			}
-		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXIMITY_INDEX]) {
+		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX]) {
 		
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 
-		  	hoardlight = i2f (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXIMITY_INDEX])/2; //i2f (12);
+		  	hoardlight = i2f (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX])/2; //i2f (12);
 			hoardlight++;
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 

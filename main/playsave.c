@@ -351,8 +351,10 @@ for (i = 0; i < 2; i++) {
 			RP (extraGameInfo [i].monsterball.forces [j].nForce, 0, j);
 			}
 		for (j = 0; j < 3; j++) {
-			RP (gameOptions [i].input.bRampKeys [j], i, j);
-			RP (gameOptions [i].input.mouseSensitivity [j], 0, j);
+			RP (gameOptions [i].input.keyboard.bRamp [j], i, j);
+			RP (gameOptions [i].input.mouse.sensitivity [j], 0, j);
+			RP (gameOptions [i].input.trackIR.sensitivity [j], 0, j);
+			RP (gameOptions [i].input.trackIR.bMove [j], 0, j);
 			}
 		for (j = 0; j < 4; j++) {
 			RP (gameOptions [i].render.smoke.nDens [j], i, j);
@@ -360,16 +362,17 @@ for (i = 0; i < 2; i++) {
 			RP (gameOptions [i].render.smoke.nLife [j], i, j);
 			}
 		for (j = 0; j < 5; j++) {
-			RP (gameOptions [i].input.joyDeadZones [j], 0, j);
-			RP (gameOptions [i].input.joySensitivity [j], 0, j);
+			RP (gameOptions [i].input.joystick.deadzones [j], 0, j);
+			RP (gameOptions [i].input.joystick.sensitivity [j], 0, j);
 			}
-		RP (gameOptions [i].input.bJoyMouse, i, 0);
-		RP (gameOptions [i].input.bLinearJoySens, i, 0);
-		RP (gameOptions [i].input.bSyncJoyAxes, i, 0);
-		RP (gameOptions [i].input.bSyncMouseAxes, i, 0);
-		RP (gameOptions [i].input.nMouseDeadzone, i, 0);
 		RP (gameOptions [i].input.bUseHotKeys, i, 0);
-		RP (gameOptions [i].input.keyRampScale, i, 0);
+		RP (gameOptions [i].input.mouse.bJoystick, i, 0);
+		RP (gameOptions [i].input.mouse.bSyncAxes, i, 0);
+		RP (gameOptions [i].input.mouse.nDeadzone, i, 0);
+		RP (gameOptions [i].input.joystick.bLinearSens, i, 0);
+		RP (gameOptions [i].input.joystick.bSyncAxes, i, 0);
+		RP (gameOptions [i].input.trackIR.nDeadzone, i, 0);
+		RP (gameOptions [i].input.keyboard.nRamp, i, 0);
 
 		RP (gameOptions [i].ogl.bLightObjects, i, 0);
 		RP (gameOptions [i].ogl.nMaxLights, i, 0);
@@ -483,8 +486,9 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].nHitboxes, i, 0);
 	RP (extraGameInfo [i].nSpotSize, i, 0);
 
-	RP (gameOptions [i].input.bUseJoystick, i, 0);
-	RP (gameOptions [i].input.bUseMouse, i, 0);
+	RP (gameOptions [i].input.joystick.bUse, i, 0);
+	RP (gameOptions [i].input.mouse.bUse, i, 0);
+	RP (gameOptions [i].input.trackIR.bUse, i, 0);
 
 	RP (gameOptions [i].gameplay.bDefaultLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
@@ -833,12 +837,18 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].monsterball.forces[23].nForce", "-56"},
 	{"extraGameInfo[0].monsterball.forces[24].nWeaponId", "-1"},
 	{"extraGameInfo[0].monsterball.forces[24].nForce", "4"},
-	{"gameOptions[0].input.bRampKeys[0]", "0"},
-	{"gameOptions[0].input.mouseSensitivity[0]", "14"},
-	{"gameOptions[0].input.bRampKeys[1]", "0"},
-	{"gameOptions[0].input.mouseSensitivity[1]", "14"},
-	{"gameOptions[0].input.bRampKeys[2]", "0"},
-	{"gameOptions[0].input.mouseSensitivity[2]", "14"},
+	{"gameOptions[0].input.keyboard.bRamp[0]", "0"},
+	{"gameOptions[0].input.keyboard.bRamp[1]", "0"},
+	{"gameOptions[0].input.keyboard.bRamp[2]", "0"},
+	{"gameOptions[0].input.mouse.sensitivity[0]", "14"},
+	{"gameOptions[0].input.mouse.sensitivity[1]", "14"},
+	{"gameOptions[0].input.mouse.sensitivity[2]", "14"},
+	{"gameOptions[0].input.trackIR.sensitivity[0]", "14"},
+	{"gameOptions[0].input.trackIR.sensitivity[1]", "14"},
+	{"gameOptions[0].input.trackIR.sensitivity[2]", "14"},
+	{"gameOptions[0].input.trackIR.bMove[0]", "1"},
+	{"gameOptions[0].input.trackIR.bMove[1]", "1"},
+	{"gameOptions[0].input.trackIR.bMove[2]", "0"},
 	{"gameOptions[0].render.smoke.nDens[0]", "1"},
 	{"gameOptions[0].render.smoke.nSize[0]", "1"},
 	{"gameOptions[0].render.smoke.nLife[0]", "1"},
@@ -851,23 +861,23 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.smoke.nDens[3]", "1"},
 	{"gameOptions[0].render.smoke.nSize[3]", "1"},
 	{"gameOptions[0].render.smoke.nLife[3]", "1"},
-	{"gameOptions[0].input.joyDeadZones[0]", "1"},
-	{"gameOptions[0].input.joySensitivity[0]", "8"},
-	{"gameOptions[0].input.joyDeadZones[1]", "1"},
-	{"gameOptions[0].input.joySensitivity[1]", "8"},
-	{"gameOptions[0].input.joyDeadZones[2]", "1"},
-	{"gameOptions[0].input.joySensitivity[2]", "8"},
-	{"gameOptions[0].input.joyDeadZones[3]", "1"},
-	{"gameOptions[0].input.joySensitivity[3]", "8"},
-	{"gameOptions[0].input.joyDeadZones[4]", "1"},
-	{"gameOptions[0].input.joySensitivity[4]", "8"},
-	{"gameOptions[0].input.bJoyMouse", "0"},
-	{"gameOptions[0].input.bLinearJoySens", "0"},
-	{"gameOptions[0].input.bSyncJoyAxes", "1"},
-	{"gameOptions[0].input.bSyncMouseAxes", "1"},
-	{"gameOptions[0].input.nMouseDeadzone", "0"},
+	{"gameOptions[0].input.joystick.deadzones[0]", "1"},
+	{"gameOptions[0].input.joystick.sensitivity[0]", "8"},
+	{"gameOptions[0].input.joystick.deadzones[1]", "1"},
+	{"gameOptions[0].input.joystick.sensitivity[1]", "8"},
+	{"gameOptions[0].input.joystick.deadzones[2]", "1"},
+	{"gameOptions[0].input.joystick.sensitivity[2]", "8"},
+	{"gameOptions[0].input.joystick.deadzones[3]", "1"},
+	{"gameOptions[0].input.joystick.sensitivity[3]", "8"},
+	{"gameOptions[0].input.joystick.deadzones[4]", "1"},
+	{"gameOptions[0].input.joystick.sensitivity[4]", "8"},
+	{"gameOptions[0].input.mouse.bJoystick", "0"},
+	{"gameOptions[0].input.joystick.bLinearSens", "0"},
+	{"gameOptions[0].input.joystick.bSyncAxes", "1"},
+	{"gameOptions[0].input.mouse.bSyncAxes", "1"},
+	{"gameOptions[0].input.mouse.nDeadzone", "0"},
 	{"gameOptions[0].input.bUseHotKeys", "1"},
-	{"gameOptions[0].input.keyRampScale", "100"},
+	{"gameOptions[0].input.keyboard.nRamp", "100"},
 	{"gameOptions[0].ogl.bLightObjects", "1"},
 	{"gameOptions[0].ogl.nMaxLights", "4"},
 	{"gameOptions[0].render.bDynLighting", "0"},
@@ -974,8 +984,9 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].nCoopPenalty", "0"},
 	{"extraGameInfo[0].nHitboxes", "1"},
 	{"extraGameInfo[0].nSpotSize", "0"},
-	{"gameOptions[0].input.bUseJoystick", "1"},
-	{"gameOptions[0].input.bUseMouse", "1"},
+	{"gameOptions[0].input.joystick.bUse", "1"},
+	{"gameOptions[0].input.mouse.bUse", "1"},
+	{"gameOptions[0].input.trackIR.bUse", "1"},
 	{"gameOptions[0].gameplay.bDefaultLeveling", "0"},
 	{"gameOptions[0].gameplay.bFastRespawn", "0"},
 	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
@@ -1026,11 +1037,12 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[1].nCoopPenalty", "1"},
 	{"extraGameInfo[1].nHitboxes", "0"},
 	{"extraGameInfo[1].nSpotSize", "0"},
-	{"gameOptions[1].input.bUseJoystick", "0"},
-	{"gameOptions[1].input.bUseMouse", "1"},
+	{"gameOptions[1].input.joystick.bUse", "0"},
+	{"gameOptions[1].input.mouse.bUse", "1"},
+	{"gameOptions[1].input.trackIR.bUse", "1"},
 	{"gameOptions[1].gameplay.bDefaultLeveling", "0"},
 	{"gameOptions[1].gameplay.bFastRespawn", "0"},
-	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
+	{"gameOptions[1].gameplay.bHeadlightOn", "0"},
 	{"gameOptions[1].gameplay.nPlayerDifficultyLevel", "2"},
 	{"gameOptions[1].movies.bResize", "0"},
 	{"gameOptions[1].movies.bSubTitles", "0"},
@@ -1325,14 +1337,14 @@ gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling = 1
 nHighestLevels = 1;
 highestLevels[0].shortname[0] = 0;			//no name for mission 0
 highestLevels[0].nLevel = 1;				//was highest level in old struct
-gameOpts->input.joySensitivity [0] =
-gameOpts->input.joySensitivity [1] =
-gameOpts->input.joySensitivity [2] =
-gameOpts->input.joySensitivity [3] =
-gameOpts->input.joySensitivity [4] = 8;
-gameOpts->input.mouseSensitivity [0] =
-gameOpts->input.mouseSensitivity [1] =
-gameOpts->input.mouseSensitivity [2] = 8;
+gameOpts->input.joystick.sensitivity [0] =
+gameOpts->input.joystick.sensitivity [1] =
+gameOpts->input.joystick.sensitivity [2] =
+gameOpts->input.joystick.sensitivity [3] =
+gameOpts->input.joystick.sensitivity [4] = 8;
+gameOpts->input.mouse.sensitivity [0] =
+gameOpts->input.mouse.sensitivity [1] =
+gameOpts->input.mouse.sensitivity [2] = 8;
 gameStates.render.cockpit.n3DView[0]=CV_NONE;
 gameStates.render.cockpit.n3DView[1]=CV_NONE;
 
@@ -1381,7 +1393,7 @@ for (i = 0; i < 2; i++) {
 			extraGameInfo [0].nSpawnDelay = (int) CFReadByte (fp);
 		}
 	if (gameStates.input.nPlrFileVersion >= 29)
-		gameOptions [i].input.joyDeadZones [0] = (int) CFReadByte (fp);
+		gameOptions [i].input.joystick.deadzones [0] = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 30)
 		gameOptions [i].render.cockpit.nWindowSize = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 31)
@@ -1391,11 +1403,11 @@ for (i = 0; i < 2; i++) {
 	if (!i && (gameStates.input.nPlrFileVersion >= 33))
 		extraGameInfo [0].bPowerupsOnRadar = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 34) {
-		gameOptions [i].input.keyRampScale = (int) CFReadByte (fp);
-		if (gameOptions [i].input.keyRampScale < 10)
-			gameOptions [i].input.keyRampScale = 10;
-		else if (gameOptions [i].input.keyRampScale > 100)
-			gameOptions [i].input.keyRampScale = 100;
+		gameOptions [i].input.keyboard.nRamp = (int) CFReadByte (fp);
+		if (gameOptions [i].input.keyboard.nRamp < 10)
+			gameOptions [i].input.keyboard.nRamp = 10;
+		else if (gameOptions [i].input.keyboard.nRamp > 100)
+			gameOptions [i].input.keyboard.nRamp = 100;
 		}
 	if (gameStates.input.nPlrFileVersion >= 35)
 		gameOptions [i].render.color.bAmbientLight = (int) CFReadByte (fp);
@@ -1405,7 +1417,7 @@ for (i = 0; i < 2; i++) {
 		extraGameInfo [0].nZoomMode = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 38)
 		for (j = 0; j < 3; j++)
-			gameOptions [i].input.bRampKeys [j] = (int) CFReadByte (fp);
+			gameOptions [i].input.keyboard.bRamp [j] = (int) CFReadByte (fp);
 	if (!i && (gameStates.input.nPlrFileVersion >= 39))
 #if 0
 		extraGameInfo [0].bEnhancedCTF = (int) CFReadByte (fp);
@@ -1439,7 +1451,7 @@ for (i = 0; i < 2; i++) {
 	if (!i && (gameStates.input.nPlrFileVersion >= 51))
 		extraGameInfo [0].grWallTransparency = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 52)
-		gameOptions [i].input.mouseSensitivity [0] = (int) CFReadByte (fp);
+		gameOptions [i].input.mouse.sensitivity [0] = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 53) {
 		gameOptions [i].multi.bUseMacros = (int) CFReadByte (fp);
 		if (!i)
@@ -1450,7 +1462,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 55)
 		gameOptions [i].render.color.bWalls = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 56)
-		gameOptions [i].input.bLinearJoySens = (int) CFReadByte (fp);
+		gameOptions [i].input.joystick.bLinearSens = (int) CFReadByte (fp);
 	if (!i) {
 		if (gameStates.input.nPlrFileVersion >= 57)
 			extraGameInfo [0].nSpeedBoost = (int) CFReadByte (fp);
@@ -1549,10 +1561,10 @@ for (i = 0; i < 2; i++) {
 		}
 	if (gameStates.input.nPlrFileVersion >= 82) {
 		for (j = 0; j < 4; j++)
-			gameOptions [i].input.joyDeadZones [j] = (int) CFReadByte (fp);
+			gameOptions [i].input.joystick.deadzones [j] = (int) CFReadByte (fp);
 		for (j = 0; j < 4; j++)
-			gameOptions [i].input.joySensitivity [j] = CFReadByte (fp);
-		gameOptions [i].input.bSyncJoyAxes = (int) CFReadByte (fp);
+			gameOptions [i].input.joystick.sensitivity [j] = CFReadByte (fp);
+		gameOptions [i].input.joystick.bSyncAxes = (int) CFReadByte (fp);
 		}
 	if (!i && (gameStates.input.nPlrFileVersion >= 83)) 
 		extraGameInfo [1].bDualMissileLaunch = (int) CFReadByte (fp);
@@ -1560,8 +1572,8 @@ for (i = 0; i < 2; i++) {
 		if (!i)
 			extraGameInfo [1].bMouseLook = (int) CFReadByte (fp);
 		for (j = 0; j < 3; j++)
-			gameOptions [i].input.mouseSensitivity [j] = (int) CFReadByte (fp);
-		gameOptions [i].input.bSyncMouseAxes = (int) CFReadByte (fp);
+			gameOptions [i].input.mouse.sensitivity [j] = (int) CFReadByte (fp);
+		gameOptions [i].input.mouse.bSyncAxes = (int) CFReadByte (fp);
 		gameOptions [i].render.color.bMix = (int) CFReadByte (fp);
 		gameOptions [i].render.color.bCap = (int) CFReadByte (fp);
 		}
@@ -1580,8 +1592,8 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 90)
 		gameOptions [i].render.weaponIcons.bShowAmmo = (ubyte) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 91) {
-		gameOptions [i].input.bUseMouse = (ubyte) CFReadByte (fp);
-		gameOptions [i].input.bUseJoystick = (ubyte) CFReadByte (fp);
+		gameOptions [i].input.mouse.bUse = (ubyte) CFReadByte (fp);
+		gameOptions [i].input.joystick.bUse = (ubyte) CFReadByte (fp);
 		gameOptions [i].input.bUseHotKeys = (ubyte) CFReadByte (fp);
 		}
 	if (!i) {
@@ -1649,7 +1661,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 108)
 		gameOptions [i].gameplay.bInventory = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 109)
-		gameOptions [i].input.bJoyMouse = CFReadInt (fp);
+		gameOptions [i].input.mouse.bJoystick = CFReadInt (fp);
 	if (gameStates.input.nPlrFileVersion >= 110)
 		if (!i) {
 			int	w, h;
@@ -1665,8 +1677,8 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 113)
 		gameOptions [i].render.cockpit.bSplitHUDMsgs = CFReadInt (fp);
 	if (gameStates.input.nPlrFileVersion >= 114) {
-		gameOptions [i].input.joyDeadZones [4] = (int) CFReadByte (fp);
-		gameOptions [i].input.joySensitivity [4] = CFReadByte (fp);
+		gameOptions [i].input.joystick.deadzones [4] = (int) CFReadByte (fp);
+		gameOptions [i].input.joystick.sensitivity [4] = CFReadByte (fp);
 		}
 	if (gameStates.input.nPlrFileVersion >= 115)
 		if (!i) {
@@ -1911,7 +1923,7 @@ else if (CFRead ((ubyte *) &dosControlType, sizeof (ubyte), 1, fp ) != 1)
 	funcRes = errno;
 else if ((gameStates.input.nPlrFileVersion >= 21) && CFRead ((ubyte *) &winControlType, sizeof (ubyte), 1, fp ) != 1)
 	funcRes = errno;
-else if (CFRead (gameOptions [0].input.joySensitivity, sizeof (ubyte), 1, fp) != 1)
+else if (CFRead (gameOptions [0].input.joystick.sensitivity, sizeof (ubyte), 1, fp) != 1)
 	funcRes = errno;
 gameConfig.nControlType = dosControlType;
 for (i = 0; i < 11; i++) {
@@ -2074,19 +2086,19 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].render.nMaxFPS, fp);
 	if (!i)
 		CFWriteByte ((sbyte) (extraGameInfo [0].nSpawnDelay / 1000), fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.joyDeadZones [0], fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.joystick.deadzones [0], fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowSize, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowPos, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.nWindowZoom, fp);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bPowerupsOnRadar, fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.keyRampScale, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.keyboard.nRamp, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.color.bAmbientLight, fp);
 	CFWriteByte ((sbyte) gameOptions [i].ogl.bSetGammaRamp, fp);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].nZoomMode, fp);
 	for (j = 0; j < 3; j++)
-		CFWriteByte ((sbyte) gameOptions [i].input.bRampKeys [j], fp);
+		CFWriteByte ((sbyte) gameOptions [i].input.keyboard.bRamp [j], fp);
 	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bEnhancedCTF, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bRobotsHitRobots, fp);
@@ -2106,7 +2118,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].render.bAllSegs, fp);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].grWallTransparency, fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.mouseSensitivity [0], fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.mouse.sensitivity [0], fp);
 	CFWriteByte ((sbyte) gameOptions [i].multi.bUseMacros, fp);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bWiggle, fp);
@@ -2187,17 +2199,17 @@ for (i = 0; i < 2; i++) {
 		CFWriteByte ((sbyte) extraGameInfo [1].bDisableReactor, fp);
 		}
 	for (j = 0; j < 4; j++)
-		CFWriteByte ((sbyte) gameOptions [0].input.joyDeadZones [j], fp);
+		CFWriteByte ((sbyte) gameOptions [0].input.joystick.deadzones [j], fp);
 	for (j = 0; j < 4; j++)
-		CFWriteByte ((sbyte) gameOptions [0].input.joySensitivity [j], fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.bSyncJoyAxes, fp);
+		CFWriteByte ((sbyte) gameOptions [0].input.joystick.sensitivity [j], fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.joystick.bSyncAxes, fp);
 	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [1].bDualMissileLaunch, fp);
 		CFWriteByte ((sbyte) extraGameInfo [1].bMouseLook, fp);
 		}
 	for (j = 0; j < 3; j++)
-		CFWriteByte ((sbyte) gameOptions [0].input.mouseSensitivity [j], fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.bSyncMouseAxes, fp);
+		CFWriteByte ((sbyte) gameOptions [0].input.mouse.sensitivity [j], fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.mouse.bSyncAxes, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.color.bMix, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.color.bCap, fp);
 	if (!i)
@@ -2209,8 +2221,8 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].menus.bShowLevelVersion, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.nSort, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.weaponIcons.bShowAmmo, fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.bUseMouse, fp);
-	CFWriteByte ((sbyte) gameOptions [i].input.bUseJoystick, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.mouse.bUse, fp);
+	CFWriteByte ((sbyte) gameOptions [i].input.joystick.bUse, fp);
 	CFWriteByte ((sbyte) gameOptions [i].input.bUseHotKeys, fp);
 	if (!i) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bSafeUDP, fp);
@@ -2247,7 +2259,7 @@ for (i = 0; i < 2; i++) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bRenderShield, fp);
 		}
 	CFWriteByte ((sbyte) gameOptions [i].gameplay.bInventory, fp);
-	CFWriteInt (gameOptions [i].input.bJoyMouse, fp);
+	CFWriteInt (gameOptions [i].input.mouse.bJoystick, fp);
 	if (!i) {
 		CFWriteInt (displayModeInfo [NUM_DISPLAY_MODES].w, fp);
 		CFWriteInt (displayModeInfo [NUM_DISPLAY_MODES].h, fp);
@@ -2255,8 +2267,8 @@ for (i = 0; i < 2; i++) {
 	CFWriteInt (gameOptions [i].render.cockpit.bMouseIndicator, fp);
 	CFWriteInt (extraGameInfo [i].bTeleporterCams, fp);
 	CFWriteInt (gameOptions [i].render.cockpit.bSplitHUDMsgs, fp);
-	CFWriteByte (gameOptions [i].input.joyDeadZones [4], fp);
-	CFWriteByte (gameOptions [i].input.joySensitivity [4], fp);
+	CFWriteByte (gameOptions [i].input.joystick.deadzones [4], fp);
+	CFWriteByte (gameOptions [i].input.joystick.sensitivity [4], fp);
 	if (!i) {
 		tMonsterballForce *pf = extraGameInfo [0].monsterball.forces;
 		CFWriteByte (extraGameInfo [0].monsterball.nBonus, fp);
@@ -2409,7 +2421,7 @@ else if (CFWrite(&dosControlType, sizeof(ubyte), 1, fp) != 1)
 	funcRes = errno;
 else if (CFWrite(&winControlType, sizeof(ubyte), 1, fp ) != 1)
 	funcRes = errno;
-else if (CFWrite(gameOptions [0].input.joySensitivity, sizeof(ubyte), 1, fp) != 1)
+else if (CFWrite(gameOptions [0].input.joystick.sensitivity, sizeof(ubyte), 1, fp) != 1)
 	funcRes = errno;
 
 for (i = 0; i < 11; i++) {

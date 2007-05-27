@@ -129,7 +129,7 @@ int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount, int n
 void TriggersFrameProcess();
 void ExecObjTriggers (short nObject, int bDamage);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define v29_trigger_read(t, fp) CFRead(t, sizeof(v29_trigger), 1, fp)
 #define v30_trigger_read(t, fp) CFRead(t, sizeof(v30_trigger), 1, fp)
 #define TriggerRead(t, fp) CFRead(t, sizeof(tTrigger), 1, fp)

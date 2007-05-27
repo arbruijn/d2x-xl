@@ -326,13 +326,13 @@ int MaybeStealSecondaryWeapon(int player_num, int weapon_num)
 {
 	if ((gameData.multiplayer.players[player_num].secondaryWeaponFlags & HAS_FLAG(weapon_num)) && gameData.multiplayer.players[player_num].secondaryAmmo[weapon_num])
 		if (d_rand() < THIEF_PROBABILITY) {
-			if (weapon_num == PROXIMITY_INDEX)
+			if (weapon_num == PROXMINE_INDEX)
 				if (d_rand() > 8192)		//	Come in groups of 4, only add 1/4 of time.
 					return 0;
 			gameData.multiplayer.players[player_num].secondaryAmmo[weapon_num]--;
 
 			//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
-			if ((weapon_num != PROXIMITY_INDEX) && (weapon_num != SMART_MINE_INDEX)) {
+			if ((weapon_num != PROXMINE_INDEX) && (weapon_num != SMARTMINE_INDEX)) {
 				gameData.thief.stolenItems[gameData.thief.nStolenItem] = secondaryWeaponToPowerup[weapon_num];
 			}
 

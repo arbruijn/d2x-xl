@@ -707,7 +707,7 @@ if (bVerbose)
 	HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
 	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
-	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXIMITY_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
+	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXMINE_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
 	for (i=0; i < MAX_D1_PRIMARY_WEAPONS; i++)
 		LOCALPLAYER.primaryAmmo [i] = nMaxPrimaryAmmo [i];
 	for (i=0; i < MAX_D1_SECONDARY_WEAPONS; i++)
@@ -728,7 +728,7 @@ else {
 	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i] * h;
 	if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
-		LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 4;
+		LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;
 	if (gameData.pig.tex.nHamFileVersion < 3) {// SHAREWARE
 		LOCALPLAYER.secondaryAmmo [MERCURY_INDEX] = 0;
 		LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX] = 0;
@@ -736,13 +736,13 @@ else {
 		}
 
 	if (gameData.app.nGameMode & GM_HOARD)
-		LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 12;
+		LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 12;
 	else if (gameData.app.nGameMode & GM_ENTROPY) {
-		LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] = 5 * h;
-		LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX] = 5 * h;
+		LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 5 * h;
+		LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX] = 5 * h;
 		}
 	}
-bLastSecondaryWasSuper [PROXIMITY_INDEX] = 1;
+bLastSecondaryWasSuper [PROXMINE_INDEX] = 1;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordLaserLevel (LOCALPLAYER.laserLevel, MAX_LASER_LEVEL);
 

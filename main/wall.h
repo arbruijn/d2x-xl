@@ -276,7 +276,7 @@ void StartWallCloak(tSegment *seg, short tSide);
 void StartWallDecloak(tSegment *seg, short tSide);
 
 extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
-#ifdef FAST_FILE_IO
+#if 0
 #define WClipReadN(wc, n, fp) CFRead(wc, sizeof(tWallClip), n, fp)
 #define v16_wall_read(w, fp) CFRead(w, sizeof(v16_wall), 1, fp)
 #define v19_wall_read(w, fp) CFRead(w, sizeof(v19_wall), 1, fp)

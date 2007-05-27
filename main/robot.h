@@ -317,7 +317,7 @@ void CalcGunPoint(vmsVector *gun_point,tObject *obj,int gun_num);
 //      jp_list_ptr is stuffed with a pointer to a static array of joint positions.  This pointer is valid forever.
 extern int robot_get_animState(tJointPos **jp_list_ptr,int robotType,int gun_num,int state);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define RobotInfoReadN(ri, n, fp) CFRead(ri, sizeof(tRobotInfo), n, fp)
 #define JointPosReadN(jp, n, fp) CFRead(jp, sizeof(tJointPos), n, fp)
 #else

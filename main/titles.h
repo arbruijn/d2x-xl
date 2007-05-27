@@ -69,14 +69,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern int	Skip_briefing_screens;
 
 // Descent 1 briefings
-extern char szBriefingTextFilename[13];
-extern char szEndingTextFilename[13];
 
-extern int show_title_screen( char * filename, int allow_keys, int from_hog_only );
-extern int show_briefing_screen( char * filename, int allow_keys );
-extern void show_title_flick(char *name, int allow_keys );
-extern void DoBriefingScreens(char *filename,int level_num);
-extern char * get_briefing_screen( int level_num );
+extern int ShowTitleScreen (char *filename, int bAllowKeys, int from_hog_only);
+extern int ShowBriefingScreen (char *filename, int bAllowKeys);
+extern void ShowTitleFlick (char *name, int bAllowKeys);
+extern void DoBriefingScreens(char *filename,int nLevel);
+extern char *GetBriefingScreen (int nLevel);
 
 extern void show_endgame_briefing(void);
 

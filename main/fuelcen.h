@@ -136,7 +136,7 @@ void SpawnBotTrigger (tObject *objP, short nSegment);
 int GetMatCenObjType (tFuelCenInfo *matCenP, int *objFlags);
 void SetEquipGenStates (void);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define OldMatCenInfoRead(mi, fp) CFRead(mi, sizeof(old_tMatCenInfo), 1, fp)
 #define MatCenInfoRead(mi, fp) CFRead(mi, sizeof(tMatCenInfo), 1, fp)
 #else

@@ -263,7 +263,7 @@ extern void AddSegmentToGroup (int nSegment, int nGroup);
 // Verify that all vertices are legal.
 extern void med_check_all_vertices();
 
-#ifdef FAST_FILE_IO
+#if 0
 #define segment2_read(s2, fp) CFRead(s2, sizeof(tSegment2), 1, fp)
 #define delta_light_read(dl, fp) CFRead(dl, sizeof(delta_light), 1, fp)
 #define dl_index_read(di, fp) CFRead(di, sizeof(dl_index), 1, fp)

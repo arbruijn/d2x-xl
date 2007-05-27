@@ -126,7 +126,7 @@ void DoMegaWowPowerup(int quantity);
 
 void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, char *format, ...);
 
-#ifdef FAST_FILE_IO
+#if 0
 #define PowerupTypeInfoReadN(pti, n, fp) CFRead(pti, sizeof(powerupType_info), n, fp)
 #else
 /*

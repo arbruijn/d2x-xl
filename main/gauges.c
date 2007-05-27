@@ -1410,14 +1410,14 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 	if (gameData.app.nGameMode & GM_ENTROPY) {
 		char	szInfo [20];
 		int	w, h, aw;
-		if (LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusLimit)
+		if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] >= extraGameInfo [1].entropy.nCaptureVirusLimit)
 			GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
 		else
 			GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 		sprintf (szInfo, 
 			"x %d [%d]", 
-			LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX], 
-			LOCALPLAYER.secondaryAmmo [SMART_MINE_INDEX]);
+			LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX], 
+			LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX]);
 		GrPrintF (x, y, szInfo);
 		if (gameStates.entropy.bConquering) {
 			int t = (extraGameInfo [1].entropy.nCaptureTimeLimit * 1000) - 
@@ -1433,7 +1433,7 @@ if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) {
 			}
 		}
 	else
-		GrPrintF (x, y, "x %d", LOCALPLAYER.secondaryAmmo [PROXIMITY_INDEX]);
+		GrPrintF (x, y, "x %d", LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]);
 	}
 }
 
@@ -1610,13 +1610,13 @@ if (gameData.app.nGameMode & GM_ENTROPY)
 bomb = ArmedBomb ();
 if (!bomb)
 	return;
-if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXIMITY_INDEX))
+if ((gameData.app.nGameMode & GM_HOARD) && (bomb == PROXMINE_INDEX))
 	return;
 count = LOCALPLAYER.secondaryAmmo [bomb];
 #ifdef _DEBUG
 count = min (count, 99);	//only have room for 2 digits - cheating give 200
 #endif
-countx = (bomb==PROXIMITY_INDEX)?count:-count;
+countx = (bomb==PROXMINE_INDEX)?count:-count;
 if (always_show && count == 0)		//no bombs, draw nothing on HUD
 	return;
 if (!always_show && countx == oldBombcount [gameStates.render.vr.nCurrentPage])
@@ -1637,7 +1637,7 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 	}
 if (count)
 	GrSetFontColorRGBi (
-		(bomb == PROXIMITY_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1, 
+		(bomb == PROXMINE_INDEX) ? RGBA_PAL2 (55, 0, 0) : RGBA_PAL2 (59, 59, 21), 1, 
 		bg_color, bg_color != -1);
 else if (bg_color != -1)
 	GrSetFontColorRGBi (bg_color, 1, bg_color, 1);	//erase by drawing in background color
@@ -1854,7 +1854,7 @@ for (i = 0; i < 2; i++) {
 			if (j < 8)
 				bArmed = (l == gameData.weapons.nSecondary);
 			else
-				bArmed = (j == 8) == (bLastSecondaryWasSuper [PROXIMITY_INDEX] != 0);
+				bArmed = (j == 8) == (bLastSecondaryWasSuper [PROXMINE_INDEX] != 0);
 			}
 		else {
 			if (l == 5)
@@ -3453,7 +3453,7 @@ else {
 		- (y + HUD_SCALE_Y (secondary_offsets [ofs].y)), 
 		gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (nGaugeIndex), F1_0, 0);
   }
-if (!gameStates.app.bNostalgia && gameOpts->input.bJoyMouse && gameOpts->render.cockpit.bMouseIndicator)
+if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
 cmScaleX /= HUD_ASPECT;
 }

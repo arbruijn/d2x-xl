@@ -130,8 +130,8 @@ int load_mission_d1(int nMission)
 
 		break;
 	}
-	strcpy(szBriefingTextFilename,BIM_BRIEFING_FILE);
-	strcpy(szEndingTextFilename,BIM_ENDING_FILE);
+	strcpy(gameData.missions.szBriefingFilename,BIM_BRIEFING_FILE);
+	strcpy(gameData.missions.szEndingFilename,BIM_ENDING_FILE);
 	gameStates.app.bD1Mission = 1;
 	return 1;
 }
@@ -713,8 +713,8 @@ int ParseMissionFile (CFILE *fp)
 LogErr ("   parsing mission file\n");
 gameData.missions.nLastLevel = 0;
 gameData.missions.nLastSecretLevel = 0;
-szBriefingTextFilename [0] = '\0';
-szEndingTextFilename [0] = '\0';
+*gameData.missions.szBriefingFilename = '\0';
+*gameData.missions.szEndingFilename = '\0';
 while (MsnGetS (buf, 80, fp)) {
 	LogErr ("      '%s'\n", buf);
 	MsnTrimComment (buf);
@@ -745,7 +745,7 @@ while (MsnGetS (buf, 80, fp)) {
 		if ((v = MsnGetValue (buf))) {
 			MsnAddStrTerm (v);
 			if (strlen (v) < 13)
-				strcpy (szBriefingTextFilename, v);
+				strcpy (gameData.missions.szBriefingFilename, v);
 			else
 				LogErr ("      mission file: ignoring invalid briefing name\n");
 			}
@@ -754,7 +754,7 @@ while (MsnGetS (buf, 80, fp)) {
 		if ((v = MsnGetValue (buf))) {
 			MsnAddStrTerm (v);
 			if (strlen (v) < 13)
-				strcpy (szEndingTextFilename, v);
+				strcpy (gameData.missions.szEndingFilename, v);
 			else
 				LogErr ("      mission file: ignoring invalid end briefing name\n");
 			}

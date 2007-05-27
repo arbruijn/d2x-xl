@@ -683,10 +683,10 @@ if (!bFastPoll)
 
 fix key_ramp (int scancode)
 {
-if (!gameOpts->input.keyRampScale)
+if (!gameOpts->input.keyboard.nRamp)
 	return 1;
 else {
-		int maxRampTime = gameOpts->input.keyRampScale * 20; // / gameOpts->input.keyRampScale;
+		int maxRampTime = gameOpts->input.keyboard.nRamp * 20; // / gameOpts->input.keyboard.nRamp;
 		fix t = key_data.keys [scancode].timehelddown;
 
 	if (!t)

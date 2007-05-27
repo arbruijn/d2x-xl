@@ -24,7 +24,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="..\..\trackir,..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
+				AdditionalIncludeDirectories="..\..\d2x-trackir,..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
 				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -47,11 +47,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib "
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
 				OutputFile="d:\programme\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="d:\projekte\d2x\sdl-1.2.11\debug\sdl.lib D:\Projekte\SDL_mixer-1.2.7\VisualC\Debug\SDL_mixer.lib"
+				AdditionalLibraryDirectories="&quot;D:\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;d:\projekte\d2x\sdl-1.2.11\debug\sdl.lib D:\Projekte\SDL_mixer-1.2.7\VisualC\Debug\SDL_mixer.lib&quot;"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/d2x-w32-dbg.pdb"
 				SubSystem="2"
@@ -106,7 +106,7 @@
 				EnableFiberSafeOptimizations="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
+				AdditionalIncludeDirectories="..\..\d2x-trackir,..\3d,..\..\3d,..\..\include,..\..\main,..\..\arch\include,..\..\arch\win32\include,..\..\arch\win32,..\..\..\..\SDL-1.2.11\include,..\..\..\..\SDL_mixer-1.2.7"
 				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -2719,9 +2719,6 @@
 					RelativePath="..\..\main\tracker.c">
 				</File>
 				<File
-					RelativePath="..\..\trackir\trackir.c">
-				</File>
-				<File
 					RelativePath="..\..\main\vclip.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -3129,6 +3126,9 @@
 				RelativePath="..\..\main\inferno.h">
 			</File>
 			<File
+				RelativePath="..\..\main\input.h">
+			</File>
+			<File
 				RelativePath="..\..\include\interp.h">
 			</File>
 			<File
@@ -3358,6 +3358,9 @@
 			</File>
 			<File
 				RelativePath="..\..\main\tracker.h">
+			</File>
+			<File
+				RelativePath="..\..\trackir\trackir.h">
 			</File>
 			<File
 				RelativePath="..\..\include\u_dpmi.h">
