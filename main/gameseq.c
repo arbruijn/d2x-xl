@@ -1948,13 +1948,13 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 					}
 				}
 			if (gameStates.movies.nRobots) {
-				int hires_save=gameStates.menus.bHiresAvailable;
+				int hires_save = gameStates.menus.bHiresAvailable;
 				if (gameStates.movies.nRobots == 1) {		//lowres only
 					gameStates.menus.bHiresAvailable = 0;		//pretend we can't do highres
 					if (hires_save != gameStates.menus.bHiresAvailable)
 						gameStates.video.nScreenMode = -1;		//force reset
 					}
-				DoBriefingScreens ("robot.tex",nLevel);
+				DoBriefingScreens ("robot.tex", nLevel);
 				gameStates.menus.bHiresAvailable = hires_save;
 				}
 			}

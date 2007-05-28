@@ -3479,7 +3479,7 @@ do {
 		} while (i >= 0);
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
-	gameOpts->gameplay.bAutoLeveling = m [0].value;
+	gameOpts->gameplay.bAutoLeveling = m [optAutoLevel].value;
 	extraGameInfo [0].bRobotsHitRobots = m [optRobHits].value;
 	extraGameInfo [0].bShootMissiles = m [optShootMissiles].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;

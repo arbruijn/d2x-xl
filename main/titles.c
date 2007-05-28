@@ -1327,12 +1327,19 @@ int LoadScreenText (char *filename, char **buf)
 {
 	CFILE *fp;
 	int	len, i;
-	int	bHaveBinary = (strstr (filename, ".txb") != NULL);
+	int	bHaveBinary;
 	char	*bufP;
 
+if (!strstr (filename, ".t"))
+	strcat (filename, ".tex");
+bHaveBinary = (strstr (filename, ".txb") != NULL);
 if (!(fp = CFOpen (filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission))) {
-	LogErr ("can't open briefing '%s'!\n", filename);
-	return (0);
+	bHaveBinary = !bHaveBinary;
+	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
+	if (!(fp = CFOpen (filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission))) {
+		LogErr ("can't open briefing '%s'!\n", filename);
+		return (0);
+		}
 	}
 if (bHaveBinary) {
 	len = CFLength (fp, 0);
@@ -1474,7 +1481,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	return;
 	}
-strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : fnBriefing);
+strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : filename);
 con_printf (CONDBG, "Trying briefing screen <%s>\n", fnBriefing);
 LogErr ("Looking for briefing screen '%s'\n", fnBriefing);
 if (!fnBriefing)

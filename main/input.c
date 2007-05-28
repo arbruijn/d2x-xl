@@ -77,8 +77,6 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include "joystick.h"
 #endif
 #ifdef WIN32
-#	include "trackir.h"
-
 tTIRInfo	tirInfo;
 #endif
 

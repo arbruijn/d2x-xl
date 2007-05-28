@@ -110,7 +110,6 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "interp.h"
 #include "cheats.h"
 #include "rle.h"
-#include "trackir.h"
 
 u_int32_t nCurrentVGAMode;
 

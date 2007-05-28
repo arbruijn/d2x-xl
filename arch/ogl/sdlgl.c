@@ -114,7 +114,7 @@ D2SetCaption ();
 OglInitAttributes ();
 /***/LogErr ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
-#ifdef RELEASE
+#if 1//def RELEASE
 SDL_putenv ("SDL_VIDEO_CENTERED=1");
 #endif
 if (!OglVideoModeOK (w, h) ||

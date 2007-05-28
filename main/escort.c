@@ -225,9 +225,10 @@ return 1;
 
 void DetectEscortGoalAccomplished (int index)
 {
-	int		i,j;
+	int		i, j;
 	int		bDetected = 0;
 	tObject	*objP;
+	short		*childI, *childJ;
 
 //	If goal is to go away, how can it be achieved?
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)
@@ -241,7 +242,7 @@ if ((gameData.escort.nSpecialGoal == -1) && (gameData.escort.nGoalIndex == index
 	goto dega_ok;
 	}
 
-if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0)) {
+if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0) && (index <= gameData.objs.nLastObject)) {
 	objP = gameData.objs.objects + index;
 	if (objP->nType == OBJ_POWERUP)  {
 		ubyte id = objP->id;
@@ -265,33 +266,41 @@ if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0)) {
 			}
 		}
 	}
-if (gameData.escort.nSpecialGoal != -1){
+if (gameData.escort.nSpecialGoal != -1) {
 	if (gameData.escort.nSpecialGoal == ESCORT_GOAL_ENERGYCEN) {
 		if (index == -4)
 			bDetected = 1;
-		else {
-			for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-				if (gameData.segs.segments [index].children [i] == gameData.escort.nGoalIndex) {
+		else if ((index >= 0) && (index <= gameData.segs.nLastSegment) &&
+					(gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.segs.nLastSegment)) {
+			childI = gameData.segs.segments [index].children;
+			for (i = MAX_SIDES_PER_SEGMENT; i; i--, childI++) {
+				if (*childI == gameData.escort.nGoalIndex) {
 					bDetected = 1;
 					goto dega_ok;
 					}
 				else {
-					for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
-						if (gameData.segs.segments [i].children [j] == gameData.escort.nGoalIndex) {
+					childJ = gameData.segs.segments [*childI].children;
+					for (j = MAX_SIDES_PER_SEGMENT; j; j--, childJ++) {
+						if (*childJ == gameData.escort.nGoalIndex) {
 							bDetected = 1;
 							goto dega_ok;
+							}
+						}
 					}
 				}
 			}
 		} 
-	else if ((gameData.objs.objects [index].nType == OBJ_POWERUP) && 
-				(gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
-		bDetected = 1;	//	Any nType of powerup picked up will do.
-	else if ((gameData.objs.objects [index].nType == gameData.objs.objects [gameData.escort.nGoalIndex].nType) && 
-					(gameData.objs.objects [index].id == gameData.objs.objects [gameData.escort.nGoalIndex].id)) {
+	else if ((index >= 0) && (index <= gameData.objs.nLastObject)) {
+		objP = gameData.objs.objects + index;
+		if ((objP->nType == OBJ_POWERUP) && (gameData.escort.nSpecialGoal == ESCORT_GOAL_POWERUP))
+			bDetected = 1;	//	Any nType of powerup picked up will do.
+		else if ((gameData.escort.nGoalIndex >= 0) && (gameData.escort.nGoalIndex <= gameData.objs.nLastObject) &&
+					(objP->nType == gameData.objs.objects [gameData.escort.nGoalIndex].nType) && 
+					(objP->id == gameData.objs.objects [gameData.escort.nGoalIndex].id)) {
 		//	Note: This will help a little bit in making the buddy believe a goal is satisfied.  Won't work for a general goal like "find any powerup"
 		// because of the insistence of both nType and id matching.
-		bDetected = 1;
+			bDetected = 1;
+			}
 		}
 	}
 

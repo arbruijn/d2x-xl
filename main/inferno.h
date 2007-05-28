@@ -62,7 +62,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "segment.h"
 #include "console.h"
 #include "vecmat.h"
-#include "trackir.h"
 
 #ifdef __macosx__
 # include <SDL/SDL.h>
@@ -2300,6 +2299,15 @@ void D2SetCaption (void);
 void PrintVersionInfo (void);
 
 //	-----------------------------------------------------------------------------------------------------------
+
+typedef struct fVector3D {
+	float	x, y, z;
+} fVector3D;
+
+typedef struct tTIRInfo {
+	fVector3D	fvRot;
+	fVector3D	fvTrans;
+	} tTIRInfo;
 
 typedef int (WINAPI *tpfnTIRInit) (HWND);
 typedef int (WINAPI *tpfnTIRExit) (void);

@@ -100,9 +100,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "cheats.h"
 #include "input.h"
-#ifdef _DEBUG
-#include "trackir.h"
-#endif
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
