@@ -589,7 +589,7 @@ if (!bBetweenLevels)	{
 	i = gameData.walls.nWalls;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.walls.walls, sizeof (tWall), i, fp);
-//Save exploding tWall info
+//Save exploding wall info
 	i = MAX_EXPLODING_WALLS;
 	CFWrite (&i, sizeof (int), 1, fp);
 	CFWrite (gameData.walls.explWalls, sizeof (*gameData.walls.explWalls), i, fp);
@@ -1150,7 +1150,7 @@ if (!bBetweenLevels)	{
 	for (j = 0; j < i; j++)
 		StateSaveWall (gameData.walls.walls + j, fp);
 	//fpos = CFTell (fp);
-//Save exploding tWall info
+//Save exploding wall info
 	i = MAX_EXPLODING_WALLS;
 	CFWriteInt (i, fp);
 	for (j = 0; j < i; j++)
@@ -2172,7 +2172,7 @@ if (!bBetweenLevels)	{
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
 		}
 	//fpos = CFTell (fp);
-	//Restore exploding tWall info
+	//Restore exploding wall info
 	if (CFReadBoundedInt (MAX_EXPLODING_WALLS, &h, fp))
 		return 0;
 	for (i = 0; i < h; i++)
@@ -2428,7 +2428,7 @@ if (!bBetweenLevels)	{
 	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
 			DigiKillSoundLinkedToSegment ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
-	//Restore exploding tWall info
+	//Restore exploding wall info
 	if (sgVersion >= 10) {
 		CFRead (&i, sizeof (int), 1, fp);
 		CFRead (gameData.walls.explWalls, sizeof (*gameData.walls.explWalls), i, fp);

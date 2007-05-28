@@ -239,7 +239,7 @@ InitSpecialEffects ();
 InitAISystem ();
 //*---*/LogErr ("  gauge canvases...\n");
 //	InitGaugeCanvases ();
-/*---*/LogErr ("  exploding tWall...\n");
+/*---*/LogErr ("  exploding walls...\n");
 InitExplodingWalls ();
 /*---*/LogErr ("  particle systems...\n");
 InitSmoke ();

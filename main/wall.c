@@ -424,7 +424,7 @@ KillStuckObjects(WallNumP (segP, nSide));
 if (IS_WALL (nConnWall))
 	KillStuckObjects(nConnWall);
 
-//if this is an exploding tWall, explode it
+//if this is an exploding wall, explode it
 if (gameData.walls.pAnims[w->nClip].flags & WCF_EXPLODES)
 	ExplodeWall(SEG_IDX (segP),nSide);
 else {

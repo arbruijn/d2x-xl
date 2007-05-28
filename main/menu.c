@@ -3791,7 +3791,7 @@ void MiscellaneousMenu ()
 #if 0
 			optFastResp, 
 #endif
-			optHeadlight, optEscort, optUseMacros,	 
+			optHeadlight, optEscort, optUseMacros,	optAutoLevel,
 			optReticle, optMissileView, optGuided, optSmartSearch, optLevelVer, optDemoFmt;
 #if UDP_SAFEMODE
 	int	optSafeUDP;
@@ -3811,7 +3811,7 @@ do {
 	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
 	if (gameStates.app.bNostalgia) {
 		ADD_CHECK (0, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
-		opt++;
+		optAutoLevel = opt++;
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;
 		ADD_CHECK (opt, TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_I, HTX_CPITMSLVIEW);
@@ -3892,7 +3892,7 @@ do {
 		i = ExecMenu1 (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, opt, m, MiscellaneousCallback, &choice);
 	} while (i >= 0);
 	if (gameStates.app.bNostalgia) {
-		gameOpts->gameplay.bAutoLeveling = m [0].value;
+		gameOpts->gameplay.bAutoLeveling = m [optAutoLevel].value;
 		gameOpts->render.cockpit.bReticle = m [optReticle].value;
 		gameOpts->render.cockpit.bMissileView = m [optMissileView].value;
 		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].value;

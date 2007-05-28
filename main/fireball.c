@@ -1751,7 +1751,7 @@ void ExplodeWall (short nSegment, short nSide)
 
 	if (i==MAX_EXPLODING_WALLS) {		//didn't find slot.
 #if TRACE
-		con_printf (CONDBG, "Couldn't find D2_FREE slot for exploding tWall!\n");
+		con_printf (CONDBG, "Couldn't find D2_FREE slot for exploding wall!\n");
 #endif
 		Int3 ();
 		return;
