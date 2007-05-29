@@ -749,10 +749,9 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 LOCALPLAYER.energy = MAX_ENERGY;
 if (gameStates.app.bD1Mission)
 	LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
-else {
+else
 	LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
-	LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-	}
+LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 UpdateLaserWeaponInfo ();
 SetLastSuperWeaponStates ();
 }
@@ -767,10 +766,13 @@ else {
 	AccessoryCheat (bVerbose);
 	WowieCheat (bVerbose);
 	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE;
+	LOCALPLAYER.invulnerableTime =
+	LOCALPLAYER.cloakTime = 0x7fffffff;
 	gameStates.app.cheats.bSpeed = 1;
 	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
 	gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
+	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	}
 }
 

@@ -114,6 +114,7 @@ int FreeObjectSlots (int num_used);
 ubyte CollisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 ubyte bIsMissile [100];
 ubyte bIsWeapon [100];
+ubyte bSlowWeapon [100];
 short idToOOF [100];
 
 //Data for gameData.objs.objects
@@ -1980,12 +1981,15 @@ void RenderLightTrail (tObject *objP)
 {
 if (!SHOW_OBJ_FX)
 	return;
+if (!bIsWeapon [objP->id])
+	return;
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id] &&
+if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && 
+	 !bSlowWeapon [objP->id] &&
 	 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
 		vmsVector		vPos;
 		fVector			vPosf, *vTrail;
@@ -4574,11 +4578,13 @@ bIsMissile [ROBOT_SHAKER_MEGA_ID] = 1;
 
 memset (bIsWeapon, 0, sizeof (bIsWeapon));
 bIsWeapon [VULCAN_ID] =
-bIsWeapon [GAUSS_ID] = 0;
+bIsWeapon [GAUSS_ID] =
+bIsWeapon [ROBOT_VULCAN_ID] = 0;
 bIsWeapon [LASER_ID] =
 bIsWeapon [LASER_ID + 1] =
 bIsWeapon [LASER_ID + 2] =
 bIsWeapon [LASER_ID + 3] =
+bIsWeapon [REACTOR_BLOB_ID] =
 bIsWeapon [ROBOT_SLOW_PHOENIX_ID] =
 bIsWeapon [FLARE_ID] =
 bIsWeapon [SPREADFIRE_ID] =
@@ -4592,6 +4598,7 @@ bIsWeapon [OMEGA_ID] =
 bIsWeapon [ROBOT_PLASMA_ID] =
 bIsWeapon [ROBOT_MEDIUM_FIREBALL_ID] =
 bIsWeapon [ROBOT_SMARTMSL_BLOB_ID] =
+bIsWeapon [ROBOT_SMALL_FIREBALL_ID] =
 bIsWeapon [ROBOT_PHOENIX_ID] =
 bIsWeapon [ROBOT_FAST_PHOENIX_ID] =
 bIsWeapon [ROBOT_PHASE_ENERGY_ID] =
@@ -4603,8 +4610,17 @@ bIsWeapon [ROBOT_HELIX_ID] =
 bIsWeapon [ROBOT_BLUE_ENERGY_ID] =
 bIsWeapon [ROBOT_WHITE_ENERGY_ID] =
 bIsWeapon [ROBOT_BLUE_LASER_ID] =
+bIsWeapon [ROBOT_RED_LASER_ID] =
 bIsWeapon [ROBOT_GREEN_LASER_ID] =
 bIsWeapon [ROBOT_WHITE_LASER_ID] = 1;
+
+memset (bSlowWeapon, 0, sizeof (bSlowWeapon));
+bSlowWeapon [REACTOR_BLOB_ID] =
+bSlowWeapon [ROBOT_SMALL_FIREBALL_ID] =
+bSlowWeapon [SMARTMINE_BLOB_ID] =
+bSlowWeapon [ROBOT_SMARTMINE_BLOB_ID] =
+bSlowWeapon [SMARTMSL_BLOB_ID] =
+bSlowWeapon [ROBOT_SMARTMSL_BLOB_ID] = 1;
 }
 
 //------------------------------------------------------------------------------

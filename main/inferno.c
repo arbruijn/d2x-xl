@@ -2972,9 +2972,11 @@ static HINSTANCE hTIRDll = 0;
 
 static int TIRUnload (void)
 {
+#ifdef WIN32
 if (hTIRDll)
    FreeLibrary (hTIRDll);
 hTIRDll = 0;
+#endif
 return 0;
 }
 
@@ -2982,6 +2984,7 @@ return 0;
 
 static int TIRLoad (void)
 {
+#ifdef WIN32
 hTIRDll = LoadLibrary ("d2x-trackir.dll");
 if ((size_t) hTIRDll < HINSTANCE_ERROR)
 	return 0;
@@ -2992,6 +2995,9 @@ LOAD_TIR_FUNC (tpfnTIRStop, TIRStop)
 LOAD_TIR_FUNC (tpfnTIRCenter, TIRCenter)
 LOAD_TIR_FUNC (tpfnTIRQuery, TIRQuery)
 return pfnTIRInit (SDL_GetWindowHandle ());
+#else
+return 0;
+#endif
 }
 
 // ----------------------------------------------------------------------------
