@@ -692,6 +692,7 @@ sprintf (gameFolders.szMissionDir, "%s/%s", gameFolders.szGameDir, BASE_MISSION_
 
 void EvalLegacyArgs (void)
 {
+#ifdef DEBUG	// it is strongly discouraged to use these switches!
 	int bLegacy = FindArg ("-legacymode");
 
 if (bLegacy || FindArg ("-legacyinput"))
@@ -708,6 +709,7 @@ if (bLegacy || FindArg ("-legacyswitches"))
 	gameOptions [0].legacy.bSwitches = 1;
 if (bLegacy || FindArg ("-legacywalls"))
 	gameOptions [0].legacy.bWalls = 1;
+#endif
 }
 
 // ----------------------------------------------------------------------------
