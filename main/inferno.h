@@ -2309,6 +2309,10 @@ typedef struct tTIRInfo {
 	fVector3D	fvTrans;
 	} tTIRInfo;
 
+#ifndef WIN32
+#	define WINAPI
+#endif
+
 typedef int (WINAPI *tpfnTIRInit) (HWND);
 typedef int (WINAPI *tpfnTIRExit) (void);
 typedef int (WINAPI *tpfnTIRStart) (void);
