@@ -1032,7 +1032,7 @@ if (!pfnTIRQuery (&tirInfo)) {
 		pfnTIRStart ();
 	return 0;
 	}
-#if 0//def _DEBUG
+#ifdef _DEBUG
 HUDMessage (0, "%1.0f %1.0f %1.0f", tirInfo.fvTrans.x, tirInfo.fvTrans.y, tirInfo.fvTrans.z);
 #endif
 return 1;

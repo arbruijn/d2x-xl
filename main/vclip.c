@@ -47,9 +47,9 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 //----------------- Variables for video clips -------------------
 //draw an tObject which renders as a tVideoClip
 
-#define	FIREBALL_ALPHA		0.8
+#define	FIREBALL_ALPHA		0.9
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
-#define	WEAPON_ALPHA		1.0
+#define	WEAPON_ALPHA		0.7
 
 void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
 {
@@ -148,7 +148,7 @@ void DrawWeaponVClip (tObject *objP)
 	int	nVClip;
 	fix	modtime, playTime;
 
-Assert(objP->nType == OBJ_WEAPON);
+Assert (objP->nType == OBJ_WEAPON);
 nVClip = gameData.weapons.info [objP->id].weapon_vclip;
 modtime = objP->lifeleft;
 playTime = gameData.eff.pVClips [nVClip].xTotalTime;

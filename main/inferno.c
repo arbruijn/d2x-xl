@@ -2996,7 +2996,10 @@ LOAD_TIR_FUNC (tpfnTIRStart, TIRStart)
 LOAD_TIR_FUNC (tpfnTIRStop, TIRStop)
 LOAD_TIR_FUNC (tpfnTIRCenter, TIRCenter)
 LOAD_TIR_FUNC (tpfnTIRQuery, TIRQuery)
-return pfnTIRInit (SDL_GetWindowHandle ());
+if (pfnTIRInit (SDL_GetWindowHandle ()))
+	return 1;
+TIRUnload ();
+return 0;
 #else
 return 0;
 #endif

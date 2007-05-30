@@ -281,7 +281,7 @@ void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFr
 {
 	grsBitmap	*bmP;
 	int			id, orientation = 0;
-	int			transp = 2; //(objP->nType == OBJ_FIREBALL) && (objP->renderType != RT_THRUSTER);
+	int			transp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
 	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
 	fix			xSize;
 
@@ -309,7 +309,7 @@ if (gameOpts->render.bTransparentEffects) {
 		}
 	}
 else {
-	transp = 2;
+	transp = 3;
 	alpha = 1.0f;
 	}
 orientation = global_orientation;
