@@ -192,15 +192,12 @@ while ((c = KeyInKey ()))
 	if (c == KEY_ESC)
 		return MOVIE_ABORTED;
 // Stop all digital sounds currently playing.
-DigiStopAll ();
-// Stop all songs
-SongsStopAll ();
-DigiClose ();
+DigiExit ();
 // Start sound
 MVE_sndInit (gameStates.app.bUseSound ? 1 : -1);
 gameOpts->movies.bFullScreen = bFullScreen;
 ret = RunMovie (name, gameOpts->movies.bHires, bRequired, -1, -1);
-DigiInit ();
+DigiInit (1);
 gameStates.video.nScreenMode = -1;		//force screen reset
 return ret;
 }

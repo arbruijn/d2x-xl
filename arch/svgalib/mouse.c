@@ -34,7 +34,7 @@
 
 ubyte installed = 0;
 
-struct mousebutton {
+struct tMouseButton {
  ubyte pressed;
  fix time_wentDown;
  fix time_heldDown;
@@ -42,8 +42,8 @@ struct mousebutton {
  uint num_ups;
 };
 
-static struct mouseinfo {
- struct mousebutton buttons[MOUSE_MAX_BUTTONS];
+static struct tMouseInfo {
+ struct tMouseButton buttons[MOUSE_MAX_BUTTONS];
 //added on 10/17/98 by Hans de Goede for mouse functionality
  int min_x, min_y;
  int max_x, max_y;

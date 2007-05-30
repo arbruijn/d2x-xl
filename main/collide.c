@@ -19,6 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include "rle.h"
 #include "inferno.h"
@@ -342,10 +343,14 @@ if (t) {
 	PhysApplyForce (t, &vForce);
 	return 1;
 	}
+#ifdef _DEBUG
+//redo:
+#endif
 p0 = objP0->position.vPos;
 p1 = objP1->position.vPos;
 v0 = objP0->mType.physInfo.velocity;
 v1 = objP1->mType.physInfo.velocity;
+mag = VmVecDot (&v0, &v1);
 m0 = VmVecCopyNormalize (&vn0, &v0);
 m1 = VmVecCopyNormalize (&vn1, &v1);
 if (m0 && m1) {
@@ -386,10 +391,13 @@ if (!((m0 + m1) && FixMul (m0, m1))) {
 #endif
 	return 0;
 	}
+mag = VmVecMag (&vForce);
 VmVecScaleFrac (&vForce, 2 * FixMul (m0, m1), m0 + m1);
 mag = VmVecMag (&vForce);
 #if 0//def _DEBUG
-HUDMessage (0, "bump force: %c%d", (SIGN (vForce.p.x) * SIGN (vForce.p.y) * SIGN (vForce.p.z)) ? '-' : '+', mag);
+if (fabs (f2fl (mag) > 10000))
+	;//goto redo;
+HUDMessage (0, "bump force: %c%1.2f", (SIGN (vForce.p.x) * SIGN (vForce.p.y) * SIGN (vForce.p.z)) ? '-' : '+', f2fl (mag));
 #endif
 if (mag < (m0 + m1) / 200) {
 #if 0//def _DEBUG
@@ -794,25 +802,20 @@ int OkToDoOmegaDamage (tObject *weapon)
 {
 	int	parent_sig = weapon->cType.laserInfo.nParentSig;
 	int	nParentObj = weapon->cType.laserInfo.nParentObj;
+	fix	dist;
 
-	if (!(gameData.app.nGameMode & GM_MULTI))
-		return 1;
-
-	if (gameData.objs.objects [nParentObj].nSignature != parent_sig) {
-#if TRACE
-		con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
-#endif
-		}
-	else {
-		fix	dist = VmVecDistQuick (&gameData.objs.objects [nParentObj].position.vPos, &weapon->position.vPos);
-
-		if (dist > MAX_OMEGA_DIST) {
-			return 0;
-		} else
-			;
-	}
-
+if (!IsMultiGame)
 	return 1;
+if (gameData.objs.objects [nParentObj].nSignature != parent_sig) {
+#if TRACE
+	con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
+#endif
+	return 1;
+	}
+dist = VmVecDistQuick (&gameData.objs.objects [nParentObj].position.vPos, &weapon->position.vPos);
+if (dist > MAX_OMEGA_DIST)
+	return 0;
+return 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -2712,38 +2715,41 @@ void CollideInit ()
 
 //	-----------------------------------------------------------------------------
 
-int CollideObjectWithWall (tObject * A, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
+int CollideObjectWithWall (tObject * objP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
-switch (A->nType)	{
+switch (objP->nType)	{
 	case OBJ_NONE:
-		Error ("A tObject of nType NONE hit a tWall! \n");
+		Error ("An object of type NONE hit a wall! \n");
 		break;
 	case OBJ_PLAYER:		
-		CollidePlayerAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		CollidePlayerAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 		break;
 	case OBJ_WEAPON:		
-		CollideWeaponAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		CollideWeaponAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 		break;
 	case OBJ_DEBRIS:		
-		CollideDebrisAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		CollideDebrisAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 		break;
 	case OBJ_FIREBALL:	
-		break;		//CollideFireballAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;	//CollideFireballAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_ROBOT:		
-		CollideRobotAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		CollideRobotAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 		break;
 	case OBJ_HOSTAGE:		
-		break;		//CollideHostageAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;	//CollideHostageAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_CAMERA:		
-		break;		//CollideCameraAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;	//CollideCameraAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_SMOKE:		
-		break;		//CollideSmokeAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;	//CollideSmokeAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_POWERUP:		
-		break;		//CollidePowerupAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+		break;	//CollidePowerupAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 	case OBJ_GHOST:		
 		break;	//do nothing
 	case OBJ_MONSTERBALL:		
-		break;		//CollidePowerupAndWall (A, hitspeed, hitseg, hitwall, vHitPt); 
+#ifdef _DEBUG
+		objP = objP;
+#endif
+		break;	//CollidePowerupAndWall (objP, hitspeed, hitseg, hitwall, vHitPt); 
 	default:
 		Error ("Unhandled tObject nType hit tWall in Collide.c \n");
 	}

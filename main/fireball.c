@@ -1470,9 +1470,9 @@ if (rval >= 0) {
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multiplayer.nLocalPlayer))
 		gameData.objs.objects [rval].flags |= OF_PLAYER_DROPPED;
 	if (objP->nType == OBJ_ROBOT && objP->containsType==OBJ_POWERUP) {
-		if (objP->containsId==POW_VULCAN || objP->containsId==POW_GAUSS)
+		if (objP->containsId == POW_VULCAN || objP->containsId == POW_GAUSS)
 			gameData.objs.objects [rval].cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		else if (objP->containsId==POW_OMEGA)
+		else if (objP->containsId == POW_OMEGA)
 			gameData.objs.objects [rval].cType.powerupInfo.count = MAX_OMEGA_CHARGE;
 		}
 	}

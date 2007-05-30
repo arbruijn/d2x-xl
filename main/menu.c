@@ -137,17 +137,59 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-static int	nFPSopt, nRSDopt, 
-				nDiffOpt, nTranspOpt, nSBoostOpt, nCamFpsOpt, nPlrSmokeOpt,
-				nFusionRampOpt, nLightRangeOpt, nRendQualOpt, nTexQualOpt, nGunColorOpt,
-				nCamSpeedOpt, nSmokeDensOpt [4], nSmokeSizeOpt [4], nSmokeLifeOpt [4], 
-				nUseSmokeOpt, nUseCamOpt, nMslTurnSpeedOpt, nSlowmoSpeedupOpt,
-				nLightingMethodOpt, nShadowsOpt, nMaxLightsOpt, nOglMaxLightsOpt, 
-				nShadowReachOpt, 
-				nSyncSmokeSizes, nSmokeGrenadeOpt, nMaxSmokeGrenOpt;
-#if DBG_SHADOWS
-static int	optZPass, optShadowVolume, nShadowTestOpt;
+static struct {
+	int	nMaxFPS;
+	int	nRenderQual;
+	int	nTexQual;
+	int	nWallTransp;
+} renderOpts;
+
+static struct {
+	int	nMethod;
+	int	nMaxLights;
+	int	nLMapRange;
+	int	nGunColor;
+} lightOpts;
+
+static struct {
+	int	nSpeedboost;
+	int	nFusionRamp;
+	int	nMslTurnSpeed;
+	int	nSlomoSpeedup;
+} physOpts;
+
+static struct {
+	int	nDifficulty;
+	int	nSpawnDelay;
+	int	nSmokeGrens;
+	int	nMaxSmokeGrens;
+} gplayOpts;
+
+static struct {
+	int	nUse;
+	int	nPlayer;
+	int	nDensity [4];
+	int	nLife [4];
+	int	nSize [4];
+	int	nSyncSizes;
+} smokeOpts;
+
+static struct {
+	int	nUse;
+	int	nReach;
+	int	nMaxLights;
+#ifdef _DEBUG
+	int	nZPass;
+	int	nVolume;
+	int	nTest;
 #endif
+} shadowOpts;
+
+static struct {
+	int	nUse;
+	int	nSpeed;
+	int	nFPS;
+} camOpts;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -1224,7 +1266,7 @@ void NewGameMenuCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem	*m;
 	int			i, v;
 
-m = menus + nDiffOpt;
+m = menus + gplayOpts.nDifficulty;
 v = m->value;
 if (gameStates.app.nDifficultyLevel != v) {
 	gameStates.app.nDifficultyLevel = 
@@ -1294,7 +1336,7 @@ for (;;) {
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
-	nDiffOpt = opt++;
+	gplayOpts.nDifficulty = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_RADIO (opt, TXT_PLAY_D1MISSIONS, 0, KEY_1, 1, HTX_LEVEL_VERSION_FILTER);
@@ -1345,7 +1387,7 @@ for (;;) {
 		break;
 	}
 
-i = m [nDiffOpt].value;
+i = m [gplayOpts.nDifficulty].value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != i) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = i;
 	gameStates.app.nDifficultyLevel = i;
@@ -2106,7 +2148,7 @@ void ShadowOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem	*m;
 	int			v;
 
-m = menus + nShadowsOpt;
+m = menus + shadowOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bShadows) {
 	extraGameInfo [0].bShadows = v;
@@ -2114,14 +2156,14 @@ if (v != extraGameInfo [0].bShadows) {
 	return;
 	}
 if (extraGameInfo [0].bShadows) {
-	m = menus + nMaxLightsOpt;
+	m = menus + shadowOpts.nMaxLights;
 	v = m->value + 1;
 	if (gameOpts->render.shadows.nLights != v) {
 		gameOpts->render.shadows.nLights = v;
 		sprintf (m->text, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
 		m->rebuild = 1;
 		}
-	m = menus + nShadowReachOpt;
+	m = menus + shadowOpts.nReach;
 	v = m->value;
 	if (gameOpts->render.shadows.nReach != v) {
 		gameOpts->render.shadows.nReach = v;
@@ -2129,15 +2171,15 @@ if (extraGameInfo [0].bShadows) {
 		m->rebuild = 1;
 		}
 #if DBG_SHADOWS
-	if (nShadowTestOpt >= 0) {
-		m = menus + nShadowTestOpt;
+	if (shadowOpts.nTest >= 0) {
+		m = menus + shadowOpts.nTest;
 		v = m->value;
 		if (bShadowTest != v) {
 			bShadowTest = v;
 			sprintf (m->text, "Test mode: %d", bShadowTest);
 			m->rebuild = 1;
 			}
-		m = menus + optZPass;
+		m = menus + shadowOpts.nZPass;
 		v = m->value;
 		if (bZPass != v) {
 			bZPass = v;
@@ -2145,7 +2187,7 @@ if (extraGameInfo [0].bShadows) {
 			*key = -2;
 			return;
 			}
-		m = menus + optShadowVolume;
+		m = menus + shadowOpts.nVolume;
 		v = m->value;
 		if (bShadowVolume != v) {
 			bShadowVolume = v;
@@ -2191,33 +2233,33 @@ do {
 		opt++;
 		}
 	ADD_CHECK (opt, TXT_RENDER_SHADOWS, extraGameInfo [0].bShadows, KEY_W, HTX_ADVRND_SHADOWS);
-	nShadowsOpt = opt++;
+	shadowOpts.nUse = opt++;
 	optClipShadows =
 	optPlayerShadows =
 	optRobotShadows =
 	optMissileShadows =
 	optReactorShadows = -1;
 #if DBG_SHADOWS
-	optZPass =
+	shadowOpts.nZPass =
 	optFrontCap =
 	optRearCap =
-	optShadowVolume =
+	shadowOpts.nVolume =
 	optFrontFaces =
 	optBackFaces =
 	optSWCulling =
 	optWallShadows =
 	optFastShadows =
-	nShadowTestOpt = -1;
+	shadowOpts.nTest = -1;
 #endif
 	if (extraGameInfo [0].bShadows) {
 		sprintf (szMaxLights + 1, TXT_MAX_LIGHTS, gameOpts->render.shadows.nLights);
 		*szMaxLights = *(TXT_MAX_LIGHTS - 1);
 		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->render.shadows.nLights - 1, 0, MAX_SHADOW_LIGHTS, KEY_S, HTX_ADVRND_MAXLIGHTS);
-		nMaxLightsOpt = opt++;
+		shadowOpts.nMaxLights = opt++;
 		sprintf (szReach + 1, TXT_SHADOW_REACH, pszReach [gameOpts->render.shadows.nReach]);
 		*szReach = *(TXT_SHADOW_REACH - 1);
 		ADD_SLIDER (opt, szReach + 1, gameOpts->render.shadows.nReach, 0, 3, KEY_R, HTX_RENDER_SHADOWREACH);
-		nShadowReachOpt = opt++;
+		shadowOpts.nReach = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_TEXT (opt, TXT_CLIP_SHADOWS, 0);
@@ -2242,7 +2284,7 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, "use Z-Pass algorithm", bZPass, 0, NULL);
-		optZPass = opt++;
+		shadowOpts.nZPass = opt++;
 		if (!bZPass) {
 			ADD_CHECK (opt, "render front cap", bFrontCap, 0, NULL);
 			optFrontCap = opt++;
@@ -2250,7 +2292,7 @@ do {
 			optRearCap = opt++;
 			}
 		ADD_CHECK (opt, "render shadow volume", bShadowVolume, 0, NULL);
-		optShadowVolume = opt++;
+		shadowOpts.nVolume = opt++;
 		if (bShadowVolume) {
 			ADD_CHECK (opt, "render front faces", bFrontFaces, 0, NULL);
 			optFrontFaces = opt++;
@@ -2263,7 +2305,7 @@ do {
 		optSWCulling = opt++;
 		sprintf (szShadowTest, "test method: %d", bShadowTest);
 		ADD_SLIDER (opt, szShadowTest, bShadowTest, 0, 6, KEY_S, NULL);
-		nShadowTestOpt = opt++;
+		shadowOpts.nTest = opt++;
 #endif
 		}
 	for (;;) {
@@ -2283,14 +2325,14 @@ do {
 #if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {
 		GET_VAL (gameOpts->render.shadows.bFast, optFastShadows);
-		GET_VAL (bZPass, optZPass);
+		GET_VAL (bZPass, shadowOpts.nZPass);
 		GET_VAL (bFrontCap, optFrontCap);
 		GET_VAL (bRearCap, optRearCap);
 		GET_VAL (bFrontFaces, optFrontFaces);
 		GET_VAL (bBackFaces, optBackFaces);
 		GET_VAL (bWallShadows, optWallShadows);
 		GET_VAL (bSWCulling, optSWCulling);
-		GET_VAL (bShadowVolume, optShadowVolume);
+		GET_VAL (bShadowVolume, shadowOpts.nVolume);
 		}
 #endif
 	} while (i == -2);
@@ -2305,7 +2347,7 @@ void CameraOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem	*m;
 	int			v;
 
-m = menus + nUseCamOpt;
+m = menus + camOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseCameras) {
 	extraGameInfo [0].bUseCameras = v;
@@ -2313,8 +2355,8 @@ if (v != extraGameInfo [0].bUseCameras) {
 	return;
 	}
 if (extraGameInfo [0].bUseCameras) {
-	if (nCamFpsOpt >= 0) {
-		m = menus + nCamFpsOpt;
+	if (camOpts.nFPS >= 0) {
+		m = menus + camOpts.nFPS;
 		v = m->value * 5;
 		if (gameOpts->render.cameras.nFPS != v) {
 			gameOpts->render.cameras.nFPS = v;
@@ -2322,8 +2364,8 @@ if (extraGameInfo [0].bUseCameras) {
 			m->rebuild = 1;
 			}
 		}	
-	if (gameOpts->app.bExpertMode && (nCamSpeedOpt >= 0)) {
-		m = menus + nCamSpeedOpt;
+	if (gameOpts->app.bExpertMode && (camOpts.nSpeed >= 0)) {
+		m = menus + camOpts.nSpeed;
 		v = (m->value + 1) * 1000;
 		if (gameOpts->render.cameras.nSpeed != v) {
 			gameOpts->render.cameras.nSpeed = v;
@@ -2354,7 +2396,7 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_USE_CAMS, extraGameInfo [0].bUseCameras, KEY_C, HTX_ADVRND_USECAMS);
-	nUseCamOpt = opt++;
+	camOpts.nUse = opt++;
 	if (extraGameInfo [0].bUseCameras && gameOpts->app.bExpertMode) {
 		ADD_CHECK (opt, TXT_TELEPORTER_CAMS, extraGameInfo [0].bTeleporterCams, KEY_U, HTX_TELEPORTER_CAMS);
 		optTeleCams = opt++;
@@ -2363,26 +2405,26 @@ do {
 		sprintf (szCameraFps + 1, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
 		*szCameraFps = *(TXT_CAM_REFRESH - 1);
 		ADD_SLIDER (opt, szCameraFps + 1, gameOpts->render.cameras.nFPS / 5, 0, 6, KEY_A, HTX_ADVRND_CAMREFRESH);
-		nCamFpsOpt = opt++;
+		camOpts.nFPS = opt++;
 		sprintf (szCameraSpeed + 1, TXT_CAM_SPEED, gameOpts->render.cameras.nSpeed / 1000);
 		*szCameraSpeed = *(TXT_CAM_SPEED - 1);
 		ADD_SLIDER (opt, szCameraSpeed + 1, (gameOpts->render.cameras.nSpeed / 1000) - 1, 0, 9, KEY_D, HTX_ADVRND_CAMSPEED);
-		nCamSpeedOpt = opt++;
+		camOpts.nSpeed = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
 	else {
 		optTeleCams = -1;
 		optFSCameras = -1;
-		nCamFpsOpt = -1;
-		nCamSpeedOpt = -1;
+		camOpts.nFPS = -1;
+		camOpts.nSpeed = -1;
 		}
 
 	do {
 		i = ExecMenu1 (NULL, TXT_CAMERA_MENUTITLE, opt, m, &CameraOptionsCallback, &choice);
 	} while (i >= 0);
 
-	if ((extraGameInfo [0].bUseCameras = m [nUseCamOpt].value)) {
+	if ((extraGameInfo [0].bUseCameras = m [camOpts.nUse].value)) {
 		GET_VAL (extraGameInfo [0].bTeleporterCams, optTeleCams);
 		GET_VAL (gameOpts->render.cameras.bFitToWall, optFSCameras);
 		}
@@ -2400,7 +2442,7 @@ void SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem * m;
 	int				i, v;
 
-m = menus + nUseSmokeOpt;
+m = menus + smokeOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseSmoke) {
 	extraGameInfo [0].bUseSmoke = v;
@@ -2408,28 +2450,28 @@ if (v != extraGameInfo [0].bUseSmoke) {
 	return;
 	}
 if (extraGameInfo [0].bUseSmoke) {
-	m = menus + nSyncSmokeSizes;
+	m = menus + smokeOpts.nSyncSizes;
 	v = m->value;
 	if (v != gameOpts->render.smoke.bSyncSizes) {
 		gameOpts->render.smoke.bSyncSizes = v;
 		*key = -2;
 		return;
 		}
-	m = menus + nPlrSmokeOpt;
+	m = menus + smokeOpts.nPlayer;
 	v = m->value;
 	if (gameOpts->render.smoke.bPlayers != v) {
 		gameOpts->render.smoke.bPlayers = v;
 		*key = -2;
 		}
 	if (gameOpts->render.smoke.bSyncSizes) {
-		m = menus + nSmokeDensOpt [0];
+		m = menus + smokeOpts.nDensity [0];
 		v = m->value;
 		if (gameOpts->render.smoke.nDens [0] != v) {
 			gameOpts->render.smoke.nDens [0] = v;
 			sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nDens [0]]);
 			m->rebuild = 1;
 			}
-		m = menus + nSmokeSizeOpt [0];
+		m = menus + smokeOpts.nSize [0];
 		v = m->value;
 		if (gameOpts->render.smoke.nSize [0] != v) {
 			gameOpts->render.smoke.nSize [0] = v;
@@ -2439,8 +2481,8 @@ if (extraGameInfo [0].bUseSmoke) {
 		}
 	else {
 		for (i = 1; i < 4; i++) {
-			if (nSmokeDensOpt [i] >= 0) {
-				m = menus + nSmokeDensOpt [i];
+			if (smokeOpts.nDensity [i] >= 0) {
+				m = menus + smokeOpts.nDensity [i];
 				v = m->value;
 				if (gameOpts->render.smoke.nDens [i] != v) {
 					gameOpts->render.smoke.nDens [i] = v;
@@ -2448,8 +2490,8 @@ if (extraGameInfo [0].bUseSmoke) {
 					m->rebuild = 1;
 					}
 				}
-			if (nSmokeSizeOpt [i] >= 0) {
-				m = menus + nSmokeSizeOpt [i];
+			if (smokeOpts.nSize [i] >= 0) {
+				m = menus + smokeOpts.nSize [i];
 				v = m->value;
 				if (gameOpts->render.smoke.nSize [i] != v) {
 					gameOpts->render.smoke.nSize [i] = v;
@@ -2457,8 +2499,8 @@ if (extraGameInfo [0].bUseSmoke) {
 					m->rebuild = 1;
 					}
 				}
-			if (nSmokeLifeOpt [i] >= 0) {
-				m = menus + nSmokeLifeOpt [i];
+			if (smokeOpts.nLife [i] >= 0) {
+				m = menus + smokeOpts.nLife [i];
 				v = m->value;
 				if (gameOpts->render.smoke.nLife [i] != v) {
 					gameOpts->render.smoke.nLife [i] = v;
@@ -2484,18 +2526,18 @@ int AddSmokeSliders (tMenuItem *m, int opt, int i)
 sprintf (szSmokeDens [i] + 1, TXT_SMOKE_DENS, pszAmount [NMCLAMP (gameOpts->render.smoke.nDens [i], 0, 4)]);
 *szSmokeDens [i] = *(TXT_SMOKE_DENS - 1);
 ADD_SLIDER (opt, szSmokeDens [i] + 1, gameOpts->render.smoke.nDens [i], 0, 4, KEY_P, HTX_ADVRND_SMOKEDENS);
-nSmokeDensOpt [i] = opt++;
+smokeOpts.nDensity [i] = opt++;
 sprintf (szSmokeSize [i] + 1, TXT_SMOKE_SIZE, pszSize [NMCLAMP (gameOpts->render.smoke.nSize [i], 0, 3)]);
 *szSmokeSize [i] = *(TXT_SMOKE_SIZE - 1);
 ADD_SLIDER (opt, szSmokeSize [i] + 1, gameOpts->render.smoke.nSize [i], 0, 3, KEY_Z, HTX_ADVRND_PARTSIZE);
-nSmokeSizeOpt [i] = opt++;
+smokeOpts.nSize [i] = opt++;
 if (i < 3)
-	nSmokeLifeOpt [i] = -1;
+	smokeOpts.nLife [i] = -1;
 else {
 	sprintf (szSmokeLife [i] + 1, TXT_SMOKE_LIFE, pszLife [NMCLAMP (gameOpts->render.smoke.nLife [i], 0, 3)]);
 	*szSmokeLife [i] = *(TXT_SMOKE_LIFE - 1);
 	ADD_SLIDER (opt, szSmokeLife [i] + 1, gameOpts->render.smoke.nLife [i], 0, 2, KEY_L, HTX_SMOKE_LIFE);
-	nSmokeLifeOpt [i] = opt++;
+	smokeOpts.nLife [i] = opt++;
 	}
 return opt;
 }
@@ -2531,10 +2573,10 @@ do {
 	optStaticSmoke = optSmokeColl = optSmokeDisp = -1;
 
 	ADD_CHECK (opt, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
-	nUseSmokeOpt = opt++;
+	smokeOpts.nUse = opt++;
 	for (j = 1; j < 4; j++)
-		nSmokeSizeOpt [j] =
-		nSmokeDensOpt [j] = -1;
+		smokeOpts.nSize [j] =
+		smokeOpts.nDensity [j] = -1;
 	if (extraGameInfo [0].bUseSmoke) {
 		if (gameOpts->app.bExpertMode) {
 			if (!gameOpts->render.smoke.bSyncSizes && gameOpts->render.smoke.bPlayers) {
@@ -2542,7 +2584,7 @@ do {
 				opt++;
 				}
 			ADD_CHECK (opt, TXT_SMOKE_PLAYERS, gameOpts->render.smoke.bPlayers, KEY_Y, HTX_ADVRND_PLRSMOKE);
-			nPlrSmokeOpt = opt++;
+			smokeOpts.nPlayer = opt++;
 			if (gameOpts->render.smoke.bPlayers) {
 				if (!gameOpts->render.smoke.bSyncSizes) {
 					opt = AddSmokeSliders (m, opt, 1);
@@ -2589,7 +2631,7 @@ do {
 			ADD_TEXT (opt, "", 0);
 			opt++;
 			ADD_CHECK (opt, TXT_SYNC_SIZES, gameOpts->render.smoke.bSyncSizes, KEY_M, HTX_ADVRND_SYNCSIZES);
-			nSyncSmokeSizes = opt++;
+			smokeOpts.nSyncSizes = opt++;
 			if (gameOpts->render.smoke.bSyncSizes) {
 				opt = AddSmokeSliders (m, opt, 0);
 				for (j = 1; j < 4; j++) {
@@ -2598,14 +2640,14 @@ do {
 					}
 				}
 			else {
-				nSmokeDensOpt [0] =
-				nSmokeSizeOpt [0] = -1;
+				smokeOpts.nDensity [0] =
+				smokeOpts.nSize [0] = -1;
 				}	
 			}
 		}
 	else
 		nOptSmokeLag =
-		nPlrSmokeOpt =
+		smokeOpts.nPlayer =
 		optBotSmoke =
 		optMissSmoke =
 		optDebrisSmoke =
@@ -2617,8 +2659,8 @@ do {
 	do {
 		i = ExecMenu1 (NULL, TXT_SMOKE_MENUTITLE, opt, m, &SmokeOptionsCallback, &choice);
 		} while (i >= 0);
-	if ((extraGameInfo [0].bUseSmoke = m [nUseSmokeOpt].value)) {
-		GET_VAL (gameOpts->render.smoke.bPlayers, nPlrSmokeOpt);
+	if ((extraGameInfo [0].bUseSmoke = m [smokeOpts.nUse].value)) {
+		GET_VAL (gameOpts->render.smoke.bPlayers, smokeOpts.nPlayer);
 		GET_VAL (gameOpts->render.smoke.bRobots, optBotSmoke);
 		GET_VAL (gameOpts->render.smoke.bMissiles, optMissSmoke);
 		GET_VAL (gameOpts->render.smoke.bDebris, optDebrisSmoke);
@@ -2626,7 +2668,7 @@ do {
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
 		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);
-		//GET_VAL (gameOpts->render.smoke.bSyncSizes, nSyncSmokeSizes);
+		//GET_VAL (gameOpts->render.smoke.bSyncSizes, smokeOpts.nSyncSizes);
 		if (gameOpts->render.smoke.bSyncSizes) {
 			for (j = 1; j < 4; j++) {
 				gameOpts->render.smoke.nSize [j] = gameOpts->render.smoke.nSize [0];
@@ -2654,15 +2696,15 @@ if (optContrast >= 0) {
 		}
 	}
 if (gameOpts->app.bExpertMode) {
-	m = menus + nRendQualOpt;
+	m = menus + renderOpts.nRenderQual;
 	v = m->value;
 	if (gameOpts->render.nQuality != v) {
 		gameOpts->render.nQuality = v;
 		sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 		m->rebuild = 1;
 		}
-	if (nTexQualOpt > 0) {
-		m = menus + nTexQualOpt;
+	if (renderOpts.nTexQual > 0) {
+		m = menus + renderOpts.nTexQual;
 		v = m->value;
 		if (gameOpts->render.textures.nQuality != v) {
 			gameOpts->render.textures.nQuality = v;
@@ -2670,7 +2712,7 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
-	m = menus + nTranspOpt;
+	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
 		extraGameInfo [0].grWallTransparency = v;
@@ -2689,33 +2731,33 @@ void LightingOptionsCallback (int nitems, tMenuItem * menus, int * key, int cite
 	tMenuItem	*m;
 	int			v;
 
-if (nLightingMethodOpt >= 0) {
-	v = menus [nLightingMethodOpt + 1].value;
+if (lightOpts.nMethod >= 0) {
+	v = menus [lightOpts.nMethod + 1].value;
 	if (v != gameOpts->render.bDynLighting) {
 		gameOpts->render.bDynLighting = v;
-		gameOpts->render.color.bUseLightMaps = menus [nLightingMethodOpt + 1].value;
+		gameOpts->render.color.bUseLightMaps = menus [lightOpts.nMethod + 1].value;
 		*key = -2;
 		return;
 		}
 	if (gameStates.render.color.bLightMapsOk) {
-		v = menus [nLightingMethodOpt + 2].value;
+		v = menus [lightOpts.nMethod + 2].value;
 		if (v != gameOpts->render.color.bUseLightMaps) {
 			gameOpts->render.color.bUseLightMaps = v;
-			gameOpts->render.bDynLighting = menus [nLightingMethodOpt + 2].value;
+			gameOpts->render.bDynLighting = menus [lightOpts.nMethod + 2].value;
 			*key = -2;
 			return;
 			}
 		}
 	}
-m = menus + nGunColorOpt;
+m = menus + lightOpts.nGunColor;
 v = m->value;
 if (v != gameOpts->render.color.bGunLight) {
 	gameOpts->render.color.bGunLight = v;
 	*key = -2;
 	return;
 	}
-if (nOglMaxLightsOpt >= 0) {
-	m = menus + nOglMaxLightsOpt;
+if (lightOpts.nMaxLights >= 0) {
+	m = menus + lightOpts.nMaxLights;
 	v = m->value + 4;
 	if (v != gameOpts->ogl.nMaxLights) {
 		gameOpts->ogl.nMaxLights = v;
@@ -2724,8 +2766,8 @@ if (nOglMaxLightsOpt >= 0) {
 		return;
 		}
 	}
-if (nLightRangeOpt >= 0) {
-	m = menus + nLightRangeOpt;
+if (lightOpts.nLMapRange >= 0) {
+	m = menus + lightOpts.nLMapRange;
 	v = m->value;
 	if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps) {
 		if (gameOpts->render.color.nLightMapRange != v) {
@@ -2767,13 +2809,13 @@ void LightingOptionsMenu ()
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
-	nLightingMethodOpt =
-	nLightRangeOpt =
-	nOglMaxLightsOpt = 
+	lightOpts.nMethod =
+	lightOpts.nLMapRange =
+	lightOpts.nMaxLights = 
 	optObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
 		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
-		nLightingMethodOpt = opt++;
+		lightOpts.nMethod = opt++;
 		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_G, 1, HTX_OGL_LIGHTING);
 		opt++;
 		if (gameStates.render.color.bLightMapsOk) {
@@ -2787,16 +2829,16 @@ do {
 		sprintf (szLightRange + 1, TXT_LMAP_RANGE, 50 + gameOpts->render.color.nLightMapRange * 10, '%');
 		*szLightRange = *(TXT_LMAP_RANGE - 1);
 		ADD_SLIDER (opt, szLightRange + 1, gameOpts->render.color.nLightMapRange, 0, 10, KEY_R, HTX_ADVRND_LMAPRANGE);
-		nLightRangeOpt = opt++;
+		lightOpts.nLMapRange = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	if (!gameStates.app.bGameRunning && (nLightingMethodOpt >= 0)) {
+	if (!gameStates.app.bGameRunning && (lightOpts.nMethod >= 0)) {
 		if (gameOpts->render.bDynLighting) {
 			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
 			*szLightRange = *(TXT_LIGHT_RANGE - 1);
 			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 2, KEY_R, HTX_ADVRND_LIGHTRANGE);
-			nLightRangeOpt = opt++;
+			lightOpts.nLMapRange = opt++;
 #if 0
 			ADD_TEXT (opt, "", 0);
 			opt++;
@@ -2806,7 +2848,7 @@ do {
 			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
 			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
 			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
-			nOglMaxLightsOpt = opt++;
+			lightOpts.nMaxLights = opt++;
 			ADD_TEXT (opt, "", 0);
 			opt++;
 			}
@@ -2814,7 +2856,7 @@ do {
 	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
 	optColoredLight = opt++;
 	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
-	nGunColorOpt = opt++;
+	lightOpts.nGunColor = opt++;
 	optMixColors = 
 	optPowerupLights = -1;
 	if (gameOpts->app.bExpertMode) {
@@ -2843,8 +2885,8 @@ do {
 		gameOpts->ogl.bLightObjects = m [optObjectLight].value;
 	if (optColoredLight >= 0)
 		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
-	if (nGunColorOpt >= 0)
-		gameOpts->render.color.bGunLight = m [nGunColorOpt].value;
+	if (lightOpts.nGunColor >= 0)
+		gameOpts->render.color.bGunLight = m [lightOpts.nGunColor].value;
 	if (gameOpts->app.bExpertMode) {
 		if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
 			gameStates.ogl.nContrast = 8;
@@ -2911,7 +2953,7 @@ if (!gameStates.app.bNostalgia) {
 	if (v != GrGetPaletteGamma ())
 		GrSetPaletteGamma (v);
 	}
-m = menus + nFPSopt;
+m = menus + renderOpts.nMaxFPS;
 v = fpsTable [m->value];
 if (gameOpts->render.nMaxFPS != (v ? v : 1)) {
 	gameOpts->render.nMaxFPS = v ? v : 1;
@@ -2931,15 +2973,15 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
-	m = menus + nRendQualOpt;
+	m = menus + renderOpts.nRenderQual;
 	v = m->value;
 	if (gameOpts->render.nQuality != v) {
 		gameOpts->render.nQuality = v;
 		sprintf (m->text, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 		m->rebuild = 1;
 		}
-	if (nTexQualOpt > 0) {
-		m = menus + nTexQualOpt;
+	if (renderOpts.nTexQual > 0) {
+		m = menus + renderOpts.nTexQual;
 		v = m->value;
 		if (gameOpts->render.textures.nQuality != v) {
 			gameOpts->render.textures.nQuality = v;
@@ -2947,7 +2989,7 @@ if (gameOpts->app.bExpertMode) {
 			m->rebuild = 1;
 			}
 		}
-	m = menus + nTranspOpt;
+	m = menus + renderOpts.nWallTransp;
 	v = (GR_ACTUAL_FADE_LEVELS * m->value + 5) / 10;
 	if (extraGameInfo [0].grWallTransparency != v) {
 		extraGameInfo [0].grWallTransparency = v;
@@ -3004,7 +3046,7 @@ do {
 		sprintf (szMaxFps + 1, TXT_NO_FRAMECAP);
 	*szMaxFps = *(TXT_FRAMECAP - 1);
 	ADD_SLIDER (opt, szMaxFps + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, 15, KEY_F, HTX_RENDER_FRAMECAP);
-	nFPSopt = opt++;
+	renderOpts.nMaxFPS = opt++;
 
 	if (gameOpts->app.bExpertMode) {
 		if (!(gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)) {
@@ -3015,14 +3057,14 @@ do {
 		sprintf (szRendQual + 1, TXT_RENDQUAL, pszRendQual [gameOpts->render.nQuality]);
 		*szRendQual = *(TXT_RENDQUAL - 1);
 		ADD_SLIDER (opt, szRendQual + 1, gameOpts->render.nQuality, 0, 4, KEY_Q, HTX_ADVRND_RENDQUAL);
-		nRendQualOpt = opt++;
+		renderOpts.nRenderQual = opt++;
 		if (gameStates.app.bGameRunning)
-			nTexQualOpt = -1;
+			renderOpts.nTexQual = -1;
 		else {
 			sprintf (szTexQual + 1, TXT_TEXQUAL, pszTexQual [gameOpts->render.textures.nQuality]);
 			*szTexQual = *(TXT_TEXQUAL + 1);
 			ADD_SLIDER (opt, szTexQual + 1, gameOpts->render.textures.nQuality, 0, 3, KEY_U, HTX_ADVRND_TEXQUAL);
-			nTexQualOpt = opt++;
+			renderOpts.nTexQual = opt++;
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -3030,7 +3072,7 @@ do {
 		sprintf (szWallTransp + 1, TXT_WALL_TRANSP, h * 10, '%');
 		*szWallTransp = *(TXT_WALL_TRANSP - 1);
 		ADD_SLIDER (opt, szWallTransp + 1, h, 0, 10, KEY_T, HTX_ADVRND_WALLTRANSP);
-		nTranspOpt = opt++;
+		renderOpts.nWallTransp = opt++;
 		ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
 		optColoredWalls = opt++;
 #if 0
@@ -3063,9 +3105,9 @@ do {
 		optMovieOpts = opt++;
 		}
 	else
-		nRendQualOpt =
-		nTexQualOpt =
-		nTranspOpt = 
+		renderOpts.nRenderQual =
+		renderOpts.nTexQual =
+		renderOpts.nWallTransp = 
 		optColoredWalls =
 		optContrast =
 		optLightingOpts =
@@ -3170,7 +3212,7 @@ void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int cite
 	tMenuItem	*m;
 	int			v;
 
-m = menus + nDiffOpt;
+m = menus + gplayOpts.nDifficulty;
 v = m->value;
 if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
 	gameOpts->gameplay.nPlayerDifficultyLevel = v;
@@ -3183,7 +3225,7 @@ if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
 	}
 
 if (gameOpts->app.bExpertMode) {
-	m = menus + nRSDopt;
+	m = menus + gplayOpts.nSpawnDelay;
 	v = (m->value - 1) * 5;
 	if (extraGameInfo [0].nSpawnDelay != v * 1000) {
 		extraGameInfo [0].nSpawnDelay = v * 1000;
@@ -3191,7 +3233,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 
-	m = menus + nSmokeGrenadeOpt;
+	m = menus + gplayOpts.nSmokeGrens;
 	v = m->value;
 	if (extraGameInfo [0].bSmokeGrenades != v) {
 		extraGameInfo [0].bSmokeGrenades = v;
@@ -3199,8 +3241,8 @@ if (gameOpts->app.bExpertMode) {
 		return;
 		}
 
-	if (nMaxSmokeGrenOpt >= 0) {
-		m = menus + nMaxSmokeGrenOpt;
+	if (gplayOpts.nMaxSmokeGrens >= 0) {
+		m = menus + gplayOpts.nMaxSmokeGrens;
 		v = m->value + 1;
 		if (extraGameInfo [0].nMaxSmokeGrenades != v) {
 			extraGameInfo [0].nMaxSmokeGrenades = v;
@@ -3231,12 +3273,12 @@ do {
 	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
 	ADD_SLIDER (opt, szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
-	nDiffOpt = opt++;
+	gplayOpts.nDifficulty = opt++;
 	if (gameOpts->app.bExpertMode) {
 		sprintf (szRespawnDelay + 1, TXT_RESPAWN_DELAY, (extraGameInfo [0].nSpawnDelay < 0) ? -1 : extraGameInfo [0].nSpawnDelay / 1000);
 		*szRespawnDelay = *(TXT_RESPAWN_DELAY - 1);
 		ADD_SLIDER (opt, szRespawnDelay + 1, extraGameInfo [0].nSpawnDelay / 5000 + 1, 0, 13, KEY_R, HTX_GPLAY_SPAWNDELAY);
-		nRSDopt = opt++;
+		gplayOpts.nSpawnDelay = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOn, KEY_H, HTX_MISC_HEADLIGHT);
@@ -3270,15 +3312,15 @@ do {
 			opt++;
 			}
 		ADD_CHECK (opt, TXT_GPLAY_SMOKEGRENADES, extraGameInfo [0].bSmokeGrenades, KEY_S, HTX_GPLAY_SMOKEGRENADES);
-		nSmokeGrenadeOpt = opt++;
+		gplayOpts.nSmokeGrens = opt++;
 		if (extraGameInfo [0].bSmokeGrenades) {
 			sprintf (szMaxSmokeGrens + 1, TXT_MAX_SMOKEGRENS, extraGameInfo [0].nMaxSmokeGrenades);
 			*szMaxSmokeGrens = *(TXT_MAX_SMOKEGRENS - 1);
 			ADD_SLIDER (opt, szMaxSmokeGrens + 1, extraGameInfo [0].nMaxSmokeGrenades - 1, 0, 3, KEY_X, HTX_GPLAY_MAXGRENADES);
-			nMaxSmokeGrenOpt = opt++;
+			gplayOpts.nMaxSmokeGrens = opt++;
 			}
 		else
-			nMaxSmokeGrenOpt = -1;
+			gplayOpts.nMaxSmokeGrens = -1;
 		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
@@ -3309,7 +3351,7 @@ do {
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bFixedRespawns = m [optFixedSpawn].value;
-	extraGameInfo [0].bSmokeGrenades = m [nSmokeGrenadeOpt].value;
+	extraGameInfo [0].bSmokeGrenades = m [gplayOpts.nSmokeGrens].value;
 	extraGameInfo [0].bDualMissileLaunch = m [optDualMiss].value;
 	extraGameInfo [0].bDropAllMissiles = m [optDropAll].value;
 	extraGameInfo [0].bImmortalPowerups = m [optImmortal].value;
@@ -3365,7 +3407,7 @@ void PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem
 	int			v;
 
 if (gameOpts->app.bExpertMode) {
-	m = menus + nSBoostOpt;
+	m = menus + physOpts.nSpeedboost;
 	v = m->value;
 	if (extraGameInfo [0].nSpeedBoost != v) {
 		extraGameInfo [0].nSpeedBoost = v;
@@ -3373,7 +3415,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 
-	m = menus + nFusionRampOpt;
+	m = menus + physOpts.nFusionRamp;
 	v = m->value + 2;
 	if (extraGameInfo [0].nFusionPowerMod != v) {
 		extraGameInfo [0].nFusionPowerMod = v;
@@ -3381,7 +3423,7 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 
-	m = menus + nMslTurnSpeedOpt;
+	m = menus + physOpts.nMslTurnSpeed;
 	v = m->value;
 	if (extraGameInfo [0].nMslTurnSpeed != v) {
 		extraGameInfo [0].nMslTurnSpeed = v;
@@ -3390,7 +3432,7 @@ if (gameOpts->app.bExpertMode) {
 		return;
 		}
 
-	m = menus + nSlowmoSpeedupOpt;
+	m = menus + physOpts.nSlomoSpeedup;
 	v = m->value + 4;
 	if (gameOpts->gameplay.nSlowMotionSpeedup != v) {
 		gameOpts->gameplay.nSlowMotionSpeedup = v;
@@ -3432,19 +3474,19 @@ do {
 		sprintf (szSpeedBoost + 1, TXT_SPEEDBOOST, extraGameInfo [0].nSpeedBoost * 10, '%');
 		*szSpeedBoost = *(TXT_SPEEDBOOST - 1);
 		ADD_SLIDER (opt, szSpeedBoost + 1, extraGameInfo [0].nSpeedBoost, 0, 10, KEY_B, HTX_GPLAY_SPEEDBOOST);
-		nSBoostOpt = opt++;
+		physOpts.nSpeedboost = opt++;
 		sprintf (szFusionPower + 1, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
 		*szFusionPower = *(TXT_FUSION_PWR - 1);
 		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
-		nFusionRampOpt = opt++;
+		physOpts.nFusionRamp = opt++;
 		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [extraGameInfo [0].nMslTurnSpeed]);
 		*szMslTurnSpeed = *(TXT_MSL_TURNSPEED - 1);
 		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
-		nMslTurnSpeedOpt = opt++;
+		physOpts.nMslTurnSpeed = opt++;
 		sprintf (szSlowmoSpeedup + 1, TXT_SLOWMOTION_SPEEDUP, (float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
 		*szSlowmoSpeedup = *(TXT_SLOWMOTION_SPEEDUP - 1);
 		ADD_SLIDER (opt, szSlowmoSpeedup + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
-		nSlowmoSpeedupOpt = opt++;
+		physOpts.nSlomoSpeedup = opt++;
 		sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
 		*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
 		ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 6, KEY_D, HTX_DEBRIS_LIFE);

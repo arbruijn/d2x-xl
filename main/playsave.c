@@ -354,7 +354,6 @@ for (i = 0; i < 2; i++) {
 			RP (gameOptions [i].input.keyboard.bRamp [j], i, j);
 			RP (gameOptions [i].input.mouse.sensitivity [j], 0, j);
 			RP (gameOptions [i].input.trackIR.sensitivity [j], 0, j);
-			RP (gameOptions [i].input.trackIR.bMove [j], 0, j);
 			}
 		for (j = 0; j < 4; j++) {
 			RP (gameOptions [i].render.smoke.nDens [j], i, j);
@@ -364,6 +363,7 @@ for (i = 0; i < 2; i++) {
 		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].input.joystick.deadzones [j], 0, j);
 			RP (gameOptions [i].input.joystick.sensitivity [j], 0, j);
+			RP (gameOptions [i].input.trackIR.bMove [j], 0, j);
 			}
 		RP (gameOptions [i].input.bUseHotKeys, i, 0);
 		RP (gameOptions [i].input.mouse.bJoystick, i, 0);
@@ -371,6 +371,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.mouse.nDeadzone, i, 0);
 		RP (gameOptions [i].input.joystick.bLinearSens, i, 0);
 		RP (gameOptions [i].input.joystick.bSyncAxes, i, 0);
+		RP (gameOptions [i].input.trackIR.nMode, i, 0);
 		RP (gameOptions [i].input.trackIR.nDeadzone, i, 0);
 		RP (gameOptions [i].input.keyboard.nRamp, i, 0);
 
@@ -490,7 +491,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].input.mouse.bUse, i, 0);
 	RP (gameOptions [i].input.trackIR.bUse, i, 0);
 
-	RP (gameOptions [i].gameplay.bDefaultLeveling, i, 0);
+	RP (gameOptions [i].gameplay.bAutoLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
 	RP (gameOptions [i].gameplay.bHeadlightOn, 0, 0);
 	RP (gameOptions [i].gameplay.nPlayerDifficultyLevel, i, 0);
@@ -847,8 +848,10 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.trackIR.sensitivity[1]", "14"},
 	{"gameOptions[0].input.trackIR.sensitivity[2]", "14"},
 	{"gameOptions[0].input.trackIR.bMove[0]", "1"},
-	{"gameOptions[0].input.trackIR.bMove[1]", "1"},
+	{"gameOptions[0].input.trackIR.bMove[1]", "0"},
 	{"gameOptions[0].input.trackIR.bMove[2]", "0"},
+	{"gameOptions[0].input.trackIR.bMove[3]", "0"},
+	{"gameOptions[0].input.trackIR.bMove[4]", "0"},
 	{"gameOptions[0].render.smoke.nDens[0]", "1"},
 	{"gameOptions[0].render.smoke.nSize[0]", "1"},
 	{"gameOptions[0].render.smoke.nLife[0]", "1"},
@@ -987,7 +990,8 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.joystick.bUse", "1"},
 	{"gameOptions[0].input.mouse.bUse", "1"},
 	{"gameOptions[0].input.trackIR.bUse", "1"},
-	{"gameOptions[0].gameplay.bDefaultLeveling", "0"},
+	{"gameOptions[0].input.trackIR.nMode", "2"},
+	{"gameOptions[0].gameplay.bAutoLeveling", "0"},
 	{"gameOptions[0].gameplay.bFastRespawn", "0"},
 	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
 	{"gameOptions[0].gameplay.nPlayerDifficultyLevel", "2"},
@@ -1040,7 +1044,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[1].input.joystick.bUse", "0"},
 	{"gameOptions[1].input.mouse.bUse", "1"},
 	{"gameOptions[1].input.trackIR.bUse", "1"},
-	{"gameOptions[1].gameplay.bDefaultLeveling", "0"},
+	{"gameOptions[1].gameplay.bAutoLeveling", "0"},
 	{"gameOptions[1].gameplay.bFastRespawn", "0"},
 	{"gameOptions[1].gameplay.bHeadlightOn", "0"},
 	{"gameOptions[1].gameplay.nPlayerDifficultyLevel", "2"},
@@ -1333,10 +1337,10 @@ if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
 if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5))
 	joydefs_calibrate();
 gameData.app.playerDefaultDifficulty = 1;
-gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling = 1;
+gameOptions [0].gameplay.bAutoLeveling = 1;
 nHighestLevels = 1;
-highestLevels[0].shortname[0] = 0;			//no name for mission 0
-highestLevels[0].nLevel = 1;				//was highest level in old struct
+highestLevels [0].shortname [0] = 0;			//no name for mission 0
+highestLevels [0].nLevel = 1;				//was highest level in old struct
 gameOpts->input.joystick.sensitivity [0] =
 gameOpts->input.joystick.sensitivity [1] =
 gameOpts->input.joystick.sensitivity [2] =
@@ -1891,7 +1895,7 @@ if (bOnlyWindowSizes)
 	goto done;
 
 gameData.app.playerDefaultDifficulty = CFReadByte (fp);
-gameOpts->gameplay.bDefaultLeveling = CFReadByte (fp);
+gameOpts->gameplay.bAutoLeveling = CFReadByte (fp);
 gameOpts->render.cockpit.bReticle = CFReadByte (fp);
 gameStates.render.cockpit.nMode = CFReadByte (fp);
 nDisplayMode = gameStates.video.nDefaultDisplayMode;
@@ -1998,7 +2002,6 @@ mpParams.bTeamDoors = extraGameInfo [1].bTeamDoors;
 mpParams.bEnableCheats = extraGameInfo [1].bEnableCheats;
 extraGameInfo [0].nSpawnDelay *= 1000;
 extraGameInfo [1].bDisableReactor = 0;
-gameOptions [0].gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 SetDebrisCollisions ();
@@ -2461,7 +2464,7 @@ return funcRes;
 
 //------------------------------------------------------------------------------
 //update the tPlayer's highest level.  returns errno (0 == no error)
-int update_player_file()
+int UpdatePlayerFile()
 {
 	int ret = ReadPlayerFile(0);
 

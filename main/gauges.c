@@ -3831,7 +3831,7 @@ if (!(gameStates.render.bRearView || (gameStates.render.cockpit.nMode == CM_REAR
 	if (!(gameData.app.nGameMode&GM_MULTI && gameData.multigame.kills.bShowList) && !Saving_movie_frames)
 		ShowTime ();
 #endif
-	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!bUsePlayerHeadAngles))
+	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!viewInfo.bUsePlayerHeadAngles))
 		ShowReticle (0);
 
 	ShowHUDNames ();

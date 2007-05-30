@@ -1208,6 +1208,11 @@ int HandleSystemKey(int key)
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
 
+		case KEY_CTRLED + KEY_F12:
+			gameData.trackIR.x =
+			gameData.trackIR.y = 0;
+			break;
+
 		case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		
 			if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))

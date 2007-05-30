@@ -30,7 +30,7 @@
 
 #define Z_SENSITIVITY 100
 
-mouseinfo mouseData;
+tMouseInfo mouseData;
 
 //------------------------------------------------------------------------------
 
@@ -60,7 +60,7 @@ void mouse_button_handler(SDL_MouseButtonEvent *mbe)
 	};
 
 	int button = button_remap[mbe->button - 1]; // -1 since SDL seems to start counting at 1
-	struct mousebutton *mb = mouseData.buttons + button;
+	struct tMouseButton *mb = mouseData.buttons + button;
 
 	if (mbe->state == SDL_PRESSED) {
 		mb->pressed = 1;
@@ -68,12 +68,12 @@ void mouse_button_handler(SDL_MouseButtonEvent *mbe)
 		mb->numDowns++;
 
 		if (button == D2_MB_Z_UP) {
-			mouseData.delta_z += Z_SENSITIVITY;
+			mouseData.dz += Z_SENSITIVITY;
 			mouseData.z += Z_SENSITIVITY;
 			mb->rotated = 1;
 			}
 		else if (button == D2_MB_Z_DOWN) {
-			mouseData.delta_z -= Z_SENSITIVITY;
+			mouseData.dz -= Z_SENSITIVITY;
 			mouseData.z -= Z_SENSITIVITY;
 			mb->rotated = 1;
 		}
@@ -89,14 +89,14 @@ void mouse_button_handler(SDL_MouseButtonEvent *mbe)
 void mouse_motion_handler(SDL_MouseMotionEvent *mme)
 {
 #ifdef LANDSCAPE
-	mouseData.delta_y += mme->xrel;
-	mouseData.delta_x += mme->yrel;
+	mouseData.dy += mme->xrel;
+	mouseData.dx += mme->yrel;
 	mouseData.y += mme->xrel;
 	mouseData.x += mme->yrel;
 #else
 	if (mme->xrel || mme->yrel) {
-		mouseData.delta_x += mme->xrel;
-		mouseData.delta_y += mme->yrel;
+		mouseData.dx += mme->xrel;
+		mouseData.dy += mme->yrel;
 		mouseData.x += mme->xrel;
 		mouseData.y += mme->yrel;
 		}
@@ -121,9 +121,9 @@ void mouse_flush()	// clears all mice events...
 		mouseData.buttons[i].numDowns=0;
 		mouseData.buttons[i].rotated=0;
 	}
-	mouseData.delta_x = 0;
-	mouseData.delta_y = 0;
-	mouseData.delta_z = 0;
+	mouseData.dx = 0;
+	mouseData.dy = 0;
+	mouseData.dz = 0;
 	mouseData.x = 0;
 	mouseData.y = 0;
 	mouseData.z = 0;
@@ -159,10 +159,10 @@ if (gameOpts->legacy.bInput)
 if (!bFastPoll)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	*dx = mouseData.delta_x;
-	*dy = mouseData.delta_y;
-	mouseData.delta_x = 0;
-	mouseData.delta_y = 0;
+	*dx = mouseData.dx;
+	*dy = mouseData.dy;
+	mouseData.dx = 0;
+	mouseData.dy = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -186,12 +186,12 @@ void MouseGetDeltaZ( int *dx, int *dy, int *dz )
 if (!bFastPoll)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	*dx = mouseData.delta_x;
-	*dy = mouseData.delta_y;
-	*dz = mouseData.delta_z;
-	mouseData.delta_x = 0;
-	mouseData.delta_y = 0;
-	mouseData.delta_z = 0;
+	*dx = mouseData.dx;
+	*dy = mouseData.dy;
+	*dz = mouseData.dz;
+	mouseData.dx = 0;
+	mouseData.dy = 0;
+	mouseData.dz = 0;
 }
 
 //------------------------------------------------------------------------------

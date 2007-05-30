@@ -581,42 +581,34 @@ char * CFGetS (char * buf, size_t n, CFILE * fp)
 	size_t i;
 	int c;
 
-#if 0 // don't use the standard fgets, because it will only handle the native line-ending style
-	if (fp->lib_offset == 0) // This is not an archived file
-	{
-		t = fgets(buf, n, fp->file);
-		fp->raw_position = ftell(fp->file);
-		return t;
-	}
-#endif
-
-	for (i=0; i<n-1; i++) {
-		do {
-			if (fp->raw_position >= fp->size) {
-				*buf = 0;
-				return NULL;
+for (i = 0; i < n - 1; i++) {
+	do {
+		if (fp->raw_position >= fp->size) {
+			*buf = 0;
+			return (buf == t) ? NULL : t;
 			}
-			c = CFGetC(fp);
-			if (c == 0 || c == 10)       // Unix line ending
-				break;
-			if (c == 13) {      // Mac or DOS line ending
-				int c1;
+		c = CFGetC (fp);
+		if (c == 0 || c == 10)       // Unix line ending
+			break;
+		if (c == 13) {      // Mac or DOS line ending
+			int c1;
 
-				c1 = CFGetC(fp);
-				CFSeek(fp, -1, SEEK_CUR);
-				if (c1 == 10) // DOS line ending
-					continue;
-				else            // Mac line ending
-					break;
+			c1 = CFGetC (fp);
+			CFSeek (fp, -1, SEEK_CUR);
+			if (c1 == 10) // DOS line ending
+				continue;
+			else            // Mac line ending
+				break;
 			}
 		} while (c == 13);
- 		if (c == 13)  // because cr-lf is a bad thing on the mac
- 			c = '\n';   // and anyway -- 0xod is CR on mac, not 0x0a
-		*buf++ = c;
-		if (c=='\n') break;
+ 	if (c == 13)  // because cr-lf is a bad thing on the mac
+ 		c = '\n';   // and anyway -- 0xod is CR on mac, not 0x0a
+	*buf++ = c;
+	if (c == '\n')
+		break;
 	}
-	*buf++ = 0;
-	return  t;
+*buf++ = 0;
+return  t;
 }
 
 // ----------------------------------------------------------------------------

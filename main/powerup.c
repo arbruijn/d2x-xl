@@ -149,7 +149,7 @@ if (vcP->flags & WCF_ALTFMT) {
 			vcP->flags |= WCF_INITIALIZED;
 		}
 	}
-xTime = vciP->xFrameTime - xPowerupTime + xFudge;
+xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
 if (xTime < 0) {
 	h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
 	xTime += h * vcP->xFrameTime;

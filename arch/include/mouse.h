@@ -99,21 +99,21 @@ extern int MouseButtonState(int button);
 
 #define MOUSE_MAX_BUTTONS       8
 
-typedef struct mousebutton {
+typedef struct tMouseButton {
 	ubyte pressed;
 	ubyte rotated;
 	fix time_wentDown;
 	fix time_heldDown;
 	uint numDowns;
 	uint num_ups;
-} mousebutton;
+} tMouseButton;
 
-typedef struct mouseinfo {
-	mousebutton buttons[MOUSE_MAX_BUTTONS];
-	int delta_x, delta_y, delta_z;
-	int x,y,z;
-} mouseinfo;
+typedef struct tMouseInfo {
+	tMouseButton buttons [MOUSE_MAX_BUTTONS];
+	int dx, dy, dz;
+	int x, y, z;
+} tMouseInfo;
 
-extern mouseinfo mouseData;
+extern tMouseInfo mouseData;
 
 #endif

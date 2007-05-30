@@ -44,6 +44,7 @@ extern double fxCanvW2, fxCanvH2;
 typedef struct tViewInfo {
 	vmsVector	pos;
 	vmsAngVec	playerHeadAngles;
+	int			bUsePlayerHeadAngles;
 	vmsMatrix	view [2];
 	vmsVector	scale;
 	vmsVector	windowScale;		//scaling for window aspect

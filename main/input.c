@@ -332,7 +332,7 @@ if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)
 	return;
 JoyGetCalVals (axis_min, axis_center, axis_max);
 if (axis_max [3] > 1)
-	raw_button = (rawAxis*100)/axis_max [3];
+	raw_button = (rawAxis*100) /axis_max [3];
 else
 	raw_button = 0;
 if (raw_button > 88)
@@ -420,7 +420,7 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) { {
 		int i, d2xJoystickState [10];
 
 	for (i = 0; i < 10; i++)
-		d2xJoystickState [i] = JoyGetButtonState (kcHotkeys [i*2+1].value);
+		d2xJoystickState [i] = JoyGetButtonState (kcHotkeys [i * 2+1].value);
 
 	//----------------Weapon 1----------------
 	if (HaveD2XKey (kcHotkeys, 0) ||
@@ -826,7 +826,7 @@ void ControlsDoMouse (int *mouseAxis, int nMouseButtons,
 							 int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, 
 							 int bGetSlideBank)
 {
-	int	v, mouse_sens_mod = 8;
+	int	v, nMouseSensMod = 8;
 
 if (bGetSlideBank == 0) {
 	if ((v = kcMouse [5].value) < 255) 
@@ -918,7 +918,7 @@ if (bGetSlideBank == 2) {
 			}
 		}
 	else {
-		SDL_GetMouseState(&mouseData.x, &mouseData.y);
+		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 			int dx = mouseData.x - SWIDTH / 2;
 			int dz = MouseDeadzone (mouseData.y - SHEIGHT / 2);
@@ -936,22 +936,22 @@ if (bGetSlideBank == 2) {
 					dx -= dz;
 				}
 			dx = 640 * dx / (SWIDTH / gameOpts->input.mouse.sensitivity [0]);
-			Controls [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // mouse_sens_mod;
+			Controls [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // nMouseSensMod;
 			}
 		else {
 			if ((v = kcMouse [13].value) < 255) {
 				if (kcMouse [14].value)		// If inverted...
-					Controls [3].pitchTime += (mouseAxis [v]*gameOpts->input.mouse.sensitivity [1])/mouse_sens_mod;
+					Controls [3].pitchTime += (mouseAxis [v] * gameOpts->input.mouse.sensitivity [1]) / nMouseSensMod;
 				else
-					Controls [3].pitchTime -= (mouseAxis [v]*gameOpts->input.mouse.sensitivity [1])/mouse_sens_mod;
+					Controls [3].pitchTime -= (mouseAxis [v] * gameOpts->input.mouse.sensitivity [1]) / nMouseSensMod;
 				}
 			}
 		if (*bBankOn) {
 			if ((v = kcMouse [15].value) < 255) {
 				if (kcMouse [16].value)		// If inverted...
-					Controls [3].bankTime -= (mouseAxis [v]*gameOpts->input.mouse.sensitivity [2])/mouse_sens_mod;
+					Controls [3].bankTime -= (mouseAxis [v] * gameOpts->input.mouse.sensitivity [2]) / nMouseSensMod;
 				else
-					Controls [3].bankTime += (mouseAxis [v]*gameOpts->input.mouse.sensitivity [2])/mouse_sens_mod;
+					Controls [3].bankTime += (mouseAxis [v] * gameOpts->input.mouse.sensitivity [2]) / nMouseSensMod;
 				}
 			}
 		else {
@@ -971,14 +971,14 @@ if (bGetSlideBank == 2) {
 						dy -= dz;
 					}
 				dy = 480 * dy / (SHEIGHT / gameOpts->input.mouse.sensitivity [1]);
-				Controls [3].pitchTime += dy; // * gameOpts->input.mouse.sensitivity [1]); // mouse_sens_mod;
+				Controls [3].pitchTime += dy; // * gameOpts->input.mouse.sensitivity [1]); // nMouseSensMod;
 				}
 			else {
-				if ((v = kcMouse [15].value) < 255 && mouseAxis [v]) {
+				if (((v = kcMouse [15].value) < 255) && mouseAxis [v]) {
 					if (kcMouse [16].value)		// If inverted...
-						Controls [3].headingTime -= (mouseAxis [v]*gameOpts->input.mouse.sensitivity [0])/mouse_sens_mod;
+						Controls [3].headingTime -= (mouseAxis [v] * gameOpts->input.mouse.sensitivity [0]) / nMouseSensMod;
 					else
-						Controls [3].headingTime += (mouseAxis [v]*gameOpts->input.mouse.sensitivity [0])/mouse_sens_mod;
+						Controls [3].headingTime += (mouseAxis [v] * gameOpts->input.mouse.sensitivity [0]) / nMouseSensMod;
 					}
 				}
 			}
@@ -987,8 +987,8 @@ if (bGetSlideBank == 2) {
 
 if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 	if (bGetSlideBank == 2) {
-		Controls [0].verticalThrustTime += MouseButtonDownTime (D2_MB_Z_UP)/2;
-		Controls [0].verticalThrustTime -= MouseButtonDownTime (D2_MB_Z_DOWN)/2;
+		Controls [0].verticalThrustTime += MouseButtonDownTime (D2_MB_Z_UP) / 2;
+		Controls [0].verticalThrustTime -= MouseButtonDownTime (D2_MB_Z_DOWN) / 2;
 		Controls [3].bankTime += MouseButtonDownTime (D2_MB_BANK_LEFT);
 		Controls [3].bankTime -= MouseButtonDownTime (D2_MB_BANK_RIGHT);
 		}
@@ -1001,11 +1001,11 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 			}
 		}
 	else if (bGetSlideBank == 1) {
-		*pitchTimeP += MouseButtonDownTime (D2_MB_PITCH_FORWARD)/ (PH_SCALE*2);
-		*pitchTimeP -= MouseButtonDownTime (D2_MB_PITCH_BACKWARD)/ (PH_SCALE*2);
+		*pitchTimeP += MouseButtonDownTime (D2_MB_PITCH_FORWARD) / (PH_SCALE * 2);
+		*pitchTimeP -= MouseButtonDownTime (D2_MB_PITCH_BACKWARD) / (PH_SCALE * 2);
 		if (!*bBankOn) {
-			*headingTimeP -= MouseButtonDownTime (D2_MB_HEAD_LEFT)/PH_SCALE;
-			*headingTimeP += MouseButtonDownTime (D2_MB_HEAD_RIGHT)/PH_SCALE;
+			*headingTimeP -= MouseButtonDownTime (D2_MB_HEAD_LEFT) /PH_SCALE;
+			*headingTimeP += MouseButtonDownTime (D2_MB_HEAD_RIGHT) /PH_SCALE;
 			}
 		}
 	if (*bBankOn) {
@@ -1023,6 +1023,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 
 int ControlsReadTrackIR (void)
 {
+viewInfo.bUsePlayerHeadAngles = 0;
 if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
 	return 0;
 if (!pfnTIRQuery (&tirInfo)) {
@@ -1031,8 +1032,8 @@ if (!pfnTIRQuery (&tirInfo)) {
 		pfnTIRStart ();
 	return 0;
 	}
-#ifdef _DEBUG
-HUDMessage (0, "%1.2f %1.2f %1.2f", tirInfo.fvTrans.x, tirInfo.fvTrans.y, tirInfo.fvTrans.z);
+#if 0//def _DEBUG
+HUDMessage (0, "%1.0f %1.0f %1.0f", tirInfo.fvTrans.x, tirInfo.fvTrans.y, tirInfo.fvTrans.z);
 #endif
 return 1;
 }
@@ -1041,50 +1042,91 @@ return 1;
 
 void ControlsDoTrackIR (void)
 {
-int	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f);
-int	dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f);
-int	dz = MouseDeadzone (dy);
-if (dx < 0) {
-	if (dx > -dz)
-		dx = 0;
-	else
-		dx += dz;
-}
-else {
-	if (dx < dz)
-		dx = 0;
-	else
-		dx -= dz;
-	}
-dz = MouseDeadzone (dx);
-if (dy < 0) {
-	if (dy > -dz)
-		dy = 0;
-	else
-		dy += dz;
-}
-else {
-	if (dy < dz)
-		dy = 0;
-	else
-		dy -= dz;
-	}
-#ifdef _DEBUG
-HUDMessage (0, "%d %d", dx, dy);
+	int	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f),
+			dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f),
+			dz;
+	int	x, y;
+
+if (gameOpts->input.trackIR.nMode == 0) {
+	dx = (int) tirInfo.fvRot.z;
+	dy = (int) tirInfo.fvRot.y;
+	x = gameData.trackIR.x;
+	y = gameData.trackIR.y;
+	gameData.trackIR.x = dx;
+	gameData.trackIR.y = dy;
+	dx -= x;
+	dy -= y;
+	if (gameOpts->input.trackIR.bMove [0]) {
+		Controls [0].headingTime -= dx * (gameOpts->input.trackIR.sensitivity [0] + 1) * 2;
+		Controls [0].pitchTime += dy * (gameOpts->input.trackIR.sensitivity [1] + 1) * 2;
+		}
+	if (gameOpts->input.trackIR.bMove [1])
+		Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+#if 0//def _DEBUG
+	HUDMessage (0, "%d %d", dx, dy);
 #endif
-dx = 640 * dx / (SWIDTH / gameOpts->input.trackIR.sensitivity [0]);
-dy = 480 * dy / (SHEIGHT / gameOpts->input.trackIR.sensitivity [1]);
-if (gameOpts->input.trackIR.bMove [0]) {
-	Controls [0].headingTime -= dx;
-	Controls [0].pitchTime += dy;
-	Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 65536.0f * gameOpts->input.trackIR.sensitivity [2]);
 	}
-if (gameOpts->input.trackIR.bMove [1]) {
-	Controls [0].sidewaysThrustTime -= (int) (tirInfo.fvTrans.x * gameStates.input.kcPollTime / 16384.0f * gameOpts->input.trackIR.sensitivity [0]);
-	Controls [0].verticalThrustTime -= (int) (tirInfo.fvTrans.z * gameStates.input.kcPollTime / 16384.0f * gameOpts->input.trackIR.sensitivity [1]);
+else if (gameOpts->input.trackIR.nMode == 1) {
+	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f);
+	dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f);
+	dz = MouseDeadzone (dy);
+	if (dx < 0) {
+		if (dx > -dz)
+			dx = 0;
+		else
+			dx += dz;
+	}
+	else {
+		if (dx < dz)
+			dx = 0;
+		else
+			dx -= dz;
+		}
+	dz = MouseDeadzone (dx);
+	if (dy < 0) {
+		if (dy > -dz)
+			dy = 0;
+		else
+			dy += dz;
+	}
+	else {
+		if (dy < dz)
+			dy = 0;
+		else
+			dy -= dz;
+		}
+#if 0//def _DEBUG
+	HUDMessage (0, "%d %d", dx, dy);
+#endif
+	dx = 640 * dx / (SWIDTH / (gameOpts->input.trackIR.sensitivity [0] + 1));
+	dy = 480 * dy / (SHEIGHT / (gameOpts->input.trackIR.sensitivity [1] + 1));
+	if (gameOpts->input.trackIR.bMove [0]) {
+		Controls [0].headingTime -= dx;
+		Controls [0].pitchTime += dy;
+		}
+	if (gameOpts->input.trackIR.bMove [1])
+		Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+	}
+else {
+	viewInfo.bUsePlayerHeadAngles = 1;
+	if (gameOpts->input.trackIR.bMove [0]) {
+		viewInfo.playerHeadAngles.h = (fixang) -tirInfo.fvRot.z / 4 * (gameOpts->input.trackIR.sensitivity [0] + 1);
+		viewInfo.playerHeadAngles.p = (fixang) tirInfo.fvRot.y / 4 * (gameOpts->input.trackIR.sensitivity [1] + 1);
+		}
+	else
+		viewInfo.playerHeadAngles.h = 
+		viewInfo.playerHeadAngles.p = 0;
+	if (gameOpts->input.trackIR.bMove [1])
+		viewInfo.playerHeadAngles.b = (fixang) tirInfo.fvRot.x / 4 * (gameOpts->input.trackIR.sensitivity [2] + 1);
+	else
+		viewInfo.playerHeadAngles.b = 0;
 	}
 if (gameOpts->input.trackIR.bMove [2])
-	Controls [0].forwardThrustTime -= (int) (tirInfo.fvTrans.y * gameStates.input.kcPollTime / 16384.0f * gameOpts->input.trackIR.sensitivity [1]);
+	Controls [0].sidewaysThrustTime -= (int) (tirInfo.fvTrans.x * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
+if (gameOpts->input.trackIR.bMove [3])
+	Controls [0].verticalThrustTime += (int) (tirInfo.fvTrans.y * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
+if (gameOpts->input.trackIR.bMove [4])
+	Controls [0].forwardThrustTime -= (int) (tirInfo.fvTrans.z * gameStates.input.kcPollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
 }
 
 #endif
@@ -1268,7 +1310,7 @@ if (gameStates.input.nCruiseSpeed > i2f (100))
 else if (gameStates.input.nCruiseSpeed < 0) 
 	gameStates.input.nCruiseSpeed = 0;
 if (!Controls [0].forwardThrustTime)
-	Controls [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcPollTime)/100;
+	Controls [0].forwardThrustTime = FixMul (gameStates.input.nCruiseSpeed,gameStates.input.kcPollTime) /100;
 
 #if 0 //LIMIT_CONTROLS_FPS
 if (nBankSensMod > 2) {

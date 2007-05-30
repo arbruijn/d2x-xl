@@ -264,7 +264,6 @@ typedef struct tGameplayOptions {
 	int bTurboMode;
 	int bFastRespawn;
 	int bAutoLeveling;
-	int bDefaultLeveling;
 	int bEscortHotKeys;
 	int nPlayerDifficultyLevel;
 	int bSkipBriefingScreens;
@@ -297,7 +296,8 @@ typedef struct tJoystickInputOptions {
 typedef struct tTrackIRInputOptions {
 	int bPresent;
 	int bUse;
-	int bMove [3];
+	int nMode;
+	int bMove [5];
 	int nDeadzone;
 	int sensitivity [3];
 	int bSyncAxes;
@@ -2135,6 +2135,9 @@ typedef struct tCollisionData {
 	tFVIHitInfo hitData;
 } tCollisionData;
 
+typedef struct tTrackIRData {
+	int	x, y;
+} tTrackIRData;
 
 typedef struct tGameData {
 	tSegmentData		segs;
@@ -2180,6 +2183,7 @@ typedef struct tGameData {
 	tMissileData		missiles;
 	tCameraData			cameras;
 	tCollisionData		collisions;
+	tTrackIRData		trackIR;
 	tStatsData			stats;
 	tApplicationData	app;
 } tGameData;
@@ -2327,6 +2331,8 @@ extern tpfnTIRStart	pfnTIRStart;
 extern tpfnTIRStop	pfnTIRStop;
 extern tpfnTIRCenter	pfnTIRCenter;
 extern tpfnTIRQuery	pfnTIRQuery;
+
+int TIRLoad (void);
 
 //	-----------------------------------------------------------------------------------------------------------
 

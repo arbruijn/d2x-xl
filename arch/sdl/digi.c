@@ -254,7 +254,7 @@ for (sl = SoundSlots; sl < SoundSlots + MAX_SOUND_SLOTS; sl++) {
 
 //------------------------------------------------------------------------------
 /* Initialise audio devices. */
-int DigiInit ()
+int DigiInit (float fSlowDown)
 {
 if (!gameStates.app.bUseSound)
 	return 1;
@@ -270,7 +270,7 @@ if (gameStates.app.bDemoData)
 if (gameOpts->sound.bUseSDLMixer) {
 	if (0 > (gameData.songs.user.bMP3 ?
 				Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10) :
-				Mix_OpenAudio (gameOpts->sound.digiSampleRate, SOUND_FORMAT, 2, 
+				Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), SOUND_FORMAT, 2, 
 									2 * SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K)))) {
 		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
@@ -284,7 +284,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 else 
 #endif
 	{
-	WaveSpec.freq = gameOpts->sound.digiSampleRate;
+	WaveSpec.freq = (int) (gameOpts->sound.digiSampleRate / fSlowDown);
 	//added/changed by Sam Lantinga on 12/01/98 for new SDL version
 	WaveSpec.format = AUDIO_U8;
 	WaveSpec.channels = 2;
@@ -304,10 +304,6 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-/* Toggle audio */
-void DigiReset () { }
-
-//------------------------------------------------------------------------------
 /* Shut down audio */
 void _CDECL_ DigiClose (void)
 {
@@ -324,6 +320,23 @@ if (gameOpts->sound.bUseSDLMixer) {
 else
 #endif
 	SDL_CloseAudio ();
+}
+
+//------------------------------------------------------------------------------
+
+void DigiExit (void)
+{
+DigiStopAll ();
+SongsStopAll ();
+DigiClose ();
+}
+
+//------------------------------------------------------------------------------
+/* Toggle audio */
+void DigiReset () 
+{
+DigiExit ();
+DigiInit (1);
 }
 
 //------------------------------------------------------------------------------

@@ -60,7 +60,7 @@ bmP->bm_avgColor = 0;
 int InitMonsterball (int nBitmap)
 {
 	grsBitmap			*bmP, *altBmP;
-	tVideoClip					*vcP;
+	tVideoClip			*vcP;
 	powerupType_info	*ptP;
 	int					i;
 
@@ -113,8 +113,10 @@ void InitHoardData (void)
 	powerupType_info	*ptP;
 	ubyte					*bmDataP;
 
+#ifdef RELEASE
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)))
 	return;
+#endif
 if (gameStates.app.bDemoData) {
 #ifndef _DEBUG
 	Warning ("Hoard data not available with demo data.");

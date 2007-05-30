@@ -1005,7 +1005,9 @@ UnstickObject (objP);
 
 void PhysApplyForce (tObject *objP, vmsVector *vForce)
 {
-
+#ifdef _DEBUG
+	fix mag;
+#endif
 	//	Put in by MK on 2/13/96 for force getting applied to Omega blobs, which have 0 mass, 
 	//	in collision with crazy reactor robot thing on d2levf-s.
 if (objP->mType.physInfo.mass == 0)
@@ -1019,10 +1021,18 @@ if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
 	Tactile_apply_force (vForce, &objP->position.mOrient);
 #endif
 //Add in acceleration due to force
+#ifdef _DEBUG
+mag = VmVecMag (&objP->mType.physInfo.velocity);
+#endif
 if (!gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted || (objP != gameData.objs.console))
 	VmVecScaleInc (&objP->mType.physInfo.velocity, 
 						vForce, 
 						FixDiv (f1_0, objP->mType.physInfo.mass));
+#ifdef _DEBUG
+mag = VmVecMag (&objP->mType.physInfo.velocity);
+if (f2fl (mag) > 500)
+	objP = objP;
+#endif
 }
 
 //	----------------------------------------------------------------

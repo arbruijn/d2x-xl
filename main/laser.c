@@ -382,8 +382,8 @@ vBlobPos = *vFiringPos;
 nLastSeg = nFiringSeg;
 
 //	If nearby, don't perturb vector.  If not nearby, start halfway out.
-if (xGoalDist < MIN_OMEGA_DIST*4) {
-	for (i=0; i<nOmegaBlobs; i++)
+if (xGoalDist < MIN_OMEGA_DIST * 4) {
+	for (i = 0; i < nOmegaBlobs; i++)
 		xPerturbArray [i] = 0;
 	} 
 else {
@@ -476,13 +476,13 @@ if (LOCALPLAYER.energy) {
 	fix	xEnergyUsed;
 
 	xOldOmegaCharge = gameData.laser.xOmegaCharge;
-	gameData.laser.xOmegaCharge += gameData.time.xFrame/OMEGA_CHARGE_SCALE;
+	gameData.laser.xOmegaCharge += (fix) (gameData.time.xFrame / OMEGA_CHARGE_SCALE / gameStates.gameplay.slowmo [0].fSpeed);
 	if (gameData.laser.xOmegaCharge > MAX_OMEGA_CHARGE)
 		gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 	xDeltaCharge = gameData.laser.xOmegaCharge - xOldOmegaCharge;
-	xEnergyUsed = FixMul (F1_0*190/17, xDeltaCharge);
+	xEnergyUsed = FixMul (F1_0 * 190 / 17, xDeltaCharge);
 	if (gameStates.app.nDifficultyLevel < 2)
-		xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel+2)/4);
+		xEnergyUsed = FixMul (xEnergyUsed, i2f (gameStates.app.nDifficultyLevel + 2) / 4);
 
 	LOCALPLAYER.energy -= xEnergyUsed;
 	if (LOCALPLAYER.energy < 0)
@@ -500,6 +500,7 @@ void DoOmegaStuff (tObject *parentObjP, vmsVector *vFiringPos, tObject *weaponOb
 	short			nLockObj, nFiringSeg;
 	vmsVector	vGoalPos;
 	int			pnum = parentObjP->id;
+	static		int nDelay = 0;
 
 if (pnum == gameData.multiplayer.nLocalPlayer) {
 	//	If charge >= min, or (some charge and zero energy), allow to fire.
@@ -521,8 +522,20 @@ weaponObjP->cType.laserInfo.nParentObj = gameData.multiplayer.players [pnum].nOb
 weaponObjP->cType.laserInfo.nParentSig = gameData.objs.objects [gameData.multiplayer.players [pnum].nObject].nSignature;
 
 if (gameStates.limitFPS.bOmega && !gameStates.app.tick40fps.bTick)
+#if 1
+	return;
+if (SlowMotionActive ()) {
+	if (nDelay > 0) {
+		nDelay -= 2;
+		if	(nDelay > 0)
+			return;
+		}
+	nDelay += gameOpts->gameplay.nSlowMotionSpeedup;
+	}
+#else
 	nLockObj = -1;
 else
+#endif
 	nLockObj = FindHomingObject (vFiringPos, weaponObjP);
 if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, parentObjP->nSegment)))
 	return;

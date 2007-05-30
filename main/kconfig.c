@@ -1608,7 +1608,7 @@ read_head_tracker ()
 		return;
 	}
 
-	bUsePlayerHeadAngles = 0;
+	viewInfo.bUsePlayerHeadAngles = 0;
 	if (Last_angles_read)	{
 		fix yaw1 = yaw;
 		

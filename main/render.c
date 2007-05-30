@@ -248,7 +248,7 @@ void Draw3DReticle (fix nEyeOffset)
 	grs_canvas	*saved_canvas;
 	int			saved_interp_method;
 
-//	if (!bUsePlayerHeadAngles) return;
+//	if (!viewInfo.bUsePlayerHeadAngles) return;
 	
 for (i = 0; i < 4; i++) {
 	reticlePoints [i].p3_index = -1;
@@ -3032,7 +3032,6 @@ return (Controls [0].zoomDownCount > 0);
 
 //------------------------------------------------------------------------------
 
-int bUsePlayerHeadAngles = 0;
 extern int criticalErrorCounterPtr, nDescentCriticalError;
 
 extern int Num_tmaps_drawn;
@@ -3378,13 +3377,13 @@ else {
 	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment);
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
-	if (gameData.objs.viewer == gameData.objs.console && bUsePlayerHeadAngles) {
+	if ((gameData.objs.viewer == gameData.objs.console) && viewInfo.bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
 		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, gameStates.render.xZoom);
 		}
-	else if (gameStates.render.bRearView && (gameData.objs.viewer==gameData.objs.console)) {
+	else if (gameStates.render.bRearView && (gameData.objs.viewer == gameData.objs.console)) {
 		vmsMatrix mHead, mView;
 		viewInfo.playerHeadAngles.p = 
 		viewInfo.playerHeadAngles.b = 0;
@@ -3618,7 +3617,7 @@ else
 		}
 	}
 gameStates.render.nShadowPass = 0;
-if (bUsePlayerHeadAngles) 
+if (viewInfo.bUsePlayerHeadAngles) 
 	Draw3DReticle (nEyeOffset);
 G3EndFrame ();
 }

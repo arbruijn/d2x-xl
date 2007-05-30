@@ -1414,7 +1414,6 @@ if (i) {
 	gameOptions [1].gameplay.bTurboMode = 0;
 	gameOptions [1].gameplay.bFastRespawn = 0;
 	gameOptions [1].gameplay.bAutoLeveling = 1;
-	gameOptions [1].gameplay.bDefaultLeveling = 1;
 	gameOptions [1].gameplay.bEscortHotKeys = 1;
 	gameOptions [1].gameplay.nPlayerDifficultyLevel = DEFAULT_DIFFICULTY;
 	gameOptions [1].gameplay.bSkipBriefingScreens = 0;
@@ -1430,7 +1429,6 @@ else {
 	gameOptions [0].gameplay.bTurboMode = 0;
 	gameOptions [0].gameplay.bFastRespawn = 0;
 	gameOptions [0].gameplay.bAutoLeveling = 1;
-	gameOptions [0].gameplay.bDefaultLeveling = 1;
 	gameOptions [0].gameplay.bEscortHotKeys = 1;
 	gameOptions [0].gameplay.nPlayerDifficultyLevel = DEFAULT_DIFFICULTY;
 	gameOptions [0].gameplay.bSkipBriefingScreens = 0;
@@ -2982,12 +2980,16 @@ return 0;
 
 // ------------------------------------------------------------------------------------------
 
-static int TIRLoad (void)
+int TIRLoad (void)
 {
 #ifdef WIN32
+if (hTIRDll)
+	return 1;
 hTIRDll = LoadLibrary ("d2x-trackir.dll");
-if ((size_t) hTIRDll < HINSTANCE_ERROR)
+if ((size_t) hTIRDll < HINSTANCE_ERROR) {
+	hTIRDll = NULL;
 	return 0;
+	}
 LOAD_TIR_FUNC (tpfnTIRInit, TIRInit)
 LOAD_TIR_FUNC (tpfnTIRExit, TIRExit)
 LOAD_TIR_FUNC (tpfnTIRStart, TIRStart)
@@ -3118,7 +3120,7 @@ BMInit ();
 #endif
 
 /*---*/LogErr ("Initializing sound\n");
-DigiInit ();
+DigiInit (1);
 /*---*/LogErr ("Loading hoard data\n");
 LoadHoardData ();
 error_init (ShowInGameWarning, NULL);

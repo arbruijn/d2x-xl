@@ -28,10 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define EZERO 0
 #endif
 
-extern int DefaultLeveling_on;
-
 // update the tPlayer's highest level.  returns errno (0 == no error)
-int update_player_file ();
+int UpdatePlayerFile ();
 
 // Used to save KConfig values to disk.
 int WritePlayerFile ();

@@ -963,26 +963,8 @@ else {
 	}
 bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || bIsMissile [thisObjP->id]);
 bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
-if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly)) {
+if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL)) {
 #if 1//def RELEASE
-#	ifdef _DEBUG
-	if ((thisObjP->id == 15) && (otherObjP->rType.polyObjInfo.nModel < 0)) {
-		vmsVector hv [2];
-		fix dist0, dist1, dot;
-		size = size;
-		dist0 = VmVecDist (p0, &thisObjP->position.vPos);
-		dist1 = VmVecDist (p1, &thisObjP->position.vPos);
-		dot = VmVecDot (VmVecSub (hv, p0, &thisObjP->position.vPos), VmVecSub (hv + 1, p1, &thisObjP->position.vPos));
-		dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
-		if (dist == ((dist0 > dist1) ? dist0 : dist1))
-			dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
-		if (dist > (size = thisObjP->size + otherObjP->size)) {
-			dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
-			return 0;
-			}
-		}
-	else
-#	endif
 	dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
 	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
 	if (dist > (size = thisObjP->size + otherObjP->size))

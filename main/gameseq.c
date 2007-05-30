@@ -797,7 +797,6 @@ else
 if (ReadPlayerFile (0) != EZERO)
 	goto do_menu_again;
 KCSetControls (0);
-gameOpts->gameplay.bAutoLeveling = gameOpts->gameplay.bDefaultLeveling;
 SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);
 WriteConfigFile ();		// Update lastplr
 D2SetCaption ();

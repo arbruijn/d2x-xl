@@ -65,8 +65,6 @@ extern int Render_only_bottom;
 
 
 // Set the following to turn on tPlayer head turning
-extern int bUsePlayerHeadAngles;
-
 // If the above flag is set, these angles specify the orientation of the head
 extern vmsAngVec Player_head_angles;
 

@@ -3897,7 +3897,7 @@ void SetSlowMotionState (int i)
 
 if (gameStates.gameplay.slowmo [i].nState) {
 	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
-	if (nSlowMotionChannel>= 0) {
+	if (nSlowMotionChannel >= 0) {
 		DigiStopSound (nSlowMotionChannel);
 		nSlowMotionChannel= -1;
 		}
@@ -3921,18 +3921,16 @@ if (gameStates.gameplay.slowmo [0].nState > 0) {
 	HUDInitMessage (TXT_SLOWING_DOWN);
 	}
 else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
-	 ((gameStates.gameplay.slowmo [0].nState == 0) &&
-	  (gameStates.gameplay.slowmo [0].fSpeed == 1)) || 
-	 (gameStates.gameplay.slowmo [1].nState < 0) || 
-	 ((gameStates.gameplay.slowmo [1].nState == 0) &&
-	  (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
+			((gameStates.gameplay.slowmo [0].nState == 0) && (gameStates.gameplay.slowmo [0].fSpeed == 1)) || 
+			(gameStates.gameplay.slowmo [1].nState < 0) || 
+			((gameStates.gameplay.slowmo [1].nState == 0) && (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel= DigiPlayWAV ("speedup.wav", F1_0);
+		nSlowMotionChannel = DigiPlayWAV ("speedup.wav", F1_0);
 	HUDInitMessage (TXT_SPEEDING_UP);
 	}
 else {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel= DigiPlayWAV ("slowdown.wav", F1_0);
+		nSlowMotionChannel = DigiPlayWAV ("slowdown.wav", F1_0);
 	HUDInitMessage (TXT_SLOWING_DOWN);
 	}
 }
@@ -4082,10 +4080,14 @@ for (i = 0; i < 2; i++) {
 		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
 			gameStates.gameplay.slowmo [i].fSpeed = f;
 			gameStates.gameplay.slowmo [i].nState = 0;
+			DigiExit ();
+			DigiInit (f);
 			}
 		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
 			gameStates.gameplay.slowmo [i].fSpeed = 1;
 			gameStates.gameplay.slowmo [i].nState = 0;
+			DigiExit ();
+			DigiInit (1);
 			}
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
 		}

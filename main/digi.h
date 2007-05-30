@@ -72,9 +72,10 @@ extern int digi_sample_rate;
 extern int digiVolume;
 
 int digi_get_settings();
-int DigiInit();
-void DigiReset();
-void _CDECL_ DigiClose(void);
+int DigiInit (float fSlowDown);
+void DigiExit (void);
+void DigiReset ();
+void _CDECL_ DigiClose (void);
 
 // Volume is max at F1_0.
 int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops, char *pszWAV);

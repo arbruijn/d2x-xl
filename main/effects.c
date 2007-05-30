@@ -51,9 +51,9 @@ if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))
 	return ecP->vc.xFrameTime;
 else {
 	grsBitmap	*bmP = gameData.pig.tex.pBitmaps + ecP->vc.frames [0].index;
-	return ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? 
-			 (ecP->vc.xFrameTime * ecP->vc.nFrameCount) / BM_FRAMECOUNT (bmP) : 
-			 ecP->vc.xFrameTime;
+	return (fix) ((((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? 
+					  (ecP->vc.xFrameTime * ecP->vc.nFrameCount) / BM_FRAMECOUNT (bmP) : 
+					  ecP->vc.xFrameTime) /  gameStates.gameplay.slowmo [0].fSpeed);
 	}
 #endif
 }
@@ -215,7 +215,7 @@ xEffectTime += gameData.time.xFrame;
 			continue;
 		if (ecP->flags & EF_STOPPED)
 			continue;
-		ecP->time_left -= xEffectTime;
+		ecP->time_left -= (fix) (xEffectTime /  gameStates.gameplay.slowmo [0].fSpeed);
 		if (ecP->time_left > 0)
 			continue;
 		if (!(ft = EffectFrameTime (ecP)))

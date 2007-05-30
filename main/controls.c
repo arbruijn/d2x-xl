@@ -67,7 +67,7 @@ if (!EGI_FLAG (bWiggle, 1, 0, 1))
 	return;
 nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];
 pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
-FixFastSinCos (gameData.time.xGame, &xWiggle, NULL);
+FixFastSinCos ((fix) (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
 if (wiggleTime < F1_0)// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
 	xWiggle = FixMul (xWiggle * 20, wiggleTime); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if ((objP->nType == OBJ_PLAYER) || !pParent)
