@@ -2968,14 +2968,20 @@ static HINSTANCE hTIRDll = 0;
 
 // ------------------------------------------------------------------------------------------
 
-static int TIRUnload (void)
+int TIRUnload (void)
 {
 #ifdef WIN32
 if (hTIRDll)
    FreeLibrary (hTIRDll);
+pfnTIRInit = NULL;
+pfnTIRExit = NULL;
+pfnTIRStart = NULL;
+pfnTIRStop = NULL;
+pfnTIRCenter = NULL;
+pfnTIRQuery = NULL;
 hTIRDll = 0;
 #endif
-return 0;
+return gameStates.input.bHaveTrackIR = 0;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -2988,7 +2994,7 @@ if (hTIRDll)
 hTIRDll = LoadLibrary ("d2x-trackir.dll");
 if ((size_t) hTIRDll < HINSTANCE_ERROR) {
 	hTIRDll = NULL;
-	return 0;
+	return gameStates.input.bHaveTrackIR = 0;
 	}
 LOAD_TIR_FUNC (tpfnTIRInit, TIRInit)
 LOAD_TIR_FUNC (tpfnTIRExit, TIRExit)
@@ -2997,11 +3003,11 @@ LOAD_TIR_FUNC (tpfnTIRStop, TIRStop)
 LOAD_TIR_FUNC (tpfnTIRCenter, TIRCenter)
 LOAD_TIR_FUNC (tpfnTIRQuery, TIRQuery)
 if (pfnTIRInit (SDL_GetWindowHandle ()))
-	return 1;
+	return gameStates.input.bHaveTrackIR = 1;
 TIRUnload ();
-return 0;
+return gameStates.input.bHaveTrackIR = 0;
 #else
-return 0;
+return gameStates.input.bHaveTrackIR = 0;
 #endif
 }
 
@@ -3147,7 +3153,7 @@ InitThreads ();
 /*---*/LogErr ("Loading hires models\n");
 LoadHiresModels ();
 /*---*/LogErr ("Enabling TrackIR support\n");
-gameStates.input.bHaveTrackIR = TIRLoad ();
+TIRLoad ();
 return 0;
 }
 

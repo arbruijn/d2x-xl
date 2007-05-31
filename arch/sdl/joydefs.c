@@ -91,11 +91,14 @@ void joydefs_calibrate()
 
 //------------------------------------------------------------------------------
 
-int AddDeadzoneControl (tMenuItem *m, char *szText, char *szFmt, char *szHelp, ubyte nValue, char nKey, int *pnOpt)
+int AddDeadzoneControl (tMenuItem *m, char *szText, char *szFmt, char *szHelp, char **szSizes, ubyte nValue, char nKey, int *pnOpt)
 {
-sprintf (szText + 1, szFmt, szDZoneSizes [nValue]);
+if (szSizes)
+	sprintf (szText + 1, szFmt, szSizes [nValue]);
+else
+	sprintf (szText + 1, szFmt);
 *szText = *(szFmt - 1);
-ADD_SLIDER (*pnOpt, szText + 1, nValue, 0, 4, nKey, szHelp);
+ADD_SLIDER (*pnOpt, szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, szHelp);
 return (*pnOpt)++;
 }
 
@@ -269,7 +272,7 @@ do {
 				ADD_CHECK (opt, TXT_JOYMOUSE, gameOpts->input.mouse.bJoystick, KEY_J, HTX_CONF_JOYMOUSE);
 				mouseOpts.nJoystick = opt++;
 				if (gameOpts->input.mouse.bJoystick && gameOpts->app.bExpertMode)
-					mouseOpts.nDeadzone = AddDeadzoneControl (m, szMouseDeadzone, TXT_MOUSE_DEADZONE, HTX_MOUSE_DEADZONE, gameOpts->input.mouse.nDeadzone, KEY_U, &opt);
+					mouseOpts.nDeadzone = AddDeadzoneControl (m, szMouseDeadzone, TXT_MOUSE_DEADZONE, HTX_MOUSE_DEADZONE, szDZoneSizes, gameOpts->input.mouse.nDeadzone, KEY_U, &opt);
 				ADD_TEXT (opt, "", 0);
 				opt++;
 				nMouseTypeOpt = opt;
@@ -512,7 +515,7 @@ if (gameOpts->input.trackIR.bUse) {
 			v = m->value;
 			if (gameOpts->input.trackIR.bMove [i] != v) {
 				gameOpts->input.trackIR.bMove [i] = v;
-				for (h = i = 0; i < 3; i++)
+				for (h = 0, i = 2; i < 5; i++)
 					h += gameOpts->input.trackIR.bMove [i];
 				if (h < 2) {
 					*key = -2;
@@ -586,13 +589,16 @@ do {
 			tirOpts.nSyncAxes = opt++;
 			tirOpts.nSensitivity = AddAxisControls (m, &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
 																 3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxes, &opt);
-			if ((gameOpts->input.trackIR.nMode == 1) && gameOpts->input.trackIR.bMove [0])
-				tirOpts.nDeadzone = AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, gameOpts->input.trackIR.nDeadzone, KEY_U, &opt);
+			if (gameOpts->input.trackIR.bMove [2] || 
+				 gameOpts->input.trackIR.bMove [3] || 
+				 gameOpts->input.trackIR.bMove [4])
+				tirOpts.nDeadzone = AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U, &opt);
 			else
-				tirOpts.nDeadzone = -1;
+				tirOpts.nDeadzone = 0;
 			}
 		else
-			tirOpts.nSyncAxes = -1;
+			tirOpts.nSyncAxes =
+			tirOpts.nDeadzone = -1;
 		}
 	i = ExecMenu1 (NULL, TXT_TRACKIR_CONFIG, opt, m, TrackIRConfigCallback, &choice);
 	if (gameStates.input.bHaveTrackIR)

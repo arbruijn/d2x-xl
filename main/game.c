@@ -674,7 +674,8 @@ int GrToggleFullScreenMenu (void)
 
 void StopTime ()
 {
-pfnTIRStop ();
+if (pfnTIRStop)
+	pfnTIRStop ();
 if (++gameData.time.nPaused == 1) {
 	fix xTime = TimerGetFixedSeconds ();
 	gameData.time.xSlack = xTime - gameData.time.xLast;
@@ -712,7 +713,8 @@ if (!--gameData.time.nPaused) {
 #if defined (TIMER_TEST) && defined (_DEBUG)
 gameData.time.xStarts++;
 #endif
-pfnTIRStart ();
+if (pfnTIRStart)
+	pfnTIRStart ();
 }
 
 //------------------------------------------------------------------------------
@@ -1626,7 +1628,8 @@ GameSetup ();								// Replaces what was here earlier.
 ProfilerSetStatus (1);
 #endif
 
-pfnTIRStart ();
+if (pfnTIRStart)
+	pfnTIRStart ();
 if (!setjmp (gameExitPoint)) {
 for (;;) {
 	int player_shields;
@@ -1760,7 +1763,8 @@ UnloadCamBot ();
 #ifdef APPLE_DEMO
 SetFunctionMode (FMODE_EXIT);		// get out of game in Apple OEM version
 #endif
-pfnTIRStop ();
+if (pfnTIRStop)
+	pfnTIRStop ();
 }
 
 // ----------------------------------------------------------------------------

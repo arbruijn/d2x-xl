@@ -2333,6 +2333,7 @@ extern tpfnTIRCenter	pfnTIRCenter;
 extern tpfnTIRQuery	pfnTIRQuery;
 
 int TIRLoad (void);
+int TIRUnload (void);
 
 //	-----------------------------------------------------------------------------------------------------------
 

@@ -1046,6 +1046,7 @@ void ControlsDoTrackIR (void)
 			dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f),
 			dz;
 	int	x, y;
+	float	fDeadzone, fScale;
 
 if (gameOpts->input.trackIR.nMode == 0) {
 	dx = (int) tirInfo.fvRot.z;
@@ -1121,12 +1122,29 @@ else {
 	else
 		viewInfo.playerHeadAngles.b = 0;
 	}
-if (gameOpts->input.trackIR.bMove [2])
-	Controls [0].sidewaysThrustTime -= (int) (tirInfo.fvTrans.x * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
-if (gameOpts->input.trackIR.bMove [3])
-	Controls [0].verticalThrustTime += (int) (tirInfo.fvTrans.y * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
-if (gameOpts->input.trackIR.bMove [4])
-	Controls [0].forwardThrustTime -= (int) (tirInfo.fvTrans.z * gameStates.input.kcPollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
+fDeadzone = 256.0f * gameOpts->input.trackIR.nDeadzone;
+fScale = 16384.0f / (16384.0f - fDeadzone);
+if (gameOpts->input.trackIR.bMove [2] && ((float) fabs (tirInfo.fvTrans.x) > fDeadzone)) {
+	if (tirInfo.fvTrans.x < 0)
+		tirInfo.fvTrans.x += fDeadzone;
+	else
+		tirInfo.fvTrans.x -= fDeadzone;
+	Controls [0].sidewaysThrustTime -= (int) ((tirInfo.fvTrans.x - fDeadzone) * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
+	}
+if (gameOpts->input.trackIR.bMove [3] && ((float) fabs (tirInfo.fvTrans.y) > fDeadzone)) {
+	if (tirInfo.fvTrans.y < 0)
+		tirInfo.fvTrans.y += fDeadzone;
+	else
+		tirInfo.fvTrans.y -= fDeadzone;
+	Controls [0].verticalThrustTime += (int) ((tirInfo.fvTrans.y - fDeadzone) * gameStates.input.kcPollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
+	}
+if (gameOpts->input.trackIR.bMove [4] && ((float) fabs (tirInfo.fvTrans.z) > fDeadzone)) {
+	if (tirInfo.fvTrans.z < 0)
+		tirInfo.fvTrans.z += fDeadzone;
+	else
+		tirInfo.fvTrans.z -= fDeadzone;
+	Controls [0].forwardThrustTime -= (int) ((tirInfo.fvTrans.z - fDeadzone) * gameStates.input.kcPollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+	}
 }
 
 #endif

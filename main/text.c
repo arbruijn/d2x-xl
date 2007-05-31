@@ -1672,7 +1672,7 @@ char *defaultGameTexts [][2] = {
 	{"NaturalPoint ~TrackIR verwenden", "use NaturalPoint ~TrackIR"},
 	{"~Empfindlichkeit", "sensitivity"},
 	{"%c-Empfindlichkeit", "%c sensitivity"},
-	{"~Neutrale zone: %s", "~Deadzone: %s"},
+	{"~Neutrale zone", "~Deadzone"},
 	{"~Drehen", "t~Urn"},
 	{"~Rollen", "~Roll"},
 	{"~Horizontal gleiten", "slide ~Horizontally"},
