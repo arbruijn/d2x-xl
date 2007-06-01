@@ -307,7 +307,7 @@ else {
 	if (LoadDeadzone ()) {
 		grs_color c = {1, 255, 255, 255, 128};
 		OglUBitMapMC (0, 0, 16, 16, bmpDeadzone, &c, 1, 0);
-		r = MouseDeadzone (0);
+		r = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (double) grdCurScreen->sc_w;
 		h = r / (double) grdCurScreen->sc_h;
 		glEnable (GL_TEXTURE_2D);
@@ -332,7 +332,7 @@ else {
 		glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
 		glColor4d (1.0, 0.8, 0.0, 1.0 / (3.0 + 0.5 * gameOpts->input.mouse.nDeadzone));
 		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
-		r = MouseDeadzone (0) / 4;
+		r = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
 		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos30);
 		}
 	glPopMatrix ();

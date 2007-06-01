@@ -449,16 +449,11 @@ if (gameOpts->gameplay.bIdleAnims) {
 		else
 			h = 0;
 		}
-#if 1
-	MoveTowardsVector (objP, &vVecToGoal, 0);
-	if (VmVecDist (&vGoal, &objP->position.vPos) > objP->size * 3 / 2)
-#else
 	else if (MoveTowardsPoint (objP, &vGoal, objP->size * 3 / 2))
-#endif
 		h = rand () % 8 == 0;
 	else
 		h = 1;
-	if (h && (rand () % 100 == 0)) {
+	if (h && (rand () % 25 == 0)) {
 		j = rand () % 8;
 		if ((j == i) || (rand () % 3 == 0))
 			COMPUTE_SEGMENT_CENTER_I (&vGoal, objP->nSegment);

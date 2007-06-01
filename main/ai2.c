@@ -1746,7 +1746,7 @@ else {
 
 	if (xMinDist)
 		xScale /= 20;
-	//	Move one radii towards center.
+	//	Move one radius towards center.
 	VmVecScale (&vGoalDir, xScale);
 	VmVecInc (&objP->position.vPos, &vGoalDir);
 	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);

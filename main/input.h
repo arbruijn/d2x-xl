@@ -13,6 +13,6 @@ void ResetCruise (void);
 char GetKeyValue (char key);
 void SetMaxPitch (int nMinTurnRate);
 void SetControlType (void);
-int MouseDeadzone (int d);
+int CalcDeadzone (int d, int nDeadzone);
 
 #endif //__INPUT_H

@@ -814,9 +814,9 @@ for (i = 0; i < 60; i += 30) {
 
 //------------------------------------------------------------------------------
 
-int MouseDeadzone (int d)
+int CalcDeadzone (int d, int nDeadzone)
 {
-double	r = 32 * gameOpts->input.mouse.nDeadzone;
+double	r = 32 * nDeadzone;
 return (int) (r ? (d ? sqrt (r * r - d * d) : r) : 0);
 }
 
@@ -921,7 +921,7 @@ if (bGetSlideBank == 2) {
 		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 			int dx = mouseData.x - SWIDTH / 2;
-			int dz = MouseDeadzone (mouseData.y - SHEIGHT / 2);
+			int dz = CalcDeadzone (mouseData.y - SHEIGHT / 2, gameOpts->input.mouse.nDeadzone);
 			if (dx < 0) {
 				if (dx > -dz)
 					dx = 0;
@@ -939,7 +939,7 @@ if (bGetSlideBank == 2) {
 			Controls [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // nMouseSensMod;
 			}
 		else {
-			if ((v = kcMouse [13].value) < 255) {
+			if (((v = kcMouse [13].value) < 255) && mouseAxis [v]) {
 				if (kcMouse [14].value)		// If inverted...
 					Controls [3].pitchTime += (mouseAxis [v] * gameOpts->input.mouse.sensitivity [1]) / nMouseSensMod;
 				else
@@ -947,7 +947,7 @@ if (bGetSlideBank == 2) {
 				}
 			}
 		if (*bBankOn) {
-			if ((v = kcMouse [15].value) < 255) {
+			if (((v = kcMouse [15].value) < 255) && mouseAxis [v]) {
 				if (kcMouse [16].value)		// If inverted...
 					Controls [3].bankTime -= (mouseAxis [v] * gameOpts->input.mouse.sensitivity [2]) / nMouseSensMod;
 				else
@@ -957,7 +957,7 @@ if (bGetSlideBank == 2) {
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 				int	dy = mouseData.y - SHEIGHT / 2;
-				int	dz = MouseDeadzone (mouseData.x - SWIDTH / 2);
+				int	dz = CalcDeadzone (mouseData.x - SWIDTH / 2, gameOpts->input.mouse.nDeadzone);
 				if (dy < 0) {
 					if (dy > -dz)
 						dy = 0;
@@ -1032,7 +1032,7 @@ if (!pfnTIRQuery (&tirInfo)) {
 		pfnTIRStart ();
 	return 0;
 	}
-#ifdef _DEBUG
+#if 0//def _DEBUG
 HUDMessage (0, "%1.0f %1.0f %1.0f", tirInfo.fvTrans.x, tirInfo.fvTrans.y, tirInfo.fvTrans.z);
 #endif
 return 1;
@@ -1049,28 +1049,41 @@ void ControlsDoTrackIR (void)
 	float	fDeadzone, fScale;
 
 if (gameOpts->input.trackIR.nMode == 0) {
-	dx = (int) tirInfo.fvRot.z;
-	dy = (int) tirInfo.fvRot.y;
+#if 1
+#else
+	dx = (int) tirInfo.fvRot.z * (gameOpts->input.trackIR.sensitivity [0] + 1);
+	dy = (int) tirInfo.fvRot.y * (gameOpts->input.trackIR.sensitivity [1] + 1);
+#endif
 	x = gameData.trackIR.x;
 	y = gameData.trackIR.y;
-	gameData.trackIR.x = dx;
-	gameData.trackIR.y = dy;
-	dx -= x;
-	dy -= y;
+#if 0//def _DEBUG
+		HUDMessage (0, "%d/%d %d/%d", x, dx, y, dy);
+#endif
+	if (abs (dx - x) > gameOpts->input.trackIR.nDeadzone * 4) {
+		dx = dx * (gameOpts->input.trackIR.sensitivity [0] + 1) / 4;
+		gameData.trackIR.x = dx;
+		dx -= x;
+		}
+	else
+		dx = 0;
+	if (abs (dy - y) > gameOpts->input.trackIR.nDeadzone * 4) {
+		dy = dy * (gameOpts->input.trackIR.sensitivity [1] + 1) / 4;
+		gameData.trackIR.y = dy;
+		dy -= y;
+		}
+	else
+		dy = 0;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		Controls [0].headingTime -= dx * (gameOpts->input.trackIR.sensitivity [0] + 1) * 2;
-		Controls [0].pitchTime += dy * (gameOpts->input.trackIR.sensitivity [1] + 1) * 2;
+		Controls [0].headingTime -= dx * gameStates.input.kcPollTime;
+		Controls [0].pitchTime += dy * gameStates.input.kcPollTime;
 		}
 	if (gameOpts->input.trackIR.bMove [1])
 		Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
-#if 0//def _DEBUG
-	HUDMessage (0, "%d %d", dx, dy);
-#endif
 	}
 else if (gameOpts->input.trackIR.nMode == 1) {
 	dx = (int) ((float) tirInfo.fvRot.z * (float) SWIDTH / 16384.0f);
 	dy = (int) ((float) tirInfo.fvRot.y * (float) SHEIGHT / 16384.0f);
-	dz = MouseDeadzone (dy);
+	dz = 0; //CalcDeadzone (dy, gameOpts->input.trackIR.nDeadzone);
 	if (dx < 0) {
 		if (dx > -dz)
 			dx = 0;
@@ -1083,7 +1096,7 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 		else
 			dx -= dz;
 		}
-	dz = MouseDeadzone (dx);
+	dz = 0; //CalcDeadzone (dx, gameOpts->input.trackIR.nDeadzone);
 	if (dy < 0) {
 		if (dy > -dz)
 			dy = 0;

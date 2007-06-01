@@ -489,8 +489,7 @@ if (gameOpts->input.trackIR.bUse) {
 				gameData.trackIR.x = 
 				gameData.trackIR.y = 0;
 				}
-			else if (i == 2)
-				*key = -2;
+			*key = -2;
 			return;
 			}
 		}
@@ -589,12 +588,7 @@ do {
 			tirOpts.nSyncAxes = opt++;
 			tirOpts.nSensitivity = AddAxisControls (m, &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
 																 3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxes, &opt);
-			if (gameOpts->input.trackIR.bMove [2] || 
-				 gameOpts->input.trackIR.bMove [3] || 
-				 gameOpts->input.trackIR.bMove [4])
-				tirOpts.nDeadzone = AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U, &opt);
-			else
-				tirOpts.nDeadzone = 0;
+			tirOpts.nDeadzone = AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U, &opt);
 			}
 		else
 			tirOpts.nSyncAxes =
