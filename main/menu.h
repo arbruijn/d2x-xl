@@ -46,7 +46,6 @@ void InitDetailLevels(int detailLevel);
 int SwitchDisplayMode (int dir);
 
 extern char *menu_difficulty_text[];
-extern int playerDefaultDifficulty;
 extern int Max_debrisObjects;
 extern int MissileView_enabled;
 extern int EscortView_enabled;

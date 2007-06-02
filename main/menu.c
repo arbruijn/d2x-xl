@@ -91,8 +91,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-//char *menu_difficulty_text[] = {"Trainee", "Rookie", "Hotshot", "Ace", "Insane"};
-//char *menu_detail_text[] = {"Lowest", "Low", "Medium", "High", "Highest", "", "Custom..."};
+//char *menu_difficulty_text [] = {"Trainee", "Rookie", "Hotshot", "Ace", "Insane"};
+//char *menu_detail_text [] = {"Lowest", "Low", "Medium", "High", "Highest", "", "Custom..."};
 
 #define MENU_NEW_GAME                   0
 #define MENU_NEW_SP_GAME                1
@@ -391,14 +391,14 @@ if (!gameStates.app.bNostalgia) {
 
 //------------------------------------------------------------------------------
 
-extern unsigned char ipx_ServerAddress[10];
-extern unsigned char ipx_LocalAddress[10];
+extern unsigned char ipx_ServerAddress [10];
+extern unsigned char ipx_LocalAddress [10];
 
 //------------------------------------------------------------------------------
 //returns number of item chosen
 int CallMenu () 
 {
-	int nMenuChoice[25];
+	int nMenuChoice [25];
 	tMenuItem m [25];
 	int i, num_options = 0;
 
@@ -407,7 +407,7 @@ memset (nMenuChoice, 0, sizeof (nMenuChoice));
 memset (m, 0, sizeof (m));
 //LoadPalette (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
-if (!LOCALPLAYER.callsign[0]) {
+if (!LOCALPLAYER.callsign [0]) {
 	SelectPlayer ();
 	return 0;
 }
@@ -441,8 +441,8 @@ do {
 		}
 #endif
 	WritePlayerFile ();
-	if ((i > -1) && (nMenuChoice[main_menu_choice] <= MENU_QUIT))
-		ExecMenuOption (nMenuChoice[main_menu_choice]);
+	if ((i > -1) && (nMenuChoice [main_menu_choice] <= MENU_QUIT))
+		ExecMenuOption (nMenuChoice [main_menu_choice]);
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	GrPaletteFadeOut (NULL, 32, 0);
@@ -540,7 +540,7 @@ switch (select) {
 	case MENU_GAME:
 		break;
 	case MENU_DEMO_PLAY:	{
-		char demoPath [FILENAME_LEN], demoFile[FILENAME_LEN];
+		char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 		sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
 		if (ExecMenuFileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 			NDStartPlayback (demoFile);
@@ -592,7 +592,7 @@ switch (select) {
 #ifdef _DEBUG
 	case MENU_LOAD_LEVEL: {
 		tMenuItem m;
-		char text[10]="";
+		char text [10]="";
 		int nNewLevel;
 
 		m.nType=NM_TYPE_INPUT; m.text_len = 10; m.text = text;
@@ -716,23 +716,35 @@ i = ExecMenu1 (NULL, TXT_DIFFICULTY_LEVEL, NDL, m, NULL, &choice);
 if (i <= -1)
 	return 0;
 if (choice != gameStates.app.nDifficultyLevel) {       
-	gameOpts->gameplay.nPlayerDifficultyLevel = choice;
+	gameStates.app.nDifficultyLevel = choice;
 	WritePlayerFile ();
 	}
-gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-ubyte   Render_depths[NUM_DETAIL_LEVELS-1] =                        {15, 31, 63, 127, 255};
-sbyte   Max_perspective_depths[NUM_DETAIL_LEVELS-1] =               { 1,  2,  3,  5,  8};
-sbyte   Max_linear_depths[NUM_DETAIL_LEVELS-1] =                    { 3,  5,  7, 10, 50};
-sbyte   Max_linear_depthsObjects[NUM_DETAIL_LEVELS-1] =            { 1,  2,  3,  7, 20};
-sbyte   Max_debrisObjects_list[NUM_DETAIL_LEVELS-1] =              { 2,  4,  7, 10, 15};
-sbyte   MaxObjects_onscreen_detailed_list[NUM_DETAIL_LEVELS-1] =   { 2,  4,  7, 10, 15};
-sbyte   Smts_list[NUM_DETAIL_LEVELS-1] =                            { 2,  4,  8, 16, 50};   //      threshold for models to go to lower detail model, gets multiplied by objP->size
-sbyte   MaxSound_channels[NUM_DETAIL_LEVELS-1] =                   { 2,  4,  8, 12, 16};
+typedef struct tDetailData {
+	ubyte		renderDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxPerspectiveDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxLinearDepths [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxLinearDepthObjects [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
+	sbyte		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
+	sbyte		maxSoundChannels [NUM_DETAIL_LEVELS - 1];
+} tDetailData;
+
+tDetailData	details = {
+	{15, 31, 63, 127, 255},
+	{ 1,  2,  3,   5,   8},
+	{ 3,  5,  7,  10,  50},
+	{ 1,  2,  3,   7,  20},
+	{ 2,  4,  7,  10,  15},
+	{ 2,  4,  7,  10,  15},
+	{ 2,  4,  8,  16,  50},
+	{ 2,  4,  8,  12,  16}};
+
 
 //      -----------------------------------------------------------------------------
 //      Set detail level based stuff.
@@ -741,15 +753,15 @@ void InitDetailLevels (int nDetailLevel)
 {
 	Assert ((nDetailLevel >= 0) && (nDetailLevel < NUM_DETAIL_LEVELS));
 
-if (nDetailLevel < NUM_DETAIL_LEVELS-1) {
-	gameStates.render.detail.nRenderDepth = Render_depths[nDetailLevel];
-	gameStates.render.detail.nMaxPerspectiveDepth = Max_perspective_depths[nDetailLevel];
-	gameStates.render.detail.nMaxLinearDepth = Max_linear_depths[nDetailLevel];
-	gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depthsObjects[nDetailLevel];
-	gameStates.render.detail.nMaxDebrisObjects = Max_debrisObjects_list[nDetailLevel];
-	gameStates.render.detail.nMaxObjectsOnScreenDetailed = MaxObjects_onscreen_detailed_list[nDetailLevel];
-	gameData.models.nSimpleModelThresholdScale = Smts_list[nDetailLevel];
-	DigiSetMaxChannels (MaxSound_channels[ nDetailLevel ]);
+if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
+	gameStates.render.detail.nRenderDepth = details.renderDepths [nDetailLevel];
+	gameStates.render.detail.nMaxPerspectiveDepth = details.maxPerspectiveDepths [nDetailLevel];
+	gameStates.render.detail.nMaxLinearDepth = details.maxLinearDepths [nDetailLevel];
+	gameStates.render.detail.nMaxLinearDepthObjects = details.maxLinearDepthObjects [nDetailLevel];
+	gameStates.render.detail.nMaxDebrisObjects = details.maxDebrisObjects [nDetailLevel];
+	gameStates.render.detail.nMaxObjectsOnScreenDetailed = details.maxObjsOnScreenDetailed [nDetailLevel];
+	gameData.models.nSimpleModelThresholdScale = details.simpleModelThresholdScales [nDetailLevel];
+	DigiSetMaxChannels (details.maxSoundChannels [ nDetailLevel ]);
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
 	gameStates.render.detail.nWallRenderDepth = nDetailLevel;
@@ -762,6 +774,7 @@ if (nDetailLevel < NUM_DETAIL_LEVELS-1) {
 }
 
 //      -----------------------------------------------------------------------------
+
 void DetailLevelMenu (void)
 {
 	int i, choice = gameStates.app.nDetailLevel;
@@ -811,26 +824,26 @@ void CustomDetailsCallback (int nitems, tMenuItem * items, int *last_key, int ci
 	*last_key = *last_key;
 	citem = citem;
 
-gameStates.render.detail.nObjectComplexity = items[0].value;
-gameStates.render.detail.nObjectDetail = items[1].value;
-gameStates.render.detail.nWallDetail = items[2].value;
-gameStates.render.detail.nWallRenderDepth = items[3].value;
-gameStates.render.detail.nDebrisAmount = items[4].value;
-gameStates.sound.nMaxSoundChannels = items[5].value;
+gameStates.render.detail.nObjectComplexity = items [0].value;
+gameStates.render.detail.nObjectDetail = items [1].value;
+gameStates.render.detail.nWallDetail = items [2].value;
+gameStates.render.detail.nWallRenderDepth = items [3].value;
+gameStates.render.detail.nDebrisAmount = items [4].value;
+gameStates.sound.nMaxSoundChannels = items [5].value;
 }
 
 // -----------------------------------------------------------------------------
 
 void InitCustomDetails (void)
 {
-gameStates.render.detail.nRenderDepth = Render_depths[gameStates.render.detail.nWallRenderDepth];
-gameStates.render.detail.nMaxPerspectiveDepth = Max_perspective_depths[gameStates.render.detail.nWallDetail];
-gameStates.render.detail.nMaxLinearDepth = Max_linear_depths[gameStates.render.detail.nWallDetail];
-gameStates.render.detail.nMaxDebrisObjects = Max_debrisObjects_list[gameStates.render.detail.nDebrisAmount];
-gameStates.render.detail.nMaxObjectsOnScreenDetailed = MaxObjects_onscreen_detailed_list[gameStates.render.detail.nObjectComplexity];
-gameData.models.nSimpleModelThresholdScale = Smts_list[gameStates.render.detail.nObjectComplexity];
-gameStates.render.detail.nMaxLinearDepthObjects = Max_linear_depthsObjects[gameStates.render.detail.nObjectDetail];
-DigiSetMaxChannels (MaxSound_channels[gameStates.sound.nMaxSoundChannels ]);
+gameStates.render.detail.nRenderDepth = details.renderDepths [gameStates.render.detail.nWallRenderDepth];
+gameStates.render.detail.nMaxPerspectiveDepth = details.maxPerspectiveDepths [gameStates.render.detail.nWallDetail];
+gameStates.render.detail.nMaxLinearDepth = details.maxLinearDepths [gameStates.render.detail.nWallDetail];
+gameStates.render.detail.nMaxDebrisObjects = details.maxDebrisObjects [gameStates.render.detail.nDebrisAmount];
+gameStates.render.detail.nMaxObjectsOnScreenDetailed = details.maxObjsOnScreenDetailed [gameStates.render.detail.nObjectComplexity];
+gameData.models.nSimpleModelThresholdScale = details.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
+gameStates.render.detail.nMaxLinearDepthObjects = details.maxLinearDepthObjects [gameStates.render.detail.nObjectDetail];
+DigiSetMaxChannels (details.maxSoundChannels [gameStates.sound.nMaxSoundChannels ]);
 }
 
 #define	DL_MAX	10
@@ -937,7 +950,7 @@ static int ScreenResMenuItemToMode (int menuItem)
 if ((wideScreenOpt >= 0) && (menuItem > wideScreenOpt))
 	menuItem--;
 for (j = 0; j < NUM_DISPLAY_MODES; j++)
-	if (displayModeInfo[j].isAvailable)
+	if (displayModeInfo [j].isAvailable)
 		if (--menuItem < 0)
 			break;
 return j;
@@ -951,7 +964,7 @@ static int ScreenResModeToMenuItem(int mode)
 	int item = 0;
 
 	for (j = 0; j < mode; j++)
-		if (displayModeInfo[j].isAvailable)
+		if (displayModeInfo [j].isAvailable)
 			item++;
 
 	if ((wideScreenOpt >= 0) && (mode >= wideScreenOpt))
@@ -1196,7 +1209,7 @@ do {
 	if (nMissions < 1)
 		return;
 	for (i = 0; i < nMissions; i++) {
-		m [i] = gameData.missions.list[i].szMissionName;
+		m [i] = gameData.missions.list [i].szMissionName;
 		if (!stricmp (m [i], gameConfig.szLastMission))
 			nDefaultMission= i;
 		}
@@ -1248,7 +1261,6 @@ try_again:
 	}
 }
 
-gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 WritePlayerFile ();
 if (!DifficultyMenu ())
 	return;
@@ -1270,9 +1282,9 @@ m = menus + gplayOpts.nDifficulty;
 v = m->value;
 if (gameStates.app.nDifficultyLevel != v) {
 	gameStates.app.nDifficultyLevel = 
-	gameOpts->gameplay.nPlayerDifficultyLevel = v;
+	gameStates.app.nDifficultyLevel = v;
 	InitGateIntervals ();
-	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
+	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->rebuild = 1;
 	}
 for (i = 0; i < 3; i++)
@@ -1388,8 +1400,7 @@ for (;;) {
 	}
 
 i = m [gplayOpts.nDifficulty].value;
-if (gameOpts->gameplay.nPlayerDifficultyLevel != i) {
-	gameOpts->gameplay.nPlayerDifficultyLevel = i;
+if (gameStates.app.nDifficultyLevel != i) {
 	gameStates.app.nDifficultyLevel = i;
 	InitGateIntervals ();
 	}
@@ -3214,13 +3225,13 @@ void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int cite
 
 m = menus + gplayOpts.nDifficulty;
 v = m->value;
-if (gameOpts->gameplay.nPlayerDifficultyLevel != v) {
-	gameOpts->gameplay.nPlayerDifficultyLevel = v;
+if (gameStates.app.nDifficultyLevel != v) {
+	gameStates.app.nDifficultyLevel = v;
 	if (!IsMultiGame) {
 		gameStates.app.nDifficultyLevel = v;
 		InitGateIntervals ();
 		}
-	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameOpts->gameplay.nPlayerDifficultyLevel));
+	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->rebuild = 1;
 	}
 
@@ -3665,10 +3676,10 @@ if (gameConfig.nDigiVolume != items [optDigiVol].value)     {
 	}
 
 if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
-	if (items[optRedbook].value && !gameOpts->sound.bUseRedbook) {
+	if (items [optRedbook].value && !gameOpts->sound.bUseRedbook) {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
-		items[optRedbook].value = 0;
-		items[optRedbook].rebuild = 1;
+		items [optRedbook].value = 0;
+		items [optRedbook].rebuild = 1;
 		}
 	else if ((gameStates.sound.bRedbookEnabled = items [optRedbook].value)) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
@@ -3678,7 +3689,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 		else
 			Int3 ();
 
-		if (items[optRedbook].value && !gameStates.sound.bRedbookPlaying) {
+		if (items [optRedbook].value && !gameStates.sound.bRedbookPlaying) {
 			gameStates.sound.bRedbookEnabled = 0;
 			gameStates.menus.nInMenu = 0;
 			ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_MUSIC_NOCD);
@@ -3693,7 +3704,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 
 if (gameStates.sound.bRedbookEnabled) {
 	if (gameConfig.nRedbookVolume != items [optMusicVol].value)   {
-		gameConfig.nRedbookVolume = items[optMusicVol].value;
+		gameConfig.nRedbookVolume = items [optMusicVol].value;
 		SetRedbookVolume (gameConfig.nRedbookVolume);
 		}
 	}
@@ -4312,7 +4323,7 @@ else {
 void DoNewIPAddress ()
  {
   tMenuItem m [4];
-  char IPText[30];
+  char IPText [30];
   int choice;
 
   	memset (m, 0, sizeof (m));
@@ -4321,11 +4332,11 @@ void DoNewIPAddress ()
   m [1].nType=NM_TYPE_INPUT; 
   m [1].text_len = 50; 
   m [1].text = IPText;
-  IPText[0]=0;
+  IPText [0]=0;
 
   choice = ExecMenu (NULL, TXT_JOIN_TCP, 2, m, NULL, NULL);
 
-  if (choice==-1 || m [1].text[0]==0)
+  if (choice==-1 || m [1].text [0]==0)
    return;
 
   ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);

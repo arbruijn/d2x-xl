@@ -265,7 +265,6 @@ typedef struct tGameplayOptions {
 	int bFastRespawn;
 	int bAutoLeveling;
 	int bEscortHotKeys;
-	int nPlayerDifficultyLevel;
 	int bSkipBriefingScreens;
 	int bHeadlightOn;
 	int bShieldWarning;
@@ -1719,7 +1718,6 @@ typedef struct tApplicationData {
 	int					nGameMode;
 	int					bGamePaused;
 	uint					nStateGameId;
-	int					playerDefaultDifficulty;
 int						nLifetimeChecksum;
 } tApplicationData;
 

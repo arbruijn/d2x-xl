@@ -859,7 +859,7 @@ gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
 // Read in gameTopFileInfo to get size of saved fileinfo.
 
 if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
-	Error("Error seeking in gamesave.c"); 
+	return -1; 
 
 //	if (CFRead(&gameTopFileInfo, sizeof(gameTopFileInfo), 1, LoadFile) != 1)
 //		Error("Error reading gameTopFileInfo in gamesave.c");
@@ -936,7 +936,7 @@ if (gameTopFileInfo.fileinfo_version >= 31) { //load mine filename
 }
 else if (gameTopFileInfo.fileinfo_version >= 14) { //load mine filename
 	// read null-terminated string
-	char *p=gameData.missions.szCurrentLevel;
+	char *p = gameData.missions.szCurrentLevel;
 	//must do read one char at a time, since no CFGetS()
 	do {
 		*p = CFGetC (LoadFile);
@@ -946,10 +946,11 @@ else
 	gameData.missions.szCurrentLevel[0]=0;
 
 if (gameTopFileInfo.fileinfo_version >= 19) {	//load pof names
-	N_save_pof_names = CFReadShort(LoadFile);
+	N_save_pof_names = CFReadShort (LoadFile);
 	if (N_save_pof_names != 0x614d && N_save_pof_names != 0x5547) { // "Ma"de w/DMB beta/"GU"ILE
-		Assert(N_save_pof_names < MAX_POLYGON_MODELS);
-		CFRead(Save_pof_names,N_save_pof_names,SHORT_FILENAME_LEN,LoadFile);
+		if (N_save_pof_names >= MAX_POLYGON_MODELS)
+			return -1;
+		CFRead (Save_pof_names,N_save_pof_names,SHORT_FILENAME_LEN,LoadFile);
 	}
 }
 

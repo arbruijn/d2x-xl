@@ -244,7 +244,6 @@ for (i = 0; i < 2; i++) {
 
 		RP (iDlTimeout, 0, 0);
 		
-		RP (gameData.app.playerDefaultDifficulty, 0, 0);
 		RP (gameStates.render.cockpit.nMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
@@ -494,7 +493,6 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].gameplay.bAutoLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
 	RP (gameOptions [i].gameplay.bHeadlightOn, 0, 0);
-	RP (gameOptions [i].gameplay.nPlayerDifficultyLevel, i, 0);
 
 	RP (gameOptions [i].movies.bResize, i, 0);
 	RP (gameOptions [i].movies.bSubTitles, i, 0);
@@ -692,7 +690,6 @@ tParamValue defaultParams [] = {
 {"gameData.render.window.w=640"},
 {"gameData.render.window.h=480"},
 {"iDlTimeout=5"},
-{"gameData.app.playerDefaultDifficulty=0"},
 {"gameStates.render.cockpit.nMode=0"},
 {"gameStates.video.nDefaultDisplayMode=4"},
 {"gameStates.video.nDefaultDisplayMode=4"},
@@ -995,7 +992,6 @@ tParamValue defaultParams [] = {
 {"gameOptions[0].gameplay.bAutoLeveling=0"},
 {"gameOptions[0].gameplay.bFastRespawn=0"},
 {"gameOptions[0].gameplay.bHeadlightOn=0"},
-{"gameOptions[0].gameplay.nPlayerDifficultyLevel=2"},
 {"gameOptions[0].movies.bResize=1"},
 {"gameOptions[0].movies.bSubTitles=0"},
 {"gameOptions[0].movies.nQuality=0"},
@@ -1048,7 +1044,6 @@ tParamValue defaultParams [] = {
 {"gameOptions[1].gameplay.bAutoLeveling=0"},
 {"gameOptions[1].gameplay.bFastRespawn=0"},
 {"gameOptions[0].gameplay.bHeadlightOn=0"},
-{"gameOptions[1].gameplay.nPlayerDifficultyLevel=2"},
 {"gameOptions[1].movies.bResize=0"},
 {"gameOptions[1].movies.bSubTitles=0"},
 {"gameOptions[1].movies.nQuality=0"},
@@ -1337,7 +1332,7 @@ if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
 	}
 if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5))
 	joydefs_calibrate();
-gameData.app.playerDefaultDifficulty = 1;
+gameStates.app.nDifficultyLevel = DEFAULT_DIFFICULTY;
 gameOptions [0].gameplay.bAutoLeveling = 1;
 nHighestLevels = 1;
 highestLevels [0].shortname [0] = 0;			//no name for mission 0
@@ -1444,8 +1439,8 @@ for (i = 0; i < 2; i++) {
 	if (!i && (gameStates.input.nPlrFileVersion >= 46))
 		extraGameInfo [0].bDualMissileLaunch = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 47) {
-		gameOptions [i].gameplay.nPlayerDifficultyLevel = (int) CFReadByte (fp);
-		gameOptions [i].gameplay.nPlayerDifficultyLevel = NMCLAMP (gameOptions [i].gameplay.nPlayerDifficultyLevel, 0, 4);
+		gameStates.app.nDifficultyLevel = (int) CFReadByte (fp);
+		gameStates.app.nDifficultyLevel = NMCLAMP (gameStates.app.nDifficultyLevel, 0, 4);
 		}
 	if (gameStates.input.nPlrFileVersion >= 48)
 		gameOptions [i].render.bTransparentEffects = (int) CFReadByte (fp);
@@ -1895,7 +1890,7 @@ gameData.render.window.h = CFReadShort (fp);
 if (bOnlyWindowSizes)
 	goto done;
 
-gameData.app.playerDefaultDifficulty = CFReadByte (fp);
+gameStates.app.nDifficultyLevel = CFReadByte (fp);
 gameOpts->gameplay.bAutoLeveling = CFReadByte (fp);
 gameOpts->render.cockpit.bReticle = CFReadByte (fp);
 gameStates.render.cockpit.nMode = CFReadByte (fp);
@@ -2115,7 +2110,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].gameplay.bFastRespawn, fp);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bDualMissileLaunch, fp);
-	CFWriteByte ((sbyte) gameOptions [i].gameplay.nPlayerDifficultyLevel, fp);
+	CFWriteByte ((sbyte) gameStates.app.nDifficultyLevel, fp);
 	CFWriteByte ((sbyte) gameOptions [i].render.bTransparentEffects, fp);
 	if (!i)
 		CFWriteByte ((sbyte) extraGameInfo [0].bRobotsOnRadar, fp);
@@ -2393,7 +2388,7 @@ CFWriteInt(SAVE_FILE_ID, fp);
 CFWriteShort(PLAYER_FILE_VERSION, fp);
 CFWriteShort((short) gameData.render.window.w, fp);
 CFWriteShort((short) gameData.render.window.h, fp);
-CFWriteByte ((sbyte) gameData.app.playerDefaultDifficulty, fp);
+CFWriteByte ((sbyte) gameStates.app.nDifficultyLevel, fp);
 CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
 CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
 CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view

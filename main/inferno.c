@@ -1415,7 +1415,6 @@ if (i) {
 	gameOptions [1].gameplay.bFastRespawn = 0;
 	gameOptions [1].gameplay.bAutoLeveling = 1;
 	gameOptions [1].gameplay.bEscortHotKeys = 1;
-	gameOptions [1].gameplay.nPlayerDifficultyLevel = DEFAULT_DIFFICULTY;
 	gameOptions [1].gameplay.bSkipBriefingScreens = 0;
 	gameOptions [1].gameplay.bHeadlightOn = 1;
 	gameOptions [1].gameplay.bShieldWarning = 0;
@@ -1430,7 +1429,6 @@ else {
 	gameOptions [0].gameplay.bFastRespawn = 0;
 	gameOptions [0].gameplay.bAutoLeveling = 1;
 	gameOptions [0].gameplay.bEscortHotKeys = 1;
-	gameOptions [0].gameplay.nPlayerDifficultyLevel = DEFAULT_DIFFICULTY;
 	gameOptions [0].gameplay.bSkipBriefingScreens = 0;
 	gameOptions [0].gameplay.bHeadlightOn = 0;
 	gameOptions [0].gameplay.bShieldWarning = 0;

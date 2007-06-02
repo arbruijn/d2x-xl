@@ -235,7 +235,7 @@ return !strnicmp (buf, tok, strlen (tok));
 //adds a terminating 0 after a string at the first white space
 void MsnAddStrTerm (char *s)
 {
-while (*s && (*s != '\r') && (*s != '\n'))
+while (*s && isprint (*s) && (*s != '\r') && (*s != '\n'))
 	s++;
 *s = 0;		//terminate!
 }
@@ -823,7 +823,7 @@ int LoadMission (int nMission)
 {
 	CFILE		*fp;
 	char		szFolder [FILENAME_LEN], szFile [FILENAME_LEN];
-	int		i, bFoundHogFile;
+	int		i, bFoundHogFile = 0;
 	
 gameData.missions.nEnhancedMission = 0;
 if (nMission == gameData.missions.nD1BuiltinMission) {
@@ -866,7 +866,7 @@ if (nMission == gameData.missions.nBuiltinMission) {
 	}
 gameData.missions.nCurrentMission = nMission;
 #if TRACE
-con_printf (CON_VERBOSE, "Loading mission %d\n", nMission );
+con_printf (CON_VERBOSE, "Loading mission %d\n", nMission);
 #endif
 	//read mission from file
 switch (gameData.missions.list [nMission].location) {
@@ -897,18 +897,27 @@ if (!(fp = CFOpen (szFile, szFolder, "rb", 0))) {
 	gameData.missions.nCurrentMission = -1;
 	return 0;		//error!
 	}
+i = ParseMissionFile (fp);
+CFClose(fp);
+if (!i) {
+	gameData.missions.nCurrentMission = -1;
+	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_MSNFILE_ERROR);
+	return 0;
+	}
 //for non-builtin missions, load HOG
 CFUseAltHogFile ("");
-if (strcmp(gameData.missions.list [nMission].filename, gameData.missions.szBuiltinMissionFilename)) {
+if (!strcmp (gameData.missions.list [nMission].filename, gameData.missions.szBuiltinMissionFilename)) 
+	bFoundHogFile = 1;
+else {
 	sprintf (szFile, "%s%s.hog", szFolder, gameData.missions.list [nMission].filename);
 	strlwr (szFile);
 	bFoundHogFile = CFUseAltHogFile (szFile);
 	if (bFoundHogFile) {
 		// for Descent 1 missions, load descent.hog
 		if ((gameData.missions.list [nMission].nDescentVersion == 1) && 
-				strcmp (gameData.missions.list [nMission].filename, "descent"))
+			 strcmp (gameData.missions.list [nMission].filename, "descent"))
 			if (!CFUseD1HogFile ("descent.hog"))
-				Warning(TXT_NO_HOG);
+				Warning (TXT_NO_HOG);
 		}
 	else {
 		sprintf (szFile, "%s%s%s", 
@@ -917,25 +926,19 @@ if (strcmp(gameData.missions.list [nMission].filename, gameData.missions.szBuilt
 					(gameData.missions.list [nMission].nDescentVersion == 2) ? ".rl2" : ".rdl");
 		strlwr (szFile);
 		bFoundHogFile = CFUseAltHogFile (szFile);
-		CFClose (fp);
 		if (bFoundHogFile) {
 			strcpy (gameData.missions.szLevelNames [0], gameHogFiles.AltHogFiles.files [0].name);
 			gameData.missions.nLastLevel = 1;
 			}
-		else
-			gameData.missions.nCurrentMission = -1;
-		return bFoundHogFile;
+		else {
+			sprintf (szFile, "%s%s", szFolder, gameData.missions.szLevelNames [0]);
+			strlwr (szFile);
+			bFoundHogFile = CFUseAltHogFile (szFile);
+			}
 		}
 	}
 //init vars
-i = ParseMissionFile (fp);
-CFClose(fp);
-if (!i) {
-	gameData.missions.nCurrentMission = -1;
-	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_MSNFILE_ERROR);
-	return 0;
-	}
-if (gameData.missions.nLastLevel <= 0) {
+if (!bFoundHogFile || (gameData.missions.nLastLevel <= 0)) {
 	gameData.missions.nCurrentMission = -1;		//no valid mission loaded
 	return 0;
 	}

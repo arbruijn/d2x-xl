@@ -2119,7 +2119,6 @@ SelectWeapon (gameData.weapons.nPrimary, 0, 0, 0);
 SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
 // Restore the difficulty level
 gameStates.app.nDifficultyLevel = CFReadInt (fp);
-gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 // Restore the cheats enabled flag
 gameStates.app.cheats.bEnabled = CFReadInt (fp);
 for (i = 0; i < 2; i++) {
@@ -2393,7 +2392,6 @@ SelectWeapon (gameData.weapons.nPrimary, 0, 0, 0);
 SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
 // Restore the difficulty level
 CFRead (&gameStates.app.nDifficultyLevel, sizeof (int), 1, fp);
-gameStates.app.nDifficultyLevel = gameOpts->gameplay.nPlayerDifficultyLevel;
 // Restore the cheats enabled flag
 CFRead (&gameStates.app.cheats.bEnabled, sizeof (int), 1, fp);
 if (!bBetweenLevels)	{

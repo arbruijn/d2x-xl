@@ -109,7 +109,7 @@ int do_flythrough(tObject *obj,int firstTime);
 
 extern jmp_buf gameExitPoint;       // Do a long jump to this when game is over.
 extern int DifficultyLevel;    // Difficulty level in 0..NDL-1, 0 = easiest, NDL-1 = hardest
-extern int nPlayerDifficultyLevel;
+extern int nDifficultyLevel;
 extern int DetailLevel;        // Detail level in 0..NUM_DETAIL_LEVELS-1, 0 = boringest, NUM_DETAIL_LEVELS = coolest
 extern int Global_laser_firingCount;
 extern int Global_missile_firingCount;
