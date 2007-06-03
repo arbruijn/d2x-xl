@@ -70,8 +70,12 @@ if (objP->nType == OBJ_FIREBALL) {
 	ta = (double) iFrame / (double) nFrames * alpha;
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
-else if (objP->nType == OBJ_WEAPON)
-	alpha = WEAPON_ALPHA;
+else if (objP->nType == OBJ_WEAPON) {
+	if ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID) && (objP->id != SMALLMINE_ID)) 
+		alpha = 1.0;
+	else
+		alpha = WEAPON_ALPHA;
+	}
 #if 1
 if (objP->nType == OBJ_FIREBALL)
 	glDepthMask (0);	//don't set z-buffer for transparent objects

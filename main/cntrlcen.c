@@ -396,7 +396,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			MakeRandomVector (&vRand);
 			VmVecScaleInc (&vecToGoal, &vRand, F1_0/6);
 			VmVecNormalizeQuick (&vecToGoal);
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
 			count++;
@@ -404,7 +404,7 @@ if ((rStatP->nNextFireTime < 0) &&
 		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
 		if (gameStates.app.nDifficultyLevel == 0)
 			xDeltaFireTime += (fix) (F1_0 / 2 * gameStates.gameplay.slowmo [0].fSpeed);
-		if (IsMultiGame) // slow down rate of fire in multi tPlayer
+		if (IsMultiGame) // slow down rate of fire in multi player
 			xDeltaFireTime *= 2;
 		rStatP->nNextFireTime = xDeltaFireTime;
 		}
