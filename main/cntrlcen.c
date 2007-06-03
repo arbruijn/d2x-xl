@@ -359,7 +359,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 	}
 
 if ((rStatP->nNextFireTime < 0) && 
-	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath+F1_0*2))) {
+	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0 * 2))) {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.ai.vBelievedPlayerPos);
 	else
@@ -403,7 +403,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			}
 		xDeltaFireTime = (NDL - gameStates.app.nDifficultyLevel) * F1_0/4;
 		if (gameStates.app.nDifficultyLevel == 0)
-			xDeltaFireTime += F1_0/2;
+			xDeltaFireTime += (fix) (F1_0 / 2 * gameStates.gameplay.slowmo [0].fSpeed);
 		if (IsMultiGame) // slow down rate of fire in multi tPlayer
 			xDeltaFireTime *= 2;
 		rStatP->nNextFireTime = xDeltaFireTime;
