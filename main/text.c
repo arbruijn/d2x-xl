@@ -794,7 +794,7 @@ char *defaultGameTexts [][2] = {
 	{"Transparente Waende faerben", "Colorize transparent Walls"},
 	{"transparente Explosionen", "enable Transparent Explosions"},
 	{"Kameras aktivieren", "Use Cameras"},
-	{"Kameraausgabe an Wand anpassen", "Fit Camera outpUt to tWall"},
+	{"Kameraausgabe an Wand anpassen", "Fit Camera outpUt to wall"},
 	{"Helligkeit per Gamma regeln", "Adjust Brightness Via Gamma"},
 	{"Hohe Filmqualitaet", "High Movie Quality"},
 	{"Vollbild-Filme", "F~Ullscreen Movies"},

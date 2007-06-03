@@ -165,16 +165,25 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 	tmpi = INTEL_INT (netPlayers.nSecurity);
 	memcpy(out_buffer + loc, &tmpi, 4);                       loc += 4;
 	for (i = 0; i < MAX_PLAYERS+4; i++) {
-		memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1); loc += CALLSIGN_LEN+1;
-		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.server, 4);    loc += 4;
-		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);      loc += 6;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].version_major), 1);      loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].version_minor), 1);      loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);      loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].connected), 1);          loc++;
+		memcpy(out_buffer + loc, netPlayers.players[i].callsign, CALLSIGN_LEN+1); 
+		loc += CALLSIGN_LEN+1;
+		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.server, 4);    
+		loc += 4;
+		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);      
+		loc += 6;
+		memcpy(out_buffer + loc, &(netPlayers.players[i].version_major), 1);      
+		loc++;
+		memcpy(out_buffer + loc, &(netPlayers.players[i].version_minor), 1);      
+		loc++;
+		memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);      
+		loc++;
+		memcpy(out_buffer + loc, &(netPlayers.players[i].connected), 1);          
+		loc++;
 		tmps = INTEL_SHORT(netPlayers.players[i].socket);
-		memcpy(out_buffer + loc, &tmps, 2);                                       loc += 2;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].rank), 1);               loc++;
+		memcpy(out_buffer + loc, &tmps, 2);                                       
+		loc += 2;
+		memcpy(out_buffer + loc, &(netPlayers.players[i].rank), 1);               
+		loc++;
 	}
 
 	if ((server == NULL) && (node == NULL))
@@ -243,7 +252,8 @@ void BEReceiveSequencePacket(ubyte *data, tSequencePacket *seq)
 {
 	int loc = 0;
 
-	seq->nType = data[0];                        loc++;
+	seq->nType = data[0];                        
+	loc++;
 	memcpy(&(seq->nSecurity), data + loc, 4);  loc += 4;   loc += 3;   // +3 for pad byte
 	seq->nSecurity = INTEL_INT (seq->nSecurity);
 	BEReceiveNetPlayerInfo(data + loc, &(seq->player));

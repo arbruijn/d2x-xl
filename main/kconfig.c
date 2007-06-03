@@ -83,7 +83,7 @@ ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte
 ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_0, (ubyte) KEY_1, (ubyte) KEY_2, (ubyte) KEY_3, (ubyte) KEY_4, (ubyte) KEY_5, (ubyte) KEY_6, (ubyte) KEY_7, (ubyte) KEY_8, (ubyte) KEY_9, (ubyte) KEY_0, (ubyte) KEY_MINUS, (ubyte) KEY_EQUAL, (ubyte) KEY_ALTED+KEY_F9 };
 #endif
 
-#define TABLE_CREATION 1
+#define TABLE_CREATION 0
 
 // Array used to 'blink' the cursor while waiting for a keypress.
 sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
@@ -406,7 +406,7 @@ kcItem kcHotkeys [] = {
 	{ 16, 15,113, 71, 26, 14, 18, 15, 17, "Weapon 9", 314, BT_KEY, 255 },
 	{ 17, 15,113,100, 26, 15, 19, 16, 18, "Weapon 9", 314, BT_JOY_BUTTON, 255 },
 	{ 18, 15,121, 71, 26, 16, 20, 17, 19, "Weapon 10", 315, BT_KEY, 255 },
-	{ 19, 15,121,100, 26, 17, 21, 18, 20, "Weapon 10", 315, BT_JOY_BUTTON, 255 },
+	{ 19, 15,121,100, 26, 17, 21, 18, 20, "Weapon 10", 315, BT_JOY_BUTTON, 255 }
 
 	//{ 20, 15,131, 71, 26, 18, 22, 19, 21, "CYC PRIMARY", BT_KEY, 255 },
 	//{ 21, 15,131,100, 26, 19, 23, 20, 22, "CYC PRIMARY", BT_JOY_BUTTON, 255 },
@@ -432,6 +432,10 @@ int ExtXVibrateInfo [2]={0,0};
 int ExtYVibrateInfo [2]={0,0};
 ubyte ExtXVibrateClear=0;
 ubyte ExtYVibrateClear=0;
+
+typedef struct tKCItemPos {
+	int	i, l, r, y;
+	} tKCItemPos;
 
 //------------------------------------------------------------------------------
 
@@ -476,90 +480,107 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int FindNextItemUp (kcItem * items, int nItems, int cItem)
+int FindNextItemRight (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int *ref)
 {
-	int x, y, i;
-
-	y = items [cItem].y;
-	x = items [cItem].x + items [cItem].w1;
-	
-do {	
-	if (--y < 0) {
-		y = grdCurCanv->cv_bitmap.bm_props.h-1;
-		if (--x < 0) 
-			x = grdCurCanv->cv_bitmap.bm_props.w-1;
-		}
-	i = FindItemAt (items, nItems, x, y);
-} while (i < 0);
-return i;
+cItem = ref [cItem];
+return pos [(cItem + 1) % nItems].i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemDown (kcItem * items, int nItems, int cItem)
+int FindNextItemLeft (kcItem *items, int nItems, int cItem, tKCItemPos *pos, int *ref)
 {
-	int x, y, i;
-
-	y = items [cItem].y;
-	x = items [cItem].x+items [cItem].w1;
-	
-do {	
-	if (++y > grdCurCanv->cv_bitmap.bm_props.h-1) {
-		y = 0;
-		if (++x > grdCurCanv->cv_bitmap.bm_props.w-1)
-			x = 0;
-		}
-	i = FindItemAt (items, nItems, x, y);
-} while (i < 0);
-return i;
+cItem = ref [cItem];
+return pos [cItem ? cItem - 1 : nItems - 1].i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemRight (kcItem * items, int nItems, int cItem)
+int FindNextItemUp (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int *ref)
 {
-	int x, y, i;
+	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
-	y = items [cItem].y;
-	x = items [cItem].x+items [cItem].w1;
-	
-do {	
-	if (++x > grdCurCanv->cv_bitmap.bm_props.w-1) {
-		x = 0;
-		y++;
-		if (++y > grdCurCanv->cv_bitmap.bm_props.h-1)
-			y = 0;
+i = j = ref [cItem];
+l = pos [i].l;
+r = pos [i].r;
+x = (l + r) / 2;
+y = yStart = pos [i].y;
+#if 0
+do {
+	if (--i < 0)
+		i = nItems - 1;
+	if ((r >= pos [i].l) && (l <= pos [i].r))
+		return pos [i].i;
+	} while (i != j);
+#endif
+dMin = 0x7fffffff;
+dy = 0;
+for (;;) {
+	if (--i < 0)
+		i = nItems - 1;
+	if (i == j)
+		break;
+	if (pos [i].y == yStart)
+		continue;
+	dx = abs (x - (pos [i].l + pos [i].r) / 2);
+	if (y != pos [i].y) {
+		y = pos [i].y;
+		dy += 10;
 		}
-	i = FindItemAt (items, nItems, x, y);
-} while (i < 0);
-return i;
+	dx += dy;
+	if (dMin > dx) {
+		dMin = dx;
+		h = i;
+		}
+	}
+return pos [h].i;
 }
 
 //------------------------------------------------------------------------------
 
-int FindNextItemLeft (kcItem *items, int nItems, int cItem)
+int FindNextItemDown (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int *ref)
 {
-	int x, y, i;
+	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
-	y = items [cItem].y;
-	x = items [cItem].x + items [cItem].w1;
-	
-do {	
-	if (--x < 0) {
-		x = grdCurCanv->cv_bitmap.bm_props.w-1;
-		if (--y < 0) 
-			y = grdCurCanv->cv_bitmap.bm_props.h-1;
+i = j = ref [cItem];
+l = pos [i].l;
+r = pos [i].r;
+x = (l + r) / 2;
+y = yStart = pos [i].y;
+#if 0
+do {
+	i = (i + 1) % nItems;
+	if ((r >= pos [i].l) && (l <= pos [i].r))
+		return pos [i].i;
+	} while (i != j);
+#endif
+dMin = 0x7fffffff;
+dy = 0;
+for (;;) {
+	i = (i + 1) % nItems;
+	if (i == j)
+		break;
+	if (pos [i].y == yStart)
+		continue;
+	dx = abs (x - (pos [i].l + pos [i].r) / 2);
+	if (y != pos [i].y) {
+		y = pos [i].y;
+		dy += 10;
 		}
-	i = FindItemAt (items, nItems, x, y);
-} while (i < 0);
-return i;
+	dx += dy;
+	if (dMin > dx) {
+		dMin = dx;
+		h = i;
+		}
+	}
+return pos [h].i;
 }
 
 //------------------------------------------------------------------------------
 
 inline char *MouseTextString (i)
 {
-return (i < 3)? baseGameTexts [mousebutton_text [i]] : mousebutton_textra [i - 3];
+return (i < 3) ? baseGameTexts [mousebutton_text [i]] : mousebutton_textra [i - 3];
 }
 
 //------------------------------------------------------------------------------
@@ -1006,15 +1027,82 @@ return BT_NONE;
 
 //------------------------------------------------------------------------------
 
+void QSortItemPos (tKCItemPos *pos, int left, int right)
+{
+	int			l = left, 
+					r = right;
+	tKCItemPos	h, m = pos [(l + r) / 2];
+
+while ((pos [l].y < m.y) || ((pos [l].y == m.y) && (pos [l].l < m.l)))
+	l++;
+while ((pos [r].y > m.y) || ((pos [r].y == m.y) && (pos [r].l > m.l)))
+	r--;
+if (l <= r) {
+	if (l < r) {
+		h = pos [l];
+		pos [l] = pos [r];
+		pos [r] = h;
+		}
+	l++;
+	r--;
+	}
+if (l < right)
+	QSortItemPos (pos, l, right);
+if (left < r)
+	QSortItemPos (pos, left, r);
+}
+
+//------------------------------------------------------------------------------
+
+tKCItemPos *GetItemPos (kcItem *items, int nItems)
+{
+	tKCItemPos	*pos;
+	int			i;
+
+if (!(pos = (tKCItemPos *) D2_ALLOC (nItems * sizeof (tKCItemPos))))
+	return NULL;
+for (i = 0; i < nItems; i++) {
+	pos [i].l = items [i].x + items [i].w1;
+	pos [i].r = pos [i].l + items [i].w2;
+	pos [i].y = items [i].y;
+	pos [i].i = i;
+	}
+QSortItemPos (pos, 0, nItems - 1);
+return pos;
+}
+
+//------------------------------------------------------------------------------
+
+int *GetItemRef (kcItem *items, int nItems, tKCItemPos *pos)
+{
+	int	*ref;
+	int	i;
+
+if (!(ref = (int *) D2_ALLOC (nItems * sizeof (int))))
+	return NULL;
+for (i = 0; i < nItems; i++)
+	ref [pos [i].i] = i;
+return ref;
+}
+
+//------------------------------------------------------------------------------
+
 void LinkKbdEntries (void)
 {
-	int	i, j;
+	int			i, j, *ref;
+	tKCItemPos	*pos = GetItemPos (kcKeyboard, NUM_KEY_CONTROLS);
 
-for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)	{
-	kcKeyboard [i].u = FindNextItemUp (kcKeyboard, j, i);
-	kcKeyboard [i].d = FindNextItemDown (kcKeyboard, j, i);
-	kcKeyboard [i].l = FindNextItemLeft (kcKeyboard, j, i);
-	kcKeyboard [i].r = FindNextItemRight (kcKeyboard, j, i);
+if (pos) {
+	if (ref = GetItemRef (kcKeyboard, NUM_KEY_CONTROLS, pos)) {
+		for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++) {
+			kcKeyboard [i].u = FindNextItemUp (kcKeyboard, j, i, pos, ref);
+			kcKeyboard [i].d = FindNextItemDown (kcKeyboard, j, i, pos, ref);
+			kcKeyboard [i].l = FindNextItemLeft (kcKeyboard, j, i, pos, ref);
+			kcKeyboard [i].r = FindNextItemRight (kcKeyboard, j, i, pos, ref);
+			}
+		D2_FREE (ref);
+		}
+	D2_FREE (pos);
 	}
 }
 
@@ -1022,13 +1110,20 @@ for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)	{
 
 void LinkJoyEntries (void)
 {
-	int	i, j;
+	int			i, j, *ref;
+	tKCItemPos	*pos = GetItemPos (kcJoystick, NUM_JOY_CONTROLS);
 
-for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
-	kcJoystick [i].u = FindNextItemUp (kcJoystick, j, i);
-	kcJoystick [i].d = FindNextItemDown (kcJoystick, j, i);
-	kcJoystick [i].l = FindNextItemLeft (kcJoystick, j, i);
-	kcJoystick [i].r = FindNextItemRight (kcJoystick, j, i);
+if (pos) {
+	if (ref = GetItemRef (kcJoystick, NUM_JOY_CONTROLS, pos)) {
+		for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
+			kcJoystick [i].u = FindNextItemUp (kcJoystick, j, i, pos, ref);
+			kcJoystick [i].d = FindNextItemDown (kcJoystick, j, i, pos, ref);
+			kcJoystick [i].l = FindNextItemLeft (kcJoystick, j, i, pos, ref);
+			kcJoystick [i].r = FindNextItemRight (kcJoystick, j, i, pos, ref);
+			}
+		D2_FREE (ref);
+		}
+	D2_FREE (pos);
 	}
 }
 
@@ -1036,13 +1131,20 @@ for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
 
 void LinkMouseEntries (void)
 {
-	int	i, j;
+	int			i, j, *ref;
+	tKCItemPos	*pos = GetItemPos (kcMouse, NUM_MOUSE_CONTROLS);
 
-for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
-	kcMouse [i].u = FindNextItemUp (kcMouse, j, i);
-	kcMouse [i].d = FindNextItemDown (kcMouse, j, i);
-	kcMouse [i].l = FindNextItemLeft (kcMouse, j, i);
-	kcMouse [i].r = FindNextItemRight (kcMouse, j, i);
+if (pos) {
+	if (ref = GetItemRef (kcMouse, NUM_MOUSE_CONTROLS, pos)) {
+		for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
+			kcMouse [i].u = FindNextItemUp (kcMouse, j, i, pos, ref);
+			kcMouse [i].d = FindNextItemDown (kcMouse, j, i, pos, ref);
+			kcMouse [i].l = FindNextItemLeft (kcMouse, j, i, pos, ref);
+			kcMouse [i].r = FindNextItemRight (kcMouse, j, i, pos, ref);
+			}
+		D2_FREE (ref);
+		}
+	D2_FREE (pos);
 	}
 }
 
@@ -1050,13 +1152,20 @@ for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
 
 void LinkHotkeyEntries (void)
 {
-	int	i, j;
+	int			i, j, *ref;
+	tKCItemPos	*pos = GetItemPos (kcHotkeys, NUM_HOTKEY_CONTROLS);
 
-for (i = 0, j = NUM_HOTKEY_CONTROLS; i < j; i++)	{
-	kcHotkeys [i].u = FindNextItemUp (kcHotkeys, j, i);
-	kcHotkeys [i].d = FindNextItemDown (kcHotkeys, j, i);
-	kcHotkeys [i].l = FindNextItemLeft (kcHotkeys, j, i);
-	kcHotkeys [i].r = FindNextItemRight (kcHotkeys, j, i);
+if (pos) {
+	if (ref = GetItemRef (kcHotkeys, NUM_HOTKEY_CONTROLS, pos)) {
+		for (i = 0, j = NUM_HOTKEY_CONTROLS; i < j; i++)	{
+			kcHotkeys [i].u = FindNextItemUp (kcHotkeys, j, i, pos, ref);
+			kcHotkeys [i].d = FindNextItemDown (kcHotkeys, j, i, pos, ref);
+			kcHotkeys [i].l = FindNextItemLeft (kcHotkeys, j, i, pos, ref);
+			kcHotkeys [i].r = FindNextItemRight (kcHotkeys, j, i, pos, ref);
+			}
+		D2_FREE (ref);
+		}
+	D2_FREE (pos);
 	}
 }
 
@@ -1095,10 +1204,6 @@ WINDOS (
 	int	nChangeMode = BT_NONE, nPrevMode = BT_NONE;
 	bkg	bg;
 
-WIN (char *old_bg_pcx);
-WIN (old_bg_pcx = _SCRContext.bkg_filename);
-WIN (DEFINE_SCREEN (NULL));
-
 All_items = items;
 Num_items = nItems;
 memset (&bg, 0, sizeof (bg));
@@ -1112,8 +1217,8 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 	StopTime ();
 	}
 
-WINDOS (save_canvas = dd_grd_curcanv, save_canvas = grdCurCanv);
-WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
+save_canvas = grdCurCanv;
+GrSetCurrentCanvas (NULL);		
 save_font = grdCurCanv->cv_font;
 
 FlushInput ();
@@ -1132,7 +1237,7 @@ else if (items == kcJoystick)
 else if (items == kcMouse)
 	i = 2;
 else if (items == kcHotkeys)
-	i = 4;
+	i = 3;
 else
 	i = -1;
 if (i >= 0)
@@ -1248,7 +1353,7 @@ for (;;) {
 			break;
 		case KEY_UP: 		
 		case KEY_PAD8:
-#ifdef TABLE_CREATION
+#if TABLE_CREATION
 			if (items [cItem].u == -1) 
 				items [cItem].u=FindNextItemUp (items,nItems, cItem);
 #endif
@@ -1257,7 +1362,7 @@ for (;;) {
 		
 		case KEY_DOWN: 	
 		case KEY_PAD2:
-#ifdef TABLE_CREATION
+#if TABLE_CREATION
 			if (items [cItem].d == -1) 
 				items [cItem].d=FindNextItemDown (items,nItems, cItem);
 #endif
@@ -1265,7 +1370,7 @@ for (;;) {
 			break;
 		case KEY_LEFT: 	
 		case KEY_PAD4:
-#ifdef TABLE_CREATION
+#if TABLE_CREATION
 			if (items [cItem].l == -1) 
 				items [cItem].l=FindNextItemLeft (items,nItems, cItem);
 #endif
@@ -1273,7 +1378,7 @@ for (;;) {
 			break;
 		case KEY_RIGHT: 	
 		case KEY_PAD6:
-#ifdef TABLE_CREATION
+#if TABLE_CREATION
 			if (items [cItem].r == -1) 
 				items [cItem].r=FindNextItemRight (items,nItems, cItem);
 #endif
@@ -1288,7 +1393,7 @@ for (;;) {
 		case KEY_ESC:
 			KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
 			return;
-#ifdef TABLE_CREATION
+#if TABLE_CREATION
 		case KEYDBGGED+KEY_F12:	{
 			FILE *fp;
 #if TRACE		
