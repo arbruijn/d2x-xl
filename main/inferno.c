@@ -3148,6 +3148,7 @@ InitPowerupTables ();
 InitWeaponFlags ();
 InitGame ();
 InitThreads ();
+PiggyInitMemory ();
 /*---*/LogErr ("Loading hires models\n");
 LoadHiresModels ();
 /*---*/LogErr ("Enabling TrackIR support\n");

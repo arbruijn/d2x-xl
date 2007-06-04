@@ -620,6 +620,7 @@ typedef struct tRenderStates {
 	int bDoAppearanceEffect;
 	int bGlLighting;
 	int bColored;
+	int bBriefing;
 	int bRearView;
 	int nInterpolationMethod;
 	int bTMapFlat;

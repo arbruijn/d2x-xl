@@ -51,15 +51,15 @@ typedef struct SoundFile {
 	char    name [15];
 } SoundFile;
 
-
 int PiggyInit();
+int PiggyInitMemory (void);
 void PiggyInitPigFile (char *filename);
 void _CDECL_ PiggyClose(void);
 void PiggyDumpAll();
 tBitmapIndex PiggyRegisterBitmap( grsBitmap * bmp, char * name, int in_file );
-int piggy_registerSound( tDigiSound * snd, char * name, int in_file );
-tBitmapIndex piggy_find_bitmap( char * name, int bD1Data );
-int piggy_findSound( char * name );
+int PiggyRegisterSound( tDigiSound * snd, char * name, int in_file );
+tBitmapIndex PiggyFindBitmap( char * name, int bD1Data );
+int PiggyFindSound( char * name );
 
 typedef struct {
     char  identSize;          // size of ID field that follows 18 char header (0 usually)

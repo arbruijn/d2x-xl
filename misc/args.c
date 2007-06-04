@@ -45,10 +45,10 @@ int FindArg (char * s)
 {
 	int i;
   
-  for (i=0; i<Num_args; i++)
-    if (Args [i] && *Args [i] && !stricmp (Args [i], s))
-      return i;
-  return 0;
+for (i = 0; i < Num_args; i++)
+	if (Args [i] && *Args [i] && !stricmp (Args [i], s))
+		return i;
+return 0;
 }
 
 //------------------------------------------------------------------------------

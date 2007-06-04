@@ -68,7 +68,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
 #ifdef _DEBUG
-#	define PIGGY_MEM_QUOTA	2
+#	define PIGGY_MEM_QUOTA	4
 #else
 #	define PIGGY_MEM_QUOTA	8
 #endif
@@ -872,7 +872,7 @@ memset (gameData.pig.snd.sounds, 0, sizeof (gameData.pig.snd.sounds));
 
 //------------------------------------------------------------------------------
 
-int piggy_registerSound (tDigiSound * snd, char * name, int in_file)
+int PiggyRegisterSound (tDigiSound * snd, char * name, int in_file)
 {
 	int i;
 
@@ -895,7 +895,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-tBitmapIndex piggy_find_bitmap (char * name, int bD1Data)   
+tBitmapIndex PiggyFindBitmap (char * name, int bD1Data)   
 {
 	tBitmapIndex bmp;
 	int i;
@@ -934,7 +934,7 @@ tBitmapIndex piggy_find_bitmap (char * name, int bD1Data)
 
 //------------------------------------------------------------------------------
 
-int piggy_findSound (char * name)     
+int PiggyFindSound (char * name)     
 {
 	int i;
 
@@ -980,7 +980,7 @@ int request_cd (void);
 //------------------------------------------------------------------------------
 //copies a pigfile from the CD to the current dir
 //retuns file handle of new pig
-CFILE *copy_pigfile_from_cd (char *filename)
+CFILE *CopyPigFileFromCD (char *filename)
 {
 	char name [80];
 	FFS ffs;
@@ -1029,6 +1029,46 @@ CFILE *copy_pigfile_from_cd (char *filename)
 }
 
 //------------------------------------------------------------------------------
+
+int PiggyInitMemory (void)
+{
+	static	int bMemInited = 0;
+
+if (bMemInited)
+	return 1;
+#ifdef EDITOR
+bitmapCacheSize = nDataSize + (nDataSize / 10);   //extra mem for new bitmaps
+Assert (bitmapCacheSize > 0);
+#elif defined (WIN32)
+	{
+	MEMORYSTATUS	memStat;
+	GlobalMemoryStatus (&memStat);
+	bitmapCacheSize = (int) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
+	}
+#else
+bitmapCacheSize = PIGGY_BUFFER_SIZE;
+if (bLowMemory)
+	bitmapCacheSize = PIGGY_SMALL_BUFFER_SIZE;
+// the following loop will scale bitmap memory down by 20% for each iteration
+// until memory could be allocated, and then once more to leave enough memory
+// for other parts of the program
+for (;;) {
+	if ((bitmapBits [0] = D2_ALLOC (bitmapCacheSize))) {
+		D2_FREE (bitmapBits [0]);
+		break;
+		}
+	bitmapCacheSize = (bitmapCacheSize / 10) * PIGGY_MEM_QUOTA;
+	if (bitmapCacheSize < PIGGY_SMALL_BUFFER_SIZE) {
+		Error ("Not enough memory to load D2 bitmaps\n");
+		return 0;
+		break;
+		}
+	}
+#endif
+return bMemInited = 1;
+}
+
+//------------------------------------------------------------------------------
 //initialize a pigfile, reading headers
 //returns the size of all the bitmap data
 void PiggyInitPigFile (char *filename)
@@ -1050,9 +1090,9 @@ strlwr (szPigName);
 piggyFP [gameStates.app.bD1Data] = CFOpen (szPigName, gameFolders.szDataDir, "rb", 0);
 if (!piggyFP [gameStates.app.bD1Data]) {
 #ifdef EDITOR
-		return;         //if editor, ok to not have pig, because we'll build one
+	return;         //if editor, ok to not have pig, because we'll build one
 #else
-		piggyFP [gameStates.app.bD1Data] = copy_pigfile_from_cd (szPigName);
+	piggyFP [gameStates.app.bD1Data] = CopyPigFileFromCD (szPigName);
 #endif
 	}
 if (piggyFP [gameStates.app.bD1Data]) {                        //make sure pig is valid nType file & is up-to-date
@@ -1064,12 +1104,10 @@ if (piggyFP [gameStates.app.bD1Data]) {                        //make sure pig i
 		}
 	}
 if (!piggyFP [gameStates.app.bD1Data]) {
-	#ifdef EDITOR
-		return;         //if editor, ok to not have pig, because we'll build one
-	#else
-		Error ("Cannot load required file <%s>", szPigName);
-		return;
-	#endif
+#ifndef EDITOR
+	Error ("Cannot load required file <%s>", szPigName);
+#endif
+	return;
 	}
 strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = CFReadInt (piggyFP [gameStates.app.bD1Data]);
@@ -1094,36 +1132,6 @@ for (i = 0; i < nBitmapNum; i++) {
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
 	PiggyRegisterBitmap (&bmTemp, temp_name, 1);
-	}
-#	ifdef EDITOR
-bitmapCacheSize = nDataSize + (nDataSize/10);   //extra mem for new bitmaps
-Assert (bitmapCacheSize > 0);
-#	else
-#		ifdef _WIN32
-	{
-	MEMORYSTATUS	memStat;
-	GlobalMemoryStatus (&memStat);
-	bitmapCacheSize = (int) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
-	}
-#		else
-bitmapCacheSize = PIGGY_BUFFER_SIZE;
-if (bLowMemory)
-	bitmapCacheSize = PIGGY_SMALL_BUFFER_SIZE;
-#		endif
-#	endif
-// the following loop will scale bitmap memory down by 20% for each iteration
-// until memory could be allocated, and then once more to leave enough memory
-// for other parts of the program
-for (;;) {
-	if ((bitmapBits [0] = D2_ALLOC (bitmapCacheSize))) {
-		D2_FREE (bitmapBits [0]);
-		break;
-		}
-	bitmapCacheSize = (bitmapCacheSize / 10) * PIGGY_MEM_QUOTA;
-	if (bitmapCacheSize < PIGGY_SMALL_BUFFER_SIZE) {
-		Error ("Not enough memory to load D2 bitmaps\n");
-		break;
-		}
 	}
 bPigFileInitialized = 1;
 }
@@ -1168,7 +1176,7 @@ void piggy_new_pigfile (char *pigname)
 
 	#ifndef EDITOR
 	if (!piggyFP [0])
-		piggyFP [0] = copy_pigfile_from_cd (pigname);
+		piggyFP [0] = CopyPigFileFromCD (pigname);
 	#endif
 	if (piggyFP [0]) {  //make sure pig is valid nType file & is up-to-date
 		int pig_id,pig_version;
@@ -1348,7 +1356,7 @@ for (i=0; i<nSoundNum; i++) {
 		soundOffset [gameStates.app.bD1Data][gameData.pig.snd.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + sound_start;
 		memcpy (temp_name_read, sndh.name, 8);
 		temp_name_read [8] = 0;
-		piggy_registerSound (&tempSound, temp_name_read, 1);
+		PiggyRegisterSound (&tempSound, temp_name_read, 1);
 		sbytes += sndh.length;
 	}
 
@@ -2014,7 +2022,7 @@ reloadTextures:
 
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
-#ifndef _DEBUG
+#if 0//ndef _DEBUG
 		return;
 #endif
 		}
@@ -2223,7 +2231,7 @@ void PiggyWritePigFile (char *filename)
 		bmh.flags = gameData.pig.tex.pBitmaps[i].bm_props.flags;
 		if (PiggyIsSubstitutableBitmap (gameData.pig.tex.pBitmapFiles[i].name, subst_name)) {
 			tBitmapIndex other_bitmap;
-			other_bitmap = piggy_find_bitmap (subst_name, gameStates.app.bD1Data);
+			other_bitmap = PiggyFindBitmap (subst_name, gameStates.app.bD1Data);
 			gameData.pig.tex.bitmapXlat [i] = other_bitmap.index;
 			bmh.flags |= BM_FLAG_PAGED_OUT;
 		else

@@ -218,30 +218,26 @@ static int rescale_x (int x)
 
 //-----------------------------------------------------------------------------
 
-static int rescale_y (int y)
+static inline int RescaleY (int y)
 {
-	return y * GHEIGHT / 200;
+return y * GHEIGHT / 200;
 }
 
 //-----------------------------------------------------------------------------
 
 int local_key_inkey (void)
 {
-	int	rval;
+	int	rval = KeyInKey ();
 
-	rval = KeyInKey ();
-
-	if (rval == KEY_PRINT_SCREEN) {
-		SaveScreenShot (NULL, 0);
-		return 0;				//say no key pressed
+if (rval == KEY_PRINT_SCREEN) {
+	SaveScreenShot (NULL, 0);
+	return 0;				//say no key pressed
 	}
-
-	if (NMCheckButtonPress ())		//joystick or mouse button pressed?
-		rval = KEY_SPACEBAR;
-	else if (MouseButtonState (0))
-		rval = KEY_SPACEBAR;
-
-	return rval;
+if (NMCheckButtonPress ())		//joystick or mouse button pressed?
+	return KEY_SPACEBAR;
+if (MouseButtonState (0))
+	return KEY_SPACEBAR;
+return rval;
 }
 
 //-----------------------------------------------------------------------------
@@ -414,9 +410,9 @@ void init_char_pos (briefing_screen *bsp, int bRescale)
 {
 if (bRescale) {
 	bsp->text_ulx = rescale_x (bsp->text_ulx);
-	bsp->text_uly = rescale_y (bsp->text_uly);
+	bsp->text_uly = RescaleY (bsp->text_uly);
 	bsp->text_width = rescale_x (bsp->text_width);
-	bsp->text_height = rescale_y (bsp->text_height);
+	bsp->text_height = RescaleY (bsp->text_height);
 	}
 Briefing_text_x = bsp->text_ulx;
 Briefing_text_y = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8 * (1 + gameStates.menus.bHires));
@@ -431,9 +427,9 @@ void ShowBitmapFrame (int bRedraw)
 
 	grsBitmap *bmP;
 	int x = rescale_x (138);
-	int y = rescale_y (55);
+	int y = RescaleY (55);
 	int w = rescale_x (166);
-	int h = rescale_y (138);
+	int h = RescaleY (138);
 
 	//	Only plot every nth frame.
 	if (!bRedraw && Door_divCount) {
@@ -506,7 +502,7 @@ void ShowBitmapFrame (int bRedraw)
 
 		LoadPalette ("", "", 0, 0, 1);
 		{
-		tBitmapIndex bmi = piggy_find_bitmap (Bitmap_name, 0);
+		tBitmapIndex bmi = PiggyFindBitmap (Bitmap_name, 0);
 		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 		PIGGY_PAGE_IN (bmi, 0);
 		}
@@ -602,9 +598,9 @@ void InitSpinningRobot (void) // (int x, int y, int w, int h)
 	//Robot_angles.h += 0;
 
 	int x = rescale_x (138);
-	int y = rescale_y (55);
+	int y = RescaleY (55);
 	int w = rescale_x (163);
-	int h = rescale_y (136);
+	int h = RescaleY (136);
 
 	robotCanv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
 	bInitRobot = 1;
@@ -1505,6 +1501,7 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 	}
 if (!LoadScreenText (fnBriefing, &szBriefingText))
 	return;
+gameStates.render.bBriefing = 1;
 DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
@@ -1531,6 +1528,7 @@ if (gameStates.app.bD1Mission) {
 	}
 else
 	ShowBriefingScreen (nLevel, 0, (short) nLevel);
+gameStates.render.bBriefing = 0;
 D2_FREE (szBriefingText);
 szBriefingText = NULL;
 KeyFlush ();

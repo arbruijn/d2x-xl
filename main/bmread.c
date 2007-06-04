@@ -227,7 +227,7 @@ tBitmapIndex bm_load_sub( char * filename )
 
 	_splitpath(  filename, NULL, NULL, fname, NULL );
 
-	bitmap_num=piggy_find_bitmap( fname );
+	bitmap_num=PiggyFindBitmap( fname );
 	if (bitmap_num.index)	{
 		return bitmap_num;
 	}
@@ -272,7 +272,7 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 	
 	for (i=0; i<MAX_BITMAPS_PER_BRUSH; i++ )	{
 		sprintf( tempname, "%bObjectRendered#%d", fname, i );
-		bi = piggy_find_bitmap( tempname );
+		bi = PiggyFindBitmap( tempname );
 		if ( !bi.index )	
 			break;
 		bmp[i] = bi;
@@ -330,7 +330,7 @@ int ds_load( char * filename )	{
 	_splitpath(  filename, NULL, NULL, fname, NULL );
 	_makepath( rawname, NULL, NULL,fname, (gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?".R22":".RAW" );
 
-	i=piggy_findSound( fname );
+	i=PiggyFindSound( fname );
 	if (i!=255)	{
 		return i;
 	}
@@ -348,7 +348,7 @@ int ds_load( char * filename )	{
 #endif
 		return 255;
 	}
-	i = piggy_registerSound( &new, fname, 0 );
+	i = PiggyRegisterSound( &new, fname, 0 );
 	return i;
 }
 

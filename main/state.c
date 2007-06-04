@@ -1369,7 +1369,7 @@ int StateRestoreAll (int bInGame, int bSecretRestore, char *pszFilenameOverride)
 	char filename [128];
 	int	i, filenum = -1;
 
-if (gameData.app.nGameMode & GM_MULTI)	{
+if (IsMultiGame) {
 #	ifdef MULTI_SAVE
 	MultiInitiateRestoreGame ();
 #	endif
