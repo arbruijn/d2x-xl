@@ -2186,6 +2186,7 @@ UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse
 gameData.smoke.iFreeSmoke = -1;
 gameData.smoke.iUsedSmoke = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
+memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 InitEndLevelData ();
 SetDataVersion (-1);
 }

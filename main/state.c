@@ -1430,6 +1430,9 @@ if (!bSecretRestore && bInGame) {
 gameStates.app.bGameRunning = 0;
 i = StateRestoreAllSub (filename, 0, bSecretRestore);
 gameData.app.bGamePaused = 0;
+/*---*/LogErr ("   rebuilding OpenGL texture data\n");
+/*---*/LogErr ("      rebuilding effects\n");
+RebuildGfxFx (1, 1);
 StartTime ();
 return i;
 }

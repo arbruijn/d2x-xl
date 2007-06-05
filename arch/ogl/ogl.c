@@ -550,17 +550,9 @@ return 0;
 
 void OglCachePolyModelTextures (int nModel)
 {
-	tPolyModel		*po = gameData.models.polyModels + nModel;
-	int				h, i, j;
-	tBitmapIndex	bmi;
-
-for (i = po->nTextures, j = po->nFirstTexture; i; i--, j++) {
-//		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [po->nFirstTexture+i]];
-	h = gameData.pig.tex.pObjBmIndex [j];
-	bmi = gameData.pig.tex.objBmIndex [h];
-	PIGGY_PAGE_IN (bmi, 0);
-	OglLoadBmTexture (gameData.pig.tex.bitmaps [0] + bmi.index, 1, 3);
-	}
+	tPolyModel *po;
+if ((po = GetPolyModel (NULL, NULL, nModel, 0)))
+	LoadModelTextures (po, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -581,13 +573,13 @@ for (i = 0; i < vc->nFrameCount; i++) {
 
 void OglCacheWeaponTextures (tWeaponInfo *w)
 {
-	OglCacheVClipTexturesN (w->flash_vclip, 1);
-	OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
-	OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
-	if (w->renderType == WEAPON_RENDER_VCLIP)
-		OglCacheVClipTexturesN (w->weapon_vclip, 3);
-	else if (w->renderType == WEAPON_RENDER_POLYMODEL)
-		OglCachePolyModelTextures (w->nModel);
+OglCacheVClipTexturesN (w->flash_vclip, 1);
+OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
+OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
+if (w->renderType == WEAPON_RENDER_VCLIP)
+	OglCacheVClipTexturesN (w->weapon_vclip, 3);
+else if (w->renderType == WEAPON_RENDER_POLYMODEL)
+	OglCachePolyModelTextures (w->nModel);
 }
 
 //------------------------------------------------------------------------------
@@ -655,61 +647,6 @@ for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
 
 //------------------------------------------------------------------------------
 
-void CacheObjTextures (int nObj)
-{
-if (nObj == -3) {
-	ResetSpecialEffects ();
-	InitSpecialEffects ();
-	}
-else if (nObj == -2) 
-	OglCacheWeaponTextures (gameData.weapons.info + primaryWeaponToWeaponInfo [LASER_INDEX]);
-else if (nObj == -1)
-	OglCacheWeaponTextures (gameData.weapons.info + secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]);
-else if (gameData.objs.objects [nObj].renderType == RT_POWERUP) {
-	OglCacheVClipTexturesN (gameData.objs.objects [nObj].rType.vClipInfo.nClipIndex, 0);
-	switch (gameData.objs.objects [nObj].id){
-/*					case POW_LASER:
-			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [LASER_INDEX]]);
-//						if (laserlev<4)
-//							laserlev++;
-			break;*/
-		case POW_VULCAN:
-			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [VULCAN_INDEX]]);
-			break;
-		case POW_SPREADFIRE:
-			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [SPREADFIRE_INDEX]]);
-			break;
-		case POW_PLASMA:
-			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [PLASMA_INDEX]]);
-			break;
-		case POW_FUSION:
-			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [FUSION_INDEX]]);
-			break;
-/*					case POW_CONCUSSION_1:
-		case POW_CONCUSSION_4:
-			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]]);
-			break;*/
-		case POW_PROXMINE:
-			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXMINE_INDEX]]);
-			break;
-		case POW_HOMINGMSL_1:
-		case POW_HOMINGMSL_4:
-			OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [HOMING_INDEX]]);
-			break;
-		case POW_SMARTMSL:
-			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [SMART_INDEX]]);
-			break;
-		case POW_MEGAMSL:
-			OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [MEGA_INDEX]]);
-			break;
-		}
-	}
-else if (gameData.objs.objects [nObj].renderType == RT_POLYOBJ)
-	OglCachePolyModelTextures (gameData.objs.objects [nObj].rType.polyObjInfo.nModel);
-}
-
-//------------------------------------------------------------------------------
-
 static int nCacheSeg = 0;
 static int nCacheObj = -3;
 
@@ -751,19 +688,18 @@ return 1;
 
 int OglCacheLevelTextures (void)
 {
-	int				i, bD1;
-	eclip				*ec;
-	int				max_efx=0,ef;
-#if 1
-	int				seg, side;
-	short				tmap1,tmap2;
-	grsBitmap		*bmP,*bm2, *bmm;
-	struct tSide	*sideP;
-#endif
+	int			i, j, bD1;
+	eclip			*ec;
+	int			max_efx = 0, ef;
+	int			nSegment, nSide;
+	short			tmap1, tmap2;
+	grsBitmap	*bmP,*bm2, *bmm;
+	tSegment		*segP;
+	tSide			*sideP;
 
 OglResetTextureStatsInternal ();//loading a new lev should reset textures
 TexMergeClose ();
-TexMergeInit (100);
+TexMergeInit (-1);
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1];i++,ec++) {
@@ -776,19 +712,13 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 		for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ec++) {
 			if ((ec->changingWallTexture == -1) && (ec->changingObjectTexture == -1))
 				continue;
-	//			if (ec->vc.nFrameCount>max_efx)
-	//				max_efx=ec->vc.nFrameCount;
 			ec->time_left = -1;
 			}
 	}
 DoSpecialEffects ();
 
-#if 0
-OglCacheTextures ();
-#else
-for (seg = 0; seg < gameData.segs.nSegments; seg++) {
-	for (side = 0; side < MAX_SIDES_PER_SEGMENT; side++) {
-		sideP = gameData.segs.segments [seg].sides + side;
+for (segP = SEGMENTS, nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
 		tmap1 = sideP->nBaseTex;
 		if ((tmap1 < 0) || (tmap1 >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]))
 			continue;
@@ -808,63 +738,19 @@ for (seg = 0; seg < gameData.segs.nSegments; seg++) {
 	}
 ResetSpecialEffects ();
 InitSpecialEffects ();
-{
-//		int laserlev=1;
-	//always have lasers and concs
-	OglCacheWeaponTextures (gameData.weapons.info + primaryWeaponToWeaponInfo [LASER_INDEX]);
-	OglCacheWeaponTextures (gameData.weapons.info + secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]);
-	for (i = 0; i <= gameData.objs.nLastObject; i++) {
-		if (gameData.objs.objects [i].renderType == RT_POWERUP) {
-			OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 3);
-			switch (gameData.objs.objects [i].id) {
-/*					case POW_LASER:
-					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [LASER_INDEX]]);
-//						if (laserlev<4)
-//							laserlev++;
-					break;*/
-#if 1//def _DEBUG
-				case POW_HOARD_ORB:
-					OglCacheVClipTexturesN (gameData.objs.objects [i].rType.vClipInfo.nClipIndex, 0);
-					break;
-#endif
-				case POW_VULCAN:
-					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [VULCAN_INDEX]]);
-					break;
-				case POW_SPREADFIRE:
-					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [SPREADFIRE_INDEX]]);
-					break;
-				case POW_PLASMA:
-					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [PLASMA_INDEX]]);
-					break;
-				case POW_FUSION:
-					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [FUSION_INDEX]]);
-					break;
-				case POW_CONCUSSION_1:
-				case POW_CONCUSSION_4:
-					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [CONCUSSION_INDEX]]);
-					break;
-				case POW_PROXMINE:
-					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [PROXMINE_INDEX]]);
-					break;
-				case POW_HOMINGMSL_1:
-				case POW_HOMINGMSL_4:
-					OglCacheWeaponTextures (&gameData.weapons.info [primaryWeaponToWeaponInfo [HOMING_INDEX]]);
-					break;
-				case POW_SMARTMSL:
-					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [SMART_INDEX]]);
-					break;
-				case POW_MEGAMSL:
-					OglCacheWeaponTextures (&gameData.weapons.info [secondaryWeaponToWeaponInfo [MEGA_INDEX]]);
-					break;
-				default:
-					break;
-				}
-			}
-		else if (gameData.objs.objects [i].renderType == RT_POLYOBJ)
-			OglCachePolyModelTextures (gameData.objs.objects [i].rType.polyObjInfo.nModel);
-		}
-	}
-#endif
+// cache all weapon and powerup textures
+for (i = 0; i < EXTRA_OBJ_IDS; i++)
+	OglCacheWeaponTextures (gameData.weapons.info + i);
+for (i = 0; i < MAX_POWERUP_TYPES; i++)
+	if (i != 9)
+		OglCacheVClipTexturesN (gameData.objs.pwrUp.info [i].nClipIndex, 3);
+for (i = 0; i <= gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects [i].renderType == RT_POLYOBJ)
+		OglCachePolyModelTextures (gameData.objs.objects [i].rType.polyObjInfo.nModel);
+for (i = 0; i < 2; i++)
+	for (j = 0; j < MAX_GAUGE_BMS; j++)
+		if (gameData.cockpit.gauges [i][j].index != 0xffff)
+			PIGGY_PAGE_IN (gameData.cockpit.gauges [i][j], 0);
 return 0;
 }
 

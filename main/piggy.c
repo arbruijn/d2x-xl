@@ -2022,7 +2022,7 @@ reloadTextures:
 
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
-#if 0//ndef _DEBUG
+#ifndef _DEBUG
 		return;
 #endif
 		}

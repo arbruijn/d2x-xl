@@ -22,12 +22,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsg.h"
 //from gauges.c
 
-#define MAX_GAUGE_BMS 100   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
-#define D1_MAX_GAUGE_BMS 80   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
-
-extern tBitmapIndex Gauges[MAX_GAUGE_BMS];      // Array of all gauge bitmaps.
-extern tBitmapIndex Gauges_hires[MAX_GAUGE_BMS];    // hires gauges
-
 // Flags for gauges/hud stuff
 extern ubyte Reticle_on;
 

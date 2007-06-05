@@ -1324,7 +1324,7 @@ switch (nType) {
 			objP->mType.physInfo.mass = F1_0;
 			objP->mType.physInfo.flags = PF_BOUNCE;
 			objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
-			objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0] [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+			objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 			objP->rType.vClipInfo.nCurFrame = 0;
 
 			switch (objP->id) {

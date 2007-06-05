@@ -258,8 +258,8 @@ for (i = 0; i < gameData.models.nPolyModels; i++)
 
 t = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d cockpit gauges\n", t);
-BitmapIndexReadN (Gauges, t, fp);
-BitmapIndexReadN (Gauges_hires, t, fp);
+BitmapIndexReadN (gameData.cockpit.gauges [1], t, fp);
+BitmapIndexReadN (gameData.cockpit.gauges [0], t, fp);
 
 gameData.pig.tex.nObjBitmaps = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d tObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
@@ -860,7 +860,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 		CFRead (gameData.models.polyModels [i].modelData, sizeof (ubyte), gameData.models.polyModels [i].nDataSize, fp);
 	}
 
-	CFRead (Gauges, sizeof (tBitmapIndex), MAX_GAUGE_BMS, fp);
+	CFRead (gameData.cockpit.gauges [1], sizeof (tBitmapIndex), MAX_GAUGE_BMS, fp);
 
 	CFRead (gameData.models.nDyingModels, sizeof (int), MAX_POLYGON_MODELS, fp);
 	CFRead (gameData.models.nDeadModels, sizeof (int), MAX_POLYGON_MODELS, fp);
@@ -994,7 +994,7 @@ void BMReadAllD1 (CFILE * fp)
 	for (i=0;i<gameData.models.nPolyModels;i++)
 		PolyModelDataRead (&gameData.models.polyModels [i], fp);
 	*/CFSeek (fp, 521490-160, SEEK_SET);// OK, I admit, this is a dirty hack
-	//BitmapIndexReadN (Gauges, D1_MAX_GAUGE_BMS, fp);
+	//BitmapIndexReadN (gameData.cockpit.gauges [1], D1_MAX_GAUGE_BMS, fp);
 	CFSeek (fp, D1_MAX_GAUGE_BMS * sizeof (tBitmapIndex), SEEK_CUR);
 
 	/*

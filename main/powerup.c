@@ -115,9 +115,7 @@ char *pszPowerup [MAX_POWERUP_TYPES] = {
 	"mercury missile (4)",
 	"earth shaker",
 	"blue flag",
-	"red flag",
-	"",
-	""
+	"red flag"
 	};
 
 #define	MAX_INV_ITEMS	((5 - gameStates.app.nDifficultyLevel) * ((playerP->flags & PLAYER_FLAGS_AMMO_RACK) ? 2 : 1))

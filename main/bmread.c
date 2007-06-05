@@ -916,7 +916,7 @@ void bm_read_gauges()
 	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 		Assert(clipCount < MAX_GAUGE_BMS);
-		Gauges[clipCount] = bitmap;
+		gameData.cockpit.gauges [1][clipCount] = bitmap;
 		clipCount++;
 	} else {
 		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
@@ -924,7 +924,7 @@ void bm_read_gauges()
 		ab_load( arg, bm, &num_abm_frames );
 		for (i=clipCount; i<clipCount+num_abm_frames; i++) {
 			Assert(i < MAX_GAUGE_BMS);
-			Gauges[i] = bm[i-clipCount];
+			gameData.cockpit.gauges [1][i] = bm[i-clipCount];
 		}
 		clipCount += num_abm_frames;
 	}
@@ -938,7 +938,7 @@ void bm_read_gauges_hires()
 	if (!abmFlag)	{
 		bitmap = bm_load_sub(arg);
 		Assert(clipCount < MAX_GAUGE_BMS);
-		Gauges_hires[clipCount] = bitmap;
+		gameData.cockpit.gauges [0][clipCount] = bitmap;
 		clipCount++;
 	} else {
 		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
@@ -946,7 +946,7 @@ void bm_read_gauges_hires()
 		ab_load( arg, bm, &num_abm_frames );
 		for (i=clipCount; i<clipCount+num_abm_frames; i++) {
 			Assert(i < MAX_GAUGE_BMS);
-			Gauges_hires[i] = bm[i-clipCount];
+			gameData.cockpit.gauges [0][i] = bm[i-clipCount];
 		}
 		clipCount += num_abm_frames;
 	}
@@ -2294,10 +2294,10 @@ fprintf(tfile,"gameData.models.nDyingModels array = %d, gameData.models.nDeadMod
 
 	t = MAX_GAUGE_BMS;
 	fwrite( &t, sizeof(int), 1, fp );
-	fwrite( Gauges, sizeof(tBitmapIndex), t, fp );
-	fwrite( Gauges_hires, sizeof(tBitmapIndex), t, fp );
+	fwrite( gameData.cockpit.gauges [1], sizeof(tBitmapIndex), t, fp );
+	fwrite( gameData.cockpit.gauges [0], sizeof(tBitmapIndex), t, fp );
 
-fprintf(tfile,"Num gauge bitmaps = %d, Gauges array = %d, Gauges_hires array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(tBitmapIndex)*t);
+fprintf(tfile,"Num gauge bitmaps = %d, gameData.cockpit.gauges [1] array = %d, gameData.cockpit.gauges [0] array = %d\n",t,sizeof(tBitmapIndex)*t,sizeof(tBitmapIndex)*t);
 
 	t = MAX_OBJ_BITMAPS;
 	fwrite( &t, sizeof(int), 1, fp );

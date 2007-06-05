@@ -59,7 +59,7 @@ int TexMergeInit (int nCacheSize)
 	int i;
 	TEXTURE_CACHE *cacheP = texCache;
 
-nCacheEntries = (nCacheSize <= MAX_NUM_CACHE_BITMAPS) ? nCacheSize  : MAX_NUM_CACHE_BITMAPS;
+nCacheEntries = ((nCacheSize > 0) && (nCacheSize <= MAX_NUM_CACHE_BITMAPS)) ? nCacheSize  : MAX_NUM_CACHE_BITMAPS;
 for (i = 0; i < nCacheEntries; i++, cacheP++) {
 	cacheP->last_frame_used = -1;
 	cacheP->bmTop =

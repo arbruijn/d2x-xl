@@ -983,7 +983,8 @@ ClearBoxedMessage ();		//remove message before new palette loaded
 GrPaletteStepLoad (NULL);		//actually load the palette
 /*---*/LogErr ("   rebuilding OpenGL texture data\n");
 /*---*/LogErr ("      rebuilding effects\n");
-RebuildGfxFx (1, 1);
+if (!bRestore)
+	RebuildGfxFx (1, 1);
 ResetPingStats ();
 gameStates.gameplay.nDirSteps = 0;
 gameStates.gameplay.bMineMineCheat = 0;

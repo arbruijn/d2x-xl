@@ -70,9 +70,6 @@ double cmScaleX, cmScaleY;
 
 #define HUD_ASPECT	((double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w / 0.75)
 
-tBitmapIndex Gauges [MAX_GAUGE_BMS];   // Array of all gauge bitmaps.
-tBitmapIndex Gauges_hires [MAX_GAUGE_BMS];   // hires gauges
-
 grs_canvas *Canv_LeftEnergyGauge;
 grs_canvas *Canv_AfterburnerGauge;
 grs_canvas *Canv_SBEnergyGauge;
@@ -154,15 +151,15 @@ int bHaveObjTallyBms = -1;
 #define PAGE_IN_GAUGE(x) _page_in_gauge (x)
 static inline void _page_in_gauge (int x)
 {
-PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? Gauges_hires [x] : Gauges [x], 0);
+PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0] [x] : gameData.cockpit.gauges [1] [x], 0);
 }
 
 #else
-#define PAGE_IN_GAUGE(x)	PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? Gauges_hires [x] : Gauges [x], 0);	
+#define PAGE_IN_GAUGE(x)	PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0] [x] : gameData.cockpit.gauges [1] [x], 0);	
 
 #endif
 
-#define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires?Gauges_hires [x].index:Gauges [x].index)
+#define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires?gameData.cockpit.gauges [0] [x].index:gameData.cockpit.gauges [1] [x].index)
 
 //change MAX_GAUGE_BMS when adding gauges
 
@@ -2467,34 +2464,32 @@ if (bHaveGaugeCanvases) {
 
 //	-----------------------------------------------------------------------------
 
-void InitGauges ()
+void InitGauges (void)
 {
 	int i;
 
 	//draw_gauges_on 	= 1;
 
-	for (i=0; i<2; i++)	{
-		if (((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP)) || ((gameData.demo.nState == ND_STATE_PLAYBACK) && (gameData.demo.nGameMode & GM_MULTI) && !(gameData.demo.nGameMode & GM_MULTI_COOP))) 
-			old_score [i] = -99;
-		else
-			old_score [i]			= -1;
-		old_energy [i]			= -1;
-		old_shields [i]			= -1;
-		oldFlags [i]			= -1;
-		old_cloak [i]			= -1;
-		old_lives [i]			= -1;
-		old_afterburner [i]	= -1;
-		oldBombcount [i]		= 0;
-		old_laserLevel [i]	= 0;
-	
-		old_weapon [0][i] = old_weapon [1][i] = -1;
-		old_ammoCount [0][i] = old_ammoCount [1][i] = -1;
-		Old_Omega_charge [i] = -1;
+for (i=0; i<2; i++)	{
+	if ((IsMultiGame && !IsCoopGame) || ((gameData.demo.nState == ND_STATE_PLAYBACK) && (gameData.demo.nGameMode & GM_MULTI) && !(gameData.demo.nGameMode & GM_MULTI_COOP))) 
+		old_score [i] = -99;
+	else
+		old_score [i]		= -1;
+	old_energy [i]			= -1;
+	old_shields [i]		= -1;
+	oldFlags [i]			= -1;
+	old_cloak [i]			= -1;
+	old_lives [i]			= -1;
+	old_afterburner [i]	= -1;
+	oldBombcount [i]		= 0;
+	old_laserLevel [i]	= 0;
+
+	old_weapon [0][i] = old_weapon [1][i] = -1;
+	old_ammoCount [0][i] = old_ammoCount [1][i] = -1;
+	Old_Omega_charge [i] = -1;
 	}
-
-	nCloakFadeState = 0;
-
-	weapon_box_user [0] = weapon_box_user [1] = WBU_WEAPON;
+nCloakFadeState = 0;
+weapon_box_user [0] = weapon_box_user [1] = WBU_WEAPON;
 }
 
 //	-----------------------------------------------------------------------------
