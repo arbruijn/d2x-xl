@@ -984,7 +984,7 @@ else {
 		}
 	}
 //	If weaponP fired by tPlayer or companion...
-if ((weaponP->cType.laserInfo.parentType== OBJ_PLAYER) || robot_escort) {
+if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || robot_escort) {
 	if (!(weaponP->flags & OF_SILENT) && 
 		 (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject))
 		CreateAwarenessEvent (weaponP, PA_WEAPON_WALL_COLLISION);			// tObject "weaponP" can attract attention to tPlayer

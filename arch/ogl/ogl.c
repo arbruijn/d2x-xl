@@ -57,6 +57,7 @@
 #include "menu.h"
 #include "newmenu.h"
 #include "gauges.h"
+#include "hostage.h"
 #include "gr.h"
 
 //------------------------------------------------------------------------------
@@ -696,6 +697,7 @@ int OglCacheLevelTextures (void)
 	grsBitmap	*bmP,*bm2, *bmm;
 	tSegment		*segP;
 	tSide			*sideP;
+	tObject		*objP;
 
 OglResetTextureStatsInternal ();//loading a new lev should reset textures
 TexMergeClose ();
@@ -738,19 +740,25 @@ for (segP = SEGMENTS, nSegment = 0; nSegment < gameData.segs.nSegments; nSegment
 	}
 ResetSpecialEffects ();
 InitSpecialEffects ();
+CacheObjectEffects ();
 // cache all weapon and powerup textures
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTexturesN (gameData.objs.pwrUp.info [i].nClipIndex, 3);
-for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].renderType == RT_POLYOBJ)
-		OglCachePolyModelTextures (gameData.objs.objects [i].rType.polyObjInfo.nModel);
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++)
+	if (objP->renderType == RT_POLYOBJ)
+		OglCachePolyModelTextures (objP->rType.polyObjInfo.nModel);
+// cache the hostage clip frame textures
+OglCacheVClipTexturesN (33, 2);    
+// cache all clip frame textures incl. explosions and effects
 for (i = 0; i < 2; i++)
 	for (j = 0; j < MAX_GAUGE_BMS; j++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			PIGGY_PAGE_IN (gameData.cockpit.gauges [i][j], 0);
+for (i = 0; i < gameData.eff.nClips [0]; i++)
+	OglCacheVClipTexturesN (i, 1);
 return 0;
 }
 

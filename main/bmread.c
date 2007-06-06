@@ -2161,10 +2161,10 @@ void bm_read_hostage()
 	int n;
 	char 	*equal_ptr;
 
-	Assert(N_hostageTypes < MAX_HOSTAGE_TYPES);
+	Assert(nHostageTypes < MAX_HOSTAGE_TYPES);
 
-	n = N_hostageTypes;
-	N_hostageTypes++;
+	n = nHostageTypes;
+	nHostageTypes++;
 
 	// Process arguments
 	arg = strtok( NULL, space );
@@ -2177,7 +2177,7 @@ void bm_read_hostage()
 
 			if (!stricmp( arg, "vclip_num" ))
 
-				Hostage_vclip_num[n] = atoi(equal_ptr);
+				nHostageVClips[n] = atoi(equal_ptr);
 
 			else {
 				Int3();

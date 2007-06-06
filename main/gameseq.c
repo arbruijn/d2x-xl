@@ -670,8 +670,8 @@ else
 effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
 if (effectObjP) {
 	effectObjP->position.mOrient = playerObjP->position.mOrient;
-	if (gameData.eff.vClips [0] [VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		DigiLinkSoundToObject (gameData.eff.vClips [0] [VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0);
+	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
+		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0);
 	}
 }
 
@@ -1098,7 +1098,7 @@ void DoEndLevelScoreGlitz (int network)
 	char	all_hostage_text [64];
 	char	endgame_text [64];
 	#define N_GLITZITEMS 11
-	char				m_str [N_GLITZITEMS] [30];
+	char				m_str [N_GLITZITEMS][30];
 	tMenuItem	m [N_GLITZITEMS+1];
 	int				i,c;
 	char				title [128];
@@ -1888,7 +1888,7 @@ objP->renderType = RT_POWERUP;
 objP->controlType = CT_POWERUP;
 objP->size = gameData.objs.pwrUp.info [POW_ENERGY].size;
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_ENERGY].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0] [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 }
 
 //------------------------------------------------------------------------------

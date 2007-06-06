@@ -2870,6 +2870,10 @@ else if (nType == OBJ_ROBOT) {
 	if (ROBOTINFO (id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 	}
+else if (nType == OBJ_HOSTAGE)
+	nType = nType;
+else if (nType == OBJ_FIREBALL)
+	nType = nType;
 else if (nType == OBJ_CNTRLCEN)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)

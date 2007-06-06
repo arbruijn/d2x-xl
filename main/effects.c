@@ -101,7 +101,7 @@ void ResetSpecialEffects (void)
 	tBitmapIndex	bmi;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
-	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++) {
+	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ecP++) {
 		ecP->nSegment = -1;					//clear any active one-shots
 		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_ALTFMT | EF_INITIALIZED);	//restart any stopped effects
 		bmi = ecP->vc.frames [ecP->nCurFrame];
@@ -110,8 +110,21 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 			gameData.pig.tex.bmIndex [bD1][ecP->changingWallTexture] = bmi;
 		if (ecP->changingObjectTexture != -1)
 			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
-
 	}
+}
+
+// ----------------------------------------------------------------------------
+
+void CacheObjectEffects (void)
+{
+	int				i, j, bD1;
+	eclip				*ecP;
+
+for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
+	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ecP++)
+		if ((ecP->changingObjectTexture != -1) && !(ecP->flags & EF_ALTFMT))
+			for (j = 0; j < ecP->vc.nFrameCount; j++)
+				PIGGY_PAGE_IN (ecP->vc.frames [j], bD1);
 }
 
 // ----------------------------------------------------------------------------
@@ -195,7 +208,7 @@ return bmP;
 
 // ----------------------------------------------------------------------------
 
-void DoSpecialEffects()
+void DoSpecialEffects (void)
 {
 	static fix xEffectTime = 0;
 
@@ -298,7 +311,7 @@ xEffectTime += gameData.time.xFrame;
 			if (ecP->nCurFrame >= nFrames) {
 				if (ecP->flags & EF_ONE_SHOT) {
 	#ifdef _DEBUG
-					Assert(ecP->nSegment!=-1);
+					Assert(ecP->nSegment != -1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
 					Assert(ecP->nDestBm!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
 	#endif

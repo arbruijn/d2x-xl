@@ -74,9 +74,9 @@ int	PK1=1, PK2=8;
 tObject *ObjectCreateExplosionSub (
 	tObject *objP, 
 	short nSegment, 
-	vmsVector * position, 
+	vmsVector *position, 
 	fix size, 
-	ubyte vclipType, 
+	ubyte nVClip, 
 	fix maxdamage, 
 	fix maxdistance, 
 	fix maxforce, 
@@ -85,8 +85,8 @@ tObject *ObjectCreateExplosionSub (
 	short nObject;
 	tObject *explObjP;
 
-nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIdentityMatrix, size, 
-							  CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
+nObject = CreateObject (OBJ_FIREBALL, nVClip, -1, nSegment, position, &vmdIdentityMatrix, size, 
+							   CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
 
 	if (nObject < 0) {
 #if TRACE
@@ -97,7 +97,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 
 	explObjP = gameData.objs.objects + nObject;
 	//now set explosion-specific data
-	explObjP->lifeleft = gameData.eff.vClips [0] [vclipType].xTotalTime;
+	explObjP->lifeleft = gameData.eff.vClips [0][nVClip].xTotalTime;
 	explObjP->cType.explInfo.nSpawnTime = -1;
 	explObjP->cType.explInfo.nDeleteObj = -1;
 	explObjP->cType.explInfo.nDeleteTime = -1;
@@ -183,7 +183,7 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 								}
 								if (obj0P->shields >= 0) {
 									if (ROBOTINFO (obj0P->id).bossFlag)
-										if (bossProps [gameStates.app.bD1Mission] [ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
+										if (bossProps [gameStates.app.bD1Mission][ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
 											damage /= 4;
 
 									if (ApplyDamageToRobot (obj0P, damage, parent))
@@ -274,37 +274,28 @@ nObject = CreateObject (OBJ_FIREBALL, vclipType, -1, nSegment, position, &vmdIde
 	}	// end if (maxdamage...
 
 	return explObjP;
-
 }
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector * position, fix size, ubyte vclipType)
+tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector * position, fix size, ubyte nVClip)
 {
-return ObjectCreateExplosionSub (NULL, nSegment, position, size, vclipType, 0, 0, 0, -1);
+return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateExplosion (short nSegment, vmsVector * position, fix size, ubyte vclipType)
+tObject *ObjectCreateExplosion (short nSegment, vmsVector * position, fix size, ubyte nVClip)
 {
-return ObjectCreateExplosionSub (NULL, nSegment, position, size, vclipType, 0, 0, 0, -1);
+return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateBadassExplosion (
-	tObject *objP, 
-	short nSegment, 
-	vmsVector *position, 
-	fix size, 
-	ubyte vclipType, 
-	fix maxdamage, 
-	fix maxdistance, 
-	fix maxforce, 
-	short parent)
+tObject *ObjectCreateBadassExplosion (tObject *objP, short nSegment, vmsVector *position, fix size, ubyte nVClip, 
+												  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
-	tObject	*rval = ObjectCreateExplosionSub (objP, nSegment, position, size, vclipType, maxdamage, maxdistance, maxforce, parent);
+	tObject	*rval = ObjectCreateExplosionSub (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 
 if ((objP != NULL) && (objP->nType == OBJ_WEAPON))
 	CreateSmartChildren (objP, NUM_SMART_CHILDREN);

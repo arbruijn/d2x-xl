@@ -4435,7 +4435,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDisable (GL_TEXTURE_2D);
 		}
 	glDepthFunc (GL_LESS);
-	if (!nWindow)
+	if (!(nWindow || gameStates.render.cameras.bActive))
 		RenderRadar ();
 	if (gameStates.render.automap.bDisplay) {
 		if (gameOpts->render.automap.bSmoke)

@@ -172,8 +172,8 @@ if (!gameData.hoard.bInitialized) {
 	//Create orb goal tWall effect
 	gameData.hoard.goal.nClip = gameData.eff.nEffects [0]++;
 	Assert (gameData.eff.nEffects [0] < MAX_EFFECTS);
-	ecP = gameData.eff.pEffects + gameData.hoard.goal.nClip;
-	*ecP = gameData.eff.pEffects [94];        //copy from blue goal
+	ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip;
+	*ecP = gameData.eff.effects [0][94];        //copy from blue goal
 	ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
 	ecP->vc.nFrameCount = gameData.hoard.goal.nFrames;
 	ecP->flags &= ~EF_INITIALIZED;
@@ -199,7 +199,7 @@ if (!gameData.hoard.bInitialized) {
 	nBitmap = InitMonsterball (nBitmap);
 	}
 else {
-	ecP = gameData.eff.pEffects + gameData.hoard.goal.nClip;
+	ecP = gameData.eff.effects [0] + gameData.hoard.goal.nClip;
 	}
 
 //Load and remap bitmap data for orb
