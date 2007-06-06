@@ -116,7 +116,7 @@ for (i = 0; i < 6; i++) {
 	d = VmVecDot (gameData.segs.segments [objP->nSegment].sides [i].normals, &objP->position.mOrient.uVec);
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
-if (gameOpts->physics.nLevelling == 0) {	 // new tPlayer leveling code: use normal of tSide closest to our up vec
+if (gameOpts->gameplay.nAutoLeveling == 0) {	 // new tPlayer leveling code: use normal of tSide closest to our up vec
 	if (GetNumFaces (&gameData.segs.segments [objP->nSegment].sides [best_side])==2) {
 		tSide *s = &gameData.segs.segments [objP->nSegment].sides [best_side];
 		desiredUpVec.p.x = (s->normals [0].p.x + s->normals [1].p.x) / 2;
@@ -127,7 +127,7 @@ if (gameOpts->physics.nLevelling == 0) {	 // new tPlayer leveling code: use norm
 	else
 		desiredUpVec = gameData.segs.segments [objP->nSegment].sides [best_side].normals [0];
 	}
-else if (gameOpts->physics.nLevelling == 1)	// old way: used floor's normal as upvec
+else if (gameOpts->gameplay.nAutoLeveling == 1)	// old way: used floor's normal as upvec
 	desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
 else 
 	desiredUpVec = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient.uVec;
@@ -153,8 +153,10 @@ if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 		VmMatMul (&new_pm, &objP->position.mOrient, &mRotate);
 		objP->position.mOrient = new_pm;
 		}
+#if 0
 	else 
-		gameOpts->physics.nLevelling = 0;
+		gameOpts->gameplay.nAutoLeveling = 0;
+#endif
 	}
 }
 

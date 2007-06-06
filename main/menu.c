@@ -3525,6 +3525,7 @@ do {
 		opt++;
 		ADD_RADIO (opt, TXT_AUTOLEVEL_GLOBAL, 0, KEY_M, 1, HTX_AUTO_LEVELLING);
 		opt++;
+		m [optAutoLevel + NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 3)].value = 1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
