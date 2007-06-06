@@ -1472,16 +1472,20 @@ void DoBriefingScreens (char *filename, int nLevel)
 	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, gameData.missions.szEndingFilename);
 	char	fnBriefing [FILENAME_LEN];
 
+gameStates.render.bBriefing = 1;
 RebuildGfxFx (1, 1);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
+	gameStates.render.bBriefing = 0;
 	return;
 	}
 strcpy (fnBriefing, *gameData.missions.szBriefingFilename ? gameData.missions.szBriefingFilename : filename);
 con_printf (CONDBG, "Trying briefing screen <%s>\n", fnBriefing);
 LogErr ("Looking for briefing screen '%s'\n", fnBriefing);
-if (!fnBriefing)
+if (!fnBriefing) {
+	gameStates.render.bBriefing = 0;
 	return;
+	}
 if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.missions.nD1BuiltinMission)) {
 	FILE	*fp;
 	int	i;
@@ -1496,12 +1500,15 @@ if (gameStates.app.bD1Mission && (gameData.missions.nCurrentMission != gameData.
 			break;
 			}
 		}
-	if (i == 2)
+	if (i == 2) {
+		gameStates.render.bBriefing = 0;
 		return;
+		}
 	}
-if (!LoadScreenText (fnBriefing, &szBriefingText))
+if (!LoadScreenText (fnBriefing, &szBriefingText)) {
+	gameStates.render.bBriefing = 0;
 	return;
-gameStates.render.bBriefing = 1;
+	}
 DigiStopAllChannels ();
 SongsPlaySong (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);

@@ -827,8 +827,9 @@ extern char szAutoMission [255];
 int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 {
 	char		*pszLevelName;
+	char		szHogName [FILENAME_LEN];
 	tPlayer	save_player;
-	int		nRooms, nLoadRes;
+	int		nRooms, bRetry, nLoadRes;
 
 /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
@@ -909,17 +910,32 @@ GrPaletteStepLoad (NULL);
 ShowBoxedMessage (TXT_LOADING);
 /*---*/LogErr ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
-				 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
+									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 memset (gameData.segs.xSegments, 0xff, sizeof (*gameData.segs.xSegments) * MAX_SEGMENTS);
 memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * MAX_OBJECTS);
 /*---*/LogErr ("   loading texture brightness info\n");
 LoadTextureBrightness (pszLevelName);
-nLoadRes = LoadLevelSub (pszLevelName);		//actually load the data from disk!
+for (;;) {
+	if (!(nLoadRes = LoadLevelSub (pszLevelName)))
+		break;	//actually load the data from disk!
+	nLoadRes = 1;
+	if (bRetry)
+		break;
+	if (strstr (gameHogFiles.AltHogFiles.szName, ".hog"))
+		break;
+	sprintf (szHogName, "%s%s%s%s", 
+				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", 
+				gameFolders.szMsnSubFolder, pszLevelName);
+	if (!CFUseAltHogFile (szHogName))
+		break;
+	bRetry = 1;
+	};
 if (nLoadRes) {
 	/*---*/LogErr ("Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
 	Warning (TXT_LOAD_ERROR, pszLevelName);
 	return 0;
 	}
+
 gameData.missions.nCurrentLevel = nLevel;
 gamePalette = LoadPalette (szCurrentLevelPalette, pszLevelName, 1, 1, 1);		//don't change screen
 InitGaugeCanvases ();
@@ -1744,8 +1760,8 @@ int StartNewLevelSub (int nLevel, int bPageInTextures, int bSecret, int bRestore
 
 reloadLevel:
 
-if (!(gameData.app.nGameMode & GM_MULTI)) {
-	gameStates.render.cockpit.nLastDrawn [0] = -1;
+if (!IsMultiGame) {
+	gameStates.render.cockpit.nLastDrawn [0] =
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
  gameStates.render.cockpit.bBigWindowSwitch=0;
@@ -1807,7 +1823,7 @@ if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.bRejoined) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
 	}
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
 	FindMonsterball (); //will simply remove all Monsterballs

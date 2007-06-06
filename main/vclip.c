@@ -51,12 +51,12 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int vclip_num, tRgbColorf *color)
+void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int nVClip, tRgbColorf *color)
 {
 	double		ta = 0, alpha = 0;
-	tVideoClip	*pvc = gameData.eff.vClips [0] + vclip_num;
+	tVideoClip	*pvc = gameData.eff.vClips [0] + nVClip;
 	int			nFrames = pvc->nFrameCount;
-	int			iFrame = CurFrame (vclip_num, timeToLive);
+	int			iFrame = CurFrame (nVClip, timeToLive);
 	int			bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
 if (objP->nType == OBJ_FIREBALL) {

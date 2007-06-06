@@ -690,7 +690,7 @@ return 1;
 int OglCacheLevelTextures (void)
 {
 	int			i, j, bD1;
-	tEffectClip			*ec;
+	tEffectClip	*ec;
 	int			max_efx = 0, ef;
 	int			nSegment, nSide;
 	short			tmap1, tmap2;
@@ -699,10 +699,11 @@ int OglCacheLevelTextures (void)
 	tSide			*sideP;
 	tObject		*objP;
 
+if (gameStates.render.bBriefing)
+	return 0;
 OglResetTextureStatsInternal ();//loading a new lev should reset textures
 TexMergeClose ();
 TexMergeInit (-1);
-
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0,ec = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1];i++,ec++) {
 		if ((ec->changingWallTexture == -1) && (ec->changingObjectTexture == -1))

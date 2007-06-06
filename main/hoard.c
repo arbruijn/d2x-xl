@@ -108,8 +108,8 @@ void InitHoardData (void)
 	ubyte					palette [256*3];
 	CFILE					*fp;
 	int					i, fPos, nBitmap;
-	tVideoClip					*vcP;
-	tEffectClip					*ecP;
+	tVideoClip			*vcP;
+	tEffectClip			*ecP;
 	powerupType_info	*ptP;
 	ubyte					*bmDataP;
 
@@ -188,7 +188,7 @@ if (!gameData.hoard.bInitialized) {
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
 		ecP->vc.frames [i].index = nBitmap;
-		InitHoardBitmap (gameData.pig.tex.pBitmaps + nBitmap, 
+		InitHoardBitmap (gameData.pig.tex.bitmaps [0] + nBitmap, 
 							  gameData.hoard.goal.nWidth, 
 							  gameData.hoard.goal.nHeight, 
 							  0, 
@@ -217,7 +217,7 @@ CFReadShort (fp);        //skip frame count
 CFRead (palette, 3, 256, fp);
 gameData.hoard.goal.palette = AddPalette (palette);
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
-	grsBitmap *bmP = gameData.pig.tex.pBitmaps + ecP->vc.frames [i].index;
+	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
 	CFRead (bmP->bm_texBuf, 1, gameData.hoard.goal.nFrameSize, fp);
 	GrRemapBitmapGood (bmP, gameData.hoard.goal.palette, 255, -1);
 	}
