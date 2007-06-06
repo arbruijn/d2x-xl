@@ -135,10 +135,10 @@ double		vlighting=0;
 static int			obj_eclip;
 static char 		*dest_bm;		//clip number to play when destroyed
 static int			dest_vclip;		//what tVideoClip to play when exploding
-static int			dest_eclip;		//what eclip to play when exploding
+static int			dest_eclip;		//what tEffectClip to play when exploding
 static fix			dest_size;		//3d size of explosion
 static int			crit_clip;		//clip number to play when destroyed
-static int			critFlag;		//flag if this is a destroyed eclip
+static int			critFlag;		//flag if this is a destroyed tEffectClip
 static int			tmap1Flag;		//flag if this is used as nBaseTex (not nOvlTex)
 static int			numSounds=0;
 
@@ -1635,7 +1635,7 @@ void bm_read_player_ship()
 	arg = strtok( NULL, space );
 
 	Player_ship->mass = Player_ship->drag = 0;	//stupid defaults
-	Player_ship->expl_vclip_num = -1;
+	Player_ship->nExplVClip = -1;
 
 	while (arg!=NULL)	{
 
@@ -1680,8 +1680,8 @@ void bm_read_player_ship()
 				Player_ship->maxRotThrust = fl2f(atof(equal_ptr);
 			else if (!stricmp( arg, "dying_pof" ))
 				model_name_dying = equal_ptr;
-			else if (!stricmp( arg, "expl_vclip_num" ))
-				Player_ship->expl_vclip_num=atoi(equal_ptr);
+			else if (!stricmp( arg, "nExplVClip" ))
+				Player_ship->nExplVClip=atoi(equal_ptr);
 			else {
 				Int3();
 #if TRACE
@@ -2241,9 +2241,9 @@ fprintf(tfile,"Num Sounds [gameStates.app.bD1Data] = %d, Sounds [gameStates.app.
 fprintf(tfile,"Num_vclips = %d, Vclip array = %d\n",Num_vclips,sizeof(tVideoClip)*Num_vclips);
 
 	fwrite( &Num_effects, sizeof(int), 1, fp );
-	fwrite( Effects, sizeof(eclip), Num_effects, fp );
+	fwrite( Effects, sizeof(tEffectClip), Num_effects, fp );
 
-fprintf(tfile,"Num_effects = %d, Effects array = %d\n",Num_effects,sizeof(eclip)*Num_effects);
+fprintf(tfile,"Num_effects = %d, Effects array = %d\n",Num_effects,sizeof(tEffectClip)*Num_effects);
 
 	fwrite( &Num_wall_anims, sizeof(int), 1, fp );
 	fwrite( WallAnims, sizeof(tWallClip), Num_wall_anims, fp );

@@ -2108,11 +2108,11 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 				 (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				xAfterburnerCharge = afterburner<<9;
+				gameData.physics.xAfterburnerCharge = afterburner<<9;
 			else if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				if (old_afterburner != 255)
-					xAfterburnerCharge = old_afterburner<<9;
+					gameData.physics.xAfterburnerCharge = old_afterburner<<9;
 				}
 			break;
 		}

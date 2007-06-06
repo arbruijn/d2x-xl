@@ -971,7 +971,7 @@ if (!nTexture)
 	return 0;
 else {
 	short nClip = gameData.pig.tex.pTMapInfo [nTexture].eclip_num;
-	eclip	*ecP = (nClip < 0) ? NULL : gameData.eff.pEffects + nClip;
+	tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.eff.pEffects + nClip;
 	short	nDestBM = ecP ? ecP->nDestBm : -1;
 	ubyte	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
 

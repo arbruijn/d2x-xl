@@ -1094,7 +1094,7 @@ extern void MultiSendSoundFunction (char,char);
 void DoAfterburnerStuff (void)
 {
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
-	xAfterburnerCharge=0;
+	gameData.physics.xAfterburnerCharge=0;
 if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	if (DigiKillSoundLinkedToObject (LOCALPLAYER.nObject))
 #ifdef NETWORK
@@ -1103,8 +1103,8 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	 	;
 	}
 else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfterburnerState)) || 
-	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !xAfterburnerCharge))) {
-	if (xAfterburnerCharge && Controls [0].afterburnerState && 
+	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
+	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) LOCALPLAYER.nObject, 
 										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
@@ -1124,7 +1124,7 @@ else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfter
 		}
 	}
 bLastAfterburnerState = Controls [0].afterburnerState;
-xLastAfterburnerCharge = xAfterburnerCharge;
+xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge;
 }
 
 // -- //	------------------------------------------------------------------------------------

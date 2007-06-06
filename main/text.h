@@ -1732,13 +1732,13 @@ void LoadGameTexts(void);
 #define TXT_TRACKIR_STEER			GT(939)
 #define TXT_TRACKIR_LOOK			GT(940)
 #define TXT_WALL_INDESTRUCTIBLE	GT(941)
+#define TXT_AUTOLEVEL_NONE			GT(942)
+#define TXT_AUTOLEVEL_SIDE			GT(943)
+#define TXT_AUTOLEVEL_FLOOR		GT(944)
+#define TXT_AUTOLEVEL_GLOBAL		GT(945)
 
 #if 0
 
-#define TXT_				GT(942)
-#define TXT_				GT(943)
-#define TXT_				GT(944)
-#define TXT_				GT(945)
 #define TXT_				GT(946)
 #define TXT_				GT(947)
 #define TXT_				GT(948)
@@ -2203,10 +2203,10 @@ void LoadGameTexts(void);
 #define HTX_TRACKIR_AIM				HT(289)				
 #define HTX_TRACKIR_STEER			HT(290)				
 #define HTX_TRACKIR_LOOK			HT(291)				
+#define HTX_AUTO_LEVELLING			HT(292)				
 
 #if 0
 				
-#define HTX_					HT(292)				
 #define HTX_					HT(293)				
 #define HTX_					HT(294)				
 #define HTX_					HT(295)				

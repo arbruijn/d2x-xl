@@ -798,7 +798,7 @@ switch (objP->id) {
 	case POW_AFTERBURNER:
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_AFTERBURNER, TXT_THE_BURNER, TXT_GOT_BURNER, nPlayer);
 		if (bUsed < 0) {
-			xAfterburnerCharge = f1_0;
+			gameData.physics.xAfterburnerCharge = f1_0;
 			bUsed = 1;
 			}
 		break;

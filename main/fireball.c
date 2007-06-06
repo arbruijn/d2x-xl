@@ -1501,8 +1501,8 @@ if (objP->nType==OBJ_ROBOT) {
 	else if (stage==1 && ROBOTINFO (objP->id).nExp2VClip>-1)
 		return ROBOTINFO (objP->id).nExp2VClip;
 	}
-else if ((objP->nType == OBJ_PLAYER) && (gameData.pig.ship.player->expl_vclip_num >- 1))
-	return gameData.pig.ship.player->expl_vclip_num;
+else if ((objP->nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
+	return gameData.pig.ship.player->nExplVClip;
 return VCLIP_SMALL_EXPLOSION;		//default
 }
 

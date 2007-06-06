@@ -74,7 +74,7 @@ void PagingTouchVClip (tVideoClip * vc, int bD1)
 void PagingTouchWallEffects (int nTexture)
 {
 	int	i;
-	eclip *ecP = gameData.eff.pEffects;
+	tEffectClip *ecP = gameData.eff.pEffects;
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
@@ -84,9 +84,9 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 		if (ecP->dest_vclip > -1)
 			PagingTouchVClip (&gameData.eff.pVClips [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->dest_eclip > -1)
-			PagingTouchVClip (&gameData.eff.pEffects [ecP->dest_eclip].vc, gameStates.app.bD1Data); //what eclip to play when exploding
+			PagingTouchVClip (&gameData.eff.pEffects [ecP->dest_eclip].vc, gameStates.app.bD1Data); //what tEffectClip to play when exploding
 		if (ecP->crit_clip > -1)
-			PagingTouchVClip (&gameData.eff.pEffects [ecP->crit_clip].vc, gameStates.app.bD1Data); //what eclip to play when mine critical
+			PagingTouchVClip (&gameData.eff.pEffects [ecP->crit_clip].vc, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
 		}
 	}
 }
@@ -96,7 +96,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 void PagingTouchObjectEffects (int nTexture)
 {
 	int	i;
-	eclip *ecP = gameData.eff.pEffects;
+	tEffectClip *ecP = gameData.eff.pEffects;
 
 for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 	if (ecP->changingObjectTexture == nTexture)

@@ -24,7 +24,7 @@ void PlayerShipRead(tPlayerShip *ps, CFILE *fp)
 	int i;
 
 	ps->nModel = CFReadInt(fp);
-	ps->expl_vclip_num = CFReadInt(fp);
+	ps->nExplVClip = CFReadInt(fp);
 	ps->mass = CFReadFix(fp);
 	ps->drag = CFReadFix(fp);
 	ps->maxThrust = CFReadFix(fp);

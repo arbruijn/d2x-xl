@@ -650,7 +650,7 @@ CFWrite (&gameStates.app.bLunacy, sizeof (int), 1, fp);
 CFWrite (gameData.marker.objects, sizeof (gameData.marker.objects), 1, fp);
 CFWrite (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFWrite (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
-CFWrite (&xAfterburnerCharge, sizeof (fix), 1, fp);
+CFWrite (&gameData.physics.xAfterburnerCharge, sizeof (fix), 1, fp);
 //save last was super information
 CFWrite (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1, fp);
 CFWrite (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1, fp);
@@ -1230,7 +1230,7 @@ for (i = 0; i < NUM_MARKERS; i++)
 	CFWriteShort (gameData.marker.objects [i], fp);
 CFWrite (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFWrite (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
-CFWriteFix (xAfterburnerCharge, fp);
+CFWriteFix (gameData.physics.xAfterburnerCharge, fp);
 //save last was super information
 CFWrite (bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1, fp);
 CFWrite (bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1, fp);
@@ -2300,7 +2300,7 @@ CFRead (gameData.marker.nOwner, sizeof (gameData.marker.nOwner), 1, fp);
 CFRead (gameData.marker.szMessage, sizeof (gameData.marker.szMessage), 1, fp);
 
 if (bSecretRestore != 1)
-	xAfterburnerCharge = CFReadFix (fp);
+	gameData.physics.xAfterburnerCharge = CFReadFix (fp);
 else {
 	CFReadFix (fp);
 	}
@@ -2532,7 +2532,7 @@ else {
 
 if (sgVersion >= 11) {
 	if (bSecretRestore != 1)
-		CFRead (&xAfterburnerCharge, sizeof (fix), 1, fp);
+		CFRead (&gameData.physics.xAfterburnerCharge, sizeof (fix), 1, fp);
 	else {
 		fix	dummy_fix;
 		CFRead (&dummy_fix, sizeof (fix), 1, fp);

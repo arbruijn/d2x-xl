@@ -42,7 +42,7 @@ static char rcsid [] = "$Id: effects.c,v 1.5 2003/10/10 09:36:34 btb Exp $";
 
 // ----------------------------------------------------------------------------
 
-fix EffectFrameTime (eclip *ecP)
+fix EffectFrameTime (tEffectClip *ecP)
 {
 #ifdef _DEBUG
 return ecP->vc.xFrameTime;
@@ -74,7 +74,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 void ResetPogEffects (void)
 {
 	int				i, bD1;
-	eclip				*ecP;
+	tEffectClip				*ecP;
 	tWallClip		*wcP;
 	tVideoClip		*vcP;
 
@@ -97,7 +97,7 @@ for (i = gameData.eff.nClips [0], vcP = gameData.eff.vClips [0]; i; i--, vcP++)
 void ResetSpecialEffects (void)
 {
 	int				i, bD1;
-	eclip				*ecP;
+	tEffectClip				*ecP;
 	tBitmapIndex	bmi;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
@@ -118,7 +118,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 void CacheObjectEffects (void)
 {
 	int				i, j, bD1;
-	eclip				*ecP;
+	tEffectClip				*ecP;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ecP++)
@@ -216,7 +216,7 @@ xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.tick40fps.bTick) 
 	{
 		grsBitmap		*bmP = NULL;
-		eclip				*ecP;
+		tEffectClip				*ecP;
 		tBitmapIndex	bmi;
 		fix				ft;
 		int				i, t, nFrames;
@@ -352,7 +352,7 @@ xEffectTime += gameData.time.xFrame;
 void RestoreEffectBitmapIcons()
 {
 	int i,j;
-	eclip *ecP;
+	tEffectClip *ecP;
 	tBitmapIndex	bmi;
 	
 for (i=0, j=gameData.eff.nEffects [gameStates.app.bD1Data], ecP = gameData.eff.pEffects;i<j;i++, ecP++)
@@ -379,7 +379,7 @@ for (i = 0, j = gameData.eff.nEffects [0], ecP = gameData.eff.effects [0]; i < j
 //stop an effect from animating.  Show first frame.
 void StopEffect(int effect_num)
 {
-	eclip *ecP = gameData.eff.pEffects + effect_num;
+	tEffectClip *ecP = gameData.eff.pEffects + effect_num;
 	//Assert(ecP->bm_ptr != -1);
 ecP->flags |= EF_STOPPED;
 ecP->nCurFrame = 0;
@@ -402,9 +402,9 @@ gameData.eff.pEffects [effect_num].flags &= ~EF_STOPPED;
 // ----------------------------------------------------------------------------
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
 /*
- * reads n eclip structs from a CFILE
+ * reads n tEffectClip structs from a CFILE
  */
-int EClipReadN(eclip *ecP, int n, CFILE *fp)
+int EClipReadN(tEffectClip *ecP, int n, CFILE *fp)
 {
 	int i = n;
 

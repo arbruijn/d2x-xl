@@ -1114,7 +1114,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 			continue;
 		}
 	else {
-		eclip *ecP = gameData.eff.pEffects + ec;
+		tEffectClip *ecP = gameData.eff.pEffects + ec;
 		if (ecP->flags & EF_ONE_SHOT)
 			continue;
 		if (ecP->nDestBm < 0)

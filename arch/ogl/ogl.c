@@ -690,7 +690,7 @@ return 1;
 int OglCacheLevelTextures (void)
 {
 	int			i, j, bD1;
-	eclip			*ec;
+	tEffectClip			*ec;
 	int			max_efx = 0, ef;
 	int			nSegment, nSide;
 	short			tmap1, tmap2;

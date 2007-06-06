@@ -834,7 +834,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (gameData.eff.vClips, sizeof (tVideoClip), VCLIP_MAXNUM, fp);
 
 	CFRead (&gameData.eff.nEffects, sizeof (int), 1, fp);
-	CFRead (gameData.eff.effects, sizeof (eclip), MAX_EFFECTS, fp);
+	CFRead (gameData.eff.effects, sizeof (tEffectClip), MAX_EFFECTS, fp);
 
 	CFRead (&gameData.walls.nAnims, sizeof (int), 1, fp);
 	CFRead (gameData.walls.anims, sizeof (tWallClip), MAX_WALL_ANIMS, fp);

@@ -109,7 +109,7 @@ void InitHoardData (void)
 	CFILE					*fp;
 	int					i, fPos, nBitmap;
 	tVideoClip					*vcP;
-	eclip					*ecP;
+	tEffectClip					*ecP;
 	powerupType_info	*ptP;
 	ubyte					*bmDataP;
 

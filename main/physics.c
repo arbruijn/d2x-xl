@@ -111,15 +111,12 @@ void DoPhysicsAlignObject (tObject * objP)
 
 best_side = 0;
 // bank tPlayer according to tSegment orientation
-//find tSide of tSegment that tPlayer is most alligned with
+//find tSide of tSegment that tPlayer is most aligned with
 for (i = 0; i < 6; i++) {
 	d = VmVecDot (gameData.segs.segments [objP->nSegment].sides [i].normals, &objP->position.mOrient.uVec);
 	if (d > largest_d) {largest_d = d; best_side=i;}
 	}
-if (bFloorLeveling)
-	// old way: used floor's normal as upvec
-	desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
-else  // new tPlayer leveling code: use normal of tSide closest to our up vec
+if (gameOpts->physics.nLevelling == 0) {	 // new tPlayer leveling code: use normal of tSide closest to our up vec
 	if (GetNumFaces (&gameData.segs.segments [objP->nSegment].sides [best_side])==2) {
 		tSide *s = &gameData.segs.segments [objP->nSegment].sides [best_side];
 		desiredUpVec.p.x = (s->normals [0].p.x + s->normals [1].p.x) / 2;
@@ -129,6 +126,11 @@ else  // new tPlayer leveling code: use normal of tSide closest to our up vec
 		}
 	else
 		desiredUpVec = gameData.segs.segments [objP->nSegment].sides [best_side].normals [0];
+	}
+else if (gameOpts->physics.nLevelling == 1)	// old way: used floor's normal as upvec
+	desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
+else 
+	desiredUpVec = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient.uVec;
 if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 	fixang save_delta_ang;
 	vmsAngVec tangles;
@@ -152,7 +154,7 @@ if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {
 		objP->position.mOrient = new_pm;
 		}
 	else 
-		bFloorLeveling = 0;
+		gameOpts->physics.nLevelling = 0;
 	}
 }
 

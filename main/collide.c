@@ -687,7 +687,7 @@ int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *pnt, tObject *blo
 	ubyte			vc;
 	fix			u, v;
 	fix			xDestSize;
-	eclip			*ecP = NULL;
+	tEffectClip			*ecP = NULL;
 	grsBitmap	*bmP;
 	//	If this tWall has a tTrigger and the blower-upper is not the tPlayer or the buddy, abort!
 
@@ -762,7 +762,7 @@ if (nSwitchType) {
 	if ((nSound = ecP->nSound) != -1)		//kill sound
 		DigiKillSoundLinkedToSegment (SEG_IDX (segP), nSide, nSound);
 	if (!bPermaTrigger && (ecP->dest_eclip != -1) && (gameData.eff.pEffects [ecP->dest_eclip].nSegment == -1)) {
-		eclip	*newEcP = gameData.eff.pEffects + ecP->dest_eclip;
+		tEffectClip	*newEcP = gameData.eff.pEffects + ecP->dest_eclip;
 		int nNewBm = newEcP->changingWallTexture;
 		newEcP->time_left = EffectFrameTime (newEcP);
 		newEcP->nCurFrame = 0;

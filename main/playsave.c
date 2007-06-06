@@ -263,6 +263,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameStates.multi.nConnection, 0, 0);
 		RP (gameStates.multi.bUseTracker, 0, 0);
 
+		RP (gameData.menu.alpha, 0, 0);
+
 		RP (mpParams.nLevel, 0, 0);
 		RP (mpParams.nGameType, 0, 0);
 		RP (mpParams.nGameMode, 0, 0);
@@ -490,7 +492,7 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].input.mouse.bUse, i, 0);
 	RP (gameOptions [i].input.trackIR.bUse, i, 0);
 
-	RP (gameOptions [i].gameplay.bAutoLeveling, i, 0);
+	RP (gameOptions [i].gameplay.nAutoLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
 	RP (gameOptions [i].gameplay.bHeadlightOn, 0, 0);
 
@@ -708,6 +710,7 @@ tParamValue defaultParams [] = {
 {"gameStates.ogl.nContrast=8"},
 {"gameStates.multi.nConnection=1"},
 {"gameStates.multi.bUseTracker=0"},
+{"gameData.menu.alpha=79"},
 {"mpParams.nLevel=1"},
 {"mpParams.nGameType=3"},
 {"mpParams.nGameMode=3"},
@@ -989,7 +992,7 @@ tParamValue defaultParams [] = {
 {"gameOptions[0].input.joystick.bUse=1"},
 {"gameOptions[0].input.mouse.bUse=1"},
 {"gameOptions[0].input.trackIR.bUse=1"},
-{"gameOptions[0].gameplay.bAutoLeveling=0"},
+{"gameOptions[0].gameplay.nAutoLeveling=0"},
 {"gameOptions[0].gameplay.bFastRespawn=0"},
 {"gameOptions[0].gameplay.bHeadlightOn=0"},
 {"gameOptions[0].movies.bResize=1"},
@@ -1041,7 +1044,7 @@ tParamValue defaultParams [] = {
 {"gameOptions[1].input.joystick.bUse=0"},
 {"gameOptions[1].input.mouse.bUse=0"},
 {"gameOptions[1].input.trackIR.bUse=0"},
-{"gameOptions[1].gameplay.bAutoLeveling=0"},
+{"gameOptions[1].gameplay.nAutoLeveling=0"},
 {"gameOptions[1].gameplay.bFastRespawn=0"},
 {"gameOptions[0].gameplay.bHeadlightOn=0"},
 {"gameOptions[1].movies.bResize=0"},
@@ -1333,7 +1336,7 @@ if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
 if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5))
 	joydefs_calibrate();
 gameStates.app.nDifficultyLevel = DEFAULT_DIFFICULTY;
-gameOptions [0].gameplay.bAutoLeveling = 1;
+gameOptions [0].gameplay.nAutoLeveling = 1;
 nHighestLevels = 1;
 highestLevels [0].shortname [0] = 0;			//no name for mission 0
 highestLevels [0].nLevel = 1;				//was highest level in old struct
@@ -1891,7 +1894,7 @@ if (bOnlyWindowSizes)
 	goto done;
 
 gameStates.app.nDifficultyLevel = CFReadByte (fp);
-gameOpts->gameplay.bAutoLeveling = CFReadByte (fp);
+gameOpts->gameplay.nAutoLeveling = CFReadByte (fp);
 gameOpts->render.cockpit.bReticle = CFReadByte (fp);
 gameStates.render.cockpit.nMode = CFReadByte (fp);
 nDisplayMode = gameStates.video.nDefaultDisplayMode;
@@ -2389,7 +2392,7 @@ CFWriteShort(PLAYER_FILE_VERSION, fp);
 CFWriteShort((short) gameData.render.window.w, fp);
 CFWriteShort((short) gameData.render.window.h, fp);
 CFWriteByte ((sbyte) gameStates.app.nDifficultyLevel, fp);
-CFWriteByte ((sbyte) gameOptions [0].gameplay.bAutoLeveling, fp);
+CFWriteByte ((sbyte) gameOptions [0].gameplay.nAutoLeveling, fp);
 CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
 CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
 CFWriteByte ((sbyte) gameStates.video.nDefaultDisplayMode, fp);

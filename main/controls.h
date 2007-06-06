@@ -50,6 +50,4 @@ void ReadFlyingControls( tObject * obj );
 extern ubyte Controls_stopped;
 extern ubyte Controls_always_move;
 
-extern fix xAfterburnerCharge;
-
 #endif

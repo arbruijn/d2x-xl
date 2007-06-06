@@ -1,5 +1,5 @@
 defPlayerShip.nModel = 108;
-defPlayerShip.expl_vclip_num = 58;
+defPlayerShip.nExplVClip = 58;
 defPlayerShip.mass = F1_0 * 4;
 defPlayerShip.drag = 2162;
 defPlayerShip.maxThrust = 511180;

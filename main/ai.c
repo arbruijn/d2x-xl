@@ -288,7 +288,7 @@ if (gameData.ai.vLastPlayerPosFiredAt.p.x ||
 		VmVecDistQuick (&gameData.ai.vLastPlayerPosFiredAt, &gameData.ai.vBelievedPlayerPos);
 else
 	gameData.ai.nDistToLastPlayerPosFiredAt = F1_0 * 10000;
-abState = xAfterburnerCharge && Controls [0].afterburnerState && 
+abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || 
 	 (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON) || abState)

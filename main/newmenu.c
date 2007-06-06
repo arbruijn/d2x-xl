@@ -257,8 +257,8 @@ if ((gameOpts->menus.nStyle == 1)) {// && ((gameOpts->menus.altBg.bHave < 1) || 
 		GrSetColorRGB (PAL2RGBA (15), PAL2RGBA (15), PAL2RGBA (27), 80);
 	else
 #endif
-		GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 80);
-	gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 3.0f;
+		GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
+	gameStates.render.grAlpha = (float) gameData.menu.alpha / 255.0f;
 	GrURect (x1, y1, x2, y2);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
@@ -1814,9 +1814,12 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 		case KEY_CTRLED+KEY_F1:
 			SwitchDisplayMode (-1);
 			break;
-		case KEY_CTRLED+KEY_F2:
-			SwitchDisplayMode (1);
+
+		case KEY_COMMAND + KEY_T:
+		case KEY_CTRLED + KEY_T:
+			gameData.menu.alpha = (gameData.menu.alpha + 16) & 0xFF;
 			break;
+
 		case KEY_COMMAND + KEY_P:
 		case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
@@ -2596,9 +2599,9 @@ void DeletePlayerSavedGames (char * name)
 	int i;
 	char filename [16];
 	
-	for (i=0;i<10; i++)	{
-		sprintf (filename, "%s.sg%d", name, i);
-		CFDelete (filename, gameFolders.szSaveDir);
+for (i = 0; i < 10; i++) {
+	sprintf (filename, "%s.sg%d", name, i);
+	CFDelete (filename, gameFolders.szSaveDir);
 	}
 }
 

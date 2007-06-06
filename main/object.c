@@ -3868,7 +3868,7 @@ gameData.physics.xTime = secs2f (gameStates.app.tick60fps.nTime);
 gameData.physics.xTime = gameData.time.xFrame;
 #endif
 DeleteAllObjsThatShouldBeDead ();
-if (gameOpts->gameplay.bAutoLeveling)
+if (gameOpts->gameplay.nAutoLeveling)
 	gameData.objs.console->mType.physInfo.flags |= PF_LEVELLING;
 else
 	gameData.objs.console->mType.physInfo.flags &= ~PF_LEVELLING;

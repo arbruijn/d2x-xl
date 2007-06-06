@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_FROMPOG		16
 #define EF_INITIALIZED	32
 
-typedef struct eclip {
+typedef struct tEffectClip {
 	tVideoClip   vc;             //embedded tVideoClip
 	fix     time_left;      //for sequencing
 	int     nCurFrame;      //for sequencing
@@ -39,19 +39,19 @@ typedef struct eclip {
 	int     crit_clip;      //use this clip instead of above one when mine critical
 	int     nDestBm;    //use this bitmap when monitor destroyed
 	int     dest_vclip;     //what tVideoClip to play when exploding
-	int     dest_eclip;     //what eclip to play when exploding
+	int     dest_eclip;     //what tEffectClip to play when exploding
 	fix     dest_size;      //3d size of explosion
 	int     nSound;      //what sound this makes
 	int     nSegment,nSide; //what seg & tSide, for one-shot clips
-} __pack__ eclip;
+} __pack__ tEffectClip;
 
-typedef eclip D1_eclip;
+typedef tEffectClip D1_eclip;
 
 extern int Num_effects [2];
-extern eclip Effects [2][MAX_EFFECTS];
+extern tEffectClip Effects [2][MAX_EFFECTS];
 
 // Set up special effects.
-extern fix EffectFrameTime (eclip *ec);
+extern fix EffectFrameTime (tEffectClip *ec);
 
 // Set up special effects.
 extern void InitSpecialEffects();
@@ -72,12 +72,12 @@ void StopEffect(int effect_num);
 void RestartEffect(int effect_num);
 
 #if 0
-#define EClipReadN(ec, n, fp) CFRead(ec, sizeof(eclip), n, fp)
+#define EClipReadN(ec, n, fp) CFRead(ec, sizeof(tEffectClip), n, fp)
 #else
 /*
- * reads n eclip structs from a CFILE
+ * reads n tEffectClip structs from a CFILE
  */
-extern int EClipReadN(eclip *ec, int n, CFILE *fp);
+extern int EClipReadN(tEffectClip *ec, int n, CFILE *fp);
 #endif
 
 grsBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames);

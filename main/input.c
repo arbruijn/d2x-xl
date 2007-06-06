@@ -1420,7 +1420,7 @@ void CybermouseAdjust ()
 /*	if (gameData.multiplayer.nLocalPlayer > -1)	{
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
-		gameOpts->gameplay.bAutoLeveling = 0;
+		gameOpts->gameplay.nAutoLeveling = 0;
 
 		if (kc_external_version > 0) {		
 			vmsMatrix tempm, ViewMatrix;

@@ -1686,7 +1686,7 @@ return -1;
 			 (_eP)->changingWallTexture : \
 			 (_eP)->changingObjectTexture)
 
-eclip *FindEffect (eclip *ecP, int tNum)
+tEffectClip *FindEffect (tEffectClip *ecP, int tNum)
 {
 	int				h, i, j;
 	tBitmapIndex	*frameP;
@@ -1989,7 +1989,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 			bitmapFlags [bD1][i] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 			bitmapFlags [bD1][i] |= BM_FLAG_TGA;
 			if (bmP->bm_props.h > bmP->bm_props.w) {
-				eclip	*ecP = NULL;
+				tEffectClip	*ecP = NULL;
 				tWallClip *wcP;
 				tVideoClip *vcP;
 				while ((ecP = FindEffect (ecP, i))) {
@@ -2556,7 +2556,7 @@ if (fp) {
 			bm.bm_props.rowsize *= bm.bm_bpp;
 			bm.bm_data.alt.bm_frameCount = (ubyte) nFrames;
 			if (nFrames > 1) {
-				eclip	*ecP = NULL;
+				tEffectClip	*ecP = NULL;
 				tWallClip *wcP;
 				tVideoClip *vcP;
 				while ((ecP = FindEffect (ecP, indices [i]))) {

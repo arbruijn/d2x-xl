@@ -1691,6 +1691,10 @@ char *defaultGameTexts [][2] = {
 	{"zum ~Steuern", "for ~steering the ship"},
 	{"zum ~Umschauen", "for ~looking around"},
 	{"Hey Junge, die Wand ist unzerstoerbar.", "Hey bub, you are trying to destroy an indestructable wall."},
+	{"Schiff ~Nicht ausrichten", "~No auto levelling"},
+	{"Schiff zur naechsten ~Flaeche ausrichten", "align ship with nearest ~Side"},
+	{"Schiff zum ~Boden ausrichten", "align ship with ~Floor"},
+	{"Schiff zur ~Mine ausrichten", "align ship to ~Mine"},
 #if 0
 	{"", ""},
 #endif
@@ -2226,6 +2230,8 @@ char *defaultHelpTexts [][2] = {
 	 "If ticked, the ship will change its heading until you move your\nhead back to its 'center position'."},
 	{"Wenn angetickt, schaut man sich entsprechend der Kopfdrehungen\num, waehrend das Schiff unveraendert weiterfliegt.", 
 	 "If ticked, you can look around while the ship keeps its direction."},
+	{"Um die Orientierung einfacher zu machen, kann das Schiff immer\nautomatisch eine bestimmte Lage gedreht werden.\n\nZur naechsten Flaeche richtet es zu der nahegelegenen\nFlaeche aus, zu der es den geringsten Winkel hat.\nZum Boden richtet es immer zu einem gedachten Boden aus.\nZur Mine richtet es immer bezueglich der gesamten Mine aus.", 
+	 "To ease keeping ones orientation, the ship can be automatically\nturned into a certain position.\n\n'Nearest side' aligns it to a nearby face it forms the smallest angle with.\n'Floor' aligns it with a virtual floor.\n'Mine' aligns it relative to the entire mine."},
 #if 0
 	{"", ""},
 #endif

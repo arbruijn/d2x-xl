@@ -3468,9 +3468,9 @@ if (gameOpts->app.bExpertMode) {
 
 void PhysicsOptionsMenu ()
 {
-	tMenuItem m [20];
+	tMenuItem m [25];
 	int	i, opt = 0, choice = 0;
-	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
+	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1, 
 			optFluidPhysics = -1, optHitAngles = -1, optShootMissiles = -1, optHitboxes = -1;
 	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionPower [50], szDebrisLife [50];
 
@@ -3504,8 +3504,7 @@ do {
 		nOptDebrisLife = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
-		optAutoLevel = opt++;
+		m [optAutoLevel + gameOpts->gameplay.nAutoLeveling].value = 1;
 		ADD_CHECK (opt, TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
 		optWiggle = opt++;
 		ADD_CHECK (opt, TXT_BOTS_HIT_BOTS, extraGameInfo [0].bRobotsHitRobots, KEY_O, HTX_GPLAY_BOTSHITBOTS);
@@ -3516,6 +3515,16 @@ do {
 		optHitAngles = opt++;
 		ADD_CHECK (opt, TXT_SHOOT_MISSILES, extraGameInfo [0].bShootMissiles, KEY_S, HTX_GPLAY_SHOOTMISSILES);
 		optShootMissiles = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_RADIO (opt, TXT_AUTOLEVEL_NONE, 0, KEY_N, 1, HTX_AUTO_LEVELLING);
+		optAutoLevel = opt++;
+		ADD_RADIO (opt, TXT_AUTOLEVEL_SIDE, 0, KEY_S, 1, HTX_AUTO_LEVELLING);
+		opt++;
+		ADD_RADIO (opt, TXT_AUTOLEVEL_FLOOR, 0, KEY_F, 1, HTX_AUTO_LEVELLING);
+		opt++;
+		ADD_RADIO (opt, TXT_AUTOLEVEL_GLOBAL, 0, KEY_M, 1, HTX_AUTO_LEVELLING);
+		opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
@@ -3532,7 +3541,7 @@ do {
 		} while (i >= 0);
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
-	gameOpts->gameplay.bAutoLeveling = m [optAutoLevel].value;
+	gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].value;
 	extraGameInfo [0].bRobotsHitRobots = m [optRobHits].value;
 	extraGameInfo [0].bShootMissiles = m [optShootMissiles].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
@@ -3541,6 +3550,11 @@ if (gameOpts->app.bExpertMode) {
 	for (i = 0; i < 3; i++)
 		if (m [optHitboxes + i].value) {
 			extraGameInfo [0].nHitboxes = i;
+			break;
+			}
+	for (i = 0; i < 4; i++)
+		if (m [optAutoLevel + i].value) {
+			gameOpts->gameplay.nAutoLeveling = i;
 			break;
 			}
 	for (i = 0; i < 2; i++)
@@ -3863,7 +3877,7 @@ do {
 	memset (m, 0, sizeof (m));
 	optReticle = optMissileView = optGuided = optSmartSearch = optLevelVer = optDemoFmt = -1;
 	if (gameStates.app.bNostalgia) {
-		ADD_CHECK (0, TXT_AUTO_LEVEL, gameOpts->gameplay.bAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
+		ADD_CHECK (0, TXT_AUTO_LEVEL, gameOpts->gameplay.nAutoLeveling, KEY_L, HTX_MISC_AUTOLEVEL);
 		optAutoLevel = opt++;
 		ADD_CHECK (opt, TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_R, HTX_CPIT_SHOWRETICLE);
 		optReticle = opt++;
@@ -3945,7 +3959,7 @@ do {
 		i = ExecMenu1 (NULL, gameStates.app.bNostalgia ? TXT_TOGGLES : TXT_MISC_TITLE, opt, m, MiscellaneousCallback, &choice);
 	} while (i >= 0);
 	if (gameStates.app.bNostalgia) {
-		gameOpts->gameplay.bAutoLeveling = m [optAutoLevel].value;
+		gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].value;
 		gameOpts->render.cockpit.bReticle = m [optReticle].value;
 		gameOpts->render.cockpit.bMissileView = m [optMissileView].value;
 		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].value;

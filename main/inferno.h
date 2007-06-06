@@ -263,7 +263,7 @@ typedef struct tGameplayOptions {
 	int bSecretSave;
 	int bTurboMode;
 	int bFastRespawn;
-	int bAutoLeveling;
+	int nAutoLeveling;
 	int bEscortHotKeys;
 	int bSkipBriefingScreens;
 	int bHeadlightOn;
@@ -1307,6 +1307,7 @@ typedef struct tPhysicsData {
 	short					*ignoreObjs;
 	tFVISideData		side;
 	fix					xTime;
+	fix					xAfterburnerCharge;
 } tPhysicsData;
 
 //------------------------------------------------------------------------------
@@ -1440,23 +1441,24 @@ typedef struct tTextureData {
 } tTextureData;
 
 typedef struct tEffectData {
-	eclip					effects [2][MAX_EFFECTS];
-	tVideoClip 				vClips [2][VCLIP_MAXNUM];
+	tEffectClip			effects [2][MAX_EFFECTS];
+	tVideoClip 			vClips [2][VCLIP_MAXNUM];
 	int					nEffects [2];
 	int 					nClips [2];
-	eclip					*pEffects;
-	tVideoClip					*pVClips;
+	tEffectClip			*pEffects;
+	tVideoClip			*pVClips;
 } tEffectData;
 
 #define N_PLAYER_GUNS 8
 
 typedef struct tPlayerShip {
 	int					nModel;
-	int					expl_vclip_num;
-	fix					mass,drag;
-	fix					maxThrust,
-							reverseThrust,
-							brakes;
+	int					nExplVClip;
+	fix					mass;
+	fix					drag;
+	fix					maxThrust;
+	fix					reverseThrust;
+	fix					brakes;
 	fix					wiggle;
 	fix					maxRotThrust;
 	vmsVector			gunPoints [N_PLAYER_GUNS];
@@ -1880,6 +1882,7 @@ typedef struct tMenuData {
 	unsigned int		tabbedColor;
 	unsigned int		helpColor;
 	unsigned int		colorOverride;
+	ubyte					alpha;
 } tMenuData;
 
 #define MAX_FUEL_CENTERS    500

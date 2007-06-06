@@ -86,7 +86,6 @@ else {
 //look at keyboard, mouse, joystick, CyberMan, whatever, and set 
 //physics vars rotVel, velocity
 
-fix xAfterburnerCharge=f1_0;
 vmsVector playerThrust;
 
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
@@ -157,14 +156,14 @@ void ReadFlyingControls(tObject *objP)
 				int oldCount,newCount;
 	
 				//add in value from 0..1
-				afterburner_scale = f1_0 + min (f1_0/2, xAfterburnerCharge) * 2;
+				afterburner_scale = f1_0 + min (f1_0/2, gameData.physics.xAfterburnerCharge) * 2;
 				forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
-				oldCount = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
+				oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 				if (!gameStates.gameplay.bAfterburnerCheat)
-					xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
-				if (xAfterburnerCharge < 0)
-					xAfterburnerCharge = 0;
-				newCount = (xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
+					gameData.physics.xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
+				if (gameData.physics.xAfterburnerCharge < 0)
+					gameData.physics.xAfterburnerCharge = 0;
+				newCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 				if (gameStates.app.bNostalgia && (oldCount != newCount))
 					gameStates.render.bDropAfterburnerBlob = 1;	//drop blob (after physics called)
 			}
@@ -173,12 +172,12 @@ void ReadFlyingControls(tObject *objP)
 			fix cur_energy,charge_up;
 	
 			//charge up to full
-			charge_up = min(gameData.time.xFrame/8,f1_0 - xAfterburnerCharge);	//recharge over 8 seconds
+			charge_up = min(gameData.time.xFrame/8,f1_0 - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
 			cur_energy = LOCALPLAYER.energy - i2f (10);
 			cur_energy = max(cur_energy, 0);	//don't drop below 10
 			//maybe limit charge up by energy
 			charge_up = min (charge_up,cur_energy / 10);
-			xAfterburnerCharge += charge_up;
+			gameData.physics.xAfterburnerCharge += charge_up;
 			LOCALPLAYER.energy -= charge_up * 100 / 10;	//full charge uses 10% of energy
 		}
 	}

@@ -479,7 +479,7 @@ LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages_on_board = 0;
 
-xAfterburnerCharge = 0;
+gameData.physics.xAfterburnerCharge = 0;
 
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	LOCALPLAYER.primaryAmmo [i] = 0;
@@ -496,16 +496,16 @@ gameData.weapons.nOverridden = 0;
 gameData.weapons.nPrimary = 0;
 gameData.weapons.nSecondary = 0;
 LOCALPLAYER.flags &= ~ 
-										  (PLAYER_FLAGS_QUAD_LASERS |
-											PLAYER_FLAGS_AFTERBURNER |
-											PLAYER_FLAGS_CLOAKED |
-											PLAYER_FLAGS_INVULNERABLE |
-											PLAYER_FLAGS_MAP_ALL |
-											PLAYER_FLAGS_CONVERTER |
-											PLAYER_FLAGS_AMMO_RACK |
-											PLAYER_FLAGS_HEADLIGHT |
-											PLAYER_FLAGS_HEADLIGHT_ON |
-											PLAYER_FLAGS_FLAG);
+	(PLAYER_FLAGS_QUAD_LASERS |
+	 PLAYER_FLAGS_AFTERBURNER |
+	 PLAYER_FLAGS_CLOAKED |
+	 PLAYER_FLAGS_INVULNERABLE |
+	 PLAYER_FLAGS_MAP_ALL |
+	 PLAYER_FLAGS_CONVERTER |
+	 PLAYER_FLAGS_AMMO_RACK |
+	 PLAYER_FLAGS_HEADLIGHT |
+	 PLAYER_FLAGS_HEADLIGHT_ON |
+	 PLAYER_FLAGS_FLAG);
 if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkness)
 	LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
 LOCALPLAYER.cloakTime = 0;
@@ -598,7 +598,7 @@ if (LOCALPLAYER.timeTotal > i2f (3600))	{
 
 //------------------------------------------------------------------------------
 
-//go through this level and start any eclip sounds
+//go through this level and start any tEffectClip sounds
 void SetSoundSources ()
 {
 	short nSegment,nSide;
@@ -1232,7 +1232,7 @@ int PSecretLevelDestroyed (void)
 {
 if (gameStates.app.bFirstSecretVisit)
 	return 0;		//	Never been there, can't have been destroyed.
-if (CFExist (SECRETC_FILENAME,gameFolders.szSaveDir,0))
+if (CFExist (SECRETC_FILENAME, gameFolders.szSaveDir, 0))
 	return 0;
 return 1;
 }
@@ -1241,13 +1241,12 @@ return 1;
 
 void DoSecretMessage (char *msg)
 {
-	int	old_fmode;
+	int	fMode = gameStates.app.nFunctionMode;
 
-old_fmode = gameStates.app.nFunctionMode;
 StopTime ();
 SetFunctionMode (FMODE_MENU);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
-SetFunctionMode (old_fmode);
+SetFunctionMode (fMode);
 StartTime ();
 }
 

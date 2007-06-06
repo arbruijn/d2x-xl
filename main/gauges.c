@@ -1563,7 +1563,7 @@ if (HIDE_HUD)
 	return;
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
-h = FixMul (xAfterburnerCharge, 100);
+h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (gameOpts->render.cockpit.bTextGauges) {
 	y = grdCurCanv->cv_h - ((gameData.app.nGameMode & GM_MULTI) ? 8 : 3) * nLineSpacing;
 	GrSetCurFont (GAME_FONT);
@@ -1578,9 +1578,9 @@ else {
 	GrURect (6, y, 6 + (int) (h * xScale), y + (int) (9 * yScale));
 	}
 if (gameData.demo.nState==ND_STATE_RECORDING) {
-	if (xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage]) {
-		NDRecordPlayerAfterburner (old_afterburner [gameStates.render.vr.nCurrentPage], xAfterburnerCharge);
-		old_afterburner [gameStates.render.vr.nCurrentPage] = xAfterburnerCharge;
+	if (gameData.physics.xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage]) {
+		NDRecordPlayerAfterburner (old_afterburner [gameStates.render.vr.nCurrentPage], gameData.physics.xAfterburnerCharge);
+		old_afterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
 	 	}
 	}
 }
@@ -1930,7 +1930,7 @@ int HUDEquipmentActive (int bFlag)
 {
 switch (bFlag) {
 	case PLAYER_FLAGS_AFTERBURNER:
-		return (xAfterburnerCharge && Controls [0].afterburnerState);
+		return (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState);
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
@@ -3253,7 +3253,7 @@ void SBDrawAfterburner ()
 //	GrSetCurrentCanvas (Canv_SBAfterburnerGauge);
 	PAGE_IN_GAUGE (SB_GAUGE_AFTERBURNER);
 	HUDBitBlt (SB_AFTERBURNER_GAUGE_X, SB_AFTERBURNER_GAUGE_Y, gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_AFTERBURNER), F1_0, 0);
-	erase_height = FixMul ((f1_0 - xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
+	erase_height = FixMul ((f1_0 - gameData.physics.xAfterburnerCharge), SB_AFTERBURNER_GAUGE_H);
 //	HUDMessage (0, "AB: %d", erase_height);
 
 	if (erase_height > 0) {
@@ -3903,13 +3903,13 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	DrawNumericalDisplay (shields, energy);
 	old_energy [gameStates.render.vr.nCurrentPage] = energy;
 
-	if (xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage]) {
+	if (gameData.physics.xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage]) {
 		if (gameData.demo.nState==ND_STATE_RECORDING) {
-			NDRecordPlayerAfterburner (old_afterburner [gameStates.render.vr.nCurrentPage], xAfterburnerCharge);
+			NDRecordPlayerAfterburner (old_afterburner [gameStates.render.vr.nCurrentPage], gameData.physics.xAfterburnerCharge);
 			}
 		}
-	DrawAfterburnerBar (xAfterburnerCharge);
-	old_afterburner [gameStates.render.vr.nCurrentPage] = xAfterburnerCharge;
+	DrawAfterburnerBar (gameData.physics.xAfterburnerCharge);
+	old_afterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
 
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawNumericalDisplay (shields, energy);
@@ -3944,12 +3944,12 @@ else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 		SBDrawEnergyBar (energy);
 		old_energy [gameStates.render.vr.nCurrentPage] = energy;
 		}
-	if (xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage] || frc) {
+	if (gameData.physics.xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage] || frc) {
 		if (gameData.demo.nState==ND_STATE_RECORDING) {
-			NDRecordPlayerAfterburner (old_afterburner [gameStates.render.vr.nCurrentPage], xAfterburnerCharge);
+			NDRecordPlayerAfterburner (old_afterburner [gameStates.render.vr.nCurrentPage], gameData.physics.xAfterburnerCharge);
 			}
 		SBDrawAfterburner ();
-		old_afterburner [gameStates.render.vr.nCurrentPage] = xAfterburnerCharge;
+		old_afterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
 		}
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawInvulnerableShip ();

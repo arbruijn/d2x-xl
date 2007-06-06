@@ -1693,7 +1693,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 		//	Process only walls which have glass.
 		if ((tm = segp->sides [nSide].nOvlTex)) {
 			int	ec, db;
-			eclip *ecP;
+			tEffectClip *ecP;
 
 			ec=gameData.pig.tex.pTMapInfo [tm].eclip_num;
 			ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;

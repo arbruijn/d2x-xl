@@ -1413,7 +1413,7 @@ if (i) {
 	gameOptions [1].gameplay.bSecretSave = 0;
 	gameOptions [1].gameplay.bTurboMode = 0;
 	gameOptions [1].gameplay.bFastRespawn = 0;
-	gameOptions [1].gameplay.bAutoLeveling = 1;
+	gameOptions [1].gameplay.nAutoLeveling = 1;
 	gameOptions [1].gameplay.bEscortHotKeys = 1;
 	gameOptions [1].gameplay.bSkipBriefingScreens = 0;
 	gameOptions [1].gameplay.bHeadlightOn = 1;
@@ -1427,7 +1427,7 @@ else {
 	gameOptions [0].gameplay.bSecretSave = 0;
 	gameOptions [0].gameplay.bTurboMode = 0;
 	gameOptions [0].gameplay.bFastRespawn = 0;
-	gameOptions [0].gameplay.bAutoLeveling = 1;
+	gameOptions [0].gameplay.nAutoLeveling = 1;
 	gameOptions [0].gameplay.bEscortHotKeys = 1;
 	gameOptions [0].gameplay.bSkipBriefingScreens = 0;
 	gameOptions [0].gameplay.bHeadlightOn = 0;
@@ -2138,6 +2138,7 @@ gameData.ai.nAwarenessEvents = 0;
 gameData.ai.nDistToLastPlayerPosFiredAt = 0;
 gameData.ai.freePointSegs = gameData.ai.pointSegs;
 gameData.menu.colorOverride = 0;
+gameData.menu.alpha = 5 * 16 - 1;	//~ 0.3
 gameData.matCens.xFuelRefillSpeed = i2f (1);
 gameData.matCens.xFuelGiveAmount = i2f (25);
 gameData.matCens.xFuelMaxAmount = i2f (100);
@@ -2179,6 +2180,7 @@ gameData.render.terrain.uvlList [1][0].u = f1_0;
 gameData.render.terrain.uvlList [1][1].u = f1_0;
 gameData.render.terrain.uvlList [1][1].v = f1_0;
 gameData.render.terrain.uvlList [1][2].v = f1_0;
+gameData.physics.xAfterburnerCharge = f1_0;
 SetSpherePulse (&gameData.render.shield.pulse, 0.02f, 0.5f);
 UseSpherePulse (&gameData.render.shield, &gameData.render.shield.pulse);
 SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
