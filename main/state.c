@@ -2225,6 +2225,8 @@ if (!bBetweenLevels)	{
 	for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED))
 			AnimateOpeningDoor (SEGMENTS + wallP->nSegment, wallP->nSide, -1);
+		else if ((wallP->nType == WALL_BLASTABLE) && (wallP->flags & WALL_BLASTED))
+			BlastBlastableWall (SEGMENTS + wallP->nSegment, wallP->nSide);
 		}
 	gameData.reactor.bDestroyed = CFReadInt (fp);
 	gameData.reactor.countdown.nTimer = CFReadFix (fp);

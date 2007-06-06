@@ -1158,6 +1158,7 @@ r = f2fl (objP->size);
 r2 = r / 4;
 
 glDisable (GL_CULL_FACE);
+glDisable (GL_TEXTURE_2D);
 glEnableClientState (GL_VERTEX_ARRAY);
 glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
 if (gameOpts->render.cockpit.bRotateMslLockInd) {
@@ -2350,6 +2351,8 @@ switch (objP->renderType) {
 					DrawWeaponVClip (objP); 
 				if ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID) && (objP->id != SMALLMINE_ID)) 
 					RenderLightTrail (objP);
+				else
+					RenderMslLockIndicator (objP);
 				}
 			else
 				DrawWeaponVClip (objP); 

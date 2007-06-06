@@ -267,6 +267,7 @@ extern void WallSetTMapNum(tSegment *seg,short tSide,tSegment *csegp, short csid
 
 extern void InitDoorAnims (void);
 int AnimateOpeningDoor (tSegment *segP, short nSide, fix xElapsedTime);
+void BlastBlastableWall (tSegment *segP, short nSide);
 
 // Remove any flares from a tWall
 void KillStuckObjects(int wallnum);

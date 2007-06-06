@@ -101,5 +101,26 @@ void RenderMineSegment (int nn);
 
 extern grsBitmap *bmpCorona;
 
+//------------------------------------------------------------------------------
+
+static inline tObject *GuidedMslView (void)
+{
+	tObject *objP;
+
+return (objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
+		 (objP->nType == OBJ_WEAPON) && 
+		 (objP->id == GUIDEDMSL_ID) && 
+		 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) ?
+	objP : NULL;
+}
+
+//------------------------------------------------------------------------------
+
+static inline tObject *GuidedInMainView (void)
+{
+return gameOpts->render.cockpit.bGuidedInMainView ? GuidedMslView () : NULL;
+}
+
+//------------------------------------------------------------------------------
 
 #endif /* _RENDER_H */

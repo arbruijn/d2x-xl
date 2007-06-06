@@ -1975,7 +1975,8 @@ void DoRenderObject(int nObject, int nWindow)
 	//	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
 	//	that the guided missile system will know what gameData.objs.objects to look at.
 	//	I didn't know we had guided missiles before the release of D1. --MK
-	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER)) {
+	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) ||
+		 ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))) {
 		//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
 		//	This peculiar piece of code makes us keep track of the most recently rendered gameData.objs.objects, which
 		//	are probably the higher priority gameData.objs.objects, without overflowing the buffer
@@ -2002,7 +2003,7 @@ void DoRenderObject(int nObject, int nWindow)
 	else
 #endif
 		//NOTE LINK TO ABOVE
-	bObjectRendered [nObject] = RenderObject(objP, nWindow, 0);
+	bObjectRendered [nObject] = RenderObject (objP, nWindow, 0);
 	for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
 		hObj = gameData.objs.objects + n;
 		Assert(hObj->nType == OBJ_FIREBALL);
@@ -4203,9 +4204,16 @@ void GetPlayerMslLock (void)
 	int			nWeapon, nObject, nGun, h, i, j;
 	vmsVector	vGunPos;
 	vmsMatrix	m;
+	tObject		*objP;
 
 gameData.objs.trackGoals [0] =
 gameData.objs.trackGoals [1] = NULL;
+if (objP = GuidedInMainView ()) {
+	nObject = FindHomingObject (&objP->position.vPos, objP);
+	gameData.objs.trackGoals [0] = 
+	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	return;
+	}
 if (!AllowedToFireMissile ())
 	return;
 if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0) || COMPETITION)
@@ -4435,7 +4443,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDisable (GL_TEXTURE_2D);
 		}
 	glDepthFunc (GL_LESS);
-	if (!(nWindow || gameStates.render.cameras.bActive))
+	if (!(nWindow || gameStates.render.cameras.bActive || GuidedInMainView ()))
 		RenderRadar ();
 	if (gameStates.render.automap.bDisplay) {
 		if (gameOpts->render.automap.bSmoke)

@@ -287,18 +287,18 @@ return WallIsDoorWay (segP, nSide);
 void WallInit ()
 {
 	int i;
-	tWall *w = gameData.walls.walls;
+	tWall *wallP = gameData.walls.walls;
 
 gameData.walls.nWalls = 0;
-for (i = 0; i < MAX_WALLS; i++, w++) {
-	w->nSegment = 
-	w->nSide = -1;
-	w->nType = WALL_NORMAL;
-	w->flags = 0;
-	w->hps = 0;
-	w->nTrigger = NO_TRIGGER;
-	w->nClip = -1;
-	w->nLinkedWall = NO_WALL;
+for (i = 0; i < MAX_WALLS; i++, wallP++) {
+	wallP->nSegment = 
+	wallP->nSide = -1;
+	wallP->nType = WALL_NORMAL;
+	wallP->flags = 0;
+	wallP->hps = 0;
+	wallP->nTrigger = NO_TRIGGER;
+	wallP->nClip = -1;
+	wallP->nLinkedWall = NO_WALL;
 	}
 gameData.walls.nOpenDoors = 0;
 gameData.walls.nCloaking = 0;
@@ -308,7 +308,7 @@ gameData.walls.nCloaking = 0;
 // Initializes one tWall.
 void WallReset (tSegment *segP, short nSide)
 {
-	tWall *w;
+	tWall *wallP;
 	int i = WallNumP (segP, nSide);
 
 if (!IS_WALL (i)) {
@@ -317,15 +317,15 @@ if (!IS_WALL (i)) {
 #endif
 	return;
 	}
-w = gameData.walls.walls;
-w->nSegment = SEG_IDX (segP);
-w->nSide = nSide;
-w->nType = WALL_NORMAL;
-w->flags = 0;
-w->hps = 0;
-w->nTrigger = NO_TRIGGER;
-w->nClip = -1;
-w->nLinkedWall = NO_WALL;
+wallP = gameData.walls.walls;
+wallP->nSegment = SEG_IDX (segP);
+wallP->nSide = nSide;
+wallP->nType = WALL_NORMAL;
+wallP->flags = 0;
+wallP->hps = 0;
+wallP->nTrigger = NO_TRIGGER;
+wallP->nClip = -1;
+wallP->nLinkedWall = NO_WALL;
 }
 #endif
 
@@ -394,24 +394,23 @@ void BlastBlastableWall (tSegment *segP, short nSide)
 	tSegment *connSegP;
 	int a, n;
 	short nWall, nConnWall;
-	tWall *w;
+	tWall *wallP;
 
 nWall = WallNumP (segP, nSide);
 Assert(IS_WALL (nWall));
-w = gameData.walls.walls + nWall;
-w->hps = -1;	//say it's blasted
+wallP = gameData.walls.walls + nWall;
+wallP->hps = -1;	//say it's blasted
 
 if (segP->children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
-		Warning (TXT_BLAST_SINGLE,
-			gameData.segs.segments - segP, nSide, nWall);
+		Warning (TXT_BLAST_SINGLE, gameData.segs.segments - segP, nSide, nWall);
 	connSegP = NULL;
 	nConnSide = -1;
 	nConnWall = NO_WALL;
 	}
 else {
 	connSegP = gameData.segs.segments + segP->children [nSide];
-	nConnSide = FindConnectedSide(segP, connSegP);
+	nConnSide = FindConnectedSide (segP, connSegP);
 	Assert (nConnSide != -1);
 	nConnWall = WallNumP (connSegP, nConnSide);
 	}
@@ -420,19 +419,18 @@ if (IS_WALL (nConnWall))
 	KillStuckObjects (nConnWall);
 
 //if this is an exploding wall, explode it
-if (gameData.walls.pAnims [w->nClip].flags & WCF_EXPLODES)
-	ExplodeWall (SEG_IDX (segP),nSide);
+if ((gameData.walls.pAnims [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
+	ExplodeWall (SEG_IDX (segP), nSide);
 else {
 	//if not exploding, set final frame, and make door passable
-	a = w->nClip;
+	a = wallP->nClip;
 	n = AnimFrameCount (gameData.walls.pAnims + a);
 	WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, n - 1);
-	w->flags |= WALL_BLASTED;
+	wallP->flags |= WALL_BLASTED;
 	if (IS_WALL (nConnWall))
 		gameData.walls.walls [nConnWall].flags |= WALL_BLASTED;
 	}
 }
-
 
 //-----------------------------------------------------------------
 // Destroys a blastable tWall.
@@ -452,7 +450,7 @@ void WallDamage (tSegment *segP, short nSide, fix damage)
 {
 	int		a, i, n;
 	short		nConnSide, nConnWall, nWall = WallNumP (segP, nSide);
-	tWall		*w;
+	tWall		*wallP;
 	tSegment *connSegP;
 
 if (!IS_WALL (nWall)) {
@@ -461,10 +459,10 @@ if (!IS_WALL (nWall)) {
 #endif
 	return;
 	}
-w = gameData.walls.walls + nWall;
-if (w->nType != WALL_BLASTABLE)
+wallP = gameData.walls.walls + nWall;
+if (wallP->nType != WALL_BLASTABLE)
 	return;
-if ((w->flags & WALL_BLASTED) || (w->hps < 0))
+if ((wallP->flags & WALL_BLASTED) || (wallP->hps < 0))
 	return;
 
 if (segP->children [nSide] < 0) {
@@ -481,20 +479,20 @@ else {
 	Assert(nConnSide != -1);
 	nConnWall = WallNumP (connSegP, nConnSide);
 	}
-w->hps -= damage;
+wallP->hps -= damage;
 if (IS_WALL (nConnWall))
 	gameData.walls.walls [nConnWall].hps -= damage;
-a = w->nClip;
+a = wallP->nClip;
 n = AnimFrameCount (gameData.walls.pAnims + a);
-if (w->hps < WALL_HPS*1/n) {
-	BlastBlastableWall(segP, nSide);
+if (wallP->hps < WALL_HPS*1/n) {
+	BlastBlastableWall (segP, nSide);
 	if (IsMultiGame)
-		MultiSendDoorOpen (SEG_IDX (segP), nSide, w->flags);
+		MultiSendDoorOpen (SEG_IDX (segP), nSide, wallP->flags);
 	}
 else {
 	for (i = 0; i < n; i++)
-		if (w->hps < WALL_HPS * (n - i) / n)
-			WallSetTMapNum(segP, nSide, connSegP, nConnSide, a, i);
+		if (wallP->hps < WALL_HPS * (n - i) / n)
+			WallSetTMapNum (segP, nSide, connSegP, nConnSide, a, i);
 	}
 }
 
@@ -502,7 +500,7 @@ else {
 // Opens a door
 void WallOpenDoor (tSegment *segP, short nSide)
 {
-	tWall			*w;
+	tWall			*wallP;
 	tActiveDoor *d;
 	short			nConnSide, nWall, nConnWall;
 	tSegment		*connSegP;
@@ -512,15 +510,15 @@ Assert(IS_WALL (nWall)); 	//Opening door on illegal tWall
 if (!IS_WALL (nWall))
 	return;
 
-w = gameData.walls.walls + nWall;
+wallP = gameData.walls.walls + nWall;
 //KillStuckObjects(WallNumP (segP, nSide));
 
-if ((w->state == WALL_DOOR_OPENING) ||		//already opening
-	 (w->state == WALL_DOOR_WAITING)	||		//open, waiting to close
-	 (w->state == WALL_DOOR_OPEN))			//open, & staying open
+if ((wallP->state == WALL_DOOR_OPENING) ||	//already opening
+	 (wallP->state == WALL_DOOR_WAITING) ||	//open, waiting to close
+	 (wallP->state == WALL_DOOR_OPEN))			//open, & staying open
 	return;
 
-if (w->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
+if (wallP->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 	int i, j;
 
 	d = gameData.walls.activeDoors;
@@ -537,12 +535,12 @@ foundDoor:
 	Assert(i<gameData.walls.nOpenDoors);				//didn't find door!
 	Assert(d!=NULL); // Get John!
 
-	d->time = (fix) (gameData.walls.pAnims [w->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - d->time;
+	d->time = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - d->time;
 	if (d->time < 0)
 		d->time = 0;
 	}
 else {											//create new door
-	Assert(w->state == WALL_DOOR_CLOSED);
+	Assert(wallP->state == WALL_DOOR_CLOSED);
 
 fastFix:
 
@@ -550,7 +548,7 @@ fastFix:
 	d = gameData.walls.activeDoors + gameData.walls.nOpenDoors++;
 	d->time = 0;
 	}
-w->state = WALL_DOOR_OPENING;
+wallP->state = WALL_DOOR_OPENING;
 
 // So that door can't be shot while opening
 if (segP->children [nSide] < 0) {
@@ -576,17 +574,17 @@ d->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (segP) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening(SEG_IDX (segP), nSide);
-if (IS_WALL (w->nLinkedWall) && IS_WALL (nConnWall) && (w->nLinkedWall == nConnWall)) {
-	tWall *w2 = gameData.walls.walls + w->nLinkedWall;
-	tSegment *seg2 = gameData.segs.segments + w2->nSegment;
-	w2->state = WALL_DOOR_OPENING;
-	connSegP = gameData.segs.segments + seg2->children [w2->nSide];
-	nConnSide = FindConnectedSide(seg2, connSegP);
+if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall == nConnWall)) {
+	tWall *wallP2 = gameData.walls.walls + wallP->nLinkedWall;
+	tSegment *segP2 = gameData.segs.segments + wallP2->nSegment;
+	wallP2->state = WALL_DOOR_OPENING;
+	connSegP = gameData.segs.segments + segP2->children [wallP2->nSide];
+	nConnSide = FindConnectedSide(segP2, connSegP);
 	Assert(nConnSide != -1);
 	if (IS_WALL (nConnWall))
 		gameData.walls.walls [nConnWall].state = WALL_DOOR_OPENING;
 	d->nPartCount = 2;
-	d->nFrontWall [1] = w->nLinkedWall;
+	d->nFrontWall [1] = wallP->nLinkedWall;
 	d->nBackWall [1] = nConnWall;
 	}
 else
@@ -595,8 +593,8 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
 	vmsVector cp;
 	COMPUTE_SIDE_CENTER(&cp, segP, nSide);
-	if (gameData.walls.pAnims [w->nClip].openSound > -1)
-		DigiLinkSoundToPos(gameData.walls.pAnims [w->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	if (gameData.walls.pAnims [wallP->nClip].openSound > -1)
+		DigiLinkSoundToPos(gameData.walls.pAnims [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 }
 
@@ -821,47 +819,47 @@ return 1; 	//doorway is D2_FREE!
 
 //-----------------------------------------------------------------
 // Closes a door
-void WallCloseDoor(tSegment *segP, short nSide)
+void WallCloseDoor (tSegment *segP, short nSide)
 {
-	tWall *w;
-	tActiveDoor *d;
+	tWall *wallP;
+	tActiveDoor *doorP;
 	short nConnSide, nWall, nConnWall;
 	tSegment *connSegP;
 
 Assert(IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 
-w = &gameData.walls.walls [WallNumP (segP, nSide)];
-nWall = WALL_IDX (w);
-if ((w->state == WALL_DOOR_CLOSING) ||		//already closing
-	 (w->state == WALL_DOOR_WAITING)	||		//open, waiting to close
-	 (w->state == WALL_DOOR_CLOSED))			//closed
+wallP = &gameData.walls.walls [WallNumP (segP, nSide)];
+nWall = WALL_IDX (wallP);
+if ((wallP->state == WALL_DOOR_CLOSING) ||		//already closing
+	 (wallP->state == WALL_DOOR_WAITING)	||		//open, waiting to close
+	 (wallP->state == WALL_DOOR_CLOSED))			//closed
 	return;
 
 if (!IsDoorFree (segP,nSide))
 	return;
-if (w->state == WALL_DOOR_OPENING) {	//reuse door
+if (wallP->state == WALL_DOOR_OPENING) {	//reuse door
 	int i;
-	d = gameData.walls.activeDoors;
-	for (i = 0; i <gameData.walls.nOpenDoors; i++, d++) {		//find door
-		if ((d->nFrontWall [0]== nWall) || (d->nBackWall [0] == nWall) ||
-			((d->nPartCount == 2) && ((d->nFrontWall [1] == nWall) || (d->nBackWall [1] == nWall))))
+	doorP = gameData.walls.activeDoors;
+	for (i = 0; i <gameData.walls.nOpenDoors; i++, doorP++) {		//find door
+		if ((doorP->nFrontWall [0]== nWall) || (doorP->nBackWall [0] == nWall) ||
+			((doorP->nPartCount == 2) && ((doorP->nFrontWall [1] == nWall) || (doorP->nBackWall [1] == nWall))))
 			break;
 		}
 	if (i >= gameData.walls.nOpenDoors)	//no matching open door found
 		return;
-	Assert(d != NULL); // Get John!
-	d->time = (fix) (gameData.walls.pAnims [w->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - d->time;
-	if (d->time < 0)
-		d->time = 0;
+	Assert(doorP != NULL); // Get John!
+	doorP->time = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - doorP->time;
+	if (doorP->time < 0)
+		doorP->time = 0;
 	}
 else {											//create new door
-	Assert(w->state == WALL_DOOR_OPEN);
-	d = gameData.walls.activeDoors + gameData.walls.nOpenDoors;
-	d->time = 0;
+	Assert(wallP->state == WALL_DOOR_OPEN);
+	doorP = gameData.walls.activeDoors + gameData.walls.nOpenDoors;
+	doorP->time = 0;
 	gameData.walls.nOpenDoors++;
 	Assert(gameData.walls.nOpenDoors < MAX_DOORS);
 	}
-w->state = WALL_DOOR_CLOSING;
+wallP->state = WALL_DOOR_CLOSING;
 // So that door can't be shot while opening
 connSegP = gameData.segs.segments + segP->children [nSide];
 nConnSide = FindConnectedSide(segP, connSegP);
@@ -869,21 +867,21 @@ Assert(nConnSide != -1);
 nConnWall = WallNumP (connSegP, nConnSide);
 if (IS_WALL (nConnWall))
 	gameData.walls.walls [nConnWall].state = WALL_DOOR_CLOSING;
-d->nFrontWall [0] = WallNumP (segP, nSide);
-d->nBackWall [0] = nConnWall;
+doorP->nFrontWall [0] = WallNumP (segP, nSide);
+doorP->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (segP) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening(SEG_IDX (segP), nSide);
-if (IS_WALL (w->nLinkedWall))
+if (IS_WALL (wallP->nLinkedWall))
 	Int3();		//don't think we ever used linked walls
 else
-	d->nPartCount = 1;
+	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
 	vmsVector cp;
-	COMPUTE_SIDE_CENTER(&cp, segP, nSide);
-	if (gameData.walls.pAnims [w->nClip].openSound > -1)
-		DigiLinkSoundToPos(gameData.walls.pAnims [w->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
+	if (gameData.walls.pAnims [wallP->nClip].openSound > -1)
+		DigiLinkSoundToPos (gameData.walls.pAnims [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 }
 
@@ -928,34 +926,34 @@ return 0;
 //-----------------------------------------------------------------
 // Animates opening of a door.
 // Called in the game loop.
-void DoDoorOpen(int nDoor)
+void DoDoorOpen (int nDoor)
 {
 	int			p, bFlags = 3;
-	tActiveDoor *d;
+	tActiveDoor *doorP;
 
 Assert(nDoor != -1);		//Trying to DoDoorOpen on illegal door
-d = gameData.walls.activeDoors + nDoor;
-for (p = 0; p < d->nPartCount; p++) {
-	tWall		*w;
+doorP = gameData.walls.activeDoors + nDoor;
+for (p = 0; p < doorP->nPartCount; p++) {
+	tWall		*wallP;
 	short		cSide, nSide;
 	tSegment	*connSegP, *segP;
 	int		wn;
 
-	d->time += gameData.time.xFrame;
-	w = gameData.walls.walls + d->nFrontWall [p];
-	KillStuckObjects (d->nFrontWall [p]);
-	KillStuckObjects (d->nBackWall [p]);
+	doorP->time += gameData.time.xFrame;
+	wallP = gameData.walls.walls + doorP->nFrontWall [p];
+	KillStuckObjects (doorP->nFrontWall [p]);
+	KillStuckObjects (doorP->nBackWall [p]);
 
-	segP = gameData.segs.segments + w->nSegment;
-	nSide = w->nSide;
+	segP = gameData.segs.segments + wallP->nSegment;
+	nSide = wallP->nSide;
 	wn = WallNumP (segP, nSide);
 	Assert(IS_WALL (wn));		//Trying to DoDoorOpen on illegal tWall
-	bFlags &= AnimateOpeningDoor (segP, nSide, d->time);
+	bFlags &= AnimateOpeningDoor (segP, nSide, doorP->time);
 	connSegP = gameData.segs.segments + segP->children [nSide];
 	cSide = FindConnectedSide(segP, connSegP);
 	Assert (cSide != -1);
 	if (IS_WALL (WallNumP (connSegP, cSide)))
-		bFlags &= AnimateOpeningDoor (connSegP, cSide, d->time);
+		bFlags &= AnimateOpeningDoor (connSegP, cSide, doorP->time);
 	}
 if (bFlags & 2)
 	gameData.walls.activeDoors [gameData.walls.nOpenDoors].time = 0;	//counts up
@@ -996,29 +994,29 @@ return 0;
 // Called from the game loop.
 void DoDoorClose (int nDoor)
 {
-	tActiveDoor *d;
-	tWall			*w;
+	tActiveDoor *doorP;
+	tWall			*wallP;
 	int			p, bFlags = 1;
 
 Assert(nDoor != -1);		//Trying to DoDoorOpen on illegal door
-d = gameData.walls.activeDoors + nDoor;
-w = gameData.walls.walls + d->nFrontWall [0];
+doorP = gameData.walls.activeDoors + nDoor;
+wallP = gameData.walls.walls + doorP->nFrontWall [0];
 
 	//check for gameData.objs.objects in doorway before closing
-if (w->flags & WALL_DOOR_AUTO)
-	if (!IsDoorFree (gameData.segs.segments + w->nSegment,(short) w->nSide)) {
-		DigiKillSoundLinkedToSegment((short) w->nSegment,(short) w->nSide,-1);
-		WallOpenDoor (&gameData.segs.segments [w->nSegment],(short) w->nSide);		//re-open door
+if (wallP->flags & WALL_DOOR_AUTO)
+	if (!IsDoorFree (gameData.segs.segments + wallP->nSegment,(short) wallP->nSide)) {
+		DigiKillSoundLinkedToSegment((short) wallP->nSegment,(short) wallP->nSide,-1);
+		WallOpenDoor (&gameData.segs.segments [wallP->nSegment],(short) wallP->nSide);		//re-open door
 		return;
 		}
 
-for (p = 0; p < d->nPartCount; p++) {
+for (p = 0; p < doorP->nPartCount; p++) {
 	short		cSide, nSide;
 	tSegment	*connSegP, *segP;
 
-	w = gameData.walls.walls + d->nFrontWall [p];
-	segP = gameData.segs.segments + w->nSegment;
-	nSide = w->nSide;
+	wallP = gameData.walls.walls + doorP->nFrontWall [p];
+	segP = gameData.segs.segments + wallP->nSegment;
+	nSide = wallP->nSide;
 	if (!IS_WALL (WallNumP (segP, nSide))) {
 #if TRACE
 		con_printf (CONDBG, "Trying to DoDoorClose on Illegal tWall\n");
@@ -1032,16 +1030,16 @@ for (p = 0; p < d->nPartCount; p++) {
 	connSegP = gameData.segs.segments + segP->children [nSide];
 	cSide = FindConnectedSide (segP, connSegP);
 	Assert(cSide != -1);
-	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(p || d->time)) {
+	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(p || doorP->time)) {
 		vmsVector cp;
 		COMPUTE_SIDE_CENTER (&cp, segP, nSide);
-		if (gameData.walls.pAnims [w->nClip].closeSound  > -1)
+		if (gameData.walls.pAnims [wallP->nClip].closeSound  > -1)
 			DigiLinkSoundToPos((short) gameData.walls.pAnims [gameData.walls.walls [WallNumP (segP, nSide)].nClip].closeSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 		}
-	d->time += gameData.time.xFrame;
-	bFlags &= AnimateClosingDoor (segP, nSide, d->time);
+	doorP->time += gameData.time.xFrame;
+	bFlags &= AnimateClosingDoor (segP, nSide, doorP->time);
 	if (IS_WALL (WallNumP (connSegP, cSide)))
-		bFlags &= AnimateClosingDoor (connSegP, cSide, d->time);
+		bFlags &= AnimateClosingDoor (connSegP, cSide, doorP->time);
 	}
 if (bFlags & 1)
 	WallCloseDoorNum (nDoor);
@@ -1272,36 +1270,28 @@ void WallToggle(tSegment *segP, short nSide)
 {
 	int nWall;
 
-	if (SEG_IDX (segP) > gameData.segs.nLastSegment)
-	{
+if (SEG_IDX (segP) > gameData.segs.nLastSegment) {
 #ifdef _DEBUG
-		Warning("Can't toggle nSide %d of tSegment %d - nonexistent tSegment!\n", nSide, SEG_IDX (segP));
+	Warning("Can't toggle nSide %d of tSegment %d - nonexistent tSegment!\n", nSide, SEG_IDX (segP));
 #endif
-		return;
+	return;
 	}
-	Assert((ushort) nSide < MAX_SIDES_PER_SEGMENT);
-
-	nWall = WallNumP (segP, nSide);
-
-	if (!IS_WALL (nWall)) {
+Assert((ushort) nSide < MAX_SIDES_PER_SEGMENT);
+nWall = WallNumP (segP, nSide);
+if (!IS_WALL (nWall)) {
 #if TRACE
-	 	con_printf (CONDBG, "Illegal WallToggle\n");
+ 	con_printf (CONDBG, "Illegal WallToggle\n");
 #endif
-		return;
+	return;
 	}
-
-	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordWallToggle(SEG_IDX (segP), nSide);
-
-	if (gameData.walls.walls [nWall].nType == WALL_BLASTABLE)
-		WallDestroy(segP, nSide);
-
-	if ((gameData.walls.walls [nWall].nType == WALL_DOOR) && 
-		 (gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED))
-		WallOpenDoor(segP, nSide);
-
+if (gameData.demo.nState == ND_STATE_RECORDING)
+	NDRecordWallToggle(SEG_IDX (segP), nSide);
+if (gameData.walls.walls [nWall].nType == WALL_BLASTABLE)
+	WallDestroy(segP, nSide);
+if ((gameData.walls.walls [nWall].nType == WALL_DOOR) && 
+		(gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED))
+	WallOpenDoor(segP, nSide);
 }
-
 
 //-----------------------------------------------------------------
 // Tidy up gameData.walls.walls array for load/save purposes.
@@ -1310,20 +1300,20 @@ void ResetWalls()
 	int i;
 	tWall *pWall = gameData.walls.walls+gameData.walls.nWalls;
 
-	if (gameData.walls.nWalls < 0) {
+if (gameData.walls.nWalls < 0) {
 #if TRACE
-		con_printf (CONDBG, "Illegal gameData.walls.nWalls\n");
+	con_printf (CONDBG, "Illegal gameData.walls.nWalls\n");
 #endif
-		return;
+	return;
 	}
 
-	for (i=gameData.walls.nWalls;i<MAX_WALLS;i++, pWall++) {
-		pWall->nType = WALL_NORMAL;
-		pWall->flags = 0;
-		pWall->hps = 0;
-		pWall->nTrigger = -1;
-		pWall->nClip = -1;
-		}
+for (i = gameData.walls.nWalls; i < MAX_WALLS; i++, pWall++) {
+	pWall->nType = WALL_NORMAL;
+	pWall->flags = 0;
+	pWall->hps = 0;
+	pWall->nTrigger = -1;
+	pWall->nClip = -1;
+	}
 }
 
 //-----------------------------------------------------------------

@@ -714,19 +714,6 @@ void HandleDeathKey(int key)
 
 //------------------------------------------------------------------------------
 
-inline int GuidedInMainView (void)
-{
-	tObject *gmP;
-
-return gameOpts->render.cockpit.bGuidedInMainView &&
-		 (gmP = gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer]) && 
-		 (gmP->nType == OBJ_WEAPON) && 
-		 (gmP->id == GUIDEDMSL_ID) && 
-		 (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]);
-}
-
-//------------------------------------------------------------------------------
-
 void HandleDemoKey(int key)
 {
 if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))

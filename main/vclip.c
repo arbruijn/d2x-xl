@@ -71,7 +71,7 @@ if (objP->nType == OBJ_FIREBALL) {
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
 else if (objP->nType == OBJ_WEAPON) {
-	if ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID) && (objP->id != SMALLMINE_ID)) 
+	if ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID) || (objP->id == SMALLMINE_ID)) 
 		alpha = 1.0;
 	else
 		alpha = WEAPON_ALPHA;

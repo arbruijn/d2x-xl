@@ -951,10 +951,13 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 	fix	max_dot = -F1_0*2;
 	int	nBestObj = -1;
 	int	cur_min_trackable_dot;
-
+	int	bGuidedMslView = (tracker->nType == OBJ_WEAPON) && (tracker == GuidedInMainView ());
 
 //	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-Assert ((tracker->nType == OBJ_PLAYER) || (WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
+Assert ((tracker->nType == OBJ_PLAYER) || 
+		  bGuidedMslView || 
+		  (WI_homingFlag (tracker->id)) || 
+		  (tracker->id == OMEGA_ID));
 
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
 
@@ -976,12 +979,12 @@ else {
 
 	//	Find the window which has the forward view.
 	for (i = 0; i < MAX_RENDERED_WINDOWS; i++)
-		if (windowRenderedData [i].frame >= gameData.app.nFrameCount - 1)
-			if (windowRenderedData [i].viewer == gameData.objs.console)
-				if (!windowRenderedData [i].rearView) {
-					nWindow = i;
-					break;
-					}
+		if ((windowRenderedData [i].frame >= gameData.app.nFrameCount - 1) &&
+			 ((windowRenderedData [i].viewer == gameData.objs.console) || bGuidedMslView) &&
+			 !windowRenderedData [i].rearView) {
+			nWindow = i;
+			break;
+			}
 
 	//	Couldn't find suitable view from this frame, so do complete search.
 	if (nWindow == -1)

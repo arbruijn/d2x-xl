@@ -137,7 +137,7 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][9];
 
 // List of objects rendered last frame in order.  Created at render
 // time, used by homing missiles in laser.c
-#define MAX_RENDERED_OBJECTS    50
+#define MAX_RENDERED_OBJECTS    100
 
 /*
  * STRUCTURES

@@ -212,7 +212,7 @@ void DrawWindowLabel ()
 			default:					control_name = "Unknown"; break;
 		}
 
-		GrSetFontColorRGBi (MEDRED_RGBA, 1, 0, 0);
+		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 		GrPrintF (0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewer), viewer_name, viewer_id, control_name);
 
 	}
@@ -300,7 +300,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 		int	y = grdCurCanv->cv_bitmap.bm_props.h;
 
 		GrSetCurFont (GAME_FONT);
-		GrSetFontColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 		if (gameStates.input.nCruiseSpeed > 0) {
 			int line_spacing = GAME_FONT->ft_h + GAME_FONT->ft_h/4;
 
@@ -412,7 +412,8 @@ void game_render_frame_stereo ()
 	fix actual_eye_width;
 	int actual_eye_offset;
 	grs_canvas RenderCanvas [2];
-	int bNoDrawHUD=0;
+	int bNoDrawHUD = 0, bGMView = 0;
+	tObject *gmObjP;
 
 	save_aspect = grdCurScreen->sc_aspect;
 	grdCurScreen->sc_aspect *= 2;	//Muck with aspect ratio
@@ -441,16 +442,12 @@ void game_render_frame_stereo ()
 		actual_eye_offset = gameStates.render.vr.nEyeOffset;
 	}
 
-	if (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer] && 
-		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && 
-		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && 
-		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] && 
-		 gameOpts->render.cockpit.bGuidedInMainView)
+	if ((bGMView = GuidedInMainView ()))
 		actual_eye_offset = 0;
 
 	GrSetCurrentCanvas (&RenderCanvas [0]);
 
-	if (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer] && gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nType==OBJ_WEAPON && gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] && gameOpts->render.cockpit.bGuidedInMainView) {
+	if (bGMView) {
 		char *msg = "Guided Missile View";
 		tObject *viewer_save = gameData.objs.viewer;
 		int w, h, aw;
@@ -465,7 +462,7 @@ void game_render_frame_stereo ()
 			gameData.objs.viewer = viewer_save;
 
 			GrSetCurFont (GAME_FONT);    //GAME_FONT);
-			GrSetFontColorRGBi (MEDRED_RGBA, 1, 0, 0);
+			GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 			GrGetStringSize (msg, &w, &h, &aw);
 
 			GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, 3, msg);
@@ -715,11 +712,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 	nDemoDoingLeft = nDemoDoingRight = 0;
    return;
    } 
-objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
-if (objP && 
-	 (objP->nType == OBJ_WEAPON) && 
-	 (objP->id == GUIDEDMSL_ID) && 
-	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer])) {
+if (objP = GuidedMslView ()) {
 	if (gameOpts->render.cockpit.bGuidedInMainView)	{
 		gameStates.render.nRenderingType=6+ (1<<4);
 		DoCockpitWindowView (1, gameData.objs.viewer, 0, WBUMSL, "SHIP");
@@ -875,7 +868,7 @@ void GameRenderFrameMono (void)
   		WakeupRenderedObjects (gameData.objs.viewer, 0);
 		gameData.objs.viewer = viewer_save;
 		GrSetCurFont (GAME_FONT);    //GAME_FONT);
-		GrSetFontColorRGBi (MEDRED_RGBA, 1, 0, 0);
+		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 		GrGetStringSize (msg, &w, &h, &aw);
 		GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, 3, msg);
 		DrawGuidedCrosshair ();
