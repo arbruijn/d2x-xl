@@ -1691,7 +1691,7 @@ char *defaultGameTexts [][2] = {
 	{"zum ~Steuern", "for ~steering the ship"},
 	{"zum ~Umschauen", "for ~looking around"},
 	{"Hey Junge, die Wand ist unzerstoerbar.", "Hey bub, you are trying to destroy an indestructable wall."},
-	{"Schiff ~Nicht ausrichten", "~No auto levelling"},
+	{"Schiff ~Nicht ausrichten", "~No auto leveling"},
 	{"Schiff zur naechsten ~Flaeche ausrichten", "align ship with nearest ~Side"},
 	{"Schiff zum ~Boden ausrichten", "align ship with ~Floor"},
 	{"Schiff zur ~Mine ausrichten", "align ship to ~Mine"},

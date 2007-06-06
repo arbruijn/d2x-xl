@@ -829,7 +829,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	char		*pszLevelName;
 	char		szHogName [FILENAME_LEN];
 	tPlayer	save_player;
-	int		nRooms, bRetry, nLoadRes;
+	int		nRooms, bRetry = 0, nLoadRes;
 
 /*---*/LogErr ("Loading level...\n");
 gameStates.app.bGameRunning = 0;
