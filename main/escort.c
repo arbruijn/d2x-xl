@@ -179,7 +179,7 @@ int BuddyMayTalk (void)
 	int		i;
 	tSegment	*segP;
 
-if (gameData.objs.objects [gameData.escort.nObjNum].nType != OBJ_ROBOT) {
+if ((gameData.escort.nObjNum < 0) || (gameData.objs.objects [gameData.escort.nObjNum].nType != OBJ_ROBOT)) {
 	gameData.escort.bMayTalk = 0;
 	return 0;
 	}

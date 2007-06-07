@@ -12,66 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Scores header.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  16:02:07  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:31:53  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.13  1994/12/07  00:36:36  mike
- * scores sequencing stuff.
- *
- * Revision 1.12  1994/11/28  11:26:09  matt
- * Took out scores for weapons, which are no longer used
- *
- * Revision 1.11  1994/10/24  18:20:03  john
- * Made the current high score flash.
- *
- * Revision 1.10  1994/10/18  18:21:36  john
- * NEw score system.
- *
- * Revision 1.9  1994/10/03  23:01:58  matt
- * New parms for scoresView()
- *
- *
- * Revision 1.8  1994/09/27  16:10:37  adam
- * changed scores of course
- *
- * Revision 1.7  1994/08/31  19:25:46  mike
- * Add score values for new powerups.
- *
- * Revision 1.6  1994/08/26  16:00:18  mike
- * enhanced (?) scoring.
- *
- * Revision 1.5  1994/08/26  13:01:45  john
- * Put high score system in.
- *
- * Revision 1.4  1994/05/30  16:33:21  yuan
- * Revamping high scores.
- *
- * Revision 1.3  1994/05/14  17:15:07  matt
- * Got rid of externs in source (non-header) files
- *
- * Revision 1.2  1994/05/13  13:13:57  yuan
- * Added tPlayer death...
- *
- * When you die, if just pops up a a message.
- * When game is over, a message is popped up, and if you have a high score,
- * you get to enter it.
- *
- * Revision 1.1  1994/05/13  10:22:16  yuan
- * Initial revision
- *
- *
- */
-
-
 #ifndef _SCORES_H
 #define _SCORES_H
 
@@ -94,10 +34,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define INVULNERABILITY_SCORE   0
 #define HEADLIGHT_SCORE         0
 
-extern void scoresView(int citem);
+void ScoresView (int citem);
 
 // If tPlayer has a high score, adds you to file and returns.
 // If abortFlag set, only show if tPlayer has gotten a high score.
-extern void scores_maybe_add_player(int abortFlag);
+void MaybeAddPlayerScore (int abortFlag);
 
 #endif /* _SCORES_H */

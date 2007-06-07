@@ -437,7 +437,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 
 				if (CreditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
 					GrFreeCanvas(CreditsOffscreenBuf);
-				WIN(DEFINE_SCREEN(Menu_pcx_name));
+				WIN(DEFINE_SCREEN(MENU_PCX_NAME));
 				glDisable (GL_BLEND);
 				gameStates.menus.nInMenu = 0;
 				return;

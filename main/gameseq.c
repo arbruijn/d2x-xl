@@ -570,7 +570,7 @@ void DoGameOver ()
 {
 //	ExecMessageBox (TXT_GAME_OVER, 1, TXT_OK, "");
 if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
-	scores_maybe_add_player (0);
+	MaybeAddPlayerScore (0);
 SetFunctionMode (FMODE_MENU);
 gameData.app.nGameMode = GM_GAME_OVER;
 longjmp (gameExitPoint, 0);		// Exit out of game loop
@@ -1546,7 +1546,7 @@ if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 	GrClearCanvas (BLACK_RGBA);
 	GrPaletteStepClear ();
 	//LoadPalette (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
-	scores_maybe_add_player (0);
+	MaybeAddPlayerScore (0);
 	}
 SetFunctionMode (FMODE_MENU);
 if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))

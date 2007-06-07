@@ -621,12 +621,12 @@ if (!bSubFolder && gameOpts->app.bSinglePlayer) {
 	}
 if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubFolder, "single"))) {
 	if (gameOpts->app.nVersionFilter & 2) {
-		AddBuiltinMissionToList(&count);  //read built-in first
+		AddBuiltinMissionToList (&count);  //read built-in first
 		if (gameOpts->app.bSinglePlayer)
-			AddBuiltinD2XMissionToList(&count);  //read built-in first
+			AddBuiltinD2XMissionToList (&count);  //read built-in first
 		}
 	if (gameOpts->app.nVersionFilter & 1)
-		AddBuiltinD1MissionToList(&count);
+		AddBuiltinD1MissionToList (&count);
 	}
 nBuiltIns = count;
 sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubFolder);

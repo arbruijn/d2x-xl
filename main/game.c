@@ -1755,7 +1755,7 @@ if (gameStates.render.cockpit.nModeSave != -1) {
 if (gameStates.app.nFunctionMode != FMODE_EDITOR)
 	GrPaletteFadeOut (NULL,32,0);			// Fade out before going to menu
 //@@	if ((!demo_playing) && (!multi_game) && (gameStates.app.nFunctionMode != FMODE_EDITOR))	{
-//@@		scores_maybe_add_player (gameStates.app.bGameAborted);
+//@@		MaybeAddPlayerScore (gameStates.app.bGameAborted);
 //@@	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 GameDisableCheats ();

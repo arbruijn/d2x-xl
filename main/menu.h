@@ -36,7 +36,7 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 #endif
 
 // name of background bitmap
-#define Menu_pcx_name \
+#define MENU_PCX_NAME \
 			(CFExist(MENU_PCX_FULL,gameFolders.szDataDir,0)?MENU_PCX_FULL:\
 			(CFExist(MENU_PCX_OEM,gameFolders.szDataDir,0)?MENU_PCX_OEM:\
 			CFExist(MENU_PCX_SHAREWARE,gameFolders.szDataDir,0)?MENU_PCX_SHAREWARE:MENU_PCX_MAC_SHARE))

@@ -218,7 +218,8 @@ void SoundMenu ();
 void MiscellaneousMenu ();
 
 // Function Prototypes added after LINTING
-void ExecMenuOption (int select);
+int ExecMainMenuOption (int nChoice);
+int ExecMultiMenuOption (int nChoice);
 void CustomDetailsMenu (void);
 void NewGameMenu (void);
 void MultiplayerMenu (void);
@@ -307,15 +308,47 @@ try_again:;
 
 //------------------------------------------------------------------------------
 //static int FirstTime = 1;
-static int main_menu_choice = 0;
-
 static int nD1Opt = -1, nD2Opt = -1;
 
-//      Create the main menu.
-void CreateMainMenu (tMenuItem *m, int *nMenuChoice, int *nCallerOptions)
-{
-	int     opt = 0;
+static struct {
+	int	nNew;
+	int	nSingle;
+	int	nLoad;
+	int	nLoadDirect;
+	int	nMulti;
+	int	nConfig;
+	int	nPilots;
+	int	nDemo;
+	int	nScores;
+	int	nMovies;
+	int	nSongs;
+	int	nCredits;
+	int	nQuit;
+	int	nOrder;
+	int	nHelp;
+	int	nChoice;
+} mainOpts;
 
+static struct {
+	int	nStartIpx;
+	int	nJoinIpx;
+	int	nStartUdp;
+	int	nJoinUdp;
+	int	nStartUdpTracker;
+	int	nJoinUdpTracker;
+	int	nStartMCast4;
+	int	nJoinMCast4;
+	int	nStartKali;
+	int	nJoinKali;
+	int	nSerial;
+} multiOpts = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1};
+
+//      Create the main menu.
+int CreateMainMenu (tMenuItem *m)
+{
+	int opt = 0;
+
+memset (&mainOpts, 0xff, sizeof (mainOpts));
 #ifndef DEMO_ONLY
 SetScreenMode (SCREEN_MENU);
 #if 1
@@ -327,66 +360,51 @@ ADD_TEXT (opt, "", 0);
 m [opt++].noscroll = 1;
 #endif
 ADD_MENU (opt, TXT_NEW_GAME1, KEY_N, HTX_MAIN_NEW);
-nMenuChoice [opt++] = MENU_NEW_GAME;
+mainOpts.nNew = opt++;
 if (!gameStates.app.bNostalgia) {
 	ADD_MENU (opt, TXT_NEW_SPGAME, KEY_I, HTX_MAIN_SINGLE);
-	nMenuChoice [opt++] = MENU_NEW_SP_GAME;
+	mainOpts.nSingle = opt++;
 	}
 ADD_MENU (opt, TXT_LOAD_GAME, KEY_L, HTX_MAIN_LOAD);
-nMenuChoice [opt++] = MENU_LOAD_GAME;
+mainOpts.nLoad = opt++;
 ADD_MENU (opt, TXT_MULTIPLAYER_, KEY_M, HTX_MAIN_MULTI);
-nMenuChoice [opt++] = MENU_MULTIPLAYER;
+mainOpts.nMulti = opt++;
 if (gameStates.app.bNostalgia)
 	ADD_MENU (opt, TXT_OPTIONS_, KEY_O, HTX_MAIN_CONF);
 else
 	ADD_MENU (opt, TXT_CONFIGURE, KEY_O, HTX_MAIN_CONF);
-nMenuChoice [opt++] = MENU_CONFIG;
+mainOpts.nConfig = opt++;
 ADD_MENU (opt, TXT_CHANGE_PILOTS, KEY_P, HTX_MAIN_PILOT);
-nMenuChoice [opt++] = MENU_NEW_PLAYER;
+mainOpts.nPilots = opt++;
 ADD_MENU (opt, TXT_VIEW_DEMO, KEY_D, HTX_MAIN_DEMO);
-nMenuChoice [opt++] = MENU_DEMO_PLAY;
+mainOpts.nDemo = opt++;
 ADD_MENU (opt, TXT_VIEW_SCORES, KEY_H, HTX_MAIN_SCORES);
-nMenuChoice [opt++] = MENU_VIEW_SCORES;
+mainOpts.nScores = opt++;
 if (CFExist ("orderd2.pcx", gameFolders.szDataDir, 0)) { // SHAREWARE
 	ADD_MENU (opt, TXT_ORDERING_INFO, -1, NULL);
-	nMenuChoice [opt++] = MENU_ORDER_INFO;
+	mainOpts.nOrder = opt++;
 	}
 ADD_MENU (opt, TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
-nMenuChoice [opt++] = MENU_PLAY_MOVIE;
+mainOpts.nMovies = opt++;
 if (!gameStates.app.bNostalgia) {
 	ADD_MENU (opt, TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
-	nMenuChoice [opt++] = MENU_PLAY_SONG;
+	mainOpts.nSongs = opt++;
 	}
 ADD_MENU (opt, TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
-nMenuChoice [opt++] = MENU_SHOW_CREDITS;
+mainOpts.nCredits = opt++;
 #endif
 ADD_MENU (opt, TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
-nMenuChoice [opt++] = MENU_QUIT;
-#ifdef _DEBUG
-if (!(gameData.app.nGameMode & GM_MULTI))   {
-	//m [opt].nType=NM_TYPE_TEXT;
-	//m [opt++].text=" Debug options:";
-
-//		ADD_MENU ("  Load level...", MENU_LOAD_LEVEL , KEY_N);
-	#ifdef EDITOR
+mainOpts.nQuit = opt++;
+#if 0
+if (!IsMultiGame) {
+	ADD_MENU ("  Load level...", MENU_LOAD_LEVEL , KEY_N);
+#	ifdef EDITOR
 	ADD_MENU (opt, "  Editor", KEY_E, NULL);
 	nMenuChoice [opt++] = MENU_EDITOR;
-	#endif
+#	endif
 }
-
-//ADD_MENU ("  Play song", MENU_PLAY_SONG, -1);
 #endif
-#if 0
-if (!gameStates.app.bNostalgia) {
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	ADD_CHECK (opt, TXT_PLAY_D2MISSIONS, (gameOpts->app.nVersionFilter & 2) != 0, KEY_2, HTX_MAIN_D2);
-	nMenuChoice [nD2Opt = opt++] = MENU_D2_MISSIONS;
-	ADD_CHECK (opt, TXT_PLAY_D1MISSIONS, (gameOpts->app.nVersionFilter & 1) != 0, KEY_1, HTX_MAIN_D1);
-	nMenuChoice [nD1Opt = opt++] = MENU_D1_MISSIONS;
-	}
-#endif
-*nCallerOptions = opt;
+return opt;
 }
 
 //------------------------------------------------------------------------------
@@ -398,42 +416,39 @@ extern unsigned char ipx_LocalAddress [10];
 //returns number of item chosen
 int CallMenu () 
 {
-	int nMenuChoice [25];
 	tMenuItem m [25];
-	int i, num_options = 0;
+	int i, nChoice = 0, nOptions = 0;
 
 IpxClose ();
-memset (nMenuChoice, 0, sizeof (nMenuChoice));
 memset (m, 0, sizeof (m));
 //LoadPalette (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
 
 if (!LOCALPLAYER.callsign [0]) {
 	SelectPlayer ();
 	return 0;
-}
-
+	}
 if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
-	ExecMenuOption (MENU_START_SERIAL);
+	ExecMultiMenuOption (multiOpts.nSerial);
 	return 0;
-}
-
+	}
 if (gameData.multiplayer.autoNG.bValid) {
-	ExecMenuOption (MENU_MULTIPLAYER);
+	ExecMultiMenuOption (mainOpts.nMulti);
 	return 0;
 	}
 LogErr ("launching main menu\n");
 do {
-	CreateMainMenu (m, nMenuChoice, &num_options); // may have to change, eg, maybe selected pilot and no save games.
+	nOptions = CreateMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
 	keydTime_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!
-	if (main_menu_choice < 0)
-		main_menu_choice = 0;
+	if (nChoice < 0)
+		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;
-	i = ExecMenu2 ("", NULL, num_options, m, AutoDemoMenuCheck, &main_menu_choice, Menu_pcx_name);
-#if 0
-	gameOpts->app.nVersionFilter = 0;
+	Assert (nOptions <= sizeofa (m));
+	i = ExecMenu2 ("", NULL, nOptions, m, AutoDemoMenuCheck, &nChoice, MENU_PCX_NAME);
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
+#if 0
 	else {
+		gameOpts->app.nVersionFilter = 0;
 		if (m [nD2Opt].value)
 			gameOpts->app.nVersionFilter |= 2;
 		if (m [nD1Opt].value)
@@ -441,14 +456,14 @@ do {
 		}
 #endif
 	WritePlayerFile ();
-	if ((i > -1) && (nMenuChoice [main_menu_choice] <= MENU_QUIT))
-		ExecMenuOption (nMenuChoice [main_menu_choice]);
+	if (i > -1)
+		ExecMainMenuOption (nChoice);
 } while (gameStates.app.nFunctionMode == FMODE_MENU);
 if (gameStates.app.nFunctionMode == FMODE_GAME)
 	GrPaletteFadeOut (NULL, 32, 0);
 FlushInput ();
 StopPlayerMovement ();
-return main_menu_choice;
+return mainOpts.nChoice;
 }
 
 //------------------------------------------------------------------------------
@@ -520,186 +535,160 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-extern void show_order_form (void);      // John didn't want this in inferno.h so I just externed it.
-
-//returns flag, true means quit menu
-void ExecMenuOption (int select) 
+int ExecMultiMenuOption (int nChoice)
 {
-	int bGotGame = 0;
+	int	bUDP = 0, bStart = 0;
 
 gameStates.multi.bUseTracker = 0;
-switch (select) {
-	case MENU_NEW_GAME:
-		gameOpts->app.bSinglePlayer = 0;
-		NewGameMenu ();
-		break;
-	case MENU_NEW_SP_GAME:
-		gameOpts->app.bSinglePlayer = 1;
-		NewGameMenu ();
-		break;
-	case MENU_GAME:
-		break;
-	case MENU_DEMO_PLAY:	{
-		char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
-		sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
-		if (ExecMenuFileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
-			NDStartPlayback (demoFile);
-		break;
+if (nChoice == multiOpts.nSerial) {
+	com_main_menu ();
+	return 1;
 	}
-	case MENU_LOAD_GAME:
-		if (!StateRestoreAll (0, 0, NULL))
-			SetFunctionMode (FMODE_MENU);
-		break;
-	#ifdef EDITOR
-	case MENU_EDITOR:
-		SetFunctionMode (FMODE_EDITOR);
-		InitCockpit ();
-		break;
-	#endif
-	case MENU_VIEW_SCORES:
-		GrPaletteFadeOut (NULL, 32, 0);
-		scoresView (-1);
-		break;
-#if 0
-	case MENU_ORDER_INFO:
-		show_order_form ();
-		break;
-#endif
-	case MENU_QUIT:
-		#ifdef EDITOR
-		if (!SafetyCheck ()) break;
-		#endif
-		GrPaletteFadeOut (NULL, 32, 0);
-		SetFunctionMode (FMODE_EXIT);
-		break;
-	case MENU_NEW_PLAYER:
-		gameStates.gfx.bOverride = 0;
-		SelectPlayer ();               //1 == allow escape out of menu
-		break;
-
-	case MENU_PLAY_MOVIE:
-		PlayMenuMovie ();
-		break;
-
-	case MENU_HELP:
-		DoShowHelp ();
-		break;
-
-	case MENU_PLAY_SONG:    
-		PlayMenuSong ();
-		break;
-
-#ifdef _DEBUG
-	case MENU_LOAD_LEVEL: {
-		tMenuItem m;
-		char text [10]="";
-		int nNewLevel;
-
-		m.nType=NM_TYPE_INPUT; m.text_len = 10; m.text = text;
-		ExecMenu (NULL, "Enter level to load", 1, &m, NULL, NULL);
-		nNewLevel = atoi (m.text);
-		if (nNewLevel!=0 && nNewLevel>=gameData.missions.nLastSecretLevel && nNewLevel<=gameData.missions.nLastLevel)  {
-			GrPaletteFadeOut (NULL, 32, 0);
-			StartNewGame (nNewLevel);
+if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTracker)) {
+	if (gameStates.app.bNostalgia > 1)
+		return 0;
+	gameStates.multi.bUseTracker = 1;
+	bUDP = 1;
+	bStart = (nChoice == multiOpts.nStartUdpTracker);
+	}
+else if ((nChoice == multiOpts.nStartUdp) || (nChoice == multiOpts.nJoinUdp)) {
+	if (gameStates.app.bNostalgia > 1)
+		return 0;
+	bUDP = 1;
+	bStart = (nChoice == multiOpts.nStartUdp);
+	}
+else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nStartMCast4))
+	bStart = 1;
+else if ((nChoice != multiOpts.nJoinIpx) && (nChoice != multiOpts.nJoinKali) &&	(nChoice != multiOpts.nJoinMCast4))
+	return 0;
+gameOpts->app.bSinglePlayer = 0;
+LoadMission (gameData.missions.nLastMission);
+if (bUDP && !(bStart || InitAutoNetGame () || NetworkGetIpAddr ()))
+	return 0;
+gameStates.multi.bServer = (nChoice & 1) == 0;
+gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
+if (bUDP) {
+	gameStates.multi.nGameType = UDP_GAME;
+	IpxSetDriver (IPX_DRIVER_UDP); 
+	if (nChoice == MENU_START_UDP_TRACKER_NETGAME) {
+		int n = ActiveTrackerCount (1);
+		if (n < -2) {
+			if (n == -4)
+				ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NO_TRACKERS);
+			gameStates.multi.bUseTracker = 0;
+			return 0;
+			}
 		}
-
-		break;
 	}
-#endif //ifndef RELEASE
+else if ((nChoice == multiOpts.nStartIpx) || (nChoice == multiOpts.nJoinIpx)) {
+	gameStates.multi.nGameType = IPX_GAME;
+	IpxSetDriver (IPX_DRIVER_IPX); 
+	}
+else if ((nChoice == multiOpts.nStartKali) || (nChoice == multiOpts.nJoinKali)) {
+	gameStates.multi.nGameType = IPX_GAME;
+	IpxSetDriver (IPX_DRIVER_KALI); 
+	}
+else if ((nChoice == multiOpts.nStartMCast4) || (nChoice == multiOpts.nJoinMCast4)) {
+	gameStates.multi.nGameType = IPX_GAME;
+	IpxSetDriver (IPX_DRIVER_MCAST4); 
+	}
+if (bStart ? NetworkStartGame () : NetworkBrowseGames ())
+	return 1;
+IpxClose ();
+return 0;
+}
 
-	//case MENU_START_TCP_NETGAME:
-	//case MENU_JOIN_TCP_NETGAME:
-	case MENU_START_UDP_TRACKER_NETGAME:
-	case MENU_JOIN_UDP_TRACKER_NETGAME:
-		if (gameStates.app.bNostalgia < 2)
-			gameStates.multi.bUseTracker = 1;
-	case MENU_START_UDP_NETGAME:
-	case MENU_JOIN_UDP_NETGAME:
-		if (gameStates.app.bNostalgia > 1)
-			break;
-	case MENU_START_IPX_NETGAME:
-	case MENU_JOIN_IPX_NETGAME:
-	case MENU_START_KALI_NETGAME:
-	case MENU_JOIN_KALI_NETGAME:
-	case MENU_START_MCAST4_NETGAME:
-	case MENU_JOIN_MCAST4_NETGAME:
-		gameOpts->app.bSinglePlayer = 0;
-		LoadMission (gameData.missions.nLastMission);
-//			WIN (ipx_create_read_thread ();
-		if ((select == MENU_JOIN_UDP_NETGAME) ||
-			 (select == MENU_JOIN_UDP_TRACKER_NETGAME)) {
-			if (!(InitAutoNetGame () || NetworkGetIpAddr ())) {
-				//ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_IP);
-				return;
-				}
-			}
-		gameStates.multi.bServer = (select & 1) == 0;
-		gameStates.app.bHaveExtraGameInfo [1] = gameStates.multi.bServer;
-		switch (select & ~0x1) {
-			case MENU_START_IPX_NETGAME: 
-				gameStates.multi.nGameType = IPX_GAME;
-				IpxSetDriver (IPX_DRIVER_IPX); 
-				break;
-			case MENU_START_UDP_TRACKER_NETGAME: 
-			case MENU_START_UDP_NETGAME: 
-				gameStates.multi.nGameType = UDP_GAME;
-				IpxSetDriver (IPX_DRIVER_UDP); 
-				if (select == MENU_START_UDP_TRACKER_NETGAME) {
-					int n = ActiveTrackerCount (1);
-					if (n < -2) {
-						if (n == -4)
-							ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NO_TRACKERS);
-						gameStates.multi.bUseTracker = 0;
-						return;
-						}
-					}
-				break;
-			case MENU_START_KALI_NETGAME: 
-				gameStates.multi.nGameType = IPX_GAME;
-				IpxSetDriver (IPX_DRIVER_KALI); 
-				break;
-			case MENU_START_MCAST4_NETGAME: 
-				gameStates.multi.nGameType = IPX_GAME;
-				IpxSetDriver (IPX_DRIVER_MCAST4); 
-				break;
-			default: 
-				Int3 ();
-			}
+//------------------------------------------------------------------------------
 
-		if ((select & 0x1) == 0) // MENU_START_*_NETGAME
-			bGotGame = NetworkStartGame ();
-		else // MENU_JOIN_*_NETGAME
-			bGotGame = NetworkBrowseGames ();
-		if (!bGotGame)
-			IpxClose ();
-		break;
+void ShowOrderForm (void);      // John didn't want this in inferno.h so I just externed it.
 
-#if 0
-	case MENU_START_TCP_NETGAME:
-	case MENU_JOIN_TCP_NETGAME:
-		ExecMessageBox (TXT_SORRY, 1, TXT_OK, "Not available in shareware version!");
-		// DoNewIPAddress ();
-		break;
-#endif //NETWORK
+//returns flag, true means quit menu
+int ExecMainMenuOption (int nChoice) 
+{
+if (nChoice == mainOpts.nNew) {
+	gameOpts->app.bSinglePlayer = 0;
+	NewGameMenu ();
+	}
+else if (nChoice == mainOpts.nSingle) {
+	gameOpts->app.bSinglePlayer = 1;
+	NewGameMenu ();
+	}
+else if (nChoice == mainOpts.nLoad) {
+	if (!StateRestoreAll (0, 0, NULL))
+		SetFunctionMode (FMODE_MENU);
+	}
+#ifdef _DEBUG
+else if (nChoice == mainOpts.nLoadDirect) {
+	tMenuItem	m [1];
+	char			szLevel [10] = "";
+	int			nLevel;
 
-	case MENU_START_SERIAL:
-		com_main_menu ();
-		break;
-	case MENU_MULTIPLAYER:
-		MultiplayerMenu ();
-		break;
-	case MENU_CONFIG:
-		ConfigMenu ();
-		break;
-	case MENU_SHOW_CREDITS:
+	ADD_INPUT (0, szLevel, sizeof (szLevel), NULL);
+	ExecMenu (NULL, "Enter level to load", 1, m, NULL, NULL);
+	nLevel = atoi (m->text);
+	if (nLevel && (nLevel >= gameData.missions.nLastSecretLevel) && (nLevel <= gameData.missions.nLastLevel)) {
 		GrPaletteFadeOut (NULL, 32, 0);
-		SongsStopAll ();
-		ShowCredits (NULL); 
-		break;
-	default:
-		Error ("Unknown option %d in ExecMenuOption", select);
-		break;
+		StartNewGame (nLevel);
+		}
 	}
+#endif
+else if (nChoice == mainOpts.nMulti) {
+	MultiplayerMenu ();
+	}
+else if (nChoice == mainOpts.nConfig) {
+	ConfigMenu ();
+	}
+else if (nChoice == mainOpts.nPilots) {
+	gameStates.gfx.bOverride = 0;
+	SelectPlayer ();
+	}
+else if (nChoice == mainOpts.nDemo) {
+	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
+
+	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoDir, *gameFolders.szDemoDir ? "/" : ""); 
+	if (ExecMenuFileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
+		NDStartPlayback (demoFile);
+	}
+else if (nChoice == mainOpts.nScores) {
+	GrPaletteFadeOut (NULL, 32, 0);
+	ScoresView (-1);
+	}
+else if (nChoice == mainOpts.nMovies) {
+	PlayMenuMovie ();
+	}
+else if (nChoice == mainOpts.nSongs) {
+	PlayMenuSong ();
+	}
+else if (nChoice == mainOpts.nCredits) {
+	GrPaletteFadeOut (NULL, 32, 0);
+	SongsStopAll ();
+	ShowCredits (NULL); 
+	}
+#ifdef EDITOR
+else if (nChoice == mainOpts.nEditor) {
+	SetFunctionMode (FMODE_EDITOR);
+	InitCockpit ();
+	}
+#endif
+else if (nChoice == mainOpts.nHelp) {
+	DoShowHelp ();
+	}
+else if (nChoice == mainOpts.nQuit) {
+#ifdef EDITOR
+	if (SafetyCheck ()) {
+#endif
+	GrPaletteFadeOut (NULL, 32, 0);
+	SetFunctionMode (FMODE_EXIT);
+#ifdef EDITOR
+	}
+#endif
+	}
+else if (nChoice == mainOpts.nOrder) {
+	ShowOrderForm ();
+	}
+else
+	return 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1211,7 +1200,7 @@ do {
 	for (i = 0; i < nMissions; i++) {
 		m [i] = gameData.missions.list [i].szMissionName;
 		if (!stricmp (m [i], gameConfig.szLastMission))
-			nDefaultMission= i;
+			nDefaultMission = i;
 		}
 	nMission = ExecMenuListBox1 (menuTitles [gameOpts->app.nVersionFilter], nMissions, m, 1, nDefaultMission, NULL);
 	GameFlushInputs ();
@@ -4196,22 +4185,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+static inline int MultiChoice (int nType, int bJoin)
+{
+return *(((int *) &multiOpts) + 2 * nType + bJoin);
+}
+
 void MultiplayerMenu ()
 {
-	int nMenuChoice [11];
-	tMenuItem m [11];
+	tMenuItem	m [15];
 	int choice = 0, opt = 0, i, optCreate, optJoin, optConn, nConnections;
 	int old_game_mode;
-	static int choiceMap [5][2] = {
-		{MENU_START_IPX_NETGAME, MENU_JOIN_IPX_NETGAME},
-		{MENU_START_UDP_NETGAME, MENU_JOIN_UDP_NETGAME},
-		{MENU_START_UDP_TRACKER_NETGAME, MENU_JOIN_UDP_TRACKER_NETGAME},
-		{MENU_START_MCAST4_NETGAME, MENU_JOIN_MCAST4_NETGAME},
-		{MENU_START_KALI_NETGAME, MENU_JOIN_KALI_NETGAME}
-	};
 
-if (gameData.multiplayer.autoNG.bValid)
-	ExecMenuOption (choiceMap [gameData.multiplayer.autoNG.uConnect][!gameData.multiplayer.autoNG.bHost]);
+if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {
+	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);
+	if (i >= 0)
+		ExecMultiMenuOption (i);
+	}
 else {
 	do {
 		old_game_mode = gameData.app.nGameMode;
@@ -4242,40 +4231,38 @@ else {
 		else {
 #ifdef NATIVE_IPX
 			ADD_MENU (opt, TXT_START_IPX_NET_GAME,  -1, HTX_NETWORK_IPX);
-			nMenuChoice [opt++] = MENU_START_IPX_NETGAME;
+			multiOpts.nStartIpx = opt++;
 			ADD_MENU (opt, TXT_JOIN_IPX_NET_GAME, -1, HTX_NETWORK_IPX);
-			nMenuChoice [opt++] = MENU_JOIN_IPX_NETGAME;
+			multiOpts.nJoinIpx = opt++;
 #endif //NATIVE_IPX
-			//ADD_MENU (TXT_START_TCP_NET_GAME, MENU_START_TCP_NETGAME, -1);
-			//ADD_MENU (TXT_JOIN_TCP_NET_GAME, MENU_JOIN_TCP_NETGAME, -1);
 			ADD_MENU (opt, TXT_MULTICAST_START, KEY_M, HTX_NETWORK_MCAST);
-			nMenuChoice [opt++] = MENU_START_MCAST4_NETGAME;
+			multiOpts.nStartMCast4 = opt++;
 			ADD_MENU (opt, TXT_MULTICAST_JOIN, KEY_N, HTX_NETWORK_MCAST);
-			nMenuChoice [opt++] = MENU_JOIN_MCAST4_NETGAME;
+			multiOpts.nJoinMCast4 = opt++;
 #ifdef KALINIX
 			ADD_MENU (opt, TXT_KALI_START, KEY_K, HTX_NETWORK_KALI);
-			nMenuChoice [opt++] = MENU_START_KALI_NETGAME;
+			multiOpts.nStartKali = opt++;
 			ADD_MENU (opt, TXT_KALI_JOIN, KEY_I, HTX_NETWORK_KALI);
-			nMenuChoice [opt++] = MENU_JOIN_KALI_NETGAME;
+			multiOpts.nJoinKali = opt++;
 #endif // KALINIX
 			if (gameStates.app.bNostalgia > 2) {
 				ADD_MENU (opt, TXT_MODEM_GAME2, KEY_G, HTX_NETWORK_MODEM);
-				nMenuChoice [opt++] = MENU_START_SERIAL;
+				multiOpts.nSerial = opt++;
 				}
 			}
 		i = ExecMenu1 (NULL, TXT_MULTIPLAYER, opt, m, NULL, &choice);
 		if (i > -1) {      
 			if (gameStates.app.bNostalgia > 1)
-				i = nMenuChoice [choice];
+				i = choice;
 			else {
 				for (gameStates.multi.nConnection = 0; 
 					  gameStates.multi.nConnection < nConnections; 
 					  gameStates.multi.nConnection++)
 					if (m [optConn + gameStates.multi.nConnection].value)
 						break;
-				i = choiceMap [gameStates.multi.nConnection][choice == optJoin];
+				i = MultiChoice (gameStates.multi.nConnection, choice == optJoin);
 				}
-			ExecMenuOption (i);
+			ExecMultiMenuOption (i);
 			}
 		if (old_game_mode != gameData.app.nGameMode)
 			break;          // leave menu

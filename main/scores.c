@@ -226,7 +226,7 @@ void scores_fill_struct(stats_info * stats)
 //------------------------------------------------------------------------------
 //char * score_placement[10] = { TXT_1ST, TXT_2ND, TXT_3RD, TXT_4TH, TXT_5TH, TXT_6TH, TXT_7TH, TXT_8TH, TXT_9TH, TXT_10TH };
 
-void scores_maybe_add_player(int abortFlag)
+void MaybeAddPlayerScore(int abortFlag)
 {
 	char text1[COOL_MESSAGE_LEN+10];
 	tMenuItem m[10];
@@ -282,7 +282,7 @@ void scores_maybe_add_player(int abortFlag)
 		scores_write();
 
 	}
-	scoresView(position);
+	ScoresView(position);
 }
 
 //------------------------------------------------------------------------------
@@ -361,7 +361,7 @@ void scores_draw_item( int  i, stats_info * stats )
 
 //------------------------------------------------------------------------------
 
-void scoresView(int citem)
+void ScoresView (int citem)
 {
 	fix t0 = 0, t1;
 	int c,i,done,looper;

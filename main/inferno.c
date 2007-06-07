@@ -157,7 +157,7 @@ int __far descent_critical_error_handler (unsigned deverr, unsigned errcode, uns
 
 void check_joystick_calibration (void);
 
-void show_order_form (void);
+void ShowOrderForm (void);
 void quit_request ();
 
 tGameOptions *gameOpts = gameOptions;
@@ -3179,7 +3179,7 @@ FreeParams ();
 #ifdef _DEBUG
 if (!FindArg ("-notitles"))
 #endif
-	//show_order_form ();
+	//ShowOrderForm ();
 FreeGameData ();
 #ifdef _DEBUG
 if (FindArg ("-showmeminfo"))
@@ -3263,7 +3263,7 @@ void check_joystick_calibration ()
 
 // ----------------------------------------------------------------------------
 
-void show_order_form ()
+void ShowOrderForm ()
 {
 #ifndef EDITOR
 	int 	pcx_error;
