@@ -1371,7 +1371,7 @@ return 1;
 
 void ReadBinD2XParams (CFILE *fp)
 {
-	int	i, j, gameOptsSize;
+	int	i, j, gameOptsSize = 0;
 
 if (gameStates.input.nPlrFileVersion >= 97)
 	gameOptsSize = CFReadInt (fp);
