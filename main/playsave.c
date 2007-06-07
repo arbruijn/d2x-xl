@@ -180,13 +180,12 @@ return 1;
 #define RP(_v,_i,_j)	RegisterParam ((void *) &(_v), #_v, _i, _j, sizeof (_v))
 
 //------------------------------------------------------------------------------
+// returns number of config items with identical ids before the current one
 
 int FindConfigParam (kcItem *cfgP, int nItems, int iItem, char *pszText)
 {
 	int	h, i;
 
-if (strstr ("joystick.Pitch U/D", pszText))
-	i = 0;
 for (h = i = 0; i < nItems; i++) {
 	if (!strcmp (pszText, cfgP [i].text)) {
 		if (i < iItem)
@@ -219,7 +218,7 @@ for (i = 0; i < nItems; i++) {
 		RegisterParam (&cfgP [i].value, szTag, 0, 0, sizeof (cfgP [i].value));
 		}
 	else {
-		sprintf (p, "%s[0].value", cfgP [i].text, j);
+		sprintf (p, "%s[%d].value", cfgP [i].text, j);
 		RegisterParam (&cfgP [i].value, szTag, j, 0, sizeof (cfgP [i].value));
 		}
 	}
