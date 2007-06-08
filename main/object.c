@@ -2238,6 +2238,10 @@ switch (objP->renderType) {
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
+		if (objP->nType == OBJ_SMOKE) {
+			objP->renderType = RT_NONE;
+			return 0;
+			}
 		if (gameStates.render.nType != 1)
 			return 0;
 		DoObjectSmoke (objP);

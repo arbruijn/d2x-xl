@@ -262,42 +262,38 @@ WIN (extern int DD_Emulation);
 
 // ------------------------------------------------------------------------
 
-void AutoDemoMenuCheck (int nitems, tMenuItem * items, int *last_key, int citem)
+void AutoDemoMenuCheck (int nitems, tMenuItem * items, int *nLastKey, int citem)
 {
 	int curtime;
 
 PrintVersionInfo ();
 // Don't allow them to hit ESC in the main menu.
-if (*last_key==KEY_ESC) 
-	*last_key = 0;
-
+if (*nLastKey == KEY_ESC) 
+	*nLastKey = 0;
 if (gameStates.app.bAutoDemos) {
 	curtime = TimerGetApproxSeconds ();
-	if (((keydTime_when_last_pressed + i2f (/*2*/5)) < curtime)
+	if (((xLastKeyPressTime + i2f (/*2*/5)) < curtime)
 #ifdef _DEBUG	
 		&& !gameData.speedtest.bOn
 #endif		
 		) {
-		int n_demos;
-
-		n_demos = NDCountDemos ();
+		int nDemos = NDCountDemos ();
 
 try_again:;
 
-		if ((d_rand () % (n_demos+1)) == 0) {
+		if ((d_rand () % (nDemos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
 				PlayIntroMovie ();
 				SongsPlaySong (SONG_TITLE, 1);
-				*last_key = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
+				*nLastKey = -3; //exit menu to force rebuild even if not going to game mode. -3 tells menu system not to restore
 				SetScreenMode (SCREEN_MENU);
 			}
 		else {
-			WIN (HideCursorW ());
-			keydTime_when_last_pressed = curtime;                  // Reset timer so that disk won't thrash if no demos.
+			xLastKeyPressTime = curtime;                  // Reset timer so that disk won't thrash if no demos.
 			NDStartPlayback (NULL);           // Randomly pick a file
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 				SetFunctionMode (FMODE_GAME);
-				*last_key = -3; //exit menu to get into game mode. -3 tells menu system not to restore
+				*nLastKey = -3; //exit menu to get into game mode. -3 tells menu system not to restore
 				}
 			else
 				goto try_again;	//keep trying until we get a demo that works
@@ -438,7 +434,7 @@ if (gameData.multiplayer.autoNG.bValid) {
 LogErr ("launching main menu\n");
 do {
 	nOptions = CreateMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
-	keydTime_when_last_pressed = TimerGetFixedSeconds ();                // .. 20 seconds from now!
+	xLastKeyPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
 	if (nChoice < 0)
 		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;
@@ -446,15 +442,6 @@ do {
 	i = ExecMenu2 ("", NULL, nOptions, m, AutoDemoMenuCheck, &nChoice, MENU_PCX_NAME);
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
-#if 0
-	else {
-		gameOpts->app.nVersionFilter = 0;
-		if (m [nD2Opt].value)
-			gameOpts->app.nVersionFilter |= 2;
-		if (m [nD1Opt].value)
-			gameOpts->app.nVersionFilter |= 1;
-		}
-#endif
 	WritePlayerFile ();
 	if (i > -1)
 		ExecMainMenuOption (nChoice);
@@ -807,10 +794,10 @@ gameOpts->movies.bHires = m [7].value;
 
 //      -----------------------------------------------------------------------------
 
-void CustomDetailsCallback (int nitems, tMenuItem * items, int *last_key, int citem)
+void CustomDetailsCallback (int nitems, tMenuItem * items, int *nLastKey, int citem)
 {
 	nitems = nitems;
-	*last_key = *last_key;
+	*nLastKey = *nLastKey;
 	citem = citem;
 
 gameStates.render.detail.nObjectComplexity = items [0].value;
@@ -964,19 +951,19 @@ static int ScreenResModeToMenuItem(int mode)
 
 //------------------------------------------------------------------------------
 
-void ScreenResCallback (int nItems, tMenuItem *m, int *last_key, int citem)
+void ScreenResCallback (int nItems, tMenuItem *m, int *nLastKey, int citem)
 {
 	int	i, j;
 
 if (m [optCustRes].value != (nDisplayMode == NUM_DISPLAY_MODES)) 
-	*last_key = -2;
+	*nLastKey = -2;
 for (i = 0; i < optCustRes; i++)
 	if (m [i].value) {
 		j = ScreenResMenuItemToMode(i);
 		if ((j < NUM_DISPLAY_MODES) && (j != nDisplayMode)) {
 			SetDisplayMode (j, 0);
 			nDisplayMode = gameStates.video.nDisplayMode;
-			*last_key = -2;
+			*nLastKey = -2;
 			}
 		break;
 		}
@@ -1412,14 +1399,14 @@ static int optContrast = -1;
 
 //------------------------------------------------------------------------------
 
-void options_menuset (int nitems, tMenuItem * items, int *last_key, int citem)
+void options_menuset (int nitems, tMenuItem * items, int *nLastKey, int citem)
 {
 if (gameStates.app.bNostalgia) {
 	if (citem == optBrightness)
 		GrSetPaletteGamma (items [optBrightness].value);
 	}
 nitems++;		//kill warning
-last_key++;		//kill warning
+nLastKey++;		//kill warning
 }
 
 //------------------------------------------------------------------------------
@@ -3668,10 +3655,10 @@ WIN (static BOOL windigi_driver_off=FALSE);
 
 static int optDigiVol, optMusicVol, optRedbook;
 
-void SoundMenuCallback (int nitems, tMenuItem * items, int *last_key, int citem)
+void SoundMenuCallback (int nitems, tMenuItem * items, int *nLastKey, int citem)
 {
 	nitems=nitems;          
-	*last_key = *last_key;
+	*nLastKey = *nLastKey;
 
 if (gameConfig.nDigiVolume != items [optDigiVol].value)     {
 	gameConfig.nDigiVolume = items [optDigiVol].value;
