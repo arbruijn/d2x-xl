@@ -40,7 +40,7 @@ volatile unsigned char 	keyd_last_pressed;
 volatile unsigned char 	keyd_last_released;
 volatile unsigned char	keyd_pressed[256];
 volatile unsigned char	keydFlags[256];
-volatile int		keydTime_when_last_pressed;
+volatile int		xLastKeyPressTime;
 
 typedef struct Key_info {
 	ubyte		state;			// state of key 1 == down, 0 == up
@@ -386,7 +386,7 @@ void key_handler(SDL_KeyboardEvent *event)
 			if (state) {
 				key->counter++;
 				keyd_last_pressed = keycode;
-				keydTime_when_last_pressed = TimerGetFixedSeconds();
+				xLastKeyPressTime = TimerGetFixedSeconds();
 				key->flags = 0;
 				if (keyd_pressed [KEY_LSHIFT] || keyd_pressed [KEY_RSHIFT])
 					key->flags |= (ubyte) (KEY_SHIFTED / 256);
@@ -399,7 +399,7 @@ void key_handler(SDL_KeyboardEvent *event)
 		else {
 			if (state) {
 				keyd_last_pressed = keycode;
-				key->timewentdown = keydTime_when_last_pressed = TimerGetFixedSeconds();
+				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
 				key_data.keys [keycode].timehelddown = 0;
 				keyd_pressed [keycode] = 1;
 				key->downcount += state;
@@ -412,7 +412,7 @@ void key_handler(SDL_KeyboardEvent *event)
 					key->flags |= (ubyte) (KEY_ALTED / 256);
 				if (keyd_pressed [KEY_LCTRL] || keyd_pressed [KEY_RCTRL])
 					key->flags |= (ubyte) (KEY_CTRLED / 256);
-//				key->timewentdown = keydTime_when_last_pressed = TimerGetFixedSeconds();
+//				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
 			} else {	
 				keyd_pressed [keycode] = 0;
 				keyd_last_released = keycode;
@@ -439,7 +439,7 @@ void key_handler(SDL_KeyboardEvent *event)
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
 				key_data.keybuffer[key_data.keytail] = keycode;
-				key_data.time_pressed[key_data.keytail] = keydTime_when_last_pressed;
+				key_data.time_pressed[key_data.keytail] = xLastKeyPressTime;
 				key_data.keytail = temp;
 			}
 		}
@@ -460,7 +460,7 @@ void key_init()
 
   bInstalled=1;
 
-  keydTime_when_last_pressed = TimerGetFixedSeconds();
+  xLastKeyPressTime = TimerGetFixedSeconds();
   keyd_bufferType = 1;
   keyd_repeat = 1;
   

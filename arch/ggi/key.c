@@ -45,7 +45,7 @@ unsigned char 		keyd_editor_mode;
 volatile unsigned char 	keyd_last_pressed;
 volatile unsigned char 	keyd_last_released;
 volatile unsigned char	keyd_pressed[256];
-volatile int		keydTime_when_last_pressed;
+volatile int		xLastKeyPressTime;
 
 typedef struct Key_info {
 	ubyte		state;			// state of key 1 == down, 0 == up
@@ -270,7 +270,7 @@ void keyboard_handler(int button, ubyte state)
 			if (state) {
 				key->counter++;
 				keyd_last_pressed = keycode;
-				keydTime_when_last_pressed = TimerGetFixedSeconds();
+				xLastKeyPressTime = TimerGetFixedSeconds();
 			}
 		} else {
 			if (state)	{
@@ -278,7 +278,7 @@ void keyboard_handler(int button, ubyte state)
 				keyd_pressed[keycode] = 1;
 				key->downcount += state;
 				key->state = 1;
-				key->timewentdown = keydTime_when_last_pressed = TimerGetFixedSeconds();
+				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
 				key->counter++;
 			} else {	
 				keyd_pressed[keycode] = 0;
@@ -302,7 +302,7 @@ void keyboard_handler(int button, ubyte state)
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
 				key_data.keybuffer[key_data.keytail] = keycode;
-				key_data.time_pressed[key_data.keytail] = keydTime_when_last_pressed;
+				key_data.time_pressed[key_data.keytail] = xLastKeyPressTime;
 				key_data.keytail = temp;
 			}
 		}
@@ -319,7 +319,7 @@ void key_init()
 {
 	Installed=1;
 
-	keydTime_when_last_pressed = TimerGetFixedSeconds();
+	xLastKeyPressTime = TimerGetFixedSeconds();
 	keyd_bufferType = 1;
 	keyd_repeat = 1;
 

@@ -109,7 +109,7 @@ extern unsigned char keyd_repeat;	 // 1=allow repeating, 0=dont allow repeat
 extern unsigned char keyd_editor_mode;
 
 // Time in seconds when last key was pressed...
-extern volatile int keydTime_when_last_pressed;
+extern volatile int xLastKeyPressTime;
 
 //==========================================================================
 // These are the "buffered" keypress routines.  Use them by setting the
