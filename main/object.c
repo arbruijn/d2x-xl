@@ -3928,7 +3928,7 @@ void SlowMotionMessage (void)
 {
 if (gameStates.gameplay.slowmo [0].nState > 0) {
 	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel= DigiPlayWAV ("slowdown.wav", F1_0);
+		nSlowMotionChannel = DigiPlayWAV ("slowdown.wav", F1_0);
 	HUDInitMessage (TXT_SLOWING_DOWN);
 	}
 else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
@@ -4004,7 +4004,7 @@ SlowMotionMessage ();
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void ToggleSlowMotion (void)
+int ToggleSlowMotion (void)
 {
 	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER));
 	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER));
@@ -4019,7 +4019,7 @@ if (SlowMotionActive ()) {
 #if 0
 		LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
 #else
-		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 8;
+		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 12;
 #endif
 	if (!bSlowMotionOk) {
 		if (gameStates.gameplay.slowmo [0].nState != -1) {
@@ -4028,7 +4028,7 @@ if (SlowMotionActive ()) {
 				InitBulletTime (1);
 			SlowMotionMessage ();
 			}
-		return;
+		return 0;
 		}
 	if (!bBulletTimeOk) {
 		if (gameStates.gameplay.slowmo [1].nState != -1)
@@ -4038,7 +4038,7 @@ if (SlowMotionActive ()) {
 	}
 #endif
 if (!(bSlowMotion || bBulletTime))
-	return;
+	return 0;
 if (bBulletTime) {	//toggle bullet time and slow motion
 	if (SlowMotionActive ()) {
 		if (BulletTimeActive ())
@@ -4067,7 +4067,7 @@ else {
 			InitBulletTime (-1);
 		}
 	}
-SlowMotionMessage ();
+return 1;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -4077,12 +4077,12 @@ SlowMotionMessage ();
 
 void DoSlowMotionFrame (void)
 {
-	int	i;
+	int	i, bMsg;
 	float	f, h;
 
 if (gameStates.app.bNostalgia || IsMultiGame)
 	return;
-ToggleSlowMotion ();
+bMsg = ToggleSlowMotion ();
 f = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
 h = (f - 1) / (SLOWDOWN_SECS * SLOWDOWN_FPS);
 for (i = 0; i < 2; i++) {
@@ -4091,18 +4091,24 @@ for (i = 0; i < 2; i++) {
 		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
 			gameStates.gameplay.slowmo [i].fSpeed = f;
 			gameStates.gameplay.slowmo [i].nState = 0;
-			DigiExit ();
-			DigiInit (f);
+			if (!i) {
+				DigiExit ();
+				DigiInit (f);
+				}
 			}
 		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
 			gameStates.gameplay.slowmo [i].fSpeed = 1;
 			gameStates.gameplay.slowmo [i].nState = 0;
-			DigiExit ();
-			DigiInit (1);
+			if (!i) {
+				DigiExit ();
+				DigiInit (1);
+				}
 			}
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
 		}
 	}
+if (bMsg)
+	SlowMotionMessage ();
 #if 0//def _DEBUG
 HUDMessage (0, "%1.2f %1.2f %d", 
 				gameStates.gameplay.slowmo [0].fSpeed, gameStates.gameplay.slowmo [1].fSpeed,
