@@ -4311,25 +4311,18 @@ else {
 
 void DoNewIPAddress ()
  {
-  tMenuItem m [4];
-  char IPText [30];
-  int choice;
+  tMenuItem m [2];
+  char		szIP [30];
+  int			choice;
 
-  	memset (m, 0, sizeof (m));
-	m [0].nType=NM_TYPE_TEXT; 
-  m [0].text = "Enter an address or hostname:";
-  m [1].nType=NM_TYPE_INPUT; 
-  m [1].text_len = 50; 
-  m [1].text = IPText;
-  IPText [0]=0;
-
-  choice = ExecMenu (NULL, TXT_JOIN_TCP, 2, m, NULL, NULL);
-
-  if (choice==-1 || m [1].text [0]==0)
-   return;
-
-  ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
- }
+memset (m, 0, sizeof (m));
+ADD_TEXT (0, "Enter an address or hostname:", 0);
+ADD_INPUT (1, szIP, 50, NULL);
+choice = ExecMenu (NULL, TXT_JOIN_TCP, 2, m, NULL, NULL);
+if ((choice == -1) || !*m [1].text)
+	return;
+ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
+}
 
 //------------------------------------------------------------------------------
 //eof

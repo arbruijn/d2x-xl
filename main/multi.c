@@ -4628,11 +4628,11 @@ void MultiQuickSoundHack (int num)
 	int length, i;
 
 num = DigiXlatSound ((short) num);
-length = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound][num].length;
-ReversedSound.data = (ubyte *)D2_ALLOC (length);
-ReversedSound.length = length;
+length = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][num].nLength;
+ReversedSound.data = (ubyte *) D2_ALLOC (length);
+ReversedSound.nLength = length;
 for (i = 0; i < length; i++)
-	ReversedSound.data [i] = gameData.pig.snd.sounds [gameOpts->sound.bD1Sound][num].data [length-i-1];
+	ReversedSound.data [i] = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][num].data [length-i-1];
 SoundHacked = 1;
 }
 

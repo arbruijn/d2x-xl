@@ -287,7 +287,7 @@ int DigiFindChannel(int soundno)
 	if (soundno < 0 )
 		return -1;
 
-	if (gameData.pig.snd.sounds[soundno].data == NULL)
+	if (gameData.pig.sound.sounds[soundno].data == NULL)
 	{
 		Int3();
 		return -1;

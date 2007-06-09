@@ -43,13 +43,13 @@ typedef struct tBitmapIndex {
 	ushort index;
 } __pack__ tBitmapIndex;
 
-typedef struct BitmapFile {
+typedef struct tBitmapFile {
 	char    name [15];
-} BitmapFile;
+} tBitmapFile;
 
-typedef struct SoundFile {
+typedef struct tSoundFile {
 	char    name [15];
-} SoundFile;
+} tSoundFile;
 
 int PiggyInit();
 int PiggyInitMemory (void);

@@ -552,6 +552,7 @@ exit (0);
 #	define	DATADIR			"Data"
 #	define	SHADERDIR		"Shaders"
 #	define	MODELDIR			"Models"
+#	define	SOUNDDIR			"Sounds"
 #	define	CONFIGDIR		"Config"
 #	define	PROFDIR			"Profiles"
 #	define	SCRSHOTDIR		"Screenshots"
@@ -564,6 +565,7 @@ exit (0);
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
 #	define	MODELDIR			"models"
+#	define	SOUNDDIR			"sounds"
 #	define	CONFIGDIR		"config"
 #	define	PROFDIR			"profiles"
 #	define	SCRSHOTDIR		"screenshots"
@@ -643,6 +645,7 @@ else
 /*---*/LogErr ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/LogErr ("expected game data folder = '%s'\n", gameFolders.szDataDir);
 GetAppFolder (szDataRootDir, gameFolders.szModelDir, MODELDIR, "*.oof");
+GetAppFolder (szDataRootDir, gameFolders.szSoundDir, SOUNDDIR, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
@@ -868,6 +871,12 @@ if ((t = FindArg ("-use_d1sounds")))
 	gameOptions [0].sound.bUseD1Sounds = NumArg (t, 1);
 if ((t = FindArg ("-noredbook")))
 	gameOptions [0].sound.bUseRedbook = 0;
+#if USE_SDL_MIXER
+if (gameOptions [0].sound.bUseSDLMixer) {
+	if (FindArg ("-hires_sound"))
+		gameOptions [0].sound.bHires = NumArg (t, 1);
+	}
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -1506,6 +1515,7 @@ else {
 	gameOptions [0].sound.bUseSDLMixer = 0;
 #endif
 	}
+gameOptions [i].sound.bHires = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2073,7 +2083,7 @@ gameData.pig.tex.pAltBitmaps = gameData.pig.tex.altBitmaps [gameStates.app.bD1Da
 gameData.pig.tex.pBmIndex = gameData.pig.tex.bmIndex [gameStates.app.bD1Data];
 gameData.pig.tex.pBitmapFiles = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data];
 gameData.pig.tex.pTMapInfo = gameData.pig.tex.tMapInfo [gameStates.app.bD1Data];
-gameData.pig.snd.pSounds = gameData.pig.snd.sounds [gameStates.app.bD1Data];
+gameData.pig.sound.pSounds = gameData.pig.sound.sounds [gameStates.app.bD1Data];
 gameData.eff.pEffects = gameData.eff.effects [gameStates.app.bD1Data];
 gameData.eff.pVClips = gameData.eff.vClips [gameStates.app.bD1Data];
 gameData.walls.pAnims = gameData.walls.anims [gameStates.app.bD1Data];

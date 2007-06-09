@@ -47,9 +47,10 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "allg_snd.h"
 typedef SAMPLE tDigiSound;
 #else
-typedef struct tDigiSound       {
-	int length;
-	ubyte * data;
+typedef struct tDigiSound {
+	int	bHires;
+	int	nLength;
+	ubyte *data;
 } tDigiSound;
 #endif
 

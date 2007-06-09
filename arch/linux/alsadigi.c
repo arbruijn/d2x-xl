@@ -390,8 +390,8 @@ TryNextChannel:
  if (slot<0) return -1;
 
  SoundSlots[slot].soundno = nSound;
- SoundSlots[slot].samples = gameData.pig.snd.sounds[nSound].data;
- SoundSlots[slot].length = gameData.pig.snd.sounds[nSound].length;
+ SoundSlots[slot].samples = gameData.pig.sound.sounds[nSound].data;
+ SoundSlots[slot].length = gameData.pig.sound.sounds[nSound].length;
  SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, volume);
  SoundSlots[slot].pan = pan;
  SoundSlots[slot].position.vPosition = 0;
@@ -432,8 +432,8 @@ int DigiStartSoundObject(int obj)
 
 
  SoundSlots[slot].soundno = SoundObjects[obj].nSound;
- SoundSlots[slot].samples = gameData.pig.snd.sounds[SoundObjects[obj].nSound].data;
- SoundSlots[slot].length = gameData.pig.snd.sounds[SoundObjects[obj].nSound].length;
+ SoundSlots[slot].samples = gameData.pig.sound.sounds[SoundObjects[obj].nSound].data;
+ SoundSlots[slot].length = gameData.pig.sound.sounds[SoundObjects[obj].nSound].length;
  SoundSlots[slot].volume = FixMul(gameStates.sound.digi.nVolume, SoundObjects[obj].volume);
  SoundSlots[slot].pan = SoundObjects[obj].pan;
  SoundSlots[slot].position.vPosition = 0;
@@ -569,7 +569,7 @@ int DigiLinkSoundToObject2(int orgSoundnum, short nObject, int forever, fix maxV
 		return -1;
 	if (nSound < 0) 
 		return -1;
-	if (!gameData.pig.snd.sounds[nSound].data) {
+	if (!gameData.pig.sound.sounds[nSound].data) {
 		Int3();
 		return -1;
 		}
@@ -630,7 +630,7 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 
 	if (!gameStates.sound.digi.bInitialized) return -1;
 	if (nSound < 0) return -1;
-	if (gameData.pig.snd.sounds[nSound].data==NULL) {
+	if (gameData.pig.sound.sounds[nSound].data==NULL) {
 		Int3();
 		return -1;
 	}

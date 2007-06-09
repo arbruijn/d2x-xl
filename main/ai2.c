@@ -2249,7 +2249,7 @@ int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *b
 	objP->mType.physInfo.rotVel.p.z = (gameData.time.xGame - StartTime)/7;
 
 	if (gameOpts->sound.digiSampleRate)
-		sound_duration = FixDiv (gameData.pig.snd.pSounds [DigiXlatSound (deathSound)].length, gameOpts->sound.digiSampleRate);
+		sound_duration = FixDiv (gameData.pig.sound.pSounds [DigiXlatSound (deathSound)].nLength, gameOpts->sound.digiSampleRate);
 	else
 		sound_duration = F1_0;
 

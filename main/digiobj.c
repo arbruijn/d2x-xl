@@ -401,13 +401,13 @@ if (maxVolume < 0)
 //	if (maxVolume > F1_0) maxVolume = F1_0;
 if (nSound < 0) 
 	return -1;
-if (!gameData.pig.snd.sounds [gameOpts->sound.bD1Sound][nSound].data) {
+if (!gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data) {
 	Int3 ();
 	return -1;
 	}
 if ((nObject<0)|| (nObject>gameData.objs.nLastObject))
 	return -1;
-if (!bForever) { 		// && gameData.pig.snd.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
+if (!bForever) { 		// && gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (
 		&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
@@ -494,13 +494,13 @@ if (maxVolume < 0)
 //	if (maxVolume > F1_0) maxVolume = F1_0;
 if (nSound < 0) 
 	return -1;
-if (!gameData.pig.snd.sounds [gameOpts->sound.bD1Sound][nSound].data) {
+if (!gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data) {
 	Int3 ();
 	return -1;
 	}
 if ((nSegment < 0)|| (nSegment > gameData.segs.nLastSegment))
 	return -1;
-if (!bForever) { 	//&& gameData.pig.snd.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
+if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD)	{
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 						  pos, nSegment, maxVolume, &volume, &pan, maxDistance);

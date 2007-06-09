@@ -757,11 +757,11 @@ char *AdamLevel_names[NUM_ADAM_LEVELS] = {
 	"D2LEVF-S.LVL",
 };
 
-typedef struct BitmapFile	{
+typedef struct tBitmapFile	{
 	char			name[15];
-} BitmapFile;
+} tBitmapFile;
 
-extern BitmapFile gameData.pig.tex.bitmapFiles[ MAX_BITMAP_FILES ];
+extern tBitmapFile gameData.pig.tex.bitmapFiles[ MAX_BITMAP_FILES ];
 
 int	Ignore_tmap_num2_error;
 

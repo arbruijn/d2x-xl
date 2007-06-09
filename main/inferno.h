@@ -323,6 +323,7 @@ typedef struct tSoundOptions {
 	int bUseD1Sounds;
 	int bUseRedbook;
 	int bD1Sound;
+	int bHires;
 	int bUseSDLMixer;
 	int digiSampleRate;
 } tSoundOptions;
@@ -1405,6 +1406,7 @@ typedef struct tRobotData {
 #define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
 
 typedef struct tSoundData {
+	ubyte					*data [2];
 	tDigiSound			sounds [2][MAX_SOUND_FILES];
 	int					nSoundFiles [2];
 	tDigiSound			*pSounds;
@@ -1414,7 +1416,7 @@ typedef struct tSoundData {
 #define D1_N_COCKPIT_BITMAPS 4
 
 typedef struct tTextureData {
-	BitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
+	tBitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
 	grsBitmap			bitmaps [2][MAX_BITMAP_FILES];
 	grsBitmap			altBitmaps [2][MAX_BITMAP_FILES];
 	ushort				bitmapXlat [MAX_BITMAP_FILES];
@@ -1432,7 +1434,7 @@ typedef struct tTextureData {
 	int					nHamFileVersion;
 	int					nTextures [2];
 	int					nFirstMultiBitmap;
-	BitmapFile			*pBitmapFiles;
+	tBitmapFile			*pBitmapFiles;
 	grsBitmap			*pBitmaps;
 	grsBitmap			*pAltBitmaps;
 	tBitmapIndex		*pBmIndex;
@@ -1478,7 +1480,7 @@ typedef struct tFlagData {
 
 typedef struct tPigData {
 	tTextureData		tex;
-	tSoundData			snd;
+	tSoundData			sound;
 	tShipData			ship;
 	tFlagData			flags [2];
 } tPigData;
