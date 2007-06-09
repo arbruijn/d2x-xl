@@ -40,6 +40,8 @@
 #include "inferno.h"
 #include "text.h"
 
+#define SDL_MIXER_CHANNELS	2
+
 //edited 05/17/99 Matt Mueller - added ifndef NO_ASM
 //added on 980905 by adb to add inline FixMul for mixer on i386
 #ifndef NO_ASM
@@ -274,7 +276,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else if (gameData.songs.user.bMP3)
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), SOUND_FORMAT, 2, 
+		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), SOUND_FORMAT, SDL_MIXER_CHANNELS, 
 								 2 * SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K));
 	if (h < 0) {
 		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
@@ -363,11 +365,27 @@ int DigiResampleSound (tDigiSound *gsp, struct tSoundSlot *ssp, int bD1Sound, in
 	ushort	*ps, *ph;
 
 i = gsp->nLength;
+#if SDL_MIXER_CHANNELS == 2
 l = 2 * i;
 if (bD1Sound)
 	l *= 2;
-if (bMP3)
+if (bMP3) 
 	l = l * 32 / 11;	//sample up to approx. 32 kHz
+#else
+if (bMP3) 
+	{
+	l = 2 * i;
+	if (bD1Sound)
+		l *= 2;
+	l = l * 32 / 11;	//sample up to approx. 32 kHz
+	}
+else if (bD1Sound)
+	l = 2 * i;
+else {
+	ssp->samples = gsp->data;
+	return i;
+	}
+#endif
 #if SOUND_FORMAT == AUDIO_S16LSB
 else
 	l *= 2;
@@ -429,9 +447,11 @@ for (;;) {
 #if SOUND_FORMAT == AUDIO_S16LSB
 			*(--ps) = (ushort) h;
 #endif
+#if SDL_MIXER_CHANNELS == 2
 			*(--ps) = (ushort) h;
 			if (ps <= ph)
 				break;
+#endif
 			}
 		}
 	}

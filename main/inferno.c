@@ -873,7 +873,7 @@ if ((t = FindArg ("-noredbook")))
 	gameOptions [0].sound.bUseRedbook = 0;
 #if USE_SDL_MIXER
 if (gameOptions [0].sound.bUseSDLMixer) {
-	if (FindArg ("-hires_sound"))
+	if (t = FindArg ("-hires_sound"))
 		gameOptions [0].sound.bHires = NumArg (t, 1);
 	}
 #endif
