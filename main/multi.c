@@ -4623,16 +4623,19 @@ pingStats [0].launchTime = 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiQuickSoundHack (int num)
+void MultiQuickSoundHack (int nSound)
 {
-	int length, i;
+	int			l, i, j;
+	tDigiSound	*dsP = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound] + nSound;
+	ubyte			*dataP;
 
-num = DigiXlatSound ((short) num);
-length = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][num].nLength;
-ReversedSound.data = (ubyte *) D2_ALLOC (length);
-ReversedSound.nLength = length;
-for (i = 0; i < length; i++)
-	ReversedSound.data [i] = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][num].data [length-i-1];
+nSound = DigiXlatSound ((short) nSound);
+l = dsP->nLength [dsP->bDTX];
+ReversedSound.data [0] = (ubyte *) D2_ALLOC (l);
+ReversedSound.nLength [0] = l;
+dataP = dsP->data [dsP->bDTX] + l;
+for (i = 0, j = l; i < l; i++)
+	ReversedSound.data [0][i] = *(--dataP);
 SoundHacked = 1;
 }
 

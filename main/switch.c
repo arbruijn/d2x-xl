@@ -931,11 +931,17 @@ switch (trigP->nType) {
 		break;
 
 	case TT_SHIELD_DAMAGE:
-		LOCALPLAYER.shields += gameData.trigs.triggers [nTrigger].value;
+		if (gameStates.app.bD1Mission)
+			LOCALPLAYER.shields += gameData.trigs.triggers [nTrigger].value;
+		else
+			LOCALPLAYER.shields += (fix) (LOCALPLAYER.shields * f2fl (gameData.trigs.triggers [nTrigger].value) / 100);
 		break;
 
 	case TT_ENERGY_DRAIN:
-		LOCALPLAYER.energy += gameData.trigs.triggers [nTrigger].value;
+		if (gameStates.app.bD1Mission)
+			LOCALPLAYER.energy += gameData.trigs.triggers [nTrigger].value;
+		else
+			LOCALPLAYER.energy += (fix) (LOCALPLAYER.energy * f2fl (gameData.trigs.triggers [nTrigger].value) / 100);
 		break;
 
 	case TT_CHANGE_TEXTURE:

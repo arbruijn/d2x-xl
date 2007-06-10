@@ -119,7 +119,7 @@ return !strnicmp(&filename[len-11], "level", 5);
 
 //------------------------------------------------------------------------------
 
-void ChangeFilenameExtension(char *dest, char *src, char *new_ext)
+void ChangeFilenameExtension (char *dest, char *src, char *new_ext)
 {
 	int i;
 

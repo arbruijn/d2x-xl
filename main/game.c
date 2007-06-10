@@ -1810,6 +1810,7 @@ PiggyFreeHiresAnimations ();
 PiggyBitmapPageOutAll (0);
 LogErr ("freeing sound buffers\n");
 DigiFreeSoundBufs ();
+FreeSoundReplacements ();
 LogErr ("unloading hoard data\n");
 FreeHoardData ();
 LogErr ("unloading auxiliary poly model data\n");

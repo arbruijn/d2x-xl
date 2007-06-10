@@ -250,9 +250,9 @@ if (!gameData.hoard.bInitialized) {
 			CFSeek (fp, len, SEEK_CUR);     //skip over 11k sample
 			len = CFReadInt (fp);    //get 22k len
 			}
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength = len;
-		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data = D2_ALLOC (len);
-		CFRead (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data, 1, len, fp);
+		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
+		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0] = D2_ALLOC (len);
+		CFRead (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0], 1, len, fp);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
 			len = CFReadInt (fp);    //get 22k len
 			CFSeek (fp, len, SEEK_CUR);     //skip over 22k sample
@@ -306,8 +306,7 @@ for (i = 0; i < 2; i++) {
 	gameData.hoard.icon [i].bm.bm_texBuf = NULL;
 	}
 for (i = 0; i < 4; i++) {
-	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data);
-	gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data = NULL;
+	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0]);
 	}
 }
 //-----------------------------------------------------------------------------

@@ -146,7 +146,7 @@ ubyte *d1Palette = NULL;
 #define BM_FLAGS_TO_COPY (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT \
                          | BM_FLAG_NO_LIGHTING | BM_FLAG_RLE | BM_FLAG_RLE_BIG)
 
-typedef struct DiskBitmapHeader {
+typedef struct tPIGBitmapHeader {
 	char name [8];
 	ubyte dflags;           // bits 0-5 anim frame num, bit 6 abm flag
 	ubyte width;            // low 8 bits here, 4 more bits in wh_extra
@@ -155,19 +155,31 @@ typedef struct DiskBitmapHeader {
 	ubyte flags;
 	ubyte bm_avgColor;
 	int offset;
-} __pack__ DiskBitmapHeader;
+} __pack__ tPIGBitmapHeader;
 
-#define DISKBITMAPHEADER_D1_SIZE 17 // no wh_extra
+typedef struct tPIGBitmapHeaderD1 {
+	char name [8];
+	ubyte dflags;           // bits 0-5 anim frame num, bit 6 abm flag
+	ubyte width;            // low 8 bits here, 4 more bits in wh_extra
+	ubyte height;           // low 8 bits here, 4 more bits in wh_extra
+	ubyte flags;
+	ubyte bm_avgColor;
+	int offset;
+} __pack__ tPIGBitmapHeaderD1;
 
-typedef struct DiskSoundHeader {
+#define PIGBITMAPHEADER_D1_SIZE 17 // no wh_extra
+
+typedef struct tPIGSoundHeader {
 	char name [8];
 	int length;
 	int data_length;
 	int offset;
-} __pack__ DiskSoundHeader;
+} __pack__ tPIGSoundHeader;
 
 int ReadHamFile ();
 int ReadSoundFile ();
+void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
+extern char szLastPalettePig [];
 
 //---------------------------------------------------------------
 
@@ -759,16 +771,16 @@ return nMasks;
 
 #if 0//def FAST_FILE_IO /*disabled for a reason!*/
 
-#define DiskBitmapHeaderRead(dbh, fp) CFRead (dbh, sizeof (DiskBitmapHeader), 1, fp)
-#define DiskSoundHeaderRead(dsh, fp) CFRead (dsh, sizeof (DiskSoundHeader), 1, fp)
+#define PIGBitmapHeaderRead(dbh, fp) CFRead (dbh, sizeof (tPIGBitmapHeader), 1, fp)
+#define PIGSoundHeaderRead(dsh, fp) CFRead (dsh, sizeof (tPIGSoundHeader), 1, fp)
 
 #else
 
 //------------------------------------------------------------------------------
 /*
- * reads a DiskBitmapHeader structure from a CFILE
+ * reads a tPIGBitmapHeader structure from a CFILE
  */
-void DiskBitmapHeaderRead (DiskBitmapHeader *dbh, CFILE *fp)
+void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFILE *fp)
 {
 	CFRead (dbh->name, 8, 1, fp);
 	dbh->dflags = CFReadByte (fp);
@@ -782,31 +794,31 @@ void DiskBitmapHeaderRead (DiskBitmapHeader *dbh, CFILE *fp)
 
 //------------------------------------------------------------------------------
 /*
- * reads a DiskSoundHeader structure from a CFILE
+ * reads a tPIGSoundHeader structure from a CFILE
  */
-void DiskSoundHeaderRead (DiskSoundHeader *dsh, CFILE *fp)
+void PIGSoundHeaderRead (tPIGSoundHeader *dsh, CFILE *fp)
 {
-	CFRead (dsh->name, 8, 1, fp);
-	dsh->length = CFReadInt (fp);
-	dsh->data_length = CFReadInt (fp);
-	dsh->offset = CFReadInt (fp);
+CFRead (dsh->name, 8, 1, fp);
+dsh->length = CFReadInt (fp);
+dsh->data_length = CFReadInt (fp);
+dsh->offset = CFReadInt (fp);
 }
 #endif // FAST_FILE_IO
 
 //------------------------------------------------------------------------------
 /*
- * reads a descent 1 DiskBitmapHeader structure from a CFILE
+ * reads a descent 1 tPIGBitmapHeader structure from a CFILE
  */
-void DiskBitmapHeader_d1_read (DiskBitmapHeader *dbh, CFILE *fp)
+void PIGBitmapHeaderD1Read (tPIGBitmapHeader *dbh, CFILE *fp)
 {
-	CFRead (dbh->name, 8, 1, fp);
-	dbh->dflags = CFReadByte (fp);
-	dbh->width = CFReadByte (fp);
-	dbh->height = CFReadByte (fp);
-	dbh->wh_extra = 0;
-	dbh->flags = CFReadByte (fp);
-	dbh->bm_avgColor = CFReadByte (fp);
-	dbh->offset = CFReadInt (fp);
+CFRead (dbh->name, 8, 1, fp);
+dbh->dflags = CFReadByte (fp);
+dbh->width = CFReadByte (fp);
+dbh->height = CFReadByte (fp);
+dbh->wh_extra = 0;
+dbh->flags = CFReadByte (fp);
+dbh->bm_avgColor = CFReadByte (fp);
+dbh->offset = CFReadInt (fp);
 }
 
 //------------------------------------------------------------------------------
@@ -825,11 +837,11 @@ void swap_0_255 (grsBitmap *bmp)
 	int i;
 	ubyte	*p;
 
-	for (i = bmp->bm_props.h * bmp->bm_props.w, p = bmp->bm_texBuf; i; i--, p++) {
-		if (!*p)
-			*p = 255;
-		else if (*p == 255)
-			*p = 0;
+for (i = bmp->bm_props.h * bmp->bm_props.w, p = bmp->bm_texBuf; i; i--, p++) {
+	if (!*p)
+		*p = 255;
+	else if (*p == 255)
+		*p = 0;
 	}
 }
 
@@ -935,12 +947,10 @@ int PiggyFindSound (char * name)
 {
 	int i;
 
-	i = hashtable_search (&soundNames [gameStates.app.bD1Data], name);
-
-	if (i < 0)
-		return 255;
-
-	return i;
+i = hashtable_search (&soundNames [gameStates.app.bD1Data], name);
+if (i < 0)
+	return 255;
+return i;
 }
 
 //------------------------------------------------------------------------------
@@ -1075,13 +1085,13 @@ void PiggyInitPigFile (char *filename)
 	char					szPigName [FILENAME_LEN];
 	int					nHeaderSize, nBitmapNum, nDataSize, nDataStart, i;
 	grsBitmap			bmTemp;
-	DiskBitmapHeader	bmh;
+	tPIGBitmapHeader	bmh;
 
 PiggyCloseFile ();             //close old pig if still open
 strcpy (szPigName, filename);
 //rename pigfile for shareware
 if (!stricmp (DEFAULT_PIGFILE, DEFAULT_PIGFILE_SHAREWARE) && 
-	 !CFExist (szPigName, gameFolders.szDataDir,0))
+	 !CFExist (szPigName, gameFolders.szDataDir, 0))
 	strcpy (szPigName, DEFAULT_PIGFILE_SHAREWARE);
 strlwr (szPigName);
 piggyFP [gameStates.app.bD1Data] = CFOpen (szPigName, gameFolders.szDataDir, "rb", 0);
@@ -1108,12 +1118,12 @@ if (!piggyFP [gameStates.app.bD1Data]) {
 	}
 strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = CFReadInt (piggyFP [gameStates.app.bD1Data]);
-nHeaderSize = nBitmapNum * sizeof (DiskBitmapHeader);
+nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
 nDataStart = nHeaderSize + CFTell (piggyFP [gameStates.app.bD1Data]);
 nDataSize = CFLength (piggyFP [gameStates.app.bD1Data], 0) - nDataStart;
 gameData.pig.tex.nBitmaps [0] = 1;
 for (i = 0; i < nBitmapNum; i++) {
-	DiskBitmapHeaderRead (&bmh, piggyFP [gameStates.app.bD1Data]);
+	PIGBitmapHeaderRead (&bmh, piggyFP [gameStates.app.bD1Data]);
 	memcpy (temp_name_read, bmh.name, 8);
 	temp_name_read [8] = 0;
 	if (bmh.dflags & DBM_FLAG_ABM)        
@@ -1135,6 +1145,77 @@ bPigFileInitialized = 1;
 
 //------------------------------------------------------------------------------
 
+void FreeSoundReplacements (void)
+{
+	tDigiSound	*dsP;
+	int			i, j;
+
+LogErr ("unloading custom sounds\n");	
+for (i = 0; i < 2; i++)
+	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
+		if (dsP->bDTX) {
+			D2_FREE (dsP->data [1]);
+			dsP->bDTX = 0;
+			}
+}
+
+//------------------------------------------------------------------------------
+
+int LoadSoundReplacements (char *pszFilename)
+{
+	CFILE					*fp;
+	char					szId [4];
+	short					nSounds;
+	int					i, l;
+	ubyte					j;
+	tPIGSoundHeader	dsh;
+	tDigiSound			*dsP;
+	size_t				nHeaderOffs, nDataOffs;
+	char					szFilename [SHORT_FILENAME_LEN];
+
+//first, D2_FREE up data allocated for old bitmaps
+LogErr ("   loading replacement sounds\n");
+FreeSoundReplacements ();
+ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
+if (!(fp = CFOpen (szFilename, gameFolders.szDataDir, "rb", 0)))
+	return -1;
+if (CFRead (szId, 1, sizeof (szId), fp) != sizeof (szId)) {
+	CFClose (fp);
+	return -1;
+	}
+if (strncmp (szId, "DTX2", sizeof (szId))) {
+	CFClose (fp);
+	return -1;
+	}
+nSounds = CFReadShort (fp);
+CFReadShort (fp);	//skip 2 bytes of unknown data
+nHeaderOffs = CFTell (fp);
+nDataOffs = nHeaderOffs + nSounds * sizeof (tPIGSoundHeader);
+for (i = 0; i < nSounds; i++) {
+	CFSeek (fp, nHeaderOffs + i * sizeof (tPIGSoundHeader), SEEK_SET);
+	PIGSoundHeaderRead (&dsh, fp);
+	j = PiggyFindSound (dsh.name);
+	if (j == 255)
+		continue;
+	dsP = gameData.pig.sound.sounds [gameStates.app.bD1Mission] + j;
+	l = dsh.length;
+	if (!(dsP->data [1] = (ubyte *) D2_ALLOC (l)))
+		continue;
+	CFSeek (fp, nDataOffs + dsh.offset, SEEK_SET);
+	if (CFRead (dsP->data [1], 1, l, fp) != l) {
+		CFClose (fp);
+		D2_FREE (dsP->data [1]);
+		return -1;
+		}
+	dsP->bDTX = 1;
+	dsP->nLength [1] = l;
+	}
+CFClose (fp);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 #define SHORT_FILENAME_LEN 13
 #define MAX_BITMAPS_PER_BRUSH 30
 
@@ -1148,7 +1229,7 @@ void piggy_new_pigfile (char *pigname)
 	char temp_name [16];
 	char temp_name_read [16];
 	grsBitmap bmTemp;
-	DiskBitmapHeader bmh;
+	tPIGBitmapHeader bmh;
 	int nHeaderSize, nBitmapNum, nDataSize, nDataStart;
 	int must_rewrite_pig = 0;
 
@@ -1192,11 +1273,11 @@ void piggy_new_pigfile (char *pigname)
 #endif
 	if (piggyFP [0]) {
 		nBitmapNum = CFReadInt (piggyFP [0]);
-		nHeaderSize = nBitmapNum * sizeof (DiskBitmapHeader);
+		nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
 		nDataStart = nHeaderSize + CFTell (piggyFP [0]);
 		nDataSize = CFLength (piggyFP [0],0) - nDataStart;
 		for (i = 1; i <= nBitmapNum; i++) {
-			DiskBitmapHeaderRead (&bmh, piggyFP [0]);
+			PIGBitmapHeaderRead (&bmh, piggyFP [0]);
 			memcpy (temp_name_read, bmh.name, 8);
 			temp_name_read [8] = 0;
 			if (bmh.dflags & DBM_FLAG_ABM)        
@@ -1343,15 +1424,15 @@ if (!gameOpts->sound.bHires)
 sprintf (szSoundFile, "%s.wav", pszSoundName);
 if (!(fp = CFOpen (szSoundFile, gameFolders.szSoundDir, "rb", 0)))
 	return 0;
-if (0 >= (soundP->nLength = CFLength (fp, 0))) {
+if (0 >= (soundP->nLength [0] = CFLength (fp, 0))) {
 	CFClose (fp);
 	return 0;
 	}
-if (!(soundP->data = (ubyte *) D2_ALLOC (soundP->nLength))) {
+if (!(soundP->data [0] = (ubyte *) D2_ALLOC (soundP->nLength [0]))) {
 	CFClose (fp);
 	return 0;
 	}
-if (CFRead (soundP->data, soundP->nLength, 1, fp) != 1) {
+if (CFRead (soundP->data [0], soundP->nLength [0], 1, fp) != 1) {
 	CFClose (fp);
 	return 0;
 	}
@@ -1363,25 +1444,26 @@ return 1;
 
 int LoadSounds (CFILE *fpSound, int nSoundNum, int nSoundStart)
 {
-	DiskSoundHeader	sndh;
+	tPIGSoundHeader	sndh;
 	tDigiSound			sound;
 	int					i;
 	int					sbytes = 0;
-	int 					nHeaderSize = nSoundNum * sizeof (DiskSoundHeader);
+	int 					nHeaderSize = nSoundNum * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
 
 
 /*---*/LogErr ("      Loading sound data (%d sounds)\n", nSoundNum);
 CFSeek (fpSound, nSoundStart, SEEK_SET);
+memset (&sound, 0, sizeof (sound));
 for (i = 0; i < nSoundNum; i++) {
-	DiskSoundHeaderRead (&sndh, fpSound);
-	//size -= sizeof (DiskSoundHeader);
+	PIGSoundHeaderRead (&sndh, fpSound);
+	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
 	if (!LoadHiresSound (&sound, szSoundName)) {
 		sound.bHires = 0;
-		sound.nLength = sndh.length;
-		sound.data = (ubyte *) (size_t) (sndh.offset + nHeaderSize + nSoundStart);
+		sound.nLength [0] = sndh.length;
+		sound.data [0] = (ubyte *) (size_t) (sndh.offset + nHeaderSize + nSoundStart);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
 		}
 	PiggyRegisterSound (&sound, szSoundName, 1);
@@ -1541,8 +1623,10 @@ int PiggyInit (void)
 
 /*---*/LogErr ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
 	for (i=0; i<MAX_SOUND_FILES; i++)	{
-		gameData.pig.sound.sounds [0][i].nLength = 0;
-		gameData.pig.sound.sounds [0][i].data = NULL;
+		gameData.pig.sound.sounds [0][i].nLength [0] =
+		gameData.pig.sound.sounds [0][i].nLength [1] = 0;
+		gameData.pig.sound.sounds [0][i].data [0] =
+		gameData.pig.sound.sounds [0][i].data [1] = NULL;
 		soundOffset [0][i] = 0;
 	}
 /*---*/LogErr ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
@@ -1569,8 +1653,8 @@ int PiggyInit (void)
 			bogus_data [i * 1024 + (1023 - i)] = c;
 			}
 		PiggyRegisterBitmap (&bogus_bitmap, "bogus", 1);
-		bogusSound.nLength = 1024*1024;
-		bogusSound.data = bogus_data;
+		bogusSound.nLength [0] = 1024*1024;
+		bogusSound.data [0] = bogus_data;
 		bitmapOffsets [0][0] =
 		bitmapOffsets [1][0] = 0;
 	}
@@ -1630,28 +1714,28 @@ int PiggyIsNeeded (int nSound)
 
 void PiggyReadSounds (void)
 {
-	CFILE * fp = NULL;
-	ubyte * ptr;
-	int i, sbytes;
+	CFILE *fp = NULL;
+	ubyte *ptr;
+	int	i, j, sbytes;
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
 sbytes = 0;
 if (!(fp = CFOpen (gameStates.app.bD1Mission ? "descent.pig" : DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0)))
 	return;
-for (i = 0; i < gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i++) {
+for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++) {
 	tDigiSound *soundP = gameData.pig.sound.pSounds + i;
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 		if (PiggyIsNeeded (i)) {
 			CFSeek (fp, soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
 
 			// Read in the sound data!!!
-			soundP->data = ptr;
-			ptr += soundP->nLength;
-			sbytes += soundP->nLength;
-			CFRead (soundP->data, soundP->nLength, 1, fp);
+			soundP->data [0] = ptr;
+			ptr += soundP->nLength [0];
+			sbytes += soundP->nLength [0];
+			CFRead (soundP->data [0], soundP->nLength [0], 1, fp);
 			}
 		else
-			soundP->data = (ubyte *) -1;
+			soundP->data [0] = (ubyte *) -1;
 		}
 	}
 CFClose (fp);
@@ -2158,7 +2242,7 @@ void PiggyWritePigFile (char *filename)
 {
 	FILE *pig_fp;
 	int nBmDataOffs, data_offset;
-	DiskBitmapHeader bmh;
+	tPIGBitmapHeader bmh;
 	int org_offset;
 	char subst_name [32];
 	int i, j;
@@ -2184,7 +2268,7 @@ void PiggyWritePigFile (char *filename)
 	gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
 
 	nBmDataOffs = ftell (pig_fp);
-	nBmDataOffs += (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] - 1) * sizeof (DiskBitmapHeader);
+	nBmDataOffs += (gameData.pig.tex.nBitmaps [gameStates.app.bD1Data] - 1) * sizeof (tPIGBitmapHeader);
 	data_offset = nBmDataOffs;
 
 	change_filename_ext (tname,filename,"lst");
@@ -2256,7 +2340,7 @@ void PiggyWritePigFile (char *filename)
 			bmh.flags &= ~BM_FLAG_PAGED_OUT;
 			}
 		bmh.bm_avgColor=gameData.pig.tex.bitmaps [i].bm_avgColor;
-		fwrite (&bmh, sizeof (DiskBitmapHeader), 1, pig_fp);  // Mark as a bitmap
+		fwrite (&bmh, sizeof (tPIGBitmapHeader), 1, pig_fp);  // Mark as a bitmap
 		}
 	fclose (pig_fp);
 #if TRACE				
@@ -2285,7 +2369,7 @@ void PiggyDumpAll ()
 	int i, xlatOffset;
 	FILE * fpHAM;
 	int org_offset,data_offset=0;
-	DiskSoundHeader sndh;
+	tPIGSoundHeader sndh;
 	int sound_data_start=0;
 	FILE *fp1,*fp2;
 
@@ -2353,7 +2437,7 @@ void PiggyDumpAll ()
 		con_printf (CONDBG, "\nDumping sounds...");
 #endif	
 		sound_data_start = ftell (fpHAM);
-		sound_data_start += gameData.pig.sound.nSoundFiles [0]*sizeof (DiskSoundHeader);
+		sound_data_start += gameData.pig.sound.nSoundFiles [0]*sizeof (tPIGSoundHeader);
 		data_offset = sound_data_start;
 	
 		for (i=0; i < gameData.pig.sound.nSoundFiles [0]; i++) {
@@ -2371,7 +2455,7 @@ void PiggyDumpAll ()
 			fwrite (snd->data, sizeof (ubyte), snd->length, fpHAM);
 			data_offset += snd->length;
 			fseek (fpHAM, org_offset, SEEK_SET);
-			fwrite (&sndh, sizeof (DiskSoundHeader), 1, fpHAM);                    // Mark as a bitmap
+			fwrite (&sndh, sizeof (tPIGSoundHeader), 1, fpHAM);                    // Mark as a bitmap
 	
 			fprintf (fp1, "SND: %s, size %d bytes\n", sounds [i].name, snd->length);
 			fprintf (fp2, "%s.raw\n", sounds [i].name);
@@ -2402,14 +2486,22 @@ void PiggyDumpAll ()
 
 void _CDECL_ PiggyClose (void)
 {
-	int	i, j;
+	int			i, j;
+	tDigiSound	*dsP;
 
 LogErr ("unloading textures\n");	
 PiggyCloseFile ();
+LogErr ("unloading sounds\n");	
 for (i = 0; i < 2; i++) {
-	for (j = 0; j < MAX_SOUND_FILES; j++)
-		if (gameData.pig.sound.sounds [i][j].bHires)
-			D2_FREE (gameData.pig.sound.sounds [i][j].data);
+	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
+		if (dsP->bHires) {
+			D2_FREE (dsP->data [0]);
+			dsP->bHires = 0;
+			}
+		else if (dsP->bDTX) {
+			D2_FREE (dsP->data [1]);
+			dsP->bDTX = 0;
+			}
 	if (gameData.pig.sound.data [i])
 		D2_FREE (gameData.pig.sound.data [i]);
 	hashtable_free (bitmapNames + i);
@@ -2496,16 +2588,13 @@ int PiggyIsSubstitutableBitmap (char * name, char * subst_name)
  *  2) From descent.pig (for loading d1 levels)
  */
 
-extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
-extern char szLastPalettePig [];
-
 void _CDECL_ FreeBitmapReplacements (void)
 {
 }
 
 //------------------------------------------------------------------------------
 
-void LoadBitmapReplacements (char *level_name)
+void LoadBitmapReplacements (char *pszLevelName)
 {
 	char			szFilename [SHORT_FILENAME_LEN];
 	CFILE			*fp;
@@ -2515,13 +2604,13 @@ void LoadBitmapReplacements (char *level_name)
 	//first, D2_FREE up data allocated for old bitmaps
 LogErr ("   loading replacement textures\n");
 FreeBitmapReplacements ();
-ChangeFilenameExtension (szFilename, level_name, ".pog");
-fp = CFOpen (szFilename, gameFolders.szDataDir,"rb",0);
+ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
+fp = CFOpen (szFilename, gameFolders.szDataDir, "rb", 0);
 if (fp) {
 	int					id, version, nBitmapNum, bTGA;
 	int					bmDataSize, bmDataOffset, bmOffset;
 	ushort				*indices;
-	DiskBitmapHeader	*bmh;
+	tPIGBitmapHeader	*bmh;
 
 	id = CFReadInt (fp);
 	version = CFReadInt (fp);
@@ -2531,15 +2620,15 @@ if (fp) {
 		}
 	nBitmapNum = CFReadInt (fp);
 	MALLOC (indices, ushort, nBitmapNum);
-	MALLOC (bmh, DiskBitmapHeader, nBitmapNum);
+	MALLOC (bmh, tPIGBitmapHeader, nBitmapNum);
 #if 0
 	CFRead (indices, nBitmapNum * sizeof (ushort), 1, fp);
-	CFRead (bmh, nBitmapNum * sizeof (DiskBitmapHeader), 1, fp);
+	CFRead (bmh, nBitmapNum * sizeof (tPIGBitmapHeader), 1, fp);
 #else
 	for (i = 0; i < nBitmapNum; i++)
 		indices [i] = CFReadShort (fp);
 	for (i = 0; i < nBitmapNum; i++)
-		DiskBitmapHeaderRead (bmh + i, fp);
+		PIGBitmapHeaderRead (bmh + i, fp);
 #endif
 	bmDataOffset = CFTell (fp);
 	bmDataSize = CFLength (fp, 0) - bmDataOffset;
@@ -2650,7 +2739,7 @@ void PiggyBitmapReadD1 (
 	grsBitmap			*bmP, /* read into this bmP */
    CFILE					*piggyFP, /* read from this file */
 	int					nBmDataOffs, /* specific to file */
-   DiskBitmapHeader	*bmh, /* header info for bmP */
+   tPIGBitmapHeader	*bmh, /* header info for bmP */
    ubyte					**pNextBmP, /* where to write it (if 0, use D2_ALLOC) */
 	ubyte					*palette, /* what palette the bmP has */
    ubyte					*colorMap) /* how to translate bmP's colors */
@@ -2786,7 +2875,7 @@ switch (CFLength (fp, 0)) {
 CFSeek (fp, nPigDataStart, SEEK_SET);
 nBitmapNum = CFReadInt (fp);
 nSoundNum = CFReadInt (fp);
-nHeaderSize = nBitmapNum * DISKBITMAPHEADER_D1_SIZE + nSoundNum * sizeof (DiskSoundHeader);
+nHeaderSize = nBitmapNum * PIGBITMAPHEADER_D1_SIZE + nSoundNum * sizeof (tPIGSoundHeader);
 nBmHdrOffs = nPigDataStart + 2 * sizeof (int);
 nBmDataOffs = nBmHdrOffs + nHeaderSize;
 if (pSoundNum)
@@ -2806,7 +2895,7 @@ grsBitmap bmTemp;
 
 void LoadD1BitmapReplacements ()
 {
-	DiskBitmapHeader	bmh;
+	tPIGBitmapHeader	bmh;
 	char					temp_name [16];
 	char					temp_name_read [16];
 	int					i, nBmHdrOffs, nBmDataOffs, nSoundNum, nBitmapNum;
@@ -2833,7 +2922,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 	gameStates.app.bD1Data = 1;
 	SetDataVersion (1);
 	if (!bHaveD1Sounds) {
-		LoadSounds (piggyFP [1], nSoundNum, nBmHdrOffs + nBitmapNum * DISKBITMAPHEADER_D1_SIZE);
+		LoadSounds (piggyFP [1], nSoundNum, nBmHdrOffs + nBitmapNum * PIGBITMAPHEADER_D1_SIZE);
 		PiggyReadSounds ();
 		bHaveD1Sounds = 1;
 		}
@@ -2841,7 +2930,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 	gameData.pig.tex.nBitmaps [1] = 0;
 	PiggyRegisterBitmap (&bogus_bitmap, "bogus", 1);
 	for (i = 0; i < nBitmapNum; i++) {
-		DiskBitmapHeader_d1_read (&bmh, piggyFP [1]);
+		PIGBitmapHeaderD1Read (&bmh, piggyFP [1]);
 		memcpy (temp_name_read, bmh.name, 8);
 		temp_name_read [8] = 0;
 		if (bmh.dflags & DBM_FLAG_ABM)        
@@ -2876,7 +2965,7 @@ TexMergeFlush ();       //for re-merging with new textures
 tBitmapIndex ReadExtraBitmapD1Pig (char *name)
 {
 	CFILE					*piggyFP;
-	DiskBitmapHeader	bmh;
+	tPIGBitmapHeader	bmh;
 	int					i, nBmHdrOffs, nBmDataOffs, nBitmapNum;
 	tBitmapIndex		bmi;
 	grsBitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
@@ -2895,7 +2984,7 @@ LoadD1Palette ();
 }
 LoadD1PigHeader (piggyFP, NULL, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 0);
 for (i = 0; i < nBitmapNum; i++) {
-	DiskBitmapHeader_d1_read (&bmh, piggyFP);
+	PIGBitmapHeaderD1Read (&bmh, piggyFP);
 	if (!strnicmp (bmh.name, name, 8))
 		break;
 	}

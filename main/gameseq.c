@@ -845,6 +845,8 @@ SongsStopAll ();
 DigiStopAllChannels ();
 /*---*/LogErr ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
+/*---*/LogErr ("   unloading custom sounds\n");
+FreeSoundReplacements ();
 /*---*/LogErr ("   unloading hardware lights\n");
 RemoveDynLights ();
 /*---*/LogErr ("   unloading cambot\n");
@@ -950,6 +952,7 @@ else {
 	if (bPageInTextures)
 		PiggyLoadLevelData ();
 	LoadBitmapReplacements (pszLevelName);
+	LoadSoundReplacements (pszLevelName);
 	}
 /*---*/LogErr ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);

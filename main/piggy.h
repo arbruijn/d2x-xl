@@ -60,6 +60,8 @@ tBitmapIndex PiggyRegisterBitmap( grsBitmap * bmp, char * name, int in_file );
 int PiggyRegisterSound( tDigiSound * snd, char * name, int in_file );
 tBitmapIndex PiggyFindBitmap( char * name, int bD1Data );
 int PiggyFindSound( char * name );
+int LoadSoundReplacements (char *pszFileName);
+void FreeSoundReplacements (void);
 
 typedef struct {
     char  identSize;          // size of ID field that follows 18 char header (0 usually)
