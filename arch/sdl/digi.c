@@ -366,7 +366,7 @@ int DigiResampleSound (tDigiSound *dsP, struct tSoundSlot *ssP, int bD1Sound, in
 	ubyte		*dataP = dsP->data [dsP->bDTX];
 
 i = dsP->nLength [dsP->bDTX];
-if (dsP->bDTX)
+if (dsP->bDTX && gameOpts->sound.bUseSDLMixer)
 	bD1Sound = 1;
 #if SDL_MIXER_CHANNELS == 2
 l = 2 * i;
@@ -655,7 +655,7 @@ if (pszWAV)
 	return -1;
 #endif
 	{
-	if (gameOpts->sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K)) {
+	if (dsP->bDTX || (gameOpts->sound.bD1Sound && (gameOpts->sound.digiSampleRate != SAMPLE_RATE_11K))) {
 		int l = DigiResampleSound (dsP, ssP, 0, 0);
 		if (l <= 0)
 			return -1;

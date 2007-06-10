@@ -1173,6 +1173,8 @@ int LoadSoundReplacements (char *pszFilename)
 	size_t				nHeaderOffs, nDataOffs;
 	char					szFilename [SHORT_FILENAME_LEN];
 
+if (gameOpts->sound.bHires)
+	return -1;
 //first, D2_FREE up data allocated for old bitmaps
 LogErr ("   loading replacement sounds\n");
 FreeSoundReplacements ();
