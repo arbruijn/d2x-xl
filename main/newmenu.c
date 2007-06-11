@@ -1815,6 +1815,10 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 			SwitchDisplayMode (-1);
 			break;
 
+		case KEY_CTRLED+KEY_F2:
+			SwitchDisplayMode (1);
+			break;
+
 		case KEY_COMMAND + KEY_T:
 		case KEY_CTRLED + KEY_T:
 			gameData.menu.alpha = (gameData.menu.alpha + 16) & 0xFF;
