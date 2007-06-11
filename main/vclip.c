@@ -51,7 +51,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int nVClip, tRgbColorf *color)
+void DrawVClipObject (tObject *objP, fix timeToLive, int lighted, int nVClip, tRgbColorf *color)
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip	*pvc = gameData.eff.vClips [0] + nVClip;
@@ -59,7 +59,7 @@ void DrawVClipObject (tObject *objP,fix timeToLive, int lighted, int nVClip, tRg
 	int			iFrame = CurFrame (nVClip, timeToLive);
 	int			bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
-if (objP->nType == OBJ_FIREBALL) {
+if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
 		alpha = THRUSTER_ALPHA;
 		//if (objP->mType.physInfo.flags & PF_WIGGLE)	//tPlayer ship
@@ -77,7 +77,7 @@ else if (objP->nType == OBJ_WEAPON) {
 		alpha = WEAPON_ALPHA;
 	}
 #if 1
-if (objP->nType == OBJ_FIREBALL)
+if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 	glDepthMask (0);	//don't set z-buffer for transparent objects
 #endif
 if (pvc->flags & VF_ROD)
@@ -87,7 +87,7 @@ else {
 	DrawObjectBlob (objP, pvc->frames [0], pvc->frames [iFrame], iFrame, color, (float) alpha);
 	}
 #if 1
-if (objP->nType == OBJ_FIREBALL)
+if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 	glDepthMask (1);
 #endif
 }

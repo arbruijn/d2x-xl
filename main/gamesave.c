@@ -183,8 +183,8 @@ else {		//Robots taken care of above
 	if (objP->renderType == RT_POLYOBJ) {
 		int i;
 		char *name = Save_pof_names [objP->rType.polyObjInfo.nModel];
-		for (i=0;i<gameData.models.nPolyModels;i++)
-			if (!stricmp(Pof_names [i],name)) {		//found it!	
+		for (i = 0; i < gameData.models.nPolyModels; i++)
+			if (!stricmp (Pof_names [i], name)) {		//found it!	
 				objP->rType.polyObjInfo.nModel = i;
 				break;
 				}
@@ -994,7 +994,7 @@ if (gameFileInfo.walls.offset > -1) {
 	con_printf(CONDBG, "   loading tWall data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.walls.offset,SEEK_SET))	{
-		for (i=0;i<gameFileInfo.walls.count;i++) {
+		for (i = 0; i <gameFileInfo.walls.count; i++) {
 
 			if (gameTopFileInfo.fileinfo_version >= 20)
 				wall_read(&gameData.walls.walls [i], LoadFile); // v20 walls and up.
@@ -1007,10 +1007,10 @@ if (gameFileInfo.walls.offset > -1) {
 				gameData.walls.walls [i].nLinkedWall	= w.nLinkedWall;
 				gameData.walls.walls [i].nType			= w.nType;
 				gameData.walls.walls [i].flags			= w.flags;
-				gameData.walls.walls [i].hps			= w.hps;
+				gameData.walls.walls [i].hps				= w.hps;
 				gameData.walls.walls [i].nTrigger		= w.nTrigger;
 				gameData.walls.walls [i].nClip			= w.nClip;
-				gameData.walls.walls [i].keys			= w.keys;
+				gameData.walls.walls [i].keys				= w.keys;
 				gameData.walls.walls [i].state			= WALL_DOOR_CLOSED;
 			} else {
 				v16_wall w;
@@ -1019,10 +1019,10 @@ if (gameFileInfo.walls.offset > -1) {
 				gameData.walls.walls [i].nSegment = gameData.walls.walls [i].nSide = gameData.walls.walls [i].nLinkedWall = -1;
 				gameData.walls.walls [i].nType		= w.nType;
 				gameData.walls.walls [i].flags		= w.flags;
-				gameData.walls.walls [i].hps		= w.hps;
+				gameData.walls.walls [i].hps			= w.hps;
 				gameData.walls.walls [i].nTrigger	= w.nTrigger;
 				gameData.walls.walls [i].nClip		= w.nClip;
-				gameData.walls.walls [i].keys		= w.keys;
+				gameData.walls.walls [i].keys			= w.keys;
 			}
 
 		}
@@ -1045,7 +1045,7 @@ if (gameFileInfo.doors.offset > -1) {
 
 				v19_door_read(&d, LoadFile);
 				gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
-				for (p=0;p<d.nPartCount;p++) {
+				for (p = 0; p < d.nPartCount; p++) {
 					short cseg,cside;
 
 					cseg = gameData.segs.segments [d.seg[p]].children[d.nSide[p]];
@@ -1069,7 +1069,7 @@ if (gameFileInfo.triggers.offset > -1) {
 	con_printf(CONDBG, "   loading tTrigger data ...\n");
 #endif
 	if (!CFSeek(LoadFile, gameFileInfo.triggers.offset,SEEK_SET))	{
-		for (i=0;i<gameFileInfo.triggers.count;i++) {
+		for (i = 0; i < gameFileInfo.triggers.count; i++) {
 			if (gameTopFileInfo.fileinfo_version >= 31) 
 				TriggerRead(gameData.trigs.triggers + i, LoadFile, 0);
 			else {
@@ -1226,7 +1226,6 @@ if (gameFileInfo.botGen.offset > -1) {
 }
 
 //================ READ MATERIALIZATION CENTERS INFO ===============
-i = CFTell (LoadFile);
 if (gameFileInfo.equipGen.offset > -1) {
 	int	j;
 
@@ -1308,9 +1307,9 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 
 //========================= UPDATE VARIABLES ======================
 
-ResetObjects(gameFileInfo.objects.count);
+ResetObjects (gameFileInfo.objects.count);
 
-for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
+for (i = 0; i < gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
 	gameData.objs.objects [i].next = gameData.objs.objects [i].prev = -1;
 	if (gameData.objs.objects [i].nType != OBJ_NONE) {
 		int objsegnum = gameData.objs.objects [i].nSegment;
@@ -1318,13 +1317,12 @@ for (i=0; i<gameFileInfo.objects.count/*MAX_OBJECTS*/; i++) {
 			gameData.objs.objects [i].nType = OBJ_NONE;
 		else {
 			gameData.objs.objects [i].nSegment = -1;			//avoid Assert()
-			LinkObject(i,objsegnum);
+			LinkObject (i, objsegnum);
 		}
 	}
 }
 
-ClearTransientObjects(1);		//1 means clear proximity bombs
-
+ClearTransientObjects (1);		//1 means clear proximity bombs
 // Make sure non-transparent doors are set correctly.
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	tSide	*sidep = gameData.segs.segments [i].sides;
@@ -1350,7 +1348,7 @@ gameData.walls.nOpenDoors = gameFileInfo.doors.count;
 gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 
 //go through all walls, killing references to invalid triggers
-for (i=0;i<gameData.walls.nWalls;i++)
+for (i = 0; i < gameData.walls.nWalls; i++)
 	if (gameData.walls.walls [i].nTrigger >= gameData.trigs.nTriggers) {
 #if TRACE
 		con_printf (CONDBG,"Removing reference to invalid tTrigger %d from tWall %d\n",gameData.walls.walls [i].nTrigger,i);
@@ -1359,11 +1357,11 @@ for (i=0;i<gameData.walls.nWalls;i++)
 	}
 
 //go through all triggers, killing unused ones
-for (i=0;i<gameData.trigs.nTriggers;) {
+for (i = 0; i < gameData.trigs.nTriggers; ) {
 	int w;
 
 	//	Find which tWall this tTrigger is connected to.
-	for (w=0; w<gameData.walls.nWalls; w++)
+	for (w = 0; w < gameData.walls.nWalls; w++)
 		if (gameData.walls.walls [w].nTrigger == i)
 			break;
 
@@ -1386,7 +1384,7 @@ for (i=0;i<gameData.trigs.nTriggers;) {
 for (i = 0; i < gameData.walls.nWalls; i++)
 	gameData.walls.walls [i].controllingTrigger = -1;
 
-for (t=0; t<gameData.trigs.nTriggers; t++) {
+for (t = 0; t < gameData.trigs.nTriggers; t++) {
 	for (l = 0; l<gameData.trigs.triggers [t].nLinks; l++) {
 
 		seg_num = gameData.trigs.triggers [t].nSegment [l];
@@ -1428,7 +1426,7 @@ if (gameTopFileInfo.fileinfo_version < 17) {
 #ifdef _DEBUG
 {
 	short	nSide;
-	for (nSide=0; nSide<6; nSide++) {
+	for (nSide = 0; nSide < 6; nSide++) {
 		short	wallnum = WallNumI (gameData.segs.nLastSegment, nSide);
 		if (IS_WALL (wallnum))
 			if ((gameData.walls.walls [wallnum].nSegment != gameData.segs.nLastSegment) || 

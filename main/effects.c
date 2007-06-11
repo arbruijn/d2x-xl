@@ -74,7 +74,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 void ResetPogEffects (void)
 {
 	int				i, bD1;
-	tEffectClip				*ecP;
+	tEffectClip		*ecP;
 	tWallClip		*wcP;
 	tVideoClip		*vcP;
 

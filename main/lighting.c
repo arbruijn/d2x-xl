@@ -314,7 +314,7 @@ if (xObjIntensity) {
 	if (objP && (objP->nType == OBJ_POWERUP) && !EGI_FLAG (bPowerupLights, 0, 0, 0)) 
 		xObjIntensity = 0;
 	bUseColor = (color != NULL); //&& (color->red < 1.0 || color->green < 1.0 || color->blue < 1.0);
-	bForceColor = objP && ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL));
+	bForceColor = objP && ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION));
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
 	if (objP && ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER))) {
@@ -508,6 +508,7 @@ switch (nObjType) {
 		break;
 
 	case OBJ_FIREBALL:
+	case OBJ_EXPLOSION:
 		if ((objP->id != 0xff) && (objP->renderType != RT_THRUSTER)) {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
 			fix xLight = vcP->lightValue;

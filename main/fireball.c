@@ -382,7 +382,7 @@ return sqrt (size);
 
 #define DEBRIS_LIFE (f1_0 * 2)		//lifespan in seconds
 
-fix nDebrisLife [] = {2, 15, 30, 60, 120, 180, 300};
+fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
 tObject *ObjectCreateDebris (tObject *parentObjP, int nSubObj)
 {
@@ -1554,7 +1554,7 @@ if (delayTime) {		//wait a little while before creating explosion
 	if (nObject < 0) {
 		MaybeDeleteObject (hitObjP);		//no explosion, die instantly
 #if TRACE
-		con_printf (1, "Couldn't start explosion, deleting tObject now\n");
+		con_printf (1, "Couldn't start explosion, deleting object now\n");
 #endif
 		Int3 ();
 		return;

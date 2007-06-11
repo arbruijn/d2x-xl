@@ -121,7 +121,7 @@ int DigiGetMaxChannels();
 extern int digi_lomem;
 
 short DigiXlatSound(short nSound);
-
+int DigiUnXlatSound (int nSound);
 extern void DigiStopSound (int channel);
 
 // Returns the channel a sound number is playing on, or

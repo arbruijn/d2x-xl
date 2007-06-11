@@ -1695,6 +1695,7 @@ char *defaultGameTexts [][2] = {
 	{"Schiff zur naechsten ~Flaeche ausrichten", "align ship with nearest ~Side"},
 	{"Schiff zum ~Boden ausrichten", "align ship with ~Floor"},
 	{"Schiff zur ~Mine ausrichten", "align ship to ~Mine"},
+	{"~Reibung Spielerschiff: %d%c", "player ship dra~G: %d%c"},
 #if 0
 	{"", ""},
 #endif
@@ -2232,6 +2233,8 @@ char *defaultHelpTexts [][2] = {
 	 "If ticked, you can look around while the ship keeps its direction."},
 	{"Um die Orientierung einfacher zu machen, kann das Schiff immer\nautomatisch eine bestimmte Lage gedreht werden.\n\nZur naechsten Flaeche richtet es zu der nahegelegenen\nFlaeche aus, zu der es den geringsten Winkel hat.\nZum Boden richtet es immer zu einem gedachten Boden aus.\nZur Mine richtet es immer bezueglich der gesamten Mine aus.", 
 	 "To ease keeping ones orientation, the ship can be automatically\nturned into a certain position.\n\n'Nearest side' aligns it to a nearby face it forms the smallest angle with.\n'Floor' aligns it with a virtual floor.\n'Mine' aligns it relative to the entire mine."},
+	{"Je kleiner die Reibung, desto laenger behaelt das Schiff ohne\nSchub Flugrichtung und Geschwindigkeit bei. Es muss mit\nGegenschub gebremst werden.", 
+	 "The smaller the drag, the longer will the ship keep heading\nand speed even without thrust. You need to apply reverse\nthrust to brake."},
 #if 0
 	{"", ""},
 #endif

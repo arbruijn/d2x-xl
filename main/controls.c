@@ -63,7 +63,7 @@ void WiggleObject (tObject *objP)
 
 if (gameStates.render.nShadowPass == 2) 
 	return;
-if (!EGI_FLAG (bWiggle, 1, 0, 1))
+if (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWiggle, 1, 0, 1))
 	return;
 nParent = gameData.objs.parentObjs [OBJ_IDX (objP)];
 pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;

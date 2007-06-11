@@ -234,6 +234,8 @@ if (objP->mType.physInfo.drag) {
 	fix			xDrag = (objP->mType.physInfo.drag * 5) / 2;
 	fix			xScale = f1_0 - xDrag;
 
+	if (objP == gameData.objs.console) 
+		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
 		VmVecCopyScale (&accel, &objP->mType.physInfo.rotThrust, FixDiv (f1_0, objP->mType.physInfo.mass));
 		while (nTries--) {
@@ -242,9 +244,10 @@ if (objP->mType.physInfo.drag) {
 			}
 		//do linear scale on remaining bit of time
 		VmVecScaleInc (&objP->mType.physInfo.rotVel, &accel, k);
-		VmVecScale (&objP->mType.physInfo.rotVel, f1_0 - FixMul (k, xDrag));
+		if (xDrag)
+			VmVecScale (&objP->mType.physInfo.rotVel, f1_0 - FixMul (k, xDrag));
 		}
-	else if (!(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
+	else if (xDrag && !(objP->mType.physInfo.flags & PF_FREE_SPINNING)) {
 		fix xTotalDrag = f1_0;
 		while (nTries--)
 			xTotalDrag = FixMul (xTotalDrag, xScale);
@@ -468,7 +471,6 @@ void DoPhysicsSim (tObject *objP)
 	tVFIQuery			fq;
 	vmsVector			vSavePos;
 	int					nSaveSeg;
-	fix					xDrag;
 	fix					xSimTime, xOldSimTime, xTimeScale;
 	vmsVector			vStartPos;
 	int					bGetPhysSegs, bObjStopped = 0;
@@ -510,15 +512,17 @@ Assert (objP->mType.physInfo.brakes == 0);		//brakes not used anymore?
 //if uses thrust, cannot have zero xDrag
 Assert (!(objP->mType.physInfo.flags & PF_USES_THRUST) || objP->mType.physInfo.drag);
 //do thrust & xDrag
-if ((xDrag = objP->mType.physInfo.drag)) {
+if (objP->mType.physInfo.drag) {
 	vmsVector accel, *vel = &objP->mType.physInfo.velocity;
-	fix a;
+	int		nTries = xSimTime / FT;
+	fix		xDrag = objP->mType.physInfo.drag;
+	fix		r = xSimTime % FT;
+	fix		k = FixDiv (r, FT);
+	fix		d = f1_0 - xDrag;
+	fix		a;
 
-	int nTries = xSimTime / FT;
-	fix r = xSimTime % FT;
-	fix k = FixDiv (r, FT);
-	fix d = f1_0 - xDrag;
-
+	if (objP == gameData.objs.console) 
+		xDrag = EGI_FLAG (nDrag, 0, 0, 0) * xDrag / 10;
 	if (objP->mType.physInfo.flags & PF_USES_THRUST) {
 		VmVecCopyScale (&accel, &objP->mType.physInfo.thrust, FixDiv (f1_0, objP->mType.physInfo.mass));
 		a = (accel.p.x || accel.p.y || accel.p.z);
@@ -532,7 +536,8 @@ if ((xDrag = objP->mType.physInfo.drag)) {
 			}
 			//do linear scale on remaining bit of time
 			VmVecScaleInc (vel, &accel, k);
-			VmVecScale (vel, f1_0 - FixMul (k, xDrag));
+			if (xDrag)
+				VmVecScale (vel, f1_0 - FixMul (k, xDrag));
 			if (bDoSpeedBoost) {
 				if (vel->p.x < sbd.vMinVel.p.x)
 					vel->p.x = sbd.vMinVel.p.x;
@@ -549,7 +554,7 @@ if ((xDrag = objP->mType.physInfo.drag)) {
 				}
 			}
 		}
-	else {
+	else if (xDrag) {
 		fix xTotalDrag = f1_0;
 		while (nTries--)
 			xTotalDrag = FixMul (xTotalDrag, d);

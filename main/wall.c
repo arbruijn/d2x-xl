@@ -793,27 +793,22 @@ int IsDoorFree (tSegment *segP,short nSide)
 {
 	short		nConnSide;
 	tSegment *connSegP;
-	short		nObject;
+	short		nObject, t;
 
 connSegP = gameData.segs.segments + segP->children [nSide];
-nConnSide = FindConnectedSide(segP, connSegP);
+nConnSide = FindConnectedSide (segP, connSegP);
 Assert(nConnSide != -1);
 
 //go through each tObject in each of two segments, and see if
 //it pokes into the connecting segP
 
-for (nObject=segP->objects;nObject!=-1;nObject=gameData.objs.objects [nObject].next)
-	if (gameData.objs.objects [nObject].nType!=OBJ_WEAPON && 
-			gameData.objs.objects [nObject].nType!=OBJ_FIREBALL && 
-		CheckPoke(nObject,SEG_IDX (segP),nSide))
+for (nObject = segP->objects; nObject != -1; nObject = gameData.objs.objects [nObject].next) {
+	t = gameData.objs.objects [nObject].nType;
+	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION))
+		continue;
+	if (CheckPoke (nObject, SEG_IDX (segP), nSide) || CheckPoke (nObject, SEG_IDX (connSegP), nConnSide))
 		return 0;	//not D2_FREE
-
-for (nObject=connSegP->objects;nObject!=-1;nObject=gameData.objs.objects [nObject].next)
-	if (gameData.objs.objects [nObject].nType!=OBJ_WEAPON && 
-			gameData.objs.objects [nObject].nType!=OBJ_FIREBALL && 
-		CheckPoke(nObject,(short) (SEG_IDX (connSegP)),nConnSide))
-		return 0;	//not D2_FREE
-
+		}
 return 1; 	//doorway is D2_FREE!
 }
 

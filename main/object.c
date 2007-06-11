@@ -300,7 +300,7 @@ if (gameOpts->render.bTransparentEffects) {
 				alpha = 1.0f;
 			orientation = OBJ_IDX (objP) & 7;
 			}
-		else if (objP->nType != OBJ_FIREBALL)
+		else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
 			alpha = 1.0f;
 		else {
 			orientation = (OBJ_IDX (objP)) & 7;
@@ -2230,6 +2230,24 @@ mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
+#if 0//def _DEBUG
+if (objP->nType == OBJ_EXPLOSION) {
+	static time_t	t0 = 0;
+	static int i = 0,
+					nClips [] = {0, 2, 5, 7, 57, 58, 59, 60, 106};
+
+	if (gameStates.app.nSDLTicks - t0 > 4000) {
+		if (t0)
+			do {
+				i = (i + 1) % sizeofa (nClips);
+				} while (gameData.eff.vClips [0][nClips [i]].xFrameTime <= 0);
+
+		t0 = gameStates.app.nSDLTicks;
+		objP->rType.vClipInfo.nClipIndex = nClips [i];
+		}
+	HUDMessage (0, "%d", nClips [i]);
+	}
+#endif
 switch (objP->renderType) {
 	case RT_NONE:	
 		if (gameStates.render.nType != 1)
@@ -2335,7 +2353,7 @@ switch (objP->renderType) {
 			break;
 			
 	case RT_FIREBALL: 
-	if (!bForce && (gameStates.render.nType != 1))
+		if (!bForce && (gameStates.render.nType != 1))
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
@@ -2509,7 +2527,7 @@ void SpecialResetObjects (void)
 gameData.objs.nObjects = MAX_OBJECTS;
 gameData.objs.nLastObject = 0;
 Assert (gameData.objs.objects [0].nType != OBJ_NONE);		//0 should be used
-for (i=MAX_OBJECTS;i--;)
+for (i = MAX_OBJECTS; i--; )
 	if (gameData.objs.objects [i].nType == OBJ_NONE)
 		gameData.objs.freeList [--gameData.objs.nObjects] = i;
 	else
@@ -2789,6 +2807,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 				Int3 ();		//	This is curious.  What is an tObject that is a tWall?
 				break;
 			case OBJ_FIREBALL:
+			case OBJ_EXPLOSION:
 			case OBJ_WEAPON:
 			case OBJ_DEBRIS:
 				objList [olind++] = i;
@@ -4186,11 +4205,11 @@ return h;
 //------------------------------------------------------------------------------
 //called after load.  Takes number of gameData.objs.objects,  and gameData.objs.objects should be
 //compressed.  resets D2_FREE list, marks unused gameData.objs.objects as unused
-void ResetObjects (int n_objs)
+void ResetObjects (int nObjects)
 {
 	int i;
 
-gameData.objs.nObjects = n_objs;
+gameData.objs.nObjects = nObjects;
 Assert (gameData.objs.nObjects > 0);
 for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
@@ -4274,7 +4293,6 @@ void ClearTransientObjects (int clear_all)
 	for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++)
 		if (((objP->nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID)))) ||
 			   objP->nType == OBJ_FIREBALL ||
-			   objP->nType == OBJ_DEBRIS ||
 			   objP->nType == OBJ_DEBRIS ||
 			   ((objP->nType != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
 

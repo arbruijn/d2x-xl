@@ -321,6 +321,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].nMaxSmokeGrenades, 0, 0);
 		RP (extraGameInfo [i].nMslTurnSpeed, 0, 0);
 		RP (extraGameInfo [i].nRadar, 0, 0);
+		RP (extraGameInfo [i].nDrag, 0, 0);
 		RP (extraGameInfo [i].nSpawnDelay, 0, 0); // / 1000
 		RP (extraGameInfo [i].nSpeedBoost, 0, 0);
 		RP (extraGameInfo [i].nWeaponDropMode, 0, 0);
@@ -764,6 +765,7 @@ tParamValue defaultParams [] = {
 {"extraGameInfo[0].nMaxSmokeGrenades=1"},
 {"extraGameInfo[0].nMslTurnSpeed=2"},
 {"extraGameInfo[0].nRadar=1"},
+{"extraGameInfo[0].nDrag=0"},
 {"extraGameInfo[0].nSpawnDelay=0"},
 {"extraGameInfo[0].nSpeedBoost=10"},
 {"extraGameInfo[0].nWeaponDropMode=1"},

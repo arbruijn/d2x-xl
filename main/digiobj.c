@@ -114,14 +114,13 @@ int DigiUnXlatSound (int nSound)
 	int i;
 	ubyte *table = (gameStates.sound.digi.bLoMem ? AltSounds [gameOpts->sound.bD1Sound] :Sounds [gameOpts->sound.bD1Sound]);
 
-	if (nSound < 0) return -1;
-
-	for (i=0;i<MAX_SOUNDS;i++)
-		if (table [i] == nSound)
-			return i;
-
-	Int3 ();
-	return 0;
+if (nSound < 0) 
+	return -1;
+for (i = 0;i < MAX_SOUNDS; i++)
+	if (table [i] == nSound)
+		return i;
+Int3 ();
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -263,17 +262,15 @@ void DigiInitSounds ()
 {
 	int i;
 
-	SoundQInit ();
-
-	DigiStopAllChannels ();
-
-	DigiStopLoopingSound ();
-	for (i=0; i<MAX_SOUND_OBJECTS; i++)	{
-		SoundObjects [i].channel = -1;
-		SoundObjects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
+SoundQInit ();
+DigiStopAllChannels ();
+DigiStopLoopingSound ();
+for (i = 0; i < MAX_SOUND_OBJECTS; i++)	{
+	SoundObjects [i].channel = -1;
+	SoundObjects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
 	}
-	gameStates.sound.digi.nActiveObjects = 0;
-	gameStates.sound.digi.bSoundsInitialized = 1;
+gameStates.sound.digi.nActiveObjects = 0;
+gameStates.sound.digi.bSoundsInitialized = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +384,7 @@ if (SoundObjects [i].channel > -1)
 #define SOUND_3D_THRESHHOLD  (gameOpts->sound.digiSampleRate * 3 / 2)	//1.5 seconds
 
 int DigiLinkSoundToObject3 (
-	short nOrgSound, short nObject, int bForever, fix maxVolume, fix  maxDistance, 
+	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance, 
 	int loop_start, int loop_end)
 {
 	int			i, volume, pan;

@@ -4519,6 +4519,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bTripleFusion = 0;
 	extraGameInfo [i].nHitboxes = 0;
 	extraGameInfo [i].nRadar = 0;
+	extraGameInfo [i].nDrag = 10;
 	extraGameInfo [i].nSpotSize = 2 - i;
 	extraGameInfo [i].nSpotStrength = 2 - i;
 	extraGameInfo [i].nLightRange = 0;
@@ -4648,6 +4649,7 @@ else {
 	LogErr ("   bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	LogErr ("   nHitboxes: %d\n", extraGameInfo [1].nHitboxes);
 	LogErr ("   nRadar: %d\n", extraGameInfo [1].nRadar);
+	LogErr ("   nDrag: %d\n", extraGameInfo [1].nDrag);
 	LogErr ("   nSpotSize: %d\n", extraGameInfo [1].nSpotSize);
 	LogErr ("   nSpotStrength: %d\n", extraGameInfo [1].nSpotStrength);
 	LogErr ("   nLightRange: %d\n", extraGameInfo [1].nLightRange);

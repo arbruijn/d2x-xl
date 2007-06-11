@@ -182,34 +182,66 @@ void DrawWindowLabel ()
 		viewer_id = "";
 		switch (gameData.objs.viewer->nType)
 		{
-			case OBJ_FIREBALL:	viewer_name = "Fireball"; break;
-			case OBJ_ROBOT:		viewer_name = "Robot";
+			case OBJ_FIREBALL:	
+				viewer_name = "Fireball"; 
+				break;
+			case OBJ_ROBOT:		
+				viewer_name = "Robot";
 #ifdef EDITOR
-										viewer_id = gameData.bots.names [gameData.objs.viewer->id];
+				viewer_id = gameData.bots.names [gameData.objs.viewer->id];
 #endif
 				break;
-			case OBJ_HOSTAGE:		viewer_name = "Hostage"; break;
-			case OBJ_PLAYER:		viewer_name = "Player"; break;
-			case OBJ_WEAPON:		viewer_name = "Weapon"; break;
-			case OBJ_CAMERA:		viewer_name = "Camera"; break;
-			case OBJ_POWERUP:		viewer_name = "Powerup";
+			case OBJ_HOSTAGE:		
+				viewer_name = "Hostage"; 
+				break;
+			case OBJ_PLAYER:		
+				viewer_name = "Player"; 
+				break;
+			case OBJ_WEAPON:		
+				viewer_name = "Weapon"; 
+				break;
+			case OBJ_CAMERA:		
+				viewer_name = "Camera"; 
+				break;
+			case OBJ_POWERUP:		
+				viewer_name = "Powerup";
 #ifdef EDITOR
-										viewer_id = Powerup_names [gameData.objs.viewer->id];
+				viewer_id = Powerup_names [gameData.objs.viewer->id];
 #endif
 				break;
-			case OBJ_DEBRIS:		viewer_name = "Debris"; break;
-			case OBJ_CNTRLCEN:	viewer_name = "Reactor"; break;
-			default:					viewer_name = "Unknown"; break;
+			case OBJ_DEBRIS:		
+				viewer_name = "Debris"; 
+				break;
+			case OBJ_CNTRLCEN:	
+				viewer_name = "Reactor"; 
+				break;
+			default:					
+				viewer_name = "Unknown"; 
+				break;
 		}
 
 		switch (gameData.objs.viewer->controlType) {
-			case CT_NONE:			control_name = "Stopped"; break;
-			case CT_AI:				control_name = "AI"; break;
-			case CT_FLYING:		control_name = "Flying"; break;
-			case CT_SLEW:			control_name = "Slew"; break;
-			case CT_FLYTHROUGH:	control_name = "Flythrough"; break;
-			case CT_MORPH:			control_name = "Morphing"; break;
-			default:					control_name = "Unknown"; break;
+			case CT_NONE:			
+				control_name = "Stopped"; 
+				break;
+			case CT_AI:				
+				control_name = "AI"; 
+				break;
+			case CT_FLYING:		
+				control_name = "Flying"; 
+				break;
+			case CT_SLEW:			
+				control_name = "Slew"; 
+				break;
+			case CT_FLYTHROUGH:	
+				control_name = "Flythrough"; 
+				break;
+			case CT_MORPH:			
+				control_name = "Morphing"; 
+				break;
+			default:					
+				control_name = "Unknown"; 
+				break;
 		}
 
 		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);

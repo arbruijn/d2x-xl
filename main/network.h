@@ -132,7 +132,7 @@ typedef struct tFrameInfoShort {
 	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoShort;
 
-typedef struct entropy_gameinfo {
+typedef struct tEntropyGameInfo {
 	ushort	nEnergyFillRate;
 	ushort	nShieldFillRate;
 	ushort	nShieldDamageRate;
@@ -149,7 +149,7 @@ typedef struct entropy_gameinfo {
 	char		nOverrideTextures;
 	char		bBrightenRooms;
 	char		bPlayerHandicap;
-} entropy_gameinfo;
+} tEntropyGameInfo;
 
 #define MAX_MONSTERBALL_FORCES	25
 
@@ -192,7 +192,7 @@ typedef struct tExtraGameInfo {
 	char		bSmartWeaponSwitch;
 	char		bFluidPhysics;
 	char		nWeaponDropMode;
-	entropy_gameinfo entropy;
+	tEntropyGameInfo entropy;
 	char		bRotateLevels;
 	char		bDisableReactor;
 	char		bMouseLook;
@@ -232,6 +232,7 @@ typedef struct tExtraGameInfo {
 	char		bTripleFusion;
 	char		nHitboxes;
 	char		nRadar;
+	char		nDrag;
 	char		nSpotSize;
 	char		nSpotStrength;
 	int		nLightRange;

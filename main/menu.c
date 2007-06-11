@@ -156,6 +156,7 @@ static struct {
 	int	nFusionRamp;
 	int	nMslTurnSpeed;
 	int	nSlomoSpeedup;
+	int	nDrag;
 } physOpts;
 
 static struct {
@@ -3394,6 +3395,15 @@ void PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem
 	int			v;
 
 if (gameOpts->app.bExpertMode) {
+	m = menus + physOpts.nDrag;
+	v = m->value;
+	if (extraGameInfo [0].nDrag != v) {
+		extraGameInfo [0].nDrag = v;
+		sprintf (m->text, TXT_PLAYER_DRAG, extraGameInfo [0].nDrag * 10, '%');
+		*key = -2;
+		return;
+		}
+
 	m = menus + physOpts.nSpeedboost;
 	v = m->value;
 	if (extraGameInfo [0].nSpeedBoost != v) {
@@ -3446,9 +3456,9 @@ void PhysicsOptionsMenu ()
 {
 	tMenuItem m [25];
 	int	i, opt = 0, choice = 0;
-	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1, 
+	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
 			optFluidPhysics = -1, optHitAngles = -1, optShootMissiles = -1, optHitboxes = -1;
-	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionPower [50], szDebrisLife [50];
+	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionPower [50], szDebrisLife [50], szDrag [50];
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
@@ -3476,13 +3486,21 @@ do {
 		physOpts.nSlomoSpeedup = opt++;
 		sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
 		*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
-		ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 6, KEY_D, HTX_DEBRIS_LIFE);
+		ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 8, KEY_D, HTX_DEBRIS_LIFE);
 		nOptDebrisLife = opt++;
+		sprintf (szDrag + 1, TXT_PLAYER_DRAG, extraGameInfo [0].nDrag * 10, '%');
+		*szDrag = *(TXT_PLAYER_DRAG - 1);
+		ADD_SLIDER (opt, szDrag + 1, extraGameInfo [0].nDrag, 0, 10, KEY_G, HTX_PLAYER_DRAG);
+		physOpts.nDrag = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		m [optAutoLevel + gameOpts->gameplay.nAutoLeveling].value = 1;
-		ADD_CHECK (opt, TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
-		optWiggle = opt++;
+		if (!extraGameInfo [0].nDrag)
+			optWiggle = -1;
+		else {
+			ADD_CHECK (opt, TXT_WIGGLE_SHIP, extraGameInfo [0].bWiggle, KEY_W, HTX_MISC_WIGGLE);
+			optWiggle = opt++;
+			}
 		ADD_CHECK (opt, TXT_BOTS_HIT_BOTS, extraGameInfo [0].bRobotsHitRobots, KEY_O, HTX_GPLAY_BOTSHITBOTS);
 		optRobHits = opt++;
 		ADD_CHECK (opt, TXT_FLUID_PHYS, extraGameInfo [0].bFluidPhysics, KEY_Y, HTX_GPLAY_FLUIDPHYS);
@@ -3523,7 +3541,8 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bShootMissiles = m [optShootMissiles].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
-	extraGameInfo [0].bWiggle = m [optWiggle].value;
+	if (optWiggle >= 0)
+		extraGameInfo [0].bWiggle = m [optWiggle].value;
 	for (i = 0; i < 3; i++)
 		if (m [optHitboxes + i].value) {
 			extraGameInfo [0].nHitboxes = i;

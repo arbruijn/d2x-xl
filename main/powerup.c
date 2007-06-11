@@ -125,7 +125,6 @@ char *pszPowerup [MAX_POWERUP_TYPES] = {
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 {
 	static fix	xPowerupTime = 0;
-
 	int			h, nFrames = vcP->nFrameCount;
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 	grsBitmap	*bmP;
@@ -152,7 +151,7 @@ if (xTime < 0) {
 	h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
 	xTime += h * vcP->xFrameTime;
 	h %= nFrames;
-	if (nObject & 1) {
+	if ((nObject & 1) && (OBJECTS [nObject].nType != OBJ_EXPLOSION)) {
 		vciP->nCurFrame -= h;
 		if (0 > vciP->nCurFrame)
 			vciP->nCurFrame = nFrames - 1;

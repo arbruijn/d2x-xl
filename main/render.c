@@ -2770,8 +2770,8 @@ if (abs (xDeltaDist) < (objAP->size + objBP->size)) {		//same position
 	//the afterburner blobs, though.
 
 	if ((objAP->nType == OBJ_WEAPON) || 
-		 (objAP->nType == OBJ_FIREBALL && objAP->id != VCLIP_AFTERBURNER_BLOB)) {
-		if (!(objBP->nType == OBJ_WEAPON || objBP->nType == OBJ_FIREBALL))
+		 ((objAP->nType == OBJ_FIREBALL) && (objAP->id != VCLIP_AFTERBURNER_BLOB))) {
+		if (!((objBP->nType == OBJ_WEAPON) || (objBP->nType == OBJ_FIREBALL)))
 			return -1;	//a is weapon, b is not, so say a is closer
 		}
 	else {
