@@ -1165,7 +1165,7 @@ int LoadSoundReplacements (char *pszFilename)
 {
 	CFILE					*fp;
 	char					szId [4];
-	short					nSounds;
+	int					nSounds;
 	int					i, l;
 	int					b11K = (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K);
 	ubyte					j;
@@ -1190,14 +1190,13 @@ if (strncmp (szId, "DTX2", sizeof (szId))) {
 	CFClose (fp);
 	return -1;
 	}
-nSounds = CFReadShort (fp);
+nSounds = CFReadInt (fp);
 if (!b11K)
 	nSounds *= 2;
-CFReadShort (fp);	//skip 2 bytes of unknown data
 nHeaderOffs = CFTell (fp);
 nDataOffs = nHeaderOffs + nSounds * sizeof (tPIGSoundHeader);
 for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
-	CFSeek (fp, nHeaderOffs + i * sizeof (tPIGSoundHeader), SEEK_SET);
+	CFSeek (fp, (long) (nHeaderOffs + i * sizeof (tPIGSoundHeader)), SEEK_SET);
 	PIGSoundHeaderRead (&dsh, fp);
 	j = PiggyFindSound (dsh.name);
 	if (j == 255)
@@ -1206,7 +1205,7 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 	l = dsh.length;
 	if (!(dsP->data [1] = (ubyte *) D2_ALLOC (l)))
 		continue;
-	CFSeek (fp, nDataOffs + dsh.offset, SEEK_SET);
+	CFSeek (fp, (long) (nDataOffs + dsh.offset), SEEK_SET);
 	if (CFRead (dsP->data [1], 1, l, fp) != l) {
 		CFClose (fp);
 		D2_FREE (dsP->data [1]);
