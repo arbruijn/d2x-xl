@@ -713,7 +713,7 @@ GrFreeCanvas (temp_canv);
 
 //------------------------------------------------------------------------------
 //name for each group.  maybe move somewhere else
-char *system_name [] = {
+char *pszSystemNames [] = {
 			"Zeta Aquilae",
 			"Quartzon System",
 			"Brimspark System",
@@ -729,7 +729,7 @@ else
 	sprintf (amLevelNum, "Secret Level %i",-gameData.missions.nCurrentLevel);
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
 		(gameData.missions.nCurrentLevel > 0))		//built-in mission
-	sprintf (amLevelName,"%s %d: ",system_name [(gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
+	sprintf (amLevelName,"%s %d: ",pszSystemNames [(gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
 else
 	strcpy (amLevelName, " ");
 strcat (amLevelName, gameData.missions.szCurrentLevel);

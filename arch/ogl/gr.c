@@ -887,12 +887,13 @@ else {
 //------------------------------------------------------------------------------
 
 extern int bSaveScreenShot;
+extern char *pszSystemNames [];
 
 void SaveScreenShot (unsigned char *buf, int bAutomap)
 {
 	char				szMessage [100];
-	char				szSaveName [FILENAME_LEN];
-	int				i, bTmpBuf;
+	char				szSaveName [FILENAME_LEN], szLevelName [128];
+	int				i, j, bTmpBuf;
 	static int		nSaveNum = 0;
 	GLenum			glErrCode;
 	
@@ -904,6 +905,19 @@ if (!gameStates.ogl.bReadPixels) {
 		HUDMessage (MSGC_GAME_FEEDBACK, "Screenshots not supported on your configuration");
 	return;
 	}
+for (i = j = 0; gameData.missions.szCurrentLevel [i]; i++)
+	if (isalnum (gameData.missions.szCurrentLevel [i]))
+		szLevelName [j++] = gameData.missions.szCurrentLevel [i];
+	else if (j && (szLevelName [j - 1] != '_'))
+		szLevelName [j++] = '_';
+while (j && (szLevelName [j - 1] == '_'))
+	j--;
+if (j) {
+	szLevelName [j++] = '-';
+	szLevelName [j] = '\0';
+	}
+else
+	strcpy (szLevelName, "scrn");
 StopTime();
 if (*gameFolders.szScrShotDir)
 	sprintf (szSaveName, "%s", gameFolders.szScrShotDir);
@@ -911,7 +925,7 @@ else
 	*szSaveName = '\0';
 i = (int) strlen (szSaveName);
 do {
-	sprintf (szSaveName + i, "/scrn%04d.tga", nSaveNum++);
+	sprintf (szSaveName + i, "/%s%04d.tga", szLevelName, nSaveNum++);
 	nSaveNum %= 9999;
 	} while (!access (szSaveName, 0));
 
