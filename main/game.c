@@ -1554,8 +1554,6 @@ void GameDisableCheats ()
 
 void GameSetup (void)
 {
-	int	i, nExplSound;
-
 DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
 DoLunacyOff ();		//	Restore true insane mode.
 gameStates.app.bGameAborted = 0;
@@ -1601,17 +1599,8 @@ if (gameData.missions.nCurrentLevel == 0) {			//not a real level
 #if TRACE
 //con_printf (CONDBG, "   FixObjectSegs d:\temp\dm_test.\n");
 #endif
-if (255 > (nExplSound = PiggyFindSound ("explode2"))) {
-	nExplSound = DigiUnXlatSound (nExplSound);
-	for (i = 0; i <= gameData.objs.nLastObject; i++) 
-		if (OBJECTS [i].nType == OBJ_EXPLOSION) {
-			OBJECTS [i].rType.vClipInfo.nClipIndex = OBJECTS [i].id;
-			DigiLinkSoundToObject3 (nExplSound, i, 1, F1_0, i2f (256), -1, -1);
-			}
-	}
 GameFlushInputs ();
 }
-
 
 //------------------------------------------------------------------------------
 

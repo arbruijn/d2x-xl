@@ -601,52 +601,56 @@ if (LOCALPLAYER.timeTotal > i2f (3600))	{
 //go through this level and start any tEffectClip sounds
 void SetSoundSources ()
 {
-	short nSegment,nSide;
-	tSegment *seg;
-	vmsVector pnt;
-	int csegnum;
+	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
+	tSegment		*segP, *connSegP;
+	vmsVector	v;
+	int			i, nExplSound, nOvlTex, nEffect;
+	char			szExplSound [9];
 
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 DigiInitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
-for (seg = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLastSegment; seg++, nSegment++)
+for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++)
 	for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) {
-		int	tm, ec;
-		short	sn;
-
-		if (!(WALL_IS_DOORWAY (seg,nSide, NULL) & WID_RENDER_FLAG))
+		if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
 			continue;
-		if ((tm = seg->sides [nSide].nOvlTex))
-			ec = gameData.pig.tex.pTMapInfo [tm].eclip_num;
-		else
-			ec = -1;
-		if (ec < 0)
-			ec = gameData.pig.tex.pTMapInfo [seg->sides [nSide].nBaseTex].eclip_num;
-		if (ec < 0)
+		nEffect = (nOvlTex = segP->sides [nSide].nOvlTex) ? gameData.pig.tex.pTMapInfo [nOvlTex].eclip_num : -1;
+		if (nEffect < 0)
+			nEffect = gameData.pig.tex.pTMapInfo [segP->sides [nSide].nBaseTex].eclip_num;
+		if (nEffect < 0)
 			continue;
-		if ((sn = gameData.eff.pEffects [ec].nSound) == -1)
+		if ((nSound = gameData.eff.pEffects [nEffect].nSound) == -1)
 			continue;
-		csegnum = seg->children [nSide];
+		nConnSeg = segP->children [nSide];
 
 		//check for sound on other tSide of tWall.  Don't add on
 		//both walls if sound travels through tWall.  If sound
 		//does travel through tWall, add sound for lower-numbered
 		//tSegment.
 
-		if (IS_CHILD (csegnum) && (csegnum < nSegment) &&
-			 (WALL_IS_DOORWAY (seg, nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
-			tSegment *csegp = gameData.segs.segments+seg->children [nSide];
-			int csidenum = FindConnectedSide (seg, csegp);
-			if (csegp->sides [csidenum].nOvlTex == seg->sides [nSide].nOvlTex)
+		if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
+			 (WALL_IS_DOORWAY (segP, nSide, NULL) & (WID_FLY_FLAG | WID_RENDPAST_FLAG))) {
+			connSegP = gameData.segs.segments + segP->children [nSide];
+			nConnSide = FindConnectedSide (segP, connSegP);
+			if (connSegP->sides [nConnSide].nOvlTex == segP->sides [nSide].nOvlTex)
 				continue;		//skip this one
 			}
-		COMPUTE_SIDE_CENTER (&pnt,seg,nSide);
-		DigiLinkSoundToPos (sn, nSegment, nSide, &pnt, 1, F1_0/2);
+		COMPUTE_SIDE_CENTER (&v,segP,nSide);
+		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0/2);
 		}
+
+strcpy (szExplSound, "explode2");
+if (255 > (nExplSound = PiggyFindSound (szExplSound))) {
+	nExplSound = DigiUnXlatSound (nExplSound);
+	for (i = 0; i <= gameData.objs.nLastObject; i++) 
+		if (OBJECTS [i].nType == OBJ_EXPLOSION) {
+			OBJECTS [i].rType.vClipInfo.nClipIndex = OBJECTS [i].id;
+			DigiLinkSoundToObject3 (nExplSound, i, 1, F1_0, i2f (256), -1, -1);
+			}
+	}
 gameOpts->sound.bD1Sound = 0;
 gameStates.sound.bDontStartObjects = 0;
 }
-
 
 //------------------------------------------------------------------------------
 
