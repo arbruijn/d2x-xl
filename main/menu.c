@@ -3522,11 +3522,11 @@ do {
 		m [optAutoLevel + NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 3)].value = 1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
+		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 2, HTX_GPLAY_HITBOXES);
 		optHitboxes = opt++;
-		ADD_RADIO (opt, TXT_SIMPLE_HITBOXES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
+		ADD_RADIO (opt, TXT_SIMPLE_HITBOXES, 0, KEY_W, 2, HTX_GPLAY_HITBOXES);
 		opt++;
-		ADD_RADIO (opt, TXT_COMPLEX_HITBOXES, 0, KEY_W, 1, HTX_GPLAY_HITBOXES);
+		ADD_RADIO (opt, TXT_COMPLEX_HITBOXES, 0, KEY_W, 2, HTX_GPLAY_HITBOXES);
 		opt++;
 		m [optHitboxes + NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2)].value = 1;
 		}
