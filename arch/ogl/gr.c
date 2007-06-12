@@ -908,7 +908,7 @@ if (!gameStates.ogl.bReadPixels) {
 for (i = j = 0; gameData.missions.szCurrentLevel [i]; i++)
 	if (isalnum (gameData.missions.szCurrentLevel [i]))
 		szLevelName [j++] = gameData.missions.szCurrentLevel [i];
-	else if (j && (szLevelName [j - 1] != '_'))
+	else if ((gameData.missions.szCurrentLevel [i] == ' ') && j && (szLevelName [j - 1] != '_'))
 		szLevelName [j++] = '_';
 while (j && (szLevelName [j - 1] == '_'))
 	j--;
