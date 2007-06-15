@@ -1697,7 +1697,7 @@ char *defaultGameTexts [][2] = {
 	{"Schiff zur ~Mine ausrichten", "align ship to ~Mine"},
 	{"~Reibung Spielerschiff: %d%c", "player ship dra~G: %d%c"},
 	{"~Solide Leuchtspuren", "~Solid light trails"},
-	{"~Plasma-Leuchtspuren", "~Plasma light trails"},
+	{"~Partikel-Leuchtspuren", "~Particle light trails"},
 #if 0
 	{"", ""},
 #endif
