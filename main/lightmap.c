@@ -869,7 +869,7 @@ void ComputeLightMaps (int segNum)
 #if LMAP_REND2TEX
 	ubyte			brightMap [512];
 	ubyte			lightMap [512*3];
-	uvl			lMapUVL [4];
+	tUVL			lMapUVL [4];
 	fix			nDist, nMinDist;
 	GLuint		lightMapId;
 	int			bStart;

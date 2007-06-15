@@ -25,7 +25,7 @@ void G3SetModelPoints(g3sPoint *pointlist);
 //calls the tObject interpreter to render an tObject.  The tObject renderer
 //is really a seperate pipeline. returns true if drew
 bool G3DrawPolyModel (tObject *objP, void *model_ptr,grsBitmap **model_bitmaps,vmsAngVec *animAngles,
-							 fix light,fix *glowValues, tRgbColorf *obj_colors, tPOFObject *po, int nModel);
+							 fix light,fix *glowValues, tRgbaColorf *obj_colors, tPOFObject *po, int nModel);
 
 int G3DrawPolyModelShadow (tObject *objP, void *modelP, vmsAngVec *pAnimAngles, int nModel);
 

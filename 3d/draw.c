@@ -52,7 +52,12 @@ void G3SetSpecialRender (tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer,
 tmap_drawer_ptr = (tmap_drawer)?tmap_drawer:draw_tmap;
 flat_drawer_ptr = (flat_drawer)?flat_drawer:gr_upoly_tmap;
 line_drawer_ptr = (line_drawer)?line_drawer:GrLine;
+if (tmap_drawer == DrawTexPolyFlat)
+	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
+else
+	fpDrawTexPolyMulti = gameStates.render.color.bRenderLightMaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 }
+
 //------------------------------------------------------------------------------
 //returns true if a plane is facing the viewer. takes the unrotated surface 
 //normal of the plane, and a point on it.  The normal need not be normalized
@@ -96,7 +101,7 @@ bool G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, vmsVector *norm, vmsVecto
 //------------------------------------------------------------------------------
 
 bool G3CheckAndDrawTMap (
-	int nv, g3sPoint **pointlist, uvl *uvl_list, grsBitmap *bm, vmsVector *norm, vmsVector *pnt)
+	int nv, g3sPoint **pointlist, tUVL *uvl_list, grsBitmap *bm, vmsVector *norm, vmsVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1);
@@ -119,16 +124,16 @@ bool MustClipFlatFace (int nv, g3s_codes cc)
 		for (i=0;i<nv;i++) {
 			g3sPoint *p = bufptr[i];
 	
-			if (! (p->p3Flags & PF_PROJECTED))
+			if (! (p->p3_flags & PF_PROJECTED))
 				G3ProjectPoint (p);
 	
-			if (p->p3Flags & PF_OVERFLOW) {
+			if (p->p3_flags & PF_OVERFLOW) {
 				ret = 1;
 				goto free_points;
 			}
 
-			polyVertList[i*2]   = p->p3_sx;
-			polyVertList[i*2+1] = p->p3_sy;
+			polyVertList[i*2]   = p->p3_screen.x;
+			polyVertList[i*2+1] = p->p3_screen.y;
 		}
 	
 		 (*flat_drawer_ptr) (nv, (int *)polyVertList);
@@ -141,7 +146,7 @@ free_points:
 	;
 
 	for (i=0;i<nv;i++)
-		if (Vbuf1[i]->p3Flags & PF_TEMP_POINT)
+		if (Vbuf1[i]->p3_flags & PF_TEMP_POINT)
 			free_temp_point (Vbuf1[i]);
 
 //	Assert (free_point_num==0);

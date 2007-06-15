@@ -72,15 +72,15 @@ extern vmsAngVec Player_head_angles;
 // Routines for conditionally rotating & projecting points
 //
 
-// This must be called at the start of the frame if RotateList() will be used
+// This must be called at the start of the frame if RotateVertexList() will be used
 void RenderStartFrame(void);
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
-g3s_codes RotateList(int nv, short *pointnumlist);
+g3s_codes RotateVertexList(int nv, short *pointnumlist);
 
 // Given a list of point numbers, project any that haven't been projected
-void ProjectList(int nv, short *pointnumlist);
+void ProjectVertexList(int nv, short *pointnumlist);
 void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (int bWhite);
 int RenderShadowMap (tDynLight *pLight);

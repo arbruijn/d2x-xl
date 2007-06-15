@@ -2327,7 +2327,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
 
 void AllocWeaponData (void)
 {
-GETMEM (tRgbColorf, gameData.weapons.color, MAX_OBJECTS, 0);
+GETMEM (tRgbaColorf, gameData.weapons.color, MAX_OBJECTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2483,7 +2483,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bEnableShadows)
 
 void FreeWeaponData (void)
 {
-FREEMEM (tRgbColorf, gameData.weapons.color, MAX_OBJECTS);
+FREEMEM (tRgbaColorf, gameData.weapons.color, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------

@@ -1445,7 +1445,7 @@ void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *seg, int 
 	tSide			*sideP = &seg->sides [nSide];
 	int			vertList [6], vertnum_list [6];
  	vec2d			p1, vec0, vec1, checkP;	
-	uvl			uvls [3];
+	tUVL			uvls [3];
 	fix			k0, k1;
 	int			h, i;
 

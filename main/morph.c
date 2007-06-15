@@ -319,7 +319,7 @@ for (i=0;i<pmP->nModels;i++) {
 	}
 
 	//now draw everything
-for (i=0;i<sort_n;i++) {
+for (i = 0; i < sort_n; i++) {
 	mn = sort_list [i];
 	if (mn == nSubModel) {
  		int i;
@@ -375,7 +375,9 @@ void MorphDrawObject (tObject *objP)
 	light = ComputeObjectLight (objP, NULL);
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	G3SetModelPoints (gameData.models.polyModelPoints);
+	gameData.render.pVerts = gameData.models.fPolyModelVerts;
 	MorphDrawModel (pmP, 0, objP->rType.polyObjInfo.animAngles, light, mdP, objP->rType.polyObjInfo.nModel);
+	gameData.render.pVerts = NULL;
 	G3DoneInstance ();
 
 #ifdef NEWDEMO

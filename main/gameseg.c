@@ -2183,7 +2183,7 @@ void ChangeLight (short nSegment, short nSide, int dir)
 {
 	int			i, j, k;
 	fix			dl, lNew, *pSegLightDelta;
-	uvl			*uvlP;
+	tUVL			*uvlP;
 	dl_index		*dliP;
 	delta_light	*dlP;
 	short			iSeg, iSide;

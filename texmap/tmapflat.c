@@ -253,9 +253,9 @@ void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 
 	Assert(nverts < MAX_TMAP_VERTS);
 
-	average_light = vertbuf[0]->p3_l;
+	average_light = vertbuf[0]->p3_uvl.l;
 	for (i=1; i<nverts; i++)
-		average_light += vertbuf[i]->p3_l;
+		average_light += vertbuf[i]->p3_uvl.l;
 
 	if (nverts == 4)
 		average_light = f2i(average_light * NUM_LIGHTING_LEVELS/4);
@@ -271,8 +271,8 @@ void DrawTexPolyFlat(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 	GrSetColor(color);
 
 	for (i=0;i<nverts;i++) {
-		points[i].x = vertbuf[i]->p3_sx;
-		points[i].y = vertbuf[i]->p3_sy;
+		points[i].x = vertbuf[i]->p3_screen.x;
+		points[i].y = vertbuf[i]->p3_screen.y;
 	}
 
 	gr_upoly_tmap(nverts,(int *) points);

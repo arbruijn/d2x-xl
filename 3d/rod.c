@@ -29,7 +29,7 @@ grs_point blob_vertices[4];
 g3sPoint rodPoints[4];
 g3sPoint *rodPointList[] = {&rodPoints[0], &rodPoints[1], &rodPoints[2], &rodPoints[3]};
 
-uvl uvl_list[4] = {
+tUVL uvl_list[4] = {
 	{ 0x0200, 0x0200, 0 }, 
 	{ 0xfe00, 0x0200, 0 }, 
 	{ 0xfe00, 0xfe00, 0 }, 
@@ -77,7 +77,7 @@ if (codes_and)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
 for (i = 0; i < 4; i++) {
-	rodPoints [i].p3Flags = 0;
+	rodPoints [i].p3_flags = 0;
 	rodPoints [i].p3_index = -1;
 	}
 return 0;

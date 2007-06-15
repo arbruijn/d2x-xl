@@ -103,7 +103,7 @@ void ResetSpecialEffects (void)
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ecP++) {
 		ecP->nSegment = -1;					//clear any active one-shots
-		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_ALTFMT | EF_INITIALIZED);	//restart any stopped effects
+		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_INITIALIZED);	//restart any stopped effects
 		bmi = ecP->vc.frames [ecP->nCurFrame];
 		//reset bitmap, which could have been changed by a crit_clip
 		if (ecP->changingWallTexture != -1)
@@ -168,9 +168,10 @@ if (gameOpts->ogl.bGlTexMerge) {
 	for (i = 0; i < nFrames; i++) {
 		j = BM_INDEX (frameP, i, bIndirect, bObject);
 		hbmP = pBitmaps + j;
-		if (BM_OVERRIDE (hbmP) != bmP)
+		if (BM_OVERRIDE (hbmP) != bmP) {
 			PiggyFreeHiresAnimation (hbmP, gameStates.app.bD1Data && !bObject);
-		BM_OVERRIDE (hbmP) = bmP;
+			BM_OVERRIDE (hbmP) = bmP;
+			}
 		}
 	}
 else {

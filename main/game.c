@@ -247,8 +247,14 @@ InitSmoke ();
 LoadBackgroundBitmap ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
-//	BuildMissionList (0);
-/* Register cvars */
+gameStates.render.color.bRenderLightMaps =
+	gameStates.render.color.bLightMapsOk && 
+	gameOpts->render.color.bAmbientLight && 
+	gameOpts->render.color.bUseLightMaps;
+gameStates.ogl.bGlTexMerge = 
+	gameOpts->ogl.bGlTexMerge && 
+	gameStates.render.textures.bGlsTexMergeOk;
+fpDrawTexPolyMulti = gameStates.render.color.bRenderLightMaps ? G3DrawTexPolyLightmap : G3DrawTexPolyMulti;
 }
 
 //------------------------------------------------------------------------------
@@ -2414,7 +2420,7 @@ void SlideTextures (void)
 	int	nSegment, nSide, h, i, j, tmn;
 	ubyte	sides;
 	tSide	*sideP;
-	uvl	*uvlP;
+	tUVL	*uvlP;
 	fix	slideU, slideV;
 
 if (!gameData.segs.bHaveSlideSegs)

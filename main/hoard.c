@@ -291,15 +291,19 @@ void FreeHoardData (void)
 
 if (!gameData.hoard.bInitialized)
 	return;
+bmP = BM_OVERRIDE (&gameData.hoard.monsterball.bm) ? BM_OVERRIDE (&gameData.hoard.monsterball.bm) : &gameData.hoard.monsterball.bm;
+if (bmP->bm_texBuf == gameData.hoard.orb.bm.bm_texBuf)
+	bmP->bm_texBuf = NULL;
+else {
+	D2_FREE (bmP->bm_texBuf);
+	if (BM_OVERRIDE (&gameData.hoard.monsterball.bm))
+		D2_FREE (bmP);
+	}
 D2_FREE (gameData.hoard.orb.bm.bm_texBuf);
 gameData.hoard.orb.bm.bm_texBuf = NULL;
 D2_FREE (gameData.hoard.goal.bm.bm_texBuf);
 gameData.hoard.goal.bm.bm_texBuf = NULL;
 bmP = &gameData.hoard.monsterball.bm;
-bmP = BM_OVERRIDE (&gameData.hoard.monsterball.bm) ? BM_OVERRIDE (&gameData.hoard.monsterball.bm) : &gameData.hoard.monsterball.bm;
-D2_FREE (bmP->bm_texBuf);
-if (BM_OVERRIDE (&gameData.hoard.monsterball.bm))
-	D2_FREE (bmP);
 memset (&gameData.hoard.orb.bm, 0, sizeof (grsBitmap));
 for (i = 0; i < 2; i++) {
 	D2_FREE (gameData.hoard.icon [i].bm.bm_texBuf);

@@ -70,7 +70,8 @@ int LoadPolygonModel(char *filename,int n_textures,grsBitmap ***textures);
 #endif
 
 // draw a polygon model
-void DrawPolygonModel(tObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec *animAngles,int nModel,int flags,fix light,fix *glowValues,tBitmapIndex nAltTextures[], tRgbColorf *obj_color);
+void DrawPolygonModel (tObject *objP, vmsVector *pos,vmsMatrix *orient,vmsAngVec *animAngles, int nModel, int flags, fix light, 
+							  fix *glowValues, tBitmapIndex nAltTextures[], tRgbaColorf *obj_color);
 
 // fills in arrays gunPoints & gun_dirs, returns the number of guns read
 int read_model_guns(char *filename,vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels);

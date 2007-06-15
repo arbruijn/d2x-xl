@@ -68,7 +68,7 @@ void G3ProjectPoint (g3sPoint *p)
 #ifndef __powerc
 	fix tx, ty;
 
-if ((p->p3Flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
+if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
 	return;
 v = p->p3_vec;
 v.p.x = FixMul (v.p.x, viewInfo.scale.p.x);
@@ -76,24 +76,24 @@ v.p.y = FixMul (v.p.y, viewInfo.scale.p.y);
 v.p.z = FixMul (v.p.z, viewInfo.scale.p.z);
 if (CheckMulDiv (&tx, v.p.x, xCanvW2, v.p.z) && 
 	 CheckMulDiv (&ty, v.p.y, xCanvH2, v.p.z)) {
-	p->p3_sx = xCanvW2 + tx;
-	p->p3_sy = xCanvH2 - ty;
-	p->p3Flags |= PF_PROJECTED;
+	p->p3_screen.x = xCanvW2 + tx;
+	p->p3_screen.y = xCanvH2 - ty;
+	p->p3_flags |= PF_PROJECTED;
 	}
 else
-	p->p3Flags |= PF_OVERFLOW;
+	p->p3_flags |= PF_OVERFLOW;
 #else
 double fz;
-if ((p->p3Flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
+if ((p->p3_flags & PF_PROJECTED) || (p->p3_codes & CC_BEHIND))
 	return;
 if (p->p3_z <= 0)	{
-	p->p3Flags |= PF_OVERFLOW;
+	p->p3_flags |= PF_OVERFLOW;
 	return;
 	}
 fz = f2fl (p->p3_z);
-p->p3_sx = fl2f (fxCanvW2 + (f2fl (v.p.x) * fxCanvW2 / fz);
-p->p3_sy = fl2f (fxCanvH2 - (f2fl (v.p.y) * fxCanvH2 / fz);
-p->p3Flags |= PF_PROJECTED;
+p->p3_screen.x = fl2f (fxCanvW2 + (f2fl (v.p.x) * fxCanvW2 / fz);
+p->p3_screen.y = fl2f (fxCanvH2 - (f2fl (v.p.y) * fxCanvH2 / fz);
+p->p3_flags |= PF_PROJECTED;
 #endif
 }
 
@@ -157,7 +157,7 @@ vmsVector *G3RotateDeltaVec (vmsVector *dest,vmsVector *src)
 ubyte G3AddDeltaVec (g3sPoint *dest, g3sPoint *src, vmsVector *vDelta)
 {
 VmVecAdd (&dest->p3_vec, &src->p3_vec, vDelta);
-dest->p3Flags = 0;		//not projected
+dest->p3_flags = 0;		//not projected
 return G3EncodePoint (dest);
 }
 

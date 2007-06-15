@@ -827,7 +827,7 @@ G3RotateDeltaVec (&delta, &gameData.endLevel.satellite.vUp);
 G3AddDeltaVec (&top_pnt, &p, &delta);
 if (!(p.p3_codes & CC_BEHIND)) {
 	int save_im = gameStates.render.nInterpolationMethod;
-	if (!(p.p3Flags & PF_OVERFLOW)) {
+	if (!(p.p3_flags & PF_OVERFLOW)) {
 		gameStates.render.nInterpolationMethod = 0;
 		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &top_pnt, SATELLITE_WIDTH, f1_0);
 		gameStates.render.nInterpolationMethod = save_im;
@@ -878,9 +878,9 @@ for (i = 0; i < MAX_STARS; i++) {
 	G3RotateDeltaVec (&p.p3_vec, &stars [i]);
 	G3EncodePoint (&p);
 	if (p.p3_codes == 0) {
-		p.p3Flags &= ~PF_PROJECTED;
+		p.p3_flags &= ~PF_PROJECTED;
 		G3ProjectPoint (&p);
-		gr_pixel (f2i (p.p3_sx), f2i (p.p3_sy));
+		gr_pixel (f2i (p.p3_screen.x), f2i (p.p3_screen.y));
 		}
 	}
 }

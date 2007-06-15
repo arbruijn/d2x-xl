@@ -158,7 +158,7 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vOb
 
 Cache_lookups++;
 	if ((cache_frame == 0) || (cache_frame + Lighting_frame_delta <= gameData.app.nFrameCount)) {
-		int			bApplyLight=0;
+		int			bApplyLight = 0;
 		tVFIQuery	fq;
 		tFVIData		hit_data;
 		int			nSegment, hitType;
@@ -225,7 +225,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (tRgbColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
+void SetDynColor (tRgbaColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
 if (gameOpts->render.bDynLighting)
 	return;
@@ -263,7 +263,7 @@ void ApplyLight (
 	int			nRenderVertices, 
 	short			*renderVertices, 
 	int			nObject,
-	tRgbColorf	*color)
+	tRgbaColorf	*color)
 {
 	int			vv, bUseColor, bForceColor;
 	int			nVertex;
@@ -465,14 +465,14 @@ int		nHeadLights;
 
 // ---------------------------------------------------------
 
-fix ComputeLightIntensity (int nObject, tRgbColorf *color, char *pbGotColor)
+fix ComputeLightIntensity (int nObject, tRgbaColorf *color, char *pbGotColor)
 {
 	tObject		*objP = gameData.objs.objects + nObject;
 	int			nObjType = objP->nType;
    fix			hoardlight, s;
 
-	static tRgbColorf powerupColors [9] = {
-		{0,1,0}, {1, 0.8f, 0}, {0,0,1}, {1,1,1}, {0,0,1}, {1,0,0}, {1, 0.8f, 0}, {0,1,0}, {1, 0.8f, 0}
+	static tRgbaColorf powerupColors [9] = {
+		{0,1,0,1},{1,0.8f,0,1},{0,0,1,1},{1,1,1,1},{0,0,1,1},{1,0,0,1},{1,0.8f,0,1},{0,1,0,1},{1,0.8f,0,1}
 	};
 
 color->red =
@@ -624,7 +624,7 @@ void SetDynamicLight (void)
 	tObject		*objP;
 	vmsVector	*objPos;
 	fix			xObjIntensity;
-	tRgbColorf	color;
+	tRgbaColorf	color;
 
 	nHeadLights = 0;
 
@@ -1186,7 +1186,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-short UpdateDynLight (tRgbColorf *pc, float brightness, short nSegment, short nSide, short nObject)
+short UpdateDynLight (tRgbaColorf *pc, float brightness, short nSegment, short nSide, short nObject)
 {
 	short	nLight = FindDynLight (nSegment, nSide, nObject);
 	
@@ -1313,7 +1313,7 @@ if (!pc || pc->index) {
 
 //------------------------------------------------------------------------------
 
-int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
+int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
 {
 	tDynLight	*pl;
 	short			h, i;
@@ -1789,7 +1789,7 @@ int AddOglHeadLight (tObject *objP)
 	static float spotAngles [] = {0.95f, 0.825f, 0.25f};
 
 if (gameOpts->render.bDynLighting) {
-		tRgbColorf	c = {1.0f, 1.0f, 1.0f};
+		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
 		int			nLight;
 
@@ -1863,7 +1863,7 @@ if (gameOpts->render.bDynLighting ||
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
-		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1);
+		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 1);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
 		}
 	}

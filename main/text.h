@@ -1737,11 +1737,11 @@ void LoadGameTexts(void);
 #define TXT_AUTOLEVEL_FLOOR		GT(944)
 #define TXT_AUTOLEVEL_GLOBAL		GT(945)
 #define TXT_PLAYER_DRAG				GT(946)
+#define TXT_SOLID_LIGHTTRAILS		GT(947)
+#define TXT_PLASMA_LIGHTTRAILS	GT(948)
 
 #if 0
 
-#define TXT_				GT(947)
-#define TXT_				GT(948)
 #define TXT_				GT(949)
 #define TXT_				GT(950)
 #define TXT_				GT(951)
@@ -2205,10 +2205,10 @@ void LoadGameTexts(void);
 #define HTX_TRACKIR_LOOK			HT(291)				
 #define HTX_AUTO_LEVELLING			HT(292)				
 #define HTX_PLAYER_DRAG				HT(293)				
+#define HTX_LIGHTTRAIL_TYPE		HT(294)				
 
 #if 0
 				
-#define HTX_					HT(294)				
 #define HTX_					HT(295)				
 #define HTX_					HT(296)				
 #define HTX_					HT(297)				

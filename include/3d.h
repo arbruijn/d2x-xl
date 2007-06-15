@@ -28,16 +28,16 @@ extern short highest_texture_num;
 
 //Structure for storing u,v,light values.  This structure doesn't have a
 //prefix because it was defined somewhere else before it was moved here
-typedef struct uvl {
+typedef struct tUVL {
 	fix u,v,l;
-} uvl;
+} tUVL;
 
-typedef union uvlf {
+typedef union tUVLf {
 	float a [3];
 	struct {
 		float	u, v, l;
 		} v;
-	} uvlf;
+	} tUVLf;
 
 //Stucture to store clipping codes in a word
 typedef struct g3s_codes {
@@ -59,21 +59,24 @@ typedef struct g3s_codes {
 #define CC_OFF_TOP      8
 #define CC_BEHIND       0x80
 
-//Used to store rotated points for mines.  Has frame count to indictate
+//Used to store rotated points for mines.  Has frame count to indicate
 //if rotated, and flag to indicate if projected.
 typedef struct g3sNormal {
 	fVector		vNormal;
 	ubyte			nFaces;	// # of faces that use this vertex
 } g3sNormal;
 
+typedef struct tScreenPos {
+	fix			x, y;
+} tScreenPos;
 
 typedef struct g3sPoint {
-	vmsVector	p3_vec;  //x,y,z of rotated point
-	fix			p3_u,p3_v,p3_l; //u,v,l coords
-	fix			p3_sx,p3_sy;    //screen x&y
-	ubyte			p3_codes;     //clipping codes
-	ubyte			p3Flags;     //projected?
-	short			p3_index;     //keep structure longword aligned
+	vmsVector	p3_vec;			//x,y,z of rotated point
+	tUVL			p3_uvl;			//u,v,l coords
+	tScreenPos	p3_screen;		//screen x&y
+	ubyte			p3_codes;		//clipping codes
+	ubyte			p3_flags;		//projected?
+	int			p3_index;		//keep structure longword aligned
 	g3sNormal	p3_normal;
 } g3sPoint;
 
@@ -232,7 +235,7 @@ return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, &viewInfo.posf), viewInfo.
 static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)
 {
 G3TransformPoint (&pDest->p3_vec, pSrc, 0);
-pDest->p3Flags = 0;	
+pDest->p3_flags = 0;	
 return G3EncodePoint (pDest);
 }
 
@@ -257,7 +260,7 @@ bool G3DrawPoly(int nv,g3sPoint **pointlist);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawTMap(int nv,g3sPoint **pointlist,uvl *uvl_list,grsBitmap *bm, int bBlend);
+bool G3DrawTMap(int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm, int bBlend);
 
 //draw a sortof sphere - i.e., the 2d radius is proportional to the 3d
 //radius, but not to the distance from the eye
@@ -274,7 +277,7 @@ int G3DrawSphere(g3sPoint *pnt,fix rad, int bBigSphere);
 //G3DrawPoly().
 //returns -1 if not facing, 1 if off screen, 0 if drew
 bool G3CheckAndDrawPoly(int nv,g3sPoint **pointlist,vmsVector *norm,vmsVector *pnt);
-bool G3CheckAndDrawTMap(int nv,g3sPoint **pointlist,uvl *uvl_list,grsBitmap *bm,vmsVector *norm,vmsVector *pnt);
+bool G3CheckAndDrawTMap(int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm,vmsVector *norm,vmsVector *pnt);
 
 //draws a line. takes two points.
 bool G3DrawLine(g3sPoint *p0,g3sPoint *p1);
@@ -289,7 +292,7 @@ bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoi
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew
-bool G3DrawBitmap (vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation, tRgbColorf *color, float alpha, int transp, int bDepthInfo);
+bool G3DrawBitmap (vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation, tRgbaColorf *color, float alpha, int transp, int bDepthInfo);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults

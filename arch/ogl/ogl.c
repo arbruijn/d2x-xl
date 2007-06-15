@@ -110,6 +110,8 @@ PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
 
 //------------------------------------------------------------------------------
 
+tTexPolyMultiDrawer	*fpDrawTexPolyMulti = NULL;
+
 int bOcclusionQuery = 0;
 
 //change to 1 for lots of spew.
@@ -718,7 +720,6 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 			ec->time_left = -1;
 			}
 	}
-DoSpecialEffects ();
 
 for (segP = SEGMENTS, nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
@@ -741,6 +742,7 @@ for (segP = SEGMENTS, nSegment = 0; nSegment < gameData.segs.nSegments; nSegment
 	}
 ResetSpecialEffects ();
 InitSpecialEffects ();
+DoSpecialEffects ();
 CacheObjectEffects ();
 // cache all weapon and powerup textures
 for (i = 0; i < EXTRA_OBJ_IDS; i++)

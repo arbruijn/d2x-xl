@@ -192,6 +192,13 @@ static struct {
 	int	nFPS;
 } camOpts;
 
+static struct {
+	int	nCoronas;
+	int	nObjCoronas;
+	int	nCoronaIntensity;
+	int	nLightTrails;
+} effectOpts;
+
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
 static char *pszTexQual [4];
@@ -1810,8 +1817,6 @@ return j;
 
 //------------------------------------------------------------------------------
 
-int nCoronaIntOpt = -1, nCoronasOpt = -1, nObjCoronasOpt = -1;
-
 char *pszCoronaInt [3];
 
 void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
@@ -1819,20 +1824,26 @@ void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem	*m;
 	int			v;
 
-m = menus + nCoronasOpt;
+m = menus + effectOpts.nLightTrails;
+v = m->value;
+if (extraGameInfo [0].bLightTrails != v) {
+	extraGameInfo [0].bLightTrails = v;
+	*key = -2;
+	}	
+m = menus + effectOpts.nCoronas;
 v = m->value;
 if (gameOpts->render.bCoronas != v) {
 	gameOpts->render.bCoronas = v;
 	*key = -2;
 	}	
-m = menus + nObjCoronasOpt;
+m = menus + effectOpts.nObjCoronas;
 v = m->value;
 if (gameOpts->render.bObjectCoronas != v) {
 	gameOpts->render.bObjectCoronas = v;
 	*key = -2;
 	}	
-if (nCoronaIntOpt >= 0) {
-	m = menus + nCoronaIntOpt;
+if (effectOpts.nCoronaIntensity >= 0) {
+	m = menus + effectOpts.nCoronaIntensity;
 	v = m->value;
 	if (gameOpts->render.nCoronaIntensity != v) {
 		gameOpts->render.nCoronaIntensity = v;
@@ -1849,8 +1860,8 @@ void EffectOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
-	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, optLightTrails, 
-			optTracers, optShockwaves;
+	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, 
+			optTracers, optShockwaves, optTrailType;
 	char	szCoronaInt [50];
 
 pszCoronaInt [0] = TXT_LOW;
@@ -1861,27 +1872,21 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
-	nCoronasOpt = opt++;
+	effectOpts.nCoronas = opt++;
 	ADD_CHECK (opt, TXT_RENDER_OBJCORONAS, gameOpts->render.bObjectCoronas, KEY_O, HTX_ADVRND_OBJCORONAS);
-	nObjCoronasOpt = opt++;
+	effectOpts.nObjCoronas = opt++;
 	if (gameOpts->render.bCoronas || gameOpts->render.bObjectCoronas) {
 		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
 		ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 2, KEY_I, HTX_CORONA_INTENSITY);
-		nCoronaIntOpt = opt++;
+		effectOpts.nCoronaIntensity = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
 	else	
-		nCoronaIntOpt = -1;
+		effectOpts.nCoronaIntensity = -1;
 	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
 	optTranspExpl = opt++;
-	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
-	optShockwaves = opt++;
-	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_L, HTX_RENDER_LGTTRAILS);
-	optLightTrails = opt++;
-	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
-	optTracers = opt++;
 	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
@@ -1890,6 +1895,21 @@ do {
 	optThrustFlame = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
 	optRenderShields = opt++;
+	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
+	optTracers = opt++;
+	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
+	optShockwaves = opt++;
+	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_L, HTX_RENDER_LGTTRAILS);
+	effectOpts.nLightTrails = opt++;
+	if (extraGameInfo [0].bLightTrails) {
+		ADD_RADIO (opt, TXT_SOLID_LIGHTTRAILS, 0, KEY_S, 1, HTX_LIGHTTRAIL_TYPE);
+		optTrailType = opt++;
+		ADD_RADIO (opt, TXT_PLASMA_LIGHTTRAILS, 0, KEY_P, 1, HTX_LIGHTTRAIL_TYPE);
+		opt++;
+		m [optTrailType + gameOpts->render.smoke.bPlasmaTrails].value = 1;
+		}
+	else
+		optTrailType = -1;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
@@ -1898,9 +1918,10 @@ do {
 		} 
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
-	gameOpts->render.bCoronas = m [nCoronasOpt].value;
-	gameOpts->render.bObjectCoronas = m [nObjCoronasOpt].value;
-	extraGameInfo [0].bLightTrails = m [optLightTrails].value;
+	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
+	gameOpts->render.bObjectCoronas = m [effectOpts.nObjCoronas].value;
+	if (optTrailType >= 0)
+		gameOpts->render.smoke.bPlasmaTrails = (m [optTrailType].value == 0);
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;

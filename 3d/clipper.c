@@ -42,18 +42,18 @@ g3sPoint *get_temp_point()
 	Assert (free_point_num < MAX_POINTS_IN_POLY );
 	p = free_points[free_point_num++];
 
-	p->p3Flags = PF_TEMP_POINT;
+	p->p3_flags = PF_TEMP_POINT;
 
 	return p;
 }
 
 void free_temp_point(g3sPoint *p)
 {
-	Assert(p->p3Flags & PF_TEMP_POINT);
+	Assert(p->p3_flags & PF_TEMP_POINT);
 
 	free_points[--free_point_num] = p;
 
-	p->p3Flags &= ~PF_TEMP_POINT;
+	p->p3_flags &= ~PF_TEMP_POINT;
 }
 
 //clips an edge against one plane. 
@@ -103,25 +103,25 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 	if (planeFlag & (CC_OFF_LEFT|CC_OFF_BOT))
 		tmp->p3_z = -tmp->p3_z;
 
-	if (on_pnt->p3Flags & PF_UVS) {
+	if (on_pnt->p3_flags & PF_UVS) {
 // PSX_HACK!!!!
-//		tmp->p3_u = on_pnt->p3_u + FixMulDiv(off_pnt->p3_u-on_pnt->p3_u,kn,kd);
-//		tmp->p3_v = on_pnt->p3_v + FixMulDiv(off_pnt->p3_v-on_pnt->p3_v,kn,kd);
-		tmp->p3_u = on_pnt->p3_u + FixMul((off_pnt->p3_u-on_pnt->p3_u), psx_ratio);
-		tmp->p3_v = on_pnt->p3_v + FixMul((off_pnt->p3_v-on_pnt->p3_v), psx_ratio);
+//		tmp->p3_uvl.u = on_pnt->p3_uvl.u + FixMulDiv(off_pnt->p3_uvl.u-on_pnt->p3_uvl.u,kn,kd);
+//		tmp->p3_uvl.v = on_pnt->p3_uvl.v + FixMulDiv(off_pnt->p3_uvl.v-on_pnt->p3_uvl.v,kn,kd);
+		tmp->p3_uvl.u = on_pnt->p3_uvl.u + FixMul((off_pnt->p3_uvl.u-on_pnt->p3_uvl.u), psx_ratio);
+		tmp->p3_uvl.v = on_pnt->p3_uvl.v + FixMul((off_pnt->p3_uvl.v-on_pnt->p3_uvl.v), psx_ratio);
 
-		tmp->p3Flags |= PF_UVS;
+		tmp->p3_flags |= PF_UVS;
 	}
 
-	if (on_pnt->p3Flags & PF_LS) {
+	if (on_pnt->p3_flags & PF_LS) {
 // PSX_HACK
 //		tmp->p3_r = on_pnt->p3_r + FixMulDiv(off_pnt->p3_r-on_pnt->p3_r,kn,kd);
 //		tmp->p3_g = on_pnt->p3_g + FixMulDiv(off_pnt->p3_g-on_pnt->p3_g,kn,kd);
 //		tmp->p3_b = on_pnt->p3_b + FixMulDiv(off_pnt->p3_b-on_pnt->p3_b,kn,kd);
 
-		tmp->p3_l = on_pnt->p3_l + FixMul((off_pnt->p3_l-on_pnt->p3_l), psx_ratio);
+		tmp->p3_uvl.l = on_pnt->p3_uvl.l + FixMul((off_pnt->p3_uvl.l-on_pnt->p3_uvl.l), psx_ratio);
 
-		tmp->p3Flags |= PF_LS;
+		tmp->p3_flags |= PF_LS;
 	}
 
 	G3EncodePoint(tmp);
@@ -136,8 +136,8 @@ void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 	g3sPoint *old_p1;
 
 	//might have these left over
-	(*p0)->p3Flags &= ~(PF_UVS|PF_LS);
-	(*p1)->p3Flags &= ~(PF_UVS|PF_LS);
+	(*p0)->p3_flags &= ~(PF_UVS|PF_LS);
+	(*p1)->p3_flags &= ~(PF_UVS|PF_LS);
 
 	for (planeFlag=1;planeFlag<16;planeFlag<<=1)
 		if (codes_or & planeFlag) {
@@ -149,7 +149,7 @@ void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 
 			*p1 = clip_edge(planeFlag,*p0,*p1);
 
-			if (old_p1->p3Flags & PF_TEMP_POINT)
+			if (old_p1->p3_flags & PF_TEMP_POINT)
 				free_temp_point(old_p1);
 		}
 
@@ -189,7 +189,7 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3s_codes *c
 
 			//see if must D2_FREE discarded point
 
-			if (src[i]->p3Flags & PF_TEMP_POINT)
+			if (src[i]->p3_flags & PF_TEMP_POINT)
 				free_temp_point(src[i]);
 		}
 		else {			//cur not off, copy to dest buffer

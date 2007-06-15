@@ -226,6 +226,13 @@ while (n--) {
 #endif
 		dest->p3_normal.nFaces = 0;
 	G3TransformAndEncodePoint (dest++, src++);
+	if (!gameStates.ogl.bUseTransform) {
+		pfv->p.x = (float) src->p.x / 65536.0f;
+		pfv->p.y = (float) src->p.y / 65536.0f;
+		pfv->p.z = (float) src->p.z / 65536.0f;
+		dest->p3_index = o++;
+		pfv++;
+		}
 	}
 }
 
@@ -284,7 +291,7 @@ void G3SwapPolyModelData (ubyte *data)
 {
 	int i;
 	short n;
-	uvl *uvl_val;
+	tUVL *uvl_val;
 	ubyte *p = data;
 
 for (;;) {
@@ -327,7 +334,7 @@ for (;;) {
 			VmsVectorSwap (VECPTR (p + 4));
 			VmsVectorSwap (VECPTR (p + 16));
 			for (i = 0; i < n; i++) {
-				uvl_val = (uvl *) ((p+30+ ((n&~1)+1)*2) + (i * sizeof (uvl)));
+				uvl_val = (tUVL *) ((p+30+ ((n&~1)+1)*2) + (i * sizeof (tUVL)));
 				FixSwap (&uvl_val->u);
 				FixSwap (&uvl_val->v);
 			}
@@ -2184,7 +2191,7 @@ if (!gameStates.render.bShadowMaps) {
 		return 0;
 	}
 CHECK();
-OglActiveTexture (GL_TEXTURE0_ARB);
+OglActiveTexture (GL_TEXTURE0_ARB, 0);
 glEnable (GL_TEXTURE_2D);
 pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
@@ -2263,7 +2270,7 @@ bool G3DrawPolyModel (
 	vmsAngVec	*pAnimAngles, 
 	fix			xModelLight, 
 	fix			*xGlowValues, 
-	tRgbColorf	*objColorP,
+	tRgbaColorf	*objColorP,
 	tPOFObject  *po,
 	int			nModel)
 {
@@ -2285,7 +2292,6 @@ if (SHOW_DYN_LIGHT &&
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
 nGlow = -1;		//glow off by default
-gameData.render.pVerts = gameData.models.fPolyModelVerts;
 glEnable (GL_CULL_FACE);
 glCullFace (GL_BACK);
 for (;;) {
@@ -2332,7 +2338,7 @@ for (;;) {
 		int nv = WORDVAL (p+2);
 		Assert ( nv < MAX_POINTS_PER_POLY );
 		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
-			uvl *uvlList;
+			tUVL *uvlList;
 			int i;
 			fix l;
 
@@ -2347,7 +2353,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (uvl *) (p + 30 + (nv | 1) * 2);
+			uvlList = (tUVL *) (p + 30 + (nv | 1) * 2);
 			for (i = 0; i < nv; i++)
 				uvlList [i].l = l;
 
@@ -2420,7 +2426,6 @@ bool G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAn
 
 G3CheckAndSwap (modelP);
 nGlow = -1;		//glow off by default
-gameData.render.pVerts = gameData.models.fPolyModelVerts;
 for (;;) {
 	switch (WORDVAL (p)) {
 		case OP_EOF:
@@ -2458,8 +2463,8 @@ for (;;) {
 
 		case OP_TMAPPOLY: {
 			int nv = WORDVAL (p+2);
-			uvl *uvlList;
-			uvl morph_uvls [3];
+			tUVL *uvlList;
+			tUVL morph_uvls [3];
 			int i, nTris;
 			fix light;
 			//calculate light from surface normal
@@ -2473,7 +2478,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (uvl *) (p+30+ ((nv&~1)+1)*2);
+			uvlList = (tUVL *) (p+30+ ((nv&~1)+1)*2);
 			for (i = 0; i < 3; i++)
 				morph_uvls [i].l = light;
 			for (i = 0; i < 2; i++) {

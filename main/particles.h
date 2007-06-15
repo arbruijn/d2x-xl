@@ -8,16 +8,11 @@
 #define MAX_PARTICLES(_nParts,_nDens)	MaxParticles (_nParts, _nDens)
 #define PARTICLE_SIZE(_nSize,_nScale)	ParticleSize (_nSize, _nScale)
 
-typedef struct tPartColor {
-	double		r, g, b, a;
-} tPartColor;
-
 typedef struct tPartPos {
 	double		x, y, z;
 } tPartPos;
 
 typedef struct tParticle {
-	tPartColor	glColor;			//well ... the color, ya know =)
 #if !EXTRA_VERTEX_ARRAYS
 	tPartPos		glPos;
 #endif
@@ -37,6 +32,7 @@ typedef struct tParticle {
 	int			nHeight;
 	int			nRad;
 	short			nSegment;
+	tRgbaColord	color;			//well ... the color, ya know =)
 } tParticle;
 
 typedef struct tPartIdx {
@@ -66,6 +62,8 @@ typedef struct tCloud {
 	ubyte			bHavePrevPos;	//valid previous position set?
 	tParticle	*pParticles;	//list of active particles
 	tPartIdx		*pPartIdx;
+	tRgbaColord	color;
+	int			bHaveColor;
 } tCloud;
 
 typedef struct tSmoke {
@@ -83,7 +81,8 @@ typedef struct tSmoke {
 int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
-					  int nLife, int nSpeed, int nType, int nObject);
+					  int nLife, int nSpeed, int nType, int nObject,
+					  tRgbaColord *pColor);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();
 int RenderSmoke ();

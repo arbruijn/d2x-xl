@@ -363,7 +363,7 @@ int RenderObject(tObject *objP, int nWindowNum, int bForce);
 
 // Draw a blob-nType tObject, like a fireball
 void DrawObjectBlob(tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame,
-						  tRgbColorf *color, float alpha);
+						  tRgbaColorf *color, float alpha);
 
 // draw an tObject that is a texture-mapped rod
 void DrawObjectRodTexPoly(tObject *obj, tBitmapIndex bitmap, int lighted);

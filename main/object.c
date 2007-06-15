@@ -277,7 +277,7 @@ int global_orientation = 0;
 
 extern tRgbColorf bitmapColors [MAX_BITMAP_FILES];
 
-void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbColorf *color, float alpha)
+void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *color, float alpha)
 {
 	grsBitmap	*bmP;
 	int			id, orientation = 0;
@@ -1427,7 +1427,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 	if (pp) {
 		if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 			glDisable (GL_STENCIL_TEST);
-		OglActiveTexture (GL_TEXTURE0_ARB);
+		OglActiveTexture (GL_TEXTURE0_ARB, 0);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		PIGGY_PAGE_IN (pf->bmi, 0);
@@ -1739,7 +1739,7 @@ return 0;
 
 #define EXPAND_CORONA	2
 
-void RenderObjectCorona (tObject *objP, tRgbColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset)
+void RenderObjectCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1752,7 +1752,7 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 
-	static uvlf	uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	static tUVLf	uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 
 	vmsVector	vPos = objP->position.vPos;
 	if (xOffset) {
@@ -1846,7 +1846,7 @@ if ((objP->nType == OBJ_WEAPON) && bIsWeapon [objP->id]) {
 			fVector			vPosf;
 			int				h, i, j, k, n;
 			float				r [4], l [4], alpha;
-			tRgbColorf		*pc = gameData.weapons.color + objP->id;
+			tRgbaColorf		*pc = gameData.weapons.color + objP->id;
 
 		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
 		glDepthMask (0);
@@ -1984,6 +1984,10 @@ if (!SHOW_OBJ_FX)
 	return;
 if (!bIsWeapon [objP->id])
 	return;
+if (gameOpts->render.smoke.bPlasmaTrails) {
+	DoObjectSmoke (objP);
+	return;
+	}
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
@@ -1996,7 +2000,7 @@ if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) &&
 		fVector			vPosf, *vTrail;
 		int				i, j, bStencil;
 		float				h, r = f2fl (objP->size);
-		tRgbColorf		*pc = gameData.weapons.color + objP->id;
+		tRgbaColorf		*pc = gameData.weapons.color + objP->id;
 
 	if (r <= 1)
 		h = 1;
@@ -2148,8 +2152,8 @@ return 1;
 
 void DrawDebrisCorona (tObject *objP)
 {
-	static	tRgbColorf	debrisGlow = {0.66f, 0, 0};
-	static	tRgbColorf	markerGlow = {0, 0.66f, 0};
+	static	tRgbaColorf	debrisGlow = {0.66f, 0, 0, 1};
+	static	tRgbaColorf	markerGlow = {0, 0.66f, 0, 1};
 	static	time_t t0 = 0;
 
 if (objP->nType == OBJ_MARKER)
@@ -2357,8 +2361,9 @@ switch (objP->renderType) {
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
-			if (objP->nType == OBJ_WEAPON)
+			if (objP->nType == OBJ_WEAPON) {
 				RenderLightTrail (objP);
+				}
 			}
 		break;
 
@@ -2369,12 +2374,15 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (objP->nType == OBJ_WEAPON) {
-				if (!DoObjectSmoke (objP))
+				if ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID) || (objP->id == SMALLMINE_ID)) {
+					if (!DoObjectSmoke (objP))
+						DrawWeaponVClip (objP); 
+					}	
+				else {
 					DrawWeaponVClip (objP); 
-				if ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID) && (objP->id != SMALLMINE_ID)) 
 					RenderLightTrail (objP);
-				else
 					RenderMslLockIndicator (objP);
+					}
 				}
 			else
 				DrawWeaponVClip (objP); 

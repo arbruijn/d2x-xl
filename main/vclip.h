@@ -175,7 +175,7 @@ extern int Num_vclips [2];
 extern tVideoClip Vclip [2][VCLIP_MAXNUM];
 
 // draw an tObject which renders as a tVideoClip.
-void DrawVClipObject(tObject *obj, fix timeleft, int lighted, int vclip_num, tRgbColorf *color);
+void DrawVClipObject(tObject *obj, fix timeleft, int lighted, int vclip_num, tRgbaColorf *color);
 extern void DrawWeaponVClip(tObject *obj);
 
 #if 0

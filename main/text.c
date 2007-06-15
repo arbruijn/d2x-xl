@@ -1696,6 +1696,8 @@ char *defaultGameTexts [][2] = {
 	{"Schiff zum ~Boden ausrichten", "align ship with ~Floor"},
 	{"Schiff zur ~Mine ausrichten", "align ship to ~Mine"},
 	{"~Reibung Spielerschiff: %d%c", "player ship dra~G: %d%c"},
+	{"~Solide Leuchtspuren", "~Solid light trails"},
+	{"~Plasma-Leuchtspuren", "~Plasma light trails"},
 #if 0
 	{"", ""},
 #endif
@@ -2235,6 +2237,8 @@ char *defaultHelpTexts [][2] = {
 	 "To ease keeping ones orientation, the ship can be automatically\nturned into a certain position.\n\n'Nearest side' aligns it to a nearby face it forms the smallest angle with.\n'Floor' aligns it with a virtual floor.\n'Mine' aligns it relative to the entire mine."},
 	{"Je kleiner die Reibung, desto laenger behaelt das Schiff ohne\nSchub Flugrichtung und Geschwindigkeit bei. Es muss mit\nGegenschub gebremst werden.", 
 	 "The smaller the drag, the longer will the ship keep heading\nand speed even without thrust. You need to apply reverse\nthrust to brake."},
+	{"Solide Leuchtspuren werden als vom Geschoss ausgehende, durch-\ngehend gefaerbte Balken gezeichnet. Das benoetigt sehr wenig\nRechenzeit. Plasma-Leuchtspuren werden als leuchtende Partikel\nentlang des Weges des Geschosses gezeichnet. Das ist\netwas aufwendiger, sieht aber realistischer aus.", 
+	 "Solid light trails are drawn als solidly colored stripes exten-\nding from the projectile. This needs very little time to render.\nPlasma light trails are rendered as glowing particles\nalong the projectile's path. That looks more realistic, but also needs more processing power."},
 #if 0
 	{"", ""},
 #endif

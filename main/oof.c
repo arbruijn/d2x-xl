@@ -2316,7 +2316,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
 					OglColor4sf (pvc [h].color.red, pvc [h].color.green, pvc [h].color.blue, 1);
 				else
-					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1);
+					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1, 1);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);
@@ -2456,7 +2456,7 @@ if (!gameStates.ogl.bUseTransform)
 OOF_VecVms2Oof (&vPos, &viewInfo.pos);
 if (IsMultiGame && netGame.BrightPlayers)
 	*fLight = 1.0f;
-OglActiveTexture (GL_TEXTURE0_ARB);
+OglActiveTexture (GL_TEXTURE0_ARB, 0);
 glEnable (GL_TEXTURE_2D);
 for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 	if (pso->nParent == -1) {

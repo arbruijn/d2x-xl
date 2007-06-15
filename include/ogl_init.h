@@ -109,13 +109,13 @@ typedef struct _ogl_texture {
 } ogl_texture;
 
 typedef struct tFaceColor {
+	tRgbaColorf	color;
 	char			index;
-	tRgbColorf	color;
 } tFaceColor;
 
 typedef struct tFaceColord {
-	char			index;
 	tRgbColord	color;
+	char			index;
 } tFaceColord;
 
 extern ogl_texture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
@@ -301,20 +301,41 @@ bool G3DrawWhitePoly (int nv, g3sPoint **pointList);
 bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, float red, float green, float blue, float alpha);
 
 bool G3DrawTexPolyMulti (
-	int nv,
-	g3sPoint **pointlist,
-	uvl *uvl_list,
-#if LIGHTMAPS
-	uvl *uvl_lMap,
-#endif
-	grsBitmap *bmbot,
-	grsBitmap *bm,
-#if LIGHTMAPS
-	ogl_texture *lightMap,
-#endif
+	int			nVerts, 
+	g3sPoint		**pointList, 
+	tUVL			*uvlList, 
+	tUVL			*uvlLMap, 
+	grsBitmap	*bmBot, 
+	grsBitmap	*bmTop, 
+	ogl_texture	*lightMap, 
 	vmsVector	*pvNormal,
-	int orient,
-	int bBlend);
+	int			orient, 
+	int			bBlend);
+
+bool G3DrawTexPolyLightmap (
+	int			nVerts, 
+	g3sPoint		**pointList, 
+	tUVL			*uvlList, 
+	tUVL			*uvlLMap, 
+	grsBitmap	*bmBot, 
+	grsBitmap	*bmTop, 
+	ogl_texture	*lightMap, 
+	vmsVector	*pvNormal,
+	int			orient, 
+	int			bBlend);
+
+bool G3DrawTexPolyFlat (
+	int			nVerts, 
+	g3sPoint		**pointList, 
+	tUVL			*uvlList, 
+	tUVL			*uvlLMap, 
+	grsBitmap	*bmBot, 
+	grsBitmap	*bmTop, 
+	ogl_texture	*lightMap, 
+	vmsVector	*pvNormal,
+	int			orient, 
+	int			bBlend);
+
 void OglDrawReticle (int cross,int primary,int secondary);
 void OglCachePolyModelTextures (int nModel);
 
@@ -377,23 +398,13 @@ static inline int OglUBitMapM (int x, int y,grsBitmap *bm)
 return OglUBitMapMC (x, y, 0, 0, bm, NULL, F1_0, 0);
 }
 
-static inline int G3DrawTexPoly (int nv, g3sPoint **pointlist, uvl *uvl_list,
-											grsBitmap *bm, vmsVector *pvNormal, int bBlend)
-{
-#if LIGHTMAPS
-return G3DrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNormal, 0, bBlend);
-#else
-return G3DrawTexPolyMulti (nv, pointlist, uvl_list, bm, NULL, pvNormal, 0, bBlend);
-#endif
-}
-
 typedef struct tSinCosd {
 	double	dSin, dCos;
 } tSinCosd;
 
 void OglComputeSinCos (int nSides, tSinCosd *sinCosP);
 void OglColor4sf (float r, float g, float b, float s);
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale);
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale, int bSetColor);
 void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 
@@ -425,13 +436,24 @@ else if (!handle || (boundHandles [nTMU] != handle)) {
 
 #else
 
-#define OglActiveTexture(i)	glActiveTexture (i)
+#define OglActiveTexture(i,b)	if (b) glClientActiveTexture (i); else glActiveTexture (i)
 
 #define OGL_BINDTEX(_handle)	glBindTexture (GL_TEXTURE_2D, _handle)
 
 #endif
 
 extern GLhandleARB	genShaderProg;
+
+typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, ogl_texture *, vmsVector *, int, int);
+extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
+
+//------------------------------------------------------------------------------
+
+static inline int G3DrawTexPoly (int nv, g3sPoint **pointlist, tUVL *uvl_list,
+											grsBitmap *bm, vmsVector *pvNormal, int bBlend)
+{
+return fpDrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNormal, 0, bBlend);
+}
 
 //------------------------------------------------------------------------------
 

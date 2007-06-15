@@ -645,7 +645,7 @@ void DrawPolygonModel (
 	fix				light, 
 	fix				*glowValues, 
 	tBitmapIndex	altTextures [], 
-	tRgbColorf		*color)
+	tRgbaColorf		*color)
 {
 	tPolyModel	*po;
 	int			nTextures;
@@ -666,6 +666,7 @@ _3dfx_rendering_poly_obj = 1;
 PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
+gameData.render.pVerts = gameData.models.fPolyModelVerts;
 if (!flags)		//draw entire tObject
 	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, light, glowValues, color, NULL, nModel);
 else {
@@ -688,6 +689,7 @@ else {
 			}	
 	}
 G3DoneInstance ();
+gameData.render.pVerts = NULL;
 #if 0
 {
 	g3sPoint p0, p1;

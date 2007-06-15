@@ -68,9 +68,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #if 0
 //Structure for storing u,v,light values.
 //NOTE: this structure should be the same as the one in 3d.h
-typedef struct uvl {
+typedef struct tUVL {
 	fix u, v, l;
-} uvl;
+} tUVL;
 #endif
 
 #ifdef COMPACT_SEGS
@@ -79,7 +79,7 @@ typedef struct tSide {
 	ubyte   pad;            //keep us longword alligned
 	short   nWall;
 	short   nTexture [2];
-	uvl     uvls [4];
+	tUVL     uvls [4];
 	//vmsVector normals[2]; // 2 normals, if quadrilateral, both the same.
 } tSide;
 #else
@@ -90,7 +90,7 @@ typedef struct tSide {
 	short   		nBaseTex;
 	ushort		nOvlOrient : 2;
 	ushort		nOvlTex : 14;
-	uvl     		uvls [4];
+	tUVL     		uvls [4];
 	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
 } tSide;
 #endif

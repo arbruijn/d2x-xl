@@ -89,10 +89,10 @@ glClientActiveTextureARB =  (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress(
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPolyMulti (
+bool fpDrawTexPolyMulti (
 	int nv,
 	g3sPoint **pointlist,
-	uvl *uvl_list,
+	tUVL *uvl_list,
 	grsBitmap *bmbot,
 	grsBitmap *bm,
 	int orient)
@@ -210,7 +210,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPoly (int nv,g3sPoint **pointlist,uvl *uvl_list,grsBitmap *bm)
+bool G3DrawTexPoly (int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm)
 {
 return g4_draw_tmap_2 (nv, pointlist, uvl_list, bm, NULL, 0);
 }

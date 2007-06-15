@@ -304,7 +304,7 @@ OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (sdP->nFaceNodes == 3)
 	bmP = NULL;
 else if (bmP) {
-	OglActiveTexture (GL_TEXTURE0_ARB);
+	OglActiveTexture (GL_TEXTURE0_ARB, 0);
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmP, 1, 1))
 		bmP = NULL;

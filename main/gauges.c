@@ -3712,9 +3712,9 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		G3TransformAndEncodePoint (&vPlayerPos, &gameData.objs.objects [nObject].position.vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
-			if (!(vPlayerPos.p3Flags & PF_OVERFLOW)) {
-				fix x = vPlayerPos.p3_sx;
-				fix y = vPlayerPos.p3_sy;
+			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
+				fix x = vPlayerPos.p3_screen.x;
+				fix y = vPlayerPos.p3_screen.y;
 				if (bShowName) {				// Draw callsign on HUD
 					if (gameStates.multi.bPlayerIsTyping [p]) {
 						int t = gameStates.app.nSDLTicks;

@@ -57,7 +57,7 @@ ushort BECalcSegmentCheckSum()
 	short				s;
 	tSegment			*segP;
 	tSide				*sideP;
-	uvl				*uvlP;
+	tUVL				*uvlP;
 	vmsVector		*normP;
 
 sum1 = sum2 = 0;

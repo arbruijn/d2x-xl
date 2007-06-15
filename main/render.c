@@ -241,7 +241,7 @@ extern void ShowReticle(int force_big);
 void Draw3DReticle (fix nEyeOffset)
 {
 	g3sPoint 	reticlePoints [4];
-	uvl			uvl [4];
+	tUVL			tUVL [4];
 	g3sPoint	*pointList [4];
 	int 			i;
 	vmsVector	v1, v2;
@@ -253,16 +253,16 @@ void Draw3DReticle (fix nEyeOffset)
 for (i = 0; i < 4; i++) {
 	reticlePoints [i].p3_index = -1;
 	pointList [i] = reticlePoints + i;
-	uvl [i].l = MAX_LIGHT;
+	tUVL [i].l = MAX_LIGHT;
 	}
-uvl [0].u =
-uvl [0].v =
-uvl [1].v =
-uvl [3].u = 0; 
-uvl [1].u =
-uvl [2].u =
-uvl [2].v =
-uvl [3].v = F1_0;
+tUVL [0].u =
+tUVL [0].v =
+tUVL [1].v =
+tUVL [3].u = 0; 
+tUVL [1].u =
+tUVL [2].u =
+tUVL [2].v =
+tUVL [3].v = F1_0;
 
 VmVecScaleAdd( &v1, &gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient.fVec, F1_0*4);
 VmVecScaleInc(&v1, &gameData.objs.viewer->position.mOrient.rVec, nEyeOffset);
@@ -300,7 +300,7 @@ GrSetCurrentCanvas(saved_canvas);
 
 saved_interp_method=gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointList, uvl, &reticle_canvas->cv_bitmap, NULL, 1);
+G3DrawTexPoly (4, pointList, tUVL, &reticle_canvas->cv_bitmap, NULL, 1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -381,10 +381,10 @@ return funcRes;
 typedef struct tFaceProps {
 	short			segNum, sideNum;
 	short			nBaseTex, nOvlTex, nOvlOrient;
-	uvl			uvls [4];
+	tUVL			uvls [4];
 	short			vp [4];
 #if LIGHTMAPS
-	uvl			uvl_lMaps [4];
+	tUVL			uvl_lMaps [4];
 #endif
 	vmsVector	vNormal;
 	ubyte			nv;
@@ -466,7 +466,7 @@ int SetFaceLight (tFaceProps *propsP)
 if (SHOW_DYN_LIGHT)
 	return 0;
 for (i = 0; i < propsP->nv; i++, pvc++) {
-	//the uvl struct has static light already in it
+	//the tUVL struct has static light already in it
 	//scale static light for destruction effect
 	if (EGI_FLAG (bDarkness, 0, 0, 0))
 		propsP->uvls [i].l = 0;
@@ -786,6 +786,7 @@ else
 #	endif
 #endif
 
+gameData.render.vertexList = gameData.segs.fVertices;
 #if APPEND_LAYERED_TEXTURES
 if (!gameOpts->render.bOptimize || bRender) 
 #else
@@ -808,6 +809,7 @@ if (!bRender)
 #if OGL_QUERY
 	if (gameStates.render.bQueryOcclusion) {
 		DrawOutline (props.nv, pointList);
+		gameData.render.vertexList = NULL;
 		return;
 		}
 #endif
@@ -816,12 +818,14 @@ if (!bRender)
 #if 1
 	if (gameStates.render.nShadowBlurPass == 1) {
 		G3DrawWhitePoly (props.nv, pointList);
+		gameData.render.vertexList = NULL;
 		return;
 		}
 #endif
 	SetVertexColors (&props);
 	if (gameStates.render.nType == 2) {
 		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointList);
+		gameData.render.vertexList = NULL;
 		return;
 		}
 	nCamNum = gameData.cameras.nSides  ? gameData.cameras.nSides [props.segNum * 6 + props.sideNum] : -1;
@@ -848,8 +852,10 @@ if (!bRender)
 	//handle cloaked walls
 	if (bIsMonitor)
 		pc->bVisible = 1;
-	if (RenderWall (&props, pointList, bIsMonitor))
+	if (RenderWall (&props, pointList, bIsMonitor)) {
+		gameData.render.vertexList = NULL;
 		return;
+		}
 	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->position.mOrient.fVec, norm);
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
 		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
@@ -923,7 +929,7 @@ if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
 #endif
 	if (bmTop)
-		G3DrawTexPolyMulti (
+		fpDrawTexPolyMulti (
 			props.nv, 
 			pointList, 
 			props.uvls, 
@@ -947,7 +953,7 @@ if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 			&props.vNormal, 
 			!bIsMonitor || bIsTeleCam); 
 #else
-		G3DrawTexPolyMulti (
+		fpDrawTexPolyMulti (
 			props.nv, 
 			pointList, 
 			props.uvls, 
@@ -1000,14 +1006,14 @@ else {
 // ----------------------------------------------------------------------------
 //	Only called if editor active.
 //	Used to determine which face was clicked on.
-void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap1, int tmap2, uvl *uvlp)
+void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap1, int tmap2, tUVL *uvlp)
 {
 	int	i;
 
 	if (bSearchMode) {
 		int save_lighting;
 		grsBitmap *bm;
-		uvl uvlCopy [8];
+		tUVL uvlCopy [8];
 		g3sPoint *pointList [4];
 
 		if (tmap2 > 0)
@@ -1026,7 +1032,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
 		//G3DrawPoly(nv, vp);
-		G3DrawTexPoly (nv, pointList, (uvl *)uvlCopy, bm, 1);
+		G3DrawTexPoly (nv, pointList, (tUVL *)uvlCopy, bm, 1);
  gameStates.render.nLighting = save_lighting;
 
 		if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) == 1) {
@@ -1368,7 +1374,7 @@ void RenderCorona (short nSegment, short nSide)
 	fVector		vertList [4], sprite [4];
 	short			sideVerts [4];
 	ushort		nWall;
-	uvlf			uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	tUVLf			uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 	fVector		d, n, o, v, vCenter = {{0,0,0}}, vEye;
 #if ROTATE_CORONA
 	fVector		vDeltaX, vDeltaY;
@@ -1673,7 +1679,7 @@ void RenderSide (tSegment *segP, short nSide)
 	tSide			*sideP = segP->sides + nSide;
 	vmsVector	tvec;
 	fix			v_dot_n0, v_dot_n1;
-//	uvl			temp_uvls [4];
+//	tUVL			temp_uvls [4];
 	fix			min_dot, max_dot;
 	vmsVector  normals [2];
 //	ubyte			widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
@@ -1686,7 +1692,7 @@ void RenderSide (tSegment *segP, short nSide)
 #if LIGHTMAPS
 #define	LMAP_SIZE	(1.0 / 16.0)
 
-	static uvl	uvl_lMaps [4] = {
+	static tUVL	uvl_lMaps [4] = {
 		{fl2f (LMAP_SIZE), fl2f (LMAP_SIZE), 0}, 
 		{fl2f (1.0 - LMAP_SIZE), fl2f (LMAP_SIZE), 0}, 
 		{fl2f (1.0 - LMAP_SIZE), fl2f (1.0 - LMAP_SIZE), 0}, 
@@ -1751,10 +1757,10 @@ if (sideP->nType == SIDE_IS_QUAD) {
 	v_dot_n0 = VmVecDot (&tvec, normals);
 	if (v_dot_n0 < 0)
 		return;
-	memcpy (props.uvls, sideP->uvls, sizeof (uvl) * 4);
+	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
 #if LIGHTMAPS
 	if (bDoLightMaps) {
-		memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (uvl) * 4);
+		memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
 #if LMAP_LIGHTADJUST
 		props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
 #	endif
@@ -1799,7 +1805,7 @@ else {
 			memcpy (props.uvls, sideP->uvls, sizeof (props.uvls));
 #if LIGHTMAPS
 			if (bDoLightMaps) {
-				memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (uvl) * 4);
+				memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
 #	if LMAP_LIGHTADJUST
 				props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
 #	endif
@@ -1820,10 +1826,10 @@ im_so_ashamed: ;
 		props.nv = 3;
 		if (sideP->nType == SIDE_IS_TRI_02) {
 			if (v_dot_n0 >= 0) {
-				memcpy (props.uvls, sideP->uvls, sizeof (uvl) * 3);
+				memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 3);
 #if LIGHTMAPS
 				if (bDoLightMaps) {
-					memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (uvl) * 3);
+					memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 3);
 #	if LMAP_LIGHTADJUST
 					props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = F1_0 / 2;
 #	endif
@@ -1838,11 +1844,11 @@ im_so_ashamed: ;
 
 			if (v_dot_n1 >= 0) {
 				props.uvls [0] = sideP->uvls [0];
-				memcpy (props.uvls + 1, sideP->uvls + 2, sizeof (uvl) * 2);
+				memcpy (props.uvls + 1, sideP->uvls + 2, sizeof (tUVL) * 2);
 #if LIGHTMAPS
 				if (bDoLightMaps) {
 					props.uvl_lMaps [0] = uvl_lMaps [0];
-					memcpy (props.uvl_lMaps + 1, uvl_lMaps + 2, sizeof (uvl) * 2);
+					memcpy (props.uvl_lMaps + 1, uvl_lMaps + 2, sizeof (tUVL) * 2);
 #if LMAP_LIGHTADJUST
 					props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = F1_0 / 2;
 #endif
@@ -1859,10 +1865,10 @@ im_so_ashamed: ;
 			}
 		else if (sideP->nType == SIDE_IS_TRI_13) {
 			if (v_dot_n1 >= 0) {
-				memcpy (props.uvls + 1, sideP->uvls + 1, sizeof (uvl) * 3);
+				memcpy (props.uvls + 1, sideP->uvls + 1, sizeof (tUVL) * 3);
 #if LIGHTMAPS
 				if (bDoLightMaps) {
-					memcpy (props.uvl_lMaps + 1, uvl_lMaps + 1, sizeof (uvl) * 3);
+					memcpy (props.uvl_lMaps + 1, uvl_lMaps + 1, sizeof (tUVL) * 3);
 #	if LMAP_LIGHTADJUST
 					props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
 #	endif
@@ -2037,7 +2043,7 @@ int check_bWindowCheck=0;
 
 // -----------------------------------------------------------------------------------
 //increment counter for checking if points bRotated
-//This must be called at the start of the frame if RotateList() will be used
+//This must be called at the start of the frame if RotateVertexList() will be used
 void RenderStartFrame()
 {
 if (!++gameStates.render.nFrameCount) {		//wrap!
@@ -2050,7 +2056,7 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 //Given a list of point numbers, rotate any that haven't been bRotated this frame
 //cc.and and cc.or will contain the position/orientation of the face that is determined 
 //by the vertices passed relative to the viewer
-g3s_codes RotateList (int nv, short *pointNumList)
+g3s_codes RotateVertexList (int nv, short *vertexIndexP)
 {
 	int			i, j;
 	g3sPoint		*pnt;
@@ -2059,7 +2065,7 @@ g3s_codes RotateList (int nv, short *pointNumList)
 cc.and = 0xff;  
 cc.or = 0;
 for (i = 0; i < nv; i++) {
-	j = pointNumList [i];
+	j = vertexIndexP [i];
 	pnt = gameData.segs.points + j;
 	if (nRotatedLast [j] != gameStates.render.nFrameCount) {
 		G3TransformAndEncodePoint (pnt, gameData.segs.vertices + j);
@@ -2079,14 +2085,14 @@ return cc;
 
 // -----------------------------------------------------------------------------------
 //Given a lit of point numbers, project any that haven't been projected
-void ProjectList (int nv, short *pointNumList)
+void ProjectVertexList (int nv, short *vertexIndexP)
 {
-	int i, pnum;
+	int i, j;
 
 for (i = 0; i < nv; i++) {
-	pnum = pointNumList [i];
-	if (!(gameData.segs.points [pnum].p3Flags & PF_PROJECTED))
-		G3ProjectPoint (gameData.segs.points + pnum);
+	j = vertexIndexP [i];
+	if (!(gameData.segs.points [j].p3_flags & PF_PROJECTED))
+		G3ProjectPoint (gameData.segs.points + j);
 	}
 }
 
@@ -2146,7 +2152,7 @@ Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return;
 OglSetupTransform ();
-cc = RotateList (8, segP->verts);
+cc = RotateVertexList (8, segP->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
 if (!cc.and || gameStates.render.automap.bDisplay) {		//all off screen?
@@ -2200,7 +2206,7 @@ void OutlineSegSide(tSegment *seg, int _side, int edge, int vert)
 {
 	g3s_codes cc;
 
-cc=RotateList(8, seg->verts);
+cc=RotateVertexList(8, seg->verts);
 if (! cc.and) {		//all off screen?
 	g3sPoint *pnt;
 	//render curedge of curside of curseg in green
@@ -2210,10 +2216,10 @@ if (! cc.and) {		//all off screen?
 	//draw a little cross at the current vert
 	pnt = gameData.segs.points + seg->verts [sideToVerts [_side][vert]];
 	G3ProjectPoint(pnt);		//make sure projected
-	GrLine(pnt->p3_sx-CROSS_WIDTH, pnt->p3_sy, pnt->p3_sx, pnt->p3_sy-CROSS_HEIGHT);
-	GrLine(pnt->p3_sx, pnt->p3_sy-CROSS_HEIGHT, pnt->p3_sx+CROSS_WIDTH, pnt->p3_sy);
-	GrLine(pnt->p3_sx+CROSS_WIDTH, pnt->p3_sy, pnt->p3_sx, pnt->p3_sy+CROSS_HEIGHT);
-	GrLine(pnt->p3_sx, pnt->p3_sy+CROSS_HEIGHT, pnt->p3_sx-CROSS_WIDTH, pnt->p3_sy);
+	GrLine(pnt->p3_screen.x-CROSS_WIDTH, pnt->p3_screen.y, pnt->p3_screen.x, pnt->p3_screen.y-CROSS_HEIGHT);
+	GrLine(pnt->p3_screen.x, pnt->p3_screen.y-CROSS_HEIGHT, pnt->p3_screen.x+CROSS_WIDTH, pnt->p3_screen.y);
+	GrLine(pnt->p3_screen.x+CROSS_WIDTH, pnt->p3_screen.y, pnt->p3_screen.x, pnt->p3_screen.y+CROSS_HEIGHT);
+	GrLine(pnt->p3_screen.x, pnt->p3_screen.y+CROSS_HEIGHT, pnt->p3_screen.x-CROSS_WIDTH, pnt->p3_screen.y);
 	}
 }
 
@@ -3156,7 +3162,7 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 glEnable (GL_TEXTURE_2D);
-OglActiveTexture (GL_TEXTURE0_ARB);
+OglActiveTexture (GL_TEXTURE0_ARB, 0);
 if (OglBindBmTex (&shadowBuf, 0, 0))
 	return;
 glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -3265,7 +3271,7 @@ void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
 	tCamera		*pc;
 
 #if 1
-OglActiveTexture (GL_TEXTURE0_ARB);
+OglActiveTexture (GL_TEXTURE0_ARB, 0);
 glEnable (GL_TEXTURE_2D); 
 
 glEnable (GL_TEXTURE_GEN_S);
@@ -3299,7 +3305,7 @@ glDisable (GL_TEXTURE_GEN_S);
 glDisable (GL_TEXTURE_GEN_T);
 glDisable (GL_TEXTURE_GEN_R);
 glDisable (GL_TEXTURE_GEN_Q);
-OglActiveTexture (GL_TEXTURE0_ARB);		
+OglActiveTexture (GL_TEXTURE0_ARB, 0);		
 glDisable (GL_TEXTURE_2D);
 #endif
 DestroyShadowMaps ();
@@ -3835,7 +3841,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					andCodes = 0xff;
 					s2v = sideToVerts [c];
 					if (!bRotated) {
-						RotateList (8, segP->verts);
+						RotateVertexList (8, segP->verts);
 						bRotated = 1;
 						}
 					for (i = 0; i < 4; i++)
@@ -3867,28 +3873,28 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					int bNotProjected = 0;	//a point wasn't projected
 					if (bRotated < 2) {
 						if (!bRotated)
-							RotateList (8, segP->verts);
-						ProjectList (8, segP->verts);
+							RotateVertexList (8, segP->verts);
+						ProjectVertexList (8, segP->verts);
 						bRotated = 2;
 						}
 					s2v = sideToVerts [nSide];
 					for (i = 0, codes_and_3d = codes_and_2d = 0xff; i < 4; i++) {
 						int p = sv [s2v [i]];
 						g3sPoint *pnt = gameData.segs.points + p;
-						if (!(pnt->p3Flags & PF_PROJECTED)) {
+						if (!(pnt->p3_flags & PF_PROJECTED)) {
 							bNotProjected = 1; 
 							break;
 							}
-						_x = (short) f2i (pnt->p3_sx);
-						_y = (short) f2i (pnt->p3_sy);
+						_x = (short) f2i (pnt->p3_screen.x);
+						_y = (short) f2i (pnt->p3_screen.y);
 						codes_and_3d &= pnt->p3_codes;
 						codes_and_2d &= code_window_point (_x, _y, checkWinP);
 #ifdef _DEBUG
 						if (bDrawEdges) {
 							GrSetColorRGB (128, 0, 128, 255);
-							gr_uline (pnt->p3_sx, pnt->p3_sy, 
-								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sx, 
-								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_sy);
+							gr_uline (pnt->p3_screen.x, pnt->p3_screen.y, 
+								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_screen.x, 
+								gameData.segs.points [segP->verts [sideToVerts [nSide][(i+1)%4]]].p3_screen.y);
 							}
 #endif
 						if (_x < min_x) 
@@ -4270,7 +4276,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	RotateSideNorms ();
 #if defined(EDITOR) && defined (_DEBUG)
 	if (bShowOnlyCurSide) {
-		RotateList (8, Cursegp->verts);
+		RotateVertexList (8, Cursegp->verts);
 		RenderSide (Cursegp, Curside);
 		goto done_rendering;
 		}
@@ -4341,6 +4347,9 @@ if (nClearWindow == 2) {
 		}
 	}
 InitFaceList ();
+gameStates.render.bFullBright =
+	gameStates.render.automap.bDisplay && 
+	gameOpts->render.automap.bBright;
 return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 }
 

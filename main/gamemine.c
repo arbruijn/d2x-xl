@@ -709,7 +709,7 @@ int load_mine_data (CFILE *loadFile)
 			gameData.segs.segments [i].group = -1;
 			#endif
 
-			if (mine_top_fileinfo.fileinfo_version < 15) {	//used old uvl ranges
+			if (mine_top_fileinfo.fileinfo_version < 15) {	//used old tUVL ranges
 				int sn, uvln;
 
 				for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++)
@@ -1169,7 +1169,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 					sideP->nOvlTex = ConvertD1Texture (sideP->nOvlTex, 0);
 				}
 
-			// Read uvl sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
+			// Read tUVL sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
 			GetSideVerts (sideVerts, nSegment, nSide);
 			for (i = 0; i < 4; i++ ) {
 				temp_short = CFReadShort (loadFile);

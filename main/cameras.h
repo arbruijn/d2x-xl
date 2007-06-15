@@ -22,7 +22,7 @@ typedef struct tCamera {
 	char			bShadowMap;
 	char			bTeleport;
 	int			nWaitFrames;
-	uvl			uvlList [8];
+	tUVL			uvlList [8];
 #if RENDER2TEXTURE == 1
 	ogl_pbuffer	pb;
 	ogl_texture	glTex;
@@ -40,7 +40,7 @@ int CreateCameras (void);
 void DestroyCameras (void);
 int RenderCameras (void);
 int RenderCamera (tCamera *pc);
-void GetCameraUVL (tCamera *pc, uvl *uvlCopy);
+void GetCameraUVL (tCamera *pc, tUVL *uvlCopy);
 #if RENDER2TEXTURE
 int OglCamBufAvail (tCamera *pc, int bCheckTexture);
 #endif

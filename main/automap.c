@@ -1139,7 +1139,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 			continue;		// If a line isn't secret and is normal color, then don't draw it
 		}
 
-	cc = RotateList (2,e->verts);
+	cc = RotateVertexList (2,e->verts);
 	distance = gameData.segs.points [e->verts [1]].p3_z;
 	if (minDistance>distance)
 		minDistance = distance;

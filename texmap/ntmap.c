@@ -1038,8 +1038,8 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 		g3ds_vertex	*tvp = &Tmap1.verts[i];
 		g3sPoint	*vp = vertbuf[i];
 
-		tvp->x2d = vp->p3_sx;
-		tvp->y2d = vp->p3_sy;
+		tvp->x2d = vp->p3_screen.x;
+		tvp->y2d = vp->p3_screen.y;
 
 		//	Check for overflow on FixDiv.  Will overflow on vp->z <= something small.  Allow only as low as 256.
 		if (vp->p3_z < 256) {
@@ -1048,13 +1048,13 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 		}
 
 		tvp->z = FixDiv(F1_0*12, vp->p3_z);
-		tvp->u = vp->p3_u << 6; //* bp->bm_props.w;
-		tvp->v = vp->p3_v << 6; //* bp->bm_props.h;
+		tvp->u = vp->p3_uvl.u << 6; //* bp->bm_props.w;
+		tvp->v = vp->p3_uvl.v << 6; //* bp->bm_props.h;
 
 		Assert(gameStates.render.nLighting < 3);
 
 		if (gameStates.render.nLighting)
-			tvp->l = vp->p3_l * NUM_LIGHTING_LEVELS;
+			tvp->l = vp->p3_uvl.l * NUM_LIGHTING_LEVELS;
 	}
 
 

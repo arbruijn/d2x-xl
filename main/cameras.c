@@ -332,7 +332,7 @@ gameData.cameras.nCameras = 0;
 
 //------------------------------------------------------------------------------
 
-void GetCameraUVL (tCamera *pc, uvl *uvlCopy)
+void GetCameraUVL (tCamera *pc, tUVL *uvlCopy)
 {
 #ifndef _DEBUG
 if (pc->bHaveUVL)
@@ -470,14 +470,14 @@ else
 			uvlCopy [3].u = F1_0 - dd;
 			}
 		if (rotLeft) {
-			uvl	h = uvlCopy [0];
+			tUVL	h = uvlCopy [0];
 			uvlCopy [0] = uvlCopy [1];
 			uvlCopy [1] = uvlCopy [2];
 			uvlCopy [2] = uvlCopy [3];
 			uvlCopy [3] = h;
 			}
 		else if (rotRight) {
-			uvl	h = uvlCopy [0];
+			tUVL	h = uvlCopy [0];
 			uvlCopy [0] = uvlCopy [3];
 			uvlCopy [3] = uvlCopy [2];
 			uvlCopy [2] = uvlCopy [1];

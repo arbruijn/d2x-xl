@@ -63,7 +63,7 @@ void ReadFlickeringLight(tFlickeringLight *fl, CFILE *fp);
 void InitTextureBrightness (void);
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int AddDynLight (tRgbColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
+int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynLights (void);
 void RemoveDynLights (void);

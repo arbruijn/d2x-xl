@@ -172,6 +172,7 @@ typedef struct tSmokeOptions {
 	int bPlayers;
 	int bRobots;
 	int bMissiles;
+	int bPlasmaTrails;
 	int bDebris;
 	int bStatic;
 	int bCollisions;
@@ -482,6 +483,7 @@ typedef struct tOglStates {
 	int bFullScreen;
 	int bLastFullScreen;
 	int bUseTransform;
+	int bGlTexMerge;
 	int bBrightness;
 	int bDoPalStep;
 	int nColorBits;
@@ -531,6 +533,7 @@ typedef struct tCameraStates {
 
 typedef struct tColorStates {
 	int bLightMapsOk;
+	int bRenderLightMaps;
 } tColorStates;
 
 typedef struct tTextureStates {
@@ -643,6 +646,7 @@ typedef struct tRenderStates {
 	int bViewDist;
 	int bD2XLights;
 	int bRendering;
+	int bFullBright;
 	int nFrameFlipFlop;
 	int nModelQuality;
 	int nState;	//0: render geometry, 1: render objects
@@ -914,7 +918,7 @@ typedef struct tSphereData {
 typedef struct tDynLight {
 	vmsVector	vPos;
 	vmsVector	vDir;
-	tRgbColorf	color;
+	tRgbaColorf	color;
 	float			brightness;
 	float			rad;
 #if USE_OGL_LIGHTS
@@ -1085,7 +1089,7 @@ typedef struct tTerrainRenderData {
 	grsBitmap	*bmP;
 	g3sPoint	saveRow [TERRAIN_GRID_MAX_SIZE];
 	vmsVector	vStartPoint;
-	uvl			uvlList [2][3];
+	tUVL			uvlList [2][3];
 	int			bOutline;
 	int			nGridW, nGridH;
 	int			orgI, orgJ;
@@ -1131,6 +1135,7 @@ typedef struct tRenderData {
 	fix						xFlashEffect;
 	fix						xTimeFlashLastPlayed;
 	fVector					*pVerts;
+	fVector					*vertexList;
 	tLightData				lights;
 	tMorphData				morph;
 	tShadowData				shadows;
@@ -1501,7 +1506,7 @@ typedef struct tWeaponData {
 	int					nTypes [2];
 	tWeaponInfo			info [MAX_WEAPON_TYPES];
 	tD1WeaponInfo		infoD1 [D1_MAX_WEAPON_TYPES];
-	tRgbColorf			*color;
+	tRgbaColorf			*color;
 	ubyte					bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 } tWeaponData;
 
