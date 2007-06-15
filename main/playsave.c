@@ -431,6 +431,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.shadows.nReach, i, 0);
 
+		RP (gameOptions [i].render.smoke.bPlasmaTrails, i, 0);
 		RP (gameOptions [i].render.smoke.bCollisions, i, 0);
 		RP (gameOptions [i].render.smoke.bDecreaseLag, i, 0);
 		RP (gameOptions [i].render.smoke.bDebris, i, 0);
@@ -931,6 +932,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.shadows.nClip=1"},
 	{"gameOptions[0].render.shadows.nLights=2"},
 	{"gameOptions[0].render.shadows.nReach=2"},
+	{"gameOptions[0].render.smoke.bPlasmaTrails=0"},
 	{"gameOptions[0].render.smoke.bCollisions=0"},
 	{"gameOptions[0].render.smoke.bDecreaseLag=0"},
 	{"gameOptions[0].render.smoke.bDebris=1"},
