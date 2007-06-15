@@ -1984,84 +1984,84 @@ if (!SHOW_OBJ_FX)
 	return;
 if (!bIsWeapon [objP->id])
 	return;
-if (gameOpts->render.smoke.bPlasmaTrails) {
-	DoObjectSmoke (objP);
-	return;
-	}
 #if SHADOWS
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && 
-	 !bSlowWeapon [objP->id] &&
-	 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
-		vmsVector		vPos;
-		fVector			vPosf, *vTrail;
-		int				i, j, bStencil;
-		float				h, r = f2fl (objP->size);
-		tRgbaColorf		*pc = gameData.weapons.color + objP->id;
+if (!bSlowWeapon [objP->id]) {
+	if (gameOpts->render.smoke.bPlasmaTrails)
+		DoObjectSmoke (objP);
+	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && 
+		!bSlowWeapon [objP->id] &&
+		(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
+			vmsVector		vPos;
+			fVector			vPosf, *vTrail;
+			int				i, j, bStencil;
+			float				h, r = f2fl (objP->size);
+			tRgbaColorf		*pc = gameData.weapons.color + objP->id;
 
-	if (r <= 1)
-		h = 1;
-	else if (r >= 3)
-		h = 2;
-	else
-		h = 1.5f;
-	if (r >= 3.0f)
-		r /= 1.5f;
-	else if (r < 1)
-		r *= 2;
-	else if (r < 2)
-		r *= 1.5f;
-	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-		glDisable (GL_STENCIL_TEST);
-	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
-	G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
-	glDepthMask (0);
-	glDisable (GL_TEXTURE_2D);
-	glDisable (GL_CULL_FACE);		
-	for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++, vTrail++) {
-			if (i)
-				glColor4f (0,0,0,0);
-			else
-				glColor4f (pc->red, pc->green, pc->blue, 0.5f);
-			vPosf.p.x = 0;
-			vPosf.p.y = vTrail->p.y * r;
-			vPosf.p.z = vTrail->p.z;
-			if (vPosf.p.z == -50)
-				vPosf.p.z *= h;
-			G3TransformPointf (&vPosf, &vPosf, 0);
-			glVertex3fv ((GLfloat *) &vPosf);
+		if (r <= 1)
+			h = 1;
+		else if (r >= 3)
+			h = 2;
+		else
+			h = 1.5f;
+		if (r >= 3.0f)
+			r /= 1.5f;
+		else if (r < 1)
+			r *= 2;
+		else if (r < 2)
+			r *= 1.5f;
+		if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
+			glDisable (GL_STENCIL_TEST);
+		VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
+		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
+		glDepthMask (0);
+		glDisable (GL_TEXTURE_2D);
+		glDisable (GL_CULL_FACE);		
+		for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
+			glBegin (GL_QUADS);
+			for (i = 0; i < 4; i++, vTrail++) {
+				if (i)
+					glColor4f (0,0,0,0);
+				else
+					glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+				vPosf.p.x = 0;
+				vPosf.p.y = vTrail->p.y * r;
+				vPosf.p.z = vTrail->p.z;
+				if (vPosf.p.z == -50)
+					vPosf.p.z *= h;
+				G3TransformPointf (&vPosf, &vPosf, 0);
+				glVertex3fv ((GLfloat *) &vPosf);
+				}
+			glEnd ();
 			}
-		glEnd ();
-		}
-	for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++, vTrail++) {
-			if (i)
-				glColor4f (0,0,0,0);
-			else
-				glColor4f (pc->red, pc->green, pc->blue, 0.5f);
-			vPosf.p.y = 0;
-			vPosf.p.x = vTrail->p.y * r;
-			vPosf.p.z = vTrail->p.z;
-			if (vPosf.p.z == -50)
-				vPosf.p.z *= h;
-			G3TransformPointf (&vPosf, &vPosf, 0);
-			glVertex3fv ((GLfloat *) &vPosf);
+		for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
+			glBegin (GL_QUADS);
+			for (i = 0; i < 4; i++, vTrail++) {
+				if (i)
+					glColor4f (0,0,0,0);
+				else
+					glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+				vPosf.p.y = 0;
+				vPosf.p.x = vTrail->p.y * r;
+				vPosf.p.z = vTrail->p.z;
+				if (vPosf.p.z == -50)
+					vPosf.p.z *= h;
+				G3TransformPointf (&vPosf, &vPosf, 0);
+				glVertex3fv ((GLfloat *) &vPosf);
+				}
+			glEnd ();
 			}
-		glEnd ();
+		glDepthMask (1);
+		glCullFace (GL_BACK);
+		G3DoneInstance ();
+		if (bStencil)
+			glEnable (GL_STENCIL_TEST);
 		}
-	glDepthMask (1);
-	glCullFace (GL_BACK);
-	G3DoneInstance ();
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	RenderShockwave (objP);
 	}
-RenderShockwave (objP);
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
 	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
 else
@@ -4631,6 +4631,7 @@ bIsWeapon [LASER_ID + 2] =
 bIsWeapon [LASER_ID + 3] =
 bIsWeapon [REACTOR_BLOB_ID] =
 bIsWeapon [ROBOT_SLOW_PHOENIX_ID] =
+bIsWeapon [SMARTMSL_BLOB_ID] =
 bIsWeapon [FLARE_ID] =
 bIsWeapon [SPREADFIRE_ID] =
 bIsWeapon [PLASMA_ID] =

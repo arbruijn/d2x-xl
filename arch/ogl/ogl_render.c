@@ -1584,9 +1584,9 @@ if (bmTop) {
 	}
 else
 	bDrawOverlay = -1;
-
+#if G3_DRAW_ARRAYS
 retry:
-
+#endif
 if (bShaderMerge) {	
 	GLint loc;
 	bmMask = BM_MASK (bmTop);
@@ -1682,6 +1682,8 @@ else
 		if (bDrawOverlay) {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
 				pl = *ppl;
+				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL, 
+									gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 1);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				OglVertex3f (pl);
 				}
@@ -1689,6 +1691,8 @@ else
 		else {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
 				pl = *ppl;
+				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL, 
+									gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 1);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
 				OglVertex3f (pl);
