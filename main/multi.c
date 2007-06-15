@@ -2700,9 +2700,9 @@ cloakCount = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if ((gameData.objs.objects [i].nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
 		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].nSegment, 
-									  &gameData.objs.objects [i].position.vPos, &vmdIdentityMatrix, 
-									  gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
-									  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
+									   &gameData.objs.objects [i].position.vPos, &vmdIdentityMatrix, 
+									   gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
+									   CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 		ReleaseObject ((short) i);
 		if (nObject != -1) {
 			gameData.objs.objects [nObject].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
@@ -2971,7 +2971,7 @@ void MultiSetRobotAI (void)
 
 int MultiDeleteExtraObjects ()
 {
-	int i;
+	int i, nType;
 	int nnp = 0;
 	tObject *objP;
 
@@ -2980,20 +2980,21 @@ int MultiDeleteExtraObjects ()
 // This function also prints the total number of available multiplayer
 // positions in this level, even though this should always be 8 or more!
 
-objP = gameData.objs.objects;
-for (i = 0;i <= gameData.objs.nLastObject;i++) {
-	if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST) || (objP->nType == OBJ_CAMBOT))
+for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
+	nType = objP->nType;
+	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT))
 		nnp++;
-	else if ((objP->nType == OBJ_ROBOT) && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
+	else if ((nType == OBJ_ROBOT) && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
 		;
-	else if ((objP->nType!=OBJ_NONE) && (objP->nType!=OBJ_PLAYER) && (objP->nType!=OBJ_POWERUP) && (objP->nType!=OBJ_CNTRLCEN) && (objP->nType!=OBJ_HOSTAGE) && !(objP->nType == OBJ_WEAPON && objP->id == SMALLMINE_ID)) {
+	else if ((nType != OBJ_NONE) && (nType != OBJ_PLAYER) && (nType != OBJ_POWERUP) && 
+				(nType != OBJ_MONSTERBALL) && (nType != OBJ_EXPLOSION) && (nType != OBJ_CNTRLCEN) && 
+				(nType != OBJ_HOSTAGE) && ((nType != OBJ_WEAPON) || (objP->id != SMALLMINE_ID))) {
 		// Before deleting tObject, if it's a robot, drop it's special powerup, if any
-		if (objP->nType == OBJ_ROBOT)
+		if (nType == OBJ_ROBOT)
 			if (objP->containsCount && (objP->containsType == OBJ_POWERUP))
 				ObjectCreateEgg (objP);
 		ReleaseObject ((short) i);
 		}
-	objP++;
 	}
 return nnp;
 }
