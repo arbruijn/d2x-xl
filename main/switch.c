@@ -748,7 +748,7 @@ else {
 	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
 		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_CNTRLCEN))
 			return 1;
-		if (!(bBotTrigger || ROBOTINFO (objP->id).companion))
+		if (!(bBotTrigger)
 			return 1;
 		}
 	else
