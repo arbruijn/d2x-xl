@@ -88,6 +88,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "d_io.h"
 #include "timer.h"
 #include "objsmoke.h"
+#include "menu.h"
 
 #include "findfile.h"
 
@@ -175,6 +176,28 @@ static int		bRevertFormat = -1;
 
 CFILE *ndInFile = NULL;
 CFILE *ndOutFile = NULL;
+
+//	-----------------------------------------------------------------------------
+
+int NDErrorMsg (char *pszMsg1, char *pszMsg2, char *pszMsg3)
+{
+	tMenuItem	m [3];
+	int			opt = 0;
+
+memset (m, 0, sizeof (m));
+ADD_TEXT (opt, pszMsg1, 0);
+opt++;
+if (pszMsg2 && *pszMsg2) {
+	ADD_TEXT (opt, pszMsg2, 0);
+	opt++;
+	}
+if (pszMsg3 && *pszMsg3) {
+	ADD_TEXT (opt, pszMsg3, 0);
+	opt++;
+	}
+ExecMenu (NULL, NULL, opt, m, NULL, NULL);
+return 1;
+}
 
 //	-----------------------------------------------------------------------------
 
@@ -704,7 +727,7 @@ switch (objP->controlType) {
 		if (objP->flags & OF_ATTACHED) {     //attach to previous tObject
 			Assert (prevObjP!=NULL);
 			if (prevObjP->controlType == CT_EXPLOSION) {
-				if ((prevObjP->flags & OF_ATTACHED) &&(prevObjP->cType.explInfo.nAttachParent != -1))
+				if ((prevObjP->flags & OF_ATTACHED) && (prevObjP->cType.explInfo.nAttachParent != -1))
 					AttachObject (gameData.objs.objects + prevObjP->cType.explInfo.nAttachParent, objP);
 				else
 					objP->flags &= ~OF_ATTACHED;
@@ -743,11 +766,11 @@ switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i, tmo;
-		if ((objP->nType != OBJ_ROBOT) &&(objP->nType != OBJ_PLAYER) &&(objP->nType != OBJ_CLUTTER)) {
+		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_CLUTTER)) {
 			objP->rType.polyObjInfo.nModel = NDReadInt ();
 			objP->rType.polyObjInfo.nSubObjFlags = NDReadInt ();
 			}
-		if ((objP->nType != OBJ_PLAYER) &&(objP->nType != OBJ_DEBRIS))
+		if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_DEBRIS))
 		for (i = 0; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
 			NDReadAngVec (objP->rType.polyObjInfo.animAngles + i);
 		tmo = NDReadInt ();
@@ -827,7 +850,7 @@ if (!(gameStates.app.bNostalgia || gameOpts->demo.bOldFormat))
 NDWriteByte (o.flags);
 NDWriteShort ((short) o.nSignature);
 NDWritePosition (&o);
-if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && (o.nType != OBJ_POWERUP) &&(o.nType != OBJ_CLUTTER)) {
+if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && (o.nType != OBJ_POWERUP) && (o.nType != OBJ_CLUTTER)) {
 	NDWriteByte (o.controlType);
 	NDWriteByte (o.movementType);
 	NDWriteFix (o.size);
@@ -911,11 +934,11 @@ switch (o.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i;
-		if ((o.nType != OBJ_ROBOT) &&(o.nType != OBJ_PLAYER) &&(o.nType != OBJ_CLUTTER)) {
+		if ((o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && (o.nType != OBJ_CLUTTER)) {
 			NDWriteInt (o.rType.polyObjInfo.nModel);
 			NDWriteInt (o.rType.polyObjInfo.nSubObjFlags);
 			}
-		if ((o.nType != OBJ_PLAYER) &&(o.nType != OBJ_DEBRIS))
+		if ((o.nType != OBJ_PLAYER) && (o.nType != OBJ_DEBRIS))
 #if 0
 			for (i=0;i<MAX_SUBMODELS;i++)
 				NDWriteAngVec (&o.polyObjInfo.animAngles [i]);
@@ -958,7 +981,7 @@ NDWriteByte (ND_EVENT_START_DEMO);
 NDWriteByte ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat) ? DEMO_VERSION : DEMO_VERSION_D2X);
 NDWriteByte (DEMO_GAME_TYPE);
 NDWriteFix (gameData.time.xGame);
-if (IsMultiGame)
+if (gameData.demo.nGameMode & GM_MULTI)
 	NDWriteInt (gameData.app.nGameMode | (gameData.multiplayer.nLocalPlayer << 16));
 else
 	// NOTE LINK TO ABOVE!!!
@@ -968,7 +991,7 @@ if (IsTeamGame) {
 	NDWriteString (netGame.team_name [0]);
 	NDWriteString (netGame.team_name [1]);
 	}
-if (IsMultiGame) {
+if (gameData.demo.nGameMode & GM_MULTI) {
 	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NDWriteString (gameData.multiplayer.players [i].callsign);
@@ -1044,7 +1067,7 @@ void NDRecordViewerObject (tObject * objP)
 {
 	int	i = OBJ_IDX (objP);
 	int	h = gameData.demo.bViewWasRecorded [i];
-if (h &&(h - 1 == gameStates.render.nRenderingType))
+if (h && (h - 1 == gameStates.render.nRenderingType))
 	return;
 //if (gameData.demo.bWasRecorded [OBJ_IDX (objP)])
 //	return;
@@ -1588,23 +1611,18 @@ StartTime ();
 
 //	-----------------------------------------------------------------------------
 
-int NDReadDemoStart (int rnd_demo)
+int NDReadDemoStart (int bRandom)
 {
 	sbyte	i, gameType, laserLevel;
 	char	c, energy, shield;
 	int	nVersionFilter;
-	char	text [128], szCurrentMission [FILENAME_LEN];
+	char	szMsg [128], szCurrentMission [FILENAME_LEN];
 
+i = CFTell (ndInFile);
 c = NDReadByte ();
 if ((c != ND_EVENT_START_DEMO) || bNDBadRead) {
-	tMenuItem m [1];
-
-	sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = text;
-	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
-	return 1;
+	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_CORRUPT);
+	return NDErrorMsg (szMsg, NULL, NULL);
 	}
 if (bRevertFormat > 0)
 	bRevertFormat = 0;
@@ -1619,41 +1637,18 @@ if (gameOpts->demo.bRevertFormat && !bRevertFormat) {
 	}
 gameType = NDReadByte ();
 if (gameType < DEMO_GAME_TYPE) {
-	tMenuItem m [2];
-
-	sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = text;
-	m [1].nType = NM_TYPE_TEXT; 
-	m [1].text = "    In Descent: First Strike";
-
-	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
-	return 1;
+	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
+	return NDErrorMsg (szMsg, "    In Descent: First Strike", NULL);
 	}
 if (gameType != DEMO_GAME_TYPE) {
-	tMenuItem m [2];
-
-	sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = text;
-	m [1].nType = NM_TYPE_TEXT; 
-	m [1].text = "   In Unknown Descent version";
-
-	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
-	return 1;
+	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_RECORDED);
+	return NDErrorMsg (szMsg, "   In Unknown Descent version", NULL);
 	}
 if (gameData.demo.nVersion < DEMO_VERSION) {
-	if (!rnd_demo) {
-		tMenuItem m [1];
-		sprintf (text, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
-		memset (m, 0, sizeof (m));
-		m [0].nType = NM_TYPE_TEXT; 
-		m [0].text = text;
-		ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
-		}
+	if (bRandom)
 		return 1;
+	sprintf (szMsg, "%s %s", TXT_CANT_PLAYBACK, TXT_DEMO_OLD);
+	return NDErrorMsg (szMsg, NULL, NULL);
 	}
 gameData.demo.bUseShortPos = (gameData.demo.nVersion == DEMO_VERSION);
 gameData.time.xGame = NDReadFix ();
@@ -1668,14 +1663,14 @@ if (gameData.demo.nGameMode & GM_TEAM) {
 	NDReadString (netGame.team_name [0]);
 	NDReadString (netGame.team_name [1]);
 	}
-if (IsMultiGame) {
+if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();
 	c = NDReadByte ();
 	gameData.multiplayer.nPlayers = (int)c;
 	// changed this to above two lines -- breaks on the mac because of
 	// endian issues
 	//		NDReadByte ((sbyte *)&gameData.multiplayer.nPlayers);
-	for (i = 0 ; i < gameData.multiplayer.nPlayers; i++) {
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		gameData.multiplayer.players [i].cloakTime = 0;
 		gameData.multiplayer.players [i].invulnerableTime = 0;
 		NDReadString (gameData.multiplayer.players [i].callsign);
@@ -1703,22 +1698,17 @@ if (laserLevel != LOCALPLAYER.laserLevel) {
 	UpdateLaserWeaponInfo ();
 	}
 // Support for missions
+i = CFTell (ndInFile);
 NDReadString (szCurrentMission);
 nVersionFilter = gameOpts->app.nVersionFilter;
 gameOpts->app.nVersionFilter = 3;	//make sure mission will be loaded
 i = LoadMissionByName (szCurrentMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (!i) {
-	if (!rnd_demo) {
-		tMenuItem m [1];
-
-		sprintf (text, TXT_NOMISSION4DEMO, szCurrentMission);
-		memset (m, 0, sizeof (m));
-		m [0].nType = NM_TYPE_TEXT; 
-		m [0].text = text;
-		ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
-		}
-	return 1;
+	if (bRandom)
+		return 1;
+	sprintf (szMsg, TXT_NOMISSION4DEMO, szCurrentMission);
+	return NDErrorMsg (szMsg, NULL, NULL);
 	}
 gameData.demo.xRecordedTotal = 0;
 gameData.demo.xPlaybackTotal = 0;
@@ -1891,7 +1881,7 @@ while (!bDone) {
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
 				LinkObject (OBJ_IDX (objP), nSegment);
-				if ((objP->nType == OBJ_PLAYER) &&(IsMultiGame)) {
+				if ((objP->nType == OBJ_PLAYER) && (gameData.demo.nGameMode & GM_MULTI)) {
 					int tPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->id) : objP->id;
 					if (tPlayer == 0)
 						break;
@@ -2146,7 +2136,7 @@ while (!bDone) {
 
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 ((gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD) && (oflags != 0xffff))) {
-				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = 0;
 					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multiplayer.nLocalPlayer);
 					}
@@ -2154,14 +2144,14 @@ while (!bDone) {
 					LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 					gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
 					}
-				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = 0;
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 				LOCALPLAYER.flags = oflags;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || (gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				if (!(oflags & PLAYER_FLAGS_CLOAKED) &&(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
+				if (!(oflags & PLAYER_FLAGS_CLOAKED) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
 					LOCALPLAYER.cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 					gameData.demo.bPlayersCloaked |= (1 << gameData.multiplayer.nLocalPlayer);
 					}
@@ -2169,7 +2159,7 @@ while (!bDone) {
 					LOCALPLAYER.cloakTime = 0;
 					gameData.demo.bPlayersCloaked &= ~ (1 << gameData.multiplayer.nLocalPlayer);
 					}
-				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) &&(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
+				if (!(oflags & PLAYER_FLAGS_INVULNERABLE) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 				if ((oflags & PLAYER_FLAGS_INVULNERABLE) && !(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
 					LOCALPLAYER.invulnerableTime = 0;
@@ -2623,16 +2613,7 @@ while (!bDone) {
 				}
 			if ((loadedLevel < gameData.missions.nLastSecretLevel) || 
 				 (loadedLevel > gameData.missions.nLastLevel)) {
-				tMenuItem m [3];
-
-				memset (m, 0, sizeof (m));
-				m [0].nType = NM_TYPE_TEXT; 
-				m [0].text = TXT_CANT_PLAYBACK;
-				m [1].nType = NM_TYPE_TEXT; 
-				m [1].text = TXT_LEVEL_CANT_LOAD;
-				m [2].nType = NM_TYPE_TEXT; 
-				m [2].text = TXT_DEMO_OLD_CORRUPT;
-				ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
+				NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
 				return -1;
 				}
 			LoadLevel ((int) loadedLevel, 1, 0);
@@ -2675,16 +2656,8 @@ while (!bDone) {
 		}
 	}
 LastReadValue = c;
-if (bNDBadRead) {
-	tMenuItem m [2];
-
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = TXT_DEMO_ERR_READING;
-	m [1].nType = NM_TYPE_TEXT; 
-	m [1].text = TXT_DEMO_OLD_CORRUPT;
-	ExecMenu (NULL, NULL, sizeof (m) / sizeof (*m), m, NULL, NULL);
-	}
+if (bNDBadRead)
+	NDErrorMsg (TXT_DEMO_ERR_READING, TXT_DEMO_OLD_CORRUPT, NULL);
 else
 	NDUpdateSmoke ();	
 return bDone;
@@ -2718,16 +2691,7 @@ void NDGotoEnd ()
 CFSeek (ndInFile, -2, SEEK_END);
 level = NDReadByte ();
 if ((level < gameData.missions.nLastSecretLevel) || (level > gameData.missions.nLastLevel)) {
-	tMenuItem m [3];
-
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; 
-	m [0].text = TXT_CANT_PLAYBACK;
-	m [1].nType = NM_TYPE_TEXT; 
-	m [1].text = TXT_LEVEL_CANT_LOAD;
-	m [2].nType = NM_TYPE_TEXT; 
-	m [2].text = TXT_DEMO_OLD_CORRUPT;
-	ExecMenu (NULL, NULL, sizeof (m)/sizeof (*m), m, NULL, NULL);
+	NDErrorMsg (TXT_CANT_PLAYBACK, TXT_LEVEL_CANT_LOAD, TXT_DEMO_OLD_CORRUPT);
 	NDStopPlayback ();
 	return;
 	}
@@ -2739,7 +2703,7 @@ CFSeek (ndInFile, -2 - byteCount, SEEK_CUR);
 
 nFrameLength = NDReadShort ();
 loc = CFTell (ndInFile);
-if (IsMultiGame)
+if (gameData.demo.nGameMode & GM_MULTI)
 	gameData.demo.bPlayersCloaked = NDReadByte ();
 else
 	bbyte = NDReadByte ();
@@ -2768,7 +2732,7 @@ if (laserLevel != LOCALPLAYER.laserLevel) {
 	LOCALPLAYER.laserLevel = laserLevel;
 	UpdateLaserWeaponInfo ();
 	}
-if (IsMultiGame) {
+if (gameData.demo.nGameMode & GM_MULTI) {
 	c = NDReadByte ();
 	gameData.multiplayer.nPlayers = (int)c;
 	// see newdemo_read_start_demo for explanation of
@@ -3139,7 +3103,7 @@ void NDFinishRecording (void)
 
 NDWriteByte (ND_EVENT_EOF);
 NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
-if (IsMultiGame) {
+if (gameData.demo.nGameMode & GM_MULTI) {
 	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
 		if (gameData.multiplayer.players [l].flags & PLAYER_FLAGS_CLOAKED)
 			cloaked |= (1 << l);
@@ -3166,7 +3130,7 @@ for (l = 0; l < MAX_SECONDARY_WEAPONS; l++)
 byteCount += (sizeof (short) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
 NDWriteByte (LOCALPLAYER.laserLevel);
 byteCount++;
-if (IsMultiGame) {
+if (gameData.demo.nGameMode & GM_MULTI) {
 	NDWriteByte ((sbyte)gameData.multiplayer.nPlayers);
 	byteCount++;
 	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
@@ -3320,7 +3284,7 @@ return nFiles;
 void NDStartPlayback (char * filename)
 {
 	FFS ffs;
-	int rnd_demo = 0;
+	int bRandom = 0;
 	char filename2 [PATH_MAX+FILENAME_LEN], searchName [FILENAME_LEN];
 
 ChangePlayerNumTo (0);
@@ -3331,7 +3295,7 @@ gameData.demo.xJasonPlaybackTotal = 0;
 if (!filename) {
 	// Randomly pick a filename
 	int nFiles = 0, nRandFiles;
-	rnd_demo = 1;
+	bRandom = 1;
 	nFiles = NDCountDemos ();
 	if (nFiles == 0) {
 		return;     // No files found!
@@ -3386,7 +3350,7 @@ bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
 gameData.objs.viewer = gameData.objs.console = gameData.objs.objects;   // play properly as if console tPlayer
-if (NDReadDemoStart (rnd_demo)) {
+if (NDReadDemoStart (bRandom)) {
 	CFClose (ndInFile);
 	CFClose (ndOutFile);
 	return;
@@ -3463,20 +3427,13 @@ bytes_done = 0;
 nTotalSize = CFLength (ndInFile, 0);
 ndOutFile = CFOpen (outname, "", "wb", 0);
 if (!ndOutFile) {
-	tMenuItem m [1];
-
-	memset (m, 0, sizeof (m));
-	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't open output file";
-	ExecMenu (NULL, NULL, 1, m, NULL, NULL);
+	NDErrorMsg ("Can't open output file", NULL, NULL);
 	NDStopPlayback ();
 	return;
 	}
 buf = D2_ALLOC (BUF_SIZE);
 if (buf == NULL) {
-	tMenuItem m [1];
-
-	m [0].nType = NM_TYPE_TEXT; m [0].text = "Can't D2_ALLOC output buffer";
-	ExecMenu (NULL, NULL, 1, m, NULL, NULL);
+	NDErrorMsg ("Mot enough memory for output buffer", NULL, NULL);
 	CFClose (ndOutFile);
 	NDStopPlayback ();
 	return;
