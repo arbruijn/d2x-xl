@@ -96,7 +96,9 @@ void KillStuckObjects(int wallnum);
 int AnimFrameCount (tWallClip *anim)
 {
 grsBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
-return ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) ? BM_FRAMECOUNT (bmP) : anim->nFrameCount;
+if (BM_OVERRIDE (bmP))
+	bmP = BM_OVERRIDE (bmP);
+return (bmP->bmType == BM_TYPE_ALT) ? BM_PARENT (bmP) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP) : anim->nFrameCount;
 }
 
 //-----------------------------------------------------------------

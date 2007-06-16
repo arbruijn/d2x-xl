@@ -173,6 +173,7 @@ if (gameOpts->ogl.bGlTexMerge) {
 			BM_OVERRIDE (hbmP) = bmP;
 			}
 		}
+	*pnFrames = BM_FRAMECOUNT (bmP);
 	}
 else {
 	grsBitmap *bmfP, *hbmP;

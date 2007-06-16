@@ -123,7 +123,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
@@ -135,7 +135,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="d:\projekte\d2x\sdl-1.2.11\Release\sdl.lib D:\Projekte\SDL_mixer-1.2.7\VisualC\Release\SDL_mixer.lib"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="FALSE"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
@@ -3283,10 +3283,10 @@
 				RelativePath="..\..\main\reorder.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath="..\..\resource.h">
 			</File>
 			<File
-				RelativePath="..\..\resource.h">
+				RelativePath=".\resource.h">
 			</File>
 			<File
 				RelativePath="..\..\include\rle.h">
@@ -3401,10 +3401,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">
