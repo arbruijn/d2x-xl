@@ -791,7 +791,7 @@ int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType)
 	ret = open_fake_file(ifilename,&ifile);		//read in entire file
 	if (ret == IFF_NO_ERROR) {
 		bm->bm_texBuf = NULL;
-		ret = iff_parse_bitmap(&ifile,bm,bitmapType,NULL);
+		ret = iff_parse_bitmap(&ifile, bm, bitmapType, NULL);
 	}
 	if (ifile.data) 
 		D2_FREE(ifile.data);

@@ -150,13 +150,13 @@ if (Kmatrix_nomovie_message) {
 	GrPrintF (CENTERSCREEN-LHX (40), LHY (20), " (Movie not played)");
 	}
 
-for (j=0; j<gameData.multiplayer.nPlayers; j++) {
+for (j = 0; j<gameData.multiplayer.nPlayers; j++) {
 	if (gameData.app.nGameMode & GM_TEAM)
 		color = GetTeam (sorted [j]);
 	else
 		color = sorted [j];
 	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
-	if (gameData.multiplayer.players [sorted [j]].connected==0)
+	if (gameData.multiplayer.players [sorted [j]].connected == 0)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
       GrSetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors  [color].b), 1, 0, 0);

@@ -134,7 +134,7 @@ if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 vmsVector yCache [256];
 ubyte ycFlags [256];
 
-extern vmsMatrix surface_orient;
+extern vmsMatrix mSurfaceOrient;
 
 vmsVector *get_dy_vec (int h)
 {
@@ -143,7 +143,7 @@ vmsVector *get_dy_vec (int h)
 dyp = yCache + h;
 if (!ycFlags [h]) {
 	vmsVector tv;
-	VmVecCopyScale (&tv, &surface_orient.uVec, h * TERRAIN_HEIGHT_SCALE);
+	VmVecCopyScale (&tv, &mSurfaceOrient.uVec, h * TERRAIN_HEIGHT_SCALE);
 	G3RotateDeltaVec (dyp, &tv);
 	ycFlags [h] = 1;
 	}
@@ -175,17 +175,17 @@ jLow = 0;
 jHigh = gameData.render.terrain.nGridH - 1;
 memset (ycFlags, 0, sizeof (ycFlags));
 gameStates.render.nInterpolationMethod = im;
-VmVecCopyScale (&tv, &surface_orient.rVec, TERRAIN_GRID_SCALE);
+VmVecCopyScale (&tv, &mSurfaceOrient.rVec, TERRAIN_GRID_SCALE);
 G3RotateDeltaVec (&delta_i, &tv);
-VmVecCopyScale (&tv, &surface_orient.fVec, TERRAIN_GRID_SCALE);
+VmVecCopyScale (&tv, &mSurfaceOrient.fVec, TERRAIN_GRID_SCALE);
 G3RotateDeltaVec (&delta_j, &tv);
-VmVecScaleAdd (&gameData.render.terrain.vStartPoint, vOrgPoint, &surface_orient.rVec,
+VmVecScaleAdd (&gameData.render.terrain.vStartPoint, vOrgPoint, &mSurfaceOrient.rVec,
 						-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
-VmVecScaleInc (&gameData.render.terrain.vStartPoint, &surface_orient.fVec, 
+VmVecScaleInc (&gameData.render.terrain.vStartPoint, &mSurfaceOrient.fVec, 
 						-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
 VmVecSub (&tv, &gameData.objs.viewer->position.vPos, &gameData.render.terrain.vStartPoint);
-iViewer = VmVecDot (&tv, &surface_orient.rVec) / TERRAIN_GRID_SCALE;
-jViewer = VmVecDot (&tv, &surface_orient.fVec) / TERRAIN_GRID_SCALE;
+iViewer = VmVecDot (&tv, &mSurfaceOrient.rVec) / TERRAIN_GRID_SCALE;
+jViewer = VmVecDot (&tv, &mSurfaceOrient.fVec) / TERRAIN_GRID_SCALE;
 G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);
 pLowSave = pLast;
 for (j = jLow; j <= jHigh; j++) {
@@ -226,7 +226,7 @@ for (i = iLow; i < iViewer; i++) {
 	}
 //now do i from other end
 VmVecNegate (&delta_i);		//going the other way now...
-VmVecScaleInc (&gameData.render.terrain.vStartPoint, &surface_orient.rVec, 
+VmVecScaleInc (&gameData.render.terrain.vStartPoint, &mSurfaceOrient.rVec, 
 						(iHigh-iLow)*TERRAIN_GRID_SCALE);
 G3TransformAndEncodePoint (&pLast, &gameData.render.terrain.vStartPoint);
 pLowSave = pLast;

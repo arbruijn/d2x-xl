@@ -88,7 +88,7 @@ int OglInitLoadLibrary (void);
 /* I assume this ought to be >= MAX_BITMAP_FILES in piggy.h? */
 #define OGL_TEXTURE_LIST_SIZE 5000
 
-typedef struct _ogl_texture {
+typedef struct tOglTexture {
 	GLuint	 	handle;
 	GLint			internalformat;
 	GLenum		format;
@@ -100,13 +100,14 @@ typedef struct _ogl_texture {
 	int 			wrapstate;
 	fix 			lastrend;
 	unsigned		long numrend;
-	char 			bMipMaps;
+	ubyte			bMipMaps;
+	ubyte			bFrameBuf;
 #if RENDER2TEXTURE == 1
 	ogl_pbuffer	pbuffer;
 #elif RENDER2TEXTURE == 2
 	ogl_fbuffer	fbuffer;
 #endif
-} ogl_texture;
+} tOglTexture;
 
 typedef struct tFaceColor {
 	tRgbaColorf	color;
@@ -118,11 +119,11 @@ typedef struct tFaceColord {
 	char			index;
 } tFaceColord;
 
-extern ogl_texture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
+extern tOglTexture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
 
 extern int ogl_mem_target;
-ogl_texture* OglGetFreeTexture(void);
-void OglInitTexture(ogl_texture* t, int bMask);
+tOglTexture* OglGetFreeTexture(void);
+void OglInitTexture(tOglTexture* t, int bMask);
 void OglInitTextureListInternal(void);
 void OglSmashTextureListInternal(void);
 void ogl_vivify_texture_list_internal(void);
@@ -266,8 +267,8 @@ int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, void 
 #endif
 int OglLoadBmTexture (grsBitmap *bm, int bMipMap, int nTransp);
 //void ogl_loadtexture(unsigned char * data, int width, int height,int dxo,int dyo, int *texid,double *u,double *v,char bMipMap,double prio);
-int OglLoadTexture (grsBitmap *bmP, int dxo,int dyo, ogl_texture *tex, int nTransp, int bSuperTransp);
-void OglFreeTexture (ogl_texture *glTexture);
+int OglLoadTexture (grsBitmap *bmP, int dxo,int dyo, tOglTexture *tex, int nTransp, int bSuperTransp);
+void OglFreeTexture (tOglTexture *glTexture);
 void OglFreeBmTexture (grsBitmap *bm);
 void OglDoPalFx (void);
 void OglStartFrame (int bFlat, int bResetColorBuf);
@@ -284,7 +285,7 @@ bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src,
 void OglUPixelC (int x, int y, grs_color *c);
 void OglULineC (int left,int top,int right,int bot, grs_color *c);
 void OglUPolyC (int left, int top, int right, int bot, grs_color *c);
-void OglTexWrap (ogl_texture *tex, int state);
+void OglTexWrap (tOglTexture *tex, int state);
 void RebuildGfxFx (int bGame, int bCameras);
 
 tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP);
@@ -307,7 +308,7 @@ bool G3DrawTexPolyMulti (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	ogl_texture	*lightMap, 
+	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
@@ -319,7 +320,7 @@ bool G3DrawTexPolyLightmap (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	ogl_texture	*lightMap, 
+	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
@@ -331,7 +332,7 @@ bool G3DrawTexPolyFlat (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	ogl_texture	*lightMap, 
+	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend);
@@ -444,7 +445,7 @@ else if (!handle || (boundHandles [nTMU] != handle)) {
 
 extern GLhandleARB	genShaderProg;
 
-typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, ogl_texture *, vmsVector *, int, int);
+typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int);
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
 //------------------------------------------------------------------------------

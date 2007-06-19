@@ -48,7 +48,7 @@ GLhandleARB lmFS [3] = {0,0,0};
 GLhandleARB lmVS [3] = {0,0,0}; 
 
 int numLightMaps; 
-ogl_texture *lightMaps = NULL;  //Level Lightmaps
+tOglTexture *lightMaps = NULL;  //Level Lightmaps
 tLightMap *lightData = NULL;  //Level lights
 
 #ifndef GL_VERSION_20
@@ -723,7 +723,7 @@ if (!(numLightMaps = CountLights ()))
 	return 0;
 if (!(lightData = D2_ALLOC (sizeof (tLightMap) * numLightMaps)))
 	return numLightMaps = 0; 
-if (!(lightMaps = (ogl_texture *) D2_ALLOC (MAX_SEGMENTS * 6 * sizeof (*lightMaps)))) {
+if (!(lightMaps = (tOglTexture *) D2_ALLOC (MAX_SEGMENTS * 6 * sizeof (*lightMaps)))) {
 	D2_FREE (lightData);
 	return numLightMaps = 0; 
 	}

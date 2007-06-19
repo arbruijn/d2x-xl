@@ -288,7 +288,7 @@ bool G3DrawRodPoly(g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top
 
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light);
+bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew

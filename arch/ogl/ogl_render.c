@@ -56,6 +56,7 @@
 #include "gameseg.h"
 #include "lighting.h"
 #include "input.h"
+#include "endlevel.h"
 
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -165,8 +166,6 @@ else
 //------------------------------------------------------------------------------
 
 int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
-
-#define f2glf(x) (f2fl (x))
 
 bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
@@ -475,8 +474,8 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glPushMatrix ();
-glTranslatef (f2glf (pnt->p3_vec.p.x), f2glf (pnt->p3_vec.p.y), f2glf (pnt->p3_vec.p.z));
-r = f2glf (rad);
+glTranslatef (f2fl (pnt->p3_vec.p.x), f2fl (pnt->p3_vec.p.y), f2fl (pnt->p3_vec.p.z));
+r = f2fl (rad);
 glScaled (r, r, r);
 if (bBigSphere)
 	if (hBigSphere)
@@ -499,7 +498,7 @@ return 0;
 int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
 glDisable (GL_TEXTURE_2D);
-//	glPointSize (f2glf (rad);
+//	glPointSize (f2fl (rad);
 OglGrsColor (&grdCurCanv->cv_color);
 glPushMatrix ();
 glTranslatef (
@@ -558,7 +557,7 @@ glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cv_color);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nv; i++, pointList++) {
-//	glVertex3f (f2glf (pointList [c]->p3_vec.p.x), f2glf (pointList [c]->p3_vec.p.y), f2glf (pointList [c]->p3_vec.p.z);
+//	glVertex3f (f2fl (pointList [c]->p3_vec.p.x), f2fl (pointList [c]->p3_vec.p.y), f2fl (pointList [c]->p3_vec.p.z);
 	OglVertex3f (*pointList);
 	}
 if (grdCurCanv->cv_color.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
@@ -741,7 +740,9 @@ if (EGI_FLAG (bShadows, 0, 1, 0)
 	 )
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
-if (vertColor) {
+if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)
+	OglColor4sf (l, l, l, s);
+else if (vertColor) {
 	if (SHOW_DYN_OBJ_LIGHT) {
 		vertColor->color.red = 
 		vertColor->color.green = 
@@ -829,20 +830,20 @@ inline void SetTexCoord (tUVL *uvlList, int orient, int multi, tUVLf *vertUVL)
 
 switch (orient) {
 	case 1:
-		u1 = 1.0f - f2glf (uvlList->v);
-		v1 = f2glf (uvlList->u);
+		u1 = 1.0f - f2fl (uvlList->v);
+		v1 = f2fl (uvlList->u);
 		break;
 	case 2:
-		u1 = 1.0f - f2glf (uvlList->u);
-		v1 = 1.0f - f2glf (uvlList->v);
+		u1 = 1.0f - f2fl (uvlList->u);
+		v1 = 1.0f - f2fl (uvlList->v);
 		break;
 	case 3:
-		u1 = f2glf (uvlList->v);
-		v1 = 1.0f - f2glf (uvlList->u);
+		u1 = f2fl (uvlList->v);
+		v1 = 1.0f - f2fl (uvlList->u);
 		break;
 	default:
-		u1 = f2glf (uvlList->u);
-		v1 = f2glf (uvlList->v);
+		u1 = f2fl (uvlList->u);
+		v1 = f2fl (uvlList->v);
 		break;
 	}
 if (vertUVL) {
@@ -861,7 +862,7 @@ else
 
 //------------------------------------------------------------------------------
 //glTexture MUST be bound first
-void OglTexWrap (ogl_texture *tex, int state)
+void OglTexWrap (tOglTexture *tex, int state)
 {
 #if 0
 if (tex->handle < 0)
@@ -1478,7 +1479,7 @@ bool G3DrawTexPolyFlat (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	ogl_texture	*lightMap, 
+	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend)
@@ -1518,7 +1519,7 @@ bool G3DrawTexPolyMulti (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	ogl_texture	*lightMap, 
+	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend)
@@ -1527,7 +1528,7 @@ bool G3DrawTexPolyMulti (
 	int			bShaderMerge = 0,
 					bSuperTransp = 0;
 	int			bLight = 1, 
-					bDynLight = SHOW_DYN_OBJ_LIGHT, 
+					bDynLight = SHOW_DYN_OBJ_LIGHT && !gameStates.app.bEndLevelSequence, 
 					bDrawOverlay = 0;
 	grsBitmap	*bmP = NULL, *bmMask;
 	g3sPoint		*pl, **ppl;
@@ -1604,7 +1605,12 @@ if (bShaderMerge) {
 					 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 	}
 else {
-	InitTMU0 (bDrawArrays);
+	if (bmBot == gameData.endLevel.satellite.bmP) {
+		glActiveTexture (GL_TEXTURE0_ARB);
+		glEnable (GL_TEXTURE_2D);
+		}
+	else
+		InitTMU0 (bDrawArrays);
 	if (OglBindBmTex (bmBot, 1, 3))
 		return 1;
 	bmBot = BmCurFrame (bmBot);
@@ -1693,7 +1699,7 @@ else
 				pl = *ppl;
 				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL, 
 									gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 1);
-				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
+				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
 				OglVertex3f (pl);
 				}
@@ -1702,36 +1708,32 @@ else
 	else if (bLight) {
 		if (bDrawOverlay) {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-				pl = *ppl;
 				SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, NULL);
-				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
-				OglVertex3f (pl);
+				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
+				OglVertex3f (*ppl);
 				}
 			}
 		else {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-				pl = *ppl;
 				SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, NULL);
-				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
+				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
-				OglVertex3f (pl);
+				OglVertex3f (*ppl);
 				}
 			}
 		}
 	else {
 		if (bDrawOverlay) {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-				pl = *ppl;
-				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
-				OglVertex3f (pl);
+				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
+				OglVertex3f (*ppl);
 				}
 			}
 		else {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-				pl = *ppl;
-				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
+				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
-				OglVertex3f (pl);
+				OglVertex3f (*ppl);
 				}
 			}
 		}
@@ -1799,7 +1801,7 @@ bool G3DrawTexPolyLightmap (
 	tUVL			*uvlLMap, 
 	grsBitmap	*bmBot, 
 	grsBitmap	*bmTop, 
-	ogl_texture	*lightMap, 
+	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
 	int			bBlend)
@@ -1872,10 +1874,10 @@ if (gameStates.render.bFullBright)
 for (i = 0; i < nVerts; i++, ppl++) {
 	if (!gameStates.render.bFullBright)
 		SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
-	glMultiTexCoord2f (GL_TEXTURE0_ARB, f2glf (uvlList [i].u), f2glf (uvlList [i].v));
+	glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 	if (bmTop)
 		SetTexCoord (uvlList + i, orient, 1, NULL);
-	glMultiTexCoord2f (GL_TEXTURE2_ARB, f2glf (uvlLMap [i].u), f2glf (uvlLMap [i].v));
+	glMultiTexCoord2f (GL_TEXTURE2_ARB, f2fl (uvlLMap [i].u), f2fl (uvlLMap [i].v));
 	OglVertex3f (*ppl);
 	}
 glEnd ();
@@ -1912,11 +1914,11 @@ if (!bDepthInfo) {
 	}
 VmVecSub (&v1, pos, &viewInfo.pos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
-x = (double) f2glf (pv.p.x);
-y = (double) f2glf (pv.p.y);
-z = (double) f2glf (pv.p.z);
-w = (double) f2glf (width); //FixMul (width, viewInfo.scale.x));
-h = (double) f2glf (height); //FixMul (height, viewInfo.scale.y));
+x = (double) f2fl (pv.p.x);
+y = (double) f2fl (pv.p.y);
+z = (double) f2fl (pv.p.z);
+w = (double) f2fl (width); //FixMul (width, viewInfo.scale.x));
+h = (double) f2fl (height); //FixMul (height, viewInfo.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);
@@ -2086,7 +2088,7 @@ bool OglUBitBltI (
 {
 	GLdouble xo, yo, xs, ys;
 	GLdouble u1, v1;//, u2, v2;
-	ogl_texture tex, *texP;
+	tOglTexture tex, *texP;
 	GLint curFunc; 
 	int nTransp = GrBitmapHasTransparency (src) ? (src->bm_props.flags & BM_FLAG_TGA) ? -1 : 2 : 0;
 

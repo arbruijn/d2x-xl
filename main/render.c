@@ -2148,7 +2148,7 @@ if (gameStates.render.nShadowPass == 2)
 	return;
 #	endif
 #endif
-Assert(nSegment!=-1 && nSegment <= gameData.segs.nLastSegment);
+Assert(nSegment != -1 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
 	return;
 OglSetupTransform ();
@@ -4452,7 +4452,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glDisable (GL_TEXTURE_2D);
 		}
 	glDepthFunc (GL_LESS);
-	if (!(nWindow || gameStates.render.cameras.bActive || GuidedInMainView ()))
+	if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
 		RenderRadar ();
 	if (gameStates.render.automap.bDisplay) {
 		if (gameOpts->render.automap.bSmoke)

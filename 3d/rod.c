@@ -25,55 +25,61 @@ static char rcsid[] = "$Id: rod.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "fix.h"
 #include "ogl_init.h"
 
-grs_point blob_vertices[4];
-g3sPoint rodPoints[4];
-g3sPoint *rodPointList[] = {&rodPoints[0], &rodPoints[1], &rodPoints[2], &rodPoints[3]};
+#define RESCALE_ROD	0
 
-tUVL uvl_list[4] = {
-	{ 0x0200, 0x0200, 0 }, 
-	{ 0xfe00, 0x0200, 0 }, 
-	{ 0xfe00, 0xfe00, 0 }, 
-	{ 0x0200, 0xfe00, 0 }};
+grs_point blobVertices [4];
+g3sPoint rodPoints [4];
+g3sPoint *rodPointList [] = {rodPoints, rodPoints + 1, rodPoints + 2, rodPoints + 3};
+
+tUVL rodUvlList [4] = {
+	{0x0200, 0x0200, 0}, 
+	{0xfe00, 0x0200, 0}, 
+	{0xfe00, 0xfe00, 0}, 
+	{0x0200, 0xfe00, 0}};
 
 //------------------------------------------------------------------------------
 //compute the corners of a rod.  fills in vertbuf.
-int CalcRodCorners (g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix top_width)
+int CalcRodCorners (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
 {
-	vmsVector	delta_vec, top, tempv, rod_norm;
-	ubyte			codes_and;
+	vmsVector	vDelta, vTop, vTemp, vRodNorm;
+	ubyte			andCodes;
 	int			i;
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
-VmVecSub (&delta_vec, &bot_point->p3_vec, &top_point->p3_vec);
+VmVecSub (&vDelta, &btmPoint->p3_vec, &topPoint->p3_vec);
 //unscale for aspect
-//delta_vec.x = FixDiv (delta_vec.x, viewInfo.scale.x);
-//delta_vec.y = FixDiv (delta_vec.y, viewInfo.scale.y);
+#if RESCALE_ROD
+vDelta.p.x = FixDiv (vDelta.p.x, viewInfo.scale.p.x);
+vDelta.p.y = FixDiv (vDelta.p.y, viewInfo.scale.p.y);
+#endif
 //calc perp vector
 //do lots of normalizing to prevent overflowing.  When this code works, 
 //it should be optimized
-VmVecNormalize (&delta_vec);
-VmVecCopyNormalize (&top, &top_point->p3_vec);
-VmVecCross (&rod_norm, &delta_vec, &top);
-VmVecNormalize (&rod_norm);
+VmVecNormalize (&vDelta);
+VmVecCopyNormalize (&vTop, &topPoint->p3_vec);
+VmVecCross (&vRodNorm, &vDelta, &vTop);
+VmVecNormalize (&vRodNorm);
 //scale for aspect
-//rod_norm.x = FixMul (rod_norm.x, viewInfo.scale.x);
-//rod_norm.y = FixMul (rod_norm.y, viewInfo.scale.y);
+#if RESCALE_ROD
+vRodNorm.p.x = FixMul (vRodNorm.p.x, viewInfo.scale.p.x);
+vRodNorm.p.y = FixMul (vRodNorm.p.y, viewInfo.scale.p.y);
+#endif
 //now we have the usable edge.  generate four points
-//top points
-VmVecCopyScale (&tempv, &rod_norm, top_width);
-tempv.p.z = 0;
-VmVecAdd (&rodPoints [0].p3_vec, &top_point->p3_vec, &tempv);
-VmVecSub (&rodPoints [1].p3_vec, &top_point->p3_vec, &tempv);
-VmVecCopyScale (&tempv, &rod_norm, bot_width);
-tempv.p.z = 0;
-VmVecSub (&rodPoints [2].p3_vec, &bot_point->p3_vec, &tempv);
-VmVecAdd (&rodPoints [3].p3_vec, &bot_point->p3_vec, &tempv);
+//vTop points
+VmVecCopyScale (&vTemp, &vRodNorm, xTopWidth);
+vTemp.p.z = 0;
+VmVecAdd (&rodPoints [0].p3_vec, &topPoint->p3_vec, &vTemp);
+VmVecSub (&rodPoints [1].p3_vec, &topPoint->p3_vec, &vTemp);
+VmVecCopyScale (&vTemp, &vRodNorm, xBtmWidth);
+vTemp.p.z = 0;
+VmVecSub (&rodPoints [2].p3_vec, &btmPoint->p3_vec, &vTemp);
+VmVecAdd (&rodPoints [3].p3_vec, &btmPoint->p3_vec, &vTemp);
 
 //now code the four points
-for (i = 0, codes_and = 0xff; i < 4; i++)
-	codes_and &= G3EncodePoint (rodPoints + i);
-if (codes_and)
+for (i = 0, andCodes = 0xff; i < 4; i++)
+	andCodes &= G3EncodePoint (rodPoints + i);
+if (andCodes)
 	return 1;		//1 means off screen
 //clear flags for new points (not projected)
 for (i = 0; i < 4; i++) {
@@ -86,9 +92,9 @@ return 0;
 //------------------------------------------------------------------------------
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodPoly (g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix top_width)
+bool G3DrawRodPoly (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
 {
-if (CalcRodCorners (bot_point, bot_width, top_point, top_width))
+if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
 return G3DrawPoly (4, rodPointList);
 }
@@ -96,15 +102,17 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodTexPoly (grsBitmap *bitmap, g3sPoint *bot_point, fix bot_width, g3sPoint *top_point, fix top_width, fix light)
+bool G3DrawRodTexPoly (grsBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList)
 {
-if (CalcRodCorners (bot_point, bot_width, top_point, top_width))
+if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
-uvl_list [0].l = 
-uvl_list [1].l = 
-uvl_list [2].l = 
-uvl_list [3].l = light;
-return G3DrawTexPoly (4, rodPointList, uvl_list, bitmap, NULL, 1);
+if (!uvlList)
+	uvlList = rodUvlList;
+uvlList [0].l = 
+uvlList [1].l = 
+uvlList [2].l = 
+uvlList [3].l = light;
+return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1);
 }
 
 //------------------------------------------------------------------------------

@@ -25,10 +25,10 @@ typedef struct tCamera {
 	tUVL			uvlList [8];
 #if RENDER2TEXTURE == 1
 	ogl_pbuffer	pb;
-	ogl_texture	glTex;
+	tOglTexture	glTex;
 #elif RENDER2TEXTURE == 2
 	ogl_fbuffer	fb;
-	ogl_texture	glTex;
+	tOglTexture	glTex;
 #endif
 	vmsMatrix	orient;
 	fixang		curAngle;

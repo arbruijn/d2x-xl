@@ -147,12 +147,12 @@ extern GLuint glInitTMU [3];
 extern GLuint glExitTMU;
 extern GLuint mouseIndList;
 
-ogl_texture oglTextureList [OGL_TEXTURE_LIST_SIZE];
+tOglTexture oglTextureList [OGL_TEXTURE_LIST_SIZE];
 int oglTexListCur;
 
 //------------------------------------------------------------------------------
 
-inline void OglInitTextureStats (ogl_texture* t)
+inline void OglInitTextureStats (tOglTexture* t)
 {
 t->prio = (float) 0.3;//default prio
 t->lastrend = 0;
@@ -161,7 +161,7 @@ t->numrend = 0;
 
 //------------------------------------------------------------------------------
 
-void OglInitTexture (ogl_texture *t, int bMask)
+void OglInitTexture (tOglTexture *t, int bMask)
 {
 t->handle = 0;
 t->internalformat = bMask ? 1 : gameStates.ogl.bpp / 8;
@@ -169,6 +169,7 @@ t->format = bMask ? GL_ALPHA : gameStates.ogl.nRGBAFormat;
 t->wrapstate = -1;
 t->w =
 t->h = 0;
+t->bFrameBuf = 0;
 OglInitTextureStats (t);
 }
 
@@ -177,7 +178,7 @@ OglInitTextureStats (t);
 void OglResetTextureStatsInternal (void)
 {
 	int			i;
-	ogl_texture	*t = oglTextureList;
+	tOglTexture	*t = oglTextureList;
 
 for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 	if (t->handle)
@@ -189,7 +190,7 @@ for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 void OglInitTextureListInternal (void)
 {
 	int			i;
-	ogl_texture	*t = oglTextureList;
+	tOglTexture	*t = oglTextureList;
 	oglTexListCur = 0;
 
 for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
@@ -222,7 +223,7 @@ if (bmP->glTexture && (bmP->glTexture->handle == -1)) {
 void OglSmashTextureListInternal (void)
 {
 	int			h, i, j, k;
-	ogl_texture *t;
+	tOglTexture *t;
 	grsBitmap	*bmP, *altBmP;
 
 OglDeleteLists (&hBigSphere, 1);
@@ -255,7 +256,7 @@ glInitTMU [1] =
 glInitTMU [2] =
 glExitTMU = 0;
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
-	if ((GLint) t->handle > 0) {
+	if (!t->bFrameBuf && (t->handle > 0)) {
 		glDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = -1;
 		}
@@ -289,10 +290,10 @@ oglTexListCur = 0;
 
 //------------------------------------------------------------------------------
 
-ogl_texture *OglGetFreeTextureInternal (void)
+tOglTexture *OglGetFreeTextureInternal (void)
 {
 	int i;
-	ogl_texture *t = oglTextureList + oglTexListCur;
+	tOglTexture *t = oglTextureList + oglTexListCur;
 
 for (i = 0; i < OGL_TEXTURE_LIST_SIZE; i++) {
 	if (!(t->handle || t->w))
@@ -309,9 +310,9 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-ogl_texture *OglGetFreeTexture (void)
+tOglTexture *OglGetFreeTexture (void)
 {
-ogl_texture *t = OglGetFreeTextureInternal ();
+tOglTexture *t = OglGetFreeTextureInternal ();
 if (!t) {
 #ifdef _DEBUG
 	Warning ("OGL: texture list full!\n");
@@ -330,7 +331,7 @@ int ogl_texture_stats (void)
 	int used=0,usedl4a4=0,usedrgba=0,databytes=0,truebytes=0,datatexel=0,truetexel=0,i;
 	int prio0=0,prio1=0,prio2=0,prio3=0,prioh=0;
 //	int grabbed=0;
-	ogl_texture* t;
+	tOglTexture* t;
 for (i = 0, t=oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
 	if (t->handle) {
 		used++;
@@ -359,7 +360,7 @@ int ogl_mem_target = -1;
 
 void ogl_clean_texture_cache (void)
 {
-	ogl_texture* t;
+	tOglTexture* t;
 	int i,bytes;
 	int time=120;
 	
@@ -372,7 +373,7 @@ if (ogl_mem_target < 0) {
 bytes=ogl_texture_stats ();
 while (bytes>ogl_mem_target){
 	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
-		if ((GLint) t->handle > 0) {
+		if (!t->bFrameBuf && (t->handle > 0)) {
 			if (t->lastrend + f1_0 * time < gameData.time.xGame) {
 				OglFreeTexture (t);
 				bytes -= t->bytes;
@@ -389,7 +390,7 @@ while (bytes>ogl_mem_target){
 
 //------------------------------------------------------------------------------
 
-int ogl_bindteximage (ogl_texture *texP)
+int ogl_bindteximage (tOglTexture *texP)
 {
 #if RENDER2TEXTURE == 1
 #	if 1
@@ -432,7 +433,7 @@ return 0;
 
 int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp)
 {
-	ogl_texture	*texP;
+	tOglTexture	*texP;
 #if RENDER2TEXTURE
 	int			bPBuffer;
 #endif
@@ -442,14 +443,14 @@ if (!bmP)
 bmP = BmOverride (bmP);
 texP = bmP->glTexture;
 #if RENDER2TEXTURE
-if ((bPBuffer = texP && ((GLint) texP->handle < 0))) {
+if ((bPBuffer = texP && texP->bFrameBuf)) {
 	if (ogl_bindteximage (texP))
 		return 1;
 	}
 else
 #endif
 	{
-	if (!(texP && ((GLint) texP->handle > 0))) {
+	if (!(texP && (texP->handle > 0))) {
 		if (OglLoadBmTexture (bmP, bMipMaps, nTransp))
 			return 1;
 		bmP = BmOverride (bmP);
@@ -461,8 +462,10 @@ else
 		}
 	OGL_BINDTEX (texP->handle);
 	}
+#ifdef _DEBUG
 bmP->glTexture->lastrend = gameData.time.xGame;
 bmP->glTexture->numrend++;
+#endif
 return 0;
 }
 
@@ -967,7 +970,7 @@ return nFormat;
 //------------------------------------------------------------------------------
 //create texture buffer from data already in RGBA format
 
-ubyte *OglCopyTexBuf (ogl_texture *texP, int dxo, int dyo, ubyte *data)
+ubyte *OglCopyTexBuf (tOglTexture *texP, int dxo, int dyo, ubyte *data)
 {
 if (!dxo && !dyo && (texP->w == texP->tw) && (texP->h == texP->th))
 	return data;	//can use data 1:1
@@ -994,7 +997,7 @@ else {	//need to reformat
 
 //------------------------------------------------------------------------------
 
-int TexFormatSupported (ogl_texture *texP)
+int TexFormatSupported (tOglTexture *texP)
 {
 	GLint nFormat = 0;
 
@@ -1073,7 +1076,7 @@ return nFormat == texP->internalformat;
 
 //------------------------------------------------------------------------------
 
-int TexFormatVerify (ogl_texture *texP)
+int TexFormatVerify (tOglTexture *texP)
 {
 while (!TexFormatSupported (texP)) {
 	switch (texP->format) {
@@ -1116,7 +1119,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void TexSetSizeSub (ogl_texture *texP,int dbits,int bits,int w, int h)
+void TexSetSizeSub (tOglTexture *texP,int dbits,int bits,int w, int h)
 {
 	int u;
 
@@ -1132,7 +1135,7 @@ texP->bytesu = (int) (((double) u * bits) / 8.0);
 
 //------------------------------------------------------------------------------
 
-void TexSetSize (ogl_texture *texP)
+void TexSetSize (tOglTexture *texP)
 {
 	GLint	w, h;
 	int	nBits = 16, a = 0;
@@ -1201,7 +1204,7 @@ TexSetSizeSub (texP, nBits, a, w, h);
 
 #if TEXTURE_COMPRESSION
 
-int OglCompressTexture (grsBitmap *bmP, ogl_texture *texP)
+int OglCompressTexture (grsBitmap *bmP, tOglTexture *texP)
 {
 	GLint nFormat, nParam;
 	ubyte	*data;
@@ -1246,11 +1249,11 @@ return 0;
 //In theory this could be a problem for repeating textures, but all real
 //textures (not sprites, etc) in descent are 64x64, so we are ok.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
-int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, ogl_texture *texP, int nTransp, int superTransp)
+int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, tOglTexture *texP, int nTransp, int superTransp)
 {
 	ubyte			*data = bmP->bm_texBuf;
 	GLubyte		*bufP = gameData.render.ogl.texBuf;
-	ogl_texture	tex;
+	tOglTexture	tex;
 	int			bLocalTexture;
 
 if (!bmP)
@@ -1309,7 +1312,7 @@ texP->u = (float) ((double) texP->w / (double) texP->tw);
 texP->v = (float) ((double) texP->h / (double) texP->th);
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
-if ((GLint) texP->handle >= 0) 
+if (!texP->bFrameBuf) 
 #endif
 	{
 #if TEXTURE_COMPRESSION
@@ -1395,7 +1398,7 @@ int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, void
 #endif
 {
 	unsigned char	*buf;
-	ogl_texture		*t;
+	tOglTexture		*t;
 	grsBitmap		*bmParent;
 
 while ((bmP->bmType == BM_TYPE_STD) && (bmParent = BM_PARENT (bmP)) && (bmParent != bmP))
@@ -1415,17 +1418,19 @@ if (!(t = bmP->glTexture)) {
 #if RENDER2TEXTURE == 1
 	if (pb) {
 		t->pbuffer = *pb;
-		t->handle = -((GLint) pb->texId);
+		t->handle = pb->texId;
+		t->bFrameBuf = 1;
 		}
 #elif RENDER2TEXTURE == 2
 	if (fb) {
 		t->fbuffer = *fb;
-		t->handle = -((GLint) fb->texId);
+		t->handle = fb->texId;
+		t->bFrameBuf = 1;
 		}
 #endif
 	}
 else {
-	if ((GLint) t->handle > 0)
+	if (t->handle > 0)
 		return 0;
 	if (!t->w) {
 		t->lw = bmP->bm_props.w;
@@ -1519,11 +1524,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void OglFreeTexture (ogl_texture *t)
+void OglFreeTexture (tOglTexture *t)
 {
 if (t) {
 	GLuint h = (GLuint) t->handle;
-	if (h) {
+	if ((GLint) h > 0) {
 		r_texcount--;
 		glDeleteTextures (1, &h);
 		OglInitTexture (t, 0);
@@ -1535,7 +1540,7 @@ if (t) {
 
 void OglFreeBmTexture (grsBitmap *bmP)
 {
-	ogl_texture	*t;
+	tOglTexture	*t;
 
 while ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP) && (bmP != BM_PARENT (bmP)))
 	bmP = BM_PARENT (bmP);
@@ -1549,12 +1554,12 @@ if (BM_FRAMES (bmP)) {
 	}
 else if ((t = bmP->glTexture)) {
 #if RENDER2TEXTURE == 2
-	if ((GLint) t->handle < 0)
+	if (t->bFrameBuf)
 		OGL_BINDTEX (0);
 	else
 #elif RENDER2TEXTURE == 1
 #	ifdef _WIN32
-	if ((GLint) t->handle < 0) {
+	if (t->bFrameBuf) {
 		if (t->pbuffer.bBound) {
 			if (wglReleaseTexImageARB (t->pbuffer.hBuf, WGL_FRONT_LEFT_ARB))
 				t->pbuffer.bBound = 0;

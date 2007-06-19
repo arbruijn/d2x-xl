@@ -1103,6 +1103,7 @@ powerupToModel [POW_VULCAN_AMMO] = MAX_POLYGON_MODELS - 32;
 memset (weaponToModel, 0, sizeof (weaponToModel));
 weaponToModel [PROXMINE_ID] = MAX_POLYGON_MODELS - 2;
 weaponToModel [SMARTMINE_ID] = MAX_POLYGON_MODELS - 4;
+weaponToModel [ROBOT_SMARTMINE_ID] = MAX_POLYGON_MODELS - 4;
 }
 
 //-----------------------------------------------------------------------------

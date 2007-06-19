@@ -2049,6 +2049,8 @@ void HUDShowIcons (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
+if (gameStates.app.bEndLevelSequence)
+	return;
 HUDToggleWeaponIcons ();
 if (gameOpts->render.cockpit.bHUD || SHOW_COCKPIT) {
 	HUDShowPlayerStats ();

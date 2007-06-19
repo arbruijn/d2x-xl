@@ -188,7 +188,7 @@ typedef struct _grsBitmap {
 	int				bm_transparentFrames [4];
 	int				bm_supertranspFrames [4];
 
-	struct _ogl_texture	*glTexture;
+	struct tOglTexture	*glTexture;
 	struct {
 		grs_stdBmData		std;
 		grs_altBmData		alt;

@@ -50,7 +50,7 @@ PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB = NULL;
 
 //------------------------------------------------------------------------------
 
-ogl_texture TestTex;  //Test Lightmap
+tOglTexture TestTex;  //Test Lightmap
 
 GLuint EmptyTexture(int Xsize, int Ysize)			// Create An Empty Texture
 {

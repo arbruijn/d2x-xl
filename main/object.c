@@ -385,7 +385,7 @@ _3dfx_rendering_poly_obj = 1;
 #ifdef PA_3DFX_VOODOO
 light = f1_0;
 #endif
-G3DrawRodTexPoly (bmP, &bot_p, objP->size, &top_p, objP->size, light);
+G3DrawRodTexPoly (bmP, &bot_p, objP->size, &top_p, objP->size, light, NULL);
 #ifdef _3DFX
 _3dfx_rendering_poly_obj = 0;
 #endif

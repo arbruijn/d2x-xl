@@ -2389,7 +2389,7 @@ for (;;) {
 		g3sPoint rodBotP, rodTopP;
 		G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 		G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
-		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
+		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
 		p += 36;
 		}
 	else if (h == OP_SUBCALL) {
@@ -2518,7 +2518,7 @@ for (;;) {
 			g3sPoint rodBotP, rodTopP;
 			G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 			G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
-			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0);
+			G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
 			p += 36;
 			break;
 			}

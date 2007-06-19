@@ -75,7 +75,7 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #endif
 
 extern int				numLightMaps;
-extern ogl_texture	*lightMaps;  //Level Lightmaps - currently hardset to 5400, probably need to change this to a variable number
+extern tOglTexture	*lightMaps;  //Level Lightmaps - currently hardset to 5400, probably need to change this to a variable number
 extern tLightMap		*lightData;  //Level lights
 extern GLhandleARB	lmShaderProgs [3];
 

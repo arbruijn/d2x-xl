@@ -206,8 +206,11 @@ else {
 CFRead (palette, 3, 256, fp);
 gameData.hoard.orb.palette = AddPalette (palette);
 vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
+bmDataP = gameData.hoard.orb.bm.bm_texBuf;
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	grsBitmap *bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
+	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
+	bmDataP += gameData.hoard.goal.nFrameSize;
 	CFRead (bmP->bm_texBuf, 1, gameData.hoard.orb.nFrameSize, fp);
 	GrRemapBitmapGood (bmP, gameData.hoard.orb.palette, 255, -1);
 	}
@@ -216,8 +219,11 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 CFReadShort (fp);        //skip frame count
 CFRead (palette, 3, 256, fp);
 gameData.hoard.goal.palette = AddPalette (palette);
+bmDataP = gameData.hoard.goal.bm.bm_texBuf;
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
+	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
+	bmDataP += gameData.hoard.goal.nFrameSize;
 	CFRead (bmP->bm_texBuf, 1, gameData.hoard.goal.nFrameSize, fp);
 	GrRemapBitmapGood (bmP, gameData.hoard.goal.palette, 255, -1);
 	}

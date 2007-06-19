@@ -93,12 +93,12 @@ typedef struct flythrough_data {
 
 void DoEndLevelFlyThrough (int n);
 void DrawStars ();
-int find_exit_side (tObject *objP);
-void generate_starfield ();
+int FindExitSide (tObject *objP);
+void GenerateStarfield ();
 void StartEndLevelFlyThrough (int n, tObject *objP, fix speed);
 void StartRenderedEndLevelSequence ();
 
-char movie_table [2][30] = {	
+char movieTable [2][30] = {	
 	{'a', 'b', 'c', 
 	'a', 
 	'd', 'f', 'd', 'f', 
@@ -115,12 +115,13 @@ char movie_table [2][30] = {
 	}
 };
 
-#define N_MOVIES (sizeof (movie_table) / (2 * sizeof (*movie_table)))
+#define N_MOVIES (sizeof (movieTable) / (2 * sizeof (*movieTable)))
 
 #define N_MOVIES_SECRET 0
 
-
 #define FLY_ACCEL i2f (5)
+
+static tUVL satUVL [4] = {{-F1_0/2,0,F1_0},{F1_0/2,0,F1_0},{F1_0/2,F1_0,F1_0},{-F1_0/2,F1_0,F1_0}};
 
 extern int ELFindConnectedSide (int seg0, int seg1);
 
@@ -146,12 +147,13 @@ return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 //return though which tSide of seg0 is seg1
 int ELFindConnectedSide (int seg0, int seg1)
 {
-	tSegment *Seg=&gameData.segs.segments [seg0];
-	int i;
+	tSegment *segP = gameData.segs.segments + seg0;
+	int		i;
 
-	for (i=MAX_SIDES_PER_SEGMENT;i--;) if (Seg->children [i]==seg1) return i;
-
-	return -1;
+for (i = MAX_SIDES_PER_SEGMENT;i--; ) 
+	if (segP->children [i] == seg1) 
+		return i;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -162,20 +164,20 @@ extern int Kmatrix_nomovie_message;
 //returns movie played status.  see movie.h
 int StartEndLevelMovie ()
 {
-	char movie_name [SHORT_FILENAME_LEN];
+	char szMovieName [SHORT_FILENAME_LEN];
 	int r;
 
-strcpy (movie_name, gameStates.app.bD1Mission ? "exita.mve" : "esa.mve");
+strcpy (szMovieName, gameStates.app.bD1Mission ? "exita.mve" : "esa.mve");
 if (!IS_D2_OEM)
 	if (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)
 		return 1;   //don't play movie
 if (gameData.missions.nCurrentLevel > 0)
 	if (gameStates.app.bD1Mission)
-		movie_name [4] = movie_table [1][gameData.missions.nCurrentLevel-1];
+		szMovieName [4] = movieTable [1][gameData.missions.nCurrentLevel-1];
 	else
-		movie_name [2] = movie_table [0][gameData.missions.nCurrentLevel-1];
+		szMovieName [2] = movieTable [0][gameData.missions.nCurrentLevel-1];
 else if (gameStates.app.bD1Mission) {
-	movie_name [4] = movie_table [1][26 - gameData.missions.nCurrentLevel];
+	szMovieName [4] = movieTable [1][26 - gameData.missions.nCurrentLevel];
 	}
 else {
 #ifndef SHAREWARE
@@ -185,7 +187,7 @@ else {
 #endif
 }
 #ifndef SHAREWARE
-r = PlayMovie (movie_name, (gameData.app.nGameMode & GM_MULTI) ? 0 : MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+r = PlayMovie (szMovieName, (gameData.app.nGameMode & GM_MULTI) ? 0 : MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 #else
 return 0;	// movie not played for shareware
 #endif
@@ -236,7 +238,7 @@ void InitEndLevel ()
 //!!	gameData.endLevel.exit.nModel = LoadPolygonModel ("exit01.pof", 1, exit_bitmap_list, NULL);
 //!!	gameData.endLevel.exit.nDestroyedModel = LoadPolygonModel ("exit01d.pof", 1, exit_bitmap_list, NULL);
 
-generate_starfield ();
+GenerateStarfield ();
 atexit (FreeEndLevelData);
 gameData.endLevel.terrain.bmInstance.bm_texBuf = 
 gameData.endLevel.satellite.bmInstance.bm_texBuf = NULL;
@@ -248,7 +250,7 @@ tObject external_explosion;
 
 vmsAngVec exit_angles={-0xa00, 0, 0};
 
-vmsMatrix surface_orient;
+vmsMatrix mSurfaceOrient;
 
 extern char szLastPaletteLoaded [];
 
@@ -278,7 +280,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 		}
 LOCALPLAYER.homingObjectDist = -F1_0; // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
@@ -286,7 +288,7 @@ if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) ||
 		((gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission) && 
 		gameStates.app.bHaveExtraMovies)) {
 	// only play movie for built-in mission
-	if (!(gameData.app.nGameMode & GM_MULTI))
+	if (!IsMultiGame)
 		nMoviePlayed = StartEndLevelMovie ();
 	}
 if ((nMoviePlayed == MOVIE_NOT_PLAYED) && gameStates.app.bEndLevelDataLoaded) {   //don't have movie.  Do rendered sequence, if available
@@ -306,44 +308,44 @@ if (!bSecret)
 
 void StartRenderedEndLevelSequence ()
 {
-	int last_segnum, exit_side, tunnel_length;
-	int nSegment, old_segnum, entry_side, i;
+	int nLastSeg, nExitSide, nTunnelLength;
+	int nSegment, nOldSeg, nEntrySide, i;
 
 //count segments in exit tunnel
-old_segnum = gameData.objs.console->nSegment;
-exit_side = find_exit_side (gameData.objs.console);
-nSegment = gameData.segs.segments [old_segnum].children [exit_side];
-tunnel_length = 0;
+nOldSeg = gameData.objs.console->nSegment;
+nExitSide = FindExitSide (gameData.objs.console);
+nSegment = gameData.segs.segments [nOldSeg].children [nExitSide];
+nTunnelLength = 0;
 do {
-	entry_side = ELFindConnectedSide (nSegment, old_segnum);
-	exit_side = sideOpposite [entry_side];
-	old_segnum = nSegment;
-	nSegment = gameData.segs.segments [nSegment].children [exit_side];
-	tunnel_length++;
+	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
+	nExitSide = sideOpposite [nEntrySide];
+	nOldSeg = nSegment;
+	nSegment = gameData.segs.segments [nSegment].children [nExitSide];
+	nTunnelLength++;
 	} while (nSegment >= 0);
 if (nSegment != -2) {
 	PlayerFinishedLevel (0);		//don't do special sequence
 	return;
 	}
-last_segnum = old_segnum;
+nLastSeg = nOldSeg;
 //now pick transition nSegment 1/3 of the way in
-old_segnum = gameData.objs.console->nSegment;
-exit_side = find_exit_side (gameData.objs.console);
-nSegment = gameData.segs.segments [old_segnum].children [exit_side];
-i=tunnel_length/3;
+nOldSeg = gameData.objs.console->nSegment;
+nExitSide = FindExitSide (gameData.objs.console);
+nSegment = gameData.segs.segments [nOldSeg].children [nExitSide];
+i = nTunnelLength / 3;
 while (i--) {
-	entry_side = ELFindConnectedSide (nSegment, old_segnum);
-	exit_side = sideOpposite [entry_side];
-	old_segnum = nSegment;
-	nSegment = gameData.segs.segments [nSegment].children [exit_side];
+	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
+	nExitSide = sideOpposite [nEntrySide];
+	nOldSeg = nSegment;
+	nSegment = gameData.segs.segments [nSegment].children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
 gameStates.render.cockpit.nModeSave = gameStates.render.cockpit.nMode;
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
 	NetworkDoFrame (1, 1);
 	}
-Assert (last_segnum == gameData.endLevel.exit.nSegNum);
+Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
 if (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1)
 	SongsPlaySong (SONG_ENDLEVEL, 0);
 gameStates.app.bEndLevelSequence = EL_FLYTHROUGH;
@@ -362,7 +364,7 @@ gameStates.gameplay.bMineDestroyed = 0;
 
 extern flythrough_data flyObjects [];
 
-extern tObject *slew_obj;
+extern tObject *slewObjP;
 
 vmsAngVec player_angles, player_dest_angles;
 vmsAngVec camera_desired_angles, camera_cur_angles;
@@ -491,16 +493,15 @@ if (gameData.endLevel.xCurFlightSpeed != gameData.endLevel.xDesiredFlightSpeed) 
 
 	if (abs (delta) < frame_accel)
 		gameData.endLevel.xCurFlightSpeed = gameData.endLevel.xDesiredFlightSpeed;
+	else if (delta > 0)
+		gameData.endLevel.xCurFlightSpeed += frame_accel;
 	else
-		if (delta > 0)
-			gameData.endLevel.xCurFlightSpeed += frame_accel;
-		else
-			gameData.endLevel.xCurFlightSpeed -= frame_accel;
-}
+		gameData.endLevel.xCurFlightSpeed -= frame_accel;
+	}
 
 //do big explosions
 if (!gameStates.render.bOutsideMine) {
-	if (gameStates.app.bEndLevelSequence==EL_OUTSIDE) {
+	if (gameStates.app.bEndLevelSequence == EL_OUTSIDE) {
 		vmsVector tvec;
 
 		VmVecSub (&tvec, &gameData.objs.console->position.vPos, &gameData.endLevel.exit.vSideExit);
@@ -520,7 +521,7 @@ if (!gameStates.render.bOutsideMine) {
 		}
 
 	//do explosions chasing tPlayer
-	if ((explosion_wait1-=gameData.time.xFrame) < 0) {
+	if ((explosion_wait1 -= gameData.time.xFrame) < 0) {
 		vmsVector	tpnt;
 		short			nSegment;
 		tObject		*expl;
@@ -542,8 +543,8 @@ if (!gameStates.render.bOutsideMine) {
 	}
 
 //do little explosions on walls
-if (gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH && gameStates.app.bEndLevelSequence < EL_OUTSIDE)
-	if ((explosion_wait2-=gameData.time.xFrame) < 0) {
+if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
+	if ((explosion_wait2 -= gameData.time.xFrame) < 0) {
 		vmsVector tpnt;
 		tVFIQuery fq;
 		tFVIData hit_data;
@@ -613,7 +614,7 @@ switch (gameStates.app.bEndLevelSequence) {
 	case EL_LOOKBACK: {
 		DoEndLevelFlyThrough (0);
 		DoEndLevelFlyThrough (1);
-		if (timer>0) {
+		if (timer > 0) {
 			timer -= gameData.time.xFrame;
 			if (timer < 0)		//reduce speed
 				flyObjects [1].speed = flyObjects [0].speed;
@@ -629,7 +630,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			bank_rate = (-exit_seg_angles.b - cam_angles.b)/2;
 			gameData.objs.console->controlType = gameData.objs.endLevelCamera->controlType = CT_NONE;
 #ifdef SLEW_ON
-slew_obj = gameData.objs.endLevelCamera;
+			slewObjP = gameData.objs.endLevelCamera;
 #endif
 			}
 		break;
@@ -641,8 +642,12 @@ slew_obj = gameData.objs.endLevelCamera;
 #endif
 		VmVecScaleInc (&gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient.fVec, FixMul (gameData.time.xFrame, gameData.endLevel.xCurFlightSpeed));
 #ifndef SLEW_ON
-		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.fVec, FixMul (gameData.time.xFrame, -2*gameData.endLevel.xCurFlightSpeed));
-		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, &gameData.objs.endLevelCamera->position.mOrient.uVec, FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
+		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, 
+							&gameData.objs.endLevelCamera->position.mOrient.fVec, 
+							FixMul (gameData.time.xFrame, -2*gameData.endLevel.xCurFlightSpeed));
+		VmVecScaleInc (&gameData.objs.endLevelCamera->position.vPos, 
+							&gameData.objs.endLevelCamera->position.mOrient.uVec, 
+							FixMul (gameData.time.xFrame, -gameData.endLevel.xCurFlightSpeed/10));
 		VmExtractAnglesMatrix (&cam_angles, &gameData.objs.endLevelCamera->position.mOrient);
 		cam_angles.b += (fixang) FixMul (bank_rate, gameData.time.xFrame);
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->position.mOrient, &cam_angles);
@@ -664,7 +669,7 @@ slew_obj = gameData.objs.endLevelCamera;
 		timer -= gameData.time.xFrame;
 		if (timer < 0) {
 #ifdef SLEW_ON
-			slew_obj = gameData.objs.endLevelCamera;
+			slewObjP = gameData.objs.endLevelCamera;
 			DoSlewMovement (gameData.objs.endLevelCamera, 1, 1);
 			timer += gameData.time.xFrame;		//make time stop
 			break;
@@ -700,11 +705,11 @@ slew_obj = gameData.objs.endLevelCamera;
 		GetAnglesToObject (&camera_desired_angles, &gameData.objs.console->position.vPos, &gameData.objs.endLevelCamera->position.vPos);
 		mask = ChaseAngles (&camera_cur_angles, &camera_desired_angles);
 		VmAngles2Matrix (&gameData.objs.endLevelCamera->position.mOrient, &camera_cur_angles);
-		if ((mask&5) == 5) {
+		if ((mask & 5) == 5) {
 			vmsVector tvec;
 			gameStates.app.bEndLevelSequence = EL_CHASING;
 			VmVecNormalizedDirQuick (&tvec, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
-			VmVector2Matrix (&gameData.objs.console->position.mOrient, &tvec, &surface_orient.uVec, NULL);
+			VmVector2Matrix (&gameData.objs.console->position.mOrient, &tvec, &mSurfaceOrient.uVec, NULL);
 			gameData.endLevel.xDesiredFlightSpeed *= 2;
 			}
 #endif
@@ -746,7 +751,7 @@ slew_obj = gameData.objs.endLevelCamera;
 #define MIN_D 0x100
 
 //find which tSide to fly out of
-int find_exit_side (tObject *objP)
+int FindExitSide (tObject *objP)
 {
 	int i;
 	vmsVector prefvec, segcenter, sidevec;
@@ -810,39 +815,41 @@ fix satellite_size = i2f (400);
 
 void RenderExternalScene (fix xEyeOffset)
 {
-	vmsVector delta;
-	g3sPoint p, top_pnt;
+	vmsVector vDelta;
+	g3sPoint p, pTop;
 
 gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (xEyeOffset)
 	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 G3SetViewMatrix (&gameData.objs.viewer->position.vPos, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 GrClearCanvas (BLACK_RGBA);
-G3StartInstanceMatrix (&vmdZeroVector, &surface_orient);
+G3StartInstanceMatrix (&vmdZeroVector, &mSurfaceOrient);
 DrawStars ();
 G3DoneInstance ();
 //draw satellite
 G3TransformAndEncodePoint (&p, &gameData.endLevel.satellite.vPos);
-G3RotateDeltaVec (&delta, &gameData.endLevel.satellite.vUp);
-G3AddDeltaVec (&top_pnt, &p, &delta);
+G3RotateDeltaVec (&vDelta, &gameData.endLevel.satellite.vUp);
+G3AddDeltaVec (&pTop, &p, &vDelta);
 if (!(p.p3_codes & CC_BEHIND)) {
-	int save_im = gameStates.render.nInterpolationMethod;
 	if (!(p.p3_flags & PF_OVERFLOW)) {
+		int imSave = gameStates.render.nInterpolationMethod;
 		gameStates.render.nInterpolationMethod = 0;
-		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &top_pnt, SATELLITE_WIDTH, f1_0);
-		gameStates.render.nInterpolationMethod = save_im;
+		if (!OglBindBmTex (gameData.endLevel.satellite.bmP, 1, 0))
+			G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, f1_0, satUVL);
+		gameStates.render.nInterpolationMethod = imSave;
 		}
 	}
 #ifdef STATION_ENABLED
-DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL, gameData.endLevel.station.nModel, 0, f1_0, NULL, NULL);
+DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL, 
+						gameData.endLevel.station.nModel, 0, f1_0, NULL, NULL);
 #endif
 RenderTerrain (&gameData.endLevel.exit.vGroundExit, exit_point_bmx, exit_point_bmy);
 DrawExitModel ();
 if (gameStates.render.bExtExplPlaying)
 	DrawFireball (&external_explosion);
-gameStates.render.nLighting=0;
+gameStates.render.nLighting = 0;
 RenderObject (gameData.objs.console, 0, 0);
-gameStates.render.nLighting=1;
+gameStates.render.nLighting = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -851,7 +858,7 @@ gameStates.render.nLighting=1;
 
 vmsVector stars [MAX_STARS];
 
-void generate_starfield ()
+void GenerateStarfield ()
 {
 	int i;
 
@@ -897,7 +904,7 @@ if (gameData.objs.viewer->nType == OBJ_PLAYER)
 if (xEyeOffset)
 	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 #ifdef EDITOR
-if (gameStates.app.nFunctionMode==FMODE_EDITOR)
+if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 	gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
@@ -905,7 +912,7 @@ if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE) {
 	}
 else {
 	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment);
-	if (nStartSeg==-1)
+	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
 	}
 if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
@@ -979,7 +986,7 @@ return dest;
 void DoEndLevelFlyThrough (int n)
 {
 	tObject *objP;
-	tSegment *pseg;
+	tSegment *segP;
 	int old_player_seg;
 
 flydata = flyObjects + n;
@@ -995,35 +1002,35 @@ if (!flydata->firstTime) {
 	}
 //check new tPlayer seg
 UpdateObjectSeg (objP);
-pseg = &gameData.segs.segments [objP->nSegment];
-if (flydata->firstTime || objP->nSegment != old_player_seg) {		//moved into new seg
+segP = gameData.segs.segments + objP->nSegment;
+if (flydata->firstTime || (objP->nSegment != old_player_seg)) {		//moved into new seg
 	vmsVector curcenter, nextcenter;
 	fix step_size, segTime;
-	short entry_side, exit_side = -1;//what sides we entry and leave through
-	vmsVector dest_point;		//where we are heading (center of exit_side)
+	short nEntrySide, nExitSide = -1;//what sides we entry and leave through
+	vmsVector dest_point;		//where we are heading (center of nExitSide)
 	vmsAngVec dest_angles;		//where we want to be pointing
 	vmsMatrix dest_orient;
-	int up_side=0;
+	int up_side = 0;
 
-	entry_side=0;
+	nEntrySide = 0;
 	//find new exit tSide
 	if (!flydata->firstTime) {
-		entry_side = ELFindConnectedSide (objP->nSegment, old_player_seg);
-		exit_side = sideOpposite [entry_side];
+		nEntrySide = ELFindConnectedSide (objP->nSegment, old_player_seg);
+		nExitSide = sideOpposite [nEntrySide];
 		}
-	if (flydata->firstTime || entry_side==-1 || pseg->children [exit_side]==-1)
-		exit_side = find_exit_side (objP);
+	if (flydata->firstTime || nEntrySide==-1 || segP->children [nExitSide]==-1)
+		nExitSide = FindExitSide (objP);
 	{										//find closest tSide to align to
 		fix d, largest_d=-f1_0;
 		int i;
 
 		for (i = 0; i < 6; i++) {
-			d = VmVecDot (&pseg->sides [i].normals [0], &flydata->objP->position.mOrient.uVec);
+			d = VmVecDot (&segP->sides [i].normals [0], &flydata->objP->position.mOrient.uVec);
 			if (d > largest_d) {largest_d = d; up_side=i;}
 			}
 		}
 	//update target point & angles
-	COMPUTE_SIDE_CENTER (&dest_point, pseg, exit_side);
+	COMPUTE_SIDE_CENTER (&dest_point, segP, nExitSide);
 	//update target point and movement points
 	//offset tObject sideways
 	if (flydata->offset_frac) {
@@ -1032,14 +1039,14 @@ if (flydata->firstTime || objP->nSegment != old_player_seg) {		//moved into new 
 		fix dist;
 
 		for (i = 0; i < 6; i++)
-			if (i!=entry_side && i!=exit_side && i!=up_side && i!=sideOpposite [up_side]) {
+			if (i!=nEntrySide && i!=nExitSide && i!=up_side && i!=sideOpposite [up_side]) {
 				if (s0==-1)
 					s0 = i;
 				else
 					s1 = i;
 				}
-		COMPUTE_SIDE_CENTER (&s0p, pseg, s0);
-		COMPUTE_SIDE_CENTER (&s1p, pseg, s1);
+		COMPUTE_SIDE_CENTER (&s0p, segP, s0);
+		COMPUTE_SIDE_CENTER (&s1p, segP, s1);
 		dist = FixMul (VmVecDist (&s0p, &s1p), flydata->offset_frac);
 		if (dist-flydata->offsetDist > MAX_SLIDE_PER_SEGMENT)
 			dist = flydata->offsetDist + MAX_SLIDE_PER_SEGMENT;
@@ -1049,10 +1056,10 @@ if (flydata->firstTime || objP->nSegment != old_player_seg) {		//moved into new 
 	VmVecSub (&flydata->step, &dest_point, &objP->position.vPos);
 	step_size = VmVecNormalizeQuick (&flydata->step);
 	VmVecScale (&flydata->step, flydata->speed);
-	COMPUTE_SEGMENT_CENTER (&curcenter, pseg);
-	COMPUTE_SEGMENT_CENTER_I (&nextcenter, pseg->children [exit_side]);
+	COMPUTE_SEGMENT_CENTER (&curcenter, segP);
+	COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);
 	VmVecSub (&flydata->headvec, &nextcenter, &curcenter);
-	VmVector2Matrix (&dest_orient, &flydata->headvec, &pseg->sides [up_side].normals [0], NULL);
+	VmVector2Matrix (&dest_orient, &flydata->headvec, &segP->sides [up_side].normals [0], NULL);
 	VmExtractAnglesMatrix (&dest_angles, &dest_orient);
 	if (flydata->firstTime)
 		VmExtractAnglesMatrix (&flydata->angles, &objP->position.mOrient);
@@ -1170,7 +1177,7 @@ void LoadEndLevelData (int level_num)
 	char line [LINE_LEN], *p;
 	CFILE *ifile;
 	int var, nSegment, nSide;
-	int exit_side=0, i;
+	int nExitSide=0, i;
 	int bHaveBinary = 0;
 
 gameStates.app.bEndLevelDataLoaded = 0;		//not loaded yet
@@ -1220,8 +1227,10 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 		}
 	if ((p=strchr (line, ';')))
 		*p = 0;		//cut off comment
-	for (p=line+strlen (line)-1;p>line && isspace (*p);*p--=0);
-	for (p=line;isspace (*p);p++);
+	for (p = line + strlen (line) - 1; p > line && isspace (*p); *p-- = 0)
+		;
+	for (p = line; isspace (*p); p++)
+		;
 	if (!*p)		//empty line
 		continue;
 	switch (var) {
@@ -1241,7 +1250,7 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 #endif
 				gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 				return;
-			}
+				}
 			gameData.endLevel.terrain.bmP = &gameData.endLevel.terrain.bmInstance;
 			//GrRemapBitmapGood (gameData.endLevel.terrain.bmP, NULL, iff_transparent_color, -1);
 			break;
@@ -1293,7 +1302,7 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 			ta.p = -i2f (pitch)/360;
 			ta.b = 0;
 			VmAngles2Matrix (&tm, &ta);
-			if (var==5)
+			if (var == 5)
 				gameData.endLevel.satellite.vPos = tm.fVec;
 				//VmVecCopyScale (&gameData.endLevel.satellite.vPos, &tm.fVec, SATELLITE_DIST);
 			else
@@ -1313,11 +1322,13 @@ Assert (var == NUM_VARS);
 // OK, now the data is loaded.  Initialize everything
 //find the exit sequence by searching all segments for a tSide with
 //children == -2
-for (nSegment=0, gameData.endLevel.exit.nSegNum=-1;gameData.endLevel.exit.nSegNum==-1 && nSegment<=gameData.segs.nLastSegment;nSegment++)
-	for (nSide=0;nSide<6;nSide++)
+for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
+	  (gameData.endLevel.exit.nSegNum == -1) && (nSegment <= gameData.segs.nLastSegment);
+	  nSegment++)
+	for (nSide = 0; nSide < 6; nSide++)
 		if (gameData.segs.segments [nSegment].children [nSide] == -2) {
 			gameData.endLevel.exit.nSegNum = nSegment;
-			exit_side = nSide;
+			nExitSide = nSide;
 			break;
 			}
 
@@ -1325,7 +1336,7 @@ Assert (gameData.endLevel.exit.nSegNum!=-1);
 LogErr ("      computing endlevel element orientation\n");
 COMPUTE_SEGMENT_CENTER_I (&gameData.endLevel.exit.vMineExit, gameData.endLevel.exit.nSegNum);
 ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, &gameData.segs.segments [gameData.endLevel.exit.nSegNum]);
-COMPUTE_SIDE_CENTER_I (&gameData.endLevel.exit.vSideExit, gameData.endLevel.exit.nSegNum, exit_side);
+COMPUTE_SIDE_CENTER_I (&gameData.endLevel.exit.vSideExit, gameData.endLevel.exit.nSegNum, nExitSide);
 VmVecScaleAdd (&gameData.endLevel.exit.vGroundExit, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.uVec, -i2f (20));
 //compute orientation of surface
 {
@@ -1334,13 +1345,13 @@ VmVecScaleAdd (&gameData.endLevel.exit.vGroundExit, &gameData.endLevel.exit.vMin
 
 	VmAngles2Matrix (&exit_orient, &exit_angles);
 	VmTransposeMatrix (&exit_orient);
-	VmMatMul (&surface_orient, &gameData.endLevel.exit.mOrient, &exit_orient);
-	VmCopyTransposeMatrix (&tm, &surface_orient);
+	VmMatMul (&mSurfaceOrient, &gameData.endLevel.exit.mOrient, &exit_orient);
+	VmCopyTransposeMatrix (&tm, &mSurfaceOrient);
 	VmVecRotate (&tv, &gameData.endLevel.station.vPos, &tm);
 	VmVecScaleAdd (&gameData.endLevel.station.vPos, &gameData.endLevel.exit.vMineExit, &tv, STATION_DIST);
 	VmVecRotate (&tv, &gameData.endLevel.satellite.vPos, &tm);
 	VmVecScaleAdd (&gameData.endLevel.satellite.vPos, &gameData.endLevel.exit.vMineExit, &tv, SATELLITE_DIST);
-	VmVector2Matrix (&tm, &tv, &surface_orient.uVec, NULL);
+	VmVector2Matrix (&tm, &tv, &mSurfaceOrient.uVec, NULL);
 	VmVecCopyScale (&gameData.endLevel.satellite.vUp, &tm.uVec, SATELLITE_HEIGHT);
 	}
 CFClose (ifile);
