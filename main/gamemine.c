@@ -380,7 +380,7 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 			return nD1Texture + 147;
 		}
 
-	for (h = sizeof (nD1ToD2Texture) / sizeof (nD1ToD2Texture), i = 0; i < h; i++)
+	for (h = sizeofa (nD1ToD2Texture), i = 0; i < h; i++)
 		if ((nD1ToD2Texture [i].d1_min <= nD1Texture) && (nD1ToD2Texture [i].d1_max >= nD1Texture)) {
 			if (nD1ToD2Texture [i].repl [0] == -1)	// -> repl [1] contains an offset
 				return nD1Texture + nD1ToD2Texture [i].repl [1];
@@ -389,7 +389,7 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 			}
 
 	{ // handle rare case where orientation != 0
-		short nTexture = nD1Texture &  TMAP_NUM_MASK;
+		short nTexture = nD1Texture & TMAP_NUM_MASK;
 		short orient = nD1Texture & ~TMAP_NUM_MASK;
 	if (orient)
 		return orient | ConvertD1Texture (nTexture, bForce);
