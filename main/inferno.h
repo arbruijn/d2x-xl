@@ -802,6 +802,7 @@ typedef struct tApplicationStates {
 	int bEnableShadows;
 	int bEnableFreeCam;
 	int bCacheTextures;
+	int bUseSwapFile;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;

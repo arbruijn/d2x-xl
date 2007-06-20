@@ -3283,10 +3283,10 @@
 				RelativePath="..\..\main\reorder.h">
 			</File>
 			<File
-				RelativePath="..\..\resource.h">
+				RelativePath=".\resource.h">
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath="..\..\resource.h">
 			</File>
 			<File
 				RelativePath="..\..\include\rle.h">
@@ -3401,10 +3401,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

@@ -1043,6 +1043,10 @@ int PiggyInitMemory (void)
 
 if (bMemInited)
 	return 1;
+if (gameStates.app.bUseSwapFile) {
+	bitmapCacheSize = 0xFFFFFFFF;
+	return bMemInited = 1;
+	}
 #ifdef EDITOR
 bitmapCacheSize = nDataSize + (nDataSize / 10);   //extra mem for new bitmaps
 Assert (bitmapCacheSize > 0);

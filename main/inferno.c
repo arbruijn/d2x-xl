@@ -927,6 +927,8 @@ if ((t = FindArg ("-altbg_name")) && *Args [t+1])
 	strncpy (gameOptions [0].menus.altBg.szName, Args [t+1], sizeof (gameOptions [0].menus.altBg.szName));
 if ((t = FindArg ("-menu_hotkeys")))
 	gameOptions [0].menus.nHotKeys = NumArg (t, 1);
+if ((t = FindArg ("-use_swapfile")))
+	gameStates.app.bUseSwapFile = NumArg (t, 1);
 else if (gameStates.app.bEnglish)
 	gameOptions [0].menus.nHotKeys = 1;
 }
