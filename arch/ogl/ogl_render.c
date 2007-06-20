@@ -707,8 +707,8 @@ return (float) ((c < 0.5) ? pow (c, 1.0f / b) : pow (c, b));
 
 void OglColor4sf (float r, float g, float b, float s)
 {
-if (IsMultiGame || (gameStates.ogl.nContrast == 8) || gameStates.app.bNostalgia)
-	glColor4f (r * s, g * s, b * s, gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+if (gameStates.ogl.bStandardContrast)
+	glColor4f (r * s, g * s, b * s, gameStates.ogl.fAlpha);
 else {
 	float c = (float) gameStates.ogl.nContrast - 8.0f;
 
@@ -716,8 +716,7 @@ else {
 		c = 1.0f / (1.0f + c * (3.0f / 8.0f));
 	else
 		c = 1.0f - c * (3.0f / 8.0f);
-	glColor4f (BC (r, c) * s, BC (g, c) * s, BC (b, c) * s, 
-				  gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+	glColor4f (BC (r, c) * s, BC (g, c) * s, BC (b, c) * s, gameStates.ogl.fAlpha);
 	}
 }
 
@@ -728,22 +727,14 @@ else {
 	float l = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvlList->l);
 	float s = 1.0f;
 
-if (!gameStates.render.nRenderPass)
-	return;
 #if SHADOWS
-if (EGI_FLAG (bShadows, 0, 1, 0) 
-	 && (gameStates.render.nShadowPass < 3)
-	 && !FAST_SHADOWS
-#	if DBG_SHADOWS
-	 && !bShadowTest
-#	endif
-	 )
+if (gameStates.ogl.bScaleLight)
 	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)
 	OglColor4sf (l, l, l, s);
 else if (vertColor) {
-	if (SHOW_DYN_OBJ_LIGHT) {
+	if (gameStates.ogl.bDynObjLight) {
 		vertColor->color.red = 
 		vertColor->color.green = 
 		vertColor->color.blue = 1.0f;
@@ -756,7 +747,6 @@ else if (vertColor) {
 			tMapColor.color.green =
 			tMapColor.color.blue = 1.0;
 		}	
-	#if VERTEX_LIGHTING
 	else if (i >= sizeof (vertColors) / sizeof (tFaceColor))
 		return;
 	else if (vertColors [i].index) {
@@ -770,12 +760,6 @@ else if (vertColor) {
 			pvc->index = 0;
 			}
 		}	
-	#else
-	else if (lightColor.index) {
-		ScaleColor (&lightColor, l);
-		vertColor->color = lightColor.color;
-		}
-	#endif	
 	else {
 		vertColor->color.red = 
 		vertColor->color.green = 
@@ -784,7 +768,7 @@ else if (vertColor) {
 	vertColor->color.alpha = s;
 	}
 else {
-	if (SHOW_DYN_OBJ_LIGHT)
+	if (gameStates.ogl.bDynObjLight)
 		OglColor4sf (1.0f, 1.0f, 1.0f, s);
 	else if (tMapColor.index) {
 		ScaleColor (&tMapColor, l);
@@ -794,14 +778,11 @@ else {
 			tMapColor.color.green =
 			tMapColor.color.blue = 1.0;
 		}	
-	#if VERTEX_LIGHTING
 	else if (i >= sizeof (vertColors) / sizeof (tFaceColor))
 		return;
 	else if (vertColors [i].index) {
 			tFaceColor *pvc = vertColors + i;
 
-	//	if (pvc->index >= 0)
-	//		ScaleColor (pvc, l);
 		OglColor4sf (pvc->color.red, pvc->color.green, pvc->color.blue, s);
 		if (bResetColor) {
 			pvc->color.red =
@@ -810,12 +791,6 @@ else {
 			pvc->index = 0;
 			}
 		}	
-	#else
-	else if (lightColor.index) {
-		ScaleColor (&lightColor, l);
-		OglColor4sf (lightColor.color.red, lightColor.color.green, lightColor.color.blue, s);
-		}
-	#endif	
 	else {
 		OglColor4sf (l, l, l, s);
 		}
@@ -824,27 +799,25 @@ else {
 
 //------------------------------------------------------------------------------
 
-inline void SetTexCoord (tUVL *uvlList, int orient, int multi, tUVLf *vertUVL)
+inline void SetTexCoord (tUVL *uvlList, int nOrient, int bMulti, tUVLf *vertUVL)
 {
 	float u1, v1;
 
-switch (orient) {
-	case 1:
-		u1 = 1.0f - f2fl (uvlList->v);
-		v1 = f2fl (uvlList->u);
-		break;
-	case 2:
-		u1 = 1.0f - f2fl (uvlList->u);
-		v1 = 1.0f - f2fl (uvlList->v);
-		break;
-	case 3:
-		u1 = f2fl (uvlList->v);
-		v1 = 1.0f - f2fl (uvlList->u);
-		break;
-	default:
-		u1 = f2fl (uvlList->u);
-		v1 = f2fl (uvlList->v);
-		break;
+if (nOrient == 1) {
+	u1 = 1.0f - f2fl (uvlList->v);
+	v1 = f2fl (uvlList->u);
+	}
+else if (nOrient == 2) {
+	u1 = 1.0f - f2fl (uvlList->u);
+	v1 = 1.0f - f2fl (uvlList->v);
+	}
+else if (nOrient == 3) {
+	u1 = f2fl (uvlList->v);
+	v1 = 1.0f - f2fl (uvlList->u);
+	}
+else {
+	u1 = f2fl (uvlList->u);
+	v1 = f2fl (uvlList->v);
 	}
 if (vertUVL) {
 	vertUVL->v.u = u1;
@@ -852,7 +825,7 @@ if (vertUVL) {
 	}
 else {
 #if OGL_MULTI_TEXTURING
-	if (multi)
+	if (bMulti)
 		glMultiTexCoord2f (GL_TEXTURE1_ARB, u1, v1);
 else
 #endif
@@ -889,16 +862,12 @@ else {
 		glNewList (glInitTMU [bClientState][i], GL_COMPILE);
 	OglActiveTexture (tmuIds [i], bClientState);
 	glEnable (GL_TEXTURE_2D);
-	switch (i) {
-		case 0:
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			break;
-		case 1:
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-			break;
-		default:
-			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		}
+	if (i == 0)
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	else if (i == 1)
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	else
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (glInitTMU [bClientState][i]) {
 		glEndList ();
 		InitTMU (i, bClientState);
@@ -1529,6 +1498,7 @@ bool G3DrawTexPolyMulti (
 					bSuperTransp = 0;
 	int			bLight = 1, 
 					bDynLight = SHOW_DYN_OBJ_LIGHT && !gameStates.app.bEndLevelSequence, 
+					bResetColor = 0,
 					bDrawOverlay = 0;
 	grsBitmap	*bmP = NULL, *bmMask;
 	g3sPoint		*pl, **ppl;
@@ -1633,11 +1603,14 @@ if (gameStates.render.bFullBright) {
 	glColor3d (1,1,1);
 	bLight = 0;
 	}
+else if (!gameStates.render.nRenderPass)
+	bLight = 0;
 else if (!bLight)
 	glColor3i (0,0,0);
 if (!bLight)
 	bDynLight = 0;
-
+gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
+gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 #if G3_DRAW_ARRAYS
 if (bDrawArrays = 0) {
 	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
@@ -1708,14 +1681,15 @@ else
 	else if (bLight) {
 		if (bDrawOverlay) {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-				SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, NULL);
+				SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				OglVertex3f (*ppl);
 				}
 			}
 		else {
+			bResetColor = (bDrawOverlay != 1);
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-				SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, NULL);
+				SetTMapColor (uvlList + i, i, bmBot, bResetColor, NULL);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
 				OglVertex3f (*ppl);
@@ -1777,13 +1751,13 @@ if (bDrawOverlay > 0) {
 	}
 else if (bShaderMerge) {
 #if OGL_CLEANUP
-	OglActiveTexture (GL_TEXTURE1_ARB, G3_DRAW_ARRAYS);
+	OglActiveTexture (GL_TEXTURE1_ARB, bDrawArrays);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D); // Disable the 2nd texture
 #endif
 	glUseProgramObject (tmProg = 0);
 	}
-OglActiveTexture (GL_TEXTURE0_ARB, G3_DRAW_ARRAYS);
+OglActiveTexture (GL_TEXTURE0_ARB, bDrawArrays);
 OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 tMapColor.index =

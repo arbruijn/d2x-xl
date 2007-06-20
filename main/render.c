@@ -4347,9 +4347,13 @@ if (nClearWindow == 2) {
 		}
 	}
 InitFaceList ();
-gameStates.render.bFullBright =
-	gameStates.render.automap.bDisplay && 
-	gameOpts->render.automap.bBright;
+gameStates.render.bFullBright = gameStates.render.automap.bDisplay && gameOpts->render.automap.bBright;
+gameStates.ogl.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (gameStates.ogl.nContrast == 8);
+#if SHADOWS
+gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowPass < 3) && !FAST_SHADOWS;
+#else
+gameStates.ogl.bScaleLight = 0;
+#endif
 return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 }
 

@@ -510,6 +510,9 @@ typedef struct tOglStates {
 	int nLastH;
 	int nReticle;
 	int bpp;
+	int bScaleLight;
+	int bDynObjLight;
+	int bStandardContrast;
 	int nRGBAFormat;
 	int nRGBFormat;
 	int bIntensity4;
@@ -525,6 +528,7 @@ typedef struct tOglStates {
 	tRgbColorb bright;
 	tRgbColorf fBright;
 	tRgbColors palAdd;
+	float fAlpha;
 } tOglStates;
 
 typedef struct tCameraStates {
