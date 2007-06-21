@@ -41,7 +41,7 @@ tObject *ExplodeBadassWeapon(tObject *obj,vmsVector *pos);
 // blows up the tPlayer with a badass explosion
 // return the explosion tObject
 tObject *ExplodeBadassPlayer(tObject *obj);
-tObject *CreateBlast (tObject *objP);
+tObject *CreateExplBlast (tObject *objP);
 void ExplodeObject(tObject *obj,fix delayTime);
 void DoExplosionSequence(tObject *obj);
 void DoDebrisFrame(tObject *obj);      // deal with debris for this frame

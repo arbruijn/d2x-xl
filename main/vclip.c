@@ -100,7 +100,7 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 
 // -----------------------------------------------------------------------------
 
-void DrawBlast (tObject *objP)
+void DrawExplBlast (tObject *objP)
 {
 	float			fLife, fAlpha;
 	fix			xSize, xSize2;
@@ -113,6 +113,8 @@ void DrawBlast (tObject *objP)
 		{1, 0.75f, 0, 1},
 		{1, 1.0f, 1, 3}};
 
+if (objP->lifeleft <= 0)
+	return;
 if (!LoadCorona ())
 	return;
 fLife = f2fl (BLAST_LIFE * 2 - objP->lifeleft);
@@ -126,7 +128,9 @@ VmVecInc (&vPos, &vDir);
 glDepthMask (0);
 #if SIMPLE_BLAST
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 4);
+#	ifdef _DEBUG
 HUDMessage (0, "%1.2f", fAlpha);
+#	endif
 G3DrawSprite (&vPos, xSize, xSize, bmpCorona, NULL, fAlpha);
 #else
 xSize2 = xSize / 20;

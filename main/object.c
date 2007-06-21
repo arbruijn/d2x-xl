@@ -2367,6 +2367,13 @@ switch (objP->renderType) {
 			}
 		break;
 
+	case RT_EXPLBLAST: 
+		if (!bForce && (gameStates.render.nType != 1))
+			return 0;
+		if (gameStates.render.nShadowPass != 2)
+			DrawExplBlast (objP); 
+		break;
+
 	case RT_WEAPON_VCLIP: 
 		if (gameStates.render.nType != 1)
 			return 0;

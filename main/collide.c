@@ -847,7 +847,7 @@ if (weaponP->id == OMEGA_ID)
 		return 1;
 
 if (bIsMissile [weaponP->id])
-	CreateBlast (weaponP);
+	CreateExplBlast (weaponP);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);

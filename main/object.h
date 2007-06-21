@@ -57,11 +57,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_MONSTERBALL	17	 // a monsterball
 #define OBJ_SMOKE			18	 // static smoke
 #define OBJ_EXPLOSION	19	 // static explosion clouds
-#define OBJ_BLAST			20	 // white explosion blast
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in tObject.c
-#define MAX_OBJECT_TYPES 21
+#define MAX_OBJECT_TYPES 20
 
 // Result types
 #define RESULT_NOTHING  0   // Ignore this collision
@@ -99,6 +98,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_MORPH        6   // a robot being morphed
 #define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
+#define RT_EXPLBLAST		9	 // white explosion light blast
 
 // misc tObject flags
 #define OF_EXPLODING        1   // this tObject is exploding

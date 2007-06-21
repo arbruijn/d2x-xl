@@ -71,10 +71,10 @@ int	PK1=1, PK2=8;
 
 //------------------------------------------------------------------------------
 
-tObject *CreateBlast (tObject *parentObjP)
+tObject *CreateExplBlast (tObject *parentObjP)
 {
-	short	nObject = CreateObject (OBJ_BLAST, -1, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
-											2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
+	short	nObject = CreateObject (OBJ_FIREBALL, -1, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
+											2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
 	tObject	*objP;
 
 if (!gameOpts->render.bExplBlast)
@@ -475,12 +475,8 @@ return debrisP;
 
 void DrawFireball (tObject *objP)
 {
-if (objP->lifeleft > 0) {
-	if (objP->nType == OBJ_BLAST)
-		DrawBlast (objP);
-	else
-		DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
-	}
+if (objP->lifeleft > 0)
+	DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1545,7 +1541,7 @@ return VCLIP_SMALL_EXPLOSION;		//default
 void ExplodePolyModel (tObject *objP)
 {
 Assert (objP->renderType == RT_POLYOBJ);
-CreateBlast (objP);
+CreateExplBlast (objP);
 if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
 	objP->rType.polyObjInfo.nModel = gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel];
 if (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels > 1) {
