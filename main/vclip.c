@@ -28,6 +28,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "vclip.h"
 #include "weapon.h"
 #include "laser.h"
+#include "render.h"
 #include "hudmsg.h"
 
 //----------------- Variables for video clips -------------------
@@ -90,6 +91,22 @@ else {
 if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 	glDepthMask (1);
 #endif
+}
+
+// -----------------------------------------------------------------------------
+
+void DrawBlast (tObject *objP)
+{
+	float	fLife;
+	fix	xSize;
+
+if (!LoadCorona ())
+	return;
+fLife = f2fl (F1_0 - objP->lifeleft);
+xSize = (fix) (objP->size * 10 * fLife);
+glDepthMask (0);
+G3DrawBitmap (&objP->position.vPos, xSize, xSize, bmpCorona, 0, NULL, f2fl (objP->lifeleft) * 2.5f, 1, 1);
+glDepthMask (1);
 }
 
 // -----------------------------------------------------------------------------

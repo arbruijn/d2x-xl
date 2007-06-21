@@ -55,12 +55,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_MARKER      15  // a map marker
 #define OBJ_CAMBOT		16	 // a camera
 #define OBJ_MONSTERBALL	17	 // a monsterball
-#define OBJ_SMOKE			18
-#define OBJ_EXPLOSION	19
+#define OBJ_SMOKE			18	 // static smoke
+#define OBJ_EXPLOSION	19	 // static explosion clouds
+#define OBJ_BLAST			20	 // white explosion blast
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in tObject.c
-#define MAX_OBJECT_TYPES 20
+#define MAX_OBJECT_TYPES 21
 
 // Result types
 #define RESULT_NOTHING  0   // Ignore this collision

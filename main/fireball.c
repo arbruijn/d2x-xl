@@ -71,6 +71,35 @@ int	PK1=1, PK2=8;
 
 //------------------------------------------------------------------------------
 
+tObject *CreateBlast (tObject *parentObjP)
+{
+	short	nObject = CreateObject (OBJ_BLAST, -1, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
+											2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
+	tObject	*objP;
+
+if (!gameOpts->render.bExplBlast)
+	return NULL;
+if (nObject < 0)
+	return NULL;
+objP = OBJECTS + nObject;
+objP->lifeleft = F1_0 / 2;	//1/2 sec
+objP->size = parentObjP->size;
+if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [parentObjP->id])) {
+	if ((parentObjP->id == EARTHSHAKER_ID) || (parentObjP->id == ROBOT_EARTHSHAKER_ID))
+		objP->size *= 5;
+	if ((parentObjP->id == MEGAMSL_ID) || (parentObjP->id == ROBOT_MEGAMSL_ID) || (parentObjP->id == EARTHSHAKER_MEGA_ID))
+		objP->size *= 20;
+	else {
+		objP->lifeleft /= 2;
+		if (parentObjP->size < F1_0)
+			objP->size *= 10;
+		}
+	}
+return objP;
+}
+
+//------------------------------------------------------------------------------
+
 tObject *ObjectCreateExplosionSub (
 	tObject *objP, 
 	short nSegment, 
@@ -445,8 +474,12 @@ return debrisP;
 
 void DrawFireball (tObject *objP)
 {
-if (objP->lifeleft > 0)
-	DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+if (objP->lifeleft > 0) {
+	if (objP->nType == OBJ_BLAST)
+		DrawBlast (objP);
+	else
+		DrawVClipObject (objP, objP->lifeleft, 0, objP->id, (objP->nType == OBJ_WEAPON) ? gameData.weapons.color + objP->id : NULL);
+	}
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1508,18 +1541,19 @@ return VCLIP_SMALL_EXPLOSION;		//default
 
 //------------------------------------------------------------------------------
 //blow up a polygon model
-void ExplodePolyModel (tObject *obj)
+void ExplodePolyModel (tObject *objP)
 {
-Assert (obj->renderType == RT_POLYOBJ);
-if (gameData.models.nDyingModels [obj->rType.polyObjInfo.nModel] != -1)
-	obj->rType.polyObjInfo.nModel = gameData.models.nDyingModels [obj->rType.polyObjInfo.nModel];
-if (gameData.models.polyModels [obj->rType.polyObjInfo.nModel].nModels > 1) {
+Assert (objP->renderType == RT_POLYOBJ);
+CreateBlast (objP);
+if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
+	objP->rType.polyObjInfo.nModel = gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel];
+if (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels > 1) {
 	int i;
-	for (i = 1; i < gameData.models.polyModels [obj->rType.polyObjInfo.nModel].nModels; i++)
-		if ((obj->nType != OBJ_ROBOT) || (obj->id != 44) || (i != 5)) 	//energy sucker energy part
-			ObjectCreateDebris (obj, i);
+	for (i = 1; i < gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels; i++)
+		if ((objP->nType != OBJ_ROBOT) || (objP->id != 44) || (i != 5)) 	//energy sucker energy part
+			ObjectCreateDebris (objP, i);
 	//make parent tObject only draw center part
-	obj->rType.polyObjInfo.nSubObjFlags = 1;
+	objP->rType.polyObjInfo.nSubObjFlags = 1;
 	}
 }
 

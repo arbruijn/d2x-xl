@@ -218,6 +218,7 @@ typedef struct tRenderOptions {
 	int bWireFrame;
 	int bOptimize;
 	int bTransparentEffects;
+	int bExplBlast;
 	int bCoronas;
 	int bObjectCoronas;
 	int nCoronaIntensity;

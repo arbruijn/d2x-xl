@@ -1861,7 +1861,7 @@ void EffectOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, 
-			optTracers, optShockwaves, optTrailType;
+			optTracers, optShockwaves, optTrailType, optExplBlast;
 	char	szCoronaInt [50];
 
 pszCoronaInt [0] = TXT_LOW;
@@ -1889,6 +1889,8 @@ do {
 	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
+	ADD_CHECK (opt, TXT_EXPLOSION_BLAST, gameOpts->render.bExplBlast, KEY_B, HTX_EXPLOSION_BLAST);
+	optExplBlast = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
 	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
@@ -1918,6 +1920,7 @@ do {
 		} 
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
+	gameOpts->render.bExplBlast = m [optExplBlast].value;
 	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
 	gameOpts->render.bObjectCoronas = m [effectOpts.nObjCoronas].value;
 	if (optTrailType >= 0)

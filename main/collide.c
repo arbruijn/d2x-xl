@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "textures.h"
 #include "multi.h"
 #include "cntrlcen.h"
+#include "fireball.h"
 #include "newdemo.h"
 #include "endlevel.h"
 #include "multibot.h"
@@ -143,7 +144,7 @@ if ((robot->id == ROBOT_BRAIN) ||
 
 int ApplyDamageToClutter (tObject *clutter, fix damage)
 {
-if (clutter->flags&OF_EXPLODING)
+if (clutter->flags & OF_EXPLODING)
 	return 0;
 if (clutter->shields < 0) 
 	return 0;	//clutter already dead...
@@ -845,6 +846,8 @@ if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 
+if (bIsMissile [weaponP->id])
+	CreateBlast (weaponP);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
@@ -856,8 +859,8 @@ if (weaponP->id == GUIDEDMSL_ID) {
 		con_printf (CONDBG, "Guided missile loses bounciness. \n");
 #endif
 		weaponP->mType.physInfo.flags &= ~PF_BOUNCE;
+		}
 	}
-}
 
 //if an energy weaponP hits a forcefield, let it bounce
 if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&

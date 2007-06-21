@@ -383,6 +383,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.textures.nQuality, i, 0);
 		RP (gameOptions [i].render.bAutoTransparency, i, 0);
+		RP (gameOptions [i].render.bExplBlast, i, 0);
 		RP (gameOptions [i].render.bCoronas, i, 0);
 		RP (gameOptions [i].render.bObjectCoronas, i, 0);
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
@@ -891,6 +892,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.nDebrisLife=0"},
 	{"gameOptions[0].render.textures.nQuality=2"},
 	{"gameOptions[0].render.bAutoTransparency=1"},
+	{"gameOptions[0].render.bExplBlast=1"},
 	{"gameOptions[0].render.bCoronas=1"},
 	{"gameOptions[0].render.bObjectCoronas=1"},
 	{"gameOptions[0].render.nCoronaIntensity=1"},

@@ -656,6 +656,8 @@ void BotGenHandler (tFuelCenInfo * matCenP)
 	fix			topTime;
 	int			nType, nMyStation, nCount, i;
 
+if (gameStates.gameplay.bNoBotAI)
+	return;
 if (!matCenP->bEnabled)
 	return;
 if (matCenP->xDisableTime > 0) {
