@@ -294,6 +294,8 @@ bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoi
 //returns 1 if off screen, 0 if drew
 bool G3DrawBitmap (vmsVector *pos,fix width,fix height,grsBitmap *bm, int orientation, tRgbaColorf *color, float alpha, int transp, int bDepthInfo);
 
+bool G3DrawSprite (vmsVector *pos, fix width, fix height, grsBitmap *bmP, tRgbaColorf *color, float alpha);
+
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults
 void G3SetSpecialRender(tmap_drawer_fp tmap_drawer, flat_drawer_fp flat_drawer, line_drawer_fp line_drawer);

@@ -1863,6 +1863,63 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+bool G3DrawSprite (
+	vmsVector	*pos, 
+	fix			width, 
+	fix			height, 
+	grsBitmap	*bmP, 
+	tRgbaColorf	*color,
+	float			alpha)
+{
+	vmsVector	pv, v1;
+	GLdouble		h, w, u, v, x, y, z;
+
+OglActiveTexture (GL_TEXTURE0_ARB, 0);
+VmVecSub (&v1, pos, &viewInfo.pos);
+VmVecRotate (&pv, &v1, &viewInfo.view [0]);
+x = (double) f2fl (pv.p.x);
+y = (double) f2fl (pv.p.y);
+z = (double) f2fl (pv.p.z);
+w = (double) f2fl (width); 
+h = (double) f2fl (height); 
+if (gameStates.render.nShadowBlurPass == 1) {
+	glDisable (GL_TEXTURE_2D);
+	glColor4d (1,1,1,1);
+	glBegin (GL_QUADS);
+	glVertex3d (x - w, y + h, z);
+	glVertex3d (x + w, y + h, z);
+	glVertex3d (x + w, y - h, z);
+	glVertex3d (x - w, y - h, z);
+	glEnd ();
+	}
+else {
+	glEnable (GL_TEXTURE_2D);
+	if (OglBindBmTex (bmP, 1, 1)) 
+		return 1;
+	bmP = BmOverride (bmP);
+	OglTexWrap (bmP->glTexture, GL_CLAMP);
+	if (color)
+		glColor4f (color->red, color->green, color->blue, alpha);
+	else
+		glColor4d (1, 1, 1, (double) alpha);
+	glBegin (GL_QUADS);
+	u = bmP->glTexture->u;
+	v = bmP->glTexture->v;
+	glTexCoord2d (0, 0);
+	glVertex3d (x - w, y + h, z);
+	glTexCoord2d (u, 0);
+	glVertex3d (x + w, y + h, z);
+	glTexCoord2d (u, v);
+	glVertex3d (x + w, y - h, z);
+	glTexCoord2d (0, v);
+	glVertex3d (x - w, y - h, z);
+	glEnd ();
+	}
+return 0;
+} 
+
+//------------------------------------------------------------------------------
+
 bool G3DrawBitmap (
 	vmsVector	*pos, 
 	fix			width, 

@@ -67,6 +67,38 @@ Num_args = 0;
 
 //------------------------------------------------------------------------------
 
+char *GetIniFileName (char *fnIni, int bDebug)
+{
+	int	i;
+
+if ((i = FindArg ("-ini")))
+	strncpy (fnIni, Args [i + 1], sizeof (fnIni) - 1);
+else {
+#if defined(__unix__)
+	FFS		ffs;
+	strcpy (fnIni, gameFolders.szHomeDir);
+	if (bDebug)
+		strcat (fnIni, "/.d2x-xl-dbg");
+	else
+		strcat (fnIni, "/.d2x-xl");
+	if (FFF (fnIni, &ffs, 0) <= 0) {
+#endif
+	strcpy (fnIni, gameFolders.szConfigDir);
+	if (*fnIni)
+		strcat (fnIni, "/");
+	if (bDebug)
+		strcat (fnIni, "d2xdebug.ini");
+	else
+		strcat (fnIni, "d2x.ini");
+#if defined(__unix__)
+   }
+#endif //!__unix__
+	}
+return fnIni;
+}
+
+//------------------------------------------------------------------------------
+
 void InitArgs (int argc, char **argv)
 {
 	int 		i, j;
@@ -96,35 +128,16 @@ for (i = 0; i < Num_args; i++)
 
 // look for the ini file
 // for unix, allow both ~/.d2x-xl and <config dir>/d2x.ini
-if ((i = FindArg ("-ini")))
-	strncpy (fnIni, Args [i + 1], sizeof (fnIni) - 1);
-else {
-#if defined(__unix__)
-FFS		ffs;
-	strcpy (fnIni, gameFolders.szHomeDir);
-#	ifndef RELEASE
-	strcat (fnIni, "/.d2x-xl-dbg");
-#	else
-	strcat (fnIni, "/.d2x-xl");
-#	endif
-	if (FFF (fnIni, &ffs, 0) <= 0) {
-#endif
-
-	strcpy (fnIni, gameFolders.szConfigDir);
-	if (*fnIni)
-		strcat (fnIni, "/");
 #ifdef _DEBUG
-	strcat (fnIni, "d2xdebug.ini");
-#else
-	strcat (fnIni, "d2x.ini");
+GetIniFileName (fnIni, 1);
 #endif
-
-#if defined(__unix__)
-   }
-#endif //!__unix__
-	}
-  
 f = CFOpen (fnIni, "", "rt", 0);
+#ifdef _DEBUG
+if (!f) {
+	GetIniFileName (fnIni, 0);
+	f = CFOpen (fnIni, "", "rt", 0);
+	}
+#endif
 if (f) {
 	while (!CFEoF (f)) {
 		pszLine = fsplitword (f, '\n');

@@ -21,6 +21,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #endif
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "error.h"
 
@@ -29,7 +30,11 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "weapon.h"
 #include "laser.h"
 #include "render.h"
+#include "fireball.h"
 #include "hudmsg.h"
+
+#define SIMPLE_BLAST 1
+#define MOVE_BLAST 1
 
 //----------------- Variables for video clips -------------------
 
@@ -97,23 +102,40 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 
 void DrawBlast (tObject *objP)
 {
-	float			fLife;
-	fix			xSize, xDist;
+	float			fLife, fAlpha;
+	fix			xSize, xSize2;
 	vmsVector	vPos, vDir;
+	int			i;
+
+	static tRgbaColorf blastColors [] = {
+		{0.5, 0.0f, 0.5f, 1},
+		{1, 0.5f, 0, 1},
+		{1, 0.75f, 0, 1},
+		{1, 1.0f, 1, 3}};
 
 if (!LoadCorona ())
 	return;
-fLife = f2fl (F1_0 - objP->lifeleft);
+fLife = f2fl (BLAST_LIFE * 2 - objP->lifeleft);
 xSize = (fix) (objP->size * 10 * fLife);
-glDepthMask (0);
 vPos = objP->position.vPos;
-xDist = VmVecDist (&vPos, &gameData.objs.console->position.vPos);
+#if MOVE_BLAST
 VmVecNormalize (VmVecSub (&vDir, &gameData.objs.console->position.vPos, &vPos));
 VmVecScale (&vDir, xSize - objP->size);
 VmVecInc (&vPos, &vDir);
-xDist = VmVecMag (&vDir);
-xDist = VmVecDist (&vPos, &gameData.objs.console->position.vPos);
-G3DrawBitmap (&vPos, xSize, xSize, bmpCorona, 0, NULL, f2fl (objP->lifeleft) * 2.5f, 1, 1);
+#endif
+glDepthMask (0);
+#if SIMPLE_BLAST
+fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 4);
+HUDMessage (0, "%1.2f", fAlpha);
+G3DrawSprite (&vPos, xSize, xSize, bmpCorona, NULL, fAlpha);
+#else
+xSize2 = xSize / 20;
+fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 2;
+OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+for (i = 0; i < 4; i++, xSize -= xSize2) {
+	G3DrawSprite (&vPos, xSize, xSize, bmpCorona, blastColors + i, fAlpha * blastColors [i].alpha);
+	}
+#endif
 glDepthMask (1);
 }
 
