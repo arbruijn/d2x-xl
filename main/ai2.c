@@ -1982,6 +1982,8 @@ int CreateGatedRobot (tObject *bossObjP, short nSegment, ubyte nObjId, vmsVector
 	fix			objsize = gameData.models.polyModels [botInfoP->nModel].rad;
 	ubyte			default_behavior;
 
+if (gameStates.gameplay.bNoBotAI)
+	return -1;
 nBoss = FindBoss (OBJ_IDX (bossObjP));
 if (nBoss < 0)
 	return -1;

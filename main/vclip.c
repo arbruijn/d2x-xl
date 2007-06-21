@@ -97,15 +97,23 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 
 void DrawBlast (tObject *objP)
 {
-	float	fLife;
-	fix	xSize;
+	float			fLife;
+	fix			xSize, xDist;
+	vmsVector	vPos, vDir;
 
 if (!LoadCorona ())
 	return;
 fLife = f2fl (F1_0 - objP->lifeleft);
 xSize = (fix) (objP->size * 10 * fLife);
 glDepthMask (0);
-G3DrawBitmap (&objP->position.vPos, xSize, xSize, bmpCorona, 0, NULL, f2fl (objP->lifeleft) * 2.5f, 1, 1);
+vPos = objP->position.vPos;
+xDist = VmVecDist (&vPos, &gameData.objs.console->position.vPos);
+VmVecNormalize (VmVecSub (&vDir, &gameData.objs.console->position.vPos, &vPos));
+VmVecScale (&vDir, xSize - objP->size);
+VmVecInc (&vPos, &vDir);
+xDist = VmVecMag (&vDir);
+xDist = VmVecDist (&vPos, &gameData.objs.console->position.vPos);
+G3DrawBitmap (&vPos, xSize, xSize, bmpCorona, 0, NULL, f2fl (objP->lifeleft) * 2.5f, 1, 1);
 glDepthMask (1);
 }
 

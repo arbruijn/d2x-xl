@@ -84,6 +84,8 @@ if (nObject < 0)
 objP = OBJECTS + nObject;
 objP->lifeleft = F1_0 / 2;	//1/2 sec
 objP->size = parentObjP->size;
+if (parentObjP->nType == OBJ_ROBOT)
+	objP->size /= 2;
 if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [parentObjP->id])) {
 	if ((parentObjP->id == EARTHSHAKER_ID) || (parentObjP->id == ROBOT_EARTHSHAKER_ID))
 		objP->size *= 5;
