@@ -1290,19 +1290,21 @@ void QSortClouds (int left, int right)
 			r = right; 
 	fix	m = pCloudList [(l + r) / 2].xDist;
 
-while (pCloudList [l].xDist > m)
-	l++;
-while (pCloudList [r].xDist < m)
-	r--;
-if (l <= r) {
-	if (l < r) {
-		tCloudList h = pCloudList [l];
-		pCloudList [l] = pCloudList [r];
-		pCloudList [r] = h;
+do {
+	while (pCloudList [l].xDist > m)
+		l++;
+	while (pCloudList [r].xDist < m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tCloudList h = pCloudList [l];
+			pCloudList [l] = pCloudList [r];
+			pCloudList [r] = h;
+			}
+		l++;
+		r--;
 		}
-	l++;
-	r--;
-	}
+	} while (l <= r);
 if (l < right)
 	QSortClouds (l, right);
 if (left < r)

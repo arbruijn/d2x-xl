@@ -1647,24 +1647,28 @@ if (objP->lifeleft < 0)
 extern void DropStolenItems (tObject *objP);
 
 //do whatever needs to be done for this explosion for this frame
-void DoExplosionSequence (tObject *obj)
+void DoExplosionSequence (tObject *objP)
 {
 	int t;
 
-Assert (obj->controlType == CT_EXPLOSION);
+Assert (objP->controlType == CT_EXPLOSION);
 //See if we should die of old age
-if (obj->lifeleft <= 0) 	{	// We died of old age
-	KillObject (obj);
-	obj->lifeleft = 0;
+if (objP->lifeleft <= 0) {	// We died of old age
+	KillObject (objP);
+	objP->lifeleft = 0;
+	if (objP->renderType == RT_EXPLBLAST)
+		objP->cType.explInfo.nDeleteTime = -1;
 	}
+if (objP->renderType == RT_EXPLBLAST)
+	return;
 //See if we should create a secondary explosion
-if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
-	tObject		*explObjP, *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
+if (objP->lifeleft <= objP->cType.explInfo.nSpawnTime) {
+	tObject		*explObjP, *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
 	ubyte			nVClip;
 	vmsVector	*vSpawnPos;
 	fix			xBadAss = (fix) ROBOTINFO (delObjP->id).badass;
-	if ((obj->cType.explInfo.nDeleteObj < 0) || 
-		 (obj->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
+	if ((objP->cType.explInfo.nDeleteObj < 0) || 
+		 (objP->cType.explInfo.nDeleteObj > gameData.objs.nLastObject)) {
 #if TRACE
 		con_printf (CONDBG, "Illegal value for nDeleteObj in fireball.c\n");
 #endif
@@ -1719,7 +1723,7 @@ if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
 	if (ROBOTINFO (delObjP->id).nExp2Sound > -1)
 		DigiLinkSoundToPos (ROBOTINFO (delObjP->id).nExp2Sound, delObjP->nSegment, 0, vSpawnPos, 0, F1_0);
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->id).nExp2Sound, vSpawnPos, delObjP->nSegment);
-	obj->cType.explInfo.nSpawnTime = -1;
+	objP->cType.explInfo.nSpawnTime = -1;
 	//make debris
 	if (delObjP->renderType == RT_POLYOBJ)
 		ExplodePolyModel (delObjP);		//explode a polygon model
@@ -1732,7 +1736,7 @@ if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
 		explObjP->cType.explInfo.nDeleteTime = explObjP->lifeleft/2;
 		explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
 #ifdef _DEBUG
-		if (obj->cType.explInfo.nDeleteObj < 0)
+		if (objP->cType.explInfo.nDeleteObj < 0)
 		  	Int3 (); // See Rob!
 #endif
 		}
@@ -1744,9 +1748,9 @@ if (obj->lifeleft <= obj->cType.explInfo.nSpawnTime) {
 		}
 	}
 	//See if we should delete an tObject
-if (obj->lifeleft <= obj->cType.explInfo.nDeleteTime) {
-	tObject *delObjP = gameData.objs.objects + obj->cType.explInfo.nDeleteObj;
-	obj->cType.explInfo.nDeleteTime = -1;
+if (objP->lifeleft <= objP->cType.explInfo.nDeleteTime) {
+	tObject *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;
+	objP->cType.explInfo.nDeleteTime = -1;
 	MaybeDeleteObject (delObjP);
 	}
 }

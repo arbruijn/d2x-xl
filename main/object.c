@@ -3832,7 +3832,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 		delay = DEG90;
 
 	lifetime = (delay * 3) / 2;
-	if (!(gameData.app.nGameMode & GM_MULTI)) {
+	if (!IsMultiGame) {
 		delay /= 2;
 		lifetime *= 2;
 		}
@@ -3866,6 +3866,8 @@ if ((objP->lifeleft != IMMORTAL_TIME) &&
 	 (gameData.physics.xTime != F1_0))
 	objP->lifeleft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
+if ((objP->nType == OBJ_FIREBALL) && (objP->renderType == RT_EXPLBLAST))
+	objP = objP;
 if (HandleObjectControl (objP))
 	return 1;
 if (objP->lifeleft < 0) {		// We died of old age
