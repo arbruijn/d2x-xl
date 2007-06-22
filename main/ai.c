@@ -787,7 +787,7 @@ _exit_cheat:
 
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 	// Note: Should only do these two function calls for gameData.objs.objects which animate
-	if (gameData.ai.bEnableAnimation && (gameData.ai.xDistToPlayer > MAX_WAKEUP_DIST / 2)) { // && !bMultiGame)) {
+	if (gameData.ai.bEnableAnimation && (gameData.ai.xDistToPlayer < MAX_WAKEUP_DIST / 2)) { // && !bMultiGame)) {
 		gameData.ai.bObjAnimates = DoSillyAnimation (objP);
 		if (gameData.ai.bObjAnimates)
 			AIFrameAnimation (objP);

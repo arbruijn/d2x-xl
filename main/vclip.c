@@ -33,7 +33,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "fireball.h"
 #include "hudmsg.h"
 
-#define SIMPLE_BLAST 1
+#define SIMPLE_BLAST 0
 #define MOVE_BLAST 1
 
 //----------------- Variables for video clips -------------------
@@ -126,6 +126,7 @@ VmVecScale (&vDir, xSize - objP->size);
 VmVecInc (&vPos, &vDir);
 #endif
 glDepthMask (0);
+OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if SIMPLE_BLAST
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 4);
 #	ifdef _DEBUG
@@ -135,10 +136,8 @@ G3DrawSprite (&vPos, xSize, xSize, bmpCorona, NULL, fAlpha);
 #else
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 2;
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-for (i = 0; i < 4; i++, xSize -= xSize2) {
+for (i = 0; i < 4; i++, xSize -= xSize2)
 	G3DrawSprite (&vPos, xSize, xSize, bmpCorona, blastColors + i, fAlpha * blastColors [i].alpha);
-	}
 #endif
 glDepthMask (1);
 }

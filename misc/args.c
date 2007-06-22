@@ -130,6 +130,8 @@ for (i = 0; i < Num_args; i++)
 // for unix, allow both ~/.d2x-xl and <config dir>/d2x.ini
 #ifdef _DEBUG
 GetIniFileName (fnIni, 1);
+#else
+GetIniFileName (fnIni, 0);
 #endif
 f = CFOpen (fnIni, "", "rt", 0);
 #ifdef _DEBUG

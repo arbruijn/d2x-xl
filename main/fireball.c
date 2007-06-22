@@ -73,8 +73,9 @@ int	PK1=1, PK2=8;
 
 tObject *CreateExplBlast (tObject *parentObjP)
 {
-	short	nObject = CreateObject (OBJ_FIREBALL, -1, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
-											2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
+	short		nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
+												2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
+	short		id;
 	tObject	*objP;
 
 if (!gameOpts->render.bExplBlast)
@@ -85,15 +86,18 @@ objP = OBJECTS + nObject;
 objP->lifeleft = BLAST_LIFE;
 objP->size = parentObjP->size;
 	objP->size /= 2;
-if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [parentObjP->id])) {
-	if ((parentObjP->id == EARTHSHAKER_ID) || (parentObjP->id == ROBOT_EARTHSHAKER_ID))
-		objP->size *= 5;
-	if ((parentObjP->id == MEGAMSL_ID) || (parentObjP->id == ROBOT_MEGAMSL_ID) || (parentObjP->id == EARTHSHAKER_MEGA_ID))
-		objP->size *= 20;
+if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [id = parentObjP->id])) {
+	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
+		objP->size = 7 * F1_0 / 2;
+//		objP->lifeleft = 3 * BLAST_LIFE / 2;
+		}
+	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
+		objP->size = 3 * F1_0;
+	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
+		objP->size = 2 * F1_0;
 	else {
 		objP->lifeleft /= 2;
-		if (parentObjP->size < F1_0)
-			objP->size *= 10;
+		objP->size = F1_0;
 		}
 	}
 return objP;
