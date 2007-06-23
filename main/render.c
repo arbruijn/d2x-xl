@@ -82,9 +82,6 @@ extern int bWallShadows;
 extern int bZPass;
 #endif
 
-grsBitmap *bmpCorona = NULL;
-int bHaveCorona = 0;
-
 int _CDECL_ D2X_RenderThread (void *p);
 int _CDECL_ D2X_OpenGLThread (void *p);
 
@@ -154,6 +151,34 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 }
 
 //------------------------------------------------------------------------------
+
+grsBitmap *bmpExplBlast = NULL;
+int bHaveExplBlast = 0;
+
+int LoadExplBlast (void)
+{
+if (!bHaveExplBlast) {
+	bmpExplBlast = CreateAndReadTGA ("blast.tga");
+	bHaveExplBlast = bmpExplBlast ? 1 : -1;
+	}
+return bHaveExplBlast > 0;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeExplBlast (void)
+{
+if (bmpExplBlast) {
+	GrFreeBitmap (bmpExplBlast);
+	bmpExplBlast = NULL;
+	bHaveExplBlast = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+grsBitmap *bmpCorona = NULL;
+int bHaveCorona = 0;
 
 int LoadCorona (void)
 {

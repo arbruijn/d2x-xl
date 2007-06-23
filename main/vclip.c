@@ -33,7 +33,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "fireball.h"
 #include "hudmsg.h"
 
-#define SIMPLE_BLAST 0
+#define SIMPLE_BLAST 1
 #define MOVE_BLAST 1
 
 //----------------- Variables for video clips -------------------
@@ -115,7 +115,7 @@ void DrawExplBlast (tObject *objP)
 
 if (objP->lifeleft <= 0)
 	return;
-if (!LoadCorona ())
+if (!LoadExplBlast ())
 	return;
 fLife = f2fl (BLAST_LIFE * 2 - objP->lifeleft);
 xSize = (fix) (objP->size * 10 * fLife);

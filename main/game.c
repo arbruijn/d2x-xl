@@ -1837,6 +1837,8 @@ FreeInventoryIcons ();
 FreeObjTallyIcons ();
 LogErr ("unloading corona data\n");
 FreeCorona ();
+LogErr ("unloading blast data\n");
+FreeExplBlast ();
 LogErr ("unloading deadzone indicator data\n");
 FreeDeadzone ();
 LogErr ("unloading palettes\n");

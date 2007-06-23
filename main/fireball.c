@@ -73,14 +73,13 @@ int	PK1=1, PK2=8;
 
 tObject *CreateExplBlast (tObject *parentObjP)
 {
-	short		nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
-												2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
-	short		id;
+	short		nObject, id;
 	tObject	*objP;
 
 if (!gameOpts->render.bExplBlast)
 	return NULL;
-if (nObject < 0)
+nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
+								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
 objP->lifeleft = BLAST_LIFE;
