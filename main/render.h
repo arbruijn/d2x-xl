@@ -102,6 +102,7 @@ void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float 
 void RenderMineSegment (int nn);
 
 extern grsBitmap *bmpCorona;
+extern grsBitmap *bmpExplBlast;
 
 //------------------------------------------------------------------------------
 

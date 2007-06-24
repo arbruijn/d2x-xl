@@ -128,16 +128,16 @@ VmVecInc (&vPos, &vDir);
 glDepthMask (0);
 OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if SIMPLE_BLAST
-fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 4);
+fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
 #	ifdef _DEBUG
 HUDMessage (0, "%1.2f", fAlpha);
 #	endif
-G3DrawSprite (&vPos, xSize, xSize, bmpCorona, NULL, fAlpha);
+G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, NULL, fAlpha);
 #else
 xSize2 = xSize / 20;
-fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 2;
+fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
-	G3DrawSprite (&vPos, xSize, xSize, bmpCorona, blastColors + i, fAlpha * blastColors [i].alpha);
+	G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, blastColors + i, fAlpha * blastColors [i].alpha);
 #endif
 glDepthMask (1);
 }

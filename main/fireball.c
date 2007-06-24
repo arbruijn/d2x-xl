@@ -95,7 +95,7 @@ if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [id = parentObjP->id])) {
 	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
 		objP->size = 2 * F1_0;
 	else {
-		objP->lifeleft /= 2;
+		//objP->lifeleft /= 2;
 		objP->size = F1_0;
 		}
 	}
