@@ -1436,6 +1436,7 @@ if (ROBOTINFO (robotP->id).companion) {
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
 	}
+gameData.objs.xTimeLastHit [OBJ_IDX (robotP)] = gameStates.app.nSDLTicks;
 robotP->shields -= damage;
 //	Do unspeakable hacks to make sure tPlayer doesn't die after killing boss.  Or before, sort of.
 if (bIsBoss) {
@@ -1700,14 +1701,14 @@ if (weaponP->cType.laserInfo.nParentSig == robotP->nSignature)
 //	Also, only a weaponP hit from a tPlayer weaponP causes smart blobs.
 if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	if ((robotP->shields > 0) && bIsEnergyWeapon [weaponP->id]) {
-		int	num_blobs;
-		fix	probval = (gameStates.app.nDifficultyLevel+2) * min (weaponP->shields, robotP->shields);
-		probval = botInfoP->energyBlobs * probval/ (NDL*32);
-		num_blobs = probval >> 16;
-		if (2*d_rand () < (probval & 0xffff))
-			num_blobs++;
-		if (num_blobs)
-			CreateSmartChildren (robotP, num_blobs);
+		int	nBlobs;
+		fix	xProb = (gameStates.app.nDifficultyLevel+2) * min (weaponP->shields, robotP->shields);
+		xProb = botInfoP->energyBlobs * xProb/ (NDL*32);
+		nBlobs = xProb >> 16;
+		if (2 * d_rand () < (xProb & 0xffff))
+			nBlobs++;
+		if (nBlobs)
+			CreateSmartChildren (robotP, nBlobs);
 		}
 
 	//	Note: If weaponP hits an invulnerable boss, it will still do badass damage, including to the boss, 
@@ -1756,7 +1757,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 			//	hit, and missing a robotP is what prevents the Gauss from being game-breaking.
 			if (weaponP->id == GAUSS_ID) {
 				if (botInfoP->bossFlag)
-					damage = damage * (2 * NDL - gameStates.app.nDifficultyLevel) / (2 * NDL);
+					damage *= (2 * NDL - gameStates.app.nDifficultyLevel) / (2 * NDL);
 				}
 			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weaponP->id == FUSION_ID))
 				damage *= extraGameInfo [IsMultiGame].nFusionPowerMod / 2;

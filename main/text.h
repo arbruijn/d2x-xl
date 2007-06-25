@@ -1740,10 +1740,10 @@ void LoadGameTexts(void);
 #define TXT_SOLID_LIGHTTRAILS		GT(947)
 #define TXT_PLASMA_LIGHTTRAILS	GT(948)
 #define TXT_EXPLOSION_BLAST		GT(949)
+#define TXT_ROBOT_SHIELDS			GT(950)
 
 #if 0
 
-#define TXT_				GT(950)
 #define TXT_				GT(951)
 #define TXT_				GT(952)
 #define TXT_				GT(953)
@@ -2207,10 +2207,10 @@ void LoadGameTexts(void);
 #define HTX_PLAYER_DRAG				HT(293)				
 #define HTX_LIGHTTRAIL_TYPE		HT(294)				
 #define HTX_EXPLOSION_BLAST		HT(295)				
+#define HTX_ROBOT_SHIELDS			HT(296)				
 
 #if 0
 				
-#define HTX_					HT(296)				
 #define HTX_					HT(297)				
 #define HTX_					HT(298)				
 #define HTX_					HT(299)				

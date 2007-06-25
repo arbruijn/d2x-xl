@@ -1069,7 +1069,7 @@ if ((t = FindArg ("-mathformat")))
 	gameOpts->render.nDefMathFormat = NumArg (t, 2);
 #if defined (_WIN32) || defined (__unix__)
 if ((t = FindArg ("-enable_sse")))
-	gameOpts->render.bEnableSSE = NumArg (t, 1);
+	gameStates.render.bEnableSSE = NumArg (t, 1);
 #endif
 if ((t = FindArg ("-render_opt")))
 	gameOptions [0].render.bOptimize = NumArg (t, 1);
@@ -1233,7 +1233,6 @@ if (i) {
 	gameOptions [1].render.bOptimize = 0;
 	gameOptions [1].render.nMathFormat = 0;
 	gameOptions [1].render.nDefMathFormat = 0;
-	gameOptions [1].render.bEnableSSE = 0;
 	gameOptions [1].render.nDebrisLife = 0;
 	gameOptions [1].render.shadows.nLights = 0;
 	gameOptions [1].render.cameras.bFitToWall = 0;
@@ -1321,7 +1320,6 @@ else {
 	gameOptions [0].render.bAutoTransparency = 1;
 	gameOptions [0].render.nMathFormat = 0;
 	gameOptions [0].render.nDefMathFormat = 0;
-	gameOptions [0].render.bEnableSSE = 0;
 	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.bCoronas = 0;
 	gameOptions [0].render.bObjectCoronas = 0;
@@ -2258,6 +2256,7 @@ GETMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS, 0);
 GETMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS, 0);
+GETMEM (fix, gameData.objs.xTimeLastHit, MAX_OBJECTS, 0);
 GETMEM (fix, gameData.objs.xLight, MAX_OBJECTS, 0);
 GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
 GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
@@ -2414,6 +2413,7 @@ FREEMEM (tSpeedBoostData, gameData.objs.speedBoost, MAX_OBJECTS);
 FREEMEM (vmsVector, gameData.objs.vRobotGoals, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLastAfterburnerTime, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xCreationTime, MAX_OBJECTS);
+FREEMEM (fix, gameData.objs.xTimeLastHit, MAX_OBJECTS);
 FREEMEM (fix, gameData.objs.xLight, MAX_OBJECTS);
 FREEMEM (int, gameData.objs.nLightSig, MAX_OBJECTS);
 FREEMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS);

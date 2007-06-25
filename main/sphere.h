@@ -22,6 +22,8 @@ void SetSpherePulse (tPulseData *pPulse, float fSpeed, float fMin);
 
 void UseSpherePulse (tSphereData *sdP, tPulseData *pPulse);
 
+void FreeSphereCoord (void);
+
 #endif //__SPHERE_H
 
 //eof

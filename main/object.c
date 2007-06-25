@@ -2282,8 +2282,17 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
 			DrawPolygonObject (objP);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#else
+			if (EGI_FLAG (bRenderShield, 0, 1, 0) && gameOpts->render.bRobotShields) {
+				if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
+					DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.4f);
+				else if (ROBOTINFO (objP->id).companion)
+					DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, 0.4f);
+				else
+					DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, 0.4f);
+				}
 #endif
 			RenderTargetIndicator (objP, NULL);
 			SetRobotLocationInfo (objP);

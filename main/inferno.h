@@ -224,10 +224,10 @@ typedef struct tRenderOptions {
 	int nCoronaIntensity;
 	int bUseShaders;
 	int bHiresModels;
+	int bRobotShields;
 	int bAutoTransparency;
 	int nMathFormat;
 	int nDefMathFormat;
-	int bEnableSSE;
 	short nMaxFPS;
 	int nQuality;
 	int nTextureQuality;
@@ -631,6 +631,7 @@ typedef struct tRenderStates {
 	int bColored;
 	int bBriefing;
 	int bRearView;
+	int bEnableSSE;
 	int nInterpolationMethod;
 	int bTMapFlat;
 	int nWindow;
@@ -1279,6 +1280,7 @@ typedef struct tObjectData {
 	vmsVector			*vRobotGoals;
 	fix					*xLastAfterburnerTime;
 	fix					*xCreationTime;
+	fix					*xTimeLastHit;
 	fix					*xLight;
 	int					*nLightSig;
 	tFaceColor			color;

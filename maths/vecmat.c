@@ -29,7 +29,7 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "error.h"
 //#define _DEBUG
 #define EXACT_VEC_MAG	1
-#define ENABLE_SSE		0
+#define ENABLE_SSE		1
 
 #ifndef ASM_VECMAT
 vmsVector vmdZeroVector = {{0, 0, 0}};
@@ -224,7 +224,7 @@ return dest;
 fVector *VmVecMulf (fVector *dest, fVector *src0, fVector *src1)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 #if defined (_WIN32)
 	_asm {
 		mov		esi,src0
@@ -232,7 +232,8 @@ if (gameOpts->render.bEnableSSE) {
 		mov		esi,src1
 		movups	xmm1,[esi]
 		mulps		xmm0,xmm1
-		movups	dest,xmm0
+		mov		esi,dest
+		movups	[esi],xmm0
 		}
 #elif defined (__unix__)
 	asm (
@@ -261,7 +262,7 @@ return dest;
 fix VmVecDotProd (vmsVector *v0, vmsVector *v1)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 		fVector	v0h, v1h;
 	
 	VmsVecToFloat (&v0h, v0);
@@ -304,7 +305,7 @@ else {
 float VmVecDotf (fVector *v0, fVector *v1)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 		fVector	v;
 
 #if defined (_WIN32)
@@ -457,7 +458,7 @@ else {
 float VmVecMagf (fVector *v)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 		fVector	h;
 #if defined (_WIN32)
 	__asm {
@@ -499,7 +500,7 @@ float VmVecDistf (fVector *v0, fVector *v1)
 	fVector	t;
 
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 #if defined (_WIN32)
 	__asm {
 		mov		esi,v0
@@ -1078,7 +1079,7 @@ return m;
 vmsVector *VmVecRotate (vmsVector *dest, vmsVector *src, vmsMatrix *m)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 		fVector	vf;
 		fMatrix	mf, *mfP;
 
@@ -1187,7 +1188,7 @@ return dest;
 fVector *VmVecRotatef (fVector *dest, fVector *src, fMatrix *m)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 #if defined (_WIN32)
 	__asm {
 		mov		esi,src
@@ -1401,7 +1402,7 @@ return a;
 fix VmDistToPlane (vmsVector *checkp, vmsVector *norm, vmsVector *planep)
 {
 #if ENABLE_SSE
-if (gameOpts->render.bEnableSSE) {
+if (gameStates.render.bEnableSSE) {
 		fVector	c, p, n, t;
 	
 	VmsVecToFloat (&c, checkp);

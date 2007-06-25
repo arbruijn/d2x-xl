@@ -197,6 +197,7 @@ static struct {
 	int	nObjCoronas;
 	int	nCoronaIntensity;
 	int	nLightTrails;
+	int	nRenderShields;
 } effectOpts;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
@@ -1824,6 +1825,12 @@ void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem	*m;
 	int			v;
 
+m = menus + effectOpts.nRenderShields;
+v = m->value;
+if (extraGameInfo [0].bRenderShield != v) {
+	extraGameInfo [0].bRenderShield = v;
+	*key = -2;
+	}	
 m = menus + effectOpts.nLightTrails;
 v = m->value;
 if (extraGameInfo [0].bLightTrails != v) {
@@ -1860,7 +1867,7 @@ void EffectOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
-	int	optTranspExpl, optThrustFlame, optRenderShields, optDmgExpl, optAutoTransp, 
+	int	optTranspExpl, optThrustFlame, optDmgExpl, optAutoTransp, optRobotShields,
 			optTracers, optShockwaves, optTrailType, optExplBlast;
 	char	szCoronaInt [50];
 
@@ -1896,7 +1903,12 @@ do {
 	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
 	optThrustFlame = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
-	optRenderShields = opt++;
+	effectOpts.nRenderShields = opt++;
+	if (extraGameInfo [0].bRenderShield) {
+		ADD_CHECK (opt, TXT_ROBOT_SHIELDS, extraGameInfo [0].bRenderShield, KEY_O, HTX_ROBOT_SHIELDS);
+		optRobotShields = opt++;
+		}
+	optRobotShields = -1;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
@@ -1929,7 +1941,8 @@ do {
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
-	extraGameInfo [0].bRenderShield = m [optRenderShields].value;
+	extraGameInfo [0].bRenderShield = m [effectOpts.nRenderShields].value;
+	GET_VAL (gameOpts->render.bRobotShields, optRobotShields);
 #if EXPMODE_DEFAULTS
 	if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.bTransparentEffects = 1;

@@ -202,6 +202,32 @@ if (bmpCorona) {
 
 //------------------------------------------------------------------------------
 
+grsBitmap *bmpShield = NULL;
+int bHaveShield = 0;
+
+int LoadShield (void)
+{
+if (!bHaveShield) {
+	bmpShield = CreateAndReadTGA ("shield.tga");
+	if (0 < (bHaveShield = bmpShield ? 1 : -1))
+		BM_FRAMECOUNT (bmpShield) = bmpShield->bm_props.h / bmpShield->bm_props.w;
+	}
+return bHaveShield > 0;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeShield (void)
+{
+if (bmpShield) {
+	GrFreeBitmap (bmpShield);
+	bmpShield = NULL;
+	bHaveShield = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void DrawOutline (int nv, g3sPoint **pointList)
 {
 	int i;
