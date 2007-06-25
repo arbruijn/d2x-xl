@@ -1484,7 +1484,7 @@ char *defaultGameTexts [][2] = {
 	{"niedrig", "low"},
 	{"standard", "standard"},
 	{"hoch", "high"},
-	{"Schilds~Phaeren zeichnen", "render shield s~Pheres"},
+	{"s~Pieler-Schilde zeichnen", "render ~Player shields"},
 	{"Erweiterte Render-Optionen...", "~Advanced Render Options..."},
 	{"Erweiterte Render-Optionen", "Advanced Render Options"},
 	{"~Verschiedenes...", "M~Iscellaneous..."},
@@ -1699,7 +1699,7 @@ char *defaultGameTexts [][2] = {
 	{"~Solide Leuchtspuren", "~Solid light trails"},
 	{"~Partikel-Leuchtspuren", "~Particle light trails"},
 	{"Detonations-~Blitze", "explosion ~Blasts"},
-	{"Roboter-~Schilde", "robot ~Shields"},
+	{"Roboter-~Schilde zeichnen", "render robot ~Shields"},
 #if 0
 	{"", ""},
 #endif

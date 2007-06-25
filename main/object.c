@@ -955,7 +955,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 #ifdef _DEBUG
 		RenderHitbox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
 #else
-		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 0.6f);
+		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 1.0f);
 #endif
 	else if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
@@ -970,17 +970,17 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		}
 	if (gameData.multiplayer.bWasHit [i])
 #ifdef _DEBUG
-		RenderHitbox (objP, 1.0f, 0.5f, 0.0f, 0.5f);
+		RenderHitbox (objP, 1.0f, 0.5f, 0.0f, 1.0f);
 #else
-		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 0.5f);
+		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 1.0f);
 #endif
 	else {
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
 #ifdef _DEBUG
-		RenderHitbox (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
+		RenderHitbox (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 400.0f);
 #else
-		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2ir (gameData.multiplayer.players [i].shields) / 400.0f);
+		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 100.0f);
 #endif
 		}
 	if (bStencil)
@@ -2285,13 +2285,13 @@ switch (objP->renderType) {
 #if 0//def _DEBUG
 			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
-			if (EGI_FLAG (bRenderShield, 0, 1, 0) && gameOpts->render.bRobotShields) {
+			if (gameOpts->render.bRobotShields) {
 				if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
-					DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.4f);
+					DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
 				else if (ROBOTINFO (objP->id).companion)
-					DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, 0.4f);
+					DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP));
 				else
-					DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, 0.4f);
+					DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP));
 				}
 #endif
 			RenderTargetIndicator (objP, NULL);

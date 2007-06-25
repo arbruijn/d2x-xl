@@ -298,7 +298,6 @@ if (!bmP && LoadShield ()) {
 	static time_t t0 = 0;
 	bmP = bmpShield;
 	bTextured = 1;
-	alpha = 1;
 	if ((gameStates.app.nSDLTicks - t0 > 40) && BM_CURFRAME (bmP)) {
 		t0 = gameStates.app.nSDLTicks;
 		BM_CURFRAME (bmP)++;
@@ -322,6 +321,7 @@ if (!bmP) {
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (0);
 	bTextured = 0;
+	alpha /= 2;
 	}
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);

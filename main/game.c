@@ -111,6 +111,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "cheats.h"
 #include "rle.h"
 #include "digi.h"
+#include "sphere.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1842,7 +1843,7 @@ FreeCorona ();
 LogErr ("unloading shield texture data\n");
 FreeShield ();
 LogErr ("unloading shield data\n");
-FreeShieldCoord ();
+FreeSphereCoord ();
 LogErr ("unloading blast texture data\n");
 FreeExplBlast ();
 LogErr ("unloading deadzone indicator texture data\n");

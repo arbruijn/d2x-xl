@@ -197,7 +197,6 @@ static struct {
 	int	nObjCoronas;
 	int	nCoronaIntensity;
 	int	nLightTrails;
-	int	nRenderShields;
 } effectOpts;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
@@ -1825,12 +1824,6 @@ void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 	tMenuItem	*m;
 	int			v;
 
-m = menus + effectOpts.nRenderShields;
-v = m->value;
-if (extraGameInfo [0].bRenderShield != v) {
-	extraGameInfo [0].bRenderShield = v;
-	*key = -2;
-	}	
 m = menus + effectOpts.nLightTrails;
 v = m->value;
 if (extraGameInfo [0].bLightTrails != v) {
@@ -1867,8 +1860,8 @@ void EffectOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
-	int	optTranspExpl, optThrustFlame, optDmgExpl, optAutoTransp, optRobotShields,
-			optTracers, optShockwaves, optTrailType, optExplBlast;
+	int	optTranspExpl, optThrustFlame, optDmgExpl, optAutoTransp, optPlayerShields,
+			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast;
 	char	szCoronaInt [50];
 
 pszCoronaInt [0] = TXT_LOW;
@@ -1903,7 +1896,7 @@ do {
 	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
 	optThrustFlame = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
-	effectOpts.nRenderShields = opt++;
+	optPlayerShields = opt++;
 	if (extraGameInfo [0].bRenderShield) {
 		ADD_CHECK (opt, TXT_ROBOT_SHIELDS, extraGameInfo [0].bRenderShield, KEY_O, HTX_ROBOT_SHIELDS);
 		optRobotShields = opt++;
@@ -1941,8 +1934,8 @@ do {
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
-	extraGameInfo [0].bRenderShield = m [effectOpts.nRenderShields].value;
-	GET_VAL (gameOpts->render.bRobotShields, optRobotShields);
+	extraGameInfo [0].bRenderShield = m [optPlayerShields].value;
+	gameOpts->render.bRobotShields = m [optRobotShields].value;
 #if EXPMODE_DEFAULTS
 	if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.bTransparentEffects = 1;
