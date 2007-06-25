@@ -358,6 +358,8 @@ switch (gameStates.render.cockpit.nMode) {
 	case CM_STATUS_BAR:
 		{
 		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].bm_props.h;
+		if (gameStates.app.bDemoData)
+			h *= 2;
 		if (grdCurScreen->sc_h > 480)
 			h = (int) ((double) h * (double) grdCurScreen->sc_h / 480.0);
      	gameData.render.window.hMax = grdCurScreen->sc_h - h;

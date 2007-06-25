@@ -758,13 +758,13 @@ span weapon_window_right_hires [] = {		//first span 207, 154
 #define SB_SECONDARY_AMMO_X		 (SB_SECONDARY_W_BOX_LEFT+ (gameStates.video.nDisplayMode? (14-4):11))	// (212+9)
 #define SB_SECONDARY_AMMO_Y		 (gameStates.video.nDisplayMode?414:171)
 
-typedef struct gauge_box {
+typedef struct tGaugeBox {
 	int left, top;
 	int right, bot;		//maximal box
 	span *spanlist;	//list of left, right spans for copy
-} gauge_box;
+} tGaugeBox;
 
-gauge_box gauge_boxes [] = {
+tGaugeBox gaugeBoxes [] = {
 
 // primary left/right low res
 		{PRIMARY_W_BOX_LEFT_L, PRIMARY_W_BOX_TOP_L, PRIMARY_W_BOX_RIGHT_L, PRIMARY_W_BOX_BOT_L, weapon_window_left}, 
@@ -805,8 +805,8 @@ inline void HUDBitBlt (int x, int y, grsBitmap *bmP, int scale, int orient)
 OglUBitMapMC (
 	 (x < 0) ? -x : HUD_SCALE_X (x), 
 	 (y < 0) ? -y : HUD_SCALE_Y (y), 
-	HUD_SCALE_X (bmP->bm_props.w), 
-	HUD_SCALE_Y (bmP->bm_props.h), 
+	HUD_SCALE_X (bmP->bm_props.w) * (gameStates.app.bDemoData + 1), 
+	HUD_SCALE_Y (bmP->bm_props.h) * (gameStates.app.bDemoData + 1), 
 	bmP, 
 	NULL, 
 	scale, 
@@ -860,7 +860,7 @@ GrString (HUD_SCALE_X (x), HUD_SCALE_Y (y), szBuf);
 
 //copy a box from the off-screen buffer to the visible page
 
-void CopyGaugeBox (gauge_box *box, grsBitmap *bm)
+void CopyGaugeBox (tGaugeBox *box, grsBitmap *bm)
 {
 #if 0
 if (box->spanlist) {
@@ -2904,7 +2904,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponInfoSub (int info_index, gauge_box *box, int pic_x, int pic_y, char *name, int text_x, 
+void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, char *name, int text_x, 
 								  int text_y, int orient)
 {
 	grsBitmap *bmP;
@@ -2973,21 +2973,21 @@ if (nWeaponType == 0) {
 
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 		DrawWeaponInfoSub (info_index, 
-			gauge_boxes + SB_PRIMARY_BOX, 
+			gaugeBoxes + SB_PRIMARY_BOX, 
 			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y, 
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum), 
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 0);
 #if 0
 	else if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		DrawWeaponInfoSub (info_index, 
-			gauge_boxes + SB_PRIMARY_BOX, 
+			gaugeBoxes + SB_PRIMARY_BOX, 
 			SB_PRIMARY_W_PIC_X, SB_PRIMARY_W_PIC_Y, 
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum), 
 			SB_PRIMARY_W_TEXT_X, SB_PRIMARY_W_TEXT_Y, 3);
 #endif
 	else
 		DrawWeaponInfoSub (info_index, 
-			gauge_boxes + COCKPIT_PRIMARY_BOX, 
+			gaugeBoxes + COCKPIT_PRIMARY_BOX, 
 			PRIMARY_W_PIC_X, PRIMARY_W_PIC_Y, 
 			PRIMARY_WEAPON_NAMES_SHORT (nWeaponNum), 
 			PRIMARY_W_TEXT_X, PRIMARY_W_TEXT_Y, 0);
@@ -2997,21 +2997,21 @@ else {
 
 	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
 		DrawWeaponInfoSub (info_index, 
-			gauge_boxes + SB_SECONDARY_BOX, 
+			gaugeBoxes + SB_SECONDARY_BOX, 
 			SB_SECONDARY_W_PIC_X, SB_SECONDARY_W_PIC_Y, 
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum), 
 			SB_SECONDARY_W_TEXT_X, SB_SECONDARY_W_TEXT_Y, 0);
 #if 0
 	else if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		DrawWeaponInfoSub (info_index, 
-			gauge_boxes + COCKPIT_SECONDARY_BOX, 
+			gaugeBoxes + COCKPIT_SECONDARY_BOX, 
 			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y, 
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum), 
 			SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 1);
 #endif
 	else
 		DrawWeaponInfoSub (info_index, 
-			gauge_boxes + COCKPIT_SECONDARY_BOX, 
+			gaugeBoxes + COCKPIT_SECONDARY_BOX, 
 			SECONDARY_W_PIC_X, SECONDARY_W_PIC_Y, 
 			SECONDARY_WEAPON_NAMES_SHORT (nWeaponNum), 
 			SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
@@ -3114,10 +3114,10 @@ if (weapon_boxStates [nWeaponType] != WS_SET) {		//fade gauge
 	int fadeValue = f2i (weapon_box_fadeValues [nWeaponType]);
 	int boxofs = (gameStates.render.cockpit.nMode == CM_STATUS_BAR) ? SB_PRIMARY_BOX : COCKPIT_PRIMARY_BOX;
 	gameStates.render.grAlpha = (float) fadeValue;
-	GrRect (gauge_boxes [boxofs + nWeaponType].left, 
-			  gauge_boxes [boxofs + nWeaponType].top, 
-			  gauge_boxes [boxofs + nWeaponType].right, 
-			  gauge_boxes [boxofs + nWeaponType].bot);
+	GrRect (gaugeBoxes [boxofs + nWeaponType].left, 
+			  gaugeBoxes [boxofs + nWeaponType].top, 
+			  gaugeBoxes [boxofs + nWeaponType].right, 
+			  gaugeBoxes [boxofs + nWeaponType].bot);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	}
 GrSetCurrentCanvas (GetCurrentGameScreen ());
@@ -3145,11 +3145,11 @@ void DrawStatic (int win)
 	PIGGY_PAGE_IN (vc->frames [framenum], 0);
 	bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
-	for (x=gauge_boxes [boxofs+win].left;x<gauge_boxes [boxofs+win].right;x+=bmp->bm_props.w)
-		for (y=gauge_boxes [boxofs+win].top;y<gauge_boxes [boxofs+win].bot;y+=bmp->bm_props.h)
+	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->bm_props.w)
+		for (y=gaugeBoxes [boxofs+win].top;y<gaugeBoxes [boxofs+win].bot;y+=bmp->bm_props.h)
 			/*GrBitmap*/HUDBitBlt (x, y, bmp, F1_0, 0);
 	GrSetCurrentCanvas (GetCurrentGameScreen ());
-	CopyGaugeBox (&gauge_boxes [boxofs+win], &gameStates.render.vr.buffers.render [0].cv_bitmap);
+	CopyGaugeBox (&gaugeBoxes [boxofs+win], &gameStates.render.vr.buffers.render [0].cv_bitmap);
 }
 
 //	-----------------------------------------------------------------------------
@@ -3162,7 +3162,7 @@ void DrawWeaponBoxes ()
 	if (weapon_box_user [0] == WBU_WEAPON) {
 		drew = DrawWeaponBox (0, gameData.weapons.nPrimary);
 		if (drew) 
-			CopyGaugeBox (gauge_boxes+boxofs, &gameStates.render.vr.buffers.render [0].cv_bitmap);
+			CopyGaugeBox (gaugeBoxes+boxofs, &gameStates.render.vr.buffers.render [0].cv_bitmap);
 
 		if (weapon_boxStates [0] == WS_SET) {
 			if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
@@ -3190,7 +3190,7 @@ void DrawWeaponBoxes ()
 	if (weapon_box_user [1] == WBU_WEAPON) {
 		drew = DrawWeaponBox (1, gameData.weapons.nSecondary);
 		if (drew)
-			CopyGaugeBox (&gauge_boxes [boxofs+1], &gameStates.render.vr.buffers.render [0].cv_bitmap);
+			CopyGaugeBox (&gaugeBoxes [boxofs+1], &gameStates.render.vr.buffers.render [0].cv_bitmap);
 
 		if (weapon_boxStates [1] == WS_SET)
 			if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != old_ammoCount [1][gameStates.render.vr.nCurrentPage]) {
@@ -3771,6 +3771,14 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 
 //	-----------------------------------------------------------------------------
 
+inline void SetCMScales (void)
+{
+cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
+cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
+}
+
+//	-----------------------------------------------------------------------------
+
 //draw all the things on the HUD
 void DrawHUD ()
 {
@@ -3783,8 +3791,7 @@ if (gameStates.render.cockpit.nMode==CM_STATUS_BAR) {
 	InitGauges ();
 //	vr_reset_display ();
   }
-cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
-cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
+SetCMScales ();
 nLineSpacing = GAME_FONT->ft_h + GAME_FONT->ft_h/4;
 
 	//	Show score so long as not in rearview
@@ -3874,10 +3881,7 @@ void RenderGauges ()
 
 if (HIDE_HUD)
 	return;
-
-cmScaleX = (grdCurScreen->sc_w <= 640) ? 1 : (double) grdCurScreen->sc_w / 640.0;
-cmScaleY = (grdCurScreen->sc_h <= 480) ? 1 : (double) grdCurScreen->sc_h / 480.0;
-
+SetCMScales ();
 Assert (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR);
 // check to see if our display mode has changed since last render time --
 // if so, then we need to make new gauge canvases.
@@ -4044,7 +4048,7 @@ void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, 
 	static int overlap_dirty [2]={0, 0};
 	int boxnum;
 	static int window_x, window_y;
-	gauge_box *box;
+	tGaugeBox *box;
 	int rearView_save = gameStates.render.bRearView;
 	int w, h, dx;
 	fix nZoomSave;
@@ -4131,7 +4135,7 @@ else {
 		boxnum = (SB_PRIMARY_BOX)+win;
 	else
 		goto abort;
-	box = gauge_boxes + boxnum;
+	box = gaugeBoxes + boxnum;
 		GrInitSubCanvas (
 			&window_canv, gameStates.render.vr.buffers.render, 
 			HUD_SCALE_X (box->left), 
