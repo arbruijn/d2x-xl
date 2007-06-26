@@ -1557,7 +1557,7 @@ char *defaultGameTexts [][2] = {
 	{"Rauch von ~Truemmern", "Smoke from ~Debris"},
 	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
 	{"korrekte Abprall~Winkel verwenden", "use hit ~Angles when colliding"},
-	{"~Plasmaspuren zeichen", "render energy ~Trails"},
+	{"~Plasmaspuren zeichen", "render energy tra~Ils"},
 	{"~Leuchtspuren zeichen", "render tra~Cers"},
 	{"~Schockwellen zeichnen", "render ~Shock waves"},
 	{"~Sammelregler verwenden    ",  "Use ~Master Sliders            "},
@@ -1699,7 +1699,7 @@ char *defaultGameTexts [][2] = {
 	{"~Solide Leuchtspuren", "~Solid light trails"},
 	{"~Partikel-Leuchtspuren", "~Particle light trails"},
 	{"Detonations-~Blitze", "explosion ~Blasts"},
-	{"Roboter-~Schilde zeichnen", "render robot ~Shields"},
+	{"r~Oboter-Schilde zeichnen", "render r~Obot shields"},
 #if 0
 	{"", ""},
 #endif

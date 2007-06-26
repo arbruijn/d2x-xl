@@ -29,7 +29,7 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "error.h"
 //#define _DEBUG
 #define EXACT_VEC_MAG	1
-#define ENABLE_SSE		1
+#define ENABLE_SSE		0
 
 #ifndef ASM_VECMAT
 vmsVector vmdZeroVector = {{0, 0, 0}};
@@ -426,11 +426,22 @@ if (gameOpts->render.nMathFormat == 2) {
 		fVector	h;
 
 	VmsVecToFloat (&h, v);
+#if defined (_WIN32)
 	__asm {
 		movups	xmm0,h
 		mulps		xmm0,xmm0
 		movups	h,xmm0
 		}
+#elif defined (__unix__)
+	asm (
+		"mov		%0,%%rsi\n\t"
+		"movups	(%%rsi),%%xmm0\n\t"
+		"mulps	%%xmm0,%%xmm0\n\t"
+		"movups	%%xmm0,%0\n\t"
+		: "=m" (h)
+		: "%rsi"
+		);	
+#endif
 	return (fix) (sqrt (h.p.x + h.p.y + h.p.z) * 65536);
 #else
 	return (fix) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 

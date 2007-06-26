@@ -227,6 +227,7 @@ void GameSeqInitNetworkPlayers ()
 	// Initialize network tPlayer start locations and tObject numbers
 
 memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsTyping));
+//VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {

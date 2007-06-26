@@ -1897,16 +1897,13 @@ do {
 	optThrustFlame = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
 	optPlayerShields = opt++;
-	if (extraGameInfo [0].bRenderShield) {
-		ADD_CHECK (opt, TXT_ROBOT_SHIELDS, extraGameInfo [0].bRenderShield, KEY_O, HTX_ROBOT_SHIELDS);
-		optRobotShields = opt++;
-		}
-	optRobotShields = -1;
+	ADD_CHECK (opt, TXT_ROBOT_SHIELDS, gameOpts->render.bRobotShields, KEY_O, HTX_ROBOT_SHIELDS);
+	optRobotShields = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
 	optShockwaves = opt++;
-	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_L, HTX_RENDER_LGTTRAILS);
+	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_I, HTX_RENDER_LGTTRAILS);
 	effectOpts.nLightTrails = opt++;
 	if (extraGameInfo [0].bLightTrails) {
 		ADD_RADIO (opt, TXT_SOLID_LIGHTTRAILS, 0, KEY_S, 1, HTX_LIGHTTRAIL_TYPE);
