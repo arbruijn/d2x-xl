@@ -95,10 +95,13 @@ void KillStuckObjects(int wallnum);
 
 int AnimFrameCount (tWallClip *anim)
 {
+	int	n;
+
 grsBitmap *bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [anim->frames [0]].index;
 if (BM_OVERRIDE (bmP))
 	bmP = BM_OVERRIDE (bmP);
-return (bmP->bmType == BM_TYPE_ALT) ? BM_PARENT (bmP) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP) : anim->nFrameCount;
+n = (bmP->bmType == BM_TYPE_ALT) ? BM_PARENT (bmP) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP) : anim->nFrameCount;
+return (n > 1) ? n : anim->nFrameCount;
 }
 
 //-----------------------------------------------------------------
@@ -477,7 +480,7 @@ if (segP->children [nSide] < 0) {
 	}
 else {
 	connSegP = gameData.segs.segments + segP->children [nSide];
-	nConnSide = FindConnectedSide(segP, connSegP);
+	nConnSide = FindConnectedSide (segP, connSegP);
 	Assert(nConnSide != -1);
 	nConnWall = WallNumP (connSegP, nConnSide);
 	}
@@ -486,7 +489,7 @@ if (IS_WALL (nConnWall))
 	gameData.walls.walls [nConnWall].hps -= damage;
 a = wallP->nClip;
 n = AnimFrameCount (gameData.walls.pAnims + a);
-if (wallP->hps < WALL_HPS*1/n) {
+if (wallP->hps < WALL_HPS * 1 / n) {
 	BlastBlastableWall (segP, nSide);
 	if (IsMultiGame)
 		MultiSendDoorOpen (SEG_IDX (segP), nSide, wallP->flags);

@@ -1696,7 +1696,6 @@ void DoPlayerDead ()
 gameStates.app.bGameRunning = 0;
 ResetPaletteAdd ();
 GrPaletteStepLoad (NULL);
-//	DigiPauseDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DigiStopDigiSounds ();		//kill any continuing sounds (eg. forcefield hum)
 DeadPlayerEnd ();		//terminate death sequence (if playing)
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
@@ -1753,6 +1752,7 @@ else {
 		StartLevel (1);
 		}
 	}
+SetSoundSources ();
 DigiSyncSounds ();
 }
 

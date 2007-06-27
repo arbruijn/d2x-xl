@@ -756,10 +756,10 @@ void DigiPauseDigiSounds ()
 	int i;
 
 DigiPauseLoopingSound ();
-for (i=0; i<MAX_SOUND_OBJECTS; i++)	{
-	if ((SoundObjects [i].flags & SOF_USED) && (SoundObjects [i].channel>-1))	{
+for (i = 0; i < MAX_SOUND_OBJECTS; i++)	{
+	if ((SoundObjects [i].flags & SOF_USED) && (SoundObjects [i].channel > -1)) {
 		DigiStopSound (SoundObjects [i].channel);
-		if (! (SoundObjects [i].flags & SOF_PLAY_FOREVER))
+		if (!(SoundObjects [i].flags & SOF_PLAY_FOREVER))
 			SoundObjects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
 		gameStates.sound.digi.nActiveObjects--;
 		SoundObjects [i].channel = -1;

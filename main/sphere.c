@@ -319,7 +319,6 @@ if (bmP) {
 	}
 if (!bmP) {
 	glDisable (GL_TEXTURE_2D);
-	glDepthMask (0);
 	bTextured = 0;
 	alpha /= 2;
 	}
@@ -332,6 +331,7 @@ if (sdP->pPulse && sdP->pPulse->fScale) {
 	}
 glColor4f (red, green, blue, alpha);
 *pfScale = fScale;
+glDepthMask (0);
 return bTextured;
 }
 

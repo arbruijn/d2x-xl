@@ -162,6 +162,8 @@ grsBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndire
 
 if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
+if (BM_FRAMECOUNT (bmP) < 2)
+	return NULL;
 if (gameOpts->ogl.bGlTexMerge) {
 	OglLoadBmTexture (bmP, 1, 3);
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.pBitmaps;
