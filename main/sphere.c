@@ -548,7 +548,7 @@ if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
-	float	r = f2fl (objP->size);
+	float	r = f2fl (objP->size) * 1.05f;
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
 					  r, r, r, red, green, blue, alpha, NULL);
