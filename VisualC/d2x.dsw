@@ -78,19 +78,13 @@ Package=<4>
     Project_Dep_Name native_midi
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name playmus
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name playwave
+    Project_Dep_Name timidity
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name SDL
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name SDLmain
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name timidity
     End Project Dependency
 }}}
 
@@ -121,30 +115,6 @@ Package=<4>
 ###############################################################################
 
 Project: "native_midi"="..\..\..\SDL_mixer-1.2.7\VisualC\native_midi\native_midi.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "playmus"="..\..\..\SDL_mixer-1.2.7\VisualC\playmus\playmus.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "playwave"="..\..\..\SDL_mixer-1.2.7\VisualC\playwave\playwave.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
