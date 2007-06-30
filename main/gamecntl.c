@@ -1014,286 +1014,286 @@ extern int bSaveScreenShot;
 //returns 1 if screen changed
 int HandleSystemKey(int key)
 {
-	int bScreenChanged=0;
+	int bScreenChanged = 0;
 	int bStopPlayerMovement = 1;
 
 	//if (gameStates.gameplay.bSpeedBoost)
 	//	return 0;
 
-	if (!gameStates.app.bPlayerIsDead)
-		switch (key) {
-
-			#ifdef DOORDBGGING
-			case KEY_LAPOSTRO+KEY_SHIFTED:
-				dump_door_debugging_info();
-				break;
-			#endif
-
-			case KEY_ESC:
-				if (gameData.app.bGamePaused) {
-					gameData.app.bGamePaused=0;
-					}
-				else {
-					gameStates.app.bGameAborted=1;
-					SetFunctionMode (FMODE_MENU);
-				}
-				break;
-
-			case KEY_SHIFTED+KEY_F1:
-				bScreenChanged = select_next_window_function(0);
-				break;
-			case KEY_SHIFTED+KEY_F2:
-				bScreenChanged = select_next_window_function(1);
-				break;
-			case KEY_SHIFTED+KEY_F3:
-				gameOpts->render.cockpit.nWindowSize = (gameOpts->render.cockpit.nWindowSize + 1) % 4;
-				bScreenChanged = 1; //select_next_window_function(1);
-				break;
-			case KEY_CTRLED+KEY_F3:
-				gameOpts->render.cockpit.nWindowPos = (gameOpts->render.cockpit.nWindowPos + 1) % 6;
-				bScreenChanged = 1; //select_next_window_function(1);
-				break;
-			case KEY_SHIFTED+KEY_CTRLED+KEY_F3:
-				gameOpts->render.cockpit.nWindowZoom = (gameOpts->render.cockpit.nWindowZoom + 1) % 4;
-				bScreenChanged = 1; //select_next_window_function(1);
-				break;
-		}
-
+if (!gameStates.app.bPlayerIsDead)
 	switch (key) {
 
-#if 1
-		case KEY_SHIFTED + KEY_ESC:
-			con_show();
+#ifdef DOORDBGGING
+		case KEY_LAPOSTRO+KEY_SHIFTED:
+			dump_door_debugging_info();
 			break;
+#endif
+
+		case KEY_ESC:
+			if (gameData.app.bGamePaused) {
+				gameData.app.bGamePaused = 0;
+				}
+			else {
+				gameStates.app.bGameAborted = 1;
+				SetFunctionMode (FMODE_MENU);
+			}
+			break;
+
+		case KEY_SHIFTED+KEY_F1:
+			bScreenChanged = select_next_window_function(0);
+			break;
+		case KEY_SHIFTED+KEY_F2:
+			bScreenChanged = select_next_window_function(1);
+			break;
+		case KEY_SHIFTED+KEY_F3:
+			gameOpts->render.cockpit.nWindowSize = (gameOpts->render.cockpit.nWindowSize + 1) % 4;
+			bScreenChanged = 1; //select_next_window_function(1);
+			break;
+		case KEY_CTRLED+KEY_F3:
+			gameOpts->render.cockpit.nWindowPos = (gameOpts->render.cockpit.nWindowPos + 1) % 6;
+			bScreenChanged = 1; //select_next_window_function(1);
+			break;
+		case KEY_SHIFTED+KEY_CTRLED+KEY_F3:
+			gameOpts->render.cockpit.nWindowZoom = (gameOpts->render.cockpit.nWindowZoom + 1) % 4;
+			bScreenChanged = 1; //select_next_window_function(1);
+			break;
+		}
+
+switch (key) {
+
+#if 1
+	case KEY_SHIFTED + KEY_ESC:
+		con_show();
+		break;
 
 #else
-		case KEY_SHIFTED + KEY_ESC:     //quick exit
-			#ifdef EDITOR
-				if (! SafetyCheck()) 
-				break;
-				close_editor_screen();
-			#endif
-
-			gameStates.app.bGameAborted=1;
-			gameStates.app.nFunctionMode=FMODE_EXIT;
+	case KEY_SHIFTED + KEY_ESC:     //quick exit
+		#ifdef EDITOR
+			if (! SafetyCheck()) 
 			break;
+			close_editor_screen();
+		#endif
+
+		gameStates.app.bGameAborted = 1;
+		gameStates.app.nFunctionMode = FMODE_EXIT;
+		break;
 #endif
 
-		case KEY_COMMAND+KEY_P: 
-		case KEY_CTRLED+KEY_P: 
-		case KEY_PAUSE: 
-			DoGamePause();				
+	case KEY_COMMAND+KEY_P: 
+	case KEY_CTRLED+KEY_P: 
+	case KEY_PAUSE: 
+		DoGamePause();				
+		break;
+
+	case KEY_CTRLED + KEY_ALTED + KEY_S:
+		if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
+			return 0;
+		if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam))
+			gameStates.app.playerPos = gameData.objs.viewer->position;
+		else
+			gameData.objs.viewer->position = gameStates.app.playerPos;
+		break;
+
+	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
+	case KEY_PRINT_SCREEN: 
+		bSaveScreenShot = 1;
+		SaveScreenShot (NULL, 0);		
+		break;
+
+	case KEY_F1:					
+		DoShowHelp();			
+		break;
+
+	case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
+		{
+			int bScanlineSave = bScanlineDouble;
+
+			if (!IsMultiGame) {
+				PaletteSave(); 
+				ApplyModifiedPalette(); 
+				ResetPaletteAdd(); 
+				GrPaletteStepLoad (NULL); 
+				}
+			ConfigMenu();
+			if (!IsMultiGame) 
+				PaletteRestore();
+			if (bScanlineSave != bScanlineDouble)   
+				InitCockpit();	// reset the cockpit after changing...
+	      PA_DFX (InitCockpit());
 			break;
-
-		case KEY_CTRLED + KEY_ALTED + KEY_S:
-			if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
-				return 0;
-			if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam))
-				gameStates.app.playerPos = gameData.objs.viewer->position;
-			else
-				gameData.objs.viewer->position = gameStates.app.playerPos;
-			break;
-
-		case KEY_COMMAND + KEY_SHIFTED + KEY_P:
-		case KEY_PRINT_SCREEN: 
-			bSaveScreenShot = 1;
-			SaveScreenShot (NULL, 0);		
-			break;
-
-		case KEY_F1:					
-			DoShowHelp();			
-			break;
-
-		case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
-			{
-				int bScanlineSave = bScanlineDouble;
-
-				if (!(gameData.app.nGameMode&GM_MULTI)) {
-					PaletteSave(); 
-					ApplyModifiedPalette(); 
-					ResetPaletteAdd(); 
-					GrPaletteStepLoad (NULL); 
-					}
-				ConfigMenu();
-				if (!(gameData.app.nGameMode&GM_MULTI)) 
-					PaletteRestore();
-				if (bScanlineSave != bScanlineDouble)   
-					InitCockpit();	// reset the cockpit after changing...
-	         PA_DFX (InitCockpit());
-				break;
-			}
+		}
 
 
-		case KEY_F3:
-			PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
-			PA_DFX (break);
+	case KEY_F3:
+		PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
+		PA_DFX (break);
 
-			if (!GuidedInMainView ()) {
-				ToggleCockpit();	
-				bScreenChanged=1;
-			}
-			break;
+		if (!GuidedInMainView ()) {
+			ToggleCockpit();	
+			bScreenChanged=1;
+		}
+		break;
 
-		case KEY_F7+KEY_SHIFTED: 
-			PaletteSave(); 
-			joydefs_calibrate(); 
-			PaletteRestore(); 
-			break;
+	case KEY_F7+KEY_SHIFTED: 
+		PaletteSave(); 
+		joydefs_calibrate(); 
+		PaletteRestore(); 
+		break;
 
-		case KEY_SHIFTED+KEY_MINUS:
-		case KEY_MINUS:	
-			shrink_window(); 
-			bScreenChanged=1; 
-			break;
+	case KEY_SHIFTED+KEY_MINUS:
+	case KEY_MINUS:	
+		shrink_window(); 
+		bScreenChanged=1; 
+		break;
 
-		case KEY_SHIFTED+KEY_EQUAL:
-		case KEY_EQUAL:			
-			grow_window();  
-			bScreenChanged=1; 
-			break;
+	case KEY_SHIFTED+KEY_EQUAL:
+	case KEY_EQUAL:			
+		grow_window();  
+		bScreenChanged=1; 
+		break;
 
 #if 1//ndef _DEBUG
-		case KEY_F5:
-			if ( gameData.demo.nState == ND_STATE_RECORDING ) {
-				NDStopRecording();
-				}
-			else if ( gameData.demo.nState == ND_STATE_NORMAL )
-				if (!gameData.app.bGamePaused)		//can't start demo while paused
-					NDStartRecording();
-			break;
+	case KEY_F5:
+		if ( gameData.demo.nState == ND_STATE_RECORDING ) {
+			NDStopRecording();
+			}
+		else if ( gameData.demo.nState == ND_STATE_NORMAL )
+			if (!gameData.app.bGamePaused)		//can't start demo while paused
+				NDStartRecording();
+		break;
 #endif
-		case KEY_ALTED+KEY_F4:
-			gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName+1)%2;
+	case KEY_ALTED+KEY_F4:
+		gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName+1)%2;
 
-		case KEY_F7:
-			gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.app.nGameMode & GM_TEAM) ? 4 : 3);
-			if (gameData.app.nGameMode & GM_MULTI)
-				MultiSortKillList();
-			bStopPlayerMovement = 0;
-			break;
+	case KEY_F7:
+		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.app.nGameMode & GM_TEAM) ? 4 : 3);
+		if (gameData.app.nGameMode & GM_MULTI)
+			MultiSortKillList();
+		bStopPlayerMovement = 0;
+		break;
 
-		case KEY_CTRLED+KEY_F7:
-			if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
-				ResetPingStats ();
-			break;
+	case KEY_CTRLED+KEY_F7:
+		if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
+			ResetPingStats ();
+		break;
 
-		case KEY_CTRLED+KEY_F8:
-			gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
-			gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
-			break;
+	case KEY_CTRLED+KEY_F8:
+		gameData.stats.nDisplayMode = (gameData.stats.nDisplayMode + 1) % 5;
+		gameOpts->render.cockpit.bPlayerStats = gameData.stats.nDisplayMode != 0;
+		break;
 
-		case KEY_F8:
-			MultiSendMsgStart(-1);
-			bStopPlayerMovement = 0;
-			break;
+	case KEY_F8:
+		MultiSendMsgStart(-1);
+		bStopPlayerMovement = 0;
+		break;
 
-		case KEY_F9:
-		case KEY_F10:
-		case KEY_F11:
-		case KEY_F12:
-			MultiSendMacro(key);
-			bStopPlayerMovement = 0;
-			break;		// send taunt macros
+	case KEY_F9:
+	case KEY_F10:
+	case KEY_F11:
+	case KEY_F12:
+		MultiSendMacro(key);
+		bStopPlayerMovement = 0;
+		break;		// send taunt macros
 
-		case KEY_CTRLED + KEY_F12:
-			gameData.trackIR.x =
-			gameData.trackIR.y = 0;
-			break;
+	case KEY_CTRLED + KEY_F12:
+		gameData.trackIR.x =
+		gameData.trackIR.y = 0;
+		break;
 
-		case KEY_ALTED + KEY_F12:
+	case KEY_ALTED + KEY_F12:
 #ifndef _DEBUG		
-			if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
+		if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
 #endif			
-				gameStates.render.bExternalView = !gameStates.render.bExternalView;
-			ResetFlightPath (&externalView, -1, -1);
-			break;
+			gameStates.render.bExternalView = !gameStates.render.bExternalView;
+		ResetFlightPath (&externalView, -1, -1);
+		break;
 
-		case KEY_SHIFTED + KEY_F9:
-		case KEY_SHIFTED + KEY_F10:
-		case KEY_SHIFTED + KEY_F11:
-		case KEY_SHIFTED + KEY_F12:
-			MultiDefineMacro(key);
-			bStopPlayerMovement = 0;
-			break;		// redefine taunt macros
+	case KEY_SHIFTED + KEY_F9:
+	case KEY_SHIFTED + KEY_F10:
+	case KEY_SHIFTED + KEY_F11:
+	case KEY_SHIFTED + KEY_F12:
+		MultiDefineMacro(key);
+		bStopPlayerMovement = 0;
+		break;		// redefine taunt macros
 
-		case KEY_ALTED+KEY_F2:
-			if (!gameStates.app.bPlayerIsDead && !((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
-				int     rsave, gsave, bsave;
-				rsave = gameStates.ogl.palAdd.red;
-				gsave = gameStates.ogl.palAdd.green;
-				bsave = gameStates.ogl.palAdd.blue;
+	case KEY_ALTED+KEY_F2:
+		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
+			int     rsave, gsave, bsave;
+			rsave = gameStates.ogl.palAdd.red;
+			gsave = gameStates.ogl.palAdd.green;
+			bsave = gameStates.ogl.palAdd.blue;
 
-				FullPaletteSave();
-				gameStates.ogl.palAdd.red = rsave;
-				gameStates.ogl.palAdd.green = gsave;
-				gameStates.ogl.palAdd.blue = bsave;
-				StateSaveAll( 0, 0, NULL );
-				PaletteRestore();
-			}
-			break;  // 0 means not between levels.
+			FullPaletteSave();
+			gameStates.ogl.palAdd.red = rsave;
+			gameStates.ogl.palAdd.green = gsave;
+			gameStates.ogl.palAdd.blue = bsave;
+			StateSaveAll( 0, 0, NULL );
+			PaletteRestore();
+		}
+		break;  // 0 means not between levels.
 
-		case KEY_ALTED+KEY_F3:
-			if (!gameStates.app.bPlayerIsDead && !((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & GM_MULTI_COOP))) {
-				FullPaletteSave();
-				StateRestoreAll(1, 0, NULL);
-				if (gameData.app.bGamePaused)
-					DoGamePause();
-			}
-			break;
-
-
-		case KEY_F4 + KEY_SHIFTED:
-			DoEscortMenu();
-			break;
+	case KEY_ALTED+KEY_F3:
+		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
+			FullPaletteSave ();
+			StateRestoreAll (1, 0, NULL);
+			if (gameData.app.bGamePaused)
+				DoGamePause();
+		}
+		break;
 
 
-		case KEY_F4 + KEY_SHIFTED + KEY_ALTED:
-			ChangeGuidebotName();
-			break;
+	case KEY_F4 + KEY_SHIFTED:
+		DoEscortMenu();
+		break;
 
-		case KEY_MINUS + KEY_ALTED:     
-			SongsGotoPrevSong(); 
-			break;
 
-		case KEY_EQUAL + KEY_ALTED:     
-			SongsGotoNextSong(); 
-			break;
+	case KEY_F4 + KEY_SHIFTED + KEY_ALTED:
+		ChangeGuidebotName();
+		break;
+
+	case KEY_MINUS + KEY_ALTED:     
+		SongsGotoPrevSong(); 
+		break;
+
+	case KEY_EQUAL + KEY_ALTED:     
+		SongsGotoNextSong(); 
+		break;
 
 //added 8/23/99 by Matt Mueller for hot key res/fullscreen changing, and menu access
-		case KEY_CTRLED+KEY_SHIFTED+KEY_PADDIVIDE:
-		case KEY_ALTED+KEY_CTRLED+KEY_PADDIVIDE:
-		case KEY_ALTED+KEY_SHIFTED+KEY_PADDIVIDE:
-			RenderOptionsMenu();
-			break;
+	case KEY_CTRLED+KEY_SHIFTED+KEY_PADDIVIDE:
+	case KEY_ALTED+KEY_CTRLED+KEY_PADDIVIDE:
+	case KEY_ALTED+KEY_SHIFTED+KEY_PADDIVIDE:
+		RenderOptionsMenu();
+		break;
 #if 0
-		case KEY_CTRLED+KEY_SHIFTED+KEY_PADMULTIPLY:
-		case KEY_ALTED+KEY_CTRLED+KEY_PADMULTIPLY:
-		case KEY_ALTED+KEY_SHIFTED+KEY_PADMULTIPLY:
-			change_res();
-			break;
+	case KEY_CTRLED+KEY_SHIFTED+KEY_PADMULTIPLY:
+	case KEY_ALTED+KEY_CTRLED+KEY_PADMULTIPLY:
+	case KEY_ALTED+KEY_SHIFTED+KEY_PADMULTIPLY:
+		change_res();
+		break;
 #endif
-		case KEY_CTRLED+KEY_F1:
-			SwitchDisplayMode (-1);
-			break;
-		case KEY_CTRLED+KEY_F2:
-			SwitchDisplayMode (1);
-			break;
+	case KEY_CTRLED+KEY_F1:
+		SwitchDisplayMode (-1);
+		break;
+	case KEY_CTRLED+KEY_F2:
+		SwitchDisplayMode (1);
+		break;
 
-		case KEY_ALTED+KEY_ENTER:
-		case KEY_ALTED+KEY_PADENTER:
-			GrToggleFullScreenGame();
-			break;
+	case KEY_ALTED+KEY_ENTER:
+	case KEY_ALTED+KEY_PADENTER:
+		GrToggleFullScreenGame();
+		break;
 //end addition -MM
-			
+		
 //added 11/01/98 Matt Mueller
 #if 0
-		case KEY_CTRLED+KEY_ALTED+KEY_LAPOSTRO:
-			toggle_hud_log();
-			break;
+	case KEY_CTRLED+KEY_ALTED+KEY_LAPOSTRO:
+		toggle_hud_log();
+		break;
 #endif
 //end addition -MM
 
-		default:
+	default:
 			return bScreenChanged;
 	}	 //switch (key)
 if (bStopPlayerMovement) {
@@ -1973,12 +1973,12 @@ while ((key=KeyInKeyTime(&keyTime)) != 0)    {
 		MarkerInputMessage (key);
 			continue;
 		}
-if ( (gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining ))	{
+if ( IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining ))	{
 	MultiMsgInputSub( key );
 	continue;		//get next key
 	}
 #ifdef _DEBUG
-if ((key&KEYDBGGED)&&(gameData.app.nGameMode&GM_MULTI))   {
+if ((key&KEYDBGGED)&&IsMultiGame)   {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf( gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
 	}

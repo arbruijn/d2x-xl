@@ -481,7 +481,7 @@ void DoPhysicsSim (tObject *objP)
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 	int					bDoSpeedBoost = sbd.bBoosted; // && (objP == gameData.objs.console);
-	static int qqq = 0;
+	
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
 #ifdef _DEBUG

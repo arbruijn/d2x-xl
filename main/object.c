@@ -641,7 +641,8 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 }
 else {
 	if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
-		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [objP->id].cloakTime, gameData.multiplayer.players [objP->id].cloakTime + CLOAK_TIME_MAX);
+		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [objP->id].cloakTime, 
+								 gameData.multiplayer.players [objP->id].cloakTime + CLOAK_TIME_MAX);
 	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
 		if (ROBOTINFO (objP->id).bossFlag) {
 			int i = FindBoss (OBJ_IDX (objP));
@@ -2206,10 +2207,9 @@ if (objP == dbgObjP) {
 if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console) &&
 	 !gameStates.render.automap.bDisplay) {
-	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum))) {
-		savePos = objP->position;
-		objP->position = gameStates.app.playerPos;
-		}
+	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
+		;
+		//HUDMessage (0, "%1.2f %1.2f %1.2f", f2fl (objP->position.vPos.p.x), f2fl (objP->position.vPos.p.y), f2fl (objP->position.vPos.p.z));
 #ifdef _DEBUG
 	 else if ((gameStates.render.nShadowPass != 2) && !gameStates.app.bPlayerIsDead &&
 				 (nWindowNum || (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK)))) { //don't render ship model if neither external view nor main view
@@ -2271,12 +2271,18 @@ switch (objP->renderType) {
 			int bDynObjLight = gameOpts->ogl.bLightObjects;
 			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)))
 				return 0;
+			if (bSpectate) {
+				savePos = objP->position;
+				objP->position = gameStates.app.playerPos;
+				}
 			DrawPolygonObject (objP);
 			gameOpts->ogl.bLightObjects = bDynObjLight;
 			RenderThrusterFlames (objP);
 			RenderPlayerShield (objP);
 			RenderTargetIndicator (objP, NULL);
 			RenderTowedFlag (objP);
+			if (bSpectate)
+				objP->position = savePos;
 			}
 		else if (objP->nType == OBJ_ROBOT) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
@@ -2447,13 +2453,11 @@ if (objP->renderType != RT_NONE)
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
 		if (!gameData.demo.bWasRecorded [OBJ_IDX (objP)]) {
 			NDRecordRenderObject (objP);
-			gameData.demo.bWasRecorded [OBJ_IDX (objP)]=1;
+			gameData.demo.bWasRecorded [OBJ_IDX (objP)] = 1;
 		}
 	}
 #endif
 gameStates.render.detail.nMaxLinearDepth = mldSave;
-if (bSpectate)
-	objP->position = savePos;
 return 1;
 }
 
@@ -2531,8 +2535,7 @@ for (i = 0; i < MAX_OBJECTS; i++) {
 for (i = 0, pSeg = gameData.segs.segments;i<MAX_SEGMENTS;i++, pSeg++)
 	pSeg->objects = -1;
 gameData.objs.console = 
-gameData.objs.viewer = 
-gameData.objs.objects;
+gameData.objs.viewer = gameData.objs.objects;
 InitPlayerObject ();
 LinkObject (OBJ_IDX (gameData.objs.console), 0);	//put in the world in tSegment 0
 gameData.objs.nObjects = 1;						//just the tPlayer
@@ -3875,8 +3878,6 @@ if ((objP->lifeleft != IMMORTAL_TIME) &&
 	 (gameData.physics.xTime != F1_0))
 	objP->lifeleft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if ((objP->nType == OBJ_FIREBALL) && (objP->renderType == RT_EXPLBLAST))
-	objP = objP;
 if (HandleObjectControl (objP))
 	return 1;
 if (objP->lifeleft < 0) {		// We died of old age

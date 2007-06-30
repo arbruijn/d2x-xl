@@ -473,7 +473,7 @@ void game_render_frame_stereo ()
 
 	if (bGMView) {
 		char *msg = "Guided Missile View";
-		tObject *viewer_save = gameData.objs.viewer;
+		tObject *viewerSave = gameData.objs.viewer;
 		int w, h, aw;
 
 		gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
@@ -483,7 +483,7 @@ void game_render_frame_stereo ()
 			UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
 			RenderFrame (0, 0);
 			WakeupRenderedObjects (gameData.objs.viewer, 0);
-			gameData.objs.viewer = viewer_save;
+			gameData.objs.viewer = viewerSave;
 
 			GrSetCurFont (GAME_FONT);    //GAME_FONT);
 			GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
@@ -876,7 +876,7 @@ void GameRenderFrameMono (void)
 		 (gameOpts->render.cockpit.bGuidedInMainView)) {
 		int w, h, aw;
 		char *msg = "Guided Missile View";
-		tObject *viewer_save = gameData.objs.viewer;
+		tObject *viewerSave = gameData.objs.viewer;
 
       if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 			 gameStates.render.cockpit.bBigWindowSwitch = 1;
@@ -890,7 +890,7 @@ void GameRenderFrameMono (void)
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 		RenderFrame (0, 0);
   		WakeupRenderedObjects (gameData.objs.viewer, 0);
-		gameData.objs.viewer = viewer_save;
+		gameData.objs.viewer = viewerSave;
 		GrSetCurFont (GAME_FONT);    //GAME_FONT);
 		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 		GrGetStringSize (msg, &w, &h, &aw);

@@ -4043,7 +4043,7 @@ void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, 
 	grs_canvas window_canv;
 	static grs_canvas overlap_canv;
 
-	tObject *viewer_save = gameData.objs.viewer;
+	tObject *viewerSave = gameData.objs.viewer;
 	grs_canvas *save_canv = grdCurCanv;
 	static int overlap_dirty [2]={0, 0};
 	int boxnum;
@@ -4212,7 +4212,7 @@ old_weapon [win][gameStates.render.vr.nCurrentPage] = old_ammoCount [win][gameSt
 
 abort:;
 
-gameData.objs.viewer = viewer_save;
+gameData.objs.viewer = viewerSave;
 GrSetCurrentCanvas (save_canv);
 gameStates.render.bRearView = rearView_save;
 }

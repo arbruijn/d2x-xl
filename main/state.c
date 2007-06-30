@@ -2634,8 +2634,7 @@ else {
 		}
 	}
 gameData.objs.viewer = 
-gameData.objs.console = 
-	gameData.objs.objects + LOCALPLAYER.nObject;
+gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
 StartTime ();
 return 1;
 }

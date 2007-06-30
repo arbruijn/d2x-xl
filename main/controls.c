@@ -115,11 +115,11 @@ void ReadFlyingControls(tObject *objP)
 		return;
 	}
 
-	if ((objP->nType!=OBJ_PLAYER) || (objP->id!=gameData.multiplayer.nLocalPlayer)) 
+	if ((objP->nType != OBJ_PLAYER) || (objP->id != gameData.multiplayer.nLocalPlayer)) 
 		return;	//references to tPlayerShip require that this obj be the tPlayer
 
-	gmObjP = gameData.objs.guidedMissile[gameData.multiplayer.nLocalPlayer];
-	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig[gameData.multiplayer.nLocalPlayer])) {
+	gmObjP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
+	if (gmObjP && (gmObjP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer])) {
 		vmsAngVec rotangs;
 		vmsMatrix rotmat,tempm;
 		fix speed;
