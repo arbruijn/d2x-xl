@@ -1217,22 +1217,24 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
+	int			bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
+	tPosition	*pPos = bSpectate ? &gameStates.app.playerPos : &objP->position;
+
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
-if (nGun >= 0) {
+if (nGun < 0)
+	VmVecScale (VmVecAdd (&v, gameData.pig.ship.player->gunPoints - nGun, gameData.pig.ship.player->gunPoints - nGun - 1), F1_0 / 2);
+else {
 	v = gameData.pig.ship.player->gunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (&v, &objP->position.mOrient.uVec, LASER_OFFS);
+		VmVecScaleInc (&v, &pPos->mOrient.uVec, LASER_OFFS);
 	}
-else {
-	VmVecScale (VmVecAdd (&v, gameData.pig.ship.player->gunPoints - nGun, gameData.pig.ship.player->gunPoints - nGun - 1), F1_0 / 2);
-	}
-VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+VmCopyTransposeMatrix (&m, &pPos->mOrient);
 VmVecRotate (&vGunPoint, &v, &m);
-memcpy (&m, &objP->position.mOrient, sizeof (vmsMatrix));
+memcpy (&m, &pPos->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
 	VmVecScaleInc (&vGunPoint, &m.uVec, -2 * VmVecMag (&v));
-VmVecAdd (&vLaserPos, &objP->position.vPos, &vGunPoint);
+VmVecAdd (&vLaserPos, &pPos->vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (delayTime), then move this point backwards.
 if (delayTime)
 	VmVecScaleInc (&vLaserPos, &m.fVec, -FixMul (delayTime, WI_speed (laserType,gameStates.app.nDifficultyLevel)));
@@ -1240,7 +1242,7 @@ if (delayTime)
 //	DoMuzzleStuff (objP, &Pos);
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
-fq.p0					= &objP->position.vPos;
+fq.p0					= &pPos->vPos;
 fq.startSeg			= objP->nSegment;
 fq.p1					= &vLaserPos;
 fq.radP0				=
@@ -1254,7 +1256,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
 //SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-if (VmVecDistQuick (&vLaserPos, &objP->position.vPos) > 0x50000) {
+if (VmVecDistQuick (&vLaserPos, &pPos->vPos) > 0x50000) {
 	return -1;
 	}
 if (nFate == HIT_WALL)  {

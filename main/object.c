@@ -3956,7 +3956,7 @@ if (gameStates.gameplay.slowmo [i].nState) {
 	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
 	if (nSlowMotionChannel >= 0) {
 		DigiStopSound (nSlowMotionChannel);
-		nSlowMotionChannel= -1;
+		nSlowMotionChannel = -1;
 		}
 	}
 else if (gameStates.gameplay.slowmo [i].fSpeed > 1) {
@@ -4148,6 +4148,7 @@ for (i = 0; i < 2; i++) {
 			if (!i) {
 				DigiExit ();
 				DigiInit (1);
+				PlayLevelSong (gameData.missions.nCurrentLevel);
 				}
 			}
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
