@@ -849,7 +849,7 @@ for (;;)
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			//int s = (int) WORDVAL (p+4);
+			int s = (int) WORDVAL (p+4);
 			p += n * sizeof (vmsVector) + 8;
 			(*pnVerts) += n;
 			break;
@@ -1454,11 +1454,12 @@ h = po->subObjs.nSubObjs * sizeof (tPOFSubObject);
 if (!(po->subObjs.pSubObjs = (tPOFSubObject *) D2_ALLOC (h)))
 	return G3FreePolyModelItems (po);
 memset (po->subObjs.pSubObjs, 0, h);
-if (!(po->pvVerts = (vmsVector *) D2_ALLOC (po->nVerts * sizeof (vmsVector))))
+h = po->nVerts;
+if (!(po->pvVerts = (vmsVector *) D2_ALLOC (h * sizeof (vmsVector))))
 	return G3FreePolyModelItems (po);
-if (!(po->pfClipDist = (float *) D2_ALLOC (po->nVerts * sizeof (float))))
+if (!(po->pfClipDist = (float *) D2_ALLOC (h * sizeof (float))))
 	gameOpts->render.shadows.nClip = 1;
-if (!(po->pVertFlags = (ubyte *) D2_ALLOC (po->nVerts * sizeof (ubyte))))
+if (!(po->pVertFlags = (ubyte *) D2_ALLOC (h * sizeof (ubyte))))
 	gameOpts->render.shadows.nClip = 1;
 if (bShadowData) {
 	if (!(po->faces.pFaces = (tPOF_face *) D2_ALLOC (po->faces.nFaces * sizeof (tPOF_face))))
@@ -1472,9 +1473,9 @@ if (bShadowData) {
 	if (!(po->pFaceVerts = (short *) D2_ALLOC (nFaceVerts * sizeof (short))))
 		return G3FreePolyModelItems (po);
 	}
-if (!(po->pVertNorms = (g3sNormal *) D2_ALLOC (po->nVerts * sizeof (g3sNormal))))
+if (!(po->pVertNorms = (g3sNormal *) D2_ALLOC (h * sizeof (g3sNormal))))
 	return G3FreePolyModelItems (po);
-memset (po->pVertNorms, 0, po->nVerts * sizeof (g3sNormal));
+memset (po->pVertNorms, 0, h * sizeof (g3sNormal));
 return po->nState = 1;
 }
 
@@ -2300,7 +2301,6 @@ for (;;) {
 		break;
 	else if (h == OP_DEFPOINTS) {
 		int n = WORDVAL (p+2);
-
 		RotatePointList (modelPointList, VECPTR (p+4), po ? po->pVertNorms : NULL, n, 0);
 		p += n * sizeof (vmsVector) + 4;
 		break;

@@ -491,7 +491,7 @@ int DigiSpeedupSound (tDigiSound *dsP, struct tSoundSlot *ssP, int speed)
 	ubyte	*pDest, *pSrc;
 
 l = FixMulDiv (ssP->bResampled ? ssP->length : dsP->nLength [dsP->bDTX], speed, F1_0);
-if (! (pDest = (ubyte *) D2_ALLOC (l)))
+if (!(pDest = (ubyte *) D2_ALLOC (l)))
 	return -1;
 pSrc = ssP->bResampled ? ssP->samples : dsP->data [dsP->bDTX];
 for (h = i = j = 0; i < l; i++) {
@@ -544,6 +544,8 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 	struct tSoundSlot *ssP;
 	tDigiSound *dsP = NULL;
 
+if (nSound == 110)
+	nSound = 110;
 if (!gameStates.app.bUseSound)
 	return -1;
 if (!gameStates.sound.digi.bInitialized) 
@@ -552,7 +554,7 @@ if (!(pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
 	dsP = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameOpts->sound.bD1Sound];
-	if (! (dsP->data && dsP->nLength))
+	if (!(dsP->data && dsP->nLength))
 		return -1;
 	Assert (dsP->data != (void *) -1);
 	}
@@ -613,7 +615,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	ssP->channel = gameStates.sound.digi.nNextChannel;
 	if (pszWAV) {
 #if 0
-		if (! (ssP->samples = CFReadData (pszWAV, gameFolders.szDataDir, 0)))
+		if (!(ssP->samples = CFReadData (pszWAV, gameFolders.szDataDir, 0)))
 			return -1;
 		ssP->mixChunk = Mix_QuickLoad_WAV ((Uint8 *) ssP->samples);
 #else
@@ -856,7 +858,7 @@ DigiStopSound (channel);
 
 //------------------------------------------------------------------------------
 
-#if ! (defined (_WIN32) || USE_SDL_MIXER)
+#if !(defined (_WIN32) || USE_SDL_MIXER)
 // MIDI stuff follows.
 void DigiSetMidiVolume (int mvolume) { }
 int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song) {return 0;}

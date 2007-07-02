@@ -2298,7 +2298,7 @@ void AllocRenderLightData (void)
 if (!gameStates.app.bNostalgia) {
 	GETMEM (short, gameData.render.lights.dynamic.nNearestSegLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
 	GETMEM (short, gameData.render.lights.dynamic.nNearestVertLights, MAX_SEGMENTS * MAX_NEAREST_LIGHTS, 0);
-	GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, 0);
+	GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, 0xff);
 	}
 GETMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6, 0);
 GETMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES, 0);

@@ -227,7 +227,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 void SetDynColor (tRgbaColorf *color, tRgbColorf *pDynColor, int nVertex, char *pbGotDynColor, int bForce)
 {
-if (gameOpts->render.bDynLighting)
+if (0 && gameOpts->render.bDynLighting)
 	return;
 if (!color)
 	return;
@@ -639,7 +639,7 @@ if (gameData.render.lights.bInitDynColoring) {
 
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
-if (!gameOpts->render.bDynLighting) {
+if (!(0 && gameOpts->render.bDynLighting)) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nRenderList [iRenderSeg];
 		if (nSegment != -1) {
@@ -715,7 +715,7 @@ for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastOb
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	//	In multiplayer games, process even unprocessed gameData.objs.objects every 4th frame, else don't know about tPlayer sneaking up.
 	if ((lightingObjects [nObject]) || 
-		 ((gameData.app.nGameMode & GM_MULTI) && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
+		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
 		if (newLightingObjects [nObject])
 			//	Not lit last frame, so we don't need to light it.  (Already lit if casting light this frame.)
 			//	But copy value from newLightingObjects to update lightingObjects array.
@@ -1189,14 +1189,15 @@ return -1;
 short UpdateDynLight (tRgbaColorf *pc, float brightness, short nSegment, short nSide, short nObject)
 {
 	short	nLight = FindDynLight (nSegment, nSide, nObject);
-	
+
 if (nLight >= 0) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
 	if (!pc)
 		pc = &pl->color;
 	if ((pl->brightness != brightness) || 
-		 (pl->color.red != pc->red) || (pl->color.green != pc->green) || (pl->color.blue != pc->blue))
+		 (pl->color.red != pc->red) || (pl->color.green != pc->green) || (pl->color.blue != pc->blue)) {
 		SetDynLightColor (nLight, pc->red, pc->green, pc->blue, brightness);
+		}
 	}
 return nLight;
 }
@@ -1205,7 +1206,7 @@ return nLight;
 
 int LastEnabledDynLight (void)
 {
-	int	i = gameData.render.lights.dynamic.nLights;
+	short	i = gameData.render.lights.dynamic.nLights;
 
 while (i)
 	if (gameData.render.lights.dynamic.lights [--i].bState)
@@ -1255,7 +1256,7 @@ if (pl1 != pl2) {
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState)
 {
 	short nLight = FindDynLight (nSegment, nSide, nObject);
-	
+
 if (nLight >= 0) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
 #if 1
@@ -1920,6 +1921,7 @@ GLhandleARB lfs = 0;
 
 void InitLightingShaders (void)
 {
+#if 0
 if (!gameOpts->render.bDynLighting)
 	gameStates.render.bHaveDynLights = 0;
 else {
@@ -1933,6 +1935,7 @@ else {
 		gameOpts->render.bDynLighting = 0;
 #endif
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------------------------

@@ -1124,7 +1124,15 @@ int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
 
 colorSum = *pColorSum;
+#if MULTI_THREADED
 for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl += incr) {
+#else
+for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
+#endif
+	if (!psl->bState)
+		continue;
+	if (i == gameData.threads.vertColor.data.nMatLight)
+		continue;
 	if (gameData.threads.vertColor.data.bExclusive) {
 		if (gameData.threads.vertColor.data.bExclusive < 0)
 			break;
@@ -1148,10 +1156,6 @@ for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl +=
 		//if (!(gameStates.render.nState || psl->bVariable))
 		//	continue;
 		}
-	if (i == gameData.threads.vertColor.data.nMatLight)
-		continue;
-	if (!psl->bState)
-		continue;
 	lightColor = *((fVector *) &psl->color);
 #if STATIC_LIGHT_TRANSFORM
 	lightPos = psl->pos [1];

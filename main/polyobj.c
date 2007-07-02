@@ -41,6 +41,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #include "byteswap.h"
 #include "ogl_init.h"
 #include "gamepal.h"
+#include "network.h"
 
 #ifndef DRIVE
 #include "texmap.h"
@@ -579,13 +580,12 @@ else {
 		}
 	}
 //check if should use simple model (depending on detail level chosen)
-if (po->nSimplerModel)					//must have a simpler model
-	if (!flags && pos) {					//can't switch if this is debris
-		int	cnt = 1;
-		fix depth = G3CalcPointDepth (pos);		//gets 3d depth
-		while (po->nSimplerModel && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
-			po = gameData.models.polyModels + po->nSimplerModel - 1;
-		}
+if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && po->nSimplerModel && !flags && pos) {
+	int	cnt = 1;
+	fix depth = G3CalcPointDepth (pos);		//gets 3d depth
+	while (po->nSimplerModel && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * po->rad))
+		po = gameData.models.polyModels + po->nSimplerModel - 1;
+	}
 return po;
 }
 

@@ -355,7 +355,7 @@ void DigiResumeLoopingSound ()
 void DigiStartSoundObject (int i)
 {
 	// start sample structures 
-SoundObjects [i].channel =  -1;
+SoundObjects [i].channel = -1;
 if (SoundObjects [i].volume <= 0)
 	return;
 if (gameStates.sound.bDontStartObjects)
