@@ -146,7 +146,7 @@ int StartBriefingSound (int c, short nSound, fix nVolume, char *pszWAV)
 if (c < 0) {
 	int b = gameOpts->sound.bD1Sound;
 	gameOpts->sound.bD1Sound = 0;
-	c = DigiStartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, F1_0, pszWAV);
+	c = DigiStartSound (DigiXlatSound (nSound), nVolume, 0xFFFF / 2, 1, -1, -1, -1, F1_0, pszWAV, NULL);
 	gameOpts->sound.bD1Sound = b;
 	}
 return c;

@@ -327,6 +327,7 @@ typedef struct tSoundOptions {
 	int bD1Sound;
 	int bHires;
 	int bUseSDLMixer;
+	int bUseOpenAL;
 	int digiSampleRate;
 } tSoundOptions;
 
@@ -1418,11 +1419,23 @@ typedef struct tRobotData {
 #define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.bots.nTypes [1]))
 #define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
 
+#if USE_OPENAL
+
+typedef struct tOpenALData {
+	ALCdevice			*device;
+	ALCcontext			*context;
+} tOpenALData;
+
+#endif
+
 typedef struct tSoundData {
 	ubyte					*data [2];
 	tDigiSound			sounds [2][MAX_SOUND_FILES];
 	int					nSoundFiles [2];
 	tDigiSound			*pSounds;
+#if USE_OPENAL
+	tOpenALData			openAL;
+#endif
 } tSoundData;
 
 #define N_COCKPIT_BITMAPS 6

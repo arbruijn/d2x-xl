@@ -1915,7 +1915,7 @@ while (!bDone) {
 			volume = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				DigiPlaySample3D ((short) soundno, angle, volume, 0);
+				DigiPlaySample3D ((short) soundno, angle, volume, 0, NULL);
 			break;
 
 		case ND_EVENT_SOUND_3D_ONCE:
@@ -1924,7 +1924,7 @@ while (!bDone) {
 			volume = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState == ND_STATE_PLAYBACK)
-				DigiPlaySample3D ((short) soundno, angle, volume, 1);
+				DigiPlaySample3D ((short) soundno, angle, volume, 1, NULL);
 			break;
 
 		case ND_EVENT_LINK_SOUND_TO_OBJ: {

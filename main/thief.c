@@ -313,7 +313,7 @@ int MaybeStealFlagItem(int player_num, int flagval)
 			Assert(powerup_index != -1);
 			gameData.thief.stolenItems[gameData.thief.nStolenItem] = powerup_index;
 
-			DigiPlaySampleOnce(SOUND_WEAPON_STOLEN, F1_0);
+			DigiPlaySampleOnce (SOUND_WEAPON_STOLEN, F1_0);
 			return 1;
 		}
 	}

@@ -24,6 +24,14 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "vecmat.h"
 
+#define USE_OPENAL	0
+
+#if USE_OPENAL
+#	include "al.h"
+#	include "alc.h"
+#	include "efx.h"
+#endif
+
 #ifdef _WIN32
 #	ifdef _DEBUG
 #		define USE_SDL_MIXER	1
@@ -48,10 +56,13 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef SAMPLE tDigiSound;
 #else
 typedef struct tDigiSound {
-	ubyte	bHires;
-	ubyte	bDTX;
-	int	nLength [2];
-	ubyte *data [2];
+	ubyte		bHires;
+	ubyte		bDTX;
+	int		nLength [2];
+	ubyte		*data [2];
+#if USE_OPENAL
+	ALuint	buffer;
+#endif
 } tDigiSound;
 #endif
 
@@ -81,46 +92,41 @@ void _CDECL_ DigiClose (void);
 
 // Volume is max at F1_0.
 int DigiPlaySampleSpeed (short soundno, fix maxVolume, int nSpeed, int nLoops, char *pszWAV);
-int DigiPlaySample (short nSound, fix maxVolume );
+int DigiPlaySample (short nSound, fix maxVolume);
 int DigiPlaySampleLooped (short soundno, fix maxVolume, int nLoops);
 int DigiPlayWAV (char *pszWAV, fix maxVolume);
 int DigiPlayWAVLooped (char *pszWAV, fix maxVolume, int nLoops);
-void DigiPlaySampleOnce (short nSound, fix maxVolume );
-int DigiLinkSoundToObject (short nSound, short nObject, int forever, fix maxVolume );
-int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume );
+void DigiPlaySampleOnce (short nSound, fix maxVolume);
+int DigiLinkSoundToObject (short nSound, short nObject, int forever, fix maxVolume);
+int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, vmsVector *pos, int forever, fix maxVolume);
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
-int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance );
-int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance );
-
-int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int loop_start, int loop_end );
-
-int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song );
-
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups ); // Volume from 0-0x7fff
-
+int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance);
+int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance);
+int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int loop_start, int loop_end);
+int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos); // Volume from 0-0x7fff
 void DigiInitSounds();
 void DigiSyncSounds();
-int  DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound );
-int  DigiKillSoundLinkedToObject (int nObject );
+int  DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound);
+int  DigiKillSoundLinkedToObject (int nObject);
+void DigiSetMidiVolume (int mvolume);
+void DigiSetFxVolume (int dvolume);
+void DigiMidiVolume (int dvolume, int mvolume);
 
-void DigiSetMidiVolume (int mvolume );
-void DigiSetFxVolume (int dvolume );
-void DigiMidiVolume (int dvolume, int mvolume );
+int DigiIsSoundPlaying (short nSound);
 
-int DigiIsSoundPlaying(short nSound);
+void DigiPauseAll ();
+void DigiResumeAll ();
+void DigiPauseDigiSounds ();
+void DigiResumeDigiSounds ();
+void DigiStopAll ();
 
-void DigiPauseAll();
-void DigiResumeAll();
-void DigiPauseDigiSounds();
-void DigiResumeDigiSounds();
-void DigiStopAll();
-
-void DigiSetMaxChannels(int n);
-int DigiGetMaxChannels();
+void DigiSetMaxChannels (int n);
+int DigiGetMaxChannels ();
 
 extern int digi_lomem;
 
-short DigiXlatSound(short nSound);
+short DigiXlatSound (short nSound);
 int DigiUnXlatSound (int nSound);
 extern void DigiStopSound (int channel);
 
@@ -131,25 +137,47 @@ extern int DigiFindChannel(short nSound);
 // Volume 0-F1_0
 extern int DigiStartSound (short nSound, fix volume, int pan, int looping, 
 								   int loop_start, int loop_end, int soundobj, int speed, 
-								   char *pszWAV);
+								   char *pszWAV, vmsVector *vPos);
 
 // Stops all sounds that are playing
 void DigiStopAllChannels();
 
-void DigiEndSound (int channel );
-void DigiSetChannelPan (int channel, int pan );
-void DigiSetChannelVolume (int channel, int volume );
-int DigiIsChannelPlaying(int channel);
-void DigiPauseMidi();
-void DigiDebug();
-void DigiStopCurrentSong();
+void DigiEndSound (int channel);
+void DigiSetChannelPan (int channel, int pan);
+void DigiSetChannelVolume (int channel, int volume);
+int DigiIsChannelPlaying (int channel);
+void DigiPauseMidi ();
+void DigiDebug ();
+void DigiStopCurrentSong ();
 
-void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end );
-void DigiChangeLoopingVolume (fix volume );
-void DigiStopLoopingSound();
+void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end);
+void DigiChangeLoopingVolume (fix volume);
+void DigiStopLoopingSound ();
 void DigiFreeSoundBufs (void);
 
 // Plays a queued voice sound.
-extern void DigiStartSoundQueued (short nSound, fix volume );
+extern void DigiStartSoundQueued (short nSound, fix volume);
+
+//------------------------------------------------------------------------------
+
+typedef struct tSoundQueueEntry {
+	fix			time_added;
+	short			nSound;
+} tSoundQueueEntry;
+
+#define MAX_SOUND_QUEUE 32
+#define MAX_LIFE			F1_0*30		// After being queued for 30 seconds, don't play it
+
+typedef struct tSoundQueue {
+	int	nHead;
+	int	nTail;
+	int	nSounds;
+	int	nChannel;
+	tSoundQueueEntry	queue [MAX_SOUND_QUEUE];
+} tSoundQueue;
+
+extern tSoundQueue soundQueue;
+
+//------------------------------------------------------------------------------
 
 #endif

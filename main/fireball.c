@@ -84,16 +84,16 @@ nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->
 objP = OBJECTS + nObject;
 objP->lifeleft = BLAST_LIFE;
 objP->size = parentObjP->size;
-	objP->size /= 2;
+objP->size /= 3;
 if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [id = parentObjP->id])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
-		objP->size = 7 * F1_0 / 2;
+		objP->size = 5 * F1_0 / 2;
 //		objP->lifeleft = 3 * BLAST_LIFE / 2;
 		}
 	else if ((id == MEGAMSL_ID) || (id == ROBOT_MEGAMSL_ID) || (id == EARTHSHAKER_MEGA_ID))
-		objP->size = 3 * F1_0;
-	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
 		objP->size = 2 * F1_0;
+	else if ((id == SMARTMSL_ID) || (id == ROBOT_SMARTMSL_ID))
+		objP->size = 3 * F1_0 / 2;
 	else {
 		//objP->lifeleft /= 2;
 		objP->size = F1_0;

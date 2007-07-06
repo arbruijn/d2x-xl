@@ -611,15 +611,17 @@ switch (nObjType) {
 
 // ----------------------------------------------------------------------------------------------
 
+static short renderVertices [MAX_VERTICES_D2X];
+static sbyte renderVertexFlags [MAX_VERTICES_D2X];
+static sbyte newLightingObjects [MAX_OBJECTS_D2X];
+
+
 void SetDynamicLight (void)
 {
 	int			vv, nv;
 	int			nObject, nVertex, nSegment;
 	int			nRenderVertices;
-	short			renderVertices [MAX_VERTICES_D2X];
-	sbyte			render_vertexFlags [MAX_VERTICES_D2X];
 	int			iRenderSeg, v;
-	sbyte			newLightingObjects [MAX_OBJECTS_D2X];
 	char			bGotColor, bKeepDynColoring = 0;
 	tObject		*objP;
 	vmsVector	*objPos;
@@ -631,7 +633,7 @@ void SetDynamicLight (void)
 if (!gameOpts->render.bDynamicLight)
 	return;
 
-memset (render_vertexFlags, 0, gameData.segs.nLastVertex + 1);
+memset (renderVertexFlags, 0, gameData.segs.nLastVertex + 1);
 gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
@@ -644,14 +646,15 @@ if (!(0 && gameOpts->render.bDynLighting)) {
 		nSegment = gameData.render.mine.nRenderList [iRenderSeg];
 		if (nSegment != -1) {
 			short	*vp = gameData.segs.segments [nSegment].verts;
-			for (v=0; v < MAX_VERTICES_PER_SEGMENT; v++) {
+			for (v = 0; v < MAX_VERTICES_PER_SEGMENT; v++) {
 				nv = vp [v];
 				if ((nv < 0) || (nv > gameData.segs.nLastVertex)) {
 					Int3 ();		//invalid vertex number
 					continue;	//ignore it, and go on to next one
 					}
-				if (!render_vertexFlags [nv]) {
-					render_vertexFlags [nv] = 1;
+				if (!renderVertexFlags [nv]) {
+					Assert (nRenderVertices < sizeofa (renderVertices));
+					renderVertexFlags [nv] = 1;
 					renderVertices [nRenderVertices++] = nv;
 					}
 				}

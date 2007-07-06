@@ -892,9 +892,8 @@ hashtable_insert (&soundNames [gameStates.app.bD1Data],
 						sounds [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]].name, 
 						gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]);
 gameData.pig.sound.pSounds [gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = *soundP;
-if (!nInFile) {
-	soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = 0;       
-}
+if (!nInFile)
+	soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = 0;
 i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data];
 if (!nInFile)
 	nSoundFilesNew++;
@@ -1463,6 +1462,9 @@ int LoadSounds (CFILE *fpSound, int nSoundNum, int nSoundStart)
 /*---*/LogErr ("      Loading sound data (%d sounds)\n", nSoundNum);
 CFSeek (fpSound, nSoundStart, SEEK_SET);
 memset (&sound, 0, sizeof (sound));
+#if USE_OPENAL
+memset (&sound.buffer, 0xFF, sizeof (sound.buffer));
+#endif
 for (i = 0; i < nSoundNum; i++) {
 	PIGSoundHeaderRead (&sndh, fpSound);
 	//size -= sizeof (tPIGSoundHeader);
@@ -1709,29 +1711,57 @@ int PiggyIsNeeded (int nSound)
 {
 	int i;
 
-	if (!gameStates.sound.digi.bLoMem) return 1;
-
-	for (i=0; i<MAX_SOUNDS; i++) {
-		if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data] [AltSounds [gameStates.app.bD1Data][i]] == nSound))
-			return 1;
+if (!gameStates.sound.digi.bLoMem)
+	return 1;
+for (i = 0; i < MAX_SOUNDS; i++) {
+	if ((AltSounds [gameStates.app.bD1Data][i] < 255) && (Sounds [gameStates.app.bD1Data] [AltSounds [gameStates.app.bD1Data][i]] == nSound))
+		return 1;
 	}
-	return 0;
+return 0;
 }
+
+//------------------------------------------------------------------------------
+
+#if USE_OPENAL
+
+int PiggyBufferSound (tDigiSound *soundP)
+{
+if (!gameOpts->sound.bUseOpenAL)
+	return 0;
+if (soundP->buffer != 0xFFFFFFFF) {
+	alDeleteBuffers (1, &soundP->buffer);
+	soundP->buffer = 0xFFFFFFFF;
+	}
+alGenBuffers (1, &soundP->buffer);
+if (alGetError () != AL_NO_ERROR) {
+	soundP->buffer = 0xFFFFFFFF;
+	gameOpts->sound.bUseOpenAL = 0;
+	return 0;
+	}
+alBufferData (soundP->buffer, AL_FORMAT_MONO8, soundP->data [0], soundP->nLength [0], gameOpts->sound.digiSampleRate);
+if (alGetError () != AL_NO_ERROR) {
+	gameOpts->sound.bUseOpenAL = 0;
+	return 0;
+	}
+return 1;
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 
 void PiggyReadSounds (void)
 {
-	CFILE *fp = NULL;
-	ubyte *ptr;
-	int	i, j, sbytes;
+	CFILE			*fp = NULL;
+	ubyte			*ptr;
+	int			i, j, sbytes;
+	tDigiSound	*soundP = gameData.pig.sound.pSounds;
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
 sbytes = 0;
 if (!(fp = CFOpen (gameStates.app.bD1Mission ? "descent.pig" : DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0)))
 	return;
-for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++) {
-	tDigiSound *soundP = gameData.pig.sound.pSounds + i;
+for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {
 		if (PiggyIsNeeded (i)) {
 			CFSeek (fp, soundOffset [gameStates.app.bD1Data][i], SEEK_SET);
@@ -1741,6 +1771,9 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 			ptr += soundP->nLength [0];
 			sbytes += soundP->nLength [0];
 			CFRead (soundP->data [0], soundP->nLength [0], 1, fp);
+#if USE_OPENAL
+			PiggyBufferSound (soundP);
+#endif
 			}
 		else
 			soundP->data [0] = (ubyte *) -1;

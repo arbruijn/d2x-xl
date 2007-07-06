@@ -273,9 +273,9 @@ tangles.b = (fixang) FixMul (objP->mType.physInfo.rotVel.p.z, gameData.physics.x
 if (!IsMultiGame) {
 	int i = (objP != gameData.objs.console) ? 0 : 1;
 	if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
-		tangles.p = (fix) (tangles.p / gameStates.gameplay.slowmo [i].fSpeed);
-		tangles.h = (fix) (tangles.h / gameStates.gameplay.slowmo [i].fSpeed);
-		tangles.b = (fix) (tangles.b / gameStates.gameplay.slowmo [i].fSpeed);
+		tangles.p = (fixang) (tangles.p / gameStates.gameplay.slowmo [i].fSpeed);
+		tangles.h = (fixang) (tangles.h / gameStates.gameplay.slowmo [i].fSpeed);
+		tangles.b = (fixang) (tangles.b / gameStates.gameplay.slowmo [i].fSpeed);
 		}
 	}
 VmAngles2Matrix (&mRotate, &tangles);
