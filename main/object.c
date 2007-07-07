@@ -2291,17 +2291,19 @@ switch (objP->renderType) {
 #if 0//def _DEBUG
 			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
-			if (gameOpts->render.bRobotShields) {
-				if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
-					DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
-				else if (ROBOTINFO (objP->id).companion)
-					DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
-				else
-					DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP) / 2);
-				}
+			if (gameStates.render.nShadowPass != 2) {
+				if (gameOpts->render.bRobotShields) {
+					if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
+						DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
+					else if (ROBOTINFO (objP->id).companion)
+						DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
+					else
+						DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP) / 2);
+					}
 #endif
-			RenderTargetIndicator (objP, NULL);
-			SetRobotLocationInfo (objP);
+				RenderTargetIndicator (objP, NULL);
+				SetRobotLocationInfo (objP);
+				}
 			}
 		else if (objP->nType == OBJ_WEAPON) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
