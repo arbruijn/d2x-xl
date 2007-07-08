@@ -529,7 +529,7 @@ if (nBreakOnObject != -1)
 	//con_printf (CONDBG, "Object %i: behavior = %02x, mode = %i, awareness = %i, cur=%i, goal=%i\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, aip->CURRENT_STATE, aip->GOAL_STATE);
 #endif
 	//Assert ((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR);
-if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
+if ((aip->behavior < MIN_BEHAVIOR) || (aip->behavior > MAX_BEHAVIOR)) {
 #if TRACE	
 		//con_printf (CONDBG, "Object %i behavior is %i, setting to AIB_NORMAL, fix in editor!\n", nObject, aip->behavior);
 #endif
@@ -594,10 +594,10 @@ if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
 		else {
 _exit_cheat:
 			bVisAndVecComputed = 0;
-			if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-				gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
-			else
+			if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 				gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [nObject & (MAX_AI_CLOAK_INFO-1)].vLastPos;
+			else
+				gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
 			}
 		}
 	gameData.ai.xDistToPlayer = VmVecDistQuick (&gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
@@ -616,11 +616,10 @@ _exit_cheat:
 		}
 #endif
 		if (ailp->nextPrimaryFire <= 0)
-			CalcGunPoint (&gameData.ai.vGunPoint, objP, aip->CURRENT_GUN);
+			bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, aip->CURRENT_GUN);
 		else
-			CalcGunPoint (&gameData.ai.vGunPoint, objP,
-							  (ROBOTINFO (objP->id).nGuns == 1) ? 0 : !aip->CURRENT_GUN);
-		bHaveGunPos = 1;
+			bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP,
+												 (ROBOTINFO (objP->id).nGuns == 1) ? 0 : !aip->CURRENT_GUN);
 		vVisPos = gameData.ai.vGunPoint;
 		}
 	else {
@@ -987,7 +986,7 @@ switch (ailp->mode) {
 		// Green guy doesn't get his circle distance boosted, else he might never attack.
 		if (botInfoP->attackType != 1)
 			circleDistance += (nObject & 0xf) * F1_0/2;
-		ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_CHASE_DIST);
+		ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, -MAX_CHASE_DIST);
 		// @mk, 12/27/94, structure here was strange.  Would do both clauses of what are now this if/then/else.  Used to be if/then, if/then.
 		if ((gameData.ai.nPlayerVisibility < 2) && (nPrevVisibility == 2)) { 
 			if (!AIMultiplayerAwareness (objP, 53)) {
@@ -1144,7 +1143,7 @@ switch (ailp->mode) {
 			DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
 		if ((gameData.ai.nPlayerVisibility == 2) && 
 			 (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && (aip->behavior != AIB_RUN_FROM) && (objP->id != ROBOT_BRAIN) && 
-			 (botInfoP->companion != 1) && (botInfoP->thief != 1)) {
+			 !(botInfoP->companion || botInfoP->thief)) {
 			if (botInfoP->attackType == 0)
 				ailp->mode = AIM_CHASE_OBJECT;
 			// This should not just be distance based, but also time-since-tPlayer-seen based.
@@ -1367,8 +1366,8 @@ if (ailp->playerAwarenessType) {
 // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  -
 // If new state = fire, then set all gun states to fire.
 if (aip->GOAL_STATE == AIS_FIRE) {
-	int i, num_guns = ROBOTINFO (objP->id).nGuns;
-	for (i = 0; i< num_guns; i++)
+	int i, nGuns = ROBOTINFO (objP->id).nGuns;
+	for (i = 0; i< nGuns; i++)
 		ailp->goalState [i] = AIS_FIRE;
 	}
 
@@ -1433,10 +1432,9 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 #if 1
 			if (!bHaveGunPos) {
 				if (ailp->nextPrimaryFire <= 0)
-					CalcGunPoint (&gameData.ai.vGunPoint, objP, aip->CURRENT_GUN);
+					bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, aip->CURRENT_GUN);
 				else
-					CalcGunPoint (&gameData.ai.vGunPoint, objP, (ROBOTINFO (objP->id).nGuns == 1) ? 0 : !aip->CURRENT_GUN);
-				bHaveGunPos = 1;
+					bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, (ROBOTINFO (objP->id).nGuns == 1) ? 0 : !aip->CURRENT_GUN);
 				vVisPos = gameData.ai.vGunPoint;
 				}
 #endif
@@ -1485,7 +1483,7 @@ if (!gameData.ai.nPlayerVisibility) {
 
 funcExit:
 
-#if 0//def _DEBUG
+#ifdef _DEBUG
 HUDMessage (0, "%s %s %d %d %d", 
 				state_text [aip->flags [1]], state_text [aip->flags [2]],
 				gameData.ai.xDistToPlayer / F1_0, 
@@ -1500,16 +1498,14 @@ void AIDoCloakStuff (void)
 {
 	int i;
 
-	for (i=0; i<MAX_AI_CLOAK_INFO; i++) {
-		gameData.ai.cloakInfo [i].vLastPos = gameData.objs.console->position.vPos;
-		gameData.ai.cloakInfo [i].nLastSeg = gameData.objs.console->nSegment;
-		gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
+for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+	gameData.ai.cloakInfo [i].vLastPos = gameData.objs.console->position.vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = gameData.objs.console->nSegment;
+	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
-
-	// Make work for control centers.
-	gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [0].vLastPos;
-	gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
-
+// Make work for control centers.
+gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [0].vLastPos;
+gameData.ai.nBelievedPlayerSeg = gameData.ai.cloakInfo [0].nLastSeg;
 }
 
 // ----------------------------------------------------------------------------

@@ -293,7 +293,7 @@ void InitCamBots (int bReset);
 void UnloadCamBot (void);
 //given an tObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-void CalcGunPoint(vmsVector *gun_point,tObject *obj,int gun_num);
+int CalcGunPoint(vmsVector *gun_point,tObject *obj,int gun_num);
 //void CalcGunPoint(vmsVector *gun_point,int nObject,int gun_num);
 
 //  Tells joint positions for a gun to be in a specified state.

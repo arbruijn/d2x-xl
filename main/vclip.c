@@ -103,9 +103,12 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 void DrawExplBlast (tObject *objP)
 {
 	float			fLife, fAlpha;
-	fix			xSize, xSize2;
+	fix			xSize;
 	vmsVector	vPos, vDir;
+#if !SIMPLE_BLAST
 	int			i;
+	fix			xSize2;
+#endif
 
 	static tRgbaColorf blastColors [] = {
 		{0.5, 0.0f, 0.5f, 1},

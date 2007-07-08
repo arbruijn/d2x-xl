@@ -142,18 +142,24 @@ void InitAISystem (void)
 //	Given a behavior, set initial mode.
 int AIBehaviorToMode (int behavior)
 {
-	switch (behavior) {
-		case AIB_IDLING:			return AIM_IDLING;
-		case AIB_NORMAL:			return AIM_CHASE_OBJECT;
-		case AIB_BEHIND:			return AIM_BEHIND;
-		case AIB_RUN_FROM:		return AIM_RUN_FROM_OBJECT;
-		case AIB_SNIPE:			return AIM_IDLING;	//	Changed, 09/13/95, MK, snipers are still until they see you or are hit.
-		case AIB_STATION:			return AIM_IDLING;
-		case AIB_FOLLOW:			return AIM_FOLLOW_PATH;
-		default:	Int3 ();	//	Contact Mike: Error, illegal behavior nType
+switch (behavior) {
+	case AIB_IDLING:			
+		return AIM_IDLING;
+	case AIB_NORMAL:			
+		return AIM_CHASE_OBJECT;
+	case AIB_BEHIND:			
+		return AIM_BEHIND;
+	case AIB_RUN_FROM:		
+		return AIM_RUN_FROM_OBJECT;
+	case AIB_SNIPE:			
+		return AIM_IDLING;	//	Changed, 09/13/95, MK, snipers are still until they see you or are hit.
+	case AIB_STATION:			
+		return AIM_IDLING;
+	case AIB_FOLLOW:			
+		return AIM_FOLLOW_PATH;
+	default:	Int3 ();	//	Contact Mike: Error, illegal behavior nType
 	}
-
-	return AIM_IDLING;
+return AIM_IDLING;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -1551,6 +1557,16 @@ int	Gun_point_hack=0;
 int		RobotSoundVolume=DEFAULT_ROBOT_SOUND_VOLUME;
 
 // --------------------------------------------------------------------------------------------------------------------
+
+inline void LimitPlayerVisibility (fix xMaxVisibleDist, tAILocal *ailp)
+{
+#if 1
+if ((xMaxVisibleDist > 0) && (gameData.ai.xDistToPlayer > xMaxVisibleDist) && (ailp->playerAwarenessType < PA_RETURN_FIRE))
+	gameData.ai.nPlayerVisibility = 0;
+#endif
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 //	Note: This function could be optimized.  Surely ObjectCanSeePlayer would benefit from the
 //	information of a normalized gameData.ai.vVecToPlayer.
 //	Return tPlayer visibility:
@@ -1565,8 +1581,7 @@ void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, tRobotInfo
 							  fix xMaxVisibleDist)
 {
 if (*flag) {
-	if ((gameData.ai.xDistToPlayer > xMaxVisibleDist) && (ailp->playerAwarenessType < PA_RETURN_FIRE))
-		gameData.ai.nPlayerVisibility = 0;
+	LimitPlayerVisibility (xMaxVisibleDist, ailp);
 	}
 else {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
@@ -1583,8 +1598,7 @@ else {
 			}
 		dist = VmVecNormalizedDirQuick (&gameData.ai.vVecToPlayer, &gameData.ai.cloakInfo [cloak_index].vLastPos, pos);
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
-		if ((gameData.ai.xDistToPlayer > xMaxVisibleDist) && (ailp->playerAwarenessType < PA_RETURN_FIRE))
-			gameData.ai.nPlayerVisibility = 0;
+		LimitPlayerVisibility (xMaxVisibleDist, ailp);
 #ifdef _DEBUG
 		if (gameData.ai.nPlayerVisibility == 2)
 			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
@@ -1597,12 +1611,11 @@ else {
 	else {
 		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
 		VmVecNormalizedDirQuick (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, pos);
-		if ((gameData.ai.vVecToPlayer.p.x == 0) && (gameData.ai.vVecToPlayer.p.y == 0) && (gameData.ai.vVecToPlayer.p.z == 0)) {
+		if (!(gameData.ai.vVecToPlayer.p.x || gameData.ai.vVecToPlayer.p.y || gameData.ai.vVecToPlayer.p.z)) {
 			gameData.ai.vVecToPlayer.p.x = F1_0;
 			}
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
-		if ((gameData.ai.xDistToPlayer > xMaxVisibleDist) && (ailp->playerAwarenessType < PA_RETURN_FIRE))
-			gameData.ai.nPlayerVisibility = 0;
+		LimitPlayerVisibility (xMaxVisibleDist, ailp);
 #ifdef _DEBUG
 		if (gameData.ai.nPlayerVisibility == 2)
 			gameData.ai.nPlayerVisibility = gameData.ai.nPlayerVisibility;
