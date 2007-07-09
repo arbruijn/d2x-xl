@@ -417,6 +417,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.color.bCap, i, 0);
 		RP (gameOptions [i].render.color.bGunLight, i, 0);
 		RP (gameOptions [i].render.color.bMix, i, 0);
+		RP (gameOptions [i].render.color.nSaturation, i, 0);
 		RP (gameOptions [i].render.color.bWalls, i, 0);
 		RP (gameOptions [i].render.color.bUseLightMaps, i, 0);
 		RP (gameOptions [i].render.color.nLightMapRange, i, 0);
@@ -921,6 +922,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.bCap", "0"},
 	{"gameOptions[0].render.color.bGunLight", "1"},
 	{"gameOptions[0].render.color.bMix", "1"},
+	{"gameOptions[0].render.color.nColorSaturation", "0"},
 	{"gameOptions[0].render.color.bWalls", "1"},
 	{"gameOptions[0].render.color.bUseLightMaps", "0"},
 	{"gameOptions[0].render.color.nLightMapRange", "0"},

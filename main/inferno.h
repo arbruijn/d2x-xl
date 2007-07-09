@@ -138,6 +138,7 @@ typedef struct tColorOptions {
 	int bMix;
 	int bUseLightMaps;
 	int nLightMapRange;
+	int nSaturation;
 } tColorOptions;
 
 typedef struct tCockpitOptions {

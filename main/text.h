@@ -1741,12 +1741,12 @@ void LoadGameTexts(void);
 #define TXT_PLASMA_LIGHTTRAILS	GT(948)
 #define TXT_EXPLOSION_BLAST		GT(949)
 #define TXT_ROBOT_SHIELDS			GT(950)
+#define TXT_FULL_COLORSAT			GT(951)
+#define TXT_LIMIT_COLORSAT			GT(952)
+#define TXT_NO_COLORSAT				GT(953)
 
 #if 0
 
-#define TXT_				GT(951)
-#define TXT_				GT(952)
-#define TXT_				GT(953)
 #define TXT_				GT(954)
 #define TXT_				GT(955)
 #define TXT_				GT(956)
@@ -2208,10 +2208,10 @@ void LoadGameTexts(void);
 #define HTX_LIGHTTRAIL_TYPE		HT(294)				
 #define HTX_EXPLOSION_BLAST		HT(295)				
 #define HTX_ROBOT_SHIELDS			HT(296)				
+#define HTX_COLOR_SATURATION		HT(297)				
 
 #if 0
 				
-#define HTX_					HT(297)				
 #define HTX_					HT(298)				
 #define HTX_					HT(299)				
 

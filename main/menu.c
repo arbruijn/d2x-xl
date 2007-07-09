@@ -2805,10 +2805,10 @@ if (lightOpts.nLMapRange >= 0) {
 
 void LightingOptionsMenu ()
 {
-	tMenuItem m [15];
+	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
-	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights;
+	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat;
 #if 0
 	int checks;
 #endif
@@ -2827,6 +2827,7 @@ do {
 	lightOpts.nMethod =
 	lightOpts.nLMapRange =
 	lightOpts.nMaxLights = 
+	optColorSat = 
 	optObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
 		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
@@ -2848,8 +2849,8 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	if (!gameStates.app.bGameRunning && (lightOpts.nMethod >= 0)) {
-		if (gameOpts->render.bDynLighting) {
+	if ((lightOpts.nMethod >= 0) && gameOpts->render.bDynLighting) {
+		if (!gameStates.app.bGameRunning) {
 			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
 			*szLightRange = *(TXT_LIGHT_RANGE - 1);
 			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 2, KEY_R, HTX_ADVRND_LIGHTRANGE);
@@ -2867,6 +2868,15 @@ do {
 			ADD_TEXT (opt, "", 0);
 			opt++;
 			}
+		ADD_RADIO (opt, TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
+		optColorSat = opt++;
+		ADD_RADIO (opt, TXT_LIMIT_COLORSAT, 0, KEY_L, 2, HTX_COLOR_SATURATION);
+		opt++;
+		ADD_RADIO (opt, TXT_NO_COLORSAT, 0, KEY_N, 2, HTX_COLOR_SATURATION);
+		opt++;
+		m [optColorSat + NMCLAMP (gameOpts->render.color.nSaturation, 0, 2)].value = 1;
+		ADD_TEXT (opt, "", 0);
+		opt++;
 		}
 	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
 	optColoredLight = opt++;
@@ -2884,6 +2894,7 @@ do {
 		}
 	ADD_CHECK (opt, TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
 	optFlickerLights = opt++;
+	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightingOptionsCallback, &choice);
 		if (i < 0)
@@ -2916,6 +2927,13 @@ do {
 		}
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
 	} while (i == -2);
+if (optColorSat >= 0) {
+	for (i = 0; i < 2; i++)
+		if (m [optColorSat + i].value) {
+			gameOpts->render.color.nSaturation = i;
+			break;
+			}
+	}
 }
 
 //------------------------------------------------------------------------------

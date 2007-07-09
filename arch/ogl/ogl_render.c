@@ -1112,11 +1112,19 @@ return vReflect;
 
 //------------------------------------------------------------------------------
 
+inline int sqri (int i)
+{
+return i * i;
+}
+
+//------------------------------------------------------------------------------
+
 int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 {
 	static float	fLightRanges [3] = {10, 14.142f, 20};
 
-	int				j, nType, bInRad;
+	int				j, nType, bInRad, nSaturation = gameOpts->render.color.nSaturation;
+	int				nBrightness, nMaxBrightness = 0;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	float				fLightDist, fAttenuation, spotEffect, NdotL, RdotE;
 	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
@@ -1226,11 +1234,41 @@ for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
 		VmVecMulf (&lightColor, &lightColor, &gameData.threads.vertColor.data.matSpecular);
 		VmVecIncf (&vertColor, &lightColor);
 		}
-	VmVecScaleAddf (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
+	if (nSaturation < 2)	//sum up color components
+		VmVecScaleAddf (&colorSum, &colorSum, &vertColor, 1.0f / fAttenuation);
+	else {	//use max. color components
+		VmVecScalef (&vertColor, &vertColor, 1.0f / fAttenuation);
+		nBrightness = sqri ((int) (vertColor.c.r * 1000)) + sqri ((int) (vertColor.c.g * 1000)) + sqri ((int) (vertColor.c.b * 1000));
+		if (nMaxBrightness < nBrightness) {
+			nMaxBrightness = nBrightness;
+			colorSum = vertColor;
+			}
+		else if (nMaxBrightness == nBrightness) {
+			if (colorSum.c.r < vertColor.c.r)
+				colorSum.c.r = vertColor.c.r;
+			if (colorSum.c.g < vertColor.c.g)
+				colorSum.c.g = vertColor.c.g;
+			if (colorSum.c.b < vertColor.c.b)
+				colorSum.c.b = vertColor.c.b;
+			}
+		}
 	j++;
 	}
-if (j)
+if (j) {
+	if (nSaturation == 1) {	//if a color component is > 1, cap color components using highest component value
+		float	cMax = colorSum.c.r;
+		if (cMax < colorSum.c.g)
+			cMax = colorSum.c.g;
+		if (cMax < colorSum.c.b)
+			cMax = colorSum.c.b;
+		if (cMax > 1) {
+			colorSum.c.r /= cMax;
+			colorSum.c.g /= cMax;
+			colorSum.c.b /= cMax;
+			}
+		}
 	*pColorSum = colorSum;
+	}
 return j;
 }
 

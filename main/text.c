@@ -1700,6 +1700,9 @@ char *defaultGameTexts [][2] = {
 	{"~Partikel-Leuchtspuren", "~Particle light trails"},
 	{"Detonations-~Blitze", "explosion ~Blasts"},
 	{"r~Oboter-Schilde zeichnen", "render r~Obot shields"},
+	{"~Volle Farbsaettigung", "~Full color saturation"},
+	{"~Begrenzte Farbsaettigung", "~Limit color saturation"},
+	{"~Keine Farbsaettigung", "~No color saturation"},
 #if 0
 	{"", ""},
 #endif
@@ -2243,6 +2246,8 @@ char *defaultHelpTexts [][2] = {
 	 "Solid light trails are drawn als solidly colored stripes exten-\nding from the projectile. This needs very little time to render.\nPlasma light trails are rendered as glowing particles\nalong the projectile's path. That looks more realistic, but also needs more processing power."},
 	{"Wenn angekreuzt, erzeugen explodierende Objekte einen hellen Lichtblitz.", "If checked exploding objects create a bright flash of light."},
 	{"Wenn angekreuzt, werden die Schutzschilde der Roboter gezeichnet.", "If checked, robot shields will be drawn."},
+	{"Farbsaettigung kann entstehen, wenn mehrere Lichtquellen denselben\nBereich beleuchten. In diesem Fall addieren sich\ndie Farben der Lichtquellen. Da der hellste Wert einer Farb-\nkomponente (Rot, Gruen, Blau) eins ist, kann das dazu\nfuehren, dass mehrere farbige Lichtquellen zusammen weisses oder\nandersfarbiges Licht erzeugen.\n\nBei voller Farbsaettigung wird die Beleuchtung genau so erechnet.\n\nBei begrenzter Farbsaettigung wird nach Berechnung der Farbsumme\ndie groesste Farbkomponente bestimmt. Ist diese groesser als\neins, werden alle Farbkomponenten durch diesen Wert geteilt. Damit bleibt farbiges Licht weitgehend erhalten.\n\nWird die Farbsaettigung ganz unterdrueckt, wird nur das hellste Licht\nverwendet. Dazu werden die Farbkomponenten quadriert und\naddiert. Das Licht mit dem hoechsten Resultat wird als das\nhellste betrachtet.", 
+	 "Color saturation can happen when several light sources light the\nsame area. If this is the case, the colors of the\nlight sources are added up. As the brightest value of a color\ncomponent (red, green, blue) is one, that can lead to\nseveral colored light sources together are creating white or\ndifferently colored light.\n\nWith full color saturation, lighting is computed exactly light that.\n\nWith limited color saturation, after computing the color sum the\ngreated color component is determined. If it is greater than\none, all color components are divided by this value.\nThat way colored light will generally be preserved.\n\nIf color saturation is suppressed, only the brightest light\n will be used.\nTo determine the brightest light, all color components of the\nlights are squared and added up. The light with the highest\nvalue is considered the brightest."},
 #if 0
 	{"", ""},
 #endif
