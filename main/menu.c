@@ -2928,7 +2928,7 @@ do {
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
 	} while (i == -2);
 if (optColorSat >= 0) {
-	for (i = 0; i < 2; i++)
+	for (i = 0; i < 3; i++)
 		if (m [optColorSat + i].value) {
 			gameOpts->render.color.nSaturation = i;
 			break;
