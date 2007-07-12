@@ -31,9 +31,10 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "laser.h"
 #include "render.h"
 #include "fireball.h"
+#include "sphere.h"
 #include "hudmsg.h"
 
-#define SIMPLE_BLAST 1
+#define BLAST_TYPE 0
 #define MOVE_BLAST 1
 
 //----------------- Variables for video clips -------------------
@@ -102,12 +103,16 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 
 void DrawExplBlast (tObject *objP)
 {
-	float			fLife, fAlpha;
+	float			fLife, fAlpha, r;
 	fix			xSize;
 	vmsVector	vPos, vDir;
-#if !SIMPLE_BLAST
+#if BLAST_TYPE == 1
 	int			i;
 	fix			xSize2;
+#elif BLAST_TYPE == 2
+	int			i;
+	tSphereData	sd;
+	tOOF_vector	p = {0,0,0};
 #endif
 
 	static tRgbaColorf blastColors [] = {
@@ -130,17 +135,29 @@ VmVecInc (&vPos, &vDir);
 #endif
 glDepthMask (0);
 OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#if SIMPLE_BLAST
+#if BLAST_TYPE == 0
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
 #	ifdef _DEBUG
 HUDMessage (0, "%1.2f", fAlpha);
 #	endif
 G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, NULL, fAlpha);
-#else
+#elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
 	G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, blastColors + i, fAlpha * blastColors [i].alpha);
+#elif BLAST_TYPE == 2
+CreateSphere (&sd);
+fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
+r = f2fl (xSize);
+sd.pPulse = 0;
+G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+for (i = 0; i < 3; i++) {
+	RenderSphere (&sd, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
+					  r, r, r, 1, 1, 1, fAlpha, NULL, 1);
+	r *= i ? 0.5f : 0.8f;
+	}
+G3DoneInstance ();
 #endif
 glDepthMask (1);
 }

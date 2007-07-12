@@ -33,7 +33,7 @@ static char rcsid[] = "$Id: text.c,v 1.11 2003/11/26 12:26:33 btb Exp $";
 #include "args.h"
 #include "compbit.h"
 
-#ifndef _DEBUG
+#ifdef _DEBUG
 #	define DUMP_TEXTS 0
 #else
 #	define DUMP_TEXTS 0
@@ -724,12 +724,12 @@ char *d2GameTexts [] = {
 	"P1",
 	"R1",
 	"Y1",
-	"SIngle Player Game"
+	"S~Ingle Player Game"
 	};
 
 char *defaultGameTexts [][2] = {
 	// menu messages
-	{"Ein~Zelspieler-Spiel", "SIngle Player Game"},
+	{"Ein~Zelspieler-Spiel", "S~Ingle Player Game"},
 	{"~Filme abspielen", "PLAY MOVIES..."},
 	{"~Musik abspielen", "PLAY SONGS..."},
 	{"D~2 Missionen spielen", "Play D2 Missions"},
@@ -2212,7 +2212,8 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann man einstellen, wie weit das Radar reicht.", "Here you can adjust the radar's range."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Rauch-\neffekte dargestellt werden.", "Check to have smoke effects rendered in the textured automap."},
 	{"Abhaengig von der hier vorgenommenen Einstellungen verbleiben\nExplosionstruemmer laenger und treiben herum.", "Depending on the setting made here, debris from explosions\nwill stay longer and keep floating around."},
-	{"Wenn angekreuzt, rotiert die Zielsuch-Anzeige langsam um\ndas Ziel.", "If checked the track goal indicator will rotate slowly around\nthe target."},
+	{"Wenn angekreuzt, werden potentielle Ziele von zielsuchenden Raketen\nmit Dreiecken markiert.", "If checked potential targets of homing missiles will be marked\nwith triangles."},
+	{"Wenn angekreuzt, rotiert die Zielsuch-Anzeige langsam um\ndas Ziel.", "If checked the missile target indicator will rotate slowly around\nthe target."},
 	{"Wenn angekreuzt, erhalten Energieschuesse und Truemmer Lichthoefe.", "If checked, debris and shot from energy weapons are rendered with\ncoronas."},
 	{"Wenn angekreuzt, wird die Umgebung der Mine ('Skybox') in der Ueber-\nsichtskarte gezeichnet.", "If checked, the mine's environment ('skybox') is rendered in the\nautomap."},
 	{"Hier kann die maximale Zeitlupen-Beschleunigung eingestellt werden.", "Adjust the maximal slow motion speedup here."},
@@ -2228,6 +2229,8 @@ char *defaultHelpTexts [][2] = {
 	{"Ankreuzen, wenn das Schiff sich entsprechend Kopfdrehungen drehen soll.", "Check if the ship should turn according to the head turning."},
 	{"Ankreuzen, wenn das Schiff entsprechend lateraler und vertikaler\nKopfbewegungen gleiten soll.", "Check if the ship should react to lateral and\nvertical head movements."},
 	{"Ankreuzen, wenn der Schub mit Kopfbewegungen geregelt werden soll.", "Check if thrust should be controlled by head\nmovements."},
+	{"Wenn angekreuzt, werden alle Empfindlichkeitseinstellungen der\nTrackIR-Steuerung mit einem gemeinsamen Schieberegler vorgenommen.\nAnderfalls kann jede Einstellung gesondert geregelt werden.", 
+	 "If checked, all sensitivity settings of the TrackIR control can\nbe made using a single slider control. Otherwise, each setting can\nbe changed separately."},
 	{"Hier koennen der Tastatur Spielaktionen zugeordnet werden.", "Assign game actions to the keyboard here."},
 	{"Hier koennen der Maus Spielaktionen zugeordnet werden.", "Assign game actions to the mouse here."},
 	{"Hier koennen einem oder mehreren Joysticks oder Gamepads\nSpielaktionen zugeordnet werden.", "Assign game actions to one ore more joysticks and gamepads here."},

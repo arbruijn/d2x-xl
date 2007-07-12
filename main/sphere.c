@@ -294,9 +294,8 @@ if (sdP->pPulse) {
 else
 	fScale = 1;
 #if 1
-if (!bmP && LoadShield ()) {
+if (bmP && (bmP == bmpShield)) {
 	static time_t t0 = 0;
-	bmP = bmpShield;
 	bTextured = 1;
 	if ((gameStates.app.nSDLTicks - t0 > 40) && BM_CURFRAME (bmP)) {
 		t0 = gameStates.app.nSDLTicks;
@@ -311,8 +310,9 @@ if (bmP) {
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmP, 1, 1))
 		bmP = NULL;
-	else if (BM_CURFRAME (bmP)) {
-		bmP = BM_CURFRAME (bmP);
+	else {
+		if (BM_CURFRAME (bmP))
+			bmP = BM_CURFRAME (bmP);
 		if (!bTextured)
 			bTextured = -1;
 		}
@@ -400,16 +400,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RenderSphereSimple (float fRadius, int nRings, float red, float green, float blue, float alpha, int bTextured)
+void RenderSphereSimple (float fRadius, int nRings, float red, float green, float blue, float alpha, int bTextured, int nTiles)
 {
-	int				nCull, h, i, j, k;
+	int				nCull, h, i, j;
 	fVector			p;
 	tSphereCoord	*psc [2];
 
 if (!CreateSphereSimple (nRings))
 	return;
 h = nRings / 2;
-k = (bTextured == -1) ? 4 : 1;
 for (nCull = 0; nCull < 2; nCull++) {
 	psc [0] = psc [1] = sphereCoordP;
 	for (j = 0; j < h; j++) {
@@ -420,18 +419,19 @@ for (nCull = 0; nCull < 2; nCull++) {
 			VmVecScalef (&p, &p, fRadius);
 			G3TransformPointf (&p, &p, 0);
 			if (bTextured)
-				glTexCoord2f (psc [0]->uvl.v.u * k, psc [0]->uvl.v.v * k);
+				glTexCoord2f (psc [0]->uvl.v.u * nTiles, psc [0]->uvl.v.v * nTiles);
 			glVertex3fv ((GLfloat *) &p);
 			psc [0]++;
 			p = psc [0]->vPos;
 			VmVecScalef (&p, &p, fRadius);
 			G3TransformPointf (&p, &p, 0);
 			if (bTextured)
-				glTexCoord2f (psc [0]->uvl.v.u * k, psc [0]->uvl.v.v * k);
+				glTexCoord2f (psc [0]->uvl.v.u * nTiles, psc [0]->uvl.v.v * nTiles);
 			glVertex3fv ((GLfloat *) &p);
 			psc [0]++;
 			}
 		glEnd();
+#if 0
 		if (!bTextured) {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i <= nRings; i++) {
@@ -439,20 +439,21 @@ for (nCull = 0; nCull < 2; nCull++) {
 				VmVecScalef (&p, &p, fRadius);
 				G3TransformPointf (&p, &p, 0);
 				if (bTextured)
-					glTexCoord2f (psc [1]->uvl.v.u * k, psc [1]->uvl.v.v * k);
+					glTexCoord2f (psc [1]->uvl.v.u * nTiles, psc [1]->uvl.v.v * nTiles);
 				glVertex3fv ((GLfloat *) &p);
 				psc [1]++;
 				p = psc [1]->vPos;
 				VmVecScalef (&p, &p, fRadius);
 				G3TransformPointf (&p, &p, 0);
 				if (bTextured)
-					glTexCoord2f (psc [1]->uvl.v.u * k, psc [1]->uvl.v.v * k);
+					glTexCoord2f (psc [1]->uvl.v.u * nTiles, psc [1]->uvl.v.v * nTiles);
 				glVertex3fv ((GLfloat *) &p);
 				psc [1]++;
 				}
 			glEnd ();
 			glLineWidth (1);
 			}
+#endif
 		}
 	}
 glCullFace (GL_BACK);
@@ -461,7 +462,7 @@ glCullFace (GL_BACK);
 //------------------------------------------------------------------------------
 
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
-					   float red, float green, float blue, float alpha, grsBitmap *bmP)
+					   float red, float green, float blue, float alpha, grsBitmap *bmP, int nTiles)
 {
 	static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 
@@ -484,7 +485,7 @@ glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
 OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if SIMPLE_SPHERE
-RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured);
+RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 #	if 1
 pSphere = (tOOF_vector *) RotateSphere (sdP, pRotSphere, pPos, xScale, yScale, zScale);
@@ -539,6 +540,8 @@ return 0;
 
 void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha)
 {
+if (!LoadShield ())
+	return;
 if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
 	if (gameData.render.shield.pSphere)
 		DestroySphere (&gameData.render.shield);
@@ -551,7 +554,7 @@ if (gameData.render.shield.nFaces > 0) {
 	float	r = f2fl (objP->size) * 1.05f;
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
-					  r, r, r, red, green, blue, alpha, NULL);
+					  r, r, r, red, green, blue, alpha, bmpShield, 1);
 	G3DoneInstance ();
 	}
 }
@@ -569,7 +572,7 @@ if (gameData.render.monsterball.nFaces > 0) {
 	float r = f2fl (objP->size);
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
-					  r, r, r, red, green, blue, alpha, &gameData.hoard.monsterball.bm);
+					  r, r, r, red, green, blue, alpha, &gameData.hoard.monsterball.bm, 4);
 	G3DoneInstance ();
 	}
 }
