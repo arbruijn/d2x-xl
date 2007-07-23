@@ -648,7 +648,7 @@ char *d2GameTexts [] = {
 	"Baud",
 	"A consistency error has been\ndetected in your network connection.\nCheck you hardware and re-join",
 	"Press any key to continue (Print Screen to save screenshot)",
-	"An error occured while writing\ndemo.  Demo is likely corrupted.\nEnter demo name now or\npress ESC to delete demo.",
+	"An error occured while writing\ndemo.  Demo is probably corrupted.\nEnter demo name now or\npress ESC to delete demo.",
 	"The main reactor is invulnerable for",
 	"The level being loaded is not\navailable in Destination Saturn.\nUnable to continue demo playback.\n\nPress any key to continue.",
 	"Reactor life",
@@ -1360,7 +1360,7 @@ char *defaultGameTexts [][2] = {
 	{"Ladefehler:", "Failed loading"},
 	{"descent.pig v1.0 und PC-Shareware-\nVersionen nicht unterstuetzt", "descent.pig of v1.0 and all\nPC shareware versions not supported."},
 	{"Unbekannte Groesse von ", "Unknown size for "},
-	{"Gespeicherter Spielstand beschaedigt!", "Save game data corrupted!"},
+	{"Gespeicherter Spielstand beschaedigt\noder der Level wurde veraendert!", "Save game data corrupted\nor the level has been changed!"},
 	{"Kann weder DESCENT.TEX noch DESCENT.TXB oeffnen", "Cannot open file DESCENT.TEX or DESCENT.TXB"},
 	{"Schalter verweist auf einseitige Wand\n(Segment:%d, Seite: %d, Schalter:%d)!",
 	 "Trigger targets single sided tWall\n(segment:%d, side:%d, trigger:%d)!"},
@@ -1703,6 +1703,7 @@ char *defaultGameTexts [][2] = {
 	{"~Volle Farbsaettigung", "~Full color saturation"},
 	{"~Begrenzte Farbsaettigung", "~Limit color saturation"},
 	{"~Keine Farbsaettigung", "~No color saturation"},
+	{"Die Pilotendatei ist beschaedigt.", "The player file has been damaged."},
 #if 0
 	{"", ""},
 #endif

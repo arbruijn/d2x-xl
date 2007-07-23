@@ -1987,7 +1987,7 @@ if (gameStates.input.nPlrFileVersion >= 23) {
 	if (gameData.app.nLifetimeChecksum != GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled)) {
 		networkData.nNetLifeKills = 
 		networkData.nNetLifeKilled = 0;
- 		ExecMessageBox (NULL, NULL, 1, "Shame on me", "Trying to cheat eh?");
+ 		ExecMessageBox (NULL, NULL, 1, TXT_WARNING, TXT_PROFILE_DAMAGED);
 		bRewriteIt = 1;
 		}
 	}

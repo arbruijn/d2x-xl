@@ -1432,7 +1432,8 @@ i = StateRestoreAllSub (filename, 0, bSecretRestore);
 gameData.app.bGamePaused = 0;
 /*---*/LogErr ("   rebuilding OpenGL texture data\n");
 /*---*/LogErr ("      rebuilding effects\n");
-RebuildGfxFx (1, 1);
+if (i)
+	RebuildGfxFx (1, 1);
 StartTime ();
 return i;
 }
@@ -1446,7 +1447,7 @@ int CFReadBoundedInt (int nMax, int *nVal, CFILE *fp)
 i = CFReadInt (fp);
 if ((i < 0) || (i > nMax)) {
 	Warning (TXT_SAVE_CORRUPT);
-	CFClose (fp);
+	//CFClose (fp);
 	return 1;
 	}
 *nVal = i;
@@ -2583,11 +2584,11 @@ return 1;
 
 int StateRestoreAllSub (char *filename, int bMulti, int bSecretRestore)
 {
-	CFILE			*fp;
-	char			szDesc [DESC_LENGTH + 1];
-	char			id [5];
-	int			sgVersion, i;
-	fix			xOldGameTime = gameData.time.xGame;
+	CFILE		*fp;
+	char		szDesc [DESC_LENGTH + 1];
+	char		id [5];
+	int		sgVersion, i;
+	fix		xOldGameTime = gameData.time.xGame;
 
 if (! (fp = CFOpen (filename, gameFolders.szSaveDir, "rb", 0)))
 	return 0;
@@ -2613,10 +2614,12 @@ CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W*THUMBNAIL_H : THUMBNAIL_LW * THUMBNAI
 // And now...skip the goddamn palette stuff that somebody forgot to add
 CFSeek (fp, 768, SEEK_CUR);
 if (sgVersion < 27)
-	StateRestoreBinGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
+	i = StateRestoreBinGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
 else
-	StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
+	i = StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
 CFClose (fp);
+if (!i)
+	return 0;
 FixObjectSegs ();
 FixObjectSizes ();
 ComputeNearestLights ();

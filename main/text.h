@@ -1744,10 +1744,10 @@ void LoadGameTexts(void);
 #define TXT_FULL_COLORSAT			GT(951)
 #define TXT_LIMIT_COLORSAT			GT(952)
 #define TXT_NO_COLORSAT				GT(953)
+#define TXT_PROFILE_DAMAGED		GT(954)
 
 #if 0
 
-#define TXT_				GT(954)
 #define TXT_				GT(955)
 #define TXT_				GT(956)
 #define TXT_				GT(957)

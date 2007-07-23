@@ -667,7 +667,10 @@ int CFClose(CFILE *fp)
 
 if (!fp)
 	return 0;
-result = fclose (fp->file);
+if (fp->file) {
+	result = fclose (fp->file);
+	fp->file = NULL;
+	}
 D2_FREE (fp);
 return result;
 }
