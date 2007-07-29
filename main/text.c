@@ -1703,7 +1703,7 @@ char *defaultGameTexts [][2] = {
 	{"~Volle Farbsaettigung", "~Full color saturation"},
 	{"~Begrenzte Farbsaettigung", "~Limit color saturation"},
 	{"~Keine Farbsaettigung", "~No color saturation"},
-	{"Die Pilotendatei ist beschaedigt.", "The player file has been damaged."},
+	{"Die Pilotendatei ist beschaedigt und wurde repariert.", "The player file was damaged and has been repaired."},
 #if 0
 	{"", ""},
 #endif

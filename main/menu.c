@@ -2750,7 +2750,7 @@ if (lightOpts.nMethod >= 0) {
 	v = menus [lightOpts.nMethod + 1].value;
 	if (v != gameOpts->render.bDynLighting) {
 		gameOpts->render.bDynLighting = v;
-		gameOpts->render.color.bUseLightMaps = menus [lightOpts.nMethod + 1].value;
+		gameOpts->render.color.bUseLightMaps = menus [lightOpts.nMethod + 2].value;
 		*key = -2;
 		return;
 		}
@@ -2758,7 +2758,7 @@ if (lightOpts.nMethod >= 0) {
 		v = menus [lightOpts.nMethod + 2].value;
 		if (v != gameOpts->render.color.bUseLightMaps) {
 			gameOpts->render.color.bUseLightMaps = v;
-			gameOpts->render.bDynLighting = menus [lightOpts.nMethod + 2].value;
+			gameOpts->render.bDynLighting = menus [lightOpts.nMethod + 1].value;
 			*key = -2;
 			return;
 			}
@@ -2832,10 +2832,10 @@ do {
 	if (!gameStates.app.bGameRunning) {
 		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
 		lightOpts.nMethod = opt++;
-		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting, KEY_G, 1, HTX_OGL_LIGHTING);
+		ADD_RADIO (opt, TXT_OGL_LIGHTING, gameOpts->render.bDynLighting && !gameOpts->render.color.bUseLightMaps, KEY_G, 1, HTX_OGL_LIGHTING);
 		opt++;
 		if (gameStates.render.color.bLightMapsOk) {
-			ADD_RADIO (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps, KEY_M, 1, HTX_RENDER_LIGHTMAPS);
+			ADD_RADIO (opt, TXT_USE_LMAPS, gameOpts->render.color.bUseLightMaps && !gameOpts->render.bDynLighting, KEY_M, 1, HTX_RENDER_LIGHTMAPS);
 			opt++;
 			}
 		ADD_TEXT (opt, "", 0);

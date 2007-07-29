@@ -25,7 +25,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CHECK_DROP	2
 #define EXEC_DROP		3
 
-#define BLAST_LIFE	(F1_0 / 2)
+#define BLAST_LIFE	(2 * F1_0 / 5)
+#define BLAST_SCALE	(5 * F1_0 / BLAST_LIFE)
 
 tObject *ObjectCreateExplosion(short nSegment, vmsVector *position, fix size, ubyte vclipType);
 tObject *ObjectCreateMuzzleFlash(short nSegment, vmsVector *position, fix size, ubyte vclipType);

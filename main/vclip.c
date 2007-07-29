@@ -126,7 +126,7 @@ if (objP->lifeleft <= 0)
 if (!LoadExplBlast ())
 	return;
 fLife = f2fl (BLAST_LIFE * 2 - objP->lifeleft);
-xSize = (fix) (objP->size * 10 * fLife);
+xSize = (fix) (objP->size * fLife * BLAST_SCALE);
 vPos = objP->position.vPos;
 #if MOVE_BLAST
 VmVecNormalize (VmVecSub (&vDir, &gameData.objs.console->position.vPos, &vPos));
