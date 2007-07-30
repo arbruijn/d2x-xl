@@ -1418,7 +1418,7 @@ char *defaultGameTexts [][2] = {
 	{"sehr hoch", "very high"},
 	{"extrem", "extreme"},
 	{"E~Xplosionen wenn beschaedigt", "Show eXplosions if damaged"},
-	{"zeige ~Abgasstrahl", "show thruster Flames"},
+	{"kein ~Abgasstrahl", "no thruster ~Flames"},
 	{"~Kollisionserkennung Rauch", "smoke collIsion detection"},
 	{"Warnton wenn Schild schwach", "Warning sound on low shields"},
 	{"E~Xperten-Optionen anzeigen", "show eXpert options"},
@@ -1704,6 +1704,8 @@ char *defaultGameTexts [][2] = {
 	{"~Begrenzte Farbsaettigung", "~Limit color saturation"},
 	{"~Keine Farbsaettigung", "~No color saturation"},
 	{"Die Pilotendatei ist beschaedigt und wurde repariert.", "The player file was damaged and has been repaired."},
+	{"~2D-Abgasstrahl", "~2D thruster flames"},
+	{"~3D-Abgasstrahl", "~3D thruster flames"},
 #if 0
 	{"", ""},
 #endif
@@ -1874,8 +1876,8 @@ char *defaultHelpTexts [][2] = {
 	 "Check to have weapon fire and missiles cast colored light\non the environment."},
 	{"Ankreuzen, wenn bei stark beschaedigten Schiffen und Robotern\nExplosionseffekte erscheinen sollen. Der Effekt beginnt, wenn\ndie Schilde eines Robots oder Schiffes unter 50% des Ausgangs-\nwertes sinken, und nimmt bei weiterer Beschaedigung zu.\n\nDiese Option kann die Leistung des Programms verringern.", 
 	 "Check if you want to have explosions appear on badly damaged\nships and robots. The effect will start if an robot's or\nship's shields are down to 50% of the initial value, and will\nincrease the more additional damage the object takes.\n\nThis option may cause a performance hit."},
-	{"Ankreuzen, wenn aus den Antriebsduesen der Schiffe Auspuff-\nflammen kommen sollen.", 
-	 "Check to have flames come out of a ship's thrusters."},
+	{"Hier wird eingestellt, wie der Abgasstrahl des Schiffes aussieht.\nDie 2D-Darstellung ist einfach, sieht aber dennoch gut aus.\nIn der 3D-Darstellung werden die Flammen als dreidimensionales\nObjekt gezeichnet.", 
+	 "Set the style of the flames coming out of a ship's thrusters.\n2D thruster flames are simple yet good looking display style.\n3D thrusters are rendered as fully threedimensional objects."},
 	{"Ankreuzen, wenn die Schiffe von einer transparenten Schildkugel\numgeben sein sollen (blau: normal, weiss: unverwundbar,\norange: getroffen)", 
 	 "Check if a transparent shield sphere is to be rendered around\nthe ships (blue: normal, white: invulnerable, orange: hit)."},
 	{"Ankreuzen, wenn den Filmen zum Spiel Untertitel unterlegt\nwerden sollen", 

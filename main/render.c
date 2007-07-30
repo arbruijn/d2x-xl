@@ -202,27 +202,32 @@ if (bmpCorona) {
 
 //------------------------------------------------------------------------------
 
-grsBitmap *bmpThruster = NULL;
-int bHaveThruster = 0;
+grsBitmap *bmpThruster [2] = {NULL, NULL};
+int bHaveThruster [2] = {0, 0};
 
 int LoadThruster (void)
 {
-if (!bHaveThruster) {
-	bmpThruster = CreateAndReadTGA ("thruster.tga");
-	bHaveThruster = bmpThruster ? 1 : -1;
+	int nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
+
+if (!bHaveThruster [nStyle]) {
+	bmpThruster [nStyle] = CreateAndReadTGA ((EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) ? "thrust2d.tga" : "thrust3d.tga");
+	bHaveThruster [nStyle] = bmpThruster [nStyle] ? 1 : -1;
 	}
-return bHaveThruster > 0;
+return bHaveThruster [nStyle] > 0;
 }
 
 //------------------------------------------------------------------------------
 
 void FreeThruster (void)
 {
-if (bmpThruster) {
-	GrFreeBitmap (bmpThruster);
-	bmpThruster = NULL;
-	bHaveThruster = 0;
-	}
+	int	i;
+
+for (i = 0; i < 2; i++)
+	if (bmpThruster [i]) {
+		GrFreeBitmap (bmpThruster [i]);
+		bmpThruster [i] = NULL;
+		bHaveThruster [i] = 0;
+		}
 }
 
 //------------------------------------------------------------------------------

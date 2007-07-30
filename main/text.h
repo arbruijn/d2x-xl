@@ -1461,7 +1461,7 @@ void LoadGameTexts(void);
 #define TXT_VERY_HIGH				GT(668)
 #define TXT_EXTREME					GT(669)
 #define TXT_DMG_EXPL					GT(670)
-#define TXT_THRUSTER_FLAME			GT(671)
+#define TXT_NO_THRUSTER_FLAME		GT(671)
 #define TXT_SMOKE_COLLISION		GT(672)
 #define TXT_SHIELD_WARNING			GT(673)
 #define TXT_EXPERT_MODE				GT(674)
@@ -1745,6 +1745,8 @@ void LoadGameTexts(void);
 #define TXT_LIMIT_COLORSAT			GT(952)
 #define TXT_NO_COLORSAT				GT(953)
 #define TXT_PROFILE_DAMAGED		GT(954)
+#define TXT_2D_THRUSTER_FLAME		GT(955)
+#define TXT_3D_THRUSTER_FLAME		GT(956)
 
 #if 0
 

@@ -96,7 +96,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3dfx_des.h"
 #endif
 
-#define ALT_THRUSTERS 1
 #define LIMIT_PHYSICS_FPS	0
 
 #define IS_TRACK_GOAL(_objP)	(((_objP) == gameData.objs.trackGoals [0]) || ((_objP) == gameData.objs.trackGoals [1]))
@@ -1554,7 +1553,7 @@ else {
 
 void RenderThrusterFlames (tObject *objP)
 {
-	int				h, i, j, k, l, nThrusters, bStencil;
+	int				h, i, j, k, l, nThrusters, bStencil, bTextured, nStyle;
 	tRgbaColorf		c [2];
 	vmsVector		vPos [2];
 	fVector			v;
@@ -1627,114 +1626,149 @@ else {
 	nThrusters = 1;
 	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	}
-#if ALT_THRUSTERS
-{
-	fVector	vPosf, n, vv [4], fVecf, vEye = {{0, 0, 0}};
-	tUVLf		uvlList4 [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
-	tUVLf		uvlList3 [3] = {{{0,0,1}},{{1,1,1}},{{1,0,1}}};
-	float		c;
-
-if (!LoadThruster ())
-	return;
-fLength *= 6;
-fSize *= 1.5;
-VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
-for (h = 0; h < nThrusters; h++) {
-	VmsVecToFloat (&vPosf, vPos + h);
-	VmVecScaleAddf (vv + 2, &vPosf, &fVecf, -fLength);
-	G3TransformPointf (vv + 2, vv + 2, 0);
-	G3TransformPointf (&vPosf, &vPosf, 0);
-	VmVecNormalf (&n, vv + 2, &vPosf, &vEye);
-	VmVecScaleAddf (vv, &vPosf, &n, fSize);
-	VmVecScaleAddf (vv + 1, &vPosf, &n, -fSize);
-	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmpThruster, 1, -1)) 
-		return;
-	OglTexWrap (bmpThruster->glTexture, GL_CLAMP);
-	glDisable (GL_CULL_FACE);
-	glDepthMask (0);
-	glEnable (GL_BLEND);
-	c = 0.7 + 0.03 * fPulse;
-	glColor3f (c, c, c);
-	glBegin (GL_TRIANGLES);
-	for (i = 0; i < 3; i++) {
-		glTexCoord2fv ((GLfloat *) (uvlList3 + i));
-		glVertex3fv ((GLfloat *) (vv + i));
-		}
-	glEnd ();
-	VmVecNormalf (&n, vv, vv + 1, vv + 2);
-	VmVecScaleAddf (vv + 2, &vPosf, &n, fSize);
-	vv [3] = vv [0];
-	VmVecScaleAddf (vv, &vPosf, &n, -fSize);
-	glBegin (GL_QUADS);
-	for (i = 0; i < 4; i++) {
-		glTexCoord2fv ((GLfloat *) (uvlList4 + i));
-		glVertex3fv ((GLfloat *) (vv + i));
-		}
-	glEnd ();
-	}
-glEnable (GL_CULL_FACE);
-glDepthMask (1);
-}
-#else
-
-CreateThrusterFlame ();
-glLineWidth (3);
 if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	glDisable (GL_STENCIL_TEST);
-for (h = 0; h < nThrusters; h++) {
-	c [1].red = 0.5f + 0.05f * fPulse;
-	c [1].green = 0.45f + 0.045f * fPulse;
-	c [1].blue = 0.0f;
-	c [1].alpha = 0.9f;
-	G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
+glDepthMask (0);
+bTextured = 0;
+nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
+if (!LoadThruster ()) {
+	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 	glDisable (GL_TEXTURE_2D);
-	glDepthMask (0);
-	glCullFace (GL_FRONT);
-	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
-#if 1
-		c [0] = c [1];
-		c [1].red *= 0.975f;
-		c [1].green *= 0.8f;
-		c [1].alpha *= fFade [i / 4];
-		glBegin (GL_QUAD_STRIP);
-		for (j = 0; j < RING_SIZE + 1; j++) {
-			k = j % RING_SIZE;
-			for (l = 0; l < 2; l++) {
-				v = vFlame [i + l][k];
-				v.p.x *= fSize;
-				v.p.y *= fSize;
-				v.p.z *= fLength;
-				G3TransformPointf (&v, &v, 0);
-				glColor4fv ((GLfloat *) (c + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
-				glVertex3fv ((GLfloat *) &v);
+	}
+else {
+	glEnable (GL_TEXTURE_2D);
+	if (OglBindBmTex (bmpThruster [nStyle], 1, -1)) {
+		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
+		glDisable (GL_TEXTURE_2D);
+		}
+	else {
+		OglTexWrap (bmpThruster [nStyle]->glTexture, GL_CLAMP);
+		bTextured = 1;
+		}
+	}
+
+if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
+		static tUVLf	uvlThruster [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+		static tUVLf	uvlFlame [3] = {{{0,0,1}},{{1,1,1}},{{1,0,1}}};
+		static fVector	vEye = {{0, 0, 0}};
+
+		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
+		float		c = 0.7f + 0.03f * fPulse, dotFlame, dotThruster;
+
+	glDisable (GL_CULL_FACE);
+	glEnable (GL_BLEND);
+	glColor3f (c, c, c);
+	fLength *= 6;
+	fSize *= 1.5;
+	VmsVecToFloat (&fVecf, /*pp ? &pp->mOrient.fVec :*/ &objP->position.mOrient.fVec);
+	for (h = 0; h < nThrusters; h++) {
+		VmsVecToFloat (&vPosf, vPos + h);
+		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -fLength);
+		G3TransformPointf (vFlame + 2, vFlame + 2, 0);
+		G3TransformPointf (&vPosf, &vPosf, 0);
+		VmVecNormalf (&vNormf, vFlame + 2, &vPosf, &vEye);
+		VmVecScaleAddf (vFlame, &vPosf, &vNormf, fSize);
+		VmVecScaleAddf (vFlame + 1, &vPosf, &vNormf, -fSize);
+		VmVecNormalf (&vNormf, vFlame, vFlame + 1, vFlame + 2);
+		vThruster [0] = vFlame [0];
+		vThruster [2] = vFlame [1];
+		VmVecScaleAddf (vThruster + 1, &vPosf, &vNormf, fSize);
+		VmVecScaleAddf (vThruster + 3, &vPosf, &vNormf, -fSize);
+		VmVecNormalizef (&vPosf, &vPosf);
+		VmVecNormalizef (&v, vFlame + 2);
+		dotFlame = VmVecDotf (&vPosf, &v);
+		VmVecNormalizef (&v, vThruster);
+		dotThruster = VmVecDotf (&vPosf, &v);
+		if (dotFlame < dotThruster) {
+			glBegin (GL_TRIANGLES);
+			for (i = 0; i < 3; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlFlame + i));
+				glVertex3fv ((GLfloat *) (vFlame + i));
 				}
+			glEnd ();
+			}
+		glBegin (GL_QUADS);
+		for (i = 0; i < 4; i++) {
+			glTexCoord2fv ((GLfloat *) (uvlThruster + i));
+			glVertex3fv ((GLfloat *) (vThruster + i));
 			}
 		glEnd ();
+		}
+	glEnable (GL_CULL_FACE);
+	}
+else {
+	tUVLf	uvl, uvlStep;
+
+	CreateThrusterFlame ();
+	glLineWidth (3);
+	glCullFace (GL_FRONT);
+	uvlStep.v.u = 1.0f / RING_SIZE;
+	uvlStep.v.v = 0.5f / THRUSTER_SEGS;
+	for (h = 0; h < nThrusters; h++) {
+		if (bTextured) {
+			float c = 0.8f + 0.02f * fPulse;
+			glColor3f (c,c,c);
+			}
+		else 
+			{
+			c [1].red = 0.5f + 0.05f * fPulse;
+			c [1].green = 0.45f + 0.045f * fPulse;
+			c [1].blue = 0.0f;
+			c [1].alpha = 0.9f;
+			}
+		G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
+		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
+#if 1
+			if (!bTextured) {
+				c [0] = c [1];
+				c [1].red *= 0.975f;
+				c [1].green *= 0.8f;
+				c [1].alpha *= fFade [i / 4];
+				}
+			glBegin (GL_QUAD_STRIP);
+			for (j = 0; j < RING_SIZE + 1; j++) {
+				k = j % RING_SIZE;
+				uvl.v.u = j * uvlStep.v.u;
+				for (l = 0; l < 2; l++) {
+					v = vFlame [i + l][k];
+					v.p.x *= fSize;
+					v.p.y *= fSize;
+					v.p.z *= fLength;
+					G3TransformPointf (&v, &v, 0);
+					if (bTextured) {
+						uvl.v.v = 0.25f + uvlStep.v.v * (i + l);
+						glTexCoord2fv ((GLfloat *) &uvl);
+						}
+					else
+						glColor4fv ((GLfloat *) (c + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
+					glVertex3fv ((GLfloat *) &v);
+					}
+				}
+			glEnd ();
 #else
-		glBegin (GL_LINE_LOOP);
-		glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
+			glBegin (GL_LINE_LOOP);
+			glColor4f (c [1].red, c [1].green, c [1].blue, c [1].alpha);
+			for (j = 0; j < RING_SIZE; j++) {
+				G3TransformPointf (&v, vFlame [i] + j);
+				glVertex3fv ((GLfloat *) &v);
+				}
+			glEnd ();
+#endif
+			}
+		glBegin (GL_TRIANGLE_STRIP);
 		for (j = 0; j < RING_SIZE; j++) {
-			G3TransformPointf (&v, vFlame [i] + j);
+			G3TransformPointf (&v, vFlame [0] + nStripIdx [j], 0);
 			glVertex3fv ((GLfloat *) &v);
 			}
 		glEnd ();
-#endif
+		G3DoneInstance ();
 		}
-	glBegin (GL_TRIANGLE_STRIP);
-	for (j = 0; j < RING_SIZE; j++) {
-		G3TransformPointf (&v, vFlame [0] + nStripIdx [j], 0);
-		glVertex3fv ((GLfloat *) &v);
-		}
-	glEnd ();
 	glLineWidth (1);
 	glCullFace (GL_BACK);
-	glDepthMask (1);
-	G3DoneInstance ();
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
 	}
-#endif
+glDepthMask (1);
+if (bStencil)
+	glEnable (GL_STENCIL_TEST);
 }
 
 // -----------------------------------------------------------------------------

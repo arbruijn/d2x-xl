@@ -1860,7 +1860,7 @@ void EffectOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
-	int	optTranspExpl, optThrustFlame, optDmgExpl, optAutoTransp, optPlayerShields,
+	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
 			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast;
 	char	szCoronaInt [50];
 
@@ -1893,8 +1893,13 @@ do {
 	optExplBlast = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
-	ADD_CHECK (opt, TXT_THRUSTER_FLAME, extraGameInfo [0].bThrusterFlames, KEY_F, HTX_RENDER_THRUSTER);
-	optThrustFlame = opt++;
+	ADD_RADIO (opt, TXT_NO_THRUSTER_FLAME, 0, KEY_F, 1, HTX_RENDER_THRUSTER);
+	optThrusterFlame = opt++;
+	ADD_RADIO (opt, TXT_2D_THRUSTER_FLAME, 0, KEY_2, 1, HTX_RENDER_THRUSTER);
+	opt++;
+	ADD_RADIO (opt, TXT_3D_THRUSTER_FLAME, 0, KEY_3, 1, HTX_RENDER_THRUSTER);
+	opt++;
+	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].value = 1;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
 	optPlayerShields = opt++;
 	ADD_CHECK (opt, TXT_ROBOT_SHIELDS, gameOpts->render.bRobotShields, KEY_O, HTX_ROBOT_SHIELDS);
@@ -1930,7 +1935,11 @@ do {
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
-	extraGameInfo [0].bThrusterFlames = m [optThrustFlame].value;
+	for (i = 0; i < 3; i++)
+		if (m [optThrusterFlame + i].value) {
+			extraGameInfo [0].bThrusterFlames = i;
+			break;
+			}
 	extraGameInfo [0].bRenderShield = m [optPlayerShields].value;
 	gameOpts->render.bRobotShields = m [optRobotShields].value;
 #if EXPMODE_DEFAULTS
