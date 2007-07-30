@@ -96,6 +96,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3dfx_des.h"
 #endif
 
+#define ALT_THRUSTERS 1
 #define LIMIT_PHYSICS_FPS	0
 
 #define IS_TRACK_GOAL(_objP)	(((_objP) == gameData.objs.trackGoals [0]) || ((_objP) == gameData.objs.trackGoals [1]))
@@ -1626,9 +1627,59 @@ else {
 	nThrusters = 1;
 	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	}
+#if ALT_THRUSTERS
+{
+	fVector	vPosf, n, vv [4], fVecf, vEye = {{0, 0, 0}};
+	tUVLf		uvlList4 [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	tUVLf		uvlList3 [3] = {{{0,0,1}},{{1,1,1}},{{1,0,1}}};
+	float		c;
+
+if (!LoadThruster ())
+	return;
+fLength *= 6;
+fSize *= 1.5;
+VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
+for (h = 0; h < nThrusters; h++) {
+	VmsVecToFloat (&vPosf, vPos + h);
+	VmVecScaleAddf (vv + 2, &vPosf, &fVecf, -fLength);
+	G3TransformPointf (vv + 2, vv + 2, 0);
+	G3TransformPointf (&vPosf, &vPosf, 0);
+	VmVecNormalf (&n, vv + 2, &vPosf, &vEye);
+	VmVecScaleAddf (vv, &vPosf, &n, fSize);
+	VmVecScaleAddf (vv + 1, &vPosf, &n, -fSize);
+	glEnable (GL_TEXTURE_2D);
+	if (OglBindBmTex (bmpThruster, 1, -1)) 
+		return;
+	OglTexWrap (bmpThruster->glTexture, GL_CLAMP);
+	glDisable (GL_CULL_FACE);
+	glDepthMask (0);
+	glEnable (GL_BLEND);
+	c = 0.7 + 0.03 * fPulse;
+	glColor3f (c, c, c);
+	glBegin (GL_TRIANGLES);
+	for (i = 0; i < 3; i++) {
+		glTexCoord2fv ((GLfloat *) (uvlList3 + i));
+		glVertex3fv ((GLfloat *) (vv + i));
+		}
+	glEnd ();
+	VmVecNormalf (&n, vv, vv + 1, vv + 2);
+	VmVecScaleAddf (vv + 2, &vPosf, &n, fSize);
+	vv [3] = vv [0];
+	VmVecScaleAddf (vv, &vPosf, &n, -fSize);
+	glBegin (GL_QUADS);
+	for (i = 0; i < 4; i++) {
+		glTexCoord2fv ((GLfloat *) (uvlList4 + i));
+		glVertex3fv ((GLfloat *) (vv + i));
+		}
+	glEnd ();
+	}
+glEnable (GL_CULL_FACE);
+glDepthMask (1);
+}
+#else
+
 CreateThrusterFlame ();
 glLineWidth (3);
-
 if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	glDisable (GL_STENCIL_TEST);
 for (h = 0; h < nThrusters; h++) {
@@ -1655,7 +1706,7 @@ for (h = 0; h < nThrusters; h++) {
 				v.p.y *= fSize;
 				v.p.z *= fLength;
 				G3TransformPointf (&v, &v, 0);
-				glColor4f (c [l].red, c [l].green, c [l].blue, c [l].alpha);
+				glColor4fv ((GLfloat *) (c + l)); // (c [l].red, c [l].green, c [l].blue, c [l].alpha);
 				glVertex3fv ((GLfloat *) &v);
 				}
 			}
@@ -1683,6 +1734,7 @@ for (h = 0; h < nThrusters; h++) {
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
+#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -3854,7 +3906,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 	if ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) {
 		if (SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 			return;
-		if ((gameStates.app.bNostalgia || !EGI_FLAG (bThrusterFlames, 1, 1, 0)) && 
+		if ((gameStates.app.bNostalgia || EGI_FLAG (bThrusterFlames, 1, 1, 0)) && 
 			 (objP->id != MERCURYMSL_ID))
 			return;
 		}

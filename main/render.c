@@ -202,6 +202,31 @@ if (bmpCorona) {
 
 //------------------------------------------------------------------------------
 
+grsBitmap *bmpThruster = NULL;
+int bHaveThruster = 0;
+
+int LoadThruster (void)
+{
+if (!bHaveThruster) {
+	bmpThruster = CreateAndReadTGA ("thruster.tga");
+	bHaveThruster = bmpThruster ? 1 : -1;
+	}
+return bHaveThruster > 0;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeThruster (void)
+{
+if (bmpThruster) {
+	GrFreeBitmap (bmpThruster);
+	bmpThruster = NULL;
+	bHaveThruster = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 grsBitmap *bmpShield = NULL;
 int bHaveShield = 0;
 

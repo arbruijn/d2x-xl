@@ -96,6 +96,8 @@ int LoadExplBlast (void);
 void FreeExplBlast (void);
 int LoadCorona (void);
 void FreeCorona (void);
+int LoadThruster (void);
+void FreeThruster (void);
 int LoadShield (void);
 void FreeShield (void);
 int LoadDeadzone (void);
@@ -104,6 +106,7 @@ void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float 
 void RenderMineSegment (int nn);
 
 extern grsBitmap *bmpCorona;
+extern grsBitmap *bmpThruster;
 extern grsBitmap *bmpShield;
 extern grsBitmap *bmpExplBlast;
 

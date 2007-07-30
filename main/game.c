@@ -1840,6 +1840,8 @@ FreeInventoryIcons ();
 FreeObjTallyIcons ();
 LogErr ("unloading corona texture data\n");
 FreeCorona ();
+LogErr ("unloading thruster texture data\n");
+FreeThruster ();
 LogErr ("unloading shield texture data\n");
 FreeShield ();
 LogErr ("unloading shield data\n");
