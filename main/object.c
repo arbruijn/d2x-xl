@@ -1553,7 +1553,7 @@ else {
 
 void RenderThrusterFlames (tObject *objP)
 {
-	int				h, i, j, k, l, nThrusters, bStencil, bTextured, nStyle;
+	int				h, i, j, k, l, nThrusters, bStencil, bSpectate, bTextured, nStyle;
 	tRgbaColorf		c [2];
 	vmsVector		vPos [2];
 	fVector			v;
@@ -1603,7 +1603,7 @@ if (objP->nType == OBJ_PLAYER) {
 		pt->nPulse = d_rand () % 11;
 		}
 	fPulse = (float) pt->nPulse / 10.0f;
-	fSize = 0.5f + fLength * 0.5f;
+	fSize = (fLength + 1) / 2;
 	nThrusters = 2;
 	CalcShipThrusterPos (objP, vPos);
 	}
@@ -1647,6 +1647,7 @@ else {
 		}
 	}
 
+bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		static tUVLf	uvlThruster [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 		static tUVLf	uvlFlame [3] = {{{0,0,1}},{{1,1,1}},{{1,0,1}}};
@@ -1660,7 +1661,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glColor3f (c, c, c);
 	fLength *= 6;
 	fSize *= 1.5;
-	VmsVecToFloat (&fVecf, /*pp ? &pp->mOrient.fVec :*/ &objP->position.mOrient.fVec);
+	VmsVecToFloat (&fVecf, (pp && !bSpectate) ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
 	for (h = 0; h < nThrusters; h++) {
 		VmsVecToFloat (&vPosf, vPos + h);
 		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -fLength);
@@ -1716,7 +1717,7 @@ else {
 			c [1].blue = 0.0f;
 			c [1].alpha = 0.9f;
 			}
-		G3StartInstanceMatrix (vPos + h, pp ? &pp->mOrient : &objP->position.mOrient);
+		G3StartInstanceMatrix (vPos + h, (pp && !bSpectate) ? &pp->mOrient : &objP->position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 			if (!bTextured) {
