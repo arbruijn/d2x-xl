@@ -163,6 +163,7 @@ void PiggyFreeHiresAnimations (void);
 int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP);
 
 ubyte *LoadD1Palette (void);
+void UseBitmapCache (grsBitmap *bmP, int nSize);
 
 extern int bUseHiresTextures, bD1Data;
 extern unsigned int bitmapCacheUsed;

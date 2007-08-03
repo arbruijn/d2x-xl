@@ -167,6 +167,9 @@ typedef struct _grs_altBmData {
 #define BM_TYPE_MASK		4
 
 typedef struct _grsBitmap {
+#ifdef _DEBUG
+	char				szName [20];
+#endif
 	grs_bmProps		bm_props;
 	ubyte				*bm_palette;
 	ubyte				*bm_texBuf;		// ptr to texture data...

@@ -3749,7 +3749,7 @@ void NMProgressBar (char *szCaption, int nCurProgress, int nMaxProgress,
 						  void (*doProgress) (int nItems, tMenuItem *items, int *last_key, int cItem))
 {
 	tMenuItem	m [3];
-	int				i, nInMenu;
+	int			i, nInMenu;
 
 memset (m, 0, sizeof (m));
 ADD_GAUGE (0, "                    ", 0, nMaxProgress); 

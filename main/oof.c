@@ -1348,13 +1348,16 @@ return 1;
 
 int OOF_ReleaseTextures (void)
 {
-	tOOFObject *po;
+	tOOFObject	*po;
+	grsBitmap	*bmP;
 	int			i, j;
 
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
-	if (po->textures.pBitmaps)
-		for (j = 0; j < po->textures.nTextures; j++)
-			GrFreeBitmapData (po->textures.pBitmaps + j);
+	if (bmP = po->textures.pBitmaps)
+		for (j = po->textures.nTextures; j; j--, bmP++) {
+			UseBitmapCache (bmP, -bmP->bm_props.h * bmP->bm_props.rowsize);
+			GrFreeBitmapData (bmP);
+			}
 return 0;
 }
 
@@ -1369,13 +1372,16 @@ CFSplitPath (pszFile, NULL, fn, NULL);
 if (nShrinkFactor > 1) {
 	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
 	if (ReadTGA (fnShrunk, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0)) {
-		bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
+#ifdef _DEBUG
+		strncpy (bmP->szName, fn, sizeof (bmP->szName));
+#endif
+		UseBitmapCache (bmP, bmP->bm_props.h * bmP->bm_props.rowsize);
 		return 1;
 		}
 	}
 if (!ReadTGA (pszFile, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0))
 	return 0;
-bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
+UseBitmapCache (bmP, bmP->bm_props.h * bmP->bm_props.rowsize);
 if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	if (gameStates.app.bCacheTextures) {
 		tTgaHeader	h;

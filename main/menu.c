@@ -1911,9 +1911,9 @@ do {
 	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_I, HTX_RENDER_LGTTRAILS);
 	effectOpts.nLightTrails = opt++;
 	if (extraGameInfo [0].bLightTrails) {
-		ADD_RADIO (opt, TXT_SOLID_LIGHTTRAILS, 0, KEY_S, 1, HTX_LIGHTTRAIL_TYPE);
+		ADD_RADIO (opt, TXT_SOLID_LIGHTTRAILS, 0, KEY_S, 2, HTX_LIGHTTRAIL_TYPE);
 		optTrailType = opt++;
-		ADD_RADIO (opt, TXT_PLASMA_LIGHTTRAILS, 0, KEY_P, 1, HTX_LIGHTTRAIL_TYPE);
+		ADD_RADIO (opt, TXT_PLASMA_LIGHTTRAILS, 0, KEY_P, 2, HTX_LIGHTTRAIL_TYPE);
 		opt++;
 		m [optTrailType + gameOpts->render.smoke.bPlasmaTrails].value = 1;
 		}

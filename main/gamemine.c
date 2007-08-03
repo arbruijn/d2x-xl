@@ -1713,22 +1713,16 @@ InitTexColors ();
 nCompiledVersion = CFReadByte (loadFile);
 //Assert ( nCompiledVersion==COMPILED_MINE_VERSION );
 #if TRACE
-if (nCompiledVersion!=COMPILED_MINE_VERSION)
+if (nCompiledVersion != COMPILED_MINE_VERSION)
 	con_printf (CONDBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
 con_printf (CONDBG, "   compiled mine version = %d\n", nCompiledVersion);
 #endif
-if (bNewFileFormat)
-	gameData.segs.nVertices = CFReadShort (loadFile);
-else
-	gameData.segs.nVertices = CFReadInt (loadFile);
-Assert ( gameData.segs.nVertices <= MAX_VERTICES );
+gameData.segs.nVertices = bNewFileFormat ? CFReadShort (loadFile) : CFReadInt (loadFile);
+Assert (gameData.segs.nVertices <= MAX_VERTICES);
 #if TRACE
 con_printf (CONDBG, "   %d vertices\n", gameData.segs.nVertices);
 #endif
-if (bNewFileFormat)
-	gameData.segs.nSegments = CFReadShort (loadFile);
-else
-	gameData.segs.nSegments = CFReadInt (loadFile);
+gameData.segs.nSegments = bNewFileFormat ? CFReadShort (loadFile) : CFReadInt (loadFile);
 if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 	Warning (TXT_LEVEL_TOO_LARGE);
 	return -1;

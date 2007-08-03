@@ -181,7 +181,42 @@ int ReadSoundFile ();
 void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 extern char szLastPalettePig [];
 
-//---------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+#ifdef _DEBUG
+typedef struct tTrackedBitmaps {
+	grsBitmap	*bmP;
+	int			nSize;
+} tTrackedBitmaps;
+
+tTrackedBitmaps	trackedBitmaps [1000000];
+int					nTrackedBitmaps = 0;
+#endif
+
+void UseBitmapCache (grsBitmap *bmP, int nSize)
+{
+bitmapCacheUsed += nSize;
+#ifdef _DEBUG
+if (nSize < 0) {
+	int i;
+	for (i = 0; i < nTrackedBitmaps; i++)
+		if (trackedBitmaps [i].bmP == bmP) {
+			CBP (trackedBitmaps [i].nSize != -nSize);
+			if (i < --nTrackedBitmaps)
+				trackedBitmaps [i] = trackedBitmaps [nTrackedBitmaps];
+			trackedBitmaps [nTrackedBitmaps].bmP = NULL;
+			trackedBitmaps [nTrackedBitmaps].nSize = 0;
+			break;
+			}
+	}
+else {
+	trackedBitmaps [nTrackedBitmaps].bmP = bmP;
+	trackedBitmaps [nTrackedBitmaps++].nSize = nSize;
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
 
 int IsOpaqueDoor (int i)
 {
@@ -660,7 +695,7 @@ if (!bRealloc)
 else {
 	if (!(pData = D2_ALLOC (xMax * yMax * bpp)))
 		return 0;
-	bitmapCacheUsed -= bmP->bm_props.h * bmP->bm_props.rowsize;
+	UseBitmapCache (bmP, -bmP->bm_props.h * bmP->bm_props.rowsize);
 	pDest = pData;
 	}
 for (yDest = 0; yDest < yMax; yDest++) {
@@ -721,7 +756,7 @@ bmP->bm_props.w = xMax;
 bmP->bm_props.h = yMax;
 bmP->bm_props.rowsize /= xFactor;
 if (bRealloc)
-	bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
+	UseBitmapCache (bmP, bmP->bm_props.h * bmP->bm_props.rowsize);
 return 1;
 }
 
@@ -1889,15 +1924,8 @@ return NULL;
 inline void PiggyFreeBitmapData (grsBitmap *bmP)
 {
 if (bmP->bm_texBuf) {
-#ifdef _DEBUG
-	unsigned int h = bitmapCacheUsed;
-#endif
 	D2_FREE (bmP->bm_texBuf);
-	bitmapCacheUsed -= bmP->bm_props.h * bmP->bm_props.rowsize;
-#ifdef _DEBUG
-	if (bitmapCacheUsed > h)
-		bitmapCacheUsed = h;
-#endif
+	UseBitmapCache (bmP, -bmP->bm_props.h * bmP->bm_props.rowsize);
 	}
 }
 
@@ -1947,11 +1975,8 @@ void PiggyFreeHiresAnimations (void)
 	grsBitmap	*bmP;
 
 for (bD1 = 0, bmP = gameData.pig.tex.bitmaps [bD1]; bD1 < 2; bD1++)
-	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++) {
-		if (bmP - gameData.pig.tex.bitmaps [0] == 1998)
-			i = i;
+	for (i = gameData.pig.tex.nBitmaps [bD1]; i; i--, bmP++)
 		PiggyFreeHiresAnimation (bmP, bD1);
-		}
 }
 
 //------------------------------------------------------------------------------
@@ -2087,7 +2112,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "rock260")) {
+	if (strstr (bmName, "misc019")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
@@ -2125,7 +2150,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 			BM_OVERRIDE (bmP) = altBmP;
 			bmP = altBmP;
 			ReadTGAHeader (fp, &h, bmP);
-			nSize = h.width * h.height * 4;
+			nSize = h.width * h.height * bmP->bm_bpp;
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
 			nOffset = CFTell (fp);
@@ -2174,15 +2199,18 @@ reloadTextures:
 		PiggyCriticalError ();
 		goto reloadTextures;
 		}
+#ifdef _DEBUG
+strncpy (bmP->szName, bmName, sizeof (bmP->szName));
+#endif
 #if TEXTURE_COMPRESSION
 	if (bmP->bm_compressed)
-		bitmapCacheUsed += bmP->bm_bufSize;
+		UseBitmapCache (bmP, bmP->bm_bufSize);
 	else 
 #endif
 		{
 		bmP->bm_texBuf = D2_ALLOC (nSize);
 		if (bmP->bm_texBuf) 
-			bitmapCacheUsed += nSize;
+			UseBitmapCache (bmP, nSize);
 		}
 	if (!bmP->bm_texBuf || (bitmapCacheUsed > bitmapCacheSize)) {
 		Int3 ();
@@ -2742,9 +2770,12 @@ if (fp) {
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.bm_fromPog = 1;
 		bm.bm_handle = j;
+#ifdef _DEBUG
+		sprintf (bm.szName, "POG%04d", j);
+#endif
 		gameData.pig.tex.pAltBitmaps [j] = bm;
 		BM_OVERRIDE (gameData.pig.tex.pBitmaps + j) = gameData.pig.tex.pAltBitmaps + j;
-		bitmapCacheUsed += bm.bm_props.h * bm.bm_props.rowsize;
+		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, bm.bm_props.h * bm.bm_props.rowsize);
 		}
 	D2_FREE (indices);
 	D2_FREE (bmh);
@@ -2807,7 +2838,7 @@ if (pNextBmP) {
 	}
 else {
 	bmP->bm_texBuf = D2_ALLOC (bmP->bm_props.h * bmP->bm_props.rowsize);
-	bitmapCacheUsed += bmP->bm_props.h * bmP->bm_props.rowsize;
+	UseBitmapCache (bmP, bmP->bm_props.h * bmP->bm_props.rowsize);
 	}
 CFRead (bmP->bm_texBuf, 1, zSize, piggyFP);
 bSwap0255 = 0;
