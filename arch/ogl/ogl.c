@@ -770,7 +770,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 //little hack to find the largest or equal multiple of 2 for a given number
-inline int pow2ize (int x)
+int pow2ize (int x)
 {
 	int i;
 
