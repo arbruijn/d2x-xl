@@ -71,6 +71,7 @@ typedef struct tScreenPos {
 } tScreenPos;
 
 typedef struct g3sPoint {
+	vmsVector	p3_src;			//untransformed point
 	vmsVector	p3_vec;			//x,y,z of rotated point
 	tUVL			p3_uvl;			//u,v,l coords
 	tScreenPos	p3_screen;		//screen x&y
@@ -234,6 +235,7 @@ return VmVecRotatef (pDest, VmVecSubf (&vTrans, pSrc, &viewInfo.posf), viewInfo.
 
 static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)
 {
+pDest->p3_src = *pSrc;
 G3TransformPoint (&pDest->p3_vec, pSrc, 0);
 pDest->p3_flags = 0;	
 return G3EncodePoint (pDest);

@@ -668,7 +668,7 @@ PA_DFX (gameStates.render.nLighting = 0);
 
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
 if (!flags)		//draw entire tObject
-	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, light, glowValues, color, NULL, nModel);
+	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
 else {
 	int i;
 
@@ -683,7 +683,7 @@ else {
 				VmVecNegate (&vOffs);
 				G3StartInstanceMatrix (&vOffs, NULL);
 				G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
-									  animAngles, light, glowValues, color, NULL, nModel);
+									  animAngles, NULL, light, glowValues, color, NULL, nModel);
 				G3DoneInstance ();
 				}
 			}	

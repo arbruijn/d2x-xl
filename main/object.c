@@ -1579,7 +1579,6 @@ if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flag
 	return;
 fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
 fLength = fSpeed / 60.0f;
-fLength += 0.2f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
@@ -1606,6 +1605,23 @@ if (objP->nType == OBJ_PLAYER) {
 	fSize = (fLength + 1) / 2;
 	nThrusters = 2;
 	CalcShipThrusterPos (objP, vPos);
+	}
+else if (objP->nType == OBJ_ROBOT) {
+	vmsMatrix	m;
+	tModelThrusters *mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+	if (gameStates.app.nSDLTicks - tPulse > 10) {
+		tPulse = gameStates.app.nSDLTicks;
+		nPulse = d_rand () % 11;
+		}
+	fPulse = (float) nPulse / 10.0f;
+	nThrusters = mtP->nCount;
+	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+	for (i = 0; i < nThrusters; i++) {
+		VmVecRotate (vPos + i, mtP->vPos + i, &m);
+		VmVecInc (vPos + i, &objP->position.vPos);
+		}
+	fSize = mtP->fSize;
+	//mtP->nCount = 0;
 	}
 else {
 	if (!bIsMissile [objP->id])
@@ -1659,6 +1675,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);
 	glColor3f (c, c, c);
+	fLength += 0.5;
 	fLength *= 6;
 	fSize *= 1.5;
 	VmsVecToFloat (&fVecf, (pp && !bSpectate) ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
@@ -1700,6 +1717,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 else {
 	tUVLf	uvl, uvlStep;
 
+	fLength += 0.5f;
 	CreateThrusterFlame ();
 	glLineWidth (3);
 	glCullFace (GL_FRONT);
@@ -2375,6 +2393,7 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
 			DrawPolygonObject (objP);
+			RenderThrusterFlames (objP);
 #if 0//def _DEBUG
 			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else

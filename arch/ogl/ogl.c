@@ -770,13 +770,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 //little hack to find the largest or equal multiple of 2 for a given number
-int pow2ize (int x)
+inline int pow2ize (int x)
 {
 	int i;
-	for (i = 2; i <= 4096; i *= 2)
-		if (x <= i) 
-			return i;
-	return i;
+
+for (i = 2; i <= 4096; i *= 2)
+	if (x <= i) 
+		return i;
+return i;
 }
 
 //------------------------------------------------------------------------------

@@ -346,7 +346,7 @@ for (i = 0; i < sort_n; i++) {
 		G3DrawMorphingModel (
 			pmP->modelData + pmP->subModels.ptrs [nSubModel], 
 			gameData.models.textures, 
-			animAngles, light, 
+			animAngles, NULL, light, 
 			mdP->vecs + mdP->submodelStartPoints [nSubModel], nModel);
 		}
 	else {

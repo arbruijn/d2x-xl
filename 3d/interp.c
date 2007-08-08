@@ -2264,11 +2264,48 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void AddThruster (int nModel, vmsVector *vNormal, vmsVector *vOffset, grsBitmap *bmP, int nPoints)
+{
+	int					h, i, nSize;
+	vmsVector			v;
+	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
+
+if (mtP->nCount >= 2)
+	return;
+i = bmP - gameData.pig.tex.bitmaps [0];
+if ((i < 1741) || (i > 1745))
+	return;
+if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -F1_0))
+	return;
+for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
+	VmVecInc (&v, &pointList [i]->p3_src);
+v.p.x /= nPoints;
+v.p.y /= nPoints;
+v.p.z /= nPoints;
+v.p.z -= F1_0 / 4;
+if (vOffset)
+	VmVecInc (&v, vOffset);
+if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
+	return;
+mtP->vPos [mtP->nCount] = v;
+if (vOffset)
+	VmVecDec (&v, vOffset);
+if (!mtP->nCount++) {
+	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
+		if (nSize > (h = VmVecDist (&v, &pointList [i]->p3_src)))
+			nSize = h;
+	mtP->fSize = f2fl (nSize);// * 1.25f;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 bool G3DrawPolyModel (
 	tObject		*objP, 
 	void			*modelP, 
 	grsBitmap	**modelBitmaps, 
 	vmsAngVec	*pAnimAngles, 
+	vmsVector	*vOffset,
 	fix			xModelLight, 
 	fix			*xGlowValues, 
 	tRgbaColorf	*objColorP,
@@ -2341,6 +2378,7 @@ for (;;) {
 			tUVL *uvlList;
 			int i;
 			fix l;
+			vmsVector *pvn = VECPTR (p+16);
 
 			//calculate light from surface normal
 			if (nGlow < 0) {			//no glow
@@ -2368,6 +2406,7 @@ for (;;) {
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
 			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
+			AddThruster (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
 			}
 		else
 			p += 30;
@@ -2376,12 +2415,12 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
-			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
-			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		p += 32;
 		}
@@ -2393,11 +2432,15 @@ for (;;) {
 		p += 36;
 		}
 	else if (h == OP_SUBCALL) {
-		vmsAngVec *a;
+		vmsAngVec	*va;
+		vmsVector	vo;
 
-		a = pAnimAngles ? pAnimAngles + WORDVAL (p+2) : NULL;
-		G3StartInstanceAngles (VECPTR (p+4), a);
-		G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, objColorP, po, nModel);
+		va = pAnimAngles ? pAnimAngles + WORDVAL (p+2) : NULL;
+		vo = *VECPTR (p+4);
+		G3StartInstanceAngles (&vo, va);
+		if (vOffset)
+			VmVecInc (&vo, vOffset);
+		G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, objColorP, po, nModel);
 		G3DoneInstance ();
 		p += 20;
 		}
@@ -2418,7 +2461,7 @@ int nestCount;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing tObject
-bool G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
+bool G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset,
 								  fix xModelLight, vmsVector *new_points, int nModel)
 {
 	ubyte *p = modelP;
@@ -2503,13 +2546,13 @@ for (;;) {
 		case OP_SORTNORM:
 			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 				//draw back then front
-				G3DrawMorphingModel (p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
-				G3DrawMorphingModel (p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, new_points, nModel);
 
 				}
 			else {			//not facing.  draw front then back
-				G3DrawMorphingModel (p + WORDVAL (p+28), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
-				G3DrawMorphingModel (p + WORDVAL (p+30), modelBitmaps, pAnimAngles, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, new_points, nModel);
+				G3DrawMorphingModel (p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, new_points, nModel);
 				}
 			p += 32;
 			break;
@@ -2524,13 +2567,12 @@ for (;;) {
 			}
 
 		case OP_SUBCALL: {
-			vmsAngVec *a;
-			if (pAnimAngles)
-				a = &pAnimAngles [WORDVAL (p+2)];
-			else
-				a = &avZero;
-			G3StartInstanceAngles (VECPTR (p+4), a);
-			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, xModelLight, xGlowValues, NULL, NULL, nModel);
+			vmsAngVec	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &avZero;
+			vmsVector	vo = *VECPTR (p+4);
+			G3StartInstanceAngles (&vo, va);
+			if (vOffset)
+				VmVecInc (&vo, vOffset);
+			G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, NULL, NULL, nModel);
 			G3DoneInstance ();
 			p += 20;
 			break;

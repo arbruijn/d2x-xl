@@ -1549,6 +1549,12 @@ typedef struct tModelHitboxes {
 #endif
 } tModelHitboxes;
 
+typedef struct tModelThrusters {
+	vmsVector			vPos [2];
+	float					fSize;
+	ubyte					nCount;
+	} tModelThrusters;
+
 typedef struct tModelData {
 	int					nHiresModels;
 	tOOFObject			hiresModels [MAX_POLYGON_MODELS];
@@ -1570,6 +1576,7 @@ typedef struct tModelData {
 	int					nDyingModels [MAX_POLYGON_MODELS];
 	int					nDeadModels [MAX_POLYGON_MODELS];
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
+	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
 } tModelData;
 
 #include "player.h"

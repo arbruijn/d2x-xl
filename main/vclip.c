@@ -103,13 +103,14 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 
 void DrawExplBlast (tObject *objP)
 {
-	float			fLife, fAlpha, r;
+	float			fLife, fAlpha;
 	fix			xSize;
 	vmsVector	vPos, vDir;
 #if BLAST_TYPE == 1
 	int			i;
 	fix			xSize2;
 #elif BLAST_TYPE == 2
+	float			r;
 	int			i;
 	tSphereData	sd;
 	tOOF_vector	p = {0,0,0};
