@@ -2264,10 +2264,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void AddThruster (int nModel, vmsVector *vNormal, vmsVector *vOffset, grsBitmap *bmP, int nPoints)
+void GetThrusterPos (int nModel, vmsVector *vNormal, vmsVector *vOffset, grsBitmap *bmP, int nPoints)
 {
 	int					h, i, nSize;
-	vmsVector			v;
+	vmsVector			v, vForward = {{0,0,F1_0}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 
 if (mtP->nCount >= 2)
@@ -2275,14 +2275,18 @@ if (mtP->nCount >= 2)
 i = bmP - gameData.pig.tex.bitmaps [0];
 if ((i < 1741) || (i > 1745))
 	return;
+#if 1
+if (VmVecDot (vNormal, &vForward) > -F1_0 / 3)
+#else
 if (vNormal->p.x || vNormal->p.y || (vNormal->p.z != -F1_0))
+#endif
 	return;
 for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
 	VmVecInc (&v, &pointList [i]->p3_src);
 v.p.x /= nPoints;
 v.p.y /= nPoints;
 v.p.z /= nPoints;
-v.p.z -= F1_0 / 4;
+v.p.z -= F1_0 / 8;
 if (vOffset)
 	VmVecInc (&v, vOffset);
 if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
@@ -2290,6 +2294,8 @@ if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) 
 mtP->vPos [mtP->nCount] = v;
 if (vOffset)
 	VmVecDec (&v, vOffset);
+mtP->vDir [mtP->nCount] = *vNormal;
+VmVecNegate (mtP->vDir + mtP->nCount);
 if (!mtP->nCount++) {
 	for (i = 0, nSize = 0x7fffffff; i < nPoints; i++)
 		if (nSize > (h = VmVecDist (&v, &pointList [i]->p3_src)))
@@ -2406,7 +2412,7 @@ for (;;) {
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
 			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
-			AddThruster (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
+			GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
 			}
 		else
 			p += 30;

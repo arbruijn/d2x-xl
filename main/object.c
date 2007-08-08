@@ -1532,20 +1532,22 @@ if (!bHaveFlame) {
 
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos)
 {
+	tPosition	*pPos = (gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject)) ? &gameStates.app.playerPos : &objP->position;
+
 if (gameOpts->render.bHiresModels) {
-	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-	VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -(8 * objP->size / 44));
-	VmVecScaleAdd (vPos + 1, vPos, &objP->position.mOrient.rVec, 8 * objP->size / 22);
+	VmVecScaleAdd (vPos, &pPos->vPos, &pPos->mOrient.fVec, -objP->size);
+	VmVecScaleInc (vPos, &pPos->mOrient.rVec, -(8 * objP->size / 44));
+	VmVecScaleAdd (vPos + 1, vPos, &pPos->mOrient.rVec, 8 * objP->size / 22);
 	}
 else {
-	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 10 * 9);
+	VmVecScaleAdd (vPos, &pPos->vPos, &pPos->mOrient.fVec, -objP->size / 10 * 9);
 	if (gameStates.app.bFixModels)
-		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, objP->size / 40);
+		VmVecScaleInc (vPos, &pPos->mOrient.uVec, objP->size / 40);
 	else
-		VmVecScaleInc (vPos, &objP->position.mOrient.uVec, -objP->size / 20);
+		VmVecScaleInc (vPos, &pPos->mOrient.uVec, -objP->size / 20);
 	vPos [1] = vPos [0];
-	VmVecScaleInc (vPos, &objP->position.mOrient.rVec, -8 * objP->size / 49);
-	VmVecScaleInc (vPos + 1, &objP->position.mOrient.rVec, 8 * objP->size / 49);
+	VmVecScaleInc (vPos, &pPos->mOrient.rVec, -8 * objP->size / 49);
+	VmVecScaleInc (vPos + 1, &pPos->mOrient.rVec, 8 * objP->size / 49);
 	}
 }
 
@@ -1553,16 +1555,17 @@ else {
 
 void RenderThrusterFlames (tObject *objP)
 {
-	int				h, i, j, k, l, nThrusters, bStencil, bSpectate, bTextured, nStyle;
-	tRgbaColorf		c [2];
-	vmsVector		vPos [2];
-	fVector			v;
-	float				fSize, fLength, fSpeed, fPulse, fFade [4];
-	tThrusterData	*pt = NULL;
-	tPathPoint		*pp = NULL;
+	int					h, i, j, k, l, nThrusters, bStencil, bSpectate, bTextured, nStyle;
+	tRgbaColorf			c [2];
+	vmsVector			vPos [2], vDir [2];
+	fVector				v;
+	float					fSize, fLength, fSpeed, fPulse, fFade [4];
+	tThrusterData		*pt = NULL;
+	tPathPoint			*pp = NULL;
+	tModelThrusters	*mtP;
 	
-	static time_t	tPulse = 0;
-	static int		nPulse = 10;
+	static time_t		tPulse = 0;
+	static int			nPulse = 10;
 
 if (gameStates.app.bNostalgia)
 	return;
@@ -1578,7 +1581,7 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
-fLength = fSpeed / 60.0f;
+fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
@@ -1608,7 +1611,7 @@ if (objP->nType == OBJ_PLAYER) {
 	}
 else if (objP->nType == OBJ_ROBOT) {
 	vmsMatrix	m;
-	tModelThrusters *mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+	mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
 	if (gameStates.app.nSDLTicks - tPulse > 10) {
 		tPulse = gameStates.app.nSDLTicks;
 		nPulse = d_rand () % 11;
@@ -1619,6 +1622,7 @@ else if (objP->nType == OBJ_ROBOT) {
 	for (i = 0; i < nThrusters; i++) {
 		VmVecRotate (vPos + i, mtP->vPos + i, &m);
 		VmVecInc (vPos + i, &objP->position.vPos);
+		VmVecRotate (vDir + i, mtP->vDir + i, &m);
 		}
 	fSize = mtP->fSize;
 	//mtP->nCount = 0;
@@ -1644,7 +1648,7 @@ else {
 	}
 if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	glDisable (GL_STENCIL_TEST);
-glDepthMask (0);
+//glDepthMask (0);
 bTextured = 0;
 nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
 if (!LoadThruster ()) {
@@ -1662,7 +1666,22 @@ else {
 		bTextured = 1;
 		}
 	}
-
+if (nThrusters > 1) {
+	vmsVector vRot [2];
+	for (i = 0; i < 2; i++)
+		G3RotatePoint (vRot + i, vPos + i, 0);
+	if (vRot [0].p.z < vRot [1].p.z) {
+		vmsVector v = vPos [0];
+		vPos [0] = vPos [1];
+		vPos [1] = v;
+		if (objP->nType == OBJ_ROBOT) {
+			v = vDir [0];
+			vDir [0] = vDir [1];
+			vDir [1] = v;
+			}
+		}
+	}
+glEnable (GL_BLEND);
 bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		static tUVLf	uvlThruster [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
@@ -1670,16 +1689,17 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		static fVector	vEye = {{0, 0, 0}};
 
 		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
-		float		c = 0.7f + 0.03f * fPulse, dotFlame, dotThruster;
+		float		c = 1/*0.7f + 0.03f * fPulse*/, dotFlame, dotThruster;
 
 	glDisable (GL_CULL_FACE);
-	glEnable (GL_BLEND);
 	glColor3f (c, c, c);
-	fLength += 0.5;
-	fLength *= 6;
+	fLength *= 4 * fSize;
 	fSize *= 1.5;
-	VmsVecToFloat (&fVecf, (pp && !bSpectate) ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
+	if (objP->nType != OBJ_ROBOT)
+		VmsVecToFloat (&fVecf,  (pp && !bSpectate) ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
 	for (h = 0; h < nThrusters; h++) {
+		if (objP->nType == OBJ_ROBOT)
+			VmsVecToFloat (&fVecf, vDir + h);
 		VmsVecToFloat (&vPosf, vPos + h);
 		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -fLength);
 		G3TransformPointf (vFlame + 2, vFlame + 2, 0);
@@ -1717,7 +1737,6 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 else {
 	tUVLf	uvl, uvlStep;
 
-	fLength += 0.5f;
 	CreateThrusterFlame ();
 	glLineWidth (3);
 	glCullFace (GL_FRONT);
@@ -1725,8 +1744,8 @@ else {
 	uvlStep.v.v = 0.5f / THRUSTER_SEGS;
 	for (h = 0; h < nThrusters; h++) {
 		if (bTextured) {
-			float c = 0.8f + 0.02f * fPulse;
-			glColor3f (c,c,c);
+			float c = 1; //0.8f + 0.02f * fPulse;
+			glColor3f (c, c, c); //, 0.9f);
 			}
 		else 
 			{
