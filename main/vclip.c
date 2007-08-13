@@ -33,6 +33,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "fireball.h"
 #include "sphere.h"
 #include "hudmsg.h"
+#include "u_mem.h"
 
 #define BLAST_TYPE 0
 #define MOVE_BLAST 1

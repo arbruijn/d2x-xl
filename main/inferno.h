@@ -220,6 +220,7 @@ typedef struct tRenderOptions {
 	int bOptimize;
 	int bTransparentEffects;
 	int bExplBlast;
+	int bExplShrapnels;
 	int bCoronas;
 	int bObjectCoronas;
 	int nCoronaIntensity;
@@ -1269,6 +1270,22 @@ typedef struct tHitbox {
 	short					nParent;			//parent hitbox
 } tHitbox;
 
+typedef struct tShrapnel {
+	vmsVector	vPos;
+	vmsVector	vDir;
+	vmsVector	vOffs;
+	fix			xSpeed;
+	fix			xLife;
+	fix			xTTL;
+	int			nSmoke;
+	int			nTurn;
+} tShrapnel;
+
+typedef struct tShrapnelData {
+	int			nShrapnels;
+	tShrapnel	*shrapnels;
+} tShrapnelData;
+
 typedef struct tObjectData {
 	tObjTypeData		types;
 	tObject				*objects;
@@ -1309,6 +1326,7 @@ typedef struct tObjectData {
 	int					nDeadControlCenter;
 	int					nVertigoBotFlags;
 	short					*nHitObjects;
+	tShrapnelData		*shrapnels;
 	tPowerupData		pwrUp;
 } tObjectData;
 

@@ -1197,8 +1197,8 @@ else {
 		//LogErr ("cannot create gameData.smoke.smoke\n");
 		return 0;
 		}
-	pSmoke->nObject = nObject;
-	pSmoke->nSignature = gameData.objs.objects [nObject].nSignature;
+	if ((pSmoke->nObject = nObject) != 0x7fffffff)
+		pSmoke->nSignature = gameData.objs.objects [nObject].nSignature;
 	pSmoke->nClouds = 0;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
@@ -1239,13 +1239,13 @@ else
 	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
 		pSmoke = gameData.smoke.smoke + i;
 #if 0
-		if (pSmoke->nSignature != gameData.objs.objects [pSmoke->nObject].nSignature) {
+		if ((pSmoke->nObject != 0x7fffffff) && (pSmoke->nSignature != gameData.objs.objects [pSmoke->nObject].nSignature)) {
 			SetSmokeLife (i, 0);
 			//continue;
 			}
 #endif
 #ifdef _DEBUG
-		if (gameData.objs.objects [pSmoke->nObject].nType == 255)
+		if ((pSmoke->nObject != 0x7fffffff) && (gameData.objs.objects [pSmoke->nObject].nType == 255))
 			i = i;
 #endif
 		if ((pCloud = pSmoke->pClouds))
@@ -1261,7 +1261,7 @@ else
 					}
 				else {
 					//LogErr ("moving %d (%d)\n", i, pSmoke->nObject);
-					if ((pSmoke->nObject < 0) || (gameData.objs.objects [pSmoke->nObject].nType == 255))
+					if ((pSmoke->nObject < 0) || ((pSmoke->nObject != 0x7fffffff) && (gameData.objs.objects [pSmoke->nObject].nType == 255)))
 						SetCloudLife (pCloud, 0);
 					if (MoveCloud (pCloud, t))
 						h++;
@@ -1322,7 +1322,7 @@ for (i = gameData.smoke.iUsedSmoke, j = 0; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.smoke + i;
 	if (pSmoke->pClouds) {
 		j += pSmoke->nClouds;
-		if (gameData.smoke.objects [pSmoke->nObject] < 0)
+		if ((pSmoke->nObject != 0x7fffffff) && (gameData.smoke.objects [pSmoke->nObject] < 0))
 			SetSmokeLife (i, 0);
 		}
 	}
@@ -1351,8 +1351,12 @@ for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 		return 0;
 		}
 	if (pSmoke->pClouds) {
-		objP = gameData.objs.objects + pSmoke->nObject;
-		brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
+		if (pSmoke->nObject == 0x7fffffff)
+			brightness = 1;
+		else {
+			objP = gameData.objs.objects + pSmoke->nObject;
+			brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
+			}
 		for (j = 0; j < pSmoke->nClouds; j++, k++) {
 			pSmoke->pClouds [j].brightness = brightness;
 			pCloudList [k].pCloud = pSmoke->pClouds + j;
@@ -1395,8 +1399,12 @@ else {
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
 				return 0;
-			objP = gameData.objs.objects + pSmoke->nObject;
-			brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
+			if (pSmoke->nObject == 0x7fffffff)
+				brightness = 1;
+			else {
+				objP = gameData.objs.objects + pSmoke->nObject;
+				brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
+				}
 			if (gameData.smoke.objects [pSmoke->nObject] < 0)
 				SetSmokeLife (i, 0);
 			for (j = 0; j < pSmoke->nClouds; j++) {

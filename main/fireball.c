@@ -79,7 +79,8 @@ tObject *CreateExplBlast (tObject *parentObjP)
 if (!gameOpts->render.bExplBlast)
 	return NULL;
 nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
-								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);if (nObject < 0)
+								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_EXPLBLAST, 1);
+if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
 objP->lifeleft = BLAST_LIFE;
@@ -1545,6 +1546,7 @@ void ExplodePolyModel (tObject *objP)
 {
 Assert (objP->renderType == RT_POLYOBJ);
 CreateExplBlast (objP);
+CreateShrapnels (objP);
 if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
 	objP->rType.polyObjInfo.nModel = gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel];
 if (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nModels > 1) {

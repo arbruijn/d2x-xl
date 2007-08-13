@@ -1861,7 +1861,7 @@ void EffectOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
-			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast;
+			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast, optExplShrapnels;
 	char	szCoronaInt [50];
 
 pszCoronaInt [0] = TXT_LOW;
@@ -1891,6 +1891,8 @@ do {
 	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_EXPLOSION_BLAST, gameOpts->render.bExplBlast, KEY_B, HTX_EXPLOSION_BLAST);
 	optExplBlast = opt++;
+	ADD_CHECK (opt, TXT_EXPLOSION_SHRAPNELS, gameOpts->render.bExplShrapnels, KEY_P, HTX_EXPLOSION_SHRAPNELS);
+	optExplShrapnels = opt++;
 	ADD_CHECK (opt, TXT_DMG_EXPL, extraGameInfo [0].bDamageExplosions, KEY_X, HTX_RENDER_DMGEXPL);
 	optDmgExpl = opt++;
 	ADD_RADIO (opt, TXT_NO_THRUSTER_FLAME, 0, KEY_F, 1, HTX_RENDER_THRUSTER);
@@ -1928,6 +1930,7 @@ do {
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
+	gameOpts->render.bExplShrapnels = m [optExplShrapnels].value;
 	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
 	gameOpts->render.bObjectCoronas = m [effectOpts.nObjCoronas].value;
 	if (optTrailType >= 0)

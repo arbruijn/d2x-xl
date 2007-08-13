@@ -99,6 +99,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
 #define RT_EXPLBLAST		9	 // white explosion light blast
+#define RT_SHRAPNELS		10	 // white explosion light blast
 
 // misc tObject flags
 #define OF_EXPLODING        1   // this tObject is exploding
@@ -501,6 +502,8 @@ int SlowMotionActive (void);
 int BulletTimeActive (void);
 void SlowMotionOff (void);
 void BulletTimeOn (void);
+
+int CreateShrapnels (tObject *parentObjP);
 
 extern ubyte bIsMissile [];
 

@@ -87,6 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_init.h"
 #include "input.h"
 #include "automap.h"
+#include "u_mem.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -833,6 +834,140 @@ if (nSegment != -1) {
 	explObjP->mType.physInfo.velocity.p.y = objP->mType.physInfo.velocity.p.y / 2;
 	explObjP->mType.physInfo.velocity.p.z = objP->mType.physInfo.velocity.p.z / 2;
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+#define SHRAPNEL_MAX_PARTS			500
+#define SHRAPNEL_PART_LIFE			-2000
+#define SHRAPNEL_PART_SPEED		10
+
+int CreateShrapnels (tObject *parentObjP)
+{
+	tShrapnelData	*sdP;
+	tShrapnel		*shrapnelP;
+	vmsVector		vDir;
+	int				i, h = (int) f2fl (parentObjP->size) * 5;
+	short				nObject;
+	tObject			*objP;
+	tRgbaColord		color = {1,1,1,0.5};
+
+if (!gameOpts->render.bExplShrapnels)
+	return 0;
+if ((parentObjP->nType != OBJ_PLAYER) && (parentObjP->nType != OBJ_ROBOT))
+	return 0;
+nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
+								1, CT_EXPLOSION, MT_NONE, RT_SHRAPNELS, 1);
+if (nObject < 0)
+	return 0;
+objP = gameData.objs.objects + nObject;
+sdP = gameData.objs.shrapnels + nObject;
+h += d_rand () % h;
+if (!(sdP->shrapnels = (tShrapnel *) D2_ALLOC (h * sizeof (tShrapnel))))
+	return 0;
+sdP->nShrapnels = h;
+for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
+	vDir.p.x = F1_0 /4 - d_rand () % (2 * F1_0);
+	vDir.p.y = F1_0 /4 - d_rand () % (2 * F1_0);
+	vDir.p.z = F1_0 /4 - d_rand () % (2 * F1_0);
+	VmVecNormalize (&vDir);
+	shrapnelP->vDir = vDir;
+	VmVecScale (&vDir, parentObjP->size);
+	VmVecAdd (&shrapnelP->vPos, &parentObjP->position.vPos, &vDir);
+	shrapnelP->nTurn = 1;
+	shrapnelP->xSpeed = F1_0 / 20 + d_rand () % (F1_0 / 20);
+	shrapnelP->xLife = 
+	shrapnelP->xTTL = 3 * F1_0 / 2 + d_rand ();
+	if (objP->lifeleft < shrapnelP->xLife)
+		objP->lifeleft = shrapnelP->xLife;
+	shrapnelP->nSmoke = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
+											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, 2, 0x7fffffff, &color);
+	}
+objP->lifeleft *= 2;
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+void DestroyShrapnels (tObject *objP)
+{
+	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
+
+if (sdP->shrapnels) {
+	int	i, h = sdP->nShrapnels;
+
+	sdP->nShrapnels = 0;
+	for (i = 0; i < h; i++)
+		SetSmokeLife (sdP->shrapnels [i].nSmoke, 0);
+	D2_FREE (sdP->shrapnels);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void MoveShrapnel (tShrapnel *shrapnelP)
+{
+	fix			xSpeed = FixDiv (shrapnelP->xSpeed, gameData.time.xFrame);
+	vmsVector	vOffs;
+
+xSpeed = 2 * (fix) ((float) xSpeed * (float) shrapnelP->xTTL / (float) shrapnelP->xLife);
+#if 1
+if (--(shrapnelP->nTurn))
+	vOffs = shrapnelP->vOffs;
+else {
+	shrapnelP->nTurn = 4 + d_rand () % 4;
+	vOffs = shrapnelP->vDir;
+	vOffs.p.x = (fix) ((double) vOffs.p.x * (0.0 + 2 * (double) d_rand () / 32767.0));
+	vOffs.p.y = (fix) ((double) vOffs.p.y * (0.0 + 2 * (double) d_rand () / 32767.0));
+	vOffs.p.z = (fix) ((double) vOffs.p.z * (0.0 + 2 * (double) d_rand () / 32767.0));
+	VmVecNormalize (&vOffs);
+	shrapnelP->vOffs = vOffs;
+	}
+#endif
+VmVecScale (&vOffs, xSpeed);
+VmVecInc (&shrapnelP->vPos, &vOffs);
+SetSmokePos (shrapnelP->nSmoke, &shrapnelP->vPos);
+}
+
+// -----------------------------------------------------------------------------
+
+void DrawShrapnel (tShrapnel *shrapnelP)
+{
+if (shrapnelP->xTTL > 0) {
+	MoveShrapnel (shrapnelP);
+	if (LoadExplBlast ()) {
+		fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
+		glDepthMask (0);
+		G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
+		glDepthMask (1);
+		}
+	if (0 >= (shrapnelP->xTTL -= gameData.time.xFrame))
+		DestroySmoke (shrapnelP->nSmoke);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void DrawShrapnels (tObject *objP)
+{
+	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
+	tShrapnel		*shrapnelP = sdP->shrapnels;
+	int				h, i;
+
+for (i = 0, h = sdP->nShrapnels; i < h; ) {
+	DrawShrapnel (shrapnelP);
+	if (shrapnelP->xTTL > 0) {
+		i++;
+		shrapnelP++;
+		}
+	else {
+		(sdP->nShrapnels)--;
+		if (i < --h)
+			*shrapnelP = sdP->shrapnels [h];
+		}
+	}
+if (!sdP->nShrapnels)
+	DestroyShrapnels (objP);
 }
 
 //------------------------------------------------------------------------------
@@ -2514,6 +2649,13 @@ switch (objP->renderType) {
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
 			DrawExplBlast (objP); 
+		break;
+
+	case RT_SHRAPNELS: 
+		if (!bForce && (gameStates.render.nType != 1))
+			return 0;
+		if (gameStates.render.nShadowPass != 2)
+			DrawShrapnels (objP); 
 		break;
 
 	case RT_WEAPON_VCLIP: 
