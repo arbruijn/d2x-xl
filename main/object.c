@@ -910,7 +910,7 @@ void MoveShrapnel (tShrapnel *shrapnelP)
 	fix			xSpeed = FixDiv (shrapnelP->xSpeed, gameData.time.xFrame);
 	vmsVector	vOffs;
 
-xSpeed = 2 * (fix) ((float) xSpeed * (float) shrapnelP->xTTL / (float) shrapnelP->xLife);
+xSpeed = 2 * (fix) (((float) xSpeed * (float) shrapnelP->xTTL) / ((float) shrapnelP->xLife * gameStates.gameplay.slowmo [0].fSpeed));
 #if 1
 if (--(shrapnelP->nTurn))
 	vOffs = shrapnelP->vOffs;
@@ -941,7 +941,7 @@ if (shrapnelP->xTTL > 0) {
 		G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
 		glDepthMask (1);
 		}
-	if (0 >= (shrapnelP->xTTL -= gameData.time.xFrame))
+	if (0 >= (shrapnelP->xTTL -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed)))
 		DestroySmoke (shrapnelP->nSmoke);
 	}
 }
