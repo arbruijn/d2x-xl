@@ -1731,45 +1731,26 @@ else {
 	}
 if (pt)
 	pt->fSpeed = fSpeed;
-if (objP->nType == OBJ_PLAYER) {
+bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
+#if 1
+if (gameStates.app.nSDLTicks - tPulse > 10) {
+	tPulse = gameStates.app.nSDLTicks;
+	nPulse = d_rand () % 11;
+	}
+fPulse = (float) nPulse / 10.0f;
+
+if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER)) {
+	if (bSpectate) 
+		pp = NULL;
+	else {
 		pt = gameData.render.thrusters + objP->id;
 		pp = GetPathPoint (&pt->path);
-
-	if (gameStates.app.nSDLTicks - pt->tPulse > 10) {
-		pt->tPulse = gameStates.app.nSDLTicks;
-		pt->nPulse = d_rand () % 11;
 		}
-	fPulse = (float) pt->nPulse / 10.0f;
 	fSize = (fLength + 1) / 2;
 	nThrusters = 2;
 	CalcShipThrusterPos (objP, vPos);
 	}
-else if (objP->nType == OBJ_ROBOT) {
-	vmsMatrix	m;
-	mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
-	if (gameStates.app.nSDLTicks - tPulse > 10) {
-		tPulse = gameStates.app.nSDLTicks;
-		nPulse = d_rand () % 11;
-		}
-	fPulse = (float) nPulse / 10.0f;
-	nThrusters = mtP->nCount;
-	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-	for (i = 0; i < nThrusters; i++) {
-		VmVecRotate (vPos + i, mtP->vPos + i, &m);
-		VmVecInc (vPos + i, &objP->position.vPos);
-		VmVecRotate (vDir + i, mtP->vDir + i, &m);
-		}
-	fSize = mtP->fSize;
-	//mtP->nCount = 0;
-	}
-else {
-	if (!bIsMissile [objP->id])
-		return;
-	if (gameStates.app.nSDLTicks - tPulse > 10) {
-		tPulse = gameStates.app.nSDLTicks;
-		nPulse = d_rand () % 11;
-		}
-	fPulse = (float) nPulse / 10.0f;
+else if (gameOpts->render.bHiresModels && bIsMissile [objP->id]) {
 	if (objP->id == EARTHSHAKER_ID)
 		fSize = 1.0f;
 	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
@@ -1781,6 +1762,64 @@ else {
 	nThrusters = 1;
 	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	}
+else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) || bIsMissile [objP->id]) {
+	vmsMatrix	m;
+	if (bSpectate || (objP->nType != OBJ_PLAYER))
+		pp = NULL;
+	else {
+		pt = gameData.render.thrusters + objP->id;
+		pp = GetPathPoint (&pt->path);
+		}
+	mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+	nThrusters = mtP->nCount;
+	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+	for (i = 0; i < nThrusters; i++) {
+		VmVecRotate (vPos + i, mtP->vPos + i, &m);
+		VmVecInc (vPos + i, &objP->position.vPos);
+		VmVecRotate (vDir + i, mtP->vDir + i, &m);
+		}
+	fSize = mtP->fSize;
+	//mtP->nCount = 0;
+	}
+else
+	return;
+#else
+if (objP->nType == OBJ_ROBOT) {
+	vmsMatrix	m;
+	mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+	nThrusters = mtP->nCount;
+	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+	for (i = 0; i < nThrusters; i++) {
+		VmVecRotate (vPos + i, mtP->vPos + i, &m);
+		VmVecInc (vPos + i, &objP->position.vPos);
+		VmVecRotate (vDir + i, mtP->vDir + i, &m);
+		}
+	fSize = mtP->fSize;
+	//mtP->nCount = 0;
+	}
+else if (objP->nType == OBJ_PLAYER) {
+		pt = gameData.render.thrusters + objP->id;
+		pp = GetPathPoint (&pt->path);
+
+	fSize = (fLength + 1) / 2;
+	nThrusters = 2;
+	CalcShipThrusterPos (objP, vPos);
+	}
+else {
+	if (!bIsMissile [objP->id])
+		return;
+	if (objP->id == EARTHSHAKER_ID)
+		fSize = 1.0f;
+	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
+		fSize = 0.8f;
+	else if (objP->id == SMARTMSL_ID)
+		fSize = 0.6f;
+	else
+		fSize = 0.5f;
+	nThrusters = 1;
+	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
+	}
+#endif
 if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	glDisable (GL_STENCIL_TEST);
 //glDepthMask (0);
@@ -1817,7 +1856,6 @@ if (nThrusters > 1) {
 		}
 	}
 glEnable (GL_BLEND);
-bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		static tUVLf	uvlThruster [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 		static tUVLf	uvlFlame [3] = {{{0,0,1}},{{1,1,1}},{{1,0,1}}};
@@ -1830,10 +1868,12 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glColor3f (c, c, c);
 	fLength *= 4 * fSize;
 	fSize *= 1.5;
-	if (objP->nType != OBJ_ROBOT)
-		VmsVecToFloat (&fVecf,  (pp && !bSpectate) ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
+#if 1
+	if (objP->nType == OBJ_PLAYER)
+		VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
+#endif
 	for (h = 0; h < nThrusters; h++) {
-		if (objP->nType == OBJ_ROBOT)
+		if (objP->nType != OBJ_PLAYER)
 			VmsVecToFloat (&fVecf, vDir + h);
 		VmsVecToFloat (&vPosf, vPos + h);
 		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -fLength);
@@ -2183,9 +2223,18 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 if (EGI_FLAG (bTracers, 0, 1, 0) &&
-	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID))) {
+	 (objP->nType == OBJ_WEAPON) && ((objP->id == VULCAN_ID) || (objP->id == GAUSS_ID)
+	 /*&& !gameData.objs.nTracers [objP->cType.laserInfo.nParentObj]*/)) {
+#if 0
+	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
+	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
+								gameData.weapons.info [objP->id].po_len_to_width_ratio) / 4;
+	gameData.models.nScale = F1_0 / 4;
+	DrawPolygonObject (objP);
+	gameData.models.nScale = 0;
+#else
 		fVector			vPosf [2], vDirf;
-		short				h, i;
+		short				i;
 		int				bStencil;
 //		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
@@ -2209,8 +2258,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glEnable (GL_BLEND);
 	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_LINE_SMOOTH);
-	h = 0; //d_rand () % 4;
-	glLineStipple ((h + 1) * 4, 0x00FF); //patterns [h]);
+	glLineStipple (6, 0x003F); //patterns [h]);
 	vDirf.p.x *= TRACER_WIDTH / 20.0f;
 	vDirf.p.y *= TRACER_WIDTH / 20.0f;
 	vDirf.p.z *= TRACER_WIDTH / 20.0f;
@@ -2220,8 +2268,10 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		glColor4d (1, 1, 1, 0.5 / i);
 		glVertex3fv ((GLfloat *) (vPosf + 1));
 		glVertex3fv ((GLfloat *) vPosf);
+#if 0
 		VmVecDecf (vPosf, &vDirf);
 		VmVecDecf (vPosf + 1, &vDirf);
+#endif
 		glEnd ();
 		}
 	glLineWidth (1);
@@ -2230,6 +2280,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glDepthMask (1);
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
+#endif
 	}
 }
 

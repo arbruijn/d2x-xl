@@ -649,6 +649,8 @@ if (pParent == gameData.objs.console) {
 		}
 	}
 #endif
+if ((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID))
+	gameData.objs.nTracers [nParent] = (gameData.objs.nTracers [nParent] + 1) % 3;
 objP = gameData.objs.objects + nObject;
 objP->cType.laserInfo.nParentObj = nParent;
 objP->cType.laserInfo.parentType = pParent->nType;
@@ -1276,7 +1278,7 @@ vLaserDir = m.fVec;
 if (spreadr || spreadu) {
 	VmVecScaleInc (&vLaserDir, &m.rVec, spreadr);
 	VmVecScaleInc (&vLaserDir, &m.uVec, spreadu);
-}
+	}
 if (bLaserOffs)
 	VmVecScaleInc (&vLaserDir, &m.uVec, LASER_OFFS);
 nObject = CreateNewLaser (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), laserType, bMakeSound);
@@ -1286,10 +1288,8 @@ if (laserType == OMEGA_ID)
 if (nObject == -1) {
 	return -1;
 	}
-if ((laserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided) {
+if ((laserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.guidedMissile [objP->id] = gameData.objs.objects + nObject;
-}
-
 gameData.multigame.bIsGuided = 0;
 laserP = gameData.objs.objects + nObject;
 if (laserType == CONCUSSION_ID ||
@@ -1503,7 +1503,7 @@ int LocalPlayerFireLaser (void)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 	fix		xEnergyUsed;
-	int		nAmmoUsed,nPrimaryAmmo;
+	int		nAmmoUsed, nPrimaryAmmo;
 	int		nWeaponIndex;
 	int		rVal = 0;
 	int 		nfires = 1;
@@ -1723,161 +1723,162 @@ return rVal;
 //	Returns number of times a weapon was fired.  This is typically 1, but might be more for low frame rates.
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.
+
+#define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
+#define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
+
 int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFires)
 {
 	tObject	*objP = gameData.objs.objects + nObject;
 
-	switch (nWeapon) {
-		case LASER_INDEX: {
-			ubyte	nLaser;
-			nLaserOffset = ((F1_0*2)* (d_rand ()%8))/8;
-			if (level <= MAX_LASER_LEVEL)
-				nLaser = LASER_ID + level;
-			else
-				nLaser = SUPERLASER_ID + (level - MAX_LASER_LEVEL-1);
-			LaserPlayerFire (objP, nLaser, 0, 1, 0);
-			LaserPlayerFire (objP, nLaser, 1, 0, 0);
-			if (flags & LASER_QUAD) {
-				//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt harmless
-				LaserPlayerFire (objP, nLaser, 2, 0, 0);
-				LaserPlayerFire (objP, nLaser, 3, 0, 0);
+switch (nWeapon) {
+	case LASER_INDEX: {
+		ubyte	nLaser;
+		nLaserOffset = ((F1_0*2)* (d_rand ()%8))/8;
+		if (level <= MAX_LASER_LEVEL)
+			nLaser = LASER_ID + level;
+		else
+			nLaser = SUPERLASER_ID + (level - MAX_LASER_LEVEL-1);
+		LaserPlayerFire (objP, nLaser, 0, 1, 0);
+		LaserPlayerFire (objP, nLaser, 1, 0, 0);
+		if (flags & LASER_QUAD) {
+			//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt harmless
+			LaserPlayerFire (objP, nLaser, 2, 0, 0);
+			LaserPlayerFire (objP, nLaser, 3, 0, 0);
 			}
-			break;
-		}
-		case VULCAN_INDEX: {
-			//	Only make sound for 1/4 of vulcan bullets.
-			int	bMakeSound = 1;
-			//if (d_rand () > 24576)
-			//	bMakeSound = 1;
-			LaserPlayerFireSpread (objP, VULCAN_ID, 6, d_rand ()/8 - 32767/16, d_rand ()/8 - 32767/16, bMakeSound, 0);
-			if (nFires > 1) {
-				LaserPlayerFireSpread (objP, VULCAN_ID, 6, d_rand ()/8 - 32767/16, d_rand ()/8 - 32767/16, 0, 0);
-				if (nFires > 2) {
-					LaserPlayerFireSpread (objP, VULCAN_ID, 6, d_rand ()/8 - 32767/16, d_rand ()/8 - 32767/16, 0, 0);
-				}
-			}
-			break;
-		}
-		case SPREADFIRE_INDEX:
-			if (flags & LASER_SPREADFIRE_TOGGLED) {
-				LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, F1_0/16, 0, 0, 0);
-				LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -F1_0/16, 0, 0, 0);
-				LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
-			} else {
-				LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, F1_0/16, 0, 0);
-				LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0);
-				LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
-			}
-			break;
-
-		case PLASMA_INDEX:
-			LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0);
-			LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0);
-			if (nFires > 1) {
-				LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
-				LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
-			}
-			break;
-
-		case FUSION_INDEX: {
-			vmsVector	vForce;
-			LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
-			LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
-			if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameStates.players [objP->id].bTripleFusion)
-				LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
-			flags = (sbyte) (gameData.fusion.xCharge >> 12);
-			gameData.fusion.xCharge = 0;
-			vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
-			vForce.p.y = -(objP->position.mOrient.fVec.p.y << 7);
-			vForce.p.z = -(objP->position.mOrient.fVec.p.z << 7);
-			PhysApplyForce (objP, &vForce);
-			vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
-			vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
-			vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
-			PhysApplyRot (objP, &vForce);
-			}
-			break;
-		case SUPER_LASER_INDEX: {
-			ubyte superLevel = 3;		//make some new kind of laser eventually
-			LaserPlayerFire (objP, superLevel, 0, 1, 0);
-			LaserPlayerFire (objP, superLevel, 1, 0, 0);
-
-			if (flags & LASER_QUAD) {
-				//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt harmless
-				LaserPlayerFire (objP, superLevel, 2, 0, 0);
-				LaserPlayerFire (objP, superLevel, 3, 0, 0);
-			}
-			break;
-		}
-		case GAUSS_INDEX: {
-			//	Only make sound for 1/4 of vulcan bullets.
-			int	bMakeSound = 1;
-			//if (d_rand () > 24576)
-			//	bMakeSound = 1;
-			
-			LaserPlayerFireSpread (objP, GAUSS_ID, 6, (d_rand ()/8 - 32767/16)/5, (d_rand ()/8 - 32767/16)/5, bMakeSound, 0);
-			if (nFires > 1) {
-				LaserPlayerFireSpread (objP, GAUSS_ID, 6, (d_rand ()/8 - 32767/16)/5, (d_rand ()/8 - 32767/16)/5, 0, 0);
-				if (nFires > 2) {
-					LaserPlayerFireSpread (objP, GAUSS_ID, 6, (d_rand ()/8 - 32767/16)/5, (d_rand ()/8 - 32767/16)/5, 0, 0);
-				}
-			}
-			break;
-		}
-		case HELIX_INDEX: {
-			int helix_orient;
-			fix spreadr,spreadu;
-			helix_orient = (flags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK;
-			switch (helix_orient) {
-
-				case 0: spreadr =  F1_0/16; spreadu = 0;       break; // Vertical
-				case 1: spreadr =  F1_0/17; spreadu = F1_0/42; break; //  22.5 degrees
-				case 2: spreadr =  F1_0/22; spreadu = F1_0/22; break; //  45   degrees
-				case 3: spreadr =  F1_0/42; spreadu = F1_0/17; break; //  67.5 degrees
-				case 4: spreadr =  0;       spreadu = F1_0/16; break; //  90   degrees
-				case 5: spreadr = -F1_0/42; spreadu = F1_0/17; break; // 112.5 degrees
-				case 6: spreadr = -F1_0/22; spreadu = F1_0/22; break; // 135   degrees	
-				case 7: spreadr = -F1_0/17; spreadu = F1_0/42; break; // 157.5 degrees
-				default:
-					Error ("Invalid helix_orientation value %x\n",helix_orient);
-			}
-
-			LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0);
-			LaserPlayerFireSpread (objP, HELIX_ID, 6,  spreadr,  spreadu, 0, 0);
-			LaserPlayerFireSpread (objP, HELIX_ID, 6, -spreadr, -spreadu, 0, 0);
-			LaserPlayerFireSpread (objP, HELIX_ID, 6,  spreadr*2,  spreadu*2, 0, 0);
-			LaserPlayerFireSpread (objP, HELIX_ID, 6, -spreadr*2, -spreadu*2, 0, 0);
-			break;
+		break;
 		}
 
-		case PHOENIX_INDEX:
-			LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0);
-			LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0);
-			if (nFires > 1) {
-				LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
-				LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
+	case VULCAN_INDEX: {
+		//	Only make sound for 1/4 of vulcan bullets.
+		int	bMakeSound = 1;
+		LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, bMakeSound, 0);
+		if (nFires > 1) {
+			LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+			if (nFires > 2)
+				LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
 			}
-			break;
+		break;
+		}
 
-		case OMEGA_INDEX:
-			LaserPlayerFire (objP, OMEGA_ID, 1, 1, 0);
-			break;
+	case SPREADFIRE_INDEX:
+		if (flags & LASER_SPREADFIRE_TOGGLED) {
+			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, F1_0/16, 0, 0, 0);
+			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -F1_0/16, 0, 0, 0);
+			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
+			}
+		else {
+			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, F1_0/16, 0, 0);
+			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0);
+			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
+			}
+		break;
 
-		default:
-			Int3 ();	//	Contact Yuan: Unknown Primary weapon nType, setting to 0.
-			gameData.weapons.nPrimary = 0;
+	case PLASMA_INDEX:
+		LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0);
+		LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0);
+		if (nFires > 1) {
+			LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
+			LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
+			}
+		break;
+
+	case FUSION_INDEX: {
+		vmsVector	vForce;
+		LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
+		LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
+		if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameStates.players [objP->id].bTripleFusion)
+			LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
+		flags = (sbyte) (gameData.fusion.xCharge >> 12);
+		gameData.fusion.xCharge = 0;
+		vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
+		vForce.p.y = -(objP->position.mOrient.fVec.p.y << 7);
+		vForce.p.z = -(objP->position.mOrient.fVec.p.z << 7);
+		PhysApplyForce (objP, &vForce);
+		vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
+		vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
+		vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
+		PhysApplyRot (objP, &vForce);
+		}
+		break;
+
+	case SUPER_LASER_INDEX: {
+		ubyte superLevel = 3;		//make some new kind of laser eventually
+		LaserPlayerFire (objP, superLevel, 0, 1, 0);
+		LaserPlayerFire (objP, superLevel, 1, 0, 0);
+
+		if (flags & LASER_QUAD) {
+			//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt harmless
+			LaserPlayerFire (objP, superLevel, 2, 0, 0);
+			LaserPlayerFire (objP, superLevel, 3, 0, 0);
+			}
+		break;
+		}
+
+	case GAUSS_INDEX: {
+		//	Only make sound for 1/4 of vulcan bullets.
+		int	bMakeSound = 1;
+		LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, bMakeSound, 0);
+		if (nFires > 1) {
+			LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+			if (nFires > 2)
+				LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+			}
+		break;
+		}
+
+	case HELIX_INDEX: {
+		int helix_orient;
+		fix spreadr,spreadu;
+		helix_orient = (flags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK;
+		switch (helix_orient) {
+			case 0: spreadr =  F1_0/16; spreadu = 0;       break; // Vertical
+			case 1: spreadr =  F1_0/17; spreadu = F1_0/42; break; //  22.5 degrees
+			case 2: spreadr =  F1_0/22; spreadu = F1_0/22; break; //  45   degrees
+			case 3: spreadr =  F1_0/42; spreadu = F1_0/17; break; //  67.5 degrees
+			case 4: spreadr =  0;       spreadu = F1_0/16; break; //  90   degrees
+			case 5: spreadr = -F1_0/42; spreadu = F1_0/17; break; // 112.5 degrees
+			case 6: spreadr = -F1_0/22; spreadu = F1_0/22; break; // 135   degrees	
+			case 7: spreadr = -F1_0/17; spreadu = F1_0/42; break; // 157.5 degrees
+			default:
+				Error ("Invalid helix_orientation value %x\n",helix_orient);
+			}
+
+		LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0);
+		LaserPlayerFireSpread (objP, HELIX_ID, 6,  spreadr,  spreadu, 0, 0);
+		LaserPlayerFireSpread (objP, HELIX_ID, 6, -spreadr, -spreadu, 0, 0);
+		LaserPlayerFireSpread (objP, HELIX_ID, 6,  spreadr*2,  spreadu*2, 0, 0);
+		LaserPlayerFireSpread (objP, HELIX_ID, 6, -spreadr*2, -spreadu*2, 0, 0);
+		break;
+		}
+
+	case PHOENIX_INDEX:
+		LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0);
+		LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0);
+		if (nFires > 1) {
+			LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
+			LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
+			}
+		break;
+
+	case OMEGA_INDEX:
+		LaserPlayerFire (objP, OMEGA_ID, 1, 1, 0);
+		break;
+
+	default:
+		Int3 ();	//	Contact Yuan: Unknown Primary weapon nType, setting to 0.
+		gameData.weapons.nPrimary = 0;
 	}
 
-	// Set values to be recognized during comunication phase, if we are the
-	//  one shooting
-	if ((IsMultiGame) && (nObject == LOCALPLAYER.nObject))
-	{
-		gameData.multigame.laser.bFired = nFires;
-		gameData.multigame.laser.nGun = nWeapon;
-		gameData.multigame.laser.nFlags = flags;
-		gameData.multigame.laser.nLevel = level;
+// Set values to be recognized during comunication phase, if we are the
+//  one shooting
+if ((IsMultiGame) && (nObject == LOCALPLAYER.nObject)) {
+	gameData.multigame.laser.bFired = nFires;
+	gameData.multigame.laser.nGun = nWeapon;
+	gameData.multigame.laser.nFlags = flags;
+	gameData.multigame.laser.nLevel = level;
 	}
-	return nFires;
+return nFires;
 }
 
 //	-------------------------------------------------------------------------------------------

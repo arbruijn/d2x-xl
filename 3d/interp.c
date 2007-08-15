@@ -197,15 +197,17 @@ modelPointList = pointlist;
 void RotatePointList (g3sPoint *dest, vmsVector *src, g3sNormal *norms, int n, int o)
 {
 	fVector	*pfv = (fVector *) (gameData.models.fPolyModelVerts + o);
+	float		fScale;
 
 dest += o;
 if (norms)
 	norms += o;
 while (n--) {
 	if (gameStates.ogl.bUseTransform) {
-		pfv->p.x = (float) src->p.x / 65536.0f;
-		pfv->p.y = (float) src->p.y / 65536.0f;
-		pfv->p.z = (float) src->p.z / 65536.0f;
+		fScale = f2fl (gameData.models.nScale) / 65536.0f;
+		pfv->p.x = (float) src->p.x * fScale;
+		pfv->p.y = (float) src->p.y * fScale;
+		pfv->p.z = (float) src->p.z * fScale;
 		dest->p3_index = o++;
 		pfv++;
 		}
@@ -225,11 +227,18 @@ while (n--) {
 	else
 #endif
 		dest->p3_normal.nFaces = 0;
-	G3TransformAndEncodePoint (dest++, src++);
+	if (gameData.models.nScale) {
+		vmsVector v = *src++;
+		VmVecScale (&v, gameData.models.nScale);
+		G3TransformAndEncodePoint (dest++, &v);
+		}
+	else
+		G3TransformAndEncodePoint (dest++, src++);
 	if (!gameStates.ogl.bUseTransform) {
-		pfv->p.x = (float) src->p.x / 65536.0f;
-		pfv->p.y = (float) src->p.y / 65536.0f;
-		pfv->p.z = (float) src->p.z / 65536.0f;
+		fScale = f2fl (gameData.models.nScale) / 65536.0f;
+		pfv->p.x = (float) src->p.x * fScale;
+		pfv->p.y = (float) src->p.y * fScale;
+		pfv->p.z = (float) src->p.z * fScale;
 		dest->p3_index = o++;
 		pfv++;
 		}
@@ -2272,9 +2281,11 @@ void GetThrusterPos (int nModel, vmsVector *vNormal, vmsVector *vOffset, grsBitm
 
 if (mtP->nCount >= 2)
 	return;
-i = bmP - gameData.pig.tex.bitmaps [0];
-if ((i < 1741) || (i > 1745))
-	return;
+if (bmP) {
+	i = bmP - gameData.pig.tex.bitmaps [0];
+	if ((i != 24) && ((i < 1741) || (i > 1745)))
+		return;
+	}
 #if 1
 if (VmVecDot (vNormal, &vForward) > -F1_0 / 3)
 #else
@@ -2443,6 +2454,8 @@ for (;;) {
 
 		va = pAnimAngles ? pAnimAngles + WORDVAL (p+2) : NULL;
 		vo = *VECPTR (p+4);
+		if (gameData.models.nScale)
+			VmVecScale (&vo, gameData.models.nScale);
 		G3StartInstanceAngles (&vo, va);
 		if (vOffset)
 			VmVecInc (&vo, vOffset);
@@ -2575,6 +2588,8 @@ for (;;) {
 		case OP_SUBCALL: {
 			vmsAngVec	*va = pAnimAngles ? &pAnimAngles [WORDVAL (p+2)] : &avZero;
 			vmsVector	vo = *VECPTR (p+4);
+			if (gameData.models.nScale)
+				VmVecScale (&vo, gameData.models.nScale);
 			G3StartInstanceAngles (&vo, va);
 			if (vOffset)
 				VmVecInc (&vo, vOffset);

@@ -899,6 +899,7 @@ DestroyCameras ();
 DestroyAllSmoke ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
+memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
 gameData.render.lights.flicker.nLights = 0;
 save_player = LOCALPLAYER;	
 Assert (gameStates.app.bAutoRunMission || 

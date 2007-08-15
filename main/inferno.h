@@ -1302,6 +1302,7 @@ typedef struct tObjectData {
 	fix					*xTimeLastHit;
 	fix					*xLight;
 	int					*nLightSig;
+	ubyte					*nTracers;
 	tFaceColor			color;
 	short					nFirstDropped;
 	short					nLastDropped;
@@ -1596,6 +1597,7 @@ typedef struct tModelData {
 	int					nDeadModels [MAX_POLYGON_MODELS];
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
+	int					nScale;
 } tModelData;
 
 #include "player.h"
