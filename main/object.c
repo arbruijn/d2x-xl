@@ -1690,14 +1690,14 @@ else {
 
 void RenderThrusterFlames (tObject *objP)
 {
-	int					h, i, j, k, l, nThrusters, bStencil, bSpectate, bTextured, nStyle;
+	int					h, i, j, k, l, nStyle, nThrusters, bStencil, bSpectate, bTextured;
 	tRgbaColorf			c [2];
 	vmsVector			vPos [2], vDir [2];
 	fVector				v;
 	float					fSize, fLength, fSpeed, fPulse, fFade [4];
 	tThrusterData		*pt = NULL;
 	tPathPoint			*pp = NULL;
-	tModelThrusters	*mtP;
+	tModelThrusters	*mtP = NULL;
 	
 	static time_t		tPulse = 0;
 	static int			nPulse = 10;
@@ -1738,11 +1738,8 @@ if (gameStates.app.nSDLTicks - tPulse > 10) {
 	nPulse = d_rand () % 11;
 	}
 fPulse = (float) nPulse / 10.0f;
-
 if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER)) {
-	if (bSpectate) 
-		pp = NULL;
-	else {
+	if (!bSpectate) {
 		pt = gameData.render.thrusters + objP->id;
 		pp = GetPathPoint (&pt->path);
 		}
@@ -1750,7 +1747,9 @@ if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER)) {
 	nThrusters = 2;
 	CalcShipThrusterPos (objP, vPos);
 	}
-else if (gameOpts->render.bHiresModels && bIsMissile [objP->id]) {
+else if (gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) {
+	tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	fix		nObjRad = 2 * (phb->vMax.p.z - phb->vMin.p.z) / 3;
 	if (objP->id == EARTHSHAKER_ID)
 		fSize = 1.0f;
 	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
@@ -1760,13 +1759,13 @@ else if (gameOpts->render.bHiresModels && bIsMissile [objP->id]) {
 	else
 		fSize = 0.5f;
 	nThrusters = 1;
-	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
+	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
+		fLength /= 2;
+	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -nObjRad);
 	}
-else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) || bIsMissile [objP->id]) {
+else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) || ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id])) {
 	vmsMatrix	m;
-	if (bSpectate || (objP->nType != OBJ_PLAYER))
-		pp = NULL;
-	else {
+	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
 		pt = gameData.render.thrusters + objP->id;
 		pp = GetPathPoint (&pt->path);
 		}
@@ -1779,7 +1778,6 @@ else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) || bIsMissile
 		VmVecRotate (vDir + i, mtP->vDir + i, &m);
 		}
 	fSize = mtP->fSize;
-	//mtP->nCount = 0;
 	}
 else
 	return;
@@ -1805,7 +1803,7 @@ else if (objP->nType == OBJ_PLAYER) {
 	nThrusters = 2;
 	CalcShipThrusterPos (objP, vPos);
 	}
-else {
+else if (objP->nType == OBJ_WEAPON) {
 	if (!bIsMissile [objP->id])
 		return;
 	if (objP->id == EARTHSHAKER_ID)
@@ -1867,13 +1865,13 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glDisable (GL_CULL_FACE);
 	glColor3f (c, c, c);
 	fLength *= 4 * fSize;
-	fSize *= 1.5;
+	fSize *= (objP->nType == OBJ_WEAPON) ? 1.25f : 1.25f;
 #if 1
-	if (objP->nType == OBJ_PLAYER)
+	if (!mtP)
 		VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
 #endif
 	for (h = 0; h < nThrusters; h++) {
-		if (objP->nType != OBJ_PLAYER)
+		if (mtP)
 			VmsVecToFloat (&fVecf, vDir + h);
 		VmsVecToFloat (&vPosf, vPos + h);
 		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -fLength);
