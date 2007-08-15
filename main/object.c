@@ -901,6 +901,7 @@ if (sdP->shrapnels) {
 		SetSmokeLife (sdP->shrapnels [i].nSmoke, 0);
 	D2_FREE (sdP->shrapnels);
 	}
+objP->lifeleft = -1;
 }
 
 // -----------------------------------------------------------------------------
