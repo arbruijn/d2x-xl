@@ -2417,7 +2417,7 @@ else {
 		bHasModel = 1;
 		}
 	}
-if (!(nModel && gameData.models.modelToOOF [nModel]))
+if (!(nModel && (!gameOpts->render.bHiresModels || gameData.models.modelToOOF [nModel])))
 	return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {

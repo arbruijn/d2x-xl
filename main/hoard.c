@@ -315,8 +315,8 @@ for (i = 0; i < 2; i++) {
 	D2_FREE (gameData.hoard.icon [i].bm.bm_texBuf);
 	gameData.hoard.icon [i].bm.bm_texBuf = NULL;
 	}
-for (i = 0; i < 4; i++) {
-	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0]);
+for (i = 1; i <= 4; i++) {
+	D2_FREE (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] - i].data [0]);
 	}
 }
 //-----------------------------------------------------------------------------
