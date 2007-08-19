@@ -2417,7 +2417,7 @@ else {
 		bHasModel = 1;
 		}
 	}
-if (!(nModel && (!gameOpts->render.bHiresModels || gameData.models.modelToOOF [nModel])))
+if (!(nModel && ((!gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) || gameData.models.modelToOOF [nModel])))
 	return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
@@ -2429,7 +2429,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;
 #if 0
-if (bIsMissile [objP->id]) 
+if ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) 
 #endif
 	{
 	objP->mType.physInfo.rotVel.p.x = 0;
