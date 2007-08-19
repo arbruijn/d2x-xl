@@ -861,6 +861,9 @@ nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->
 if (nObject < 0)
 	return 0;
 objP = gameData.objs.objects + nObject;
+objP->cType.explInfo.nSpawnTime = -1;
+objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDeleteTime = -1;
 sdP = gameData.objs.shrapnels + nObject;
 h += d_rand () % h;
 if (!(sdP->shrapnels = (tShrapnel *) D2_ALLOC (h * sizeof (tShrapnel))))

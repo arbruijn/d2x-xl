@@ -84,6 +84,9 @@ if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
 objP->lifeleft = BLAST_LIFE;
+objP->cType.explInfo.nSpawnTime = -1;
+objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDeleteTime = -1;
 objP->size = parentObjP->size;
 objP->size /= 3;
 if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [id = parentObjP->id])) {
@@ -1660,7 +1663,7 @@ if (objP->lifeleft <= 0) {	// We died of old age
 	if (objP->renderType == RT_EXPLBLAST)
 		objP->cType.explInfo.nDeleteTime = -1;
 	}
-if (objP->renderType == RT_EXPLBLAST)
+if ((objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS))
 	return;
 //See if we should create a secondary explosion
 if (objP->lifeleft <= objP->cType.explInfo.nSpawnTime) {
