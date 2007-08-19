@@ -1475,6 +1475,8 @@ if  (nSide != 0)
 	return;
 #	endif
 #endif
+if (IsMultiGame && extraGameInfo [1].bDarkness)
+	return;
 if (gameOpts->render.bDynamicLight) {
 	i = FindDynLight (nSegment, nSide, -1);
 	if ((i >= 0) && !gameData.render.lights.dynamic.lights [i].bOn)
