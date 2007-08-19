@@ -50,6 +50,8 @@
 
 //------------------------------------------------------------------------------
 
+#define SORT_CLOUDS 1
+
 #define OGL_VERTEX_ARRAYS	1
 
 #define PARTICLE_TYPES	4
@@ -1333,9 +1335,12 @@ return j;
 
 int CreateCloudList (void)
 {
-	int			h, i, j, k;
+	int			h, i, j, nClouds;
+#if SORT_CLOUDS
 	vmsVector	vPos;
+#endif
 	tSmoke		*pSmoke = gameData.smoke.smoke;
+	tCloud		*pCloud;
 	tObject		*objP;
 	double		brightness;
 
@@ -1344,7 +1349,7 @@ if (!h)
 	return 0;
 if (!(pCloudList = D2_ALLOC (h * sizeof (tCloudList))))
 	return -1;
-for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
+for (i = gameData.smoke.iUsedSmoke, nClouds = 0; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.smoke + i;
 	if (!LoadParticleImage (pSmoke->nType)) {
 		D2_FREE (pCloudList);
@@ -1357,17 +1362,23 @@ for (i = gameData.smoke.iUsedSmoke, k = 0; i >= 0; i = pSmoke->nNext) {
 			objP = gameData.objs.objects + pSmoke->nObject;
 			brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
 			}
-		for (j = 0; j < pSmoke->nClouds; j++, k++) {
-			pSmoke->pClouds [j].brightness = brightness;
-			pCloudList [k].pCloud = pSmoke->pClouds + j;
-			G3TransformPoint (&vPos, &pSmoke->pClouds [j].pos, 0);
-			pCloudList [k].xDist = VmVecMag (&vPos);
+		for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
+			if (pCloud->nParts > 0) {
+				pCloud->brightness = brightness;
+				pCloudList [nClouds].pCloud = pCloud;
+#if SORT_CLOUDS
+				G3TransformPoint (&vPos, &pCloud->pos, 0);
+				pCloudList [nClouds++].xDist = VmVecMag (&vPos);
+#endif
+				}
 			}
 		}
 	}
-if (h > 1)
-	QSortClouds (0, h - 1);
-return h;
+#if SORT_CLOUDS
+if (nClouds > 1)
+	QSortClouds (0, nClouds - 1);
+#endif
+return nClouds;
 }
 
 //------------------------------------------------------------------------------
@@ -1381,6 +1392,7 @@ int RenderSmoke (void)
 #if !EXTRA_VERTEX_ARRAYS
 nBuffer = 0;
 #endif
+#if 1
 h = CreateCloudList ();
 if (!h)
 	return 1;
@@ -1391,7 +1403,9 @@ else if (h > 0) {
 	D2_FREE (pCloudList);
 	pCloudList = NULL;
 	}
-else {
+else 
+#endif
+	{
 	tSmoke *pSmoke = gameData.smoke.smoke;
 
 	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
