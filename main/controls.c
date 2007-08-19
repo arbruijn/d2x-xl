@@ -91,7 +91,7 @@ vmsVector playerThrust;
 #define AFTERBURNER_USE_SECS	3				//use up in 3 seconds
 #define DROP_DELTA_TIME			(f1_0/15)	//drop 3 per second
 
-void ReadFlyingControls(tObject *objP)
+void ReadFlyingControls (tObject *objP)
 {
 	fix	forwardThrustTime;
 	tObject *gmObjP;
@@ -211,7 +211,11 @@ void ReadFlyingControls(tObject *objP)
 		//	Note, you must check for ft < F1_0/2, else you can get an overflow  on the << 15.
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->maxThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
+		if (VmVecMag (&objP->mType.physInfo.thrust) > 250)
+			objP = objP;
 		VmVecScale (&objP->mType.physInfo.thrust, FixDiv (gameData.pig.ship.player->maxThrust, ft));
+		if (VmVecMag (&objP->mType.physInfo.thrust) > 250)
+			objP = objP;
 		if ((ft < F1_0/2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
 			ft = (gameData.pig.ship.player->maxThrust >> 15) + 1;
 		VmVecScale (&objP->mType.physInfo.rotThrust, FixDiv (gameData.pig.ship.player->maxRotThrust, ft));

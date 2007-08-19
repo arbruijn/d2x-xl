@@ -1953,18 +1953,18 @@ if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameDat
 		}
 	else {
 		int i;
-		for (i=0; i<4; i++ )
-			if (JoyGetButtonDownCnt(i)>0) 
+		for (i = 0; i < 4; i++ )
+			if (JoyGetButtonDownCnt (i) > 0) 
 				gameStates.app.bDeathSequenceAborted = 1;
-		for (i=0; i<3; i++ )
-			if (MouseButtonDownCount(i)>0) 
+		for (i = 0; i < 3; i++ )
+			if (MouseButtonDownCount (i) > 0) 
 				gameStates.app.bDeathSequenceAborted = 1;
 		if (gameStates.app.bDeathSequenceAborted)
 			GameFlushInputs();
 		}
 	} 
 else {
-	explodingFlag=0;
+	explodingFlag = 0;
 	}
 if (gameData.demo.nState == ND_STATE_PLAYBACK )
 	update_vcrState();
@@ -1974,11 +1974,11 @@ while ((key=KeyInKeyTime(&keyTime)) != 0)    {
 			continue;
 		}
 if ( IsMultiGame && (gameData.multigame.msg.bSending || gameData.multigame.msg.bDefining ))	{
-	MultiMsgInputSub( key );
+	MultiMsgInputSub (key);
 	continue;		//get next key
 	}
 #ifdef _DEBUG
-if ((key&KEYDBGGED)&&IsMultiGame)   {
+if ((key&KEYDBGGED) && IsMultiGame) {
 	gameData.multigame.msg.nReceiver = 100;		// Send to everyone...
 	sprintf( gameData.multigame.msg.szMsg, "%s %s", TXT_I_AM_A, TXT_CHEATER);
 	}

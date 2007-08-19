@@ -67,7 +67,7 @@ int bShowMemInfo = 0;
 #define CHECKSIZE 16
 #define CHECKBYTE 0xFC
 
-#define MEM_MAX_INDEX 10000
+#define MEM_MAX_INDEX 1000000
 
 static void *pMallocBase [MEM_MAX_INDEX];
 static unsigned int nMallocSize [MEM_MAX_INDEX];

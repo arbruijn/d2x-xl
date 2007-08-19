@@ -3,7 +3,7 @@
 
 #define EXTRA_VERTEX_ARRAYS	1
 
-#define MAX_SMOKE 1000
+#define MAX_SMOKE 10000
 
 #define MAX_PARTICLES(_nParts,_nDens)	MaxParticles (_nParts, _nDens)
 #define PARTICLE_SIZE(_nSize,_nScale)	ParticleSize (_nSize, _nScale)

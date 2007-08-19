@@ -854,6 +854,8 @@ int CreateShrapnels (tObject *parentObjP)
 
 if (!gameOpts->render.bExplShrapnels)
 	return 0;
+if (parentObjP->flags & OF_ARMAGEDDON)
+	return 0;
 if ((parentObjP->nType != OBJ_PLAYER) && (parentObjP->nType != OBJ_ROBOT))
 	return 0;
 nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
@@ -861,6 +863,7 @@ nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->
 if (nObject < 0)
 	return 0;
 objP = gameData.objs.objects + nObject;
+objP->lifeleft = 0;
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
@@ -869,7 +872,7 @@ h += d_rand () % h;
 if (!(sdP->shrapnels = (tShrapnel *) D2_ALLOC (h * sizeof (tShrapnel))))
 	return 0;
 sdP->nShrapnels = h;
-for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
+for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	vDir.p.x = F1_0 /4 - d_rand () % (2 * F1_0);
 	vDir.p.y = F1_0 /4 - d_rand () % (2 * F1_0);
 	vDir.p.z = F1_0 /4 - d_rand () % (2 * F1_0);
@@ -886,7 +889,10 @@ for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
 	shrapnelP->nSmoke = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
 											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, 2, 0x7fffffff, &color);
 	}
-objP->lifeleft *= 2;
+objP->lifeleft++;
+objP->cType.explInfo.nSpawnTime = -1;
+objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDeleteTime = -1;
 return 1;
 }
 
@@ -901,8 +907,10 @@ if (sdP->shrapnels) {
 
 	sdP->nShrapnels = 0;
 	for (i = 0; i < h; i++)
-		SetSmokeLife (sdP->shrapnels [i].nSmoke, 0);
+		if (sdP->shrapnels [i].nSmoke >= 0)
+			SetSmokeLife (sdP->shrapnels [i].nSmoke, 0);
 	D2_FREE (sdP->shrapnels);
+	sdP->shrapnels = 0;
 	}
 objP->lifeleft = -1;
 }
@@ -938,15 +946,12 @@ SetSmokePos (shrapnelP->nSmoke, &shrapnelP->vPos);
 void DrawShrapnel (tShrapnel *shrapnelP)
 {
 if (shrapnelP->xTTL > 0) {
-	MoveShrapnel (shrapnelP);
 	if (LoadExplBlast ()) {
 		fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
 		glDepthMask (0);
 		G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
 		glDepthMask (1);
 		}
-	if (0 >= (shrapnelP->xTTL -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed)))
-		DestroySmoke (shrapnelP->nSmoke);
 	}
 }
 
@@ -958,20 +963,39 @@ void DrawShrapnels (tObject *objP)
 	tShrapnel		*shrapnelP = sdP->shrapnels;
 	int				h, i;
 
-for (i = 0, h = sdP->nShrapnels; i < h; ) {
+for (i = 0, h = sdP->nShrapnels; i < h; )
 	DrawShrapnel (shrapnelP);
-	if (shrapnelP->xTTL > 0) {
-		i++;
-		shrapnelP++;
+}
+
+// -----------------------------------------------------------------------------
+
+int MoveShrapnels (tObject *objP)
+{
+	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
+	tShrapnel		*shrapnelP = sdP->shrapnels;
+	int				h, i;
+
+if (objP->lifeleft > 0) {
+	for (i = 0, h = sdP->nShrapnels; i < h; ) {
+		if (shrapnelP->xTTL <= 0)
+			continue;
+		if (0 < (shrapnelP->xTTL -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed))) {
+			shrapnelP++;
+			i++;
+			}
+		else {
+			SetSmokeLife (shrapnelP->nSmoke, 0);
+			shrapnelP->nSmoke = -1;
+			(sdP->nShrapnels)--;
+			if (i < --h)
+				*shrapnelP = sdP->shrapnels [h];
+			}
 		}
-	else {
-		(sdP->nShrapnels)--;
-		if (i < --h)
-			*shrapnelP = sdP->shrapnels [h];
-		}
+	if (sdP->nShrapnels)
+		return 1;
 	}
-if (!sdP->nShrapnels)
-	DestroyShrapnels (objP);
+DestroyShrapnels (objP);
+return 0;
 }
 
 //------------------------------------------------------------------------------

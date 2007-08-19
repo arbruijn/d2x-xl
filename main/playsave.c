@@ -144,7 +144,7 @@ for (pi = pszTag; *pszIdent; h++) {
 		strcpy (pi, pszIdent);
 		break;
 		}
-	memcpy (pi, pszIdent, l = ph - pszIdent);
+	memcpy (pi, pszIdent, l = (int) (ph - pszIdent));
 	sprintf (pi + l, "[%d]", h ? j : i);
 	pi = pszTag + strlen (pszTag);
 	strcat (pszTag, pszIdent = strchr (ph + 1, ']') + 1);
@@ -160,7 +160,7 @@ int RegisterParam (void *valP, char *pszIdent, int i, int j, ubyte nSize)
 	int		l;
 	tParam	*pp;
 
-l = strlen (MakeTag (szTag, pszIdent, i, j));
+l = (int) strlen (MakeTag (szTag, pszIdent, i, j));
 pp = (tParam *) D2_ALLOC (sizeof (tParam) + l);
 if (!pp)
 	return 0;
@@ -576,8 +576,8 @@ done:
 
 strcat (szVal, "\n");
 #endif
-CFWrite (pp->szTag, 1, strlen (pp->szTag), fp);
-CFWrite (szVal, 1, strlen (szVal), fp);
+CFWrite (pp->szTag, 1, (int) strlen (pp->szTag), fp);
+CFWrite (szVal, 1, (int) strlen (szVal), fp);
 fflush (fp->file);
 return 1;
 }

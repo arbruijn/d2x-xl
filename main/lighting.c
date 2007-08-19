@@ -52,6 +52,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "lightmap.h"
 #include "gamemine.h"
 #include "text.h"
+#include "input.h"
 
 #define FLICKERFIX 0
 
@@ -261,7 +262,7 @@ void ApplyLight (
 	int			nObjSeg, 
 	vmsVector	*vObjPos, 
 	int			nRenderVertices, 
-	short			*renderVertices, 
+	short			*renderVertexP, 
 	int			nObject,
 	tRgbaColorf	*color)
 {
@@ -380,7 +381,7 @@ if (xObjIntensity) {
 		// -- for (vv=gameData.app.nFrameCount&1; vv<nRenderVertices; vv+=2) {
 		for (vv = 0; vv < nRenderVertices; vv++) {
 
-			nVertex = renderVertices [vv];
+			nVertex = renderVertexP [vv];
 #if FLICKERFIX == 0
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
@@ -430,7 +431,7 @@ if (xObjIntensity) {
 
 // ----------------------------------------------------------------------------------------------
 
-void CastMuzzleFlashLight (int nRenderVertices, short *renderVertices)
+void CastMuzzleFlashLight (int nRenderVertices, short *renderVertexP)
 {
 	int	i;
 	short	time_since_flash;
@@ -442,7 +443,7 @@ void CastMuzzleFlashLight (int nRenderVertices, short *renderVertices)
 			if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
 				ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE, 
 								gameData.muzzle.info [i].nSegment, &gameData.muzzle.info [i].pos, 
-								nRenderVertices, renderVertices, -1, NULL);
+								nRenderVertices, renderVertexP, -1, NULL);
 			else
 				gameData.muzzle.info [i].createTime = 0;		// turn off this muzzle flash
 		}
@@ -457,7 +458,6 @@ fix	objLightXlat [16] =
 	 0x3123, 0x29af, 0x1f03, 0x032a};
 
 //	Flag array of gameData.objs.objects lit last frame.  Guaranteed to process this frame if lit last frame.
-sbyte   lightingObjects [MAX_OBJECTS_D2X];
 
 #define	MAX_HEADLIGHTS	8
 tObject	*Headlights [MAX_HEADLIGHTS];
@@ -509,7 +509,9 @@ switch (nObjType) {
 
 	case OBJ_FIREBALL:
 	case OBJ_EXPLOSION:
-		if ((objP->id != 0xff) && (objP->renderType != RT_THRUSTER)) {
+		if ((objP->id == 0xff) || (objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS)) 
+			return 0;
+		else {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
 			fix xLight = vcP->lightValue;
 #if 1
@@ -552,8 +554,6 @@ switch (nObjType) {
 			else
 				return xLight;
 			}
-		else
-			 return 0;
 		break;
 
 	case OBJ_ROBOT:
@@ -611,11 +611,6 @@ switch (nObjType) {
 
 // ----------------------------------------------------------------------------------------------
 
-static short renderVertices [MAX_VERTICES_D2X];
-static sbyte renderVertexFlags [MAX_VERTICES_D2X];
-static sbyte newLightingObjects [MAX_OBJECTS_D2X];
-
-
 void SetDynamicLight (void)
 {
 	int			vv, nv;
@@ -633,7 +628,7 @@ void SetDynamicLight (void)
 if (!gameOpts->render.bDynamicLight)
 	return;
 
-memset (renderVertexFlags, 0, gameData.segs.nLastVertex + 1);
+memset (gameData.render.lights.vertexFlags, 0, gameData.segs.nLastVertex + 1);
 gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
@@ -652,17 +647,17 @@ if (!(0 && gameOpts->render.bDynLighting)) {
 					Int3 ();		//invalid vertex number
 					continue;	//ignore it, and go on to next one
 					}
-				if (!renderVertexFlags [nv]) {
-					Assert (nRenderVertices < sizeofa (renderVertices));
-					renderVertexFlags [nv] = 1;
-					renderVertices [nRenderVertices++] = nv;
+				if (!gameData.render.lights.vertexFlags [nv]) {
+					Assert (nRenderVertices < MAX_VERTICES);
+					gameData.render.lights.vertexFlags [nv] = 1;
+					gameData.render.lights.vertices [nRenderVertices++] = nv;
 					}
 				}
 			}
 		}
 
 	for (vv = 0; vv < nRenderVertices; vv++) {
-		nVertex = renderVertices [vv];
+		nVertex = gameData.render.lights.vertices [vv];
 		Assert (nVertex >= 0 && nVertex <= gameData.segs.nLastVertex);
 #if FLICKERFIX == 0
 		if ((nVertex ^ gameData.app.nFrameCount) & 1)
@@ -674,8 +669,8 @@ if (!(0 && gameOpts->render.bDynLighting)) {
 			}
 		}
 	}
-CastMuzzleFlashLight (nRenderVertices, renderVertices);
-memset (newLightingObjects, 0, sizeof (newLightingObjects));
+CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
+memset (gameData.render.lights.newObjects, 0, sizeof (gameData.render.lights.newObjects));
 
 //	July 5, 1995: New faster dynamic lighting code.  About 5% faster on the PC (un-optimized).
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
@@ -694,8 +689,8 @@ for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++
 		if (bGotColor)
 			bKeepDynColoring = 1;
 		if (xObjIntensity) {
-			ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
-			newLightingObjects [nObject] = 1;
+			ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), &color);
+			gameData.render.lights.newObjects [nObject] = 1;
 			}
 		nObject = objP->next;
 		}
@@ -709,20 +704,20 @@ for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastOb
 	if (bGotColor)
 		bKeepDynColoring = 1;
 	if (xObjIntensity) {
-		ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, OBJ_IDX (objP), &color);
-		newLightingObjects [nObject] = 1;
+		ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), &color);
+		gameData.render.lights.newObjects [nObject] = 1;
 		}
 	}
 #endif
 //	Now, process all lights from last frame which haven't been processed this frame.
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	//	In multiplayer games, process even unprocessed gameData.objs.objects every 4th frame, else don't know about tPlayer sneaking up.
-	if ((lightingObjects [nObject]) || 
+	if ((gameData.render.lights.objects [nObject]) || 
 		 (IsMultiGame && (((nObject ^ gameData.app.nFrameCount) & 3) == 0))) {
-		if (newLightingObjects [nObject])
+		if (gameData.render.lights.newObjects [nObject])
 			//	Not lit last frame, so we don't need to light it.  (Already lit if casting light this frame.)
-			//	But copy value from newLightingObjects to update lightingObjects array.
-			lightingObjects [nObject] = newLightingObjects [nObject];
+			//	But copy value from gameData.render.lights.newObjects to update gameData.render.lights.objects array.
+			gameData.render.lights.objects [nObject] = gameData.render.lights.newObjects [nObject];
 		else {
 			//	Lit last frame, but not this frame.  Get intensity...
 			objP = gameData.objs.objects + nObject;
@@ -732,12 +727,12 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 			if (bGotColor)
 				bKeepDynColoring = 1;
 			if (xObjIntensity) {
-				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, renderVertices, nObject, 
+				ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject, 
 								bGotColor ? &color : NULL);
-				lightingObjects [nObject] = 1;
+				gameData.render.lights.objects [nObject] = 1;
 				} 
 			else
-				lightingObjects [nObject] = 0;
+				gameData.render.lights.objects [nObject] = 0;
 			}
 		} 
 	}

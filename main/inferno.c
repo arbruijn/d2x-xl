@@ -2311,6 +2311,10 @@ GETMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES, 0);
 GETMEM (tRgbColorf, gameData.render.lights.dynamicColor, MAX_VERTICES, 0);
 GETMEM (char, gameData.render.lights.bGotDynColor, MAX_VERTICES, 0);
+GETMEM (short, gameData.render.lights.vertices, MAX_VERTICES, 0);
+GETMEM (sbyte, gameData.render.lights.vertexFlags, MAX_VERTICES, 0);
+GETMEM (sbyte, gameData.render.lights.newObjects, MAX_OBJECTS, 0);
+GETMEM (sbyte, gameData.render.lights.objects, MAX_OBJECTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2470,6 +2474,10 @@ FREEMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS);
 FREEMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES);
 FREEMEM (tRgbColorf, gameData.render.lights.dynamicColor, MAX_VERTICES);
 FREEMEM (char, gameData.render.lights.bGotDynColor, MAX_VERTICES);
+FREEMEM (short, gameData.render.lights.vertices, MAX_VERTICES);
+FREEMEM (sbyte, gameData.render.lights.vertexFlags, MAX_VERTICES);
+FREEMEM (sbyte, gameData.render.lights.newObjects, MAX_OBJECTS);
+FREEMEM (sbyte, gameData.render.lights.objects, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------

@@ -566,6 +566,11 @@ if (gameStates.render.bPointSprites) {
 	else
 #endif
 	{
+		double	r = 0.9 + (double) (rand () % 1000) / 500.0;
+
+	pc.red *= r;
+	pc.green *= r;
+	pc.blue *= r;
 	glColor4dv ((GLdouble *) &pc);
 	glVertex3d (f2fl (hp.p.x), f2fl (hp.p.y), f2fl (hp.p.z));
 	}
@@ -1142,7 +1147,6 @@ if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);
 	D2_FREE (pSmoke->pClouds);
-	pSmoke->pClouds = NULL;
 	i = pSmoke->nNext;
 	if (gameData.smoke.iUsedSmoke == iSmoke)
 		gameData.smoke.iUsedSmoke = i;
@@ -1234,12 +1238,13 @@ if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
 else 
 #endif
 {
-		int		h, i, j = 0, t = gameStates.app.nSDLTicks;
+		int		h, i, n, j = 0, t = gameStates.app.nSDLTicks;
 		tSmoke	*pSmoke;
 		tCloud	*pCloud;
 
-	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
+	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = n) {
 		pSmoke = gameData.smoke.smoke + i;
+		n = pSmoke->nNext;
 #if 0
 		if ((pSmoke->nObject != 0x7fffffff) && (pSmoke->nSignature != gameData.objs.objects [pSmoke->nObject].nSignature)) {
 			SetSmokeLife (i, 0);
@@ -1258,7 +1263,7 @@ else
 					if (!RemoveCloud (i, j)) {
 						//LogErr ("killing gameData.smoke.smoke %d (%d)\n", i, pSmoke->nObject);
 						DestroySmoke (i);
-						return 0;
+						break;
 						}
 					}
 				else {

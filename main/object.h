@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  */
 
 #define MAX_OBJECTS_D2  	350 // increased on 01/24/95 for multiplayer. --MK;  total number of objects in world
-#define MAX_OBJECTS_D2X	   700 
+#define MAX_OBJECTS_D2X	   MAX_SEGMENTS_D2X
 #define MAX_OBJECTS     	MAX_SEGMENTS
 #define MAX_HIT_OBJECTS		20
 
@@ -504,6 +504,8 @@ void SlowMotionOff (void);
 void BulletTimeOn (void);
 
 int CreateShrapnels (tObject *parentObjP);
+void DestroyShrapnels (tObject *objP);
+int MoveShrapnels (tObject *objP);
 
 extern ubyte bIsMissile [];
 

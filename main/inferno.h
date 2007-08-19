@@ -1039,6 +1039,10 @@ typedef struct tLightData {
 	char					bStartDynColoring;
 	char					bInitDynColoring;
 	tRgbColorf			globalDynColor;
+	short					*vertices;
+	sbyte					*vertexFlags;
+	sbyte					*newObjects;
+	sbyte					*objects;
 } tLightData;
 
 typedef struct tShadowData {

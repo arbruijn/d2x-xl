@@ -3457,8 +3457,7 @@ if (gameOpts->app.bExpertMode) {
 	if (extraGameInfo [0].nDrag != v) {
 		extraGameInfo [0].nDrag = v;
 		sprintf (m->text, TXT_PLAYER_DRAG, extraGameInfo [0].nDrag * 10, '%');
-		*key = -2;
-		return;
+		m->rebuild = 1;
 		}
 
 	m = menus + physOpts.nSpeedboost;
@@ -3482,8 +3481,7 @@ if (gameOpts->app.bExpertMode) {
 	if (extraGameInfo [0].nMslTurnSpeed != v) {
 		extraGameInfo [0].nMslTurnSpeed = v;
 		sprintf (m->text, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [v]);
-		*key = -2;
-		return;
+		m->rebuild = 1;
 		}
 
 	m = menus + physOpts.nSlomoSpeedup;

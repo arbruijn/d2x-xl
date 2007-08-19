@@ -1660,11 +1660,13 @@ Assert (objP->controlType == CT_EXPLOSION);
 if (objP->lifeleft <= 0) {	// We died of old age
 	KillObject (objP);
 	objP->lifeleft = 0;
-	if (objP->renderType == RT_EXPLBLAST)
-		objP->cType.explInfo.nDeleteTime = -1;
 	}
-if ((objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS))
+if (objP->renderType == RT_EXPLBLAST) 
 	return;
+if (objP->renderType == RT_SHRAPNELS) {
+	MoveShrapnels (objP);
+	return;
+	}
 //See if we should create a secondary explosion
 if (objP->lifeleft <= objP->cType.explInfo.nSpawnTime) {
 	tObject		*explObjP, *delObjP = gameData.objs.objects + objP->cType.explInfo.nDeleteObj;

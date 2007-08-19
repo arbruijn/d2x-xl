@@ -63,6 +63,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lightmap.h"
 #include "gauges.h"
 #include "sphere.h"
+#include "input.h"
 
 //------------------------------------------------------------------------------
 
@@ -4335,7 +4336,7 @@ for (i = 0; i < j; i++, h = !h) {
 int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 {
 	window	*rwP;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	int		i;
 #endif
 
@@ -4384,7 +4385,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 		nRenderObjs = 0;
 		}
 #endif
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	if (!bWindowCheck) {
 		nWindowClipLeft  = nWindowClipTop = 0;
 		nWindowClipRight = grdCurCanv->cv_bitmap.bm_props.w-1;
@@ -4403,7 +4404,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildObjectLists (gameData.render.mine.nRenderSegs);
 		if (nEyeOffset <= 0)	// Do for left eye or zero.
-			SetDynamicLight();
+			SetDynamicLight ();
 		}
 	}
 if (nClearWindow == 2) {
