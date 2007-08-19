@@ -539,6 +539,7 @@ if (pParticle->nType < 3) {
 			pc.blue *= (double) psc->color.blue;
 			}
 		}
+	brightness *= 0.9 + (double) (rand () % 1000) / 5000.0;
 	pc.red *= brightness;
 	pc.green *= brightness;
 	pc.blue *= brightness;
@@ -566,7 +567,7 @@ if (gameStates.render.bPointSprites) {
 	else
 #endif
 	{
-		double	r = 0.9 + (double) (rand () % 1000) / 500.0;
+		double	r = 0.9 + (double) (rand () % 1000) / 5000.0;
 
 	pc.red *= r;
 	pc.green *= r;

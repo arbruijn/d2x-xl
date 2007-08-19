@@ -838,7 +838,7 @@ if (nSegment != -1) {
 
 // -----------------------------------------------------------------------------
 
-#define SHRAPNEL_MAX_PARTS			500
+#define SHRAPNEL_MAX_PARTS			250
 #define SHRAPNEL_PART_LIFE			-2000
 #define SHRAPNEL_PART_SPEED		10
 
@@ -963,7 +963,7 @@ void DrawShrapnels (tObject *objP)
 	tShrapnel		*shrapnelP = sdP->shrapnels;
 	int				h, i;
 
-for (i = 0, h = sdP->nShrapnels; i < h; )
+for (i = 0, h = sdP->nShrapnels; i < h; i++)
 	DrawShrapnel (shrapnelP);
 }
 
@@ -980,7 +980,7 @@ if (objP->lifeleft > 0) {
 		if (shrapnelP->xTTL <= 0)
 			continue;
 		if (0 < (shrapnelP->xTTL -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed))) {
-			shrapnelP++;
+			MoveShrapnel (shrapnelP++);
 			i++;
 			}
 		else {
