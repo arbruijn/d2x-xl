@@ -1858,7 +1858,7 @@ if (effectOpts.nCoronaIntensity >= 0) {
 void EffectOptionsMenu ()
 {
 	tMenuItem m [20];
-	int	i, choice = 0;
+	int	i, j, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
 			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast, optExplShrapnels;
@@ -1938,9 +1938,9 @@ do {
 	extraGameInfo [0].bTracers = m [optTracers].value;
 	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
-	for (i = 0; i < 3; i++)
-		if (m [optThrusterFlame + i].value) {
-			extraGameInfo [0].bThrusterFlames = i;
+	for (j = 0; j < 3; j++)
+		if (m [optThrusterFlame + j].value) {
+			extraGameInfo [0].bThrusterFlames = j;
 			break;
 			}
 	extraGameInfo [0].bRenderShield = m [optPlayerShields].value;
