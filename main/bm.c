@@ -205,7 +205,7 @@ CFRead (AltSounds [0], sizeof (ubyte), t, fp);
 
 gameData.eff.nClips [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d animation clips\n", gameData.eff.nClips [0]);
-vclip_read_n (gameData.eff.vClips [0], gameData.eff.nClips [0], fp);
+VClipReadN (gameData.eff.vClips [0], gameData.eff.nClips [0], fp);
 
 gameData.eff.nEffects [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
@@ -244,7 +244,7 @@ PolyModelReadN (gameData.models.polyModels, gameData.models.nPolyModels, fp);
 gameData.models.nDefPolyModels = gameData.models.nPolyModels;
 memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.models.nPolyModels * sizeof (*gameData.models.defPolyModels));
 
-/*---*/LogErr ("      Loading tPolyModel data\n");
+/*---*/LogErr ("      Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [i].modelData = 
 	gameData.models.defPolyModels [i].modelData = NULL;
@@ -579,7 +579,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	}
 gameData.eff.nClips [1] = CFReadInt (fp);
 /*---*/LogErr ("         Loading %d animation clips\n", gameData.eff.nClips [1]);
-vclip_read_n (gameData.eff.vClips [1], D1_VCLIP_MAXNUM, fp);
+VClipReadN (gameData.eff.vClips [1], D1_VCLIP_MAXNUM, fp);
 gameData.eff.nEffects [1] = CFReadInt (fp);
 /*---*/LogErr ("         Loading %d animation descriptions\n", gameData.eff.nClips [1]);
 EClipReadN (gameData.eff.effects [1], D1_MAX_EFFECTS, fp);
@@ -961,7 +961,7 @@ void BMReadAllD1 (CFILE * fp)
 	*/CFSeek (fp, D1_MAX_SOUNDS * 2, SEEK_CUR);
 
 	/*gameData.eff.nClips = */ CFReadInt (fp);
-	//vclip_read_n (gameData.eff.vClips, D1_MAX_VCLIPS, fp);
+	//VClipReadN (gameData.eff.vClips, D1_MAX_VCLIPS, fp);
 	CFSeek (fp, D1_MAX_VCLIPS * D1_VCLIP_SIZE, SEEK_CUR);
 
 	gameData.eff.nEffects [1] = CFReadInt (fp);
@@ -1321,7 +1321,8 @@ for (j = 0; j < t; j++) {
 		}
 	pm = bAltModels ? gameData.models.altPolyModels + i : gameData.models.polyModels + i;
 	FreeModel (pm);
-	PolyModelRead (pm, fp);
+	if (!PolyModelRead (pm, fp, 0))
+		return -1;
 	PolyModelDataRead (pm, i, NULL, fp);
 	pm->rad = G3PolyModelSize (pm, i);
 	if (bAltModels) {
@@ -1472,8 +1473,10 @@ int LoadExitModels ()
 	if (exit_hamfile) {
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, exit_hamfile);
-		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, exit_hamfile);
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, exit_hamfile, 0))
+			return 0;
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, exit_hamfile, 0))
+			return 0;
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num + 3;
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].modelData = NULL;
@@ -1516,8 +1519,10 @@ int LoadExitModels ()
 		CFSeek (exit_hamfile, offset, SEEK_SET);
 		gameData.endLevel.exit.nModel = gameData.models.nPolyModels++;
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
-		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, exit_hamfile);
-		PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, exit_hamfile);
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nModel, exit_hamfile, 0))
+			return 0;
+		if (!PolyModelRead (gameData.models.polyModels + gameData.endLevel.exit.nDestroyedModel, exit_hamfile, 0))
+			return 0;
 		gameData.models.polyModels [gameData.endLevel.exit.nModel].nFirstTexture = start_num;
 		gameData.models.polyModels [gameData.endLevel.exit.nDestroyedModel].nFirstTexture = start_num+3;
 		CFSeek (exit_hamfile, offset2, SEEK_SET);

@@ -495,7 +495,6 @@ void HomingCheat (int bVerbose)
 	int	i;
 
 if (gameStates.app.cheats.bHomingWeapons = !gameStates.app.cheats.bHomingWeapons) {
-	gameStates.app.cheats.bHomingWeapons = 1;
 	for (i = 0; i < 20; i++) {
 		bOldHomingStates [i] = WI_homingFlag (i);
 		WI_set_homingFlag (i, 1);

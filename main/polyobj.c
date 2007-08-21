@@ -524,18 +524,17 @@ if (po->modelData)
 
 tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
 {
-	tPolyModel	*po;
+	tPolyModel	*po = NULL;
 	int			bHaveAltModel = gameData.models.altPolyModels [nModel].modelData != NULL,
 					bIsDefModel = (gameData.models.polyModels [nModel].nDataSize == 
 										gameData.models.defPolyModels [nModel].nDataSize);
 
-if (nModel >= gameData.models.nPolyModels)
+if ((nModel >= gameData.models.nPolyModels) && !(po = gameData.models.modelToPOL [nModel]))
 	return NULL;
-Assert (nModel < gameData.models.nPolyModels);
 // only render shadows for custom models and for standard models with a shadow proof alternative model
 if (!objP) 
 	po = ((gameStates.app.bAltModels && bIsDefModel && bHaveAltModel) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-else {
+else if (!po) {
 	if (!(bIsDefModel && bHaveAltModel)) {
 		if (gameStates.app.bFixModels && (objP->nType == OBJ_ROBOT) && (gameStates.render.nShadowPass == 2))
 			return NULL;
@@ -859,11 +858,25 @@ if (curDrawBuffer != GL_BACK)
 /*
  * reads a tPolyModel structure from a CFILE
  */
-extern void PolyModelRead (tPolyModel *pm, CFILE *fp)
+int PolyModelRead (tPolyModel *pm, CFILE *fp, int bHMEL)
 {
-	int i;
+	int	i;
 
-pm->nModels = CFReadInt (fp);
+if (bHMEL) {
+	char	szId [4];
+	int	nElement, nBlocks;
+
+	CFRead (szId, sizeof (szId), 1, fp);
+	if (strnicmp (szId, "HMEL", 4))
+		return 0;
+	if (CFReadInt (fp) != 1)
+		return 0;
+	nElement = CFReadInt (fp);
+	nBlocks = CFReadInt (fp);
+	pm->nModels = 1;
+	}
+else
+	pm->nModels = CFReadInt (fp);
 pm->nDataSize = CFReadInt (fp);
 CFReadInt (fp);
 pm->modelData = NULL;
@@ -888,18 +901,20 @@ pm->rad = CFReadFix (fp);
 pm->nTextures = CFReadByte (fp);
 pm->nFirstTexture = CFReadShort (fp);
 pm->nSimplerModel = CFReadByte (fp);
+return 1;
 }
 
 //------------------------------------------------------------------------------
 /*
  * reads n tPolyModel structs from a CFILE
  */
-extern int PolyModelReadN (tPolyModel *pm, int n, CFILE *fp)
+int PolyModelReadN (tPolyModel *pm, int n, CFILE *fp)
 {
 	int i;
 
 for (i = n; i; i--, pm++)
-	PolyModelRead (pm, fp);
+	if (!PolyModelRead (pm, fp, 0))
+		break;
 return i;
 }
 #endif

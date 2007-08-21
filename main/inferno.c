@@ -2795,66 +2795,93 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 typedef struct tOOFToModel {
 	char	*pszOOF;
+	char	*pszPOL;
 	short	nModel;
 } tOOFToModel;
 
 static tOOFToModel oofToModel [] = {
-	{"pyrogl.oof", 108}, 
-	{NULL, 110}, 	//negative means this is an additional model number to be used with an existing oof
-	{"concussion.oof", 127}, 
-	{NULL, 137}, 
-	{"homer.oof", 133}, 
-	{NULL, 136}, 
-	{"smartmsl.oof", 134}, 
-	{NULL, 162}, 
-	{"mega.oof", 135}, 
-	{NULL, 142}, 
-	{"flashmsl.oof", 151}, 
-	{NULL, 158}, 
-	{NULL, 165}, 
-	{"guided.oof", 152}, 
-	{"mercury.oof", 153}, 
-	{NULL, 161}, 
-	{"eshaker.oof", 154}, 
-	{NULL, 163}, 
-	{"shakrsub.oof", 160},
-	{"pminepack.oof", MAX_POLYGON_MODELS - 1},
-	{"proxmine.oof", MAX_POLYGON_MODELS - 2},
-	{"sminepack.oof", MAX_POLYGON_MODELS - 3},
-	{"smartmine.oof", MAX_POLYGON_MODELS - 4},
-	{"concussion4.oof", MAX_POLYGON_MODELS - 5},
-	{"homer4.oof", MAX_POLYGON_MODELS - 6},
-	{"flash4.oof", MAX_POLYGON_MODELS - 7},
-	{"guided4.oof", MAX_POLYGON_MODELS - 8},
-	{"mercury4.oof", MAX_POLYGON_MODELS - 9},
-	{"laser.oof", MAX_POLYGON_MODELS - 10},
-	{"vulcan.oof", MAX_POLYGON_MODELS - 11},
-	{"spreadfire.oof", MAX_POLYGON_MODELS - 12},
-	{"plasma.oof", MAX_POLYGON_MODELS - 13},
-	{"fusion.oof", MAX_POLYGON_MODELS - 14},
-	{"superlaser.oof", MAX_POLYGON_MODELS - 15},
-	{"gauss.oof", MAX_POLYGON_MODELS - 16},
-	{"helix.oof", MAX_POLYGON_MODELS - 17},
-	{"phoenix.oof", MAX_POLYGON_MODELS - 18},
-	{"omega.oof", MAX_POLYGON_MODELS - 19},
-	{"quadlaser.oof", MAX_POLYGON_MODELS - 20},
-	{"afterburner.oof", MAX_POLYGON_MODELS - 21},
-	{"headlight.oof", MAX_POLYGON_MODELS - 22},
-	{"ammorack.oof", MAX_POLYGON_MODELS - 23},
-	{"converter.oof", MAX_POLYGON_MODELS - 24},
-	{"fullmap.oof", MAX_POLYGON_MODELS - 25},
-	{"cloak.oof", MAX_POLYGON_MODELS - 26},
-	{"invul.oof", MAX_POLYGON_MODELS - 27},
-	{"extralife.oof", MAX_POLYGON_MODELS - 28},
-	{"bluekey.oof", MAX_POLYGON_MODELS - 29},
-	{"redkey.oof", MAX_POLYGON_MODELS - 30},
-	{"goldkey.oof", MAX_POLYGON_MODELS - 31},
-	{"vulcanammo.oof", MAX_POLYGON_MODELS - 32}
+	{"pyrogl.oof", NULL, 108}, 
+	{NULL, NULL, 110}, 	//negative means this is an additional model number to be used with an existing oof
+	{"concussion.oof", NULL, 127}, 
+	{NULL, NULL, 137}, 
+	{"homer.oof", NULL, 133}, 
+	{NULL, NULL, 136}, 
+	{"smartmsl.oof", NULL, 134}, 
+	{NULL, NULL, 162}, 
+	{"mega.oof", NULL, 135}, 
+	{NULL, NULL, 142}, 
+	{"flashmsl.oof", NULL, 151}, 
+	{NULL, NULL, 158}, 
+	{NULL, NULL, 165}, 
+	{"guided.oof", NULL, 152}, 
+	{"mercury.oof", NULL, 153}, 
+	{NULL, NULL, 161}, 
+	{"eshaker.oof", NULL, 154}, 
+	{NULL, NULL, 163}, 
+	{"shakrsub.oof", NULL, 160},
+	{"pminepack.oof", NULL, MAX_POLYGON_MODELS - 1},
+	{"proxmine.oof", NULL, MAX_POLYGON_MODELS - 2},
+	{"sminepack.oof", NULL, MAX_POLYGON_MODELS - 3},
+	{"smartmine.oof", NULL, MAX_POLYGON_MODELS - 4},
+	{"concussion4.oof", "concpack.pol", MAX_POLYGON_MODELS - 5},
+	{"homer4.oof", "homrpack.pol", MAX_POLYGON_MODELS - 6},
+	{"flash4.oof", "flashpack.pol", MAX_POLYGON_MODELS - 7},
+	{"guided4.oof", "guidpack.pol", MAX_POLYGON_MODELS - 8},
+	{"mercury4.oof", "mercpack.pol", MAX_POLYGON_MODELS - 9},
+	{"laser.oof", NULL, MAX_POLYGON_MODELS - 10},
+	{"vulcan.oof", NULL, MAX_POLYGON_MODELS - 11},
+	{"spreadfire.oof", NULL, MAX_POLYGON_MODELS - 12},
+	{"plasma.oof", NULL, MAX_POLYGON_MODELS - 13},
+	{"fusion.oof", NULL, MAX_POLYGON_MODELS - 14},
+	{"superlaser.oof", NULL, MAX_POLYGON_MODELS - 15},
+	{"gauss.oof", NULL, MAX_POLYGON_MODELS - 16},
+	{"helix.oof", NULL, MAX_POLYGON_MODELS - 17},
+	{"phoenix.oof", NULL, MAX_POLYGON_MODELS - 18},
+	{"omega.oof", NULL, MAX_POLYGON_MODELS - 19},
+	{"quadlaser.oof", NULL, MAX_POLYGON_MODELS - 20},
+	{"afterburner.oof", NULL, MAX_POLYGON_MODELS - 21},
+	{"headlight.oof", NULL, MAX_POLYGON_MODELS - 22},
+	{"ammorack.oof", NULL, MAX_POLYGON_MODELS - 23},
+	{"converter.oof", NULL, MAX_POLYGON_MODELS - 24},
+	{"fullmap.oof", NULL, MAX_POLYGON_MODELS - 25},
+	{"cloak.oof", NULL, MAX_POLYGON_MODELS - 26},
+	{"invul.oof", NULL, MAX_POLYGON_MODELS - 27},
+	{"extralife.oof", NULL, MAX_POLYGON_MODELS - 28},
+	{"bluekey.oof", NULL, MAX_POLYGON_MODELS - 29},
+	{"redkey.oof", NULL, MAX_POLYGON_MODELS - 30},
+	{"goldkey.oof", NULL, MAX_POLYGON_MODELS - 31},
+	{"vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32}
 	};
 
 void InitModelToOOF (void)
 {
 memset (gameData.models.modelToOOF, 0, sizeof (gameData.models.modelToOOF));
+memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
+}
+
+// ----------------------------------------------------------------------------
+
+short LoadLoresModel (short i)
+{
+	CFILE			*fp;
+	tPolyModel	*pm;
+	short			nModel, j = sizeofa (oofToModel);
+
+if (!(oofToModel [i].pszPOL && (fp = CFOpen (oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0))))
+	return ++i;
+if (!PolyModelRead (pm = gameData.models.polyModels + (nModel = oofToModel [i].nModel), fp, 1)) {
+	CFClose (fp);
+	return ++i;
+	}
+pm->modelData = 
+pm->modelData = NULL;
+PolyModelDataRead (pm, i, gameData.models.defPolyModels + nModel, fp);
+CFClose (fp);
+do {
+	gameData.models.modelToPOL [oofToModel [i].nModel] = pm;
+	} while ((++i < j) && !oofToModel [i].pszOOF);
+gameData.models.nLoresModels++;
+return i;
 }
 
 // ----------------------------------------------------------------------------
@@ -2868,30 +2895,37 @@ if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
 	oofToModel [i].pszOOF = "cube.oof";
 #endif
 if (!(oofToModel [i].pszOOF && OOF_ReadFile (oofToModel [i].pszOOF, po)))
-	i++;
-else {
-	do {
-		CBP (!oofToModel [i].nModel);
-		gameData.models.modelToOOF [oofToModel [i].nModel] = po;
-		} while ((++i < j) && !oofToModel [i].pszOOF);
-	gameData.models.nHiresModels++;
-	po++;
-	}
+	return LoadLoresModel (i);
+do {
+	CBP (!oofToModel [i].nModel);
+	gameData.models.modelToOOF [oofToModel [i].nModel] = po;
+	} while ((++i < j) && !oofToModel [i].pszOOF);
+gameData.models.nHiresModels++;
 return i;
 }
 
 //------------------------------------------------------------------------------
 
 static int loadIdx;
+static int loadOp = 0;
 
 static void LoadModelsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
-loadIdx = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, loadIdx);
-if (loadIdx >= sizeofa (oofToModel)) {
-	*key = -2;
-	GrPaletteStepLoad (NULL);
-	return;
+if (loadOp == 0) {
+	loadIdx = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, loadIdx);
+	if (loadIdx >= sizeofa (oofToModel)) {
+		loadOp = 1;
+		loadIdx = 0;
+		}
+	}	
+else if (loadOp == 1) {
+	loadIdx = LoadLoresModel (loadIdx);
+	if (loadIdx >= sizeofa (oofToModel)) {
+		*key = -2;
+		GrPaletteStepLoad (NULL);
+		return;
+		}
 	}
 m [0].value++;
 m [0].rebuild = 1;
@@ -2903,12 +2937,16 @@ GrPaletteStepLoad (NULL);
 
 int ModelsGaugeSize (void)
 {
-	int h = sizeofa (oofToModel), i, j;
+	int h, i, j;
 
-for (i = h, j = 0; j < i; j++)
-	if (!oofToModel [j].pszOOF)
-		h--;
-return h;
+for (h = i = 0, j = sizeofa (oofToModel); i < j; i++)
+	if (oofToModel [i].pszOOF) {
+		if (gameOpts->render.bHiresModels)
+			h++;
+		if (oofToModel [i].pszPOL)
+			h++;
+		}
+return h = (gameOpts->render.bHiresModels + 1) * sizeofa (oofToModel);
 }
 
 //------------------------------------------------------------------------------
@@ -2916,6 +2954,7 @@ return h;
 void LoadModelsGauge (void)
 {
 loadIdx = 0;
+loadOp = gameOpts->render.bHiresModels ? 0 : 1;
 NMProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll); 
 }
 
@@ -2927,7 +2966,7 @@ InitModelToOOF ();
 gameData.models.nHiresModels = 0;
 if (gameStates.app.bNostalgia)
 	gameOpts->render.bHiresModels = 0;
-else if (gameOpts->render.bHiresModels) {
+else /*if (gameOpts->render.bHiresModels)*/ {
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		LoadModelsGauge ();
 	else {
@@ -2936,6 +2975,9 @@ else if (gameOpts->render.bHiresModels) {
 		ShowBoxedMessage (TXT_LOADING_MODELS);
 		while (i < j)
 			i = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, i);
+		i = 0;
+		while (i < j)
+			i = LoadLoresModel (i);
 		}
 	ClearBoxedMessage ();
 	}

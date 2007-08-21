@@ -180,12 +180,12 @@ void DrawWeaponVClip (tObject *objP);
 void DrawExplBlast (tObject *objP);
 
 #if 0
-#define vclip_read_n(vc, n, fp) CFRead(vc, sizeof(tVideoClip), n, fp)
+#define VClipReadN(vc, n, fp) CFRead(vc, sizeof(tVideoClip), n, fp)
 #else
 /*
  * reads n tVideoClip structs from a CFILE
  */
-extern int vclip_read_n(tVideoClip *vc, int n, CFILE *fp);
+extern int VClipReadN(tVideoClip *vc, int n, CFILE *fp);
 #endif
 
 #endif /* _VCLIP_H */

@@ -1611,7 +1611,7 @@ char *defaultGameTexts [][2] = {
 	{"D2X-Einstellungen", "D2X options"},
 	{"Licht-~Reichweite: %s", "Light ~Range: %s"},
 	{"Weit", "Far"},
-	{"Lade Hires-Modelle...", "Loading Hires Models..."},
+	{"Lade Modelle...", "Loading Models..."},
 	{"~Wettkampf-Modus", "~Competition mode"},
 	{"~Flackernde Lichter verwenden", "use ~Flickering lights"},
 	{"~Rauchgranaten verwenden", "use ~Smoke grenades"},

@@ -413,7 +413,7 @@ int EClipReadN(tEffectClip *ecP, int n, CFILE *fp)
 	int i = n;
 
 for (; n; n--, ecP++) {
-	vclip_read_n(&ecP->vc, 1, fp);
+	VClipReadN(&ecP->vc, 1, fp);
 	ecP->time_left = CFReadFix(fp);
 	ecP->nCurFrame = CFReadInt(fp);
 	ecP->changingWallTexture = CFReadShort(fp);

@@ -956,9 +956,10 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker)
 	int	bGuidedMslView = (tracker->nType == OBJ_WEAPON) && (tracker == GuidedInMainView ());
 
 //	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-Assert ((tracker->nType == OBJ_PLAYER) || 
+Assert (gameStates.app.cheats.bHomingWeapons ||
+		  (tracker->nType == OBJ_PLAYER) || 
 		  bGuidedMslView || 
-		  (WI_homingFlag (tracker->id)) || 
+		  WI_homingFlag (tracker->id) || 
 		  (tracker->id == OMEGA_ID));
 
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
@@ -1320,10 +1321,9 @@ if ((objP == gameData.objs.console) &&
 	  (laserP->id != SMARTMINE_ID)))
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
-if (gameData.weapons.info [laserType].homingFlag) {
+if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [laserType].homingFlag) {
 	if (objP == gameData.objs.console) {
-		laserP->cType.laserInfo.nMslLock = 
-			FindHomingObject (&vLaserPos, laserP);
+		laserP->cType.laserInfo.nMslLock = FindHomingObject (&vLaserPos, laserP);
 		gameData.multigame.laser.nTrack = laserP->cType.laserInfo.nMslLock;
 		}
 	else {// Some other tPlayer shot the homing thing
@@ -1420,7 +1420,7 @@ if ((objP->nType == OBJ_WEAPON) && (objP->id == FUSION_ID)) {		//always set fusi
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
 if ((objP->nType == OBJ_WEAPON) && 
-    WI_homingFlag (objP->id) && 
+    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->id)) && 
 	 !((objP->id == GUIDEDMSL_ID) && 
 	   (objP == (gmObjP = gameData.objs.guidedMissile [gameData.objs.objects [objP->cType.laserInfo.nParentObj].id])) && 
 	   (objP->nSignature == gmObjP->nSignature))) {

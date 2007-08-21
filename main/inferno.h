@@ -1580,6 +1580,7 @@ typedef struct tModelThrusters {
 	} tModelThrusters;
 
 typedef struct tModelData {
+	int					nLoresModels;
 	int					nHiresModels;
 	tOOFObject			hiresModels [MAX_POLYGON_MODELS];
 	tPOFObject			pofData [2][2][MAX_POLYGON_MODELS];
@@ -1588,6 +1589,7 @@ typedef struct tModelData {
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
 	tPolyModel			altPolyModels [MAX_POLYGON_MODELS];
 	tOOFObject			*modelToOOF [MAX_POLYGON_MODELS];
+	tPolyModel			*modelToPOL [MAX_POLYGON_MODELS];
 	int					nPolyModels;
 	int					nDefPolyModels;
 	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];

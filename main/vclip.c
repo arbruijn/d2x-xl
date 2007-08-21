@@ -236,10 +236,10 @@ if (modtime == ONE_FRAME_TIME)
 	modtime = d_rand();
 if (objP->id == PROXMINE_ID) {		//make prox bombs spin out of sync
 	int nObject = OBJ_IDX (objP);
-	modtime += (modtime * (nObject&7)) / 16;	//add variance to spin rate
+	modtime += (modtime * (nObject & 7)) / 16;	//add variance to spin rate
 	while (modtime > playTime)
 		modtime -= playTime;
-	if ((nObject&1) ^ ((nObject>>1)&1))			//make some spin other way
+	if ((nObject&1) ^ ((nObject >> 1) & 1))			//make some spin other way
 		modtime = playTime - modtime;
 	}
 else {
@@ -258,21 +258,21 @@ else
 /*
  * reads n tVideoClip structs from a CFILE
  */
-int vclip_read_n(tVideoClip *vc, int n, CFILE *fp)
+int VClipReadN(tVideoClip *vc, int n, CFILE *fp)
 {
 	int i, j;
 
-	for (i = 0; i < n; i++) {
-		vc[i].xTotalTime = CFReadFix(fp);
-		vc[i].nFrameCount = CFReadInt(fp);
-		vc[i].xFrameTime = CFReadFix(fp);
-		vc[i].flags = CFReadInt(fp);
-		vc[i].nSound = CFReadShort(fp);
-		for (j = 0; j < VCLIP_MAX_FRAMES; j++)
-			vc[i].frames[j].index = CFReadShort(fp);
-		vc[i].lightValue = CFReadFix(fp);
+for (i = 0; i < n; i++) {
+	vc[i].xTotalTime = CFReadFix(fp);
+	vc[i].nFrameCount = CFReadInt(fp);
+	vc[i].xFrameTime = CFReadFix(fp);
+	vc[i].flags = CFReadInt(fp);
+	vc[i].nSound = CFReadShort(fp);
+	for (j = 0; j < VCLIP_MAX_FRAMES; j++)
+		vc[i].frames[j].index = CFReadShort(fp);
+	vc[i].lightValue = CFReadFix(fp);
 	}
-	return i;
+return i;
 }
 #endif
 

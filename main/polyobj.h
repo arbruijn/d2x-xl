@@ -88,13 +88,13 @@ void FreeModel (tPolyModel *po);
 #define MAX_POLYOBJ_TEXTURES 100
 
 #if 0
-#define PolyModelRead(pm, fp) CFRead(pm, sizeof(tPolyModel), 1, fp)
-#define PolyModelReadN(pm, n, fp) CFRead(pm, sizeof(tPolyModel), n, fp)
+#define PolyModelRead(pm, fp, bHMEL) CFRead(pm, sizeof(tPolyModel), 1, fp)
+#define PolyModelReadN(pm, n, fp, bHMEL) CFRead(pm, sizeof(tPolyModel), n, fp)
 #else
 /*
  * reads a tPolyModel structure from a CFILE
  */
-extern void PolyModelRead(tPolyModel *pm, CFILE *fp);
+int PolyModelRead(tPolyModel *pm, CFILE *fp, int bHMEL);
 
 /*
  * reads n tPolyModel structs from a CFILE

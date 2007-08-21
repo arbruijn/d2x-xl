@@ -852,6 +852,8 @@ int CreateShrapnels (tObject *parentObjP)
 	tObject			*objP;
 	tRgbaColord		color = {1,1,1,0.5};
 
+if (!SHOW_SMOKE)
+	return;
 if (!gameOpts->render.bExplShrapnels)
 	return 0;
 if (parentObjP->flags & OF_ARMAGEDDON)
@@ -878,15 +880,14 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	vDir.p.z = F1_0 /4 - d_rand () % (2 * F1_0);
 	VmVecNormalize (&vDir);
 	shrapnelP->vDir = vDir;
-	VmVecScale (&vDir, parentObjP->size);
-	VmVecAdd (&shrapnelP->vPos, &parentObjP->position.vPos, &vDir);
+	VmVecScaleAdd (&shrapnelP->vPos, &parentObjP->position.vPos, &vDir, parentObjP->size / 4 + rand () % (parentObjP->size / 2));
 	shrapnelP->nTurn = 1;
 	shrapnelP->xSpeed = F1_0 / 20 + d_rand () % (F1_0 / 20);
 	shrapnelP->xLife = 
 	shrapnelP->xTTL = 3 * F1_0 / 2 + d_rand ();
 	if (objP->lifeleft < shrapnelP->xLife)
 		objP->lifeleft = shrapnelP->xLife;
-	shrapnelP->nSmoke = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
+	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
 											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE, SHRAPNEL_PART_SPEED, 2, 0x7fffffff, &color);
 	}
 objP->lifeleft++;
@@ -1893,7 +1894,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glDisable (GL_CULL_FACE);
 	glColor3f (c, c, c);
 	fLength *= 4 * fSize;
-	fSize *= (objP->nType == OBJ_WEAPON) ? 1.25f : 1.25f;
+	fSize *= (objP->nType == OBJ_WEAPON) ? 1.5f : 1.25f;
 #if 1
 	if (!mtP)
 		VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
@@ -2444,8 +2445,9 @@ else {
 		bHasModel = 1;
 		}
 	}
-if (!(nModel && ((!gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && bIsMissile [objP->id]) || gameData.models.modelToOOF [nModel])))
-	return 0;
+if (!bHasModel && ((objP->nType != OBJ_WEAPON) || !bIsMissile [objP->id]) &&
+	 !(nModel && (gameData.models.modelToOOF [nModel] || gameData.models.modelToPOL [nModel])))
+		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	a.p = (rand () % F1_0) - F1_0 / 2;

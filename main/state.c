@@ -1255,95 +1255,79 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 	CFILE			*fp;
 	grs_canvas	*cnv;
 
-	Assert (bBetweenLevels == 0);	//between levels save ripped out
-	StopTime ();
-/*	if (gameData.app.nGameMode & GM_MULTI)	{
-		{
-		StartTime ();
-		return 0;
-		}
-	}*/
-
-	fp = CFOpen (filename, gameFolders.szSaveDir, "wb", 0);
-	if (!fp) {
-		if (! (gameData.app.nGameMode & GM_MULTI))
-			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
-		StartTime ();
-		return 0;
+Assert (bBetweenLevels == 0);	//between levels save ripped out
+StopTime ();
+fp = CFOpen (filename, gameFolders.szSaveDir, "wb", 0);
+if (!fp) {
+	if (!IsMultiGame)
+		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
+	StartTime ();
+	return 0;
 	}
 
 //Save id
-	CFWrite (dgss_id, sizeof (char)*4, 1, fp);
-
+CFWrite (dgss_id, sizeof (char) * 4, 1, fp);
 //Save sgVersion
-	i = STATE_VERSION;
-	CFWrite (&i, sizeof (int), 1, fp);
-
+i = STATE_VERSION;
+CFWrite (&i, sizeof (int), 1, fp);
 //Save description
-	CFWrite (szDesc, sizeof (char) * DESC_LENGTH, 1, fp);
-	
+CFWrite (szDesc, sizeof (char) * DESC_LENGTH, 1, fp);
 // Save the current screen shot...
-
-	cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH);
-	if (cnv)	{
+if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 		ubyte			*buf;
 		grsBitmap	bm;
 		int			k, x, y;
 		grs_canvas * cnv_save;
 		cnv_save = grdCurCanv;
 		
-		GrSetCurrentCanvas (cnv);
-		PA_DFX (pa_set_backbuffer_current ());
-		RenderFrame (0, 0);
-		PA_DFX (pa_alpha_always ());
-			
-		//buf = D2_ALLOC (THUMBNAIL_LW * THUMBNAIL_LH * 3);
-		if (curDrawBuffer == GL_BACK)
-			GameRenderFrame ();
-		glReadBuffer (GL_FRONT);
-		bm.bm_bpp = 3;
-		buf = D2_ALLOC (grdCurScreen->sc_w * grdCurScreen->sc_h * bm.bm_bpp);
-		glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
-		bm.bm_props.w = grdCurScreen->sc_w;
-		bm.bm_props.h = grdCurScreen->sc_h;
-		bm.bm_texBuf = buf;
-		// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-		ShrinkTGA (&bm, grdCurScreen->sc_w / THUMBNAIL_LW, grdCurScreen->sc_h / THUMBNAIL_LH, 0);
-		GrPaletteStepLoad (NULL);
-		// convert the resized TGA to bmp
-		for (y = 0; y < THUMBNAIL_LH; y++) {
-			i = y * (grdCurScreen->sc_w / (grdCurScreen->sc_w / THUMBNAIL_LW)) * 3;
-			k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
-			for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-				cnv->cv_bitmap.bm_texBuf [k] =
-					GrFindClosestColor (gamePalette, buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
-				}
-		GrPaletteStepLoad (NULL);
-		D2_FREE (buf);
-		CFWrite (cnv->cv_bitmap.bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
-	WINDOS (
-		DDGrSetCurrentCanvas (cnv_save),
-		GrSetCurrentCanvas (cnv_save)
-		);
+	GrSetCurrentCanvas (cnv);
+	PA_DFX (pa_set_backbuffer_current ());
+	RenderFrame (0, 0);
+	PA_DFX (pa_alpha_always ());
+		
+	//buf = D2_ALLOC (THUMBNAIL_LW * THUMBNAIL_LH * 3);
+	if (curDrawBuffer == GL_BACK)
+		GameRenderFrame ();
+	glReadBuffer (GL_FRONT);
+	bm.bm_bpp = 3;
+	buf = D2_ALLOC (grdCurScreen->sc_w * grdCurScreen->sc_h * bm.bm_bpp);
+	glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	bm.bm_props.w = grdCurScreen->sc_w;
+	bm.bm_props.h = grdCurScreen->sc_h;
+	bm.bm_texBuf = buf;
+	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
+	ShrinkTGA (&bm, grdCurScreen->sc_w / THUMBNAIL_LW, grdCurScreen->sc_h / THUMBNAIL_LH, 0);
+	GrPaletteStepLoad (NULL);
+	// convert the resized TGA to bmp
+	for (y = 0; y < THUMBNAIL_LH; y++) {
+		i = y * (grdCurScreen->sc_w / (grdCurScreen->sc_w / THUMBNAIL_LW)) * 3;
+		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
+		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
+			cnv->cv_bitmap.bm_texBuf [k] =
+				GrFindClosestColor (gamePalette, buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
+			}
+	GrPaletteStepLoad (NULL);
+	D2_FREE (buf);
+	CFWrite (cnv->cv_bitmap.bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
+	GrSetCurrentCanvas (cnv_save);
 	GrFreeCanvas (cnv);
 	CFWrite (gamePalette, 3, 256, fp);
 	}
 else	{
  	ubyte color = 0;
- 	for (i=0; i<THUMBNAIL_LW*THUMBNAIL_LH; i++)
+ 	for (i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++)
 		CFWrite (&color, sizeof (ubyte), 1, fp);
 	}
 StateSaveUniGameData (fp, bBetweenLevels);
 if (CFError (fp)) {
-	if (! (gameData.app.nGameMode & GM_MULTI)) {
+	if (!IsMultiGame) {
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR);
 		CFClose (fp);
 		CFDelete (filename, gameFolders.szSaveDir);
 		}
 	}
-else  {
+else 
 	CFClose (fp);
-	}
 StartTime ();
 return 1;
 }
@@ -1462,6 +1446,7 @@ int StateLoadMission (CFILE *fp)
 	int	i, nVersionFilter = gameOpts->app.nVersionFilter;
 
 CFRead (szMission, sizeof (char), 9, fp);
+szMission [9] = '\0';
 gameOpts->app.nVersionFilter = 3;
 i = LoadMissionByName (szMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;
