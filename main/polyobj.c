@@ -572,6 +572,8 @@ else if (!po) {
 		else if (objP->nType == OBJ_CNTRLCEN) {
 			if (!gameOpts->render.shadows.bReactors)
 				return NULL;
+			if (!(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
+				po--;
 			}
 		else 
 			return NULL;
