@@ -3308,7 +3308,8 @@ void GameplayOptionsMenu ()
 	int	i, j, opt = 0, choice = 0;
 	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, optHeadlight = -1,
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
-			optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, optAwareness = -1;
+			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
+			optAwareness = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 
@@ -3352,6 +3353,8 @@ do {
 		optDualMiss = opt++;
 		ADD_CHECK (opt, TXT_TRIPLE_FUSION, extraGameInfo [0].bTripleFusion, KEY_U, HTX_GPLAY_TRIFUSION);
 		optTripleFusion = opt++;
+		ADD_CHECK (opt, TXT_ENHANCED_SHAKERS, extraGameInfo [0].bEnhancedShakers, KEY_B, HTX_ENHANCED_SHAKERS);
+		optEnhancedShakers = opt++;
 		if (extraGameInfo [0].bSmokeGrenades) {
 			ADD_TEXT (opt, "", 0);
 			opt++;
@@ -3403,6 +3406,7 @@ if (gameOpts->app.bExpertMode) {
 	extraGameInfo [0].bMultiBosses = m [optMultiBosses].value;
 	extraGameInfo [0].bSmartWeaponSwitch = m [optSmartWeaponSwitch].value;
 	extraGameInfo [0].bTripleFusion = m [optTripleFusion].value;
+	extraGameInfo [0].bEnhancedShakers = m [optEnhancedShakers].value;
 	extraGameInfo [0].nWeaponDropMode = m [optWeaponDrop].value;
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);

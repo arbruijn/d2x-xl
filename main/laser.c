@@ -90,7 +90,7 @@ extern int bDoingLightingHack;
 //	They are defined in laser.h.  They are copied here for reference.  These values are valid on 1/10/96:
 //	If you want the Omega Cannon view cone to be different than the Homing Missile viewcone, contact MK to make the change.
 //	 (Unless you are a programmer, in which case, do it yourself!)
-#define	OMEGA_MIN_TRACKABLE_DOT			 (15*F1_0/16)		//	Larger values mean narrower cone.  F1_0 means damn near impossible.  0 means 180 degree field of view.
+#define	OMEGA_MIN_TRACKABLE_DOT			 (15 * F1_0 / 16)		//	Larger values mean narrower cone.  F1_0 means damn near impossible.  0 means 180 degree field of view.
 #define	OMEGA_MAX_TRACKABLE_DIST		MAX_OMEGA_DIST	//	An tObject must be at least this close to be tracked.
 
 //	Note, you don't need to change these constants.  You can control damage and energy consumption by changing the
@@ -104,7 +104,7 @@ extern int bDoingLightingHack;
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 ((F1_0 * 29) / 100)
 
-static   int nMslTurnSpeeds [3] = {4, 8, 16};
+static   int nMslTurnSpeeds [3] = {4, 2, 1};
 
 #define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
 
@@ -792,10 +792,10 @@ if (gameData.weapons.info [objP->id].speedvar != 128) {
 	}
 //	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
 if ((objP->id == SMARTMSL_BLOB_ID) || 
-		(objP->id == SMARTMINE_BLOB_ID) || 
-		(objP->id == ROBOT_SMARTMSL_BLOB_ID) || 
-		(objP->id == ROBOT_SMARTMINE_BLOB_ID) || 
-		(objP->id == EARTHSHAKER_MEGA_ID))
+	 (objP->id == SMARTMINE_BLOB_ID) || 
+	 (objP->id == ROBOT_SMARTMSL_BLOB_ID) || 
+	 (objP->id == ROBOT_SMARTMINE_BLOB_ID) || 
+	 (objP->id == EARTHSHAKER_MEGA_ID))
 	xWeaponSpeed /= 4;
 if (WIThrust (objP->id) != 0)
 	xWeaponSpeed /= 2;
@@ -904,12 +904,13 @@ if (objP->nType == OBJ_ROBOT) {
 VmVecSub (&vGoal, &objP->position.vPos, &tracker->position.vPos);
 VmVecNormalizeQuick (&vGoal);
 *xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
-if ((*xDot < xMinTrackableDot) && (*xDot > F1_0*9/10)) {
+if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
 	VmVecNormalize (&vGoal);
 	*xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
 	}
 
-if (*xDot >= xMinTrackableDot) {
+if ((*xDot >= xMinTrackableDot) || 
+	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (tracker->id == EARTHSHAKER_MEGA_ID) /*&& (*xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if tObject is visible
 	return ObjectToObjectVisibility (tracker, objP, FQ_TRANSWALL);
 	}
@@ -920,28 +921,19 @@ return 0;
 
 int CallFindHomingObjectComplete (tObject *tracker, vmsVector *curpos)
 {
-if (IsMultiGame) {
-	if ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OBJ_PLAYER)) {
-		//	It's fired by a tPlayer, so if robots present, track robot, else track player.
-		if (IsCoopGame)
-			return FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1);
-		else
-			return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, OBJ_ROBOT);
-		} 
-	else {
-			int	goal2Type = -1;
-
-		if (gameStates.app.cheats.bRobotsKillRobots)
-			goal2Type = OBJ_ROBOT;
-#ifdef _DEBUG
-		if ((tracker->cType.laserInfo.parentType != OBJ_ROBOT) && (tracker->cType.laserInfo.parentType != OBJ_PLAYER))
-			tracker = tracker;
-#endif
-		return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, goal2Type);
-		}		
-	} 
-else
+if (!IsMultiGame)
 	return FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1);
+if ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OBJ_PLAYER)) {
+	//	It's fired by a tPlayer, so if robots present, track robot, else track player.
+	return IsCoopGame ? 
+			 FindHomingObjectComplete (curpos, tracker, OBJ_ROBOT, -1) :
+			 FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, OBJ_ROBOT);
+		} 
+#ifdef _DEBUG
+if ((tracker->cType.laserInfo.parentType != OBJ_ROBOT) && (tracker->cType.laserInfo.parentType != OBJ_PLAYER))
+	tracker = tracker;
+#endif
+return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, gameStates.app.cheats.bRobotsKillRobots ? OBJ_ROBOT : -1);
 }
 
 //	--------------------------------------------------------------------------------------------
@@ -950,9 +942,9 @@ else
 int FindHomingObject (vmsVector *curpos, tObject *tracker)
 {
 	int	i;
-	fix	max_dot = -F1_0*2;
+	fix	maxDot = -F1_0*2;
 	int	nBestObj = -1;
-	int	cur_min_trackable_dot;
+	int	curMinTrackableDot;
 	int	bGuidedMslView = (tracker->nType == OBJ_WEAPON) && (tracker == GuidedInMainView ());
 
 //	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
@@ -967,9 +959,9 @@ Assert (gameStates.app.cheats.bHomingWeapons ||
 if (IsMultiGame)
 	return CallFindHomingObjectComplete (tracker, curpos);
 
-cur_min_trackable_dot = MIN_TRACKABLE_DOT;
+curMinTrackableDot = MIN_TRACKABLE_DOT;
 if ((tracker->nType == OBJ_WEAPON) && (tracker->id == OMEGA_ID))
-	cur_min_trackable_dot = OMEGA_MIN_TRACKABLE_DOT;
+	curMinTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 
 //	Not in network mode.  If not fired by tPlayer, then track player.
 if ((tracker->nType != OBJ_PLAYER) && (tracker->cType.laserInfo.nParentObj != LOCALPLAYER.nObject)) {
@@ -978,7 +970,7 @@ if ((tracker->nType != OBJ_PLAYER) && (tracker->cType.laserInfo.nParentObj != LO
 	} 
 else {
 		int	nWindow = -1;
-		fix	dist, max_trackableDist;
+		fix	dist, maxTrackableDist;
 
 	//	Find the window which has the forward view.
 	for (i = 0; i < MAX_RENDERED_WINDOWS; i++)
@@ -993,9 +985,11 @@ else {
 	if (nWindow == -1)
 		return CallFindHomingObjectComplete (tracker, curpos);
 
-	max_trackableDist = MAX_TRACKABLE_DIST;
+	maxTrackableDist = MAX_TRACKABLE_DIST;
+	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (tracker->id == EARTHSHAKER_MEGA_ID))
+		maxTrackableDist *= 2;
 	if (tracker->id == OMEGA_ID)
-		max_trackableDist = OMEGA_MAX_TRACKABLE_DIST;
+		maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
 
 	//	Not in network mode and fired by player.
 	for (i = windowRenderedData [nWindow].numObjects - 1; i >= 0; i--) {
@@ -1018,27 +1012,27 @@ else {
 			}
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 		dist = VmVecNormalizeQuick (&vecToCurObj);
-		if (dist < max_trackableDist) {
+		if (dist < maxTrackableDist) {
 			dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
 			//	frames to determine if the tObject remains trackable.
-			if (dot > cur_min_trackable_dot) {
-				if (dot > max_dot) {
+			if (dot > curMinTrackableDot) {
+				if (dot > maxDot) {
 					if (ObjectToObjectVisibility (tracker, gameData.objs.objects + nObject, FQ_TRANSWALL)) {
-						max_dot = dot;
+						maxDot = dot;
 						nBestObj = nObject;
 						}
 					}
 				} 
-			else if (dot > F1_0 - (F1_0 - cur_min_trackable_dot) * 2) {
+			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
 				VmVecNormalize (&vecToCurObj);
 				dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
-				if (dot > cur_min_trackable_dot) {
-					if (dot > max_dot) {
+				if (dot > curMinTrackableDot) {
+					if (dot > maxDot) {
 						if (ObjectToObjectVisibility (tracker, gameData.objs.objects + nObject, FQ_TRANSWALL)) {
-							max_dot = dot;
+							maxDot = dot;
 							nBestObj = nObject;
 							}
 						}
@@ -1059,20 +1053,29 @@ return nBestObj;
 int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_objType1, int track_objType2)
 {
 	int	nObject;
-	fix	max_dot = -F1_0*2;
+	fix	maxDot = -F1_0*2;
 	int	nBestObj = -1;
-	fix	max_trackableDist;
-	fix	min_trackable_dot;
+	fix	maxTrackableDist;
+	fix	minTrackableDot;
 
 	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
 //Assert ((WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
 
-max_trackableDist = MAX_TRACKABLE_DIST;
-min_trackable_dot = MIN_TRACKABLE_DOT;
+maxTrackableDist = MAX_TRACKABLE_DIST;
+if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (tracker->id == EARTHSHAKER_MEGA_ID)) {
+	maxTrackableDist *= 2;
+	minTrackableDot = -F1_0;
+	}
+else
+#ifdef _DEBUG
+	minTrackableDot = -F1_0;
+#else
+	minTrackableDot = MIN_TRACKABLE_DOT;
+#endif
 
 if (tracker->id == OMEGA_ID) {
-	max_trackableDist = OMEGA_MAX_TRACKABLE_DIST;
-	min_trackable_dot = OMEGA_MIN_TRACKABLE_DOT;
+	maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
+	minTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 	}
 
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
@@ -1112,7 +1115,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 	dist = VmVecMagQuick (&vecToCurObj);
 
-	if (dist < max_trackableDist) {
+	if (dist < maxTrackableDist) {
 		VmVecNormalizeQuick (&vecToCurObj);
 		dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
 		if (bIsProximity)
@@ -1121,9 +1124,9 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 		//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 		//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
 		//	frames to determine if the tObject remains trackable.
-		if ((dot > min_trackable_dot) && (dot > max_dot) &&
+		if ((dot > minTrackableDot) && (dot > maxDot) &&
 			 (ObjectToObjectVisibility (tracker, gameData.objs.objects + nObject, FQ_TRANSWALL))) {
-			max_dot = dot;
+			maxDot = dot;
 			nBestObj = nObject;
 			}
 		}
@@ -1365,21 +1368,17 @@ if (IsMultiGame) {
 #define HOMER_MAX_FPS	40
 #define HOMER_MIN_DELAY (1000 / HOMER_MAX_FPS)
 
-void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *norm_vel)
+void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *vNormVel)
 {
-	vmsVector	new_fvec;
+	vmsVector	vNewDir;
 	fix 			frameTime;
 
-if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
-	return;
 frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
-new_fvec = *norm_vel;
-VmVecScale (&new_fvec, /*gameData.time.xFrame*/ (fix) (frameTime * HOMINGMSL_SCALE / gameStates.gameplay.slowmo [0].fSpeed));
-VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
-VmVecNormalizeQuick (&new_fvec);
-//	if ((norm_vel->x == 0) && (norm_vel->y == 0) && (norm_vel->z == 0))
-//		return;
-VmVector2Matrix (&objP->position.mOrient, &new_fvec, NULL, NULL);
+vNewDir = *vNormVel;
+VmVecScale (&vNewDir, (fix) (frameTime * 16 /*HOMINGMSL_SCALE*/ / gameStates.gameplay.slowmo [0].fSpeed));
+VmVecInc (&vNewDir, &objP->position.mOrient.fVec);
+VmVecNormalizeQuick (&vNewDir);
+VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1419,7 +1418,8 @@ if ((objP->nType == OBJ_WEAPON) && (objP->id == FUSION_ID)) {		//always set fusi
 	VmVecScale (&objP->mType.physInfo.velocity, WI_speed (objP->id,gameStates.app.nDifficultyLevel));
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
-if ((objP->nType == OBJ_WEAPON) && 
+if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.tick40fps.bTick) &&
+	 (objP->nType == OBJ_WEAPON) && 
     (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (objP->id)) && 
 	 !((objP->id == GUIDEDMSL_ID) && 
 	   (objP == (gmObjP = gameData.objs.guidedMissile [gameData.objs.objects [objP->cType.laserInfo.nParentObj].id])) && 
@@ -1456,13 +1456,19 @@ if ((objP->nType == OBJ_WEAPON) &&
 			vTemp = objP->mType.physInfo.velocity;
 			speed = VmVecNormalizeQuick (&vTemp);
 			xMaxSpeed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
-			if (speed+F1_0 < xMaxSpeed) {
-				speed += FixMul (xMaxSpeed, gameData.time.xFrame/2);
+			if (speed + F1_0 < xMaxSpeed) {
+				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
 				if (speed > xMaxSpeed)
 					speed = xMaxSpeed;
-			}
+				}
+			if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (objP->id == EARTHSHAKER_MEGA_ID)) {
+				fix	h = (objP->lifeleft + F1_0 - 1) / F1_0;
 
+				if (h > 7)
+					VmVecScale (&vVecToObject, F1_0 / (h - 6));
+				}
 			// -- dot = VmVecDot (&vTemp, &vVecToObject);
+			VmVecScale (&vVecToObject, F1_0 / HOMINGMSL_SCALE);
 			VmVecInc (&vTemp, &vVecToObject);
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->id].renderType != WEAPON_RENDER_POLYMODEL)
@@ -1489,7 +1495,7 @@ if ((objP->nType == OBJ_WEAPON) &&
 if ((objP->nType == OBJ_WEAPON) &&
 	 (xWeaponSpeed > WI_speed (objP->id, gameStates.app.nDifficultyLevel))) {
 	//	Only slow down if not allowed to move.  Makes sense, huh?  Allows proxbombs to get moved by physics force. --MK, 2/13/96
-	if (WI_speed (objP->id,gameStates.app.nDifficultyLevel)) {
+	if (WI_speed (objP->id, gameStates.app.nDifficultyLevel)) {
 		xScaleFactor = FixDiv (WI_speed (objP->id,gameStates.app.nDifficultyLevel), xWeaponSpeed);
 		VmVecScale (&objP->mType.physInfo.velocity, xScaleFactor);
 		}

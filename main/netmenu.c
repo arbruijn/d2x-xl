@@ -2557,6 +2557,7 @@ else
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
 		ADDFLAG (AXI.bShootMissiles, "shoot msls");
 		ADDFLAG (AXI.bTripleFusion, "tri fusion");
+		ADDFLAG (AXI.bEnhancedShakers, "enh shakers");
 		ADDFLAG (AXI.nHitboxes, "hit boxes");
 		}
 	else

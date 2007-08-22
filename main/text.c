@@ -1707,6 +1707,7 @@ char *defaultGameTexts [][2] = {
 	{"~2D-Abgasstrahl", "~2D thruster flames"},
 	{"~3D-Abgasstrahl", "~3D thruster flames"},
 	{"explosions-schra~Pnells", "explosion shra~Pnels"},
+	{"verbesserte Earth Sha~Ker", "enhanced shaker ~Bomblets"},
 #if 0
 	{"", ""},
 #endif
@@ -2256,6 +2257,8 @@ char *defaultHelpTexts [][2] = {
 	{"Farbsaettigung kann entstehen, wenn mehrere Lichtquellen denselben\nBereich beleuchten. In diesem Fall addieren sich\ndie Farben der Lichtquellen. Da der hellste Wert einer Farb-\nkomponente (Rot, Gruen, Blau) eins ist, kann das dazu\nfuehren, dass mehrere farbige Lichtquellen zusammen weisses oder\nandersfarbiges Licht erzeugen.\n\nBei voller Farbsaettigung wird die Beleuchtung genau so erechnet.\n\nBei begrenzter Farbsaettigung wird nach Berechnung der Farbsumme\ndie groesste Farbkomponente bestimmt. Ist diese groesser als\neins, werden alle Farbkomponenten durch diesen Wert geteilt. Damit bleibt farbiges Licht weitgehend erhalten.\n\nWird die Farbsaettigung ganz unterdrueckt, wird nur das hellste Licht\nverwendet. Dazu werden die Farbkomponenten quadriert und\naddiert. Das Licht mit dem hoechsten Resultat wird als das\nhellste betrachtet.", 
 	 "Color saturation can happen when several light sources light the\nsame area. If this is the case, the colors of the\nlight sources are added up. As the brightest value of a color\ncomponent (red, green, blue) is one, that can lead to\nseveral colored light sources together are creating white or\ndifferently colored light.\n\nWith full color saturation, lighting is computed exactly light that.\n\nWith limited color saturation, after computing the color sum the\ngreated color component is determined. If it is greater than\none, all color components are divided by this value.\nThat way colored light will generally be preserved.\n\nIf color saturation is suppressed, only the brightest light\n will be used.\nTo determine the brightest light, all color components of the\nlights are squared and added up. The light with the highest\nvalue is considered the brightest."},
 	{"Wenn angekreuzt, erzeugen explodierende Objekte herumschwirrende\nSchrapnells.", "If checked exploding objects cause shrapnels to whizz\naround."},
+	{"Wenn angekreuzt, spueren Earth Shaker-Satelliten Ziele in\ngroesserer Entfernung und groesserem Winkel zu Ihrer Flug-\nrichtung auf. Zum Ausgleich wenden sie dafuer waehrend\nder ersten drei Flugsekunden langsamer.", 
+	 "If checked, earth shaker bomblets sense targets at greater\ndistance and greater angles towards their flight direction.\nTo compensate, they will turn slower during the first\nthree seconds of flight."},
 #if 0
 	{"", ""},
 #endif

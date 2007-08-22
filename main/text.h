@@ -1748,10 +1748,10 @@ void LoadGameTexts(void);
 #define TXT_2D_THRUSTER_FLAME		GT(955)
 #define TXT_3D_THRUSTER_FLAME		GT(956)
 #define TXT_EXPLOSION_SHRAPNELS	GT(957)
+#define TXT_ENHANCED_SHAKERS		GT(958)
 
 #if 0
 
-#define TXT_				GT(958)
 #define TXT_				GT(959)
 #define TXT_				GT(960)
 #define TXT_				GT(961)
@@ -2210,10 +2210,9 @@ void LoadGameTexts(void);
 #define HTX_ROBOT_SHIELDS			HT(296)				
 #define HTX_COLOR_SATURATION		HT(297)				
 #define HTX_EXPLOSION_SHRAPNELS	HT(298)				
+#define HTX_ENHANCED_SHAKERS		HT(299)				
 
 #if 0
-				
-#define HTX_					HT(299)				
 
 #define HTX_					HT(300)				
 #define HTX_					HT(301)				

@@ -485,6 +485,7 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].bPowerupLights, i, 0);
 	RP (extraGameInfo [i].bShootMissiles, i, 0);
 	RP (extraGameInfo [i].bTripleFusion, i, 0);
+	RP (extraGameInfo [i].bEnhancedShakers, i, 0);
 	RP (extraGameInfo [i].bTagOnlyHitObjs, i, 0);
 	RP (extraGameInfo [i].bTargetIndicators, i, 0);
 	RP (extraGameInfo [i].bTowFlags, i, 0);
@@ -991,6 +992,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bPowerupLights", "1"},
 	{"extraGameInfo[0].bShootMissiles", "0"},
 	{"extraGameInfo[0].bTripleFusion", "1"},
+	{"extraGameInfo[0].bEnhancedShakers", "0"},
 	{"extraGameInfo[0].bTagOnlyHitObjs", "1"},
 	{"extraGameInfo[0].bTargetIndicators", "1"},
 	{"extraGameInfo[0].bTowFlags", "0"},
