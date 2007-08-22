@@ -1042,7 +1042,7 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 			continue;
 		VmVecSub (&dist, vertP, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
-		if ((pDists [n].nDist = h) <= F1_0 * 125) {
+		if ((pDists [n].nDist = h) <= F1_0 * 150) {
 			pDists [n].nIndex = l;
 			n++;
 			}

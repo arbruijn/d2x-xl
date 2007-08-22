@@ -2946,7 +2946,7 @@ for (h = i = 0, j = sizeofa (oofToModel); i < j; i++)
 		if (oofToModel [i].pszPOL)
 			h++;
 		}
-return h = (gameOpts->render.bHiresModels + 1) * sizeofa (oofToModel);
+return h = (gameOpts->render.bHiresModels + 1) * (sizeofa (oofToModel) - 1);
 }
 
 //------------------------------------------------------------------------------

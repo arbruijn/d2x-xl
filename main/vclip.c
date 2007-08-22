@@ -139,9 +139,6 @@ glDepthMask (0);
 OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
-#	ifdef _DEBUG
-HUDMessage (0, "%1.2f", fAlpha);
-#	endif
 G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, NULL, fAlpha);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
