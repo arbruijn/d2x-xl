@@ -1244,7 +1244,7 @@ for (i = b11K ? 0 : nSounds / 2; i < nSounds; i++) {
 	if (!(dsP->data [1] = (ubyte *) D2_ALLOC (l)))
 		continue;
 	CFSeek (fp, (long) (nDataOffs + dsh.offset), SEEK_SET);
-	if (CFRead (dsP->data [1], 1, l, fp) != l) {
+	if (CFRead (dsP->data [1], 1, l, fp) != (unsigned int) l) {
 		CFClose (fp);
 		D2_FREE (dsP->data [1]);
 		return -1;

@@ -853,7 +853,7 @@ int CreateShrapnels (tObject *parentObjP)
 	tRgbaColord		color = {1,1,1,0.5};
 
 if (!SHOW_SMOKE)
-	return;
+	return 0;
 if (!gameOpts->render.bExplShrapnels)
 	return 0;
 if (parentObjP->flags & OF_ARMAGEDDON)
