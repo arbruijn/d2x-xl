@@ -112,6 +112,13 @@ static   int nMslTurnSpeeds [3] = {4, 2, 1};
 #define	MAX_OBJDISTS			30
 
 //---------------------------------------------------------------------------------
+
+inline int HomingMslScale (void)
+{
+return (int) (HOMINGMSL_SCALE * sqrt (gameStates.gameplay.slowmo [0].fSpeed));
+}
+
+//---------------------------------------------------------------------------------
 // Called by render code.... determines if the laser is from a robot or the
 // tPlayer and calls the appropriate routine.
 
@@ -1375,7 +1382,7 @@ void HomingMissileTurnTowardsVelocity (tObject *objP, vmsVector *vNormVel)
 
 frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime) : gameData.time.xFrame;
 vNewDir = *vNormVel;
-VmVecScale (&vNewDir, (fix) (frameTime * 16 /*HOMINGMSL_SCALE*/ / gameStates.gameplay.slowmo [0].fSpeed));
+VmVecScale (&vNewDir, (fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 VmVecInc (&vNewDir, &objP->position.mOrient.fVec);
 VmVecNormalizeQuick (&vNewDir);
 VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
@@ -1468,7 +1475,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 					VmVecScale (&vVecToObject, F1_0 / (h - 6));
 				}
 			// -- dot = VmVecDot (&vTemp, &vVecToObject);
-			VmVecScale (&vVecToObject, F1_0 / HOMINGMSL_SCALE);
+			VmVecScale (&vVecToObject, F1_0 / HomingMslScale ());
 			VmVecInc (&vTemp, &vVecToObject);
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->id].renderType != WEAPON_RENDER_POLYMODEL)
