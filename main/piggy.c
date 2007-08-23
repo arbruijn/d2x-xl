@@ -377,13 +377,15 @@ else if (bReverse) {
 				p->blue = (ubyte) (c.b * brightness);
 				}
 			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-				if (0 && bShaderMerge) { 
+#if 0
+				if (bShaderMerge) { 
 					p->red =
 					p->green =
 					p->blue = 0;
 					p->alpha = 1;
 					}
 				else
+#endif
 					p->alpha = 0;
 				if (!n)
 					bmP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
@@ -428,13 +430,15 @@ else {
 				p->blue = (ubyte) (c.b * brightness);
 				}
 			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-				if (0 && bShaderMerge) { 
+#if 0
+				if (bShaderMerge) { 
 					p->red =
 					p->green =
 					p->blue = 0;
 					p->alpha = 1;
 					}
 				else
+#endif
 					p->alpha = 0;
 				if (!n)
 					bmP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
@@ -673,9 +677,9 @@ return r;
 
 int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 {
-	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
-	int		bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	int		bpp = bmP->bm_bpp;
+	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
+	int		bShaderMerge = (bpp == 4) && gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	ubyte		*pData, *pSrc, *pDest;
 	int		cSum [4];
 
@@ -707,9 +711,11 @@ for (yDest = 0; yDest < yMax; yDest++) {
 			xSrc = xDest * xFactor;
 			pSrc = bmP->bm_texBuf + (ySrc * w + xSrc) * bpp;
 			for (x = xFactor; x; xSrc++, x--) {
+#if 0
 				if (bShaderMerge)
 					bSuperTransp = (pSrc [3] == 1);
 				else
+#endif
 					bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
 				if (bSuperTransp) {
 					nSuperTransp++;
@@ -721,13 +727,16 @@ for (yDest = 0; yDest < yMax; yDest++) {
 				}
 			}
 		if (nSuperTransp >= nFactor2 / 2) {
+#if 0
 			if (bShaderMerge) {
 				pDest [0] = 
 				pDest [1] = 
 				pDest [2] = 0;
 				pDest [3] = 1;
 				}
-			else {
+			else
+#endif
+				{
 				pDest [0] = 120;
 				pDest [1] = 88;
 				pDest [2] = 128;
