@@ -984,7 +984,8 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && (thisObjP->nTy
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
-			return 0;
+			if (0x7fffffff == (dist = CheckVectorToHitbox (&hitP, p0, p1, &vn, NULL, thisObjP, 0)))
+				return 0;
 		VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
 		}
 	else {
