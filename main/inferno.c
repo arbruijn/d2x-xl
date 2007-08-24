@@ -2826,7 +2826,7 @@ static tOOFToModel oofToModel [] = {
 	{"smartmine.oof", "smrtmine.pol", MAX_POLYGON_MODELS - 4},
 	{"concussion4.oof", "concpack.pol", MAX_POLYGON_MODELS - 5},
 	{"homer4.oof", "homrpack.pol", MAX_POLYGON_MODELS - 6},
-	{"flash4.oof", "flashpack.pol", MAX_POLYGON_MODELS - 7},
+	{"flash4.oof", "flshpack.pol", MAX_POLYGON_MODELS - 7},
 	{"guided4.oof", "guidpack.pol", MAX_POLYGON_MODELS - 8},
 	{"mercury4.oof", "mercpack.pol", MAX_POLYGON_MODELS - 9},
 	{"laser.oof", NULL, MAX_POLYGON_MODELS - 10},
