@@ -273,12 +273,20 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
+#ifdef _DEBUG
+
 void CHK (void)
 {
 Assert (ndOutFile != NULL);
 if (gameData.demo.nWritten >= 750)
 	gameData.demo.nWritten = gameData.demo.nWritten;
 }
+
+#else
+
+#define	CHK()
+
+#endif
 
 //	-----------------------------------------------------------------------------
 
