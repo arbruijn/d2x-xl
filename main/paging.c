@@ -142,8 +142,8 @@ void PagingTouchWeapon (int nWeaponType)
 
 	switch (gameData.weapons.info [nWeaponType].renderType)	{
 	case WEAPON_RENDER_VCLIP:
-		if (gameData.weapons.info [nWeaponType].weapon_vclip > -1)
-			PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].weapon_vclip], 0);
+		if (gameData.weapons.info [nWeaponType].nVClipIndex > -1)
+			PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nVClipIndex], 0);
 		break;
 	case WEAPON_RENDER_NONE:
 		break;

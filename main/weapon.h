@@ -38,7 +38,7 @@ typedef struct tWeaponInfo {
 	short   robot_hitSound;    // What sound for impact with robot
 
 	sbyte   ammo_usage;         // How many units of ammunition it uses.
-	sbyte   weapon_vclip;       // Vclip to render for the weapon, itself.
+	sbyte   nVClipIndex;       // Vclip to render for the weapon, itself.
 	short   wall_hitSound;     // What sound for impact with tWall
 
 	sbyte   destroyable;        // If !0, this weapon can be destroyed by another weapon.
@@ -99,7 +99,7 @@ typedef struct tD1WeaponInfo {
 	sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 	sbyte	ammo_usage;					//	How many units of ammunition it uses.
 
-	sbyte	weapon_vclip;				//	Vclip to render for the weapon, itself.
+	sbyte	nVClipIndex;				//	Vclip to render for the weapon, itself.
 	sbyte	destroyable;				//	If !0, this weapon can be destroyed by another weapon.
 	sbyte	matter;						//	Flag: set if this tObject is matter (as opposed to energy)
 	sbyte	bounce;						//	Flag: set if this tObject bounces off walls

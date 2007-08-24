@@ -163,7 +163,7 @@ glDepthMask (1);
 
 // -----------------------------------------------------------------------------
 
-void ConvertWeaponToVClip (tObject *objP)
+void ConvertPowerupToVClip (tObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -173,6 +173,21 @@ objP->controlType = CT_POWERUP;
 objP->renderType = RT_POWERUP;
 objP->mType.physInfo.mass = F1_0;
 objP->mType.physInfo.drag = 512;
+}
+
+// -----------------------------------------------------------------------------
+
+void ConvertWeaponToVClip (tObject *objP)
+{
+objP->rType.vClipInfo.nClipIndex = gameData.weapons.info [objP->id].nVClipIndex;
+objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.nCurFrame = 0;
+objP->controlType = CT_WEAPON;
+objP->renderType = RT_WEAPON_VCLIP;
+objP->mType.physInfo.mass = gameData.weapons.info [objP->id].mass;
+objP->mType.physInfo.drag = gameData.weapons.info [objP->id].drag;
+objP->size = gameData.weapons.info [objP->id].strength [gameStates.app.nDifficultyLevel] / 10;
+objP->movementType = MT_PHYSICS;
 }
 
 // -----------------------------------------------------------------------------
@@ -187,7 +202,7 @@ if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 if (objP->renderType == RT_POLYOBJ)
 	return 1;
 nModel = WeaponToModel (objP->id);
-if (!(nModel && gameData.models.modelToOOF [nModel]))
+if (!(nModel && (gameData.models.modelToOOF [nModel] || gameData.models.modelToPOL [nModel])))
 	return 0;
 a.p = (rand () % F1_0) - F1_0 / 2;
 a.b = (rand () % F1_0) - F1_0 / 2;
@@ -204,13 +219,15 @@ objP->mType.physInfo.rotVel.p.x = gameOpts->render.powerups.nSpin ? F1_0 / (5 - 
 objP->renderType = RT_POLYOBJ;
 objP->movementType = MT_PHYSICS;
 objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
-objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel;
+if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->id].nModel))
+	objP->rType.polyObjInfo.nModel = nModel;
 #if 0
 objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
 							gameData.weapons.info [objP->id].po_len_to_width_ratio);
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;
-objP->lifeleft = IMMORTAL_TIME;
+if (objP->nType == OBJ_POWERUP)
+	objP->lifeleft = IMMORTAL_TIME;
 return 1;
 }
 
@@ -222,7 +239,7 @@ void DrawWeaponVClip (tObject *objP)
 	fix	modtime, playTime;
 
 Assert (objP->nType == OBJ_WEAPON);
-nVClip = gameData.weapons.info [objP->id].weapon_vclip;
+nVClip = gameData.weapons.info [objP->id].nVClipIndex;
 modtime = objP->lifeleft;
 playTime = gameData.eff.pVClips [nVClip].xTotalTime;
 //	Special values for modtime were causing enormous slowdown for omega blobs.
@@ -236,7 +253,7 @@ if (objP->id == PROXMINE_ID) {		//make prox bombs spin out of sync
 	modtime += (modtime * (nObject & 7)) / 16;	//add variance to spin rate
 	while (modtime > playTime)
 		modtime -= playTime;
-	if ((nObject&1) ^ ((nObject >> 1) & 1))			//make some spin other way
+	if ((nObject & 1) ^ ((nObject >> 1) & 1))			//make some spin other way
 		modtime = playTime - modtime;
 	}
 else {

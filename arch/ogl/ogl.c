@@ -583,7 +583,7 @@ OglCacheVClipTexturesN (w->flash_vclip, 1);
 OglCacheVClipTexturesN (w->robot_hit_vclip, 1);
 OglCacheVClipTexturesN (w->wall_hit_vclip, 1);
 if (w->renderType == WEAPON_RENDER_VCLIP)
-	OglCacheVClipTexturesN (w->weapon_vclip, 3);
+	OglCacheVClipTexturesN (w->nVClipIndex, 3);
 else if (w->renderType == WEAPON_RENDER_POLYMODEL)
 	OglCachePolyModelTextures (w->nModel);
 }

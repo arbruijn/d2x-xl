@@ -101,6 +101,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "endlevel.h"
 #include "banlist.h"
 #include "collide.h"
+#include "interp.h"
 
 //#  include "3dfx_des.h"
 
@@ -2819,10 +2820,10 @@ static tOOFToModel oofToModel [] = {
 	{"eshaker.oof", NULL, 154}, 
 	{NULL, NULL, 163}, 
 	{"shakrsub.oof", NULL, 160},
-	{"pminepack.oof", NULL, MAX_POLYGON_MODELS - 1},
-	{"proxmine.oof", NULL, MAX_POLYGON_MODELS - 2},
-	{"sminepack.oof", NULL, MAX_POLYGON_MODELS - 3},
-	{"smartmine.oof", NULL, MAX_POLYGON_MODELS - 4},
+	{"pminepack.oof", "pminpack.pol", MAX_POLYGON_MODELS - 1},
+	{"proxmine.oof", "proxmine.pol", MAX_POLYGON_MODELS - 2},
+	{"sminepack.oof", "sminpack.pol", MAX_POLYGON_MODELS - 3},
+	{"smartmine.oof", "smrtmine.pol", MAX_POLYGON_MODELS - 4},
 	{"concussion4.oof", "concpack.pol", MAX_POLYGON_MODELS - 5},
 	{"homer4.oof", "homrpack.pol", MAX_POLYGON_MODELS - 6},
 	{"flash4.oof", "flashpack.pol", MAX_POLYGON_MODELS - 7},
@@ -2877,6 +2878,7 @@ pm->modelData =
 pm->modelData = NULL;
 PolyModelDataRead (pm, i, gameData.models.defPolyModels + nModel, fp);
 CFClose (fp);
+pm->rad = G3PolyModelSize (pm, nModel);
 do {
 	gameData.models.modelToPOL [oofToModel [i].nModel] = pm;
 	} while ((++i < j) && !oofToModel [i].pszOOF);

@@ -2653,29 +2653,35 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_WEAPON) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
-#if 1//def RELEASE
-			DrawPolygonObject (objP);
-#endif
-			if (bIsMissile [objP->id]) {
-#ifdef _DEBUG
-#	if 0
-				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
-#	else
-				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-#	endif
-#endif
-				RenderThrusterFlames (objP);
-				}
+			if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && 
+				 ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))
+				ConvertWeaponToVClip (objP);
 			else {
+
+#if 1//def RELEASE
+				DrawPolygonObject (objP);
+#endif
+				if (bIsMissile [objP->id]) {
 #ifdef _DEBUG
 #	if 0
-				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #	else
-				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+					RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
-				if (objP->id != SMALLMINE_ID)
-					RenderLightTrail (objP);
+					RenderThrusterFlames (objP);
+					}
+				else {
+#ifdef _DEBUG
+#	if 0
+					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
+#	else
+					RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#	endif
+#endif
+					if (objP->id != SMALLMINE_ID)
+						RenderLightTrail (objP);
+					}
 				}
 			}
 		else if (objP->nType == OBJ_CNTRLCEN) {
@@ -2686,7 +2692,12 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D) {
+				if ((objP->id == POW_SMARTMINE) || (objP->id == POW_PROXMINE))
+					gameData.models.nScale = 2 * F1_0;
+				else
+					gameData.models.nScale = 3 * F1_0 / 2;
 				DrawPolygonObject (objP);
+				gameData.models.nScale = 0;
 				objP->mType.physInfo.mass = F1_0;
 				objP->mType.physInfo.drag = 512;
 				if (gameOpts->render.powerups.nSpin != 
@@ -2754,7 +2765,8 @@ switch (objP->renderType) {
 					if (!DoObjectSmoke (objP))
 						DrawWeaponVClip (objP); 
 					}	
-				else {
+				else 
+					{
 					DrawWeaponVClip (objP); 
 					RenderLightTrail (objP);
 					RenderMslLockIndicator (objP);

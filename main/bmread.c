@@ -1924,7 +1924,7 @@ void bm_read_weapon(int unusedFlag)
 				// Set tVideoClip to play for this weapon.
 				Weapon_info[n].bitmap.index = 0;
 				Weapon_info[n].renderType = WEAPON_RENDER_VCLIP;
-				Weapon_info[n].weapon_vclip = atoi(equal_ptr);
+				Weapon_info[n].nVClipIndex = atoi(equal_ptr);
 
 			} else if (!stricmp( arg, "none_bmp" )) {
 				Weapon_info[n].bitmap = bm_load_sub(equal_ptr);
