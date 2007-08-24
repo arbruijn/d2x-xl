@@ -833,22 +833,19 @@ int CreateNewLaserEasy (vmsVector * vDirection, vmsVector * vPosition, short par
 	//	Note that while FindVectorIntersection is pretty slow, it is not terribly slow if the destination point is
 	//	in the same tSegment as the source point.
 
-	fq.p0					= &parentObjP->position.vPos;
-	fq.startSeg			= parentObjP->nSegment;
-	fq.p1					= vPosition;
-	fq.radP0				=
-	fq.radP1				= 0;
-	fq.thisObjNum		= OBJ_IDX (parentObjP);
-	fq.ignoreObjList	= NULL;
-	fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
+fq.p0					= &parentObjP->position.vPos;
+fq.startSeg			= parentObjP->nSegment;
+fq.p1					= vPosition;
+fq.radP0				=
+fq.radP1				= 0;
+fq.thisObjNum		= OBJ_IDX (parentObjP);
+fq.ignoreObjList	= NULL;
+fq.flags				= FQ_TRANSWALL | FQ_CHECK_OBJS;		//what about trans walls???
 
-	fate = FindVectorIntersection (&fq, &hit_data);
-	if (fate != HIT_NONE  || hit_data.hit.nSegment==-1) {
-		return -1;
-	}
-
-	return CreateNewLaser (vDirection, &hit_data.hit.vPoint, (short) hit_data.hit.nSegment, parent, nWeaponType, bMakeSound);
-
+fate = FindVectorIntersection (&fq, &hit_data);
+if (fate != HIT_NONE  || hit_data.hit.nSegment==-1)
+	return -1;
+return CreateNewLaser (vDirection, &hit_data.hit.vPoint, (short) hit_data.hit.nSegment, parent, nWeaponType, bMakeSound);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

@@ -923,12 +923,16 @@ void MoveShrapnel (tShrapnel *shrapnelP)
 	fix			xSpeed = FixDiv (shrapnelP->xSpeed, gameData.time.xFrame);
 	vmsVector	vOffs;
 
+#if 0
 xSpeed = 2 * (fix) (((float) xSpeed * (float) shrapnelP->xTTL) / ((float) shrapnelP->xLife * gameStates.gameplay.slowmo [0].fSpeed));
+#else
+xSpeed = xSpeed - (fix) (xSpeed / 4 / gameStates.gameplay.slowmo [0].fSpeed);
+#endif
 #if 1
 if (--(shrapnelP->nTurn))
 	vOffs = shrapnelP->vOffs;
 else {
-	shrapnelP->nTurn = 4 + d_rand () % 4;
+	shrapnelP->nTurn = ((shrapnelP->xTTL > F1_0 / 2) ? 2 : 4) + d_rand () % 4;
 	vOffs = shrapnelP->vDir;
 	vOffs.p.x = (fix) ((double) vOffs.p.x * (0.0 + 2 * (double) d_rand () / 32767.0));
 	vOffs.p.y = (fix) ((double) vOffs.p.y * (0.0 + 2 * (double) d_rand () / 32767.0));
@@ -976,11 +980,13 @@ int MoveShrapnels (tObject *objP)
 	tShrapnel		*shrapnelP = sdP->shrapnels;
 	int				h, i;
 
+if (!gameStates.app.tick40fps.bTick)
+	return 0;
 if (objP->lifeleft > 0) {
 	for (i = 0, h = sdP->nShrapnels; i < h; ) {
 		if (shrapnelP->xTTL <= 0)
 			continue;
-		if (0 < (shrapnelP->xTTL -= (fix) (gameData.time.xFrame / gameStates.gameplay.slowmo [0].fSpeed))) {
+		if (0 < (shrapnelP->xTTL -= (fix) (secs2f (gameStates.app.tick40fps.nTime) / gameStates.gameplay.slowmo [0].fSpeed))) {
 			MoveShrapnel (shrapnelP++);
 			i++;
 			}
