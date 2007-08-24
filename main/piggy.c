@@ -2129,7 +2129,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 #endif
 	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
-	sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureDir [bD1], 
+	sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureCacheDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName, 512 / nShrinkFactor);
 	bTGA = 0;
 	bmP->bm_bpp = 1;
@@ -2275,7 +2275,7 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 			if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 				nSize /= (nShrinkFactor * nShrinkFactor);
 				if (gameStates.app.bCacheTextures)
-					SaveTGA (bmName, gameFolders.szTextureDir [bD1], &h, bmP);
+					SaveTGA (bmName, gameFolders.szTextureCacheDir [bD1], &h, bmP);
 				}
 			}
 		if (nDescentCriticalError) {

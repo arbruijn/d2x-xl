@@ -653,22 +653,40 @@ GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");
 #ifdef __linux__
 if (*gameFolders.szHomeDir) {
-	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
-	if (!CFMkDir (szDataRootDir)) {
 		char	fn [FILENAME_LEN];
-		sprintf (fn, "%s/%s", szDataRootDir, PROFDIR);
-		CFMkDir (fn);
-		sprintf (fn, "%s/%s", szDataRootDir, SAVEDIR);
-		CFMkDir (fn);
-		sprintf (fn, "%s/%s", szDataRootDir, SCRSHOTDIR);
-		CFMkDir (fn);
-		sprintf (fn, "%s/%s", szDataRootDir, DEMODIR);
-		CFMkDir (fn);
-		sprintf (fn, "%s/%s", szDataRootDir, CONFIGDIR);
-		CFMkDir (fn);
-		}
+
+	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
+	CFMkDir (szDataRootDir);
+	sprintf (fn, "%s/%s", szDataRootDir, PROFDIR);
+	CFMkDir (fn);
+	sprintf (fn, "%s/%s", szDataRootDir, SAVEDIR);
+	CFMkDir (fn);
+	sprintf (fn, "%s/%s", szDataRootDir, SCRSHOTDIR);
+	CFMkDir (fn);
+	sprintf (fn, "%s/%s", szDataRootDir, DEMODIR);
+	CFMkDir (fn);
+	sprintf (fn, "%s/%s", szDataRootDir, CONFIGDIR);
+	CFMkDir (fn);
+	sprintf (fn, "%s/%s", szDataRootDir, CONFIGDIR);
+	CFMkDir (fn);
 	}
 #endif
+if (*gameFolders.szHomeDir) {
+#ifdef _WIN32
+	strcpy (szDataRootDir, gameFolders.szHomeDir);
+	if (szDataRootDir [i = (int) strlen (szDataRootDir) - 1] == '\\')
+		szDataRootDir [i] = '\0';
+#else
+	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
+#endif
+	CFMkDir (szDataRootDir);
+	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s", szDataRootDir, TEXTUREDIR_D2);
+	CFMkDir (gameFolders.szTextureCacheDir [0]);
+	sprintf (gameFolders.szTextureCacheDir [1], "%s/%s", szDataRootDir, TEXTUREDIR_D1);
+	CFMkDir (gameFolders.szTextureCacheDir [1]);
+	sprintf (gameFolders.szModelCacheDir, "%s/%s", szDataRootDir, MODELDIR);
+	CFMkDir (gameFolders.szModelCacheDir);
+	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");

@@ -1371,7 +1371,7 @@ int OOF_ReadTGA (char *pszFile, grsBitmap *bmP)
 CFSplitPath (pszFile, NULL, fn, NULL);
 if (nShrinkFactor > 1) {
 	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
-	if (ReadTGA (fnShrunk, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0)) {
+	if (ReadTGA (fnShrunk, gameFolders.szModelCacheDir, bmP, -1, 1.0, 0, 0)) {
 #ifdef _DEBUG
 		strncpy (bmP->szName, fn, sizeof (bmP->szName));
 #endif
@@ -1391,7 +1391,7 @@ if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFa
 		if (!(fp = CFOpen (fn, gameFolders.szModelDir, "rb", 0)))
 			return 1;
 		if (ReadTGAHeader (fp, &h, NULL))
-			SaveTGA (fn, gameFolders.szModelDir, &h, bmP);
+			SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
 		CFClose (fp);
 		}
 	}
