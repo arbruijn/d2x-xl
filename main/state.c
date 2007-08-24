@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				34
+#define STATE_VERSION				35
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -2190,11 +2190,12 @@ if (!bBetweenLevels)	{
 			StateRestoreTrigger (gameData.trigs.objTriggers + i, fp);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			StateRestoreObjTriggerRef (gameData.trigs.objTriggerRefs + i, fp);
-		for (i = 0; i < MAX_OBJECTS_D2X; i++)
+		j = (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X;
+		for (i = 0; i < j; i++)
 			gameData.trigs.firstObjTrigger [i] = CFReadShort (fp);
 		}
 	else
-		CFSeek (fp, MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
+		CFSeek (fp, ((sgVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
 	//fpos = CFTell (fp);
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{
@@ -2441,10 +2442,10 @@ if (!bBetweenLevels)	{
 		if (gameData.trigs.nObjTriggers > 0) {
 			CFRead (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, fp);
 			CFRead (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, fp);
-			CFRead (gameData.trigs.firstObjTrigger, sizeof (short), MAX_OBJECTS_D2X, fp);
+			CFRead (gameData.trigs.firstObjTrigger, sizeof (short), (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X, fp);
 			}
 		else
-			CFSeek (fp, MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
+			CFSeek (fp, (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
 		}
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{

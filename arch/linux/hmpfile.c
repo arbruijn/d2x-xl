@@ -25,7 +25,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 {
 	int i;
 	char buf [256] ;
-	long data;
+	long data = 0;
 	CFILE *fp;
 	hmp_file *hmp;
 	int num_tracks, midi_div;

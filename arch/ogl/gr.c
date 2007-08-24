@@ -859,9 +859,6 @@ else {
 	//write .TGA header.
 	fwrite (&hdr, 18, 1, f);
 #endif
-#if 0
-	r = fwrite (buf, w * h * (hdr.bits / 8), 1, f);
-#elif 1
 	rgbP = ((tRGB *) buf);// + w * (h - 1);
 	bgrP = outBuf;
 	for (i = h; i; i--) {
@@ -871,14 +868,7 @@ else {
 			bgrP->b = rgbP->b;
 			}
 		}
-	r = (int) fwrite (outBuf, w * h * (hdr.bits / 8), 1, f);
-#else
-	w *= (hdr.bits / 8);
-	buf += (h - 1) * w;
-	for (; h; h--, buf -= w)
-		if (0 >= (r = fwrite (buf, w, 1, f)))
-			break;
-#endif
+	r = (int) fwrite (outBuf, w * h * 3, 1, f);
 #if TRACE	
 	if (r <= 0)
 		con_printf (CONDBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
