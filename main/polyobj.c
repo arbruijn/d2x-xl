@@ -869,7 +869,7 @@ if (bHMEL) {
 	int	nElement, nBlocks;
 
 	CFRead (szId, sizeof (szId), 1, fp);
-	if (strnicmp (szId, "HMEL", 4))
+	if (strncasecmp (szId, "HMEL", 4))
 		return 0;
 	if (CFReadInt (fp) != 1)
 		return 0;
