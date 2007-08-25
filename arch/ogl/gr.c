@@ -466,11 +466,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		FreeObjTallyIcons ();
 		ResetHoardData ();
 		FreeParticleImages ();
-		FreeCorona ();
-		FreeThruster ();
-		FreeShield ();
-		FreeExplBlast ();
-		FreeDeadzone ();
+		FreeExtraImages ();
 		OOF_ReleaseTextures ();
 		if (bReload) {
 			OglCacheLevelTextures ();

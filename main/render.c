@@ -203,6 +203,31 @@ if (bmpCorona) {
 
 //------------------------------------------------------------------------------
 
+grsBitmap *bmpHalo = NULL;
+int bHaveHalo = 0;
+
+int LoadHalo (void)
+{
+if (!bHaveHalo) {
+	bmpHalo = CreateAndReadTGA ("halo.tga");
+	bHaveHalo = bmpHalo ? 1 : -1;
+	}
+return bHaveHalo > 0;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeHalo (void)
+{
+if (bmpHalo) {
+	GrFreeBitmap (bmpHalo);
+	bmpHalo = NULL;
+	bHaveHalo = 0;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 grsBitmap *bmpThruster [2] = {NULL, NULL};
 int bHaveThruster [2] = {0, 0};
 
@@ -255,6 +280,18 @@ if (bmpShield) {
 	bmpShield = NULL;
 	bHaveShield = 0;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void FreeExtraImages (void)
+{
+FreeCorona ();
+FreeHalo ();
+FreeThruster ();
+FreeShield ();
+FreeExplBlast ();
+FreeDeadzone ();
 }
 
 //------------------------------------------------------------------------------

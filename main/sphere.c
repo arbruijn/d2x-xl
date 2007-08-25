@@ -552,6 +552,13 @@ if (!gameData.render.shield.pSphere)
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
 	float	r = f2fl (objP->size) * 1.05f;
+	if (LoadHalo ()) {
+		tRgbaColorf	c = {red, green, blue, 1};
+		fix  xSize = 3 * objP->size / 2;
+		glDepthMask (0);
+		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpHalo, &c, 0.66f);
+		glDepthMask (1);
+		}
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
 					  r, r, r, red, green, blue, alpha, bmpShield, 1);
