@@ -1114,7 +1114,7 @@ if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
 if (SHOW_SHADOWS &&
-	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
 #endif
 if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
@@ -1123,7 +1123,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		glDisable (GL_STENCIL_TEST);
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		RenderHitbox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
 #else
 		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 1.0f);
@@ -1140,7 +1140,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 			}
 		}
 	if (gameData.multiplayer.bWasHit [i])
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		RenderHitbox (objP, 1.0f, 0.5f, 0.0f, 1.0f);
 #else
 		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 1.0f);
@@ -1148,7 +1148,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	else {
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		RenderHitbox (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 400.0f);
 #else
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 100.0f);
