@@ -552,7 +552,7 @@ if (!gameData.render.shield.pSphere)
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
 	float	r = f2fl (objP->size) * 1.05f;
-	if (LoadHalo ()) {
+	if (gameOpts->render.bObjectCoronas && LoadHalo ()) {
 		tRgbaColorf	c = {red, green, blue, 1};
 		fix  xSize = 3 * objP->size / 2;
 		glDepthMask (0);
