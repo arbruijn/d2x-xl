@@ -42,6 +42,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #include "ogl_init.h"
 #include "gamepal.h"
 #include "network.h"
+#include "strutil.h"
 
 #ifndef DRIVE
 #include "texmap.h"
@@ -869,7 +870,7 @@ if (bHMEL) {
 	int	nElement, nBlocks;
 
 	CFRead (szId, sizeof (szId), 1, fp);
-	if (strncasecmp (szId, "HMEL", 4))
+	if (strnicmp (szId, "HMEL", 4))
 		return 0;
 	if (CFReadInt (fp) != 1)
 		return 0;
