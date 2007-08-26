@@ -1201,7 +1201,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
+void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
 int LoadRobotReplacements (char *szLevelName, int bAddBots, int bAltModels)
 {

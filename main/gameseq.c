@@ -933,7 +933,7 @@ for (;;) {
 		break;
 	sprintf (szHogName, "%s%s%s%s", 
 				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", 
-				gameFolders.szMsnSubFolder, pszLevelName);
+				gameFolders.szMsnSubDir, pszLevelName);
 	if (!CFUseAltHogFile (szHogName))
 		break;
 	bRetry = 1;

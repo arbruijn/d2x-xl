@@ -1071,7 +1071,7 @@ if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (t
 	minTrackableDot = -F1_0;
 	}
 else
-#ifdef _DEBUG
+#if 0//def _DEBUG
 	minTrackableDot = -F1_0;
 #else
 	minTrackableDot = MIN_TRACKABLE_DOT;

@@ -562,6 +562,7 @@ exit (0);
 #	define	DEMODIR			"Demos"
 #	define	TEXTUREDIR_D2	"Textures"
 #	define	TEXTUREDIR_D1	"Textures/D1"
+#	define	TEMPDIR			"Temp"
 #else
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
@@ -575,6 +576,7 @@ exit (0);
 #	define	DEMODIR			"demos"
 #	define	TEXTUREDIR_D2	"textures"
 #	define	TEXTUREDIR_D1	"textures/d1"
+#	define	TEMPDIR			"temp"
 #endif
 
 void GetAppFolders (void)
@@ -686,6 +688,8 @@ if (*gameFolders.szHomeDir) {
 	CFMkDir (gameFolders.szTextureCacheDir [1]);
 	sprintf (gameFolders.szModelCacheDir, "%s/%s", szDataRootDir, MODELDIR);
 	CFMkDir (gameFolders.szModelCacheDir);
+	sprintf (gameFolders.szTempDir, "%s/%s", szDataRootDir, TEMPDIR);
+	CFMkDir (gameFolders.szTempDir);
 	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");

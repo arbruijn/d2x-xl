@@ -1186,7 +1186,7 @@ gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
-	gameFolders.szMsnSubFolder [0] = '\0';
+	gameFolders.szMsnSubDir [0] = '\0';
 CFUseAltHogFile ("");
 do {
 	nMissions = BuildMissionList (0, nFolder);
@@ -1301,7 +1301,7 @@ gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
-	gameFolders.szMsnSubFolder [0] = '\0';
+	gameFolders.szMsnSubDir [0] = '\0';
 CFUseAltHogFile ("");
 for (;;) {
 	memset (m, 0, sizeof (m));

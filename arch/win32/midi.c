@@ -103,9 +103,20 @@ if (!(bCustom || (hmp = hmp_open (pszSong, bD1Song))))
 if (gameOpts->sound.bUseSDLMixer) {
 	char	fnSong [FILENAME_LEN], *pfnSong;
 
-	if (bCustom)
+	if (bCustom) {
 		pfnSong = pszSong;
+		if (strstr (pszSong, ".mp3") && !gameData.songs.user.bMP3) {
+			DigiExit ();
+			gameData.songs.user.bMP3 = 1;
+			DigiInit (1);
+			}
+		}
 	else {
+		if (!strstr (pszSong, ".mp3") && gameData.songs.user.bMP3) {
+			DigiExit ();
+			gameData.songs.user.bMP3 = 0;
+			DigiInit (1);
+			}
 		sprintf (fnSong, "%s/d2x-temp.mid", gameFolders.szHomeDir);
 		if (!hmp_to_midi (hmp, fnSong)) {
 			LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());

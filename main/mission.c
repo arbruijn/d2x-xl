@@ -584,18 +584,18 @@ void MoveMsnFolderUp (void)
 {
 int	i;
 
-for (i = (int) strlen (gameFolders.szMsnSubFolder) - 2; i >= 0; i--)
-	if (gameFolders.szMsnSubFolder [i] == '/')
+for (i = (int) strlen (gameFolders.szMsnSubDir) - 2; i >= 0; i--)
+	if (gameFolders.szMsnSubDir [i] == '/')
 		break;
-gameFolders.szMsnSubFolder [i + 1] = '\0';
+gameFolders.szMsnSubDir [i + 1] = '\0';
 }
 
 //------------------------------------------------------------------------------
 
 void MoveMsnFolderDown (int nSubFolder)
 {
-strcat (gameFolders.szMsnSubFolder, gameData.missions.list [nSubFolder].szMissionName + 1);
-gameFolders.szMsnSubFolder [strlen (gameFolders.szMsnSubFolder) - 1] = '/';
+strcat (gameFolders.szMsnSubDir, gameData.missions.list [nSubFolder].szMissionName + 1);
+gameFolders.szMsnSubDir [strlen (gameFolders.szMsnSubDir) - 1] = '/';
 }
 
 //------------------------------------------------------------------------------
@@ -614,12 +614,12 @@ if (nSubFolder >= 0) {
 		MoveMsnFolderUp ();
 	}
 
-bSubFolder = (*gameFolders.szMsnSubFolder != '\0');
+bSubFolder = (*gameFolders.szMsnSubDir != '\0');
 if (!bSubFolder && gameOpts->app.bSinglePlayer) {
-	strcpy (gameFolders.szMsnSubFolder, "single/");
+	strcpy (gameFolders.szMsnSubDir, "single/");
 //		bSubFolder = 1;
 	}
-if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubFolder, "single"))) {
+if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMsnSubDir, "single"))) {
 	if (gameOpts->app.nVersionFilter & 2) {
 		AddBuiltinMissionToList (&count);  //read built-in first
 		if (gameOpts->app.bSinglePlayer)
@@ -629,7 +629,7 @@ if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szM
 		AddBuiltinD1MissionToList (&count);
 	}
 nBuiltIns = count;
-sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubFolder);
+sprintf (gameFolders.szMissionDirs [0], "%s/%s", gameFolders.szMissionDir, gameFolders.szMsnSubDir);
 bHaveSubFolders = 0;
 if (gameOpts->app.nVersionFilter & 2) {
 	AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
@@ -641,7 +641,7 @@ if (gameOpts->app.nVersionFilter & 1) {
 	}
 if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
 	bHaveSubFolders = 0;
-	sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubFolder);
+	sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubDir);
 	if (gameOpts->app.nVersionFilter & 2) {
 		AddMissionsToList(&count, anarchy_mode, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 		bHaveSubFolders = 1;
@@ -956,7 +956,7 @@ int LoadMissionByName (char *szMissionName, int nSubFolder)
 	int n, i, j;
 
 if (nSubFolder < 0) {
-	*gameFolders.szMsnSubFolder = '\0';
+	*gameFolders.szMsnSubDir = '\0';
 	LogErr ("   searching mission '%s'\n", szMissionName);
 	}
 n = BuildMissionList (1, nSubFolder);
@@ -981,7 +981,7 @@ int FindMissionByName(char *szMissionName, int nSubFolder)
 	int n,i,j;
 
 if (nSubFolder < 0)
-	*gameFolders.szMsnSubFolder = '\0';
+	*gameFolders.szMsnSubDir = '\0';
 n = BuildMissionList (1, nSubFolder);
 for (i = 0; i < n; i++) 
 	if (!stricmp (szMissionName, gameData.missions.list [i].filename))

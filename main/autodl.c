@@ -596,7 +596,7 @@ dlResult = 1;
 dlState = PID_DL_OPEN;
 nTimeout = SDL_GetTicks ();
 sprintf (szTitle, "Downloading <%s>", pszMission);
-*gameFolders.szMsnSubFolder = '\0';
+*gameFolders.szMsnSubDir = '\0';
 do {
 	i = ExecMenu2 (NULL, szTitle, 3, m, (void (*)) DownloadPoll, 0, NULL);
 	} while (i >= 0);

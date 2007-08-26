@@ -3406,9 +3406,9 @@ if (nPrimaryBm && (gameData.weapons.nPrimary==LASER_INDEX) &&
 		(LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
 	nPrimaryBm++;
 
-if (secondaryWeaponToGunNum [gameData.weapons.nSecondary]==7)
+if (secondaryWeaponToGunNum [gameData.weapons.nSecondary] == 7)
 	nSecondaryBm += 3;		//now value is 0, 1 or 3, 4
-else if (nSecondaryBm && !(gameData.laser.nMissileGun&1))
+else if (nSecondaryBm && !(gameData.laser.nMissileGun & 1))
 		nSecondaryBm++;
 
 nCrossBm = ((nPrimaryBm > 0) || (nSecondaryBm > 0));

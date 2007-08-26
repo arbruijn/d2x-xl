@@ -322,13 +322,16 @@ SongsPlaySong (gameStates.sound.nCurrentSong, repeat);
 
 //------------------------------------------------------------------------------
 
+void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
+
 int nCurrentLevelSong;
 
 void PlayLevelSong (int nLevel)
 {
-	int nSong;
-	int nTracks;
-	int bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
+	int	nSong;
+	int	nTracks;
+	int	bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
+	char	*pszLevelName, szFilename [SHORT_FILENAME_LEN];
 
 Assert(nLevel != 0);
 if (!gameData.songs.bInitialized)
@@ -343,9 +346,14 @@ if (force_rb_register) {
 	RBARegisterCD();			//get new track list for new CD
 	force_rb_register = 0;
 	}
-if (gameData.songs.user.nLevelSongs) {
-	nSong %= gameData.songs.user.nLevelSongs;
-	DigiPlayMidiSong (gameData.songs.user.pszLevelSongs [nSong], NULL, NULL, 1, 0);
+pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
+strlwr (pszLevelName);
+ChangeFilenameExtension (szFilename, pszLevelName, ".ogg");
+if (CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
+	char	szSong [FILENAME_LEN];
+		
+	sprintf (szSong, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", szFilename);
+	DigiPlayMidiSong (szSong, NULL, NULL, 1, 0);
 	}
 else {
 	if (gameStates.sound.bRedbookEnabled && RBAEnabled () && (nTracks = RBAGetNumberOfTracks()) > 1)	//try to play redbook
