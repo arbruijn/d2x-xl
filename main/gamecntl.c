@@ -104,8 +104,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
 
-#define SHOW_EXIT_PATH  1
-
 #define Arcade_mode 0
 
 #ifdef EDITOR
@@ -1526,11 +1524,11 @@ void HandleTestKey(int key)
 		case KEYDBGGED+KEY_0:	
 			ShowWeaponStatus();   break;
 
-		#ifdef SHOW_EXIT_PATH
+#ifdef SHOW_EXIT_PATH
 		case KEYDBGGED+KEY_1:	
 			CreateSpecialPath();  
 			break;
-		#endif
+#endif
 
 		case KEYDBGGED+KEY_Y:
 			DoReactorDestroyedStuff(NULL);

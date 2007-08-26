@@ -21,6 +21,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _INFERNO_H
 #define _INFERNO_H
 
+#define SHOW_EXIT_PATH  1
+
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
 #define MULTI_THREADED	0

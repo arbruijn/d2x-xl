@@ -317,7 +317,7 @@ xEffectTime += gameData.time.xFrame;
 	#ifdef _DEBUG
 					Assert(ecP->nSegment != -1);
 					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert(ecP->nDestBm!=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
+					Assert(ecP->nDestBm !=0 && gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex);
 	#endif
 					gameData.segs.segments [ecP->nSegment].sides [ecP->nSide].nOvlTex = ecP->nDestBm;		//replace with destoyed
 					ecP->flags &= ~EF_ONE_SHOT;

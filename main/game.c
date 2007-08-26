@@ -124,8 +124,6 @@ void GamePaletteStepUp (int r, int g, int b);
 
 //#define TEST_TIMER	1		//if this is set, do checking on timer
 
-#define	SHOW_EXIT_PATH	1
-
 #ifdef EDITOR
 #include "editor/editor.h"
 #endif
@@ -2569,7 +2567,7 @@ int	nLastLevelPathCreated = -1;
 //	------------------------------------------------------------------------------------------------------------------
 //	Create path for tPlayer from current tSegment to goal tSegment.
 //	Return true if path created, else return false.
-int mark_player_path_to_segment (int nSegment)
+int MarkPlayerPathToSegment (int nSegment)
 {
 	int		i;
 	tObject	*objP = gameData.objs.console;
@@ -2637,16 +2635,11 @@ int CreateSpecialPath (void)
 	int	i,j;
 
 	//	---------- Find exit doors ----------
-	for (i=0; i<=gameData.segs.nLastSegment; i++)
-		for (j=0; j<MAX_SIDES_PER_SEGMENT; j++)
-			if (gameData.segs.segments[i].children[j] == -2) {
-#if TRACE
-				//con_printf (CONDBG, "Exit at tSegment %i\n", i);
-#endif
-				return mark_player_path_to_segment (i);
-			}
-
-	return 0;
+for (i = 0; i <= gameData.segs.nLastSegment; i++)
+	for (j = 0; j < MAX_SIDES_PER_SEGMENT; j++)
+		if (gameData.segs.segments [i].children [j] == -2)
+			return MarkPlayerPathToSegment (i);
+return 0;
 }
 
 #endif

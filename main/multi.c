@@ -2697,130 +2697,131 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 ng = 1;
 invCount = 0;
 cloakCount = 0;
-for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if ((gameData.objs.objects [i].nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
-		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, gameData.objs.objects [i].nSegment, 
-									   &gameData.objs.objects [i].position.vPos, &vmdIdentityMatrix, 
+for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
+	if ((objP->nType == OBJ_HOSTAGE) && !(gameData.app.nGameMode & GM_MULTI_COOP)) {
+		nObject = CreateObject (OBJ_POWERUP, POW_SHIELD_BOOST, -1, objP->nSegment, 
+									   &objP->position.vPos, &vmdIdentityMatrix, 
 									   gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size, 
 									   CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 		ReleaseObject ((short) i);
 		if (nObject != -1) {
-			gameData.objs.objects [nObject].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
-			gameData.objs.objects [nObject].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [nObject].rType.vClipInfo.nClipIndex].xFrameTime;
-			gameData.objs.objects [nObject].rType.vClipInfo.nCurFrame = 0;
-			gameData.objs.objects [nObject].mType.physInfo.drag = 512;     //1024;
-			gameData.objs.objects [nObject].mType.physInfo.mass = F1_0;
-			VmVecZero (&gameData.objs.objects [nObject].mType.physInfo.velocity);
+			tObject	*objP = OBJECTS + nObject;
+			objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
+			objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+			objP->rType.vClipInfo.nCurFrame = 0;
+			objP->mType.physInfo.drag = 512;     //1024;
+			objP->mType.physInfo.mass = F1_0;
+			VmVecZero (&objP->mType.physInfo.velocity);
 			}
 		continue;
 		}
-	if (gameData.objs.objects [i].nType == OBJ_POWERUP) {
-		if (gameData.objs.objects [i].id == POW_EXTRA_LIFE) {
+	if (objP->nType == OBJ_POWERUP) {
+		if (objP->id == POW_EXTRA_LIFE) {
 			if (ng && !netGame.DoInvulnerability) {
-				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
-				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
-				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
+				objP->id = POW_SHIELD_BOOST;
+				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				}
 			else {
-				gameData.objs.objects [i].id = POW_INVUL;
-				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
-				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
+				objP->id = POW_INVUL;
+				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				}
 			}
 
 		if (!(gameData.app.nGameMode & GM_MULTI_COOP))
-			if ((gameData.objs.objects [i].id  >= POW_KEY_BLUE) && (gameData.objs.objects [i].id <= POW_KEY_GOLD)) {
-				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
-				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
-				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
+			if ((objP->id  >= POW_KEY_BLUE) && (objP->id <= POW_KEY_GOLD)) {
+				objP->id = POW_SHIELD_BOOST;
+				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				}
-		if (gameData.objs.objects [i].id == POW_INVUL) {
+		if (objP->id == POW_INVUL) {
 			if (invCount  >= 3 || (ng && !netGame.DoInvulnerability)) {
-				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
-				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
-				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
+				objP->id = POW_SHIELD_BOOST;
+				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				} 
 			else
 				invCount++;
 			}
-		if (gameData.objs.objects [i].id == POW_CLOAK) {
+		if (objP->id == POW_CLOAK) {
 			if (cloakCount  >= 3 || (ng && !netGame.DoCloak)) {
-				gameData.objs.objects [i].id = POW_SHIELD_BOOST;
-				gameData.objs.objects [i].rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [gameData.objs.objects [i].id].nClipIndex;
-				gameData.objs.objects [i].rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][gameData.objs.objects [i].rType.vClipInfo.nClipIndex].xFrameTime;
+				objP->id = POW_SHIELD_BOOST;
+				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+				objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
 				} 
 			else
 				cloakCount++;
 			}
-		if (gameData.objs.objects [i].id == POW_AFTERBURNER && ng && !netGame.DoAfterburner)
+		if (objP->id == POW_AFTERBURNER && ng && !netGame.DoAfterburner)
 			BashToShield (i, "afterburner");
-		if (gameData.objs.objects [i].id == POW_FUSION && ng && !netGame.DoFusions)
+		if (objP->id == POW_FUSION && ng && !netGame.DoFusions)
 			BashToShield (i, "fusion");
-		if (gameData.objs.objects [i].id == POW_PHOENIX && ng && !netGame.DoPhoenix)
+		if (objP->id == POW_PHOENIX && ng && !netGame.DoPhoenix)
 			BashToShield (i, "phoenix");
-		if (gameData.objs.objects [i].id == POW_HELIX && ng && !netGame.DoHelix)
+		if (objP->id == POW_HELIX && ng && !netGame.DoHelix)
 			BashToShield (i, "helix");
-		if (gameData.objs.objects [i].id == POW_MEGAMSL && ng && !netGame.DoMegas)
+		if (objP->id == POW_MEGAMSL && ng && !netGame.DoMegas)
 			BashToShield (i, "mega");
-		if (gameData.objs.objects [i].id == POW_SMARTMSL && ng && !netGame.DoSmarts)
+		if (objP->id == POW_SMARTMSL && ng && !netGame.DoSmarts)
 			BashToShield (i, "smartmissile");
-		if (gameData.objs.objects [i].id == POW_GAUSS && ng && !netGame.DoGauss)
+		if (objP->id == POW_GAUSS && ng && !netGame.DoGauss)
 			BashToShield (i, "gauss");
-		if (gameData.objs.objects [i].id == POW_VULCAN && ng && !netGame.DoVulcan)
+		if (objP->id == POW_VULCAN && ng && !netGame.DoVulcan)
 			BashToShield (i, "vulcan");
-		if (gameData.objs.objects [i].id == POW_PLASMA && ng && !netGame.DoPlasma)
+		if (objP->id == POW_PLASMA && ng && !netGame.DoPlasma)
 			BashToShield (i, "plasma");
-		if (gameData.objs.objects [i].id == POW_OMEGA && ng && !netGame.DoOmega)
+		if (objP->id == POW_OMEGA && ng && !netGame.DoOmega)
 			BashToShield (i, "omega");
-		if (gameData.objs.objects [i].id == POW_SUPERLASER && ng && !netGame.DoSuperLaser)
+		if (objP->id == POW_SUPERLASER && ng && !netGame.DoSuperLaser)
 			BashToShield (i, "superlaser");
-		if (gameData.objs.objects [i].id == POW_PROXMINE && ng && !netGame.DoProximity)
+		if (objP->id == POW_PROXMINE && ng && !netGame.DoProximity)
 			BashToShield (i, "proximity");
 		// Special: Make all proximity bombs into shields if in
 		// hoard mode because we use the proximity slot in the
 		// tPlayer struct to signify how many orbs the tPlayer has.
-		if (gameData.objs.objects [i].id == POW_PROXMINE && ng && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
+		if (objP->id == POW_PROXMINE && ng && (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 			BashToShield (i, "proximity");
-		if (gameData.objs.objects [i].id == POW_SMARTMINE && ng && (gameData.app.nGameMode & GM_ENTROPY))
+		if (objP->id == POW_SMARTMINE && ng && (gameData.app.nGameMode & GM_ENTROPY))
 			BashToShield (i, "smart mine");
-		if (gameData.objs.objects [i].id == POW_VULCAN_AMMO && ng && (!netGame.DoVulcan && !netGame.DoGauss))
+		if (objP->id == POW_VULCAN_AMMO && ng && (!netGame.DoVulcan && !netGame.DoGauss))
 			BashToShield (i, "vulcan ammo");
-		if (gameData.objs.objects [i].id == POW_SPREADFIRE && ng && !netGame.DoSpread)
+		if (objP->id == POW_SPREADFIRE && ng && !netGame.DoSpread)
 			BashToShield (i, "spread");
-		if (gameData.objs.objects [i].id == POW_SMARTMINE && ng && !netGame.DoSmartMine)
+		if (objP->id == POW_SMARTMINE && ng && !netGame.DoSmartMine)
 			BashToShield (i, "smartmine");
-		if (gameData.objs.objects [i].id == POW_FLASHMSL_1 && ng && !netGame.DoFlash)
+		if (objP->id == POW_FLASHMSL_1 && ng && !netGame.DoFlash)
 			BashToShield (i, "flash");
-		if (gameData.objs.objects [i].id == POW_FLASHMSL_4 && ng && !netGame.DoFlash)
+		if (objP->id == POW_FLASHMSL_4 && ng && !netGame.DoFlash)
 			BashToShield (i, "flash");
-		if (gameData.objs.objects [i].id == POW_GUIDEDMSL_1 && ng && !netGame.DoGuided)
+		if (objP->id == POW_GUIDEDMSL_1 && ng && !netGame.DoGuided)
 			BashToShield (i, "guided");
-		if (gameData.objs.objects [i].id == POW_GUIDEDMSL_4 && ng && !netGame.DoGuided)
+		if (objP->id == POW_GUIDEDMSL_4 && ng && !netGame.DoGuided)
 			BashToShield (i, "guided");
-		if (gameData.objs.objects [i].id == POW_EARTHSHAKER && ng && !netGame.DoEarthShaker)
+		if (objP->id == POW_EARTHSHAKER && ng && !netGame.DoEarthShaker)
 			BashToShield (i, "earth");
-		if (gameData.objs.objects [i].id == POW_MERCURYMSL_1 && ng && !netGame.DoMercury)
+		if (objP->id == POW_MERCURYMSL_1 && ng && !netGame.DoMercury)
 			BashToShield (i, "Mercury");
-		if (gameData.objs.objects [i].id == POW_MERCURYMSL_4 && ng && !netGame.DoMercury)
+		if (objP->id == POW_MERCURYMSL_4 && ng && !netGame.DoMercury)
 			BashToShield (i, "Mercury");
-		if (gameData.objs.objects [i].id == POW_CONVERTER && ng && !netGame.DoConverter)
+		if (objP->id == POW_CONVERTER && ng && !netGame.DoConverter)
 			BashToShield (i, "Converter");
-		if (gameData.objs.objects [i].id == POW_AMMORACK && ng && !netGame.DoAmmoRack)
+		if (objP->id == POW_AMMORACK && ng && !netGame.DoAmmoRack)
 			BashToShield (i, "Ammo rack");
-		if (gameData.objs.objects [i].id == POW_HEADLIGHT && ng && 
+		if (objP->id == POW_HEADLIGHT && ng && 
 			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (bHeadLights, 0, 0, 0))))
 			BashToShield (i, "Headlight");
-		if (gameData.objs.objects [i].id == POW_LASER && ng && !netGame.DoLaserUpgrade)
+		if (objP->id == POW_LASER && ng && !netGame.DoLaserUpgrade)
 			BashToShield (i, "Laser powerup");
-		if (gameData.objs.objects [i].id == POW_HOMINGMSL_1 && ng && !netGame.DoHoming)
+		if (objP->id == POW_HOMINGMSL_1 && ng && !netGame.DoHoming)
 			BashToShield (i, "Homing");
-		if (gameData.objs.objects [i].id == POW_HOMINGMSL_4 && ng && !netGame.DoHoming)
+		if (objP->id == POW_HOMINGMSL_4 && ng && !netGame.DoHoming)
 			BashToShield (i, "Homing");
-		if (gameData.objs.objects [i].id == POW_QUADLASER && ng && !netGame.DoQuadLasers)
+		if (objP->id == POW_QUADLASER && ng && !netGame.DoQuadLasers)
 			BashToShield (i, "Quad Lasers");
-		if (gameData.objs.objects [i].id == POW_BLUEFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
+		if (objP->id == POW_BLUEFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
 			BashToShield (i, "Blue flag");
-		if (gameData.objs.objects [i].id == POW_REDFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
+		if (objP->id == POW_REDFLAG && !(gameData.app.nGameMode & GM_CAPTURE))
 			BashToShield (i, "Red flag");
 		}
 	}

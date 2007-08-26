@@ -189,7 +189,7 @@ if (pColor)
 	pParticle->color = *pColor;
 else {
 	pParticle->color.red = 1.0;
-	pParticle->color.green = 0.0;
+	pParticle->color.green = 0.5;
 	pParticle->color.blue = 0.0;//(double) (64 + randN (64)) / 255.0;
 	pParticle->color.alpha = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
 	}
@@ -518,12 +518,12 @@ if (pParticle->nType > 2) {
 	}
 else {
 	if (pParticle->color.green < 1.0) {
-		pParticle->color.green += 1.0 / 3.0;
+		pParticle->color.green += 1.0 / 20.0 / (double) gameStates.gameplay.slowmo [0].fSpeed;
 		if (pParticle->color.green > 1.0)
 			pParticle->color.green = 1.0;
 		}
 	if (pParticle->color.blue < 1.0) {
-		pParticle->color.blue += 1.0 / 6.0;
+		pParticle->color.blue += 1.0 / 10.0 / (double) gameStates.gameplay.slowmo [0].fSpeed;
 		if (pParticle->color.blue > 1.0)
 			pParticle->color.blue = 1.0;
 		}

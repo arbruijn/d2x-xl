@@ -108,209 +108,175 @@ return objP;
 
 //------------------------------------------------------------------------------
 
-tObject *ObjectCreateExplosionSub (
-	tObject *objP, 
-	short nSegment, 
-	vmsVector *position, 
-	fix size, 
-	ubyte nVClip, 
-	fix maxdamage, 
-	fix maxdistance, 
-	fix maxforce, 
-	short parent)
+tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPos, fix xSize, 
+											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
 {
-	short nObject;
-	tObject *explObjP;
+	short			nObject;
+	tObject		*explObjP, *obj0P;
+	fix			dist, force, damage;
+	vmsVector	pos_hit, vForce;
+	int			i, t, id;
 
-nObject = CreateObject (OBJ_FIREBALL, nVClip, -1, nSegment, position, &vmdIdentityMatrix, size, 
+#ifdef _DEBUG
+if (nVClip != 2)
+	return NULL;
+#endif
+nObject = CreateObject (OBJ_FIREBALL, nVClip, -1, nSegment, vPos, &vmdIdentityMatrix, xSize, 
 							   CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
 
-	if (nObject < 0) {
+if (nObject < 0) {
 #if TRACE
-		con_printf (1, "Can't create tObject in ObjectCreateExplosionSub.\n");
+	con_printf (1, "Can't create tObject in ObjectCreateExplosionSub.\n");
 #endif
-		return NULL;
+	return NULL;
 	}
 
-	explObjP = gameData.objs.objects + nObject;
-	//now set explosion-specific data
-	explObjP->lifeleft = gameData.eff.vClips [0][nVClip].xTotalTime;
-	explObjP->cType.explInfo.nSpawnTime = -1;
-	explObjP->cType.explInfo.nDeleteObj = -1;
-	explObjP->cType.explInfo.nDeleteTime = -1;
+explObjP = gameData.objs.objects + nObject;
+//now set explosion-specific data
+explObjP->lifeleft = gameData.eff.vClips [0][nVClip].xTotalTime;
+explObjP->cType.explInfo.nSpawnTime = -1;
+explObjP->cType.explInfo.nDeleteObj = -1;
+explObjP->cType.explInfo.nDeleteTime = -1;
 
-	if (maxdamage > 0) {
-		fix dist, force;
-		vmsVector pos_hit, vForce;
-		fix damage;
-		int i, t, id;
-		tObject * obj0P = gameData.objs.objects;
-					 
-		// -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
-
-		for (i=0; i<=gameData.objs.nLastObject; i++)	{
-			t = obj0P->nType;
-			id = obj0P->id;
-			//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
-			//	When a smart bomb blows up, if one of its children goes right towards a nearby tWall, it will
-			//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
-			if ((obj0P != objP) && !(obj0P->flags & OF_SHOULD_BE_DEAD) && 
-			    ((t==OBJ_WEAPON && (id==PROXMINE_ID || id==SMARTMINE_ID || id==SMALLMINE_ID)) || 
-			     (t == OBJ_CNTRLCEN) || 
-			     (t==OBJ_PLAYER) || ((t==OBJ_ROBOT) && (parent >= 0) &&
-			     ((gameData.objs.objects [parent].nType != OBJ_ROBOT) || (gameData.objs.objects [parent].id != id))))) {
-				dist = VmVecDistQuick (&obj0P->position.vPos, &explObjP->position.vPos);
-				// Make damage be from 'maxdamage' to 0.0, where 0.0 is 'maxdistance' away;
-				if (dist < maxdistance) {
-					if (ObjectToObjectVisibility (explObjP, obj0P, FQ_TRANSWALL)) {
-
-						damage = maxdamage - FixMulDiv (dist, maxdamage, maxdistance);
-						force = maxforce - FixMulDiv (dist, maxforce, maxdistance);
-
-						// Find the force vector on the tObject
-						VmVecNormalizedDirQuick (&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
-						VmVecScale (&vForce, force);
-	
-						// Find where the point of impact is... (pos_hit)
-						VmVecSub (&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
-						VmVecScale (&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
-	
-						switch (obj0P->nType)	{
-							case OBJ_WEAPON:
-								PhysApplyForce (obj0P, &vForce);
-
-								if (obj0P->id == PROXMINE_ID || obj0P->id == SMARTMINE_ID) {		//prox bombs have chance of blowing up
-									if (FixMul (dist, force) > i2f (8000)) {
-										KillObject (obj0P);
-										ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
-									}
-								}
-								break;
-
-							case OBJ_ROBOT:
-								{
-								PhysApplyForce (obj0P, &vForce);
-
-								//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
-								if ((objP != NULL) && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
-									tAIStatic	*aip = &obj0P->cType.aiInfo;
-									int			force_val = f2i (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
-
-									if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame < F1_0) {
-										aip->SKIP_AI_COUNT += force_val;
-										obj0P->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
-										obj0P->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
-										obj0P->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
-										obj0P->mType.physInfo.flags |= PF_USES_THRUST;
-
-										//@@if (ROBOTINFO (obj0P->id).companion)
-										//@@	BuddyMessage ("Daisy, Daisy, Give me...");
-									} else
-										aip->SKIP_AI_COUNT--;
-
-								}
-
-								//	When a robot gets whacked by a xBadAss force, he looks towards it because robots tend to get blasted from behind.
-								{
-									vmsVector vNegForce;
-									vNegForce.p.x = vForce.p.x * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									vNegForce.p.y = vForce.p.y * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									vNegForce.p.z = vForce.p.z * -2 * (7 - gameStates.app.nDifficultyLevel)/8;
-									PhysApplyRot (obj0P, &vNegForce);
-								}
-								if (obj0P->shields >= 0) {
-									if (ROBOTINFO (obj0P->id).bossFlag)
-										if (bossProps [gameStates.app.bD1Mission][ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
-											damage /= 4;
-
-									if (ApplyDamageToRobot (obj0P, damage, parent))
-										if ((objP != NULL) && (parent == LOCALPLAYER.nObject))
-											AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
-								}
-
-								if ((objP != NULL) && (ROBOTINFO (obj0P->id).companion) && (!gameData.weapons.info [objP->id].flash)) {
-									int	i, count;
-									char	ouch_str [6*4 + 2];
-
-									count = f2i (damage/8);
-									if (count > 4)
-										count = 4;
-									else if (count <= 0)
-										count = 1;
-									ouch_str [0] = 0;
-									for (i=0; i<count; i++) {
-										strcat (ouch_str, TXT_BUDDY_OUCH);
-										strcat (ouch_str, " ");
-										}
-									BuddyMessage (ouch_str);
-								}
-								break;
-								}
-							case OBJ_CNTRLCEN:
-								if (obj0P->shields >= 0) {
-									ApplyDamageToReactor (obj0P, damage, parent);
-								}
-								break;
-							case OBJ_PLAYER:	{
-								tObject * killer=NULL;
-								vmsVector	vForce2;
-
-								//	Hack!Warning!Test code!
-								if ((objP != NULL) && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
-									int	fe;
-
-									fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
-
-									if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
-										fe /= 2;
-										force /= 2;
-									}
-									if (force > F1_0) {
-										gameData.render.xFlashEffect = fe;
-										PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
-#if TRACE
-										con_printf (CONDBG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
-#endif
-									}
-								}
-
-								if ((objP != NULL) && (gameData.app.nGameMode & GM_MULTI) && (objP->nType == OBJ_PLAYER)) {
-									killer = objP;
-								}
-								vForce2 = vForce;
-								if (parent > -1) {
-									killer = gameData.objs.objects + parent;
-									if (killer != gameData.objs.console)		// if someone else whacks you, cut force by 2x
-										vForce2.p.x /= 2;	
-										vForce2.p.y /= 2;	
-										vForce2.p.z /= 2;
-								}
-								vForce2.p.x /= 2;	
-								vForce2.p.y /= 2;	
-								vForce2.p.z /= 2;
-
-								PhysApplyForce (obj0P, &vForce);
-								PhysApplyRot (obj0P, &vForce2);
-								if (gameStates.app.nDifficultyLevel == 0)
-									damage /= 4;
-								if (obj0P->shields >= 0)
-									ApplyDamageToPlayer (obj0P, killer, damage);
-							}
-								break;
-
-							default:
-								Int3 ();	//	Illegal tObject nType
-						}	// end switch
-					} else {
-						;
-					}	// end if (ObjectToObjectVisibility...
-				}	// end if (dist < maxdistance)
-			}
-			obj0P++;
-		}	// end for
-	}	// end if (maxdamage...
-
+if (xMaxDamage <= 0)
 	return explObjP;
+// -- now legal for xBadAss explosions on a tWall. Assert (objP != NULL);
+for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, obj0P++) {
+	t = obj0P->nType;
+	id = obj0P->id;
+	//	Weapons used to be affected by xBadAss explosions, but this introduces serious problems.
+	//	When a smart bomb blows up, if one of its children goes right towards a nearby tWall, it will
+	//	blow up, blowing up all the children.  So I remove it.  MK, 09/11/94
+	if (obj0P == objP)
+		continue;
+	if (obj0P->flags & OF_SHOULD_BE_DEAD)
+		continue;
+	if (t == OBJ_WEAPON) {
+		if ((id != PROXMINE_ID) && (id != SMARTMINE_ID) && (id != SMALLMINE_ID)) 
+		continue;
+		}
+	else if (t == OBJ_ROBOT) {
+		if (nParent < 0)
+			continue;
+		if ((gameData.objs.objects [nParent].nType == OBJ_ROBOT) && (gameData.objs.objects [nParent].id == id))
+			continue;
+		}
+	else if ((t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER))
+		continue;
+	dist = VmVecDistQuick (&obj0P->position.vPos, &explObjP->position.vPos);
+	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
+	if (dist >= xMaxDistance)
+		continue;
+	if (!ObjectToObjectVisibility (explObjP, obj0P, FQ_TRANSWALL))
+		continue;
+	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
+	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
+	// Find the force vector on the tObject
+	VmVecNormalizedDirQuick (&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
+	VmVecScale (&vForce, force);
+	// Find where the point of impact is... (pos_hit)
+	VmVecSub (&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
+	VmVecScale (&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
+	if (t == OBJ_WEAPON) {
+		PhysApplyForce (obj0P, &vForce);
+		if (((id == PROXMINE_ID) || (id == SMARTMINE_ID)) && (FixMul (dist, force) > i2f (8000))) {	//prox bombs have chance of blowing up
+			KillObject (obj0P);
+			ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
+			}
+		}
+	else if (t == OBJ_ROBOT) {
+		vmsVector	vNegForce;
+		fix			xScale = -2 * (7 - gameStates.app.nDifficultyLevel) / 8;
+
+		PhysApplyForce (obj0P, &vForce);
+		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
+		if (objP && (!ROBOTINFO (obj0P->id).bossFlag) && (gameData.weapons.info [objP->id].flash)) {
+			tAIStatic	*aip = &obj0P->cType.aiInfo;
+			int			force_val = f2i (FixDiv (VmVecMagQuick (&vForce) * gameData.weapons.info [objP->id].flash, gameData.time.xFrame)/128) + 2;
+
+			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= F1_0) 
+				aip->SKIP_AI_COUNT--;
+			else {
+				aip->SKIP_AI_COUNT += force_val;
+				obj0P->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;
+				obj0P->mType.physInfo.rotThrust.p.y = ((d_rand () - 16384) * force_val)/16;
+				obj0P->mType.physInfo.rotThrust.p.z = ((d_rand () - 16384) * force_val)/16;
+				obj0P->mType.physInfo.flags |= PF_USES_THRUST;
+				}
+			}
+		vNegForce.p.x = vForce.p.x * xScale;
+		vNegForce.p.y = vForce.p.y * xScale;
+		vNegForce.p.z = vForce.p.z * xScale;
+		PhysApplyRot (obj0P, &vNegForce);
+		if (obj0P->shields >= 0) {
+			if (ROBOTINFO (obj0P->id).bossFlag &&
+				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (obj0P->id).bossFlag-BOSS_D2].bInvulKinetic)
+				damage /= 4;
+			if (ApplyDamageToRobot (obj0P, damage, nParent) && objP && (nParent == LOCALPLAYER.nObject))
+				AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
+			}
+		if (objP && (ROBOTINFO (obj0P->id).companion) && (!gameData.weapons.info [objP->id].flash)) {
+			int	i, count;
+			char	szOuch [6*4 + 2];
+
+			count = f2i (damage / 8);
+			if (count > 4)
+				count = 4;
+			else if (count <= 0)
+				count = 1;
+			szOuch [0] = 0;
+			for (i = 0; i < count; i++) {
+				strcat (szOuch, TXT_BUDDY_OUCH);
+				strcat (szOuch, " ");
+				}
+			BuddyMessage (szOuch);
+			}
+		else if (t == OBJ_CNTRLCEN) {
+			if (obj0P->shields >= 0)
+				ApplyDamageToReactor (obj0P, damage, nParent);
+			}
+		else if (t == OBJ_PLAYER) {
+			tObject		*killerP = NULL;
+			vmsVector	vForce2;
+
+			//	Hack!Warning!Test code!
+			if (objP && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
+				int fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
+				if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
+					fe /= 2;
+					force /= 2;
+					}
+				if (force > F1_0) {
+					gameData.render.xFlashEffect = fe;
+					PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
+#if TRACE
+					con_printf (CONDBG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
+#endif
+					}
+				}
+			if (objP && IsMultiGame && (objP->nType == OBJ_PLAYER))
+				killerP = objP;
+			vForce2 = vForce;
+			if (nParent > -1) {
+				killerP = gameData.objs.objects + nParent;
+				if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
+					vForce2.p.x /= 2;	
+					vForce2.p.y /= 2;	
+					vForce2.p.z /= 2;
+				}
+			vForce2.p.x /= 2;	
+			vForce2.p.y /= 2;	
+			vForce2.p.z /= 2;
+			PhysApplyForce (obj0P, &vForce);
+			PhysApplyRot (obj0P, &vForce2);
+			if (gameStates.app.nDifficultyLevel == 0)
+				damage /= 4;
+			if (obj0P->shields >= 0)
+				ApplyDamageToPlayer (obj0P, killerP, damage);
+			}
+		}
+	}
+return explObjP;
 }
 
 //------------------------------------------------------------------------------
@@ -332,11 +298,11 @@ return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0
 tObject *ObjectCreateBadassExplosion (tObject *objP, short nSegment, vmsVector *position, fix size, ubyte nVClip, 
 												  fix maxDamage, fix maxDistance, fix maxForce, short parent)
 {
-	tObject	*rval = ObjectCreateExplosionSub (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
+	tObject	*explObjP = ObjectCreateExplosionSub (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 
-if ((objP != NULL) && (objP->nType == OBJ_WEAPON))
+if (objP && (objP->nType == OBJ_WEAPON))
 	CreateSmartChildren (objP, NUM_SMART_CHILDREN);
-return rval;
+return explObjP;
 }
 
 //------------------------------------------------------------------------------

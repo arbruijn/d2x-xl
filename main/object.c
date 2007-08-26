@@ -317,6 +317,7 @@ orientation = global_orientation;
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
+	OglLoadBmTexture (bmP, 1, 1);
 	bmP = BM_OVERRIDE (bmP);
 	if (BM_FRAMES (bmP))
 		bmP = BM_FRAMES (bmP) + iFrame;
@@ -4712,29 +4713,22 @@ void ClearTransientObjects (int clear_all)
 
 //------------------------------------------------------------------------------
 //attaches an tObject, such as a fireball, to another tObject, such as a robot
-void AttachObject (tObject *parent, tObject *sub)
+void AttachObject (tObject *parentObjP, tObject *childObjP)
 {
-	Assert (sub->nType == OBJ_FIREBALL);
-	Assert (sub->controlType == CT_EXPLOSION);
-
-	Assert (sub->cType.explInfo.nNextAttach==-1);
-	Assert (sub->cType.explInfo.nPrevAttach==-1);
-
-	Assert (parent->attachedObj == -1 || 
-			 gameData.objs.objects [parent->attachedObj].cType.explInfo.nPrevAttach==-1);
-
-	sub->cType.explInfo.nNextAttach = parent->attachedObj;
-
-	if (sub->cType.explInfo.nNextAttach != -1)
-		gameData.objs.objects [sub->cType.explInfo.nNextAttach].cType.explInfo.nPrevAttach = OBJ_IDX (sub);
-
-	parent->attachedObj = OBJ_IDX (sub);
-
-	sub->cType.explInfo.nAttachParent = OBJ_IDX (parent);
-	sub->flags |= OF_ATTACHED;
-
-	Assert (sub->cType.explInfo.nNextAttach != OBJ_IDX (sub));
-	Assert (sub->cType.explInfo.nPrevAttach != OBJ_IDX (sub));
+Assert (childObjP->nType == OBJ_FIREBALL);
+Assert (childObjP->controlType == CT_EXPLOSION);
+Assert (childObjP->cType.explInfo.nNextAttach==-1);
+Assert (childObjP->cType.explInfo.nPrevAttach==-1);
+Assert (parentObjP->attachedObj == -1 || 
+			gameData.objs.objects [parentObjP->attachedObj].cType.explInfo.nPrevAttach==-1);
+childObjP->cType.explInfo.nNextAttach = parentObjP->attachedObj;
+if (childObjP->cType.explInfo.nNextAttach != -1)
+	gameData.objs.objects [childObjP->cType.explInfo.nNextAttach].cType.explInfo.nPrevAttach = OBJ_IDX (childObjP);
+parentObjP->attachedObj = OBJ_IDX (childObjP);
+childObjP->cType.explInfo.nAttachParent = OBJ_IDX (parentObjP);
+childObjP->flags |= OF_ATTACHED;
+Assert (childObjP->cType.explInfo.nNextAttach != OBJ_IDX (childObjP));
+Assert (childObjP->cType.explInfo.nPrevAttach != OBJ_IDX (childObjP));
 }
 
 //------------------------------------------------------------------------------
