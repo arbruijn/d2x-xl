@@ -117,10 +117,6 @@ tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPo
 	vmsVector	pos_hit, vForce;
 	int			i, t, id;
 
-#ifdef _DEBUG
-if (nVClip != 2)
-	return NULL;
-#endif
 nObject = CreateObject (OBJ_FIREBALL, nVClip, -1, nSegment, vPos, &vmdIdentityMatrix, xSize, 
 							   CT_EXPLOSION, MT_NONE, RT_FIREBALL, 1);
 
