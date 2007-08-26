@@ -284,6 +284,8 @@ if (bmpShield) {
 
 //------------------------------------------------------------------------------
 
+void FreeDeadzone ();
+
 void FreeExtraImages (void)
 {
 FreeCorona ();

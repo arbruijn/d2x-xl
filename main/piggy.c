@@ -321,6 +321,8 @@ int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP, int alpha,
 	int				i, j, n, nFrames, nBytes = ph->bits / 8;
 	int				h = bmP->bm_props.h;
 	int				w = bmP->bm_props.w;
+	tRgbColorf		avgColor;
+	float				a;
 
 if (!(bmP->bm_texBuf || (bmP->bm_texBuf = D2_ALLOC (ph->height * w * nBytes))))
 	 return 0;
@@ -332,6 +334,7 @@ if (!bmP->bm_texBuf) {
 bmP->bm_bpp = nBytes;
 memset (bmP->bm_transparentFrames, 0, sizeof (bmP->bm_transparentFrames));
 memset (bmP->bm_supertranspFrames, 0, sizeof (bmP->bm_supertranspFrames));
+avgColor.red = avgColor.green = avgColor.blue = 0;
 if (ph->bits == 24) {
 	tBGRA	c;
 	tRgbColorb *p = ((tRgbColorb *) (bmP->bm_texBuf)) + w * (bmP->bm_props.h - 1);
@@ -350,6 +353,9 @@ if (ph->bits == 24) {
 				p->green = (ubyte) (c.g * brightness);
 				p->blue = (ubyte) (c.b * brightness);
 				}
+			avgColor.red += p->red;
+			avgColor.green += p->green;
+			avgColor.blue += p->blue;
 			//p->alpha = (alpha < 0) ? 255 : alpha;
 			}
 		p -= 2 * w;
@@ -405,6 +411,10 @@ else if (bReverse) {
 				if (bmP)
 					bmP->bm_transparentFrames [n / 32] |= (1 << (n % 32));
 				}
+			a = (float) p->alpha / 255;
+			avgColor.red += p->red * a;
+			avgColor.green += p->green * a;
+			avgColor.blue += p->blue * a;
 			}
 		}
 	}	
@@ -457,10 +467,18 @@ else {
 					bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
 				bmP->bm_transparentFrames [n / 32] |= (1 << (n % 32));
 				}
+			a = (float) p->alpha / 255;
+			avgColor.red += p->red * a;
+			avgColor.green += p->green * a;
+			avgColor.blue += p->blue * a;
 			}
 		p -= 2 * w;
 		}
 	}	
+a = (float) (h * w);
+bmP->bm_avgRGB.red = (ubyte) (avgColor.red / a);
+bmP->bm_avgRGB.green = (ubyte) (avgColor.green / a);
+bmP->bm_avgRGB.blue = (ubyte) (avgColor.blue / a);
 return 1;
 }
 

@@ -514,36 +514,44 @@ switch (nObjType) {
 		else {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
 			fix xLight = vcP->lightValue;
-#if 1
 			int i, j;
 			grsBitmap *bmP;
-			color->red =
-			color->green =
-			color->blue = 0.0f;
-			for (i = j = 0; i < vcP->nFrameCount; i++) {
-				bmP = gameData.pig.tex.pBitmaps + vcP->frames [i].index;
-				if (bmP->bm_avgRGB.red + bmP->bm_avgRGB.green + bmP->bm_avgRGB.blue == 0)
-					if (!BitmapColor (bmP, bmP->bm_texBuf))
-						continue;
-				color->red += (float) bmP->bm_avgRGB.red / 255.0f;
-				color->green += (float) bmP->bm_avgRGB.green / 255.0f;
-				color->blue += (float) bmP->bm_avgRGB.blue / 255.0f;
-				j++;
+			if (bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index)) {
+				color->red = (float) bmP->bm_avgRGB.red;
+				color->green = (float) bmP->bm_avgRGB.green;
+				color->blue = (float) bmP->bm_avgRGB.blue;
+				*pbGotColor = 1;
 				}
-			if (j) {
-				color->red /= j;
-				color->green /= j;
-				color->blue /= j;
-				}
-			else 
-#else
-				{
-				color->red = 0.75f;
-				color->green = 0.15f;
+			else {
+#if 1
+				color->red =
+				color->green =
 				color->blue = 0.0f;
-				}
+				for (i = j = 0; i < vcP->nFrameCount; i++) {
+					bmP = gameData.pig.tex.pBitmaps + vcP->frames [i].index;
+					if (bmP->bm_avgRGB.red + bmP->bm_avgRGB.green + bmP->bm_avgRGB.blue == 0)
+						if (!BitmapColor (bmP, bmP->bm_texBuf))
+							continue;
+					color->red += (float) bmP->bm_avgRGB.red / 255.0f;
+					color->green += (float) bmP->bm_avgRGB.green / 255.0f;
+					color->blue += (float) bmP->bm_avgRGB.blue / 255.0f;
+					j++;
+					}
+				if (j) {
+					color->red /= j;
+					color->green /= j;
+					color->blue /= j;
+					}
+				else 
+#else
+					{
+					color->red = 0.75f;
+					color->green = 0.15f;
+					color->blue = 0.0f;
+					}
 #endif
-			*pbGotColor = 1;
+				*pbGotColor = 1;
+				}
 #if 0
 			if (objP->renderType != RT_THRUSTER)
 				xLight /= 8;
