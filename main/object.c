@@ -2073,7 +2073,7 @@ return 0;
 
 #define EXPAND_CORONA	2
 
-void RenderObjectCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset)
+void RenderLaserCorona (tObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -2083,6 +2083,124 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
+	int			bStencil, i;
+	float			a1, a2;
+	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
+	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	float			fLength = f2fl (phb->vMax.p.z - phb->vMin.p.z) / 2;
+	float			fRad = f2fl (phb->vMax.p.x - phb->vMin.p.x) / 2;
+
+	static fVector	vEye = {{0, 0, 0}};
+	static tUVLf	uvlCorona [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+
+	if (bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
+		glDisable (GL_STENCIL_TEST);
+	glDepthMask (0);
+	glEnable (GL_TEXTURE_2D);
+	if (OglBindBmTex (bmpCorona, 1, -1)) 
+		return;
+	OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+	colorP->alpha = alpha;
+	glColor4fv ((GLfloat *) colorP);
+	VmsVecToFloat (&vDir, &objP->position.mOrient.fVec);
+	VmsVecToFloat (&vPos, &objP->position.vPos);
+	VmVecScaleAddf (vCorona, &vPos, &vDir, fScale * fLength);
+	vh [4] = vCorona [0];
+	VmVecScaleAddf (vCorona + 3, &vPos, &vDir, -fScale * fLength);
+	G3TransformPointf (&vPos, &vPos, 0);
+	G3TransformPointf (vCorona, vCorona, 0);
+	G3TransformPointf (vCorona + 3, vCorona + 3, 0);
+	VmVecNormalf (&vNorm, &vPos, vCorona, &vEye);
+	fScale *= fRad * 2;
+	VmVecScaleIncf3 (vCorona, &vNorm, fScale);
+	VmVecScaleAddf (vCorona + 1, vCorona, &vNorm, -2 * fScale);
+	VmVecScaleIncf3 (vCorona + 3, &vNorm, fScale);
+	VmVecScaleAddf (vCorona + 2, vCorona + 3, &vNorm, -2 * fScale);
+	VmVecNormalf (&vNorm, vCorona, vCorona + 1, vCorona + 2);
+	VmVecScaleAddf (vh, vCorona, vCorona + 1, 0.5f);
+	VmVecScaleAddf (vh + 2, vCorona + 3, vCorona + 2, 0.5f);
+	VmVecScaleAddf (vh + 1, &vPos, &vNorm, fScale);
+	VmVecScaleAddf (vh + 3, &vPos, &vNorm, -fScale);
+	for (i = 0; i < 4; i++)
+		VmVecNormalizef (vh + i, vh + i);
+	a1 = (float) fabs (VmVecDotf (vh + 2, vh));
+	a2 = (float) fabs (VmVecDotf (vh + 3, vh + 1));
+#if 0
+	HUDMessage (0, "%1.2f %1.2f", a1, a2);
+	glLineWidth (2);
+	glColor4d (1,1,1,1);
+	glDisable (GL_TEXTURE_2D);
+	glBegin (GL_LINES);
+	for (i = 1; i < 3; i++)
+		glVertex3fv ((GLfloat *) (vh + i));
+	glEnd ();
+	glLineWidth (1);
+	glColor4fv ((GLfloat *) colorP);
+#endif
+	if (a2 < a1) {
+#if 0
+		VmVecNormalf (&vNorm, vh + 1, vh + 3, vh + 4);
+		VmVecScaleAddf (vh, &vPos, &vNorm, fScale);
+		VmVecScaleAddf (vh + 2, &vPos, &vNorm, -fScale);
+		glBegin (GL_QUADS);
+		for (i = 0; i < 4; i++) {
+			glTexCoord2fv ((GLfloat *) (uvlCorona + i));
+			glVertex3fv ((GLfloat *) (vh + i));
+			}
+		glEnd ();
+#	if 1
+		glLineWidth (2);
+		glColor4d (1,1,1,1);
+		glDisable (GL_TEXTURE_2D);
+		glBegin (GL_LINE_LOOP);
+		for (i = 0; i < 4; i++)
+			glVertex3fv ((GLfloat *) (vh + i));
+		glEnd ();
+		glLineWidth (1);
+#	endif
+#else
+		fix xSize = fl2f (fScale);
+		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpCorona, colorP, alpha);
+#endif
+		}
+	else {
+		glBegin (GL_QUADS);
+		for (i = 0; i < 4; i++) {
+			glTexCoord2fv ((GLfloat *) (uvlCorona + i));
+			glVertex3fv ((GLfloat *) (vCorona + i));
+			}
+		glEnd ();
+#if 0
+		glLineWidth (2);
+		glColor4d (1,1,1,1);
+		glDisable (GL_TEXTURE_2D);
+		glBegin (GL_LINE_LOOP);
+		for (i = 0; i < 4; i++)
+			glVertex3fv ((GLfloat *) (vCorona + i));
+		glEnd ();
+		glLineWidth (1);
+#endif
+		}
+	glDepthMask (1);
+	if (bStencil)
+		glEnable (GL_STENCIL_TEST);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RenderObjectCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset)
+{
+if (!SHOW_OBJ_FX)
+	return;
+#if SHADOWS
+if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
+//	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
+	return;
+#endif
+if (objP->nType == OBJ_WEAPON)
+	RenderLaserCorona (objP, colorP, alpha, fScale);
+else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 
