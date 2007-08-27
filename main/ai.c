@@ -1483,7 +1483,7 @@ if (!gameData.ai.nPlayerVisibility) {
 
 funcExit:
 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 HUDMessage (0, "%s %s %d %d %d", 
 				state_text [aip->flags [1]], state_text [aip->flags [2]],
 				gameData.ai.xDistToPlayer / F1_0, 
