@@ -1901,7 +1901,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glDisable (GL_CULL_FACE);
 	glColor3f (c, c, c);
 	fLength *= 4 * fSize;
-	fSize *= (objP->nType == OBJ_WEAPON) ? 1.5f : 1.25f;
+	fSize *= 2;
 #if 1
 	if (!mtP)
 		VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
@@ -2198,7 +2198,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (objP->nType == OBJ_WEAPON)
+if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
 else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	int			bStencil;
@@ -2778,10 +2778,10 @@ switch (objP->renderType) {
 			else {
 
 #if 1//def RELEASE
-				DrawPolygonObject (objP);
 #endif
 				if (bIsMissile [objP->id]) {
-#ifdef _DEBUG
+					DrawPolygonObject (objP);
+#if 0//def _DEBUG
 #	if 0
 					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #	else
@@ -2791,15 +2791,19 @@ switch (objP->renderType) {
 					RenderThrusterFlames (objP);
 					}
 				else {
-#ifdef _DEBUG
+#if 0//def _DEBUG
 #	if 0
 					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #	else
 					RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #	endif
 #endif
+					if (objP->nType != OBJ_WEAPON)
+						DrawPolygonObject (objP);
 					if (objP->id != SMALLMINE_ID)
 						RenderLightTrail (objP);
+					if (objP->nType == OBJ_WEAPON)
+						DrawPolygonObject (objP);
 					}
 				}
 			}
