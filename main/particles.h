@@ -31,6 +31,7 @@ typedef struct tParticle {
 	int			nWidth;
 	int			nHeight;
 	int			nRad;
+	int			bDir;
 	short			nSegment;
 	tRgbaColord	color;			//well ... the color, ya know =)
 } tParticle;
@@ -48,9 +49,12 @@ typedef struct tCloud {
 	int			nParts;			//curent no. of particles
 	int			nMaxParts;		//max. no. of particles
 	int			nDensity;		//density (opaqueness) of smoke cloud
+	float			fPartsPerTick;
+	int			nTicks;
 	int			nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
 	int			nPartLimit;		//highest max. part. no ever set for this cloud
 	float			nPartScale;
+	int			nDefBrightness;
 	double		brightness;
 	int			nMoved;			//time last moved
 	short			nSegment;
@@ -94,6 +98,7 @@ void SetSmokeDir (int i, vmsVector *pDir);
 void SetSmokeLife (int i, int nLife);
 void SetSmokeType (int i, int nType);
 void SetSmokeSpeed (int i, int nSpeed);
+void SetSmokeBrightness (int i, int nBrightness);
 tCloud *GetCloud (int i, int j);
 int GetSmokeType (int i);
 void FreeParticleImages (void);

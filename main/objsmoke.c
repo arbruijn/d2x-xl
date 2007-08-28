@@ -42,7 +42,7 @@
 #define DEBRIS_PART_LIFE			-2000
 #define DEBRIS_PART_SPEED			30
 
-#define STATIC_SMOKE_MAX_PARTS	100
+#define STATIC_SMOKE_MAX_PARTS	500
 #define STATIC_SMOKE_PART_LIFE	-3200
 #define STATIC_SMOKE_PART_SPEED	1000
 
@@ -494,23 +494,40 @@ else
 
 void DoStaticSmoke (tObject *objP)
 {
-	int			nLife, nParts, nSpeed, nSize, nDrift, i, j;
+	int			nLife, nParts, nSpeed, nSize, nDrift, nBrightness, i, j;
 	vmsVector	pos, offs, dir;
 	tTrigger		*trigP;
 
-if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic))
+if (!SHOW_SMOKE)
 	return;
-objP->renderType = RT_NONE;
 i = (int) OBJ_IDX (objP);
+if (!gameOpts->render.smoke.bStatic) {
+	if (gameData.smoke.objects [i] >= 0)
+		KillObjectSmoke (i);
+	return;
+	}
+objP->renderType = RT_NONE;
 if (gameData.smoke.objects [i] < 0) {
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
+	j = (trigP && trigP->value) ? trigP->value : 5;
+#if 1
+	nLife = (j * (j + 1)) / 2;
+#else
 	nLife = (trigP && trigP->value) ? trigP->value : 5;
+#endif
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_BRIGHTNESS, -1);
+	nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
 	j = (trigP && trigP->value) ? trigP->value : 5;
-	for (nSpeed = 0; j; j--)
-		nSpeed += j;
+#if 1
+	nSpeed = (j * (j + 1)) / 2;
+#else
+	nSpeed = j;
+#endif
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
-	nParts = (trigP && trigP->value) ? trigP->value * 25 : STATIC_SMOKE_MAX_PARTS;
+	nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
+	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
+	nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : nSpeed * 50;
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
 	j = (trigP && trigP->value) ? trigP->value : 5;
 	if (gameOpts->render.smoke.bDisperse)
@@ -518,12 +535,11 @@ if (gameData.smoke.objects [i] < 0) {
 			nSize += j;
 	else
 		nSize = j + 1;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
-	nDrift = (trigP && trigP->value) ? trigP->value * 200 : nSpeed * 50;
-	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, F1_0 * nSpeed);
+	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, nSpeed * 2 * F1_0 / 55);
 	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, &dir, 
 															objP->nSegment, 1, -nParts, -PARTICLE_SIZE (nSize, 2.0f), 
 															-1, 3, STATIC_SMOKE_PART_LIFE * nLife, nDrift, 2, i, NULL);
+	SetSmokeBrightness (gameData.smoke.objects [i], nBrightness);
 	}
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
 i = (trigP && trigP->value) ? trigP->value * 3 : 15;
@@ -609,8 +625,6 @@ void StaticSmokeFrame (void)
 	int		i;
 
 if (!SHOW_SMOKE)
-	return;
-if (!gameOpts->render.smoke.bStatic)
 	return;
 for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
 	if (objP->nType == OBJ_SMOKE)
