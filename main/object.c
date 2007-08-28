@@ -1814,6 +1814,8 @@ else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) || ((objP->nT
 		VmVecRotate (vDir + i, mtP->vDir + i, &m);
 		}
 	fSize = mtP->fSize;
+	if ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id] && (nThrusters > 1))
+		nThrusters = 1;
 	}
 else
 	return;
@@ -1901,7 +1903,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	glDisable (GL_CULL_FACE);
 	glColor3f (c, c, c);
 	fLength *= 4 * fSize;
-	fSize *= 2;
+	fSize *= 1.5f;
 #if 1
 	if (!mtP)
 		VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);

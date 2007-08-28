@@ -229,6 +229,10 @@ else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
 			}
+		if (!(objP->mType.physInfo.thrust.p.x ||
+				objP->mType.physInfo.thrust.p.y ||
+				objP->mType.physInfo.thrust.p.z))
+			nScale /= 2;
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating tPlayer smoke\n");
 			h = gameData.smoke.objects [j] = 

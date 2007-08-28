@@ -204,7 +204,7 @@ if (norms)
 	norms += o;
 while (n--) {
 	if (gameStates.ogl.bUseTransform) {
-		fScale = f2fl (gameData.models.nScale) / 65536.0f;
+		fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
 		pfv->p.x = (float) src->p.x * fScale;
 		pfv->p.y = (float) src->p.y * fScale;
 		pfv->p.z = (float) src->p.z * fScale;
@@ -228,20 +228,21 @@ while (n--) {
 #endif
 		dest->p3_normal.nFaces = 0;
 	if (gameData.models.nScale) {
-		vmsVector v = *src++;
+		vmsVector v = *src;
 		VmVecScale (&v, gameData.models.nScale);
 		G3TransformAndEncodePoint (dest++, &v);
 		}
 	else
-		G3TransformAndEncodePoint (dest++, src++);
+		G3TransformAndEncodePoint (dest++, src);
 	if (!gameStates.ogl.bUseTransform) {
-		fScale = f2fl (gameData.models.nScale) / 65536.0f;
+		fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
 		pfv->p.x = (float) src->p.x * fScale;
 		pfv->p.y = (float) src->p.y * fScale;
 		pfv->p.z = (float) src->p.z * fScale;
 		dest->p3_index = o++;
 		pfv++;
 		}
+	src++;
 	}
 }
 
@@ -2297,7 +2298,7 @@ for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
 v.p.x /= nPoints;
 v.p.y /= nPoints;
 v.p.z /= nPoints;
-v.p.z -= F1_0 / 8;
+v.p.z -= F1_0 / 64;
 if (vOffset)
 	VmVecInc (&v, vOffset);
 if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
@@ -2423,7 +2424,8 @@ for (;;) {
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
 			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
-			GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
+			if (!objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id])))
+				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
 			}
 		else
 			p += 30;
