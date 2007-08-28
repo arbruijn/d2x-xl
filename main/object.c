@@ -2223,7 +2223,7 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	glDepthMask (0);
 	if (bSimple) {
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						1, colorP, alpha, 1, 1);
+						  1, colorP, alpha, 1, 1);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
@@ -2443,6 +2443,8 @@ static fVector vTrailVerts [2][4] = {{{{0,0,0}},{{0,-1,-5}},{{0,-1,-50}},{{0,0,-
 
 void RenderLightTrail (tObject *objP)
 {
+	tRgbaColorf		c, *pc;
+
 if (!SHOW_OBJ_FX)
 	return;
 if (!bIsWeapon [objP->id])
@@ -2452,6 +2454,16 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
+if (objP->renderType == RT_POLYOBJ)
+	pc = gameData.weapons.color + objP->id;
+else {
+	tRgbColorb	*pcb = VClipColor (objP);
+	c.red = pcb->red / 255.0f;
+	c.green = pcb->green / 255.0f;
+	c.blue = pcb->blue / 255.0f;
+	pc = &c;
+	}
+
 if (!bSlowWeapon [objP->id]) {
 	if (gameOpts->render.smoke.bPlasmaTrails)
 		DoObjectSmoke (objP);
@@ -2462,8 +2474,7 @@ if (!bSlowWeapon [objP->id]) {
 			fVector			vPosf, *vTrail;
 			int				i, j, bStencil;
 			float				h, r = f2fl (objP->size);
-			tRgbaColorf		*pc = gameData.weapons.color + objP->id;
-
+			
 		if (r <= 1)
 			h = 1;
 		else if (r >= 3)
@@ -2526,9 +2537,9 @@ if (!bSlowWeapon [objP->id]) {
 	RenderShockwave (objP);
 	}
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
-	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.5f, 0, 3, 1, 0);
+	RenderObjectCorona (objP, pc, 0.5f, 0, 3, 1, 0);
 else
-	RenderObjectCorona (objP, gameData.weapons.color + objP->id, 0.75f, 0, 3, 0, 0);
+	RenderObjectCorona (objP, pc, 0.75f, 0, 3, 0, 0);
 }
 
 // -----------------------------------------------------------------------------

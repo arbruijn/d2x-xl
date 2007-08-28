@@ -227,49 +227,49 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 				}
 			BuddyMessage (szOuch);
 			}
-		else if (t == OBJ_CNTRLCEN) {
-			if (obj0P->shields >= 0)
-				ApplyDamageToReactor (obj0P, damage, nParent);
-			}
-		else if (t == OBJ_PLAYER) {
-			tObject		*killerP = NULL;
-			vmsVector	vForce2;
+		}
+	else if (t == OBJ_CNTRLCEN) {
+		if (obj0P->shields >= 0)
+			ApplyDamageToReactor (obj0P, damage, nParent);
+		}
+	else if (t == OBJ_PLAYER) {
+		tObject		*killerP = NULL;
+		vmsVector	vForce2;
 
-			//	Hack!Warning!Test code!
-			if (objP && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
-				int fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
-				if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
-					fe /= 2;
-					force /= 2;
-					}
-				if (force > F1_0) {
-					gameData.render.xFlashEffect = fe;
-					PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
+		//	Hack!Warning!Test code!
+		if (objP && gameData.weapons.info [objP->id].flash && obj0P->id==gameData.multiplayer.nLocalPlayer) {
+			int fe = min (F1_0*4, force*gameData.weapons.info [objP->id].flash/32);	//	For four seconds or less
+			if (objP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
+				fe /= 2;
+				force /= 2;
+				}
+			if (force > F1_0) {
+				gameData.render.xFlashEffect = fe;
+				PALETTE_FLASH_ADD (PK1 + f2i (PK2*force), PK1 + f2i (PK2*force), PK1 + f2i (PK2*force));
 #if TRACE
-					con_printf (CONDBG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
+				con_printf (CONDBG, "force = %7.3f, adding %i\n", f2fl (force), PK1 + f2i (PK2*force));
 #endif
-					}
 				}
-			if (objP && IsMultiGame && (objP->nType == OBJ_PLAYER))
-				killerP = objP;
-			vForce2 = vForce;
-			if (nParent > -1) {
-				killerP = gameData.objs.objects + nParent;
-				if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
-					vForce2.p.x /= 2;	
-					vForce2.p.y /= 2;	
-					vForce2.p.z /= 2;
-				}
-			vForce2.p.x /= 2;	
-			vForce2.p.y /= 2;	
-			vForce2.p.z /= 2;
-			PhysApplyForce (obj0P, &vForce);
-			PhysApplyRot (obj0P, &vForce2);
-			if (gameStates.app.nDifficultyLevel == 0)
-				damage /= 4;
-			if (obj0P->shields >= 0)
-				ApplyDamageToPlayer (obj0P, killerP, damage);
 			}
+		if (objP && IsMultiGame && (objP->nType == OBJ_PLAYER))
+			killerP = objP;
+		vForce2 = vForce;
+		if (nParent > -1) {
+			killerP = gameData.objs.objects + nParent;
+			if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
+				vForce2.p.x /= 2;	
+				vForce2.p.y /= 2;	
+				vForce2.p.z /= 2;
+			}
+		vForce2.p.x /= 2;	
+		vForce2.p.y /= 2;	
+		vForce2.p.z /= 2;
+		PhysApplyForce (obj0P, &vForce);
+		PhysApplyRot (obj0P, &vForce2);
+		if (gameStates.app.nDifficultyLevel == 0)
+			damage /= 4;
+		if (obj0P->shields >= 0)
+			ApplyDamageToPlayer (obj0P, killerP, damage);
 		}
 	}
 return explObjP;

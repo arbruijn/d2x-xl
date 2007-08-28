@@ -318,7 +318,7 @@ return 1;
 int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
-	int				i, j, n, nFrames, nBytes = ph->bits / 8;
+	int				i, j, n, nVisible = 0, nFrames, nBytes = ph->bits / 8;
 	int				h = bmP->bm_props.h;
 	int				w = bmP->bm_props.w;
 	tRgbColorf		avgColor;
@@ -359,6 +359,7 @@ if (ph->bits == 24) {
 			//p->alpha = (alpha < 0) ? 255 : alpha;
 			}
 		p -= 2 * w;
+		nVisible = w * h * 255;
 		}
 	}
 else if (bReverse) {
@@ -411,6 +412,7 @@ else if (bReverse) {
 				if (bmP)
 					bmP->bm_transparentFrames [n / 32] |= (1 << (n % 32));
 				}
+			nVisible += p->alpha;
 			a = (float) p->alpha / 255;
 			avgColor.red += p->red * a;
 			avgColor.green += p->green * a;
@@ -467,6 +469,7 @@ else {
 					bmP->bm_props.flags |= BM_FLAG_TRANSPARENT;
 				bmP->bm_transparentFrames [n / 32] |= (1 << (n % 32));
 				}
+			nVisible += p->alpha;
 			a = (float) p->alpha / 255;
 			avgColor.red += p->red * a;
 			avgColor.green += p->green * a;
@@ -475,7 +478,7 @@ else {
 		p -= 2 * w;
 		}
 	}	
-a = (float) (h * w);
+a = (float) nVisible / 255.0f;
 bmP->bm_avgRGB.red = (ubyte) (avgColor.red / a);
 bmP->bm_avgRGB.green = (ubyte) (avgColor.green / a);
 bmP->bm_avgRGB.blue = (ubyte) (avgColor.blue / a);
@@ -2139,7 +2142,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "exp18")) {
+	if (strstr (bmName, "plas")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}

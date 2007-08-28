@@ -125,27 +125,10 @@ char *pszPowerup [MAX_POWERUP_TYPES] = {
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 {
 	static fix	xPowerupTime = 0;
-	int			h, nFrames = vcP->nFrameCount;
+	int			h, nFrames = SetupHiresVClip (vcP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
-	grsBitmap	*bmP;
 	
 xPowerupTime += gameData.physics.xTime;
-
-if (vcP->flags & WCF_ALTFMT) {
-	if (vcP->flags & WCF_INITIALIZED) {
-		bmP = BM_OVERRIDE (gameData.pig.tex.bitmaps [0] + vcP->frames [0].index);
-		nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
-		}
-	else {
-		bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);
-		if (!bmP)
-			vcP->flags &= ~WCF_ALTFMT;
-		else if (!gameOpts->ogl.bGlTexMerge)
-			vcP->flags &= ~WCF_ALTFMT;
-		else 
-			vcP->flags |= WCF_INITIALIZED;
-		}
-	}
 xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
 if ((xTime < 0) && (vcP->xFrameTime > 0)) {
 	h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;

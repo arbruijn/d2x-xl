@@ -52,7 +52,48 @@ iFrame = (pvc->xTotalTime - timeToLive) / pvc->xFrameTime;
 return (iFrame < nFrames) ? iFrame : nFrames - 1;
 }
 
-//----------------- Variables for video clips -------------------
+//------------------------------------------------------------------------------
+
+tRgbColorb *VClipColor (tObject *objP)
+{
+	int				nVClip = gameData.weapons.info [objP->id].nVClipIndex;
+	tVideoClip		*vcP = gameData.eff.vClips [0] + nVClip;
+	tBitmapIndex	bmi = vcP->frames [0];
+	grsBitmap		*bmP;
+
+PIGGY_PAGE_IN (bmi, 0);
+bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))
+	bmP = BM_OVERRIDE (bmP);
+return &bmP->bm_avgRGB;
+}
+
+//------------------------------------------------------------------------------
+
+int SetupHiresVClip (tVideoClip *vcP)
+{
+	int nFrames = vcP->nFrameCount;
+
+if (vcP->flags & WCF_ALTFMT) {
+	grsBitmap	*bmP;
+	if (vcP->flags & WCF_INITIALIZED) {
+		bmP = BM_OVERRIDE (gameData.pig.tex.bitmaps [0] + vcP->frames [0].index);
+		nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
+		}
+	else {
+		bmP = SetupHiresAnim ((short *) vcP->frames, nFrames, -1, 0, 1, &nFrames);
+		if (!bmP)
+			vcP->flags &= ~WCF_ALTFMT;
+		else if (!gameOpts->ogl.bGlTexMerge)
+			vcP->flags &= ~WCF_ALTFMT;
+		else 
+			vcP->flags |= WCF_INITIALIZED;
+		}
+	}
+return nFrames;
+}
+
+//------------------------------------------------------------------------------
 //draw an tObject which renders as a tVideoClip
 
 #define	FIREBALL_ALPHA		0.9
@@ -62,8 +103,8 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 void DrawVClipObject (tObject *objP, fix timeToLive, int lighted, int nVClip, tRgbaColorf *color)
 {
 	double		ta = 0, alpha = 0;
-	tVideoClip	*pvc = gameData.eff.vClips [0] + nVClip;
-	int			nFrames = pvc->nFrameCount;
+	tVideoClip	*vcP = gameData.eff.vClips [0] + nVClip;
+	int			nFrames = SetupHiresVClip (vcP);
 	int			iFrame = CurFrame (nVClip, timeToLive);
 	int			bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
@@ -88,11 +129,11 @@ else if (objP->nType == OBJ_WEAPON) {
 if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 	glDepthMask (0);	//don't set z-buffer for transparent objects
 #endif
-if (pvc->flags & VF_ROD)
-	DrawObjectRodTexPoly (objP, pvc->frames [iFrame], lighted);
+if (vcP->flags & VF_ROD)
+	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], lighted);
 else {
 	Assert(lighted == 0);		//blob cannot now be lighted
-	DrawObjectBlob (objP, pvc->frames [0], pvc->frames [iFrame], iFrame, color, (float) alpha);
+	DrawObjectBlob (objP, vcP->frames [0], vcP->frames [iFrame], iFrame, color, (float) alpha);
 	}
 #if 1
 if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))

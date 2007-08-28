@@ -55,6 +55,8 @@ void DrawVClipObject (tObject *objP, fix timeleft, int lighted, int vclip_num, t
 void DrawWeaponVClip (tObject *objP);
 void DrawExplBlast (tObject *objP);
 void ConvertWeaponToVClip (tObject *objP);
+int SetupHiresVClip (tVideoClip *vcP);
+tRgbColorb *VClipColor (tObject *objP);
 
 #if 0
 #define VClipReadN(vc, n, fp) CFRead(vc, sizeof(tVideoClip), n, fp)

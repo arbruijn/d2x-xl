@@ -460,7 +460,7 @@ fix force_force = i2f (50);
 void CollidePlayerAndWall (tObject * playerObjP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
 	fix damage;
-	char ForceFieldHit=0;
+	char bForceFieldHit = 0;
 	int nBaseTex, nOvlTex;
 
 if (playerObjP->id != gameData.multiplayer.nLocalPlayer) // Execute only for local tPlayer
@@ -485,7 +485,7 @@ if (gameData.pig.tex.pTMapInfo [nBaseTex].flags & TMI_FORCE_FIELD) {
 	DigiLinkSoundToPos (SOUND_FORCEFIELD_BOUNCE_PLAYER, hitseg, 0, vHitPt, 0, f1_0);
 	if (gameData.app.nGameMode & GM_MULTI)
 		MultiSendPlaySound (SOUND_FORCEFIELD_BOUNCE_PLAYER, f1_0);
-	ForceFieldHit=1;
+	bForceFieldHit=1;
 	} 
 else {
 #ifdef TACTILE
@@ -504,7 +504,7 @@ if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [hitseg].special == SEG
 //	** Damage from hitting tWall **
 //	If the tPlayer has less than 10% shields, don't take damage from bump
 // Note: Does quad damage if hit a vForce field - JL
-damage = (hitspeed / DAMAGE_SCALE) * (ForceFieldHit * 8 + 1);
+damage = (hitspeed / DAMAGE_SCALE) * (bForceFieldHit * 8 + 1);
 nOvlTex = gameData.segs.segments [hitseg].sides [hitwall].nOvlTex;
 //don't do tWall damage and sound if hit lava or water
 if ((gameData.pig.tex.pTMapInfo [nBaseTex].flags & (TMI_WATER|TMI_VOLATILE)) || 
@@ -515,13 +515,13 @@ if (damage >= DAMAGE_THRESHOLD) {
 	CreateAwarenessEvent (playerObjP, PA_WEAPON_WALL_COLLISION);
 	if (volume > F1_0)
 		volume = F1_0;
-	if (volume > 0 && !ForceFieldHit) {  // uhhhgly hack
+	if (volume > 0 && !bForceFieldHit) {  // uhhhgly hack
 		DigiLinkSoundToPos (SOUND_PLAYER_HIT_WALL, hitseg, 0, vHitPt, 0, volume);
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendPlaySound (SOUND_PLAYER_HIT_WALL, volume);	
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE))
-		if (LOCALPLAYER.shields > f1_0*10 || ForceFieldHit)
+		if (LOCALPLAYER.shields > f1_0*10 || bForceFieldHit)
 			ApplyDamageToPlayer (playerObjP, playerObjP, damage);
 	}
 return;
@@ -828,18 +828,14 @@ return 1;
 
 // int Show_segAnd_side = 0;
 
-int CollideWeaponAndWall (
-	tObject * weaponP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
+int CollideWeaponAndWall (tObject * weaponP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
 	tSegment *segP = gameData.segs.segments + hitseg;
 	tSide *sideP = segP->sides + hitwall;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->id;
 	tObject *wObjP = gameData.objs.objects + weaponP->cType.laserInfo.nParentObj;
 
-	int bBlewUp;
-	int wallType;
-	int playernum;
-	int robot_escort;
+	int bBlewUp, bEscort, wallType, nPlayer;
 	fix nStrength = WI_strength (weaponP->id, gameStates.app.nDifficultyLevel);
 
 if (weaponP->id == OMEGA_ID)
@@ -886,28 +882,25 @@ if (keyd_pressed [KEY_LAPOSTRO])
 		else if (weaponP->id == FLARE_ID)
 			AddLight (hitseg, hitwall);
 		}
-if ((weaponP->mType.physInfo.velocity.p.x == 0) && 
-	 (weaponP->mType.physInfo.velocity.p.y == 0) && 
-	 (weaponP->mType.physInfo.velocity.p.z == 0)) {
+if (!(weaponP->mType.physInfo.velocity.p.x ||
+	   weaponP->mType.physInfo.velocity.p.y ||
+	   weaponP->mType.physInfo.velocity.p.z)) {
 	Int3 ();	//	Contact Matt: This is impossible.  A weaponP with 0 velocity hit a tWall, which doesn't move.
 	return 1;
 	}
 #endif
 bBlewUp = CheckEffectBlowup (segP, hitwall, vHitPt, weaponP, 0);
 if ((weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && ROBOTINFO (wObjP->id).companion) {
-	robot_escort = 1;
-	if (gameData.app.nGameMode & GM_MULTI) {
+	bEscort = 1;
+	if (IsMultiGame) {
 		Int3 ();  // Get Jason!
 	   return 1;
 	   }	
-	playernum = gameData.multiplayer.nLocalPlayer;		//if single tPlayer, he's the tPlayer's buddy
+	nPlayer = gameData.multiplayer.nLocalPlayer;		//if single tPlayer, he's the tPlayer's buddy
 	}
 else {
-	robot_escort = 0;
-	if (wObjP->nType == OBJ_PLAYER)
-		playernum = wObjP->id;
-	else
-		playernum = -1;		//not a tPlayer (thus a robot)
+	bEscort = 0;
+	nPlayer = (wObjP->nType == OBJ_PLAYER) ? wObjP->id : -1;
 	}
 if (bBlewUp) {		//could be a tWall switch
 	//for tWall triggers, always say that the tPlayer shot it out.  This is
@@ -918,11 +911,10 @@ if (bBlewUp) {		//could be a tWall switch
 	}
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
-wallType = WallHitProcess (segP, hitwall, weaponP->shields, playernum, weaponP);
+wallType = WallHitProcess (segP, hitwall, weaponP->shields, nPlayer, weaponP);
 // Wall is volatile if either tmap 1 or 2 is volatile
 if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_VOLATILE) || 
-		(sideP->nOvlTex && 
-		(gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_VOLATILE))) {
+	 (sideP->nOvlTex && (gameData.pig.tex.pTMapInfo [sideP->nOvlTex].flags & TMI_VOLATILE))) {
 	ubyte tVideoClip;
 	//we've hit a volatile tWall
 	DigiLinkSoundToPos (SOUND_VOLATILE_WALL_HIT, hitseg, 0, vHitPt, 0, F1_0);
@@ -975,9 +967,9 @@ else {
 		//if it's not the tPlayer's weaponP, or it is the tPlayer's and there
 		//is no tWall, and no blowing up monitor, then play sound
 		if ((weaponP->cType.laserInfo.parentType != OBJ_PLAYER) ||	
-				((!IS_WALL (WallNumS (sideP)) || wallType==WHP_NOT_SPECIAL) && !bBlewUp))
-			if ((wInfoP->wall_hitSound > -1) && (!(weaponP->flags & OF_SILENT)))
-			DigiLinkSoundToPos (wInfoP->wall_hitSound, weaponP->nSegment, 0, &weaponP->position.vPos, 0, F1_0);
+			 ((!IS_WALL (WallNumS (sideP)) || wallType == WHP_NOT_SPECIAL) && !bBlewUp))
+			if ((wInfoP->wall_hitSound > -1) && !(weaponP->flags & OF_SILENT))
+				DigiLinkSoundToPos (wInfoP->wall_hitSound, weaponP->nSegment, 0, &weaponP->position.vPos, 0, F1_0);
 		if (wInfoP->wall_hit_vclip > -1)	{
 			if (wInfoP->damage_radius)
 				ExplodeBadassWeapon (weaponP, vHitPt);
@@ -987,7 +979,7 @@ else {
 		}
 	}
 //	If weaponP fired by tPlayer or companion...
-if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || robot_escort) {
+if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || bEscort) {
 	if (!(weaponP->flags & OF_SILENT) && 
 		 (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject))
 		CreateAwarenessEvent (weaponP, PA_WEAPON_WALL_COLLISION);			// tObject "weaponP" can attract attention to tPlayer
