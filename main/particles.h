@@ -31,7 +31,7 @@ typedef struct tParticle {
 	int			nWidth;
 	int			nHeight;
 	int			nRad;
-	int			bDir;
+	int			bHaveDir;
 	short			nSegment;
 	tRgbaColord	color;			//well ... the color, ya know =)
 } tParticle;

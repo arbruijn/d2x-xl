@@ -215,7 +215,7 @@ if (pDir) {
 	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 64);
 	VmVecScale (&vDrift, nSpeed);
 	pParticle->dir = *pDir;
-	pParticle->bDir = 1;
+	pParticle->bHaveDir = 1;
 	}
 else {
 	vmsVector	vOffs;
@@ -225,7 +225,7 @@ else {
 	vOffs = vDrift;
 	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 64);
 	VmVecZero (&pParticle->dir);
-	pParticle->bDir = 1;
+	pParticle->bHaveDir = 1;
 	}
 pParticle->drift = vDrift;
 if (nLife < 0)
@@ -360,7 +360,7 @@ t = nCurTime - pParticle->nMoved;
 			if (t < 0)
 				t = -t;
 			VmVecScaleAdd (&pParticle->pos, &pos, &drift, t);
-			if (pParticle->bDir) {
+			if (pParticle->bHaveDir) {
 				vmsVector vi = drift, vj = pParticle->dir;
 				VmVecNormalize (&vi);
 				VmVecNormalize (&vj);
