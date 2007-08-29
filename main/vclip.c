@@ -57,10 +57,15 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 tRgbColorb *VClipColor (tObject *objP)
 {
 	int				nVClip = gameData.weapons.info [objP->id].nVClipIndex;
-	tVideoClip		*vcP = gameData.eff.vClips [0] + nVClip;
-	tBitmapIndex	bmi = vcP->frames [0];
+	tBitmapIndex	bmi;
 	grsBitmap		*bmP;
 
+if (nVClip) {
+	tVideoClip *vcP = gameData.eff.vClips [0] + nVClip;
+	bmi = vcP->frames [0];
+	}
+else
+	bmi = gameData.weapons.info [objP->id].bitmap;
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))
