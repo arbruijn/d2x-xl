@@ -471,8 +471,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-tRgbColorf bitmapColors [MAX_BITMAP_FILES];
-
 tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP)
 {
 	int c, h, i, j = 0, r = 0, g = 0, b = 0;
@@ -482,12 +480,16 @@ tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP)
 if (!bufP)
 	return NULL;
 h = (int) (bmP - gameData.pig.tex.pBitmaps);
+#ifdef _DEBUG
+if (h == 874)
+	h = h;
+#endif
 if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
 	h = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	if ((h < 0) || (h >= MAX_BITMAP_FILES))
 		return NULL;
 	}
-color = bitmapColors + h;
+color = gameData.pig.tex.bitmapColors + h;
 if (color->red || color->green || color->blue)
 	return color;
 palette = bmP->bm_palette;
@@ -1259,6 +1261,10 @@ int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, tOglTexture *texP, int nTr
 
 if (!bmP)
 	return 1;
+#ifdef _DEBUG
+if (strstr (bmP->szName, "plasblob"))
+	bmP = bmP;
+#endif
 if (texP) {
 	bLocalTexture = 0;
 	//calculate smallest texture size that can accomodate us (must be multiples of 2)

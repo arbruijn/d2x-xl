@@ -1543,19 +1543,14 @@ int VmPointLineIntersection (vmsVector *hitP, vmsVector *p1, vmsVector *p2, vmsV
 	int			bClamped = 0;
 
 VmVecSub (&d21, p2, p1);
-#if 0
-m = VmVecMag (&d21);
-m *= m;
-#else
 m = fabs ((double) d21.p.x * (double) d21.p.x + (double) d21.p.y * (double) d21.p.y + (double) d21.p.z * (double) d21.p.z);
-#endif
 if (!m) {
 	if (hitP)
 		*hitP = *p1;
 	return 0;
 	}
 VmVecSub (&d31, p3, p1);
-u = (double) VmVecDot (&d31, &d21);
+u = (double) d31.p.x * (double) d21.p.x + (double) d31.p.y * (double) d21.p.y + (double) d31.p.z * (double) d21.p.z;
 u /= m;
 if (u < 0)
 	bClamped = bClampToFarthest ? 2 : 1;

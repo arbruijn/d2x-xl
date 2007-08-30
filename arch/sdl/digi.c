@@ -288,7 +288,9 @@ if (!gameOpts->sound.bUseOpenAL)
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
 	int h;
-	if (gameOpts->sound.bHires)
+	if (gameOpts->sound.bHires == 1)
+		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 16);
+	else if (gameOpts->sound.bHires == 2)
 		h = Mix_OpenAudio ((int) (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 16);
 	else if (gameData.songs.user.bMP3)
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);

@@ -157,7 +157,12 @@ bmP->bm_props.nType = bmParent->bm_props.nType;
 bmP->bm_props.rowsize = bmParent->bm_props.rowsize;
 bmP->glTexture = bmParent->glTexture;
 bmP->bm_palette = bmParent->bm_palette;
+bmP->bm_avgColor = bmParent->bm_avgColor;
+bmP->bm_avgRGB = bmParent->bm_avgRGB;
 BM_PARENT (bmP) = bmParent;
+#ifdef _DEBUG
+memcpy (bmP->szName, bmParent->szName, sizeof (bmP->szName));
+#endif
 bmP->bm_texBuf = bmParent->bm_texBuf + (unsigned int) ((y * bmParent->bm_props.rowsize) + x);
 }
 

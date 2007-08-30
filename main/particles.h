@@ -75,6 +75,7 @@ typedef struct tSmoke {
 	int			nObject;
 	int			nSignature;
 	int			nType;			//black or white
+	int			nBirth;			//time of creation
 	int			nLife;			//max. particle life time
 	int			nSpeed;			//initial particle speed
 	int			nClouds;			//number of separate particle clouds

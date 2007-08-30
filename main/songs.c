@@ -315,7 +315,7 @@ if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
 
 //------------------------------------------------------------------------------
 
-void SongsPlayCurrentSong(int repeat)
+void SongsPlayCurrentSong (int repeat)
 {
 SongsPlaySong (gameStates.sound.nCurrentSong, repeat);
 }
@@ -326,7 +326,7 @@ void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
 int nCurrentLevelSong;
 
-void PlayLevelSong (int nLevel)
+void PlayLevelSong (int nLevel, int bFromHog)
 {
 	int	nSong;
 	int	nTracks;
@@ -346,28 +346,33 @@ if (force_rb_register) {
 	RBARegisterCD();			//get new track list for new CD
 	force_rb_register = 0;
 	}
-pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
-strlwr (pszLevelName);
-ChangeFilenameExtension (szFilename, pszLevelName, ".ogg");
-if (CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
-	char	szSong [FILENAME_LEN];
+if (bFromHog) {
+	pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
+	strlwr (pszLevelName);
+	ChangeFilenameExtension (szFilename, pszLevelName, ".ogg");
+	if (CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
+		char	szSong [FILENAME_LEN];
 		
-	sprintf (szSong, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", szFilename);
-	DigiPlayMidiSong (szSong, NULL, NULL, 1, 0);
-	}
-else {
-	if (gameStates.sound.bRedbookEnabled && RBAEnabled () && (nTracks = RBAGetNumberOfTracks()) > 1)	//try to play redbook
-		PlayRedbookTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks-REDBOOK_FIRST_LEVEL_TRACK+1)),1);
-	if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
-		nSong = gameData.songs.nLevelSongs [bD1Song] ? gameData.songs.nFirstLevelSong [bD1Song] + (nSong % gameData.songs.nLevelSongs [bD1Song]) : 0;
-		gameStates.sound.nCurrentSong = nSong;
-			DigiPlayMidiSong (
-				gameData.songs.info [nSong].filename, 
-				gameData.songs.info [nSong].melodicBankFile, 
-				gameData.songs.info [nSong].drumBankFile, 
-				1, 
-				bD1Song);
+		sprintf (szSong, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", szFilename);
+		if (DigiPlayMidiSong (szSong, NULL, NULL, 1, 0))
+			return;
 		}
+	}
+if ((nLevel > 0) && gameData.songs.user.nLevelSongs) {
+	if (DigiPlayMidiSong (gameData.songs.user.pszLevelSongs [(nLevel - 1) % gameData.songs.user.nLevelSongs], NULL, NULL, 1, 0))
+		return;
+	}
+if (gameStates.sound.bRedbookEnabled && RBAEnabled () && (nTracks = RBAGetNumberOfTracks()) > 1)	//try to play redbook
+	PlayRedbookTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks-REDBOOK_FIRST_LEVEL_TRACK+1)),1);
+if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
+	nSong = gameData.songs.nLevelSongs [bD1Song] ? gameData.songs.nFirstLevelSong [bD1Song] + (nSong % gameData.songs.nLevelSongs [bD1Song]) : 0;
+	gameStates.sound.nCurrentSong = nSong;
+		DigiPlayMidiSong (
+			gameData.songs.info [nSong].filename, 
+			gameData.songs.info [nSong].melodicBankFile, 
+			gameData.songs.info [nSong].drumBankFile, 
+			1, 
+			bD1Song);
 	}
 }
 
@@ -394,7 +399,7 @@ void SongsCheckRedbookRepeat()
 				//new code plays all tracks to end of disk, so if disk has
 				//stopped we must be at end.  So start again with level 1 song.
 	
-				PlayLevelSong(1);
+				PlayLevelSong (1, 0);
 			}
 			StartTime();
 		}
@@ -408,7 +413,7 @@ void SongsGotoNextSong()
 {
 if (gameStates.sound.bRedbookPlaying) 		//get correct track
 	nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;
-PlayLevelSong(nCurrentLevelSong+1);
+PlayLevelSong(nCurrentLevelSong + 1, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -418,7 +423,7 @@ void SongsGotoPrevSong()
 if (gameStates.sound.bRedbookPlaying) 		//get correct track
 	nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (nCurrentLevelSong > 1)
-	PlayLevelSong(nCurrentLevelSong-1);
+	PlayLevelSong(nCurrentLevelSong - 1, 0);
 }
 
 //------------------------------------------------------------------------------

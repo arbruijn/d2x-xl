@@ -768,12 +768,14 @@ for (yDest = 0; yDest < yMax; yDest++) {
 		else {
 			for (i = 0; i < bpp; i++, pDest++) {
 				*pDest = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
+#if 0
 				if (i == 3)	 {//alpha treatment round to 0 or 255 depending on the average alpha
 					if (*pDest < 128)
 						*pDest = 0;
 					else if (*pDest > 127)
 						*pDest = 255;
 					}
+#endif
 				}
 			}
 		}
@@ -1494,7 +1496,7 @@ int LoadHiresSound (tDigiSound *soundP, char *pszSoundName)
 if (!gameOpts->sound.bHires)
 	return 0;
 sprintf (szSoundFile, "%s.wav", pszSoundName);
-if (!(fp = CFOpen (szSoundFile, gameFolders.szSoundDir, "rb", 0)))
+if (!(fp = CFOpen (szSoundFile, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], "rb", 0)))
 	return 0;
 if (0 >= (soundP->nLength [0] = CFLength (fp, 0))) {
 	CFClose (fp);
@@ -2142,7 +2144,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "plas")) {
+	if (strstr (bmName, "plasblob")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}

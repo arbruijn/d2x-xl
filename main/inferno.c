@@ -553,7 +553,8 @@ exit (0);
 #	define	DATADIR			"Data"
 #	define	SHADERDIR		"Shaders"
 #	define	MODELDIR			"Models"
-#	define	SOUNDDIR			"Sounds"
+#	define	SOUNDDIR1		"Sounds1"
+#	define	SOUNDDIR2		"Sounds2"
 #	define	CONFIGDIR		"Config"
 #	define	PROFDIR			"Profiles"
 #	define	SCRSHOTDIR		"Screenshots"
@@ -567,7 +568,8 @@ exit (0);
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
 #	define	MODELDIR			"models"
-#	define	SOUNDDIR			"sounds"
+#	define	SOUNDDIR1		"sounds1"
+#	define	SOUNDDIR2		"sounds2"
 #	define	CONFIGDIR		"config"
 #	define	PROFDIR			"profiles"
 #	define	SCRSHOTDIR		"screenshots"
@@ -648,7 +650,8 @@ else
 /*---*/LogErr ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/LogErr ("expected game data folder = '%s'\n", gameFolders.szDataDir);
 GetAppFolder (szDataRootDir, gameFolders.szModelDir, MODELDIR, "*.oof");
-GetAppFolder (szDataRootDir, gameFolders.szSoundDir, SOUNDDIR, "*.wav");
+GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
+GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");

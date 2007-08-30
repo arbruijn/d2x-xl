@@ -899,6 +899,7 @@ DestroyCameras ();
 DestroyAllSmoke ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
+memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));
 memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
 gameData.render.lights.flicker.nLights = 0;
 save_player = LOCALPLAYER;	
@@ -1003,7 +1004,7 @@ gameData.hoard.nMonsterballSeg = -1;
 SetSoundSources ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
-PlayLevelSong (gameData.missions.nCurrentLevel);
+PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 ClearBoxedMessage ();		//remove message before new palette loaded
 GrPaletteStepLoad (NULL);		//actually load the palette
 /*---*/LogErr ("   rebuilding OpenGL texture data\n");
@@ -1339,7 +1340,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	InitSecretLevel (nLevel);
 	if (!gameStates.app.bAutoRunMission && gameStates.app.bD1Mission)
 		ShowLevelIntro (nLevel);
-	PlayLevelSong (gameData.missions.nCurrentLevel);
+	PlayLevelSong (gameData.missions.nCurrentLevel, 0);
 	InitRobotsForLevel ();
 	InitAIObjects ();
 	InitShakerDetonates ();

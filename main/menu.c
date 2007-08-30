@@ -3754,7 +3754,7 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
 			SongsPlaySong (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
-			PlayLevelSong (gameData.missions.nCurrentLevel);
+			PlayLevelSong (gameData.missions.nCurrentLevel, 0);
 		else
 			Int3 ();
 
@@ -3789,7 +3789,7 @@ else
 		else if (!bSongPlaying) {
 			DigiStopAllChannels ();
 			if (gameStates.app.bGameRunning)
-				PlayLevelSong (gameData.missions.nCurrentLevel);
+				PlayLevelSong (gameData.missions.nCurrentLevel, 0);
 			else
 				SongsPlaySong (gameStates.sound.nCurrentSong, 1);
 			}

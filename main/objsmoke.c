@@ -357,7 +357,7 @@ else
 
 void DoMissileSmoke (tObject *objP)
 {
-	int			nParts, i;
+	int			nParts, nSpeed, nLife, i;
 	float			nScale = 1.5f;
 	vmsVector	pos;
 
@@ -366,15 +366,18 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bMissiles))
 i = OBJ_IDX (objP);
 if ((objP->shields < 0) || (objP->flags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
-else 
+else {
+	nSpeed = WI_speed (objP->id, gameStates.app.nDifficultyLevel);
+	nLife = gameOpts->render.smoke.nLife [3] + 1;
 #if 1
-	nParts = MSL_MAX_PARTS;
+	nParts = (int) (MSL_MAX_PARTS * f2fl (nSpeed) / (40.0f * (4 - nLife)));
 #else
 	nParts = (objP->id == EARTHSHAKER_ID) ? 1500 : 
 				(objP->id == MEGAMSL_ID) ? 1400 : 
 				(objP->id == SMARTMSL_ID) ? 1300 : 
 				1200;
 #endif
+	}
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		if (!gameOpts->render.smoke.bSyncSizes) {
@@ -383,7 +386,7 @@ if (nParts) {
 			}
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
 																gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-																1, (gameOpts->render.smoke.nLife [3] + 1) * MSL_PART_LIFE, MSL_PART_SPEED, 1, i, NULL);
+																1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, 1, i, NULL);
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -509,8 +512,8 @@ if (!gameOpts->render.smoke.bStatic) {
 objP->renderType = RT_NONE;
 if (gameData.smoke.objects [i] < 0) {
 	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
-	j = (trigP && trigP->value) ? trigP->value : 5;
 #if 1
+	j = (trigP && trigP->value) ? trigP->value : 5;
 	nLife = (j * (j + 1)) / 2;
 #else
 	nLife = (trigP && trigP->value) ? trigP->value : 5;

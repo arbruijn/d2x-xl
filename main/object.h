@@ -35,6 +35,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECTS     	MAX_SEGMENTS
 #define MAX_HIT_OBJECTS		20
 
+#define MAX_SHRAPNEL_LIFE	(2 * F1_0)
+
 // Object types
 #define OBJ_NONE        255 // unused tObject
 #define OBJ_WALL        0   // A tWall... not really an tObject, but used for collisions

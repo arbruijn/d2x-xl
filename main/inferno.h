@@ -1277,14 +1277,19 @@ typedef struct tHitbox {
 } tHitbox;
 
 typedef struct tShrapnel {
-	vmsVector	vPos;
+	vmsVector	vPos, vStartPos;
 	vmsVector	vDir;
 	vmsVector	vOffs;
 	fix			xSpeed;
+	fix			xBaseSpeed;
 	fix			xLife;
 	fix			xTTL;
 	int			nSmoke;
 	int			nTurn;
+	int			nParts;
+	int			d;
+	double		fScale;
+	time_t		tUpdate;
 } tShrapnel;
 
 typedef struct tShrapnelData {
@@ -1477,6 +1482,7 @@ typedef struct tTextureData {
 	tBitmapIndex		objBmIndex [MAX_OBJ_BITMAPS];
 	ushort				pObjBmIndex [MAX_OBJ_BITMAPS];
 	tBitmapIndex		cockpitBmIndex [N_COCKPIT_BITMAPS];
+	tRgbColorf			bitmapColors [MAX_BITMAP_FILES];
 	int					nBitmaps [2];
 	int					nObjBitmaps;
 	int					bPageFlushed;

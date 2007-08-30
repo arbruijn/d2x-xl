@@ -963,6 +963,8 @@ else {
 	}
 bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || bIsMissile [thisObjP->id]);
 bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
+if (otherObjP->nType == OBJ_WEAPON)
+	otherObjP = otherObjP;
 if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL)) {
 #if 1//def RELEASE
 	dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
