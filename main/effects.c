@@ -97,14 +97,14 @@ for (i = gameData.eff.nClips [0], vcP = gameData.eff.vClips [0]; i; i--, vcP++)
 void ResetSpecialEffects (void)
 {
 	int				i, bD1;
-	tEffectClip				*ecP;
+	tEffectClip		*ecP;
 	tBitmapIndex	bmi;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ecP++) {
 		ecP->nSegment = -1;					//clear any active one-shots
 		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_INITIALIZED);	//restart any stopped effects
-		bmi = ecP->vc.frames [ecP->nCurFrame];
+		bmi = ecP->vc.frames [ecP->nCurFrame = 0];
 		//reset bitmap, which could have been changed by a crit_clip
 		if (ecP->changingWallTexture != -1)
 			gameData.pig.tex.bmIndex [bD1][ecP->changingWallTexture] = bmi;

@@ -2002,7 +2002,9 @@ else if (gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && bIsMiss
 		fLength /= 2;
 	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -nObjRad);
 	}
-else if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) || ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id])) {
+else if ((objP->nType == OBJ_PLAYER) || 
+			((objP->nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) || 
+			((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id])) {
 	vmsMatrix	m;
 	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
 		pt = gameData.render.thrusters + objP->id;
@@ -2972,7 +2974,7 @@ switch (objP->renderType) {
 			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
 			if (gameStates.render.nShadowPass != 2) {
-				if (gameOpts->render.bRobotShields) {
+				if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
 					if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
 						DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
 					else if (ROBOTINFO (objP->id).companion)
