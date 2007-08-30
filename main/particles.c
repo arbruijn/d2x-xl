@@ -408,7 +408,7 @@ else {
 			pParticle->nHeight = (short) ((double) pParticle->nHeight * decay);
 			}
 #endif
-		pParticle->nLife -= t / gameStates.gameplay.slowmo [0].fSpeed;
+		pParticle->nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
 		}
 	}	
 pParticle->nMoved = nCurTime;
