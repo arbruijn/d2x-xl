@@ -31,7 +31,8 @@ typedef struct tParticle {
 	int			nWidth;
 	int			nHeight;
 	int			nRad;
-	int			bHaveDir;
+	char			bHaveDir;
+	char			nFade;
 	short			nSegment;
 	tRgbaColord	color;			//well ... the color, ya know =)
 } tParticle;
@@ -47,6 +48,7 @@ typedef struct tCloud {
 	int			nBirth;			//time of creation
 	int			nSpeed;			//initial particle speed
 	int			nParts;			//curent no. of particles
+	int			nFirstPart;
 	int			nMaxParts;		//max. no. of particles
 	int			nDensity;		//density (opaqueness) of smoke cloud
 	float			fPartsPerTick;
@@ -59,6 +61,7 @@ typedef struct tCloud {
 	int			nMoved;			//time last moved
 	short			nSegment;
 	short			nObject;
+	short			nObjType;
 	vmsVector	dir;
 	vmsVector	pos;				//initial particle position
 	vmsVector	prevPos;			//initial particle position
@@ -73,6 +76,8 @@ typedef struct tCloud {
 typedef struct tSmoke {
 	int			nNext;
 	int			nObject;
+	short			nObjType;
+	short			nObjId;
 	int			nSignature;
 	int			nType;			//black or white
 	int			nBirth;			//time of creation

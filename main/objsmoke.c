@@ -34,11 +34,11 @@
 #define LASER_PART_LIFE				-500
 #define LASER_PART_SPEED			0
 
-#define BOMB_MAX_PARTS				60
+#define BOMB_MAX_PARTS				250
 #define BOMB_PART_LIFE				-16000
 #define BOMB_PART_SPEED				200
 
-#define DEBRIS_MAX_PARTS			25
+#define DEBRIS_MAX_PARTS			50
 #define DEBRIS_PART_LIFE			-2000
 #define DEBRIS_PART_SPEED			30
 
@@ -225,28 +225,34 @@ else {
 		}
 	nParts = (gameStates.entropy.nTimeLastMoved < 0) ? SHIP_MAX_PARTS * 2 : SHIP_MAX_PARTS;
 	if (SHOW_SMOKE && nParts && gameOpts->render.smoke.bPlayers) {
-		if (!gameOpts->render.smoke.bSyncSizes) {
+		if (gameOpts->render.smoke.bSyncSizes) {
+			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [0]);
+			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale);
+			}
+		else {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.smoke.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [1], nScale);
 			}
 		if (!(objP->mType.physInfo.thrust.p.x ||
 				objP->mType.physInfo.thrust.p.y ||
-				objP->mType.physInfo.thrust.p.z))
+				objP->mType.physInfo.thrust.p.z)) {
+			nParts /= 2;
 			nScale /= 2;
+			}
 		if (0 > (h = gameData.smoke.objects [j])) {
 			//LogErr ("creating tPlayer smoke\n");
 			h = gameData.smoke.objects [j] = 
 				CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 2, nParts, nScale,
-								 gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1],
+								 gameOpts->render.smoke.nSize [1],
 								 2, PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j, NULL);
 			}
 		else {
 			SetSmokeType (h, nType);
-			SetSmokePartScale (h, nScale);
+			SetSmokePartScale (h, -nScale);
 			SetSmokeDensity (h, nParts, gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1]);
 			SetSmokeSpeed (gameData.smoke.objects [i], 
 								(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) ?
-								PLR_PART_SPEED : PLR_PART_SPEED * 3 / 4);
+								PLR_PART_SPEED : PLR_PART_SPEED * 2);
 			}
 		CalcShipThrusterPos (objP, vPos);
 		for (j = 0; j < 2; j++)
@@ -481,7 +487,7 @@ else
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts,
-																-PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 0, i, NULL);
+																-PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 1, i, NULL);
 		}
 	offs.p.x = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	offs.p.y = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
