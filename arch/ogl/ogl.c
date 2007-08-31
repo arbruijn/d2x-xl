@@ -268,10 +268,6 @@ for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 for (k = 0; k < 2; k++) {
 	bmP = gameData.pig.tex.bitmaps [k];
 	for (i = gameData.pig.tex.nBitmaps [k] + (k ? 0 : gameData.hoard.nBitmaps); i; i--, bmP++) {
-		if (gameData.pig.tex.pBmIndex [409].index != 1926)
-			bmP = bmP;
-		if (bmP - gameData.pig.tex.bitmaps [k] == 1926)
-			bmP = bmP;
 		if (bmP->bmType == BM_TYPE_STD) {
 			if (!BM_OVERRIDE (bmP))
 				UnlinkTexture (bmP);

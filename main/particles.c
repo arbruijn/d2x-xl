@@ -198,9 +198,9 @@ else {
 	pParticle->color.red = 1.0;
 	pParticle->color.green = 0.5;
 	pParticle->color.blue = 0.0;//(double) (64 + randN (64)) / 255.0;
-	pParticle->color.alpha = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
 	pParticle->nFade = 2;
 	}
+pParticle->color.alpha = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed *= F1_0;
 if (pDir) {
@@ -918,8 +918,6 @@ if ((c.nPartsPerPos = (int) (c.fPartsPerTick * c.nTicks)) >= 1) {
 			h = c.nMaxParts - i;
 		if (h <= 0)
 			goto funcExit;
-		else if (h == 1)
-			h = 1;
 		if (c.bHavePrevPos && (fDist > 0)) {
 			VmsVecToFloat (&vPosf, &c.prevPos);
 			VmsVecToFloat (&vDeltaf, &vDelta);
@@ -1027,13 +1025,14 @@ return 0;
 
 int RenderCloud (tCloud *pCloud)
 {
-	int		h = pCloud->nParts, i, j, 
-				nFirstPart = pCloud->nFirstPart,
-				nPartLimit = pCloud->nPartLimit,
-				bSorted = gameOpts->render.smoke.bSort && (h > 1),
-				bReverse;
-	tPartIdx	*pPartIdx;
-	double	brightness = pCloud->brightness;
+	int			h = pCloud->nParts, i, j, 
+					nFirstPart = pCloud->nFirstPart,
+					nPartLimit = pCloud->nPartLimit,
+					bSorted = gameOpts->render.smoke.bSort && (h > 1),
+					bReverse;
+	tPartIdx		*pPartIdx;
+	vmsVector	v;
+	double		brightness = pCloud->brightness;
 
 if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
 	return 0;
@@ -1047,7 +1046,9 @@ if (bSorted) {
 		for (i = 0; i < h; i++)
 			RenderParticle (pCloud->pParticles + (nFirstPart + pPartIdx [i].i) % nPartLimit, brightness);
 	}
-if (!pCloud->bHavePrevPos || (VmVecDist (&pCloud->pos, &viewInfo.pos) >= VmVecDist (&pCloud->prevPos, &viewInfo.pos))) {
+if (pCloud->bHavePrevPos && 
+	 (VmVecDist (&pCloud->pos, &viewInfo.pos) >= VmVecMag (VmVecSub (&v, &pCloud->prevPos, &viewInfo.pos))) &&
+	 (VmVecDot (&v, &gameData.objs.viewer->position.mOrient.fVec) >= 0)) {	//emitter moving away and facing towards emitter
 	for (i = h, j = (nFirstPart + h) % nPartLimit; i; i--) {
 		if (!j)
 			j = nPartLimit;
@@ -1065,7 +1066,7 @@ if (!pCloud->bHavePrevPos || (VmVecDist (&pCloud->pos, &viewInfo.pos) >= VmVecDi
 else {
 	for (i = h, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
 	#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-		if (!RenderParticle (pCloud->pParticles + --j))
+		if (!RenderParticle (pCloud->pParticles + j, brightness))
 			if (gameStates.render.bVertexArrays) {
 				FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
 				nBuffer = iBuffer;
