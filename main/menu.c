@@ -2475,6 +2475,8 @@ m = menus + smokeOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseSmoke) {
 	extraGameInfo [0].bUseSmoke = v;
+	if (!v)
+		FreePartList ();
 	*key = -2;
 	return;
 	}
