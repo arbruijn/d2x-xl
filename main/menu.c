@@ -173,6 +173,7 @@ static struct {
 	int	nLife [4];
 	int	nSize [4];
 	int	nSyncSizes;
+	int	nQuality;
 } smokeOpts;
 
 static struct {
@@ -206,6 +207,7 @@ static char *pszRendQual [5];
 static char *pszAmount [5];
 static char *pszSize [4];
 static char *pszLife [3];
+static char *pszSmokeQual [3];
 
 #if DBG_SHADOWS
 extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, 
@@ -2477,6 +2479,14 @@ if (v != extraGameInfo [0].bUseSmoke) {
 	return;
 	}
 if (extraGameInfo [0].bUseSmoke) {
+	m = menus + smokeOpts.nQuality;
+	v = m->value;
+	if (v != gameOpts->render.smoke.bSort) {
+		gameOpts->render.smoke.bSort = v;
+		sprintf (m->text, TXT_SMOKE_QUALITY, pszSmokeQual [v]);
+		m->rebuild = 1;
+		return;
+		}
 	m = menus + smokeOpts.nSyncSizes;
 	v = m->value;
 	if (v != gameOpts->render.smoke.bSyncSizes) {
@@ -2495,14 +2505,14 @@ if (extraGameInfo [0].bUseSmoke) {
 		v = m->value;
 		if (gameOpts->render.smoke.nDens [0] != v) {
 			gameOpts->render.smoke.nDens [0] = v;
-			sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nDens [0]]);
+			sprintf (m->text, TXT_SMOKE_DENS, pszAmount [v]);
 			m->rebuild = 1;
 			}
 		m = menus + smokeOpts.nSize [0];
 		v = m->value;
 		if (gameOpts->render.smoke.nSize [0] != v) {
 			gameOpts->render.smoke.nSize [0] = v;
-			sprintf (m->text, TXT_SMOKE_SIZE, pszSize [gameOpts->render.smoke.nSize [0]]);
+			sprintf (m->text, TXT_SMOKE_SIZE, pszSize [v]);
 			m->rebuild = 1;
 			}
 		}
@@ -2513,7 +2523,7 @@ if (extraGameInfo [0].bUseSmoke) {
 				v = m->value;
 				if (gameOpts->render.smoke.nDens [i] != v) {
 					gameOpts->render.smoke.nDens [i] = v;
-					sprintf (m->text, TXT_SMOKE_DENS, pszAmount [gameOpts->render.smoke.nDens [i]]);
+					sprintf (m->text, TXT_SMOKE_DENS, pszAmount [v]);
 					m->rebuild = 1;
 					}
 				}
@@ -2522,7 +2532,7 @@ if (extraGameInfo [0].bUseSmoke) {
 				v = m->value;
 				if (gameOpts->render.smoke.nSize [i] != v) {
 					gameOpts->render.smoke.nSize [i] = v;
-					sprintf (m->text, TXT_SMOKE_SIZE, pszSize [gameOpts->render.smoke.nSize [i]]);
+					sprintf (m->text, TXT_SMOKE_SIZE, pszSize [v]);
 					m->rebuild = 1;
 					}
 				}
@@ -2531,7 +2541,7 @@ if (extraGameInfo [0].bUseSmoke) {
 				v = m->value;
 				if (gameOpts->render.smoke.nLife [i] != v) {
 					gameOpts->render.smoke.nLife [i] = v;
-					sprintf (m->text, TXT_SMOKE_LIFE, pszLife [gameOpts->render.smoke.nLife [i]]);
+					sprintf (m->text, TXT_SMOKE_LIFE, pszLife [v]);
 					m->rebuild = 1;
 					}
 				}
@@ -2578,21 +2588,27 @@ void SmokeOptionsMenu ()
 	int	opt;
 	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, 
 			optStaticSmoke, optSmokeColl, optSmokeDisp;
+	char	szSmokeQual [50];
 
-	pszSize [0] = TXT_SMALL;
-	pszSize [1] = TXT_MEDIUM;
-	pszSize [2] = TXT_LARGE;
-	pszSize [3] = TXT_VERY_LARGE;
+pszSize [0] = TXT_SMALL;
+pszSize [1] = TXT_MEDIUM;
+pszSize [2] = TXT_LARGE;
+pszSize [3] = TXT_VERY_LARGE;
 
-	pszAmount [0] = TXT_QUALITY_LOW;
-	pszAmount [1] = TXT_QUALITY_MED;
-	pszAmount [2] = TXT_QUALITY_HIGH;
-	pszAmount [3] = TXT_VERY_HIGH;
-	pszAmount [4] = TXT_EXTREME;
+pszAmount [0] = TXT_QUALITY_LOW;
+pszAmount [1] = TXT_QUALITY_MED;
+pszAmount [2] = TXT_QUALITY_HIGH;
+pszAmount [3] = TXT_VERY_HIGH;
+pszAmount [4] = TXT_EXTREME;
 
-	pszLife [0] = TXT_SHORT;
-	pszLife [1] = TXT_MEDIUM;
-	pszLife [2] = TXT_LONG;
+pszLife [0] = TXT_SHORT;
+pszLife [1] = TXT_MEDIUM;
+pszLife [2] = TXT_LONG;
+
+pszSmokeQual [0] = TXT_STANDARD;
+pszSmokeQual [1] = TXT_GOOD;
+pszSmokeQual [2] = TXT_HIGH;
+
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
@@ -2670,6 +2686,10 @@ do {
 				smokeOpts.nDensity [0] =
 				smokeOpts.nSize [0] = -1;
 				}	
+			sprintf (szSmokeQual + 1, TXT_SMOKE_QUALITY, pszSmokeQual [NMCLAMP (gameOpts->render.smoke.bSort, 0, 2)]);
+			*szSmokeQual = *(TXT_SMOKE_QUALITY - 1);
+			ADD_SLIDER (opt, szSmokeQual + 1, gameOpts->render.smoke.bSort, 0, 2, KEY_Q, HTX_ADVRND_SMOKEQUAL);
+			smokeOpts.nQuality = opt++;
 			}
 		}
 	else

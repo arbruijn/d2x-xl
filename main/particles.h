@@ -62,6 +62,7 @@ typedef struct tCloud {
 	short			nSegment;
 	short			nObject;
 	short			nObjType;
+	short			nObjId;
 	vmsVector	dir;
 	vmsVector	pos;				//initial particle position
 	vmsVector	prevPos;			//initial particle position
@@ -112,6 +113,8 @@ void SetCloudPos (tCloud *pCloud, vmsVector *pos);
 void InitSmoke (void);
 int MaxParticles (int nParts, int nDens);
 float ParticleSize (int nSize, float nScale);
+int AllocPartList (void);
+void FreePartList (void);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;

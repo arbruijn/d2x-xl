@@ -1708,6 +1708,8 @@ char *defaultGameTexts [][2] = {
 	{"~3D-Abgasstrahl", "~3D thruster flames"},
 	{"explosions-schra~Pnells", "explosion shra~Pnels"},
 	{"verbesserte Earth Sha~Ker", "enhanced shaker ~Bomblets"},
+	{"gut", "good"},
+	{"Rauch-~Qualitaet: %s", "smoke ~Quality: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2259,6 +2261,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erzeugen explodierende Objekte herumschwirrende\nSchrapnells.", "If checked exploding objects cause shrapnels to whizz\naround."},
 	{"Wenn angekreuzt, spueren Earth Shaker-Satelliten Ziele in\ngroesserer Entfernung und groesserem Winkel zu Ihrer Flug-\nrichtung auf. Zum Ausgleich wenden sie dafuer waehrend\nder ersten drei Flugsekunden langsamer.", 
 	 "If checked, earth shaker bomblets sense targets at greater\ndistance and greater angles towards their flight direction.\nTo compensate, they will turn slower during the first\nthree seconds of flight."},
+	{"Je nach Einstellung werden weiter vom Spieler entfernte Rauch-\npartikel vor naeheren gezeichnet. Dadurch sieht Rauch natuerlicher\naus. Je mehr Rauchquellen vorhanden sind, desto mehr wirkt sich eine\nhohe Qualitaetseinstellung aus. Ein hoeherer Wert erfordert\nallerdings auch mehr Rechenleistung.", 
+	 "Depending on the chosen setting, smoke particles that are further\naway from the player are rendered first. That makes smoke appear\nmore natural. The more smoke sources, the stronger the effect of a\nhigh quality setting. A higher value however requires more\ncomputing power."},
 #if 0
 	{"", ""},
 #endif

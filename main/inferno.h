@@ -2015,12 +2015,28 @@ typedef struct tDemoData {
 
 #include "particles.h"
 
+typedef struct tPartList {
+	struct tPartList	*pNextPart;
+	tParticle			*pParticle;
+	float					fBrightness;
+} tPartList;
+
+typedef struct tPartDepthBuf {
+	tPartList		**pDepthBuffer;
+	tPartList		*pPartList;
+	int				nParts;
+	int				nFreeParts;
+	int				zMin;
+	int				zMax;
+} tPartDepthBuf;
+
 typedef struct tSmokeData {
 	tSmoke			smoke [MAX_SMOKE];
 	short				*objects;
 	time_t			*objExplTime;
 	int				iFreeSmoke;
 	int				iUsedSmoke;
+	tPartDepthBuf	depthBuf;
 } tSmokeData;
 
 #define GUIDEBOT_NAME_LEN 9

@@ -1051,8 +1051,6 @@ if ((t = FindArg ("-render_quality")) && *Args [t+1]) {
 	else if (gameOpts->render.nQuality > 3)
 		gameOpts->render.nQuality = 3;
 	}
-if ((t = FindArg ("-sort_smoke")))
-	gameOptions [0].render.smoke.bSort = NumArg (t, 1);
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-shadows")))
