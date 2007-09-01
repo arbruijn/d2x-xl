@@ -1165,6 +1165,8 @@ if (bSorted) {
 	for (i = 0; i < nParts; i++)
 		RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness);
 	}
+else
+#endif //SORT_CLOUD_PARTS
 if (pCloud->bHavePrevPos && 
 	 (VmVecDist (&pCloud->pos, &viewInfo.pos) >= VmVecMag (VmVecSub (&v, &pCloud->prevPos, &viewInfo.pos))) &&
 	 (VmVecDot (&v, &gameData.objs.viewer->position.mOrient.fVec) >= 0)) {	//emitter moving away and facing towards emitter
@@ -1183,7 +1185,6 @@ if (pCloud->bHavePrevPos &&
 		}
 	}
 else 
-#endif //SORT_CLOUD_PARTS
 {
 	for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
