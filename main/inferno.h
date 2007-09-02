@@ -168,9 +168,10 @@ typedef struct tTextureOptions {
 } tTextureOptions;
 
 typedef struct tSmokeOptions {
-	int nDens [4];
-	int nSize [4];
-	int nLife [4];
+	int nDens [5];
+	int nSize [5];
+	int nLife [5];
+	int nAlpha [5];
 	int bSyncSizes;
 	int bPlayers;
 	int bRobots;
@@ -181,7 +182,6 @@ typedef struct tSmokeOptions {
 	int bCollisions;
 	int bDisperse;
 	int bSort;
-	int nAlpha;
 	int bDecreaseLag;	//only render if tPlayer is moving forward
 } tSmokeOptions;
 
@@ -223,7 +223,7 @@ typedef struct tRenderOptions {
 	int bOptimize;
 	int bTransparentEffects;
 	int bExplBlast;
-	int bExplShrapnels;
+	int nExplShrapnels;
 	int bCoronas;
 	int bObjectCoronas;
 	int nCoronaIntensity;

@@ -20,10 +20,6 @@ typedef struct tParticle {
 	vmsVector	transPos;		//transformed position
 	vmsVector	dir;				//movement direction
 	vmsVector	drift;
-	char			nType;			//black or white
-	char			nOrient;
-	char			nRotDir;
-	char			nBounce;
 	int			nTTL;				//time to live
 	int			nLife;			//remaining life time
 	int			nDelay;			//time between creation and appearance
@@ -31,10 +27,15 @@ typedef struct tParticle {
 	int			nWidth;
 	int			nHeight;
 	int			nRad;
-	char			bHaveDir;
-	char			nFade;
 	short			nSegment;
 	tRgbaColord	color;			//well ... the color, ya know =)
+	char			nType;			//black or white
+	char			nOrient;
+	char			nRotDir;
+	char			nBounce;
+	char			bHaveDir;
+	char			nFade;
+	char			nClass;
 } tParticle;
 
 typedef struct tPartIdx {
@@ -43,7 +44,8 @@ typedef struct tPartIdx {
 } tPartIdx;
 
 typedef struct tCloud {
-	int			nType;			//black or white
+	char			nType;			//black or white
+	char			nClass;
 	int			nLife;			//max. particle life time
 	int			nBirth;			//time of creation
 	int			nSpeed;			//initial particle speed
@@ -80,7 +82,7 @@ typedef struct tSmoke {
 	short			nObjType;
 	short			nObjId;
 	int			nSignature;
-	int			nType;			//black or white
+	char			nType;			//black or white
 	int			nBirth;			//time of creation
 	int			nLife;			//max. particle life time
 	int			nSpeed;			//initial particle speed
@@ -92,7 +94,7 @@ typedef struct tSmoke {
 int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
-					  int nLife, int nSpeed, int nType, int nObject,
+					  int nLife, int nSpeed, char nType, int nObject,
 					  tRgbaColord *pColor);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();

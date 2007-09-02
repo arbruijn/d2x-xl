@@ -356,10 +356,11 @@ for (i = 0; i < 2; i++) {
 			RP (gameOptions [i].input.mouse.sensitivity [j], 0, j);
 			RP (gameOptions [i].input.trackIR.sensitivity [j], 0, j);
 			}
-		for (j = 0; j < 4; j++) {
+		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].render.smoke.nDens [j], i, j);
 			RP (gameOptions [i].render.smoke.nSize [j], i, j);
 			RP (gameOptions [i].render.smoke.nLife [j], i, j);
+			RP (gameOptions [i].render.smoke.nAlpha [j], i, j);
 			}
 		for (j = 0; j < 5; j++) {
 			RP (gameOptions [i].input.joystick.deadzones [j], 0, j);
@@ -384,7 +385,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.textures.nQuality, i, 0);
 		RP (gameOptions [i].render.bAutoTransparency, i, 0);
 		RP (gameOptions [i].render.bExplBlast, i, 0);
-		RP (gameOptions [i].render.bExplShrapnels, i, 0);
+		RP (gameOptions [i].render.nExplShrapnels, i, 0);
 		RP (gameOptions [i].render.bCoronas, i, 0);
 		RP (gameOptions [i].render.bObjectCoronas, i, 0);
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
@@ -857,15 +858,23 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.smoke.nDens[0]", "1"},
 	{"gameOptions[0].render.smoke.nSize[0]", "1"},
 	{"gameOptions[0].render.smoke.nLife[0]", "1"},
+	{"gameOptions[0].render.smoke.nAlpha[0]", "1"},
 	{"gameOptions[0].render.smoke.nDens[1]", "1"},
 	{"gameOptions[0].render.smoke.nSize[1]", "1"},
 	{"gameOptions[0].render.smoke.nLife[1]", "1"},
+	{"gameOptions[0].render.smoke.nAlpha[1]", "1"},
 	{"gameOptions[0].render.smoke.nDens[2]", "1"},
 	{"gameOptions[0].render.smoke.nSize[2]", "1"},
 	{"gameOptions[0].render.smoke.nLife[2]", "1"},
+	{"gameOptions[0].render.smoke.nAlpha[2]", "1"},
 	{"gameOptions[0].render.smoke.nDens[3]", "1"},
 	{"gameOptions[0].render.smoke.nSize[3]", "1"},
 	{"gameOptions[0].render.smoke.nLife[3]", "1"},
+	{"gameOptions[0].render.smoke.nAlpha[3]", "1"},
+	{"gameOptions[0].render.smoke.nDens[4]", "1"},
+	{"gameOptions[0].render.smoke.nSize[4]", "1"},
+	{"gameOptions[0].render.smoke.nLife[4]", "1"},
+	{"gameOptions[0].render.smoke.nAlpha[4]", "1"},
 	{"gameOptions[0].input.joystick.deadzones[0]", "1"},
 	{"gameOptions[0].input.joystick.sensitivity[0]", "7"},
 	{"gameOptions[0].input.trackIR.bMove[0]", "1"},
@@ -897,7 +906,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.textures.nQuality", "2"},
 	{"gameOptions[0].render.bAutoTransparency", "1"},
 	{"gameOptions[0].render.bExplBlast", "1"},
-	{"gameOptions[0].render.bExplShrapnels", "1"},
+	{"gameOptions[0].render.nExplShrapnels", "1"},
 	{"gameOptions[0].render.bCoronas", "1"},
 	{"gameOptions[0].render.bObjectCoronas", "1"},
 	{"gameOptions[0].render.nCoronaIntensity", "1"},

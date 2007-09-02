@@ -81,7 +81,7 @@ static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 
-static double alphaScale [5] = {1, 0.8, 0.6, 0.4, 0.2};
+static double alphaScale [5] = {6.0 / 6.0, 5.0 / 6.0, 4.0 / 6.0, 3.0 / 6.0, 2.0 / 6.0};
 
 #if EXTRA_VERTEX_ARRAYS
 
@@ -95,6 +95,8 @@ static int iBuffer = 0;
 static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
+
+static int nLastType = -1;
 
 #define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
 
@@ -176,7 +178,7 @@ if (nFrames > 1) {
 		{
 
 		t0 [nType] = t;
-#if 0
+#if 1
 		iFrames = (iFrames + 1) % nFrames;
 #else
 		iFrames += iFrameIncr;
@@ -264,8 +266,8 @@ return n * n;
 #define RANDOM_FADE	(0.95 + (double) rand () / (double) RAND_MAX / 20.0)
 
 int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
-						  short nSegment, int nLife, int nSpeed, int nType, float nScale, 
-						  tRgbaColord *pColor, int nCurTime, int bStart)
+						  short nSegment, int nLife, int nSpeed, char nType, char nClass,
+						  float nScale, tRgbaColord *pColor, int nCurTime, int bStart)
 {
 	vmsVector	vDrift;
 	int			nRad;
@@ -279,6 +281,7 @@ else
 if (!nRad)
 	nRad = F1_0;
 pParticle->nType = nType;
+pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
 if (pColor) {
@@ -622,9 +625,13 @@ if (BM_CURFRAME (bmP))
 #if 1
 if (gameOpts->render.smoke.bSort) {
 	hp = pParticle->transPos;
-	if (OglBindBmTex (bmP, 0, 1))
-		return 0;
-	glBegin (GL_QUADS);
+	if (nLastType != pParticle->nType) {
+		nLastType = pParticle->nType;
+		glEnd ();
+		if (OglBindBmTex (bmP, 0, 1))
+			return 0;
+		glBegin (GL_QUADS);
+		}
 	}
 else
 #endif
@@ -657,11 +664,11 @@ else if (pParticle->nFade == 0) {
 	}
 pc = pParticle->color;
 //pc.alpha *= /*gameOpts->render.smoke.bDisperse ? decay2 :*/ decay;
-pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha];
+pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
 pc.alpha = (pc.alpha - 0.005) * decay + 0.005;
 if (pParticle->nType < 3) {
 	if (SHOW_DYN_LIGHT) {
-		tFaceColor	*psc = AvgSgmColor (pParticle->nSegment, NULL);
+		tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
 		if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
 			pc.red *= (double) psc->color.red;
 			pc.green *= (double) psc->color.green;
@@ -857,6 +864,7 @@ else
 		if (nType >= 0)
 			glBegin (GL_QUADS);
 	}
+nLastType = -1;
 return 1;
 }
 
@@ -897,9 +905,27 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+char SmokeObjClass (int nObject)
+{
+if (nObject >= 0) {
+	tObject	*objP = OBJECTS + nObject;
+	if (objP->nType == OBJ_PLAYER)
+		return 1;
+	if (objP->nType == OBJ_ROBOT)
+		return 2;
+	if (objP->nType == OBJ_WEAPON)
+		return 3;
+	if (objP->nType == OBJ_DEBRIS)
+		return 4;
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
-					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, int nType, 
+					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
 					  tRgbaColord *pColor, int nCurTime)
 {
 if (!(pCloud->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
@@ -936,6 +962,7 @@ if ((pCloud->nObject = nObject) >= 0) {
 	pCloud->nObjType = gameData.objs.objects [nObject].nType;
 	pCloud->nObjId = gameData.objs.objects [nObject].id;
 	}
+pCloud->nClass = SmokeObjClass (nObject);
 pCloud->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
 pCloud->nTicks = 0;
 pCloud->nDefBrightness = 0;
@@ -1035,7 +1062,7 @@ if ((c.nPartsPerPos = (int) (c.fPartsPerTick * c.nTicks)) >= 1) {
 			vPos.p.y = (fix) (vPosf.p.y * 65536.0f);
 			vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
 			CreateParticle (c.pParticles + j, &vPos, pDir, c.nSegment, c.nLife, 
-								 c.nSpeed, c.nType, c.nPartScale, c.bHaveColor ? &c.color : NULL,
+								 c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
 								 nCurTime, 0); //nInterpolatePos);
 			}
 		}
@@ -1391,7 +1418,7 @@ return 1;
 
 int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
-					  int nLife, int nSpeed, int nType, int nObject, tRgbaColord *pColor)
+					  int nLife, int nSpeed, char nType, int nObject, tRgbaColord *pColor)
 {
 #if 0
 if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
@@ -1507,6 +1534,8 @@ double CloudBrightness (tCloud *pCloud)
 if (pCloud->nObject < 0)
 	return 0.5;
 if (pCloud->nObjType == OBJ_SMOKE)
+	return 0.5;
+if (pCloud->nObjType == OBJ_DEBRIS)
 	return 0.5;
 if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
 	return 0.2;
@@ -1747,7 +1776,6 @@ for (pd = gameData.smoke.depthBuf.pDepthBuffer + PART_DEPTHBUFFER_SIZE - 1;
 		do {
 			RenderParticle (pl->pParticle, pl->fBrightness);
 			h--;
-			glEnd ();
 			pl = pl->pNextPart;
 			}
 		while (pl);

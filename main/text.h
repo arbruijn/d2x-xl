@@ -1752,11 +1752,11 @@ void LoadGameTexts(void);
 #define TXT_GOOD						GT(959)
 #define TXT_SMOKE_QUALITY			GT(960)
 #define TXT_SMOKE_ALPHA				GT(961)
+#define TXT_FEW						GT(962)
+#define TXT_MANY						GT(963)
 
 #if 0
 
-#define TXT_				GT(962)
-#define TXT_				GT(963)
 #define TXT_				GT(964)
 #define TXT_				GT(965)
 #define TXT_				GT(966)
