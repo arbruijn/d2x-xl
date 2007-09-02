@@ -81,6 +81,8 @@ static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 
+static double alphaScale [5] = {1, 0.8, 0.6, 0.4, 0.2};
+
 #if EXTRA_VERTEX_ARRAYS
 
 #define VERT_BUF_SIZE	512 //8192
@@ -655,6 +657,7 @@ else if (pParticle->nFade == 0) {
 	}
 pc = pParticle->color;
 //pc.alpha *= /*gameOpts->render.smoke.bDisperse ? decay2 :*/ decay;
+pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha];
 pc.alpha = (pc.alpha - 0.005) * decay + 0.005;
 if (pParticle->nType < 3) {
 	if (SHOW_DYN_LIGHT) {
@@ -1153,8 +1156,8 @@ int RenderCloud (tCloud *pCloud)
 #if SORT_CLOUD_PARTS
 	int			bSorted = gameOpts->render.smoke.bSort && (nParts > 1);
 	tPartIdx		*pPartIdx;
-	vmsVector	v;
 #endif
+	vmsVector	v;
 
 if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
 	return 0;

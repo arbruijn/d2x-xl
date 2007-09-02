@@ -174,6 +174,7 @@ static struct {
 	int	nSize [4];
 	int	nSyncSizes;
 	int	nQuality;
+	int	nAlpha;
 } smokeOpts;
 
 static struct {
@@ -208,6 +209,7 @@ static char *pszAmount [5];
 static char *pszSize [4];
 static char *pszLife [3];
 static char *pszSmokeQual [3];
+static char *pszSmokeAlpha [5];
 
 #if DBG_SHADOWS
 extern int	bZPass, bFrontCap, bRearCap, bFrontFaces, bBackFaces, bShadowVolume, bShadowTest, 
@@ -2489,6 +2491,14 @@ if (extraGameInfo [0].bUseSmoke) {
 		m->rebuild = 1;
 		return;
 		}
+	m = menus + smokeOpts.nAlpha;
+	v = m->value;
+	if (v != gameOpts->render.smoke.nAlpha) {
+		gameOpts->render.smoke.nAlpha = v;
+		sprintf (m->text, TXT_SMOKE_ALPHA, pszSmokeAlpha [v]);
+		m->rebuild = 1;
+		return;
+		}
 	m = menus + smokeOpts.nSyncSizes;
 	v = m->value;
 	if (v != gameOpts->render.smoke.bSyncSizes) {
@@ -2590,7 +2600,7 @@ void SmokeOptionsMenu ()
 	int	opt;
 	int	nOptSmokeLag, optBotSmoke, optMissSmoke, optDebrisSmoke, 
 			optStaticSmoke, optSmokeColl, optSmokeDisp;
-	char	szSmokeQual [50];
+	char	szSmokeQual [50], szSmokeAlpha [50];
 
 pszSize [0] = TXT_SMALL;
 pszSize [1] = TXT_MEDIUM;
@@ -2610,6 +2620,12 @@ pszLife [2] = TXT_LONG;
 pszSmokeQual [0] = TXT_STANDARD;
 pszSmokeQual [1] = TXT_GOOD;
 pszSmokeQual [2] = TXT_HIGH;
+
+pszSmokeAlpha [0] = TXT_LOW;
+pszSmokeAlpha [1] = TXT_MEDIUM;
+pszSmokeAlpha [2] = TXT_HIGH;
+pszSmokeAlpha [3] = TXT_VERY_HIGH;
+pszSmokeAlpha [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -2692,6 +2708,10 @@ do {
 			*szSmokeQual = *(TXT_SMOKE_QUALITY - 1);
 			ADD_SLIDER (opt, szSmokeQual + 1, gameOpts->render.smoke.bSort, 0, 2, KEY_Q, HTX_ADVRND_SMOKEQUAL);
 			smokeOpts.nQuality = opt++;
+			sprintf (szSmokeAlpha + 1, TXT_SMOKE_ALPHA, pszSmokeAlpha [NMCLAMP (gameOpts->render.smoke.nAlpha, 0, 4)]);
+			*szSmokeAlpha = *(TXT_SMOKE_ALPHA - 1);
+			ADD_SLIDER (opt, szSmokeAlpha + 1, gameOpts->render.smoke.nAlpha, 0, 4, KEY_T, HTX_ADVRND_SMOKEALPHA);
+			smokeOpts.nAlpha = opt++;
 			}
 		}
 	else

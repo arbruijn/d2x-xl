@@ -1710,6 +1710,7 @@ char *defaultGameTexts [][2] = {
 	{"verbesserte Earth Sha~Ker", "enhanced shaker ~Bomblets"},
 	{"gut", "good"},
 	{"Rauch-~Qualitaet: %s", "smoke ~Quality: %s"},
+	{"Rauch-~Transparenz: %s", "smoke ~Transparency: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2263,6 +2264,7 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, earth shaker bomblets sense targets at greater\ndistance and greater angles towards their flight direction.\nTo compensate, they will turn slower during the first\nthree seconds of flight."},
 	{"Je nach Einstellung werden weiter vom Spieler entfernte Rauch-\npartikel vor naeheren gezeichnet. Dadurch sieht Rauch natuerlicher\naus. Je mehr Rauchquellen vorhanden sind, desto mehr wirkt sich eine\nhohe Qualitaetseinstellung aus. Ein hoeherer Wert erfordert\nallerdings auch mehr Rechenleistung.", 
 	 "Depending on the chosen setting, smoke particles that are further\naway from the player are rendered first. That makes smoke appear\nmore natural. The more smoke sources, the stronger the effect of a\nhigh quality setting. A higher value however requires more\ncomputing power."},
+	{"Je hoeher der eingestellte Wert, desto durchsichtiger ercheint Rauch.", "The higher the setting, the more transparent smoke looks."},
 #if 0
 	{"", ""},
 #endif

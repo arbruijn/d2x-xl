@@ -446,6 +446,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.smoke.bStatic, i, 0);
 		RP (gameOptions [i].render.smoke.bSyncSizes, i, 0);
 		RP (gameOptions [i].render.smoke.bSort, i, 0);
+		RP (gameOptions [i].render.smoke.nAlpha, i, 0);
 
 		RP (gameOptions [i].render.weaponIcons.alpha, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bEquipment, i, 0);
@@ -951,6 +952,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.smoke.bStatic", "1"},
 	{"gameOptions[0].render.smoke.bSyncSizes", "1"},
 	{"gameOptions[0].render.smoke.bSort", "1"},
+	{"gameOptions[0].render.smoke.nAlpha", "0"},
 	{"gameOptions[0].render.weaponIcons.alpha", "3"},
 	{"gameOptions[0].render.weaponIcons.bEquipment", "1"},
 	{"gameOptions[0].render.weaponIcons.bShowAmmo", "1"},

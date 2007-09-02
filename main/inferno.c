@@ -1311,6 +1311,7 @@ if (i) {
 	gameOptions [1].render.smoke.bCollisions = 0;
 	gameOptions [1].render.smoke.bDisperse = 0;
 	gameOptions [1].render.smoke.bSort = 0;
+	gameOptions [1].render.smoke.nAlpha = 0;
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
 	gameOptions [1].render.powerups.b3D = 0;
 	gameOptions [1].render.powerups.nSpin = 0;
@@ -1411,6 +1412,7 @@ else {
 	gameOptions [0].render.smoke.bCollisions = 0;
 	gameOptions [0].render.smoke.bDisperse = 0;
 	gameOptions [0].render.smoke.bSort = 0;
+	gameOptions [0].render.smoke.nAlpha = 0;
 	gameOptions [0].render.smoke.bDecreaseLag = 1;
 	gameOptions [0].render.powerups.b3D = 0;
 	gameOptions [0].render.powerups.nSpin = 0;

@@ -181,6 +181,7 @@ typedef struct tSmokeOptions {
 	int bCollisions;
 	int bDisperse;
 	int bSort;
+	int nAlpha;
 	int bDecreaseLag;	//only render if tPlayer is moving forward
 } tSmokeOptions;
 
