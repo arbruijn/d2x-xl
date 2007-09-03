@@ -1042,12 +1042,14 @@ return 0;
 #define SHRAPNEL_PART_LIFE			-1750
 #define SHRAPNEL_PART_SPEED		10
 
+static float fShrapnelScale [5] = {0, 5.0f / 3.0f, 2.5f, 10.0f / 3.0f, 5};
+
 int CreateShrapnels (tObject *parentObjP)
 {
 	tShrapnelData	*sdP;
 	tShrapnel		*shrapnelP;
 	vmsVector		vDir;
-	int				i, h = (int) (f2fl (parentObjP->size) * 5 / (1 << (4 - gameOpts->render.nExplShrapnels)));
+	int				i, h = (int) (f2fl (parentObjP->size) * fShrapnelScale [gameOpts->render.nExplShrapnels] + 0.5);
 	short				nObject;
 	tObject			*objP;
 	tRgbaColord		color = {1,1,1,0.5};
