@@ -50,6 +50,10 @@
 
 //------------------------------------------------------------------------------
 
+#define BLOWUP_PARTICLES 0		//blow particles up at "birth"
+
+#define SMOKE_SLOWMO 0
+
 #define SORT_CLOUDS 1
 
 #define SORT_CLOUD_PARTS 0
@@ -267,7 +271,7 @@ return n * n;
 
 int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
 						  short nSegment, int nLife, int nSpeed, char nType, char nClass,
-						  float nScale, tRgbaColord *pColor, int nCurTime, int bStart)
+						  float nScale, tRgbaColord *pColor, int nCurTime, int bBlowUp)
 {
 	vmsVector	vDrift;
 	int			nRad;
@@ -333,16 +337,27 @@ else {
 pParticle->drift = vDrift;
 if (nLife < 0)
 	nLife = -nLife;
-if (gameOpts->render.smoke.bDisperse && (nType < 3))
-	nLife = (nLife * 2) / 3;
+if (nType < 3) {
+	if (gameOpts->render.smoke.bDisperse)
+		nLife = (nLife * 2) / 3;
+	nLife = nLife / 2 + randN (nLife / 2);
+	}
 pParticle->nLife = 
-pParticle->nTTL = nLife / 2 + randN (nLife / 2);
+pParticle->nTTL = nLife;
 pParticle->nOrient = randN (4);
 pParticle->nMoved = nCurTime;
 pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
-pParticle->nRad = nRad + randN (nRad);
-pParticle->nWidth =
-pParticle->nHeight = pParticle->nRad / 2;
+nRad += (nType == 3) ? nRad : randN (nRad);
+if (pParticle->bBlowUp = bBlowUp) {
+	pParticle->nRad = nRad;
+	pParticle->nWidth =
+	pParticle->nHeight = nRad / 2;
+	}
+else {
+	pParticle->nWidth =
+	pParticle->nHeight = nRad;
+	pParticle->nRad = nRad / 2;
+	}
 pParticle->color.alpha /= nType + 2; //4 - nType * 0.5; //nType + 2;
 return 1;
 }
@@ -382,7 +397,6 @@ int CollideParticleAndWall (tParticle *pParticle)
 	tSegment		*segP;
 	tSide			*sideP;
 	int			bInit, nSide, nVert, nChild, nFace, nInFront;
-	//int			nRad = max (pParticle->nWidth, pParticle->nHeight) / 2;
 	fix			nDist;
 	int			*vlP;
 	vmsVector	pos = pParticle->pos;
@@ -438,7 +452,7 @@ return 0;
 
 int MoveParticle (tParticle *pParticle, int nCurTime)
 {
-	int			j;
+	int			j, nRad;
 	fix			t, dot;
 	vmsVector	pos, drift;
 	fix			drag = fl2f ((float) pParticle->nLife / (float) pParticle->nTTL);
@@ -491,27 +505,38 @@ else {
 		}
 	pParticle->drift = drift;
 	if (pParticle->nTTL >= 0) {
-		int nRad = pParticle->nRad;
-	if (pParticle->nWidth < nRad) {
-		pParticle->nWidth += nRad / 10;
-		pParticle->nHeight += nRad / 10;
-		if (pParticle->nWidth > nRad)
-			pParticle->nWidth = nRad;
-		if (pParticle->nHeight > nRad)
-			pParticle->nHeight = nRad;
-		pParticle->color.alpha *= 1.0725;
-		}
-#if 0
-		//VmVecScaleFrac (&pParticle->drift, t - ((t / 10) ? t / 10 : 1), t);
-		decay = 1.0 - (double) t / (double) pParticle->nTTL;
-		pParticle->color.alpha *= decay;
-		HUDMessage (0, "%1.5f", decay);
-		if (!gameStates.render.bPointSprites || gameOpts->render.smoke.bSort) {
-			pParticle->nWidth = (short) ((double) pParticle->nWidth * decay);
-			pParticle->nHeight = (short) ((double) pParticle->nHeight * decay);
-			}
-#endif
+#if SMOKE_SLOWMO
+		pParticle->nLife -= (int) (t / gameStates.gameplay.slowmo [0].fSpeed);
+#else
 		pParticle->nLife -= t;
+#endif
+		if (nRad = pParticle->nRad) {
+			if (pParticle->bBlowUp) {
+				if (pParticle->nWidth >= nRad)
+					pParticle->nRad = 0;
+				else {
+					pParticle->nWidth += nRad / 10 / pParticle->bBlowUp;
+					pParticle->nHeight += nRad / 10 / pParticle->bBlowUp;
+					if (pParticle->nWidth > nRad)
+						pParticle->nWidth = nRad;
+					if (pParticle->nHeight > nRad)
+						pParticle->nHeight = nRad;
+					pParticle->color.alpha *= (1.0 + 0.0725 / pParticle->bBlowUp);
+					if (pParticle->color.alpha > 1)
+						pParticle->color.alpha = 1;
+					}
+				}
+			else {
+				if (pParticle->nWidth <= nRad)
+					pParticle->nRad = 0;
+				else {
+					pParticle->nRad += nRad / 5;
+					pParticle->color.alpha *= 1.0725;
+					if (pParticle->color.alpha > 1)
+						pParticle->color.alpha = 1;
+					}
+				}
+			}
 		}
 	}	
 pParticle->nMoved = nCurTime;
@@ -546,7 +571,7 @@ if (iBuffer) {
 	if ((i = glGetError ()))
 		HUDMessage (0, "glVertexPointer %d failed (%d)", iBuffer, i);
 #	endif
-	if (!gameStates.render.bPointSprites || gameOpts->render.smoke.bSort) {
+	if (!gameStates.render.bPointSprites) {
 		glTexCoordPointer (2, GL_DOUBLE, 0, texCoordBuffer);
 #	ifdef _DEBUG
 		if ((i = glGetError ()))
@@ -571,7 +596,7 @@ if (iBuffer) {
 inline void SetParticleTexCoord (GLdouble u, GLdouble v, char orient)
 {
 #if OGL_VERTEX_ARRAYS
-if (gameStates.render.bVertexArrays) {
+if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 	if (orient == 1) {
 		texCoordBuffer [iBuffer][0] = 1.0 - v;
 		texCoordBuffer [iBuffer][1] = u;
@@ -642,14 +667,22 @@ if (pParticle->nType > 2) {
 	}
 else if (pParticle->nFade > 0) {
 	if (pParticle->color.green < 1.0) {
+#if SMOKE_SLOWMO
 		pParticle->color.green += 1.0 / 20.0 / (double) gameStates.gameplay.slowmo [0].fSpeed;
+#else
+		pParticle->color.green += 1.0 / 20.0; 
+#endif
 		if (pParticle->color.green > 1.0) {
 			pParticle->color.green = 1.0;
 			pParticle->nFade--;
 			}
 		}
 	if (pParticle->color.blue < 1.0) {
+#if SMOKE_SLOWMO
 		pParticle->color.blue += 1.0 / 10.0 / (double) gameStates.gameplay.slowmo [0].fSpeed;
+#else
+		pParticle->color.blue += 1.0 / 10.0;
+#endif
 		if (pParticle->color.blue > 1.0) {
 			pParticle->color.blue = 1.0;
 			pParticle->nFade--;
@@ -664,7 +697,10 @@ else if (pParticle->nFade == 0) {
 	}
 pc = pParticle->color;
 //pc.alpha *= /*gameOpts->render.smoke.bDisperse ? decay2 :*/ decay;
-pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
+if (pParticle->nType == 3)
+	pc.alpha /= 2;
+else
+	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
 pc.alpha = (pc.alpha - 0.005) * decay + 0.005;
 if (pParticle->nType < 3) {
 	if (SHOW_DYN_LIGHT) {
@@ -683,7 +719,7 @@ if (pParticle->nType < 3) {
 #if OGL_POINT_SPRITES
 if (gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort) {
 #	if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays) {
+	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 #		if !EXTRA_VERTEX_ARRAYS
 		pParticle->glPos.p.x = f2fl (hp.x);
 		pParticle->glPos.p.y = f2fl (hp.y);
@@ -731,7 +767,7 @@ else
 	y = f2fl (hp.p.y);
 	z = f2fl (hp.p.z);
 #if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays) {
+	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 		pf = vertexBuffer [iBuffer];
 		pf [0] =
 		pf [9] = x - w; 
@@ -799,7 +835,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort) {
 	float quadratic [] = {1.0f, 0.0f, 0.01f};
    float partSize = f2fl ((gameOpts->render.smoke.bSyncSizes ? 
-									PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale) : nScale)) * 128; 
+									PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale) : nScale)) * 256; 
 	static float maxSize = -1.0f;
 	glPointParameterfvARB (GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
 	glPointParameterfARB (GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
@@ -807,13 +843,15 @@ if (gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort) {
 	glEnable (GL_POINT_SPRITE_ARB);
 	if (maxSize < 0)
 	   glGetFloatv (GL_POINT_SIZE_MAX_ARB, &maxSize);
-	glPointSize ((maxSize > partSize) ? partSize : maxSize);
+	if (maxSize != partSize)
+		maxSize = partSize;
+	glPointSize (maxSize);
 	glPointParameterfARB (GL_POINT_SIZE_MIN_ARB, 1.0f);
 	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, 100 * maxSize);
 	if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
 		return 0;
 #	if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays) {
+	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 #	ifdef _DEBUG
 		GLenum i;
 #endif
@@ -838,7 +876,7 @@ else
 	if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
 		return 0;
 #if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays) {
+	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 #ifdef _DEBUG
 		GLenum i;
 #endif
@@ -873,7 +911,7 @@ return 1;
 int EndRenderSmoke (tCloud *pCloud)
 {
 #if OGL_VERTEX_ARRAYS
-if (pCloud && gameStates.render.bVertexArrays) {
+if (pCloud && gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 #	if EXTRA_VERTEX_ARRAYS
 	FlushVertexArrays ();
 #	else
@@ -926,7 +964,7 @@ return 0;
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
-					  tRgbaColord *pColor, int nCurTime)
+					  tRgbaColord *pColor, int nCurTime, int bBlowUpParts)
 {
 if (!(pCloud->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
 	return 0;
@@ -949,6 +987,7 @@ if ((pCloud->bHaveDir = (pDir != NULL)))
 pCloud->prevPos =
 pCloud->pos = *pPos;
 pCloud->bHavePrevPos = 1;
+pCloud->bBlowUpParts = bBlowUpParts;
 pCloud->nParts = 0;
 pCloud->nMoved = nCurTime;
 pCloud->nPartLimit =
@@ -1023,7 +1062,11 @@ int MoveCloud (tCloud *pCloud, int nCurTime)
 	vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL);
 	fVector		vDeltaf, vPosf;
 
+#if SMOKE_SLOWMO
+t = (int) ((nCurTime - c.nMoved) / gameStates.gameplay.slowmo [0].fSpeed);
+#else
 t = nCurTime - c.nMoved;
+#endif
 nPartSeg = -1;
 for (i = c.nParts, j = c.nFirstPart; i; i--, j = (j + 1) % c.nPartLimit)
 	if (!MoveParticle (c.pParticles + j, nCurTime)) {
@@ -1063,7 +1106,7 @@ if ((c.nPartsPerPos = (int) (c.fPartsPerTick * c.nTicks)) >= 1) {
 			vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
 			CreateParticle (c.pParticles + j, &vPos, pDir, c.nSegment, c.nLife, 
 								 c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
-								 nCurTime, 0); //nInterpolatePos);
+								 nCurTime, c.bBlowUpParts);
 			}
 		}
 	}
@@ -1203,23 +1246,22 @@ if (pCloud->bHavePrevPos &&
 	for (i = nParts, j = (nFirstPart + nParts) % nPartLimit; i; i--) {
 		if (!j)
 			j = nPartLimit;
-	#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
+#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
 		if (!RenderParticle (pCloud->pParticles + --j))
-			if (gameStates.render.bVertexArrays) {
+			if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 				FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
 				nBuffer = iBuffer;
 				}
-	#else
+#else
 		RenderParticle (pCloud->pParticles + --j, brightness);
-	#endif
+#endif
 		}
 	}
-else 
-{
+else {
 	for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
 		if (!RenderParticle (pCloud->pParticles + j, brightness))
-			if (gameStates.render.bVertexArrays) {
+			if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 				FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
 				nBuffer = iBuffer;
 				}
@@ -1418,7 +1460,7 @@ return 1;
 
 int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
-					  int nLife, int nSpeed, char nType, int nObject, tRgbaColord *pColor)
+					  int nLife, int nSpeed, char nType, int nObject, tRgbaColord *pColor, int bBlowUpParts)
 {
 #if 0
 if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
@@ -1454,7 +1496,7 @@ else {
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
 		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, nSegment, nObject, nMaxParts, nPartScale, nDensity, 
-							  nPartsPerPos, nLife, nSpeed, nType, pColor, t))
+							  nPartsPerPos, nLife, nSpeed, nType, pColor, t, bBlowUpParts))
 			pSmoke->nClouds++;
 		else {
 			DestroySmoke (gameData.smoke.iFreeSmoke);
@@ -1475,8 +1517,17 @@ else {
 
 int MoveSmoke (void)
 {
+#if SMOKE_SLOWMO
+	static int	t0 = 0;
+	int t = gameStates.app.nSDLTicks - t0;
+
+if (t / gameStates.gameplay.slowmo [0].fSpeed < 25)
+	return 0;
+t0 += (int) (gameStates.gameplay.slowmo [0].fSpeed * 25);
+#else
 if (!gameStates.app.tick40fps.bTick)
 	return 0;
+#endif
 #if 0
 if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
 	return 0;

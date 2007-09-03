@@ -904,7 +904,7 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	shrapnelP->fScale = 45.0 / 80.0;
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, shrapnelP->nParts,
 											   -PARTICLE_SIZE (1, 4), -1, 1, /*shrapnelP->xTTL * 4000 /*/ SHRAPNEL_PART_LIFE, 
-												SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color);
+												SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1);
 	}
 objP->lifeleft += objP->lifeleft;
 objP->cType.explInfo.nSpawnTime = -1;
@@ -1092,7 +1092,7 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	if (objP->lifeleft < shrapnelP->xLife)
 		objP->lifeleft = shrapnelP->xLife;
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
-											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color);
+											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1);
 	}
 objP->lifeleft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;
@@ -2887,6 +2887,10 @@ if (objP == dbgObjP) {
 #endif
 	}
 #endif
+if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
+	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) &&
+	 (gameStates.render.nShadowPass != 2))
+	return 0;
 if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console) &&
 	 !gameStates.render.automap.bDisplay) {
@@ -3799,7 +3803,7 @@ if (objP->nType == OBJ_WEAPON) {
 		nParent = gameData.objs.objects [objP->cType.laserInfo.nParentObj].id;
 		if (nParent != gameData.multiplayer.nLocalPlayer)
 			gameData.objs.guidedMissile [nParent] = NULL;
-		else if (gameData.demo.nState==ND_STATE_RECORDING)
+		else if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordGuidedEnd ();
 		}
 	}

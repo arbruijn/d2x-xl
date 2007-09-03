@@ -34,6 +34,7 @@ typedef struct tParticle {
 	char			nRotDir;
 	char			nBounce;
 	char			bHaveDir;
+	char			bBlowUp;
 	char			nFade;
 	char			nClass;
 } tParticle;
@@ -73,7 +74,8 @@ typedef struct tCloud {
 	tParticle	*pParticles;	//list of active particles
 	tPartIdx		*pPartIdx;
 	tRgbaColord	color;
-	int			bHaveColor;
+	char			bHaveColor;
+	char			bBlowUpParts;	//blow particles up at their "birth"
 } tCloud;
 
 typedef struct tSmoke {
@@ -95,7 +97,7 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
 					  int nLife, int nSpeed, char nType, int nObject,
-					  tRgbaColord *pColor);
+					  tRgbaColord *pColor, int bBlowUpParts);
 int DestroySmoke (int iSmoke);
 int MoveSmoke ();
 int RenderSmoke ();
