@@ -35,6 +35,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "game.h"
 #include "key.h"
 #include "object.h"
+#include "objrender.h"
 #include "physics.h"
 #include "error.h"
 #include "joy.h"
@@ -2272,6 +2273,8 @@ if (nDebugSlowdown) {
 	DoSeismicStuff ();
 //LogErr ("DoSmokeFrame \n");
 	DoSmokeFrame ();
+//LogErr ("DoFlashFrame \n");
+	DoFlashFrame ();
 //LogErr ("DoAmbientSounds\n");
 	DoAmbientSounds ();
 #ifdef _DEBUG
@@ -2337,8 +2340,8 @@ if (nDebugSlowdown) {
 		}
 	else { // Note the link to above!
 		LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
-//LogErr ("MoveAllObjects\n");
-		if (!MoveAllObjects ())
+//LogErr ("UpdateAllObjects\n");
+		if (!UpdateAllObjects ())
 			return 0;
 //LogErr ("PowerupGrabCheatAll \n");
 		PowerupGrabCheatAll ();

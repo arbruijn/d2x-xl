@@ -48,6 +48,7 @@ static char rcsid [] = "$Id: endlevel.c, v 1.20 2003/10/12 09:38:48 btb Exp $";
 
 #include "endlevel.h"
 #include "object.h"
+#include "objrender.h"
 #include "game.h"
 #include "screens.h"
 #include "gauges.h"
@@ -475,7 +476,7 @@ void DoEndLevelFrame ()
 	static fix ext_expl_halflife;
 
 save_last_pos = gameData.objs.console->vLastPos;	//don't let move code change this
-MoveAllObjects ();
+UpdateAllObjects ();
 gameData.objs.console->vLastPos = save_last_pos;
 
 if (gameStates.render.bExtExplPlaying) {

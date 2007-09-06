@@ -46,6 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 
 #include "object.h"
+#include "objrender.h"
 #include "physics.h"
 #include "slew.h"
 #include "render.h"
@@ -1772,10 +1773,10 @@ if (!EGI_FLAG (bUseSmoke, 0, 1, 0))
 	return 0;
 else {
 		int		i, nObject;
-		tSmoke	*pSmoke = gameData.smoke.smoke;
+		tSmoke	*pSmoke = gameData.smoke.buffer;
 
-	for (i = gameData.smoke.iUsedSmoke; i >= 0; i = pSmoke->nNext) {
-		pSmoke = gameData.smoke.smoke + i;
+	for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
+		pSmoke = gameData.smoke.buffer + i;
 		nObject = NDFindObject (pSmoke->nSignature);
 		if (nObject < 0) {
 			gameData.smoke.objects [pSmoke->nObject] = -1;

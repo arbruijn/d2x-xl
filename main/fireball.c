@@ -30,6 +30,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "object.h"
+#include "objsmoke.h"
+#include "objrender.h"
 #include "vclip.h"
 #include "game.h"
 #include "mono.h"
@@ -89,7 +91,7 @@ objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 objP->size = parentObjP->size;
 objP->size /= 3;
-if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [id = parentObjP->id])) {
+if ((parentObjP->nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [id = parentObjP->id])) {
 	if ((id == EARTHSHAKER_ID) || (id == ROBOT_EARTHSHAKER_ID)) {
 		objP->size = 5 * F1_0 / 2;
 //		objP->lifeleft = 3 * BLAST_LIFE / 2;
@@ -103,6 +105,28 @@ if ((parentObjP->nType == OBJ_WEAPON) && (bIsMissile [id = parentObjP->id])) {
 		objP->size = F1_0;
 		}
 	}
+return objP;
+}
+
+//------------------------------------------------------------------------------
+
+tObject *CreateLighting (tObject *parentObjP)
+{
+	short		nObject;
+	tObject	*objP;
+
+if (!gameOpts->render.bLightnings)
+	return NULL;
+nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
+								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_LIGHTNING, 1);
+if (nObject < 0)
+	return NULL;
+objP = OBJECTS + nObject;
+objP->lifeleft = IMMORTAL_TIME;
+objP->cType.explInfo.nSpawnTime = -1;
+objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDeleteTime = -1;
+objP->size = 1;
 return objP;
 }
 
@@ -1626,7 +1650,7 @@ if (objP->lifeleft <= 0) {	// We died of old age
 if (objP->renderType == RT_EXPLBLAST) 
 	return;
 if (objP->renderType == RT_SHRAPNELS) {
-	MoveShrapnels (objP);
+	UpdateShrapnels (objP);
 	return;
 	}
 //See if we should create a secondary explosion

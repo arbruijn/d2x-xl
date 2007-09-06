@@ -842,7 +842,7 @@ if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 
-if (bIsMissile [weaponP->id])
+if (gameData.objs.bIsMissile [weaponP->id])
 	CreateExplBlast (weaponP);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
@@ -1679,7 +1679,7 @@ if ((botInfoP->companion) &&
 	 (weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && 
 	  !gameStates.app.cheats.bRobotsKillRobots)
 	return 1;
-if (bIsMissile [weaponP->id])
+if (gameData.objs.bIsMissile [weaponP->id])
 	CreateExplBlast (weaponP);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
@@ -2219,7 +2219,7 @@ if (weaponP->id == SMARTMINE_ID)
 	if (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.nParentObj)
 		if (VmVecDistQuick (vHitPt, &playerObjP->position.vPos) > playerObjP->size)
 			return 1;
-if (bIsMissile [weaponP->id])
+if (gameData.objs.bIsMissile [weaponP->id])
 	CreateExplBlast (weaponP);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
@@ -2416,7 +2416,7 @@ if (dist >= F1_0*5)
 else {
 	MaybeKillWeapon (weapon1, weapon2);
 	if (weapon1->flags & OF_SHOULD_BE_DEAD) {
-		if (bIsMissile [weapon1->id])
+		if (gameData.objs.bIsMissile [weapon1->id])
 			CreateExplBlast (weapon1);
 		ExplodeBadassWeapon (weapon1, vHitPt);
 		DigiLinkSoundToPos (gameData.weapons.info [weapon1->id].robot_hitSound, weapon1->nSegment , 0, vHitPt, 0, F1_0);
@@ -2445,8 +2445,8 @@ else if (id2 == OMEGA_ID) {
 	if (!OkToDoOmegaDamage (weapon2))
 		return 1;
 	}
-bKill1 = WI_destructable (id1) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id1]);
-bKill2 = WI_destructable (id2) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && bIsMissile [id2]);
+bKill1 = WI_destructable (id1) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && gameData.objs.bIsMissile [id1]);
+bKill2 = WI_destructable (id2) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && gameData.objs.bIsMissile [id2]);
 if (bKill1 || bKill2) {
 	//	Bug reported by Adam Q. Pletcher on September 9, 1994, smart bomb homing missiles were toasting each other.
 	if ((id1 == id2) && (weapon1->cType.laserInfo.nParentObj == weapon2->cType.laserInfo.nParentObj))
@@ -2657,7 +2657,7 @@ void CollideInit ()
 
 	for (i=0; i < MAX_OBJECT_TYPES; i++)
 		for (j=0; j < MAX_OBJECT_TYPES; j++)
-			CollisionResult [i][j] = RESULT_NOTHING;
+			gameData.objs.collisionResult [i][j] = RESULT_NOTHING;
 
 	ENABLE_COLLISION (OBJ_WALL, OBJ_ROBOT);
 	ENABLE_COLLISION (OBJ_WALL, OBJ_WEAPON);

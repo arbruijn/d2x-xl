@@ -2424,7 +2424,7 @@ for (;;) {
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
 			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
-			if (!objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && bIsMissile [objP->id])))
+			if (!objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])))
 				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
 			}
 		else

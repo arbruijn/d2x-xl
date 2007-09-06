@@ -99,7 +99,7 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
 					  int nLife, int nSpeed, char nType, int nObject,
 					  tRgbaColord *pColor, int bBlowUpParts);
 int DestroySmoke (int iSmoke);
-int MoveSmoke ();
+int UpdateSmoke ();
 int RenderSmoke ();
 int DestroyAllSmoke (void);
 void SetSmokeDensity (int i, int nMaxParts, int nDensity);

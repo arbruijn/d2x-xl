@@ -561,7 +561,7 @@ else if (!po) {
 		else if ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_POWERUP)) {
 			if (!gameOpts->render.shadows.bMissiles)
 				return NULL;
-			if (!bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
+			if (!gameData.objs.bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
 				return NULL;
 			}
 		else if (objP->nType == OBJ_PLAYER) {

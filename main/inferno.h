@@ -107,6 +107,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FLASH_CYCLE_RATE f1_0
 
+//------------------------------------------------------------------------------
+
 // The version number of the game
 typedef struct tLegacyOptions {
 	int bInput;
@@ -118,11 +120,15 @@ typedef struct tLegacyOptions {
 	int bWalls;
 } tLegacyOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tCameraOptions {
 	int nFPS;
 	int nSpeed;
 	int bFitToWall;
 } tCameraOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tWeaponIconOptions {
 	int bSmall;
@@ -131,6 +137,8 @@ typedef struct tWeaponIconOptions {
 	char nSort;
 	ubyte alpha;
 } tWeaponIconOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tColorOptions {
 	int bCap;
@@ -142,6 +150,8 @@ typedef struct tColorOptions {
 	int nLightMapRange;
 	int nSaturation;
 } tColorOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tCockpitOptions {
 	int bHUD;
@@ -162,10 +172,14 @@ typedef struct tCockpitOptions {
 	int nWindowZoom;
 } tCockpitOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tTextureOptions {
 	int bUseHires;
 	int nQuality;
 } tTextureOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tSmokeOptions {
 	int nDens [5];
@@ -185,6 +199,8 @@ typedef struct tSmokeOptions {
 	int bDecreaseLag;	//only render if tPlayer is moving forward
 } tSmokeOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tShadowOptions {
 	int nReach;
 	int nLights;
@@ -197,10 +213,14 @@ typedef struct tShadowOptions {
 	int bReactors;
 	} tShadowOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tPowerupOptions {
 	int b3D;
 	int nSpin;
 } tPowerupOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tAutomapOptions {
 	int bTextured;
@@ -211,6 +231,8 @@ typedef struct tAutomapOptions {
 	int nColor;
 	int nRange;
 } tAutomapOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tRenderOptions {
 	int bAllSegs;
@@ -227,6 +249,7 @@ typedef struct tRenderOptions {
 	int bCoronas;
 	int bObjectCoronas;
 	int nCoronaIntensity;
+	int bLightnings;
 	int bUseShaders;
 	int bHiresModels;
 	int bRobotShields;
@@ -248,6 +271,8 @@ typedef struct tRenderOptions {
 	tAutomapOptions automap;
 } tRenderOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
@@ -255,6 +280,8 @@ typedef struct tOglOptions {
 	int nMaxLights;
 	int bVoodooHack;
 } tOglOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tMovieOptions {
 	int bHires;
@@ -264,6 +291,8 @@ typedef struct tMovieOptions {
 	int bFullScreen;
 	int bSubTitles;
 } tMovieOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tGameplayOptions {
 	int nAutoSelectWeapon;
@@ -281,6 +310,8 @@ typedef struct tGameplayOptions {
 	int nSlowMotionSpeedup;
 } tGameplayOptions;
 
+//------------------------------------------------------------------------------
+
 #define UNIQUE_JOY_AXES	5
 
 typedef struct tMouseInputOptions {
@@ -291,6 +322,8 @@ typedef struct tMouseInputOptions {
 	int sensitivity [3];
 	} tMouseInputOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tJoystickInputOptions {
 	int bUse;
 	int bSyncAxes;
@@ -298,6 +331,8 @@ typedef struct tJoystickInputOptions {
 	int sensitivity [UNIQUE_JOY_AXES];
 	int deadzones [UNIQUE_JOY_AXES];
 	} tJoystickInputOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tTrackIRInputOptions {
 	int bPresent;
@@ -309,11 +344,15 @@ typedef struct tTrackIRInputOptions {
 	int bSyncAxes;
 	} tTrackIRInputOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tKeyboardInputOptions {
 	int bUse;
 	int nRamp;
 	int bRamp [3];
 	} tKeyboardInputOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tInputOptions {
 	int bLimitTurnRate;
@@ -326,6 +365,8 @@ typedef struct tInputOptions {
 	tKeyboardInputOptions keyboard;
 } tInputOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSoundOptions {
 	int bUseD1Sounds;
 	int bUseRedbook;
@@ -336,6 +377,8 @@ typedef struct tSoundOptions {
 	int digiSampleRate;
 } tSoundOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tAltBgOptions {
 	int bHave;
 	double alpha;
@@ -343,6 +386,8 @@ typedef struct tAltBgOptions {
 	int grayscale;
 	char szName [FILENAME_LEN];
 } tAltBgOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tMenuOptions {
 	int nStyle;
@@ -353,10 +398,14 @@ typedef struct tMenuOptions {
 	tAltBgOptions altBg;
 } tMenuOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tDemoOptions {
 	int bOldFormat;
 	int bRevertFormat;
 } tDemoOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tMultiplayerOptions {
 	int bNoRankings;
@@ -365,6 +414,8 @@ typedef struct tMultiplayerOptions {
 	int bNoRedundancy;
 } tMultiplayerOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tApplicationOptions {
 	int bAutoRunMission;
 	int nVersionFilter;
@@ -372,6 +423,8 @@ typedef struct tApplicationOptions {
 	int bExpertMode;
 	int nScreenShotInterval;
 } tApplicationOptions;
+
+//------------------------------------------------------------------------------
 
 typedef struct tGameOptions {
 	tRenderOptions			render;
@@ -387,6 +440,8 @@ typedef struct tGameOptions {
 	tDemoOptions			demo;
 } tGameOptions;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSeismicStates {
 	fix	nMagnitude;
 	fix	nStartTime;
@@ -400,12 +455,16 @@ typedef struct tSeismicStates {
 	int	nVolume;
 } tSeismicStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSlowMotionStates {
 	float fSpeed;
 	int	nState;
 	time_t tUpdate;
 	int	bActive;
 	} tSlowMotionStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tGameplayStates {
 	int bMultiBosses;
@@ -427,6 +486,8 @@ typedef struct tGameplayStates {
 	tSlowMotionStates slowmo [2];
 } tGameplayStates;
 
+//------------------------------------------------------------------------------
+
 #define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount)
 
 typedef struct tInputStates {
@@ -445,6 +506,8 @@ typedef struct tInputStates {
 	fix		nCruiseSpeed;
 } tInputStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tMenuStates {
 	int bHires;
 	int bHiresAvailable;
@@ -456,11 +519,15 @@ typedef struct tMenuStates {
 	int bReordering;
 } tMenuStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tMovieStates {
 	int nRobots;
 	int bIntroPlayed;
 	int bMac;
 } tMovieStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tMultiplayerStates {
 	int bUseTracker;
@@ -477,12 +544,16 @@ typedef struct tMultiplayerStates {
 	int bPlayerIsTyping [MAX_PLAYERS];
 } tMultiplayerStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tGfxStates {
 	int bInstalled;
 	int bOverride;
 	int nStartScrSize;
 	int nStartScrMode;
 } tGfxStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tOglStates {
 	int bInitialized;
@@ -538,19 +609,27 @@ typedef struct tOglStates {
 	float fAlpha;
 } tOglStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tCameraStates {
 	int bActive;
 } tCameraStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tColorStates {
 	int bLightMapsOk;
 	int bRenderLightMaps;
 } tColorStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tTextureStates {
 	int bGlsTexMergeOk;
 	int bHaveMaskShader;
 } tTextureStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tCockpitStates {
 	int bShowPingStats;
@@ -564,6 +643,8 @@ typedef struct tCockpitStates {
 	int n3DView [2];
 	int nCoopPlayerView [2];
 } tCockpitStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tVRBuffers {
 	grs_canvas  *offscreen;			// The offscreen data buffer
@@ -589,11 +670,15 @@ typedef struct tVRStates {
 	tVRBuffers	buffers;
 } tVRStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tFontStates {
 	int bHires;
 	int bHiresAvailable;
 	int bInstalled;
 } tFontStates;
+
+//------------------------------------------------------------------------------
 
 #define DEFAULT_RENDER_DEPTH 255
 
@@ -687,6 +772,8 @@ typedef struct tRenderStates {
 	tAutomapStates automap;
 } tRenderStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tDigiStates {
 	int bInitialized;
 	int bSoundsInitialized;
@@ -703,6 +790,8 @@ typedef struct tDigiStates {
 	short nLoopingChannel;
 } tDigiStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSoundStates {
 	int nCurrentSong;
 	int bRedbookEnabled;
@@ -714,6 +803,8 @@ typedef struct tSoundStates {
 	tDigiStates digi;
 } tSoundStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tVideoStates {
 	int nDisplayMode;
 	int nDefaultDisplayMode;
@@ -723,6 +814,8 @@ typedef struct tVideoStates {
 	int nHeight;
 	int bFullScreen;
 } tVideoStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tCheatStates {
 	int bEnabled;
@@ -742,12 +835,16 @@ typedef struct tCheatStates {
 	int nUnlockLevel;
 } tCheatStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tEntropyStates {
 	int bConquering;
 	int bConquerWarning;
 	int bExitSequence;
 	int nTimeLastMoved;
 } tEntropyStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tSlowTick {
 	int bTick;
@@ -823,6 +920,8 @@ typedef struct tApplicationStates {
 	tCheatStates cheats;
 } tApplicationStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tLimitFPSStates {
 	ubyte	bControls;
 	ubyte bJoystick;
@@ -833,9 +932,13 @@ typedef struct tLimitFPSStates {
 	ubyte bOmega;
 } tLimitFPSStates;
 
+//------------------------------------------------------------------------------
+
 typedef struct tPlayerStates {
 	int bTripleFusion;
 } tPlayerStates;
+
+//------------------------------------------------------------------------------
 
 typedef struct tGameStates {
 	tGameplayStates		gameplay;
@@ -854,9 +957,13 @@ typedef struct tGameStates {
 	tPlayerStates			players [MAX_PLAYERS];
 } tGameStates;
 
+//------------------------------------------------------------------------------
+
 extern tGameOptions	gameOptions [2];
 extern tGameStates	gameStates;
 extern tGameOptions	*gameOpts;
+
+//------------------------------------------------------------------------------
 
 #define MAX_PATH_POINTS		20
 
@@ -875,6 +982,8 @@ typedef struct tFlightPath {
 	time_t				tRefresh;
 	time_t				tUpdate;
 } tFlightPath;
+
+//------------------------------------------------------------------------------
 
 #include "cameras.h"
 
@@ -896,6 +1005,8 @@ typedef struct tLightRef {
 	short			nTexture;
 } tLightRef;
 
+//------------------------------------------------------------------------------
+
 typedef struct tColorData {
 	tFaceColor	*lights;
 	tFaceColor	*sides;
@@ -908,6 +1019,8 @@ typedef struct tColorData {
 	int			nVisibleLights;
 	tRgbColorf	flagTag;
 } tColorData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tPulseData {
 	float			fScale;
@@ -924,6 +1037,8 @@ typedef struct tSphereData {
 	tPulseData	pulse;
 	tPulseData	*pPulse;
 } tSphereData;
+
+//------------------------------------------------------------------------------
 
 #define USE_OGL_LIGHTS	0
 #define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
@@ -957,6 +1072,8 @@ typedef struct tDynLight {
 	tShadowLightInfo	shadow;
 } tDynLight;
 
+//------------------------------------------------------------------------------
+
 typedef struct tOglMaterial {
 #if 0 //using global default values instead
 	fVector		diffuse;
@@ -968,6 +1085,8 @@ typedef struct tOglMaterial {
 	ubyte			bValid;
 	short			nLight;
 } tOglMaterial;
+
+//------------------------------------------------------------------------------
 
 typedef struct tShaderLight {
 #if 1
@@ -989,11 +1108,15 @@ typedef struct tShaderLight {
 	ubyte			bExclusive;
 } tShaderLight;
 
+//------------------------------------------------------------------------------
+
 typedef struct tShaderLightData {
 	tShaderLight	lights [MAX_OGL_LIGHTS];
 	int				nLights;
 	GLuint			nTexHandle;
 } tShaderLightData;
+
+//------------------------------------------------------------------------------
 
 #define MAX_NEAREST_LIGHTS 32
 
@@ -1011,6 +1134,8 @@ typedef struct tDynLightData {
 
 extern int nMaxNearestLights [21];
 
+//------------------------------------------------------------------------------
+
 //Flickering light system
 typedef struct tFlickeringLight {
 	short				nSegment;
@@ -1026,6 +1151,8 @@ typedef struct tFlickerLightData {
 	tFlickeringLight	lights [MAX_FLICKERING_LIGHTS];
 	int					nLights;
 } tFlickerLightData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tLightData {
 	int					nStatic;
@@ -1048,6 +1175,8 @@ typedef struct tLightData {
 	sbyte					*objects;
 } tLightData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tShadowData {
 	short				nLight;
 	short				nLights;
@@ -1061,12 +1190,16 @@ typedef struct tShadowData {
 	ubyte				nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 } tShadowData;
 
+//------------------------------------------------------------------------------
+
 #include "morph.h"
 
 typedef struct tMorphData {
 	tMorphInfo	objects [MAX_MORPH_OBJECTS];
 	fix			xRate;
 } tMorphData;
+
+//------------------------------------------------------------------------------
 
 #define	MAX_COMPUTED_COLORS	64
 
@@ -1087,6 +1220,8 @@ typedef struct tPaletteData {
 	ubyte						*pCurPal;
 } tPaletteData;
 
+//------------------------------------------------------------------------------
+
 #define OGLTEXBUFSIZE (2048*2048*4)
 
 typedef struct tOglData {
@@ -1095,6 +1230,8 @@ typedef struct tOglData {
 	GLenum					nSrcBlend;
 	GLenum					nDestBlend;
 } tOglData;
+
+//------------------------------------------------------------------------------
 
 #define TERRAIN_GRID_MAX_SIZE   64
 #define TERRAIN_GRID_SCALE      i2f (2*20)
@@ -1113,12 +1250,16 @@ typedef struct tTerrainRenderData {
 	int			nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
 } tTerrainRenderData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tThrusterData {
 	tFlightPath				path;
 	float						fSpeed;
 	short						nPulse;
 	time_t					tPulse;
 } tThrusterData;
+
+//------------------------------------------------------------------------------
 
 #define MAX_RENDER_SEGS     MAX_SEGMENTS_D2X
 #define OBJS_PER_SEG        5
@@ -1136,11 +1277,15 @@ typedef struct tMineRenderData {
 	int						sCntSave;
 } tMineRenderData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tGameWindowData {
 	int						x, y;
 	int						w, h;
 	int						wMax, hMax;
 } tGameWindowData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tRenderData {
 	tColorData				color;
@@ -1164,16 +1309,22 @@ typedef struct tRenderData {
 	tGameWindowData		window;
 } tRenderData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSecretData {
 	int			nReturnSegment;
 	vmsMatrix	returnOrient;
 
 } tSecretData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSlideSegs {
 	short	nSegment;
 	ubyte	nSides;
 } tSlideSegs;
+
+//------------------------------------------------------------------------------
 
 #define SEGVIS_FLAGS		((MAX_SEGMENTS + 7) >> 3)
 #define VERTVIS_FLAGS	((MAX_VERTICES + 3) >> 2)
@@ -1205,6 +1356,8 @@ typedef struct tSegmentData {
 	int					bHaveSlideSegs;
 } tSegmentData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tWallData {
 	tWall					walls [MAX_WALLS];
 	tExplWall			explWalls [MAX_EXPLODING_WALLS];
@@ -1219,6 +1372,8 @@ typedef struct tWallData {
 	tWallClip			*pAnims;
 } tWallData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tTriggerData {
 	tTrigger				triggers [MAX_TRIGGERS];
 	tTrigger				objTriggers [MAX_TRIGGERS];
@@ -1229,10 +1384,14 @@ typedef struct tTriggerData {
 	int					nObjTriggers;
 } tTriggerData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tPowerupData {
 	powerupType_info info [MAX_POWERUP_TYPES];
 	int					nTypes;
 } tPowerupData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tObjTypeData {
 	int					nTypes;
@@ -1240,6 +1399,8 @@ typedef struct tObjTypeData {
 	sbyte					nId [MAX_OBJTYPE];  
 	fix					nStrength [MAX_OBJTYPE];   
 } tObjTypeData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tSpeedBoostData {
 	int					bBoosted;
@@ -1249,6 +1410,8 @@ typedef struct tSpeedBoostData {
 	vmsVector			vSrc;
 	vmsVector			vDest;
 } tSpeedBoostData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tQuad {
 	vmsVector			v [4];	//corner vertices
@@ -1277,6 +1440,8 @@ typedef struct tHitbox {
 	short					nParent;			//parent hitbox
 } tHitbox;
 
+//------------------------------------------------------------------------------
+
 typedef struct tShrapnel {
 	vmsVector	vPos, vStartPos;
 	vmsVector	vDir;
@@ -1297,6 +1462,8 @@ typedef struct tShrapnelData {
 	int			nShrapnels;
 	tShrapnel	*shrapnels;
 } tShrapnelData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tObjectData {
 	tObjTypeData		types;
@@ -1341,7 +1508,14 @@ typedef struct tObjectData {
 	short					*nHitObjects;
 	tShrapnelData		*shrapnels;
 	tPowerupData		pwrUp;
+	ubyte					collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
+	ubyte					bIsMissile [100];
+	ubyte					bIsWeapon [100];
+	ubyte					bIsSlowWeapon [100];
+	short					idToOOF [100];
 } tObjectData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tFVISideData {
 	int					vertices [6];
@@ -1451,6 +1625,8 @@ typedef struct tRobotData {
 #define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.bots.nTypes [1]))
 #define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
 
+//------------------------------------------------------------------------------
+
 #if USE_OPENAL
 
 typedef struct tOpenALData {
@@ -1469,6 +1645,8 @@ typedef struct tSoundData {
 	tOpenALData			openAL;
 #endif
 } tSoundData;
+
+//------------------------------------------------------------------------------
 
 #define N_COCKPIT_BITMAPS 6
 #define D1_N_COCKPIT_BITMAPS 4
@@ -1501,6 +1679,8 @@ typedef struct tTextureData {
 	int					brightness [MAX_WALL_TEXTURES];
 } tTextureData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tEffectData {
 	tEffectClip			effects [2][MAX_EFFECTS];
 	tVideoClip 			vClips [2][VCLIP_MAXNUM];
@@ -1509,6 +1689,8 @@ typedef struct tEffectData {
 	tEffectClip			*pEffects;
 	tVideoClip			*pVClips;
 } tEffectData;
+
+//------------------------------------------------------------------------------
 
 #define N_PLAYER_GUNS 8
 
@@ -1530,6 +1712,8 @@ typedef struct tShipData {
 	tPlayerShip			*player;
 } tShipData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
 	tVideoClip			*vcP;
@@ -1537,12 +1721,16 @@ typedef struct tFlagData {
 	tFlightPath			path;
 } tFlagData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tPigData {
 	tTextureData		tex;
 	tSoundData			sound;
 	tShipData			ship;
 	tFlagData			flags [2];
 } tPigData;
+
+//------------------------------------------------------------------------------
 
 #include "laser.h"
 
@@ -1566,6 +1754,8 @@ typedef struct tWeaponData {
 
 #define bLastPrimaryWasSuper (gameData.weapons.bLastWasSuper [0])
 #define bLastSecondaryWasSuper (gameData.weapons.bLastWasSuper [1])
+
+//------------------------------------------------------------------------------
 
 #include "polyobj.h"
 
@@ -1615,6 +1805,8 @@ typedef struct tModelData {
 	int					nScale;
 } tModelData;
 
+//------------------------------------------------------------------------------
+
 #include "player.h"
 
 typedef struct tAutoNetGame {
@@ -1658,6 +1850,8 @@ typedef struct tMultiplayerData {
 } tMultiplayerData;
 
 #include "multi.h"
+
+//------------------------------------------------------------------------------
 
 typedef struct tMultiCreateData {
 	int					nObjNums [MAX_NET_CREATE_OBJECTS];
@@ -1715,6 +1909,8 @@ typedef struct tMultiGameData {
 	int					nTypingTimeout;
 } tMultiGameData;
 
+//------------------------------------------------------------------------------
+
 #define LEVEL_NAME_LEN 36       //make sure this is a multiple of 4!
 
 #include "mission.h"
@@ -1744,6 +1940,8 @@ typedef struct tMissionData {
 	int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
 } tMissionData;
 
+//------------------------------------------------------------------------------
+
 #define N_MAX_ROOMS	128
 
 typedef struct tEntropyData {
@@ -1760,6 +1958,8 @@ typedef struct tCountdownData {
 	int					nTotalTime;
 } tCountdownData;
 
+//------------------------------------------------------------------------------
+
 #define NUM_MARKERS         16
 #define MARKER_MESSAGE_LEN  40
 
@@ -1775,6 +1975,8 @@ typedef struct tMarkerData {
 	char					szInput [40];
 } tMarkerData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tTimeData {
 	fix					xFrame;	//  since last frame, in seconds
 	fix					xRealFrame;
@@ -1788,6 +1990,8 @@ typedef struct tTimeData {
 	int					nStops;
 } tTimeData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tApplicationData {
 	int					nFrameCount;
 	int					nGameMode;
@@ -1795,6 +1999,8 @@ typedef struct tApplicationData {
 	uint					nStateGameId;
 int						nLifetimeChecksum;
 } tApplicationData;
+
+//------------------------------------------------------------------------------
 
 #define MAX_SEGS_VISITED			1000
 #define MAX_BOSS_COUNT				50
@@ -1826,6 +2032,8 @@ typedef struct tBossData {
 	sbyte					bDyingSoundPlaying;
 } tBossData;
 
+//------------------------------------------------------------------------------
+
 #include "cntrlcen.h"
 
 typedef struct tReactorStates {
@@ -1851,6 +2059,8 @@ typedef struct tReactorData {
 	int					bDisabled;
 	int					bDestroyed;
 } tReactorData;
+
+//------------------------------------------------------------------------------
 
 #include "ai.h"
 
@@ -1881,6 +2091,8 @@ typedef struct tAIData {
 	int					bObjAnimates;
 	tAwarenessEvent	awarenessEvents [MAX_AWARENESS_EVENTS];
 } tAIData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tSatelliteData {
 	grsBitmap			bmInstance;
@@ -1921,6 +2133,8 @@ typedef struct tEndLevelData {
 	fix					xDesiredFlightSpeed;
 } tEndLevelData;
 
+//------------------------------------------------------------------------------
+
 #include "songs.h"
 
 typedef struct tUserMusicData {
@@ -1934,6 +2148,8 @@ typedef struct tUserMusicData {
 	char					szMenuSong [FILENAME_LEN];
 } tUserMusicData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tSongData {
 	tSongInfo			info [MAX_NUM_SONGS];
 	int					bInitialized;
@@ -1946,6 +2162,8 @@ typedef struct tSongData {
 	tUserMusicData		user;
 } tSongData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tMenuData {
 	int					bValid;
 	unsigned int		tinyColors [2][2];
@@ -1956,6 +2174,8 @@ typedef struct tMenuData {
 	unsigned int		colorOverride;
 	ubyte					alpha;
 } tMenuData;
+
+//------------------------------------------------------------------------------
 
 #define MAX_FUEL_CENTERS    500
 #define MAX_ROBOT_CENTERS   100
@@ -1977,6 +2197,8 @@ typedef struct tMatCenData {
 	int				origStationTypes [MAX_FUEL_CENTERS];
 	tSegment			*playerSegP;
 } tMatCenData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tDemoData {
 	int				bAuto;
@@ -2014,6 +2236,8 @@ typedef struct tDemoData {
 	int				bFlyingGuided;
 } tDemoData;
 
+//------------------------------------------------------------------------------
+
 #include "particles.h"
 
 typedef struct tPartList {
@@ -2032,13 +2256,66 @@ typedef struct tPartDepthBuf {
 } tPartDepthBuf;
 
 typedef struct tSmokeData {
-	tSmoke			smoke [MAX_SMOKE];
+	tSmoke			buffer [MAX_SMOKE];
 	short				*objects;
 	time_t			*objExplTime;
-	int				iFreeSmoke;
-	int				iUsedSmoke;
+	int				iFree;
+	int				iUsed;
 	tPartDepthBuf	depthBuf;
 } tSmokeData;
+
+//------------------------------------------------------------------------------
+
+#define MAX_FLASHES	1000
+
+typedef struct tFlash;
+
+typedef struct tFlashNode {
+	struct tFlash	*pChild;
+	vmsVector		vBase;
+	vmsVector		vPos;
+	vmsVector		vDir;
+	vmsVector		vDelta [2];
+	int				nDist [2];
+	int				nDelta [2];
+	int				nDir;
+} tFlashNode;
+
+typedef struct tFlash {
+	vmsVector		vPos;
+	vmsVector		vDir;
+	tFlashNode		*pNodes;
+	int				nIndex;
+	int				nNext;
+	short				nNodeC;
+	short				nChildC;
+	short				nDepth;
+	int				nObject;
+	int				nLife;
+	int				nTTL;
+	int				nLength;
+	int				nAmplitude;
+	int				bRandom;
+	int				nSteps;
+	int				iStep;
+	tRgbaColorf		color;
+} tFlash;
+
+typedef struct tFlashList {
+	int				nNext;
+	int				nFlashes;
+	tFlash			*pf;
+} tFlashList;
+
+typedef struct tFlashData {
+	short				*objects;
+	tFlashList		buffer [MAX_FLASHES];
+	int				iFree;
+	int				iUsed;
+	int				nNext;
+} tFlashData;
+
+//------------------------------------------------------------------------------
 
 #define GUIDEBOT_NAME_LEN 9
 
@@ -2060,12 +2337,16 @@ typedef struct tEscortData {
 	char				szRealName [GUIDEBOT_NAME_LEN + 1];
 } tEscortData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tThiefData {
 	ubyte				stolenItems [MAX_STOLEN_ITEMS];
 	int				nStolenItem;
 	fix				xReInitTime;
 	fix				xWaitTimes [NDL];
 } tThiefData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tHoardItem {
 	int			nWidth;
@@ -2090,6 +2371,8 @@ typedef struct tHoardData {
 	short			nLastHitter;
 } tHoardData;
 
+//------------------------------------------------------------------------------
+
 #include "hudmsg.h"
 
 typedef struct tHUDMessage {
@@ -2106,6 +2389,8 @@ typedef struct tHUDData {
 	int					bPlayerMessage;
 } tHUDData;
 
+//------------------------------------------------------------------------------
+
 typedef struct {
 	int	seg0, seg1, csd;
 	fix	dist;
@@ -2119,6 +2404,8 @@ typedef struct tFCDData {
 	fix				xLastFlushTime;
 	int				nConnSegDist;
 } tFCDData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tVertColorData {
 	int		bExclusive;
@@ -2168,6 +2455,8 @@ typedef struct tThreadData {
 	tClipDistThreadData	clipDist;
 	} tThreadData;
 
+//------------------------------------------------------------------------------
+
 #ifdef _DEBUG
 typedef struct tSpeedtestData {
 	int		bOn;
@@ -2180,6 +2469,8 @@ typedef struct tSpeedtestData {
 	} tSpeedtestData;
 #endif
 
+//------------------------------------------------------------------------------
+
 typedef struct tLaserData {
 	fix		xLastFiredTime;
 	fix		xNextFireTime;
@@ -2189,6 +2480,8 @@ typedef struct tLaserData {
 	int		nMissileGun;
 } tLaserData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tFusionData {
 	fix	xAutoFireTime;
 	fix	xCharge;
@@ -2196,17 +2489,23 @@ typedef struct tFusionData {
 	fix	xLastSoundTime;
 } tFusionData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tMissileData {
 	fix		xLastFiredTime;
 	fix		xNextFireTime;
 	int		nGlobalFiringCount;
 } tMissileData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tCameraData {
 	short		nCameras;
 	tCamera	cameras [MAX_CAMERAS];
 	char		*nSides;
 } tCameraData;
+
+//------------------------------------------------------------------------------
 
 typedef struct tPlayerStats {
 	int	nShots [2];
@@ -2219,15 +2518,21 @@ typedef struct tStatsData {
 	int				nDisplayMode;
 	} tStatsData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tCollisionData {
 	int			nSegsVisited;
 	short			segsVisited [MAX_SEGS_VISITED];
 	tFVIHitInfo hitData;
 } tCollisionData;
 
+//------------------------------------------------------------------------------
+
 typedef struct tTrackIRData {
 	int	x, y;
 } tTrackIRData;
+
+//------------------------------------------------------------------------------
 
 #define MAX_GAUGE_BMS 100   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 #define D1_MAX_GAUGE_BMS 80   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
@@ -2262,6 +2567,7 @@ typedef struct tGameData {
 	tMatCenData			matCens;
 	tDemoData			demo;
 	tSmokeData			smoke;
+	tFlashData			flashes;
 	tEscortData			escort;
 	tThiefData			thief;
 	tHoardData			hoard;

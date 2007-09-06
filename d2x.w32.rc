@@ -27,8 +27,8 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,9,290,0
- PRODUCTVERSION 1,9,290,0
+ FILEVERSION 1,9,291,0
+ PRODUCTVERSION 1,9,291,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -45,11 +45,11 @@ BEGIN
         BEGIN
             VALUE "Comments", "Descent 2 OpenGL for MS Windows"
             VALUE "FileDescription", "Descent 2 OpenGL for MS Windows"
-            VALUE "FileVersion", "1, 9, 290, 0"
+            VALUE "FileVersion", "1, 9, 291, 0"
             VALUE "InternalName", "D2X-XL"
             VALUE "OriginalFilename", "d2x-xl.exe"
             VALUE "ProductName", "D2X-XL"
-            VALUE "ProductVersion", "1, 9, 290, 0"
+            VALUE "ProductVersion", "1, 9, 291, 0"
         END
     END
     BLOCK "VarFileInfo"

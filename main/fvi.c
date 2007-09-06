@@ -961,8 +961,8 @@ else {
  		 ((IsCoopGame) && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 		size /= 2;
 	}
-bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || bIsMissile [thisObjP->id]);
-bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || bIsMissile [otherObjP->id]);
+bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [thisObjP->id]);
+bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [otherObjP->id]);
 if (otherObjP->nType == OBJ_WEAPON)
 	otherObjP = otherObjP;
 if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL)) {
@@ -1202,8 +1202,8 @@ if (flags & FQ_CHECK_OBJS) {
 			if (LasersAreRelated (nObject, nThisObject))
 				continue;
 			if (nThisObject > -1) {
-				if ((CollisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
-					 (CollisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+				if ((gameData.objs.collisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
+					 (gameData.objs.collisionResult [nOtherType][nThisType] == RESULT_NOTHING))
 					continue;
 				}
 			nFudgedRad = radP1;
@@ -1249,7 +1249,7 @@ if (flags & FQ_CHECK_OBJS) {
 	}
 #endif
 segP = gameData.segs.segments + nStartSeg;
-if ((nThisObject > -1) && (CollisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
+if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
 startMask = GetSegMasks (p0, nStartSeg, radP0).faceMask;

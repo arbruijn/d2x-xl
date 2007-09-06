@@ -341,7 +341,7 @@ int FindConnectedSide (tSegment *baseSegP, tSegment *connSegP)
 for (s = 0; s < MAX_SIDES_PER_SEGMENT; s++)
 	if (*childs++ == nBaseSeg)
 		return s;
-// legal to return -1, used in MoveOneObject (), mk, 06/08/94: Assert (0);		// Illegal -- there is no connecting tSide between these two segments
+// legal to return -1, used in UpdateObject (), mk, 06/08/94: Assert (0);		// Illegal -- there is no connecting tSide between these two segments
 return -1;
 }
 

@@ -8,6 +8,8 @@
 #define	SHOW_SMOKE	\
 			(!gameStates.app.bNostalgia && EGI_FLAG (bUseSmoke, 1, 1, 0))
 
+#define MAX_SHRAPNEL_LIFE	(2 * F1_0)
+
 //------------------------------------------------------------------------------
 
 void KillPlayerSmoke (int i);
@@ -23,6 +25,11 @@ int DoObjectSmoke (tObject *objP);
 void PlayerSmokeFrame (void);
 void RobotSmokeFrame (void);
 void DoSmokeFrame (void);
+
+int CreateShrapnels (tObject *parentObjP);
+void DestroyShrapnels (tObject *objP);
+int UpdateShrapnels (tObject *objP);
+void DrawShrapnels (tObject *objP);
 
 //------------------------------------------------------------------------------
 

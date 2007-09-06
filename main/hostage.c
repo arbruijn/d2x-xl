@@ -28,6 +28,7 @@ static char rcsid[] = "$Id: hostage.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 
 #include "inferno.h"
 #include "object.h"
+#include "objrender.h"
 #include "game.h"
 #include "player.h"
 #include "gauges.h"

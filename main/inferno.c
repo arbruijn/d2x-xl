@@ -73,6 +73,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "text.h"
 #include "newdemo.h"
 #include "object.h"
+#include "objrender.h"
 #include "network.h"
 #include "modem.h"
 #include "gamefont.h"
@@ -2241,8 +2242,10 @@ SetSpherePulse (&gameData.render.shield.pulse, 0.02f, 0.5f);
 UseSpherePulse (&gameData.render.shield, &gameData.render.shield.pulse);
 SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
-gameData.smoke.iFreeSmoke = -1;
-gameData.smoke.iUsedSmoke = -1;
+gameData.smoke.iFree = -1;
+gameData.smoke.iUsed = -1;
+gameData.flashes.iFree = -1;
+gameData.flashes.iUsed = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 InitEndLevelData ();
@@ -2315,8 +2318,15 @@ GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
 
 void AllocSmokeData (void)
 {
-GETMEM (short, gameData.smoke.objects, MAX_OBJECTS, 0);
+GETMEM (short, gameData.smoke.objects, MAX_OBJECTS, 0xff);
 GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
+}
+
+// ----------------------------------------------------------------------------
+
+void AllocFlashData (void)
+{
+GETMEM (short, gameData.flashes.objects, MAX_OBJECTS, 0xff);
 }
 
 // ----------------------------------------------------------------------------
@@ -2415,6 +2425,7 @@ void AllocGameData (void)
 AllocSegmentData ();
 AllocObjectData ();
 AllocSmokeData ();
+AllocFlashData ();
 AllocCameraData ();
 AllocRenderColorData ();
 AllocRenderLightData ();
@@ -2480,6 +2491,15 @@ void FreeSmokeData (void)
 {
 FREEMEM (short, gameData.smoke.objects, MAX_OBJECTS);
 FREEMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS);
+}
+
+// ----------------------------------------------------------------------------
+
+void FreeFlashData (void)
+{
+LogErr ("unloading lightning data\n");
+DestroyAllFlashes ();
+FREEMEM (short, gameData.flashes.objects, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------
@@ -2578,6 +2598,7 @@ void FreeGameData (void)
 FreeSegmentData ();
 FreeObjectData ();
 FreeSmokeData ();
+FreeFlashData ();
 FreeCameraData ();
 FreeRenderColorData ();
 FreeRenderLightData ();

@@ -30,6 +30,7 @@ char laser_rcsid [] = "$Id: laser.c,v 1.10 2003/10/10 09:36:35 btb Exp $";
 #include "game.h"
 #include "bm.h"
 #include "object.h"
+#include "objrender.h"
 #include "laser.h"
 #include "args.h"
 #include "segment.h"
@@ -257,7 +258,7 @@ if (id1 == ROBOT_SMARTMINE_ID || id2 == ROBOT_SMARTMINE_ID ||
 	 id1 == SMARTMINE_ID || id2 == SMARTMINE_ID ||
 	 id1 == SMALLMINE_ID || id2 == SMALLMINE_ID)
 	return 0;
-if (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && (bIsMissile [id1] || bIsMissile [id2]))
+if (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && (gameData.objs.bIsMissile [id1] || gameData.objs.bIsMissile [id2]))
 	return 0;
 return 1;
 }

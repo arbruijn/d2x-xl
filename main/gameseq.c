@@ -37,6 +37,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "player.h"
 #include "key.h"
 #include "object.h"
+#include "objrender.h"
 #include "physics.h"
 #include "error.h"
 #include "joy.h"
@@ -895,8 +896,10 @@ if (gameData.missions.nEnhancedMission) {
 #endif
 /*---*/LogErr ("   Destroying camera objects\n");
 DestroyCameras ();
-/*---*/LogErr ("   Destroying smoke objects\n");
+/*---*/LogErr ("   Destroying particle data\n");
 DestroyAllSmoke ();
+/*---*/LogErr ("   Destroying lightning data\n");
+DestroyAllFlashes ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));

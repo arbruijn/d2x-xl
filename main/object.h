@@ -35,8 +35,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECTS     	MAX_SEGMENTS
 #define MAX_HIT_OBJECTS		20
 
-#define MAX_SHRAPNEL_LIFE	(2 * F1_0)
-
 // Object types
 #define OBJ_NONE        255 // unused tObject
 #define OBJ_WALL        0   // A tWall... not really an tObject, but used for collisions
@@ -102,6 +100,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
 #define RT_EXPLBLAST		9	 // white explosion light blast
 #define RT_SHRAPNELS		10	 // white explosion light blast
+#define RT_LIGHTNING    11
 
 // misc tObject flags
 #define OF_EXPLODING        1   // this tObject is exploding
@@ -311,7 +310,7 @@ extern tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
  * VARIABLES
  */
 
-// ie CollisionResult[a][b]==  what happens to a when it collides with b
+// ie gameData.objs.collisionResult[a][b]==  what happens to a when it collides with b
 
 extern char *robot_names[];         // name of each robot
 
@@ -362,16 +361,7 @@ void ResetObjects(int n_objs);
 // make tObject array non-sparse
 void compressObjects(void);
 
-// Render an tObject.  Calls one of several routines based on nType
-int RenderObject(tObject *objP, int nWindowNum, int bForce);
-
 // Draw a blob-nType tObject, like a fireball
-void DrawObjectBlob(tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame,
-						  tRgbaColorf *color, float alpha);
-
-// draw an tObject that is a texture-mapped rod
-void DrawObjectRodTexPoly(tObject *obj, tBitmapIndex bitmap, int lighted);
-
 // Deletes all objects that have been marked for death.
 void DeleteAllObjsThatShouldBeDead();
 
@@ -379,7 +369,7 @@ void DeleteAllObjsThatShouldBeDead();
 void object_toggle_lock_targets();
 
 // move all objects for the current frame
-int MoveAllObjects();     // moves all objects
+int UpdateAllObjects();     // moves all objects
 
 // set viewer tObject to next tObject in array
 void object_goto_nextViewer();
@@ -388,7 +378,7 @@ void object_goto_nextViewer();
 void object_render_targets(void);
 
 // move an tObject for the current frame
-int MoveOneObject(tObject * obj);
+int UpdateObject(tObject * obj);
 
 // make object0 the tPlayer, setting all relevant fields
 void InitPlayerObject();
@@ -488,11 +478,7 @@ int DelObjChildP (tObject *pChild);
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
 tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef);
 
-void DrawPolygonObject (tObject *objP);
-void RenderTargetIndicator (tObject *objP, tRgbColorf *pc);
-void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
 tObject *ObjFindFirstOfType (int nType);
-void ConvertWeaponToPowerup (tObject *objP);
 void InitWeaponFlags (void);
 float ObjectDamage (tObject *objP);
 int FindBoss (int nObject);
@@ -504,10 +490,6 @@ int SlowMotionActive (void);
 int BulletTimeActive (void);
 void SlowMotionOff (void);
 void BulletTimeOn (void);
-
-int CreateShrapnels (tObject *parentObjP);
-void DestroyShrapnels (tObject *objP);
-int MoveShrapnels (tObject *objP);
 
 extern ubyte bIsMissile [];
 
@@ -539,11 +521,9 @@ if (objP == dbgObjP)
 #endif
 }
 
-extern ubyte CollisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
-
 #define SET_COLLISION(type1, type2, result) \
-	CollisionResult [type1][type2] = result; \
-	CollisionResult [type2][type1] = result;
+	gameData.objs.collisionResult [type1][type2] = result; \
+	gameData.objs.collisionResult [type2][type1] = result;
 
 #define ENABLE_COLLISION(type1, type2)		SET_COLLISION(type1, type2, RESULT_CHECK)
 
