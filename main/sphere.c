@@ -553,7 +553,8 @@ if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
 	float	r = f2fl (objP->size) * 1.05f;
 	if (gameOpts->render.bObjectCoronas && LoadHalo ()) {
-		tRgbaColorf	c = {red, green, blue, alpha};
+		float fScale = gameData.render.shield.pPulse->fScale;
+		tRgbaColorf	c = {red * fScale, green * fScale, blue * fScale, alpha * fScale};
 		fix  xSize = 3 * objP->size / 2;
 		glDepthMask (0);
 		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpHalo, &c, alpha * 4.0f / 3.0f);

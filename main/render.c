@@ -31,6 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "object.h"
 #include "objrender.h"
+#include "lightning.h"
 #include "laser.h"
 #include "textures.h"
 #include "screens.h"
@@ -3727,8 +3728,8 @@ if (SHOW_SHADOWS &&
 			RenderShadowTexture ();
 			}
 #endif
+		RenderLightnings ();
 		RenderSmoke ();
-		RenderFlashes ();
 		}
 	}
 else 
@@ -3745,8 +3746,8 @@ else
 			}
 		}
 	if (!nWindow) {
+		RenderLightnings ();
 		RenderSmoke ();
-		RenderFlashes ();
 		}
 	}
 gameStates.render.nShadowPass = 0;
@@ -4585,9 +4586,10 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 	if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
 		RenderRadar ();
 	if (gameStates.render.automap.bDisplay) {
+		if (gameOpts->render.automap.bLightnings)
+		RenderLightnings ();
 		if (gameOpts->render.automap.bSmoke)
 			RenderSmoke ();
-		RenderFlashes ();
 		}
 	}
 }

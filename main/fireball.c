@@ -115,7 +115,7 @@ tObject *CreateLighting (tObject *parentObjP)
 	short		nObject;
 	tObject	*objP;
 
-if (!gameOpts->render.bLightnings)
+if (!EGI_FLAG (bUseLightnings, 0, 0, 1))
 	return NULL;
 nObject = CreateObject (OBJ_FIREBALL, 0, -1, parentObjP->nSegment, &parentObjP->position.vPos, &vmdIdentityMatrix, 
 								2 * parentObjP->size, CT_EXPLOSION, MT_NONE, RT_LIGHTNING, 1);

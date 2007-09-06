@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "laser.h"
 #include "key.h"
 #include "gameseg.h"
+#include "lightning.h"
 #include "object.h"
 #include "physics.h"
 #include "slew.h"		
@@ -820,6 +821,24 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
+
+void CreateWeaponEffects (tObject *objP)
+{
+if (gameData.objs.bIsMissile [objP->id]) {
+	if ((objP->id == EARTHSHAKER_ID) || (objP->id == EARTHSHAKER_ID))
+		CreateShakerLightnings (objP);
+	else if ((objP->id == EARTHSHAKER_MEGA_ID) || (objP->id == ROBOT_SHAKER_MEGA_ID))
+		CreateShakerMegaLightnings (objP);
+	else if ((objP->id == MEGAMSL_ID) || (objP->id == ROBOT_MEGAMSL_ID))
+		CreateMegaLightnings (objP);
+#ifdef _DEBUG
+	else
+		objP = objP;
+#endif
+	}
+}
+
+//	-----------------------------------------------------------------------------
 //these gets added to the weapon's values when the weapon hits a volitle tWall
 #define VOLATILE_WALL_EXPL_STRENGTH i2f (10)
 #define VOLATILE_WALL_IMPACT_SIZE	i2f (3)
@@ -842,8 +861,7 @@ if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 
-if (gameData.objs.bIsMissile [weaponP->id])
-	CreateExplBlast (weaponP);
+CreateWeaponEffects (weaponP);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
@@ -1679,8 +1697,7 @@ if ((botInfoP->companion) &&
 	 (weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && 
 	  !gameStates.app.cheats.bRobotsKillRobots)
 	return 1;
-if (gameData.objs.bIsMissile [weaponP->id])
-	CreateExplBlast (weaponP);
+CreateWeaponEffects (weaponP);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 //	If a persistent weaponP hit robotP most recently, quick abort, else we cream the same robotP many times, 
@@ -2219,8 +2236,7 @@ if (weaponP->id == SMARTMINE_ID)
 	if (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.nParentObj)
 		if (VmVecDistQuick (vHitPt, &playerObjP->position.vPos) > playerObjP->size)
 			return 1;
-if (gameData.objs.bIsMissile [weaponP->id])
-	CreateExplBlast (weaponP);
+CreateWeaponEffects (weaponP);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 damage = FixMul (damage, weaponP->cType.laserInfo.multiplier);
@@ -2416,8 +2432,7 @@ if (dist >= F1_0*5)
 else {
 	MaybeKillWeapon (weapon1, weapon2);
 	if (weapon1->flags & OF_SHOULD_BE_DEAD) {
-		if (gameData.objs.bIsMissile [weapon1->id])
-			CreateExplBlast (weapon1);
+		CreateWeaponEffects (weapon1);
 		ExplodeBadassWeapon (weapon1, vHitPt);
 		DigiLinkSoundToPos (gameData.weapons.info [weapon1->id].robot_hitSound, weapon1->nSegment , 0, vHitPt, 0, F1_0);
 		}

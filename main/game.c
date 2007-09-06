@@ -36,6 +36,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "key.h"
 #include "object.h"
 #include "objrender.h"
+#include "lightning.h"
 #include "physics.h"
 #include "error.h"
 #include "joy.h"
@@ -2274,7 +2275,7 @@ if (nDebugSlowdown) {
 //LogErr ("DoSmokeFrame \n");
 	DoSmokeFrame ();
 //LogErr ("DoFlashFrame \n");
-	DoFlashFrame ();
+	DoLightningFrame ();
 //LogErr ("DoAmbientSounds\n");
 	DoAmbientSounds ();
 #ifdef _DEBUG

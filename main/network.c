@@ -4490,6 +4490,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bSafeUDP = 0;
 	extraGameInfo [i].bFastPitch = i ? 0 : 1;
 	extraGameInfo [i].bUseSmoke = 1;
+	extraGameInfo [i].bUseLightnings = 1;
 	extraGameInfo [i].bDamageExplosions = 1;
 	extraGameInfo [i].bThrusterFlames = 1;
 	extraGameInfo [i].bShadows = 1;
@@ -4621,6 +4622,7 @@ else {
 	LogErr ("   bSafeUDP: %d\n", extraGameInfo [1].bSafeUDP);
 	LogErr ("   bFastPitch: %d\n", extraGameInfo [1].bFastPitch);
 	LogErr ("   bUseSmoke: %d\n", extraGameInfo [1].bUseSmoke);
+	LogErr ("   bUseLightnings: %d\n", extraGameInfo [1].bUseLightnings);
 	LogErr ("   bDamageExplosions: %d\n", extraGameInfo [1].bDamageExplosions);
 	LogErr ("   bThrusterFlames: %d\n", extraGameInfo [1].bThrusterFlames);
 	LogErr ("   bShadows: %d\n", extraGameInfo [1].bShadows);

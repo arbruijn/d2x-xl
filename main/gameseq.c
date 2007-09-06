@@ -38,6 +38,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "key.h"
 #include "object.h"
 #include "objrender.h"
+#include "lightning.h"
 #include "physics.h"
 #include "error.h"
 #include "joy.h"
@@ -899,7 +900,7 @@ DestroyCameras ();
 /*---*/LogErr ("   Destroying particle data\n");
 DestroyAllSmoke ();
 /*---*/LogErr ("   Destroying lightning data\n");
-DestroyAllFlashes ();
+DestroyAllLightnings ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));

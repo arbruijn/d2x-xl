@@ -10,11 +10,13 @@ static int randSeed = 0;
 double Noise1D (int x)			 
 {
 #if 1
-srand (randSeed + x);
+srand (randSeed * (x + 2));
 x = rand ();
-return (double) (((RAND_MAX + 1) / 2) - x) / (double) ((RAND_MAX + 1) / 2);
+return (double) (x - ((RAND_MAX + 1) / 2)) / (double) ((RAND_MAX + 1) / 2);
 #else
-double h = (int) pow (x << 13, x);
+double h;
+x = randSeed + x * x;
+h = (int) pow ((double) x * (double) (1 << 13), x);
 h = h * (h * (h * 15731 + 789221) + 1376312589);
 return 1.0 - ((int) h & 0x7fffffff) / 1073741824.0;    
 #endif

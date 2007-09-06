@@ -392,6 +392,12 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bRobotShields, i, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
 
+		RP (gameOptions [i].render.lightnings.bRobots, i, 0);
+		RP (gameOptions [i].render.lightnings.bMissiles, i, 0);
+		RP (gameOptions [i].render.lightnings.bStatic, i, 0);
+		RP (gameOptions [i].render.lightnings.bCoronas, i, 0);
+		RP (gameOptions [i].render.lightnings.nQuality, i, 0);
+
 		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
 		RP (gameOptions [i].render.cameras.nFPS, i, 0);
 		RP (gameOptions [i].render.cameras.nSpeed, i, 0);
@@ -399,6 +405,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.automap.bBright, i, 0);
 		RP (gameOptions [i].render.automap.bCoronas, i, 0);
 		RP (gameOptions [i].render.automap.bSmoke, i, 0);
+		RP (gameOptions [i].render.automap.bLightnings, i, 0);
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
 		RP (gameOptions [i].render.automap.bSkybox, i, 0);
 		RP (gameOptions [i].render.automap.nColor, i, 0);
@@ -918,6 +925,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.automap.bBright", "0"},
 	{"gameOptions[0].render.automap.bCoronas", "1"},
 	{"gameOptions[0].render.automap.bSmoke", "1"},
+	{"gameOptions[0].render.automap.bLightnings", "1"},
 	{"gameOptions[0].render.automap.bTextured", "1"},
 	{"gameOptions[0].render.automap.bSkybox", "0"},
 	{"gameOptions[0].render.automap.nColor", "1"},
@@ -940,6 +948,11 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.bWalls", "1"},
 	{"gameOptions[0].render.color.bUseLightMaps", "0"},
 	{"gameOptions[0].render.color.nLightMapRange", "0"},
+	{"gameOptions[0].render.lightnings.bRobots", "1"},
+	{"gameOptions[0].render.lightnings.bMissiles", "1"},
+	{"gameOptions[0].render.lightnings.bStatic", "1"},
+	{"gameOptions[0].render.lightnings.bCoronas", "1"},
+	{"gameOptions[0].render.lightnings.nQuality", "1"},
 	{"gameOptions[0].render.powerups.b3D", "1"},
 	{"gameOptions[0].render.powerups.nSpin", "1"},
 	{"gameOptions[0].render.shadows.bFast", "1"},

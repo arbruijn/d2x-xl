@@ -201,6 +201,17 @@ typedef struct tSmokeOptions {
 
 //------------------------------------------------------------------------------
 
+typedef struct tLightningOptions {
+	int bRobots;
+	int bMissiles;
+	int bExplosions;
+	int bStatic;
+	int bCoronas;
+	int nQuality;
+} tLightningOptions;
+
+//------------------------------------------------------------------------------
+
 typedef struct tShadowOptions {
 	int nReach;
 	int nLights;
@@ -227,6 +238,7 @@ typedef struct tAutomapOptions {
 	int bBright;
 	int bCoronas;
 	int bSmoke;
+	int bLightnings;
 	int bSkybox;
 	int nColor;
 	int nRange;
@@ -249,7 +261,6 @@ typedef struct tRenderOptions {
 	int bCoronas;
 	int bObjectCoronas;
 	int nCoronaIntensity;
-	int bLightnings;
 	int bUseShaders;
 	int bHiresModels;
 	int bRobotShields;
@@ -266,6 +277,7 @@ typedef struct tRenderOptions {
 	tTextureOptions textures;
 	tWeaponIconOptions weaponIcons;
 	tSmokeOptions smoke;
+	tLightningOptions lightnings;
 	tShadowOptions shadows;
 	tPowerupOptions powerups;
 	tAutomapOptions automap;
@@ -2268,23 +2280,22 @@ typedef struct tSmokeData {
 
 #define MAX_FLASHES	1000
 
-typedef struct tFlash;
+typedef struct tLightning;
 
-typedef struct tFlashNode {
-	struct tFlash	*pChild;
+typedef struct tLightningNode {
+	struct tLightning	*pChild;
+	vmsVector		vPos;
+	vmsVector		vNewPos;
+	vmsVector		vOffs;
 	vmsVector		vBase;
-	vmsVector		vPos;
-	vmsVector		vDir;
 	vmsVector		vDelta [2];
-	int				nDist [2];
-	int				nDelta [2];
-	int				nDir;
-} tFlashNode;
+} tLightningNode;
 
-typedef struct tFlash {
+typedef struct tLightning {
 	vmsVector		vPos;
+	vmsVector		vEnd;
 	vmsVector		vDir;
-	tFlashNode		*pNodes;
+	tLightningNode		*pNodes;
 	int				nIndex;
 	int				nNext;
 	short				nNodeC;
@@ -2294,26 +2305,29 @@ typedef struct tFlash {
 	int				nLife;
 	int				nTTL;
 	int				nLength;
+	int				nOffset;
 	int				nAmplitude;
+	int				nSmoothe;
+	int				bClamp;
 	int				bRandom;
 	int				nSteps;
 	int				iStep;
 	tRgbaColorf		color;
-} tFlash;
+} tLightning;
 
-typedef struct tFlashList {
+typedef struct tLightningBundle {
 	int				nNext;
-	int				nFlashes;
-	tFlash			*pf;
-} tFlashList;
+	int				nLightnings;
+	tLightning		*pf;
+} tLightningBundle;
 
-typedef struct tFlashData {
+typedef struct tLightningData {
 	short				*objects;
-	tFlashList		buffer [MAX_FLASHES];
+	tLightningBundle	buffer [MAX_FLASHES];
 	int				iFree;
 	int				iUsed;
 	int				nNext;
-} tFlashData;
+} tLightningData;
 
 //------------------------------------------------------------------------------
 
@@ -2567,7 +2581,7 @@ typedef struct tGameData {
 	tMatCenData			matCens;
 	tDemoData			demo;
 	tSmokeData			smoke;
-	tFlashData			flashes;
+	tLightningData		lightnings;
 	tEscortData			escort;
 	tThiefData			thief;
 	tHoardData			hoard;

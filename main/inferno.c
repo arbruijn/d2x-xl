@@ -74,6 +74,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "newdemo.h"
 #include "object.h"
 #include "objrender.h"
+#include "lightning.h"
 #include "network.h"
 #include "modem.h"
 #include "gamefont.h"
@@ -1323,9 +1324,16 @@ if (i) {
 	gameOptions [1].render.smoke.bDisperse = 0;
 	gameOptions [1].render.smoke.bSort = 0;
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
+	gameOptions [1].render.lightnings.bRobots = 0;
+	gameOptions [1].render.lightnings.bMissiles = 0;
+	gameOptions [1].render.lightnings.bStatic = 0;
+	gameOptions [1].render.lightnings.bCoronas = 0;
+	gameOptions [1].render.lightnings.nQuality = 0;
 	gameOptions [1].render.powerups.b3D = 0;
 	gameOptions [1].render.powerups.nSpin = 0;
 	gameOptions [1].render.automap.bTextured = 0;
+	gameOptions [1].render.automap.bSmoke = 0;
+	gameOptions [1].render.automap.bLightnings = 0;
 	gameOptions [1].render.automap.bSkybox = 0;
 	gameOptions [1].render.automap.bBright = 1;
 	gameOptions [1].render.automap.bCoronas = 0;
@@ -1433,9 +1441,16 @@ else {
 	gameOptions [0].render.smoke.bDisperse = 0;
 	gameOptions [0].render.smoke.bSort = 0;
 	gameOptions [0].render.smoke.bDecreaseLag = 1;
+	gameOptions [0].render.lightnings.bRobots = 1;
+	gameOptions [0].render.lightnings.bMissiles = 1;
+	gameOptions [0].render.lightnings.bStatic = 1;
+	gameOptions [0].render.lightnings.bCoronas = 1;
+	gameOptions [0].render.lightnings.nQuality = 0;
 	gameOptions [0].render.powerups.b3D = 0;
 	gameOptions [0].render.powerups.nSpin = 0;
 	gameOptions [0].render.automap.bTextured = 0;
+	gameOptions [0].render.automap.bSmoke = 0;
+	gameOptions [0].render.automap.bLightnings = 0;
 	gameOptions [0].render.automap.bSkybox = 0;
 	gameOptions [0].render.automap.bBright = 1;
 	gameOptions [0].render.automap.bCoronas = 0;
@@ -2244,8 +2259,8 @@ SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
 gameData.smoke.iFree = -1;
 gameData.smoke.iUsed = -1;
-gameData.flashes.iFree = -1;
-gameData.flashes.iUsed = -1;
+gameData.lightnings.iFree = -1;
+gameData.lightnings.iUsed = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 InitEndLevelData ();
@@ -2324,9 +2339,9 @@ GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
 
 // ----------------------------------------------------------------------------
 
-void AllocFlashData (void)
+void AllocLightningData (void)
 {
-GETMEM (short, gameData.flashes.objects, MAX_OBJECTS, 0xff);
+GETMEM (short, gameData.lightnings.objects, MAX_OBJECTS, 0xff);
 }
 
 // ----------------------------------------------------------------------------
@@ -2425,7 +2440,7 @@ void AllocGameData (void)
 AllocSegmentData ();
 AllocObjectData ();
 AllocSmokeData ();
-AllocFlashData ();
+AllocLightningData ();
 AllocCameraData ();
 AllocRenderColorData ();
 AllocRenderLightData ();
@@ -2495,11 +2510,11 @@ FREEMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS);
 
 // ----------------------------------------------------------------------------
 
-void FreeFlashData (void)
+void FreeLightningData (void)
 {
 LogErr ("unloading lightning data\n");
-DestroyAllFlashes ();
-FREEMEM (short, gameData.flashes.objects, MAX_OBJECTS);
+DestroyAllLightnings ();
+FREEMEM (short, gameData.lightnings.objects, MAX_OBJECTS);
 }
 
 // ----------------------------------------------------------------------------
@@ -2598,7 +2613,7 @@ void FreeGameData (void)
 FreeSegmentData ();
 FreeObjectData ();
 FreeSmokeData ();
-FreeFlashData ();
+FreeLightningData ();
 FreeCameraData ();
 FreeRenderColorData ();
 FreeRenderLightData ();

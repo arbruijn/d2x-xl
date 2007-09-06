@@ -207,10 +207,10 @@ return dest;
 vmsVector *VmVecScaleFrac (vmsVector *dest, fix n, fix d)
 {
 #if 1 // DPH: Kludge: this was overflowing a lot, so I made it use the FPU.
-double nd = f2fl(n) / f2fl(d);
-dest->p.x = fl2f (f2fl (dest->p.x) * nd);
-dest->p.y = fl2f (f2fl (dest->p.y) * nd);
-dest->p.z = fl2f (f2fl (dest->p.z) * nd);
+double nd = (double) n / (double) d;
+dest->p.x = (fix) ((double) dest->p.x * nd);
+dest->p.y = (fix) ((double) dest->p.y * nd);
+dest->p.z = (fix) ((double) dest->p.z * nd);
 #else
 dest->p.x = FixMulDiv (src->p.x, n, d);
 dest->p.y = FixMulDiv (src->p.y, n, d);

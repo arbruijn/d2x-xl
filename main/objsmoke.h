@@ -8,6 +8,9 @@
 #define	SHOW_SMOKE	\
 			(!gameStates.app.bNostalgia && EGI_FLAG (bUseSmoke, 1, 1, 0))
 
+#define	SHOW_FLASHES	\
+			(!gameStates.app.bNostalgia && EGI_FLAG (bUseFlashes, 1, 1, 0))
+
 #define MAX_SHRAPNEL_LIFE	(2 * F1_0)
 
 //------------------------------------------------------------------------------
