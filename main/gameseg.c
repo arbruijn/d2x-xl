@@ -1117,7 +1117,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPoint (vmsVector *p, int nSegment)
+int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive)
 {
 int nNewSeg;
 
@@ -1129,7 +1129,7 @@ if (nSegment != -1) {
 		return nNewSeg;
 	}
 //couldn't find via attached segs, so search all segs
-if (bDoingLightingHack)
+if (bDoingLightingHack || !bExhaustive)
 	return -1;
 ++nExhaustiveCount;
 #if 0 //TRACE

@@ -1086,10 +1086,14 @@ switch (key) {
 	case KEY_CTRLED + KEY_ALTED + KEY_S:
 		if ((IsMultiGame && !IsCoopGame) || !gameStates.app.bEnableFreeCam)
 			return 0;
-		if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam))
+		if ((gameStates.app.bFreeCam = !gameStates.app.bFreeCam)) {
 			gameStates.app.playerPos = gameData.objs.viewer->position;
-		else
+			gameStates.app.nPlayerSegment = gameData.objs.viewer->nSegment;
+			}
+		else {
 			gameData.objs.viewer->position = gameStates.app.playerPos;
+			RelinkObject (OBJ_IDX (gameData.objs.viewer), gameStates.app.nPlayerSegment);
+			}
 		break;
 
 	case KEY_COMMAND + KEY_SHIFTED + KEY_P:

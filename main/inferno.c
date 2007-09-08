@@ -1445,7 +1445,7 @@ else {
 	gameOptions [0].render.lightnings.bMissiles = 1;
 	gameOptions [0].render.lightnings.bStatic = 1;
 	gameOptions [0].render.lightnings.bCoronas = 1;
-	gameOptions [0].render.lightnings.nQuality = 0;
+	gameOptions [0].render.lightnings.nQuality = 1;
 	gameOptions [0].render.powerups.b3D = 0;
 	gameOptions [0].render.powerups.nSpin = 0;
 	gameOptions [0].render.automap.bTextured = 0;
@@ -2262,6 +2262,7 @@ gameData.smoke.iUsed = -1;
 gameData.lightnings.iFree = -1;
 gameData.lightnings.iUsed = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
+gameData.laser.nLightning = -1;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 InitEndLevelData ();
 SetDataVersion (-1);
@@ -2342,6 +2343,7 @@ GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
 void AllocLightningData (void)
 {
 GETMEM (short, gameData.lightnings.objects, MAX_OBJECTS, 0xff);
+GETMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS, 0xff);
 }
 
 // ----------------------------------------------------------------------------
@@ -2514,6 +2516,7 @@ void FreeLightningData (void)
 {
 LogErr ("unloading lightning data\n");
 DestroyAllLightnings ();
+FREEMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS);
 FREEMEM (short, gameData.lightnings.objects, MAX_OBJECTS);
 }
 

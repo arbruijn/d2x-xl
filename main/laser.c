@@ -31,6 +31,7 @@ char laser_rcsid [] = "$Id: laser.c,v 1.10 2003/10/10 09:36:35 btb Exp $";
 #include "bm.h"
 #include "object.h"
 #include "objrender.h"
+#include "lightning.h"
 #include "laser.h"
 #include "args.h"
 #include "segment.h"
@@ -349,7 +350,72 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 
 // ---------------------------------------------------------------------------------
 
-void CreateOmegaBlobs (short nFiringSeg, vmsVector *vFiringPos, vmsVector *vGoalPos, tObject *parentObjP)
+void DestroyOmegaLightnings (void)
+{
+if (gameData.laser.nLightning >= 0) {
+	DestroyLightnings (gameData.laser.nLightning, NULL);
+	gameData.laser.nLightning = -1;
+	}
+}
+
+// ---------------------------------------------------------------------------------
+
+int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP)
+{
+	vmsVector	vFiringPos;
+	int			bSpectate;
+
+if (!EGI_FLAG (bUseLightnings, 0, 0, 1))
+	return -1;
+if (gameData.laser.xOmegaCharge == MAX_OMEGA_CHARGE)
+	DestroyOmegaLightnings ();
+if (gameData.laser.nLightning < 0)
+	return 0;
+if (parentObjP) {
+	if (parentObjP != gameData.laser.parentObjP)
+		return 0;
+	if (targetObjP != gameData.laser.targetObjP)
+		return 0;
+	}
+if (bSpectate = SPECTATOR (gameData.laser.parentObjP)) {
+	VmVecSub (&vFiringPos, &gameStates.app.playerPos.vPos, &gameStates.app.playerPos.mOrient.uVec);
+	VmVecInc (&vFiringPos, &gameStates.app.playerPos.mOrient.fVec);
+	}
+else {
+	VmVecSub (&vFiringPos, &gameData.laser.parentObjP->position.vPos, &gameData.laser.parentObjP->position.mOrient.uVec);
+	VmVecInc (&vFiringPos, &gameData.laser.parentObjP->position.mOrient.fVec);
+	}
+MoveLightnings (gameData.laser.nLightning, NULL, &vFiringPos, bSpectate ? gameStates.app.nPlayerSegment : gameData.laser.parentObjP->nSegment, 1, 0);
+if (gameData.laser.targetObjP)
+	MoveLightnings (gameData.laser.nLightning, NULL, &gameData.laser.targetObjP->position.vPos, gameData.laser.targetObjP->nSegment, 1, 1);
+return 1;
+}
+
+// ---------------------------------------------------------------------------------
+
+int CreateOmegaLightnings (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
+{
+if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
+	tRgbaColorf	color = {0.9f, 0.95f, 1.0f, 0.6f};
+	vmsVector	*vEnd, vFiringPos;
+	int			bSpectate = SPECTATOR (parentObjP);
+	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &parentObjP->position;
+
+	VmVecSub (&vFiringPos, &posP->vPos, &posP->mOrient.uVec);
+	VmVecInc (&vFiringPos, &posP->mOrient.fVec);
+	gameData.laser.parentObjP = parentObjP;
+	gameData.laser.targetObjP = targetObjP;
+	vEnd = targetObjP ? &targetObjP->position.vPos : vTargetPos;
+	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, 
+																-(bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment) - 1, 
+																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 0, 0, 3, 1, 1, &color);
+	}
+return (gameData.laser.nLightning >= 0);
+}
+
+// ---------------------------------------------------------------------------------
+
+void CreateOmegaBlobs (short nFiringSeg, vmsVector *vFiringPos, vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
 {
 	short			nLastSeg, nLastCreatedObj = -1;
 	vmsVector	vGoal;
@@ -363,11 +429,12 @@ void CreateOmegaBlobs (short nFiringSeg, vmsVector *vFiringPos, vmsVector *vGoal
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
-VmVecSub (&vGoal, vGoalPos, vFiringPos);
+CreateOmegaLightnings (vTargetPos, parentObjP, targetObjP);
+VmVecSub (&vGoal, vTargetPos, vFiringPos);
 xGoalDist = VmVecNormalizeQuick (&vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
-	nOmegaBlobs = xGoalDist/xOmegaBlobDist;
+	nOmegaBlobs = xGoalDist / xOmegaBlobDist;
 	if (nOmegaBlobs == 0)
 		nOmegaBlobs = 1;
 	} 
@@ -396,9 +463,9 @@ if (xGoalDist < MIN_OMEGA_DIST * 4) {
 	} 
 else {
 	VmVecScaleInc (&vBlobPos, &vOmegaDelta, F1_0/2);	//	Put first blob half way out.
-	for (i=0; i<nOmegaBlobs/2; i++) {
-		xPerturbArray [i] = F1_0*i + F1_0/4;
-		xPerturbArray [nOmegaBlobs-1-i] = F1_0*i;
+	for (i = 0; i < nOmegaBlobs / 2; i++) {
+		xPerturbArray [i] = F1_0 * i + F1_0 / 4;
+		xPerturbArray [nOmegaBlobs - 1 - i] = F1_0 * i;
 		}
 	}
 
@@ -406,9 +473,9 @@ else {
 MakeRandomVector (&vPerturb);
 VmVecScaleInc (&vPerturb, &parentObjP->position.mOrient.uVec, -F1_0/2);
 //bDoingLightingHack = 1;	//	Ugly, but prevents blobs which are probably outside the mine from killing framerate.
-for (i=0; i<nOmegaBlobs; i++) {
-	vmsVector	temp_pos;
-	short			blob_objnum, nSegment;
+for (i = 0; i < nOmegaBlobs; i++) {
+	vmsVector	vTempPos;
+	short			nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination tObject, causing damage.
 	if (i == nOmegaBlobs-1)
@@ -420,18 +487,18 @@ for (i=0; i<nOmegaBlobs; i++) {
 		MakeRandomVector (&vTemp);
 		VmVecScaleInc (&vPerturb, &vTemp, F1_0/4);
 		}
-	VmVecScaleAdd (&temp_pos, &vBlobPos, &vPerturb, xPerturbArray [i]);
-	nSegment = FindSegByPoint (&temp_pos, nLastSeg);
+	VmVecScaleAdd (&vTempPos, &vBlobPos, &vPerturb, xPerturbArray [i]);
+	nSegment = FindSegByPoint (&vTempPos, nLastSeg, 1);
 	if (nSegment != -1) {
 		tObject		*objP;
 
 		nLastSeg = nSegment;
-		blob_objnum = CreateObject (OBJ_WEAPON, OMEGA_ID, -1, nSegment, &temp_pos, NULL, 0, 
+		nBlobObj = CreateObject (OBJ_WEAPON, OMEGA_ID, -1, nSegment, &vTempPos, NULL, 0, 
 											 CT_WEAPON, MT_PHYSICS, RT_WEAPON_VCLIP, 1);
-		if (blob_objnum == -1)
+		if (nBlobObj == -1)
 			break;
-		nLastCreatedObj = blob_objnum;
-		objP = gameData.objs.objects + blob_objnum;
+		nLastCreatedObj = nBlobObj;
+		objP = gameData.objs.objects + nBlobObj;
 		objP->lifeleft = ONE_FRAME_TIME;
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
@@ -462,24 +529,29 @@ void OmegaChargeFrame (void)
 {
 	fix	xDeltaCharge, xOldOmegaCharge;
 
-if (gameData.laser.xOmegaCharge == MAX_OMEGA_CHARGE)
+if (gameData.laser.xOmegaCharge == MAX_OMEGA_CHARGE) {
+	DestroyOmegaLightnings ();
 	return;
-
-if (!(PlayerHasWeapon (OMEGA_INDEX, 0, -1) & HAS_WEAPON_FLAG))
+	}
+if (!(PlayerHasWeapon (OMEGA_INDEX, 0, -1) & HAS_WEAPON_FLAG)) {
+	DestroyOmegaLightnings ();
 	return;
-if (gameStates.app.bPlayerIsDead)
+	}
+if (gameStates.app.bPlayerIsDead) {
+	DestroyOmegaLightnings ();
 	return;
-if ((gameData.weapons.nPrimary == OMEGA_INDEX) && 
-		!gameData.laser.xOmegaCharge && 
-		!LOCALPLAYER.energy) {
+	}
+if ((gameData.weapons.nPrimary == OMEGA_INDEX) && !gameData.laser.xOmegaCharge && !LOCALPLAYER.energy) {
+	DestroyOmegaLightnings ();
 	gameData.weapons.nPrimary--;
 	AutoSelectWeapon (0, 1);
 	}
 //	Don't charge while firing.
 if ((gameData.laser.nLastOmegaFireFrame == gameData.app.nFrameCount) || 
-	 (gameData.laser.nLastOmegaFireFrame == gameData.app.nFrameCount-1))
+	 (gameData.laser.nLastOmegaFireFrame == gameData.app.nFrameCount - 1))
 	return;
 
+DestroyOmegaLightnings ();
 if (LOCALPLAYER.energy) {
 	fix	xEnergyUsed;
 
@@ -505,16 +577,18 @@ if (LOCALPLAYER.energy) {
 //	*pos is the location from which the omega bolt starts
 void DoOmegaStuff (tObject *parentObjP, vmsVector *vFiringPos, tObject *weaponObjP)
 {
-	short			nLockObj, nFiringSeg;
-	vmsVector	vGoalPos;
-	int			pnum = parentObjP->id;
+	short			nTargetObj, nFiringSeg, nParentSeg;
+	vmsVector	vTargetPos;
+	int			nPlayer = parentObjP->id;
+	int			bSpectate = SPECTATOR (parentObjP);
 	static		int nDelay = 0;
 
-if (pnum == gameData.multiplayer.nLocalPlayer) {
+if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	//	If charge >= min, or (some charge and zero energy), allow to fire.
-	if (!((gameData.laser.xOmegaCharge >= MIN_OMEGA_CHARGE) || 
-			 (gameData.laser.xOmegaCharge && !gameData.multiplayer.players [pnum].energy))) {
+	if ((gameData.laser.xOmegaCharge < MIN_OMEGA_CHARGE) &&
+		 (!gameData.laser.xOmegaCharge || gameData.multiplayer.players [nPlayer].energy)) {
 		ReleaseObject (OBJ_IDX (weaponObjP));
+		DestroyOmegaLightnings ();
 		return;
 		}
 	gameData.laser.xOmegaCharge -= gameData.time.xFrame;
@@ -526,8 +600,8 @@ if (pnum == gameData.multiplayer.nLocalPlayer) {
 	}
 
 weaponObjP->cType.laserInfo.parentType = OBJ_PLAYER;
-weaponObjP->cType.laserInfo.nParentObj = gameData.multiplayer.players [pnum].nObject;
-weaponObjP->cType.laserInfo.nParentSig = gameData.objs.objects [gameData.multiplayer.players [pnum].nObject].nSignature;
+weaponObjP->cType.laserInfo.nParentObj = gameData.multiplayer.players [nPlayer].nObject;
+weaponObjP->cType.laserInfo.nParentSig = gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].nSignature;
 
 if (gameStates.limitFPS.bOmega && !gameStates.app.tick40fps.bTick)
 #if 1
@@ -541,12 +615,16 @@ if (SlowMotionActive ()) {
 	nDelay += gameOpts->gameplay.nSlowMotionSpeedup;
 	}
 #else
-	nLockObj = -1;
+	nTargetObj = -1;
 else
 #endif
-	nLockObj = FindHomingObject (vFiringPos, weaponObjP);
-if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, parentObjP->nSegment)))
+	nTargetObj = FindHomingObject (vFiringPos, weaponObjP);
+nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment;
+
+if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, nParentSeg, 1))) {
+	DestroyOmegaLightnings ();
 	return;
+	}
 //	Play sound.
 if (parentObjP == gameData.objs.viewer)
 	DigiPlaySample (gameData.weapons.info [weaponObjP->id].flashSound, F1_0);
@@ -555,8 +633,8 @@ else
 							  weaponObjP->nSegment, 0, &weaponObjP->position.vPos, 0, F1_0);
 //	Delete the original tObject.  Its only purpose in life was to determine which tObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
-if (nLockObj != -1)
-	vGoalPos = gameData.objs.objects [nLockObj].position.vPos;
+if (nTargetObj != -1)
+	vTargetPos = gameData.objs.objects [nTargetObj].position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
 	tVFIQuery	fq;
 	tFVIData		hit_data;
@@ -564,11 +642,11 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	vmsVector	vPerturb, perturbed_fvec;
 
 	MakeRandomVector (&vPerturb);
-	VmVecScaleAdd (&perturbed_fvec, &parentObjP->position.mOrient.fVec, &vPerturb, F1_0/16);
-	VmVecScaleAdd (&vGoalPos, vFiringPos, &perturbed_fvec, MAX_OMEGA_DIST);
+	VmVecScaleAdd (&perturbed_fvec, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &parentObjP->position.mOrient.fVec, &vPerturb, F1_0/16);
+	VmVecScaleAdd (&vTargetPos, vFiringPos, &perturbed_fvec, MAX_OMEGA_DIST);
 	fq.startSeg = nFiringSeg;
 	fq.p0 = vFiringPos;
-	fq.p1	= &vGoalPos;
+	fq.p1	= &vTargetPos;
 	fq.radP0 =
 	fq.radP1 = 0;
 	fq.thisObjNum = OBJ_IDX (parentObjP);
@@ -577,11 +655,11 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	fate = FindVectorIntersection (&fq, &hit_data);
 	if (fate != HIT_NONE) {
 		Assert (hit_data.hit.nSegment != -1);		//	How can this be?  We went from inside the mine to outside without hitting anything?
-		vGoalPos = hit_data.hit.vPoint;
+		vTargetPos = hit_data.hit.vPoint;
 		}
 	}
 //	This is where we create a pile of omega blobs!
-CreateOmegaBlobs (nFiringSeg, vFiringPos, &vGoalPos, parentObjP);
+CreateOmegaBlobs (nFiringSeg, vFiringPos, &vTargetPos, parentObjP, (nTargetObj < 0) ? NULL : OBJECTS + nTargetObj);
 }
 
 // ---------------------------------------------------------------------------------
@@ -595,7 +673,7 @@ int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
 	tObject	*objP, *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
 	fix		xParentSpeed, xWeaponSpeed;
 	fix		volume;
-	fix		xLaserLength=0;
+	fix		xLaserLength = 0;
 	Assert (nWeaponType < gameData.weapons.nTypes [0]);
 
 if (nWeaponType >= gameData.weapons.nTypes [0])
@@ -667,12 +745,12 @@ objP->cType.laserInfo.nParentSig = pParent->nSignature;
 //	not apply to the Omega Cannon.
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
-	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec, NULL);
+	VmVector2Matrix (&objP->position.mOrient, vDirection, SPECTATOR (pParent) ? &gameStates.app.playerPos.mOrient.uVec : &pParent->position.mOrient.uVec, NULL);
 	if ((gameData.objs.objects + nParent != gameData.objs.viewer) && (pParent->nType != OBJ_WEAPON)) {
 		// Muzzle flash		
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
 			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
-												gameData.weapons.info [objP->id].flash_vclip);
+											 gameData.weapons.info [objP->id].flash_vclip);
 		}
 	DoOmegaStuff (gameData.objs.objects + nParent, vPosition, objP);
 	return nObject;
@@ -688,17 +766,17 @@ if (pParent->nType == OBJ_PLAYER) {
 	if (nWeaponType == FUSION_ID) {
 		if (gameData.fusion.xCharge <= 0)
 			objP->cType.laserInfo.multiplier = F1_0;
-		else if (gameData.fusion.xCharge <= 4*F1_0)
+		else if (gameData.fusion.xCharge <= 4 * F1_0)
 			objP->cType.laserInfo.multiplier = F1_0 + gameData.fusion.xCharge / 2;
 		else
-			objP->cType.laserInfo.multiplier = 4*F1_0;
+			objP->cType.laserInfo.multiplier = 4 * F1_0;
 		}
 	else if (/* (nWeaponType >= LASER_ID) &&*/ (nWeaponType <= MAX_SUPER_LASER_LEVEL) && 
 				(gameData.multiplayer.players [pParent->id].flags & PLAYER_FLAGS_QUAD_LASERS))
-		objP->cType.laserInfo.multiplier = F1_0*3/4;
+		objP->cType.laserInfo.multiplier = 3 * F1_0 / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
-			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]= objP;
+			gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer] = objP;
 			gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] = objP->nSignature;
 			if (gameData.demo.nState==ND_STATE_RECORDING)
 				NDRecordGuidedStart ();
@@ -773,7 +851,7 @@ if ((pParent->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 	int			nEndSeg;
 
 	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset + (xLaserLength / 2));
-	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment);
+	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment, 1);
 	if (nEndSeg == objP->nSegment) 
 		objP->position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
@@ -856,15 +934,15 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 {
 	tVFIQuery	fq;
 	tFVIData		hit_data;
-	int			fate, nTries = 0;
+	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
 	if (nTries++)
-		fq.startSeg		= FindSegByPoint (&objP1->position.vPos, objP1->nSegment);
+		fq.startSeg		= bSpectate ? FindSegByPoint (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1) : FindSegByPoint (&objP1->position.vPos, objP1->nSegment, 1);
 	else
-		fq.startSeg		= objP1->nSegment;
-	fq.p0					= &objP1->position.vPos;
-	fq.p1					= &objP2->position.vPos;
+		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->nSegment;
+	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->position.vPos;
+	fq.p1					= SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->position.vPos;
 	fq.radP0				= 
 	fq.radP1				= 0x10;
 	fq.thisObjNum		= OBJ_IDX (objP1);
@@ -944,32 +1022,33 @@ return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, gameStates.app.che
 //	--------------------------------------------------------------------------------------------
 //	Find tObject to home in on.
 //	Scan list of gameData.objs.objects rendered last frame, find one that satisfies function of nearness to center and distance.
-int FindHomingObject (vmsVector *curpos, tObject *tracker)
+int FindHomingObject (vmsVector *curpos, tObject *trackerP)
 {
 	int	i;
 	fix	maxDot = -F1_0*2;
 	int	nBestObj = -1;
 	int	curMinTrackableDot;
-	int	bGuidedMslView = (tracker->nType == OBJ_WEAPON) && (tracker == GuidedInMainView ());
+	int	bGuidedMslView = (trackerP->nType == OBJ_WEAPON) && (trackerP == GuidedInMainView ());
+	int	bSpectate = SPECTATOR (trackerP);
 
 //	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
 Assert (gameStates.app.cheats.bHomingWeapons ||
-		  (tracker->nType == OBJ_PLAYER) || 
+		  (trackerP->nType == OBJ_PLAYER) || 
 		  bGuidedMslView || 
-		  WI_homingFlag (tracker->id) || 
-		  (tracker->id == OMEGA_ID));
+		  WI_homingFlag (trackerP->id) || 
+		  (trackerP->id == OMEGA_ID));
 
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
 
 if (IsMultiGame)
-	return CallFindHomingObjectComplete (tracker, curpos);
+	return CallFindHomingObjectComplete (trackerP, curpos);
 
 curMinTrackableDot = MIN_TRACKABLE_DOT;
-if ((tracker->nType == OBJ_WEAPON) && (tracker->id == OMEGA_ID))
+if ((trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID))
 	curMinTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 
 //	Not in network mode.  If not fired by tPlayer, then track player.
-if ((tracker->nType != OBJ_PLAYER) && (tracker->cType.laserInfo.nParentObj != LOCALPLAYER.nObject)) {
+if ((trackerP->nType != OBJ_PLAYER) && (trackerP->cType.laserInfo.nParentObj != LOCALPLAYER.nObject)) {
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 		nBestObj = OBJ_IDX (gameData.objs.console);
 	} 
@@ -988,12 +1067,12 @@ else {
 
 	//	Couldn't find suitable view from this frame, so do complete search.
 	if (nWindow == -1)
-		return CallFindHomingObjectComplete (tracker, curpos);
+		return CallFindHomingObjectComplete (trackerP, curpos);
 
 	maxTrackableDist = MAX_TRACKABLE_DIST;
-	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (tracker->id == EARTHSHAKER_MEGA_ID))
+	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->nType == OBJ_WEAPON) && (trackerP->id == EARTHSHAKER_MEGA_ID))
 		maxTrackableDist *= 2;
-	if (tracker->id == OMEGA_ID)
+	else if (trackerP->id == OMEGA_ID)
 		maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
 
 	//	Not in network mode and fired by player.
@@ -1012,20 +1091,20 @@ else {
 				continue;
 			//	Your missiles don't track your escort.
 			if (ROBOTINFO (curObjP->id).companion && 
-				 ((tracker->nType == OBJ_PLAYER) || (tracker->cType.laserInfo.parentType == OBJ_PLAYER)))
+				 ((trackerP->nType == OBJ_PLAYER) || (trackerP->cType.laserInfo.parentType == OBJ_PLAYER)))
 				continue;
 			}
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 		dist = VmVecNormalizeQuick (&vecToCurObj);
 		if (dist < maxTrackableDist) {
-			dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
+			dot = VmVecDot (&vecToCurObj, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &trackerP->position.mOrient.fVec);
 
 			//	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 			//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
 			//	frames to determine if the tObject remains trackable.
 			if (dot > curMinTrackableDot) {
 				if (dot > maxDot) {
-					if (ObjectToObjectVisibility (tracker, gameData.objs.objects + nObject, FQ_TRANSWALL)) {
+					if (ObjectToObjectVisibility (trackerP, gameData.objs.objects + nObject, FQ_TRANSWALL)) {
 						maxDot = dot;
 						nBestObj = nObject;
 						}
@@ -1033,10 +1112,10 @@ else {
 				} 
 			else if (dot > F1_0 - (F1_0 - curMinTrackableDot) * 2) {
 				VmVecNormalize (&vecToCurObj);
-				dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
+				dot = VmVecDot (&vecToCurObj, &trackerP->position.mOrient.fVec);
 				if (dot > curMinTrackableDot) {
 					if (dot > maxDot) {
-						if (ObjectToObjectVisibility (tracker, gameData.objs.objects + nObject, FQ_TRANSWALL)) {
+						if (ObjectToObjectVisibility (trackerP, gameData.objs.objects + nObject, FQ_TRANSWALL)) {
 							maxDot = dot;
 							nBestObj = nObject;
 							}
@@ -1216,7 +1295,7 @@ int LaserPlayerFireSpreadDelay (
 {
 	short			nLaserSeg;
 	int			nFate; 
-	vmsVector	v, vLaserPos, vLaserDir,  vGunPoint;
+	vmsVector	v, vLaserPos, vLaserDir, vGunPoint;
 	tVFIQuery	fq;
 	tFVIData		hit_data;
 	vmsMatrix	m;
@@ -1228,7 +1307,7 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
-	int			bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
+	int			bSpectate = SPECTATOR (objP);
 	tPosition	*pPos = bSpectate ? &gameStates.app.playerPos : &objP->position;
 
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
@@ -1254,7 +1333,7 @@ if (delayTime)
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
 fq.p0					= &pPos->vPos;
-fq.startSeg			= objP->nSegment;
+fq.startSeg			= bSpectate ? gameStates.app.nPlayerSegment : objP->nSegment;
 fq.p1					= &vLaserPos;
 fq.radP0				=
 fq.radP1				= 0x10;
@@ -1687,7 +1766,7 @@ return rVal;
 // -- 		tObject		*obj;
 // -- 
 // -- 		VmVecInc (&point_pos, &delta_pos);
-// -- 		tPointSeg = FindSegByPoint (&point_pos, start_segnum);
+// -- 		tPointSeg = FindSegByPoint (&point_pos, start_segnum, 1);
 // -- 		if (tPointSeg == -1)	//	Hey, we thought we were creating points on a line, but we left the mine!
 // -- 			continue;
 // -- 

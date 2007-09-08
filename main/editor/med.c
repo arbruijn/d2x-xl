@@ -705,7 +705,7 @@ int SetPlayerFromCursegMinusOne()
 	//RelinkObject(OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(Cursegp) );
 	//UpdateObjectSeg(gameData.objs.console);		//might have backed right out of curseg
 
-	newseg = FindSegByPoint(&gameData.objs.console->position.vPos,SEG_PTR_2_NUM(Cursegp) );
+	newseg = FindSegByPoint(&gameData.objs.console->position.vPos, SEG_PTR_2_NUM(Cursegp, 1);
 	if (newseg != -1)
 		RelinkObject(OBJ_IDX (gameData.objs.console),newseg);
 

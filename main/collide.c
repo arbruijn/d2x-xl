@@ -1150,7 +1150,7 @@ int  CollideRobotAndPlayer (tObject *robot, tObject *playerObjP, vmsVector *vHit
 
 if (robot->flags & OF_EXPLODING)
 	return 1;
-nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment);
+nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment, 1);
 if (nCollisionSeg != -1)
 	ObjectCreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
@@ -1556,7 +1556,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		short	nNewObj;
 		short	nSegment;
 
-		nSegment = FindSegByPoint (vHitPt, robot->nSegment);
+		nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1);
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 		bDamage = 0;
 
@@ -1624,7 +1624,7 @@ else if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulK
 		   (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulEnergy)) {
 	short	nSegment;
 
-	nSegment = FindSegByPoint (vHitPt, robot->nSegment);
+	nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1);
 	DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 	bDamage = 0;
 	}
@@ -1678,9 +1678,8 @@ int CollideRobotAndWeapon (tObject *robotP, tObject *weaponP, vmsVector *vHitPt)
 
 if ((weaponP->id == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;		
-if (weaponP->id == OMEGA_ID)
-	if (!OkToDoOmegaDamage (weaponP))
-		return 1;
+if ((weaponP->id == OMEGA_ID) && !OkToDoOmegaDamage (weaponP))
+	return 1;
 if (botInfoP->bossFlag) {
 	int i = FindBoss (OBJ_IDX (robotP));
 	if (i >= 0)
@@ -1946,30 +1945,30 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 	//	If the tPlayer had smart mines, maybe arm one of them.
 	rthresh = 30000;
 	while ((playerP->secondaryAmmo [SMARTMINE_INDEX]%4==1) && (d_rand () < rthresh)) {
-		short			newseg;
+		short			nNewSeg;
 		vmsVector	tvec;
 
 		MakeRandomVector (&vRandom);
 		rthresh /= 2;
 		VmVecAdd (&tvec, &playerObjP->position.vPos, &vRandom);
-		newseg = FindSegByPoint (&tvec, playerObjP->nSegment);
-		if (newseg != -1)
-			CreateNewLaser (&vRandom, &tvec, newseg, plrObjNum, SMARTMINE_ID, 0);
+		nNewSeg = FindSegByPoint (&tvec, playerObjP->nSegment, 1);
+		if (nNewSeg != -1)
+			CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
 	  	}
 
 		//	If the tPlayer had proximity bombs, maybe arm one of them.
 		if ((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
 			rthresh = 30000;
 			while ((playerP->secondaryAmmo [PROXMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
-				short			newseg;
+				short			nNewSeg;
 				vmsVector	tvec;
 	
 				MakeRandomVector (&vRandom);
 				rthresh /= 2;
 				VmVecAdd (&tvec, &playerObjP->position.vPos, &vRandom);
-				newseg = FindSegByPoint (&tvec, playerObjP->nSegment);
-				if (newseg != -1)
-					CreateNewLaser (&vRandom, &tvec, newseg, plrObjNum, PROXMINE_ID, 0);
+				nNewSeg = FindSegByPoint (&tvec, playerObjP->nSegment, 1);
+				if (nNewSeg != -1)
+					CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, PROXMINE_ID, 0);
 			}
 		}
 

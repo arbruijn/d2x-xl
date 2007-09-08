@@ -190,7 +190,7 @@ segmasks GetSegMasks(vmsVector *checkp,int nSegment,fix rad);
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPoint(vmsVector *p,int nSegment);
+int FindSegByPoint(vmsVector *vPos, int nSegment, int bExhaustive);
 
 //--repair-- // Create data specific to segments which does not need to get written to disk.
 //--repair-- extern void create_local_segment_data(void);

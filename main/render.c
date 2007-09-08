@@ -3506,7 +3506,7 @@ if (gameStates.render.cameras.bActive) {
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 	}
 else {
-	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment);
+	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1);
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
 	if ((gameData.objs.viewer == gameData.objs.console) && viewInfo.bUsePlayerHeadAngles) {

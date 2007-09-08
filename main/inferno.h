@@ -929,6 +929,7 @@ typedef struct tApplicationStates {
 	char *szCurrentMission;
 	char *szCurrentMissionFile;
 	tPosition playerPos;
+	short nPlayerSegment;
 	tCheatStates cheats;
 } tApplicationStates;
 
@@ -2295,38 +2296,52 @@ typedef struct tLightning {
 	vmsVector		vPos;
 	vmsVector		vEnd;
 	vmsVector		vDir;
-	tLightningNode		*pNodes;
+	tLightningNode	*pNodes;
+	tRgbaColorf		color;
 	int				nIndex;
 	int				nNext;
-	short				nNodeC;
-	short				nChildC;
-	short				nDepth;
-	int				nObject;
 	int				nLife;
 	int				nTTL;
+	int				nDelay;
 	int				nLength;
 	int				nOffset;
 	int				nAmplitude;
-	int				nSmoothe;
-	int				bClamp;
-	int				bRandom;
-	int				nSteps;
-	int				iStep;
-	tRgbaColorf		color;
+	short				nSmoothe;
+	short				nSteps;
+	short				iStep;
+	short				nNodeC;
+	short				nChildC;
+	short				nDepth;
+	short				nObject;
+	short				nSegment;
+	char				bClamp;
+	char				bRandom;
 } tLightning;
 
 typedef struct tLightningBundle {
 	int				nNext;
 	int				nLightnings;
-	tLightning		*pf;
+	tLightning		*pl;
 } tLightningBundle;
 
-typedef struct tLightningData {
-	short				*objects;
-	tLightningBundle	buffer [MAX_FLASHES];
-	int				iFree;
-	int				iUsed;
+typedef struct tLightningLight {
+	vmsVector		vPos;
+	tRgbaColorf		color;
 	int				nNext;
+	int				nLights;
+	int				nBrightness;
+	int				nDynLight;
+	char				nFrameFlipFlop;
+} tLightningLight;
+
+typedef struct tLightningData {
+	short					*objects;
+	tLightningLight	*lights;
+	tLightningBundle	buffer [MAX_FLASHES];
+	int					iFree;
+	int					iUsed;
+	int					nNext;
+	int					nFirstLight;
 } tLightningData;
 
 //------------------------------------------------------------------------------
@@ -2492,6 +2507,9 @@ typedef struct tLaserData {
 	int		nLastOmegaFireFrame;
 	int		nGlobalFiringCount;
 	int		nMissileGun;
+	int		nLightning;
+	tObject	*parentObjP;
+	tObject	*targetObjP;
 } tLaserData;
 
 //------------------------------------------------------------------------------
@@ -2710,6 +2728,9 @@ extern fix nDebrisLife [];
 #define WALLS		gameData.walls.walls
 
 #define MAXFPS		((gameStates.render.automap.bDisplay && !gameStates.render.automap.bRadar) ? 40 : gameOpts->render.nMaxFPS)
+
+#define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
+#define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->position)
 
 #ifdef RELEASE
 #	define FAST_SHADOWS	1

@@ -1277,7 +1277,7 @@ return EndRenderSmoke (pCloud);
 
 void SetCloudPos (tCloud *pCloud, vmsVector *pos)
 {
-int nNewSeg = FindSegByPoint (pos, pCloud->nSegment);
+int nNewSeg = FindSegByPoint (pos, pCloud->nSegment, 1);
 pCloud->pos = *pos;
 if (nNewSeg >= 0)
 	pCloud->nSegment = nNewSeg;

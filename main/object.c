@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "textures.h"
 
+#include "lightning.h"
 #include "object.h"
 #include "objsmoke.h"
 #include "physics.h"
@@ -356,7 +357,7 @@ MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 / 2 + d_rand () * 4 / 2);
-nSegment = FindSegByPoint (&pos, objP->nSegment);
+nSegment = FindSegByPoint (&pos, objP->nSegment, 1);
 if (nSegment != -1) {
 	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, VCLIP_SMALL_EXPLOSION);
 	if (!explObjP)
@@ -385,7 +386,7 @@ MakeRandomVector (&rand_vec);
 VmVecScale (&rand_vec, objP->size / 2);
 VmVecInc (&pos, &rand_vec);
 size = FixMul (size_scale, F1_0 + d_rand ()*4);
-nSegment = FindSegByPoint (&pos, objP->nSegment);
+nSegment = FindSegByPoint (&pos, objP->nSegment, 1);
 if (nSegment != -1) {
 	tObject *explObjP = ObjectCreateExplosion (nSegment, &pos, size, vclip_num);
 	if (!explObjP)
@@ -726,6 +727,7 @@ void FreeObject (int nObject)
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 KillObjectSmoke (nObject);
+DestroyObjectLightnings (OBJECTS + nObject);
 RemoveDynLight (-1, -1, nObject);
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
@@ -890,7 +892,7 @@ Assert (cType <= CT_CNTRLCEN);
 if ((nType == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMaxDebrisObjects))
 	return -1;
 if (GetSegMasks (pos, nSegment, 0).centerMask)
-	if ((nSegment = FindSegByPoint (pos, nSegment)) == -1) {
+	if ((nSegment = FindSegByPoint (pos, nSegment, 1)) == -1) {
 #ifdef _DEBUG
 #	if TRACE				
 		con_printf (CONDBG, "Bad segment in CreateObject (nType=%d)\n", nType);
@@ -947,7 +949,7 @@ if (objP->movementType == MT_PHYSICS) {
 if (objP->renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->shields = 20 * F1_0;
-nSegment = FindSegByPoint (pos, nSegment);		//find correct tSegment
+nSegment = FindSegByPoint (pos, nSegment, 1);		//find correct tSegment
 Assert (nSegment != -1);
 objP->nSegment = -1;					//set to zero by memset, above
 LinkObject (nObject, nSegment);
@@ -1802,6 +1804,19 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 }
 
 //--------------------------------------------------------------------
+
+void HandleObjectEffects (tObject *objP)
+{
+if (objP->nType == OBJ_ROBOT) {
+	if (ROBOTINFO (objP->id).energyDrain) {
+			tRgbaColorf color = {1.0f, 0.8f, 0, 0.4f};
+
+		CreateRobotLightnings (objP, &color);
+		}
+	}
+}
+
+//--------------------------------------------------------------------
 //move an tObject for the current frame
 
 int UpdateObject (tObject * objP)
@@ -1815,8 +1830,10 @@ if ((objP->lifeleft != IMMORTAL_TIME) &&
 	 (gameData.physics.xTime != F1_0))
 	objP->lifeleft -= (fix) (gameData.physics.xTime / gameStates.gameplay.slowmo [0].fSpeed);		//...inevitable countdown towards death
 gameStates.render.bDropAfterburnerBlob = 0;
-if (HandleObjectControl (objP))
+if (HandleObjectControl (objP)) {
+	HandleObjectEffects (objP);
 	return 1;
+	}
 if (objP->lifeleft < 0) {		// We died of old age
 	KillObject (objP);
 	if ((objP->nType == OBJ_WEAPON) && WI_damage_radius (objP->id))
@@ -1828,6 +1845,7 @@ if ((objP->nType == OBJ_NONE) || (objP->flags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//tObject has been deleted
 	}
 HandleObjectMovement (objP);
+HandleObjectEffects (objP);
 if (CheckObjectHitTriggers (objP, nPrevSegment))
 	return 0;
 CheckObjectInVolatileWall (objP);
@@ -2195,7 +2213,7 @@ nDebrisObjectCount = 0;
 //Tries to find a tSegment for an tObject, using FindSegByPoint ()
 int FindObjectSeg (tObject * objP)
 {
-return FindSegByPoint (&objP->position.vPos, objP->nSegment);
+return FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
 }
 
 

@@ -1875,7 +1875,7 @@ CalcShipThrusterPos (objP, vPos);
 if (count == 1)
 	VmVecAvg (vPos, vPos, vPos + 1);
 for (i = 0; i < count; i++) {
-	nSegment = FindSegByPoint (vPos + i, objP->nSegment);
+	nSegment = FindSegByPoint (vPos + i, objP->nSegment, 1);
 	if (nSegment == -1)
 		continue;
 	if (!(blobObjP = ObjectCreateExplosion (nSegment, vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))

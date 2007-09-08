@@ -901,6 +901,7 @@ DestroyCameras ();
 DestroyAllSmoke ();
 /*---*/LogErr ("   Destroying lightning data\n");
 DestroyAllLightnings ();
+DestroyOmegaLightnings ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));

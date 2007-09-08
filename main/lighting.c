@@ -42,6 +42,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "weapon.h"
 #include "powerup.h"
 #include "object.h"
+#include "lightning.h"
 #include "fvi.h"
 #include "robot.h"
 #include "multi.h"
@@ -167,7 +168,7 @@ Cache_lookups++;
 		nSegment = -1;
 
 		#ifdef _DEBUG
-		nSegment = FindSegByPoint (vObjPos, nObjSeg);
+		nSegment = FindSegByPoint (vObjPos, nObjSeg, 1);
 		if (nSegment == -1) {
 			Int3 ();		//	Obj_pos is not in nObjSeg!
 			return 0;		//	Done processing this tObject.
@@ -306,7 +307,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	return;
 	}
 if (xObjIntensity) {
-	fix	obji_64 = xObjIntensity*64;
+	fix	obji_64 = xObjIntensity * 64;
 	
 	if (bDarkness) {
 		if (objP->nType == OBJ_PLAYER)
@@ -318,15 +319,13 @@ if (xObjIntensity) {
 	bForceColor = objP && ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION));
 	// for pretty dim sources, only process vertices in tObject's own tSegment.
 	//	12/04/95, MK, markers only cast light in own tSegment.
-	if (objP && ((abs (obji_64) <= F1_0*8) || (objP->nType == OBJ_MARKER))) {
+	if (objP && ((abs (obji_64) <= F1_0 * 8) || (objP->nType == OBJ_MARKER))) {
 		short *vp = gameData.segs.segments [nObjSeg].verts;
 
 		for (vv = 0; vv < MAX_VERTICES_PER_SEGMENT; vv++) {
-
 			nVertex = vp [vv];
 #if !FLICKERFIX
-			if (/* (gameOpts->render.color.bAmbientLight && color) ||*/ 
-				 ((nVertex ^ gameData.app.nFrameCount) & 1))
+			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
 			{
 				vVertPos = gameData.segs.vertices + nVertex;
@@ -345,7 +344,7 @@ if (xObjIntensity) {
 		}
 	else {
 		int	headlightShift = 0;
-		fix	maxHeadlightDist = F1_0*200;
+		fix	maxHeadlightDist = F1_0 * 200;
 
 		if (objP && (objP->nType == OBJ_PLAYER))
 			if ((gameStates.render.bHeadlightOn = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON))) {
@@ -680,30 +679,22 @@ if (!(0 && gameOpts->render.bDynLighting)) {
 CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
 memset (gameData.render.lights.newObjects, 0, sizeof (gameData.render.lights.newObjects));
 
+if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
+	tLightningLight	*pll;
+
+	SetLightningLights ();
+	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
+		nSegment = gameData.render.mine.nRenderList [iRenderSeg];
+		pll = gameData.lightnings.lights + nSegment;
+		if (pll->nFrameFlipFlop == gameStates.render.nFrameFlipFlop)
+			ApplyLight (pll->nBrightness, nSegment, &pll->vPos, nRenderVertices, gameData.render.lights.vertices, -1, &pll->color);
+		}
+	ResetLightningLights ();
+	}
 //	July 5, 1995: New faster dynamic lighting code.  About 5% faster on the PC (un-optimized).
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
 //	one or two segments if we notice light changing as gameData.objs.objects go offscreen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
-#if 0
-for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
-	nSegment = gameData.render.mine.nRenderList [iRenderSeg];
-	nObject = gameData.segs.segments [nSegment].objects;
-
-	while (nObject != -1) {
-		objP = gameData.objs.objects + nObject;
-		objPos = &objP->position.vPos;
-
-		xObjIntensity = ComputeLightIntensity (nObject, &color, &bGotColor);
-		if (bGotColor)
-			bKeepDynColoring = 1;
-		if (xObjIntensity) {
-			ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), &color);
-			gameData.render.lights.newObjects [nObject] = 1;
-			}
-		nObject = objP->next;
-		}
-	}
-#else
 for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++) {
 	if (objP->nType == OBJ_NONE)
 		continue;
@@ -716,7 +707,6 @@ for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastOb
 		gameData.render.lights.newObjects [nObject] = 1;
 		}
 	}
-#endif
 //	Now, process all lights from last frame which haven't been processed this frame.
 for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	//	In multiplayer games, process even unprocessed gameData.objs.objects every 4th frame, else don't know about tPlayer sneaking up.

@@ -153,7 +153,8 @@ void ReleaseGuidedMissile(int player_num);
 void CreateSmartChildren(tObject *objp, int count);
 int ObjectToObjectVisibility(tObject *obj1, tObject *obj2, int transType);
 int FindHomingObject (vmsVector *curpos, tObject *tracker);
-
+int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
+void DestroyOmegaLightnings (void);
 
 typedef struct tMuzzleInfo {
 	fix         createTime;

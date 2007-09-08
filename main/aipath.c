@@ -90,13 +90,13 @@ vPoint.p.x /= 16;
 vPoint.p.y /= 16;
 vPoint.p.z /= 16;
 VmVecSub (&curSegP->point, &vCenter, &vPoint);
-nSegment = FindSegByPoint (&curSegP->point, succSegP->nSegment);
+nSegment = FindSegByPoint (&curSegP->point, succSegP->nSegment, 1);
 if (nSegment == -1) {
 #if TRACE
 	con_printf (1, "Warning: point not in ANY tSegment in aipath.c/InsertCenterPoints().\n");
 #endif
 	curSegP->point = vCenter;
-	FindSegByPoint (&curSegP->point, succSegP->nSegment);
+	FindSegByPoint (&curSegP->point, succSegP->nSegment, 1);
 	}
 curSegP->nSegment = succSegP->nSegment;
 return curSegP;
@@ -176,7 +176,7 @@ if (j > MAX_SEGMENTS)
 	j = MAX_SEGMENTS;
 for (i = 1, --j; i < j; i++) {
 	// -- ptSegs [i].nSegment = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
-	nTempSeg = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment);
+	nTempSeg = FindSegByPoint (&ptSegs [i].point, ptSegs [i].nSegment, 1);
 	Assert (nTempSeg != -1);
 	if (nTempSeg < 0) {
 		break;
@@ -260,7 +260,7 @@ for (i = 1, --j; i < j; i++) {
 			}
 		}
 	//	Only move towards outside if remained inside tSegment.
-	nNewSeg = FindSegByPoint (&vGoalPos, ptSegs [i].nSegment);
+	nNewSeg = FindSegByPoint (&vGoalPos, ptSegs [i].nSegment, 1);
 	if (nNewSeg == ptSegs [i].nSegment) {
 		newPtSegs [i].point = vGoalPos;
 		newPtSegs [i].nSegment = nNewSeg;

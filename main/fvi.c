@@ -1072,11 +1072,11 @@ nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
 							  hitData->segList, &hitData->nSegments, -2);
-//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg);
+//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg, 1);
 if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
 	nHitSegment = nHitSegment2;
 else {
-	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg);
+	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg, 1);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
@@ -1682,8 +1682,8 @@ fq.radP0 =
 fq.radP1 = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
-if (gameStates.app.bFreeCam && (objP == gameData.objs.viewer))
-	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment);
+if (SPECTATOR (objP))
+	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
 else
 	fq.startSeg = objP ? objP->nSegment : nSegment;
 fq.ignoreObjList = NULL;

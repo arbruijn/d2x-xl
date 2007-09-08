@@ -1316,7 +1316,7 @@ if (!bHaveFlame) {
 
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos)
 {
-	tPosition	*pPos = (gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject)) ? &gameStates.app.playerPos : &objP->position;
+	tPosition	*pPos = OBJPOS (objP);
 
 if (gameOpts->render.bHiresModels) {
 	VmVecScaleAdd (vPos, &pPos->vPos, &pPos->mOrient.fVec, -objP->size);
@@ -1380,7 +1380,7 @@ else {
 	}
 if (pt)
 	pt->fSpeed = fSpeed;
-bSpectate = gameStates.app.bFreeCam && (OBJ_IDX (objP) == LOCALPLAYER.nObject);
+bSpectate = SPECTATOR (objP);
 #if 1
 if (gameStates.app.nSDLTicks - tPulse > 10) {
 	tPulse = gameStates.app.nSDLTicks;
@@ -2439,11 +2439,12 @@ switch (objP->renderType) {
 					if (!DoObjectSmoke (objP))
 						DrawWeaponVClip (objP); 
 					}	
-				else 
-					{
+				else if ((objP->id != OMEGA_ID) || !EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 					DrawWeaponVClip (objP); 
-					RenderLightTrail (objP);
-					RenderMslLockIndicator (objP);
+					if (objP->id != OMEGA_ID) {
+						RenderLightTrail (objP);
+						RenderMslLockIndicator (objP);
+						}
 					}
 				}
 			else
