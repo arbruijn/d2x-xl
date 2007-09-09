@@ -391,6 +391,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
+		RP (gameOptions [i].render.bDepthSort, i, 0);
 
 		RP (gameOptions [i].render.lightnings.bRobots, i, 0);
 		RP (gameOptions [i].render.lightnings.bMissiles, i, 0);
@@ -919,6 +920,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.nCoronaIntensity", "1"},
 	{"gameOptions[0].render.bRobotShields", "0"},
 	{"gameOptions[0].render.bTransparentEffects", "1"},
+	{"gameOptions[0].render.bDepthSort", "1"},
 	{"gameOptions[0].render.cameras.bFitToWall", "0"},
 	{"gameOptions[0].render.cameras.nFPS", "0"},
 	{"gameOptions[0].render.cameras.nSpeed", "5000"},

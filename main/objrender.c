@@ -270,7 +270,7 @@ return xLight;
 void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *color, float alpha)
 {
 	grsBitmap	*bmP;
-	int			id, orientation = 0;
+	int			id;
 	int			nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
 	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
 	fix			xSize;
@@ -288,12 +288,10 @@ if (gameOpts->render.bTransparentEffects) {
 				alpha = 2.0f / 3.0f;
 			else
 				alpha = 1.0f;
-			orientation = OBJ_IDX (objP) & 7;
 			}
 		else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
 			alpha = 1.0f;
 		else {
-			orientation = (OBJ_IDX (objP)) & 7;
 			alpha = 2.0f / 3.0f;
 			}
 		}
@@ -302,7 +300,6 @@ else {
 	nTransp = 3;
 	alpha = 1.0f;
 	}
-orientation = nGlobalOrientation;
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
@@ -312,41 +309,28 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 		bmP = BM_FRAMES (bmP) + iFrame;
 	alpha = 1;
 	}
+else if (color && gameOpts->render.bDepthSort)
+	OglLoadBmTexture (bmP, 1, nTransp);
+
+if (color)
+	memcpy (color, gameData.pig.tex.bitmapColors + bmi.index, sizeof (*color));
 
 xSize = objP->size;
-if (bmP->bm_props.w > bmP->bm_props.h)
-	G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
-					  orientation, NULL, alpha, nTransp, bDepthInfo);
-else
-	G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
-					  orientation, NULL, alpha, nTransp, bDepthInfo);
-if (color) {
-#if 1
-	memcpy (color, gameData.pig.tex.bitmapColors + bmi.index, sizeof (*color));
-#else
-#	if 0
-	ubyte *p = bmP->bm_texBuf;
-	int c, h, i, j = 0, r = 0, g = 0, b = 0;
-	for (h = i = bmP->bm_props.w * bmP->bm_props.h; i; i--, p++) {
-		if (c = *p) {
-			c *= 3;
-			r += grPalette [c++];
-			g += grPalette [c++];
-			b += grPalette [c];
-			j++;
-			}
-		}
-	j *= 63;
-	color->red = (double) r / (double) j;
-	color->green = (double) g / (double) j;
-	color->blue = (double) b / (double) j;
-#	else
-	unsigned char c = bmP->bm_avgColor;
-	color->red = CPAL2Tr (bmP->bm_palette, c);
-	color->green = CPAL2Tg (bmP->bm_palette, c);
-	color->blue = CPAL2Tb (bmP->bm_palette, c);
-#	endif
-#endif
+
+if (gameOpts->render.bDepthSort) {
+	tRgbaColorf	color = {1, 1, 1, alpha};
+	if (bmP->bm_props.w > bmP->bm_props.h)
+		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), 0);
+	else
+		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, 0);
+	}
+else {
+	if (bmP->bm_props.w > bmP->bm_props.h)
+		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
+						  NULL, alpha, nTransp, bDepthInfo);
+	else	
+		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
+						  NULL, alpha, nTransp, bDepthInfo);
 	}
 }
 
@@ -555,6 +539,7 @@ if (FAST_SHADOWS &&
 xLight = CalcObjectLight (objP, xEngineGlow);
 if (DrawHiresObject (objP, xLight, xEngineGlow))
 	return;
+gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
 imSave = gameStates.render.nInterpolationMethod;
 if (bLinearTMapPolyObjs)
 	gameStates.render.nInterpolationMethod = 1;
@@ -645,6 +630,7 @@ else {
 		}
 	}
 gameStates.render.nInterpolationMethod = imSave;
+gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
 }
 
 //------------------------------------------------------------------------------
@@ -1544,17 +1530,25 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		VmVecNormalizef (&v, vThruster);
 		dotThruster = VmVecDotf (&vPosf, &v);
 		if (dotFlame < dotThruster) {
-			glBegin (GL_TRIANGLES);
-			for (i = 0; i < 3; i++) {
-				glTexCoord2fv ((GLfloat *) (uvlFlame + i));
-				glVertex3fv ((GLfloat *) (vFlame + i));
+			if (gameOpts->render.bDepthSort)
+				RIAddPoly (bmpThruster [nStyle], vFlame, uvlFlame, NULL, NULL, 3);
+			else {
+				glBegin (GL_TRIANGLES);
+				for (i = 0; i < 3; i++) {
+					glTexCoord2fv ((GLfloat *) (uvlFlame + i));
+					glVertex3fv ((GLfloat *) (vFlame + i));
+					}
+				glEnd ();
 				}
-			glEnd ();
 			}
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++) {
-			glTexCoord2fv ((GLfloat *) (uvlThruster + i));
-			glVertex3fv ((GLfloat *) (vThruster + i));
+		if (gameOpts->render.bDepthSort)
+			RIAddPoly (bmpThruster [nStyle], vThruster, uvlThruster, NULL, NULL, 4);
+		else {
+			glBegin (GL_QUADS);
+			for (i = 0; i < 4; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlThruster + i));
+				glVertex3fv ((GLfloat *) (vThruster + i));
+				}
 			}
 		glEnd ();
 		}
@@ -1840,7 +1834,7 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	glDepthMask (0);
 	if (bSimple) {
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						  1, colorP, alpha, 1, 1);
+						  colorP, alpha, 1, 1);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;

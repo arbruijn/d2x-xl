@@ -119,6 +119,10 @@ int MaxParticles (int nParts, int nDens);
 float ParticleSize (int nSize, float nScale);
 int AllocPartList (void);
 void FreePartList (void);
+int LoadParticleImages (void);
+int BeginRenderSmoke (int nType, float nScale);
+int EndRenderSmoke (tCloud *pCloud);
+int RenderParticle (tParticle *pParticle, double brightness);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;

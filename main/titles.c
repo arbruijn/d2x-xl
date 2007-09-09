@@ -511,7 +511,7 @@ void ShowBitmapFrame (int bRedraw)
 		G3StartFrame (1, 0);
 		G3SetViewMatrix (&p, &mIdentity, gameStates.render.xZoom);
 		p.p.z = 2 * w * F1_0;
-		G3DrawBitmap (&p, w * F1_0, h * F1_0, bmP, 0, NULL, 1.0, 3, 0);
+		G3DrawBitmap (&p, w * F1_0, h * F1_0, bmP, NULL, 1.0, 3, 0);
 		G3EndFrame ();
 		if (!gameOpts->menus.nStyle)
 			GrUpdate (0);

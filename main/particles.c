@@ -28,6 +28,7 @@
 #include "gameseg.h"
 #include "network.h"
 #include "lighting.h"
+#include "render.h"
 #include "objsmoke.h"
 #include "particles.h"
 
@@ -99,8 +100,6 @@ static int iBuffer = 0;
 static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
-
-static int nLastType = -1;
 
 #define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
 
@@ -648,10 +647,19 @@ bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bS
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 #if 1
-if (gameOpts->render.smoke.bSort) {
+if (gameOpts->render.bDepthSort > 0) {
 	hp = pParticle->transPos;
-	if (nLastType != pParticle->nType) {
-		nLastType = pParticle->nType;
+	if (gameData.smoke.nLastType != pParticle->nType) {
+		gameData.smoke.nLastType = pParticle->nType;
+		if (OglBindBmTex (bmP, 0, 1))
+			return 0;
+		}
+	glBegin (GL_QUADS);
+	}
+else if (gameOpts->render.smoke.bSort) {
+	hp = pParticle->transPos;
+	if (gameData.smoke.nLastType != pParticle->nType) {
+		gameData.smoke.nLastType = pParticle->nType;
 		glEnd ();
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
@@ -807,6 +815,8 @@ else
 	glVertex3d (x - w, y - h, z);
 	}
 	}
+if (gameOpts->render.bDepthSort > 0)
+	glEnd ();
 return 1;
 }
 
@@ -816,93 +826,95 @@ int BeginRenderSmoke (int nType, float nScale)
 {
 	grsBitmap	*bmP;
 
-if (nType >= 0) {
-	nType %= PARTICLE_TYPES;
-	AnimateParticle (nType);
-	bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType];
-	}
-OglActiveTexture (GL_TEXTURE0_ARB, 0);
-glEnable (GL_TEXTURE_2D);
-if (EGI_FLAG (bShadows, 0, 1, 0)) // && (gameStates.render.nShadowPass == 3))
-	glDisable (GL_STENCIL_TEST);
-glDepthFunc (GL_LESS);
-glDepthMask (0);
-#if 0
-glEnable (GL_BLEND);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
-#if OGL_POINT_SPRITES
-if (gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort) {
-	float quadratic [] = {1.0f, 0.0f, 0.01f};
-   float partSize = f2fl ((gameOpts->render.smoke.bSyncSizes ? 
-									PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale) : nScale)) * 256; 
-	static float maxSize = -1.0f;
-	glPointParameterfvARB (GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
-	glPointParameterfARB (GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
-	glTexEnvf (GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
-	glEnable (GL_POINT_SPRITE_ARB);
-	if (maxSize < 0)
-	   glGetFloatv (GL_POINT_SIZE_MAX_ARB, &maxSize);
-	if (maxSize != partSize)
-		maxSize = partSize;
-	glPointSize (maxSize);
-	glPointParameterfARB (GL_POINT_SIZE_MIN_ARB, 1.0f);
-	glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, 100 * maxSize);
-	if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
-		return 0;
-#	if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
-#	ifdef _DEBUG
-		GLenum i;
-#endif
-		glEnableClientState (GL_VERTEX_ARRAY);
-#	ifdef _DEBUG
-		if ((i = glGetError ())) 
-			HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) %d failed (%d)", iBuffer, i);
-#	endif
-		glEnableClientState (GL_COLOR_ARRAY);
-#	ifdef _DEBUG
-		if ((i = glGetError ())) 
-			HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) %d failed (%d)", iBuffer, i);
-#	endif
+if (gameOpts->render.bDepthSort <= 0) {
+	if ((nType >= 0) && !gameOpts->render.smoke.bSort) {
+		nType %= PARTICLE_TYPES;
+		AnimateParticle (nType);
+		bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType];
+		}
+	OglActiveTexture (GL_TEXTURE0_ARB, 0);
+	glEnable (GL_TEXTURE_2D);
+	if (EGI_FLAG (bShadows, 0, 1, 0)) // && (gameStates.render.nShadowPass == 3))
+		glDisable (GL_STENCIL_TEST);
+	glDepthFunc (GL_LESS);
+	glDepthMask (0);
+	#if 0
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	#endif
+	#if OGL_POINT_SPRITES
+	if (gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort) {
+		float quadratic [] = {1.0f, 0.0f, 0.01f};
+		float partSize = f2fl ((gameOpts->render.smoke.bSyncSizes ? 
+										PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale) : nScale)) * 256; 
+		static float maxSize = -1.0f;
+		glPointParameterfvARB (GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
+		glPointParameterfARB (GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
+		glTexEnvf (GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
+		glEnable (GL_POINT_SPRITE_ARB);
+		if (maxSize < 0)
+			glGetFloatv (GL_POINT_SIZE_MAX_ARB, &maxSize);
+		if (maxSize != partSize)
+			maxSize = partSize;
+		glPointSize (maxSize);
+		glPointParameterfARB (GL_POINT_SIZE_MIN_ARB, 1.0f);
+		glPointParameterfARB (GL_POINT_SIZE_MAX_ARB, 100 * maxSize);
+		if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
+			return 0;
+	#	if OGL_VERTEX_ARRAYS
+		if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
+	#	ifdef _DEBUG
+			GLenum i;
+	#endif
+			glEnableClientState (GL_VERTEX_ARRAY);
+	#	ifdef _DEBUG
+			if ((i = glGetError ())) 
+				HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) %d failed (%d)", iBuffer, i);
+	#	endif
+			glEnableClientState (GL_COLOR_ARRAY);
+	#	ifdef _DEBUG
+			if ((i = glGetError ())) 
+				HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) %d failed (%d)", iBuffer, i);
+	#	endif
+			}
+		else
+	#	endif
+			glBegin (GL_POINTS);
 		}
 	else
-#	endif
-		glBegin (GL_POINTS);
-	}
-else
-#endif
-	{
-	if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
-		return 0;
-#if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
-#ifdef _DEBUG
-		GLenum i;
-#endif
-		glDisableClientState (GL_VERTEX_ARRAY);
-		glEnableClientState (GL_VERTEX_ARRAY);
-#ifdef _DEBUG
-		if ((i = glGetError ())) 
-			HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) failed (%d)", i);
-#endif
-		glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-#ifdef _DEBUG
-		if ((i = glGetError ())) 
-			HUDMessage (0, "glEnableClientState (GL_TEX_COORD_ARRAY) failed (%d)", i);
-#endif
-		glEnableClientState (GL_COLOR_ARRAY);
-#ifdef _DEBUG
-		if ((i = glGetError ())) 
-			HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) failed (%d)", i);
-#endif
+	#endif
+		{
+		if ((nType >= 0) && OglBindBmTex (bmP, 0, 1))
+			return 0;
+	#if OGL_VERTEX_ARRAYS
+		if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
+	#ifdef _DEBUG
+			GLenum i;
+	#endif
+			glDisableClientState (GL_VERTEX_ARRAY);
+			glEnableClientState (GL_VERTEX_ARRAY);
+	#ifdef _DEBUG
+			if ((i = glGetError ())) 
+				HUDMessage (0, "glEnableClientState (GL_VERTEX_ARRAY) failed (%d)", i);
+	#endif
+			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+	#ifdef _DEBUG
+			if ((i = glGetError ())) 
+				HUDMessage (0, "glEnableClientState (GL_TEX_COORD_ARRAY) failed (%d)", i);
+	#endif
+			glEnableClientState (GL_COLOR_ARRAY);
+	#ifdef _DEBUG
+			if ((i = glGetError ())) 
+				HUDMessage (0, "glEnableClientState (GL_COLOR_ARRAY) failed (%d)", i);
+	#endif
+			}
+		else
+	#endif
+			if (nType >= 0)
+				glBegin (GL_QUADS);
 		}
-	else
-#endif
-		if (nType >= 0)
-			glBegin (GL_QUADS);
 	}
-nLastType = -1;
+gameData.smoke.nLastType = -1;
 return 1;
 }
 
@@ -1229,48 +1241,55 @@ int RenderCloud (tCloud *pCloud)
 #endif
 	vmsVector	v;
 
-if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
-	return 0;
-#if SORT_CLOUD_PARTS
-if (bSorted) {
-	pPartIdx = pCloud->pPartIdx;
-	nParts = SortCloudParticles (pCloud->pParticles, pPartIdx, nParts, nFirstPart, nPartLimit);
-	for (i = 0; i < nParts; i++)
-		RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness);
-	}
-else
-#endif //SORT_CLOUD_PARTS
-if (pCloud->bHavePrevPos && 
-	 (VmVecDist (&pCloud->pos, &viewInfo.pos) >= VmVecMag (VmVecSub (&v, &pCloud->prevPos, &viewInfo.pos))) &&
-	 (VmVecDot (&v, &gameData.objs.viewer->position.mOrient.fVec) >= 0)) {	//emitter moving away and facing towards emitter
-	for (i = nParts, j = (nFirstPart + nParts) % nPartLimit; i; i--) {
-		if (!j)
-			j = nPartLimit;
-#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-		if (!RenderParticle (pCloud->pParticles + --j))
-			if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
-				FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
-				nBuffer = iBuffer;
-				}
-#else
-		RenderParticle (pCloud->pParticles + --j, brightness);
-#endif
-		}
+if (gameOpts->render.bDepthSort) {
+	for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
+		RIAddParticle (pCloud->pParticles + j, brightness);
+	return 1;
 	}
 else {
-	for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
-#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-		if (!RenderParticle (pCloud->pParticles + j, brightness))
-			if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
-				FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
-				nBuffer = iBuffer;
-				}
-#else
-		RenderParticle (pCloud->pParticles + j, brightness);
-#endif
+	if (!BeginRenderSmoke (pCloud->nType, pCloud->nPartScale))
+		return 0;
+#if SORT_CLOUD_PARTS
+	if (bSorted) {
+		pPartIdx = pCloud->pPartIdx;
+		nParts = SortCloudParticles (pCloud->pParticles, pPartIdx, nParts, nFirstPart, nPartLimit);
+		for (i = 0; i < nParts; i++)
+			RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness);
 		}
+	else
+#endif //SORT_CLOUD_PARTS
+	if (pCloud->bHavePrevPos && 
+		(VmVecDist (&pCloud->pos, &viewInfo.pos) >= VmVecMag (VmVecSub (&v, &pCloud->prevPos, &viewInfo.pos))) &&
+		(VmVecDot (&v, &gameData.objs.viewer->position.mOrient.fVec) >= 0)) {	//emitter moving away and facing towards emitter
+		for (i = nParts, j = (nFirstPart + nParts) % nPartLimit; i; i--) {
+			if (!j)
+				j = nPartLimit;
+#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
+			if (!RenderParticle (pCloud->pParticles + --j))
+				if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
+					FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
+					nBuffer = iBuffer;
+					}
+#else
+			RenderParticle (pCloud->pParticles + --j, brightness);
+#endif
+			}
+		}
+	else {
+		for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
+#if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
+			if (!RenderParticle (pCloud->pParticles + j, brightness))
+				if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
+					FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
+					nBuffer = iBuffer;
+					}
+#else
+			RenderParticle (pCloud->pParticles + j, brightness);
+#endif
+			}
+		}
+	return EndRenderSmoke (pCloud);
 	}
-return EndRenderSmoke (pCloud);
 }
 
 //------------------------------------------------------------------------------
@@ -1704,8 +1723,13 @@ int ParticleCount (void)
 	tCloud		*pCloud;
 	tParticle	*pParticle;
 
+#if 1
+gameData.smoke.depthBuf.zMin = gameData.render.zMin;
+gameData.smoke.depthBuf.zMax = gameData.render.zMax;
+#else
 gameData.smoke.depthBuf.zMin = 0x7fffffff;
 gameData.smoke.depthBuf.zMax = -0x7fffffff;
+#endif
 gameData.smoke.depthBuf.nParts = 0;
 for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.buffer + i;
@@ -1721,6 +1745,10 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 						}
 					G3TransformPoint (&pParticle->transPos, &pParticle->pos, 0);
 					z = pParticle->transPos.p.z;
+#if 0
+					if ((z < gameData.render.zMin) || (z > gameData.render.zMax))
+						continue;
+#else
 					if (z < 0)
 						continue;
 					gameData.smoke.depthBuf.nParts++;
@@ -1728,6 +1756,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 						gameData.smoke.depthBuf.zMin = z;
 					if (gameData.smoke.depthBuf.zMax < z)
 						gameData.smoke.depthBuf.zMax = z;
+#endif
 					}
 				}
 			}
@@ -1754,7 +1783,7 @@ bSort = (gameOpts->render.smoke.bSort > 1);
 zScale = (double) (PART_DEPTHBUFFER_SIZE - 1) / (double) (gameData.smoke.depthBuf.zMax - gameData.smoke.depthBuf.zMin);
 if (zScale > 1)
 	zScale = 1;
-ResetDepthBuf ();
+//ResetDepthBuf ();
 for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (j = pSmoke->nClouds)) {
@@ -1769,8 +1798,13 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 						pParticle = pCloud->pParticles;
 						}
 					z = pParticle->transPos.p.z;
+#if 1
+					if ((z < gameData.render.zMin) || (z > gameData.render.zMax))
+						continue;
+#else
 					if (z < 0)
 						continue;
+#endif
 					pd = gameData.smoke.depthBuf.pDepthBuffer + (int) ((double) (z - gameData.smoke.depthBuf.zMin) * zScale);
 					// find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 					ph = gameData.smoke.depthBuf.pPartList + --gameData.smoke.depthBuf.nFreeParts;
@@ -1806,7 +1840,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 int RenderParticles (void)
 {
 	int	h;
-	struct tPartList	**pd, *pl;
+	struct tPartList	**pd, *pl, *pn;
 
 if (!AllocPartList ())
 	return 0;
@@ -1822,14 +1856,18 @@ if (!LoadParticleImages ())
 BeginRenderSmoke (-1, 1);
 for (pd = gameData.smoke.depthBuf.pDepthBuffer + PART_DEPTHBUFFER_SIZE - 1; 
 	  pd >= gameData.smoke.depthBuf.pDepthBuffer; 
-	  pd--)
-	if (pl = *pd)
+	  pd--) {
+		if (pl = *pd) {
 		do {
 			RenderParticle (pl->pParticle, pl->fBrightness);
-			h--;
-			pl = pl->pNextPart;
-			}
-		while (pl);
+			pn = pl->pNextPart;
+			pl->pNextPart = NULL;
+			pl = pn;
+			} while (pl);
+		*pd = NULL;
+		}
+	}
+gameData.smoke.depthBuf.nFreeParts = PARTLIST_SIZE;
 EndRenderSmoke (NULL);
 return 1;
 }
@@ -1845,7 +1883,7 @@ int RenderClouds (void)
 #if !EXTRA_VERTEX_ARRAYS
 nBuffer = 0;
 #endif
-h = CreateCloudList ();
+h = gameOpts->render.bDepthSort ? -1 : CreateCloudList ();
 if (!h)
 	return 1;
 if (h > 0) {
@@ -1886,7 +1924,7 @@ return 1;
 
 int RenderSmoke (void)
 {
-return gameOpts->render.smoke.bSort ? RenderParticles () : RenderClouds ();
+return (gameOpts->render.smoke.bSort && !gameOpts->render.bDepthSort) ? RenderParticles () : RenderClouds ();
 }
 
 //------------------------------------------------------------------------------

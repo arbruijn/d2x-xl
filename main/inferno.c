@@ -1240,6 +1240,7 @@ if (i) {
 	gameOptions [1].render.shadows.nClip = 1;
 	gameOptions [1].render.shadows.nReach = 1;
 	gameOptions [1].render.nMaxFPS = 150;
+	gameOptions [1].render.bDepthSort = 0;
 	gameOptions [1].render.bTransparentEffects = 0;
 	gameOptions [1].render.bAllSegs = 0;
 	gameOptions [1].render.bDynamicLight = 1;
@@ -1351,6 +1352,7 @@ else {
 	gameOptions [0].render.shadows.nClip = 1;
 	gameOptions [0].render.shadows.nReach = 1;
 	gameOptions [0].render.nMaxFPS = 150;
+	gameOptions [1].render.bDepthSort = 1;
 	gameOptions [0].render.bTransparentEffects = 1;
 	gameOptions [0].render.bAllSegs = 1;
 	gameOptions [0].render.bDynamicLight = 1;
@@ -2259,6 +2261,7 @@ SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
 UseSpherePulse (&gameData.render.monsterball, &gameData.render.monsterball.pulse);
 gameData.smoke.iFree = -1;
 gameData.smoke.iUsed = -1;
+gameData.smoke.nLastType = -1;
 gameData.lightnings.iFree = -1;
 gameData.lightnings.iUsed = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;

@@ -299,7 +299,7 @@ extern GLenum curDrawBuffer;
 #include "3d.h"
 
 bool G3DrawWhitePoly (int nv, g3sPoint **pointList);
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, float red, float green, float blue, float alpha);
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color);
 
 bool G3DrawTexPolyMulti (
 	int			nVerts, 
@@ -375,6 +375,8 @@ void OglResetTransform ();
 void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grs_color *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
+int G3EnableClientStates (GLuint nTMU, int bColor);
+void G3DisableClientStates (GLuint nTMU);
 
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20

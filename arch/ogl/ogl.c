@@ -1327,7 +1327,9 @@ if (!texP->bFrameBuf)
 #else
 	if (data) {
 #endif
-		if (nTransp >= 0) {
+		if (nTransp < 0) 
+			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
+		else {
 			texP->format = 
 				OglFillTexBuf (bmP, gameData.render.ogl.texBuf, texP->lw, texP->w, texP->h, dxo, dyo, texP->tw, texP->th, 
 									texP->format, nTransp, superTransp);
@@ -1338,8 +1340,6 @@ if (!texP->bFrameBuf)
 			else if ((texP->format == GL_RGB5) || (texP->format == GL_RGBA4))
 				texP->internalformat = 2;
 			}
-		else
-			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
 		}
 	// Generate OpenGL texture IDs.
 	glGenTextures (1, (GLuint *) &texP->handle);

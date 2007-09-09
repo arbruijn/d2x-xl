@@ -271,6 +271,7 @@ typedef struct tRenderOptions {
 	int nQuality;
 	int nTextureQuality;
 	int nDebrisLife;
+	int bDepthSort;
 	tCameraOptions cameras;
 	tColorOptions color;
 	tCockpitOptions cockpit;
@@ -1320,6 +1321,8 @@ typedef struct tRenderData {
 	tThrusterData			thrusters [MAX_PLAYERS];
 	tMineRenderData		mine;
 	tGameWindowData		window;
+	fix						zMin;
+	fix						zMax;
 } tRenderData;
 
 //------------------------------------------------------------------------------
@@ -2274,6 +2277,7 @@ typedef struct tSmokeData {
 	time_t			*objExplTime;
 	int				iFree;
 	int				iUsed;
+	int				nLastType;
 	tPartDepthBuf	depthBuf;
 } tSmokeData;
 

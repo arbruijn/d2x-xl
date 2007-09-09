@@ -568,34 +568,42 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointList, 
-							 float red, float green, float blue, float alpha)
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointList, tRgbaColorf *color)
 {
-	int			c;
-	GLint			curFunc; 
+	int		i;
+	GLint		depthFunc; 
 
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nv, pointList);
 	return 0;
 	}
-r_polyc++;
-glGetIntegerv (GL_DEPTH_FUNC, &curFunc);
+if (color->alpha < 0)
+	color->alpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+if (gameOpts->render.bDepthSort > 0) {
+	fVector		vertices [8];
+
+	for (i = 0; i < nv; i++)
+		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
+	RIAddPoly (NULL, vertices, NULL, color, NULL, nv);
+	}
+else {
+	r_polyc++;
+	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 #if OGL_QUERY
-if (gameStates.render.bQueryOcclusion)
-	glDepthFunc (GL_LESS);
-else
+	if (gameStates.render.bQueryOcclusion)
+		glDepthFunc (GL_LESS);
+	else
 #endif
 	glDepthFunc (GL_LEQUAL);
-glEnable (GL_BLEND);
-glDisable (GL_TEXTURE_2D);
-if (alpha < 0)
-	alpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-glColor4f (red, green, blue, alpha);
-glBegin (GL_TRIANGLE_FAN);
-for (c = 0; c < nv; c++)
-	OglVertex3f (*pointList++);
-glEnd ();
-glDepthFunc (curFunc);
+	glEnable (GL_BLEND);
+	glDisable (GL_TEXTURE_2D);
+	glColor4fv ((GLfloat *) color);
+	glBegin (GL_TRIANGLE_FAN);
+	for (i = 0; i < nv; i++)
+		OglVertex3f (*pointList++);
+	glEnd ();
+	glDepthFunc (depthFunc);
+	}
 return 0;
 }
 
@@ -1423,7 +1431,7 @@ if (pVertColor) {
 
 //------------------------------------------------------------------------------
 
-inline int G3EnableClientState (GLuint nState)
+int G3EnableClientState (GLuint nState)
 {
 	GLint	i;
 
@@ -1443,7 +1451,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline void G3DisableClientStates (GLuint nTMU)
+void G3DisableClientStates (GLuint nTMU)
 {
 glClientActiveTexture (nTMU);
 glDisableClientState (GL_VERTEX_ARRAY);
@@ -1454,10 +1462,10 @@ glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 
 //------------------------------------------------------------------------------
 
-inline int G3EnableClientStates (GLuint nTMU)
+int G3EnableClientStates (GLuint nTMU, int bColor)
 {
 glClientActiveTexture (nTMU);
-if	(G3EnableClientState (GL_COLOR_ARRAY) &&
+if	((!bColor || G3EnableClientState (GL_COLOR_ARRAY)) &&
 //	 G3EnableClientState (GL_INDEX_ARRAY) &&
 	 G3EnableClientState (GL_TEXTURE_COORD_ARRAY) &&
 	 G3EnableClientState (GL_VERTEX_ARRAY))
@@ -1549,11 +1557,6 @@ bool G3DrawTexPolyMulti (
 #endif
 #if G3_DRAW_ARRAYS
 	int			bDrawArrays = gameData.render.pVerts != NULL;
-	fVector		vertices [8];
-	tFaceColor	vertColors [8];
-	int			vertIndex [8];
-	int			colorIndex [8];
-	tUVLf			vertUVL [2][8];
 #else
 	int			bDrawArrays = 0;
 #endif
@@ -1653,12 +1656,17 @@ if (!bLight)
 	bDynLight = 0;
 gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-#if G3_DRAW_ARRAYS
-if (bDrawArrays = 0) {
+if (bDrawArrays || ((gameOpts->render.bDepthSort > 0) && (gameStates.ogl.fAlpha < 1) && !bmTop)) {
+		fVector		vertices [8];
+		tFaceColor	vertColors [8];
+		tUVLf			vertUVL [2][8];
+		int			vertIndex [8];
+		//int			colorIndex [8];
+
 	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
 		pl = *ppl;
 		vertIndex [i] = pl->p3_index;
-		colorIndex [i] = i;
+		//colorIndex [i] = i;
 		vertices [i] = gameData.render.pVerts [pl->p3_index];
 		vertUVL [0][i].v.u = f2fl (uvlList [i].u);
 		vertUVL [0][i].v.v = f2fl (uvlList [i].v);
@@ -1669,7 +1677,14 @@ if (bDrawArrays = 0) {
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, vertColors + i);
 		}
-	if (!G3EnableClientStates (GL_TEXTURE0_ARB)) {
+	if (gameOpts->render.bDepthSort > 0) {
+		RIAddPoly (bmBot, vertices, vertUVL [0], NULL, vertColors, nVerts);
+		return 0;
+		}
+	}
+#if G3_DRAW_ARRAYS
+if (bDrawArrays) {
+	if (!G3EnableClientStates (GL_TEXTURE0_ARB, 1)) {
 		bDrawArrays = 0;
 		goto retry;
 		}
@@ -1678,8 +1693,8 @@ if (bDrawArrays = 0) {
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), vertUVL [0]);
 	if (bLight)
 		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
-	if (!bDrawOverlay) {
-		if (!G3EnableClientStates (GL_TEXTURE1_ARB)) {
+	if (bmTop && !bDrawOverlay) {
+		if (!G3EnableClientStates (GL_TEXTURE1_ARB, 1)) {
 			G3DisableClientStates (GL_TEXTURE0_ARB);
 			bDrawArrays = 0;
 			goto retry;
@@ -1692,7 +1707,7 @@ if (bDrawArrays = 0) {
 		}
 	glDrawArrays (GL_TRIANGLE_FAN, 0, nVerts);
 	G3DisableClientStates (GL_TEXTURE0_ARB);
-	if (!bDrawOverlay)
+	if (bmTop && !bDrawOverlay)
 		G3DisableClientStates (GL_TEXTURE1_ARB);
 	}
 else 
@@ -1967,7 +1982,6 @@ bool G3DrawBitmap (
 	fix			width, 
 	fix			height, 
 	grsBitmap	*bmP, 
-	int			orientation, 
 	tRgbaColorf	*color,
 	float			alpha, 
 	int			transp, 

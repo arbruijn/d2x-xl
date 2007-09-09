@@ -131,4 +131,94 @@ return gameOpts->render.cockpit.bGuidedInMainView ? GuidedMslView () : NULL;
 
 //------------------------------------------------------------------------------
 
+#define ITEM_DEPTHBUFFER_SIZE	100000
+#define ITEM_BUFFER_SIZE		1000000
+
+typedef enum tRenderItemType {
+	riPoly,
+	riSprite,
+	riSphere,
+	riParticle,
+	riLightning
+} tRenderItemType;
+
+typedef struct tRIPoly {
+	grsBitmap			*bmP;
+	fVector				vertices [8];
+	tUVLf					texCoord [8];
+	tRgbaColorf			color [8];
+	char					nVertices;
+	char					bColor;
+} tRIPoly;
+
+typedef struct tRISprite {
+	grsBitmap			*bmP;
+	fVector				position;
+	tRgbaColorf			color;
+	int					nWidth;
+	int					nHeight;
+	char					nFrame;
+	char					bColor;
+} tRISprite;
+
+typedef struct tRIParticle {
+	tParticle			*particle;
+	double				fBrightness;
+} tRIParticle;
+
+typedef enum tRISphereType {
+	riSphereShield,
+	riMonsterball
+} tRISphereType;
+
+typedef struct tRISphere {
+	tRISphereType		nType;
+	tRgbaColorf			color;
+	tObject				*objP;
+} tRISphere;
+
+typedef struct tRILightning {
+	tLightning			*lightning;
+} tRILightning;
+
+typedef struct tRenderItem {
+	struct tRenderItem	*pNextItem;
+	tRenderItemType		nType;
+	int						z;
+	union {
+		tRIPoly				poly;
+		tRISprite			sprite;
+		tRIParticle			particle;
+		tRISphere			sphere;
+		tRILightning		lightning;
+	} item;
+} tRenderItem;
+
+typedef struct tRenderItemBuffer {
+	tRenderItem		**pDepthBuffer;
+	tRenderItem		*pItemList;
+	int				nItems;
+	int				nFreeItems;
+	int				zMin;
+	int				zMax;
+	double			zScale;
+	int				bTextured;
+	int				bClientState;
+	grsBitmap		*bmP;
+} tRenderItemBuffer;
+
+int AllocRenderItemBuffer (void);
+void FreeRenderItemBuffer (void);
+void ResetRenderItemBuffer (void);
+void InitRenderItemBuffer (int zMin, int zMax);
+int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z);
+int RIAddPoly (grsBitmap *bmP, fVector *vertices, tUVLf *texCoord, tRgbaColorf *color, tFaceColor *altColor, char nVertices);
+int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame);
+int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
+int RIAddParticle (tParticle *particle, double fBrightness);
+int RIAddLightnings (tLightning *lightnings, short nLightnings);
+void RenderItems (void);
+
+//------------------------------------------------------------------------------
+
 #endif /* _RENDER_H */
