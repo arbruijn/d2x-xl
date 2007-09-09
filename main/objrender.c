@@ -2049,7 +2049,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-static fVector vTrailVerts [2][4] = {{{{0,0,0}},{{0,-1,-5}},{{0,-1,-50}},{{0,0,-50}}},
+static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-1,-5}},{{0,-1,-50}},{{0,0,-50}}},
 												 {{{0,0,0}},{{0,1,-5}},{{0,1,-50}},{{0,0,-50}}}};
 
 void RenderLightTrail (tObject *objP)
@@ -2082,8 +2082,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 		!gameData.objs.bIsSlowWeapon [objP->id] &&
 		(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
 			vmsVector		vPos;
-			fVector			vPosf, *vTrail;
-			int				i, j, bStencil;
+			fVector			vPosf, vTrailVerts [4], *vTrail;
+			tRgbaColorf		trailColor [4] = {{0,0,0,0.5f},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+			int				i, j, nOrient, bStencil, bDepthSort = (gameOpts->render.bDepthSort > 0);
 			float				h, r = f2fl (objP->size);
 			
 		if (r <= 1)
@@ -2098,52 +2099,51 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			r *= 2;
 		else if (r < 2)
 			r *= 1.5f;
-		if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-			glDisable (GL_STENCIL_TEST);
 		VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
 		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
-		glDepthMask (0);
-		glDisable (GL_TEXTURE_2D);
-		glDisable (GL_CULL_FACE);		
-		for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
-			glBegin (GL_QUADS);
-			for (i = 0; i < 4; i++, vTrail++) {
-				if (i)
-					glColor4f (0,0,0,0);
-				else
-					glColor4f (pc->red, pc->green, pc->blue, 0.5f);
-				vPosf.p.x = 0;
-				vPosf.p.y = vTrail->p.y * r;
-				vPosf.p.z = vTrail->p.z;
-				if (vPosf.p.z == -50)
-					vPosf.p.z *= h;
-				G3TransformPointf (&vPosf, &vPosf, 0);
-				glVertex3fv ((GLfloat *) &vPosf);
-				}
-			glEnd ();
+		if (!bDepthSort) {
+			glDepthMask (0);
+			if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
+				glDisable (GL_STENCIL_TEST);
+			glDisable (GL_TEXTURE_2D);
+			glDisable (GL_CULL_FACE);		
 			}
-		for (j = 0, vTrail = vTrailVerts [0]; j < 2; j++) {
-			glBegin (GL_QUADS);
-			for (i = 0; i < 4; i++, vTrail++) {
-				if (i)
-					glColor4f (0,0,0,0);
-				else
-					glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+		memcpy (trailColor, pc, 3 * sizeof (float));
+		for (nOrient = 0; nOrient < 2; nOrient++) {
+			if (nOrient)
 				vPosf.p.y = 0;
-				vPosf.p.x = vTrail->p.y * r;
-				vPosf.p.z = vTrail->p.z;
-				if (vPosf.p.z == -50)
-					vPosf.p.z *= h;
-				G3TransformPointf (&vPosf, &vPosf, 0);
-				glVertex3fv ((GLfloat *) &vPosf);
+			else
+				vPosf.p.x = 0;
+			for (j = 0, vTrail = vTrailOffs [0]; j < 2; j++) {
+				for (i = 0; i < 4; i++, vTrail++) {
+					if (nOrient)
+						vPosf.p.x = vTrail->p.y * r;
+					else
+						vPosf.p.y = vTrail->p.y * r;
+					vPosf.p.z = vTrail->p.z;
+					if (vPosf.p.z == -50)
+						vPosf.p.z *= h;
+					G3TransformPointf (vTrailVerts + i, &vPosf, 0);
+					glVertex3fv ((GLfloat *) vTrailVerts + i);
+					}
+				if (bDepthSort)
+					RIAddPoly (NULL, vTrailVerts, NULL, trailColor, NULL, 4, 0);
+				else {
+					glEnableClientState (GL_VERTEX_ARRAY);
+					glVertexPointer (4, GL_FLOAT, 0, vTrailVerts);
+					glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), trailColor);
+					glDrawArrays (GL_QUADS, 0, 4);
+					glDisableClientState (GL_VERTEX_ARRAY);
+					}
 				}
-			glEnd ();
 			}
-		glDepthMask (1);
-		glCullFace (GL_BACK);
-		G3DoneInstance ();
-		if (bStencil)
-			glEnable (GL_STENCIL_TEST);
+		if (!bDepthSort) {
+			glDepthMask (1);
+			glCullFace (GL_BACK);
+			G3DoneInstance ();
+			if (bStencil)
+				glEnable (GL_STENCIL_TEST);
+			}
 		}
 	RenderShockwave (objP);
 	}
