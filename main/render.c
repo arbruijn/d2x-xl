@@ -4751,7 +4751,7 @@ return renderItems.nFreeItems;
 
 //------------------------------------------------------------------------------
 
-int RIAddPoly (grsBitmap *bmP, fVector *vertices, tUVLf *texCoord, tRgbaColorf *color, tFaceColor *altColor, char nVertices)
+int RIAddPoly (grsBitmap *bmP, fVector *vertices, tUVLf *texCoord, tRgbaColorf *color, tFaceColor *altColor, char nVertices, char bDepthMask)
 {
 	tRIPoly	item;
 	int		i;
@@ -4763,6 +4763,7 @@ if (nVertices > 4)
 #endif
 item.bmP = bmP;
 item.nVertices = nVertices;
+item.bDepthMask = bDepthMask;
 memcpy (item.texCoord, texCoord, nVertices * sizeof (tUVLf));
 item.bColor = 1;
 if (color)
@@ -4853,12 +4854,14 @@ return 1;
 int LoadRenderItemImage (grsBitmap *bmP, int nFrame, int nWrap, int bClientState)
 {
 if (bmP) {
-	if ((renderItems.bTextured < 1) || (renderItems.bClientState < 0)) {
+	if ((renderItems.bTextured < 1) || (renderItems.bClientState != bClientState)) {
 		OglActiveTexture (GL_TEXTURE0_ARB, bClientState);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
-		renderItems.bClientState = 1;
+		if (renderItems.bClientState != bClientState)
+			renderItems.bmP = NULL;
+		renderItems.bClientState = bClientState;
 		}
 	if (bmP == renderItems.bmP)
 		return 1;
@@ -4886,7 +4889,10 @@ void RIRenderPoly (tRIPoly *item)
 {
 	int	i, j;
 
-if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 1)) {
+if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) {
+//	if (renderItems.bDepthMask != item->bDepthMask)
+//		glDepthMask (renderItems.bDepthMask = item->bDepthMask);
+#if 0
 	if (G3EnableClientStates (GL_TEXTURE0_ARB, item->bColor)) {
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
@@ -4897,11 +4903,11 @@ if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 1)) {
 		glDrawArrays (GL_TRIANGLE_FAN, 0, item->nVertices);
 		G3DisableClientStates (GL_TEXTURE0_ARB);
 		}
-	else {
-		OglActiveTexture (GL_TEXTURE0_ARB, 0);
-		glEnable (GL_TEXTURE_2D);
+	else if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) 
+#endif
+		{
 		j = item->nVertices;
-		glBegin (GL_TRIANGLE_STRIP);
+		glBegin (GL_TRIANGLE_FAN);
 		if (item->bColor) {
 			if (item->bmP) {
 				for (i = 0; i < j; i++) {
@@ -4944,6 +4950,10 @@ if (LoadRenderItemImage (item->bmP, item->nFrame, GL_REPEAT, 0)) {
 	float		h, w, u, v;
 	fVector	fVertex = item->position;
 
+	if (renderItems.bDepthMask) {
+		glDepthMask (0);
+		renderItems.bDepthMask = 0;
+		}
 	w = (float) f2fl (item->nWidth); 
 	h = (float) f2fl (item->nHeight); 
 	u = item->bmP->glTexture->u;
@@ -4983,6 +4993,25 @@ glDisable (GL_CULL_FACE);
 
 //------------------------------------------------------------------------------
 
+void RIRenderParticle (tRIParticle *item)
+{
+if ((renderItems.bTextured < 1) || renderItems.bClientState) {
+	OglActiveTexture (GL_TEXTURE0_ARB, 0);
+	glEnable (GL_TEXTURE_2D);
+	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	gameData.smoke.nLastType = -1;
+	renderItems.bTextured = 1;
+	renderItems.bClientState = 0;
+	}
+if (renderItems.bDepthMask) {
+	glDepthMask (0);
+	renderItems.bDepthMask = 0;
+	}
+RenderParticle (item->particle, item->fBrightness);
+}
+
+//------------------------------------------------------------------------------
+
 void RenderItems (void)
 {
 	struct tRenderItem	**pd, *pl, *pn;
@@ -4996,6 +5025,7 @@ if (EGI_FLAG (bShadows, 0, 1, 0))
 	glDisable (GL_STENCIL_TEST);
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
+renderItems.bDepthMask = 0;
 renderItems.bmP = NULL;
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;
 bParticles = LoadParticleImages ();
@@ -5012,7 +5042,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		do {
 			nType = pl->nType;
 			if (nType == riPoly) {
-				RIRenderPoly (&pl->item.poly);
+//				RIRenderPoly (&pl->item.poly);
 				}
 			else if (nType == riSprite) {
 				RIRenderSprite (&pl->item.sprite);
@@ -5022,13 +5052,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 				}
 			else if (nType == riParticle) {
 				if (bParticles)
-					if (!renderItems.bTextured) {
-						OglActiveTexture (GL_TEXTURE0_ARB, 0);
-						glEnable (GL_TEXTURE_2D);
-						glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-						renderItems.bTextured = 1;
-						}
-					RenderParticle (pl->item.particle.particle, pl->item.particle.fBrightness);
+					RIRenderParticle (&pl->item.particle);
 				}
 			else if (nType == riLightning) {
 				RenderLightning (pl->item.lightning.lightning, 1);

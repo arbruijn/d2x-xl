@@ -640,10 +640,11 @@ int RenderParticle (tParticle *pParticle, double brightness)
 	double				*pf;
 #endif
 	double				decay = (double) pParticle->nLife / (double) pParticle->nTTL;
+	int					bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
 
 if (pParticle->nDelay > 0)
 	return 0;
-bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][pParticle->nType % PARTICLE_TYPES];
+bmP = bmpParticle [bPointSprites][pParticle->nType % PARTICLE_TYPES];
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 #if 1
@@ -725,9 +726,9 @@ if (pParticle->nType < 3) {
 	pc.blue *= brightness;
 	}
 #if OGL_POINT_SPRITES
-if (gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort) {
+if (bPointSprites) {
 #	if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
+	if (gameStates.render.bVertexArrays) {
 #		if !EXTRA_VERTEX_ARRAYS
 		pParticle->glPos.p.x = f2fl (hp.x);
 		pParticle->glPos.p.y = f2fl (hp.y);
@@ -775,7 +776,7 @@ else
 	y = f2fl (hp.p.y);
 	z = f2fl (hp.p.z);
 #if OGL_VERTEX_ARRAYS
-	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
+	if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) {
 		pf = vertexBuffer [iBuffer];
 		pf [0] =
 		pf [9] = x - w; 

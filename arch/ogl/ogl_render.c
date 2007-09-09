@@ -584,7 +584,7 @@ if (gameOpts->render.bDepthSort > 0) {
 
 	for (i = 0; i < nv; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, vertices, NULL, color, NULL, nv);
+	RIAddPoly (NULL, vertices, NULL, color, NULL, nv, 1);
 	}
 else {
 	r_polyc++;
@@ -1656,7 +1656,7 @@ if (!bLight)
 	bDynLight = 0;
 gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (bDrawArrays || ((gameOpts->render.bDepthSort > 0) && (gameStates.ogl.fAlpha < 1) && !bmTop)) {
+if (bDrawArrays || (!bmTop && (gameOpts->render.bDepthSort > 0) && ((bmBot->bm_props.flags & BM_FLAG_TRANSPARENT) || (gameStates.ogl.fAlpha < 1)))) {
 		fVector		vertices [8];
 		tFaceColor	vertColors [8];
 		tUVLf			vertUVL [2][8];
@@ -1678,7 +1678,7 @@ if (bDrawArrays || ((gameOpts->render.bDepthSort > 0) && (gameStates.ogl.fAlpha 
 			SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, vertColors + i);
 		}
 	if (gameOpts->render.bDepthSort > 0) {
-		RIAddPoly (bmBot, vertices, vertUVL [0], NULL, vertColors, nVerts);
+		RIAddPoly (bmBot, vertices, vertUVL [0], NULL, vertColors, nVerts, 1);
 		return 0;
 		}
 	}

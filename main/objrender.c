@@ -1531,7 +1531,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		dotThruster = VmVecDotf (&vPosf, &v);
 		if (dotFlame < dotThruster) {
 			if (gameOpts->render.bDepthSort)
-				RIAddPoly (bmpThruster [nStyle], vFlame, uvlFlame, NULL, NULL, 3);
+				RIAddPoly (bmpThruster [nStyle], vFlame, uvlFlame, NULL, NULL, 3, 1);
 			else {
 				glBegin (GL_TRIANGLES);
 				for (i = 0; i < 3; i++) {
@@ -1542,7 +1542,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 				}
 			}
 		if (gameOpts->render.bDepthSort)
-			RIAddPoly (bmpThruster [nStyle], vThruster, uvlThruster, NULL, NULL, 4);
+			RIAddPoly (bmpThruster [nStyle], vThruster, uvlThruster, NULL, NULL, 4, 1);
 		else {
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
