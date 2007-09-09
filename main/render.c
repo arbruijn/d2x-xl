@@ -4609,7 +4609,7 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		 gameOpts->render.bCoronas && LoadCorona ()) {
 		gameStates.render.nType = 3;
 		gameData.render.mine.nVisited++;
-		glEnable (GL_TEXTURE_2D);
+ 		glEnable (GL_TEXTURE_2D);
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthFunc (GL_LEQUAL);
@@ -4889,10 +4889,9 @@ void RIRenderPoly (tRIPoly *item)
 {
 	int	i, j;
 
-if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) {
-//	if (renderItems.bDepthMask != item->bDepthMask)
-//		glDepthMask (renderItems.bDepthMask = item->bDepthMask);
-#if 0
+if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 1)) {
+	if (renderItems.bDepthMask != item->bDepthMask)
+		glDepthMask (renderItems.bDepthMask = item->bDepthMask);
 	if (G3EnableClientStates (GL_TEXTURE0_ARB, item->bColor)) {
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
@@ -4903,9 +4902,7 @@ if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) {
 		glDrawArrays (GL_TRIANGLE_FAN, 0, item->nVertices);
 		G3DisableClientStates (GL_TEXTURE0_ARB);
 		}
-	else if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) 
-#endif
-		{
+	else if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) {
 		j = item->nVertices;
 		glBegin (GL_TRIANGLE_FAN);
 		if (item->bColor) {
@@ -4939,6 +4936,7 @@ if (LoadRenderItemImage (item->bmP, 0, GL_REPEAT, 0)) {
 			}
 		glEnd ();
 		}
+	gameData.smoke.nLastType = -1;
 	}
 }
 
@@ -4977,6 +4975,7 @@ if (LoadRenderItemImage (item->bmP, item->nFrame, GL_REPEAT, 0)) {
 	fVertex.p.x -= 2 * w;
 	glVertex3fv ((GLfloat *) &fVertex);
 	glEnd ();
+	gameData.smoke.nLastType = -1;
 	}
 }
 
@@ -4989,6 +4988,9 @@ if (item->nType == riSphereShield)
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 glDisable (GL_CULL_FACE);
+renderItems.bTextured = 1;
+renderItems.bmP = NULL;
+gameData.smoke.nLastType = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -5008,6 +5010,16 @@ if (renderItems.bDepthMask) {
 	renderItems.bDepthMask = 0;
 	}
 RenderParticle (item->particle, item->fBrightness);
+renderItems.bTextured = 1;
+renderItems.bmP = NULL;
+}
+
+//------------------------------------------------------------------------------
+
+void RIRenderLightning (tRILightning *item)
+{
+RenderLightning (item->lightning, 1);
+renderItems.bTextured = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -5042,7 +5054,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		do {
 			nType = pl->nType;
 			if (nType == riPoly) {
-//				RIRenderPoly (&pl->item.poly);
+				RIRenderPoly (&pl->item.poly);
 				}
 			else if (nType == riSprite) {
 				RIRenderSprite (&pl->item.sprite);
@@ -5055,8 +5067,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 					RIRenderParticle (&pl->item.particle);
 				}
 			else if (nType == riLightning) {
-				RenderLightning (pl->item.lightning.lightning, 1);
-				renderItems.bTextured = 0;
+				RIRenderLightning (&pl->item.lightning);
 				}
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;

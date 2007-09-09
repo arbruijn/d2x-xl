@@ -176,18 +176,18 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	return;
 	}
 j = OBJ_IDX (objP);
-#if 0//def _DEBUG
+#ifdef _DEBUG
 if ((h = gameData.lightnings.objects [j]) >= 0) {
 	t0 = gameStates.app.nSDLTicks;
 	}
 else if (gameStates.app.nSDLTicks - t0 > 2000) {
-	tRgbaColorf color = {0, 0.2f, 1.0f, 0.4f};
+	tRgbaColorf color = {0.2f, 0.2f, 1.0f, 0.4f};
 	gameData.lightnings.objects [j] = CreateLightning (
 		30, 
 		gameStates.app.bFreeCam ? &gameStates.app.playerPos.vPos : &objP->position.vPos,
 		(1 || (rand () & 1)) ? NULL :
 		gameStates.app.bFreeCam ? &gameStates.app.playerPos.mOrient.uVec : &objP->position.mOrient.uVec, 
-		j, -2000, 2000, F1_0 * 50, F1_0 * 5, 0, 100, 0, 0, 100, 1, 1, &color);
+		j, -30000, 2000, F1_0 * 50, F1_0 * 5, 0, 100, 0, 0, 3, 1, 1, &color);
 	}
 #endif
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
