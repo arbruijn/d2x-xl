@@ -801,12 +801,11 @@ void RenderLightningCorona (fVector *vPosf, int nScale)
 #endif
 
 VmVecSubf (&vn, vPosf, vPosf + 1);
-VmVecScalef (&vn, &vn, nScale ? 2.0f : 1.5f);
+VmVecScalef (&vn, &vn, nScale ? 2 : 1.125f);
 VmVecAddf (vCorona, vPosf, &vn);
 VmVecSubf (vCorona + 1, vPosf + 1, &vn);
 VmVecNormalf (&vn, vCorona, vCorona + 1, &vEye);
-if (nScale)
-	VmVecScalef (&vn, &vn, 2);
+VmVecScalef (&vn, &vn, nScale ? 2 : 0.5f);
 VmVecSubf (vCorona + 2, vCorona + 1, &vn);
 VmVecSubf (vCorona + 3, vCorona, &vn);
 VmVecIncf (vCorona, &vn);
@@ -837,12 +836,14 @@ if (pl) {
 		float			f;
 
 	glEnable (GL_BLEND);
+//	OglBlendFunc (GL_ONE, GL_ONE);
 	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	OglBlendFunc (GL_SRC_ALPHA, GL_ONE); //, GL_ONE_MINUS_SRC_ALPHA);
 	if (gameOpts->render.bDepthSort < 1) {
 		glDepthMask (0);
 		glDisable (GL_CULL_FACE);
 		}
-	glLineWidth (1);
+	glLineWidth (2);
 	glEnable (GL_SMOOTH);
 	for (; nLightnings; nLightnings--, pl++) {
 		if (pl->nNodeC < 0)
@@ -887,7 +888,11 @@ if (pl) {
 					else {
 						//OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 						//glDisable (GL_TEXTURE_2D);
-						glColor4f (1, 1, 1, color.alpha);
+#if 0
+						glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
+#else
+						glColor4f (1, 1, 1, color.alpha / 2);
+#endif
 						}
 					for (i = pl->nNodeC, j = 0, pln = pl->pNodes; j < i; j++, pln++) {
 						vPosf [0] = vPosf [1];
@@ -934,6 +939,7 @@ if (pl) {
 		}
 	glLineWidth (1);
 	glDisable (GL_SMOOTH);
+	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 
@@ -1062,7 +1068,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 			pll->color.red /= n;
 			pll->color.green /= n;
 			pll->color.blue /= n;
-			pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
+			pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
 			}
 		}
 	}

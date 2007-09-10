@@ -2091,7 +2091,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 				(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
 				LoadCorona ()) {
 			fVector			vNormf, vOffsf, vTrailVerts [4];
-			int				i, bStencil, bDepthSort = (gameOpts->render.bDepthSort > 0);
+			int				bStencil, bDepthSort = (gameOpts->render.bDepthSort > 0);
 			float				l, r = f2fl (objP->size);
 
 			static fVector vEye = {{0, 0, 0}};

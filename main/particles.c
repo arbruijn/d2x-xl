@@ -1820,7 +1820,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 							pi->pNextPart = ph;
 							}
 						else {
-							ph->pNextPart = NULL;
+							ph->pNextPart = *pd;
 							*pd = ph;
 							}
 						}

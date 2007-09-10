@@ -181,7 +181,7 @@ if ((h = gameData.lightnings.objects [j]) >= 0) {
 	t0 = gameStates.app.nSDLTicks;
 	}
 else if (gameStates.app.nSDLTicks - t0 > 2000) {
-	tRgbaColorf color = {0.2f, 0.2f, 1.0f, 0.4f};
+	tRgbaColorf color = {0.1f, 0.1f, 1.0f, 0.4f};
 	gameData.lightnings.objects [j] = CreateLightning (
 		30, 
 		gameStates.app.bFreeCam ? &gameStates.app.playerPos.vPos : &objP->position.vPos,
