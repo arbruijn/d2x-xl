@@ -999,12 +999,6 @@ if (!bRender)
 	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->position.mOrient.fVec, norm);
 	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
 		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
-#if TRACE	
-			//con_printf (CONDBG, "Invalid tmap number %d, gameData.pig.tex.nTextures=%d, changing to 0\n", tmap1, gameData.pig.tex.nTextures);
-#endif
-#ifdef _DEBUG
-			Int3();
-#endif
 		sideP->nBaseTex = 0;
 		}
 	if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
@@ -1071,58 +1065,37 @@ if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 #ifdef _DEBUG
 	if (bmTop)
 		fpDrawTexPolyMulti (
-			props.nv, 
-			pointList, 
-			props.uvls, 
-#if LIGHTMAPS
+			props.nv, pointList, props.uvls, 
+#	if LIGHTMAPS
 			props.uvl_lMaps, 
-#endif
+#	endif
 			bmBot, bmTop, 
-#if LIGHTMAPS
+#	if LIGHTMAPS
 			lightMaps + props.segNum * 6 + props.sideNum, 
-#endif
-			&props.vNormal, 
-			props.nOvlOrient, 
-			!bIsMonitor || bIsTeleCam); 
+#	endif
+			&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
 	else
-#if LIGHTMAPS == 0
-		G3DrawTexPoly (
-			props.nv, 
-			pointList, 
-			props.uvls, 
-			bmBot, 
-			&props.vNormal, 
-			!bIsMonitor || bIsTeleCam); 
-#else
+#	if LIGHTMAPS == 0
+		G3DrawTexPoly (props.nv, pointList, props.uvls, bmBot, &props.vNormal, !bIsMonitor || bIsTeleCam); 
+#	else
 		fpDrawTexPolyMulti (
-			props.nv, 
-			pointList, 
-			props.uvls, 
-			props.uvl_lMaps, 
-			bmBot, 
-			NULL, 
+			props.nv, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL, 
 			lightMaps + props.segNum * 6 + props.sideNum, 
-			&props.vNormal, 
-			0, 
-			!bIsMonitor || bIsTeleCam); //(bIsMonitor && !gameOpts->render.cameras.bFitToWall) || (bmBot->bm_props.flags & BM_FLAG_TGA));
-#endif
-		}
+			&props.vNormal, 0, !bIsMonitor || bIsTeleCam);
+#	endif
 #else
 	fpDrawTexPolyMulti (
-		props.nv, 
-		pointList, 
-		props.uvls, 
-#if LIGHTMAPS
+		props.nv, pointList, props.uvls, 
+#	if LIGHTMAPS
 		props.uvl_lMaps, 
-#endif
+#	endif
 		bmBot, bmTop, 
-#if LIGHTMAPS
+#	if LIGHTMAPS
 		lightMaps + props.segNum * 6 + props.sideNum, 
+#	endif
+		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
 #endif
-		&props.vNormal, 
-		props.nOvlOrient, 
-		!bIsMonitor || bIsTeleCam); 
-#endif
+		}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 		// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
 		//if (nSegment == gameData.objs.objects->nSegment) 
