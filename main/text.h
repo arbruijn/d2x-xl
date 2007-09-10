@@ -1754,10 +1754,10 @@ void LoadGameTexts(void);
 #define TXT_SMOKE_ALPHA				GT(961)
 #define TXT_FEW						GT(962)
 #define TXT_MANY						GT(963)
+#define TXT_TRANSP_DEPTH_SORT		GT(964)
 
 #if 0
 
-#define TXT_				GT(964)
 #define TXT_				GT(965)
 #define TXT_				GT(966)
 #define TXT_				GT(967)
@@ -2213,10 +2213,10 @@ void LoadGameTexts(void);
 #define HTX_ENHANCED_SHAKERS		HT(299)				
 #define HTX_ADVRND_SMOKEQUAL		HT(300)				
 #define HTX_ADVRND_SMOKEALPHA		HT(301)				
+#define HTX_TRANSP_DEPTH_SORT		HT(302)				
 
 #if 0
 
-#define HTX_					HT(302)				
 #define HTX_					HT(303)				
 #define HTX_					HT(304)				
 #define HTX_					HT(305)				

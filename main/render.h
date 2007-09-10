@@ -147,8 +147,10 @@ typedef struct tRIPoly {
 	fVector				vertices [4];
 	tUVLf					texCoord [4];
 	tRgbaColorf			color [4];
+	int					nWrap;
+	int					nPrimitive;
 	char					nVertices;
-	char					bColor;
+	char					nColors;
 	char					bDepthMask;
 } tRIPoly;
 
@@ -203,8 +205,11 @@ typedef struct tRenderItemBuffer {
 	int				zMin;
 	int				zMax;
 	double			zScale;
-	char				bTextured;
+	int				nWrap;
 	char				bClientState;
+	char				bTextured;
+	char				bClientColor;
+	char				bClientTexCoord;
 	char				bDepthMask;
 	grsBitmap		*bmP;
 } tRenderItemBuffer;
@@ -214,7 +219,8 @@ void FreeRenderItemBuffer (void);
 void ResetRenderItemBuffer (void);
 void InitRenderItemBuffer (int zMin, int zMax);
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z);
-int RIAddPoly (grsBitmap *bmP, fVector *vertices, tUVLf *texCoord, tRgbaColorf *color, tFaceColor *altColor, char nVertices, char bDepthMask);
+int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoord, tRgbaColorf *color, 
+					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, double fBrightness);

@@ -584,7 +584,7 @@ if (gameOpts->render.bDepthSort > 0) {
 
 	for (i = 0; i < nv; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, vertices, NULL, color, NULL, nv, 1);
+	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT);
 	}
 else {
 	r_polyc++;
@@ -1462,12 +1462,12 @@ glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 
 //------------------------------------------------------------------------------
 
-int G3EnableClientStates (GLuint nTMU, int bColor)
+int G3EnableClientStates (GLuint nTMU, int bColor, int bTextured)
 {
 glClientActiveTexture (nTMU);
 if	((!bColor || G3EnableClientState (GL_COLOR_ARRAY)) &&
 //	 G3EnableClientState (GL_INDEX_ARRAY) &&
-	 G3EnableClientState (GL_TEXTURE_COORD_ARRAY) &&
+	 (!bTextured || G3EnableClientState (GL_TEXTURE_COORD_ARRAY)) &&
 	 G3EnableClientState (GL_VERTEX_ARRAY))
 	return 1;
 G3DisableClientStates (nTMU);
@@ -1677,14 +1677,16 @@ if (bDrawArrays || (!bmTop && (gameOpts->render.bDepthSort > 0) && ((bmBot->bm_p
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, vertColors + i);
 		}
+#if 1
 	if (gameOpts->render.bDepthSort > 0) {
-		RIAddPoly (bmBot, vertices, vertUVL [0], NULL, vertColors, nVerts, 1);
+		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT);
 		return 0;
 		}
+#endif
 	}
 #if G3_DRAW_ARRAYS
 if (bDrawArrays) {
-	if (!G3EnableClientStates (GL_TEXTURE0_ARB, 1)) {
+	if (!G3EnableClientStates (GL_TEXTURE0_ARB, 1, 1)) {
 		bDrawArrays = 0;
 		goto retry;
 		}
@@ -1694,7 +1696,7 @@ if (bDrawArrays) {
 	if (bLight)
 		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 	if (bmTop && !bDrawOverlay) {
-		if (!G3EnableClientStates (GL_TEXTURE1_ARB, 1)) {
+		if (!G3EnableClientStates (GL_TEXTURE1_ARB, 1, 1)) {
 			G3DisableClientStates (GL_TEXTURE0_ARB);
 			bDrawArrays = 0;
 			goto retry;
@@ -1987,8 +1989,9 @@ bool G3DrawBitmap (
 	int			transp, 
 	int			bDepthInfo)
 {
-	vmsVector	pv, v1;
-	GLdouble		h, w, u, v, x, y, z;
+	fVector		fPos;
+	GLfloat		h, w, u, v;
+
 	GLint			depthFunc;
 
 r_bitmapc++;
@@ -1999,21 +2002,28 @@ if (!bDepthInfo) {
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 	glDepthFunc (GL_ALWAYS);
 	}
+#if 1
+VmsVecToFloat (&fPos, pos);
+G3TransformPointf (&fPos, &fPos, 0);
+#else
 VmVecSub (&v1, pos, &viewInfo.pos);
 VmVecRotate (&pv, &v1, &viewInfo.view [0]);
-x = (double) f2fl (pv.p.x);
-y = (double) f2fl (pv.p.y);
-z = (double) f2fl (pv.p.z);
-w = (double) f2fl (width); //FixMul (width, viewInfo.scale.x));
-h = (double) f2fl (height); //FixMul (height, viewInfo.scale.y));
+#endif
+w = (GLfloat) f2fl (width); //FixMul (width, viewInfo.scale.x));
+h = (GLfloat) f2fl (height); //FixMul (height, viewInfo.scale.y));
 if (gameStates.render.nShadowBlurPass == 1) {
 	glDisable (GL_TEXTURE_2D);
 	glColor4d (1,1,1,1);
 	glBegin (GL_QUADS);
-	glVertex3d (x - w, y + h, z);
-	glVertex3d (x + w, y + h, z);
-	glVertex3d (x + w, y - h, z);
-	glVertex3d (x - w, y - h, z);
+	fPos.p.x -= w;
+	fPos.p.y += h;
+	glVertex3fv ((GLfloat *) &fPos);
+	fPos.p.x += 2 * w;
+	glVertex3fv ((GLfloat *) &fPos);
+	fPos.p.y -= 2 * h;
+	glVertex3fv ((GLfloat *) &fPos);
+	fPos.p.x -= 2 * w;
+	glVertex3fv ((GLfloat *) &fPos);
 	glEnd ();
 	}
 else {
@@ -2026,17 +2036,22 @@ else {
 		glColor4f (color->red, color->green, color->blue, alpha);
 	else
 		glColor4d (1, 1, 1, (double) alpha);
-	glBegin (GL_QUADS);
 	u = bmP->glTexture->u;
 	v = bmP->glTexture->v;
-	glTexCoord2d (0, 0);
-	glVertex3d (x - w, y + h, z);
-	glTexCoord2d (u, 0);
-	glVertex3d (x + w, y + h, z);
-	glTexCoord2d (u, v);
-	glVertex3d (x + w, y - h, z);
-	glTexCoord2d (0, v);
-	glVertex3d (x - w, y - h, z);
+	glBegin (GL_QUADS);
+	glTexCoord2f (0, 0);
+	fPos.p.x -= w;
+	fPos.p.y += h;
+	glVertex3fv ((GLfloat *) &fPos);
+	glTexCoord2f (u, 0);
+	fPos.p.x += 2 * w;
+	glVertex3fv ((GLfloat *) &fPos);
+	glTexCoord2f (u, v);
+	fPos.p.y -= 2 * h;
+	glVertex3fv ((GLfloat *) &fPos);
+	glTexCoord2f (0, v);
+	fPos.p.x -= 2 * w;
+	glVertex3fv ((GLfloat *) &fPos);
 	glEnd ();
 	}
 if (!bDepthInfo)

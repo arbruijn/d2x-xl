@@ -1713,6 +1713,7 @@ char *defaultGameTexts [][2] = {
 	{"Rauch-~Transparenz: %s", "smoke ~Transparency: %s"},
 	{"wenig", "few"},
 	{"viel", "many"},
+	{"~Transparenz Tiefen-sortieren", "~Depth sort transparency"},
 #if 0
 	{"", ""},
 #endif
@@ -2267,7 +2268,9 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, earth shaker bomblets sense targets at greater\ndistance and greater angles towards their flight direction.\nTo compensate, they will turn slower during the first\nthree seconds of flight."},
 	{"Je nach Einstellung werden weiter vom Spieler entfernte Rauch-\npartikel vor naeheren gezeichnet. Dadurch sieht Rauch natuerlicher\naus. Je mehr Rauchquellen vorhanden sind, desto mehr wirkt sich eine\nhohe Qualitaetseinstellung aus. Ein hoeherer Wert erfordert\nallerdings auch mehr Rechenleistung.", 
 	 "Depending on the chosen setting, smoke particles that are further\naway from the player are rendered first. That makes smoke appear\nmore natural. The more smoke sources, the stronger the effect of a\nhigh quality setting. A higher value however requires more\ncomputing power."},
-	{"Je hoeher der eingestellte Wert, desto durchsichtiger ercheint Rauch.", "The higher the setting, the more transparent smoke looks."},
+	{"Je hoeher der eingestellte Wert, desto durchsichtiger ercheint\nRauch.", "The higher the setting, the more transparent smoke looks."},
+	{"Wenn angekreuzt, werden transparente Objekte nach Abstand vom\nBetrachter sortiert und beim Entferntesten beginnend\ngezeichnet. Dadurch wird vermieden, dass entferntere transparente\nObjekte von naehergelegenen verdeckt werden.", 
+	 "If checked, transparent objects are being sorted according to\n their distance from the viewer, ensuring that far\naway transparent objects aren't hidden behind closer ones.\n"},
 #if 0
 	{"", ""},
 #endif

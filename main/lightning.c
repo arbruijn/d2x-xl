@@ -788,13 +788,17 @@ if (gameData.lightnings.objects [i] >= 0) {
 
 //------------------------------------------------------------------------------
 
+#define LIGHTNING_VERT_ARRAYS 1
+
 void RenderLightningCorona (fVector *vPosf, int nScale)
 {
 	static tUVLf	uvlCorona [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 	static fVector	vEye = {{0,0,0}};
 
 	fVector	vCorona [4], vn;
+#if !LIGHTNING_VERT_ARRAYS
 	int		i;
+#endif
 
 VmVecSubf (&vn, vPosf, vPosf + 1);
 VmVecScalef (&vn, &vn, nScale ? 2.0f : 1.5f);
@@ -807,7 +811,7 @@ VmVecSubf (vCorona + 2, vCorona + 1, &vn);
 VmVecSubf (vCorona + 3, vCorona, &vn);
 VmVecIncf (vCorona, &vn);
 VmVecIncf (vCorona + 1, &vn);
-#if 1
+#if LIGHTNING_VERT_ARRAYS
 glVertexPointer (4, GL_FLOAT, 0, vCorona);
 glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlCorona);
 glDrawArrays (GL_QUADS, 0, 4);
@@ -834,7 +838,10 @@ if (pl) {
 
 	glEnable (GL_BLEND);
 	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable (GL_CULL_FACE);
+	if (gameOpts->render.bDepthSort < 1) {
+		glDepthMask (0);
+		glDisable (GL_CULL_FACE);
+		}
 	glLineWidth (1);
 	glEnable (GL_SMOOTH);
 	for (; nLightnings; nLightnings--, pl++) {
@@ -853,11 +860,11 @@ if (pl) {
 		color.alpha /= 2;
 		f = (color.red * 3 + color.green * 5 + color.blue * 2) / 10;
 		f = (float) sqrt (f);
-		glDepthMask (0);
 		if (gameOpts->render.lightnings.bCoronas) {
-			glEnableClientState (GL_VERTEX_ARRAY);
 			glClientActiveTexture (GL_TEXTURE0_ARB);
 			glEnable (GL_TEXTURE_2D);
+			glEnableClientState (GL_VERTEX_ARRAY);
+			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 				for (h = 0; h < 2; h++) {
 					if (h) {
@@ -906,10 +913,12 @@ if (pl) {
 		for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++)
 			RenderLightning (pln->pChild, 1);
 		}
-	glEnable (GL_CULL_FACE);
+	if (gameOpts->render.bDepthSort < 1) {
+		glEnable (GL_CULL_FACE);
+		glDepthMask (1);
+		}
 	glLineWidth (1);
 	glDisable (GL_SMOOTH);
-	glDepthMask (1);
 	}
 }
 

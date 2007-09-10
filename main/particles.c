@@ -644,7 +644,8 @@ int RenderParticle (tParticle *pParticle, double brightness)
 
 if (pParticle->nDelay > 0)
 	return 0;
-bmP = bmpParticle [bPointSprites][pParticle->nType % PARTICLE_TYPES];
+if (!(bmP = bmpParticle [bPointSprites][pParticle->nType % PARTICLE_TYPES]))
+	return 0;
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 #if 1
@@ -1230,9 +1231,24 @@ return nParts;
 
 //------------------------------------------------------------------------------
 
+double CloudBrightness (tCloud *pCloud)
+{
+if (pCloud->nObject < 0)
+	return 0.5;
+if (pCloud->nObjType == OBJ_SMOKE)
+	return 0.5;
+if (pCloud->nObjType == OBJ_DEBRIS)
+	return 0.5;
+if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
+	return 0.2;
+return (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.66 + 0.1;
+}
+
+//------------------------------------------------------------------------------
+
 int RenderCloud (tCloud *pCloud)
 {
-	double		brightness = pCloud->brightness;
+	double		brightness = CloudBrightness (pCloud);
 	int			nParts = pCloud->nParts, i, j, 
 					nFirstPart = pCloud->nFirstPart,
 					nPartLimit = pCloud->nPartLimit;
@@ -1596,21 +1612,6 @@ else
 			}
 	return j;
 	}
-}
-
-//------------------------------------------------------------------------------
-
-double CloudBrightness (tCloud *pCloud)
-{
-if (pCloud->nObject < 0)
-	return 0.5;
-if (pCloud->nObjType == OBJ_SMOKE)
-	return 0.5;
-if (pCloud->nObjType == OBJ_DEBRIS)
-	return 0.5;
-if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
-	return 0.2;
-return (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.66 + 0.1;
 }
 
 //------------------------------------------------------------------------------

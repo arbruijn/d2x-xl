@@ -375,7 +375,7 @@ void OglResetTransform ();
 void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grs_color *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
-int G3EnableClientStates (GLuint nTMU, int bColor);
+int G3EnableClientStates (GLuint nTMU, int bColor, int bTextured);
 void G3DisableClientStates (GLuint nTMU);
 
 #if OGL_MULTI_TEXTURING

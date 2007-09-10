@@ -1531,7 +1531,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		dotThruster = VmVecDotf (&vPosf, &v);
 		if (dotFlame < dotThruster) {
 			if (gameOpts->render.bDepthSort)
-				RIAddPoly (bmpThruster [nStyle], vFlame, uvlFlame, NULL, NULL, 3, 1);
+				RIAddPoly (bmpThruster [nStyle], vFlame, 3, uvlFlame, NULL, NULL, 0, 1, GL_TRIANGLES, GL_CLAMP);
 			else {
 				glBegin (GL_TRIANGLES);
 				for (i = 0; i < 3; i++) {
@@ -1542,7 +1542,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 				}
 			}
 		if (gameOpts->render.bDepthSort)
-			RIAddPoly (bmpThruster [nStyle], vThruster, uvlThruster, NULL, NULL, 4, 1);
+			RIAddPoly (bmpThruster [nStyle], vThruster, 4, uvlThruster, NULL, NULL, 0, 1, GL_QUADS, GL_CLAMP);
 		else {
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
@@ -1800,7 +1800,7 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 
 // -----------------------------------------------------------------------------
 
-void RenderObjectCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset)
+void RenderObjectCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1818,6 +1818,7 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	static tUVLf	uvlList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 
 	vmsVector	vPos = objP->position.vPos;
+	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
 	if (xOffset) {
 		if (bViewerOffset) {
 			vmsVector o;
@@ -1829,6 +1830,11 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 		}
 	if (xSize < F1_0)
 		xSize = F1_0;
+	if (bDepthSort) {
+		colorP->alpha = alpha;
+		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, 0);
+		return;
+		}
 	if (bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
 		glDisable (GL_STENCIL_TEST);
 	glDepthMask (0);
@@ -2049,8 +2055,10 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-1,-5}},{{0,-1,-50}},{{0,0,-50}}},
-												 {{{0,0,0}},{{0,1,-5}},{{0,1,-50}},{{0,0,-50}}}};
+#define TRAIL_VERT_ARRAYS 0
+
+static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
+												{{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
 
 void RenderLightTrail (tObject *objP)
 {
@@ -2079,78 +2087,119 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 	if (gameOpts->render.smoke.bPlasmaTrails)
 		DoObjectSmoke (objP);
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && 
-		!gameData.objs.bIsSlowWeapon [objP->id] &&
-		(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
-			vmsVector		vPos;
-			fVector			vPosf, vTrailVerts [4], *vTrail;
-			tRgbaColorf		trailColor [4] = {{0,0,0,0.5f},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
-			int				i, j, nOrient, bStencil, bDepthSort = (gameOpts->render.bDepthSort > 0);
-			float				h, r = f2fl (objP->size);
+				!gameData.objs.bIsSlowWeapon [objP->id] &&
+				(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
+				LoadCorona ()) {
+			fVector			vNormf, vOffsf, vTrailVerts [4];
+			int				i, bStencil, bDepthSort = (gameOpts->render.bDepthSort > 0);
+			float				l, r = f2fl (objP->size);
+
+			static fVector vEye = {{0, 0, 0}};
+
+			static tRgbaColorf	trailColor = {0,0,0,0.5f};
+			static tUVLf			uvlTrail [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};;
 			
-		if (r <= 1)
-			h = 1;
-		else if (r >= 3)
-			h = 2;
-		else
-			h = 1.5f;
 		if (r >= 3.0f)
 			r /= 1.5f;
 		else if (r < 1)
 			r *= 2;
 		else if (r < 2)
 			r *= 1.5f;
-		VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
-		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
-		if (!bDepthSort) {
-			glDepthMask (0);
+		if (objP->renderType == RT_POLYOBJ) {
+			tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+			l = f2fl (phb->vMax.p.z - phb->vMin.p.z);
+			if (objP->id == FUSION_ID)
+				l *= 1.5;
+			}
+		else
+			l = 4 * r;
+
+		VmsVecToFloat (&vOffsf, &objP->position.mOrient.fVec);
+		VmsVecToFloat (vTrailVerts, &objP->position.vPos);
+		vCenterf = *vTrailVerts;
+		VmVecScaleIncf3 (vTrailVerts, &vOffsf, l);// * -0.75f);
+		VmVecScaleAddf (vTrailVerts + 2, vTrailVerts, &vOffsf, -100);
+		G3TransformPointf (vTrailVerts, vTrailVerts, 0);
+		G3TransformPointf (vTrailVerts + 2, vTrailVerts + 2, 0);
+		VmVecSubf (&vOffsf, vTrailVerts + 2, vTrailVerts);
+		VmVecScalef (&vOffsf, &vOffsf, r * 0.04f);
+		VmVecNormalf (&vNormf, vTrailVerts, vTrailVerts + 2, &vEye);
+		VmVecScalef (&vNormf, &vNormf, r * 4);
+		VmVecAddf (&vBorderf, &vCenterf, &vNormf);
+		VmVecAddf (vTrailVerts + 1, vTrailVerts, &vNormf);
+		VmVecIncf (vTrailVerts + 1, &vOffsf);
+		VmVecSubf (vTrailVerts + 3, vTrailVerts, &vNormf);
+		VmVecIncf (vTrailVerts + 3, &vOffsf);
+		if (bDepthSort) {
+			memcpy (&trailColor, pc, 3 * sizeof (float));
+#if 1
+			RIAddPoly (bmpCorona, vTrailVerts, 4, uvlTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP);
+#else
+			RIAddPoly (NULL, vTrailVerts, 4, uvlTrail, NULL, NULL, 1, 0, GL_QUADS, 0);
+#endif
+			}
+		else {
+#if TRAIL_VERT_ARRAYS
+			glClientActiveTexture (GL_TEXTURE0_ARB);
+			glEnableClientState (GL_VERTEX_ARRAY);
+			if (glGetError ()) {
+				glDisableClientState (GL_VERTEX_ARRAY);
+				glEnableClientState (GL_VERTEX_ARRAY);
+				if (glGetError ())
+					return;
+				}
+			glEnableClientState (GL_COLOR_ARRAY);
+			if (glGetError ())
+				glEnableClientState (GL_COLOR_ARRAY);
+#endif
 			if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 				glDisable (GL_STENCIL_TEST);
-			glDisable (GL_TEXTURE_2D);
 			glDisable (GL_CULL_FACE);		
-			}
-		memcpy (trailColor, pc, 3 * sizeof (float));
-		for (nOrient = 0; nOrient < 2; nOrient++) {
-			if (nOrient)
-				vPosf.p.y = 0;
-			else
-				vPosf.p.x = 0;
-			for (j = 0, vTrail = vTrailOffs [0]; j < 2; j++) {
-				for (i = 0; i < 4; i++, vTrail++) {
-					if (nOrient)
-						vPosf.p.x = vTrail->p.y * r;
-					else
-						vPosf.p.y = vTrail->p.y * r;
-					vPosf.p.z = vTrail->p.z;
-					if (vPosf.p.z == -50)
-						vPosf.p.z *= h;
-					G3TransformPointf (vTrailVerts + i, &vPosf, 0);
-					glVertex3fv ((GLfloat *) vTrailVerts + i);
-					}
-				if (bDepthSort)
-					RIAddPoly (NULL, vTrailVerts, NULL, trailColor, NULL, 4, 0);
-				else {
-					glEnableClientState (GL_VERTEX_ARRAY);
-					glVertexPointer (4, GL_FLOAT, 0, vTrailVerts);
-					glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), trailColor);
-					glDrawArrays (GL_QUADS, 0, 4);
-					glDisableClientState (GL_VERTEX_ARRAY);
-					}
+			glDepthMask (0);
+			glEnable (GL_TEXTURE_2D);
+			if (OglBindBmTex (bmpCorona, 1, -1)) 
+				return;
+			OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+			glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+#if TRAIL_VERT_ARRAYS
+			glVertexPointer (4, GL_FLOAT, 0, vTrailVerts);
+			if (glGetError ())
+				glVertexPointer (4, GL_FLOAT, 0, vTrailVerts);
+			glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), trailColor);
+			if (glGetError ())
+				glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), trailColor);
+			glDrawArrays (GL_QUADS, 0, 4);
+			glDisableClientState (GL_COLOR_ARRAY);
+			glDisableClientState (GL_VERTEX_ARRAY);
+#else
+			glBegin (GL_QUADS);
+			for (i = 0; i < 4; i++) {
+				glTexCoord3fv ((GLfloat *) (uvlTrail + i));
+				glVertex3fv ((GLfloat *) (vTrailVerts + i));
 				}
-			}
-		if (!bDepthSort) {
-			glDepthMask (1);
-			glCullFace (GL_BACK);
-			G3DoneInstance ();
+			glEnd ();
+			glDisable (GL_TEXTURE_2D);
+#if 1
+			glColor3d (1, 0, 0);
+			glBegin (GL_LINE_LOOP);
+			for (i = 0; i < 4; i++) {
+				glVertex3fv ((GLfloat *) (vTrailVerts + i));
+				}
+			glEnd ();
+#endif
+#endif
 			if (bStencil)
 				glEnable (GL_STENCIL_TEST);
+			glEnable (GL_CULL_FACE);
+			glDepthMask (1);
 			}
 		}
 	RenderShockwave (objP);
 	}
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
-	RenderObjectCorona (objP, pc, 0.5f, 0, 3, 1, 0);
+	RenderObjectCorona (objP, pc, 0.5f, 0, 3, 1, 0, 1);
 else
-	RenderObjectCorona (objP, pc, 0.75f, 0, 3, 0, 0);
+	RenderObjectCorona (objP, pc, 0.75f, 0, 3, 0, 0, 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -2162,7 +2211,7 @@ void DrawDebrisCorona (tObject *objP)
 	static	time_t t0 = 0;
 
 if (objP->nType == OBJ_MARKER)
-	RenderObjectCorona (objP, &markerGlow, 0.75f, 0, 3, 1, 1);
+	RenderObjectCorona (objP, &markerGlow, 0.75f, 0, 3, 1, 1, 0);
 #ifdef _DEBUG
 else if (objP->nType == OBJ_DEBRIS) {
 #else
@@ -2178,7 +2227,7 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1);
+		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1, 0);
 		}
 	}
 }
@@ -2443,7 +2492,7 @@ switch (objP->renderType) {
 				}
 			else
 				DrawWeaponVClip (objP); 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 			if (EGI_FLAG (bRenderShield, 0, 1, 0))
 				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #endif
