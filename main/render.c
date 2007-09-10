@@ -4859,18 +4859,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline int RIEnableClientState (GLuint nState)
-{
-glEnableClientState (nState);
-if (!glGetError ())
-	return 1;
-glDisableClientState (nState);
-glEnableClientState (nState);
-return !glGetError ();
-}
-
-//------------------------------------------------------------------------------
-
 int RISetClientState (char bClientState, char bTexCoord, char bColor)
 {
 if (renderItems.bClientState == bClientState) {
@@ -4893,10 +4881,10 @@ if (renderItems.bClientState == bClientState) {
 else if (bClientState) {
 	renderItems.bClientState = 1;
 	glClientActiveTexture (GL_TEXTURE0_ARB);
-	if (!RIEnableClientState (GL_VERTEX_ARRAY))
+	if (!OglEnableClientState (GL_VERTEX_ARRAY))
 		return 0;
 	if (bTexCoord) {
-		if (RIEnableClientState (GL_TEXTURE_COORD_ARRAY))
+		if (OglEnableClientState (GL_TEXTURE_COORD_ARRAY))
 			renderItems.bClientTexCoord = 1;
 		else {
 			RISetClientState (0, 0, 0);
@@ -4904,7 +4892,7 @@ else if (bClientState) {
 			}
 		}
 	if (bColor) {
-		if (RIEnableClientState (GL_COLOR_ARRAY))
+		if (OglEnableClientState (GL_COLOR_ARRAY))
 			renderItems.bClientColor = 1;
 		else {
 			RISetClientState (0, 0, 0);
@@ -4962,8 +4950,8 @@ void RIRenderPoly (tRIPoly *item)
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
-#if 0
-if (LoadRenderItemImage (item->bmP, item->bColor, 0, item->nWrap, 1)) {
+#if 1
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
@@ -4973,7 +4961,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, 0, item->nWrap, 1)) {
 		glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), item->color);
 	else
 		glColor3d (1, 1, 1);
-	glDrawArrays (renderItems.bTextured ? GL_TRIANGLE_FAN : GL_QUADS, 0, item->nVertices);
+	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 else 
 #endif
@@ -4984,8 +4972,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 		if (item->bmP) {
 			for (i = 0; i < j; i++) {
 				glColor4fv ((GLfloat *) (item->color + i));
-				glVertex3fv ((GLfloat *) (item->vertices + i));
 				glTexCoord2fv ((GLfloat *) (item->texCoord + i));
+				glVertex3fv ((GLfloat *) (item->vertices + i));
 				}
 			}
 		else {
@@ -5002,8 +4990,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 			glColor3d (1, 1, 1);
 		if (item->bmP) {
 			for (i = 0; i < j; i++) {
-				glVertex3fv ((GLfloat *) (item->vertices + i));
 				glTexCoord2fv ((GLfloat *) (item->texCoord + i));
+				glVertex3fv ((GLfloat *) (item->vertices + i));
 				}
 			}
 		else {

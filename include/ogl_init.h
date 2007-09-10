@@ -375,8 +375,13 @@ void OglResetTransform ();
 void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grs_color *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
-int G3EnableClientStates (GLuint nTMU, int bColor, int bTextured);
-void G3DisableClientStates (GLuint nTMU);
+int OglEnableClientState (GLuint nState);
+int OglEnableClientStates (int bTexCoord, int bColor);
+void OglDisableClientStates (int bTexCoord, int bColor);
+int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tUVLf *texCoordP, 
+							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
+
+//------------------------------------------------------------------------------
 
 #if OGL_MULTI_TEXTURING
 #	ifndef GL_VERSION_20

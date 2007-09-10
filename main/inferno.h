@@ -2283,7 +2283,8 @@ typedef struct tSmokeData {
 
 //------------------------------------------------------------------------------
 
-#define MAX_FLASHES	1000
+#define MAX_LIGHTNINGS	1000
+#define MAX_LIGHTNING_NODES	1000
 
 typedef struct tLightning;
 
@@ -2341,7 +2342,7 @@ typedef struct tLightningLight {
 typedef struct tLightningData {
 	short					*objects;
 	tLightningLight	*lights;
-	tLightningBundle	buffer [MAX_FLASHES];
+	tLightningBundle	buffer [MAX_LIGHTNINGS];
 	int					iFree;
 	int					iUsed;
 	int					nNext;

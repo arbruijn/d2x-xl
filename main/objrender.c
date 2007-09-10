@@ -816,7 +816,7 @@ void RenderDamageIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector		fPos, fVerts [4];
 	float			r, r2, w;
-	int			bStencil;
+	int			i, bStencil, bDrawArrays;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -850,20 +850,18 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	glDisable (GL_TEXTURE_2D);
 #if 1
-#	if 1
-	glEnableClientState (GL_VERTEX_ARRAY);
-	glVertexPointer (4, GL_FLOAT, 0, fVerts);
-	glDrawArrays (GL_QUADS, 0, 4);
-	//glDisableClientState (GL_VERTEX_ARRAY);
-#	else
-	glBegin (GL_QUADS);
-	glVertex3fv ((GLfloat *) fVerts);
-	glVertex3fv ((GLfloat *) (fVerts + 1));
-	glVertex3fv ((GLfloat *) (fVerts + 2));
-	glVertex3fv ((GLfloat *) (fVerts + 3));
-	glEnd ();
-#	endif
+	if (bDrawArrays = OglEnableClientState (GL_VERTEX_ARRAY)) {
+		glVertexPointer (4, GL_FLOAT, 0, fVerts);
+		glDrawArrays (GL_QUADS, 0, 4);
+		}
+	else {
+		glBegin (GL_QUADS);
+		for (i = 0; i < 4; i++)
+			glVertex3fv ((GLfloat *) (fVerts + i));
+		glEnd ();
+		}
 #else
+	bDrawArrays = 0;
 	glBegin (GL_QUADS);
 	glVertex3f (fPos.p.x, fPos.p.y, fPos.p.z);
 	glVertex3f (fPos.p.x + w, fPos.p.y, fPos.p.z);
@@ -874,19 +872,17 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	w = 2 * r;
 	fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + w;
 	glColor3fv ((GLfloat *) pc);
-#if 1
-	//glEnableClientState (GL_VERTEX_ARRAY);
-	glVertexPointer (4, GL_FLOAT, 0, fVerts);
-	glDrawArrays (GL_LINE_LOOP, 0, 4);
-	glDisableClientState (GL_VERTEX_ARRAY);
-#else
-	glBegin (GL_LINE_LOOP);
-	glVertex3fv ((GLfloat *) fVerts);
-	glVertex3fv ((GLfloat *) (fVerts + 1));
-	glVertex3fv ((GLfloat *) (fVerts + 2));
-	glVertex3fv ((GLfloat *) (fVerts + 3));
-	glEnd ();
-#endif
+	if (bDrawArrays) {
+		glVertexPointer (4, GL_FLOAT, 0, fVerts);
+		glDrawArrays (GL_LINE_LOOP, 0, 4);
+		glDisableClientState (GL_VERTEX_ARRAY);
+		}
+	else {
+		glBegin (GL_LINE_LOOP);
+		for (i = 0; i < 4; i++)
+			glVertex3fv ((GLfloat *) (fVerts + i));
+		glEnd ();
+		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
 	}
@@ -930,7 +926,7 @@ r2 = r / 4;
 
 glDisable (GL_CULL_FACE);
 glDisable (GL_TEXTURE_2D);
-glEnableClientState (GL_VERTEX_ARRAY);
+OglEnableClientState (GL_VERTEX_ARRAY);
 glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
 if (gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVector	rotVerts [3];
@@ -1026,7 +1022,7 @@ void RenderTargetIndicator (tObject *objP, tRgbColorf *pc)
 {
 	fVector		fPos, fVerts [4];
 	float			r, r2, r3;
-	int			bStencil, nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
+	int			i, bStencil, bDrawArrays, nPlayer = (objP->nType == OBJ_PLAYER) ? objP->id : -1;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -1082,33 +1078,26 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [1].p.z =
 		fVerts [2].p.z =
 		fVerts [3].p.z = fPos.p.z;
-
-#if 1
-		glEnableClientState (GL_VERTEX_ARRAY);
-		glDrawArrays (GL_LINE_STRIP, 0, 4);
-		//glDisableClientState (GL_VERTEX_ARRAY);
-#else
-		glBegin (GL_LINE_STRIP);
-		glVertex3fv ((GLfloat *) fVerts);
-		glVertex3fv ((GLfloat *) (fVerts + 1));
-		glVertex3fv ((GLfloat *) (fVerts + 2));
-		glVertex3fv ((GLfloat *) (fVerts + 3));
-		glEnd ();
-#endif
+		if (bDrawArrays = OglEnableClientState (GL_VERTEX_ARRAY))
+			glDrawArrays (GL_LINE_STRIP, 0, 4);
+		else {
+			glBegin (GL_LINE_STRIP);
+			for (i = 0; i < 4; i++)
+				glVertex3fv ((GLfloat *) (fVerts + i));
+			glEnd ();
+			}
 		fVerts [0].p.x = fVerts [3].p.x = fPos.p.x + r2;
 		fVerts [1].p.x = fVerts [2].p.x = fPos.p.x + r;
-#if 1
-		//glEnableClientState (GL_VERTEX_ARRAY);
-		glDrawArrays (GL_LINE_STRIP, 0, 4);
-		glDisableClientState (GL_VERTEX_ARRAY);
-#else
-		glBegin (GL_LINE_STRIP);
-		glVertex3fv ((GLfloat *) fVerts);
-		glVertex3fv ((GLfloat *) (fVerts + 1));
-		glVertex3fv ((GLfloat *) (fVerts + 2));
-		glVertex3fv ((GLfloat *) (fVerts + 3));
-		glEnd ();
-#endif
+		if (bDrawArrays) {
+			glDrawArrays (GL_LINE_STRIP, 0, 4);
+			glDisableClientState (GL_VERTEX_ARRAY);
+			}
+		else {
+			glBegin (GL_LINE_STRIP);
+			for (i = 0; i < 4; i++)
+				glVertex3fv ((GLfloat *) (fVerts + i));
+			glEnd ();
+			}
 		}
 	else {	//triangle
 		r2 = r / 3;
@@ -1120,17 +1109,15 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [0].p.z =
 		fVerts [1].p.z =
 		fVerts [2].p.z = fPos.p.z;
-#if 1
-		glEnableClientState (GL_VERTEX_ARRAY);
-		glDrawArrays (GL_LINE_LOOP, 0, 3);
-		//glDisableClientState (GL_VERTEX_ARRAY);
-#else
-		glBegin (GL_LINE_LOOP);
-		glVertex3fv ((GLfloat *) fVerts);
-		glVertex3fv ((GLfloat *) (fVerts + 1));
-		glVertex3fv ((GLfloat *) (fVerts + 2));
-		glEnd ();
-#endif
+		if (bDrawArrays = OglEnableClientState (GL_VERTEX_ARRAY))
+			glDrawArrays (GL_LINE_LOOP, 0, 3);
+		else {
+			glBegin (GL_LINE_LOOP);
+			glVertex3fv ((GLfloat *) fVerts);
+			glVertex3fv ((GLfloat *) (fVerts + 1));
+			glVertex3fv ((GLfloat *) (fVerts + 2));
+			glEnd ();
+			}
 		if (EGI_FLAG (bDamageIndicators, 0, 1, 0)) {
 			r3 = ObjectDamage (objP);
 			if (r3 < 1.0f) {
@@ -1144,17 +1131,16 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 				}
 			}
 		glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
-#if 1
-		//glEnableClientState (GL_VERTEX_ARRAY);
-		glDrawArrays (GL_TRIANGLES, 0, 3);
-		glDisableClientState (GL_VERTEX_ARRAY);
-#else
-		glBegin (GL_TRIANGLES);
-		glVertex3fv ((GLfloat *) fVerts);
-		glVertex3fv ((GLfloat *) (fVerts + 1));
-		glVertex3fv ((GLfloat *) (fVerts + 2));
-		glEnd ();
-#endif
+		if (bDrawArrays) {
+			glDrawArrays (GL_TRIANGLES, 0, 3);
+			glDisableClientState (GL_VERTEX_ARRAY);
+			}
+		else {
+			glBegin (GL_TRIANGLES);
+			for (i = 0; i < 3; i++)
+			glVertex3fv ((GLfloat *) (fVerts + i));
+			glEnd ();
+			}
 		}
 	if (bStencil)
 		glEnable (GL_STENCIL_TEST);
@@ -1466,7 +1452,7 @@ if (!LoadThruster ()) {
 	extraGameInfo [IsMultiGame].bThrusterFlames = 2;
 	glDisable (GL_TEXTURE_2D);
 	}
-else {
+else if (gameOpts->render.bDepthSort <= 0) {
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmpThruster [nStyle], 1, -1)) {
 		extraGameInfo [IsMultiGame].bThrusterFlames = 2;
@@ -1530,7 +1516,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		VmVecNormalizef (&v, vThruster);
 		dotThruster = VmVecDotf (&vPosf, &v);
 		if (dotFlame < dotThruster) {
-			if (gameOpts->render.bDepthSort)
+			if (gameOpts->render.bDepthSort > 0)
 				RIAddPoly (bmpThruster [nStyle], vFlame, 3, uvlFlame, NULL, NULL, 0, 1, GL_TRIANGLES, GL_CLAMP);
 			else {
 				glBegin (GL_TRIANGLES);
@@ -1541,7 +1527,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 				glEnd ();
 				}
 			}
-		if (gameOpts->render.bDepthSort)
+		if (gameOpts->render.bDepthSort > 0)
 			RIAddPoly (bmpThruster [nStyle], vThruster, 4, uvlThruster, NULL, NULL, 0, 1, GL_QUADS, GL_CLAMP);
 		else {
 			glBegin (GL_QUADS);
@@ -2055,8 +2041,6 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-#define TRAIL_VERT_ARRAYS 1
-
 static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
 												{{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
 
@@ -2091,7 +2075,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 				(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
 				LoadCorona ()) {
 			fVector			vNormf, vOffsf, vTrailVerts [4];
-			int				bStencil, bDepthSort = (gameOpts->render.bDepthSort > 0);
+			int				i, bStencil, bDrawArrays, bDepthSort = (gameOpts->render.bDepthSort > 0);
 			float				l, r = f2fl (objP->size);
 
 			static fVector vEye = {{0, 0, 0}};
@@ -2130,24 +2114,10 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 		VmVecIncf (vTrailVerts + 3, &vOffsf);
 		if (bDepthSort) {
 			memcpy (&trailColor, pc, 3 * sizeof (float));
-#if 1
 			RIAddPoly (bmpCorona, vTrailVerts, 4, uvlTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP);
-#else
-			RIAddPoly (NULL, vTrailVerts, 4, uvlTrail, NULL, NULL, 1, 0, GL_QUADS, 0);
-#endif
 			}
 		else {
-#if TRAIL_VERT_ARRAYS
-			glClientActiveTexture (GL_TEXTURE0_ARB);
-			glEnableClientState (GL_VERTEX_ARRAY);
-			if (glGetError ()) {
-				glDisableClientState (GL_VERTEX_ARRAY);
-				glEnableClientState (GL_VERTEX_ARRAY);
-				if (glGetError ())
-					return;
-				}
-			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
-#endif
+			bDrawArrays = OglEnableClientStates (1, 0);
 			if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 				glDisable (GL_STENCIL_TEST);
 			glDisable (GL_CULL_FACE);		
@@ -2157,29 +2127,28 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 				return;
 			OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 			glColor4f (pc->red, pc->green, pc->blue, 0.5f);
-#if TRAIL_VERT_ARRAYS
-			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
-			glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlTrail);
-			glDrawArrays (GL_QUADS, 0, 4);
-			glDisableClientState (GL_COLOR_ARRAY);
-			glDisableClientState (GL_VERTEX_ARRAY);
-#else
-			glBegin (GL_QUADS);
-			for (i = 0; i < 4; i++) {
-				glTexCoord3fv ((GLfloat *) (uvlTrail + i));
-				glVertex3fv ((GLfloat *) (vTrailVerts + i));
+			if (bDrawArrays) {
+				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
+				glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlTrail);
+				glDrawArrays (GL_QUADS, 0, 4);
+				OglDisableClientStates (1, 0);
 				}
-			glEnd ();
-			glDisable (GL_TEXTURE_2D);
-#if 1
-			glColor3d (1, 0, 0);
-			glBegin (GL_LINE_LOOP);
-			for (i = 0; i < 4; i++) {
-				glVertex3fv ((GLfloat *) (vTrailVerts + i));
+			else {
+				glBegin (GL_QUADS);
+				for (i = 0; i < 4; i++) {
+					glTexCoord3fv ((GLfloat *) (uvlTrail + i));
+					glVertex3fv ((GLfloat *) (vTrailVerts + i));
+					}
+				glEnd ();
+#if 0 // render outline
+				glDisable (GL_TEXTURE_2D);
+				glColor3d (1, 0, 0);
+				glBegin (GL_LINE_LOOP);
+				for (i = 0; i < 4; i++)
+					glVertex3fv ((GLfloat *) (vTrailVerts + i));
+				glEnd ();
+#endif
 				}
-			glEnd ();
-#endif
-#endif
 			if (bStencil)
 				glEnable (GL_STENCIL_TEST);
 			glEnable (GL_CULL_FACE);

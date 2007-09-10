@@ -1431,22 +1431,53 @@ if (pVertColor) {
 
 //------------------------------------------------------------------------------
 
+int OglEnableClientState (GLuint nState)
+{
+glEnableClientState (nState);
+if (!glGetError ())
+	return 1;
+glDisable (nState);
+glEnableClientState (nState);
+return glGetError () == 0;
+}
+
+//------------------------------------------------------------------------------
+
+void OglDisableClientStates (int bTexCoord, int bColor)
+{
+glDisableClientState (GL_VERTEX_ARRAY);
+if (bTexCoord)
+	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+if (bColor)
+	glDisableClientState (GL_COLOR_ARRAY);
+}
+
+//------------------------------------------------------------------------------
+
+int OglEnableClientStates (int bTexCoord, int bColor)
+{
+if (!OglEnableClientState (GL_VERTEX_ARRAY))
+	return 0;
+if (bTexCoord && !OglEnableClientState (GL_TEXTURE_COORD_ARRAY)) {
+	OglDisableClientStates (0, 0);
+	return 0;
+	}
+if (bColor && !OglEnableClientState (GL_COLOR_ARRAY)) {
+	OglDisableClientStates (bTexCoord, 0);
+	return 0;
+	}
+glClientActiveTexture (GL_TEXTURE0_ARB);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int G3EnableClientState (GLuint nState)
 {
-	GLint	i;
-
-glEnableClientState (nState);
-if ((i = glGetError ())) {
-#ifdef _DEBUG
-	HUDMessage (0, "glEnableClientState (%d) failed (%d)", nState, i);
-#endif
-	glEnableClientState (nState);
-	if ((i = glGetError ())) {
-		gameData.render.pVerts = NULL;
-		return 0;
-		}
-	}
-return 1;
+if (OglEnableClientState (nState))
+	return 1;
+gameData.render.pVerts = NULL;
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1462,14 +1493,15 @@ glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 
 //------------------------------------------------------------------------------
 
-int G3EnableClientStates (GLuint nTMU, int bColor, int bTextured)
+int G3EnableClientStates (GLuint nTMU)
 {
-glClientActiveTexture (nTMU);
-if	((!bColor || G3EnableClientState (GL_COLOR_ARRAY)) &&
+if	(G3EnableClientState (GL_COLOR_ARRAY) &&
 //	 G3EnableClientState (GL_INDEX_ARRAY) &&
-	 (!bTextured || G3EnableClientState (GL_TEXTURE_COORD_ARRAY)) &&
-	 G3EnableClientState (GL_VERTEX_ARRAY))
+	 G3EnableClientState (GL_TEXTURE_COORD_ARRAY) &&
+	 G3EnableClientState (GL_VERTEX_ARRAY)) {
+	glClientActiveTexture (nTMU);
 	return 1;
+	}
 G3DisableClientStates (nTMU);
 return 0;
 }
@@ -1686,7 +1718,7 @@ if (bDrawArrays || (!bmTop && (gameOpts->render.bDepthSort > 0) && ((bmBot->bm_p
 	}
 #if G3_DRAW_ARRAYS
 if (bDrawArrays) {
-	if (!G3EnableClientStates (GL_TEXTURE0_ARB, 1, 1)) {
+	if (!G3EnableClientStates (GL_TEXTURE0_ARB)) {
 		bDrawArrays = 0;
 		goto retry;
 		}
@@ -1696,7 +1728,7 @@ if (bDrawArrays) {
 	if (bLight)
 		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 	if (bmTop && !bDrawOverlay) {
-		if (!G3EnableClientStates (GL_TEXTURE1_ARB, 1, 1)) {
+		if (!G3EnableClientStates (GL_TEXTURE1_ARB)) {
 			G3DisableClientStates (GL_TEXTURE0_ARB);
 			bDrawArrays = 0;
 			goto retry;
@@ -2654,6 +2686,86 @@ void OglResetTransform (void)
 {
 if (gameStates.ogl.bUseTransform)
 	glPopMatrix ();
+}
+
+//------------------------------------------------------------------------------
+
+int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tUVLf *texCoordP, 
+							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
+{
+	int	bDrawArrays = OglEnableClientState (GL_VERTEX_ARRAY) &&
+							  (!bmP || !texCoordP || OglEnableClientState (GL_TEXTURE_COORD_ARRAY)) &&
+							  (!colorP || (nColors < nVertices) || OglEnableClientState (GL_COLOR_ARRAY));
+
+if (bDrawArrays)
+	glClientActiveTexture (GL_TEXTURE0_ARB);
+if (bmP)
+	glEnable (GL_TEXTURE_2D);
+else
+	glDisable (GL_TEXTURE_2D);
+if (bmP) {
+	if (OglBindBmTex (bmP, 1, 1))
+		return 0;
+	bmP = BmOverride (bmP);
+	if (BM_FRAMES (bmP))
+		bmP = BM_FRAMES (bmP) + nFrame;
+	OglTexWrap (bmP->glTexture, nWrap);
+	}
+if (bDrawArrays) {
+	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertexP);
+	if (texCoordP)
+		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), texCoordP);
+	if (colorP) {
+		if (nColors == nVertices)
+			glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
+		else
+			glColor4fv ((GLfloat *) colorP);
+		}
+	glDrawArrays (nPrimitive, 0, nVertices);
+	glDisableClientState (GL_VERTEX_ARRAY);
+	if (texCoordP)
+		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+	if (colorP)
+		glDisableClientState (GL_COLOR_ARRAY);
+	}
+else {
+	int i = nVertices;
+	glBegin (nPrimitive);
+	if (colorP && (nColors == nVertices)) {
+		if (bmP) {
+			for (i = 0; i < nVertices; i++) {
+				glColor4fv ((GLfloat *) (colorP + i));
+				glVertex3fv ((GLfloat *) (vertexP + i));
+				glTexCoord2fv ((GLfloat *) (texCoordP + i));
+				}
+			}
+		else {
+			for (i = 0; i < nVertices; i++) {
+				glColor4fv ((GLfloat *) (colorP + i));
+				glVertex3fv ((GLfloat *) (vertexP + i));
+				}
+			}
+		}
+	else {
+		if (colorP)
+			glColor4fv ((GLfloat *) colorP);
+		else
+			glColor3d (1, 1, 1);
+		if (bmP) {
+			for (i = 0; i < nVertices; i++) {
+				glVertex3fv ((GLfloat *) (vertexP + i));
+				glTexCoord2fv ((GLfloat *) (texCoordP + i));
+				}
+			}
+		else {
+			for (i = 0; i < nVertices; i++) {
+				glVertex3fv ((GLfloat *) (vertexP + i));
+				}
+			}
+		}
+	glEnd ();
+	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
