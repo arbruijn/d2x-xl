@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "objsmoke.h"
 #include "objrender.h"
+#include "lightning.h"
 #include "physics.h"
 #include "slew.h"		
 #include "render.h"
