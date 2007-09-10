@@ -2055,7 +2055,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-#define TRAIL_VERT_ARRAYS 0
+#define TRAIL_VERT_ARRAYS 1
 
 static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
 												{{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
@@ -2146,9 +2146,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 				if (glGetError ())
 					return;
 				}
-			glEnableClientState (GL_COLOR_ARRAY);
-			if (glGetError ())
-				glEnableClientState (GL_COLOR_ARRAY);
+			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 #endif
 			if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 				glDisable (GL_STENCIL_TEST);
@@ -2160,12 +2158,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 			glColor4f (pc->red, pc->green, pc->blue, 0.5f);
 #if TRAIL_VERT_ARRAYS
-			glVertexPointer (4, GL_FLOAT, 0, vTrailVerts);
-			if (glGetError ())
-				glVertexPointer (4, GL_FLOAT, 0, vTrailVerts);
-			glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), trailColor);
-			if (glGetError ())
-				glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), trailColor);
+			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
+			glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlTrail);
 			glDrawArrays (GL_QUADS, 0, 4);
 			glDisableClientState (GL_COLOR_ARRAY);
 			glDisableClientState (GL_VERTEX_ARRAY);

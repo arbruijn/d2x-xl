@@ -812,7 +812,7 @@ VmVecSubf (vCorona + 3, vCorona, &vn);
 VmVecIncf (vCorona, &vn);
 VmVecIncf (vCorona + 1, &vn);
 #if LIGHTNING_VERT_ARRAYS
-glVertexPointer (4, GL_FLOAT, 0, vCorona);
+glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
 glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlCorona);
 glDrawArrays (GL_QUADS, 0, 4);
 #else
@@ -861,12 +861,22 @@ if (pl) {
 		f = (color.red * 3 + color.green * 5 + color.blue * 2) / 10;
 		f = (float) sqrt (f);
 		if (gameOpts->render.lightnings.bCoronas) {
+#if LIGHTNING_VERT_ARRAYS
+			glEnd ();
 			glClientActiveTexture (GL_TEXTURE0_ARB);
-			glEnable (GL_TEXTURE_2D);
-			glDisableClientState (GL_VERTEX_ARRAY);
 			glEnableClientState (GL_VERTEX_ARRAY);
+			if (glGetError ()) {
+				glDisableClientState (GL_VERTEX_ARRAY);
+				glEnableClientState (GL_VERTEX_ARRAY);
+				if (glGetError ())
+					return;
+				}
 			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+			if (glGetError ())
+				return;
+#endif
+			glEnable (GL_TEXTURE_2D);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 				for (h = 0; h < 2; h++) {
 					if (h) {
@@ -888,8 +898,10 @@ if (pl) {
 						}
 					}
 				}
+#if LIGHTNING_VERT_ARRAYS
 			glDisableClientState (GL_VERTEX_ARRAY);
 			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+#endif
 			glDisable (GL_TEXTURE_2D);
 			}
 #if 1
