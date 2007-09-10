@@ -863,7 +863,9 @@ if (pl) {
 		if (gameOpts->render.lightnings.bCoronas) {
 			glClientActiveTexture (GL_TEXTURE0_ARB);
 			glEnable (GL_TEXTURE_2D);
+			glDisableClientState (GL_VERTEX_ARRAY);
 			glEnableClientState (GL_VERTEX_ARRAY);
+			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 				for (h = 0; h < 2; h++) {
@@ -887,6 +889,7 @@ if (pl) {
 					}
 				}
 			glDisableClientState (GL_VERTEX_ARRAY);
+			glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 			glDisable (GL_TEXTURE_2D);
 			}
 #if 1

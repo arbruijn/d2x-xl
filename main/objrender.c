@@ -2116,7 +2116,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 
 		VmsVecToFloat (&vOffsf, &objP->position.mOrient.fVec);
 		VmsVecToFloat (vTrailVerts, &objP->position.vPos);
-		vCenterf = *vTrailVerts;
 		VmVecScaleIncf3 (vTrailVerts, &vOffsf, l);// * -0.75f);
 		VmVecScaleAddf (vTrailVerts + 2, vTrailVerts, &vOffsf, -100);
 		G3TransformPointf (vTrailVerts, vTrailVerts, 0);
@@ -2125,7 +2124,6 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 		VmVecScalef (&vOffsf, &vOffsf, r * 0.04f);
 		VmVecNormalf (&vNormf, vTrailVerts, vTrailVerts + 2, &vEye);
 		VmVecScalef (&vNormf, &vNormf, r * 4);
-		VmVecAddf (&vBorderf, &vCenterf, &vNormf);
 		VmVecAddf (vTrailVerts + 1, vTrailVerts, &vNormf);
 		VmVecIncf (vTrailVerts + 1, &vOffsf);
 		VmVecSubf (vTrailVerts + 3, vTrailVerts, &vNormf);
