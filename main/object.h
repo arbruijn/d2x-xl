@@ -57,6 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_MONSTERBALL	17	 // a monsterball
 #define OBJ_SMOKE			18	 // static smoke
 #define OBJ_EXPLOSION	19	 // static explosion clouds
+#define OBJ_LIGHTNING	20	 // lightnings
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in tObject.c
@@ -213,6 +214,32 @@ typedef struct tVClipInfo {
 	sbyte   nCurFrame;
 } __pack__ tVClipInfo;
 
+typedef struct tSmokeInfo {
+	int			nLife;
+	int			nSize [2];
+	int			nParts;
+	int			nSpeed;
+	int			nDrift;
+	int			nBrightness;
+	tRgbColorb	color;
+} __pack__ tSmokeInfo;
+
+typedef struct tLightningInfo {
+	int			nLightnings;
+	int			nLife;
+	int			nDelay;
+	int			nLength;
+	int			nAmplitude;
+	int			nOffset;
+	short			nTarget;
+	short			nNodeC;
+	short			nChildC;
+	short			nSteps;
+	char			nSmoothe;
+	char			bClamp;
+	tRgbaColorf color;
+} __pack__ tLightningInfo;
+
 // structures for different kinds of rendering
 
 typedef struct tPolyObjInfo {
@@ -263,6 +290,8 @@ typedef struct tObject {
 		tAIStatic      aiInfo;
 		tObjLightInfo  lightInfo;     // why put this here?  Didn't know what else to do with it.
 		tPowerupInfo   powerupInfo;
+		tSmokeInfo		smokeInfo;
+		tLightningInfo	lightning;
 		} cType;
 	// render info, determined by RENDER_TYPE
 	union {
@@ -356,7 +385,8 @@ void ReleaseObject(short nObject);
 
 // called after load.  Takes number of objects, and objects should be
 // compressed
-void ResetObjects(int n_objs);
+void ResetObjects (int nObjects);
+void ConvertObjects (void);
 
 // make tObject array non-sparse
 void compressObjects(void);

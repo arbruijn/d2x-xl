@@ -23,36 +23,6 @@
 #include "objsmoke.h"
 #include "automap.h"
 
-#define SHIP_MAX_PARTS				50
-#define PLR_PART_LIFE				-4000
-#define PLR_PART_SPEED				40
-
-#define BOT_MAX_PARTS				250
-#define BOT_PART_LIFE				-6000
-#define BOT_PART_SPEED				300
-
-#define MSL_MAX_PARTS				500
-#define MSL_PART_LIFE				-3000
-#define MSL_PART_SPEED				30
-
-#define LASER_MAX_PARTS				250
-#define LASER_PART_LIFE				-500
-#define LASER_PART_SPEED			0
-
-#define BOMB_MAX_PARTS				250
-#define BOMB_PART_LIFE				-16000
-#define BOMB_PART_SPEED				200
-
-#define DEBRIS_MAX_PARTS			150
-#define DEBRIS_PART_LIFE			-2000
-#define DEBRIS_PART_SPEED			30
-
-#define STATIC_SMOKE_MAX_PARTS	500
-#define STATIC_SMOKE_PART_LIFE	-3200
-#define STATIC_SMOKE_PART_SPEED	1000
-
-#define REACTOR_MAX_PARTS			250
-
 //------------------------------------------------------------------------------
 
 #ifdef _DEBUG
@@ -181,13 +151,13 @@ if ((h = gameData.lightnings.objects [j]) >= 0) {
 	t0 = gameStates.app.nSDLTicks;
 	}
 else if (gameStates.app.nSDLTicks - t0 > 2000) {
-	tRgbaColorf color = {0.1f, 0.1f, 1.0f, 0.4f};
+	tRgbaColorf color = {0.1f, 0.1f, 1.0f, 0.3f};
 	gameData.lightnings.objects [j] = CreateLightning (
-		1, 
+		30, 
 		gameStates.app.bFreeCam ? &gameStates.app.playerPos.vPos : &objP->position.vPos,
 		(1 || (rand () & 1)) ? NULL :
 		gameStates.app.bFreeCam ? &gameStates.app.playerPos.mOrient.uVec : &objP->position.mOrient.uVec, 
-		j, -30000, 2000, F1_0 * 50, F1_0 * 5, 0, 100, 20, 1, 300, 1, 1, &color);
+		j, -30000, 2000, F1_0 * 60, F1_0 * 5, 0, 100, 10, 1, 3, 1, 1, &color);
 	}
 #endif
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
@@ -476,9 +446,8 @@ else
 
 void DoStaticSmoke (tObject *objP)
 {
-	int			nLife, nParts, nSpeed, nSize, nDrift, nBrightness, i, j;
+	int			i, j;
 	vmsVector	pos, offs, dir;
-	tTrigger		*trigP;
 
 if (!SHOW_SMOKE)
 	return;
@@ -488,44 +457,17 @@ if (!gameOpts->render.smoke.bStatic) {
 		KillObjectSmoke (i);
 	return;
 	}
-objP->renderType = RT_NONE;
 if (gameData.smoke.objects [i] < 0) {
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
-#if 1
-	j = (trigP && trigP->value) ? trigP->value : 5;
-	nLife = (j * (j + 1)) / 2;
-#else
-	nLife = (trigP && trigP->value) ? trigP->value : 5;
-#endif
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_BRIGHTNESS, -1);
-	nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
-	j = (trigP && trigP->value) ? trigP->value : 5;
-#if 1
-	nSpeed = (j * (j + 1)) / 2;
-#else
-	nSpeed = j;
-#endif
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
-	nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
-	nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : nSpeed * 50;
-	trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
-	j = (trigP && trigP->value) ? trigP->value : 5;
-	if (gameOpts->render.smoke.bDisperse)
-		nSize = (j * (j + 1)) / 2;
-	else
-		nSize = j + 1;
-	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, nSpeed * 2 * F1_0 / 55);
+	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, objP->cType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	gameData.smoke.objects [i] = CreateSmoke (&objP->position.vPos, &dir, 
-															objP->nSegment, 1, -nParts, -PARTICLE_SIZE (nSize, 2.0f), 
-															-1, 3, STATIC_SMOKE_PART_LIFE * nLife, nDrift, 2, i, NULL, 1);
-	SetSmokeBrightness (gameData.smoke.objects [i], nBrightness);
+															objP->nSegment, 1, -objP->cType.smokeInfo.nParts, 
+															-PARTICLE_SIZE (objP->cType.smokeInfo.nSize [gameOpts->render.smoke.bDisperse], 2.0f), 
+															-1, 3, STATIC_SMOKE_PART_LIFE * objP->cType.smokeInfo.nLife, 
+															objP->cType.smokeInfo.nDrift, 2, i, NULL, 1);
+	SetSmokeBrightness (gameData.smoke.objects [i], objP->cType.smokeInfo.nBrightness);
 	}
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
-i = (trigP && trigP->value) ? trigP->value * 3 : 15;
-trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
-i += ((trigP && trigP->value) ? trigP->value * 3 : 15) / 2;
+i = objP->cType.smokeInfo.nDrift >> 4;
+i += objP->cType.smokeInfo.nSize [0] >> 4;
 i /= 2;
 j = i - i / 2;
 i /= 2;

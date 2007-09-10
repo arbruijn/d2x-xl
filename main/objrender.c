@@ -1680,7 +1680,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
-	int			bStencil, i;
+	int			bStencil, bDrawArrays, i;
 	float			a1, a2;
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
 	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
@@ -1761,12 +1761,20 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 #endif
 		}
 	else {
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++) {
-			glTexCoord2fv ((GLfloat *) (uvlCorona + i));
-			glVertex3fv ((GLfloat *) (vCorona + i));
+		if (bDrawArrays = OglEnableClientStates (1, 0)) {
+			glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlCorona);
+			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
+			glDrawArrays (GL_QUADS, 0, 4);
+			OglDisableClientStates (1, 0);
 			}
-		glEnd ();
+		else {
+			glBegin (GL_QUADS);
+			for (i = 0; i < 4; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlCorona + i));
+				glVertex3fv ((GLfloat *) (vCorona + i));
+				}
+			glEnd ();
+			}
 #if 0
 		glLineWidth (2);
 		glColor4d (1,1,1,1);
@@ -2080,7 +2088,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 
 			static fVector vEye = {{0, 0, 0}};
 
-			static tRgbaColorf	trailColor = {0,0,0,0.5f};
+			static tRgbaColorf	trailColor = {0,0,0,0.33f};
 			static tUVLf			uvlTrail [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};;
 			
 		if (r >= 3.0f)

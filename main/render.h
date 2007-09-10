@@ -182,6 +182,7 @@ typedef struct tRISphere {
 
 typedef struct tRILightning {
 	tLightning			*lightning;
+	short					nDepth;
 } tRILightning;
 
 typedef struct tRenderItem {
@@ -224,7 +225,7 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoor
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, double fBrightness);
-int RIAddLightnings (tLightning *lightnings, short nLightnings);
+int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
 void RenderItems (void);
 
 //------------------------------------------------------------------------------

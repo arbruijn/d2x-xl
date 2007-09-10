@@ -8,10 +8,37 @@
 #define	SHOW_SMOKE	\
 			(!gameStates.app.bNostalgia && EGI_FLAG (bUseSmoke, 1, 1, 0))
 
-#define	SHOW_FLASHES	\
-			(!gameStates.app.bNostalgia && EGI_FLAG (bUseFlashes, 1, 1, 0))
-
 #define MAX_SHRAPNEL_LIFE	(2 * F1_0)
+
+#define SHIP_MAX_PARTS				50
+#define PLR_PART_LIFE				-4000
+#define PLR_PART_SPEED				40
+
+#define BOT_MAX_PARTS				250
+#define BOT_PART_LIFE				-6000
+#define BOT_PART_SPEED				300
+
+#define MSL_MAX_PARTS				500
+#define MSL_PART_LIFE				-3000
+#define MSL_PART_SPEED				30
+
+#define LASER_MAX_PARTS				250
+#define LASER_PART_LIFE				-500
+#define LASER_PART_SPEED			0
+
+#define BOMB_MAX_PARTS				250
+#define BOMB_PART_LIFE				-16000
+#define BOMB_PART_SPEED				200
+
+#define DEBRIS_MAX_PARTS			150
+#define DEBRIS_PART_LIFE			-2000
+#define DEBRIS_PART_SPEED			30
+
+#define STATIC_SMOKE_MAX_PARTS	500
+#define STATIC_SMOKE_PART_LIFE	-3200
+#define STATIC_SMOKE_PART_SPEED	1000
+
+#define REACTOR_MAX_PARTS			250
 
 //------------------------------------------------------------------------------
 

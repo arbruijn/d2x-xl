@@ -209,6 +209,7 @@ typedef struct tExtraGameInfo {
 	char		bDarkness;
 	char		bHeadLights;
 	char		bPowerupLights;
+	char		bBrightObjects;
 	char		bTeamDoors;
 	char		bEnableCheats;
 	char		bTargetIndicators;

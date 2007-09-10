@@ -81,6 +81,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "tracker.h"
 #include "particles.h"
+#include "lightning.h"
 #include "vers_id.h"
 #include "input.h"
 #include "collide.h"
@@ -150,6 +151,11 @@ static struct {
 	int	nLMapRange;
 	int	nGunColor;
 } lightOpts;
+
+static struct {
+	int	nUse;
+	int	nQuality;
+} lightningOpts;
 
 static struct {
 	int	nSpeedboost;
@@ -2496,8 +2502,8 @@ do {
 
 void SmokeOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	tMenuItem * m;
-	int				i, v;
+	tMenuItem	*m;
+	int			i, v;
 
 m = menus + smokeOpts.nUse;
 v = m->value;
@@ -2907,7 +2913,7 @@ void LightingOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0;
 	int	opt;
-	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat;
+	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects;
 #if 0
 	int checks;
 #endif
@@ -2993,6 +2999,12 @@ do {
 		}
 	ADD_CHECK (opt, TXT_FLICKERLIGHTS, extraGameInfo [0].bFlickerLights, KEY_F, HTX_FLICKERLIGHTS);
 	optFlickerLights = opt++;
+	if (gameOpts->render.bHiresModels) {
+		ADD_CHECK (opt, TXT_BRIGHT_OBJECTS, extraGameInfo [0].bBrightObjects, KEY_B, HTX_BRIGHT_OBJECTS);
+		optBrightObjects = opt++;
+		}
+	else
+		optBrightObjects = -1;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightingOptionsCallback, &choice);
@@ -3025,6 +3037,7 @@ do {
 			extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
 		}
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
+	GET_VAL (extraGameInfo [0].bBrightObjects, optBrightObjects);
 	} while (i == -2);
 if (optColorSat >= 0) {
 	for (i = 0; i < 3; i++)
@@ -3033,6 +3046,93 @@ if (optColorSat >= 0) {
 			break;
 			}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+static	char *pszLightningQuality [2];
+
+void LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+m = menus + lightningOpts.nUse;
+v = m->value;
+if (v != extraGameInfo [0].bUseLightnings) {
+	if (!(extraGameInfo [0].bUseLightnings = v))
+		DestroyAllLightnings ();
+	*key = -2;
+	return;
+	}
+if (extraGameInfo [0].bUseLightnings) {
+	m = menus + lightningOpts.nQuality;
+	v = m->value;
+	if (gameOpts->render.lightnings.nQuality != v) {
+		gameOpts->render.lightnings.nQuality = v;
+		sprintf (m->text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
+		m->rebuild = 1;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LightningOptionsMenu ()
+{
+	tMenuItem m [10];
+	int	i, choice = 0;
+	int	opt;
+	int	optDamage, optExplosions, optStatic, optOmega, optCoronas;
+	char	szQuality [50];
+
+	pszLightningQuality [0] = TXT_LIGHTNING_JAGGY;
+	pszLightningQuality [1] = TXT_LIGHTNING_SMOOTH;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	lightningOpts.nQuality = 
+	optDamage = 
+	optExplosions = 
+	optStatic = 
+	optOmega = 
+	optCoronas = -1;
+
+	ADD_CHECK (opt, TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
+	lightningOpts.nUse = opt++;
+	if (extraGameInfo [0].bUseLightnings) {
+		sprintf (szQuality + 1, TXT_LIGHTNING_QUALITY, pszLightningQuality [gameOpts->render.lightnings.nQuality]);
+		*szQuality = *(TXT_LIGHTNING_QUALITY - 1);
+		ADD_SLIDER (opt, szQuality + 1, gameOpts->render.color.nLightMapRange, 0, 1, KEY_R, HTX_ADVRND_LMAPRANGE);
+		lightningOpts.nQuality = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_CORONAS, gameOpts->render.lightnings.bCoronas, KEY_P, HTX_LIGHTNING_CORONAS);
+		optCoronas = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_DAMAGE, gameOpts->render.lightnings.bDamage, KEY_D, HTX_LIGHTNING_DAMAGE);
+		optDamage = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_EXPLOSIONS, gameOpts->render.lightnings.bExplosions, KEY_E, HTX_LIGHTNING_EXPLOSIONS);
+		optExplosions = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_S, HTX_LIGHTNING_STATIC);
+		optStatic = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
+		optOmega = opt++;
+		}
+	Assert (opt <= sizeofa (m));
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_LIGHTNING_MENUTITLE, opt, m, &LightningOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	if (extraGameInfo [0].bUseLightnings) {
+		GET_VAL (gameOpts->render.lightnings.bCoronas, optCoronas);
+		GET_VAL (gameOpts->render.lightnings.bDamage, optDamage);
+		GET_VAL (gameOpts->render.lightnings.bExplosions, optExplosions);
+		GET_VAL (gameOpts->render.lightnings.bStatic, optStatic);
+		GET_VAL (gameOpts->render.lightnings.bOmega, optOmega);
+		}
+	} while (i == -2);
 }
 
 //------------------------------------------------------------------------------
@@ -3139,7 +3239,7 @@ void RenderOptionsMenu ()
 	int	h, i, choice = 0;
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
-			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts;
+			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts;
 	int	optUseGamma, optColoredWalls, optDepthSort;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
@@ -3221,6 +3321,8 @@ do {
 		optLightingOpts = opt++;
 		ADD_MENU (opt, TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optSmokeOpts = opt++;
+		ADD_MENU (opt, TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
+		optLightningOpts = opt++;
 		if (!(gameStates.app.bEnableShadows && gameStates.render.bHaveStencilBuffer))
 			optShadowOpts = -1;
 		else {
@@ -3278,6 +3380,8 @@ do {
 				LightingOptionsMenu ();
 			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
 				SmokeOptionsMenu ();
+			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
+				LightningOptionsMenu ();
 			else if ((optShadowOpts >= 0) && (i == optShadowOpts))
 				ShadowOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))

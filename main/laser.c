@@ -353,7 +353,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 void DestroyOmegaLightnings (void)
 {
 if (gameData.laser.nLightning >= 0) {
-	DestroyLightnings (gameData.laser.nLightning, NULL);
+	DestroyLightnings (gameData.laser.nLightning, NULL, 0);
 	gameData.laser.nLightning = -1;
 	}
 }
@@ -395,8 +395,12 @@ return 1;
 
 int CreateOmegaLightnings (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
 {
+if (!SHOW_LIGHTNINGS)
+	return 0;
+if (!gameOpts->render.lightnings.bOmega)
+	return 0;
 if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
-	tRgbaColorf	color = {0.9f, 0.95f, 1.0f, 0.6f};
+	tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
 	vmsVector	*vEnd, vFiringPos;
 	int			bSpectate = SPECTATOR (parentObjP);
 	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &parentObjP->position;
@@ -408,7 +412,7 @@ if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
 	vEnd = targetObjP ? &targetObjP->position.vPos : vTargetPos;
 	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, 
 																-(bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment) - 1, 
-																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 0, 0, 3, 1, 1, &color);
+																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 10, 1, 3, 1, 1, &color);
 	}
 return (gameData.laser.nLightning >= 0);
 }
@@ -583,6 +587,10 @@ void DoOmegaStuff (tObject *parentObjP, vmsVector *vFiringPos, tObject *weaponOb
 	int			bSpectate = SPECTATOR (parentObjP);
 	static		int nDelay = 0;
 
+#if 1
+if (gameStates.gameplay.bMineMineCheat && (gameData.laser.xOmegaCharge < MAX_OMEGA_CHARGE))
+	gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE - 1;
+#endif
 if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	//	If charge >= min, or (some charge and zero energy), allow to fire.
 	if ((gameData.laser.xOmegaCharge < MIN_OMEGA_CHARGE) &&

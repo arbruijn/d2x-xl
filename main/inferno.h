@@ -202,12 +202,12 @@ typedef struct tSmokeOptions {
 //------------------------------------------------------------------------------
 
 typedef struct tLightningOptions {
-	int bRobots;
-	int bMissiles;
+	int nQuality;
+	int bCoronas;
+	int bDamage;
 	int bExplosions;
 	int bStatic;
-	int bCoronas;
-	int nQuality;
+	int bOmega;
 } tLightningOptions;
 
 //------------------------------------------------------------------------------
@@ -263,6 +263,7 @@ typedef struct tRenderOptions {
 	int nCoronaIntensity;
 	int bUseShaders;
 	int bHiresModels;
+	int bBrightObjects;
 	int bRobotShields;
 	int bAutoTransparency;
 	int nMathFormat;
@@ -2290,43 +2291,46 @@ typedef struct tLightning;
 
 typedef struct tLightningNode {
 	struct tLightning	*pChild;
-	vmsVector		vPos;
-	vmsVector		vNewPos;
-	vmsVector		vOffs;
-	vmsVector		vBase;
-	vmsVector		vDelta [2];
+	vmsVector			vPos;
+	vmsVector			vNewPos;
+	vmsVector			vOffs;
+	vmsVector			vBase;
+	vmsVector			vDelta [2];
 } tLightningNode;
 
 typedef struct tLightning {
-	vmsVector		vPos;
-	vmsVector		vEnd;
-	vmsVector		vDir;
-	tLightningNode	*pNodes;
-	tRgbaColorf		color;
-	int				nIndex;
-	int				nNext;
-	int				nLife;
-	int				nTTL;
-	int				nDelay;
-	int				nLength;
-	int				nOffset;
-	int				nAmplitude;
-	short				nSmoothe;
-	short				nSteps;
-	short				iStep;
-	short				nNodeC;
-	short				nChildC;
-	short				nDepth;
-	short				nObject;
-	short				nSegment;
-	char				bClamp;
-	char				bRandom;
+	struct tLightning *pParent;
+	vmsVector			vPos;
+	vmsVector			vEnd;
+	vmsVector			vDir;
+	tLightningNode		*pNodes;
+	tRgbaColorf			color;
+	int					nIndex;
+	int					nNext;
+	int					nLife;
+	int					nTTL;
+	int					nDelay;
+	int					nLength;
+	int					nOffset;
+	int					nAmplitude;
+	short					nSmoothe;
+	short					nSteps;
+	short					iStep;
+	short					nNodeC;
+	short					nChildC;
+	short					nDepth;
+	short					nObject;
+	short					nSegment;
+	short					nNode;
+	char					bClamp;
+	char					bRandom;
 } tLightning;
 
 typedef struct tLightningBundle {
 	int				nNext;
 	int				nLightnings;
 	tLightning		*pl;
+	int				bDestroy;
 } tLightningBundle;
 
 typedef struct tLightningLight {
@@ -2346,6 +2350,7 @@ typedef struct tLightningData {
 	int					iFree;
 	int					iUsed;
 	int					nNext;
+	int					bDestroy;
 	int					nFirstLight;
 } tLightningData;
 

@@ -1528,6 +1528,7 @@ extraGameInfo [1].bRotateLevels = egi1Save.bRotateLevels;
 extraGameInfo [1].bDarkness = egi1Save.bDarkness;
 extraGameInfo [1].bHeadLights = egi1Save.bHeadLights;
 extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
+extraGameInfo [1].bBrightObjects = egi1Save.bBrightObjects;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
 extraGameInfo [1].nCoopPenalty = egi1Save.nCoopPenalty;
 extraGameInfo [1].bRadarEnabled = ((netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0);
@@ -4512,6 +4513,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bShockwaves = 0;
 	extraGameInfo [i].bCompetition = 0;
 	extraGameInfo [i].bPowerupLights = i;
+	extraGameInfo [i].bBrightObjects = i;
 	extraGameInfo [i].bCheckUDPPort = 1;
 	extraGameInfo [i].bSmokeGrenades = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
@@ -4613,6 +4615,9 @@ else {
 	LogErr ("   bFluidPhysics: %d\n", extraGameInfo [1].bFluidPhysics);
 	LogErr ("   nWeaponDropMode: %d\n", extraGameInfo [1].nWeaponDropMode);
 	LogErr ("   bDarkness: %d\n", extraGameInfo [1].bDarkness);
+	LogErr ("   bHeadLights: %d\n", extraGameInfo [1].bHeadLights);
+	LogErr ("   bPowerupLights: %d\n", extraGameInfo [1].bPowerupLights);
+	LogErr ("   bBrightObjects: %d\n", extraGameInfo [1].bBrightObjects);
 	LogErr ("   bTeamDoors: %d\n", extraGameInfo [1].bTeamDoors);
 	LogErr ("   bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	LogErr ("   bRotateLevels: %d\n", extraGameInfo [1].bRotateLevels);

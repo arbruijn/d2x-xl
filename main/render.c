@@ -3787,6 +3787,9 @@ else
 		RenderSmoke ();
 		}
 	}
+RenderItems ();
+if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
+	RenderRadar ();
 gameStates.render.nShadowPass = 0;
 if (viewInfo.bUsePlayerHeadAngles) 
 	Draw3DReticle (nEyeOffset);
@@ -4627,9 +4630,6 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		if (gameOpts->render.automap.bSmoke)
 			RenderSmoke ();
 		}
-	RenderItems ();
-	if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
-		RenderRadar ();
 	}
 }
 
@@ -4738,7 +4738,7 @@ ph = renderItems.pItemList + --renderItems.nFreeItems;
 ph->nType = nType;
 ph->z = z;
 memcpy (&ph->item, itemData, itemSize);
-for (pi = NULL, pj = *pd; pj && (pj->z > z); pj = pj->pNextItem)
+for (pi = NULL, pj = *pd; pj && ((pj->z > z) || ((pj->z == z) && (pj->nType < nType))); pj = pj->pNextItem)
 	pi = pj;
 if (pi) {
 	ph->pNextItem = pi->pNextItem;
@@ -4838,7 +4838,7 @@ return AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z);
 
 //------------------------------------------------------------------------------
 
-int RIAddLightnings (tLightning *lightnings, short nLightnings)
+int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth)
 {
 	tRILightning item;
 	vmsVector vPos;	
@@ -4846,6 +4846,7 @@ int RIAddLightnings (tLightning *lightnings, short nLightnings)
 
 for (; nLightnings; nLightnings--, lightnings++) {
 	item.lightning = lightnings;
+	item.nDepth = nDepth;
 	G3TransformPoint (&vPos, &lightnings->vPos, 0);
 	z = vPos.p.z;
 	G3TransformPoint (&vPos, &lightnings->vEnd, 0);
@@ -4950,8 +4951,8 @@ void RIRenderPoly (tRIPoly *item)
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
-#if 1
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
+#if 0
+if (LoadRenderItemImage (item->bmP, item->bColor, 0, item->nWrap, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
@@ -5085,7 +5086,7 @@ renderItems.bTextured = 1;
 void RIRenderLightning (tRILightning *item)
 {
 RISetClientState (0, 0, 0);
-RenderLightning (item->lightning, 1);
+RenderLightning (item->lightning, 1, item->nDepth, 0);
 renderItems.bTextured = 0;
 gameData.smoke.nLastType = -1;
 }

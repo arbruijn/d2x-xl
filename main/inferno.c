@@ -1249,6 +1249,8 @@ if (i) {
 		gameOptions [1].render.nQuality = 0;
 	gameOptions [1].render.bCoronas = 0;
 	gameOptions [1].render.bObjectCoronas = 0;
+	gameOptions [1].render.bRobotShields = 0;
+	gameOptions [1].render.bBrightObjects = 0;
 	gameOptions [1].render.nCoronaIntensity = 2;
 	gameOptions [1].render.bExplBlast = 1;
 	gameOptions [1].render.nExplShrapnels = 1;
@@ -1325,8 +1327,9 @@ if (i) {
 	gameOptions [1].render.smoke.bDisperse = 0;
 	gameOptions [1].render.smoke.bSort = 0;
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
-	gameOptions [1].render.lightnings.bRobots = 0;
-	gameOptions [1].render.lightnings.bMissiles = 0;
+	gameOptions [1].render.lightnings.bOmega = 0;
+	gameOptions [1].render.lightnings.bDamage = 0;
+	gameOptions [1].render.lightnings.bExplosions = 0;
 	gameOptions [1].render.lightnings.bStatic = 0;
 	gameOptions [1].render.lightnings.bCoronas = 0;
 	gameOptions [1].render.lightnings.nQuality = 0;
@@ -1369,6 +1372,8 @@ else {
 	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.bCoronas = 0;
 	gameOptions [0].render.bObjectCoronas = 0;
+	gameOptions [0].render.bRobotShields = 0;
+	gameOptions [0].render.bBrightObjects = 0;
 	gameOptions [0].render.nCoronaIntensity = 2;
 	gameOptions [0].render.bExplBlast = 1;
 	gameOptions [0].render.nExplShrapnels = 1;
@@ -1443,8 +1448,9 @@ else {
 	gameOptions [0].render.smoke.bDisperse = 0;
 	gameOptions [0].render.smoke.bSort = 0;
 	gameOptions [0].render.smoke.bDecreaseLag = 1;
-	gameOptions [0].render.lightnings.bRobots = 1;
-	gameOptions [0].render.lightnings.bMissiles = 1;
+	gameOptions [1].render.lightnings.bOmega = 1;
+	gameOptions [0].render.lightnings.bDamage = 1;
+	gameOptions [0].render.lightnings.bExplosions = 1;
 	gameOptions [0].render.lightnings.bStatic = 1;
 	gameOptions [0].render.lightnings.bCoronas = 1;
 	gameOptions [0].render.lightnings.nQuality = 1;

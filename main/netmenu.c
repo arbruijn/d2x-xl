@@ -2491,10 +2491,13 @@ if (!*AXI.szGameName) {
 else 
 #endif
 	{
-	if (AXI.bShadows || AXI.bUseSmoke) {
+	if (AXI.bShadows || AXI.bUseSmoke || AXI.bBrightObjects || (!AXI.bCompetition && AXI.bUseLightnings)) {
 		INITFLAGS ("Graphics Fx: "); 
 		ADDFLAG (AXI.bShadows, "Shadows");
 		ADDFLAG (AXI.bUseSmoke, "Smoke");
+		if (!AXI.bCompetition)
+			ADDFLAG (AXI.bUseLightnings, "Lightnings");
+		ADDFLAG (AXI.bBrightObjects, "Bright Objects");
 		}
 	else
 		strcpy (mTexts [opt], "Graphics Fx: None");

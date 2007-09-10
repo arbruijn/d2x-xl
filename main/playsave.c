@@ -310,6 +310,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bTracers, 0, 0);
 		RP (extraGameInfo [i].bUseCameras, 0, 0);
 		RP (extraGameInfo [i].bUseSmoke, 0, 0);
+		RP (extraGameInfo [i].bUseLightnings, 0, 0);
 		RP (extraGameInfo [i].bShockwaves, 0, 0);
 		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
 		RP (extraGameInfo [i].bWiggle, 0, 0);
@@ -389,14 +390,16 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bCoronas, i, 0);
 		RP (gameOptions [i].render.bObjectCoronas, i, 0);
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
+		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
 		RP (gameOptions [i].render.bDepthSort, i, 0);
 
-		RP (gameOptions [i].render.lightnings.bRobots, i, 0);
-		RP (gameOptions [i].render.lightnings.bMissiles, i, 0);
-		RP (gameOptions [i].render.lightnings.bStatic, i, 0);
 		RP (gameOptions [i].render.lightnings.bCoronas, i, 0);
+		RP (gameOptions [i].render.lightnings.bDamage, i, 0);
+		RP (gameOptions [i].render.lightnings.bExplosions, i, 0);
+		RP (gameOptions [i].render.lightnings.bOmega, i, 0);
+		RP (gameOptions [i].render.lightnings.bStatic, i, 0);
 		RP (gameOptions [i].render.lightnings.nQuality, i, 0);
 
 		RP (gameOptions [i].render.cameras.bFitToWall, i, 0);
@@ -455,7 +458,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.smoke.bStatic, i, 0);
 		RP (gameOptions [i].render.smoke.bSyncSizes, i, 0);
 		RP (gameOptions [i].render.smoke.bSort, i, 0);
-		RP (gameOptions [i].render.smoke.nAlpha, i, 0);
 
 		RP (gameOptions [i].render.weaponIcons.alpha, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bEquipment, i, 0);
@@ -771,6 +773,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bTracers", "1"},
 	{"extraGameInfo[0].bUseCameras", "1"},
 	{"extraGameInfo[0].bUseSmoke", "1"},
+	{"extraGameInfo[0].bUseLightnings", "1"},
 	{"extraGameInfo[0].bShockwaves", "0"},
 	{"extraGameInfo[0].bUseHitAngles", "0"},
 	{"extraGameInfo[0].bWiggle", "1"},
@@ -918,6 +921,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bCoronas", "1"},
 	{"gameOptions[0].render.bObjectCoronas", "1"},
 	{"gameOptions[0].render.nCoronaIntensity", "1"},
+	{"gameOptions[0].render.bBrightObjects", "0"},
 	{"gameOptions[0].render.bRobotShields", "0"},
 	{"gameOptions[0].render.bTransparentEffects", "1"},
 	{"gameOptions[0].render.bDepthSort", "1"},
@@ -950,8 +954,9 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.bWalls", "1"},
 	{"gameOptions[0].render.color.bUseLightMaps", "0"},
 	{"gameOptions[0].render.color.nLightMapRange", "0"},
-	{"gameOptions[0].render.lightnings.bRobots", "1"},
-	{"gameOptions[0].render.lightnings.bMissiles", "1"},
+	{"gameOptions[0].render.lightnings.bDamage", "1"},
+	{"gameOptions[0].render.lightnings.bExplosions", "1"},
+	{"gameOptions[0].render.lightnings.bOmega", "1"},
 	{"gameOptions[0].render.lightnings.bStatic", "1"},
 	{"gameOptions[0].render.lightnings.bCoronas", "1"},
 	{"gameOptions[0].render.lightnings.nQuality", "1"},
@@ -976,7 +981,6 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.smoke.bStatic", "1"},
 	{"gameOptions[0].render.smoke.bSyncSizes", "1"},
 	{"gameOptions[0].render.smoke.bSort", "1"},
-	{"gameOptions[0].render.smoke.nAlpha", "0"},
 	{"gameOptions[0].render.weaponIcons.alpha", "3"},
 	{"gameOptions[0].render.weaponIcons.bEquipment", "1"},
 	{"gameOptions[0].render.weaponIcons.bShowAmmo", "1"},

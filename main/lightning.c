@@ -82,6 +82,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #define RENDER_TARGET_LIGHTNING 0
+#define RENDER_LIGHTNING_CORONA 1
+
+void CreateLightningPath (tLightning *pl, int bSeed);
 
 //------------------------------------------------------------------------------
 
@@ -95,20 +98,14 @@ return (double) rand () / (double) RAND_MAX;
 void InitLightnings (void)
 {
 	int i, j;
-#if OGL_VERTEX_BUFFERS
-	GLdouble	pl = colorBuffer;
 
-for (i = 0; i < VERT_BUFFER_SIZE; i++, pl++) {
-	*pl++ = 1.0;	
-	*pl++ = 1.0;	
-	*pl++ = 1.0;	
-	}
-#endif
 for (i = 0, j = 1; j < MAX_LIGHTNINGS; i++, j++) 
 	gameData.lightnings.buffer [i].nNext = j;
 gameData.lightnings.buffer [i].nNext = -1;
 gameData.lightnings.iFree = 0;
 gameData.lightnings.iUsed = -1;
+gameData.lightnings.bDestroy = 0;
+memset (gameData.lightnings.objects, 0xff, MAX_OBJECTS * sizeof (*gameData.lightnings.objects));
 }
 
 //------------------------------------------------------------------------------
@@ -125,13 +122,31 @@ return vRand;
 
 //------------------------------------------------------------------------------
 
+int ComputeChildEnd (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDir, vmsVector *vParentDir, int nLength)
+{
+	int	nDot;
+	int	i = 0;
+
+//VmVecNormalize (vDir);
+nLength = 3 * nLength / 4 + (int) (f_rand () * nLength / 4);
+do {
+	VmRandomVector (vDir);
+	VmVecNormalize (vDir);
+	nDot = VmVecDot (vDir, vParentDir);
+	} while ((nDot > 9 * F1_0 / 10) || (nDot < 3 * F1_0 / 4));
+VmVecScaleAdd (vEnd, vPos, vDir, nLength);
+return nLength;
+}
+
+//------------------------------------------------------------------------------
+
 void SetupLightning (tLightning *pl, int bInit)
 {
+	tLightning		*pp;
 	tLightningNode	*pln;
 	vmsVector		vPos, vDir, vDelta [2], v;
 	int				i;
 
-pl->iStep = 0;
 if (pl->bRandom) {
 	vDir.p.x = F1_0 / 4 - d_rand ();
 	vDir.p.y = F1_0 / 4 - d_rand ();
@@ -142,8 +157,8 @@ if (pl->bRandom) {
 else {
 	VmVecSub (&vDir, &pl->vEnd, &pl->vPos);
 	VmVecNormalize (&vDir);
-	pl->vDir = vDir;
 	}
+pl->vDir = vDir;
 if (pl->nOffset) {
 	i = pl->nOffset / 2 + (int) f_rand () * pl->nOffset / 2;
 	VmVecScaleInc (&pl->vPos, &vDir, i);
@@ -158,6 +173,14 @@ VmVecAdd (&v, &vPos, vDelta + 1);
 VmVecNormal (vDelta, &vPos, &pl->vEnd, &v);
 VmVecScaleFrac (&vDir, pl->nLength, pl->nNodeC * F1_0);
 pl->nNodeC = abs (pl->nNodeC);
+pl->iStep = 0;
+#if 0
+pl->nSteps = -abs (pl->nSteps);
+#endif
+if (pp = pl->pParent) {
+	pl->nLength = ComputeChildEnd (&pl->vPos, &pl->vEnd, &pl->vDir, &pp->vDir, pp->nLength / pp->nChildC * 3 / 2);
+	VmVecCopyScale (&vDir, &pl->vDir, pl->nLength / (pl->nNodeC - 1));
+	}
 for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++) {
 	pln->vBase =
 	pln->vPos = vPos;	
@@ -176,11 +199,12 @@ for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++) {
 tLightning *AllocLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, short nObject, 
 									 int nLife, int nDelay, int nLength, int nAmplitude, int nOffset,
 									 short nNodeC, short nChildC, short nDepth, short nSteps, 
-									 short nSmoothe, char bClamp, tRgbaColorf *colorP)
+									 short nSmoothe, char bClamp, tRgbaColorf *colorP, 
+									 tLightning *pParent, short nNode)
 {
 	tLightning		*pfRoot, *pl;
 	tLightningNode	*pln;
-	int				h, i, j, bRandom = (vEnd == NULL);
+	int				h, i, bRandom = (vEnd == NULL);
 
 if (!(nLife && nLength && (nNodeC > 4)))
 	return NULL;
@@ -197,7 +221,7 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 		D2_FREE (pfRoot);
 		return NULL;
 		}
-	pl->nIndex = -1;
+	pl->nIndex = gameData.lightnings.iFree;
 	if (nObject < 0) {
 		pl->nObject = -1;
 		pl->nSegment = -nObject - 1;
@@ -206,14 +230,16 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 		pl->nObject = nObject;
 		pl->nSegment = OBJECTS [nObject].nSegment;
 		}
+	pl->pParent = pParent;
+	pl->nNode = nNode;
 	pl->nNodeC = nNodeC;
 	pl->nChildC = nChildC;
 	pl->nDepth = nDepth;
 	pl->nLife = nLife;
 	h = abs (nLife);
-	pl->nTTL = (bRandom && !nDepth) ? 3 * h / 4 + (int) (f_rand () * h / 2) : h;
+	pl->nTTL = (bRandom) ? 3 * h / 4 + (int) (f_rand () * h / 2) : h;
 	pl->nDelay = abs (nDelay);
-	pl->nLength = (bRandom && !nDepth) ? 3 * nLength / 4 + (int) (f_rand () * nLength / 2) : nLength;
+	pl->nLength = (bRandom) ? 3 * nLength / 4 + (int) (f_rand () * nLength / 2) : nLength;
 	pl->nAmplitude = nAmplitude;
 	pl->nOffset = nOffset;
 	pl->nSteps = nSteps;
@@ -226,27 +252,19 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 		pl->vEnd = *vEnd;
 	SetupLightning (pl, 1);
 	if (nDepth) {
-		vmsVector	vDir, vSegmentDir;
-		int			l;
+		tLightningNode *plh;
+		vmsVector		vEnd;
+		int				l, nNode;
+		double			nStep, j;
 
-		vEnd = &pl->vEnd;
-		h = pl->nNodeC / nChildC;
-		nLength /= h;
-		j = pl->nNodeC - h;
-		h = j / nChildC;
-		for (j = pl->nNodeC + h / 2, pln = pl->pNodes + h / 2; j;  j--, pln++) {
-			if (rand () % h)
-				continue;
-			VmVecSub (&vSegmentDir, &(pln + 1)->vPos, &pln->vPos);
-			VmVecNormalize (&vSegmentDir);
-			do {
-				VmRandomVector (&vDir);
-				} while (abs (VmVecDot (&vDir, &vSegmentDir)) > 9 * F1_0 / 10);
-			VmVecScaleInc (&vDir, &vSegmentDir, F1_0 * 2);
-			l = 3 * nLength / 4 + (int) (f_rand () * nLength / 2);
-			VmVecScale (&vDir, l * F1_0);
-			pln->pChild = AllocLightning (1, &pln->vPos, &vDir, -1, pl->nLife, 0, l, nAmplitude / 5, 0,
-													2 * (pl->nNodeC / nChildC), 0, nDepth - 1, nSteps, nSmoothe, bClamp, colorP);
+		nStep = (double) (pl->nNodeC - pl->nNodeC / nChildC) / (double) nChildC;
+		l = nLength / nChildC;
+		plh = pl->pNodes;
+		for (h = pl->nNodeC, j = nStep / 2; j < h; j += nStep) {
+			nNode = (int) j + 1 - rand () % 3;
+			pln = plh + nNode;
+			pln->pChild = AllocLightning (1, &pln->vPos, &vEnd, -1, pl->nLife, 0, l, nAmplitude / nChildC * 2, 0,
+													pl->nNodeC / nChildC, nChildC / 5, nDepth - 1, nSteps / 2, nSmoothe, bClamp, colorP, pl, nNode);
 			}
 		}
 	}
@@ -260,7 +278,7 @@ int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, short nO
 							short nNodeC, short nChildC, short nDepth, short nSteps, 
 							short nSmoothe, char bClamp, tRgbaColorf *colorP)
 {
-if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
+if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		tLightning			*pl;
 		int					n;
@@ -271,16 +289,16 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 		return -1;
 	srand (gameStates.app.nSDLTicks);
 	if (!(pl = AllocLightning (nLightnings, vPos, vEnd, nObject, nLife, nDelay, nLength, nAmplitude, 
-										nOffset, nNodeC, nChildC, nDepth, nSteps, nSmoothe, bClamp, colorP)))
+										nOffset, nNodeC, nChildC, nDepth, nSteps, nSmoothe, bClamp, colorP, NULL, -1)))
 		return -1;
 	n = gameData.lightnings.iFree;
-	pl->nIndex = n;
 	plb = gameData.lightnings.buffer + n;
 	gameData.lightnings.iFree = plb->nNext;
 	plb->nNext = gameData.lightnings.iUsed;
 	gameData.lightnings.iUsed = n;
 	plb->pl = pl;
 	plb->nLightnings = nLightnings;
+	plb->bDestroy = 0;
 	}
 return gameData.lightnings.iUsed;
 }
@@ -330,7 +348,7 @@ if (pl && pl->pNodes) {
 
 //------------------------------------------------------------------------------
 
-void DestroyLightnings (int iLightning, tLightning *pl)
+void DestroyLightnings (int iLightning, tLightning *pl, int bDestroy)
 {
 	tLightningBundle	*plh, *plb = NULL;
 	int					i;
@@ -341,6 +359,10 @@ else {
 	if (!IsUsedLightning (iLightning))
 		return;
 	plb = gameData.lightnings.buffer + iLightning;
+	if (!bDestroy) {
+		plb->bDestroy = 1;
+		return;
+		}
 	pl = plb->pl;
 	i = plb->nNext;
 	if (gameData.lightnings.iUsed == iLightning)
@@ -366,11 +388,15 @@ int DestroyAllLightnings (void)
 {
 	int	i, j;
 
-for (i = gameData.lightnings.iUsed; i >= 0; i = j) {
-	j = gameData.lightnings.buffer [i].nNext;
-	DestroyLightnings (-i - 1, NULL);
+if (gameData.lightnings.bDestroy >= 0)
+	gameData.lightnings.bDestroy = 1;
+else {
+	for (i = gameData.lightnings.iUsed; i >= 0; i = j) {
+		j = gameData.lightnings.buffer [i].nNext;
+		DestroyLightnings (-i - 1, NULL, 1);
+		}
+	InitLightnings ();
 	}
-InitLightnings ();
 return 1;
 }
 
@@ -383,7 +409,7 @@ int ComputeAttractor (vmsVector *vAttract, vmsVector *vDest, vmsVector *vPos, in
 VmVecSub (vAttract, vDest, vPos);
 nDist = VmVecMag (vAttract) / i;
 if (!nMinDist)
-	VmVecScale (vAttract, F1_0 / i);	// scale attractor with inverse of remaining distance
+	VmVecScale (vAttract, F1_0 / i * 2);	// scale attractor with inverse of remaining distance
 else {
 	if (nDist < nMinDist)
 		nDist = nMinDist;
@@ -394,10 +420,12 @@ return nDist;
 
 //------------------------------------------------------------------------------
 
-vmsVector *CreateLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract)
+vmsVector *CreateLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, int nDist)
 {
 	int nDot;
 
+if (nDist < F1_0 / 16)
+	return VmRandomVector (vOffs);
 do {
 	VmRandomVector (vOffs);
 	nDot = VmVecDot (vAttract, vOffs);
@@ -464,14 +492,15 @@ vmsVector ComputeLightningNode (tLightningNode *pln, vmsVector *vPos, vmsVector 
 	vmsVector	vAttract, vOffs;
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
-CreateLightningPathPoint (&vOffs, &vAttract);
+CreateLightningPathPoint (&vOffs, &vAttract, nDist);
 if (vPrevOffs)
 	SmootheLightningOffset (&vOffs, vPrevOffs, nDist, nSmoothe);
 else if (pln->vOffs.p.x || pln->vOffs.p.z || pln->vOffs.p.z) {
 	VmVecScaleInc (&vOffs, &pln->vOffs, 2 * F1_0);
 	VmVecScale (&vOffs, F1_0 / 3);
 	}
-AttractLightningPathPoint (&vOffs, &vAttract, vPos, nDist, i, 0);
+if (nDist > F1_0 / 16)
+	AttractLightningPathPoint (&vOffs, &vAttract, vPos, nDist, i, 0);
 if (bClamp)
 	ClampLightningPathPoint (vPos, vBase, nAmplitude);
 pln->vNewPos = *vPos;
@@ -634,8 +663,10 @@ if (!gameOpts->render.lightnings.nQuality) {
 int UpdateLightning (tLightning *pl, int nLightnings)
 {
 	tLightningNode	*pln;
-	int				h, i, j, bSeed;
+	int				h, i, j, bSeed, bInit;
 	tLightning		*pfRoot = pl;
+
+	static int nDepth = -1;
 
 if (!pl)
 	return 0;
@@ -643,14 +674,19 @@ if (!pl)
 if (!gameStates.app.tick40fps.bTick)
 	return -1;
 #endif
+nDepth++;
 for (i = 0; i < nLightnings; i++, pl++) {
 	pl->nTTL -= gameStates.app.tick40fps.nTime;
 	if (pl->nNodeC > 0) {
+		if (bInit = (pl->nSteps < 0))
+			pl->nSteps = -pl->nSteps;
 		if (!pl->iStep) {
 #if 1
 			bSeed = 1;
 			do {
+				LogErr ("CreateLightningPath ...\n");
 				CreateLightningPath (pl, bSeed);
+				LogErr ("done\n");
 #if 1
 				break;
 #else
@@ -669,8 +705,14 @@ for (i = 0; i < nLightnings; i++, pl++) {
 			pl->iStep = pl->nSteps;
 			}
 		for (j = pl->nNodeC - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++) {
-			VmVecInc (&pln->vPos, &pln->vOffs);
-			MoveLightnings (1, pln->pChild, &pln->vPos, pl->nSegment, 0, 0);
+			if (bInit)
+				pln->vPos = pln->vNewPos;
+			else
+				VmVecInc (&pln->vPos, &pln->vOffs);
+			if (pln->pChild) {
+				MoveLightnings (1, pln->pChild, &pln->vPos, pl->nSegment, 0, 0);
+				UpdateLightning (pln->pChild, 1);
+				}
 			}
 		(pl->iStep)--;
 		}
@@ -707,6 +749,7 @@ for (i = 0; i < nLightnings; i++, pl++) {
 		}
 #endif
 	}
+nDepth--;
 return nLightnings;
 }
 
@@ -737,8 +780,8 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
 		n = plb->nNext;
-		if (!(plb->nLightnings = UpdateLightning (plb->pl, plb->nLightnings)))
-			DestroyLightnings (i, NULL);
+		if (plb->bDestroy || !(plb->nLightnings = UpdateLightning (plb->pl, plb->nLightnings)))
+			DestroyLightnings (i, NULL, 1);
 		}
 	}
 }
@@ -816,7 +859,7 @@ void DestroyObjectLightnings (tObject *objP)
 	int i = OBJ_IDX (objP);
 
 if (gameData.lightnings.objects [i] >= 0) {
-	DestroyLightnings (gameData.lightnings.objects [i], NULL);
+	DestroyLightnings (gameData.lightnings.objects [i], NULL, 0);
 	gameData.lightnings.objects [i] = -1;
 	}
 }
@@ -825,60 +868,112 @@ if (gameData.lightnings.objects [i] >= 0) {
 
 #define LIGHTNING_VERT_ARRAYS 1
 
-void RenderLightningCorona (fVector *vPosf, int nScale, int bDrawArrays)
+void RenderLightningCorona (fVector *vPosf, int nScale, int bDrawArrays, int bStart, int bEnd)
 {
-	static tUVLf	uvlCorona [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	static tUVLf	uvlCorona [3][4] = {
+		{{{0,0.45f,1}},{{1,0.45f,1}},{{1,0.55f,1}},{{0,0.55f,1}}},
+		{{{0,0.2f,1}},{{1,0.2f,1}},{{1,0.5f,1}},{{0,0.5f,1}}},
+		{{{0,0.5f,1}},{{1,0.5f,1}},{{1,0.8f,1}},{{0,0.8f,1}}}
+		};
+
 	static fVector	vEye = {{0,0,0}};
 
-	fVector	vCorona [4], vn;
-	int		i;
+	static fVector	vCorona [6] = {{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
 
-VmVecSubf (&vn, vPosf, vPosf + 1);
-VmVecScalef (&vn, &vn, nScale ? 2 : 1.125f);
-VmVecAddf (vCorona, vPosf, &vn);
-VmVecSubf (vCorona + 1, vPosf + 1, &vn);
-VmVecNormalf (&vn, vCorona, vCorona + 1, &vEye);
-VmVecScalef (&vn, &vn, nScale ? 2 : 0.5f);
-VmVecSubf (vCorona + 2, vCorona + 1, &vn);
-VmVecSubf (vCorona + 3, vCorona, &vn);
-VmVecIncf (vCorona, &vn);
-VmVecIncf (vCorona + 1, &vn);
+	fVector	vn, vd;
+	int		i, j = bStart + 2 * bEnd;
+
+VmVecNormalf (&vn, vPosf, vPosf + 1, &vEye);
+if (!nScale)
+	VmVecScalef (&vn, &vn, 0.5f);
+if (bStart) {
+	VmVecAddf (vCorona, vPosf, &vn);
+	VmVecSubf (vCorona + 1, vPosf, &vn);
+	VmVecSubf (&vd, vPosf, vPosf + 1);
+	VmVecNormalizef (&vd, &vd);
+	if (!nScale)
+		VmVecScalef (&vd, &vd, 0.5f);
+	VmVecIncf (vCorona, &vd);
+	VmVecIncf (vCorona + 1, &vd);
+	}
+else {
+	vCorona [0] = vCorona [3];
+	vCorona [1] = vCorona [2];
+	}
+VmVecAddf (vCorona + 3, vPosf + 1, &vn);
+VmVecSubf (vCorona + 2, vPosf + 1, &vn);
+if (bEnd) {
+	VmVecSubf (&vd, vPosf + 1, vPosf);
+	VmVecNormalizef (&vd, &vd);
+	if (nScale)
+		VmVecScalef (&vd, &vd, 0.5f);
+	VmVecIncf (vCorona + 2, &vd);
+	VmVecIncf (vCorona + 3, &vd);
+	}
 if (bDrawArrays) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlCorona);
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlCorona + j);
 	glDrawArrays (GL_QUADS, 0, 4);
 	}
 else {
+#if 1
 	glBegin (GL_QUADS);
+	for (i = 0; i < 4; i++) {
+		glTexCoord2fv ((GLfloat *) (uvlCorona [j] + i));
+		glVertex3fv ((GLfloat *) (vCorona + i));
+		}
+	glEnd ();
+#endif
+#if 0
+	glDisable (GL_TEXTURE_2D);
+	glDisable (GL_BLEND);
+	if (bStart)
+		glColor3f (1,0,0);
+	else
+		glColor3f (0,0,1);
+	glBegin (GL_LINE_LOOP);
 	for (i = 0; i < 4; i++) {
 		glTexCoord2fv ((GLfloat *) (uvlCorona + i));
 		glVertex3fv ((GLfloat *) (vCorona + i));
 		}
 	glEnd ();
+	glEnable (GL_TEXTURE_2D);
+	glEnable (GL_BLEND);
+#endif
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void RenderLightning (tLightning *pl, int nLightnings)
+void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthSort)
 {
-if (pl) {
-		tLightningNode	*pln;
-		fVector		vPosf [2] = {{{0,0,0}},{{0,0,0}}};
-		int			h, i, j, bDrawArrays;
-		tRgbaColorf	color;
-		float			f;
+	tLightningNode	*pln;
+	fVector		vPosf [2] = {{{0,0,0}},{{0,0,0}}};
+	int			i;
+#if RENDER_LIGHTNING_CORONA
+	int			h, j, bDrawArrays;
+#endif
+	tRgbaColorf	color;
+	float			f;
 
+if (!pl)
+	return;
+if (bDepthSort) {
+	for (; nLightnings; nLightnings--, pl++) {
+		if (pl->nNodeC < 0)
+			continue;
+		RIAddLightnings (pl, 1, nDepth);
+		for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++)
+			RenderLightning (pln->pChild, 1, nDepth + 1, 1);
+		}
+	}
+else {
 	glEnable (GL_BLEND);
-//	OglBlendFunc (GL_ONE, GL_ONE);
 	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	OglBlendFunc (GL_SRC_ALPHA, GL_ONE); //, GL_ONE_MINUS_SRC_ALPHA);
 	if (gameOpts->render.bDepthSort < 1) {
 		glDepthMask (0);
 		glDisable (GL_CULL_FACE);
 		}
-	glLineWidth (2);
-	glEnable (GL_SMOOTH);
 	for (; nLightnings; nLightnings--, pl++) {
 		if (pl->nNodeC < 0)
 			continue;
@@ -892,14 +987,16 @@ if (pl) {
 		color.red *= (float) (0.9 + f_rand () / 5);
 		color.green *= (float) (0.9 + f_rand () / 5);
 		color.blue *= (float) (0.9 + f_rand () / 5);
-		color.alpha /= 2;
+		if (nDepth)
+			color.alpha /= 2;
 		f = (color.red * 3 + color.green * 5 + color.blue * 2) / 10;
 		f = (float) sqrt (f);
-#if 0
+#if RENDER_LIGHTNING_CORONA
 		if (gameOpts->render.lightnings.bCoronas) {
-			bDrawArrays = OglEnableClientStates (1, 0);
+			bDrawArrays = 0; //OglEnableClientStates (1, 0);
 			glEnable (GL_TEXTURE_2D);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
+				OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 				for (h = 0; h < 2; h++) {
 					if (h) {
 						glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
@@ -907,24 +1004,27 @@ if (pl) {
 					else {
 						glColor4f (1, 1, 1, color.alpha / 2);
 						}
-					for (i = pl->nNodeC, j = 0, pln = pl->pNodes; j < i; j++, pln++) {
+					for (i = pl->nNodeC - 1, j = 0, pln = pl->pNodes; j <= i; j++, pln++) {
 						vPosf [0] = vPosf [1];
 						VmsVecToFloat (vPosf + 1, &pln->vPos);
 						G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 						if (j)
-							RenderLightningCorona (vPosf, h);
+							RenderLightningCorona (vPosf, h, bDrawArrays, j == 1, j == i);
 						}
 					}
 				}
 			if (bDrawArrays)
-				OglDisableClientState (1, 0);
+				OglDisableClientStates (1, 0);
 			glDisable (GL_TEXTURE_2D);
 			}
-		color.alpha /= 2;
 #endif
 #if 1
+		if (nDepth)
+			color.alpha /= 2;
+		OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 		glColor4fv ((GLfloat *) &color);
-		glColor4f (1, 0, 0, 1);
+		glLineWidth ((GLfloat) (nDepth ? 2 : 3));
+		glEnable (GL_SMOOTH);
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++) {
 			VmsVecToFloat (vPosf, &pln->vPos);
@@ -934,7 +1034,7 @@ if (pl) {
 		glEnd ();
 #endif
 #if defined (_DEBUG) && RENDER_TARGET_LIGHTNING
-		glColor4f (1, 0, 0, 1);
+		glColor3f (1,0,0,1);
 		glLineWidth (1);
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++) {
@@ -945,7 +1045,7 @@ if (pl) {
 		glEnd ();
 #endif
 		for (i = pl->nNodeC, pln = pl->pNodes; i; i--, pln++)
-			RenderLightning (pln->pChild, 1);
+			RenderLightning (pln->pChild, 1, nDepth + 1, 0);
 		}
 	if (gameOpts->render.bDepthSort < 1) {
 		glEnable (GL_CULL_FACE);
@@ -961,7 +1061,7 @@ if (pl) {
 
 void RenderLightnings (void)
 {
-if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
+if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		int			i, n;
 
@@ -970,10 +1070,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
 		n = plb->nNext;
-		if (gameOpts->render.bDepthSort)
-			RIAddLightnings (plb->pl, plb->nLightnings);
-		else
-			RenderLightning (plb->pl, plb->nLightnings);
+		RenderLightning (plb->pl, plb->nLightnings, 0, gameOpts->render.bDepthSort > 0);
 		}
 	if (EGI_FLAG (bShadows, 0, 1, 0)) 
 		glEnable (GL_STENCIL_TEST);
@@ -984,8 +1081,14 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 
 void DoLightningFrame (void)
 {
-UpdateLightnings ();
-UpdateOmegaLightnings (NULL, NULL);
+if (gameData.lightnings.bDestroy) {
+	gameData.lightnings.bDestroy = -1;
+	DestroyAllLightnings ();
+	}
+else {
+	UpdateLightnings ();
+	UpdateOmegaLightnings (NULL, NULL);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1095,7 +1198,7 @@ void CreateMissileLightnings (tObject *objP, tRgbaColorf *colorP, int nRods, int
 if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 	//gameData.lightnings.objects [OBJ_IDX (objP)] = 
 		CreateLightning (
-			nRods, &objP->position.vPos, NULL, OBJ_IDX (objP), 750, 0, nRad, F1_0 * 4, 2 * F1_0, 50, 0, 0, 3, 1, 1, colorP);
+			nRods, &objP->position.vPos, NULL, OBJ_IDX (objP), 750, 0, nRad, F1_0 * 4, 2 * F1_0, 50, 5, 1, 3, 1, 1, colorP);
 	}
 }
 
@@ -1103,7 +1206,7 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 
 void CreateShakerLightnings (tObject *objP)
 {
-tRgbaColorf color = {0, 0.1f, 0.8f, 0.4f};
+tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.3f};
 
 CreateMissileLightnings (objP, &color, 20, 20 * F1_0);
 }
@@ -1112,7 +1215,7 @@ CreateMissileLightnings (objP, &color, 20, 20 * F1_0);
 
 void CreateShakerMegaLightnings (tObject *objP)
 {
-tRgbaColorf color = {0, 0.1f, 0.8f, 0.4f};
+tRgbaColorf color = {0.1f, 0.1f, 0.8f, 0.3f};
 
 CreateMissileLightnings (objP, &color, 15, 15 * F1_0);
 }
@@ -1121,7 +1224,7 @@ CreateMissileLightnings (objP, &color, 15, 15 * F1_0);
 
 void CreateMegaLightnings (tObject *objP)
 {
-tRgbaColorf color = {0.8f, 0.1f, 0.0f, 0.4f};
+tRgbaColorf color = {0.8f, 0.1f, 0.1f, 0.3f};
 
 CreateMissileLightnings (objP, &color, 20, 15 * F1_0);
 }
@@ -1145,10 +1248,10 @@ if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
 			MoveObjectLightnings (objP);
 			return;
 			}
-		DestroyLightnings (h, NULL);
+		DestroyLightnings (h, NULL, 0);
 		}
 	gameData.lightnings.objects [i] = CreateLightning (
-		n, &objP->position.vPos, NULL, OBJ_IDX (objP), -1000, 4000, objP->size, objP->size / 8, 0, 20, 0, 0, 4, 1, 1, colorP);
+		n, &objP->position.vPos, NULL, OBJ_IDX (objP), -1000, 4000, objP->size, objP->size / 8, 0, 20, 2, 1, 4, 1, 1, colorP);
 	}
 }
 

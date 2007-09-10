@@ -2186,6 +2186,52 @@ return h;
 }
 
 //------------------------------------------------------------------------------
+
+void ConvertSmokeObject (tObject *objP)
+{
+	int			j;
+	tTrigger		*trigP;
+
+objP->renderType = RT_NONE;
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
+#if 1
+j = (trigP && trigP->value) ? trigP->value : 5;
+objP->cType.smokeInfo.nLife = (j * (j + 1)) / 2;
+#else
+objP->cType.smokeInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
+#endif
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_BRIGHTNESS, -1);
+objP->cType.smokeInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
+j = (trigP && trigP->value) ? trigP->value : 5;
+#if 1
+objP->cType.smokeInfo.nSpeed = (j * (j + 1)) / 2;
+#else
+objP->cType.smokeInfo.nSpeed = j;
+#endif
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
+objP->cType.smokeInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
+objP->cType.smokeInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->cType.smokeInfo.nSpeed * 50;
+trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
+j = (trigP && trigP->value) ? trigP->value : 5;
+objP->cType.smokeInfo.nSize [0] = j + 1;
+objP->cType.smokeInfo.nSize [1] = (j * (j + 1)) / 2;
+}
+
+//------------------------------------------------------------------------------
+
+void ConvertObjects (void)
+{
+	tObject	*objP;
+	int		i;
+
+for (i = gameData.objs.nLastObject + 1, objP = OBJECTS; i; i--, objP++)
+	if (objP->nType == OBJ_SMOKE)
+		ConvertSmokeObject (objP);
+}
+
+//------------------------------------------------------------------------------
 //called after load.  Takes number of gameData.objs.objects,  and gameData.objs.objects should be
 //compressed.  resets D2_FREE list, marks unused gameData.objs.objects as unused
 void ResetObjects (int nObjects)

@@ -1578,7 +1578,8 @@ void StateFixObjects (void)
 {
 	tObject	*objP = gameData.objs.objects;
 	int		i, j, nSegment;
-	
+
+ConvertObjects ();
 gameData.objs.nNextSignature = 0;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;

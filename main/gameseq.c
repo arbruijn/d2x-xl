@@ -1037,6 +1037,7 @@ if (!bRestore) {
 	gameStates.gameplay.slowmo [1].fSpeed = 1;
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
+	ConvertObjects ();
 	ComputeNearestLights ();
 	ComputeStaticDynLighting ();
 	SetEquipGenStates ();
