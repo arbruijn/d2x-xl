@@ -2451,7 +2451,7 @@ switch (objP->renderType) {
 					if (!DoObjectSmoke (objP))
 						DrawWeaponVClip (objP); 
 					}	
-				else if ((objP->id != OMEGA_ID) || !EGI_FLAG (bUseLightnings, 0, 0, 1)) {
+				else if ((objP->id != OMEGA_ID) || !(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega)) {
 					DrawWeaponVClip (objP); 
 					if (objP->id != OMEGA_ID) {
 						RenderLightTrail (objP);
