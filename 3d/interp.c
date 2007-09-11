@@ -36,6 +36,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "render.h"
 #include "gameseg.h"
 #include "lighting.h"
+#include "lightning.h"
 
 extern tFaceColor tMapColor;
 
@@ -203,6 +204,7 @@ dest += o;
 if (norms)
 	norms += o;
 while (n--) {
+	dest->p3_key = (short) o;
 	if (gameStates.ogl.bUseTransform) {
 		fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
 		pfv->p.x = (float) src->p.x * fScale;
@@ -2333,6 +2335,8 @@ bool G3DrawPolyModel (
 	ubyte *p = modelP;
 	short	h;
 
+	static int nDepth = -1;
+
 #if DBG_SHADOWS
 if (bShadowTest)
 	return 1;
@@ -2341,9 +2345,10 @@ if (bShadowTest)
 //if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
 	return 1;
 #endif
+nDepth++;
 G3CheckAndSwap (modelP);
 if (SHOW_DYN_LIGHT && 
-	 !po && objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))) {
+	!nDepth && !po && objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))) {
 	po = gameData.models.pofData [gameStates.app.bD1Mission][0] + nModel;
 	G3GatherPolyModelItems (objP, modelP, pAnimAngles, po, 0);
 	}
@@ -2424,6 +2429,8 @@ for (;;) {
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
 			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
+			if (objP)
+				RenderDamageLightnings (objP, pointList, nv);
 			if (!objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])))
 				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
 			}
@@ -2434,12 +2441,12 @@ for (;;) {
 	else if (h == OP_SORTNORM) {
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
 			//draw back then front
-			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
-			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (NULL, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
-			G3DrawPolyModel (NULL, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
+			G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
 		p += 32;
 		}
@@ -2461,7 +2468,7 @@ for (;;) {
 		G3StartInstanceAngles (&vo, va);
 		if (vOffset)
 			VmVecInc (&vo, vOffset);
-		G3DrawPolyModel (NULL, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, objColorP, po, nModel);
+		G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, objColorP, po, nModel);
 		G3DoneInstance ();
 		p += 20;
 		}
@@ -2473,6 +2480,7 @@ for (;;) {
 	else 
 		Error ("invalid polygon model\n");
 	}
+nDepth--;
 return 1;
 }
 

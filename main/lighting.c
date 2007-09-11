@@ -1355,7 +1355,7 @@ pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
 pl->bSpot = 0;
-pl->nType = (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
+pl->nType = (nSide < 0) ? 2 : (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0)
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
@@ -1364,7 +1364,10 @@ else if (nSegment >= 0) {
 	vmsVector	vOffs;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
-	COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
+	if (nSide < 0)
+		COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment);
+	else
+		COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 #if 0
 	VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
 	VmVecScaleFrac (&vOffs, 1, 200);
@@ -1393,18 +1396,22 @@ glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 #if 0
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.dynamic.nLights, pl - gameData.render.lights.dynamic.lights);
-#endif		  
-if (nObject >= 0) {
+#endif	
+else if (nObject >= 0) {
 	pl->rad = 0;
 	gameData.render.lights.dynamic.owners [nObject] = gameData.render.lights.dynamic.nLights;
 	}
 else if (nSegment >= 0) {
-	int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
+	if (nSide < 0)
+		pl->rad = 0;
+	else {
+		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
 
-	ComputeSideRads (nSegment, nSide, &rMin, &rMax);
-	pl->rad = f2fl ((rMin + rMax) / 20);
-	//RegisterLight (NULL, nSegment, nSide);
-	pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
+		ComputeSideRads (nSegment, nSide, &rMin, &rMax);
+		pl->rad = f2fl ((rMin + rMax) / 20);
+		//RegisterLight (NULL, nSegment, nSide);
+		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
+		}
 	}
 else
 	pl->bVariable = 0;
@@ -1455,6 +1462,23 @@ DeleteDynLight (nLight);
 if (nObject >= 0)
 	gameData.render.lights.dynamic.owners [nObject] = -1;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void RemoveDynLightningLights (void)
+{
+	tDynLight	*pl = gameData.render.lights.dynamic.lights;
+	short			i;
+
+for (i = 0; i < gameData.render.lights.dynamic.nLights; )
+	if ((pl->nSegment >= 0) && (pl->nSide < 0)) {
+		DeleteDynLight (i);
+		}
+	else {
+		i++;
+		pl++;
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -1591,6 +1615,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
 	psl->bOn = pl->bOn;
 	psl->nType = pl->nType;
+	psl->bLightning = (pl->nObject < 0) && (pl->nSide < 0);
 	psl->bShadow =
 	psl->bExclusive = 0;
 	if (psl->bState) {

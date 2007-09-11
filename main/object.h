@@ -225,18 +225,21 @@ typedef struct tSmokeInfo {
 } __pack__ tSmokeInfo;
 
 typedef struct tLightningInfo {
-	int			nLightnings;
 	int			nLife;
 	int			nDelay;
 	int			nLength;
 	int			nAmplitude;
 	int			nOffset;
+	short			nLightnings;
+	short			nId;
 	short			nTarget;
-	short			nNodeC;
-	short			nChildC;
+	short			nNodes;
+	short			nChildren;
 	short			nSteps;
 	char			nSmoothe;
 	char			bClamp;
+	char			bPlasma;
+	char			bRandom;
 	tRgbaColorf color;
 } __pack__ tLightningInfo;
 
@@ -290,13 +293,13 @@ typedef struct tObject {
 		tAIStatic      aiInfo;
 		tObjLightInfo  lightInfo;     // why put this here?  Didn't know what else to do with it.
 		tPowerupInfo   powerupInfo;
-		tSmokeInfo		smokeInfo;
-		tLightningInfo	lightning;
 		} cType;
 	// render info, determined by RENDER_TYPE
 	union {
 		tPolyObjInfo   polyObjInfo;      // polygon model
 		tVClipInfo     vClipInfo;     // tVideoClip
+		tSmokeInfo		smokeInfo;
+		tLightningInfo	lightningInfo;
 		} rType;
 #ifdef WORDS_NEED_ALIGNMENT
 	short   nPad;
@@ -558,6 +561,8 @@ if (objP == dbgObjP)
 #define ENABLE_COLLISION(type1, type2)		SET_COLLISION(type1, type2, RESULT_CHECK)
 
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
+
+#define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 
 //	-----------------------------------------------------------------------------------------------------------
 

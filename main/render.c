@@ -5058,8 +5058,13 @@ renderItems.bTextured = 1;
 
 void RIRenderLightning (tRILightning *item)
 {
+if (renderItems.bDepthMask) {
+	glDepthMask (0);
+	renderItems.bDepthMask = 0;
+	}
 RISetClientState (0, 0, 0);
 RenderLightning (item->lightning, 1, item->nDepth, 0);
+renderItems.bmP = NULL;
 renderItems.bTextured = 0;
 gameData.smoke.nLastType = -1;
 }

@@ -203,7 +203,9 @@ typedef struct tSmokeOptions {
 
 typedef struct tLightningOptions {
 	int nQuality;
-	int bCoronas;
+	int nStyle;
+	int bPlasma;
+	int bRobots;
 	int bDamage;
 	int bExplosions;
 	int bStatic;
@@ -1120,6 +1122,7 @@ typedef struct tShaderLight {
 	ubyte			bOn;
 	ubyte			bSpot;
 	ubyte			bShadow;
+	ubyte			bLightning;
 	ubyte			bExclusive;
 } tShaderLight;
 
@@ -2303,6 +2306,7 @@ typedef struct tLightning {
 	vmsVector			vPos;
 	vmsVector			vEnd;
 	vmsVector			vDir;
+	vmsVector			vDelta;
 	tLightningNode		*pNodes;
 	tRgbaColorf			color;
 	int					nIndex;
@@ -2316,21 +2320,26 @@ typedef struct tLightning {
 	short					nSmoothe;
 	short					nSteps;
 	short					iStep;
-	short					nNodeC;
-	short					nChildC;
-	short					nDepth;
+	short					nNodes;
+	short					nChildren;
 	short					nObject;
 	short					nSegment;
 	short					nNode;
+	char					nDepth;
 	char					bClamp;
+	char					bPlasma;
+	char					bFixedDelta;
 	char					bRandom;
 } tLightning;
 
 typedef struct tLightningBundle {
 	int				nNext;
-	int				nLightnings;
 	tLightning		*pl;
-	int				bDestroy;
+	int				nLightnings;
+	short				nObject;
+	int				nKey [2];
+	int				tUpdate;
+	char				bDestroy;
 } tLightningBundle;
 
 typedef struct tLightningLight {

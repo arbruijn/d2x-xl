@@ -1699,6 +1699,7 @@ switch (objP->movementType) {
 #endif
 		DoPhysicsSim (objP);	
 		SetDynLightPos (OBJ_IDX (objP));
+		MoveObjectLightnings (objP);
 		break;	//move by physics
 
 	case MT_SPINNING:		
@@ -1809,7 +1810,7 @@ void HandleObjectEffects (tObject *objP)
 {
 if (objP->nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->id).energyDrain) {
-			tRgbaColorf color = {1.0f, 0.8f, 0, 0.4f};
+			tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 
 		CreateRobotLightnings (objP, &color);
 		}
@@ -2196,27 +2197,27 @@ objP->renderType = RT_NONE;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
 #if 1
 j = (trigP && trigP->value) ? trigP->value : 5;
-objP->cType.smokeInfo.nLife = (j * (j + 1)) / 2;
+objP->rType.smokeInfo.nLife = (j * (j + 1)) / 2;
 #else
-objP->cType.smokeInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
+objP->rType.smokeInfo.nLife = (trigP && trigP->value) ? trigP->value : 5;
 #endif
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_BRIGHTNESS, -1);
-objP->cType.smokeInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
+objP->rType.smokeInfo.nBrightness = (trigP && trigP->value) ? trigP->value * 10 : 75;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SPEED, -1);
 j = (trigP && trigP->value) ? trigP->value : 5;
 #if 1
-objP->cType.smokeInfo.nSpeed = (j * (j + 1)) / 2;
+objP->rType.smokeInfo.nSpeed = (j * (j + 1)) / 2;
 #else
-objP->cType.smokeInfo.nSpeed = j;
+objP->rType.smokeInfo.nSpeed = j;
 #endif
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DENS, -1);
-objP->cType.smokeInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
+objP->rType.smokeInfo.nParts = j * ((trigP && trigP->value) ? trigP->value * 50 : STATIC_SMOKE_MAX_PARTS);
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_DRIFT, -1);
-objP->cType.smokeInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->cType.smokeInfo.nSpeed * 50;
+objP->rType.smokeInfo.nDrift = (trigP && trigP->value) ? j * trigP->value * 50 : objP->rType.smokeInfo.nSpeed * 50;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_SIZE, -1);
 j = (trigP && trigP->value) ? trigP->value : 5;
-objP->cType.smokeInfo.nSize [0] = j + 1;
-objP->cType.smokeInfo.nSize [1] = (j * (j + 1)) / 2;
+objP->rType.smokeInfo.nSize [0] = j + 1;
+objP->rType.smokeInfo.nSize [1] = (j * (j + 1)) / 2;
 }
 
 //------------------------------------------------------------------------------

@@ -155,6 +155,7 @@ static struct {
 static struct {
 	int	nUse;
 	int	nQuality;
+	int	nStyle;
 } lightningOpts;
 
 static struct {
@@ -3051,6 +3052,7 @@ if (optColorSat >= 0) {
 //------------------------------------------------------------------------------
 
 static	char *pszLightningQuality [2];
+static	char *pszLightningStyle [2];
 
 void LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -3073,6 +3075,13 @@ if (extraGameInfo [0].bUseLightnings) {
 		sprintf (m->text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
 		m->rebuild = 1;
 		}
+	m = menus + lightningOpts.nStyle;
+	v = m->value;
+	if (gameOpts->render.lightnings.nStyle != v) {
+		gameOpts->render.lightnings.nStyle = v;
+		sprintf (m->text, TXT_LIGHTNING_STYLE, pszLightningStyle [v]);
+		m->rebuild = 1;
+		}
 	}
 }
 
@@ -3083,11 +3092,13 @@ void LightningOptionsMenu ()
 	tMenuItem m [10];
 	int	i, choice = 0;
 	int	opt;
-	int	optDamage, optExplosions, optStatic, optOmega, optCoronas;
-	char	szQuality [50];
+	int	optDamage, optExplosions, optRobots, optStatic, optOmega, optPlasma;
+	char	szQuality [50], szStyle [50];
 
-	pszLightningQuality [0] = TXT_LIGHTNING_JAGGY;
-	pszLightningQuality [1] = TXT_LIGHTNING_SMOOTH;
+	pszLightningQuality [0] = TXT_LOW;
+	pszLightningQuality [1] = TXT_HIGH;
+	pszLightningStyle [0] = TXT_LIGHTNING_SMOOTH;
+	pszLightningStyle [1] = TXT_LIGHTNING_JAGGY;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -3095,25 +3106,32 @@ do {
 	lightningOpts.nQuality = 
 	optDamage = 
 	optExplosions = 
+	optRobots = 
 	optStatic = 
 	optOmega = 
-	optCoronas = -1;
+	optPlasma = -1;
 
 	ADD_CHECK (opt, TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
 	lightningOpts.nUse = opt++;
 	if (extraGameInfo [0].bUseLightnings) {
 		sprintf (szQuality + 1, TXT_LIGHTNING_QUALITY, pszLightningQuality [gameOpts->render.lightnings.nQuality]);
 		*szQuality = *(TXT_LIGHTNING_QUALITY - 1);
-		ADD_SLIDER (opt, szQuality + 1, gameOpts->render.color.nLightMapRange, 0, 1, KEY_R, HTX_ADVRND_LMAPRANGE);
+		ADD_SLIDER (opt, szQuality + 1, gameOpts->render.lightnings.nQuality, 0, 1, KEY_R, HTX_LIGHTNING_QUALITY);
 		lightningOpts.nQuality = opt++;
+		sprintf (szStyle + 1, TXT_LIGHTNING_STYLE, pszLightningStyle [gameOpts->render.lightnings.nStyle]);
+		*szStyle = *(TXT_LIGHTNING_STYLE - 1);
+		ADD_SLIDER (opt, szStyle + 1, gameOpts->render.lightnings.nStyle, 0, 1, KEY_S, HTX_LIGHTNING_STYLE);
+		lightningOpts.nStyle = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_LIGHTNING_CORONAS, gameOpts->render.lightnings.bCoronas, KEY_P, HTX_LIGHTNING_CORONAS);
-		optCoronas = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_CORONAS, gameOpts->render.lightnings.bPlasma, KEY_P, HTX_LIGHTNING_CORONAS);
+		optPlasma = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_DAMAGE, gameOpts->render.lightnings.bDamage, KEY_D, HTX_LIGHTNING_DAMAGE);
 		optDamage = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_EXPLOSIONS, gameOpts->render.lightnings.bExplosions, KEY_E, HTX_LIGHTNING_EXPLOSIONS);
 		optExplosions = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_ROBOTS, gameOpts->render.lightnings.bRobots, KEY_R, HTX_LIGHTNING_ROBOTS);
+		optRobots = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_S, HTX_LIGHTNING_STATIC);
 		optStatic = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
@@ -3126,9 +3144,10 @@ do {
 			break;
 		} 
 	if (extraGameInfo [0].bUseLightnings) {
-		GET_VAL (gameOpts->render.lightnings.bCoronas, optCoronas);
+		GET_VAL (gameOpts->render.lightnings.bPlasma, optPlasma);
 		GET_VAL (gameOpts->render.lightnings.bDamage, optDamage);
 		GET_VAL (gameOpts->render.lightnings.bExplosions, optExplosions);
+		GET_VAL (gameOpts->render.lightnings.bRobots, optRobots);
 		GET_VAL (gameOpts->render.lightnings.bStatic, optStatic);
 		GET_VAL (gameOpts->render.lightnings.bOmega, optOmega);
 		}

@@ -365,9 +365,9 @@ int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP)
 	vmsVector	vFiringPos;
 	int			bSpectate;
 
-if (!EGI_FLAG (bUseLightnings, 0, 0, 1))
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
 	return -1;
-if (gameData.laser.xOmegaCharge == MAX_OMEGA_CHARGE)
+if (gameData.laser.xOmegaCharge >= MAX_OMEGA_CHARGE)
 	DestroyOmegaLightnings ();
 if (gameData.laser.nLightning < 0)
 	return 0;
@@ -395,24 +395,25 @@ return 1;
 
 int CreateOmegaLightnings (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
 {
-if (!SHOW_LIGHTNINGS)
-	return 0;
-if (!gameOpts->render.lightnings.bOmega)
+if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
 	return 0;
 if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
-	tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
+	static tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
 	vmsVector	*vEnd, vFiringPos;
 	int			bSpectate = SPECTATOR (parentObjP);
 	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &parentObjP->position;
 
+	DestroyOmegaLightnings ();
 	VmVecSub (&vFiringPos, &posP->vPos, &posP->mOrient.uVec);
 	VmVecInc (&vFiringPos, &posP->mOrient.fVec);
 	gameData.laser.parentObjP = parentObjP;
 	gameData.laser.targetObjP = targetObjP;
 	vEnd = targetObjP ? &targetObjP->position.vPos : vTargetPos;
-	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, 
+	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, NULL, 
 																-(bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment) - 1, 
-																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 10, 1, 3, 1, 1, &color);
+																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 10, 1, 3, 1, 1, 
+																0, //(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
+																&color);
 	}
 return (gameData.laser.nLightning >= 0);
 }

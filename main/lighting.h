@@ -67,6 +67,7 @@ int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, 
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynLights (void);
 void RemoveDynLights (void);
+void RemoveDynLightningLights (void);
 void SetDynLightPos (short nObject);
 void MoveDynLight (short nObject);
 void TransformDynLights (int bStatic, int bVariable);
