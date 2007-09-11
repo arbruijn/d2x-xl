@@ -311,7 +311,7 @@ void DrawOutline (int nv, g3sPoint **pointList)
 #if 1 //def RELEASE
 if (gameStates.render.bQueryOcclusion) {
 	tRgbaColorf outlineColor = {1, 1, 0, -1};
-	G3DrawPolyAlpha (nv, pointList, &outlineColor);
+	G3DrawPolyAlpha (nv, pointList, &outlineColor, 1);
 	return;
 	}
 #endif
@@ -486,18 +486,18 @@ gameStates.render.grAlpha = 6;
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (owner > 0)) {
 	if ((csegnum < 0) || (gameData.segs.xSegments [csegnum].owner != owner)) {
 		if (owner == 1)
-			G3DrawPolyAlpha (nv, pointList, &blueTeamColor);
+			G3DrawPolyAlpha (nv, pointList, &blueTeamColor, 0);
 		else
-			G3DrawPolyAlpha (nv, pointList, &redTeamColor);
+			G3DrawPolyAlpha (nv, pointList, &redTeamColor, 0);
 		}
 	}
 else if (special == SEGMENT_IS_WATER) {
 	if ((csegnum < 0) || (gameData.segs.segment2s [csegnum].special != SEGMENT_IS_WATER))
-		G3DrawPolyAlpha (nv, pointList, &waterColor);	
+		G3DrawPolyAlpha (nv, pointList, &waterColor, 0);	
 	}
 else if (special == SEGMENT_IS_LAVA) {
 	if ((csegnum < 0) || (gameData.segs.segment2s [csegnum].special != SEGMENT_IS_LAVA))
-		G3DrawPolyAlpha (nv, pointList, &lavaColor);	
+		G3DrawPolyAlpha (nv, pointList, &lavaColor, 0);	
 	}
 else
 	funcRes = 0;
@@ -790,7 +790,7 @@ if (IS_WALL (nWallNum)) {
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < GR_ACTUAL_FADE_LEVELS) {
 						gameStates.render.grAlpha = (float) c;
-						G3DrawPolyAlpha (propsP->nv, pointList, &cloakColor);		//draw as flat poly
+						G3DrawPolyAlpha (propsP->nv, pointList, &cloakColor, 1);		//draw as flat poly
 						}
 					}
 				else {
@@ -804,7 +804,7 @@ if (IS_WALL (nWallNum)) {
 						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS) {
 						tRgbaColorf wallColor = {CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1};
-						G3DrawPolyAlpha (propsP->nv, pointList, &wallColor);	//draw as flat poly
+						G3DrawPolyAlpha (propsP->nv, pointList, &wallColor, 1);	//draw as flat poly
 						}
 					}
 				}

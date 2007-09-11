@@ -568,7 +568,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointList, tRgbaColorf *color)
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask)
 {
 	int		i;
 	GLint		depthFunc; 
@@ -584,7 +584,7 @@ if (gameOpts->render.bDepthSort > 0) {
 
 	for (i = 0; i < nv; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT);
+	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT);
 	}
 else {
 	r_polyc++;
@@ -594,6 +594,8 @@ else {
 		glDepthFunc (GL_LESS);
 	else
 #endif
+	if (!bDepthMask)
+		glDepthMask (0);
 	glDepthFunc (GL_LEQUAL);
 	glEnable (GL_BLEND);
 	glDisable (GL_TEXTURE_2D);
@@ -603,6 +605,8 @@ else {
 		OglVertex3f (*pointList++);
 	glEnd ();
 	glDepthFunc (depthFunc);
+	if (!bDepthMask)
+		glDepthMask (1);
 	}
 return 0;
 }

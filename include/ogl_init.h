@@ -299,7 +299,7 @@ extern GLenum curDrawBuffer;
 #include "3d.h"
 
 bool G3DrawWhitePoly (int nv, g3sPoint **pointList);
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color);
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask);
 
 bool G3DrawTexPolyMulti (
 	int			nVerts, 
