@@ -84,7 +84,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RENDER_TARGET_LIGHTNING 0
 #define RENDER_LIGHTNING_PLASMA 1
 
-void CreateLightningPath (tLightning *pl, int bSeed);
+void CreateLightningPath (tLightning *pl, int bSeed, int nDepth);
 
 //------------------------------------------------------------------------------
 
@@ -510,11 +510,11 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-vmsVector *AttractLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, vmsVector *vPos, int nDist, int i, int bJoinPaths)
+vmsVector *AttractLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, vmsVector *vPos, int nDist, int i, int bJoinPaths, int nDepth)
 {
 	int nMag = VmVecMag (vOffs);
 // attract offset vector by scaling it with distance from attracting node
-VmVecScaleFrac (vOffs, i * nDist / 2, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
+	VmVecScaleFrac (vOffs, i * (nDepth ? nDist / 2 : nDist), nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
 VmVecInc (vOffs, vAttract);	//add offset and attractor vectors (attractor is the bigger the closer)
 nMag = VmVecMag (vOffs);
 VmVecScaleFrac (vOffs, bJoinPaths ? nDist / 2 : nDist, nMag);	//rescale to desired path length
@@ -540,7 +540,7 @@ return nAmplitude;
 //------------------------------------------------------------------------------
 
 vmsVector ComputeLightningNode (tLightningNode *pln, vmsVector *vPos, vmsVector *vDest, vmsVector *vBase, vmsVector *vPrevOffs,
-									 int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp)
+									 int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp, int nDepth)
 {
 	vmsVector	vAttract, vOffs;
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
@@ -553,7 +553,7 @@ else if (pln->vOffs.p.x || pln->vOffs.p.z || pln->vOffs.p.z) {
 	VmVecScale (&vOffs, F1_0 / 3);
 	}
 if (nDist > F1_0 / 16)
-	AttractLightningPathPoint (&vOffs, &vAttract, vPos, nDist, i, 0);
+	AttractLightningPathPoint (&vOffs, &vAttract, vPos, nDist, i, 0, nDepth);
 if (bClamp)
 	ClampLightningPathPoint (vPos, vBase, nAmplitude);
 pln->vNewPos = *vPos;
@@ -636,7 +636,7 @@ if ((nMaxDist < nAmplitude) /*&& (nMaxDist > 3 * nAmplitude / 4)*/ && (rand () <
 
 //------------------------------------------------------------------------------
 
-void CreateLightningPath (tLightning *pl, int bSeed)
+void CreateLightningPath (tLightning *pl, int bSeed, int nDepth)
 {
 	tLightningNode	*pfh, *pln [2];
 	int			h, i, j, nSteps, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
@@ -676,7 +676,8 @@ if (pl->bRandom) {
 	else {
 		nMinDist = pl->nLength / (pl->nNodes - 1);
 		for (i = pl->nNodes - 1, pfh = pl->pNodes + 1; i; i--, pfh++, bPrevOffs [0] = 1) 
-			*vPrevOffs = ComputeLightningNode (pfh, vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp);
+			*vPrevOffs = ComputeLightningNode (pfh, vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, 
+														  nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp, nDepth);
 		}
 	}
 else {
@@ -693,7 +694,8 @@ else {
 	else {
 		for (i = pl->nNodes - 1, j = 0, pln [0] = pl->pNodes + 1, pln [1] = pl->pNodes + i - 1; i; i--, j = !j) {
 			pfh = pln [j];
-			vPrevOffs [j] = ComputeLightningNode (pfh, vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, nSteps, nAmplitude, 0, i, nSmoothe, bClamp);
+			vPrevOffs [j] = ComputeLightningNode (pfh, vPos + j, vPos + !j, vBase, bPrevOffs [j] ? vPrevOffs + j : NULL, 
+															  nSteps, nAmplitude, 0, i, nSmoothe, bClamp, nDepth);
 			bPrevOffs [j] = 1;
 			if (pln [1] <= pln [0])
 				break;
@@ -735,7 +737,7 @@ for (i = 0; i < nLightnings; i++, pl++) {
 #if 1
 			bSeed = 1;
 			do {
-				CreateLightningPath (pl, bSeed);
+				CreateLightningPath (pl, bSeed, nDepth);
 #if 1
 				break;
 #else
