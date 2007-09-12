@@ -1487,6 +1487,37 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int OglSetupBmFrames (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
+{
+	int nFrames = (bmP->bmType == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
+
+if (nFrames < 2)
+	return 0;
+else {
+	grsBitmap	*bmfP = (grsBitmap *) D2_ALLOC (nFrames * sizeof (struct _grsBitmap));
+	int			i, w = bmP->bm_props.w;
+
+	memset (bmfP, 0, nFrames * sizeof (struct _grsBitmap));
+	BM_FRAMES (bmP) = bmfP;
+	for (i = 0; i < nFrames; i++, bmfP++) {
+		BM_CURFRAME (bmP) = bmfP;
+		GrInitSubBitmap (bmfP, bmP, 0, i * w, w, w);
+		bmfP->bmType = BM_TYPE_FRAME;
+		bmfP->bm_props.y = 0;
+		BM_PARENT (bmfP) = bmP;
+		if (bmP->bm_transparentFrames [i / 32] & (1 << (i % 32)))
+			bmfP->bm_props.flags |= BM_FLAG_TRANSPARENT;
+		if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
+			bmfP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
+		if (bLoad)
+			OglLoadBmTextureM (bmfP, bDoMipMap, nTransp, 0, NULL);
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int OglLoadBmTexture (grsBitmap *bmP, int bDoMipMap, int nTransp)
 {
 	int			i, h, w, nFrames;
@@ -1505,21 +1536,8 @@ if (!(bmP->bm_props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	}
 else if (!BM_FRAMES (bmP)) {
 	grsBitmap	*bmfP;
-	bmfP = (grsBitmap *) D2_ALLOC (nFrames * sizeof (struct _grsBitmap));
-	memset (bmfP, 0, nFrames * sizeof (struct _grsBitmap));
-	BM_FRAMES (bmP) = bmfP;
-	for (i = 0; i < nFrames; i++, bmfP++) {
-		BM_CURFRAME (bmP) = bmfP;
-		GrInitSubBitmap (bmfP, bmP, 0, i * w, w, w);
-		bmfP->bmType = BM_TYPE_FRAME;
-		bmfP->bm_props.y = 0;
-		BM_PARENT (bmfP) = bmP;
-		if (bmP->bm_transparentFrames [i / 32] & (1 << (i % 32)))
-			bmfP->bm_props.flags |= BM_FLAG_TRANSPARENT;
-		if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
-			bmfP->bm_props.flags |= BM_FLAG_SUPER_TRANSPARENT;
-		OglLoadBmTextureM (bmfP, bDoMipMap, nTransp, 0, NULL);
-		}
+
+	OglSetupBmFrames (bmP, bDoMipMap, nTransp, 1);
 	BM_CURFRAME (bmP) = BM_FRAMES (bmP);
 	if (CreateSuperTranspMasks (bmP))
 		for (i = nFrames, bmfP = BM_FRAMES (bmP); i; i--, bmfP++)
