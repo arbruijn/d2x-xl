@@ -6,7 +6,7 @@
 int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
 							short nObject, int nLife, int nDelay, int nLength, int nAmplitude, int nOffset,
 							short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
-							char bClamp, char bPlasma, tRgbaColorf *colorP);
+							char bClamp, char bPlasma, char bSound, tRgbaColorf *colorP);
 void DestroyLightnings (int iLightning, tLightning *pf, int bDestroy);
 int DestroyAllLightnings (void);
 void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, int bStretch, int bFromEnd);

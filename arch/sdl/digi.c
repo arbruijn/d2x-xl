@@ -581,7 +581,7 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 						  int loop_start, int loop_end, int soundobj, int speed, 
 						  char *pszWAV, vmsVector *vPos)
 {
-	int			i, l, starting_channel;
+	int			i, l, nStartChannel;
 	tSoundSlot	*ssP;
 	tDigiSound	*dsP = NULL;
 
@@ -597,7 +597,7 @@ if (!(pszWAV && gameOpts->sound.bUseSDLMixer)) {
 		return -1;
 	Assert (dsP->data != (void *) -1);
 	}
-starting_channel = gameStates.sound.digi.nNextChannel;
+nStartChannel = gameStates.sound.digi.nNextChannel;
 for(;;) {
 	if (!SoundSlots [gameStates.sound.digi.nNextChannel].playing)
 		break;
@@ -606,7 +606,7 @@ for(;;) {
 	gameStates.sound.digi.nNextChannel++;
 	if (gameStates.sound.digi.nNextChannel >= gameStates.sound.digi.nMaxChannels)
 		gameStates.sound.digi.nNextChannel = 0;
-	if (gameStates.sound.digi.nNextChannel == starting_channel) {
+	if (gameStates.sound.digi.nNextChannel == nStartChannel) {
 		//mprintf ((1, "OUT OF SOUND CHANNELS!!!\n"));
 		return -1;
 		}

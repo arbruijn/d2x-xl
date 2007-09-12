@@ -2496,6 +2496,9 @@ switch (objP->renderType) {
 				RenderLightTrail (objP);
 			}
 		break;
+		
+	case RT_LIGHTNING:
+		break;
 
 	default: 
 		Error ("Unknown renderType <%d>", objP->renderType);

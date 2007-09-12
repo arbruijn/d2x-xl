@@ -102,16 +102,18 @@ int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, vmsVector *po
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
 int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance);
 int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance);
-int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int loop_start, int loop_end);
+int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix  maxDistance, int nLoopStart, int nLoopEnd, char *pszSound);
 int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos); // Volume from 0-0x7fff
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, char *pszSound); // Volume from 0-0x7fff
 void DigiInitSounds();
 void DigiSyncSounds();
-int  DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound);
-int  DigiKillSoundLinkedToObject (int nObject);
+int DigiKillSoundLinkedToSegment (short nSegment, short nSide, short nSound);
+int DigiKillSoundLinkedToObject (int nObject);
 void DigiSetMidiVolume (int mvolume);
 void DigiSetFxVolume (int dvolume);
 void DigiMidiVolume (int dvolume, int mvolume);
+int DigiGetSoundByName (char *pszSound);
+int DigiSetObjectSound (int nObject, int nSound, char *pszSound);
 
 int DigiIsSoundPlaying (short nSound);
 

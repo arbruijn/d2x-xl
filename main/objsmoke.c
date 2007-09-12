@@ -146,19 +146,37 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	return;
 	}
 j = OBJ_IDX (objP);
-#if 0//def _DEBUG
-if ((h = gameData.lightnings.objects [j]) >= 0) {
-	t0 = gameStates.app.nSDLTicks;
+#if 1//def _DEBUG
+{
+	static int nLightning = -1;
+
+if (nLightning < 0) {
+	nLightning = CreateObject (OBJ_LIGHTNING, 0, -1, objP->nSegment, &OBJPOS (objP)->vPos, &OBJPOS (objP)->mOrient, F1_0, CT_NONE, MT_NONE, RT_NONE, 0);
+	if (nLightning >= 0) {
+		static tRgbaColorf color = {0.1f, 0.1f, 1.0f, 0.2f};
+
+		struct tLightningInfo *pli = &OBJECTS [nLightning].rType.lightningInfo;
+
+		pli->nLife = -3000;
+		pli->nDelay = 1000;
+		pli->nLength = 60;
+		pli->nAmplitude = 10;
+		pli->nOffset = 0;
+		pli->nLightnings = 50;
+		pli->nId = 0;
+		pli->nTarget = 0;
+		pli->nNodes = 100;
+		pli->nChildren = 10;
+		pli->nSteps = 3;
+		pli->nSmoothe = 1;
+		pli->bClamp = 1;
+		pli->bPlasma = 1;
+		pli->bSound = 1;
+		pli->bRandom = 1;
+		pli->color = color;
+		}
 	}
-else if (gameStates.app.nSDLTicks - t0 > 2000) {
-	tRgbaColorf color = {0.1f, 0.1f, 1.0f, 0.2f};
-	gameData.lightnings.objects [j] = CreateLightning (
-		30, 
-		gameStates.app.bFreeCam ? &gameStates.app.playerPos.vPos : &objP->position.vPos, NULL,
-		(1 || (rand () & 1)) ? NULL :
-		gameStates.app.bFreeCam ? &gameStates.app.playerPos.mOrient.uVec : &objP->position.mOrient.uVec, 
-		j, -3000, 1000, F1_0 * 60, F1_0 * 10, 0, 100, 10, 1, 3, 1, 1, 1, &color);
-	}
+}
 #endif
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->position.mOrient.fVec;
@@ -261,10 +279,8 @@ void DoRobotSmoke (tObject *objP)
 	float			nScale;
 	vmsVector	pos;
 
-if (!SHOW_SMOKE)
-	return;
 i = OBJ_IDX (objP);
-if (!gameOpts->render.smoke.bRobots) {
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -319,10 +335,8 @@ void DoReactorSmoke (tObject *objP)
 	int			h = -1, i, nShields = 0, nParts;
 	vmsVector	vDir, vPos;
 
-if (!SHOW_SMOKE)
-	return;
 i = OBJ_IDX (objP);
-if (!gameOpts->render.smoke.bRobots) {
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bRobots)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -366,10 +380,8 @@ void DoMissileSmoke (tObject *objP)
 	float			nScale = 1.5f;
 	vmsVector	pos;
 
-if (!SHOW_SMOKE)
-	return;
 i = OBJ_IDX (objP);
-if (!gameOpts->render.smoke.bMissiles) {
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bMissiles)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -413,10 +425,8 @@ void DoDebrisSmoke (tObject *objP)
 	float			nScale = 2;
 	vmsVector	pos;
 
-if (!SHOW_SMOKE)
-	return;
 i = OBJ_IDX (objP);
-if (!gameOpts->render.smoke.bDebris) {
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bDebris)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;
@@ -449,10 +459,8 @@ void DoStaticSmoke (tObject *objP)
 	int			i, j;
 	vmsVector	pos, offs, dir;
 
-if (!SHOW_SMOKE)
-	return;
 i = (int) OBJ_IDX (objP);
-if (!gameOpts->render.smoke.bStatic) {
+if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
 	if (gameData.smoke.objects [i] >= 0)
 		KillObjectSmoke (i);
 	return;

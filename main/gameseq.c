@@ -602,13 +602,13 @@ if (LOCALPLAYER.timeTotal > i2f (3600))	{
 //------------------------------------------------------------------------------
 
 //go through this level and start any tEffectClip sounds
-void SetSoundSources ()
+void SetSoundSources (void)
 {
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
 	tSegment		*segP, *connSegP;
+	tObject		*objP;
 	vmsVector	v;
-	int			i, nExplSound, nOvlTex, nEffect;
-	char			szExplSound [9];
+	int			i, nOvlTex, nEffect;
 
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 DigiInitSounds ();		//clear old sounds
@@ -639,16 +639,14 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 				continue;		//skip this one
 			}
 		COMPUTE_SIDE_CENTER (&v,segP,nSide);
-		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0/2);
+		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0 / 2);
 		}
 
-strcpy (szExplSound, "explode2");
-if (255 > (nExplSound = PiggyFindSound (szExplSound))) {
-	nExplSound = DigiUnXlatSound (nExplSound);
-	for (i = 0; i <= gameData.objs.nLastObject; i++) 
-		if (OBJECTS [i].nType == OBJ_EXPLOSION) {
-			OBJECTS [i].rType.vClipInfo.nClipIndex = OBJECTS [i].id;
-			DigiLinkSoundToObject3 (nExplSound, i, 1, F1_0, i2f (256), -1, -1);
+if (255 > (nSound = DigiGetSoundByName ("explode2"))) {
+	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) 
+		if (objP->nType == OBJ_EXPLOSION) {
+			objP->rType.vClipInfo.nClipIndex = objP->id;
+			DigiSetObjectSound (i, nSound, NULL);
 			}
 	}
 gameOpts->sound.bD1Sound = 0;

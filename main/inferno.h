@@ -2338,7 +2338,9 @@ typedef struct tLightningBundle {
 	int				nLightnings;
 	short				nObject;
 	int				nKey [2];
-	int				tUpdate;
+	time_t			tUpdate;
+	int				nSound;
+	char				bSound;
 	char				bDestroy;
 } tLightningBundle;
 

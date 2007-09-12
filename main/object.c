@@ -1523,7 +1523,7 @@ if (sideMask) {
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
 			if (!nLavaFallHissPlaying [objP->id]) {
-				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
+				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL);
 				nLavaFallHissPlaying [objP->id] = 1;
 				}
 			}
@@ -1534,7 +1534,7 @@ if (bChkVolaSeg) {
 		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		bUnderLavaFall = 1;
 		if (!nLavaFallHissPlaying [objP->id]) {
-			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1);
+			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL);
 			nLavaFallHissPlaying [objP->id] = 1;
 			}
 		}

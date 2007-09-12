@@ -169,12 +169,12 @@ if (nFrames > 1) {
 	static time_t t0 [PARTICLE_TYPES] = {0, 0, 0, 0};
 
 	time_t		t = gameStates.app.nSDLTicks;
-	int			iFrames = iParticleFrames [bPointSprites][nType];
+	int			iFrame = iParticleFrames [bPointSprites][nType];
 	int			iFrameIncr = iPartFrameIncr [bPointSprites][nType];
 	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort;
 	grsBitmap	*bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType % PARTICLE_TYPES];
 
-	BM_CURFRAME (bmP) = BM_FRAMES (bmP) + iFrames;
+	BM_CURFRAME (bmP) = BM_FRAMES (bmP) + iFrame;
 #if 1
 	if (t - t0 [nType] > 150) 
 #endif
@@ -182,17 +182,40 @@ if (nFrames > 1) {
 
 		t0 [nType] = t;
 #if 1
-		iFrames = (iFrames + 1) % nFrames;
+		iFrame = (iFrame + 1) % nFrames;
 #else
-		iFrames += iFrameIncr;
-		if ((iFrames < 0) || (iFrames >= nFrames)) {
+		iFrame += iFrameIncr;
+		if ((iFrame < 0) || (iFrame >= nFrames)) {
 			iPartFrameIncr [bPointSprites][nType] = -iFrameIncr;
-			iFrames += -2 * iFrameIncr;
+			iFrame += -2 * iFrameIncr;
 			}
 #endif
-		iParticleFrames [bPointSprites][nType] = iFrames;
+		iParticleFrames [bPointSprites][nType] = iFrame;
 		}
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void AdjustParticleBrightness (grsBitmap *bmP)
+{
+	grsBitmap	*bmfP;
+	int			i, j = bmP->bm_data.alt.bm_frameCount;
+	double		*dFrameBright, dAvgBright = 0, dMaxBright = 0;
+
+if (j < 2)
+	return;
+if (!(dFrameBright = (double *) D2_ALLOC (j * sizeof (double))))
+	return;
+for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++) {
+	dAvgBright += (dFrameBright [i] = TGABrightness (bmfP));
+	if (dMaxBright < dFrameBright [i])
+		dMaxBright = dFrameBright [i];
+	}
+dAvgBright /= j;
+for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++)
+	TGAChangeBrightness (bmfP, dMaxBright / dFrameBright [i]);
+D2_FREE (dFrameBright);
 }
 
 //	-----------------------------------------------------------------------------
@@ -214,6 +237,13 @@ if (*flagP < 0)
 	return 0;
 bmpParticle [bPointSprites][nType] = bmP;
 BM_FRAMECOUNT (bmP) = bmP->bm_props.h / bmP->bm_props.w;
+#if 1
+if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
+	AdjustParticleBrightness (bmP);
+	D2_FREE (BM_FRAMES (bmP));	// make sure frames get loaded to OpenGL in OglLoadBmTexture ()
+	BM_CURFRAME (bmP) = NULL;
+	}
+#endif
 OglLoadBmTexture (bmP, 0, 3);
 nParticleFrames [bPointSprites][nType] = BM_FRAMECOUNT ((bmP));
 return *flagP > 0;
@@ -640,19 +670,20 @@ int RenderParticle (tParticle *pParticle, double brightness)
 	double				*pf;
 #endif
 	double				decay = (double) pParticle->nLife / (double) pParticle->nTTL;
-	int					bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
+	int					nType = pParticle->nType,
+							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
 
 if (pParticle->nDelay > 0)
 	return 0;
-if (!(bmP = bmpParticle [bPointSprites][pParticle->nType % PARTICLE_TYPES]))
+if (!(bmP = bmpParticle [bPointSprites][nType % PARTICLE_TYPES]))
 	return 0;
 if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 #if 1
 if (gameOpts->render.bDepthSort > 0) {
 	hp = pParticle->transPos;
-	if (gameData.smoke.nLastType != pParticle->nType) {
-		gameData.smoke.nLastType = pParticle->nType;
+	if (gameData.smoke.nLastType != nType) {
+		gameData.smoke.nLastType = nType;
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
 		}
@@ -660,8 +691,8 @@ if (gameOpts->render.bDepthSort > 0) {
 	}
 else if (gameOpts->render.smoke.bSort) {
 	hp = pParticle->transPos;
-	if (gameData.smoke.nLastType != pParticle->nType) {
-		gameData.smoke.nLastType = pParticle->nType;
+	if (gameData.smoke.nLastType != nType) {
+		gameData.smoke.nLastType = nType;
 		glEnd ();
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
@@ -671,7 +702,7 @@ else if (gameOpts->render.smoke.bSort) {
 else
 #endif
 	G3TransformPoint (&hp, &pParticle->pos, 0);
-if (pParticle->nType > 2) {
+if (nType > 2) {
 	//pParticle->color.green *= 0.99;
 	//pParticle->color.blue *= 0.99;
 	}
@@ -707,12 +738,12 @@ else if (pParticle->nFade == 0) {
 	}
 pc = pParticle->color;
 //pc.alpha *= /*gameOpts->render.smoke.bDisperse ? decay2 :*/ decay;
-if (pParticle->nType == 3)
+if (nType == 3)
 	pc.alpha /= 2;
 else
 	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
 pc.alpha = (pc.alpha - 0.005) * decay + 0.005;
-if (pParticle->nType < 3) {
+if (nType < 3) {
 	if (SHOW_DYN_LIGHT) {
 		tFaceColor *psc = AvgSgmColor (pParticle->nSegment, NULL);
 		if (psc->index == gameStates.render.nFrameFlipFlop + 1) {
@@ -764,7 +795,7 @@ else
 	u = bmP->glTexture->u;
 	v = bmP->glTexture->v;
 	o = pParticle->nOrient;
-	if (gameOpts->render.smoke.bDisperse && (pParticle->nType < 3)) {
+	if (gameOpts->render.smoke.bDisperse && (nType < 3)) {
 		decay = sqrt (decay);
 		w = f2fl (pParticle->nWidth) / decay;
 		h = f2fl (pParticle->nHeight) / decay;
@@ -1461,6 +1492,8 @@ if (iSmoke < 0)
 else if (!IsUsedSmoke (iSmoke))
 	return -1;
 pSmoke = gameData.smoke.buffer + iSmoke;
+if (gameData.smoke.objects && (pSmoke->nObject >= 0))
+	gameData.smoke.objects [pSmoke->nObject] = -1;
 if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);

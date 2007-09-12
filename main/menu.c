@@ -3097,8 +3097,8 @@ void LightningOptionsMenu ()
 
 	pszLightningQuality [0] = TXT_LOW;
 	pszLightningQuality [1] = TXT_HIGH;
-	pszLightningStyle [0] = TXT_LIGHTNING_SMOOTH;
-	pszLightningStyle [1] = TXT_LIGHTNING_JAGGY;
+	pszLightningStyle [0] = TXT_LIGHTNING_JAGGY;
+	pszLightningStyle [1] = TXT_LIGHTNING_SMOOTH;
 
 do {
 	memset (m, 0, sizeof (m));

@@ -3876,7 +3876,7 @@ void MultiDoSoundFunction (char *buf)
 	char nPlayer, whichfunc;
 	short sound;
 
-if (LOCALPLAYER.connected!=1)
+if (LOCALPLAYER.connected != 1)
 	return;
 
 nPlayer = buf [1];
@@ -3885,7 +3885,8 @@ sound = buf [3];
 if (whichfunc == 0)
 	DigiKillSoundLinkedToObject (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
-	DigiLinkSoundToObject3 (sound, (short) gameData.multiplayer.players [nPlayer].nObject, 1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
+	DigiLinkSoundToObject3 (sound, (short) gameData.multiplayer.players [nPlayer].nObject, 1, F1_0, i2f (256), 
+									AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL);
 }
 
 //-----------------------------------------------------------------------------

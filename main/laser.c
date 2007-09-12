@@ -393,6 +393,8 @@ return 1;
 
 // ---------------------------------------------------------------------------------
 
+#define OMEGA_PLASMA 0
+
 int CreateOmegaLightnings (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
 {
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
@@ -409,11 +411,18 @@ if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
 	gameData.laser.parentObjP = parentObjP;
 	gameData.laser.targetObjP = targetObjP;
 	vEnd = targetObjP ? &targetObjP->position.vPos : vTargetPos;
+#if OMEGA_PLASMA
+	color.alpha = gameOpts->render.lightnings.bPlasma ? 0.5f : 0.3f;
+#endif
 	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, NULL, 
 																-(bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment) - 1, 
 																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 10, 1, 3, 1, 1, 
-																0, //(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
-																&color);
+#if OMEGA_PLASMA
+																(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
+#else
+																0,
+#endif
+																1, &color);
 	}
 return (gameData.laser.nLightning >= 0);
 }

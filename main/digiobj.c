@@ -71,9 +71,10 @@ typedef struct tSoundObject {
 	int			volume;			// Volume that this sound is playing at
 	int			pan;				// Pan value that this sound is playing at
 	int			channel;			// What channel this is playing on, -1 if not playing
-	short			nSound;		// The sound number that is playing
-	int			loop_start;		// The start point of the loop. -1 means no loop
-	int			loop_end;		// The end point of the loop
+	short			nSound;			// The sound number that is playing
+	char			szSound [SHORT_FILENAME_LEN];	// file name of custom sound to be played
+	int			nLoopStart;		// The start point of the loop. -1 means no loop
+	int			nLoopEnd;		// The end point of the loop
 	union {	
 		struct {
 			short			nSegment;				// Used if SOF_LINK_TO_POS field is used
@@ -229,7 +230,7 @@ return DigiPlaySampleSpeed (-1, maxVolume, F1_0, nLoops, pszWAV);
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos)	
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, char *pszSound)	
 {
 
 	no_dups = 1;
@@ -248,7 +249,7 @@ if (nSound < 0)
 if (volume < 10) 
 	return;
 // start the sample playing
-DigiStartSound (nSound, volume, angle, 0, -1, -1, -1, F1_0, NULL, vPos);
+DigiStartSound (nSound, volume, angle, 0, -1, -1, -1, F1_0, pszSound, vPos);
 }
 
 //------------------------------------------------------------------------------
@@ -277,7 +278,7 @@ gameStates.sound.digi.bSoundsInitialized = 1;
 // plays a sample that loops bForever.  
 // Call digi_stop_channe (channel) to stop it.
 // Call DigiSetChannelVolume (channel, volume) to change volume.
-// if loop_start is -1, entire sample loops
+// if nLoopStart is -1, entire sample loops
 // Returns the channel that sound is playing on, or -1 if can't play.
 // This could happen because of no sound drivers loaded or not enough channels.
 
@@ -298,7 +299,7 @@ if (gameStates.sound.digi.nLoopingSound > -1)
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySampleLooping (short nSound, fix maxVolume,int loop_start, int loop_end)
+void DigiPlaySampleLooping (short nSound, fix maxVolume,int nLoopStart, int nLoopEnd)
 {
 nSound = DigiXlatSound (nSound);
 if (nSound < 0) 
@@ -307,8 +308,8 @@ if (gameStates.sound.digi.nLoopingChannel>-1)
 	DigiStopSound (gameStates.sound.digi.nLoopingChannel);
 gameStates.sound.digi.nLoopingSound = (short) nSound;
 gameStates.sound.digi.nLoopingVolume = (short) maxVolume;
-gameStates.sound.digi.nLoopingStart = (short) loop_start;
-gameStates.sound.digi.nLoopingEnd = (short) loop_end;
+gameStates.sound.digi.nLoopingStart = (short) nLoopStart;
+gameStates.sound.digi.nLoopingEnd = (short) nLoopEnd;
 DigiPlaySampleLoopingSub ();
 }
 
@@ -372,8 +373,9 @@ soP->channel =
 		soP->volume, 
 		soP->pan, 
 		soP->flags & SOF_PLAY_FOREVER, 
-		soP->loop_start, 
-		soP->loop_end, i, F1_0, NULL, 
+		soP->nLoopStart, 
+		soP->nLoopEnd, i, F1_0, 
+		soP->szSound,
 		(soP->flags & SOF_LINK_TO_OBJ) ? &gameData.objs.objects [soP->linkType.obj.nObject].position.vPos : &soP->linkType.pos.position);
 if (soP->channel > -1)
 	gameStates.sound.digi.nActiveObjects++;
@@ -385,61 +387,60 @@ if (soP->channel > -1)
 
 int DigiLinkSoundToObject3 (
 	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance, 
-	int loop_start, int loop_end)
+	int nLoopStart, int nLoopEnd, char *pszSound)
 {
-	int			i, volume, pan;
-	tObject		*objP;
-	short			nSound;
-	tSoundObject *soP;
+	tObject			*objP;
+	tSoundObject 	*soP;
+	int				i, volume, pan;
+	short				nSound;
 
-nSound = DigiXlatSound (nOrgSound);
 if (maxVolume < 0) 
 	return -1;
-//	if (maxVolume > F1_0) maxVolume = F1_0;
-if (nSound < 0) 
-	return -1;
-if (!gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data) {
-	Int3 ();
-	return -1;
-	}
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
 	return -1;
+if (!(pszSound && *pszSound)) {
+	nSound = DigiXlatSound (nOrgSound);
+	if (nSound < 0) 
+		return -1;
+	if (!gameData.pig.sound.sounds [gameOpts->sound.bD1Sound][nSound].data) {
+		Int3 ();
+		return -1;
+		}
+	}
 objP = gameData.objs.objects + nObject;
 if (!bForever) { 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (
 		&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, 
-		gameData.objs.viewer->nSegment, &gameData.objs.objects [nObject].position.vPos, 
-		gameData.objs.objects [nObject].nSegment, maxVolume, &volume, &pan, maxDistance);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, &objP->position.vPos);
+		gameData.objs.viewer->nSegment, &objP->position.vPos, objP->nSegment, maxVolume, &volume, &pan, maxDistance);
+	DigiPlaySample3D (nOrgSound, pan, volume, 0, &objP->position.vPos, pszSound);
 	return -1;
 	}
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordLinkSoundToObject3 (nOrgSound, nObject, maxVolume, maxDistance, loop_start, loop_end);
+	NDRecordLinkSoundToObject3 (nOrgSound, nObject, maxVolume, maxDistance, nLoopStart, nLoopEnd);
 #endif
 for (i = 0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
 	if (!soP->flags)
 		break;
-if (i == MAX_SOUND_OBJECTS) {
-	//mprintf ((1, "Too many sound gameData.objs.objects!\n"));
+if (i == MAX_SOUND_OBJECTS) 
 	return -1;
-	}
 soP->nSignature = gameStates.sound.digi.nNextSignature++;
 soP->flags = SOF_USED | SOF_LINK_TO_OBJ;
 if (bForever)
 	soP->flags |= SOF_PLAY_FOREVER;
 soP->linkType.obj.nObject = nObject;
-soP->linkType.obj.nObjSig = gameData.objs.objects [nObject].nSignature;
+soP->linkType.obj.nObjSig = objP->nSignature;
 soP->maxVolume = maxVolume;
 soP->maxDistance = maxDistance;
 soP->volume = 0;
 soP->pan = 0;
-soP->nSound = nSound;
-soP->loop_start = loop_start;
-soP->loop_end = loop_end;
+soP->nSound = (pszSound && *pszSound) ? -1 : nSound;
+strncpy (soP->szSound, pszSound, sizeof (soP->szSound));
+soP->nLoopStart = nLoopStart;
+soP->nLoopEnd = nLoopEnd;
 if (gameStates.sound.bDontStartObjects) { 		//started at level start
 	soP->flags |= SOF_PERMANENT;
-	soP->channel =  -1;
+	soP->channel = -1;
 	}
 else {
 	DigiGetSoundLoc (
@@ -462,7 +463,7 @@ return soP->nSignature;
 int DigiLinkSoundToObject2 (
 	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance)
 {		
-return DigiLinkSoundToObject3 (nOrgSound, nObject, bForever, maxVolume, maxDistance, -1, -1);
+return DigiLinkSoundToObject3 (nOrgSound, nObject, bForever, maxVolume, maxDistance, -1, -1, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -499,7 +500,7 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 						  pos, nSegment, maxVolume, &volume, &pan, maxDistance);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, pos);
+	DigiPlaySample3D (nOrgSound, pan, volume, 0, pos, NULL);
 	return -1;
 	}
 for (i=0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
@@ -521,7 +522,7 @@ soP->maxVolume = maxVolume;
 soP->maxDistance = maxDistance;
 soP->volume = 0;
 soP->pan = 0;
-soP->loop_start = soP->loop_end = -1;
+soP->nLoopStart = soP->nLoopEnd = -1;
 if (gameStates.sound.bDontStartObjects) {		//started at level start
 	soP->flags |= SOF_PERMANENT;
 	soP->channel = -1;
@@ -637,7 +638,7 @@ void DigiRecordSoundObjects ()
 			 == (SOF_USED | SOF_LINK_TO_OBJ | SOF_PLAY_FOREVER))
 		{
 			NDRecordLinkSoundToObject3 (DigiUnXlatSound (SoundObjects [i].nSound), SoundObjects [i].linkType.obj.nObject, 
-			SoundObjects [i].maxVolume, SoundObjects [i].maxDistance, SoundObjects [i].loop_start, SoundObjects [i].loop_end);
+			SoundObjects [i].maxVolume, SoundObjects [i].maxDistance, SoundObjects [i].nLoopStart, SoundObjects [i].nLoopEnd);
 		}
 	}
 }
@@ -949,6 +950,25 @@ else {
 }
 // Try to start it!
 SoundQProcess ();
+}
+
+//------------------------------------------------------------------------------
+
+int DigiGetSoundByName (char *pszSound)
+{
+	char	szSound [FILENAME_LEN];
+	int	nSound;
+	
+strcpy (szSound, pszSound);
+nSound = PiggyFindSound (szSound);
+return (nSound == 255) ? -1 : DigiUnXlatSound (nSound);
+}
+
+//------------------------------------------------------------------------------
+
+int DigiSetObjectSound (int nObject, int nSound, char *pszSound)
+{
+return (nObject < 0) ? -1 : DigiLinkSoundToObject3 (nSound, nObject, 1, F1_0, i2f (256), -1, -1, pszSound);
 }
 
 //------------------------------------------------------------------------------
