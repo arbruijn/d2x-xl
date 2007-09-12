@@ -8,7 +8,7 @@ int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVecto
 							short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 							char bClamp, char bPlasma, char bSound, tRgbaColorf *colorP);
 void DestroyLightnings (int iLightning, tLightning *pf, int bDestroy);
-int DestroyAllLightnings (void);
+int DestroyAllLightnings (int bForce);
 void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, int bStretch, int bFromEnd);
 void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthSort);
 void RenderLightnings (void);

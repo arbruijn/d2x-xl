@@ -435,7 +435,10 @@ soP->maxDistance = maxDistance;
 soP->volume = 0;
 soP->pan = 0;
 soP->nSound = (pszSound && *pszSound) ? -1 : nSound;
-strncpy (soP->szSound, pszSound, sizeof (soP->szSound));
+if (pszSound)
+	strncpy (soP->szSound, pszSound, sizeof (soP->szSound));
+else
+	*(soP->szSound) = '\0';
 soP->nLoopStart = nLoopStart;
 soP->nLoopEnd = nLoopEnd;
 if (gameStates.sound.bDontStartObjects) { 		//started at level start
@@ -604,7 +607,7 @@ int DigiKillSoundLinkedToObject (int nObject)
 	}
 #endif
 
-	for (i=0, soP = SoundObjects; i<MAX_SOUND_OBJECTS; i++, soP++)	{
+	for (i = 0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)	{
 		if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ))	{
 			if (soP->linkType.obj.nObject == nObject)	{
 				if (soP->channel > -1)	{

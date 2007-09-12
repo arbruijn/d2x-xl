@@ -213,8 +213,9 @@ for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++) {
 		dMaxBright = dFrameBright [i];
 	}
 dAvgBright /= j;
-for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++)
-	TGAChangeBrightness (bmfP, dMaxBright / dFrameBright [i]);
+for (i = 0, bmfP = BM_FRAMES (bmP); i < j; i++, bmfP++) {
+	TGAChangeBrightness (bmfP, 0, 1, 2 * (int) (255 * dFrameBright [i] * (dAvgBright - dFrameBright [i])), 0);
+	}
 D2_FREE (dFrameBright);
 }
 

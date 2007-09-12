@@ -589,7 +589,7 @@ if (!gameStates.app.bUseSound)
 	return -1;
 if (!gameStates.sound.digi.bInitialized) 
 	return -1;
-if (!(pszWAV && gameOpts->sound.bUseSDLMixer)) {
+if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
 		return -1;
 	dsP = gameData.pig.sound.sounds [gameOpts->sound.bD1Sound] + nSound % gameData.pig.sound.nSoundFiles [gameOpts->sound.bD1Sound];
@@ -660,7 +660,7 @@ if (ssP->bResampled) {
 if (gameOpts->sound.bUseSDLMixer) {
 	//resample to two channels
 	ssP->channel = gameStates.sound.digi.nNextChannel;
-	if (pszWAV) {
+	if (pszWAV && *pszWAV) {
 #if 0
 		if (!(ssP->samples = CFReadData (pszWAV, gameFolders.szDataDir, 0)))
 			return -1;
@@ -694,7 +694,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 	}
 else 
 #else
-if (pszWAV)
+if (pszWAV && *pszWAV)
 	return -1;
 #endif
 	{

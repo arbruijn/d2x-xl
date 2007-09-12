@@ -29,6 +29,6 @@ int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *pb, int alpha,
 grsBitmap *CreateAndReadTGA (char *szFile);
 int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP);
 double TGABrightness (grsBitmap *bmP);
-void TGAChangeBrightness (grsBitmap *bmP, double dScale);
+void TGAChangeBrightness (grsBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha);
 
 #endif //_TGA_H

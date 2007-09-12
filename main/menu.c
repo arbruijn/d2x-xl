@@ -3063,7 +3063,7 @@ m = menus + lightningOpts.nUse;
 v = m->value;
 if (v != extraGameInfo [0].bUseLightnings) {
 	if (!(extraGameInfo [0].bUseLightnings = v))
-		DestroyAllLightnings ();
+		DestroyAllLightnings (0);
 	*key = -2;
 	return;
 	}

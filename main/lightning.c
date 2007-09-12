@@ -132,7 +132,7 @@ return vRand;
 vmsVector *DirectedRandomVector (vmsVector *vRand, vmsVector *vDir, int nMinDot, int nMaxDot)
 {
 	vmsVector	vr, vd, vSign;
-	int			nDot, nSign, i;
+	int			nDot, nSign;
 
 VmVecCopyNormalize (&vd, vDir);
 vSign.p.x = vd.p.x ? vd.p.x / abs (vd.p.x) : 0;
@@ -146,6 +146,7 @@ do {
 	VmVecNormalize (&vr);
 #if 0
 	if (nSign != VECSIGN (vr)) {
+		int i;
 		do {
 			i = rand () % 3;
 			} while (!vr.v [i]);
@@ -345,8 +346,11 @@ if (SHOW_LIGHTNINGS) {
 	plb->pl = pl;
 	plb->nLightnings = nLightnings;
 	plb->nObject = nObject;
-	if (plb->bSound = bSound)
-		plb->nSound = DigiSetObjectSound (nObject, -1, "lightng.wav");
+	if (plb->bSound = bSound) {
+		DigiSetObjectSound (nObject, -1, "lightng.wav");
+		if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
+			DigiSetObjectSound (nObject, plb->nSound, NULL);
+		}
 	else
 		plb->nSound = -1;
 	plb->tUpdate = -1;
@@ -430,6 +434,8 @@ else {
 		plh->nNext = i;
 	gameData.lightnings.iFree = iLightning;
 	gameData.lightnings.objects [iLightning] = -1;
+	if (plb->bSound && (plb->nObject >= 0))
+		DigiKillSoundLinkedToObject (plb->nObject);
 	i = plb->nLightnings;
 	}
 for (; i; i--, pl++)
@@ -442,16 +448,16 @@ if (plb) {
 
 //------------------------------------------------------------------------------
 
-int DestroyAllLightnings (void)
+int DestroyAllLightnings (int bForce)
 {
 	int	i, j;
 
-if (gameData.lightnings.bDestroy >= 0)
+if (!bForce && (gameData.lightnings.bDestroy >= 0))
 	gameData.lightnings.bDestroy = 1;
 else {
 	for (i = gameData.lightnings.iUsed; i >= 0; i = j) {
 		j = gameData.lightnings.buffer [i].nNext;
-		DestroyLightnings (-i - 1, NULL, 1);
+		DestroyLightnings (i, NULL, 1);
 		}
 	InitLightnings ();
 	}
@@ -1075,16 +1081,17 @@ else {
 		f = (float) sqrt (f);
 #if RENDER_LIGHTNING_PLASMA
 		if (bPlasma) {
-			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			bDrawArrays = OglEnableClientStates (1, 0);
 			glEnable (GL_TEXTURE_2D);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 				OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 				for (h = 0; h < 2; h++) {
 					if (h) {
+						OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 						glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
 						}
 					else {
+						OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 						glColor4f (1, 1, 1, color.alpha / 2);
 						}
 					for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++, pln++) {
@@ -1139,10 +1146,10 @@ else {
 			glEnable (GL_CULL_FACE);
 			glDepthMask (1);
 			}
-		glLineWidth (1);
-		glDisable (GL_SMOOTH);
-		OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
+	glLineWidth (1);
+	glDisable (GL_SMOOTH);
+	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 
@@ -1220,7 +1227,7 @@ void DoLightningFrame (void)
 {
 if (gameData.lightnings.bDestroy) {
 	gameData.lightnings.bDestroy = -1;
-	DestroyAllLightnings ();
+	DestroyAllLightnings (0);
 	}
 else {
 	UpdateLightnings ();
@@ -1340,7 +1347,8 @@ void CreateExplosionLightnings (tObject *objP, tRgbaColorf *colorP, int nRods, i
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bExplosions) {
 	//gameData.lightnings.objects [OBJ_IDX (objP)] = 
 		CreateLightning (
-			nRods, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), 750, 0, nRad, F1_0 * 4, 2 * F1_0, 50, 5, 1, 3, 1, 1, 0, 0, colorP);
+			nRods, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), 750, 0, 
+			nRad, F1_0 * 4, 2 * F1_0, 50, 5, 1, 3, 1, 1, 0, 0, colorP);
 	}
 }
 
@@ -1382,7 +1390,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 		MoveObjectLightnings (objP);
 	else
 		gameData.lightnings.objects [i] = CreateLightning (
-			2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, objP->size, objP->size / 8, 0, 20, 2, 1, 20, 1, 1, 0, 0, colorP);
+			objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, 
+			objP->size, objP->size / 8, 0, 25, 3, 1, 20, 1, 1, 0, 0, colorP);
 	}
 }
 
@@ -1438,9 +1447,7 @@ void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, int nVertices)
 {
 	tLightningBundle	*plb;
 	vmsVector			vPos, vEnd;
-#if 0
-	vmsVector			vDelta;
-#endif
+	vmsVector			vDelta, vNorm;
 	int					h, i, j, bUpdate = 0;
 	short					nObject;
 	tPolyKey				key;
@@ -1476,15 +1483,13 @@ if (i < 0) {
 #endif
 	vPos = pointList [0]->p3_src;
 	vEnd = pointList [1 + rand () % (nVertices - 1)]->p3_src;
-#if 0
-	VmVecNormal (&vDelta, &vPos, &pointList [1]->p3_src, &vEnd);
-	VmVecScaleInc (&vPos, &vDelta, F1_0 / 64);
-	VmVecScaleInc (&vEnd, &vDelta, F1_0 / 64);
-	VmVecNormal (&vDelta, &vDelta, &vPos, &vEnd);
-#endif
+	VmVecNormal (&vNorm, &vPos, &pointList [1]->p3_src, &vEnd);
+	VmVecScaleInc (&vPos, &vNorm, F1_0 / 64);
+	VmVecScaleInc (&vEnd, &vNorm, F1_0 / 64);
+	VmVecNormal (&vDelta, &vNorm, &vPos, &vEnd);
 	h = VmVecDist (&vPos, &vEnd);
-	i = CreateLightning (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 3000 + rand () % 2000, 0, 
-								h, h / 4 + rand () % 2, 0, 20, 2, 0, 10, 0, 1, 1, 0, &color);
+	i = CreateLightning (1, &vPos, &vEnd, &vDelta, nObject, 1000 + rand () % 2000, 0, 
+								h, h / 4 + rand () % 2, 0, 20, 2, 1, 5, 0, 1, 1, 0, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

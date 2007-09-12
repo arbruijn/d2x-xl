@@ -642,7 +642,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0 / 2);
 		}
 
-if (255 > (nSound = DigiGetSoundByName ("explode2"))) {
+if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
 	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) 
 		if (objP->nType == OBJ_EXPLOSION) {
 			objP->rType.vClipInfo.nClipIndex = objP->id;
@@ -898,7 +898,7 @@ DestroyCameras ();
 /*---*/LogErr ("   Destroying particle data\n");
 DestroyAllSmoke ();
 /*---*/LogErr ("   Destroying lightning data\n");
-DestroyAllLightnings ();
+DestroyAllLightnings (1);
 DestroyOmegaLightnings ();
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();

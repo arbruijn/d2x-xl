@@ -527,29 +527,67 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void TGAChangeBrightness (grsBitmap *bmP, double dScale)
+void TGAChangeBrightness (grsBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha)
 {
 	int h = 0;
 
-if (bmP && (dScale != 1.0)) {
-		int		bpp = bmP->bm_bpp, i, j, c;
+if (bmP) {
+		int		bpp = bmP->bm_bpp, h, i, j, c, bAlpha = (bpp == 4);
 		ubyte		*pData;
 
 	if (pData = bmP->bm_texBuf) {
-		if (dScale < 0) {
-			for (i = bmP->bm_props.w * bmP->bm_props.h; i; i--)
-				for (j = 3; j; j--, pData++)
-					*pData = (ubyte) (*pData * dScale);
-				pData++;
-			}
-		else {
-			dScale = 1.0 / dScale;
-			for (i = bmP->bm_props.w * bmP->bm_props.h; i; i--)
-				for (j = 3; j; j--, pData++) {
-					if (c = 255 - *pData)
-						*pData = 255 - (ubyte) (c * dScale);
+	if (!bAlpha)
+		bSkipAlpha = 1;
+	else if (bSkipAlpha)
+		bpp = 3;
+		if (nOffset) {
+			for (i = bmP->bm_props.w * bmP->bm_props.h; i; i--) {
+				for (h = 0, j = 3; j; j--, pData++) {
+					c = (int) *pData + nOffset;
+					h += c;
+					*pData = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 					}
-				pData++;
+				if (bSkipAlpha)
+					pData++;
+				else if (bAlpha) {
+					if (c = *pData) {
+						c += nOffset;
+						*pData = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+						}
+					pData++;
+					}
+				}
+			}
+		else if (dScale && (dScale != 1.0)) {
+			if (dScale < 0) {
+				for (i = bmP->bm_props.w * bmP->bm_props.h; i; i--) {
+					for (j = bpp; j; j--, pData++)
+						*pData = (ubyte) (*pData * dScale);
+					if (bSkipAlpha)
+						pData++;
+					}
+				}
+			else if (bInverse) {
+				dScale = 1.0 / dScale;
+				for (i = bmP->bm_props.w * bmP->bm_props.h; i; i--) {
+					for (j = bpp; j; j--, pData++)
+						if (c = 255 - *pData)
+							*pData = 255 - (ubyte) (c * dScale);
+					if (bSkipAlpha)
+						pData++;
+					}
+				}
+			else {
+				for (i = bmP->bm_props.w * bmP->bm_props.h; i; i--) {
+					for (j = bpp; j; j--, pData++)
+						if (c = 255 - *pData) {
+							c = (int) (*pData * dScale);
+							*pData = (ubyte) ((c > 255) ? 255 : c);
+							}
+					if (bSkipAlpha)
+						pData++;
+					}
+				}
 			}
 		}
 	}	
