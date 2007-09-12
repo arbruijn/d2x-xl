@@ -1074,8 +1074,8 @@ if (gameOpts->input.trackIR.nMode == 0) {
 	else
 		dy = 0;
 	if (gameOpts->input.trackIR.bMove [0]) {
-		Controls [0].headingTime -= dx * gameStates.input.kcPollTime;
-		Controls [0].pitchTime += dy * gameStates.input.kcPollTime;
+		Controls [0].headingTime -= (fix) (dx * gameStates.input.kcPollTime);
+		Controls [0].pitchTime += (fix) (dy * gameStates.input.kcPollTime);
 		}
 	if (gameOpts->input.trackIR.bMove [1])
 		Controls [0].bankTime += (int) (tirInfo.fvRot.x * gameStates.input.kcPollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));

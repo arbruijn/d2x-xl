@@ -116,7 +116,7 @@ do {
 	vRand->p.x = F1_0 / 4 - d_rand ();
 	vRand->p.y = F1_0 / 4 - d_rand ();
 	vRand->p.z = F1_0 / 4 - d_rand ();
-	} while (!(vRand->p.x || vRand->p.y || vRand->p.z));
+	} while (!(vRand->p.x && vRand->p.y && vRand->p.z));
 return vRand;
 }
 
@@ -171,7 +171,7 @@ void SetupLightning (tLightning *pl, int bInit)
 {
 	tLightning		*pp;
 	tLightningNode	*pln;
-	vmsVector		vPos, vDir, vDelta [2], v;
+	static vmsVector		vPos, vDir, vDelta [2], v;
 	int				i;
 
 if (pl->bRandom) {
@@ -197,10 +197,13 @@ if (pl->bFixedDelta) {
 	VmVecZero (vDelta + 1);
 	}
 else {
+	v.p.x = vDir.p.x ? SIGN (vDir.p.x) * F1_0 : F1_0;
+	v.p.y = vDir.p.y ? SIGN (vDir.p.y) * F1_0 : F1_0;
+	v.p.z = vDir.p.z ? SIGN (vDir.p.z) * F1_0 : F1_0;
 	do {
-		vDelta->p.x = (int) (vDir.p.x * f_rand ());
-		vDelta->p.y = (int) (vDir.p.y * f_rand ());
-		vDelta->p.z = (int) (vDir.p.z * f_rand ());
+		vDelta->p.x = (int) (v.p.x * f_rand ());
+		vDelta->p.y = (int) (v.p.y * f_rand ());
+		vDelta->p.z = (int) (v.p.z * f_rand ());
 		VmVecNormalize (vDelta);
 		} while (abs (VmVecDot (&vDir, vDelta)) > 9 * F1_0 / 10);
 	VmVecNormal (vDelta + 1, &vPos, &pl->vEnd, vDelta);
@@ -1406,6 +1409,16 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+vmsVector *RandomIntersection (vmsVector *vIntersect, vmsVector *vStart, vmsVector *vEnd)
+{
+VmVecSub (vIntersect, vEnd, vStart);
+VmVecScaleFrac (vIntersect, F1_0, (fix) (f_rand () * F1_0));
+VmVecInc (vIntersect, vStart);
+return vIntersect;
+}
+
+//------------------------------------------------------------------------------
+
 typedef union tPolyKey {
 	int	i [2];
 	short	s [4];
@@ -1414,7 +1427,10 @@ typedef union tPolyKey {
 void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, int nVertices)
 {
 	tLightningBundle	*plb;
-	vmsVector			vDelta, vPos, vEnd;
+	vmsVector			vPos, vEnd;
+#if 0
+	vmsVector			vDelta;
+#endif
 	int					h, i, j, bUpdate = 0;
 	short					nObject;
 	tPolyKey				key;
@@ -1427,7 +1443,7 @@ void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, int nVertices)
 
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
-if ((objP->nType != OBJ_ROBOT) /*&& (objP->nType != OBJ_PLAYER)*/)
+if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_PLAYER))
 	return;
 if (nVertices < 3)
 	return;
@@ -1448,8 +1464,14 @@ if (i < 0) {
 	if (f_rand () > fDamage)
 		return;
 #endif
-	vPos = pointList [0]->p3_src;
-	vEnd = pointList [1 + rand () % (nVertices - 1)]->p3_src;
+	if (nVertices < 4) {
+		vPos = pointList [0]->p3_src;
+		vEnd = pointList [1 + rand () % (nVertices - 1)]->p3_src;
+		}
+	else {
+		RandomIntersection (&vPos, &pointList [0]->p3_src, &pointList [1]->p3_src);
+		RandomIntersection (&vEnd, &pointList [h]->p3_src, &pointList [h + 1]->p3_src);
+		}
 #if 0
 	VmVecNormal (&vDelta, &vPos, &pointList [1]->p3_src, &vEnd);
 	VmVecScaleInc (&vPos, &vDelta, F1_0 / 64);

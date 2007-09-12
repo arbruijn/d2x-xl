@@ -539,6 +539,10 @@ SOURCE=..\..\main\lightmap.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\lightning.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\menu.c
 # End Source File
 # Begin Source File
@@ -595,6 +599,10 @@ SOURCE=..\..\main\object.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\objrender.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\objsmoke.c
 # End Source File
 # Begin Source File
@@ -608,6 +616,10 @@ SOURCE=..\..\main\paging.c
 # Begin Source File
 
 SOURCE=..\..\main\particles.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\perlin.c
 # End Source File
 # Begin Source File
 
@@ -1044,6 +1056,10 @@ SOURCE=..\..\main\lightmap.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\lightning.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\makesig.h
 # End Source File
 # Begin Source File
@@ -1116,6 +1132,10 @@ SOURCE=..\..\main\object.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\objrender.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\objsmoke.h
 # End Source File
 # Begin Source File
@@ -1149,6 +1169,10 @@ SOURCE=..\..\include\pbuffer.h
 # Begin Source File
 
 SOURCE=..\..\include\pcx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\perlin.h
 # End Source File
 # Begin Source File
 
