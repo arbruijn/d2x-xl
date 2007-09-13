@@ -1267,7 +1267,7 @@ double CloudBrightness (tCloud *pCloud)
 {
 if (pCloud->nObject < 0)
 	return 0.5;
-if (pCloud->nObjType == OBJ_SMOKE)
+if (pCloud->nObjType == OBJ_EFFECT)
 	return 0.5;
 if (pCloud->nObjType == OBJ_DEBRIS)
 	return 0.5;

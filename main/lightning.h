@@ -4,7 +4,7 @@
 #include "inferno.h"
 
 int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
-							short nObject, int nLife, int nDelay, int nLength, int nAmplitude, int nOffset,
+							short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 							short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
 							char bClamp, char bPlasma, char bSound, tRgbaColorf *colorP);
 void DestroyLightnings (int iLightning, tLightning *pf, int bDestroy);

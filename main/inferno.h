@@ -205,6 +205,7 @@ typedef struct tLightningOptions {
 	int nQuality;
 	int nStyle;
 	int bPlasma;
+	int bPlayers;
 	int bRobots;
 	int bDamage;
 	int bExplosions;
@@ -2306,6 +2307,7 @@ typedef struct tLightning {
 	vmsVector			vPos;
 	vmsVector			vEnd;
 	vmsVector			vDir;
+	vmsVector			vRefEnd;
 	vmsVector			vDelta;
 	tLightningNode		*pNodes;
 	tRgbaColorf			color;
@@ -2325,6 +2327,7 @@ typedef struct tLightning {
 	short					nObject;
 	short					nSegment;
 	short					nNode;
+	char					nAngle;
 	char					nDepth;
 	char					bClamp;
 	char					bPlasma;

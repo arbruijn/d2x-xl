@@ -151,9 +151,9 @@ j = OBJ_IDX (objP);
 	static int nLightning = -1;
 
 if (nLightning < 0) {
-	nLightning = CreateObject (OBJ_LIGHTNING, 0, -1, objP->nSegment, &OBJPOS (objP)->vPos, &OBJPOS (objP)->mOrient, F1_0, CT_NONE, MT_NONE, RT_NONE, 0);
+	nLightning = CreateObject (OBJ_EFFECT, 0, -1, objP->nSegment, &OBJPOS (objP)->vPos, &OBJPOS (objP)->mOrient, F1_0, CT_NONE, MT_NONE, RT_NONE, 0);
 	if (nLightning >= 0) {
-		static tRgbaColorf color = {0.1f, 0.1f, 1.0f, 0.2f};
+		static tRgbaColorb color = {255 / 5, 255 / 5, 255, 255 / 5};
 
 		struct tLightningInfo *pli = &OBJECTS [nLightning].rType.lightningInfo;
 
@@ -950,7 +950,7 @@ if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
-else if (t == OBJ_SMOKE)
+else if ((t == OBJ_EFFECT) && (objP->id == SMOKE_ID))
 	DoStaticSmoke (objP);
 else if (t == OBJ_CNTRLCEN)
 	DoReactorSmoke (objP);
@@ -1009,7 +1009,7 @@ void StaticSmokeFrame (void)
 if (!SHOW_SMOKE)
 	return;
 for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
-	if (objP->nType == OBJ_SMOKE)
+	if ((objP->nType == OBJ_EFFECT) && (objP->id == SMOKE_ID))
 		DoStaticSmoke (objP);
 }
 

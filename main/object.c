@@ -1810,10 +1810,25 @@ void HandleObjectEffects (tObject *objP)
 {
 if (objP->nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->id).energyDrain) {
-			tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
+			static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 
 		CreateRobotLightnings (objP, &color);
 		}
+	}
+else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
+	int s = gameData.segs.segment2s [objP->nSegment].special;
+	if (s == SEGMENT_IS_FUELCEN) {
+			static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
+
+		CreateRobotLightnings (objP, &color);
+		}
+	else if (s == SEGMENT_IS_REPAIRCEN) {
+			tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
+
+		CreateRobotLightnings (objP, &color);
+		}
+	else
+		DestroyObjectLightnings (objP);
 	}
 }
 
@@ -2193,7 +2208,9 @@ void ConvertSmokeObject (tObject *objP)
 	int			j;
 	tTrigger		*trigP;
 
-objP->renderType = RT_NONE;
+objP->nType = OBJ_EFFECT;
+objP->id = SMOKE_ID;
+objP->renderType = RT_SMOKE;
 trigP = FindObjTrigger (OBJ_IDX (objP), TT_SMOKE_LIFE, -1);
 #if 1
 j = (trigP && trigP->value) ? trigP->value : 5;
@@ -2230,6 +2247,47 @@ void ConvertObjects (void)
 for (i = gameData.objs.nLastObject + 1, objP = OBJECTS; i; i--, objP++)
 	if (objP->nType == OBJ_SMOKE)
 		ConvertSmokeObject (objP);
+}
+
+//------------------------------------------------------------------------------
+
+void SetupSmokeEffect (tObject *objP)
+{
+	tSmokeInfo	*psi = &objP->rType.smokeInfo;
+	int			j;
+
+objP->renderType = RT_SMOKE;
+j = psi->nLife ? psi->nLife : 5;
+#if 1
+psi->nLife = (j * (j + 1)) / 2;
+#else
+psi->nLife = psi->value ? psi->value : 5;
+#endif
+psi->nBrightness = psi->nBrightness ? psi->nBrightness * 10 : 75;
+j = psi->nSpeed ? psi->nSpeed : 5;
+#if 1
+psi->nSpeed = (j * (j + 1)) / 2;
+#else
+psi->nSpeed = j;
+#endif
+psi->nParts = j * (psi->nParts ? psi->nParts * 50 : STATIC_SMOKE_MAX_PARTS);
+psi->nDrift = psi->nDrift ? j * psi->nDrift * 50 : psi->nSpeed * 50;
+j = psi->nSize [0] ? psi->nSize [0] : 5;
+psi->nSize [0] = j + 1;
+psi->nSize [1] = (j * (j + 1)) / 2;
+}
+
+//------------------------------------------------------------------------------
+
+void SetupEffects (void)
+{
+	tObject	*objP;
+	int		i;
+
+for (i = gameData.objs.nLastObject + 1, objP = OBJECTS; i; i--, objP++)
+	if (objP->nType == OBJ_EFFECT)
+		if (objP->id == SMOKE_ID)
+			SetupSmokeEffect (objP);
 }
 
 //------------------------------------------------------------------------------

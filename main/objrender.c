@@ -2287,8 +2287,8 @@ switch (objP->renderType) {
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
-		if (objP->nType == OBJ_SMOKE) {
-			objP->renderType = RT_NONE;
+		if (objP->nType == OBJ_EFFECT) {
+			objP->renderType = (objP->id == SMOKE_ID) ? RT_SMOKE : RT_LIGHTNING;
 			return 0;
 			}
 		if (gameStates.render.nType != 1)
@@ -2497,6 +2497,7 @@ switch (objP->renderType) {
 			}
 		break;
 		
+	case RT_SMOKE:
 	case RT_LIGHTNING:
 		break;
 

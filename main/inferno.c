@@ -1330,6 +1330,7 @@ if (i) {
 	gameOptions [1].render.lightnings.bOmega = 0;
 	gameOptions [1].render.lightnings.bDamage = 0;
 	gameOptions [1].render.lightnings.bExplosions = 0;
+	gameOptions [1].render.lightnings.bPlayers = 0;
 	gameOptions [1].render.lightnings.bRobots = 0;
 	gameOptions [1].render.lightnings.bStatic = 0;
 	gameOptions [1].render.lightnings.bPlasma = 0;
@@ -1453,6 +1454,7 @@ else {
 	gameOptions [0].render.lightnings.bOmega = 1;
 	gameOptions [0].render.lightnings.bDamage = 1;
 	gameOptions [0].render.lightnings.bExplosions = 1;
+	gameOptions [0].render.lightnings.bPlayers = 1;
 	gameOptions [0].render.lightnings.bRobots = 1;
 	gameOptions [0].render.lightnings.bStatic = 1;
 	gameOptions [0].render.lightnings.bPlasma = 1;
@@ -2528,7 +2530,7 @@ FREEMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS);
 void FreeLightningData (void)
 {
 LogErr ("unloading lightning data\n");
-DestroyAllLightnings ();
+DestroyAllLightnings (1);
 FREEMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS);
 FREEMEM (short, gameData.lightnings.objects, MAX_OBJECTS);
 }

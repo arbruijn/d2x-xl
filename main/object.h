@@ -57,11 +57,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_MONSTERBALL	17	 // a monsterball
 #define OBJ_SMOKE			18	 // static smoke
 #define OBJ_EXPLOSION	19	 // static explosion clouds
-#define OBJ_LIGHTNING	20	 // lightnings
+#define OBJ_EFFECT		20	 // lightnings
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in tObject.c
-#define MAX_OBJECT_TYPES 20
+#define MAX_OBJECT_TYPES 21
 
 // Result types
 #define RESULT_NOTHING  0   // Ignore this collision
@@ -101,7 +101,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
 #define RT_EXPLBLAST		9	 // white explosion light blast
 #define RT_SHRAPNELS		10	 // white explosion light blast
-#define RT_LIGHTNING    11
+#define RT_SMOKE			11
+#define RT_LIGHTNING    12
+
+#define SMOKE_ID			0
+#define LIGHTNING_ID		1
 
 // misc tObject flags
 #define OF_EXPLODING        1   // this tObject is exploding
@@ -236,12 +240,13 @@ typedef struct tLightningInfo {
 	short			nNodes;
 	short			nChildren;
 	short			nSteps;
+	char			nAngle;
 	char			nSmoothe;
 	char			bClamp;
 	char			bPlasma;
 	char			bSound;
 	char			bRandom;
-	tRgbaColorf color;
+	tRgbaColorb color;
 } __pack__ tLightningInfo;
 
 // structures for different kinds of rendering
@@ -391,6 +396,7 @@ void ReleaseObject(short nObject);
 // compressed
 void ResetObjects (int nObjects);
 void ConvertObjects (void);
+void SetupEffects (void);
 
 // make tObject array non-sparse
 void compressObjects(void);

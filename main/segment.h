@@ -90,7 +90,7 @@ typedef struct tSide {
 	short   		nBaseTex;
 	ushort		nOvlOrient : 2;
 	ushort		nOvlTex : 14;
-	tUVL     		uvls [4];
+	tUVL     	uvls [4];
 	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
 } tSide;
 #endif

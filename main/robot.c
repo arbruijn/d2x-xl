@@ -262,7 +262,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
 		gameData.ai.localInfo [i].mode = AIM_IDLING;
 		}
-	else if (objP->nType == OBJ_SMOKE) {
+	else if (objP->nType == OBJ_EFFECT) {
 		objP->id	= 0;
 		objP->size = 0;
 		objP->lifeleft = IMMORTAL_TIME;

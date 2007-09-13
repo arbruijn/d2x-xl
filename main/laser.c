@@ -416,7 +416,7 @@ if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
 #endif
 	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, NULL, 
 																-(bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment) - 1, 
-																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 100, 10, 1, 3, 1, 1, 
+																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 2, 0, 0, 100, 10, 1, 3, 1, 1, 
 #if OMEGA_PLASMA
 																(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
 #else
