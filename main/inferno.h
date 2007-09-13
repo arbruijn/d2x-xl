@@ -2334,7 +2334,6 @@ typedef struct tLightning {
 	char					bPlasma;
 	char					bFixedDelta;
 	char					bRandom;
-	char					bInPlane;
 } tLightning;
 
 typedef struct tLightningBundle {

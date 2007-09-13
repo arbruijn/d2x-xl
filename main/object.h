@@ -246,6 +246,7 @@ typedef struct tLightningInfo {
 	char			bPlasma;
 	char			bSound;
 	char			bRandom;
+	char			bInPlane;
 	tRgbaColorb color;
 } __pack__ tLightningInfo;
 
