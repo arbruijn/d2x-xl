@@ -146,38 +146,6 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	return;
 	}
 j = OBJ_IDX (objP);
-#if 1//def _DEBUG
-{
-	static int nLightning = -1;
-
-if (nLightning < 0) {
-	nLightning = CreateObject (OBJ_EFFECT, 0, -1, objP->nSegment, &OBJPOS (objP)->vPos, &OBJPOS (objP)->mOrient, F1_0, CT_NONE, MT_NONE, RT_NONE, 0);
-	if (nLightning >= 0) {
-		static tRgbaColorb color = {255 / 5, 255 / 5, 255, 255 / 5};
-
-		struct tLightningInfo *pli = &OBJECTS [nLightning].rType.lightningInfo;
-
-		pli->nLife = -3000;
-		pli->nDelay = 1000;
-		pli->nLength = 60;
-		pli->nAmplitude = 10;
-		pli->nOffset = 0;
-		pli->nLightnings = 50;
-		pli->nId = 0;
-		pli->nTarget = 0;
-		pli->nNodes = 100;
-		pli->nChildren = 10;
-		pli->nSteps = 3;
-		pli->nSmoothe = 1;
-		pli->bClamp = 1;
-		pli->bPlasma = 1;
-		pli->bSound = 1;
-		pli->bRandom = 1;
-		pli->color = color;
-		}
-	}
-}
-#endif
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->position.mOrient.fVec;
 	VmVecSub (&mn, &objP->position.vPos, &objP->vLastPos);

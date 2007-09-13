@@ -2304,6 +2304,7 @@ typedef struct tLightningNode {
 
 typedef struct tLightning {
 	struct tLightning *pParent;
+	vmsVector			vBase;
 	vmsVector			vPos;
 	vmsVector			vEnd;
 	vmsVector			vDir;
@@ -2333,6 +2334,7 @@ typedef struct tLightning {
 	char					bPlasma;
 	char					bFixedDelta;
 	char					bRandom;
+	char					bInPlane;
 } tLightning;
 
 typedef struct tLightningBundle {

@@ -520,6 +520,7 @@ switch (objP->renderType) {
 		objP->rType.lightningInfo.bPlasma = CFReadByte (f);
 		objP->rType.lightningInfo.bSound = CFReadByte (f);
 		objP->rType.lightningInfo.bRandom = CFReadByte (f);
+		objP->rType.lightningInfo.bInPlane = CFReadByte (f);
 		objP->rType.lightningInfo.color.red = CFReadByte (f);
 		objP->rType.lightningInfo.color.green = CFReadByte (f);
 		objP->rType.lightningInfo.color.blue = CFReadByte (f);

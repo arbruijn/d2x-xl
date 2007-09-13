@@ -178,12 +178,14 @@ void SetupLightning (tLightning *pl, int bInit)
 	vmsVector		vPos, vDir, vRefDir, vDelta [2], v;
 	int				i;
 
+pl->vPos = pl->vBase;
 if (pl->bRandom) {
 	if (!pl->nAngle)
 		VmRandomVector (&vDir);
 	else {
-		int nMinDot = 90 * F1_0 / pl->nAngle;
+		int nMinDot = F1_0 - pl->nAngle * F1_0 / 90;
 		VmVecSub (&vRefDir, &pl->vRefEnd, &pl->vPos);
+		VmVecNormalize (&vRefDir);
 		do {
 			VmRandomVector (&vDir);
 			} while (VmVecDot (&vRefDir, &vDir) < nMinDot);
@@ -196,7 +198,7 @@ else {
 	}
 pl->vDir = vDir;
 if (pl->nOffset) {
-	i = pl->nOffset / 2 + (int) f_rand () * pl->nOffset / 2;
+	i = pl->nOffset / 2 + (int) (f_rand () * pl->nOffset / 2);
 	VmVecScaleInc (&pl->vPos, &vDir, i);
 	VmVecScaleInc (&pl->vEnd, &vDir, i);
 	}
@@ -238,6 +240,7 @@ for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++) {
 	else if (pln->pChild)
 		SetupLightning (pln->pChild, 0);
 	}
+pl->nSteps = -abs (pl->nSteps);
 //(pln - 1)->vPos = pl->vEnd;
 }
 
@@ -295,7 +298,8 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 	pl->bPlasma = bPlasma;
 	pl->iStep = 0;
 	pl->color = *colorP;
-	pl->vPos = *vPos;
+	pl->vBase = *vPos;
+	pl->nNext = -1;
 	if (vEnd)
 		pl->vRefEnd = *vEnd;
 	if (!(pl->bRandom = bRandom))
@@ -936,7 +940,10 @@ if (SHOW_LIGHTNINGS) {
 
 void MoveObjectLightnings (tObject *objP)
 {
-MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (objP)->vPos, objP->nSegment, 0, 0);
+if ((objP->vLastPos.p.x != objP->position.vPos.p.x) ||
+	 (objP->vLastPos.p.y != objP->position.vPos.p.y) ||
+	 (objP->vLastPos.p.z != objP->position.vPos.p.z))
+	MoveLightnings (gameData.lightnings.objects [OBJ_IDX (objP)], NULL, &OBJPOS (objP)->vPos, objP->nSegment, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1052,7 +1059,7 @@ if (!pl)
 	return;
 if (bDepthSort > 0) {
 	for (; nLightnings; nLightnings--, pl++) {
-		if (pl->nNodes < 0)
+		if ((pl->nNodes < 0) || (pl->nSteps < 0))
 			continue;
 		RIAddLightnings (pl, 1, nDepth);
 		for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++)
@@ -1069,7 +1076,7 @@ else {
 		}
 	bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 	for (; nLightnings; nLightnings--, pl++) {
-		if (pl->nNodes < 0)
+		if ((pl->nNodes < 0) || (pl->nSteps < 0))
 			continue;
 		color = pl->color;
 		if (pl->nLife > 0) {
@@ -1184,13 +1191,15 @@ if (SHOW_LIGHTNINGS) {
 
 //------------------------------------------------------------------------------
 
-vmsVector *FindLightningTargetPos (short nTarget)
+vmsVector *FindLightningTargetPos (tObject *emitterP, short nTarget)
 {
 	int				i;
 	tObject			*objP;
 
+if (!nTarget)
+	return 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nType == OBJ_EFFECT) && (objP->id == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
+	if ((objP != emitterP) && (objP->nType == OBJ_EFFECT) && (objP->id == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
 		return &objP->position.vPos;
 return NULL;
 }
@@ -1201,7 +1210,7 @@ void StaticLightningFrame (void)
 {
 	int				i;
 	tObject			*objP;
-	vmsVector		*vEnd;
+	vmsVector		*vEnd, *vDelta, v;
 	tLightningInfo	*pli;
 	tRgbaColorf		color;
 
@@ -1219,17 +1228,18 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		continue;
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
-	else if (!(vEnd = FindLightningTargetPos (pli->nTarget))) {
-		pli->nLightnings = 0;
-		return;
+	else if (!(vEnd = FindLightningTargetPos (objP, pli->nTarget))) {
+		VmVecScaleAdd (&v, &objP->position.vPos, &objP->position.mOrient.fVec, F1_0 * pli->nLength);
+		vEnd = &v;
 		}
 	color.red = (float) pli->color.red / 255.0f;
 	color.green = (float) pli->color.green / 255.0f;
 	color.blue = (float) pli->color.blue / 255.0f;
 	color.alpha = (float) pli->color.alpha / 255.0f;
+	vDelta = pli->bInPlane ? &objP->position.mOrient.rVec : NULL;
 	gameData.lightnings.objects [i] =
-		CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, NULL, i, pli->nLife, pli->nDelay, pli->nLength * F1_0,
-							  pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
+		CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, vPlane, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
+							  pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 							  pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, &color);
 	}
 }
