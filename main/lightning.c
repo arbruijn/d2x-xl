@@ -1238,7 +1238,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 	color.alpha = (float) pli->color.alpha / 255.0f;
 	vDelta = pli->bInPlane ? &objP->position.mOrient.rVec : NULL;
 	gameData.lightnings.objects [i] =
-		CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, vPlane, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
+		CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
 							  pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
 							  pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, &color);
 	}

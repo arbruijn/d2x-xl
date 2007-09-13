@@ -33,7 +33,8 @@ songs.c     state.c     switch.c    terrain.c   texmerge.c  \
 text.c      titles.c    vclip.c     wall.c      weapon.c		\
 autodl.c		cameras.c	lightmap.c	tracker.c	objsmoke.c	\
 netmenu.c	cheats.c		banlist.c	thief.c		endlevel.c	\
-multimsg.c	hoard.c		objrender.c lightning.c perlin.c
+multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
+tga.c
 
 EXTRA_libmain_a_SOURCES = \
 kmatrix.c multi.c multibot.c network.c netmisc.c \
@@ -54,5 +55,5 @@ object.h paging.h physics.h piggy.h player.h playsave.h polyobj.h powerup.h \
 render.h reorder.h robot.h scores.h screens.h segment.h segpoint.h slew.h \
 songs.h sounds.h state.h switch.h terrain.h texmerge.h text.h textures.h \
 titles.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
-autodl.h cameras.h lightmap.h tracker.h findfile.h \
+autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 joydefs.c
