@@ -225,7 +225,7 @@ typedef struct tSmokeInfo {
 	int			nSpeed;
 	int			nDrift;
 	int			nBrightness;
-	tRgbColorb	color;
+	tRgbaColorb	color;
 } __pack__ tSmokeInfo;
 
 typedef struct tLightningInfo {

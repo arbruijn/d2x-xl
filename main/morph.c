@@ -303,7 +303,7 @@ void MorphDrawModel (tPolyModel *pmP, int nSubModel, vmsAngVec *animAngles, fix 
 
 sort_list [0] = nSubModel;
 sort_n = 1;
-for (i=0;i<pmP->nModels;i++) {
+for (i = 0; i < pmP->nModels; i++) {
 	if (mdP->submodelActive [i] && pmP->subModels.parents [i]==nSubModel) {
 		facing = G3CheckNormalFacing (pmP->subModels.pnts+i, pmP->subModels.norms+i);
 		if (!facing)

@@ -338,207 +338,197 @@ extern int MultiPowerupIs4Pack(int);
 //reads one tObject of the given version from the given file
 void ReadObject(tObject *objP,CFILE *f,int version)
 {
+	int	i;
 
-	objP->nType           = CFReadByte(f);
-	objP->id             = CFReadByte(f);
+objP->nType = CFReadByte(f);
+objP->id = CFReadByte(f);
+objP->controlType = CFReadByte(f);
+objP->movementType = CFReadByte(f);
+objP->renderType = CFReadByte(f);
+objP->flags = CFReadByte(f);
+objP->nSegment = CFReadShort(f);
+objP->attachedObj = -1;
+CFReadVector(&objP->position.vPos,f);
+CFReadMatrix(&objP->position.mOrient,f);
+objP->size = CFReadFix(f);
+objP->shields = CFReadFix(f);
+CFReadVector(&objP->vLastPos,f);
+objP->containsType = CFReadByte(f);
+objP->containsId = CFReadByte(f);
+objP->containsCount = CFReadByte(f);
+switch (objP->movementType) {
+	case MT_PHYSICS:
+		CFReadVector(&objP->mType.physInfo.velocity,f);
+		CFReadVector(&objP->mType.physInfo.thrust,f);
+		objP->mType.physInfo.mass		= CFReadFix(f);
+		objP->mType.physInfo.drag		= CFReadFix(f);
+		objP->mType.physInfo.brakes	= CFReadFix(f);
+		CFReadVector(&objP->mType.physInfo.rotVel,f);
+		CFReadVector(&objP->mType.physInfo.rotThrust,f);
+		objP->mType.physInfo.turnRoll	= CFReadFixAng(f);
+		objP->mType.physInfo.flags		= CFReadShort(f);
+		break;
 
-	objP->controlType   = CFReadByte(f);
-	objP->movementType  = CFReadByte(f);
-	objP->renderType    = CFReadByte(f);
-	objP->flags          = CFReadByte(f);
+	case MT_SPINNING:
+		CFReadVector(&objP->mType.spinRate,f);
+		break;
 
-	objP->nSegment         = CFReadShort(f);
-	objP->attachedObj   = -1;
+	case MT_NONE:
+		break;
 
-	CFReadVector(&objP->position.vPos,f);
-	CFReadMatrix(&objP->position.mOrient,f);
-
-	objP->size           = CFReadFix(f);
-	objP->shields        = CFReadFix(f);
-
-	CFReadVector(&objP->vLastPos,f);
-
-	objP->containsType  = CFReadByte(f);
-	objP->containsId    = CFReadByte(f);
-	objP->containsCount = CFReadByte(f);
-
-	switch (objP->movementType) {
-
-		case MT_PHYSICS:
-
-			CFReadVector(&objP->mType.physInfo.velocity,f);
-			CFReadVector(&objP->mType.physInfo.thrust,f);
-
-			objP->mType.physInfo.mass		= CFReadFix(f);
-			objP->mType.physInfo.drag		= CFReadFix(f);
-			objP->mType.physInfo.brakes	= CFReadFix(f);
-
-			CFReadVector(&objP->mType.physInfo.rotVel,f);
-			CFReadVector(&objP->mType.physInfo.rotThrust,f);
-
-			objP->mType.physInfo.turnRoll	= CFReadFixAng(f);
-			objP->mType.physInfo.flags		= CFReadShort(f);
-
-			break;
-
-		case MT_SPINNING:
-
-			CFReadVector(&objP->mType.spinRate,f);
-			break;
-
-		case MT_NONE:
-			break;
-
-		default:
-			Int3();
+	default:
+		Int3();
 	}
 
-	switch (objP->controlType) {
-
-		case CT_AI: {
-			int i;
-
-			objP->cType.aiInfo.behavior = CFReadByte(f);
-
-			for (i=0;i<MAX_AI_FLAGS;i++)
-				objP->cType.aiInfo.flags [i] = CFReadByte(f);
-
-			objP->cType.aiInfo.nHideSegment = CFReadShort(f);
-			objP->cType.aiInfo.nHideIndex = CFReadShort(f);
-			objP->cType.aiInfo.nPathLength = CFReadShort(f);
-			objP->cType.aiInfo.nCurPathIndex = (char) CFReadShort(f);
-
-			if (version <= 25) {
-				CFReadShort(f);	//				objP->cType.aiInfo.follow_path_start_seg	= 
-				CFReadShort(f);	//				objP->cType.aiInfo.follow_path_end_seg		= 
+switch (objP->controlType) {
+	case CT_AI: 
+		objP->cType.aiInfo.behavior = CFReadByte(f);
+		for (i=0;i<MAX_AI_FLAGS;i++)
+			objP->cType.aiInfo.flags [i] = CFReadByte(f);
+		objP->cType.aiInfo.nHideSegment = CFReadShort(f);
+		objP->cType.aiInfo.nHideIndex = CFReadShort(f);
+		objP->cType.aiInfo.nPathLength = CFReadShort(f);
+		objP->cType.aiInfo.nCurPathIndex = (char) CFReadShort(f);
+		if (version <= 25) {
+			CFReadShort(f);	//				objP->cType.aiInfo.follow_path_start_seg	= 
+			CFReadShort(f);	//				objP->cType.aiInfo.follow_path_end_seg		= 
 			}
+		break;
 
-			break;
-		}
+	case CT_EXPLOSION:
+		objP->cType.explInfo.nSpawnTime		= CFReadFix(f);
+		objP->cType.explInfo.nDeleteTime		= CFReadFix(f);
+		objP->cType.explInfo.nDeleteObj	= CFReadShort(f);
+		objP->cType.explInfo.nNextAttach = objP->cType.explInfo.nPrevAttach = objP->cType.explInfo.nAttachParent = -1;
+		break;
 
-		case CT_EXPLOSION:
+	case CT_WEAPON: //do I really need to read these?  Are they even saved to disk?
+		objP->cType.laserInfo.parentType		= CFReadShort(f);
+		objP->cType.laserInfo.nParentObj		= CFReadShort(f);
+		objP->cType.laserInfo.nParentSig	= CFReadInt(f);
+		break;
 
-			objP->cType.explInfo.nSpawnTime		= CFReadFix(f);
-			objP->cType.explInfo.nDeleteTime		= CFReadFix(f);
-			objP->cType.explInfo.nDeleteObj	= CFReadShort(f);
-			objP->cType.explInfo.nNextAttach = objP->cType.explInfo.nPrevAttach = objP->cType.explInfo.nAttachParent = -1;
+	case CT_LIGHT:
+		objP->cType.lightInfo.intensity = CFReadFix(f);
+		break;
 
-			break;
+	case CT_POWERUP:
+		if (version >= 25)
+			objP->cType.powerupInfo.count = CFReadInt(f);
+		else
+			objP->cType.powerupInfo.count = 1;
+		if (objP->id == POW_VULCAN)
+			objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
+		if (objP->id == POW_GAUSS)
+			objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
+		if (objP->id == POW_OMEGA)
+			objP->cType.powerupInfo.count = MAX_OMEGA_CHARGE;
+		break;
 
-		case CT_WEAPON:
+	case CT_NONE:
+	case CT_FLYING:
+	case CT_DEBRIS:
+		break;
 
-			//do I really need to read these?  Are they even saved to disk?
+	case CT_SLEW:		//the tPlayer is generally saved as slew
+		break;
 
-			objP->cType.laserInfo.parentType		= CFReadShort(f);
-			objP->cType.laserInfo.nParentObj		= CFReadShort(f);
-			objP->cType.laserInfo.nParentSig	= CFReadInt(f);
+	case CT_CNTRLCEN:
+		break;
 
-			break;
-
-		case CT_LIGHT:
-
-			objP->cType.lightInfo.intensity = CFReadFix(f);
-			break;
-
-		case CT_POWERUP:
-
-			if (version >= 25)
-				objP->cType.powerupInfo.count = CFReadInt(f);
-			else
-				objP->cType.powerupInfo.count = 1;
-
-			if (objP->id == POW_VULCAN)
-					objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-
-			if (objP->id == POW_GAUSS)
-					objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-
-			if (objP->id == POW_OMEGA)
-					objP->cType.powerupInfo.count = MAX_OMEGA_CHARGE;
-
-			break;
-
-
-		case CT_NONE:
-		case CT_FLYING:
-		case CT_DEBRIS:
-			break;
-
-		case CT_SLEW:		//the tPlayer is generally saved as slew
-			break;
-
-		case CT_CNTRLCEN:
-			break;
-
-		case CT_MORPH:
-		case CT_FLYTHROUGH:
-		case CT_REPAIRCEN:
+	case CT_MORPH:
+	case CT_FLYTHROUGH:
+	case CT_REPAIRCEN:
 		default:
-			Int3();
-	
+		Int3();
 	}
 
-	switch (objP->renderType) {
+switch (objP->renderType) {
+	case RT_NONE:
+		break;
 
-		case RT_NONE:
-			break;
-
-		case RT_MORPH:
-		case RT_POLYOBJ: {
-			int i,tmo;
-
-			objP->rType.polyObjInfo.nModel		= CFReadInt(f);
-
-			for (i=0;i<MAX_SUBMODELS;i++)
-				CFReadAngVec(&objP->rType.polyObjInfo.animAngles [i],f);
-
-			objP->rType.polyObjInfo.nSubObjFlags	= CFReadInt(f);
-
-			tmo = CFReadInt(f);
-
-			#ifndef EDITOR
-			objP->rType.polyObjInfo.nTexOverride	= tmo;
-			#else
-			if (tmo==-1)
-				objP->rType.polyObjInfo.nTexOverride	= -1;
-			else {
-				int xlated_tmo = tmap_xlate_table[tmo];
-				if (xlated_tmo < 0)	{
+	case RT_MORPH:
+	case RT_POLYOBJ: {
+		int i,tmo;
+		objP->rType.polyObjInfo.nModel = CFReadInt(f);
+		for (i=0;i<MAX_SUBMODELS;i++)
+			CFReadAngVec(&objP->rType.polyObjInfo.animAngles [i],f);
+		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt(f);
+		tmo = CFReadInt(f);
+#ifndef EDITOR
+		objP->rType.polyObjInfo.nTexOverride = tmo;
+#else
+		if (tmo==-1)
+			objP->rType.polyObjInfo.nTexOverride = -1;
+		else {
+			int xlated_tmo = tmap_xlate_table[tmo];
+			if (xlated_tmo < 0)	{
 #if TRACE
-					con_printf (CONDBG, "Couldn't find texture for demo tObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
+				con_printf (CONDBG, "Couldn't find texture for demo tObject, nModel = %d\n", objP->rType.polyObjInfo.nModel);
 #endif
-					Int3();
-					xlated_tmo = 0;
+				Int3();
+				xlated_tmo = 0;
 				}
-				objP->rType.polyObjInfo.nTexOverride	= xlated_tmo;
+			objP->rType.polyObjInfo.nTexOverride	= xlated_tmo;
 			}
-			#endif
-
-			objP->rType.polyObjInfo.nAltTextures	= 0;
-
-			break;
+#endif
+		objP->rType.polyObjInfo.nAltTextures	= 0;
+		break;
 		}
 
-		case RT_WEAPON_VCLIP:
-		case RT_HOSTAGE:
-		case RT_POWERUP:
-		case RT_FIREBALL:
+	case RT_WEAPON_VCLIP:
+	case RT_HOSTAGE:
+	case RT_POWERUP:
+	case RT_FIREBALL:
+		objP->rType.vClipInfo.nClipIndex	= CFReadInt(f);
+		objP->rType.vClipInfo.xFrameTime	= CFReadFix(f);
+		objP->rType.vClipInfo.nCurFrame	= CFReadByte(f);
+		break;
 
-			objP->rType.vClipInfo.nClipIndex	= CFReadInt(f);
-			objP->rType.vClipInfo.xFrameTime	= CFReadFix(f);
-			objP->rType.vClipInfo.nCurFrame	= CFReadByte(f);
+	case RT_THRUSTER:
+	case RT_LASER:
+		break;
 
-			break;
+	case RT_SMOKE:
+		objP->rType.smokeInfo.nLife = CFReadInt (f);
+		objP->rType.smokeInfo.nSize [0] = CFReadInt (f);
+		objP->rType.smokeInfo.nParts = CFReadInt (f);
+		objP->rType.smokeInfo.nSpeed = CFReadInt (f);
+		objP->rType.smokeInfo.nDrift = CFReadInt (f);
+		objP->rType.smokeInfo.nBrightness = CFReadInt (f);
+		objP->rType.smokeInfo.color.red = CFReadByte (f);
+		objP->rType.smokeInfo.color.green = CFReadByte (f);
+		objP->rType.smokeInfo.color.blue = CFReadByte (f);
+		objP->rType.smokeInfo.color.alpha = CFReadByte (f);
+		break;
 
-		case RT_THRUSTER:
-		case RT_LASER:
-			break;
+	case RT_LIGHTNING:
+		objP->rType.lightningInfo.nLife = CFReadInt (f);
+		objP->rType.lightningInfo.nDelay = CFReadInt (f);
+		objP->rType.lightningInfo.nLength = CFReadInt (f);
+		objP->rType.lightningInfo.nAmplitude = CFReadInt (f);
+		objP->rType.lightningInfo.nOffset = CFReadInt (f);
+		objP->rType.lightningInfo.nLightnings = CFReadShort (f);
+		objP->rType.lightningInfo.nId = CFReadShort (f);
+		objP->rType.lightningInfo.nTarget = CFReadShort (f);
+		objP->rType.lightningInfo.nNodes = CFReadShort (f);
+		objP->rType.lightningInfo.nChildren = CFReadShort (f);
+		objP->rType.lightningInfo.nSteps = CFReadShort (f);
+		objP->rType.lightningInfo.nAngle = CFReadByte (f);
+		objP->rType.lightningInfo.nSmoothe = CFReadByte (f);
+		objP->rType.lightningInfo.bClamp = CFReadByte (f);
+		objP->rType.lightningInfo.bPlasma = CFReadByte (f);
+		objP->rType.lightningInfo.bSound = CFReadByte (f);
+		objP->rType.lightningInfo.bRandom = CFReadByte (f);
+		objP->rType.lightningInfo.color.red = CFReadByte (f);
+		objP->rType.lightningInfo.color.green = CFReadByte (f);
+		objP->rType.lightningInfo.color.blue = CFReadByte (f);
+		objP->rType.lightningInfo.color.alpha = CFReadByte (f);
+		break;
 
-		default:
-			Int3();
-
+	default:
+		Int3();
 	}
-
 }
 
 //------------------------------------------------------------------------------
