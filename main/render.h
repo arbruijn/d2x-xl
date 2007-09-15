@@ -147,6 +147,7 @@ typedef struct tRIPoly {
 	fVector				vertices [4];
 	tUVLf					texCoord [4];
 	tRgbaColorf			color [4];
+	short					sideLength [4];
 	int					nWrap;
 	int					nPrimitive;
 	char					nVertices;

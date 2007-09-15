@@ -98,9 +98,9 @@ return dest;
 //dest can equal either source
 vmsVector *VmVecAvg(vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
-dest->p.x = (src0->p.x + src1->p.x)/2;
-dest->p.y = (src0->p.y + src1->p.y)/2;
-dest->p.z = (src0->p.z + src1->p.z)/2;
+dest->p.x = (src0->p.x + src1->p.x) / 2;
+dest->p.y = (src0->p.y + src1->p.y) / 2;
+dest->p.z = (src0->p.z + src1->p.z) / 2;
 return dest;
 }
 
@@ -111,9 +111,20 @@ vmsVector *VmVecAvg4(vmsVector *dest,
 								vmsVector *src0, vmsVector *src1, 
 								vmsVector *src2, vmsVector *src3)
 {
-dest->p.x = (src0->p.x + src1->p.x + src2->p.x + src3->p.x)/4;
-dest->p.y = (src0->p.y + src1->p.y + src2->p.y + src3->p.y)/4;
-dest->p.z = (src0->p.z + src1->p.z + src2->p.z + src3->p.z)/4;
+dest->p.x = (src0->p.x + src1->p.x + src2->p.x + src3->p.x) / 4;
+dest->p.y = (src0->p.y + src1->p.y + src2->p.y + src3->p.y) / 4;
+dest->p.z = (src0->p.z + src1->p.z + src2->p.z + src3->p.z) / 4;
+return dest;
+}
+
+// ------------------------------------------------------------------------
+//averages two vectors. returns ptr to dest
+//dest can equal either source
+fVector *VmVecAvgf (fVector *dest, fVector *src0, fVector *src1)
+{
+dest->p.x = (src0->p.x + src1->p.x) / 2;
+dest->p.y = (src0->p.y + src1->p.y) / 2;
+dest->p.z = (src0->p.z + src1->p.z) / 2;
 return dest;
 }
 

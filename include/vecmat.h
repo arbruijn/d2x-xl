@@ -182,6 +182,8 @@ fVector *VmVecMulf (fVector *dest, fVector *src0, fVector *src1);
 //dest can equal either source
 vmsVector *VmVecAvg (vmsVector *dest, vmsVector *src0, vmsVector *src1);
 
+fVector *VmVecAvgf (fVector *dest, fVector *src0, fVector *src1);
+
 //averages four vectors. returns ptr to dest
 //dest can equal any source
 vmsVector *VmVecAvg4 (vmsVector *dest, vmsVector *src0, vmsVector *src1, vmsVector *src2, vmsVector *src3);

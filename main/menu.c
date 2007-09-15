@@ -2692,6 +2692,7 @@ pszSmokeAlpha [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
+	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
 	opt = 0;
 	nOptSmokeLag = optStaticSmoke = optSmokeColl = optSmokeDisp = -1;
 
