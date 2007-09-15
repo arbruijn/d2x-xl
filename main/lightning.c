@@ -83,7 +83,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define RENDER_TARGET_LIGHTNING 0
 #define RENDER_LIGHTNING_PLASMA 1
-#define RENDER_LIGHTING_SEGMENTS 0
+#define RENDER_LIGHTING_SEGMENTS 1
 
 
 #define STYLE(_pl)	((((_pl)->nStyle < 0) || (gameOpts->render.lightnings.nStyle < (_pl)->nStyle)) ? \
@@ -700,7 +700,7 @@ for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++) {
 		}
 	}
 if (h = nAmplitude - nMaxDist) {
-	nMaxDist += (rand () % 5) * (h / 4);
+	nMaxDist += (rand () % 5) * h / 4;
 	for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++)
 		VmVecScaleFrac (&pln->vOffs, nAmplitude, nMaxDist);
 	}
@@ -1089,18 +1089,26 @@ if (!bPlasma)
 if (nDepth)
 	color.alpha /= 2;
 if (bPlasma) {
-#if 1 //render lightning segment outline
+#if 0 //render lightning segment outline
 	glDisable (GL_TEXTURE_2D);
 	glDisable (GL_BLEND);
 	if (bStart)
 		glColor3f (1,0,0);
 	else
 		glColor3f (0,0,1);
+	glLineWidth (2);
 	glBegin (GL_LINE_LOOP);
 	for (i = 0; i < 4; i++) {
+		if (i < 2)
+			glColor3d (1,1,1);
+		else if (i < 3)
+			glColor3d (1,0.8,0);
+		else
+			glColor3d (1,0.5,0);
 		glVertex3fv ((GLfloat *) (vPlasma + i));
 		}
 	glEnd ();
+	glLineWidth (1);
 	glEnable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 #endif
@@ -1120,7 +1128,7 @@ if (bPlasma) {
 			if (bDrawArrays) {
 				glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlPlasma + h);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vPlasma);
-				glDrawArrays (GL_QUADS, 0, 4);
+				glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 				}
 			else {
 				glBegin (GL_QUADS);
@@ -1131,12 +1139,12 @@ if (bPlasma) {
 				glEnd ();
 				}
 			if (!i) {	//resize plasma quad for inner, white plasma path
-				VmVecScalef (&vDelta, VmVecSubf (&vDelta, vPlasma, vPlasma + 3), 0.5f);
+				VmVecScalef (&vDelta, VmVecSubf (&vDelta, vPlasma, vPlasma + 1), 0.25f);
 				VmVecDecf (vPlasma, &vDelta);
-				VmVecDecf (vPlasma + 3, &vDelta);
-				VmVecScalef (&vDelta, VmVecSubf (&vDelta, vPlasma + 1, vPlasma + 2), 0.5f);
-				VmVecDecf (vPlasma + 1, &vDelta);
+				VmVecIncf (vPlasma + 1, &vDelta);
+				VmVecScalef (&vDelta, VmVecSubf (&vDelta, vPlasma + 2, vPlasma + 3), 0.25f);
 				VmVecDecf (vPlasma + 2, &vDelta);
+				VmVecIncf (vPlasma + 3, &vDelta);
 				}
 			}
 		}
@@ -1222,7 +1230,7 @@ else {
 	if (bDrawArrays) {
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlPlasma + j);
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), vPlasma);
-		glDrawArrays (GL_QUADS, 0, 4);
+		glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 		}
 	else {
 		glBegin (GL_QUADS);
@@ -1298,7 +1306,7 @@ if (bDepthSort > 0) {
 				G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 				}
 			if (j)
-				RenderLightningPlasma (vPosf, &color, 0, 0, j == 1, j == i, bPlasma, nDepth, 1);
+				RenderLightningPlasma (vPosf, &color, 0, 0, j == 1, j == i, 1, nDepth, 1);
 			}
 #else
 		RIAddLightnings (pl, 1, nDepth);
