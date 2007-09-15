@@ -4923,6 +4923,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, char bPlasma, char bStart, char bEnd, short nDepth)
+{
+	tRILightningSegment	item;
+
+memcpy (item.vLine, vLine, 2 * sizeof (fVector));
+if (item.bPlasma = bPlasma)
+	memcpy (item.vPlasma, vPlasma, 4 * sizeof (fVector));
+memcpy (&item.color, color, sizeof (tRgbaColorf));
+item.bStart = bStart;
+item.bEnd = bEnd;
+item.nDepth = nDepth;
+return AddRenderItem (riLightningSegment, &item, sizeof (item), fl2f ((item.vLine [0].p.z + item.vLine [1].p.z) / 2));
+}
+
+//------------------------------------------------------------------------------
+
 int RISetClientState (char bClientState, char bTexCoord, char bColor)
 {
 if (renderItems.bClientState == bClientState) {
@@ -5161,6 +5177,23 @@ gameData.smoke.nLastType = -1;
 
 //------------------------------------------------------------------------------
 
+void RIRenderLightningSegment (tRILightningSegment *item)
+{
+if (renderItems.bDepthMask) {
+	glDepthMask (0);
+	renderItems.bDepthMask = 0;
+	}
+RISetClientState (0, 0, 0);
+RenderLightningSegment (item->vLine, item->vPlasma, &item->color, item->bPlasma, item->bStart, item->bEnd, item->nDepth);
+if (item->bPlasma) {
+	renderItems.bmP = NULL;
+	gameData.smoke.nLastType = -1;
+	}
+renderItems.bTextured = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void RenderItems (void)
 {
 	struct tRenderItem	**pd, *pl, *pn;
@@ -5205,6 +5238,9 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 				}
 			else if (nType == riLightning) {
 				RIRenderLightning (&pl->item.lightning);
+				}
+			else if (nType == riLightningSegment) {
+				RIRenderLightningSegment (&pl->item.lightningSegment);
 				}
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;

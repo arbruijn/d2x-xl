@@ -139,7 +139,8 @@ typedef enum tRenderItemType {
 	riSprite,
 	riSphere,
 	riParticle,
-	riLightning
+	riLightning,
+	riLightningSegment
 } tRenderItemType;
 
 typedef struct tRIPoly {
@@ -186,16 +187,27 @@ typedef struct tRILightning {
 	short					nDepth;
 } tRILightning;
 
+typedef struct tRILightningSegment {
+	fVector					vLine [2];
+	fVector					vPlasma [4];
+	tRgbaColorf				color;
+	short						nDepth;
+	char						bStart;
+	char						bEnd;
+	char						bPlasma;
+} tRILightningSegment;
+
 typedef struct tRenderItem {
 	struct tRenderItem	*pNextItem;
 	tRenderItemType		nType;
 	int						z;
 	union {
-		tRIPoly				poly;
-		tRISprite			sprite;
-		tRIParticle			particle;
-		tRISphere			sphere;
-		tRILightning		lightning;
+		tRIPoly					poly;
+		tRISprite				sprite;
+		tRIParticle				particle;
+		tRISphere				sphere;
+		tRILightning			lightning;
+		tRILightningSegment	lightningSegment;
 	} item;
 } tRenderItem;
 
@@ -227,6 +239,8 @@ int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nW
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, double fBrightness);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
+int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
+									char bPlasma, char bStart, char bEnd, short nDepth);
 void RenderItems (void);
 
 //------------------------------------------------------------------------------
