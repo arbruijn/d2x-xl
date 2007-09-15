@@ -697,8 +697,8 @@ for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++) {
 		h = i;
 		}
 	}
-if (nMaxDist < nAmplitude) {
-	nMaxDist += (int) (f_rand () * (nAmplitude - nMaxDist));
+if (h = nAmplitude - nMaxDist) {
+	nMaxDist += (rand () % 5) * (h / 4);
 	for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++)
 		VmVecScaleFrac (&pln->vOffs, nAmplitude, nMaxDist);
 	}

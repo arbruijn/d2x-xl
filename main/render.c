@@ -4726,38 +4726,44 @@ return renderItems.nFreeItems;
 
 //------------------------------------------------------------------------------
 
-int RISplitPoly (tRIPoly *item)
+int RISplitPoly (tRIPoly *item, int nDepth)
 {
 	tRIPoly		split [2];
-	fVector		vSplit [2];
+	fVector		vSplit;
 	tRgbaColorf	color;
-	int			i, i0, i1, i2, i3, nMaxLen = 0;
-	float			z, u, v, *c, *c0, *c1;
+	int			i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
+	float			z, *c, *c0, *c1;
 
 split [0] = split [1] = *item;
-for (i = 0; i < split [0].nVertices; i++)
-	if (nMaxLen < split [0].sideLength [i]) { 
-		nMaxLen = split [0].sideLength [i];
+for (i = 0; i < split [0].nVertices; i++) {
+	l = split [0].sideLength [i];
+	if (nMaxLen < l) { 
+		nMaxLen = l;
 		i0 = i;
 		}
-if (nMaxLen <= 30) {
+	if (nMinLen > l)
+		nMinLen = l;
+	}
+if (!nMaxLen)
+	return 1;
+if ((nMaxLen <= 30) && (nMaxLen < nMinLen / 2 * 3)) {
 	for (i = 0, z = 0; i < split [0].nVertices; i++)
 		if (z < split [0].vertices [i].p.z)
 			z = split [0].vertices [i].p.z;
-	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z));
+	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (z));
 	}
-i1 = (i0 % split [0].nVertices);
 if (split [0].nVertices == 3) {
-	VmVecAvgf (vSplit, split [0].vertices + i0, split [0].vertices + i1);
+	i1 = (i0 + 1) % 3;
+	;
 	split [0].vertices [i1] =
-	split [1].vertices [i0] = vSplit [0];
+	split [1].vertices [i0] = *VmVecAvgf (&vSplit, split [0].vertices + i0, split [0].vertices + i1);
+	split [0].sideLength [i0] =
+	split [1].sideLength [i0] = nMaxLen / 2;
 	if (split [0].bmP) {
-		u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
-		v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
 		split [0].texCoord [i1].v.u =
-		split [1].texCoord [i0].v.u = u;
+		split [1].texCoord [i0].v.u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
 		split [0].texCoord [i1].v.v =
-		split [1].texCoord [i0].v.v = v;
+		split [1].texCoord [i0].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
 		}
 	if (split [0].nColors == 3) {
 		for (i = 4, c = (float *) &color, c0 = (float *) split [0].color + i0, c1 = (float *) split [0].color + i1; i; i--)
@@ -4767,40 +4773,39 @@ if (split [0].nVertices == 3) {
 		}
 	}
 else {
-	i2 = (i0 + split [0].nVertices) % 4;
-	i3 = (i1 + split [0].nVertices) % 4;
-	VmVecAvgf (vSplit, split [0].vertices + i0, split [0].vertices + i1);
-	VmVecAvgf (vSplit + 1, split [0].vertices + i2, split [0].vertices + i3);
+	i1 = (i0 + 1) % 4;
+	i2 = (i0 + 2) % 4;
+	i3 = (i1 + 2) % 4;
 	split [0].vertices [i1] =
-	split [1].vertices [i0] = vSplit [0];
-	split [0].vertices [i3] =
-	split [1].vertices [i2] = vSplit [1];
+	split [1].vertices [i0] = *VmVecAvgf (&vSplit, split [0].vertices + i0, split [0].vertices + i1);
+	split [0].vertices [i2] =
+	split [1].vertices [i3] = *VmVecAvgf (&vSplit, split [0].vertices + i2, split [0].vertices + i3);
 	if (split [0].bmP) {
-		u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
-		v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
 		split [0].texCoord [i1].v.u =
-		split [1].texCoord [i0].v.u = u;
+		split [1].texCoord [i0].v.u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
 		split [0].texCoord [i1].v.v =
-		split [1].texCoord [i0].v.v = v;
-		u = (split [0].texCoord [i3].v.u + split [0].texCoord [i2].v.u) / 2;
-		v = (split [0].texCoord [i3].v.v + split [0].texCoord [i2].v.v) / 2;
-		split [0].texCoord [i3].v.u =
-		split [1].texCoord [i2].v.u = u;
-		split [0].texCoord [i3].v.v =
-		split [1].texCoord [i2].v.v = v;
+		split [1].texCoord [i0].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
+		split [0].texCoord [i2].v.u =
+		split [1].texCoord [i3].v.u = (split [0].texCoord [i3].v.u + split [0].texCoord [i2].v.u) / 2;
+		split [0].texCoord [i2].v.v =
+		split [1].texCoord [i3].v.v = (split [0].texCoord [i3].v.v + split [0].texCoord [i2].v.v) / 2;
 		}
 	if (split [0].nColors == 4) {
-		for (i = 0, c = (float *) &color, c0 = (float *) split [0].color + i0, c1= (float *) split [0].color + i1; i; i--)
+		for (i = 4, c = (float *) &color, c0 = (float *) (split [0].color + i0), c1 = (float *) (split [0].color + i1); i; i--)
 			*c++ = (*c0++ + *c1++) / 2;
 		split [0].color [i1] =
 		split [1].color [i0] = color;
-		for (i = 4, c = (float *) &color, c0 = (float *) split [0].color + i2, c1= (float *) split [0].color + i3; i; i--)
+		for (i = 4, c = (float *) &color, c0 = (float *) (split [0].color + i2), c1 = (float *) (split [0].color + i3); i; i--)
 			*c++ = (*c0++ + *c1++) / 2;
-		split [0].color [i3] =
-		split [1].color [i2] = color;
+		split [0].color [i2] =
+		split [1].color [i3] = color;
 		}
+	split [0].sideLength [i0] =
+	split [1].sideLength [i0] =
+	split [0].sideLength [i2] =
+	split [1].sideLength [i2] = nMaxLen / 2;
 	}
-return RISplitPoly (split) && RISplitPoly (split + 1);
+return RISplitPoly (split, nDepth + 1) && RISplitPoly (split + 1, nDepth + 1);
 }
 
 //------------------------------------------------------------------------------
@@ -4810,6 +4815,7 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoor
 {
 	tRIPoly	item;
 	int		i;
+	float		z;
 
 #ifdef _DEBUG
 if (nVertices > 4)
@@ -4819,7 +4825,7 @@ item.bmP = bmP;
 item.nVertices = nVertices;
 item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
-item.bDepthMask = bDepthMask;
+item.bDepthMask = 0;
 memcpy (item.texCoord, texCoord ? texCoord : defaultTexCoord, nVertices * sizeof (tUVLf));
 if (item.nColors = nColors) {
 	if (nColors < nVertices)
@@ -4833,13 +4839,17 @@ if (item.nColors = nColors) {
 		item.nColors = 0;
 	}
 memcpy (item.vertices, vertices, nVertices * sizeof (fVector));
-for (i = 0; i <= nVertices; i++)
-	item.sideLength [i] = (short) (VmVecDistf (vertices + i, vertices + i % nVertices) + 0.5f);
-#if 1
-return RISplitPoly (&item);
-#else
-return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z));
-#endif
+if (bDepthMask) {
+	for (i = 0; i < nVertices; i++)
+		item.sideLength [i] = (short) (VmVecDistf (vertices + i, vertices + (i + 1) % nVertices) + 0.5f);
+	return RISplitPoly (&item, 0);
+	}
+else {
+	for (i = 0, z = 0; i < item.nVertices; i++)
+		if (z < item.vertices [i].p.z)
+			z = item.vertices [i].p.z;
+	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z));
+	}
 }
 
 //------------------------------------------------------------------------------

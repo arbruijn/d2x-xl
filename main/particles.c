@@ -319,7 +319,11 @@ return n * n;
 
 inline double ParticleBrightness (tRgbaColord *pColor)
 {
-return (pColor->red * 3 + pColor->green * 5 + pColor->red * 2) / 10.0;
+#if 0
+return (pColor->red + pColor->green + pColor->blue) / 3.0;
+#else
+return (pColor->red * 3 + pColor->green * 5 + pColor->blue * 2) / 10.0;
+#endif
 }
 
 //------------------------------------------------------------------------------
