@@ -445,7 +445,8 @@ if (gameData.smoke.objects [i] < 0) {
 i = objP->rType.smokeInfo.nDrift >> 4;
 i += objP->rType.smokeInfo.nSize [0] >> 4;
 i /= 2;
-j = i - i / 2;
+if (!(j = i - i / 2))
+	j = 2;
 i /= 2;
 offs.p.x = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
 offs.p.y = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);

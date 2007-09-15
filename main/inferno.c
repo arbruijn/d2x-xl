@@ -2948,7 +2948,8 @@ static tOOFToModel oofToModel [] = {
 	{"bluekey.oof", NULL, MAX_POLYGON_MODELS - 29},
 	{"redkey.oof", NULL, MAX_POLYGON_MODELS - 30},
 	{"goldkey.oof", NULL, MAX_POLYGON_MODELS - 31},
-	{"vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32}
+	{"vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32},
+	{"hostage.oof", NULL, HOSTAGE_MODEL}
 	};
 
 void InitModelToOOF (void)

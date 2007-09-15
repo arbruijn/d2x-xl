@@ -1767,14 +1767,13 @@ void LoadGameTexts(void);
 #define TXT_LIGHTNING_ROBOTS		GT(974)
 #define TXT_LIGHTNING_STATIC		GT(975)
 #define TXT_LIGHTNING_OMEGA		GT(976)
-#define TXT_LIGHTNING_JAGGY		GT(977)
-#define TXT_LIGHTNING_SMOOTH		GT(978)
-#define TXT_BRIGHT_OBJECTS			GT(979)
+#define TXT_LIGHTNING_ERRATIC		GT(977)
+#define TXT_LIGHTNING_JAGGY		GT(978)
+#define TXT_LIGHTNING_SMOOTH		GT(979)
+#define TXT_BRIGHT_OBJECTS			GT(980)
 
 #if 0
 
-#define TXT_				GT(979)
-#define TXT_				GT(980)
 #define TXT_				GT(981)
 #define TXT_				GT(982)
 #define TXT_				GT(983)

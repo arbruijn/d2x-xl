@@ -2283,6 +2283,7 @@ typedef struct tSmokeData {
 	int				iFree;
 	int				iUsed;
 	int				nLastType;
+	int				bAnimate;
 	tPartDepthBuf	depthBuf;
 } tSmokeData;
 
@@ -2300,6 +2301,7 @@ typedef struct tLightningNode {
 	vmsVector			vOffs;
 	vmsVector			vBase;
 	vmsVector			vDelta [2];
+	int					nDelta [2];
 } tLightningNode;
 
 typedef struct tLightning {
@@ -2328,12 +2330,13 @@ typedef struct tLightning {
 	short					nObject;
 	short					nSegment;
 	short					nNode;
+	char					nStyle;
 	char					nAngle;
 	char					nDepth;
 	char					bClamp;
 	char					bPlasma;
-	char					bFixedDelta;
 	char					bRandom;
+	char					bInPlane;
 } tLightning;
 
 typedef struct tLightningBundle {

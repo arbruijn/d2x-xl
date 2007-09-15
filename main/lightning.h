@@ -6,7 +6,7 @@
 int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
 							short nObject, int nLife, int nDelay, int nLength, int nAmplitude, char nAngle, int nOffset,
 							short nNodeC, short nChildC, char nDepth, short nSteps, short nSmoothe, 
-							char bClamp, char bPlasma, char bSound, tRgbaColorf *colorP);
+							char bClamp, char bPlasma, char bSound, char nStyle, tRgbaColorf *colorP);
 void DestroyLightnings (int iLightning, tLightning *pf, int bDestroy);
 int DestroyAllLightnings (int bForce);
 void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, int bStretch, int bFromEnd);
@@ -23,6 +23,10 @@ void CreateShakerMegaLightnings (tObject *objP);
 void CreateMegaLightnings (tObject *objP);
 void CreateDamageLightnings (tObject *objP, tRgbaColorf *colorP);
 void CreateRobotLightnings (tObject *objP, tRgbaColorf *colorP);
+void CreatePlayerLightnings (tObject *objP, tRgbaColorf *colorP);
+void DestroyPlayerLightnings (void);
+void DestroyRobotLightnings (void);
+void DestroyStaticLightnings (void);
 
 #define	SHOW_LIGHTNINGS \
 			(!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bUseLightnings, 1, 1, 0))

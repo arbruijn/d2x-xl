@@ -1719,17 +1719,19 @@ char *defaultGameTexts [][2] = {
 	{"Blitze verwenden", "~Use Lightnings"},
 	{"Darstellungs~Qualitaet: %s", "render ~Quality: %s"},
 	{"Darstellungs~Art: %s", "render ~Style: %s"},
-	{"~Plasma darstellen", "render ~Plasma"},
+	{"p~Lasma darstellen", "render p~Lasma"},
 	{"blitze bei ~Beschaedigungen", "show ~Damage lightnings"},
 	{"~Explosionen verursachen Blitze", "~Explosions cast lightnings"},
-	{"~Spielerschiffe erzeugen Blitze", "~Player ships cast lightnings"},
+	{"s~Pielerschiffe erzeugen Blitze", "~Player ships cast lightnings"},
 	{"~Roboter erzeugen Blitze", "~Robots cast lightnings"},
-	{"s~Tatische Blitze darstellen", "show ~Static lightnings"},
+	{"s~Tatische Blitze darstellen", "show s~Tatic lightnings"},
 	{"~Omega schiesst blitze", "~Omega fires lightnings"},
+	{"erratisch", "erratic"},
 	{"gezackt", "jaggy"},
 	{"weich", "smooth"},
 	{"~Helle Hires-Objekte", "~Bright hires models"},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};

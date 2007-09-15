@@ -515,6 +515,7 @@ switch (objP->renderType) {
 		objP->rType.lightningInfo.nChildren = CFReadShort (f);
 		objP->rType.lightningInfo.nSteps = CFReadShort (f);
 		objP->rType.lightningInfo.nAngle = CFReadByte (f);
+		objP->rType.lightningInfo.nStyle = CFReadByte (f);
 		objP->rType.lightningInfo.nSmoothe = CFReadByte (f);
 		objP->rType.lightningInfo.bClamp = CFReadByte (f);
 		objP->rType.lightningInfo.bPlasma = CFReadByte (f);

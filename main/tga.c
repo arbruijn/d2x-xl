@@ -289,6 +289,8 @@ int WriteTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
 {
 ph->width = bmP->bm_props.w;
 ph->height = bmP->bm_props.h;
+ph->bits = bmP->bm_bpp * 8;
+ph->imageType = 2;
 CFWriteByte (ph->identSize, fp);
 CFWriteByte (ph->colorMapType, fp);
 CFWriteByte (ph->imageType, fp);
@@ -633,6 +635,87 @@ if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
 	if (CreateSuperTranspMask (bmP->bm_data.alt.bm_frames + i))
 		nMasks++;
 return nMasks;
+}
+
+//------------------------------------------------------------------------------
+
+int TGAInterpolate (grsBitmap *bmP, int nScale)
+{
+	ubyte	*bufP, *destP, *srcP1, *srcP2;
+	int	nSize, nFrameSize, nStride, nFrames, i, j;
+
+if (nScale < 1)
+	nScale = 1;
+else if (nScale > 3)
+	nScale = 3;
+nScale = 1 << nScale;
+nFrames = bmP->bm_props.h / bmP->bm_props.w;
+nFrameSize = bmP->bm_props.w * bmP->bm_props.w * bmP->bm_bpp;
+nSize = nFrameSize * nFrames * nScale;
+if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
+	return 0;
+bmP->bm_props.h *= nScale;
+memset (bufP, 0, nSize);
+for (destP = bufP, srcP1 = bmP->bm_texBuf, i = 0; i < nFrames; i++) {
+	memcpy (destP, srcP1, nFrameSize);
+	destP += nFrameSize * nScale;
+	srcP1 += nFrameSize;
+	}
+#if 1
+while (nScale > 1) {
+	nStride = nFrameSize * nScale;
+	for (i = 0; i < nFrames; i++) {
+		srcP1 = bufP + nStride * i;
+		srcP2 = bufP + nStride * ((i + 1) % nFrames);
+		destP = srcP1 + nStride / 2;
+		for (j = nFrameSize; j; j--) {
+			*destP++ = (ubyte) (((short) *srcP1++ + (short) *srcP2++) / 2);
+			if (destP - bufP > nSize)
+				destP = destP;
+			}
+		}
+	nScale >>= 1;
+	nFrames <<= 1;
+	}
+#endif
+D2_FREE (bmP->bm_texBuf);
+bmP->bm_texBuf = bufP;
+return nFrames;
+}
+
+//------------------------------------------------------------------------------
+
+int TGAMakeSquare (grsBitmap *bmP)
+{
+	ubyte	*bufP, *destP, *srcP;
+	int	nSize, nFrameSize, nRowSize, nFrames, i, j, w, q;
+
+nFrames = bmP->bm_props.h / bmP->bm_props.w;
+if (nFrames < 4)
+	return 0;
+for (q = nFrames; q * q > nFrames; q >>= 1)
+	;
+if (q * q != nFrames)
+	return 0;
+w = bmP->bm_props.w;
+nFrameSize = w * w * bmP->bm_bpp;
+nSize = nFrameSize * nFrames;
+if (!(bufP = (ubyte *) D2_ALLOC (nSize)))
+	return 0;
+srcP = bmP->bm_texBuf;
+nRowSize = w * bmP->bm_bpp;
+for (destP = bufP, i = 0; i < nFrames; i++) {
+	for (j = 0; j < w; j++) {
+		destP = bufP + (i / q) * q * nFrameSize + j * q * nRowSize + (i % q) * nRowSize;
+		memcpy (destP, srcP, nRowSize);
+		srcP += nRowSize;
+		}
+	}
+D2_FREE (bmP->bm_texBuf);
+bmP->bm_texBuf = bufP;
+bmP->bm_props.w =
+bmP->bm_props.h = q * w;
+return q;
 }
 
 //------------------------------------------------------------------------------

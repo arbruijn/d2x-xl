@@ -3052,7 +3052,7 @@ if (optColorSat >= 0) {
 //------------------------------------------------------------------------------
 
 static	char *pszLightningQuality [2];
-static	char *pszLightningStyle [2];
+static	char *pszLightningStyle [3];
 
 void LightningOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -3074,6 +3074,7 @@ if (extraGameInfo [0].bUseLightnings) {
 		gameOpts->render.lightnings.nQuality = v;
 		sprintf (m->text, TXT_LIGHTNING_QUALITY, pszLightningQuality [v]);
 		m->rebuild = 1;
+		DestroyAllLightnings (0);
 		}
 	m = menus + lightningOpts.nStyle;
 	v = m->value;
@@ -3093,12 +3094,13 @@ void LightningOptionsMenu ()
 	int	i, choice = 0;
 	int	opt;
 	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optOmega, optPlasma;
-	char	szQuality [50], szStyle [50];
+	char	szQuality [50], szStyle [100];
 
 	pszLightningQuality [0] = TXT_LOW;
 	pszLightningQuality [1] = TXT_HIGH;
-	pszLightningStyle [0] = TXT_LIGHTNING_JAGGY;
-	pszLightningStyle [1] = TXT_LIGHTNING_SMOOTH;
+	pszLightningStyle [0] = TXT_LIGHTNING_ERRATIC;
+	pszLightningStyle [1] = TXT_LIGHTNING_JAGGY;
+	pszLightningStyle [2] = TXT_LIGHTNING_SMOOTH;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -3121,21 +3123,21 @@ do {
 		lightningOpts.nQuality = opt++;
 		sprintf (szStyle + 1, TXT_LIGHTNING_STYLE, pszLightningStyle [gameOpts->render.lightnings.nStyle]);
 		*szStyle = *(TXT_LIGHTNING_STYLE - 1);
-		ADD_SLIDER (opt, szStyle + 1, gameOpts->render.lightnings.nStyle, 0, 1, KEY_S, HTX_LIGHTNING_STYLE);
+		ADD_SLIDER (opt, szStyle + 1, gameOpts->render.lightnings.nStyle, 0, 2, KEY_S, HTX_LIGHTNING_STYLE);
 		lightningOpts.nStyle = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_LIGHTNING_PLASMA, gameOpts->render.lightnings.bPlasma, KEY_P, HTX_LIGHTNING_PLASMA);
+		ADD_CHECK (opt, TXT_LIGHTNING_PLASMA, gameOpts->render.lightnings.bPlasma, KEY_L, HTX_LIGHTNING_PLASMA);
 		optPlasma = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_DAMAGE, gameOpts->render.lightnings.bDamage, KEY_D, HTX_LIGHTNING_DAMAGE);
 		optDamage = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_EXPLOSIONS, gameOpts->render.lightnings.bExplosions, KEY_E, HTX_LIGHTNING_EXPLOSIONS);
 		optExplosions = opt++;
-		ADD_CHECK (opt, TXT_LIGHTNING_PLAYERS, gameOpts->render.lightnings.bPlayers, KEY_R, HTX_LIGHTNING_PLAYERS);
+		ADD_CHECK (opt, TXT_LIGHTNING_PLAYERS, gameOpts->render.lightnings.bPlayers, KEY_P, HTX_LIGHTNING_PLAYERS);
 		optPlayers = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_ROBOTS, gameOpts->render.lightnings.bRobots, KEY_R, HTX_LIGHTNING_ROBOTS);
 		optRobots = opt++;
-		ADD_CHECK (opt, TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_S, HTX_LIGHTNING_STATIC);
+		ADD_CHECK (opt, TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_T, HTX_LIGHTNING_STATIC);
 		optStatic = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
 		optOmega = opt++;
@@ -3156,6 +3158,12 @@ do {
 		GET_VAL (gameOpts->render.lightnings.bOmega, optOmega);
 		}
 	} while (i == -2);
+if (!gameOpts->render.lightnings.bPlayers)
+	DestroyPlayerLightnings ();
+if (!gameOpts->render.lightnings.bRobots)
+	DestroyRobotLightnings ();
+if (!gameOpts->render.lightnings.bStatic)
+	DestroyStaticLightnings ();
 }
 
 //------------------------------------------------------------------------------

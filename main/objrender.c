@@ -155,6 +155,18 @@ objP->mType.physInfo.drag = 512;
 
 // -----------------------------------------------------------------------------
 
+int ConvertHostageToModel (tObject *objP)
+{
+if (!gameData.models.modelToOOF [HOSTAGE_MODEL])
+	return 0;
+objP->renderType = RT_POLYOBJ;
+objP->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
+objP->rType.polyObjInfo.nTexOverride = -1;
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
 int ConvertPowerupToWeapon (tObject *objP)
 {
 	vmsAngVec	a;
@@ -2472,7 +2484,9 @@ switch (objP->renderType) {
 	case RT_HOSTAGE: 
 		if (gameStates.render.nType != 1)
 			return 0;
-		if (gameStates.render.nShadowPass != 2)
+		if (ConvertHostageToModel (objP))
+			DrawPolygonObject (objP);
+		else if (gameStates.render.nShadowPass != 2)
 			DrawHostage (objP); 
 		break;
 

@@ -30,13 +30,13 @@ typedef struct tParticle {
 	short			nSegment;
 	tRgbaColord	color;			//well ... the color, ya know =)
 	char			nType;			//black or white
-	char			nOrient;
 	char			nRotDir;
 	char			nBounce;
 	char			bHaveDir;
 	char			bBlowUp;
 	char			nFade;
 	char			nClass;
+	char			nFrame;
 } tParticle;
 
 typedef struct tPartIdx {

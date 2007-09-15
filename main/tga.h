@@ -30,5 +30,7 @@ grsBitmap *CreateAndReadTGA (char *szFile);
 int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP);
 double TGABrightness (grsBitmap *bmP);
 void TGAChangeBrightness (grsBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha);
+int TGAInterpolate (grsBitmap *bmP, int nScale);
+int TGAMakeSquare (grsBitmap *bmP);
 
 #endif //_TGA_H

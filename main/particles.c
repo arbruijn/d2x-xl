@@ -174,6 +174,8 @@ if (nFrames > 1) {
 	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort;
 	grsBitmap	*bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType % PARTICLE_TYPES];
 
+	if (!BM_FRAMES (bmP))
+		return;
 	BM_CURFRAME (bmP) = BM_FRAMES (bmP) + iFrame;
 #if 1
 	if (t - t0 [nType] > 150) 
@@ -223,7 +225,8 @@ D2_FREE (dFrameBright);
 
 int LoadParticleImage (int nType)
 {
-	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort,
+	int			h, 
+					bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort,
 					*flagP = bHavePartImg [bPointSprites] + nType;
 	grsBitmap	*bmP = NULL;
 
@@ -237,8 +240,19 @@ bmP = CreateAndReadTGA (szParticleImg [bPointSprites][nType]);
 if (*flagP < 0)
 	return 0;
 bmpParticle [bPointSprites][nType] = bmP;
+#if 0
+{
+	tTgaHeader h;
+
+TGAInterpolate (bmP, 2);
+if (TGAMakeSquare (bmP)) {
+	memset (&h, 0, sizeof (h));
+	SaveTGA (szParticleImg [bPointSprites][nType], gameFolders.szDataDir, &h, bmP);
+	}
+}
+#endif
 BM_FRAMECOUNT (bmP) = bmP->bm_props.h / bmP->bm_props.w;
-#if 1
+#if 0
 if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	AdjustParticleBrightness (bmP);
 	D2_FREE (BM_FRAMES (bmP));	// make sure frames get loaded to OpenGL in OglLoadBmTexture ()
@@ -246,7 +260,12 @@ if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	}
 #endif
 OglLoadBmTexture (bmP, 0, 3);
-nParticleFrames [bPointSprites][nType] = BM_FRAMECOUNT ((bmP));
+if (nType == PARTICLE_TYPES - 1)
+	nParticleFrames [bPointSprites][nType] = BM_FRAMECOUNT (bmP);
+else {
+	h = bmP->bm_props.w / 64;
+	nParticleFrames [bPointSprites][nType] = h;
+	}
 return *flagP > 0;
 }
 
@@ -374,7 +393,6 @@ if (nType < 3) {
 	}
 pParticle->nLife = 
 pParticle->nTTL = nLife;
-pParticle->nOrient = randN (4);
 pParticle->nMoved = nCurTime;
 pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
 nRad += (nType == 3) ? nRad : randN (nRad);
@@ -388,6 +406,7 @@ else {
 	pParticle->nHeight = nRad;
 	pParticle->nRad = nRad / 2;
 	}
+pParticle->nFrame = rand () % nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
 pParticle->color.alpha /= nType + 2; //4 - nType * 0.5; //nType + 2;
 return 1;
 }
@@ -623,39 +642,16 @@ if (iBuffer) {
 
 //------------------------------------------------------------------------------
 
-inline void SetParticleTexCoord (GLdouble u, GLdouble v, char orient)
+inline void SetParticleTexCoord (GLdouble u, GLdouble v)
 {
 #if OGL_VERTEX_ARRAYS
 if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
-	if (orient == 1) {
-		texCoordBuffer [iBuffer][0] = 1.0 - v;
-		texCoordBuffer [iBuffer][1] = u;
-		}
-	else if (orient == 2) {
-		texCoordBuffer [iBuffer][0] = 1.0 - u;
-		texCoordBuffer [iBuffer][1] = 1.0 - v;
-		}
-	else if (orient == 3) {
-		texCoordBuffer [iBuffer][0] = v;
-		texCoordBuffer [iBuffer][1] = 1.0 - u;
-		}
-	else {
-		texCoordBuffer [iBuffer][0] = u;
-		texCoordBuffer [iBuffer][1] = v;
-		}
+	texCoordBuffer [iBuffer][0] = u;
+	texCoordBuffer [iBuffer][1] = v;
 	}
 else 
 #endif
-{
-if (orient == 1)
-	glTexCoord2d (1.0 - v, u);
-else if (orient == 2)
-	glTexCoord2d (1.0 - u, 1.0 - v);
-else if (orient == 3)
-	glTexCoord2d (v, 1.0 - u);
-else 
 	glTexCoord2d (u, v);
-}
 }
 
 //------------------------------------------------------------------------------
@@ -664,7 +660,6 @@ int RenderParticle (tParticle *pParticle, double brightness)
 {
 	vmsVector			hp;
 	GLdouble				u, v, x, y, z, h, w;
-	char					o;
 	grsBitmap			*bmP;
 	tRgbaColord			pc;
 #if OGL_VERTEX_ARRAYS
@@ -673,6 +668,9 @@ int RenderParticle (tParticle *pParticle, double brightness)
 	double				decay = (double) pParticle->nLife / (double) pParticle->nTTL;
 	int					nType = pParticle->nType,
 							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
+
+	static int			nFrames = 1;
+	static double		deltaUV = 1.0;
 
 if (pParticle->nDelay > 0)
 	return 0;
@@ -687,6 +685,8 @@ if (gameOpts->render.bDepthSort > 0) {
 		gameData.smoke.nLastType = nType;
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
+		nFrames = nParticleFrames [bPointSprites][nType];
+		deltaUV = 1.0 / (double) nFrames;
 		}
 	glBegin (GL_QUADS);
 	}
@@ -697,6 +697,8 @@ else if (gameOpts->render.smoke.bSort) {
 		glEnd ();
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
+		nFrames = nParticleFrames [bPointSprites][nType];
+		deltaUV = 1.0 / (double) nFrames;
 		glBegin (GL_QUADS);
 		}
 	}
@@ -795,7 +797,6 @@ else
 	{
 	u = bmP->glTexture->u;
 	v = bmP->glTexture->v;
-	o = pParticle->nOrient;
 	if (gameOpts->render.smoke.bDisperse && (nType < 3)) {
 		decay = sqrt (decay);
 		w = f2fl (pParticle->nWidth) / decay;
@@ -823,13 +824,15 @@ else
 		pf [5] =
 		pf [8] =
 		pf [11] = z;
-		SetParticleTexCoord (0, 0, o);
+		u = (double) (pParticle->nFrame % nFrames) * deltaUV;
+		v = (double) (pParticle->nFrame / nFrames) * deltaUV;
+		SetParticleTexCoord (u, v);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
-		SetParticleTexCoord (u, 0, o);
+		SetParticleTexCoord (u + deltaUV, v);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
-		SetParticleTexCoord (u, v, o);
+		SetParticleTexCoord (u + deltaUV, v + deltaUV);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
-		SetParticleTexCoord (0, v, o);
+		SetParticleTexCoord (u, v + deltaUV);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
 		if (iBuffer >= VERT_BUF_SIZE)
 			FlushVertexArrays ();
@@ -838,15 +841,19 @@ else
 #else
 	{
 #endif
+	u = (double) (pParticle->nFrame % nFrames) * deltaUV;
+	v = (double) (pParticle->nFrame / nFrames) * deltaUV;
 	glColor4dv ((GLdouble *) &pc);
-	SetParticleTexCoord (0, 0, o);
+	glTexCoord2d (u, v);
 	glVertex3d (x - w, y + h, z);
-	SetParticleTexCoord (u, 0, o);
+	glTexCoord2d (u + deltaUV, v);
 	glVertex3d (x + w, y + h, z);
-	SetParticleTexCoord (u, v, o);
+	glTexCoord2d (u + deltaUV, v + deltaUV);
 	glVertex3d (x + w, y - h, z);
-	SetParticleTexCoord (0, v, o);
+	glTexCoord2d (u, v + deltaUV);
 	glVertex3d (x - w, y - h, z);
+	if (gameData.smoke.bAnimate)
+		pParticle->nFrame = (pParticle->nFrame + 1) % (nFrames * nFrames);
 	}
 	}
 if (gameOpts->render.bDepthSort > 0)
@@ -859,6 +866,7 @@ return 1;
 int BeginRenderSmoke (int nType, float nScale)
 {
 	grsBitmap	*bmP;
+	static time_t	t0 = 0;
 
 if (gameOpts->render.bDepthSort <= 0) {
 	if ((nType >= 0) && !gameOpts->render.smoke.bSort) {
@@ -949,6 +957,12 @@ if (gameOpts->render.bDepthSort <= 0) {
 		}
 	}
 gameData.smoke.nLastType = -1;
+if (gameStates.app.nSDLTicks - t0 < 33) 
+	gameData.smoke.bAnimate = 0;
+else {
+	t0 = gameStates.app.nSDLTicks;
+	gameData.smoke.bAnimate = 1;
+	}
 return 1;
 }
 

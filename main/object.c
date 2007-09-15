@@ -1820,12 +1820,12 @@ else if ((objP->nType == OBJ_PLAYER) && gameOpts->render.lightnings.bPlayers) {
 	if (s == SEGMENT_IS_FUELCEN) {
 			static tRgbaColorf color = {1.0f, 0.8f, 0.3f, 0.2f};
 
-		CreateRobotLightnings (objP, &color);
+		CreatePlayerLightnings (objP, &color);
 		}
 	else if (s == SEGMENT_IS_REPAIRCEN) {
 			tRgbaColorf color = {0.3f, 0.5f, 0.1f, 0.2f};
 
-		CreateRobotLightnings (objP, &color);
+		CreatePlayerLightnings (objP, &color);
 		}
 	else
 		DestroyObjectLightnings (objP);

@@ -837,6 +837,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	int		nRooms, bRetry = 0, nLoadRes;
 
 /*---*/LogErr ("Loading level...\n");
+gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
 gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
@@ -1036,11 +1037,11 @@ if (!bRestore) {
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
 	ConvertObjects ();
-	SetupEffects ();
 	ComputeNearestLights ();
 	ComputeStaticDynLighting ();
 	SetEquipGenStates ();
 	}
+SetupEffects ();
 SetVertigoRobotFlags ();
 SetDebrisCollisions ();
 return 1;

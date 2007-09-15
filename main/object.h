@@ -241,6 +241,7 @@ typedef struct tLightningInfo {
 	short			nChildren;
 	short			nSteps;
 	char			nAngle;
+	char			nStyle;
 	char			nSmoothe;
 	char			bClamp;
 	char			bPlasma;
