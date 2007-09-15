@@ -1282,7 +1282,7 @@ double CloudBrightness (tCloud *pCloud)
 if (pCloud->nObject < 0)
 	return 0.5;
 if (pCloud->nObjType == OBJ_EFFECT)
-	return 0.5;
+	return (double) pCloud->nDefBrightness / 100.0;
 if (pCloud->nObjType == OBJ_DEBRIS)
 	return 0.5;
 if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))

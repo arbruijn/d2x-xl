@@ -2263,15 +2263,15 @@ psi->nLife = (j * (j + 1)) / 2;
 #else
 psi->nLife = psi->value ? psi->value : 5;
 #endif
-psi->nBrightness = psi->nBrightness ? psi->nBrightness * 10 : 75;
+psi->nBrightness = psi->nBrightness ? psi->nBrightness * 10 : 50;
 j = psi->nSpeed ? psi->nSpeed : 5;
 #if 1
 psi->nSpeed = (j * (j + 1)) / 2;
 #else
 psi->nSpeed = j;
 #endif
-psi->nParts = j * (psi->nParts ? psi->nParts * 50 : STATIC_SMOKE_MAX_PARTS);
-psi->nDrift = psi->nDrift ? j * psi->nDrift * 50 : psi->nSpeed * 50;
+psi->nParts = j * (psi->nParts ? psi->nParts * 100 : STATIC_SMOKE_MAX_PARTS);
+psi->nDrift = psi->nDrift ? j * psi->nDrift * 75 : psi->nSpeed * 50;
 j = psi->nSize [0] ? psi->nSize [0] : 5;
 psi->nSize [0] = j + 1;
 psi->nSize [1] = (j * (j + 1)) / 2;
