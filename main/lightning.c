@@ -83,8 +83,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define RENDER_TARGET_LIGHTNING 0
 #define RENDER_LIGHTNING_PLASMA 1
-#define RENDER_LIGHTING_SEGMENTS 1
-
+#define RENDER_LIGHTING_SEGMENTS 0
+#define RENDER_LIGHTNING_OUTLINE 0
+#define UPDATE_LIGHTINGS 1
 
 #define STYLE(_pl)	((((_pl)->nStyle < 0) || (gameOpts->render.lightnings.nStyle < (_pl)->nStyle)) ? \
 							gameOpts->render.lightnings.nStyle : \
@@ -826,7 +827,9 @@ if (!gameStates.app.tick40fps.bTick)
 #endif
 nDepth++;
 for (i = 0; i < nLightnings; i++, pl++) {
+#if UPDATE_LIGHTINGS
 	pl->nTTL -= gameStates.app.tick40fps.nTime;
+#endif
 	if (pl->nNodes > 0) {
 		if (bInit = (pl->nSteps < 0))
 			pl->nSteps = -pl->nSteps;
@@ -855,7 +858,7 @@ for (i = 0; i < nLightnings; i++, pl++) {
 		for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++) {
 			if (bInit)
 				pln->vPos = pln->vNewPos;
-#if 1
+#if UPDATE_LIGHTINGS
 			else
 				VmVecInc (&pln->vPos, &pln->vOffs);
 #endif
@@ -864,7 +867,9 @@ for (i = 0; i < nLightnings; i++, pl++) {
 				UpdateLightning (pln->pChild, 1, nDepth + 1);
 				}
 			}
+#if UPDATE_LIGHTINGS
 		(pl->iStep)--;
+#endif
 		}
 #if 1
 	if (pl->nTTL <= 0) {
@@ -1089,7 +1094,7 @@ if (!bPlasma)
 if (nDepth)
 	color.alpha /= 2;
 if (bPlasma) {
-#if 0 //render lightning segment outline
+#if RENDER_LIGHTNING_OUTLINE //render lightning segment outline
 	glDisable (GL_TEXTURE_2D);
 	glDisable (GL_BLEND);
 	if (bStart)
@@ -1118,11 +1123,11 @@ if (bPlasma) {
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 		for (i = 0; i < 2; i++) {
 			if (!i) {
-				OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				//OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
 				}
 			else {
-				OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+				//OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 				glColor4f (1, 1, 1, color.alpha / 2);
 				}
 			if (bDrawArrays) {
@@ -1176,6 +1181,7 @@ void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int nScale, int 
 
 	fVector	vn [2], vd;
 	int		i, j = bStart + 2 * bEnd;
+	float		fDot;
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
 if (bStart) {
@@ -1233,15 +1239,55 @@ else {
 		glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 		}
 	else {
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++) {
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + i));
-			glVertex3fv ((GLfloat *) (vPlasma + i));
+#if 0
+		VmVecNormalf (vn, vPlasma, vPlasma + 1, vPlasma + 2);
+		VmVecNormalf (vn + 1, vPlasma, vPlasma + 2, vPlasma + 3);
+		fDot = VmVecDotf (vn, vn + 1);
+		if (fDot >= 0) {
+			glBegin (GL_TRIANGLES);
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glVertex3fv ((GLfloat *) (vPlasma));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 1));
+			glVertex3fv ((GLfloat *) (vPlasma + 1));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 2));
+			glVertex3fv ((GLfloat *) (vPlasma + 2));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glVertex3fv ((GLfloat *) (vPlasma));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 2));
+			glVertex3fv ((GLfloat *) (vPlasma + 2));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 3));
+			glVertex3fv ((GLfloat *) (vPlasma + 3));
+			glEnd ();
+			}	
+		else if (fDot < 0) {
+			glBegin (GL_TRIANGLES);
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glVertex3fv ((GLfloat *) (vPlasma));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 1));
+			glVertex3fv ((GLfloat *) (vPlasma + 1));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 3));
+			glVertex3fv ((GLfloat *) (vPlasma + 3));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glVertex3fv ((GLfloat *) (vPlasma));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 2));
+			glVertex3fv ((GLfloat *) (vPlasma + 2));
+			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 3));
+			glVertex3fv ((GLfloat *) (vPlasma + 3));
+			glEnd ();
+			}
+		else 
+#endif
+			{
+			glBegin (GL_QUADS);
+			for (i = 0; i < 4; i++) {
+				glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + i));
+				glVertex3fv ((GLfloat *) (vPlasma + i));
+				}	
 			}
 		glEnd ();
 		}
 #endif
-#if 0 //render lightning segment outline
+#if RENDER_LIGHTNING_OUTLINE //render lightning segment outline
 	glDisable (GL_TEXTURE_2D);
 	glDisable (GL_BLEND);
 	glLineWidth (1);
@@ -1254,6 +1300,7 @@ else {
 		glVertex3fv ((GLfloat *) (vPlasma + i));
 		}
 	glEnd ();
+	glColor4fv ((GLfloat *) color);
 	glEnable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 #endif
@@ -1345,7 +1392,7 @@ else {
 			color.alpha /= 2;
 #if RENDER_LIGHTNING_PLASMA
 		if (bPlasma) {
-			bDrawArrays = OglEnableClientStates (1, 0);
+			bDrawArrays = 0; //OglEnableClientStates (1, 0);
 			glEnable (GL_TEXTURE_2D);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 				OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
@@ -1355,7 +1402,7 @@ else {
 						glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
 						}
 					else {
-						OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+						//OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 						glColor4f (1, 1, 1, color.alpha / 2);
 						}
 					for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
@@ -1370,7 +1417,7 @@ else {
 							G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 							}
 						if (j)
-							RenderLightningPlasma (vPosf, NULL, h, bDrawArrays, j == 1, j == i, 1, nDepth, 0);
+							RenderLightningPlasma (vPosf, &color, h, bDrawArrays, j == 1, j == i, 1, nDepth, 0);
 						}
 					}
 				}
