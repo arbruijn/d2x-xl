@@ -1692,7 +1692,8 @@ if (!bLight)
 	bDynLight = 0;
 gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (bDrawArrays || (!bmTop && (gameOpts->render.bDepthSort > 0) && ((bmBot->bm_props.flags & BM_FLAG_TRANSPARENT) || (gameStates.ogl.fAlpha < 1)))) {
+if (bDrawArrays || 
+	 (!bmTop && (gameOpts->render.bDepthSort > 0) && (((bmBot->bm_bpp > 1) && (bmBot->bm_props.flags & BM_FLAG_TRANSPARENT)) || (gameStates.ogl.fAlpha < 1)))) {
 		fVector		vertices [8];
 		tFaceColor	vertColors [8];
 		tUVLf			vertUVL [2][8];

@@ -1181,7 +1181,6 @@ void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int nScale, int 
 
 	fVector	vn [2], vd;
 	int		i, j = bStart + 2 * bEnd;
-	float		fDot;
 
 memcpy (vNormal, vNormal + 1, 2 * sizeof (fVector));
 if (bStart) {
@@ -1240,6 +1239,7 @@ else {
 		}
 	else {
 #if 0
+		float		fDot;
 		VmVecNormalf (vn, vPlasma, vPlasma + 1, vPlasma + 2);
 		VmVecNormalf (vn + 1, vPlasma, vPlasma + 2, vPlasma + 3);
 		fDot = VmVecDotf (vn, vn + 1);

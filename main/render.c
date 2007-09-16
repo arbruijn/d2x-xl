@@ -4685,11 +4685,9 @@ renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 
 void InitRenderItemBuffer (int zMin, int zMax)
 {
-if (zMin < 0)
-	zMin = 0;
-renderItems.zMin = zMin;
-renderItems.zMax = zMax = zMin + 11 * (zMax - zMin) / 10;
-renderItems.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - zMin);
+renderItems.zMin = F1_0;
+renderItems.zMax = zMax - F1_0;
+renderItems.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - F1_0);
 if (renderItems.zScale > 1)
 	renderItems.zScale = 1;
 }
@@ -4744,9 +4742,7 @@ for (i = 0; i < split [0].nVertices; i++) {
 	if (nMinLen > l)
 		nMinLen = l;
 	}
-if (!nMaxLen)
-	return 1;
-if ((nMaxLen <= 30) && (nMaxLen < nMinLen / 2 * 3)) {
+if (!nMaxLen || ((nMaxLen <= 30) && (nMaxLen < nMinLen / 2 * 3))) {
 	for (i = 0, z = 0; i < split [0].nVertices; i++)
 		if (z < split [0].vertices [i].p.z)
 			z = split [0].vertices [i].p.z;
