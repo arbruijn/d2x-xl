@@ -393,7 +393,7 @@ return 1;
 
 // ---------------------------------------------------------------------------------
 
-#define OMEGA_PLASMA 1
+#define OMEGA_PLASMA 0
 
 int CreateOmegaLightnings (vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
 {

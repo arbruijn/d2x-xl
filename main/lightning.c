@@ -741,7 +741,8 @@ plh->vNewPos = plh->vPos;
 VmVecZero (&plh->vOffs);
 if ((nDepth > 1) || pl->bRandom) {
 	if (nStyle == 2) {
-		nAmplitude *= (nDepth == 1) ? 2 : 4;
+		if (nDepth > 1)
+			nAmplitude *= 4;
 		for (h = pl->nNodes, i = 0, plh = pl->pNodes; i < h; i++, plh++) {
 			phi = bClamp ?(double) i / (double) (h - 1) : 1;
 			ComputePerlinNode (plh, nSteps, nAmplitude, nSeed, 2 * phi / 3, phi * 7.5);
@@ -1735,7 +1736,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (ob
 	else
 		gameData.lightnings.objects [i] = CreateLightning (
 			4 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, 
-			4 * objP->size, objP->size, 0, 2 * objP->size, 50, 5, 1, 5, 1, 1, 1, 0, 1, colorP);
+			4 * objP->size, objP->size, 0, 2 * objP->size, 50, 5, 1, 5, 1, 1, 0, 0, 1, colorP);
 	}
 }
 
