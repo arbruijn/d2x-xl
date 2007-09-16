@@ -290,22 +290,25 @@ void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFr
 
 if (gameOpts->render.bTransparentEffects) {
 	if (!alpha) {
-		if (objP->nType == OBJ_POWERUP) {
-			id = objP->id;
-			if ((id == POW_EXTRA_LIFE) ||
-				 (id == POW_ENERGY) ||
-				 (id == POW_SHIELD_BOOST) ||
-				 (id == POW_HOARD_ORB) ||
-				 (id == POW_CLOAK) ||
-				 (id == POW_INVUL))
-				alpha = 2.0f / 3.0f;
-			else
-				alpha = 1.0f;
-			}
-		else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
+		if (nTransp == 3)
 			alpha = 1.0f;
 		else {
-			alpha = 2.0f / 3.0f;
+			if (objP->nType == OBJ_POWERUP) {
+				id = objP->id;
+				if ((id == POW_EXTRA_LIFE) ||
+					 (id == POW_ENERGY) ||
+					(id == POW_SHIELD_BOOST) ||
+					(id == POW_HOARD_ORB) ||
+					(id == POW_CLOAK) ||
+					(id == POW_INVUL))
+					alpha = 2.0f / 3.0f;
+				else
+					alpha = 1.0f;
+				}
+			else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
+				alpha = 1.0f;
+			else
+				alpha = 2.0f / 3.0f;
 			}
 		}
 	}
