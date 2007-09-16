@@ -1078,9 +1078,9 @@ DestroyAllObjectLightnings (OBJ_EFFECT, LIGHTNING_ID);
 #define LIGHTNING_VERT_ARRAYS 1
 
 static tUVLf	uvlPlasma [3][4] = {
-	{{{0.2f,0.45f,1}},{{0.8f,0.45f,1}},{{0.8f,0.55f,1}},{{0.2f,0.55f,1}}},
-	{{{0.2f,0.2f,1}},{{0.8f,0.2f,1}},{{0.8f,0.5f,1}},{{0.2f,0.5f,1}}},
-	{{{0.2f,0.5f,1}},{{0.8f,0.5f,1}},{{0.8f,0.8f,1}},{{0.2f,0.8f,1}}}
+	{{{0,0.45f,1}},{{1,0.45f,1}},{{1,0.55f,1}},{{0,0.55f,1}}},
+	{{{0,0,1}},{{1,0,1}},{{1,0.5f,1}},{{0,0.5f,1}}},
+	{{{0,0.5f,1}},{{1,0.5f,1}},{{1,1,1}},{{0,1,1}}}
 	};
 
 void RenderLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *colorP, int bPlasma, int bStart, int bEnd, short nDepth)
