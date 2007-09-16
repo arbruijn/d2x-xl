@@ -140,7 +140,8 @@ typedef enum tRenderItemType {
 	riSphere,
 	riParticle,
 	riLightning,
-	riLightningSegment
+	riLightningSegment,
+	riThruster
 } tRenderItemType;
 
 typedef struct tRIPoly {
@@ -197,6 +198,13 @@ typedef struct tRILightningSegment {
 	char						bPlasma;
 } tRILightningSegment;
 
+typedef struct tRIThruster {
+	grsBitmap				*bmP;
+	fVector					vertices [7];
+	tUVLf						texCoord [7];
+	char						bFlame;
+} tRIThruster;
+
 typedef struct tRenderItem {
 	struct tRenderItem	*pNextItem;
 	tRenderItemType		nType;
@@ -208,6 +216,7 @@ typedef struct tRenderItem {
 		tRISphere				sphere;
 		tRILightning			lightning;
 		tRILightningSegment	lightningSegment;
+		tRIThruster				thruster;
 	} item;
 } tRenderItem;
 
@@ -241,6 +250,7 @@ int RIAddParticle (tParticle *particle, double fBrightness);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
 int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
 									char bPlasma, char bStart, char bEnd, short nDepth);
+int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVector *vFlame, tUVLf *uvlFlame);
 void RenderItems (void);
 
 //------------------------------------------------------------------------------

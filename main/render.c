@@ -4646,7 +4646,7 @@ tRenderItemBuffer	renderItems;
 
 static tUVLf defaultTexCoord [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 
-int AllocRenderItems (void)
+inline int AllocRenderItems (void)
 {
 if (renderItems.pDepthBuffer)
 	return 1;
@@ -4740,10 +4740,15 @@ for (i = 0; i < split [0].nVertices; i++) {
 	if (nMinLen > l)
 		nMinLen = l;
 	}
-if (!nMaxLen || ((nMaxLen <= 30) && (nMaxLen < nMinLen / 2 * 3))) {
+if (!nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
 	for (i = 0, z = 0; i < split [0].nVertices; i++)
+#if 1
+		z += split [0].vertices [i].p.z;
+	z /= split [0].nVertices;
+#else
 		if (z < split [0].vertices [i].p.z)
 			z = split [0].vertices [i].p.z;
+#endif
 	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (z));
 	}
 if (split [0].nVertices == 3) {
@@ -4933,6 +4938,30 @@ return AddRenderItem (riLightningSegment, &item, sizeof (item), fl2f ((item.vLin
 
 //------------------------------------------------------------------------------
 
+int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVector *vFlame, tUVLf *uvlFlame)
+{
+	tRIThruster	item;
+	int			i, j;
+	float			z = 0;
+
+item.bmP = bmP;
+memcpy (item.vertices, vThruster, 4 * sizeof (fVector));
+memcpy (item.texCoord, uvlThruster, 4 * sizeof (tUVLf));
+if (item.bFlame == (vFlame != NULL)) {
+	memcpy (item.vertices + 4, vFlame, 3 * sizeof (fVector));
+	memcpy (item.texCoord + 4, uvlFlame, 3 * sizeof (tUVLf));
+	j = 7;
+	}
+else 
+	j = 4;
+for (i = 0; i < j; i++)
+	if (z < item.vertices [i].p.z)
+		z = item.vertices [i].p.z;
+return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z));
+}
+
+//------------------------------------------------------------------------------
+
 int RISetClientState (char bClientState, char bTexCoord, char bColor)
 {
 if (renderItems.bClientState == bClientState) {
@@ -5024,8 +5053,7 @@ void RIRenderPoly (tRIPoly *item)
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
-#if 0
-if (LoadRenderItemImage (item->bmP, item->bColor, 0, item->nWrap, 1)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
@@ -5037,9 +5065,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, 0, item->nWrap, 1)) {
 		glColor3d (1, 1, 1);
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
-else 
-#endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
+else if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 	j = item->nVertices;
 	glBegin (item->nPrimitive);
 	if (item->nColors > 1) {
@@ -5188,6 +5214,39 @@ renderItems.bTextured = 0;
 
 //------------------------------------------------------------------------------
 
+void RIRenderThruster (tRIThruster *item)
+{
+if (!renderItems.bDepthMask)
+	glDepthMask (renderItems.bDepthMask = 1);
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1)) {
+	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
+	if (item->bFlame)
+		glDrawArrays (GL_TRIANGLES, 4, 3);
+	glDrawArrays (GL_QUADS, 0, 4);
+	}
+else if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0)) {
+	int i;
+	if (item->bFlame) {
+		glBegin (GL_TRIANGLES);
+		for (i = 0; i < 3; i++) {
+			glTexCoord2fv ((GLfloat *) (item->texCoord + 4 + i));
+			glVertex3fv ((GLfloat *) (item->vertices + 4 + i));
+			}
+		glEnd ();
+		}
+	glBegin (GL_QUADS);
+	for (i = 0; i < 4; i++) {
+		glTexCoord2fv ((GLfloat *) (item->texCoord + i));
+		glVertex3fv ((GLfloat *) (item->vertices + i));
+		}
+	glEnd ();
+	}
+gameData.smoke.nLastType = -1;
+}
+
+//------------------------------------------------------------------------------
+
 void RenderItems (void)
 {
 	struct tRenderItem	**pd, *pl, *pn;
@@ -5236,6 +5295,9 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 			else if (nType == riLightningSegment) {
 				RIRenderLightningSegment (&pl->item.lightningSegment);
 				}
+			else if (nType == riThruster) {
+				RIRenderThruster (&pl->item.thruster);
+				}
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;
 			pl = pn;
@@ -5243,6 +5305,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		*pd = NULL;
 		}
 	}
+HUDMessage (0, "%d", ITEM_BUFFER_SIZE - renderItems.nFreeItems);
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 EndRenderSmoke (NULL);
 if (EGI_FLAG (bShadows, 0, 1, 0)) 

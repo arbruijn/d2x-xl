@@ -1528,10 +1528,10 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		dotFlame = VmVecDotf (&vPosf, &v);
 		VmVecNormalizef (&v, vThruster);
 		dotThruster = VmVecDotf (&vPosf, &v);
-		if (dotFlame < dotThruster) {
-			if (gameOpts->render.bDepthSort > 0)
-				RIAddPoly (bmpThruster [nStyle], vFlame, 3, uvlFlame, NULL, NULL, 0, 1, GL_TRIANGLES, GL_CLAMP);
-			else {
+		if (gameOpts->render.bDepthSort > 0)
+			RIAddThruster (bmpThruster [nStyle], vThruster, uvlThruster, (dotFlame < dotThruster) ? vFlame : NULL, uvlFlame);
+		else {
+			if (dotFlame < dotThruster) {
 				glBegin (GL_TRIANGLES);
 				for (i = 0; i < 3; i++) {
 					glTexCoord2fv ((GLfloat *) (uvlFlame + i));
@@ -1539,17 +1539,13 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 					}
 				glEnd ();
 				}
-			}
-		if (gameOpts->render.bDepthSort > 0)
-			RIAddPoly (bmpThruster [nStyle], vThruster, 4, uvlThruster, NULL, NULL, 0, 1, GL_QUADS, GL_CLAMP);
-		else {
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
 				glTexCoord2fv ((GLfloat *) (uvlThruster + i));
 				glVertex3fv ((GLfloat *) (vThruster + i));
 				}
+			glEnd ();
 			}
-		glEnd ();
 		}
 	glEnable (GL_CULL_FACE);
 	}
