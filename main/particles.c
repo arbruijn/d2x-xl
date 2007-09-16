@@ -1529,7 +1529,7 @@ else if (!IsUsedSmoke (iSmoke))
 	return -1;
 pSmoke = gameData.smoke.buffer + iSmoke;
 if (gameData.smoke.objects && (pSmoke->nObject >= 0))
-	gameData.smoke.objects [pSmoke->nObject] = -1;
+	SetSmokeObject (i, pSmoke->nObject, -1);
 if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);
@@ -2141,6 +2141,15 @@ if (gameOpts->render.smoke.bDisperse)
 	return (float) (PARTICLE_RAD * (nSize + 1)) / nScale + 0.5f;
 else
 	return ((float) (PARTICLE_RAD << nSize)) / nScale + 0.5f;
+}
+
+//------------------------------------------------------------------------------
+
+int SetSmokeObject (int nObject, int nSmoke)
+{
+if ((nObject < 0) || (nObject >= MAX_OBJECTS))
+	return -1;
+return gameData.smoke.objects [nObject] = nSmoke;
 }
 
 //------------------------------------------------------------------------------

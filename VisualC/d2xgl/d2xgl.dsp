@@ -691,6 +691,10 @@ SOURCE=..\..\main\text.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\tga.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\thief.c
 # End Source File
 # Begin Source File
@@ -1301,6 +1305,10 @@ SOURCE=..\..\main\text.h
 # Begin Source File
 
 SOURCE=..\..\main\textures.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\tga.h
 # End Source File
 # Begin Source File
 

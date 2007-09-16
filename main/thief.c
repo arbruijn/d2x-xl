@@ -104,7 +104,7 @@ int ChooseThiefRecreationSegment(void)
 	cur_drop_depth = THIEF_DEPTH;
 
 	while ((nSegment == -1) && (cur_drop_depth > THIEF_DEPTH/2)) {
-		nSegment = PickConnectedSegment(&gameData.objs.objects[LOCALPLAYER.nObject], cur_drop_depth);
+		nSegment = PickConnectedSegment (gameData.objs.objects + LOCALPLAYER.nObject, cur_drop_depth);
 		if (gameData.segs.segment2s[nSegment].special == SEGMENT_IS_CONTROLCEN)
 			nSegment = -1;
 		cur_drop_depth--;

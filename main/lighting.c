@@ -1357,23 +1357,37 @@ pl->bState = 1;
 pl->bSpot = 0;
 pl->nType = (nSide < 0) ? 2 : (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
 SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
-if (nObject >= 0)
+if (nObject >= 0) {
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
+	pl->rad = 0;
+	gameData.render.lights.dynamic.owners [nObject] = gameData.render.lights.dynamic.nLights;
+	}
 else if (nSegment >= 0) {
 #if 0
 	vmsVector	vOffs;
 	tSide			*sideP = gameData.segs.segments [nSegment].sides + nSide;
 #endif
-	if (nSide < 0)
+	if (nSide < 0) {
+		pl->rad = 0;
 		COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment);
-	else
+		}	
+	else {
+		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
+
+		ComputeSideRads (nSegment, nSide, &rMin, &rMax);
+		pl->rad = f2fl ((rMin + rMax) / 20);
+		//RegisterLight (NULL, nSegment, nSide);
+		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
 		COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
+		}
 #if 0
 	VmVecAdd (&vOffs, sideP->normals, sideP->normals + 1);
 	VmVecScaleFrac (&vOffs, 1, 200);
 	VmVecInc (&pl->vPos, &vOffs);
 #endif
 	}
+else
+	pl->bVariable = 0;
 #if USE_OGL_LIGHTS
 #	if 0
 pl->fAttenuation [0] = 1.0f / f2fl (xBrightness); //0.5f;
@@ -1397,24 +1411,6 @@ glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.dynamic.nLights, pl - gameData.render.lights.dynamic.lights);
 #endif	
-else if (nObject >= 0) {
-	pl->rad = 0;
-	gameData.render.lights.dynamic.owners [nObject] = gameData.render.lights.dynamic.nLights;
-	}
-else if (nSegment >= 0) {
-	if (nSide < 0)
-		pl->rad = 0;
-	else {
-		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
-
-		ComputeSideRads (nSegment, nSide, &rMin, &rMax);
-		pl->rad = f2fl ((rMin + rMax) / 20);
-		//RegisterLight (NULL, nSegment, nSide);
-		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide);
-		}
-	}
-else
-	pl->bVariable = 0;
 pl->bOn = 1;
 pl->bTransform = 1;
 return gameData.render.lights.dynamic.nLights++;

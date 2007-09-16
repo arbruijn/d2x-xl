@@ -940,8 +940,6 @@ if (!bRender)
 		*pp = gameData.segs.points + props.vp [i];
 		if (!gameStates.render.nType) {
 			z = (*pp)->p3_vec.p.z;
-			if (gameData.render.zMin > z)
-				gameData.render.zMin = z;
 			if (gameData.render.zMax < z)
 				gameData.render.zMax = z;
 			}

@@ -123,6 +123,7 @@ int LoadParticleImages (void);
 int BeginRenderSmoke (int nType, float nScale);
 int EndRenderSmoke (tCloud *pCloud);
 int RenderParticle (tParticle *pParticle, double brightness);
+int SetSmokeObject (int nObject, int nSmoke);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;
