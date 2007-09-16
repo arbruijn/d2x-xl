@@ -15,8 +15,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _RENDER_H
 #define _RENDER_H
 
+#include "inferno.h"
+#include "network.h"
 #include "3d.h"
-
 #include "object.h"
 
 #define	APPEND_LAYERED_TEXTURES 0
@@ -252,6 +253,22 @@ int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color,
 									char bPlasma, char bStart, char bEnd, short nDepth);
 int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVector *vFlame, tUVLf *uvlFlame);
 void RenderItems (void);
+
+//------------------------------------------------------------------------------
+
+static inline int StencilOff (void)
+{
+if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
+	return 0;
+glDisable (GL_STENCIL_TEST);
+return 1;
+}
+
+static inline void StencilOn (int bStencil)
+{
+if (bStencil) 
+	glEnable (GL_STENCIL_TEST);
+}
 
 //------------------------------------------------------------------------------
 

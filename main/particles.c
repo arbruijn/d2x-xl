@@ -895,8 +895,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType];
 	OglActiveTexture (GL_TEXTURE0_ARB, 0);
 	glEnable (GL_TEXTURE_2D);
-	if (EGI_FLAG (bShadows, 0, 1, 0)) // && (gameStates.render.nShadowPass == 3))
-		glDisable (GL_STENCIL_TEST);
+	gameData.smoke.bStencil = StencilOff ();
 	glDepthFunc (GL_LESS);
 	glDepthMask (0);
 	#if 0
@@ -1012,8 +1011,7 @@ if (gameStates.render.bPointSprites) {
 #endif
 OGL_BINDTEX (0);
 glDepthMask (1);
-if (EGI_FLAG (bShadows, 0, 1, 0))// && (gameStates.render.nShadowPass == 3))
-	glEnable (GL_STENCIL_TEST);
+StencilOn (gameData.smoke.bStencil);
 //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //glEnable (GL_DEPTH_TEST);
 //glDisable (GL_TEXTURE_2D);

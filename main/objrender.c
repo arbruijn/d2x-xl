@@ -756,8 +756,7 @@ if (SHOW_SHADOWS &&
 #endif
 if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	 !(gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
-	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 #if 0//def _DEBUG
@@ -791,8 +790,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 100.0f);
 #endif
 		}
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 }
 
@@ -842,8 +840,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
-	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
@@ -896,8 +893,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 			glVertex3fv ((GLfloat *) (fVerts + i));
 		glEnd ();
 		}
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 }
 
@@ -1069,8 +1065,7 @@ RenderMslLockIndicator (objP);
 if (EGI_FLAG (bTagOnlyHitObjs, 0, 1, 0) && (ObjectDamage (objP) >= 1.0f))
 	return;
 if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
-	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	glDisable (GL_TEXTURE_2D);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
@@ -1155,8 +1150,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 			glEnd ();
 			}
 		}
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 RenderDamageIndicator (objP, pc);
 }
@@ -1195,8 +1189,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		grsBitmap		*bmP;
 
 	if (pp) {
-		if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-			glDisable (GL_STENCIL_TEST);
+		bStencil = StencilOff ();
 		OglActiveTexture (GL_TEXTURE0_ARB, 0);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1230,8 +1223,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		glEnd ();
 		G3DoneInstance ();
 		OGL_BINDTEX (0);
-		if (bStencil)
-			glEnable (GL_STENCIL_TEST);
+		StencilOn (bStencil);
 		}
 	}
 }
@@ -1456,8 +1448,7 @@ else if (objP->nType == OBJ_WEAPON) {
 	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	}
 #endif
-if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-	glDisable (GL_STENCIL_TEST);
+bStencil = StencilOff ();
 //glDepthMask (0);
 bTextured = 0;
 nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
@@ -1620,8 +1611,7 @@ else {
 	glCullFace (GL_BACK);
 	}
 glDepthMask (1);
-if (bStencil)
-	glEnable (GL_STENCIL_TEST);
+StencilOn (bStencil);
 }
 
 // -----------------------------------------------------------------------------
@@ -1699,8 +1689,7 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	static fVector	vEye = {{0, 0, 0}};
 	static tUVLf	uvlCorona [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 
-	if (bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	glDepthMask (0);
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmpCorona, 1, -1)) 
@@ -1796,8 +1785,7 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 #endif
 		}
 	glDepthMask (1);
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 }
 
@@ -1838,8 +1826,7 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, 0);
 		return;
 		}
-	if (bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	glDepthMask (0);
 	if (bSimple) {
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
@@ -1888,8 +1875,7 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 		}
 
 	glDepthMask (1);
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 }
 
@@ -1911,8 +1897,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 		int			bStencil;
 
 	VmVecScaleAdd (&vPos, &objP->position.vPos, &objP->position.mOrient.fVec, objP->size / 2);
-	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	if (EGI_FLAG (bShockwaves, 1, 1, 0) && 
 		 (objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z)) {
 			fVector			vPosf;
@@ -1976,8 +1961,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 		glCullFace (GL_BACK);
 		G3DoneInstance ();
 		}
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 }
 
@@ -2023,8 +2007,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z))
 			return;
 		}
-	if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-		glDisable (GL_STENCIL_TEST);
+	bStencil = StencilOff ();
 	glDepthMask (0);
 	glEnable (GL_LINE_STIPPLE);
 	glEnable (GL_BLEND);
@@ -2050,8 +2033,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glDisable (GL_LINE_STIPPLE);
 	glDisable (GL_LINE_SMOOTH);
 	glDepthMask (1);
-	if (bStencil)
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 #endif
 	}
 }
@@ -2135,8 +2117,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			}
 		else {
 			bDrawArrays = OglEnableClientStates (1, 0);
-			if ((bStencil = SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
-				glDisable (GL_STENCIL_TEST);
+			bStencil = StencilOff ();
 			glDisable (GL_CULL_FACE);		
 			glDepthMask (0);
 			glEnable (GL_TEXTURE_2D);
@@ -2166,8 +2147,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 				glEnd ();
 #endif
 				}
-			if (bStencil)
-				glEnable (GL_STENCIL_TEST);
+			StencilOn (bStencil);
 			glEnable (GL_CULL_FACE);
 			glDepthMask (1);
 			}

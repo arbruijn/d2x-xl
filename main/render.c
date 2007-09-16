@@ -1387,7 +1387,7 @@ if (!bHaveShipColors) {
 
 void RenderRadar (void)
 {
-	int			i;
+	int			i, bStencil;
 	tObject		*objP;
 	GLint			depthFunc;
 	tRgbColord	*pc;
@@ -1398,6 +1398,7 @@ if (gameStates.render.automap.bDisplay)
 	return;
 if (!(i = EGI_FLAG (nRadar, 0, 1, 0)))
 	return;
+bStencil = StencilOff ();
 InitShipColors ();
 yRadar = (i == 1) ? 20 : -20;
 VmAngles2Matrix (&mRadar, &aRadar);
@@ -1432,6 +1433,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 glLineWidth (1);
 glDepthFunc (depthFunc);
 glEnable (GL_CULL_FACE);		
+StencilOn (bStencil);
 }
 
 // -----------------------------------------------------------------------------------
@@ -4741,14 +4743,15 @@ for (i = 0; i < split [0].nVertices; i++) {
 		nMinLen = l;
 	}
 if (!nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
-	for (i = 0, z = 0; i < split [0].nVertices; i++)
-#if 1
+	for (i = 0, z = 0; i < split [0].nVertices; i++) {
+#if 0
 		z += split [0].vertices [i].p.z;
 	z /= split [0].nVertices;
 #else
 		if (z < split [0].vertices [i].p.z)
 			z = split [0].vertices [i].p.z;
 #endif
+		}
 	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (z));
 	}
 if (split [0].nVertices == 3) {
@@ -4818,6 +4821,8 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoor
 
 #ifdef _DEBUG
 if (nVertices > 4)
+	nVertices = nVertices;
+if (nVertices < 4)
 	nVertices = nVertices;
 #endif
 item.bmP = bmP;
@@ -4968,9 +4973,9 @@ if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
 		if (renderItems.bClientTexCoord != bTexCoord) {
 			if (renderItems.bClientTexCoord = bTexCoord)
-				glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-			else
 				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+			else
+				glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 			}
 		if (renderItems.bClientColor != bColor) {
 			if (renderItems.bClientColor = bColor)
@@ -5053,6 +5058,7 @@ void RIRenderPoly (tRIPoly *item)
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
+#if 1
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
@@ -5065,7 +5071,9 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
 		glColor3d (1, 1, 1);
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
-else if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
+else 
+#endif
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 	j = item->nVertices;
 	glBegin (item->nPrimitive);
 	if (item->nColors > 1) {
@@ -5250,13 +5258,12 @@ gameData.smoke.nLastType = -1;
 void RenderItems (void)
 {
 	struct tRenderItem	**pd, *pl, *pn;
-	int						nType, bParticles;
+	int						nType, bParticles, bStencil;
 
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
-if (EGI_FLAG (bShadows, 0, 1, 0)) 
-	glDisable (GL_STENCIL_TEST);
+bStencil = StencilOff ();
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
 renderItems.bDepthMask = 0;
@@ -5312,6 +5319,7 @@ if (EGI_FLAG (bShadows, 0, 1, 0))
 	glEnable (GL_STENCIL_TEST);
 glDepthFunc (GL_LEQUAL);
 glEnable (GL_CULL_FACE);
+StencilOn (bStencil);
 return;
 }
 

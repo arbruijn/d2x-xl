@@ -2284,6 +2284,7 @@ typedef struct tSmokeData {
 	int				iUsed;
 	int				nLastType;
 	int				bAnimate;
+	int				bStencil;
 	tPartDepthBuf	depthBuf;
 } tSmokeData;
 

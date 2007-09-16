@@ -1405,7 +1405,9 @@ else {
 						glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
 						}
 					else {
-						//OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+#if 0
+						OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+#endif
 						glColor4f (1, 1, 1, color.alpha / 2);
 						}
 					for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
@@ -1429,11 +1431,13 @@ else {
 			}
 #endif
 #if 1
+#	if 0
 		if (nDepth)
 			color.alpha /= 2;
+#	endif
 		OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 		glColor4fv ((GLfloat *) &color);
-		glLineWidth ((GLfloat) (nDepth ? 2 : 3));
+		glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_SMOOTH);
 		glBegin (GL_LINE_STRIP);
@@ -1443,8 +1447,10 @@ else {
 			glVertex3fv ((GLfloat *) vPosf);
 			}
 		glEnd ();
+#	if 0
 		if (nDepth)
 			color.alpha *= 2;
+#	endif
 #endif
 #if defined (_DEBUG) && RENDER_TARGET_LIGHTNING
 		glColor3f (1,0,0,1);
@@ -1480,18 +1486,15 @@ void RenderLightnings (void)
 {
 if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
-		int			i, n;
+		int			i, n, bStencil = StencilOff ();
 
-	if (EGI_FLAG (bShadows, 0, 1, 0)) 
-		glDisable (GL_STENCIL_TEST);
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {
 		plb = gameData.lightnings.buffer + i;
 		n = plb->nNext;
 		if (!(plb->nKey [0] | plb->nKey [1]))
 			RenderLightning (plb->pl, plb->nLightnings, 0, gameOpts->render.bDepthSort > 0);
 		}
-	if (EGI_FLAG (bShadows, 0, 1, 0)) 
-		glEnable (GL_STENCIL_TEST);
+	StencilOn (bStencil);
 	}
 }
 
@@ -1837,7 +1840,7 @@ if (i < 0) {
 	VmVecNormal (&vDelta, &vNorm, &vPos, &vEnd);
 	h = VmVecDist (&vPos, &vEnd);
 	i = CreateLightning (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + rand () % 2000, 0, 
-								h, h / 4 + rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 1, 0, 1, &color);
+								h, h / 4 + rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {
