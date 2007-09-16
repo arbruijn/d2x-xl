@@ -366,10 +366,10 @@ if (SHOW_LIGHTNINGS) {
 	plb->nObject = nObject;
 	if (plb->bSound = bSound) {
 		DigiSetObjectSound (nObject, -1, "lightng.wav");
-#if 0
-		if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
-			DigiSetObjectSound (nObject, plb->nSound, NULL);
-#endif
+		if (vEnd || (nAngle <= 0)) {
+			if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
+				DigiSetObjectSound (nObject, plb->nSound, NULL);
+			}
 		}
 	else
 		plb->nSound = -1;

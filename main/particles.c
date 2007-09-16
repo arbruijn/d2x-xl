@@ -1529,7 +1529,7 @@ else if (!IsUsedSmoke (iSmoke))
 	return -1;
 pSmoke = gameData.smoke.buffer + iSmoke;
 if (gameData.smoke.objects && (pSmoke->nObject >= 0))
-	SetSmokeObject (i, pSmoke->nObject, -1);
+	SetSmokeObject (pSmoke->nObject, -1);
 if (pSmoke->pClouds) {
 	for (i = pSmoke->nClouds; i; )
 		DestroyCloud (pSmoke->pClouds + --i);

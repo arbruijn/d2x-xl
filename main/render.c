@@ -4819,7 +4819,7 @@ item.bmP = bmP;
 item.nVertices = nVertices;
 item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
-item.bDepthMask = 0;
+item.bDepthMask = bDepthMask;
 memcpy (item.texCoord, texCoord ? texCoord : defaultTexCoord, nVertices * sizeof (tUVLf));
 if (item.nColors = nColors) {
 	if (nColors < nVertices)
