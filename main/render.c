@@ -5312,7 +5312,6 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		*pd = NULL;
 		}
 	}
-HUDMessage (0, "%d", ITEM_BUFFER_SIZE - renderItems.nFreeItems);
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 EndRenderSmoke (NULL);
 if (EGI_FLAG (bShadows, 0, 1, 0)) 
