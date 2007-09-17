@@ -4289,8 +4289,8 @@ if (gameStates.render.frameRate.value) {
 	GrPrintF (grdCurCanv->cv_w - (x * GAME_FONT->ft_w), 
 				 grdCurCanv->cv_h - y * (GAME_FONT->ft_h + GAME_FONT->ft_h / 4), 
 				 "      FPS: %s", szRate);
-	ShowRenderItems ();
 	}
+ShowRenderItems ();
 }
 
 //	-----------------------------------------------------------------------------
