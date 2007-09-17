@@ -1714,7 +1714,7 @@ char *defaultGameTexts [][2] = {
 	{"wenig", "few"},
 	{"viel", "many"},
 	{"~Transparenz Tiefen-sortieren", "~Depth sort transparency"},
-	{"~Blitz-Einstellungen", "l~Ightning options"},
+	{"~Blitz-Einstellungen...", "l~Ightning options..."},
 	{"Blitze", "Lightnings"},
 	{"Blitze verwenden", "~Use Lightnings"},
 	{"Darstellungs~Qualitaet: %s", "render ~Quality: %s"},
