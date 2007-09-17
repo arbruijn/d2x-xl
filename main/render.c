@@ -5056,7 +5056,7 @@ if (bmP) {
 		//glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		renderItems.bTextured = 1;
 		}
-	if ((bmP != renderItems.bmP) || (nWrap != renderItems.nWrap)) {
+	if ((bmP != renderItems.bmP) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
 		if (OglBindBmTex (bmP, 1, 1)) {
 			renderItems.bmP = NULL;
 			return 0;
@@ -5297,6 +5297,7 @@ renderItems.bTextured = -1;
 renderItems.bClientState = -1;
 renderItems.bDepthMask = 0;
 renderItems.nWrap = 0;
+renderItems.nFrame = -1;
 renderItems.bmP = NULL;
 renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;

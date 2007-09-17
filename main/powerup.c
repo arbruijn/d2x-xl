@@ -203,6 +203,9 @@ void DrawBlobOutline (void)
 
 void DrawPowerup (tObject *objP)
 {
+#ifdef _DEBUG
+//return;
+#endif
 if (objP->nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
 else {

@@ -230,6 +230,7 @@ typedef struct tRenderItemBuffer {
 	int				zMax;
 	double			zScale;
 	int				nWrap;
+	char				nFrame;
 	char				bClientState;
 	char				bTextured;
 	char				bClientColor;

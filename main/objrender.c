@@ -290,26 +290,22 @@ void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFr
 
 if (gameOpts->render.bTransparentEffects) {
 	if (!alpha) {
-		if (nTransp == 3)
-			alpha = 1.0f;
-		else {
-			if (objP->nType == OBJ_POWERUP) {
-				id = objP->id;
-				if ((id == POW_EXTRA_LIFE) ||
-					 (id == POW_ENERGY) ||
+		if (objP->nType == OBJ_POWERUP) {
+			id = objP->id;
+			if ((id == POW_EXTRA_LIFE) ||
+					(id == POW_ENERGY) ||
 					(id == POW_SHIELD_BOOST) ||
 					(id == POW_HOARD_ORB) ||
 					(id == POW_CLOAK) ||
 					(id == POW_INVUL))
-					alpha = 2.0f / 3.0f;
-				else
-					alpha = 1.0f;
-				}
-			else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
-				alpha = 1.0f;
-			else
 				alpha = 2.0f / 3.0f;
+			else
+				alpha = 1.0f;
 			}
+		else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
+			alpha = 1.0f;
+		else
+			alpha = 2.0f / 3.0f;
 		}
 	}
 else {
@@ -336,9 +332,9 @@ xSize = objP->size;
 if (gameOpts->render.bDepthSort) {
 	tRgbaColorf	color = {1, 1, 1, alpha};
 	if (bmP->bm_props.w > bmP->bm_props.h)
-		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), 0);
+		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), iFrame);
 	else
-		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, 0);
+		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, iFrame);
 	}
 else {
 	if (bmP->bm_props.w > bmP->bm_props.h)
