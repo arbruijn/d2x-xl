@@ -1356,9 +1356,16 @@ if (gameData.render.lights.dynamic.material.bValid) {
 	}
 #if 1//ndef _DEBUG //cache light values per frame
 if (!(gameData.threads.vertColor.data.bExclusive || 
-	   gameData.threads.vertColor.data.bMatEmissive || pVertColor) && (nVertex >= 0)) {
+	   gameData.threads.vertColor.data.bMatEmissive/* || pVertColor*/) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
+		if (pVertColor) {
+			pVertColor->index = gameStates.render.nFrameFlipFlop + 1;
+			pVertColor->color.red = pc->color.red * fScale;
+			pVertColor->color.green = pc->color.green * fScale;
+			pVertColor->color.blue = pc->color.blue * fScale;
+			pVertColor->color.alpha = 1;
+			}
 		OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
 		return;
 		}
@@ -1426,9 +1433,10 @@ if (!gameData.threads.vertColor.data.bMatEmissive && pc) {
 	}
 if (pVertColor) {
 	pVertColor->index = gameStates.render.nFrameFlipFlop + 1;
-	pVertColor->color.red = colorSum.c.r;
-	pVertColor->color.green = colorSum.c.g;
-	pVertColor->color.blue = colorSum.c.b;
+	pVertColor->color.red = colorSum.c.r * fScale;
+	pVertColor->color.green = colorSum.c.g * fScale;
+	pVertColor->color.blue = colorSum.c.b * fScale;
+	pVertColor->color.alpha = colorSum.c.a;
 	}
 #endif
 } 
@@ -1708,6 +1716,8 @@ if (bDrawArrays ||
 		vertUVL [0][i].v.u = f2fl (uvlList [i].u);
 		vertUVL [0][i].v.v = f2fl (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, vertUVL [1] + i);
+		if (gameOpts->render.bDepthSort > 0)
+			i = i;
 		if (bDynLight)
 			G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), vertIndex [i], vertColors + i, 
 								gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 0);
