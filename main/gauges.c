@@ -4237,13 +4237,37 @@ fix frameTimeList [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 fix frameTimeTotal = 0;
 int frameTimeCounter = 0;
 
+void ShowRenderItems ()
+{
+if ((gameOpts->render.bDepthSort > 0) && renderItems.bDisplay) {
+		char szItems [50];
+		static time_t t, t0 = -1;
+		static fix rate = 0;
+		int x = 9, y = 5; // position measured from lower right corner
+	   //static int q;
+	
+	GrSetCurFont (GAME_FONT);	
+	GrSetFontColorRGBi (ORANGE_RGBA, 1, 0, 0);
+	sprintf (szItems, "Polys: %d", renderItems.nItems);	// Convert fixed to string
+	if (gameStates.render.automap.bDisplay)
+		y = 1;
+	if (IsMultiGame)
+		y = 6;
+	GrPrintF (grdCurCanv->cv_w - (x * GAME_FONT->ft_w), 
+				 grdCurCanv->cv_h - y * (GAME_FONT->ft_h + GAME_FONT->ft_h / 4), 
+				 szItems);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void ShowFrameRate ()
 {
 if (gameStates.render.frameRate.value) {
 		char szRate [50];
 		static time_t t, t0 = -1;
 		static fix rate = 0;
-		int x = 8, y = 6; // position measured from lower right corner
+		int x = 11, y = 6; // position measured from lower right corner
 	   //static int q;
 	
 	frameTimeTotal += gameData.time.xRealFrame - frameTimeList [frameTimeCounter];
@@ -4264,7 +4288,8 @@ if (gameStates.render.frameRate.value) {
 		y = 7;
 	GrPrintF (grdCurCanv->cv_w - (x * GAME_FONT->ft_w), 
 				 grdCurCanv->cv_h - y * (GAME_FONT->ft_h + GAME_FONT->ft_h / 4), 
-				 "FPS: %s", szRate);
+				 "      FPS: %s", szRate);
+	ShowRenderItems ();
 	}
 }
 

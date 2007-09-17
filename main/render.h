@@ -235,6 +235,7 @@ typedef struct tRenderItemBuffer {
 	char				bClientColor;
 	char				bClientTexCoord;
 	char				bDepthMask;
+	char				bDisplay;
 	grsBitmap		*bmP;
 } tRenderItemBuffer;
 
@@ -253,6 +254,8 @@ int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color,
 									char bPlasma, char bStart, char bEnd, short nDepth);
 int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVector *vFlame, tUVLf *uvlFlame);
 void RenderItems (void);
+
+extern tRenderItemBuffer renderItems;
 
 //------------------------------------------------------------------------------
 

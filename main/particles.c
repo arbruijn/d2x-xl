@@ -1868,7 +1868,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 						}
 					z = pParticle->transPos.p.z;
 #if 1
-					if ((z < gameData.render.zMin) || (z > gameData.render.zMax))
+					if ((z < F1_0) || (z > gameData.render.zMax))
 						continue;
 #else
 					if (z < 0)
@@ -1993,7 +1993,7 @@ return 1;
 
 int RenderSmoke (void)
 {
-return (gameOpts->render.smoke.bSort && !gameOpts->render.bDepthSort) ? RenderParticles () : RenderClouds ();
+return (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? RenderParticles () : RenderClouds ();
 }
 
 //------------------------------------------------------------------------------

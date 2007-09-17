@@ -124,6 +124,8 @@ fix	Face_reflectivity = (F1_0/2);
 short nDbgSeg = -1;
 short nDbgSide = -1;
 int nDbgVertex = -1;
+int nDbgBaseTex = -1;
+int nDbgOvlTex = -1;
 #endif
 
 //------------------------------------------------------------------------------
@@ -911,6 +913,10 @@ props.widFlags = propsP->widFlags;
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
+	props.segNum = props.segNum;
+if (props.nBaseTex == nDbgBaseTex)
+	props.segNum = props.segNum;
+if (props.nOvlTex == nDbgOvlTex)
 	props.segNum = props.segNum;
 #	if 0
 else
@@ -4685,8 +4691,8 @@ renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 
 void InitRenderItemBuffer (int zMin, int zMax)
 {
-renderItems.zMin = F1_0;
-renderItems.zMax = zMax - F1_0;
+renderItems.zMin = 0;
+renderItems.zMax = zMax - renderItems.zMin;
 renderItems.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - F1_0);
 if (renderItems.zScale > 1)
 	renderItems.zScale = 1;
@@ -4697,25 +4703,33 @@ if (renderItems.zScale > 1)
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z)
 {
 	tRenderItem *ph, *pi, *pj, **pd;
+	int			nOffset;
 
+if ((z < renderItems.zMin) || (z > renderItems.zMax))
+	return renderItems.nFreeItems;
 AllocRenderItems ();
 if (!renderItems.nFreeItems)
 	return 0;
-if ((z < renderItems.zMin) || (z > renderItems.zMax))
-	return renderItems.nFreeItems;
-pd = renderItems.pDepthBuffer + (int) ((double) (z - renderItems.zMin) * renderItems.zScale);
+nOffset = (int) ((double) (z - renderItems.zMin) * renderItems.zScale);
+if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
+	return 0;
+pd = renderItems.pDepthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = renderItems.pItemList + --renderItems.nFreeItems;
 ph->nType = nType;
 ph->z = z;
 memcpy (&ph->item, itemData, itemSize);
-for (pi = NULL, pj = *pd; pj && ((pj->z > z) || ((pj->z == z) && (pj->nType < nType))); pj = pj->pNextItem)
+if (*pd)
+	pj = *pd;
+for (pi = NULL, pj = *pd; pj && ((pj->z < z) || ((pj->z == z) && (pj->nType < nType))); pj = pj->pNextItem)
 	pi = pj;
 if (pi) {
 	ph->pNextItem = pi->pNextItem;
 	pi->pNextItem = ph;
 	}
 else {
+	if (*pd)
+		pd = pd;
 	ph->pNextItem = *pd;
 	*pd = ph;
 	}
@@ -4834,11 +4848,17 @@ memcpy (item.texCoord, texCoord ? texCoord : defaultTexCoord, nVertices * sizeof
 if (item.nColors = nColors) {
 	if (nColors < nVertices)
 		nColors = 1;
-	if (color)
+	if (color) {
 		memcpy (item.color, color, nColors * sizeof (tRgbaColorf));
-	else if (altColor)
-		for (i = 0; i < nVertices; i++)
+		for (i = 0; i < nColors; i++)
+			item.color [i].alpha *= gameStates.ogl.fAlpha;
+		}
+	else if (altColor) {
+		for (i = 0; i < nColors; i++) {
 			item.color [i] = altColor [i].color;
+			item.color [i].alpha *= gameStates.ogl.fAlpha;
+			}
+		}
 	else
 		item.nColors = 0;
 	}
@@ -4852,6 +4872,8 @@ else {
 	for (i = 0, z = 0; i < item.nVertices; i++)
 		if (z < item.vertices [i].p.z)
 			z = item.vertices [i].p.z;
+	if ((z < renderItems.zMin) || (z > renderItems.zMax))
+		return 0;
 	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z));
 	}
 }
@@ -4984,7 +5006,7 @@ if (renderItems.bClientState == bClientState) {
 				glDisableClientState (GL_COLOR_ARRAY);
 			}
 		}
-	return 0;
+	return 1;
 	}
 else if (bClientState) {
 	renderItems.bClientState = 1;
@@ -5009,10 +5031,14 @@ else if (bClientState) {
 		}
 	}
 else {
-	if (renderItems.bClientTexCoord)
+	if (renderItems.bClientTexCoord) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
-	if (renderItems.bClientColor)
+		renderItems.bClientTexCoord = 0;
+		}
+	if (renderItems.bClientColor) {
 		glDisableClientState (GL_COLOR_ARRAY);
+		renderItems.bClientColor = 0;
+		}
 	glActiveTexture (GL_TEXTURE0_ARB);
 	renderItems.bClientState = 0;
 	}
@@ -5171,8 +5197,8 @@ gameData.smoke.nLastType = -1;
 
 void RIRenderParticle (tRIParticle *item)
 {
+RISetClientState (0, 0, 0);
 if (renderItems.bTextured < 1) {
-	OglActiveTexture (GL_TEXTURE0_ARB, 0);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	gameData.smoke.nLastType = -1;
@@ -5182,10 +5208,8 @@ if (renderItems.bDepthMask) {
 	glDepthMask (0);
 	renderItems.bDepthMask = 0;
 	}
-RISetClientState (0, 0, 0);
 RenderParticle (item->particle, item->fBrightness);
-renderItems.bmP = NULL;
-renderItems.bTextured = 1;
+renderItems.bTextured = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -5258,7 +5282,7 @@ gameData.smoke.nLastType = -1;
 void RenderItems (void)
 {
 	struct tRenderItem	**pd, *pl, *pn;
-	int						nType, bParticles, bStencil;
+	int						nDepth, nType, bParticles, bStencil;
 
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
@@ -5269,6 +5293,7 @@ renderItems.bClientState = -1;
 renderItems.bDepthMask = 0;
 renderItems.nWrap = 0;
 renderItems.bmP = NULL;
+renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;
 bParticles = LoadParticleImages ();
 glEnable (GL_BLEND);
@@ -5281,6 +5306,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {
 	if (pl = *pd) {
+		nDepth = 0;
 		do {
 			nType = pl->nType;
 			if (nType == riPoly) {
@@ -5308,6 +5334,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 			pn = pl->pNextItem;
 			pl->pNextItem = NULL;
 			pl = pn;
+			nDepth++;
 			} while (pl);
 		*pd = NULL;
 		}

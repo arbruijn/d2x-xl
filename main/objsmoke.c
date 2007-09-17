@@ -434,22 +434,24 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
 	return;
 	}
 if (gameData.smoke.objects [i] < 0) {
-		tRgbaColorf	color;
+		tRgbaColord color;
+		int bColor;
 	
-	color.red = (float) objP->rType.smokeInfo.color.red / 255.0f;
-	color.green = (float) objP->rType.smokeInfo.color.green / 255.0f;
-	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;
-	color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0f;
+	color.red = (float) objP->rType.smokeInfo.color.red / 255.0;
+	color.green = (float) objP->rType.smokeInfo.color.green / 255.0;
+	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0;
+	if (bColor = (color.red + color.green + color.blue > 0))
+		color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0;
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, &dir, 
 											  objP->nSegment, 1, -objP->rType.smokeInfo.nParts, 
 											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.smoke.bDisperse], 2.0f), 
 											  -1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.smokeInfo.nLife, 
-											  objP->rType.smokeInfo.nDrift, 2, i, NULL, 1));
-	SetSmokeBrightness (gameData.smoke.objects [i], objP->rType.smokeInfo.nBrightness);
+											  objP->rType.smokeInfo.nDrift, 2, i, bColor ? &color : NULL, 1));
+	SetSmokeBrightness (gameData.smoke.objects [i], bColor ? 1 : objP->rType.smokeInfo.nBrightness);
 	}
 i = objP->rType.smokeInfo.nDrift >> 4;
-i += objP->rType.smokeInfo.nSize [0] >> 4;
+i += objP->rType.smokeInfo.nSize [0] >> 2;
 i /= 2;
 if (!(j = i - i / 2))
 	j = 2;

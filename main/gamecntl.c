@@ -100,6 +100,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "cheats.h"
 #include "input.h"
+#include "render.h"
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
@@ -1456,6 +1457,10 @@ void HandleGameKey(int key)
 			break;
 		}
 		
+		case KEY_ALTED + KEY_P:
+			renderItems.bDisplay = !renderItems.bDisplay;
+			break;
+
 		case KEY_ALTED + KEY_R:
 			gameStates.render.frameRate.value = !gameStates.render.frameRate.value;
 			break;
