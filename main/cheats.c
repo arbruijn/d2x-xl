@@ -915,6 +915,7 @@ tCheat cheats [] = {
 	{"buggin", TurboCheat, -1, 0, 1}, 
 	{"flash", NULL, 1, 0, 1}, 
 	{"gabbahey", EnableD1Cheats, 0, 0, -1}, 
+	{"guile", CloakCheat, 0, 0, -1}, 
 	{"lunacy", AhimsaCheat, 1, 0, 1}, 
 	{"mitzi", AllKeysCheat, 1, 0, 1}, 
 	{"opsytoys", FinishLevelCheat, 1, 0, 1}, 

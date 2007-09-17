@@ -4952,7 +4952,7 @@ int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVect
 item.bmP = bmP;
 memcpy (item.vertices, vThruster, 4 * sizeof (fVector));
 memcpy (item.texCoord, uvlThruster, 4 * sizeof (tUVLf));
-if (item.bFlame == (vFlame != NULL)) {
+if (item.bFlame = (vFlame != NULL)) {
 	memcpy (item.vertices + 4, vFlame, 3 * sizeof (fVector));
 	memcpy (item.texCoord + 4, uvlFlame, 3 * sizeof (tUVLf));
 	j = 7;
