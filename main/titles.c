@@ -258,18 +258,30 @@ else if ((ps = strstr (szImg, ".pcx"))) {
 	*ps = c;
 	}
 
-for (;;) {
-	pcxErr = bFullScr ?
-		PcxReadFullScrImage (szImg, gameStates.app.bD1Mission) :
-		PCXReadBitmap (szImg, bmP, BM_LINEAR, gameStates.app.bD1Mission);
-	if (pcxErr == PCX_ERROR_NONE)
-		break;
-	if (!ps)
-		break;
-	strcpy (ps, "00.pcx");
-	*++ps = c;
-	ps = NULL;
-	} 
+if (strstr (szImg, ".tga")) {
+	grsBitmap bm;
+	if (!ReadTGA (szImg, gameFolders.szDataDir, &bm, -1, 1.0, 0, 0))
+		return PCX_ERROR_OPENING;
+	if (bFullScr) {
+		ShowFullscreenImage (&bm);
+		GrFreeBitmapData (&bm);
+		}
+	return PCX_ERROR_NONE;
+	}
+else {
+	for (;;) {
+		pcxErr = bFullScr ?
+			PcxReadFullScrImage (szImg, gameStates.app.bD1Mission) :
+			PCXReadBitmap (szImg, bmP, BM_LINEAR, gameStates.app.bD1Mission);
+		if (pcxErr == PCX_ERROR_NONE)
+			break;
+		if (!ps)
+			break;
+		strcpy (ps, "00.pcx");
+		*++ps = c;
+		ps = NULL;
+		} 
+	}
 return pcxErr;
 }
 

@@ -118,27 +118,6 @@ return !strnicmp(&filename[len-11], "level", 5);
 #endif
 
 //------------------------------------------------------------------------------
-
-void ChangeFilenameExtension (char *dest, char *src, char *new_ext)
-{
-	int i;
-
-strcpy (dest, src);
-if (new_ext[0]=='.')
-	new_ext++;
-for (i=1; i < (int) strlen(dest); i++)
-	if (dest[i]=='.'||dest[i]==' '||dest[i]==0)
-		break;
-if (i < 123) {
-	dest[i]='.';
-	dest[i+1]=new_ext[0];
-	dest[i+2]=new_ext[1];
-	dest[i+3]=new_ext[2];
-	dest[i+4]=0;
-	}
-}
-
-//------------------------------------------------------------------------------
 //--unused-- vmsAngVec zero_angles={0,0,0};
 
 #define VmAngVecZero(v) do {(v)->p=(v)->b=(v)->h=0;} while (0)

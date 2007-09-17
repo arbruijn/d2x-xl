@@ -83,12 +83,12 @@ extern void UpdatePlayerStats();
 
 // from scores.c
 
-extern void show_high_scores(int place);
-extern void draw_high_scores(int place);
-extern int add_player_to_high_scores(tPlayer *playerP);
-extern void input_name (int place);
-extern int reset_high_scores();
-extern void InitPlayerStatsLevel(int secretFlag);
+void show_high_scores(int place);
+void draw_high_scores(int place);
+int add_player_to_high_scores(tPlayer *playerP);
+void input_name (int place);
+int reset_high_scores();
+void InitPlayerStatsLevel(int secretFlag);
 
 void open_message_window(void);
 void close_message_window(void);
@@ -113,5 +113,8 @@ void BashToShield(int, char *);
 void BashToEnergy(int, char *);
 
 fix RobotDefaultShields (tObject *objP);
+
+char *LevelName (int nLevel);
+char *MakeLevelFilename (int nLevel, char *pszFilename, char *pszFileExt);
 
 #endif /* _GAMESEQ_H */

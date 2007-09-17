@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MOVIE_PLAYED_FULL   1		// movie was played all the way through
 #define MOVIE_ABORTED       2		// movie started by was aborted
 
+#define MOVIE_OPTIONAL		 0		//false
 #define MOVIE_REQUIRED		 1		//true
 
 

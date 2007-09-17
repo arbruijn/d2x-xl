@@ -331,7 +331,7 @@ void PlayLevelSong (int nLevel, int bFromHog)
 	int	nSong;
 	int	nTracks;
 	int	bD1Song = (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
-	char	*pszLevelName, szFilename [SHORT_FILENAME_LEN];
+	char	szFilename [FILENAME_LEN];
 
 Assert(nLevel != 0);
 if (!gameData.songs.bInitialized)
@@ -347,9 +347,7 @@ if (force_rb_register) {
 	force_rb_register = 0;
 	}
 if (bFromHog) {
-	pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
-	strlwr (pszLevelName);
-	ChangeFilenameExtension (szFilename, pszLevelName, ".ogg");
+	MakeLevelFilename (nLevel, szFilename, ".ogg");
 	if (CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 		

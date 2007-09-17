@@ -825,6 +825,23 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 }
 
 //------------------------------------------------------------------------------
+
+char *LevelName (int nLevel)
+{
+return gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? 
+		 gameData.missions.szSecretLevelNames [-nLevel-1] : 
+		 gameData.missions.szLevelNames [nLevel-1];
+}
+
+//------------------------------------------------------------------------------
+
+char *MakeLevelFilename (int nLevel, char *pszFilename, char *pszFileExt)
+{
+ChangeFilenameExtension (pszFilename, strlwr (LevelName (nLevel)), pszFileExt);
+return pszFilename;
+}
+
+//------------------------------------------------------------------------------
 //load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
 
 extern char szAutoMission [255];
@@ -911,8 +928,7 @@ Assert (gameStates.app.bAutoRunMission ||
 		  ((nLevel <= gameData.missions.nLastLevel) && 
 		   (nLevel >= gameData.missions.nLastSecretLevel) && 
 			(nLevel != 0)));
-pszLevelName = gameStates.app.bAutoRunMission ? szAutoMission : (nLevel < 0) ? gameData.missions.szSecretLevelNames [-nLevel-1] : gameData.missions.szLevelNames [nLevel-1];
-strlwr (pszLevelName);
+strlwr (pszLevelName = LevelName (nLevel));
 /*---*/LogErr ("   loading level '%s'\n", pszLevelName);
 GrSetCurrentCanvas (NULL);
 GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
@@ -1508,27 +1524,31 @@ extern void com_hangup (void);
 //called when the tPlayer has finished the last level
 void DoEndGame (void)
 {
+	char  szFilename [FILENAME_LEN];
+
 SetFunctionMode (FMODE_MENU);
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 SetScreenMode (SCREEN_MENU);
 GrSetCurrentCanvas (NULL);
 KeyFlush ();
-if (!(gameData.app.nGameMode & GM_MULTI)) {
+if (!IsMultiGame) {
 	if (gameData.missions.nCurrentMission == (gameStates.app.bD1Mission ? gameData.missions.nD1BuiltinMission : gameData.missions.nBuiltinMission)) {
-		int played=MOVIE_NOT_PLAYED;	//default is not played
+		int bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
 
-		if (!gameStates.app.bD1Mission) {
-			InitSubTitles (ENDMOVIE ".tex");	
-			played = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-			CloseSubTitles ();
+		if (!(bPlayed = PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, ".mve"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize))) {
+			if (!gameStates.app.bD1Mission) {
+				InitSubTitles (ENDMOVIE ".tex");	
+				bPlayed = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+				CloseSubTitles ();
+				}
+			else if (gameStates.app.bHaveExtraMovies) {
+				//InitSubTitles (ENDMOVIE ".tex");	//ingore errors
+				bPlayed = PlayMovie (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+				CloseSubTitles ();
+				}
 			}
-		else if (gameStates.app.bHaveExtraMovies) {
-			//InitSubTitles (ENDMOVIE ".tex");	//ingore errors
-			played = PlayMovie (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-			CloseSubTitles ();
-			}
-		if (!played) {
+		if (!bPlayed) {
 			if (IS_D2_OEM) {
 				SongsPlaySong (SONG_TITLE, 0);
 				DoBriefingScreens ("end2oem.tex",1);
@@ -1541,8 +1561,8 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 		}
 	else {    //not multi
 		char tname [FILENAME_LEN];
-		sprintf (tname,"%s.tex",gameStates.app.szCurrentMissionFile);
-		DoBriefingScreens (tname,gameData.missions.nLastLevel+1);   //level past last is endgame breifing
+		sprintf (tname, "%s.tex", gameStates.app.szCurrentMissionFile);
+		DoBriefingScreens (tname, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
 
 		//try doing special credits
 		sprintf (tname,"%s.ctb",gameStates.app.szCurrentMissionFile);
@@ -1550,7 +1570,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 		}
 	}
 KeyFlush ();
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	MultiEndLevelScore ();
 else
 	// NOTE LINK TO ABOVE
@@ -1939,42 +1959,44 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 
 struct {
 	int	nLevel;
-	char	movie_name [FILENAME_LEN];
-} intro_movie [] = { { 1,"pla"},
-							{ 5,"plb"},
-							{ 9,"plc"},
-							{13,"pld"},
-							{17,"ple"},
-							{21,"plf"},
-							{24,"plg"}};
+	char	szMovieName [FILENAME_LEN];
+} szIntroMovies [] = {{ 1,"pla"},
+							 { 5,"plb"},
+							 { 9,"plc"},
+							 {13,"pld"},
+							 {17,"ple"},
+							 {21,"plf"},
+							 {24,"plg"}};
 
-#define NUM_INTRO_MOVIES (sizeof (intro_movie) / sizeof (*intro_movie))
+#define NUM_INTRO_MOVIES (sizeof (szIntroMovies) / sizeof (*szIntroMovies))
 
 void ShowLevelIntro (int nLevel)
 {
 //if shareware, show a briefing?
-if (!(gameData.app.nGameMode & GM_MULTI)) {
-	int i;
+if (!IsMultiGame) {
+	int i, bPlayed = 0;
+	char szFilename [FILENAME_LEN];
 
+	if (PlayMovie (MakeLevelFilename (nLevel, szFilename, ".mvl"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize))
+		return;
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
-		int movie=0;
 		if (IS_SHAREWARE) {
-			if (nLevel==1)
+			if (nLevel == 1)
 				DoBriefingScreens ("brief2.tex", 1);
 			}
 		else if (IS_D2_OEM) {
-			if (nLevel == 1 && !gameStates.movies.bIntroPlayed)
+			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed)
 				DoBriefingScreens ("brief2o.tex", 1);
 			}
 		else { // full version
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
 				PlayIntroMovie ();
 				}
-			for (i=0;i<NUM_INTRO_MOVIES;i++) {
-				if (intro_movie [i].nLevel == nLevel) {
+			for (i = 0; i < NUM_INTRO_MOVIES; i++) {
+				if (szIntroMovies [i].nLevel == nLevel) {
 					gameStates.video.nScreenMode = -1;
-					PlayMovie (intro_movie [i].movie_name, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-					movie=1;
+					PlayMovie (szIntroMovies [i].szMovieName, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+					bPlayed=1;
 					break;
 					}
 				}
@@ -1995,7 +2017,7 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 			 (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission)) {
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
 				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
-					PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+					 PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 				}			
 			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
 			}

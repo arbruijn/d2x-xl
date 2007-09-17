@@ -958,6 +958,8 @@ if (bGetSlideBank == 2) {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
 				int	dy = mouseData.y - SHEIGHT / 2;
 				int	dz = CalcDeadzone (mouseData.x - SWIDTH / 2, gameOpts->input.mouse.nDeadzone);
+				if (kcMouse [14].value)
+					dy = -dy;
 				if (dy < 0) {
 					if (dy > -dz)
 						dy = 0;

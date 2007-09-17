@@ -25,6 +25,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "pcx.h"
 #include "cfile.h"
+#include "tga.h"
 #include "palette.h"
 
 int pcx_encode_byte(ubyte byt, ubyte cnt, CFILE *fid);
@@ -381,18 +382,22 @@ return p;
 
 int PcxReadFullScrImage(char * filename, int bD1Mission)
 {
-	int			pcx_error;
-	grsBitmap	bm;
+		int			pcxError;
+		grsBitmap	bm;
 
-GrInitBitmapData (&bm);
-BM_MASK (&bm) = NULL;
-pcx_error = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
-if (pcx_error == PCX_ERROR_NONE) {
+if (strstr (filename, ".tga"))
+	pcxError = ReadTGA (filename, gameFolders.szDataDir, &bm, -1, 1.0, 0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
+else {
+	GrInitBitmapData (&bm);
+	BM_MASK (&bm) = NULL;
+	pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);
+	}
+if (pcxError == PCX_ERROR_NONE) {
 	GrPaletteStepLoad (NULL);
 	ShowFullscreenImage (&bm);
 	GrFreeBitmapData (&bm);
 	}
-return pcx_error;
+return pcxError;
 }
 
 //------------------------------------------------------------------------------

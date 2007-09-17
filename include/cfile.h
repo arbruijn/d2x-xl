@@ -169,6 +169,7 @@ void CFWriteAngVec (vmsAngVec *v, CFILE *file);
 void CFWriteVector (vmsVector *v, CFILE *file);
 void CFWriteMatrix (vmsMatrix *m,CFILE *file);
 void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt);
+void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
 
 // writes variable length, null-termined string.
 int CFWriteString (char *buf, CFILE *file);

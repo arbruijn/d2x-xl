@@ -312,19 +312,19 @@ void NMLoadBackground (char * filename, bkg *bg, int bRedraw)
 {
 	int			pcx_error;
 	int			width, height;
-	grsBitmap	*bmp = bg ? bg->background : NULL;
+	grsBitmap	*bmP = bg ? bg->background : NULL;
 
 	//@@//I think this only gets called to fill the whole screen
 	//@@Assert (grdCurCanv->cv_bitmap.bm_props.w == 320);
 	//@@Assert (grdCurCanv->cv_bitmap.bm_props.h == 200);
 #if 0
 	if (bRedraw)
-		bRedraw = gameOpts->menus.nStyle && bmp && pszCurBg && filename && !strcmp (pszCurBg, filename);
+		bRedraw = gameOpts->menus.nStyle && bmP && pszCurBg && filename && !strcmp (pszCurBg, filename);
 #endif
 if (!(bRedraw && gameOpts->menus.nStyle)) {
-	if (bmp && (bmp != pAltBg)) {
-		GrFreeBitmap (bmp);
-		bmp = NULL;
+	if (bmP && (bmP != pAltBg)) {
+		GrFreeBitmap (bmP);
+		bmP = NULL;
 		}
 	if (!filename)
 		filename = pszCurBg;
@@ -335,7 +335,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 	if (!(filename && strcmp (filename, MENU_PCX_FULL) && strcmp (filename, MENU_PCX_SHAREWARE))) {
 		NMLoadAltBg ();
 		if (gameOpts->menus.altBg.bHave > 0)
-			bmp = pAltBg;
+			bmP = pAltBg;
 		}
 	if (gameOpts->menus.altBg.bHave < 1) {
 		if (!filename)
@@ -343,10 +343,10 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 		pcx_error = pcx_get_dimensions (filename, &width, &height);
 		if (pcx_error != PCX_ERROR_NONE)
 			Error ("Could not open pcx file <%s>\n", filename);
-		bmp = GrCreateBitmap (width, height, 1);
-		Assert (bmp != NULL);
+		bmP = GrCreateBitmap (width, height, 1);
+		Assert (bmP != NULL);
 		}
-	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmp, bmp->bm_props.nType, 0);
+	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmP, bmP->bm_props.nType, 0);
 	Assert (pcx_error == PCX_ERROR_NONE);
 // Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 
@@ -359,21 +359,21 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 	strcpy (szLastPaletteLoaded, "");		//force palette load next time
 	if (bg) {
 		if (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)
-			OglLoadBmTexture (bmp, 0, 0);
+			OglLoadBmTexture (bmP, 0, 0);
 		bg->pszPrevBg = pszCurBg;
 		pszCurBg = filename;
 		}
 	}
-if (!bmp)
+if (!bmP)
 	return;
 WIN (DDGRLOCK (dd_grd_curcanv));
 if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle))
-	ShowFullscreenImage (bmp);
+	ShowFullscreenImage (bmP);
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (bg)
-	bg->background = bmp;
+	bg->background = bmP;
 else
-	GrFreeBitmap (bmp);
+	GrFreeBitmap (bmP);
 }
 
 //------------------------------------------------------------------------------
