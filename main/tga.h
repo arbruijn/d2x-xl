@@ -1,6 +1,10 @@
 #ifndef _TGA_H
 #define _TGA_H
 
+#ifdef HAVE_CONFIG_H
+#	include <conf.h>
+#endif
+
 typedef struct {
     char  identSize;          // size of ID field that follows 18 char header (0 usually)
     char  colorMapType;      // nType of colour map 0=none, 1=has palette

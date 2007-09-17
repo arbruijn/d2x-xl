@@ -434,6 +434,12 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
 	return;
 	}
 if (gameData.smoke.objects [i] < 0) {
+		tRgbaColorf	color;
+	
+	color.red = (float) objP->rType.smokeInfo.color.red / 255.0f;
+	color.green = (float) objP->rType.smokeInfo.color.green / 255.0f;
+	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;
+	color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0f;
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, &dir, 
 											  objP->nSegment, 1, -objP->rType.smokeInfo.nParts, 
