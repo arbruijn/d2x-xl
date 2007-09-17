@@ -877,21 +877,21 @@ for (i = 0; i < nLightnings; i++, pl++) {
 #if 1
 	if (pl->nTTL <= 0) {
 		if (pl->nLife < 0) {
-			if (pl->bRandom) {
-				if (0 > (pl->nNodes = -pl->nNodes)) {
-					h = pl->nDelay / 2;
-					pl->nTTL = h + (int) (f_rand () * h);
-					}
-				else {
+			if (0 > (pl->nNodes = -pl->nNodes)) {
+				h = pl->nDelay / 2;
+				pl->nTTL = h + (int) (f_rand () * h);
+				}
+			else {
+				if (pl->bRandom) {
 					h = -pl->nLife;
 					pl->nTTL = 3 * h / 4 + (int) (f_rand () * h / 2);
 					SetupLightning (pl, 0);
 					}
-				}
-			else {
-				pl->nTTL = -pl->nLife;
-				pl->nNodes = abs (pl->nNodes);
-				SetupLightning (pl, 0);
+				else {
+					pl->nTTL = -pl->nLife;
+					pl->nNodes = abs (pl->nNodes);
+					SetupLightning (pl, 0);
+					}
 				}
 			}
 		else {
