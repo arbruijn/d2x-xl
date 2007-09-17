@@ -305,7 +305,7 @@ else {
 	glPushMatrix ();
 	glTranslated (0.5, 0.5, 0);
 	if (LoadDeadzone ()) {
-		grs_color c = {1, 255, 255, 255, 128};
+		grs_color c = {{1, 255, 255, 255, 128}};
 		OglUBitMapMC (0, 0, 16, 16, bmpDeadzone, &c, 1, 0);
 		r = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 		w = r / (double) grdCurScreen->sc_w;

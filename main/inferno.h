@@ -2293,8 +2293,6 @@ typedef struct tSmokeData {
 #define MAX_LIGHTNINGS	1000
 #define MAX_LIGHTNING_NODES	1000
 
-typedef struct tLightning;
-
 typedef struct tLightningNode {
 	struct tLightning	*pChild;
 	vmsVector			vPos;

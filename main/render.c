@@ -1441,7 +1441,7 @@ StencilOn (bStencil);
 int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short *pSideVerts)
 {
 	short			sideVerts [4];
-	fix			d, d1, d2, dMax = 0;
+	fix			d, d1, d2, dMax = -1;
 	int			i, j;
 
 if (!pSideVerts) {

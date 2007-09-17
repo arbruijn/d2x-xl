@@ -1179,8 +1179,8 @@ void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int nScale, int 
 									 char bStart, char bEnd, char bPlasma, short nDepth, int bDepthSort)
 {
 	static fVector	vEye = {{0,0,0}};
-	static fVector	vPlasma [6] = {{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0},{0,0,0}};
-	static fVector vNormal [3] = {{0,0,0},{0,0,0},{0,0,0}};
+	static fVector	vPlasma [6] = {{{0,0,0}},{{0,0,0}},{{0,0,0}},{{0,0,0}},{{0,0,0}},{{0,0,0}}};
+	static fVector vNormal [3] = {{{0,0,0}},{{0,0,0}},{{0,0,0}}};
 
 	fVector	vn [2], vd;
 	int		i, j = bStart + 2 * bEnd;
