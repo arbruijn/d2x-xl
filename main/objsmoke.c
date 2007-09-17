@@ -448,7 +448,7 @@ if (gameData.smoke.objects [i] < 0) {
 											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.smoke.bDisperse], 2.0f), 
 											  -1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.smokeInfo.nLife, 
 											  objP->rType.smokeInfo.nDrift, 2, i, bColor ? &color : NULL, 1));
-	SetSmokeBrightness (gameData.smoke.objects [i], bColor ? 1 : objP->rType.smokeInfo.nBrightness);
+	SetSmokeBrightness (gameData.smoke.objects [i], objP->rType.smokeInfo.nBrightness);
 	}
 i = objP->rType.smokeInfo.nDrift >> 4;
 i += objP->rType.smokeInfo.nSize [0] >> 2;
