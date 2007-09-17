@@ -770,7 +770,7 @@ else {
 	plh->vNewPos = plh->vPos;
 	VmVecZero (&plh->vOffs);
 	if (nStyle == 2) {
-		nAmplitude *= 4;
+		nAmplitude = 5 * nAmplitude / 3;
 		for (h = pl->nNodes, i = 0, plh = pl->pNodes; i < h; i++, plh++) {
 			phi = bClamp ? (double) i / (double) (h - 1) : 1;
 			ComputePerlinNode (plh, nSteps, nAmplitude, nSeed, phi, phi * 10);

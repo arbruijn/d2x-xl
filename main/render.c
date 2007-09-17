@@ -5250,15 +5250,20 @@ void RIRenderThruster (tRIThruster *item)
 {
 if (!renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 1);
+#if 1
 if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), item->texCoord);
+	glColor3d (1,1,1);
 	if (item->bFlame)
 		glDrawArrays (GL_TRIANGLES, 4, 3);
 	glDrawArrays (GL_QUADS, 0, 4);
 	}
-else if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0)) {
+else 
+#endif
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0)) {
 	int i;
+	glColor3d (1,1,1);
 	if (item->bFlame) {
 		glBegin (GL_TRIANGLES);
 		for (i = 0; i < 3; i++) {

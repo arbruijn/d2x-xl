@@ -1716,8 +1716,6 @@ if (bDrawArrays ||
 		vertUVL [0][i].v.u = f2fl (uvlList [i].u);
 		vertUVL [0][i].v.v = f2fl (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, vertUVL [1] + i);
-		if (gameOpts->render.bDepthSort > 0)
-			i = i;
 		if (bDynLight)
 			G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), vertIndex [i], vertColors + i, 
 								gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 0);
