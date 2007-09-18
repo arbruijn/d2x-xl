@@ -1559,7 +1559,7 @@ if (!IsMultiGame) {
 		}
 	else {    //not multi
 		char tname [FILENAME_LEN];
-		PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, ".mve"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
+		PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, ".mvx"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
 		sprintf (tname, "%s.tex", gameStates.app.szCurrentMissionFile);
 		DoBriefingScreens (tname, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
 
@@ -1976,7 +1976,7 @@ if (!IsMultiGame) {
 	int i, bPlayed = 0;
 	char szFilename [FILENAME_LEN];
 
-	if (PlayMovie (MakeLevelFilename (nLevel, szFilename, ".mvl"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize))
+	if (PlayMovie (MakeLevelFilename (nLevel, szFilename, ".mvi"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize))
 		return;
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
