@@ -180,7 +180,7 @@ int PlayMovie (const char *filename, int bRequired, int bForce, int bFullScreen)
 	char name [FILENAME_LEN], *p;
 	int c, ret;
 
-#if 0//ndef _DEBUG
+#if 1//ndef _DEBUG
 if (!bForce && (gameOpts->movies.nLevel < 2))
 	return MOVIE_NOT_PLAYED;
 #endif
