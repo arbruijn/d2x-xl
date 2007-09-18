@@ -1536,17 +1536,15 @@ if (!IsMultiGame) {
 	if (gameData.missions.nCurrentMission == (gameStates.app.bD1Mission ? gameData.missions.nD1BuiltinMission : gameData.missions.nBuiltinMission)) {
 		int bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
 
-		if (!(bPlayed = PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, ".mve"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize))) {
-			if (!gameStates.app.bD1Mission) {
-				InitSubTitles (ENDMOVIE ".tex");	
-				bPlayed = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-				CloseSubTitles ();
-				}
-			else if (gameStates.app.bHaveExtraMovies) {
-				//InitSubTitles (ENDMOVIE ".tex");	//ingore errors
-				bPlayed = PlayMovie (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-				CloseSubTitles ();
-				}
+		if (!gameStates.app.bD1Mission) {
+			InitSubTitles (ENDMOVIE ".tex");	
+			bPlayed = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+			CloseSubTitles ();
+			}
+		else if (gameStates.app.bHaveExtraMovies) {
+			//InitSubTitles (ENDMOVIE ".tex");	//ingore errors
+			bPlayed = PlayMovie (D1_ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
+			CloseSubTitles ();
 			}
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
@@ -1561,6 +1559,7 @@ if (!IsMultiGame) {
 		}
 	else {    //not multi
 		char tname [FILENAME_LEN];
+		PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, ".mve"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
 		sprintf (tname, "%s.tex", gameStates.app.szCurrentMissionFile);
 		DoBriefingScreens (tname, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
 

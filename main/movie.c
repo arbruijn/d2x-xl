@@ -180,7 +180,7 @@ int PlayMovie (const char *filename, int bRequired, int bForce, int bFullScreen)
 	char name [FILENAME_LEN], *p;
 	int c, ret;
 
-#if 1//ndef _DEBUG
+#if 0//ndef _DEBUG
 if (!bForce && (gameOpts->movies.nLevel < 2))
 	return MOVIE_NOT_PLAYED;
 #endif
@@ -330,7 +330,7 @@ if (movie_bg.bmp) {
 //returns status.  see movie.h
 int RunMovie (char *filename, int hiresFlag, int bRequired, int dx, int dy)
 {
-	CFILE			*filehndl;
+	CFILE			*pf;
 	int			result=1, aborted=0;
 	int			track = 0;
 	int			nFrame;
@@ -339,7 +339,7 @@ int RunMovie (char *filename, int hiresFlag, int bRequired, int dx, int dy)
 
 result = 1;
 // Open Movie file.  If it doesn't exist, no movie, just return.
-if (!(filehndl = OpenMovieFile (filename, bRequired))) {
+if (!((pf = CFOpen (filename, gameFolders.szDataDir, "rb", 0)) || (pf = OpenMovieFile (filename, bRequired)))) {
 	if (bRequired) {
 #if TRACE
 		con_printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);
@@ -353,7 +353,7 @@ SetScreenMode (SCREEN_MENU);
 GrPaletteStepLoad (NULL);
 MVE_sfCallbacks (MovieShowFrame);
 MVE_palCallbacks (MovieSetPalette);
-if (MVE_rmPrepMovie ((void *) filehndl, dx, dy, track, libP ? libP->bLittleEndian : 1)) {
+if (MVE_rmPrepMovie ((void *) pf, dx, dy, track, libP ? libP->bLittleEndian : 1)) {
 	Int3 ();
 	return MOVIE_NOT_PLAYED;
 	}
@@ -383,7 +383,7 @@ while ((result = MVE_rmStepMovie ()) == 0) {
 	}
 Assert (aborted || result == MVE_ERR_EOF);	 ///movie should be over
 MVE_rmEndMovie ();
-CFClose (filehndl);                           // Close Movie File
+CFClose (pf);                           // Close Movie File
 // Restore old graphic state
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 GrPaletteStepLoad (NULL);
@@ -899,29 +899,26 @@ CFILE *SearchMovieLib (tMovieLib *lib, char *filename, int bRequired)
 	int i;
 	CFILE *filehandle;
 
-	if (lib == NULL)
-		return NULL;
-	for (i=0;i<lib->n_movies;i++)
-		if (!stricmp (filename, lib->movies [i].name)) {	//found the movie in a library 
-			int from_cd;
-			from_cd = (lib->flags & MLF_ON_CD);
-			if (from_cd)
-				SongsStopRedbook ();		//ready to read from CD
-			do {		//keep trying until we get the file handle
-				movie_handle = filehandle = CFOpen (lib->name, gameFolders.szMovieDir, "rb", 0);
-				if (bRequired && from_cd && filehandle == NULL)
-				{   //didn't get file!
-					if (request_cd () == -1)		//ESC from requester
-						break;						//bail from here. will get error later
-				}
-
-			} while (bRequired && from_cd && filehandle == NULL);
-
-			if (filehandle)
-				CFSeek (filehandle, (movie_start = lib->movies [i].offset), SEEK_SET);
-			return filehandle;
-		}
+if (lib == NULL)
 	return NULL;
+for (i = 0; i < lib->n_movies; i++)
+	if (!stricmp (filename, lib->movies [i].name)) {	//found the movie in a library 
+		int from_cd;
+		from_cd = (lib->flags & MLF_ON_CD);
+		if (from_cd)
+			SongsStopRedbook ();		//ready to read from CD
+		do {		//keep trying until we get the file handle
+			movie_handle = filehandle = CFOpen (lib->name, gameFolders.szMovieDir, "rb", 0);
+			if (bRequired && from_cd && filehandle == NULL) {   //didn't get file!
+				if (request_cd () == -1)		//ESC from requester
+					break;						//bail from here. will get error later
+				}
+			} while (bRequired && from_cd && filehandle == NULL);
+		if (filehandle)
+			CFSeek (filehandle, (movie_start = lib->movies [i].offset), SEEK_SET);
+		return filehandle;
+	}
+return NULL;
 }
 
 //-----------------------------------------------------------------------
@@ -931,12 +928,10 @@ CFILE *OpenMovieFile (char *filename, int bRequired)
 	CFILE *filehandle;
 	int i;
 
-	for (i=0;i<N_MOVIE_LIBS;i++) {
-		if ((filehandle = SearchMovieLib (movies.libs [i], filename, bRequired)) != NULL)
-			return filehandle;
-	}
-
-	return NULL;    //couldn't find it
+for (i = 0; i < N_MOVIE_LIBS; i++)
+	if ((filehandle = SearchMovieLib (movies.libs [i], filename, bRequired)) != NULL)
+		return filehandle;
+return NULL;    //couldn't find it
 }
 
 //-----------------------------------------------------------------------
