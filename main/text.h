@@ -1698,7 +1698,7 @@ void LoadGameTexts(void);
 #define TXT_ROTATE_MSLLOCKIND		GT(905)
 #define TXT_PLAY_ALL_MISSIONS		GT(906)
 #define TXT_NEWGAME_MENUTITLE		GT(907)
-#define TXT_RENDER_OBJCORONAS		GT(908)
+#define TXT_WEAPON_CORONAS			GT(908)
 #define TXT_AUTOMAP_SKYBOX			GT(909)
 #define TXT_INPUT_SLOWMOTION		GT(910)
 #define TXT_SPEEDING_UP				GT(911)
@@ -1771,10 +1771,10 @@ void LoadGameTexts(void);
 #define TXT_LIGHTNING_JAGGY		GT(978)
 #define TXT_LIGHTNING_SMOOTH		GT(979)
 #define TXT_BRIGHT_OBJECTS			GT(980)
+#define TXT_POWERUP_CORONAS		GT(981)
 
 #if 0
 
-#define TXT_				GT(981)
 #define TXT_				GT(982)
 #define TXT_				GT(983)
 #define TXT_				GT(984)
@@ -2182,7 +2182,7 @@ void LoadGameTexts(void);
 #define HTX_DEBRIS_LIFE				HT(268)				
 #define HTX_CPIT_MSLLOCKIND		HT(269)				
 #define HTX_ROTATE_MSLLOCKIND		HT(270)				
-#define HTX_ADVRND_OBJCORONAS		HT(271)				
+#define HTX_WEAPON_CORONAS			HT(271)				
 #define HTX_AUTOMAP_SKYBOX			HT(272)				
 #define HTX_SLOWMOTION_SPEEDUP	HT(273)				
 #define HTX_GPLAY_TRIFUSION		HT(274)				
@@ -2228,12 +2228,10 @@ void LoadGameTexts(void);
 #define HTX_LIGHTNING_SMOOTH		HT(314)
 #define HTX_LIGHTNING_OPTIONS		HT(315)				
 #define HTX_BRIGHT_OBJECTS			HT(316)				
+#define HTX_POWERUP_CORONAS		HT(317)				
 
 #if 0
 
-#define HTX_					HT(315)				
-#define HTX_					HT(316)				
-#define HTX_					HT(317)				
 #define HTX_					HT(318)				
 #define HTX_					HT(319)				
 #define HTX_					HT(320)				

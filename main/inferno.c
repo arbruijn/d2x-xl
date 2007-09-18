@@ -1248,7 +1248,8 @@ if (i) {
 	if (gameStates.app.bNostalgia > 2)
 		gameOptions [1].render.nQuality = 0;
 	gameOptions [1].render.bCoronas = 0;
-	gameOptions [1].render.bObjectCoronas = 0;
+	gameOptions [1].render.bWeaponCoronas = 0;
+	gameOptions [1].render.bPowerupCoronas = 0;
 	gameOptions [1].render.bRobotShields = 0;
 	gameOptions [1].render.bBrightObjects = 0;
 	gameOptions [1].render.nCoronaIntensity = 2;
@@ -1374,7 +1375,8 @@ else {
 	gameOptions [0].render.nDefMathFormat = 0;
 	gameOptions [0].render.nDebrisLife = 0;
 	gameOptions [0].render.bCoronas = 0;
-	gameOptions [0].render.bObjectCoronas = 0;
+	gameOptions [0].render.bWeaponCoronas = 0;
+	gameOptions [0].render.bPowerupCoronas = 0;
 	gameOptions [0].render.bRobotShields = 0;
 	gameOptions [0].render.bBrightObjects = 0;
 	gameOptions [0].render.nCoronaIntensity = 2;

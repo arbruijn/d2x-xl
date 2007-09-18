@@ -262,7 +262,8 @@ typedef struct tRenderOptions {
 	int bExplBlast;
 	int nExplShrapnels;
 	int bCoronas;
-	int bObjectCoronas;
+	int bWeaponCoronas;
+	int bPowerupCoronas;
 	int nCoronaIntensity;
 	int bUseShaders;
 	int bHiresModels;

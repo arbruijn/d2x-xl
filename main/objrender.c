@@ -277,15 +277,66 @@ ComputeEngineGlow (objP, xEngineGlow);
 return xLight;
 }
 
+// -----------------------------------------------------------------------------
+
+void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona)
+{
+if (!bCorona)
+	bCorona = 0;
+if (gameOpts->render.bWeaponCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
+	tRgbaColorf	c = {red, green, blue, alpha};
+	glDepthMask (0);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f);
+	glDepthMask (1);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RenderPowerupCorona (tObject *objP, float red, float green, float blue, float alpha)
+{
+if (gameOpts->render.bPowerupCoronas && LoadCorona ()) {
+	static tRgbaColorf powerupColors [5] = {
+		{0.2f, 0.2f, 0.9f, 0.3f},
+		{0.9f, 0.2f, 0.2f, 0.3f},
+		{0.9f, 0.8f, 0.2f, 0.3f},
+		{1.0f, 1.0f, 1.0f, 0.3f},
+		{1.0f, 1.0f, 1.0f, 0.3f}
+		};
+	fix xSize;
+	tRgbaColorf *colorP;
+
+	if (objP->id == POW_EXTRA_LIFE)
+		objP = objP;
+	if (alpha == 1) {
+		int i = objP->id - POW_KEY_BLUE;
+
+		colorP = powerupColors + (((i < 0) || (i > 2)) ? 3 : i);
+		xSize = 12 * F1_0;
+		}
+	else {
+		float b = sqrt ((red * 3 + green * 5 + blue * 2) / 10);
+		powerupColors [4].red = red / b;
+		powerupColors [4].green = green / b;
+		powerupColors [4].blue = blue / b;
+		powerupColors [4].alpha = alpha;
+		colorP = powerupColors + 4;
+		xSize = 6 * F1_0;
+		}
+	glDepthMask (0);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpCorona, colorP, alpha);
+	glDepthMask (1);
+	}
+}
+
 //------------------------------------------------------------------------------
 //draw an tObject that has one bitmap & doesn't rotate
 
-void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *color, float alpha)
+void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *colorP, float alpha)
 {
 	grsBitmap	*bmP;
 	int			id;
 	int			nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
-	int			bDepthInfo = 1; // (objP->nType != OBJ_FIREBALL);
 	fix			xSize;
 
 if (gameOpts->render.bTransparentEffects) {
@@ -319,16 +370,18 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	bmP = BM_OVERRIDE (bmP);
 	if (BM_FRAMES (bmP))
 		bmP = BM_FRAMES (bmP) + iFrame;
-	alpha = 1;
+	//alpha = 1;
 	}
-else if (color && gameOpts->render.bDepthSort)
+else if (colorP && gameOpts->render.bDepthSort)
 	OglLoadBmTexture (bmP, 1, nTransp);
 
-if (color)
-	memcpy (color, gameData.pig.tex.bitmapColors + bmi.index, sizeof (*color));
+if (colorP)
+	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi.index, sizeof (tRgbaColorf));
 
 xSize = objP->size;
 
+if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
+	RenderPowerupCorona (objP, (float) bmP->bm_avgRGB.red / 255.0f, (float) bmP->bm_avgRGB.green / 255.0f, (float) bmP->bm_avgRGB.blue / 255.0f, alpha);
 if (gameOpts->render.bDepthSort) {
 	tRgbaColorf	color = {1, 1, 1, alpha};
 	if (bmP->bm_props.w > bmP->bm_props.h)
@@ -339,10 +392,10 @@ if (gameOpts->render.bDepthSort) {
 else {
 	if (bmP->bm_props.w > bmP->bm_props.h)
 		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
-						  NULL, alpha, nTransp, bDepthInfo);
+						  NULL, alpha, nTransp);
 	else	
 		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
-						  NULL, alpha, nTransp, bDepthInfo);
+						  NULL, alpha, nTransp);
 	}
 }
 
@@ -1677,7 +1730,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
+if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 	int			bStencil, bDrawArrays, i;
 	float			a1, a2;
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
@@ -1790,7 +1843,7 @@ if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 
 // -----------------------------------------------------------------------------
 
-void RenderObjectCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort)
+void RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1801,7 +1854,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
-else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
+else if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 
@@ -1829,7 +1882,7 @@ else if (gameOpts->render.bObjectCoronas && LoadCorona ()) {
 	glDepthMask (0);
 	if (bSimple) {
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
-						  colorP, alpha, 1, 1);
+						  colorP, alpha, 1);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
@@ -2154,9 +2207,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 	RenderShockwave (objP);
 	}
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
-	RenderObjectCorona (objP, pc, 0.5f, 0, 3, 1, 0, 1);
+	RenderWeaponCorona (objP, pc, 0.5f, 0, 3, 1, 0, 1);
 else
-	RenderObjectCorona (objP, pc, 0.75f, 0, 3, 0, 0, 0);
+	RenderWeaponCorona (objP, pc, 0.75f, 0, 3, 0, 0, 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -2168,7 +2221,7 @@ void DrawDebrisCorona (tObject *objP)
 	static	time_t t0 = 0;
 
 if (objP->nType == OBJ_MARKER)
-	RenderObjectCorona (objP, &markerGlow, 0.75f, 0, 3, 1, 1, 0);
+	RenderWeaponCorona (objP, &markerGlow, 0.75f, 0, 3, 1, 1, 0);
 #ifdef _DEBUG
 else if (objP->nType == OBJ_DEBRIS) {
 #else
@@ -2184,7 +2237,7 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			debrisGlow.red = 0.5f + f2fl (d_rand () % (F1_0 / 4));
 			debrisGlow.green = f2fl (d_rand () % (F1_0 / 4));
 			}
-		RenderObjectCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1, 0);
+		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1, 0);
 		}
 	}
 }
@@ -2370,6 +2423,7 @@ switch (objP->renderType) {
 					gameData.models.nScale = 2 * F1_0;
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
+				RenderPowerupCorona (objP, 1, 1, 1, 1);
 				DrawPolygonObject (objP);
 				gameData.models.nScale = 0;
 				objP->mType.physInfo.mass = F1_0;
@@ -2470,8 +2524,10 @@ switch (objP->renderType) {
 			return 0;
 		if (gameStates.render.nType != 1)
 			return 0;
-		if (ConvertPowerupToWeapon (objP))
+		if (ConvertPowerupToWeapon (objP)) {
+			RenderPowerupCorona (objP, 1, 1, 1, 1);
 			DrawPolygonObject (objP);
+			}
 		else if (gameStates.render.nShadowPass != 2)
 			DrawPowerup (objP); 
 		break;

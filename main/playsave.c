@@ -388,7 +388,8 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bExplBlast, i, 0);
 		RP (gameOptions [i].render.nExplShrapnels, i, 0);
 		RP (gameOptions [i].render.bCoronas, i, 0);
-		RP (gameOptions [i].render.bObjectCoronas, i, 0);
+		RP (gameOptions [i].render.bWeaponCoronas, i, 0);
+		RP (gameOptions [i].render.bPowerupCoronas, i, 0);
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
 		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
@@ -922,7 +923,8 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bExplBlast", "1"},
 	{"gameOptions[0].render.nExplShrapnels", "1"},
 	{"gameOptions[0].render.bCoronas", "1"},
-	{"gameOptions[0].render.bObjectCoronas", "1"},
+	{"gameOptions[0].render.bWeaponCoronas", "1"},
+	{"gameOptions[0].render.bPowerupCoronas", "1"},
 	{"gameOptions[0].render.nCoronaIntensity", "1"},
 	{"gameOptions[0].render.bBrightObjects", "0"},
 	{"gameOptions[0].render.bRobotShields", "0"},

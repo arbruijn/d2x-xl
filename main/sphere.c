@@ -12,6 +12,7 @@
 #include "render.h"
 #include "maths.h"
 #include "u_mem.h"
+#include "objrender.h"
 
 #define SIMPLE_SPHERE	1
 
@@ -551,19 +552,13 @@ if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
-	float	r = f2fl (objP->size) * 1.05f;
-	if (gameOpts->render.bObjectCoronas && LoadHalo ()) {
-		float fScale = gameData.render.shield.pPulse->fScale;
-		tRgbaColorf	c = {red * fScale, green * fScale, blue * fScale, alpha * fScale};
-		fix  xSize = 3 * objP->size / 2;
-		glDepthMask (0);
-		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpHalo, &c, alpha * 4.0f / 3.0f);
-		glDepthMask (1);
-		}
+	float	fScale, r = f2fl (objP->size) * 1.05f;
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
 					  r, r, r, red, green, blue, alpha, bmpShield, 1);
 	G3DoneInstance ();
+	fScale = gameData.render.shield.pPulse->fScale;
+	RenderObjectHalo (objP, 3 * objP->size / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 	}
 }
 

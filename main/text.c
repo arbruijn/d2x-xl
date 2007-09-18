@@ -1657,7 +1657,7 @@ char *defaultGameTexts [][2] = {
 	{"Zielsuch-Anzeige ~Rotieren", "~Rotate missile lock indicator"},
 	{"~Alle missionen spielen", "play ~All missions"},
 	{"Neues Spiel", "New Game"},
-	{"~Objekte mit Lichthoefen zeichnen", "render coronas for ~Objects"},
+	{"~Schuesse mit Lichthoefen zeichnen", "render coronas for ~Weapon shots"},
 	{"~Skybox anzeigen", "show ~Skybox"},
 	{"Zeitlupe/-raffer", "Slowmo/Speed"},
 	{"beschleunige...", "speeding up..."},
@@ -1730,6 +1730,7 @@ char *defaultGameTexts [][2] = {
 	{"gezackt", "jaggy"},
 	{"weich", "smooth"},
 	{"~Helle Hires-Objekte", "~Bright hires models"},
+	{"~Powerups mit Lichthoefen zeichnen", "render coronas for ~Powerups"},
 #if 0
 	{"", ""},
 #endif
@@ -2300,6 +2301,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, feuert die Omega-Kanone Blitze statt weisser\nKugeln.", "If checked, the Omega cannon fires lightning bolts\ninstead of white globes."},
 	{"Menue fuer Blitz-Einstellungen aufrufen.", "Invoke the lightning settings menu here."},
 	{"Wenn angekreuzt, werden Hires-Modelle heller dargestellt.\n(Sonst sind sie in dunklen Bereichen eventuell schlecht\nsichtbar.)", "If checked, hires models are rendered brighter.\n(Otherwise, they might be hard to see in dark areas.)"},
+	{"Wenn angekreuzt, erhalten Powerups Lichthoefe.", "If checked, powerups are rendered with coronas."},
 #if 0
 	{"", ""},
 #endif

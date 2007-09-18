@@ -12,5 +12,6 @@ void DrawPolygonObject (tObject *objP);
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
 void ConvertWeaponToPowerup (tObject *objP);
 int RenderObject(tObject *objP, int nWindowNum, int bForce);
+void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona);
 
 #endif //OBJJRENDER_H

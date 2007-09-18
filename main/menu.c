@@ -206,7 +206,8 @@ static struct {
 
 static struct {
 	int	nCoronas;
-	int	nObjCoronas;
+	int	nWeaponCoronas;
+	int	nPowerupCoronas;
 	int	nCoronaIntensity;
 	int	nLightTrails;
 	int	nExplShrapnels;
@@ -1852,10 +1853,10 @@ if (gameOpts->render.bCoronas != v) {
 	gameOpts->render.bCoronas = v;
 	*key = -2;
 	}	
-m = menus + effectOpts.nObjCoronas;
+m = menus + effectOpts.nWeaponCoronas;
 v = m->value;
-if (gameOpts->render.bObjectCoronas != v) {
-	gameOpts->render.bObjectCoronas = v;
+if (gameOpts->render.bWeaponCoronas != v) {
+	gameOpts->render.bWeaponCoronas = v;
 	*key = -2;
 	}	
 if (effectOpts.nCoronaIntensity >= 0) {
@@ -1903,9 +1904,11 @@ do {
 
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
 	effectOpts.nCoronas = opt++;
-	ADD_CHECK (opt, TXT_RENDER_OBJCORONAS, gameOpts->render.bObjectCoronas, KEY_O, HTX_ADVRND_OBJCORONAS);
-	effectOpts.nObjCoronas = opt++;
-	if (gameOpts->render.bCoronas || gameOpts->render.bObjectCoronas) {
+	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.bWeaponCoronas, KEY_S, HTX_WEAPON_CORONAS);
+	effectOpts.nWeaponCoronas = opt++;
+	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.bPowerupCoronas, KEY_P, HTX_POWERUP_CORONAS);
+	effectOpts.nPowerupCoronas = opt++;
+	if (gameOpts->render.bCoronas || gameOpts->render.bWeaponCoronas) {
 		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
 		ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 2, KEY_I, HTX_CORONA_INTENSITY);
@@ -1964,7 +1967,8 @@ do {
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
 	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
-	gameOpts->render.bObjectCoronas = m [effectOpts.nObjCoronas].value;
+	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
+	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
 	if (optTrailType >= 0)
 		gameOpts->render.smoke.bPlasmaTrails = (m [optTrailType].value == 0);
 	extraGameInfo [0].bTracers = m [optTracers].value;
@@ -1987,7 +1991,7 @@ do {
 		gameOpts->render.bTransparentEffects = 1;
 	gameOpts->render.bAutoTransparency = 1;
 	gameOpts->render.bCoronas = 0;
-	gameOpts->render.bObjectCoronas = 0;
+	gameOpts->render.bWeaponCoronas = 0;
 	extraGameInfo [0].bLightTrails = 1;
 	extraGameInfo [0].bTracers = 1;
 	extraGameInfo [0].bShockwaves = 1;

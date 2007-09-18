@@ -685,9 +685,7 @@ void DrawShrapnel (tShrapnel *shrapnelP)
 if (shrapnelP->xTTL > 0) {
 	if (LoadExplBlast ()) {
 		fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
-		glDepthMask (0);
 		G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
-		glDepthMask (1);
 		}
 	}
 }
@@ -860,9 +858,7 @@ void DrawShrapnel (tShrapnel *shrapnelP)
 if (shrapnelP->xTTL > 0) {
 	if (LoadExplBlast ()) {
 		fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
-		glDepthMask (0);
 		G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
-		glDepthMask (1);
 		}
 	}
 }
