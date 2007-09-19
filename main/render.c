@@ -5306,6 +5306,8 @@ BeginRenderSmoke (-1, 1);
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {
+	  if (pd - renderItems.pDepthBuffer == 50872)
+		  pd = pd;
 	if (pl = *pd) {
 		nDepth = 0;
 		do {

@@ -1772,10 +1772,10 @@ void LoadGameTexts(void);
 #define TXT_LIGHTNING_SMOOTH		GT(979)
 #define TXT_BRIGHT_OBJECTS			GT(980)
 #define TXT_POWERUP_CORONAS		GT(981)
+#define TXT_AUTOMAP_LIGHTNINGS	GT(982)
 
 #if 0
 
-#define TXT_				GT(982)
 #define TXT_				GT(983)
 #define TXT_				GT(984)
 #define TXT_				GT(985)
@@ -2229,10 +2229,10 @@ void LoadGameTexts(void);
 #define HTX_LIGHTNING_OPTIONS		HT(315)				
 #define HTX_BRIGHT_OBJECTS			HT(316)				
 #define HTX_POWERUP_CORONAS		HT(317)				
+#define HTX_AUTOMAP_LIGHTNINGS	HT(318)				
 
 #if 0
 
-#define HTX_					HT(318)				
 #define HTX_					HT(319)				
 #define HTX_					HT(320)				
 #define HTX_					HT(321)				

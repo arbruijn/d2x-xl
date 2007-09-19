@@ -1649,7 +1649,7 @@ char *defaultGameTexts [][2] = {
 	{"~Weisses Radar", "~White radar"},
 	{"~Schwarzes Radar", "b~Lack radar"},
 	{"r~Adar-Reichweite: %s", "radar r~Ange: %s"},
-	{"R~Auch zeichnen", "render ~Smoke"},
+	{"~Rauch zeichnen", "render ~Smoke"},
 	{"Lebensdauer ~Truemmer: %d sec", "~Debris life: %d secs"},
 	{"Powerups auf Karte ~Und Radar zeigen", "Show powerups on automap ~And radar"},
 	{"~Keine Powerups anzeigen", "~Don't show powerups"},
@@ -1731,6 +1731,7 @@ char *defaultGameTexts [][2] = {
 	{"weich", "smooth"},
 	{"~Helle Hires-Objekte", "~Bright hires models"},
 	{"~Powerups mit Lichthoefen zeichnen", "render coronas for ~Powerups"},
+	{"~Blitze zeichnen", "render ~Lightnings"},
 #if 0
 	{"", ""},
 #endif
@@ -2302,6 +2303,7 @@ char *defaultHelpTexts [][2] = {
 	{"Menue fuer Blitz-Einstellungen aufrufen.", "Invoke the lightning settings menu here."},
 	{"Wenn angekreuzt, werden Hires-Modelle heller dargestellt.\n(Sonst sind sie in dunklen Bereichen eventuell schlecht\nsichtbar.)", "If checked, hires models are rendered brighter.\n(Otherwise, they might be hard to see in dark areas.)"},
 	{"Wenn angekreuzt, erhalten Powerups Lichthoefe.", "If checked, powerups are rendered with coronas."},
+	{"Ankreuzen, damit in der texturierten Uebersichtskarte Blitz-\neffekte dargestellt werden.", "Check to have lightning effects rendered in the textured automap."},
 #if 0
 	{"", ""},
 #endif
