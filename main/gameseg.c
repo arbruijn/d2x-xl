@@ -608,8 +608,6 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 
 	if (nFaces == 2) {
 		nVertex = min (vertexList [0], vertexList [2]);
-		if (vertexList [4] < 0)
-			CreateAbsVertexLists (vertexList, nSegment, sn);
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
 				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);

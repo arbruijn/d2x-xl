@@ -579,7 +579,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 if (color->alpha < 0)
 	color->alpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-#if 0
+#if 1
 if (gameOpts->render.bDepthSort > 0) {
 	fVector		vertices [8];
 
@@ -1725,7 +1725,7 @@ if (bDrawArrays ||
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, vertColors + i);
 		}
-#if 0
+#if 1
 	if (gameOpts->render.bDepthSort > 0) {
 		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT);
 		return 0;

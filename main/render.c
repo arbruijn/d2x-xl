@@ -5297,12 +5297,12 @@ renderItems.bmP = NULL;
 renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;
 bParticles = LoadParticleImages ();
-BeginRenderSmoke (-1, 1);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LESS);
 glDepthMask (0);
 glDisable (GL_CULL_FACE);
+BeginRenderSmoke (-1, 1);
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {

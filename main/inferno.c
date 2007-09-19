@@ -3078,9 +3078,11 @@ else /*if (gameOpts->render.bHiresModels)*/ {
 		short	i = 0, j = sizeofa (oofToModel);
 
 		ShowBoxedMessage (TXT_LOADING_MODELS);
-		while (i < j)
-			i = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, i);
-		i = 0;
+		if (gameOpts->render.bHiresModels) {
+			while (i < j)
+				i = LoadHiresModel (gameData.models.hiresModels + gameData.models.nHiresModels, i);
+			i = 0;
+			}
 		while (i < j)
 			i = LoadLoresModel (i);
 		}
