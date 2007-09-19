@@ -980,7 +980,10 @@ if (SHOW_LIGHTNINGS) {
 		if (vDelta.p.x || vDelta.p.y || vDelta.p.z) {
 			if (bStretch) {
 				vOffs = vDelta;
-				VmVecInc (&pl->vPos, &vDelta);
+				if (bFromEnd)
+					VmVecInc (&pl->vEnd, &vDelta);
+				else
+					VmVecInc (&pl->vPos, &vDelta);
 				}
 			else if (bFromEnd) {
 				VmVecInc (&pl->vPos, &vDelta);

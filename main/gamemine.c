@@ -1408,7 +1408,7 @@ void ComputeVertexVisibility (int startI)
 	vmsVector	c, d, *vertP;
 
 if (startI <= 0)
-	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * VERTVIS_FLAGS);
+	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS);
 if (gameStates.app.bMultiThreaded)
 	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 else
@@ -1461,7 +1461,7 @@ void ComputeSegmentVisibility (int startI)
 	tSegment		*segP;
 
 if (startI <= 0)
-	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * SEGVIS_FLAGS);
+	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
 if (gameStates.app.bMultiThreaded)
 	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 else
@@ -1695,10 +1695,13 @@ if (bOk)
 	bOk = (nSegments == gameData.segs.nSegments) && 
 			(nVertices == gameData.segs.nVertices);
 if (bOk)
-	bOk = (CFRead (gameData.segs.bSegVis, sizeof (ubyte) * ((nSegments + 7) >> 3), 1, fp) == 1) &&
-			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * ((nVertices + 3) >> 2), 1, fp) == 1) &&
+	bOk = 
+			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
+#if 0
+			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * nVertices * VERTVIS_FLAGS, 1, fp) == 1) &&
+#endif
 			(CFRead (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
-			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1);
+			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nVertices * MAX_NEAREST_LIGHTS, 1, fp) == 1);
 CFClose (fp);
 return bOk;
 }
@@ -1721,10 +1724,12 @@ if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "wb", 0)))
 	return 0;
 bOk = (CFWrite (&nSegments, sizeof (nSegments), 1, fp) == 1) &&
 		(CFWrite (&nVertices, sizeof (nVertices), 1, fp) == 1) &&
-		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * ((nSegments + 7) >> 3), 1, fp) == 1) &&
-		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * ((nVertices + 3) >> 2), 1, fp) == 1) &&
+		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
+#if 0
+		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * nVertices * VERTVIS_FLAGS, 1, fp) == 1) &&
+#endif
 		(CFWrite (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
-		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1);
+		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nVertices * MAX_NEAREST_LIGHTS, 1, fp) == 1);
 CFClose (fp);
 return bOk;
 }
@@ -1807,6 +1812,8 @@ for (i = 0; i < 2; i++) {
 
 void ComputeNearestLights (int nLevel)
 {
+	int h, i, j, b = 0;
+
 if (gameStates.app.bNostalgia)
 	return;
 if (!(SHOW_DYN_LIGHT || 
@@ -1815,14 +1822,21 @@ if (!(SHOW_DYN_LIGHT ||
 	return;
 loadOp = 0;
 loadIdx = 0;
+#if 1
+b = LoadPrecompiledLights (nLevel);
+#else
 if (LoadPrecompiledLights (nLevel))
 	return;
-else if (gameStates.app.bMultiThreaded) {
+else 
+#endif
+if (gameStates.app.bMultiThreaded) {
 	gameData.physics.side.bCache = 0;
-	StartOglLightThreads (VertVisThread);
-	StartOglLightThreads (SegVisThread);
-	StartOglLightThreads (SegLightsThread);
-	StartOglLightThreads (VertLightsThread);
+		StartOglLightThreads (VertVisThread);
+		StartOglLightThreads (SegVisThread);
+	if (!b) {
+		StartOglLightThreads (SegLightsThread);
+		StartOglLightThreads (VertLightsThread);
+		}
 	gameData.physics.side.bCache = 1;
 	}
 else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
@@ -1835,6 +1849,13 @@ else {
 	ComputeNearestSegmentLights (-1);
 	ComputeNearestVertexLights (-1);
 	}
+LogErr ("\n");
+for (h = i = 0; i < gameData.segs.nSegments; i++) {
+	for (j = 0; j < MAX_NEAREST_LIGHTS; j++, h++)
+		LogErr ("%d ", gameData.render.lights.dynamic.nNearestVertLights [h]);
+	LogErr ("\n");
+	}
+LogErr ("\n");
 SavePrecompiledLights (nLevel);
 }
 

@@ -1428,7 +1428,7 @@ if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
 		pl->bState = pl->bOn = 0;
 		return;
 		}
-	LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.dynamic.lights);
+	//LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.dynamic.lights);
 	// if not removing last light in list, move last light down to the now free list entry
 	// and keep the freed light handle thus avoiding gaps in used handles
 	if (nLight < --gameData.render.lights.dynamic.nLights) {
@@ -1923,6 +1923,8 @@ if (gameOpts->render.bDynLighting ||
 			nVertex = nVertex;
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
+		if (nVertex == 482)
+			nVertex = nVertex;
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
 		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 1);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);

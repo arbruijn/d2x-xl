@@ -1349,8 +1349,10 @@ typedef struct tSlideSegs {
 
 //------------------------------------------------------------------------------
 
-#define SEGVIS_FLAGS		((MAX_SEGMENTS + 7) >> 3)
-#define VERTVIS_FLAGS	((MAX_VERTICES + 3) >> 2)
+#define MAX_SEGVIS_FLAGS	((MAX_SEGMENTS + 7) >> 3)
+#define MAX_VERTVIS_FLAGS	((MAX_VERTICES + 3) >> 2)
+#define SEGVIS_FLAGS			((gameData.segs.nSegments + 7) >> 3)
+#define VERTVIS_FLAGS		((gameData.segs.nVertices + 3) >> 2)
 
 typedef struct tSegmentData {
 	int					nMaxSegments;
