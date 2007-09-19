@@ -506,19 +506,11 @@ int CreateAbsVertexLists (int *vertices, int nSegment, int nSide)
 	int  *sv = sideToVertsInt [nSide];
 	int nFaces;
 
-	static int bSemaphore = 0;
-
-#if 0
-if (bSemaphore)
-	return -1;
-#endif
-bSemaphore = 1;
 if (gameData.physics.side.bCache &&
 	 (gameData.physics.side.nSegment == nSegment) && 
 	 (gameData.physics.side.nSide == nSide) &&
 	 (gameData.physics.side.nType == sideP->nType)) {
 	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
-	bSemaphore = 0;
 	return gameData.physics.side.nFaces;
 	}	
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
@@ -568,7 +560,6 @@ if (gameData.physics.side.bCache) {
 	gameData.physics.side.nType = sideP->nType;
 	memcpy (gameData.physics.side.vertices, vertices, sizeof (gameData.physics.side.vertices));
 	}
-bSemaphore = 0;
 return nFaces;
 }
 
@@ -590,21 +581,13 @@ segmasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
 	tSide2		*side2P;
 	segmasks		masks;
 
-	static int qqq, bSemaphore = 0;
-
 masks.valid = 0;
-#if 0
-if (bSemaphore)
-	return masks;
-#endif
-bSemaphore = 1;
 masks.centerMask = 0;
 masks.faceMask = 0;
 masks.sideMask = 0;
 masks.valid = 1;
 if (nSegment == -1) {
 	//Error ("nSegment == -1 in GetSegMasks ()");
-	bSemaphore = 0;
 	return masks;
 	}
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
@@ -614,14 +597,9 @@ seg2P = gameData.segs.segment2s + nSegment;
 side2P = seg2P->sides;
 //check point against each tSide of tSegment. return bitmask
 for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P++) {
-	qqq++;
 	// Get number of faces on this tSide, and at vertexList, store vertices.
 	//	If one face, then vertexList indicates a quadrilateral.
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-	if (qqq == 823)
-		qqq = qqq;
-	if (qqq == 824)
-		qqq = qqq;
 	nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
 	//those faces form a concave or convex tSide.  If the tSide pokes out, 
@@ -696,7 +674,6 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 		}
 	}
 masks.valid = 1;
-bSemaphore = 0;
 return masks;
 }
 

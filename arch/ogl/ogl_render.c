@@ -579,6 +579,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 if (color->alpha < 0)
 	color->alpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+#if 0
 if (gameOpts->render.bDepthSort > 0) {
 	fVector		vertices [8];
 
@@ -586,7 +587,9 @@ if (gameOpts->render.bDepthSort > 0) {
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
 	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT);
 	}
-else {
+else 
+#endif
+	{
 	r_polyc++;
 	glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 #if OGL_QUERY
@@ -1131,10 +1134,10 @@ return i * i;
 
 //------------------------------------------------------------------------------
 
+float fLightRanges [3] = {10, 14.142f, 20};
+
 int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 {
-	static float	fLightRanges [3] = {10, 14.142f, 20};
-
 	int				j, nType, bInRad, nSaturation = gameOpts->render.color.nSaturation;
 	int				nBrightness, nMaxBrightness = 0;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
@@ -1722,7 +1725,7 @@ if (bDrawArrays ||
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, vertColors + i);
 		}
-#if 1
+#if 0
 	if (gameOpts->render.bDepthSort > 0) {
 		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT);
 		return 0;

@@ -1694,13 +1694,15 @@ if (gameOpts->render.bDynLighting) {
 
 //------------------------------------------------------------------------------
 
-void SetNearestDynamicLights (int nSegment)
+int SetNearestDynamicLights (int nSegment)
 {
-	static	int nLastSeg = 1;
+	static int nLastSeg = 1;
+	static int	nLights = 0;
 
 if (nLastSeg == nSegment)
-	return;
+	return nLights;
 nLastSeg = nSegment;
+nLights = 0;
 if (gameOpts->render.bDynLighting) {
 	short				i = gameData.render.lights.dynamic.shader.nLights,
 						nLightSeg;
@@ -1727,11 +1729,16 @@ if (gameOpts->render.bDynLighting) {
 				psl->bState = (m <= F1_0 * 125);
 				}
 			}
+		if (psl->bState)
+			nLights++;
 		}
 	}
+return nLights;
 }
 
 //------------------------------------------------------------------------------
+
+extern float fLightRanges [3];
 
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
 {
@@ -1776,24 +1783,59 @@ for (i = 0; i < 8; i++, pv++) {
 		c.index++;
 		}
 	}
+
 if (c.index) {
 	ds = (float) c.index;
 	psc->color.red = c.color.red / ds;
 	psc->color.green = c.color.green / ds;
 	psc->color.blue = c.color.blue / ds;
-	d = psc->color.red;
-	if (d < psc->color.green)
-		d = psc->color.green;
-	if (d < psc->color.blue)
-		d = psc->color.blue;
-	if (d > 1.0f) {
-		psc->color.red /= d;
-		psc->color.green /= d;
-		psc->color.blue /= d;
-		}
 	}
 else
 	psc->color.red = psc->color.green = psc->color.blue = 0.0f;
+
+if (i = SetNearestDynamicLights (nSegment)) {
+	short				nLights = gameData.render.lights.dynamic.shader.nLights;
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + nLights;
+	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
+	float				fLightDist, fAttenuation;
+	fVector			vPosf;
+
+	if (pvPos)
+		VmsVecToFloat (&vPosf, pvPos);
+	while (nLights--) {
+		psl--;
+		if (psl->nType < 2)
+			break;
+		if (!psl->bState)
+			continue;
+#if 1
+		if (pvPos) {
+			vVertex = gameData.segs.vertices [*pv];
+			//G3TransformPoint (&vVertex, &vVertex);
+			fLightDist = VmVecDistf (psl->pos, &vPosf) / fLightRange;
+			fAttenuation = fLightDist / psl->brightness;
+			VmVecScaleAddf ((fVector *) &c.color, (fVector *) &c.color, (fVector *) &psl->color, 1.0f / fAttenuation);
+			}
+		else 
+#endif
+			{
+			VmVecIncf ((fVector *) &psc->color, (fVector *) &psl->color);
+			}
+		if (!--i)
+			break;
+		}
+	}
+
+d = psc->color.red;
+if (d < psc->color.green)
+	d = psc->color.green;
+if (d < psc->color.blue)
+	d = psc->color.blue;
+if (d > 1.0f) {
+	psc->color.red /= d;
+	psc->color.green /= d;
+	psc->color.blue /= d;
+	}
 psc->index = gameStates.render.nFrameFlipFlop + 1;
 return psc;
 }
@@ -1867,10 +1909,11 @@ if (gameStates.app.bNostalgia)
 if (gameOpts->render.bDynLighting || 
 	 !gameStates.app.bD2XLevel || 
 	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
-		int				nVertex,
+		int				i, j, nVertex,
 							bColorize = !gameOpts->render.bDynLighting;
-		tFaceColor		*pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
+		tFaceColor		*pfh, *pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
+		tSegment2		*seg2P;
 
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
@@ -1883,6 +1926,18 @@ if (gameOpts->render.bDynLighting ||
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
 		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 1);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
+		}
+	pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
+	for (i = 0, seg2P = gameData.segs.segment2s; i < gameData.segs.nSegments; i++, seg2P++) {
+		if (seg2P->special == SEGMENT_IS_SKYBOX) {
+			short	*sv = SEGMENTS [i].verts;
+			for (j = 8; j; j--, sv++) {
+				pfh = pf + *sv;
+				pfh->color.red =
+				pfh->color.green =
+				pfh->color.blue = 1;
+				}
+			}
 		}
 	}
 }

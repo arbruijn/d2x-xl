@@ -5149,10 +5149,8 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
-	if (renderItems.bDepthMask) {
-		glDepthMask (0);
-		renderItems.bDepthMask = 0;
-		}
+	if (renderItems.bDepthMask)
+		glDepthMask (renderItems.bDepthMask = 0);
 	w = (float) f2fl (item->nWidth); 
 	h = (float) f2fl (item->nHeight); 
 	u = item->bmP->glTexture->u;
@@ -5206,10 +5204,8 @@ if (renderItems.bTextured < 1) {
 	gameData.smoke.nLastType = -1;
 	renderItems.bTextured = 1;
 	}
-if (renderItems.bDepthMask) {
-	glDepthMask (0);
-	renderItems.bDepthMask = 0;
-	}
+if (renderItems.bDepthMask)
+	glDepthMask (renderItems.bDepthMask = 0);
 RenderParticle (item->particle, item->fBrightness);
 renderItems.bTextured = 0;
 }
@@ -5218,14 +5214,13 @@ renderItems.bTextured = 0;
 
 void RIRenderLightning (tRILightning *item)
 {
-if (renderItems.bDepthMask) {
-	glDepthMask (0);
-	renderItems.bDepthMask = 0;
-	}
+if (renderItems.bDepthMask)
+	glDepthMask (renderItems.bDepthMask = 0);
 RISetClientState (0, 0, 0);
 RenderLightning (item->lightning, 1, item->nDepth, 0);
 renderItems.bmP = NULL;
 renderItems.bTextured = 0;
+renderItems.bDepthMask = 1;
 gameData.smoke.nLastType = -1;
 }
 
@@ -5233,10 +5228,8 @@ gameData.smoke.nLastType = -1;
 
 void RIRenderLightningSegment (tRILightningSegment *item)
 {
-if (renderItems.bDepthMask) {
-	glDepthMask (0);
-	renderItems.bDepthMask = 0;
-	}
+if (renderItems.bDepthMask)
+	glDepthMask (renderItems.bDepthMask = 0);
 RISetClientState (0, 0, 0);
 RenderLightningSegment (item->vLine, item->vPlasma, &item->color, item->bPlasma, item->bStart, item->bEnd, item->nDepth);
 if (item->bPlasma) {
@@ -5304,12 +5297,12 @@ renderItems.bmP = NULL;
 renderItems.nItems = ITEM_BUFFER_SIZE - renderItems.nFreeItems;
 pl = renderItems.pItemList + ITEM_BUFFER_SIZE - 1;
 bParticles = LoadParticleImages ();
+BeginRenderSmoke (-1, 1);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LESS);
 glDepthMask (0);
 glDisable (GL_CULL_FACE);
-BeginRenderSmoke (-1, 1);
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {
