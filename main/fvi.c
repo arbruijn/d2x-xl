@@ -580,7 +580,7 @@ if (gameStates.render.bRendering)
 	vNormal = gameData.segs.segment2s [nSegment].sides [nSide].rotNorms [iFace];
 else
 	vNormal = gameData.segs.segments [nSegment].sides [nSide].normals [iFace];
-CreateAbsVertexLists (&nFaces, vertexList, nSegment, nSide);
+nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 //use lowest point number
 #if 1
 if (p1 == p0) {
@@ -717,7 +717,7 @@ int SpecialCheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1, sh
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
 	fix			edge_len, move_len;
 	int			vertList [6];
-	int			h, num_faces, nEdge;
+	int			h, nFaces, nEdge;
 	uint			nEdgeMask;
 	vmsVector	*edge_v0, *edge_v1, edge_vec;
 	tSegment		*segP = gameData.segs.segments + nSegment;
@@ -733,7 +733,7 @@ if (bSimpleFVI) {
 if ((SEG_IDX (segP)) == -1)
 	Error ("nSegment == -1 in SpecialCheckLineToSegFace()");
 //LogErr ("      CreateAbsVertexLists ...");
-CreateAbsVertexLists (&num_faces, vertList, nSegment, nSide);
+nFaces = CreateAbsVertexLists (vertList, nSegment, nSide);
 //LogErr ("done\n");
 VmVecSub (&move_vec, p1, p0);
 //figure out which edge(sideP) to check against
@@ -1443,7 +1443,7 @@ void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *seg, int 
 	vmsVector	*pnt_array;
 	vmsVector	normal_array;
 	int			nSegment = SEG_IDX (seg);
-	int			num_faces;
+	int			nFaces;
 	int			biggest, ii, jj;
 	tSide			*sideP = &seg->sides [nSide];
 	int			vertList [6], vertnum_list [6];
@@ -1465,8 +1465,8 @@ if (nSegment == -1) {
 	Error ("nSegment == -1 in FindHitPointUV()");
 	return;
 	}
-CreateAbsVertexLists (&num_faces, vertList, nSegment, nSide);
-CreateAllVertNumLists (&num_faces, vertnum_list, nSegment, nSide);
+nFaces = CreateAbsVertexLists (vertList, nSegment, nSide);
+CreateAllVertNumLists (&nFaces, vertnum_list, nSegment, nSide);
 //now the hard work.
 //1. find what plane to project this tWall onto to make it a 2d case
 memcpy (&normal_array, sideP->normals + iFace, sizeof (vmsVector));
@@ -1637,7 +1637,7 @@ if (faceMask != 0) {				//on the back of at least one face
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (faceMask & bit) {            //on the back of this iFace
 				//did we go through this tWall/door?
-				CreateAbsVertexLists (&nFaces, vertList, SEG_IDX (segP), nSide);
+				nFaces = CreateAbsVertexLists (vertList, SEG_IDX (segP), nSide);
 				nFaceHitType = CheckSphereToSegFace (vPoint, nSegment, nSide, iFace, 
 															 (nFaces == 1) ? 4 : 3, rad, vertList);
 				if (nFaceHitType) {            //through this tWall/door

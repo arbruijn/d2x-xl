@@ -977,7 +977,12 @@ if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLight
 nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
 if (nMaxLights > MAX_NEAREST_LIGHTS)
 	nMaxLights = MAX_NEAREST_LIGHTS;
-INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
+if (gameStates.app.bMultiThreaded) {
+	i = -i;
+	j = i ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
+	}
+else
+	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments);
 for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 	COMPUTE_SEGMENT_CENTER (&center, segP);
 	pl = gameData.render.lights.dynamic.lights;
@@ -1029,7 +1034,12 @@ if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLight
 nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
 if (nMaxLights > MAX_NEAREST_LIGHTS)
 	nMaxLights = MAX_NEAREST_LIGHTS;
-INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
+if (gameStates.app.bMultiThreaded) {
+	i = -i;
+	j = i ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
+	}
+else
+	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 #ifdef _DEBUG
 	if (i == nDbgVertex)
@@ -1401,11 +1411,15 @@ void ComputeVertexVisibility (int startI)
 	int			i, j, v, endI;
 	vmsVector	c, d, *vertP;
 
-if (startI <= 0) {
-	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * MAX_SEGMENTS * VERTVIS_FLAGS);
-	// every segment can see itself and its neighbours
+if (startI <= 0)
+	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * VERTVIS_FLAGS);
+if (gameStates.app.bMultiThreaded) {
+	startI = -startI;
+	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 	}
-INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+else
+	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+	// every segment can see itself and its neighbours
 for (i = startI; i < endI; i++) {
 	for (v = 0, vertP = gameData.segs.vertices; v < gameData.segs.nVertices; v++, vertP++) {
 		if (VERTVIS (i, v) > 0)
@@ -1452,19 +1466,23 @@ void ComputeSegmentVisibility (int startI)
 	short			*psv;
 	tSegment		*segP;
 
-if (startI <= 0) {
-	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * MAX_SEGMENTS * SEGVIS_FLAGS);
-	// every segment can see itself and its neighbours
-	for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
-		SetSegVis (i, i);
-		for (j = 0; j < 6; j++) {
-			c = segP->children [j];
-			if (c >= 0)
-				SetSegVis (i, c);
-			}
+if (startI <= 0)
+	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * SEGVIS_FLAGS);
+if (gameStates.app.bMultiThreaded) {
+	startI = -startI;
+	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
+	}
+else
+	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+// every segment can see itself and its neighbours
+for (i = startI, segP = gameData.segs.segments + startI; i < endI; i++, segP++) {
+	SetSegVis (i, i);
+	for (j = 0; j < 6; j++) {
+		c = segP->children [j];
+		if (c >= 0)
+			SetSegVis (i, c);
 		}
 	}
-INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 for (i = startI; i < endI; i++) {
 	for (j = 0, segP = gameData.segs.segments; j < gameData.segs.nSegments; j++, segP++) {
 		if ((i == j) || SEGVIS (i, j))
@@ -1614,7 +1632,8 @@ int SortLightsGaugeSize (void)
 {
 if (gameStates.app.bNostalgia)
 	return 0;
-if (!(gameOpts->render.bDynLighting || 
+if (gameStates.app.bMultiThreaded ||
+	 !(gameOpts->render.bDynLighting || 
 	  (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored) ||
 	   gameStates.app.bEnableShadows))
 	return 0;
@@ -1666,8 +1685,138 @@ NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + 
 
 //------------------------------------------------------------------------------
 
-void ComputeNearestLights (void)
+int LoadPrecompiledLights (int nLevel)
 {
+	CFILE	*fp;
+	int	nSegments, nVertices, bOk;
+	char	szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
+
+if (!gameStates.app.bCacheLights)
+	return 0;
+CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, NULL, szFilename, NULL);
+sprintf (szFullname, "%s-%d-%d.pre", szFilename, extraGameInfo [0].nLightRange, nLevel);
+if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "rb", 0)))
+	return 0;
+bOk = (CFRead (&nSegments, sizeof (nSegments), 1, fp) == 1) &&
+		(CFRead (&nVertices, sizeof (nVertices), 1, fp) == 1);
+if (bOk)
+	bOk = (nSegments == gameData.segs.nSegments) && 
+			(nVertices == gameData.segs.nVertices);
+if (bOk)
+	bOk = (CFRead (gameData.segs.bSegVis, sizeof (ubyte) * nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
+			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * nSegments * VERTVIS_FLAGS, 1, fp) == 1) &&
+			(CFRead (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
+			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1);
+CFClose (fp);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+int SavePrecompiledLights (int nLevel)
+{
+	CFILE	*fp;
+	int	nSegments = gameData.segs.nSegments,
+			nVertices = gameData.segs.nVertices,
+			bOk;
+	char	szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
+
+if (!gameStates.app.bCacheLights)
+	return 0;
+CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, NULL, szFilename, NULL);
+sprintf (szFullname, "%s-%d-%d.pre", szFilename, extraGameInfo [0].nLightRange, nLevel);
+if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "wb", 0)))
+	return 0;
+bOk = (CFWrite (&nSegments, sizeof (nSegments), 1, fp) == 1) &&
+		(CFWrite (&nVertices, sizeof (nVertices), 1, fp) == 1) &&
+		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
+		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * nSegments * VERTVIS_FLAGS, 1, fp) == 1) &&
+		(CFWrite (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
+		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1);
+CFClose (fp);
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+
+#if 1 //MULTI_THREADED
+
+typedef int _CDECL_	tOglLightFunc (void *);
+typedef tOglLightFunc *pOglLightFunc;
+
+static tThreadInfo	ti;
+
+int _CDECL_ SegVisThread (void *pThreadId)
+{
+	int		nId = *((int *) pThreadId);
+
+ComputeSegmentVisibility (nId ? -gameData.segs.nSegments / 2 : 0);
+SDL_SemPost (ti.done [nId]);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ VertVisThread (void *pThreadId)
+{
+	int		nId = *((int *) pThreadId);
+
+ComputeVertexVisibility (nId ? -gameData.segs.nSegments / 2 : 0);
+SDL_SemPost (ti.done [nId]);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ SegLightsThread (void *pThreadId)
+{
+	int		nId = *((int *) pThreadId);
+
+ComputeNearestSegmentLights (nId ? -gameData.segs.nSegments / 2 : 0);
+SDL_SemPost (ti.done [nId]);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ VertLightsThread (void *pThreadId)
+{
+	int		nId = *((int *) pThreadId);
+
+ComputeNearestVertexLights (nId ? -gameData.segs.nVertices / 2 : 0);
+SDL_SemPost (ti.done [nId]);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+static void StartOglLightThreads (pOglLightFunc pFunc)
+{
+	int	i;
+
+for (i = 0; i < 2; i++) {
+	ti.done [i] = SDL_CreateSemaphore (0);
+	ti.nId [i] = i;
+	ti.pThread [i] = SDL_CreateThread (pFunc, ti.nId + i);
+	}
+SDL_SemWait (ti.done [0]);
+SDL_SemWait (ti.done [1]);
+for (i = 0; i < 2; i++) {
+	SDL_KillThread (ti.pThread [i]);
+	SDL_DestroySemaphore (ti.done [i]);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+#endif
+
+//------------------------------------------------------------------------------
+
+void ComputeNearestLights (int nLevel)
+{
+	time_t	t;
+
 if (gameStates.app.bNostalgia)
 	return;
 if (!(SHOW_DYN_LIGHT || 
@@ -1676,16 +1825,31 @@ if (!(SHOW_DYN_LIGHT ||
 	return;
 loadOp = 0;
 loadIdx = 0;
-if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
+if (LoadPrecompiledLights (nLevel))
+	return;
+else if (gameStates.app.bMultiThreaded) {
+	t = clock ();
+	gameData.physics.side.bCache = 0;
+	StartOglLightThreads (VertVisThread);
+	StartOglLightThreads (SegVisThread);
+	StartOglLightThreads (SegLightsThread);
+	StartOglLightThreads (VertLightsThread);
+	gameData.physics.side.bCache = 1;
+	t = clock () - t;
+	}
+else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	NMProgressBar (TXT_PREP_DESCENT, 
 						LoadMineGaugeSize () + PagingGaugeSize (), 
 						LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 else {
+	t = clock ();
 	ComputeVertexVisibility (-1);
 	ComputeSegmentVisibility (-1);
 	ComputeNearestSegmentLights (-1);
 	ComputeNearestVertexLights (-1);
+	t = clock () - t;
 	}
+SavePrecompiledLights (nLevel);
 }
 
 //------------------------------------------------------------------------------

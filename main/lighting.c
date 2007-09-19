@@ -1718,7 +1718,7 @@ if (gameOpts->render.bDynLighting) {
 		if (psl->nType == 3)
 			psl->bState = 1;
 		else {
-			nLightSeg = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
+			nLightSeg = (pl->nSegment < 0) ? (pl->nObject < 0) ? 1 : gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				psl->bState = 0;
 			else {

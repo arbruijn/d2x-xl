@@ -2041,7 +2041,7 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
-int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime)
+int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime, int *nLevel)
 {
 	tPlayer	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
@@ -2315,12 +2315,13 @@ else
 	CFReadFix (fp);
 if (sgVersion > 27)
 	gameData.missions.nEnteredFromLevel = CFReadShort (fp);
+*nLevel = nCurrentLevel;
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int StateRestoreBinGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime)
+int StateRestoreBinGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime, int *nLevel)
 {
 	tPlayer	restoredPlayers [MAX_PLAYERS];
 	int		nPlayers, nServerPlayer = -1;
@@ -2564,6 +2565,7 @@ if (sgVersion >= 22) {
 		CFRead (&dummy_fix, sizeof (fix), 1, fp);
 		}
 	}
+*nLevel = nCurrentLevel;
 return 1;
 }
 
@@ -2574,7 +2576,7 @@ int StateRestoreAllSub (char *filename, int bMulti, int bSecretRestore)
 	CFILE		*fp;
 	char		szDesc [DESC_LENGTH + 1];
 	char		id [5];
-	int		sgVersion, i;
+	int		nLevel, sgVersion, i;
 	fix		xOldGameTime = gameData.time.xGame;
 
 if (! (fp = CFOpen (filename, gameFolders.szSaveDir, "rb", 0)))
@@ -2601,15 +2603,15 @@ CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W*THUMBNAIL_H : THUMBNAIL_LW * THUMBNAI
 // And now...skip the goddamn palette stuff that somebody forgot to add
 CFSeek (fp, 768, SEEK_CUR);
 if (sgVersion < 27)
-	i = StateRestoreBinGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
+	i = StateRestoreBinGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
 else
-	i = StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime);
+	i = StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
 CFClose (fp);
 if (!i)
 	return 0;
 FixObjectSegs ();
 FixObjectSizes ();
-ComputeNearestLights ();
+ComputeNearestLights (nLevel);
 ComputeStaticDynLighting ();
 InitReactorForLevel (1);
 SetEquipGenStates ();

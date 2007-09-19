@@ -971,7 +971,7 @@ if (objP->controlType == CT_AI) {
 				sideP = gameData.segs.segments [nOrigSegment].sides + nSide;
 				if (nOrigSegment == -1)
 					Error ("nOrigSegment == -1 in physics");
-				CreateAbsVertexLists (&nFaces, vertex_list, nOrigSegment, nSide);
+				nFaces = CreateAbsVertexLists (vertex_list, nOrigSegment, nSide);
 				//let'sideP pretend this tWall is not triangulated
 				nVertex = vertex_list [0];
 				if (nVertex > vertex_list [1])

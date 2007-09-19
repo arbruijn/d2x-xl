@@ -113,7 +113,7 @@ int game_load_mine(char * filename);
 // returns 0=everything ok, 1=old version, -1=error
 int load_mine_data(CFILE *LoadFile);
 int LoadMineSegmentsCompiled(CFILE *LoadFile);
-void ComputeNearestLights (void);
+void ComputeNearestLights (int nLevel);
 
 extern short tmap_xlate_table[];
 extern fix Level_shake_frequency, Level_shake_duration;

@@ -874,7 +874,7 @@ typedef struct tSlowTick {
 typedef struct tApplicationStates {
 	tSlowTick tick40fps;
 	tSlowTick tick60fps;
-#if MULTI_THREADED
+#if 1 //MULTI_THREADED
 	int bExit;
 	int bMultiThreaded;
 #endif
@@ -929,6 +929,7 @@ typedef struct tApplicationStates {
 	int bEnableShadows;
 	int bEnableFreeCam;
 	int bCacheTextures;
+	int bCacheLights;
 	int bUseSwapFile;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 	fix nPlayerTimeOfDeath;
@@ -1540,10 +1541,12 @@ typedef struct tObjectData {
 //------------------------------------------------------------------------------
 
 typedef struct tFVISideData {
+	int					bCache;
 	int					vertices [6];
 	int					nFaces;
 	short					nSegment;
 	short					nSide;
+	short					nType;
 } tFVISideData;
 
 typedef struct tPhysicsData {
@@ -2480,12 +2483,16 @@ typedef struct tVertColorData {
 	float		fMatShininess;
 	} tVertColorData;
 
-typedef struct tVertColorThreadData {
-#if MULTI_THREADED
+typedef struct tThreadInfo {
 	SDL_Thread		*pThread [2];
 	int				nId [2];
 	SDL_sem			*done [2];	
 	SDL_sem			*exec [2];
+	} tThreadInfo;
+
+typedef struct tVertColorThreadData {
+#if MULTI_THREADED
+	tThreadInfo		info;
 #endif
 	tVertColorData	data;
 	} tVertColorThreadData;
@@ -2499,17 +2506,14 @@ typedef struct tClipDistData {
 
 typedef struct tClipDistThreadData {
 #if MULTI_THREADED
-	SDL_Thread		*pThread [2];
-	int				nId [2];
-	SDL_sem			*done [2];	
-	SDL_sem			*exec [2];
+	tThreadInfo		info;
 #endif
 	tClipDistData	data;
 	} tClipDistThreadData;
 
 typedef struct tThreadData {
-	tVertColorThreadData	vertColor;
-	tClipDistThreadData	clipDist;
+	tVertColorThreadData		vertColor;
+	tClipDistThreadData		clipDist;
 	} tThreadData;
 
 //------------------------------------------------------------------------------

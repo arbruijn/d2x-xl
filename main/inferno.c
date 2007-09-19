@@ -1127,6 +1127,8 @@ if ((t = FindArg ("-max_segments")) && *Args [t+1]) {
 		t = MAX_SEGMENTS_D2X;
 	gameData.segs.nMaxSegments = t;
 	}
+if ((t = FindArg ("-cache_lights")))
+	gameStates.app.bCacheLights = NumArg (t, 1);
 if ((t = FindArg ("-enable_shadows")))
 	gameStates.app.bEnableShadows = NumArg (t, 1);
 if ((t = FindArg ("-enable_freecam")))
@@ -1147,8 +1149,8 @@ else if ((t = FindArg ("-nostalgia"))) {
 gameStates.app.iNostalgia = (gameStates.app.bNostalgia > 0);
 gameOpts = gameOptions + gameStates.app.iNostalgia;
 
-#if MULTI_THREADED
-if ((t = FindArg ("-multithreaded"))
+#if 1 //MULTI_THREADED
+if ((t = FindArg ("-multithreaded")))
 	gameStates.app.bMultiThreaded = NumArg (t, 1);
 #endif
 if ((t = FindArg ("-nosound")))
@@ -2269,6 +2271,7 @@ gameData.render.terrain.uvlList [1][1].u = f1_0;
 gameData.render.terrain.uvlList [1][1].v = f1_0;
 gameData.render.terrain.uvlList [1][2].v = f1_0;
 gameData.physics.xAfterburnerCharge = f1_0;
+gameData.physics.side.bCache = 1;
 SetSpherePulse (&gameData.render.shield.pulse, 0.02f, 0.5f);
 UseSpherePulse (&gameData.render.shield, &gameData.render.shield.pulse);
 SetSpherePulse (&gameData.render.monsterball.pulse, 0.005f, 0.9f);
@@ -3097,14 +3100,14 @@ void InitThreads (void)
 
 if (gameStates.app.bMultiThreaded) {
 	for (i = 0; i < 2; i++) {
-		gameData.threads.vertColor.done [i] = SDL_CreateSemaphore (0);
-		gameData.threads.vertColor.exec [i] = SDL_CreateSemaphore (0);
-		gameData.threads.vertColor.nId [i] = i;
-		gameData.threads.vertColor.pThread [i] = SDL_CreateThread (VertColorThread, gameData.threads.vertColor.nId + i);
-		gameData.threads.clipDist.done [i] = SDL_CreateSemaphore (0);
-		gameData.threads.clipDist.exec [i] = SDL_CreateSemaphore (0);
-		gameData.threads.clipDist.nId [i] = i;
-		gameData.threads.clipDist.pThread [i] = SDL_CreateThread (ClipDistThread, gameData.threads.clipDist.nId + i);
+		gameData.threads.vertColor.info.done [i] = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info.exec [i] = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info.nId [i] = i;
+		gameData.threads.vertColor.info.pThread [i] = SDL_CreateThread (VertColorThread, gameData.threads.vertColor.info.nId + i);
+		gameData.threads.clipDist.info.done [i] = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.info.exec [i] = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.info.nId [i] = i;
+		gameData.threads.clipDist.info.pThread [i] = SDL_CreateThread (ClipDistThread, gameData.threads.clipDist.info.nId + i);
 		}
 	}
 #endif

@@ -297,11 +297,11 @@ void RenderPowerupCorona (tObject *objP, float red, float green, float blue, flo
 {
 if (gameOpts->render.bPowerupCoronas && LoadCorona ()) {
 	static tRgbaColorf powerupColors [5] = {
-		{0.2f, 0.2f, 0.9f, 0.3f},
-		{0.9f, 0.2f, 0.2f, 0.3f},
-		{0.9f, 0.8f, 0.2f, 0.3f},
-		{1.0f, 1.0f, 1.0f, 0.3f},
-		{1.0f, 1.0f, 1.0f, 0.3f}
+		{0.2f, 0.2f, 0.9f, 0.25f},
+		{0.9f, 0.2f, 0.2f, 0.25f},
+		{0.9f, 0.8f, 0.2f, 0.25f},
+		{1.0f, 1.0f, 1.0f, 0.25f},
+		{1.0f, 1.0f, 1.0f, 0.25f}
 		};
 	fix xSize;
 	tRgbaColorf *colorP;
@@ -315,7 +315,7 @@ if (gameOpts->render.bPowerupCoronas && LoadCorona ()) {
 		xSize = 12 * F1_0;
 		}
 	else {
-		float b = sqrt ((red * 3 + green * 5 + blue * 2) / 10);
+		float b = (float) sqrt ((red * 3 + green * 5 + blue * 2) / 10);
 		powerupColors [4].red = red / b;
 		powerupColors [4].green = green / b;
 		powerupColors [4].blue = blue / b;

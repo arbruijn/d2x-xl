@@ -120,6 +120,7 @@ typedef struct segmasks {
    short faceMask;     //which faces sphere pokes through (12 bits)
    sbyte sideMask;     //which sides sphere pokes through (6 bits)
    sbyte centerMask;   //which sides center point is on back of (6 bits)
+	sbyte valid;
 } segmasks;
 
 
@@ -165,7 +166,7 @@ ubyte GetSideDistsAll (vmsVector *checkp, int nSegment, fix *xSideDists);
 void CreateAllVertexLists (int *num_faces, int *vertices, int nSegment, int nSide);
 
 //like create_all_vertex_lists(), but generate absolute point numbers
-void CreateAbsVertexLists(int *num_faces, int *vertices, int nSegment, int nSide);
+int CreateAbsVertexLists (int *vertices, int nSegment, int nSide);
 
 // -----------------------------------------------------------------------------------
 // Like create all vertex lists, but returns the vertnums (relative to

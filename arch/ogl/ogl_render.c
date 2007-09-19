@@ -1294,10 +1294,10 @@ int _CDECL_ VertColorThread (void *pThreadId)
 	fVector	colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
 
 while (!gameStates.app.bExit) {
-	SDL_SemWait (gameData.threads.vertColor.exec [nId]);
+	SDL_SemWait (gameData.threads.vertColor.info.exec [nId]);
 	gameData.threads.vertColor.data.colorSum [nId] = colorSum;
 	G3AccumVertColor (nId, 2, gameData.threads.vertColor.data.colorSum + nId);
-	SDL_SemPost (gameData.threads.vertColor.done [nId]);
+	SDL_SemPost (gameData.threads.vertColor.info.done [nId]);
 	}
 return 0;
 }

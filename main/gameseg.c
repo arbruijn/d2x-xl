@@ -499,18 +499,27 @@ switch (sideP->nType) {
 
 // -------------------------------------------------------------------------------
 //like CreateAllVertexLists (), but generate absolute point numbers
-void CreateAbsVertexLists (int *nFaces, int *vertices, int nSegment, int nSide)
+int CreateAbsVertexLists (int *vertices, int nSegment, int nSide)
 {
 	short	*vp = gameData.segs.segments [nSegment].verts;
 	tSide	*sideP = gameData.segs.segments [nSegment].sides + nSide;
 	int  *sv = sideToVertsInt [nSide];
+	int nFaces;
 
-if ((gameData.physics.side.nSegment == nSegment) && 
+	static int bSemaphore = 0;
+
+#if 0
+if (bSemaphore)
+	return -1;
+#endif
+bSemaphore = 1;
+if (gameData.physics.side.bCache &&
+	 (gameData.physics.side.nSegment == nSegment) && 
 	 (gameData.physics.side.nSide == nSide) &&
-	 gameData.physics.side.nFaces) {
+	 (gameData.physics.side.nType == sideP->nType)) {
 	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
-	*nFaces = gameData.physics.side.nFaces;
-	return;
+	bSemaphore = 0;
+	return gameData.physics.side.nFaces;
 	}	
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
 switch (sideP->nType) {
@@ -519,7 +528,7 @@ switch (sideP->nType) {
 		vertices [1] = vp [sv [1]];
 		vertices [2] = vp [sv [2]];
 		vertices [3] = vp [sv [3]];
-		gameData.physics.side.nFaces = 1;
+		nFaces = 1;
 		break;
 
 	case SIDE_IS_TRI_02:
@@ -530,6 +539,7 @@ switch (sideP->nType) {
 		vertices [3] = vp [sv [2]];
 		vertices [4] = vp [sv [3]];
 		vertices [5] = vp [sv [0]];
+		nFaces = 2;
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS (), 
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
@@ -542,6 +552,7 @@ switch (sideP->nType) {
 		vertices [3] = vp [sv [1]];
 		vertices [4] = vp [sv [2]];
 		vertices [5] = vp [sv [3]];
+		nFaces = 2;
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
@@ -550,10 +561,15 @@ switch (sideP->nType) {
 		Error ("Illegal tSide nType (3), nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, nSegment, nSide);
 		break;
 	}
-gameData.physics.side.nSegment = nSegment;
-gameData.physics.side.nSide = nSide;
-memcpy (gameData.physics.side.vertices, vertices, sizeof (gameData.physics.side.vertices));
-*nFaces = gameData.physics.side.nFaces;
+if (gameData.physics.side.bCache) {
+	gameData.physics.side.nSegment = nSegment;
+	gameData.physics.side.nSide = nSide;
+	gameData.physics.side.nFaces = nFaces;
+	gameData.physics.side.nType = sideP->nType;
+	memcpy (gameData.physics.side.vertices, vertices, sizeof (gameData.physics.side.vertices));
+	}
+bSemaphore = 0;
+return nFaces;
 }
 
 // -------------------------------------------------------------------------------
@@ -574,11 +590,21 @@ segmasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
 	tSide2		*side2P;
 	segmasks		masks;
 
-masks.sideMask = 0;
-masks.faceMask = 0;
+	static int qqq, bSemaphore = 0;
+
+masks.valid = 0;
+#if 0
+if (bSemaphore)
+	return masks;
+#endif
+bSemaphore = 1;
 masks.centerMask = 0;
+masks.faceMask = 0;
+masks.sideMask = 0;
+masks.valid = 1;
 if (nSegment == -1) {
-	Error ("nSegment == -1 in GetSegMasks ()");
+	//Error ("nSegment == -1 in GetSegMasks ()");
+	bSemaphore = 0;
 	return masks;
 	}
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
@@ -588,10 +614,15 @@ seg2P = gameData.segs.segment2s + nSegment;
 side2P = seg2P->sides;
 //check point against each tSide of tSegment. return bitmask
 for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P++) {
+	qqq++;
 	// Get number of faces on this tSide, and at vertexList, store vertices.
 	//	If one face, then vertexList indicates a quadrilateral.
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-	CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+	if (qqq == 823)
+		qqq = qqq;
+	if (qqq == 824)
+		qqq = qqq;
+	nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
 	//those faces form a concave or convex tSide.  If the tSide pokes out, 
 	//then a point is on the back of the tSide if it is behind BOTH faces, 
@@ -599,6 +630,8 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 
 	if (nFaces == 2) {
 		nVertex = min (vertexList [0], vertexList [2]);
+		if (vertexList [4] < 0)
+			CreateAbsVertexLists (vertexList, nSegment, sn);
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
 				xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
@@ -662,6 +695,8 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 		faceBit <<= 2;
 		}
 	}
+masks.valid = 1;
+bSemaphore = 0;
 return masks;
 }
 
@@ -698,7 +733,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 	// Get number of faces on this tSide, and at vertexList, store vertices.
 	//	If one face, then vertexList indicates a quadrilateral.
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-	CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+	nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
 	//those faces form a concave or convex tSide.  If the tSide pokes out, 
 	//then a point is on the back of the tSide if it is behind BOTH faces, 
@@ -711,7 +746,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 		nVertex = min (vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
@@ -770,7 +805,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 			nVertex = vertexList [3];
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
 			if (gameStates.render.bRendering)
 				xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
@@ -819,7 +854,8 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 	// Get number of faces on this tSide, and at vertexList, store vertices.
 	//	If one face, then vertexList indicates a quadrilateral.
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-	CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+	while (0 > (nFaces = CreateAbsVertexLists (vertexList, nSegment, sn)))
+		;
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
 	//those faces form a concave or convex tSide.  If the tSide pokes out, 
 	//then a point is on the back of the tSide if it is behind BOTH faces, 
@@ -832,7 +868,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 		nVertex = min (vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
@@ -876,7 +912,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++) {
 			nVertex = vertexList [3];
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-			CreateAbsVertexLists (&nFaces, vertexList, nSegment, sn);
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
 #endif
 		if (gameStates.render.bRendering)
 			xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
@@ -938,10 +974,8 @@ int CheckSegmentConnections (void)
 
 			s = &seg->sides [nSide];
 
-			CreateAbsVertexLists (&nFaces, vertexList, nSegment, nSide);
-
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 			csegnum = seg->children [nSide];
-
 			if (csegnum >= 0) {
 				cseg = &gameData.segs.segments [csegnum];
 				csidenum = FindConnectedSide (seg, cseg);
@@ -956,7 +990,7 @@ int CheckSegmentConnections (void)
 
 				cs = &cseg->sides [csidenum];
 
-				CreateAbsVertexLists (&con_num_faces, con_vertex_list, csegnum, csidenum);
+				con_num_faces = CreateAbsVertexLists (con_vertex_list, csegnum, csidenum);
 
 				if (con_num_faces != nFaces) {
 #if TRACE
@@ -1120,6 +1154,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive)
 {
 int nNewSeg;
+segmasks masks;
 
 //allow nSegment == -1, meaning we have no idea what tSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
@@ -1135,10 +1170,15 @@ if (bDoingLightingHack || !bExhaustive)
 #if 0 //TRACE
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
 #endif
-for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
-	if ((gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) && 
-	    (!GetSegMasks (p, nNewSeg, 0).centerMask))
+for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++) {
+	if (gameData.segs.segment2s [nNewSeg].special == SEGMENT_IS_SKYBOX)
+		continue;
+	do {
+	    masks = GetSegMasks (p, nNewSeg, 0);
+	   } while (!masks.valid);
+	if (!masks.centerMask)
 		return nNewSeg;
+	}
 ++nExhaustiveFailedCount;
 #if TRACE
 con_printf (1, "Warning: could not find point tSegment (%i times)\n", nExhaustiveFailedCount);
@@ -1811,10 +1851,10 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 			int			nVertex;
 			tSide			*s;
 
-			CreateAbsVertexLists (&nFaces, vertexList, SEG_IDX (segP), nSide);
+			nFaces = CreateAbsVertexLists (vertexList, SEG_IDX (segP), nSide);
 #ifdef _DEBUG
 			if (nFaces != 2)
-				CreateAbsVertexLists (&nFaces, vertexList, SEG_IDX (segP), nSide);
+				nFaces = CreateAbsVertexLists (vertexList, SEG_IDX (segP), nSide);
 #endif
 			Assert (nFaces == 2);
 			s = segP->sides + nSide;

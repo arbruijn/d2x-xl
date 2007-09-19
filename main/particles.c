@@ -475,7 +475,7 @@ if ((bInit = (pParticle->nSegment != nPartSeg)))
 for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 	vlP = vertexList [nSide];
 	if (bInit) {
-		CreateAbsVertexLists (nFaces + nSide, vlP, nPartSeg, nSide);
+		nFaces [nSide] = CreateAbsVertexLists (vlP, nPartSeg, nSide);
 		if (nFaces [nSide] == 1) {
 			bSidePokesOut [nSide] = 0;
 			nVert = vlP [0];

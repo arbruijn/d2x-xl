@@ -1636,6 +1636,10 @@ if (SHOW_LIGHTNINGS) {
 		pll->color.green =
 		pll->color.blue = 0;
 		pll->nBrightness = 0;
+		if (pll->nDynLight >= 0) {
+			DeleteDynLight (pll->nDynLight);
+			pll->nDynLight = -1;
+			}
 		}
 	gameData.lightnings.nFirstLight = -1;
 	}
@@ -1645,6 +1649,7 @@ if (SHOW_LIGHTNINGS) {
 
 void SetLightningLights (void)
 {
+ResetLightningLights ();
 if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		tLightningLight	*pll;
@@ -1657,8 +1662,6 @@ if (SHOW_LIGHTNINGS) {
 		nLights += SetLightningLight (plb->pl, plb->nLightnings);
 		}
 	if (nLights) {
-		if (bDynLighting)
-			RemoveDynLightningLights ();
 		for (i = gameData.lightnings.nFirstLight; i >= 0; i = pll->nNext) {
 			pll = gameData.lightnings.lights + i;
 			n = pll->nLights;
@@ -1668,7 +1671,7 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.blue /= n;
 			pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha));
 			if (bDynLighting)
-				AddDynLight (&pll->color, pll->nBrightness, i, -1, -1);
+				pll->nDynLight = AddDynLight (&pll->color, pll->nBrightness, i, -1, -1);
 			}
 		}
 	}

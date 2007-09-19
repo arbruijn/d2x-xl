@@ -66,6 +66,7 @@ void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
 int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynLights (void);
+void DeleteDynLight (short nLight);
 void RemoveDynLights (void);
 void RemoveDynLightningLights (void);
 void SetDynLightPos (short nObject);

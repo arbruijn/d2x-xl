@@ -2958,7 +2958,9 @@ void BuildObjectLists(int n_segs)
 				do {
 					segmasks m;
 					did_migrate = 0;
-					m = GetSegMasks(&objP->position.vPos, new_segnum, objP->size);
+					do {
+						m = GetSegMasks(&objP->position.vPos, new_segnum, objP->size);
+						} while (!m.valid);
 					if (m.sideMask) {
 						short sn, sf;
 						for (sn=0, sf=1;sn<6;sn++, sf<<=1)
