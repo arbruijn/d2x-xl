@@ -1923,8 +1923,6 @@ if (gameOpts->render.bDynLighting ||
 			nVertex = nVertex;
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
-		if (nVertex == 482)
-			nVertex = nVertex;
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
 		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 1);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);

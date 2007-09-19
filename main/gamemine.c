@@ -1812,8 +1812,6 @@ for (i = 0; i < 2; i++) {
 
 void ComputeNearestLights (int nLevel)
 {
-	int h, i, j, b = 0;
-
 if (gameStates.app.bNostalgia)
 	return;
 if (!(SHOW_DYN_LIGHT || 
@@ -1822,21 +1820,14 @@ if (!(SHOW_DYN_LIGHT ||
 	return;
 loadOp = 0;
 loadIdx = 0;
-#if 1
-b = LoadPrecompiledLights (nLevel);
-#else
 if (LoadPrecompiledLights (nLevel))
 	return;
-else 
-#endif
 if (gameStates.app.bMultiThreaded) {
 	gameData.physics.side.bCache = 0;
-		StartOglLightThreads (VertVisThread);
-		StartOglLightThreads (SegVisThread);
-	if (!b) {
-		StartOglLightThreads (SegLightsThread);
-		StartOglLightThreads (VertLightsThread);
-		}
+	StartOglLightThreads (VertVisThread);
+	StartOglLightThreads (SegVisThread);
+	StartOglLightThreads (SegLightsThread);
+	StartOglLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
 	}
 else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
@@ -1849,13 +1840,6 @@ else {
 	ComputeNearestSegmentLights (-1);
 	ComputeNearestVertexLights (-1);
 	}
-LogErr ("\n");
-for (h = i = 0; i < gameData.segs.nSegments; i++) {
-	for (j = 0; j < MAX_NEAREST_LIGHTS; j++, h++)
-		LogErr ("%d ", gameData.render.lights.dynamic.nNearestVertLights [h]);
-	LogErr ("\n");
-	}
-LogErr ("\n");
 SavePrecompiledLights (nLevel);
 }
 
