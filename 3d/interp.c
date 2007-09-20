@@ -1919,14 +1919,14 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-#if MULTI_THREADED
+#if MULTI_THREADED_SHADOWS
 
 int _CDECL_ ClipDistThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
 
 while (!gameStates.app.bExit) {
-	SDL_SemWait (gameData.threads.clipDist.exec [nId]);
+	SDL_SemWait (gameData.threads.clipDist.info [nId].exec);
 	gameData.threads.clipDist.data.fClipDist [nId] = 
 		G3ClipDistByFaceCenters (gameData.threads.clipDist.data.objP, 
 										 gameData.threads.clipDist.data.po, 
@@ -1937,7 +1937,7 @@ while (!gameStates.app.bExit) {
 										 gameData.threads.clipDist.data.po, 
 										 gameData.threads.clipDist.data.fClipDist [nId],
 										 nId, 2);
-	SDL_SemPost	(gameData.threads.clipDist.done [nId]);
+	SDL_SemPost	(gameData.threads.clipDist.info [nId].done);
 	}
 return 0;
 }
@@ -1978,16 +1978,16 @@ if (!pso->bCalcClipDist)
 	return pso->fClipDist;	//only recompute every 2nd frame
 pso->bCalcClipDist = 0;
 #endif
-#if MULTI_THREADED
+#if MULTI_THREADED_SHADOWS
 	if (gameStates.app.bMultiThreaded) {
 	gameData.threads.clipDist.data.objP = objP;
 	gameData.threads.clipDist.data.po = po;
 	gameData.threads.clipDist.data.pso = pso;
 	G3GetLitVertices (po, pso);
-	SDL_SemPost (gameData.threads.clipDist.exec [0]);
-	SDL_SemPost (gameData.threads.clipDist.exec [1]);
-	SDL_SemWait (gameData.threads.clipDist.done [0]);
-	SDL_SemWait (gameData.threads.clipDist.done [1]);
+	SDL_SemPost (gameData.threads.clipDist.info [0].exec);
+	SDL_SemPost (gameData.threads.clipDist.info [1].exec);
+	SDL_SemWait (gameData.threads.clipDist.info [0].done);
+	SDL_SemWait (gameData.threads.clipDist.info [1].done);
 	fMaxDist = (gameData.threads.clipDist.data.fClipDist [0] > gameData.threads.clipDist.data.fClipDist [1]) ?
 					gameData.threads.clipDist.data.fClipDist [0] : gameData.threads.clipDist.data.fClipDist [1];
 	}

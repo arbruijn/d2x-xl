@@ -1736,19 +1736,19 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-#if 1 //MULTI_THREADED
+#if MULTI_THREADED_PRECALC
 
 typedef int _CDECL_	tOglLightFunc (void *);
 typedef tOglLightFunc *pOglLightFunc;
 
-static tThreadInfo	ti;
+static tThreadInfo	ti [2];
 
 int _CDECL_ SegVisThread (void *pThreadId)
 {
 	int		nId = *((int *) pThreadId);
 
 ComputeSegmentVisibility (nId ? gameData.segs.nSegments / 2 : 0);
-SDL_SemPost (ti.done [nId]);
+SDL_SemPost (ti [nId].done);
 return 0;
 }
 
@@ -1759,7 +1759,7 @@ int _CDECL_ VertVisThread (void *pThreadId)
 	int		nId = *((int *) pThreadId);
 
 ComputeVertexVisibility (nId ? gameData.segs.nSegments / 2 : 0);
-SDL_SemPost (ti.done [nId]);
+SDL_SemPost (ti [nId].done);
 return 0;
 }
 
@@ -1770,7 +1770,7 @@ int _CDECL_ SegLightsThread (void *pThreadId)
 	int		nId = *((int *) pThreadId);
 
 ComputeNearestSegmentLights (nId ? gameData.segs.nSegments / 2 : 0);
-SDL_SemPost (ti.done [nId]);
+SDL_SemPost (ti [nId].done);
 return 0;
 }
 
@@ -1781,7 +1781,7 @@ int _CDECL_ VertLightsThread (void *pThreadId)
 	int		nId = *((int *) pThreadId);
 
 ComputeNearestVertexLights (nId ? gameData.segs.nVertices / 2 : 0);
-SDL_SemPost (ti.done [nId]);
+SDL_SemPost (ti [nId].done);
 return 0;
 }
 
@@ -1792,21 +1792,19 @@ static void StartOglLightThreads (pOglLightFunc pFunc)
 	int	i;
 
 for (i = 0; i < 2; i++) {
-	ti.done [i] = SDL_CreateSemaphore (0);
-	ti.nId [i] = i;
-	ti.pThread [i] = SDL_CreateThread (pFunc, ti.nId + i);
+	ti [i].done = SDL_CreateSemaphore (0);
+	ti [i].nId = i;
+	ti [i].pThread = SDL_CreateThread (pFunc, &ti [0].nId);
 	}
-SDL_SemWait (ti.done [0]);
-SDL_SemWait (ti.done [1]);
+SDL_SemWait (ti [0].done);
+SDL_SemWait (ti [1].done);
 for (i = 0; i < 2; i++) {
-	SDL_KillThread (ti.pThread [i]);
-	SDL_DestroySemaphore (ti.done [i]);
+	SDL_KillThread (ti [i].pThread);
+	SDL_DestroySemaphore (ti [i].done);
 	}
 }
 
-//------------------------------------------------------------------------------
-
-#endif
+#endif //MULTI_THREADED_PRECALC
 
 //------------------------------------------------------------------------------
 
@@ -1822,7 +1820,9 @@ loadOp = 0;
 loadIdx = 0;
 if (LoadPrecompiledLights (nLevel))
 	return;
-if (gameStates.app.bMultiThreaded) {
+else 
+#if MULTI_THREADED_PRECALC
+	if (gameStates.app.bMultiThreaded) {
 	gameData.physics.side.bCache = 0;
 	StartOglLightThreads (VertVisThread);
 	StartOglLightThreads (SegVisThread);
@@ -1830,7 +1830,9 @@ if (gameStates.app.bMultiThreaded) {
 	StartOglLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
 	}
-else if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
+else 
+#endif
+if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	NMProgressBar (TXT_PREP_DESCENT, 
 						LoadMineGaugeSize () + PagingGaugeSize (), 
 						LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 

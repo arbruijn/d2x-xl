@@ -3097,22 +3097,23 @@ int _CDECL_ ClipDistThread (void *pThreadId);
 
 void InitThreads (void)
 {
-#if MULTI_THREADED
-	int	i;
-
 if (gameStates.app.bMultiThreaded) {
+	int	i;
 	for (i = 0; i < 2; i++) {
-		gameData.threads.vertColor.info.done [i] = SDL_CreateSemaphore (0);
-		gameData.threads.vertColor.info.exec [i] = SDL_CreateSemaphore (0);
-		gameData.threads.vertColor.info.nId [i] = i;
-		gameData.threads.vertColor.info.pThread [i] = SDL_CreateThread (VertColorThread, gameData.threads.vertColor.info.nId + i);
-		gameData.threads.clipDist.info.done [i] = SDL_CreateSemaphore (0);
-		gameData.threads.clipDist.info.exec [i] = SDL_CreateSemaphore (0);
-		gameData.threads.clipDist.info.nId [i] = i;
-		gameData.threads.clipDist.info.pThread [i] = SDL_CreateThread (ClipDistThread, gameData.threads.clipDist.info.nId + i);
+#if MULTI_THREADED_LIGHTS
+		gameData.threads.vertColor.info [i].done = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info [i].nId = i;
+		gameData.threads.vertColor.info [i].pThread = SDL_CreateThread (VertColorThread, &gameData.threads.vertColor.info [i].nId);
+#endif
+#if MULTI_THREADED_SHADOWS
+		gameData.threads.clipDist.info [i].done = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threads.clipDist.info [i].nId = i;
+		gameData.threads.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threads.clipDist.info [i].nId);
+#endif
 		}
 	}
-#endif
 gameData.threads.vertColor.data.matAmbient.c.r = 
 gameData.threads.vertColor.data.matAmbient.c.g = 
 gameData.threads.vertColor.data.matAmbient.c.b = 0.01f;

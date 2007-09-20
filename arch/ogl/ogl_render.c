@@ -1147,7 +1147,7 @@ int G3AccumVertColor (int i, int incr, fVector *pColorSum)
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
 
 colorSum = *pColorSum;
-#if MULTI_THREADED
+#if MULTI_THREADED_LIGHTS
 for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl += incr) {
 #else
 for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
@@ -1289,7 +1289,7 @@ return j;
 
 //------------------------------------------------------------------------------
 
-#if MULTI_THREADED
+#if MULTI_THREADED_LIGHTS
 
 int _CDECL_ VertColorThread (void *pThreadId)
 {
@@ -1297,10 +1297,10 @@ int _CDECL_ VertColorThread (void *pThreadId)
 	fVector	colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
 
 while (!gameStates.app.bExit) {
-	SDL_SemWait (gameData.threads.vertColor.info.exec [nId]);
+	SDL_SemWait (gameData.threads.vertColor.info [nId].exec);
 	gameData.threads.vertColor.data.colorSum [nId] = colorSum;
 	G3AccumVertColor (nId, 2, gameData.threads.vertColor.data.colorSum + nId);
-	SDL_SemPost (gameData.threads.vertColor.info.done [nId]);
+	SDL_SemPost (gameData.threads.vertColor.info [nId].done);
 	}
 return 0;
 }
@@ -1393,12 +1393,12 @@ if (!(gameStates.render.nState || pVertColor)) {
 	}
 gameData.threads.vertColor.data.pVertPos = pVertPos;
 //VmVecNegatef (&vertNorm);
-#if MULTI_THREADED
+#if MULTI_THREADED_LIGHTS
 if (gameStates.app.bMultiThreaded) {
-	SDL_SemPost (gameData.threads.vertColor.exec [0]);
-	SDL_SemPost (gameData.threads.vertColor.exec [1]);
-	SDL_SemWait (gameData.threads.vertColor.done [0]);
-	SDL_SemWait (gameData.threads.vertColor.done [1]);
+	SDL_SemPost (gameData.threads.vertColor.info [0].exec);
+	SDL_SemPost (gameData.threads.vertColor.info [1].exec);
+	SDL_SemWait (gameData.threads.vertColor.info [0].done);
+	SDL_SemWait (gameData.threads.vertColor.info [1].done);
 	VmVecAddf (&colorSum, gameData.threads.vertColor.data.colorSum, gameData.threads.vertColor.data.colorSum + 1);
 	}
 else

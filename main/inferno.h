@@ -25,7 +25,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
-#define MULTI_THREADED	0
+#define MULTI_THREADED_SHADOWS	1
+#define MULTI_THREADED_LIGHTS		1
+#define MULTI_THREADED_PRECALC	1
+
 #define USE_SEGRADS		0
 #define CALC_SEGRADS		1
 
@@ -2486,15 +2489,16 @@ typedef struct tVertColorData {
 	} tVertColorData;
 
 typedef struct tThreadInfo {
-	SDL_Thread		*pThread [2];
-	int				nId [2];
-	SDL_sem			*done [2];	
-	SDL_sem			*exec [2];
+	SDL_Thread		*pThread;
+	SDL_sem			*done;	
+	SDL_sem			*exec;
+	int				nId;
+	int				bDone;
 	} tThreadInfo;
 
 typedef struct tVertColorThreadData {
-#if MULTI_THREADED
-	tThreadInfo		info;
+#if MULTI_THREADED_LIGHTS
+	tThreadInfo		info [2];
 #endif
 	tVertColorData	data;
 	} tVertColorThreadData;
@@ -2507,8 +2511,8 @@ typedef struct tClipDistData {
 	} tClipDistData;
 
 typedef struct tClipDistThreadData {
-#if MULTI_THREADED
-	tThreadInfo		info;
+#if MULTI_THREADED_SHADOWS
+	tThreadInfo		info [2];
 #endif
 	tClipDistData	data;
 	} tClipDistThreadData;
