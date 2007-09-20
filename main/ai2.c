@@ -1833,10 +1833,12 @@ if ((objP == NULL) || (ROBOTINFO (objP->id).companion == 1)) {
 	//	If Buddy is returning to tPlayer, don't let him think he can get through triggered doors.
 	//	It's only valid to think that if the tPlayer is going to get him through.  But if he's
 	//	going to the tPlayer, the tPlayer is probably on the opposite tSide.
-	if (objP == NULL)
+	if (objP)
+		ailp_mode = gameData.ai.localInfo [OBJ_IDX (objP)].mode;
+	else if (gameData.escort.nObjNum >= 0)
 		ailp_mode = gameData.ai.localInfo [gameData.escort.nObjNum].mode;
 	else
-		ailp_mode = gameData.ai.localInfo [OBJ_IDX (objP)].mode;
+		ailp_mode = 0;
 
 	// -- if (Buddy_got_stuck) {
 	if (ailp_mode == AIM_GOTO_PLAYER) {

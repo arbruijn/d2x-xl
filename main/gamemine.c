@@ -1380,9 +1380,16 @@ gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nV
 
 //------------------------------------------------------------------------------
 
-inline void SetSegVis (short nSrcSeg, short nDestSeg)
+inline int SetSegVis (short nSrcSeg, short nDestSeg)
 {
+	static int bSemaphore = 0;
+
+if (bSemaphore)
+	return 0;
+bSemaphore = 1;
 gameData.segs.bSegVis [nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
+bSemaphore = 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1462,17 +1469,20 @@ void ComputeSegmentVisibility (int startI)
 
 if (startI <= 0)
 	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
-if (gameStates.app.bMultiThreaded)
+if (gameStates.app.bMultiThreaded) {
 	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
+	}
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 // every segment can see itself and its neighbours
 for (i = startI, segP = gameData.segs.segments + startI; i < endI; i++, segP++) {
-	SetSegVis (i, i);
+	while (!SetSegVis (i, i))
+		;
 	for (j = 0; j < 6; j++) {
 		c = segP->children [j];
 		if (c >= 0)
-			SetSegVis (i, c);
+			while (!SetSegVis (i, c))
+				;
 		}
 	}
 for (i = startI; i < endI; i++) {
@@ -1483,7 +1493,8 @@ for (i = startI; i < endI; i++) {
 		for (k = 0; k < 8; k++) {
 			v = psv [k];	
 			if (VERTVIS (i, v) > 0) {
-				SetSegVis (i, j);
+				while (!SetSegVis (i, j))
+					;
 				break;
 				}
 			}
@@ -1749,6 +1760,7 @@ int _CDECL_ SegVisThread (void *pThreadId)
 
 ComputeSegmentVisibility (nId ? gameData.segs.nSegments / 2 : 0);
 SDL_SemPost (ti [nId].done);
+ti [nId].bDone = 1;
 return 0;
 }
 
@@ -1760,6 +1772,7 @@ int _CDECL_ VertVisThread (void *pThreadId)
 
 ComputeVertexVisibility (nId ? gameData.segs.nSegments / 2 : 0);
 SDL_SemPost (ti [nId].done);
+ti [nId].bDone = 1;
 return 0;
 }
 
@@ -1771,6 +1784,7 @@ int _CDECL_ SegLightsThread (void *pThreadId)
 
 ComputeNearestSegmentLights (nId ? gameData.segs.nSegments / 2 : 0);
 SDL_SemPost (ti [nId].done);
+ti [nId].bDone = 1;
 return 0;
 }
 
@@ -1782,6 +1796,7 @@ int _CDECL_ VertLightsThread (void *pThreadId)
 
 ComputeNearestVertexLights (nId ? gameData.segs.nVertices / 2 : 0);
 SDL_SemPost (ti [nId].done);
+ti [nId].bDone = 1;
 return 0;
 }
 
@@ -1792,12 +1807,22 @@ static void StartOglLightThreads (pOglLightFunc pFunc)
 	int	i;
 
 for (i = 0; i < 2; i++) {
+	ti [i].bDone = 0;
 	ti [i].done = SDL_CreateSemaphore (0);
 	ti [i].nId = i;
-	ti [i].pThread = SDL_CreateThread (pFunc, &ti [0].nId);
+	ti [i].pThread = SDL_CreateThread (pFunc, &ti [i].nId);
 	}
+#if 0
 SDL_SemWait (ti [0].done);
 SDL_SemWait (ti [1].done);
+#else
+while (!(ti [0].bDone && ti [1].bDone))
+#	ifdef _WIN32
+	Sleep (1);
+#	else
+	usleep (1000);
+#	endif
+#endif
 for (i = 0; i < 2; i++) {
 	SDL_KillThread (ti [i].pThread);
 	SDL_DestroySemaphore (ti [i].done);
@@ -1822,7 +1847,7 @@ if (LoadPrecompiledLights (nLevel))
 	return;
 else 
 #if MULTI_THREADED_PRECALC
-	if (gameStates.app.bMultiThreaded) {
+	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	StartOglLightThreads (VertVisThread);
 	StartOglLightThreads (SegVisThread);
