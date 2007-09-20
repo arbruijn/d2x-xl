@@ -1321,13 +1321,11 @@ void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceCo
 	//float				fScale;
 	tFaceColor		*pc = NULL;
 
+gameData.threads.vertColor.data.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
 gameData.threads.vertColor.data.fMatShininess = 0.0f;
 gameData.threads.vertColor.data.bMatSpecular = 0;
 gameData.threads.vertColor.data.bMatEmissive = 0; 
 gameData.threads.vertColor.data.nMatLight = -1;
-gameData.threads.vertColor.data.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
-gameData.threads.vertColor.data.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4),
-gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 if (!FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 	; //fScale = 1.0f;
 else if (FAST_SHADOWS || (gameStates.render.nShadowPass != 1))
@@ -1341,7 +1339,7 @@ if (gameData.render.lights.dynamic.material.bValid) {
 	if (gameData.render.lights.dynamic.material.emissive.c.r ||
 		 gameData.render.lights.dynamic.material.emissive.c.g ||
 		 gameData.render.lights.dynamic.material.emissive.c.b) {
-		bMatEmissive = 1;
+		gameData.threads.vertColor.data.bMatEmissive = 1;
 		nMatLight = gameData.render.lights.dynamic.material.nLight;
 		colorSum = gameData.render.lights.dynamic.material.emissive;
 		}
@@ -1358,8 +1356,7 @@ if (gameData.render.lights.dynamic.material.bValid) {
 		gameData.threads.vertColor.data.matSpecular = matSpecular;
 	}
 #if 1//ndef _DEBUG //cache light values per frame
-if (!(gameData.threads.vertColor.data.bExclusive || 
-	   gameData.threads.vertColor.data.bMatEmissive/* || pVertColor*/) && (nVertex >= 0)) {
+if (!(gameData.threads.vertColor.data.bExclusive || gameData.threads.vertColor.data.bMatEmissive) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
 		if (pVertColor) {

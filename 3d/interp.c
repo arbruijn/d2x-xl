@@ -2285,7 +2285,7 @@ void GetThrusterPos (int nModel, vmsVector *vNormal, vmsVector *vOffset, grsBitm
 if (mtP->nCount >= 2)
 	return;
 if (bmP) {
-	i = bmP - gameData.pig.tex.bitmaps [0];
+	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
 		return;
 	}

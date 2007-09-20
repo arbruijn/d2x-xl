@@ -1118,10 +1118,10 @@ void grs_font_read (grs_font *gf, CFILE *fp)
 	gf->ft_minchar = CFReadByte (fp);
 	gf->ft_maxchar = CFReadByte (fp);
 	gf->ft_bytewidth = CFReadShort (fp);
-	gf->ft_data = (ubyte *) ((long) CFReadInt (fp));
-	gf->ft_chars = (ubyte **) ((long) CFReadInt (fp));
-	gf->ft_widths = (short *) ((long) CFReadInt (fp));
-	gf->ft_kerndata = (ubyte *) ((long) CFReadInt (fp));
+	gf->ft_data = (ubyte *) (size_t) CFReadInt (fp);
+	gf->ft_chars = (ubyte **) (size_t) CFReadInt (fp);
+	gf->ft_widths = (short *) (size_t) CFReadInt (fp);
+	gf->ft_kerndata = (ubyte *) (size_t) CFReadInt (fp);
 }
 #endif
 

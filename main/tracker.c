@@ -308,7 +308,7 @@ szAddr [21] = '\0';
 if (!(pszPort = strchr (szAddr, ':')))
 	return 0;
 *pszPort++ = '\0';
-if (!stoip (szAddr, (char *) UDP_ADDR (addr)))
+if (!stoip (szAddr, (char *) (size_t) UDP_ADDR (addr)))
 	return 0;
 if (!stoport (pszPort, &port, NULL))
 	return 0;

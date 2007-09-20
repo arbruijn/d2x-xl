@@ -37,6 +37,7 @@ typedef struct tParticle {
 	char			nFade;
 	char			nClass;
 	char			nFrame;
+	char			nOrient;
 } tParticle;
 
 typedef struct tPartIdx {
@@ -122,10 +123,8 @@ void FreePartList (void);
 int LoadParticleImages (void);
 int BeginRenderSmoke (int nType, float nScale);
 int EndRenderSmoke (tCloud *pCloud);
-int RenderParticle (tParticle *pParticle, double brightness, int nThread);
+int RenderParticle (tParticle *pParticle, double brightness);
 int SetSmokeObject (int nObject, int nSmoke);
-void StartSmokeThreads (void);
-void KillSmokeThreads (void);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;

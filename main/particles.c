@@ -51,6 +51,8 @@
 
 //------------------------------------------------------------------------------
 
+#define MAKE_SMOKE_IMAGE 0
+
 #define BLOWUP_PARTICLES 0		//blow particles up at "birth"
 
 #define SMOKE_SLOWMO 0
@@ -101,7 +103,7 @@ static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
 
-#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
+#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 64 : 64)
 
 //	-----------------------------------------------------------------------------
 
@@ -241,7 +243,7 @@ bmP = CreateAndReadTGA (szParticleImg [bPointSprites][nType]);
 if (*flagP < 0)
 	return 0;
 bmpParticle [bPointSprites][nType] = bmP;
-#if 0
+#if MAKE_SMOKE_IMAGE
 {
 	tTgaHeader h;
 
@@ -332,7 +334,8 @@ return (pColor->red * 3 + pColor->green * 5 + pColor->blue * 2) / 10.0;
 
 int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
 						  short nSegment, int nLife, int nSpeed, char nSmokeType, char nClass,
-						  float nScale, tRgbaColord *pColor, int nCurTime, int bBlowUp)
+						  float nScale, tRgbaColord *pColor, int nCurTime, int bBlowUp,
+						  double dBrightness)
 {
 	vmsVector	vDrift;
 	int			nRad, nFrames, nType = (nSmokeType == PARTICLE_TYPES - 1);
@@ -362,6 +365,10 @@ else {
 	pParticle->nFade = 2;
 	}
 pParticle->color.alpha = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
+if (gameOpts->render.smoke.bDisperse) {
+	dBrightness = 1.0 - dBrightness;
+	pParticle->color.alpha += dBrightness * dBrightness / 8.0;
+	}
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed *= F1_0;
 if (pDir) {
@@ -420,6 +427,7 @@ else {
 	}
 nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
 pParticle->nFrame = rand () % (nFrames * nFrames);
+pParticle->nOrient = rand () % 3;
 #if 1
 pParticle->color.alpha /= nSmokeType + 2;
 if (nType)
@@ -673,17 +681,18 @@ else
 
 //------------------------------------------------------------------------------
 
-int RenderParticle (tParticle *pParticle, double brightness, int nThread)
+int RenderParticle (tParticle *pParticle, double brightness)
 {
 	vmsVector			hp;
 	GLdouble				d, u, v, x, y, z, h, w;
 	grsBitmap			*bmP;
 	tRgbaColord			pc;
+	tUVLd					texCoord [4];
 #if OGL_VERTEX_ARRAYS
 	double				*pf;
 #endif
 	double				decay = (double) pParticle->nLife / (double) pParticle->nTTL;
-	int					nType = pParticle->nType,
+	int					i, nType = pParticle->nType,
 							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
 
 	static int			nFrames = 1;
@@ -848,13 +857,25 @@ else
 		pf [5] =
 		pf [8] =
 		pf [11] = z;
-		SetParticleTexCoord (u, v);
+		i = pParticle->nOrient; 
+		texCoord [0].v.u =
+		texCoord [3].v.u = u;
+		texCoord [0].v.v = 
+		texCoord [1].v.v = v;
+		texCoord [1].v.u =
+		texCoord [2].v.u = u + d;
+		texCoord [2].v.v =
+		texCoord [3].v.v = v + d;
+		SetParticleTexCoord (texCoord [i].v.u, texCoord [i].v.v);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
-		SetParticleTexCoord (u + d, v);
+		i = ++i % 4;
+		SetParticleTexCoord (texCoord [i].v.u, texCoord [i].v.v);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
-		SetParticleTexCoord (u + d, v + d);
+		i = ++i % 4;
+		SetParticleTexCoord (texCoord [i].v.u, texCoord [i].v.v);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
-		SetParticleTexCoord (u, v + d);
+		i = ++i % 4;
+		SetParticleTexCoord (texCoord [i].v.u, texCoord [i].v.v);
 		memcpy (colorBuffer [iBuffer++], &pc, sizeof (pc));
 		if (iBuffer >= VERT_BUF_SIZE)
 			FlushVertexArrays ();
@@ -863,14 +884,23 @@ else
 #else
 	{
 #endif
+	i = pParticle->nOrient; 
+	texCoord [0].v.u =
+	texCoord [3].v.u = u;
+	texCoord [0].v.v = 
+	texCoord [1].v.v = v;
+	texCoord [1].v.u =
+	texCoord [2].v.u = u + d;
+	texCoord [2].v.v =
+	texCoord [3].v.v = v + d;
 	glColor4dv ((GLdouble *) &pc);
-	glTexCoord2d (u, v);
+	glTexCoord2dv ((GLdouble *) (texCoord + i));
 	glVertex3d (x - w, y + h, z);
-	glTexCoord2d (u + d, v);
+	glTexCoord2dv ((GLdouble *) (texCoord + (i + 1) % 4));
 	glVertex3d (x + w, y + h, z);
-	glTexCoord2d (u + d, v + d);
+	glTexCoord2dv ((GLdouble *) (texCoord + (i + 2) % 4));
 	glVertex3d (x + w, y - h, z);
-	glTexCoord2d (u, v + d);
+	glTexCoord2dv ((GLdouble *) (texCoord + (i + 3) % 4));
 	glVertex3d (x - w, y - h, z);
 	if (gameData.smoke.bAnimate)
 		pParticle->nFrame = (pParticle->nFrame + 1) % (nFrames * nFrames);
@@ -1130,11 +1160,29 @@ for (i = pCloud->nParts, j = pCloud->nFirstPart; i; i--, j = (j + 1) % pCloud->n
 
 //------------------------------------------------------------------------------
 
+double CloudBrightness (tCloud *pCloud)
+{
+if (pCloud->nType == PARTICLE_TYPES - 1)
+	return 1.0;
+if (pCloud->nObject < 0)
+	return 0.5;
+if (pCloud->nObjType == OBJ_EFFECT)
+	return (double) pCloud->nDefBrightness / 100.0;
+if (pCloud->nObjType == OBJ_DEBRIS)
+	return 0.5;
+if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
+	return 0.2;
+return (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.66 + 0.1 / (3.0 - pCloud->nType);
+}
+
+//------------------------------------------------------------------------------
+
 int UpdateCloud (tCloud *pCloud, int nCurTime)
 {
 	tCloud		c = *pCloud;
 	int			t, h, i, j;
 	float			fDist;
+	double		dBrightness = CloudBrightness (pCloud);
 	vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL);
 	fVector		vDeltaf, vPosf;
 
@@ -1182,7 +1230,7 @@ if ((c.nPartsPerPos = (int) (c.fPartsPerTick * c.nTicks)) >= 1) {
 			vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
 			CreateParticle (c.pParticles + j, &vPos, pDir, c.nSegment, c.nLife, 
 								 c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
-								 nCurTime, c.bBlowUpParts);
+								 nCurTime, c.bBlowUpParts, dBrightness);
 			}
 		}
 	}
@@ -1293,24 +1341,7 @@ return nParts;
 
 //------------------------------------------------------------------------------
 
-double CloudBrightness (tCloud *pCloud)
-{
-if (pCloud->nType == PARTICLE_TYPES - 1)
-	return 1.0;
-if (pCloud->nObject < 0)
-	return 0.5;
-if (pCloud->nObjType == OBJ_EFFECT)
-	return (double) pCloud->nDefBrightness / 100.0;
-if (pCloud->nObjType == OBJ_DEBRIS)
-	return 0.5;
-if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
-	return 0.2;
-return (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.66 + 0.1 / (3.0 - pCloud->nType);
-}
-
-//------------------------------------------------------------------------------
-
-int RenderCloud (tCloud *pCloud, int nThread)
+int RenderCloud (tCloud *pCloud)
 {
 	double		brightness = CloudBrightness (pCloud);
 	int			nParts = pCloud->nParts, i, j, 
@@ -1324,7 +1355,7 @@ int RenderCloud (tCloud *pCloud, int nThread)
 
 if (gameOpts->render.bDepthSort) {
 	for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit)
-		RIAddParticle (pCloud->pParticles + j, brightness, nThread);
+		RIAddParticle (pCloud->pParticles + j, brightness);
 	return 1;
 	}
 else {
@@ -1335,7 +1366,7 @@ else {
 		pPartIdx = pCloud->pPartIdx;
 		nParts = SortCloudParticles (pCloud->pParticles, pPartIdx, nParts, nFirstPart, nPartLimit);
 		for (i = 0; i < nParts; i++)
-			RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness, nThread);
+			RenderParticle (pCloud->pParticles + pPartIdx [i].i, brightness);
 		}
 	else
 #endif //SORT_CLOUD_PARTS
@@ -1346,26 +1377,26 @@ else {
 			if (!j)
 				j = nPartLimit;
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-			if (!RenderParticle (pCloud->pParticles + --j, nThread))
+			if (!RenderParticle (pCloud->pParticles + --j))
 				if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 					FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
 					nBuffer = iBuffer;
 					}
 #else
-			RenderParticle (pCloud->pParticles + --j, brightness, nThread);
+			RenderParticle (pCloud->pParticles + --j, brightness);
 #endif
 			}
 		}
 	else {
 		for (i = nParts, j = nFirstPart; i; i--, j = (j + 1) % nPartLimit) {
 #if OGL_VERTEX_ARRAYS && !EXTRA_VERTEX_ARRAYS
-			if (!RenderParticle (pCloud->pParticles + j, brightness, nThread))
+			if (!RenderParticle (pCloud->pParticles + j, brightness))
 				if (gameStates.render.bVertexArrays && !gameOpts->render.smoke.bSort) {
 					FlushVertexArrays (pCloud->pParticles + iBuffer, nBuffer - iBuffer);
 					nBuffer = iBuffer;
 					}
 #else
-			RenderParticle (pCloud->pParticles + j, brightness, nThread);
+			RenderParticle (pCloud->pParticles + j, brightness);
 #endif
 			}
 		}
@@ -1927,7 +1958,7 @@ for (pd = gameData.smoke.depthBuf.pDepthBuffer + PART_DEPTHBUFFER_SIZE - 1;
 	  pd--) {
 		if (pl = *pd) {
 		do {
-			RenderParticle (pl->pParticle, pl->fBrightness, -1);
+			RenderParticle (pl->pParticle, pl->fBrightness);
 			pn = pl->pNextPart;
 			pl->pNextPart = NULL;
 			pl = pn;
@@ -1942,60 +1973,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-typedef struct tSmokeThreadInfo {
-	tThreadInfo		info;
-	tCloud			*pCloud;
-} tSmokeThreadInfo;
-
-static tSmokeThreadInfo tiRender [2];
-
-int _CDECL_ RenderCloudThread (void *pThreadId)
-{
-	int		nId = *((int *) pThreadId);
-
-for (;;) {
-	SDL_SemWait (tiRender [nId].info.exec);
-	if (tiRender [nId].info.bQuit)
-		break;
-	RenderCloud (tiRender [nId].pCloud, nId);
-	SDL_SemPost (tiRender [nId].info.done);
-	tiRender [nId].info.bDone = 1;
-	};
-return 0;
-}
-//------------------------------------------------------------------------------
-
-void StartSmokeThreads (void)
-{
-	int	i;
-
-for (i = 0; i < 2; i++) {
-	tiRender [i].info.bQuit = 0;
-	tiRender [i].info.bDone = -1;
-	tiRender [i].info.done = SDL_CreateSemaphore (0);
-	tiRender [i].info.exec = SDL_CreateSemaphore (0);
-	tiRender [i].info.nId = i;
-	tiRender [i].info.pThread = SDL_CreateThread (RenderCloudThread, &tiRender [i].info.nId);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void KillSmokeThreads (void)
-{
-	int	i;
-
-for (i = 0; i < 2; i++) {
-	tiRender [i].info.bQuit = 1;
-	SDL_SemPost (tiRender [i].info.exec);
-	SDL_WaitThread (tiRender [i].info.pThread, NULL);
-	SDL_DestroySemaphore (tiRender [i].info.exec);
-	SDL_DestroySemaphore (tiRender [i].info.done);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 int RenderClouds (void)
 {
 	int		h, i, j;
@@ -2005,29 +1982,13 @@ int RenderClouds (void)
 #if !EXTRA_VERTEX_ARRAYS
 nBuffer = 0;
 #endif
-h = ((gameOpts->render.bDepthSort > 0) && !gameStates.app.bMultiThreaded) ? -1 : CreateCloudList ();
+h = (gameOpts->render.bDepthSort > 0) ? -1 : CreateCloudList ();
 if (!h)
 	return 1;
 if (h > 0) {
-	if (gameStates.app.bMultiThreaded && (gameOpts->render.bDepthSort > 0)) {
-		do {
-			while (!(tiRender [0].info.bDone || tiRender [1].info.bDone)) 
-				;
-			i = tiRender [0].info.bDone ? 0 : 1;
-			if (tiRender [i].info.bDone > 0)
-				SDL_SemWait (tiRender [i].info.done);
-			tiRender [i].pCloud = pCloudList [--h].pCloud;
-			tiRender [i].info.bDone = 0;
-			SDL_SemPost (tiRender [i].info.exec);
-			} while (h);
-		while (!(tiRender [0].info.bDone && tiRender [1].info.bDone)) 
-			;
-		}
-	else {
-		do {
-			RenderCloud (pCloudList [--h].pCloud, -1);
-			} while (h);
-		}
+	do {
+		RenderCloud (pCloudList [--h].pCloud);
+		} while (h);
 	D2_FREE (pCloudList);
 	pCloudList = NULL;
 	}
@@ -2050,7 +2011,7 @@ else
 				SetSmokeLife (i, 0);
 			for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
 				pCloud->brightness = brightness;
-				RenderCloud (pCloud, -1);
+				RenderCloud (pCloud);
 				}
 			}
 		}

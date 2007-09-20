@@ -244,12 +244,12 @@ int AllocRenderItemBuffer (void);
 void FreeRenderItemBuffer (void);
 void ResetRenderItemBuffer (void);
 void InitRenderItemBuffer (int zMin, int zMax);
-int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z, int nThread);
+int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z);
 int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
-int RIAddParticle (tParticle *particle, double fBrightness, int nThread);
+int RIAddParticle (tParticle *particle, double fBrightness);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
 int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
 									char bPlasma, char bStart, char bEnd, short nDepth);
