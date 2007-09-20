@@ -4702,11 +4702,15 @@ if (renderItems.zScale > 1)
 
 //------------------------------------------------------------------------------
 
-int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z)
+int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z, int nThread)
 {
 	tRenderItem *ph, *pi, *pj, **pd;
 	int			nOffset;
 
+	static int nSemaphore = 0;
+
+if ((nThread >= 0) && (nThread != nSemaphore))
+	return -1;
 if ((z < renderItems.zMin) || (z > renderItems.zMax))
 	return renderItems.nFreeItems;
 AllocRenderItems ();
@@ -4735,6 +4739,7 @@ else {
 	ph->pNextItem = *pd;
 	*pd = ph;
 	}
+nSemaphore = !nSemaphore;
 return renderItems.nFreeItems;
 }
 
@@ -4745,7 +4750,7 @@ int RISplitPoly (tRIPoly *item, int nDepth)
 	tRIPoly		split [2];
 	fVector		vSplit;
 	tRgbaColorf	color;
-	int			i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
+	int			addRes, i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
 	float			z, *c, *c0, *c1;
 
 split [0] = split [1] = *item;
@@ -4768,7 +4773,9 @@ if (!nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3
 			z = split [0].vertices [i].p.z;
 #endif
 		}
-	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (z));
+	while (0 > (addRes = AddRenderItem (riPoly, item, sizeof (*item), fl2f (z), 0)))
+		;
+	return addRes;
 	}
 if (split [0].nVertices == 3) {
 	i1 = (i0 + 1) % 3;
@@ -4832,7 +4839,7 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoor
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap)
 {
 	tRIPoly	item;
-	int		i;
+	int		addRes, i;
 	float		z;
 
 #ifdef _DEBUG
@@ -4876,7 +4883,9 @@ else {
 			z = item.vertices [i].p.z;
 	if ((z < renderItems.zMin) || (z > renderItems.zMax))
 		return 0;
-	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z));
+	while (0 > (addRes = AddRenderItem (riPoly, &item, sizeof (item), fl2f (z), 0)))
+		;
+	return addRes;
 	}
 }
 
@@ -4886,6 +4895,7 @@ int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nW
 {
 	tRISprite	item;
 	vmsVector	vPos;
+	int			addRes;
 
 item.bmP = bmP;
 if (item.bColor = (color != NULL))
@@ -4895,7 +4905,9 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 G3TransformPoint (&vPos, position, 0);
 VmsVecToFloat (&item.position, &vPos);
-return AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z);
+while (0 > (addRes = AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z, 0)))
+	;
+return addRes;
 }
 
 //------------------------------------------------------------------------------
@@ -4904,6 +4916,7 @@ int RIAddSphere (tRISphereType nType, float red, float green, float blue, float 
 {
 	tRISphere	item;
 	vmsVector	vPos;
+	int			addRes;
 
 item.nType = nType;
 item.color.red = red;
@@ -4912,19 +4925,24 @@ item.color.blue = blue;
 item.color.alpha = alpha;
 item.objP = objP;
 G3TransformPoint (&vPos, &objP->position.vPos, 0);
-return AddRenderItem (riSphere, &item, sizeof (item), vPos.p.z);
+while (0 > (addRes = AddRenderItem (riSphere, &item, sizeof (item), vPos.p.z, 0)))
+	;
+return addRes;
 }
 
 //------------------------------------------------------------------------------
 
-int RIAddParticle (tParticle *particle, double fBrightness)
+int RIAddParticle (tParticle *particle, double fBrightness, int nThread)
 {
 	tRIParticle	item;
+	int			addRes;
 
 item.particle = particle;
 item.fBrightness = fBrightness;
 G3TransformPoint (&particle->transPos, &particle->pos, 0);
-return AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z);
+while (0 > (addRes = AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z, nThread)))
+	;
+return addRes;
 }
 
 //------------------------------------------------------------------------------
@@ -4933,7 +4951,7 @@ int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth)
 {
 	tRILightning item;
 	vmsVector vPos;	
-	int z;
+	int addRes, z;
 
 for (; nLightnings; nLightnings--, lightnings++) {
 	item.lightning = lightnings;
@@ -4943,7 +4961,8 @@ for (; nLightnings; nLightnings--, lightnings++) {
 	G3TransformPoint (&vPos, &lightnings->vEnd, 0);
 	if (z < vPos.p.z)
 		z = vPos.p.z;
-	if (!AddRenderItem (riLightning, &item, sizeof (item), z))
+	while (0 > (addRes = AddRenderItem (riLightning, &item, sizeof (item), z, 0)));
+	if (!addRes)
 		return 0;
 	}
 return 1;
@@ -4954,6 +4973,7 @@ return 1;
 int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, char bPlasma, char bStart, char bEnd, short nDepth)
 {
 	tRILightningSegment	item;
+	int addRes;
 
 memcpy (item.vLine, vLine, 2 * sizeof (fVector));
 if (item.bPlasma = bPlasma)
@@ -4962,7 +4982,9 @@ memcpy (&item.color, color, sizeof (tRgbaColorf));
 item.bStart = bStart;
 item.bEnd = bEnd;
 item.nDepth = nDepth;
-return AddRenderItem (riLightningSegment, &item, sizeof (item), fl2f ((item.vLine [0].p.z + item.vLine [1].p.z) / 2));
+while (0 > (addRes = AddRenderItem (riLightningSegment, &item, sizeof (item), fl2f ((item.vLine [0].p.z + item.vLine [1].p.z) / 2, 0))))
+	;
+return addRes;
 }
 
 //------------------------------------------------------------------------------
@@ -4970,7 +4992,7 @@ return AddRenderItem (riLightningSegment, &item, sizeof (item), fl2f ((item.vLin
 int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVector *vFlame, tUVLf *uvlFlame)
 {
 	tRIThruster	item;
-	int			i, j;
+	int			addRes, i, j;
 	float			z = 0;
 
 item.bmP = bmP;
@@ -4986,7 +5008,9 @@ else
 for (i = 0; i < j; i++)
 	if (z < item.vertices [i].p.z)
 		z = item.vertices [i].p.z;
-return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z));
+while (0 > (addRes = AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), 0)))
+	;
+return addRes;
 }
 
 //------------------------------------------------------------------------------

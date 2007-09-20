@@ -1807,6 +1807,7 @@ if (gameStates.app.bMultiThreaded) {
 		SDL_KillThread (gameData.threads.vertColor.pThread [i]);
 		SDL_DestroySemaphore (gameData.threads.vertColor.exec [i]);
 		}
+	KillSmokeThreads ();
 	}
 #endif
 GrClose ();

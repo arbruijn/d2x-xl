@@ -1749,9 +1749,6 @@ return bOk;
 
 #if MULTI_THREADED_PRECALC
 
-typedef int _CDECL_	tOglLightFunc (void *);
-typedef tOglLightFunc *pOglLightFunc;
-
 static tThreadInfo	ti [2];
 
 int _CDECL_ SegVisThread (void *pThreadId)
@@ -1802,7 +1799,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static void StartOglLightThreads (pOglLightFunc pFunc)
+static void StartOglLightThreads (pThreadFunc pFunc)
 {
 	int	i;
 

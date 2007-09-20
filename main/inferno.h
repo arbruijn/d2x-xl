@@ -25,8 +25,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
-#define MULTI_THREADED_SHADOWS	1
-#define MULTI_THREADED_LIGHTS		1
+#define MULTI_THREADED_SHADOWS	0
+#define MULTI_THREADED_LIGHTS		0
 #define MULTI_THREADED_PRECALC	1
 
 #define USE_SEGRADS		0
@@ -109,6 +109,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FMODE_EDITOR		3		// running the editor
 
 #define FLASH_CYCLE_RATE f1_0
+
+//------------------------------------------------------------------------------
+
+typedef int _CDECL_	tThreadFunc (void *);
+typedef tThreadFunc *pThreadFunc;
+
+typedef struct tThreadInfo {
+	SDL_Thread		*pThread;
+	SDL_sem			*done;	
+	SDL_sem			*exec;
+	int				nId;
+	int				bExec;
+	int				bDone;
+	int				bQuit;
+	} tThreadInfo;
 
 //------------------------------------------------------------------------------
 
@@ -2487,14 +2502,6 @@ typedef struct tVertColorData {
 	fVector	*pVertPos;
 	float		fMatShininess;
 	} tVertColorData;
-
-typedef struct tThreadInfo {
-	SDL_Thread		*pThread;
-	SDL_sem			*done;	
-	SDL_sem			*exec;
-	int				nId;
-	int				bDone;
-	} tThreadInfo;
 
 typedef struct tVertColorThreadData {
 #if MULTI_THREADED_LIGHTS

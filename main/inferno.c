@@ -3113,6 +3113,7 @@ if (gameStates.app.bMultiThreaded) {
 		gameData.threads.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threads.clipDist.info [i].nId);
 #endif
 		}
+	StartSmokeThreads ();
 	}
 gameData.threads.vertColor.data.matAmbient.c.r = 
 gameData.threads.vertColor.data.matAmbient.c.g = 
