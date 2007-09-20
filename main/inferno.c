@@ -2354,7 +2354,7 @@ GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
 
 void AllocSmokeData (void)
 {
-GETMEM (short, gameData.smoke.objects, MAX_OBJECTS, 0xff);
+GETMEM (short, gameData.smoke.objects, MAX_OBJECTS, (char) 0xff);
 GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
 }
 
@@ -2362,8 +2362,8 @@ GETMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS, 0);
 
 void AllocLightningData (void)
 {
-GETMEM (short, gameData.lightnings.objects, MAX_OBJECTS, 0xff);
-GETMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS, 0xff);
+GETMEM (short, gameData.lightnings.objects, MAX_OBJECTS, (char) 0xff);
+GETMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS, (char) 0xff);
 }
 
 // ----------------------------------------------------------------------------

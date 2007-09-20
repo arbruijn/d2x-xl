@@ -427,7 +427,7 @@ else {
 	}
 nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
 pParticle->nFrame = rand () % (nFrames * nFrames);
-pParticle->nOrient = rand () % 3;
+pParticle->nOrient = rand () % 4;
 #if 1
 pParticle->color.alpha /= nSmokeType + 2;
 if (nType)
