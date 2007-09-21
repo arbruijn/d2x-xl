@@ -1769,7 +1769,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 	else
 		gameData.lightnings.objects [i] = CreateLightning (
 			2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, 
-			objP->size, objP->size / 8, 0, 0, 25, 3, 1, 5, 1, 1, 0, 1, 0, colorP);
+			objP->size, objP->size / 8, 0, 0, 25, 3, 1, 5, 1, 1, 0, 0, 0, colorP);
 	}
 }
 
@@ -1812,7 +1812,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 		}
 	gameData.lightnings.objects [i] = CreateLightning (
 		n, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 4000, 
-		objP->size, objP->size / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 1, -1, colorP);
+		objP->size, objP->size / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, -1, colorP);
 	}
 }
 
