@@ -4760,7 +4760,7 @@ for (i = 0; i < split [0].nVertices; i++) {
 	if (nMinLen > l)
 		nMinLen = l;
 	}
-if (!nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
+if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
 	for (i = 0, z = 0; i < split [0].nVertices; i++) {
 #if 0
 		z += split [0].vertices [i].p.z;
@@ -4774,22 +4774,21 @@ if (!nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3
 	}
 if (split [0].nVertices == 3) {
 	i1 = (i0 + 1) % 3;
-	;
-	split [0].vertices [i1] =
-	split [1].vertices [i0] = *VmVecAvgf (&vSplit, split [0].vertices + i0, split [0].vertices + i1);
+	split [0].vertices [i0] =
+	split [1].vertices [i1] = *VmVecAvgf (&vSplit, split [0].vertices + i0, split [0].vertices + i1);
 	split [0].sideLength [i0] =
 	split [1].sideLength [i0] = nMaxLen / 2;
 	if (split [0].bmP) {
-		split [0].texCoord [i1].v.u =
-		split [1].texCoord [i0].v.u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
-		split [0].texCoord [i1].v.v =
-		split [1].texCoord [i0].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
+		split [0].texCoord [i0].v.u =
+		split [1].texCoord [i1].v.u = (split [0].texCoord [i1].v.u + split [0].texCoord [i0].v.u) / 2;
+		split [0].texCoord [i0].v.v =
+		split [1].texCoord [i1].v.v = (split [0].texCoord [i1].v.v + split [0].texCoord [i0].v.v) / 2;
 		}
 	if (split [0].nColors == 3) {
-		for (i = 4, c = (float *) &color, c0 = (float *) split [0].color + i0, c1 = (float *) split [0].color + i1; i; i--)
+		for (i = 4, c = (float *) &color, c0 = (float *) (split [0].color + i0), c1 = (float *) (split [0].color + i1); i; i--)
 			*c++ = (*c0++ + *c1++) / 2;
-		split [0].color [i1] =
-		split [1].color [i0] = color;
+		split [0].color [i0] =
+		split [1].color [i1] = color;
 		}
 	}
 else {
@@ -5025,6 +5024,8 @@ else if (bClientState) {
 			return 0;
 			}
 		}
+	else
+		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 	if (bColor) {
 		if (OglEnableClientState (GL_COLOR_ARRAY))
 			renderItems.bClientColor = 1;
@@ -5033,6 +5034,8 @@ else if (bClientState) {
 			return 0;
 			}
 		}
+	else
+		glDisableClientState (GL_COLOR_ARRAY);
 	}
 else {
 	if (renderItems.bClientTexCoord) {
@@ -5308,8 +5311,6 @@ BeginRenderSmoke (-1, 1);
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {
-	  if (pd - renderItems.pDepthBuffer == 50872)
-		  pd = pd;
 	if (pl = *pd) {
 		nDepth = 0;
 		do {

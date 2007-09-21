@@ -365,10 +365,12 @@ else {
 	pParticle->nFade = 2;
 	}
 pParticle->color.alpha = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
+#if 1
 if (gameOpts->render.smoke.bDisperse) {
 	dBrightness = 1.0 - dBrightness;
 	pParticle->color.alpha += dBrightness * dBrightness / 8.0;
 	}
+#endif
 //nSpeed = (int) (sqrt (nSpeed) * (double) F1_0);
 nSpeed *= F1_0;
 if (pDir) {

@@ -292,7 +292,7 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 	pl->nLife = nLife;
 	h = abs (nLife);
 	pl->nTTL = (bRandom) ? 3 * h / 4 + (int) (f_rand () * h / 2) : h;
-	pl->nDelay = abs (nDelay);
+	pl->nDelay = abs (nDelay) * 10;
 	pl->nLength = (bRandom) ? 3 * nLength / 4 + (int) (f_rand () * nLength / 2) : nLength;
 	pl->nAmplitude = (nAmplitude < 0) ? nLength / 6 : nAmplitude;
 	pl->nAngle = vEnd ? nAngle : 0;
@@ -338,6 +338,21 @@ return pfRoot;
 
 //------------------------------------------------------------------------------
 
+void CreateLightningSound (tLightningBundle *plb, int bSound)
+{
+if (plb->bSound = bSound) {
+	DigiSetObjectSound (plb->nObject, -1, "lightng.wav");
+	if (plb->bForcefield) {
+		if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
+			DigiSetObjectSound (plb->nObject, plb->nSound, NULL);
+		}
+	}
+else
+	plb->nSound = -1;
+}
+
+//------------------------------------------------------------------------------
+
 int CreateLightning (int nLightnings, vmsVector *vPos, vmsVector *vEnd, vmsVector *vDelta,
 							short nObject, int nLife, int nDelay, int nLength, int nAmplitude, 
 							char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps, 
@@ -364,15 +379,8 @@ if (SHOW_LIGHTNINGS) {
 	plb->pl = pl;
 	plb->nLightnings = nLightnings;
 	plb->nObject = nObject;
-	if (plb->bSound = bSound) {
-		DigiSetObjectSound (nObject, -1, "lightng.wav");
-		if (vEnd || (nAngle <= 0)) {
-			if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
-				DigiSetObjectSound (nObject, plb->nSound, NULL);
-			}
-		}
-	else
-		plb->nSound = -1;
+	plb->bForcefield = !nDelay && (vEnd || (nAngle <= 0));
+	CreateLightningSound (plb, bSound);
 	plb->tUpdate = -1;
 	plb->nKey [0] =
 	plb->nKey [1] = 0;
@@ -430,6 +438,14 @@ if (pl && pl->pNodes) {
 
 //------------------------------------------------------------------------------
 
+void DestroyLightningSound (tLightningBundle *plb)
+{
+if ((plb->bSound > 0) & (plb->nObject >= 0))
+	DigiKillSoundLinkedToObject (plb->nObject);
+}
+
+//------------------------------------------------------------------------------
+
 void DestroyLightnings (int iLightning, tLightning *pl, int bDestroy)
 {
 	tLightningBundle	*plh, *plb = NULL;
@@ -454,8 +470,7 @@ else {
 		plh->nNext = i;
 	gameData.lightnings.iFree = iLightning;
 	gameData.lightnings.objects [iLightning] = -1;
-	if (plb->bSound && (plb->nObject >= 0))
-		DigiKillSoundLinkedToObject (plb->nObject);
+	DestroyLightningSound (plb);
 	i = plb->nLightnings;
 	}
 for (; i; i--, pl++)
@@ -912,6 +927,27 @@ return nLightnings;
 
 //------------------------------------------------------------------------------
 
+void UpdateLightningSound (tLightningBundle *plb)
+{
+	tLightning	*pl;
+	int			i;
+
+if (!plb->bSound)
+	return;
+for (i = plb->nLightnings, pl = plb->pl; i; i--, pl++)
+	if (pl->nNodes > 0) {
+		if (plb->bSound < 0)
+			CreateLightningSound (plb, 1);
+		return;
+		}
+if (plb->bSound < 0)
+	return;
+DestroyLightningSound (plb);
+plb->bSound = -1;
+}
+
+//------------------------------------------------------------------------------
+
 #define LIMIT_FLASH_FPS	1
 #define FLASH_SLOWMO 1
 
@@ -945,8 +981,10 @@ if (SHOW_LIGHTNINGS) {
 		else {
 			if (!(plb->nLightnings = UpdateLightning (plb->pl, plb->nLightnings, 0)))
 				DestroyLightnings (i, NULL, 1);
-			else if (!(plb->nKey [0] || plb->nKey [1]) && (plb->nObject >= 0))
+			else if (!(plb->nKey [0] || plb->nKey [1]) && (plb->nObject >= 0)) {
+				UpdateLightningSound (plb);
 				MoveObjectLightnings (OBJECTS + plb->nObject);
+				}
 			}
 		}
 	}

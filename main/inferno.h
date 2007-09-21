@@ -2371,6 +2371,7 @@ typedef struct tLightningBundle {
 	time_t			tUpdate;
 	int				nSound;
 	char				bSound;
+	char				bForcefield;
 	char				bDestroy;
 } tLightningBundle;
 
