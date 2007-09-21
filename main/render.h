@@ -244,7 +244,7 @@ int AllocRenderItemBuffer (void);
 void FreeRenderItemBuffer (void);
 void ResetRenderItemBuffer (void);
 void InitRenderItemBuffer (int zMin, int zMax);
-int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z);
+int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame);

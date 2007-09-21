@@ -4411,28 +4411,31 @@ if (renderItems.zScale > 1)
 
 //------------------------------------------------------------------------------
 
-int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int z)
+int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
 {
 	tRenderItem *ph, *pi, *pj, **pd;
 	int			nOffset;
 
-if ((z < renderItems.zMin) || (z > renderItems.zMax))
+if ((nDepth < renderItems.zMin) || (nDepth > renderItems.zMax))
 	return renderItems.nFreeItems;
 AllocRenderItems ();
 if (!renderItems.nFreeItems)
 	return 0;
-nOffset = (int) ((double) (z - renderItems.zMin) * renderItems.zScale);
+if (nIndex <= 0)
+	nOffset = 0;
+else
+	nOffset = (int) ((double) (nIndex - renderItems.zMin) * renderItems.zScale);
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = renderItems.pDepthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = renderItems.pItemList + --renderItems.nFreeItems;
 ph->nType = nType;
-ph->z = z;
+ph->z = nDepth;
 memcpy (&ph->item, itemData, itemSize);
 if (*pd)
 	pj = *pd;
-for (pi = NULL, pj = *pd; pj && ((pj->z < z) || ((pj->z == z) && (pj->nType < nType))); pj = pj->pNextItem)
+for (pi = NULL, pj = *pd; pj && ((pj->z < nDepth) || ((pj->z == nDepth) && (pj->nType < nType))); pj = pj->pNextItem)
 	pi = pj;
 if (pi) {
 	ph->pNextItem = pi->pNextItem;
@@ -4455,7 +4458,7 @@ int RISplitPoly (tRIPoly *item, int nDepth)
 	fVector		vSplit;
 	tRgbaColorf	color;
 	int			i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
-	float			z, *c, *c0, *c1;
+	float			zMin, zMax, *c, *c0, *c1;
 
 split [0] = split [1] = *item;
 for (i = 0; i < split [0].nVertices; i++) {
@@ -4468,16 +4471,13 @@ for (i = 0; i < split [0].nVertices; i++) {
 		nMinLen = l;
 	}
 if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
-	for (i = 0, z = 0; i < split [0].nVertices; i++) {
-#if 0
-		z += split [0].vertices [i].p.z;
-	z /= split [0].nVertices;
-#else
-		if (z < split [0].vertices [i].p.z)
-			z = split [0].vertices [i].p.z;
-#endif
+	for (i = 0, zMax = 0, zMin = 1e30f; i < split [0].nVertices; i++) {
+		if (zMax < split [0].vertices [i].p.z)
+			zMax = split [0].vertices [i].p.z;
+		if (zMin > split [0].vertices [i].p.z)
+			zMin = split [0].vertices [i].p.z;
 		}
-	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (z));
+	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (zMax), fl2f (zMin));
 	}
 if (split [0].nVertices == 3) {
 	i1 = (i0 + 1) % 3;
@@ -4584,7 +4584,7 @@ else {
 			z = item.vertices [i].p.z;
 	if ((z < renderItems.zMin) || (z > renderItems.zMax))
 		return 0;
-	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z));
+	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z), fl2f (z));
 	}
 }
 
@@ -4603,7 +4603,7 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 G3TransformPoint (&vPos, position, 0);
 VmsVecToFloat (&item.position, &vPos);
-return AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z);
+return AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z, vPos.p.z);
 }
 
 //------------------------------------------------------------------------------
@@ -4620,7 +4620,7 @@ item.color.blue = blue;
 item.color.alpha = alpha;
 item.objP = objP;
 G3TransformPoint (&vPos, &objP->position.vPos, 0);
-return AddRenderItem (riSphere, &item, sizeof (item), vPos.p.z);
+return AddRenderItem (riSphere, &item, sizeof (item), vPos.p.z, vPos.p.z);
 }
 
 //------------------------------------------------------------------------------
@@ -4632,7 +4632,7 @@ int RIAddParticle (tParticle *particle, double fBrightness)
 item.particle = particle;
 item.fBrightness = fBrightness;
 G3TransformPoint (&particle->transPos, &particle->pos, 0);
-return AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z);
+return AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z);
 }
 
 //------------------------------------------------------------------------------
@@ -4651,7 +4651,7 @@ for (; nLightnings; nLightnings--, lightnings++) {
 	G3TransformPoint (&vPos, &lightnings->vEnd, 0);
 	if (z < vPos.p.z)
 		z = vPos.p.z;
-	if (!AddRenderItem (riLightning, &item, sizeof (item), z))
+	if (!AddRenderItem (riLightning, &item, sizeof (item), z, z))
 		return 0;
 	}
 return 1;
@@ -4662,6 +4662,7 @@ return 1;
 int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, char bPlasma, char bStart, char bEnd, short nDepth)
 {
 	tRILightningSegment	item;
+	fix z;
 
 memcpy (item.vLine, vLine, 2 * sizeof (fVector));
 if (item.bPlasma = bPlasma)
@@ -4670,7 +4671,8 @@ memcpy (&item.color, color, sizeof (tRgbaColorf));
 item.bStart = bStart;
 item.bEnd = bEnd;
 item.nDepth = nDepth;
-return AddRenderItem (riLightningSegment, &item, sizeof (item), fl2f ((item.vLine [0].p.z + item.vLine [1].p.z) / 2));
+z = fl2f ((item.vLine [0].p.z + item.vLine [1].p.z) / 2);
+return AddRenderItem (riLightningSegment, &item, sizeof (item), z, z);
 }
 
 //------------------------------------------------------------------------------
@@ -4694,7 +4696,7 @@ else
 for (i = 0; i < j; i++)
 	if (z < item.vertices [i].p.z)
 		z = item.vertices [i].p.z;
-return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z));
+return AddRenderItem (riThruster, &item, sizeof (item), fl2f (z), fl2f (z));
 }
 
 //------------------------------------------------------------------------------
