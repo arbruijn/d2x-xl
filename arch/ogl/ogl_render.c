@@ -1718,7 +1718,10 @@ if (bDrawArrays || bDepthSort) {
 		pl = *ppl;
 		vertIndex [i] = pl->p3_index;
 		//colorIndex [i] = i;
-		vertices [i] = gameData.render.pVerts [pl->p3_index];
+		if (pl->p3_index < 0)
+			VmsVecToFloat (vertices + i, &pl->p3_vec);
+		else
+			vertices [i] =  gameData.render.pVerts [pl->p3_index];
 		vertUVL [0][i].v.u = f2fl (uvlList [i].u);
 		vertUVL [0][i].v.v = f2fl (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, vertUVL [1] + i);

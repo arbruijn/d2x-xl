@@ -184,6 +184,8 @@ else if (objP->nType == OBJ_ROBOT) {
 	}
 else if (objP->nType == OBJ_CNTRLCEN)
 	fDmg = f2fl (objP->shields) / f2fl (ReactorStrength ());
+else if ((objP->nType == 255) || (objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
+	fDmg = 0.0f;
 else
 	fDmg = 1.0f;
 return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;

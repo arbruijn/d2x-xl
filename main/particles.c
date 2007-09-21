@@ -1053,7 +1053,7 @@ return 1;
 
 char SmokeObjClass (int nObject)
 {
-if (nObject >= 0) {
+if ((nObject >= 0) && (nObject != 0x7fffffff)) {
 	tObject	*objP = OBJECTS + nObject;
 	if (objP->nType == OBJ_PLAYER)
 		return 1;
@@ -1071,10 +1071,12 @@ return 0;
 
 double CloudBrightness (tCloud *pCloud)
 {
+	tObject	*objP;
+
 if (pCloud->nObject == 0x7fffffff)
-	return 1;
+	return 0.5f;
 if (pCloud->nType == PARTICLE_TYPES - 1)
-	return 1.0;
+	return 1.0f;
 if (pCloud->nObject < 0)
 	return pCloud->brightness;
 if (pCloud->nObjType == OBJ_EFFECT)
@@ -1083,9 +1085,10 @@ if (pCloud->nObjType == OBJ_DEBRIS)
 	return 0.5;
 if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
 	return 0.2;
-if (OBJECTS [pCloud->nObject].nType == 255)
+objP = OBJECTS + pCloud->nObject;
+if ((objP->nType != pCloud->nObjType) || (objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return pCloud->brightness;
-return pCloud->brightness = (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.5 + 0.1;
+return pCloud->brightness = (double) ObjectDamage (objP) * 0.5 + 0.1;
 }
 
 //------------------------------------------------------------------------------
@@ -1126,7 +1129,8 @@ pCloud->nPartScale = nPartScale;
 pCloud->nDensity = nDensity;
 pCloud->nPartsPerPos = nPartsPerPos;
 pCloud->nSegment = nSegment;
-if ((pCloud->nObject = nObject) >= 0) {
+pCloud->nObject = nObject;
+if ((nObject >= 0) && (nObject != 0x7fffffff)) {
 	pCloud->nObjType = gameData.objs.objects [nObject].nType;
 	pCloud->nObjId = gameData.objs.objects [nObject].id;
 	}
@@ -2006,7 +2010,7 @@ else
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
 				return 0;
-			if (gameData.smoke.objects [pSmoke->nObject] < 0)
+			if ((pSmoke->nObject >= 0) && (pSmoke->nObject != 0x7fffffff) && (gameData.smoke.objects [pSmoke->nObject] < 0))
 				SetSmokeLife (i, 0);
 			for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
 				pCloud->brightness = CloudBrightness (pCloud);
