@@ -265,7 +265,7 @@ int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, ogl_f
 #else
 int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
 #endif
-int OglLoadBmTexture (grsBitmap *bm, int bMipMap, int nTransp);
+int OglLoadBmTexture (grsBitmap *bm, int bMipMap, int nTransp, int bLoad);
 //void ogl_loadtexture(unsigned char * data, int width, int height,int dxo,int dyo, int *texid,double *u,double *v,char bMipMap,double prio);
 int OglLoadTexture (grsBitmap *bmP, int dxo,int dyo, tOglTexture *tex, int nTransp, int bSuperTransp);
 void OglFreeTexture (tOglTexture *glTexture);

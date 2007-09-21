@@ -1592,6 +1592,7 @@ bool G3DrawTexPolyMulti (
 					bSuperTransp = 0;
 	int			bLight = 1, 
 					bDynLight = SHOW_DYN_OBJ_LIGHT && !gameStates.app.bEndLevelSequence, 
+					bDepthSort,
 					bResetColor = 0,
 					bDrawOverlay = 0;
 	grsBitmap	*bmP = NULL, *bmMask;
@@ -1627,6 +1628,8 @@ else {
 	}
 glDepthFunc (GL_LEQUAL);
 bmBot = BmOverride (bmBot);
+bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) && (((bmBot->bm_bpp > 1) && 
+				 (bmBot->bm_props.flags & BM_FLAG_TRANSPARENT)) || (gameStates.ogl.fAlpha < 1)));
 if ((bmTop = BmOverride (bmTop)) && BM_FRAMES (bmTop)) {
 	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
 	bmP = bmTop;
@@ -1663,7 +1666,7 @@ if (bShaderMerge) {
 	glUniform1f (loc = glGetUniformLocation (tmProg, "grAlpha"), 
 					 gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
 	}
-else {
+else if (!bDepthSort) {
 	if (bmBot == gameData.endLevel.satellite.bmP) {
 		glActiveTexture (GL_TEXTURE0_ARB);
 		glEnable (GL_TEXTURE_2D);
@@ -1678,30 +1681,33 @@ else {
 	else
 		OglTexWrap (bmBot->glTexture, GL_REPEAT);
 	}
-if (SHOW_DYN_LIGHT) {
+
+if (!bDepthSort) {
+	if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
-	if (pvNormal)
-		VmsVecToFloat (&vNormal, pvNormal);
-else
-		G3CalcNormal (pointList, &vNormal);
+		if (pvNormal)
+			VmsVecToFloat (&vNormal, pvNormal);
+	else
+			G3CalcNormal (pointList, &vNormal);
 #else
-		G3Normal (pointList, pvNormal);
+			G3Normal (pointList, pvNormal);
 #endif
+		}
+	if (gameStates.render.bFullBright) {
+		glColor3d (1,1,1);
+		bLight = 0;
+		}
+	else if (!gameStates.render.nRenderPass)
+		bLight = 0;
+	else if (!bLight)
+		glColor3i (0,0,0);
+	if (!bLight)
+		bDynLight = 0;
+	gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
 	}
-if (gameStates.render.bFullBright) {
-	glColor3d (1,1,1);
-	bLight = 0;
-	}
-else if (!gameStates.render.nRenderPass)
-	bLight = 0;
-else if (!bLight)
-	glColor3i (0,0,0);
-if (!bLight)
-	bDynLight = 0;
-gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
+
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
-if (bDrawArrays || 
-	 (!bmTop && (gameOpts->render.bDepthSort > 0) && (((bmBot->bm_bpp > 1) && (bmBot->bm_props.flags & BM_FLAG_TRANSPARENT)) || (gameStates.ogl.fAlpha < 1)))) {
+if (bDrawArrays || bDepthSort) {
 		fVector		vertices [8];
 		tFaceColor	vertColors [8];
 		tUVLf			vertUVL [2][8];
@@ -1724,6 +1730,7 @@ if (bDrawArrays ||
 		}
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
+		OglLoadBmTexture (bmBot, 1, 3, 0);
 		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT);
 		return 0;
 		}

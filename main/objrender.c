@@ -366,14 +366,14 @@ else {
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
-	OglLoadBmTexture (bmP, 1, nTransp = -1);
+	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BM_OVERRIDE (bmP);
 	if (BM_FRAMES (bmP))
 		bmP = BM_FRAMES (bmP) + iFrame;
 	//alpha = 1;
 	}
 else if (colorP && gameOpts->render.bDepthSort)
-	OglLoadBmTexture (bmP, 1, nTransp);
+	OglLoadBmTexture (bmP, 1, nTransp, 0);
 
 if (colorP)
 	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi.index, sizeof (tRgbaColorf));
@@ -382,7 +382,7 @@ xSize = objP->size;
 
 if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
 	RenderPowerupCorona (objP, (float) bmP->bm_avgRGB.red / 255.0f, (float) bmP->bm_avgRGB.green / 255.0f, (float) bmP->bm_avgRGB.blue / 255.0f, alpha);
-if (gameOpts->render.bDepthSort) {
+if (gameOpts->render.bDepthSort > 0) {
 	tRgbaColorf	color = {1, 1, 1, alpha};
 	if (bmP->bm_props.w > bmP->bm_props.h)
 		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), iFrame);

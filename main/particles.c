@@ -103,7 +103,7 @@ static int iBuffer = 0;
 static int nBuffer = 0;
 #endif
 
-#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 64 : 64)
+#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
 
 //	-----------------------------------------------------------------------------
 
@@ -262,7 +262,7 @@ if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	BM_CURFRAME (bmP) = NULL;
 	}
 #endif
-OglLoadBmTexture (bmP, 0, 3);
+OglLoadBmTexture (bmP, 0, 3, 1);
 if (nType == PARTICLE_TYPES - 1)
 	nParticleFrames [bPointSprites][nType] = BM_FRAMECOUNT (bmP);
 else {
@@ -1069,6 +1069,27 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+double CloudBrightness (tCloud *pCloud)
+{
+if (pCloud->nObject == 0x7fffffff)
+	return 1;
+if (pCloud->nType == PARTICLE_TYPES - 1)
+	return 1.0;
+if (pCloud->nObject < 0)
+	return pCloud->brightness;
+if (pCloud->nObjType == OBJ_EFFECT)
+	return (double) pCloud->nDefBrightness / 100.0;
+if (pCloud->nObjType == OBJ_DEBRIS)
+	return 0.5;
+if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
+	return 0.2;
+if (OBJECTS [pCloud->nObject].nType == 255)
+	return pCloud->brightness;
+return pCloud->brightness = (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.5 + 0.1;
+}
+
+//------------------------------------------------------------------------------
+
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
@@ -1113,6 +1134,7 @@ pCloud->nClass = SmokeObjClass (nObject);
 pCloud->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
 pCloud->nTicks = 0;
 pCloud->nDefBrightness = 0;
+pCloud->brightness = (nObject < 0) ? 0.5 : CloudBrightness (pCloud);
 return 1;
 }
 
@@ -1159,23 +1181,6 @@ for (i = pCloud->nParts, j = pCloud->nFirstPart; i; i--, j = (j + 1) % pCloud->n
 }
 
 #endif
-
-//------------------------------------------------------------------------------
-
-double CloudBrightness (tCloud *pCloud)
-{
-if (pCloud->nType == PARTICLE_TYPES - 1)
-	return 1.0;
-if (pCloud->nObject < 0)
-	return 0.5;
-if (pCloud->nObjType == OBJ_EFFECT)
-	return (double) pCloud->nDefBrightness / 100.0;
-if (pCloud->nObjType == OBJ_DEBRIS)
-	return 0.5;
-if ((pCloud->nObjType == OBJ_WEAPON) && (pCloud->nObjId == PROXMINE_ID))
-	return 0.2;
-return (double) ObjectDamage (OBJECTS + pCloud->nObject) * 0.66 + 0.1 / (3.0 - pCloud->nType);
-}
 
 //------------------------------------------------------------------------------
 
@@ -1978,8 +1983,6 @@ return 1;
 int RenderClouds (void)
 {
 	int		h, i, j;
-	tObject	*objP;
-	double	brightness;
 
 #if !EXTRA_VERTEX_ARRAYS
 nBuffer = 0;
@@ -2003,16 +2006,10 @@ else
 		if (pSmoke->pClouds) {
 			if (!LoadParticleImage (pSmoke->nType))
 				return 0;
-			if (pSmoke->nObject == 0x7fffffff)
-				brightness = 1;
-			else {
-				objP = gameData.objs.objects + pSmoke->nObject;
-				brightness = (double) ObjectDamage (objP) * 0.75 + 0.1;
-				}
 			if (gameData.smoke.objects [pSmoke->nObject] < 0)
 				SetSmokeLife (i, 0);
 			for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-				pCloud->brightness = brightness;
+				pCloud->brightness = CloudBrightness (pCloud);
 				RenderCloud (pCloud);
 				}
 			}

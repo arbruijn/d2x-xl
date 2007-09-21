@@ -359,7 +359,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 	strcpy (szLastPaletteLoaded, "");		//force palette load next time
 	if (bg) {
 		if (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)
-			OglLoadBmTexture (bmP, 0, 0);
+			OglLoadBmTexture (bmP, 0, 0, 1);
 		bg->pszPrevBg = pszCurBg;
 		pszCurBg = filename;
 		}

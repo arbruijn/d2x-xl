@@ -362,7 +362,7 @@ if (anim->flags & WCF_ALTFMT) {
 		else {
 			anim->flags |= WCF_INITIALIZED;
 			BM_CURFRAME (bmP) = BM_FRAMES (bmP) + nFrame;
-			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3);
+			OglLoadBmTexture (BM_CURFRAME (bmP), 1, 3, 1);
 			nFrame++;
 			if (nFrame > nFrames)
 				nFrame = nFrames;

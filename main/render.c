@@ -513,7 +513,7 @@ typedef struct tFaceProps {
 	short			segNum, sideNum;
 	short			nBaseTex, nOvlTex, nOvlOrient;
 	tUVL			uvls [4];
-	short			vp [4];
+	short			vp [5];
 #if LIGHTMAPS
 	tUVL			uvl_lMaps [4];
 #endif
@@ -527,13 +527,6 @@ typedef struct tFaceListEntry {
 	short			nextFace;
 	tFaceProps	props;
 } tFaceListEntry;
-
-#if APPEND_LAYERED_TEXTURES
-static tFaceListEntry	faceList [6 * 2 * MAX_SEGMENTS_D2X];
-static short				faceListRoots [MAX_TEXTURES];
-static short				faceListTails [MAX_TEXTURES];
-static short				nFaceListSize;
-#endif
 
 //------------------------------------------------------------------------------
 // If any color component > 1, scale all components down so that the greatest == 1.
@@ -875,11 +868,19 @@ grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 #	define LMAP_LIGHTADJUST	0
 #endif
 
-void RenderFace (tFaceProps *propsP, int offs, int bRender)
+void RenderFace (tFaceProps *propsP)
 {
-	tFaceProps	props;
+	tFaceProps	props = *propsP;
+	grsBitmap  *bmBot = NULL;
+	grsBitmap  *bmTop = NULL;
 
-if (propsP->nBaseTex < 0)
+	int			i, z, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
+	g3sPoint		*pointList [8], **pp;
+	tSegment		*segP = gameData.segs.segments + props.segNum;
+	tSide			*sideP = segP->sides + props.sideNum;
+	tCamera		*pc = NULL;
+
+if (props.nBaseTex < 0)
 	return;
 if (gameStates.render.nShadowPass == 2) {
 #if DBG_SHADOWS
@@ -892,25 +893,6 @@ if (gameStates.render.nShadowPass == 2) {
 	RenderFaceShadow (propsP);
 	return;
 	}
-#if 1
-props = *propsP;
-memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
-memcpy (props.vp, propsP->vp + offs, props.nv * sizeof (*props.vp));
-#else
-props.segNum = propsP->segNum;
-props.sideNum = propsP->sideNum;
-props.nBaseTex = propsP->nBaseTex;
-props.nOvlTex = propsP->nOvlTex;
-props.nOvlOrient = propsP->nOvlOrient;
-props.nv = propsP->nv;
-memcpy (props.uvls, propsP->uvls + offs, props.nv * sizeof (*props.uvls));
-memcpy (props.vp, propsP->vp + offs, props.nv * sizeof (*props.vp));
-#if LIGHTMAPS
-memcpy (props.uvl_lMaps, propsP->uvl_lMaps + offs, props.nv * sizeof (*props.uvl_lMaps));
-#endif
-memcpy (&props.vNormal, &propsP->vNormal, sizeof (props.vNormal));
-props.widFlags = propsP->widFlags;
-#endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 	props.segNum = props.segNum;
@@ -925,60 +907,36 @@ else
 #endif
 
 gameData.render.vertexList = gameData.segs.fVertices;
-#if APPEND_LAYERED_TEXTURES
-if (!gameOpts->render.bOptimize || bRender) 
-#else
-if (!bRender) 
-#endif
-{
-	// -- Using new headlight system...fix			face_light;
-	grsBitmap  *bmBot = NULL;
-	grsBitmap  *bmTop = NULL;
-
-	int			i, z, bIsMonitor, bIsTeleCam, bHaveCamImg, nCamNum, bCamBufAvail;
-	g3sPoint		*pointList [8], **pp;
-	tSegment		*segP = gameData.segs.segments + props.segNum;
-	tSide			*sideP = segP->sides + props.sideNum;
-	tCamera		*pc = NULL;
-
-	Assert(props.nv <= 4);
-	for (i = 0, pp = pointList; i < props.nv; i++, pp++) {
-		*pp = gameData.segs.points + props.vp [i];
-		if (!gameStates.render.nType) {
-			z = (*pp)->p3_vec.p.z;
-			if (gameData.render.zMax < z)
-				gameData.render.zMax = z;
-			}
+Assert(props.nv <= 4);
+for (i = 0, pp = pointList; i < props.nv; i++, pp++) {
+	*pp = gameData.segs.points + props.vp [i];
+	if (!gameStates.render.nType) {
+		z = (*pp)->p3_vec.p.z;
+		if (gameData.render.zMax < z)
+			gameData.render.zMax = z;
 		}
-#if OGL_QUERY
-	if (gameStates.render.bQueryOcclusion) {
-		DrawOutline (props.nv, pointList);
-		gameData.render.vertexList = NULL;
-		return;
-		}
-#endif
-	if (!(gameOpts->render.bTextures || IsMultiGame))
-		goto drawWireFrame;
+	}
+if (!(gameOpts->render.bTextures || IsMultiGame))
+	goto drawWireFrame;
 #if 1
-	if (gameStates.render.nShadowBlurPass == 1) {
-		G3DrawWhitePoly (props.nv, pointList);
-		gameData.render.vertexList = NULL;
-		return;
-		}
+if (gameStates.render.nShadowBlurPass == 1) {
+	G3DrawWhitePoly (props.nv, pointList);
+	gameData.render.vertexList = NULL;
+	return;
+	}
 #endif
-	SetVertexColors (&props);
-	if (gameStates.render.nType == 2) {
-		RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointList);
-		gameData.render.vertexList = NULL;
-		return;
-		}
+SetVertexColors (&props);
+if (gameStates.render.nType == 2) {
+	RenderColoredSegment (props.segNum, props.sideNum, props.nv, pointList);
+	gameData.render.vertexList = NULL;
+	return;
+	}
+bIsMonitor = 0;
+if (gameStates.render.bDoCameras) {
 	nCamNum = gameData.cameras.nSides  ? gameData.cameras.nSides [props.segNum * 6 + props.sideNum] : -1;
-	bIsTeleCam = 0;
-	bIsMonitor = extraGameInfo [0].bUseCameras && 
-					 (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
-					 !gameStates.render.cameras.bActive && (nCamNum >= 0);
-	if (bIsMonitor) {
+	if (bIsMonitor = (nCamNum >= 0)) {
 		pc = gameData.cameras.cameras + nCamNum;
+		pc->bVisible = 1;
 		bIsTeleCam = pc->bTeleport;
 #if RENDER2TEXTURE
 		bCamBufAvail = OglCamBufAvail (pc, 1) == 1;
@@ -986,108 +944,84 @@ if (!bRender)
 		bCamBufAvail = 0;
 #endif
 		bHaveCamImg = pc->bValid && /*!pc->bShadowMap &&*/ 
-						  (pc->texBuf.glTexture || bCamBufAvail) &&
-						  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
+							(pc->texBuf.glTexture || bCamBufAvail) &&
+							(!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
+		}
+	}
+if (!bIsMonitor)
+	bIsTeleCam = 
+	bHaveCamImg = 
+	bCamBufAvail = 0;
+if (RenderWall (&props, pointList, bIsMonitor)) {	//handle semi-transparent walls
+	gameData.render.vertexList = NULL;
+	return;
+	}
+if (props.widFlags & WID_RENDER_FLAG) {	
+	if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
+	sideP->nBaseTex = 0;
+	}
+if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
+	if (gameStates.render.nType == 3) {
+		bmBot = bmpCorona;
+		bmTop = NULL;
+		props.uvls [0].u =
+		props.uvls [0].v =
+		props.uvls [1].v =
+		props.uvls [3].u = F1_0 / 4;
+		props.uvls [1].u =
+		props.uvls [2].u =
+		props.uvls [2].v =
+		props.uvls [3].v = F1_0 / 4 * 3;
+		}
+	else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
+		bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
+		if (props.nOvlTex)
+			bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
 		}
 	else {
-		bHaveCamImg = 0;
-		bCamBufAvail = 0;
-		}
-	//handle cloaked walls
-	if (bIsMonitor)
-		pc->bVisible = 1;
-	if (RenderWall (&props, pointList, bIsMonitor)) {
-		gameData.render.vertexList = NULL;
-		return;
-		}
-	// -- Using new headlight system...face_light = -VmVecDot(&gameData.objs.viewer->position.mOrient.fVec, norm);
-	if (props.widFlags & WID_RENDER_FLAG) {		//if (WALL_IS_DOORWAY(segP, nSide) == WID_NO_WALL)
-		if (props.nBaseTex >= gameData.pig.tex.nTextures [gameStates.app.bD1Data]) {
-		sideP->nBaseTex = 0;
-		}
-	if (!(bHaveCamImg && gameOpts->render.cameras.bFitToWall)) {
-		if (gameStates.render.nType == 3) {
-			bmBot = bmpCorona;
-			bmTop = NULL;
-			props.uvls [0].u =
-			props.uvls [0].v =
-			props.uvls [1].v =
-			props.uvls [3].u = F1_0 / 4;
-			props.uvls [1].u =
-			props.uvls [2].u =
-			props.uvls [2].v =
-			props.uvls [3].v = F1_0 / 4 * 3;
-			}
-		else if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
-			bmBot = LoadFaceBitmap (props.nBaseTex, sideP->nFrame);
-			if (props.nOvlTex)
-				bmTop = LoadFaceBitmap ((short) (props.nOvlTex), sideP->nFrame);
-			}
-		else
-			// New code for overlapping textures...
-			if (props.nOvlTex != 0) {
+		if (props.nOvlTex != 0) {
+			bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
+#ifdef _DEBUG
+			if (!bmBot)
 				bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
-#ifdef _DEBUG
-				if (!bmBot)
-					bmBot = TexMergeGetCachedBitmap (props.nBaseTex, props.nOvlTex, props.nOvlOrient);
-#endif
-				}
-			else {
-				bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.nBaseTex].index;
-				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.nBaseTex], gameStates.app.bD1Mission);
-				}
-//		Assert(!(bmBot->bm_props.flags & BM_FLAG_PAGED_OUT));
-		}
-	//else 
-	if (bHaveCamImg) {
-		GetCameraUVL (pc, props.uvls);
-		pc->texBuf.glTexture->wrapstate = -1;
-		if (bIsTeleCam) {
-#ifdef _DEBUG
-			bmBot = &pc->texBuf;
-			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-#else
-			bmTop = &pc->texBuf;
-			gameStates.render.grAlpha = (GR_ACTUAL_FADE_LEVELS * 7) / 10;
 #endif
 			}
-		else if (gameOpts->render.cameras.bFitToWall || (props.nOvlTex > 0))
-			bmBot = &pc->texBuf;
-		else
-			bmTop = &pc->texBuf;
+		else {
+			bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [props.nBaseTex].index;
+			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [props.nBaseTex], gameStates.app.bD1Mission);
+			}
 		}
-	SetFaceLight (&props);
-#ifdef EDITOR
-	if (Render_only_bottom && (nSide == WBOTTOM))
-		G3DrawTexPoly (props.nv, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
+	}
+
+if (bHaveCamImg) {
+	GetCameraUVL (pc, props.uvls);
+	pc->texBuf.glTexture->wrapstate = -1;
+	if (bIsTeleCam) {
+#ifdef _DEBUG
+		bmBot = &pc->texBuf;
+		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+#else
+		bmTop = &pc->texBuf;
+		gameStates.render.grAlpha = (GR_ACTUAL_FADE_LEVELS * 7) / 10;
+#endif
+		}
+	else if (gameOpts->render.cameras.bFitToWall || (props.nOvlTex > 0))
+		bmBot = &pc->texBuf;
 	else
+		bmTop = &pc->texBuf;
+	}
+SetFaceLight (&props);
+#ifdef EDITOR
+if (Render_only_bottom && (nSide == WBOTTOM))
+	G3DrawTexPoly (props.nv, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
+else
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
-	props.segNum = props.segNum;
+props.segNum = props.segNum;
 #endif
 #ifdef _DEBUG
-	if (bmTop)
-		fpDrawTexPolyMulti (
-			props.nv, pointList, props.uvls, 
-#	if LIGHTMAPS
-			props.uvl_lMaps, 
-#	endif
-			bmBot, bmTop, 
-#	if LIGHTMAPS
-			lightMaps + props.segNum * 6 + props.sideNum, 
-#	endif
-			&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
-	else
-#	if LIGHTMAPS == 0
-		G3DrawTexPoly (props.nv, pointList, props.uvls, bmBot, &props.vNormal, !bIsMonitor || bIsTeleCam); 
-#	else
-		fpDrawTexPolyMulti (
-			props.nv, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL, 
-			lightMaps + props.segNum * 6 + props.sideNum, 
-			&props.vNormal, 0, !bIsMonitor || bIsTeleCam);
-#	endif
-#else
+if (bmTop)
 	fpDrawTexPolyMulti (
 		props.nv, pointList, props.uvls, 
 #	if LIGHTMAPS
@@ -1098,42 +1032,40 @@ if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 		lightMaps + props.segNum * 6 + props.sideNum, 
 #	endif
 		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
+else
+#	if LIGHTMAPS == 0
+	G3DrawTexPoly (props.nv, pointList, props.uvls, bmBot, &props.vNormal, !bIsMonitor || bIsTeleCam); 
+#	else
+	fpDrawTexPolyMulti (
+		props.nv, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL, 
+		lightMaps + props.segNum * 6 + props.sideNum, 
+		&props.vNormal, 0, !bIsMonitor || bIsTeleCam);
+#	endif
+#else
+fpDrawTexPolyMulti (
+	props.nv, pointList, props.uvls, 
+#	if LIGHTMAPS
+	props.uvl_lMaps, 
+#	endif
+	bmBot, bmTop, 
+#	if LIGHTMAPS
+	lightMaps + props.segNum * 6 + props.sideNum, 
+#	endif
+	&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
 #endif
-		}
+	}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-		// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
-		//if (nSegment == gameData.objs.objects->nSegment) 
+	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
+	//if (nSegment == gameData.objs.objects->nSegment) 
 #ifdef _DEBUG
-	if (bOutLineMode) 
-		DrawOutline (props.nv, pointList);
+if (bOutLineMode) 
+	DrawOutline (props.nv, pointList);
 #endif
+
 drawWireFrame:
-	if (gameOpts->render.bWireFrame && !IsMultiGame)
-		DrawOutline (props.nv, pointList);
-	}
-else {
-#if APPEND_LAYERED_TEXTURES
-	tFaceListEntry	*flp = faceList + nFaceListSize;
-	short				t = props.nBaseTex;
-	if (!props.nOvlTex || (faceListRoots [props.nBaseTex] < 0)) {
-		short	t = props.nOvlTex ? props.nOvlTex : props.nBaseTex;
-		flp->nextFace = faceListRoots [t];
-		if (faceListTails [t] < 0)
-			faceListTails [t] = nFaceListSize;
-		faceListRoots [t] = nFaceListSize++;
-		}
-	else {
-		tFaceListEntry	*flh = faceList + faceListTails [t];
-		flh->nextFace = nFaceListSize;
-		flp->nextFace = -1;
-		faceListTails [t] = nFaceListSize++;
-		}
-#endif
-	props.nType = (char) gameStates.render.nType;
-#if APPEND_LAYERED_TEXTURES
-	flp->props = props;
-#endif
-	}
+
+if (gameOpts->render.bWireFrame && !IsMultiGame)
+	DrawOutline (props.nv, pointList);
 }
 
 #ifdef EDITOR
@@ -1812,19 +1744,7 @@ glLineWidth (1);
 
 void RenderSide (tSegment *segP, short nSide)
 {
-//	short			props.vp [4];
-//	short			nSegment = SEG_IDX (segP);
 	tSide			*sideP = segP->sides + nSide;
-	vmsVector	tvec;
-	fix			v_dot_n0, v_dot_n1;
-//	tUVL			temp_uvls [4];
-	fix			min_dot, max_dot;
-	vmsVector  normals [2];
-//	ubyte			widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
-	int			bDoLightMaps = gameStates.render.color.bLightMapsOk && 
-										gameOpts->render.color.bUseLightMaps && 
-										gameOpts->render.color.bAmbientLight && 
-										!IsMultiGame;
 	tFaceProps	props;
 
 #if LIGHTMAPS
@@ -1866,10 +1786,8 @@ switch (gameStates.render.nType) {
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}
-normals [0] = sideP->normals [0];
-normals [1] = sideP->normals [1];
 #if LIGHTMAPS
-if (bDoLightMaps) {
+if (gameStates.render.bDoLightMaps) {
 		float	Xs = 8;
 		float	h = 0.5f / (float) Xs;
 
@@ -1889,162 +1807,60 @@ props.nOvlOrient = sideP->nOvlOrient;
 
 	//	========== Mark: Here is the change...beginning here: ==========
 
-GetSideVerts (props.vp, props.segNum, props.sideNum);
-if (sideP->nType == SIDE_IS_QUAD) {
-	VmVecSub (&tvec, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
-	v_dot_n0 = VmVecDot (&tvec, normals);
-	if (v_dot_n0 < 0)
-		return;
-	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
 #if LIGHTMAPS
-	if (bDoLightMaps) {
+	if (gameStates.render.bDoLightMaps) {
 		memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
 #if LMAP_LIGHTADJUST
 		props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
 #	endif
 		}
 #endif
+
+#ifdef _DEBUG //convenient place for a debug breakpoint
+if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
+	props.segNum = props.segNum;
+if (props.nBaseTex == nDbgBaseTex)
+	props.segNum = props.segNum;
+if (props.nOvlTex == nDbgOvlTex)
+	props.segNum = props.segNum;
+#	if 0
+else
+	return;
+#	endif
+#endif
+
+if (sideP->nType == SIDE_IS_QUAD) {
 	props.nv = 4;
-	props.vNormal = normals [0];
-	RenderFace (&props, 0, 0);
+	props.vNormal = sideP->normals [0];
+	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
+	GetSideVerts (props.vp, props.segNum, props.sideNum);
+	RenderFace (&props);
 #ifdef EDITOR
 	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
 #endif
 	} 
 else {
-	//	Regardless of whether this tSide is comprised of a single quad, or two triangles, we need to know one normal, so
-	//	deal with it, get the dot product.
-	VmVecNormalizedDirQuick (&tvec, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][sideP->nType == SIDE_IS_TRI_13]]);
-	v_dot_n0 = VmVecDot (&tvec, normals);
-
-	//	========== Mark: The change ends here. ==========
-
-	//	Although this tSide has been triangulated, because it is not planar, see if it is acceptable
-	//	to render it as a single quadrilateral.  This is a function of how far away the viewer is, how non-planar
-	//	the face is, how normal to the surfaces the view is.
-	//	Now, if both dot products are close to 1.0, then render two triangles as a single quad.
-	v_dot_n1 = VmVecDot(&tvec, normals+1);
-#if 1
-	if (v_dot_n0 < v_dot_n1) {
-		min_dot = v_dot_n0;
-		max_dot = v_dot_n1;
+	// new code: No software visibility culling anymore
+	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
+	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
+	props.nv = 4;
+	VmVecAdd (&props.vNormal, sideP->normals, sideP->normals + 1);
+	VmVecScale (&props.vNormal, F1_0 / 2);
+	if (sideP->nType == SIDE_IS_TRI_02) {
+		memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
+		GetSideVerts (props.vp, props.segNum, props.sideNum);
+		RenderFace (&props);
+		}
+	else if (sideP->nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
+		memcpy (props.uvls + 1, sideP->uvls, sizeof (tUVL) * 3);
+		props.uvls [0] = sideP->uvls [3];
+		GetSideVerts (props.vp + 1, props.segNum, props.sideNum);
+		props.vp [0] = props.vp [4];
+		RenderFace (&props);
 		}
 	else {
-		min_dot = v_dot_n1;
-		max_dot = v_dot_n0;
-		}
-	//	Determine whether to detriangulate tSide: (speed hack, assumes Tulate_min_ratio == F1_0*2, should FixMul(min_dot, Tulate_min_ratio))
-	if (gameStates.render.bDetriangulation && ((min_dot+F1_0/256 > max_dot) || ((gameData.objs.viewer->nSegment != props.segNum) &&  (min_dot > Tulate_min_dot) && (max_dot < min_dot*2)))) {
-		//	The other detriangulation code doesn't deal well with badly non-planar sides.
-		fix	n0_dot_n1 = VmVecDot(normals, normals + 1);
-		if (n0_dot_n1 < Min_n0_n1_dot)
-			goto im_so_ashamed;
-		if (min_dot >= 0) {
-			memcpy (props.uvls, sideP->uvls, sizeof (props.uvls));
-#if LIGHTMAPS
-			if (bDoLightMaps) {
-				memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 4);
-#	if LMAP_LIGHTADJUST
-				props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
-#	endif
-				}
-#endif
-			props.nv = 4;
-			props.vNormal = normals [0];
-			RenderFace (&props, 0, 0);
-#ifdef EDITOR
-			CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
-#endif
-			}
-		}
-	else 
-#endif
-		{
-im_so_ashamed: ;
-		props.nv = 3;
-		if (sideP->nType == SIDE_IS_TRI_02) {
-			if (v_dot_n0 >= 0) {
-				memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 3);
-#if LIGHTMAPS
-				if (bDoLightMaps) {
-					memcpy (props.uvl_lMaps, uvl_lMaps, sizeof (tUVL) * 3);
-#	if LMAP_LIGHTADJUST
-					props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = F1_0 / 2;
-#	endif
-					}
-#endif
-				props.vNormal = normals [0];
-				RenderFace (&props, 0, 0);
-#ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
-#endif
-				}
-
-			if (v_dot_n1 >= 0) {
-				props.uvls [0] = sideP->uvls [0];
-				memcpy (props.uvls + 1, sideP->uvls + 2, sizeof (tUVL) * 2);
-#if LIGHTMAPS
-				if (bDoLightMaps) {
-					props.uvl_lMaps [0] = uvl_lMaps [0];
-					memcpy (props.uvl_lMaps + 1, uvl_lMaps + 2, sizeof (tUVL) * 2);
-#if LMAP_LIGHTADJUST
-					props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = F1_0 / 2;
-#endif
-					}
-#endif
-				props.vp [1] = props.vp [2];	
-				props.vp [2] = props.vp [3];	// want to render from vertices 0, 2, 3 on tSide
-				props.vNormal = normals [1];
-				RenderFace (&props, 0, 0);
-#ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
-#endif
-				}
-			}
-		else if (sideP->nType == SIDE_IS_TRI_13) {
-			if (v_dot_n1 >= 0) {
-				memcpy (props.uvls + 1, sideP->uvls + 1, sizeof (tUVL) * 3);
-#if LIGHTMAPS
-				if (bDoLightMaps) {
-					memcpy (props.uvl_lMaps + 1, uvl_lMaps + 1, sizeof (tUVL) * 3);
-#	if LMAP_LIGHTADJUST
-					props.uvls [1].l = props.uvls [2].l = props.uvls [3].l = F1_0 / 2;
-#	endif
-					}
-#endif
-				props.vNormal = normals [0];
-				RenderFace (&props, 1, 0);
-#ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
-#endif
-				}
-
-			if (v_dot_n0 >= 0) {
-				props.uvls [0] = sideP->uvls [0];		
-				props.uvls [1] = sideP->uvls [1];		
-				props.uvls [2] = sideP->uvls [3];
-				props.vp [2] = props.vp [3];		// want to render from vertices 0, 1, 3
-#if LIGHTMAPS
-				if (bDoLightMaps) {
-					props.uvl_lMaps [0] = uvl_lMaps [0];
-					props.uvl_lMaps [1] = uvl_lMaps [1];
-					props.uvl_lMaps [2] = uvl_lMaps [3];
-#if LMAP_LIGHTADJUST
-					props.uvls [0].l = props.uvls [1].l = props.uvls [2].l = F1_0 / 2;
-#endif
-					}
-#endif
-				props.vNormal = normals [1];
-				RenderFace (&props, 0, 0);
-#ifdef EDITOR
-				CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
-#endif
-				}
-			}
-		else {
-			Error("Illegal tSide nType in RenderSide, nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
-			return;
-			}
+		Error("Illegal tSide nType in RenderSide, nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, SEG_IDX (segP), props.sideNum);
+		return;
 		}
 	}
 }
@@ -2295,39 +2111,8 @@ gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
 if (!cc.and || gameStates.render.automap.bDisplay) {		//all off screen?
 	gameStates.render.nState = 0;
-#if OGL_QUERY
-	if (gameStates.render.bQueryOcclusion) {
-			short		sideVerts [4];
-			double	sideDists [6];
-			char		sideNums [6];
-			int		i; 
-			double	d, dMin, dx, dy, dz;
-			tObject	*objP = gameData.objs.objects + LOCALPLAYER.nObject;
-
-		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
-			sideNums [sn] = (char) sn;
-			GetSideVerts (sideVerts, nSegment, sn);
-			dMin = 1e300;
-			for (i = 0; i < 4; i++) {
-				dx = objP->position.vPos.p.x - gameData.segs.vertices [sideVerts [i]].p.x;
-				dy = objP->position.vPos.p.y - gameData.segs.vertices [sideVerts [i]].p.y;
-				dz = objP->position.vPos.p.z - gameData.segs.vertices [sideVerts [i]].p.z;
-				d = dx * dx + dy * dy + dz * dz;
-				if (dMin > d)
-					dMin = d;
-				}
-			sideDists [sn] = dMin;
-			}
-		SortSidesByDist (sideDists, sideNums, 0, 5);
-		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
-			RenderSide (segP, sideNums [sn]);
-		}
-	else 
-#endif
-		{
-		for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
-			RenderSide (segP, sn);
-		}
+	for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
+		RenderSide (segP, sn);
 	}
 OglResetTransform ();
 OGL_BINDTEX (0);
@@ -4177,19 +3962,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline void InitFaceList (void)
-{
-#if APPEND_LAYERED_TEXTURES
-if (gameOpts->render.bOptimize) {
-	nFaceListSize = 0;
-	memset (faceListRoots, 0xFF, sizeof (faceListRoots));
-	memset (faceListTails, 0xFF, sizeof (faceListTails));
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
 void RenderObjList (int listnum, int nWindow)
 {
 if (migrateObjects) {
@@ -4242,49 +4014,6 @@ for (i = gameData.render.mine.nRenderSegs; i--;)  {
 		RenderObjList (i, nWindow);
 		}
 	}
-}
-
-//------------------------------------------------------------------------------
-
-void RenderFaceList (int nWindow)
-{
-#if APPEND_LAYERED_TEXTURES
-if (gameOpts->render.bOptimize) {
-		int				i, j;
-		tSegment			*segP;
-		tSide				*sideP;
-		tFaceListEntry	*flp = faceList;
-
-	for (gameStates.render.nType = 0; gameStates.render.nType < 5; gameStates.render.nType++) {
-#if 0
-		switch (gameStates.render.nType) {
-			case 1: //walls
-				glDepthFunc (GL_LEQUAL);
-				break;
-			case 2: //transparency (alpha blending)
-				glDepthFunc (GL_LEQUAL);
-				break;
-			default:
-				glDepthFunc (GL_LESS);
-				break;
-			}
-#endif
-		for (i = 0; i < MAX_TEXTURES; i++) {
-			if (0 > faceListRoots [i])
-				continue;
-			for (flp = faceList + faceListRoots [i]; ; flp = faceList + flp->nextFace) {
-				segP = gameData.segs.segments + flp->props.segNum;
-				sideP = segP->sides + flp->props.sideNum;
-				if (flp->props.nType == gameStates.render.nType)
-					RenderFace (&flp->props, 0, 1);
-				if (flp->nextFace < 0)
-					break;
-				}
-			}
-		}
-	RenderVisibleObjects (nWindow);
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -4436,35 +4165,9 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	else 
 #endif
 
-if (((gameStates.render.nRenderPass <= 0) && 
-	  (gameStates.render.nShadowPass < 2) && 
-	  (gameStates.render.nShadowBlurPass < 2)) || 
+if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || 
 	 (gameStates.render.nShadowPass == 2)) {
 	BuildSegmentList (nStartSeg, nWindow);		//fills in gameData.render.mine.nRenderList & gameData.render.mine.nRenderSegs
-	//GatherVisibleLights ();
-#if OGL_QUERY
-	if (1 && !nWindow) {
-		memset (bRenderSegObjs, 0, sizeof (bRenderSegObjs));
-		memset (bRenderObjs, 0, sizeof (bRenderObjs));
-		nRenderObjs = 0;
-		}
-#endif
-#if 0//def _DEBUG
-	if (!bWindowCheck) {
-		nWindowClipLeft  = nWindowClipTop = 0;
-		nWindowClipRight = grdCurCanv->cv_bitmap.bm_props.w-1;
-		nWindowClipBot   = grdCurCanv->cv_bitmap.bm_props.h-1;
-		}
-	for (i = 0; i < gameData.render.mine.nRenderSegs;i++) {
-		short nSegment = gameData.render.mine.nRenderList [i];
-		if (nSegment != -1) {
-			if (visited2 [nSegment])
-				Int3();		//get Matt
-			else
-				visited2 [nSegment] = 1;
-			}
-		}
-#endif
 	if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 		BuildObjectLists (gameData.render.mine.nRenderSegs);
 		if (nEyeOffset <= 0)	// Do for left eye or zero.
@@ -4481,10 +4184,7 @@ if (nClearWindow == 2) {
 		for (i=nFirstTerminalSeg, rwP = renderWindows; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
 			if (gameData.render.mine.nRenderList [i] != -1) {
 #ifdef _DEBUG
-				if ((rwP->left == -1) || 
-					 (rwP->top == -1) || 
-					 (rwP->right == -1) || 
-					 (rwP->bot == -1))
+				if ((rwP->left == -1) || (rwP->top == -1) || (rwP->right == -1) || (rwP->bot == -1))
 					Int3();
 				else
 #endif
@@ -4494,7 +4194,6 @@ if (nClearWindow == 2) {
 			}
 		}
 	}
-InitFaceList ();
 gameStates.render.bFullBright = gameStates.render.automap.bDisplay && gameOpts->render.automap.bBright;
 gameStates.ogl.bStandardContrast = gameStates.app.bNostalgia || IsMultiGame || (gameStates.ogl.nContrast == 8);
 #if SHADOWS
@@ -4570,6 +4269,14 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 
 gameData.threads.vertColor.data.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
+
+gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras && 
+									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
+										 !gameStates.render.cameras.bActive;
+gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk && 
+											gameOpts->render.color.bUseLightMaps && 
+											gameOpts->render.color.bAmbientLight && 
+											!IsMultiGame;
 gameStates.render.nWindow = nWindow;
 bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 gameStates.render.nType = 0;	//render solid geometry front to back
@@ -5091,6 +4798,7 @@ void RIRenderPoly (tRIPoly *item)
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
+glEnable (GL_CULL_FACE);
 #if 1
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
@@ -5143,6 +4851,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 		}
 	glEnd ();
 	}
+glDisable (GL_CULL_FACE);
 gameData.smoke.nLastType = -1;
 }
 

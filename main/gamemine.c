@@ -1697,7 +1697,7 @@ int LoadPrecompiledLights (int nLevel)
 if (!gameStates.app.bCacheLights)
 	return 0;
 CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, NULL, szFilename, NULL);
-sprintf (szFullname, "%s-%d-%d.pre", szFilename, extraGameInfo [0].nLightRange, nLevel);
+sprintf (szFullname, "%s-%d.pre", szFilename,nLevel);
 if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "rb", 0)))
 	return 0;
 bOk = (CFRead (&nSegments, sizeof (nSegments), 1, fp) == 1) &&
@@ -1730,7 +1730,7 @@ int SavePrecompiledLights (int nLevel)
 if (!gameStates.app.bCacheLights)
 	return 0;
 CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, NULL, szFilename, NULL);
-sprintf (szFullname, "%s-%d-%d.pre", szFilename, extraGameInfo [0].nLightRange, nLevel);
+sprintf (szFullname, "%s-%d.pre", szFilename,nLevel);
 if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "wb", 0)))
 	return 0;
 bOk = (CFWrite (&nSegments, sizeof (nSegments), 1, fp) == 1) &&

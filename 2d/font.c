@@ -848,7 +848,7 @@ while (next_row != NULL) {
 		}
 	}
 bmP->bm_palette = palP;
-OglLoadBmTexture (bmP, 0, 2);
+OglLoadBmTexture (bmP, 0, 2, 1);
 return bmP;
 }
 
