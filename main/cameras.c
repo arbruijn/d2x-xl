@@ -250,7 +250,7 @@ return 1;
 
 int CreateCameras (void)
 {
-	int		h, i, j, k;
+	int		h, i, j, k, r;
 	ubyte		t;
 	tWall		*wallP;
 	tObject	*objP;
@@ -258,6 +258,7 @@ int CreateCameras (void)
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
+
 memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides));
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
 	t = wallP->nTrigger;
@@ -277,14 +278,18 @@ for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP+
 #endif
 	}
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
-	j = gameData.trigs.firstObjTrigger [i];
-	for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h; j = gameData.trigs.objTriggerRefs [j].next, h--) {
+	r = j = gameData.trigs.firstObjTrigger [i];
+	if (j >= 0)
+		j = j;
+	for (h = sizeofa (gameData.trigs.objTriggerRefs); (j >= 0) && h; h--) {
 		triggerP = gameData.trigs.objTriggers + j;
 		if (triggerP->nType == TT_CAMERA) {
 			for (k = 0; k < triggerP->nLinks; k++)
 				if (CreateCamera (gameData.cameras.cameras + gameData.cameras.nCameras, -1, -1, triggerP->nSegment [k], triggerP->nSide [k], objP, 0, 0))
 					gameData.cameras.nSides [triggerP->nSegment [k] * 6 + triggerP->nSide [k]] = (char) gameData.cameras.nCameras++;
 			}
+		if (r == (j = gameData.trigs.objTriggerRefs [j].next))
+			break;
 		}
 	}
 return gameData.cameras.nCameras;
