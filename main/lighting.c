@@ -1355,7 +1355,10 @@ pl->nSide = nSide;
 pl->nObject = nObject;
 pl->bState = 1;
 pl->bSpot = 0;
-pl->nType = (nSide < 0) ? 2 : (nObject < 0) ? (nSegment < 0) ? 3 : 0 : 2;
+//0: static light
+//2: object/lightning
+//3: headlight
+pl->nType = (nSegment < 0) ? ((nObject < 0) ? 3 : 2) : ((nSide < 0) ? 2 : 0);
 SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0) {
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
@@ -1643,21 +1646,24 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGB
 
 //------------------------------------------------------------------------------
 
-void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable)
+short SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable)
 {
 //if (gameOpts->render.bDynLighting) 
 	{
 	short	*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short	i, j;
 
+	gameData.render.lights.dynamic.nVertLights = 0;
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		if (gameData.render.lights.dynamic.lights [j].bVariable) {
 			if (bVariable < 0)
 				continue;
-			if (!(bVariable && gameData.render.lights.dynamic.lights [j].bOn))
+			if (!(bVariable && gameData.render.lights.dynamic.lights [j].bOn)) {
+				gameData.render.lights.dynamic.nVertLights++;
 				continue;
+				}
 			}
 		else {
 			if (!bStatic)
@@ -1665,8 +1671,10 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 			}
 		gameData.render.lights.dynamic.shader.lights [j].nType = nType;
 		gameData.render.lights.dynamic.shader.lights [j].bState = 1;
+		gameData.render.lights.dynamic.nVertLights++;
 		}
 	}
+return gameData.render.lights.dynamic.nVertLights;
 }
 
 //------------------------------------------------------------------------------
@@ -1694,10 +1702,10 @@ if (gameOpts->render.bDynLighting) {
 
 //------------------------------------------------------------------------------
 
-int SetNearestDynamicLights (int nSegment)
+short SetNearestDynamicLights (int nSegment)
 {
 	static int nLastSeg = 1;
-	static int	nLights = 0;
+	static short nLights = 0;
 
 if (nLastSeg == nSegment)
 	return nLights;
@@ -1726,14 +1734,14 @@ if (gameOpts->render.bDynLighting) {
 			else {
 				VmVecSub (&d, &c, &pl->vPos);
 				m = VmVecMag (&d);
-				psl->bState = (m <= F1_0 * 125);
+				psl->bState = (m <= F1_0 * 150);
 				}
 			}
 		if (psl->bState)
 			nLights++;
 		}
 	}
-return nLights;
+return gameData.render.lights.dynamic.nDynLights = nLights;
 }
 
 //------------------------------------------------------------------------------

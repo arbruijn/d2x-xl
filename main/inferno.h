@@ -1167,6 +1167,8 @@ typedef struct tDynLightData {
 	short					*nNearestVertLights;	//the 8 nearest static lights for every tSegment
 	short					*owners;
 	short					nLights;
+	short					nDynLights;
+	short					nVertLights;
 	short					nHeadLights [MAX_PLAYERS];
 	short					nSegment;
 	tShaderLightData	shader;
