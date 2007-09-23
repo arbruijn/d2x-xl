@@ -2336,7 +2336,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
 					OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, 1);
 				else
-					G3VertexColor ((fVector *) &vc, (fVector *) phv, -1, pvc + h, 1, 1, 0);
+					G3VertexColor ((fVector *) &vc, (fVector *) phv, -1, pvc + h, 1, 1);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);
@@ -2498,7 +2498,7 @@ int OOF_RenderShadow (tObject *objP, tOOFObject *po, float *fLight)
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*pnl >= 0); i++, pnl++) {
-	gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights [0] + *pnl;
+	gameData.render.shadows.pLight = gameData.render.lights.dynamic.shader.lights + *pnl;
 	if (!gameData.render.shadows.pLight->bState)
 		continue;
 	gameData.render.shadows.nLight++;

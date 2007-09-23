@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
 #define MULTI_THREADED_SHADOWS	0
-#define MULTI_THREADED_LIGHTS		1
+#define MULTI_THREADED_LIGHTS		0
 #define MULTI_THREADED_PRECALC	1
 
 #define USE_SEGRADS		0
@@ -1129,15 +1129,11 @@ typedef struct tOglMaterial {
 //------------------------------------------------------------------------------
 
 typedef struct tShaderLight {
-#if 1
 	vmsVector	vPos;
 	fVector		pos [2];
 	fVector		dir;
 	fVector		color;
 	float			rad;
-	short			nSegment;
-	short			nObject;
-#endif
 	float			brightness;
 	float			spotAngle;
 	float			spotExponent;
@@ -1156,7 +1152,7 @@ typedef struct tShaderLight {
 //------------------------------------------------------------------------------
 
 typedef struct tShaderLightData {
-	tShaderLight	lights [2][MAX_OGL_LIGHTS];
+	tShaderLight	lights [MAX_OGL_LIGHTS];
 	int				nLights;
 	GLuint			nTexHandle;
 } tShaderLightData;

@@ -1154,22 +1154,18 @@ return i * i;
 
 float fLightRanges [3] = {10, 14.142f, 20};
 
-int G3AccumVertColor (int i, int incr, fVector *pColorSum)
+int G3AccumVertColor (fVector *pColorSum)
 {
-	int				j, nType, bInRad, nSaturation = gameOpts->render.color.nSaturation;
+	int				i, j, nType, bInRad, nSaturation = gameOpts->render.color.nSaturation;
 	int				nBrightness, nMaxBrightness = 0;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	float				fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
 						vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
 
 colorSum = *pColorSum;
-#if MULTI_THREADED_LIGHTS
-for (j = 0; i < gameData.render.lights.dynamic.shader.nLights; i += incr, psl += incr) {
-#else
 for (i = j = 0; i < gameData.render.lights.dynamic.shader.nLights; i++, psl++) {
-#endif
 	if (!psl->bState)
 		continue;
 	if (i == gameData.threads.vertColor.data.nMatLight)
@@ -1390,26 +1386,6 @@ return j;
 
 //------------------------------------------------------------------------------
 
-#if MULTI_THREADED_LIGHTS
-
-int _CDECL_ VertColorThread (void *pThreadId)
-{
-	int		nId = *((int *) pThreadId);
-	fVector	colorSum = {0.0f, 0.0f, 0.0f, 1.0f};
-
-while (!gameStates.app.bExit) {
-	SDL_SemWait (gameData.threads.vertColor.info [nId].exec);
-	gameData.threads.vertColor.data.colorSum [nId] = colorSum;
-	G3AccumVertColor (nId, 2, gameData.threads.vertColor.data.colorSum + nId);
-	SDL_SemPost (gameData.threads.vertColor.info [nId].done);
-	}
-return 0;
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 #define STATIC_LIGHT_TRANSFORM	0
 
 void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale, int bSetColor)
@@ -1467,7 +1443,8 @@ if (!(gameData.threads.vertColor.data.bExclusive || gameData.threads.vertColor.d
 			pVertColor->color.blue = pc->color.blue * fScale;
 			pVertColor->color.alpha = 1;
 			}
-		OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
+		if (bSetColor)
+			OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
 		return;
 		}
 	}
@@ -1502,7 +1479,7 @@ if (gameStates.app.bMultiThreaded) {
 	}
 else
 #endif
-	G3AccumVertColor (0, 1, &colorSum);
+	G3AccumVertColor (&colorSum);
 if ((nVertex >= 0) && !(gameStates.render.nState && gameData.threads.vertColor.data.bDarkness)) {
 	tRgbaColorf	ambient = gameData.render.color.ambient [nVertex].color;
 	colorSum.c.r += ambient.red;
