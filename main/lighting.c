@@ -1813,7 +1813,7 @@ if (c.index) {
 else
 	psc->color.red = psc->color.green = psc->color.blue = 0.0f;
 
-if (i = SetNearestDynamicLights (nSegment)) {
+if (SetNearestDynamicLights (nSegment)) {
 	short				nLights = gameData.render.lights.dynamic.shader.nLights;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + nLights;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
@@ -1822,12 +1822,8 @@ if (i = SetNearestDynamicLights (nSegment)) {
 
 	if (pvPos)
 		VmsVecToFloat (&vPosf, pvPos);
-	while (nLights--) {
-		psl--;
-		if (psl->nType < 2)
-			break;
-		if (!psl->bState)
-			continue;
+	for (i = 0; i < gameData.render.lights.dynamic.shader.nActiveLights; i++) {
+		psl = gameData.render.lights.dynamic.shader.activeLights [i];
 #if 1
 		if (pvPos) {
 			vVertex = gameData.segs.vertices [*pv];
