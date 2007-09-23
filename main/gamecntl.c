@@ -1457,6 +1457,11 @@ void HandleGameKey(int key)
 			break;
 		}
 		
+		case KEY_ALTED + KEY_M:
+			gameStates.app.bMultiThreaded = !gameStates.app.bMultiThreaded;
+			HUDMessage (0, "multi-threading %s", gameStates.app.bMultiThreaded ? "ON" : "OFF");
+			break;
+
 		case KEY_ALTED + KEY_P:
 			renderItems.bDisplay = !renderItems.bDisplay;
 			break;

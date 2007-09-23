@@ -1105,10 +1105,10 @@ typedef struct tDynLight {
 	ubyte			nPlayer;
 	ubyte			nType;
 	ubyte			bState;
-	ubyte			bVariable;
 	ubyte			bOn;
 	ubyte			bSpot;
 	ubyte			bTransform;
+	ubyte			bVariable;
 	tShadowLightInfo	shadow;
 } tDynLight;
 
@@ -1135,6 +1135,8 @@ typedef struct tShaderLight {
 	fVector		dir;
 	fVector		color;
 	float			rad;
+	short			nSegment;
+	short			nObject;
 #endif
 	float			brightness;
 	float			spotAngle;
@@ -1152,7 +1154,7 @@ typedef struct tShaderLight {
 //------------------------------------------------------------------------------
 
 typedef struct tShaderLightData {
-	tShaderLight	lights [MAX_OGL_LIGHTS];
+	tShaderLight	lights [2][MAX_OGL_LIGHTS];
 	int				nLights;
 	GLuint			nTexHandle;
 } tShaderLightData;
@@ -2503,7 +2505,7 @@ typedef struct tVertColorData {
 	fVector	matDiffuse;
 	fVector	matSpecular;
 	fVector	vertNorm;
-	fVector	colorSum [2];
+	fVector	colorSum;
 	fVector	*pVertPos;
 	float		fMatShininess;
 	} tVertColorData;

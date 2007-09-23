@@ -3247,7 +3247,7 @@ int GatherShadowLightSources (void)
 	tShaderLight	*psl;
 	vmsVector		vLightDir;
 
-psl = gameData.render.lights.dynamic.shader.lights;
+psl = gameData.render.lights.dynamic.shader.lights [0];
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
@@ -3257,7 +3257,7 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
 	for (i = n = 0; (n < m) && (*pnl >= 0); i++, pnl++) {
-		psl = gameData.render.lights.dynamic.shader.lights + *pnl;
+		psl = gameData.render.lights.dynamic.shader.lights [0] + *pnl;
 		if (!psl->bState)
 			continue;
 		if (!CanSeePoint (objP, &objP->position.vPos, &psl->vPos, objP->nSegment))
@@ -3277,7 +3277,7 @@ for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
 		}
 	gameData.render.shadows.objLights [k + n] = -1;
 	}
-psl = gameData.render.lights.dynamic.shader.lights;
+psl = gameData.render.lights.dynamic.shader.lights [0];
 for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	if (psl->bShadow)
 		h++;
@@ -3431,7 +3431,7 @@ if (!bShadowTest)
 void RenderNeatShadows (fix nEyeOffset, int nWindow, short nStartSeg)
 {
 	short				i;
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
+	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights [0];
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, psl++) {
@@ -4146,7 +4146,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
-	TransformDynLights (1, 1);
+	TransformDynLights (0, 1);
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif

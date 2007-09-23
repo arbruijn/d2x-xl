@@ -75,7 +75,7 @@ void TransformDynLights (int bStatic, int bVariable);
 short FindDynLight (short nSegment, short nSide, short nObject);
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
-short SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable);
+void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable, tShaderLight *pLights);
 void SetNearestStaticLights (int nSegment, ubyte nType);
 short SetNearestDynamicLights (int nSegment);
 void ComputeStaticDynLighting (void);

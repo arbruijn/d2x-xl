@@ -413,7 +413,7 @@ typedef struct tSinCosd {
 
 void OglComputeSinCos (int nSides, tSinCosd *sinCosP);
 void OglColor4sf (float r, float g, float b, float s);
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale, int bSetColor);
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale, int bSetColor, int nThread);
 void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 

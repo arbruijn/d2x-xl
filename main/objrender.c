@@ -2549,7 +2549,7 @@ switch (objP->renderType) {
 	default: 
 		Error ("Unknown renderType <%d>", objP->renderType);
 	}
-SetNearestStaticLights (objP->nSegment, 0);
+//SetNearestStaticLights (objP->nSegment, 0);
 
 #ifdef NEWDEMO
 if (objP->renderType != RT_NONE)

@@ -3092,7 +3092,7 @@ else /*if (gameOpts->render.bHiresModels)*/ {
 
 // ----------------------------------------------------------------------------
 
-int _CDECL_ VertColorThread (void *pThreadId);
+int _CDECL_ VertexColorThread (void *pThreadId);
 int _CDECL_ ClipDistThread (void *pThreadId);
 
 void InitThreads (void)
@@ -3103,8 +3103,11 @@ if (gameStates.app.bMultiThreaded) {
 #if MULTI_THREADED_LIGHTS
 		gameData.threads.vertColor.info [i].done = SDL_CreateSemaphore (0);
 		gameData.threads.vertColor.info [i].exec = SDL_CreateSemaphore (0);
+		gameData.threads.vertColor.info [i].bDone =
+		gameData.threads.vertColor.info [i].bExec =
+		gameData.threads.vertColor.info [i].bQuit = 0;
 		gameData.threads.vertColor.info [i].nId = i;
-		gameData.threads.vertColor.info [i].pThread = SDL_CreateThread (VertColorThread, &gameData.threads.vertColor.info [i].nId);
+		gameData.threads.vertColor.info [i].pThread = SDL_CreateThread (VertexColorThread, &gameData.threads.vertColor.info [i].nId);
 #endif
 #if MULTI_THREADED_SHADOWS
 		gameData.threads.clipDist.info [i].done = SDL_CreateSemaphore (0);
