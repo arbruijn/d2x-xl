@@ -4246,7 +4246,7 @@ else {
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-SetNearestDynamicLights (nSegment);
+SetNearestDynamicLights (nSegment, 0);
 RenderSegment (nSegment, gameStates.render.nWindow);
 VISIT (nSegment);
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)

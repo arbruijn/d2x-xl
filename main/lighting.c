@@ -1669,8 +1669,6 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
 		if (psl->bVariable) {
-			if (bVariable < 0)
-				continue;
 			if (!(bVariable && psl->bOn))
 				continue;
 			}
@@ -1715,7 +1713,35 @@ if (gameOpts->render.bDynLighting) {
 
 //------------------------------------------------------------------------------
 
-short SetNearestDynamicLights (int nSegment)
+void QSortDynamicLights (int left, int right)
+{
+	int	l = left,
+			r = right,
+			m = gameData.render.lights.dynamic.shader.activeLights [(l + r) / 2]->xDistance;
+
+while (gameData.render.lights.dynamic.shader.activeLights [l]->xDistance < m)
+	l++;
+while (gameData.render.lights.dynamic.shader.activeLights [r]->xDistance > m)
+	r--;
+if (l <= r) {
+	if (l < r) {
+		tShaderLight *h = gameData.render.lights.dynamic.shader.activeLights [l];
+		gameData.render.lights.dynamic.shader.activeLights [l] = gameData.render.lights.dynamic.shader.activeLights [r];
+		gameData.render.lights.dynamic.shader.activeLights [r] = h;
+		}
+	l++;
+	r--;
+	}
+if (l < right)
+	QSortDynamicLights (l, right);
+if (left < r)
+	QSortDynamicLights (left, r);
+}
+
+
+//------------------------------------------------------------------------------
+
+short SetNearestDynamicLights (int nSegment, int bVariable)
 {
 	static int nLastSeg = 1;
 
@@ -1726,32 +1752,33 @@ if (gameOpts->render.bDynLighting) {
 	short				i = gameData.render.lights.dynamic.shader.nLights,
 						nLightSeg;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
-	vmsVector		d, c;
-	fix				m;
+	vmsVector		c;
 
 	gameData.render.lights.dynamic.shader.nActiveLights = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	while (i--) {
 		psl--;
-		if (psl->nType < 2)
-			break;
+		if (psl->nType < 2) {
+			if (!bVariable)
+				break;
+			if (!(psl->bVariable && psl->bOn))
+				continue;
+			}
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
-		if (psl->nType == 3)
-			psl->bState = 1;
-		else {
+		if (psl->nType < 3) {
 			nLightSeg = (psl->nSegment < 0) ? (psl->nObject < 0) ? -1 : gameData.objs.objects [psl->nObject].nSegment : psl->nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
-				psl->bState = 0;
-			else {
-				VmVecSub (&d, &c, &psl->vPos);
-				m = VmVecMag (&d);
-				psl->bState = (m <= F1_0 * 150);
-				}
+				continue;
+			if ((psl->xDistance = VmVecDist (&c, &psl->vPos)) > F1_0 * 150)
+				continue;
 			}
-		if (psl->bState) 
-			gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
+		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
 		}
+	}
+if (gameData.render.lights.dynamic.shader.nActiveLights > MAX_NEAREST_LIGHTS) {
+	QSortDynamicLights (0, gameData.render.lights.dynamic.shader.nActiveLights - 1);
+	gameData.render.lights.dynamic.shader.nActiveLights = MAX_NEAREST_LIGHTS;
 	}
 return gameData.render.lights.dynamic.shader.nActiveLights;
 }
@@ -1813,7 +1840,7 @@ if (c.index) {
 else
 	psc->color.red = psc->color.green = psc->color.blue = 0.0f;
 
-if (SetNearestDynamicLights (nSegment)) {
+if (SetNearestDynamicLights (nSegment, 1)) {
 	short				nLights = gameData.render.lights.dynamic.shader.nLights;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + nLights;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
@@ -1837,8 +1864,6 @@ if (SetNearestDynamicLights (nSegment)) {
 			{
 			VmVecIncf ((fVector *) &psc->color, (fVector *) &psl->color);
 			}
-		if (!--i)
-			break;
 		}
 	}
 
