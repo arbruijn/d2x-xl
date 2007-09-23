@@ -479,6 +479,7 @@ switch (objP->renderType) {
 		objP->rType.smokeInfo.color.green = CFReadByte (f);
 		objP->rType.smokeInfo.color.blue = CFReadByte (f);
 		objP->rType.smokeInfo.color.alpha = CFReadByte (f);
+		objP->rType.smokeInfo.nSide = CFReadByte (f);
 		break;
 
 	case RT_LIGHTNING:

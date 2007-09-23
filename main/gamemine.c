@@ -1176,7 +1176,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 				}
 
 			// Read tUVL sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
-			GetSideVerts (sideVerts, nSegment, nSide);
+			GetSideVertIndex (sideVerts, nSegment, nSide);
 			for (i = 0; i < 4; i++ ) {
 				temp_short = CFReadShort (loadFile);
 				sideP->uvls [i].u = ((fix)temp_short) << 5;

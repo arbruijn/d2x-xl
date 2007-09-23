@@ -1833,7 +1833,7 @@ void DoExplodingWallFrame ()
 
 				//calc expl position
 
-				GetSideVerts (vertnum_list, nSegment, nSide);
+				GetSideVertIndex (vertnum_list, nSegment, nSide);
 				v0 = gameData.segs.vertices + vertnum_list [0];
 				v1 = gameData.segs.vertices + vertnum_list [1];
 				v2 = gameData.segs.vertices + vertnum_list [2];

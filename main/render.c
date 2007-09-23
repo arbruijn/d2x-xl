@@ -1383,7 +1383,7 @@ int CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, short *pSid
 	int			i, j;
 
 if (!pSideVerts) {
-	GetSideVerts (sideVerts, nSegment, nSide);
+	GetSideVertIndex (sideVerts, nSegment, nSide);
 	pSideVerts = sideVerts;
 	}
 for (j = 0; j < 4; j++) {
@@ -1539,7 +1539,7 @@ else {
 		}
 	}
 
-GetSideVerts (sideVerts, nSegment, nSide);
+GetSideVertIndex (sideVerts, nSegment, nSide);
 // get the transformed face coordinates and compute their center
 for (i = 0; i < 4; i++) {
 	vertList [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
@@ -1833,7 +1833,7 @@ if (sideP->nType == SIDE_IS_QUAD) {
 	props.nv = 4;
 	props.vNormal = sideP->normals [0];
 	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
-	GetSideVerts (props.vp, props.segNum, props.sideNum);
+	GetSideVertIndex (props.vp, props.segNum, props.sideNum);
 	RenderFace (&props);
 #ifdef EDITOR
 	CheckFace (props.segNum, props.sideNum, 0, 3, props.vp, sideP->nBaseTex, sideP->nOvlTex, sideP->uvls);
@@ -1848,13 +1848,13 @@ else {
 	VmVecScale (&props.vNormal, F1_0 / 2);
 	if (sideP->nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
-		GetSideVerts (props.vp, props.segNum, props.sideNum);
+		GetSideVertIndex (props.vp, props.segNum, props.sideNum);
 		RenderFace (&props);
 		}
 	else if (sideP->nType == SIDE_IS_TRI_13) {	//just rendering the fan with vertex 1 instead of 0
 		memcpy (props.uvls + 1, sideP->uvls, sizeof (tUVL) * 3);
 		props.uvls [0] = sideP->uvls [3];
-		GetSideVerts (props.vp + 1, props.segNum, props.sideNum);
+		GetSideVertIndex (props.vp + 1, props.segNum, props.sideNum);
 		props.vp [0] = props.vp [4];
 		RenderFace (&props);
 		}

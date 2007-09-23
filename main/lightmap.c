@@ -343,7 +343,7 @@ double SideRad (int segNum, int sideNum)
 	short			sideVerts [4];
 	vmsVector	*v;
 
-GetSideVerts (sideVerts, segNum, sideNum); 
+GetSideVertIndex (sideVerts, segNum, sideNum); 
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < 4; i++) {
@@ -768,7 +768,7 @@ for (segNum = 0; segNum <= gameData.segs.nLastSegment; segNum++) {
 #endif
 			tempLight.range += sideRad;
 			//find where it is in the level.
-			GetSideVerts (sideVerts, segNum, sideNum); 
+			GetSideVertIndex (sideVerts, segNum, sideNum); 
 			//this is just temporary need to find actual lights on surfaces
 			VmVecAvg4 (
 				&lightData [numLightMaps].pos, 
@@ -894,7 +894,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 		if ((segP->children [sideNum] >= 0) && !IS_WALL (WallNumS (sideP)))
 			continue; 	//skip open sides
 #endif			
-		GetSideVerts (sideVerts, segNum, sideNum); 
+		GetSideVertIndex (sideVerts, segNum, sideNum); 
 #if LMAP_REND2TEX
 		OglCreateFBuffer (&lightMaps [mapNum].fbuffer, 64, 64);
 		OglEnableFBuffer (&lightMaps [mapNum].fbuffer);

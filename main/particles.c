@@ -330,16 +330,39 @@ return (pColor->red * 3 + pColor->green * 5 + pColor->blue * 2) / 10.0;
 
 //------------------------------------------------------------------------------
 
+vmsVector *RandomPointOnQuad (vmsVector *quad, vmsVector *vPos)
+{
+	vmsVector	vOffs;
+	int			i;
+
+i = rand () % 2;
+VmVecSub (&vOffs, quad + i + 1, quad + i);
+VmVecScale (&vOffs, 2 * d_rand ());
+VmVecInc (&vOffs, quad + i);
+i += 2;
+VmVecSub (vPos, quad + (i + 1) % 4, quad + i);
+VmVecScale (vPos, 2 * d_rand ());
+VmVecInc (vPos, quad + i);
+VmVecDec (vPos, &vOffs);
+VmVecScale (vPos, 2 * d_rand ());
+VmVecInc (vPos, &vOffs);
+return vPos;
+}
+
+//------------------------------------------------------------------------------
+
 #define RANDOM_FADE	(0.95 + (double) rand () / (double) RAND_MAX / 20.0)
 
 int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
 						  short nSegment, int nLife, int nSpeed, char nSmokeType, char nClass,
 						  float nScale, tRgbaColord *pColor, int nCurTime, int bBlowUp,
-						  double dBrightness)
+						  double dBrightness, vmsVector *vEmittingFace)
 {
-	vmsVector	vDrift;
+	vmsVector	vDrift, vPos;
 	int			nRad, nFrames, nType = (nSmokeType == PARTICLE_TYPES - 1);
 
+if (vEmittingFace)
+	pPos = RandomPointOnQuad (vEmittingFace, &vPos);
 if (nScale < 0)
 	nRad = (int) -nScale;
 else if (gameOpts->render.smoke.bSyncSizes)
@@ -1096,7 +1119,7 @@ return pCloud->brightness = (double) ObjectDamage (objP) * 0.5 + 0.1;
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
-					  tRgbaColord *pColor, int nCurTime, int bBlowUpParts)
+					  tRgbaColord *pColor, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
 {
 if (!(pCloud->pParticles = (tParticle *) D2_ALLOC (nMaxParts * sizeof (tParticle))))
 	return 0;
@@ -1138,6 +1161,8 @@ pCloud->nClass = SmokeObjClass (nObject);
 pCloud->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
 pCloud->nTicks = 0;
 pCloud->nDefBrightness = 0;
+if (pCloud->bEmittingFace = (vEmittingFace != NULL))
+	memcpy (pCloud->vEmittingFace, vEmittingFace, sizeof (pCloud->vEmittingFace));
 pCloud->brightness = (nObject < 0) ? 0.5 : CloudBrightness (pCloud);
 return 1;
 }
@@ -1194,7 +1219,8 @@ int UpdateCloud (tCloud *pCloud, int nCurTime)
 	int			t, h, i, j;
 	float			fDist;
 	double		dBrightness = CloudBrightness (pCloud);
-	vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL);
+	vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL),
+					*vEmittingFace = c.bEmittingFace ? c.vEmittingFace : NULL;
 	fVector		vDeltaf, vPosf;
 
 #if SMOKE_SLOWMO
@@ -1241,7 +1267,7 @@ if ((c.nPartsPerPos = (int) (c.fPartsPerTick * c.nTicks)) >= 1) {
 			vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
 			CreateParticle (c.pParticles + j, &vPos, pDir, c.nSegment, c.nLife, 
 								 c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
-								 nCurTime, c.bBlowUpParts, dBrightness);
+								 nCurTime, c.bBlowUpParts, dBrightness, vEmittingFace);
 			}
 		}
 	}
@@ -1603,8 +1629,8 @@ return 1;
 //------------------------------------------------------------------------------
 
 int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxClouds, int nMaxParts, 
-					  float nPartScale, int nDensity, int nPartsPerPos, 
-					  int nLife, int nSpeed, char nType, int nObject, tRgbaColord *pColor, int bBlowUpParts)
+					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
+					  int nObject, tRgbaColord *pColor, int bBlowUpParts, char nSide)
 {
 #if 0
 if (!(EGI_FLAG (bUseSmoke, 0, 1, 0)))
@@ -1618,9 +1644,12 @@ else if (!LoadParticleImage (nType)) {
 	return -1;
 	}
 else {
-		int		i, t = gameStates.app.nSDLTicks;
-		tSmoke	*pSmoke;
+		int			i, t = gameStates.app.nSDLTicks;
+		tSmoke		*pSmoke;
+		vmsVector	vEmittingFace [4];	
 
+	if (nSide >= 0)
+		GetSideVerts (vEmittingFace, nSegment, nSide);
 	nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.smoke.nDens [0]);
 	if (gameStates.render.bPointSprites)
 		nMaxParts *= 2;
@@ -1640,7 +1669,7 @@ else {
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
 		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, nSegment, nObject, nMaxParts, nPartScale, nDensity, 
-							  nPartsPerPos, nLife, nSpeed, nType, pColor, t, bBlowUpParts))
+							  nPartsPerPos, nLife, nSpeed, nType, pColor, t, bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
 			pSmoke->nClouds++;
 		else {
 			DestroySmoke (gameData.smoke.iFree);

@@ -149,7 +149,8 @@ int FindConnectedSide(tSegment *base_seg, tSegment *con_seg);
 			COMPUTE_SEGMENT_RAD_I (_pc, SEG_IDX (_segP))
 
 // Fill in array with four absolute point numbers for a given tSide
-void GetSideVerts(short *vertlist,int nSegment,int nSide);
+void GetSideVertIndex (short *vertIndex, int nSegment, int nSide);
+void GetSideVerts (vmsVector *vertices, int nSegment, int nSide);
 ubyte GetSideDists (vmsVector *checkp, int nSegment, fix *xSideDists, int bBehind);
 ubyte GetSideDistsAll (vmsVector *checkp, int nSegment, fix *xSideDists);
 

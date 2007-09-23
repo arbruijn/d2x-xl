@@ -109,7 +109,7 @@ if (nThrusters < 0) {
 	nThrusters = 
 		CreateSmoke (&objP->position.vPos, &dir, objP->nSegment, 2, -2000, 20000,
 						 gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [1],
-						 2, -2000, PLR_PART_SPEED * 50, 5, OBJ_IDX (objP), NULL, 1);
+						 2, -2000, PLR_PART_SPEED * 50, 5, OBJ_IDX (objP), NULL, 1, -1);
 	SetSmokeObject (OBJ_IDX (objP)) = nThrusters;
 	}
 else
@@ -219,7 +219,7 @@ else {
 			h = SetSmokeObject (j, 
 					CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 2, nParts, nScale,
 									 gameOpts->render.smoke.nSize [1],
-									 2, PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j, NULL, 1));
+									 2, PLR_PART_LIFE / (nType + 1), PLR_PART_SPEED, nType, j, NULL, 1, -1));
 			}
 		else {
 			SetSmokeType (h, nType);
@@ -280,7 +280,7 @@ if (nParts > 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
 												  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2],
-												  1, BOT_PART_LIFE, BOT_PART_SPEED, 0, i, NULL, 1));
+												  1, BOT_PART_LIFE, BOT_PART_SPEED, 0, i, NULL, 1, -1));
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], nScale);
@@ -323,7 +323,7 @@ if (nParts > 0) {
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, 3.0,
-												  -1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED, 0, i, NULL, 1));
+												  -1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED, 0, i, NULL, 1, -1));
 		}
 	else {
 		SetSmokePartScale (gameData.smoke.objects [i], 0.5);
@@ -376,7 +376,7 @@ if (nParts) {
 			}
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, nScale,
 												  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-												  1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, 1, i, NULL, 1));
+												  1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, 1, i, NULL, 1, -1));
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -411,7 +411,7 @@ if (nParts) {
 		}
 	if (gameData.smoke.objects [i] < 0) {
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts / 2,
-												  nScale, -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i, NULL, 0));
+												  nScale, -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i, NULL, 0, -1));
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 	SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -447,7 +447,7 @@ if (gameData.smoke.objects [i] < 0) {
 											  objP->nSegment, 1, -objP->rType.smokeInfo.nParts, 
 											  -PARTICLE_SIZE (objP->rType.smokeInfo.nSize [gameOpts->render.smoke.bDisperse], 2.0f), 
 											  -1, 3, STATIC_SMOKE_PART_LIFE * objP->rType.smokeInfo.nLife, 
-											  objP->rType.smokeInfo.nDrift, 2, i, bColor ? &color : NULL, 1));
+											  objP->rType.smokeInfo.nDrift, 2, i, bColor ? &color : NULL, 1, objP->rType.smokeInfo.nSide - 1));
 	SetSmokeBrightness (gameData.smoke.objects [i], objP->rType.smokeInfo.nBrightness);
 	}
 i = objP->rType.smokeInfo.nDrift >> 4;
@@ -480,7 +480,7 @@ else
 if (nParts) {
 	if (gameData.smoke.objects [i] < 0) {
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts,
-												  -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 1, i, NULL, 1));
+												  -PARTICLE_SIZE (3, 0.5f), -1, 3, BOMB_PART_LIFE, BOMB_PART_SPEED, 1, i, NULL, 1, -1));
 		}
 	offs.p.x = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	offs.p.y = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
@@ -533,7 +533,7 @@ if (gameData.smoke.objects [i] < 0) {
 	c.alpha = 0.1f + nScale / 10;
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, -PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale),
 											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
-											  1, (gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE, LASER_PART_SPEED, 3, i, &c, 0));
+											  1, (gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE, LASER_PART_SPEED, 3, i, &c, 0, -1));
 	}
 VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 SetSmokePos (gameData.smoke.objects [i], &pos);
@@ -607,7 +607,7 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	shrapnelP->fScale = 45.0 / 80.0;
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, shrapnelP->nParts,
 											   -PARTICLE_SIZE (1, 4), -1, 1, /*shrapnelP->xTTL * 4000 /*/ SHRAPNEL_PART_LIFE, 
-												SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1);
+												SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1, -1);
 	}
 objP->lifeleft += objP->lifeleft;
 objP->cType.explInfo.nSpawnTime = -1;
@@ -793,7 +793,7 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	if (objP->lifeleft < shrapnelP->xLife)
 		objP->lifeleft = shrapnelP->xLife;
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
-											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1);
+											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1, -1);
 	}
 objP->lifeleft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;

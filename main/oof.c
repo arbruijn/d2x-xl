@@ -2312,7 +2312,11 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->position.vPos);
 			fl = (float) sqrt (fl);
 			if (bBright)
+#if 1
+				fl += (1 - fl) / 2;
+#else
 				fl = (float) sqrt (fl);
+#endif
 			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			else
@@ -2327,9 +2331,15 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 				vc.color.green = (float) sqrt (pvc [h].color.green);
 				vc.color.blue = (float) sqrt (pvc [h].color.blue);
 				if (bBright) {
+#if 1
+					vc.color.red += (1 - vc.color.red) / 2;
+					vc.color.green += (1 - vc.color.green) / 2;
+					vc.color.blue += (1 - vc.color.blue) / 2;
+#else
 					vc.color.red = (float) sqrt (vc.color.red);
 					vc.color.green = (float) sqrt (vc.color.green);
 					vc.color.blue = (float) sqrt (vc.color.blue);
+#endif
 					}
 				}
 			if (bDynLighting) {

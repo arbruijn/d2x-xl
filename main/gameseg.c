@@ -366,15 +366,26 @@ return 0;
 
 // -----------------------------------------------------------------------------------
 // Fill in array with four absolute point numbers for a given tSide
-void GetSideVerts (short *vertlist, int nSegment, int nSide)
+void GetSideVertIndex (short *vertIndex, int nSegment, int nSide)
 {
 	sbyte *sv = sideToVerts [nSide];
 	short	*vp = gameData.segs.segments [nSegment].verts;
 
-vertlist [0] = vp [sv [0]];
-vertlist [1] = vp [sv [1]];
-vertlist [2] = vp [sv [2]];
-vertlist [3] = vp [sv [3]];
+vertIndex [0] = vp [sv [0]];
+vertIndex [1] = vp [sv [1]];
+vertIndex [2] = vp [sv [2]];
+vertIndex [3] = vp [sv [3]];
+}
+
+// -----------------------------------------------------------------------------------
+// Fill in array with four absolute point numbers for a given tSide
+void GetSideVerts (vmsVector *vertices, int nSegment, int nSide)
+{
+	short i, vertIndex [4];
+
+GetSideVertIndex (vertIndex, nSegment, nSide);
+for (i = 0; i < 4; i++)
+	vertices [i] = gameData.segs.vertices [vertIndex [i]];
 }
 
 #ifdef EDITOR

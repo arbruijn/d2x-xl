@@ -226,7 +226,7 @@ else {
 	else
 		COMPUTE_SIDE_CENTER_I (&pc->obj.position.vPos, srcSeg, srcSide);
 #else
-	GetSideVerts (sideVerts, srcSeg, srcSide);
+	GetSideVertIndex (sideVerts, srcSeg, srcSide);
 	for (i = 0; i < 4; i++) {
 		pv = gameData.segs.vertices + sideVerts [i];
 		pc->obj.position.p.vPos.x += pv->x;

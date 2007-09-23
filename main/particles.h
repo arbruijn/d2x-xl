@@ -46,7 +46,7 @@ typedef struct tPartIdx {
 } tPartIdx;
 
 typedef struct tCloud {
-	char			nType;			//black or white
+	char			nType;			//smoke/light trail (corona)
 	char			nClass;
 	int			nLife;			//max. particle life time
 	int			nBirth;			//time of creation
@@ -70,6 +70,7 @@ typedef struct tCloud {
 	vmsVector	dir;
 	vmsVector	pos;				//initial particle position
 	vmsVector	prevPos;			//initial particle position
+	vmsVector	vEmittingFace [4];
 	ubyte			bHaveDir;		//movement direction given?
 	ubyte			bHavePrevPos;	//valid previous position set?
 	tParticle	*pParticles;	//list of active particles
@@ -77,6 +78,7 @@ typedef struct tCloud {
 	tRgbaColord	color;
 	char			bHaveColor;
 	char			bBlowUpParts;	//blow particles up at their "birth"
+	char			bEmittingFace;
 } tCloud;
 
 typedef struct tSmoke {
@@ -98,7 +100,7 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
 					  int nLife, int nSpeed, char nType, int nObject,
-					  tRgbaColord *pColor, int bBlowUpParts);
+					  tRgbaColord *pColor, int bBlowUpParts, char nFace);
 int DestroySmoke (int iSmoke);
 int UpdateSmoke ();
 int RenderSmoke ();

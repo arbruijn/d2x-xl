@@ -1467,7 +1467,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 
 addEdge:
 
-		GetSideVerts (vertex_list,nSegment,sn);
+		GetSideVertIndex (vertex_list,nSegment,sn);
 		AddOneEdge (vertex_list [0], vertex_list [1], color, sn, nSegment, bHidden, 0, bNoFade);
 		AddOneEdge (vertex_list [1], vertex_list [2], color, sn, nSegment, bHidden, 0, bNoFade);
 		AddOneEdge (vertex_list [2], vertex_list [3], color, sn, nSegment, bHidden, 0, bNoFade);
@@ -1494,7 +1494,7 @@ for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++) {
 
 	// Only add edges that have no children
 	if (segP->children [sn] == -1) {
-		GetSideVerts (vertex_list,nSegment,sn);
+		GetSideVertIndex (vertex_list,nSegment,sn);
 
 		AddOneUnknownEdge (vertex_list [0], vertex_list [1]);
 		AddOneUnknownEdge (vertex_list [1], vertex_list [2]);
