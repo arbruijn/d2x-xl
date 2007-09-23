@@ -1543,8 +1543,6 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
 		float		c = 1/*0.7f + 0.03f * fPulse*/, dotFlame, dotThruster;
 
-	glDisable (GL_CULL_FACE);
-	glColor3f (c, c, c);
 	fLength *= 4 * fSize;
 	fSize *= 1.5f;
 #if 1
@@ -1574,6 +1572,8 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		if (gameOpts->render.bDepthSort > 0)
 			RIAddThruster (bmpThruster [nStyle], vThruster, uvlThruster, (dotFlame < dotThruster) ? vFlame : NULL, uvlFlame);
 		else {
+			glDisable (GL_CULL_FACE);
+			glColor3f (c, c, c);
 			if (dotFlame < dotThruster) {
 				glBegin (GL_TRIANGLES);
 				for (i = 0; i < 3; i++) {
@@ -1588,9 +1588,9 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 				glVertex3fv ((GLfloat *) (vThruster + i));
 				}
 			glEnd ();
+			glEnable (GL_CULL_FACE);
 			}
 		}
-	glEnable (GL_CULL_FACE);
 	}
 else {
 	tUVLf	uvl, uvlStep;

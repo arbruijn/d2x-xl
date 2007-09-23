@@ -1164,7 +1164,7 @@ int G3AccumVertColor (fVector *pColorSum)
 	float				fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
 	fVector			spotDir, lightDir, lightColor, lightPos, vReflect, colorSum, 
 						vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights;
+	tShaderLight	*psl;
 
 colorSum = *pColorSum;
 h = (gameData.render.lights.dynamic.shader.nActiveLights < MAX_NEAREST_LIGHTS) ? gameData.render.lights.dynamic.shader.nActiveLights : MAX_NEAREST_LIGHTS;

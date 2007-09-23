@@ -2300,7 +2300,7 @@ for (i = 1, v = pointList [0]->p3_src; i < nPoints; i++)
 v.p.x /= nPoints;
 v.p.y /= nPoints;
 v.p.z /= nPoints;
-v.p.z -= F1_0 / 64;
+v.p.z -= F1_0 / 8;
 if (vOffset)
 	VmVecInc (&v, vOffset);
 if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
