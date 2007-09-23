@@ -4254,7 +4254,11 @@ if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
 else if (gameStates.render.nType == 1) {
 	SetNearestStaticLights (nSegment, 1);
 	RenderObjList (nn, gameStates.render.nWindow);
+#if 1
+	gameData.render.lights.dynamic.shader.nActiveLights = gameData.render.lights.dynamic.shader.iStaticLights;
+#else
 	SetNearestStaticLights (nSegment, 0);
+#endif
 	}	
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
 	RenderObjList (nn, gameStates.render.nWindow);

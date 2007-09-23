@@ -1154,6 +1154,10 @@ typedef struct tShaderLight {
 typedef struct tShaderLightData {
 	tShaderLight	lights [MAX_OGL_LIGHTS];
 	int				nLights;
+	tShaderLight	*activeLights [MAX_OGL_LIGHTS];
+	int				nActiveLights;
+	int				iVariableLights;
+	int				iStaticLights;
 	GLuint			nTexHandle;
 } tShaderLightData;
 

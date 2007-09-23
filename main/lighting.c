@@ -1660,11 +1660,14 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 	short				i, j;
 	tShaderLight	*psl;
 
+	gameData.render.lights.dynamic.shader.iVariableLights = gameData.render.lights.dynamic.shader.nActiveLights;
 	gameData.render.lights.dynamic.nVertLights = 0;
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		psl = gameData.render.lights.dynamic.shader.lights + j;
+		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
+			continue;
 		if (psl->bVariable) {
 			if (bVariable < 0)
 				continue;
@@ -1677,6 +1680,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 			}
 		psl->nType = nType;
 		psl->bState = 1;
+		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
 		}
 	}
 }
@@ -1696,10 +1700,15 @@ if (gameOpts->render.bDynLighting) {
 	short	*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short	i, j;
 
-	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
+	gameData.render.lights.dynamic.shader.iStaticLights = gameData.render.lights.dynamic.shader.nActiveLights;
+	for (i = gameOpts->ogl.nMaxLights; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
 		gameData.render.lights.dynamic.shader.lights [j].nType = nType;
+		if (gameData.threads.vertColor.data.bNoShadow && gameData.render.lights.dynamic.shader.lights [j].bShadow)
+			continue;
+		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] =
+			gameData.render.lights.dynamic.shader.lights + j;
 		}
 	}
 }
@@ -1709,12 +1718,10 @@ if (gameOpts->render.bDynLighting) {
 short SetNearestDynamicLights (int nSegment)
 {
 	static int nLastSeg = 1;
-	static short nLights = 0;
 
 if (nLastSeg == nSegment)
-	return nLights;
+	return gameData.render.lights.dynamic.shader.nActiveLights;
 nLastSeg = nSegment;
-nLights = 0;
 if (gameOpts->render.bDynLighting) {
 	short				i = gameData.render.lights.dynamic.shader.nLights,
 						nLightSeg;
@@ -1722,11 +1729,14 @@ if (gameOpts->render.bDynLighting) {
 	vmsVector		d, c;
 	fix				m;
 
+	gameData.render.lights.dynamic.shader.nActiveLights = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	while (i--) {
 		psl--;
 		if (psl->nType < 2)
 			break;
+		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
+			continue;
 		if (psl->nType == 3)
 			psl->bState = 1;
 		else {
@@ -1739,11 +1749,11 @@ if (gameOpts->render.bDynLighting) {
 				psl->bState = (m <= F1_0 * 150);
 				}
 			}
-		if (psl->bState)
-			nLights++;
+		if (psl->bState) 
+			gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
 		}
 	}
-return gameData.render.lights.dynamic.nDynLights = nLights;
+return gameData.render.lights.dynamic.shader.nActiveLights;
 }
 
 //------------------------------------------------------------------------------
@@ -1933,6 +1943,7 @@ if (gameOpts->render.bDynLighting ||
 			nVertex = nVertex;
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
+		gameData.render.lights.dynamic.shader.nActiveLights = 0;
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
 		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 1);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
