@@ -96,16 +96,16 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="3"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
+				Optimization="0"
+				GlobalOptimizations="FALSE"
+				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="FALSE"
 				ImproveFloatingPointConsistency="FALSE"
-				FavorSizeOrSpeed="1"
-				OmitFramePointers="TRUE"
-				EnableFiberSafeOptimizations="TRUE"
-				OptimizeForProcessor="3"
-				OptimizeForWindowsApplication="TRUE"
+				FavorSizeOrSpeed="0"
+				OmitFramePointers="FALSE"
+				EnableFiberSafeOptimizations="FALSE"
+				OptimizeForProcessor="0"
+				OptimizeForWindowsApplication="FALSE"
 				AdditionalIncludeDirectories="&quot;D:\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\3d;..\..\3d;..\..\include;..\..\main;..\..\arch\include;..\..\arch\win32\include;..\..\arch\win32;&quot;..\..\..\..\SDL-1.2.11\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.7&quot;"
 				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
@@ -123,7 +123,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
@@ -135,7 +135,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Relese&quot;;&quot;\projekte\d2x\sdl-1.2.11\Release&quot;;&quot;\Projekte\SDL_mixer-1.2.7\VisualC\Release&quot;"
-				GenerateDebugInformation="FALSE"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
@@ -3154,10 +3154,10 @@
 						RelativePath="..\..\main\reorder.h">
 					</File>
 					<File
-						RelativePath="..\..\resource.h">
+						RelativePath=".\resource.h">
 					</File>
 					<File
-						RelativePath=".\resource.h">
+						RelativePath="..\..\resource.h">
 					</File>
 					<File
 						RelativePath="..\..\include\rle.h">
@@ -3425,10 +3425,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

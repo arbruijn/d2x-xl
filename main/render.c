@@ -1956,15 +1956,11 @@ if (bSearchMode)
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
 for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
-#ifdef _DEBUG
 	hObj = gameData.objs.objects + n;
 	Assert (hObj->nType == OBJ_FIREBALL);
 	Assert (hObj->controlType == CT_EXPLOSION);
 	Assert (hObj->flags & OF_ATTACHED);
 	RenderObject (hObj, nWindow, 1);
-#else
-	RenderObject (gameData.objs.objects + n, nWindow, 1);
-#endif
 	}
 #ifdef EDITOR
 if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index)

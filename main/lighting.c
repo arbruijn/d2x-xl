@@ -1792,7 +1792,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
 	short			i, *pv;
 	vmsVector	vCenter, vVertex;
-	float			d, ds, cMax;
+	float			d, ds;
 
 if (!gameOpts->render.bDynLighting) {
 	psc->index = !gameStates.render.nFrameFlipFlop + 1;
@@ -1812,23 +1812,6 @@ c.color.red = c.color.green = c.color.blue = 0.0f;
 c.index = 0;
 for (i = 0; i < 8; i++, pv++) {
 	pvc = gameData.render.color.vertices + *pv;
-#if 0
-	if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
-		c = gameData.render.color.ambient [*pv];
-		cMax = c.color.red;
-		if (cMax < c.color.green)
-			cMax = c.color.green;
-		if (cMax < c.color.blue)
-			cMax = c.color.blue;
-		if (cMax > 1) {
-			c.color.red /= cMax;
-			c.color.green /= cMax;
-			c.color.blue /= cMax;
-			}
-		c.color.red = c.color.green = c.color.blue = 1;
-		pvc = &c;
-		}
-#endif
 	if (pvPos) {
 		vVertex = gameData.segs.vertices [*pv];
 		//G3TransformPoint (&vVertex, &vVertex);
