@@ -412,7 +412,6 @@ if (pDir) {
 		}
 	pParticle->color.green =
 	pParticle->color.blue = 1.0;//(double) (64 + randN (64)) / 255.0;
-	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 64);
 	VmVecScale (&vDrift, nSpeed);
 	pParticle->dir = *pDir;
 	pParticle->bHaveDir = 1;
@@ -423,10 +422,13 @@ else {
 	vDrift.p.y = nSpeed - randN (2 * nSpeed);
 	vDrift.p.z = nSpeed - randN (2 * nSpeed);
 	vOffs = vDrift;
-	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 64);
 	VmVecZero (&pParticle->dir);
 	pParticle->bHaveDir = 1;
 	}
+if (vEmittingFace)
+	pParticle->pos = *pPos;
+else
+	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 8);
 pParticle->drift = vDrift;
 if (nLife < 0)
 	nLife = -nLife;

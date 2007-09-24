@@ -450,17 +450,19 @@ if (gameData.smoke.objects [i] < 0) {
 											  objP->rType.smokeInfo.nDrift, 2, i, bColor ? &color : NULL, 1, objP->rType.smokeInfo.nSide - 1));
 	SetSmokeBrightness (gameData.smoke.objects [i], objP->rType.smokeInfo.nBrightness);
 	}
-i = objP->rType.smokeInfo.nDrift >> 4;
-i += objP->rType.smokeInfo.nSize [0] >> 2;
-i /= 2;
-if (!(j = i - i / 2))
-	j = 2;
-i /= 2;
-offs.p.x = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-offs.p.y = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-offs.p.z = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
-VmVecAdd (&pos, &objP->position.vPos, &offs);
-SetSmokePos (gameData.smoke.objects [i], &pos);
+if (objP->rType.smokeInfo.nSide <= 0) {	//don't vary emitter position for smoke emitting faces
+	i = objP->rType.smokeInfo.nDrift >> 4;
+	i += objP->rType.smokeInfo.nSize [0] >> 2;
+	i /= 2;
+	if (!(j = i - i / 2))
+		j = 2;
+	i /= 2;
+	offs.p.x = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	offs.p.y = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	offs.p.z = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
+	VmVecAdd (&pos, &objP->position.vPos, &offs);
+	SetSmokePos (gameData.smoke.objects [i], &pos);
+	}
 }
 
 //------------------------------------------------------------------------------
