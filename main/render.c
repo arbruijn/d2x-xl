@@ -4425,7 +4425,7 @@ if ((nDepth < renderItems.zMin) || (nDepth > renderItems.zMax))
 AllocRenderItems ();
 if (!renderItems.nFreeItems)
 	return 0;
-if (nIndex <= 0)
+if (nIndex < renderItems.zMin)
 	nOffset = 0;
 else
 	nOffset = (int) ((double) (nIndex - renderItems.zMin) * renderItems.zScale);
@@ -4435,7 +4435,7 @@ pd = renderItems.pDepthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = renderItems.pItemList + --renderItems.nFreeItems;
 ph->nType = nType;
-ph->z = nIndex;
+ph->z = nDepth;
 memcpy (&ph->item, itemData, itemSize);
 if (*pd)
 	pj = *pd;
@@ -4462,7 +4462,7 @@ int RISplitPoly (tRIPoly *item, int nDepth)
 	fVector		vSplit;
 	tRgbaColorf	color;
 	int			i, l, i0, i1, i2, i3, nMinLen = 0x7fff, nMaxLen = 0;
-	float			zMin, zMax, *c, *c0, *c1;
+	float			z, zMin, zMax, *c, *c0, *c1;
 
 split [0] = split [1] = *item;
 for (i = 0; i < split [0].nVertices; i++) {
@@ -4476,10 +4476,11 @@ for (i = 0; i < split [0].nVertices; i++) {
 	}
 if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0].nVertices == 3) || (nMaxLen <= nMinLen / 2 * 3)))) {
 	for (i = 0, zMax = 0, zMin = 1e30f; i < split [0].nVertices; i++) {
-		if (zMax < split [0].vertices [i].p.z)
-			zMax = split [0].vertices [i].p.z;
-		if (zMin > split [0].vertices [i].p.z)
-			zMin = split [0].vertices [i].p.z;
+		z = split [0].vertices [i].p.z;
+		if (zMax < z)
+			zMax = z;
+		if (zMin > z)
+			zMin = z;
 		}
 	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (zMax), fl2f (zMin));
 	}
