@@ -4435,7 +4435,7 @@ pd = renderItems.pDepthBuffer + nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = renderItems.pItemList + --renderItems.nFreeItems;
 ph->nType = nType;
-ph->z = nDepth;
+ph->z = nIndex;
 memcpy (&ph->item, itemData, itemSize);
 if (*pd)
 	pj = *pd;
