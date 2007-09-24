@@ -894,7 +894,7 @@ if (gameStates.render.nShadowPass == 2) {
 	return;
 	}
 #ifdef _DEBUG //convenient place for a debug breakpoint
-if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
+if (props.segNum == nDbgSeg && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
 	props.segNum = props.segNum;
 if (props.nBaseTex == nDbgBaseTex)
 	props.segNum = props.segNum;
@@ -2085,7 +2085,7 @@ if (r > left)
 
 // -----------------------------------------------------------------------------------
 
-void RenderSegment (short nSegment, int nWindow)
+int RenderSegment (short nSegment, int nWindow)
 {
 	tSegment		*segP = gameData.segs.segments + nSegment;
 	g3s_codes 	cc;
@@ -2096,26 +2096,25 @@ if (EGI_FLAG (bShadows, 0, 1, 0) &&
 	 FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
 	 (gameStates.render.nShadowPass >= 2))
-	return;
-#	if 0
-if (gameStates.render.nShadowPass == 2)
-	return;
-#	endif
+	return 0;
 #endif
+#ifdef _DEBUG
 Assert(nSegment != -1 && nSegment <= gameData.segs.nLastSegment);
 if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
-	return;
+	return 0;
+#endif
 OglSetupTransform ();
 cc = RotateVertexList (8, segP->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
-if (!cc.and || gameStates.render.automap.bDisplay) {		//all off screen?
-	gameStates.render.nState = 0;
-	for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
-		RenderSide (segP, sn);
-	}
+if (cc.and && !gameStates.render.automap.bDisplay)	//all off screen and not rendering the automap	
+	return 0;
+gameStates.render.nState = 0;
+for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
+	RenderSide (segP, sn);
 OglResetTransform ();
 OGL_BINDTEX (0);
+return 1;
 }
 
 #define CROSS_WIDTH  i2f(8)
@@ -4247,7 +4246,8 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 SetNearestDynamicLights (nSegment, 0);
-RenderSegment (nSegment, gameStates.render.nWindow);
+if (!RenderSegment (nSegment, gameStates.render.nWindow))
+	return;
 VISIT (nSegment);
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
 	bAutomapVisited [nSegment] = bSetAutomapVisited;

@@ -1792,7 +1792,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
 	short			i, *pv;
 	vmsVector	vCenter, vVertex;
-	float			d, ds;
+	float			d, ds, cMax;
 
 if (!gameOpts->render.bDynLighting) {
 	psc->index = !gameStates.render.nFrameFlipFlop + 1;
@@ -1812,34 +1812,43 @@ c.color.red = c.color.green = c.color.blue = 0.0f;
 c.index = 0;
 for (i = 0; i < 8; i++, pv++) {
 	pvc = gameData.render.color.vertices + *pv;
-	if (pvc->index == gameStates.render.nFrameFlipFlop + 1) {
-		if (pvPos) {
-			vVertex = gameData.segs.vertices [*pv];
-			//G3TransformPoint (&vVertex, &vVertex);
-			d = 2.0f - f2fl (VmVecDist (&vVertex, pvPos)) / f2fl (VmVecDist (&vCenter, &vVertex));
-			c.color.red += pvc->color.red * d;
-			c.color.green += pvc->color.green * d;
-			c.color.blue += pvc->color.blue * d;
-			ds += d;
+#if 0
+	if (pvc->index != gameStates.render.nFrameFlipFlop + 1) {
+		c = gameData.render.color.ambient [*pv];
+		cMax = c.color.red;
+		if (cMax < c.color.green)
+			cMax = c.color.green;
+		if (cMax < c.color.blue)
+			cMax = c.color.blue;
+		if (cMax > 1) {
+			c.color.red /= cMax;
+			c.color.green /= cMax;
+			c.color.blue /= cMax;
 			}
-		else {
-			c.color.red += pvc->color.red;
-			c.color.green += pvc->color.green;
-			c.color.blue += pvc->color.blue;
-			}
-		c.index++;
+		c.color.red = c.color.green = c.color.blue = 1;
+		pvc = &c;
+		}
+#endif
+	if (pvPos) {
+		vVertex = gameData.segs.vertices [*pv];
+		//G3TransformPoint (&vVertex, &vVertex);
+		d = 2.0f - f2fl (VmVecDist (&vVertex, pvPos)) / f2fl (VmVecDist (&vCenter, &vVertex));
+		c.color.red += pvc->color.red * d;
+		c.color.green += pvc->color.green * d;
+		c.color.blue += pvc->color.blue * d;
+		ds += d;
+		}
+	else {
+		c.color.red += pvc->color.red;
+		c.color.green += pvc->color.green;
+		c.color.blue += pvc->color.blue;
 		}
 	}
 
-if (c.index) {
-	ds = (float) c.index;
-	psc->color.red = c.color.red / ds;
-	psc->color.green = c.color.green / ds;
-	psc->color.blue = c.color.blue / ds;
-	}
-else
-	psc->color.red = psc->color.green = psc->color.blue = 0.0f;
-
+psc->color.red = c.color.red / 8.0f;
+psc->color.green = c.color.green / 8.0f;
+psc->color.blue = c.color.blue / 8.0f;
+#if 0
 if (SetNearestDynamicLights (nSegment, 1)) {
 	short				nLights = gameData.render.lights.dynamic.shader.nLights;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + nLights;
@@ -1866,7 +1875,8 @@ if (SetNearestDynamicLights (nSegment, 1)) {
 			}
 		}
 	}
-
+#endif
+#if 0
 d = psc->color.red;
 if (d < psc->color.green)
 	d = psc->color.green;
@@ -1877,6 +1887,7 @@ if (d > 1.0f) {
 	psc->color.green /= d;
 	psc->color.blue /= d;
 	}
+#endif
 psc->index = gameStates.render.nFrameFlipFlop + 1;
 return psc;
 }

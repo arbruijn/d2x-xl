@@ -375,6 +375,7 @@ pParticle->nType = nType;
 pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
+pParticle->bBright = (rand () % 50) == 0;
 if (pColor) {
 	pParticle->color.red = pColor->red * RANDOM_FADE;
 	pParticle->color.green = pColor->green * RANDOM_FADE;
@@ -389,7 +390,7 @@ else {
 	}
 pParticle->color.alpha = (double) (SMOKE_START_ALPHA + randN (64)) / 255.0;
 #if 1
-if (gameOpts->render.smoke.bDisperse) {
+if (gameOpts->render.smoke.bDisperse && !pParticle->bBright) {
 	dBrightness = 1.0 - dBrightness;
 	pParticle->color.alpha += dBrightness * dBrightness / 8.0;
 	}
@@ -428,7 +429,7 @@ else {
 if (vEmittingFace)
 	pParticle->pos = *pPos;
 else
-	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 8);
+	VmVecScaleAdd (&pParticle->pos, pPos, &vDrift, F1_0 / 64);
 pParticle->drift = vDrift;
 if (nLife < 0)
 	nLife = -nLife;
@@ -758,6 +759,8 @@ else if (gameOpts->render.smoke.bSort) {
 else
 #endif
 	G3TransformPoint (&hp, &pParticle->pos, 0);
+if (pParticle->bBright)
+	brightness = sqrt (brightness);
 if (nType) {
 	//pParticle->color.green *= 0.99;
 	//pParticle->color.blue *= 0.99;

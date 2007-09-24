@@ -34,6 +34,7 @@ typedef struct tParticle {
 	char			nBounce;
 	char			bHaveDir;
 	char			bBlowUp;
+	char			bBright;
 	char			nFade;
 	char			nClass;
 	char			nFrame;

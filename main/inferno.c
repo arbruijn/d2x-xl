@@ -629,7 +629,9 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, STD_GAME
 if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, SHAREPATH, ""))
 		*gameFolders.szGameDir = '\0';
 #	ifdef __macosx__
-	 GetOSXAppFolder(szDataRootDir, gameFolders.szGameDir);
+GetOSXAppFolder (szDataRootDir, gameFolders.szGameDir);
+if ((psz = strstr (szDataRootDir, "/data")) || (psz = strstr (szDataRootDir, "/Data")))
+	*psz = '\0';
 #	else
 strcpy (szDataRootDir, gameFolders.szGameDir);
 #	endif //__macosx__

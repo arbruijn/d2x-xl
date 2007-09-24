@@ -323,11 +323,19 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 		nStep = (double) pl->nNodes / (double) nChildren;
 		l = nLength / n;
 		plh = pl->pNodes;
+#if 0	//children have completely random nodes
+		for (h = pl->nNodes - (int) nStep, nNode = (int) (nStep / 2 + 0.5); (nNode < h) && nChildren; nNode++) {
+			if (rand () % (int) nStep)
+				continue;
+			nChildren--;
+			pln = plh + nNode;
+#else //children are about nStep nodes away from each other
 		for (h = pl->nNodes - (int) nStep, j = nStep / 2; j < h; j += nStep) {
 			nNode = (int) j + 2 - rand () % 5;
 			if (nNode < 1)
 				nNode = (int) j;
 			pln = plh + nNode;
+#endif
 			pln->pChild = AllocLightning (1, &pln->vPos, &vEnd, vDelta, -1, pl->nLife, 0, l, nAmplitude / n * 2, nAngle, 0,
 													2 * pl->nNodes / n, nChildren / 5, nDepth - 1, nSteps / 2, nSmoothe, bClamp, bPlasma, nStyle, colorP, pl, nNode);
 			}
@@ -1768,8 +1776,8 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 		MoveObjectLightnings (objP);
 	else
 		gameData.lightnings.objects [i] = CreateLightning (
-			2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, 
-			objP->size, objP->size / 8, 0, 0, 25, 3, 1, 5, 1, 1, 0, 0, 0, colorP);
+			2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 100, 
+			objP->size, objP->size / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 0, colorP);
 	}
 }
 

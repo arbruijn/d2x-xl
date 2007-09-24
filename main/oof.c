@@ -2289,11 +2289,11 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #endif
 	if (pf->bTextured) {
 #ifdef _DEBUG
-		fl = -OOF_VecDot (&pf->vNormal, &mView.f);
-		fl = 0.25f + 0.75f * fl;
+		fl = OOF_VecDot (&pf->vNormal, &mView.f);
+		fl = 0.75f + 0.25f * fl;
 		fl = fl * *fLight;
 #else
-		fl = *fLight * (0.25f - 0.75f * OOF_VecDot (&pf->vNormal, &mView.f));
+		fl = *fLight * (0.75f - 0.25f * OOF_VecDot (&pf->vNormal, &mView.f));
 #endif
 //		fl = 1.0f;
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
@@ -2310,18 +2310,22 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			}
 		else if (!bDynLighting) {
 			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->position.vPos);
+#if 0
 			fl = (float) sqrt (fl);
+#endif
 			if (bBright)
 #if 1
 				fl += (1 - fl) / 2;
 #else
 				fl = (float) sqrt (fl);
 #endif
-			if (psc->index != gameStates.render.nFrameFlipFlop + 1)
-				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
-			else
+#if 0
+			if (psc->index == gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (psc->color.red * fl, psc->color.green * fl, psc->color.blue * fl,
 							  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+			else
+#endif
+				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			}
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
@@ -2346,7 +2350,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
 					OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, 1);
 				else
-					G3VertexColor ((fVector *) &vc, (fVector *) phv, -1, pvc + h, 1, 1);
+					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1, 1);
 				}
 			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);

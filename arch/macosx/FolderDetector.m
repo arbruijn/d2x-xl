@@ -82,5 +82,5 @@ void GetOSXAppFolder(char* szDataRootDir, char* szGameDir)
 		strcpy (szDataRootDir, szGameDir);
 	else
 		strcpy (szDataRootDir, path);
-	LogErr ("expected data root folder = '%s'\n", szDataRootDir);	
+	LogErr ("expected Mac OS X data root folder = '%s'\n", szDataRootDir);	
 }
