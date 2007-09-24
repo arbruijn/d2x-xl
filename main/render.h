@@ -133,7 +133,7 @@ return gameOpts->render.cockpit.bGuidedInMainView ? GuidedMslView () : NULL;
 //------------------------------------------------------------------------------
 
 #define ITEM_DEPTHBUFFER_SIZE	100000
-#define ITEM_BUFFER_SIZE		1000000
+#define ITEM_BUFFER_SIZE		100000
 
 typedef enum tRenderItemType {
 	riPoly,

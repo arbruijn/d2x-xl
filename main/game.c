@@ -2393,6 +2393,8 @@ return 1;
 }
 
 
+//	-----------------------------------------------------------------------------
+
 void ComputeSlideSegs (void)
 {
 	int	nSegment, nSide, bIsSlideSeg, tmn;
@@ -2441,8 +2443,9 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
-		slideU = FixMul (gameData.time.xFrame, slideU << 8);
-		slideV = FixMul (gameData.time.xFrame, slideV << 8);
+		i = (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ? 2 : 8;
+		slideU = FixMul (gameData.time.xFrame, slideU << i);
+		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > f2_0) {

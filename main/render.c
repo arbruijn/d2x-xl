@@ -2110,6 +2110,7 @@ gameData.render.pVerts = gameData.segs.fVertices;
 if (cc.and && !gameStates.render.automap.bDisplay)	//all off screen and not rendering the automap	
 	return 0;
 gameStates.render.nState = 0;
+SetNearestDynamicLights (nSegment, 0);
 for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++)
 	RenderSide (segP, sn);
 OglResetTransform ();
@@ -4245,10 +4246,9 @@ else {
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-SetNearestDynamicLights (nSegment, 0);
+VISIT (nSegment);
 if (!RenderSegment (nSegment, gameStates.render.nWindow))
 	return;
-VISIT (nSegment);
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
 	bAutomapVisited [nSegment] = bSetAutomapVisited;
 else if (gameStates.render.nType == 1) {
