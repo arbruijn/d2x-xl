@@ -1688,6 +1688,8 @@ bool G3DrawTexPolyMulti (
 	int			bDrawArrays = 0;
 #endif
 
+if (bDynLight)
+	bDynLight = 1;
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVerts, pointList);
 	return 0;
@@ -1695,10 +1697,12 @@ if (gameStates.render.nShadowBlurPass == 1) {
 if (!bmBot)
 	return 1;
 if (FAST_SHADOWS) {
-	if (bBlend)
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	else
+	if (!bBlend)
 		glDisable (GL_BLEND);
+#if 0
+	else
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 	}
 else {
 	if (gameStates.render.nShadowPass == 1)
@@ -1785,7 +1789,7 @@ if (!bDepthSort) {
 		glColor3i (0,0,0);
 	if (!bLight)
 		bDynLight = 0;
-	gameStates.ogl.bDynObjLight = SHOW_DYN_OBJ_LIGHT;
+	gameStates.ogl.bDynObjLight = bDynLight;
 	}
 
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
@@ -1958,7 +1962,8 @@ OGL_BINDTEX (0);
 glDisable (GL_TEXTURE_2D);
 tMapColor.index =
 lightColor.index = 0;
-glEnable (GL_BLEND);
+if (!bBlend)
+	glEnable (GL_BLEND);
 return 0;
 }
 

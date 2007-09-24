@@ -2264,7 +2264,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tOOF_vector		*pv, *pvn, *phv;
 	tFaceColor		*pvc, vc;
 	grsBitmap		*bmP;
-	int				h, i, j, k;
+	int				h, i, j;
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0);
 	int				bDynLighting = SHOW_DYN_OBJ_LIGHT;
 	float				fl, r, g, b;
@@ -2279,6 +2279,7 @@ pvc = pso->pVertColors;
 //memset (pvc, 0, pso->nVerts * sizeof (tFaceColor));
 glEnable (GL_CULL_FACE);
 glCullFace (GL_BACK);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	if (pf->bReverse)
 		glFrontFace (GL_CCW);
@@ -2319,7 +2320,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #else
 				fl = (float) sqrt (fl);
 #endif
-#if 0
+#if 1
 			if (psc->index == gameStates.render.nFrameFlipFlop + 1)
 				glColor4f (psc->color.red * fl, psc->color.green * fl, psc->color.blue * fl,
 							  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
@@ -2330,29 +2331,24 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
 			phv = pv + (h = pfv->nIndex);
-			for (k = 0; k < 3; k++) {
-				vc.color.red = (float) sqrt (pvc [h].color.red);
-				vc.color.green = (float) sqrt (pvc [h].color.green);
-				vc.color.blue = (float) sqrt (pvc [h].color.blue);
-				if (bBright) {
+			if (bDynLighting && (pvc [h].index != gameStates.render.nFrameFlipFlop + 1))
+				G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1, 0);
+			vc.color.red = (float) sqrt (pvc [h].color.red);
+			vc.color.green = (float) sqrt (pvc [h].color.green);
+			vc.color.blue = (float) sqrt (pvc [h].color.blue);
+			if (bBright) {
 #if 1
-					vc.color.red += (1 - vc.color.red) / 2;
-					vc.color.green += (1 - vc.color.green) / 2;
-					vc.color.blue += (1 - vc.color.blue) / 2;
+				vc.color.red += (1 - vc.color.red) / 2;
+				vc.color.green += (1 - vc.color.green) / 2;
+				vc.color.blue += (1 - vc.color.blue) / 2;
 #else
-					vc.color.red = (float) sqrt (vc.color.red);
-					vc.color.green = (float) sqrt (vc.color.green);
-					vc.color.blue = (float) sqrt (vc.color.blue);
+				vc.color.red = (float) sqrt (vc.color.red);
+				vc.color.green = (float) sqrt (vc.color.green);
+				vc.color.blue = (float) sqrt (vc.color.blue);
 #endif
-					}
 				}
-			if (bDynLighting) {
-				if (pvc [h].index == gameStates.render.nFrameFlipFlop + 1)
-					OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, 1);
-				else
-					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1, 1);
-				}
-			glMultiTexCoord2f (GL_TEXTURE0_ARB, pfv->fu, pfv->fv);
+			OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+			glTexCoord2f (pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);
 			//glVertex4f (phv->x, phv->y, phv->z, 0.5);
 			}	

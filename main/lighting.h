@@ -88,6 +88,6 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 			 gameOpts->render.bDynLighting)
 
 #define	SHOW_DYN_OBJ_LIGHT \
-			(SHOW_DYN_LIGHT && (gameOpts->ogl.bLightObjects || !gameStates.render.nState))
+			(gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects && gameStates.render.nState)
 
 #endif /* _LIGHTING_H */

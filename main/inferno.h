@@ -772,6 +772,7 @@ typedef struct tRenderStates {
 	int nShadowBlurPass;
 	int bShadowMaps;
 	int bLoResShadows;
+	int bUseDynLight;
 	int nSoften;
 	int bHeadlightOn;
 	int bHaveSkyBox;
@@ -1357,6 +1358,7 @@ typedef struct tRenderData {
 	tGameWindowData		window;
 	fix						zMin;
 	fix						zMax;
+	ubyte						bObjectRendered [MAX_OBJECTS_D2X];
 } tRenderData;
 
 //------------------------------------------------------------------------------

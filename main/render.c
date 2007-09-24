@@ -111,8 +111,6 @@ int nRotatedLast [MAX_VERTICES_D2X];
 // access gameData.objs.viewer members.
 
 
-ubyte bObjectRendered [MAX_OBJECTS_D2X];
-
 #ifdef EDITOR
 int	Render_only_bottom = 0;
 int	Bottom_bitmap_num = 9;
@@ -1055,6 +1053,7 @@ fpDrawTexPolyMulti (
 #endif
 	}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+gameStates.ogl.fAlpha = 1;
 	// render the tSegment the tPlayer is in with a transparent color if it is a water or lava tSegment
 	//if (nSegment == gameData.objs.objects->nSegment) 
 #ifdef _DEBUG
@@ -1899,81 +1898,77 @@ void renderObject_search(tObject *objP)
 //------------------------------------------------------------------------------
 
 extern ubyte nDemoDoingRight, nDemoDoingLeft;
-void DoRenderObject(int nObject, int nWindow)
+
+void DoRenderObject (int nObject, int nWindow)
 {
 #ifdef EDITOR
 	int save_3d_outline=0;
 #endif
-	tObject *objP = gameData.objs.objects+nObject, *hObj;
+	tObject *objP = gameData.objs.objects + nObject, *hObj;
 	tWindowRenderedData *wrd = windowRenderedData + nWindow;
-	int count = 0;
+	int nType, count = 0;
 	int n;
 
-	if (!(IsMultiGame || gameOpts->render.bObjects))
-		return;
-#if 0
-	if (obj == gameData.objs.console)
-		return;
-#endif
-	Assert(nObject < MAX_OBJECTS);
-#ifdef _DEBUG
-	if (bObjectRendered [nObject]) {		//already rendered this...
-		Int3();		//get Matt!!!
-		return;
-	}
-#endif
-   if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-	  if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->nType == OBJ_PLAYER) {
-			// A nice fat hack: keeps the tPlayer ship from showing up in the
-			// small extra view when guiding a missile in the big window
-#if TRACE	
-			//con_printf (CONDBG, "Returning from RenderObject prematurely...\n");
-#endif
-  			return; 
-			}
+if (!(IsMultiGame || gameOpts->render.bObjects))
+	return;
+Assert(nObject < MAX_OBJECTS);
+if (gameData.render.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop)	//already rendered this...
+	return;
+if (gameData.demo.nState == ND_STATE_PLAYBACK) {
+	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->nType == OBJ_PLAYER) {
+		// A nice fat hack: keeps the tPlayer ship from showing up in the
+		// small extra view when guiding a missile in the big window
+  		return; 
 		}
-	//	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
-	//	that the guided missile system will know what gameData.objs.objects to look at.
-	//	I didn't know we had guided missiles before the release of D1. --MK
-	if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER) ||
-		 ((objP->nType == OBJ_WEAPON) && ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))) {
-		//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
-		//	This peculiar piece of code makes us keep track of the most recently rendered gameData.objs.objects, which
-		//	are probably the higher priority gameData.objs.objects, without overflowing the buffer
-		if (wrd->numObjects >= MAX_RENDERED_OBJECTS) {
-			Int3();
-			wrd->numObjects /= 2;
-		}
-		wrd->renderedObjects [wrd->numObjects++] = nObject;
 	}
-	if ((count++ > MAX_OBJECTS) || (objP->next == nObject)) {
-		Int3();					// infinite loop detected
-		objP->next = -1;		// won't this clean things up?
-		return;					// get out of this infinite loop!
+//	Added by MK on 09/07/94 (at about 5:28 pm, CDT, on a beautiful, sunny late summer day!) so
+//	that the guided missile system will know what gameData.objs.objects to look at.
+//	I didn't know we had guided missiles before the release of D1. --MK
+nType = objP->nType;
+if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
+	 ((nType == OBJ_WEAPON) && ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))) {
+	//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
+	//	This peculiar piece of code makes us keep track of the most recently rendered objects, which
+	//	are probably the higher priority objects, without overflowing the buffer
+	if (wrd->numObjects >= MAX_RENDERED_OBJECTS) {
+		Int3();
+		wrd->numObjects /= 2;
+		}
+	wrd->renderedObjects [wrd->numObjects++] = nObject;
+	}
+if ((count++ > MAX_OBJECTS) || (objP->next == nObject)) {
+	Int3();					// infinite loop detected
+	objP->next = -1;		// won't this clean things up?
+	return;					// get out of this infinite loop!
 	}
 	//g3_drawObject(objP->class_id, &objP->position.vPos, &objP->position.mOrient, objP->size);
 	//check for editor tObject
 #ifdef EDITOR
-	if (gameStates.app.nFunctionMode==FMODE_EDITOR && nObject==CurObject_index) {
-		save_3d_outline = g3d_interp_outline;
-		g3d_interp_outline=1;
+if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index) {
+	save_3d_outline = g3d_interp_outline;
+	g3d_interp_outline=1;
 	}
-	if (bSearchMode)
-		renderObject_search(objP);
+if (bSearchMode)
+	renderObject_search(objP);
 	else
 #endif
-		//NOTE LINK TO ABOVE
-	bObjectRendered [nObject] = RenderObject (objP, nWindow, 0);
-	for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
-		hObj = gameData.objs.objects + n;
-		Assert(hObj->nType == OBJ_FIREBALL);
-		Assert(hObj->controlType == CT_EXPLOSION);
-		Assert(hObj->flags & OF_ATTACHED);
-		RenderObject (hObj, nWindow, 1);
+	//NOTE LINK TO ABOVE
+if (RenderObject (objP, nWindow, 0))
+	gameData.render.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
+for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
+#ifdef _DEBUG
+	hObj = gameData.objs.objects + n;
+	Assert (hObj->nType == OBJ_FIREBALL);
+	Assert (hObj->controlType == CT_EXPLOSION);
+	Assert (hObj->flags & OF_ATTACHED);
+	RenderObject (hObj, nWindow, 1);
+#else
+	RenderObject (gameData.objs.objects + n, nWindow, 1);
+#endif
 	}
 #ifdef EDITOR
-	if (gameStates.app.nFunctionMode==FMODE_EDITOR && nObject==CurObject_index)
-		g3d_interp_outline = save_3d_outline;
+if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index)
+	g3d_interp_outline = save_3d_outline;
 #endif
 }
 
@@ -3252,7 +3247,7 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
 for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
-	if (!bObjectRendered [h])
+	if (gameData.render.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
 	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
@@ -4138,7 +4133,6 @@ windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;
 #endif
-memset (bObjectRendered, 0, (gameData.objs.nLastObject + 1) * sizeof (bObjectRendered [0]));
 	//set up for rendering
 
 if (((gameStates.render.nRenderPass <= 0) && 
@@ -4274,6 +4268,7 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 gameData.threads.vertColor.data.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 
+gameStates.render.bUseDynLight = SHOW_DYN_LIGHT;
 gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras && 
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
 										 !gameStates.render.cameras.bActive;

@@ -2964,8 +2964,9 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	if ((lightOpts.nMethod >= 0) && gameOpts->render.bDynLighting) {
-		if (!gameStates.app.bGameRunning) {
+	if (/*(lightOpts.nMethod >= 0) &&*/ gameOpts->render.bDynLighting && !IsMultiGame) {
+		//if (!gameStates.app.bGameRunning) 
+			{
 			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
 			*szLightRange = *(TXT_LIGHT_RANGE - 1);
 			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 2, KEY_R, HTX_ADVRND_LIGHTRANGE);
