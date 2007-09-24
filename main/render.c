@@ -4425,10 +4425,14 @@ if ((nDepth < renderItems.zMin) || (nDepth > renderItems.zMax))
 AllocRenderItems ();
 if (!renderItems.nFreeItems)
 	return 0;
+#if 1
+	nOffset = (int) ((double) (nDepth - renderItems.zMin) * renderItems.zScale);
+#else
 if (nIndex < renderItems.zMin)
 	nOffset = 0;
 else
 	nOffset = (int) ((double) (nIndex - renderItems.zMin) * renderItems.zScale);
+#endif
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = renderItems.pDepthBuffer + nOffset;
