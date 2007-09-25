@@ -2263,12 +2263,12 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
 	tOOF_vector		*pv, *pvn, *phv;
-	tFaceColor		*pvc, vc;
+	tFaceColor		*pvc, vc, sc;
 	grsBitmap		*bmP;
 	int				h, i, j;
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0);
 	int				bDynLighting = gameStates.render.bApplyDynLight;
-	float				fl, r, g, b;
+	float				fl, r, g, b, fAlpha = po->fAlpha;
 
 #if DBG_SHADOWS
 if (bShadowTest && (bShadowTest < 4))
@@ -2281,6 +2281,11 @@ pvc = pso->pVertColors;
 glEnable (GL_CULL_FACE);
 glCullFace (GL_BACK);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (!bDynLighting) {
+	sc = *AvgSgmColor (objP->nSegment, &objP->position.vPos);
+	if (sc.index != gameStates.render.nFrameFlipFlop + 1)
+		sc.color.red = sc.color.green = sc.color.blue = 1;
+	}
 for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 	if (pf->bReverse)
 		glFrontFace (GL_CCW);
@@ -2297,6 +2302,8 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #else
 		fl = *fLight * (0.75f - 0.25f * OOF_VecDot (&pf->vNormal, &mView.f));
 #endif
+		if (fl > 1)
+			fl = 1;
 //		fl = 1.0f;
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
 		if (bmP->glTexture && (bmP->glTexture->handle < 0))
@@ -2308,10 +2315,9 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			glColor4f (fl * pso->glowInfo.color.r, 
 						  fl * pso->glowInfo.color.g, 
 						  fl * pso->glowInfo.color.b, 
-						  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+						  pso->pfAlpha [pfv->nIndex] * fAlpha);
 			}
 		else if (!bDynLighting) {
-			tFaceColor *psc = AvgSgmColor (objP->nSegment, &objP->position.vPos);
 #if 0
 			fl = (float) sqrt (fl);
 #endif
@@ -2321,34 +2327,31 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 #else
 				fl = (float) sqrt (fl);
 #endif
-#if 1
-			if (psc->index == gameStates.render.nFrameFlipFlop + 1)
-				glColor4f (psc->color.red * fl, psc->color.green * fl, psc->color.blue * fl,
-							  pso->pfAlpha [pfv->nIndex] * po->fAlpha);
-			else
-#endif
-				glColor4f (fl, fl, fl, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+			glColor4f (sc.color.red * fl, sc.color.green * fl, sc.color.blue * fl,
+						  pso->pfAlpha [pfv->nIndex] * fAlpha);
 			}
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts; j; j--, pfv++) {
 			phv = pv + (h = pfv->nIndex);
-			if (bDynLighting && (pvc [h].index != gameStates.render.nFrameFlipFlop + 1))
-				G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1, 0);
-			vc.color.red = (float) sqrt (pvc [h].color.red);
-			vc.color.green = (float) sqrt (pvc [h].color.green);
-			vc.color.blue = (float) sqrt (pvc [h].color.blue);
-			if (bBright) {
+			if (bDynLighting) {
+				if (pvc [h].index != gameStates.render.nFrameFlipFlop + 1)
+					G3VertexColor ((fVector *) (pvn + h), (fVector *) phv, -1, pvc + h, 1, 0);
+				vc.color.red = (float) sqrt (pvc [h].color.red);
+				vc.color.green = (float) sqrt (pvc [h].color.green);
+				vc.color.blue = (float) sqrt (pvc [h].color.blue);
+				if (bBright) {
 #if 1
-				vc.color.red += (1 - vc.color.red) / 2;
-				vc.color.green += (1 - vc.color.green) / 2;
-				vc.color.blue += (1 - vc.color.blue) / 2;
+					vc.color.red += (1 - vc.color.red) / 2;
+					vc.color.green += (1 - vc.color.green) / 2;
+					vc.color.blue += (1 - vc.color.blue) / 2;
 #else
-				vc.color.red = (float) sqrt (vc.color.red);
-				vc.color.green = (float) sqrt (vc.color.green);
-				vc.color.blue = (float) sqrt (vc.color.blue);
+					vc.color.red = (float) sqrt (vc.color.red);
+					vc.color.green = (float) sqrt (vc.color.green);
+					vc.color.blue = (float) sqrt (vc.color.blue);
 #endif
+					}
+				OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, pso->pfAlpha [pfv->nIndex] * fAlpha);
 				}
-			OglColor4sf (vc.color.red, vc.color.green, vc.color.blue, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
 			glTexCoord2f (pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);
 			//glVertex4f (phv->x, phv->y, phv->z, 0.5);
@@ -2384,7 +2387,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		r = fl * (float) pf->texProps.color.r / 255.0f;
 		g = fl * (float) pf->texProps.color.g / 255.0f;
 		b = fl * (float) pf->texProps.color.b / 255.0f;
-		glColor4f (r, g, b, pso->pfAlpha [pfv->nIndex] * po->fAlpha);
+		glColor4f (r, g, b, pso->pfAlpha [pfv->nIndex] * fAlpha);
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
 			glVertex3fv ((GLfloat *) (pv + pfv->nIndex));

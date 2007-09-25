@@ -1587,17 +1587,25 @@ if (gameData.render.lights.dynamic.shader.nActiveLights > MAX_NEAREST_LIGHTS) {
 return gameData.render.lights.dynamic.shader.nActiveLights;
 }
 //------------------------------------------------------------------------------
+
 extern float fLightRanges [3];
+extern short nDbgSeg;
+
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
 {
 	tFaceColor	c, *pvc, *psc = gameData.render.color.segments + nSegment;
 	short			i, *pv;
 	vmsVector	vCenter, vVertex;
 	float			d, ds;
+
+if (nSegment == nDbgSeg)
+	nSegment = nSegment;
+#if 0
 if (!gameOpts->render.bDynLighting) {
 	psc->index = !gameStates.render.nFrameFlipFlop + 1;
 	return psc;
 	}
+#endif
 if (psc->index == gameStates.render.nFrameFlipFlop + 1)
 	return psc;
 if (pvPos) {
@@ -1674,10 +1682,12 @@ return psc;
 }
 
 //------------------------------------------------------------------------------
+
 int AddOglHeadLight (tObject *objP)
 {
 	static float spotExps [] = {3.0f, 5.0f, 10.0f};
 	static float spotAngles [] = {0.95f, 0.825f, 0.25f};
+
 if (gameOpts->render.bDynLighting) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
@@ -1696,6 +1706,7 @@ if (gameOpts->render.bDynLighting) {
 return -1;
 }
 //------------------------------------------------------------------------------
+
 void RemoveOglHeadLight (tObject *objP)
 {
 if (gameOpts->render.bDynLighting) {
@@ -1704,6 +1715,7 @@ if (gameOpts->render.bDynLighting) {
 	}
 }
 //------------------------------------------------------------------------------
+
 void UpdateOglHeadLight (void)
 {
 	tDynLight	*pl;
