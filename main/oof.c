@@ -2266,7 +2266,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	grsBitmap		*bmP;
 	int				h, i, j;
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0);
-	int				bDynLighting = SHOW_DYN_OBJ_LIGHT;
+	int				bDynLighting = gameStates.render.bApplyDynLight;
 	float				fl, r, g, b;
 
 #if DBG_SHADOWS

@@ -26,11 +26,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
 #define MULTI_THREADED_SHADOWS	0
-#define MULTI_THREADED_LIGHTS		0
+#define MULTI_THREADED_LIGHTS	0
 #define MULTI_THREADED_PRECALC	1
 
 #define USE_SEGRADS		0
-#define CALC_SEGRADS		1
+#define CALC_SEGRADS	1
 
 #ifdef _DEBUG
 #	define	SHADOWS	1
@@ -773,6 +773,7 @@ typedef struct tRenderStates {
 	int bShadowMaps;
 	int bLoResShadows;
 	int bUseDynLight;
+	int bApplyDynLight;
 	int nSoften;
 	int bHeadlightOn;
 	int bHaveSkyBox;

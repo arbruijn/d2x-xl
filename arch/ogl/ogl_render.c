@@ -1673,7 +1673,7 @@ bool G3DrawTexPolyMulti (
 	int			bShaderMerge = 0,
 					bSuperTransp = 0;
 	int			bLight = 1, 
-					bDynLight = SHOW_DYN_OBJ_LIGHT && !gameStates.app.bEndLevelSequence, 
+					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence, 
 					bDepthSort,
 					bResetColor = 0,
 					bDrawOverlay = 0;

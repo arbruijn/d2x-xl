@@ -4243,7 +4243,9 @@ if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
 	bAutomapVisited [nSegment] = bSetAutomapVisited;
 else if (gameStates.render.nType == 1) {
 	SetNearestStaticLights (nSegment, 1);
+	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
 	RenderObjList (nn, gameStates.render.nWindow);
+	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
 #if 1
 	gameData.render.lights.dynamic.shader.nActiveLights = gameData.render.lights.dynamic.shader.iStaticLights;
 #else
@@ -4264,6 +4266,7 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 gameData.threads.vertColor.data.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.threads.vertColor.data.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 
+gameStates.render.bApplyDynLight =
 gameStates.render.bUseDynLight = SHOW_DYN_LIGHT;
 gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras && 
 									    (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)) && 
