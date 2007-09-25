@@ -1598,13 +1598,9 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
 	vmsVector	vCenter, vVertex;
 	float			d, ds;
 
+#ifdef _DEBUG
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
-#if 0
-if (!gameOpts->render.bDynLighting) {
-	psc->index = !gameStates.render.nFrameFlipFlop + 1;
-	return psc;
-	}
 #endif
 if (psc->index == gameStates.render.nFrameFlipFlop + 1)
 	return psc;
