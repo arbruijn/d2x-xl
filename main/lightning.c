@@ -147,15 +147,15 @@ vSign.p.y = vd.p.y ? vd.p.y / abs (vd.p.y) : 0;
 vSign.p.z = vd.p.z ? vd.p.z / abs (vd.p.z) : 0;
 nSign = VECSIGN (vd);
 do {
-	vr.p.x = /*vSign.p.x ? vSign.p.x * rand () :*/ F1_0 / 4 - rand ();
-	vr.p.y = /*vSign.p.y ? vSign.p.y * rand () :*/ F1_0 / 4 - rand ();
-	vr.p.z = /*vSign.p.z ? vSign.p.z * rand () :*/ F1_0 / 4 - rand ();
+	vr.p.x = /*vSign.p.x ? vSign.p.x * d_rand () :*/ F1_0 / 4 - d_rand ();
+	vr.p.y = /*vSign.p.y ? vSign.p.y * d_rand () :*/ F1_0 / 4 - d_rand ();
+	vr.p.z = /*vSign.p.z ? vSign.p.z * d_rand () :*/ F1_0 / 4 - d_rand ();
 	VmVecNormalize (&vr);
 #if 0
 	if (nSign != VECSIGN (vr)) {
 		int i;
 		do {
-			i = rand () % 3;
+			i = d_rand () % 3;
 			} while (!vr.v [i]);
 		vr.v [i] = -vr.v [i];
 		}
@@ -216,9 +216,9 @@ if (pl->bInPlane) {
 	}
 else {
 	do {
-		vDelta->p.x = F1_0 / 4 - rand ();
-		vDelta->p.y = F1_0 / 4 - rand ();
-		vDelta->p.z = F1_0 / 4 - rand ();
+		vDelta->p.x = F1_0 / 4 - d_rand ();
+		vDelta->p.y = F1_0 / 4 - d_rand ();
+		vDelta->p.z = F1_0 / 4 - d_rand ();
 		VmVecNormalize (vDelta);
 		} while (abs (VmVecDot (&vDir, vDelta)) > 9 * F1_0 / 10);
 	VmVecNormal (vDelta + 1, &vPos, &pl->vEnd, vDelta);
@@ -325,13 +325,13 @@ for (i = nLightnings, pl = pfRoot; i; i--, pl++) {
 		plh = pl->pNodes;
 #if 0	//children have completely random nodes
 		for (h = pl->nNodes - (int) nStep, nNode = (int) (nStep / 2 + 0.5); (nNode < h) && nChildren; nNode++) {
-			if (rand () % (int) nStep)
+			if (d_rand () % (int) nStep)
 				continue;
 			nChildren--;
 			pln = plh + nNode;
 #else //children are about nStep nodes away from each other
 		for (h = pl->nNodes - (int) nStep, j = nStep / 2; j < h; j += nStep) {
-			nNode = (int) j + 2 - rand () % 5;
+			nNode = (int) j + 2 - d_rand () % 5;
 			if (nNode < 1)
 				nNode = (int) j;
 			pln = plh + nNode;
@@ -726,7 +726,7 @@ for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++) {
 		}
 	}
 if (h = nAmplitude - nMaxDist) {
-	nMaxDist += (rand () % 5) * h / 4;
+	nMaxDist += (d_rand () % 5) * h / 4;
 	for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++)
 		VmVecScaleFrac (&pln->vOffs, nAmplitude, nMaxDist);
 	}
@@ -746,10 +746,10 @@ void CreateLightningPath (tLightning *pl, int bSeed, int nDepth)
 vBase [0] = vPos [0] = pl->vPos;
 vBase [1] = vPos [1] = pl->vEnd;
 if (bSeed) {
-	nSeed [0] = rand ();
-	nSeed [1] = rand ();
-	nSeed [0] *= rand ();
-	nSeed [1] *= rand ();
+	nSeed [0] = d_rand ();
+	nSeed [1] = d_rand ();
+	nSeed [0] *= d_rand ();
+	nSeed [1] *= d_rand ();
 	}
 #ifdef _DEBUG
 else
@@ -1885,14 +1885,14 @@ if (i < 0) {
 		return;
 #endif
 	vPos = pointList [0]->p3_src;
-	vEnd = pointList [1 + rand () % (nVertices - 1)]->p3_src;
+	vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_src;
 	VmVecNormal (&vNorm, &vPos, &pointList [1]->p3_src, &vEnd);
 	VmVecScaleInc (&vPos, &vNorm, F1_0 / 64);
 	VmVecScaleInc (&vEnd, &vNorm, F1_0 / 64);
 	VmVecNormal (&vDelta, &vNorm, &vPos, &vEnd);
 	h = VmVecDist (&vPos, &vEnd);
-	i = CreateLightning (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + rand () % 2000, 0, 
-								h, h / 4 + rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 1, &color);
+	i = CreateLightning (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0, 
+								h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 1, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

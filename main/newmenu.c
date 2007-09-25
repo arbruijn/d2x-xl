@@ -279,7 +279,13 @@ else if (!gameOpts->menus.altBg.bHave) {
 	if ((pAltBg = GrCreateBitmap (0, 0, 1))) {
 		memset (pAltBg, 0, sizeof (*pAltBg));
 		gameOpts->menus.altBg.bHave = 
-			ReadTGA (gameOpts->menus.altBg.szName, NULL, pAltBg, 
+			ReadTGA (gameOpts->menus.altBg.szName, 
+#ifdef __linux__
+						gameFolders.szTempDir,
+#else
+						NULL, 
+#endif
+						pAltBg, 
 						(gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255), 
 						gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale, 0) ? 1 : -1;
 		}

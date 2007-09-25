@@ -23,6 +23,7 @@
 #include  "strutil.h"
 #include  "hudmsg.h"
 #include  "ogl_init.h"
+#include  "tga.h"
 #include  "oof.h"
 
 //------------------------------------------------------------------------------
