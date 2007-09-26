@@ -961,12 +961,18 @@ else {
  		 ((IsCoopGame) && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 		size /= 2;
 	}
+
+	// check hit sphere collisions
+if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &thisObjP->position.vPos, size + rad)))
+	return 0;
+
 bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [thisObjP->id]);
 bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [otherObjP->id]);
-if (otherObjP->nType == OBJ_WEAPON)
-	otherObjP = otherObjP;
-if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL)) {
-#if 1//def RELEASE
+if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && 
+	 (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL) && 
+	 (thisObjP->nType != OBJ_HOSTAGE) && (otherObjP->nType != OBJ_HOSTAGE) && 
+	 (thisObjP->nType != OBJ_POWERUP) && (otherObjP->nType != OBJ_POWERUP)) {
+#if 0//def RELEASE
 	dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
 	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
 	if (dist > (size = thisObjP->size + otherObjP->size))
@@ -1011,10 +1017,6 @@ if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && (thisObjP->nTy
 			}
 		}
 	}
-else
-	// check hit sphere collisions
-	if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &thisObjP->position.vPos, size + rad)))
-		return 0;
 *intP = hitP;
 return dist;
 }

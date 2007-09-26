@@ -1552,14 +1552,22 @@ int OglEnableClientStates (int bTexCoord, int bColor)
 {
 if (!OglEnableClientState (GL_VERTEX_ARRAY))
 	return 0;
-if (bTexCoord && !OglEnableClientState (GL_TEXTURE_COORD_ARRAY)) {
-	OglDisableClientStates (0, 0);
-	return 0;
+if (bTexCoord) {
+	if (!OglEnableClientState (GL_TEXTURE_COORD_ARRAY)) {
+		OglDisableClientStates (0, 0);
+		return 0;
+		}
 	}
-if (bColor && !OglEnableClientState (GL_COLOR_ARRAY)) {
-	OglDisableClientStates (bTexCoord, 0);
-	return 0;
+else
+	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+if (bColor) {
+	if (!OglEnableClientState (GL_COLOR_ARRAY)) {
+		OglDisableClientStates (bTexCoord, 0);
+		return 0;
+		}
 	}
+else
+	glDisableClientState (GL_COLOR_ARRAY);
 glClientActiveTexture (GL_TEXTURE0_ARB);
 return 1;
 }

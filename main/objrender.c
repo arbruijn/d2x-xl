@@ -2176,7 +2176,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			if (OglBindBmTex (bmpCorona, 1, -1)) 
 				return;
 			OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
-			glColor4f (pc->red, pc->green, pc->blue, 0.5f);
+			glColor4f (pc->red, pc->green, pc->blue, 0.33f);
 			if (bDrawArrays) {
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
 				glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlTrail);

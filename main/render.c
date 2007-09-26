@@ -5061,6 +5061,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 	}
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 EndRenderSmoke (NULL);
+OglDisableClientStates (1, 1);
 if (EGI_FLAG (bShadows, 0, 1, 0)) 
 	glEnable (GL_STENCIL_TEST);
 glDepthFunc (GL_LEQUAL);
