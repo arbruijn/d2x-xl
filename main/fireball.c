@@ -172,7 +172,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 	if (obj0P->flags & OF_SHOULD_BE_DEAD)
 		continue;
 	if (t == OBJ_WEAPON) {
-		if ((id != PROXMINE_ID) && (id != SMARTMINE_ID) && (id != SMALLMINE_ID)) 
+		if (!WeaponIsMine (obj0P->id)) 
 		continue;
 		}
 	else if (t == OBJ_ROBOT) {
@@ -199,7 +199,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 	VmVecScale (&pos_hit, FixDiv (obj0P->size, obj0P->size + dist));
 	if (t == OBJ_WEAPON) {
 		PhysApplyForce (obj0P, &vForce);
-		if (((id == PROXMINE_ID) || (id == SMARTMINE_ID)) && (FixMul (dist, force) > i2f (8000))) {	//prox bombs have chance of blowing up
+		if (WeaponIsMine (obj0P->id) && (FixMul (dist, force) > i2f (8000))) {	//prox bombs have chance of blowing up
 			KillObject (obj0P);
 			ExplodeBadassWeapon (obj0P, &obj0P->position.vPos);
 			}

@@ -401,7 +401,7 @@ else {
 
 //------------------------------------------------------------------------------
 //draw an tObject that is a texture-mapped rod
-void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int lighted)
+void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
 	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix light;
@@ -409,14 +409,18 @@ void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int lighted)
 	g3sPoint top_p, bot_p;
 
 PIGGY_PAGE_IN (bmi, 0);
-bmP = BmOverride (bmP);
-//bmP->bm_handle = bmi.index;
+if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
+	OglLoadBmTexture (bmP, 1, -1, gameOpts->render.bDepthSort <= 0);
+	bmP = BM_OVERRIDE (bmP);
+	if (BM_FRAMES (bmP))
+		bmP = BM_FRAMES (bmP) + iFrame;
+	}
 VmVecCopyScale (&delta, &objP->position.mOrient.uVec, objP->size);
 VmVecAdd (&top_v, &objP->position.vPos, &delta);
 VmVecSub (&bot_v, &objP->position.vPos, &delta);
 G3TransformAndEncodePoint (&top_p, &top_v);
 G3TransformAndEncodePoint (&bot_p, &bot_v);
-if (lighted)
+if (bLit)
 	light = ComputeObjectLight (objP, &top_p.p3_vec);
 else
 	light = f1_0;
@@ -2376,8 +2380,7 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_WEAPON) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
-			if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && 
-				 ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))
+			if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->id) && (objP->id != SMALLMINE_ID))
 				ConvertWeaponToVClip (objP);
 			else {
 
@@ -2489,7 +2492,7 @@ switch (objP->renderType) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
 			if (objP->nType == OBJ_WEAPON) {
-				if ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID) || (objP->id == SMALLMINE_ID)) {
+				if (WeaponIsMine (objP->id)) {
 					if (!DoObjectSmoke (objP))
 						DrawWeaponVClip (objP); 
 					}	

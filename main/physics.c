@@ -674,7 +674,7 @@ retryMove:
 	else if (fviResult == HIT_OBJECT) {
 		tObject	*hitObjP = gameData.objs.objects + hi.hit.nObject;
 
-		if ((hitObjP->nType == OBJ_WEAPON) && ((hitObjP->id == PROXMINE_ID) || (hitObjP->id == SMARTMINE_ID)))
+		if (ObjIsPlayerMine (hitObjP))
 			nTries--;
 		}
 

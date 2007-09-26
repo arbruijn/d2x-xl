@@ -106,7 +106,7 @@ return nFrames;
 #define	THRUSTER_ALPHA		(1.0 / 3.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (tObject *objP, fix timeToLive, int lighted, int nVClip, tRgbaColorf *color)
+void DrawVClipObject (tObject *objP, fix timeToLive, int bLit, int nVClip, tRgbaColorf *color)
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + nVClip;
@@ -126,7 +126,7 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {
 	alpha = (ta >= 0) ? alpha - ta : alpha + ta;
 	}
 else if (objP->nType == OBJ_WEAPON) {
-	if ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID) || (objP->id == SMALLMINE_ID)) 
+	if (WeaponIsMine (objP->id)) 
 		alpha = 1.0;
 	else
 		alpha = WEAPON_ALPHA;
@@ -136,9 +136,9 @@ if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
 	glDepthMask (0);	//don't set z-buffer for transparent objects
 #endif
 if (vcP->flags & VF_ROD)
-	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], lighted);
+	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], bLit, iFrame);
 else {
-	Assert(lighted == 0);		//blob cannot now be lighted
+	Assert(bLit == 0);		//blob cannot now be bLit
 	DrawObjectBlob (objP, vcP->frames [0], vcP->frames [iFrame], iFrame, color, (float) alpha);
 	}
 #if 1

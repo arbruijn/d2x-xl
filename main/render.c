@@ -1926,7 +1926,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 //	I didn't know we had guided missiles before the release of D1. --MK
 nType = objP->nType;
 if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
-	 ((nType == OBJ_WEAPON) && ((objP->id == PROXMINE_ID) || (objP->id == SMARTMINE_ID)))) {
+	 ((nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->id))) {
 	//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
 	//	This peculiar piece of code makes us keep track of the most recently rendered objects, which
 	//	are probably the higher priority objects, without overflowing the buffer

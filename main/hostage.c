@@ -41,13 +41,13 @@ static char rcsid[] = "$Id: hostage.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 //------------- Globaly used hostage variables --------------------------------
 
 int nHostageTypes = 0;		  			// Number of hostage types
-int nHostageVClips[MAX_HOSTAGE_TYPES];	// tVideoClip num for each tpye of hostage
+int nHostageVClips [MAX_HOSTAGE_TYPES];	// tVideoClip num for each tpye of hostage
 
 
 //-------------- Renders a hostage --------------------------------------------
 void DrawHostage(tObject *objP)
 {
-DrawObjectRodTexPoly(objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames[objP->rType.vClipInfo.nCurFrame], 1);
+DrawObjectRodTexPoly (objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 1, objP->rType.vClipInfo.nCurFrame);
 }
 
 

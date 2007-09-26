@@ -183,4 +183,32 @@ return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless);
 
 //	-----------------------------------------------------------------------------------------------------------
 
+static inline int WeaponIsPlayerMine (int nId)
+{
+return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID) || (nId == ROBOT_SMARTMINE_ID);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+static inline int WeaponIsMine (int nId)
+{
+return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID) || (nId == ROBOT_SMARTMINE_ID);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+static inline int ObjIsPlayerMine (tObject *objP)
+{
+return (objP->nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->id);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
+static inline int ObjIsMine (tObject *objP)
+{
+return (objP->nType == OBJ_WEAPON) && WeaponIsMine (objP->id);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 #endif /* _LASER_H */

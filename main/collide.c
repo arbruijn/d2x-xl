@@ -1300,7 +1300,7 @@ return 1;
 //	If both gameData.objs.objects are weapons, weaken the weapon.
 void MaybeKillWeapon (tObject *weaponP, tObject *otherObjP)
 {
-if ((weaponP->id == PROXMINE_ID) || (weaponP->id == SMARTMINE_ID) || (weaponP->id == SMALLMINE_ID)) {
+if (WeaponIsMine (weaponP->id)) {
 	KillObject (weaponP);
 	return;
 	}
@@ -2506,7 +2506,7 @@ return 1;
 int CollideWeaponAndDebris (tObject * weaponP, tObject * debris, vmsVector *vHitPt) 
 { 
 //	Hack! Prevent debris from causing bombs spewed at tPlayer death to detonate!
-if ((weaponP->id == PROXMINE_ID) || (weaponP->id == SMARTMINE_ID)) {
+if (WeaponIsMine (weaponP->id)) {
 	if (weaponP->cType.laserInfo.creationTime + F1_0/2 > gameData.time.xGame)
 		return 1;
 	}
