@@ -278,12 +278,12 @@ bool OglUBitMapMC(int x, int y,grsBitmap *bm,int c)
 	GLdouble u1,u2,v1,v2;
 
 r_ubitmapc++;
-x+=grdCurCanv->cv_bitmap.bm_props.x;
-y+=grdCurCanv->cv_bitmap.bm_props.y;
+x+=grdCurCanv->cvBitmap.bmProps.x;
+y+=grdCurCanv->cvBitmap.bmProps.y;
 xo=x/(double)last_width;
-xf=(bm->bm_props.w+x)/(double)last_width;
+xf=(bm->bmProps.w+x)/(double)last_width;
 yo=1.0-y/(double)last_height;
-yf=1.0-(bm->bm_props.h+y)/(double)last_height;
+yf=1.0-(bm->bmProps.h+y)/(double)last_height;
 
 glActiveTextureARB(GL_TEXTURE0_ARB);
 OglBindBmTex(bm);
@@ -296,34 +296,34 @@ glEnable (GL_ALPHA_TEST);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-if (bm->bm_props.x==0) {
+if (bm->bmProps.x==0) {
 	u1=0;
-	if (bm->bm_props.w==bm->glTexture->w)
+	if (bm->bmProps.w==bm->glTexture->w)
 		u2=bm->glTexture->u;
 	else
-		u2=(bm->bm_props.w+bm->bm_props.x)/(double)bm->glTexture->tw;
+		u2=(bm->bmProps.w+bm->bmProps.x)/(double)bm->glTexture->tw;
 	}
 else {
-	u1=bm->bm_props.x/(double)bm->glTexture->tw;
-	u2=(bm->bm_props.w+bm->bm_props.x)/(double)bm->glTexture->tw;
+	u1=bm->bmProps.x/(double)bm->glTexture->tw;
+	u2=(bm->bmProps.w+bm->bmProps.x)/(double)bm->glTexture->tw;
 	}
-if (bm->bm_props.y==0) {
+if (bm->bmProps.y==0) {
 	v1=0;
-	if (bm->bm_props.h==bm->glTexture->h)
+	if (bm->bmProps.h==bm->glTexture->h)
 		v2=bm->glTexture->v;
 	else
-		v2=(bm->bm_props.h+bm->bm_props.y)/(double)bm->glTexture->th;
+		v2=(bm->bmProps.h+bm->bmProps.y)/(double)bm->glTexture->th;
 	}
 else{
-	v1=bm->bm_props.y/(double)bm->glTexture->th;
-	v2=(bm->bm_props.h+bm->bm_props.y)/(double)bm->glTexture->th;
+	v1=bm->bmProps.y/(double)bm->glTexture->th;
+	v2=(bm->bmProps.h+bm->bmProps.y)/(double)bm->glTexture->th;
 	}
 
 glBegin(GL_QUADS);
 if (c < 0)
 	glColor3d (1.0,1.0,1.0);
 else
-	glColor3d (CPAL2Tr (bmP->bm_palette, c), CPAL2Tg (bmP->bm_palette, c), CPAL2Tb (bmP->bm_palette, c));
+	glColor3d (CPAL2Tr (bmP->bmPalette, c), CPAL2Tg (bmP->bmPalette, c), CPAL2Tb (bmP->bmPalette, c));
 glTexCoord2f (u1, v1);
 glVertex2d (xo, yo);
 glTexCoord2f (u2, v1);

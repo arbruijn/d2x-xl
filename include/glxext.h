@@ -320,7 +320,7 @@ typedef XID GLXVideoSourceSGIX;
 
 #ifndef GLX_SGIX_fbconfig
 typedef XID GLXFBConfigIDSGIX;
-typedef struct __GLXFBConfigRec *GLXFBConfigSGIX;
+typedef struct GLXFBConfigRec *GLXFBConfigSGIX;
 #endif
 
 #ifndef GLX_SGIX_pbuffer

@@ -19,7 +19,7 @@ typedef	GLXPbuffer	HPBUFFER;
 #endif
 
 
-typedef struct _ogl_pbuffer {
+typedef struct ogl_pbuffer {
 	HPBUFFER	hBuf;
 	HGLDC		hDC;
 	HGLRC		hRC;

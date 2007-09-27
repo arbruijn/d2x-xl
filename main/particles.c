@@ -204,7 +204,7 @@ if (nFrames > 1) {
 void AdjustParticleBrightness (grsBitmap *bmP)
 {
 	grsBitmap	*bmfP;
-	int			i, j = bmP->bm_data.alt.bm_frameCount;
+	int			i, j = bmP->bmData.alt.bmFrameCount;
 	double		*dFrameBright, dAvgBright = 0, dMaxBright = 0;
 
 if (j < 2)
@@ -254,7 +254,7 @@ if (TGAMakeSquare (bmP)) {
 	}
 }
 #endif
-BM_FRAMECOUNT (bmP) = bmP->bm_props.h / bmP->bm_props.w;
+BM_FRAMECOUNT (bmP) = bmP->bmProps.h / bmP->bmProps.w;
 #if 0
 if (OglSetupBmFrames (BmOverride (bmP), 0, 0, 0)) {
 	AdjustParticleBrightness (bmP);
@@ -266,7 +266,7 @@ OglLoadBmTexture (bmP, 0, 3, 1);
 if (nType == PARTICLE_TYPES - 1)
 	nParticleFrames [bPointSprites][nType] = BM_FRAMECOUNT (bmP);
 else {
-	h = bmP->bm_props.w / 64;
+	h = bmP->bmProps.w / 64;
 	nParticleFrames [bPointSprites][nType] = h;
 	}
 return *flagP > 0;

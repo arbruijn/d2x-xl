@@ -35,11 +35,11 @@
 int OglCreateCamBuf (tCamera *pc)
 {
 #if RENDER2TEXTURE == 1
-if (!OglCreatePBuffer (&pc->pb, pc->texBuf.bm_props.w, pc->texBuf.bm_props.h, 0))
+if (!OglCreatePBuffer (&pc->pb, pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, 0))
 	return 0;
 pc->glTexId = pc->pb.texId;
 #elif RENDER2TEXTURE == 2
-if (!OglCreateFBuffer (&pc->fb, pc->texBuf.bm_props.w, pc->texBuf.bm_props.h, pc->bShadowMap))
+if (!OglCreateFBuffer (&pc->fb, pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, pc->bShadowMap))
 	return 0;
 pc->glTexId = pc->fb.texId;
 #endif
@@ -157,45 +157,45 @@ memset (pc, 0, sizeof (tCamera));
 pc->bShadowMap = bShadowMap;
 #if 0
 if (gameOpts->render.cameras.bFitToWall || bTeleport) {
-	h = min (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h);
+	h = min (grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h);
 	for (i = 1; i < h; i *= 2)
 		;
 	if (i > h)
 		i /= 2;
-	pc->texBuf.bm_props.w =
-	pc->texBuf.bm_props.h = i;
+	pc->texBuf.bmProps.w =
+	pc->texBuf.bmProps.h = i;
 	}
 else 
 #endif
 	{
-	h = grdCurCanv->cv_bitmap.bm_props.w;
+	h = grdCurCanv->cvBitmap.bmProps.w;
 	for (i = 1; i < h; i *= 2)
 		;
-	pc->texBuf.bm_props.w = i;
-	h = grdCurCanv->cv_bitmap.bm_props.h;
+	pc->texBuf.bmProps.w = i;
+	h = grdCurCanv->cvBitmap.bmProps.h;
 	for (i = 1; i < h; i *= 2)
 		;
-	pc->texBuf.bm_props.h = i;
+	pc->texBuf.bmProps.h = i;
 	}
-pc->texBuf.bm_props.rowsize = grdCurCanv->cv_bitmap.bm_props.w;
-pc->texBuf.bm_bpp = 4;
+pc->texBuf.bmProps.rowSize = grdCurCanv->cvBitmap.bmProps.w;
+pc->texBuf.bmBPP = 4;
 #if RENDER2TEXTURE
 if (!OglCreateCamBuf (pc)) 
 #endif
 {
 #if CAMERA_READPIXELS
-	if (!(pc->texBuf.bm_texBuf = (char *) D2_ALLOC (pc->texBuf.bm_props.w * pc->texBuf.bm_props.h * 4)))
+	if (!(pc->texBuf.bmTexBuf = (char *) D2_ALLOC (pc->texBuf.bmProps.w * pc->texBuf.bmProps.h * 4)))
 		return 0;
 	if (gameOpts->render.cameras.bFitToWall || pc->bTeleport)
-		pc->screenBuf = pc->texBuf.bm_texBuf;
+		pc->screenBuf = pc->texBuf.bmTexBuf;
 	else {
-		pc->screenBuf = D2_ALLOC (grdCurCanv->cv_bitmap.bm_props.w * grdCurCanv->cv_bitmap.bm_props.h * 4);
+		pc->screenBuf = D2_ALLOC (grdCurCanv->cvBitmap.bmProps.w * grdCurCanv->cvBitmap.bmProps.h * 4);
 		if (!pc->screenBuf) {
 			gameOpts->render.cameras.bFitToWall = 1;
-			pc->screenBuf = pc->texBuf.bm_texBuf;
+			pc->screenBuf = pc->texBuf.bmTexBuf;
 			}
 		}	
-	memset (pc->texBuf.bm_texBuf, 0, pc->texBuf.bm_props.w * pc->texBuf.bm_props.h * 4);
+	memset (pc->texBuf.bmTexBuf, 0, pc->texBuf.bmProps.w * pc->texBuf.bmProps.h * 4);
 #else
 	return 0;
 #endif
@@ -301,11 +301,11 @@ void DestroyCamera (tCamera *pc)
 {
 OglFreeBmTexture (&pc->texBuf);
 glDeleteTextures (1, &pc->glTexId);
-if (pc->screenBuf && (pc->screenBuf != (char *) pc->texBuf.bm_texBuf))
+if (pc->screenBuf && (pc->screenBuf != (char *) pc->texBuf.bmTexBuf))
 	D2_FREE (pc->screenBuf);
-if (pc->texBuf.bm_texBuf) {
-	D2_FREE (pc->texBuf.bm_texBuf);
-	pc->texBuf.bm_texBuf = NULL;
+if (pc->texBuf.bmTexBuf) {
+	D2_FREE (pc->texBuf.bmTexBuf);
+	pc->texBuf.bmTexBuf = NULL;
 	}
 #if RENDER2TEXTURE
 if (bRender2TextureOk)
@@ -363,8 +363,8 @@ else
 	dd = (dd % F1_0) ?  (F1_0 - dd % F1_0) / 2 : 0;
 #if RENDER2TEXTURE == 1
 	if (!bFitToWall && bCamBufAvail) {
-		a = (double) grdCurCanv->cv_bitmap.bm_props.h / (double) pc->texBuf.bm_props.h;
-		dy = ((fix) ((double) h * (1.0 - a))) / 2 * grdCurCanv->cv_bitmap.bm_props.h / (double) grdCurCanv->cv_bitmap.bm_props.w;
+		a = (double) grdCurCanv->cvBitmap.bmProps.h / (double) pc->texBuf.bmProps.h;
+		dy = ((fix) ((double) h * (1.0 - a))) / 2 * grdCurCanv->cvBitmap.bmProps.h / (double) grdCurCanv->cvBitmap.bmProps.w;
 		dy -= dd;
 		if (yFlip) {
 			uvlCopy [0].v = -dy;
@@ -382,8 +382,8 @@ else
 			uvlCopy [3].v = F1_0 + dy; //-F1_0 - dy;
 			uvlCopy [2].v = -dy; //dy;
 			}
-		a = (double) (pc->texBuf.bm_props.w - grdCurCanv->cv_bitmap.bm_props.w) / 
-			 (double) pc->texBuf.bm_props.w;
+		a = (double) (pc->texBuf.bmProps.w - grdCurCanv->cvBitmap.bmProps.w) / 
+			 (double) pc->texBuf.bmProps.w;
 		dx = ((fix) ((double) h * a));
 		for (i = 0; i < 2; i++) {
 			if (xFlip) {
@@ -402,10 +402,10 @@ else
 		r = (double) (uvlCopy [2].u - uvlCopy [0].u) / (double) (uvlCopy [1].v - uvlCopy [0].v);
 		if (r < 0)
 			r = -r;
-		a = (double) grdCurCanv->cv_bitmap.bm_props.h / (double) pc->texBuf.bm_props.h;
-		dy = ((fix) ((double) h * (1.0 - a))) / 2;// * grdCurCanv->cv_bitmap.bm_props.h / (double) grdCurCanv->cv_bitmap.bm_props.w;
-		d = (double) grdCurCanv->cv_bitmap.bm_props.w / (double) grdCurCanv->cv_bitmap.bm_props.h;
-		//dy = ((fix) ((double) h * (a))) / 2;// * grdCurCanv->cv_bitmap.bm_props.h / (double) grdCurCanv->cv_bitmap.bm_props.w;
+		a = (double) grdCurCanv->cvBitmap.bmProps.h / (double) pc->texBuf.bmProps.h;
+		dy = ((fix) ((double) h * (1.0 - a))) / 2;// * grdCurCanv->cvBitmap.bmProps.h / (double) grdCurCanv->cvBitmap.bmProps.w;
+		d = (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h;
+		//dy = ((fix) ((double) h * (a))) / 2;// * grdCurCanv->cvBitmap.bmProps.h / (double) grdCurCanv->cvBitmap.bmProps.w;
 		if (d - 1.0)
 			dy = (int) ((double) dy * (d - r) / (d - 1.0));
 		if (yFlip) {
@@ -424,7 +424,7 @@ else
 			uvlCopy [3].v = (int) ((F1_0 + dy) * a); //-F1_0 - dy;
 			uvlCopy [2].v = (int) (-dy * a); //dy;
 			}
-		a = (double) grdCurCanv->cv_bitmap.bm_props.w / (double) pc->texBuf.bm_props.w;
+		a = (double) grdCurCanv->cvBitmap.bmProps.w / (double) pc->texBuf.bmProps.w;
 		dx = ((fix) ((double) h * a)) / 2;
 		dx = 0;
 		for (i = 0; i < 2; i++) {
@@ -444,11 +444,11 @@ else
 		if (0 && bFitToWall)
 			dx = dy = 0;
 		else {
-			ha = 1.0 - (double) grdCurCanv->cv_bitmap.bm_props.w / (double) pc->texBuf.bm_props.w;
-			va = 1.0 - (double) grdCurCanv->cv_bitmap.bm_props.h / (double) pc->texBuf.bm_props.h;
+			ha = 1.0 - (double) grdCurCanv->cvBitmap.bmProps.w / (double) pc->texBuf.bmProps.w;
+			va = 1.0 - (double) grdCurCanv->cvBitmap.bmProps.h / (double) pc->texBuf.bmProps.h;
 			dx = (fix) ((double) F1_0 * ha);
 			dy = (fix) ((double) F1_0 * va);
-			dd = (pc->texBuf.bm_props.w == pc->texBuf.bm_props.h) ? (dy - dx) / 2 : dy;
+			dd = (pc->texBuf.bmProps.w == pc->texBuf.bmProps.h) ? (dy - dx) / 2 : dy;
 			}
 		if (yFlip) {
 			uvlCopy [0].v =
@@ -513,7 +513,7 @@ if (OglReleaseCamBuf (pc) && OglEnableCamBuf (pc)) {
 	}
 else 
 #	if CAMERA_READPIXELS
-if (pc->texBuf.bm_texBuf) 
+if (pc->texBuf.bmTexBuf) 
 #	endif
 #endif
 	{
@@ -521,7 +521,7 @@ if (pc->texBuf.bm_texBuf)
 	pc->bValid = 1;
 	OglFreeBmTexture (&pc->texBuf);
 #if CAMERA_READPIXELS
-	memset (pc->texBuf.bm_texBuf, 0, pc->texBuf.bm_props.w * pc->texBuf.bm_props.h * 4);
+	memset (pc->texBuf.bmTexBuf, 0, pc->texBuf.bmProps.w * pc->texBuf.bmProps.h * 4);
 	glDisable (GL_TEXTURE_2D);
 #endif
 	glReadBuffer (GL_BACK);
@@ -529,15 +529,15 @@ if (pc->texBuf.bm_texBuf)
 #if CAMERA_READPIXELS == 0
 		OglLoadBmTextureM (&pc->texBuf, 0, -1, 0, NULL);
 		glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-			(grdCurCanv->cv_bitmap.bm_props.w - pc->texBuf.bm_props.w) / 2, 
-			(grdCurCanv->cv_bitmap.bm_props.h - pc->texBuf.bm_props.h) / 2, 
-			pc->texBuf.bm_props.w, pc->texBuf.bm_props.h, 0);
+			(grdCurCanv->cvBitmap.bmProps.w - pc->texBuf.bmProps.w) / 2, 
+			(grdCurCanv->cvBitmap.bmProps.h - pc->texBuf.bmProps.h) / 2, 
+			pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, 0);
 #else
 		glReadPixels (
-			(grdCurCanv->cv_bitmap.bm_props.w - pc->texBuf.bm_props.w) / 2, 
-			(grdCurCanv->cv_bitmap.bm_props.h - pc->texBuf.bm_props.h) / 2, 
-			pc->texBuf.bm_props.w, pc->texBuf.bm_props.h, 
-			GL_RGBA, GL_UNSIGNED_BYTE, pc->texBuf.bm_texBuf);
+			(grdCurCanv->cvBitmap.bmProps.w - pc->texBuf.bmProps.w) / 2, 
+			(grdCurCanv->cvBitmap.bmProps.h - pc->texBuf.bmProps.h) / 2, 
+			pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, 
+			GL_RGBA, GL_UNSIGNED_BYTE, pc->texBuf.bmTexBuf);
 		OglLoadBmTextureM (&pc->texBuf, 0, -1, NULL);
 #endif
 		}
@@ -545,33 +545,33 @@ if (pc->texBuf.bm_texBuf)
 #if CAMERA_READPIXELS == 0
 			OglLoadBmTextureM (&pc->texBuf, 0, -1, 0, NULL);
 			glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 
-				-(pc->texBuf.bm_props.w - grdCurCanv->cv_bitmap.bm_props.w) / 2,
-				-(pc->texBuf.bm_props.h - grdCurCanv->cv_bitmap.bm_props.h) / 2, 
-				pc->texBuf.bm_props.w, pc->texBuf.bm_props.h, 0);
+				-(pc->texBuf.bmProps.w - grdCurCanv->cvBitmap.bmProps.w) / 2,
+				-(pc->texBuf.bmProps.h - grdCurCanv->cvBitmap.bmProps.h) / 2, 
+				pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, 0);
 #else
 		char	*pSrc, *pDest;
-		int	dxBuf = (pc->texBuf.bm_props.w - grdCurCanv->cv_bitmap.bm_props.w) / 2;
-		int	dyBuf = (pc->texBuf.bm_props.h - grdCurCanv->cv_bitmap.bm_props.h) / 2;
-		int	wSrc = grdCurCanv->cv_bitmap.bm_props.w * 4;
-		int	wDest = pc->texBuf.bm_props.w * 4;
+		int	dxBuf = (pc->texBuf.bmProps.w - grdCurCanv->cvBitmap.bmProps.w) / 2;
+		int	dyBuf = (pc->texBuf.bmProps.h - grdCurCanv->cvBitmap.bmProps.h) / 2;
+		int	wSrc = grdCurCanv->cvBitmap.bmProps.w * 4;
+		int	wDest = pc->texBuf.bmProps.w * 4;
 
-		if (grdCurCanv->cv_bitmap.bm_props.w == pc->texBuf.bm_props.w) {
+		if (grdCurCanv->cvBitmap.bmProps.w == pc->texBuf.bmProps.w) {
 			glReadPixels (
-				0, 0, grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h,
-				GL_RGBA, GL_UNSIGNED_BYTE, pc->texBuf.bm_texBuf + dyBuf * pc->texBuf.bm_props.w * 4);
+				0, 0, grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h,
+				GL_RGBA, GL_UNSIGNED_BYTE, pc->texBuf.bmTexBuf + dyBuf * pc->texBuf.bmProps.w * 4);
 			}
 		else {
 			glReadPixels (
-				0, 0, grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h,
+				0, 0, grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h,
 				GL_RGBA, GL_UNSIGNED_BYTE, pc->screenBuf);
 			pSrc = pc->screenBuf;
-			pDest = pc->texBuf.bm_texBuf + (dyBuf - 1) * wDest + dxBuf * 4;
+			pDest = pc->texBuf.bmTexBuf + (dyBuf - 1) * wDest + dxBuf * 4;
 #	ifndef _WIN32
-			for (dyBuf = grdCurCanv->cv_bitmap.bm_props.h; dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
+			for (dyBuf = grdCurCanv->cvBitmap.bmProps.h; dyBuf; dyBuf--, pSrc += wSrc, pDest += wDest)
 				memcpy (pDest, pSrc, wSrc);
 #	else
-			dxBuf = pc->texBuf.bm_props.w - grdCurCanv->cv_bitmap.bm_props.w;
-			dyBuf = grdCurCanv->cv_bitmap.bm_props.h;
+			dxBuf = pc->texBuf.bmProps.w - grdCurCanv->cvBitmap.bmProps.w;
+			dyBuf = grdCurCanv->cvBitmap.bmProps.h;
 			wSrc /= 4;
 			__asm {
 				push	edi

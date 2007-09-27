@@ -302,7 +302,7 @@ if (from_hog_only)
 strcat (new_filename, filename);
 filename = new_filename;
 
-title_bm.bm_texBuf=NULL;
+title_bm.bmTexBuf=NULL;
 if ((pcxResult = LoadBriefImg (filename, &title_bm, 0)) != PCX_ERROR_NONE) {
 #if TRACE
 	con_printf (CONDBG, "File '%s', PCX load error: %s (%i)\n  (No big deal, just no title screen.)\n", filename, pcx_errormsg (pcxResult), pcxResult);
@@ -324,7 +324,7 @@ while (1) {
 }
 if (GrPaletteFadeOut (NULL, 32, bAllowKeys))
 	return 1;
-D2_FREE (title_bm.bm_texBuf);
+D2_FREE (title_bm.bmTexBuf);
 return 0;
 }
 
@@ -407,7 +407,7 @@ briefing_screen briefingScreens [] = {
 
 int	Briefing_text_x, Briefing_text_y;
 
-grs_canvas	*robotCanv = NULL;
+gsrCanvas	*robotCanv = NULL;
 vmsAngVec	Robot_angles;
 
 char    Bitmap_name [32] = "";
@@ -434,7 +434,7 @@ Briefing_text_y = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8
 
 void ShowBitmapFrame (int bRedraw)
 {
-	grs_canvas *curCanvSave, *bitmap_canv=0;
+	gsrCanvas *curCanvSave, *bitmap_canv=0;
 	vmsVector p = ZERO_VECTOR;
 
 	grsBitmap *bmP;
@@ -562,9 +562,9 @@ void ShowBitmapFrame (int bRedraw)
 
 void show_briefing_bitmap (grsBitmap *bmp)
 {
-	grs_canvas	*curCanvSave, *bitmap_canv;
+	gsrCanvas	*curCanvSave, *bitmap_canv;
 
-bitmap_canv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->bm_props.w, bmp->bm_props.h);
+bitmap_canv = GrCreateSubCanvas (grdCurCanv, 220, 45, bmp->bmProps.w, bmp->bmProps.h);
 curCanvSave = grdCurCanv;
 GrSetCurrentCanvas (bitmap_canv);
 GrBitmapM (0, 0, bmp, 0);
@@ -576,7 +576,7 @@ D2_FREE (bitmap_canv);
 
 void ShowSpinningRobotFrame (int nRobot)
 {
-	grs_canvas	*curCanvSave;
+	gsrCanvas	*curCanvSave;
 
 if (nRobot != -1) {
 	Robot_angles.h += 150;
@@ -599,7 +599,7 @@ if (nRobot != -1) {
 
 void RotateBriefingRobot (void)
 {
-grs_canvas	*curCanvSave = grdCurCanv;
+gsrCanvas	*curCanvSave = grdCurCanv;
 grdCurCanv = robotCanv;
 RotateRobot ();
 grdCurCanv = curCanvSave;
@@ -1022,7 +1022,7 @@ while (!done) {
 					kludge = *message++;
 					spinRobotName [2] = kludge; // ugly but proud
 					if (message > pj) {
-						grs_canvas *curCanvSave = grdCurCanv;
+						gsrCanvas *curCanvSave = grdCurCanv;
 						grdCurCanv = robotCanv;
 						bRobotPlaying = InitRobotMovie (spinRobotName);
 						grdCurCanv = curCanvSave;
@@ -1100,7 +1100,7 @@ while (!done) {
 				Assert (iff_error == IFF_NO_ERROR);
 
 				show_briefing_bitmap (&guy_bitmap);
-				D2_FREE (guy_bitmap.bm_texBuf);
+				D2_FREE (guy_bitmap.bmTexBuf);
 				prev_ch = 10;
 				}
 			else if (ch == 'S') {
@@ -1464,7 +1464,7 @@ if (gameStates.app.bD1Mission) {
 		Int3 ();
 		return 0;
 		}
-	GrPaletteStepLoad (bmBriefing.bm_palette);
+	GrPaletteStepLoad (bmBriefing.bmPalette);
 	GrSetCurrentCanvas (NULL);
 	ShowFullscreenImage (&bmBriefing);
 	GrUpdate (0);

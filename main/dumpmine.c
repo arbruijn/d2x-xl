@@ -929,7 +929,7 @@ void say_unused_tmaps(FILE *my_file, int *tb)
 
 	for (i=0; i<MAX_BITMAP_FILES; i++)
 		if (!tb[i]) {
-			if (gameData.pig.tex.bitmaps[gameData.pig.tex.pBmIndex[i].index].bm_texBuf == &bogus_data)
+			if (gameData.pig.tex.bitmaps[gameData.pig.tex.pBmIndex[i].index].bmTexBuf == &bogus_data)
 				fprintf(my_file, "U");
 			else
 				fprintf(my_file, " ");

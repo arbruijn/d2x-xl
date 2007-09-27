@@ -238,16 +238,16 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int initializing;
 
 //these are instances of canvases, pointed to by variables below
-grs_canvas _canv_editor_game;		//the game on the editor screen
+gsrCanvas _canv_editor_game;		//the game on the editor screen
 
 //these are pointers to our canvases
-grs_canvas *Canv_editor;			//the editor screen
-grs_canvas *Canv_editor_game=&_canv_editor_game; //the game on the editor screen
+gsrCanvas *Canv_editor;			//the editor screen
+gsrCanvas *Canv_editor_game=&_canv_editor_game; //the game on the editor screen
 
-grs_canvas *canv_offscreen;		//for off-screen rendering
-grs_canvas *Pad_text_canvas;		// Keypad text
+gsrCanvas *canv_offscreen;		//for off-screen rendering
+gsrCanvas *Pad_text_canvas;		// Keypad text
 
-grs_font *editor_font=NULL;
+grsFont *editor_font=NULL;
 
 //where the editor is looking
 vmsVector EdView_target={0,0,0};
@@ -278,7 +278,7 @@ UI_GADGET_ICON * LockIcon;
 
 UI_EVENT * DemoBuffer = NULL;
 
-//grs_canvas * BigCanvas[2];
+//gsrCanvas * BigCanvas[2];
 //int CurrentBigCanvas = 0;
 //int BigCanvasFirstTime = 1;
 
@@ -767,11 +767,11 @@ int DosShell()
 
 	// Save the current graphics state.
 
-	w = grdCurScreen->sc_canvas.cv_bitmap.bm_props.w;
-	h = grdCurScreen->sc_canvas.cv_bitmap.bm_props.h;
+	w = grdCurScreen->scCanvas.cvBitmap.bmProps.w;
+	h = grdCurScreen->scCanvas.cvBitmap.bmProps.h;
 
 	save_bitmap = GrCreateBitmap( w, h );
-	GrBmUBitBlt(w, h, 0, 0, 0, 0, &(grdCurScreen->sc_canvas.cv_bitmap), save_bitmap );
+	GrBmUBitBlt(w, h, 0, 0, 0, 0, &(grdCurScreen->scCanvas.cvBitmap), save_bitmap );
 
 	GrSetMode( SM_ORIGINAL );
 
@@ -786,8 +786,8 @@ int DosShell()
 #endif
 	key_init();
 
-	GrSetMode(grdCurScreen->sc_mode);
-	GrBmUBitBlt(w, h, 0, 0, 0, 0, save_bitmap, &(grdCurScreen->sc_canvas.cv_bitmap);
+	GrSetMode(grdCurScreen->scMode);
+	GrBmUBitBlt(w, h, 0, 0, 0, 0, save_bitmap, &(grdCurScreen->scCanvas.cvBitmap);
 	GrFreeBitmap( save_bitmap );
 	//gr_pal_setblock( 0, 256, grdCurScreen->pal );
 	//GrUsePaletteTable();
@@ -869,12 +869,12 @@ void init_editor_screen()
 
 	if (editor_screen_open) return;
 
-	grdCurScreen->sc_canvas.cv_font = editor_font;
+	grdCurScreen->scCanvas.cvFont = editor_font;
 	
 	//create canvas for game on the editor screen
 	initializing = 1;
 	GrSetCurrentCanvas(Canv_editor);
-	Canv_editor->cv_font = editor_font;
+	Canv_editor->cvFont = editor_font;
 	GrInitSubCanvas(Canv_editor_game,Canv_editor,GAMEVIEW_X,GAMEVIEW_Y,GAMEVIEW_W,GAMEVIEW_H);
 	
 	//Editor renders into full (320x200) game screen 
@@ -955,9 +955,9 @@ void init_editor_screen()
 
 	EditorWindow->keyboard_focus_gadget = (UI_GADGET *)LargeViewBox;
 
-	canv_offscreen->cv_font = grdCurScreen->sc_canvas.cv_font;
-//	BigCanvas[0]->cv_font = grdCurScreen->sc_canvas.cv_font; 
-//	BigCanvas[1]->cv_font = grdCurScreen->sc_canvas.cv_font; 
+	canv_offscreen->cvFont = grdCurScreen->scCanvas.cvFont;
+//	BigCanvas[0]->cvFont = grdCurScreen->scCanvas.cvFont; 
+//	BigCanvas[1]->cvFont = grdCurScreen->scCanvas.cvFont; 
 //	BigCanvasFirstTime = 1;
 
 	// Draw status box
@@ -1000,7 +1000,7 @@ void close_editor_screen()
 
 void med_show_warning(char *s)
 {
-	grs_canvas *save_canv=grdCurCanv;
+	gsrCanvas *save_canv=grdCurCanv;
 
 	//gr_pal_fade_in(grdCurScreen->pal);	//in case palette is blacked
 
@@ -1174,12 +1174,12 @@ void editor(void)
 		//gr_pal_fade_in( grdCurScreen->pal );
 	}
 
-	w = GameViewBox->canvas->cv_bitmap.bm_props.w;
-	h = GameViewBox->canvas->cv_bitmap.bm_props.h;
+	w = GameViewBox->canvas->cvBitmap.bmProps.w;
+	h = GameViewBox->canvas->cvBitmap.bmProps.h;
 	
 	savedbitmap = GrCreateBitmap(w, h );
 
-	GrBmUBitBlt( w, h, 0, 0, 0, 0, &GameViewBox->canvas->cv_bitmap, savedbitmap );
+	GrBmUBitBlt( w, h, 0, 0, 0, 0, &GameViewBox->canvas->cvBitmap, savedbitmap );
 
 	GrSetCurrentCanvas( GameViewBox->canvas );
 	GrSetCurFont(editor_font);
@@ -1322,7 +1322,7 @@ void editor(void)
 		{
 			ui_mouse_hide();
 			gameStates.app.nFunctionMode = FMODE_GAME;
-			GrBmUBitBlt( w, h, 0, 0, 0, 0, savedbitmap, &GameViewBox->canvas->cv_bitmap);
+			GrBmUBitBlt( w, h, 0, 0, 0, 0, savedbitmap, &GameViewBox->canvas->cvBitmap);
 			GrFreeBitmap( savedbitmap );
 			break;
 		}

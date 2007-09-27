@@ -34,7 +34,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 inline void GrSetBitmapData (grsBitmap *bmP, unsigned char *data)
 {
 OglFreeBmTexture(bmP);
-bmP->bm_texBuf = data;
+bmP->bmTexBuf = data;
 }
 
 //------------------------------------------------------------------------------
@@ -70,15 +70,15 @@ void GrInitBitmap  (
 	unsigned char *data, int bpp) // TODO: virtualize
 {
 memset (bmP, 0, sizeof  (*bmP));
-bmP->bm_props.x = x;
-bmP->bm_props.y = y;
-bmP->bm_props.w = w;
-bmP->bm_props.h = h;
-bmP->bm_bpp = bpp;
-bmP->bm_props.nType = mode;
-bmP->bm_props.rowsize = nBytesPerLine * bpp;
+bmP->bmProps.x = x;
+bmP->bmProps.y = y;
+bmP->bmProps.w = w;
+bmP->bmProps.h = h;
+bmP->bmBPP = bpp;
+bmP->bmProps.nType = mode;
+bmP->bmProps.rowSize = nBytesPerLine * bpp;
 if (bpp > 2)
-	bmP->bm_props.flags = (char) BM_FLAG_TGA;
+	bmP->bmProps.flags = (char) BM_FLAG_TGA;
 GrSetBitmapData (bmP, data);
 }
 
@@ -94,7 +94,7 @@ GrInitBitmap (bmP, mode, x, y, w, h, nBytesPerLine, GrAllocBitmapData (w, h, bpp
 
 void GrInitBitmapData (grsBitmap *bmP) // TODO: virtulize
 {
-bmP->bm_texBuf = NULL;
+bmP->bmTexBuf = NULL;
 //	OglFreeBmTexture(bmP);//not what we want here.
 bmP->glTexture = NULL;
 }
@@ -138,8 +138,8 @@ void GrFreeBitmapData (grsBitmap *bmP) // TODO: virtulize
 {
 if (bmP) {
 	OglFreeBmTexture (bmP);
-	if (bmP->bm_texBuf) 
-		D2_FREE (bmP->bm_texBuf);
+	if (bmP->bmTexBuf) 
+		D2_FREE (bmP->bmTexBuf);
 	}
 }
 
@@ -147,23 +147,23 @@ if (bmP) {
 
 void GrInitSubBitmap (grsBitmap *bmP, grsBitmap *bmParent, int x, int y, int w, int h)	// TODO: virtualize
 {
-bmP->bm_props.x = x + bmParent->bm_props.x;
-bmP->bm_props.y = y + bmParent->bm_props.y;
-bmP->bm_props.w = w;
-bmP->bm_props.h = h;
-bmP->bm_bpp = bmParent->bm_bpp;
-bmP->bm_props.flags = bmParent->bm_props.flags;
-bmP->bm_props.nType = bmParent->bm_props.nType;
-bmP->bm_props.rowsize = bmParent->bm_props.rowsize;
+bmP->bmProps.x = x + bmParent->bmProps.x;
+bmP->bmProps.y = y + bmParent->bmProps.y;
+bmP->bmProps.w = w;
+bmP->bmProps.h = h;
+bmP->bmBPP = bmParent->bmBPP;
+bmP->bmProps.flags = bmParent->bmProps.flags;
+bmP->bmProps.nType = bmParent->bmProps.nType;
+bmP->bmProps.rowSize = bmParent->bmProps.rowSize;
 bmP->glTexture = bmParent->glTexture;
-bmP->bm_palette = bmParent->bm_palette;
-bmP->bm_avgColor = bmParent->bm_avgColor;
-bmP->bm_avgRGB = bmParent->bm_avgRGB;
+bmP->bmPalette = bmParent->bmPalette;
+bmP->bmAvgColor = bmParent->bmAvgColor;
+bmP->bmAvgRGB = bmParent->bmAvgRGB;
 BM_PARENT (bmP) = bmParent;
 #ifdef _DEBUG
 memcpy (bmP->szName, bmParent->szName, sizeof (bmP->szName));
 #endif
-bmP->bm_texBuf = bmParent->bm_texBuf + (unsigned int) ((y * bmParent->bm_props.rowsize) + x);
+bmP->bmTexBuf = bmParent->bmTexBuf + (unsigned int) ((y * bmParent->bmProps.rowSize) + x);
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ for (; i; i--)
 
 void GrSetBitmapFlags (grsBitmap *pbm, int flags)
 {
-pbm->bm_props.flags = flags;
+pbm->bmProps.flags = flags;
 }
 
 //------------------------------------------------------------------------------
@@ -206,9 +206,9 @@ pbm->bm_props.flags = flags;
 void GrSetTransparent (grsBitmap *pbm, int bTransparent)
 {
 if (bTransparent)
-	GrSetBitmapFlags (pbm, pbm->bm_props.flags | BM_FLAG_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bmProps.flags | BM_FLAG_TRANSPARENT);
 else
-	GrSetBitmapFlags (pbm, pbm->bm_props.flags & ~BM_FLAG_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bmProps.flags & ~BM_FLAG_TRANSPARENT);
 }
 
 //------------------------------------------------------------------------------
@@ -216,9 +216,9 @@ else
 void GrSetSuperTransparent (grsBitmap *pbm, int bTransparent)
 {
 if (bTransparent)
-	GrSetBitmapFlags (pbm, pbm->bm_props.flags & ~BM_FLAG_SUPER_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bmProps.flags & ~BM_FLAG_SUPER_TRANSPARENT);
 else
-	GrSetBitmapFlags (pbm, pbm->bm_props.flags | BM_FLAG_SUPER_TRANSPARENT);
+	GrSetBitmapFlags (pbm, pbm->bmProps.flags | BM_FLAG_SUPER_TRANSPARENT);
 }
 
 //------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ if ((superTranspColor >= 0) && (superTranspColor <= 255)) {
 	if (freq [superTranspColor])
 		GrSetSuperTransparent (bmP, 0);
 	}
-bmP->bm_palette = AddPalette (palette);
+bmP->bmPalette = AddPalette (palette);
 }
 
 //------------------------------------------------------------------------------
@@ -246,10 +246,10 @@ void GrRemapBitmap (grsBitmap * bmP, ubyte *palette, int transparentColor, int s
 
 memset (freq, 0, 256 * sizeof (int));
 if (!palette)
-	palette = bmP->bm_palette;
+	palette = bmP->bmPalette;
 if (!palette)
 	return;
-GrCountColors (bmP->bm_texBuf, bmP->bm_props.w * bmP->bm_props.h, freq);
+GrCountColors (bmP->bmTexBuf, bmP->bmProps.w * bmP->bmProps.h, freq);
 GrSetPalette (bmP, palette, transparentColor, superTranspColor, freq);
 }
 
@@ -261,16 +261,16 @@ void GrRemapBitmapGood (grsBitmap * bmP, ubyte *palette, int transparentColor, i
 
 memset (freq, 0, 256 * sizeof (int));
 if (!palette)
-	palette = bmP->bm_palette;
+	palette = bmP->bmPalette;
 if (!palette)
 	return;
-if (bmP->bm_props.w == bmP->bm_props.rowsize)
-	GrCountColors (bmP->bm_texBuf, bmP->bm_props.w * bmP->bm_props.h, freq);
+if (bmP->bmProps.w == bmP->bmProps.rowSize)
+	GrCountColors (bmP->bmTexBuf, bmP->bmProps.w * bmP->bmProps.h, freq);
 else {
 	int y;
-	ubyte *p = bmP->bm_texBuf;
-	for (y = bmP->bm_props.h; y; y--, p += bmP->bm_props.rowsize)
-		GrCountColors (p, bmP->bm_props.w, freq);
+	ubyte *p = bmP->bmTexBuf;
+	for (y = bmP->bmProps.h; y; y--, p += bmP->bmProps.rowSize)
+		GrCountColors (p, bmP->bmProps.w, freq);
 	}
 GrSetPalette (bmP, palette, transparentColor, superTranspColor, freq);
 }
@@ -280,7 +280,7 @@ GrSetPalette (bmP, palette, transparentColor, superTranspColor, freq);
 #ifdef BITMAP_SELECTOR
 int GrBitmapAssignSelector(grsBitmap * bmP)
 {
-if  (!dpmi_allocate_selector(bmP->bm_texBuf, bmP->bm_props.w*bmP->bm_props.h, &bmP->bm_selector)) {
+if  (!dpmi_allocate_selector(bmP->bmTexBuf, bmP->bmProps.w*bmP->bmProps.h, &bmP->bm_selector)) {
 	bmP->bm_selector = 0;
 	return 1;
 	}
@@ -295,18 +295,18 @@ void GrBitmapCheckTransparency (grsBitmap * bmP)
 	int x, y;
 	ubyte * data;
 
-	data = bmP->bm_texBuf;
+	data = bmP->bmTexBuf;
 
-for (y = 0; y < bmP->bm_props.h; y++)	{
-	for (x = 0; x < bmP->bm_props.w; x++)	{
+for (y = 0; y < bmP->bmProps.h; y++)	{
+	for (x = 0; x < bmP->bmProps.w; x++)	{
 		if  (*data++ == TRANSPARENCY_COLOR)	{
 			GrSetTransparent (bmP, 1);
 			return;
 			}
 		}
-	data += bmP->bm_props.rowsize - bmP->bm_props.w;
+	data += bmP->bmProps.rowSize - bmP->bmProps.w;
 	}
-bmP->bm_props.flags = 0;
+bmP->bmProps.flags = 0;
 }
 
 //---------------------------------------------------------------
@@ -315,13 +315,13 @@ int GrBitmapHasTransparency (grsBitmap *bmP)
 {
 	int	i, nFrames;
 
-if (bmP->bm_props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
-nFrames = bmP->bm_props.h / bmP->bm_props.w;
+nFrames = bmP->bmProps.h / bmP->bmProps.w;
 for (i = 1; i < nFrames; i++) {
-	if (bmP->bm_transparentFrames [i / 32] & (1 << (i % 32)))
+	if (bmP->bmTransparentFrames [i / 32] & (1 << (i % 32)))
 		return 1;
-	if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
+	if (bmP->bmSupertranspFrames [i / 32] & (1 << (i % 32)))
 		return 1;
 	}
 return 0;

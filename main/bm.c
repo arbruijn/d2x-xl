@@ -76,19 +76,19 @@ int ComputeAvgPixel (grsBitmap *newBm)
 	int	total_red, total_green, total_blue;
 	ubyte	*palette;
 
-pptr = (char *)newBm->bm_texBuf;
+pptr = (char *)newBm->bmTexBuf;
 total_red = 0;
 total_green = 0;
 total_blue = 0;
-palette = newBm->bm_palette;
-for (row = 0; row < newBm->bm_props.h; row++)
-	for (column = 0; column < newBm->bm_props.w; column++) {
+palette = newBm->bmPalette;
+for (row = 0; row < newBm->bmProps.h; row++)
+	for (column = 0; column < newBm->bmProps.w; column++) {
 		color = *pptr++;
 		total_red += palette [color*3];
 		total_green += palette [color*3+1];
 		total_blue += palette [color*3+2];
 		}
-size = newBm->bm_props.h * newBm->bm_props.w * 2;
+size = newBm->bmProps.h * newBm->bmProps.w * 2;
 total_red /= size;
 total_green /= size;
 total_blue /= size;
@@ -1065,9 +1065,9 @@ for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i;
 	  i < gameData.pig.tex.nExtraBitmaps; i++, bmP++) {
 	gameData.pig.tex.nObjBitmaps--;
 	OglFreeBmTexture (bmP);
-	if (bmP->bm_texBuf) {
-		D2_FREE (bmP->bm_texBuf);
-		UseBitmapCache (bmP, -bmP->bm_props.h * bmP->bm_props.rowsize);
+	if (bmP->bmTexBuf) {
+		D2_FREE (bmP->bmTexBuf);
+		UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
@@ -1393,7 +1393,7 @@ tBitmapIndex ReadExtraBitmapIFF (char * filename)
 	bitmap_num.index = 0;
 	//MALLOC (newBm, grsBitmap, 1);
 	iff_error = iff_read_bitmap (filename,newBm,BM_LINEAR);
-	//newBm->bm_handle=0;
+	//newBm->bmHandle=0;
 	if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
 		con_printf (CONDBG, 
@@ -1406,7 +1406,7 @@ tBitmapIndex ReadExtraBitmapIFF (char * filename)
 		GrRemapBitmapGood (newBm, NULL, iff_transparent_color, 254);
 	else
 		GrRemapBitmapGood (newBm, NULL, -1, 254);
-	newBm->bm_avgColor = ComputeAvgPixel (newBm);
+	newBm->bmAvgColor = ComputeAvgPixel (newBm);
 	bitmap_num.index = gameData.pig.tex.nExtraBitmaps;
 	gameData.pig.tex.pBitmaps [gameData.pig.tex.nExtraBitmaps++] = *newBm;
 	//D2_FREE (new);
@@ -1431,7 +1431,7 @@ if (!bip->index) {
 	}
 if (!(i = bip->index))
 	return NULL;
-//if (gameData.pig.tex.bitmaps [0][i].bm_props.w != 64 || gameData.pig.tex.bitmaps [0][i].bm_props.h != 64)
+//if (gameData.pig.tex.bitmaps [0][i].bmProps.w != 64 || gameData.pig.tex.bitmaps [0][i].bmProps.h != 64)
 //	Error ("Bitmap <%s> is not 64x64", name);
 gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nObjBitmaps] = gameData.pig.tex.nObjBitmaps;
 gameData.pig.tex.nObjBitmaps++;

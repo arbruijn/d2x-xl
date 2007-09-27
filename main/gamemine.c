@@ -990,7 +990,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 			continue;
 		VmVecSub (&dist, &center, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
-		if ((pDists [n].nDist = h) <= F1_0 * 125) {
+		if ((pDists [n].nDist = h) <= MAX_LIGHT_RANGE) {
 			pDists [n].nIndex = l;
 			n++;
 			}
@@ -1048,7 +1048,7 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 			continue;
 		VmVecSub (&dist, vertP, &pl->vPos);
 		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
-		if ((pDists [n].nDist = h) <= F1_0 * 150) {
+		if ((pDists [n].nDist = h) <= MAX_LIGHT_RANGE) {
 			pDists [n].nIndex = l;
 			n++;
 			}
@@ -1375,7 +1375,7 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 
 inline void SetVertVis (short nSegment, short nVertex, ubyte b)
 {
-gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nVertex & 3) * 2));
+gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nVertex & 3) << 1));
 }
 
 //------------------------------------------------------------------------------
@@ -1444,13 +1444,13 @@ for (i = startI; i < endI; i++) {
 		SetVertVis (i, v, 1);
 #if CALC_SEGRADS
 		VmVecSub (&d, gameData.segs.segCenters [0] + i, vertP);
-		if (VmVecMag (&d) > F1_0 * 125 + gameData.segs.segRads [1][i])
+		if (VmVecMag (&d) > MAX_LIGHT_RANGE + gameData.segs.segRads [1][i])
 			continue;
 #endif
 		for (j = 0; j < 6; j++) {
 			COMPUTE_SIDE_CENTER_I (&c, i, j);
 			VmVecSub (&d, &c, vertP);
-			if ((VmVecMag (&d) <= F1_0 * 125) && CanSeePoint (NULL, &c, vertP, i)) {
+			if ((VmVecMag (&d) <= MAX_LIGHT_RANGE) && CanSeePoint (NULL, &c, vertP, i)) {
 				SetVertVis (i, v, 3);
 				break;
 				}
@@ -1852,17 +1852,21 @@ else
 	StartOglLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
 	}
-else 
-#endif
-if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-	NMProgressBar (TXT_PREP_DESCENT, 
-						LoadMineGaugeSize () + PagingGaugeSize (), 
-						LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 else {
-	ComputeVertexVisibility (-1);
-	ComputeSegmentVisibility (-1);
-	ComputeNearestSegmentLights (-1);
-	ComputeNearestVertexLights (-1);
+	int bMultiThreaded = gameStates.app.bMultiThreaded;
+	gameStates.app.bMultiThreaded = 0;
+#endif
+	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
+		NMProgressBar (TXT_PREP_DESCENT, 
+							LoadMineGaugeSize () + PagingGaugeSize (), 
+							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
+	else {
+		ComputeVertexVisibility (-1);
+		ComputeSegmentVisibility (-1);
+		ComputeNearestSegmentLights (-1);
+		ComputeNearestVertexLights (-1);
+		}
+	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
 SavePrecompiledLights (nLevel);
 }

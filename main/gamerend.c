@@ -104,18 +104,18 @@ void DrawCenteredText (int y, char * s)
 	char p;
 	int i, l = (int) strlen (s);
 
-if (string_width (s, l) < grdCurCanv->cv_bitmap.bm_props.w)	{
+if (string_width (s, l) < grdCurCanv->cvBitmap.bmProps.w)	{
 	GrString (0x8000, y, s);
 	return;
 	}
 
 for (i=0; i<l; i++)	{
-	if (string_width (s, i) > (grdCurCanv->cv_bitmap.bm_props.w - 16))	{
+	if (string_width (s, i) > (grdCurCanv->cvBitmap.bmProps.w - 16))	{
 		p = s [i];
 		s [i] = 0;
 		GrString (0x8000, y, s);
 		s [i] = p;
-		GrString (0x8000, y+grdCurCanv->cv_font->ft_h+1, &s [i]);
+		GrString (0x8000, y+grdCurCanv->cvFont->ftHeight+1, &s [i]);
 		return;
 		}
 	}
@@ -132,7 +132,7 @@ if (gameData.marker.nDefiningMsg) {
 	GrSetCurFont (GAME_FONT);    //GAME_FONT 
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
    sprintf (temp_string, TXT_DEF_MARKER, gameData.marker.szInput);
-	DrawCenteredText (grdCurCanv->cv_bitmap.bm_props.h/2-16, temp_string);
+	DrawCenteredText (grdCurCanv->cvBitmap.bmProps.h/2-16, temp_string);
    }
 }
 
@@ -146,20 +146,20 @@ if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bSending))	{
 	GrSetCurFont (GAME_FONT);    //GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
-	DrawCenteredText (grdCurCanv->cv_bitmap.bm_props.h/2-16, temp_string);
+	DrawCenteredText (grdCurCanv->cvBitmap.bmProps.h/2-16, temp_string);
 	}
 if ((gameData.app.nGameMode&GM_MULTI) && (gameData.multigame.msg.bDefining))	{
 	GrSetCurFont (GAME_FONT);    //GAME_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (temp_string, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
-	DrawCenteredText (grdCurCanv->cv_bitmap.bm_props.h/2-16, temp_string);
+	DrawCenteredText (grdCurCanv->cvBitmap.bmProps.h/2-16, temp_string);
 	}
 }
 
 //------------------------------------------------------------------------------
 //these should be in gr.h 
-#define cv_w  cv_bitmap.bm_props.w
-#define cv_h  cv_bitmap.bm_props.h
+#define cv_w  cvBitmap.bmProps.w
+#define cv_h  cvBitmap.bmProps.h
 
 //------------------------------------------------------------------------------
 #ifdef _DEBUG
@@ -262,11 +262,11 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 		}
 	GrSetCurFont (SMALL_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	y = SMALL_FONT->ft_h*4;
+	y = SMALL_FONT->ftHeight*4;
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
-		y += SMALL_FONT->ft_h*2;
+		y += SMALL_FONT->ftHeight*2;
 	if (gameStates.app.bPlayerIsDead)
-		y += SMALL_FONT->ft_h*2;
+		y += SMALL_FONT->ftHeight*2;
 	GrPrintF (0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
 	}
 }
@@ -305,7 +305,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	GrSetFontColorRGBi (RGBA_PAL2 (27, 0, 0), 1, 0, 0);
 	GrGetStringSize (message, &w, &h, &aw);
 	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		if (grdCurCanv->cv_bitmap.bm_props.h > 240)
+		if (grdCurCanv->cvBitmap.bmProps.h > 240)
 			h += 40;
 		else
 			h += 15;
@@ -313,7 +313,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	else if (gameStates.render.cockpit.nMode == CM_LETTERBOX)
 		h += 7;
 	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !Saving_movie_frames)
-		GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, grdCurCanv->cv_bitmap.bm_props.h - h - 2, message);
+		GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, grdCurCanv->cvBitmap.bmProps.h - h - 2, message);
 	}
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	RenderCountdownGauge ();
@@ -321,12 +321,12 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 		 (gameData.objs.viewer->nType == OBJ_PLAYER) && 
 		 (gameData.objs.viewer->id == gameData.multiplayer.nLocalPlayer))	{
 		int	x = 3;
-		int	y = grdCurCanv->cv_bitmap.bm_props.h;
+		int	y = grdCurCanv->cvBitmap.bmProps.h;
 
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 		if (gameStates.input.nCruiseSpeed > 0) {
-			int line_spacing = GAME_FONT->ft_h + GAME_FONT->ft_h/4;
+			int line_spacing = GAME_FONT->ftHeight + GAME_FONT->ftHeight/4;
 
 			if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 				if (gameData.app.nGameMode & GM_MULTI)
@@ -384,41 +384,41 @@ void GameExpandBitmap (grsBitmap * bmp, uint flags)
 
 switch (flags & 3) {
 	case 2:	// expand x
-		Assert (bmp->bm_props.rowsize == bmp->bm_props.w*2);
-		dptr = &bmp->bm_texBuf [(bmp->bm_props.h-1)*bmp->bm_props.rowsize];
-		for (i=bmp->bm_props.h-1; i>=0; i--)	{
-			ExpandRow (dptr, dptr, bmp->bm_props.w);	
-			dptr -= bmp->bm_props.rowsize;
+		Assert (bmp->bmProps.rowSize == bmp->bmProps.w*2);
+		dptr = &bmp->bmTexBuf [(bmp->bmProps.h-1)*bmp->bmProps.rowSize];
+		for (i=bmp->bmProps.h-1; i>=0; i--)	{
+			ExpandRow (dptr, dptr, bmp->bmProps.w);	
+			dptr -= bmp->bmProps.rowSize;
 			}
-		bmp->bm_props.w *= 2;
+		bmp->bmProps.w *= 2;
 		break;
 
 	case 1:	// expand y
-		dptr = &bmp->bm_texBuf [(2* (bmp->bm_props.h-1)+1)*bmp->bm_props.rowsize];
-		sptr = &bmp->bm_texBuf [(bmp->bm_props.h-1)*bmp->bm_props.rowsize];
-		for (i=bmp->bm_props.h-1; i>=0; i--)	{
-			memcpy (dptr, sptr, bmp->bm_props.w);	
-			dptr -= bmp->bm_props.rowsize;
-			memcpy (dptr, sptr, bmp->bm_props.w);	
-			dptr -= bmp->bm_props.rowsize;
-			sptr -= bmp->bm_props.rowsize;
+		dptr = &bmp->bmTexBuf [(2* (bmp->bmProps.h-1)+1)*bmp->bmProps.rowSize];
+		sptr = &bmp->bmTexBuf [(bmp->bmProps.h-1)*bmp->bmProps.rowSize];
+		for (i=bmp->bmProps.h-1; i>=0; i--)	{
+			memcpy (dptr, sptr, bmp->bmProps.w);	
+			dptr -= bmp->bmProps.rowSize;
+			memcpy (dptr, sptr, bmp->bmProps.w);	
+			dptr -= bmp->bmProps.rowSize;
+			sptr -= bmp->bmProps.rowSize;
 			}
-		bmp->bm_props.h *= 2;
+		bmp->bmProps.h *= 2;
 		break;
 
 	case 3:	// expand x & y
-		Assert (bmp->bm_props.rowsize == bmp->bm_props.w*2);
-		dptr = &bmp->bm_texBuf [(2* (bmp->bm_props.h-1)+1)*bmp->bm_props.rowsize];
-		sptr = &bmp->bm_texBuf [(bmp->bm_props.h-1)*bmp->bm_props.rowsize];
-		for (i=bmp->bm_props.h-1; i>=0; i--)	{
-			ExpandRow (dptr, sptr, bmp->bm_props.w);	
-			dptr -= bmp->bm_props.rowsize;
-			ExpandRow (dptr, sptr, bmp->bm_props.w);	
-			dptr -= bmp->bm_props.rowsize;
-			sptr -= bmp->bm_props.rowsize;
+		Assert (bmp->bmProps.rowSize == bmp->bmProps.w*2);
+		dptr = &bmp->bmTexBuf [(2* (bmp->bmProps.h-1)+1)*bmp->bmProps.rowSize];
+		sptr = &bmp->bmTexBuf [(bmp->bmProps.h-1)*bmp->bmProps.rowSize];
+		for (i=bmp->bmProps.h-1; i>=0; i--)	{
+			ExpandRow (dptr, sptr, bmp->bmProps.w);	
+			dptr -= bmp->bmProps.rowSize;
+			ExpandRow (dptr, sptr, bmp->bmProps.w);	
+			dptr -= bmp->bmProps.rowSize;
+			sptr -= bmp->bmProps.rowSize;
 			}
-		bmp->bm_props.w *= 2;
-		bmp->bm_props.h *= 2;
+		bmp->bmProps.w *= 2;
+		bmp->bmProps.h *= 2;
 		break;
 	}
 }
@@ -435,23 +435,23 @@ void game_render_frame_stereo ()
 	fix save_aspect;
 	fix actual_eye_width;
 	int actual_eye_offset;
-	grs_canvas RenderCanvas [2];
+	gsrCanvas RenderCanvas [2];
 	int bNoDrawHUD = 0, bGMView = 0;
 	tObject *gmObjP;
 
-	save_aspect = grdCurScreen->sc_aspect;
-	grdCurScreen->sc_aspect *= 2;	//Muck with aspect ratio
+	save_aspect = grdCurScreen->scAspect;
+	grdCurScreen->scAspect *= 2;	//Muck with aspect ratio
 
-	sw = dw = gameStates.render.vr.buffers.render [0].cv_bitmap.bm_props.w;
-	sh = dh = gameStates.render.vr.buffers.render [0].cv_bitmap.bm_props.h;
+	sw = dw = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w;
+	sh = dh = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h;
 
 	if (gameStates.render.vr.nLowRes & 1)	{
 		sh /= 2;				
-		grdCurScreen->sc_aspect *= 2;  //Muck with aspect ratio	                        
+		grdCurScreen->scAspect *= 2;  //Muck with aspect ratio	                        
 	}
 	if (gameStates.render.vr.nLowRes & 2)	{
 		sw /= 2;				
-		grdCurScreen->sc_aspect /= 2;  //Muck with aspect ratio	                        
+		grdCurScreen->scAspect /= 2;  //Muck with aspect ratio	                        
 	}
 
 	GrInitSubCanvas (RenderCanvas [0, gameStates.render.vr.buffers.render, 0, 0, sw, sh);
@@ -489,7 +489,7 @@ void game_render_frame_stereo ()
 			GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 			GrGetStringSize (msg, &w, &h, &aw);
 
-			GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, 3, msg);
+			GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
 
 			glDisable (GL_DEPTH_TEST);
 			DrawGuidedCrosshair ();
@@ -507,34 +507,34 @@ void game_render_frame_stereo ()
 		RenderFrame (-actual_eye_width, 0);		// Left eye
 
 	if (gameStates.render.vr.nLowRes)
-		GameExpandBitmap (&RenderCanvas [0].cv_bitmap, gameStates.render.vr.nLowRes);
+		GameExpandBitmap (&RenderCanvas [0].cvBitmap, gameStates.render.vr.nLowRes);
 
 	{	//render small window into left eye's canvas
-		grs_canvas *save=grdCurCanv;
-		fix save_aspect2 = grdCurScreen->sc_aspect;
-		grdCurScreen->sc_aspect = save_aspect*2;
+		gsrCanvas *save=grdCurCanv;
+		fix save_aspect2 = grdCurScreen->scAspect;
+		grdCurScreen->scAspect = save_aspect*2;
 		SW_drawn [0] = SW_drawn [1] = 0;
 		ShowExtraViews ();
 		GrSetCurrentCanvas (save);
-		grdCurScreen->sc_aspect = save_aspect2;
+		grdCurScreen->scAspect = save_aspect2;
 	}
 
 //NEWVR
 	if (actual_eye_offset > 0) {
 		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (grdCurCanv->cv_bitmap.bm_props.w-labs (actual_eye_offset)*2, 0, 
-               grdCurCanv->cv_bitmap.bm_props.w-1, grdCurCanv->cv_bitmap.bm_props.h);
+		GrRect (grdCurCanv->cvBitmap.bmProps.w-labs (actual_eye_offset)*2, 0, 
+               grdCurCanv->cvBitmap.bmProps.w-1, grdCurCanv->cvBitmap.bmProps.h);
 	} else if (actual_eye_offset < 0) {
 		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (0, 0, labs (actual_eye_offset)*2-1, grdCurCanv->cv_bitmap.bm_props.h);
+		GrRect (0, 0, labs (actual_eye_offset)*2-1, grdCurCanv->cvBitmap.bmProps.h);
 	}
 
 	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD)	{
-		grs_canvas tmp;
+		gsrCanvas tmp;
 		if (actual_eye_offset < 0) {
-			GrInitSubCanvas (&tmp, grdCurCanv, labs (actual_eye_offset*2), 0, grdCurCanv->cv_bitmap.bm_props.w- (labs (actual_eye_offset)*2), grdCurCanv->cv_bitmap.bm_props.h);
+			GrInitSubCanvas (&tmp, grdCurCanv, labs (actual_eye_offset*2), 0, grdCurCanv->cvBitmap.bmProps.w- (labs (actual_eye_offset)*2), grdCurCanv->cvBitmap.bmProps.h);
 		} else {
-			GrInitSubCanvas (&tmp, grdCurCanv, 0, 0, grdCurCanv->cv_bitmap.bm_props.w- (labs (actual_eye_offset)*2), grdCurCanv->cv_bitmap.bm_props.h);
+			GrInitSubCanvas (&tmp, grdCurCanv, 0, 0, grdCurCanv->cvBitmap.bmProps.w- (labs (actual_eye_offset)*2), grdCurCanv->cvBitmap.bmProps.h);
 		}
 		GrSetCurrentCanvas (&tmp);
 		GameDrawHUDStuff ();
@@ -549,7 +549,7 @@ void game_render_frame_stereo ()
 		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->id==GUIDEDMSL_ID && 
 		 gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]->nSignature==gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer] && 
 		 gameOpts->render.cockpit.bGuidedInMainView)
-		GrBitmap (0, 0, &RenderCanvas [0].cv_bitmap);
+		GrBitmap (0, 0, &RenderCanvas [0].cvBitmap);
 	else {
 		if (gameStates.render.bRearView)
 			RenderFrame (-actual_eye_width, 0);	// switch eye positions for rear view
@@ -557,17 +557,17 @@ void game_render_frame_stereo ()
 			RenderFrame (actual_eye_width, 0);		// Right eye
 
 		if (gameStates.render.vr.nLowRes)
-			GameExpandBitmap (&RenderCanvas [1].cv_bitmap, gameStates.render.vr.nLowRes);
+			GameExpandBitmap (&RenderCanvas [1].cvBitmap, gameStates.render.vr.nLowRes);
 	}
 
 
 	{	//copy small window from left eye
-		grs_canvas temp;
+		gsrCanvas temp;
 		int w;
 		for (w=0;w<2;w++) {
 			if (SW_drawn [w]) {
 				GrInitSubCanvas (&temp, &RenderCanvas [0], SW_x [w], SW_y [w], SW_w [w], SW_h [w]);
-				GrBitmap (SW_x [w]+actual_eye_offset*2, SW_y [w], &temp.cv_bitmap);
+				GrBitmap (SW_x [w]+actual_eye_offset*2, SW_y [w], &temp.cvBitmap);
 			}
 		}
 	}
@@ -575,20 +575,20 @@ void game_render_frame_stereo ()
 //NEWVR
 	if (actual_eye_offset>0) {
 		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (0, 0, labs (actual_eye_offset)*2-1, grdCurCanv->cv_bitmap.bm_props.h);
+		GrRect (0, 0, labs (actual_eye_offset)*2-1, grdCurCanv->cvBitmap.bmProps.h);
 	} else if (actual_eye_offset < 0)	{
 		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (grdCurCanv->cv_bitmap.bm_props.w-labs (actual_eye_offset)*2, 0, 
-               grdCurCanv->cv_bitmap.bm_props.w-1, grdCurCanv->cv_bitmap.bm_props.h);
+		GrRect (grdCurCanv->cvBitmap.bmProps.w-labs (actual_eye_offset)*2, 0, 
+               grdCurCanv->cvBitmap.bmProps.w-1, grdCurCanv->cvBitmap.bmProps.h);
 	}
 
 //NEWVR (Add the next 2 lines)
 	if (gameStates.render.vr.bShowHUD && !bNoDrawHUD)	{
-		grs_canvas tmp;
+		gsrCanvas tmp;
 		if (actual_eye_offset > 0) {
-			GrInitSubCanvas (&tmp, grdCurCanv, labs (actual_eye_offset*2), 0, grdCurCanv->cv_bitmap.bm_props.w- (labs (actual_eye_offset)*2), grdCurCanv->cv_bitmap.bm_props.h);
+			GrInitSubCanvas (&tmp, grdCurCanv, labs (actual_eye_offset*2), 0, grdCurCanv->cvBitmap.bmProps.w- (labs (actual_eye_offset)*2), grdCurCanv->cvBitmap.bmProps.h);
 		} else {
-			GrInitSubCanvas (&tmp, grdCurCanv, 0, 0, grdCurCanv->cv_bitmap.bm_props.w- (labs (actual_eye_offset)*2), grdCurCanv->cv_bitmap.bm_props.h);
+			GrInitSubCanvas (&tmp, grdCurCanv, 0, 0, grdCurCanv->cvBitmap.bmProps.w- (labs (actual_eye_offset)*2), grdCurCanv->cvBitmap.bmProps.h);
 		}
 		GrSetCurrentCanvas (&tmp);
 		GameDrawHUDStuff ();
@@ -600,8 +600,8 @@ void game_render_frame_stereo ()
 	if (gameStates.render.vr.bUseRegCode)	{
 		int width, height, quarter;
 
-		width = RenderCanvas [0].cv_bitmap.bm_props.w;
-		height = RenderCanvas [0].cv_bitmap.bm_props.h;
+		width = RenderCanvas [0].cvBitmap.bmProps.w;
+		height = RenderCanvas [0].cvBitmap.bmProps.h;
 		quarter = width / 4;
 
 		// black out left-hand tSide of left page
@@ -640,8 +640,8 @@ void game_render_frame_stereo ()
 		GrClearCanvas (0);
 	}
 
-	sw = dw = gameStates.render.vr.buffers.render [0].cv_bitmap.bm_props.w;
-	sh = dh = gameStates.render.vr.buffers.render [0].cv_bitmap.bm_props.h;
+	sw = dw = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w;
+	sh = dh = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h;
 
 	// Copy left eye, then right eye
 	gr_bitblt_dest_step_shift = 1;		// Skip every other scanline.
@@ -649,20 +649,20 @@ void game_render_frame_stereo ()
 	if (gameStates.render.vr.nRenderMode == VR_INTERLACED) 	{
 		if (actual_eye_offset > 0)	{
 			int xoff = labs (actual_eye_offset);
-			GrBmUBitBlt (dw-xoff, dh, xoff, 0, 0, 0, &RenderCanvas [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
-			GrBmUBitBlt (dw-xoff, dh, 0, 1, xoff, 0, &RenderCanvas [1].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
+			GrBmUBitBlt (dw-xoff, dh, xoff, 0, 0, 0, &RenderCanvas [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap);
+			GrBmUBitBlt (dw-xoff, dh, 0, 1, xoff, 0, &RenderCanvas [1].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap);
 		} else if (actual_eye_offset < 0)	{
 			int xoff = labs (actual_eye_offset);
-			GrBmUBitBlt (dw-xoff, dh, 0, 0, xoff, 0, &RenderCanvas [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
-			GrBmUBitBlt (dw-xoff, dh, xoff, 1, 0, 0, &RenderCanvas [1].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
+			GrBmUBitBlt (dw-xoff, dh, 0, 0, xoff, 0, &RenderCanvas [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap);
+			GrBmUBitBlt (dw-xoff, dh, xoff, 1, 0, 0, &RenderCanvas [1].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap);
 		} else {
-			GrBmUBitBlt (dw, dh, 0, 0, 0, 0, &RenderCanvas [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
-			GrBmUBitBlt (dw, dh, 0, 1, 0, 0, &RenderCanvas [1].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap);
+			GrBmUBitBlt (dw, dh, 0, 0, 0, 0, &RenderCanvas [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap);
+			GrBmUBitBlt (dw, dh, 0, 1, 0, 0, &RenderCanvas [1].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap);
 		}
 	} else if (gameStates.render.vr.nRenderMode == VR_AREA_DET) {
 		// VFX copy
-		GrBmUBitBlt (dw, dh, 0,  gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [0].cv_bitmap);
-		GrBmUBitBlt (dw, dh, dw, gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [1].cv_bitmap, &gameStates.render.vr.buffers.screenPages [0].cv_bitmap);
+		GrBmUBitBlt (dw, dh, 0,  gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [0].cvBitmap);
+		GrBmUBitBlt (dw, dh, dw, gameStates.render.vr.nCurrentPage, 0, 0, &RenderCanvas [1].cvBitmap, &gameStates.render.vr.buffers.screenPages [0].cvBitmap);
 	} else {
 		Int3 ();		// Huh?
 	}
@@ -676,25 +676,25 @@ void game_render_frame_stereo ()
 			gr_wait_for_retrace = 0;
 
 //	Added by Samir from John's code
-		if ((gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.nType == BM_MODEX) && (Game_3dmaxFlag==3))	{
+		if ((gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.nType == BM_MODEX) && (Game_3dmaxFlag==3))	{
 			int old_x, old_y, new_x;
-			old_x = gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.x;
-			old_y = gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.y;
-			new_x = old_y*gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.rowsize;
+			old_x = gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.x;
+			old_y = gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.y;
+			new_x = old_y*gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.rowSize;
 			new_x += old_x/4;
-			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.x = new_x;
-			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.y = 0;
-			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.nType = BM_SVGA;
+			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.x = new_x;
+			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.y = 0;
+			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.nType = BM_SVGA;
 			GrShowCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.nType = BM_MODEX;
-			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.x = old_x;
-			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap.bm_props.y = old_y;
+			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.nType = BM_MODEX;
+			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.x = old_x;
+			gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap.bmProps.y = old_y;
 		} else {
 			GrShowCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 		}
 		gr_wait_for_retrace = 1;
 	}
-	grdCurScreen->sc_aspect=save_aspect;
+	grdCurScreen->scAspect=save_aspect;
 }
 #endif
 
@@ -857,15 +857,15 @@ void DrawGuidedCrosshair (void);
 void GameRenderFrameMono (void)
 {
 	tObject		*objP;
-	grs_canvas	Screen_3d_window;
+	gsrCanvas	Screen_3d_window;
 	int			bNoDrawHUD = 0;
 
 	GrInitSubCanvas (
 		&Screen_3d_window, &gameStates.render.vr.buffers.screenPages [0], 
-		gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.x, 
-		gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y, 
-		gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.w, 
-		gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.h);
+		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, 
+		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 
+		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.w, 
+		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.h);
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 	
 	objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
@@ -894,7 +894,7 @@ void GameRenderFrameMono (void)
 		GrSetCurFont (GAME_FONT);    //GAME_FONT);
 		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 		GrGetStringSize (msg, &w, &h, &aw);
-		GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, 3, msg);
+		GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
 		DrawGuidedCrosshair ();
 		HUDRenderMessageFrame ();
 		bNoDrawHUD = 1;
@@ -924,7 +924,7 @@ void GameRenderFrameMono (void)
 		if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{	
 			gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 			GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-			GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.x, gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cv_bitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cv_bitmap, 1);
+			GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap, 1);
 			gr_wait_for_retrace = 0;
 			GrShowCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 			gr_wait_for_retrace = 1;
@@ -1061,12 +1061,12 @@ void copy_background_rect (int left, int top, int right, int bot)
 	if (right < left || bot < top)
 		return;
 
-	tile_left = left / bm->bm_props.w;
-	tile_right = right / bm->bm_props.w;
-	tile_top = top / bm->bm_props.h;
-	tile_bot = bot / bm->bm_props.h;
+	tile_left = left / bm->bmProps.w;
+	tile_right = right / bm->bmProps.w;
+	tile_top = top / bm->bmProps.h;
+	tile_bot = bot / bm->bmProps.h;
 
-	ofs_y = top % bm->bm_props.h;
+	ofs_y = top % bm->bmProps.h;
 	dest_y = top;
 
 WIN (DDGRLOCK (dd_grd_curcanv))
@@ -1074,15 +1074,15 @@ WIN (DDGRLOCK (dd_grd_curcanv))
 	for (y=tile_top;y<=tile_bot;y++) {
 		int w, h;
 
-		ofs_x = left % bm->bm_props.w;
+		ofs_x = left % bm->bmProps.w;
 		dest_x = left;
 
-		//h = (bot < dest_y+bm->bm_props.h)? (bot-dest_y+1): (bm->bm_props.h-ofs_y);
-		h = min (bot-dest_y+1, bm->bm_props.h-ofs_y);
+		//h = (bot < dest_y+bm->bmProps.h)? (bot-dest_y+1): (bm->bmProps.h-ofs_y);
+		h = min (bot-dest_y+1, bm->bmProps.h-ofs_y);
 		for (x=tile_left;x<=tile_right;x++) {
-			//w = (right < dest_x+bm->bm_props.w)? (right-dest_x+1): (bm->bm_props.w-ofs_x);
-			w = min (right-dest_x+1, bm->bm_props.w-ofs_x);
-			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, &bmBackground, &grdCurCanv->cv_bitmap, 1);
+			//w = (right < dest_x+bm->bmProps.w)? (right-dest_x+1): (bm->bmProps.w-ofs_x);
+			w = min (right-dest_x+1, bm->bmProps.w-ofs_x);
+			GrBmUBitBlt (w, h, dest_x, dest_y, ofs_x, ofs_y, &bmBackground, &grdCurCanv->cvBitmap, 1);
 			ofs_x = 0;
 			dest_x += w;
 			}
@@ -1202,14 +1202,14 @@ void DrawCockpit (int h, int y)
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [h].index;
 	grsBitmap *bm = gameData.pig.tex.bitmaps [0] + i; 
-	grs_color c;
+	grsColor c;
 
 	PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [h], 0);
 	OglLoadBmTexture (bm, 1, 3, 1);
    GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	c.index = 255;
 	c.rgb = 0;
-	OglUBitMapMC (0, y, -1, grdCurCanv->cv_bitmap.bm_props.h - y, bm, &c, F1_0, 0);
+	OglUBitMapMC (0, y, -1, grdCurCanv->cvBitmap.bmProps.h - y, bm, &c, F1_0, 0);
 	}
 }
 
@@ -1258,7 +1258,7 @@ switch (gameStates.render.cockpit.nMode)	{
 		GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 		GrClearCanvas (BLACK_RGBA);
 		// In a modex mode, clear the other buffer.
-		if (grdCurCanv->cv_bitmap.bm_props.nType == BM_MODEX) {
+		if (grdCurCanv->cvBitmap.bmProps.nType == BM_MODEX) {
 			GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage^1]);
 			GrClearCanvas (BLACK_RGBA);
 			GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
@@ -1298,7 +1298,7 @@ void DrawGuidedCrosshair (void)
 	if (w < 5)
 		w = 5;
 
-	h = i2f (w) / grdCurScreen->sc_aspect;
+	h = i2f (w) / grdCurScreen->scAspect;
 
 	x = grdCurCanv->cv_w / 2;
 	y = grdCurCanv->cv_h / 2;
@@ -1337,8 +1337,8 @@ void ShowBoxedMessage (char *msg)
 	);
 	GrSetCurFont (MEDIUM1_FONT);
 	GrGetStringSize (msg, &w, &h, &aw);
-	x = (grdCurScreen->sc_w-w)/2;
-	y = (grdCurScreen->sc_h-h)/2;
+	x = (grdCurScreen->scWidth-w)/2;
+	y = (grdCurScreen->scHeight-h)/2;
 	if (bg.bmp) {
 		GrFreeBitmap (bg.bmp);
 		bg.bmp = NULL;
@@ -1348,7 +1348,7 @@ void ShowBoxedMessage (char *msg)
 	if (!gameOpts->menus.nStyle) {
 		bg.bmp = GrCreateBitmap (w+BOX_BORDER, h+BOX_BORDER, 1);
 		WIN (DDGRLOCK (dd_grd_curcanv));
-		GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cv_bitmap), bg.bmp, 1);
+		GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cvBitmap), bg.bmp, 1);
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	NMDrawBackground (&bg, x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1, 0);

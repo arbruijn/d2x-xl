@@ -602,7 +602,7 @@ if (altTextures) {
 		gameData.models.textureIndex [i] = altTextures [i];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 #ifdef _3DFX
-      gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
+      gameData.models.textures [i]->bmHandle = gameData.models.textureIndex [i].index;
 #endif
 		}
 	}
@@ -611,7 +611,7 @@ else {
 		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 #ifdef _3DFX
-      gameData.models.textures [i]->bm_handle = gameData.models.textureIndex [i].index;
+      gameData.models.textures [i]->bmHandle = gameData.models.textureIndex [i].index;
 #endif
 		}
 	}

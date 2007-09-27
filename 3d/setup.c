@@ -46,14 +46,14 @@ void G3StartFrame (int bFlat, int bResetColorBuf)
 	fix s;
 
 //set int w,h & fixed-point w,h/2
-xCanvW2 = (nCanvasWidth  = grdCurCanv->cv_bitmap.bm_props.w) << 15;
-xCanvH2 = (nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h) << 15;
+xCanvW2 = (nCanvasWidth  = grdCurCanv->cvBitmap.bmProps.w) << 15;
+xCanvH2 = (nCanvasHeight = grdCurCanv->cvBitmap.bmProps.h) << 15;
 #ifdef __powerc
-fxCanvW2 = f2fl ((nCanvasWidth  = grdCurCanv->cv_bitmap.bm_props.w) << 15);
-fxCanvH2 = f2fl ((nCanvasHeight = grdCurCanv->cv_bitmap.bm_props.h) << 15);
+fxCanvW2 = f2fl ((nCanvasWidth  = grdCurCanv->cvBitmap.bmProps.w) << 15);
+fxCanvH2 = f2fl ((nCanvasHeight = grdCurCanv->cvBitmap.bmProps.h) << 15);
 #endif
 //compute aspect ratio for this canvas
-s = FixMulDiv (grdCurScreen->sc_aspect, nCanvasHeight, nCanvasWidth);
+s = FixMulDiv (grdCurScreen->scAspect, nCanvasHeight, nCanvasWidth);
 if (s <= f1_0) {	   //scale x
 	viewInfo.windowScale.p.x = s;
 	viewInfo.windowScale.p.y = f1_0;

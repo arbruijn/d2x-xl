@@ -216,9 +216,9 @@ void LoadBackgroundBitmap ()
 {
 	int pcx_error;
 
-if (bmBackground.bm_texBuf)
-	D2_FREE (bmBackground.bm_texBuf);
-bmBackground.bm_texBuf=NULL;
+if (bmBackground.bmTexBuf)
+	D2_FREE (bmBackground.bmTexBuf);
+bmBackground.bmTexBuf=NULL;
 pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? "johnhead.pcx" : BACKGROUND_NAME,
 									  &bmBackground, BM_LINEAR,0);
 if (pcx_error != PCX_ERROR_NONE)
@@ -303,8 +303,8 @@ if (grdCurScreen) {
 
 //------------------------------------------------------------------------------
 //these should be in gr.h
-#define cv_w  cv_bitmap.bm_props.w
-#define cv_h  cv_bitmap.bm_props.h
+#define cv_w  cvBitmap.bmProps.w
+#define cv_h  cvBitmap.bmProps.h
 
 extern void NDRecordCockpitChange (int);
 
@@ -337,7 +337,7 @@ bGameCockpitCopyCode  = NULL;
 switch (gameStates.render.cockpit.nMode) {
 	case CM_FULL_COCKPIT:
 	case CM_REAR_VIEW:
-     	gameData.render.window.hMax = (grdCurScreen->sc_h * 2) / 3;
+     	gameData.render.window.hMax = (grdCurScreen->scHeight * 2) / 3;
 		if (gameData.render.window.h > gameData.render.window.hMax)
 			gameData.render.window.h = gameData.render.window.hMax;
 		if (gameData.render.window.w > gameData.render.window.wMax)
@@ -348,7 +348,7 @@ switch (gameStates.render.cockpit.nMode) {
 		break;
 
 	case CM_FULL_SCREEN:
-		gameData.render.window.hMax = grdCurScreen->sc_h;
+		gameData.render.window.hMax = grdCurScreen->scHeight;
 		gameData.render.window.h = gameData.render.window.hMax;
 		gameData.render.window.w = gameData.render.window.wMax;
 		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
@@ -358,12 +358,12 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_STATUS_BAR:
 		{
-		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].bm_props.h;
+		int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].bmProps.h;
 		if (gameStates.app.bDemoData)
 			h *= 2;
-		if (grdCurScreen->sc_h > 480)
-			h = (int) ((double) h * (double) grdCurScreen->sc_h / 480.0);
-     	gameData.render.window.hMax = grdCurScreen->sc_h - h;
+		if (grdCurScreen->scHeight > 480)
+			h = (int) ((double) h * (double) grdCurScreen->scHeight / 480.0);
+     	gameData.render.window.hMax = grdCurScreen->scHeight - h;
 		gameData.render.window.h = gameData.render.window.hMax;
 		gameData.render.window.w = gameData.render.window.wMax;
 		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w) / 2;
@@ -374,9 +374,9 @@ switch (gameStates.render.cockpit.nMode) {
 
 	case CM_LETTERBOX: {
 		int x = 0; 
-		int w = gameStates.render.vr.buffers.render[0].cv_bitmap.bm_props.w;		//VR_render_width;
-		int h = (int) ((gameStates.render.vr.buffers.render[0].cv_bitmap.bm_props.h * 7) / 10 / ((double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w / 0.75));
-		int y = (gameStates.render.vr.buffers.render[0].cv_bitmap.bm_props.h - h) / 2;
+		int w = gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.w;		//VR_render_width;
+		int h = (int) ((gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.h * 7) / 10 / ((double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth / 0.75));
+		int y = (gameStates.render.vr.buffers.render[0].cvBitmap.bmProps.h - h) / 2;
 		GameInitRenderSubBuffers (x, y, w, h);
 		break;
 		}
@@ -467,7 +467,7 @@ else {
 	else {
 		gameStates.render.vr.buffers.offscreen = GrCreateCanvas (render_w, render_h);
       }
-	gameStates.render.vr.buffers.offscreen->cv_bitmap.bm_props.nType = BM_OGL;
+	gameStates.render.vr.buffers.offscreen->cvBitmap.bmProps.nType = BM_OGL;
 	GrInitSubCanvas (&gameStates.render.vr.buffers.render[0], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
 	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
 	}
@@ -505,7 +505,7 @@ WIN (static int saved_window_h);
 	}
 #endif
 if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenMode) && 
-		(/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->sc_mode == gameStates.render.vr.nScreenMode))) {
+		(/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->scMode == gameStates.render.vr.nScreenMode))) {
 	GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	OglSetScreenMode ();
 	return 1;
@@ -542,11 +542,11 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 			}
 
 			GrInitSubCanvas (
-				gameStates.render.vr.buffers.screenPages, &grdCurScreen->sc_canvas, 0, 0, 
-				grdCurScreen->sc_w, grdCurScreen->sc_h);
+				gameStates.render.vr.buffers.screenPages, &grdCurScreen->scCanvas, 0, 0, 
+				grdCurScreen->scWidth, grdCurScreen->scHeight);
 			GrInitSubCanvas (
-				gameStates.render.vr.buffers.screenPages + 1, &grdCurScreen->sc_canvas, 0, 0, 
-				grdCurScreen->sc_w, grdCurScreen->sc_h);
+				gameStates.render.vr.buffers.screenPages + 1, &grdCurScreen->scCanvas, 0, 0, 
+				grdCurScreen->scWidth, grdCurScreen->scHeight);
 
 			gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 
@@ -566,8 +566,8 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 			ResetCockpit ();
 		}
 			{
-			gameData.render.window.wMax = grdCurScreen->sc_w;
-			gameData.render.window.hMax = grdCurScreen->sc_h;
+			gameData.render.window.wMax = grdCurScreen->scWidth;
+			gameData.render.window.hMax = grdCurScreen->scHeight;
 	      if (!gameData.render.window.h || (gameData.render.window.h > gameData.render.window.hMax) || 
 				 !gameData.render.window.w || (gameData.render.window.w > gameData.render.window.wMax)) {
 				gameData.render.window.w = gameData.render.window.wMax;
@@ -579,27 +579,27 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 	//	Define screen pages for game mode
 	// If we designate through screenFlags to use paging, then do so.
 		WINDOS (
-			DDGrInitSubCanvas (&dd_VR_screen_pages[0], dd_grd_screencanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
+			DDGrInitSubCanvas (&dd_VR_screen_pages[0], dd_grd_screencanv, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight),
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight)
 		);
 
 		if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
 		WINDOS (
-			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_backcanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->sc_canvas, 0, grdCurScreen->sc_h, grdCurScreen->sc_w, grdCurScreen->sc_h)
+			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_backcanv, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight),
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 0, grdCurScreen->scHeight, grdCurScreen->scWidth, grdCurScreen->scHeight)
 		);
 		}
 		else {
 		WINDOS (
-			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_screencanv, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h),
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h)
+			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_screencanv, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight),
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight)
 		);
 		}
 		InitCockpit ();
 		gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
 		if (gameStates.render.vr.nRenderMode != VR_NONE)	{
 			// for 640x480 or higher, use hires font.
-			if (gameStates.render.fonts.bHiresAvailable && (grdCurScreen->sc_h > 400))
+			if (gameStates.render.fonts.bHiresAvailable && (grdCurScreen->scHeight > 400))
 				gameStates.render.fonts.bHires = 1;
 			else
 				gameStates.render.fonts.bHires = 0;
@@ -609,7 +609,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 
 	#ifdef EDITOR
 	case SCREEN_EDITOR:
-		if (grdCurScreen->sc_mode != SM (800,600))	{
+		if (grdCurScreen->scMode != SM (800,600))	{
 			int gr_error;
 			if ((gr_error=GrSetMode (SM (800,600)))!=0) { //force into game scrren
 				Warning ("Cannot init editor screen (error=%d)",gr_error);
@@ -618,7 +618,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 		}
 		GrPaletteStepLoad (NULL);
 
-		GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
+		GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 		Canv_editor = &gameStates.render.vr.buffers.editorCanvas;
 		GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
 		GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
@@ -900,21 +900,21 @@ void level_with_floor ();
 
 void modex_clear_box (int x,int y,int w,int h)
 {
-	grs_canvas *temp_canv,*save_canv;
+	gsrCanvas *temp_canv,*save_canv;
 
 	save_canv = grdCurCanv;
 	temp_canv = GrCreateCanvas (w,h);
 	GrSetCurrentCanvas (temp_canv);
 	GrClearCanvas (BLACK_RGBA);
 	GrSetCurrentCanvas (save_canv);
-	GrBitmapM (x,y,&temp_canv->cv_bitmap, 0);
+	GrBitmapM (x,y,&temp_canv->cvBitmap, 0);
 	GrFreeCanvas (temp_canv);
 
 }
 
 //------------------------------------------------------------------------------
 
-extern void modex_printf (int x,int y,char *s,grs_font *font,int color);
+extern void modex_printf (int x,int y,char *s,grsFont *font,int color);
 
 // mac routine to drop contents of screen to a pict file using copybits
 // save a PICT to a file
@@ -1856,9 +1856,9 @@ if (bGameCockpitCopyCode) {
 	D2_FREE (bGameCockpitCopyCode);
 	bGameCockpitCopyCode = NULL;
 }
-if (bmBackground.bm_texBuf) {
+if (bmBackground.bmTexBuf) {
 	LogErr ("unloading background bitmap\n");
-	D2_FREE (bmBackground.bm_texBuf);
+	D2_FREE (bmBackground.bmTexBuf);
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
 LogErr ("unloading custom background data\n");
@@ -1876,7 +1876,7 @@ if (fErr) {
 
 //-----------------------------------------------------------------------------
 
-grs_canvas *GetCurrentGameScreen ()
+gsrCanvas *GetCurrentGameScreen ()
 {
 return gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage;
 }
@@ -1935,13 +1935,13 @@ void flush_movie_buffer ()
 #if TRACE
 	//con_printf (CONDBG,"Flushing movie bufferd:\temp\dm_test.");
 #endif
-	bmMovie.bm_texBuf = Movie_frame_buffer;
+	bmMovie.bmTexBuf = Movie_frame_buffer;
 
 	for (f=0;f<nMovieFrames;f++) {
 		sprintf (savename, "%sfrm%04d.pcx",movie_path,__Movie_frame_num);
 		__Movie_frame_num++;
 		pcx_write_bitmap (savename, &bmMovie);
-		bmMovie.bm_texBuf += MOVIE_FRAME_SIZE;
+		bmMovie.bmTexBuf += MOVIE_FRAME_SIZE;
 
 		if (f % 5 == 0) {
 #if TRACE
@@ -1994,13 +1994,13 @@ void toggle_movie_saving ()
 
 			nMovieFrames=0;
 
-			bmMovie.bm_props.x = bmMovie.bm_props.y = 0;
-			bmMovie.bm_props.w = 320;
-			bmMovie.bm_props.h = 200;
-			bmMovie.bm_props.nType = BM_LINEAR;
-			bmMovie.bm_props.flags = 0;
-			bmMovie.bm_props.rowsize = 320;
-			//bmMovie.bm_handle = 0;
+			bmMovie.bmProps.x = bmMovie.bmProps.y = 0;
+			bmMovie.bmProps.w = 320;
+			bmMovie.bmProps.h = 200;
+			bmMovie.bmProps.nType = BM_LINEAR;
+			bmMovie.bmProps.flags = 0;
+			bmMovie.bmProps.rowSize = 320;
+			//bmMovie.bmHandle = 0;
 
 			GrPaletteRead (Movie_pal);		//get actual palette from the hardware
 
@@ -2021,7 +2021,7 @@ void toggle_movie_saving ()
 
 void save_movie_frame ()
 {
-	memcpy (Movie_frame_buffer+nMovieFrames*MOVIE_FRAME_SIZE,grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf,MOVIE_FRAME_SIZE);
+	memcpy (Movie_frame_buffer+nMovieFrames*MOVIE_FRAME_SIZE,grdCurScreen->scCanvas.cvBitmap.bmTexBuf,MOVIE_FRAME_SIZE);
 
 	nMovieFrames++;
 

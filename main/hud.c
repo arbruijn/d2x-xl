@@ -61,23 +61,23 @@ int nModexHUDMsgs;
 #define LHX (x)      (gameStates.render.fonts.bHires?2* (x):x)
 #define LHY (y)      (gameStates.render.fonts.bHires? (24* (y))/10:y)
 
-extern grs_canvas *PrintToCanvas (char *s,grs_font *font, unsigned int fc, unsigned int bc, int doubleFlag);
+extern gsrCanvas *PrintToCanvas (char *s,grsFont *font, unsigned int fc, unsigned int bc, int doubleFlag);
 
 // ----------------------------------------------------------------------------
 
 void ClearBackgroundMessages (void)
 {
-if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y >= 6)) {
-	grs_canvas	*canv_save = grdCurCanv;
+if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y >= 6)) {
+	gsrCanvas	*canv_save = grdCurCanv;
 
 WINDOS (
 	DDGrSetCurrentCanvas (GetCurrentGameScreen ()),
 	GrSetCurrentCanvas (GetCurrentGameScreen ())
 	);
 PA_DFX (pa_set_frontbuffer_current ());
-PA_DFX (copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cv_bitmap.bm_props.w, nLastMsgYCrd+nLastMsgHeight-1));
+PA_DFX (copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1));
 PA_DFX (pa_set_backbuffer_current ());
-copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cv_bitmap.bm_props.w, nLastMsgYCrd+nLastMsgHeight-1);
+copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1);
 WINDOS (
 	DDGrSetCurrentCanvas (canv_save),
 	GrSetCurrentCanvas (canv_save)
@@ -108,10 +108,10 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 
 //	-----------------------------------------------------------------------------
 //	print to buffer, double heights, and blit bitmap to screen
-void HUDModexMessage (int x, int y, char *s, grs_font *font, unsigned int color)
+void HUDModexMessage (int x, int y, char *s, grsFont *font, unsigned int color)
 {
-grs_canvas *temp_canv = PrintToCanvas (s, font, color, 0, 1);
-GrBitmapM (x, y, &temp_canv->cv_bitmap, 2);
+gsrCanvas *temp_canv = PrintToCanvas (s, font, color, 0, 1);
+GrBitmapM (x, y, &temp_canv->cvBitmap, 2);
 GrFreeCanvas (temp_canv);
 }
 
@@ -150,7 +150,7 @@ if (pMsgs->nMessages > 0) {
 		pMsgs->nColor = GREEN_RGBA;
 
 	if ((gameStates.render.vr.nRenderMode == VR_NONE) && ((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || 
-		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].cv_bitmap.bm_props.y >= (gameData.render.window.hMax/8))) {
+		 (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y >= (gameData.render.window.hMax/8))) {
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
@@ -158,12 +158,12 @@ if (pMsgs->nMessages > 0) {
 		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
 			int	ycrd;
 			WINDOS (
-				dd_grs_canvas *canv_save = dd_grd_curcanv,
-				grs_canvas	*canv_save = grdCurCanv
+				ddgrs_canvas *canv_save = dd_grd_curcanv,
+				gsrCanvas	*canv_save = grdCurCanv
 				);
 			WINDOS (
-				ycrd = dd_grd_curcanv->yoff - (SMALL_FONT->ft_h+2),
-				ycrd = grdCurCanv->cv_bitmap.bm_props.y - (SMALL_FONT->ft_h+2)
+				ycrd = dd_grd_curcanv->yoff - (SMALL_FONT->ftHeight+2),
+				ycrd = grdCurCanv->cvBitmap.bmProps.y - (SMALL_FONT->ftHeight+2)
 				);
 			if (ycrd < 0)
 				ycrd = 0;
@@ -174,11 +174,11 @@ if (pMsgs->nMessages > 0) {
 			GrSetCurFont (SMALL_FONT);
 			GrGetStringSize (pszMsg, &w, &h, &aw);
 			ClearBackgroundMessages ();
-			if (grdCurCanv->cv_bitmap.bm_props.nType == BM_MODEX) {
+			if (grdCurCanv->cvBitmap.bmProps.nType == BM_MODEX) {
 				WIN (Int3 ());    // No no no no ....
 				ycrd -= h;
 				h *= 2;
-				HUDModexMessage ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg, SMALL_FONT, 
+				HUDModexMessage ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg, SMALL_FONT, 
 									  pMsgs->nColor);
 				if (nModexHUDMsgs > 0) {
 					nModexHUDMsgs--;
@@ -193,9 +193,9 @@ if (pMsgs->nMessages > 0) {
 						pMsgs->nColor = GREEN_RGBA;
 					GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
 					PA_DFX (pa_set_frontbuffer_current ());
-					PA_DFX (GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg));
+					PA_DFX (GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg));
 					PA_DFX (pa_set_backbuffer_current ());
-					GrPrintF ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, ycrd, pszMsg);
+					GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg);
 					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				WIN (DDGRUNLOCK (dd_grd_curcanv));
 				}
@@ -212,18 +212,18 @@ if (pMsgs->nMessages > 0) {
 		if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 			if (gameData.render.window.w == gameData.render.window.wMax)
-				yStart = SMALL_FONT->ft_h / 2;
+				yStart = SMALL_FONT->ftHeight / 2;
 			else
-				yStart= SMALL_FONT->ft_h * 2;
+				yStart= SMALL_FONT->ftHeight * 2;
 		} else
-			yStart = SMALL_FONT->ft_h / 2;
+			yStart = SMALL_FONT->ftHeight / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
 			tObject *gmP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 			if (gmP && 
 				 (gmP->nType == OBJ_WEAPON) && 
 				 (gmP->id == GUIDEDMSL_ID) &&
 			    (gmP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]))
-				yStart += SMALL_FONT->ft_h + 3;
+				yStart += SMALL_FONT->ftHeight + 3;
 			}
 
 	WIN (DDGRLOCK (dd_grd_curcanv));
@@ -239,16 +239,16 @@ if (pMsgs->nMessages > 0) {
 			y = yStart + i * (h + 1);
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
-			PA_DFX (GrString ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, y [nType], pMsgs->szMsgs [n]));
+			PA_DFX (GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y [nType], pMsgs->szMsgs [n]));
 			PA_DFX (pa_set_backbuffer_current ());
-			GrString ((grdCurCanv->cv_bitmap.bm_props.w-w)/2, y, pMsgs->szMsgs [n]);
+			GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y, pMsgs->szMsgs [n]);
 			if (!gameOpts->render.cockpit.bSplitHUDMsgs) 
 				y += h + 1;
 			}
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	}
-else if (GetCurrentGameScreen ()->cv_bitmap.bm_props.nType == BM_MODEX) {
+else if (GetCurrentGameScreen ()->cvBitmap.bmProps.nType == BM_MODEX) {
 	if (nModexHUDMsgs) {
 		int temp = nLastMsgYCrd;
 		nModexHUDMsgs--;
@@ -381,7 +381,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       NO_DFX (GrSetColorRGB (0, 0, 0, 255));
       NO_DFX (GrRect ( x, y, x+w, y+h));
       gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-      GrString (0x8000, (grdCurCanv->cv_h - grdCurCanv->cv_font->ft_h)/2 + h/8, TXT_GAME_OVER);
+      GrString (0x8000, (grdCurCanv->cv_h - grdCurCanv->cvFont->ftHeight)/2 + h/8, TXT_GAME_OVER);
 #if 0
       // Automatically exit death after 10 secs
       if ( gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
@@ -395,7 +395,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
    if (pMsgs->nColor == -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
-   GrString (0x8000, grdCurCanv->cv_h- (grdCurCanv->cv_font->ft_h+3), TXT_PRESS_ANY_KEY);
+   GrString (0x8000, grdCurCanv->cv_h- (grdCurCanv->cvFont->ftHeight+3), TXT_PRESS_ANY_KEY);
 	}
 }
 

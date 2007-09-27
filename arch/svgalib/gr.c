@@ -53,7 +53,7 @@ int GrSetMode(u_int32_t mode)
 	unsigned int w, h;
 	char vgamode[16];
 	vga_modeinfo *modeinfo;
-	int modenum, rowsize;
+	int modenum, rowSize;
 	void *framebuffer;
 	
 #ifdef NOGRAPH
@@ -88,7 +88,7 @@ int GrSetMode(u_int32_t mode)
 		screenbuffer = physicalscreen;
 
 		framebuffer = physicalscreen->vbuf;
-		rowsize = physicalscreen->bytewidth;
+		rowSize = physicalscreen->bytewidth;
 	}
 	else
 	{
@@ -105,22 +105,22 @@ int GrSetMode(u_int32_t mode)
 		gl_getcontext(screenbuffer);
 
 		framebuffer = screenbuffer->vbuf;
-		rowsize = screenbuffer->bytewidth;
+		rowSize = screenbuffer->bytewidth;
 	}
 
-	memset(grdCurScreen, 0, sizeof(grs_screen);
-	grdCurScreen->sc_mode = mode;
-	grdCurScreen->sc_w = w;
-	grdCurScreen->sc_h = h;
-	grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = rowsize;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = framebuffer;
+	memset(grdCurScreen, 0, sizeof(grsScreen);
+	grdCurScreen->scMode = mode;
+	grdCurScreen->scWidth = w;
+	grdCurScreen->scHeight = h;
+	grdCurScreen->scAspect = FixDiv(grdCurScreen->scWidth*3,grdCurScreen->scHeight*4);
+	grdCurScreen->scCanvas.cvBitmap.bmProps.x = 0;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.y = 0;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.w = w;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.h = h;
+	grdCurScreen->scCanvas.cvBitmap.bmBPP = 1;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = rowSize;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_LINEAR;
+	grdCurScreen->scCanvas.cvBitmap.bmTexBuf = framebuffer;
 	GrSetCurrentCanvas(NULL);
 	
 	//gamefont_choose_game_font(w,h);
@@ -136,20 +136,20 @@ int GrInit(void)
  	// Only do this function once!
 	if (gameStates.gfx.bInstalled==1)
 		return -1;
-	MALLOC(grdCurScreen,grs_screen, 1);
-	memset(grdCurScreen, 0, sizeof(grs_screen);
+	MALLOC(grdCurScreen,grsScreen, 1);
+	memset(grdCurScreen, 0, sizeof(grsScreen);
 	
 	vga_init();
 
 	if ((retcode=GrSetMode(mode)))
 		return retcode;
 	
-	grdCurScreen->sc_canvas.cv_color = 0;
-	grdCurScreen->sc_canvas.cv_drawmode = 0;
-	grdCurScreen->sc_canvas.cv_font = NULL;
-	grdCurScreen->sc_canvas.cv_font_fg_color = 0;
-	grdCurScreen->sc_canvas.cv_font_bg_color = 0;
-	GrSetCurrentCanvas( &grdCurScreen->sc_canvas );
+	grdCurScreen->scCanvas.cvColor = 0;
+	grdCurScreen->scCanvas.cvDrawMode = 0;
+	grdCurScreen->scCanvas.cvFont = NULL;
+	grdCurScreen->scCanvas.cvFontFgColor = 0;
+	grdCurScreen->scCanvas.cvFontBgColor = 0;
+	GrSetCurrentCanvas( &grdCurScreen->scCanvas );
 
 	gameStates.gfx.bInstalled = 1;
 	atexit(GrClose);

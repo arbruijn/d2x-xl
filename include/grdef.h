@@ -68,7 +68,7 @@ extern void gr_pal_setone( int index, unsigned char red, unsigned char green, un
 
 void gr_linear_movsb( ubyte * source, ubyte * dest, int nbytes);
 void gr_linear_movsw( ubyte * source, ubyte * dest, int nbytes);
-void gr_linear_stosd( ubyte * dest, grs_color *color, unsigned int nbytes);
+void gr_linear_stosd( ubyte * dest, grsColor *color, unsigned int nbytes);
 
 extern unsigned int gr_var_color;
 extern unsigned int gr_var_bwidth;
@@ -85,11 +85,11 @@ extern unsigned int Table8to32[256];
 #define MINY    0
 #define MAXX    (GWIDTH-1)
 #define MAXY    (GHEIGHT-1)
-#define TYPE    grdCurCanv->cv_bitmap.bm_props.nType
-#define XOFFSET grdCurCanv->cv_bitmap.bm_props.x
-#define YOFFSET grdCurCanv->cv_bitmap.bm_props.y
-#define ROWSIZE grdCurCanv->cv_bitmap.bm_props.rowsize
-#define DATA    grdCurCanv->cv_bitmap.bm_texBuf
-#define COLOR   (grdCurCanv->cv_color)
+#define TYPE    grdCurCanv->cvBitmap.bmProps.nType
+#define XOFFSET grdCurCanv->cvBitmap.bmProps.x
+#define YOFFSET grdCurCanv->cvBitmap.bmProps.y
+#define ROWSIZE grdCurCanv->cvBitmap.bmProps.rowSize
+#define DATA    grdCurCanv->cvBitmap.bmTexBuf
+#define COLOR   (grdCurCanv->cvColor)
 
 void order( int *x1, int *x2 );

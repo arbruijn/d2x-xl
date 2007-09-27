@@ -660,7 +660,7 @@ void KCDrawTitle (char *title)
 {
 char *p = strchr (title, '\n');
 
-grdCurCanv->cv_font = MEDIUM3_FONT;
+grdCurCanv->cvFont = MEDIUM3_FONT;
 if (p) 
 	*p = 32;
 GrString (0x8000, KC_LHY (8), title);
@@ -672,7 +672,7 @@ if (p)
 
 void KCDrawHeader (kcItem *items)
 {
-grdCurCanv->cv_font = GAME_FONT;
+grdCurCanv->cvFont = GAME_FONT;
 GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 
 GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1);
@@ -751,9 +751,9 @@ KCDrawItemExt (items + cItem, 1, 0);
 
 //------------------------------------------------------------------------------
 
-void KCQuitMenu (grs_canvas *save_canvas, grs_font *save_font, bkg *bg, int time_stopped)
+void KCQuitMenu (gsrCanvas *save_canvas, grsFont *save_font, bkg *bg, int time_stopped)
 {
-grdCurCanv->cv_font	= save_font;
+grdCurCanv->cvFont	= save_font;
 WIN (DEFINE_SCREEN (old_bg_pcx));
 //WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), GrFreeSubCanvas (bg->menu_canvas));
 //bg->menu_canvas = NULL;
@@ -786,7 +786,7 @@ for (i = 0, n = (int) (item - All_items); i < Num_items; i++)	{
 item->value = code;					 
 if (curDrawBuffer == GL_FRONT) {
 	KCDrawItem (item, 1);
-	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), grdCurCanv->cv_font->ft_h);
+	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), grdCurCanv->cvFont->ftHeight);
 	}
 GameFlushInputs ();
 WIN (DDGRLOCK (dd_grd_curcanv));
@@ -1191,10 +1191,10 @@ nLinked |= tableFlags;
 void KConfigSub (kcItem * items, int nItems, char * title)
 {
 WINDOS (
-	dd_grs_canvas * save_canvas,
-	grs_canvas * save_canvas
+	ddgrs_canvas * save_canvas,
+	gsrCanvas * save_canvas
 );
-	grs_font * save_font;
+	grsFont * save_font;
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
 	int	close_x = 0, close_y = 0, close_size = 0;
 
@@ -1219,12 +1219,12 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 
 save_canvas = grdCurCanv;
 GrSetCurrentCanvas (NULL);		
-save_font = grdCurCanv->cv_font;
+save_font = grdCurCanv->cvFont;
 
 FlushInput ();
 NMDrawBackground (&bg, xOffs, yOffs, 
-	xOffs + 639 /*grdCurCanv->cv_bitmap.bm_props.w - 1*/, 
-	yOffs + 479 /*grdCurCanv->cv_bitmap.bm_props.h - 1*/, 0);
+	xOffs + 639 /*grdCurCanv->cvBitmap.bmProps.w - 1*/, 
+	yOffs + 479 /*grdCurCanv->cvBitmap.bmProps.h - 1*/, 0);
 GrPaletteStepLoad (NULL);
 
 cItem = 0;
@@ -1460,9 +1460,9 @@ for (;;) {
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			for (i = 0; i < nItems; i++)	{
 				item_height = KCGetItemHeight (items + i);
-				x1 = grdCurCanv->cv_bitmap.bm_props.x + LHX (items [i].x) + LHX (items [i].w1);
+				x1 = grdCurCanv->cvBitmap.bmProps.x + LHX (items [i].x) + LHX (items [i].w1);
 				x2 = x1 + LHX (items [i].w2);
-				y1 = grdCurCanv->cv_bitmap.bm_props.y + LHY (items [i].y);
+				y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [i].y);
 				y2 = y1 + /*LHY*/ (item_height);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					cItem = i;
@@ -1478,17 +1478,17 @@ for (;;) {
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 			item_height = KCGetItemHeight (items + cItem);
-			x1 = grdCurCanv->cv_bitmap.bm_props.x + LHX (items [cItem].x) + LHX (items [cItem].w1);
+			x1 = grdCurCanv->cvBitmap.bmProps.x + LHX (items [cItem].x) + LHX (items [cItem].w1);
 			x2 = x1 + LHX (items [cItem].w2);
-			y1 = grdCurCanv->cv_bitmap.bm_props.y + LHY (items [cItem].y);
+			y1 = grdCurCanv->cvBitmap.bmProps.y + LHY (items [cItem].y);
 			y2 = y1 + /*LHY*/ (item_height);
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				nChangeMode = items [cItem].nType;
 				GameFlushInputs ();
 			} else {
-				x1 = grdCurCanv->cv_bitmap.bm_props.x + close_x + LHX (1);
+				x1 = grdCurCanv->cvBitmap.bmProps.x + close_x + LHX (1);
 				x2 = x1 + close_size - LHX (1);
-				y1 = grdCurCanv->cv_bitmap.bm_props.y + close_y + LHX (1);
+				y1 = grdCurCanv->cvBitmap.bmProps.y + close_y + LHX (1);
 				y2 = y1 + close_size - LHY (1);
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
@@ -1613,8 +1613,8 @@ void KConfig (int n, char * title)
 	grsBitmap	*bmSave;
 	int			i, j, b = gameOpts->legacy.bInput;
 
-	xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
-	yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
+	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
+	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
@@ -1627,11 +1627,11 @@ void KConfig (int n, char * title)
 	if (gameOpts->menus.bFastMenus)
 		bmSave = NULL;
 	else {
-		bmSave = GrCreateBitmap (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.h, 1);
+		bmSave = GrCreateBitmap (grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.h, 1);
 		Assert (bmSave != NULL);
-		bmSave->bm_palette = gameData.render.ogl.palette;
-		GrBmBitBlt (grdCurCanv->cv_bitmap.bm_props.w, grdCurCanv->cv_bitmap.bm_props.w, 
-						 0, 0, 0, 0, &grdCurCanv->cv_bitmap, bmSave);
+		bmSave->bmPalette = gameData.render.ogl.palette;
+		GrBmBitBlt (grdCurCanv->cvBitmap.bmProps.w, grdCurCanv->cvBitmap.bmProps.w, 
+						 0, 0, 0, 0, &grdCurCanv->cvBitmap, bmSave);
 		}
 	if (n == 0)
 		KConfigSub (kcKeyboard, NUM_KEY_CONTROLS, title);

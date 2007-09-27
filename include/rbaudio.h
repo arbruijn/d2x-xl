@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define RBA_MEDIA_CHANGED	-1
 
-typedef struct _RBACHANNELCTL {
+typedef struct RBACHANNELCTL {
 	unsigned int out0in, out0vol;
 	unsigned int out1in, out1vol;
 	unsigned int out2in, out2vol;

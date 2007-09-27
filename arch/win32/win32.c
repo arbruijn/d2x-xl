@@ -100,26 +100,26 @@ int GrSetMode(int mode)
 
 	GrPaletteStepClear();
 
-	memset( grdCurScreen, 0, sizeof(grs_screen);
-	grdCurScreen->sc_mode = mode;
-	grdCurScreen->sc_w = w;
-	grdCurScreen->sc_h = h;
-	grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
-	GrInitCanvas(&grdCurScreen->sc_canvas, (unsigned char *)BM_D3D_DISPLAY, t, w, h);
+	memset( grdCurScreen, 0, sizeof(grsScreen);
+	grdCurScreen->scMode = mode;
+	grdCurScreen->scWidth = w;
+	grdCurScreen->scHeight = h;
+	grdCurScreen->scAspect = FixDiv(grdCurScreen->scWidth*3,grdCurScreen->scHeight*4);
+	GrInitCanvas(&grdCurScreen->scCanvas, (unsigned char *)BM_D3D_DISPLAY, t, w, h);
 	GrSetCurrentCanvas(NULL);
 
 
 	if (!(backbuffer = createdib()))
 		return 1;
 
-	grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = backbuffer;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
+	grdCurScreen->scCanvas.cvBitmap.bmTexBuf = backbuffer;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_LINEAR;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.x = 0;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.y = 0;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.w = w;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.h = h;
+	grdCurScreen->scCanvas.cvBitmap.bmBPP = 1;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = w;
 	
 	gamefont_choose_game_font(w,h);
 	
@@ -136,8 +136,8 @@ int GrInit(int mode)
 	if (gameStates.gfx.bInstalled==1)
 		return -1;
 
-	MALLOC( grdCurScreen,grs_screen,1 );
-	memset( grdCurScreen, 0, sizeof(grs_screen);
+	MALLOC( grdCurScreen,grsScreen,1 );
+	memset( grdCurScreen, 0, sizeof(grsScreen);
 
 	// Set the mode.
 	if ((retcode=GrSetMode(mode)))
@@ -147,12 +147,12 @@ int GrInit(int mode)
 
 	// Set all the screen, canvas, and bitmap variables that
 	// aren't set by the GrSetMode call:
-	grdCurScreen->sc_canvas.cv_color = 0;
-	grdCurScreen->sc_canvas.cv_drawmode = 0;
-	grdCurScreen->sc_canvas.cv_font = NULL;
-	grdCurScreen->sc_canvas.cv_font_fg_color = 0;
-	grdCurScreen->sc_canvas.cv_font_bg_color = 0;
-	GrSetCurrentCanvas( &grdCurScreen->sc_canvas );
+	grdCurScreen->scCanvas.cvColor = 0;
+	grdCurScreen->scCanvas.cvDrawMode = 0;
+	grdCurScreen->scCanvas.cvFont = NULL;
+	grdCurScreen->scCanvas.cvFontFgColor = 0;
+	grdCurScreen->scCanvas.cvFontBgColor = 0;
+	GrSetCurrentCanvas( &grdCurScreen->scCanvas );
 
 	// Set flags indicating that this is installed.
 	gameStates.gfx.bInstalled = 1;
@@ -162,23 +162,23 @@ int GrInit(int mode)
 
 void gr_upixel( int x, int y )
 {
-	gr_bm_upixel(&grdCurCanv->cv_bitmap, x, y, (unsigned char)COLOR);
+	gr_bm_upixel(&grdCurCanv->cvBitmap, x, y, (unsigned char)COLOR);
 #if 0
-	grsBitmap * bm = &grdCurCanv->cv_bitmap;
+	grsBitmap * bm = &grdCurCanv->cvBitmap;
 	Win32_Rect (
-		//x + bm->bm_props.x, y + bm->bm_props.y,
-		//x + bm->bm_props.x, y + bm->bm_props.y,
+		//x + bm->bmProps.x, y + bm->bmProps.y,
+		//x + bm->bmProps.x, y + bm->bmProps.y,
 		x, y, x, y,
-		bm->bm_texBuf, COLOR);
+		bm->bmTexBuf, COLOR);
 #endif
 }
 
 void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 {
-	switch (bm->bm_props.nType)
+	switch (bm->bmProps.nType)
 	{
 	case BM_LINEAR:
-		bm->bm_texBuf[ bm->bm_props.rowsize*y+x ] = color;
+		bm->bmTexBuf[ bm->bmProps.rowSize*y+x ] = color;
 		break;
 
 	case BM_DIRECTX:
@@ -186,9 +186,9 @@ void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 			unsigned char *p = gr_current_pal + color * 3;
 		Win32_Rect (
 			x, y, x, y,
-			//x + bm->bm_props.x, y + bm->bm_props.y,
-			//x + bm->bm_props.x, y + bm->bm_props.y,
-				(int)bm->bm_texBuf, color);
+			//x + bm->bmProps.x, y + bm->bmProps.y,
+			//x + bm->bmProps.x, y + bm->bmProps.y,
+				(int)bm->bmTexBuf, color);
 		}
 		break;
 
@@ -247,8 +247,8 @@ unsigned char *createdib(void)
 
 	memset(bmHdr, 0, sizeof(*bmHdr);
 	bmHdr->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bmHdr->bmiHeader.biWidth = grdCurScreen->sc_canvas.cv_bitmap.bm_props.w;
-	bmHdr->bmiHeader.biHeight = -grdCurScreen->sc_canvas.cv_bitmap.bm_props.h;
+	bmHdr->bmiHeader.biWidth = grdCurScreen->scCanvas.cvBitmap.bmProps.w;
+	bmHdr->bmiHeader.biHeight = -grdCurScreen->scCanvas.cvBitmap.bmProps.h;
 	bmHdr->bmiHeader.biPlanes = 1;
 	bmHdr->bmiHeader.biBitCount = 8;
 	bmHdr->bmiHeader.biCompression = BI_RGB;
@@ -285,9 +285,9 @@ void Win32_BlitLinearToDirectX_bm(grsBitmap *bm, int sx, int sy,
 
 	dest = backbuffer + dy * 320 + dx;
 	
-	if (bm->bm_props.flags & BM_FLAG_RLE) {
-		src = bm->bm_texBuf + 4 + bm->bm_props.h;
-		rle_w = bm->bm_texBuf + 4;
+	if (bm->bmProps.flags & BM_FLAG_RLE) {
+		src = bm->bmTexBuf + 4 + bm->bmProps.h;
+		rle_w = bm->bmTexBuf + 4;
 		while (sy--)
 			src += (int)*rle_w++;
 		if (masked) {
@@ -304,17 +304,17 @@ void Win32_BlitLinearToDirectX_bm(grsBitmap *bm, int sx, int sy,
 			}
 		}
 	} else {
-		src = bm->bm_texBuf + sy * bm->bm_props.rowsize + sx;
+		src = bm->bmTexBuf + sy * bm->bmProps.rowSize + sx;
 		if (masked) {
 			for (i = h; i--; ) {
 				gr_linear_rep_movsdm(src, dest, w);
-				src += bm->bm_props.rowsize;
+				src += bm->bmProps.rowSize;
 				dest += 320;
 			}
 		} else {
 			for (i = h; i--; ) {
 				gr_linear_movsd(src, dest, w);
-				src += bm->bm_props.rowsize;
+				src += bm->bmProps.rowSize;
 				dest += 320;
 			}
 		}
@@ -322,7 +322,7 @@ void Win32_BlitLinearToDirectX_bm(grsBitmap *bm, int sx, int sy,
 	hdc = CreateCompatibleDC(NULL);
 	SelectObject(hdc, screen_bitmap);
 	SetDIBColorTable(hdc, 0, 256, w32lastrgb);
-	BlitToPrimaryRect(hdc, dx, dy, w, h, grdCurCanv->cv_bitmap.bm_texBuf);
+	BlitToPrimaryRect(hdc, dx, dy, w, h, grdCurCanv->cvBitmap.bmTexBuf);
 	DeleteDC(hdc);
 }
 

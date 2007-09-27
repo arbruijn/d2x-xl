@@ -151,7 +151,7 @@ if (gameStates.ogl.bInitialized)
 int GrToggleFullScreen(void)
 {
 GrDoFullScreen(!gameStates.ogl.bFullScreen);
-	//	grdCurScreen->sc_mode=0;//hack to get it to reset screen mode
+	//	grdCurScreen->scMode=0;//hack to get it to reset screen mode
 return gameStates.ogl.bFullScreen;
 }
 
@@ -162,18 +162,18 @@ int arch_toggle_fullscreen_menu(void)
 	unsigned char *buf=NULL;
 
 if (gameStates.ogl.bReadPixels) {
-	MALLOC(buf,unsigned char,grdCurScreen->sc_w*grdCurScreen->sc_h*3);
+	MALLOC(buf,unsigned char,grdCurScreen->scWidth*grdCurScreen->scHeight*3);
 	glReadBuffer(GL_FRONT);
-	glReadPixels(0,0,grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
+	glReadPixels(0,0,grdCurScreen->scWidth,grdCurScreen->scHeight,GL_RGB,GL_UNSIGNED_BYTE,buf);
 	}
 GrDoFullScreen(!gameStates.ogl.bFullScreen);
 if (gameStates.ogl.bReadPixels){
-//		glWritePixels(0,0,grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
+//		glWritePixels(0,0,grdCurScreen->scWidth,grdCurScreen->scHeight,GL_RGB,GL_UNSIGNED_BYTE,buf);
 	glRasterPos2f(0,0);
-	glDrawPixels(grdCurScreen->sc_w,grdCurScreen->sc_h,GL_RGB,GL_UNSIGNED_BYTE,buf);
+	glDrawPixels(grdCurScreen->scWidth,grdCurScreen->scHeight,GL_RGB,GL_UNSIGNED_BYTE,buf);
 	D2_FREE(buf);
 	}
-	//	grdCurScreen->sc_mode=0;//hack to get it to reset screen mode
+	//	grdCurScreen->scMode=0;//hack to get it to reset screen mode
 return gameStates.ogl.bFullScreen;
 }
 
@@ -330,24 +330,24 @@ if (mode<=0)
 w=SM_W(mode);
 h=SM_H(mode);
 nCurrentVGAMode = mode;
-gr_bm_data = grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf;//since we use realloc, we want to keep this pointer around.
-memset( grdCurScreen, 0, sizeof(grs_screen));
-grdCurScreen->sc_mode = mode;
-grdCurScreen->sc_w = w;
-grdCurScreen->sc_h = h;
-//grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
-grdCurScreen->sc_aspect = FixDiv (grdCurScreen->sc_w, (fix) (grdCurScreen->sc_h * ((double) w / (double) h)));
-grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
-grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
-grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
-grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
-grdCurScreen->sc_canvas.cv_bitmap.bm_palette = defaultPalette; //just need some valid palette here
-//grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = screen->pitch;
-grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
-grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_OGL;
-//grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = (unsigned char *)screen->pixels;
-grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = D2_REALLOC(gr_bm_data,w*h);
+gr_bm_data = grdCurScreen->scCanvas.cvBitmap.bmTexBuf;//since we use realloc, we want to keep this pointer around.
+memset( grdCurScreen, 0, sizeof(grsScreen));
+grdCurScreen->scMode = mode;
+grdCurScreen->scWidth = w;
+grdCurScreen->scHeight = h;
+//grdCurScreen->scAspect = FixDiv(grdCurScreen->scWidth*3,grdCurScreen->scHeight*4);
+grdCurScreen->scAspect = FixDiv (grdCurScreen->scWidth, (fix) (grdCurScreen->scHeight * ((double) w / (double) h)));
+grdCurScreen->scCanvas.cvBitmap.bmProps.x = 0;
+grdCurScreen->scCanvas.cvBitmap.bmProps.y = 0;
+grdCurScreen->scCanvas.cvBitmap.bmProps.w = w;
+grdCurScreen->scCanvas.cvBitmap.bmProps.h = h;
+grdCurScreen->scCanvas.cvBitmap.bmBPP = 1;
+grdCurScreen->scCanvas.cvBitmap.bmPalette = defaultPalette; //just need some valid palette here
+//grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = screen->pitch;
+grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = w;
+grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_OGL;
+//grdCurScreen->scCanvas.cvBitmap.bmTexBuf = (unsigned char *)screen->pixels;
+grdCurScreen->scCanvas.cvBitmap.bmTexBuf = D2_REALLOC(gr_bm_data,w*h);
 GrSetCurrentCanvas(NULL);
 //gr_enable_default_palette_loading();
 /***/LogErr ("   initializing OpenGL window\n");
@@ -522,9 +522,9 @@ if ((t=FindArg ("-gl_reticle"))){
 /***/LogErr ("   initializing internal texture list\n");
 OglInitTextureListInternal();
 /***/LogErr ("   allocating screen buffer\n");
-MALLOC (grdCurScreen, grs_screen, 1);
-memset (grdCurScreen, 0, sizeof (grs_screen));
-grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = NULL;
+MALLOC (grdCurScreen, grsScreen, 1);
+memset (grdCurScreen, 0, sizeof (grsScreen));
+grdCurScreen->scCanvas.cvBitmap.bmTexBuf = NULL;
 
 // Set the mode.
 for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
@@ -538,15 +538,15 @@ for (t = 0; scrSizes [t].x && scrSizes [t].y; t++)
 if ((retcode = GrSetMode (mode)))
 	return retcode;
 
-grdCurScreen->sc_canvas.cv_color.index = 0;
-grdCurScreen->sc_canvas.cv_color.rgb = 0;
-grdCurScreen->sc_canvas.cv_drawmode = 0;
-grdCurScreen->sc_canvas.cv_font = NULL;
-grdCurScreen->sc_canvas.cv_font_fg_color.index = 0;
-grdCurScreen->sc_canvas.cv_font_bg_color.index = 0;
-grdCurScreen->sc_canvas.cv_font_fg_color.rgb = 0;
-grdCurScreen->sc_canvas.cv_font_bg_color.rgb = 0;
-GrSetCurrentCanvas( &grdCurScreen->sc_canvas );
+grdCurScreen->scCanvas.cvColor.index = 0;
+grdCurScreen->scCanvas.cvColor.rgb = 0;
+grdCurScreen->scCanvas.cvDrawMode = 0;
+grdCurScreen->scCanvas.cvFont = NULL;
+grdCurScreen->scCanvas.cvFontFgColor.index = 0;
+grdCurScreen->scCanvas.cvFontBgColor.index = 0;
+grdCurScreen->scCanvas.cvFontFgColor.rgb = 0;
+grdCurScreen->scCanvas.cvFontBgColor.rgb = 0;
+GrSetCurrentCanvas( &grdCurScreen->scCanvas );
 
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
@@ -563,8 +563,8 @@ void _CDECL_ GrClose()
 LogErr ("shutting down graphics subsystem\n");
 OglClose();//platform specific code
 if (grdCurScreen) {
-	if (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf)
-		D2_FREE (grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf);
+	if (grdCurScreen->scCanvas.cvBitmap.bmTexBuf)
+		D2_FREE (grdCurScreen->scCanvas.cvBitmap.bmTexBuf);
 	D2_FREE (grdCurScreen);
 	}
 #ifdef OGL_RUNTIME_LOAD
@@ -577,15 +577,15 @@ if (ogl_rt_loaded)
 
 extern int r_upixelc;
 
-void OglUPixelC(int x, int y, grs_color *c)
+void OglUPixelC(int x, int y, grsColor *c)
 {
 r_upixelc++;
 glDisable (GL_TEXTURE_2D);
 glPointSize(1.0);
 glBegin(GL_POINTS);
 OglGrsColor (c);
-glVertex2d ((x + grdCurCanv->cv_bitmap.bm_props.x) / (double) gameStates.ogl.nLastW,
-				1.0 - (y + grdCurCanv->cv_bitmap.bm_props.y) / (double) gameStates.ogl.nLastW);
+glVertex2d ((x + grdCurCanv->cvBitmap.bmProps.x) / (double) gameStates.ogl.nLastW,
+				1.0 - (y + grdCurCanv->cvBitmap.bmProps.y) / (double) gameStates.ogl.nLastW);
 if (c->rgb)
 	glDisable (GL_BLEND);
 glEnd();
@@ -597,10 +597,10 @@ void OglURect(int left,int top,int right,int bot)
 {
 	GLfloat		xo, yo, xf, yf;
 	
-xo = ((float) left + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
-xf = (float) (right + grdCurCanv->cv_bitmap.bm_props.x)/ (float) gameStates.ogl.nLastW;
-yo = 1.0f - (float) (top + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (float) (bot + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
+xo = ((float) left + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
+xf = (float) (right + grdCurCanv->cvBitmap.bmProps.x)/ (float) gameStates.ogl.nLastW;
+yo = 1.0f - (float) (top + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (float) (bot + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
 	
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&COLOR);
@@ -616,14 +616,14 @@ glEnd ();
 
 //------------------------------------------------------------------------------
 
-void OglULineC(int left,int top,int right,int bot, grs_color *c)
+void OglULineC(int left,int top,int right,int bot, grsColor *c)
 {
 	GLfloat xo, yo, xf, yf;
 	
-xo = (left + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
-xf = (right + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (top + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (bot + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
+xo = (left + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
+xf = (right + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
+yo = 1.0f - (top + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (bot + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (c);
 glBegin (GL_LINES);
@@ -636,14 +636,14 @@ glEnd();
 	
 //------------------------------------------------------------------------------
 
-void OglUPolyC (int left, int top, int right, int bot, grs_color *c)
+void OglUPolyC (int left, int top, int right, int bot, grsColor *c)
 {
 	GLfloat xo, yo, xf, yf;
 	
-xo = (left + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
-xf = (right + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW;
-yo = 1.0f - (top + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
-yf = 1.0f - (bot + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH;
+xo = (left + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
+xf = (right + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
+yo = 1.0f - (top + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
+yf = 1.0f - (bot + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (c);
 glBegin (GL_LINE_LOOP);
@@ -919,17 +919,17 @@ do {
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = D2_ALLOC (grdCurScreen->sc_w * grdCurScreen->sc_h * 3);
+	buf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * 3);
 	glDisable (GL_TEXTURE_2D);
 	glReadBuffer (GL_FRONT);
-	glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;
 	}
 else
 	glErrCode = GL_NO_ERROR;
 if (glErrCode == GL_NO_ERROR) {
-	WriteScreenShot (szSaveName, grdCurScreen->sc_w, grdCurScreen->sc_h, buf, 0);
+	WriteScreenShot (szSaveName, grdCurScreen->scWidth, grdCurScreen->scHeight, buf, 0);
 	if (!(bAutomap || screenShotIntervals [gameOpts->app.nScreenShotInterval])) {
 		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);

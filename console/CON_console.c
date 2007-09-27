@@ -24,7 +24,7 @@
 #include "inferno.h"
 #include "gamefont.h"
 
-#define FG_COLOR    grdCurCanv->cv_font_fg_color
+#define FG_COLOR    grdCurCanv->cvFontFgColor
 #define get_msecs() approx_fsec_to_msec(TimerGetApproxSeconds())
 
 
@@ -267,9 +267,9 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 	int loop;
 	int loop2;
 	int Screenlines;
-	grs_canvas *canv_save = NULL;
-	grs_color	orig_color;
-	grs_font		*orig_font;
+	gsrCanvas *canv_save = NULL;
+	grsColor	orig_color;
+	grsFont		*orig_font;
 
 	if(!console)
 		return;
@@ -278,7 +278,7 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 	if(!CON_isVisible(console))
 		return;
 
-	Screenlines = console->ConsoleSurface->cv_h / (CON_LINE_SPACE + console->ConsoleSurface->cv_font->ft_h);
+	Screenlines = console->ConsoleSurface->cv_h / (CON_LINE_SPACE + console->ConsoleSurface->cvFont->ftHeight);
 
 	if(!gameOpts->menus.nStyle) {
 		canv_save = grdCurCanv;
@@ -304,22 +304,22 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 #endif
 
 	orig_color = FG_COLOR;
-	orig_font = grdCurCanv->cv_font;
-	grdCurCanv->cv_font = SMALL_FONT;
+	orig_font = grdCurCanv->cvFont;
+	grdCurCanv->cvFont = SMALL_FONT;
 	GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
 	//now draw text from last but second line to top
 	for(loop = 0; loop < Screenlines-1 && loop < console->LineBuffer - console->ConsoleScrollBack; loop++) {
 		if(console->ConsoleScrollBack != 0 && loop == 0)
 			for(loop2 = 0; loop2 < (console->VChars / 5) + 1; loop2++)
 			{
-				GrString(CON_CHAR_BORDER + (loop2*5*console->ConsoleSurface->cv_font->ft_w), (Screenlines - loop - 2) * (CON_LINE_SPACE + console->ConsoleSurface->cv_font->ft_h), CON_SCROLL_INDICATOR);
+				GrString(CON_CHAR_BORDER + (loop2*5*console->ConsoleSurface->cvFont->ftWidth), (Screenlines - loop - 2) * (CON_LINE_SPACE + console->ConsoleSurface->cvFont->ftHeight), CON_SCROLL_INDICATOR);
 			}
 		else
 		{
-			GrString(CON_CHAR_BORDER, (Screenlines - loop - 2) * (CON_LINE_SPACE + console->ConsoleSurface->cv_font->ft_h), console->ConsoleLines[console->ConsoleScrollBack + loop]);
+			GrString(CON_CHAR_BORDER, (Screenlines - loop - 2) * (CON_LINE_SPACE + console->ConsoleSurface->cvFont->ftHeight), console->ConsoleLines[console->ConsoleScrollBack + loop]);
 		}
 	}
-	grdCurCanv->cv_font = orig_font;
+	grdCurCanv->cvFont = orig_font;
 	FG_COLOR = orig_color;
 	if(!gameOpts->menus.nStyle)
 		GrSetCurrentCanvas(canv_save);
@@ -363,7 +363,7 @@ void CON_UpdateOffset(ConsoleInformation* console) {
 void NMBlueBox (int x1, int y1, int x2, int y2);
 
 void CON_DrawConsole(ConsoleInformation *console) {
-	grs_canvas *canv_save;
+	gsrCanvas *canv_save;
 	grsBitmap *clip;
 
 	if(!console)
@@ -390,8 +390,8 @@ void CON_DrawConsole(ConsoleInformation *console) {
 		NMBlueBox (0, 0, console->ConsoleSurface->cv_w, console->RaiseOffset);
 	else {
 		canv_save = grdCurCanv;
-		GrSetCurrentCanvas(&console->OutputScreen->sc_canvas);
-		clip = GrCreateSubBitmap(&console->ConsoleSurface->cv_bitmap, 0, 
+		GrSetCurrentCanvas(&console->OutputScreen->scCanvas);
+		clip = GrCreateSubBitmap(&console->ConsoleSurface->cvBitmap, 0, 
 											 console->ConsoleSurface->cv_h - console->RaiseOffset, 
 											 console->ConsoleSurface->cv_w, console->RaiseOffset);
 		GrBitmap(console->DispX, console->DispY, clip);
@@ -407,7 +407,7 @@ void CON_DrawConsole(ConsoleInformation *console) {
 //------------------------------------------------------------------------------
 
 /* Initializes the console */
-ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int lines, int x, int y, int w, int h)
+ConsoleInformation *CON_Init(grsFont *Font, grsScreen *DisplayScreen, int lines, int x, int y, int w, int h)
 {
 	int loop;
 	ConsoleInformation *newinfo;
@@ -441,15 +441,15 @@ ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int line
 	CON_SetTabCompletion(newinfo, Default_TabFunction);
 
 	/* make sure that the size of the console is valid */
-	if(w > newinfo->OutputScreen->sc_w || w < Font->ft_w * 32)
-		w = newinfo->OutputScreen->sc_w;
-	if(h > newinfo->OutputScreen->sc_h || h < Font->ft_h)
-		h = newinfo->OutputScreen->sc_h;
-	if(x < 0 || x > newinfo->OutputScreen->sc_w - w)
+	if(w > newinfo->OutputScreen->scWidth || w < Font->ftWidth * 32)
+		w = newinfo->OutputScreen->scWidth;
+	if(h > newinfo->OutputScreen->scHeight || h < Font->ftHeight)
+		h = newinfo->OutputScreen->scHeight;
+	if(x < 0 || x > newinfo->OutputScreen->scWidth - w)
 		newinfo->DispX = 0;
 	else
 		newinfo->DispX = x;
-	if(y < 0 || y > newinfo->OutputScreen->sc_h - h)
+	if(y < 0 || y > newinfo->OutputScreen->scHeight - h)
 		newinfo->DispY = 0;
 	else
 		newinfo->DispY = y;
@@ -459,7 +459,7 @@ ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int line
 
 	/* Load the consoles font */
 	{
-		grs_canvas *canv_save;
+		gsrCanvas *canv_save;
 
 		canv_save = grdCurCanv;
 		GrSetCurrentCanvas(newinfo->ConsoleSurface);
@@ -470,19 +470,19 @@ ConsoleInformation *CON_Init(grs_font *Font, grs_screen *DisplayScreen, int line
 
 
 	/* Load the dirty rectangle for user input */
-	newinfo->InputBackground = GrCreateBitmap(w, newinfo->ConsoleSurface->cv_font->ft_h, 1);
+	newinfo->InputBackground = GrCreateBitmap(w, newinfo->ConsoleSurface->cvFont->ftHeight, 1);
 #if 0
 	SDL_FillRect(newinfo->InputBackground, NULL, SDL_MapRGBA(newinfo->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
 
 	/* calculate the number of visible characters in the command line */
-	newinfo->VChars = (w - CON_CHAR_BORDER) / newinfo->ConsoleSurface->cv_font->ft_w;
+	newinfo->VChars = (w - CON_CHAR_BORDER) / newinfo->ConsoleSurface->cvFont->ftWidth;
 	if(newinfo->VChars > CON_CHARS_PER_LINE)
 		newinfo->VChars = CON_CHARS_PER_LINE;
 
 	/* We would like to have a minumum # of lines to guarentee we don't create a memory error */
-	if(h / (CON_LINE_SPACE + newinfo->ConsoleSurface->cv_font->ft_h) > lines)
-		newinfo->LineBuffer = h / (CON_LINE_SPACE + newinfo->ConsoleSurface->cv_font->ft_h);
+	if(h / (CON_LINE_SPACE + newinfo->ConsoleSurface->cvFont->ftHeight) > lines)
+		newinfo->LineBuffer = h / (CON_LINE_SPACE + newinfo->ConsoleSurface->cvFont->ftHeight);
 	else
 		newinfo->LineBuffer = lines;
 
@@ -628,14 +628,14 @@ void DrawCommandLine() {
 	int x;
 	int commandbuffer;
 #if 0
-	grs_font* CurrentFont;
+	grsFont* CurrentFont;
 #endif
 	static int	LastBlinkTime = 0;	/* Last time the consoles cursor blinked */
 	static int	LastCursorPos = 0;		// Last Cursor Position
 	static int	bBlink = 0;			/* Is the cursor currently blinking */
-	grs_canvas	*canv_save = NULL;
-	grs_color	orig_color;
-	grs_font		*orig_font;
+	gsrCanvas	*canv_save = NULL;
+	grsColor	orig_color;
+	grsFont		*orig_font;
 
 	if(!Topmost)
 		return;
@@ -643,7 +643,7 @@ void DrawCommandLine() {
 	commandbuffer = Topmost->VChars - (int) strlen(Topmost->Prompt) - 1; // -1 to make cursor visible
 
 #if 0
-	CurrentFont = Topmost->ConsoleSurface->cv_font;
+	CurrentFont = Topmost->ConsoleSurface->cvFont;
 #endif
 
 	//Concatenate the left and right tSide to command
@@ -678,14 +678,14 @@ void DrawCommandLine() {
 	if (!gameOpts->menus.nStyle) {
 		canv_save = grdCurCanv;
 		GrSetCurrentCanvas(Topmost->ConsoleSurface);
-		GrBitmap(0, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cv_font->ft_h, Topmost->InputBackground);
+		GrBitmap(0, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->InputBackground);
 		}
 	//now add the text
 	orig_color = FG_COLOR;
-	orig_font = grdCurCanv->cv_font;
-	grdCurCanv->cv_font = SMALL_FONT;
+	orig_font = grdCurCanv->cvFont;
+	grdCurCanv->cvFont = SMALL_FONT;
 	GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
-	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cv_font->ft_h, Topmost->VCommand);
+	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->VCommand);
 
 	//at last add the cursor
 	//check if the blink period is over
@@ -710,14 +710,14 @@ void DrawCommandLine() {
 		GrGetStringSize (Topmost->VCommand, &w, &h, &aw);
 		x = CON_CHAR_BORDER + w;
 #else
-		x = CON_CHAR_BORDER + Topmost->ConsoleSurface->cv_font->ft_w * (Topmost->CursorPos - Topmost->Offset + (int) strlen(Topmost->Prompt));
+		x = CON_CHAR_BORDER + Topmost->ConsoleSurface->cvFont->ftWidth * (Topmost->CursorPos - Topmost->Offset + (int) strlen(Topmost->Prompt));
 #endif
 		if(Topmost->InsMode)
-			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cv_font->ft_h, CON_INS_CURSOR);
+			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, CON_INS_CURSOR);
 		else
-			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cv_font->ft_h, CON_OVR_CURSOR);
+			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, CON_OVR_CURSOR);
 	}
-	grdCurCanv->cv_font = orig_font;
+	grdCurCanv->cvFont = orig_font;
 	FG_COLOR = orig_color;
 
 	if (!gameOpts->menus.nStyle)
@@ -823,16 +823,16 @@ int CON_Background(ConsoleInformation *console, grsBitmap *image)
 #if 0
 	SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
-	GrBmBitBlt(console->BackgroundImage->bm_props.w, console->InputBackground->bm_props.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cv_font->ft_h, console->BackgroundImage, console->InputBackground);
+	GrBmBitBlt(console->BackgroundImage->bmProps.w, console->InputBackground->bmProps.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cvFont->ftHeight, console->BackgroundImage, console->InputBackground);
 
 	return 0;
 }
 
 //------------------------------------------------------------------------------
 /* Sets font info for the console */
-void CON_Font(ConsoleInformation *console, grs_font *font, unsigned int fg, unsigned int bg)
+void CON_Font(ConsoleInformation *console, grsFont *font, unsigned int fg, unsigned int bg)
 {
-	grs_canvas *canv_save;
+	gsrCanvas *canv_save;
 
 	canv_save = grdCurCanv;
 	GrSetCurrentCanvas(console->ConsoleSurface);
@@ -847,12 +847,12 @@ void CON_Position(ConsoleInformation *console, int x, int y) {
 	if(!console)
 		return;
 
-	if(x < 0 || x > console->OutputScreen->sc_w - console->ConsoleSurface->cv_w)
+	if(x < 0 || x > console->OutputScreen->scWidth - console->ConsoleSurface->cv_w)
 		console->DispX = 0;
 	else
 		console->DispX = x;
 
-	if(y < 0 || y > console->OutputScreen->sc_h - console->ConsoleSurface->cv_h)
+	if(y < 0 || y > console->OutputScreen->scHeight - console->ConsoleSurface->cv_h)
 		console->DispY = 0;
 	else
 		console->DispY = y;
@@ -868,26 +868,26 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 		return 1;
 
 	/* make sure that the size of the console is valid */
-	if(w > console->OutputScreen->sc_w || w < console->ConsoleSurface->cv_font->ft_w * 32)
-		w = console->OutputScreen->sc_w;
-	if(h > console->OutputScreen->sc_h || h < console->ConsoleSurface->cv_font->ft_h)
-		h = console->OutputScreen->sc_h;
-	if(x < 0 || x > console->OutputScreen->sc_w - w)
+	if(w > console->OutputScreen->scWidth || w < console->ConsoleSurface->cvFont->ftWidth * 32)
+		w = console->OutputScreen->scWidth;
+	if(h > console->OutputScreen->scHeight || h < console->ConsoleSurface->cvFont->ftHeight)
+		h = console->OutputScreen->scHeight;
+	if(x < 0 || x > console->OutputScreen->scWidth - w)
 		console->DispX = 0;
 	else
 		console->DispX = x;
-	if(y < 0 || y > console->OutputScreen->sc_h - h)
+	if(y < 0 || y > console->OutputScreen->scHeight - h)
 		console->DispY = 0;
 	else
 		console->DispY = y;
 
 	/* resize console surface */
-	GrFreeBitmapData(&console->ConsoleSurface->cv_bitmap);
-	GrInitBitmapAlloc(&console->ConsoleSurface->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 1);
+	GrFreeBitmapData(&console->ConsoleSurface->cvBitmap);
+	GrInitBitmapAlloc(&console->ConsoleSurface->cvBitmap, BM_LINEAR, 0, 0, w, h, w, 1);
 
 	/* Load the dirty rectangle for user input */
 	GrFreeBitmap(console->InputBackground);
-	console->InputBackground = GrCreateBitmap(w, console->ConsoleSurface->cv_font->ft_h, 1);
+	console->InputBackground = GrCreateBitmap(w, console->ConsoleSurface->cvFont->ftHeight, 1);
 
 	/* Now reset some stuff dependent on the previous size */
 	console->ConsoleScrollBack = 0;
@@ -897,7 +897,7 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 #if 0
 		SDL_FillRect(console->InputBackground, NULL, SDL_MapRGBA(console->ConsoleSurface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
 #endif
-		GrBmBitBlt(console->BackgroundImage->bm_props.w, console->InputBackground->bm_props.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cv_font->ft_h, console->BackgroundImage, console->InputBackground);
+		GrBmBitBlt(console->BackgroundImage->bmProps.w, console->InputBackground->bmProps.h, 0, 0, 0, console->ConsoleSurface->cv_h - console->ConsoleSurface->cvFont->ftHeight, console->BackgroundImage, console->InputBackground);
 	}
 
 #if 0
@@ -909,7 +909,7 @@ int CON_Resize(ConsoleInformation *console, int x, int y, int w, int h)
 
 //------------------------------------------------------------------------------
 /* Transfers the console to another screen surface, and adjusts size */
-int CON_Transfer(ConsoleInformation *console, grs_screen *new_outputscreen, int x, int y, int w, int h)
+int CON_Transfer(ConsoleInformation *console, grsScreen *new_outputscreen, int x, int y, int w, int h)
 {
 	if(!console)
 		return 1;
@@ -921,7 +921,7 @@ int CON_Transfer(ConsoleInformation *console, grs_screen *new_outputscreen, int 
 
 /* Sets the topmost console for input */
 void CON_Topmost(ConsoleInformation *console) {
-	grs_canvas *canv_save;
+	gsrCanvas *canv_save;
 	short orig_color;
 
 	if(!console)
@@ -932,9 +932,9 @@ void CON_Topmost(ConsoleInformation *console) {
 		canv_save = grdCurCanv;
 		GrSetCurrentCanvas(Topmost->ConsoleSurface);
 
-		GrBitmap(0, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cv_font->ft_h, Topmost->InputBackground);
+		GrBitmap(0, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->InputBackground);
 		orig_color = FG_COLOR.index;
-		GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cv_font->ft_h, Topmost->VCommand);
+		GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->VCommand);
 		FG_COLOR.index = orig_color;
 
 		GrSetCurrentCanvas(canv_save);

@@ -102,8 +102,8 @@ static		char *pszCurBg = NULL;
 grsBitmap	*pAltBg = NULL;
 
 typedef struct nm_control {
-	int	sc_w,
-			sc_h,
+	int	scWidth,
+			scHeight,
 			x, 
 			y, 
 			xOffs, 
@@ -218,10 +218,10 @@ if (gameStates.app.bGameRunning) {
 void _CDECL_ NewMenuClose (void)	
 {
 LogErr ("unloading menu data\n");
-if (nm_background.bm_texBuf)
-	D2_FREE (nm_background.bm_texBuf);
-if (nm_background_save.bm_texBuf)
-	D2_FREE (nm_background_save.bm_texBuf);
+if (nm_background.bmTexBuf)
+	D2_FREE (nm_background.bmTexBuf);
+if (nm_background_save.bmTexBuf)
+	D2_FREE (nm_background_save.bmTexBuf);
 bNewMenuFirstTime = 1;
 }
 
@@ -232,9 +232,9 @@ ubyte bgPalette [256*3];
 void NMRemapBackground ()
 {
 if (!bNewMenuFirstTime) {
-	if (!nm_background.bm_texBuf)
-		nm_background.bm_texBuf = D2_ALLOC (nm_background.bm_props.w * nm_background.bm_props.h);
-	memcpy (nm_background.bm_texBuf, nm_background_save.bm_texBuf, nm_background.bm_props.w * nm_background.bm_props.h);
+	if (!nm_background.bmTexBuf)
+		nm_background.bmTexBuf = D2_ALLOC (nm_background.bmProps.w * nm_background.bmProps.h);
+	memcpy (nm_background.bmTexBuf, nm_background_save.bmTexBuf, nm_background.bmProps.w * nm_background.bmProps.h);
 	//GrRemapBitmapGood (&nm_background, bgPalette, -1, -1);
 	}
 }
@@ -248,10 +248,10 @@ if ((gameOpts->menus.nStyle == 1)) {// && ((gameOpts->menus.altBg.bHave < 1) || 
 		x1 = 1;
 	if (y1 <= 0)
 		y1 = 1;
-	if (x2 >= grdCurScreen->sc_w)
-		x2 = grdCurScreen->sc_w - 1;
-	if (y2 >= grdCurScreen->sc_h)
-		y2 = grdCurScreen->sc_h - 1;
+	if (x2 >= grdCurScreen->scWidth)
+		x2 = grdCurScreen->scWidth - 1;
+	if (y2 >= grdCurScreen->scHeight)
+		y2 = grdCurScreen->scHeight - 1;
 #if 0
 	if ((gameOpts->menus.altBg.bHave > 0) && !gameStates.app.bGameRunning)
 		GrSetColorRGB (PAL2RGBA (15), PAL2RGBA (15), PAL2RGBA (27), 80);
@@ -321,8 +321,8 @@ void NMLoadBackground (char * filename, bkg *bg, int bRedraw)
 	grsBitmap	*bmP = bg ? bg->background : NULL;
 
 	//@@//I think this only gets called to fill the whole screen
-	//@@Assert (grdCurCanv->cv_bitmap.bm_props.w == 320);
-	//@@Assert (grdCurCanv->cv_bitmap.bm_props.h == 200);
+	//@@Assert (grdCurCanv->cvBitmap.bmProps.w == 320);
+	//@@Assert (grdCurCanv->cvBitmap.bmProps.h == 200);
 #if 0
 	if (bRedraw)
 		bRedraw = gameOpts->menus.nStyle && bmP && pszCurBg && filename && !strcmp (pszCurBg, filename);
@@ -352,7 +352,7 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 		bmP = GrCreateBitmap (width, height, 1);
 		Assert (bmP != NULL);
 		}
-	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmP, bmP->bm_props.nType, 0);
+	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmP, bmP->bmProps.nType, 0);
 	Assert (pcx_error == PCX_ERROR_NONE);
 // Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 
@@ -410,18 +410,18 @@ else {
 		if (bNewMenuFirstTime) {
 			atexit (NewMenuClose);
 			bNewMenuFirstTime = 0;
-			nm_background_save.bm_texBuf = NULL;
+			nm_background_save.bmTexBuf = NULL;
 			}
 		else {
-			if (nm_background_save.bm_texBuf)
-				D2_FREE (nm_background_save.bm_texBuf);
-			if (nm_background.bm_texBuf)
-				D2_FREE (nm_background.bm_texBuf);
+			if (nm_background_save.bmTexBuf)
+				D2_FREE (nm_background_save.bmTexBuf);
+			if (nm_background.bmTexBuf)
+				D2_FREE (nm_background.bmTexBuf);
 			}
 		pcx_error = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
 		Assert (pcx_error == PCX_ERROR_NONE);
 		nm_background = nm_background_save;
-		nm_background.bm_texBuf = NULL;		
+		nm_background.bmTexBuf = NULL;		
 		NMRemapBackground ();
 		bHiresBackground = gameStates.menus.bHires;
 		}
@@ -431,8 +431,8 @@ else {
 		y1 = 0;
 	w = x2-x1+1;
 	h = y2-y1+1;
-	//if (w > nm_background.bm_props.w) w = nm_background.bm_props.w;
-	//if (h > nm_background.bm_props.h) h = nm_background.bm_props.h;
+	//if (w > nm_background.bmProps.w) w = nm_background.bmProps.w;
+	//if (h > nm_background.bmProps.h) h = nm_background.bmProps.h;
 	x2 = x1 + w - 1;
 	y2 = y1 + h - 1;
 #if 0
@@ -442,9 +442,9 @@ else {
 		WIN (DDGRLOCK (dd_grd_curcanv);
 		glDisable (GL_BLEND);
 		if (bNoDarkening)
-			GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), tmp, &(grdCurCanv->cv_bitmap));
+			GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), tmp, &(grdCurCanv->cvBitmap));
 		else
-			GrBmBitBlt (w, h, x1, y1, 0, 0, tmp, &(grdCurCanv->cv_bitmap));
+			GrBmBitBlt (w, h, x1, y1, 0, 0, tmp, &(grdCurCanv->cvBitmap));
 		glEnable (GL_BLEND);
 		GrFreeBitmap (tmp);
 	}
@@ -452,9 +452,9 @@ else {
 	WIN (DDGRLOCK (dd_grd_curcanv));
 	glDisable (GL_BLEND);
 	if (bNoDarkening)
-		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nm_background, &(grdCurCanv->cv_bitmap));
+		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nm_background, &(grdCurCanv->cvBitmap));
 	else
-		GrBmBitBlt (w, h, x1, y1, 0, 0, &nm_background, &(grdCurCanv->cv_bitmap));
+		GrBmBitBlt (w, h, x1, y1, 0, 0, &nm_background, &(grdCurCanv->cvBitmap));
 	glEnable (GL_BLEND);
 #endif
 	if (!bNoDarkening) {
@@ -516,22 +516,22 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 				Assert (bg->background != NULL);
 				}
 			WIN (DDGRLOCK (dd_grd_curcanv));
-			GrBmBitBlt (w, h, 0, 0, x, y, &grdCurCanv->cv_bitmap, bg->background);
+			GrBmBitBlt (w, h, 0, 0, x, y, &grdCurCanv->cvBitmap, bg->background);
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			}
 		}
 	} 
 // Save the background of the display
-//	Win95 must refer to the screen as a dd_grs_canvas, so...
+//	Win95 must refer to the screen as a ddgrs_canvas, so...
 if (!(gameOpts->menus.nStyle && bRedraw)) {
 	if (bg && !(bg->menu_canvas || bg->bIgnoreCanv)) {
 		if (gameOpts->menus.nStyle) {
 			x = y = 0;
-			w = grdCurScreen->sc_w;
-			h = grdCurScreen->sc_h;
+			w = grdCurScreen->scWidth;
+			h = grdCurScreen->scHeight;
 			}
 		WINDOS (bg->menu_canvas = DDGrCreateSubCanvas (dd_grd_screencanv, x, y, w, h), 
-				  bg->menu_canvas = GrCreateSubCanvas (&grdCurScreen->sc_canvas, x, y, w, h)
+				  bg->menu_canvas = GrCreateSubCanvas (&grdCurScreen->scCanvas, x, y, w, h)
 			);
 		WINDOS (DDGrSetCurrentCanvas (bg->menu_canvas), 
 				  GrSetCurrentCanvas (bg->menu_canvas));
@@ -547,10 +547,10 @@ if (bg && !(gameOpts->menus.nStyle || filename)) {
 		bg->saved = GrCreateBitmap (w, h, 1);
 		Assert (bg->saved != NULL);
 		}
-	bg->saved->bm_palette = defaultPalette;
+	bg->saved->bmPalette = defaultPalette;
 	if (!gameOpts->menus.nStyle) {
 		WIN (DDGRLOCK (dd_grd_curcanv));
-		GrBmBitBlt (w, h, 0, 0, 0, 0, &grdCurCanv->cv_bitmap, bg->saved);
+		GrBmBitBlt (w, h, 0, 0, 0, 0, &grdCurCanv->cvBitmap, bg->saved);
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
@@ -579,16 +579,16 @@ void NMRestoreBackground (int sx, int sy, int dx, int dy, int w, int h)
 	if (y1 < 0) 
 		y1 = 0;
 
-	if (x2 >= nm_background.bm_props.w) 
-		x2=nm_background.bm_props.w-1;
-	if (y2 >= nm_background.bm_props.h) 
-		y2=nm_background.bm_props.h-1;
+	if (x2 >= nm_background.bmProps.w) 
+		x2=nm_background.bmProps.w-1;
+	if (y2 >= nm_background.bmProps.h) 
+		y2=nm_background.bmProps.h-1;
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
 
 	WIN (DDGRLOCK (dd_grd_curcanv));
-	GrBmBitBlt (w, h, dx, dy, x1, y1, &nm_background, &(grdCurCanv->cv_bitmap));
+	GrBmBitBlt (w, h, dx, dy, x1, y1, &nm_background, &(grdCurCanv->cvBitmap));
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
@@ -616,11 +616,11 @@ if (bTiny) {
 	}
 else {
 	if (bIsCurrent)
-		grdCurCanv->cv_font = SELECTED_FONT;
+		grdCurCanv->cvFont = SELECTED_FONT;
 	else
-		grdCurCanv->cv_font = NORMAL_FONT;
+		grdCurCanv->cvFont = NORMAL_FONT;
 	}
-return grdCurCanv->cv_font_fg_color.index;
+return grdCurCanv->cvFontFgColor.index;
 }
 
 //------------------------------------------------------------------------------
@@ -644,8 +644,8 @@ if (/*!strchr (item->text, '\t') &&*/ bCreateTextBms && gameOpts->menus.bFastMen
 	 (bm || (bm = CreateStringBitmap (item->text, MENU_KEY (item->key, -1), 
 												 gameData.menu.keyColor,
 												 nTabs, item->centered, item->w)))) {
-	OglUBitBltI (bm->bm_props.w, bm->bm_props.h, item->x, item->y, bm->bm_props.w, bm->bm_props.h, 0, 0, 
-						bm, &grdCurCanv->cv_bitmap, 0, 1);
+	OglUBitBltI (bm->bmProps.w, bm->bmProps.h, item->x, item->y, bm->bmProps.w, bm->bmProps.h, 0, 0, 
+						bm, &grdCurCanv->cvBitmap, 0, 1);
 	item->text_bm [bIsCurrent] = bm;
 	}
 else 
@@ -776,8 +776,8 @@ void NMString (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 	GrGetStringSize (s2, &w, &h, &aw);
 	// CHANGED
 	if (curDrawBuffer != GL_BACK)
-		GrBmBitBlt (b->background->bm_props.w-15, h+2, 5, y-1, 5, y-1, b->background, &(grdCurCanv->cv_bitmap));
-	//GrBmBitBlt (w, h, x, y, x, y, b->background, &(grdCurCanv->cv_bitmap));
+		GrBmBitBlt (b->background->bmProps.w-15, h+2, 5, y-1, 5, y-1, b->background, &(grdCurCanv->cvBitmap));
+	//GrBmBitBlt (w, h, x, y, x, y, b->background, &(grdCurCanv->cvBitmap));
 
 	if (0 && gameStates.multi.bSurfingNet) {
 		for (i=0;i<l;i++) {
@@ -828,8 +828,8 @@ void NMStringSlider (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 	// CHANGED
 
 		if (curDrawBuffer != GL_BACK)
-			GrBmBitBlt (b->background->bm_props.w-15, h, 5, y, 5, y, b->background, &(grdCurCanv->cv_bitmap));
-		//GrBmBitBlt (w, h, x, y, x, y, b->background, &(grdCurCanv->cv_bitmap));
+			GrBmBitBlt (b->background->bmProps.w-15, h, 5, y, 5, y, b->background, &(grdCurCanv->cvBitmap));
+		//GrBmBitBlt (w, h, x, y, x, y, b->background, &(grdCurCanv->cvBitmap));
 
 		item->text = s;
 		NMHotKeyString (item, bIsCurrent, bTiny, 1, 0);
@@ -841,8 +841,8 @@ void NMStringSlider (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 
 			// CHANGED
 			if (curDrawBuffer != GL_BACK) {
-				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, b->background, &(grdCurCanv->cv_bitmap));
-				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, b->background, &(grdCurCanv->cv_bitmap));
+				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, b->background, &(grdCurCanv->cvBitmap));
+				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, b->background, &(grdCurCanv->cvBitmap));
 				}
 			GrString (x+w1-w, y, s1);
 
@@ -897,7 +897,7 @@ void NMRString (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny, char *s)
 	// CHANGED
 	WIN (DDGRLOCK (dd_grd_curcanv));
 		if (curDrawBuffer != GL_BACK)
-			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cv_bitmap));
+			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
 		hs = item->text;
 		item->text = s;
 		h = item->x;
@@ -924,7 +924,7 @@ void NMRStringWXY (bkg * b, int w1, int x, int y, char *s)
 	// CHANGED
 	WIN (DDGRLOCK (dd_grd_curcanv));
 		if (curDrawBuffer != GL_BACK)
-			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cv_bitmap));
+			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
 		GrString (x-w, y, s);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
@@ -959,7 +959,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		GrString (x, y, CURSOR_STRING);
 	else {
 		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (x, y, x+grdCurCanv->cv_font->ft_w-1, y+grdCurCanv->cv_font->ft_h-1);
+		GrRect (x, y, x+grdCurCanv->cvFont->ftWidth-1, y+grdCurCanv->cvFont->ftHeight-1);
 	}
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
@@ -1021,7 +1021,7 @@ if (item->rebuild) {
 WIN (DDGRLOCK (dd_grd_curcanv));	
 	switch (item->nType)	{
 	case NM_TYPE_TEXT:
-      // grdCurCanv->cv_font=TEXT_FONT;
+      // grdCurCanv->cvFont=TEXT_FONT;
 		// fall through on purpose
 
 	case NM_TYPE_MENU:
@@ -1255,12 +1255,12 @@ void NMDrawCloseBox (int x, int y)
 
 //------------------------------------------------------------------------------
 
-int NMDrawTitle (char *title, grs_font *font, unsigned int color, int ty)
+int NMDrawTitle (char *title, grsFont *font, unsigned int color, int ty)
 {
 if (title && *title)	{
 		int string_width, nStringHeight, average_width, tw, th;
 
-	grdCurCanv->cv_font = font;
+	grdCurCanv->cvFont = font;
 	GrSetFontColorRGBi (color, 1, 0, 0);
 	GrGetStringSize (title, &string_width, &nStringHeight, &average_width);
 	tw = string_width;
@@ -1275,12 +1275,12 @@ return ty;
 
 //------------------------------------------------------------------------------
 
-void NMGetTitleSize (char *title, grs_font *font, int *tw, int *th)
+void NMGetTitleSize (char *title, grsFont *font, int *tw, int *th)
 {
 if (title && *title)	{
 		int string_width, nStringHeight, average_width;
 
-	grdCurCanv->cv_font = font;
+	grdCurCanv->cvFont = font;
 	GrGetStringSize (title, &string_width, &nStringHeight, &average_width);
 	if (string_width > *tw)
 		*tw = string_width;
@@ -1367,7 +1367,7 @@ for (i = 0; i < nItems; i++) {
 		Assert (strlen (item [i].text) < NM_MAX_TEXT_LEN);
 		strncpy (item [i].saved_text, item [i].text, NM_MAX_TEXT_LEN);
 		(*nOthers)++;
-		string_width = item [i].text_len*grdCurCanv->cv_font->ft_w+ ((gameStates.menus.bHires?3:1)*item [i].text_len);
+		string_width = item [i].text_len*grdCurCanv->cvFont->ftWidth+ ((gameStates.menus.bHires?3:1)*item [i].text_len);
 		if (string_width > MAX_TEXT_WIDTH) 
 			string_width = MAX_TEXT_WIDTH;
 		item [i].value = -1;
@@ -1376,7 +1376,7 @@ for (i = 0; i < nItems; i++) {
 		Assert (strlen (item [i].text) < NM_MAX_TEXT_LEN);
 		strncpy (item [i].saved_text, item [i].text, NM_MAX_TEXT_LEN);
 		(*nMenus)++;
-		string_width = item [i].text_len*grdCurCanv->cv_font->ft_w+ ((gameStates.menus.bHires?3:1)*item [i].text_len);
+		string_width = item [i].text_len*grdCurCanv->cvFont->ftWidth+ ((gameStates.menus.bHires?3:1)*item [i].text_len);
 		item [i].value = -1;
 		item [i].group = 0;
 		}
@@ -1429,12 +1429,12 @@ for (i = 0; i < nItems; i++)	{
 
 int NMInitCtrl (nm_control *ctrlP, char *title, char *subtitle, int nItems, tMenuItem *item)
 {
-if ((ctrlP->sc_w != grdCurScreen->sc_w) || (ctrlP->sc_h != grdCurScreen->sc_h)) {
+if ((ctrlP->scWidth != grdCurScreen->scWidth) || (ctrlP->scHeight != grdCurScreen->scHeight)) {
 		nm_control	ctrl = *ctrlP;
 		int			i, gap, haveTitle;
 
-	ctrl.sc_w = grdCurScreen->sc_w;
-	ctrl.sc_h = grdCurScreen->sc_h;
+	ctrl.scWidth = grdCurScreen->scWidth;
+	ctrl.scHeight = grdCurScreen->scHeight;
 	ctrl.nDisplayMode = gameStates.video.nDisplayMode;
 	NMGetTitleSize (title, TITLE_FONT, &ctrl.tw, &ctrl.th);
 	NMGetTitleSize (subtitle, SUBTITLE_FONT, &ctrl.tw, &ctrl.th);
@@ -1442,12 +1442,12 @@ if ((ctrlP->sc_w != grdCurScreen->sc_w) || (ctrlP->sc_h != grdCurScreen->sc_h)) 
 	haveTitle = ((title && *title) || (subtitle && *subtitle));
 	gap = haveTitle ? (int) LHY (8) : 0;
 	ctrl.th += gap;		//put some space between titles & body
-	grdCurCanv->cv_font = ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT;
+	grdCurCanv->cvFont = ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT;
 
 	ctrl.h = ctrl.th;
 	ctrl.nMenus = ctrl.nOthers = 0;
 	ctrl.nStringHeight = NMGetMenuSize (item, nItems, &ctrl.w, &ctrl.h, &ctrl.aw, &ctrl.nMenus, &ctrl.nOthers);
-	ctrl.nMaxOnMenu = (((gameOpts->menus.nStyle && (ctrl.sc_h > 480)) ? ctrl.sc_h * 4 / 5 : 480) - ctrl.th - LHY (8)) / ctrl.nStringHeight - 2;
+	ctrl.nMaxOnMenu = (((gameOpts->menus.nStyle && (ctrl.scHeight > 480)) ? ctrl.scHeight * 4 / 5 : 480) - ctrl.th - LHY (8)) / ctrl.nStringHeight - 2;
 	if (/*!ctrl.bTinyMode &&*/ (ctrl.h > (ctrl.nMaxOnMenu * (ctrl.nStringHeight+1)) + gap)) {
 	  ctrl.bIsScrollBox = 1;
 	  ctrl.h = (ctrl.nMaxOnMenu * (ctrl.nStringHeight + haveTitle) + haveTitle * LHY (ctrl.bTinyMode ? 12 : 8));
@@ -1484,22 +1484,22 @@ if ((ctrlP->sc_w != grdCurScreen->sc_w) || (ctrlP->sc_h != grdCurScreen->sc_h)) 
 		ctrl.twidth = 0;
 		}
 
-	if (ctrl.w > ctrl.sc_w)
-		ctrl.w = ctrl.sc_w;
-	if (ctrl.h > ctrl.sc_h)
-		ctrl.h = ctrl.sc_h;
+	if (ctrl.w > ctrl.scWidth)
+		ctrl.w = ctrl.scWidth;
+	if (ctrl.h > ctrl.scHeight)
+		ctrl.h = ctrl.scHeight;
 
 	ctrl.xOffs = (gameStates.menus.bHires ? 30 : 15);
-	i = (ctrl.sc_w - ctrl.w) / 2;
+	i = (ctrl.scWidth - ctrl.w) / 2;
 	if (i < ctrl.xOffs)
 		ctrl.xOffs = i / 2;
 	ctrl.yOffs = (gameStates.menus.bHires ? 30 : 15);
-	if (ctrl.sc_h - ctrl.h < 2 * ctrl.yOffs)
-		ctrl.h = ctrl.sc_h - 2 * ctrl.yOffs;
+	if (ctrl.scHeight - ctrl.h < 2 * ctrl.yOffs)
+		ctrl.h = ctrl.scHeight - 2 * ctrl.yOffs;
 	ctrl.w += 2 * ctrl.xOffs;
 	ctrl.h += 2 * ctrl.yOffs;
-	ctrl.x = (ctrl.sc_w - ctrl.w) / 2;
-	ctrl.y = (ctrl.sc_h - ctrl.h) / 2;
+	ctrl.x = (ctrl.scWidth - ctrl.w) / 2;
+	ctrl.y = (ctrl.scHeight - ctrl.h) / 2;
 	if (gameOpts->menus.nStyle) {
 		ctrl.xOffs += ctrl.x;
 		ctrl.yOffs += ctrl.y;
@@ -1514,17 +1514,17 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void NMSaveScreen (grs_canvas **save_canvas, grs_canvas **game_canvas, grs_font **saveFont)
+void NMSaveScreen (gsrCanvas **save_canvas, gsrCanvas **game_canvas, grsFont **saveFont)
 {
 WINDOS (*game_canvas = dd_grd_curcanv, *game_canvas = grdCurCanv);
 WINDOS (*save_canvas = dd_grd_curcanv, *save_canvas = grdCurCanv);
-*saveFont = grdCurCanv->cv_font;
+*saveFont = grdCurCanv->cvFont;
 WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
 }
 
 //------------------------------------------------------------------------------
 
-void NMRestoreScreen (char *filename, bkg *bg, grs_canvas *save_canvas, grs_font *saveFont, int bDontRestore)
+void NMRestoreScreen (char *filename, bkg *bg, gsrCanvas *save_canvas, grsFont *saveFont, int bDontRestore)
 {
 WINDOS (DDGrSetCurrentCanvas (bg->menu_canvas), GrSetCurrentCanvas (bg->menu_canvas));
 if (gameOpts->menus.nStyle)
@@ -1551,7 +1551,7 @@ else {
 WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), 
 		  GrFreeSubCanvas (bg->menu_canvas));
 WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));			
-grdCurCanv->cv_font	= saveFont;
+grdCurCanv->cvFont	= saveFont;
 WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (save_canvas));
 memset (bg, 0, sizeof (*bg));
 GrabMouse (1, 0);
@@ -1589,7 +1589,7 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
 	int			choice, old_choice, i;
 	nm_control	ctrl;
 	int			k, nLastScrollCheck=-1, sx, sy;
-	grs_font		*saveFont;
+	grsFont		*saveFont;
 	bkg			bg;
 	int			bAllText=0;		//set true if all text items
 	int			sound_stopped=0, time_stopped=0;
@@ -1597,8 +1597,8 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
    char			*Temp, TempVal;
 	int			bDontRestore = 0;
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
-	WINDOS (dd_grs_canvas *save_canvas, grs_canvas *save_canvas);	
-	WINDOS (dd_grs_canvas *game_canvas, grs_canvas *game_canvas);	
+	WINDOS (ddgrs_canvas *save_canvas, gsrCanvas *save_canvas);	
+	WINDOS (ddgrs_canvas *game_canvas, gsrCanvas *game_canvas);	
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick=0;
 	int			mx=0, my=0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
@@ -1717,7 +1717,7 @@ while (!done) {
 		k = KEY_DOWN;
 	else
 		k = KeyInKey ();
-	if ((ctrl.sc_w != grdCurScreen->sc_w) || (ctrl.sc_h != grdCurScreen->sc_h)) {
+	if ((ctrl.scWidth != grdCurScreen->scWidth) || (ctrl.scHeight != grdCurScreen->scHeight)) {
 		memset (&ctrl, 0, sizeof (ctrl));
 		ctrl.width = width;
 		ctrl.height = height;
@@ -1748,7 +1748,7 @@ while (!done) {
 		}
 	else {
 		if (gameStates.app.bGameRunning) {
-			WINDOS (dd_grs_canvas *save_canvas, grs_canvas *save_canvas);	
+			WINDOS (ddgrs_canvas *save_canvas, gsrCanvas *save_canvas);	
 			WINDOS (save_canvas = dd_grd_curcanv, save_canvas = grdCurCanv);
 			WINDOS (DDGrSetCurrentCanvas (game_canvas), GrSetCurrentCanvas (game_canvas));
 			//GrPaletteStepLoad (gamePalette);
@@ -1775,7 +1775,7 @@ while (!done) {
 		NMDrawTitle (subtitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 		if (!bRedraw)
 			ctrl.ty = t;
-		grdCurCanv->cv_font = bTinyMode ? SMALL_FONT : NORMAL_FONT;
+		grdCurCanv->cvFont = bTinyMode ? SMALL_FONT : NORMAL_FONT;
 		}
 	if (!time_stopped){
 		// Save current menu box
@@ -2073,9 +2073,9 @@ launchOption:
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			mouse_get_pos (&mx, &my);
 			for (i=0; i<nItems; i++)	{
-				x1 = grdCurCanv->cv_bitmap.bm_props.x + item [i].x - item [i].right_offset - 6;
+				x1 = grdCurCanv->cvBitmap.bmProps.x + item [i].x - item [i].right_offset - 6;
 				x2 = x1 + item [i].w;
-				y1 = grdCurCanv->cv_bitmap.bm_props.y + item [i].y;
+				y1 = grdCurCanv->cvBitmap.bmProps.y + item [i].y;
 				y2 = y1 + item [i].h;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 					if (i + ctrl.nScrollOffset - ctrl.nMaxNoScroll != choice) {
@@ -2123,8 +2123,8 @@ launchOption:
 				
 				if (ctrl.nScrollOffset > ctrl.nMaxNoScroll) {
 					GrGetStringSize (UP_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
-					x2 = grdCurCanv->cv_bitmap.bm_props.x + item [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
-		         y1 = grdCurCanv->cv_bitmap.bm_props.y + item [ctrl.nScrollOffset].y- ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+					x2 = grdCurCanv->cvBitmap.bmProps.x + item [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
+		         y1 = grdCurCanv->cvBitmap.bmProps.y + item [ctrl.nScrollOffset].y- ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 					x1 = x2 - arrow_width;
 					y2 = y1 + arrow_height;
 					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
@@ -2138,8 +2138,8 @@ launchOption:
 					}
 				if ((i = ctrl.nScrollOffset + ctrl.nMaxDisplayable - ctrl.nMaxNoScroll) < nItems) {
 					GrGetStringSize (DOWN_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
-					x2 = grdCurCanv->cv_bitmap.bm_props.x + item [i-1].x - (gameStates.menus.bHires?24:12);
-					y1 = grdCurCanv->cv_bitmap.bm_props.y + item [i-1].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
+					x2 = grdCurCanv->cvBitmap.bmProps.x + item [i-1].x - (gameStates.menus.bHires?24:12);
+					y1 = grdCurCanv->cvBitmap.bmProps.y + item [i-1].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 					x1 = x2 - arrow_width;
 					y2 = y1 + arrow_height;
 					if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
@@ -2154,9 +2154,9 @@ launchOption:
 				}
 			
 			for (i = ctrl.nScrollOffset; i < nItems; i++)	{
-				x1 = grdCurCanv->cv_bitmap.bm_props.x + item [i].x - item [i].right_offset - 6;
+				x1 = grdCurCanv->cvBitmap.bmProps.x + item [i].x - item [i].right_offset - 6;
 				x2 = x1 + item [i].w;
-				y1 = grdCurCanv->cv_bitmap.bm_props.y + item [i].y;
+				y1 = grdCurCanv->cvBitmap.bmProps.y + item [i].y;
 				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 				y2 = y1 + item [i].h;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) &&(item [i].nType != NM_TYPE_TEXT)) {
@@ -2183,7 +2183,7 @@ launchOption:
 							GrGetStringSize (SLIDER_RIGHT, &sright_width, &height, &aw);
 							GrGetStringSize (SLIDER_MIDDLE, &smiddle_width, &height, &aw);
 
-							x1 = grdCurCanv->cv_bitmap.bm_props.x + item [choice].x + item [choice].w - slider_width;
+							x1 = grdCurCanv->cvBitmap.bmProps.x + item [choice].x + item [choice].w - slider_width;
 							x2 = x1 + slider_width + sright_width;
 							if ((mx > x1) &&(mx < (x1 + sleft_width)) &&(item [choice].value != item [choice].minValue)) {
 								item [choice].value = item [choice].minValue;
@@ -2224,9 +2224,9 @@ launchOption:
 		
 		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(item [choice].nType == NM_TYPE_MENU)) {
 			mouse_get_pos (&mx, &my);
-			x1 = grdCurCanv->cv_bitmap.bm_props.x + item [choice].x;
+			x1 = grdCurCanv->cvBitmap.bmProps.x + item [choice].x;
 			x2 = x1 + item [choice].w;
-			y1 = grdCurCanv->cv_bitmap.bm_props.y + item [choice].y;
+			y1 = grdCurCanv->cvBitmap.bmProps.y + item [choice].y;
 			if (choice >= ctrl.nScrollOffset)
 				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 			y2 = y1 + item [choice].h;
@@ -2261,9 +2261,9 @@ launchOption:
 		
 		if (!done && !nMouseState && nOldMouseState && bCloseBox) {
 			mouse_get_pos (&mx, &my);
-			x1 = (gameOpts->menus.nStyle ? ctrl.x : grdCurCanv->cv_bitmap.bm_props.x) + CLOSE_X;
+			x1 = (gameOpts->menus.nStyle ? ctrl.x : grdCurCanv->cvBitmap.bmProps.x) + CLOSE_X;
 			x2 = x1 + CLOSE_SIZE;
-			y1 = (gameOpts->menus.nStyle ? ctrl.y : grdCurCanv->cv_bitmap.bm_props.y) + CLOSE_Y;
+			y1 = (gameOpts->menus.nStyle ? ctrl.y : grdCurCanv->cvBitmap.bmProps.y) + CLOSE_Y;
 			y2 = y1 + CLOSE_SIZE;
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 				if (cItemP)
@@ -2413,7 +2413,7 @@ launchOption:
 			}
 		WINDOS (	DDGrSetCurrentCanvas (bg.menu_canvas), 
 				GrSetCurrentCanvas (bg.menu_canvas));
-		grdCurCanv->cv_font = ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT;
+		grdCurCanv->cvFont = ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT;
      	for (i = 0; i < ctrl.nMaxDisplayable + ctrl.nScrollOffset - ctrl.nMaxNoScroll; i++) {
 			if ((i >= ctrl.nMaxNoScroll) && (i < ctrl.nScrollOffset))
 				continue;
@@ -2441,10 +2441,10 @@ launchOption:
 			}
 #endif
       if (ctrl.bIsScrollBox) {
-      	//grdCurCanv->cv_font = NORMAL_FONT;
+      	//grdCurCanv->cvFont = NORMAL_FONT;
         	if (bRedraw || (nLastScrollCheck != ctrl.nScrollOffset)) {
           	nLastScrollCheck=ctrl.nScrollOffset;
-          	grdCurCanv->cv_font = SELECTED_FONT;
+          	grdCurCanv->cvFont = SELECTED_FONT;
           	sy=item [ctrl.nScrollOffset].y - ((ctrl.nStringHeight+1)*(ctrl.nScrollOffset - ctrl.nMaxNoScroll));
           	sx=item [ctrl.nScrollOffset].x - (gameStates.menus.bHires?24:12);
           	if (ctrl.nScrollOffset > ctrl.nMaxNoScroll)
@@ -2464,7 +2464,7 @@ launchOption:
 			if (gameOpts->menus.nStyle)
 				NMDrawCloseBox (ctrl.x, ctrl.y);
 			else
-				NMDrawCloseBox (ctrl.x - grdCurCanv->cv_bitmap.bm_props.x, ctrl.y - grdCurCanv->cv_bitmap.bm_props.y);
+				NMDrawCloseBox (ctrl.x - grdCurCanv->cvBitmap.bmProps.x, ctrl.y - grdCurCanv->cvBitmap.bmProps.y);
 			bCloseBox = 1;
 			}
 		if (bRedraw || !gameOpts->menus.nStyle)
@@ -2744,7 +2744,7 @@ ReadFileNames:
 		GrSetCurrentCanvas (NULL);
 		WIN (DDGRLOCK (dd_grd_curcanv))					//mwa put these here -- are these needed Samir???
 		{
-			grdCurCanv->cv_font = SUBTITLE_FONT;
+			grdCurCanv->cvFont = SUBTITLE_FONT;
 		}
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 
@@ -2762,14 +2762,14 @@ ReadFileNames:
 			GrGetStringSize (title, &w, &h, &aw);		
 			if (w > w_w)
 				w_w = w;
-			title_height = h + (grd_curfont->ft_h*2);		// add a little space at the bottom of the title
+			title_height = h + (grd_curfont->ftHeight*2);		// add a little space at the bottom of the title
 		}
 
 		box_w = w_w;
-		box_h = ((grd_curfont->ft_h + 2) * NumFiles_displayed);
+		box_h = ((grd_curfont->ftHeight + 2) * NumFiles_displayed);
 
-		w_w += (grd_curfont->ft_w * 4);
-		w_h = title_height + box_h + (grd_curfont->ft_h * 2);		// more space at bottom
+		w_w += (grd_curfont->ftWidth * 4);
+		w_h = title_height + box_h + (grd_curfont->ftHeight * 2);		// more space at bottom
 
 		if (w_w > grdCurCanv->cv_w) 
 			w_w = grdCurCanv->cv_w;
@@ -2788,7 +2788,7 @@ ReadFileNames:
 		if (w_y < 0) 
 			w_y = 0;
 
-		box_x = w_x + (grd_curfont->ft_w*2);			// must be in sync with w_w!!!
+		box_x = w_x + (grd_curfont->ftWidth*2);			// must be in sync with w_w!!!
 		box_y = w_y + title_height;
 
 // save the screen behind the menu.
@@ -2796,12 +2796,12 @@ ReadFileNames:
 		bg.saved = NULL;
 		if (!gameOpts->menus.nStyle) {
 			if ((gameStates.render.vr.buffers.offscreen->cv_w >= w_w) &&(gameStates.render.vr.buffers.offscreen->cv_h >= w_h)) 
-				bg.background = &gameStates.render.vr.buffers.offscreen->cv_bitmap;
+				bg.background = &gameStates.render.vr.buffers.offscreen->cvBitmap;
 			else
 				bg.background = GrCreateBitmap (w_w, w_h, 1);
 			Assert (bg.background != NULL);
 			WIN (DDGRLOCK (dd_grd_curcanv));
-			GrBmBitBlt (w_w, w_h, 0, 0, w_x, w_y, &grdCurCanv->cv_bitmap, bg.background);
+			GrBmBitBlt (w_w, w_h, 0, 0, w_x, w_y, &grdCurCanv->cvBitmap, bg.background);
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			}
 		NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1, 0);
@@ -3033,7 +3033,7 @@ ReadFileNames:
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				x1 = box_x;
 				x2 = box_x + box_w - 1;
-				y1 = (i-first_item)* (grd_curfont->ft_h + 2) + box_y;
+				y1 = (i-first_item)* (grd_curfont->ftHeight + 2) + box_y;
 				y2 = y1+h+1;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 					if (i == cItem && !mouse2State) {
@@ -3053,7 +3053,7 @@ ReadFileNames:
 			mouse_get_pos (&mx, &my);
 			x1 = box_x;
 			x2 = box_x + box_w - 1;
-			y1 = (cItem-first_item)* (grd_curfont->ft_h + 2) + box_y;
+			y1 = (cItem-first_item)* (grd_curfont->ftHeight + 2) + box_y;
 			y2 = y1+h+1;
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 				if (bDblClick) 
@@ -3082,32 +3082,32 @@ ReadFileNames:
 			NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1,1);
 			WIN (DDGRLOCK (dd_grd_curcanv))
 			{	
-				grdCurCanv->cv_font = NORMAL_FONT;
+				grdCurCanv->cvFont = NORMAL_FONT;
 				GrString (0x8000, w_y+10, title);
 			}
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			GrSetColorRGB (0, 0, 0, 255);
 			for (i=first_item; i<first_item+NumFiles_displayed; i++)	{
 				int w, h, aw, y;
-				y = (i-first_item)* (grd_curfont->ft_h + 2) + box_y;
+				y = (i-first_item)* (grd_curfont->ftHeight + 2) + box_y;
 			
 				if (i >= NumFiles)	{
 
 					GrSetColorRGBi (RGBA_PAL2 (5, 5, 5));
-					GrRect (box_x + box_w, y-1, box_x + box_w, y + grd_curfont->ft_h + 1);
-					//GrRect (box_x, y + grd_curfont->ft_h + 2, box_x + box_w, y + grd_curfont->ft_h + 2);
+					GrRect (box_x + box_w, y-1, box_x + box_w, y + grd_curfont->ftHeight + 1);
+					//GrRect (box_x, y + grd_curfont->ftHeight + 2, box_x + box_w, y + grd_curfont->ftHeight + 2);
 					
 					GrSetColorRGBi (RGBA_PAL2 (2, 2, 2));
-					GrRect (box_x - 1, y - 1, box_x - 1, y + grd_curfont->ft_h + 2);
+					GrRect (box_x - 1, y - 1, box_x - 1, y + grd_curfont->ftHeight + 2);
 					
 					GrSetColorRGB (0, 0, 0, 255);
-					GrRect (box_x, y - 1, box_x + box_w - 1, y + grd_curfont->ft_h + 1);
+					GrRect (box_x, y - 1, box_x + box_w - 1, y + grd_curfont->ftHeight + 1);
 					
 				} else {
 					if (i == cItem)	
-						grdCurCanv->cv_font = SELECTED_FONT;
+						grdCurCanv->cvFont = SELECTED_FONT;
 					else	
-						grdCurCanv->cv_font = NORMAL_FONT;
+						grdCurCanv->cvFont = NORMAL_FONT;
 					GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 
 					GrSetColorRGBi (RGBA_PAL2 (5, 5, 5));
@@ -3130,22 +3130,22 @@ ReadFileNames:
 				SDL_ShowCursor (0);
 			i = ocitem;
 			if ((i>=0) &&(i<NumFiles))	{
-				y = (i-first_item)* (grd_curfont->ft_h+2)+box_y;
+				y = (i-first_item)* (grd_curfont->ftHeight+2)+box_y;
 				if (i == cItem)	
-					grdCurCanv->cv_font = SELECTED_FONT;
+					grdCurCanv->cvFont = SELECTED_FONT;
 				else	
-					grdCurCanv->cv_font = NORMAL_FONT;
+					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
 			}
 			i = cItem;
 			if ((i>=0) &&(i<NumFiles))	{
-				y = (i-first_item)* (grd_curfont->ft_h+2)+box_y;
+				y = (i-first_item)* (grd_curfont->ftHeight+2)+box_y;
 				if (i == cItem)	
-					grdCurCanv->cv_font = SELECTED_FONT;
+					grdCurCanv->cvFont = SELECTED_FONT;
 				else	
-					grdCurCanv->cv_font = NORMAL_FONT;
+					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
@@ -3175,10 +3175,10 @@ ExitFileMenu:
 			if (gameData.demo.nState != ND_STATE_PLAYBACK)	//horrible hack to prevent restore when screen has been cleared
 			{
 			WIN (DDGRLOCK (dd_grd_curcanv));
-			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, &grdCurCanv->cv_bitmap);
+			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, &grdCurCanv->cvBitmap);
 			WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
 			}
-			if (bg.background != &gameStates.render.vr.buffers.offscreen->cv_bitmap)
+			if (bg.background != &gameStates.render.vr.buffers.offscreen->cvBitmap)
 				GrFreeBitmap (bg.background);
 #if 0
 		WINDOS (
@@ -3186,7 +3186,7 @@ ExitFileMenu:
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
 				dd_grd_curcanv, 
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-			GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cv_bitmap), &(grdCurCanv->cv_bitmap))
+			GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cvBitmap), &(grdCurCanv->cvBitmap))
 		);
 #endif
 		GrUpdate (0);
@@ -3266,7 +3266,7 @@ WIN (int win_redraw=0);
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
 	GrSetCurrentCanvas (NULL);
-	grdCurCanv->cv_font = SUBTITLE_FONT;
+	grdCurCanv->cvFont = SUBTITLE_FONT;
 
 	width = 0;
 	for (i=0; i<nItems; i++)	{
@@ -3275,8 +3275,8 @@ WIN (int win_redraw=0);
 		if (w > width)
 			width = w;
 	}
-	nItemsOnScreen = LB_ITEMS_ON_SCREEN * grdCurCanv->cv_bitmap.bm_props.h / 480;
-	height = (grd_curfont->ft_h + 2) * nItemsOnScreen;
+	nItemsOnScreen = LB_ITEMS_ON_SCREEN * grdCurCanv->cvBitmap.bmProps.h / 480;
+	height = (grd_curfont->ftHeight + 2) * nItemsOnScreen;
 
 	{
 		int w, h, aw;
@@ -3286,15 +3286,15 @@ WIN (int win_redraw=0);
 		title_height = h + 5;
 	}
 
-	border_size = grd_curfont->ft_w;
-   WIN (border_size=grd_curfont->ft_w*2);
+	border_size = grd_curfont->ftWidth;
+   WIN (border_size=grd_curfont->ftWidth*2);
 		
-	width += (grd_curfont->ft_w);
-	if (width > grdCurCanv->cv_w - (grd_curfont->ft_w * 3))
-		width = grdCurCanv->cv_w - (grd_curfont->ft_w * 3);
+	width += (grd_curfont->ftWidth);
+	if (width > grdCurCanv->cv_w - (grd_curfont->ftWidth * 3))
+		width = grdCurCanv->cv_w - (grd_curfont->ftWidth * 3);
 
-	wx = (grdCurCanv->cv_bitmap.bm_props.w-width)/2;
-	wy = (grdCurCanv->cv_bitmap.bm_props.h- (height+title_height))/2 + title_height;
+	wx = (grdCurCanv->cvBitmap.bmProps.w-width)/2;
+	wy = (grdCurCanv->cvBitmap.bmProps.h- (height+title_height))/2 + title_height;
 	if (wy < title_height)
 		wy = title_height;
 
@@ -3305,14 +3305,14 @@ WIN (int win_redraw=0);
 
 	if (!gameOpts->menus.nStyle) {
 		if ((gameStates.render.vr.buffers.offscreen->cv_w >= total_width) &&(gameStates.render.vr.buffers.offscreen->cv_h >= total_height))
-			bg.background = &gameStates.render.vr.buffers.offscreen->cv_bitmap;
+			bg.background = &gameStates.render.vr.buffers.offscreen->cvBitmap;
 		else
 			//bg.background = GrCreateBitmap (width, (height + title_height));
 			bg.background = GrCreateBitmap (total_width, total_height, 1);
 		Assert (bg.background != NULL);
 		WIN (DDGRLOCK (dd_grd_curcanv));
-			//GrBmBitBlt (wx+width+border_size, wy+height+border_size, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cv_bitmap, bg.background);
-			GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cv_bitmap, bg.background);
+			//GrBmBitBlt (wx+width+border_size, wy+height+border_size, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);
+			GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 
@@ -3322,7 +3322,7 @@ WIN (int win_redraw=0);
 				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
 				dd_VR_offscreen_buffer, 0, 0, 
 				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(grdCurCanv->cv_bitmap), &(gameStates.render.vr.buffers.offscreen->cv_bitmap))
+		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(grdCurCanv->cvBitmap), &(gameStates.render.vr.buffers.offscreen->cvBitmap))
 	);
 #endif
 
@@ -3512,7 +3512,7 @@ WIN (int win_redraw=0);
 				GrGetStringSize (items [i], &w, &h, &aw);
 				x1 = wx;
 				x2 = wx + width;
-				y1 = (i-first_item)* (grd_curfont->ft_h+2)+wy;
+				y1 = (i-first_item)* (grd_curfont->ftHeight+2)+wy;
 				y2 = y1+h+1;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 					//if (i == cItem) {
@@ -3546,22 +3546,22 @@ WIN (int win_redraw=0);
 				SDL_ShowCursor (0);
 			WIN (DDGRLOCK (dd_grd_curcanv));
 			if (gameOpts->menus.nStyle) {
-				grdCurCanv->cv_font = NORMAL_FONT;
+				grdCurCanv->cvFont = NORMAL_FONT;
 				GrString (0x8000, wy - title_height, title);
 				}
 
 			GrSetColorRGB (0, 0, 0, 255);
 			for (i=first_item; i<first_item+nItemsOnScreen; i++)	{
 				int w, h, aw, y;
-				y = (i-first_item)* (grd_curfont->ft_h+2)+wy;
+				y = (i-first_item)* (grd_curfont->ftHeight+2)+wy;
 				if (i >= nItems)	{
 					GrSetColorRGB (0, 0, 0, 255);
-					GrRect (wx, y-1, wx+width-1, y+grd_curfont->ft_h + 1);
+					GrRect (wx, y-1, wx+width-1, y+grd_curfont->ftHeight + 1);
 				} else {
 					if (i == cItem)	
-						grdCurCanv->cv_font = SELECTED_FONT;
+						grdCurCanv->cvFont = SELECTED_FONT;
 					else	
-						grdCurCanv->cv_font = NORMAL_FONT;
+						grdCurCanv->cvFont = NORMAL_FONT;
 					GrGetStringSize (items [i], &w, &h, &aw);
 					GrRect (wx, y-1, wx+width-1, y+h+1);
 					GrString (wx+5, y, items [i]);
@@ -3583,11 +3583,11 @@ WIN (int win_redraw=0);
 
 			i = ocitem;
 			if ((i>=0) &&(i<nItems))	{
-				y = (i-first_item)* (grd_curfont->ft_h+2)+wy;
+				y = (i-first_item)* (grd_curfont->ftHeight+2)+wy;
 				if (i == cItem)	
-					grdCurCanv->cv_font = SELECTED_FONT;
+					grdCurCanv->cvFont = SELECTED_FONT;
 				else	
-					grdCurCanv->cv_font = NORMAL_FONT;
+					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (items [i], &w, &h, &aw);
 				GrRect (wx, y-1, wx+width-1, y+h+1);
 				GrString (wx+5, y, items [i]);
@@ -3595,11 +3595,11 @@ WIN (int win_redraw=0);
 			}
 			i = cItem;
 			if ((i>=0) &&(i<nItems))	{
-				y = (i-first_item)* (grd_curfont->ft_h+2)+wy;
+				y = (i-first_item)* (grd_curfont->ftHeight+2)+wy;
 				if (i == cItem)	
-					grdCurCanv->cv_font = SELECTED_FONT;
+					grdCurCanv->cvFont = SELECTED_FONT;
 				else	
-					grdCurCanv->cv_font = NORMAL_FONT;
+					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (items [i], &w, &h, &aw);
 				GrRect (wx, y-1, wx+width-1, y+h);
 				GrString (wx+5, y, items [i]);
@@ -3627,9 +3627,9 @@ WIN (int win_redraw=0);
 	else {
 		SDL_ShowCursor (0);
 		WIN (DDGRLOCK (dd_grd_curcanv));
-		GrBmBitBlt (total_width, total_height, wx-border_size, wy-title_height-border_size, 0, 0, bg.background, &grdCurCanv->cv_bitmap);
+		GrBmBitBlt (total_width, total_height, wx-border_size, wy-title_height-border_size, 0, 0, bg.background, &grdCurCanv->cvBitmap);
 		WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
-		if (bg.background != &gameStates.render.vr.buffers.offscreen->cv_bitmap)
+		if (bg.background != &gameStates.render.vr.buffers.offscreen->cvBitmap)
 			GrFreeBitmap (bg.background);
 		GrUpdate (0);
 		}
@@ -3641,7 +3641,7 @@ WIN (int win_redraw=0);
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
 				dd_grd_curcanv, 
 				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cv_bitmap), &(grdCurCanv->cv_bitmap))
+		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cvBitmap), &(grdCurCanv->cvBitmap))
 	);
 #endif
 

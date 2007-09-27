@@ -280,7 +280,7 @@ void move_and_draw( int dsource, int ddest, int ecx )
 //-----------------------------------------------------------------------------------------
 // Given bitmap, bmp, finds the size of the code
 
-int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
+int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowSize, int destType )
 {
 	int x,y;
 	ubyte pixel;
@@ -290,7 +290,7 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 	int num_to_draw, draw_start_source, draw_start_dest;
 	int esi, edi;
 
-	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
+	Assert( (!(mask_bmp->bmProps.flags&BM_FLAG_RLE)) );
 
 	CodeCounter = 0;
 
@@ -311,8 +311,8 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 
 	for ( y=sy; y<sy+sh; y++ ) {
 		for ( x=sx; x<sx+sw; x++ ) {
-			dest_offset = y*mask_bmp->bm_props.rowsize+x;
-			pixel = mask_bmp->bm_texBuf[dest_offset];
+			dest_offset = y*mask_bmp->bmProps.rowSize+x;
+			pixel = mask_bmp->bmTexBuf[dest_offset];
 			if ( pixel!=255 ) {
 				switch ( draw_mode) {
 				case MODE_DRAW:
@@ -347,7 +347,7 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 			edi = draw_start_dest + num_to_draw;
 		}
 		draw_mode = MODE_NONE;
-		source_offset += (srowsize - sw);
+		source_offset += (srowSize - sw);
 	}
 	CodeCounter++;     // for return
 
@@ -358,21 +358,21 @@ int gr_ibitblt_find_code_size_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 	return CodeCounter;
 }
 
-int gr_ibitblt_find_code_size( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+int gr_ibitblt_find_code_size( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowSize )
 {
-	return gr_ibitblt_find_code_size_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_LINEAR );
+	return gr_ibitblt_find_code_size_sub( mask_bmp, sx, sy, sw, sh, srowSize, BM_LINEAR );
 }
 
-int gr_ibitblt_find_code_size_svga( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+int gr_ibitblt_find_code_size_svga( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowSize )
 {
-	return gr_ibitblt_find_code_size_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_SVGA );
+	return gr_ibitblt_find_code_size_sub( mask_bmp, sx, sy, sw, sh, srowSize, BM_SVGA );
 }
 
 //-----------------------------------------------------------------------------------------
 // Given bitmap, bmp, create code that transfers a bitmap of size sw*sh to position
 // (sx,sy) on top of bmp, only overwritting transparent pixels of the bitmap.
 
-ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize, int destType )
+ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowSize, int destType )
 {
 	int x,y;
 	ubyte pixel;
@@ -385,12 +385,12 @@ ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 	ubyte *code;
 	uint temp;
 
-	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
+	Assert( (!(mask_bmp->bmProps.flags&BM_FLAG_RLE)) );
 
 	if ( destType == BM_SVGA )
-		code_size = gr_ibitblt_find_code_size_svga( mask_bmp, sx, sy, sw, sh, srowsize );
+		code_size = gr_ibitblt_find_code_size_svga( mask_bmp, sx, sy, sw, sh, srowSize );
 	else
-		code_size = gr_ibitblt_find_code_size( mask_bmp, sx, sy, sw, sh, srowsize );
+		code_size = gr_ibitblt_find_code_size( mask_bmp, sx, sy, sw, sh, srowSize );
 
 	code = D2_ALLOC( code_size );
 	if ( code == NULL )
@@ -425,8 +425,8 @@ ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 
 	for ( y=sy; y<sy+sh; y++ ) {
 		for ( x=sx; x<sx+sw; x++ ) {
-			dest_offset = y*mask_bmp->bm_props.rowsize+x;
-			pixel = mask_bmp->bm_texBuf[dest_offset];
+			dest_offset = y*mask_bmp->bmProps.rowSize+x;
+			pixel = mask_bmp->bmTexBuf[dest_offset];
 			if ( pixel!=255 ) {
 				switch ( draw_mode) {
 				case MODE_DRAW:
@@ -461,7 +461,7 @@ ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 			edi = draw_start_dest + num_to_draw;
 		}
 		draw_mode = MODE_NONE;
-		source_offset += (srowsize - sw);
+		source_offset += (srowSize - sw);
 	}
 	*Code_pointer++ = OPCODE_RET;
 
@@ -473,21 +473,21 @@ ubyte	*gr_ibitblt_create_mask_sub( grsBitmap * mask_bmp, int sx, int sy, int sw,
 	return code;
 }
 
-ubyte   *gr_ibitblt_create_mask( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+ubyte   *gr_ibitblt_create_mask( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowSize )
 {
-	return gr_ibitblt_create_mask_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_LINEAR );
+	return gr_ibitblt_create_mask_sub( mask_bmp, sx, sy, sw, sh, srowSize, BM_LINEAR );
 }
 
-ubyte   *gr_ibitblt_create_mask_svga( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowsize )
+ubyte   *gr_ibitblt_create_mask_svga( grsBitmap * mask_bmp, int sx, int sy, int sw, int sh, int srowSize )
 {
-	return gr_ibitblt_create_mask_sub( mask_bmp, sx, sy, sw, sh, srowsize, BM_SVGA );
+	return gr_ibitblt_create_mask_sub( mask_bmp, sx, sy, sw, sh, srowSize, BM_SVGA );
 }
 
 
 void gr_ibitblt(grsBitmap * source_bmp, grsBitmap * dest_bmp, ubyte * mask )
 {
 	if (mask != NULL )
-		gr_ibitblt_do_asm( source_bmp->bm_texBuf, dest_bmp->bm_texBuf, mask );
+		gr_ibitblt_do_asm( source_bmp->bmTexBuf, dest_bmp->bmTexBuf, mask );
 }
 
 
@@ -496,16 +496,16 @@ void    gr_ibitblt_find_hole_size( grsBitmap * mask_bmp, int *minx, int *miny, i
 	int x, y, count=0;
 	ubyte c;
 
-	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
+	Assert( (!(mask_bmp->bmProps.flags&BM_FLAG_RLE)) );
 
-	*minx = mask_bmp->bm_props.w-1;
+	*minx = mask_bmp->bmProps.w-1;
 	*maxx = 0;
-	*miny = mask_bmp->bm_props.h-1;
+	*miny = mask_bmp->bmProps.h-1;
 	*maxy = 0;
 
-	for ( y=0; y<mask_bmp->bm_props.h; y++ )
-		for ( x=0; x<mask_bmp->bm_props.w; x++ ) {
-			c = mask_bmp->bm_texBuf[mask_bmp->bm_props.rowsize*y+x];
+	for ( y=0; y<mask_bmp->bmProps.h; y++ )
+		for ( x=0; x<mask_bmp->bmProps.w; x++ ) {
+			c = mask_bmp->bmTexBuf[mask_bmp->bmProps.rowSize*y+x];
 			if (c == 255 ) {
 				if ( x < *minx ) *minx = x;
 				if ( y < *miny ) *miny = y;
@@ -543,23 +543,23 @@ static double *scanline = NULL;
 
 void gr_ibitblt(grsBitmap *src_bmp, grsBitmap *dest_bmp, ubyte pixel_double)
 {
-	int x, y, sw, sh, srowsize, drowsize, dstart, sy, dy;
+	int x, y, sw, sh, srowSize, drowSize, dstart, sy, dy;
 	ubyte *src, *dest;
 	short *current_hole, *current_hole_length;
 
 // variable setup
 
-	sw = src_bmp->bm_props.w;
-	sh = src_bmp->bm_props.h;
-	srowsize = src_bmp->bm_props.rowsize;
-	drowsize = dest_bmp->bm_props.rowsize;
-	src = src_bmp->bm_texBuf;
-	dest = dest_bmp->bm_texBuf;
+	sw = src_bmp->bmProps.w;
+	sh = src_bmp->bmProps.h;
+	srowSize = src_bmp->bmProps.rowSize;
+	drowSize = dest_bmp->bmProps.rowSize;
+	src = src_bmp->bmTexBuf;
+	dest = dest_bmp->bmTexBuf;
 
 	sy = 0;
 	while (start_points[sy][0] == -1) {
 		sy++;
-		dest += drowsize;
+		dest += drowSize;
 	}
 
  	if (pixel_double) {
@@ -579,7 +579,7 @@ void gr_ibitblt(grsBitmap *src_bmp, grsBitmap *dest_bmp, ubyte pixel_double)
 				current_hole_length++;
 			}
 			dy++;
-			dest += drowsize;
+			dest += drowSize;
 			current_hole = start_points[dy];
 			current_hole_length = hole_length[dy];
 			for (x = 0;x < MAX_HOLES; x++) {
@@ -591,8 +591,8 @@ void gr_ibitblt(grsBitmap *src_bmp, grsBitmap *dest_bmp, ubyte pixel_double)
 				current_hole_length++;
 			}
 			dy++;
-			dest += drowsize;
-			src += srowsize;
+			dest += drowSize;
+			src += srowSize;
 		}
 	} else {
 		Assert(sw <= MAX_WIDTH);
@@ -604,19 +604,19 @@ void gr_ibitblt(grsBitmap *src_bmp, grsBitmap *dest_bmp, ubyte pixel_double)
 				dstart = start_points[y][x];
 				gr_linear_movsd(&(src[dstart]), &(dest[dstart]), hole_length[y][x]);
 			}
-			dest += drowsize;
-			src += srowsize;
+			dest += drowSize;
+			src += srowSize;
 		}
 	}
 }
 
-void gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowsize)
+void gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowSize)
 {
 	int x, y;
 	ubyte mode;
 	int count = 0;
 
-	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
+	Assert( (!(mask_bmp->bmProps.flags&BM_FLAG_RLE)) );
 
 	for (y = 0; y < MAX_SCANLINES; y++) {
 		for (x = 0; x < MAX_HOLES; x++) {
@@ -629,10 +629,10 @@ void gr_ibitblt_create_mask(grsBitmap *mask_bmp, int sx, int sy, int sw, int sh,
 		count = 0;
 		mode = FIND_START;
 		for (x = sx; x < sx + sw; x++) {
-			if ((mode == FIND_START) && (mask_bmp->bm_texBuf[mask_bmp->bm_props.rowsize*y+x] == TRANSPARENCY_COLOR)) {
+			if ((mode == FIND_START) && (mask_bmp->bmTexBuf[mask_bmp->bmProps.rowSize*y+x] == TRANSPARENCY_COLOR)) {
 				start_points[y][count] = x;
 				mode = FIND_STOP;
-			} else if ((mode == FIND_STOP) && (mask_bmp->bm_texBuf[mask_bmp->bm_props.rowsize*y+x] != TRANSPARENCY_COLOR)) {
+			} else if ((mode == FIND_STOP) && (mask_bmp->bmTexBuf[mask_bmp->bmProps.rowSize*y+x] != TRANSPARENCY_COLOR)) {
 				hole_length[y][count] = x - start_points[y][count];
 				count++;
 				mode = FIND_START;
@@ -651,20 +651,20 @@ void gr_ibitblt_find_hole_size(grsBitmap *mask_bmp, int *minx, int *miny, int *m
 	ubyte c;
 	int x, y, count = 0;
 
-	Assert( (!(mask_bmp->bm_props.flags&BM_FLAG_RLE)) );
-	Assert( mask_bmp->bm_props.flags&BM_FLAG_TRANSPARENT );
+	Assert( (!(mask_bmp->bmProps.flags&BM_FLAG_RLE)) );
+	Assert( mask_bmp->bmProps.flags&BM_FLAG_TRANSPARENT );
 
-	*minx = mask_bmp->bm_props.w - 1;
+	*minx = mask_bmp->bmProps.w - 1;
 	*maxx = 0;
-	*miny = mask_bmp->bm_props.h - 1;
+	*miny = mask_bmp->bmProps.h - 1;
 	*maxy = 0;
 
 	if (scanline == NULL)
 		scanline = (double *)D2_ALLOC(sizeof(double) * (MAX_WIDTH / sizeof(double)));
 
-	for (y = 0; y < mask_bmp->bm_props.h; y++) {
-		for (x = 0; x < mask_bmp->bm_props.w; x++) {
-			c = mask_bmp->bm_texBuf[mask_bmp->bm_props.rowsize*y+x];
+	for (y = 0; y < mask_bmp->bmProps.h; y++) {
+		for (x = 0; x < mask_bmp->bmProps.w; x++) {
+			c = mask_bmp->bmTexBuf[mask_bmp->bmProps.rowSize*y+x];
 			if (c == TRANSPARENCY_COLOR) { // don't look for transparancy color here.
 				count++;
 				if (x < *minx) *minx = x;

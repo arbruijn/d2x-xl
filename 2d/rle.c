@@ -301,28 +301,28 @@ int gr_bitmap_rle_compress (grsBitmap * bmP)
 
 	// first must check to see if this is large bitmap.
 
-	for (y=0; y<bmP->bm_props.h; y++)	{
-		d1= gr_rle_getsize (bmP->bm_props.w, &bmP->bm_texBuf[bmP->bm_props.w*y]);
+	for (y=0; y<bmP->bmProps.h; y++)	{
+		d1= gr_rle_getsize (bmP->bmProps.w, &bmP->bmTexBuf[bmP->bmProps.w*y]);
 		if (d1 > 255) {
 			large_rle = 1;
 			break;
 		}
 	}
 
-	rle_data=D2_ALLOC (MAX_BMP_SIZE (bmP->bm_props.w, bmP->bm_props.h));
+	rle_data=D2_ALLOC (MAX_BMP_SIZE (bmP->bmProps.w, bmP->bmProps.h));
 	if (rle_data==NULL) return 0;
 	if (!large_rle)
-		doffset = 4 + bmP->bm_props.h;
+		doffset = 4 + bmP->bmProps.h;
 	else
-		doffset = 4 + (2 * bmP->bm_props.h);		// each row of rle'd bitmap has short instead of byte offset now
+		doffset = 4 + (2 * bmP->bmProps.h);		// each row of rle'd bitmap has short instead of byte offset now
 
-	for (y=0; y<bmP->bm_props.h; y++)	{
-		d1= gr_rle_getsize (bmP->bm_props.w, &bmP->bm_texBuf[bmP->bm_props.w*y]);
-		if (( (doffset+d1) > bmP->bm_props.w*bmP->bm_props.h) || (d1 > (large_rle?32767:255))) {
+	for (y=0; y<bmP->bmProps.h; y++)	{
+		d1= gr_rle_getsize (bmP->bmProps.w, &bmP->bmTexBuf[bmP->bmProps.w*y]);
+		if (( (doffset+d1) > bmP->bmProps.w*bmP->bmProps.h) || (d1 > (large_rle?32767:255))) {
 			D2_FREE (rle_data);
 			return 0;
 		}
-		d = gr_rle_encode (bmP->bm_props.w, &bmP->bm_texBuf[bmP->bm_props.w*y], &rle_data[doffset]);
+		d = gr_rle_encode (bmP->bmProps.w, &bmP->bmTexBuf[bmP->bmProps.w*y], &rle_data[doffset]);
 		Assert (d==d1);
 		doffset	+= d;
 		if (large_rle)
@@ -331,11 +331,11 @@ int gr_bitmap_rle_compress (grsBitmap * bmP)
 			rle_data[y+4] = d;
 	}
 	memcpy (	rle_data, &doffset, 4);
-	memcpy (	bmP->bm_texBuf, rle_data, doffset);
+	memcpy (	bmP->bmTexBuf, rle_data, doffset);
 	D2_FREE (rle_data);
-	bmP->bm_props.flags |= BM_FLAG_RLE;
+	bmP->bmProps.flags |= BM_FLAG_RLE;
 	if (large_rle)
-		bmP->bm_props.flags |= BM_FLAG_RLE_BIG;
+		bmP->bmProps.flags |= BM_FLAG_RLE_BIG;
 	return 1;
 }
 
@@ -408,13 +408,13 @@ void rle_expand_texture_sub (grsBitmap * bmP, grsBitmap * rle_temp_bitmap_1)
 	unsigned char * dbits1;
 #endif
 
-sbits = bmP->bm_texBuf + 4 + bmP->bm_props.h;
-dbits = rle_temp_bitmap_1->bm_texBuf;
-rle_temp_bitmap_1->bm_props.flags = bmP->bm_props.flags & (~BM_FLAG_RLE);
-for (i=0; i < bmP->bm_props.h; i++) {
+sbits = bmP->bmTexBuf + 4 + bmP->bmProps.h;
+dbits = rle_temp_bitmap_1->bmTexBuf;
+rle_temp_bitmap_1->bmProps.flags = bmP->bmProps.flags & (~BM_FLAG_RLE);
+for (i=0; i < bmP->bmProps.h; i++) {
 	gr_rle_decode (sbits, dbits);
-	sbits += (int) bmP->bm_texBuf [4+i];
-	dbits += bmP->bm_props.w;
+	sbits += (int) bmP->bmTexBuf [4+i];
+	dbits += bmP->bmProps.w;
 	}
 }
 
@@ -429,7 +429,7 @@ grsBitmap *rle_expand_texture (grsBitmap * bmP)
 if (!rle_cache_initialized) 
 	RLECacheInit ();
 
-Assert (!(bmP->bm_props.flags & BM_FLAG_PAGED_OUT));
+Assert (!(bmP->bmProps.flags & BM_FLAG_PAGED_OUT));
 
 lc = rleCounter;
 rleCounter++;
@@ -456,7 +456,7 @@ for (i = 0; i < MAX_CACHE_BITMAPS; i++) {
 		least_recently_used = i;
 		}
 	}
-Assert (bmP->bm_props.w<=64 && bmP->bm_props.h<=64); //dest buffer is 64x64
+Assert (bmP->bmProps.w<=64 && bmP->bmProps.h<=64); //dest buffer is 64x64
 rle_misses++;
 rle_expand_texture_sub (bmP, rle_cache[least_recently_used].expanded_bitmap);
 rle_cache[least_recently_used].rle_bitmap = bmP;
@@ -608,21 +608,21 @@ void rle_swap_0_255 (grsBitmap *bmP)
 	unsigned char *ptr, *ptr2, *temp, *start;
 	unsigned short nLineSize;
 
-rle_big = bmP->bm_props.flags & BM_FLAG_RLE_BIG;
-temp = D2_ALLOC (MAX_BMP_SIZE (bmP->bm_props.w, bmP->bm_props.h));
+rle_big = bmP->bmProps.flags & BM_FLAG_RLE_BIG;
+temp = D2_ALLOC (MAX_BMP_SIZE (bmP->bmProps.w, bmP->bmProps.h));
 if (rle_big) {                  // set ptrs to first lines
-	ptr = bmP->bm_texBuf + 4 + 2 * bmP->bm_props.h;
-	ptr2 = temp + 4 + 2 * bmP->bm_props.h;
+	ptr = bmP->bmTexBuf + 4 + 2 * bmP->bmProps.h;
+	ptr2 = temp + 4 + 2 * bmP->bmProps.h;
 } else {
-	ptr = bmP->bm_texBuf + 4 + bmP->bm_props.h;
-	ptr2 = temp + 4 + bmP->bm_props.h;
+	ptr = bmP->bmTexBuf + 4 + bmP->bmProps.h;
+	ptr2 = temp + 4 + bmP->bmProps.h;
 }
-for (i = 0; i < bmP->bm_props.h; i++) {
+for (i = 0; i < bmP->bmProps.h; i++) {
 	start = ptr2;
 	if (rle_big)
-		nLineSize = INTEL_SHORT (* ((unsigned short *) &bmP->bm_texBuf [4 + 2 * i]));
+		nLineSize = INTEL_SHORT (* ((unsigned short *) &bmP->bmTexBuf [4 + 2 * i]));
 	else
-		nLineSize = bmP->bm_texBuf [4 + i];
+		nLineSize = bmP->bmTexBuf [4 + i];
 	for (j = 0; j < nLineSize; j++) {
 		h = ptr [j];
 		if (!IS_RLE_CODE (h)) {
@@ -654,7 +654,7 @@ for (i = 0; i < bmP->bm_props.h; i++) {
 	}
 len = (int) (ptr2 - temp);
 * ((int *)temp) = len;           // set total size
-memcpy (bmP->bm_texBuf, temp, len);
+memcpy (bmP->bmTexBuf, temp, len);
 D2_FREE (temp);
 }
 
@@ -667,22 +667,22 @@ int rle_remap (grsBitmap *bmP, ubyte *colorMap, int maxLen)
 	unsigned char	*pSrc, *pDest, *remapBuf, *start;
 	unsigned short nLineSize;
 
-bBigRLE = bmP->bm_props.flags & BM_FLAG_RLE_BIG;
-remapBuf = D2_ALLOC (MAX_BMP_SIZE (bmP->bm_props.w, bmP->bm_props.h) + 30000);
+bBigRLE = bmP->bmProps.flags & BM_FLAG_RLE_BIG;
+remapBuf = D2_ALLOC (MAX_BMP_SIZE (bmP->bmProps.w, bmP->bmProps.h) + 30000);
 if (bBigRLE) {                  // set ptrs to first lines
-	pSrc = bmP->bm_texBuf + 4 + 2 * bmP->bm_props.h;
-	pDest = remapBuf + 4 + 2 * bmP->bm_props.h;
+	pSrc = bmP->bmTexBuf + 4 + 2 * bmP->bmProps.h;
+	pDest = remapBuf + 4 + 2 * bmP->bmProps.h;
 	}
 else {
-	pSrc = bmP->bm_texBuf + 4 + bmP->bm_props.h;
-	pDest = remapBuf + 4 + bmP->bm_props.h;
+	pSrc = bmP->bmTexBuf + 4 + bmP->bmProps.h;
+	pDest = remapBuf + 4 + bmP->bmProps.h;
 	}
-for (i = 0; i < bmP->bm_props.h; i++) {
+for (i = 0; i < bmP->bmProps.h; i++) {
 	start = pDest;
 	if (bBigRLE)
-		nLineSize = INTEL_SHORT (*((unsigned short *) (bmP->bm_texBuf + 4 + 2 * i)));
+		nLineSize = INTEL_SHORT (*((unsigned short *) (bmP->bmTexBuf + 4 + 2 * i)));
 	else
-		nLineSize = bmP->bm_texBuf [4 + i];
+		nLineSize = bmP->bmTexBuf [4 + i];
 	for (j = 0; j < nLineSize; j++) {
 		h = pSrc [j];
 		if (!IS_RLE_CODE (h)) {
@@ -704,9 +704,9 @@ for (i = 0; i < bmP->bm_props.h; i++) {
 	pSrc += nLineSize;           // go to next line
 	}
 len = (int) (pDest - remapBuf);
-Assert (len <= bmP->bm_props.h * bmP->bm_props.rowsize);
+Assert (len <= bmP->bmProps.h * bmP->bmProps.rowSize);
 * ((int *)remapBuf) = len;           // set total size
-memcpy (bmP->bm_texBuf, remapBuf, len);
+memcpy (bmP->bmTexBuf, remapBuf, len);
 D2_FREE (remapBuf);
 return len;
 }
@@ -720,22 +720,22 @@ int rle_expand (grsBitmap *bmP, ubyte *colorMap, int bSwap0255)
 	int				i, j, l, bBigRLE;
 	unsigned short nLineSize;
 
-if (!(bmP->bm_props.flags & BM_FLAG_RLE))
-	return bmP->bm_props.h * bmP->bm_props.rowsize;
-if (!(expandBuf = D2_ALLOC (bmP->bm_props.h * bmP->bm_props.rowsize)))
+if (!(bmP->bmProps.flags & BM_FLAG_RLE))
+	return bmP->bmProps.h * bmP->bmProps.rowSize;
+if (!(expandBuf = D2_ALLOC (bmP->bmProps.h * bmP->bmProps.rowSize)))
 	return -1;
 
-bBigRLE = (bmP->bm_props.flags & BM_FLAG_RLE_BIG) != 0;
+bBigRLE = (bmP->bmProps.flags & BM_FLAG_RLE_BIG) != 0;
 if (bBigRLE)
-	pSrc = bmP->bm_texBuf + 4 + 2 * bmP->bm_props.h;
+	pSrc = bmP->bmTexBuf + 4 + 2 * bmP->bmProps.h;
 else
-	pSrc = bmP->bm_texBuf + 4 + bmP->bm_props.h;
+	pSrc = bmP->bmTexBuf + 4 + bmP->bmProps.h;
 pDest = expandBuf;
-for (i = 0; i < bmP->bm_props.h; i++, pSrc += nLineSize) {
+for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 	if (bBigRLE)
-		nLineSize = INTEL_SHORT (*((unsigned short *) (bmP->bm_texBuf + 4 + 2 * i)));
+		nLineSize = INTEL_SHORT (*((unsigned short *) (bmP->bmTexBuf + 4 + 2 * i)));
 	else
-		nLineSize = bmP->bm_texBuf [4 + i];
+		nLineSize = bmP->bmTexBuf [4 + i];
 	for (j = 0; j < nLineSize; j++) {
 		h = pSrc [j];
 		if (!IS_RLE_CODE (h)) {
@@ -746,7 +746,7 @@ for (i = 0; i < bmP->bm_props.h; i++, pSrc += nLineSize) {
 				else if (c == 255)
 					c = 0;
 				}
-			if (pDest - expandBuf > bmP->bm_props.h * bmP->bm_props.rowsize) {
+			if (pDest - expandBuf > bmP->bmProps.h * bmP->bmProps.rowSize) {
 				D2_FREE (expandBuf);
 				return -1;
 				}	
@@ -762,7 +762,7 @@ for (i = 0; i < bmP->bm_props.h; i++, pSrc += nLineSize) {
 				else if (c == 255)
 					c = 0;
 				}
-			if (pDest - expandBuf + l > bmP->bm_props.h * bmP->bm_props.rowsize) {
+			if (pDest - expandBuf + l > bmP->bmProps.h * bmP->bmProps.rowSize) {
 				D2_FREE (expandBuf);
 				return -1;
 				}	
@@ -772,9 +772,9 @@ for (i = 0; i < bmP->bm_props.h; i++, pSrc += nLineSize) {
 		}
 	}
 l = (int) (pDest - expandBuf);
-Assert (l <= bmP->bm_props.h * bmP->bm_props.rowsize);
-memcpy (bmP->bm_texBuf, expandBuf, l);
-bmP->bm_props.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
+Assert (l <= bmP->bmProps.h * bmP->bmProps.rowSize);
+memcpy (bmP->bmTexBuf, expandBuf, l);
+bmP->bmProps.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
 D2_FREE (expandBuf);
 return l;
 }

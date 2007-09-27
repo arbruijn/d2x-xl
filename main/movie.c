@@ -212,11 +212,11 @@ void MovieShowFrame (ubyte *buf, uint bufw, uint bufh, uint sx, uint sy,
 Assert (bufw == w && bufh == h);
 
 memset (&bmFrame, 0, sizeof (bmFrame));
-bmFrame.bm_props.w = bmFrame.bm_props.rowsize = bufw;
-bmFrame.bm_props.h = bufh;
-bmFrame.bm_props.nType = BM_LINEAR;
-bmFrame.bm_texBuf = buf;
-bmFrame.bm_palette = movies.palette;
+bmFrame.bmProps.w = bmFrame.bmProps.rowSize = bufw;
+bmFrame.bmProps.h = bufh;
+bmFrame.bmProps.nType = BM_LINEAR;
+bmFrame.bmTexBuf = buf;
+bmFrame.bmPalette = movies.palette;
 
 TRANSPARENCY_COLOR = -1;
 if (gameOpts->menus.nStyle) {
@@ -225,19 +225,19 @@ if (gameOpts->menus.nStyle) {
 	}
 if (gameOpts->movies.bFullScreen) {
 	double r = (double) bufh / (double) bufw;
-	int dh = (int) (grdCurCanv->cv_bitmap.bm_props.w * r);
-	int yOffs = (grdCurCanv->cv_bitmap.bm_props.h - dh) / 2;
+	int dh = (int) (grdCurCanv->cvBitmap.bmProps.w * r);
+	int yOffs = (grdCurCanv->cvBitmap.bmProps.h - dh) / 2;
 
 	glDisable (GL_BLEND);
-	OglUBitBltI (grdCurCanv->cv_bitmap.bm_props.w, dh, 0, yOffs, 
+	OglUBitBltI (grdCurCanv->cvBitmap.bmProps.w, dh, 0, yOffs, 
 					 bufw, bufh, sx, sy, 
-					 &bmFrame, &grdCurCanv->cv_bitmap, 
+					 &bmFrame, &grdCurCanv->cvBitmap, 
 					 gameOpts->movies.nQuality, 1);
 	glEnable (GL_BLEND);
 	}
 else {
-	int xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
-	int yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
+	int xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
+	int yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 
 	if (xOffs < 0)
 		xOffs = 0;
@@ -246,12 +246,12 @@ else {
 	dstx += xOffs;
 	dsty += yOffs;
 	WIN (DDGRLOCK (dd_grd_curcanv));
-	if ((grdCurCanv->cv_bitmap.bm_props.w > 640) || (grdCurCanv->cv_bitmap.bm_props.h > 480)) {
+	if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
 		GrUBox (dstx-1, dsty, dstx+w, dsty+h+1);
 		}
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, &grdCurCanv->cv_bitmap, 1);
+	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, &grdCurCanv->cvBitmap, 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 }
@@ -291,8 +291,8 @@ void ShowPauseMessage (char *msg)
 GrSetCurrentCanvas (NULL);
 GrSetCurFont (SMALL_FONT);
 GrGetStringSize (msg, &w, &h, &aw);
-x = (grdCurScreen->sc_w - w) / 2;
-y = (grdCurScreen->sc_h - h) / 2;
+x = (grdCurScreen->scWidth - w) / 2;
+y = (grdCurScreen->scHeight - h) / 2;
 #if 0
 if (movie_bg.bmp) {
 	GrFreeBitmap (movie_bg.bmp);
@@ -304,7 +304,7 @@ movie_bg.y=y;
 movie_bg.w=w; 
 movie_bg.h=h;
 movie_bg.bmp = GrCreateBitmap (w+BOX_BORDER, h+BOX_BORDER, 1);
-GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cv_bitmap), movie_bg.bmp);
+GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cvBitmap), movie_bg.bmp);
 #endif
 GrSetColorRGB (0, 0, 0, 255);
 GrRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
@@ -399,8 +399,8 @@ if (gameStates.menus.bHires)
 	GrSetMode (SM (640, 480);
 else
 	GrSetMode (SM (320, 200);
-GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages [0], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages [1], &grdCurScreen->sc_canvas, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
+GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages [0], &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages [1], &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
 return 1;
 }
@@ -582,7 +582,7 @@ if (nFrame == 0) {
 	num_active_subtitles = 0;
 	next_subtitle = 0;
 	GrSetCurFont (GAME_FONT);
-	line_spacing = grdCurCanv->cv_font->ft_h + (grdCurCanv->cv_font->ft_h >> 2);
+	line_spacing = grdCurCanv->cvFont->ftHeight + (grdCurCanv->cvFont->ftHeight >> 2);
 	GrSetFontColor (255, -1);
 	}
 
@@ -607,12 +607,12 @@ while (next_subtitle < subTitles.nCaptions && nFrame >= subTitles.captions [next
 	}
 
 //find y coordinate for first line of subtitles
-y = grdCurCanv->cv_bitmap.bm_props.h- ((line_spacing+1)*MAX_ACTIVE_SUBTITLES+2);
+y = grdCurCanv->cvBitmap.bmProps.h- ((line_spacing+1)*MAX_ACTIVE_SUBTITLES+2);
 
 //erase old subtitles if necessary
 if (must_erase) {
 	GrSetColorRGB (0, 0, 0, 255);
-	GrRect (0, y, grdCurCanv->cv_bitmap.bm_props.w-1, grdCurCanv->cv_bitmap.bm_props.h-1);
+	GrRect (0, y, grdCurCanv->cvBitmap.bmProps.w-1, grdCurCanv->cvBitmap.bmProps.h-1);
 	}
 //now draw the current subtitles
 for (t=0;t<num_active_subtitles;t++)
@@ -732,7 +732,7 @@ int request_cd (void)
 {
 #if 0
 	ubyte save_pal [256*3];
-	grs_canvas *save_canv, *tcanv;
+	gsrCanvas *save_canv, *tcanv;
 	int ret, was_faded=gameStates.render.bPaletteFadedOut;
 
 	GrPaletteStepClear ();
@@ -741,7 +741,7 @@ int request_cd (void)
 	tcanv = GrCreateCanvas (grdCurCanv->cv_w, grdCurCanv->cv_h);
 
 	GrSetCurrentCanvas (tcanv);
-	gr_ubitmap (0, 0, &save_canv->cv_bitmap);
+	gr_ubitmap (0, 0, &save_canv->cvBitmap);
 	GrSetCurrentCanvas (save_canv);
 
 	GrClearCanvas (0);
@@ -760,7 +760,7 @@ int request_cd (void)
 	}
 	force_rb_register = 1;  //disc has changed; force register new CD
 	GrPaletteStepClear ();
-	gr_ubitmap (0, 0, &tcanv->cv_bitmap);
+	gr_ubitmap (0, 0, &tcanv->cvBitmap);
 	if (!was_faded)
 		GrPaletteStepLoad (NULL);
 	GrFreeCanvas (tcanv);

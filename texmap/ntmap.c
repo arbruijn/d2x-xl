@@ -217,17 +217,17 @@ void init_interface_vars_to_assembler(void)
 {
 	grsBitmap	*bp;
 
-	bp = &grdCurCanv->cv_bitmap;
+	bp = &grdCurCanv->cvBitmap;
 
 	Assert(bp!=NULL);
-	Assert(bp->bm_texBuf!=NULL);
-	Assert(bp->bm_props.h <= MAX_Y_POINTERS);
+	Assert(bp->bmTexBuf!=NULL);
+	Assert(bp->bmProps.h <= MAX_Y_POINTERS);
 
 	//	If bytes_per_row has changed, create new table of pointers.
-	if (bytes_per_row != (int) bp->bm_props.rowsize) {
+	if (bytes_per_row != (int) bp->bmProps.rowSize) {
 		int	y_val, i;
 
-		bytes_per_row = (int) bp->bm_props.rowsize;
+		bytes_per_row = (int) bp->bmProps.rowSize;
 
 		y_val = 0;
 		for (i=0; i<MAX_Y_POINTERS; i++) {
@@ -236,20 +236,20 @@ void init_interface_vars_to_assembler(void)
 		}
 	}
 
-        write_buffer = (unsigned char *) bp->bm_texBuf;
+        write_buffer = (unsigned char *) bp->bmTexBuf;
 
 	window_left = 0;
-	window_right = (int) bp->bm_props.w-1;
+	window_right = (int) bp->bmProps.w-1;
 	window_top = 0;
-	window_bottom = (int) bp->bm_props.h-1;
+	window_bottom = (int) bp->bmProps.h-1;
 
 	nWindowClipLeft = window_left;
 	nWindowClipRight = window_right;
 	nWindowClipTop = window_top;
 	nWindowClipBot = window_bottom;
 
-	window_width = bp->bm_props.w;
-	window_height = bp->bm_props.h;
+	window_width = bp->bmProps.w;
+	window_height = bp->bmProps.h;
 
 	if (!bFixRecipTableComputed)
 		init_fix_recip_table();
@@ -473,7 +473,7 @@ void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix u
 	fx_dv_dx = FixMul(vright - vleft,recip_dx);
 	fx_dz_dx = FixMul(zright - zleft,recip_dx);
 	fx_y = y;
-	pixptr = srcb->bm_texBuf;
+	pixptr = srcb->bmTexBuf;
 
 	switch (bLightingEnabled) {
 		case 0:
@@ -757,7 +757,7 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 		fx_y = y;
 		fx_xright = f2i(xright);
 		fx_xleft = f2i(xleft);
-		pixptr = srcb->bm_texBuf;
+		pixptr = srcb->bmTexBuf;
 
 		switch (bLightingEnabled) {
 			case 0:
@@ -1016,16 +1016,16 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 	// -- now called from G3StartFrame -- init_interface_vars_to_assembler();
 
 	//	If no transparency and seg depth is large, render as flat shaded.
-	if ((nCurrentSegDepth > gameStates.render.detail.nMaxLinearDepth) && ((bp->bm_props.flags & 3) == 0)) {
+	if ((nCurrentSegDepth > gameStates.render.detail.nMaxLinearDepth) && ((bp->bmProps.flags & 3) == 0)) {
 		DrawTexPolyFlat(bp, nverts, vertbuf);
 		return;
 	}
 
-	if ( bp->bm_props.flags & BM_FLAG_RLE )
+	if ( bp->bmProps.flags & BM_FLAG_RLE )
 		bp = rle_expand_texture( bp );		// Expand if rle'd
 
-	gameStates.render.bTransparency = bp->bm_props.flags & BM_FLAG_TRANSPARENT;
-	if (bp->bm_props.flags & BM_FLAG_NO_LIGHTING)
+	gameStates.render.bTransparency = bp->bmProps.flags & BM_FLAG_TRANSPARENT;
+	if (bp->bmProps.flags & BM_FLAG_NO_LIGHTING)
 		gameStates.render.nLighting = 0;
 
 
@@ -1048,8 +1048,8 @@ void draw_tmap(grsBitmap *bp,int nverts,g3sPoint **vertbuf)
 		}
 
 		tvp->z = FixDiv(F1_0*12, vp->p3_z);
-		tvp->u = vp->p3_uvl.u << 6; //* bp->bm_props.w;
-		tvp->v = vp->p3_uvl.v << 6; //* bp->bm_props.h;
+		tvp->u = vp->p3_uvl.u << 6; //* bp->bmProps.w;
+		tvp->v = vp->p3_uvl.v << 6; //* bp->bmProps.h;
 
 		Assert(gameStates.render.nLighting < 3);
 

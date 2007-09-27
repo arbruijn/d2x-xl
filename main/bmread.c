@@ -189,21 +189,21 @@ int ComputeAvgPixel(grsBitmap *newBm)
 	char	*pptr;
 	int	total_red, total_green, total_blue;
 
-	pptr = (char *)newBm->bm_texBuf;
+	pptr = (char *)newBm->bmTexBuf;
 
 	total_red = 0;
 	total_green = 0;
 	total_blue = 0;
 
-	for (row=0; row<newBm->bm_props.h; row++)
-		for (column=0; column<newBm->bm_props.w; column++) {
+	for (row=0; row<newBm->bmProps.h; row++)
+		for (column=0; column<newBm->bmProps.w; column++) {
 			color = *pptr++;
 			total_red += grPalette[color*3];
 			total_green += grPalette[color*3+1];
 			total_blue += grPalette[color*3+2];
 		}
 
-	size = newBm->bm_props.h * newBm->bm_props.w * 2;
+	size = newBm->bmProps.h * newBm->bmProps.w * 2;
 	total_red /= size;
 	total_green /= size;
 	total_blue /= size;
@@ -234,7 +234,7 @@ tBitmapIndex bm_load_sub( char * filename )
 
 	MALLOC( new, grsBitmap, 1 );
 	iff_error = iff_read_bitmap(filename,new,BM_LINEAR,newpal);
-	new->bm_handle=0;
+	new->bmHandle=0;
 	if (iff_error != IFF_NO_ERROR)		{
 #if TRACE
 		con_printf (1, "File %bObjectRendered - IFF error: %bObjectRendered",filename,iff_errormsg(iff_error));
@@ -247,7 +247,7 @@ tBitmapIndex bm_load_sub( char * filename )
 	else
 		GrRemapBitmapGood( new, newpal, -1, SuperX );
 
-	new->bm_avgColor = ComputeAvgPixel(new);
+	new->bmAvgColor = ComputeAvgPixel(new);
 
 	bitmap_num = PiggyRegisterBitmap( new, fname, 0 );
 	D2_FREE( new );
@@ -303,7 +303,7 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 		else
 			GrRemapBitmapGood( bm[i], newpal, -1, SuperX );
 
-		bm[i]->bm_avgColor = ComputeAvgPixel(bm[i]);
+		bm[i]->bmAvgColor = ComputeAvgPixel(bm[i]);
 
 		new_bmp = PiggyRegisterBitmap( bm[i], tempname, 0 );
 		D2_FREE( bm[i] );
@@ -700,7 +700,7 @@ void verify_textures()
 	j=0;
 	for (i=0; i<Num_tmaps; i++ )	{
 		bmp = GameBitmaps + Textures [gameStates.app.bD1Data][i].index;
-		if ( (bmp->bm_props.w!=64)||(bmp->bm_props.h!=64)||(bmp->bm_props.rowsize!=64) )	{
+		if ( (bmp->bmProps.w!=64)||(bmp->bmProps.h!=64)||(bmp->bmProps.rowSize!=64) )	{
 #if TRACE
 			con_printf (1, "ERROR: Texture '%bObjectRendered' isn't 64x64 !\n", TmapInfo [gameStates.app.bD1Data][i].filename );
 #endif
@@ -712,8 +712,8 @@ void verify_textures()
 
 	for (i=0;i<Num_effects;i++)
 		if (Effects [gameStates.app.bD1Data][i].changingObjectTexture != -1)
-			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].bm_props.w!=64 || 
-				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].bm_props.h!=64)
+			if (GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].bmProps.w!=64 || 
+				 GameBitmaps[gameData.pig.tex.objBmIndex[Effects [gameStates.app.bD1Data][i].changingObjectTexture].index].bmProps.h!=64)
 				Error("Effect %d is used on tObject, but is not 64x64",i);
 
 }
@@ -740,7 +740,7 @@ void bm_read_alias()
 //--unused-- 	fp = fopen( "XPARENT.LST", "wt" );
 //--unused-- 	for (i=0; i<Num_tmaps; i++ )	{
 //--unused-- 		k = 0;
-//--unused-- 		p = Textures [gameStates.app.bD1Data][i]->bm_texBuf;
+//--unused-- 		p = Textures [gameStates.app.bD1Data][i]->bmTexBuf;
 //--unused-- 		for (j=0; j<64*64; j++ )
 //--unused-- 			if ( (*p++)==255 ) k++;
 //--unused-- 		if ( k )	{
@@ -817,7 +817,7 @@ void bm_read_eclip()
 
 		Assert(clipCount < frames);
 		Effects [gameStates.app.bD1Data][nClip].vc.frames[clipCount] = bitmap;
-		set_lightingFlag(&GameBitmaps[bitmap.index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bitmap.index].bmProps.flags);
 
 		Assert(!obj_eclip);		//obj eclips for non-abm files not supported!
 		Assert(critFlag==0);
@@ -847,7 +847,7 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime/Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount;
 
 		clipCount = 0;	
-		set_lightingFlag( &GameBitmaps[bm[clipCount].index].bm_props.flags);
+		set_lightingFlag( &GameBitmaps[bm[clipCount].index].bmProps.flags);
 		Effects [gameStates.app.bD1Data][nClip].vc.frames[clipCount] = bm[clipCount];
 
 		if (!obj_eclip && !critFlag) {
@@ -875,7 +875,7 @@ void bm_read_eclip()
 		//if for an tObject, Effects_bm_ptrs set in tObject load
 
 		for(clipCount=1;clipCount < Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount; clipCount++) {
-			set_lightingFlag( &GameBitmaps[bm[clipCount].index].bm_props.flags);
+			set_lightingFlag( &GameBitmaps[bm[clipCount].index].bmProps.flags);
 			Effects [gameStates.app.bD1Data][nClip].vc.frames[clipCount] = bm[clipCount];
 		}
 
@@ -976,7 +976,7 @@ void bm_read_wclip()
 		WallAnims[nClip].openSound = wall_openSound;
 		WallAnims[nClip].closeSound = wall_closeSound;
 		Textures [gameStates.app.bD1Data][textureCount] = bitmap;
-		set_lightingFlag(&GameBitmaps[bitmap.index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bitmap.index].bmProps.flags);
 		set_texture_name( arg );
 		Assert(textureCount < MAX_TEXTURES);
 		textureCount++;
@@ -1002,12 +1002,12 @@ void bm_read_wclip()
 
 		if (nClip >= Num_wall_anims) Num_wall_anims = nClip+1;
 
-		set_lightingFlag(&GameBitmaps[bm[clipCount].index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bm[clipCount].index].bmProps.flags);
 
 		for (clipCount=0;clipCount < WallAnims[nClip].nFrameCount; clipCount++)	{
 			////printf("%d", clipCount);
 			Textures [gameStates.app.bD1Data][textureCount] = bm[clipCount];
-			set_lightingFlag(&GameBitmaps[bm[clipCount].index].bm_props.flags);
+			set_lightingFlag(&GameBitmaps[bm[clipCount].index].bmProps.flags);
 			WallAnims[nClip].frames[clipCount] = textureCount;
 			REMOVE_DOTS(arg);
 			sprintf( TmapInfo [gameStates.app.bD1Data][textureCount].filename, "%bObjectRendered#%d", arg, clipCount);
@@ -1035,7 +1035,7 @@ void bm_read_vclip()
 		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/frames;
 		Vclip [gameStates.app.bD1Data][nClip].lightValue = fl2f(vlighting);
 		Vclip [gameStates.app.bD1Data][nClip].nSound = nSound;
-		set_lightingFlag(&GameBitmaps[bi.index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bi.index].bmProps.flags);
 		Assert(clipCount < frames);
 		Vclip [gameStates.app.bD1Data][nClip].frames[clipCount++] = bi;
 		if (rodFlag) {
@@ -1060,11 +1060,11 @@ void bm_read_vclip()
 		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/Vclip [gameStates.app.bD1Data][nClip].nFrameCount;
 		Vclip [gameStates.app.bD1Data][nClip].lightValue = fl2f(vlighting);
 		Vclip [gameStates.app.bD1Data][nClip].nSound = nSound;
-		set_lightingFlag(&GameBitmaps[bm[clipCount].index].bm_props.flags);
+		set_lightingFlag(&GameBitmaps[bm[clipCount].index].bmProps.flags);
 
 		for (clipCount=0;clipCount < Vclip [gameStates.app.bD1Data][nClip].nFrameCount; clipCount++) {
 			////printf("%d", clipCount);
-			set_lightingFlag(&GameBitmaps[bm[clipCount].index].bm_props.flags);
+			set_lightingFlag(&GameBitmaps[bm[clipCount].index].bmProps.flags);
 			Vclip [gameStates.app.bD1Data][nClip].frames[clipCount] = bm[clipCount];
 		}
 	}
@@ -1217,7 +1217,7 @@ grsBitmap *load_polymodel_bitmap(char *name)
 	}
 	else 	{
 		gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps] = bm_load_sub(name);
-		if (GameBitmaps[gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps].index].bm_props.w!=64 || GameBitmaps[gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps].index].bm_props.h!=64)
+		if (GameBitmaps[gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps].index].bmProps.w!=64 || GameBitmaps[gameData.pig.tex.objBmIndex[gameData.pig.tex.nObjBitmaps].index].bmProps.h!=64)
 			Error("Bitmap <%bObjectRendered> is not 64x64",name);
 		gameData.pig.tex.pObjBmIndex[N_ObjBitmapPtrs++] = gameData.pig.tex.nObjBitmaps;
 		gameData.pig.tex.nObjBitmaps++;
@@ -2044,7 +2044,7 @@ void bm_read_weapon(int unusedFlag)
 
 			bm = load_polymodel_bitmap(arg);
 			if (! lighted)
-				bm->bm_props.flags |= BM_FLAG_NO_LIGHTING;
+				bm->bmProps.flags |= BM_FLAG_NO_LIGHTING;
 
 			lighted = 1;			//default for next bitmap is lighted
 		}

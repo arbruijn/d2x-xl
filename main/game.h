@@ -144,7 +144,7 @@ int TimeStopped (void);
 
 // If automapFlag == 1, then call automap routine to write message.
 
-extern grs_canvas * GetCurrentGameScreen();
+extern gsrCanvas * GetCurrentGameScreen();
 
 //valid modes for cockpit
 #define CM_FULL_COCKPIT     0   // normal screen with cockput

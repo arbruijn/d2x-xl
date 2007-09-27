@@ -111,8 +111,8 @@ grsBitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
 
 nLRU = 0;
 nLowestFrame = texCache [0].last_frame_used;
-bmTop = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapTop].index);
-bmBot = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapBot].index);
+bmTop = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapTop].index, -1);
+bmBot = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapBot].index, -1);
 
 for (i = 0, cacheP = texCache; i < nCacheEntries; i++,cacheP++) {
 #if 1//ndef _DEBUG
@@ -146,12 +146,12 @@ if (gameData.pig.tex.bPageFlushed)	{	// If cache got flushed, re-read 'em.
 Assert (gameData.pig.tex.bPageFlushed == 0);
 #endif
 
-bmTop = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapTop].index);
-bmBot = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapBot].index);
-if (!bmTop->bm_palette)
-	bmTop->bm_palette = gamePalette;
-if (!bmBot->bm_palette)
-	bmBot->bm_palette = gamePalette;
+bmTop = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapTop].index, -1);
+bmBot = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [tMapBot].index, -1);
+if (!bmTop->bmPalette)
+	bmTop->bmPalette = gamePalette;
+if (!bmBot->bmPalette)
+	bmBot->bmPalette = gamePalette;
 cacheP = texCache + nLRU;
 bmP = cacheP->bitmap;
 if (bmP)
@@ -160,32 +160,32 @@ if (bmP)
 // if necessary, allocate cache bitmap
 // in any case make sure the cache bitmap has the proper size
 if (!bmP ||
-	(bmP->bm_props.w != bmBot->bm_props.w) || 
-	(bmP->bm_props.h != bmBot->bm_props.h)) {
+	(bmP->bmProps.w != bmBot->bmProps.w) || 
+	(bmP->bmProps.h != bmBot->bmProps.h)) {
 	if (bmP)
 		GrFreeBitmap (bmP);
 	cacheP->bitmap =
-	bmP = GrCreateBitmap (bmBot->bm_props.w, bmBot->bm_props.h, 4);
+	bmP = GrCreateBitmap (bmBot->bmProps.w, bmBot->bmProps.h, 4);
 	if (!bmP)
 		return NULL;
 	}
 else
-	bmP->bm_props.flags = (char) BM_FLAG_TGA;
-if (!bmP->bm_texBuf)
+	bmP->bmProps.flags = (char) BM_FLAG_TGA;
+if (!bmP->bmTexBuf)
 	return NULL;
-bmP->bm_palette = gamePalette;
+bmP->bmPalette = gamePalette;
 if (!(gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)) {
-	if (bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) {
+	if (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) {
 //			return bmTop;
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 1);
-		bmP->bm_props.flags |= BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT;
-		bmP->bm_avgColor = bmTop->bm_avgColor;
+		bmP->bmProps.flags |= BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT;
+		bmP->bmAvgColor = bmTop->bmAvgColor;
 		}
 	else {
-//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->bm_texBuf);
+//			MergeTexturesNormal (nOrient, bmBot, bmTop, bmP->bmTexBuf);
 		MergeTextures (nOrient, bmBot, bmTop, bmP, 0);
-		bmP->bm_props.flags |= bmBot->bm_props.flags & (~BM_FLAG_RLE);
-		bmP->bm_avgColor = bmBot->bm_avgColor;
+		bmP->bmProps.flags |= bmBot->bmProps.flags & (~BM_FLAG_RLE);
+		bmP->bmAvgColor = bmBot->bmAvgColor;
 		}
 	}
 cacheP->bmTop = bmTop;
@@ -204,14 +204,14 @@ void MergeTexturesNormal (int nType, grsBitmap * bmBot, grsBitmap * bmTop, ubyte
 
 if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)
 	return;
-if (bmTop->bm_props.flags & BM_FLAG_RLE)
+if (bmTop->bmProps.flags & BM_FLAG_RLE)
 	bmTop = rle_expand_texture(bmTop);
-if (bmBot->bm_props.flags & BM_FLAG_RLE)
+if (bmBot->bmProps.flags & BM_FLAG_RLE)
 	bmBot = rle_expand_texture(bmBot);
 //	Assert(bmBot != bmTop);
-top_data = bmTop->bm_texBuf;
-bottom_data = bmBot->bm_texBuf;
-scale = bmBot->bm_props.w / bmTop->bm_props.w;
+top_data = bmTop->bmTexBuf;
+bottom_data = bmBot->bmTexBuf;
+scale = bmBot->bmProps.w / bmTop->bmProps.w;
 if (!scale)
 	scale = 1;
 if (scale > 1)
@@ -220,16 +220,16 @@ if (scale > 1)
 switch(nType)	{
 	case 0:
 		// Normal
-		GrMergeTextures(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
+		GrMergeTextures(bottom_data, top_data, dest_data, bmBot->bmProps.w, bmBot->bmProps.h, scale);
 		break;
 	case 1:
-		GrMergeTextures1(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
+		GrMergeTextures1(bottom_data, top_data, dest_data, bmBot->bmProps.w, bmBot->bmProps.h, scale);
 		break;
 	case 2:
-		GrMergeTextures2(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
+		GrMergeTextures2(bottom_data, top_data, dest_data, bmBot->bmProps.w, bmBot->bmProps.h, scale);
 		break;
 	case 3:
-		GrMergeTextures3(bottom_data, top_data, dest_data, bmBot->bm_props.w, bmBot->bm_props.h, scale);
+		GrMergeTextures3(bottom_data, top_data, dest_data, bmBot->bmProps.w, bmBot->bmProps.h, scale);
 		break;
 	}
 }
@@ -306,38 +306,38 @@ void MergeTextures (
 	int		i, x, y, bw, bh, tw, th, dw, dh;
 	int		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
-	tRGBA		*dest_data = (tRGBA *) dest_bmp->bm_texBuf;
+	tRGBA		*dest_data = (tRGBA *) dest_bmp->bmTexBuf;
 
 	ubyte * top_data, *bottom_data, *top_pal, *btmPalette;
 
-bmBot = BmOverride (bmBot);
-bmTop = BmOverride (bmTop);
+bmBot = BmOverride (bmBot, -1);
+bmTop = BmOverride (bmTop, -1);
 if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk)
 	return;
-if (bmTop->bm_props.flags & BM_FLAG_RLE)
+if (bmTop->bmProps.flags & BM_FLAG_RLE)
 	bmTop = rle_expand_texture (bmTop);
 
-if (bmBot->bm_props.flags & BM_FLAG_RLE)
+if (bmBot->bmProps.flags & BM_FLAG_RLE)
 	bmBot = rle_expand_texture (bmBot);
 
 //	Assert(bmBot != bmTop);
 
-top_data = bmTop->bm_texBuf;
-bottom_data = bmBot->bm_texBuf;
-top_pal = bmTop->bm_palette;
-btmPalette = bmBot->bm_palette;
+top_data = bmTop->bmTexBuf;
+bottom_data = bmBot->bmTexBuf;
+top_pal = bmTop->bmPalette;
+btmPalette = bmBot->bmPalette;
 
 //	Assert(bottom_data != top_data);
 
 //Int3();
 bh =
-bw = bmBot->bm_props.w;
-//h = bmBot->bm_props.h;
+bw = bmBot->bmProps.w;
+//h = bmBot->bmProps.h;
 th =
-tw = bmTop->bm_props.w;
+tw = bmTop->bmProps.w;
 dw =
-dh = dest_bmp->bm_props.w;
-//th = bmTop->bm_props.h;
+dh = dest_bmp->bmProps.w;
+//th = bmTop->bmProps.h;
 #if 1
 // square textures assumed here, so no test for h!
 if (dw < tw) {
@@ -357,14 +357,14 @@ else {
 	btmScale.d = 1;
 	}
 #else
-if (w > bmTop->bm_props.w)
-	w = h = bmBot->bm_props.w;
+if (w > bmTop->bmProps.w)
+	w = h = bmBot->bmProps.w;
 scale.c = scale.d = 1;
 #endif
-bTopBPP = bmTop->bm_bpp;
-bBtmBPP = bmBot->bm_bpp;
+bTopBPP = bmTop->bmBPP;
+bBtmBPP = bmBot->bmBPP;
 #ifdef _DEBUG
-memset (dest_data, 253, dest_bmp->bm_props.w * dest_bmp->bm_props.h * 4);
+memset (dest_data, 253, dest_bmp->bmProps.w * dest_bmp->bmProps.h * 4);
 #endif
 switch(nType)	{
 	case 0:

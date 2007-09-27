@@ -153,7 +153,7 @@ typedef struct tPIGBitmapHeader {
 	ubyte height;           // low 8 bits here, 4 more bits in wh_extra
 	ubyte wh_extra;         // bits 0-3 width, bits 4-7 height
 	ubyte flags;
-	ubyte bm_avgColor;
+	ubyte bmAvgColor;
 	int offset;
 } __pack__ tPIGBitmapHeader;
 
@@ -163,7 +163,7 @@ typedef struct tPIGBitmapHeaderD1 {
 	ubyte width;            // low 8 bits here, 4 more bits in wh_extra
 	ubyte height;           // low 8 bits here, 4 more bits in wh_extra
 	ubyte flags;
-	ubyte bm_avgColor;
+	ubyte bmAvgColor;
 	int offset;
 } __pack__ tPIGBitmapHeaderD1;
 
@@ -237,7 +237,7 @@ int SaveS3TC (grsBitmap *bmP, char *pszFolder, char *pszFilename)
 	CFILE		*fp;
 	char		szFilename [FILENAME_LEN], szFolder [FILENAME_LEN];
 
-if (!bmP->bm_compressed)
+if (!bmP->bmCompressed)
 	return 0;
 CFSplitPath (pszFilename, szFolder, szFilename + 1, NULL);
 strcat (szFilename + 1, ".s3tc");
@@ -248,11 +248,11 @@ if (CFExist (szFilename, pszFolder, 0))
 	return 1;
 if (!(fp = CFOpen (szFilename + 1, pszFolder, "wb", 0)))
 	return 0;
-if ((CFWrite (&bmP->bm_props.w, sizeof (bmP->bm_props.w), 1, fp) != 1) ||
-	 (CFWrite (&bmP->bm_props.h, sizeof (bmP->bm_props.h), 1, fp) != 1) ||
-	 (CFWrite (&bmP->bm_format, sizeof (bmP->bm_format), 1, fp) != 1) ||
-    (CFWrite (&bmP->bm_bufSize, sizeof (bmP->bm_bufSize), 1, fp) != 1) ||
-    (CFWrite (bmP->bm_texBuf, bmP->bm_bufSize, 1, fp) != 1)) {
+if ((CFWrite (&bmP->bmProps.w, sizeof (bmP->bmProps.w), 1, fp) != 1) ||
+	 (CFWrite (&bmP->bmProps.h, sizeof (bmP->bmProps.h), 1, fp) != 1) ||
+	 (CFWrite (&bmP->bmFormat, sizeof (bmP->bmFormat), 1, fp) != 1) ||
+    (CFWrite (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1, fp) != 1) ||
+    (CFWrite (bmP->bmTexBuf, bmP->bmBufSize, 1, fp) != 1)) {
 	CFClose (fp);
 	return 0;
 	}
@@ -276,23 +276,23 @@ if (*szFolder)
 	pszFolder = szFolder;
 if (!(fp = CFOpen (szFilename, pszFolder, "rb", 0)))
 	return 0;
-if ((CFRead (&bmP->bm_props.w, sizeof (bmP->bm_props.w), 1, fp) != 1) ||
-	 (CFRead (&bmP->bm_props.h, sizeof (bmP->bm_props.h), 1, fp) != 1) ||
-	 (CFRead (&bmP->bm_format, sizeof (bmP->bm_format), 1, fp) != 1) ||
-	 (CFRead (&bmP->bm_bufSize, sizeof (bmP->bm_bufSize), 1, fp) != 1)) {
+if ((CFRead (&bmP->bmProps.w, sizeof (bmP->bmProps.w), 1, fp) != 1) ||
+	 (CFRead (&bmP->bmProps.h, sizeof (bmP->bmProps.h), 1, fp) != 1) ||
+	 (CFRead (&bmP->bmFormat, sizeof (bmP->bmFormat), 1, fp) != 1) ||
+	 (CFRead (&bmP->bmBufSize, sizeof (bmP->bmBufSize), 1, fp) != 1)) {
 	CFClose (fp);
 	return 0;
 	}
-if (!(bmP->bm_texBuf = (ubyte *) D2_ALLOC (bmP->bm_bufSize))) {
+if (!(bmP->bmTexBuf = (ubyte *) D2_ALLOC (bmP->bmBufSize))) {
 	CFClose (fp);
 	return 0;
 	}
-if (CFRead (bmP->bm_texBuf, bmP->bm_bufSize, 1, fp) != 1) {
+if (CFRead (bmP->bmTexBuf, bmP->bmBufSize, 1, fp) != 1) {
 	CFClose (fp);
 	return 0;
 	}
 CFClose (fp);
-bmP->bm_compressed = 1;
+bmP->bmCompressed = 1;
 return 1;
 }
 
@@ -319,7 +319,7 @@ void PIGBitmapHeaderRead (tPIGBitmapHeader *dbh, CFILE *fp)
 	dbh->height = CFReadByte (fp);
 	dbh->wh_extra = CFReadByte (fp);
 	dbh->flags = CFReadByte (fp);
-	dbh->bm_avgColor = CFReadByte (fp);
+	dbh->bmAvgColor = CFReadByte (fp);
 	dbh->offset = CFReadInt (fp);
 }
 
@@ -348,7 +348,7 @@ dbh->width = CFReadByte (fp);
 dbh->height = CFReadByte (fp);
 dbh->wh_extra = 0;
 dbh->flags = CFReadByte (fp);
-dbh->bm_avgColor = CFReadByte (fp);
+dbh->bmAvgColor = CFReadByte (fp);
 dbh->offset = CFReadInt (fp);
 }
 
@@ -368,7 +368,7 @@ void swap_0_255 (grsBitmap *bmp)
 	int i;
 	ubyte	*p;
 
-for (i = bmp->bm_props.h * bmp->bm_props.w, p = bmp->bm_texBuf; i; i--, p++) {
+for (i = bmp->bmProps.h * bmp->bmProps.w, p = bmp->bmTexBuf; i; i--, p++) {
 	if (!*p)
 		*p = 255;
 	else if (*p == 255)
@@ -398,7 +398,7 @@ hashtable_insert (bitmapNames + gameStates.app.bD1Mission, gameData.pig.tex.pBit
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
 if (!in_file) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
-	bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->bm_props.flags;
+	bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->bmProps.flags;
 	}
 gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
 return temp;
@@ -665,10 +665,10 @@ for (i = 0; i < nBitmapNum; i++) {
 	else
 		strcpy (temp_name, temp_name_read);
 	memset (&bmTemp, 0, sizeof (grsBitmap));
-	bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
-	bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
-	bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
-	bmTemp.bm_avgColor = bmh.bm_avgColor;
+	bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra & 0x0f) << 8);
+	bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
+	bmTemp.bmProps.flags |= BM_FLAG_PAGED_OUT;
+	bmTemp.bmAvgColor = bmh.bmAvgColor;
 	bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
@@ -829,12 +829,12 @@ void piggy_new_pigfile (char *pigname)
 			}
 			strcpy (gameData.pig.tex.bitmapFiles [0][i].name,temp_name);
 			memset (&bmTemp, 0, sizeof (grsBitmap));
-			bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
-			bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra & 0xf0)<<4);
-			bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
-			bmTemp.bm_avgColor = bmh.bm_avgColor;
-			bmTemp.bm_texBuf = D2_ALLOC (bmTemp.bm_props.w * bmTemp.bm_props.h);
-			bitmapCacheUsed += bmTemp.bm_props.w * bmTemp.bm_props.h;
+			bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
+			bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra & 0xf0)<<4);
+			bmTemp.bmProps.flags |= BM_FLAG_PAGED_OUT;
+			bmTemp.bmAvgColor = bmh.bmAvgColor;
+			bmTemp.bmTexBuf = D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
+			bitmapCacheUsed += bmTemp.bmProps.w * bmTemp.bmProps.h;
 			bitmapFlags [0][i] = bmh.flags & BM_FLAGS_TO_COPY;
 			bitmapOffsets [0][i] = bmh.offset + nDataStart;
 			gameData.pig.tex.bitmaps [0][i] = bmTemp;
@@ -874,14 +874,14 @@ void piggy_new_pigfile (char *pigname)
 					char tempname [20];
 					int SuperX;
 					sprintf (tempname, "%s#%d", basename, fnum);
-					//SuperX = (gameData.pig.tex.bitmaps [i+fnum].bm_props.flags&BM_FLAG_SUPER_TRANSPARENT)?254:-1;
+					//SuperX = (gameData.pig.tex.bitmaps [i+fnum].bmProps.flags&BM_FLAG_SUPER_TRANSPARENT)?254:-1;
 					SuperX = (bitmapFlags [i + fnum] & BM_FLAG_SUPER_TRANSPARENT) ? 254 : -1;
 					//above makes assumption that supertransparent color is 254
 					if (iff_has_transparency)
 						GrRemapBitmapGood (bm [fnum], newpal, iff_transparent_color, SuperX);
 					else
 						GrRemapBitmapGood (bm [fnum], newpal, -1, SuperX);
-					bm [fnum]->bm_avgColor = ComputeAvgPixel (bm [fnum]);
+					bm [fnum]->bmAvgColor = ComputeAvgPixel (bm [fnum]);
 
 #ifdef EDITOR
 					if (FindArg ("-macdata"))
@@ -889,10 +889,10 @@ void piggy_new_pigfile (char *pigname)
 #endif
 					if (!BigPig) gr_bitmap_rle_compress (bm [fnum]);
 
-					if (bm [fnum]->bm_props.flags & BM_FLAG_RLE)
-						size = * ((int *) bm [fnum]->bm_texBuf);
+					if (bm [fnum]->bmProps.flags & BM_FLAG_RLE)
+						size = * ((int *) bm [fnum]->bmTexBuf);
 					else
-						size = bm [fnum]->bm_props.w * bm [fnum]->bm_props.h;
+						size = bm [fnum]->bmProps.w * bm [fnum]->bmProps.h;
 					gameData.pig.tex.bitmaps [0][i+fnum] = *bm [fnum];
 					D2_FREE (bm [fnum]);
 				}
@@ -907,7 +907,7 @@ void piggy_new_pigfile (char *pigname)
 				MALLOC (newBm, grsBitmap, 1);
 				sprintf (bbmname, "%s.bbm", gameData.pig.tex.bitmapFiles [0][i].name);
 				iff_error = iff_read_bitmap (bbmname,newBm,BM_LINEAR,newpal);
-				newBm->bm_handle=0;
+				newBm->bmHandle=0;
 				if (iff_error != IFF_NO_ERROR) {
 #if TRACE				
 					con_printf (1, "File %s - IFF error: %s",bbmname,iff_errormsg (iff_error));
@@ -920,16 +920,16 @@ void piggy_new_pigfile (char *pigname)
 					GrRemapBitmapGood (newBm, newpal, iff_transparent_color, SuperX);
 				else
 					GrRemapBitmapGood (newBm, newpal, -1, SuperX);
-				newBm->bm_avgColor = ComputeAvgPixel (newBm);
+				newBm->bmAvgColor = ComputeAvgPixel (newBm);
 #ifdef EDITOR
 				if (FindArg ("-macdata"))
 					swap_0_255 (newBm);
 #endif
 				if (!BigPig)  gr_bitmap_rle_compress (newBm);
-				if (newBm->bm_props.flags & BM_FLAG_RLE)
-					size = * ((int *) newBm->bm_texBuf);
+				if (newBm->bmProps.flags & BM_FLAG_RLE)
+					size = * ((int *) newBm->bmTexBuf);
 				else
-					size = newBm->bm_props.w * newBm->bm_props.h;
+					size = newBm->bmProps.w * newBm->bmProps.h;
 				gameData.pig.tex.bitmaps [0][i] = *newBm;
 				D2_FREE (newBm);
 			}
@@ -1180,11 +1180,11 @@ int PiggyInit (void)
 /*---*/LogErr ("   Initializing placeholder bitmap\n");
 		bogus_bitmap_initialized = 1;
 		memset (&bogus_bitmap, 0, sizeof (grsBitmap));
-		bogus_bitmap.bm_props.w = 
-		bogus_bitmap.bm_props.h = 
-		bogus_bitmap.bm_props.rowsize = 64;
-		bogus_bitmap.bm_texBuf = bogus_data;
-		bogus_bitmap.bm_palette = gamePalette;
+		bogus_bitmap.bmProps.w = 
+		bogus_bitmap.bmProps.h = 
+		bogus_bitmap.bmProps.rowSize = 64;
+		bogus_bitmap.bmTexBuf = bogus_data;
+		bogus_bitmap.bmPalette = gamePalette;
 		c = GrFindClosestColor (gamePalette, 0, 0, 63);
 		memset (bogus_data, c, 4096);
 		c = GrFindClosestColor (gamePalette, 63, 0, 0);
@@ -1328,17 +1328,17 @@ char * crit_errors [13] = { "Write Protected", "Unknown Unit", "Drive Not Ready"
 
 void PiggyCriticalError ()
 {
-	grs_canvas * save_canv;
-	grs_font * save_font;
+	gsrCanvas * save_canv;
+	grsFont * save_font;
 	int i;
 	save_canv = grdCurCanv;
-	save_font = grdCurCanv->cv_font;
+	save_font = grdCurCanv->cvFont;
 	GrPaletteStepLoad (NULL);
 	i = ExecMessageBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", crit_errors [descent_critical_errcode&0xf], (descent_critical_deverror&0xf)+'A');
 	if (i == 1)
 		exit (1);
 	GrSetCurrentCanvas (save_canv);
-	grdCurCanv->cv_font = save_font;
+	grdCurCanv->cvFont = save_font;
 }
 
 //------------------------------------------------------------------------------
@@ -1419,9 +1419,9 @@ return NULL;
 
 inline void PiggyFreeBitmapData (grsBitmap *bmP)
 {
-if (bmP->bm_texBuf) {
-	D2_FREE (bmP->bm_texBuf);
-	UseBitmapCache (bmP, -bmP->bm_props.h * bmP->bm_props.rowsize);
+if (bmP->bmTexBuf) {
+	D2_FREE (bmP->bmTexBuf);
+	UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
 	}
 }
 
@@ -1429,10 +1429,10 @@ if (bmP->bm_texBuf) {
 
 int PiggyFreeHiresFrame (grsBitmap *bmP, int bD1)
 {
-BM_OVERRIDE (gameData.pig.tex.bitmaps [bD1] + bmP->bm_handle) = NULL;
+BM_OVERRIDE (gameData.pig.tex.bitmaps [bD1] + bmP->bmHandle) = NULL;
 OglFreeBmTexture (bmP);
 bmP->bmType = 0;
-bmP->bm_texBuf = NULL;
+bmP->bmTexBuf = NULL;
 return 1;
 }
 
@@ -1456,9 +1456,9 @@ if ((bmfP = BM_FRAMES (altBmP)))
 		PiggyFreeHiresFrame (bmfP, bD1);
 OglFreeBmTexture (altBmP);
 D2_FREE (BM_FRAMES (altBmP));
-altBmP->bm_data.alt.bm_frameCount = 0;
+altBmP->bmData.alt.bmFrameCount = 0;
 PiggyFreeBitmapData (altBmP);
-altBmP->bm_palette = NULL;
+altBmP->bmPalette = NULL;
 altBmP->bmType = 0;
 return 1;
 }
@@ -1486,9 +1486,9 @@ else if (i < 0)
 if (!PiggyFreeHiresAnimation (bmP, 0))
 	OglFreeBmTexture (bmP);
 if (bitmapOffsets [bD1][i] > 0)
-	bmP->bm_props.flags |= BM_FLAG_PAGED_OUT;
-bmP->bm_fromPog = 0;
-bmP->bm_palette = NULL;
+	bmP->bmProps.flags |= BM_FLAG_PAGED_OUT;
+bmP->bmFromPog = 0;
+bmP->bmPalette = NULL;
 PiggyFreeBitmapData (bmP);
 }
 
@@ -1510,8 +1510,8 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 	for (i = 0, bmP = gameData.pig.tex.bitmaps [bD1]; 
 		  i < gameData.pig.tex.nBitmaps [bD1]; 
 		  i++, bmP++) {
-		if (bmP->bm_texBuf && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
-			bmP->bm_props.flags |= BM_FLAG_PAGED_OUT;
+		if (bmP->bmTexBuf && (bitmapOffsets [bD1][i] > 0)) { // only page out bitmaps read from disk
+			bmP->bmProps.flags |= BM_FLAG_PAGED_OUT;
 			PiggyFreeBitmap (bmP, i, bD1);
 			}
 		}
@@ -1597,14 +1597,14 @@ if (bLowMemory) {
 	i = gameData.pig.tex.bitmapXlat [i];          // Xlat for low-memory settings!
 	}
 #if 1
-bmP = BmOverride (gameData.pig.tex.bitmaps [bD1] + i);
-if (!bmP->bm_texBuf) {
+bmP = BmOverride (gameData.pig.tex.bitmaps [bD1] + i, -1);
+if (!bmP->bmTexBuf) {
 #else
 bmP = gameData.pig.tex.bitmaps [bD1] + i;
-if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
+if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 #endif
 	StopTime ();
-	nSize = bmP->bm_props.h * bmP->bm_props.rowsize;
+	nSize = bmP->bmProps.h * bmP->bmProps.rowSize;
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
@@ -1619,7 +1619,7 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 	sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureCacheDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName, 512 / nShrinkFactor);
 	bTGA = 0;
-	bmP->bm_bpp = 1;
+	bmP->bmBPP = 1;
 	if (gameStates.app.bNostalgia)
 		gameOpts->render.textures.bUseHires = 0;
 	if (*bmName && gameOpts->render.textures.bUseHires &&
@@ -1646,13 +1646,13 @@ if (bmP->bm_props.flags & BM_FLAG_PAGED_OUT) {
 			BM_OVERRIDE (bmP) = altBmP;
 			bmP = altBmP;
 			ReadTGAHeader (fp, &h, bmP);
-			nSize = h.width * h.height * bmP->bm_bpp;
+			nSize = h.width * h.height * bmP->bmBPP;
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
 			nOffset = CFTell (fp);
 			bitmapFlags [bD1][i] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 			bitmapFlags [bD1][i] |= BM_FLAG_TGA;
-			if (bmP->bm_props.h > bmP->bm_props.w) {
+			if (bmP->bmProps.h > bmP->bmProps.w) {
 				tEffectClip	*ecP = NULL;
 				tWallClip *wcP;
 				tVideoClip *vcP;
@@ -1699,23 +1699,23 @@ reloadTextures:
 strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 #endif
 #if TEXTURE_COMPRESSION
-	if (bmP->bm_compressed)
-		UseBitmapCache (bmP, bmP->bm_bufSize);
+	if (bmP->bmCompressed)
+		UseBitmapCache (bmP, bmP->bmBufSize);
 	else 
 #endif
 		{
-		bmP->bm_texBuf = D2_ALLOC (nSize);
-		if (bmP->bm_texBuf) 
+		bmP->bmTexBuf = D2_ALLOC (nSize);
+		if (bmP->bmTexBuf) 
 			UseBitmapCache (bmP, nSize);
 		}
-	if (!bmP->bm_texBuf || (bitmapCacheUsed > bitmapCacheSize)) {
+	if (!bmP->bmTexBuf || (bitmapCacheUsed > bitmapCacheSize)) {
 		Int3 ();
 		PiggyBitmapPageOutAll (0);
 		goto reloadTextures;
 		}
-	bmP->bm_props.flags = bitmapFlags [bD1][i];
-	bmP->bm_handle = i;
-	if (bmP->bm_props.flags & BM_FLAG_RLE) {
+	bmP->bmProps.flags = bitmapFlags [bD1][i];
+	bmP->bmHandle = i;
+	if (bmP->bmProps.flags & BM_FLAG_RLE) {
 		int zSize = 0;
 		nDescentCriticalError = 0;
 		zSize = CFReadInt (fp);
@@ -1723,7 +1723,7 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 			PiggyCriticalError ();
 			goto reloadTextures;
 			}
-		temp = (int) CFRead (bmP->bm_texBuf + 4, 1, zSize-4, fp);
+		temp = (int) CFRead (bmP->bmTexBuf + 4, 1, zSize-4, fp);
 		if (nDescentCriticalError) {
 			PiggyCriticalError ();
 			goto reloadTextures;
@@ -1736,12 +1736,12 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 		}
 	else 
 #if TEXTURE_COMPRESSION
-		if (!bmP->bm_compressed) 
+		if (!bmP->bmCompressed) 
 #endif
 		{
 		nDescentCriticalError = 0;
 		if (fp == piggyFP [bD1]) {
-			temp = (int) CFRead (bmP->bm_texBuf, 1, nSize, fp);
+			temp = (int) CFRead (bmP->bmTexBuf, 1, nSize, fp);
 			if (bD1)
 				GrRemapBitmapGood (bmP, d1Palette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			else
@@ -1749,17 +1749,19 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 			}
 		else {
 			ReadTGAImage (fp, &h, bmP, -1, 1.0, 0, 0);
+			if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
 			bmP->bmType = BM_TYPE_ALT;
 			if (IsOpaqueDoor (i)) {
-				bmP->bm_props.flags &= ~BM_FLAG_TRANSPARENT;
-				bmP->bm_transparentFrames [0] &= ~1;
+				bmP->bmProps.flags &= ~BM_FLAG_TRANSPARENT;
+				bmP->bmTransparentFrames [0] &= ~1;
 				}
 #if TEXTURE_COMPRESSION
 			if (CompressTGA (bmP))
 				SaveS3TC (bmP, gameFolders.szTextureDir [bD1], bmName);
 			else 
 #endif
-			if ((nShrinkFactor > 1) && (bmP->bm_props.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
+			if ((nShrinkFactor > 1) && (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 				nSize /= (nShrinkFactor * nShrinkFactor);
 				if (gameStates.app.bCacheTextures)
 					SaveTGA (bmName, gameFolders.szTextureCacheDir [bD1], &h, bmP);
@@ -1783,7 +1785,7 @@ if (bLowMemory) {
 		i = org_i;
 		}
 	}
-gameData.pig.tex.bitmaps [bD1][i].bm_props.flags &= ~BM_FLAG_PAGED_OUT;
+gameData.pig.tex.bitmaps [bD1][i].bmProps.flags &= ~BM_FLAG_PAGED_OUT;
 if (fp && (fp != piggyFP [bD1]))
 	CFClose (fp);
 }
@@ -1868,34 +1870,34 @@ void PiggyWritePigFile (char *filename)
 		}
 		bmp = gameData.pig.tex.bitmaps + i;
 
-		Assert (!(bmp->bm_props.flags & BM_FLAG_PAGED_OUT));
+		Assert (!(bmp->bmProps.flags & BM_FLAG_PAGED_OUT));
 
 		if (fp1)
-			fprintf (fp1, "BMP: %s, size %d bytes", gameData.pig.tex.pBitmapFiles[i].name, bmp->bm_props.rowsize * bmp->bm_props.h);
+			fprintf (fp1, "BMP: %s, size %d bytes", gameData.pig.tex.pBitmapFiles[i].name, bmp->bmProps.rowSize * bmp->bmProps.h);
 		org_offset = ftell (pig_fp);
 		bmh.offset = data_offset - nBmDataOffs;
 		fseek (pig_fp, data_offset, SEEK_SET);
 
-		if (bmp->bm_props.flags & BM_FLAG_RLE) {
-			size = (int *)bmp->bm_texBuf;
-			fwrite (bmp->bm_texBuf, sizeof (ubyte), *size, pig_fp);
+		if (bmp->bmProps.flags & BM_FLAG_RLE) {
+			size = (int *)bmp->bmTexBuf;
+			fwrite (bmp->bmTexBuf, sizeof (ubyte), *size, pig_fp);
 			data_offset += *size;
 			if (fp1)
 				fprintf (fp1, ", and is already compressed to %d bytes.\n", *size);
 		} else {
-			fwrite (bmp->bm_texBuf, sizeof (ubyte), bmp->bm_props.rowsize * bmp->bm_props.h, pig_fp);
-			data_offset += bmp->bm_props.rowsize * bmp->bm_props.h;
+			fwrite (bmp->bmTexBuf, sizeof (ubyte), bmp->bmProps.rowSize * bmp->bmProps.h, pig_fp);
+			data_offset += bmp->bmProps.rowSize * bmp->bmProps.h;
 			if (fp1)
 				fprintf (fp1, ".\n");
 		}
 		fseek (pig_fp, org_offset, SEEK_SET);
-		Assert (gameData.pig.tex.bitmaps [i].bm_props.w < 4096);
-		bmh.width = (gameData.pig.tex.pBitmaps[i].bm_props.w & 0xff);
-		bmh.wh_extra = ((gameData.pig.tex.pBitmaps[i].bm_props.w >> 8) & 0x0f);
-		Assert (gameData.pig.tex.bitmaps [i].bm_props.h < 4096);
-		bmh.height = gameData.pig.tex.bitmaps [i].bm_props.h;
-		bmh.wh_extra |= ((gameData.pig.tex.pBitmaps[i].bm_props.h >> 4) & 0xf0);
-		bmh.flags = gameData.pig.tex.pBitmaps[i].bm_props.flags;
+		Assert (gameData.pig.tex.bitmaps [i].bmProps.w < 4096);
+		bmh.width = (gameData.pig.tex.pBitmaps[i].bmProps.w & 0xff);
+		bmh.wh_extra = ((gameData.pig.tex.pBitmaps[i].bmProps.w >> 8) & 0x0f);
+		Assert (gameData.pig.tex.bitmaps [i].bmProps.h < 4096);
+		bmh.height = gameData.pig.tex.bitmaps [i].bmProps.h;
+		bmh.wh_extra |= ((gameData.pig.tex.pBitmaps[i].bmProps.h >> 4) & 0xf0);
+		bmh.flags = gameData.pig.tex.pBitmaps[i].bmProps.flags;
 		if (PiggyIsSubstitutableBitmap (gameData.pig.tex.pBitmapFiles[i].name, subst_name)) {
 			tBitmapIndex other_bitmap;
 			other_bitmap = PiggyFindBitmap (subst_name, gameStates.app.bD1Data);
@@ -1904,7 +1906,7 @@ void PiggyWritePigFile (char *filename)
 		else
 			bmh.flags &= ~BM_FLAG_PAGED_OUT;
 			}
-		bmh.bm_avgColor=gameData.pig.tex.bitmaps [i].bm_avgColor;
+		bmh.bmAvgColor=gameData.pig.tex.bitmaps [i].bmAvgColor;
 		fwrite (&bmh, sizeof (tPIGBitmapHeader), 1, pig_fp);  // Mark as a bitmap
 		}
 	fclose (pig_fp);
@@ -1972,7 +1974,7 @@ void PiggyDumpAll ()
 	
 		//D2_FREE up memeory used by new bitmaps
 		for (i=gameData.pig.tex.nBitmaps-nBitmapFilesNew;i<gameData.pig.tex.nBitmaps;i++)
-			D2_FREE (gameData.pig.tex.bitmaps [i].bm_texBuf);
+			D2_FREE (gameData.pig.tex.bitmaps [i].bmTexBuf);
 	
 		//next thing must be done after pig written
 		fseek (fpHAM, xlatOffset, SEEK_SET);
@@ -2201,35 +2203,35 @@ if (fp) {
 	for (i = 0; i < nBitmapNum; i++) {
 		bmOffset = bmh [i].offset;
 		memset (&bm, 0, sizeof (grsBitmap));
-		bm.bm_props.flags |= bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA);
-		bm.bm_props.w = bm.bm_props.rowsize = bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8);
-		if ((bTGA = (bm.bm_props.flags & BM_FLAG_TGA)) && (bm.bm_props.w > 256))
-			bm.bm_props.h = bm.bm_props.w * bmh [i].height;
+		bm.bmProps.flags |= bmh [i].flags & (BM_FLAGS_TO_COPY | BM_FLAG_TGA);
+		bm.bmProps.w = bm.bmProps.rowSize = bmh [i].width + ((short) (bmh [i].wh_extra & 0x0f) << 8);
+		if ((bTGA = (bm.bmProps.flags & BM_FLAG_TGA)) && (bm.bmProps.w > 256))
+			bm.bmProps.h = bm.bmProps.w * bmh [i].height;
 		else
-			bm.bm_props.h = bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4);
-		bm.bm_bpp = bTGA ? 4 : 1;
-		if (!(bm.bm_props.w * bm.bm_props.h))
+			bm.bmProps.h = bmh [i].height + ((short) (bmh [i].wh_extra & 0xf0) << 4);
+		bm.bmBPP = bTGA ? 4 : 1;
+		if (!(bm.bmProps.w * bm.bmProps.h))
 			continue;
-		if (bmOffset + bm.bm_props.h * bm.bm_props.rowsize > bmDataSize)
+		if (bmOffset + bm.bmProps.h * bm.bmProps.rowSize > bmDataSize)
 			break;
-		bm.bm_avgColor = bmh [i].bm_avgColor;
+		bm.bmAvgColor = bmh [i].bmAvgColor;
 		bm.bmType = BM_TYPE_ALT;
-		if (!(bm.bm_texBuf = GrAllocBitmapData (bm.bm_props.w, bm.bm_props.h, bm.bm_bpp)))
+		if (!(bm.bmTexBuf = GrAllocBitmapData (bm.bmProps.w, bm.bmProps.h, bm.bmBPP)))
 			break;
 		CFSeek (fp, bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
-			int	nFrames = bm.bm_props.h / bm.bm_props.w;
+			int	nFrames = bm.bmProps.h / bm.bmProps.w;
 			tTgaHeader	h;
 
-			h.width = bm.bm_props.w;
-			h.height = bm.bm_props.h;
+			h.width = bm.bmProps.w;
+			h.height = bm.bmProps.h;
 			h.bits = 32;
 			if (!ReadTGAImage (fp, &h, &bm, -1, 1.0, 0, 1)) {
-				D2_FREE (bm.bm_texBuf);
+				D2_FREE (bm.bmTexBuf);
 				break;
 				}
-			bm.bm_props.rowsize *= bm.bm_bpp;
-			bm.bm_data.alt.bm_frameCount = (ubyte) nFrames;
+			bm.bmProps.rowSize *= bm.bmBPP;
+			bm.bmData.alt.bmFrameCount = (ubyte) nFrames;
 			if (nFrames > 1) {
 				tEffectClip	*ecP = NULL;
 				tWallClip *wcP;
@@ -2252,26 +2254,26 @@ if (fp) {
 			j = indices [i];
 			}
 		else {
-			int nSize = bm.bm_props.w * bm.bm_props.h;
-			if (nSize != (int) CFRead (bm.bm_texBuf, 1, nSize, fp)) {
-				D2_FREE (bm.bm_texBuf);
+			int nSize = bm.bmProps.w * bm.bmProps.h;
+			if (nSize != (int) CFRead (bm.bmTexBuf, 1, nSize, fp)) {
+				D2_FREE (bm.bmTexBuf);
 				break;
 				}
-			bm.bm_palette = gamePalette;
+			bm.bmPalette = gamePalette;
 			j = indices [i];
 			rle_expand (&bm, NULL, 0);
-			bm.bm_props = gameData.pig.tex.pBitmaps [j].bm_props;
+			bm.bmProps = gameData.pig.tex.pBitmaps [j].bmProps;
 			GrRemapBitmapGood (&bm, gamePalette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 		PiggyFreeBitmap (NULL, j, 0);
-		bm.bm_fromPog = 1;
-		bm.bm_handle = j;
+		bm.bmFromPog = 1;
+		bm.bmHandle = j;
 #ifdef _DEBUG
 		sprintf (bm.szName, "POG%04d", j);
 #endif
 		gameData.pig.tex.pAltBitmaps [j] = bm;
 		BM_OVERRIDE (gameData.pig.tex.pBitmaps + j) = gameData.pig.tex.pAltBitmaps + j;
-		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, bm.bm_props.h * bm.bm_props.rowsize);
+		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, bm.bmProps.h * bm.bmProps.rowSize);
 		}
 	D2_FREE (indices);
 	D2_FREE (bmh);
@@ -2315,10 +2317,10 @@ void PiggyBitmapReadD1 (
 	int zSize, bSwap0255;
 
 memset (bmP, 0, sizeof (grsBitmap));
-bmP->bm_props.w = bmP->bm_props.rowsize = bmh->width + ((short) (bmh->wh_extra&0x0f)<<8);
-bmP->bm_props.h = bmh->height + ((short) (bmh->wh_extra&0xf0)<<4);
-bmP->bm_avgColor = bmh->bm_avgColor;
-bmP->bm_props.flags |= bmh->flags & BM_FLAGS_TO_COPY;
+bmP->bmProps.w = bmP->bmProps.rowSize = bmh->width + ((short) (bmh->wh_extra&0x0f)<<8);
+bmP->bmProps.h = bmh->height + ((short) (bmh->wh_extra&0xf0)<<4);
+bmP->bmAvgColor = bmh->bmAvgColor;
+bmP->bmProps.flags |= bmh->flags & BM_FLAGS_TO_COPY;
 
 CFSeek (piggyFP , nBmDataOffs + bmh->offset, SEEK_SET);
 if (bmh->flags & BM_FLAG_RLE) {
@@ -2326,17 +2328,17 @@ if (bmh->flags & BM_FLAG_RLE) {
 	CFSeek (piggyFP, -4, SEEK_CUR);
 	}
 else
-	zSize = bmP->bm_props.h * bmP->bm_props.w;
+	zSize = bmP->bmProps.h * bmP->bmProps.w;
 
 if (pNextBmP) {
-	bmP->bm_texBuf = *pNextBmP;
+	bmP->bmTexBuf = *pNextBmP;
 	*pNextBmP += zSize;
 	}
 else {
-	bmP->bm_texBuf = D2_ALLOC (bmP->bm_props.h * bmP->bm_props.rowsize);
-	UseBitmapCache (bmP, bmP->bm_props.h * bmP->bm_props.rowsize);
+	bmP->bmTexBuf = D2_ALLOC (bmP->bmProps.h * bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
 	}
-CFRead (bmP->bm_texBuf, 1, zSize, piggyFP);
+CFRead (bmP->bmTexBuf, 1, zSize, piggyFP);
 bSwap0255 = 0;
 switch (CFLength (piggyFP,0)) {
 	case D1_MAC_PIGSIZE:
@@ -2506,12 +2508,12 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		else
 			strcpy (temp_name, temp_name_read);
 		memset (&bmTemp, 0, sizeof (grsBitmap));
-		bmTemp.bm_props.w = bmTemp.bm_props.rowsize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
-		bmTemp.bm_props.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
-		bmTemp.bm_props.flags |= BM_FLAG_PAGED_OUT;
-		bmTemp.bm_avgColor = bmh.bm_avgColor;
-		bmTemp.bm_texBuf = D2_ALLOC (bmTemp.bm_props.w * bmTemp.bm_props.h);
-		bitmapCacheUsed += bmTemp.bm_props.h * bmTemp.bm_props.w;
+		bmTemp.bmProps.w = bmTemp.bmProps.rowSize = bmh.width + ((short) (bmh.wh_extra&0x0f)<<8);
+		bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra&0xf0)<<4);
+		bmTemp.bmProps.flags |= BM_FLAG_PAGED_OUT;
+		bmTemp.bmAvgColor = bmh.bmAvgColor;
+		bmTemp.bmTexBuf = D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
+		bitmapCacheUsed += bmTemp.bmProps.h * bmTemp.bmProps.w;
 		bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 		bitmapOffsets [1][i+1] = bmh.offset + nBmDataOffs;
 		Assert ((i+1) == gameData.pig.tex.nBitmaps [1]);
@@ -2564,7 +2566,7 @@ if (i >= nBitmapNum) {
 	}
 PiggyBitmapReadD1 (newBm, piggyFP, nBmDataOffs, &bmh, 0, d1Palette, d1ColorMap);
 CFClose (piggyFP);
-newBm->bm_avgColor = 0;	//ComputeAvgPixel (newBm);
+newBm->bmAvgColor = 0;	//ComputeAvgPixel (newBm);
 bmi.index = gameData.pig.tex.nExtraBitmaps;
 gameData.pig.tex.pBitmaps[gameData.pig.tex.nExtraBitmaps++] = *newBm;
 return bmi;
@@ -2652,7 +2654,7 @@ if (!(bmp = GrCreateBitmap (bih.biWidth, bih.biHeight, 1))) {
 	return NULL;
 	}
 CFSeek (fp, bfh.bfOffBits, SEEK_SET);
-if (CFRead (bmp->bm_texBuf, bih.biWidth * bih.biHeight, 1, fp) != 1) {
+if (CFRead (bmp->bmTexBuf, bih.biWidth * bih.biHeight, 1, fp) != 1) {
 	GrFreeBitmap (bmp);
 	return NULL;
 	}

@@ -367,9 +367,7 @@ PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
-	bmP = BM_OVERRIDE (bmP);
-	if (BM_FRAMES (bmP))
-		bmP = BM_FRAMES (bmP) + iFrame;
+	bmP = BmOverride (bmP, iFrame);
 	//alpha = 1;
 	}
 else if (colorP && gameOpts->render.bDepthSort)
@@ -381,20 +379,20 @@ if (colorP)
 xSize = objP->size;
 
 if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
-	RenderPowerupCorona (objP, (float) bmP->bm_avgRGB.red / 255.0f, (float) bmP->bm_avgRGB.green / 255.0f, (float) bmP->bm_avgRGB.blue / 255.0f, alpha);
+	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, alpha);
 if (gameOpts->render.bDepthSort > 0) {
 	tRgbaColorf	color = {1, 1, 1, alpha};
-	if (bmP->bm_props.w > bmP->bm_props.h)
-		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), iFrame);
+	if (bmP->bmProps.w > bmP->bmProps.h)
+		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame);
 	else
-		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, iFrame);
+		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame);
 	}
 else {
-	if (bmP->bm_props.w > bmP->bm_props.h)
-		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bm_props.h, bmP->bm_props.w), bmP, 
+	if (bmP->bmProps.w > bmP->bmProps.h)
+		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), bmP, 
 						  NULL, alpha, nTransp);
 	else	
-		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bm_props.w, bmP->bm_props.h), xSize, bmP, 
+		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP, 
 						  NULL, alpha, nTransp);
 	}
 }
@@ -411,9 +409,7 @@ void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 PIGGY_PAGE_IN (bmi, 0);
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	OglLoadBmTexture (bmP, 1, -1, gameOpts->render.bDepthSort <= 0);
-	bmP = BM_OVERRIDE (bmP);
-	if (BM_FRAMES (bmP))
-		bmP = BM_FRAMES (bmP) + iFrame;
+	bmP = BmOverride (bmP, iFrame);
 	}
 VmVecCopyScale (&delta, &objP->position.mOrient.uVec, objP->size);
 VmVecAdd (&top_v, &objP->position.vPos, &delta);
@@ -1253,7 +1249,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
 		if (OglBindBmTex (bmP, 1, 2))
 			return;
-		bmP = BmCurFrame (bmP);
+		bmP = BmCurFrame (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_REPEAT);
 		VmVecScaleInc (&vPos, &objP->position.mOrient.fVec, -objP->size);
 		r = f2fl (objP->size);
@@ -1879,13 +1875,13 @@ else if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 		xSize = F1_0;
 	if (bDepthSort) {
 		colorP->alpha = alpha;
-		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, 0);
+		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0);
 		return;
 		}
 	bStencil = StencilOff ();
 	glDepthMask (0);
 	if (bSimple) {
-		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bm_props.w, bmpCorona->bm_props.h), xSize, bmpCorona, 
+		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, 
 						  colorP, alpha, 1);
 		}
 	else {

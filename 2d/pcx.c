@@ -149,14 +149,14 @@ ysize = header.Ymax - header.Ymin + 1;
     }
 
 	if ( bitmapType == BM_LINEAR )	{
-		if ( bmP->bm_texBuf == NULL )	{
+		if ( bmP->bmTexBuf == NULL )	{
 			GrInitBitmapAlloc (bmP, bitmapType, 0, 0, xsize, ysize, xsize, 1);
 		}
 	}
 
-	if ( bmP->bm_props.nType == BM_LINEAR )	{
+	if ( bmP->bmProps.nType == BM_LINEAR )	{
 		for (row=0; row< ysize ; row++)      {
-			pixdata = &bmP->bm_texBuf [bmP->bm_props.rowsize*row];
+			pixdata = &bmP->bmTexBuf [bmP->bmProps.rowSize*row];
 			for (col=0; col< xsize ; )      {
 				if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
 					CFClose( PCXfile );
@@ -217,7 +217,7 @@ else {
 	CFClose( PCXfile );
 	return PCX_ERROR_NO_PALETTE;
 	}
-bmP->bm_palette = AddPalette (palette);
+bmP->bmPalette = AddPalette (palette);
 CFClose(PCXfile);
 return PCX_ERROR_NONE;
 }
@@ -240,9 +240,9 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 	header.Nplanes = 1;
 	header.BitsPerPixel = 8;
 	header.Version = 5;
-	header.Xmax = bmP->bm_props.w-1;
-	header.Ymax = bmP->bm_props.h-1;
-	header.BytesPerLine = bmP->bm_props.w;
+	header.Xmax = bmP->bmProps.w-1;
+	header.Ymax = bmP->bmProps.h-1;
+	header.BytesPerLine = bmP->bmProps.w;
 
 	PCXfile = CFOpen(filename, gameFolders.szDataDir, "wb", 0);
 	if ( !PCXfile )
@@ -254,8 +254,8 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 		return PCX_ERROR_WRITING;
 	}
 
-	for (i=0; i<bmP->bm_props.h; i++ )	{
-		if (!pcx_encode_line( &bmP->bm_texBuf[bmP->bm_props.rowsize*i], bmP->bm_props.w, PCXfile ))	{
+	for (i=0; i<bmP->bmProps.h; i++ )	{
+		if (!pcx_encode_line( &bmP->bmTexBuf[bmP->bmProps.rowSize*i], bmP->bmProps.w, PCXfile ))	{
 			CFClose(PCXfile);
 			return PCX_ERROR_WRITING;
 		}
@@ -271,7 +271,7 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 
 	// Write the extended palette
 	for (i=0; i<768; i++ )
-		palette[i] = bmP->bm_palette [i] << 2;
+		palette[i] = bmP->bmPalette [i] << 2;
 
 	retval = CFWrite(palette, 768, 1, PCXfile);
 

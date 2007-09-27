@@ -142,7 +142,7 @@ glBlendFunc (nSrcBlend, nDestBlend);
 
 //------------------------------------------------------------------------------
 
-void OglGrsColor (grs_color *pc)
+void OglGrsColor (grsColor *pc)
 {
 	GLfloat	fc [4];
 
@@ -170,11 +170,11 @@ int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
 bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_LINES);
 OglVertex3x (p0->p3_vec.p.x, p0->p3_vec.p.y, p0->p3_vec.p.z);
 OglVertex3x (p1->p3_vec.p.x, p1->p3_vec.p.y, p1->p3_vec.p.z);
-if (grdCurCanv->cv_color.rgb)
+if (grdCurCanv->cvColor.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
 return 1;
@@ -272,7 +272,7 @@ if (bmpDeadzone) {
 
 void OglDrawMouseIndicator (void)
 {
-	double 	scale = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
+	double 	scale = (double) grdCurScreen->scWidth / (double) grdCurScreen->scHeight;
 	
 	static tSinCosd sinCos30 [30];
 	static tSinCosd sinCos12 [12];
@@ -300,16 +300,16 @@ else {
 	glTranslated ((double) (mouseData.x) / (double) SWIDTH, 1.0 - (double) (mouseData.y) / (double) SHEIGHT, 0);
 	glScaled (scale / 320.0, scale / 200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
 	glLineWidth (3);
-	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos12);
+	OglDrawEllipse (12, GL_LINE_LOOP, 1.5, 0, 1.5 * (double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth, 0, sinCos12);
 	glPopMatrix ();
 	glPushMatrix ();
 	glTranslated (0.5, 0.5, 0);
 	if (LoadDeadzone ()) {
-		grs_color c = {-1, 1, {255, 255, 255, 128}};
+		grsColor c = {-1, 1, {255, 255, 255, 128}};
 		OglUBitMapMC (0, 0, 16, 16, bmpDeadzone, &c, 1, 0);
 		r = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
-		w = r / (double) grdCurScreen->sc_w;
-		h = r / (double) grdCurScreen->sc_h;
+		w = r / (double) grdCurScreen->scWidth;
+		h = r / (double) grdCurScreen->scHeight;
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmpDeadzone, 1, -1)) 
 			return;
@@ -333,7 +333,7 @@ else {
 		glColor4d (1.0, 0.8, 0.0, 1.0 / (3.0 + 0.5 * gameOpts->input.mouse.nDeadzone));
 		glLineWidth ((GLfloat) (4 + 2 * gameOpts->input.mouse.nDeadzone));
 		r = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone) / 4;
-		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (double) grdCurScreen->sc_h / (double) grdCurScreen->sc_w, 0, sinCos30);
+		OglDrawEllipse (30, GL_LINE_LOOP, r, 0, r * (double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth, 0, sinCos30);
 		}
 	glPopMatrix ();
 	glDisable (GL_SMOOTH);
@@ -353,7 +353,7 @@ float darker_g [4]={32.0/256, 128.0/256, 32.0/256, 1.0};
 
 void OglDrawReticle (int cross, int primary, int secondary)
 {
-	double scale = (double)nCanvasHeight/ (double)grdCurScreen->sc_h;
+	double scale = (double)nCanvasHeight/ (double)grdCurScreen->scHeight;
 
 	static tSinCosd sinCos8 [8];
 	static tSinCosd sinCos12 [12];
@@ -369,8 +369,8 @@ if (bInitSinCos) {
 glPushMatrix ();
 //	glTranslated (0.5, 0.5, 0);
 glTranslated (
-	(grdCurCanv->cv_bitmap.bm_props.w/2+grdCurCanv->cv_bitmap.bm_props.x) / (double) gameStates.ogl.nLastW, 
-	1.0 - (grdCurCanv->cv_bitmap.bm_props.h/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2)+grdCurCanv->cv_bitmap.bm_props.y)/ (double)gameStates.ogl.nLastH, 
+	(grdCurCanv->cvBitmap.bmProps.w/2+grdCurCanv->cvBitmap.bmProps.x) / (double) gameStates.ogl.nLastW, 
+	1.0 - (grdCurCanv->cvBitmap.bmProps.h/ ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2)+grdCurCanv->cvBitmap.bmProps.y)/ (double)gameStates.ogl.nLastH, 
 	0);
 glScaled (scale/320.0, scale/200.0, scale);//the positions are based upon the standard reticle at 320x200 res.
 glDisable (GL_TEXTURE_2D);
@@ -472,7 +472,7 @@ int G3DrawSphere (g3sPoint *pnt, fix rad, int bBigSphere)
 	double r;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cvColor);
 glPushMatrix ();
 glTranslatef (f2fl (pnt->p3_vec.p.x), f2fl (pnt->p3_vec.p.y), f2fl (pnt->p3_vec.p.z));
 r = f2fl (rad);
@@ -488,7 +488,7 @@ else
 	else
 		hSmallSphere = CircleListInit (12, GL_POLYGON, GL_COMPILE_AND_EXECUTE);
 glPopMatrix ();
-if (grdCurCanv->cv_color.rgb)
+if (grdCurCanv->cvColor.rgb)
 	glDisable (GL_BLEND);
 return 0;
 }
@@ -499,11 +499,11 @@ int GrUCircle (fix xc1, fix yc1, fix r1)
 {//dunno if this really works, radar doesn't seem to.. hm..
 glDisable (GL_TEXTURE_2D);
 //	glPointSize (f2fl (rad);
-OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cvColor);
 glPushMatrix ();
 glTranslatef (
-			(f2fl (xc1) + grdCurCanv->cv_bitmap.bm_props.x) / (float) gameStates.ogl.nLastW, 
-		1.0f - (f2fl (yc1) + grdCurCanv->cv_bitmap.bm_props.y) / (float) gameStates.ogl.nLastH, 0);
+			(f2fl (xc1) + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW, 
+		1.0f - (f2fl (yc1) + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH, 0);
 glScalef (f2fl (r1), f2fl (r1), f2fl (r1));
 if (r1<=i2f (5)){
 	if (!circleh5) 
@@ -518,7 +518,7 @@ else{
 		glCallList (circleh10);
 }
 glPopMatrix ();
-if (grdCurCanv->cv_color.rgb)
+if (grdCurCanv->cvColor.rgb)
 	glDisable (GL_BLEND);
 return 0;
 }
@@ -554,13 +554,13 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 r_polyc++;
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_TRIANGLE_FAN);
 for (i = 0; i < nv; i++, pointList++) {
 //	glVertex3f (f2fl (pointList [c]->p3_vec.p.x), f2fl (pointList [c]->p3_vec.p.y), f2fl (pointList [c]->p3_vec.p.z);
 	OglVertex3f (*pointList);
 	}
-if (grdCurCanv->cv_color.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
+if (grdCurCanv->cvColor.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	glDisable (GL_BLEND);
 glEnd ();
 return 0;
@@ -659,13 +659,13 @@ inline void CapTMapColor (tUVL *uvlList, int nv, grsBitmap *bm)
 #if 0
 	tFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
 
-if (! (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) && color) {
+if (! (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) && color) {
 		double	a, m = tMapColor.color.red;
 		double	h, l = 0;
 		int		i;
 
 	for (i = 0; i < nv; i++, uvlList++) {
-		h = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : f2fl (uvlList->l);
+		h = (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : f2fl (uvlList->l);
 		if (l < h)
 			l = h;
 		}
@@ -739,7 +739,7 @@ else {
 
 /*inline*/ void SetTMapColor (tUVL *uvlList, int i, grsBitmap *bm, int bResetColor, tFaceColor *vertColor)
 {
-	float l = (bm->bm_props.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvlList->l);
+	float l = (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0f : f2fl (uvlList->l);
 	float s = 1.0f;
 
 #if SHADOWS
@@ -1610,15 +1610,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#define	INIT_TMU(_initTMU,_bm,_bClientState) \
+#define	INIT_TMU(_initTMU,_bmP,_bClientState) \
 			_initTMU (_bClientState); \
-			if (OglBindBmTex (_bm, 1, 3)) \
+			if (OglBindBmTex (_bmP, 1, 3)) \
 				return 1; \
-			(_bm) = BmCurFrame (_bm); \
-			OglTexWrap ((_bm)->glTexture, GL_REPEAT);
+			(_bmP) = BmCurFrame (_bmP, -1); \
+			OglTexWrap ((_bmP)->glTexture, GL_REPEAT);
 
 
-extern void (*tmap_drawer_ptr) (grsBitmap *bm, int nv, g3sPoint **vertlist);
+extern void (*tmap_drawer_ptr) (grsBitmap *bmP, int nv, g3sPoint **vertlist);
 
 static GLhandleARB	lmProg = (GLhandleARB) 0;
 static GLhandleARB	tmProg = (GLhandleARB) 0;
@@ -1721,10 +1721,10 @@ else {
 		}
 	}
 glDepthFunc (GL_LEQUAL);
-bmBot = BmOverride (bmBot);
-bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) && (((bmBot->bm_bpp > 1) && 
-				 (bmBot->bm_props.flags & BM_FLAG_TRANSPARENT)) || (gameStates.ogl.fAlpha < 1)));
-if ((bmTop = BmOverride (bmTop)) && BM_FRAMES (bmTop)) {
+bmBot = BmOverride (bmBot, -1);
+bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) && 
+				  ((gameStates.ogl.fAlpha < 1) || (bmBot->bmProps.flags & (BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == BM_FLAG_TGA));
+if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
 	bmP = bmTop;
 	bmTop = BM_CURFRAME (bmTop);
@@ -1733,9 +1733,9 @@ else
 	nFrame = -1;
 if (bmTop) {
 	if (nFrame < 0)
-      bSuperTransp = (bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
+      bSuperTransp = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	else
-		bSuperTransp = (BM_PARENT (bmP)->bm_supertranspFrames [nFrame / 32] & (1 << (nFrame % 32))) != 0;
+		bSuperTransp = (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 	bShaderMerge = bSuperTransp && gameStates.ogl.bGlTexMerge;
 	bDrawOverlay = !bShaderMerge;
 	}
@@ -1769,7 +1769,7 @@ else if (!bDepthSort) {
 		InitTMU0 (bDrawArrays);
 	if (OglBindBmTex (bmBot, 1, 3))
 		return 1;
-	bmBot = BmCurFrame (bmBot);
+	bmBot = BmCurFrame (bmBot, -1);
 	if (bmBot == bmpDeadzone)
 		OglTexWrap (bmBot->glTexture, GL_CLAMP);
 	else
@@ -1927,7 +1927,7 @@ if (bDrawOverlay > 0) {
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmTop, 1, 3))
 		return 1;
-	bmTop = BmCurFrame (bmTop);
+	bmTop = BmCurFrame (bmTop, -1);
 	OglTexWrap (bmTop->glTexture, GL_REPEAT);
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
@@ -2015,8 +2015,8 @@ else {
 		}
 	}
 glDepthFunc (GL_LEQUAL);
-bmBot = BmOverride (bmBot);
-if ((bmTop = BmOverride (bmTop)) && BM_FRAMES (bmTop)) {
+bmBot = BmOverride (bmBot, -1);
+if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
 	bmP = bmTop;
 	bmTop = BM_CURFRAME (bmTop);
@@ -2027,13 +2027,13 @@ if (!lightMap) //lightMapping enabled
 	return fpDrawTexPolyMulti (nVerts, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend);
 // chose shaders depending on whether overlay bitmap present or not
 if (bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge) {
-	lmProg = lmShaderProgs [(bmTop->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
+	lmProg = lmShaderProgs [(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
 	glUseProgramObject (lmProg);
 	}
 InitTMU0 (0);	// use render pipeline 0 for bottom texture
 if (OglBindBmTex (bmBot, 1, 3))
 	return 1;
-bmBot = BmCurFrame (bmBot);
+bmBot = BmCurFrame (bmBot, -1);
 OglTexWrap (bmBot->glTexture, GL_REPEAT);
 if (bShaderMerge)
 	glUniform1i (glGetUniformLocation (lmProg, "btmTex"), 0);
@@ -2041,7 +2041,7 @@ if (bmTop) { // use render pipeline 0 for overlay texture
 	InitTMU1 (0);
 	if (OglBindBmTex (bmTop, 1, 3))
 		return 1;
-	bmTop = BmCurFrame (bmTop);
+	bmTop = BmCurFrame (bmTop, -1);
 	OglTexWrap (bmTop->glTexture, GL_REPEAT);
 	glUniform1i (glGetUniformLocation (lmProg, "topTex"), 1);
 	}
@@ -2118,7 +2118,7 @@ else {
 		glEnable (GL_TEXTURE_2D);
 		if (OglBindBmTex (bmP, 1, 1)) 
 			return 1;
-		bmP = BmOverride (bmP);
+		bmP = BmOverride (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_CLAMP);
 		if (colorP)
 			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
@@ -2188,7 +2188,7 @@ else {
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmP, 1, transp)) 
 		return 1;
-	bmP = BmOverride (bmP);
+	bmP = BmOverride (bmP, -1);
 	OglTexWrap (bmP->glTexture, GL_CLAMP);
 	if (color)
 		glColor4f (color->red, color->green, color->blue, alpha);
@@ -2237,7 +2237,7 @@ switch (orient) {
 
 //------------------------------------------------------------------------------
 
-bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grs_color *c, int scale, int orient)
+bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, int scale, int orient)
 {
 	GLint depthFunc, bBlend;
 	GLfloat xo, yo, xf, yf;
@@ -2245,33 +2245,33 @@ bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grs_color *c, i
 	GLfloat	h, a;
 	GLfloat	dx, dy;
 
-bmP = BmOverride (bmP);
+bmP = BmOverride (bmP, -1);
 if (dw < 0)
-	dw = grdCurCanv->cv_bitmap.bm_props.w;
+	dw = grdCurCanv->cvBitmap.bmProps.w;
 else if (dw == 0)
-	dw = bmP->bm_props.w;
+	dw = bmP->bmProps.w;
 if (dh < 0)
-	dh = grdCurCanv->cv_bitmap.bm_props.h;
+	dh = grdCurCanv->cvBitmap.bmProps.h;
 else if (dh == 0)
-	dh = bmP->bm_props.h;
+	dh = bmP->bmProps.h;
 r_ubitmapc++;
 if (orient & 1) {
 	int h = dw;
 	dw = dh;
 	dh = h;
-	dx = (float) grdCurCanv->cv_bitmap.bm_props.y / (float) gameStates.ogl.nLastH;
-	dy = (float) grdCurCanv->cv_bitmap.bm_props.x / (float) gameStates.ogl.nLastW;
+	dx = (float) grdCurCanv->cvBitmap.bmProps.y / (float) gameStates.ogl.nLastH;
+	dy = (float) grdCurCanv->cvBitmap.bmProps.x / (float) gameStates.ogl.nLastW;
 	}
 else {
-	dx = (float) grdCurCanv->cv_bitmap.bm_props.x / (float) gameStates.ogl.nLastW;
-	dy = (float) grdCurCanv->cv_bitmap.bm_props.y / (float) gameStates.ogl.nLastH;
+	dx = (float) grdCurCanv->cvBitmap.bmProps.x / (float) gameStates.ogl.nLastW;
+	dy = (float) grdCurCanv->cvBitmap.bmProps.y / (float) gameStates.ogl.nLastH;
 	}
 #if 0
 a = 1.0;
 h = 1.0;
 orient = 0;
 #else
-a = (float) grdCurScreen->sc_w / (float) grdCurScreen->sc_h;
+a = (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight;
 h = (float) scale / (float) F1_0;
 #endif
 xo = dx + x / ((float) gameStates.ogl.nLastW * h);
@@ -2292,27 +2292,27 @@ if (!(bBlend = glIsEnabled (GL_BLEND)))
 	glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-if (bmP->bm_props.x == 0) {
+if (bmP->bmProps.x == 0) {
 	u1 = 0;
-	if (bmP->bm_props.w == bmP->glTexture->w)
+	if (bmP->bmProps.w == bmP->glTexture->w)
 		u2 = bmP->glTexture->u;
 	else
-		u2 = (bmP->bm_props.w + bmP->bm_props.x) / (float) bmP->glTexture->tw;
+		u2 = (bmP->bmProps.w + bmP->bmProps.x) / (float) bmP->glTexture->tw;
 	}
 else {
-	u1 = bmP->bm_props.x / (float) bmP->glTexture->tw;
-	u2 = (bmP->bm_props.w + bmP->bm_props.x) / (float) bmP->glTexture->tw;
+	u1 = bmP->bmProps.x / (float) bmP->glTexture->tw;
+	u2 = (bmP->bmProps.w + bmP->bmProps.x) / (float) bmP->glTexture->tw;
 	}
-if (bmP->bm_props.y == 0) {
+if (bmP->bmProps.y == 0) {
 	v1 = 0;
-	if (bmP->bm_props.h == bmP->glTexture->h)
+	if (bmP->bmProps.h == bmP->glTexture->h)
 		v2 = bmP->glTexture->v;
 	else
-		v2 = (bmP->bm_props.h + bmP->bm_props.y) / (float) bmP->glTexture->th;
+		v2 = (bmP->bmProps.h + bmP->bmProps.y) / (float) bmP->glTexture->th;
 	}
 else{
-	v1 = bmP->bm_props.y / (float) bmP->glTexture->th;
-	v2 = (bmP->bm_props.h + bmP->bm_props.y) / (float) bmP->glTexture->th;
+	v1 = bmP->bmProps.y / (float) bmP->glTexture->th;
+	v2 = (bmP->bmProps.h + bmP->bmProps.y) / (float) bmP->glTexture->th;
 	}
 
 glBegin (GL_QUADS);
@@ -2348,14 +2348,14 @@ bool OglUBitBltI (
 	GLdouble u1, v1;//, u2, v2;
 	tOglTexture tex, *texP;
 	GLint curFunc; 
-	int nTransp = (src->bm_props.flags & BM_FLAG_TGA) ? -1 : GrBitmapHasTransparency (src) ? 2 : 0;
+	int nTransp = (src->bmProps.flags & BM_FLAG_TGA) ? -1 : GrBitmapHasTransparency (src) ? 2 : 0;
 
 //	unsigned char *oldpal;
 r_ubitbltc++;
 
 u1 = v1 = 0;
-dx += dest->bm_props.x;
-dy += dest->bm_props.y;
+dx += dest->bmProps.x;
+dy += dest->bmProps.y;
 xo = dx / (double) gameStates.ogl.nLastW;
 xs = dw / (double) gameStates.ogl.nLastW;
 yo = 1.0 - dy / (double) gameStates.ogl.nLastH;
@@ -2369,7 +2369,7 @@ if (!(texP = src->glTexture)) {
 	texP->h = sh;
 	texP->prio = 0.0;
 	texP->bMipMaps = bMipMaps;
-	texP->lw = src->bm_props.rowsize;
+	texP->lw = src->bmProps.rowSize;
 	OglLoadTexture (src, sx, sy, texP, nTransp, 0);
 	}
 OGL_BINDTEX (texP->handle);
@@ -2412,54 +2412,54 @@ bool OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy,
 	unsigned char *d, *s;
 	int i, j;
 	int w1, h1;
-	int bTGA = (dest->bm_props.flags & BM_FLAG_TGA) != 0;
+	int bTGA = (dest->bmProps.flags & BM_FLAG_TGA) != 0;
 //	w1=w;h1=h;
-w1=grdCurScreen->sc_w;
-h1=grdCurScreen->sc_h;
+w1=grdCurScreen->scWidth;
+h1=grdCurScreen->scHeight;
 
 if (gameStates.ogl.bReadPixels > 0) {
 	glDisable (GL_TEXTURE_2D);
 	glReadBuffer (GL_FRONT);
 	if (bTGA)
 		glReadPixels (0, 0, w1, h1, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
-//			glReadPixels (sx, grdCurScreen->sc_h - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->bm_texBuf);
+//			glReadPixels (sx, grdCurScreen->scHeight - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->bmTexBuf);
 	else {
 		if (w1*h1*3>OGLTEXBUFSIZE)
 			Error ("OglUBitBltToLinear: screen res larger than OGLTEXBUFSIZE\n");
 		glReadPixels (0, 0, w1, h1, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 		}
-//		glReadPixels (sx, grdCurScreen->sc_h- (sy+h), w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
+//		glReadPixels (sx, grdCurScreen->scHeight- (sy+h), w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 //		glReadPixels (sx, sy, w+sx, h+sy, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 	}
 else {
-	if (dest->bm_props.flags & BM_FLAG_TGA)
-		memset (dest->bm_texBuf, 0, w1*h1*4);
+	if (dest->bmProps.flags & BM_FLAG_TGA)
+		memset (dest->bmTexBuf, 0, w1*h1*4);
 	else
 		memset (gameData.render.ogl.texBuf, 0, w1*h1*3);
 	}
 if (bTGA) {
-	sx += src->bm_props.x;
-	sy += src->bm_props.y;
+	sx += src->bmProps.x;
+	sy += src->bmProps.y;
 	for (i = 0; i < h; i++) {
-		d = dest->bm_texBuf + dx + (dy + i) * dest->bm_props.rowsize;
+		d = dest->bmTexBuf + dx + (dy + i) * dest->bmProps.rowSize;
 		s = gameData.render.ogl.texBuf + ((h1 - (i + sy + 1)) * w1 + sx) * 4;
 		memcpy (d, s, w * 4);
 		}
 /*
 	for (i = 0; i < h; i++)
-		memcpy (dest->bm_texBuf + (h - i - 1) * dest->bm_props.rowsize, 
+		memcpy (dest->bmTexBuf + (h - i - 1) * dest->bmProps.rowSize, 
 				  gameData.render.ogl.texBuf + ((sy + i) * h1 + sx) * 4, 
-				  dest->bm_props.rowsize);
+				  dest->bmProps.rowSize);
 */
 	}
 else {
-	sx += src->bm_props.x;
-	sy += src->bm_props.y;
+	sx += src->bmProps.x;
+	sy += src->bmProps.y;
 	for (i = 0; i < h; i++) {
-		d = dest->bm_texBuf + dx + (dy + i) * dest->bm_props.rowsize;
+		d = dest->bmTexBuf + dx + (dy + i) * dest->bmProps.rowSize;
 		s = gameData.render.ogl.texBuf + ((h1 - (i + sy + 1)) * w1 + sx) * 3;
 		for (j = 0; j < w; j++) {
-			*d++ = GrFindClosestColor (dest->bm_palette, s [0] / 4, s [1] / 4, s [2] / 4);
+			*d++ = GrFindClosestColor (dest->bmPalette, s [0] / 4, s [1] / 4, s [2] / 4);
 			s += 3;
 			}
 		}
@@ -2474,20 +2474,20 @@ bool OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * s
 #if 0 //just seems to cause a mess.
 	GLdouble xo, yo;//, xs, ys;
 	
-	dx+=dest->bm_props.x;
-	dy+=dest->bm_props.y;
+	dx+=dest->bmProps.x;
+	dy+=dest->bmProps.y;
 	
 //	xo=dx/ (double)gameStates.ogl.nLastW;
-	xo=dx/ (double)grdCurScreen->sc_w;
+	xo=dx/ (double)grdCurScreen->scWidth;
 //	yo=1.0- (dy+h)/ (double)gameStates.ogl.nLastH;
-	yo=1.0- (dy+h)/ (double)grdCurScreen->sc_h;
-	sx+=src->bm_props.x;
-	sy+=src->bm_props.y;
+	yo=1.0- (dy+h)/ (double)grdCurScreen->scHeight;
+	sx+=src->bmProps.x;
+	sy+=src->bmProps.y;
 	glDisable (GL_TEXTURE_2D);
 	glReadBuffer (GL_FRONT);
 	glRasterPos2f (xo, yo);
 //	glReadPixels (0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
-	glCopyPixels (sx, grdCurScreen->sc_h- (sy+h), w, h, GL_COLOR);
+	glCopyPixels (sx, grdCurScreen->scHeight- (sy+h), w, h, GL_COLOR);
 	glRasterPos2f (0, 0);
 #endif
 	return 0;
@@ -2502,7 +2502,7 @@ gameStates.render.glFOV = fov;
 gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #else
 if (gameStates.ogl.bUseTransform)
-	gameStates.render.glAspect = (double) grdCurScreen->sc_w / (double) grdCurScreen->sc_h;
+	gameStates.render.glAspect = (double) grdCurScreen->scWidth / (double) grdCurScreen->scHeight;
 else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
@@ -2670,7 +2670,7 @@ else
 		OglSetFOV (gameStates.render.glFOV);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
-		OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 
+		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 
 						  nCanvasWidth, nCanvasHeight);
 		}
 	if (gameStates.render.nRenderPass < 0) {
@@ -2696,8 +2696,8 @@ else
 		}
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
-			grdCurCanv->cv_bitmap.bm_props.x, 
-			grdCurScreen->sc_canvas.cv_bitmap.bm_props.h - grdCurCanv->cv_bitmap.bm_props.y - nCanvasHeight, 
+			grdCurCanv->cvBitmap.bmProps.x, 
+			grdCurScreen->scCanvas.cvBitmap.bmProps.h - grdCurCanv->cvBitmap.bmProps.y - nCanvasHeight, 
 			nCanvasWidth, 
 			nCanvasHeight);
 		glEnable (GL_SCISSOR_TEST);
@@ -2747,9 +2747,9 @@ void merge_textures_stats (void);
 
 void OglEndFrame (void)
 {
-//	OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, );
-//	glViewport (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
-OGL_VIEWPORT (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h);
+//	OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
+//	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+OGL_VIEWPORT (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();
@@ -2781,7 +2781,7 @@ void OglSwapBuffers (int bForce, int bClear)
 if (!gameStates.menus.nInMenu || bForce) {
 	ogl_clean_texture_cache ();
 	if (gr_renderstats)
-		GrPrintF (5, GAME_FONT->ft_h*13+3*13, "%i flat %i tex %i sprites %i bitmaps", r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc);
+		GrPrintF (5, GAME_FONT->ftHeight*13+3*13, "%i flat %i tex %i sprites %i bitmaps", r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc);
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 		OglDoPalFx ();
 	OglSwapBuffersInternal ();
@@ -2830,7 +2830,7 @@ else
 if (bmP) {
 	if (OglBindBmTex (bmP, 1, 1))
 		return 0;
-	bmP = BmOverride (bmP);
+	bmP = BmOverride (bmP, -1);
 	if (BM_FRAMES (bmP))
 		bmP = BM_FRAMES (bmP) + nFrame;
 	OglTexWrap (bmP->glTexture, nWrap);

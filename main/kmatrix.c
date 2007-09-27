@@ -277,7 +277,7 @@ void kmatrix_reactor (char *message)
 
 if ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL))
 	return;
-grdCurCanv->cv_font = SMALL_FONT;
+grdCurCanv->cvFont = SMALL_FONT;
 if (oldmessage [0]!=0) {
 	GrSetFontColorRGBi (RGBA_PAL2 (0, 1, 0), 1, 0, 0);
 	GrGetStringSize (oldmessage, &sw, &sh, &aw);
@@ -303,7 +303,7 @@ if (PhallicMan==-1)
 	strcpy (message,TXT_NO_RECORD);
 else
 	sprintf (message, TXT_BEST_RECORD, gameData.multiplayer.players [PhallicMan].callsign,PhallicLimit);
-grdCurCanv->cv_font = SMALL_FONT;
+grdCurCanv->cvFont = SMALL_FONT;
 GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
 GrGetStringSize (message, &sw, &sh, &aw);
 GrPrintF (CENTERSCREEN- (sw/2), LHY (55+72+3), message);
@@ -317,8 +317,8 @@ void KMatrixRedraw ()
 	int i, color;
 	int sorted [MAX_NUM_NET_PLAYERS];
 
-xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
-yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
+xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
+yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 if (xOffs < 0)
 	xOffs = 0;
 if (yOffs < 0)
@@ -329,9 +329,9 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	}
 MultiSortKillList ();
 WIN (DDGRLOCK (dd_grd_curcanv));
-grdCurCanv->cv_font = MEDIUM3_FONT;
+grdCurCanv->cvFont = MEDIUM3_FONT;
 GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE	);
-grdCurCanv->cv_font = SMALL_FONT;
+grdCurCanv->cvFont = SMALL_FONT;
 MultiGetKillList (sorted);
 kmatrix_draw_names (sorted);
 for (i=0; i<gameData.multiplayer.nPlayers; i++) {
@@ -362,9 +362,9 @@ void kmatrix_redraw_coop ()
 
 MultiSortKillList ();
 WIN (DDGRLOCK (dd_grd_curcanv));
-grdCurCanv->cv_font = MEDIUM3_FONT;
+grdCurCanv->cvFont = MEDIUM3_FONT;
 GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY"	);
-grdCurCanv->cv_font = SMALL_FONT;
+grdCurCanv->cvFont = SMALL_FONT;
 MultiGetKillList (sorted);
 kmatrix_draw_coop_names (sorted);
 for (i=0; i<gameData.multiplayer.nPlayers; i++) {

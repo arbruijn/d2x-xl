@@ -455,9 +455,9 @@ switch (nObjType) {
 			int i, j;
 			grsBitmap *bmP;
 			if (bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index)) {
-				color->red = (float) bmP->bm_avgRGB.red;
-				color->green = (float) bmP->bm_avgRGB.green;
-				color->blue = (float) bmP->bm_avgRGB.blue;
+				color->red = (float) bmP->bmAvgRGB.red;
+				color->green = (float) bmP->bmAvgRGB.green;
+				color->blue = (float) bmP->bmAvgRGB.blue;
 				*pbGotColor = 1;
 				}
 			else {
@@ -467,12 +467,12 @@ switch (nObjType) {
 				color->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
 					bmP = gameData.pig.tex.pBitmaps + vcP->frames [i].index;
-					if (bmP->bm_avgRGB.red + bmP->bm_avgRGB.green + bmP->bm_avgRGB.blue == 0)
-						if (!BitmapColor (bmP, bmP->bm_texBuf))
+					if (bmP->bmAvgRGB.red + bmP->bmAvgRGB.green + bmP->bmAvgRGB.blue == 0)
+						if (!BitmapColor (bmP, bmP->bmTexBuf))
 							continue;
-					color->red += (float) bmP->bm_avgRGB.red / 255.0f;
-					color->green += (float) bmP->bm_avgRGB.green / 255.0f;
-					color->blue += (float) bmP->bm_avgRGB.blue / 255.0f;
+					color->red += (float) bmP->bmAvgRGB.red / 255.0f;
+					color->green += (float) bmP->bmAvgRGB.green / 255.0f;
+					color->blue += (float) bmP->bmAvgRGB.blue / 255.0f;
 					j++;
 					}
 				if (j) {
@@ -1497,7 +1497,9 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 		}
 	}
 }
+
 //------------------------------------------------------------------------------
+
 void SetNearestStaticLights (int nSegment, ubyte nType)
 {
 	static	int nLastSeg = 1;
@@ -1574,7 +1576,7 @@ if (gameOpts->render.bDynLighting) {
 			nLightSeg = (psl->nSegment < 0) ? (psl->nObject < 0) ? -1 : gameData.objs.objects [psl->nObject].nSegment : psl->nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
-			if ((psl->xDistance = VmVecDist (&c, &psl->vPos)) > F1_0 * 150)
+			if ((psl->xDistance = VmVecDist (&c, &psl->vPos)) > MAX_LIGHT_RANGE)
 				continue;
 			}
 		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
@@ -1743,6 +1745,7 @@ if (gameOpts->render.bDynLighting ||
 		tFaceColor		*pfh, *pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
 		fVector			vVertex;
 		tSegment2		*seg2P;
+
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
 	for (nVertex = 0; nVertex < gameData.segs.nVertices; nVertex++, pf++) {

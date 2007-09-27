@@ -62,26 +62,26 @@ void gr_pixel( int x, int y )
 #ifndef D1XD3D
 inline void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 {
-	grs_color c;
-	switch (bm->bm_props.nType)
+	grsColor c;
+	switch (bm->bmProps.nType)
 	{
 	case BM_OGL:
 		c.index = color;
 		c.rgb = 0;
-		OglUPixelC(bm->bm_props.x + x, bm->bm_props.y + y, &c);
+		OglUPixelC(bm->bmProps.x + x, bm->bmProps.y + y, &c);
 		return;
 	case BM_LINEAR:
-		bm->bm_texBuf[ bm->bm_props.rowsize*y+x ] = color;
+		bm->bmTexBuf[ bm->bmProps.rowSize*y+x ] = color;
 		return;
 #ifdef __DJGPP__
 	case BM_MODEX:
-		x += bm->bm_props.x;
-		y += bm->bm_props.y;
+		x += bm->bmProps.x;
+		y += bm->bmProps.y;
 		gr_modex_setplane( x & 3 );
-		gr_video_memory[(bm->bm_props.rowsize * y) + (x/4)] = color;
+		gr_video_memory[(bm->bmProps.rowSize * y) + (x/4)] = color;
 		return;
 	case BM_SVGA:
-		gr_vesa_pixel(color,(unsigned int)bm->bm_texBuf + (unsigned int)bm->bm_props.rowsize * y + x);
+		gr_vesa_pixel(color,(unsigned int)bm->bmTexBuf + (unsigned int)bm->bmProps.rowSize * y + x);
 		return;
 #endif
 	}
@@ -90,7 +90,7 @@ inline void gr_bm_upixel( grsBitmap * bm, int x, int y, unsigned char color )
 
 void gr_bm_pixel( grsBitmap * bm, int x, int y, unsigned char color )
 {
-	if ((x<0) || (y<0) || (x>=bm->bm_props.w) || (y>=bm->bm_props.h)) return;
+	if ((x<0) || (y<0) || (x>=bm->bmProps.w) || (y>=bm->bmProps.h)) return;
 	gr_bm_upixel (bm, x, y, color);
 }
 

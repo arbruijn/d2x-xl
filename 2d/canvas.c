@@ -28,91 +28,91 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vesa.h"
 #endif
 
-grs_canvas * grdCurCanv = NULL;    //active canvas
-grs_screen * grdCurScreen = NULL;  //active screen
+gsrCanvas * grdCurCanv = NULL;    //active canvas
+grsScreen * grdCurScreen = NULL;  //active screen
 
 //	-----------------------------------------------------------------------------
 
-grs_canvas *GrCreateCanvas(int w, int h)
+gsrCanvas *GrCreateCanvas(int w, int h)
 {
-	grs_canvas *newCanv;
+	gsrCanvas *newCanv;
 	
-	newCanv = (grs_canvas *)D2_ALLOC( sizeof(grs_canvas) );
-	GrInitBitmapAlloc (&newCanv->cv_bitmap, BM_LINEAR, 0, 0, w, h, w, 1);
+	newCanv = (gsrCanvas *)D2_ALLOC( sizeof(gsrCanvas) );
+	GrInitBitmapAlloc (&newCanv->cvBitmap, BM_LINEAR, 0, 0, w, h, w, 1);
 
-	newCanv->cv_color.index = 0;
-	newCanv->cv_color.rgb = 0;
-	newCanv->cv_drawmode = 0;
-	newCanv->cv_font = NULL;
-	newCanv->cv_font_fg_color.index = 0;
-	newCanv->cv_font_fg_color.rgb = 0;
-	newCanv->cv_font_bg_color.index = 0;
-	newCanv->cv_font_bg_color.rgb = 0;
+	newCanv->cvColor.index = 0;
+	newCanv->cvColor.rgb = 0;
+	newCanv->cvDrawMode = 0;
+	newCanv->cvFont = NULL;
+	newCanv->cvFontFgColor.index = 0;
+	newCanv->cvFontFgColor.rgb = 0;
+	newCanv->cvFontBgColor.index = 0;
+	newCanv->cvFontBgColor.rgb = 0;
 	return newCanv;
 }
 
 //	-----------------------------------------------------------------------------
 
-grs_canvas *GrCreateSubCanvas(grs_canvas *canv, int x, int y, int w, int h)
+gsrCanvas *GrCreateSubCanvas(gsrCanvas *canv, int x, int y, int w, int h)
 {
-	grs_canvas *newCanv;
+	gsrCanvas *newCanv;
 
-newCanv = (grs_canvas *)D2_ALLOC( sizeof(grs_canvas) );
-GrInitSubBitmap (&newCanv->cv_bitmap, &canv->cv_bitmap, x, y, w, h);
-newCanv->cv_color = canv->cv_color;
-newCanv->cv_drawmode = canv->cv_drawmode;
-newCanv->cv_font = canv->cv_font;
-newCanv->cv_font_fg_color = canv->cv_font_fg_color;
-newCanv->cv_font_bg_color = canv->cv_font_bg_color;
+newCanv = (gsrCanvas *)D2_ALLOC( sizeof(gsrCanvas) );
+GrInitSubBitmap (&newCanv->cvBitmap, &canv->cvBitmap, x, y, w, h);
+newCanv->cvColor = canv->cvColor;
+newCanv->cvDrawMode = canv->cvDrawMode;
+newCanv->cvFont = canv->cvFont;
+newCanv->cvFontFgColor = canv->cvFontFgColor;
+newCanv->cvFontBgColor = canv->cvFontBgColor;
 return newCanv;
 }
 
 //	-----------------------------------------------------------------------------
 
-void GrInitCanvas(grs_canvas *canv, unsigned char * pixdata, int pixtype, int w, int h)
+void GrInitCanvas(gsrCanvas *canv, unsigned char * pixdata, int pixtype, int w, int h)
 {
 	int wreal;
 
-canv->cv_color.index = 0;
-canv->cv_color.rgb = 0;
-canv->cv_drawmode = 0;
-canv->cv_font = NULL;
-canv->cv_font_fg_color.index = 0;
-canv->cv_font_bg_color.index = 0;
+canv->cvColor.index = 0;
+canv->cvColor.rgb = 0;
+canv->cvDrawMode = 0;
+canv->cvFont = NULL;
+canv->cvFontFgColor.index = 0;
+canv->cvFontBgColor.index = 0;
 #ifndef __DJGPP__
 wreal = w;
 #else
 wreal = (pixtype == BM_MODEX) ? w / 4 : w;
 #endif
-GrInitBitmap (&canv->cv_bitmap, pixtype, 0, 0, w, h, wreal, pixdata, 1);
+GrInitBitmap (&canv->cvBitmap, pixtype, 0, 0, w, h, wreal, pixdata, 1);
 }
 
 //	-----------------------------------------------------------------------------
 
-void GrInitSubCanvas(grs_canvas *newCanv, grs_canvas *src, int x, int y, int w, int h)
+void GrInitSubCanvas(gsrCanvas *newCanv, gsrCanvas *src, int x, int y, int w, int h)
 {
-	newCanv->cv_color = src->cv_color;
-	newCanv->cv_drawmode = src->cv_drawmode;
-	newCanv->cv_font = src->cv_font;
-	newCanv->cv_font_fg_color = src->cv_font_fg_color;
-	newCanv->cv_font_bg_color = src->cv_font_bg_color;
+	newCanv->cvColor = src->cvColor;
+	newCanv->cvDrawMode = src->cvDrawMode;
+	newCanv->cvFont = src->cvFont;
+	newCanv->cvFontFgColor = src->cvFontFgColor;
+	newCanv->cvFontBgColor = src->cvFontBgColor;
 
-	GrInitSubBitmap (&newCanv->cv_bitmap, &src->cv_bitmap, x, y, w, h);
+	GrInitSubBitmap (&newCanv->cvBitmap, &src->cvBitmap, x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
 
-void GrFreeCanvas(grs_canvas *canv)
+void GrFreeCanvas(gsrCanvas *canv)
 {
 if (canv) {
-	GrFreeBitmapData (&canv->cv_bitmap);
+	GrFreeBitmapData (&canv->cvBitmap);
 	D2_FREE(canv);
 	}
 }
 
 //	-----------------------------------------------------------------------------
 
-void GrFreeSubCanvas(grs_canvas *canv)
+void GrFreeSubCanvas(gsrCanvas *canv)
 {
 if (canv)
     D2_FREE(canv);
@@ -122,36 +122,36 @@ if (canv)
 
 int gr_wait_for_retrace = 1;
 
-void GrShowCanvas( grs_canvas *canv )
+void GrShowCanvas( gsrCanvas *canv )
 {
 #ifdef __DJGPP__
-	if (canv->cv_bitmap.bm_props.nType == BM_MODEX )
-		gr_modex_setstart( canv->cv_bitmap.bm_props.x, canv->cv_bitmap.bm_props.y, gr_wait_for_retrace );
+	if (canv->cvBitmap.bmProps.nType == BM_MODEX )
+		gr_modex_setstart( canv->cvBitmap.bmProps.x, canv->cvBitmap.bmProps.y, gr_wait_for_retrace );
 
-	else if (canv->cv_bitmap.bm_props.nType == BM_SVGA )
-		gr_vesa_setstart( canv->cv_bitmap.bm_props.x, canv->cv_bitmap.bm_props.y );
+	else if (canv->cvBitmap.bmProps.nType == BM_SVGA )
+		gr_vesa_setstart( canv->cvBitmap.bmProps.x, canv->cvBitmap.bmProps.y );
 #endif
-		//	else if (canv->cv_bitmap.bm_props.nType == BM_LINEAR )
+		//	else if (canv->cvBitmap.bmProps.nType == BM_LINEAR )
 		// Int3();		// Get JOHN!
-		//gr_linear_movsd( canv->cv_bitmap.bm_texBuf, (void *)gr_video_memory, 320*200);
+		//gr_linear_movsd( canv->cvBitmap.bmTexBuf, (void *)gr_video_memory, 320*200);
 }
 
 //	-----------------------------------------------------------------------------
 
-void GrSetCurrentCanvas( grs_canvas *canv )
+void GrSetCurrentCanvas( gsrCanvas *canv )
 {
 #if 0 //TRACE
 con_printf (CONDBG, 
 	"grd_set_current_canvas (canv=%p, grdCurCanv=%p, grdCurScreen=%p)\n", 
 	canv, grdCurCanv, grdCurScreen);
 #endif
-grdCurCanv = canv ? canv : &(grdCurScreen->sc_canvas);
+grdCurCanv = canv ? canv : &(grdCurScreen->scCanvas);
 #ifndef NO_ASM
 gr_var_color = 
-	(!grdCurCanv->cv_color_rgb && (grdCurCanv->cv_color >= 0) && (grdCurCanv->cv_color <= 255)) ? 
-	grdCurCanv->cv_color : 0;
-gr_var_bitmap = grdCurCanv->cv_bitmap.bm_texBuf;
-gr_var_bwidth = grdCurCanv->cv_bitmap.bm_props.rowsize;
+	(!grdCurCanv->cv_color_rgb && (grdCurCanv->cvColor >= 0) && (grdCurCanv->cvColor <= 255)) ? 
+	grdCurCanv->cvColor : 0;
+gr_var_bitmap = grdCurCanv->cvBitmap.bmTexBuf;
+gr_var_bwidth = grdCurCanv->cvBitmap.bmProps.rowSize;
 #endif
 }
 
@@ -163,7 +163,7 @@ if (TYPE == BM_OGL)
 	GrSetColorRGBi (color);
 else 
 	if (color)
-		GrSetColor (GrFindClosestColor (grdCurCanv->cv_bitmap.bm_palette, RGBA_RED (color), RGBA_GREEN (color), RGBA_BLUE (color)));
+		GrSetColor (GrFindClosestColor (grdCurCanv->cvBitmap.bmPalette, RGBA_RED (color), RGBA_GREEN (color), RGBA_BLUE (color)));
 	else
 		GrSetColor (TRANSPARENCY_COLOR);
 GrRect (0, 0, GWIDTH-1, GHEIGHT-1);
@@ -173,8 +173,8 @@ GrRect (0, 0, GWIDTH-1, GHEIGHT-1);
 
 void GrSetColor(int color)
 {
-grdCurCanv->cv_color.index =color % 256;
-grdCurCanv->cv_color.rgb = 0;
+grdCurCanv->cvColor.index =color % 256;
+grdCurCanv->cvColor.rgb = 0;
 #ifndef NO_ASM
 gr_var_color = color % 256;
 #endif
@@ -184,11 +184,11 @@ gr_var_color = color % 256;
 
 void GrSetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha)
 {
-grdCurCanv->cv_color.rgb = 1;
-grdCurCanv->cv_color.color.red = red;
-grdCurCanv->cv_color.color.green = green;
-grdCurCanv->cv_color.color.blue = blue;
-grdCurCanv->cv_color.color.alpha = alpha;
+grdCurCanv->cvColor.rgb = 1;
+grdCurCanv->cvColor.color.red = red;
+grdCurCanv->cvColor.color.green = green;
+grdCurCanv->cvColor.color.blue = blue;
+grdCurCanv->cvColor.color.alpha = alpha;
 #ifndef NO_ASM
 	gr_var_color = color % 256;
 #endif
@@ -209,11 +209,11 @@ GrSetColorRGB (
 
 void GrFadeColorRGB (double dFade)
 {
-if (dFade && grdCurCanv->cv_color.rgb) {
-	grdCurCanv->cv_color.color.red = (ubyte) (grdCurCanv->cv_color.color.red * dFade);
-	grdCurCanv->cv_color.color.green = (ubyte) (grdCurCanv->cv_color.color.green * dFade);
-	grdCurCanv->cv_color.color.blue = (ubyte) (grdCurCanv->cv_color.color.blue * dFade);
-	//grdCurCanv->cv_color.color.alpha = (ubyte) ((float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS * 255.0f);
+if (dFade && grdCurCanv->cvColor.rgb) {
+	grdCurCanv->cvColor.color.red = (ubyte) (grdCurCanv->cvColor.color.red * dFade);
+	grdCurCanv->cvColor.color.green = (ubyte) (grdCurCanv->cvColor.color.green * dFade);
+	grdCurCanv->cvColor.color.blue = (ubyte) (grdCurCanv->cvColor.color.blue * dFade);
+	//grdCurCanv->cvColor.color.alpha = (ubyte) ((float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS * 255.0f);
 	}
 }
 

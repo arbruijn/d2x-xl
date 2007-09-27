@@ -301,11 +301,11 @@ if (gameData.render.terrain.pHeightMap)
 	D2_FREE (gameData.render.terrain.pHeightMap)
 else
 	atexit (FreeTerrainHeightMap);		//first time
-gameData.render.terrain.nGridW = bmHeight.bm_props.w;
-gameData.render.terrain.nGridH = bmHeight.bm_props.h;
+gameData.render.terrain.nGridW = bmHeight.bmProps.w;
+gameData.render.terrain.nGridH = bmHeight.bmProps.h;
 Assert (gameData.render.terrain.nGridW <= TERRAIN_GRID_MAX_SIZE);
 Assert (gameData.render.terrain.nGridH <= TERRAIN_GRID_MAX_SIZE);
-gameData.render.terrain.pHeightMap = bmHeight.bm_texBuf;
+gameData.render.terrain.pHeightMap = bmHeight.bmTexBuf;
 hMax = 0;
 hMin = 255;
 for (i = 0; i < gameData.render.terrain.nGridW; i++)
@@ -321,14 +321,14 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 		HEIGHT (i, j) -= hMin;
 		}
 	}
-//	D2_FREE (bmHeight.bm_texBuf);
+//	D2_FREE (bmHeight.bmTexBuf);
 gameData.render.terrain.bmP = gameData.endLevel.terrain.bmP;
 #if 0 //the following code turns the (palettized) terrain texture into a white TGA texture for testing
-gameData.render.terrain.bmP->bm_props.rowsize *= 4;
-gameData.render.terrain.bmP->bm_props.flags |= BM_FLAG_TGA;
-D2_FREE (gameData.render.terrain.bmP->bm_texBuf);
-gameData.render.terrain.bmP->bm_texBuf = D2_ALLOC (gameData.render.terrain.bmP->bm_props.h * gameData.render.terrain.bmP->bm_props.rowsize);
-memset (gameData.render.terrain.bmP->bm_texBuf, 0xFF, gameData.render.terrain.bmP->bm_props.h * gameData.render.terrain.bmP->bm_props.rowsize);
+gameData.render.terrain.bmP->bmProps.rowSize *= 4;
+gameData.render.terrain.bmP->bmProps.flags |= BM_FLAG_TGA;
+D2_FREE (gameData.render.terrain.bmP->bmTexBuf);
+gameData.render.terrain.bmP->bmTexBuf = D2_ALLOC (gameData.render.terrain.bmP->bmProps.h * gameData.render.terrain.bmP->bmProps.rowSize);
+memset (gameData.render.terrain.bmP->bmTexBuf, 0xFF, gameData.render.terrain.bmP->bmProps.h * gameData.render.terrain.bmP->bmProps.rowSize);
 #endif
 LogErr ("            building terrain light map\n");
 BuildTerrainLightMap ();

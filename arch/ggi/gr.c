@@ -45,7 +45,7 @@ void GrUpdate (0)
 {
 	ggiFlush(screenvis);
 	if (!use_directbuffer)
-		ggiPutBox(screenvis, 0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, screenbuffer);
+		ggiPutBox(screenvis, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, screenbuffer);
 }
 
 int GrSetMode(u_int32_t mode)
@@ -83,30 +83,30 @@ int GrSetMode(u_int32_t mode)
 			use_directbuffer = 1;
 	}
 
-        memset(grdCurScreen, 0, sizeof(grs_screen);
+        memset(grdCurScreen, 0, sizeof(grsScreen);
 
-	grdCurScreen->sc_mode = mode;
-	grdCurScreen->sc_w = w;
-	grdCurScreen->sc_h = h;
-	grdCurScreen->sc_aspect = FixDiv(grdCurScreen->sc_w*3,grdCurScreen->sc_h*4);
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.x = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.y = 0;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.w = w;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.h = h;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_props.nType = BM_LINEAR;
-	grdCurScreen->sc_canvas.cv_bitmap.bm_bpp = 1;
+	grdCurScreen->scMode = mode;
+	grdCurScreen->scWidth = w;
+	grdCurScreen->scHeight = h;
+	grdCurScreen->scAspect = FixDiv(grdCurScreen->scWidth*3,grdCurScreen->scHeight*4);
+	grdCurScreen->scCanvas.cvBitmap.bmProps.x = 0;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.y = 0;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.w = w;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.h = h;
+	grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_LINEAR;
+	grdCurScreen->scCanvas.cvBitmap.bmBPP = 1;
 
 	if (use_directbuffer)
 	{
-	        grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = dbuffer->write;
-        	grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = dbuffer->buffer.plb.stride;
+	        grdCurScreen->scCanvas.cvBitmap.bmTexBuf = dbuffer->write;
+        	grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = dbuffer->buffer.plb.stride;
 	}
 	else
 	{
 		D2_FREE(screenbuffer);
 		screenbuffer = D2_ALLOC (w * h);
-		grdCurScreen->sc_canvas.cv_bitmap.bm_texBuf = screenbuffer;
-		grdCurScreen->sc_canvas.cv_bitmap.bm_props.rowsize = w;
+		grdCurScreen->scCanvas.cvBitmap.bmTexBuf = screenbuffer;
+		grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = w;
 	}
 
 	GrSetCurrentCanvas(NULL);
@@ -123,8 +123,8 @@ int GrInit(void)
  	// Only do this function once!
 	if (gameStates.gfx.bInstalled==1)
 		return -1;
-	MALLOC(grdCurScreen,grs_screen, 1);
-	memset(grdCurScreen, 0, sizeof(grs_screen);
+	MALLOC(grdCurScreen,grsScreen, 1);
+	memset(grdCurScreen, 0, sizeof(grsScreen);
 	
 	ggiInit();
 	screenvis = ggiOpen(NULL);
@@ -133,12 +133,12 @@ int GrInit(void)
 	if ((retcode=GrSetMode(mode)))
 		return retcode;
 	
-	grdCurScreen->sc_canvas.cv_color = 0;
-	grdCurScreen->sc_canvas.cv_drawmode = 0;
-	grdCurScreen->sc_canvas.cv_font = NULL;
-	grdCurScreen->sc_canvas.cv_font_fg_color = 0;
-	grdCurScreen->sc_canvas.cv_font_bg_color = 0;
-	GrSetCurrentCanvas( &grdCurScreen->sc_canvas );
+	grdCurScreen->scCanvas.cvColor = 0;
+	grdCurScreen->scCanvas.cvDrawMode = 0;
+	grdCurScreen->scCanvas.cvFont = NULL;
+	grdCurScreen->scCanvas.cvFontFgColor = 0;
+	grdCurScreen->scCanvas.cvFontBgColor = 0;
+	GrSetCurrentCanvas( &grdCurScreen->scCanvas );
 
 	gameStates.gfx.bInstalled = 1;
 	atexit(GrClose);

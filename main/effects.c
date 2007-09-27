@@ -196,7 +196,7 @@ else {
 				BM_OVERRIDE (hbmP) = NULL;	//prevent the root texture from being deleted
 			PiggyFreeBitmap (hbmP, j, gameStates.app.bD1Data);
 			BM_OVERRIDE (hbmP) = bmfP;
-			bmfP->bm_handle = j;
+			bmfP->bmHandle = j;
 			bmfP += nFrameStep;
 			}	
 		}

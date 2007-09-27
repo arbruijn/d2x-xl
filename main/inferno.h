@@ -683,11 +683,11 @@ typedef struct tCockpitStates {
 //------------------------------------------------------------------------------
 
 typedef struct tVRBuffers {
-	grs_canvas  *offscreen;			// The offscreen data buffer
-	grs_canvas	render [2];			//  Two offscreen buffers for left/right eyes.
-	grs_canvas	subRender [2];		//  Two sub buffers for left/right eyes.
-	grs_canvas	screenPages [2];	//  Two pages of VRAM if paging is available
-	grs_canvas	editorCanvas;		//  The canvas that the editor writes to.
+	gsrCanvas  *offscreen;			// The offscreen data buffer
+	gsrCanvas	render [2];			//  Two offscreen buffers for left/right eyes.
+	gsrCanvas	subRender [2];		//  Two sub buffers for left/right eyes.
+	gsrCanvas	screenPages [2];	//  Two pages of VRAM if paging is available
+	gsrCanvas	editorCanvas;		//  The canvas that the editor writes to.
 } tVRBuffers;
 
 typedef struct tVRStates {
@@ -2719,7 +2719,7 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(ga
 static inline void PIGGY_PAGE_IN (tBitmapIndex bmi, int bD1) 
 {
 grsBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi.index;
-if (!bmP->bm_texBuf || (bmP->bm_props.flags & BM_FLAG_PAGED_OUT))
+if (!bmP->bmTexBuf || (bmP->bmProps.flags & BM_FLAG_PAGED_OUT))
 	PiggyBitmapPageIn (bmi, bD1);
 }
 
@@ -2760,13 +2760,15 @@ return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS
 
 #define G3_INFINITY			fInfinity [gameOpts->render.shadows.nReach]
 
+#define MAX_LIGHT_RANGE	(125 * F1_0)
+
 #define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
 
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline int VERTVIS (short nSegment, short nVertex)
 {
-	ubyte	b = (nVertex & 3) * 2,
+	ubyte	b = (nVertex & 3) << 1,
 			b1 = 3 << b,
 			b0 = 1 << b;
 

@@ -127,24 +127,13 @@ int CheckTransparency (tSegment *segP, short nSide)
 	grsBitmap	*bmP;
 
 if (sideP->nOvlTex) {
-	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nOvlTex].index);
-	if ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) {
-		int i = (int) (BM_CURFRAME (bmP) - BM_FRAMES (bmP));
-		if (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32)))
-			return 1;
-		}
-	else if (bmP->bm_props.flags & BM_FLAG_SUPER_TRANSPARENT)
+	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nOvlTex].index, -1);
+	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
 	}
 else {
-	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index);
-	if ((bmP->bmType == BM_TYPE_ALT) && BM_FRAMES (bmP)) {
-		int i = (int) (BM_CURFRAME (bmP) - BM_FRAMES (bmP));
-		if ((bmP->bm_transparentFrames [i / 32] & (1 << (i % 32))) ||
-			 (bmP->bm_supertranspFrames [i / 32] & (1 << (i % 32))))
-			return 1;
-		}
-	else if (bmP->bm_props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index, -1);
+	if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 		return 1;
 	}
 if (gameStates.app.bD2XLevel) {
@@ -354,7 +343,7 @@ if (anim->flags & WCF_ALTFMT) {
 	if (!bmP)
 		anim->flags &= ~WCF_ALTFMT;
 	else {
-		bmP->bm_wallAnim = 1;
+		bmP->bmWallAnim = 1;
 		if (!gameOpts->ogl.bGlTexMerge) 
 			anim->flags &= ~WCF_ALTFMT;
 		else if (!BM_FRAMES (bmP)) 

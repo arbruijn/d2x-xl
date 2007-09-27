@@ -929,7 +929,7 @@ if (bGetSlideBank == 2) {
 					dx += dz;
 				}
 			else {
-				//dz = dz * grdCurScreen->sc_w / grdCurScreen->sc_h;
+				//dz = dz * grdCurScreen->scWidth / grdCurScreen->scHeight;
 				if (dx < dz)
 					dx = 0;
 				else

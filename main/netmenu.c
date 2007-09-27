@@ -1872,7 +1872,7 @@ char *PruneText (char *pszDest, char *pszSrc, int nSize, int nPos, int nVersion)
 {
 	int		lDots, lMax, l, tx, ty, ta;
 	char		*psz;
-	grs_font	*curFont = grdCurCanv->cv_font;
+	grsFont	*curFont = grdCurCanv->cvFont;
 
 if (gameOpts->menus.bShowLevelVersion && (nVersion >= 0)) {
 	if (nVersion)
@@ -1886,7 +1886,7 @@ else
 pszDest [nSize - 1] = '\0';
 if ((psz = strchr (pszDest, '\t')))
 	*psz = '\0';
-grdCurCanv->cv_font = SMALL_FONT;
+grdCurCanv->cvFont = SMALL_FONT;
 GrGetStringSize ("... ", &lDots, &ty, &ta);
 GrGetStringSize (pszDest, &tx, &ty, &ta);
 l = (int) strlen (pszDest);
@@ -1899,7 +1899,7 @@ if (tx > lMax) {
 	} while (tx > lMax);
 	strcat (pszDest, "...");
 	}
-grdCurCanv->cv_font = curFont; 
+grdCurCanv->cvFont = curFont; 
 return pszDest;
 }
 

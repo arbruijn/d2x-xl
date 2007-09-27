@@ -268,7 +268,7 @@ int LoadShield (void)
 if (!bHaveShield) {
 	bmpShield = CreateAndReadTGA ("shield.tga");
 	if (0 < (bHaveShield = bmpShield ? 1 : -1))
-		BM_FRAMECOUNT (bmpShield) = bmpShield->bm_props.h / bmpShield->bm_props.w;
+		BM_FRAMECOUNT (bmpShield) = bmpShield->bmProps.h / bmpShield->bmProps.w;
 	}
 return bHaveShield > 0;
 }
@@ -345,13 +345,13 @@ glDepthFunc (depthFunc);
 
 //------------------------------------------------------------------------------
 
-grs_canvas * reticle_canvas = NULL;
+gsrCanvas * reticle_canvas = NULL;
 
 void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticle_canvas)	{
 	LogErr ("unloading reticle data\n");
-	D2_FREE( reticle_canvas->cv_bitmap.bm_texBuf);
+	D2_FREE( reticle_canvas->cvBitmap.bmTexBuf);
 	D2_FREE( reticle_canvas);
 	reticle_canvas	= NULL;
 	}
@@ -369,7 +369,7 @@ void Draw3DReticle (fix nEyeOffset)
 	g3sPoint	*pointList [4];
 	int 			i;
 	vmsVector	v1, v2;
-	grs_canvas	*saved_canvas;
+	gsrCanvas	*saved_canvas;
 	int			saved_interp_method;
 
 //	if (!viewInfo.bUsePlayerHeadAngles) return;
@@ -412,8 +412,8 @@ if ( reticle_canvas == NULL)	{
 	if ( !reticle_canvas)
 		Error( "Couldn't D2_ALLOC reticle_canvas");
 	atexit( FreeReticleCanvas);
-	//reticle_canvas->cv_bitmap.bm_handle = 0;
-	reticle_canvas->cv_bitmap.bm_props.flags = BM_FLAG_TRANSPARENT;
+	//reticle_canvas->cvBitmap.bmHandle = 0;
+	reticle_canvas->cvBitmap.bmProps.flags = BM_FLAG_TRANSPARENT;
 	}
 
 saved_canvas = grdCurCanv;
@@ -424,7 +424,7 @@ GrSetCurrentCanvas(saved_canvas);
 
 saved_interp_method=gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointList, tUVL, &reticle_canvas->cv_bitmap, NULL, 1);
+G3DrawTexPoly (4, pointList, tUVL, &reticle_canvas->cvBitmap, NULL, 1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -1100,7 +1100,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nv, short *vp, int tmap
 		G3DrawTexPoly (nv, pointList, (tUVL *)uvlCopy, bm, 1);
  gameStates.render.nLighting = save_lighting;
 
-		if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) == 1) {
+		if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) == 1) {
 			found_seg = nSegment;
 			found_side = nSide;
 			found_face = facenum;
@@ -1878,13 +1878,13 @@ void renderObject_search(tObject *objP)
 	GrSetColor(0);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) != 0)
+	if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) != 0)
 		changed=1;
 
 	GrSetColor(1);
 	gr_pixel(_search_x, _search_y);	//set our search pixel to color zero
 	RenderObject (objP, 0, 0);
-	if (gr_ugpixel(&grdCurCanv->cv_bitmap, _search_x, _search_y) != 1)
+	if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) != 1)
 		changed=1;
 
 	if (changed) {
@@ -2200,15 +2200,15 @@ t=top;
 r=right; 
 b=bot;
 
-if ( r<0 || b<0 || l>=grdCurCanv->cv_bitmap.bm_props.w || (t>=grdCurCanv->cv_bitmap.bm_props.h && b>=grdCurCanv->cv_bitmap.bm_props.h))
+if ( r<0 || b<0 || l>=grdCurCanv->cvBitmap.bmProps.w || (t>=grdCurCanv->cvBitmap.bmProps.h && b>=grdCurCanv->cvBitmap.bmProps.h))
 	return;
 
 if (l<0) 
 	l=0;
 if (t<0) 
 	t=0;
-if (r>=grdCurCanv->cv_bitmap.bm_props.w) r=grdCurCanv->cv_bitmap.bm_props.w-1;
-if (b>=grdCurCanv->cv_bitmap.bm_props.h) b=grdCurCanv->cv_bitmap.bm_props.h-1;
+if (r>=grdCurCanv->cvBitmap.bmProps.w) r=grdCurCanv->cvBitmap.bmProps.w-1;
+if (b>=grdCurCanv->cvBitmap.bmProps.h) b=grdCurCanv->cvBitmap.bmProps.h-1;
 
 GrLine(i2f(l), i2f(t), i2f(r), i2f(t));
 GrLine(i2f(r), i2f(t), i2f(r), i2f(b));
@@ -3014,10 +3014,10 @@ void CreateShadowTexture (void)
 
 if (!bHaveShadowBuf) {
 	memset (&shadowBuf, 0, sizeof (shadowBuf));
-	shadowBuf.bm_props.w = STB_SIZE_X;
-	shadowBuf.bm_props.h = STB_SIZE_Y;
-	shadowBuf.bm_props.flags = (char) BM_FLAG_TGA;
-	shadowBuf.bm_texBuf = shadowTexBuf;
+	shadowBuf.bmProps.w = STB_SIZE_X;
+	shadowBuf.bmProps.h = STB_SIZE_Y;
+	shadowBuf.bmProps.flags = (char) BM_FLAG_TGA;
+	shadowBuf.bmTexBuf = shadowTexBuf;
 	OglLoadBmTextureM (&shadowBuf, 0, -1, 0, NULL);
 	bHaveShadowBuf = 1;
 	}
@@ -3025,11 +3025,11 @@ if (!bHaveShadowBuf) {
 //glStencilFunc (GL_EQUAL, 0, ~0);
 //RenderShadowQuad (1);
 #	if 0
-glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, grdCurCanv->cv_bitmap.bm_props.h - 128, 128, 128, 0);
+glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, grdCurCanv->cvBitmap.bmProps.h - 128, 128, 128, 0);
 #	else
 glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0,
-						grdCurCanv->cv_bitmap.bm_props.w, 
-						grdCurCanv->cv_bitmap.bm_props.h, 0);
+						grdCurCanv->cvBitmap.bmProps.w, 
+						grdCurCanv->cvBitmap.bmProps.h, 0);
 #	endif
 #else
 glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
@@ -3498,7 +3498,7 @@ if (SHOW_SHADOWS &&
 #endif
 		OglStartFrame (0, 0);
 #if SOFT_SHADOWS
-		OGL_VIEWPORT (grdCurCanv->cv_bitmap.bm_props.x, grdCurCanv->cv_bitmap.bm_props.y, 128, 128);
+		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #ifdef RELEASE
@@ -3726,8 +3726,8 @@ if (bPreDrawSegs)
 
 renderWindows [0].left =
 renderWindows [0].top = 0;
-renderWindows [0].right = grdCurCanv->cv_bitmap.bm_props.w - 1;
-renderWindows [0].bot = grdCurCanv->cv_bitmap.bm_props.h - 1;
+renderWindows [0].right = grdCurCanv->cvBitmap.bmProps.w - 1;
+renderWindows [0].bot = grdCurCanv->cvBitmap.bmProps.h - 1;
 
 //breadth-first renderer
 
@@ -4336,10 +4336,10 @@ int find_seg_side_face(short x, short y, int *seg, int *tSide, int *face, int *p
 	_search_x = x; _search_y = y;
 	found_seg = -1;
 	if (render_3d_in_big_window) {
-		grs_canvas temp_canvas;
+		gsrCanvas temp_canvas;
 
 		GrInitSubCanvas(&temp_canvas, canv_offscreen, 0, 0, 
-			LargeView.ev_canv->cv_bitmap.bm_props.w, LargeView.ev_canv->cv_bitmap.bm_props.h);
+			LargeView.ev_canv->cvBitmap.bmProps.w, LargeView.ev_canv->cvBitmap.bmProps.h);
 		GrSetCurrentCanvas(&temp_canvas);
 		RenderFrame(0, 0);
 	}
@@ -4780,9 +4780,7 @@ if (bmP) {
 			renderItems.bmP = NULL;
 			return 0;
 			}
-		bmP = BmOverride (bmP);
-		if (BM_FRAMES (bmP))
-			bmP = BM_FRAMES (bmP) + nFrame;
+		bmP = BmOverride (bmP, nFrame);
 		OglTexWrap (bmP->glTexture, nWrap);
 		renderItems.bmP = bmP;
 		renderItems.nWrap = nWrap;

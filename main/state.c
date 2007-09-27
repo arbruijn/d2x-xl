@@ -164,18 +164,18 @@ if (!items [NM_IMG_SPACE - 1].text || strcmp (items [NM_IMG_SPACE - 1].text, szT
 if (!sc_bmp [i])
 	return;
 if (gameStates.menus.bHires) {
-	x = (grdCurCanv->cv_bitmap.bm_props.w - sc_bmp [i]->bm_props.w) / 2;
+	x = (grdCurCanv->cvBitmap.bmProps.w - sc_bmp [i]->bmProps.w) / 2;
 	y = items [0].y - 16;
 	if (gameStates.app.bGameRunning)
 		GrPaletteStepLoad (NULL);
 	GrBitmap (x, y, sc_bmp [i]);
 	if (gameOpts->menus.nStyle) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
-		GrUBox (x - 1, y - 1, x + sc_bmp [i]->bm_props.w + 1, y + sc_bmp [i]->bm_props.h + 1);
+		GrUBox (x - 1, y - 1, x + sc_bmp [i]->bmProps.w + 1, y + sc_bmp [i]->bmProps.h + 1);
 		}
 	}
 else {
-	GrBitmap ((grdCurCanv->cv_bitmap.bm_props.w-THUMBNAIL_W) / 2,items [0].y - 5, sc_bmp [citem - 1]);
+	GrBitmap ((grdCurCanv->cvBitmap.bmProps.w-THUMBNAIL_W) / 2,items [0].y - 5, sc_bmp [citem - 1]);
 	}
 }
 
@@ -299,11 +299,11 @@ int StateGetRestoreFile (char * fname, int bMulti)
 					// Read thumbnail
 					if (sgVersion < 26) {
 						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_W,THUMBNAIL_H, 1);
-						CFRead (sc_bmp [i]->bm_texBuf, THUMBNAIL_W * THUMBNAIL_H, 1, fp);
+						CFRead (sc_bmp [i]->bmTexBuf, THUMBNAIL_W * THUMBNAIL_H, 1, fp);
 						}
 					else {
 						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_LW,THUMBNAIL_LH, 1);
-						CFRead (sc_bmp [i]->bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
+						CFRead (sc_bmp [i]->bmTexBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
 						}
 					if (sgVersion >= 9) {
 						ubyte pal [256*3];
@@ -1253,7 +1253,7 @@ int StateSaveAllSub (char *filename, char *szDesc, int bBetweenLevels)
 {
 	int			i;
 	CFILE			*fp;
-	grs_canvas	*cnv;
+	gsrCanvas	*cnv;
 
 Assert (bBetweenLevels == 0);	//between levels save ripped out
 StopTime ();
@@ -1277,7 +1277,7 @@ if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 		ubyte			*buf;
 		grsBitmap	bm;
 		int			k, x, y;
-		grs_canvas * cnv_save;
+		gsrCanvas * cnv_save;
 		cnv_save = grdCurCanv;
 		
 	GrSetCurrentCanvas (cnv);
@@ -1289,26 +1289,26 @@ if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 	if (curDrawBuffer == GL_BACK)
 		GameRenderFrame ();
 	glReadBuffer (GL_FRONT);
-	bm.bm_bpp = 3;
-	buf = D2_ALLOC (grdCurScreen->sc_w * grdCurScreen->sc_h * bm.bm_bpp);
-	glReadPixels (0, 0, grdCurScreen->sc_w, grdCurScreen->sc_h, GL_RGB, GL_UNSIGNED_BYTE, buf);
-	bm.bm_props.w = grdCurScreen->sc_w;
-	bm.bm_props.h = grdCurScreen->sc_h;
-	bm.bm_texBuf = buf;
+	bm.bmBPP = 3;
+	buf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * bm.bmBPP);
+	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	bm.bmProps.w = grdCurScreen->scWidth;
+	bm.bmProps.h = grdCurScreen->scHeight;
+	bm.bmTexBuf = buf;
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-	ShrinkTGA (&bm, grdCurScreen->sc_w / THUMBNAIL_LW, grdCurScreen->sc_h / THUMBNAIL_LH, 0);
+	ShrinkTGA (&bm, grdCurScreen->scWidth / THUMBNAIL_LW, grdCurScreen->scHeight / THUMBNAIL_LH, 0);
 	GrPaletteStepLoad (NULL);
 	// convert the resized TGA to bmp
 	for (y = 0; y < THUMBNAIL_LH; y++) {
-		i = y * (grdCurScreen->sc_w / (grdCurScreen->sc_w / THUMBNAIL_LW)) * 3;
+		i = y * (grdCurScreen->scWidth / (grdCurScreen->scWidth / THUMBNAIL_LW)) * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			cnv->cv_bitmap.bm_texBuf [k] =
+			cnv->cvBitmap.bmTexBuf [k] =
 				GrFindClosestColor (gamePalette, buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
 			}
 	GrPaletteStepLoad (NULL);
 	D2_FREE (buf);
-	CFWrite (cnv->cv_bitmap.bm_texBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
+	CFWrite (cnv->cvBitmap.bmTexBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
 	GrSetCurrentCanvas (cnv_save);
 	GrFreeCanvas (cnv);
 	CFWrite (gamePalette, 3, 256, fp);

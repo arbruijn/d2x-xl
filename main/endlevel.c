@@ -206,13 +206,13 @@ return (r);
 void _CDECL_ FreeEndLevelData (void)
 {
 LogErr ("unloading endlevel data\n");
-if (gameData.endLevel.terrain.bmInstance.bm_texBuf) {
+if (gameData.endLevel.terrain.bmInstance.bmTexBuf) {
 	OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-	D2_FREE (gameData.endLevel.terrain.bmInstance.bm_texBuf);
+	D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
 	}
-if (gameData.endLevel.satellite.bmInstance.bm_texBuf) {
+if (gameData.endLevel.satellite.bmInstance.bmTexBuf) {
 	OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-	D2_FREE (gameData.endLevel.satellite.bmInstance.bm_texBuf);
+	D2_FREE (gameData.endLevel.satellite.bmInstance.bmTexBuf);
 	}
 }
 
@@ -241,8 +241,8 @@ void InitEndLevel ()
 
 GenerateStarfield ();
 atexit (FreeEndLevelData);
-gameData.endLevel.terrain.bmInstance.bm_texBuf = 
-gameData.endLevel.satellite.bmInstance.bm_texBuf = NULL;
+gameData.endLevel.terrain.bmInstance.bmTexBuf = 
+gameData.endLevel.satellite.bmInstance.bmTexBuf = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1239,11 +1239,11 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 			int iff_error;
 
 			LogErr ("         loading terrain bitmap\n");
-			if (gameData.endLevel.terrain.bmInstance.bm_texBuf) {
+			if (gameData.endLevel.terrain.bmInstance.bmTexBuf) {
 				OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
-				D2_FREE (gameData.endLevel.terrain.bmInstance.bm_texBuf);
+				D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
 				}
-			Assert (gameData.endLevel.terrain.bmInstance.bm_texBuf == NULL);
+			Assert (gameData.endLevel.terrain.bmInstance.bmTexBuf == NULL);
 			iff_error = iff_read_bitmap (p, &gameData.endLevel.terrain.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {
 #ifdef _DEBUG
@@ -1276,9 +1276,9 @@ while (CFGetS (line, LINE_LEN, ifile)) {
 			int iff_error;
 
 			LogErr ("         loading satellite bitmap\n");
-			if (gameData.endLevel.satellite.bmInstance.bm_texBuf) {
+			if (gameData.endLevel.satellite.bmInstance.bmTexBuf) {
 				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
-				D2_FREE (gameData.endLevel.satellite.bmInstance.bm_texBuf);
+				D2_FREE (gameData.endLevel.satellite.bmInstance.bmTexBuf);
 				}
 			iff_error = iff_read_bitmap (p, &gameData.endLevel.satellite.bmInstance, BM_LINEAR);
 			if (iff_error != IFF_NO_ERROR) {

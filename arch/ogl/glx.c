@@ -121,11 +121,11 @@ void set_wm_hints(int fullscreen){
 	
 //	return;//seems screwed.
 	if (!hints) hints=XAllocSizeHints();
-	hints->width=hints->min_width=hints->max_width=hints->base_width=grdCurScreen->sc_w;
-	hints->height=hints->min_height=hints->max_height=hints->base_height=grdCurScreen->sc_h;
+	hints->width=hints->min_width=hints->max_width=hints->base_width=grdCurScreen->scWidth;
+	hints->height=hints->min_height=hints->max_height=hints->base_height=grdCurScreen->scHeight;
 	hints->flags=PSize|PMinSize|PMaxSize|PBaseSize;
-//	hints->min_width=hints->max_width=grdCurScreen->sc_w;
-//	hints->min_height=hints->max_height=grdCurScreen->sc_h;
+//	hints->min_width=hints->max_width=grdCurScreen->scWidth;
+//	hints->min_height=hints->max_height=grdCurScreen->scHeight;
 //	hints->flags=PMinSize|PMaxSize;
 	XSetWMNormalHints(dpy,win,hints);
 	XFree(hints);

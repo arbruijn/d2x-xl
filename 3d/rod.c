@@ -27,7 +27,7 @@ static char rcsid[] = "$Id: rod.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 
 #define RESCALE_ROD	0
 
-grs_point blobVertices [4];
+grsPoint blobVertices [4];
 g3sPoint rodPoints [4];
 g3sPoint *rodPointList [] = {rodPoints, rodPoints + 1, rodPoints + 2, rodPoints + 3};
 

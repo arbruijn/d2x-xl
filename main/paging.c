@@ -498,7 +498,7 @@ void PagingTouchAllSub ()
 			// cmp debug
 			//piggy_get_bitmap_name (i,fname);
 
-			if (!bmP->bm_texBuf || (bmP->bm_props.flags & BM_FLAG_PAGED_OUT))
+			if (!bmP->bmTexBuf || (bmP->bmProps.flags & BM_FLAG_PAGED_OUT))
 				bPageIn = 0;
 //                      if (gameData.pig.tex.bitmapXlat [i]!=i)
 //                              bPageIn = 0;

@@ -380,8 +380,8 @@ ReshowScores:
 				GrSetCurrentCanvas(NULL)
 	);
 	
-	xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
-	yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
+	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
+	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
@@ -395,12 +395,12 @@ ReshowScores:
 	while(!done)	{
 		if (!bRedraw || gameOpts->menus.nStyle) {
 			NMDrawBackground(&bg,xOffs, yOffs, xOffs + 640, xOffs + 480, bRedraw);
-			grdCurCanv->cv_font = MEDIUM3_FONT;
+			grdCurCanv->cvFont = MEDIUM3_FONT;
 
 		WIN(DDGRLOCK(dd_grd_curcanv));
 			GrString( 0x8000, yOffs + LHY(15), TXT_HIGH_SCORES );
 
-			grdCurCanv->cv_font = SMALL_FONT;
+			grdCurCanv->cvFont = SMALL_FONT;
 
 			GrSetFontColorRGBi (RGBA_PAL (31,26,5), 1, 0, 0);
 			GrString(  xOffs + LHX(31+33+XX), yOffs + LHY(46+7+YY), TXT_NAME );

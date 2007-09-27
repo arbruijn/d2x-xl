@@ -338,7 +338,7 @@ void ApplyModifiedPalette(void)
 {
 //@@    int				k, x, y;
 //@@    grsBitmap	*sbp;
-//@@    grs_canvas	*save_canv;
+//@@    gsrCanvas	*save_canv;
 //@@    int				color_xlate[256];
 //@@
 //@@
@@ -348,16 +348,16 @@ void ApplyModifiedPalette(void)
 //@@    ResetCockpit();
 //@@
 //@@    save_canv = grdCurCanv;
-//@@    GrSetCurrentCanvas(&grdCurScreen->sc_canvas);
+//@@    GrSetCurrentCanvas(&grdCurScreen->scCanvas);
 //@@
-//@@    sbp = &grdCurScreen->sc_canvas.cv_bitmap;
+//@@    sbp = &grdCurScreen->scCanvas.cvBitmap;
 //@@
 //@@    for (x=0; x<256; x++)
 //@@		color_xlate[x] = -1;
 //@@
 //@@    for (k=0; k<4; k++) {
-//@@		for (y=0; y<grdCurScreen->sc_h; y+= 4) {
-//@@			  for (x=0; x<grdCurScreen->sc_w; x++) {
+//@@		for (y=0; y<grdCurScreen->scHeight; y+= 4) {
+//@@			  for (x=0; x<grdCurScreen->scWidth; x++) {
 //@@					int	color, new_color;
 //@@					int	r, g, b;
 //@@					int	xcrd, ycrd;

@@ -538,13 +538,13 @@ int iff_parse_ilbm_pbm(FFILE *ifile,int formType,iff_bitmap_header *bmheader,int
 
 						if (!prev_bm) return IFF_CORRUPT;
 
-						bmheader->w = prev_bm->bm_props.w;
-						bmheader->h = prev_bm->bm_props.h;
-						bmheader->nType = prev_bm->bm_props.nType;
+						bmheader->w = prev_bm->bmProps.w;
+						bmheader->h = prev_bm->bmProps.h;
+						bmheader->nType = prev_bm->bmProps.nType;
 
 						MALLOC( bmheader->raw_data, ubyte, bmheader->w * bmheader->h );
 
-						memcpy(bmheader->raw_data, prev_bm->bm_texBuf, bmheader->w * bmheader->h );
+						memcpy(bmheader->raw_data, prev_bm->bmTexBuf, bmheader->w * bmheader->h );
 						skip_chunk(ifile,len);
 
 						break;
@@ -657,18 +657,18 @@ int convert_rgb15(grsBitmap *bm,iff_bitmap_header *bmheader)
 	pal_entry *palptr;
 
 	palptr = bmheader->palette;
-//        if ((new_data = D2_ALLOC(bm->bm_props.w * bm->bm_props.h * 2)) == NULL)
+//        if ((new_data = D2_ALLOC(bm->bmProps.w * bm->bmProps.h * 2)) == NULL)
 //            {ret=IFF_NO_MEM; goto done;}
-       MALLOC(new_data, ushort, bm->bm_props.w * bm->bm_props.h * 2);
+       MALLOC(new_data, ushort, bm->bmProps.w * bm->bmProps.h * 2);
        if (new_data == NULL)
            return IFF_NO_MEM;
-	for (y=0; y<bm->bm_props.h; y++) {
+	for (y=0; y<bm->bmProps.h; y++) {
 		for (x=0; x<bmheader->w; x++)
 			new_data[newptr++] = INDEX_TO_15BPP(bmheader->raw_data[y*bmheader->w+x]);
 	}
-	D2_FREE(bm->bm_texBuf);				//get rid of old-style data
-	bm->bm_texBuf = (ubyte *) new_data;			//..and point to new data
-	bm->bm_props.rowsize *= 2;				//two bytes per row
+	D2_FREE(bm->bmTexBuf);				//get rid of old-style data
+	bm->bmTexBuf = (ubyte *) new_data;			//..and point to new data
+	bm->bmProps.rowSize *= 2;				//two bytes per row
 	return IFF_NO_ERROR;
 }
 
@@ -704,20 +704,20 @@ void close_fake_file(FFILE *f)
 }
 
 //copy an iff header structure to a grsBitmap structure
-void copy_iff_to_grs(grsBitmap *bm,iff_bitmap_header *bmheader)
+void copy_iff_togrs(grsBitmap *bm,iff_bitmap_header *bmheader)
 {
-	bm->bm_props.x = bm->bm_props.y = 0;
-	bm->bm_props.w = bmheader->w;
-	bm->bm_props.h = bmheader->h;
-	bm->bm_props.nType = (char) bmheader->nType;
-	bm->bm_props.rowsize = bmheader->w;
-	bm->bm_texBuf = bmheader->raw_data;
-	bm->bm_props.flags = 0;
-	//bm->bm_handle = 0;
+	bm->bmProps.x = bm->bmProps.y = 0;
+	bm->bmProps.w = bmheader->w;
+	bm->bmProps.h = bmheader->h;
+	bm->bmProps.nType = (char) bmheader->nType;
+	bm->bmProps.rowSize = bmheader->w;
+	bm->bmTexBuf = bmheader->raw_data;
+	bm->bmProps.flags = 0;
+	//bm->bmHandle = 0;
 	
 }
 
-//if bm->bm_texBuf is set, use it (making sure w & h are correct), else
+//if bm->bmTexBuf is set, use it (making sure w & h are correct), else
 //allocate the memory
 int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *prev_bm)
 {
@@ -726,11 +726,11 @@ int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *pre
 	int sig,form_len;
 	int formType;
 
-	bmheader.raw_data = bm->bm_texBuf;
+	bmheader.raw_data = bm->bmTexBuf;
 
 	if (bmheader.raw_data) {
-		bmheader.w = bm->bm_props.w;
-		bmheader.h = bm->bm_props.h;
+		bmheader.w = bm->bmProps.w;
+		bmheader.h = bm->bmProps.h;
 	}
 
 	sig=get_sig(ifile);
@@ -766,9 +766,9 @@ int iff_parse_bitmap(FFILE *ifile, grsBitmap *bm, int bitmapType, grsBitmap *pre
 
 	//Copy data from iff_bitmap_header structure into grsBitmap structure
 
-	copy_iff_to_grs(bm,&bmheader);
+	copy_iff_togrs(bm,&bmheader);
 
-	bm->bm_palette = AddPalette ((ubyte *) &bmheader.palette);
+	bm->bmPalette = AddPalette ((ubyte *) &bmheader.palette);
 
 	//Now do post-process if required
 
@@ -790,7 +790,7 @@ int iff_read_bitmap(char *ifilename,grsBitmap *bm,int bitmapType)
 
 	ret = open_fake_file(ifilename,&ifile);		//read in entire file
 	if (ret == IFF_NO_ERROR) {
-		bm->bm_texBuf = NULL;
+		bm->bmTexBuf = NULL;
 		ret = iff_parse_bitmap(&ifile, bm, bitmapType, NULL);
 	}
 	if (ifile.data) 
@@ -808,7 +808,7 @@ int iff_read_into_bitmap(char *ifilename, grsBitmap *bm)
 
 	ret = open_fake_file(ifilename,&ifile);		//read in entire file
 	if (ret == IFF_NO_ERROR) {
-		ret = iff_parse_bitmap(&ifile,bm,bm->bm_props.nType,NULL);
+		ret = iff_parse_bitmap(&ifile,bm,bm->bmProps.nType,NULL);
 	}
 
 	if (ifile.data) D2_FREE(ifile.data);
@@ -1085,10 +1085,10 @@ int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette)
 	int ret;
 	int compression_on;
 
-	if (bm->bm_props.nType == BM_RGB15) return IFF_BAD_BM_TYPE;
+	if (bm->bmProps.nType == BM_RGB15) return IFF_BAD_BM_TYPE;
 
 #if COMPRESS
-	compression_on = (bm->bm_props.w>=MIN_COMPRESS_WIDTH);
+	compression_on = (bm->bmProps.w>=MIN_COMPRESS_WIDTH);
 #else
 	compression_on = 0;
 #endif
@@ -1096,12 +1096,12 @@ int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette)
 	//fill in values in bmheader
 
 	bmheader.x = bmheader.y = 0;
-	bmheader.w = bm->bm_props.w;
-	bmheader.h = bm->bm_props.h;
+	bmheader.w = bm->bmProps.w;
+	bmheader.h = bm->bmProps.h;
 	bmheader.nType = TYPE_PBM;
 	bmheader.transparentcolor = iff_transparent_color;
-	bmheader.pagewidth = bm->bm_props.w;	//I don't think it matters what I write
-	bmheader.pageheight = bm->bm_props.h;
+	bmheader.pagewidth = bm->bmProps.w;	//I don't think it matters what I write
+	bmheader.pageheight = bm->bmProps.h;
 	bmheader.nplanes = 8;
 	bmheader.masking = mskNone;
 	if (iff_has_transparency)	{
@@ -1110,8 +1110,8 @@ int iff_write_bitmap(char *ofilename,grsBitmap *bm, ubyte *palette)
 	bmheader.compression = (compression_on?cmpByteRun1:cmpNone);
 
 	bmheader.xaspect = bmheader.yaspect = 1;	//I don't think it matters what I write
-	bmheader.raw_data = bm->bm_texBuf;
-	bmheader.row_size = bm->bm_props.rowsize;
+	bmheader.raw_data = bm->bmTexBuf;
+	bmheader.row_size = bm->bmProps.rowSize;
 
 	if (palette) memcpy(&bmheader.palette,palette,256*3);
 
@@ -1167,7 +1167,7 @@ int iff_read_animbrush(char *ifilename,grsBitmap **bm_list,int max_bitmaps,int *
 			prev_bm = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
 
 			MALLOC(bm_list[*n_bitmaps] , grsBitmap, 1 );
-			bm_list[*n_bitmaps]->bm_texBuf = NULL;
+			bm_list[*n_bitmaps]->bmTexBuf = NULL;
 
 			ret = iff_parse_bitmap(&ifile,bm_list[*n_bitmaps],formType,prev_bm);
 

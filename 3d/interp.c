@@ -2381,9 +2381,9 @@ for (;;) {
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
 			GrFadeColorRGB (1.0);
 			if (objColorP) {
-				objColorP->red = (float) grdCurCanv->cv_color.color.red / 255.0f; 
-				objColorP->green = (float) grdCurCanv->cv_color.color.green / 255.0f;
-				objColorP->blue = (float) grdCurCanv->cv_color.color.blue / 255.0f;
+				objColorP->red = (float) grdCurCanv->cvColor.color.red / 255.0f; 
+				objColorP->green = (float) grdCurCanv->cvColor.color.green / 255.0f;
+				objColorP->blue = (float) grdCurCanv->cvColor.color.blue / 255.0f;
 				}
 			p += 30;
 			for (i = 0; i < nv; i++)
@@ -2419,7 +2419,7 @@ for (;;) {
 				uvlList [i].l = l;
 
 			if (objColorP) {
-				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bm_avgColor;
+				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bmAvgColor;
 				objColorP->red = CPAL2Tr (gamePalette, c);
 				objColorP->green = CPAL2Tg (gamePalette, c);
 				objColorP->blue = CPAL2Tb (gamePalette, c);

@@ -76,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_NO_FADE  32  // An edge that doesn't fade with distance
 #define EF_TOO_FAR  64  // An edge that is too far away
 
-void ModexPrintF (int x,int y, char *s, grs_font *font, unsigned int color);
+void ModexPrintF (int x,int y, char *s, grsFont *font, unsigned int color);
 int LastMarker (void);
 
 typedef struct tEdgeInfo {
@@ -175,7 +175,7 @@ static int DrawingListBright [MAX_EDGES];
 #define ZOOM_SPEED_FACTOR		500	// (1500)
 #define ROT_SPEED_DIVISOR		 (115000)
 
-//static grs_canvas	automap_canvas;
+//static gsrCanvas	automap_canvas;
 static grsBitmap bmAutomapBackground;
 
 #define Page Pages [0]
@@ -357,7 +357,7 @@ ClearMarkers ();
 //------------------------------------------------------------------------------
 
 #if 0
-grs_canvas *levelNumCanv, *levelNameCanv;
+gsrCanvas *levelNumCanv, *levelNameCanv;
 #endif
 
 #ifndef M_PI
@@ -369,14 +369,14 @@ grs_canvas *levelNumCanv, *levelNameCanv;
 
 bool G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 {
-	grs_color	c = grdCurCanv->cv_color;
+	grsColor	c = grdCurCanv->cvColor;
 	g3sPoint	p = *p0;
 	int			i;
 	float			hx, hy, x, y, z, r;
 	float			ang;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cvColor);
 x = f2glf (p.p3_vec.p.x);
 y = f2glf (p.p3_vec.p.y);
 z = f2glf (p.p3_vec.p.z);
@@ -405,7 +405,7 @@ bool G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 	float			ang;
 
 glDisable (GL_TEXTURE_2D);
-OglGrsColor (&grdCurCanv->cv_color);
+OglGrsColor (&grdCurCanv->cvColor);
 x = f2glf (p.p3_vec.p.x);
 y = f2glf (p.p3_vec.p.y);
 v.p.z = f2glf (p.p3_vec.p.z);
@@ -418,7 +418,7 @@ for (i = 0; i <= nSides; i++)
 		v.p.y = y + (float) sin (ang) * r;
 		glVertex3fv ((GLfloat *) &v);
 		}
-if (grdCurCanv->cv_color.rgb)
+if (grdCurCanv->cvColor.rgb)
 	glDisable (GL_BLEND);
 glEnd ();
 return 1;
@@ -635,19 +635,19 @@ else {
 	int offs = amData.bHires ? 10 : 5;
 
 #if 1
-	grs_font	*curFont = grdCurCanv->cv_font;
+	grsFont	*curFont = grdCurCanv->cvFont;
 	int		w, h, aw;
 
 	GrSetCurFont (SMALL_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
 	GrPrintF (offs, offs, amLevelNum);
 	GrGetStringSize (amLevelName, &w, &h, &aw);
-	GrPrintF (grdCurCanv->cv_bitmap.bm_props.w - offs - w, offs, amLevelName);
+	GrPrintF (grdCurCanv->cvBitmap.bmProps.w - offs - w, offs, amLevelName);
 	GrSetCurFont (curFont);
 #else
-	GrBitmapM (offs, offs, &levelNumCanv->cv_bitmap, 2);
-	GrBitmapM (grdCurCanv->cv_bitmap.bm_props.w - offs - levelNameCanv->cv_bitmap.bm_props.w, 
-				  offs, &levelNameCanv->cv_bitmap, 2);
+	GrBitmapM (offs, offs, &levelNumCanv->cvBitmap, 2);
+	GrBitmapM (grdCurCanv->cvBitmap.bmProps.w - offs - levelNameCanv->cvBitmap.bmProps.w, 
+				  offs, &levelNameCanv->cvBitmap, 2);
 #endif
 	if (gameOpts->render.automap.bTextured)
 		ShowFrameRate ();
@@ -663,25 +663,25 @@ OglSwapBuffers (0, 0);
 //------------------------------------------------------------------------------
 
 //print to canvas & float height
-grs_canvas *PrintToCanvas (char *s, grs_font *font, unsigned int fc, unsigned int bc, int doubleFlag)
+gsrCanvas *PrintToCanvas (char *s, grsFont *font, unsigned int fc, unsigned int bc, int doubleFlag)
 {
 	int y;
 	ubyte *data;
 	int rs;
-	grs_canvas *temp_canv;
-	grs_font *save_font;
+	gsrCanvas *temp_canv;
+	grsFont *save_font;
 	int w,h,aw;
-	grs_canvas *save_canv;
+	gsrCanvas *save_canv;
 	save_canv = grdCurCanv;
 
-save_font = grdCurCanv->cv_font;
+save_font = grdCurCanv->cvFont;
 GrSetCurFont (font);					//set the font we're going to use
 GrGetStringSize (s,&w,&h,&aw);		//now get the string size
 GrSetCurFont (save_font);				//restore real font
 
-//temp_canv = GrCreateCanvas (font->ft_w*strlen (s),font->ft_h*2);
-temp_canv = GrCreateCanvas (w,font->ft_h*2);
-temp_canv->cv_bitmap.bm_palette = gamePalette;
+//temp_canv = GrCreateCanvas (font->ftWidth*strlen (s),font->ftHeight*2);
+temp_canv = GrCreateCanvas (w,font->ftHeight*2);
+temp_canv->cvBitmap.bmPalette = gamePalette;
 GrSetCurrentCanvas (temp_canv);
 GrSetCurFont (font);
 GrClearCanvas (0);						//trans color
@@ -689,12 +689,12 @@ GrSetFontColorRGBi (fc, 1, bc, 1);
 GrPrintF (0, 0, s);
 //now float it, since we're drawing to 400-line modex screen
 if (doubleFlag) {
-	data = temp_canv->cv_bitmap.bm_texBuf;
-	rs = temp_canv->cv_bitmap.bm_props.rowsize;
+	data = temp_canv->cvBitmap.bmTexBuf;
+	rs = temp_canv->cvBitmap.bmProps.rowSize;
 
-	for (y=temp_canv->cv_bitmap.bm_props.h/2;y--;) {
-		memcpy (data+ (rs*y*2),data+ (rs*y),temp_canv->cv_bitmap.bm_props.w);
-		memcpy (data+ (rs* (y*2+1)),data+ (rs*y),temp_canv->cv_bitmap.bm_props.w);
+	for (y=temp_canv->cvBitmap.bmProps.h/2;y--;) {
+		memcpy (data+ (rs*y*2),data+ (rs*y),temp_canv->cvBitmap.bmProps.w);
+		memcpy (data+ (rs* (y*2+1)),data+ (rs*y),temp_canv->cvBitmap.bmProps.w);
 		}
 	}
 GrSetCurrentCanvas (save_canv);
@@ -703,12 +703,12 @@ return temp_canv;
 
 //------------------------------------------------------------------------------
 //print to buffer, float heights, and blit bitmap to screen
-void ModexPrintF (int x,int y,char *s,grs_font *font, unsigned int color)
+void ModexPrintF (int x,int y,char *s,grsFont *font, unsigned int color)
 {
-	grs_canvas *temp_canv;
+	gsrCanvas *temp_canv;
 
 temp_canv = PrintToCanvas (s, font, color, 0, !amData.bHires);
-GrBitmapM (x,y,&temp_canv->cv_bitmap, 2);
+GrBitmapM (x,y,&temp_canv->cvBitmap, 2);
 GrFreeCanvas (temp_canv);
 }
 
@@ -803,12 +803,12 @@ nMaxEdges = MAX_EDGES; //min (MAX_EDGES_FROM_VERTS (gameData.segs.nVertices), MA
 if (gameStates.render.automap.bRadar || (gameStates.video.nDisplayMode > 1)) {
 	//GrSetMode (gameStates.video.nLastScreenMode);
 	if (gameStates.render.automap.bRadar) {
-		automap_width = grdCurCanv->cv_bitmap.bm_props.w;
-		automap_height = grdCurCanv->cv_bitmap.bm_props.h;
+		automap_width = grdCurCanv->cvBitmap.bmProps.w;
+		automap_height = grdCurCanv->cvBitmap.bmProps.h;
 		}
 	else {
-		automap_width = grdCurScreen->sc_canvas.cv_bitmap.bm_props.w;
-		automap_height = grdCurScreen->sc_canvas.cv_bitmap.bm_props.h;
+		automap_width = grdCurScreen->scCanvas.cvBitmap.bmProps.w;
+		automap_height = grdCurScreen->scCanvas.cvBitmap.bmProps.h;
 		}
 	amData.bHires = 1;
 	 }

@@ -112,7 +112,7 @@ void gr_linear_stosd( ubyte * dest, ubyte color, unsigned short count )
 	}
 }
 #else
-void gr_linear_stosd( ubyte * dest, grs_color *color, unsigned int nbytes) 
+void gr_linear_stosd( ubyte * dest, grsColor *color, unsigned int nbytes) 
 {
 memset(dest, color->index, nbytes);
 }

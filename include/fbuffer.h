@@ -9,7 +9,7 @@
 
 #if RENDER2TEXTURE == 2
 
-typedef struct _ogl_fbuffer {
+typedef struct ogl_fbuffer {
 	GLuint	hBuf;
 	GLuint	hDepthRb;
 	GLuint	texId;

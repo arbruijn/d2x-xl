@@ -21,15 +21,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 draw_ubitmap(int x,int y,grsBitmap *bm)
 {
 	int xx,yy;
-	short *data15 = (short *) bm->bm_texBuf;
+	short *data15 = (short *) bm->bmTexBuf;
 
-//printf("x,y=%d,%d  w,h=%d,%d\n",x,y,bm->bm_props.w,bm->bm_props.h);
+//printf("x,y=%d,%d  w,h=%d,%d\n",x,y,bm->bmProps.w,bm->bmProps.h);
 
-	for (yy=0;yy<bm->bm_props.h;yy++)
+	for (yy=0;yy<bm->bmProps.h;yy++)
 
-		for (xx=0;xx<bm->bm_props.w;xx++)
+		for (xx=0;xx<bm->bmProps.w;xx++)
 
-			gr_vesa_pixel15(x+xx,y+yy,data15[yy*bm->bm_props.w+xx]);
+			gr_vesa_pixel15(x+xx,y+yy,data15[yy*bm->bmProps.w+xx]);
 
 
 }

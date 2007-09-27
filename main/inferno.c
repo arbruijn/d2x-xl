@@ -262,8 +262,8 @@ void PrintVersionInfo (void)
 		GrGetStringSize ("V2.2", &w, &h, &aw);
 	
 		WIN (DDGRLOCK (dd_grd_curcanv));
-	   GrPrintF (0x8000, grdCurCanv->cv_bitmap.bm_props.h-GAME_FONT->ft_h-2, TXT_COPYRIGHT);
-		GrPrintF (grdCurCanv->cv_bitmap.bm_props.w-w-2, grdCurCanv->cv_bitmap.bm_props.h-GAME_FONT->ft_h-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+	   GrPrintF (0x8000, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, TXT_COPYRIGHT);
+		GrPrintF (grdCurCanv->cvBitmap.bmProps.w-w-2, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 		if (bVertigo < 0)
 			bVertigo = CFExist ("d2x.hog", gameFolders.szMissionDir, 0);
 		if (bVertigo) {
@@ -271,24 +271,24 @@ void PrintVersionInfo (void)
 			GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
 			GrPrintF (
 				//gameStates.menus.bHires?495:248, 
-				grdCurCanv->cv_bitmap.bm_props.w-w-SUBVER_XOFFS, 
+				grdCurCanv->cvBitmap.bmProps.w-w-SUBVER_XOFFS, 
 				yOffs+ (gameOpts->menus.altBg.bHave?h+2:0), 
 				TXT_VERTIGO);
 			}
 		GrSetCurFont (MEDIUM2_FONT);
 		GrGetStringSize (D2X_NAME, &w, &h, &aw);
 		GrPrintF (
-			grdCurCanv->cv_bitmap.bm_props.w-w-SUBVER_XOFFS, 
+			grdCurCanv->cvBitmap.bmProps.w-w-SUBVER_XOFFS, 
 			yOffs+ ((bVertigo&&!gameOpts->menus.altBg.bHave)?h+2:0), 
-//			grdCurCanv->cv_bitmap.bm_props.h-2*h-2, 
+//			grdCurCanv->cvBitmap.bmProps.h-2*h-2, 
 			D2X_NAME);
 		GrSetCurFont (SMALL_FONT);
 		GrGetStringSize (VERSION, &ws, &hs, &aw);
 		GrSetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
 		GrPrintF (
-			grdCurCanv->cv_bitmap.bm_props.w-ws-1, // (gameStates.menus.bHires? (bVertigo?38:8): (bVertigo?18:3)), //ws, //- (w-ws)/2- (gameStates.menus.bHires?bVertigo?30:5:bVertigo?15:0), 
+			grdCurCanv->cvBitmap.bmProps.w-ws-1, // (gameStates.menus.bHires? (bVertigo?38:8): (bVertigo?18:3)), //ws, //- (w-ws)/2- (gameStates.menus.bHires?bVertigo?30:5:bVertigo?15:0), 
 			yOffs+ ((bVertigo&&!gameOpts->menus.altBg.bHave)?h+2:0)+ (h-hs)/2, 
-//			grdCurCanv->cv_bitmap.bm_props.h-2*h-2, 
+//			grdCurCanv->cvBitmap.bmProps.h-2*h-2, 
 			VERSION);
 		GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 		//say this is vertigo version
@@ -2765,28 +2765,28 @@ if (FindArg ("-hoarddata")) {
 	Assert (iff_error == IFF_NO_ERROR);
 	nframes_short = nframes;
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
-	fwrite (&bm[0]->bm_props.w, sizeof (short), 1, ofile);
-	fwrite (&bm[0]->bm_props.h, sizeof (short), 1, ofile);
+	fwrite (&bm[0]->bmProps.w, sizeof (short), 1, ofile);
+	fwrite (&bm[0]->bmProps.h, sizeof (short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->bm_texBuf, 1, bm[i]->bm_props.w*bm[i]->bm_props.h, ofile);
+		fwrite (bm[i]->bmTexBuf, 1, bm[i]->bmProps.w*bm[i]->bmProps.h, ofile);
 
 	iff_error = iff_read_animbrush ("orbgoal.abm", bm, MAX_BITMAPS_PER_BRUSH, &nframes, palette);
 	Assert (iff_error == IFF_NO_ERROR);
-	Assert (bm[0]->bm_props.w == 64 && bm[0]->bm_props.h == 64);
+	Assert (bm[0]->bmProps.w == 64 && bm[0]->bmProps.h == 64);
 	nframes_short = nframes;
 	fwrite (&nframes_short, sizeof (nframes_short), 1, ofile);
 	fwrite (palette, 3, 256, ofile);
 	for (i=0;i<nframes;i++)
-		fwrite (bm[i]->bm_texBuf, 1, bm[i]->bm_props.w*bm[i]->bm_props.h, ofile);
+		fwrite (bm[i]->bmTexBuf, 1, bm[i]->bmProps.w*bm[i]->bmProps.h, ofile);
 
 	for (i=0;i<2;i++) {
 		iff_error = iff_read_bitmap (i?"orbb.bbm":"orb.bbm", &icon, BM_LINEAR, palette);
 		Assert (iff_error == IFF_NO_ERROR);
-		fwrite (&icon.bm_props.w, sizeof (short), 1, ofile);
-		fwrite (&icon.bm_props.h, sizeof (short), 1, ofile);
+		fwrite (&icon.bmProps.w, sizeof (short), 1, ofile);
+		fwrite (&icon.bmProps.h, sizeof (short), 1, ofile);
 		fwrite (palette, 3, 256, ofile);
-		fwrite (icon.bm_texBuf, 1, icon.bm_props.w*icon.bm_props.h, ofile);
+		fwrite (icon.bmTexBuf, 1, icon.bmProps.w*icon.bmProps.h, ofile);
 		}
 
 	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {
@@ -3297,7 +3297,7 @@ else
 
 /*---*/LogErr ("Loading default palette\n");
 defaultPalette = GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
-grdCurCanv->cv_bitmap.bm_palette = defaultPalette;	//just need some valid palette here
+grdCurCanv->cvBitmap.bmPalette = defaultPalette;	//just need some valid palette here
 /*---*/LogErr ("Initializing game fonts\n");
 GameFontInit ();	// must load after palette data loaded.
 /*---*/LogErr ("Initializing movies\n");

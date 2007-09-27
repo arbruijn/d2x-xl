@@ -31,23 +31,23 @@ typedef struct
 
 #define BASE_GADGET             \
 	short           kind;       \
-	struct _gadget  * prev;     \
-	struct _gadget  * next;     \
-	struct _gadget  * when_tab;  \
-	struct _gadget  * when_btab; \
-	struct _gadget  * when_up;    \
-	struct _gadget  * whenDown;   \
-	struct _gadget  * when_left;   \
-	struct _gadget  * when_right;  \
-	struct _gadget  * parent;    \
+	struct gadget  * prev;     \
+	struct gadget  * next;     \
+	struct gadget  * when_tab;  \
+	struct gadget  * when_btab; \
+	struct gadget  * when_up;    \
+	struct gadget  * whenDown;   \
+	struct gadget  * when_left;   \
+	struct gadget  * when_right;  \
+	struct gadget  * parent;    \
 	int             status;     \
 	int             oldstatus;  \
-	grs_canvas *    canvas;     \
+	gsrCanvas *    canvas;     \
 	int             hotkey;     \
 	short           x1,y1,x2,y2;
 
 
-typedef struct _gadget {
+typedef struct gadget {
 	BASE_GADGET
 	unsigned char rsvd[256];
 } UI_GADGET;
@@ -177,17 +177,17 @@ typedef struct  {
 	int             moved;
 } UI_GADGET_LISTBOX;
 
-typedef struct _ui_window {
+typedef struct ui_window {
 	short           x, y;
 	short           width, height;
 	short           text_x, text_y;
-	grs_canvas *    canvas;
-	grs_canvas *    oldcanvas;
+	gsrCanvas *    canvas;
+	gsrCanvas *    oldcanvas;
 	grsBitmap *    background;
 	UI_GADGET *     gadget;
 	UI_GADGET *     keyboard_focus_gadget;
-	struct _ui_window * next;
-	struct _ui_window * prev;
+	struct ui_window * next;
+	struct ui_window * prev;
 } UI_WINDOW;
 
 typedef struct  {
@@ -223,7 +223,7 @@ typedef struct  {
 #define B1_JUST_RELEASED    (Mouse.b1_status & BUTTON_JUST_RELEASED)
 #define B1_DOUBLE_CLICKED   (Mouse.b1_status & BUTTON_DOUBLE_CLICKED)
 
-extern grs_font * ui_small_font;
+extern grsFont * ui_small_font;
 
 extern UI_MOUSE Mouse;
 extern UI_WINDOW * CurWindow;

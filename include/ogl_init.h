@@ -235,7 +235,7 @@ extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #define	OGL_VIEWPORT(_x,_y,_w,_h) \
 			{if (((int) (_x) != gameStates.ogl.nLastX) || ((int) (_y) != gameStates.ogl.nLastY) || \
 				  ((int) (_w) != gameStates.ogl.nLastW) || ((int) (_h) != gameStates.ogl.nLastH)) \
-				{glViewport ((GLint) (_x), (GLint) (grdCurScreen->sc_canvas.cv_bitmap.bm_props.h - (_y) - (_h)), (GLsizei) (_w), (GLsizei) (_h));\
+				{glViewport ((GLint) (_x), (GLint) (grdCurScreen->scCanvas.cvBitmap.bmProps.h - (_y) - (_h)), (GLsizei) (_w), (GLsizei) (_h));\
 				gameStates.ogl.nLastX = (_x); \
 				gameStates.ogl.nLastY = (_y); \
 				gameStates.ogl.nLastW = (_w); \
@@ -279,13 +279,13 @@ void OglSetScreenMode (void);
 int OglCacheLevelTextures (void);
 
 void OglURect(int left,int top,int right,int bot);
-bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grs_color *c, int scale, int orient);
+bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grsColor *c, int scale, int orient);
 bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp);
 bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
-void OglUPixelC (int x, int y, grs_color *c);
-void OglULineC (int left,int top,int right,int bot, grs_color *c);
-void OglUPolyC (int left, int top, int right, int bot, grs_color *c);
+void OglUPixelC (int x, int y, grsColor *c);
+void OglULineC (int left,int top,int right,int bot, grsColor *c);
+void OglUPolyC (int left, int top, int right, int bot, grsColor *c);
 void OglTexWrap (tOglTexture *tex, int state);
 void RebuildGfxFx (int bGame, int bCameras);
 
@@ -374,7 +374,7 @@ void DrawTexPolyFlat (grsBitmap *bm,int nv,g3sPoint **vertlist);
 void OglSetupTransform ();
 void OglResetTransform ();
 void OglPalColor (ubyte *palette, int c);
-void OglGrsColor (grs_color *pc);
+void OglGrsColor (grsColor *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 int OglEnableClientState (GLuint nState);
 int OglEnableClientStates (int bTexCoord, int bColor);

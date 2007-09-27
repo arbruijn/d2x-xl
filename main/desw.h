@@ -98,10 +98,10 @@ extern BOOL             _RedrawScreen;
 extern SCREEN_CONTEXT   _SCRContext;
 
 
-extern dd_grs_canvas *dd_VR_offscreen_buffer;
-extern dd_grs_canvas dd_VR_screen_pages[2];
-extern dd_grs_canvas dd_VR_render_buffer[2];
-extern dd_grs_canvas dd_VR_render_sub_buffer[2];
+extern ddgrs_canvas *dd_VR_offscreen_buffer;
+extern ddgrs_canvas dd_VR_screen_pages[2];
+extern ddgrs_canvas dd_VR_render_buffer[2];
+extern ddgrs_canvas dd_VR_render_sub_buffer[2];
 
 
 
@@ -124,7 +124,7 @@ extern void WinDelay(int msecs);
 
 // misc functions
 extern void WErrorPrint(char *msg);
-extern dd_grs_canvas *GetCurrentGameScreen();
+extern ddgrs_canvas *GetCurrentGameScreen();
 extern BOOL SOSInit();
 extern void SOSUnInit();
 

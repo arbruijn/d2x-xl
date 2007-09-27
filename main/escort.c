@@ -1262,8 +1262,8 @@ void ShowEscortMenu (char *msg)
 
 	GrSetCurFont ( GAME_FONT );
 	GrGetStringSize (msg,&w,&h,&aw);
-	x = (grdCurScreen->sc_w-w)/2;
-	y = (grdCurScreen->sc_h-h)/4;
+	x = (grdCurScreen->scWidth-w)/2;
+	y = (grdCurScreen->scHeight-h)/4;
 	GrSetFontColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);
    PA_DFX (pa_set_frontbuffer_current ());
 	PA_DFX (NMDrawBackground (x-15,y-15,x+w+15-1,y+h+15-1));

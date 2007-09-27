@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	D2X_KEYS		1
 
-typedef struct _control_info {
+typedef struct control_info {
 	fix pitchTime;
 	fix verticalThrustTime;
 	fix headingTime;

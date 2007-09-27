@@ -36,16 +36,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GR_FADE_LEVELS 34
 #define GR_ACTUAL_FADE_LEVELS 31
 
-#define GWIDTH  grdCurCanv->cv_bitmap.bm_props.w
-#define GHEIGHT grdCurCanv->cv_bitmap.bm_props.h
-#define SWIDTH  (grdCurScreen->sc_w)
-#define SHEIGHT (grdCurScreen->sc_h)
+#define GWIDTH  grdCurCanv->cvBitmap.bmProps.w
+#define GHEIGHT grdCurCanv->cvBitmap.bmProps.h
+#define SWIDTH  (grdCurScreen->scWidth)
+#define SHEIGHT (grdCurScreen->scHeight)
 
 #define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
 
-typedef struct _grs_point {
+typedef struct grsPoint {
 	fix x, y;
-} grs_point;
+} grsPoint;
 
 typedef struct tRgbColord {
 	double red;
@@ -139,78 +139,83 @@ typedef struct tRgbColors {
 #define BM_FLAG_RLE                 8   // A run-length encoded bitmap.
 #define BM_FLAG_PAGED_OUT           16  // This bitmap's data is paged out.
 #define BM_FLAG_RLE_BIG             32  // for bitmaps that RLE to > 255 per row (i.e. cockpits)
+#define BM_FLAG_SEE_THRU				64  // door or other texture containing see-through areas
 #define BM_FLAG_TGA						128
 
-typedef struct _grs_bmProps {
+typedef struct grsBmProps {
 	short   x, y;		// Offset from parent's origin
 	short   w, h;		// width, height
-	short   rowsize;	// unsigned char offset to next row
+	short   rowSize;	// unsigned char offset to next row
 	sbyte	  nType;		// 0=Linear, 1=ModeX, 2=SVGA
 	ubyte	  flags;			
-} grs_bmProps;
+} grsBmProps;
 
-typedef struct _grs_stdBmData {
-	struct _grsBitmap	*bm_alt;
-	struct _grsBitmap	*bm_mask;	//intended for supertransparency masks 
-	struct _grsBitmap	*bm_parent;
-} grs_stdBmData;
+typedef struct grsStdBmData {
+	struct grsBitmap	*bmAlt;
+	struct grsBitmap	*bmMask;	//intended for supertransparency masks 
+	struct grsBitmap	*bmParent;
+} grsStdBmData;
 
-typedef struct _grs_altBmData {
-	ubyte						bm_frameCount;
-	struct _grsBitmap		*bm_frames;
-	struct _grsBitmap		*bm_curFrame;
-} grs_altBmData;
+typedef struct grsAltBmData {
+	ubyte						bmFrameCount;
+	struct grsBitmap		*bmFrames;
+	struct grsBitmap		*bmCurFrame;
+} grsAltBmData;
 
 #define BM_TYPE_STD		0
 #define BM_TYPE_ALT		1
 #define BM_TYPE_FRAME	2
 #define BM_TYPE_MASK		4
 
-typedef struct _grsBitmap {
+typedef struct grsBitmap {
 #ifdef _DEBUG
 	char				szName [20];
 #endif
-	grs_bmProps		bm_props;
-	ubyte				*bm_palette;
-	ubyte				*bm_texBuf;		// ptr to texture data...
-											//   Linear = *parent+(rowsize*y+x)
-											//   ModeX = *parent+(rowsize*y+x/4)
-											//   SVGA = *parent+(rowsize*y+x)
-	ushort			bm_handle;		//for application.  initialized to 0
-	ubyte				bm_avgColor;	//  Average color of all pixels in texture map.
-	tRgbColorb		bm_avgRGB;
-	ubyte				bm_bpp :3;
+	grsBmProps		bmProps;
+	ubyte				*bmPalette;
+	ubyte				*bmTexBuf;		// ptr to texture data...
+											//   Linear = *parent+(rowSize*y+x)
+											//   ModeX = *parent+(rowSize*y+x/4)
+											//   SVGA = *parent+(rowSize*y+x)
+	ushort			bmHandle;		//for application.  initialized to 0
+	ubyte				bmAvgColor;	//  Average color of all pixels in texture map.
+	tRgbColorb		bmAvgRGB;
+	ubyte				bmBPP :3;
 	ubyte				bmType :3;
-	ubyte				bm_wallAnim :1;
-	ubyte				bm_fromPog :1;
+	ubyte				bmWallAnim :1;
+	ubyte				bmFromPog :1;
 #if TEXTURE_COMPRESSION
-	ubyte				bm_compressed;
-	int				bm_format;
-	int				bm_bufSize;
+	ubyte				bmCompressed;
+	int				bmFormat;
+	int				bmBufSize;
 #endif
-	int				bm_transparentFrames [4];
-	int				bm_supertranspFrames [4];
+	int				bmTransparentFrames [4];
+	int				bmSupertranspFrames [4];
 
 	struct tOglTexture	*glTexture;
 	struct {
-		grs_stdBmData		std;
-		grs_altBmData		alt;
-		} bm_data;
+		grsStdBmData		std;
+		grsAltBmData		alt;
+		} bmData;
 } grsBitmap;
 
-#define BM_FRAMECOUNT(_bmP)	((_bmP)->bm_data.alt.bm_frameCount)
-#define BM_FRAMES(_bmP)			((_bmP)->bm_data.alt.bm_frames)
-#define BM_CURFRAME(_bmP)		((_bmP)->bm_data.alt.bm_curFrame)
-#define BM_OVERRIDE(_bmP)		((_bmP)->bm_data.std.bm_alt)
-#define BM_MASK(_bmP)			((_bmP)->bm_data.std.bm_mask)
-#define BM_PARENT(_bmP)			((_bmP)->bm_data.std.bm_parent)
+#define BM_FRAMECOUNT(_bmP)	((_bmP)->bmData.alt.bmFrameCount)
+#define BM_FRAMES(_bmP)			((_bmP)->bmData.alt.bmFrames)
+#define BM_CURFRAME(_bmP)		((_bmP)->bmData.alt.bmCurFrame)
+#define BM_OVERRIDE(_bmP)		((_bmP)->bmData.std.bmAlt)
+#define BM_MASK(_bmP)			((_bmP)->bmData.std.bmMask)
+#define BM_PARENT(_bmP)			((_bmP)->bmData.std.bmParent)
 
-static inline grsBitmap *BmCurFrame (grsBitmap *bmP)
+static inline grsBitmap *BmCurFrame (grsBitmap *bmP, int iFrame)
 {
-return ((bmP->bmType == BM_TYPE_ALT) && BM_CURFRAME (bmP)) ? BM_CURFRAME (bmP) : bmP;
+if (bmP->bmType != BM_TYPE_ALT)
+	return bmP;
+if (iFrame < 0)
+	return BM_CURFRAME (bmP) ? BM_CURFRAME (bmP) : bmP;
+return BM_CURFRAME (bmP) = ((BM_FRAMES (bmP) ? BM_FRAMES (bmP) + iFrame : bmP));
 }
 
-static inline grsBitmap *BmOverride (grsBitmap *bmP)
+static inline grsBitmap *BmOverride (grsBitmap *bmP, int iFrame)
 {
 if (!bmP)
 	return bmP;
@@ -219,66 +224,66 @@ if (bmP->bmType == BM_TYPE_STD) {
 		return bmP;
 	bmP = BM_OVERRIDE (bmP);
 	}
-return BmCurFrame (bmP);
+return BmCurFrame (bmP, iFrame);
 }
 
 //font structure
-typedef struct _grs_font {
-	short       ft_w;           // Width in pixels
-	short       ft_h;           // Height in pixels
+typedef struct grsFont {
+	short       ftWidth;       // Width in pixels
+	short       ftHeight;      // Height in pixels
 	short       ftFlags;       // Proportional?
-	short       ft_baseline;    //
-	ubyte       ft_minchar;     // First char defined by this font
-	ubyte       ft_maxchar;     // Last char defined by this font
-	short       ft_bytewidth;   // Width in unsigned chars
-	ubyte     * ft_data;        // Ptr to raw data.
-	ubyte    ** ft_chars;       // Ptrs to data for each char (required for prop font)
-	short     * ft_widths;      // Array of widths (required for prop font)
-	ubyte     * ft_kerndata;    // Array of kerning triplet data
+	short       ftBaseLine;    //
+	ubyte       ftMinChar;     // First char defined by this font
+	ubyte       ftMaxChar;     // Last char defined by this font
+	short       ftByteWidth;   // Width in unsigned chars
+	ubyte     	*ftData;        // Ptr to raw data.
+	ubyte    	**ftChars;       // Ptrs to data for each char (required for prop font)
+	short     	*ftWidths;      // Array of widths (required for prop font)
+	ubyte     	*ftKernData;    // Array of kerning triplet data
 	// These fields do not participate in disk i/o!
-	grsBitmap *ft_bitmaps;
-	grsBitmap ft_parent_bitmap;
-} __pack__ grs_font;
+	grsBitmap 	*ftBitmaps;
+	grsBitmap 	ftParentBitmap;
+} __pack__ grsFont;
 
 #define GRS_FONT_SIZE 28    // how much space it takes up on disk
 
-typedef struct _grs_rgba {
+typedef struct grs_rgba {
 	ubyte			red;
 	ubyte			green;
 	ubyte			blue;
 	ubyte			alpha;
 } grs_rgba;
 
-typedef struct _grs_color {
+typedef struct grsColor {
 	short       index;       // current color
 	ubyte			rgb;
 	grs_rgba		color;
-} grs_color;
+} grsColor;
 
-typedef struct _grs_canvas {
-	grsBitmap  cv_bitmap;      // the bitmap for this canvas
-	grs_color	cv_color;
-	short       cv_drawmode;    // fill, XOR, etc.
-	grs_font		*cv_font;        // the currently selected font
-	grs_color	cv_font_fg_color;   // current font foreground color (-1==Invisible)
-	grs_color	cv_font_bg_color;   // current font background color (-1==Invisible)
-} grs_canvas;
+typedef struct grsCanvas {
+	grsBitmap   cvBitmap;      // the bitmap for this canvas
+	grsColor		cvColor;
+	short       cvDrawMode;    // fill, XOR, etc.
+	grsFont		*cvFont;        // the currently selected font
+	grsColor		cvFontFgColor;   // current font foreground color (-1==Invisible)
+	grsColor		cvFontBgColor;   // current font background color (-1==Invisible)
+} gsrCanvas;
 
 //shortcuts
-#define cv_w cv_bitmap.bm_props.w
-#define cv_h cv_bitmap.bm_props.h
+#define cv_w cvBitmap.bmProps.w
+#define cv_h cvBitmap.bmProps.h
 
-typedef struct _grs_screen {    // This is a video screen
-	grs_canvas  sc_canvas;  // Represents the entire screen
-	u_int32_t	sc_mode;        // Video mode number
-	short   		sc_w, sc_h;     // Actual Width and Height
-	fix     		sc_aspect;      //aspect ratio (w/h) for this screen
-} grs_screen;
+typedef struct grsScreen {    // This is a video screen
+	gsrCanvas  	scCanvas;  // Represents the entire screen
+	u_int32_t	scMode;        // Video mode number
+	short   		scWidth, scHeight;     // Actual Width and Height
+	fix     		scAspect;      //aspect ratio (w/h) for this screen
+} grsScreen;
 
 
 //=========================================================================
 // System functions:
-// setup and set mode. this creates a grs_screen structure and sets
+// setup and set mode. this creates a grsScreen structure and sets
 // grdCurScreen to point to it.  grs_curcanv points to this screen's
 // canvas.  Saves the current VGA state and screen mode.
 
@@ -286,7 +291,7 @@ int GrInit(void);
 
 // This function sets up the main screen.  It should be called whenever
 // the video mode changes.
-int GrInitScreen(int mode, int w, int h, int x, int y, int rowsize, ubyte *data);
+int GrInitScreen(int mode, int w, int h, int x, int y, int rowSize, ubyte *data);
 
 int GrVideoModeOK(u_int32_t mode);
 int GrSetMode(u_int32_t mode);
@@ -313,30 +318,30 @@ void _CDECL_ GrClose(void);
 // Makes a new canvas. allocates memory for the canvas and its bitmap, 
 // including the raw pixel buffer.
 
-grs_canvas *GrCreateCanvas(int w, int h);
+gsrCanvas *GrCreateCanvas(int w, int h);
 // Creates a canvas that is part of another canvas.  this can be used to make
 // a window on the screen.  the canvas structure is malloc'd; the address of
 // the raw pixel data is inherited from the parent canvas.
 
-grs_canvas *GrCreateSubCanvas(grs_canvas *canv, int x, int y, int w, int h);
+gsrCanvas *GrCreateSubCanvas(gsrCanvas *canv, int x, int y, int w, int h);
 
 // Initialize the specified canvas. the raw pixel data buffer is passed as
 // a parameter. no memory allocation is performed.
 
-void GrInitCanvas(grs_canvas *canv, unsigned char *pixdata, int pixtype, int w, int h);
+void GrInitCanvas(gsrCanvas *canv, unsigned char *pixdata, int pixtype, int w, int h);
 
 // Initialize the specified sub canvas. no memory allocation is performed.
 
-void GrInitSubCanvas(grs_canvas *new, grs_canvas *src, int x, int y, int w, int h);
+void GrInitSubCanvas(gsrCanvas *new, gsrCanvas *src, int x, int y, int w, int h);
 
 // Free up the canvas and its pixel data.
 
-void GrFreeCanvas(grs_canvas *canv);
+void GrFreeCanvas(gsrCanvas *canv);
 
 // Free up the canvas. do not free the pixel data, which belongs to the
 // parent canvas.
 
-void GrFreeSubCanvas(grs_canvas *canv);
+void GrFreeSubCanvas(gsrCanvas *canv);
 
 // Clear the current canvas to the specified color
 void GrClearCanvas(unsigned int color);
@@ -463,11 +468,11 @@ void gr_uscanline( int x1, int x2, int y );
 
 
 // Reads in a font file... current font set to this one.
-grs_font * GrInitFont( char * fontfile );
-void GrCloseFont( grs_font * font );
+grsFont * GrInitFont( char * fontfile );
+void GrCloseFont( grsFont * font );
 
 //remap a font, re-reading its data & palette
-void GrRemapFont( grs_font *font, char * fontname, char *font_data );
+void GrRemapFont( grsFont *font, char * fontname, char *font_data );
 
 //remap (by re-reading) all the color fonts
 void GrRemapColorFonts();
@@ -507,7 +512,7 @@ void GrRemapMonoFonts();
 void GrSetFontColor( int fg, int bg );
 void GrSetFontColorRGB (grs_rgba *fg, grs_rgba *bg);
 void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG);
-void GrSetCurFont( grs_font * new );
+void GrSetCurFont( grsFont * new );
 int GrString(int x, int y, char *s );
 int GrUString(int x, int y, char *s );
 int _CDECL_ GrPrintF( int x, int y, char * format, ... );
@@ -518,24 +523,24 @@ grsBitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int *n
 int GetCenteredX (char *s);
 
 //  From roller.c
-void RotateBitmap(grsBitmap *bp, grs_point *vertbuf, int lightValue);
+void RotateBitmap(grsBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 // From scale.c
-void ScaleBitmap(grsBitmap *bp, grs_point *vertbuf, int orientation );
+void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation );
 
 //===========================================================================
 // Global variables
-extern grs_canvas *grdCurCanv;             //active canvas
-extern grs_screen *grdCurScreen;           //active screen
+extern gsrCanvas *grdCurCanv;             //active canvas
+extern grsScreen *grdCurScreen;           //active screen
 extern unsigned char Test_bitmap_data[64*64];
 
 //shortcut to look at current font
-#define grd_curfont grdCurCanv->cv_font
+#define grd_curfont grdCurCanv->cvFont
 
 extern unsigned int FixDivide( unsigned int x, unsigned int y );
 
-extern void GrShowCanvas( grs_canvas *canv );
-extern void GrSetCurrentCanvas( grs_canvas *canv );
+extern void GrShowCanvas( gsrCanvas *canv );
+extern void GrSetCurrentCanvas( gsrCanvas *canv );
 
 //flags for fonts
 #define FT_COLOR        1
@@ -548,7 +553,7 @@ extern void gr_vesa_update( grsBitmap * source1, grsBitmap * dest, grsBitmap * s
 extern void gr_snow_out(int num_dots);
 
 extern void TestRotateBitmap(void);
-extern void RotateBitmap(grsBitmap *bp, grs_point *vertbuf, int lightValue);
+extern void RotateBitmap(grsBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 extern ubyte grFadeTable[256*GR_FADE_LEVELS];
 extern ubyte grInverseTable[32*32*32];
@@ -642,17 +647,17 @@ int SCREENMODE (int x, int y, int c);
 int S_MODE (u_int32_t *VV, int *VG);
 int GrBitmapHasTransparency (grsBitmap *bmP);
 
-#define FONT			grdCurCanv->cv_font
-#define FG_COLOR		grdCurCanv->cv_font_fg_color
-#define BG_COLOR		grdCurCanv->cv_font_bg_color
-#define FWIDTH       FONT->ft_w
-#define FHEIGHT      FONT->ft_h
-#define FBASELINE    FONT->ft_baseline
+#define FONT			grdCurCanv->cvFont
+#define FG_COLOR		grdCurCanv->cvFontFgColor
+#define BG_COLOR		grdCurCanv->cvFontBgColor
+#define FWIDTH       FONT->ftWidth
+#define FHEIGHT      FONT->ftHeight
+#define FBASELINE    FONT->ftBaseLine
 #define FFLAGS       FONT->ftFlags
-#define FMINCHAR     FONT->ft_minchar
-#define FMAXCHAR     FONT->ft_maxchar
-#define FDATA        FONT->ft_data
-#define FCHARS       FONT->ft_chars
-#define FWIDTHS      FONT->ft_widths
+#define FMINCHAR     FONT->ftMinChar
+#define FMAXCHAR     FONT->ftMaxChar
+#define FDATA        FONT->ftData
+#define FCHARS       FONT->ftChars
+#define FWIDTHS      FONT->ftWidths
 
 #endif /* def _GR_H */

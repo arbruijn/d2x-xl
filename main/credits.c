@@ -102,9 +102,9 @@ ubyte *creditsPalette = NULL;
 
 extern ubyte *grBitBltFadeTable;
 
-grs_font * header_font;
-grs_font * title_font;
-grs_font * names_font;
+grsFont * header_font;
+grsFont * title_font;
+grsFont * names_font;
 
 #define ALLOWED_CHAR 'R'
 
@@ -146,11 +146,11 @@ void ShowCredits(char *credits_filename)
 WIN(int credinit = 0;)
 	
 	box dirty_box[NUM_LINES_HIRES];
-	grs_canvas *CreditsOffscreenBuf=NULL;
+	gsrCanvas *CreditsOffscreenBuf=NULL;
 
 	WINDOS(
-		dd_grs_canvas *save_canv,
-		grs_canvas *save_canv
+		ddgrs_canvas *save_canv,
+		gsrCanvas *save_canv
 	);
 
 	WINDOS(
@@ -187,8 +187,8 @@ WIN(int credinit = 0;)
 
 	SetScreenMode(SCREEN_MENU);
 
-	xOffs = (grdCurCanv->cv_bitmap.bm_props.w - 640) / 2;
-	yOffs = (grdCurCanv->cv_bitmap.bm_props.h - 480) / 2;
+	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
+	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 
 	if (xOffs < 0)
 		xOffs = 0;
@@ -202,11 +202,11 @@ WIN(int credinit = 0;)
 	header_font = GrInitFont(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
 	title_font = GrInitFont(gameStates.menus.bHires?"font2-3h.fnt":"font2-3.fnt");
 	names_font = GrInitFont(gameStates.menus.bHires?"font2-2h.fnt":"font2-2.fnt");
-	bmBackdrop.bm_texBuf = NULL;
-	bmBackdrop.bm_palette = NULL;
+	bmBackdrop.bmTexBuf = NULL;
+	bmBackdrop.bmPalette = NULL;
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
-//MWA  be linear, so we can't rely on grdCurCanv->cv_bitmap->bm_props.nType.
+//MWA  be linear, so we can't rely on grdCurCanv->cvBitmap->bmProps.nType.
 
 	pcx_error = PCXReadBitmap (CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 	if (pcx_error != PCX_ERROR_NONE) {
@@ -223,9 +223,9 @@ if (!gameOpts->menus.nStyle) {
 	);
 	WIN(DDGRLOCK(dd_grd_curcanv));
 	GrBitmap(xOffs,yOffs,&bmBackdrop);
-	if ((grdCurCanv->cv_bitmap.bm_props.w > 640) || (grdCurCanv->cv_bitmap.bm_props.h > 480)) {
+	if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
 		GrSetColorRGBi (RGBA_PAL (0,0,32));
-		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.bm_props.w+1,yOffs+bmBackdrop.bm_props.h+1);
+		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.bmProps.w+1,yOffs+bmBackdrop.bmProps.h+1);
 		}
 	WIN(DDGRUNLOCK(dd_grd_curcanv));
 	}
@@ -248,9 +248,9 @@ if (!gameOpts->menus.nStyle) {
 	if (!CreditsOffscreenBuf)
 		Error("Not enough memory to allocate Credits Buffer.");
 	}
-CreditsOffscreenBuf->cv_bitmap.bm_palette = grdCurCanv->cv_bitmap.bm_palette;
+CreditsOffscreenBuf->cvBitmap.bmPalette = grdCurCanv->cvBitmap.bmPalette;
 if (gameOpts->menus.nStyle)
-	CreditsOffscreenBuf->cv_bitmap.bm_props.flags |= BM_FLAG_TRANSPARENT;
+	CreditsOffscreenBuf->cvBitmap.bmProps.flags |= BM_FLAG_TRANSPARENT;
 KeyFlush();
 
 	{
@@ -309,9 +309,9 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 		ShowFullscreenImage (&bmBackdrop);
 //			GrUpdate (0);
 #if 0
-		if ((grdCurCanv->cv_bitmap.bm_props.w > 640) || (grdCurCanv->cv_bitmap.bm_props.h > 480)) {
+		if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
 			GrSetColorRGBi (RGBA_PAL (0,0,32));
-			GrUBox (xOffs, yOffs, xOffs + bmBackdrop. bm_props.w + 1, yOffs + bmBackdrop.bm_props.h + 1);
+			GrUBox (xOffs, yOffs, xOffs + bmBackdrop. bmProps.w + 1, yOffs + bmBackdrop.bmProps.h + 1);
 			}
 #endif
 		WIN(DDGRUNLOCK(dd_grd_curcanv));
@@ -333,15 +333,15 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 		if (s[0] == '!') 
 			s++;
 		else if (s[0] == '$')	{
-			grdCurCanv->cv_font = header_font;
+			grdCurCanv->cvFont = header_font;
 			s++;
 			} 
 		else if (s[0] == '*')	{
-			grdCurCanv->cv_font = title_font;
+			grdCurCanv->cvFont = title_font;
 			s++;
 			} 
 		else
-			grdCurCanv->cv_font = names_font;
+			grdCurCanv->cvFont = names_font;
 		grBitBltFadeTable = (gameStates.menus.bHires ? fadeValues_hires : fadeValues);
 		tempp = strchr (s, '\t');
 		if (tempp)	{
@@ -391,13 +391,13 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 
 		for (j=0; j<NUM_LINES; j++) {
 			new_box = dirty_box + j;
-			tempbmp = &(CreditsOffscreenBuf->cv_bitmap);
+			tempbmp = &(CreditsOffscreenBuf->cvBitmap);
 
 	//	WIN(DDGRSCREENLOCK);
 				GrBmBitBlt (new_box->width + 1, new_box->height +4,
 								new_box->left + xOffs, new_box->top + yOffs, 
 								new_box->left, new_box->top,
-								tempbmp, &(grdCurScreen->sc_canvas.cv_bitmap));
+								tempbmp, &(grdCurScreen->scCanvas.cvBitmap));
 	//	WIN(DDGRSCREENUNLOCK);
 		}
 	}
@@ -427,7 +427,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 					GrCloseFont(names_font);
 					GrPaletteFadeOut(NULL, 32, 0);
 					GrUsePaletteTable(D2_DEFAULT_PALETTE, NULL);
-					D2_FREE(bmBackdrop.bm_texBuf);
+					D2_FREE(bmBackdrop.bmTexBuf);
 					CFClose(file);
 				WINDOS(
 					DDGrSetCurrentCanvas(save_canv),

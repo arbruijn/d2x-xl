@@ -71,7 +71,7 @@ PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))
 	bmP = BM_OVERRIDE (bmP);
-return &bmP->bm_avgRGB;
+return &bmP->bmAvgRGB;
 }
 
 //------------------------------------------------------------------------------
