@@ -936,19 +936,21 @@ void QSortLightDist (tLightDist *pDist, int left, int right)
 					m = pDist [(l + r) / 2].nDist;
 	tLightDist	h;
 
-while (pDist [l].nDist < m)
-	l++;
-while (pDist [r].nDist > m)
-	r--;
-if (l <= r) {
-	if (l < r) {
-		h = pDist [l];
-		pDist [l] = pDist [r];
-		pDist [r] = h;
+do {
+	while (pDist [l].nDist < m)
+		l++;
+	while (pDist [r].nDist > m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			h = pDist [l];
+			pDist [l] = pDist [r];
+			pDist [r] = h;
+			}
+		l++;
+		r--;
 		}
-	l++;
-	r--;
-	}
+	} while (l <= r);
 if (l < right)
 	QSortLightDist (pDist, l, right);
 if (left < r)
@@ -1809,19 +1811,19 @@ for (i = 0; i < 2; i++) {
 	ti [i].nId = i;
 	ti [i].pThread = SDL_CreateThread (pFunc, &ti [i].nId);
 	}
-#if 0
+#if 1
 SDL_SemWait (ti [0].done);
 SDL_SemWait (ti [1].done);
 #else
 while (!(ti [0].bDone && ti [1].bDone))
 #	ifdef _WIN32
-	Sleep (1);
+	Sleep (0);
 #	else
 	usleep (1000);
 #	endif
 #endif
 for (i = 0; i < 2; i++) {
-	SDL_KillThread (ti [i].pThread);
+	SDL_WaitThread (ti [i].pThread, NULL);
 	SDL_DestroySemaphore (ti [i].done);
 	}
 }
