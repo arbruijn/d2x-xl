@@ -1723,7 +1723,7 @@ else {
 glDepthFunc (GL_LEQUAL);
 bmBot = BmOverride (bmBot, -1);
 bDepthSort = (!bmTop && (gameOpts->render.bDepthSort > 0) && 
-				  ((gameStates.ogl.fAlpha < 1) || (bmBot->bmProps.flags & (BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == BM_FLAG_TGA));
+				  ((gameStates.ogl.fAlpha < 1) || (bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA)));
 if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 	nFrame = (int) (BM_CURFRAME (bmTop) - BM_FRAMES (bmTop));
 	bmP = bmTop;
