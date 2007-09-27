@@ -1297,19 +1297,21 @@ void QSortParticles (tPartIdx *pPartIdx, int left, int right)
 			r = right, 
 			m = pPartIdx [(l + r) / 2].z;
 
-while (pPartIdx [l].z > m)
-	l++;
-while (pPartIdx [r].z < m)
-	r--;
-if (l <= r) {
-	if (l < r) {
-		tPartIdx h = pPartIdx [l];
-		pPartIdx [l] = pPartIdx [r];
-		pPartIdx [r] = h;
+do {
+	while (pPartIdx [l].z > m)
+		l++;
+	while (pPartIdx [r].z < m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tPartIdx h = pPartIdx [l];
+			pPartIdx [l] = pPartIdx [r];
+			pPartIdx [r] = h;
+			}
+		l++;
+		r--;
 		}
-	l++;
-	r--;
-	}
+	} while (l <= r);
 if (l < right)
 	QSortParticles (pPartIdx, l, right);
 if (left < r)

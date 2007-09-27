@@ -1033,19 +1033,21 @@ void QSortItemPos (tKCItemPos *pos, int left, int right)
 					r = right;
 	tKCItemPos	h, m = pos [(l + r) / 2];
 
-while ((pos [l].y < m.y) || ((pos [l].y == m.y) && (pos [l].l < m.l)))
-	l++;
-while ((pos [r].y > m.y) || ((pos [r].y == m.y) && (pos [r].l > m.l)))
-	r--;
-if (l <= r) {
-	if (l < r) {
-		h = pos [l];
-		pos [l] = pos [r];
-		pos [r] = h;
+do {
+	while ((pos [l].y < m.y) || ((pos [l].y == m.y) && (pos [l].l < m.l)))
+		l++;
+	while ((pos [r].y > m.y) || ((pos [r].y == m.y) && (pos [r].l > m.l)))
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			h = pos [l];
+			pos [l] = pos [r];
+			pos [r] = h;
+			}
+		l++;
+		r--;
 		}
-	l++;
-	r--;
-	}
+	} while (l <= r);
 if (l < right)
 	QSortItemPos (pos, l, right);
 if (left < r)

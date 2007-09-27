@@ -1524,24 +1524,28 @@ if (gameOpts->render.bDynLighting) {
 	}
 }
 //------------------------------------------------------------------------------
+
 void QSortDynamicLights (int left, int right)
 {
 	int	l = left,
 			r = right,
 			m = gameData.render.lights.dynamic.shader.activeLights [(l + r) / 2]->xDistance;
-while (gameData.render.lights.dynamic.shader.activeLights [l]->xDistance < m)
-	l++;
-while (gameData.render.lights.dynamic.shader.activeLights [r]->xDistance > m)
-	r--;
-if (l <= r) {
-	if (l < r) {
-		tShaderLight *h = gameData.render.lights.dynamic.shader.activeLights [l];
-		gameData.render.lights.dynamic.shader.activeLights [l] = gameData.render.lights.dynamic.shader.activeLights [r];
-		gameData.render.lights.dynamic.shader.activeLights [r] = h;
+			
+do {
+	while (gameData.render.lights.dynamic.shader.activeLights [l]->xDistance < m)
+		l++;
+	while (gameData.render.lights.dynamic.shader.activeLights [r]->xDistance > m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tShaderLight *h = gameData.render.lights.dynamic.shader.activeLights [l];
+			gameData.render.lights.dynamic.shader.activeLights [l] = gameData.render.lights.dynamic.shader.activeLights [r];
+			gameData.render.lights.dynamic.shader.activeLights [r] = h;
+			}
+		l++;
+		r--;
 		}
-	l++;
-	r--;
-	}
+	} while (l <= r);
 if (l < right)
 	QSortDynamicLights (l, right);
 if (left < r)
