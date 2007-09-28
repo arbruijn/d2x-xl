@@ -41,7 +41,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 
 //----------------- Variables for video clips -------------------
 
-inline int CurFrame (int nClip, fix timeToLive)
+inline int CurFrame (tObject *objP, int nClip, fix timeToLive)
 {
 tVideoClip	*pvc = gameData.eff.vClips [0] + nClip;
 int nFrames = pvc->nFrameCount;
@@ -49,7 +49,10 @@ int nFrames = pvc->nFrameCount;
 int iFrame;
 if (timeToLive > pvc->xTotalTime)
 	timeToLive = timeToLive % pvc->xTotalTime;
-iFrame = (pvc->xTotalTime - timeToLive) / pvc->xFrameTime;
+if ((nClip == VCLIP_AFTERBURNER_BLOB) && objP->rType.vClipInfo.xFrameTime)
+	iFrame = (objP->rType.vClipInfo.xTotalTime - timeToLive) / objP->rType.vClipInfo.xFrameTime;
+else
+	iFrame = (pvc->xTotalTime - timeToLive) / pvc->xFrameTime;
 return (iFrame < nFrames) ? iFrame : nFrames - 1;
 }
 
@@ -103,7 +106,7 @@ return nFrames;
 //draw an tObject which renders as a tVideoClip
 
 #define	FIREBALL_ALPHA		0.9
-#define	THRUSTER_ALPHA		(1.0 / 3.0)
+#define	THRUSTER_ALPHA		(1.0 / 4.0)
 #define	WEAPON_ALPHA		0.7
 
 void DrawVClipObject (tObject *objP, fix timeToLive, int bLit, int nVClip, tRgbaColorf *color)
@@ -111,7 +114,7 @@ void DrawVClipObject (tObject *objP, fix timeToLive, int bLit, int nVClip, tRgba
 	double		ta = 0, alpha = 0;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + nVClip;
 	int			nFrames = SetupHiresVClip (vcP);
-	int			iFrame = CurFrame (nVClip, timeToLive);
+	int			iFrame = CurFrame (objP, nVClip, timeToLive);
 	int			bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
 if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION)) {

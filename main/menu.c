@@ -1888,9 +1888,10 @@ void EffectOptionsMenu ()
 			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast;
 	char	szCoronaInt [50], szExplShrapnels [50];
 
-pszCoronaInt [0] = TXT_LOW;
-pszCoronaInt [1] = TXT_MEDIUM;
-pszCoronaInt [2] = TXT_HIGH;
+pszCoronaInt [0] = TXT_VERY_LOW;
+pszCoronaInt [1] = TXT_LOW;
+pszCoronaInt [2] = TXT_MEDIUM;
+pszCoronaInt [3] = TXT_HIGH;
 
 pszExplShrapnels [0] = TXT_NONE;
 pszExplShrapnels [1] = TXT_FEW;
@@ -1911,7 +1912,7 @@ do {
 	if (gameOpts->render.bCoronas || gameOpts->render.bWeaponCoronas) {
 		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
-		ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 2, KEY_I, HTX_CORONA_INTENSITY);
+		ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
 		effectOpts.nCoronaIntensity = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;

@@ -1768,29 +1768,17 @@ void CheckAfterburnerBlobDrop (tObject *objP)
 if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (objP == gameData.objs.console);
 	DropAfterburnerBlobs (objP, 2, i2f (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame)
 		MultiSendDropBlobs ((char) gameData.multiplayer.nLocalPlayer);
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 
 if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner_size)) {
-	int	nObject = OBJ_IDX (objP);
-	fix	vel = VmVecMagQuick (&objP->mType.physInfo.velocity);
-	fix	delay, lifetime;
+	int	nObject, bSmoke;
+	fix	vel;
+	fix	delay, lifetime, nSize;
 
-	if (vel > F1_0*200)
-		delay = F1_0/16;
-	else if (vel > F1_0*40)
-		delay = FixDiv (F1_0*13, vel);
-	else
-		delay = DEG90;
-
-	lifetime = (delay * 3) / 2;
-	if (!IsMultiGame) {
-		delay /= 2;
-		lifetime *= 2;
-		}
-
+#if 1
 	if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]) {
 		if (SHOW_SMOKE && gameOpts->render.smoke.bMissiles)
 			return;
@@ -1798,9 +1786,33 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 			 (objP->id != MERCURYMSL_ID))
 			return;
 		}
-	if ((gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) || 
+#endif
+	if ((vel = VmVecMagQuick (&objP->mType.physInfo.velocity)) > F1_0 * 200)
+		delay = F1_0 / 16;
+	else if (vel > F1_0 * 40)
+		delay = FixDiv (F1_0 * 13, vel);
+	else
+		delay = DEG90;
+
+	if (bSmoke = SHOW_SMOKE && gameOpts->render.smoke.bMissiles) {
+		nSize = F1_0 * 3;
+		lifetime = F1_0 / 12;
+		delay = 0;
+		}
+	else {
+		nSize = i2f (gameData.weapons.info [objP->id].afterburner_size) / 16;
+		lifetime = 3 * delay / 2;
+		if (!IsMultiGame) {
+			delay /= 2;
+			lifetime *= 2;
+			}
+		}
+
+	nObject = OBJ_IDX (objP);
+	if (bSmoke ||
+		 (gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) || 
 		 (gameData.objs.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
-		DropAfterburnerBlobs (objP, 1, i2f (gameData.weapons.info [objP->id].afterburner_size)/16, lifetime, NULL, 0);
+		DropAfterburnerBlobs (objP, 1, nSize, lifetime, NULL, bSmoke);
 		gameData.objs.xLastAfterburnerTime [nObject] = gameData.time.xGame;
 		}
 	}

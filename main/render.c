@@ -1434,7 +1434,7 @@ return i;
 
 #define ROTATE_CORONA	0
 
-float coronaIntensities [] = {0.5f, 0.75f, 1};
+float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
 
 void RenderCorona (short nSegment, short nSide)
 {

@@ -1330,7 +1330,7 @@ switch (nType) {
 				Int3 ();
 				return nObject;
 				}
-			if (gameData.app.nGameMode & GM_MULTI)
+			if (IsMultiGame)
 				gameData.multigame.create.nObjNums [gameData.multigame.create.nLoc++] = nObject;
 			objP = gameData.objs.objects + nObject;
 			objP->mType.physInfo.velocity = new_velocity;
@@ -1867,21 +1867,23 @@ void DoExplodingWallFrame ()
 void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTime, 
 									tObject *pParent, int bThruster)
 {
-	vmsVector	vPos [2];
-	short			i, nSegment;
-	tObject		*blobObjP;
+	short				i, nSegment, nThrusters;
+	tObject			*blobObjP;
+	tThrusterInfo	ti;
 
-CalcShipThrusterPos (objP, vPos);
-if (count == 1)
-	VmVecAvg (vPos, vPos, vPos + 1);
-for (i = 0; i < count; i++) {
-	nSegment = FindSegByPoint (vPos + i, objP->nSegment, 1);
+nThrusters = CalcThrusterPos (objP, &ti, 1);
+for (i = 0; i < nThrusters; i++) {
+	nSegment = FindSegByPoint (ti.vPos + i, objP->nSegment, 1);
 	if (nSegment == -1)
 		continue;
-	if (!(blobObjP = ObjectCreateExplosion (nSegment, vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
+	if (!(blobObjP = ObjectCreateExplosion (nSegment, ti.vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))
 		continue;
-	if (xLifeTime != -1)
+	if (xLifeTime != -1) {
+		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;
+		blobObjP->rType.vClipInfo.xFrameTime = FixMulDiv (gameData.eff.vClips [0][VCLIP_AFTERBURNER_BLOB].xFrameTime, 
+																		  xLifeTime, blobObjP->lifeleft);
 		blobObjP->lifeleft = xLifeTime;
+		}
 	AddChildObjectP (pParent, blobObjP);
 	blobObjP->renderType = RT_THRUSTER;
 	if (bThruster) {

@@ -1773,10 +1773,10 @@ void LoadGameTexts(void);
 #define TXT_BRIGHT_OBJECTS			GT(980)
 #define TXT_POWERUP_CORONAS		GT(981)
 #define TXT_AUTOMAP_LIGHTNINGS	GT(982)
+#define TXT_VERY_LOW					GT(983)
 
 #if 0
 
-#define TXT_				GT(983)
 #define TXT_				GT(984)
 #define TXT_				GT(985)
 #define TXT_				GT(986)

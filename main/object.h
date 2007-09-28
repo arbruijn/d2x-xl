@@ -214,6 +214,7 @@ typedef struct tPowerupInfo {
 
 typedef struct tVClipInfo {
 	int     nClipIndex;
+	fix	  xTotalTime;
 	fix     xFrameTime;
 	sbyte   nCurFrame;
 } __pack__ tVClipInfo;

@@ -130,13 +130,14 @@ extern tSmoke	smoke [];
 
 void DoPlayerSmoke (tObject *objP, int i)
 {
-	int			h, j, d, nParts, nType;
-	float			nScale;
-	tCloud		*pCloud;
-	vmsVector	vPos [2], fn, mn;
+	int				h, j, d, nParts, nType;
+	float				nScale;
+	tCloud			*pCloud;
+	vmsVector		fn, mn;
+	tThrusterInfo	ti;
+
 	static int	bForward = 1;
 	static int	t0 = -1;
-
 
 if (i < 0)
 	i = objP->id;
@@ -229,10 +230,10 @@ else {
 								(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) ?
 								PLR_PART_SPEED : PLR_PART_SPEED * 2);
 			}
-		CalcShipThrusterPos (objP, vPos);
+		CalcThrusterPos (objP, &ti, 0);
 		for (j = 0; j < 2; j++)
 			if ((pCloud = GetCloud (h, j)))
-				SetCloudPos (pCloud, vPos + j);
+				SetCloudPos (pCloud, ti.vPos + j);
 		return;
 		}
 	}
@@ -344,9 +345,9 @@ else
 
 void DoMissileSmoke (tObject *objP)
 {
-	int			nParts, nSpeed, nLife, i;
-	float			nScale = 1.5f;
-	vmsVector	pos;
+	int				nParts, nSpeed, nLife, i;
+	float				nScale = 1.5f;
+	tThrusterInfo	ti;
 
 i = OBJ_IDX (objP);
 if (!(SHOW_SMOKE && gameOpts->render.smoke.bMissiles)) {
@@ -378,8 +379,8 @@ if (nParts) {
 												  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
 												  1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, 1, i, NULL, 1, -1));
 		}
-	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-	SetSmokePos (gameData.smoke.objects [i], &pos);
+	CalcThrusterPos (objP, &ti, 0);
+	SetSmokePos (gameData.smoke.objects [i], ti.vPos);
 	}
 else 
 	KillObjectSmoke (i);

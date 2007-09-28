@@ -1732,6 +1732,7 @@ char *defaultGameTexts [][2] = {
 	{"~Helle Hires-Objekte", "~Bright hires models"},
 	{"~Powerups mit Lichthoefen zeichnen", "render coronas for ~Powerups"},
 	{"~Blitze zeichnen", "render ~Lightnings"},
+	{"sehr niedrig", "very low"},
 #if 0
 	{"", ""},
 #endif

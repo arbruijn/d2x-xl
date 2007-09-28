@@ -1366,16 +1366,79 @@ else {
 
 // -----------------------------------------------------------------------------
 
+int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob)
+{
+	tThrusterInfo		ti;
+	tThrusterData		*pt = NULL;
+	int					i, nThrusters, bSpectate = SPECTATOR (objP);
+
+ti = *tiP;
+ti.pp = NULL;
+ti.mtP = NULL;
+if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER)) {
+	if (!bSpectate) {
+		pt = gameData.render.thrusters + objP->id;
+		ti.pp = GetPathPoint (&pt->path);
+		}
+	ti.fSize = (ti.fLength + 1) / 2;
+	nThrusters = 2;
+	CalcShipThrusterPos (objP, ti.vPos);
+	}
+else if (bAfterburnerBlob || (gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])) {
+		tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+		fix		nObjRad = 2 * (phb->vMax.p.z - phb->vMin.p.z) / 3;
+
+	if (bAfterburnerBlob)
+		nObjRad *= 2;
+	if (objP->id == EARTHSHAKER_ID)
+		ti.fSize = 1.0f;
+	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
+		ti.fSize = 0.8f;
+	else if (objP->id == SMARTMSL_ID)
+		ti.fSize = 0.6f;
+	else
+		ti.fSize = 0.5f;
+	nThrusters = 1;
+	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
+		ti.fLength /= 2;
+	VmVecScaleAdd (ti.vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -nObjRad);
+	}
+else if ((objP->nType == OBJ_PLAYER) || 
+			((objP->nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) || 
+			((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])) {
+	vmsMatrix	m;
+	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
+		pt = gameData.render.thrusters + objP->id;
+		ti.pp = GetPathPoint (&pt->path);
+		}
+	ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+	nThrusters = ti.mtP->nCount;
+	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+	for (i = 0; i < nThrusters; i++) {
+		VmVecRotate (ti.vPos + i, ti.mtP->vPos + i, &m);
+		VmVecInc (ti.vPos + i, &objP->position.vPos);
+		VmVecRotate (ti.vDir + i, ti.mtP->vDir + i, &m);
+		}
+	ti.fSize = ti.mtP->fSize;
+	if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id] && (nThrusters > 1))
+		nThrusters = 1;
+	}
+else
+	return 0;
+*tiP = ti;
+return nThrusters;
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderThrusterFlames (tObject *objP)
 {
 	int					h, i, j, k, l, nStyle, nThrusters, bStencil, bSpectate, bTextured;
 	tRgbaColorf			c [2];
-	vmsVector			vPos [2], vDir [2];
+	tThrusterInfo		ti;
 	fVector				v;
-	float					fSize, fLength, fSpeed, fPulse, fFade [4];
+	float					fSpeed, fPulse, fFade [4];
 	tThrusterData		*pt = NULL;
-	tPathPoint			*pp = NULL;
-	tModelThrusters	*mtP = NULL;
 	
 	static time_t		tPulse = 0;
 	static int			nPulse = 10;
@@ -1394,7 +1457,7 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
-fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
+ti.fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
 if (!pt || (fSpeed >= pt->fSpeed)) {
 	fFade [0] = 0.95f;
 	fFade [1] = 0.85f;
@@ -1410,96 +1473,14 @@ else {
 if (pt)
 	pt->fSpeed = fSpeed;
 bSpectate = SPECTATOR (objP);
-#if 1
+
 if (gameStates.app.nSDLTicks - tPulse > 10) {
 	tPulse = gameStates.app.nSDLTicks;
 	nPulse = d_rand () % 11;
 	}
 fPulse = (float) nPulse / 10.0f;
-if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER)) {
-	if (!bSpectate) {
-		pt = gameData.render.thrusters + objP->id;
-		pp = GetPathPoint (&pt->path);
-		}
-	fSize = (fLength + 1) / 2;
-	nThrusters = 2;
-	CalcShipThrusterPos (objP, vPos);
-	}
-else if (gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]) {
-	tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	fix		nObjRad = 2 * (phb->vMax.p.z - phb->vMin.p.z) / 3;
-	if (objP->id == EARTHSHAKER_ID)
-		fSize = 1.0f;
-	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
-		fSize = 0.8f;
-	else if (objP->id == SMARTMSL_ID)
-		fSize = 0.6f;
-	else
-		fSize = 0.5f;
-	nThrusters = 1;
-	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
-		fLength /= 2;
-	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -nObjRad);
-	}
-else if ((objP->nType == OBJ_PLAYER) || 
-			((objP->nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) || 
-			((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])) {
-	vmsMatrix	m;
-	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
-		pt = gameData.render.thrusters + objP->id;
-		pp = GetPathPoint (&pt->path);
-		}
-	mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
-	nThrusters = mtP->nCount;
-	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-	for (i = 0; i < nThrusters; i++) {
-		VmVecRotate (vPos + i, mtP->vPos + i, &m);
-		VmVecInc (vPos + i, &objP->position.vPos);
-		VmVecRotate (vDir + i, mtP->vDir + i, &m);
-		}
-	fSize = mtP->fSize;
-	if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id] && (nThrusters > 1))
-		nThrusters = 1;
-	}
-else
-	return;
-#else
-if (objP->nType == OBJ_ROBOT) {
-	vmsMatrix	m;
-	mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
-	nThrusters = mtP->nCount;
-	VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-	for (i = 0; i < nThrusters; i++) {
-		VmVecRotate (vPos + i, mtP->vPos + i, &m);
-		VmVecInc (vPos + i, &objP->position.vPos);
-		VmVecRotate (vDir + i, mtP->vDir + i, &m);
-		}
-	fSize = mtP->fSize;
-	//mtP->nCount = 0;
-	}
-else if (objP->nType == OBJ_PLAYER) {
-		pt = gameData.render.thrusters + objP->id;
-		pp = GetPathPoint (&pt->path);
 
-	fSize = (fLength + 1) / 2;
-	nThrusters = 2;
-	CalcShipThrusterPos (objP, vPos);
-	}
-else if (objP->nType == OBJ_WEAPON) {
-	if (!gameData.objs.bIsMissile [objP->id])
-		return;
-	if (objP->id == EARTHSHAKER_ID)
-		fSize = 1.0f;
-	else if ((objP->id == MEGAMSL_ID) || (objP->id == EARTHSHAKER_MEGA_ID))
-		fSize = 0.8f;
-	else if (objP->id == SMARTMSL_ID)
-		fSize = 0.6f;
-	else
-		fSize = 0.5f;
-	nThrusters = 1;
-	VmVecScaleAdd (vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-	}
-#endif
+nThrusters = CalcThrusterPos (objP, &ti, 0);
 bStencil = StencilOff ();
 //glDepthMask (0);
 bTextured = 0;
@@ -1522,15 +1503,15 @@ else if (gameOpts->render.bDepthSort <= 0) {
 if (nThrusters > 1) {
 	vmsVector vRot [2];
 	for (i = 0; i < 2; i++)
-		G3RotatePoint (vRot + i, vPos + i, 0);
+		G3RotatePoint (vRot + i, ti.vPos + i, 0);
 	if (vRot [0].p.z < vRot [1].p.z) {
-		vmsVector v = vPos [0];
-		vPos [0] = vPos [1];
-		vPos [1] = v;
+		vmsVector v = ti.vPos [0];
+		ti.vPos [0] = ti.vPos [1];
+		ti.vPos [1] = v;
 		if (objP->nType == OBJ_ROBOT) {
-			v = vDir [0];
-			vDir [0] = vDir [1];
-			vDir [1] = v;
+			v = ti.vDir [0];
+			ti.vDir [0] = ti.vDir [1];
+			ti.vDir [1] = v;
 			}
 		}
 	}
@@ -1543,27 +1524,27 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
 		float		c = 1/*0.7f + 0.03f * fPulse*/, dotFlame, dotThruster;
 
-	fLength *= 4 * fSize;
-	fSize *= 1.5f;
+	ti.fLength *= 4 * ti.fSize;
+	ti.fSize *= 1.5f;
 #if 1
-	if (!mtP)
-		VmsVecToFloat (&fVecf, pp ? &pp->mOrient.fVec : &objP->position.mOrient.fVec);
+	if (!ti.mtP)
+		VmsVecToFloat (&fVecf, ti.pp ? &ti.pp->mOrient.fVec : &objP->position.mOrient.fVec);
 #endif
 	for (h = 0; h < nThrusters; h++) {
-		if (mtP)
-			VmsVecToFloat (&fVecf, vDir + h);
-		VmsVecToFloat (&vPosf, vPos + h);
-		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -fLength);
+		if (ti.mtP)
+			VmsVecToFloat (&fVecf, ti.vDir + h);
+		VmsVecToFloat (&vPosf, ti.vPos + h);
+		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -ti.fLength);
 		G3TransformPointf (vFlame + 2, vFlame + 2, 0);
 		G3TransformPointf (&vPosf, &vPosf, 0);
 		VmVecNormalf (&vNormf, vFlame + 2, &vPosf, &vEye);
-		VmVecScaleAddf (vFlame, &vPosf, &vNormf, fSize);
-		VmVecScaleAddf (vFlame + 1, &vPosf, &vNormf, -fSize);
+		VmVecScaleAddf (vFlame, &vPosf, &vNormf, ti.fSize);
+		VmVecScaleAddf (vFlame + 1, &vPosf, &vNormf, -ti.fSize);
 		VmVecNormalf (&vNormf, vFlame, vFlame + 1, vFlame + 2);
 		vThruster [0] = vFlame [0];
 		vThruster [2] = vFlame [1];
-		VmVecScaleAddf (vThruster + 1, &vPosf, &vNormf, fSize);
-		VmVecScaleAddf (vThruster + 3, &vPosf, &vNormf, -fSize);
+		VmVecScaleAddf (vThruster + 1, &vPosf, &vNormf, ti.fSize);
+		VmVecScaleAddf (vThruster + 3, &vPosf, &vNormf, -ti.fSize);
 		VmVecNormalizef (&vPosf, &vPosf);
 		VmVecNormalizef (&v, vFlame + 2);
 		dotFlame = VmVecDotf (&vPosf, &v);
@@ -1612,7 +1593,7 @@ else {
 			c [1].blue = 0.0f;
 			c [1].alpha = 0.9f;
 			}
-		G3StartInstanceMatrix (vPos + h, (pp && !bSpectate) ? &pp->mOrient : &objP->position.mOrient);
+		G3StartInstanceMatrix (ti.vPos + h, (ti.pp && !bSpectate) ? &ti.pp->mOrient : &objP->position.mOrient);
 		for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 #if 1
 			if (!bTextured) {
@@ -1627,9 +1608,9 @@ else {
 				uvl.v.u = j * uvlStep.v.u;
 				for (l = 0; l < 2; l++) {
 					v = vFlame [i + l][k];
-					v.p.x *= fSize;
-					v.p.y *= fSize;
-					v.p.z *= fLength;
+					v.p.x *= ti.fSize;
+					v.p.y *= ti.fSize;
+					v.p.z *= ti.fLength;
 					G3TransformPointf (&v, &v, 0);
 					if (bTextured) {
 						uvl.v.v = 0.25f + uvlStep.v.v * (i + l);

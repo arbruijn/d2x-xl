@@ -3,6 +3,16 @@
 
 #include "inferno.h"
 
+typedef struct tThrusterInfo {
+	vmsVector			vPos [2];
+	vmsVector			vDir [2];
+	float					fSize;
+	float					fLength;
+	tPathPoint			*pp;
+	tModelThrusters	*mtP;
+} tThrusterInfo;
+
+int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob);
 void DrawObjectBlob (tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *color, float alpha);
 
 // draw an tObject that is a texture-mapped rod
