@@ -1257,7 +1257,8 @@ return WHP_NOT_SPECIAL;		//default is treat like normal tWall
 // Opens doors/destroys tWall/shuts off triggers.
 void WallToggle(tSegment *segP, short nSide)
 {
-	int nWall;
+	tWall	*wallP;
+	int	nWall;
 
 if (SEG_IDX (segP) > gameData.segs.nLastSegment) {
 #ifdef _DEBUG
@@ -1275,11 +1276,12 @@ if (!IS_WALL (nWall)) {
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordWallToggle(SEG_IDX (segP), nSide);
-if (gameData.walls.walls [nWall].nType == WALL_BLASTABLE)
-	WallDestroy(segP, nSide);
-if ((gameData.walls.walls [nWall].nType == WALL_DOOR) && 
-		(gameData.walls.walls [nWall].state == WALL_DOOR_CLOSED))
-	WallOpenDoor(segP, nSide);
+wallP = gameData.walls.walls + nWall;
+if (wallP->nType == WALL_BLASTABLE)
+	WallDestroy (segP, nSide);
+if ((wallP->nType == WALL_DOOR) && 
+	 (wallP->state == WALL_DOOR_CLOSED))
+	WallOpenDoor (segP, nSide);
 }
 
 //-----------------------------------------------------------------
