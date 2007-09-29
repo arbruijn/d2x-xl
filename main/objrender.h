@@ -21,9 +21,9 @@ void DrawObjectRodTexPoly (tObject *obj, tBitmapIndex bitmap, int bLit, int iFra
 void DrawPolygonObject (tObject *objP);
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
 void ConvertWeaponToPowerup (tObject *objP);
+int ConvertPowerupToWeapon (tObject *objP);
+void ConvertAllPowerupsToWeapons (void);
 int RenderObject(tObject *objP, int nWindowNum, int bForce);
 void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona);
-
-void ConvertAllPowerupsToWeapons (void);
 
 #endif //OBJJRENDER_H

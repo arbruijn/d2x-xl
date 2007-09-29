@@ -321,12 +321,11 @@ if (gameOpts->render.bPowerupCoronas && LoadCorona ()) {
 	fix xSize;
 	tRgbaColorf *colorP;
 
-	if (objP->id == POW_EXTRA_LIFE)
-		objP = objP;
-	if (alpha == 1) {
+	if ((objP->id >= POW_KEY_BLUE) && (objP->id <= POW_KEY_GOLD)) {
 		int i = objP->id - POW_KEY_BLUE;
 
 		colorP = powerupColors + (((i < 0) || (i > 2)) ? 3 : i);
+		powerupColors [i].alpha = alpha;
 		xSize = 12 * F1_0;
 		}
 	else {
@@ -336,7 +335,7 @@ if (gameOpts->render.bPowerupCoronas && LoadCorona ()) {
 		powerupColors [4].blue = blue / b;
 		powerupColors [4].alpha = alpha;
 		colorP = powerupColors + 4;
-		xSize = 6 * F1_0;
+		xSize = 8 * F1_0;
 		}
 	glDepthMask (0);
 	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpCorona, colorP, alpha);
@@ -394,7 +393,8 @@ if (colorP)
 xSize = objP->size;
 
 if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
-	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, alpha);
+	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, 
+								coronaIntensities [gameOpts->render.nCoronaIntensity]);
 if (gameOpts->render.bDepthSort > 0) {
 	tRgbaColorf	color = {1, 1, 1, alpha};
 	if (bmP->bmProps.w > bmP->bmProps.h)
@@ -2418,7 +2418,7 @@ switch (objP->renderType) {
 					gameData.models.nScale = 2 * F1_0;
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
-				RenderPowerupCorona (objP, 1, 1, 1, 1);
+				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nCoronaIntensity]);
 				DrawPolygonObject (objP);
 				gameData.models.nScale = 0;
 				objP->mType.physInfo.mass = F1_0;
@@ -2520,7 +2520,7 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (ConvertPowerupToWeapon (objP)) {
-			RenderPowerupCorona (objP, 1, 1, 1, 1);
+			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nCoronaIntensity]);
 			DrawPolygonObject (objP);
 			}
 		else if (gameStates.render.nShadowPass != 2)

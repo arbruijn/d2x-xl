@@ -1154,7 +1154,7 @@ return i * i;
 
 #define VECMAT_CALLS 0
 
-float fLightRanges [3] = {10, 14.142f, 20};
+float fLightRanges [5] = {5, 7.071f, 10, 14.142f, 20};
 
 int G3AccumVertColor (fVector *pColorSum)
 {

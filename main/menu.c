@@ -2858,7 +2858,7 @@ if (gameOpts->app.bExpertMode) {
 
 //------------------------------------------------------------------------------
 
-static	char *pszLightRange [3];
+static	char *pszLightRange [5];
 
 void LightingOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -2936,9 +2936,11 @@ void LightingOptionsMenu ()
 	char szLightRange [50];
 	int bLightMaps = gameOpts->render.color.bUseLightMaps;
 
-	pszLightRange [0] = TXT_STANDARD;
-	pszLightRange [1] = TXT_MEDIUM;
-	pszLightRange [2] = TXT_FAR;
+	pszLightRange [0] = TXT_VERY_LOW;
+	pszLightRange [1] = TXT_LOW;
+	pszLightRange [2] = TXT_STANDARD;
+	pszLightRange [3] = TXT_MEDIUM;
+	pszLightRange [4] = TXT_FAR;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -2973,7 +2975,7 @@ do {
 			{
 			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
 			*szLightRange = *(TXT_LIGHT_RANGE - 1);
-			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 2, KEY_R, HTX_ADVRND_LIGHTRANGE);
+			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 4, KEY_R, HTX_ADVRND_LIGHTRANGE);
 			lightOpts.nLMapRange = opt++;
 #if 0
 			ADD_TEXT (opt, "", 0);

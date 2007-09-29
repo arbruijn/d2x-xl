@@ -2994,7 +2994,7 @@ glDepthMask (0);
 if (gameStates.render.nShadowBlurPass)
 	glDisable (GL_BLEND);
 else
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glColor4dv (shadowHue [gameStates.render.nShadowBlurPass]);// / fDist);
 glBegin (GL_QUADS);

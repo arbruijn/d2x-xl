@@ -58,6 +58,7 @@ static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
 #include "newmenu.h"
 #include "gamesave.h"
 #include "gamepal.h"
+#include "sphere.h"
 
 //------------------------------------------------------------------------------
 
