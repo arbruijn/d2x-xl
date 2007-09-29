@@ -34,6 +34,7 @@ static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
 #include "textures.h"
 #include "wall.h"
 #include "object.h"
+#include "objrender.h"
 #include "gamemine.h"
 #include "error.h"
 #include "gameseg.h"
@@ -64,9 +65,8 @@ void PagingTouchVClip (tVideoClip * vc, int bD1)
 {
 	int i;
 
-	for (i=0; i<vc->nFrameCount; i++)	{
-		PIGGY_PAGE_IN (vc->frames [i], bD1);
-	}
+for (i = 0; i < vc->nFrameCount; i++)
+	PIGGY_PAGE_IN (vc->frames [i], bD1);
 }
 
 //------------------------------------------------------------------------------
@@ -105,11 +105,11 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 
 //------------------------------------------------------------------------------
 
-void PagingTouchModel (int modelnum)
+void PagingTouchModel (int nModel)
 {
-	int		i, j;
-	ushort	*pi;
-	tPolyModel *pm = gameData.models.polyModels + modelnum;
+	int			i, j;
+	ushort		*pi;
+	tPolyModel	*pm = gameData.models.polyModels + nModel;
 
 for (i = pm->nTextures, pi = gameData.pig.tex.pObjBmIndex + pm->nFirstTexture; i; i--, pi++) {
 	j = *pi;
@@ -122,34 +122,34 @@ for (i = pm->nTextures, pi = gameData.pig.tex.pObjBmIndex + pm->nFirstTexture; i
 
 void PagingTouchWeapon (int nWeaponType)
 {
-	// Page in the robot's weapons.
-	
-	if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) return;
+// Page in the robot's weapons.
 
-	if (gameData.weapons.info [nWeaponType].picture.index)	{
-		PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].picture,0);
-	}		
-	
-	if (gameData.weapons.info [nWeaponType].flash_vclip > -1)
-		PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].flash_vclip], 0);
-	if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
-		PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].wall_hit_vclip], 0);
-	if (WI_damage_radius (nWeaponType))	{
-		// Robot_hit_vclips are actually badass_vclips
-		if (gameData.weapons.info [nWeaponType].robot_hit_vclip > -1)
-			PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].robot_hit_vclip], 0);
+if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
+	return;
+if (gameData.weapons.info [nWeaponType].picture.index)
+	PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].picture,0);
+if (gameData.weapons.info [nWeaponType].flash_vclip > -1)
+	PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].flash_vclip], 0);
+if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
+	PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].wall_hit_vclip], 0);
+if (WI_damage_radius (nWeaponType))	{
+	// Robot_hit_vclips are actually badass_vclips
+	if (gameData.weapons.info [nWeaponType].robot_hit_vclip > -1)
+		PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].robot_hit_vclip], 0);
 	}
-
-	switch (gameData.weapons.info [nWeaponType].renderType)	{
+switch (gameData.weapons.info [nWeaponType].renderType)	{
 	case WEAPON_RENDER_VCLIP:
 		if (gameData.weapons.info [nWeaponType].nVClipIndex > -1)
 			PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].nVClipIndex], 0);
 		break;
+
 	case WEAPON_RENDER_NONE:
 		break;
+
 	case WEAPON_RENDER_POLYMODEL:
 		PagingTouchModel (gameData.weapons.info [nWeaponType].nModel);
 		break;
+
 	case WEAPON_RENDER_BLOB:
 		PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].bitmap, 0);
 		break;
@@ -158,28 +158,25 @@ void PagingTouchWeapon (int nWeaponType)
 
 //------------------------------------------------------------------------------
 
-sbyte super_boss_gateType_list [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22 };
+sbyte superBossGateTypeList [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22};
 
-void PagingTouchRobot (int robot_index)
+void PagingTouchRobot (int robotIndex)
 {
 	int i;
 
-	// Page in robot_index
-	PagingTouchModel (ROBOTINFO (robot_index).nModel);
-	if (ROBOTINFO (robot_index).nExp1VClip>-1)
-		PagingTouchVClip (&gameData.eff.vClips [0][ROBOTINFO (robot_index).nExp1VClip], 0);
-	if (ROBOTINFO (robot_index).nExp2VClip>-1)
-		PagingTouchVClip (&gameData.eff.vClips [0][ROBOTINFO (robot_index).nExp2VClip], 0);
-
-	// Page in his weapons
-	PagingTouchWeapon (ROBOTINFO (robot_index).nWeaponType);
-
-	// A super-boss can gate in robots...
-	if (ROBOTINFO (robot_index).bossFlag==2)	{
-		for (i=0; i<13; i++)
-			PagingTouchRobot (super_boss_gateType_list [i]);
-
-		PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
+// Page in robotIndex
+PagingTouchModel (ROBOTINFO (robotIndex).nModel);
+if (ROBOTINFO (robotIndex).nExp1VClip>-1)
+	PagingTouchVClip (&gameData.eff.vClips [0][ROBOTINFO (robotIndex).nExp1VClip], 0);
+if (ROBOTINFO (robotIndex).nExp2VClip>-1)
+	PagingTouchVClip (&gameData.eff.vClips [0][ROBOTINFO (robotIndex).nExp2VClip], 0);
+// Page in his weapons
+PagingTouchWeapon (ROBOTINFO (robotIndex).nWeaponType);
+// A super-boss can gate in robots...
+if (ROBOTINFO (robotIndex).bossFlag == 2) {
+	for (i = 0; i < 13; i++)
+		PagingTouchRobot (superBossGateTypeList [i]);
+	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
 	}
 }
 
@@ -189,146 +186,144 @@ void PagingTouchObject (tObject *objP)
 {
 	int v;
 
-	switch (objP->renderType) {
+switch (objP->renderType) {
+	case RT_NONE:	
+		break;		//doesn't render, like the tPlayer
 
-		case RT_NONE:	break;		//doesn't render, like the tPlayer
+	case RT_POLYOBJ:
+		if (objP->rType.polyObjInfo.nTexOverride == -1)
+			PagingTouchModel (objP->rType.polyObjInfo.nModel);
+		else
+			PIGGY_PAGE_IN (gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride], 0);
+		break;
 
-		case RT_POLYOBJ:
-			if (objP->rType.polyObjInfo.nTexOverride == -1)
-				PagingTouchModel (objP->rType.polyObjInfo.nModel);
-			else
-				PIGGY_PAGE_IN (gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride], 0);
-			break;
+	case RT_POWERUP:
+		if (ConvertPowerupToWeapon (objP))
+			PagingTouchObject (objP);
+		else if ((objP->rType.vClipInfo.nClipIndex < 0) || 
+					(objP->rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0])) 
+			objP->rType.vClipInfo.nClipIndex = -1;
+		break;
 
-		case RT_POWERUP:
-			if ((objP->rType.vClipInfo.nClipIndex > -1) && 
-				 (objP->rType.vClipInfo.nClipIndex < gameData.eff.nClips [0])) {
-				}
-			else
-				objP->rType.vClipInfo.nClipIndex = -1;
-			break;
+	case RT_MORPH:	
+	case RT_FIREBALL:
+	case RT_THRUSTER:
+	case RT_WEAPON_VCLIP: 
+		break;
 
-		case RT_MORPH:	break;
-		case RT_FIREBALL: break;
-		case RT_THRUSTER: break;
-		case RT_WEAPON_VCLIP: break;
+	case RT_HOSTAGE:
+		PagingTouchVClip (gameData.eff.vClips [0] + objP->rType.vClipInfo.nClipIndex, 0);
+		break;
 
-		case RT_HOSTAGE:
-			PagingTouchVClip (&gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex], 0);
-			break;
-
-		case RT_LASER: break;
+	case RT_LASER: 
+		break;
  	}
 
-	switch (objP->nType) {	
+switch (objP->nType) {	
 	case OBJ_PLAYER:	
 		v = GetExplosionVClip (objP, 0);
 		if (v > -1)
-			PagingTouchVClip (&gameData.eff.vClips [0][v], 0);
+			PagingTouchVClip (gameData.eff.vClips [0] + v, 0);
 		break;
+
 	case OBJ_ROBOT:
 		PagingTouchRobot (objP->id);
 		break;
+
 	case OBJ_CNTRLCEN:
 		PagingTouchWeapon (CONTROLCEN_WEAPON_NUM);
-		if (gameData.models.nDeadModels [objP->rType.polyObjInfo.nModel] != -1)	{
+		if (gameData.models.nDeadModels [objP->rType.polyObjInfo.nModel] != -1)
 			PagingTouchModel (gameData.models.nDeadModels [objP->rType.polyObjInfo.nModel]);
-		}
 		break;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchSide (tSegment * segp, short nSide)
+void PagingTouchSide (tSegment * segP, short nSide)
 {
 	int tmap1, tmap2;
 
-	if ((segp - gameData.segs.segments == 208) && (nSide == 4))
-		tmap1 = segp->sides [nSide].nBaseTex;
-	if (!(WALL_IS_DOORWAY (segp,nSide, NULL) & WID_RENDER_FLAG))
-		return;
+if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
+	return;
 	
-	tmap1 = segp->sides [nSide].nBaseTex;
-	PagingTouchWallEffects (tmap1);
-	tmap2 = segp->sides [nSide].nOvlTex;
-	if (tmap2) {
-		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap2], gameStates.app.bD1Data);
-		PagingTouchWallEffects (tmap2);
-		}
-	else
-		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap1], gameStates.app.bD1Data);
+tmap1 = segP->sides [nSide].nBaseTex;
+PagingTouchWallEffects (tmap1);
+tmap2 = segP->sides [nSide].nOvlTex;
+if (tmap2) {
+	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap2], gameStates.app.bD1Data);
+	PagingTouchWallEffects (tmap2);
+	}
+else
+	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap1], gameStates.app.bD1Data);
 
-	// PSX STUFF
-	#ifdef PSX_BUILD_TOOLS
-		// If there is water on the level, then force the water splash into memory
-		if (!(gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_VOLATILE) && (gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_WATER)) {
-			tBitmapIndex Splash;
-			Splash.index = 1098;
-			PIGGY_PAGE_IN (Splash);
-			Splash.index = 1099;
-			PIGGY_PAGE_IN (Splash);
-			Splash.index = 1100;
-			PIGGY_PAGE_IN (Splash);
-			Splash.index = 1101;
-			PIGGY_PAGE_IN (Splash);
-			Splash.index = 1102;
-			PIGGY_PAGE_IN (Splash);
-		}
-	#endif
-
+// PSX STUFF
+#ifdef PSX_BUILD_TOOLS
+// If there is water on the level, then force the water splash into memory
+if (!(gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_VOLATILE) && (gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_WATER)) {
+	tBitmapIndex Splash;
+	Splash.index = 1098;
+	PIGGY_PAGE_IN (Splash);
+	Splash.index = 1099;
+	PIGGY_PAGE_IN (Splash);
+	Splash.index = 1100;
+	PIGGY_PAGE_IN (Splash);
+	Splash.index = 1101;
+	PIGGY_PAGE_IN (Splash);
+	Splash.index = 1102;
+	PIGGY_PAGE_IN (Splash);
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
-void PagingTouchRobotMaker (tSegment * segp)
+void PagingTouchRobotMaker (tSegment * segP)
 {
-	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segp)];
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+	int			i;
+	uint			flags;
+	int			robotIndex;
 
-	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	{
-		PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
-		if (gameData.matCens.botGens [seg2p->nMatCen].objFlags != 0) {
-			int	i;
-			uint	flags;
-			int	robot_index;
-
-			for (i=0;i<2;i++) {
-				robot_index = i*32;
-				flags = gameData.matCens.botGens [seg2p->nMatCen].objFlags [i];
-				while (flags) {
-					if (flags & 1)	{
-						// Page in robot_index
-						PagingTouchRobot (robot_index);
-					}
-					flags >>= 1;
-					robot_index++;
-				}
-			}
-		}
-	}
+if (seg2p->special != SEGMENT_IS_ROBOTMAKER)
+	return;
+PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT], 0);
+if (!gameData.matCens.botGens [seg2p->nMatCen].objFlags)
+	return;
+for (i = 0, robotIndex = 0; i < 2; i++, robotIndex += 32)
+	for (flags = gameData.matCens.botGens [seg2p->nMatCen].objFlags [i]; flags; flags >>= 1, robotIndex++)
+		if (flags & 1)
+			PagingTouchRobot (robotIndex);
 }
 
 
 //------------------------------------------------------------------------------
 
-void PagingTouchSegment (tSegment * segp)
+void PagingTouchObjects (int nType)
 {
-	short sn, nObject;
-	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segp)];
+	int	i;
+	tObject	*objP;
 
-	if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	
-		PagingTouchRobotMaker (segp);
+for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject; i++, objP++)
+	if ((nType < 0) || (objP->nType == nType))
+		PagingTouchObject (objP);
+}
 
-//	paging_draw_orb ();
-	for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++) {
-//		paging_draw_orb ();
-		PagingTouchSide (segp, sn);
-	}
+//------------------------------------------------------------------------------
 
-	for (nObject=segp->objects;nObject!=-1;nObject=gameData.objs.objects [nObject].next)	{
-//		paging_draw_orb ();
-		PagingTouchObject (&gameData.objs.objects [nObject]);
-	}
+void PagingTouchSegment (tSegment * segP)
+{
+	short			nSide, nObject;
+	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
+
+if (SEG_IDX (segP) == 150)
+	segP = segP;
+if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	
+	PagingTouchRobotMaker (segP);
+for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
+	PagingTouchSide (segP, nSide);
+for (nObject = segP->objects; nObject != -1; nObject = gameData.objs.objects [nObject].next)
+	PagingTouchObject (gameData.objs.objects + nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -351,7 +346,7 @@ void PagingTouchWalls ()
 {
 	int i;
 
-for (i=0;i<gameData.walls.nWalls;i++)
+for (i = 0; i < gameData.walls.nWalls; i++)
 	PagingTouchWall (gameData.walls.walls + i);
 }
 
@@ -371,7 +366,7 @@ void PagingTouchPowerups (void)
 {
 	int	s;
 
-for (s=0; s < gameData.objs.pwrUp.nTypes; s++)
+for (s = 0; s < gameData.objs.pwrUp.nTypes; s++)
 	if (gameData.objs.pwrUp.info [s].nClipIndex > -1)	
 		PagingTouchVClip (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [s].nClipIndex], 0);
 }

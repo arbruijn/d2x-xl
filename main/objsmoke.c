@@ -701,7 +701,7 @@ void DrawShrapnels (tObject *objP)
 	tShrapnel		*shrapnelP = sdP->shrapnels;
 	int				h, i;
 
-for (i = 0, h = sdP->nShrapnels; i < h; i++)
+for (i = sdP->nShrapnels; i; i--, shrapnelP++)
 	DrawShrapnel (shrapnelP);
 }
 
@@ -858,11 +858,9 @@ shrapnelP->tUpdate = gameStates.app.nSDLTicks - nTicks;
 
 void DrawShrapnel (tShrapnel *shrapnelP)
 {
-if (shrapnelP->xTTL > 0) {
-	if (LoadExplBlast ()) {
-		fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
-		G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
-		}
+if ((shrapnelP->xTTL > 0) && LoadExplBlast ()) {
+	fix	xSize = F1_0 / 2 + d_rand () % (F1_0 / 4);
+	G3DrawSprite (&shrapnelP->vPos, xSize, xSize, bmpExplBlast, NULL, f2fl (shrapnelP->xTTL) / f2fl (shrapnelP->xLife) / 2);
 	}
 }
 
@@ -872,9 +870,9 @@ void DrawShrapnels (tObject *objP)
 {
 	tShrapnelData	*sdP = gameData.objs.shrapnels + OBJ_IDX (objP);
 	tShrapnel		*shrapnelP = sdP->shrapnels;
-	int				h, i;
+	int				i;
 
-for (i = 0, h = sdP->nShrapnels; i < h; i++)
+for (i = sdP->nShrapnels; i; i--, shrapnelP++)
 	DrawShrapnel (shrapnelP);
 }
 

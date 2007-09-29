@@ -77,6 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "texmerge.h"
 #include "render.h"
 #include "ipx_udp.h"
+#include "lighting.h"
 #include "lightmap.h"
 #include "autodl.h"
 #include "tracker.h"
@@ -85,6 +86,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vers_id.h"
 #include "input.h"
 #include "collide.h"
+#include "objrender.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -2160,7 +2162,8 @@ void PowerupOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem
 m = menus + nOpt3D;
 v = m->value;
 if (v != gameOpts->render.powerups.b3D) {
-	gameOpts->render.powerups.b3D = v;
+	if (gameOpts->render.powerups.b3D = v)
+		ConvertAllPowerupsToWeapons ();
 	*key = -2;
 	return;
 	}
@@ -2922,7 +2925,7 @@ if (lightOpts.nLMapRange >= 0) {
 void LightingOptionsMenu ()
 {
 	tMenuItem m [20];
-	int	i, choice = 0;
+	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
 	int	opt;
 	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects;
 #if 0
@@ -3058,6 +3061,8 @@ if (optColorSat >= 0) {
 			break;
 			}
 	}
+if (nLightRange != extraGameInfo [0].nLightRange)
+	ComputeStaticDynLighting ();
 }
 
 //------------------------------------------------------------------------------

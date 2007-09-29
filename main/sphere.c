@@ -539,10 +539,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha)
+int CreateShieldSphere (void)
 {
 if (!LoadShield ())
-	return;
+	return 0;
 if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
 	if (gameData.render.shield.pSphere)
 		DestroySphere (&gameData.render.shield);
@@ -550,6 +550,15 @@ if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2)
 	}
 if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void DrawShieldSphere (tObject *objP, float red, float green, float blue, float alpha)
+{
+if (!CreateShieldSphere ())
+	return;
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
 	float	fScale, r = f2fl (objP->size) * 1.05f;

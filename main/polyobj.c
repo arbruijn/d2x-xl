@@ -652,6 +652,7 @@ void DrawPolygonModel (
 	tPolyModel	*po;
 	int			nTextures;
 
+
 if (!(po = GetPolyModel (objP, pos, nModel, flags)))
 	return;
 if (gameStates.render.nShadowPass == 2) {

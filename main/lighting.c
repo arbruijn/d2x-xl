@@ -1737,7 +1737,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 #ifdef _DEBUG
 extern int nDbgVertex;
 #endif
-void ComputeStaticDynLighting ()
+void ComputeStaticDynLighting (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
@@ -1752,6 +1752,7 @@ if (gameOpts->render.bDynLighting ||
 
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
+	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
 	for (nVertex = 0; nVertex < gameData.segs.nVertices; nVertex++, pf++) {
 #ifdef _DEBUG
 		if (nVertex == nDbgVertex)
@@ -1760,7 +1761,8 @@ if (gameOpts->render.bDynLighting ||
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
 		gameData.render.lights.dynamic.shader.nActiveLights = 0;
 		SetNearestVertexLights (nVertex, 1, 1, bColorize);
-		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 1);
+		gameData.render.color.vertices [nVertex].index = 0;
+		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 0);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
 		}
 	pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;

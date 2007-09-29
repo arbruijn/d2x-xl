@@ -9,6 +9,8 @@
 
 int CreateSphere (tSphereData *sdP);
 
+int CreateShieldSphere (void);
+
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
 					   float red, float green, float blue, float alpha, grsBitmap *bmP, int nTiles);
 

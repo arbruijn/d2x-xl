@@ -100,6 +100,7 @@ int LoadHalo (void);
 int LoadThruster (void);
 int LoadShield (void);
 int LoadDeadzone (void);
+void LoadExtraImages (void);
 void FreeExtraImages (void);
 void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r);
 void RenderMineSegment (int nn);

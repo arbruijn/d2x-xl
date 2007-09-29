@@ -24,4 +24,6 @@ void ConvertWeaponToPowerup (tObject *objP);
 int RenderObject(tObject *objP, int nWindowNum, int bForce);
 void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona);
 
+void ConvertAllPowerupsToWeapons (void);
+
 #endif //OBJJRENDER_H

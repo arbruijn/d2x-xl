@@ -616,6 +616,7 @@ return  t;
 size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE * fp) 
 {
 unsigned int i, size = (int) (elsize * nelem);
+
 if (!fp || (size < 1)) {
 	CFCriticalError (1);
 	return 0;

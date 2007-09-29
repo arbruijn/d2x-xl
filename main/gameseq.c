@@ -1058,6 +1058,8 @@ if (!bRestore) {
 	ComputeStaticDynLighting ();
 	SetEquipGenStates ();
 	}
+LoadExtraImages ();
+CreateShieldSphere ();
 SetupEffects ();
 SetVertigoRobotFlags ();
 SetDebrisCollisions ();

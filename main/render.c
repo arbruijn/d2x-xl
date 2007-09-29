@@ -162,7 +162,7 @@ int LoadExplBlast (void)
 {
 if (!bHaveExplBlast) {
 	bmpExplBlast = CreateAndReadTGA ("blast.tga");
-	bHaveExplBlast = bmpExplBlast ? 1 : -1;
+	bHaveExplBlast = (bmpExplBlast ? 1 : -1);
 	}
 return bHaveExplBlast > 0;
 }
@@ -187,7 +187,7 @@ int LoadCorona (void)
 {
 if (!bHaveCorona) {
 	bmpCorona = CreateAndReadTGA ("corona.tga");
-	bHaveCorona = bmpCorona ? 1 : -1;
+	bHaveCorona = (bmpCorona ? 1 : -1);
 	}
 return bHaveCorona > 0;
 }
@@ -212,7 +212,7 @@ int LoadHalo (void)
 {
 if (!bHaveHalo) {
 	bmpHalo = CreateAndReadTGA ("halo.tga");
-	bHaveHalo = bmpHalo ? 1 : -1;
+	bHaveHalo = (bmpHalo ? 1 : -1);
 	}
 return bHaveHalo > 0;
 }
@@ -239,7 +239,7 @@ int LoadThruster (void)
 
 if (!bHaveThruster [nStyle]) {
 	bmpThruster [nStyle] = CreateAndReadTGA ((EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) ? "thrust2d.tga" : "thrust3d.tga");
-	bHaveThruster [nStyle] = bmpThruster [nStyle] ? 1 : -1;
+	bHaveThruster [nStyle] = (bmpThruster [nStyle] ? 1 : -1);
 	}
 return bHaveThruster [nStyle] > 0;
 }
@@ -267,7 +267,7 @@ int LoadShield (void)
 {
 if (!bHaveShield) {
 	bmpShield = CreateAndReadTGA ("shield.tga");
-	if (0 < (bHaveShield = bmpShield ? 1 : -1))
+	if (0 < (bHaveShield = (bmpShield ? 1 : -1)))
 		BM_FRAMECOUNT (bmpShield) = bmpShield->bmProps.h / bmpShield->bmProps.w;
 	}
 return bHaveShield > 0;
@@ -287,6 +287,18 @@ if (bmpShield) {
 //------------------------------------------------------------------------------
 
 void FreeDeadzone ();
+
+void LoadExtraImages (void)
+{
+LoadCorona ();
+LoadHalo ();
+LoadThruster ();
+LoadShield ();
+LoadExplBlast ();
+LoadDeadzone ();
+}
+
+//------------------------------------------------------------------------------
 
 void FreeExtraImages (void)
 {

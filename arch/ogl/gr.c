@@ -467,6 +467,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		ResetHoardData ();
 		FreeParticleImages ();
 		FreeExtraImages ();
+		LoadExtraImages ();
 		OOF_ReleaseTextures ();
 		if (bReload) {
 			OglCacheLevelTextures ();

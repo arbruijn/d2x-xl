@@ -36,6 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "gameseg.h"
 #include "textures.h"
+#include "paging.h"
 
 #include "object.h"
 #include "objsmoke.h"
@@ -230,6 +231,20 @@ if (bHasModel)
 objP->rType.polyObjInfo.nTexOverride = -1;
 objP->lifeleft = IMMORTAL_TIME;
 return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+void ConvertAllPowerupsToWeapons (void)
+{
+	int	i;
+	tObject	*objP;
+
+for (i = 0, objP = OBJECTS; i < gameData.objs.nLastObject; i++, objP++)
+	if (objP->renderType == RT_POWERUP) {
+		ConvertPowerupToWeapon (objP);
+		PagingTouchObject (objP);
+		}
 }
 
 // -----------------------------------------------------------------------------
@@ -2314,7 +2329,7 @@ switch (objP->renderType) {
 			}
 		if (gameStates.render.nType != 1)
 			return 0;
-		DoObjectSmoke (objP);
+		//DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			int bDynObjLight = gameOpts->ogl.bLightObjects;
 			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)))
