@@ -1,4 +1,4 @@
-/* $Id: ogl.c, v 1.14 2004/05/11 23:15:55 btb Exp $ */
+/* $Id: ogl.c, v 1.14 204/05/11 23:15:55 btb Exp $ */
 /*
  *
  * Graphics support functions for OpenGL.
@@ -165,7 +165,7 @@ else
 
 //------------------------------------------------------------------------------
 
-int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc;
+int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
 
 bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
@@ -560,8 +560,10 @@ for (i = 0; i < nv; i++, pointList++) {
 //	glVertex3f (f2fl (pointList [c]->p3_vec.p.x), f2fl (pointList [c]->p3_vec.p.y), f2fl (pointList [c]->p3_vec.p.z);
 	OglVertex3f (*pointList);
 	}
+#if 1
 if (grdCurCanv->cvColor.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	glDisable (GL_BLEND);
+#endif
 glEnd ();
 return 0;
 }
@@ -585,7 +587,7 @@ if (gameOpts->render.bDepthSort > 0) {
 
 	for (i = 0; i < nv; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT);
+	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 	}
 else 
 #endif
@@ -1166,8 +1168,13 @@ int G3AccumVertColor (fVector *pColorSum)
 						vertColor = {{0.0f, 0.0f, 0.0f, 1.0f}};
 	tShaderLight	*psl;
 
+r_tvertexc++;
 colorSum = *pColorSum;
+#if 1
+h = gameData.render.lights.dynamic.shader.nActiveLights;
+#else
 h = (gameData.render.lights.dynamic.shader.nActiveLights < MAX_NEAREST_LIGHTS) ? gameData.render.lights.dynamic.shader.nActiveLights : MAX_NEAREST_LIGHTS;
+#endif
 for (i = j = 0; i < h; i++) {
 	psl = gameData.render.lights.dynamic.shader.activeLights [i];
 #if 0
@@ -1200,7 +1207,7 @@ for (i = j = 0; i < h; i++) {
 #if STATIC_LIGHT_TRANSFORM
 	lightPos = psl->pos [1];
 #else
-	lightPos = psl->pos [gameStates.render.nState];
+	lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 #endif
 #if VECMAT_CALLS
 	VmVecSubf (&lightDir, &lightPos, gameData.threads.vertColor.data.pVertPos);
@@ -1230,6 +1237,10 @@ for (i = j = 0; i < h; i++) {
 			fLightDist *= fLightDist;
 		fAttenuation = fLightDist / psl->brightness;
 		}
+#if 0
+	if ((vertColor.p.x + vertColor.p.y + vertColor.p.z) / fAttenuation < 0.001)
+		continue;
+#endif
 #if VECMAT_CALLS
 	VmVecNormalizef (&lightDir, &lightDir);
 #else
@@ -1391,6 +1402,12 @@ return j;
 
 #define STATIC_LIGHT_TRANSFORM	0
 
+extern int nDbgVertex;
+
+#if PROFILING
+time_t tG3VertexColor = 0;
+#endif
+
 void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale, int bSetColor)
 {
 	fVector			matSpecular = {{0.0f, 0.0f, 0.0f, 1.0f}},
@@ -1400,6 +1417,9 @@ void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceCo
 #endif
 	//float				fScale;
 	tFaceColor		*pc = NULL;
+#if PROFILING
+	time_t			t = clock ();
+#endif
 
 gameData.threads.vertColor.data.bExclusive = !FAST_SHADOWS && (gameStates.render.nShadowPass == 3),
 gameData.threads.vertColor.data.fMatShininess = 0.0f;
@@ -1448,6 +1468,13 @@ if (!(gameData.threads.vertColor.data.bExclusive || gameData.threads.vertColor.d
 			}
 		if (bSetColor)
 			OglColor4sf (pc->color.red * fScale, pc->color.green * fScale, pc->color.blue * fScale, 1.0);
+#ifdef _DEBUG
+		if (!gameStates.render.nState && (nVertex == nDbgVertex))
+			nVertex = nVertex;
+#endif
+#if PROFILING
+		tG3VertexColor += clock () - t;
+#endif
 		return;
 		}
 	}
@@ -1482,7 +1509,9 @@ if (gameStates.app.bMultiThreaded) {
 	}
 else
 #endif
+#if 1
 	G3AccumVertColor (&colorSum);
+#endif
 if ((nVertex >= 0) && !(gameStates.render.nState && gameData.threads.vertColor.data.bDarkness)) {
 	tRgbaColorf	ambient = gameData.render.color.ambient [nVertex].color;
 	colorSum.c.r += ambient.red;
@@ -1520,6 +1549,13 @@ if (pVertColor) {
 	pVertColor->color.blue = colorSum.c.b * fScale;
 	pVertColor->color.alpha = colorSum.c.a;
 	}
+#endif
+#ifdef _DEBUG
+if (!gameStates.render.nState && (nVertex == nDbgVertex))
+	nVertex = nVertex;
+#endif
+#if PROFILING
+tG3VertexColor += clock () - t;
 #endif
 } 
 
@@ -1665,6 +1701,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+#define	G3VERTPOS(_dest,_src) \
+			if ((_src)->p3_index < 0) \
+				VmsVecToFloat (&(_dest), &((_src)->p3_vec)); \
+			else \
+				_dest = gameData.render.pVerts [(_src)->p3_index]; \
+
+//------------------------------------------------------------------------------
+
 bool G3DrawTexPolyMulti (
 	int			nVerts, 
 	g3sPoint		**pointList, 
@@ -1688,7 +1732,7 @@ bool G3DrawTexPolyMulti (
 	grsBitmap	*bmP = NULL, *bmMask;
 	g3sPoint		*pl, **ppl;
 #if USE_VERTNORMS
-	fVector		vNormal, vVertex;
+	fVector		vNormal, vVertPos;
 #endif
 #if G3_DRAW_ARRAYS
 	int			bDrawArrays = gameData.render.pVerts != NULL;
@@ -1704,6 +1748,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 if (!bmBot)
 	return 1;
+r_tpolyc++;
 if (FAST_SHADOWS) {
 	if (!bBlend)
 		glDisable (GL_BLEND);
@@ -1820,8 +1865,9 @@ if (bDrawArrays || bDepthSort) {
 		vertUVL [0][i].v.u = f2fl (uvlList [i].u);
 		vertUVL [0][i].v.v = f2fl (uvlList [i].v);
 		SetTexCoord (uvlList + i, orient, 1, vertUVL [1] + i);
+		G3VERTPOS (vVertPos, pl);
 		if (bDynLight)
-			G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), vertIndex [i], vertColors + i, 
+			G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, vertIndex [i], vertColors + i, 
 								gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 0);
 		else if (bLight)
 			SetTMapColor (uvlList + i, i, bmBot, !bDrawOverlay, vertColors + i);
@@ -1829,7 +1875,7 @@ if (bDrawArrays || bDepthSort) {
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
 		OglLoadBmTexture (bmBot, 1, 3, 0);
-		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT);
+		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 		return 0;
 		}
 #endif
@@ -1870,20 +1916,22 @@ else
 		if (bDrawOverlay) {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
 				pl = *ppl;
-				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL, 
-									gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 1);
+				G3VERTPOS (vVertPos, pl);
+				G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, pl->p3_index, NULL, 
+									/*gameStates.render.nState ? f2fl (uvlList [i].l) :*/ 1, 1);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
-				OglVertex3f (pl);
+				glVertex3fv ((GLfloat *) &vVertPos);
 				}
 			}
 		else {
 			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
 				pl = *ppl;
-				G3VertexColor (G3GetNormal (pl, &vNormal), VmsVecToFloat (&vVertex, &(pl->p3_vec)), pl->p3_index, NULL, 
-									gameStates.render.nState ? f2fl (uvlList [i].l) : 1, 1);
+				G3VERTPOS (vVertPos, pl);
+				G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, pl->p3_index, NULL, 
+									/*gameStates.render.nState ? f2fl (uvlList [i].l) :*/ 1, 1);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
-				OglVertex3f (pl);
+				glVertex3fv ((GLfloat *) &vVertPos);
 				}
 			}
 		}
@@ -1933,7 +1981,7 @@ if (bDrawOverlay > 0) {
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
-			G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertex, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, 1, 1);
+			G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertPos, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, 1, 1);
 			SetTexCoord (uvlList + i, orient, 0, NULL);
 			OglVertex3f (*ppl);
 			}
@@ -2001,6 +2049,7 @@ if (gameStates.render.nShadowBlurPass == 1) {
 	}
 if (!bmBot)
 	return 1;
+r_tpolyc++;
 //if (gameStates.render.nShadowPass != 3)
 	glDepthFunc (GL_LEQUAL);
 if (FAST_SHADOWS) {
@@ -2073,18 +2122,131 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+bool G3DrawTexPolySimple (
+	int			nVerts, 
+	g3sPoint		**pointList, 
+	tUVL			*uvlList, 
+	grsBitmap	*bmP, 
+	vmsVector	*pvNormal,
+	int			bBlend)
+{
+	int			i;
+	int			bLight = 1, 
+					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
+	g3sPoint		*pl, **ppl;
+#if USE_VERTNORMS
+	fVector		vNormal, vVertPos;
+#endif
+
+if (bDynLight)
+	bDynLight = 1;
+if (gameStates.render.nShadowBlurPass == 1) {
+	G3DrawWhitePoly (nVerts, pointList);
+	return 0;
+	}
+r_tpolyc++;
+if (FAST_SHADOWS) {
+	if (!bBlend)
+		glDisable (GL_BLEND);
+#if 0
+	else
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
+	}
+else {
+	if (gameStates.render.nShadowPass == 1)
+		bLight = !bDynLight;
+	else if (gameStates.render.nShadowPass == 3) {
+		glEnable (GL_BLEND);
+		glBlendFunc (GL_ONE, GL_ONE);
+		}
+	}
+glDepthFunc (GL_LEQUAL);
+bmP = BmOverride (bmP, -1);
+if (bmP == gameData.endLevel.satellite.bmP) {
+	glActiveTexture (GL_TEXTURE0_ARB);
+	glEnable (GL_TEXTURE_2D);
+	}
+else
+	InitTMU0 (0);
+if (OglBindBmTex (bmP, 1, 3))
+	return 1;
+//bmP = BmCurFrame (bmP, -1);
+if (bmP == bmpDeadzone)
+	OglTexWrap (bmP->glTexture, GL_CLAMP);
+else
+	OglTexWrap (bmP->glTexture, GL_REPEAT);
+
+if (SHOW_DYN_LIGHT) {
+#if USE_VERTNORMS
+	if (pvNormal)
+		VmsVecToFloat (&vNormal, pvNormal);
+else
+		G3CalcNormal (pointList, &vNormal);
+#else
+		G3Normal (pointList, pvNormal);
+#endif
+	}
+if (gameStates.render.bFullBright) {
+	glColor3d (1,1,1);
+	bLight = 0;
+	}
+else if (!gameStates.render.nRenderPass)
+	bLight = 0;
+else if (!bLight)
+	glColor3i (0,0,0);
+if (!bLight)
+	bDynLight = 0;
+gameStates.ogl.bDynObjLight = bDynLight;
+gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+glBegin (GL_TRIANGLE_FAN);
+if (bDynLight) {
+	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+		pl = *ppl;
+		G3VERTPOS (vVertPos, pl);
+		G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, pl->p3_index, NULL, 
+							/*gameStates.render.nState ? f2fl (uvlList [i].l) :*/ 1, 1);
+		glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
+		glVertex3fv ((GLfloat *) &vVertPos);
+		}
+	}
+else if (bLight) {
+	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+		SetTMapColor (uvlList + i, i, bmP, 1, NULL);
+		glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
+		OglVertex3f (*ppl);
+		}
+	}
+else {
+	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+		glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
+		OglVertex3f (*ppl);
+		}
+	}
+glEnd ();
+glDisable (GL_TEXTURE_2D);
+tMapColor.index =
+lightColor.index = 0;
+if (!bBlend)
+	glEnable (GL_BLEND);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 bool G3DrawSprite (
 	vmsVector	*vPos, 
 	fix			xWidth, 
 	fix			xHeight, 
 	grsBitmap	*bmP, 
 	tRgbaColorf	*colorP,
-	float			alpha)
+	float			alpha,
+	int			bAdditive)
 {
 	vmsVector	pv, v1;
 	GLdouble		h, w, u, v, x, y, z;
 
-if ((gameOpts->render.bDepthSort > 0) && ((colorP && (colorP->alpha < 0)) || (alpha < 0))) {
+if (gameOpts->render.bDepthSort > 0) { //&& ((colorP && (colorP->alpha < 0)) || (alpha < 0))) {
 	tRgbaColorf color;
 	if (!colorP) {
 		color.red =
@@ -2093,7 +2255,7 @@ if ((gameOpts->render.bDepthSort > 0) && ((colorP && (colorP->alpha < 0)) || (al
 		color.alpha = alpha;
 		colorP = &color;
 		}
-	RIAddSprite (bmP, vPos, colorP, xWidth, xHeight, 0);
+	RIAddSprite (bmP, vPos, colorP, xWidth, xHeight, 0, bAdditive);
 	}
 else {
 	OglActiveTexture (GL_TEXTURE0_ARB, 0);
@@ -2121,6 +2283,11 @@ else {
 			return 1;
 		bmP = BmOverride (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_CLAMP);
+		glEnable (GL_BLEND);
+		if (bAdditive)
+			glBlendFunc (GL_ONE, GL_ONE);
+		else
+			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (colorP)
 			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
 		else
@@ -2138,6 +2305,9 @@ else {
 		glVertex3d (x - w, y - h, z);
 		glEnd ();
 		glDepthMask (0);
+		if (bAdditive)
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable (GL_BLEND);
 		}
 	}
 return 0;
@@ -2659,6 +2829,7 @@ else
 	{
 	r_polyc =  
 	r_tpolyc = 
+	r_tvertexc =
 	r_bitmapc = 
 	r_ubitmapc = 
 	r_ubitbltc = 
@@ -2777,12 +2948,29 @@ if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 
 //------------------------------------------------------------------------------
 
+#if PROFILING
+extern time_t tRenderMine, tRenderObject, tG3VertexColor, tSetNearestDynamicLights, tTransform;
+#endif
+
 void OglSwapBuffers (int bForce, int bClear)
 {
 if (!gameStates.menus.nInMenu || bForce) {
 	ogl_clean_texture_cache ();
-	if (gr_renderstats)
-		GrPrintF (5, GAME_FONT->ftHeight*13+3*13, "%i flat %i tex %i sprites %i bitmaps", r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc);
+#if 1//def _DEBUG
+	if (gr_renderstats) {
+		if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu && FONT && SMALL_FONT) {
+			GrPrintF (5, SMALL_FONT->ftHeight * 2 + 2, "flat:%i tex:%i vert:%i sprite:%i msg:%i", r_polyc, r_tpolyc, r_tvertexc, r_bitmapc, r_ubitmapc);
+#	if PROFILING
+			GrPrintF (5, SMALL_FONT->ftHeight * 3 + 3, "mine:%ld", tRenderMine);
+			GrPrintF (5, SMALL_FONT->ftHeight * 4 + 4, "obj:%ld ", tRenderObject);
+			GrPrintF (5, SMALL_FONT->ftHeight * 5 + 5, "rot:%ld ", tTransform);
+			GrPrintF (5, SMALL_FONT->ftHeight * 6 + 6, "color:%ld", tG3VertexColor);
+			GrPrintF (5, SMALL_FONT->ftHeight * 7 + 7, "lights:%ld", tSetNearestDynamicLights);
+			tRenderMine = tRenderObject = tG3VertexColor = tSetNearestDynamicLights = tTransform = 0;
+#	endif
+			}
+		}
+#endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 		OglDoPalFx ();
 	OglSwapBuffersInternal ();

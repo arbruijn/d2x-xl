@@ -301,7 +301,7 @@ if (!bCorona)
 if (gameOpts->render.bWeaponCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 0);
 	glDepthMask (1);
 	}
 }
@@ -338,7 +338,7 @@ if (gameOpts->render.bPowerupCoronas && LoadCorona ()) {
 		xSize = 8 * F1_0;
 		}
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpCorona, colorP, alpha);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpCorona, colorP, alpha, 0);
 	glDepthMask (1);
 	}
 }
@@ -398,9 +398,9 @@ if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
 if (gameOpts->render.bDepthSort > 0) {
 	tRgbaColorf	color = {1, 1, 1, alpha};
 	if (bmP->bmProps.w > bmP->bmProps.h)
-		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame);
+		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, 0);
 	else
-		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame);
+		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, 0);
 	}
 else {
 	if (bmP->bmProps.w > bmP->bmProps.h)
@@ -1719,6 +1719,7 @@ return 0;
 
 void RenderLaserCorona (tObject *objP, tRgbaColorf *colorP, float alpha, float fScale)
 {
+	int	bAdditiveCoronas = 1; //gameOpts->render.bAdditiveCoronas 
 if (!SHOW_OBJ_FX)
 	return;
 #if SHADOWS
@@ -1726,25 +1727,21 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
+if (gameOpts->render.bWeaponCoronas && (bAdditiveCoronas ? LoadGlare () : LoadCorona ())) {
 	int			bStencil, bDrawArrays, i;
 	float			a1, a2;
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
 	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	float			fLength = f2fl (phb->vMax.p.z - phb->vMin.p.z) / 2;
 	float			fRad = f2fl (phb->vMax.p.x - phb->vMin.p.x) / 2;
+	grsBitmap	*bmP;
+	tRgbaColorf	color;
 
 	static fVector	vEye = {{0, 0, 0}};
 	static tUVLf	uvlCorona [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
 
-	bStencil = StencilOff ();
-	glDepthMask (0);
-	glEnable (GL_TEXTURE_2D);
-	if (OglBindBmTex (bmpCorona, 1, -1)) 
-		return;
-	OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+	bmP = bAdditiveCoronas ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
-	glColor4fv ((GLfloat *) colorP);
 	VmsVecToFloat (&vDir, &objP->position.mOrient.fVec);
 	VmsVecToFloat (&vPos, &objP->position.vPos);
 	VmVecScaleAddf (vCorona, &vPos, &vDir, fScale * fLength);
@@ -1780,33 +1777,28 @@ if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 	glLineWidth (1);
 	glColor4fv ((GLfloat *) colorP);
 #endif
+	if (bAdditiveCoronas) {
+		float fScale = coronaIntensities [gameOpts->render.nCoronaIntensity] / 2;
+		color = *colorP;
+		colorP = &color;
+		color.red *= fScale;
+		color.green *= fScale;
+		color.blue *= fScale;
+		}
 	if (a2 < a1) {
-#if 0
-		VmVecNormalf (&vNorm, vh + 1, vh + 3, vh + 4);
-		VmVecScaleAddf (vh, &vPos, &vNorm, fScale);
-		VmVecScaleAddf (vh + 2, &vPos, &vNorm, -fScale);
-		glBegin (GL_QUADS);
-		for (i = 0; i < 4; i++) {
-			glTexCoord2fv ((GLfloat *) (uvlCorona + i));
-			glVertex3fv ((GLfloat *) (vh + i));
-			}
-		glEnd ();
-#	if 1
-		glLineWidth (2);
-		glColor4d (1,1,1,1);
-		glDisable (GL_TEXTURE_2D);
-		glBegin (GL_LINE_LOOP);
-		for (i = 0; i < 4; i++)
-			glVertex3fv ((GLfloat *) (vh + i));
-		glEnd ();
-		glLineWidth (1);
-#	endif
-#else
 		fix xSize = fl2f (fScale);
-		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmpCorona, colorP, alpha);
-#endif
+		G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, colorP, alpha, bAdditiveCoronas);
 		}
 	else {
+		bStencil = StencilOff ();
+		glDepthMask (0);
+		glEnable (GL_TEXTURE_2D);
+		glColor4fv ((GLfloat *) colorP);
+		if (OglBindBmTex (bmP, 1, -1)) 
+			return;
+		OglTexWrap (bmP->glTexture, GL_CLAMP);
+		if (bAdditiveCoronas)
+			glBlendFunc (GL_ONE, GL_ONE);
 		if (bDrawArrays = OglEnableClientStates (1, 0)) {
 			glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlCorona);
 			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
@@ -1821,6 +1813,8 @@ if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 				}
 			glEnd ();
 			}
+		if (bAdditiveCoronas)
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 0
 		glLineWidth (2);
 		glColor4d (1,1,1,1);
@@ -1831,9 +1825,9 @@ if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 		glEnd ();
 		glLineWidth (1);
 #endif
+		glDepthMask (1);
+		StencilOn (bStencil);
 		}
-	glDepthMask (1);
-	StencilOn (bStencil);
 	}
 }
 
@@ -1871,7 +1865,7 @@ else if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
 		xSize = F1_0;
 	if (bDepthSort) {
 		colorP->alpha = alpha;
-		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0);
+		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 0);
 		return;
 		}
 	bStencil = StencilOff ();
@@ -2093,7 +2087,8 @@ static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,
 
 void RenderLightTrail (tObject *objP)
 {
-	tRgbaColorf		c, *pc;
+	tRgbaColorf		color, *colorP;
+	int				bAdditiveCoronas = 1; //gameOpts->render.bAdditiveCoronas;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -2105,13 +2100,13 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 #endif
 if (objP->renderType == RT_POLYOBJ)
-	pc = gameData.weapons.color + objP->id;
+	colorP = gameData.weapons.color + objP->id;
 else {
 	tRgbColorb	*pcb = VClipColor (objP);
-	c.red = pcb->red / 255.0f;
-	c.green = pcb->green / 255.0f;
-	c.blue = pcb->blue / 255.0f;
-	pc = &c;
+	color.red = pcb->red / 255.0f;
+	color.green = pcb->green / 255.0f;
+	color.blue = pcb->blue / 255.0f;
+	colorP = &color;
 	}
 
 if (!gameData.objs.bIsSlowWeapon [objP->id]) {
@@ -2120,10 +2115,11 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && 
 				!gameData.objs.bIsSlowWeapon [objP->id] &&
 				(objP->mType.physInfo.velocity.p.x || objP->mType.physInfo.velocity.p.y || objP->mType.physInfo.velocity.p.z) &&
-				LoadCorona ()) {
+				(bAdditiveCoronas ? LoadGlare () : LoadCorona ())) {
 			fVector			vNormf, vOffsf, vTrailVerts [4];
 			int				i, bStencil, bDrawArrays, bDepthSort = (gameOpts->render.bDepthSort > 0);
 			float				l, r = f2fl (objP->size);
+			grsBitmap		*bmP;
 
 			static fVector vEye = {{0, 0, 0}};
 
@@ -2159,9 +2155,16 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 		VmVecIncf (vTrailVerts + 1, &vOffsf);
 		VmVecSubf (vTrailVerts + 3, vTrailVerts, &vNormf);
 		VmVecIncf (vTrailVerts + 3, &vOffsf);
+		bmP = bAdditiveCoronas ? bmpGlare : bmpCorona;
+		memcpy (&trailColor, colorP, 3 * sizeof (float));
+		if (bAdditiveCoronas) {
+			float fScale = coronaIntensities [gameOpts->render.nCoronaIntensity] / 2;
+			trailColor.red *= fScale;
+			trailColor.green *= fScale;
+			trailColor.blue *= fScale;
+			}
 		if (bDepthSort) {
-			memcpy (&trailColor, pc, 3 * sizeof (float));
-			RIAddPoly (bmpCorona, vTrailVerts, 4, uvlTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP);
+			RIAddPoly (bmP, vTrailVerts, 4, uvlTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditiveCoronas);
 			}
 		else {
 			bDrawArrays = OglEnableClientStates (1, 0);
@@ -2169,10 +2172,12 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			glDisable (GL_CULL_FACE);		
 			glDepthMask (0);
 			glEnable (GL_TEXTURE_2D);
-			if (OglBindBmTex (bmpCorona, 1, -1)) 
+			if (OglBindBmTex (bmP, 1, -1)) 
 				return;
-			OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
-			glColor4f (pc->red, pc->green, pc->blue, 0.33f);
+			OglTexWrap (bmP->glTexture, GL_CLAMP);
+			if (bAdditiveCoronas)
+				glBlendFunc (GL_ONE, GL_ONE);
+			glColor4fv ((GLfloat *) &trailColor);
 			if (bDrawArrays) {
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
 				glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlTrail);
@@ -2186,6 +2191,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 					glVertex3fv ((GLfloat *) (vTrailVerts + i));
 					}
 				glEnd ();
+			if (bAdditiveCoronas)
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 0 // render outline
 				glDisable (GL_TEXTURE_2D);
 				glColor3d (1, 0, 0);
@@ -2203,9 +2210,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 	RenderShockwave (objP);
 	}
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
-	RenderWeaponCorona (objP, pc, 0.5f, 0, 3, 1, 0, 1);
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 3, 1, 0, 1);
 else
-	RenderWeaponCorona (objP, pc, 0.75f, 0, 3, 0, 0, 0);
+	RenderWeaponCorona (objP, colorP, 0.75f, 0, 3, 0, 0, 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -2242,6 +2249,8 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 
 bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
+time_t tRenderObject;
+
 int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {
 	int			mldSave, bSpectate = 0;
@@ -2251,6 +2260,7 @@ int RenderObject (tObject *objP, int nWindowNum, int bForce)
 	fix			nGlow [2];
 	int			oofIdx;
 #endif
+	time_t		t = clock ();
 
 #if 0//def _DEBUG
 if (objP == dbgObjP) {
@@ -2265,8 +2275,10 @@ if (objP == dbgObjP) {
 #endif
 if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
 	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) &&
-	 (gameStates.render.nShadowPass != 2))
+	 (gameStates.render.nShadowPass != 2)) {
+	tRenderObject += clock () - t;
 	return 0;
+	}
 if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	 (gameData.objs.viewer == gameData.objs.console) &&
 	 !gameStates.render.automap.bDisplay) {
@@ -2284,6 +2296,7 @@ if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 #endif	 	
 		if (gameOpts->render.smoke.bPlayers)
 			DoPlayerSmoke (objP, -1);
+		tRenderObject += clock () - t;
 		return 0;		
 		}
 	}
@@ -2291,6 +2304,7 @@ if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->nSegment);
 #endif
+	tRenderObject += clock () - t;
 	return 0;
 	}
 mldSave = gameStates.render.detail.nMaxLinearDepth;
@@ -2556,6 +2570,7 @@ if (objP->renderType != RT_NONE)
 	}
 #endif
 gameStates.render.detail.nMaxLinearDepth = mldSave;
+tRenderObject += clock () - t;
 return 1;
 }
 

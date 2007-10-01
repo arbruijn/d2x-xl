@@ -456,12 +456,20 @@ extern GLhandleARB	genShaderProg;
 typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int);
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
+bool G3DrawTexPolySimple (
+	int			nVerts, 
+	g3sPoint		**pointList, 
+	tUVL			*uvlList, 
+	grsBitmap	*bmBot, 
+	vmsVector	*pvNormal,
+	int			bBlend);
+
 //------------------------------------------------------------------------------
 
-static inline int G3DrawTexPoly (int nv, g3sPoint **pointlist, tUVL *uvl_list,
-											grsBitmap *bm, vmsVector *pvNormal, int bBlend)
+static inline int G3DrawTexPoly (int nVerts, g3sPoint **pointList, tUVL *uvlList,
+											grsBitmap *bmP, vmsVector *pvNormal, int bBlend)
 {
-return fpDrawTexPolyMulti (nv, pointlist, uvl_list, NULL, bm, NULL, NULL, pvNormal, 0, bBlend);
+return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend);
 }
 
 //------------------------------------------------------------------------------

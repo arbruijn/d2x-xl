@@ -637,6 +637,7 @@ return nTextures;
 
 //draw a polygon model
 extern int nInstanceDepth;
+
 void DrawPolygonModel (
 	tObject			*objP, 
 	vmsVector		*pos, 
@@ -652,7 +653,6 @@ void DrawPolygonModel (
 	tPolyModel	*po;
 	int			nTextures;
 
-
 if (!(po = GetPolyModel (objP, pos, nModel, flags)))
 	return;
 if (gameStates.render.nShadowPass == 2) {
@@ -661,6 +661,7 @@ if (gameStates.render.nShadowPass == 2) {
 	return;
 	}
 nTextures = LoadModelTextures (po, altTextures);
+gameStates.ogl.bUseTransform = !SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects;
 G3StartInstanceMatrix (pos, orient);
 G3SetModelPoints (gameData.models.polyModelPoints);
 #ifdef _3DFX
@@ -670,8 +671,9 @@ PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
-if (!flags)		//draw entire tObject
+if (!flags)	{	//draw entire tObject
 	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
+	}
 else {
 	int i;
 
@@ -692,6 +694,7 @@ else {
 			}	
 	}
 G3DoneInstance ();
+gameStates.ogl.bUseTransform = 0;
 gameData.render.pVerts = NULL;
 #if 0
 {

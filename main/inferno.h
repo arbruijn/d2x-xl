@@ -38,6 +38,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define	SHADOWS	1
 #endif
 
+#ifdef _DEBUG
+#	define	PROFILING 1
+#else
+#	define	PROFILING 1
+#endif
+
 #if SHADOWS
 #	ifdef _DEBUG
 #		define DBG_SHADOWS 1
@@ -282,6 +288,7 @@ typedef struct tRenderOptions {
 	int bCoronas;
 	int bWeaponCoronas;
 	int bPowerupCoronas;
+	int bAdditiveCoronas; //additive corona blending for lights and light emitting weapons
 	int nCoronaIntensity;
 	int bUseShaders;
 	int bHiresModels;
@@ -1315,9 +1322,22 @@ typedef struct tThrusterData {
 #define OBJS_PER_SEG        5
 #define N_EXTRA_OBJ_LISTS   50
 
+typedef struct tObjRenderListItem {
+	short	nNextItem;
+	short	nObject;
+	fix	xDist;
+} tObjRenderListItem;
+
+typedef struct tObjRenderList {
+	short 					ref [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
+	tObjRenderListItem	objs [MAX_OBJECTS_D2X];
+	int						nUsed;
+} tObjRenderList;
+
 typedef struct tMineRenderData {
 	vmsVector				viewerEye;
-	short 					nRenderList [MAX_RENDER_SEGS];
+	short 					nSegRenderList [MAX_RENDER_SEGS];
+	tObjRenderList			renderObjs;
 	int						nRenderSegs;
 	ubyte 					bVisited [MAX_RENDER_SEGS];
 	ubyte 					nVisited;

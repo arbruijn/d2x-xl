@@ -1312,7 +1312,7 @@ if (!IsMultiGame || IsCoopGame) {
 			}
 		}
 	else {
-		y = 6 + 2 * nLineSpacing;
+		y = 6 + 3 * nLineSpacing;
 		for (i = 0; i < 2; i++) {
 			sprintf (szInfo, "%s: %5d", i ? "Powerups" : "Robots", objCounts [i]);
 			GrGetStringSize (szInfo, &w, &h, &aw);

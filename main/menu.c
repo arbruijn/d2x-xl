@@ -210,6 +210,7 @@ static struct {
 	int	nCoronas;
 	int	nWeaponCoronas;
 	int	nPowerupCoronas;
+	int	nAdditiveCoronas;
 	int	nCoronaIntensity;
 	int	nLightTrails;
 	int	nExplShrapnels;
@@ -1883,7 +1884,7 @@ if (gameOpts->render.nExplShrapnels != v) {
 
 void EffectOptionsMenu ()
 {
-	tMenuItem m [20];
+	tMenuItem m [25];
 	int	i, j, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
@@ -1911,6 +1912,8 @@ do {
 	effectOpts.nWeaponCoronas = opt++;
 	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.bPowerupCoronas, KEY_P, HTX_POWERUP_CORONAS);
 	effectOpts.nPowerupCoronas = opt++;
+	ADD_CHECK (opt, TXT_ADDITIVE_CORONAS, gameOpts->render.bAdditiveCoronas, KEY_A, HTX_ADDITIVE_CORONAS);
+	effectOpts.nAdditiveCoronas = opt++;
 	if (gameOpts->render.bCoronas || gameOpts->render.bWeaponCoronas) {
 		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
@@ -1972,6 +1975,7 @@ do {
 	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
 	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
 	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
+	gameOpts->render.bAdditiveCoronas = m [effectOpts.nAdditiveCoronas].value;
 	if (optTrailType >= 0)
 		gameOpts->render.smoke.bPlasmaTrails = (m [optTrailType].value == 0);
 	extraGameInfo [0].bTracers = m [optTracers].value;
@@ -3777,7 +3781,7 @@ do {
 		physOpts.nSpeedboost = opt++;
 		sprintf (szFusionPower + 1, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
 		*szFusionPower = *(TXT_FUSION_PWR - 1);
-		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_W, HTX_GPLAY_FUSIONPOWER);
+		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_U, HTX_GPLAY_FUSIONPOWER);
 		physOpts.nFusionRamp = opt++;
 		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [extraGameInfo [0].nMslTurnSpeed]);
 		*szMslTurnSpeed = *(TXT_MSL_TURNSPEED - 1);

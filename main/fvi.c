@@ -638,37 +638,6 @@ return IT_NONE;
 }
 
 //	-----------------------------------------------------------------------------
-//returns the value of a determinant
-fix CalcDetValue (vmsMatrix *det)
-{
-#if 1
-	fix	xDet;
-//LogErr ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", det->rVec.p.x, det->rVec.p.y, det->rVec.p.z, det->fVec.p.x, det->fVec.p.y, det->fVec.p.z, det->uVec.p.x, det->uVec.p.y, det->uVec.p.z);
-//LogErr ("               xDet = FixMul (det->rVec.p.x, FixMul (det->uVec.p.y, det->fVec.p.z))\n");
-xDet = FixMul (det->rVec.p.x, FixMul (det->uVec.p.y, det->fVec.p.z));
-//LogErr ("               xDet -= FixMul (det->rVec.p.x, FixMul (det->uVec.p.z, det->fVec.p.y))\n");
-xDet -= FixMul (det->rVec.p.x, FixMul (det->uVec.p.z, det->fVec.p.y));
-//LogErr ("               xDet -= FixMul (det->rVec.p.y, FixMul (det->uVec.p.x, det->fVec.p.z))\n");
-xDet -= FixMul (det->rVec.p.y, FixMul (det->uVec.p.x, det->fVec.p.z));
-//LogErr ("               xDet += FixMul (det->rVec.p.y, FixMul (det->uVec.p.z, det->fVec.p.x))\n");
-xDet += FixMul (det->rVec.p.y, FixMul (det->uVec.p.z, det->fVec.p.x));
-//LogErr ("               xDet += FixMul (det->rVec.p.z, FixMul (det->uVec.p.x, det->fVec.p.y))\n");
-xDet += FixMul (det->rVec.p.z, FixMul (det->uVec.p.x, det->fVec.p.y));
-//LogErr ("               xDet -= FixMul (det->rVec.p.z, FixMul (det->uVec.p.y, det->fVec.p.x))\n");
-xDet -= FixMul (det->rVec.p.z, FixMul (det->uVec.p.y, det->fVec.p.x));
-return xDet;
-//LogErr ("             det = %d\n", xDet);
-#else
-return FixMul (det->rVec.p.x, FixMul (det->uVec.p.y, det->fVec.p.z)) -
-		 FixMul (det->rVec.p.x, FixMul (det->uVec.p.z, det->fVec.p.y)) -
-		 FixMul (det->rVec.p.y, FixMul (det->uVec.p.x, det->fVec.p.z)) +
-		 FixMul (det->rVec.p.y, FixMul (det->uVec.p.z, det->fVec.p.x)) +
-	 	 FixMul (det->rVec.p.z, FixMul (det->uVec.p.x, det->fVec.p.y)) -
-		 FixMul (det->rVec.p.z, FixMul (det->uVec.p.y, det->fVec.p.x));
-#endif
-}
-
-//	-----------------------------------------------------------------------------
 //computes the parameters of closest approach of two lines
 //fill in two parameters, t0 & t1.  returns 0 if lines are parallel, else 1
 int CheckLineToLine (fix *t1, fix *t2, vmsVector *p1, vmsVector *v1, vmsVector *p2, vmsVector *v2)
@@ -685,14 +654,14 @@ cross_mag2 = VmVecDot (&det.fVec, &det.fVec);
 if (!cross_mag2)
 	return 0;			//lines are parallel
 det.uVec = *v2;
-d = CalcDetValue (&det);
+d = VmMatrixDetValue (&det);
 if (oflow_check (d, cross_mag2))
 	return 0;
 //LogErr ("         FixDiv (%d)\n", cross_mag2);
 *t1 = FixDiv (d, cross_mag2);
 det.uVec = *v1;
 //LogErr ("         CalcDetValue\n");
-d = CalcDetValue (&det);
+d = VmMatrixDetValue (&det);
 if (oflow_check (d, cross_mag2))
 	return 0;
 //LogErr ("         FixDiv (%d)\n", cross_mag2);

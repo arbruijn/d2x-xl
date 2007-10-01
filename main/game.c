@@ -1804,7 +1804,7 @@ bGameClosed = 1;
 gameStates.app.bExit = 1;
 if (gameStates.app.bMultiThreaded) {
 	for (i = 0; i < 2; i++) {
-		SDL_KillThread (gameData.threads.vertColor.pThread [i]);
+		SDL_WaitThread (gameData.threads.vertColor.pThread [i]);
 		SDL_DestroySemaphore (gameData.threads.vertColor.exec [i]);
 		}
 	}

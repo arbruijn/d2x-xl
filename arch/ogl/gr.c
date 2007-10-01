@@ -54,6 +54,7 @@
 #include "gauges.h"
 #include "render.h"
 #include "particles.h"
+#include "newmenu.h"
 
 #define DECLARE_VARS
 
@@ -459,6 +460,7 @@ void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 	OglSmashTextureListInternal (); 
+	NMFreeAltBg (1);
 	if (bReload)
 		GrRemapMonoFonts ();
 	if (bGame) {

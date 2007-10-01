@@ -807,7 +807,7 @@ char *defaultGameTexts [][2] = {
 	{"Material-~Wartezeit: %ld s", "Respawn Delay: %ld s "},
 	{"~Koennen: %s", "Difficulty: %s"},
 	{"~Beschleunigung: %d %c", "Speed Boost: %d %c"},
-	{"~Staerke Fusionskanone %d %c", "Fusion PoWer: %d %c"},
+	{"Staerke F~Usionskanone %d %c", "F~Usion Power: %d %c"},
 	{"Feste Material-~Entstehungsorte", "Fixed Powerup Spawn Points"},
 	{"Raketen-~Doppelabschuss", "DUal Missile Launch"},
 	{"~gesamtes Material abwerfen", "Drop All Missiles On Death"},
@@ -1733,6 +1733,7 @@ char *defaultGameTexts [][2] = {
 	{"~Powerups mit Lichthoefen zeichnen", "render coronas for ~Powerups"},
 	{"~Blitze zeichnen", "render ~Lightnings"},
 	{"sehr niedrig", "very low"},
+	{"Koronas ~Additiv einblenden", "~Additive corona blending"},
 #if 0
 	{"", ""},
 #endif
@@ -2305,6 +2306,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden Hires-Modelle heller dargestellt.\n(Sonst sind sie in dunklen Bereichen eventuell schlecht\nsichtbar.)", "If checked, hires models are rendered brighter.\n(Otherwise, they might be hard to see in dark areas.)"},
 	{"Wenn angekreuzt, erhalten Powerups Lichthoefe.", "If checked, powerups are rendered with coronas."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Blitz-\neffekte dargestellt werden.", "Check to have lightning effects rendered in the textured automap."},
+	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLichthoefen und ihrem Hintergrund.", "If checked, the brightness and color of coronas and their\nbackground."},
 #if 0
 	{"", ""},
 #endif

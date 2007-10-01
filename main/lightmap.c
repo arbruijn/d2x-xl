@@ -203,8 +203,13 @@ int IsLight (int tMapNum)
 {
 if (gameStates.app.bD1Mission)
 	tMapNum = ConvertD1Texture (tMapNum, 1);
+#if 1
+if (gameData.pig.tex.brightness [tMapNum] > 0)
+	return 1;
+#else
 if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
 	return 1;
+#endif
 switch (tMapNum) {
 	case 275:
 	case 276:

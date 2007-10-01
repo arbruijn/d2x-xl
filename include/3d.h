@@ -47,9 +47,9 @@ typedef union tUVLd {
 	} tUVLd;
 
 //Stucture to store clipping codes in a word
-typedef struct g3s_codes {
+typedef struct g3sCodes {
 	ubyte or,and;   //or is low byte, and is high byte
-} g3s_codes;
+} g3sCodes;
 
 //flags for point structure
 #define PF_PROJECTED    1   //has been projected, so sx,sy valid
@@ -180,7 +180,7 @@ bool G3CheckNormalFacing(vmsVector *v,vmsVector *norm);
 //void g3_set_points(g3sPoint *points,vmsVector *vecs);
 
 //returns codes_and & codes_or of a list of points numbers
-g3s_codes g3_check_codes(int nv,g3sPoint **pointlist);
+g3sCodes g3_check_codes(int nv,g3sPoint **pointlist);
 
 //projects a point
 void G3ProjectPoint(g3sPoint *point);
@@ -304,7 +304,7 @@ bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoi
 //returns 1 if off screen, 0 if drew
 bool G3DrawBitmap (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
 
-bool G3DrawSprite (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha);
+bool G3DrawSprite (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults

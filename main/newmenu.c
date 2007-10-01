@@ -300,6 +300,8 @@ int NMFreeAltBg (int bForce)
 {
 if (!pAltBg)
 	return 0;
+if (!bForce && (gameOpts->menus.altBg.bHave == 1))
+	return 0;
 if (bForce || !--gameOpts->menus.altBg.bHave) {
 	gameOpts->menus.altBg.bHave = 0;
 	GrFreeBitmap (pAltBg);
@@ -1753,8 +1755,11 @@ while (!done) {
 			WINDOS (DDGrSetCurrentCanvas (game_canvas), GrSetCurrentCanvas (game_canvas));
 			//GrPaletteStepLoad (gamePalette);
 			//GrCopyPalette (grPalette, gamePalette, sizeof (grPalette));
-			if (gameData.app.bGamePaused /*|| timer_paused*/)
+			if (gameData.app.bGamePaused /*|| timer_paused*/) {
 				GameRenderFrame ();
+				gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+				Sleep (0);
+				}
 			else {
 				GameLoop (1, 0);
 				}

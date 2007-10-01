@@ -348,9 +348,11 @@ for (i = 0, t=oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
 //		else if (t->w!=0)
 //			grabbed++;
 	}
+#if 0
 if (gr_renderstats && Gamefonts) {
 	GrPrintF (5,GAME_FONT->ftHeight*14+3*14,"%i (%i,%i) %iK (%iK wasted)",used,usedrgba,usedl4a4,truebytes/1024, (truebytes-databytes)/1024);
 	}
+#endif
 return truebytes;
 }
 

@@ -156,7 +156,7 @@ void clip_line(g3sPoint **p0,g3sPoint **p1,ubyte codes_or)
 }
 
 
-int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3s_codes *cc)
+int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc)
 {
 	int i;
 	g3sPoint **save_dest=dest;
@@ -205,7 +205,7 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3s_codes *c
 }
 
 
-g3sPoint **clip_polygon(g3sPoint **src,g3sPoint **dest,int *nv,g3s_codes *cc)
+g3sPoint **clip_polygon(g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc)
 {
 	int planeFlag;
 	g3sPoint **t;

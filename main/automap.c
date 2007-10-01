@@ -1118,7 +1118,7 @@ for (i=0; i<=nHighestEdgeIndex; i++)	{
 
 void DrawAllEdges ()
 {
-	g3s_codes cc;
+	g3sCodes cc;
 	int i,j,nbright;
 	ubyte nfacing,nnfacing;
 	tEdgeInfo *e;

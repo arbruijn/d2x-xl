@@ -195,26 +195,23 @@ modelPointList = pointlist;
 
 //------------------------------------------------------------------------------
 
+#if PROFILING
+time_t tTransform = 0;
+#endif
+
 void RotatePointList (g3sPoint *dest, vmsVector *src, g3sNormal *norms, int n, int o)
 {
-	fVector	*pfv = (fVector *) (gameData.models.fPolyModelVerts + o);
+	fVector	*pfv = gameData.models.fPolyModelVerts + o;
 	float		fScale;
+#if PROFILING
+	time_t	t = clock ();
+#endif
 
 dest += o;
 if (norms)
 	norms += o;
 while (n--) {
 	dest->p3_key = (short) o;
-	if (gameStates.ogl.bUseTransform) {
-		fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
-		pfv->p.x = (float) src->p.x * fScale;
-		pfv->p.y = (float) src->p.y * fScale;
-		pfv->p.z = (float) src->p.z * fScale;
-		dest->p3_index = o++;
-		pfv++;
-		}
-	else
-		dest->p3_index = -1;
 #if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
@@ -229,23 +226,41 @@ while (n--) {
 	else
 #endif
 		dest->p3_normal.nFaces = 0;
-	if (gameData.models.nScale) {
-		vmsVector v = *src;
-		VmVecScale (&v, gameData.models.nScale);
-		G3TransformAndEncodePoint (dest++, &v);
+	fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
+	if (gameStates.ogl.bUseTransform) {
+		pfv->p.x = src->p.x * fScale;
+		pfv->p.y = src->p.y * fScale;
+		pfv->p.z = src->p.z * fScale;
 		}
-	else
-		G3TransformAndEncodePoint (dest++, src);
-	if (!gameStates.ogl.bUseTransform) {
-		fScale = (gameData.models.nScale ? f2fl (gameData.models.nScale) : 1) / 65536.0f;
-		pfv->p.x = (float) src->p.x * fScale;
-		pfv->p.y = (float) src->p.y * fScale;
-		pfv->p.z = (float) src->p.z * fScale;
-		dest->p3_index = o++;
-		pfv++;
+	else {
+		if (gameData.models.nScale) {
+			vmsVector v = *src;
+			VmVecScale (&v, gameData.models.nScale);
+#if 1
+			G3TransformPoint (&dest->p3_vec, &v, 0);
+#else
+			G3TransformAndEncodePoint (dest, &v);
+#endif
+			}
+		else {
+#if 1
+			G3TransformPoint (&dest->p3_vec, src, 0);
+#else
+			G3TransformAndEncodePoint (dest, src);
+#endif
+			}
+		pfv->p.x = (float) dest->p3_vec.p.x / 65536.0f;
+		pfv->p.y = (float) dest->p3_vec.p.y / 65536.0f;
+		pfv->p.z = (float) dest->p3_vec.p.z / 65536.0f;
 		}
+	dest->p3_index = o++;
+	dest++;
+	pfv++;
 	src++;
 	}
+#if PROFILING
+tTransform += clock () - t;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -532,7 +547,7 @@ return 1;
 int G3GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
 {
 	ubyte			*p = modelP;
-	int			i, n, nv;
+	int			i, n, nVerts;
 	vmsVector	*v, hv;
 	tHitbox		hb = *phb;
 
@@ -584,13 +599,13 @@ for (;;)
 			break;
 
 		case OP_FLATPOLY:
-			nv = WORDVAL (p + 2);
-			p += 30 + (nv | 1) * 2;
+			nVerts = WORDVAL (p + 2);
+			p += 30 + (nVerts | 1) * 2;
 			break;
 
 		case OP_TMAPPOLY:
-			nv = WORDVAL (p + 2);
-			p += 30 + (nv | 1) * 2 + nv * 12;
+			nVerts = WORDVAL (p + 2);
+			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 
 		case OP_SORTNORM:
@@ -868,44 +883,44 @@ for (;;)
 			}
 
 		case OP_FLATPOLY: {
-			int nv = WORDVAL (p+2);
-			*pnAdjFaces += nv;
+			int nVerts = WORDVAL (p+2);
+			*pnAdjFaces += nVerts;
 			if (bTriangularize) {
-				(*pnFaces) += nv - 2;
-				(*pnFaceVerts) += (nv - 2) * 3;
+				(*pnFaces) += nVerts - 2;
+				(*pnFaceVerts) += (nVerts - 2) * 3;
 				}
-			else { //if (nv < 5) {
+			else { //if (nVerts < 5) {
 				(*pnFaces)++;
-				(*pnFaceVerts) += nv;
+				(*pnFaceVerts) += nVerts;
 				}
 #if 0
 			else {
 				(*pnFaces) += 2;
-				(*pnFaceVerts) += ((nv + 1) / 2) * 2;
+				(*pnFaceVerts) += ((nVerts + 1) / 2) * 2;
 				}
 #endif
-			p += 30 + ((nv & ~ 1) + 1) * 2;
+			p += 30 + ((nVerts & ~ 1) + 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int nv = WORDVAL (p + 2);
-			*pnAdjFaces += nv;
+			int nVerts = WORDVAL (p + 2);
+			*pnAdjFaces += nVerts;
 			if (bTriangularize) {
-				(*pnFaces) += nv - 2;
-				(*pnFaceVerts) += (nv - 2) * 3;
+				(*pnFaces) += nVerts - 2;
+				(*pnFaceVerts) += (nVerts - 2) * 3;
 				}
-			else { //if (nv < 5) {
+			else { //if (nVerts < 5) {
 				(*pnFaces)++;
-				(*pnFaceVerts) += nv;
+				(*pnFaceVerts) += nVerts;
 				}
 #if 0
 			else {
 				(*pnFaces) += 2;
-				(*pnFaceVerts) += ((nv + 1) / 2) * 2;
+				(*pnFaceVerts) += ((nVerts + 1) / 2) * 2;
 				}
 #endif
-			p += 30 + ((nv&~1)+1)*2 + nv*12;
+			p += 30 + ((nVerts&~1)+1)*2 + nVerts*12;
 			break;
 			}
 
@@ -1036,33 +1051,33 @@ return -1;
 #else
 //------------------------------------------------------------------------------
 
-int G3FindPolyModelFace (tPOFObject *po, short *p, int nv)
+int G3FindPolyModelFace (tPOFObject *po, short *p, int nVerts)
 {
 	tPOF_face	*pf;
 	int			h, i, j, k;
 	short			*pfv;
 
 for (i = po->iFace, pf = po->faces.pFaces; i; i--, pf++) {
-	if (pf->nVerts != nv)
+	if (pf->nVerts != nVerts)
 		continue;
 	pfv = pf->pVerts;
-	for (j = 0, h = *p; j < nv; j++) {
+	for (j = 0, h = *p; j < nVerts; j++) {
 		if (h == pfv [j]) {
 			h = j;
-			for (k = 0; k < nv; k++, j = (j + 1) % nv) {
+			for (k = 0; k < nVerts; k++, j = (j + 1) % nVerts) {
 				if (p [k] != pfv [j]) {
 					j = h;
-					for (k = 0; k < nv; k++) {
+					for (k = 0; k < nVerts; k++) {
 						if (p [k] != pfv [j])
 							break;
 						if (!j)
-							j = nv;
+							j = nVerts;
 						j--;
 						}
 					break;
 					}
 				}
-			if (k == nv)
+			if (k == nVerts)
 				return 1;
 			break;
 			}
@@ -1076,19 +1091,19 @@ return 0;
 tPOF_face *G3AddPolyModelFace (tPOFObject *po, tPOFSubObject *pso, tPOF_face *pf, 
 										 vmsVector *pn, ubyte *p, int bShadowData)
 {
-	short			nv = WORDVAL (p+2);
+	short			nVerts = WORDVAL (p+2);
 	vmsVector	*pv = po->pvVerts, v;
 	short			*pfv;
 	short			i, v0;
 
-//if (G3FindPolyModelFace (po, WORDPTR (p+30), nv))
+//if (G3FindPolyModelFace (po, WORDPTR (p+30), nVerts))
 //	return pf;
 if (bShadowData) {
 	pf->vNorm = *pn;
 	if (bTriangularize) {
 		pfv = WORDPTR (p+30);
 		v0 = *pfv;
-		if (nv == 3) {
+		if (nVerts == 3) {
 			G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [2]);
 			po->iFaceVert += 3;
 			pf->bGlow = (nGlow >= 0);
@@ -1096,7 +1111,7 @@ if (bShadowData) {
 			po->iFace++;
 			pso->faces.nFaces++;
 			}
-		else if (nv == 4) {
+		else if (nVerts == 4) {
 			VmVecSub (&v, pv + pfv [3], pv + pfv [1]);
 			if (VmVecDot (pn, &v) < 0) {
 				G3AddPolyModelTri (po, pf, pfv [0], pfv [1], pfv [3]);
@@ -1128,7 +1143,7 @@ if (bShadowData) {
 				}
 			}
 		else {
-			for (i = 1; i < nv - 1; i++) {
+			for (i = 1; i < nVerts - 1; i++) {
 				G3AddPolyModelTri (po, pf, v0, pfv [i], pfv [i + 1]);
 				po->iFaceVert += 3;
 				pf->bGlow = (nGlow >= 0);
@@ -1138,10 +1153,10 @@ if (bShadowData) {
 				}
 			}
 		}
-	else { //if (nv < 5) {
+	else { //if (nVerts < 5) {
 		pfv = pf->pVerts = po->pFaceVerts + po->iFaceVert;
-		pf->nVerts = nv;
-		memcpy (pfv, WORDPTR (p+30), nv * sizeof (short));
+		pf->nVerts = nVerts;
+		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (short));
 		pf->bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 #if 0
@@ -1155,7 +1170,7 @@ if (bShadowData) {
 		if (G3FindPolyModelFace (po, pf) < 0) //check for duplicate faces
 #endif
 			{
-			po->iFaceVert += nv;
+			po->iFaceVert += nVerts;
 			pf++;
 			po->iFace++;
 			pso->faces.nFaces++;
@@ -1163,7 +1178,7 @@ if (bShadowData) {
 		}
 #if 0
 	else {
-		short h = (nv + 1) / 2;
+		short h = (nVerts + 1) / 2;
 		pfv = pf->pVerts = po->pFaceVerts + po->iFaceVert;
 		pf->nVerts = h;
 		memcpy (pfv, WORDPTR (p+30), h * sizeof (short));
@@ -1176,7 +1191,7 @@ if (bShadowData) {
 		pso->faces.nFaces++;
 		pfv = pf->pVerts = po->pFaceVerts + po->iFaceVert;
 		pf->nVerts = h;
-		memcpy (pfv, WORDPTR (p + 30) + nv / 2, h * sizeof (short));
+		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (short));
 		pf->bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 		pf->bTest = 1;
@@ -1193,7 +1208,7 @@ else {
 
 	pfv = WORDPTR (p+30);
 	VmsVecToFloat (&nf, pn);
-	for (i = 0; i < nv; i++) {
+	for (i = 0; i < nVerts; i++) {
 		pvn = po->pVertNorms + pfv [i];
 		VmVecIncf (&pvn->vNormal, &nf);
 		pvn->nFaces++;
@@ -1370,20 +1385,20 @@ for (;;)
 			}
 
 		case OP_FLATPOLY: {
-			int nv = WORDVAL (p+2);
+			int nVerts = WORDVAL (p+2);
 			if (bInitModel && bFlatPolys) {
 				pf = G3AddPolyModelFace (po, pso, pf, VECPTR (p+16), p, bShadowData);
 				}
-			p += 30 + (nv | 1) * 2;
+			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int nv = WORDVAL (p + 2);
+			int nVerts = WORDVAL (p + 2);
 			if (bInitModel && bTexPolys) {
 				pf = G3AddPolyModelFace (po, pso, pf, VECPTR (p+16), p, bShadowData);
 				}
-			p += 30 + (nv | 1) * 2 + nv * 12;
+			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
 
@@ -1541,7 +1556,7 @@ glDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv)
+void G3RenderFarShadowCapFace (tOOF_vector *pv, int nVerts)
 {
 	tOOF_vector	v0, v1;
 
@@ -1557,7 +1572,7 @@ else
 #	endif
 #endif
 glBegin (GL_TRIANGLE_FAN);
-for (pv += nv; nv; nv--) {
+for (pv += nVerts; nVerts; nVerts--) {
 	v0 = *(--pv);
 	OOF_VecSub (&v1, &v0, &vLightPosf);
 #if NORM_INF
@@ -2320,6 +2335,8 @@ if (!mtP->nCount++) {
 
 //------------------------------------------------------------------------------
 
+#define CHECK_NORMAL_FACING	0
+
 bool G3DrawPolyModel (
 	tObject		*objP, 
 	void			*modelP, 
@@ -2334,6 +2351,7 @@ bool G3DrawPolyModel (
 {
 	ubyte *p = modelP;
 	short	h;
+	short bGetThrusterPos = !objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]));
 
 	static int nDepth = -1;
 
@@ -2373,9 +2391,12 @@ for (;;) {
 		p += n * sizeof (vmsVector) + 8;
 		}
 	else if (h == OP_FLATPOLY) {
-		int nv = WORDVAL (p+2);
-		Assert (nv < MAX_POINTS_PER_POLY);
-		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
+		int nVerts = WORDVAL (p+2);
+		Assert (nVerts < MAX_POINTS_PER_POLY);
+#if CHECK_NORMAL_FACING
+		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) 
+#endif
+			{
 			int i;
 			//fix l = f2i (32 * xModelLight);
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
@@ -2386,18 +2407,23 @@ for (;;) {
 				objColorP->blue = (float) grdCurCanv->cvColor.color.blue / 255.0f;
 				}
 			p += 30;
-			for (i = 0; i < nv; i++)
+			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
-			G3DrawPoly (nv, pointList);
+			G3DrawPoly (nVerts, pointList);
 			}
+#if CHECK_NORMAL_FACING
 		else
 			p += 30;
-		p += (nv | 1) * 2;
+#endif
+		p += (nVerts | 1) * 2;
 		}
 	else if (h == OP_TMAPPOLY) {
-		int nv = WORDVAL (p+2);
-		Assert ( nv < MAX_POINTS_PER_POLY );
-		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) {
+		int nVerts = WORDVAL (p+2);
+		Assert ( nVerts < MAX_POINTS_PER_POLY );
+#if CHECK_NORMAL_FACING
+		if (G3CheckNormalFacing (VECPTR (p+4), VECPTR (p+16)) > 0) 
+#endif
+			{
 			tUVL *uvlList;
 			int i;
 			fix l;
@@ -2414,8 +2440,8 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (tUVL *) (p + 30 + (nv | 1) * 2);
-			for (i = 0; i < nv; i++)
+			uvlList = (tUVL *) (p + 30 + (nVerts | 1) * 2);
+			for (i = 0; i < nVerts; i++)
 				uvlList [i].l = l;
 
 			if (objColorP) {
@@ -2425,29 +2451,38 @@ for (;;) {
 				objColorP->blue = CPAL2Tb (gamePalette, c);
 				}
 			p += 30;
-			for (i = 0; i < nv; i++)
+			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
-			G3DrawTexPoly (nv, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
+			G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
+#if 0
 			if (objP)
-				RenderDamageLightnings (objP, pointList, nv);
-			if (!objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])))
-				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nv);
+				RenderDamageLightnings (objP, pointList, nVerts);
+			if (bGetThrusterPos)
+				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
+#endif
 			}
+#if CHECK_NORMAL_FACING
 		else
 			p += 30;
-		p += (nv | 1) * 2 + nv * 12;
+#endif
+		p += (nVerts | 1) * 2 + nVerts * 12;
 		}
 	else if (h == OP_SORTNORM) {
-		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
+#if CHECK_NORMAL_FACING
+		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) 
+#endif
+			{		//facing
 			//draw back then front
 			G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
+#if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
 			G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, objColorP, po, nModel);
 			}
+#endif
 		p += 32;
 		}
 	else if (h == OP_RODBM) {
@@ -2519,22 +2554,22 @@ for (;;) {
 			}
 
 		case OP_FLATPOLY: {
-			int nv = WORDVAL (p+2);
+			int nVerts = WORDVAL (p+2);
 			int i, nTris;
 			GrSetColor (WORDVAL (p+28));
 			for (i = 0; i < 2; i++)
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
-			for (nTris=nv-2;nTris;nTris--) {
+			for (nTris=nVerts-2;nTris;nTris--) {
 				pointList [2] = modelPointList + WORDPTR (p+30) [i++];
 				G3CheckAndDrawPoly (3, pointList, NULL, NULL);
 				pointList [1] = pointList [2];
 				}
-			p += 30 + ((nv&~1)+1)*2;
+			p += 30 + ((nVerts&~1)+1)*2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int nv = WORDVAL (p+2);
+			int nVerts = WORDVAL (p+2);
 			tUVL *uvlList;
 			tUVL morph_uvls [3];
 			int i, nTris;
@@ -2550,7 +2585,7 @@ for (;;) {
 				nGlow = -1;
 				}
 			//now poke light into l values
-			uvlList = (tUVL *) (p+30+ ((nv&~1)+1)*2);
+			uvlList = (tUVL *) (p+30+ ((nVerts&~1)+1)*2);
 			for (i = 0; i < 3; i++)
 				morph_uvls [i].l = light;
 			for (i = 0; i < 2; i++) {
@@ -2558,7 +2593,7 @@ for (;;) {
 				morph_uvls [i].u = uvlList [i].u;
 				morph_uvls [i].v = uvlList [i].v;
 				}
-			for (nTris = nv - 2; nTris; nTris--) {
+			for (nTris = nVerts - 2; nTris; nTris--) {
 				pointList [2] = modelPointList + WORDPTR (p+30) [i];
 				morph_uvls [2].u = uvlList [i].u;
 				morph_uvls [2].v = uvlList [i].v;
@@ -2568,7 +2603,7 @@ for (;;) {
 				morph_uvls [1].u = morph_uvls [2].u;
 				morph_uvls [1].v = morph_uvls [2].v;
 				}
-			p += 30 + ((nv&~1)+1)*2 + nv*12;
+			p += 30 + ((nVerts&~1)+1)*2 + nVerts*12;
 			break;
 			}
 
@@ -2644,19 +2679,19 @@ for (;;) {
 			}
 
 		case OP_FLATPOLY: {
-			int nv = WORDVAL (p+2);
-			Assert (nv > 2);		//must have 3 or more points
+			int nVerts = WORDVAL (p+2);
+			Assert (nVerts > 2);		//must have 3 or more points
 //				*WORDPTR (p+28) = (short)GrFindClosestColor15bpp (WORDVAL (p+28);
-			p += 30 + ((nv&~1)+1)*2;
+			p += 30 + ((nVerts&~1)+1)*2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int nv = WORDVAL (p+2);
-			Assert (nv > 2);		//must have 3 or more points
+			int nVerts = WORDVAL (p+2);
+			Assert (nVerts > 2);		//must have 3 or more points
 			if (WORDVAL (p+28) > nHighestTexture)
 				nHighestTexture = WORDVAL (p+28);
-			p += 30 + ((nv&~1)+1)*2 + nv*12;
+			p += 30 + ((nVerts&~1)+1)*2 + nVerts*12;
 			break;
 			}
 

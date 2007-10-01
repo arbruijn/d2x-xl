@@ -286,11 +286,11 @@ vmsVector *VmVecPerp (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *
 //value of the angle in returned.  Otherwise the angle around that vector is
 //returned.
 fixang VmVecDeltaAng (vmsVector *v0, vmsVector *v1, vmsVector *fVec);
-
+float VmVecDeltaAngf (fVector *v0, fVector *v1, fVector *fVec);
 
 //computes the delta angle between two normalized vectors. 
 fixang VmVecDeltaAngNorm (vmsVector *v0, vmsVector *v1, vmsVector *fVec);
-
+float VmVecDeltaAngNormf (fVector *v0, fVector *v1, fVector *fVec);
 
 //computes a matrix from a set of three angles.  returns ptr to matrix
 vmsMatrix *VmAngles2Matrix (vmsMatrix * m, vmsAngVec * a);
@@ -319,7 +319,8 @@ vmsVector *VmVecRotate (vmsVector *dest, vmsVector *src, vmsMatrix * m);
 fVector *VmVecRotatef (fVector *dest, fVector *src, fMatrix *m);
 
 //transpose a matrix in place. returns ptr to matrix
-vmsMatrix *VmTransposeMatrix (vmsMatrix * m);
+vmsMatrix *VmTransposeMatrix (vmsMatrix *m);
+fMatrix *VmTransposeMatrixf (fMatrix *m);
 
 #define VmTranspose(m) VmTransposeMatrix(m)
 
@@ -367,6 +368,11 @@ fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fVector *VmVecNormalf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);
 fMatrix *VmSinCos2Matrixf (fMatrix *m, float sinp, float cosp, float sinb, float cosb, float sinh, float cosh);
 fMatrix *VmSinCos2Matrixd (fMatrix *m, double sinp, double cosp, double sinb, double cosb, double sinh, double cosh);
+
+fix VmMatrixDetValue (vmsMatrix *det);
+float VmMatrixDetValuef (fMatrix *det);
+vmsMatrix *VmInvertMatrix (vmsMatrix *pDest, vmsMatrix *pSrc);
+fMatrix *VmInvertMatrixf (fMatrix *pDest, fMatrix *pSrc);
 
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))

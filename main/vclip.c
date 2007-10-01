@@ -186,10 +186,9 @@ VmVecScale (&vDir, xSize - objP->size);
 VmVecInc (&vPos, &vDir);
 #endif
 glDepthMask (0);
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
-G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, NULL, fAlpha);
+G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, NULL, fAlpha, 1);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;

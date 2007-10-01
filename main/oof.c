@@ -1948,7 +1948,7 @@ return (float *) pDest;
 
 //------------------------------------------------------------------------------
 
-float *OOF_GlInverse (float *pDest, float *pSrc)
+float *OOF_GlTranspose (float *pDest, float *pSrc)
 {
 	glMatrixf	m;
 	int			x, y;

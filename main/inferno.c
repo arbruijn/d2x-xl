@@ -1254,6 +1254,7 @@ if (i) {
 	gameOptions [1].render.bCoronas = 0;
 	gameOptions [1].render.bWeaponCoronas = 0;
 	gameOptions [1].render.bPowerupCoronas = 0;
+	gameOptions [1].render.bAdditiveCoronas = 0;
 	gameOptions [1].render.bRobotShields = 0;
 	gameOptions [1].render.bBrightObjects = 0;
 	gameOptions [1].render.nCoronaIntensity = 2;
@@ -1381,9 +1382,10 @@ else {
 	gameOptions [0].render.bCoronas = 0;
 	gameOptions [0].render.bWeaponCoronas = 0;
 	gameOptions [0].render.bPowerupCoronas = 0;
+	gameOptions [1].render.bAdditiveCoronas = 0;
+	gameOptions [0].render.nCoronaIntensity = 1;
 	gameOptions [0].render.bRobotShields = 0;
 	gameOptions [0].render.bBrightObjects = 0;
-	gameOptions [0].render.nCoronaIntensity = 2;
 	gameOptions [0].render.bExplBlast = 1;
 	gameOptions [0].render.nExplShrapnels = 1;
 #ifdef _DEBUG

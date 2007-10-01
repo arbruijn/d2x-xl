@@ -111,7 +111,7 @@ else
 
 //------------------------------------------------------------------------------
 //deal with face that must be clipped
-bool MustClipFlatFace (int nv, g3s_codes cc)
+bool MustClipFlatFace (int nv, g3sCodes cc)
 {
 	int i;
         bool ret=0;

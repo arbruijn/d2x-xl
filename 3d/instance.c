@@ -66,7 +66,7 @@ glMatrixf m;
 if (nInstanceDepth)
 	OglRot (OOF_MatVms2Gl (OOF_GlIdent (m), pm));
 else
-	OglRot (OOF_GlInverse (NULL, OOF_MatVms2Gl (OOF_GlIdent (m), pm)));
+	OglRot (OOF_GlTranspose (NULL, OOF_MatVms2Gl (OOF_GlIdent (m), pm)));
 }
 
 //------------------------------------------------------------------------------
@@ -111,15 +111,19 @@ if (gameStates.ogl.bUseTransform) {
 		VmsMove (&h);
 		}
 	else {
-		glScalef (-1.0f, -1.0f, 1.0f);
+		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
 		}
+#if 1
 	if (mOrient)
 		VmsRot (mOrient);
+#endif
+#if 1
 	if (nInstanceDepth)
-		glScalef (-1.0f, -1.0f, 1.0f);
+		glScalef (-1.0f, -1.0f, -1.0f);
 	else
-		glScalef (1.0f, 1.0f, -1.0f);
+		;//	glScalef (1.0f, 1.0f, -1.0f);
+#endif
 	}
 	{
 	vmsVector	vOffs;

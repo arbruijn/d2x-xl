@@ -29,7 +29,7 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "error.h"
 //#define _DEBUG
 #define EXACT_VEC_MAG	1
-#define ENABLE_SSE		0
+#define ENABLE_SSE		1
 
 #ifndef ASM_VECMAT
 vmsVector vmdZeroVector = {{0, 0, 0}};
@@ -890,6 +890,34 @@ return a;
 }
 
 // ------------------------------------------------------------------------
+//computes the delta angle between two vectors. 
+//vectors need not be normalized. if they are, call VmVecDeltaAngNorm()
+//the forward vector (third parameter) can be NULL, in which case the absolute
+//value of the angle in returned.  Otherwise the angle around that vector is
+//returned.
+float VmVecDeltaAngf (fVector *v0, fVector *v1, fVector *fVec)
+{
+fVector t0, t1;
+
+VmVecNormalizef (&t0, v0);
+VmVecNormalizef (&t1, v1);
+return VmVecDeltaAngNormf (&t0, &t1, fVec);
+}
+
+// ------------------------------------------------------------------------
+//computes the delta angle between two normalized vectors. 
+float VmVecDeltaAngNormf (fVector *v0, fVector *v1, fVector *fVec)
+{
+float a = (float) acos ((double) VmVecDotf (v0, v1));
+if (fVec) {
+	fVector t;
+	if (VmVecDotf (VmVecCrossProdf (&t, v0, v1), fVec) < 0)
+		a = -a;
+	}
+return a;
+}
+
+// ------------------------------------------------------------------------
 
 vmsMatrix *VmSinCos2Matrix (vmsMatrix *m, fix sinp, fix cosp, fix sinb, fix cosb, fix sinh, fix cosh)
 {
@@ -1297,6 +1325,56 @@ return m;
 }
 
 // ------------------------------------------------------------------------
+//transpose a matrix in place. returns ptr to matrix
+fMatrix *VmTransposeMatrixf (fMatrix *m)
+{
+	float	t;
+
+t = m->uVec.p.x;  m->uVec.p.x = m->rVec.p.y;  m->rVec.p.y = t;
+t = m->fVec.p.x;  m->fVec.p.x = m->rVec.p.z;  m->rVec.p.z = t;
+t = m->fVec.p.y;  m->fVec.p.y = m->uVec.p.z;  m->uVec.p.z = t;
+return m;
+}
+
+// ------------------------------------------------------------------------
+
+vmsMatrix *VmInvertMatrix (vmsMatrix *pDest, vmsMatrix *pSrc)
+{
+	fix	xDet = VmMatrixDetValue (pSrc);
+	vmsMatrix	m = *pSrc;
+
+pDest->rVec.p.x = FixDiv (FixMul (m.uVec.p.y, m.fVec.p.z) - FixMul (m.uVec.p.z, m.fVec.p.y), xDet);
+pDest->rVec.p.y = FixDiv (FixMul (m.rVec.p.z, m.fVec.p.y) - FixMul (m.rVec.p.y, m.fVec.p.z), xDet);
+pDest->rVec.p.z = FixDiv (FixMul (m.rVec.p.y, m.uVec.p.z) - FixMul (m.rVec.p.z, m.uVec.p.y), xDet);
+pDest->uVec.p.x = FixDiv (FixMul (m.uVec.p.z, m.fVec.p.x) - FixMul (m.uVec.p.x, m.fVec.p.z), xDet);
+pDest->uVec.p.y = FixDiv (FixMul (m.rVec.p.x, m.fVec.p.z) - FixMul (m.rVec.p.z, m.fVec.p.x), xDet);
+pDest->uVec.p.z = FixDiv (FixMul (m.rVec.p.z, m.uVec.p.x) - FixMul (m.rVec.p.x, m.uVec.p.z), xDet);
+pDest->fVec.p.x = FixDiv (FixMul (m.uVec.p.x, m.fVec.p.y) - FixMul (m.uVec.p.y, m.fVec.p.x), xDet);
+pDest->fVec.p.y = FixDiv (FixMul (m.rVec.p.y, m.fVec.p.x) - FixMul (m.rVec.p.x, m.fVec.p.y), xDet);
+pDest->fVec.p.z = FixDiv (FixMul (m.rVec.p.x, m.uVec.p.y) - FixMul (m.rVec.p.y, m.uVec.p.x), xDet);
+return pDest;
+}
+
+// ------------------------------------------------------------------------
+
+fMatrix *VmInvertMatrixf (fMatrix *pDest, fMatrix *pSrc)
+{
+	float		fDet = VmMatrixDetValuef (pSrc);
+	fMatrix	m = *pSrc;
+
+pDest->rVec.p.x = (m.uVec.p.y * m.fVec.p.z - m.uVec.p.z * m.fVec.p.y) / fDet;
+pDest->rVec.p.y = (m.rVec.p.z * m.fVec.p.y - m.rVec.p.y * m.fVec.p.z) / fDet;
+pDest->rVec.p.z = (m.rVec.p.y * m.uVec.p.z - m.rVec.p.z * m.uVec.p.y) / fDet;
+pDest->uVec.p.x = (m.uVec.p.z * m.fVec.p.x - m.uVec.p.x * m.fVec.p.z) / fDet;
+pDest->uVec.p.y = (m.rVec.p.x * m.fVec.p.z - m.rVec.p.z * m.fVec.p.x) / fDet;
+pDest->uVec.p.z = (m.rVec.p.z * m.uVec.p.x - m.rVec.p.x * m.uVec.p.z) / fDet;
+pDest->fVec.p.x = (m.uVec.p.x * m.fVec.p.y - m.uVec.p.y * m.fVec.p.x) / fDet;
+pDest->fVec.p.y = (m.rVec.p.y * m.fVec.p.x - m.rVec.p.x * m.fVec.p.y) / fDet;
+pDest->fVec.p.z = (m.rVec.p.x * m.uVec.p.y - m.rVec.p.y * m.uVec.p.x) / fDet;
+return pDest;
+}
+
+// ------------------------------------------------------------------------
 //copy and transpose a matrix. returns ptr to matrix
 //dest CANNOT equal source. use VmTransposeMatrix() if this is the case
 vmsMatrix *VmCopyTransposeMatrix (vmsMatrix *dest, vmsMatrix *src)
@@ -1393,6 +1471,49 @@ else {
 		a->b = fix_atan2(cosb, sinb);
 	}
 return a;
+}
+
+//	-----------------------------------------------------------------------------
+//returns the value of a determinant
+fix VmMatrixDetValue (vmsMatrix *m)
+{
+#if 1
+	fix	xDet;
+//LogErr ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", m->rVec.p.x, m->rVec.p.y, m->rVec.p.z, m->fVec.p.x, m->fVec.p.y, m->fVec.p.z, m->uVec.p.x, m->uVec.p.y, m->uVec.p.z);
+//LogErr ("               xDet = FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z))\n");
+xDet = FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z));
+//LogErr ("               xDet -= FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y))\n");
+xDet -= FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y));
+//LogErr ("               xDet -= FixMul (m->rVec.p.y, FixMul (m->uVec.p.x, m->fVec.p.z))\n");
+xDet -= FixMul (m->rVec.p.y, FixMul (m->uVec.p.x, m->fVec.p.z));
+//LogErr ("               xDet += FixMul (m->rVec.p.y, FixMul (m->uVec.p.z, m->fVec.p.x))\n");
+xDet += FixMul (m->rVec.p.y, FixMul (m->uVec.p.z, m->fVec.p.x));
+//LogErr ("               xDet += FixMul (m->rVec.p.z, FixMul (m->uVec.p.x, m->fVec.p.y))\n");
+xDet += FixMul (m->rVec.p.z, FixMul (m->uVec.p.x, m->fVec.p.y));
+//LogErr ("               xDet -= FixMul (m->rVec.p.z, FixMul (m->uVec.p.y, m->fVec.p.x))\n");
+xDet -= FixMul (m->rVec.p.z, FixMul (m->uVec.p.y, m->fVec.p.x));
+return xDet;
+//LogErr ("             m = %d\n", xDet);
+#else
+return FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z)) -
+		 FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y)) -
+		 FixMul (m->rVec.p.y, FixMul (m->uVec.p.x, m->fVec.p.z)) +
+		 FixMul (m->rVec.p.y, FixMul (m->uVec.p.z, m->fVec.p.x)) +
+	 	 FixMul (m->rVec.p.z, FixMul (m->uVec.p.x, m->fVec.p.y)) -
+		 FixMul (m->rVec.p.z, FixMul (m->uVec.p.y, m->fVec.p.x));
+#endif
+}
+
+//	-----------------------------------------------------------------------------
+//returns the value of a determinant
+float VmMatrixDetValuef (fMatrix *m)
+{
+return m->rVec.p.x * m->uVec.p.y * m->fVec.p.z -
+		 m->rVec.p.x * m->uVec.p.z * m->fVec.p.y -
+		 m->rVec.p.y * m->uVec.p.x * m->fVec.p.z +
+		 m->rVec.p.y * m->uVec.p.z * m->fVec.p.x +
+	 	 m->rVec.p.z * m->uVec.p.x * m->fVec.p.y -
+		 m->rVec.p.z * m->uVec.p.y * m->fVec.p.x;
 }
 
 // ------------------------------------------------------------------------

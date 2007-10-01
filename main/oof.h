@@ -322,7 +322,7 @@ tOOF_vector *OOF_VecRot (tOOF_vector *pDest, tOOF_vector *pSrc, tOOF_matrix *pRo
 tOOF_vector *OOF_VecPerp (tOOF_vector *pvPerp, tOOF_vector *pv0, tOOF_vector *pv1, tOOF_vector *pv2);
 tOOF_vector *OOF_VecNormal (tOOF_vector *pvNormal, tOOF_vector *pv0, tOOF_vector *pv1, tOOF_vector *pv2);
 float *OOF_GlIdent (float *pm);
-float *OOF_GlInverse (float *pDest, float *pSrc);
+float *OOF_GlTranspose (float *pDest, float *pSrc);
 int OOF_ReleaseTextures (void);
 int OOF_ReloadTextures (void);
 

@@ -391,6 +391,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bWeaponCoronas, i, 0);
 		RP (gameOptions [i].render.bPowerupCoronas, i, 0);
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
+		RP (gameOptions [i].render.bAdditiveCoronas, i, 0);
 		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
@@ -926,6 +927,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bWeaponCoronas", "1"},
 	{"gameOptions[0].render.bPowerupCoronas", "1"},
 	{"gameOptions[0].render.nCoronaIntensity", "1"},
+	{"gameOptions[0].render.nAdditiveCoronas", "0"},
 	{"gameOptions[0].render.bBrightObjects", "0"},
 	{"gameOptions[0].render.bRobotShields", "0"},
 	{"gameOptions[0].render.bTransparentEffects", "1"},

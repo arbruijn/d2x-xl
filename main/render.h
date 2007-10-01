@@ -78,7 +78,7 @@ void RenderStartFrame(void);
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
-g3s_codes RotateVertexList(int nv, short *pointnumlist);
+g3sCodes RotateVertexList(int nv, short *pointnumlist);
 
 // Given a list of point numbers, project any that haven't been projected
 void ProjectVertexList(int nv, short *pointnumlist);
@@ -96,6 +96,7 @@ int IsTransparentTexture (short nTexture);
 int LoadExplBlast (void);
 void FreeExplBlast (void);
 int LoadCorona (void);
+int LoadGlare (void);
 int LoadHalo (void);
 int LoadThruster (void);
 int LoadShield (void);
@@ -106,6 +107,7 @@ void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float 
 void RenderMineSegment (int nn);
 
 extern grsBitmap *bmpCorona;
+extern grsBitmap *bmpGlare;
 extern grsBitmap *bmpHalo;
 extern grsBitmap *bmpThruster [2];
 extern grsBitmap *bmpShield;
@@ -157,6 +159,7 @@ typedef struct tRIPoly {
 	char					nVertices;
 	char					nColors;
 	char					bDepthMask;
+	char					bAdditive;
 } tRIPoly;
 
 typedef struct tRISprite {
@@ -167,6 +170,7 @@ typedef struct tRISprite {
 	int					nHeight;
 	char					nFrame;
 	char					bColor;
+	char					bAdditive;
 } tRISprite;
 
 typedef struct tRIParticle {
@@ -247,8 +251,8 @@ void ResetRenderItemBuffer (void);
 void InitRenderItemBuffer (int zMin, int zMax);
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoord, tRgbaColorf *color, 
-					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap);
-int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame);
+					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive);
+int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
 int RIAddParticle (tParticle *particle, double fBrightness);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);

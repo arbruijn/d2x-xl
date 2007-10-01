@@ -497,6 +497,7 @@ while (gameData.app.bGamePaused) {
 			GrPaletteStepLoad(NULL);
 			RemapFontsAndMenus (1);
 			ShowBoxedMessage(msg);
+			Sleep (0);
 			}
 		gameStates.menus.nInMenu--;
 		}
@@ -1395,6 +1396,8 @@ void HandleVRKey(int key)
 
 extern void DropFlag();
 
+extern int gr_renderstats;
+
 void HandleGameKey(int key)
 {
 	switch (key) {
@@ -1468,6 +1471,10 @@ void HandleGameKey(int key)
 
 		case KEY_ALTED + KEY_R:
 			gameStates.render.frameRate.value = !gameStates.render.frameRate.value;
+			break;
+
+		case KEY_CTRLED + KEY_ALTED + KEY_R:
+			gr_renderstats = !gr_renderstats;
 			break;
 
 		case KEY_ALTED + KEY_O:
