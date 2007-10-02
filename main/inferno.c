@@ -2325,7 +2325,7 @@ GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
-GETMEM (ubyte, gameData.segs.bVertVis, MAX_SEGMENTS * MAX_VERTVIS_FLAGS, 0);
+GETMEM (ubyte, gameData.segs.bVertVis, MAX_VERTICES * MAX_VERTVIS_FLAGS, 0);
 GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
 GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
 }

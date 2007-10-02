@@ -254,9 +254,9 @@ while (n--) {
 		pfv->p.z = (float) dest->p3_vec.p.z / 65536.0f;
 		}
 	dest->p3_index = o++;
+	dest->p3_src = *src++;
 	dest++;
 	pfv++;
-	src++;
 	}
 #if PROFILING
 tTransform += clock () - t;
@@ -2351,6 +2351,7 @@ bool G3DrawPolyModel (
 {
 	ubyte *p = modelP;
 	short	h;
+	short bCloak = gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS;
 	short bGetThrusterPos = !objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]));
 
 	static int nDepth = -1;
@@ -2454,13 +2455,14 @@ for (;;) {
 			for (i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
-			G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
-#if 0
+			if (bCloak)
+				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1);
+			else
+				G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			if (objP)
 				RenderDamageLightnings (objP, pointList, nVerts);
 			if (bGetThrusterPos)
 				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
-#endif
 			}
 #if CHECK_NORMAL_FACING
 		else

@@ -2243,7 +2243,7 @@ if (!(IsMultiGame || gameOpts->render.bObjects))
 	return;
 Assert(nObject < MAX_OBJECTS);
 #if 1
-if (gameData.render.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop)	//already rendered this...
+if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop)	//already rendered this...
 	return;
 #endif
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
@@ -2286,7 +2286,7 @@ if (bSearchMode)
 #endif
 	//NOTE LINK TO ABOVE
 if (RenderObject (objP, nWindow, 0))
-	gameData.render.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
+	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
 for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {
 	hObj = gameData.objs.objects + n;
 	Assert (hObj->nType == OBJ_FIREBALL);
@@ -2877,8 +2877,8 @@ void BuildRenderObjLists (int nSegCount)
 	tObject	*objP;
 	tSegment	*segP;
 	segmasks	mask;
-	short		nSegment, nNewSeg, nChild, sn, sf;
-	int		nListPos, nObject, j;
+	short		nSegment, nNewSeg, nChild, nSide, sideFlag;
+	int		nListPos, nObject;
 
 memset (gameData.render.mine.renderObjs.ref, 0xff, gameData.segs.nSegments * sizeof (gameData.render.mine.renderObjs.ref [0]));
 gameData.render.mine.renderObjs.nUsed = 0;
@@ -2889,6 +2889,8 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		continue;
 	for (nObject = gameData.segs.segments [nSegment].objects; nObject != -1; nObject = objP->next) {
 		objP = gameData.objs.objects + nObject;
+		if (objP->nType == OBJ_PLAYER)
+			objP = objP;
 		Assert (objP->nSegment == nSegment);
 		if (objP->flags & OF_ATTACHED)
 			continue;		//ignore this tObject
@@ -2897,18 +2899,14 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 			continue;
 		mask = GetSegMasks (&objP->position.vPos, nNewSeg, objP->size);
 		if (mask.sideMask) {
-			for (sn = 0, sf = 1; sn < 6; sn++, sf <<= 1) {
-				if (!mask.sideMask & sf)
+			for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
+				if (!(mask.sideMask & sideFlag))
 					continue;
 				segP = gameData.segs.segments + nNewSeg;
-				if (WALL_IS_DOORWAY (segP, sn, NULL) & WID_FLY_FLAG) {	//can explosion migrate through
-					nChild = segP->children [sn];
-					for (j = 0; j < nSegCount; j++) {
-						if (gameData.render.mine.nSegRenderList [j] == nChild) {
-							nNewSeg = nChild;	// only migrate to segment in render list
-							break;
-							}
-						}
+				if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_FLY_FLAG) {	//can explosion migrate through
+					nChild = segP->children [nSide];
+					if (gameData.render.mine.bRenderSegment [nChild] == gameStates.render.nFrameFlipFlop)
+						nNewSeg = nChild;	// only migrate to segment in render list
 					}
 				}
 			}
@@ -3303,7 +3301,7 @@ for (h = 0, i = gameData.render.lights.dynamic.nLights; i; i--, psl++)
 	psl->bShadow =
 	psl->bExclusive = 0;
 for (h = 0; h <= gameData.objs.nLastObject + 1; h++, objP++) {
-	if (gameData.render.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
+	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;
 	pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 	k = h * MAX_SHADOW_LIGHTS;
@@ -3919,6 +3917,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						}
 					nRenderPos [nChild] = lCnt;
 					gameData.render.mine.nSegRenderList [lCnt] = nChild;
+					gameData.render.mine.bRenderSegment [nChild] = gameStates.render.nFrameFlipFlop;
 					gameData.render.mine.nSegDepth [lCnt] = l;
 					if (++lCnt >= MAX_RENDER_SEGS)
 						goto listDone;

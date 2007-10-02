@@ -1345,6 +1345,8 @@ typedef struct tMineRenderData {
 	ubyte 					nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
 	int						lCntSave;
 	int						sCntSave;
+	ubyte						bObjectRendered [MAX_OBJECTS_D2X];
+	ubyte						bRenderSegment [MAX_SEGMENTS_D2X];
 } tMineRenderData;
 
 //------------------------------------------------------------------------------
@@ -1379,7 +1381,6 @@ typedef struct tRenderData {
 	tGameWindowData		window;
 	fix						zMin;
 	fix						zMax;
-	ubyte						bObjectRendered [MAX_OBJECTS_D2X];
 } tRenderData;
 
 //------------------------------------------------------------------------------

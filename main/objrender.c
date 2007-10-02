@@ -2343,7 +2343,7 @@ switch (objP->renderType) {
 			}
 		if (gameStates.render.nType != 1)
 			return 0;
-		//DoObjectSmoke (objP);
+		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
 			int bDynObjLight = gameOpts->ogl.bLightObjects;
 			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)))

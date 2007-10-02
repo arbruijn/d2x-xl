@@ -1,6 +1,7 @@
 #include "inferno.h"
 #include "u_mem.h"
 #include "gr.h"
+#include "tga.h"
 
 //------------------------------------------------------------------------------
 

@@ -525,7 +525,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawWhitePoly (int nv, g3sPoint **pointList)
+bool G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
 {
 #if 1
 	int i;
@@ -535,7 +535,7 @@ glDisable (GL_TEXTURE_2D);
 glDisable (GL_BLEND);
 glColor4d (1.0, 1.0, 1.0, 1.0);
 glBegin (GL_TRIANGLE_FAN);
-for (i = 0; i < nv; i++, pointList++)
+for (i = 0; i < nVertices; i++, pointList++)
 	OglVertex3f (*pointList);
 glEnd ();
 #endif
@@ -544,19 +544,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPoly (int nv, g3sPoint **pointList)
+bool G3DrawPoly (int nVertices, g3sPoint **pointList)
 {
 	int i;
 
 if (gameStates.render.nShadowBlurPass == 1) {
-	G3DrawWhitePoly (nv, pointList);
+	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
 r_polyc++;
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
 glBegin (GL_TRIANGLE_FAN);
-for (i = 0; i < nv; i++, pointList++) {
+for (i = 0; i < nVertices; i++, pointList++) {
 //	glVertex3f (f2fl (pointList [c]->p3_vec.p.x), f2fl (pointList [c]->p3_vec.p.y), f2fl (pointList [c]->p3_vec.p.z);
 	OglVertex3f (*pointList);
 	}
@@ -570,13 +570,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask)
+bool G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask)
 {
 	int		i;
 	GLint		depthFunc; 
 
 if (gameStates.render.nShadowBlurPass == 1) {
-	G3DrawWhitePoly (nv, pointList);
+	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
 if (color->alpha < 0)
@@ -585,9 +585,9 @@ if (color->alpha < 0)
 if (gameOpts->render.bDepthSort > 0) {
 	fVector		vertices [8];
 
-	for (i = 0; i < nv; i++)
+	for (i = 0; i < nVertices; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, vertices, nv, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0);
+	RIAddPoly (NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 	}
 else 
 #endif
@@ -606,7 +606,7 @@ else
 	glDisable (GL_TEXTURE_2D);
 	glColor4fv ((GLfloat *) color);
 	glBegin (GL_TRIANGLE_FAN);
-	for (i = 0; i < nv; i++)
+	for (i = 0; i < nVertices; i++)
 		OglVertex3f (*pointList++);
 	glEnd ();
 	glDepthFunc (depthFunc);
@@ -627,7 +627,7 @@ con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
 
 //------------------------------------------------------------------------------
 
-void DrawTexPolyFlat (grsBitmap *bm, int nv, g3sPoint **vertlist)
+void DrawTexPolyFlat (grsBitmap *bmP, int nVertices, g3sPoint **vertlist)
 {
 #if TRACE	
 con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
@@ -656,7 +656,7 @@ tFaceColor vertColors [8] = {
 // exceed 1.0. If so, all three color values are scaled so that their maximum multiplied
 // with the max. brightness does not exceed 1.0.
 
-inline void CapTMapColor (tUVL *uvlList, int nv, grsBitmap *bm)
+inline void CapTMapColor (tUVL *uvlList, int nVertices, grsBitmap *bm)
 {
 #if 0
 	tFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
@@ -666,7 +666,7 @@ if (! (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) && color) {
 		double	h, l = 0;
 		int		i;
 
-	for (i = 0; i < nv; i++, uvlList++) {
+	for (i = 0; i < nVertices; i++, uvlList++) {
 		h = (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : f2fl (uvlList->l);
 		if (l < h)
 			l = h;
@@ -1654,7 +1654,7 @@ return 0;
 			OglTexWrap ((_bmP)->glTexture, GL_REPEAT);
 
 
-extern void (*tmap_drawer_ptr) (grsBitmap *bmP, int nv, g3sPoint **vertlist);
+extern void (*tmap_drawer_ptr) (grsBitmap *bmP, int nVertices, g3sPoint **vertlist);
 
 static GLhandleARB	lmProg = (GLhandleARB) 0;
 static GLhandleARB	tmProg = (GLhandleARB) 0;
@@ -1662,7 +1662,7 @@ static GLhandleARB	tmProg = (GLhandleARB) 0;
 //------------------------------------------------------------------------------
 
 bool G3DrawTexPolyFlat (
-	int			nVerts, 
+	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tUVL			*uvlLMap, 
@@ -1693,7 +1693,7 @@ OglActiveTexture (GL_TEXTURE0_ARB, 0);
 glDisable (GL_TEXTURE_2D);
 glColor4d (0, 0, 0, GrAlpha ());
 glBegin (GL_TRIANGLE_FAN);
-for (i = 0, ppl = pointList; i < nVerts; i++, ppl++)
+for (i = 0, ppl = pointList; i < nVertices; i++, ppl++)
 	OglVertex3f (*ppl);
 glEnd ();
 return 0;
@@ -1710,7 +1710,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 bool G3DrawTexPolyMulti (
-	int			nVerts, 
+	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tUVL			*uvlLMap, 
@@ -1743,7 +1743,7 @@ bool G3DrawTexPolyMulti (
 if (bDynLight)
 	bDynLight = 1;
 if (gameStates.render.nShadowBlurPass == 1) {
-	G3DrawWhitePoly (nVerts, pointList);
+	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
 if (!bmBot)
@@ -1854,7 +1854,7 @@ if (bDrawArrays || bDepthSort) {
 		int			vertIndex [8];
 		//int			colorIndex [8];
 
-	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		pl = *ppl;
 		vertIndex [i] = pl->p3_index;
 		//colorIndex [i] = i;
@@ -1875,7 +1875,7 @@ if (bDrawArrays || bDepthSort) {
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
 		OglLoadBmTexture (bmBot, 1, 3, 0);
-		RIAddPoly (bmBot, vertices, nVerts, vertUVL [0], NULL, vertColors, nVerts, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
+		RIAddPoly (bmBot, vertices, nVertices, vertUVL [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 		return 0;
 		}
 #endif
@@ -1903,7 +1903,7 @@ if (bDrawArrays) {
 //		glIndexPointer (GL_INT, 0, colorIndex);
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), vertUVL [1]);
 		}
-	glDrawArrays (GL_TRIANGLE_FAN, 0, nVerts);
+	glDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
 	G3DisableClientStates (GL_TEXTURE0_ARB);
 	if (bmTop && !bDrawOverlay)
 		G3DisableClientStates (GL_TEXTURE1_ARB);
@@ -1914,7 +1914,7 @@ else
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		if (bDrawOverlay) {
-			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				pl = *ppl;
 				G3VERTPOS (vVertPos, pl);
 				G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, pl->p3_index, NULL, 
@@ -1924,7 +1924,7 @@ else
 				}
 			}
 		else {
-			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				pl = *ppl;
 				G3VERTPOS (vVertPos, pl);
 				G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, pl->p3_index, NULL, 
@@ -1937,7 +1937,7 @@ else
 		}
 	else if (bLight) {
 		if (bDrawOverlay) {
-			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				OglVertex3f (*ppl);
@@ -1945,7 +1945,7 @@ else
 			}
 		else {
 			bResetColor = (bDrawOverlay != 1);
-			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				SetTMapColor (uvlList + i, i, bmBot, bResetColor, NULL);
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
@@ -1955,13 +1955,13 @@ else
 		}
 	else {
 		if (bDrawOverlay) {
-			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				OglVertex3f (*ppl);
 				}
 			}
 		else {
-			for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 				glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 				SetTexCoord (uvlList + i, orient, 1, NULL);
 				OglVertex3f (*ppl);
@@ -1980,21 +1980,21 @@ if (bDrawOverlay > 0) {
 	OglTexWrap (bmTop->glTexture, GL_REPEAT);
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
-		for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertPos, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, 1, 1);
 			SetTexCoord (uvlList + i, orient, 0, NULL);
 			OglVertex3f (*ppl);
 			}
 		}
 	else if (bLight) {
-		for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			SetTMapColor (uvlList + i, i, bmTop, 1, NULL);
 			SetTexCoord (uvlList + i, orient, 0, NULL);
 			OglVertex3f (*ppl);
 			}
 		}
 	else {
-		for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 			SetTexCoord (uvlList + i, orient, 0, NULL);
 			OglVertex3f (*ppl);
 			}
@@ -2027,7 +2027,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 bool G3DrawTexPolyLightmap (
-	int			nVerts, 
+	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	tUVL			*uvlLMap, 
@@ -2044,7 +2044,7 @@ bool G3DrawTexPolyLightmap (
 	g3sPoint		**ppl;
 
 if (gameStates.render.nShadowBlurPass == 1) {
-	G3DrawWhitePoly (nVerts, pointList);
+	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
 if (!bmBot)
@@ -2074,7 +2074,7 @@ if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 else
 	nFrame = -1;
 if (!lightMap) //lightMapping enabled
-	return fpDrawTexPolyMulti (nVerts, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend);
+	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend);
 // chose shaders depending on whether overlay bitmap present or not
 if (bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge) {
 	lmProg = lmShaderProgs [(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
@@ -2104,7 +2104,7 @@ glBegin (GL_TRIANGLE_FAN);
 ppl = pointList;
 if (gameStates.render.bFullBright)
 	glColor3d (1,1,1);
-for (i = 0; i < nVerts; i++, ppl++) {
+for (i = 0; i < nVertices; i++, ppl++) {
 	if (!gameStates.render.bFullBright)
 		SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 	glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (uvlList [i].u), f2fl (uvlList [i].v));
@@ -2123,7 +2123,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 bool G3DrawTexPolySimple (
-	int			nVerts, 
+	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
 	grsBitmap	*bmP, 
@@ -2141,7 +2141,7 @@ bool G3DrawTexPolySimple (
 if (bDynLight)
 	bDynLight = 1;
 if (gameStates.render.nShadowBlurPass == 1) {
-	G3DrawWhitePoly (nVerts, pointList);
+	G3DrawWhitePoly (nVertices, pointList);
 	return 0;
 	}
 r_tpolyc++;
@@ -2201,7 +2201,7 @@ gameStates.ogl.bDynObjLight = bDynLight;
 gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 glBegin (GL_TRIANGLE_FAN);
 if (bDynLight) {
-	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		pl = *ppl;
 		G3VERTPOS (vVertPos, pl);
 		G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, pl->p3_index, NULL, 
@@ -2211,14 +2211,14 @@ if (bDynLight) {
 		}
 	}
 else if (bLight) {
-	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		SetTMapColor (uvlList + i, i, bmP, 1, NULL);
 		glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 		OglVertex3f (*ppl);
 		}
 	}
 else {
-	for (i = 0, ppl = pointList; i < nVerts; i++, ppl++) {
+	for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
 		glTexCoord2f (f2fl (uvlList [i].u), f2fl (uvlList [i].v));
 		OglVertex3f (*ppl);
 		}

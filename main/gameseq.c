@@ -862,7 +862,8 @@ gameData.physics.side.nSide = -1;
 gameStates.gameplay.bKillBossCheat = 0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
-memset (gameData.render.bObjectRendered, 0xff, sizeof (gameData.render.bObjectRendered));
+memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
+memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
 #if 1
 /*---*/LogErr ("   stopping music\n");
 SongsStopAll ();
