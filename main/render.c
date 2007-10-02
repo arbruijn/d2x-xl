@@ -3772,6 +3772,7 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 
 gameData.render.mine.nSegRenderList [0] = nStartSeg; 
 gameData.render.mine.nSegDepth [0] = 0;
+gameData.render.mine.bRenderSegment [nStartSeg] = gameStates.render.nFrameFlipFlop;
 VISIT (nStartSeg);
 nRenderPos [nStartSeg] = 0;
 sCnt = 0;
