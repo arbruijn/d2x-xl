@@ -3,7 +3,8 @@ INCLUDES = -I $(top_srcdir)/include  -I $(top_srcdir)/main
 
 lib3d_a_SOURCES = \
 clipper.c  globvars.c  interp.c  points.c  setup.c \
-draw.c	   instance.c  matrix.c  rod.c shadows.c hitbox.c
+draw.c	   instance.c  matrix.c  rod.c shadows.c hitbox.c \
+fastmodels.c
 
 EXTRA_DIST = \
 interp.asm \

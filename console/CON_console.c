@@ -314,13 +314,13 @@ void CON_UpdateConsole(ConsoleInformation *console) {
 			{
 				GrString (CON_CHAR_BORDER + (loop2*5*console->ConsoleSurface->cvFont->ftWidth), 
 							 (Screenlines - loop - 2) * (CON_LINE_SPACE + console->ConsoleSurface->cvFont->ftHeight), 
-							 CON_SCROLL_INDICATOR, 1);
+							 CON_SCROLL_INDICATOR, NULL);
 			}
 		else
 		{
 			GrString(CON_CHAR_BORDER, 
 						(Screenlines - loop - 2) * (CON_LINE_SPACE + console->ConsoleSurface->cvFont->ftHeight),
-						 console->ConsoleLines[console->ConsoleScrollBack + loop], 1);
+						 console->ConsoleLines[console->ConsoleScrollBack + loop], NULL);
 		}
 	}
 	grdCurCanv->cvFont = orig_font;
@@ -689,7 +689,7 @@ void DrawCommandLine() {
 	orig_font = grdCurCanv->cvFont;
 	grdCurCanv->cvFont = SMALL_FONT;
 	GrSetFontColorRGBi (WHITE_RGBA, 1, 0, 0);
-	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->VCommand, 1);
+	GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->VCommand, NULL);
 
 	//at last add the cursor
 	//check if the blink period is over
@@ -717,9 +717,9 @@ void DrawCommandLine() {
 		x = CON_CHAR_BORDER + Topmost->ConsoleSurface->cvFont->ftWidth * (Topmost->CursorPos - Topmost->Offset + (int) strlen(Topmost->Prompt));
 #endif
 		if(Topmost->InsMode)
-			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, CON_INS_CURSOR, 1);
+			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, CON_INS_CURSOR, NULL);
 		else
-			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, CON_OVR_CURSOR, 1);
+			GrString(x, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, CON_OVR_CURSOR, NULL);
 	}
 	grdCurCanv->cvFont = orig_font;
 	FG_COLOR = orig_color;
@@ -938,7 +938,7 @@ void CON_Topmost(ConsoleInformation *console) {
 
 		GrBitmap(0, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->InputBackground);
 		orig_color = FG_COLOR.index;
-		GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->VCommand, 1);
+		GrString(CON_CHAR_BORDER, Topmost->ConsoleSurface->cv_h - Topmost->ConsoleSurface->cvFont->ftHeight, Topmost->VCommand, NULL);
 		FG_COLOR.index = orig_color;
 
 		GrSetCurrentCanvas(canv_save);
