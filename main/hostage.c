@@ -45,6 +45,7 @@ int nHostageVClips [MAX_HOSTAGE_TYPES];	// tVideoClip num for each tpye of hosta
 
 
 //-------------- Renders a hostage --------------------------------------------
+
 void DrawHostage(tObject *objP)
 {
 DrawObjectRodTexPoly (objP, gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 1, objP->rType.vClipInfo.nCurFrame);

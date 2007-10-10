@@ -55,9 +55,12 @@ extern int bSWCulling;
 extern int bZPass;
 #endif
 
-#define G3_DRAW_ARRAYS	1
-#define G3_USE_VBOS		0
-
+#define G3_DRAW_ARRAYS				1
+#define G3_USE_VBOS					0
+#define G3_DRAW_SUBMODELS			1
+#define G3_FAST_MODELS				1
+#define G3_DRAW_RANGE_ELEMENTS	1
+#define G3_SW_SCALING				0
 
 //------------------------------------------------------------------------------
 
@@ -75,8 +78,8 @@ else
 	G3_FREE (pm->pFaceVerts);
 G3_FREE (pm->pColor);
 G3_FREE (pm->pVertNorms);
-G3_FREE (pm->pTransVerts);
 G3_FREE (pm->pVerts);
+G3_FREE (pm->pSortedVerts);
 G3_FREE (pm->pVertBuf);
 G3_FREE (pm->pIndex);
 memset (pm, 0, sizeof (*pm));
@@ -87,10 +90,11 @@ return 0;
 
 void G3FreeAllPolyModelItems (void)
 {
-	int	i;
+	int	i, j;
 
-for (i = 0; i < MAX_POLYGON_MODELS; i++)
-	G3FreeModelItems (gameData.models.g3Models + i);
+for (j = 0; j < 2; j++)
+	for (i = 0; i < MAX_POLYGON_MODELS; i++)
+		G3FreeModelItems (gameData.models.g3Models [j] + i);
 POFFreeAllPolyModelItems ();
 }
 
@@ -167,7 +171,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pf, vmsVector *pn, ubyte *p, 
+tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, vmsVector *pn, ubyte *p, 
 										grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
 	short				nVerts = WORDVAL (p+2);
@@ -180,11 +184,11 @@ tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pf, 
 	ushort			c;
 	char				bTextured;
 
-Assert (pf - pm->pFaces < pm->nFaces);
+Assert (pmf - pm->pFaces < pm->nFaces);
 if (modelBitmaps && *modelBitmaps) {
 	bTextured = 1;
-	pf->nBitmap = WORDVAL (p+28);
-	bmP = modelBitmaps [pf->nBitmap];
+	pmf->nBitmap = WORDVAL (p+28);
+	bmP = modelBitmaps [pmf->nBitmap];
 	if (pObjColor) {
 		ubyte c = bmP->bmAvgColor;
 		pObjColor->red = CPAL2Tr (gamePalette, c);
@@ -193,11 +197,11 @@ if (modelBitmaps && *modelBitmaps) {
 		}
 	baseColor.red = baseColor.green = baseColor.blue = baseColor.alpha = 1;
 	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
-	pf->bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
+	pmf->bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
 	}
 else {
 	bTextured = 0;
-	pf->nBitmap = -1;
+	pmf->nBitmap = -1;
 	c = WORDVAL (p + 28);
 	baseColor.red = (float) PAL2RGBA (((c >> 10) & 31) << 1) / 255.0f;
 	baseColor.green = (float) PAL2RGBA (((c >> 5) & 31) << 1) / 255.0f;
@@ -206,20 +210,20 @@ else {
 	if (pObjColor)
 		*pObjColor = baseColor;
 	}
-pf->vNormal = *pn;
-pf->nIndex = pm->iFaceVert;
+pmf->vNormal = *pn;
+pmf->nIndex = pm->iFaceVert;
 pmv = pm->pFaceVerts + pm->iFaceVert;
 if (psm->nIndex < 0)
 	psm->nIndex = pm->iFaceVert;
-pf->nVerts = nVerts;
-if (pf->bGlow = (nGlow >= 0))
+pmf->nVerts = nVerts;
+if (pmf->bGlow = (nGlow >= 0))
 	nGlow = -1;
 uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pmv++, pfv++, uvl++) {
 	j = *pfv;
 	Assert (j < pm->nVerts);
 	Assert (pmv - pm->pFaceVerts < pm->nFaceVerts);
-	VmVecIncf (&pm->pVertNorms [j].vNormal, &pmv->vertex);
+	VmVecIncf3 (&pm->pVertNorms [j].vNormal, &pmv->vertex);
 	pm->pVertNorms [j].nVerts++;
 	pmv->texCoord.v.u = f2fl (uvl->u);
 	pmv->texCoord.v.v = f2fl (uvl->v);
@@ -228,10 +232,10 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pmv++, pfv++, uvl++) {
 	pmv->nIndex = j;
 	}
 pm->iFaceVert += nVerts;
-pf++;
+pmf++;
 pm->iFace++;
 psm->nFaces++;
-return pf;
+return pmf;
 }
 
 //------------------------------------------------------------------------------
@@ -241,13 +245,13 @@ bool G3GetModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nT
 {
 	ubyte				*p = modelP;
 	tG3SubModel		*psm = pm->pSubModels + nThis;
-	tG3ModelFace	*pf = pm->pFaces + pm->iFace;
+	tG3ModelFace	*pmf = pm->pFaces + pm->iFace;
 	int				nChild;
 
 G3CheckAndSwap (modelP);
 nGlow = -1;
 if (!psm->pFaces) {
-	psm->pFaces = pf;
+	psm->pFaces = pmf;
 	psm->nIndex = -1;
 	psm->nParent = nParent;
 	}
@@ -258,10 +262,10 @@ for (;;)
 
 		case OP_DEFPOINTS: {
 			int i, n = WORDVAL (p+2);
-			fVector *pfv = pm->pVerts;
+			fVector3 *pfv = pm->pVerts;
 			vmsVector *pv = VECPTR(p+4);
 			for (i = n; i; i--)
-				VmsVecToFloat (pfv++, pv++);
+				VmsVecToFloat3 (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 4;
 			break;
 			}
@@ -269,33 +273,33 @@ for (;;)
 		case OP_DEFP_START: {
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
-			fVector *pfv = pm->pVerts + s;
+			fVector3 *pfv = pm->pVerts + s;
 			vmsVector *pv = VECPTR(p+8);
 			for (i = n; i; i--)
-				VmsVecToFloat (pfv++, pv++);
+				VmsVecToFloat3 (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 8;
 			break;
 			}
 
 		case OP_FLATPOLY: {
 			int nVerts = WORDVAL (p+2);
-			pf = G3AddModelFace (pm, psm, pf, VECPTR (p+16), p, NULL, pObjColor);
+			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, NULL, pObjColor);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
 			int nVerts = WORDVAL (p + 2);
-			pf = G3AddModelFace (pm, psm, pf, VECPTR (p+16), p, modelBitmaps, pObjColor);
+			pmf = G3AddModelFace (pm, psm, pmf, VECPTR (p+16), p, modelBitmaps, pObjColor);
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
 
 		case OP_SORTNORM:
 			G3GetModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor);
-			pf = pm->pFaces + pm->iFace;
+			pmf = pm->pFaces + pm->iFace;
 			G3GetModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor);
-			pf = pm->pFaces + pm->iFace;
+			pmf = pm->pFaces + pm->iFace;
 			p += 32;
 			break;
 
@@ -308,7 +312,7 @@ for (;;)
 			pm->pSubModels [nChild].vOffset = *VECPTR (p+4);
 			pm->pSubModels [nChild].nAngles = WORDVAL (p+2);
 			G3GetModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, modelBitmaps, pObjColor);
-			pf = pm->pFaces + pm->iFace;
+			pmf = pm->pFaces + pm->iFace;
 			p += 20;
 			break;
 			}
@@ -326,15 +330,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline int G3CmpFaces (tG3ModelFace *pf, tG3ModelFace *pm)
+inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm)
 {
-if (pf->nBitmap < pm->nBitmap)
+if (pmf->nBitmap < pm->nBitmap)
 	return -1;
-if (pf->nBitmap > pm->nBitmap)
+if (pmf->nBitmap > pm->nBitmap)
 	return 1;
-if (pf->nVerts < pm->nVerts)
+if (pmf->nVerts < pm->nVerts)
 	return -1;
-if (pf->nVerts > pm->nVerts)
+if (pmf->nVerts > pm->nVerts)
 	return 1;
 return 0;
 }
@@ -380,44 +384,26 @@ if (left < r)
 
 void G3SortFaceVerts (tG3Model *pm, tG3SubModel *psm, tG3ModelVertex *psv)
 {
-	tG3ModelFace	*pf;
+	tG3ModelFace	*pmf;
 	tG3ModelVertex	*pmv = pm->pFaceVerts;
 	int				i, j, nIndex = psm->nIndex;
 
 psv += nIndex;
-for (i = psm->nFaces, pf = psm->pFaces; i; i--, pf++, psv += j) {
-	j = pf->nVerts;
+for (i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++, psv += j) {
+	j = pmf->nVerts;
 	if (nIndex + j > pm->nFaceVerts)
 		break;
-	memcpy (psv, pmv + pf->nIndex, j * sizeof (tG3ModelVertex));
-	pf->nIndex = nIndex;
+	memcpy (psv, pmv + pmf->nIndex, j * sizeof (tG3ModelVertex));
+	pmf->nIndex = nIndex;
 	nIndex += j;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
+int G3AllocModel (tG3Model *pm)
 {
-	tG3Model			*pm = gameData.models.g3Models + nModel;
-	tG3SubModel		*psm;
-	tG3VertNorm		*pn;
-	tG3ModelFace	*pf, *pfi, *pfj;
-	tG3ModelVertex	*pmv, *pSortedVerts;
-	fVector3			*pv;
-	tTexCoord2f		*pt;
-	tRgbaColorf		*pc;
-	int				i, j;
-	short				nId;
-
-if (pm->bValid)
-	return 1;
-if (!pp->modelData)
-	return 0;
-pm->nSubModels = 1;
-G3CountModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts);
-G3_ALLOC (pm->pVerts, pm->nVerts, fVector, 0);
-G3_ALLOC (pm->pTransVerts, pm->nVerts, fVector, 0);
+G3_ALLOC (pm->pVerts, pm->nVerts, fVector3, 0);
 G3_ALLOC (pm->pVertNorms, pm->nVerts, tG3VertNorm, 0);
 G3_ALLOC (pm->pColor, pm->nVerts, tFaceColor, 0xff);
 #if G3_USE_VBOS
@@ -449,21 +435,42 @@ G3_ALLOC (pm->pFaceVerts, pm->nFaceVerts, tG3ModelVertex, 0);
 G3_ALLOC (pm->pSubModels, pm->nSubModels, tG3SubModel, 0);
 G3_ALLOC (pm->pFaces, pm->nFaces, tG3ModelFace, 0);
 G3_ALLOC (pm->pIndex, pm->nFaceVerts, short, 0);
-G3_ALLOC (pSortedVerts, pm->nFaceVerts, tG3ModelVertex, 0);
-G3GetModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
+G3_ALLOC (pm->pSortedVerts, pm->nFaceVerts, tG3ModelVertex, 0);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void G3SetupModel (tG3Model *pm, int bHires)
+{
+	tG3SubModel		*psm;
+	tG3VertNorm		*pn;
+	tG3ModelFace	*pmf, *pfi, *pfj;
+	tG3ModelVertex	*pmv, *pSortedVerts;
+	fVector3			*pv;
+	tTexCoord2f		*pt;
+	tRgbaColorf		*pc;
+	int				i, j;
+	short				nId;
+
 pm->fScale = 1;
+pSortedVerts = pm->pSortedVerts;
 for (i = 0, j = pm->nFaceVerts; i < j; i++)
 	pm->pIndex [i] = i;
+//setup vertex normals
 for (i = pm->nVerts, pn = pm->pVertNorms; i; i--, pn++) {
 	Assert (pn - pm->pVertNorms < pm->nVerts);
 	if (pn->nVerts)
-		VmVecScalef (&pn->vNormal, &pn->vNormal, 1 / (float) pn->nVerts);
+		VmVecScalef ((fVector *) &pn->vNormal, (fVector *) &pn->vNormal, 1 / (float) pn->nVerts);
 	}
-for (i = pm->nFaces, pf = pm->pFaces; i; i--, pf++)
-	for (j = pf->nVerts, pmv = pm->pFaceVerts + pf->nIndex; j; j--, pmv++) {
-		pmv->vertex = pm->pVerts [pmv->nIndex];
-		pmv->normal = pm->pVertNorms [pmv->nIndex].vNormal;
+//setup face coordinates using vertex list and vertex indices
+for (i = pm->nFaces, pmf = pm->pFaces; i; i--, pmf++)
+	for (j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; j; j--, pmv++) {
+		if (!bHires)
+			pmv->vertex = pm->pVerts [pmv->nIndex];
+		memcpy (&pmv->normal, &pm->pVertNorms [pmv->nIndex].vNormal, sizeof (fVector3));
 		}
+//sort each submodel's faces
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 	G3SortFaces (psm, 0, psm->nFaces - 1);
 	G3SortFaceVerts (pm, psm, pSortedVerts);
@@ -483,12 +490,11 @@ pt = pm->pVBTexCoord;
 pc = pm->pVBColor;
 pmv = pSortedVerts;
 for (i = pm->nFaceVerts; i; i--, pt++, pc++, pv++, pmv++) {
-	memcpy (pv, &pmv->vertex, sizeof (fVector3));
+	*pv = pmv->vertex;
 	*pc = pmv->baseColor;
 	*pt = pmv->texCoord;
 	}
 memcpy (pm->pFaceVerts, pSortedVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
-D2_FREE (pSortedVerts);
 pm->bValid = 1;
 #if G3_USE_VBOS
 if (gameStates.ogl.bHaveVBOs) {
@@ -496,6 +502,130 @@ if (gameStates.ogl.bHaveVBOs) {
 	glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
 	}
 #endif
+G3_FREE (pm->pSortedVerts);
+}
+
+//------------------------------------------------------------------------------
+
+int G3CountOOFModelItems (tOOFObject *po, tG3Model *pm)
+{
+	tOOF_subObject	*pso;
+	tOOF_face		*pf;
+	int				i, j;
+
+i = po->nSubObjects;
+pm->nSubModels = i;
+pm->nFaces = 0;
+pm->nVerts = 0;
+pm->nFaceVerts = 0;
+for (pso = po->pSubObjects; i; i--, pso++) {
+	j = pso->faces.nFaces;
+	pm->nFaces += j;
+	pm->nVerts += pso->nVerts;
+	for (pf = pso->faces.pFaces; j; j--, pf++)
+		pm->nFaceVerts += pf->nVerts;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int G3GetOOFModelItems (tOOFObject *po, tG3Model *pm)
+{
+	tOOF_subObject	*pso;
+	tOOF_face		*pof;
+	tOOF_faceVert	*pfv;
+	tG3SubModel		*psm;
+	fVector3			*pv = pm->pVerts;
+	tG3VertNorm		*pvn = pm->pVertNorms;
+	tG3ModelVertex	*pmv = pm->pFaceVerts;
+	tG3ModelFace	*pmf = pm->pFaces;
+
+	int				h, i, j, n, nIndex = 0;
+
+for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, pso++, psm++) {
+	psm->nParent = pso->nParent;
+	if (psm->nParent < 0)
+		pm->iSubModel = (short) (psm - pm->pSubModels);
+	psm->vOffset.p.x = fl2f (pso->vOffset.x);
+	psm->vOffset.p.y = fl2f (pso->vOffset.y);
+	psm->vOffset.p.z = fl2f (pso->vOffset.z);
+	psm->nAngles = 0;
+	j = pso->faces.nFaces;
+	psm->nIndex = nIndex;
+	psm->nFaces = j;
+	psm->pFaces = pmf;
+	for (pof = pso->faces.pFaces; j; j--, pof++, pmf++) {
+		pmf->nIndex = nIndex;
+		pmf->bThruster = 0;
+		pmf->bGlow = 0;
+		n = pof->nVerts;
+		pmf->nVerts = n;
+		if (pof->bTextured)
+			pmf->nBitmap = pof->texProps.nTexId;
+		else
+			pmf->nBitmap = -1;
+		for (pfv = pof->pVerts; n; n--, pfv++, pmv++) {
+			h = pfv->nIndex;
+			pmv->nIndex = h;
+			pmv->texCoord.v.u = pfv->fu;
+			pmv->texCoord.v.v = pfv->fv;
+			memcpy (&pmv->vertex, pso->pvVerts + h, sizeof (tOOF_vector));
+			VmVecIncf3 (&pvn [h].vNormal, (fVector3 *) &pof->vNormal);
+			pvn [h].nVerts++;
+			if (!(pmv->bTextured = pof->bTextured)) {
+				pmv->baseColor.red = (float) pof->texProps.color.r / 255.0f;
+				pmv->baseColor.green = (float) pof->texProps.color.g / 255.0f;
+				pmv->baseColor.blue = (float) pof->texProps.color.b / 255.0f;
+				pmv->baseColor.alpha = 1.0f;
+				}
+			nIndex++;
+			}
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int G3BuildModelFromOOF (int nModel)
+{
+	tOOFObject	*po = gameData.models.modelToOOF [nModel];
+	tG3Model		*pm;
+
+if (!po)
+	return 0;
+pm = gameData.models.g3Models [1] + nModel;
+G3CountOOFModelItems (po, pm);
+if (!G3AllocModel (pm))
+	return 0;
+G3GetOOFModelItems (po, pm);
+G3SetupModel (pm, 1);
+pm->pTextures = po->textures.pBitmaps;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int G3BuildModel (int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
+{
+	tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
+
+if (pm->bValid > 0)
+	return 1;
+if (pm->bValid < 0)
+	return 0;
+if (!pp->modelData)
+	return 0;
+if (bHires)
+	return G3BuildModelFromOOF (nModel);
+pm->nSubModels = 1;
+G3CountModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts);
+if (!G3AllocModel (pm))
+	return 0;
+G3GetModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
+G3SetupModel (pm, 0);
+pm->iSubModel = 0;
 return -1;
 }
 
@@ -512,7 +642,7 @@ static tG3ThreadInfo g3ti;
 
 void G3DynLightModel (tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts)
 {
-	fVector			*pv;
+	fVector3			*pv;
 	tG3ModelVertex	*pmv;
 	tG3VertNorm		*pn;
 	tFaceColor		*pc;
@@ -521,7 +651,7 @@ void G3DynLightModel (tG3Model *pm, short iVerts, short nVerts, short iFaceVerts
 
 if (!gameStates.render.bBrightObject)
 	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts; i < nVerts; i++, pv++, pn++, pc++)
-		G3VertexColor (&pn->vNormal, pv, i, pc, NULL, 1, 0, 0);
+		G3VertexColor ((fVector *) &pn->vNormal, (fVector *) pv, i, pc, NULL, 1, 0, 0);
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
 	if (gameStates.render.bBrightObject)
 		pm->pVBColor [h] = pmv->baseColor;
@@ -599,15 +729,17 @@ SDL_WaitThread (g3ti.ti [1].pThread, NULL);
 
 //------------------------------------------------------------------------------
 
-void G3LightModel (int nModel, fix xModelLight, fix *xGlowValues)
+void G3LightModel (int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models + nModel;
+	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex	*pmv;
-	tG3ModelFace	*pf;
+	tG3ModelFace	*pmf;
 	tRgbaColorf		baseColor, *colorP;
 	float				fLight, fAlpha = (float) GrAlpha (); //(float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 	int				h, i, j, l;
 
+if (xModelLight > F1_0)
+	xModelLight = F1_0;
 if (!gameStates.render.bCloaked && SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects) {
 	if (gameStates.app.bMultiThreaded) {
 		g3ti.pm = pm;
@@ -622,28 +754,30 @@ if (!gameStates.render.bCloaked && SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects
 else {
 	if (!gameStates.render.bCloaked && gameData.objs.color.index)
 		baseColor = gameData.objs.color.color;
-	else
+	else if (gameStates.render.bCloaked)
 		baseColor.red = baseColor.green = baseColor.blue = 0;
+	else
+		baseColor.red = baseColor.green = baseColor.blue = 1;
 	baseColor.alpha = fAlpha;
-	for (i = pm->nFaces, pf = pm->pFaces; i; i--, pf++) {
+	for (i = pm->nFaces, pmf = pm->pFaces; i; i--, pmf++) {
 		if (gameStates.render.bCloaked) 
 			colorP = NULL;
 		else {
-			if (pf->nBitmap >= 0) {
-				if (pf->bGlow) 
-					l = xGlowValues [nGlow];
-				else {
-					l = -VmVecDot (&viewInfo.view [0].fVec, &pf->vNormal);
-					l = f1_0 / 4 + 3 * l / 4;
-					l = FixMul (l, xModelLight);
-					}
-				fLight = f2fl (l);
+			if (pmf->nBitmap >= 0)
 				colorP = &baseColor;
-				}
 			else
 				colorP = NULL;
+			if (pmf->bGlow) 
+				l = xGlowValues [nGlow];
+			else {
+				l = -VmVecDot (&viewInfo.view [0].fVec, &pmf->vNormal);
+				l = f1_0 / 4 + 3 * l / 4;
+				l = FixMul (l, xModelLight);
+				}
+			fLight = f2fl (l);
 			}
-		for (j = pf->nVerts, h = pf->nIndex, pmv = pm->pFaceVerts + pf->nIndex; j; j--, h++, pmv++) {
+		for (j = pmf->nVerts, h = pmf->nIndex, pmv = pm->pFaceVerts + pmf->nIndex; j; j--, h++, pmv++) {
+#if G3_DRAW_ARRAYS
 			if (colorP) {
 				pm->pVBColor [h].red = colorP->red * fLight;
 				pm->pVBColor [h].green = colorP->green * fLight;
@@ -651,11 +785,29 @@ else {
 				pm->pVBColor [h].alpha = fAlpha;
 				}
 			else if (!gameStates.render.bCloaked) {
-				pm->pVBColor [h] = pmv->baseColor;
+				pm->pVBColor [h].red = pmv->baseColor.red * fLight;
+				pm->pVBColor [h].green = pmv->baseColor.green * fLight;
+				pm->pVBColor [h].blue = pmv->baseColor.blue * fLight;
 				pm->pVBColor [h].alpha = fAlpha;
 				}
 			else
 				pm->pVBColor [h] = baseColor;
+#else
+			if (colorP) {
+				pmv->renderColor.red = colorP->red * fLight;
+				pmv->renderColor.green = colorP->green * fLight;
+				pmv->renderColor.blue = colorP->blue * fLight;
+				pmv->renderColor.alpha = fAlpha;
+				}
+			else if (!gameStates.render.bCloaked) {
+				pmv->renderColor.red = pmv->baseColor.red * fLight;
+				pmv->renderColor.green = pmv->baseColor.green * fLight;
+				pmv->renderColor.blue = pmv->baseColor.blue * fLight;
+				pmv->renderColor.alpha = fAlpha;
+				}
+			else
+				pmv->renderColor = baseColor;
+#endif
 			}
 		}
 	}
@@ -663,12 +815,14 @@ else {
 
 //------------------------------------------------------------------------------
 
-void G3ScaleModel (int nModel)
+#if G3_SW_SCALING
+
+void G3ScaleModel (int nModel, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models + nModel;
+	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	float				fScale = gameData.models.nScale ? f2fl (gameData.models.nScale) : 1;
 	int				i;
-	fVector			*pv;
+	fVector3			*pv;
 	tG3ModelVertex	*pmv;
 
 if (pm->fScale == fScale)
@@ -684,24 +838,26 @@ for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++)
 pm->fScale *= fScale;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (short nModel, tG3ModelFace *pf, vmsVector *vOffset)
+void G3GetThrusterPos (short nModel, tG3ModelFace *pmf, vmsVector *vOffset, int bHires)
 {
-	tG3Model				*pm = gameData.models.g3Models + nModel;
+	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex		*pmv;
-	fVector				v, vn, vo, vForward = {{0,0,1}};
+	fVector				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j;
 	float					h, nSize;
 
 if (mtP->nCount >= 2)
 	return;
-VmsVecToFloat (&vn, &pf->vNormal);
+VmsVecToFloat (&vn, &pmf->vNormal);
 if (VmVecDotf (&vn, &vForward) > -F1_0 / 3)
 	return;
-for (i = 1, j = pf->nVerts, pmv = pm->pFaceVerts + pf->nIndex, v = pmv->vertex; i < j; i++)
-	VmVecIncf (&v, &pmv [i].vertex);
+for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
+	VmVecIncf (&v, (fVector *) &pmv [i].vertex);
 v.p.x /= j;
 v.p.y /= j;
 v.p.z /= j;
@@ -717,11 +873,11 @@ mtP->vPos [mtP->nCount].p.y = fl2f (v.p.y);
 mtP->vPos [mtP->nCount].p.z = fl2f (v.p.z);
 if (vOffset)
 	VmVecDecf (&v, &vo);
-mtP->vDir [mtP->nCount] = pf->vNormal;
+mtP->vDir [mtP->nCount] = pmf->vNormal;
 VmVecNegate (mtP->vDir + mtP->nCount);
 if (!mtP->nCount++) {
 	for (i = 0, nSize = 1000000000; i < j; i++)
-		if (nSize > (h = VmVecDistf (&v, &pmv [i].vertex)))
+		if (nSize > (h = VmVecDistf (&v, (fVector *) &pmv [i].vertex)))
 			nSize = h;
 	mtP->fSize = nSize;// * 1.25f;
 	}
@@ -729,11 +885,12 @@ if (!mtP->nCount++) {
 
 //------------------------------------------------------------------------------
 
-void G3RenderSubModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset)
+void G3RenderSubModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps, 
+							  vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models + nModel;
+	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
-	tG3ModelFace	*pf;
+	tG3ModelFace	*pmf;
 	grsBitmap		*bmP = NULL;
 	vmsAngVec		*va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
 	vmsVector		vo;
@@ -748,16 +905,18 @@ if (vOffset) {
 	G3StartInstanceAngles (&vo, va);
 	VmVecInc (&vo, vOffset);
 	}
+#if G3_DRAW_SUBMODELS
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
-		G3RenderSubModel (objP, nModel, i, modelBitmaps, pAnimAngles, &vo);
+		G3RenderSubModel (objP, nModel, i, modelBitmaps, pAnimAngles, &vo, bHires);
+#endif
 // render the faces
 glDisable (GL_TEXTURE_2D);
-for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pf = psm->pFaces; i; ) {
-	if (!gameStates.render.bCloaked && (nBitmap != pf->nBitmap)) {
-		if (0 <= (nBitmap = pf->nBitmap)) {
-			bmP = modelBitmaps [nBitmap];
+for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; ) {
+	if (!gameStates.render.bCloaked && (nBitmap != pmf->nBitmap)) {
+		if (0 <= (nBitmap = pmf->nBitmap)) {
+			bmP = bHires ? pm->pTextures + nBitmap : modelBitmaps [nBitmap];
 			glEnable (GL_TEXTURE_2D);
 			bmP = BmOverride (bmP, -1);
 			if (BM_FRAMES (bmP))
@@ -770,25 +929,34 @@ for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pf = psm->pFaces; i; ) {
 			glDisable (GL_TEXTURE_2D);
 			}
 		}
-	nIndex = pf->nIndex;
-	if ((nFaceVerts = pf->nVerts) > 4) {
-		if (pf->bThruster)
-			G3GetThrusterPos (nModel, pf, vOffset);
+	nIndex = pmf->nIndex;
+#if G3_DRAW_ARRAYS
+	if ((nFaceVerts = pmf->nVerts) > 4) {
+		if (pmf->bThruster)
+			G3GetThrusterPos (nModel, pmf, vOffset, bHires);
 		nVerts = nFaceVerts;
-		pf++;
+		pmf++;
 		i--;
 		}
 	else { 
-		nId = pf->nId;
+		nId = pmf->nId;
 		nVerts = 0;
 		do {
-			if (pf->bThruster)
-				G3GetThrusterPos (nModel, pf, vOffset);
+			if (pmf->bThruster)
+				G3GetThrusterPos (nModel, pmf, vOffset, bHires);
 			nVerts += nFaceVerts;
-			pf++;
+			pmf++;
 			i--;
-			} while (i && (pf->nId == nId));
+			} while (i && (pmf->nId == nId));
 		}
+#else
+	nFaceVerts = pmf->nVerts;
+	if (pmf->bThruster)
+		G3GetThrusterPos (nModel, pmf, vOffset, bHires);
+	nVerts = nFaceVerts;
+	pmf++;
+	i--;
+#endif
 #ifdef _DEBUG
 	if (nIndex + nVerts > pm->nFaceVerts)
 		break;
@@ -803,7 +971,7 @@ if (gameStates.ogl.bHaveVBOs)
 		glDrawArrays ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, nIndex, nVerts);
 	else
 #	endif
-#if 0
+#if G3_DRAW_RANGE_ELEMENTS
 	if (glDrawRangeElements)
 		glDrawRangeElements ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN, 
 									nIndex, nIndex + nVerts - 1, nVerts, GL_UNSIGNED_SHORT, pm->pIndex + nIndex);
@@ -833,16 +1001,27 @@ if (vOffset)
 
 //------------------------------------------------------------------------------
 
-void G3RenderDamageLightnings (tObject *objP, short nModel, short nSubModel, vmsAngVec *pAnimAngles, vmsVector *vOffset)
+void G3RenderDamageLightnings (tObject *objP, short nModel, short nSubModel, 
+										 vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires)
 {
-	tG3Model			*pm = gameData.models.g3Models + nModel;
-	tG3SubModel		*psm = pm->pSubModels + nSubModel;
-	tG3ModelFace	*pf;
+	tG3Model			*pm;
+	tG3SubModel		*psm;
+	tG3ModelFace	*pmf;
 	grsBitmap		*bmP = NULL;
-	vmsAngVec		*va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
+	vmsAngVec		*va;
 	vmsVector		vo;
 	int				i, j;
 
+pm = gameData.models.g3Models [bHires] + nModel;
+if (pm->bValid < 1) {
+	if (!bHires)
+		return;
+	pm = gameData.models.g3Models [0] + nModel;
+	if (pm->bValid < 1)
+		return;
+	}
+psm = pm->pSubModels + nSubModel;
+va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage))
 	return;
 if (!objP || (ObjectDamage (objP) > 0.5f))
@@ -858,10 +1037,10 @@ if (vOffset) {
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
-		G3RenderDamageLightnings (objP, nModel, i, pAnimAngles, &vo);
+		G3RenderDamageLightnings (objP, nModel, i, pAnimAngles, &vo, bHires);
 // render the lightnings
-for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pf = psm->pFaces; i; i--, pf++) 
-	RenderDamageLightnings (objP, NULL, pm->pFaceVerts + pf->nIndex, pf->nVerts);
+for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; i--, pmf++) 
+	RenderDamageLightnings (objP, NULL, pm->pFaceVerts + pmf->nIndex, pmf->nVerts);
 if (vOffset)
 	G3DoneInstance ();
 }
@@ -873,14 +1052,30 @@ if (vOffset)
 int G3RenderModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, 
 						 vmsAngVec *pAnimAngles, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
-	tG3Model	*pm = gameData.models.g3Models + nModel;
+	int		i, bHires = 1;
+	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 
-	static int bFast = 1;
-
-if (!bFast)
+#if !G3_FAST_MODELS
+	gameData.models.g3Models [0][nModel].bValid =
+	gameData.models.g3Models [1][nModel].bValid = -1;
 	return 0;
-if (G3BuildModel (nModel, pp, modelBitmaps, pObjColor) <= 0)
-	return 0;
+#endif
+if (!pm->bValid) {
+	i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 1);
+	if (i < 0)	//successfully built new model
+		return 0;
+	pm->bValid = -1;
+	if (!i) {
+		i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 0);
+		if (i <= 0) {
+			if (!i)
+				pm->bValid = -1;
+			return 0;
+			}
+		bHires = 0;
+		pm = gameData.models.g3Models [0] + nModel;
+		}
+	}
 #if G3_DRAW_ARRAYS
 if (!G3EnableClientStates (1, 1, GL_TEXTURE0))
 	return 0;
@@ -901,8 +1096,12 @@ if (gameStates.ogl.bHaveVBOs) {
 pm->pVBVerts = (fVector3 *) pm->pVertBuf;
 pm->pVBColor = (tRgbaColorf *) (pm->pVBVerts + pm->nFaceVerts);
 pm->pVBTexCoord = (tTexCoord2f *) (pm->pVBColor + pm->nFaceVerts);
-//G3ScaleModel (nModel);
-G3LightModel (nModel, xModelLight, xGlowValues);
+#endif
+#if G3_SW_SCALING
+G3ScaleModel (nModel);
+#endif
+G3LightModel (nModel, xModelLight, xGlowValues, bHires);
+#if G3_DRAW_ARRAYS
 #	if G3_USE_VBOS
 if (gameStates.ogl.bHaveVBOs) {
 	if (!glUnmapBuffer (GL_ARRAY_BUFFER_ARB))
@@ -919,7 +1118,13 @@ else
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);	
 	}
 #endif
-G3RenderSubModel (objP, nModel, 0, modelBitmaps, pAnimAngles, NULL);
+if (bHires) {
+	for (i = 0; i < pm->nSubModels; i++)
+		if (pm->pSubModels [i].nParent == -1) 
+			G3RenderSubModel (objP, nModel, i, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : NULL, bHires);
+	}
+else
+	G3RenderSubModel (objP, nModel, 0, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : NULL, bHires);
 glDisable (GL_TEXTURE_2D);
 #if G3_DRAW_ARRAYS
 #	if G3_USE_VBOS
@@ -927,7 +1132,8 @@ glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
 #	endif
 G3DisableClientStates (1, 1, -1);
 #endif
-G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL);
+if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN))
+	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 return 1;
 }
 

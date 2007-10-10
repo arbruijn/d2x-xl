@@ -140,4 +140,6 @@ fixang fix_atan2 (fix cos, fix sin);
 //for passed value a, returns 1/sqrt(a) 
 fix fix_isqrt (fix a);
 
+#define fabsf(_f)	(float) fabs (_f)
+
 #endif

@@ -136,11 +136,17 @@ static inline vmsVector *VmVecInc (vmsVector *d, vmsVector *s)
 static inline fVector *VmVecIncf (fVector *d, fVector *s)
 	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
 
+static inline fVector3 *VmVecIncf3 (fVector3 *d, fVector3 *s)
+	{d->p.x += s->p.x; d->p.y += s->p.y; d->p.z += s->p.z; return d;}
+
 static inline fVector *VmVecDecf (fVector *d, fVector *s)
 	{d->p.x -= s->p.x; d->p.y -= s->p.y; d->p.z -= s->p.z; return d;}
 
 static inline fVector *VmsVecToFloat (fVector *d, vmsVector *s)
 	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); d->p.w = 1; return d;}
+
+static inline fVector3 *VmsVecToFloat3 (fVector3 *d, vmsVector *s)
+	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); return d;}
 
 fMatrix *VmsMatToFloat (fMatrix *dest, vmsMatrix *src);
 

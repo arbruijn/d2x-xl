@@ -2342,6 +2342,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\objeffects.c">
+				</File>
+				<File
 					RelativePath="..\..\main\objrender.c">
 				</File>
 				<File
@@ -3133,6 +3136,9 @@
 						RelativePath="..\..\main\object.h">
 					</File>
 					<File
+						RelativePath="..\..\main\objeffects.h">
+					</File>
+					<File
 						RelativePath="..\..\main\objrender.h">
 					</File>
 					<File
@@ -3208,10 +3214,10 @@
 						RelativePath="..\..\main\reorder.h">
 					</File>
 					<File
-						RelativePath=".\resource.h">
+						RelativePath="..\..\resource.h">
 					</File>
 					<File
-						RelativePath="..\..\resource.h">
+						RelativePath=".\resource.h">
 					</File>
 					<File
 						RelativePath="..\..\include\rle.h">

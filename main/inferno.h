@@ -1738,8 +1738,8 @@ typedef struct tG3RenderVertex {
 typedef struct tG3ModelVertex {
 	tTexCoord2f				texCoord;
 	tRgbaColorf				renderColor;
-	fVector					vertex;
-	fVector					normal;
+	fVector3					vertex;
+	fVector3					normal;
 	tRgbaColorf				baseColor;
 	short						nIndex;
 	char						bTextured;
@@ -1757,27 +1757,25 @@ typedef struct tG3ModelFace {
 
 typedef struct tG3SubModel {
 	vmsVector				vOffset;
-	struct tG3SubModel	*pSubModels;
 	tG3ModelFace			*pFaces;
 	short						nParent;
-	short						nSubModels;
 	short						nFaces;
-	short						nVerts;
 	short						nIndex;
 	ushort					nAngles;
 } tG3SubModel;
 
 typedef struct tG3VertNorm {
-	fVector					vNormal;
+	fVector3					vNormal;
 	ubyte						nVerts;
 } tG3VertNorm;
 
 typedef struct tG3Model {
-	fVector					*pVerts;
-	fVector					*pTransVerts;
+	grsBitmap				*pTextures;
+	fVector3					*pVerts;
 	tG3VertNorm				*pVertNorms;
 	tFaceColor				*pColor;
 	tG3ModelVertex			*pFaceVerts;
+	tG3ModelVertex			*pSortedVerts;
 	char						*pVBData;
 	tTexCoord2f				*pVBTexCoord;
 	tRgbaColorf				*pVBColor;
@@ -2000,7 +1998,7 @@ typedef struct tModelData {
 	int					nDeadModels [MAX_POLYGON_MODELS];
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
-	tG3Model				g3Models [MAX_POLYGON_MODELS];
+	tG3Model				g3Models [2][MAX_POLYGON_MODELS];
 	int					nScale;
 } tModelData;
 

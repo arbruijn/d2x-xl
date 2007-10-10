@@ -1855,7 +1855,7 @@ typedef union tPolyKey {
 void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices)
 {
 	tLightningBundle	*plb;
-	fVector				vPosf, vEndf, vNormf, vDeltaf;
+	fVector				v, vPosf, vEndf, vNormf, vDeltaf;
 	vmsVector			vPos, vEnd, vNorm, vDelta;
 	int					h, i, j, bUpdate = 0;
 	short					nObject;
@@ -1908,9 +1908,10 @@ if (i < 0) {
 		h = VmVecDist (&vPos, &vEnd);
 		}
 	else {
-		vPosf = pVerts->vertex;
-		vEndf = pVerts [1 + d_rand () % (nVertices - 1)].vertex;
-		VmVecNormalf (&vNormf, &vPosf, &pVerts [1].vertex, &vEndf);
+		memcpy (&vPosf, &pVerts->vertex, sizeof (fVector3));
+		memcpy (&vEndf, &pVerts [1 + d_rand () % (nVertices - 1)].vertex, sizeof (fVector3));
+		memcpy (&v, &pVerts [1].vertex, sizeof (fVector3));
+		VmVecNormalf (&vNormf, &vPosf, &v, &vEndf);
 		VmVecScaleIncf3 (&vPosf, &vNormf, 1.0f / 64.0f);
 		VmVecScaleIncf3 (&vEndf, &vNormf, 1.0f / 64.0f);
 		VmVecNormalf (&vDeltaf, &vNormf, &vPosf, &vEndf);

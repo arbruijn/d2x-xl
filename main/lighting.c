@@ -857,6 +857,7 @@ light += ComputeSegDynamicLight (objP->nSegment);
 return light;
 }
 // ----------------------------------------------------------------------------------------------
+
 void ComputeEngineGlow (tObject *objP, fix *xEngineGlowValue)
 {
 xEngineGlowValue [0] = f1_0/5;

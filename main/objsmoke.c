@@ -19,6 +19,7 @@
 #include "newdemo.h"
 #include "render.h"
 #include "object.h"
+#include "objeffects.h"
 #include "objrender.h"
 #include "objsmoke.h"
 #include "automap.h"

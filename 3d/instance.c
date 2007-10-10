@@ -109,19 +109,21 @@ if (gameStates.ogl.bUseTransform) {
 		OglRot (viewInfo.glViewf);
 		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);
-		if (gameData.models.nScale) {
-			GLfloat fScale = f2fl (gameData.models.nScale);
-			glScalef (fScale, fScale, fScale);
-			}
 		}
 	else {
 		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
 		}
+#if 1
 	if (mOrient)
 		VmsRot (mOrient);
+#endif
+#if 1
 	if (nInstanceDepth)
 		glScalef (-1.0f, -1.0f, -1.0f);
+	else
+		;//	glScalef (1.0f, 1.0f, -1.0f);
+#endif
 	}
 	{
 	vmsVector	vOffs;

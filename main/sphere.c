@@ -12,6 +12,7 @@
 #include "render.h"
 #include "maths.h"
 #include "u_mem.h"
+#include "objeffects.h"
 #include "objrender.h"
 
 #define SIMPLE_SPHERE	1

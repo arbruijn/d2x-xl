@@ -36,7 +36,7 @@ netmenu.c	cheats.c		banlist.c	thief.c		endlevel.c	\
 multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
 tga.c			glare.c		radar.c		renderlib.c	transprender.c \
 fastrender.c				renderthreads.c			flightpath.c \
-rendershadows.c
+rendershadows.c			objeffects.c
 
 EXTRA_libmain_a_SOURCES = \
 kmatrix.c multi.c multibot.c network.c netmisc.c \
@@ -59,4 +59,5 @@ songs.h sounds.h state.h switch.h terrain.h texmerge.h text.h textures.h \
 titles.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
 autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
+objeffects.h \
 joydefs.c
