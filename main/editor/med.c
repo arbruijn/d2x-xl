@@ -1430,7 +1430,7 @@ void editor(void)
 	
 			//Int3();
 
-			if (find_seg_side_face(xcrd,ycrd,&seg,&tSide,&face,&poly)) {
+			if (FindSegSideFace(xcrd,ycrd,&seg,&tSide,&face,&poly)) {
 
 
 				if (seg<0) {							//found an tObject

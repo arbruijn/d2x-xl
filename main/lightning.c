@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "objsmoke.h"
 #include "objrender.h"
+#include "transprender.h"
 #include "lightning.h"
 #include "render.h"
 #include "error.h"
@@ -1129,7 +1130,7 @@ DestroyAllObjectLightnings (OBJ_EFFECT, LIGHTNING_ID);
 
 #define LIGHTNING_VERT_ARRAYS 1
 
-static tUVLf	uvlPlasma [3][4] = {
+static tTexCoord3f	uvlPlasma [3][4] = {
 	{{{0,0.45f,1}},{{1,0.45f,1}},{{1,0.55f,1}},{{0,0.55f,1}}},
 	{{{0,0,1}},{{1,0,1}},{{1,0.5f,1}},{{0,0.5f,1}}},
 	{{{0,0.5f,1}},{{1,0.5f,1}},{{1,1,1}},{{0,1,1}}}
@@ -1169,7 +1170,7 @@ if (bPlasma) {
 	glEnable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 #endif
-	bDrawArrays = OglEnableClientStates (1, 0);
+	bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
@@ -1183,7 +1184,7 @@ if (bPlasma) {
 				glColor4f (1, 1, 1, color.alpha / 2);
 				}
 			if (bDrawArrays) {
-				glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlPlasma + h);
+				glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), uvlPlasma + h);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vPlasma);
 				glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 				}
@@ -1206,7 +1207,7 @@ if (bPlasma) {
 			}
 		}
 	if (bDrawArrays)
-		OglDisableClientStates (1, 0);
+		G3DisableClientStates (1, 0, -1);
 	}
 OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 glColor4fv ((GLfloat *) &color);
@@ -1285,7 +1286,7 @@ if (bDepthSort) {
 else {
 #if 1
 	if (bDrawArrays) {
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tUVLf), uvlPlasma + j);
+		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), uvlPlasma + j);
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), vPlasma);
 		glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 		}
@@ -1444,31 +1445,34 @@ else {
 			color.alpha /= 2;
 #if RENDER_LIGHTNING_PLASMA
 		if (bPlasma) {
-			bDrawArrays = 0; //OglEnableClientStates (1, 0);
+			bDrawArrays = 0; //G3EnableClientStates (1, 0);
 			glEnable (GL_TEXTURE_2D);
 			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 				OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 				for (h = 0; h < 2; h++) {
 					if (!h) {
-						OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-						glColor4f (color.red / 2, color.green / 2, color.blue / 2, color.alpha);
+						//OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+						OglBlendFunc (GL_ONE, GL_ONE);
+						glColor4f (color.red / 20, color.green / 20, color.blue / 20, color.alpha);
 						}
 					else {
-#if 0
-						OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+#if 1
+						OglBlendFunc (GL_ONE, GL_ONE);
 #endif
-						glColor4f (1, 1, 1, color.alpha / 2);
+						glColor4f (0.05f, 0.05f, 0.05f, color.alpha / 2);
 						}
 					for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
 						if (j < i)
 							memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
 						if (!j) {
 							VmsVecToFloat (vPosf + 1, &(pln++)->vPos);
-							G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+							if (!gameStates.ogl.bUseTransform)
+								G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 							}
 						if (j < i) {
 							VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
-							G3TransformPointf (vPosf + 2, vPosf + 2, 0);
+							if (!gameStates.ogl.bUseTransform)
+								G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 							}
 						if (j)
 							RenderLightningPlasma (vPosf, &color, h, bDrawArrays, j == 1, j == i, 1, nDepth, 0);
@@ -1476,7 +1480,7 @@ else {
 					}
 				}
 			if (bDrawArrays)
-				OglDisableClientStates (1, 0);
+				G3DisableClientStates (1, 0, -1);
 			}
 #endif
 #if 1
@@ -1492,7 +1496,8 @@ else {
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++) {
 			VmsVecToFloat (vPosf, &pln->vPos);
-			G3TransformPointf (vPosf, vPosf, 0);
+			if (!gameStates.ogl.bUseTransform)
+				G3TransformPointf (vPosf, vPosf, 0);
 			glVertex3fv ((GLfloat *) vPosf);
 			}
 		glEnd ();
@@ -1625,9 +1630,9 @@ void SetLightningSegLight (short nSegment, vmsVector *vPos, tRgbaColorf *colorP)
 {
 	tLightningLight	*pll = gameData.lightnings.lights + nSegment;
 
-if (pll->nFrameFlipFlop != gameStates.render.nFrameFlipFlop) {
+if (pll->nFrameFlipFlop != gameStates.render.nFrameFlipFlop + 1) {
 	memset (pll, 0, sizeof (*pll));
-	pll->nFrameFlipFlop = gameStates.render.nFrameFlipFlop;
+	pll->nFrameFlipFlop = gameStates.render.nFrameFlipFlop + 1;
 	pll->nNext = gameData.lightnings.nFirstLight;
 	gameData.lightnings.nFirstLight = nSegment;
 	}
@@ -1637,6 +1642,7 @@ pll->color.red += colorP->red;
 pll->color.green += colorP->green;
 pll->color.blue += colorP->blue;
 pll->color.alpha += colorP->alpha;
+pll->nSegment = nSegment;
 }
 
 //------------------------------------------------------------------------------
@@ -1718,9 +1724,9 @@ if (SHOW_LIGHTNINGS) {
 			pll->color.red /= n;
 			pll->color.green /= n;
 			pll->color.blue /= n;
-			pll->nBrightness = fl2f (sqrt ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) / 10 * pll->color.alpha));
+			pll->nBrightness = fl2f ((pll->color.red * 3 + pll->color.green * 5 + pll->color.blue * 2) * pll->color.alpha);
 			if (bDynLighting)
-				pll->nDynLight = AddDynLight (&pll->color, pll->nBrightness, 0, -1, -1);
+				pll->nDynLight = AddDynLight (&pll->color, pll->nBrightness, pll->nSegment, -1, -1, &pll->vPos);
 			}
 		}
 	}
@@ -1846,11 +1852,11 @@ typedef union tPolyKey {
 	short	s [4];
 } tPolyKey;
 
-void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, int nVertices)
+void RenderDamageLightnings (tObject *objP, g3sPoint **pointList, tG3ModelVertex *pVerts, int nVertices)
 {
 	tLightningBundle	*plb;
-	vmsVector			vPos, vEnd;
-	vmsVector			vDelta, vNorm;
+	fVector				vPosf, vEndf, vNormf, vDeltaf;
+	vmsVector			vPos, vEnd, vNorm, vDelta;
 	int					h, i, j, bUpdate = 0;
 	short					nObject;
 	tPolyKey				key;
@@ -1869,10 +1875,18 @@ if (nVertices < 3)
 	return;
 j = (nVertices > 4) ? 4 : nVertices;
 h = (nVertices + 1) / 2;
-for (i = 0; i < j; i++)
-	key.s [i] = pointList [i]->p3_key;
-for (; i < 4; i++)
-	key.s [i] = 0;
+if (pointList) {
+	for (i = 0; i < j; i++)
+		key.s [i] = pointList [i]->p3_key;
+	for (; i < 4; i++)
+		key.s [i] = 0;
+	}
+else {
+	for (i = 0; i < j; i++)
+		key.s [i] = pVerts [i].nIndex;
+	for (; i < 4; i++)
+		key.s [i] = 0;
+	}
 i = FindDamageLightning (nObject = OBJ_IDX (objP), key.i);
 if (i < 0) {
 	if ((nLastObject != nObject) || (nFrameFlipFlop != gameStates.render.nFrameFlipFlop)) {
@@ -1884,13 +1898,30 @@ if (i < 0) {
 	if (f_rand () > fDamage)
 		return;
 #endif
-	vPos = pointList [0]->p3_src;
-	vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_src;
-	VmVecNormal (&vNorm, &vPos, &pointList [1]->p3_src, &vEnd);
-	VmVecScaleInc (&vPos, &vNorm, F1_0 / 64);
-	VmVecScaleInc (&vEnd, &vNorm, F1_0 / 64);
-	VmVecNormal (&vDelta, &vNorm, &vPos, &vEnd);
-	h = VmVecDist (&vPos, &vEnd);
+	if (pointList) {
+		vPos = pointList [0]->p3_src;
+		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_src;
+		VmVecNormal (&vNorm, &vPos, &pointList [1]->p3_src, &vEnd);
+		VmVecScaleInc (&vPos, &vNorm, F1_0 / 64);
+		VmVecScaleInc (&vEnd, &vNorm, F1_0 / 64);
+		VmVecNormal (&vDelta, &vNorm, &vPos, &vEnd);
+		h = VmVecDist (&vPos, &vEnd);
+		}
+	else {
+		vPosf = pVerts->vertex;
+		vEndf = pVerts [1 + d_rand () % (nVertices - 1)].vertex;
+		VmVecNormalf (&vNormf, &vPosf, &pVerts [1].vertex, &vEndf);
+		VmVecScaleIncf3 (&vPosf, &vNormf, 1.0f / 64.0f);
+		VmVecScaleIncf3 (&vEndf, &vNormf, 1.0f / 64.0f);
+		VmVecNormalf (&vDeltaf, &vNormf, &vPosf, &vEndf);
+		h = fl2f (VmVecDistf (&vPosf, &vEndf));
+		vPos.p.x = fl2f (vPosf.p.x);
+		vPos.p.y = fl2f (vPosf.p.y);
+		vPos.p.z = fl2f (vPosf.p.z);
+		vEnd.p.x = fl2f (vEndf.p.x);
+		vEnd.p.y = fl2f (vEndf.p.y);
+		vEnd.p.z = fl2f (vEndf.p.z);
+		}
 	i = CreateLightning (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, 1000 + d_rand () % 2000, 0, 
 								h, h / 4 + d_rand () % 2, 0, 0, 20, 2, 1, 5, 0, 1, 0, 0, 1, &color);
 	bUpdate = 1;

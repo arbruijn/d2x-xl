@@ -445,6 +445,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.shadows.bFast, i, 0);
 		RP (gameOptions [i].render.shadows.bMissiles, i, 0);
+		RP (gameOptions [i].render.shadows.bPowerups, i, 0);
 		RP (gameOptions [i].render.shadows.bPlayers, i, 0);
 		RP (gameOptions [i].render.shadows.bReactors, i, 0);
 		RP (gameOptions [i].render.shadows.bRobots, i, 0);
@@ -974,6 +975,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.powerups.nSpin", "1"},
 	{"gameOptions[0].render.shadows.bFast", "1"},
 	{"gameOptions[0].render.shadows.bMissiles", "1"},
+	{"gameOptions[0].render.shadows.bPowerups", "1"},
 	{"gameOptions[0].render.shadows.bPlayers", "1"},
 	{"gameOptions[0].render.shadows.bReactors", "0"},
 	{"gameOptions[0].render.shadows.bRobots", "1"},

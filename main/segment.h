@@ -108,6 +108,9 @@ typedef struct tSegment {
 #else
 	int     objects;    // pointer to objects in this tSegment
 #endif
+	grsFace	*pFaces;
+	ubyte		nFaces;
+	ubyte		bVisible;
 } tSegment;
 
 typedef struct xsegment {

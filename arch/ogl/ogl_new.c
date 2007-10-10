@@ -107,13 +107,13 @@ glDepthFunc(GL_LEQUAL);
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 r_tpolyc++;
 if (lightmapping) {//lightmapping enabled
-	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glActiveTextureARB(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, GL_RGBA);
 	OglBindBmTex(bmbot);
 	if (bm) {
-		glActiveTextureARB(GL_TEXTURE1_ARB);
+		glActiveTextureARB(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, GL_RGBA);
@@ -132,10 +132,10 @@ if (lightmapping) {//lightmapping enabled
 		glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), f2glf(p->p3_vec.z));
 		}
 	glEnd();
-	glActiveTextureARB(GL_TEXTURE1_ARB);
+	glActiveTextureARB(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D,0);
 	glDisable(GL_TEXTURE_2D);
-	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glActiveTextureARB(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D,0);
 	glDisable(GL_TEXTURE_2D);
 	}
@@ -143,7 +143,7 @@ else {//lightmapping disabled - render old way
 	g3sPoint *p;
 
 	if (tmap_drawer_ptr==DrawTexPolyFlat){
-		glActiveTextureARB(GL_TEXTURE0_ARB);
+		glActiveTextureARB(GL_TEXTURE0);
 		glDisable (GL_TEXTURE_2D);
 		glColor4d(0,0,0,1.0-(gameStates.render.grAlpha/(double)NUM_LIGHTING_LEVELS));
 		glBegin(GL_TRIANGLE_FAN);
@@ -156,7 +156,7 @@ else {//lightmapping disabled - render old way
 		}
 	else if (tmap_drawer_ptr == draw_tmap) {
 		r_tpolyc++;
-		glActiveTextureARB(GL_TEXTURE0_ARB);
+		glActiveTextureARB(GL_TEXTURE0);
 		OGL_ENABLE(TEXTURE_2D);
 		OglBindBmTex(bmbot);
 		OglTexWrap(bmbot->glTexture,GL_REPEAT);
@@ -185,7 +185,7 @@ else {//lightmapping disabled - render old way
 	if (bm) {
 		glDepthFunc(GL_LEQUAL);
 		r_tpolyc++;
-		glActiveTextureARB(GL_TEXTURE0_ARB);
+		glActiveTextureARB(GL_TEXTURE0);
 		OGL_ENABLE(TEXTURE_2D);
 		OglBindBmTex(bm);
 		OglTexWrap(bm->glTexture,GL_REPEAT);
@@ -201,7 +201,7 @@ else {//lightmapping disabled - render old way
 		glEnd();
 		glDepthFunc(GL_LESS);
 		}
-	//glActiveTextureARB(GL_TEXTURE0_ARB);
+	//glActiveTextureARB(GL_TEXTURE0);
 	//glBindTexture(GL_TEXTURE_2D,0);
 	//glDisable(GL_TEXTURE_2D);
 	}
@@ -224,7 +224,7 @@ bool G3DrawBitmap(vmsVector *pos,fix width,fix height,grsBitmap *bm, int orienta
 	r_bitmapc++;
 	v1.z=0;
 
-glActiveTextureARB(GL_TEXTURE0_ARB);
+glActiveTextureARB(GL_TEXTURE0);
 glEnable(GL_TEXTURE_2D);
 OglBindBmTex(bm);
 OglTexWrap(bm->glTexture,GL_CLAMP);
@@ -263,7 +263,7 @@ for (i = 0; i < 4; i++) {
 glEnd();
 
 //These next lines are important for later leave these here - Lehm 4/26/05
-//glActiveTextureARB(GL_TEXTURE0_ARB);
+//glActiveTextureARB(GL_TEXTURE0);
 //glBindTexture(GL_TEXTURE_2D,0);
 //glDisable(GL_TEXTURE_2D);
 return 0;
@@ -285,7 +285,7 @@ xf=(bm->bmProps.w+x)/(double)last_width;
 yo=1.0-y/(double)last_height;
 yf=1.0-(bm->bmProps.h+y)/(double)last_height;
 
-glActiveTextureARB(GL_TEXTURE0_ARB);
+glActiveTextureARB(GL_TEXTURE0);
 OglBindBmTex(bm);
 OglTexWrap(bm->glTexture,GL_CLAMP);
 
@@ -336,7 +336,7 @@ glEnd();
 glDepthFunc(curFunc);
 glDisable (GL_ALPHA_TEST);
 glDisable (GL_BLEND);
-glActiveTextureARB(GL_TEXTURE0_ARB);
+glActiveTextureARB(GL_TEXTURE0);
 glBindTexture(GL_TEXTURE_2D,0);
 glDisable(GL_TEXTURE_2D);
 return 0;

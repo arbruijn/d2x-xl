@@ -260,7 +260,7 @@ if (nChild == -2)
 nSegment = SEG_IDX (segP);
 nWall = WallNumP (segP, nSide);
 bIsWall = IS_WALL (nWall);
-if (gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
+if (objP && gameData.objs.speedBoost [OBJ_IDX (objP)].bBoosted &&
 	 (objP == gameData.objs.console) && 
 	 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SPEEDBOOST) &&
 	 (gameData.segs.segment2s [nChild].special != SEGMENT_IS_SPEEDBOOST) &&
@@ -554,7 +554,7 @@ if (segP->children [nSide] < 0) {
 	}
 else {
 	connSegP = gameData.segs.segments + segP->children [nSide];
-	nConnSide = FindConnectedSide(segP, connSegP);
+	nConnSide = FindConnectedSide (segP, connSegP);
 	Assert(nConnSide != -1);
 	nConnWall = WallNumP (connSegP, nConnSide);
 	}
@@ -567,7 +567,7 @@ d->nFrontWall [0] = nWall;
 d->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (segP) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordDoorOpening(SEG_IDX (segP), nSide);
+	NDRecordDoorOpening (SEG_IDX (segP), nSide);
 if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall == nConnWall)) {
 	tWall *wallP2 = gameData.walls.walls + wallP->nLinkedWall;
 	tSegment *segP2 = gameData.segs.segments + wallP2->nSegment;
@@ -586,9 +586,9 @@ else
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	// NOTE THE LINK TO ABOVE!!!!
 	vmsVector cp;
-	COMPUTE_SIDE_CENTER(&cp, segP, nSide);
+	COMPUTE_SIDE_CENTER (&cp, segP, nSide);
 	if (gameData.walls.pAnims [wallP->nClip].openSound > -1)
-		DigiLinkSoundToPos(gameData.walls.pAnims [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
+		DigiLinkSoundToPos (gameData.walls.pAnims [wallP->nClip].openSound, SEG_IDX (segP), nSide, &cp, 0, F1_0);
 	}
 }
 

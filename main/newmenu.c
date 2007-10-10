@@ -645,9 +645,9 @@ else
 if (/*!strchr (item->text, '\t') &&*/ bCreateTextBms && gameOpts->menus.bFastMenus &&
 	 (bm || (bm = CreateStringBitmap (item->text, MENU_KEY (item->key, -1), 
 												 gameData.menu.keyColor,
-												 nTabs, item->centered, item->w)))) {
+												 nTabs, item->centered, item->w, 0)))) {
 	OglUBitBltI (bm->bmProps.w, bm->bmProps.h, item->x, item->y, bm->bmProps.w, bm->bmProps.h, 0, 0, 
-						bm, &grdCurCanv->cvBitmap, 0, 1);
+					 bm, &grdCurCanv->cvBitmap, 0, 1);
 	item->text_bm [bIsCurrent] = bm;
 	}
 else 
@@ -713,7 +713,7 @@ else {
 		}
 	//item->x = x + w;
 	if (i) {
-		GrString (x, y, s);
+		GrString (x, y, s, NULL);
 #ifdef _DEBUG
 		//GrUpdate (0);
 #endif
@@ -724,7 +724,7 @@ else {
 		ch2 = s [++i];
 		s [i] = '\0';
 		NMSetItemColor (item, 1, bTiny);
-		GrString (x, y, s + i - 1);
+		GrString (x, y, s + i - 1, NULL);
 #ifdef _DEBUG
 		//GrUpdate (0);
 #endif
@@ -733,7 +733,7 @@ else {
 			GrGetStringSize (s + i - 1, &w, &h, &aw);
 			x += w;
 			s [i] = ch2;
-			GrString (x, y, s + i);
+			GrString (x, y, s + i, NULL);
 			}
 		}
 	}
@@ -790,7 +790,7 @@ void NMString (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 			}
 			measure [0]=s2 [i];
 			GrGetStringSize (measure, &tx, &h, &aw);
-			GrString (x, y, measure);
+			GrString (x, y, measure, NULL);
 			x+=tx;
 		}
 	}
@@ -801,7 +801,7 @@ void NMString (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 
 	if (!gameStates.multi.bSurfingNet && p &&(w1>0)) {
 		GrGetStringSize (s1, &w, &h, &aw);
-		GrString (x+w1-w, y, s1);
+		GrString (x+w1-w, y, s1, NULL);
 		*p = '\t';
 	}
 }
@@ -836,7 +836,7 @@ void NMStringSlider (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 		item->text = s;
 		NMHotKeyString (item, bIsCurrent, bTiny, 1, 0);
 		item->text = t;
-		//GrString (x, y, s);
+		//GrString (x, y, s, NULL);
 
 		if (p)	{
 			GrGetStringSize (s1, &w, &h, &aw);
@@ -846,7 +846,7 @@ void NMStringSlider (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny)
 				GrBmBitBlt (w, 1, x+w1-w, y, x+w1-w, y, b->background, &(grdCurCanv->cvBitmap));
 				GrBmBitBlt (w, 1, x+w1-w, y+h-1, x+w1-w, y, b->background, &(grdCurCanv->cvBitmap));
 				}
-			GrString (x+w1-w, y, s1);
+			GrString (x+w1-w, y, s1, NULL);
 
 			*p = '\t';
 		}
@@ -876,7 +876,7 @@ void NMStringBlack (bkg * b, int w1, int x, int y, char * s)
 		GrSetColorRGB (0, 0, 0, 255);
 		GrRect (x, y, x+w1-1, y+h-1);
 	
-		GrString (x+1, y+1, s);
+		GrString (x+1, y+1, s, NULL);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
@@ -907,7 +907,7 @@ void NMRString (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny, char *s)
 		NMHotKeyString (item, bIsCurrent, bTiny, 0, 0);
 		item->text = hs;
 		item->x = h;
-//		GrString (x-w, y, s);
+//		GrString (x-w, y, s, NULL);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
@@ -927,7 +927,7 @@ void NMRStringWXY (bkg * b, int w1, int x, int y, char *s)
 	WIN (DDGRLOCK (dd_grd_curcanv));
 		if (curDrawBuffer != GL_BACK)
 			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
-		GrString (x-w, y, s);
+		GrString (x-w, y, s, NULL);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
@@ -958,7 +958,7 @@ void NMUpdateCursor (tMenuItem *item)
 
 WIN (DDGRLOCK (dd_grd_curcanv));
 	if (time & 0x8000)
-		GrString (x, y, CURSOR_STRING);
+		GrString (x, y, CURSOR_STRING, NULL);
 	else {
 		GrSetColorRGB (0, 0, 0, 255);
 		GrRect (x, y, x+grdCurCanv->cvFont->ftWidth-1, y+grdCurCanv->cvFont->ftHeight-1);
@@ -985,7 +985,7 @@ void NMStringInputBox (bkg *b, int w, int x, int y, char * text, int current)
    NMStringBlack (b, w, x, y, text);
 		
 	if (current)	{
-		GrString (x+w1+1, y, CURSOR_STRING);
+		GrString (x+w1+1, y, CURSOR_STRING, NULL);
 	}
 }
 
@@ -1268,7 +1268,7 @@ if (title && *title)	{
 	tw = string_width;
 	th = nStringHeight;
 	WIN (DDGRLOCK (dd_grd_curcanv));
-	GrPrintF (0x8000, ty, title);
+	GrPrintF (NULL, 0x8000, ty, title);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	ty += nStringHeight;
 	}
@@ -2812,7 +2812,7 @@ ReadFileNames:
 		NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1, 0);
 		WIN (DDGRLOCK (dd_grd_curcanv))
 		{	
-			GrString (0x8000, w_y+10, title);
+			GrString (0x8000, w_y+10, title, NULL);
 		}
 		WIN (DDGRUNLOCK (dd_grd_curcanv));
 
@@ -3088,7 +3088,7 @@ ReadFileNames:
 			WIN (DDGRLOCK (dd_grd_curcanv))
 			{	
 				grdCurCanv->cvFont = NORMAL_FONT;
-				GrString (0x8000, w_y+10, title);
+				GrString (0x8000, w_y+10, title, NULL);
 			}
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			GrSetColorRGB (0, 0, 0, 255);
@@ -3124,7 +3124,7 @@ ReadFileNames:
 					GrSetColorRGB (0, 0, 0, 255);
 							
 					GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-					GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
+					GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 				}
 			}	 
 			SDL_ShowCursor (1);
@@ -3142,7 +3142,7 @@ ReadFileNames:
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
+				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
 			i = cItem;
 			if ((i>=0) &&(i<NumFiles))	{
@@ -3153,7 +3153,7 @@ ReadFileNames:
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0));
+				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
 			GrUpdate (0);
 			SDL_ShowCursor (1);
@@ -3334,7 +3334,7 @@ WIN (int win_redraw=0);
 	NMDrawBackground (&bg, wx-border_size, wy-title_height-border_size, wx+width+border_size-1, wy+height+border_size-1,0);
 	GrUpdate (0);
 	WIN (DDGRLOCK (dd_grd_curcanv));
-		GrString (0x8000, wy - title_height, title);
+		GrString (0x8000, wy - title_height, title, NULL);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));	
 
 	WIN (DDGRRESTORE);
@@ -3552,7 +3552,7 @@ WIN (int win_redraw=0);
 			WIN (DDGRLOCK (dd_grd_curcanv));
 			if (gameOpts->menus.nStyle) {
 				grdCurCanv->cvFont = NORMAL_FONT;
-				GrString (0x8000, wy - title_height, title);
+				GrString (0x8000, wy - title_height, title, NULL);
 				}
 
 			GrSetColorRGB (0, 0, 0, 255);
@@ -3569,7 +3569,7 @@ WIN (int win_redraw=0);
 						grdCurCanv->cvFont = NORMAL_FONT;
 					GrGetStringSize (items [i], &w, &h, &aw);
 					GrRect (wx, y-1, wx+width-1, y+h+1);
-					GrString (wx+5, y, items [i]);
+					GrString (wx+5, y, items [i], NULL);
 				}
 			}		
 
@@ -3595,7 +3595,7 @@ WIN (int win_redraw=0);
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (items [i], &w, &h, &aw);
 				GrRect (wx, y-1, wx+width-1, y+h+1);
-				GrString (wx+5, y, items [i]);
+				GrString (wx+5, y, items [i], NULL);
 
 			}
 			i = cItem;
@@ -3607,7 +3607,7 @@ WIN (int win_redraw=0);
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (items [i], &w, &h, &aw);
 				GrRect (wx, y-1, wx+width-1, y+h);
-				GrString (wx+5, y, items [i]);
+				GrString (wx+5, y, items [i], NULL);
 			}
 			WIN (DDGRUNLOCK (dd_grd_curcanv));
 

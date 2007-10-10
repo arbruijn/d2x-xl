@@ -128,8 +128,6 @@ static int bitmapOffsets [2][MAX_BITMAP_FILES];
 
 static ubyte *bitmapBits [2] = {NULL, NULL};
 
-static sbyte bitmapFlags [2][MAX_BITMAP_FILES];
-
 ubyte d1ColorMap [256];
 ubyte *d1Palette = NULL;
 
@@ -398,7 +396,7 @@ hashtable_insert (bitmapNames + gameStates.app.bD1Mission, gameData.pig.tex.pBit
 gameData.pig.tex.pBitmaps [gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = *bmP;
 if (!in_file) {
 	bitmapOffsets [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = 0;
-	bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->bmProps.flags;
+	gameData.pig.tex.bitmapFlags [gameStates.app.bD1Data][gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]] = bmP->bmProps.flags;
 	}
 gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]++;
 return temp;
@@ -669,7 +667,7 @@ for (i = 0; i < nBitmapNum; i++) {
 	bmTemp.bmProps.h = bmh.height + ((short) (bmh.wh_extra & 0xf0) << 4);
 	bmTemp.bmProps.flags |= BM_FLAG_PAGED_OUT;
 	bmTemp.bmAvgColor = bmh.bmAvgColor;
-	bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
+	gameData.pig.tex.bitmapFlags [0][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 	bitmapOffsets [0][i+1] = bmh.offset + nDataStart;
 	Assert ((i+1) == gameData.pig.tex.nBitmaps [0]);
 	PiggyRegisterBitmap (&bmTemp, temp_name, 1);
@@ -835,7 +833,7 @@ void piggy_new_pigfile (char *pigname)
 			bmTemp.bmAvgColor = bmh.bmAvgColor;
 			bmTemp.bmTexBuf = D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
 			bitmapCacheUsed += bmTemp.bmProps.w * bmTemp.bmProps.h;
-			bitmapFlags [0][i] = bmh.flags & BM_FLAGS_TO_COPY;
+			gameData.pig.tex.bitmapFlags [0][i] = bmh.flags & BM_FLAGS_TO_COPY;
 			bitmapOffsets [0][i] = bmh.offset + nDataStart;
 			gameData.pig.tex.bitmaps [0][i] = bmTemp;
 		}
@@ -875,7 +873,7 @@ void piggy_new_pigfile (char *pigname)
 					int SuperX;
 					sprintf (tempname, "%s#%d", basename, fnum);
 					//SuperX = (gameData.pig.tex.bitmaps [i+fnum].bmProps.flags&BM_FLAG_SUPER_TRANSPARENT)?254:-1;
-					SuperX = (bitmapFlags [i + fnum] & BM_FLAG_SUPER_TRANSPARENT) ? 254 : -1;
+					SuperX = (gameData.pig.tex.bitmapFlags [i + fnum] & BM_FLAG_SUPER_TRANSPARENT) ? 254 : -1;
 					//above makes assumption that supertransparent color is 254
 					if (iff_has_transparency)
 						GrRemapBitmapGood (bm [fnum], newpal, iff_transparent_color, SuperX);
@@ -914,7 +912,7 @@ void piggy_new_pigfile (char *pigname)
 #endif
 					Error ("File %s - IFF error: %s",bbmname,iff_errormsg (iff_error);
 				}
-				SuperX = (bitmapFlags [i]&BM_FLAG_SUPER_TRANSPARENT)?254:-1;
+				SuperX = (gameData.pig.tex.bitmapFlags [i]&BM_FLAG_SUPER_TRANSPARENT)?254:-1;
 				//above makes assumption that supertransparent color is 254
 				if (iff_has_transparency)
 					GrRemapBitmapGood (newBm, newpal, iff_transparent_color, SuperX);
@@ -1630,8 +1628,8 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 			altBmP->bmType = BM_TYPE_ALT;
 			BM_OVERRIDE (bmP) = altBmP;
 			BM_FRAMECOUNT (altBmP) = 1;
-			bitmapFlags [bD1][i] &= ~BM_FLAG_RLE;
-			bitmapFlags [bD1][i] |= BM_FLAG_TGA;
+			gameData.pig.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_RLE;
+			gameData.pig.tex.bitmapFlags [bD1][i] |= BM_FLAG_TGA;
 			bmP = altBmP;
 			altBmP = NULL;
 			}
@@ -1650,8 +1648,8 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
 			nOffset = CFTell (fp);
-			bitmapFlags [bD1][i] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-			bitmapFlags [bD1][i] |= BM_FLAG_TGA;
+			gameData.pig.tex.bitmapFlags [bD1][i] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+			gameData.pig.tex.bitmapFlags [bD1][i] |= BM_FLAG_TGA;
 			if (bmP->bmProps.h > bmP->bmProps.w) {
 				tEffectClip	*ecP = NULL;
 				tWallClip *wcP;
@@ -1695,7 +1693,7 @@ reloadTextures:
 		PiggyCriticalError ();
 		goto reloadTextures;
 		}
-#ifdef _DEBUG
+#if 1//def _DEBUG
 strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 #endif
 #if TEXTURE_COMPRESSION
@@ -1713,7 +1711,7 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 		PiggyBitmapPageOutAll (0);
 		goto reloadTextures;
 		}
-	bmP->bmProps.flags = bitmapFlags [bD1][i];
+	bmP->bmProps.flags = gameData.pig.tex.bitmapFlags [bD1][i];
 	bmP->bmHandle = i;
 	if (bmP->bmProps.flags & BM_FLAG_RLE) {
 		int zSize = 0;
@@ -2220,9 +2218,11 @@ if (fp) {
 			break;
 		CFSeek (fp, bmDataOffset + bmOffset, SEEK_SET);
 		if (bTGA) {
-			int	nFrames = bm.bmProps.h / bm.bmProps.w;
+			int			nFrames = bm.bmProps.h / bm.bmProps.w;
 			tTgaHeader	h;
 
+			if (indices [i] == 1483)
+				i = i;
 			h.width = bm.bmProps.w;
 			h.height = bm.bmProps.h;
 			h.bits = 32;
@@ -2268,8 +2268,8 @@ if (fp) {
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.bmFromPog = 1;
 		bm.bmHandle = j;
-#ifdef _DEBUG
-		sprintf (bm.szName, "POG%04d", j);
+#if 1//def _DEBUG
+		sprintf (bm.szName, "POG#%04d", j);
 #endif
 		gameData.pig.tex.pAltBitmaps [j] = bm;
 		BM_OVERRIDE (gameData.pig.tex.pBitmaps + j) = gameData.pig.tex.pAltBitmaps + j;
@@ -2514,7 +2514,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		bmTemp.bmAvgColor = bmh.bmAvgColor;
 		bmTemp.bmTexBuf = D2_ALLOC (bmTemp.bmProps.w * bmTemp.bmProps.h);
 		bitmapCacheUsed += bmTemp.bmProps.h * bmTemp.bmProps.w;
-		bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
+		gameData.pig.tex.bitmapFlags [1][i+1] = bmh.flags & BM_FLAGS_TO_COPY;
 		bitmapOffsets [1][i+1] = bmh.offset + nBmDataOffs;
 		Assert ((i+1) == gameData.pig.tex.nBitmaps [1]);
 		PiggyRegisterBitmap (&bmTemp, temp_name, 1);

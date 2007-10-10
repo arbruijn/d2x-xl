@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "gameseg.h"
 #include "interp.h"
+#include "hitbox.h"
 #include "network.h"
 #include "sphere.h"
 

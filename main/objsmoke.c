@@ -435,14 +435,14 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
 	return;
 	}
 if (gameData.smoke.objects [i] < 0) {
-		tRgbaColord color;
+		tRgbaColorf color;
 		int bColor;
 	
-	color.red = (float) objP->rType.smokeInfo.color.red / 255.0;
-	color.green = (float) objP->rType.smokeInfo.color.green / 255.0;
-	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0;
+	color.red = (float) objP->rType.smokeInfo.color.red / 255.0f;
+	color.green = (float) objP->rType.smokeInfo.color.green / 255.0f;
+	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;
 	if (bColor = (color.red + color.green + color.blue > 0))
-		color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0;
+		color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0f;
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, &dir, 
 											  objP->nSegment, 1, -objP->rType.smokeInfo.nParts, 
@@ -502,7 +502,7 @@ void DoParticleTrail (tObject *objP)
 	int			nParts, i;
 	float			nScale;
 	vmsVector	pos;
-	tRgbaColord	c;
+	tRgbaColorf	c;
 
 if (!SHOW_OBJ_FX && EGI_FLAG (bLightTrails, 1, 1, 0))
 	return;
@@ -517,9 +517,9 @@ nParts = LASER_MAX_PARTS;
 #else
 nParts = gameData.weapons.info [objP->id].speed [0] / F1_0; 
 #endif
-c.red = (double) gameData.weapons.color [objP->id].red;
-c.green = (double) gameData.weapons.color [objP->id].green;
-c.blue = (double) gameData.weapons.color [objP->id].blue;
+c.red = (float) gameData.weapons.color [objP->id].red;
+c.green = (float) gameData.weapons.color [objP->id].green;
+c.blue = (float) gameData.weapons.color [objP->id].blue;
 c.alpha = 0.5;
 if (gameData.smoke.objects [i] < 0) {
 	nScale = f2fl (objP->size);
@@ -559,7 +559,7 @@ int CreateShrapnels (tObject *parentObjP)
 	int				i, h = (int) (fSize * 5 / (1 << (4 - gameOpts->render.smoke.nShrapnels)));
 	short				nObject;
 	tObject			*objP;
-	tRgbaColord		color = {1,1,1,0.5};
+	tRgbaColorf		color = {1,1,1,0.5};
 
 if (!SHOW_SMOKE)
 	return 0;
@@ -756,7 +756,7 @@ int CreateShrapnels (tObject *parentObjP)
 	int				i, h = (int) (f2fl (parentObjP->size) * fShrapnelScale [gameOpts->render.nExplShrapnels] + 0.5);
 	short				nObject;
 	tObject			*objP;
-	tRgbaColord		color = {1,1,1,0.5};
+	tRgbaColorf		color = {1,1,1,0.5};
 
 if (!SHOW_SMOKE)
 	return 0;

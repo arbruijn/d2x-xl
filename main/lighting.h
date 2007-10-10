@@ -63,7 +63,7 @@ void ReadFlickeringLight(tFlickeringLight *fl, CFILE *fp);
 void InitTextureBrightness (void);
 
 void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner);
+int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner, vmsVector *vPos);
 int RemoveDynLight (short nSegment, short nSide, short nObject);
 void AddDynLights (void);
 void DeleteDynLight (short nLight);
@@ -75,12 +75,13 @@ void TransformDynLights (int bStatic, int bVariable);
 short FindDynLight (short nSegment, short nSide, short nObject);
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
-void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable);
-void SetNearestStaticLights (int nSegment, ubyte nType);
-short SetNearestDynamicLights (int nSegment, int bVariable);
+void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable, int nThread);
+void SetNearestStaticLights (int nSegment, ubyte nType, int nThread);
+short SetNearestDynamicLights (int nSegment, int bVariable, int nThread);
 void ComputeStaticDynLighting (void);
 void InitLightingShaders (void);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
+int IsLight (int tMapNum);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing) && \
@@ -89,5 +90,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 
 #define	APPLY_DYN_LIGHT \
 			(gameStates.render.bUseDynLight && (gameOpts->ogl.bLightObjects || gameStates.render.nState))
+
+extern tFaceColor tMapColor, lightColor, vertColors [8];
 
 #endif /* _LIGHTING_H */

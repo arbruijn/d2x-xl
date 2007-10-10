@@ -623,6 +623,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\3d\hitbox.c">
+				</File>
+				<File
 					RelativePath="..\..\3d\instance.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -741,6 +744,9 @@
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\3d\shadows.c">
 				</File>
 			</Filter>
 			<Filter
@@ -1585,6 +1591,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\fastrender.c">
+				</File>
+				<File
 					RelativePath="..\..\main\fireball.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -1603,6 +1612,9 @@
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\main\flightpath.c">
 				</File>
 				<File
 					RelativePath="..\..\main\fuelcen.c">
@@ -1843,6 +1855,9 @@
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\main\glare.c">
 				</File>
 				<File
 					RelativePath="..\..\main\hoard.c">
@@ -2479,6 +2494,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\radar.c">
+				</File>
+				<File
 					RelativePath="..\..\main\render.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -2497,6 +2515,15 @@
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\main\renderlib.c">
+				</File>
+				<File
+					RelativePath="..\..\main\rendershadows.c">
+				</File>
+				<File
+					RelativePath="..\..\main\renderthreads.c">
 				</File>
 				<File
 					RelativePath="..\..\main\robot.c">
@@ -2732,6 +2759,9 @@
 					RelativePath="..\..\main\tracker.c">
 				</File>
 				<File
+					RelativePath="..\..\main\transprender.c">
+				</File>
+				<File
 					RelativePath="..\..\main\vclip.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -2914,6 +2944,9 @@
 						RelativePath="..\..\arch\include\event.h">
 					</File>
 					<File
+						RelativePath="..\..\main\fastrender.h">
+					</File>
+					<File
 						RelativePath="..\..\include\findfile.h">
 					</File>
 					<File
@@ -2921,6 +2954,9 @@
 					</File>
 					<File
 						RelativePath="..\..\include\fix.h">
+					</File>
+					<File
+						RelativePath="..\..\main\flightpath.h">
 					</File>
 					<File
 						RelativePath="..\..\main\fuelcen.h">
@@ -2960,6 +2996,9 @@
 					</File>
 					<File
 						RelativePath="..\..\main\gauges.h">
+					</File>
+					<File
+						RelativePath="..\..\main\glare.h">
 					</File>
 					<File
 						RelativePath="..\..\3d\globvars.h">
@@ -3145,10 +3184,22 @@
 						RelativePath="..\..\include\pstypes.h">
 					</File>
 					<File
+						RelativePath="..\..\main\radar.h">
+					</File>
+					<File
 						RelativePath="..\..\include\rbaudio.h">
 					</File>
 					<File
 						RelativePath="..\..\main\render.h">
+					</File>
+					<File
+						RelativePath="..\..\main\renderlib.h">
+					</File>
+					<File
+						RelativePath="..\..\main\rendershadows.h">
+					</File>
+					<File
+						RelativePath="..\..\main\renderthreads.h">
 					</File>
 					<File
 						RelativePath="..\..\main\reorder.h">
@@ -3236,6 +3287,9 @@
 					</File>
 					<File
 						RelativePath="..\..\trackir\trackir.h">
+					</File>
+					<File
+						RelativePath="..\..\main\transprender.h">
 					</File>
 					<File
 						RelativePath="..\..\include\u_dpmi.h">

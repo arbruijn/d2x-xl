@@ -51,7 +51,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "input.h"
 #define FLICKERFIX 0
 //int	Use_fvi_lighting = 0;
-extern tFaceColor tMapColor, lightColor, vertColors [4];
+
 #define	LIGHTING_CACHE_SIZE	4096	//	Must be power of 2!
 #define	LIGHTING_FRAME_DELTA	256	//	Recompute cache value every 8 frames.
 #define	LIGHTING_CACHE_SHIFT	8
@@ -105,10 +105,13 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 	{430, 0x020000L}, {431, 0x020000L}, {432, 0x00e000L}, {433, 0x020000L},
 	{434, 0x020000L}
 };
+
 int AddOglHeadLight (tObject *objP);
 void RemoveOglHeadLight (tObject *objP);
 void UpdateOglHeadLight (void);
+
 //--------------------------------------------------------------------------
+
 void InitTextureBrightness (void)
 {
 	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2;
@@ -127,13 +130,14 @@ for (i = h; --i; ) {
 // ----------------------------------------------------------------------------------------------
 //	Return true if we think vertex nVertex is visible from tSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
+
 int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vObjPos, int nObjSeg, vmsVector *vVertPos)
 {
 	int	cache_val, cache_frame, cache_vis;
 	cache_val = Lighting_cache [ ((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
 	cache_frame = cache_val >> 1;
 	cache_vis = cache_val & 1;
-Cache_lookups++;
+	Cache_lookups++;
 	if ((cache_frame == 0) || (cache_frame + Lighting_frame_delta <= gameData.app.nFrameCount)) {
 		int			bApplyLight = 0;
 		tVFIQuery	fq;
@@ -237,7 +241,6 @@ void ApplyLight (
 	int			iVertex, bUseColor, bForceColor;
 	int			nVertex;
 	int			bApplyLight;
-	int			bDarkness = IsMultiGame && EGI_FLAG (bDarkness, 0, 0, 0);
 	vmsVector	*vVertPos;
 	fix			dist, xOrigIntensity = xObjIntensity;
 	tObject		*objP = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
@@ -245,7 +248,7 @@ void ApplyLight (
 
 if (objP && SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
-		if (!bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
+		if (!gameData.render.vertColor.bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
 			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
@@ -257,7 +260,7 @@ if (objP && SHOW_DYN_LIGHT) {
 				HUDInitMessage (TXT_NO_HEADLIGHTS);
 				}
 			}
-		if (bDarkness)
+		if (gameData.render.vertColor.bDarkness)
 			return;
 		xObjIntensity /= 4;
 		}
@@ -266,17 +269,17 @@ if (objP && SHOW_DYN_LIGHT) {
 			RemoveDynLight (-1, -1, nObject);
 			return;
 			}
-		xObjIntensity /= 2;
+		xObjIntensity /= 4;
 		}
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
-	AddDynLight (color, xObjIntensity, -1, -1, nObject);
+	AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
 	return;
 	}
 if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity * 64;
 	
-	if (bDarkness) {
+	if (gameData.render.vertColor.bDarkness) {
 		if (objP->nType == OBJ_PLAYER)
 			xObjIntensity = 0;
 		}
@@ -362,12 +365,12 @@ if (xObjIntensity) {
 							gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 						else {
 							fix			dot, maxDot;
-							int			spotSize = bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
+							int			spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
 							VmVecSub (&vecToPoint, vVertPos, vObjPos);
 							VmVecNormalizeQuick (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = VmVecDot (&vecToPoint, &objP->position.mOrient.fVec);
-							if (bDarkness)
+							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;
 							else
 								maxDot = F1_0 / 2;
@@ -435,6 +438,7 @@ color->blue = 1.0;
 *pbGotColor = 0;
 switch (nObjType) {
 	case OBJ_PLAYER:
+		*pbGotColor = 1;
 		 if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
 			if (nHeadLights < MAX_HEADLIGHTS)
 				Headlights [nHeadLights++] = objP;
@@ -459,6 +463,7 @@ switch (nObjType) {
 			return max (VmVecMagQuick (&objP->mType.physInfo.thrust)/4, F1_0*2) + F1_0/2;
 			}
 		break;
+
 	case OBJ_FIREBALL:
 	case OBJ_EXPLOSION:
 		if ((objP->id == 0xff) || (objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS)) 
@@ -515,9 +520,11 @@ switch (nObjType) {
 				return xLight;
 			}
 		break;
+
 	case OBJ_ROBOT:
 		return F1_0*ROBOTINFO (objP->id).lightcast;
 		break;
+
 	case OBJ_WEAPON: {
 		fix tval = gameData.weapons.info [objP->id].light;
 		if (gameOpts->render.color.bGunLight)
@@ -531,7 +538,8 @@ switch (nObjType) {
 			return 2* (min (tval, objP->lifeleft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
 		else
 			return tval;
-	}
+		}
+
 	case OBJ_MARKER: {
 		fix	lightval = objP->lifeleft;
 		lightval &= 0xffff;
@@ -543,7 +551,8 @@ switch (nObjType) {
 		color->blue = 0.1f;
 		*pbGotColor = 1;
 		return lightval;
-	}
+		}
+
 	case OBJ_POWERUP:
 		if (objP->id < 9) {
 			*color = powerupColors [objP->id];
@@ -551,12 +560,15 @@ switch (nObjType) {
 			}
 		return gameData.objs.pwrUp.info [objP->id].light;
 		break;
+
 	case OBJ_DEBRIS:
 		return F1_0/4;
 		break;
+
 	case OBJ_LIGHT:
 		return objP->cType.lightInfo.intensity;
 		break;
+
 	default:
 		return 0;
 		break;
@@ -585,13 +597,14 @@ if (SHOW_DYN_LIGHT)
 if (!gameOpts->render.bDynamicLight)
 	return;
 memset (gameData.render.lights.vertexFlags, 0, gameData.segs.nLastVertex + 1);
+gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 gameData.render.lights.bStartDynColoring = 1;
 if (gameData.render.lights.bInitDynColoring) {
 	InitDynColoring ();
 	}
 //	Create list of vertices that need to be looked at for setting of ambient light.
 nRenderVertices = 0;
-if (!(gameOpts->render.bDynLighting)) {
+if (!gameOpts->render.bDynLighting) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		if (nSegment != -1) {
@@ -625,16 +638,14 @@ if (!(gameOpts->render.bDynLighting)) {
 	}
 CastMuzzleFlashLight (nRenderVertices, gameData.render.lights.vertices);
 memset (gameData.render.lights.newObjects, 0, sizeof (gameData.render.lights.newObjects));
-if (EGI_FLAG (bUseLightnings, 0, 0, 1)) {
+if (EGI_FLAG (bUseLightnings, 0, 0, 1) && !gameOpts->render.bDynLighting) {
 	tLightningLight	*pll;
-	SetLightningLights ();
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.nRenderSegs; iRenderSeg++) {
 		nSegment = gameData.render.mine.nSegRenderList [iRenderSeg];
 		pll = gameData.lightnings.lights + nSegment;
 		if (pll->nFrameFlipFlop == gameStates.render.nFrameFlipFlop)
 			ApplyLight (pll->nBrightness, nSegment, &pll->vPos, nRenderVertices, gameData.render.lights.vertices, -1, &pll->color);
 		}
-	ResetLightningLights ();
 	}
 //	July 5, 1995: New faster dynamic lighting code.  About 5% faster on the PC (un-optimized).
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
@@ -650,7 +661,7 @@ for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastOb
 	if (bGotColor)
 		bKeepDynColoring = 1;
 	if (xObjIntensity) {
-		ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), &color);
+		ApplyLight (xObjIntensity, objP->nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, OBJ_IDX (objP), bGotColor ? &color : NULL);
 		gameData.render.lights.newObjects [nObject] = 1;
 		}
 	}
@@ -1199,7 +1210,7 @@ if (!pc || pc->index) {
 
 //------------------------------------------------------------------------------
 
-int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject)
+int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nObject, vmsVector *vPos)
 {
 	tDynLight	*pl;
 	short			h, i;
@@ -1261,8 +1272,12 @@ else if (nSegment >= 0) {
 #endif
 	if (nSide < 0) {
 		pl->nType = 2;
+		pl->bVariable = 0;
 		pl->rad = 0;
-		COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment);
+		if (vPos)
+			pl->vPos = *vPos;
+		else
+			COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment);
 		}	
 	else {
 		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
@@ -1384,11 +1399,12 @@ void SetDynLightMaterial (short nSegment, short nSide, short nObject)
 {
 	//static float fBlack [4] = {0.0f, 0.0f, 0.0f, 1.0f};
 	int nLight = FindDynLight (nSegment, nSide, nObject);
+
 if (nLight >= 0) {
 	tDynLight *pl = gameData.render.lights.dynamic.lights + nLight;
 	if (pl->bState) {
-		gameData.render.lights.dynamic.material.emissive = * ((fVector *) &pl->fEmissive);
-		gameData.render.lights.dynamic.material.specular = * ((fVector *) &pl->fEmissive);
+		gameData.render.lights.dynamic.material.emissive = *((fVector *) &pl->fEmissive);
+		gameData.render.lights.dynamic.material.specular = *((fVector *) &pl->fEmissive);
 		gameData.render.lights.dynamic.material.shininess = 96;
 		gameData.render.lights.dynamic.material.bValid = 1;
 		gameData.render.lights.dynamic.material.nLight = nLight;
@@ -1396,6 +1412,42 @@ if (nLight >= 0) {
 		}
 	}	
 gameData.render.lights.dynamic.material.bValid = 0;
+}
+
+//------------------------------------------------------------------------------
+
+static inline int QCmpStaticLights (tDynLight *pl, tDynLight *pm)
+{
+return (pl->bVariable == pm->bVariable) ? 0 : pl->bVariable ? 1 : -1;
+}
+
+//------------------------------------------------------------------------------
+
+void QSortStaticLights (int left, int right)
+{
+	int	l = left,
+			r = right;
+			tDynLight m = gameData.render.lights.dynamic.lights [(l + r) / 2];
+			
+do {
+	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + l, &m) < 0)
+		l++;
+	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + r, &m) > 0)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tDynLight h = gameData.render.lights.dynamic.lights [l];
+			gameData.render.lights.dynamic.lights [l] = gameData.render.lights.dynamic.lights [r];
+			gameData.render.lights.dynamic.lights [r] = h;
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	QSortStaticLights (l, right);
+if (left < r)
+	QSortStaticLights (left, r);
 }
 
 //------------------------------------------------------------------------------
@@ -1438,12 +1490,12 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			continue;
 		pc = gameData.render.color.textures + t;
 		if (gameData.pig.tex.brightness [t])
-			AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+			AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1, NULL);
 		t = sideP->nOvlTex;
 		if ((t > 0) && (t < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [t]) {
 			pc = gameData.render.color.textures + t;
 			if ((pc->color.red > 0.0f) || (pc->color.green > 0.0f) || (pc->color.blue > 0.0f))
-				AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1);
+				AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1, NULL);
 			}
 		//if (gameData.render.lights.dynamic.nLights)
 		//	return;
@@ -1453,6 +1505,7 @@ for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, seg
 			}
 		}
 	}
+QSortStaticLights (0, gameData.render.lights.dynamic.nLights);
 }
 
 //------------------------------------------------------------------------------
@@ -1533,18 +1586,22 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGB
 
 //------------------------------------------------------------------------------
 
-void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable)
+void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable, int nThread)
 {
 //if (gameOpts->render.bDynLighting) 
 	{
-	short			*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
+	short				*pnl = gameData.render.lights.dynamic.nNearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	short				i, j;
 	tShaderLight	*psl;
-	gameData.render.lights.dynamic.shader.iVariableLights = gameData.render.lights.dynamic.shader.nActiveLights;
-	gameData.render.lights.dynamic.nVertLights = 0;
+
+	gameData.render.lights.dynamic.shader.iVariableLights [nThread] = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 	for (i = MAX_NEAREST_LIGHTS; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
+#ifdef _DEBUG
+		if (j >= gameData.render.lights.dynamic.nLights)
+			break;
+#endif
 		psl = gameData.render.lights.dynamic.shader.lights + j;
 		if (gameData.threads.vertColor.data.bNoShadow && psl->bShadow)
 			continue;
@@ -1558,14 +1615,14 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 			}
 		psl->nType = nType;
 		psl->bState = 1;
-		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
+		gameData.render.lights.dynamic.shader.activeLights [nThread][gameData.render.lights.dynamic.shader.nActiveLights [nThread]++] = psl;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void SetNearestStaticLights (int nSegment, ubyte nType)
+void SetNearestStaticLights (int nSegment, ubyte nType, int nThread)
 {
 	static	int nLastSeg = 1;
 	static	int nFrameFlipFlop = -1;
@@ -1580,45 +1637,45 @@ nLastType = nType;
 if (gameOpts->render.bDynLighting) {
 	short	*pnl = gameData.render.lights.dynamic.nNearestSegLights + nSegment * MAX_NEAREST_LIGHTS;
 	short	i, j;
-	gameData.render.lights.dynamic.shader.iStaticLights = gameData.render.lights.dynamic.shader.nActiveLights;
+	gameData.render.lights.dynamic.shader.iStaticLights [nThread] = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 	for (i = gameOpts->ogl.nMaxLights; i; i--, pnl++) {
 		if ((j = *pnl) < 0)
 			break;
-		gameData.render.lights.dynamic.shader.lights [j].nType = nType;
+		//gameData.render.lights.dynamic.shader.lights [j].nType = nType;
 		if (gameData.threads.vertColor.data.bNoShadow && gameData.render.lights.dynamic.shader.lights [j].bShadow)
 			continue;
-		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] =
+		gameData.render.lights.dynamic.shader.activeLights [nThread][gameData.render.lights.dynamic.shader.nActiveLights [nThread]++] =
 			gameData.render.lights.dynamic.shader.lights + j;
 		}
 	}
 }
 //------------------------------------------------------------------------------
 
-void QSortDynamicLights (int left, int right)
+void QSortDynamicLights (int left, int right, int nThread)
 {
 	int	l = left,
 			r = right,
-			m = gameData.render.lights.dynamic.shader.activeLights [(l + r) / 2]->xDistance;
+			m = gameData.render.lights.dynamic.shader.activeLights [nThread][(l + r) / 2]->xDistance;
 			
 do {
-	while (gameData.render.lights.dynamic.shader.activeLights [l]->xDistance < m)
+	while (gameData.render.lights.dynamic.shader.activeLights [nThread][l]->xDistance < m)
 		l++;
-	while (gameData.render.lights.dynamic.shader.activeLights [r]->xDistance > m)
+	while (gameData.render.lights.dynamic.shader.activeLights [nThread][r]->xDistance > m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tShaderLight *h = gameData.render.lights.dynamic.shader.activeLights [l];
-			gameData.render.lights.dynamic.shader.activeLights [l] = gameData.render.lights.dynamic.shader.activeLights [r];
-			gameData.render.lights.dynamic.shader.activeLights [r] = h;
+			tShaderLight *h = gameData.render.lights.dynamic.shader.activeLights [nThread][l];
+			gameData.render.lights.dynamic.shader.activeLights [nThread][l] = gameData.render.lights.dynamic.shader.activeLights [nThread][r];
+			gameData.render.lights.dynamic.shader.activeLights [nThread][r] = h;
 			}
 		l++;
 		r--;
 		}
 	} while (l <= r);
 if (l < right)
-	QSortDynamicLights (l, right);
+	QSortDynamicLights (l, right, nThread);
 if (left < r)
-	QSortDynamicLights (left, r);
+	QSortDynamicLights (left, r, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1627,27 +1684,26 @@ if (left < r)
 time_t tSetNearestDynamicLights = 0;
 #endif
 
-short SetNearestDynamicLights (int nSegment, int bVariable)
+short SetNearestDynamicLights (int nSegment, int bVariable, int nThread)
 {
-	static int nLastSeg = 1;
+	static int nLastSeg [4] = {-1, -1, -1, -1};
 #if PROFILING
 	time_t t = clock ();
 #endif
 
-if (nLastSeg == nSegment)
-	return gameData.render.lights.dynamic.shader.nActiveLights;
-nLastSeg = nSegment;
+if (nLastSeg [nThread] == nSegment)
+	return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+nLastSeg [nThread] = nSegment;
 if (gameOpts->render.bDynLighting) {
 	short				i = gameData.render.lights.dynamic.shader.nLights,
 						nLightSeg;
 	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + i;
 	vmsVector		c;
 
-	gameData.render.lights.dynamic.shader.nActiveLights = 0;
+	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = 0;
 	COMPUTE_SEGMENT_CENTER_I (&c, nSegment);
 	while (i--) {
-		psl--;
-		if (psl->nType < 2) {
+		if ((--psl)->nType < 2) {
 			if (!bVariable)
 				break;
 			if (!(psl->bVariable && psl->bOn))
@@ -1662,19 +1718,19 @@ if (gameOpts->render.bDynLighting) {
 			if ((psl->xDistance = VmVecDist (&c, &psl->vPos)) > MAX_LIGHT_RANGE)
 				continue;
 			}
-		gameData.render.lights.dynamic.shader.activeLights [gameData.render.lights.dynamic.shader.nActiveLights++] = psl;
+		gameData.render.lights.dynamic.shader.activeLights [nThread][gameData.render.lights.dynamic.shader.nActiveLights [nThread]++] = psl;
 		}
 	}
 #if 0
 if (gameData.render.lights.dynamic.shader.nActiveLights > MAX_NEAREST_LIGHTS) {
-	QSortDynamicLights (0, gameData.render.lights.dynamic.shader.nActiveLights - 1);
+	QSortDynamicLights (0, gameData.render.lights.dynamic.shader.nActiveLights - 1, nThread);
 	gameData.render.lights.dynamic.shader.nActiveLights = MAX_NEAREST_LIGHTS;
 	}
 #endif
 #if PROFILING
 tSetNearestDynamicLights += clock () - t;
 #endif
-return gameData.render.lights.dynamic.shader.nActiveLights;
+return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 }
 
 //------------------------------------------------------------------------------
@@ -1779,7 +1835,7 @@ if (gameOpts->render.bDynLighting) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
 		int			nLight;
-	nLight = AddDynLight (&c, F1_0 * 50, -1, -1, -1);
+	nLight = AddDynLight (&c, F1_0 * 50, -1, -1, -1, NULL);
 	if (nLight >= 0) {
 		pl = gameData.render.lights.dynamic.lights + nLight;
 		pl->nPlayer = objP->id;
@@ -1792,6 +1848,7 @@ if (gameOpts->render.bDynLighting) {
 	}
 return -1;
 }
+
 //------------------------------------------------------------------------------
 
 void RemoveOglHeadLight (tObject *objP)
@@ -1801,6 +1858,7 @@ if (gameOpts->render.bDynLighting) {
 	gameData.render.lights.dynamic.nHeadLights [objP->id] = -1;
 	}
 }
+
 //------------------------------------------------------------------------------
 
 void UpdateOglHeadLight (void)
@@ -1818,10 +1876,13 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 3);
 	}
 }
+
 //------------------------------------------------------------------------------
+
 #ifdef _DEBUG
 extern int nDbgVertex;
 #endif
+
 void ComputeStaticDynLighting (void)
 {
 if (gameStates.app.bNostalgia)
@@ -1831,10 +1892,12 @@ if (gameOpts->render.bDynLighting ||
 	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
 		int				i, j, nVertex,
 							bColorize = !gameOpts->render.bDynLighting;
-		tFaceColor		*pfh, *pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
+		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		fVector			vVertex;
 		tSegment2		*seg2P;
 
+	//AddDynLights ();
+	gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
@@ -1844,10 +1907,10 @@ if (gameOpts->render.bDynLighting ||
 			nVertex = nVertex;
 #endif
 		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
-		gameData.render.lights.dynamic.shader.nActiveLights = 0;
-		SetNearestVertexLights (nVertex, 1, 1, bColorize);
+		gameData.render.lights.dynamic.shader.nActiveLights [0] = 0;
+		SetNearestVertexLights (nVertex, 1, 1, bColorize, 0);
 		gameData.render.color.vertices [nVertex].index = 0;
-		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, 1, 0);
+		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, NULL, 1, 0, 0);
 		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
 		}
 	pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
@@ -1864,7 +1927,9 @@ if (gameOpts->render.bDynLighting ||
 		}
 	}
 }
+
 //------------------------------------------------------------------------------
+
 void CalcDynLightAttenuation (vmsVector *pv)
 {
 #if !USE_OGL_LIGHTS
@@ -1887,7 +1952,9 @@ for (i = gameData.render.lights.dynamic.nLights; i; i--, pl++, psl++) {
 	}
 #endif
 }
+
 //-------------------------------------------------------------------------
+
 #ifdef _DEBUG
 char *lightingVS = "lighting.vert";
 char *lightingFS = "lighting.frag";
@@ -1898,9 +1965,12 @@ char *lightingVS =
 	"void LightingVS (void){gl_FragColor=gl_Color;}"
 	;
 #endif
+
 //-------------------------------------------------------------------------
+
 GLhandleARB lvs = 0; 
 GLhandleARB lfs = 0; 
+
 void InitLightingShaders (void)
 {
 #if 0
@@ -1919,5 +1989,108 @@ else {
 	}
 #endif
 }
+
+//------------------------------------------------------------------------------
+
+int IsLight (int tMapNum) 
+{
+if (gameStates.app.bD1Mission)
+	tMapNum = ConvertD1Texture (tMapNum, 1);
+#if 1
+if (gameData.pig.tex.brightness [tMapNum] > 0)
+	return 1;
+#else
+if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
+	return 1;
+#endif
+switch (tMapNum) {
+	case 275:
+	case 276:
+	case 278:
+	case 288:
+	case 289:
+	case 290:
+	case 291:
+	case 293:
+	case 295:
+	case 296:
+	case 298:
+	case 300:
+	case 301:
+	case 302:
+	case 305:
+	case 306:
+	case 307:
+	case 348:
+	case 349:
+	case 340:
+	case 341:
+	case 345:
+	case 382:
+	case 343:
+	case 344:
+	case 377:
+	case 346:
+	case 351:
+	case 352:
+	case 364:
+	case 366:
+	case 368:
+	case 370:
+	case 372:
+	case 380:
+	case 410:
+	case 427:
+	case 374:
+	case 375:
+	case 391:
+	case 392:
+	case 393:
+	case 394:
+	case 395:
+	case 396:
+	case 397:
+	case 398:
+	case 411:
+	case 412:
+	case 428:
+	case 429:
+	case 430:
+	case 431:
+	case 414:
+	case 416:
+	case 418:
+	case 423:
+	case 424:
+	case 235:
+	case 236:
+	case 237:
+	case 243:
+	case 244:
+	case 333:
+	case 353:
+	case 356:
+	case 357:
+	case 358:
+	case 359:
+	case 378:
+	case 404:
+	case 405:
+	case 406:
+	case 407:
+	case 408:
+	case 409:
+	case 426:
+	case 434:
+	case 420:
+	case 432:
+	case 433:
+		return 1;
+	default:
+		break;
+	}
+return 0;
+}
+
 // ----------------------------------------------------------------------------------------------
 //eof

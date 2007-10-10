@@ -70,11 +70,12 @@ if (ph->bits == 24) {
 else if (bReverse) {
 	tRGBA	c;
 	tRgbaColorb	*p = (tRgbaColorb *) bmP->bmTexBuf;
-	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int nSuperTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
 		n = nFrames - i / w;
+		nSuperTransp = 0;
 		for (j = w; j; j--, p++) {
 			if (CFRead (&c, 1, 4, fp) != (size_t) 4)
 				return 0;
@@ -89,20 +90,8 @@ else if (bReverse) {
 				p->blue = (ubyte) (c.b * brightness);
 				}
 			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-#if 0
-				if (bShaderMerge) { 
-					p->red =
-					p->green =
-					p->blue = 0;
-					p->alpha = 1;
-					}
-				else
-#endif
-					p->alpha = 0;
-				if (!n)
-					bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
-				bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
+				nSuperTransp++;
+				p->alpha = 0;
 				}
 			else {
 				p->alpha = (alpha < 0) ? c.a : alpha;
@@ -125,16 +114,23 @@ else if (bReverse) {
 			avgColor.green += p->green * a;
 			avgColor.blue += p->blue * a;
 			}
+		if (nSuperTransp > w * w / 2000) {
+			if (!n)
+				bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+			bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+			bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
+			}
 		}
 	}	
 else {
 	tBGRA	c;
 	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
-	int bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int nSuperTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
 		n = nFrames - i / w;
+		nSuperTransp = 0;
 		for (j = w; j; j--, p++) {
 			if (CFRead (&c, 1, 4, fp) != (size_t) 4)
 				return 0;
@@ -149,20 +145,8 @@ else {
 				p->blue = (ubyte) (c.b * brightness);
 				}
 			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-#if 0
-				if (bShaderMerge) { 
-					p->red =
-					p->green =
-					p->blue = 0;
-					p->alpha = 1;
-					}
-				else
-#endif
-					p->alpha = 0;
-				if (!n)
-					bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
-				bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
+				nSuperTransp++;
+				p->alpha = 0;
 				}
 			else {
 				p->alpha = (alpha < 0) ? c.a : alpha;
@@ -183,6 +167,12 @@ else {
 			avgColor.red += p->red * a;
 			avgColor.green += p->green * a;
 			avgColor.blue += p->blue * a;
+			}
+		if (nSuperTransp > w * w / 2000) {
+			if (!n)
+				bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+			bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+			bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
 			}
 		p -= 2 * w;
 		}
@@ -417,6 +407,8 @@ int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 	ubyte		*pData, *pSrc, *pDest;
 	int		cSum [4];
 
+	static ubyte superTranspKeys [3] = {120,88,128};
+
 if (!bmP->bmTexBuf)
 	return 0;
 if ((xFactor < 1) || (yFactor < 1))
@@ -461,35 +453,26 @@ for (yDest = 0; yDest < yMax; yDest++) {
 				}
 			}
 		if (nSuperTransp >= nFactor2 / 2) {
-#if 0
-			if (bShaderMerge) {
-				pDest [0] = 
-				pDest [1] = 
-				pDest [2] = 0;
-				pDest [3] = 1;
-				}
-			else
-#endif
-				{
-				pDest [0] = 120;
-				pDest [1] = 88;
-				pDest [2] = 128;
-				pDest [3] = 0;
-				}
+			pDest [0] = 120;
+			pDest [1] = 88;
+			pDest [2] = 128;
+			pDest [3] = 0;
 			pDest += bpp;
 			}
 		else {
-			for (i = 0; i < bpp; i++, pDest++) {
-				*pDest = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
-#if 0
-				if (i == 3)	 {//alpha treatment round to 0 or 255 depending on the average alpha
-					if (*pDest < 128)
-						*pDest = 0;
-					else if (*pDest > 127)
-						*pDest = 255;
-					}
-#endif
+			for (i = 0, bSuperTransp = 1; i < bpp; i++)
+				pDest [i] = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
+			if (!(bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)) {
+				for (i = 0; i < 3; i++) 
+					if (pDest [i] != superTranspKeys [i])
+						break;
+				if (i == 3)
+					pDest [0] =
+					pDest [1] =
+					pDest [2] =
+					pDest [3] = 0;
 				}
+			pDest += 4;
 			}
 		}
 	}

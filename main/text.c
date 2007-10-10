@@ -1569,9 +1569,9 @@ char *defaultGameTexts [][2] = {
 	{"Lang", "Long"},
 	{"~Effekte...", "~Effect options..."},
 	{"Effekte", "Effect options"},
-	{"o~Boterschatten", "ro~bot shadows"},
+	{"R~O~boterschatten", "r~Obot shadows"},
 	{"ra~Ketenschatten", "~Missile shadows"},
-	{"~Reaktorschatten", "~Reactor shadows"},
+	{"Re~Aktorschatten", "re~Actor shadows"},
 	{"~Spielerschatten", "~Player shadows"},
 	{"schnelle Schatten~Berechnung", "~Fast shadow rendering"},
 	{"~Schatten...", "sh~Adow options..."},
@@ -1734,6 +1734,7 @@ char *defaultGameTexts [][2] = {
 	{"~Blitze zeichnen", "render ~Lightnings"},
 	{"sehr niedrig", "very low"},
 	{"Koronas ~Additiv einblenden", "~Additive corona blending"},
+	{"po~Werupschatten", "po~Werup shadows"},
 #if 0
 	{"", ""},
 #endif
@@ -2307,6 +2308,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erhalten Powerups Lichthoefe.", "If checked, powerups are rendered with coronas."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Blitz-\neffekte dargestellt werden.", "Check to have lightning effects rendered in the textured automap."},
 	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLichthoefen und ihrem Hintergrund.", "If checked, the brightness and color of coronas and their\nbackground."},
+	{"Wenn angekreuzt, werden Schatten fuer Powerups erzeugt.", 
+	 "If checked, shadows are created for powerups."},
 #if 0
 	{"", ""},
 #endif

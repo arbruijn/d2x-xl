@@ -558,10 +558,14 @@ else if (!po) {
 			if (objP->cType.aiInfo.CLOAKED)
 				return NULL;
 			}
-		else if ((objP->nType == OBJ_WEAPON) || (objP->nType == OBJ_POWERUP)) {
+		else if (objP->nType == OBJ_WEAPON) {
 			if (!gameOpts->render.shadows.bMissiles)
 				return NULL;
 			if (!gameData.objs.bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
+				return NULL;
+			}
+		else if ((objP->nType == OBJ_POWERUP)) {
+			if (!gameOpts->render.shadows.bPowerups)
 				return NULL;
 			}
 		else if (objP->nType == OBJ_PLAYER) {
@@ -661,8 +665,7 @@ if (gameStates.render.nShadowPass == 2) {
 	return;
 	}
 nTextures = LoadModelTextures (po, altTextures);
-gameStates.ogl.bUseTransform = !SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects;
-G3StartInstanceMatrix (pos, orient);
+gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
 #ifdef _3DFX
 _3dfx_rendering_poly_obj = 1;
@@ -671,8 +674,14 @@ PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
+G3StartInstanceMatrix (pos, orient);
 if (!flags)	{	//draw entire tObject
-	G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
+	if (!G3RenderModel (objP, nModel, po, gameData.models.textures, animAngles, light, glowValues, color)) {
+		G3DoneInstance ();
+		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects);
+		G3StartInstanceMatrix (pos, orient);
+		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
+		}
 	}
 else {
 	int i;

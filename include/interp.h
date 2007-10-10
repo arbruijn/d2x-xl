@@ -15,6 +15,23 @@
 #include "cfile.h"
 #include "3d.h"
 
+#define OP_EOF          0   //eof
+#define OP_DEFPOINTS    1   //defpoints
+#define OP_FLATPOLY     2   //flat-shaded polygon
+#define OP_TMAPPOLY     3   //texture-mapped polygon
+#define OP_SORTNORM     4   //sort by normal
+#define OP_RODBM        5   //rod bitmap
+#define OP_SUBCALL      6   //call a subobject
+#define OP_DEFP_START   7   //defpoints with start
+#define OP_GLOW         8   //glow value for next poly
+
+#define MAX_POINTS_PER_POLY 25
+
+#define WORDVAL(_p)	(*((short *) (_p)))
+#define WORDPTR(_p)	((short *) (_p))
+#define FIXPTR(_p)	((fix *) (_p))
+#define VECPTR(_p)	((vmsVector *) (_p))
+
 //Object functions:
 
 fix G3PolyModelSize (tPolyModel *pm, int nModel);
@@ -82,18 +99,19 @@ int get_chunks(ubyte *data, ubyte *new_data, chunk *list, int *no);
 
 void G3SwapPolyModelData (ubyte *data);
 
-void G3SetCullAndStencil (int bCullFront, int bZPass);
-void G3RenderShadowVolumeFace (tOOF_vector *pv);
-void G3RenderFarShadowCapFace (tOOF_vector *pv, int nv);
+int G3RenderModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
+						 fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
-void ComputeHitbox (int nModel, int iSubObj);
-void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb);
+void G3StartModelLightThreads (void);
+void G3EndModelLightThreads (void);
 
+extern g3sPoint *pointList [MAX_POINTS_PER_POLY];
 extern int hitboxFaceVerts [6][4];
 extern vmsVector hitBoxOffsets [8];
 extern vmsAngVec avZero;
 extern vmsVector vZero;
 extern vmsMatrix mIdentity;
+extern short nGlow;
 
 #endif //_INTERP_H
 

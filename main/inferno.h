@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_THREADED_LIGHTS	0
 #define MULTI_THREADED_PRECALC	1
 
-#define USE_SEGRADS		0
+#define USE_SEGRADS	0
 #define CALC_SEGRADS	1
 
 #ifdef _DEBUG
@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _DEBUG
 #	define	PROFILING 1
 #else
-#	define	PROFILING 1
+#	define	PROFILING 0
 #endif
 
 #if SHADOWS
@@ -248,6 +248,7 @@ typedef struct tShadowOptions {
 	int bPlayers;
 	int bRobots;
 	int bMissiles;
+	int bPowerups;
 	int bReactors;
 	} tShadowOptions;
 
@@ -298,6 +299,7 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	short nMaxFPS;
+	int nRenderPath;
 	int nQuality;
 	int nTextureQuality;
 	int nDebrisLife;
@@ -619,6 +621,7 @@ typedef struct tOglStates {
 	int bVoodooHack;
 	int bTextureCompression;
 	int bHaveTexCompression;
+	int bHaveVBOs;
 	int texMinFilter;
 	int texMagFilter;
 	int nTexMagFilterState;
@@ -748,6 +751,15 @@ typedef struct tAutomapStates {
 	int bRadar;
 	} tAutomapStates;
 
+typedef struct tRenderHistory {
+	grsBitmap	*bmBot;
+	grsBitmap	*bmTop;
+	ubyte			bSuperTransp;
+	ubyte			bShaderMerge;
+	char			bOverlay;
+	char			nShader;
+} tRenderHistory;
+
 typedef struct tRenderStates {
 	int bTopDownRadar;
 	int bExternalView;
@@ -768,6 +780,8 @@ typedef struct tRenderStates {
 	int bEnableSSE;
 	int nInterpolationMethod;
 	int bTMapFlat;
+	int bCloaked;
+	int bBrightObject;
 	int nWindow;
 	int nLighting;
 	int bTransparency;
@@ -817,6 +831,7 @@ typedef struct tRenderStates {
 	float grAlpha;
 	tRenderDetail detail;
 	tAutomapStates automap;
+	tRenderHistory history;
 } tRenderStates;
 
 //------------------------------------------------------------------------------
@@ -1164,10 +1179,10 @@ typedef struct tShaderLight {
 typedef struct tShaderLightData {
 	tShaderLight	lights [MAX_OGL_LIGHTS];
 	int				nLights;
-	tShaderLight	*activeLights [MAX_OGL_LIGHTS];
-	int				nActiveLights;
-	int				iVariableLights;
-	int				iStaticLights;
+	tShaderLight	*activeLights [4][MAX_OGL_LIGHTS];
+	int				nActiveLights [4];
+	int				iVariableLights [4];
+	int				iStaticLights [4];
 	GLuint			nTexHandle;
 } tShaderLightData;
 
@@ -1337,6 +1352,7 @@ typedef struct tObjRenderList {
 typedef struct tMineRenderData {
 	vmsVector				viewerEye;
 	short 					nSegRenderList [MAX_RENDER_SEGS];
+	grsFace					*pFaceRenderList [MAX_RENDER_SEGS * 6];
 	tObjRenderList			renderObjs;
 	int						nRenderSegs;
 	ubyte 					bVisited [MAX_RENDER_SEGS];
@@ -1347,6 +1363,11 @@ typedef struct tMineRenderData {
 	int						sCntSave;
 	ubyte						bObjectRendered [MAX_OBJECTS_D2X];
 	ubyte						bRenderSegment [MAX_SEGMENTS_D2X];
+	short						nRenderObjList [MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
+	short						nRenderPos [MAX_SEGMENTS_D2X];
+	int						nRotatedLast [MAX_VERTICES_D2X];
+	ubyte						bCalcVertexColor [MAX_VERTICES_D2X];
+	ubyte						bSetAutomapVisited;
 } tMineRenderData;
 
 //------------------------------------------------------------------------------
@@ -1359,9 +1380,26 @@ typedef struct tGameWindowData {
 
 //------------------------------------------------------------------------------
 
+typedef struct tVertColorData {
+	int		bExclusive;
+	int		bNoShadow;
+	int		bDarkness;
+	int		bMatEmissive;
+	int		bMatSpecular;
+	int		nMatLight;
+	fVector	matAmbient;
+	fVector	matDiffuse;
+	fVector	matSpecular;
+	fVector	vertNorm;
+	fVector	colorSum;
+	fVector	*pVertPos;
+	float		fMatShininess;
+	} tVertColorData;
+
 typedef struct tRenderData {
 	tColorData				color;
 	int						transpColor;
+	tVertColorData			vertColor;
 	tSphereData				shield;
 	tSphereData				monsterball;
 	int						nPaletteGamma;
@@ -1405,6 +1443,14 @@ typedef struct tSlideSegs {
 #define SEGVIS_FLAGS			((gameData.segs.nSegments + 7) >> 3)
 #define VERTVIS_FLAGS		((gameData.segs.nVertices + 3) >> 2)
 
+typedef struct tFaceData {
+	grsFace				*faces;
+	fVector3				*vertices;
+	tTexCoord2f			*texCoord;
+	tTexCoord2f			*ovlTexCoord;
+	tRgbaColorf			*color;
+	} tFaceData;
+
 typedef struct tSegmentData {
 	int					nMaxSegments;
 	vmsVector			*vertices;
@@ -1424,12 +1470,14 @@ typedef struct tSegmentData {
 	int					nLastVertex;
 	short					nSegments;
 	short					nLastSegment;
+	int					nFaces;
 	int					nLevelVersion;
 	char					szLevelFilename [FILENAME_LEN];
 	tSecretData			secret;
 	tSlideSegs			*slideSegs;
 	short					nSlideSegs;
 	int					bHaveSlideSegs;
+	tFaceData			faces;
 } tSegmentData;
 
 //------------------------------------------------------------------------------
@@ -1679,6 +1727,77 @@ typedef struct tPOFObject {
 	ubyte					nVertFlag;
 } tPOFObject;
 
+//	-----------------------------------------------------------------------------
+
+typedef struct tG3RenderVertex {
+	fVector3					vertex;
+	tRgbaColorf				color;
+	tTexCoord2f				texCoord;
+	} tG3RenderVertex;
+
+typedef struct tG3ModelVertex {
+	tTexCoord2f				texCoord;
+	tRgbaColorf				renderColor;
+	fVector					vertex;
+	fVector					normal;
+	tRgbaColorf				baseColor;
+	short						nIndex;
+	char						bTextured;
+} tG3ModelVertex;
+
+typedef struct tG3ModelFace {
+	vmsVector				vNormal;
+	short						nVerts;
+	short						nBitmap;
+	short						nIndex;
+	short						nId;
+	char						bGlow;
+	char						bThruster;
+} tG3ModelFace;
+
+typedef struct tG3SubModel {
+	vmsVector				vOffset;
+	struct tG3SubModel	*pSubModels;
+	tG3ModelFace			*pFaces;
+	short						nParent;
+	short						nSubModels;
+	short						nFaces;
+	short						nVerts;
+	short						nIndex;
+	ushort					nAngles;
+} tG3SubModel;
+
+typedef struct tG3VertNorm {
+	fVector					vNormal;
+	ubyte						nVerts;
+} tG3VertNorm;
+
+typedef struct tG3Model {
+	fVector					*pVerts;
+	fVector					*pTransVerts;
+	tG3VertNorm				*pVertNorms;
+	tFaceColor				*pColor;
+	tG3ModelVertex			*pFaceVerts;
+	char						*pVBData;
+	tTexCoord2f				*pVBTexCoord;
+	tRgbaColorf				*pVBColor;
+	fVector3					*pVBVerts;
+	tG3SubModel				*pSubModels;
+	tG3ModelFace			*pFaces;
+	tG3RenderVertex		*pVertBuf;
+	short						*pIndex;
+	float						fScale;
+	short						nFaces;
+	short						iFace;
+	short						nVerts;
+	short						nFaceVerts;
+	short						iFaceVert;
+	short						nSubModels;
+	short						iSubModel;
+	short						bValid;
+	GLint						vboHandle;
+} tG3Model;
+
 //------------------------------------------------------------------------------
 
 #define MAX_POLYGON_VERTS 1000
@@ -1731,6 +1850,7 @@ typedef struct tSoundData {
 
 typedef struct tTextureData {
 	tBitmapFile			bitmapFiles [2][MAX_BITMAP_FILES];
+	sbyte					bitmapFlags [2][MAX_BITMAP_FILES];
 	grsBitmap			bitmaps [2][MAX_BITMAP_FILES];
 	grsBitmap			altBitmaps [2][MAX_BITMAP_FILES];
 	ushort				bitmapXlat [MAX_BITMAP_FILES];
@@ -1880,6 +2000,7 @@ typedef struct tModelData {
 	int					nDeadModels [MAX_POLYGON_MODELS];
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
+	tG3Model				g3Models [MAX_POLYGON_MODELS];
 	int					nScale;
 } tModelData;
 
@@ -2415,6 +2536,7 @@ typedef struct tLightningLight {
 	int				nLights;
 	int				nBrightness;
 	int				nDynLight;
+	short				nSegment;
 	char				nFrameFlipFlop;
 } tLightningLight;
 
@@ -2496,6 +2618,7 @@ typedef struct tHUDMessage {
 	fix					xTimer;
 	unsigned int		nColor;
 	char					szMsgs [HUD_MAX_MSGS][HUD_MESSAGE_LENGTH + 5];
+	int					nMsgIds [HUD_MAX_MSGS];
 } tHUDMessage;
 
 typedef struct tHUDData {
@@ -2520,22 +2643,6 @@ typedef struct tFCDData {
 } tFCDData;
 
 //------------------------------------------------------------------------------
-
-typedef struct tVertColorData {
-	int		bExclusive;
-	int		bNoShadow;
-	int		bDarkness;
-	int		bMatEmissive;
-	int		bMatSpecular;
-	int		nMatLight;
-	fVector	matAmbient;
-	fVector	matDiffuse;
-	fVector	matSpecular;
-	fVector	vertNorm;
-	fVector	colorSum;
-	fVector	*pVertPos;
-	float		fMatShininess;
-	} tVertColorData;
 
 typedef struct tVertColorThreadData {
 #if MULTI_THREADED_LIGHTS
@@ -2808,7 +2915,7 @@ extern fix nDebrisLife [];
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
 
-#define MAXFPS		((gameStates.render.automap.bDisplay && !gameStates.render.automap.bRadar) ? 40 : gameOpts->render.nMaxFPS)
+#define MAXFPS		((gameStates.render.automap.bDisplay && !(gameStates.render.automap.bRadar || gameStates.render.frameRate.value)) ? 40 : gameOpts->render.nMaxFPS)
 
 #define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->position)

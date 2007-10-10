@@ -464,7 +464,7 @@ switch (gameData.missions.nBuiltinHogSize) {
 		break;
 
 	default:
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		Warning (TXT_HOGSIZE, gameData.missions.nBuiltinHogSize, "descent2.hog");
 #endif
 		gameData.missions.nBuiltinHogSize = FULL_MISSION_HOGSIZE;	//fall through

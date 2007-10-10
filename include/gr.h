@@ -168,7 +168,7 @@ typedef struct grsAltBmData {
 #define BM_TYPE_MASK		4
 
 typedef struct grsBitmap {
-#ifdef _DEBUG
+#if 1//def _DEBUG
 	char				szName [20];
 #endif
 	grsBmProps		bmProps;
@@ -302,8 +302,8 @@ int GrSetMode(u_int32_t mode);
 extern void gr_pal_fade_out(unsigned char * pal);
 extern void gr_pal_fade_in(unsigned char * pal);
 extern void gr_pal_clear(void);
-extern void gr_pal_setblock( int start, int number, unsigned char * pal );
-extern void gr_pal_getblock( int start, int number, unsigned char * pal );
+extern void gr_pal_setblock(int start, int number, unsigned char * pal);
+extern void gr_pal_getblock(int start, int number, unsigned char * pal);
 
 
 extern unsigned char *gr_video_memory;
@@ -363,7 +363,7 @@ void *GrAllocBitmapData (int w, int h, int bpp);
 void GrInitBitmapAlloc (grsBitmap *bmP, int mode, int x, int y, int w, int h, 
 								int nBytesPerLine, int bpp);
 
-void GrInitSubBitmap (grsBitmap *bm, grsBitmap *bmParent, int x, int y, int w, int h );
+void GrInitSubBitmap (grsBitmap *bm, grsBitmap *bmParent, int x, int y, int w, int h);
 
 void GrInitBitmap (grsBitmap *bm, int mode, int x, int y, int w, int h, int bytesPerLine, 
 						 unsigned char * data, int bpp);
@@ -377,8 +377,8 @@ void GrInitBitmapData (grsBitmap *bm);
 // Free the bitmap, but not the pixel data buffer
 void GrFreeSubBitmap(grsBitmap *bm);
 
-void gr_bm_pixel (grsBitmap * bm, int x, int y, unsigned char color );
-void gr_bm_upixel (grsBitmap * bm, int x, int y, unsigned char color );
+void gr_bm_pixel (grsBitmap * bm, int x, int y, unsigned char color);
+void gr_bm_upixel (grsBitmap * bm, int x, int y, unsigned char color);
 void GrBmBitBlt (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 void GrBmUBitBlt (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bTransp);
 void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bTransp);
@@ -391,7 +391,7 @@ void gr_update_buffer (void * sbuf1, void * sbuf2, void * dbuf, int size);
 // When this function is called, the guns are set to gr_palette, and
 // the palette stays the same until GrClose is called
 
-ubyte *GrUsePaletteTable(char * filename, char *level_name );
+ubyte *GrUsePaletteTable(char * filename, char *level_name);
 void GrCopyPalette(ubyte *gr_palette, ubyte *pal, int size);
 
 //=========================================================================
@@ -426,8 +426,8 @@ void gr_pixel(int x, int y);
 void gr_upixel(int x, int y);
 
 // Gets a pixel;
-unsigned char gr_gpixel( grsBitmap * bitmap, int x, int y );
-unsigned char gr_ugpixel( grsBitmap * bitmap, int x, int y );
+unsigned char gr_gpixel(grsBitmap * bitmap, int x, int y);
+unsigned char gr_ugpixel(grsBitmap * bitmap, int x, int y);
 
 // Draws a line into the current canvas in the current color and drawmode.
 int GrLine(fix x0, fix y0, fix x1, fix y1);
@@ -463,16 +463,16 @@ int GrUCircle(fix x, fix y, fix r);
 void gr_box(int left, int top, int right, int bot);
 void GrUBox(int left, int top, int right, int bot);
 
-void GrScanLine( int x1, int x2, int y );
-void gr_uscanline( int x1, int x2, int y );
+void GrScanLine(int x1, int x2, int y);
+void gr_uscanline(int x1, int x2, int y);
 
 
 // Reads in a font file... current font set to this one.
-grsFont * GrInitFont( char * fontfile );
-void GrCloseFont( grsFont * font );
+grsFont * GrInitFont(char * fontfile);
+void GrCloseFont(grsFont * font);
 
 //remap a font, re-reading its data & palette
-void GrRemapFont( grsFont *font, char * fontname, char *font_data );
+void GrRemapFont(grsFont *font, char * fontname, char *font_data);
 
 //remap (by re-reading) all the color fonts
 void GrRemapColorFonts();
@@ -509,24 +509,24 @@ void GrRemapMonoFonts();
 #define D2BLUE_RGBA			RGBA_PAL (35,35,55)
 
 // Writes a string using current font. Returns the next column after last char.
-void GrSetFontColor( int fg, int bg );
+void GrSetFontColor(int fg, int bg);
 void GrSetFontColorRGB (grs_rgba *fg, grs_rgba *bg);
 void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG);
-void GrSetCurFont( grsFont * new );
-int GrString(int x, int y, char *s );
-int GrUString(int x, int y, char *s );
-int _CDECL_ GrPrintF( int x, int y, char * format, ... );
-int _CDECL_ GrUPrintf( int x, int y, char * format, ... );
+void GrSetCurFont (grsFont * new);
+int GrString (int x, int y, char *s, int *idP);
+int GrUString (int x, int y, char *s);
+int _CDECL_ GrPrintF (int *idP, int x, int y, char * format, ...);
+int _CDECL_ GrUPrintf (int x, int y, char * format, ...);
 void GrGetStringSize(char *s, int *string_width, int *string_height, int *average_width);
 void GrGetStringSizeTabbed (char *s, int *string_width, int *string_height, int *average_width, int *nTabs, int nMaxWidth);
-grsBitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth);
+grsBitmap *CreateStringBitmap (char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce);
 int GetCenteredX (char *s);
 
 //  From roller.c
 void RotateBitmap(grsBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 // From scale.c
-void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation );
+void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation);
 
 //===========================================================================
 // Global variables
@@ -537,17 +537,17 @@ extern unsigned char Test_bitmap_data[64*64];
 //shortcut to look at current font
 #define grd_curfont grdCurCanv->cvFont
 
-extern unsigned int FixDivide( unsigned int x, unsigned int y );
+extern unsigned int FixDivide(unsigned int x, unsigned int y);
 
-extern void GrShowCanvas( gsrCanvas *canv );
-extern void GrSetCurrentCanvas( gsrCanvas *canv );
+extern void GrShowCanvas(gsrCanvas *canv);
+extern void GrSetCurrentCanvas(gsrCanvas *canv);
 
 //flags for fonts
 #define FT_COLOR        1
 #define FT_PROPORTIONAL 2
 #define FT_KERNED       4
 
-extern void gr_vesa_update( grsBitmap * source1, grsBitmap * dest, grsBitmap * source2 );
+extern void gr_vesa_update(grsBitmap * source1, grsBitmap * dest, grsBitmap * source2);
 
 // Special effects
 extern void gr_snow_out(int num_dots);
@@ -568,48 +568,48 @@ extern ushort grFadeTableSelector;
 // right after a call to iff_read_bitmap like this:
 //		iff_error = iff_read_bitmap(filename, new, BM_LINEAR, newpal);
 //		if (iff_error != IFF_NO_ERROR) Error("Can't load IFF file <%s>, error=%d", filename, iff_error);
-//		if ( iff_has_transparency )
-//			GrRemapBitmap( new, newpal, iff_transparent_color );
+//		if (iff_has_transparency)
+//			GrRemapBitmap(new, newpal, iff_transparent_color);
 //		else
-//			GrRemapBitmap( new, newpal, -1 );
-void GrRemapBitmap( grsBitmap * bmp, ubyte * palette, int transparent_color, int super_transparent_color );
+//			GrRemapBitmap(new, newpal, -1);
+void GrRemapBitmap(grsBitmap * bmp, ubyte * palette, int transparent_color, int super_transparent_color);
 
 // Same as above, but searches using GrFindClosestColor which uses
 // 18-bit accurracy instead of 15bit when translating colors.
-void GrRemapBitmapGood( grsBitmap * bmp, ubyte * palette, int transparent_color, int super_transparent_color );
+void GrRemapBitmapGood(grsBitmap * bmp, ubyte * palette, int transparent_color, int super_transparent_color);
 
-void GrPaletteStepUp( int r, int g, int b );
+void GrPaletteStepUp(int r, int g, int b);
 
-void GrBitmapCheckTransparency( grsBitmap * bmp );
+void GrBitmapCheckTransparency(grsBitmap * bmp);
 
 // Allocates a selector that has a base address at 'address' and length 'size'.
 // Returns 0 if successful... BE SURE TO CHECK the return value since there
 // is a limited number of selectors available!!!
-int GetSelector( void * address, int size, unsigned int * selector );
+int GetSelector(void * address, int size, unsigned int * selector);
 
 // Assigns a selector to a bitmap. Returns 0 if successful.  BE SURE TO CHECK
 // this return value since there is a limited number of selectors!!!!!!!
-int GrBitmapAssignSelector( grsBitmap * bmp );
+int GrBitmapAssignSelector(grsBitmap * bmp);
 
-//#define GR_GETCOLOR(r, g, b) (gr_inverse_table[( (((r)&31)<<10) | (((g)&31)<<5) | ((b)&31) )])
-//#define gr_getcolor(r, g, b) (gr_inverse_table[( (((r)&31)<<10) | (((g)&31)<<5) | ((b)&31) )])
-//#define BM_XRGB(r, g, b) (gr_inverse_table[( (((r)&31)<<10) | (((g)&31)<<5) | ((b)&31) )])
+//#define GR_GETCOLOR(r, g, b) (gr_inverse_table[((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
+//#define gr_getcolor(r, g, b) (gr_inverse_table[((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
+//#define BM_XRGB(r, g, b) (gr_inverse_table[((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
 
-#define BM_RGB(r, g, b) ( (((r)&31)<<10) | (((g)&31)<<5) | ((b)&31) )
-//#define BM_XRGB(r, g, b) GrFindClosestColor( (r)*2, (g)*2, (b)*2 )
-//#define GR_GETCOLOR(r, g, b) GrFindClosestColor( (r)*2, (g)*2, (b)*2 )
-//#define gr_getcolor(r, g, b) GrFindClosestColor( (r)*2, (g)*2, (b)*2 )
+#define BM_RGB(r, g, b) ((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))
+//#define BM_XRGB(r, g, b) GrFindClosestColor((r)*2, (g)*2, (b)*2)
+//#define GR_GETCOLOR(r, g, b) GrFindClosestColor((r)*2, (g)*2, (b)*2)
+//#define gr_getcolor(r, g, b) GrFindClosestColor((r)*2, (g)*2, (b)*2)
 
 // Given: r, g, b, each in range of 0-63, return the color index that
 // best matches the input.
 int GrFindClosestColor(ubyte *palette, int r, int g, int b);
-int GrFindClosestColor15bpp( int rgb );
+int GrFindClosestColor15bpp(int rgb);
 int GrAvgColor (grsBitmap *bm);
 
-void GrMergeTextures( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale );
-void GrMergeTextures1( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale );
-void GrMergeTextures2( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale );
-void GrMergeTextures3( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale );
+void GrMergeTextures(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
+void GrMergeTextures1(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
+void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
+void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 
 void GrUpdate (int bClear);
 void SaveScreenShot (unsigned char *buf, int automapFlag);
@@ -636,6 +636,9 @@ int GrToggleFullScreen(void);
 
 int GrToggleFullScreenMenu(void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
 
+void InitStringPool (void);
+void FreeStringPool (void);
+
 typedef struct tScrSize {
 	int	x, y, c;
 } tScrSize;
@@ -659,5 +662,55 @@ int GrBitmapHasTransparency (grsBitmap *bmP);
 #define FDATA        FONT->ftData
 #define FCHARS       FONT->ftChars
 #define FWIDTHS      FONT->ftWidths
+
+typedef union tTexCoord2f {
+	float a [2];
+	struct {
+		float	u, v;
+		} v;
+	} tTexCoord2f;
+
+typedef union tTexCoord3f {
+	float a [3];
+	struct {
+		float	u, v, l;
+		} v;
+	} tTexCoord3f;
+
+typedef struct grsFace {
+	short					index [4];
+	int					nIndex;
+	grsBitmap			*bmBot;
+	grsBitmap			*bmTop;
+	tTexCoord2f			*pTexCoord;
+	short					nWall;
+	short					nBaseTex;
+	short					nOvlTex;
+#ifdef _DEBUG
+	short					nSegment;
+#endif
+	ubyte					nSide;
+	ubyte					nOvlOrient;
+	ubyte					bTextured :1;
+	ubyte					bOverlay :1;
+	ubyte					bSplit :1;
+	ubyte					bTransparent :1;
+	ubyte					bIsLight :1;
+	ubyte					bHaveCameraBg :1;
+	ubyte					bTeleport :1;
+	ubyte					widFlags;
+	char					nCamera;
+	char					nType;
+	char					nSegColor;
+	char					nShader;
+	} grsFace;
+
+typedef struct grsString {
+	char					*pszText;
+	grsBitmap			*bmP;
+	int					*pId;
+	short					nWidth;
+	short					nLength;
+	} grsString;
 
 #endif /* def _GR_H */

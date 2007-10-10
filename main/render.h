@@ -19,12 +19,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "3d.h"
 #include "object.h"
+#include "renderlib.h"
+#include "flightpath.h"
 
 #define	APPEND_LAYERED_TEXTURES 0
 
 extern int nClearWindow;    // 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
-
-extern float coronaIntensities [];
 
 void GameRenderFrame (void);
 void RenderFrame (fix eye_offset, int window_num);  //draws the world into the current canvas
@@ -32,7 +32,7 @@ void RenderFrame (fix eye_offset, int window_num);  //draws the world into the c
 // cycle the flashing light for when mine destroyed
 void FlashFrame();
 
-int find_seg_side_face(short x,short y,int *seg,int *tSide,int *face,int *poly);
+int FindSegSideFace (short x,short y,int *seg,int *tSide,int *face,int *poly);
 
 // these functions change different rendering parameters
 // all return the new value of the parameter
@@ -64,7 +64,6 @@ extern short nRenderList [MAX_RENDER_SEGS];
 extern int Render_only_bottom;
 #endif
 
-
 // Set the following to turn on tPlayer head turning
 // If the above flag is set, these angles specify the orientation of the head
 extern vmsAngVec Player_head_angles;
@@ -74,44 +73,18 @@ extern vmsAngVec Player_head_angles;
 //
 
 // This must be called at the start of the frame if RotateVertexList() will be used
-void RenderStartFrame(void);
+void RenderStartFrame (void);
+void SetRenderView (fix nEyeOffset, short *pnStartSeg);
 
-// Given a list of point numbers, rotate any that haven't been rotated
-// this frame
-g3sCodes RotateVertexList(int nv, short *pointnumlist);
-
-// Given a list of point numbers, project any that haven't been projected
-void ProjectVertexList(int nv, short *pointnumlist);
 void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (int bWhite);
 int RenderShadowMap (tDynLight *pLight);
 void UpdateRenderedData (int window_num, tObject *viewer, int rearViewFlag, int user);
-
-extern tFlightPath externalView;
-
-void ResetFlightPath (tFlightPath *pPath, int nSize, int nFPS);
-void SetPathPoint (tFlightPath *pPath, tObject *objP);
-tPathPoint *GetPathPoint (tFlightPath *pPath);
-int IsTransparentTexture (short nTexture);
-int LoadExplBlast (void);
-void FreeExplBlast (void);
-int LoadCorona (void);
-int LoadGlare (void);
-int LoadHalo (void);
-int LoadThruster (void);
-int LoadShield (void);
-int LoadDeadzone (void);
-void LoadExtraImages (void);
-void FreeExtraImages (void);
-void CalcSpriteCoords (fVector *vSprite, fVector *vCenter, fVector *vEye, float dx, float dy, fMatrix *r);
+void RenderObjList (int nListPos, int nWindow);
 void RenderMineSegment (int nn);
 
-extern grsBitmap *bmpCorona;
-extern grsBitmap *bmpGlare;
-extern grsBitmap *bmpHalo;
-extern grsBitmap *bmpThruster [2];
-extern grsBitmap *bmpShield;
-extern grsBitmap *bmpExplBlast;
+void InitSegZRef (int i, int j, int nThread);
+void QSortSegZRef (short left, short right);
 
 //------------------------------------------------------------------------------
 
@@ -132,136 +105,6 @@ static inline tObject *GuidedInMainView (void)
 {
 return gameOpts->render.cockpit.bGuidedInMainView ? GuidedMslView () : NULL;
 }
-
-//------------------------------------------------------------------------------
-
-#define ITEM_DEPTHBUFFER_SIZE	100000
-#define ITEM_BUFFER_SIZE		100000
-
-typedef enum tRenderItemType {
-	riPoly,
-	riSprite,
-	riSphere,
-	riParticle,
-	riLightning,
-	riLightningSegment,
-	riThruster
-} tRenderItemType;
-
-typedef struct tRIPoly {
-	grsBitmap			*bmP;
-	fVector				vertices [4];
-	tUVLf					texCoord [4];
-	tRgbaColorf			color [4];
-	short					sideLength [4];
-	int					nWrap;
-	int					nPrimitive;
-	char					nVertices;
-	char					nColors;
-	char					bDepthMask;
-	char					bAdditive;
-} tRIPoly;
-
-typedef struct tRISprite {
-	grsBitmap			*bmP;
-	fVector				position;
-	tRgbaColorf			color;
-	int					nWidth;
-	int					nHeight;
-	char					nFrame;
-	char					bColor;
-	char					bAdditive;
-} tRISprite;
-
-typedef struct tRIParticle {
-	tParticle			*particle;
-	double				fBrightness;
-} tRIParticle;
-
-typedef enum tRISphereType {
-	riSphereShield,
-	riMonsterball
-} tRISphereType;
-
-typedef struct tRISphere {
-	tRISphereType		nType;
-	tRgbaColorf			color;
-	tObject				*objP;
-} tRISphere;
-
-typedef struct tRILightning {
-	tLightning			*lightning;
-	short					nDepth;
-} tRILightning;
-
-typedef struct tRILightningSegment {
-	fVector					vLine [2];
-	fVector					vPlasma [4];
-	tRgbaColorf				color;
-	short						nDepth;
-	char						bStart;
-	char						bEnd;
-	char						bPlasma;
-} tRILightningSegment;
-
-typedef struct tRIThruster {
-	grsBitmap				*bmP;
-	fVector					vertices [7];
-	tUVLf						texCoord [7];
-	char						bFlame;
-} tRIThruster;
-
-typedef struct tRenderItem {
-	struct tRenderItem	*pNextItem;
-	tRenderItemType		nType;
-	int						z;
-	union {
-		tRIPoly					poly;
-		tRISprite				sprite;
-		tRIParticle				particle;
-		tRISphere				sphere;
-		tRILightning			lightning;
-		tRILightningSegment	lightningSegment;
-		tRIThruster				thruster;
-	} item;
-} tRenderItem;
-
-typedef struct tRenderItemBuffer {
-	tRenderItem		**pDepthBuffer;
-	tRenderItem		*pItemList;
-	int				nItems;
-	int				nFreeItems;
-	int				zMin;
-	int				zMax;
-	double			zScale;
-	int				nWrap;
-	char				nFrame;
-	char				bClientState;
-	char				bTextured;
-	char				bClientColor;
-	char				bClientTexCoord;
-	char				bDepthMask;
-	char				bDisplay;
-	grsBitmap		*bmP;
-} tRenderItemBuffer;
-
-int AllocRenderItemBuffer (void);
-void FreeRenderItemBuffer (void);
-void ResetRenderItemBuffer (void);
-void InitRenderItemBuffer (int zMin, int zMax);
-int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
-int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tUVLf *texCoord, tRgbaColorf *color, 
-					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive);
-int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive);
-int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
-int RIAddParticle (tParticle *particle, double fBrightness);
-int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
-int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
-									char bPlasma, char bStart, char bEnd, short nDepth);
-int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tUVLf *uvlThruster, fVector *vFlame, tUVLf *uvlFlame);
-void RenderItems (void);
-
-extern tRenderItemBuffer renderItems;
 
 //------------------------------------------------------------------------------
 

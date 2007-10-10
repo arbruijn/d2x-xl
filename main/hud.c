@@ -67,7 +67,7 @@ extern gsrCanvas *PrintToCanvas (char *s,grsFont *font, unsigned int fc, unsigne
 
 void ClearBackgroundMessages (void)
 {
-if (( (gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y >= 6)) {
+if (((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y >= 6)) {
 	gsrCanvas	*canv_save = grdCurCanv;
 
 WINDOS (
@@ -128,7 +128,7 @@ if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
 pMsgs->xTimer -= gameData.time.xFrame;
-if ( pMsgs->xTimer < 0)	{
+if (pMsgs->xTimer < 0)	{
 	// Timer expired... get rid of oldest pszMsg...
 	if (pMsgs->nLast != pMsgs->nFirst)	{
 		int	temp;
@@ -156,30 +156,19 @@ if (pMsgs->nMessages > 0) {
 		pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg)) {
-			int	ycrd;
-			WINDOS (
-				ddgrs_canvas *canv_save = dd_grd_curcanv,
-				gsrCanvas	*canv_save = grdCurCanv
-				);
-			WINDOS (
-				ycrd = dd_grd_curcanv->yoff - (SMALL_FONT->ftHeight+2),
-				ycrd = grdCurCanv->cvBitmap.bmProps.y - (SMALL_FONT->ftHeight+2)
-				);
+				gsrCanvas	*canv_save = grdCurCanv;
+				int			ycrd = grdCurCanv->cvBitmap.bmProps.y - (SMALL_FONT->ftHeight+2);
+
 			if (ycrd < 0)
 				ycrd = 0;
-			WINDOS (
-				DDGrSetCurrentCanvas (GetCurrentGameScreen ()),
-				GrSetCurrentCanvas (GetCurrentGameScreen ())
-				);
+			GrSetCurrentCanvas (GetCurrentGameScreen ());
 			GrSetCurFont (SMALL_FONT);
 			GrGetStringSize (pszMsg, &w, &h, &aw);
 			ClearBackgroundMessages ();
 			if (grdCurCanv->cvBitmap.bmProps.nType == BM_MODEX) {
-				WIN (Int3 ());    // No no no no ....
 				ycrd -= h;
 				h *= 2;
-				HUDModexMessage ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg, SMALL_FONT, 
-									  pMsgs->nColor);
+				HUDModexMessage ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg, SMALL_FONT, pMsgs->nColor);
 				if (nModexHUDMsgs > 0) {
 					nModexHUDMsgs--;
 					szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = '!';
@@ -188,27 +177,19 @@ if (pMsgs->nMessages > 0) {
 					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
 			else {
-				WIN (DDGRLOCK (dd_grd_curcanv));
-					if (pMsgs->nColor == -1)
-						pMsgs->nColor = GREEN_RGBA;
-					GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
-					PA_DFX (pa_set_frontbuffer_current ());
-					PA_DFX (GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg));
-					PA_DFX (pa_set_backbuffer_current ());
-					GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, ycrd, pszMsg);
-					strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
-				WIN (DDGRUNLOCK (dd_grd_curcanv));
+				if (pMsgs->nColor == -1)
+					pMsgs->nColor = GREEN_RGBA;
+				GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
+				pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (grdCurCanv->cvBitmap.bmProps.w-w) / 2, ycrd, pszMsg);
+				strcpy (szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage], pszMsg);
 				}
-			WINDOS (
-				DDGrSetCurrentCanvas (canv_save),
-				GrSetCurrentCanvas (canv_save)
-				);
+				GrSetCurrentCanvas (canv_save);
 			nLastMsgYCrd = ycrd;
 			nLastMsgHeight = h;
 			}
 		} 
 	else {
-		GrSetCurFont ( SMALL_FONT);
+		GrSetCurFont (SMALL_FONT);
 		if ((gameStates.render.cockpit.nMode == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nMode == CM_LETTERBOX)) {
 			if (gameData.render.window.w == gameData.render.window.wMax)
@@ -239,9 +220,7 @@ if (pMsgs->nMessages > 0) {
 			y = yStart + i * (h + 1);
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
-			PA_DFX (GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y [nType], pMsgs->szMsgs [n]));
-			PA_DFX (pa_set_backbuffer_current ());
-			GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y, pMsgs->szMsgs [n]);
+			pMsgs->nMsgIds [n] = GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y, pMsgs->szMsgs [n], pMsgs->nMsgIds + n);
 			if (!gameOpts->render.cockpit.bSplitHUDMsgs) 
 				y += h + 1;
 			}
@@ -256,7 +235,7 @@ else if (GetCurrentGameScreen ()->cvBitmap.bmProps.nType == BM_MODEX) {
 		nLastMsgYCrd = temp;
 		}
 	}
-GrSetCurFont ( GAME_FONT);
+GrSetCurFont (GAME_FONT);
 }
 
 // ----------------------------------------------------------------------------
@@ -336,10 +315,10 @@ if (pszLastMsg && (!strcmp (pszLastMsg, pszMsg))) {
 pMsgs->nLast = temp;
 // Check if memory has been overwritten at this point.
 if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH)
-	Error ( "Your message to HUD is too long.  Limit is %i characters.\n", HUD_MESSAGE_LENGTH);
+	Error ("Your message to HUD is too long.  Limit is %i characters.\n", HUD_MESSAGE_LENGTH);
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordHUDMessage ( pszMsg);
+	NDRecordHUDMessage (pszMsg);
 #endif
 pMsgs->xTimer = F1_0*3;		// 1 second per 5 characters
 pMsgs->nMessages++;
@@ -369,25 +348,25 @@ void PlayerDeadMessage (void)
 if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
 	tHUDMessage	*pMsgs = gameData.hud.msgs;
 
-   if ( LOCALPLAYER.lives < 2) {
+   if (LOCALPLAYER.lives < 2) {
       int x, y, w, h, aw;
-      GrSetCurFont ( HUGE_FONT);
-      GrGetStringSize ( TXT_GAME_OVER, &w, &h, &aw);
+      GrSetCurFont (HUGE_FONT);
+      GrGetStringSize (TXT_GAME_OVER, &w, &h, &aw);
       w += 20;
       h += 8;
       x = (grdCurCanv->cv_w - w) / 2;
       y = (grdCurCanv->cv_h - h) / 2;
       NO_DFX (gameStates.render.grAlpha = 2*7);
       NO_DFX (GrSetColorRGB (0, 0, 0, 255));
-      NO_DFX (GrRect ( x, y, x+w, y+h));
+      NO_DFX (GrRect (x, y, x+w, y+h));
       gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-      GrString (0x8000, (grdCurCanv->cv_h - grdCurCanv->cvFont->ftHeight)/2 + h/8, TXT_GAME_OVER);
+      GrString (0x8000, (grdCurCanv->cv_h - grdCurCanv->cvFont->ftHeight)/2 + h/8, TXT_GAME_OVER, NULL);
 #if 0
       // Automatically exit death after 10 secs
-      if ( gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
+      if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0*10) {
                SetFunctionMode (FMODE_MENU);
                gameData.app.nGameMode = GM_GAME_OVER;
-               __asm int 3; longjmp ( gameExitPoint, 1);        // Exit out of game loop
+               __asm int 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
 	      }
 #endif
 	   }
@@ -395,7 +374,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
    if (pMsgs->nColor == -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
-   GrString (0x8000, grdCurCanv->cv_h- (grdCurCanv->cvFont->ftHeight+3), TXT_PRESS_ANY_KEY);
+   GrString (0x8000, grdCurCanv->cv_h- (grdCurCanv->cvFont->ftHeight+3), TXT_PRESS_ANY_KEY, NULL);
 	}
 }
 

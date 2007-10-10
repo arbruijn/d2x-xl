@@ -105,7 +105,7 @@ return nFrames;
 //------------------------------------------------------------------------------
 //draw an tObject which renders as a tVideoClip
 
-#define	FIREBALL_ALPHA		0.9
+#define	FIREBALL_ALPHA		0.8
 #define	THRUSTER_ALPHA		(1.0 / 4.0)
 #define	WEAPON_ALPHA		0.7
 
@@ -166,12 +166,13 @@ void DrawExplBlast (tObject *objP)
 	tSphereData	sd;
 	tOOF_vector	p = {0,0,0};
 #endif
+	tRgbaColorf	color;
 
 	static tRgbaColorf blastColors [] = {
 		{0.5, 0.0f, 0.5f, 1},
 		{1, 0.5f, 0, 1},
 		{1, 0.75f, 0, 1},
-		{1, 1.0f, 1, 3}};
+		{1, 1, 1, 3}};
 
 if (objP->lifeleft <= 0)
 	return;
@@ -188,12 +189,18 @@ VmVecInc (&vPos, &vDir);
 glDepthMask (0);
 #if BLAST_TYPE == 0
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);
-G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, NULL, fAlpha, 1);
+color.red =
+color.green =
+color.blue = 
+color.alpha = fAlpha;
+glBlendFunc (GL_ONE, GL_ONE);
+G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 0);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;
 for (i = 0; i < 4; i++, xSize -= xSize2)
-	G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, blastColors + i, fAlpha * blastColors [i].alpha);
+	G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha * blastColors [i].alpha, 0);
 #elif BLAST_TYPE == 2
 CreateSphere (&sd);
 fAlpha = (float) sqrt (f2fl (objP->lifeleft) * 3);

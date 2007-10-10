@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 #include "timer.h"
 #include "render.h"
+#include "transprender.h"
 #include "laser.h"
 #include "screens.h"
 #include "textures.h"
@@ -1966,7 +1967,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	DoWeaponStuff();
 	}
 if (gameStates.app.bPlayerExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.console->flags & OF_EXPLODING) ) {
-	if (explodingFlag==0)  {
+	if (!explodingFlag)  {
 		explodingFlag = 1;			// When tPlayer starts exploding, clear all input devices...
 		GameFlushInputs();
 		}

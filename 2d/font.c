@@ -49,6 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "makesig.h"
 
+#define STRINGPOOL 1
 #define MAX_OPEN_FONTS	50
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
@@ -707,7 +708,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 grsBitmap *CreateStringBitmap (
-	char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth)
+	char *s, int nKey, unsigned int nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
@@ -718,7 +719,7 @@ grsBitmap *CreateStringBitmap (
 	char			*text_ptr, *text_ptr1, *next_row;
 	int			letter;
 
-if (!(gameOpts->menus.nStyle && gameOpts->menus.bFastMenus))
+if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
 GrGetStringSizeTabbed (s, &w, &h, &aw, nTabs, nMaxWidth);
 if (!(w && h && (bmP = GrCreateBitmap (w, h, 4))))
@@ -861,11 +862,101 @@ int GrInternalColorString (int x, int y, char *s)
 
 //------------------------------------------------------------------------------
 
-int GrString (int x, int y, char *s)
-{
-	int w, h, aw;
-	int clipped = 0;
+#define GRS_MAX_STRINGS	1000
 
+grsString stringPool [GRS_MAX_STRINGS];
+short nPoolStrings = 0;
+
+//------------------------------------------------------------------------------
+
+void InitStringPool (void)
+{
+nPoolStrings = 0;
+memset (stringPool, 0, sizeof (stringPool));
+}
+
+//------------------------------------------------------------------------------
+
+void FreeStringPool (void)
+{
+	int			i;
+	grsString	*ps;
+
+for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
+	D2_FREE (ps->pszText);
+	if (ps->pId)
+		*ps->pId = 0;
+	GrFreeBitmap (ps->bmP);
+	}
+InitStringPool ();
+}
+
+//------------------------------------------------------------------------------
+
+grsString *CreatePoolString (char *s, int *idP)
+{
+	grsString	*ps;
+	int			l, w, h, aw;
+
+if (*idP)
+	ps = stringPool + *idP - 1;
+else {
+	if (nPoolStrings >= GRS_MAX_STRINGS)
+		return NULL;
+	ps = stringPool + nPoolStrings;
+	}
+GrGetStringSize (s, &w, &h, &aw);
+if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1)))
+	return NULL;
+l = strlen (s) + 1;
+if (ps->pszText && (ps->nLength < l)) {
+	D2_FREE (ps->pszText);
+	ps->nLength = ((l + 9) / 10) * 10;
+	}
+if (!ps->pszText) {
+	ps->nLength = ((l + 9) / 10) * 10;
+	if (!(ps->pszText = (char *) D2_ALLOC (ps->nLength))) {
+		GrFreeBitmap (ps->bmP);
+		return NULL;
+		}
+	}
+memcpy (ps->pszText, s, l);
+ps->nWidth = w;
+if (!*idP)
+	nPoolStrings++;
+ps->pId = idP;
+return ps;
+}
+
+//------------------------------------------------------------------------------
+
+grsString *GetPoolString (char *s, int *idP)
+{
+	grsString	*ps;
+
+if (!idP)
+	return NULL;
+if (*idP && (*idP <= nPoolStrings)) {
+	ps = stringPool + *idP - 1;
+	if (ps->bmP && ps->pszText && !strcmp (ps->pszText, s))
+		return ps;
+	}
+return CreatePoolString (s, idP);
+}
+
+//------------------------------------------------------------------------------
+
+int GrString (int x, int y, char *s, int *idP)
+{
+	int			w, h, aw, clipped = 0;
+#if STRINGPOOL
+	grsString	*ps;
+	
+if ((TYPE == BM_OGL) && (ps = GetPoolString (s, idP))) {
+	OglUBitMapMC (x, y, 0, 0, ps->bmP, &FG_COLOR, F1_0, 0);
+	return (int) (ps - stringPool) + 1;
+	}
+#endif
 Assert (FONT != NULL);
 if (x == 0x8000)	{
 	if (y < 0)
@@ -1032,14 +1123,14 @@ int _CDECL_ GrUPrintf (int x, int y, char * format, ...)
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ GrPrintF (int x, int y, char * format, ...)
+int _CDECL_ GrPrintF (int *idP, int x, int y, char * format, ...)
 {
 	static char buffer[1000];
 	va_list args;
 
 va_start (args, format);
 vsprintf (buffer, format, args);
-return GrString (x, y, buffer);
+return GrString (x, y, buffer, idP);
 }
 
 //------------------------------------------------------------------------------

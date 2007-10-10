@@ -470,6 +470,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		FreeParticleImages ();
 		FreeExtraImages ();
 		LoadExtraImages ();
+		FreeStringPool ();
 		OOF_ReleaseTextures ();
 		if (bReload) {
 			OglCacheLevelTextures ();

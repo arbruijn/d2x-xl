@@ -1282,6 +1282,7 @@ if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 		
 	GrSetCurrentCanvas (cnv);
 	PA_DFX (pa_set_backbuffer_current ());
+	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	RenderFrame (0, 0);
 	PA_DFX (pa_alpha_always ());
 		

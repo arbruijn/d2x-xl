@@ -105,7 +105,7 @@ void DrawCenteredText (int y, char * s)
 	int i, l = (int) strlen (s);
 
 if (string_width (s, l) < grdCurCanv->cvBitmap.bmProps.w)	{
-	GrString (0x8000, y, s);
+	GrString (0x8000, y, s, NULL);
 	return;
 	}
 
@@ -113,9 +113,9 @@ for (i=0; i<l; i++)	{
 	if (string_width (s, i) > (grdCurCanv->cvBitmap.bmProps.w - 16))	{
 		p = s [i];
 		s [i] = 0;
-		GrString (0x8000, y, s);
+		GrString (0x8000, y, s, NULL);
 		s [i] = p;
-		GrString (0x8000, y+grdCurCanv->cvFont->ftHeight+1, &s [i]);
+		GrString (0x8000, y+grdCurCanv->cvFont->ftHeight+1, &s [i], NULL);
 		return;
 		}
 	}
@@ -238,7 +238,7 @@ if (ShowView_textTimer > 0) {
 			break;
 		}
 	GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
-	GrPrintF (0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewer), viewer_name, viewer_id, control_name);
+	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewer), viewer_name, viewer_id, control_name);
 	}
 }
 #endif
@@ -267,7 +267,7 @@ if (!gameStates.app.bEndLevelSequence && gameData.reactor.bDestroyed  && (gameDa
 		y += SMALL_FONT->ftHeight*2;
 	if (gameStates.app.bPlayerIsDead)
 		y += SMALL_FONT->ftHeight*2;
-	GrPrintF (0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
+	GrPrintF (NULL, 0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
 	}
 }
 
@@ -313,7 +313,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	else if (gameStates.render.cockpit.nMode == CM_LETTERBOX)
 		h += 7;
 	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !Saving_movie_frames)
-		GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, grdCurCanv->cvBitmap.bmProps.h - h - 2, message);
+		GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, grdCurCanv->cvBitmap.bmProps.h - h - 2, message);
 	}
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	RenderCountdownGauge ();
@@ -344,7 +344,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 				y = line_spacing * 2;	//12
 				x = 20+2;
 				}
-			GrPrintF (x, y, "%s %2d%%", TXT_CRUISE, f2i (gameStates.input.nCruiseSpeed));
+			GrPrintF (NULL, x, y, "%s %2d%%", TXT_CRUISE, f2i (gameStates.input.nCruiseSpeed));
 			}
 		}
 	}
@@ -489,7 +489,7 @@ void game_render_frame_stereo ()
 			GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 			GrGetStringSize (msg, &w, &h, &aw);
 
-			GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
+			GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
 
 			glDisable (GL_DEPTH_TEST);
 			DrawGuidedCrosshair ();
@@ -894,7 +894,7 @@ void GameRenderFrameMono (void)
 		GrSetCurFont (GAME_FONT);    //GAME_FONT);
 		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 		GrGetStringSize (msg, &w, &h, &aw);
-		GrPrintF ((grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
+		GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
 		DrawGuidedCrosshair ();
 		HUDRenderMessageFrame ();
 		bNoDrawHUD = 1;

@@ -34,6 +34,11 @@
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
 #define OGL_POINT_SPRITES		1
 
+#ifdef _WIN32
+#	define	G3_SLEEP(_t)	Sleep (_t)
+#else
+#	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
+#endif
 
 #define DEFAULT_FOV	90.0
 #define FISHEYE_FOV	135.0
@@ -205,6 +210,16 @@ extern PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB;
 #	endif
 #endif
 
+#ifdef _WIN32
+extern PFNGLGENBUFFERSPROC					glGenBuffers;
+extern PFNGLBINDBUFFERPROC					glBindBuffer;
+extern PFNGLBUFFERDATAPROC					glBufferData;
+extern PFNGLMAPBUFFERPROC					glMapBuffer;
+extern PFNGLUNMAPBUFFERPROC				glUnmapBuffer;
+extern PFNGLDELETEBUFFERSPROC				glDeleteBuffers;
+extern PFNGLDRAWRANGEELEMENTSPROC		glDrawRangeElements;
+#endif
+
 #	ifdef _WIN32
 extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #	endif
@@ -213,6 +228,68 @@ extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #	define	wglGetProcAddress	SDL_GL_GetProcAddress
 #	endif
 
+#endif
+
+#ifndef GL_VERSION_20
+#		define	glCreateShaderObject			pglCreateShaderObjectARB
+#		define	glShaderSource					pglShaderSourceARB
+#		define	glCompileShader				pglCompileShaderARB
+#		define	glCreateProgramObject		pglCreateProgramObjectARB
+#		define	glAttachObject					pglAttachObjectARB
+#		define	glLinkProgram					pglLinkProgramARB
+#		define	glUseProgramObject			pglUseProgramObjectARB
+#		define	glDeleteObject					pglDeleteObjectARB
+#		define	glGetObjectParameteriv		pglGetObjectParameterivARB
+#		define	glGetInfoLog					pglGetInfoLogARB
+#		define	glGetUniformLocation			pglGetUniformLocationARB
+#		define	glUniform4f						pglUniform4fARB
+#		define	glUniform3f						pglUniform3fARB
+#		define	glUniform1f						pglUniform1fARB
+#		define	glUniform1i						pglUniform1iARB
+#		define	glUniform4fv					pglUniform4fvARB
+#		define	glUniform3fv					pglUniform3fvARB
+#		define	glUniform1fv					pglUniform1fvARB
+#		define	glUniform1i						pglUniform1iARB
+
+extern PFNGLCREATESHADEROBJECTARBPROC		glCreateShaderObject;
+extern PFNGLSHADERSOURCEARBPROC				glShaderSource;
+extern PFNGLCOMPILESHADERARBPROC				glCompileShader;
+extern PFNGLCREATEPROGRAMOBJECTARBPROC		glCreateProgramObject;
+extern PFNGLATTACHOBJECTARBPROC				glAttachObject;
+extern PFNGLLINKPROGRAMARBPROC				glLinkProgram;
+extern PFNGLUSEPROGRAMOBJECTARBPROC			glUseProgramObject;
+extern PFNGLDELETEOBJECTARBPROC				glDeleteObject;
+extern PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteriv;
+extern PFNGLGETINFOLOGARBPROC					glGetInfoLog;
+extern PFNGLGETUNIFORMLOCATIONARBPROC		glGetUniformLocation;
+extern PFNGLUNIFORM4FARBPROC					glUniform4f;
+extern PFNGLUNIFORM3FARBPROC					glUniform3f;
+extern PFNGLUNIFORM1FARBPROC					glUniform1f;
+extern PFNGLUNIFORM1IARBPROC					glUniform1i;
+extern PFNGLUNIFORM4FVARBPROC					glUniform4fv;
+extern PFNGLUNIFORM3FVARBPROC					glUniform3fv;
+extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
+#else
+#  ifdef __macosx__
+#    define glCreateShaderObject   glCreateShaderObjectARB
+#    define glShaderSource         glShaderSourceARB
+#    define glCompileShader        glCompileShaderARB
+#    define glCreateProgramObject  glCreateProgramObjectARB
+#    define glAttachObject         glAttachObjectARB
+#    define glLinkProgram          glLinkProgramARB
+#    define glUseProgramObject     glUseProgramObjectARB
+#    define glDeleteObject         glDeleteObjectARB
+#    define glGetObjectParameteriv glGetObjectParameterivARB
+#    define glGetInfoLog           glGetInfoLogARB
+#    define glGetUniformLocation   glGetUniformLocationARB
+#    define glUniform4f            glUniform4fARB
+#    define glUniform3f            glUniform3fARB
+#    define glUniform1f            glUniform1fARB
+#    define glUniform1i            glUniform1iARB
+#    define glUniform4fv           glUniform4fvARB
+#    define glUniform3fv           glUniform3fvARB
+#    define glUniform1fv           glUniform1fvARB
+#  endif
 #endif
 
 //extern int GL_texclamp_enabled;
@@ -298,9 +375,11 @@ extern ubyte *starsPalette;
 extern GLenum curDrawBuffer;
 
 #include "3d.h"
+#include "gr.h"
 
 bool G3DrawWhitePoly (int nv, g3sPoint **pointList);
 bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask);
+bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bDrawArrays, int bTextured, int bDepthOnly);
 
 bool G3DrawTexPolyMulti (
 	int			nVerts, 
@@ -371,15 +450,15 @@ void DeleteShaderProg (GLhandleARB *progP);
 void InitShaders ();
 void SetRenderQuality ();
 void DrawTexPolyFlat (grsBitmap *bm,int nv,g3sPoint **vertlist);
-void OglSetupTransform ();
-void OglResetTransform ();
+void OglSetupTransform (int bForce);
+void OglResetTransform (int bForce);
 void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grsColor *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
-int OglEnableClientState (GLuint nState);
-int OglEnableClientStates (int bTexCoord, int bColor);
-void OglDisableClientStates (int bTexCoord, int bColor);
-int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tUVLf *texCoordP, 
+int G3EnableClientState (GLuint nState, int nTMU);
+int G3EnableClientStates (int bTexCoord, int bColor, int nTMU);
+void G3DisableClientStates (int bTexCoord, int bColor, int nTMU);
+int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
 
 //------------------------------------------------------------------------------
@@ -390,6 +469,7 @@ extern PFNGLACTIVETEXTUREARBPROC			glActiveTexture;
 #		ifdef _WIN32
 extern PFNGLMULTITEXCOORD2DARBPROC		glMultiTexCoord2d;
 extern PFNGLMULTITEXCOORD2FARBPROC		glMultiTexCoord2f;
+extern PFNGLMULTITEXCOORD2FVARBPROC		glMultiTexCoord2fv;
 #		endif
 extern PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTexture;
 #	endif
@@ -413,7 +493,8 @@ typedef struct tSinCosd {
 
 void OglComputeSinCos (int nSides, tSinCosd *sinCosP);
 void OglColor4sf (float r, float g, float b, float s);
-void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, float fScale, int bSetColor);
+void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, 
+						  tFaceColor *pBaseColor, float fScale, int bSetColor, int nThread);
 void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 

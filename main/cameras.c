@@ -339,6 +339,7 @@ gameData.cameras.nCameras = 0;
 
 void GetCameraUVL (tCamera *pc, tUVL *uvlCopy)
 {
+	int	i;
 #ifndef _DEBUG
 if (pc->bHaveUVL)
 	memcpy (uvlCopy, pc->uvlList, sizeof (pc->uvlList));
@@ -493,6 +494,10 @@ else
 		uvlCopy [i].l = F1_0;
 	memcpy (pc->uvlList, uvlCopy, sizeof (pc->uvlList));
 	pc->bHaveUVL = 1;
+	}
+for (i = 0; i < 4; i++) {
+	pc->texCoord [i].v.u = f2fl (pc->uvlList [i].u);
+	pc->texCoord [i].v.v = f2fl (pc->uvlList [i].v);
 	}
 }
 

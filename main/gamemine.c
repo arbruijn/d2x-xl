@@ -1070,15 +1070,43 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void RotateTexCoord (tTexCoord2f *pDest, tTexCoord2f *pSrc, ubyte nOrient)
+{
+if (nOrient == 1) {
+	pDest->v.u = 1.0f - pSrc->v.v;
+	pDest->v.v = pSrc->v.u;
+	}
+else if (nOrient == 2) {
+	pDest->v.u = 1.0f - pSrc->v.u;
+	pDest->v.v = 1.0f - pSrc->v.v;
+	}
+else if (nOrient == 3) {
+	pDest->v.u = pSrc->v.v;
+	pDest->v.v = 1.0f - pSrc->v.u;
+	}
+else {
+	pDest->v.u = pSrc->v.u;
+	pDest->v.v = pSrc->v.v;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 {
 	short			lastSeg, nSide, i;
 	tSegment		*segP;
 	tSide			*sideP;
+	grsFace		*faceP = gameData.segs.faces.faces + gameData.segs.nFaces;
+	fVector3		*vertexP = gameData.segs.faces.vertices + gameData.segs.nFaces * 4;
+	tTexCoord2f	*texCoordP = gameData.segs.faces.texCoord + gameData.segs.nFaces * 4;
+	tTexCoord2f	*ovlTexCoordP = gameData.segs.faces.ovlTexCoord + gameData.segs.nFaces * 4;
+	tRgbaColorf	*faceColorP = gameData.segs.faces.color + gameData.segs.nFaces * 4;
+	tFaceColor	*colorP = gameData.render.color.ambient;
 	short			temp_short;
 	ushort		nWall, temp_ushort = 0;
 	short			sideVerts [4];
-	ubyte			bit_mask;
+	ubyte			bit_mask, nOvlTexCount;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
 for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, segP++) {
@@ -1088,6 +1116,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 	segP->group = 0;
 #endif
 
+	segP->nFaces = 0;
 	if (gameStates.app.bD2XLevel) { 
 		gameData.segs.xSegments [nSegment].owner = CFReadByte (loadFile);
 		gameData.segs.xSegments [nSegment].group = CFReadByte (loadFile);
@@ -1144,18 +1173,20 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 			}
 		}
 
-	for (nSide=0, sideP = segP->sides; nSide<MAX_SIDES_PER_SEGMENT; nSide++, sideP++ )	{
+	for (nSide = 0, sideP = segP->sides, nOvlTexCount = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++ )	{
 #ifdef _DEBUG
 		int bReadSideData;
-		if (segP->children [nSide]==-1)
+		nWall = WallNumI (nSegment, nSide);
+		if (segP->children [nSide] == -1)
 			bReadSideData = 1;
-		else if (IS_WALL (WallNumI (nSegment, nSide)))
+		else if (IS_WALL (nWall))
 			bReadSideData = 2;
 		else
 			bReadSideData = 0;
 		if (bReadSideData) {
 #else
-		if ((segP->children [nSide] == -1) || IS_WALL (WallNumI (nSegment, nSide))) {
+		nWall = WallNumI (nSegment, nSide);
+		if ((segP->children [nSide] == -1) || IS_WALL (nWall)) {
 #endif
 			// Read short sideP->nBaseTex;
 			if (bNewFileFormat) {
@@ -1179,7 +1210,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 
 			// Read tUVL sideP->uvls [4] (u, v>>5, write as short, l>>1 write as short)
 			GetSideVertIndex (sideVerts, nSegment, nSide);
-			for (i = 0; i < 4; i++ ) {
+			for (i = 0; i < 4; i++) {
 				temp_short = CFReadShort (loadFile);
 				sideP->uvls [i].u = ((fix)temp_short) << 5;
 				temp_short = CFReadShort (loadFile);
@@ -1193,19 +1224,96 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 				sideP->uvls [i].l = ((fix)temp_ushort) << 1;
 				gameData.render.color.vertBright [sideVerts [i]] = f2fl (sideP->uvls [i].l);
 				//CFRead ( &sideP->uvls [i].l, sizeof (fix), 1, loadFile );
+				texCoordP->v.u = f2fl (sideP->uvls [i].u);
+				texCoordP->v.v = f2fl (sideP->uvls [i].v);
+				RotateTexCoord (ovlTexCoordP, texCoordP, (ubyte) sideP->nOvlOrient);
+				texCoordP++;
+				ovlTexCoordP++;
+				colorP = gameData.render.color.ambient + sideVerts [i];
+				colorP->color.red +=  f2fl (sideP->uvls [i].l);
+				colorP->color.green +=  f2fl (sideP->uvls [i].l);
+				colorP->color.blue += f2fl (sideP->uvls [i].l);
+				colorP->color.alpha += 1;
+				*faceColorP++ = colorP->color;
+				colorP++;
 				}
+			faceP->nType = -1;
+#ifdef _DEBUG
+			faceP->nSegment = nSegment;
+#endif
+			faceP->nSide = (ubyte) nSide;
+			faceP->nWall = nWall;
+			faceP->nBaseTex = sideP->nBaseTex;
+			if (faceP->nOvlTex = sideP->nOvlTex)
+				nOvlTexCount++;
+			faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));
+			faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;
+			faceP->bTextured = 1;
+			faceP->bOverlay = 0;
+			faceP->nIndex = 4 * gameData.segs.nFaces++;
+			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
+			for (i = 0; i < 4; i++) {
+				memcpy (vertexP++, gameData.segs.fVertices + sideVerts [i], sizeof (fVector3));
+				}
+			if (!segP->nFaces++)
+				segP->pFaces = faceP;
+#if 0
+			if (faceP->nOvlTex && gameStates.ogl.bGlTexMerge &&
+				 !(gameData.pig.tex.bitmapFlags [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [faceP->nOvlTex].index] & BM_FLAG_SUPER_TRANSPARENT)) {
+					grsFace *newFaceP = segP->pFaces + segP->nFaces++;
+
+				*newFaceP = *faceP;
+				newFaceP->nIndex = 4 * gameData.segs.nFaces++;
+				for (i = 0; i < 4; i++)
+					newFaceP->index [i] = newFaceP->nIndex + i;
+				memcpy (vertexP, vertexP - 4, 4 * sizeof (fVector3));
+				memcpy (texCoordP, ovlTexCoordP - 4, 4 * sizeof (tTexCoord2f));
+				memcpy (faceColorP, faceColorP - 4, 4 * sizeof (tRgbaColorf));
+				newFaceP->nBaseTex = faceP->nOvlTex;
+				faceP->nOvlTex = newFaceP->nOvlTex = 0;
+				newFaceP->bOverlay = 1;
+				vertexP += 4;
+				texCoordP += 4;
+				ovlTexCoordP += 4;
+				faceColorP += 4;
+				faceP++;
+            }
+#endif
+			faceP++;
 			} 
 		else {
 			sideP->nBaseTex =
 			sideP->nOvlTex = 0;
 			for (i = 0; i < 4; i++) {
-				sideP->uvls [i].u = 0;
-				sideP->uvls [i].v = 0;
+				sideP->uvls [i].u =
+				sideP->uvls [i].v =
 				sideP->uvls [i].l = 0;
+				colorP->color.red = 
+				colorP->color.green = 
+				colorP->color.blue = 
+				colorP->color.alpha = 0;
+				colorP++;
 				}
 			}
 		}
+#if 1
+	if (gameStates.ogl.bGlTexMerge && nOvlTexCount) {	//allow for splitting multi-textured faces into two single textured ones
+		gameData.segs.nFaces += nOvlTexCount;
+		faceP += nOvlTexCount;
+		vertexP += nOvlTexCount * 4;
+		texCoordP += nOvlTexCount * 4;
+		ovlTexCoordP += nOvlTexCount * 4;
+		faceColorP += nOvlTexCount * 4;
+		}
+#endif
 	}
+for (colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i--, colorP++)
+	if (colorP->color.alpha > 1) {
+		colorP->color.red /= colorP->color.alpha;
+		colorP->color.green /= colorP->color.alpha;
+		colorP->color.blue /= colorP->color.alpha;
+		colorP->color.alpha = 1;
+		}
 }
 
 //------------------------------------------------------------------------------
@@ -1231,7 +1339,7 @@ gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 	for (; i < j; i++)
-		ReadColor (gameData.render.color.vertices + i, loadFile, gameData.segs.nLevelVersion <= 14);
+		ReadColor (gameData.render.color.ambient + i, loadFile, gameData.segs.nLevelVersion <= 14);
 	}
 }
 
@@ -1260,7 +1368,7 @@ for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 int HasColoredLight (void)
 {
 	int			i, bColored = 0;
-	tFaceColor	*pvc = gameData.render.color.vertices;
+	tFaceColor	*pvc = gameData.render.color.ambient;
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
@@ -1916,11 +2024,11 @@ if (gameData.segs.nSegments >= MAX_SEGMENTS) {
 con_printf (CONDBG, "   %d segments\n", gameData.segs.nSegments);
 #endif
 for (i = 0; i < gameData.segs.nVertices; i++) {
-	CFReadVector (gameData.segs.vertices+i, loadFile);
+	CFReadVector (gameData.segs.vertices + i, loadFile);
 #if !FLOAT_COORD
-	gameData.segs.fVertices [i].p.x = ((float) gameData.segs.vertices [i].p.x) / 65536.0f;
-	gameData.segs.fVertices [i].p.y = ((float) gameData.segs.vertices [i].p.y) / 65536.0f;
-	gameData.segs.fVertices [i].p.z = ((float) gameData.segs.vertices [i].p.z) / 65536.0f;
+	gameData.segs.fVertices [i].p.x = f2fl (gameData.segs.vertices [i].p.x);
+	gameData.segs.fVertices [i].p.y = f2fl (gameData.segs.vertices [i].p.y);
+	gameData.segs.fVertices [i].p.z = f2fl (gameData.segs.vertices [i].p.z);
 #endif
 	}
 memset (gameData.segs.segments, 0, MAX_SEGMENTS * sizeof (tSegment));

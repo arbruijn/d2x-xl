@@ -36,6 +36,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "key.h"
 #include "object.h"
 #include "objrender.h"
+#include "transprender.h"
 #include "lightning.h"
 #include "physics.h"
 #include "error.h"
@@ -845,7 +846,9 @@ gameData.time.xStops = gameData.time.xStarts = 0;
 #endif
 //	Set value to determine whether homing missile can see target.
 //	The lower frametime is, the more likely that it can see its target.
-if (gameData.time.xFrame <= F1_0/64)
+if (gameStates.limitFPS.bHomers)
+	xMinTrackableDot = MIN_TRACKABLE_DOT;	
+else if (gameData.time.xFrame <= F1_0/64)
 	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (F1_0 - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
 else if (gameData.time.xFrame < F1_0/32)
 	xMinTrackableDot = MIN_TRACKABLE_DOT + F1_0/64 - 2*gameData.time.xFrame;	// -- FixMul (F1_0 - MIN_TRACKABLE_DOT, F1_0-4*gameData.time.xFrame) + MIN_TRACKABLE_DOT;
@@ -875,21 +878,18 @@ RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (segP));
 #ifdef NETWORK
 void GameDrawTimeLeft ()
 {
-        char temp_string[30];
-        fix timevar;
-        int i;
+	char temp_string[30];
+	fix timevar;
+	int i;
+	static int nId = 0;
 
-        GrSetCurFont (GAME_FONT);    //GAME_FONT
-        GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
-
-        timevar=i2f (netGame.xPlayTimeAllowed*5*60);
-        i=f2i (timevar-ThisLevelTime);
-        i++;
-
-        sprintf (temp_string, TXT_TIME_LEFT, i);
-
-        if (i>=0)
-         GrString (0, 32, temp_string);
+GrSetCurFont (GAME_FONT);    //GAME_FONT
+GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
+timevar=i2f (netGame.xPlayTimeAllowed*5*60);
+i = f2i (timevar-ThisLevelTime) + 1;
+sprintf (temp_string, TXT_TIME_LEFT, i);
+if (i >= 0)
+	nId = GrString (0, 32, temp_string, &nId);
 }
 #endif
 
@@ -1809,11 +1809,17 @@ if (gameStates.app.bMultiThreaded) {
 		}
 	}
 #endif
+if (gameStates.app.bMultiThreaded) {
+	G3EndModelLightThreads ();
+	EndRenderThreads ();
+	}
 GrClose ();
 DigiClose ();
 RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
+LogErr ("unloading string pool\n");
+FreeStringPool ();
 LogErr ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();
 PiggyBitmapPageOutAll (0);

@@ -74,6 +74,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "newdemo.h"
 #include "object.h"
 #include "objrender.h"
+#include "renderthreads.h"
 #include "lightning.h"
 #include "network.h"
 #include "modem.h"
@@ -262,14 +263,14 @@ void PrintVersionInfo (void)
 		GrGetStringSize ("V2.2", &w, &h, &aw);
 	
 		WIN (DDGRLOCK (dd_grd_curcanv));
-	   GrPrintF (0x8000, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, TXT_COPYRIGHT);
-		GrPrintF (grdCurCanv->cvBitmap.bmProps.w-w-2, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+	   GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, TXT_COPYRIGHT);
+		GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w-w-2, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 		if (bVertigo < 0)
 			bVertigo = CFExist ("d2x.hog", gameFolders.szMissionDir, 0);
 		if (bVertigo) {
 			GrSetCurFont (MEDIUM2_FONT);
 			GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
-			GrPrintF (
+			GrPrintF (NULL, 
 				//gameStates.menus.bHires?495:248, 
 				grdCurCanv->cvBitmap.bmProps.w-w-SUBVER_XOFFS, 
 				yOffs+ (gameOpts->menus.altBg.bHave?h+2:0), 
@@ -277,7 +278,7 @@ void PrintVersionInfo (void)
 			}
 		GrSetCurFont (MEDIUM2_FONT);
 		GrGetStringSize (D2X_NAME, &w, &h, &aw);
-		GrPrintF (
+		GrPrintF (NULL, 
 			grdCurCanv->cvBitmap.bmProps.w-w-SUBVER_XOFFS, 
 			yOffs+ ((bVertigo&&!gameOpts->menus.altBg.bHave)?h+2:0), 
 //			grdCurCanv->cvBitmap.bmProps.h-2*h-2, 
@@ -285,7 +286,7 @@ void PrintVersionInfo (void)
 		GrSetCurFont (SMALL_FONT);
 		GrGetStringSize (VERSION, &ws, &hs, &aw);
 		GrSetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-		GrPrintF (
+		GrPrintF (NULL, 
 			grdCurCanv->cvBitmap.bmProps.w-ws-1, // (gameStates.menus.bHires? (bVertigo?38:8): (bVertigo?18:3)), //ws, //- (w-ws)/2- (gameStates.menus.bHires?bVertigo?30:5:bVertigo?15:0), 
 			yOffs+ ((bVertigo&&!gameOpts->menus.altBg.bHave)?h+2:0)+ (h-hs)/2, 
 //			grdCurCanv->cvBitmap.bmProps.h-2*h-2, 
@@ -1113,6 +1114,8 @@ if ((t = FindArg ("-model_quality")) && *Args [t+1])
 if ((t = FindArg ("-gl_texcompress")))
 	gameStates.ogl.bTextureCompression = NumArg (t, 1);
 #endif
+if ((t = FindArg ("-renderpath")))
+	gameOptions [0].render.nRenderPath = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -1236,9 +1239,11 @@ if (i) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
+	gameOptions [0].render.nRenderPath = 0;
 	gameOptions [1].render.shadows.bPlayers = 0;
 	gameOptions [1].render.shadows.bRobots = 0;
 	gameOptions [1].render.shadows.bMissiles = 0;
+	gameOptions [1].render.shadows.bPowerups = 0;
 	gameOptions [1].render.shadows.bReactors = 0;
 	gameOptions [1].render.shadows.bFast = 1;
 	gameOptions [1].render.shadows.nClip = 1;
@@ -1356,9 +1361,11 @@ if (i) {
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
+	gameOptions [0].render.nRenderPath = 1;
 	gameOptions [0].render.shadows.bPlayers = 1;
 	gameOptions [0].render.shadows.bRobots = 0;
 	gameOptions [0].render.shadows.bMissiles = 0;
+	gameOptions [0].render.shadows.bPowerups = 0;
 	gameOptions [0].render.shadows.bReactors = 0;
 	gameOptions [0].render.shadows.bFast = 1;
 	gameOptions [0].render.shadows.nClip = 1;
@@ -2289,6 +2296,7 @@ gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 gameData.laser.nLightning = -1;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 InitEndLevelData ();
+InitStringPool ();
 SetDataVersion (-1);
 }
 
@@ -2328,6 +2336,11 @@ GETMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
 GETMEM (ubyte, gameData.segs.bVertVis, MAX_VERTICES * MAX_VERTVIS_FLAGS, 0);
 GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
 GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
+GETMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6 * 2, 0);
+GETMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4 * 2, 0);
+GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4 * 2, 0);
+GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_SEGMENTS * 6 * 4 * 4, 0);
+gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_SEGMENTS * 6 * 4 * 2;
 }
 
 // ----------------------------------------------------------------------------
@@ -2494,6 +2507,10 @@ FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
 FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
 FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
 #endif
+FREEMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6);
+FREEMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4);
+FREEMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4);
+FREEMEM (tTexCoord2f, gameData.segs.faces.texCoord, 2 * MAX_SEGMENTS * 6 * 4);
 FREEMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6);
@@ -3120,19 +3137,21 @@ if (gameStates.app.bMultiThreaded) {
 		gameData.threads.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threads.clipDist.info [i].nId);
 #endif
 		}
+	G3StartModelLightThreads ();
+	StartRenderThreads ();
 	}
-gameData.threads.vertColor.data.matAmbient.c.r = 
-gameData.threads.vertColor.data.matAmbient.c.g = 
-gameData.threads.vertColor.data.matAmbient.c.b = 0.01f;
-gameData.threads.vertColor.data.matAmbient.c.a = 1.0f;
-gameData.threads.vertColor.data.matDiffuse.c.r = 
-gameData.threads.vertColor.data.matDiffuse.c.g = 
-gameData.threads.vertColor.data.matDiffuse.c.b = 
-gameData.threads.vertColor.data.matDiffuse.c.a = 1.0f;
-gameData.threads.vertColor.data.matSpecular.c.r = 
-gameData.threads.vertColor.data.matSpecular.c.g = 
-gameData.threads.vertColor.data.matSpecular.c.b = 0.0f;
-gameData.threads.vertColor.data.matSpecular.c.a = 1.0f;
+gameData.render.vertColor.matAmbient.c.r = 
+gameData.render.vertColor.matAmbient.c.g = 
+gameData.render.vertColor.matAmbient.c.b = 0.01f;
+gameData.render.vertColor.matAmbient.c.a = 1.0f;
+gameData.render.vertColor.matDiffuse.c.r = 
+gameData.render.vertColor.matDiffuse.c.g = 
+gameData.render.vertColor.matDiffuse.c.b = 
+gameData.render.vertColor.matDiffuse.c.a = 1.0f;
+gameData.render.vertColor.matSpecular.c.r = 
+gameData.render.vertColor.matSpecular.c.g = 
+gameData.render.vertColor.matSpecular.c.b = 0.0f;
+gameData.render.vertColor.matSpecular.c.a = 1.0f;
 }
 
 // ------------------------------------------------------------------------------------------

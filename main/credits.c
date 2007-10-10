@@ -122,7 +122,7 @@ typedef struct box {
 		  (CFExist("mcredits.tex",gameFolders.szDataDir,0)?"mcredits.tex":\
 			CFExist("ocredits.tex",gameFolders.szDataDir,0)?"ocredits.tex":"credits.tex")
 
-#define cr_gr_printf(x,y,s)	GrPrintF((x) == 0x8000 ? (x) : (x), (y), s)
+#define cr_gr_printf(x,y,s)	GrPrintF (NULL, (x) == 0x8000 ? (x) : (x), (y), s)
 
 //if filename passed is NULL, show normal credits
 void ShowCredits(char *credits_filename)

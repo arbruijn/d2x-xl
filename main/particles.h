@@ -9,7 +9,7 @@
 #define PARTICLE_SIZE(_nSize,_nScale)	ParticleSize (_nSize, _nScale)
 
 typedef struct tPartPos {
-	double		x, y, z;
+	float		x, y, z;
 } tPartPos;
 
 typedef struct tParticle {
@@ -28,7 +28,7 @@ typedef struct tParticle {
 	int			nHeight;
 	int			nRad;
 	short			nSegment;
-	tRgbaColord	color;			//well ... the color, ya know =)
+	tRgbaColorf	color;			//well ... the color, ya know =)
 	char			nType;			//black or white
 	char			nRotDir;
 	char			nBounce;
@@ -62,7 +62,7 @@ typedef struct tCloud {
 	int			nPartLimit;		//highest max. part. no ever set for this cloud
 	float			nPartScale;
 	int			nDefBrightness;
-	double		brightness;
+	float			fBrightness;
 	int			nMoved;			//time last moved
 	short			nSegment;
 	short			nObject;
@@ -76,7 +76,7 @@ typedef struct tCloud {
 	ubyte			bHavePrevPos;	//valid previous position set?
 	tParticle	*pParticles;	//list of active particles
 	tPartIdx		*pPartIdx;
-	tRgbaColord	color;
+	tRgbaColorf	color;
 	char			bHaveColor;
 	char			bBlowUpParts;	//blow particles up at their "birth"
 	char			bEmittingFace;
@@ -101,7 +101,7 @@ int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
 					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
 					  int nLife, int nSpeed, char nType, int nObject,
-					  tRgbaColord *pColor, int bBlowUpParts, char nFace);
+					  tRgbaColorf *pColor, int bBlowUpParts, char nFace);
 int DestroySmoke (int iSmoke);
 int UpdateSmoke ();
 int RenderSmoke ();
@@ -126,7 +126,7 @@ void FreePartList (void);
 int LoadParticleImages (void);
 int BeginRenderSmoke (int nType, float nScale);
 int EndRenderSmoke (tCloud *pCloud);
-int RenderParticle (tParticle *pParticle, double brightness);
+int RenderParticle (tParticle *pParticle, float brightness);
 int SetSmokeObject (int nObject, int nSmoke);
 
 extern int bUseSmoke;

@@ -1916,7 +1916,7 @@ extern int check_for_degenerate_segment (tSegment *segP);
 
 void ComputeVertexNormals (void)
 {
-	int			i;
+	int		i;
 	g3sPoint	*pp;
 
 for (i = gameData.segs.nVertices, pp = gameData.segs.points; i; i--, pp++) {

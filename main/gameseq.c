@@ -864,6 +864,7 @@ gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
+memset (gameData.render.mine.bCalcVertexColor, 0, sizeof (gameData.render.mine.bCalcVertexColor));
 #if 1
 /*---*/LogErr ("   stopping music\n");
 SongsStopAll ();

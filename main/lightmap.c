@@ -26,6 +26,7 @@ there I just had it exit instead.
 
 #include "inferno.h"
 #include "ogl_init.h"
+#include "lighting.h"
 #include "lightmap.h"
 #include "gameseg.h"
 #include "wall.h"
@@ -195,108 +196,6 @@ inline void FindOffset (vmsVector *outvec, vmsVector vec1, vmsVector vec2, doubl
 outvec->p.x = (fix) (f_offset * (vec2.p.x - vec1.p.x)); 
 outvec->p.y = (fix) (f_offset * (vec2.p.y - vec1.p.y)); 
 outvec->p.z = (fix) (f_offset * (vec2.p.z - vec1.p.z)); 
-}
-
-//------------------------------------------------------------------------------
-
-int IsLight (int tMapNum) 
-{
-if (gameStates.app.bD1Mission)
-	tMapNum = ConvertD1Texture (tMapNum, 1);
-#if 1
-if (gameData.pig.tex.brightness [tMapNum] > 0)
-	return 1;
-#else
-if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
-	return 1;
-#endif
-switch (tMapNum) {
-	case 275:
-	case 276:
-	case 278:
-	case 288:
-	case 289:
-	case 290:
-	case 291:
-	case 293:
-	case 295:
-	case 296:
-	case 298:
-	case 300:
-	case 301:
-	case 302:
-	case 305:
-	case 306:
-	case 307:
-	case 348:
-	case 349:
-	case 340:
-	case 341:
-	case 345:
-	case 382:
-	case 343:
-	case 344:
-	case 377:
-	case 346:
-	case 351:
-	case 352:
-	case 364:
-	case 366:
-	case 368:
-	case 370:
-	case 372:
-	case 380:
-	case 410:
-	case 427:
-	case 374:
-	case 375:
-	case 391:
-	case 392:
-	case 393:
-	case 394:
-	case 395:
-	case 396:
-	case 397:
-	case 398:
-	case 411:
-	case 412:
-	case 428:
-	case 429:
-	case 430:
-	case 431:
-	case 414:
-	case 416:
-	case 418:
-	case 423:
-	case 424:
-	case 235:
-	case 236:
-	case 237:
-	case 243:
-	case 244:
-	case 333:
-	case 353:
-	case 356:
-	case 357:
-	case 358:
-	case 359:
-	case 378:
-	case 404:
-	case 405:
-	case 406:
-	case 407:
-	case 408:
-	case 409:
-	case 426:
-	case 434:
-	case 420:
-	case 432:
-	case 433:
-		return 1;
-	default:
-		break;
-	}
-return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1007,7 +906,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 				InitLightMap (lightMap, brightMap, lmapP->color);
 				glGenTextures (1, &lightMapId); 
 				glTexImage1D (GL_TEXTURE_1D, 0, GL_RGB, 512, 1, GL_RGB, GL_UNSIGNED_BYTE, lightMap);
-				OglActiveTexture (GL_TEXTURE0_ARB);
+				OglActiveTexture (GL_TEXTURE0);
 				glEnable (GL_TEXTURE_1D);
 				glEnable (GL_BLEND);
 				glBlendFunc (GL_ONE, bStart ? GL_ZERO : GL_ONE);
@@ -1021,7 +920,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 				glBegin (GL_QUADS);
 				glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 				for (i = 0; i < 4; i++) {
-					glMultiTexCoord2f (GL_TEXTURE0_ARB, f2fl (lMapUVL [i].u), f2fl (lMapUVL [i].v));
+					glMultiTexCoord2f (GL_TEXTURE0, f2fl (lMapUVL [i].u), f2fl (lMapUVL [i].v));
 					glVertex3f (f2fl (gameData.segs.vertices [sideVerts [i]].x), 
 									f2fl (gameData.segs.vertices [sideVerts [i]].y), 
 								   f2fl (gameData.segs.vertices [sideVerts [i]].z));

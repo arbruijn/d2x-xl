@@ -2287,7 +2287,8 @@ void ShadowOptionsMenu ()
 	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	opt;
-	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, optReactorShadows;
+	int	optClipShadows, optPlayerShadows, optRobotShadows, optMissileShadows, 
+			optPowerupShadows, optReactorShadows;
 	char	szMaxLights [50], szReach [50];
 #if DBG_SHADOWS
 	char	szShadowTest [50];
@@ -2318,6 +2319,7 @@ do {
 	optPlayerShadows =
 	optRobotShadows =
 	optMissileShadows =
+	optPowerupShadows = 
 	optReactorShadows = -1;
 #if DBG_SHADOWS
 	shadowOpts.nZPass =
@@ -2350,13 +2352,15 @@ do {
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_R, HTX_PLAYER_SHADOWS);
+		ADD_CHECK (opt, TXT_PLAYER_SHADOWS, gameOpts->render.shadows.bPlayers, KEY_P, HTX_PLAYER_SHADOWS);
 		optPlayerShadows = opt++;
-		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_R, HTX_ROBOT_SHADOWS);
+		ADD_CHECK (opt, TXT_ROBOT_SHADOWS, gameOpts->render.shadows.bRobots, KEY_O, HTX_ROBOT_SHADOWS);
 		optRobotShadows = opt++;
-		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_R, HTX_MISSILE_SHADOWS);
+		ADD_CHECK (opt, TXT_MISSILE_SHADOWS, gameOpts->render.shadows.bMissiles, KEY_M, HTX_MISSILE_SHADOWS);
 		optMissileShadows = opt++;
-		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_R, HTX_REACTOR_SHADOWS);
+		ADD_CHECK (opt, TXT_POWERUP_SHADOWS, gameOpts->render.shadows.bPowerups, KEY_W, HTX_POWERUP_SHADOWS);
+		optPowerupShadows = opt++;
+		ADD_CHECK (opt, TXT_REACTOR_SHADOWS, gameOpts->render.shadows.bReactors, KEY_A, HTX_REACTOR_SHADOWS);
 		optReactorShadows = opt++;
 #if DBG_SHADOWS
 		ADD_CHECK (opt, TXT_FAST_SHADOWS, gameOpts->render.shadows.bFast, KEY_F, HTX_FAST_SHADOWS);
@@ -2401,6 +2405,7 @@ do {
 	GET_VAL (gameOpts->render.shadows.bPlayers, optPlayerShadows);
 	GET_VAL (gameOpts->render.shadows.bRobots, optRobotShadows);
 	GET_VAL (gameOpts->render.shadows.bMissiles, optMissileShadows);
+	GET_VAL (gameOpts->render.shadows.bPowerups, optPowerupShadows);
 	GET_VAL (gameOpts->render.shadows.bReactors, optReactorShadows);
 #if DBG_SHADOWS
 	if (extraGameInfo [0].bShadows) {

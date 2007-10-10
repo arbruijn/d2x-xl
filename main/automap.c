@@ -27,6 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "u_mem.h"
 #include "render.h"
+#include "transprender.h"
 #include "object.h"
 #include "vclip.h"
 #include "game.h"
@@ -503,12 +504,12 @@ if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_
 	ShowFullscreenImage (&bmAutomapBackground);
 	GrSetCurFont (HUGE_FONT);
 	GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
-	GrPrintF (RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
+	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
 	GrSetCurFont (SMALL_FONT);
 	GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
-	GrPrintF (RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
-	GrPrintF (RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
-	GrPrintF (RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
+	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	//GrUpdate (0);
 	}
@@ -533,7 +534,7 @@ else
 	DrawAllEdges ();
 	// Draw player...
 color = IsTeamGame ? GetTeam (gameData.multiplayer.nLocalPlayer) : gameData.multiplayer.nLocalPlayer;	// Note link to above if!
-GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g,playerColors [color].b));
+GrSetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 
 if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 	DrawPlayer (gameData.objs.objects + LOCALPLAYER.nObject);
@@ -640,9 +641,9 @@ else {
 
 	GrSetCurFont (SMALL_FONT);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	GrPrintF (offs, offs, amLevelNum);
+	GrPrintF (NULL, offs, offs, amLevelNum);
 	GrGetStringSize (amLevelName, &w, &h, &aw);
-	GrPrintF (grdCurCanv->cvBitmap.bmProps.w - offs - w, offs, amLevelName);
+	GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - offs - w, offs, amLevelName);
 	GrSetCurFont (curFont);
 #else
 	GrBitmapM (offs, offs, &levelNumCanv->cvBitmap, 2);
@@ -686,7 +687,7 @@ GrSetCurrentCanvas (temp_canv);
 GrSetCurFont (font);
 GrClearCanvas (0);						//trans color
 GrSetFontColorRGBi (fc, 1, bc, 1);
-GrPrintF (0, 0, s);
+GrPrintF (NULL, 0, 0, s);
 //now float it, since we're drawing to 400-line modex screen
 if (doubleFlag) {
 	data = temp_canv->cvBitmap.bmTexBuf;
@@ -992,7 +993,15 @@ while ((c = KeyInKey ())) {
 			AMDeleteMarker ();
 			break;
 
-		#ifdef _DEBUG
+		case KEY_ALTED + KEY_P:
+			renderItems.bDisplay = !renderItems.bDisplay;
+			break;
+
+		case KEY_ALTED + KEY_R:
+			gameStates.render.frameRate.value = !gameStates.render.frameRate.value;
+			break;
+
+#ifdef _DEBUG
 		case KEY_COMMA:
 			if (gameData.marker.fScale>.5)
 				gameData.marker.fScale-=.5;
@@ -1001,7 +1010,7 @@ while ((c = KeyInKey ())) {
 			if (gameData.marker.fScale<30.0)
 				gameData.marker.fScale+=.5;
 			break;
-		#endif
+#endif
 
 		case KEY_ALTED+KEY_ENTER:
 		case KEY_ALTED+KEY_PADENTER:
@@ -1079,7 +1088,7 @@ while (!bDone)	{
 		}
 	t2 = TimerGetFixedSeconds ();
 	if (bPauseGame)
-		gameData.time.xFrame=t2-t1;
+		gameData.time.xFrame = t2 - t1;
 	t1 = t2;
 	}
 #if 0

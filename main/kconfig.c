@@ -663,7 +663,7 @@ char *p = strchr (title, '\n');
 grdCurCanv->cvFont = MEDIUM3_FONT;
 if (p) 
 	*p = 32;
-GrString (0x8000, KC_LHY (8), title);
+GrString (0x8000, KC_LHY (8), title, NULL);
 if (p)
 	*p = '\n';
 }
@@ -675,7 +675,7 @@ void KCDrawHeader (kcItem *items)
 grdCurCanv->cvFont = GAME_FONT;
 GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 
-GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1);
+GrString (0x8000, KC_LHY (20), TXT_KCONFIG_STRING_1, NULL);
 GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 if (items == kcKeyboard)	{
 	GrSetFontColorRGBi (RGBA_PAL2 (31, 27, 6), 1, 0, 0);
@@ -687,7 +687,7 @@ if (items == kcKeyboard)	{
 	kc_gr_pixel (KC_LHX (128), KC_LHY (43));						
 	kc_gr_pixel (KC_LHX (128), KC_LHY (44));						
 	
-	GrString (KC_LHX (109), KC_LHY (40), "OR");
+	GrString (KC_LHX (109), KC_LHY (40), "OR", NULL);
 
 	kc_gr_scanline (KC_LHX (253), KC_LHX (261), KC_LHY (42));
 	kc_gr_scanline (KC_LHX (274), KC_LHX (283), KC_LHY (42));
@@ -696,7 +696,7 @@ if (items == kcKeyboard)	{
 	kc_gr_pixel (KC_LHX (283), KC_LHY (43));						
 	kc_gr_pixel (KC_LHX (283), KC_LHY (44));						
 
-	GrString (KC_LHX (264), KC_LHY (40), "OR");
+	GrString (KC_LHX (264), KC_LHY (40), "OR", NULL);
 
 }
 if (items == kcJoystick)	{
@@ -706,13 +706,13 @@ if (items == kcJoystick)	{
 	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (144), KC_LHY (119+18));
 	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+18));
-	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS);
-	GrString (0x8000,KC_LHY (125+18), TXT_AXES);
+	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS, NULL);
+	GrString (0x8000,KC_LHY (125+18), TXT_AXES, NULL);
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS);
-	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT);
-	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS);
-	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT);
+	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS, NULL);
+	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT, NULL);
+	GrString (KC_LHX (235), KC_LHY (145+8), TXT_AXIS, NULL);
+	GrString (KC_LHX (270), KC_LHY (145+8), TXT_INVERT, NULL);
 } else if (items == kcMouse)	{
 	GrSetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	GrSetColorRGBi (RGBA_PAL2 (31,27,6));
@@ -720,11 +720,11 @@ if (items == kcJoystick)	{
 	kc_gr_scanline (KC_LHX (181), KC_LHX (294), KC_LHY (37));
 	kc_gr_scanline (KC_LHX (18), KC_LHX (144), KC_LHY (119+5));
 	kc_gr_scanline (KC_LHX (174), KC_LHX (294), KC_LHY (119+5));
-	GrString (0x8000, KC_LHY (35), TXT_BUTTONS);
-	GrString (0x8000,KC_LHY (125+5), TXT_AXES);
+	GrString (0x8000, KC_LHY (35), TXT_BUTTONS, NULL);
+	GrString (0x8000,KC_LHY (125+5), TXT_AXES, NULL);
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS);
-	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT);
+	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS, NULL);
+	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT, NULL);
 }
 #ifdef D2X_KEYS
 else if (items == kcHotkeys)
@@ -732,8 +732,8 @@ else if (items == kcHotkeys)
 	GrSetFontColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	GrSetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
-	GrString (KC_LHX (94), KC_LHY (40), "KB");
-	GrString (KC_LHX (121), KC_LHY (40), "JOY");
+	GrString (KC_LHX (94), KC_LHY (40), "KB", NULL);
+	GrString (KC_LHX (121), KC_LHY (40), "JOY", NULL);
 }
 #endif
 }
@@ -815,7 +815,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 				KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
-	GrString (x, KC_LHY (item->y), "?");
+	GrString (x, KC_LHY (item->y), "?", NULL);
 //	PA_DFX (pa_set_backbuffer_current ();
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (curDrawBuffer != GL_BACK)
@@ -958,7 +958,7 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, char *ps
 
 WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (0x8000, KC_LHY (INFO_Y), pszMsg);
+	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
 WIN (DDGRUNLOCK (dd_grd_curcanv));	
 {				
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
@@ -1524,7 +1524,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		GrSetFontColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 	else
 		GrSetFontColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
-   GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text);
+   GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text, NULL);
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 	*btext = '\0';
@@ -1599,7 +1599,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 		GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
-		GrString (x, KC_LHY (item->y), btext);
+		GrString (x, KC_LHY (item->y), btext, NULL);
 //		PA_DFX (pa_set_backbuffer_current ();
 
 	WIN (DDGRUNLOCK (dd_grd_curcanv));

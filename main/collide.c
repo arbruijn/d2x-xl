@@ -822,9 +822,11 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CreateWeaponEffects (tObject *objP)
+void CreateWeaponEffects (tObject *objP, int bExplBlast)
 {
 if (gameData.objs.bIsMissile [objP->id]) {
+	if (bExplBlast)
+		CreateExplBlast (objP);
 	if ((objP->id == EARTHSHAKER_ID) || (objP->id == EARTHSHAKER_ID))
 		CreateShakerLightnings (objP);
 	else if ((objP->id == EARTHSHAKER_MEGA_ID) || (objP->id == ROBOT_SHAKER_MEGA_ID))
@@ -861,7 +863,7 @@ if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 
-CreateWeaponEffects (weaponP);
+CreateWeaponEffects (weaponP, 1);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
@@ -1696,7 +1698,7 @@ if ((botInfoP->companion) &&
 	 (weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && 
 	  !gameStates.app.cheats.bRobotsKillRobots)
 	return 1;
-CreateWeaponEffects (weaponP);
+CreateWeaponEffects (weaponP, 1);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 //	If a persistent weaponP hit robotP most recently, quick abort, else we cream the same robotP many times, 
@@ -2235,7 +2237,7 @@ if (weaponP->id == SMARTMINE_ID)
 	if (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.nParentObj)
 		if (VmVecDistQuick (vHitPt, &playerObjP->position.vPos) > playerObjP->size)
 			return 1;
-CreateWeaponEffects (weaponP);
+CreateWeaponEffects (weaponP, 1);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 damage = FixMul (damage, weaponP->cType.laserInfo.multiplier);
@@ -2431,7 +2433,7 @@ if (dist >= F1_0*5)
 else {
 	MaybeKillWeapon (weapon1, weapon2);
 	if (weapon1->flags & OF_SHOULD_BE_DEAD) {
-		CreateWeaponEffects (weapon1);
+		CreateWeaponEffects (weapon1, 0);
 		ExplodeBadassWeapon (weapon1, vHitPt);
 		DigiLinkSoundToPos (gameData.weapons.info [weapon1->id].robot_hitSound, weapon1->nSegment , 0, vHitPt, 0, F1_0);
 		}

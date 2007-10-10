@@ -156,6 +156,8 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker);
 int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
 void DestroyOmegaLightnings (void);
 
+void GetPlayerMslLock (void);
+
 typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;

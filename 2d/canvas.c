@@ -69,7 +69,7 @@ return newCanv;
 
 //	-----------------------------------------------------------------------------
 
-void GrInitCanvas(gsrCanvas *canv, unsigned char * pixdata, int pixtype, int w, int h)
+void GrInitCanvas (gsrCanvas *canv, unsigned char * pixdata, int pixtype, int w, int h)
 {
 	int wreal;
 

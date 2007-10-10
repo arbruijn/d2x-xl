@@ -646,7 +646,7 @@ Assert ((Current_color >= 0) && (Current_color < MAX_BRIEFING_COLORS));
 if (cursorFlag && !bRedraw) {
 	WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NULL);
-	GrPrintF (Briefing_text_x+1, Briefing_text_y, "_");
+	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
 	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
@@ -680,14 +680,14 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 //	Erase cursor
 if (cursorFlag && (delay > 0) && !bRedraw) {
 	GrSetFontColorRGBi (nEraseColor, 1, 0, 0);
-	GrPrintF (Briefing_text_x+1, Briefing_text_y, "_");
+	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
 	//	erase the character
 	GrSetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + Current_color, NULL);
-	GrPrintF (Briefing_text_x, Briefing_text_y, message);
+	GrPrintF (NULL, Briefing_text_x, Briefing_text_y, message);
 }
 //draw the character
 GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NULL);
-GrPrintF (Briefing_text_x+1, Briefing_text_y, message);
+GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, message);
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 if (!(bRedraw || gameOpts->menus.nStyle)) 
@@ -805,7 +805,7 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	else
 		GrSetFontColorRGB (&eraseColorRgb, NULL);
 
-	GrPrintF (Briefing_text_x+1, Briefing_text_y, "_");
+	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
 WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (curDrawBuffer == GL_FRONT)
 	GrUpdate (0);

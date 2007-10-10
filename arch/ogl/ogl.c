@@ -77,6 +77,7 @@ PFNGLACTIVETEXTUREARBPROC			glActiveTexture = NULL;
 #		ifdef _WIN32
 PFNGLMULTITEXCOORD2DARBPROC		glMultiTexCoord2d = NULL;
 PFNGLMULTITEXCOORD2FARBPROC		glMultiTexCoord2f = NULL;
+PFNGLMULTITEXCOORD2FVARBPROC		glMultiTexCoord2fv = NULL;
 #		endif
 PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTexture = NULL;
 #	endif
@@ -102,6 +103,16 @@ PFNGLGETQUERYOBJECTUIVARBPROC		glGetQueryObjectuiv = NULL;
 PFNGLPOINTPARAMETERFVARBPROC		glPointParameterfvARB = NULL;
 PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB = NULL;
 #	endif
+#endif
+
+#ifdef _WIN32
+PFNGLGENBUFFERSPROC					glGenBuffers = NULL;
+PFNGLBINDBUFFERPROC					glBindBuffer = NULL;
+PFNGLBUFFERDATAPROC					glBufferData = NULL;
+PFNGLMAPBUFFERPROC					glMapBuffer = NULL;
+PFNGLUNMAPBUFFERPROC					glUnmapBuffer = NULL;
+PFNGLDELETEBUFFERSPROC				glDeleteBuffers = NULL;
+PFNGLDRAWRANGEELEMENTSPROC			glDrawRangeElements = NULL;
 #endif
 
 #ifdef _WIN32
@@ -143,8 +154,8 @@ extern GLuint circleh10;
 extern GLuint cross_lh [2];
 extern GLuint primary_lh [3];
 extern GLuint secondary_lh [5];
-extern GLuint glInitTMU [3]; 
-extern GLuint glExitTMU;
+extern GLuint g3InitTMU [4][2]; 
+extern GLuint g3ExitTMU [2];
 extern GLuint mouseIndList;
 
 tOglTexture oglTextureList [OGL_TEXTURE_LIST_SIZE];
@@ -202,9 +213,10 @@ for (i = OGL_TEXTURE_LIST_SIZE; i; i--, t++)
 void OglDeleteLists (GLuint *lp, int n)
 {
 for (; n; n--, lp++) {
-	if (*lp)
+	if (*lp) {
 		glDeleteLists (*lp, 1);
 		*lp = 0;
+		}
 	}
 }
 
@@ -230,31 +242,12 @@ OglDeleteLists (&hBigSphere, 1);
 OglDeleteLists (&hSmallSphere, 1);
 OglDeleteLists (&circleh5, 1);
 OglDeleteLists (&circleh10, 1);
-OglDeleteLists (cross_lh, sizeof (cross_lh) / sizeof (*cross_lh));
-OglDeleteLists (primary_lh, sizeof (primary_lh) / sizeof (*primary_lh));
-OglDeleteLists (secondary_lh, sizeof (secondary_lh) / sizeof (*secondary_lh));
-OglDeleteLists (glInitTMU, sizeof (glInitTMU) / sizeof (*glInitTMU));
-OglDeleteLists (&glExitTMU, 1);
+OglDeleteLists (cross_lh, sizeof (cross_lh) / sizeof (GLuint));
+OglDeleteLists (primary_lh, sizeof (primary_lh) / sizeof (GLuint));
+OglDeleteLists (secondary_lh, sizeof (secondary_lh) / sizeof (GLuint));
+OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
+OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
-hBigSphere =
-hSmallSphere =
-circleh5 = 
-circleh10 =
-mouseIndList =
-cross_lh [0] =
-cross_lh [1] =
-primary_lh [0] = 
-primary_lh [1] = 
-primary_lh [2] =
-secondary_lh [0] =
-secondary_lh [1] =
-secondary_lh [2] =
-secondary_lh [3] =
-secondary_lh [4] =
-glInitTMU [0] =
-glInitTMU [1] =
-glInitTMU [2] =
-glExitTMU = 0;
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 	if (!t->bFrameBuf && (t->handle > 0)) {
 		glDeleteTextures (1, (GLuint *) &t->handle);
@@ -1955,6 +1948,19 @@ glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glA
 #	endif
 #endif
 
+#ifdef _WIN32
+glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB");
+glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB");
+glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB");
+glMapBuffer = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("glMapBufferARB");
+glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB");
+glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB");
+glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("glDrawRangeElements");
+gameStates.ogl.bHaveVBOs = glGenBuffers && glBindBuffer && glBufferData && glMapBuffer && glUnmapBuffer;
+#else
+gameStates.ogl.bHaveVBOs = 1;
+#endif
+
 #if TEXTURE_COMPRESSION
 gameStates.ogl.bHaveTexCompression = 1;
 #	ifndef GL_VERSION_20
@@ -1973,6 +1979,7 @@ gameStates.ogl.bHaveTexCompression = 0;
 #		ifdef _WIN32
 glMultiTexCoord2d			= (PFNGLMULTITEXCOORD2DARBPROC) wglGetProcAddress ("glMultiTexCoord2dARB");
 glMultiTexCoord2f			= (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress ("glMultiTexCoord2fARB");
+glMultiTexCoord2fv		= (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress ("glMultiTexCoord2fvARB");
 #		endif
 glActiveTexture			= (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB");		
 glClientActiveTexture	= (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("glClientActiveTextureARB");

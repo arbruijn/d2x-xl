@@ -292,7 +292,7 @@ void con_draw(void)
 	{
 		memcpy(buffer, con_display[i], CON_LINE_LEN);
 		buffer[CON_LINE_LEN] = 0;
-		GrString(1,j*10,buffer);
+		GrString(1, j * 10, buffer, 1);
 	}
 #endif
 #endif

@@ -2263,5 +2263,50 @@ if (bAutoSelect)
 	AutoSelectWeapon (1, 1);		//select next missile, if this one out of ammo
 }
 
+// -----------------------------------------------------------------------------
+
+int AllowedToFireMissile (void);
+
+void GetPlayerMslLock (void)
+{
+	int			nWeapon, nObject, nGun, h, i, j;
+	vmsVector	vGunPos;
+	vmsMatrix	m;
+	tObject		*objP;
+
+gameData.objs.trackGoals [0] =
+gameData.objs.trackGoals [1] = NULL;
+if (objP = GuidedInMainView ()) {
+	nObject = FindHomingObject (&objP->position.vPos, objP);
+	gameData.objs.trackGoals [0] = 
+	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	return;
+	}
+if (!AllowedToFireMissile ())
+	return;
+if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0) || COMPETITION)
+	return;
+if (gameStates.app.bPlayerIsDead)
+	return;
+nWeapon = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] <= 0)
+	return;
+if (!gameStates.app.cheats.bHomingWeapons &&
+	 (nWeapon != HOMINGMSL_ID) && (nWeapon != MEGAMSL_ID) && (nWeapon != GUIDEDMSL_ID))
+	return;
+//pnt = gameData.pig.ship.player->gunPoints [nGun];
+j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
+h = gameData.laser.nMissileGun & 1;
+VmCopyTransposeMatrix (&m, &gameData.objs.console->position.mOrient);
+for (i = 0; i < j; i++, h = !h) {
+	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
+	vGunPos = gameData.pig.ship.player->gunPoints [nGun];
+	VmVecRotate (&vGunPos, &vGunPos, &m);
+	VmVecInc (&vGunPos, &gameData.objs.console->position.vPos);
+	nObject = FindHomingObject (&vGunPos, gameData.objs.console);
+	gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	}
+}
+
 //	-------------------------------------------------------------------------------------------
 // eof

@@ -27,6 +27,12 @@ typedef union fVector {
 	struct {float r, g, b, a;} c;
 } fVector;
 
+typedef union fVector3 {
+	float v [3];
+	struct {float x, y, z;} p;
+	struct {float r, g, b;} c;
+} fVector3;
+
 //The basic fixed-point vector.  Access elements by name or position
 typedef union vmsVector {
 	fix v [3];

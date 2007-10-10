@@ -307,7 +307,7 @@ if (bmP && (bmP == bmpShield)) {
 	}
 #endif
 if (bmP) {
-	OglActiveTexture (GL_TEXTURE0_ARB, 0);
+	OglActiveTexture (GL_TEXTURE0, 0);
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmP, 1, 1))
 		bmP = NULL;
@@ -340,7 +340,7 @@ return bTextured;
 
 typedef struct tSphereCoord {
 	fVector	vPos;
-	tUVLf		uvl;
+	tTexCoord3f		uvl;
 } tSphereCoord;
 
 tSphereCoord	*sphereCoordP = NULL;

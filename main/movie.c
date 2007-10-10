@@ -617,7 +617,7 @@ if (must_erase) {
 //now draw the current subtitles
 for (t=0;t<num_active_subtitles;t++)
 	if (active_subtitles [t] != -1) {
-		GrString (0x8000, y, subTitles.captions [active_subtitles [t]].msg);
+		GrString (0x8000, y, subTitles.captions [active_subtitles [t]].msg, NULL);
 		y += line_spacing+1;
 	}
 }

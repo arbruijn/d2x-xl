@@ -32,20 +32,6 @@ typedef struct tUVL {
 	fix u,v,l;
 } tUVL;
 
-typedef union tUVLf {
-	float a [3];
-	struct {
-		float	u, v, l;
-		} v;
-	} tUVLf;
-
-typedef union tUVLd {
-	double a [3];
-	struct {
-		double	u, v, l;
-		} v;
-	} tUVLd;
-
 //Stucture to store clipping codes in a word
 typedef struct g3sCodes {
 	ubyte or,and;   //or is low byte, and is high byte
