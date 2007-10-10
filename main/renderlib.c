@@ -404,10 +404,12 @@ if (m < pc->color.green)
 	m = pc->color.green;
 if (m < pc->color.blue)
 	m = pc->color.blue;
-m = l / m;
-pc->color.red *= m;
-pc->color.green *= m;
-pc->color.blue *= m;
+if (m) {
+	m = l / m;
+	pc->color.red *= m;
+	pc->color.green *= m;
+	pc->color.blue *= m;
+	}
 }
 
 //------------------------------------------------------------------------------

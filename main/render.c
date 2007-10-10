@@ -1820,8 +1820,8 @@ windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;
 #endif
-	//set up for rendering
-
+//set up for rendering
+gameStates.ogl.fAlpha = GR_ACTUAL_FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) && 
 	  (gameStates.render.nShadowPass < 2) && 
 	  (gameStates.render.nShadowBlurPass < 2)) ||

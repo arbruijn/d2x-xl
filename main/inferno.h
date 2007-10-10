@@ -2870,11 +2870,11 @@ else
 	glVertex3fv ((GLfloat *) (gameData.render.pVerts + p->p3_index));
 }
 
-static inline double GrAlpha (void)
+static inline float GrAlpha (void)
 {
-if (gameStates.render.grAlpha >= GR_ACTUAL_FADE_LEVELS)
-	return 1.0;
-return 1.0 - (double) gameStates.render.grAlpha / (double) GR_ACTUAL_FADE_LEVELS;
+if (gameStates.render.grAlpha >= (float) GR_ACTUAL_FADE_LEVELS)
+	return 1.0f;
+return 1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 }
 
 #define	CLAMP(_val,_minVal,_maxVal)	\

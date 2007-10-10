@@ -1483,7 +1483,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			static fVector vEye = {{0, 0, 0}};
 
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
-			static tTexCoord3f	tTexCoord2flTrail [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};;
+			static tTexCoord3f	tTexCoordTrail [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};;
 			
 		if (r >= 3.0f)
 			r /= 1.5f;
@@ -1523,7 +1523,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			trailColor.blue *= fScale;
 			}
 		if (bDepthSort) {
-			RIAddPoly (bmP, vTrailVerts, 4, tTexCoord2flTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive);
+			RIAddPoly (bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive);
 			}
 		else {
 			bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0);
@@ -1542,14 +1542,14 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			glColor4fv ((GLfloat *) &trailColor);
 			if (bDrawArrays) {
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
-				glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), tTexCoord2flTrail);
+				glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), tTexCoordTrail);
 				glDrawArrays (GL_QUADS, 0, 4);
 				G3DisableClientStates (1, 0, -1);
 				}
 			else {
 				glBegin (GL_QUADS);
 				for (i = 0; i < 4; i++) {
-					glTexCoord3fv ((GLfloat *) (tTexCoord2flTrail + i));
+					glTexCoord3fv ((GLfloat *) (tTexCoordTrail + i));
 					glVertex3fv ((GLfloat *) (vTrailVerts + i));
 					}
 				glEnd ();

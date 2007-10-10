@@ -912,11 +912,8 @@ else {
 	RenderFrame (0, 0);
 	}
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
-if (!bNoDrawHUD)	{
-	WIN (DDGRLOCK (dd_grd_curcanv));
+if (!bNoDrawHUD)
 	GameDrawHUDStuff ();
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	}
 
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	ShowExtraViews ();		//missile view, buddy bot, etc.

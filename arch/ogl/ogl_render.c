@@ -149,7 +149,7 @@ void OglGrsColor (grsColor *pc)
 	GLfloat	fc [4];
 
 if (!pc)
-	glColor3f (1.0, 1.0, 1.0);
+	glColor4f (1.0, 1.0, 1.0, gameStates.render.grAlpha);
 else if (pc->rgb) {
 	fc [0] = (float) (pc->color.red) / 255.0f;
 	fc [1] = (float) (pc->color.green) / 255.0f;
@@ -2684,8 +2684,8 @@ else{
 	v2 = (bmP->bmProps.h + bmP->bmProps.y) / (float) bmP->glTexture->th;
 	}
 
-glBegin (GL_QUADS);
 OglGrsColor (c);
+glBegin (GL_QUADS);
 BmSetTexCoord (u1, v1, a, orient);
 glVertex2f (xo, yo);
 BmSetTexCoord (u2, v1, a, orient);

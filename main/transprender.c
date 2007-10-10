@@ -222,12 +222,6 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord3f *t
 	int		i;
 	float		z;
 
-#ifdef _DEBUG
-if (nVertices > 4)
-	nVertices = nVertices;
-if (nVertices < 4)
-	nVertices = nVertices;
-#endif
 item.bmP = bmP;
 item.nVertices = nVertices;
 item.nPrimitive = nPrimitive;
@@ -590,6 +584,8 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0)) {
 		glColor3d (1, 1, 1);
 	if (item->bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);
+	else
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBegin (GL_QUADS);
 	glTexCoord2f (0, 0);
 	fPos.p.x -= w;

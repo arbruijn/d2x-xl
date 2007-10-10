@@ -238,15 +238,17 @@ return xLight;
 //------------------------------------------------------------------------------
 //draw an tObject that has one bitmap & doesn't rotate
 
-void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *colorP, float alpha)
+void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
 	grsBitmap	*bmP;
-	int			id;
-	int			nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
+	tRgbaColorf	color;
+	int			id, bAdditive = 0, nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
 	fix			xSize;
 
 if (gameOpts->render.bTransparentEffects) {
-	if (!alpha) {
+	if (fAlpha)
+		bAdditive = (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION);
+	else {
 		if (objP->nType == OBJ_POWERUP) {
 			id = objP->id;
 			if ((id == POW_EXTRA_LIFE) ||
@@ -255,26 +257,28 @@ if (gameOpts->render.bTransparentEffects) {
 				 (id == POW_HOARD_ORB) ||
 				 (id == POW_CLOAK) ||
 				 (id == POW_INVUL))
-				alpha = 2.0f / 3.0f;
+				fAlpha = 2.0f / 3.0f;
 			else
-				alpha = 1.0f;
+				fAlpha = 1.0f;
 			}
 		else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
-			alpha = 1.0f;
-		else
-			alpha = 2.0f / 3.0f;
+			fAlpha = 1.0f;
+		else {
+			fAlpha = 2.0f / 3.0f;
+			bAdditive = 1;
+			}
 		}
 	}
 else {
 	nTransp = 3;
-	alpha = 1.0f;
+	fAlpha = 1.0f;
 	}
 PIGGY_PAGE_IN (bmi, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BmOverride (bmP, iFrame);
-	//alpha = 1;
+	//fAlpha = 1;
 	}
 else if (colorP && gameOpts->render.bDepthSort)
 	OglLoadBmTexture (bmP, 1, nTransp, 0);
@@ -288,23 +292,31 @@ if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
 	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, 
 								coronaIntensities [gameOpts->render.nCoronaIntensity]);
 if (gameOpts->render.bDepthSort > 0) {
-	tRgbaColorf	color;
-	color.red =
-	color.green =
-	color.blue = alpha * alpha;
-	color.alpha = alpha;
+	if (0 && bAdditive)
+		color.red = color.green = color.blue = color.alpha = 1;
+	else {
+		color.red = (float) bmP->bmAvgRGB.red / 255.0f;
+		color.green = (float) bmP->bmAvgRGB.green / 255.0f;
+		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+		color.alpha = fAlpha;
+		}
+	if (0 && bAdditive) {
+		color.red *= color.red;
+		color.green *= color.green;
+		color.blue *= color.blue;
+		}
 	if (bmP->bmProps.w > bmP->bmProps.h)
-		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, alpha < 1);
+		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive);
 	else
-		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, alpha < 1);
+		RIAddSprite (bmP, &objP->position.vPos, &color, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, iFrame, bAdditive);
 	}
 else {
 	if (bmP->bmProps.w > bmP->bmProps.h)
 		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), bmP, 
-						  NULL, alpha, nTransp);
+						  NULL, fAlpha, nTransp);
 	else	
 		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP, 
-						  NULL, alpha, nTransp);
+						  NULL, fAlpha, nTransp);
 	}
 }
 

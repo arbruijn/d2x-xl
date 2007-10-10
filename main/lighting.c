@@ -1465,7 +1465,7 @@ gameStates.render.bHaveDynLights = 1;
 //glEnable (GL_LIGHTING);
 if (gameOpts->render.bDynLighting)
 	memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
-memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
+//memset (gameData.render.color.ambient, 0, sizeof (*gameData.render.color.ambient) * MAX_VERTICES);
 pSegLights = gameData.render.lights.dynamic.nNearestSegLights;
 pVertLights = gameData.render.lights.dynamic.nNearestVertLights;
 pOwners = gameData.render.lights.dynamic.owners;

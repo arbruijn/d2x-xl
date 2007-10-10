@@ -886,6 +886,7 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	D2_FREE (ps->pszText);
 	if (ps->pId)
 		*ps->pId = 0;
+	OglFreeBmTexture (ps->bmP);
 	GrFreeBitmap (ps->bmP);
 	}
 InitStringPool ();
@@ -898,8 +899,11 @@ grsString *CreatePoolString (char *s, int *idP)
 	grsString	*ps;
 	int			l, w, h, aw;
 
-if (*idP)
+if (*idP) {
 	ps = stringPool + *idP - 1;
+	OglFreeBmTexture (ps->bmP);
+	GrFreeBitmap (ps->bmP);
+	}
 else {
 	if (nPoolStrings >= GRS_MAX_STRINGS)
 		return NULL;
