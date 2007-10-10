@@ -1449,8 +1449,10 @@ if (gameData.render.mine.nRenderSegs < 2)
 	return;
 if (RunRenderThreads (2))
 	gameData.render.zMax = max (tiRender.zMax [0], tiRender.zMax [1]);
-else
+else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
+	gameData.render.zMax = tiRender.zMax [0];
+	}
 if (!gameOpts->render.nRenderPath) {
 	if (RunRenderThreads (3)) {
 		h = gameData.render.mine.nRenderSegs;

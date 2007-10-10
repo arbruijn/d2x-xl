@@ -186,7 +186,15 @@ SOURCE=..\..\3d\draw.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\3d\fastmodels.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\3d\globvars.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\3d\hitbox.c
 # End Source File
 # Begin Source File
 
@@ -215,6 +223,10 @@ SOURCE=..\..\3d\rod.c
 # Begin Source File
 
 SOURCE=..\..\3d\setup.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\3d\shadows.c
 # End Source File
 # End Group
 # Begin Group "arch"
@@ -431,7 +443,15 @@ SOURCE=..\..\main\escort.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\fastrender.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\fireball.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\flightpath.c
 # End Source File
 # Begin Source File
 
@@ -480,6 +500,10 @@ SOURCE=..\..\main\gameseq.c
 # Begin Source File
 
 SOURCE=..\..\main\gauges.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\glare.c
 # End Source File
 # Begin Source File
 
@@ -599,6 +623,10 @@ SOURCE=..\..\main\object.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\objeffects.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\objrender.c
 # End Source File
 # Begin Source File
@@ -647,7 +675,23 @@ SOURCE=..\..\main\powerup.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\radar.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\render.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\renderlib.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\rendershadows.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\renderthreads.c
 # End Source File
 # Begin Source File
 
@@ -704,6 +748,10 @@ SOURCE=..\..\main\titles.c
 # Begin Source File
 
 SOURCE=..\..\main\tracker.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\transprender.c
 # End Source File
 # Begin Source File
 

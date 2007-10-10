@@ -39,7 +39,6 @@ int RunRenderThreads (int nTask)
 if (!gameStates.app.bMultiThreaded)
 	return 0;
 tiRender.nTask = nTask;
-tiRender.nTask = 0;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
 while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
