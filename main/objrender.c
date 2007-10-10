@@ -250,11 +250,11 @@ if (gameOpts->render.bTransparentEffects) {
 		if (objP->nType == OBJ_POWERUP) {
 			id = objP->id;
 			if ((id == POW_EXTRA_LIFE) ||
-					(id == POW_ENERGY) ||
-					(id == POW_SHIELD_BOOST) ||
-					(id == POW_HOARD_ORB) ||
-					(id == POW_CLOAK) ||
-					(id == POW_INVUL))
+				 (id == POW_ENERGY) ||
+				 (id == POW_SHIELD_BOOST) ||
+				 (id == POW_HOARD_ORB) ||
+				 (id == POW_CLOAK) ||
+				 (id == POW_INVUL))
 				alpha = 2.0f / 3.0f;
 			else
 				alpha = 1.0f;
@@ -483,7 +483,7 @@ else
 	nModel = objP->rType.polyObjInfo.nModel;
 if (!(po = gameData.models.modelToOOF [nModel]))
 	return 0;
-if (gameData.models.g3Models [1][nModel].bValid >= 0)
+if (gameData.models.g3Models [1][nModel].bValid > 0)
 	return 0;
 fLight [0] = xLight / 65536.0f;
 fLight [1] = (float) xEngineGlow [0] / 65536.0f;				

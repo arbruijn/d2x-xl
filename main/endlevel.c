@@ -49,6 +49,7 @@ static char rcsid [] = "$Id: endlevel.c, v 1.20 2003/10/12 09:38:48 btb Exp $";
 #include "endlevel.h"
 #include "object.h"
 #include "objrender.h"
+#include "transprender.h"
 #include "game.h"
 #include "screens.h"
 #include "gauges.h"
@@ -850,6 +851,7 @@ if (gameStates.render.bExtExplPlaying)
 	DrawFireball (&external_explosion);
 gameStates.render.nLighting = 0;
 RenderObject (gameData.objs.console, 0, 0);
+RenderItems ();
 gameStates.render.nLighting = 1;
 }
 
@@ -926,6 +928,7 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 else
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
+RenderItems ();
 }
 
 //-----------------------------------------------------------------------------
@@ -966,6 +969,7 @@ flydata->objP = objP;
 flydata->firstTime = 1;
 flydata->speed = speed ? speed : DEFAULT_SPEED;
 flydata->offset_frac = 0;
+SongsPlaySong (SONG_INTER, 0);
 }
 
 //------------------------------------------------------------------------------

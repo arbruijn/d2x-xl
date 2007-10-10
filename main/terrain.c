@@ -61,6 +61,7 @@ void DrawTerrainCell (int i, int j, g3sPoint *p0, g3sPoint *p1, g3sPoint *p2, g3
 {
 	g3sPoint *pointList [3];
 
+p0->p3_index =
 p1->p3_index =
 p2->p3_index =
 p3->p3_index = -1;

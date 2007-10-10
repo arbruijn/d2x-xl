@@ -738,8 +738,10 @@ void G3LightModel (int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 	float				fLight, fAlpha = (float) GrAlpha (); //(float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 	int				h, i, j, l;
 
+#if 1
 if (xModelLight > F1_0)
 	xModelLight = F1_0;
+#endif
 if (!gameStates.render.bCloaked && SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects) {
 	if (gameStates.app.bMultiThreaded) {
 		g3ti.pm = pm;
@@ -771,7 +773,7 @@ else {
 				l = xGlowValues [nGlow];
 			else {
 				l = -VmVecDot (&viewInfo.view [0].fVec, &pmf->vNormal);
-				l = f1_0 / 4 + 3 * l / 4;
+				l = 3 * f1_0 / 4 + l / 4;
 				l = FixMul (l, xModelLight);
 				}
 			fLight = f2fl (l);
@@ -1055,12 +1057,15 @@ int G3RenderModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelB
 	int		i, bHires = 1;
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 
-#if !G3_FAST_MODELS
+#if G3_FAST_MODELS
+if (!gameOpts->render.nRenderPath)
+#endif
+	{
 	gameData.models.g3Models [0][nModel].bValid =
 	gameData.models.g3Models [1][nModel].bValid = -1;
 	return 0;
-#endif
-if (!pm->bValid) {
+	}	
+if (pm->bValid < 1) {
 	i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 1);
 	if (i < 0)	//successfully built new model
 		return 0;
@@ -1132,7 +1137,7 @@ glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
 #	endif
 G3DisableClientStates (1, 1, -1);
 #endif
-if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN))
+if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN)))
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 return 1;
 }

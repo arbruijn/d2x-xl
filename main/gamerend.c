@@ -860,89 +860,89 @@ void GameRenderFrameMono (void)
 	gsrCanvas	Screen_3d_window;
 	int			bNoDrawHUD = 0;
 
-	GrInitSubCanvas (
-		&Screen_3d_window, &gameStates.render.vr.buffers.screenPages [0], 
-		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, 
-		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 
-		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.w, 
-		gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.h);
-	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
-	
-	objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
-	if (objP && 
-		 (objP->nType == OBJ_WEAPON) && 
-		 (objP->id == GUIDEDMSL_ID) && 
-		 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) && 
-		 (gameOpts->render.cockpit.bGuidedInMainView)) {
-		int w, h, aw;
-		char *msg = "Guided Missile View";
-		tObject *viewerSave = gameData.objs.viewer;
+GrInitSubCanvas (
+	&Screen_3d_window, &gameStates.render.vr.buffers.screenPages [0], 
+	gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, 
+	gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 
+	gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.w, 
+	gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.h);
+GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 
-      if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-			 gameStates.render.cockpit.bBigWindowSwitch = 1;
-			 gameStates.render.cockpit.bRedraw = 1;
-			 gameStates.render.cockpit.nMode = CM_STATUS_BAR;
-			 return;
-		   }
-  		gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
-		UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
-		if (RenderCameras ())
+objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
+if (objP && 
+	 (objP->nType == OBJ_WEAPON) && 
+	 (objP->id == GUIDEDMSL_ID) && 
+	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) && 
+	 (gameOpts->render.cockpit.bGuidedInMainView)) {
+	int w, h, aw;
+	char *msg = "Guided Missile View";
+	tObject *viewerSave = gameData.objs.viewer;
+
+   if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
+		gameStates.render.cockpit.bBigWindowSwitch = 1;
+		gameStates.render.cockpit.bRedraw = 1;
+		gameStates.render.cockpit.nMode = CM_STATUS_BAR;
+		return;
+		}
+  	gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
+	UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
+	if (RenderCameras ())
+	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
+	RenderFrame (0, 0);
+  	WakeupRenderedObjects (gameData.objs.viewer, 0);
+	gameData.objs.viewer = viewerSave;
+	GrSetCurFont (GAME_FONT);    //GAME_FONT);
+	GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
+	GrGetStringSize (msg, &w, &h, &aw);
+	GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
+	DrawGuidedCrosshair ();
+	HUDRenderMessageFrame ();
+	bNoDrawHUD = 1;
+	}
+else {	
+	if (gameStates.render.cockpit.bBigWindowSwitch) {
+		gameStates.render.cockpit.bRedraw = 1;
+		gameStates.render.cockpit.nMode = CM_FULL_COCKPIT;
+		gameStates.render.cockpit.bBigWindowSwitch = 0;
+		return;
+		}
+	UpdateRenderedData (0, gameData.objs.viewer, gameStates.render.bRearView, 0);
+	if (RenderCameras ())
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
-		RenderFrame (0, 0);
-  		WakeupRenderedObjects (gameData.objs.viewer, 0);
-		gameData.objs.viewer = viewerSave;
-		GrSetCurFont (GAME_FONT);    //GAME_FONT);
-		GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
-		GrGetStringSize (msg, &w, &h, &aw);
-		GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, 3, msg);
-		DrawGuidedCrosshair ();
-		HUDRenderMessageFrame ();
-		bNoDrawHUD = 1;
-		}
-	else {	
-		if (gameStates.render.cockpit.bBigWindowSwitch) {
-		   gameStates.render.cockpit.bRedraw = 1;
-			gameStates.render.cockpit.nMode = CM_FULL_COCKPIT;
-		   gameStates.render.cockpit.bBigWindowSwitch = 0;
-			return;
-			}
-		UpdateRenderedData (0, gameData.objs.viewer, gameStates.render.bRearView, 0);
-		if (RenderCameras ())
-			GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
-		RenderFrame (0, 0);
-		}
-	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
-	if (!bNoDrawHUD)	{
-		WIN (DDGRLOCK (dd_grd_curcanv));
-		GameDrawHUDStuff ();
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
-		}
+	RenderFrame (0, 0);
+	}
+GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
+if (!bNoDrawHUD)	{
+	WIN (DDGRLOCK (dd_grd_curcanv));
+	GameDrawHUDStuff ();
+	WIN (DDGRUNLOCK (dd_grd_curcanv));
+	}
 
-	if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
-		ShowExtraViews ();		//missile view, buddy bot, etc.
-	if (!bGameCockpitCopyCode)	{
-		if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{	
-			gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
-			GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-			GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap, 1);
-			gr_wait_for_retrace = 0;
-			GrShowCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-			gr_wait_for_retrace = 1;
-			}
+if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
+	ShowExtraViews ();		//missile view, buddy bot, etc.
+if (!bGameCockpitCopyCode)	{
+	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{	
+		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
+		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
+		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap, 1);
+		gr_wait_for_retrace = 0;
+		GrShowCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
+		gr_wait_for_retrace = 1;
 		}
+	}
 
+if (SHOW_COCKPIT) {
+	if (gameData.demo.nState == ND_STATE_PLAYBACK)
+		gameData.app.nGameMode = gameData.demo.nGameMode;
+	glDepthFunc (GL_ALWAYS);
 	if (SHOW_COCKPIT) {
-		if (gameData.demo.nState == ND_STATE_PLAYBACK)
-			gameData.app.nGameMode = gameData.demo.nGameMode;
-		glDepthFunc (GL_ALWAYS);
-		if (SHOW_COCKPIT) {
-			UpdateCockpits (1);
-			ShowExtraViews ();		//missile view, buddy bot, etc.
-			}
-		RenderGauges ();
-		HUDShowIcons ();
-		if (gameData.demo.nState == ND_STATE_PLAYBACK)
-			gameData.app.nGameMode = GM_NORMAL;
+		UpdateCockpits (1);
+		ShowExtraViews ();		//missile view, buddy bot, etc.
+		}
+	RenderGauges ();
+	HUDShowIcons ();
+	if (gameData.demo.nState == ND_STATE_PLAYBACK)
+		gameData.app.nGameMode = GM_NORMAL;
 	}
 else if (gameStates.render.cockpit.nMode == CM_REAR_VIEW)
 	UpdateCockpits (1);

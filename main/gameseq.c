@@ -1066,6 +1066,8 @@ CreateShieldSphere ();
 SetupEffects ();
 SetVertigoRobotFlags ();
 SetDebrisCollisions ();
+if (gameOpts->render.nRenderPath)
+	gameOpts->render.bDepthSort = 1;
 return 1;
 }
 
@@ -1162,7 +1164,6 @@ void DoEndLevelScoreGlitz (int network)
 DigiStopAllChannels ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)
-SongsPlaySong (SONG_INTER, 0);
 
 #ifdef TACTILE
 if (TactileStick)

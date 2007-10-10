@@ -3365,8 +3365,12 @@ do {
 		renderOpts.nWallTransp = opt++;
 		ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
 		optColoredWalls = opt++;
-		ADD_CHECK (opt, TXT_TRANSP_DEPTH_SORT, gameOpts->render.bDepthSort, KEY_D, HTX_TRANSP_DEPTH_SORT);
-		optDepthSort = opt++;
+		if (gameOpts->render.nRenderPath)
+			optDepthSort = -1;
+		else {
+			ADD_CHECK (opt, TXT_TRANSP_DEPTH_SORT, gameOpts->render.bDepthSort, KEY_D, HTX_TRANSP_DEPTH_SORT);
+			optDepthSort = opt++;
+			}
 #if 0
 		ADD_CHECK (opt, TXT_GAMMA_BRIGHT, gameOpts->ogl.bSetGammaRamp, KEY_V, HTX_ADVRND_GAMMA);
 		optUseGamma = opt++;
@@ -3458,7 +3462,7 @@ do {
 		GrSetPaletteGamma (m [optBrightness].value);
 	if (gameOpts->app.bExpertMode) {
 		gameOpts->render.color.bWalls = m [optColoredWalls].value;
-		gameOpts->render.bDepthSort = m [optDepthSort].value;
+		GET_VAL (gameOpts->render.bDepthSort, optDepthSort);
 		GET_VAL (gameOpts->ogl.bSetGammaRamp, optUseGamma);
 		if (gameStates.render.color.bLightMapsOk && gameOpts->render.color.bUseLightMaps)
 			gameStates.ogl.nContrast = 8;

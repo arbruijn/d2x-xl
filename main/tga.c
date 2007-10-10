@@ -285,6 +285,7 @@ return 1;
 
 int WriteTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
 {
+memset (ph, 0, sizeof (*ph));
 ph->width = bmP->bmProps.w;
 ph->height = bmP->bmProps.h;
 ph->bits = bmP->bmBPP * 8;
@@ -380,10 +381,13 @@ return NULL;
 
 int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
 {
-	CFILE	*fp;
-	char	fn [FILENAME_LEN], fs [5];
-	int	r;
+	CFILE			*fp;
+	char			fn [FILENAME_LEN], fs [5];
+	int			r;
+	tTgaHeader	h;
 
+if (!ph)
+	memset (ph = &h, 0, sizeof (h));
 if (!pszFolder)
 	pszFolder = gameFolders.szDataDir;
 CFSplitPath (pszFile, NULL, fn, NULL);
@@ -472,7 +476,7 @@ for (yDest = 0; yDest < yMax; yDest++) {
 					pDest [2] =
 					pDest [3] = 0;
 				}
-			pDest += 4;
+			pDest += bpp;
 			}
 		}
 	}

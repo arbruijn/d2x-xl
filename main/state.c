@@ -1281,27 +1281,32 @@ if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 		cnv_save = grdCurCanv;
 		
 	GrSetCurrentCanvas (cnv);
-	PA_DFX (pa_set_backbuffer_current ());
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-	RenderFrame (0, 0);
-	PA_DFX (pa_alpha_always ());
 		
 	//buf = D2_ALLOC (THUMBNAIL_LW * THUMBNAIL_LH * 3);
-	if (curDrawBuffer == GL_BACK)
+#if 1
+	if (curDrawBuffer == GL_BACK) {
+		gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 		GameRenderFrame ();
+		}
+	else
+		RenderFrame (0, 0);
+#endif
 	glReadBuffer (GL_FRONT);
 	bm.bmBPP = 3;
 	buf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * bm.bmBPP);
+	glDisable (GL_TEXTURE_2D);
 	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	bm.bmProps.w = grdCurScreen->scWidth;
 	bm.bmProps.h = grdCurScreen->scHeight;
+	bm.bmProps.rowSize = bm.bmProps.w * bm.bmBPP;
 	bm.bmTexBuf = buf;
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, grdCurScreen->scWidth / THUMBNAIL_LW, grdCurScreen->scHeight / THUMBNAIL_LH, 0);
 	GrPaletteStepLoad (NULL);
 	// convert the resized TGA to bmp
 	for (y = 0; y < THUMBNAIL_LH; y++) {
-		i = y * (grdCurScreen->scWidth / (grdCurScreen->scWidth / THUMBNAIL_LW)) * 3;
+		i = y * THUMBNAIL_LW * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
 			cnv->cvBitmap.bmTexBuf [k] =
@@ -1352,7 +1357,7 @@ gameData.objs.objects [nPlayerObj].position.mOrient = gameData.segs.secret.retur
 int StateRestoreAll (int bInGame, int bSecretRestore, char *pszFilenameOverride)
 {
 	char filename [128];
-	int	i, filenum = -1;
+	int	i, nFile = -1;
 
 if (IsMultiGame) {
 #	ifdef MULTI_SAVE
@@ -1368,27 +1373,27 @@ StopTime ();
 gameData.app.bGamePaused = 1;
 if (pszFilenameOverride) {
 	strcpy (filename, pszFilenameOverride);
-	filenum = NUM_SAVES+1;		//	So we don't tTrigger autosave
+	nFile = NUM_SAVES+1;		//	So we don't tTrigger autosave
 	}
-else if (! (filenum = StateGetRestoreFile (filename, 0)))	{
+else if (!(nFile = StateGetRestoreFile (filename, 0))) {
 	gameData.app.bGamePaused = 0;
 	StartTime ();
 	return 0;
 	}
 //	MK, 1/1/96
 //	If not in multiplayer, do special secret level stuff.
-//	If Nsecret.sgc (where N = filenum) exists, then copy it to secret.sgc.
+//	If Nsecret.sgc (where N = nFile) exists, then copy it to secret.sgc.
 //	If it doesn't exist, then delete secret.sgc
 
-if (!bSecretRestore && !(gameData.app.nGameMode & GM_MULTI)) {
+if (!bSecretRestore && !IsMultiGame) {
 	int	rval;
 	char	temp_fname [32], fc;
 
-	if (filenum != -1) {
-		if (filenum >= 10)
-			fc = (filenum-10) + 'a';
+	if (nFile != -1) {
+		if (nFile >= 10)
+			fc = (nFile-10) + 'a';
 		else
-			fc = '0' + filenum;
+			fc = '0' + nFile;
 		sprintf (temp_fname, "%csecret.sgc", fc);
 		if (CFExist (temp_fname,gameFolders.szSaveDir,0)) {
 			rval = copy_file (temp_fname, SECRETC_FILENAME);
@@ -1399,7 +1404,7 @@ if (!bSecretRestore && !(gameData.app.nGameMode & GM_MULTI)) {
 		}
 	}
 	//	Changed, 11/15/95, MK, don't to autosave if restoring from main menu.
-if ((filenum != (NUM_SAVES + 1)) && bInGame) {
+if ((nFile != (NUM_SAVES + 1)) && bInGame) {
 	char	temp_filename [128];
 	sprintf (temp_filename, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 	StateSaveAll (!bInGame, bSecretRestore, temp_filename);
