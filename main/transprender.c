@@ -561,7 +561,6 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 glDisable (GL_CULL_FACE);
 if (item->bAdditive)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-gameData.smoke.nLastType = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -603,7 +602,6 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0)) {
 	glEnd ();
 	if (item->bAdditive)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	gameData.smoke.nLastType = -1;
 	}
 }
 
@@ -619,14 +617,13 @@ if (item->nType == riMonsterball)
 glDisable (GL_CULL_FACE);
 renderItems.bmP = NULL;
 renderItems.bTextured = 1;
-gameData.smoke.nLastType = -1;
 }
 
 //------------------------------------------------------------------------------
 
 void RIRenderParticle (tRIParticle *item)
 {
-RISetClientState (0, 0, 0);
+RISetClientState (1, 1, 1);
 if (renderItems.bTextured < 1) {
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -650,7 +647,6 @@ RenderLightning (item->lightning, 1, item->nDepth, 0);
 renderItems.bmP = NULL;
 renderItems.bTextured = 0;
 renderItems.bDepthMask = 1;
-gameData.smoke.nLastType = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -663,7 +659,6 @@ RISetClientState (0, 0, 0);
 RenderLightningSegment (item->vLine, item->vPlasma, &item->color, item->bPlasma, item->bStart, item->bEnd, item->nDepth);
 if (item->bPlasma) {
 	renderItems.bmP = NULL;
-	gameData.smoke.nLastType = -1;
 	}
 renderItems.bTextured = 0;
 }
@@ -703,7 +698,16 @@ if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0)) {
 		}
 	glEnd ();
 	}
-gameData.smoke.nLastType = -1;
+}
+
+//------------------------------------------------------------------------------
+
+void RIFlushParticleBuffer (int nType)
+{
+if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
+	FlushParticleBuffer ();
+	gameData.smoke.nLastType = -1;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -741,6 +745,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		nDepth = 0;
 		do {
 			nType = pl->nType;
+			RIFlushParticleBuffer (nType);
 			if (nType == riPoly) {
 				RIRenderPoly (&pl->item.poly);
 				}
@@ -772,6 +777,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		}
 	}
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
+RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
 G3DisableClientStates (1, 1, GL_TEXTURE0);
 if (EGI_FLAG (bShadows, 0, 1, 0)) 

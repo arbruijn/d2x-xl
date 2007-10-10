@@ -646,7 +646,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static void FlushParticleBuffer (void)
+void FlushParticleBuffer (void)
 {
 if (iBuffer) {
 #if 1
