@@ -602,11 +602,20 @@ if (BM_MASK (bmP))
 	return BM_MASK (bmP);
 if (!(BM_MASK (bmP) = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))
 	return NULL;
-for (pi = bmP->bmTexBuf, pm = (ushort *) BM_MASK (bmP)->bmTexBuf; i; i--, pi += 4, pm++)
-	if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
-		*pm = 0;
-	else
-		*pm = 0xff;
+if (bmP->bmProps.flags & BM_FLAG_TGA) {
+	for (pi = bmP->bmTexBuf, pm = BM_MASK (bmP)->bmTexBuf; i; i--, pi += 4, pm++)
+		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
+			*pm = 0;
+		else
+			*pm = 0xff;
+	}
+else {
+	for (pi = bmP->bmTexBuf, pm = BM_MASK (bmP)->bmTexBuf; i; i--, pi++, pm++)
+		if (*pi == SUPER_TRANSP_COLOR)
+			*pm = 0;
+		else
+			*pm = 0xff;
+	}
 return bmP->bmData.std.bmMask;
 }
 
@@ -617,8 +626,6 @@ int CreateSuperTranspMasks (grsBitmap *bmP)
 	int	nMasks, i, nFrames;
 
 if (!gameStates.render.textures.bHaveMaskShader)
-	return 0;
-if (!(bmP->bmProps.flags & BM_FLAG_TGA))
 	return 0;
 if ((bmP->bmType != BM_TYPE_ALT) || !bmP->bmData.alt.bmFrames) {
 	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
