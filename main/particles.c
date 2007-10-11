@@ -700,6 +700,10 @@ if (gameOpts->render.bDepthSort > 0) {
 			return 0;
 		nFrames = nParticleFrames [0][nType];
 		deltaUV = 1.0f / (float) nFrames;
+		if (nType)
+			glBlendFunc (GL_ONE, GL_ONE);
+		else
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	if (!gameStates.render.bVertexArrays)
 		glBegin (GL_QUADS);
@@ -716,6 +720,10 @@ else if (gameOpts->render.smoke.bSort) {
 			return 0;
 		nFrames = nParticleFrames [bPointSprites][nType];
 		deltaUV = 1.0f / (float) nFrames;
+		if (nType)
+			glBlendFunc (GL_ONE, GL_ONE);
+		else
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (!gameStates.render.bVertexArrays)
 			glBegin (GL_QUADS);
 		}
@@ -792,6 +800,11 @@ x = f2fl (hp.p.x);
 y = f2fl (hp.p.y);
 z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
+if (nType) {
+	pc.red /= 50;
+	pc.green /= 50;
+	pc.blue /= 50;
+	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
 	decay = (float) sqrt (decay);
 	w = f2fl (pParticle->nWidth) / decay;
@@ -915,6 +928,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	glDisable (GL_TEXTURE_2D);
 	glDepthMask (1);
 	StencilOn (gameData.smoke.bStencil);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 return 1;
 }

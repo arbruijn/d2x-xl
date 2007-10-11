@@ -256,8 +256,9 @@ if (gameOpts->render.bTransparentEffects) {
 				 (id == POW_SHIELD_BOOST) ||
 				 (id == POW_HOARD_ORB) ||
 				 (id == POW_CLOAK) ||
-				 (id == POW_INVUL))
+				 (id == POW_INVUL)) {
 				fAlpha = 2.0f / 3.0f;
+				}
 			else
 				fAlpha = 1.0f;
 			}
@@ -300,7 +301,7 @@ if (gameOpts->render.bDepthSort > 0) {
 		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
 		color.alpha = fAlpha;
 		}
-	if (0 && bAdditive) {
+	if (bAdditive) {
 		color.red *= color.red;
 		color.green *= color.green;
 		color.blue *= color.blue;
