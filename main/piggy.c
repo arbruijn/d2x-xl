@@ -1425,10 +1425,24 @@ if (bmP->bmTexBuf) {
 
 //------------------------------------------------------------------------------
 
+void PiggyFreeMask (grsBitmap *bmP)
+{
+	grsBitmap	*bmMask;
+
+if (bmMask = BM_MASK (bmP)) {
+	OglFreeBmTexture (bmMask);
+	PiggyFreeBitmapData (bmMask);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int PiggyFreeHiresFrame (grsBitmap *bmP, int bD1)
 {
+
 BM_OVERRIDE (gameData.pig.tex.bitmaps [bD1] + bmP->bmHandle) = NULL;
 OglFreeBmTexture (bmP);
+PiggyFreeMask (bmP);
 bmP->bmType = 0;
 bmP->bmTexBuf = NULL;
 return 1;
@@ -1481,6 +1495,7 @@ if (!bmP)
 	bmP = gameData.pig.tex.bitmaps [bD1] + i;
 else if (i < 0)
 	i = (int) (bmP - gameData.pig.tex.bitmaps [bD1]);
+PiggyFreeMask (bmP);
 if (!PiggyFreeHiresAnimation (bmP, 0))
 	OglFreeBmTexture (bmP);
 if (bitmapOffsets [bD1][i] > 0)

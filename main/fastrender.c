@@ -22,11 +22,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <math.h>
 
 #include "inferno.h"
+#include "error.h"
 #include "u_mem.h"
 #include "lighting.h"
 #include "lightmap.h"
 #include "automap.h"
 #include "texmerge.h"
+#include "wall.h"
 #include "glare.h"
 #include "render.h"
 #include "renderlib.h"
@@ -106,8 +108,12 @@ if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) &&
 
 void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bVertexArrays, int bTextured, int bDepthOnly)
 {
-#if 0//def _DEBUG
-if (((nDbgSeg >= 0) && (nSegment != nDbgSeg)) || ((nDbgSide >= 0) && (faceP->nSide != nDbgSide)))
+#ifdef _DEBUG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nSegment = nSegment;
+#endif
+#if 1
+if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
 #endif
 if ((faceP->nType < 0) && ((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
@@ -289,7 +295,8 @@ gameStates.render.nType = nType;
 gameStates.render.history.nShader = -1;
 gameStates.render.history.bOverlay = 0;
 gameStates.render.history.bmBot = 
-gameStates.render.history.bmTop = NULL;
+gameStates.render.history.bmTop =
+gameStates.render.history.bmMask = NULL;
 gameData.threads.vertColor.data.bDarkness = 0;
 if (nType != 3)
 	OglSetupTransform (1);
@@ -305,6 +312,8 @@ if (bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0)) {
 		}
 	else
 		G3DisableClientStates (1, 1, GL_TEXTURE0);
+	if (G3EnableClientStates (1, 1, GL_TEXTURE2))
+		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 	}
 else {
 	G3DisableClientStates (1, 1, GL_TEXTURE1);
@@ -373,6 +382,12 @@ else {	//front to back
 #endif
 	}
 if (bVertexArrays) {
+	G3DisableClientStates (1, 1, GL_TEXTURE2);
+	glActiveTexture (GL_TEXTURE2);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+
 	G3DisableClientStates (1, 1, GL_TEXTURE1);
 	glActiveTexture (GL_TEXTURE1);
 	glEnable (GL_TEXTURE_2D);
@@ -442,17 +457,20 @@ for (i = nStart; i < nEnd; i++) {
 				}
 #endif
 			faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
+			if (!(faceP->widFlags & WID_RENDER_FLAG))
+				continue;
 			faceP->nCamera = IsMonitorFace (nSegment, nSide);
 			bTextured = 1;
-			fAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, &faceColor [0].color, &nColor, &bTextured);
+			fAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, &faceColor [1].color, &nColor, &bTextured);
 			faceP->bTextured = bTextured;
-			if (!(faceP->bTransparent = (fAlpha < 1)) &&
-				 (faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
-				faceColor [1].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
+			if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
+				faceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
 				nColor = 2;
 				}
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 			pc = gameData.segs.faces.color + faceP->nIndex;
+			if (((nColor == 1) && (fAlpha < 1)) || (nColor == 2))
+				faceP->bTransparent = 1;
 			for (h = 0; h < 4; h++, pc++) {
 				if (gameStates.render.bFullBright) 
 					*pc = c.color;
@@ -476,8 +494,13 @@ for (i = nStart; i < nEnd; i++) {
 						nVertex = nVertex;
 #endif
 					*pc = gameData.render.color.vertices [nVertex].color;
+					if (nColor == 1) {
+						pc->red *= fAlpha;
+						pc->blue *= fAlpha;
+						pc->green *= fAlpha;
+						}
+					pc->alpha = fAlpha;
 					}
-				pc->alpha = fAlpha;
 				}
 			gameData.render.lights.dynamic.material.bValid = 0;
 			}
@@ -491,15 +514,18 @@ for (i = nStart; i < nEnd; i++) {
 				nSegment = nSegment;
 #endif
 			faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
+			if (!(faceP->widFlags & WID_RENDER_FLAG))
+				continue;
 			faceP->nCamera = IsMonitorFace (nSegment, nSide);
 			bTextured = 1;
 			fAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, &faceColor [1].color, &nColor, &bTextured);
 			faceP->bTextured = bTextured;
-			if (!(faceP->bTransparent = (fAlpha < 1)) &&
-				 (faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
-				faceColor [1].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
-				nColor = 1;
+			if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
+				faceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
+				nColor = 2;
 				}
+			if (((nColor == 1) && (fAlpha < 1)) || (nColor == 2))
+				faceP->bTransparent = 1;
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			for (h = 0; h < 4; h++, pc++) {
 				if (!gameStates.render.bFullBright) {

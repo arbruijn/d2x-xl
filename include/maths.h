@@ -140,8 +140,6 @@ fixang fix_atan2 (fix cos, fix sin);
 //for passed value a, returns 1/sqrt(a) 
 fix fix_isqrt (fix a);
 
-#ifdef _WIN32
-#	define fabsf(_f)	(float) fabs (_f)
-#endif
+#define fabsf(_f)	(float) fabs (_f)
 
 #endif

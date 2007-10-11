@@ -2801,7 +2801,6 @@ else if (nCloakState && nOldCloakState && !nCloakFadeState && !refade) {
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT) {
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
 	}
-HUDMessage (0, "%d", nCloakFadeValue);
 //if (nCloakFadeValue >= GR_ACTUAL_FADE_LEVELS - 1) 
 	{
 	gameStates.render.grAlpha = (float) nCloakFadeValue / (float) GR_ACTUAL_FADE_LEVELS;

@@ -95,7 +95,7 @@ g3sPoint *pointList [MAX_POINTS_PER_POLY];
 
 //------------------------------------------------------------------------------
 
-static inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
+inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
 {
 while (n--)
 	G3TransformPoint (dest++, src++, 0);

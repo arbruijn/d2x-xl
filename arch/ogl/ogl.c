@@ -176,7 +176,7 @@ void OglInitTexture (tOglTexture *t, int bMask)
 {
 t->handle = 0;
 t->internalformat = bMask ? 1 : gameStates.ogl.bpp / 8;
-t->format = bMask ? GL_ALPHA : gameStates.ogl.nRGBAFormat;
+t->format = bMask ? GL_RED : gameStates.ogl.nRGBAFormat;
 t->wrapstate = -1;
 t->w =
 t->h = 0;
@@ -236,7 +236,7 @@ void OglSmashTextureListInternal (void)
 {
 	int			h, i, j, k;
 	tOglTexture *t;
-	grsBitmap	*bmP, *altBmP;
+	grsBitmap	*bmP, *altBmP, *bmfP;
 
 OglDeleteLists (&hBigSphere, 1);
 OglDeleteLists (&hSmallSphere, 1);
@@ -262,16 +262,24 @@ for (k = 0; k < 2; k++) {
 	bmP = gameData.pig.tex.bitmaps [k];
 	for (i = gameData.pig.tex.nBitmaps [k] + (k ? 0 : gameData.hoard.nBitmaps); i; i--, bmP++) {
 		if (bmP->bmType == BM_TYPE_STD) {
+			if (BM_MASK (bmP))
+				UnlinkTexture (BM_MASK (bmP));
 			if (!BM_OVERRIDE (bmP))
 				UnlinkTexture (bmP);
 			else {
 				altBmP = BM_OVERRIDE (bmP);
+				if (BM_MASK (altBmP))
+					UnlinkTexture (BM_MASK (altBmP));
 				UnlinkTexture (altBmP);
 				if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
 					h = BM_FRAMECOUNT (altBmP);
-					if (h > 1)
-						for (j = 0; j < h; j++)
-							UnlinkTexture (BM_FRAMES (altBmP) + j);
+					if (h > 1) {
+						for (j = h, bmfP = BM_FRAMES (altBmP); j; j--, bmfP++) {
+							if (BM_MASK (bmfP))
+								UnlinkTexture (BM_MASK (bmfP));
+							UnlinkTexture (bmfP);
+							}
+						}
 					}
 				}
 			}
@@ -429,6 +437,7 @@ return 0;
 int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp)
 {
 	tOglTexture	*texP;
+	grsBitmap	*bmMask;
 #if RENDER2TEXTURE
 	int			bPBuffer;
 #endif
@@ -456,6 +465,11 @@ else
 #endif
 		}
 	OGL_BINDTEX (texP->handle);
+	if (bmMask = BM_MASK (bmP)) {
+		texP = bmMask->glTexture;
+		if (!(texP && (texP->handle > 0)))
+			OglLoadBmTexture (bmMask, 0, -1, 1);
+		}
 	}
 #ifdef _DEBUG
 bmP->glTexture->lastrend = gameData.time.xGame;
@@ -1169,6 +1183,10 @@ switch (texP->format) {
 		nBits = 8;
 		break;
 
+	case GL_RED:
+		nBits = 8;
+		break;
+
 	case GL_RGB:
 		nBits = 24;
 
@@ -1517,7 +1535,7 @@ return 1;
 
 int OglLoadBmTexture (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
 {
-	int			i, h, w, nFrames;
+	int	i, h, w, nFrames;
 
 bmP = BmOverride (bmP, -1);
 h = bmP->bmProps.h;
@@ -1536,7 +1554,7 @@ else if (!BM_FRAMES (bmP)) {
 
 	OglSetupBmFrames (bmP, bDoMipMap, nTransp, bLoad);
 	BM_CURFRAME (bmP) = BM_FRAMES (bmP);
-	if (CreateSuperTranspMasks (bmP))
+	if (i = CreateSuperTranspMasks (bmP))
 		for (i = nFrames, bmfP = BM_FRAMES (bmP); i; i--, bmfP++)
 			if (bLoad && BM_MASK (bmfP))
 				OglLoadBmTextureM (BM_MASK (bmfP), 0, -1, 1, NULL);

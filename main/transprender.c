@@ -220,7 +220,7 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord3f *t
 {
 	tRIPoly	item;
 	int		i;
-	float		z;
+	float		z, s = GrAlpha ();
 
 item.bmP = bmP;
 item.nVertices = nVertices;
@@ -235,12 +235,12 @@ if (item.nColors = nColors) {
 	if (color) {
 		memcpy (item.color, color, nColors * sizeof (tRgbaColorf));
 		for (i = 0; i < nColors; i++)
-			item.color [i].alpha *= gameStates.ogl.fAlpha;
+			item.color [i].alpha *= s;
 		}
 	else if (altColor) {
 		for (i = 0; i < nColors; i++) {
 			item.color [i] = altColor [i].color;
-			item.color [i].alpha *= gameStates.ogl.fAlpha;
+			item.color [i].alpha *= s;
 			}
 		}
 	else

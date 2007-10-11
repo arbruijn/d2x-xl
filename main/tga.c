@@ -594,18 +594,19 @@ if (bmP) {
 
 grsBitmap *CreateSuperTranspMask (grsBitmap *bmP)
 {
-	int	i = bmP->bmProps.w * bmP->bmProps.h;
-	ubyte	*pm, *pi;
+	int		i = bmP->bmProps.w * bmP->bmProps.h;
+	ubyte		*pi;
+	ubyte		*pm;
 
-if (bmP->bmData.std.bmMask)
-	return bmP->bmData.std.bmMask;
-if (!(bmP->bmData.std.bmMask = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))
+if (BM_MASK (bmP))
+	return BM_MASK (bmP);
+if (!(BM_MASK (bmP) = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))
 	return NULL;
-for (pi = bmP->bmTexBuf, pm = bmP->bmData.std.bmMask->bmTexBuf; i; i--, pi += 4, pm++)
+for (pi = bmP->bmTexBuf, pm = (ushort *) BM_MASK (bmP)->bmTexBuf; i; i--, pi += 4, pm++)
 	if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
 		*pm = 0;
 	else
-		*pm = 1;
+		*pm = 0xff;
 return bmP->bmData.std.bmMask;
 }
 
@@ -626,9 +627,9 @@ if ((bmP->bmType != BM_TYPE_ALT) || !bmP->bmData.alt.bmFrames) {
 	}
 nFrames = BM_FRAMECOUNT (bmP);
 for (nMasks = i = 0; i < nFrames; i++)
-if (bmP->bmSupertranspFrames [i / 32] & (1 << (i % 32)))
-	if (CreateSuperTranspMask (bmP->bmData.alt.bmFrames + i))
-		nMasks++;
+	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
+		if (CreateSuperTranspMask (bmP->bmData.alt.bmFrames + i))
+			nMasks++;
 return nMasks;
 }
 

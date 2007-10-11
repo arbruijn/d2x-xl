@@ -436,24 +436,19 @@ char *texMergeFS [3] = {
 	"vec4 topColor, btmColor;" \
 	"void main(void)" \
 	"{topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"if(topColor.a==0.0){" \
 	"if((abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
-	"   else {" \
-	"      btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
-	"      gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;}}" \
-	"else {" \
-	"   btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
-	"   gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}}"
+	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
+	"gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}"
 ,
 	"uniform sampler2D btmTex, topTex, maskTex;" \
 	"uniform float grAlpha;" \
-	"void main(void)" \
-	"{float bMask=texture2D(maskTex,vec2(gl_TexCoord [2])).a;" \
-	"if(bMask<0.5)discard;" \
-	"else {vec4 topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));"\
-	"if(topColor.a==0.0)gl_FragColor=vec4(vec3(btmColor),btmColor.a*grAlpha)*gl_Color;" \
-	"else gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}}"
+	"vec4 topColor, btmColor;" \
+	"float bMask;" \
+	"void main(void){" \
+	"bMask=texture2D(maskTex,vec2(gl_TexCoord [2])).r;" \
+	"topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
+	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
+	"gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha*bMask)*gl_Color;}"
 	};
 
 char *texMergeVS [3] = {
@@ -497,7 +492,7 @@ if (!gameOpts->ogl.bGlTexMerge)
 	gameStates.render.textures.bGlsTexMergeOk = 0;
 else {
 	LogErr ("building texturing shader programs\n");
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 3; i++) {
 		if (tmShaderProgs [i])
 			DeleteShaderProg (tmShaderProgs + i);
 		b = CreateShaderProg (tmShaderProgs + i) &&

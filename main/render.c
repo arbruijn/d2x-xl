@@ -536,6 +536,10 @@ void RenderSide (tSegment *segP, short nSide)
 
 props.segNum = SEG_IDX (segP);
 props.sideNum = nSide;
+#ifdef _DEBUG
+if ((props.segNum == nDbgSeg) && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
+	segP = segP;
+#endif
 props.widFlags = WALL_IS_DOORWAY (segP, props.sideNum, NULL);
 if (!(gameOpts->render.bWalls || IsMultiGame) && IS_WALL (WallNumP (segP, props.sideNum)))
 	return;

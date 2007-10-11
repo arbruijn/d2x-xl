@@ -947,7 +947,9 @@ else
 	g3InitTMU [2][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [2][bVertexArrays])
 		glNewList (g3InitTMU [2][bVertexArrays], GL_COMPILE);
-	OglActiveTexture (GL_TEXTURE2_ARB, bVertexArrays);
+	if (bVertexArrays)
+		glClientActiveTexture (GL_TEXTURE2);
+	glActiveTexture (GL_TEXTURE2);
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	if (g3InitTMU [2][bVertexArrays]) {
@@ -968,7 +970,9 @@ else
 	g3InitTMU [3][bVertexArrays] = glGenLists (1);
 	if (g3InitTMU [3][bVertexArrays])
 		glNewList (g3InitTMU [3][bVertexArrays], GL_COMPILE);
-	OglActiveTexture (GL_TEXTURE2_ARB, bVertexArrays);
+	glActiveTexture (GL_TEXTURE2_ARB);
+	if (bVertexArrays)
+		glClientActiveTexture (GL_TEXTURE2_ARB);
 	glEnable (GL_TEXTURE_2D);
 	if (g3InitTMU [3][bVertexArrays]) {
 		glEndList ();
@@ -1713,7 +1717,7 @@ bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend,
 {
 	int			i, j, bColorKey, bOverlay, bUpdateShader, bTransparent;
 	char			nShader = -1;
-	grsBitmap	*bmMask;
+	grsBitmap	*bmMask = NULL;
 
 if (bDepthOnly) {
 	if (faceP->bOverlay)
@@ -1752,18 +1756,16 @@ if (bTextured) {
 		}
 	else
 		bOverlay = 0;
-#if 1
-	gameStates.render.history.bmBot = 
-	gameStates.render.history.bmTop = NULL;
-#endif
 	if ((bmBot != gameStates.render.history.bmBot) || 
 		 (bmTop != gameStates.render.history.bmTop) || 
 		 (bOverlay != gameStates.render.history.bOverlay)) {
 		if (bOverlay > 0) {	
 			bmMask = BM_MASK (bmTop);
 			nShader = bColorKey ? bmMask ? 2 : 1 : 0;
-			if (bUpdateShader = (nShader != gameStates.render.history.nShader))
+			if (bUpdateShader = (nShader != gameStates.render.history.nShader)) {
+				glUseProgramObject (0);
 				glUseProgramObject (tmProg = tmShaderProgs [nShader]);
+				}
 			// set base texture
 			if (bmBot != gameStates.render.history.bmBot) {
 				INIT_TMU (InitTMU0, bmBot, bVertexArrays);
@@ -1792,10 +1794,19 @@ if (bTextured) {
 				glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 				}
 			glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
+			gameStates.render.history.bmMask = bmMask;
 			}
 		else {
-			if (gameStates.render.history.bOverlay > 0)
+			if (gameStates.render.history.bOverlay > 0) {
 				glUseProgramObject (0);
+				if (gameStates.render.history.bmMask) {
+					glActiveTexture (GL_TEXTURE2);
+					glClientActiveTexture (GL_TEXTURE2);
+					glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+					OGL_BINDTEX (0);
+					gameStates.render.history.bmMask = NULL;
+					}
+				}
 #if G3_MULTI_TEXTURE
 			if (bmTop != gameStates.render.history.bmTop) {
 				if (bmTop) {
@@ -1816,8 +1827,10 @@ if (bTextured) {
 #else
 			if (bVertexArrays) {
 				if (gameStates.render.history.bmTop) {
+					glActiveTexture (GL_TEXTURE1);
 					glClientActiveTexture (GL_TEXTURE1);
 					glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+					OGL_BINDTEX (0);
 					}
 				gameStates.render.history.bmTop = NULL;
 				}
@@ -1834,8 +1847,8 @@ if (bTextured) {
 				gameStates.render.history.bmBot = bmBot;
 				}
 			}
+		gameStates.render.history.nShader = nShader;
 		}
-	gameStates.render.history.nShader = nShader;
 	gameStates.render.history.bOverlay = bOverlay;
 	}
 else {
@@ -1874,6 +1887,8 @@ else {
 		if (bOverlay > 0) {
 			glMultiTexCoord2fv (GL_TEXTURE0, (GLfloat *) (gameData.segs.faces.texCoord + j));
 			glMultiTexCoord2fv (GL_TEXTURE1, (GLfloat *) (gameData.segs.faces.ovlTexCoord + j));
+			if (bmMask)
+				glMultiTexCoord2fv (GL_TEXTURE2, (GLfloat *) (gameData.segs.faces.ovlTexCoord + j));
 			}
 		else if (bmBot)
 			glTexCoord2fv ((GLfloat *) (gameData.segs.faces.texCoord + j));

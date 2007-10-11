@@ -598,39 +598,44 @@ return !gameStates.app.bD1Mission &&
 
 //------------------------------------------------------------------------------
 
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *pc, int *bCloaking, ubyte *bTextured)
+float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *pc, int *nColor, ubyte *bTextured)
 {
 	static tRgbaColorf cloakColor = {0, 0, 0, 0};
 
+	tWall	*wallP;
 	float fAlpha;
 	short	c;
+	int	bCloaking;
 
 if (!IS_WALL (nWall))
 	return 1;
-if (widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)) {
+wallP = gameData.walls.walls + nWall;
+if ((bCloaking = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || 
+					  (widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)))) {
 	if (bIsMonitor)
 		return 1;
-	c = gameData.walls.walls [nWall].cloakValue;
-	if (widFlags & WID_CLOAKED_FLAG) {
+	c = wallP->cloakValue;
+	if (bCloaking) {
 		if (c >= GR_ACTUAL_FADE_LEVELS)
 			return 1;
 		*pc = cloakColor;
-		*bTextured = 0;
+		*nColor = 1;
 		return pc->alpha = (float) c / (float) GR_ACTUAL_FADE_LEVELS;
 		}
 	if (!gameOpts->render.color.bWalls)
-		return 0;
+		c = 0;
 	if (gameData.walls.walls [nWall].hps)
 		fAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWall].hps / ((float) F1_0 * 100.0f)));
 	else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
 		fAlpha = COMPETITION ? 3.0f / 2.0f : (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) GR_ACTUAL_FADE_LEVELS;
 	else
-		fAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
+		fAlpha = extraGameInfo [0].grWallTransparency / (float) GR_ACTUAL_FADE_LEVELS;
 	if (fAlpha < 1) {
-		pc->red = CPAL2Tr (gamePalette, c);
-		pc->green = CPAL2Tg (gamePalette, c);
-		pc->blue = CPAL2Tb (gamePalette, c);
+		pc->red = (float) CPAL2Tr (gamePalette, c) / fAlpha;
+		pc->green = (float) CPAL2Tg (gamePalette, c) / fAlpha;
+		pc->blue = (float) CPAL2Tb (gamePalette, c) / fAlpha;
 		*bTextured = 0;
+		*nColor = 1;
 		}
 	return pc->alpha = fAlpha;
 	}

@@ -52,6 +52,7 @@ static char rcsid [] = "$Id: tWall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 #include "ogl_init.h"
 #include "render.h"
 #include "hudmsg.h"
+#include "lighting.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -146,15 +147,6 @@ if (gameStates.app.bD2XLevel) {
 	}
 return gameOpts->render.bAutoTransparency && IsTransparentTexture (sideP->nBaseTex);
 }
-
-//define these here so I don't have to change WallIsDoorWay and run
-//the risk of screwing it up.
-#define WID_WALL						2	// 0/1/0		tWall
-#define WID_TRANSPARENT_WALL		6	//	0/1/1		transparent tWall
-#define WID_ILLUSORY_WALL			3	//	1/1/0		illusory tWall
-#define WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory tWall
-#define WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
-#define WID_EXTERNAL					8	// 0/0/0/1	don't see it, dont fly through it
 
 //-----------------------------------------------------------------
 // This function checks whether we can fly through the given nSide.
@@ -603,7 +595,8 @@ void StartWallCloak (tSegment *segP, short nSide)
 	int				i;
 	short				nConnWall;
 
-if (gameData.demo.nState==ND_STATE_PLAYBACK) return;
+if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+	return;
 Assert(IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 wallP = gameData.walls.walls + WallNumP (segP, nSide);
 if (wallP->nType == WALL_OPEN || wallP->state == WALL_DOOR_CLOAKING)		//already open or cloaking
@@ -617,7 +610,7 @@ nConnWall = WallNumP (connSegP, nConnSide);
 if (wallP->state == WALL_DOOR_DECLOAKING) {	//decloaking, so reuse door
 		int i;
 
-	for (i = 0, d = NULL; i <gameData.walls.nCloaking; i++) {		//find door
+	for (i = 0, d = NULL; i < gameData.walls.nCloaking; i++) {		//find door
 		d = gameData.walls.cloaking + i;
 		if ((d->nFrontWall == wallP-gameData.walls.walls) || (d->nBackWall == wallP-gameData.walls.walls))
 			break;
@@ -672,20 +665,20 @@ void StartWallDecloak (tSegment *segP, short nSide)
 	int i;
 	short nConnWall;
 
-if (gameData.demo.nState==ND_STATE_PLAYBACK) 
+if (gameData.demo.nState == ND_STATE_PLAYBACK) 
 	return;
-Assert(IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
+Assert (IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 	wallP = gameData.walls.walls + WallNumP (segP, nSide);
 if (wallP->nType == WALL_CLOSED || wallP->state == WALL_DOOR_DECLOAKING)		//already closed or decloaking
 	return;
 if (wallP->state == WALL_DOOR_CLOAKING) {	//cloaking, so reuse door
 	for (i = 0, d = NULL; i < gameData.walls.nCloaking; i++) {		//find door
 		d = gameData.walls.cloaking + i;
-		if (d->nFrontWall==wallP-gameData.walls.walls || d->nBackWall==wallP-gameData.walls.walls)
+		if ((d->nFrontWall == wallP-gameData.walls.walls) || (d->nBackWall == wallP-gameData.walls.walls))
 			break;
 		}
-	Assert(i<gameData.walls.nCloaking);				//didn't find door!
-	Assert(d!=NULL); // Get John!
+	Assert(i < gameData.walls.nCloaking);				//didn't find door!
+	Assert(d != NULL); // Get John!
 	d->time = (fix) (CLOAKING_WALL_TIME * gameStates.gameplay.slowmo [0].fSpeed) - d->time;
 	}
 else if (wallP->state == WALL_DOOR_CLOSED) {	//create new door
@@ -1309,107 +1302,98 @@ for (i = gameData.walls.nWalls; i < MAX_WALLS; i++, pWall++) {
 
 //-----------------------------------------------------------------
 
-void DoCloakingWallFrame(int cloaking_wall_num)
+void DoCloakingWallFrame (int nCloakingWall)
 {
 	tCloakingWall *d;
-	tWall *wfront,*wback;
+	tWall *frontWallP,*backWallP;
 
-	if (gameData.demo.nState==ND_STATE_PLAYBACK) 
-		return;
-
-	d = gameData.walls.cloaking + cloaking_wall_num;
-	wfront = gameData.walls.walls + d->nFrontWall;
-	wback = IS_WALL (d->nBackWall) ? gameData.walls.walls + d->nBackWall : NULL;
-
-	d->time += gameData.time.xFrame;
-
-	if (d->time > CLOAKING_WALL_TIME) {
-		wfront->nType = WALL_OPEN;
-		wfront->state = WALL_DOOR_CLOSED;		//why closed? why not?
-		if (wback) {
-			wback->nType = WALL_OPEN;
-			wback->state = WALL_DOOR_CLOSED;		//why closed? why not?
-			}
-#if 1
-		if (cloaking_wall_num < --gameData.walls.nCloaking)
-			memcpy (gameData.walls.cloaking + cloaking_wall_num,
-					  gameData.walls.cloaking + cloaking_wall_num + 1,
-					  (gameData.walls.nCloaking - cloaking_wall_num) * sizeof (*gameData.walls.cloaking));
-#else
-		for (i=cloaking_wall_num;i<gameData.walls.nCloaking;i++)
-			gameData.walls.cloaking [i] = gameData.walls.cloaking [i+1];
-		gameData.walls.nCloaking--;
-#endif
-	}
-	else if (d->time > CLOAKING_WALL_TIME/2) {
-		int oldType=wfront->nType;
-
-		wfront->cloakValue = ((d->time - CLOAKING_WALL_TIME/2) * (GR_ACTUAL_FADE_LEVELS-2)) / (CLOAKING_WALL_TIME/2);
-		if (wback)
-			wback->cloakValue = wfront->cloakValue;
-
-		if (oldType != WALL_CLOAKED) {		//just switched
-			int i;
-
-			wfront->nType = WALL_CLOAKED;
-			if (wback)
-				wback->nType = WALL_CLOAKED;
-
-			for (i=0;i<4;i++) {
-				gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [i].l = d->front_ls [i];
-				if (wback)
-					gameData.segs.segments [wback->nSegment].sides [wback->nSide].uvls [i].l = d->back_ls [i];
-			}
+if (gameData.demo.nState == ND_STATE_PLAYBACK) 
+	return;
+d = gameData.walls.cloaking + nCloakingWall;
+frontWallP = gameData.walls.walls + d->nFrontWall;
+backWallP = IS_WALL (d->nBackWall) ? gameData.walls.walls + d->nBackWall : NULL;
+d->time += gameData.time.xFrame;
+if (d->time > CLOAKING_WALL_TIME) {
+	frontWallP->nType = WALL_OPEN;
+	frontWallP->state = WALL_DOOR_CLOSED;		//why closed? why not?
+	if (backWallP) {
+		backWallP->nType = WALL_OPEN;
+		backWallP->state = WALL_DOOR_CLOSED;		//why closed? why not?
 		}
+	if (nCloakingWall < --gameData.walls.nCloaking)
+		memcpy (gameData.walls.cloaking + nCloakingWall,
+				  gameData.walls.cloaking + nCloakingWall + 1,
+				  (gameData.walls.nCloaking - nCloakingWall) * sizeof (*gameData.walls.cloaking));
 	}
-	else {		//fading out
-		fix light_scale;
+else if (SHOW_DYN_LIGHT || (d->time > CLOAKING_WALL_TIME / 2)) {
+	int oldType = frontWallP->nType;
+	if (SHOW_DYN_LIGHT)
+		frontWallP->cloakValue = (GR_ACTUAL_FADE_LEVELS * (CLOAKING_WALL_TIME - d->time)) / CLOAKING_WALL_TIME;
+	else
+		frontWallP->cloakValue = ((d->time - CLOAKING_WALL_TIME / 2) * (GR_ACTUAL_FADE_LEVELS - 2)) / (CLOAKING_WALL_TIME / 2);
+	if (backWallP)
+		backWallP->cloakValue = frontWallP->cloakValue;
+	if (oldType != WALL_CLOAKED) {		//just switched
 		int i;
-
-		light_scale = FixDiv(CLOAKING_WALL_TIME/2-d->time,CLOAKING_WALL_TIME/2);
-
-		for (i=0;i<4;i++) {
-			gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [i].l = FixMul(d->front_ls [i],light_scale);
-			if (wback)
-				gameData.segs.segments [wback->nSegment].sides [wback->nSide].uvls [i].l = FixMul(d->back_ls [i],light_scale);
+		frontWallP->nType = WALL_CLOAKED;
+		if (backWallP)
+			backWallP->nType = WALL_CLOAKED;
+		for (i = 0; i < 4; i++) {
+			gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [i].l = d->front_ls [i];
+			if (backWallP)
+				gameData.segs.segments [backWallP->nSegment].sides [backWallP->nSide].uvls [i].l = d->back_ls [i];
+			}
 		}
 	}
-
+else {		//fading out
+	fix light_scale;
+	int i;
+	light_scale = FixDiv (CLOAKING_WALL_TIME / 2 - d->time, CLOAKING_WALL_TIME / 2);
+	for (i = 0; i < 4; i++) {
+		gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [i].l = FixMul(d->front_ls [i], light_scale);
+		if (backWallP)
+			gameData.segs.segments [backWallP->nSegment].sides [backWallP->nSide].uvls [i].l = FixMul(d->back_ls [i], light_scale);
+		}
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordCloakingWall(d->nFrontWall, d->nBackWall, wfront->nType, wfront->state, wfront->cloakValue, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [0].l, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [1].l, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [2].l, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [3].l);
+		NDRecordCloakingWall (d->nFrontWall, d->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue, 
+									gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [0].l, 
+									gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [1].l, 
+									gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [2].l, 
+									gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [3].l);
 
+	}
 }
 
 //-----------------------------------------------------------------
 
-void DoDecloakingWallFrame (int cloaking_wall_num)
+void DoDecloakingWallFrame (int nCloakingWall)
 {
 	tCloakingWall *d;
-	tWall *wfront,*wback;
+	tWall *frontWallP,*backWallP;
 
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) 
 		return;
 
-	d = gameData.walls.cloaking + cloaking_wall_num;
-	wfront = gameData.walls.walls + d->nFrontWall;
-	wback = IS_WALL (d->nBackWall) ? gameData.walls.walls + d->nBackWall : NULL;
+	d = gameData.walls.cloaking + nCloakingWall;
+	frontWallP = gameData.walls.walls + d->nFrontWall;
+	backWallP = IS_WALL (d->nBackWall) ? gameData.walls.walls + d->nBackWall : NULL;
 
 	d->time += gameData.time.xFrame;
 
 	if (d->time > CLOAKING_WALL_TIME) {
 		int i;
 
-		wfront->state = WALL_DOOR_CLOSED;
-		if (wback)
-			wback->state = WALL_DOOR_CLOSED;
+		frontWallP->state = WALL_DOOR_CLOSED;
+		if (backWallP)
+			backWallP->state = WALL_DOOR_CLOSED;
 
 		for (i=0;i<4;i++) {
-			gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [i].l = d->front_ls [i];
-			if (wback)
-				gameData.segs.segments [wback->nSegment].sides [wback->nSide].uvls [i].l = d->back_ls [i];
+			gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [i].l = d->front_ls [i];
+			if (backWallP)
+				gameData.segs.segments [backWallP->nSegment].sides [backWallP->nSide].uvls [i].l = d->back_ls [i];
 		}
 
-		for (i=cloaking_wall_num;i<gameData.walls.nCloaking;i++)
+		for (i=nCloakingWall;i<gameData.walls.nCloaking;i++)
 			gameData.walls.cloaking [i] = gameData.walls.cloaking [i+1];
 		gameData.walls.nCloaking--;
 
@@ -1418,29 +1402,29 @@ void DoDecloakingWallFrame (int cloaking_wall_num)
 		fix light_scale;
 		int i;
 
-		wfront->nType = WALL_CLOSED;
-		if (wback)
-			wback->nType = WALL_CLOSED;
+		frontWallP->nType = WALL_CLOSED;
+		if (backWallP)
+			backWallP->nType = WALL_CLOSED;
 
 		light_scale = FixDiv(d->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME/2);
 
 		for (i=0;i<4;i++) {
-			gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [i].l = FixMul(d->front_ls [i],light_scale);
-			if (wback)
-				gameData.segs.segments [wback->nSegment].sides [wback->nSide].uvls [i].l = FixMul(d->back_ls [i],light_scale);
+			gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [i].l = FixMul(d->front_ls [i],light_scale);
+			if (backWallP)
+				gameData.segs.segments [backWallP->nSegment].sides [backWallP->nSide].uvls [i].l = FixMul(d->back_ls [i],light_scale);
 		}
 	}
 	else {		//cloaking in
-		wfront->cloakValue = ((CLOAKING_WALL_TIME/2 - d->time) * (GR_ACTUAL_FADE_LEVELS-2)) / (CLOAKING_WALL_TIME/2);
-		wfront->nType = WALL_CLOAKED;
-		if (wback) {
-			wback->cloakValue = wfront->cloakValue;
-			wback->nType = WALL_CLOAKED;
+		frontWallP->cloakValue = ((CLOAKING_WALL_TIME/2 - d->time) * (GR_ACTUAL_FADE_LEVELS-2)) / (CLOAKING_WALL_TIME/2);
+		frontWallP->nType = WALL_CLOAKED;
+		if (backWallP) {
+			backWallP->cloakValue = frontWallP->cloakValue;
+			backWallP->nType = WALL_CLOAKED;
 			}
 	}
 
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordCloakingWall(d->nFrontWall, d->nBackWall, wfront->nType, wfront->state, wfront->cloakValue, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [0].l, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [1].l, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [2].l, gameData.segs.segments [wfront->nSegment].sides [wfront->nSide].uvls [3].l);
+		NDRecordCloakingWall(d->nFrontWall, d->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue, gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [0].l, gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [1].l, gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [2].l, gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls [3].l);
 
 }
 

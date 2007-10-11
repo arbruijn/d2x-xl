@@ -754,6 +754,7 @@ typedef struct tAutomapStates {
 typedef struct tRenderHistory {
 	grsBitmap	*bmBot;
 	grsBitmap	*bmTop;
+	grsBitmap	*bmMask;
 	ubyte			bSuperTransp;
 	ubyte			bShaderMerge;
 	char			bOverlay;
@@ -2940,8 +2941,7 @@ typedef struct tTIRInfo {
 
 #ifndef WIN32
 #	define WINAPI
-#	define HINSTANCE int
-#	define HWND void *
+#	define HINSTANCE	int
 #endif
 
 typedef int (WINAPI *tpfnTIRInit) (HWND);
