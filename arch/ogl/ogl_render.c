@@ -1212,7 +1212,12 @@ for (i = j = 0; i < h; i++) {
 		fAttenuation = 0.01f;
 	else {
 		fLightDist = VmVecMagf (&lightDir) / fLightRange;
-		if (nType < 2) {
+#if 0
+		if (nType == 2) 
+			fLightDist *= fLightDist;
+		else 
+#endif
+			{
 			fLightDist -= psl->rad;	//make light brighter close to light source
 			if (fLightDist < 1.0f) {
 				bInRad = 1;
@@ -1220,11 +1225,10 @@ for (i = j = 0; i < h; i++) {
 				}
 			else {	//make it decay faster
 				fLightDist *= fLightDist;
-				fLightDist *= 2.0f;
+				if (nType < 2)
+					fLightDist *= 2.0f;
 				}
 			}
-		else
-			fLightDist *= fLightDist;
 		fAttenuation = fLightDist / psl->brightness;
 		}
 #if 0
@@ -1458,7 +1462,7 @@ else {
 	vcd.fMatShininess = 96;
 	}
 #if 1//ndef _DEBUG //cache light values per frame
-if (!(vcd.bExclusive || vcd.bMatEmissive) && (nVertex >= 0)) {
+if (!(gameStates.render.nState || vcd.bExclusive || vcd.bMatEmissive) && (nVertex >= 0)) {
 	pc = gameData.render.color.vertices + nVertex;
 	if (pc->index == gameStates.render.nFrameFlipFlop + 1) {
 		if (pVertColor) {

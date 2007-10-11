@@ -453,7 +453,7 @@ switch (nObjType) {
 		   FixSinCos ((gameData.time.xGame/2) & 0xFFFF,&s,NULL); // probably a bad way to do it
 			s+=F1_0; 
 			s>>=1;
-			hoardlight=FixMul (s,hoardlight);
+			hoardlight = FixMul (s,hoardlight);
 		   return (hoardlight);
 		  }
 		else if (objP->id == gameData.multiplayer.nLocalPlayer) {
@@ -522,7 +522,12 @@ switch (nObjType) {
 		break;
 
 	case OBJ_ROBOT:
-		return F1_0*ROBOTINFO (objP->id).lightcast;
+		*pbGotColor = 1;
+#if 0//def _DEBUG
+		return ROBOTINFO (objP->id).lighting;
+#else
+		return ROBOTINFO (objP->id).lightcast ? ROBOTINFO (objP->id).lighting ? ROBOTINFO (objP->id).lighting : F1_0 : 0;
+#endif
 		break;
 
 	case OBJ_WEAPON: {
@@ -1263,7 +1268,7 @@ SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc
 if (nObject >= 0) {
 	pl->nType = 2;
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
-	pl->rad = 0;
+	pl->rad = f2fl (gameData.objs.objects [nObject].size);
 	gameData.render.lights.dynamic.owners [nObject] = gameData.render.lights.dynamic.nLights;
 	}
 else if (nSegment >= 0) {
@@ -1688,12 +1693,14 @@ time_t tSetNearestDynamicLights = 0;
 short SetNearestDynamicLights (int nSegment, int bVariable, int nThread)
 {
 	static int nLastSeg [4] = {-1, -1, -1, -1};
+	static int nFrameFlipFlop = 0;
 #if PROFILING
 	time_t t = clock ();
 #endif
 
-if (nLastSeg [nThread] == nSegment)
+if ((nFrameFlipFlop == gameStates.render.nFrameFlipFlop + 1) && (nLastSeg [nThread] == nSegment))
 	return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
+nFrameFlipFlop = gameStates.render.nFrameFlipFlop + 1;
 nLastSeg [nThread] = nSegment;
 if (gameOpts->render.bDynLighting) {
 	short				i = gameData.render.lights.dynamic.shader.nLights,

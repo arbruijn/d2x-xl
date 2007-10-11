@@ -368,7 +368,7 @@ void RenderMslLockIndicator (tObject *objP)
 
 	fVector				fPos, fVerts [3];
 	float					r, r2;
-	int					nTgtInd, bHasDmg;
+	int					nTgtInd, bHasDmg, bVertexArrays;
 
 if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0))
 	return;
@@ -388,13 +388,14 @@ r = f2fl (objP->size);
 r2 = r / 4;
 
 glDisable (GL_CULL_FACE);
+bVertexArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
+glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
-G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
 if (gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVector	rotVerts [3];
 	fMatrix	m;
-	int		i, j;
+	int		h, i, j;
 
 	if (bInitSinCos) {
 		OglComputeSinCos (sizeofa (sinCosInd), sinCosInd);
@@ -415,21 +416,29 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVerts [2].p.z = 0;
 	rotVerts [0].p.w = 
 	rotVerts [1].p.w = 
-	rotVerts [2].p.w = 1;
+	rotVerts [2].p.w = 0;
 	fVerts [0].p.x = -r2;
 	fVerts [1].p.x = +r2;
 	fVerts [2].p.x = 0;
 	fVerts [0].p.y = 
 	fVerts [1].p.y = +r;
 	fVerts [2].p.y = +r - r2;
-	glVertexPointer (4, GL_FLOAT, 0, rotVerts);
+	if (bVertexArrays)
+		glVertexPointer (3, GL_FLOAT, sizeof (fVector), rotVerts);
 	for (j = 0; j < 4; j++) {
 		for (i = 0; i < 3; i++) {
 			VmVecRotatef (rotVerts + i, fVerts + i, &m);
 			fVerts [i] = rotVerts [i];
 			VmVecIncf (rotVerts + i, &fPos);
 			}	
-		glDrawArrays (GL_TRIANGLES, 0, 3);
+		if (bVertexArrays)
+			glDrawArrays (GL_TRIANGLES, 0, 3);
+		else {
+			glBegin (GL_TRIANGLES);
+			for (h = 0; h < 3; h++)
+				glVertex3fv ((GLfloat *) (rotVerts + h));
+			glEnd ();
+			}
 		if (!j) {	//now rotate by 90 degrees
 			m.rVec.p.x =
 			m.uVec.p.y = 0;
