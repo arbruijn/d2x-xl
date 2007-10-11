@@ -2940,7 +2940,8 @@ typedef struct tTIRInfo {
 
 #ifndef WIN32
 #	define WINAPI
-#	define HINSTANCE	int
+#	define HINSTANCE int
+#	define HWND void *
 #endif
 
 typedef int (WINAPI *tpfnTIRInit) (HWND);

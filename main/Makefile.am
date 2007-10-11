@@ -30,12 +30,12 @@ newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
 piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
 render.c    robot.c     scores.c    segment.c   slew.c      \
 songs.c     state.c     switch.c    terrain.c   texmerge.c  \
-text.c      titles.c    vclip.c     wall.c      weapon.c		\
-autodl.c		cameras.c	lightmap.c	tracker.c	objsmoke.c	\
-netmenu.c	cheats.c		banlist.c	thief.c		endlevel.c	\
+text.c      titles.c    vclip.c     wall.c      weapon.c	\
+autodl.c	cameras.c	lightmap.c	tracker.c	objsmoke.c	\
+netmenu.c	cheats.c	banlist.c	thief.c		endlevel.c	\
 multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
-tga.c			glare.c		radar.c		renderlib.c	transprender.c \
-fastrender.c				renderthreads.c			flightpath.c \
+tga.c		glare.c		radar.c		renderlib.c	transprender.c \
+fastrender.c			renderthreads.c			flightpath.c \
 rendershadows.c			objeffects.c
 
 EXTRA_libmain_a_SOURCES = \

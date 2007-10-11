@@ -168,7 +168,7 @@ tTransform += clock () - t;
 
 //------------------------------------------------------------------------------
 
-inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
+static inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
 {
 while (n--)
 	G3TransformPoint (dest++, src++, 0);

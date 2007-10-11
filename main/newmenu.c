@@ -1758,7 +1758,7 @@ while (!done) {
 			if (gameData.app.bGamePaused /*|| timer_paused*/) {
 				GameRenderFrame ();
 				gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-				Sleep (0);
+				G3_SLEEP (0);
 				}
 			else {
 				GameLoop (1, 0);
