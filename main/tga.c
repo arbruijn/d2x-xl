@@ -602,6 +602,7 @@ if (BM_MASK (bmP))
 	return BM_MASK (bmP);
 if (!(BM_MASK (bmP) = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))
 	return NULL;
+UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
 if (bmP->bmProps.flags & BM_FLAG_TGA) {
 	for (pi = bmP->bmTexBuf, pm = BM_MASK (bmP)->bmTexBuf; i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))

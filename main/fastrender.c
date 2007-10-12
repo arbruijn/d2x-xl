@@ -109,6 +109,8 @@ if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) &&
 void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bVertexArrays, int bTextured, int bDepthOnly)
 {
 #ifdef _DEBUG
+	static grsFace *prevFaceP = NULL;
+
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
@@ -175,9 +177,15 @@ if (faceP->nCamera < 0) {
 	}
 #ifdef _DEBUG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-	nSegment = nSegment;
+	if (bDepthOnly)
+		nSegment = nSegment;
+	else
+		nSegment = nSegment;
 #endif
 G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, bVertexArrays, bTextured && faceP->bTextured, bDepthOnly);
+#ifdef _DEBUG
+prevFaceP = faceP;
+#endif
 #if RENDER_DEPTHMASK_FIRST
 if (bTextured)
 	SplitFace (segP, faceP);
@@ -290,21 +298,18 @@ return tiRender.nFaces;
 
 //------------------------------------------------------------------------------
 
-void RenderFaceList (int nType)
+int BeginRenderFaces (int nType)
 {
-	tSegment		*segP;
-	grsFace		*faceP;
-	tFaceRef		*pfr;
-	short			nSegment;
-	int			i, j, bVertexArrays;
+	int	bVertexArrays;
 
+gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
 gameStates.render.history.nShader = -1;
-gameStates.render.history.bOverlay = 0;
+gameStates.render.history.bOverlay = -1;
 gameStates.render.history.bmBot = 
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
-gameData.threads.vertColor.data.bDarkness = 0;
+glDepthFunc (GL_LEQUAL);
 if (nType != 3)
 	OglSetupTransform (1);
 if (bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0)) {
@@ -319,13 +324,57 @@ if (bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0)) {
 		}
 	else
 		G3DisableClientStates (1, 1, GL_TEXTURE0);
-	if (G3EnableClientStates (1, 1, GL_TEXTURE2))
+	if (G3EnableClientStates (1, 1, GL_TEXTURE2)) {
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+		}
 	}
 else {
 	G3DisableClientStates (1, 1, GL_TEXTURE1);
 	G3DisableClientStates (1, 1, GL_TEXTURE0);
 	}
+return bVertexArrays;
+}
+
+//------------------------------------------------------------------------------
+
+void EndRenderFaces (int nType, int bVertexArrays)
+{
+if (bVertexArrays) {
+	G3DisableClientStates (1, 1, GL_TEXTURE2);
+	glActiveTexture (GL_TEXTURE2);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+
+	G3DisableClientStates (1, 1, GL_TEXTURE1);
+	glActiveTexture (GL_TEXTURE1);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+
+	G3DisableClientStates (1, 1, GL_TEXTURE0);
+	glActiveTexture (GL_TEXTURE0);
+	glEnable (GL_TEXTURE_2D);
+	OGL_BINDTEX (0);
+	glDisable (GL_TEXTURE_2D);
+	}
+if (gameStates.render.history.bOverlay > 0)
+	glUseProgramObject (0);
+if (nType != 3)
+	OglResetTransform (1);
+}
+
+//------------------------------------------------------------------------------
+
+void RenderFaceList (int nType)
+{
+	tSegment		*segP;
+	grsFace		*faceP;
+	tFaceRef		*pfr;
+	short			nSegment;
+	int			i, j, bVertexArrays;
+
+bVertexArrays = BeginRenderFaces (nType);
 if (nType) {	//back to front
 	for (i = gameData.render.mine.nRenderSegs; i; ) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [--i]))
@@ -388,29 +437,7 @@ else {	//front to back
 	glDepthMask (1);
 #endif
 	}
-if (bVertexArrays) {
-	G3DisableClientStates (1, 1, GL_TEXTURE2);
-	glActiveTexture (GL_TEXTURE2);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-
-	G3DisableClientStates (1, 1, GL_TEXTURE1);
-	glActiveTexture (GL_TEXTURE1);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-
-	G3DisableClientStates (1, 1, GL_TEXTURE0);
-	glActiveTexture (GL_TEXTURE0);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-	}
-if (gameStates.render.history.bOverlay > 0)
-	glUseProgramObject (0);
-if (nType != 3)
-	OglResetTransform (1);
+EndRenderFaces (nType, bVertexArrays);
 }
 
 // -----------------------------------------------------------------------------------
@@ -653,9 +680,13 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		nSegment = nSegment;
 #endif
 	if (nType == 1) {	// render opaque objects
-		SetNearestDynamicLights (nSegment, 0, 0);
-		SetNearestStaticLights (nSegment, 1, 0);
-		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects;
+		if (gameStates.render.bUseDynLight) {
+			SetNearestDynamicLights (nSegment, 0, 0);
+			SetNearestStaticLights (nSegment, 1, 0);
+			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
+			}
+		else
+			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
 #if 1

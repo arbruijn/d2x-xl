@@ -486,17 +486,16 @@ tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP)
 	tRgbColorf *color;
 	ubyte	*palette;
 		
-if (!bufP)
+if (!(bufP || (bufP = bmP->bmTexBuf)))
 	return NULL;
 h = (int) (bmP - gameData.pig.tex.pBitmaps);
-#ifdef _DEBUG
-if (h == 874)
-	h = h;
-#endif
 if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
-	h = (int) (bmP - gameData.pig.tex.bitmaps [0]);
-	if ((h < 0) || (h >= MAX_BITMAP_FILES))
-		return NULL;
+	h = (int) (bmP - gameData.pig.tex.pAltBitmaps);
+	if ((h < 0) || (h >= MAX_BITMAP_FILES)) {
+		h = (int) (bmP - gameData.pig.tex.bitmaps [0]);
+		if ((h < 0) || (h >= MAX_BITMAP_FILES))
+			return NULL;
+		}
 	}
 color = gameData.pig.tex.bitmapColors + h;
 if (color->red || color->green || color->blue)

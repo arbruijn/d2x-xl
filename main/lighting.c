@@ -1367,6 +1367,22 @@ if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
 
 //------------------------------------------------------------------------------
 
+void DeleteLightningLights (void)
+{
+	tDynLight	*pl;
+	int			nLight;
+
+for (nLight = gameData.render.lights.dynamic.nLights, pl = gameData.render.lights.dynamic.lights + nLight; nLight;) {
+	--nLight;
+	--pl;
+	if ((pl->nSegment >= 0) && (pl->nSide < 0))
+		if (nLight < --gameData.render.lights.dynamic.nLights)
+			*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int RemoveDynLight (short nSegment, short nSide, short nObject)
 {
 	int	nLight = FindDynLight (nSegment, nSide, nObject);

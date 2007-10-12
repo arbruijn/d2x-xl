@@ -121,8 +121,8 @@ static tSoundFile sounds [2][MAX_SOUND_FILES];
 static int soundOffset [2][MAX_SOUND_FILES];
 
 static hashtable bitmapNames [2];
-unsigned int bitmapCacheUsed = 0;
-unsigned int bitmapCacheSize = 0;
+size_t bitmapCacheUsed = 0;
+size_t bitmapCacheSize = 0;
 static int bitmapCacheNext [2] = {0, 0};
 static int bitmapOffsets [2][MAX_BITMAP_FILES];
 
@@ -194,6 +194,10 @@ int					nTrackedBitmaps = 0;
 void UseBitmapCache (grsBitmap *bmP, int nSize)
 {
 bitmapCacheUsed += nSize;
+if (0 > bitmapCacheUsed)
+	bitmapCacheUsed = 0;
+else if (0 > (int) bitmapCacheUsed)
+	bitmapCacheUsed = 0;
 #ifdef _DEBUG
 if (nSize < 0) {
 	int i;
@@ -2284,10 +2288,20 @@ if (fp) {
 		bm.bmFromPog = 1;
 		bm.bmHandle = j;
 #if 1//def _DEBUG
+		sprintf (bm.szName, "[%s]", gameData.pig.tex.pBitmaps [j].szName);
+#else
 		sprintf (bm.szName, "POG#%04d", j);
 #endif
 		gameData.pig.tex.pAltBitmaps [j] = bm;
 		BM_OVERRIDE (gameData.pig.tex.pBitmaps + j) = gameData.pig.tex.pAltBitmaps + j;
+		{
+		tRgbColorf	*c;
+		grsBitmap	*bmP = gameData.pig.tex.pAltBitmaps + j;
+
+		c = BitmapColor (bmP, NULL);
+		if (c && !bmP->bmAvgColor)
+			bmP->bmAvgColor = GrFindClosestColor (bmP->bmPalette, (int) c->red, (int) c->green, (int) c->blue);
+		}
 		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, bm.bmProps.h * bm.bmProps.rowSize);
 		}
 	D2_FREE (indices);

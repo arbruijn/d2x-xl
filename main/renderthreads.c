@@ -72,7 +72,7 @@ do {
 		else
 			ComputeFaceLight (0, tiRender.nMiddle, nId);
 		}
-	else if (tiRender.nTask == rtAnimateLightning) {
+	else if (tiRender.nTask == rtAnimateLightnings) {
 		if (nId)
 			AnimateLightning (tiRender.pl, tiRender.nLightnings / 2, tiRender.nLightnings, tiRender.nDepth);
 		else

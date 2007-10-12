@@ -912,6 +912,7 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 		}
 #endif
 	}
+return nLightnings - nStart;
 }
 
 //------------------------------------------------------------------------------
@@ -1657,15 +1658,14 @@ int SetLightningLight (tLightning *pl, int i)
 	int				j, nLights;
 	double			h, nStep;
 
-for (nLights = 0; i; i--, pl++) {
+SetLightningSegLight (pl->nSegment, &pl->vPos, &pl->color);
+for (nLights = 1; i; i--, pl++) {
 	if (0 < (j = pl->nNodes)) {
-		if (!(nStep = (double) (j - 1) / ((double) pl->nLength / F1_0)))
-			nStep = j - 1;
+		if (!(nStep = (double) (j - 1) / (double) ((int) ((double) pl->nLength / F1_0 / 10 + 0.5))))
+			nStep = (double) ((int) (j + 0.5));
 		nSegment = pl->nSegment;
 		pln = pl->pNodes;
-		SetLightningSegLight (nSegment, &pln->vPos, &pl->color);
-		nLights++;
-		for (h = 0; h < j; h += nStep) {
+		for (h = nStep; h < j; h += nStep) {
 			vPos = &pln [(int) h].vPos;
 			if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 0)))
 				break;
@@ -1694,11 +1694,11 @@ if (SHOW_LIGHTNINGS) {
 		pll->color.blue = 0;
 		pll->nBrightness = 0;
 		if (pll->nDynLight >= 0) {
-			DeleteDynLight (pll->nDynLight);
 			pll->nDynLight = -1;
 			}
 		}
 	gameData.lightnings.nFirstLight = -1;
+	DeleteLightningLights ();
 	}
 }
 

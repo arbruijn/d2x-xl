@@ -1591,8 +1591,10 @@ tG3VertexColor += clock () - t;
 
 int G3EnableClientState (GLuint nState, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= 0) {
+	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
+	}
 glEnableClientState (nState);
 if (!glGetError ())
 	return 1;
@@ -1605,22 +1607,25 @@ return glGetError () == 0;
 
 void G3DisableClientStates (int bTexCoord, int bColor, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= 0) {
+	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
+	}
 if (bTexCoord)
 	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 if (bColor)
 	glDisableClientState (GL_COLOR_ARRAY);
 glDisableClientState (GL_VERTEX_ARRAY);
-glActiveTexture (GL_TEXTURE0);
 }
 
 //------------------------------------------------------------------------------
 
 int G3EnableClientStates (int bTexCoord, int bColor, int nTMU)
 {
-if (nTMU >= 0)
+if (nTMU >= 0) {
+	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
+	}
 if (!G3EnableClientState (GL_VERTEX_ARRAY, -1))
 	return 0;
 if (bTexCoord) {
@@ -1840,8 +1845,8 @@ if (bTextured) {
 					glClientActiveTexture (GL_TEXTURE1);
 					glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 					OGL_BINDTEX (0);
+					gameStates.render.history.bmTop = NULL;
 					}
-				gameStates.render.history.bmTop = NULL;
 				}
 			else {
 				if (bmTop != gameStates.render.history.bmTop) {
@@ -1876,11 +1881,18 @@ if (bVertexArrays) {
 			ovlTexCoordP = faceP->pTexCoord - faceP->nIndex;
 		else
 			ovlTexCoordP = gameData.segs.faces.ovlTexCoord;
+#if 0
+		glActiveTexture (GL_TEXTURE1);
+		glClientActiveTexture (GL_TEXTURE1);
+		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
+		OGL_BINDTEX (0);
+#endif
 		if (bTextured) {
 			INIT_TMU (InitTMU0, bmTop, 1);
-#if 1
+#if 0
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
+			glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 #endif
 			}
 		else {
