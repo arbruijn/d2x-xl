@@ -270,7 +270,7 @@ for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs; i++) {
 	}
 tiRender.nFaces = h;
 if (h > 1) {
-	if (RunRenderThreads (1)) {
+	if (RunRenderThreads (rtSortFaces)) {
 		for (i = h / 2, j = h - i, ph = faceRef [1], pi = faceRef [0], pj = pi + h / 2; h; h--) {
 			if (i && (!j || (QCmpFaces (pi->faceP, pj->faceP) <= 0))) {
 				*ph++ = *pi++;

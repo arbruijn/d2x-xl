@@ -1451,14 +1451,14 @@ void SortRenderSegs (void)
 
 if (gameData.render.mine.nRenderSegs < 2)
 	return;
-if (RunRenderThreads (2))
+if (RunRenderThreads (rtInitSegZRef))
 	gameData.render.zMax = max (tiRender.zMax [0], tiRender.zMax [1]);
 else {
 	InitSegZRef (0, gameData.render.mine.nRenderSegs, 0);
 	gameData.render.zMax = tiRender.zMax [0];
 	}
 if (!gameOpts->render.nRenderPath) {
-	if (RunRenderThreads (3)) {
+	if (RunRenderThreads (rtSortSegZRef)) {
 		h = gameData.render.mine.nRenderSegs;
 		for (i = h / 2, j = h - i, ps = segZRef [1], pi = segZRef [0], pj = pi + h / 2; h; h--) {
 			if (i && (!j || (pi->z < pj->z))) {
@@ -1970,7 +1970,7 @@ gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset
 if (gameOpts->render.nRenderPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	if (gameStates.app.bMultiThreaded) {
 		CountRenderFaces ();
-		RunRenderThreads (0);
+		RunRenderThreads (rtComputeFaceLight);
 		}
 	else
 		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);

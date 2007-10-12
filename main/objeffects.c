@@ -88,7 +88,7 @@ if (gameOpts->render.bPowerupCoronas && (bAdditive ? LoadGlare () : LoadCorona (
 		}
 	color.alpha = alpha;
 	if (bAdditive) {
-		fScale = coronaIntensities [gameOpts->render.nCoronaIntensity];
+		fScale = coronaIntensities [gameOpts->render.nCoronaIntensity] / 2;
 		color.red *= fScale;
 		color.green *= fScale;
 		color.blue *= fScale;

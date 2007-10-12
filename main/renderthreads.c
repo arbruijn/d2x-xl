@@ -19,16 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "render.h"
 #include "fastrender.h"
-
-//------------------------------------------------------------------------------
-
-typedef struct tRenderThreadInfo {
-	int		nTask;
-	int		nMiddle;
-	int		nFaces;
-	int		zMax [2];
-	tThreadInfo	ti [2];
-	} tRenderThreadInfo;
+#include "renderthreads.h"
 
 tRenderThreadInfo tiRender;
 
@@ -38,6 +29,8 @@ int RunRenderThreads (int nTask)
 {
 if (!gameStates.app.bMultiThreaded)
 	return 0;
+while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+	G3_SLEEP (0);	//already running, so wait
 tiRender.nTask = nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
@@ -55,29 +48,35 @@ int _CDECL_ RenderThread (void *pThreadId)
 do {
 	while (!tiRender.ti [nId].bExec)
 		G3_SLEEP (0);
-	if (tiRender.nTask == 3) {
+	if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)
 			QSortSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs - 1);
 		else
 			QSortSegZRef (0, gameData.render.mine.nRenderSegs / 2 - 1);
 		}
-	else if (tiRender.nTask == 2) {
+	else if (tiRender.nTask == rtInitSegZRef) {
 		if (nId)
 			InitSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs, nId);
 		else
 			InitSegZRef (0, gameData.render.mine.nRenderSegs / 2, nId);
 		}
-	if (tiRender.nTask == 1) {
+	if (tiRender.nTask == rtSortFaces) {
 		if (nId)
 			QSortFaces (tiRender.nFaces / 2, tiRender.nFaces - 1);
 		else
 			QSortFaces (0, tiRender.nFaces / 2 - 1);
 		}
-	else {
+	else if (tiRender.nTask == rtComputeFaceLight) {
 		if (nId)
 			ComputeFaceLight (tiRender.nMiddle, gameData.render.mine.nRenderSegs, nId);
 		else
 			ComputeFaceLight (0, tiRender.nMiddle, nId);
+		}
+	else if (tiRender.nTask == rtAnimateLightning) {
+		if (nId)
+			AnimateLightning (tiRender.pl, tiRender.nLightnings / 2, tiRender.nLightnings, tiRender.nDepth);
+		else
+			AnimateLightning (tiRender.pl, 0, tiRender.nLightnings / 2, tiRender.nDepth);
 		}
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);

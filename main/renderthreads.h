@@ -16,12 +16,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _RENDERTHREADS_H
 
 #include "inferno.h"
+#include "lightning.h"
+
+typedef enum {
+	rtComputeFaceLight,
+	rtSortFaces,
+	rtInitSegZRef,
+	rtSortSegZRef,
+	rtAnimateLightnings
+} tRenderTask;
 
 typedef struct tRenderThreadInfo {
-	int		nTask;
-	int		nMiddle;
-	int		nFaces;
-	int		zMax [2];
+	tRenderTask	nTask;
+	int			nMiddle;
+	int			nFaces;
+	int			zMax [2];
+	tLightning	*pl;
+	int			nLightnings;
+	int			nDepth;
 	tThreadInfo	ti [2];
 	} tRenderThreadInfo;
 

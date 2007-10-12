@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objsmoke.h"
 #include "objrender.h"
 #include "transprender.h"
+#include "renderthreads.h"
 #include "lightning.h"
 #include "render.h"
 #include "error.h"
@@ -93,6 +94,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 							(_pl)->nStyle)
 
 void CreateLightningPath (tLightning *pl, int bSeed, int nDepth);
+int UpdateLightning (tLightning *pl, int nLightnings, int nDepth);
 
 //------------------------------------------------------------------------------
 
@@ -840,20 +842,13 @@ if (nStyle < 2) {
 
 //------------------------------------------------------------------------------
 
-int UpdateLightning (tLightning *pl, int nLightnings, int nDepth)
+int AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth)
 {
 	tLightningNode	*pln;
 	int				h, i, j, bSeed, bInit;
 	tLightning		*plRoot = pl;
 
-if (!(pl && nLightnings))
-	return 0;
-#if 0
-if (!gameStates.app.tick40fps.bTick)
-	return -1;
-#endif
-nDepth++;
-for (i = 0; i < nLightnings; i++, pl++) {
+for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 #if UPDATE_LIGHTINGS
 	pl->nTTL -= gameStates.app.tick40fps.nTime;
 #endif
@@ -861,25 +856,11 @@ for (i = 0; i < nLightnings; i++, pl++) {
 		if (bInit = (pl->nSteps < 0))
 			pl->nSteps = -pl->nSteps;
 		if (!pl->iStep) {
-#if 1
 			bSeed = 1;
 			do {
 				CreateLightningPath (pl, bSeed, nDepth);
-#if 1
 				break;
-#else
-				if (!bSeed)
-					break;
-				for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++)
-					if (VmVecDot (&pln [0].vOffs, &pln [1].vOffs) < 65500)
-						break;
-				bSeed = !bSeed;
-#endif
 				} while (!j);
-#else
-			for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++)
-				VmVecNegate (&pln->vOffs);
-#endif
 			pl->iStep = pl->nSteps;
 			}
 		for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++) {
@@ -931,6 +912,27 @@ for (i = 0; i < nLightnings; i++, pl++) {
 		}
 #endif
 	}
+}
+
+//------------------------------------------------------------------------------
+
+int UpdateLightning (tLightning *pl, int nLightnings, int nDepth)
+{
+if (!(pl && nLightnings))
+	return 0;
+#if 0
+if (!gameStates.app.tick40fps.bTick)
+	return -1;
+#endif
+nDepth++;
+if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
+	tiRender.pl = pl;
+	tiRender.nLightnings = nLightnings;
+	tiRender.nDepth = nDepth;
+	RunRenderThreads (rtAnimateLightnings);
+	}
+else
+	AnimateLightning (pl, 0, nLightnings, nDepth);
 return nLightnings;
 }
 
