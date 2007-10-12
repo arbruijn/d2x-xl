@@ -109,6 +109,10 @@ if (gameStates.ogl.bUseTransform) {
 		OglRot (viewInfo.glViewf);
 		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);
+		if (gameData.models.nScale) {
+			float fScale = -f2fl (gameData.models.nScale);
+			glScalef (fScale, fScale, fScale);
+			}
 		}
 	else {
 		glScalef (-1.0f, -1.0f, -1.0f);

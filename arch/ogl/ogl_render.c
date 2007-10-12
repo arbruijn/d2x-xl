@@ -1878,7 +1878,7 @@ if (bVertexArrays) {
 			ovlTexCoordP = gameData.segs.faces.ovlTexCoord;
 		if (bTextured) {
 			INIT_TMU (InitTMU0, bmTop, 1);
-#if 0
+#if 1
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
 #endif
