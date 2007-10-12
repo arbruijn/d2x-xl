@@ -420,6 +420,7 @@ return RotateVertexList (8, segP->verts).and == 0;
 void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
+	tSide			*sideP;
 	grsFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
@@ -428,9 +429,11 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 	short			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
-	int			h, i, j, nColor, 
+	tUVL			*uvlP;
+	int			h, i, j, uvi, nColor, 
 					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
 
+gameOpts->render.color.bAmbientLight = 1;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 if (gameStates.render.bFullBright)
@@ -527,12 +530,13 @@ for (i = nStart; i < nEnd; i++) {
 			if (((nColor == 1) && (fAlpha < 1)) || (nColor == 2))
 				faceP->bTransparent = 1;
 			pc = gameData.segs.faces.color + faceP->nIndex;
-			for (h = 0; h < 4; h++, pc++) {
+			uvlP = segP->sides [nSide].uvls;
+			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
 				if (!gameStates.render.bFullBright) {
 					c = faceColor [nColor];
 					nVertex = faceP->index [h];
 					SetVertexColor (nVertex, &c);
-					xLight = SetVertexLight (nSegment, nSide, nVertex, i, &c, segP->sides [nSide].uvls [h].l);
+					xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
 					AdjustVertexColor (NULL, &c, xLight);
 					}
 				*pc = c.color;

@@ -439,6 +439,7 @@ if (SHOW_DYN_LIGHT) {
 	SetDynLightMaterial (propsP->segNum, propsP->sideNum, -1);
 	return 0;
 	}
+memset (vertColors, 0, sizeof (vertColors));
 if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) { 
 	int i, j = propsP->nVertices;
 	for (i = 0; i < j; i++)
@@ -451,7 +452,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-fix SetVertexLight (int nSegment, int nSide, int nVertex, int i, tFaceColor *pc, fix light)
+fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *pc, fix light)
 {
 	tRgbColorf	*pdc;
 	fix			dynLight;
@@ -479,6 +480,10 @@ dynLight = gameData.render.lights.dynamicLight [nVertex];
 fl = f2fl (light);
 dl = f2fl (dynLight);
 light += dynLight;
+#ifdef _DEBUG
+if (nVertex == nDbgVertex)
+	nVertex = nVertex;
+#endif
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	if (gameData.render.lights.bGotDynColor [nVertex]) {
 		pdc = gameData.render.lights.dynamicColor + nVertex;
@@ -548,8 +553,10 @@ int SetFaceLight (tFaceProps *propsP)
 
 if (SHOW_DYN_LIGHT)
 	return 0;
-for (i = 0; i < propsP->nVertices; i++)
-	propsP->uvls [i].l = SetVertexLight (propsP->segNum, propsP->sideNum, propsP->vp [i], i, vertColors + i, propsP->uvls [i].l);
+for (i = 0; i < propsP->nVertices; i++) {
+	propsP->uvls [i].l = SetVertexLight (propsP->segNum, propsP->sideNum, propsP->vp [i], vertColors + i, propsP->uvls [i].l);
+	vertColors [i].index = -1;
+	}
 return 1;
 }
 

@@ -71,7 +71,7 @@ void TransformSideCenters (void);
 int IsTransparentTexture (short nTexture);
 int SetVertexColor (int nVertex, tFaceColor *pc);
 int SetVertexColors (tFaceProps *propsP);
-fix SetVertexLight (int nSegment, int nSide, int nVertex, int i, tFaceColor *pc, fix light);
+fix SetVertexLight (int nSegment, int nSide, int nVertex, tFaceColor *pc, fix light);
 int SetFaceLight (tFaceProps *propsP);
 void AdjustVertexColor (grsBitmap *bmP, tFaceColor *pc, fix xLight);
 char IsColoredSegFace (short nSegment, short nSide);

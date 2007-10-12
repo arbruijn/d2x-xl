@@ -344,6 +344,10 @@ if (xObjIntensity) {
 		// -- for (iVertex=gameData.app.nFrameCount&1; iVertex<nRenderVertices; iVertex+=2) {
 		for (iVertex = 0; iVertex < nRenderVertices; iVertex++) {
 			nVertex = renderVertexP [iVertex];
+#ifdef _DEBUG
+			if (nVertex == nDbgVertex)
+				nVertex = nVertex;
+#endif
 #if FLICKERFIX == 0
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif

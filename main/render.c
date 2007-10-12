@@ -1854,7 +1854,7 @@ if (((gameStates.render.nRenderPass <= 0) &&
 #endif
 
 #if 1
-		if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
+if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 #else
 if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || 
 	 (gameStates.render.nShadowPass == 2)) {
