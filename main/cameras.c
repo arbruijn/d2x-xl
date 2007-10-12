@@ -28,6 +28,8 @@
 #define CAMERA_READPIXELS	0
 #define TELEPORT_CAMERAS	1
 
+#define CAM_IDX(_pc)	((_pc) - gameData.cameras.cameras)
+
 //------------------------------------------------------------------------------
 
 #if RENDER2TEXTURE
@@ -43,6 +45,7 @@ if (!OglCreateFBuffer (&pc->fb, pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, pc->
 	return 0;
 pc->glTexId = pc->fb.texId;
 #endif
+sprintf (pc->texBuf.szName, "%CAM#%04d", CAM_IDX (pc));
 return 1;
 }
 

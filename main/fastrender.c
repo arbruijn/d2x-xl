@@ -160,12 +160,19 @@ else {
 	}
 #ifdef _DEBUG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-	nSegment = nSegment;
+	if (bDepthOnly)
+		nSegment = nSegment;
+	else
+		nSegment = nSegment;
 #endif
-if (!(bTextured && faceP->bTextured))
-	faceP->bmBot = faceP->bmTop = NULL;
-else if ((faceP->nCamera < 0) || !SetupMonitorFace (nSegment, faceP->nSide, faceP->nCamera, faceP))
-	LoadFaceBitmaps (segP, faceP);
+if ((faceP->nCamera >= 0) && !SetupMonitorFace (nSegment, faceP->nSide, faceP->nCamera, faceP)) 
+	faceP->nCamera = -1;
+if (faceP->nCamera < 0) {
+	if (!(bTextured && faceP->bTextured))
+		faceP->bmBot = faceP->bmTop = NULL;
+	else
+		LoadFaceBitmaps (segP, faceP);
+	}
 #ifdef _DEBUG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
@@ -417,15 +424,37 @@ return RotateVertexList (8, segP->verts).and == 0;
 
 //------------------------------------------------------------------------------
 
+int SetupFace (short nSegment, short nSide, tSegment *segP, grsFace *faceP, tFaceColor *pFaceColor, float *pfAlpha)
+{
+	ubyte	bTextured;
+	int	nColor = 0;
+
+faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
+if (!(faceP->widFlags & WID_RENDER_FLAG))
+	return -1;
+faceP->nCamera = IsMonitorFace (nSegment, nSide);
+bTextured = 1;
+*pfAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, 
+							 &pFaceColor [1].color, &nColor, &bTextured);
+faceP->bTextured = bTextured;
+if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
+	pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
+	nColor = 2;
+	}
+if (((nColor == 1) && (*pfAlpha < 1)) || (nColor == 2))
+	faceP->bTransparent = 1;
+return nColor;
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
-	tSide			*sideP;
 	grsFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
-	ubyte			bTextured,
-					nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~((1 << nThread) | (1 << !nThread))};
+	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~((1 << nThread) | (1 << !nThread))};
 	short			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
@@ -451,7 +480,6 @@ for (i = nStart; i < nEnd; i++) {
 			SetNearestDynamicLights (nSegment, 0, nThread);
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
 			nSide = faceP->nSide;
-			nColor = 0;
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 				nSegment = nSegment;
@@ -459,21 +487,10 @@ for (i = nStart; i < nEnd; i++) {
 					nSegment = nSegment;
 				}
 #endif
-			faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
-			if (!(faceP->widFlags & WID_RENDER_FLAG))
+			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha)))
 				continue;
-			faceP->nCamera = IsMonitorFace (nSegment, nSide);
-			bTextured = 1;
-			fAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, &faceColor [1].color, &nColor, &bTextured);
-			faceP->bTextured = bTextured;
-			if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
-				faceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
-				nColor = 2;
-				}
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 			pc = gameData.segs.faces.color + faceP->nIndex;
-			if (((nColor == 1) && (fAlpha < 1)) || (nColor == 2))
-				faceP->bTransparent = 1;
 			for (h = 0; h < 4; h++, pc++) {
 				if (gameStates.render.bFullBright) 
 					*pc = c.color;
@@ -511,24 +528,12 @@ for (i = nStart; i < nEnd; i++) {
 	else {
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
 			nSide = faceP->nSide;
-			nColor = 0;
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
-			faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
-			if (!(faceP->widFlags & WID_RENDER_FLAG))
+			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha)))
 				continue;
-			faceP->nCamera = IsMonitorFace (nSegment, nSide);
-			bTextured = 1;
-			fAlpha = WallAlpha (nSegment, nSide, faceP->nWall, faceP->widFlags, faceP->nCamera >= 0, &faceColor [1].color, &nColor, &bTextured);
-			faceP->bTextured = bTextured;
-			if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
-				faceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
-				nColor = 2;
-				}
-			if (((nColor == 1) && (fAlpha < 1)) || (nColor == 2))
-				faceP->bTransparent = 1;
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			uvlP = segP->sides [nSide].uvls;
 			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {

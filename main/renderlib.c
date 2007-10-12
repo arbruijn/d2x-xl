@@ -659,13 +659,7 @@ return pc->alpha = 1;
 
 int IsMonitorFace (short nSegment, short nSide)
 {
-	int	nCamera;
-
-if (!gameStates.render.bDoCameras)
-	return -1;
-return gameData.cameras.nSides ? gameData.cameras.nSides [nSegment * 6 + nSide] : -1;
-if (nCamera < 0)
-	return -1;
+return (gameStates.render.bDoCameras && gameData.cameras.nSides) ? gameData.cameras.nSides [nSegment * 6 + nSide] : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -708,7 +702,7 @@ if (bHaveMonitorBg) {
 	}
 faceP->bTeleport = bIsTeleCam;
 pc->bVisible = 1;
-return bHaveMonitorBg && gameOpts->render.cameras.bFitToWall;
+return bHaveMonitorBg || gameOpts->render.cameras.bFitToWall;
 }
 
 //------------------------------------------------------------------------------
