@@ -1967,7 +1967,7 @@ gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk &&
 											!IsMultiGame;
 gameStates.render.nWindow = nWindow;
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
-if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
+if (gameOpts->render.nRenderPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	if (gameStates.app.bMultiThreaded) {
 		CountRenderFaces ();
 		RunRenderThreads (0);
