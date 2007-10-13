@@ -98,12 +98,19 @@ return 1;
 //if matrix==NULL, don't modify matrix.  This will be like doing an offset   
 void G3StartInstanceMatrix (vmsVector *vPos, vmsMatrix *mOrient)
 {
+	vmsVector	vOffs;
+	vmsMatrix	mTrans, mRot;
+
 if (gameStates.ogl.bUseTransform) {
 	vmsVector	h;
 
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
-	if (!nInstanceDepth) {
+	if (nInstanceDepth) {
+		glScalef (-1.0f, -1.0f, -1.0f);
+		VmsMove (vPos);
+		}
+	else {
 		glLoadIdentity ();
 		glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
 		OglRot (viewInfo.glViewf);
@@ -114,44 +121,30 @@ if (gameStates.ogl.bUseTransform) {
 			glScalef (fScale, fScale, fScale);
 			}
 		}
-	else {
-		glScalef (-1.0f, -1.0f, -1.0f);
-		VmsMove (vPos);
-		}
-#if 1
 	if (mOrient)
 		VmsRot (mOrient);
-#endif
-#if 1
 	if (nInstanceDepth)
 		glScalef (-1.0f, -1.0f, -1.0f);
-	else
-		;//	glScalef (1.0f, 1.0f, -1.0f);
-#endif
 	}
-	{
-	vmsVector	vOffs;
-	vmsMatrix	mTrans, mRot;
 
-	//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
-	if (!G3PushMatrix ())
-		return;
-	//step 1: subtract object position from view position
-	VmVecSub (&vOffs, &viewInfo.pos, vPos);
-	if (mOrient) {
-		int i;
-		//step 2: rotate view vector through tObject matrix
-		VmVecRotate (&viewInfo.pos, &vOffs, mOrient);
-		//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
-		VmCopyTransposeMatrix (&mTrans, mOrient);
-		for (i = 0; i < 2; i++) {
-			VmMatMul (&mRot, &mTrans, viewInfo.view + i);
-			viewInfo.view [i] = mRot;
-			VmsMatToFloat (viewInfo.viewf + i, viewInfo.view + i);
-			}
+//Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
+if (!G3PushMatrix ())
+	return;
+//step 1: subtract object position from view position
+VmVecSub (&vOffs, &viewInfo.pos, vPos);
+if (mOrient) {
+	int i;
+	//step 2: rotate view vector through tObject matrix
+	VmVecRotate (&viewInfo.pos, &vOffs, mOrient);
+	//step 3: rotate tObject matrix through view_matrix (vm = ob * vm)
+	VmCopyTransposeMatrix (&mTrans, mOrient);
+	for (i = 0; i < 2; i++) {
+		VmMatMul (&mRot, &mTrans, viewInfo.view + i);
+		viewInfo.view [i] = mRot;
+		VmsMatToFloat (viewInfo.viewf + i, viewInfo.view + i);
 		}
-	VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
 	}
+VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
 }
 
 //------------------------------------------------------------------------------

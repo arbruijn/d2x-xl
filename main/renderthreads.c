@@ -91,6 +91,7 @@ void StartRenderThreads (void)
 
 for (i = 0; i < 2; i++) {
 	tiRender.ti [i].bDone = 0;
+	tiRender.ti [i].bBlock = 0;
 	tiRender.ti [i].bExec = 0;
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);

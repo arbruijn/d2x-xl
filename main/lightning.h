@@ -14,7 +14,7 @@ void RenderLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *colo
 void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthSort);
 void RenderLightnings (void);
 void RenderDamageLightnings (tObject *objP, g3sPoint **pointlist, tG3ModelVertex *pVerts, int nVertices);
-int AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth);
+void AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth);
 void MoveObjectLightnings (tObject *objP);
 void DestroyObjectLightnings (tObject *objP);
 void SetLightningLights (void);

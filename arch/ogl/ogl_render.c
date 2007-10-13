@@ -1889,7 +1889,7 @@ if (bVertexArrays) {
 #endif
 		if (bTextured) {
 			INIT_TMU (InitTMU0, bmTop, 1);
-#if 0
+#if 1
 			glActiveTexture (GL_TEXTURE0);
 			glClientActiveTexture (GL_TEXTURE0);
 			glEnableClientState (GL_TEXTURE_COORD_ARRAY);

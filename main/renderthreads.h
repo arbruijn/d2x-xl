@@ -38,6 +38,7 @@ typedef struct tRenderThreadInfo {
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
+
 int RunRenderThreads (int nTask);
 void StartRenderThreads (void);
 void EndRenderThreads (void);

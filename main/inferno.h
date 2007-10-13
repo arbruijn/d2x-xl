@@ -128,6 +128,7 @@ typedef struct tThreadInfo {
 	int				nId;
 	int				bExec;
 	int				bDone;
+	int				bBlock;
 	int				bQuit;
 	} tThreadInfo;
 

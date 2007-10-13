@@ -98,6 +98,33 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth);
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
+
+void TRAP (tLightningNode *pln)
+{
+if ((int) pln->pChild == 0xfeeefeee)
+	pln = pln;
+}
+
+void CHECK (tLightning *pl, int i)
+{
+	tLightningNode *pln;
+	int j;
+
+for (; i; i--, pl++)
+	if (pl->nNodes > 0)
+		for (j = pl->nNodes, pln = pl->pNodes; j; j--, pln++)
+			TRAP (pln);
+}
+
+
+#else
+#	define TRAP(_pln)
+#	define CHECK(_pl,_i)
+#endif
+
+//------------------------------------------------------------------------------
+
 inline double f_rand (void)
 {
 return (double) rand () / (double) RAND_MAX;
@@ -396,6 +423,7 @@ if (SHOW_LIGHTNINGS) {
 	plb->nKey [0] =
 	plb->nKey [1] = 0;
 	plb->bDestroy = 0;
+	CHECK (pl, nLightnings);
 	}
 return gameData.lightnings.iUsed;
 }
@@ -604,6 +632,7 @@ vmsVector ComputeJaggyNode (tLightningNode *pln, vmsVector *vPos, vmsVector *vDe
 	vmsVector	vAttract, vOffs;
 	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
+TRAP (pln);
 CreateLightningPathPoint (&vOffs, &vAttract, nDist);
 if (vPrevOffs)
 	SmootheLightningOffset (&vOffs, vPrevOffs, nDist, nSmoothe);
@@ -628,6 +657,7 @@ vmsVector ComputeErraticNode (tLightningNode *pln, vmsVector *vPos, vmsVector *v
 {
 	int	h, j, nDelta;
 
+TRAP (pln);
 pln->vNewPos = pln->vBase;
 for (j = 0; j < 2 - bInPlane; j++) {
 	nDelta = nAmplitude / 2 - (int) (f_rand () * nAmplitude);
@@ -666,6 +696,7 @@ vmsVector ComputePerlinNode (tLightningNode *pln, int nSteps, int nAmplitude, in
 {
 double dx = PerlinNoise1D (i, 0.25, 6, nSeed [0]);
 double dy = PerlinNoise1D (i, 0.25, 6, nSeed [1]);
+TRAP (pln);
 phi = sin (phi * Pi);
 phi = sqrt (phi);
 dx *= nAmplitude * phi;
@@ -774,6 +805,7 @@ if ((nDepth > 1) || pl->bRandom) {
 		for (h = pl->nNodes, i = 0, plh = pl->pNodes; i < h; i++, plh++) {
 			phi = bClamp ?(double) i / (double) (h - 1) : 1;
 			ComputePerlinNode (plh, nSteps, nAmplitude, nSeed, 2 * phi / 3, phi * 7.5);
+			TRAP (plh);
 			}
 		}
 	else {
@@ -782,12 +814,16 @@ if ((nDepth > 1) || pl->bRandom) {
 		nMinDist = pl->nLength / (pl->nNodes - 1);
 		if (!nStyle) {
 			nAmplitude *= (nDepth == 1) ? 4 : 16;
-			for (h = pl->nNodes - 1, i = 0, plh = pl->pNodes + 1; i < h; i++, plh++, bPrevOffs [0] = 1) 
+			for (h = pl->nNodes - 1, i = 0, plh = pl->pNodes + 1; i < h; i++, plh++, bPrevOffs [0] = 1) {
 				ComputeErraticNode (plh, vPos, vBase, nSteps, nAmplitude, 0, bInPlane, 1, i, h + 1, nSmoothe, bClamp);
+				TRAP (plh);
+				}
 			}
 		else {
-			for (i = pl->nNodes - 1, plh = pl->pNodes + 1; i; i--, plh++, bPrevOffs [0] = 1) 
+			for (i = pl->nNodes - 1, plh = pl->pNodes + 1; i; i--, plh++, bPrevOffs [0] = 1) {
 				*vPrevOffs = ComputeJaggyNode (plh, vPos, vPos + 1, vBase, bPrevOffs [0] ? vPrevOffs : NULL, nSteps, nAmplitude, nMinDist, i, nSmoothe, bClamp);
+				TRAP (plh);
+				}
 			}
 		}
 	}
@@ -812,6 +848,8 @@ else {
 				ComputeErraticNode (plh, vPos + j, vBase, nSteps, nAmplitude, bInPlane, j, 0, i, h, nSmoothe, bClamp);
 				if (pln [1] <= pln [0])
 					break;
+				TRAP (pln [0]);
+				TRAP (pln [1]);
 				if (j)
 					pln [1]--;
 				else
@@ -825,6 +863,8 @@ else {
 				bPrevOffs [j] = 1;
 				if (pln [1] <= pln [0])
 					break;
+				TRAP (pln [0]);
+				TRAP (pln [1]);
 				if (j)
 					pln [1]--;
 				else
@@ -842,11 +882,10 @@ if (nStyle < 2) {
 
 //------------------------------------------------------------------------------
 
-int AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth)
+void AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth)
 {
 	tLightningNode	*pln;
-	int				h, i, j, bSeed, bInit;
-	tLightning		*plRoot = pl;
+	int				i, j, bSeed, bInit;
 
 for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 #if UPDATE_LIGHTINGS
@@ -858,12 +897,14 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 		if (!pl->iStep) {
 			bSeed = 1;
 			do {
-				CreateLightningPath (pl, bSeed, nDepth);
+				CreateLightningPath (pl, bSeed, nDepth + 1);
+				CHECK (pl, 1);
 				break;
 				} while (!j);
 			pl->iStep = pl->nSteps;
 			}
 		for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++) {
+			TRAP (pln);
 			if (bInit)
 				pln->vPos = pln->vNewPos;
 #if UPDATE_LIGHTINGS
@@ -872,14 +913,25 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 #endif
 			if (pln->pChild) {
 				MoveLightnings (1, pln->pChild, &pln->vPos, pl->nSegment, 0, 0);
-				UpdateLightning (pln->pChild, 1, nDepth + 1);
+				AnimateLightning (pln->pChild, 0, 1, nDepth + 1);
 				}
 			}
+		CHECK (pl, 1);
 #if UPDATE_LIGHTINGS
 		(pl->iStep)--;
 #endif
 		}
-#if 1
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int SetLightningLife (tLightning *pl, int nLightnings)
+{
+	tLightning	*plRoot = pl;
+	int			h, i;
+
+for (i = 0; i < nLightnings; i++, pl++) {
 	if (pl->nTTL <= 0) {
 		if (pl->nLife < 0) {
 			if (0 > (pl->nNodes = -pl->nNodes)) {
@@ -891,28 +943,31 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 					h = -pl->nLife;
 					pl->nTTL = 3 * h / 4 + (int) (f_rand () * h / 2);
 					SetupLightning (pl, 0);
+					CHECK (pl, 1);
 					}
 				else {
 					pl->nTTL = -pl->nLife;
 					pl->nNodes = abs (pl->nNodes);
 					SetupLightning (pl, 0);
+					CHECK (pl, 1);
 					}
 				}
 			}
 		else {
 			DestroyLightningNodes (pl);
+			CHECK (pl, 1);
 			if (!--nLightnings)
 				return 0;
 			if (i < nLightnings) {
-				*pl = plRoot [nLightnings - 1];
+				*pl = plRoot [nLightnings];
+				CHECK (pl, 1);
 				pl--;
 				i--;
 				}
 			}
 		}
-#endif
 	}
-return nLightnings - nStart;
+return nLightnings;
 }
 
 //------------------------------------------------------------------------------
@@ -925,7 +980,7 @@ if (!(pl && nLightnings))
 if (!gameStates.app.tick40fps.bTick)
 	return -1;
 #endif
-nDepth++;
+CHECK (pl, nLightnings);
 if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 	tiRender.pl = pl;
 	tiRender.nLightnings = nLightnings;
@@ -934,7 +989,8 @@ if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 	}
 else
 	AnimateLightning (pl, 0, nLightnings, nDepth);
-return nLightnings;
+CHECK (pl, nLightnings);
+return SetLightningLife (pl, nLightnings);
 }
 
 //------------------------------------------------------------------------------
@@ -1009,7 +1065,7 @@ void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, 
 if (SHOW_LIGHTNINGS) {
 		tLightningNode	*pln;
 		vmsVector		vDelta, vOffs;
-		int				h, j; 
+		int				h, j, nLightnings; 
 		double			fStep;
 
 	if (pl) 
@@ -1021,6 +1077,8 @@ if (SHOW_LIGHTNINGS) {
 		}
 	else
 		return;
+	nLightnings = i;
+	CHECK (pl, nLightnings);
 	for (; i; i--, pl++) {
 		pl->nSegment = nSegment;
 		if (bFromEnd)
@@ -1049,6 +1107,7 @@ if (SHOW_LIGHTNINGS) {
 				}
 			if (0 < (h = pl->nNodes)) {
 				for (j = h, pln = pl->pNodes; j; j--, pln++) {
+					TRAP (pln);
 					if (bStretch) {
 						vDelta = vOffs;
 						if (bFromEnd)
@@ -1068,6 +1127,7 @@ if (SHOW_LIGHTNINGS) {
 				}
 			}
 		}
+	CHECK (pl - nLightnings, nLightnings);
 	}
 }
 
@@ -1133,10 +1193,10 @@ DestroyAllObjectLightnings (OBJ_EFFECT, LIGHTNING_ID);
 
 #define LIGHTNING_VERT_ARRAYS 1
 
-static tTexCoord3f	uvlPlasma [3][4] = {
-	{{{0,0.45f,1}},{{1,0.45f,1}},{{1,0.55f,1}},{{0,0.55f,1}}},
-	{{{0,0,1}},{{1,0,1}},{{1,0.5f,1}},{{0,0.5f,1}}},
-	{{{0,0.5f,1}},{{1,0.5f,1}},{{1,1,1}},{{0,1,1}}}
+static tTexCoord2f plasmaTexCoord [3][4] = {
+	{{{0,0.45f}},{{1,0.45f}},{{1,0.55f}},{{0,0.55f}}},
+	{{{0,0}},{{1,0}},{{1,0.5f}},{{0,0.5f}}},
+	{{{0,0.5f}},{{1,0.5f}},{{1,1}},{{0,1}}}
 	};
 
 void RenderLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *colorP, int bPlasma, int bStart, int bEnd, short nDepth)
@@ -1187,14 +1247,14 @@ if (bPlasma) {
 				glColor4f (1, 1, 1, color.alpha / 2);
 				}
 			if (bDrawArrays) {
-				glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), uvlPlasma + h);
+				glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), plasmaTexCoord + h);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vPlasma);
 				glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 				}
 			else {
 				glBegin (GL_QUADS);
 				for (j = 0; j < 4; j++) {
-					glTexCoord2fv ((GLfloat *) (uvlPlasma [h] + j));
+					glTexCoord2fv ((GLfloat *) (plasmaTexCoord [h] + j));
 					glVertex3fv ((GLfloat *) (vPlasma + j));
 					}
 				glEnd ();
@@ -1228,7 +1288,231 @@ OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 //------------------------------------------------------------------------------
 
-void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int nScale, int bDrawArrays, 
+typedef struct tPlasmaSegment {
+	tTexCoord2f	texCoord [4];
+	fVector		vPlasma [6];
+	fVector		vNormal [3];
+} tPlasmaSegment;
+
+static tPlasmaSegment plasmaBuffer [2][2][10000];
+static fVector3 coreBuffer [2][10000];
+
+//------------------------------------------------------------------------------
+
+void ComputePlasmaSegment (fVector *vPosf, int bScale, short nSegment, char bStart, char bEnd, int nDepth, int nThread)
+{
+	tPlasmaSegment	*psP;
+	fVector			vn [2], vd;
+	int				i, j = bStart + 2 * bEnd;
+
+	static fVector	vEye = {{0,0,0}};
+
+psP = plasmaBuffer [nThread][bScale] + nSegment;
+if (bStart)
+	memset (psP, 0, sizeof (*psP));
+else
+	*psP = *(psP - 1);
+memcpy (psP->vNormal, psP->vNormal + 1, 2 * sizeof (fVector));
+if (bStart) {
+	VmVecNormalf (psP->vNormal + 1, vPosf, vPosf + 1, &vEye);
+	vn [0] = psP->vNormal [1];
+	}
+else
+	VmVecScalef (vn, VmVecAddf (vn, psP->vNormal, psP->vNormal + 1), 0.5f);
+if (bEnd)
+	vn [1] = psP->vNormal [1];
+else {
+	VmVecNormalf (psP->vNormal + 2, vPosf + 1, vPosf + 2, &vEye);
+	VmVecScalef (vn + 1, VmVecAddf (vn + 1, psP->vNormal + 1, psP->vNormal + 2), 0.5f);
+	}
+if (!(nDepth || bScale)) {
+	VmVecScalef (vn, vn, 2);
+	VmVecScalef (vn + 1, vn + 1, 2);
+	}
+if (!bScale && nDepth) {
+	VmVecScalef (vn, vn, 0.5f);
+	VmVecScalef (vn + 1, vn + 1, 0.5f);
+	}
+if (bStart) {
+	VmVecAddf (psP->vPlasma, vPosf, vn);
+	VmVecSubf (psP->vPlasma + 1, vPosf, vn);
+	VmVecSubf (&vd, vPosf, vPosf + 1);
+	VmVecNormalizef (&vd, &vd);
+	if (bScale)
+		VmVecScalef (&vd, &vd, 0.5f);
+	VmVecIncf (psP->vPlasma, &vd);
+	VmVecIncf (psP->vPlasma + 1, &vd);
+	}
+else {
+	psP->vPlasma [0] = psP->vPlasma [3];
+	psP->vPlasma [1] = psP->vPlasma [2];
+	}
+VmVecAddf (psP->vPlasma + 3, vPosf + 1, vn + 1);
+VmVecSubf (psP->vPlasma + 2, vPosf + 1, vn + 1);
+if (bEnd) {
+	VmVecSubf (&vd, vPosf + 1, vPosf);
+	VmVecNormalizef (&vd, &vd);
+	if (bScale)
+		VmVecScalef (&vd, &vd, 0.5f);
+	VmVecIncf (psP->vPlasma + 2, &vd);
+	VmVecIncf (psP->vPlasma + 3, &vd);
+	}
+memcpy (psP->texCoord, plasmaTexCoord [j], 4 * sizeof (tTexCoord2f));
+}
+
+//------------------------------------------------------------------------------
+
+void ComputePlasmaBuffer (tLightning *pl, int nDepth, int nThread)
+{
+	tLightningNode	*pln;
+	fVector			vPosf [3] = {{{0,0,0}},{{0,0,0}},{{0,0,0}}};
+	int				bScale, i, j;
+
+for (bScale = 0; bScale < 2; bScale++) {
+	for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
+		TRAP (pln);
+		if (j < i)
+			memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
+		if (!j) {
+			VmsVecToFloat (vPosf + 1, &(pln++)->vPos);
+			if (!gameStates.ogl.bUseTransform)
+				G3TransformPointf (vPosf + 1, vPosf + 1, 0);
+			}
+		if (j < i) {
+			VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
+			if (!gameStates.ogl.bUseTransform)
+				G3TransformPointf (vPosf + 2, vPosf + 2, 0);
+			}
+		TRAP (pln);
+		if (j)
+			ComputePlasmaSegment (vPosf, bScale, j, j == 1, j == i, nDepth, nThread);
+		TRAP (pln);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderPlasmaBuffer (tLightning *pl, tRgbaColorf *colorP, int nThread)
+{
+	int	bScale;
+
+OglBlendFunc (GL_ONE, GL_ONE);
+for (bScale = 0; bScale < 2; bScale++) {
+	if (bScale)
+		glColor4f (0.05f, 0.05f, 0.05f, colorP->alpha / 2);
+	else
+		glColor4f (colorP->red / 20, colorP->green / 20, colorP->blue / 20, colorP->alpha);
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tPlasmaSegment), &plasmaBuffer [nThread][bScale][0].texCoord);
+	glVertexPointer (3, GL_FLOAT, sizeof (tPlasmaSegment), &plasmaBuffer [nThread][bScale][0].vPlasma);
+	glDrawArrays (GL_TRIANGLE_FAN, 0, 4 * (pl->nNodes - 1));
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderLightningCore (tLightning *pl, tRgbaColorf *colorP, int nDepth, int nThread)
+{
+	tLightningNode	*pln;
+	fVector3			*vPosf = coreBuffer [nThread];
+	int				i;
+
+OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+glDisable (GL_TEXTURE_2D);
+glColor4fv ((GLfloat *) colorP);
+glLineWidth ((GLfloat) (nDepth ? 2 : 4));
+glEnable (GL_SMOOTH);
+for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++, vPosf++) {
+	TRAP (pln);
+	VmsVecToFloat ((fVector *) vPosf, &pln->vPos);
+	}
+if (!gameStates.ogl.bUseTransform)
+	OglSetupTransform (1);
+G3EnableClientStates (0, 0, GL_TEXTURE0);
+glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
+glDrawArrays (GL_LINE_STRIP, 0, pl->nNodes);
+G3DisableClientStates (0, 0, GL_TEXTURE0);
+if (!gameStates.ogl.bUseTransform)
+	OglResetTransform (1);
+glLineWidth (1);
+glDisable (GL_SMOOTH);
+
+#if defined (_DEBUG) && RENDER_TARGET_LIGHTNING
+glColor3f (1,0,0,1);
+glLineWidth (1);
+glBegin (GL_LINE_STRIP);
+for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++) {
+	TRAP (pln);
+	VmsVecToFloat (vPosf, &pln->vNewPos);
+	G3TransformPointf (vPosf, vPosf, 0);
+	glVertex3fv ((GLfloat *) vPosf);
+	}
+glEnd ();
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+int SetupLightningPlasma (tLightning *pl)
+{
+if (!(gameOpts->render.lightnings.bPlasma && pl->bPlasma && G3EnableClientStates (1, 0, GL_TEXTURE0)))
+	return 0;
+glActiveTexture (GL_TEXTURE0);
+glClientActiveTexture (GL_TEXTURE0);
+glEnable (GL_TEXTURE_2D);
+if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
+	OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
+	return 1;
+	}
+G3DisableClientStates (1, 0, GL_TEXTURE0);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void RenderLightningsBuffered (tLightning *pl, int nStart, int nLightnings, int nDepth, int nThread)
+{
+	tLightningNode	*pln;
+	int			i;
+	int			bPlasma;
+	tRgbaColorf	color;
+
+bPlasma = SetupLightningPlasma (pl);
+for (pl += nStart, nLightnings -= nStart; nLightnings; nLightnings--, pl++) {
+	if ((pl->nNodes < 0) || (pl->nSteps < 0))
+		continue;
+	color = pl->color;
+	if (pl->nLife > 0) {
+		if ((i = pl->nLife - pl->nTTL) < 250)
+			color.alpha *= (float) i / 250.0f;
+		else if (pl->nTTL < pl->nLife / 3)
+			color.alpha *= (float) pl->nTTL / (float) (pl->nLife / 3);
+		}
+	color.red *= (float) (0.9 + f_rand () / 5);
+	color.green *= (float) (0.9 + f_rand () / 5);
+	color.blue *= (float) (0.9 + f_rand () / 5);
+	if (!bPlasma)
+		color.alpha *= 1.5f;
+	if (nDepth)
+		color.alpha /= 2;
+#if RENDER_LIGHTNING_PLASMA
+	if (bPlasma) {
+		ComputePlasmaBuffer (pl, nDepth, nThread);
+		RenderPlasmaBuffer (pl, &color, nThread);
+		G3DisableClientStates (1, 0, -1);
+		}
+#endif
+	RenderLightningCore (pl, &color, nDepth, nThread);
+	if (gameOpts->render.lightnings.nQuality)
+		for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++)
+			if (pln->pChild)
+				RenderLightningsBuffered (pln->pChild, 0, 1, nDepth + 1, nThread);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderLightningPlasma (fVector *vPosf, tRgbaColorf *color, int bScale, int bDrawArrays, 
 									 char bStart, char bEnd, char bPlasma, short nDepth, int bDepthSort)
 {
 	static fVector	vEye = {{0,0,0}};
@@ -1251,11 +1535,11 @@ else {
 	VmVecNormalf (vNormal + 2, vPosf + 1, vPosf + 2, &vEye);
 	VmVecScalef (vn + 1, VmVecAddf (vn + 1, vNormal + 1, vNormal + 2), 0.5f);
 	}
-if (!(nDepth || nScale)) {
+if (!(nDepth || bScale)) {
 	VmVecScalef (vn, vn, 2);
 	VmVecScalef (vn + 1, vn + 1, 2);
 	}
-if (!nScale && nDepth) {
+if (!bScale && nDepth) {
 	VmVecScalef (vn, vn, 0.5f);
 	VmVecScalef (vn + 1, vn + 1, 0.5f);
 	}
@@ -1264,7 +1548,7 @@ if (bStart) {
 	VmVecSubf (vPlasma + 1, vPosf, vn);
 	VmVecSubf (&vd, vPosf, vPosf + 1);
 	VmVecNormalizef (&vd, &vd);
-	if (nScale)
+	if (bScale)
 		VmVecScalef (&vd, &vd, 0.5f);
 	VmVecIncf (vPlasma, &vd);
 	VmVecIncf (vPlasma + 1, &vd);
@@ -1278,7 +1562,7 @@ VmVecSubf (vPlasma + 2, vPosf + 1, vn + 1);
 if (bEnd) {
 	VmVecSubf (&vd, vPosf + 1, vPosf);
 	VmVecNormalizef (&vd, &vd);
-	if (nScale)
+	if (bScale)
 		VmVecScalef (&vd, &vd, 0.5f);
 	VmVecIncf (vPlasma + 2, &vd);
 	VmVecIncf (vPlasma + 3, &vd);
@@ -1289,7 +1573,7 @@ if (bDepthSort) {
 else {
 #if 1
 	if (bDrawArrays) {
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), uvlPlasma + j);
+		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), plasmaTexCoord + j);
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), vPlasma);
 		glDrawArrays (GL_TRIANGLE_FAN, 0, 4);
 		}
@@ -1301,33 +1585,33 @@ else {
 		fDot = VmVecDotf (vn, vn + 1);
 		if (fDot >= 0) {
 			glBegin (GL_TRIANGLES);
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
 			glVertex3fv ((GLfloat *) (vPlasma));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 1));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 1));
 			glVertex3fv ((GLfloat *) (vPlasma + 1));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 2));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 2));
 			glVertex3fv ((GLfloat *) (vPlasma + 2));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
 			glVertex3fv ((GLfloat *) (vPlasma));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 2));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 2));
 			glVertex3fv ((GLfloat *) (vPlasma + 2));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 3));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 3));
 			glVertex3fv ((GLfloat *) (vPlasma + 3));
 			glEnd ();
 			}	
 		else if (fDot < 0) {
 			glBegin (GL_TRIANGLES);
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
 			glVertex3fv ((GLfloat *) (vPlasma));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 1));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 1));
 			glVertex3fv ((GLfloat *) (vPlasma + 1));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 3));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 3));
 			glVertex3fv ((GLfloat *) (vPlasma + 3));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j]));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
 			glVertex3fv ((GLfloat *) (vPlasma));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 2));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 2));
 			glVertex3fv ((GLfloat *) (vPlasma + 2));
-			glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + 3));
+			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 3));
 			glVertex3fv ((GLfloat *) (vPlasma + 3));
 			glEnd ();
 			}
@@ -1336,7 +1620,7 @@ else {
 			{
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
-				glTexCoord2fv ((GLfloat *) (uvlPlasma [j] + i));
+				glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + i));
 				glVertex3fv ((GLfloat *) (vPlasma + i));
 				}	
 			}
@@ -1370,18 +1654,14 @@ void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthS
 	tLightningNode	*pln;
 	fVector		vPosf [3] = {{{0,0,0}},{{0,0,0}}};
 	int			i;
-#if RENDER_LIGHTNING_PLASMA
-	int			h, j, bDrawArrays, bPlasma;
-#else
-	int			bPlasma = 0;
-#endif
+	int			h, j, bPlasma;
 	tRgbaColorf	color;
 	tObject		*objP = NULL;
 
 if (!pl)
 	return;
+bPlasma = SetupLightningPlasma (pl);
 if (bDepthSort > 0) {
-	bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 	color = pl->color;
 	if (pl->nLife > 0) {
 		if ((i = pl->nLife - pl->nTTL) < 250)
@@ -1396,7 +1676,6 @@ if (bDepthSort > 0) {
 		if ((pl->nNodes < 0) || (pl->nSteps < 0))
 			continue;
 #if RENDER_LIGHTING_SEGMENTS
-		bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 		for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
 			if (j < i)
 				memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
@@ -1428,10 +1707,12 @@ else {
 			glDisable (GL_CULL_FACE);
 			}
 		}
+#if 0
+	RenderLightningsBuffered (pl, 0, nLightnings, 0, 0);
+#else
 	for (; nLightnings; nLightnings--, pl++) {
 		if ((pl->nNodes < 0) || (pl->nSteps < 0))
 			continue;
-		bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 		color = pl->color;
 		if (pl->nLife > 0) {
 			if ((i = pl->nLife - pl->nTTL) < 250)
@@ -1448,41 +1729,30 @@ else {
 			color.alpha /= 2;
 #if RENDER_LIGHTNING_PLASMA
 		if (bPlasma) {
-			bDrawArrays = 0; //G3EnableClientStates (1, 0);
-			glEnable (GL_TEXTURE_2D);
-			if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
-				OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
-				for (h = 0; h < 2; h++) {
-					if (!h) {
-						//OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-						OglBlendFunc (GL_ONE, GL_ONE);
-						glColor4f (color.red / 20, color.green / 20, color.blue / 20, color.alpha);
+			for (h = 0; h < 2; h++) {
+				OglBlendFunc (GL_ONE, GL_ONE);
+				if (h)
+					glColor4f (0.05f, 0.05f, 0.05f, color.alpha / 2);
+				else
+					glColor4f (color.red / 20, color.green / 20, color.blue / 20, color.alpha);
+				for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
+					if (j < i)
+						memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
+					if (!j) {
+						VmsVecToFloat (vPosf + 1, &(pln++)->vPos);
+						if (!gameStates.ogl.bUseTransform)
+							G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 						}
-					else {
-#if 1
-						OglBlendFunc (GL_ONE, GL_ONE);
-#endif
-						glColor4f (0.05f, 0.05f, 0.05f, color.alpha / 2);
+					if (j < i) {
+						VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
+						if (!gameStates.ogl.bUseTransform)
+							G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 						}
-					for (i = pl->nNodes - 1, j = 0, pln = pl->pNodes; j <= i; j++) {
-						if (j < i)
-							memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
-						if (!j) {
-							VmsVecToFloat (vPosf + 1, &(pln++)->vPos);
-							if (!gameStates.ogl.bUseTransform)
-								G3TransformPointf (vPosf + 1, vPosf + 1, 0);
-							}
-						if (j < i) {
-							VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
-							if (!gameStates.ogl.bUseTransform)
-								G3TransformPointf (vPosf + 2, vPosf + 2, 0);
-							}
-						if (j)
-							RenderLightningPlasma (vPosf, &color, h, bDrawArrays, j == 1, j == i, 1, nDepth, 0);
-						}
+					if (j)
+						RenderLightningPlasma (vPosf, &color, h != 0, bPlasma, j == 1, j == i, 1, nDepth, 0);
 					}
 				}
-			if (bDrawArrays)
+			if (bPlasma)
 				G3DisableClientStates (1, 0, -1);
 			}
 #endif
@@ -1525,6 +1795,7 @@ else {
 				if (pln->pChild)
 					RenderLightning (pln->pChild, 1, nDepth + 1, bDepthSort);
 		}
+#endif
 	if (!nDepth) {
 		if ((bDepthSort < 1) || (gameOpts->render.bDepthSort < 1)) {
 			glEnable (GL_CULL_FACE);
@@ -1666,6 +1937,7 @@ for (nLights = 1; i; i--, pl++) {
 		nSegment = pl->nSegment;
 		pln = pl->pNodes;
 		for (h = nStep; h < j; h += nStep) {
+			TRAP (pln);
 			vPos = &pln [(int) h].vPos;
 			if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 0)))
 				break;
