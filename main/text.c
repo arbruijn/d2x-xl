@@ -1734,9 +1734,10 @@ char *defaultGameTexts [][2] = {
 	{"~Blitze zeichnen", "render ~Lightnings"},
 	{"sehr niedrig", "very low"},
 	{"Koronas ~Additiv einblenden", "~Additive corona blending"},
+	{"~Objekt-Koronas additiv einblenden", "dditive ~Object corona blending"},
 	{"po~Werupschatten", "po~Werup shadows"},
-#if 0
 	{"", ""},
+#if 0
 #endif
 	{"", ""}
 	};
@@ -2308,6 +2309,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, erhalten Powerups Lichthoefe.", "If checked, powerups are rendered with coronas."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Blitz-\neffekte dargestellt werden.", "Check to have lightning effects rendered in the textured automap."},
 	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLichthoefen und ihrem Hintergrund.", "If checked, the brightness and color of coronas and their\nbackground."},
+	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLeuchtspuren und ihrem Hintergrund.", "If checked, the brightness and color of light trails\nand their background."},
 	{"Wenn angekreuzt, werden Schatten fuer Powerups erzeugt.", 
 	 "If checked, shadows are created for powerups."},
 #if 0

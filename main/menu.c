@@ -211,6 +211,7 @@ static struct {
 	int	nWeaponCoronas;
 	int	nPowerupCoronas;
 	int	nAdditiveCoronas;
+	int	nAdditiveObjCoronas;
 	int	nCoronaIntensity;
 	int	nLightTrails;
 	int	nExplShrapnels;
@@ -1914,6 +1915,8 @@ do {
 	effectOpts.nPowerupCoronas = opt++;
 	ADD_CHECK (opt, TXT_ADDITIVE_CORONAS, gameOpts->render.bAdditiveCoronas, KEY_A, HTX_ADDITIVE_CORONAS);
 	effectOpts.nAdditiveCoronas = opt++;
+	ADD_CHECK (opt, TXT_ADDITIVE_OBJCORONAS, gameOpts->render.bAdditiveObjCoronas, KEY_O, HTX_ADDITIVE_OBJCORONAS);
+	effectOpts.nAdditiveObjCoronas = opt++;
 	if (gameOpts->render.bCoronas || gameOpts->render.bWeaponCoronas) {
 		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
@@ -1976,6 +1979,7 @@ do {
 	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
 	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
 	gameOpts->render.bAdditiveCoronas = m [effectOpts.nAdditiveCoronas].value;
+	gameOpts->render.bAdditiveObjCoronas = m [effectOpts.nAdditiveObjCoronas].value;
 	if (optTrailType >= 0)
 		gameOpts->render.smoke.bPlasmaTrails = (m [optTrailType].value == 0);
 	extraGameInfo [0].bTracers = m [optTracers].value;

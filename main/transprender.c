@@ -343,17 +343,18 @@ int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth)
 	vmsVector vPos;	
 	int z;
 
+item.lightning = lightnings;
+item.nLightnings = nLightnings;
+item.nDepth = nDepth;
 for (; nLightnings; nLightnings--, lightnings++) {
-	item.lightning = lightnings;
-	item.nDepth = nDepth;
 	G3TransformPoint (&vPos, &lightnings->vPos, 0);
 	z = vPos.p.z;
 	G3TransformPoint (&vPos, &lightnings->vEnd, 0);
 	if (z < vPos.p.z)
 		z = vPos.p.z;
-	if (!AddRenderItem (riLightning, &item, sizeof (item), z, z))
-		return 0;
 	}
+if (!AddRenderItem (riLightning, &item, sizeof (item), z, z))
+	return 0;
 return 1;
 }
 
@@ -643,7 +644,7 @@ void RIRenderLightning (tRILightning *item)
 if (renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 0);
 RISetClientState (0, 0, 0);
-RenderLightning (item->lightning, 1, item->nDepth, 0);
+RenderLightning (item->lightning, item->nLightnings, item->nDepth, 0);
 renderItems.bmP = NULL;
 renderItems.bTextured = 0;
 renderItems.bDepthMask = 1;

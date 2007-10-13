@@ -12,6 +12,7 @@ int DestroyAllLightnings (int bForce);
 void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, int bStretch, int bFromEnd);
 void RenderLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *colorP, int bPlasma, int bStart, int bEnd, short nDepth);
 void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthSort);
+void RenderLightningsBuffered (tLightning *plRoot, int nStart, int nLightnings, int nDepth, int nThread);
 void RenderLightnings (void);
 void RenderDamageLightnings (tObject *objP, g3sPoint **pointlist, tG3ModelVertex *pVerts, int nVertices);
 void AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth);

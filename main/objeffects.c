@@ -57,7 +57,7 @@ if (gameOpts->render.bWeaponCoronas && (bCorona ? LoadCorona () : LoadHalo ())) 
 
 void RenderPowerupCorona (tObject *objP, float red, float green, float blue, float alpha)
 {
-	int	bAdditive = gameOpts->render.bAdditiveCoronas;
+	int	bAdditive = gameOpts->render.bAdditiveObjCoronas;
 
 if (gameOpts->render.bPowerupCoronas && (bAdditive ? LoadGlare () : LoadCorona ())) {
 	static tRgbaColorf keyColors [3] = {
@@ -96,7 +96,7 @@ if (gameOpts->render.bPowerupCoronas && (bAdditive ? LoadGlare () : LoadCorona (
 	bDepthSort = gameOpts->render.bDepthSort;
 	gameOpts->render.bDepthSort = -1;
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.bAdditiveCoronas);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bmP, &color, alpha, gameOpts->render.bAdditiveObjCoronas);
 	glDepthMask (1);
 	gameOpts->render.bDepthSort = bDepthSort;
 	}
@@ -1456,7 +1456,7 @@ static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,
 void RenderLightTrail (tObject *objP)
 {
 	tRgbaColorf		color, *colorP;
-	int				bAdditive = 1; //gameOpts->render.bAdditiveCoronas;
+	int				bAdditive = 1; //gameOpts->render.bAdditiveObjCoronas;
 
 if (!SHOW_OBJ_FX)
 	return;

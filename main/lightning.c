@@ -984,7 +984,6 @@ CHECK (pl, nLightnings);
 if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 	tiRender.pl = pl;
 	tiRender.nLightnings = nLightnings;
-	tiRender.nDepth = nDepth;
 	RunRenderThreads (rtAnimateLightnings);
 	}
 else
@@ -1303,7 +1302,6 @@ void ComputePlasmaSegment (fVector *vPosf, int bScale, short nSegment, char bSta
 {
 	tPlasmaSegment	*psP;
 	fVector			vn [2], vd;
-	int				i, j = bStart + 2 * bEnd;
 
 	static fVector	vEye = {{0,0,0}};
 
@@ -1357,7 +1355,7 @@ if (bEnd) {
 	VmVecIncf (psP->vPlasma + 2, &vd);
 	VmVecIncf (psP->vPlasma + 3, &vd);
 	}
-memcpy (psP->texCoord, plasmaTexCoord [j], 4 * sizeof (tTexCoord2f));
+memcpy (psP->texCoord, plasmaTexCoord [bStart + 2 * bEnd], 4 * sizeof (tTexCoord2f));
 }
 
 //------------------------------------------------------------------------------
@@ -1397,6 +1395,7 @@ void RenderPlasmaBuffer (tLightning *pl, tRgbaColorf *colorP, int nThread)
 {
 	int	bScale;
 
+G3EnableClientStates (1, 0, GL_TEXTURE0);
 OglBlendFunc (GL_ONE, GL_ONE);
 for (bScale = 0; bScale < 2; bScale++) {
 	if (bScale)
@@ -1407,6 +1406,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 	glVertexPointer (3, GL_FLOAT, sizeof (tPlasmaSegment), &plasmaBuffer [nThread][bScale][0].vPlasma);
 	glDrawArrays (GL_TRIANGLE_FAN, 0, 4 * (pl->nNodes - 1));
 	}
+G3DisableClientStates (1, 0, GL_TEXTURE0);
 }
 
 //------------------------------------------------------------------------------
@@ -1428,10 +1428,17 @@ for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++, vPosf++) {
 	}
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
-G3EnableClientStates (0, 0, GL_TEXTURE0);
-glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
-glDrawArrays (GL_LINE_STRIP, 0, pl->nNodes);
-G3DisableClientStates (0, 0, GL_TEXTURE0);
+if (G3EnableClientStates (0, 0, GL_TEXTURE0)) {
+	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
+	glDrawArrays (GL_LINE_STRIP, 0, pl->nNodes);
+	G3DisableClientStates (0, 0, GL_TEXTURE0);
+	}	
+else {
+	glBegin (GL_LINE_STRIP);
+	for (i = 0; i < pl->nNodes; i++)
+		glVertex3fv ((GLfloat *) (coreBuffer [nThread] + i));
+	glEnd ();
+	}
 if (!gameStates.ogl.bUseTransform)
 	OglResetTransform (1);
 glLineWidth (1);
@@ -1470,17 +1477,20 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void RenderLightningsBuffered (tLightning *pl, int nStart, int nLightnings, int nDepth, int nThread)
+void RenderLightningsBuffered (tLightning *plRoot, int nStart, int nLightnings, int nDepth, int nThread)
 {
+	tLightning		*pl = plRoot + nStart;
 	tLightningNode	*pln;
-	int			i;
-	int			bPlasma;
-	tRgbaColorf	color;
+	int				h, i, j;
+	int				bPlasma;
+	tRgbaColorf		color;
 
 bPlasma = SetupLightningPlasma (pl);
-for (pl += nStart, nLightnings -= nStart; nLightnings; nLightnings--, pl++) {
+for (h = nLightnings - nStart; h; h--, pl++) {
 	if ((pl->nNodes < 0) || (pl->nSteps < 0))
 		continue;
+	if (gameStates.app.bMultiThreaded)
+		tiRender.ti [nThread].bBlock = 1;
 	color = pl->color;
 	if (pl->nLife > 0) {
 		if ((i = pl->nLife - pl->nTTL) < 250)
@@ -1495,19 +1505,28 @@ for (pl += nStart, nLightnings -= nStart; nLightnings; nLightnings--, pl++) {
 		color.alpha *= 1.5f;
 	if (nDepth)
 		color.alpha /= 2;
-#if RENDER_LIGHTNING_PLASMA
-	if (bPlasma) {
+	if (gameStates.app.bMultiThreaded && nThread) {	//thread 1 will always render after thread 0
+		tiRender.ti [1].bBlock = 0;
+		while (tiRender.ti [0].bBlock)
+			G3_SLEEP (0);
+		}
+	if (0 && bPlasma) {
 		ComputePlasmaBuffer (pl, nDepth, nThread);
 		RenderPlasmaBuffer (pl, &color, nThread);
-		G3DisableClientStates (1, 0, -1);
 		}
-#endif
 	RenderLightningCore (pl, &color, nDepth, nThread);
-	if (gameOpts->render.lightnings.nQuality)
-		for (i = pl->nNodes, pln = pl->pNodes; i; i--, pln++)
-			if (pln->pChild)
-				RenderLightningsBuffered (pln->pChild, 0, 1, nDepth + 1, nThread);
+	if (gameStates.app.bMultiThreaded && !nThread) { //thread 0 will wait for thread 1 to complete its rendering
+		tiRender.ti [0].bBlock = 0;
+		while (tiRender.ti [1].bBlock)
+			G3_SLEEP (0);
+		}
 	}
+if (gameOpts->render.lightnings.nQuality)
+	for (pl = plRoot + nStart, h = nLightnings -= nStart; h; h--, pl++)
+		if (0 < (i = pl->nNodes))
+			for (pln = pl->pNodes; i; i--, pln++)
+				if (pln->pChild)
+					RenderLightningsBuffered (pln->pChild, 0, 1, nDepth + 1, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -1660,8 +1679,8 @@ void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthS
 
 if (!pl)
 	return;
-bPlasma = SetupLightningPlasma (pl);
 if (bDepthSort > 0) {
+	bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 	color = pl->color;
 	if (pl->nLife > 0) {
 		if ((i = pl->nLife - pl->nTTL) < 250)
@@ -1707,8 +1726,18 @@ else {
 			glDisable (GL_CULL_FACE);
 			}
 		}
-#if 0
-	RenderLightningsBuffered (pl, 0, nLightnings, 0, 0);
+#if 1
+#	if 0 // no speed gain here
+	if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
+		tiRender.pl = pl;
+		tiRender.ti [0].bBlock =
+		tiRender.ti [1].bBlock = 0;
+		tiRender.nLightnings = nLightnings;
+		RunRenderThreads (rtRenderLightnings);
+		}
+	else
+#	endif
+		RenderLightningsBuffered (pl, 0, nLightnings, 0, 0);
 #else
 	for (; nLightnings; nLightnings--, pl++) {
 		if ((pl->nNodes < 0) || (pl->nSteps < 0))

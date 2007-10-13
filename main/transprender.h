@@ -61,6 +61,7 @@ typedef struct tRISphere {
 
 typedef struct tRILightning {
 	tLightning			*lightning;
+	short					nLightnings;
 	short					nDepth;
 } tRILightning;
 

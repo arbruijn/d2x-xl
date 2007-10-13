@@ -74,9 +74,15 @@ do {
 		}
 	else if (tiRender.nTask == rtAnimateLightnings) {
 		if (nId)
-			AnimateLightning (tiRender.pl, tiRender.nLightnings / 2, tiRender.nLightnings, tiRender.nDepth);
+			AnimateLightning (tiRender.pl, tiRender.nLightnings / 2, tiRender.nLightnings, 0);
 		else
-			AnimateLightning (tiRender.pl, 0, tiRender.nLightnings / 2, tiRender.nDepth);
+			AnimateLightning (tiRender.pl, 0, tiRender.nLightnings / 2, 0);
+		}
+	else if (tiRender.nTask == rtRenderLightnings) {
+		if (nId)
+			RenderLightningsBuffered (tiRender.pl, tiRender.nLightnings / 2, tiRender.nLightnings, 0, nId);
+		else
+			RenderLightningsBuffered (tiRender.pl, 0, tiRender.nLightnings / 2, 0, nId);
 		}
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);
