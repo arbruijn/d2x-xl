@@ -397,6 +397,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
 		RP (gameOptions [i].render.bDepthSort, i, 0);
 
+		RP (gameOptions [i].render.lightnings.bAuxViews, i, 0);
 		RP (gameOptions [i].render.lightnings.bPlasma, i, 0);
 		RP (gameOptions [i].render.lightnings.bDamage, i, 0);
 		RP (gameOptions [i].render.lightnings.bExplosions, i, 0);
@@ -453,6 +454,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.shadows.nReach, i, 0);
 
+		RP (gameOptions [i].render.smoke.bAuxViews, i, 0);
 		RP (gameOptions [i].render.smoke.bPlasmaTrails, i, 0);
 		RP (gameOptions [i].render.smoke.bCollisions, i, 0);
 		RP (gameOptions [i].render.smoke.bDecreaseLag, i, 0);
@@ -928,7 +930,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bWeaponCoronas", "1"},
 	{"gameOptions[0].render.bPowerupCoronas", "1"},
 	{"gameOptions[0].render.nCoronaIntensity", "1"},
-	{"gameOptions[0].render.nAdditiveCoronas", "0"},
+	{"gameOptions[0].render.bAdditiveCoronas", "0"},
 	{"gameOptions[0].render.bBrightObjects", "0"},
 	{"gameOptions[0].render.bRobotShields", "0"},
 	{"gameOptions[0].render.bTransparentEffects", "1"},
@@ -962,6 +964,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.color.bWalls", "1"},
 	{"gameOptions[0].render.color.bUseLightMaps", "0"},
 	{"gameOptions[0].render.color.nLightMapRange", "0"},
+	{"gameOptions[0].render.lightnings.bAuxViews", "0"},
 	{"gameOptions[0].render.lightnings.bDamage", "1"},
 	{"gameOptions[0].render.lightnings.bExplosions", "1"},
 	{"gameOptions[0].render.lightnings.bOmega", "1"},
@@ -982,6 +985,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.shadows.nClip", "1"},
 	{"gameOptions[0].render.shadows.nLights", "2"},
 	{"gameOptions[0].render.shadows.nReach", "2"},
+	{"gameOptions[0].render.smoke.bAuxViews", "0"},
 	{"gameOptions[0].render.smoke.bPlasmaTrails", "0"},
 	{"gameOptions[0].render.smoke.bCollisions", "0"},
 	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},

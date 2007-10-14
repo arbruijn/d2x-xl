@@ -692,7 +692,7 @@ if (!(IsMultiGame || gameOpts->render.bObjects))
 	return;
 Assert(nObject < MAX_OBJECTS);
 #if 1
-if ((gameStates.render.nShadowPass < 2) &&
+if (!nWindow && (gameStates.render.nShadowPass < 2) &&
     (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop))	//already rendered this...
 	return;
 #endif
@@ -1298,10 +1298,10 @@ else
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}
-	if (!nWindow) {
+	if (!nWindow || gameOpts->render.lightnings.bAuxViews)
 		RenderLightnings ();
+	if (!nWindow || gameOpts->render.smoke.bAuxViews)
 		RenderSmoke ();
-		}
 	}
 RenderItems ();
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
@@ -1831,8 +1831,7 @@ nHackLasers = 0;
 //set up for rendering
 gameStates.ogl.fAlpha = GR_ACTUAL_FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) && 
-	  (gameStates.render.nShadowPass < 2) && 
-	  (gameStates.render.nShadowBlurPass < 2)) ||
+	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
 	SetLightningLights ();

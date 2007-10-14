@@ -1736,8 +1736,10 @@ char *defaultGameTexts [][2] = {
 	{"Koronas ~Additiv einblenden", "~Additive corona blending"},
 	{"~Objekt-Koronas additiv einblenden", "dditive ~Object corona blending"},
 	{"po~Werupschatten", "po~Werup shadows"},
-	{"", ""},
+	{"Rauch in Cockpit-~Fenstern zeigen", "show smoke in cockpit ~Windows"},
+	{"Blitze in Cockpit-~Fenstern zeigen", "show lightnings in cockpit ~Windows"},
 #if 0
+	{"", ""},
 #endif
 	{"", ""}
 	};
@@ -2312,6 +2314,10 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLeuchtspuren und ihrem Hintergrund.", "If checked, the brightness and color of light trails\nand their background."},
 	{"Wenn angekreuzt, werden Schatten fuer Powerups erzeugt.", 
 	 "If checked, shadows are created for powerups."},
+	{"Wenn angekreuzt, werden Raucheffekte auch in Cockpit-\nfenstern (z.B. dem Rueckspiegel) angezeigt.", 
+	 "If checked, smoke effects are shown in cockpit windows\nlike e.g. the rear view."},
+	{"Wenn angekreuzt, werden Blitzeffekte auch in Cockpit-\nfenstern (z.B. dem Rueckspiegel) angezeigt.", 
+	 "If checked, lightning effects are shown in cockpit windows\nlike e.g. the rear view."},
 #if 0
 	{"", ""},
 #endif

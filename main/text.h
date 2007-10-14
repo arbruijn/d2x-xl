@@ -1777,11 +1777,11 @@ void LoadGameTexts(void);
 #define TXT_ADDITIVE_CORONAS		GT(984)
 #define TXT_ADDITIVE_OBJCORONAS	GT(985)
 #define TXT_POWERUP_SHADOWS		GT(986)
+#define TXT_SMOKE_AUXVIEWS			GT(987)
+#define TXT_LIGHTNING_AUXVIEWS	GT(988)
 
 #if 0
 
-#define TXT_				GT(987)
-#define TXT_				GT(988)
 #define TXT_				GT(989)
 #define TXT_				GT(990)
 #define TXT_				GT(991)
@@ -2233,11 +2233,11 @@ void LoadGameTexts(void);
 #define HTX_ADDITIVE_CORONAS		HT(319)				
 #define HTX_ADDITIVE_OBJCORONAS	HT(320)				
 #define HTX_POWERUP_SHADOWS		HT(321)				
+#define HTX_SMOKE_AUXVIEWS			HT(322)				
+#define HTX_LIGHTNING_AUXVIEWS	HT(323)				
 
 #if 0
 
-#define HTX_					HT(322)				
-#define HTX_					HT(323)				
 #define HTX_					HT(324)				
 #define HTX_					HT(325)				
 #define HTX_					HT(326)				

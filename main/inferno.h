@@ -222,6 +222,7 @@ typedef struct tSmokeOptions {
 	int bDisperse;
 	int bSort;
 	int bDecreaseLag;	//only render if tPlayer is moving forward
+	int bAuxViews;
 } tSmokeOptions;
 
 //------------------------------------------------------------------------------
@@ -236,6 +237,7 @@ typedef struct tLightningOptions {
 	int bExplosions;
 	int bStatic;
 	int bOmega;
+	int bAuxViews;
 } tLightningOptions;
 
 //------------------------------------------------------------------------------

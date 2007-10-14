@@ -1966,6 +1966,8 @@ do {
 		}
 	else
 		optTrailType = -1;
+	ADD_TEXT (opt, "", 0);
+	opt++;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
@@ -2687,7 +2689,7 @@ void SmokeOptionsMenu ()
 	tMenuItem m [40];
 	int	i, j, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optStaticSmoke, optSmokeColl, optSmokeDisp;
+	int	nOptSmokeLag, optStaticSmoke, optSmokeColl, optSmokeDisp, optAuxViews;
 	char	szSmokeQual [50];
 
 pszSmokeSize [0] = TXT_SMALL;
@@ -2790,6 +2792,8 @@ do {
 			optSmokeColl = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_DISPERSE, gameOpts->render.smoke.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
 			optSmokeDisp = opt++;
+			ADD_CHECK (opt, TXT_SMOKE_AUXVIEWS, gameOpts->render.smoke.bAuxViews, KEY_D, HTX_SMOKE_AUXVIEWS);
+			optAuxViews = opt++;
 			}
 		}
 	else
@@ -2800,7 +2804,8 @@ do {
 		smokeOpts.nDebris =
 		optStaticSmoke =
 		optSmokeColl =
-		optSmokeDisp = -1;
+		optSmokeDisp = 
+		optAuxViews = -1;
 
 	Assert (opt <= sizeof (m) / sizeof (m [0]));
 	do {
@@ -2815,6 +2820,7 @@ do {
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
 		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);
+		GET_VAL (gameOpts->render.smoke.bAuxViews, optAuxViews);
 		//GET_VAL (gameOpts->render.smoke.bSyncSizes, smokeOpts.nSyncSizes);
 		if (gameOpts->render.smoke.bSyncSizes) {
 			for (j = 1; j < 4; j++) {
@@ -3124,7 +3130,7 @@ void LightningOptionsMenu ()
 	tMenuItem m [15];
 	int	i, choice = 0;
 	int	opt;
-	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optOmega, optPlasma;
+	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optOmega, optPlasma, optAuxViews;
 	char	szQuality [50], szStyle [100];
 
 	pszLightningQuality [0] = TXT_LOW;
@@ -3172,6 +3178,8 @@ do {
 		optStatic = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
 		optOmega = opt++;
+		ADD_CHECK (opt, TXT_LIGHTNING_AUXVIEWS, gameOpts->render.lightnings.bAuxViews, KEY_D, HTX_LIGHTNING_AUXVIEWS);
+		optAuxViews = opt++;
 		}
 	Assert (opt <= sizeofa (m));
 	for (;;) {
@@ -3187,6 +3195,7 @@ do {
 		GET_VAL (gameOpts->render.lightnings.bRobots, optRobots);
 		GET_VAL (gameOpts->render.lightnings.bStatic, optStatic);
 		GET_VAL (gameOpts->render.lightnings.bOmega, optOmega);
+		GET_VAL (gameOpts->render.lightnings.bAuxViews, optAuxViews);
 		}
 	} while (i == -2);
 if (!gameOpts->render.lightnings.bPlayers)
@@ -4335,6 +4344,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.shadows.nClip = 0;
 			gameOpts->render.shadows.nReach = 0;
 			gameOpts->render.nExplShrapnels = 0;
+			gameOpts->render.smoke.bAuxViews = 0;
+			gameOpts->render.lightnings.bAuxViews = 0;
 			extraGameInfo [0].bShadows = 0;
 			extraGameInfo [0].bUseSmoke = 0;
 			extraGameInfo [0].bUseCameras = 0;
@@ -4351,6 +4362,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.bCollisions = 0;
 			gameOpts->render.nExplShrapnels = 1;
 			gameOpts->render.smoke.bStatic = 0;
+			gameOpts->render.smoke.bAuxViews = 0;
+			gameOpts->render.lightnings.bAuxViews = 0;
 			gameOpts->render.smoke.nDens [0] =
 			gameOpts->render.smoke.nDens [1] =
 			gameOpts->render.smoke.nDens [2] =
@@ -4368,6 +4381,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [3] = 1;
 			gameOpts->render.cockpit.bTextGauges = 1;
 			gameOpts->render.bDynLighting = 0;
+			gameOpts->render.smoke.bAuxViews = 0;
+			gameOpts->render.lightnings.bAuxViews = 0;
 			gameOpts->ogl.bLightObjects = 0;
 			extraGameInfo [0].bUseCameras = 1;
 			gameOpts->render.cameras.nFPS = 5;
@@ -4406,6 +4421,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [3] = 1;
 			gameOpts->render.cockpit.bTextGauges = 0;
 			gameOpts->render.bDynLighting = 1;
+			gameOpts->render.smoke.bAuxViews = 0;
+			gameOpts->render.lightnings.bAuxViews = 0;
 			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 			extraGameInfo [0].bUseCameras = 1;
@@ -4445,6 +4462,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [3] = 2;
 			gameOpts->render.cockpit.bTextGauges = 0;
 			gameOpts->render.bDynLighting = 1;
+			gameOpts->render.smoke.bAuxViews = 0;
+			gameOpts->render.lightnings.bAuxViews = 0;
 			gameOpts->ogl.bLightObjects = 0;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
 			extraGameInfo [0].bUseCameras = 1;
@@ -4483,6 +4502,8 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.smoke.nLife [4] = 0;
 			gameOpts->render.smoke.nLife [3] = 2;
 			gameOpts->render.bDynLighting = 1;
+			gameOpts->render.smoke.bAuxViews = 1;
+			gameOpts->render.lightnings.bAuxViews = 1;
 			gameOpts->ogl.bLightObjects = 1;
 			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
 			extraGameInfo [0].bUseCameras = 1;
