@@ -2403,15 +2403,15 @@ return 1;
 
 void ComputeSlideSegs (void)
 {
-	int	nSegment, nSide, bIsSlideSeg, tmn;
+	int	nSegment, nSide, bIsSlideSeg, nTexture;
 
 gameData.segs.nSlideSegs = 0;
 for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < 6; nSide++) {
-		tmn = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
-		if (gameData.pig.tex.pTMapInfo [tmn].slide_u  || 
-			 gameData.pig.tex.pTMapInfo [tmn].slide_v) {
+		nTexture = gameData.segs.segments [nSegment].sides [nSide].nBaseTex;
+		if (gameData.pig.tex.pTMapInfo [nTexture].slide_u  || 
+			 gameData.pig.tex.pTMapInfo [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;

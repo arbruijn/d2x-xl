@@ -732,7 +732,8 @@ switch (gameStates.app.bEndLevelSequence) {
 #endif
 		d = VmVecDistQuick (&gameData.objs.console->position.vPos, &gameData.objs.endLevelCamera->position.vPos);
 		speed_scale = FixDiv (d, i2f (0x20);
-		if (d<f1_0) d=f1_0;
+		if (d < f1_0) 
+			d = f1_0;
 		GetAnglesToObject (&player_dest_angles, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
 		ChaseAngles (&player_angles, &player_dest_angles);
 		VmAngles2Matrix (&gameData.objs.console->position.mOrient, &player_angles);
@@ -927,6 +928,7 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	}
 else
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
+gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 RenderItems ();
 }

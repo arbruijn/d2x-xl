@@ -22,9 +22,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void QSortFaces (int left, int right);
 void RenderFaceList (int nType);
 void ComputeFaceLight (int nStart, int nEnd, int nThread);
+void UpdateSlidingFaces (void);
 void CountRenderFaces (void);
 void GetRenderVertices (void);
 void RenderMineObjects (int nType);
+void RenderSkyBoxFaces (void);
 
 //------------------------------------------------------------------------------
 

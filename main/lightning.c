@@ -1481,7 +1481,7 @@ void RenderLightningsBuffered (tLightning *plRoot, int nStart, int nLightnings, 
 {
 	tLightning		*pl = plRoot + nStart;
 	tLightningNode	*pln;
-	int				h, i, j;
+	int				h, i;
 	int				bPlasma;
 	tRgbaColorf		color;
 

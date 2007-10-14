@@ -89,6 +89,28 @@ int	bOutLineMode = 0,
 
 //------------------------------------------------------------------------------
 
+void RotateTexCoord2f (tTexCoord2f *pDest, tTexCoord2f *pSrc, ubyte nOrient)
+{
+if (nOrient == 1) {
+	pDest->v.u = 1.0f - pSrc->v.v;
+	pDest->v.v = pSrc->v.u;
+	}
+else if (nOrient == 2) {
+	pDest->v.u = 1.0f - pSrc->v.u;
+	pDest->v.v = 1.0f - pSrc->v.v;
+	}
+else if (nOrient == 3) {
+	pDest->v.u = pSrc->v.v;
+	pDest->v.v = 1.0f - pSrc->v.u;
+	}
+else {
+	pDest->v.u = pSrc->v.u;
+	pDest->v.v = pSrc->v.v;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int ToggleOutlineMode (void)
 {
 return bOutLineMode = !bOutLineMode;

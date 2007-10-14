@@ -87,7 +87,7 @@ int PCXHeader_read_n(PCXHeader *ph, int n, CFILE *fp)
 
 //------------------------------------------------------------------------------
 
-int pcx_get_dimensions( char *filename, int *width, int *height)
+int PCXGetDimensions( char *filename, int *width, int *height)
 {
 	CFILE *PCXfile;
 	PCXHeader header;

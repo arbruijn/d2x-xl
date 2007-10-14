@@ -668,7 +668,6 @@ void OglDoPalFx (void)
 	int	bDepthTest, bBlend;
 	GLint	blendSrc, blendDest;
 	
-glDisable (GL_TEXTURE_2D);
 if (gameStates.render.bPaletteFadedOut) {
 	if ((bBlend = glIsEnabled (GL_BLEND))) {
 		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
@@ -693,6 +692,7 @@ else
 	return;
 if ((bDepthTest = glIsEnabled (GL_DEPTH_TEST)))
 	glDisable (GL_DEPTH_TEST);
+glDisable (GL_TEXTURE_2D);
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (0,1);

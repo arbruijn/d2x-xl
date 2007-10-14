@@ -860,6 +860,7 @@ gameStates.app.bGameRunning = 0;
 gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
 gameStates.gameplay.bKillBossCheat = 0;
+gameStates.render.nFlashScale = F1_0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));

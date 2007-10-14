@@ -678,7 +678,7 @@ typedef union tTexCoord3f {
 	} tTexCoord3f;
 
 typedef struct grsFace {
-	short					index [4];
+	ushort				index [4];
 	int					nIndex;
 	grsBitmap			*bmBot;
 	grsBitmap			*bmTop;
@@ -698,6 +698,7 @@ typedef struct grsFace {
 	ubyte					bIsLight :1;
 	ubyte					bHaveCameraBg :1;
 	ubyte					bTeleport :1;
+	ubyte					bSlide :1;
 	ubyte					widFlags;
 	char					nCamera;
 	char					nType;

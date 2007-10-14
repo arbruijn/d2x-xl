@@ -83,6 +83,7 @@ grsBitmap *LoadFaceBitmap (short tMapNum, short nFrameNum);
 void DrawOutline (int nVertices, g3sPoint **pointList);
 int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);
+void RotateTexCoord2f (tTexCoord2f *pDest, tTexCoord2f *pSrc, ubyte nOrient);
 
 #ifdef _DEBUG
 void OutlineSegSide (tSegment *seg, int _side, int edge, int vert);

@@ -193,9 +193,10 @@ void KillEverything (int bVerbose)
 
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);
-for (i=0; i<=gameData.objs.nLastObject; i++) {
+for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	switch (gameData.objs.objects [i].nType) {
 		case OBJ_ROBOT:
+		case OBJ_CNTRLCEN:
 			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
 			break;
 		case OBJ_POWERUP:

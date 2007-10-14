@@ -67,6 +67,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 #include "maths.h"
 #include "network.h"
 #include "lighting.h"
+#include "renderlib.h"
 
 //------------------------------------------------------------------------------
 
@@ -1070,28 +1071,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RotateTexCoord (tTexCoord2f *pDest, tTexCoord2f *pSrc, ubyte nOrient)
-{
-if (nOrient == 1) {
-	pDest->v.u = 1.0f - pSrc->v.v;
-	pDest->v.v = pSrc->v.u;
-	}
-else if (nOrient == 2) {
-	pDest->v.u = 1.0f - pSrc->v.u;
-	pDest->v.v = 1.0f - pSrc->v.v;
-	}
-else if (nOrient == 3) {
-	pDest->v.u = pSrc->v.v;
-	pDest->v.v = 1.0f - pSrc->v.u;
-	}
-else {
-	pDest->v.u = pSrc->v.u;
-	pDest->v.v = pSrc->v.v;
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 {
 	short			lastSeg, nSide, i;
@@ -1226,7 +1205,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 				//CFRead ( &sideP->uvls [i].l, sizeof (fix), 1, loadFile );
 				texCoordP->v.u = f2fl (sideP->uvls [i].u);
 				texCoordP->v.v = f2fl (sideP->uvls [i].v);
-				RotateTexCoord (ovlTexCoordP, texCoordP, (ubyte) sideP->nOvlOrient);
+				RotateTexCoord2f (ovlTexCoordP, texCoordP, (ubyte) sideP->nOvlOrient);
 				texCoordP++;
 				ovlTexCoordP++;
 				colorP = gameData.render.color.ambient + sideVerts [i];
@@ -1246,6 +1225,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 			faceP->nBaseTex = sideP->nBaseTex;
 			if (faceP->nOvlTex = sideP->nOvlTex)
 				nOvlTexCount++;
+			faceP->bSlide = (gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_v);
 			faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));
 			faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;
 			faceP->bTextured = 1;

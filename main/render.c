@@ -201,15 +201,17 @@ void FlashFrame()
 {
 	static fixang flash_ang = 0;
 
-if (!gameData.reactor.bDestroyed && !gameStates.gameplay.seismic.nMagnitude)
+if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
+	gameStates.render.nFlashScale = F1_0;
 	return;
+	}
 if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.ogl.palAdd.blue > 10)		//whiting out
 	return;
 //	flash_ang += FixMul(FLASH_CYCLE_RATE, gameData.time.xFrame);
 if (gameStates.gameplay.seismic.nMagnitude) {
-	fix	xAddedFlash = abs(gameStates.gameplay.seismic.nMagnitude);
+	fix xAddedFlash = abs(gameStates.gameplay.seismic.nMagnitude);
 	if (xAddedFlash < F1_0)
 		xAddedFlash *= 16;
 	flash_ang += (fixang) FixMul (gameStates.render.nFlashRate, FixMul(gameData.time.xFrame, xAddedFlash+F1_0));
@@ -1904,16 +1906,18 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ
 
 void RenderSkyBox (int nWindow)
 {
-	int	nSegment;
+	int	nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.bHaveSkyBox = 0;
 	gameStates.render.nType = 4;
+	gameStates.render.bFullBright = 1;
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
 			gameStates.render.bHaveSkyBox = 1;
 			RenderSegmentFaces (nSegment, nWindow);
 			}
+	gameStates.render.bFullBright = bFullBright;
 	}
 }
 
@@ -1974,11 +1978,15 @@ if (gameOpts->render.nRenderPath && (gameStates.render.nRenderPass <= 0) && (gam
 		}
 	else
 		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
+	UpdateSlidingFaces ();
 	}
 RenderSegmentList (0, 1);	// render opaque geometry
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
 if (!gameStates.render.automap.bDisplay)
-	RenderSkyBox (nWindow);
+	if (gameOpts->render.nRenderPath)
+		RenderSkyBoxFaces ();
+	else
+		RenderSkyBox (nWindow);
 RenderSegmentList (1, 1);		// render objects
 if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
 	glDepthFunc (GL_LEQUAL);

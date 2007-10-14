@@ -78,8 +78,10 @@ void InitRenderItemBuffer (int zMin, int zMax)
 {
 renderItems.zMin = 0;
 renderItems.zMax = zMax - renderItems.zMin;
-renderItems.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - F1_0);
-if (renderItems.zScale > 1)
+renderItems.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (zMax - renderItems.zMin);
+if (renderItems.zScale < 0)
+	renderItems.zScale = 1;
+else if (renderItems.zScale > 1)
 	renderItems.zScale = 1;
 }
 
@@ -449,6 +451,8 @@ else if (bClientState) {
 		glDisableClientState (GL_COLOR_ARRAY);
 	}
 else {
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
 	if (renderItems.bClientTexCoord) {
 		glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 		renderItems.bClientTexCoord = 0;
@@ -457,7 +461,6 @@ else {
 		glDisableClientState (GL_COLOR_ARRAY);
 		renderItems.bClientColor = 0;
 		}
-	glActiveTexture (GL_TEXTURE0);
 	renderItems.bClientState = 0;
 	}
 renderItems.bmP = NULL;
@@ -573,7 +576,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0)) {
 	fVector	fPos = item->position;
 
 	if (renderItems.bDepthMask)
-		glDepthMask (renderItems.bDepthMask = 0);
+		glDepthMask (renderItems.bDepthMask);
 	w = (float) f2fl (item->nWidth); 
 	h = (float) f2fl (item->nHeight); 
 	u = item->bmP->glTexture->u;
@@ -782,9 +785,9 @@ renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
 G3DisableClientStates (1, 1, GL_TEXTURE0);
-if (EGI_FLAG (bShadows, 0, 1, 0)) 
-	glEnable (GL_STENCIL_TEST);
+OGL_BINDTEX (0);
 glDepthFunc (GL_LEQUAL);
+glDepthMask (1);
 glEnable (GL_CULL_FACE);
 StencilOn (bStencil);
 return;

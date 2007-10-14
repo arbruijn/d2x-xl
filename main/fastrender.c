@@ -83,7 +83,7 @@ else {
 void SplitFace (tSegment *segP, grsFace *faceP)
 {
 if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
-	 faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
+	 !faceP->bSlide && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
 		grsFace *newFaceP = segP->pFaces + segP->nFaces++;
 
 	*newFaceP = *faceP;
@@ -94,7 +94,8 @@ if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) &&
 	memcpy (gameData.segs.faces.color + newFaceP->nIndex, gameData.segs.faces.color + faceP->nIndex, 4 * sizeof (tRgbaColorf));
 	newFaceP->nBaseTex = faceP->nOvlTex;
 	faceP->nOvlTex = newFaceP->nOvlTex = 0;
-	faceP->bmTop = NULL;
+	faceP->bmTop = 
+	newFaceP->bmTop = NULL;
 	faceP->bSplit = 1;
 	newFaceP->bOverlay = 1;
 	if (newFaceP->bIsLight = IsLight (newFaceP->nBaseTex))
@@ -154,7 +155,7 @@ else if (nType == 2) {
 		 (gameData.segs.xSegments [nSegment].owner < 1))
 			return;
 	}
-else {
+else if (nType == 3) {
 	tSide *sideP = segP->sides + faceP->nSide;
 	if (faceP->bIsLight)
 		RenderCorona (nSegment, faceP->nSide);
@@ -170,9 +171,11 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 if ((faceP->nCamera >= 0) && !SetupMonitorFace (nSegment, faceP->nSide, faceP->nCamera, faceP)) 
 	faceP->nCamera = -1;
 if (faceP->nCamera < 0) {
+#if 0
 	if (!(bTextured && faceP->bTextured))
 		faceP->bmBot = faceP->bmTop = NULL;
 	else
+#endif
 		LoadFaceBitmaps (segP, faceP);
 	}
 #ifdef _DEBUG
@@ -309,6 +312,7 @@ gameStates.render.history.bOverlay = -1;
 gameStates.render.history.bmBot = 
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
+OglTexWrap (NULL, GL_REPEAT);
 glDepthFunc (GL_LEQUAL);
 if (nType != 3)
 	OglSetupTransform (1);
@@ -339,6 +343,7 @@ return bVertexArrays;
 
 void EndRenderFaces (int nType, int bVertexArrays)
 {
+//G3FlushFaceBuffer (1);
 if (bVertexArrays) {
 	G3DisableClientStates (1, 1, GL_TEXTURE2);
 	glActiveTexture (GL_TEXTURE2);
@@ -362,6 +367,32 @@ if (gameStates.render.history.bOverlay > 0)
 	glUseProgramObject (0);
 if (nType != 3)
 	OglResetTransform (1);
+}
+
+//------------------------------------------------------------------------------
+
+void RenderSkyBoxFaces (void)
+{
+	tSegment		*segP;
+	grsFace		*faceP;
+	tFaceRef		*pfr;
+	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
+
+if (gameStates.render.bHaveSkyBox) {
+	gameStates.render.bHaveSkyBox = 0;
+	gameStates.render.nType = 4;
+	gameStates.render.bFullBright = 1;
+	bVertexArrays = BeginRenderFaces (4);
+	for (i = 0, segP = SEGMENTS; i < gameData.segs.nSegments; i++, segP++) {
+		if (gameData.segs.segment2s [i].special != SEGMENT_IS_SKYBOX)
+			continue;
+		gameStates.render.bHaveSkyBox = 1;
+		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
+			RenderMineFace (segP, faceP, i, 4, bVertexArrays, 1, 0);
+		}
+	gameStates.render.bFullBright = bFullBright;
+	EndRenderFaces (4, bVertexArrays);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -407,7 +438,7 @@ else {	//front to back
 			if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
-				return;
+				continue;
 			}
 		else
 			bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
@@ -432,6 +463,10 @@ else {	//front to back
 		if ((pfr [i].nSegment == nDbgSeg) && ((nDbgSide < 0) || (pfr[i].faceP->nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
+		if (gameStates.render.automap.bDisplay) {
+			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
+				continue;
+			}
 		RenderMineFace (SEGMENTS + pfr [i].nSegment, pfr [i].faceP, pfr [i].nSegment, nType, bVertexArrays, 1, 0);
 		}
 	glDepthMask (1);
@@ -475,6 +510,36 @@ return nColor;
 
 //------------------------------------------------------------------------------
 
+void UpdateSlidingFaces (void)
+{
+	tSegment		*segP;
+	grsFace		*faceP;
+	short			h, i, j;
+	tTexCoord2f	*texCoordP, *ovlTexCoordP;
+	tUVL			*uvlP;
+
+for (i = gameData.segs.nSegments, segP = SEGMENTS; i; i--, segP++) {
+	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+		if (faceP->bSlide) {
+#ifdef _DEBUG
+			if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+				faceP = faceP;
+#endif
+			texCoordP = gameData.segs.faces.texCoord + faceP->nIndex;
+			ovlTexCoordP = gameData.segs.faces.ovlTexCoord + faceP->nIndex;
+			uvlP = segP->sides [faceP->nSide].uvls;
+			for (h = 0; h < 4; h++) {
+				texCoordP [h].v.u = f2fl (uvlP [h].u);
+				texCoordP [h].v.v = f2fl (uvlP [h].v);
+				RotateTexCoord2f (ovlTexCoordP + h, texCoordP + h, faceP->nOvlOrient);
+				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
@@ -493,7 +558,7 @@ gameOpts->render.color.bAmbientLight = 1;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 if (gameStates.render.bFullBright)
-	c.color.red = c.color.green = c.color.blue = 1;
+	c.color.red = c.color.green = c.color.blue = c.color.alpha = 1;
 for (i = nStart; i < nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;

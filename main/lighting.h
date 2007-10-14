@@ -85,7 +85,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
 
 #define	SHOW_DYN_LIGHT \
-			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing) && \
+			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || gameStates.app.bEndLevelSequence) && \
 			 gameStates.render.bHaveDynLights && \
 			 gameOpts->render.bDynLighting)
 

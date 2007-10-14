@@ -234,7 +234,7 @@ if (bmP->glTexture && (bmP->glTexture->handle == (unsigned int) -1)) {
 
 void OglSmashTextureListInternal (void)
 {
-	int			h, i, j, k;
+	int			h, i, j, k, bUnlink = 0;
 	tOglTexture *t;
 	grsBitmap	*bmP, *altBmP, *bmfP;
 
@@ -252,32 +252,35 @@ for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 	if (!t->bFrameBuf && (t->handle > 0)) {
 		glDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = -1;
+		bUnlink = 1;
 		}
 	t->w =
 	t->h = 0;
 	t->wrapstate = -1;
 	}
 #if 1
-for (k = 0; k < 2; k++) {
-	bmP = gameData.pig.tex.bitmaps [k];
-	for (i = gameData.pig.tex.nBitmaps [k] + (k ? 0 : gameData.hoard.nBitmaps); i; i--, bmP++) {
-		if (bmP->bmType == BM_TYPE_STD) {
-			if (BM_MASK (bmP))
-				UnlinkTexture (BM_MASK (bmP));
-			if (!BM_OVERRIDE (bmP))
-				UnlinkTexture (bmP);
-			else {
-				altBmP = BM_OVERRIDE (bmP);
-				if (BM_MASK (altBmP))
-					UnlinkTexture (BM_MASK (altBmP));
-				UnlinkTexture (altBmP);
-				if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
-					h = BM_FRAMECOUNT (altBmP);
-					if (h > 1) {
-						for (j = h, bmfP = BM_FRAMES (altBmP); j; j--, bmfP++) {
-							if (BM_MASK (bmfP))
-								UnlinkTexture (BM_MASK (bmfP));
-							UnlinkTexture (bmfP);
+if (bUnlink) {
+	for (k = 0; k < 2; k++) {
+		bmP = gameData.pig.tex.bitmaps [k];
+		for (i = gameData.pig.tex.nBitmaps [k] + (k ? 0 : gameData.hoard.nBitmaps); i; i--, bmP++) {
+			if (bmP->bmType == BM_TYPE_STD) {
+				if (BM_MASK (bmP))
+					UnlinkTexture (BM_MASK (bmP));
+				if (!BM_OVERRIDE (bmP))
+					UnlinkTexture (bmP);
+				else {
+					altBmP = BM_OVERRIDE (bmP);
+					if (BM_MASK (altBmP))
+						UnlinkTexture (BM_MASK (altBmP));
+					UnlinkTexture (altBmP);
+					if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
+						h = BM_FRAMECOUNT (altBmP);
+						if (h > 1) {
+							for (j = h, bmfP = BM_FRAMES (altBmP); j; j--, bmfP++) {
+								if (BM_MASK (bmfP))
+									UnlinkTexture (BM_MASK (bmfP));
+								UnlinkTexture (bmfP);
+								}
 							}
 						}
 					}
@@ -822,7 +825,7 @@ int OglFillTexBuf (
 	int			tHeight,
 	int			nFormat,
 	int			nTransp,
-	int			superTransp)
+	int			bSuperTransp)
 {
 //	GLushort *texP= (GLushort *)texBuf;
 	ubyte		*data = bmP->bmTexBuf;
@@ -838,7 +841,7 @@ if (!gameData.render.ogl.palette)
 if (tWidth * tHeight * 4 > sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
 	Error ("texture too big %i %i",tWidth, tHeight);
 
-if ((tWidth <= width) && (tHeight <= height) && !GrBitmapHasTransparency (bmP))
+if (!((nTransp || bSuperTransp) && GrBitmapHasTransparency (bmP)))
 	nFormat = GL_RGB;
 #ifdef _DEBUG
 if (!nTransp)
@@ -854,9 +857,8 @@ for (y = 0; y < tHeight; y++) {
 			c = data [i++];
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
-		if ((int) c == TRANSPARENCY_COLOR) {
-			if (nTransp)
-				bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+		if (nTransp && ((int) c == TRANSPARENCY_COLOR)) {
+			bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
 			switch (nFormat) {
 				case GL_LUMINANCE:
 					(*(texBuf++)) = 0;
@@ -898,7 +900,7 @@ for (y = 0; y < tHeight; y++) {
 
 				case GL_RGB:
 				case GL_RGB5:
-					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
+					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
 						nFormat = gameStates.ogl.nRGBAFormat;
 						goto restart;
 						}
@@ -924,7 +926,7 @@ for (y = 0; y < tHeight; y++) {
 
 				case GL_RGBA:
 				case GL_RGBA4: {
-					if (superTransp && (c == SUPER_TRANSP_COLOR)) {
+					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
 						bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
 #if 0
 						if (bShaderMerge) {
@@ -1485,7 +1487,7 @@ if (bmP->bmProps.flags & BM_FLAG_TGA)
 	bmP->bmProps.flags = bmP->bmProps.flags;
 else 
 #endif
-	{
+if (!bMask) {
 	tRgbColorf	*c;
 
 	c = BitmapColor (bmP, buf);

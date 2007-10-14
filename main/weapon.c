@@ -647,7 +647,7 @@ else {
 //	----------------------------------------------------------------------------------------
 //	Show tPlayer which weapons he has, how much ammo...
 //	Looks like a debug screen now because it writes to mono screen, but that will change...
-void ShowWeaponStatus(void)
+void ShowWeaponStatus (void)
 {
 	int	i;
 #if TRACE
@@ -958,7 +958,7 @@ fix	eshakerDetonateTimes [MAX_ESHAKER_DETONATES];
 
 //	Call this to initialize for a new level.
 //	Sets all super mega missile detonation times to 0 which means there aren't any.
-void InitShakerDetonates(void)
+void InitShakerDetonates (void)
 {
 	int	i;
 
@@ -971,15 +971,15 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 //	If a smega missile been detonated, rock the mine!
 //	This should be called every frame.
 //	Maybe this should affect all robots, being called when they get their physics done.
-void RockTheMineFrame(void)
+void RockTheMineFrame (void)
 {
 	int	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
-	if (eshakerDetonateTimes[i] != 0) {
-		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes[i];
+	if (eshakerDetonateTimes [i] != 0) {
+		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
-			DigiPlaySampleLooping((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
+			DigiPlaySampleLooping ((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
 			}
@@ -1009,7 +1009,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			gameStates.gameplay.seismic.nMagnitude += rx;
 			} 
 		else
-			eshakerDetonateTimes[i] = 0;
+			eshakerDetonateTimes [i] = 0;
 		}
 	}
 //	Hook in the rumble sound effect here.
@@ -1028,7 +1028,7 @@ return gameStates.gameplay.seismic.nLevel;
 
 //	-----------------------------------------------------------------------------
 
-void InitSeismicDisturbances(void)
+void InitSeismicDisturbances (void)
 {
 gameStates.gameplay.seismic.nStartTime = 0;
 gameStates.gameplay.seismic.nEndTime = 0;
@@ -1036,7 +1036,7 @@ gameStates.gameplay.seismic.nEndTime = 0;
 
 //	-----------------------------------------------------------------------------
 //	Return true if time to start a seismic disturbance.
-int StartSeismicDisturbance(void)
+int StartSeismicDisturbance (void)
 {
 	int	rval;
 
@@ -1059,7 +1059,7 @@ return rval;
 
 //	-----------------------------------------------------------------------------
 
-void SeismicDisturbanceFrame(void)
+void SeismicDisturbanceFrame (void)
 {
 if (gameStates.gameplay.seismic.nShakeFrequency) {
 	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && 
@@ -1094,7 +1094,7 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 
 //	-----------------------------------------------------------------------------
 //	Call this when a smega detonates to start the process of rocking the mine.
-void ShakerRockStuff(void)
+void ShakerRockStuff (void)
 {
 #ifndef _DEBUG
 	int	i;
@@ -1113,7 +1113,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 //	-----------------------------------------------------------------------------
 
 //	Call this once/frame to process all super mines in the level.
-void ProcessSmartMinesFrame(void)
+void ProcessSmartMinesFrame (void)
 {
 	int	i, j;
 	int	start, add;

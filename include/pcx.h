@@ -48,7 +48,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // then bmp->bm_data is allocated and the w,h are filled.
 // If palette==NULL the palette isn't read in.  Returns error code.
 
-extern int pcx_get_dimensions( char *filename, int *width, int *height);
+extern int PCXGetDimensions( char *filename, int *width, int *height);
 
 extern int PCXReadBitmap( char * filename, grsBitmap * bmp, int bitmapType, int bD1Mission );
 

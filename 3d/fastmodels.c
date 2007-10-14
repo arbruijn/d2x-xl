@@ -1135,10 +1135,6 @@ else
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);	
 	}
 #endif
-#ifdef _DEBUG
-if (objP->nType == OBJ_WEAPON)
-	objP = objP;
-#endif
 if (bHires) {
 	for (i = 0; i < pm->nSubModels; i++)
 		if (pm->pSubModels [i].nParent == -1) 

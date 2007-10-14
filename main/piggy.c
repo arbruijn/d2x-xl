@@ -1436,6 +1436,8 @@ void PiggyFreeMask (grsBitmap *bmP)
 if (bmMask = BM_MASK (bmP)) {
 	OglFreeBmTexture (bmMask);
 	PiggyFreeBitmapData (bmMask);
+	GrFreeBitmap (bmMask);
+	BM_MASK (bmP) = NULL;
 	}
 }
 

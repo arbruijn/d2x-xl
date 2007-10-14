@@ -243,6 +243,7 @@ if (!bNewMenuFirstTime) {
 
 void NMBlueBox (int x1, int y1, int x2, int y2)
 {
+gameStates.render.nFlashScale = 0;
 if ((gameOpts->menus.nStyle == 1)) {// && ((gameOpts->menus.altBg.bHave < 1) || gameStates.app.bGameRunning)) {
 	if (x1 <= 0)
 		x1 = 1;
@@ -318,7 +319,7 @@ extern char szLastPaletteLoaded [];
 
 void NMLoadBackground (char * filename, bkg *bg, int bRedraw)
 {
-	int			pcx_error;
+	int			nPCXResult;
 	int			width, height;
 	grsBitmap	*bmP = bg ? bg->background : NULL;
 
@@ -329,7 +330,7 @@ void NMLoadBackground (char * filename, bkg *bg, int bRedraw)
 	if (bRedraw)
 		bRedraw = gameOpts->menus.nStyle && bmP && pszCurBg && filename && !strcmp (pszCurBg, filename);
 #endif
-if (!(bRedraw && gameOpts->menus.nStyle)) {
+if (!(bRedraw && gameOpts->menus.nStyle && bg && bmP)) {
 	if (bmP && (bmP != pAltBg)) {
 		GrFreeBitmap (bmP);
 		bmP = NULL;
@@ -345,17 +346,18 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 		if (gameOpts->menus.altBg.bHave > 0)
 			bmP = pAltBg;
 		}
-	if (gameOpts->menus.altBg.bHave < 1) {
+	if (!pAltBg || !bmP || (bmP != pAltBg)) {
 		if (!filename)
 			return;
-		pcx_error = pcx_get_dimensions (filename, &width, &height);
-		if (pcx_error != PCX_ERROR_NONE)
+		nPCXResult = PCXGetDimensions (filename, &width, &height);
+		if (nPCXResult != PCX_ERROR_NONE)
 			Error ("Could not open pcx file <%s>\n", filename);
 		bmP = GrCreateBitmap (width, height, 1);
+		strcpy (bmP->szName, filename);
 		Assert (bmP != NULL);
 		}
-	pcx_error = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmP, bmP ? bmP->bmProps.nType : 0, 0);
-	Assert (pcx_error == PCX_ERROR_NONE);
+	nPCXResult = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmP, bmP ? bmP->bmProps.nType : 0, 0);
+	Assert (nPCXResult == PCX_ERROR_NONE);
 // Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 
 // into the 2d's array, so the remapping will work.  Second, we need to remap the fonts.  
@@ -366,6 +368,8 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 	//GrRemapMonoFonts ();
 	strcpy (szLastPaletteLoaded, "");		//force palette load next time
 	if (bg) {
+		if (bmP == NULL)
+			return;
 		if (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)
 			OglLoadBmTexture (bmP, 0, 0, 1);
 		bg->pszPrevBg = pszCurBg;
@@ -374,10 +378,8 @@ if (!(bRedraw && gameOpts->menus.nStyle)) {
 	}
 if (!bmP)
 	return;
-WIN (DDGRLOCK (dd_grd_curcanv));
 if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle))
 	ShowFullscreenImage (bmP);
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (bg)
 	bg->background = bmP;
 else
@@ -407,7 +409,7 @@ if (gameOpts->menus.nStyle) {
 	}
 else {
 	if (bNewMenuFirstTime || gameStates.menus.bHires!=bHiresBackground)	{
-		int pcx_error;
+		int nPCXResult;
 
 		if (bNewMenuFirstTime) {
 			atexit (NewMenuClose);
@@ -420,8 +422,8 @@ else {
 			if (nm_background.bmTexBuf)
 				D2_FREE (nm_background.bmTexBuf);
 			}
-		pcx_error = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
-		Assert (pcx_error == PCX_ERROR_NONE);
+		nPCXResult = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
+		Assert (nPCXResult == PCX_ERROR_NONE);
 		nm_background = nm_background_save;
 		nm_background.bmTexBuf = NULL;		
 		NMRemapBackground ();
@@ -501,8 +503,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 	else if (bBlueBox) {
 		if (bg && (bg->menu_canvas || bg->bIgnoreCanv)) {
 			if (bg->menu_canvas)
-				WINDOS (DDGrSetCurrentCanvas (bg->menu_canvas), 
-						  GrSetCurrentCanvas (bg->menu_canvas));
+				GrSetCurrentCanvas (bg->menu_canvas);
 //			NMLoadBackground (filename, bg, bRedraw);
 			if (bVerInfo)
 				PrintVersionInfo ();
@@ -517,9 +518,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 				bg->background = GrCreateBitmap (w, h, 4);
 				Assert (bg->background != NULL);
 				}
-			WIN (DDGRLOCK (dd_grd_curcanv));
 			GrBmBitBlt (w, h, 0, 0, x, y, &grdCurCanv->cvBitmap, bg->background);
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			}
 		}
 	} 
@@ -532,12 +531,9 @@ if (!(gameOpts->menus.nStyle && bRedraw)) {
 			w = grdCurScreen->scWidth;
 			h = grdCurScreen->scHeight;
 			}
-		WINDOS (bg->menu_canvas = DDGrCreateSubCanvas (dd_grd_screencanv, x, y, w, h), 
-				  bg->menu_canvas = GrCreateSubCanvas (&grdCurScreen->scCanvas, x, y, w, h)
-			);
-		WINDOS (DDGrSetCurrentCanvas (bg->menu_canvas), 
-				  GrSetCurrentCanvas (bg->menu_canvas));
-			}
+		bg->menu_canvas = GrCreateSubCanvas (&grdCurScreen->scCanvas, x, y, w, h);
+		GrSetCurrentCanvas (bg->menu_canvas);
+		}
 	}
 if (bg && !(gameOpts->menus.nStyle || filename)) {
 	// Save the background under the menu...
@@ -550,16 +546,12 @@ if (bg && !(gameOpts->menus.nStyle || filename)) {
 		Assert (bg->saved != NULL);
 		}
 	bg->saved->bmPalette = defaultPalette;
-	if (!gameOpts->menus.nStyle) {
-		WIN (DDGRLOCK (dd_grd_curcanv));
+	if (!gameOpts->menus.nStyle)
 		GrBmBitBlt (w, h, 0, 0, 0, 0, &grdCurCanv->cvBitmap, bg->saved);
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
-		}
-	WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
+	GrSetCurrentCanvas (NULL);
 	NMDrawBackground (bg, x, y, x + w - 1, y + h - 1, bRedraw);
 	GrUpdate (0);
-	WINDOS (DDGrSetCurrentCanvas (bg->menu_canvas), 
-			  GrSetCurrentCanvas (bg->menu_canvas));
+	GrSetCurrentCanvas (bg->menu_canvas);
 	bg->background = GrCreateSubBitmap (&nm_background, 0, 0, w, h);
 	GrUpdate (0);
 	}
@@ -1401,7 +1393,7 @@ void NMSetItemPos (tMenuItem *item, int nItems, int twidth, int xOffs, int yOffs
 	int	i, j;
 
 for (i = 0; i < nItems; i++)	{
-	if ((item [i].x == (short) 0x8000) || item [i].centered) {
+	if (gameOpts->menus.nStyle && (item [i].x == (short) 0x8000) || item [i].centered) {
 		item [i].centered = 1;
 		item [i].x = GetCenteredX (item [i].text);
 		}

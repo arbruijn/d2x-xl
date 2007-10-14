@@ -136,6 +136,9 @@ if (!gameData.reactor.bDestroyed) {
 	cdtFrameTime = 0;
 	return;
 	}
+#ifdef _DEBUG
+return;
+#endif
 cdtFrameTime += gameData.time.xRealFrame;
 if (gameStates.limitFPS.bCountDown && !gameStates.app.tick40fps.bTick)
 	return;

@@ -132,11 +132,9 @@ if (sideP->nOvlTex) {
 	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
 	}
-else {
-	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index, -1);
-	if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
-		return 1;
-	}
+bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index, -1);
+if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
+	return 1;
 if (gameStates.app.bD2XLevel) {
 	short	c, nWallNum = WallNumP (segP, nSide);
 	if (IS_WALL (nWallNum)) {
@@ -193,7 +191,7 @@ if (nType == WALL_ILLUSION) {
 	if (flags & WALL_ILLUSION_OFF)
 		return WID_NO_WALL;
 	else {
-		if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency(segP, nSide))
+		if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency (segP, nSide))
 			return WID_TRANSILLUSORY_WALL;
 		else
 			return WID_ILLUSORY_WALL;
