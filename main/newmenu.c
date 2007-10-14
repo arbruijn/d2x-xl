@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # include <GL/glu.h>
 #endif
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -312,8 +313,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-
-#include <math.h>
 
 extern char szLastPaletteLoaded [];
 
@@ -1750,7 +1749,7 @@ while (!done) {
 			if (gameData.app.bGamePaused /*|| timer_paused*/) {
 				GameRenderFrame ();
 				gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-				Sleep (0);
+				G3_SLEEP (0);
 				}
 			else {
 				GameLoop (1, 0);
@@ -2066,7 +2065,6 @@ launchOption:
 			break;
 		}
 
-		WIN (Sleep (100));
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
 			mouse_get_pos (&mx, &my);
 			for (i=0; i<nItems; i++)	{
@@ -3021,7 +3019,6 @@ ReadFileNames:
 
 		if (first_item < 0) first_item = 0;
 
-		WIN (Sleep (100));
 		if (nMouseState || mouse2State) {
 			int w, h, aw;
 
@@ -3498,7 +3495,6 @@ WIN (int win_redraw=0);
 		if (first_item < 0) 
 			first_item = 0;
 
-		WIN (Sleep (100));
 		if (nMouseState) {
 			int w, h, aw;
 

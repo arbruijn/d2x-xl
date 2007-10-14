@@ -1905,7 +1905,7 @@ SDL_SemWait (ti [1].done);
 #else
 while (!(ti [0].bDone && ti [1].bDone))
 #	ifdef _WIN32
-	Sleep (0);
+	G3_SLEEP (0);
 #	else
 	usleep (1000);
 #	endif

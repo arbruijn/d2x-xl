@@ -2944,6 +2944,7 @@ typedef struct tTIRInfo {
 #ifndef WIN32
 #	define WINAPI
 #	define HINSTANCE	int
+#	define HWND void *
 #endif
 
 typedef int (WINAPI *tpfnTIRInit) (HWND);
@@ -2962,6 +2963,12 @@ extern tpfnTIRQuery	pfnTIRQuery;
 
 int TIRLoad (void);
 int TIRUnload (void);
+
+#ifdef _WIN32
+#	define	G3_SLEEP(_t)	Sleep (_t)
+#else
+#	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
+#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 

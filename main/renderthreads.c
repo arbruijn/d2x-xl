@@ -27,6 +27,8 @@ tRenderThreadInfo tiRender;
 
 int RunRenderThreads (int nTask)
 {
+	time_t	t;
+
 if (!gameStates.app.bMultiThreaded)
 	return 0;
 while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
@@ -34,8 +36,12 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 tiRender.nTask = nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
-while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+while (tiRender.ti [0].bExec || tiRender.ti [1].bExec) {
 	G3_SLEEP (0);
+	if (clock () - t > 500)
+		tiRender.ti [0].bExec =
+		tiRender.ti [1].bExec = 0;
+	}	
 return 1;
 }
 

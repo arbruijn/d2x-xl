@@ -139,7 +139,7 @@ ubyte *LoadD1Palette (void);
 void UseBitmapCache (grsBitmap *bmP, int nSize);
 
 extern int bUseHiresTextures, bD1Data;
-extern unsigned int bitmapCacheUsed;
-extern unsigned int bitmapCacheSize;
+extern size_t bitmapCacheUsed;
+extern size_t bitmapCacheSize;
 
 #endif //_PIGGY_H

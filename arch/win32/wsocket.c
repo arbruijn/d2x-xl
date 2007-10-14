@@ -651,8 +651,8 @@ return (WSAStartup (dwVersion, &wsData) != 0 ? WSAGetLastError () : 0);
 
 short TerminateWinsock ()
 {
-Sleep(50);
-Sleep(50);
+G3_SLEEP(50);
+G3_SLEEP(50);
 return (WSACleanup() == SOCKET_ERROR ? WSAGetLastError () : 0);
 }
 

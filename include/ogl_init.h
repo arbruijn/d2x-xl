@@ -34,12 +34,6 @@
 #define RENDER2TEXTURE			2	//0: glCopyTexSubImage, 1: pixel buffers, 2: frame buffers
 #define OGL_POINT_SPRITES		1
 
-#ifdef _WIN32
-#	define	G3_SLEEP(_t)	Sleep (_t)
-#else
-#	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
-#endif
-
 #define DEFAULT_FOV	90.0
 #define FISHEYE_FOV	135.0
 

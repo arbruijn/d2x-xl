@@ -224,7 +224,7 @@ if (ts.tv_nsec < 0) {
 	--ts.tv_sec;
 	}
 #ifdef _WIN32
-Sleep (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+G3_SLEEP (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
 #else
 if (nanosleep (&ts, NULL) == -1  &&  errno == EINTR)
 	exit (1);

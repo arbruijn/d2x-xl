@@ -93,7 +93,7 @@ void hmp_stop(hmp_file *hmp)
       while (hmp->bufs_in_mm)
          {
 			//PumpMessages();
-			Sleep(0);
+			G3_SLEEP(0);
          }
 	}
 	while ((mhdr = hmp->evbuf)) {

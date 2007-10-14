@@ -498,7 +498,7 @@ while (gameData.app.bGamePaused) {
 			GrPaletteStepLoad(NULL);
 			RemapFontsAndMenus (1);
 			ShowBoxedMessage(msg);
-			Sleep (0);
+			G3_SLEEP (0);
 			}
 		gameStates.menus.nInMenu--;
 		}

@@ -1218,7 +1218,7 @@ int _CDECL_ ClipDistThread (void *pThreadId)
 
 while (!gameStates.app.bExit) {
 	while (!gameData.threads.clipDist.info [nId].bExec)
-		Sleep (0);
+		G3_SLEEP (0);
 	gameData.threads.clipDist.data.fClipDist [nId] = 
 		G3ClipDistByFaceCenters (gameData.threads.clipDist.data.objP, 
 										 gameData.threads.clipDist.data.po, 
