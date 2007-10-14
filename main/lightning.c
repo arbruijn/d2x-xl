@@ -533,6 +533,7 @@ else {
 		j = gameData.lightnings.buffer [i].nNext;
 		DestroyLightnings (i, NULL, 1);
 		}
+	ResetLightningLights (1);
 	InitLightnings ();
 	}
 return 1;
@@ -1980,9 +1981,9 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
-void ResetLightningLights (void)
+void ResetLightningLights (int bForce)
 {
-if (SHOW_LIGHTNINGS) {
+if (SHOW_LIGHTNINGS || bForce) {
 		tLightningLight	*pll;
 		int					i, nLights = 0;
 
@@ -2007,7 +2008,7 @@ if (SHOW_LIGHTNINGS) {
 
 void SetLightningLights (void)
 {
-ResetLightningLights ();
+ResetLightningLights (0);
 if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
 		tLightningLight	*pll;

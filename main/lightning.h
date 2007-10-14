@@ -19,7 +19,7 @@ void AnimateLightning (tLightning *pl, int nStart, int nLightnings, int nDepth);
 void MoveObjectLightnings (tObject *objP);
 void DestroyObjectLightnings (tObject *objP);
 void SetLightningLights (void);
-void ResetLightningLights (void);
+void ResetLightningLights (int bForce);
 void DoLightningFrame (void);
 void CreateShakerLightnings (tObject *objP);
 void CreateShakerMegaLightnings (tObject *objP);

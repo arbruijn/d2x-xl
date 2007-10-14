@@ -36,6 +36,7 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 tiRender.nTask = nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
+t = clock ();
 while (tiRender.ti [0].bExec || tiRender.ti [1].bExec) {
 	G3_SLEEP (0);
 	if (clock () - t > 500)

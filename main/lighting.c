@@ -1272,7 +1272,7 @@ SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc
 if (nObject >= 0) {
 	pl->nType = 2;
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
-	pl->rad = f2fl (gameData.objs.objects [nObject].size);
+	pl->rad = f2fl (gameData.objs.objects [nObject].size) / 2;
 	gameData.render.lights.dynamic.owners [nObject] = gameData.render.lights.dynamic.nLights;
 	}
 else if (nSegment >= 0) {
@@ -1356,8 +1356,8 @@ if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
 			gameData.render.lights.dynamic.owners [pl->nObject] = nLight;
 #if USE_OGL_LIGHTS
 		RefreshDynLight (pl);
-#endif
 		pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nLights;
+#endif
 		}
 #if USE_OGL_LIGHTS
 	glDisable (pl->handle);
@@ -1376,8 +1376,11 @@ for (nLight = gameData.render.lights.dynamic.nLights, pl = gameData.render.light
 	--nLight;
 	--pl;
 	if ((pl->nSegment >= 0) && (pl->nSide < 0))
-		if (nLight < --gameData.render.lights.dynamic.nLights)
+		if (nLight < --gameData.render.lights.dynamic.nLights) {
 			*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
+			if (pl->nObject >= 0)
+				gameData.render.lights.dynamic.owners [pl->nObject] = nLight;
+			}
 	}
 }
 

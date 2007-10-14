@@ -650,9 +650,11 @@ void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 	tG3ModelVertex	*pmv;
 	tG3VertNorm		*pn;
 	tFaceColor		*pc;
-	float				fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+	float				fAlpha = GrAlpha ();
 	int				h, i;
 
+if (objP->nType == OBJ_ROBOT)
+	objP = objP;
 if (!gameStates.render.bBrightObject) {
 	VmsVecToFloat (&vPos, &objP->position.vPos);
 	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts; 
@@ -664,15 +666,17 @@ if (!gameStates.render.bBrightObject) {
 		}
 	}
 for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFaceVerts; i++, h++, pmv++) {
-	if (gameStates.render.bBrightObject)
+	if (gameStates.render.bBrightObject) {
 		pm->pVBColor [h] = pmv->baseColor;
+		pm->pVBColor [h].alpha = fAlpha;
+		}
 	else if (pmv->bTextured)
 		pm->pVBColor [h] = pm->pColor [pmv->nIndex].color;
 	else {
 		pc = pm->pColor + pmv->nIndex;
-		pm->pVBColor [h].red = pmv->baseColor.red *pc->color.red;
-		pm->pVBColor [h].green = pmv->baseColor.green *pc->color.green;
-		pm->pVBColor [h].blue = pmv->baseColor.blue *pc->color.blue;
+		pm->pVBColor [h].red = pmv->baseColor.red * pc->color.red;
+		pm->pVBColor [h].green = pmv->baseColor.green * pc->color.green;
+		pm->pVBColor [h].blue = pmv->baseColor.blue * pc->color.blue;
 		pm->pVBColor [h].alpha = pmv->baseColor.alpha;
 		}
 	}

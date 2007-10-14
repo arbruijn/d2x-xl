@@ -348,7 +348,7 @@ if (anim->flags & WCF_ALTFMT) {
 			}
 		}
 	}
-else if (anim->flags & WCF_TMAP1) {
+else if ((anim->flags & WCF_TMAP1) || !segP->sides [nSide].nOvlTex) {
 	segP->sides [nSide].nBaseTex = tmap;
 	if (connSegP)
 		connSegP->sides [cSide].nBaseTex = tmap;

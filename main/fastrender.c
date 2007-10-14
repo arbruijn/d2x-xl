@@ -375,7 +375,6 @@ void RenderSkyBoxFaces (void)
 {
 	tSegment		*segP;
 	grsFace		*faceP;
-	tFaceRef		*pfr;
 	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {

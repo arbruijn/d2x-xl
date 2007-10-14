@@ -1218,6 +1218,8 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 				}
 			faceP->nType = -1;
 #ifdef _DEBUG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				faceP = faceP;
 			faceP->nSegment = nSegment;
 #endif
 			faceP->nSide = (ubyte) nSide;
@@ -1904,11 +1906,7 @@ SDL_SemWait (ti [0].done);
 SDL_SemWait (ti [1].done);
 #else
 while (!(ti [0].bDone && ti [1].bDone))
-#	ifdef _WIN32
 	G3_SLEEP (0);
-#	else
-	usleep (1000);
-#	endif
 #endif
 for (i = 0; i < 2; i++) {
 	SDL_WaitThread (ti [i].pThread, NULL);
