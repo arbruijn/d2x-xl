@@ -450,6 +450,7 @@ if (gameOpts->render.nMathFormat == 2) {
 		"mulps	%%xmm0,%%xmm0\n\t"
 		"movups	%%xmm0,%0\n\t"
 		: "=m" (h)
+		: "m" (h)
 		: "%rsi"
 		);	
 #endif
