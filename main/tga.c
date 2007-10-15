@@ -114,7 +114,7 @@ else if (bReverse) {
 			avgColor.green += p->green * a;
 			avgColor.blue += p->blue * a;
 			}
-		if (nSuperTransp > w * w / 2000) {
+		if (nSuperTransp > 50) {
 			if (!n)
 				bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
 			bmP->bmProps.flags |= BM_FLAG_SEE_THRU;

@@ -1076,7 +1076,7 @@ int MultiMenuPoll (void)
 bWasFuelCenAlive = gameData.reactor.bDestroyed;
 // Special polling function for in-game menus for multiplayer and serial
 if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
-	return (0);
+	return 0;
 if (gameData.multigame.menu.bLeave)
 	return -1;
 xOldShields = LOCALPLAYER.shields;
@@ -1088,9 +1088,9 @@ if (!gameOpts->menus.nStyle) {
 	timer_delay (f0_1);   // delay 100 milliseconds
 	}
 if (gameStates.app.bEndLevelSequence || 
-		(gameData.reactor.bDestroyed && !bWasFuelCenAlive) || 
-		(gameStates.app.bPlayerIsDead != bPlayerWasDead) || 
-		(LOCALPLAYER.shields < xOldShields))	{
+	 (gameData.reactor.bDestroyed && !bWasFuelCenAlive) || 
+	 (gameStates.app.bPlayerIsDead != bPlayerWasDead) || 
+	 (LOCALPLAYER.shields < xOldShields)) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}

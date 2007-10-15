@@ -45,7 +45,7 @@ if (!OglCreateFBuffer (&pc->fb, pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, pc->
 	return 0;
 pc->glTexId = pc->fb.texId;
 #endif
-sprintf (pc->texBuf.szName, "%CAM#%04d", CAM_IDX (pc));
+sprintf (pc->texBuf.szName, "CAM#%04d", CAM_IDX (pc));
 return 1;
 }
 

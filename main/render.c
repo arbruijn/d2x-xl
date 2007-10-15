@@ -79,6 +79,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#define SW_CULLING			1
+
 #if LIGHTMAPS
 #	define LMAP_LIGHTADJUST	1
 #else
@@ -514,7 +516,7 @@ extern int containsFlare(tSegment *segP, int nSide);
 extern fix	Obj_light_xlate [16];
 
 // -----------------------------------------------------------------------------------
-//	Render a tSide.
+//	Render a side.
 //	Check for normal facing.  If so, render faces on tSide dictated by sideP->nType.
 
 #undef LMAP_LIGHTADJUST
@@ -568,6 +570,21 @@ switch (gameStates.render.nType) {
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}
+if (sideP->nType == SIDE_IS_QUAD)
+	props.vNormal = sideP->normals [0];
+else {
+	VmVecAdd (&props.vNormal, sideP->normals, sideP->normals + 1);
+	VmVecScale (&props.vNormal, F1_0 / 2);
+	}
+#if SW_CULLING
+	{
+		vmsVector	v;
+
+	VmVecSub (&v, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
+	if (VmVecDot (&props.vNormal, &v) < 0)
+		return;
+	}
+#endif
 #if LIGHTMAPS
 if (gameStates.render.bDoLightMaps) {
 		float	Xs = 8;
@@ -613,7 +630,6 @@ else
 
 if (sideP->nType == SIDE_IS_QUAD) {
 	props.nVertices = 4;
-	props.vNormal = sideP->normals [0];
 	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
 	GetSideVertIndex (props.vp, props.segNum, props.sideNum);
 	RenderFace (&props);
@@ -626,8 +642,6 @@ else {
 	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
 	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
 	props.nVertices = 4;
-	VmVecAdd (&props.vNormal, sideP->normals, sideP->normals + 1);
-	VmVecScale (&props.vNormal, F1_0 / 2);
 	if (sideP->nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
 		GetSideVertIndex (props.vp, props.segNum, props.sideNum);

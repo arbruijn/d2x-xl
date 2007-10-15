@@ -1643,6 +1643,9 @@ if (!setjmp (gameExitPoint)) {
 for (;;) {
 	int player_shields;
 		// GAME LOOP!
+#ifdef _DEBUG
+	if (gameStates.render.automap.bDisplay)
+#endif
 	gameStates.render.automap.bDisplay = 0;
 	gameStates.app.bConfigMenu = 0;
 	if (gameData.objs.console != &gameData.objs.objects[LOCALPLAYER.nObject]) {

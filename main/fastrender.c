@@ -115,10 +115,10 @@ void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, 
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
-#if 1
+if (!faceP->bVisible)
+	return;
 if (!(faceP->widFlags & WID_RENDER_FLAG))
 	return;
-#endif
 if ((faceP->nType < 0) && ((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
 	short	h = faceP->index [0];
@@ -314,8 +314,9 @@ gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
 OglTexWrap (NULL, GL_REPEAT);
 glDepthFunc (GL_LEQUAL);
-if (nType != 3)
-	OglSetupTransform (1);
+if (nType == 3)
+	return 0;
+OglSetupTransform (1);
 if (bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0)) {
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
@@ -343,7 +344,9 @@ return bVertexArrays;
 
 void EndRenderFaces (int nType, int bVertexArrays)
 {
-//G3FlushFaceBuffer (1);
+#if 0
+G3FlushFaceBuffer (1);
+#endif
 if (bVertexArrays) {
 	G3DisableClientStates (1, 1, GL_TEXTURE2);
 	glActiveTexture (GL_TEXTURE2);
@@ -502,7 +505,7 @@ if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
 	pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
 	nColor = 2;
 	}
-if (((nColor == 1) && (*pfAlpha < 1)) || (nColor == 2))
+if ((*pfAlpha < 1) || (nColor == 2))
 	faceP->bTransparent = 1;
 return nColor;
 }
@@ -550,6 +553,7 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;
+	vmsVector	vForward = gameData.objs.viewer->position.mOrient.fVec;
 	int			h, i, j, uvi, nColor, 
 					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
 
@@ -570,6 +574,8 @@ for (i = nStart; i < nEnd; i++) {
 		if (!gameStates.render.bFullBright)
 			SetNearestDynamicLights (nSegment, 0, nThread);
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
+				continue;
 			nSide = faceP->nSide;
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
@@ -588,16 +594,19 @@ for (i = nStart; i < nEnd; i++) {
 				else {
 					c = faceColor [nColor];
 					nVertex = faceP->index [h];
-					while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
-						G3_SLEEP (0);
-					gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
+					if (gameStates.app.bMultiThreaded) {
+						while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
+							G3_SLEEP (0);
+						gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
+						}
 					if (nColor)
 						gameData.render.color.vertices [nVertex].index = 0;
 					if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
 						G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
 											NULL, &c, 1, 0, nThread);
 						}
-					gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
+					if (gameStates.app.bMultiThreaded)
+						gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
 					if (nColor)
 						gameData.render.color.vertices [nVertex].index = 0;
 #ifdef _DEBUG
@@ -618,6 +627,8 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	else {
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
+				continue;
 			nSide = faceP->nSide;
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))

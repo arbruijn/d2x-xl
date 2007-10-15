@@ -1227,6 +1227,8 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 			faceP->nBaseTex = sideP->nBaseTex;
 			if (faceP->nOvlTex = sideP->nOvlTex)
 				nOvlTexCount++;
+			VmVecAdd (&faceP->vNormal, sideP->normals, sideP->normals + 1);
+			VmVecScale (&faceP->vNormal, F1_0 / 2);
 			faceP->bSlide = (gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_v);
 			faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));
 			faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;

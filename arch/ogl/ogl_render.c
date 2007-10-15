@@ -1234,7 +1234,8 @@ for (i = j = 0; i < h; i++) {
 		else 
 #endif
 			{
-			fLightDist -= psl->rad;	//make light brighter close to light source
+			if (gameStates.render.nState || (psl->nType < 2))
+				fLightDist -= psl->rad;	//make light brighter close to light source
 			if (fLightDist < 1.0f) {
 				bInRad = 1;
 				fLightDist = 1.4142f;
@@ -1780,7 +1781,7 @@ bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend,
 	tTexCoord2f	*ovlTexCoordP;
 
 bTransparent = (faceP->bTransparent || 
-					 (bmBot && ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) == (BM_FLAG_TRANSPARENT))));
+					 (bmBot && ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA))));
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -1804,7 +1805,7 @@ else {
 		}
 	}
 #if G3_BUFFER_FACES
-G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
+	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
 if (bTextured) {
 	bmBot = BmOverride (bmBot, -1);
@@ -1825,35 +1826,28 @@ if (bTextured) {
 		if (bOverlay > 0) {	
 			bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 			nShader = bColorKey ? bmMask ? 2 : 1 : 0;
-			if (bUpdateShader = (nShader != gameStates.render.history.nShader)) {
-				glUseProgramObject (0);
+			if (bUpdateShader = (nShader != gameStates.render.history.nShader))
 				glUseProgramObject (tmProg = tmShaderProgs [nShader]);
-				}
 			// set base texture
 			if (bmBot != gameStates.render.history.bmBot) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, bVertexArrays);
 				gameStates.render.history.bmBot = bmBot;
-				glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 				}
-			else if (bUpdateShader) {
-				glActiveTexture (GL_TEXTURE0);
-				glClientActiveTexture (GL_TEXTURE0);
-				glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
-				}
+			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 			// set overlay texture
 			if (bmTop != gameStates.render.history.bmTop) {
 				INIT_TMU (InitTMU1, GL_TEXTURE1, bmTop, bVertexArrays);
 				gameStates.render.history.bmTop = bmTop;
-				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
 				if (bVertexArrays && (gameStates.render.history.bOverlay != 1)) {	//enable multitexturing
-					glClientActiveTexture (GL_TEXTURE1);
-					glEnableClientState (GL_TEXTURE_COORD_ARRAY);
+					if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE1))
+						return 1;
 					}
 				}
-			else if (bUpdateShader)
-				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+			glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
 			if (bmMask) {
 				INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, bVertexArrays);
+				if (bVertexArrays && !G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
+					return 1;
 				glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 				}
 			glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
@@ -2703,16 +2697,16 @@ inline void BmSetTexCoord (GLfloat u, GLfloat v, GLfloat a, int orient)
 {
 switch (orient) {
 	case 1:
-		glMultiTexCoord2d (GL_TEXTURE0, (1.0f - v) * a, u);
+		glMultiTexCoord2f (GL_TEXTURE0, (1.0f - v) * a, u);
 		break;
 	case 2:
-		glMultiTexCoord2d (GL_TEXTURE0, 1.0f - u, 1.0 - v);
+		glMultiTexCoord2f (GL_TEXTURE0, 1.0f - u, 1.0f - v);
 		break;
 	case 3:
-		glMultiTexCoord2d (GL_TEXTURE0, v * a, (1.0f - u));
+		glMultiTexCoord2f (GL_TEXTURE0, v * a, (1.0f - u));
 		break;
 	default:
-		glMultiTexCoord2d (GL_TEXTURE0, u, v);
+		glMultiTexCoord2f (GL_TEXTURE0, u, v);
 		break;
 	}
 }

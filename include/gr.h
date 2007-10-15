@@ -18,6 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "fix.h"
 #include "palette.h"
+#include "vecmat.h"
 
 #ifdef MACDATA
 #	define SWAP_0_255              // swap black and white
@@ -678,6 +679,7 @@ typedef union tTexCoord3f {
 	} tTexCoord3f;
 
 typedef struct grsFace {
+	vmsVector			vNormal;
 	ushort				index [4];
 	int					nIndex;
 	grsBitmap			*bmBot;
@@ -690,7 +692,8 @@ typedef struct grsFace {
 	short					nSegment;
 #endif
 	ubyte					nSide;
-	ubyte					nOvlOrient;
+	ubyte					nOvlOrient :2;
+	ubyte					bVisible :1;
 	ubyte					bTextured :1;
 	ubyte					bOverlay :1;
 	ubyte					bSplit :1;

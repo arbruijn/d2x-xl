@@ -1071,9 +1071,10 @@ if (bRadar) {
 	gameStates.render.automap.bDisplay = 0;
 	return;
 	}
+Controls [0].automapState = 0;
 GetSlowTicks ();
 while (!bDone)	{
-	if (!nLeaveMode && Controls [0].automapState && (TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME)
+	if (!nLeaveMode && Controls [0].automapState && ((TimerGetFixedSeconds ()- xEntryTime) > LEAVE_TIME))
 		nLeaveMode = 1;
 	if (!Controls [0].automapState && (nLeaveMode == 1))
 		bDone = 1;

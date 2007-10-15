@@ -829,9 +829,10 @@ int OglFillTexBuf (
 {
 //	GLushort *texP= (GLushort *)texBuf;
 	ubyte		*data = bmP->bmTexBuf;
+	GLubyte	*bufP;
 	int		x, y, c, i, j;
 	ushort	r, g, b, a;
-	int		bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int		bTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
 gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bmPalette : bmP->bmPalette);
 if (!gameData.render.ogl.palette)
@@ -840,8 +841,8 @@ if (!gameData.render.ogl.palette)
 	return nFormat;
 if (tWidth * tHeight * 4 > sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
 	Error ("texture too big %i %i",tWidth, tHeight);
-
-if (!((nTransp || bSuperTransp) && GrBitmapHasTransparency (bmP)))
+bTransp = (nTransp || bSuperTransp) && GrBitmapHasTransparency (bmP);
+if (!bTransp)
 	nFormat = GL_RGB;
 #ifdef _DEBUG
 if (!nTransp)
@@ -850,6 +851,7 @@ if (!nTransp)
 restart:
 
 i = 0;
+bufP = texBuf;
 for (y = 0; y < tHeight; y++) {
 	i = dxo + truewidth *(y + dyo);
 	for (x = 0; x < tWidth; x++){
@@ -861,12 +863,12 @@ for (y = 0; y < tHeight; y++) {
 			bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
 			switch (nFormat) {
 				case GL_LUMINANCE:
-					(*(texBuf++)) = 0;
+					(*(bufP++)) = 0;
 					break;
 
 				case GL_LUMINANCE_ALPHA:
-					*((GLushort *) texBuf) = 0;
-					texBuf += 2; 
+					*((GLushort *) bufP) = 0;
+					bufP += 2; 
 					break;
 
 				case GL_RGB:
@@ -876,13 +878,13 @@ for (y = 0; y < tHeight; y++) {
 					break;
 
 				case GL_RGBA:
-					*((GLuint *) texBuf) = nTransp ? 0 : 0xffffffff;
-					texBuf += 4;
+					*((GLuint *) bufP) = nTransp ? 0 : 0xffffffff;
+					bufP += 4;
 					break;
 					
 				case GL_RGBA4:
-					*((GLushort *) texBuf) = nTransp ? 0 : 0xffff;
-					texBuf += 2;
+					*((GLushort *) bufP) = nTransp ? 0 : 0xffff;
+					bufP += 2;
 					break;
 				}
 //				 (*(texP++)) = 0;
@@ -890,12 +892,12 @@ for (y = 0; y < tHeight; y++) {
 		else {
 			switch (nFormat) {
 				case GL_LUMINANCE://these could prolly be done to make the intensity based upon the intensity of the resulting color, but its not needed for anything (yet?) so no point. :)
-						(*(texBuf++)) = 255;
+						(*(bufP++)) = 255;
 					break;
 
 				case GL_LUMINANCE_ALPHA:
-						(*(texBuf++)) = 255;
-						(*(texBuf++)) = 255;
+						(*(bufP++)) = 255;
+						(*(bufP++)) = 255;
 					break;
 
 				case GL_RGB:
@@ -910,16 +912,16 @@ for (y = 0; y < tHeight; y++) {
 						g = gameData.render.ogl.palette [j + 1] * 4;
 						b = gameData.render.ogl.palette [j + 2] * 4;
 						if (nFormat == GL_RGB) {
-							(*(texBuf++)) = (GLubyte) r;
-							(*(texBuf++)) = (GLubyte) g;
-							(*(texBuf++)) = (GLubyte) b;
+							(*(bufP++)) = (GLubyte) r;
+							(*(bufP++)) = (GLubyte) g;
+							(*(bufP++)) = (GLubyte) b;
 							}
 						else {
 							r >>= 3;
 							g >>= 2;
 							b >>= 3;
-							*((GLushort *) texBuf) = r + (g << 5) + (b << 11);
-							texBuf += 2;
+							*((GLushort *) bufP) = r + (g << 5) + (b << 11);
+							bufP += 2;
 							}
 						}
 					break;
@@ -962,14 +964,14 @@ for (y = 0; y < tHeight; y++) {
 							a = 255;	//not transparent
 						}
 					if (nFormat == GL_RGBA) {
-						(*(texBuf++)) = (GLubyte) r;
-						(*(texBuf++)) = (GLubyte) g;
-						(*(texBuf++)) = (GLubyte) b;
-						(*(texBuf++)) = (GLubyte) a;
+						(*(bufP++)) = (GLubyte) r;
+						(*(bufP++)) = (GLubyte) g;
+						(*(bufP++)) = (GLubyte) b;
+						(*(bufP++)) = (GLubyte) a;
 						}
 					else {
-						*((GLushort *) texBuf) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
-						texBuf += 2;
+						*((GLushort *) bufP) = (r >> 4) + ((g >> 4) << 4) + ((b >> 4) << 8) + ((a >> 4) << 12);
+						bufP += 2;
 						}
 					break;
 					}

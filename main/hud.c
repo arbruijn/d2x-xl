@@ -74,9 +74,6 @@ WINDOS (
 	DDGrSetCurrentCanvas (GetCurrentGameScreen ()),
 	GrSetCurrentCanvas (GetCurrentGameScreen ())
 	);
-PA_DFX (pa_set_frontbuffer_current ());
-PA_DFX (copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1));
-PA_DFX (pa_set_backbuffer_current ());
 copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1);
 WINDOS (
 	DDGrSetCurrentCanvas (canv_save),

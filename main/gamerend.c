@@ -921,7 +921,13 @@ if (!bGameCockpitCopyCode)	{
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{	
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
-		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, gameStates.render.vr.buffers.subRender [0].cv_h, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 0, 0, &gameStates.render.vr.buffers.subRender [0].cvBitmap, &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap, 1);
+		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, 
+						 gameStates.render.vr.buffers.subRender [0].cv_h, 
+						 gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.x, 
+						 gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y, 
+						 0, 0, 
+						 &gameStates.render.vr.buffers.subRender [0].cvBitmap, 
+						 &gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage].cvBitmap, 1);
 		gr_wait_for_retrace = 0;
 		GrShowCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 		gr_wait_for_retrace = 1;
@@ -1198,15 +1204,15 @@ void DrawCockpit (int h, int y)
 {
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [h].index;
-	grsBitmap *bm = gameData.pig.tex.bitmaps [0] + i; 
+	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + i; 
 	grsColor c;
 
 	PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [h], 0);
-	OglLoadBmTexture (bm, 1, 3, 1);
+	OglLoadBmTexture (bmP, 0, 3, 1);
    GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	c.index = 255;
 	c.rgb = 0;
-	OglUBitMapMC (0, y, -1, grdCurCanv->cvBitmap.bmProps.h - y, bm, &c, F1_0, 0);
+	OglUBitMapMC (0, y, -1, grdCurCanv->cvBitmap.bmProps.h - y, bmP, &c, F1_0, 0);
 	}
 }
 

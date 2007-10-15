@@ -1734,7 +1734,7 @@ char *defaultGameTexts [][2] = {
 	{"~Blitze zeichnen", "render ~Lightnings"},
 	{"sehr niedrig", "very low"},
 	{"Koronas ~Additiv einblenden", "~Additive corona blending"},
-	{"~Objekt-Koronas additiv einblenden", "dditive ~Object corona blending"},
+	{"~Objekt-Koronas additiv einblenden", "additive ~Object corona blending"},
 	{"po~Werupschatten", "po~Werup shadows"},
 	{"Rauch in Cockpit-~Fenstern zeigen", "show smoke in cockpit ~Windows"},
 	{"Blitze in Cockpit-~Fenstern zeigen", "show lightnings in cockpit ~Windows"},

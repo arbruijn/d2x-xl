@@ -117,7 +117,7 @@ if (gameStates.ogl.bUseTransform) {
 		VmVecSub (&h, &viewInfo.pos, vPos);
 		VmsMove (&h);
 		if (gameData.models.nScale) {
-			float fScale = -f2fl (gameData.models.nScale);
+			float fScale = f2fl (gameData.models.nScale);
 			glScalef (fScale, fScale, fScale);
 			}
 		}
