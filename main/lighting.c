@@ -1507,11 +1507,9 @@ gameData.render.lights.dynamic.owners = pOwners;
 gameData.render.lights.dynamic.nLights = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
+	if (gameData.segs.segment2s [i].special == SEGMENT_IS_SKYBOX)
+		continue;
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
-#ifdef _DEBUG
-		if (i == 218 && j == 2)
-			i = i;
-#endif
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->nWall))
 			continue;
 		t = sideP->nBaseTex;
@@ -1918,9 +1916,7 @@ void ComputeStaticDynLighting (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
-if (gameOpts->render.bDynLighting || 
-	 !gameStates.app.bD2XLevel || 
-	 (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
+if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
 		int				i, j, nVertex,
 							bColorize = !gameOpts->render.bDynLighting;
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
