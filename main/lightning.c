@@ -734,9 +734,11 @@ void ComputeNodeOffsets (tLightning *pl)
 	tLightningNode	*pln;
 	int			i, nSteps = pl->nSteps;
 
-for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++) {
-	VmVecSub (&pln->vOffs, &pln->vNewPos, &pln->vPos);
-	VmVecScale (&pln->vOffs, F1_0 / nSteps);
+if (pl->nNodes > 0) {
+	for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++) {
+		VmVecSub (&pln->vOffs, &pln->vNewPos, &pln->vPos);
+		VmVecScale (&pln->vOffs, F1_0 / nSteps);
+		}
 	}
 }
 
@@ -761,9 +763,11 @@ for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++) {
 		}
 	}
 if (h = nAmplitude - nMaxDist) {
-	nMaxDist += (d_rand () % 5) * h / 4;
-	for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++)
-		VmVecScaleFrac (&pln->vOffs, nAmplitude, nMaxDist);
+	if (pl->nNodes > 0) {
+		nMaxDist += (d_rand () % 5) * h / 4;
+		for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i; i--, pln++)
+			VmVecScaleFrac (&pln->vOffs, nAmplitude, nMaxDist);
+		}
 	}
 }
 

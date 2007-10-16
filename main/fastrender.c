@@ -370,6 +370,7 @@ if (gameStates.render.history.bOverlay > 0)
 	glUseProgramObject (0);
 if (nType != 3)
 	OglResetTransform (1);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //------------------------------------------------------------------------------

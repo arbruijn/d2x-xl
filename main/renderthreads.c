@@ -17,6 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #include "inferno.h"
+#include "error.h"
 #include "lighting.h"
 #include "render.h"
 #include "fastrender.h"
@@ -45,9 +46,11 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec && (clock () - t1 < 1000))
 	if (tiRender.ti [0].bExec != tiRender.ti [1].bExec) {
 		if (!t2)
 			t2 = clock ();
-		else if (clock () - t2 > 10)	//slower thread must not take more than 10 ms longer than faster one
+		else if (clock () - t2 > 10) {	//slower thread must not take more than 10 ms longer than faster one
+			LogErr ("threads locked up\n");
 			tiRender.ti [0].bExec =
 			tiRender.ti [1].bExec = 0;
+			}
 		}
 	}	
 return 1;

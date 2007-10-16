@@ -788,6 +788,7 @@ RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
 G3DisableClientStates (1, 1, GL_TEXTURE0);
 OGL_BINDTEX (0);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
 glEnable (GL_CULL_FACE);
