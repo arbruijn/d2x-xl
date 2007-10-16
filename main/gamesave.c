@@ -782,12 +782,12 @@ else
 // returns 0=everything ok, 1=old version, -1=error
 int LoadMineDataCompiled(CFILE *LoadFile, int bFileInfo)
 {
-	int i,j;
-	int start_offset;
+	int 	i, j;
+	int 	nStartOffset;
 	int	l;
-	short	seg_num, side_num, nWall;
+	short	nSegment, nSide, nWall;
 
-start_offset = CFTell(LoadFile);
+nStartOffset = CFTell(LoadFile);
 
 //===================== READ FILE INFO ========================
 
@@ -830,7 +830,7 @@ gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
 
 // Read in gameTopFileInfo to get size of saved fileinfo.
 
-if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
+if (CFSeek(LoadFile, nStartOffset, SEEK_SET)) 
 	return -1; 
 
 //	if (CFRead(&gameTopFileInfo, sizeof(gameTopFileInfo), 1, LoadFile) != 1)
@@ -850,7 +850,7 @@ if (gameTopFileInfo.fileinfo_version < GAME_COMPATIBLE_VERSION)
 	return -1;
 
 // Now, Read in the fileinfo
-if (CFSeek(LoadFile, start_offset, SEEK_SET)) 
+if (CFSeek(LoadFile, nStartOffset, SEEK_SET)) 
 	Error("Error seeking to gameFileInfo in gamesave.c");
 
 //	if (CFRead(&gameFileInfo, gameTopFileInfo.fileinfo_sizeof, 1, LoadFile)!=1)
@@ -1126,8 +1126,18 @@ if (gameFileInfo.triggers.offset > -1) {
 				gameData.trigs.objTriggerRefs [i].nObject = CFReadShort (LoadFile);
 				}
 			}
-		for (i = 0; i < MAX_OBJECTS_D2X; i++)
-			gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
+		if (gameTopFileInfo.fileinfo_version < 36) {
+			for (i = 0; i < MAX_OBJECTS_D2X; i++)
+				gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
+			}
+		else {
+			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
+			for (i = CFReadShort (LoadFile); i; i--) {
+				gameData.trigs.firstObjTrigger [CFReadShort (LoadFile)] = CFReadShort (LoadFile);
+				j = CFReadShort (LoadFile);
+				gameData.trigs.firstObjTrigger [j] = CFReadShort (LoadFile);
+				}
+			}
 		}
 	else {
 		gameData.trigs.nObjTriggers = 0;
@@ -1359,9 +1369,9 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 for (t = 0; t < gameData.trigs.nTriggers; t++) {
 	for (l = 0; l<gameData.trigs.triggers [t].nLinks; l++) {
 
-		seg_num = gameData.trigs.triggers [t].nSegment [l];
-		side_num = gameData.trigs.triggers [t].nSide [l];
-		nWall = WallNumI (seg_num, side_num);
+		nSegment = gameData.trigs.triggers [t].nSegment [l];
+		nSide = gameData.trigs.triggers [t].nSide [l];
+		nWall = WallNumI (nSegment, nSide);
 
 		// -- if (gameData.walls.walls [nWall].controllingTrigger != -1)
 		// -- 	Int3();
@@ -1370,7 +1380,7 @@ for (t = 0; t < gameData.trigs.nTriggers; t++) {
 		//and if it requires a botGen that it has one
 
 		if (gameData.trigs.triggers [t].nType == TT_MATCEN) {
-			if (gameData.segs.segment2s [seg_num].special != SEGMENT_IS_ROBOTMAKER)
+			if (gameData.segs.segment2s [nSegment].special != SEGMENT_IS_ROBOTMAKER)
 				Int3();		//botGen tTrigger doesn't point to botGen
 		}
 		else if (gameData.trigs.triggers [t].nType != TT_LIGHT_OFF && gameData.trigs.triggers [t].nType != TT_LIGHT_ON) {	//light triggers don't require walls
