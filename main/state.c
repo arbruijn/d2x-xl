@@ -1087,7 +1087,9 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 void StateSaveUniGameData (CFILE *fp, int bBetweenLevels)
 {
-	int	i, j;
+	int		i, j;
+	short		nObjsWithTrigger, nObject, nFirstTrigger;
+
 // Save the Between levels flag...
 CFWriteInt (bBetweenLevels, fp);
 // Save the mission info...
@@ -1190,8 +1192,6 @@ if (!bBetweenLevels)	{
 		StateSaveTrigger (gameData.trigs.objTriggers + i, fp);
 	for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 		StateSaveObjTriggerRef (gameData.trigs.objTriggerRefs + i, fp);
-	for (i = 0; i < 700; i++)
-		CFWriteShort (gameData.trigs.firstObjTrigger [i], fp);
 	for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
