@@ -1133,7 +1133,6 @@ if (gameFileInfo.triggers.offset > -1) {
 		else {
 			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
 			for (i = CFReadShort (LoadFile); i; i--) {
-				gameData.trigs.firstObjTrigger [CFReadShort (LoadFile)] = CFReadShort (LoadFile);
 				j = CFReadShort (LoadFile);
 				gameData.trigs.firstObjTrigger [j] = CFReadShort (LoadFile);
 				}

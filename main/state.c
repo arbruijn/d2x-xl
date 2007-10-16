@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx.h"
 #include "gr.h"
 
-#define STATE_VERSION				35
+#define STATE_VERSION				36
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -527,6 +527,8 @@ void StateSaveBinGameData (CFILE *fp, int bBetweenLevels)
 {
 	int		i, j;
 	ushort	nWall, nTexture;
+	short		nObjsWithTrigger, nObject, nFirstTrigger;
+
 // Save the Between levels flag...
 CFWrite (&bBetweenLevels, sizeof (int), 1, fp);
 // Save the mission info...
@@ -606,7 +608,19 @@ if (!bBetweenLevels)	{
 	CFWrite (&gameData.trigs.nObjTriggers, sizeof (int), 1, fp);
 	CFWrite (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, fp);
 	CFWrite (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, fp);
-	CFWrite (gameData.trigs.firstObjTrigger, sizeof (short), MAX_OBJECTS_D2X, fp);
+	for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
+		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
+			nObjsWithTrigger++;
+		}
+	CFWrite (&nObjsWithTrigger, sizeof (nObjsWithTrigger), 1, fp);
+	for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
+		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
+			CFWrite (&nObject, sizeof (nObject), 1, fp);
+			CFWrite (&nFirstTrigger, sizeof (nFirstTrigger), 1, fp);
+			}
+		}
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 		for (j = 0; j < 6; j++)	{
@@ -2197,11 +2211,20 @@ if (!bBetweenLevels)	{
 			StateRestoreTrigger (gameData.trigs.objTriggers + i, fp);
 		for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 			StateRestoreObjTriggerRef (gameData.trigs.objTriggerRefs + i, fp);
-		j = (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X;
-		for (i = 0; i < j; i++)
-			gameData.trigs.firstObjTrigger [i] = CFReadShort (fp);
+		if (sgVersion < 36) {
+			j = (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X;
+			for (i = 0; i < j; i++)
+				gameData.trigs.firstObjTrigger [i] = CFReadShort (fp);
+			}
+		else {
+			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
+			for (i = CFReadShort (fp); i; i--) {
+				j = CFReadShort (fp);
+				gameData.trigs.firstObjTrigger [j] = CFReadShort (fp);
+				}
+			}
 		}
-	else
+	else if (sgVersion < 36)
 		CFSeek (fp, ((sgVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
 	//fpos = CFTell (fp);
 	//Restore tmap info
@@ -2450,7 +2473,7 @@ if (!bBetweenLevels)	{
 		if (gameData.trigs.nObjTriggers > 0) {
 			CFRead (gameData.trigs.objTriggers, sizeof (tTrigger), gameData.trigs.nObjTriggers, fp);
 			CFRead (gameData.trigs.objTriggerRefs, sizeof (tObjTriggerRef), gameData.trigs.nObjTriggers, fp);
-			CFRead (gameData.trigs.firstObjTrigger, sizeof (short), (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X, fp);
+			CFRead (gameData.trigs.firstObjTrigger, sizeof (short), 700, fp);
 			}
 		else
 			CFSeek (fp, (sgVersion < 35) ? 700 : MAX_OBJECTS_D2X * sizeof (short), SEEK_CUR);
