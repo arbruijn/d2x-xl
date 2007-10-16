@@ -1966,7 +1966,7 @@ int SetLightningLight (tLightning *pl, int i)
 SetLightningSegLight (pl->nSegment, &pl->vPos, &pl->color);
 for (nLights = 1; i; i--, pl++) {
 	if (0 < (j = pl->nNodes)) {
-		if (!(nStep = (double) (j - 1) / (double) ((int) ((double) pl->nLength / F1_0 / 10 + 0.5))))
+		if (!(nStep = (double) (j - 1) / (double) ((int) ((double) pl->nLength / F1_0 / 20 + 0.5))))
 			nStep = (double) ((int) (j + 0.5));
 		nSegment = pl->nSegment;
 		pln = pl->pNodes;
