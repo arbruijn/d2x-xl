@@ -912,7 +912,7 @@ else {
 GrGetStringSize (s, &w, &h, &aw);
 if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1)))
 	return NULL;
-l = strlen (s) + 1;
+l = (int) strlen (s) + 1;
 if (ps->pszText && (ps->nLength < l)) {
 	D2_FREE (ps->pszText);
 	ps->nLength = ((l + 9) / 10) * 10;

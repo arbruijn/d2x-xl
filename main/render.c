@@ -79,7 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define SW_CULLING			1
+#define SW_CULLING			0
 
 #if LIGHTMAPS
 #	define LMAP_LIGHTADJUST	1
@@ -526,6 +526,9 @@ void RenderSide (tSegment *segP, short nSide)
 {
 	tSide			*sideP = segP->sides + nSide;
 	tFaceProps	props;
+#if SW_CULLING
+	vmsVector	v;
+#endif
 
 #if LIGHTMAPS
 #define	LMAP_SIZE	(1.0 / 16.0)
@@ -570,21 +573,6 @@ switch (gameStates.render.nType) {
 			RenderCorona (props.segNum, props.sideNum);
 		return;
 	}
-if (sideP->nType == SIDE_IS_QUAD)
-	props.vNormal = sideP->normals [0];
-else {
-	VmVecAdd (&props.vNormal, sideP->normals, sideP->normals + 1);
-	VmVecScale (&props.vNormal, F1_0 / 2);
-	}
-#if SW_CULLING
-	{
-		vmsVector	v;
-
-	VmVecSub (&v, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
-	if (VmVecDot (&props.vNormal, &v) < 0)
-		return;
-	}
-#endif
 #if LIGHTMAPS
 if (gameStates.render.bDoLightMaps) {
 		float	Xs = 8;
@@ -629,6 +617,12 @@ else
 #endif
 
 if (sideP->nType == SIDE_IS_QUAD) {
+#if SW_CULLING
+	VmVecSub (&v, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
+	if (VmVecDot (sideP->normals, &v) < 0)
+		return;
+#endif
+	props.vNormal = sideP->normals [0];
 	props.nVertices = 4;
 	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
 	GetSideVertIndex (props.vp, props.segNum, props.sideNum);
@@ -641,6 +635,12 @@ else {
 	// new code: No software visibility culling anymore
 	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
 	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
+#if SW_CULLING
+	if ((VmVecDot (sideP->normals, &v) < 0) && (VmVecDot (sideP->normals + 1, &v) < 0))
+		return;
+#endif
+	VmVecAdd (&props.vNormal, sideP->normals, sideP->normals + 1);
+	VmVecScale (&props.vNormal, F1_0 / 2);
 	props.nVertices = 4;
 	if (sideP->nType == SIDE_IS_TRI_02) {
 		memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
