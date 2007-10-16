@@ -136,7 +136,7 @@ else if (objP->nType == OBJ_WEAPON) {
 	}
 #if 1
 if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
-	glDepthMask (0);	//don't set z-buffer for transparent objects
+	glDepthMask (1);	//don't set z-buffer for transparent objects
 #endif
 if (vcP->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], bLit, iFrame);
@@ -193,9 +193,7 @@ color.red =
 color.green =
 color.blue = 
 color.alpha = fAlpha;
-glBlendFunc (GL_ONE, GL_ONE);
 G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 0);
-glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;

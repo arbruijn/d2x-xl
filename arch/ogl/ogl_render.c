@@ -2589,10 +2589,12 @@ else {
 		bmP = BmOverride (bmP, -1);
 		OglTexWrap (bmP->glTexture, GL_CLAMP);
 		glEnable (GL_BLEND);
-		if (bAdditive)
+		if (bAdditive == 2)
+			glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		else if (bAdditive == 1)
 			glBlendFunc (GL_ONE, GL_ONE);
 		else
-			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (colorP)
 			glColor4f (colorP->red, colorP->green, colorP->blue, colorP->alpha);
 		else

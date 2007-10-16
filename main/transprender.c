@@ -585,7 +585,9 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0)) {
 		glColor4fv ((GLfloat *) &item->color);
 	else
 		glColor3d (1, 1, 1);
-	if (item->bAdditive)
+	if (item->bAdditive == 2)
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	else if (item->bAdditive == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

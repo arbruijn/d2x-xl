@@ -95,14 +95,6 @@ g3sPoint *pointList [MAX_POINTS_PER_POLY];
 
 //------------------------------------------------------------------------------
 
-inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
-{
-while (n--)
-	G3TransformPoint (dest++, src++, 0);
-}
-
-//------------------------------------------------------------------------------
-
 inline int G3CheckPointFacing (tOOF_vector *pv, tOOF_vector *pNorm, tOOF_vector *pDir)
 {
 	tOOF_vector	h;

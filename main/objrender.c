@@ -586,12 +586,13 @@ else {
 		}
 		bBlendPolys = bEnergyWeapon && (gameData.weapons.info [objP->id].nInnerModel > -1);
 		bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
+		if (bEnergyWeapon) {
+			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
+			if (!gameOpts->legacy.bRender)
+				OglBlendFunc (GL_ONE, GL_ONE);
+			}
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
-			if (!gameOpts->legacy.bRender) {
-				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
-				OglBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-				}
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
 				DrawPolygonModel (
 					objP, &objP->position.vPos, &objP->position.mOrient, 
