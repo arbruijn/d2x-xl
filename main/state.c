@@ -1192,6 +1192,19 @@ if (!bBetweenLevels)	{
 		StateSaveObjTriggerRef (gameData.trigs.objTriggerRefs + i, fp);
 	for (i = 0; i < 700; i++)
 		CFWriteShort (gameData.trigs.firstObjTrigger [i], fp);
+	for (nObject = 0, nObjsWithTrigger = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
+		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers))
+			nObjsWithTrigger++;
+		}
+	CFWriteShort (nObjsWithTrigger, fp);
+	for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
+		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
+		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
+			CFWriteShort (nObject, fp);
+			CFWriteShort (&nFirstTrigger, fp);
+			}
+		}
 	//fpos = CFTell (fp);
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
