@@ -1127,7 +1127,7 @@ if (gameFileInfo.triggers.offset > -1) {
 				}
 			}
 		if (gameTopFileInfo.fileinfo_version < 36) {
-			for (i = 0; i < MAX_OBJECTS_D2X; i++)
+			for (i = 0; i < 700; i++)
 				gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
 			}
 		else {
