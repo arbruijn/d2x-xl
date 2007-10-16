@@ -168,14 +168,6 @@ tTransform += clock () - t;
 
 //------------------------------------------------------------------------------
 
-inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
-{
-while (n--)
-	G3TransformPoint (dest++, src++, 0);
-}
-
-//------------------------------------------------------------------------------
-
 #if 1 //defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 
 inline void ShortSwap (short *s)

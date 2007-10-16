@@ -79,6 +79,7 @@ void SetDynLightMaterial (short nSegment, short nSide, short nObject);
 void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable, int nThread);
 void SetNearestStaticLights (int nSegment, ubyte nType, int nThread);
 short SetNearestDynamicLights (int nSegment, int bVariable, int nThread);
+void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (void);
 void InitLightingShaders (void);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);

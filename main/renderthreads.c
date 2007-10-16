@@ -17,6 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #include "inferno.h"
+#include "lighting.h"
 #include "render.h"
 #include "fastrender.h"
 #include "renderthreads.h"
@@ -96,6 +97,12 @@ do {
 			RenderLightningsBuffered (tiRender.pl, tiRender.nLightnings / 2, tiRender.nLightnings, 0, nId);
 		else
 			RenderLightningsBuffered (tiRender.pl, 0, tiRender.nLightnings / 2, 0, nId);
+		}
+	else if (tiRender.nTask == rtStaticVertLight) {
+		if (nId)
+			ComputeStaticVertexLights (gameData.segs.nVertices / 2, gameData.segs.nVertices, nId);
+		else
+			ComputeStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
 		}
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);

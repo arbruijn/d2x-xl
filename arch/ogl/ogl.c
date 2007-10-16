@@ -834,6 +834,10 @@ int OglFillTexBuf (
 	ushort	r, g, b, a;
 	int		bTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
+#ifdef _DEBUG
+if (!strcmp (bmP->szName, "empty"))
+	bmP = bmP;
+#endif
 gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bmPalette : bmP->bmPalette);
 if (!gameData.render.ogl.palette)
 	gameData.render.ogl.palette = defaultPalette;

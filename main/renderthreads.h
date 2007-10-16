@@ -24,7 +24,8 @@ typedef enum {
 	rtInitSegZRef,
 	rtSortSegZRef,
 	rtAnimateLightnings,
-	rtRenderLightnings
+	rtRenderLightnings,
+	rtStaticVertLight
 } tRenderTask;
 
 typedef struct tRenderThreadInfo {

@@ -49,6 +49,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "gamemine.h"
 #include "text.h"
 #include "input.h"
+#include "renderthreads.h"
+
 #define FLICKERFIX 0
 //int	Use_fvi_lighting = 0;
 
@@ -1908,6 +1910,27 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 
 //------------------------------------------------------------------------------
 
+void ComputeStaticVertexLights (int nVertex, int nMax, int nThread)
+{
+	tFaceColor	*pf = gameData.render.color.ambient + nVertex;
+	fVector		vVertex;
+	int			bColorize = !gameOpts->render.bDynLighting;
+
+for (; nVertex < nMax; nVertex++, pf++) {
+#ifdef _DEBUG
+	if (nVertex == nDbgVertex)
+		nVertex = nVertex;
+#endif
+	VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
+	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = 0;
+	SetNearestVertexLights (nVertex, 1, 1, bColorize, nThread);
+	gameData.render.color.vertices [nVertex].index = 0;
+	G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, NULL, 1, 0, nThread);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 #ifdef _DEBUG
 extern int nDbgVertex;
 #endif
@@ -1917,10 +1940,8 @@ void ComputeStaticDynLighting (void)
 if (gameStates.app.bNostalgia)
 	return;
 if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !gameStates.render.bColored)) {
-		int				i, j, nVertex,
-							bColorize = !gameOpts->render.bDynLighting;
+		int				i, j, bColorize = !gameOpts->render.bDynLighting;
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
-		fVector			vVertex;
 		tSegment2		*seg2P;
 
 	//AddDynLights ();
@@ -1928,19 +1949,9 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
 	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
-	for (nVertex = 0; nVertex < gameData.segs.nVertices; nVertex++, pf++) {
-#ifdef _DEBUG
-		if (nVertex == nDbgVertex)
-			nVertex = nVertex;
-#endif
-		VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
-		gameData.render.lights.dynamic.shader.nActiveLights [0] = 0;
-		SetNearestVertexLights (nVertex, 1, 1, bColorize, 0);
-		gameData.render.color.vertices [nVertex].index = 0;
-		G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, &vVertex, nVertex, pf, NULL, 1, 0, 0);
-		//SetNearestVertexLights (nVertex, 0, 1, bColorize);
-		}
-	pf = bColorize ? gameData.render.color.vertices : gameData.render.color.ambient;
+	if (!RunRenderThreads (rtStaticVertLight))
+		ComputeStaticVertexLights (0, gameData.segs.nVertices, 0);
+	pf = gameData.render.color.ambient;
 	for (i = 0, seg2P = gameData.segs.segment2s; i < gameData.segs.nSegments; i++, seg2P++) {
 		if (seg2P->special == SEGMENT_IS_SKYBOX) {
 			short	*sv = SEGMENTS [i].verts;
@@ -1948,7 +1959,8 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 				pfh = pf + *sv;
 				pfh->color.red =
 				pfh->color.green =
-				pfh->color.blue = 1;
+				pfh->color.blue = 
+				pfh->color.alpha = 1;
 				}
 			}
 		}

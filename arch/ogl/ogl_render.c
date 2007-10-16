@@ -1781,7 +1781,7 @@ bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend,
 	tTexCoord2f	*ovlTexCoordP;
 
 bTransparent = (faceP->bTransparent || 
-					 (bmBot && ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA))));
+					 (bmBot && ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT/* | BM_FLAG_TGA*/))));
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)

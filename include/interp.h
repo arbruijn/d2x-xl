@@ -32,6 +32,8 @@
 #define FIXPTR(_p)	((fix *) (_p))
 #define VECPTR(_p)	((vmsVector *) (_p))
 
+//------------------------------------------------------------------------------
+
 //Object functions:
 
 fix G3PolyModelSize (tPolyModel *pm, int nModel);
@@ -105,6 +107,8 @@ int G3RenderModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelB
 void G3StartModelLightThreads (void);
 void G3EndModelLightThreads (void);
 
+//------------------------------------------------------------------------------
+
 extern g3sPoint *pointList [MAX_POINTS_PER_POLY];
 extern int hitboxFaceVerts [6][4];
 extern vmsVector hitBoxOffsets [8];
@@ -112,6 +116,16 @@ extern vmsAngVec avZero;
 extern vmsVector vZero;
 extern vmsMatrix mIdentity;
 extern short nGlow;
+
+//------------------------------------------------------------------------------
+
+static inline void RotatePointListToVec (vmsVector *dest, vmsVector *src, int n)
+{
+while (n--)
+	G3TransformPoint (dest++, src++, 0);
+}
+
+//------------------------------------------------------------------------------
 
 #endif //_INTERP_H
 

@@ -117,7 +117,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 #endif
 if (!faceP->bVisible)
 	return;
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if ((nType != 4) && !(faceP->widFlags & WID_RENDER_FLAG))
 	return;
 if ((faceP->nType < 0) && ((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
@@ -378,6 +378,7 @@ void RenderSkyBoxFaces (void)
 {
 	tSegment		*segP;
 	grsFace		*faceP;
+	vmsVector	vForward = gameData.objs.viewer->position.mOrient.fVec;
 	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
@@ -389,8 +390,11 @@ if (gameStates.render.bHaveSkyBox) {
 		if (gameData.segs.segment2s [i].special != SEGMENT_IS_SKYBOX)
 			continue;
 		gameStates.render.bHaveSkyBox = 1;
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
+		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
+				continue;
 			RenderMineFace (segP, faceP, i, 4, bVertexArrays, 1, 0);
+			}
 		}
 	gameStates.render.bFullBright = bFullBright;
 	EndRenderFaces (4, bVertexArrays);
@@ -574,15 +578,18 @@ for (i = nStart; i < nEnd; i++) {
 		if (!gameStates.render.bFullBright)
 			SetNearestDynamicLights (nSegment, 0, nThread);
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
-			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
-				continue;
-			nSide = faceP->nSide;
 #ifdef _DEBUG
+			nSide = faceP->nSide;
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 				nSegment = nSegment;
 				if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
 					nSegment = nSegment;
 				}
+#endif
+			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
+				continue;
+#ifndef _DEBUG
+			nSide = faceP->nSide;
 #endif
 			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha)))
 				continue;
