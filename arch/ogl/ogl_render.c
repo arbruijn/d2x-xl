@@ -1790,7 +1790,11 @@ if (bDepthOnly) {
 	}
 else {
 	bMonitor = (faceP->nCamera >= 0);
-	if (bTransparent && !faceP->bOverlay) {
+#ifdef _DEBUG
+	if (bMonitor)
+		faceP = faceP;
+#endif
+	if (!bMonitor && bTransparent && !faceP->bOverlay) {
 #ifdef _DEBUG
 		if (gameOpts->render.bDepthSort > 0) 
 #endif

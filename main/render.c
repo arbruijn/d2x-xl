@@ -373,8 +373,8 @@ if (gameStates.render.nType == 2) {
 	gameData.render.vertexList = NULL;
 	return;
 	}
-bIsMonitor = 0;
-if (nCamNum = IsMonitorFace (props.segNum, props.sideNum)) {
+nCamNum = IsMonitorFace (props.segNum, props.sideNum);
+if ((bIsMonitor = (nCamNum >= 0))) {
 	pc = gameData.cameras.cameras + nCamNum;
 	pc->bVisible = 1;
 	bIsTeleCam = pc->bTeleport;
@@ -384,10 +384,10 @@ if (nCamNum = IsMonitorFace (props.segNum, props.sideNum)) {
 	bCamBufAvail = 0;
 #endif
 	bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/ 
-					  (pc->texBuf.glTexture || bCamBufAvail) &&
-					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
+						  (pc->texBuf.glTexture || bCamBufAvail) &&
+						  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 	}
-if (!bIsMonitor)
+else 
 	bIsTeleCam = 
 	bHaveMonitorBg = 
 	bCamBufAvail = 0;
@@ -706,7 +706,7 @@ if (!(IsMultiGame || gameOpts->render.bObjects))
 	return;
 Assert(nObject < MAX_OBJECTS);
 #if 1
-if (!nWindow && (gameStates.render.nShadowPass < 2) &&
+if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShadowPass < 2) &&
     (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop))	//already rendered this...
 	return;
 #endif

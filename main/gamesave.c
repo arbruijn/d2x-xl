@@ -1131,7 +1131,7 @@ if (gameFileInfo.triggers.offset > -1) {
 				gameData.trigs.firstObjTrigger [i] = CFReadShort (LoadFile);
 			}
 		else {
-			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
+			memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (gameData.trigs.firstObjTrigger));
 			for (i = CFReadShort (LoadFile); i; i--) {
 				j = CFReadShort (LoadFile);
 				gameData.trigs.firstObjTrigger [j] = CFReadShort (LoadFile);
@@ -1142,7 +1142,7 @@ if (gameFileInfo.triggers.offset > -1) {
 		gameData.trigs.nObjTriggers = 0;
 		memset (gameData.trigs.objTriggers, 0, sizeof (tTrigger) * MAX_OBJ_TRIGGERS);
 		memset (gameData.trigs.objTriggerRefs, 0xff, sizeof (tObjTriggerRef) * MAX_OBJ_TRIGGERS);
-		memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (short) * MAX_OBJECTS_D2X);
+		memset (gameData.trigs.firstObjTrigger, 0xff, sizeof (gameData.trigs.firstObjTrigger));
 		}
 	}
 }
