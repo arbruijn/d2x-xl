@@ -1190,7 +1190,7 @@ if (!bBetweenLevels)	{
 		StateSaveTrigger (gameData.trigs.objTriggers + i, fp);
 	for (i = 0; i < gameData.trigs.nObjTriggers; i++)
 		StateSaveObjTriggerRef (gameData.trigs.objTriggerRefs + i, fp);
-	for (i = 0; i < MAX_OBJECTS_D2X; i++)
+	for (i = 0; i < 700; i++)
 		CFWriteShort (gameData.trigs.firstObjTrigger [i], fp);
 	//fpos = CFTell (fp);
 //Save tmap info
