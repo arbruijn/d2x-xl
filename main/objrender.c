@@ -242,7 +242,7 @@ void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFr
 {
 	grsBitmap	*bmP;
 	tRgbaColorf	color;
-	int			id, bAdditive = 0, nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
+	int			bAdditive = 0, bEnergy = 0, nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
 	fix			xSize;
 
 if (gameOpts->render.bTransparentEffects) {
@@ -250,14 +250,9 @@ if (gameOpts->render.bTransparentEffects) {
 		bAdditive = (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION);
 	else {
 		if (objP->nType == OBJ_POWERUP) {
-			id = objP->id;
-			if ((id == POW_EXTRA_LIFE) ||
-				 (id == POW_ENERGY) ||
-				 (id == POW_SHIELD_BOOST) ||
-				 (id == POW_HOARD_ORB) ||
-				 (id == POW_CLOAK) ||
-				 (id == POW_INVUL)) {
+			if (IsEnergyPowerup (objP->id)) {
 				fAlpha = 2.0f / 3.0f;
+				bEnergy = 1;
 				}
 			else
 				fAlpha = 1.0f;
@@ -289,7 +284,7 @@ if (colorP)
 
 xSize = objP->size;
 
-if ((objP->nType == OBJ_POWERUP) && gameOpts->render.bPowerupCoronas)
+if ((objP->nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.bPowerupCoronas) || (!bEnergy && gameOpts->render.bWeaponCoronas)))
 	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, 
 								coronaIntensities [gameOpts->render.nCoronaIntensity]);
 if (gameOpts->render.bDepthSort > 0) {

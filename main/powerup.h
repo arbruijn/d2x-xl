@@ -159,4 +159,14 @@ void CheckInventory (void);
 
 extern char *pszPowerup [MAX_POWERUP_TYPES];
 
+//------------------------------------------------------------------------------
+
+static inline int IsEnergyPowerup (int nId)
+{
+return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOST) ||
+		 (nId == POW_HOARD_ORB) || (nId == POW_CLOAK) || (nId == POW_INVUL);
+}
+
+//------------------------------------------------------------------------------
+
 #endif /* _POWERUP_H */

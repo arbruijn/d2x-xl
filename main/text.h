@@ -1698,7 +1698,7 @@ void LoadGameTexts(void);
 #define TXT_ROTATE_MSLLOCKIND		GT(905)
 #define TXT_PLAY_ALL_MISSIONS		GT(906)
 #define TXT_NEWGAME_MENUTITLE		GT(907)
-#define TXT_WEAPON_CORONAS			GT(908)
+#define TXT_SHOT_CORONAS			GT(908)
 #define TXT_AUTOMAP_SKYBOX			GT(909)
 #define TXT_INPUT_SLOWMOTION		GT(910)
 #define TXT_SPEEDING_UP				GT(911)
@@ -1779,10 +1779,10 @@ void LoadGameTexts(void);
 #define TXT_POWERUP_SHADOWS		GT(986)
 #define TXT_SMOKE_AUXVIEWS			GT(987)
 #define TXT_LIGHTNING_AUXVIEWS	GT(988)
+#define TXT_WEAPON_CORONAS			GT(989)
 
 #if 0
 
-#define TXT_				GT(989)
 #define TXT_				GT(990)
 #define TXT_				GT(991)
 #define TXT_				GT(992)
@@ -2182,7 +2182,7 @@ void LoadGameTexts(void);
 #define HTX_DEBRIS_LIFE				HT(268)				
 #define HTX_CPIT_MSLLOCKIND		HT(269)				
 #define HTX_ROTATE_MSLLOCKIND		HT(270)				
-#define HTX_WEAPON_CORONAS			HT(271)				
+#define HTX_SHOT_CORONAS			HT(271)				
 #define HTX_AUTOMAP_SKYBOX			HT(272)				
 #define HTX_SLOWMOTION_SPEEDUP	HT(273)				
 #define HTX_GPLAY_TRIFUSION		HT(274)				
@@ -2235,10 +2235,10 @@ void LoadGameTexts(void);
 #define HTX_POWERUP_SHADOWS		HT(321)				
 #define HTX_SMOKE_AUXVIEWS			HT(322)				
 #define HTX_LIGHTNING_AUXVIEWS	HT(323)				
+#define HTX_WEAPON_CORONAS			HT(324)				
 
 #if 0
 
-#define HTX_					HT(324)				
 #define HTX_					HT(325)				
 #define HTX_					HT(326)				
 #define HTX_					HT(327)				

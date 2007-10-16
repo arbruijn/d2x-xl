@@ -1657,7 +1657,7 @@ char *defaultGameTexts [][2] = {
 	{"Zielsuch-Anzeige ~Rotieren", "~Rotate missile lock indicator"},
 	{"~Alle missionen spielen", "play ~All missions"},
 	{"Neues Spiel", "New Game"},
-	{"~Schuesse mit Lichthoefen zeichnen", "render coronas for ~Weapon shots"},
+	{"~Schuesse mit Lichthoefen zeichnen", "render coronas for gun ~Shots"},
 	{"~Skybox anzeigen", "show ~Skybox"},
 	{"Zeitlupe/-raffer", "Slowmo/Speed"},
 	{"beschleunige...", "speeding up..."},
@@ -1738,6 +1738,7 @@ char *defaultGameTexts [][2] = {
 	{"po~Werupschatten", "po~Werup shadows"},
 	{"Rauch in Cockpit-~Fenstern zeigen", "show smoke in cockpit ~Windows"},
 	{"Blitze in Cockpit-~Fenstern zeigen", "show lightnings in cockpit ~Windows"},
+	{"~Waffen mit Lichthoefen zeichnen", "render coronas for ~Weapons"},
 #if 0
 	{"", ""},
 #endif
@@ -2308,7 +2309,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, feuert die Omega-Kanone Blitze statt weisser\nKugeln.", "If checked, the Omega cannon fires lightning bolts\ninstead of white globes."},
 	{"Menue fuer Blitz-Einstellungen aufrufen.", "Invoke the lightning settings menu here."},
 	{"Wenn angekreuzt, werden Hires-Modelle heller dargestellt.\n(Sonst sind sie in dunklen Bereichen eventuell schlecht\nsichtbar.)", "If checked, hires models are rendered brighter.\n(Otherwise, they might be hard to see in dark areas.)"},
-	{"Wenn angekreuzt, erhalten Powerups Lichthoefe.", "If checked, powerups are rendered with coronas."},
+	{"Wenn angekreuzt, erhalten energetische Powerups Lichthoefe.", "If checked, energetic powerups are rendered with coronas."},
 	{"Ankreuzen, damit in der texturierten Uebersichtskarte Blitz-\neffekte dargestellt werden.", "Check to have lightning effects rendered in the textured automap."},
 	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLichthoefen und ihrem Hintergrund.", "If checked, the brightness and color of coronas and their\nbackground."},
 	{"Wenn angekreuzt, addieren sich Helligkeit und Farbe von\nLeuchtspuren und ihrem Hintergrund.", "If checked, the brightness and color of light trails\nand their background."},
@@ -2318,6 +2319,7 @@ char *defaultHelpTexts [][2] = {
 	 "If checked, smoke effects are shown in cockpit windows\nlike e.g. the rear view."},
 	{"Wenn angekreuzt, werden Blitzeffekte auch in Cockpit-\nfenstern (z.B. dem Rueckspiegel) angezeigt.", 
 	 "If checked, lightning effects are shown in cockpit windows\nlike e.g. the rear view."},
+	{"Wenn angekreuzt, erhalten Waffen-Powerups Lichthoefe.", "If checked, weapon powerups are rendered with coronas."},
 #if 0
 	{"", ""},
 #endif

@@ -208,6 +208,7 @@ static struct {
 
 static struct {
 	int	nCoronas;
+	int	nShotCoronas;
 	int	nWeaponCoronas;
 	int	nPowerupCoronas;
 	int	nAdditiveCoronas;
@@ -1857,10 +1858,10 @@ if (gameOpts->render.bCoronas != v) {
 	gameOpts->render.bCoronas = v;
 	*key = -2;
 	}	
-m = menus + effectOpts.nWeaponCoronas;
+m = menus + effectOpts.nShotCoronas;
 v = m->value;
-if (gameOpts->render.bWeaponCoronas != v) {
-	gameOpts->render.bWeaponCoronas = v;
+if (gameOpts->render.bShotCoronas != v) {
+	gameOpts->render.bShotCoronas = v;
 	*key = -2;
 	}	
 if (effectOpts.nCoronaIntensity >= 0) {
@@ -1909,15 +1910,17 @@ do {
 
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
 	effectOpts.nCoronas = opt++;
-	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.bWeaponCoronas, KEY_S, HTX_WEAPON_CORONAS);
-	effectOpts.nWeaponCoronas = opt++;
+	ADD_CHECK (opt, TXT_SHOT_CORONAS, gameOpts->render.bShotCoronas, KEY_S, HTX_SHOT_CORONAS);
+	effectOpts.nShotCoronas = opt++;
 	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.bPowerupCoronas, KEY_P, HTX_POWERUP_CORONAS);
 	effectOpts.nPowerupCoronas = opt++;
+	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.bPowerupCoronas, KEY_W, HTX_WEAPON_CORONAS);
+	effectOpts.nWeaponCoronas = opt++;
 	ADD_CHECK (opt, TXT_ADDITIVE_CORONAS, gameOpts->render.bAdditiveCoronas, KEY_A, HTX_ADDITIVE_CORONAS);
 	effectOpts.nAdditiveCoronas = opt++;
 	ADD_CHECK (opt, TXT_ADDITIVE_OBJCORONAS, gameOpts->render.bAdditiveObjCoronas, KEY_O, HTX_ADDITIVE_OBJCORONAS);
 	effectOpts.nAdditiveObjCoronas = opt++;
-	if (gameOpts->render.bCoronas || gameOpts->render.bWeaponCoronas) {
+	if (gameOpts->render.bCoronas || gameOpts->render.bShotCoronas) {
 		sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 		*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
 		ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
@@ -1978,8 +1981,9 @@ do {
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
 	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
-	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
+	gameOpts->render.bShotCoronas = m [effectOpts.nShotCoronas].value;
 	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
+	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
 	gameOpts->render.bAdditiveCoronas = m [effectOpts.nAdditiveCoronas].value;
 	gameOpts->render.bAdditiveObjCoronas = m [effectOpts.nAdditiveObjCoronas].value;
 	if (optTrailType >= 0)
@@ -2004,7 +2008,7 @@ do {
 		gameOpts->render.bTransparentEffects = 1;
 	gameOpts->render.bAutoTransparency = 1;
 	gameOpts->render.bCoronas = 0;
-	gameOpts->render.bWeaponCoronas = 0;
+	gameOpts->render.bShotCoronas = 0;
 	extraGameInfo [0].bLightTrails = 1;
 	extraGameInfo [0].bTracers = 1;
 	extraGameInfo [0].bShockwaves = 1;

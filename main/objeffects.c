@@ -45,7 +45,7 @@ void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float b
 {
 if (!bCorona)
 	bCorona = 0;
-if (gameOpts->render.bWeaponCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
+if (gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
 	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 0);
@@ -59,7 +59,8 @@ void RenderPowerupCorona (tObject *objP, float red, float green, float blue, flo
 {
 	int	bAdditive = gameOpts->render.bAdditiveObjCoronas;
 
-if (gameOpts->render.bPowerupCoronas && (bAdditive ? LoadGlare () : LoadCorona ())) {
+if ((IsEnergyPowerup (objP->id) ? gameOpts->render.bPowerupCoronas : gameOpts->render.bWeaponCoronas) &&
+	 (bAdditive ? LoadGlare () : LoadCorona ())) {
 	static tRgbaColorf keyColors [3] = {
 		{0.2f, 0.2f, 0.9f, 0.2f},
 		{0.9f, 0.2f, 0.2f, 0.2f},
@@ -1094,7 +1095,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 //	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 3) : (gameStates.render.nShadowPass != 1)))
 	return;
 #endif
-if (gameOpts->render.bWeaponCoronas && (bAdditive ? LoadGlare () : LoadCorona ())) {
+if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ())) {
 	int			bStencil, bDrawArrays, i;
 	float			a1, a2;
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
@@ -1212,7 +1213,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 #endif
 if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
-else if (gameOpts->render.bWeaponCoronas && LoadCorona ()) {
+else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 

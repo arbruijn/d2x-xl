@@ -290,6 +290,7 @@ typedef struct tRenderOptions {
 	int bExplBlast;
 	int nExplShrapnels;
 	int bCoronas;
+	int bShotCoronas;
 	int bWeaponCoronas;
 	int bPowerupCoronas;
 	int bAdditiveCoronas; //additive corona blending for wall lights 
