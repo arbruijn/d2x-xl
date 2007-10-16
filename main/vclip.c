@@ -193,7 +193,7 @@ color.red =
 color.green =
 color.blue = 
 color.alpha = fAlpha;
-G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 0);
+G3DrawSprite (&vPos, xSize, xSize, bmpExplBlast, &color, fAlpha, 2);
 #elif BLAST_TYPE == 1
 xSize2 = xSize / 20;
 fAlpha = (float) sqrt (f2fl (objP->lifeleft)) / 4;
