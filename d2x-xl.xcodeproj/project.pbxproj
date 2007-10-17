@@ -329,6 +329,37 @@
 		A42652160A704A0E00D80F8D /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = A42652140A704A0E00D80F8D /* input.c */; };
 		A42652170A704A0E00D80F8D /* input.h in Headers */ = {isa = PBXBuildFile; fileRef = A42652150A704A0E00D80F8D /* input.h */; };
 		A42652DD0A70579600D80F8D /* d2doc.icns in Resources */ = {isa = PBXBuildFile; fileRef = A42652DC0A70579600D80F8D /* d2doc.icns */; };
+		A43849250CC5B6440007FEE0 /* shadows.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849240CC5B6440007FEE0 /* shadows.h */; };
+		A438493D0CC5B6710007FEE0 /* shadows.c in Sources */ = {isa = PBXBuildFile; fileRef = A438493C0CC5B6710007FEE0 /* shadows.c */; };
+		A438493F0CC5B6830007FEE0 /* hitbox.c in Sources */ = {isa = PBXBuildFile; fileRef = A438493E0CC5B6830007FEE0 /* hitbox.c */; };
+		A43849410CC5B6930007FEE0 /* hitbox.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849400CC5B6930007FEE0 /* hitbox.h */; };
+		A43849460CC5B8F20007FEE0 /* renderlib.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849440CC5B8F20007FEE0 /* renderlib.c */; };
+		A43849470CC5B8F20007FEE0 /* renderlib.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849450CC5B8F20007FEE0 /* renderlib.h */; };
+		A43849590CC5B9660007FEE0 /* fastrender.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849550CC5B9660007FEE0 /* fastrender.c */; };
+		A438495A0CC5B9660007FEE0 /* fastrender.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849560CC5B9660007FEE0 /* fastrender.h */; };
+		A438495B0CC5B9660007FEE0 /* radar.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849570CC5B9660007FEE0 /* radar.c */; };
+		A438495C0CC5B9660007FEE0 /* radar.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849580CC5B9660007FEE0 /* radar.h */; };
+		A43849690CC5B9AE0007FEE0 /* objeffects.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849630CC5B9AD0007FEE0 /* objeffects.c */; };
+		A438496A0CC5B9AE0007FEE0 /* objeffects.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849640CC5B9AD0007FEE0 /* objeffects.h */; };
+		A438496D0CC5B9AE0007FEE0 /* rendershadows.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849670CC5B9AE0007FEE0 /* rendershadows.c */; };
+		A438496E0CC5B9AE0007FEE0 /* rendershadows.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849680CC5B9AE0007FEE0 /* rendershadows.h */; };
+		A43849750CC5B9EF0007FEE0 /* glare.c in Sources */ = {isa = PBXBuildFile; fileRef = A438496F0CC5B9EF0007FEE0 /* glare.c */; };
+		A43849760CC5B9EF0007FEE0 /* glare.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849700CC5B9EF0007FEE0 /* glare.h */; };
+		A43849770CC5B9EF0007FEE0 /* renderthreads.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849710CC5B9EF0007FEE0 /* renderthreads.c */; };
+		A43849780CC5B9EF0007FEE0 /* renderthreads.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849720CC5B9EF0007FEE0 /* renderthreads.h */; };
+		A43849790CC5B9EF0007FEE0 /* transprender.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849730CC5B9EF0007FEE0 /* transprender.c */; };
+		A438497A0CC5B9EF0007FEE0 /* transprender.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849740CC5B9EF0007FEE0 /* transprender.h */; };
+		A43849830CC5BA3A0007FEE0 /* flightpath.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849810CC5BA3A0007FEE0 /* flightpath.c */; };
+		A43849840CC5BA3A0007FEE0 /* flightpath.h in Headers */ = {isa = PBXBuildFile; fileRef = A43849820CC5BA3A0007FEE0 /* flightpath.h */; };
+		A43849860CC5BA4C0007FEE0 /* fastmodels.c in Sources */ = {isa = PBXBuildFile; fileRef = A43849850CC5BA4C0007FEE0 /* fastmodels.c */; };
+		A4AD3E2E0C9E062F00B91962 /* lightning.c in Sources */ = {isa = PBXBuildFile; fileRef = A4AD3E260C9E062E00B91962 /* lightning.c */; };
+		A4AD3E2F0C9E062F00B91962 /* lightning.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD3E270C9E062E00B91962 /* lightning.h */; };
+		A4AD3E300C9E062F00B91962 /* objrender.c in Sources */ = {isa = PBXBuildFile; fileRef = A4AD3E280C9E062F00B91962 /* objrender.c */; };
+		A4AD3E310C9E062F00B91962 /* objrender.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD3E290C9E062F00B91962 /* objrender.h */; };
+		A4AD3E320C9E062F00B91962 /* perlin.c in Sources */ = {isa = PBXBuildFile; fileRef = A4AD3E2A0C9E062F00B91962 /* perlin.c */; };
+		A4AD3E330C9E062F00B91962 /* perlin.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD3E2B0C9E062F00B91962 /* perlin.h */; };
+		A4AD3E460C9E0FBE00B91962 /* tga.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD3E2D0C9E062F00B91962 /* tga.h */; };
+		A4AD3E470C9E0FBE00B91962 /* tga.c in Sources */ = {isa = PBXBuildFile; fileRef = A4AD3E2C0C9E062F00B91962 /* tga.c */; };
 		A4CFD8C30ABA01D80047DE97 /* hoard.c in Sources */ = {isa = PBXBuildFile; fileRef = A4CFD8C00ABA01D80047DE97 /* hoard.c */; };
 		A4CFD8C40ABA01D80047DE97 /* multimsg.c in Sources */ = {isa = PBXBuildFile; fileRef = A4CFD8C10ABA01D80047DE97 /* multimsg.c */; };
 		A4CFD8C50ABA01D80047DE97 /* multimsg.h in Headers */ = {isa = PBXBuildFile; fileRef = A4CFD8C20ABA01D80047DE97 /* multimsg.h */; };
@@ -660,6 +691,37 @@
 		A42652140A704A0E00D80F8D /* input.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = input.c; sourceTree = "<group>"; };
 		A42652150A704A0E00D80F8D /* input.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = input.h; sourceTree = "<group>"; };
 		A42652DC0A70579600D80F8D /* d2doc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = d2doc.icns; path = arch/macosx/d2doc.icns; sourceTree = "<group>"; };
+		A43849240CC5B6440007FEE0 /* shadows.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = shadows.h; sourceTree = "<group>"; };
+		A438493C0CC5B6710007FEE0 /* shadows.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = shadows.c; sourceTree = "<group>"; };
+		A438493E0CC5B6830007FEE0 /* hitbox.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = hitbox.c; sourceTree = "<group>"; };
+		A43849400CC5B6930007FEE0 /* hitbox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = hitbox.h; sourceTree = "<group>"; };
+		A43849440CC5B8F20007FEE0 /* renderlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = renderlib.c; sourceTree = "<group>"; };
+		A43849450CC5B8F20007FEE0 /* renderlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = renderlib.h; sourceTree = "<group>"; };
+		A43849550CC5B9660007FEE0 /* fastrender.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fastrender.c; sourceTree = "<group>"; };
+		A43849560CC5B9660007FEE0 /* fastrender.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fastrender.h; sourceTree = "<group>"; };
+		A43849570CC5B9660007FEE0 /* radar.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = radar.c; sourceTree = "<group>"; };
+		A43849580CC5B9660007FEE0 /* radar.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = radar.h; sourceTree = "<group>"; };
+		A43849630CC5B9AD0007FEE0 /* objeffects.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = objeffects.c; sourceTree = "<group>"; };
+		A43849640CC5B9AD0007FEE0 /* objeffects.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = objeffects.h; sourceTree = "<group>"; };
+		A43849670CC5B9AE0007FEE0 /* rendershadows.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rendershadows.c; sourceTree = "<group>"; };
+		A43849680CC5B9AE0007FEE0 /* rendershadows.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = rendershadows.h; sourceTree = "<group>"; };
+		A438496F0CC5B9EF0007FEE0 /* glare.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = glare.c; sourceTree = "<group>"; };
+		A43849700CC5B9EF0007FEE0 /* glare.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = glare.h; sourceTree = "<group>"; };
+		A43849710CC5B9EF0007FEE0 /* renderthreads.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = renderthreads.c; sourceTree = "<group>"; };
+		A43849720CC5B9EF0007FEE0 /* renderthreads.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = renderthreads.h; sourceTree = "<group>"; };
+		A43849730CC5B9EF0007FEE0 /* transprender.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = transprender.c; sourceTree = "<group>"; };
+		A43849740CC5B9EF0007FEE0 /* transprender.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = transprender.h; sourceTree = "<group>"; };
+		A43849810CC5BA3A0007FEE0 /* flightpath.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = flightpath.c; sourceTree = "<group>"; };
+		A43849820CC5BA3A0007FEE0 /* flightpath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = flightpath.h; sourceTree = "<group>"; };
+		A43849850CC5BA4C0007FEE0 /* fastmodels.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fastmodels.c; sourceTree = "<group>"; };
+		A4AD3E260C9E062E00B91962 /* lightning.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = lightning.c; sourceTree = "<group>"; };
+		A4AD3E270C9E062E00B91962 /* lightning.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = lightning.h; sourceTree = "<group>"; };
+		A4AD3E280C9E062F00B91962 /* objrender.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = objrender.c; sourceTree = "<group>"; };
+		A4AD3E290C9E062F00B91962 /* objrender.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = objrender.h; sourceTree = "<group>"; };
+		A4AD3E2A0C9E062F00B91962 /* perlin.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = perlin.c; sourceTree = "<group>"; };
+		A4AD3E2B0C9E062F00B91962 /* perlin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = perlin.h; sourceTree = "<group>"; };
+		A4AD3E2C0C9E062F00B91962 /* tga.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = tga.c; sourceTree = "<group>"; };
+		A4AD3E2D0C9E062F00B91962 /* tga.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = tga.h; sourceTree = "<group>"; };
 		A4CFD8C00ABA01D80047DE97 /* hoard.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = hoard.c; sourceTree = "<group>"; };
 		A4CFD8C10ABA01D80047DE97 /* multimsg.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = multimsg.c; sourceTree = "<group>"; };
 		A4CFD8C20ABA01D80047DE97 /* multimsg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = multimsg.h; sourceTree = "<group>"; };
@@ -797,14 +859,17 @@
 				70533D27093214B6006BD186 /* clipper.c */,
 				70533D28093214B6006BD186 /* clipper.h */,
 				70533D29093214B6006BD186 /* draw.c */,
+				A43849850CC5BA4C0007FEE0 /* fastmodels.c */,
 				70533D2A093214B6006BD186 /* globvars.c */,
 				70533D2B093214B6006BD186 /* globvars.h */,
+				A438493E0CC5B6830007FEE0 /* hitbox.c */,
 				70533D2C093214B6006BD186 /* instance.c */,
 				70533D2D093214B6006BD186 /* interp.c */,
 				70533D2E093214B6006BD186 /* matrix.c */,
 				70533D2F093214B6006BD186 /* points.c */,
 				70533D30093214B6006BD186 /* rod.c */,
 				70533D31093214B6006BD186 /* setup.c */,
+				A438493C0CC5B6710007FEE0 /* shadows.c */,
 			);
 			path = 3d;
 			sourceTree = "<group>";
@@ -888,8 +953,6 @@
 		70533D6B09321889006BD186 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				70E3F15809644034008296A8 /* fbuffer.h */,
-				70E3F15909644034008296A8 /* pbuffer.h */,
 				70533D8509321925006BD186 /* 3d.h */,
 				70533D8609321925006BD186 /* altsound.h */,
 				70533D8709321925006BD186 /* args.h */,
@@ -901,11 +964,13 @@
 				70533D8D09321925006BD186 /* console.h */,
 				70533D8E09321925006BD186 /* d_io.h */,
 				70533D8F09321925006BD186 /* error.h */,
+				70E3F15809644034008296A8 /* fbuffer.h */,
 				70533D9009321925006BD186 /* findfile.h */,
 				70533D9109321925006BD186 /* fix.h */,
 				70533D9209321925006BD186 /* gr.h */,
 				70533D9309321925006BD186 /* grdef.h */,
 				70533D9409321925006BD186 /* hash.h */,
+				A43849400CC5B6930007FEE0 /* hitbox.h */,
 				70533D9509321925006BD186 /* i86.h */,
 				70533D9609321925006BD186 /* ibitblt.h */,
 				70533D9709321925006BD186 /* iff.h */,
@@ -921,10 +986,12 @@
 				70533DA109321925006BD186 /* ogl_init.h */,
 				70533DA209321925006BD186 /* pa_enabl.h */,
 				70533DA309321925006BD186 /* palette.h */,
+				70E3F15909644034008296A8 /* pbuffer.h */,
 				70533DA409321925006BD186 /* pcx.h */,
 				70533DA509321925006BD186 /* pstypes.h */,
 				70533DA609321925006BD186 /* rbaudio.h */,
 				70533DA709321925006BD186 /* rle.h */,
+				A43849240CC5B6440007FEE0 /* shadows.h */,
 				70533DA809321925006BD186 /* strio.h */,
 				70533DA909321925006BD186 /* strutil.h */,
 				70533DAA09321925006BD186 /* texmap.h */,
@@ -998,6 +1065,10 @@
 				70533E14093219E2006BD186 /* endlevel.h */,
 				70533E15093219E2006BD186 /* escort.c */,
 				70533E16093219E2006BD186 /* escort.h */,
+				A43849560CC5B9660007FEE0 /* fastrender.h */,
+				A43849550CC5B9660007FEE0 /* fastrender.c */,
+				A43849810CC5BA3A0007FEE0 /* flightpath.c */,
+				A43849820CC5BA3A0007FEE0 /* flightpath.h */,
 				70533E19093219E2006BD186 /* fireball.c */,
 				70533E1A093219E2006BD186 /* fireball.h */,
 				70533E1B093219E2006BD186 /* fuelcen.c */,
@@ -1024,6 +1095,8 @@
 				70533E30093219E2006BD186 /* gamestat.h */,
 				70533E31093219E2006BD186 /* gauges.c */,
 				70533E32093219E2006BD186 /* gauges.h */,
+				A438496F0CC5B9EF0007FEE0 /* glare.c */,
+				A43849700CC5B9EF0007FEE0 /* glare.h */,
 				A4CFD8C00ABA01D80047DE97 /* hoard.c */,
 				70533E34093219E2006BD186 /* hostage.c */,
 				70533E35093219E2006BD186 /* hostage.h */,
@@ -1043,6 +1116,8 @@
 				70533E42093219E2006BD186 /* laser.h */,
 				70533E43093219E2006BD186 /* lighting.c */,
 				70533E44093219E2006BD186 /* lighting.h */,
+				A4AD3E260C9E062E00B91962 /* lightning.c */,
+				A4AD3E270C9E062E00B91962 /* lightning.h */,
 				70533E45093219E2006BD186 /* lightmap.c */,
 				70533E46093219E2006BD186 /* lightmap.h */,
 				70533E47093219E2006BD186 /* menu.c */,
@@ -1073,6 +1148,10 @@
 				70533E5C093219E2006BD186 /* newmenu.h */,
 				70533E5D093219E2006BD186 /* object.c */,
 				70533E5E093219E2006BD186 /* object.h */,
+				A43849630CC5B9AD0007FEE0 /* objeffects.c */,
+				A43849640CC5B9AD0007FEE0 /* objeffects.h */,
+				A4AD3E280C9E062F00B91962 /* objrender.c */,
+				A4AD3E290C9E062F00B91962 /* objrender.h */,
 				A42652050A70497000D80F8D /* objsmoke.c */,
 				A42652060A70497000D80F8D /* objsmoke.h */,
 				A42651D90A70468600D80F8D /* oof.c */,
@@ -1081,6 +1160,8 @@
 				70533E60093219E2006BD186 /* paging.h */,
 				A42651D70A70468600D80F8D /* particles.c */,
 				A42651D80A70468600D80F8D /* particles.h */,
+				A4AD3E2A0C9E062F00B91962 /* perlin.c */,
+				A4AD3E2B0C9E062F00B91962 /* perlin.h */,
 				70533E61093219E2006BD186 /* physics.c */,
 				70533E62093219E2006BD186 /* physics.h */,
 				70533E63093219E2006BD186 /* piggy.c */,
@@ -1093,8 +1174,16 @@
 				70533E6A093219E2006BD186 /* polyobj.h */,
 				70533E6B093219E2006BD186 /* powerup.c */,
 				70533E6C093219E2006BD186 /* powerup.h */,
-				70533E6E093219E2006BD186 /* render.c */,
+				A43849580CC5B9660007FEE0 /* radar.h */,
+				A43849570CC5B9660007FEE0 /* radar.c */,
 				70533E6F093219E2006BD186 /* render.h */,
+				70533E6E093219E2006BD186 /* render.c */,
+				A43849450CC5B8F20007FEE0 /* renderlib.h */,
+				A43849440CC5B8F20007FEE0 /* renderlib.c */,
+				A43849670CC5B9AE0007FEE0 /* rendershadows.c */,
+				A43849680CC5B9AE0007FEE0 /* rendershadows.h */,
+				A43849710CC5B9EF0007FEE0 /* renderthreads.c */,
+				A43849720CC5B9EF0007FEE0 /* renderthreads.h */,
 				70533E70093219E2006BD186 /* reorder.h */,
 				70533E71093219E2006BD186 /* robot.c */,
 				70533E72093219E2006BD186 /* robot.h */,
@@ -1122,11 +1211,15 @@
 				70533E86093219E2006BD186 /* text.c */,
 				70533E87093219E2006BD186 /* text.h */,
 				70533E88093219E3006BD186 /* textures.h */,
+				A4AD3E2C0C9E062F00B91962 /* tga.c */,
+				A4AD3E2D0C9E062F00B91962 /* tga.h */,
 				A42652020A70471400D80F8D /* thief.c */,
 				70533E89093219E3006BD186 /* titles.c */,
 				70533E8A093219E3006BD186 /* titles.h */,
 				70533E8B093219E3006BD186 /* tracker.c */,
 				70533E8C093219E3006BD186 /* tracker.h */,
+				A43849730CC5B9EF0007FEE0 /* transprender.c */,
+				A43849740CC5B9EF0007FEE0 /* transprender.h */,
 				70533E8E093219E3006BD186 /* vclip.c */,
 				70533E8F093219E3006BD186 /* vclip.h */,
 				70533E90093219E3006BD186 /* vers_id.h */,
@@ -1387,6 +1480,21 @@
 				A42652170A704A0E00D80F8D /* input.h in Headers */,
 				A4D939AD0A814FF1004931D4 /* MacErrorMsg.h in Headers */,
 				A4CFD8C50ABA01D80047DE97 /* multimsg.h in Headers */,
+				A4AD3E2F0C9E062F00B91962 /* lightning.h in Headers */,
+				A4AD3E310C9E062F00B91962 /* objrender.h in Headers */,
+				A4AD3E330C9E062F00B91962 /* perlin.h in Headers */,
+				A4AD3E460C9E0FBE00B91962 /* tga.h in Headers */,
+				A43849250CC5B6440007FEE0 /* shadows.h in Headers */,
+				A43849410CC5B6930007FEE0 /* hitbox.h in Headers */,
+				A43849470CC5B8F20007FEE0 /* renderlib.h in Headers */,
+				A438495A0CC5B9660007FEE0 /* fastrender.h in Headers */,
+				A438495C0CC5B9660007FEE0 /* radar.h in Headers */,
+				A438496A0CC5B9AE0007FEE0 /* objeffects.h in Headers */,
+				A438496E0CC5B9AE0007FEE0 /* rendershadows.h in Headers */,
+				A43849760CC5B9EF0007FEE0 /* glare.h in Headers */,
+				A43849780CC5B9EF0007FEE0 /* renderthreads.h in Headers */,
+				A438497A0CC5B9EF0007FEE0 /* transprender.h in Headers */,
+				A43849840CC5BA3A0007FEE0 /* flightpath.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1606,6 +1714,22 @@
 				A4D939BF0A815067004931D4 /* MacErrorMsg.m in Sources */,
 				A4CFD8C30ABA01D80047DE97 /* hoard.c in Sources */,
 				A4CFD8C40ABA01D80047DE97 /* multimsg.c in Sources */,
+				A4AD3E2E0C9E062F00B91962 /* lightning.c in Sources */,
+				A4AD3E300C9E062F00B91962 /* objrender.c in Sources */,
+				A4AD3E320C9E062F00B91962 /* perlin.c in Sources */,
+				A4AD3E470C9E0FBE00B91962 /* tga.c in Sources */,
+				A438493D0CC5B6710007FEE0 /* shadows.c in Sources */,
+				A438493F0CC5B6830007FEE0 /* hitbox.c in Sources */,
+				A43849460CC5B8F20007FEE0 /* renderlib.c in Sources */,
+				A43849590CC5B9660007FEE0 /* fastrender.c in Sources */,
+				A438495B0CC5B9660007FEE0 /* radar.c in Sources */,
+				A43849690CC5B9AE0007FEE0 /* objeffects.c in Sources */,
+				A438496D0CC5B9AE0007FEE0 /* rendershadows.c in Sources */,
+				A43849750CC5B9EF0007FEE0 /* glare.c in Sources */,
+				A43849770CC5B9EF0007FEE0 /* renderthreads.c in Sources */,
+				A43849790CC5B9EF0007FEE0 /* transprender.c in Sources */,
+				A43849830CC5BA3A0007FEE0 /* flightpath.c in Sources */,
+				A43849860CC5BA4C0007FEE0 /* fastmodels.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
