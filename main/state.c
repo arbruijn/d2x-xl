@@ -1202,7 +1202,7 @@ if (!bBetweenLevels)	{
 		nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
 		if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.nObjTriggers)) {
 			CFWriteShort (nObject, fp);
-			CFWriteShort (&nFirstTrigger, fp);
+			CFWriteShort (nFirstTrigger, fp);
 			}
 		}
 	//fpos = CFTell (fp);
@@ -2239,6 +2239,8 @@ if (!bBetweenLevels)	{
 		}
 	else if (sgVersion < 36)
 		CFSeek (fp, ((sgVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
+	else
+		CFReadShort (fp);
 	//fpos = CFTell (fp);
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)	{

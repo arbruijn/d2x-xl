@@ -42,19 +42,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void LoadFaceBitmaps (tSegment *segP, grsFace *faceP)
 {
-	short	nFrame;
-	tSide	*sideP;
+	tSide	*sideP = segP->sides + faceP->nSide;
+	short	nFrame = sideP->nFrame;
 
+if (faceP->nBaseTex < 0)
+	return;
+if (faceP->bOverlay)
+	faceP->nBaseTex = sideP->nOvlTex;
+else {
+	faceP->nBaseTex = sideP->nBaseTex;
+	if (!faceP->bSplit)
+		faceP->nOvlTex = sideP->nOvlTex;
+	}
 if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
-	sideP = segP->sides + faceP->nSide;
-	nFrame = sideP->nFrame;
-	if (faceP->bOverlay)
-		faceP->nBaseTex = sideP->nOvlTex;
-	else {
-		faceP->nBaseTex = sideP->nBaseTex;
-		if (!faceP->bSplit)
-			faceP->nOvlTex = sideP->nOvlTex;
-		}
 	faceP->bmBot = LoadFaceBitmap (faceP->nBaseTex, nFrame);
 	if (nFrame)
 		nFrame = nFrame;
@@ -68,6 +68,7 @@ else {
 		if (!faceP->bmBot)
 			faceP->bmBot = TexMergeGetCachedBitmap (faceP->nBaseTex, faceP->nOvlTex, faceP->nOvlOrient);
 #endif
+		faceP->bmTop = NULL;
 		}
 	else {
 		faceP->bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [faceP->nBaseTex].index;
@@ -82,6 +83,7 @@ else {
 
 void SplitFace (tSegment *segP, grsFace *faceP)
 {
+return;
 if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
 	 !faceP->bSlide && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
 		grsFace *newFaceP = segP->pFaces + segP->nFaces++;
@@ -109,6 +111,7 @@ if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) &&
 
 void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bVertexArrays, int bTextured, int bDepthOnly)
 {
+	short special;
 #ifdef _DEBUG
 	static grsFace *prevFaceP = NULL;
 
@@ -150,9 +153,11 @@ else if (nType == 1) {
 		return;
 	}
 else if (nType == 2) {
-	short special = gameData.segs.segment2s [nSegment].special;
-	if (((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED)) &&
-		 (gameData.segs.xSegments [nSegment].owner < 1))
+	if (faceP->bmBot)
+		return;
+	special = gameData.segs.segment2s [nSegment].special;
+	if ((special < SEGMENT_IS_WATER) || (special > SEGMENT_IS_TEAM_RED) || 
+		 (gameData.segs.xSegments [nSegment].group < 0) || (gameData.segs.xSegments [nSegment].owner < 1))
 			return;
 	}
 else if (nType == 3) {
@@ -185,7 +190,8 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	else
 		nSegment = nSegment;
 #endif
-G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, bVertexArrays, bTextured && faceP->bTextured, bDepthOnly);
+G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
+				bVertexArrays, bTextured && faceP->bTextured, bDepthOnly);
 #ifdef _DEBUG
 prevFaceP = faceP;
 #endif
@@ -312,6 +318,7 @@ gameStates.render.history.bOverlay = -1;
 gameStates.render.history.bmBot = 
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
+glEnable (GL_CULL_FACE);
 OglTexWrap (NULL, GL_REPEAT);
 glDepthFunc (GL_LEQUAL);
 if (nType == 3)
@@ -379,7 +386,6 @@ void RenderSkyBoxFaces (void)
 {
 	tSegment		*segP;
 	grsFace		*faceP;
-	vmsVector	vForward = gameData.objs.viewer->position.mOrient.fVec;
 	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
@@ -392,7 +398,7 @@ if (gameStates.render.bHaveSkyBox) {
 			continue;
 		gameStates.render.bHaveSkyBox = 1;
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
-			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
+			if (!(faceP->bVisible = FaceIsVisible (i, faceP->nSide)))
 				continue;
 			RenderMineFace (segP, faceP, i, 4, bVertexArrays, 1, 0);
 			}
@@ -499,7 +505,7 @@ int SetupFace (short nSegment, short nSide, tSegment *segP, grsFace *faceP, tFac
 	int	nColor = 0;
 
 faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
-if (!(faceP->widFlags & WID_RENDER_FLAG))
+if (!(faceP->widFlags & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
 	return -1;
 faceP->nCamera = IsMonitorFace (nSegment, nSide);
 bTextured = 1;
@@ -508,9 +514,11 @@ bTextured = 1;
 faceP->bTextured = bTextured;
 if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
 	pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
+	if (!faceP->bmBot)
+		*pfAlpha = pFaceColor [2].color.alpha;
 	nColor = 2;
 	}
-if ((*pfAlpha < 1) || (nColor == 2))
+if ((*pfAlpha < 1) || ((nColor == 2) && !faceP->bmBot))
 	faceP->bTransparent = 1;
 return nColor;
 }
@@ -558,7 +566,6 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;
-	vmsVector	vForward = gameData.objs.viewer->position.mOrient.fVec;
 	int			h, i, j, uvi, nColor, 
 					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
 
@@ -578,22 +585,25 @@ for (i = nStart; i < nEnd; i++) {
 	if (bDynLight) {
 		if (!gameStates.render.bFullBright)
 			SetNearestDynamicLights (nSegment, 0, nThread);
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
 #ifdef _DEBUG
+		if (nSegment == nDbgSeg)
+			nSegment = nSegment;
+#endif
+		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
 			nSide = faceP->nSide;
+#ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 				nSegment = nSegment;
 				if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
 					nSegment = nSegment;
 				}
 #endif
-			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
+			if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 				continue;
-#ifndef _DEBUG
-			nSide = faceP->nSide;
-#endif
-			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha)))
+			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+				faceP->bVisible = 0;
 				continue;
+				}
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			for (h = 0; h < 4; h++, pc++) {
@@ -608,20 +618,18 @@ for (i = nStart; i < nEnd; i++) {
 						gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
 						}
 					if (nColor)
-						gameData.render.color.vertices [nVertex].index = 0;
-					if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+						*pc = c.color;
+					else if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
 						G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
 											NULL, &c, 1, 0, nThread);
-						}
-					if (gameStates.app.bMultiThreaded)
-						gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
-					if (nColor)
-						gameData.render.color.vertices [nVertex].index = 0;
+						if (gameStates.app.bMultiThreaded)
+							gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
 #ifdef _DEBUG
-					if (nVertex == nDbgVertex)
-						nVertex = nVertex;
+						if (nVertex == nDbgVertex)
+							nVertex = nVertex;
 #endif
-					*pc = gameData.render.color.vertices [nVertex].color;
+						*pc = gameData.render.color.vertices [nVertex].color;
+						}
 					if (nColor == 1) {
 						pc->red *= fAlpha;
 						pc->blue *= fAlpha;
@@ -635,15 +643,17 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	else {
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
-			if (!(faceP->bVisible = (VmVecDot (&faceP->vNormal, &vForward) >= 0)))
-				continue;
 			nSide = faceP->nSide;
+			if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
+				continue;
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
-			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha)))
+			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+				faceP->bVisible = 0;
 				continue;
+				}
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			uvlP = segP->sides [nSide].uvls;
 			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {

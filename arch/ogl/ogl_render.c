@@ -593,7 +593,7 @@ if (color->alpha < 0)
 	color->alpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 #if 1
 if (gameOpts->render.bDepthSort > 0) {
-	fVector		vertices [8];
+	fVector	vertices [8];
 
 	for (i = 0; i < nVertices; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
@@ -820,7 +820,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-inline void SetTexCoord (tUVL *uvlList, int nOrient, int bMulti, tTexCoord3f *vertUVL, int bMask)
+inline void SetTexCoord (tUVL *uvlList, int nOrient, int bMulti, tTexCoord2f *texCoord, int bMask)
 {
 	float u1, v1;
 
@@ -840,9 +840,9 @@ else {
 	u1 = f2fl (uvlList->u);
 	v1 = f2fl (uvlList->v);
 	}
-if (vertUVL) {
-	vertUVL->v.u = u1;
-	vertUVL->v.v = v1;
+if (texCoord) {
+	texCoord->v.u = u1;
+	texCoord->v.v = v1;
 	}
 else {
 #if OGL_MULTI_TEXTURING
@@ -1780,8 +1780,9 @@ bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend,
 	grsBitmap	*bmMask = NULL;
 	tTexCoord2f	*ovlTexCoordP;
 
-bTransparent = (faceP->bTransparent || 
-					 (bmBot && ((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT/* | BM_FLAG_TGA*/))));
+if (bmBot)
+	bmBot = BmOverride (bmBot, -1);
+bTransparent = faceP->bTransparent || (bmBot && (bmBot->bmProps.flags & BM_FLAG_TRANSPARENT));
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -1812,7 +1813,6 @@ else {
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
 if (bTextured) {
-	bmBot = BmOverride (bmBot, -1);
 	if (bmTop && !bMonitor) {
 		if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
@@ -2149,7 +2149,7 @@ gameStates.ogl.fAlpha = gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVEL
 if (bVertexArrays || bDepthSort) {
 		fVector		vertices [8];
 		tFaceColor	vertColors [8];
-		tTexCoord3f			vertUVL [2][8];
+		tTexCoord2f	texCoord [2][8];
 		int			vertIndex [8];
 		//int			colorIndex [8];
 
@@ -2161,9 +2161,9 @@ if (bVertexArrays || bDepthSort) {
 			VmsVecToFloat (vertices + i, &pl->p3_vec);
 		else
 			vertices [i] = gameData.render.pVerts [pl->p3_index];
-		vertUVL [0][i].v.u = f2fl (uvlList [i].u);
-		vertUVL [0][i].v.v = f2fl (uvlList [i].v);
-		SetTexCoord (uvlList + i, orient, 1, vertUVL [1] + i, 0);
+		texCoord [0][i].v.u = f2fl (uvlList [i].u);
+		texCoord [0][i].v.v = f2fl (uvlList [i].v);
+		SetTexCoord (uvlList + i, orient, 1, texCoord [1] + i, 0);
 		G3VERTPOS (vVertPos, pl);
 		if (bDynLight)
 			G3VertexColor (G3GetNormal (pl, &vNormal), &vVertPos, vertIndex [i], vertColors + i, NULL,
@@ -2174,7 +2174,7 @@ if (bVertexArrays || bDepthSort) {
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
 		OglLoadBmTexture (bmBot, 1, 3, 0);
-		RIAddPoly (bmBot, vertices, nVertices, vertUVL [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
+		RIAddPoly (bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 		return 0;
 		}
 #endif
@@ -2187,7 +2187,7 @@ if (bVertexArrays) {
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertices);
 //	glIndexPointer (GL_INT, 0, colorIndex);
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), vertUVL [0]);
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [0]);
 	if (bLight)
 		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 	if (bmTop && !bOverlay) {
@@ -2200,7 +2200,7 @@ if (bVertexArrays) {
 		if (bLight)
 			glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 //		glIndexPointer (GL_INT, 0, colorIndex);
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), vertUVL [1]);
+		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [1]);
 		}
 	glDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
 	G3DisableClientStates (GL_TEXTURE0);

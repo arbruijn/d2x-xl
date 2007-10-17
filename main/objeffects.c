@@ -124,7 +124,7 @@ for (i = 0; i < 8; i++) {
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
+#if RENDER_HITBOX
 
 void RenderHitbox (tObject *objP, float red, float green, float blue, float alpha)
 {
@@ -134,8 +134,9 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 
 if (!SHOW_OBJ_FX)
 	return;
-if (!EGI_FLAG (bRenderShield, 0, 1, 0) ||
-	 ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)))
+if ((objP->nType == OBJ_PLAYER) && (!EGI_FLAG (bRenderShield, 0, 1, 0) || gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+	return;
+if ((objP->nType == OBJ_ROBOT) && (!gameOpts->render.bRobotShields || objP->cType.aiInfo.CLOAKED))
 	return;
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	DrawShieldSphere (objP, red, green, blue, alpha);
@@ -157,7 +158,8 @@ glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 for (; iModel <= nModels; iModel++) {
-	G3StartInstanceAngles (&pmhb [iModel].vOffset, &avZero);
+	if (iModel)
+		G3StartInstanceAngles (&pmhb [iModel].vOffset, &avZero);
 	TransformHitboxf (objP, vertList, iModel);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
@@ -176,7 +178,8 @@ for (; iModel <= nModels; iModel++) {
 		glEnd ();
 		}
 	glLineWidth (1);
-	G3DoneInstance ();
+	if (iModel)
+		G3DoneInstance ();
 	}
 G3DoneInstance ();
 #if 0//def _DEBUG	//display collision point
@@ -214,7 +217,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	bStencil = StencilOff ();
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
-#if 0//def _DEBUG
+#if RENDER_HITBOX
 		RenderHitbox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
 #else
 		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 1.0f);
@@ -231,7 +234,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 			}
 		}
 	if (gameData.multiplayer.bWasHit [i])
-#if 0//def _DEBUG
+#if RENDER_HITBOX
 		RenderHitbox (objP, 1.0f, 0.5f, 0.0f, 1.0f);
 #else
 		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 1.0f);
@@ -239,7 +242,7 @@ if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
 	else {
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
-#if 0//def _DEBUG
+#if RENDER_HITBOX
 		RenderHitbox (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 400.0f);
 #else
 		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 100.0f);
@@ -1493,7 +1496,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			static fVector vEye = {{0, 0, 0}};
 
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
-			static tTexCoord3f	tTexCoordTrail [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};;
+			static tTexCoord2f	tTexCoordTrail [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 			
 		if (r >= 3.0f)
 			r /= 1.5f;

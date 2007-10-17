@@ -3006,7 +3006,7 @@ if (!PolyModelRead (pm = gameData.models.polyModels + (nModel = oofToModel [i].n
 	}
 pm->modelData = 
 pm->modelData = NULL;
-PolyModelDataRead (pm, i, gameData.models.defPolyModels + nModel, fp);
+PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, fp);
 CFClose (fp);
 pm->rad = G3PolyModelSize (pm, nModel);
 do {

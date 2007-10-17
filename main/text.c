@@ -1530,7 +1530,7 @@ char *defaultGameTexts [][2] = {
 	{"~Pyro-Kraft: x %d", "~Pyro Force: x %d"},
 	{"Echtzeit-OpenGL-~Beleuchtung", "real-time Open~GL Lighting"},
 	{"openGL ~Objekt-Beleuchtung", "openGL ~Object lighting"},
-	{"~Lichter/Segment: %d", "~Lights/segment: %d"},
+	{"~Lichter/Objekt: %d", "~Lights/object: %d"},
 	{"~Verdunkelung", "~Darkness game"},
 	{"~Team-Tueren", "~Team Doors"},
 	{"~Cheat Codes zulassen", "Enable ~Cheat Codes"},

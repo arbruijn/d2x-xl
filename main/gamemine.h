@@ -112,7 +112,8 @@ int game_load_mine(char * filename);
 // loads from an already-open file
 // returns 0=everything ok, 1=old version, -1=error
 int load_mine_data(CFILE *LoadFile);
-int LoadMineSegmentsCompiled(CFILE *LoadFile);
+int LoadMineSegmentsCompiled (CFILE *LoadFile);
+void CreateFaceList (void);
 void ComputeNearestLights (int nLevel);
 
 extern short tmap_xlate_table[];

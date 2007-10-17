@@ -32,12 +32,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "transprender.h"
 
 #define RI_SPLIT_POLYS 1
+#define RI_POLY_OFFSET 0
 
 //------------------------------------------------------------------------------
 
 tRenderItemBuffer	renderItems;
 
-static tTexCoord3f defaultTexCoord [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+static tTexCoord2f defaultTexCoord [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 inline int AllocRenderItems (void)
 {
@@ -158,7 +159,7 @@ if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0
 		if (zMin > z)
 			zMin = z;
 		}
-	return AddRenderItem (riPoly, item, sizeof (*item), fl2f (zMax), fl2f (zMin));
+	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), fl2f (zMax), fl2f (zMin));
 	}
 if (split [0].nVertices == 3) {
 	i1 = (i0 + 1) % 3;
@@ -217,7 +218,7 @@ return RISplitPoly (split, nDepth + 1) && RISplitPoly (split + 1, nDepth + 1);
 
 //------------------------------------------------------------------------------
 
-int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord3f *texCoord, tRgbaColorf *color, 
+int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive)
 {
 	tRIPoly	item;
@@ -264,7 +265,7 @@ else
 		}
 	if ((z < renderItems.zMin) || (z > renderItems.zMax))
 		return 0;
-	return AddRenderItem (riPoly, &item, sizeof (item), fl2f (z), fl2f (z));
+	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (z), fl2f (z));
 	}
 }
 
@@ -273,19 +274,20 @@ else
 int RIAddFace (grsFace *faceP)
 {
 	fVector		vertices [4];
-	tTexCoord3f	texCoord [4];
 	int			i, j;
 
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
+for (i = 0, j = faceP->nIndex; i < 4; i++, j++) 
+#if 1
+	VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
+#else
 	G3TransformPointf (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
-	vertices [i].p.w = 0;
-	memcpy (texCoord + i, gameData.segs.faces.texCoord + j, sizeof (tTexCoord2f));
-	}
-return RIAddPoly (faceP->bmBot, vertices, 4, texCoord, gameData.segs.faces.color + faceP->nIndex,
+#endif
+return RIAddPoly (faceP->bmBot, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 }
 
@@ -469,7 +471,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, int bClientState)
+int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, int bClientState, int nTransp)
 {
 if (bmP) {
 	if (RISetClientState (bClientState, 1, nColors > 1) || (renderItems.bTextured < 1)) {
@@ -478,7 +480,7 @@ if (bmP) {
 		renderItems.bTextured = 1;
 		}
 	if ((bmP != renderItems.bmP) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
-		if (OglBindBmTex (bmP, 1, 1)) {
+		if (OglBindBmTex (bmP, 1, nTransp)) {
 			renderItems.bmP = NULL;
 			return 0;
 			}
@@ -503,25 +505,33 @@ void RIRenderPoly (tRIPoly *item)
 
 if (renderItems.bDepthMask != item->bDepthMask)
 	glDepthMask (renderItems.bDepthMask = item->bDepthMask);
-glEnable (GL_CULL_FACE);
+#if RI_POLY_OFFSET
+if (!item->bmP) {
+	glEnable (GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset (1,1);
+	glPolygonMode (GL_FRONT, GL_FILL);
+	}
+#endif
 #if 1
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1)) {
-	if (item->bAdditive)
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3)) {
+	if (item->bAdditive == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
+	else if (item->bAdditive == 2)
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), item->texCoord);
+		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->nColors == 1)
 		glColor4fv ((GLfloat *) item->color);
 	else if (item->nColors > 1)
-		glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), item->color);
+		glColorPointer (4, GL_FLOAT, 0, item->color);
 	else
 		glColor3d (1, 1, 1);
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3)) {
 	if (item->bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
@@ -562,7 +572,12 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0)) {
 		}
 	glEnd ();
 	}
-glDisable (GL_CULL_FACE);
+#if RI_POLY_OFFSET
+if (!item->bmP) {
+	glPolygonOffset (0,0);
+	glDisable (GL_POLYGON_OFFSET_FILL);
+	}	
+#endif
 if (item->bAdditive)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -571,7 +586,7 @@ if (item->bAdditive)
 
 void RIRenderSprite (tRISprite *item)
 {
-if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0)) {
+if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
@@ -678,7 +693,7 @@ if (!renderItems.bDepthMask)
 glBlendFunc (GL_ONE, GL_ONE);
 glColor3f (0.75f, 0.75f, 0.75f);
 #if 1
-if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1)) {
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), item->texCoord);
 	if (item->bFlame)
@@ -687,7 +702,7 @@ if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1)) {
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0)) {
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1)) {
 	int i;
 	if (item->bFlame) {
 		glBegin (GL_TRIANGLES);
@@ -728,6 +743,9 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 bStencil = StencilOff ();
+G3DisableClientStates (1, 1, GL_TEXTURE2);
+G3DisableClientStates (1, 1, GL_TEXTURE1);
+G3DisableClientStates (1, 1, GL_TEXTURE0);
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
 renderItems.bClientTexCoord = 0;
@@ -753,7 +771,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 		do {
 			nType = pl->nType;
 			RIFlushParticleBuffer (nType);
-			if (nType == riPoly) {
+			if ((nType == riTexPoly) || (nType == riFlatPoly)) {
 				RIRenderPoly (&pl->item.poly);
 				}
 			else if (nType == riSprite) {

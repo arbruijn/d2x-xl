@@ -745,10 +745,10 @@ switch (objP->renderType) {
 				return 0;
 			DrawPolygonObject (objP);
 			RenderThrusterFlames (objP);
-#if 0//def _DEBUG
-			RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-#else
 			if (gameStates.render.nShadowPass != 2) {
+#if RENDER_HITBOX
+				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#else
 				if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
 					if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
 						DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
@@ -773,7 +773,7 @@ switch (objP->renderType) {
 #endif
 				if (gameData.objs.bIsMissile [objP->id]) {
 					DrawPolygonObject (objP);
-#if 0//def _DEBUG
+#if RENDER_HITBOX
 #	if 0
 					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #	else
@@ -783,7 +783,7 @@ switch (objP->renderType) {
 					RenderThrusterFlames (objP);
 					}
 				else {
-#if 0//def _DEBUG
+#if RENDER_HITBOX
 #	if 0
 					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #	else

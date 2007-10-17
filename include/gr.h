@@ -679,7 +679,6 @@ typedef union tTexCoord3f {
 	} tTexCoord3f;
 
 typedef struct grsFace {
-	vmsVector			vNormal;
 	ushort				index [4];
 	int					nIndex;
 	grsBitmap			*bmBot;

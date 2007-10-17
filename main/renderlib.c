@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+#define SW_CULLING 1
 #define SOFT_SHADOWS		0
 #define RENDER_DEPTHMASK_FIRST 1
 
@@ -86,6 +87,23 @@ int found_seg, found_side, found_face, found_poly;
 
 int	bOutLineMode = 0, 
 		bShowOnlyCurSide = 0;
+
+//------------------------------------------------------------------------------
+
+int FaceIsVisible (short nSegment, short nSide)
+{
+#if SW_CULLING
+tSegment *segP = SEGMENTS + nSegment;
+tSide *sideP = segP->sides + nSide;
+vmsVector v;
+VmVecSub (&v, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
+return (sideP->nType == SIDE_IS_QUAD) ?
+		 VmVecDot (sideP->normals, &v) >= 0 :
+		 (VmVecDot (sideP->normals, &v) >= 0) || (VmVecDot (sideP->normals + 1, &v) >= 0);
+#else
+return 1;
+#endif
+}
 
 //------------------------------------------------------------------------------
 
@@ -367,13 +385,13 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrid
 		return (owner == 1) ? 2 : 1;
 	}
 special = gameData.segs.segment2s [nSegment].special;
+nConnSeg = gameData.segs.segments [nSegment].children [nSide];
+if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].special))
+	return 0;
 if (special == SEGMENT_IS_WATER) 
 	return 3;
 if (special == SEGMENT_IS_LAVA)
 	return 4;
-nConnSeg = gameData.segs.segments [nSegment].children [nSide];
-if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].special))
-	return 0;
 return 0;
 }
 

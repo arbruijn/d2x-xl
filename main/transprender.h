@@ -9,19 +9,21 @@
 #define ITEM_BUFFER_SIZE		100000
 
 typedef enum tRenderItemType {
-	riPoly,
 	riSprite,
 	riSphere,
 	riParticle,
 	riLightning,
 	riLightningSegment,
-	riThruster
+	riThruster,
+	riPoly,
+	riTexPoly,
+	riFlatPoly
 } tRenderItemType;
 
 typedef struct tRIPoly {
 	grsBitmap			*bmP;
 	fVector				vertices [4];
-	tTexCoord3f			texCoord [4];
+	tTexCoord2f			texCoord [4];
 	tRgbaColorf			color [4];
 	short					sideLength [4];
 	int					nWrap;
@@ -78,7 +80,7 @@ typedef struct tRILightningSegment {
 typedef struct tRIThruster {
 	grsBitmap				*bmP;
 	fVector					vertices [7];
-	tTexCoord3f						texCoord [7];
+	tTexCoord3f				texCoord [7];
 	char						bFlame;
 } tRIThruster;
 
@@ -122,7 +124,7 @@ void ResetRenderItemBuffer (void);
 void InitRenderItemBuffer (int zMin, int zMax);
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int RIAddFace (grsFace *faceP);
-int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord3f *texCoord, tRgbaColorf *color, 
+int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);

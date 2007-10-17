@@ -835,7 +835,7 @@ int OglFillTexBuf (
 	int		bTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 
 #ifdef _DEBUG
-if (!strcmp (bmP->szName, "empty"))
+if (strstr (bmP->szName, "door42"))
 	bmP = bmP;
 #endif
 gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bmPalette : bmP->bmPalette);

@@ -29,7 +29,11 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "error.h"
 //#define _DEBUG
 #define EXACT_VEC_MAG	1
-#define ENABLE_SSE		1
+#ifdef _WIN32
+#	define ENABLE_SSE		1
+#else
+#	define ENABLE_SSE		0
+#endif
 
 #ifndef ASM_VECMAT
 vmsVector vmdZeroVector = {{0, 0, 0}};

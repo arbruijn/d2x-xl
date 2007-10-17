@@ -79,8 +79,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define SW_CULLING			0
-
 #if LIGHTMAPS
 #	define LMAP_LIGHTADJUST	1
 #else
@@ -369,6 +367,10 @@ if (gameStates.render.nShadowBlurPass == 1) {
 #endif
 SetVertexColors (&props);
 if (gameStates.render.nType == 2) {
+#ifdef _DEBUG //convenient place for a debug breakpoint
+	if (props.segNum == nDbgSeg && ((nDbgSide < 0) || (props.sideNum == nDbgSide)))
+		props.segNum = props.segNum;
+#endif
 	RenderColoredSegFace (props.segNum, props.sideNum, props.nVertices, pointList);
 	gameData.render.vertexList = NULL;
 	return;
@@ -526,9 +528,6 @@ void RenderSide (tSegment *segP, short nSide)
 {
 	tSide			*sideP = segP->sides + nSide;
 	tFaceProps	props;
-#if SW_CULLING
-	vmsVector	v;
-#endif
 
 #if LIGHTMAPS
 #define	LMAP_SIZE	(1.0 / 16.0)
@@ -616,12 +615,9 @@ else
 #	endif
 #endif
 
+if (!FaceIsVisible (props.segNum, props.sideNum))
+	return;
 if (sideP->nType == SIDE_IS_QUAD) {
-#if SW_CULLING
-	VmVecSub (&v, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [props.sideNum][0]]);
-	if (VmVecDot (sideP->normals, &v) < 0)
-		return;
-#endif
 	props.vNormal = sideP->normals [0];
 	props.nVertices = 4;
 	memcpy (props.uvls, sideP->uvls, sizeof (tUVL) * 4);
@@ -632,13 +628,9 @@ if (sideP->nType == SIDE_IS_QUAD) {
 #endif
 	} 
 else {
-	// new code: No software visibility culling anymore
+	// new code
 	// non-planar faces are still passed as quads to the renderer as it will render triangles (GL_TRIANGLE_FAN) anyway
 	// just need to make sure the vertices come in the proper order depending of the the orientation of the two non-planar triangles
-#if SW_CULLING
-	if ((VmVecDot (sideP->normals, &v) < 0) && (VmVecDot (sideP->normals + 1, &v) < 0))
-		return;
-#endif
 	VmVecAdd (&props.vNormal, sideP->normals, sideP->normals + 1);
 	VmVecScale (&props.vNormal, F1_0 / 2);
 	props.nVertices = 4;
