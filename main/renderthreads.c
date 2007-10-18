@@ -30,6 +30,7 @@ tRenderThreadInfo tiRender;
 int RunRenderThreads (int nTask)
 {
 	time_t	t1 = 0, t2 = 0;
+	static	int nLockups = 0;
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;
@@ -40,16 +41,19 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 tiRender.nTask = nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
+//LogErr ("running render threads (task: %d)\n", nTask);
 t1 = clock ();
-while (tiRender.ti [0].bExec || tiRender.ti [1].bExec && (clock () - t1 < 1000)) {
+while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000)) {
 	G3_SLEEP (0);
 	if (tiRender.ti [0].bExec != tiRender.ti [1].bExec) {
 		if (!t2)
 			t2 = clock ();
 		else if (clock () - t2 > 10) {	//slower thread must not take more than 10 ms longer than faster one
-			LogErr ("threads locked up\n");
+			LogErr ("threads locked up (task: %d)\n", nTask);
 			tiRender.ti [0].bExec =
 			tiRender.ti [1].bExec = 0;
+			if (++nLockups > 100)
+				gameStates.app.bMultiThreaded = 0;
 			}
 		}
 	}	
@@ -118,10 +122,8 @@ void StartRenderThreads (void)
 {
 	int	i;
 
+memset (&tiRender, 0, sizeof (tiRender));
 for (i = 0; i < 2; i++) {
-	tiRender.ti [i].bDone = 0;
-	tiRender.ti [i].bBlock = 0;
-	tiRender.ti [i].bExec = 0;
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 	}

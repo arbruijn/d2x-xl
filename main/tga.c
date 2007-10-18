@@ -602,6 +602,8 @@ grsBitmap *CreateSuperTranspMask (grsBitmap *bmP)
 	ubyte		*pi;
 	ubyte		*pm;
 
+if (!gameStates.render.textures.bHaveMaskShader)
+	return NULL;
 if (BM_MASK (bmP))
 	return BM_MASK (bmP);
 if (!(BM_MASK (bmP) = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))

@@ -12,97 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header file for stuff moved from tSegment.c to gameseg.c.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:57:18  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:31:20  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.24  1995/02/01  16:34:03  john
- * Linted.
- *
- * Revision 1.23  1995/01/16  21:06:36  mike
- * Move function pick_random_point_in_segment from fireball.c to gameseg.c.
- *
- * Revision 1.22  1994/11/23  12:18:59  mike
- * prototype for level names.
- *
- * Revision 1.21  1994/11/17  14:56:59  mike
- * moved tSegment validation functions from editor to main.
- *
- * Revision 1.20  1994/11/16  23:38:46  mike
- * new improved boss teleportation behavior.
- *
- * Revision 1.19  1994/10/30  14:12:14  mike
- * rip out local segments stuff.
- *
- * Revision 1.18  1994/10/09  23:51:07  matt
- * Made FindHitPointUV() work with triangulated sides
- *
- * Revision 1.17  1994/10/06  14:08:22  matt
- * Added new function, ExtractOrientFromSegment()
- *
- * Revision 1.16  1994/09/19  21:05:52  mike
- * Prototype for FindConnectedDistance.
- *
- * Revision 1.15  1994/08/11  18:58:45  mike
- * Change shorts to ints.
- *
- * Revision 1.14  1994/08/04  00:21:09  matt
- * Cleaned up fvi & physics error handling; put in code to make sure objects
- * are in correct tSegment; simplified tSegment finding for objects and points
- *
- * Revision 1.13  1994/08/02  19:04:25  matt
- * Cleaned up vertex list functions
- *
- * Revision 1.12  1994/07/21  19:01:53  mike
- * lsegment stuff.
- *
- * Revision 1.11  1994/07/07  09:31:13  matt
- * Added comments
- *
- * Revision 1.10  1994/06/14  12:21:20  matt
- * Added new function, FindSegByPoint()
- *
- * Revision 1.9  1994/05/29  23:17:38  matt
- * Move FindObjectSeg() from physics.c to gameseg.c
- * Killed unused FindSegByPoint()
- *
- * Revision 1.8  1994/05/20  11:56:57  matt
- * Cleaned up FindVectorIntersection() interface
- * Killed check_point_in_seg(), check_player_seg(), checkObject_seg()
- *
- * Revision 1.7  1994/03/17  18:07:38  yuan
- * Removed switch code... Now we just have Walls, Triggers, and Links...
- *
- * Revision 1.6  1994/02/22  18:14:44  yuan
- * Added new tWall system
- *
- * Revision 1.5  1994/02/17  11:33:22  matt
- * Changes in tObject system
- *
- * Revision 1.4  1994/02/16  13:48:33  mike
- * enable editor to compile out.
- *
- * Revision 1.3  1994/02/14  12:05:07  mike
- * change tSegment data structure.
- *
- * Revision 1.2  1994/02/10  16:07:20  mike
- * separate editor from game based on EDITOR flag.
- *
- * Revision 1.1  1994/02/09  15:45:38  mike
- * Initial revision
- *
- *
- */
-
-
 #ifndef _GAMESEG_H
 #define _GAMESEG_H
 
@@ -131,10 +40,14 @@ int FindConnectedSide(tSegment *base_seg, tSegment *con_seg);
 
 #define	SEGMENT_CENTER_I(_nSeg)	(gameData.segs.segCenters [0] + (_nSeg))
 
+#define	SIDE_CENTER_I(_nSeg,_nSide)	(gameData.segs.sideCenters + (_nSeg) * 6 + (_nSide))
+
+#define	SIDE_CENTER_V(_nSeg,_nSide)	gameData.segs.sideCenters [(_nSeg) * 6 + (_nSide)]
+
 #define	COMPUTE_SEGMENT_CENTER_I(_pc,_nSeg) *(_pc) = (*SEGMENT_CENTER_I (_nSeg))
 
 #define	COMPUTE_SIDE_CENTER_I(_pc,_nSeg,_nSide) \
-			*(_pc) = gameData.segs.sideCenters [(_nSeg) * 6 + (_nSide)]
+			*(_pc) = SIDE_CENTER_V (_nSeg, _nSide)
 
 #define	COMPUTE_SEGMENT_RAD_I(_pc,_nSeg,_nSide) \
 			*(_pc) = gameData.segs.segRads [_nSeg]

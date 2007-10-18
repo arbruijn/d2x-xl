@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "u_mem.h"
 #include "error.h"
+#include "gameseg.h"
 #include "network.h"
 #include "lighting.h"
 #include "lightmap.h"
@@ -96,7 +97,7 @@ int FaceIsVisible (short nSegment, short nSide)
 tSegment *segP = SEGMENTS + nSegment;
 tSide *sideP = segP->sides + nSide;
 vmsVector v;
-VmVecSub (&v, &gameData.render.mine.viewerEye, gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
+VmVecSub (&v, &gameData.render.mine.viewerEye, SIDE_CENTER_I (nSegment, nSide)); //gameData.segs.vertices + segP->verts [sideToVerts [nSide][0]]);
 return (sideP->nType == SIDE_IS_QUAD) ?
 		 VmVecDot (sideP->normals, &v) >= 0 :
 		 (VmVecDot (sideP->normals, &v) >= 0) || (VmVecDot (sideP->normals + 1, &v) >= 0);

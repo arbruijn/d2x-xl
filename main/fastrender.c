@@ -83,7 +83,6 @@ else {
 
 void SplitFace (tSegment *segP, grsFace *faceP)
 {
-return;
 if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
 	 !faceP->bSlide && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
 		grsFace *newFaceP = segP->pFaces + segP->nFaces++;
@@ -612,22 +611,24 @@ for (i = nStart; i < nEnd; i++) {
 				else {
 					c = faceColor [nColor];
 					nVertex = faceP->index [h];
-					if (gameStates.app.bMultiThreaded) {
-						while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
-							G3_SLEEP (0);
-						gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
-						}
 					if (nColor)
 						*pc = c.color;
-					else if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
-						G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
-											NULL, &c, 1, 0, nThread);
-						if (gameStates.app.bMultiThreaded)
-							gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
+					else {
+						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+							if (gameStates.app.bMultiThreaded) {
+								while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
+									G3_SLEEP (0);
+								gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
+								}
+							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
+												NULL, &c, 1, 0, nThread);
+							if (gameStates.app.bMultiThreaded)
+								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
 #ifdef _DEBUG
-						if (nVertex == nDbgVertex)
-							nVertex = nVertex;
+							if (nVertex == nDbgVertex)
+								nVertex = nVertex;
 #endif
+							}
 						*pc = gameData.render.color.vertices [nVertex].color;
 						}
 					if (nColor == 1) {

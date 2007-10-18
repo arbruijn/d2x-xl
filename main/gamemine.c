@@ -970,6 +970,7 @@ int ComputeNearestSegmentLights (int i)
 	vmsVector			center, dist;
 	struct tLightDist	*pDists;
 
+LogErr ("computing nearest segment lights (%d)\n", i);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
@@ -1025,6 +1026,7 @@ int ComputeNearestVertexLights (int i)
 	vmsVector			dist;
 	struct tLightDist	*pDists;
 
+LogErr ("computing nearest vertex lights (%d)\n", i);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
@@ -1071,6 +1073,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+#ifdef _DEBUG
 grsFace *FindDupFace (short nSegment, short nSide)
 {
 	tSegment	*segP = SEGMENTS + nSegment;
@@ -1090,6 +1093,8 @@ for (i = 0, segP = SEGMENTS; i < gameData.segs.nSegments; i++, segP++) {
 	}
 return 0;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1209,7 +1214,6 @@ for (colorP = gameData.render.color.ambient, i = gameData.segs.nVertices; i; i--
 		colorP->color.blue /= colorP->color.alpha;
 		colorP->color.alpha = 1;
 		}
-FindDupFace (17, 4);
 }
 
 //------------------------------------------------------------------------------
@@ -1564,6 +1568,7 @@ void ComputeVertexVisibility (int startI)
 	int			i, j, v, endI;
 	vmsVector	c, d, *vertP;
 
+LogErr ("computing vertex visibility (%d)\n", startI);
 if (startI <= 0)
 	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS);
 if (gameStates.app.bMultiThreaded)
@@ -1617,6 +1622,7 @@ void ComputeSegmentVisibility (int startI)
 	short			*psv;
 	tSegment		*segP;
 
+LogErr ("computing segment visibility (%d)\n", startI);
 if (startI <= 0)
 	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
 if (gameStates.app.bMultiThreaded) {
