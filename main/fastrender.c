@@ -513,11 +513,11 @@ bTextured = 1;
 faceP->bTextured = bTextured;
 if ((faceP->nSegColor = IsColoredSegFace (nSegment, nSide))) {
 	pFaceColor [2].color = *ColoredSegmentColor (nSegment, nSide, faceP->nSegColor);
-	if (!faceP->bmBot)
+	if (faceP->nBaseTex < 0)
 		*pfAlpha = pFaceColor [2].color.alpha;
 	nColor = 2;
 	}
-if ((*pfAlpha < 1) || ((nColor == 2) && !faceP->bmBot))
+if ((*pfAlpha < 1) || ((nColor == 2) && (faceP->nBaseTex < 0)))
 	faceP->bTransparent = 1;
 return nColor;
 }
@@ -610,10 +610,10 @@ for (i = nStart; i < nEnd; i++) {
 					*pc = c.color;
 				else {
 					c = faceColor [nColor];
-					nVertex = faceP->index [h];
 					if (nColor)
 						*pc = c.color;
 					else {
+						nVertex = faceP->index [h];
 						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
 							if (gameStates.app.bMultiThreaded) {
 								while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])

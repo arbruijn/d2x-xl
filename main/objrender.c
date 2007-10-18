@@ -632,6 +632,7 @@ time_t tRenderObject;
 
 int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {
+	short			nObject = OBJ_IDX (objP);
 	int			mldSave, bSpectate = 0;
 	tPosition	savePos;
 #if 0
@@ -658,9 +659,11 @@ if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) &&
 	tRenderObject += clock () - t;
 	return 0;
 	}
-if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
-	 (gameData.objs.viewer == gameData.objs.console) &&
-	 !gameStates.render.automap.bDisplay) {
+if (nObject != LOCALPLAYER.nObject) {
+	if (objP == gameData.objs.viewer)
+		return 0;
+	 }
+else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.automap.bDisplay) {
 	if ((bSpectate = (gameStates.app.bFreeCam && !nWindowNum)))
 		;
 		//HUDMessage (0, "%1.2f %1.2f %1.2f", f2fl (objP->position.vPos.p.x), f2fl (objP->position.vPos.p.y), f2fl (objP->position.vPos.p.z));
@@ -681,7 +684,7 @@ if ((OBJ_IDX (objP) == LOCALPLAYER.nObject) &&
 	}
 if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
 #if TRACE				
-	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", OBJ_IDX (objP), objP->nSegment);
+	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->nSegment);
 #endif
 	tRenderObject += clock () - t;
 	return 0;
@@ -750,7 +753,7 @@ switch (objP->renderType) {
 				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
 				if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
-					if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)] < 300)
+					if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [nObject] < 300)
 						DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
 					else if (ROBOTINFO (objP->id).companion)
 						DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
@@ -942,9 +945,9 @@ switch (objP->renderType) {
 #ifdef NEWDEMO
 if (objP->renderType != RT_NONE)
 	if (gameData.demo.nState == ND_STATE_RECORDING) {
-		if (!gameData.demo.bWasRecorded [OBJ_IDX (objP)]) {
+		if (!gameData.demo.bWasRecorded [nObject]) {
 			NDRecordRenderObject (objP);
-			gameData.demo.bWasRecorded [OBJ_IDX (objP)] = 1;
+			gameData.demo.bWasRecorded [nObject] = 1;
 		}
 	}
 #endif

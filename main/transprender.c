@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "transprender.h"
 
-#define RI_SPLIT_POLYS 1
+#define RI_SPLIT_POLYS 0
 #define RI_POLY_OFFSET 0
 
 //------------------------------------------------------------------------------
@@ -518,6 +518,8 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3)) {
 		glBlendFunc (GL_ONE, GL_ONE);
 	else if (item->bAdditive == 2)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	else 
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);

@@ -1165,6 +1165,9 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 				faceP->bTransparent = 1;
 				}
 			faceP->nType = -1;
+#ifdef _DEBUG
+			faceP->nSegment = nSegment;
+#endif
 			faceP->nSide = nSide;
 			faceP->nWall = nWall;
 			faceP->nIndex = 4 * gameData.segs.nFaces++;
