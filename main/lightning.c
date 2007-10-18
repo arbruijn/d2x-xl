@@ -1276,7 +1276,7 @@ if (bPlasma) {
 	if (bDrawArrays)
 		G3DisableClientStates (1, 0, -1);
 	}
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 glColor4fv ((GLfloat *) &color);
 glLineWidth ((GLfloat) (nDepth ? 2 : 3));
 glDisable (GL_TEXTURE_2D);
@@ -1287,7 +1287,7 @@ glVertex3fv ((GLfloat *) (vLine + 1));
 glEnd ();
 glLineWidth (1);
 glDisable (GL_SMOOTH);
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //------------------------------------------------------------------------------
@@ -1401,7 +1401,7 @@ void RenderPlasmaBuffer (tLightning *pl, tRgbaColorf *colorP, int nThread)
 	int	bScale;
 
 G3EnableClientStates (1, 0, GL_TEXTURE0);
-OglBlendFunc (GL_ONE, GL_ONE);
+glBlendFunc (GL_ONE, GL_ONE);
 for (bScale = 0; bScale < 2; bScale++) {
 	if (bScale)
 		glColor4f (0.05f, 0.05f, 0.05f, colorP->alpha / 2);
@@ -1422,7 +1422,7 @@ void RenderLightningCore (tLightning *pl, tRgbaColorf *colorP, int nDepth, int n
 	fVector3			*vPosf = coreBuffer [nThread];
 	int				i;
 
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 glDisable (GL_TEXTURE_2D);
 glColor4fv ((GLfloat *) colorP);
 glLineWidth ((GLfloat) (nDepth ? 2 : 4));
@@ -1764,7 +1764,7 @@ else {
 #if RENDER_LIGHTNING_PLASMA
 		if (bPlasma) {
 			for (h = 0; h < 2; h++) {
-				OglBlendFunc (GL_ONE, GL_ONE);
+				oglBlendFunc (GL_ONE, GL_ONE);
 				if (h)
 					glColor4f (0.05f, 0.05f, 0.05f, color.alpha / 2);
 				else
@@ -1795,7 +1795,7 @@ else {
 		if (nDepth)
 			color.alpha /= 2;
 #	endif
-		OglBlendFunc (GL_SRC_ALPHA, GL_ONE);
+		oglBlendFunc (GL_SRC_ALPHA, GL_ONE);
 		glColor4fv ((GLfloat *) &color);
 		glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 		glDisable (GL_TEXTURE_2D);
@@ -1838,7 +1838,7 @@ else {
 		}
 	glLineWidth (1);
 	glDisable (GL_SMOOTH);
-	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 }
 

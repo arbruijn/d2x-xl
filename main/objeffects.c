@@ -152,7 +152,7 @@ else {
 	}
 glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
@@ -1425,7 +1425,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	glDepthMask (0);
 	glEnable (GL_LINE_STIPPLE);
 	glEnable (GL_BLEND);
-	OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable (GL_LINE_SMOOTH);
 	glLineStipple (6, 0x003F); //patterns [h]);
 	vDirf.p.x *= TRACER_WIDTH / 20.0f;

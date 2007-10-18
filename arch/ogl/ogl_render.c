@@ -3235,6 +3235,10 @@ void OglEndFrame (void)
 {
 //	OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
 //	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+G3DisableClientStates (1, 1, GL_TEXTURE2);
+G3DisableClientStates (1, 1, GL_TEXTURE1);
+G3DisableClientStates (1, 1, GL_TEXTURE0);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OGL_VIEWPORT (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #ifndef NMONO
 //	merge_textures_stats ();

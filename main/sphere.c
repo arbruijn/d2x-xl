@@ -485,7 +485,7 @@ else
 	bTextured = InitSphereSurface (sdP, red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
-OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if SIMPLE_SPHERE
 RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else

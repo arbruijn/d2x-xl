@@ -584,7 +584,7 @@ else {
 		if (bEnergyWeapon) {
 			gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
 			if (!gameOpts->legacy.bRender)
-				OglBlendFunc (GL_ONE, GL_ONE);
+				glBlendFunc (GL_ONE, GL_ONE);
 			}
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
@@ -614,7 +614,7 @@ else {
 			bEnergyWeapon ? gameData.weapons.color + objP->id : NULL);
 		if (bBlendPolys && !gameOpts->legacy.bRender) {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
-			OglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			}
 		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 		}
