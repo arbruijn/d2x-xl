@@ -67,8 +67,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define KEY_RED                 4
 #define KEY_GOLD                8
 
-#define WALL_HPS                100*F1_0    // Normal tWall's hp
-#define WALL_DOOR_INTERVAL      5*F1_0      // How many seconds a door is open
+#define WALL_HPS                i2f(100)    // Normal wall's hp
+#define WALL_DOOR_INTERVAL      i2f(5)      // How many seconds a door is open
 
 #define DOOR_OPEN_TIME          i2f(2)      // How long takes to open
 #define DOOR_WAIT_TIME          i2f(5)      // How long before auto door closes

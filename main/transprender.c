@@ -280,12 +280,12 @@ int RIAddFace (grsFace *faceP)
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	faceP = faceP;
 #endif
-for (i = 0, j = faceP->nIndex; i < 4; i++, j++) 
-#if 1
-	VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
-#else
-	G3TransformPointf (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
-#endif
+for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
+	if (gameStates.render.automap.bDisplay)
+		G3TransformPointf (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
+	else
+		VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
+	}
 return RIAddPoly (faceP->bmBot, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);

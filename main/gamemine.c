@@ -1108,23 +1108,26 @@ void CreateFaceList (void)
 	tFaceColor	*colorP = gameData.render.color.ambient;
 	tSegment		*segP = SEGMENTS;
 	tSide			*sideP;
-	short			nSegment, nWall, nOvlTexCount = 0, i, sideVerts [4];
-	ubyte			nSide, bColoredSeg;
+	short			nSegment, nWall, nOvlTexCount, i, sideVerts [4];
+	ubyte			nSide, bColoredSeg, bWall;
 	float			fLight;
 
+LogErr ("   Creating face list\n");
 gameData.segs.nFaces = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	bColoredSeg = ((gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_WATER) &&
 					   (gameData.segs.segment2s [nSegment].special <= SEGMENT_IS_TEAM_RED)) ||
-					  (gameData.segs.xSegments [nSegment].group >= 0);
+					   (gameData.segs.xSegments [nSegment].group >= 0);
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		faceP = faceP;
 	faceP->nSegment = nSegment;
 #endif
+	nOvlTexCount = 0;
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 		nWall = WallNumI (nSegment, nSide);
-		if (bColoredSeg || (segP->children [nSide] == -1) || IS_WALL (nWall)) {
+		bWall = (segP->children [nSide] == -1) || IS_WALL (nWall);
+		if (bColoredSeg || bWall) {
 			GetSideVertIndex (sideVerts, nSegment, nSide);
 			for (i = 0; i < 4; i++) {
 				texCoordP->v.u = f2fl (sideP->uvls [i].u);
@@ -1141,38 +1144,29 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 				*faceColorP++ = colorP->color;
 				colorP++;
 				}
-			}
-		faceP->nType = -1;
-		if ((segP->children [nSide] == -1) || IS_WALL (nWall)) {
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				faceP = faceP;
 			faceP->nSegment = nSegment;
 #endif
-			faceP->nSide = nSide;
-			faceP->nWall = WallNumI (nSegment, nSide);
-			faceP->nBaseTex = sideP->nBaseTex;
-			if (faceP->nOvlTex = sideP->nOvlTex)
-				nOvlTexCount++;
-			faceP->bSlide = (gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_v);
-			faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));
-			faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;
-			faceP->bTextured = 1;
-			faceP->bTransparent = 0;
-			faceP->bOverlay = 0;
-			faceP->nIndex = 4 * gameData.segs.nFaces++;
-			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
-			for (i = 0; i < 4; i++)
-				memcpy (vertexP++, gameData.segs.fVertices + sideVerts [i], sizeof (fVector3));
-			if (!segP->nFaces++)
-				segP->pFaces = faceP;
-			faceP++;
-			} 
-		else if (bColoredSeg) {
 			memset (faceP, 0, sizeof (*faceP));
+			if (bWall) {
+				faceP->nBaseTex = sideP->nBaseTex;
+				if (faceP->nOvlTex = sideP->nOvlTex)
+					nOvlTexCount++;
+				faceP->bSlide = (gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_v);
+				faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));
+				faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;
+				faceP->bTextured = 1;
+				faceP->bTransparent = 0;
+				} 
+			else if (bColoredSeg) {
+				faceP->nBaseTex = -1;
+				faceP->bTransparent = 1;
+				}
+			faceP->nType = -1;
 			faceP->nSide = nSide;
-			faceP->nBaseTex = -1;
-			faceP->bTransparent = 1;
+			faceP->nWall = nWall;
 			faceP->nIndex = 4 * gameData.segs.nFaces++;
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
 			for (i = 0; i < 4; i++)
@@ -1182,12 +1176,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 			faceP++;
 			}
 		else {
-			sideP->nBaseTex =
-			sideP->nOvlTex = 0;
 			for (i = 0; i < 4; i++) {
-				sideP->uvls [i].u =
-				sideP->uvls [i].v =
-				sideP->uvls [i].l = 0;
 				colorP->color.red = 
 				colorP->color.green = 
 				colorP->color.blue = 

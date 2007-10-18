@@ -1914,7 +1914,7 @@ do {
 	effectOpts.nShotCoronas = opt++;
 	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.bPowerupCoronas, KEY_P, HTX_POWERUP_CORONAS);
 	effectOpts.nPowerupCoronas = opt++;
-	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.bPowerupCoronas, KEY_W, HTX_WEAPON_CORONAS);
+	ADD_CHECK (opt, TXT_WEAPON_CORONAS, gameOpts->render.bWeaponCoronas, KEY_W, HTX_WEAPON_CORONAS);
 	effectOpts.nWeaponCoronas = opt++;
 	ADD_CHECK (opt, TXT_ADDITIVE_CORONAS, gameOpts->render.bAdditiveCoronas, KEY_A, HTX_ADDITIVE_CORONAS);
 	effectOpts.nAdditiveCoronas = opt++;
