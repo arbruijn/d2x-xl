@@ -504,41 +504,51 @@ void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIn
 	int 			i;
 	grsBitmap	*bmP;
 
-glEnable (GL_TEXTURE_2D);
-bmP = bAdditive ? bmpGlare : bmpCorona;
-color = gameData.render.color.textures [nTexture].color;
-glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, fIntensity);
-if (gameStates.render.bQueryCoronas != 2)
-	glDisable (GL_DEPTH_TEST);
-if (0 && G3EnableClientStates (1, 0, GL_TEXTURE0)) {
-	glActiveTexture (GL_TEXTURE0);
-	glClientActiveTexture (GL_TEXTURE0);
-	OglBindBmTex (bmP, 1, -1);
+if (gameStates.render.bQueryCoronas)
+	glDisable (GL_TEXTURE_2D);
+else {
+	glEnable (GL_TEXTURE_2D);
 	if (bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);		
-	glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
+	bmP = bAdditive ? bmpGlare : bmpCorona;
+	}
+color = gameData.render.color.textures [nTexture].color;
+if (bAdditive)
+	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
+else
+	glColor4f (color.red, color.green, color.blue, fIntensity);
+if (gameStates.render.bQueryCoronas != 2) {
+	glDisable (GL_DEPTH_TEST);
+	if (gameStates.render.bQueryCoronas == 1)
+		glDepthFunc (GL_ALWAYS);
+	}
+if (G3EnableClientStates (!gameStates.render.bQueryCoronas, 0, GL_TEXTURE0)) {
+	if (!gameStates.render.bQueryCoronas) {
+		OglBindBmTex (bmP, 1, -1);
+		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
+		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), sprite);
 	glDrawArrays (GL_QUADS, 0, 4);
-	if (bAdditive)
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	G3DisableClientStates (1, 0, GL_TEXTURE0);
+	G3DisableClientStates (!gameStates.render.bQueryCoronas, 0, GL_TEXTURE0);
 	}
 else {
-	OglBindBmTex (bmP, 1, -1);
-	if (bAdditive)
-		glBlendFunc (GL_ONE, GL_ONE);		
+	if (!gameStates.render.bQueryCoronas)
+		OglBindBmTex (bmP, 1, -1);
 	glBegin (GL_QUADS);
 	for  (i = 0; i < 4; i++) {
 		glTexCoord2fv ((GLfloat *) (tcGlare + i));
 		glVertex3fv ((GLfloat *) (sprite + i));
 		}
 	glEnd ();
-	if (bAdditive)
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
+if (!gameStates.render.bQueryCoronas && bAdditive)
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 RenderCoronaOutline (sprite, vCenter);
-if (gameStates.render.bQueryCoronas != 2)
+if (gameStates.render.bQueryCoronas != 2) {
 	glEnable (GL_DEPTH_TEST);
+	if (gameStates.render.bQueryCoronas == 1)
+		glDepthFunc (GL_LEQUAL);
+	}
 }
 
 // -----------------------------------------------------------------------------------
@@ -550,7 +560,7 @@ void RenderCorona (short nSegment, short nSide, float fIntensity)
 	tIntervalf	zRange;
 	float			fAngle, fLight;
 
-if (fIntensity < 0.25f)
+if (fIntensity < 0.01f)
 	return;
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;

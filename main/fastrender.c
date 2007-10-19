@@ -168,8 +168,10 @@ else if (nType == 3) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
-	if (!faceP->bOverlay && faceP->nCorona)
+#if 1
+	if (faceP->nCorona)
 		RenderCorona (nSegment, faceP->nSide, CoronaVisibility (faceP->nCorona));
+#endif
 	return;
 	}
 #ifdef _DEBUG
@@ -429,7 +431,6 @@ void QueryCoronas (int nFaces, int nPass)
 gameStates.render.bQueryCoronas = nPass;
 if (nPass == 1) {	//find out how many total fragments each corona has
 	glDepthMask (0);
-	glColorMask (1,1,1,1);
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
@@ -442,13 +443,23 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 		segP = SEGMENTS + nSegment;
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
 			if (faceP->nCorona) {
+#ifdef _DEBUG
+				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+					nSegment = nSegment;
+				if (faceP->nCorona == 12)
+					faceP = faceP;
+#endif
+	glClear (GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 				glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
-				if (!glGetError ())
-					RenderCorona (nSegment, faceP->nSide, 1);
+				RenderCorona (nSegment, faceP->nSide, 1);
 				glEndQuery (GL_SAMPLES_PASSED_ARB);
+#if 0
+				CoronaVisibility (faceP->nCorona);
+#endif
 				}
 		}
 	glFlush ();
+#if 1
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
@@ -460,9 +471,18 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 			}
 		segP = SEGMENTS + nSegment;
 		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
-			if (faceP->nCorona)
+			if (faceP->nCorona) {
+#ifdef _DEBUG
+				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+					nSegment = nSegment;
+#endif
 				CoronaVisibility (faceP->nCorona);
+				}
 		}
+#endif
+	glColorMask (1,1,1,1);
+	glClearColor (0,0,0,0);
+	glClear (GL_COLOR_BUFFER_BIT);
 	}
 else {
 	for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < nFaces; i++) {
@@ -482,6 +502,29 @@ else {
 	}
 EndRenderFaces (3, bVertexArrays);
 gameStates.render.bQueryCoronas = 0;
+}
+
+//------------------------------------------------------------------------------
+
+int SetupCoronaFaces (void)
+{
+	tSegment	*segP;
+	grsFace	*faceP;
+	int		i, j, nSegment;
+
+gameData.render.lights.nCoronas = 0;
+for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+		continue;
+	segP = SEGMENTS + nSegment;
+	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
+		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && !faceP->bOverlay && 
+			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
+			faceP->nCorona = ++gameData.render.lights.nCoronas;
+		else
+			faceP->nCorona = 0;
+	}
+return gameData.render.lights.nCoronas;
 }
 
 //------------------------------------------------------------------------------
@@ -514,7 +557,7 @@ if (nType) {	//back to front
 	}
 else {	//front to back
 #if RENDER_DEPTHMASK_FIRST
-	if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
+	if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && SetupCoronaFaces ()) {
 		EndRenderFaces (nType, bVertexArrays);
 		glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
 		QueryCoronas (0, 1);
@@ -659,7 +702,6 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 gameOpts->render.color.bAmbientLight = 1;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
-gameData.render.lights.nCoronas = 0;
 if (gameStates.render.bFullBright)
 	c.color.red = c.color.green = c.color.blue = c.color.alpha = 1;
 for (i = nStart; i < nEnd; i++) {
@@ -692,8 +734,6 @@ for (i = nStart; i < nEnd; i++) {
 				faceP->bVisible = 0;
 				continue;
 				}
-			if (faceP->bIsLight && FaceHasCorona (nSegment, nSide, NULL, NULL))
-				faceP->nCorona = ++gameData.render.lights.nCoronas;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			for (h = 0; h < 4; h++, pc++) {
@@ -746,8 +786,6 @@ for (i = nStart; i < nEnd; i++) {
 				faceP->bVisible = 0;
 				continue;
 				}
-			if (faceP->bIsLight && FaceHasCorona (nSegment, nSide, NULL, NULL))
-				faceP->nCorona = ++gameData.render.lights.nCoronas;
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			uvlP = segP->sides [nSide].uvls;
 			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {

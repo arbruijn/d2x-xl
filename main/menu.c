@@ -1909,9 +1909,9 @@ do {
 	effectOpts.nAdditiveObjCoronas = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_RADIO (opt, TXT_HARD_CORONAS, 0, KEY_H, gameOpts->render.nCoronaStyle == 0, HTX_CORONA_STYLE);
+	ADD_RADIO (opt, TXT_HARD_CORONAS, gameOpts->render.nCoronaStyle == 0, KEY_H, 0, HTX_CORONA_STYLE);
 	effectOpts.nCoronaStyle = opt++;
-	ADD_RADIO (opt, TXT_SOFT_CORONAS, 0, KEY_S, gameOpts->render.nCoronaStyle == 1, HTX_CORONA_STYLE);
+	ADD_RADIO (opt, TXT_SOFT_CORONAS, gameOpts->render.nCoronaStyle == 1, KEY_S, 0, HTX_CORONA_STYLE);
 	opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
