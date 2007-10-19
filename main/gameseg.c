@@ -2212,7 +2212,7 @@ void ChangeLight (short nSegment, short nSide, int dir)
 	fix			dl, lNew, *pSegLightDelta;
 	tUVL			*uvlP;
 	dl_index		*dliP;
-	delta_light	*dlP;
+	tLightDelta	*dlP;
 	short			iSeg, iSide;
 
 if ((dir < 0) && RemoveDynLight (nSegment, nSide, -1))

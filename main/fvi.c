@@ -1535,7 +1535,7 @@ if (bmP->bmProps.flags & BM_FLAG_TGA) {
 	if ((p[0] == 120) && (p[1] == 88) && (p[2] == 128))
 #else	
 	if ((gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) ?
-	    (p[3] == 1) : ((p[0] == 120) && (p[1] == 88) && (p[2] == 128)))
+	    (p [3] == 1) : ((p[0] == 120) && (p[1] == 88) && (p[2] == 128)))
 #endif	    
 		return -1;
 	// check alpha

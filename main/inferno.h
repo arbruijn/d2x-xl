@@ -26,7 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_SUBMODELS	10		// how many animating sub-objects per model
 
 #define MULTI_THREADED_SHADOWS	0
-#define MULTI_THREADED_LIGHTS	0
+#define MULTI_THREADED_LIGHTS		0
 #define MULTI_THREADED_PRECALC	1
 
 #define USE_SEGRADS	0
@@ -290,6 +290,7 @@ typedef struct tRenderOptions {
 	int bExplBlast;
 	int nExplShrapnels;
 	int bCoronas;
+	int nCoronaStyle;
 	int bShotCoronas;
 	int bWeaponCoronas;
 	int bPowerupCoronas;
@@ -647,6 +648,7 @@ typedef struct tOglStates {
 	int bIntensity4;
 	int bLuminance4Alpha4;
 	int bReadPixels;
+	int bOcclusionQuery;
 	int bGetTexLevelParam;
 #ifdef GL_ARB_multitexture
 	int bArbMultiTexture;
@@ -809,6 +811,7 @@ typedef struct tRenderStates {
 	int bD2XLights;
 	int bRendering;
 	int bFullBright;
+	int bQueryCoronas;
 	int bDoLightMaps;
 	int bDoCameras;
 	int nFrameFlipFlop;
@@ -1111,7 +1114,7 @@ typedef struct tSphereData {
 //------------------------------------------------------------------------------
 
 #define USE_OGL_LIGHTS	0
-#define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
+#define MAX_OGL_LIGHTS  (32 * 32) //MUST be a power of 2!
 
 typedef struct tDynLight {
 	vmsVector	vPos;
@@ -1234,9 +1237,10 @@ typedef struct tFlickerLightData {
 
 typedef struct tLightData {
 	int					nStatic;
+	int					nCoronas;
 	fix					*segDeltas;
 	dl_index				*deltaIndices;
-	delta_light			*deltas;
+	tLightDelta			*deltas;
 	ubyte					*subtracted;
 	tDynLightData		dynamic;
 	tFlickerLightData	flicker;
@@ -1251,6 +1255,8 @@ typedef struct tLightData {
 	sbyte					*vertexFlags;
 	sbyte					*newObjects;
 	sbyte					*objects;
+	GLuint				*coronaQueries;
+	GLuint				*coronaSamples;
 } tLightData;
 
 //------------------------------------------------------------------------------
@@ -2826,6 +2832,10 @@ typedef struct tBossProps {
 	ubyte		bInvulKinetic;
 	ubyte		bInvulSpot;
 } tBossProps;
+
+typedef struct tIntervalf {
+	float	fMin, fMax, fSize, fRad;
+} tIntervalf;
 
 extern tBossProps bossProps [2][NUM_D2_BOSSES];
 

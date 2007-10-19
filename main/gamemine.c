@@ -473,7 +473,7 @@ int load_mine_data (CFILE *loadFile)
 
 		mine_fileinfo.deltaLight.offset		=	-1;
 		mine_fileinfo.deltaLight.count		=	0;
-		mine_fileinfo.deltaLight.size		=	sizeof (delta_light);  
+		mine_fileinfo.deltaLight.size		=	sizeof (tLightDelta);  
 
 //	}
 

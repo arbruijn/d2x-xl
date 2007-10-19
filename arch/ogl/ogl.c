@@ -123,8 +123,6 @@ PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
 
 tTexPolyMultiDrawer	*fpDrawTexPolyMulti = NULL;
 
-int bOcclusionQuery = 0;
-
 //change to 1 for lots of spew.
 #ifndef M_PI
 #	define M_PI 3.141592653589793240
@@ -1939,23 +1937,29 @@ char *pszOglExtensions = (char*) glGetString (GL_EXTENSIONS);
 
 #if OGL_QUERY
 if (!(pszOglExtensions && strstr (pszOglExtensions, "GL_ARB_occlusion_query")))
-	bOcclusionQuery = 0;
+	gameStates.ogl.bOcclusionQuery = 0;
 else {
 #	ifndef GL_VERSION_20
-	glGenQueriesARB        = (PFNGLGENQUERIESARBPROC) wglGetProcAddress ("glGenQueriesARB");
-	glDeleteQueriesARB     = (PFNGLDELETEQUERIESARBPROC) wglGetProcAddress ("glDeleteQueriesARB");
-	glIsQueryARB           = (PFNGLISQUERYARBPROC) wglGetProcAddress ("glIsQueryARB");
-	glBeginQueryARB        = (PFNGLBEGINQUERYARBPROC) wglGetProcAddress ("glBeginQueryARB");
-	glEndQueryARB          = (PFNGLENDQUERYARBPROC) wglGetProcAddress ("glEndQueryARB");
-	glGetQueryivARB        = (PFNGLGETQUERYIVARBPROC) wglGetProcAddress ("glGetQueryivARB");
-	glGetQueryObjectivARB  = (PFNGLGETQUERYOBJECTIVARBPROC) wglGetProcAddress ("glGetQueryObjectivARB");
-	glGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC) wglGetProcAddress ("glGetQueryObjectuivARB");
-	bOcclusionQuery =
-		glGenQueries && glDeleteQueries && glIsQuery && 
-		glBeginQuery && glEndQuery && glGetQueryiv && 
-		glGetQueryObjectiv && glGetQueryObjectuivARB;
+	glGenQueries        = (PFNGLGENQUERIESPROC) wglGetProcAddress ("glGenQueries");
+	glDeleteQueries     = (PFNGLDELETEQUERIESPROC) wglGetProcAddress ("glDeleteQueries");
+	glIsQuery           = (PFNGLISQUERYPROC) wglGetProcAddress ("glIsQuery");
+	glBeginQuery        = (PFNGLBEGINQUERYPROC) wglGetProcAddress ("glBeginQuery");
+	glEndQuery          = (PFNGLENDQUERYPROC) wglGetProcAddress ("glEndQuery");
+	glGetQueryiv        = (PFNGLGETQUERYIVPROC) wglGetProcAddress ("glGetQueryiv");
+	glGetQueryObjectiv  = (PFNGLGETQUERYOBJECTIVPROC) wglGetProcAddress ("glGetQueryObjectiv");
+	glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC) wglGetProcAddress ("glGetQueryObjectuiv");
+	if (glGenQueries && glDeleteQueries && glIsQuery && 
+		 glBeginQuery && glEndQuery && glGetQueryiv && 
+		 glGetQueryObjectiv && glGetQueryObjectuiv) {
+			GLuint nBits;
+
+      glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS_ARB, &nBits);
+		gameStates.ogl.bOcclusionQuery = nBits > 0;
+		}
+	else
+		gameStates.ogl.bOcclusionQuery = 0;
 #	else
-	bOcclusionQuery = 1;
+	gameStates.ogl.bOcclusionQuery = 1;
 #	endif
 	}
 #endif

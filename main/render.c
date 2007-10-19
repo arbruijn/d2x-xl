@@ -569,7 +569,7 @@ switch (gameStates.render.nType) {
 		break;
 	case 3:
 		if ((IsLight (sideP->nBaseTex) || (sideP->nOvlTex && IsLight (sideP->nOvlTex))))
-			RenderCorona (props.segNum, props.sideNum);
+			RenderCorona (props.segNum, props.sideNum, 1);
 		return;
 	}
 #if LIGHTMAPS

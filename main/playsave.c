@@ -388,6 +388,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bExplBlast, i, 0);
 		RP (gameOptions [i].render.nExplShrapnels, i, 0);
 		RP (gameOptions [i].render.bCoronas, i, 0);
+		RP (gameOptions [i].render.nCoronaStyle, i, 0);
 		RP (gameOptions [i].render.bShotCoronas, i, 0);
 		RP (gameOptions [i].render.bPowerupCoronas, i, 0);
 		RP (gameOptions [i].render.bWeaponCoronas, i, 0);
@@ -928,6 +929,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bExplBlast", "1"},
 	{"gameOptions[0].render.nExplShrapnels", "1"},
 	{"gameOptions[0].render.bCoronas", "1"},
+	{"gameOptions[0].render.nCoronaStyle", "1"},
 	{"gameOptions[0].render.bShotCoronas", "1"},
 	{"gameOptions[0].render.bPowerupCoronas", "1"},
 	{"gameOptions[0].render.bWeaponCoronas", "0"},

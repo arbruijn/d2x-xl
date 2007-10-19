@@ -195,7 +195,7 @@ typedef struct {
 	sbyte   nSide;
 	sbyte   dummy;
 	ubyte   vert_light[4];
-} delta_light;
+} tLightDelta;
 
 // Light at nSegment:nSide casts light on count sides beginning at index (in array gameData.render.lightDeltas)
 typedef struct {
@@ -268,7 +268,7 @@ extern void med_check_all_vertices();
 
 #if 0
 #define segment2_read(s2, fp) CFRead(s2, sizeof(tSegment2), 1, fp)
-#define delta_light_read(dl, fp) CFRead(dl, sizeof(delta_light), 1, fp)
+#define delta_light_read(dl, fp) CFRead(dl, sizeof(tLightDelta), 1, fp)
 #define dl_index_read(di, fp) CFRead(di, sizeof(dl_index), 1, fp)
 #else
 /*
@@ -277,9 +277,9 @@ extern void med_check_all_vertices();
 void segment2_read(tSegment2 *s2, CFILE *fp);
 
 /*
- * reads a delta_light structure from a CFILE
+ * reads a tLightDelta structure from a CFILE
  */
-void delta_light_read(delta_light *dl, CFILE *fp);
+void delta_light_read(tLightDelta *dl, CFILE *fp);
 
 /*
  * reads a dl_index structure from a CFILE

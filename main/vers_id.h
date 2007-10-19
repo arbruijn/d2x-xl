@@ -8,7 +8,7 @@
 #define _VERS_ID
 
 #ifndef VERSION
-#	define VERSION "1.11.13"
+#	define VERSION		"1.11.13"
 #endif
 
 #define D2X_NAME		"D2X-XL "
@@ -27,4 +27,4 @@
 #define DESCENT_VERSION D2X_NAME VERSION
 #define D2X_IVER			(D2XMAJOR * 100000 + D2XMINOR * 1000 + D2XMICRO)
 
-#endif /* _VERS_ID */
+#endif //_VERS_ID

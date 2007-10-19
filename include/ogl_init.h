@@ -10,15 +10,15 @@
 #ifdef _WIN32
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
-#	define OGL_QUERY				0
+#	define OGL_QUERY				1
 #elif defined(__unix__)
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
-#	define OGL_QUERY				0
+#	define OGL_QUERY				1
 #elif defined(__macosx__)
 #	define OGL_MULTI_TEXTURING	1
 #	define VERTEX_LIGHTING		1
-#	define OGL_QUERY				0
+#	define OGL_QUERY				1
 #endif
 
 #define LIGHTMAPS 1

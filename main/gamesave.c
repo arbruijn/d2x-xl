@@ -826,7 +826,7 @@ gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
 
 gameFileInfo.lightDeltas.offset	=	-1;
 gameFileInfo.lightDeltas.count	=	0;
-gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
+gameFileInfo.lightDeltas.size		=	sizeof(tLightDelta);
 
 // Read in gameTopFileInfo to get size of saved fileinfo.
 
@@ -1779,7 +1779,7 @@ int SaveGameData(FILE * SaveFile)
 
  	gameFileInfo.lightDeltas.offset		=	-1;
 	gameFileInfo.lightDeltas.count	=	CountDeltaLightRecords();
-	gameFileInfo.lightDeltas.size		=	sizeof(delta_light);
+	gameFileInfo.lightDeltas.size		=	sizeof(tLightDelta);
 
 	// Write the fileinfo
 	fwrite(&gameFileInfo, sizeof(gameFileInfo), 1, SaveFile);
@@ -1836,7 +1836,7 @@ int SaveGameData(FILE * SaveFile)
 	fwrite(gameData.render.lights.deltaIndices, sizeof(dl_index), gameFileInfo.lightDeltaIndices.count, SaveFile);
 
 	deltaLight.offset = ftell(SaveFile);
-	fwrite(gameData.render.lights.deltas, sizeof(delta_light), gameFileInfo.lightDeltas.count, SaveFile);
+	fwrite(gameData.render.lights.deltas, sizeof(tLightDelta), gameFileInfo.lightDeltas.count, SaveFile);
 
 	//============= REWRITE FILE INFO, TO SAVE OFFSETS ===============
 

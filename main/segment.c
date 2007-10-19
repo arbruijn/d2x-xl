@@ -23,9 +23,9 @@ void segment2_read(tSegment2 *s2, CFILE *fp)
 }
 
 /*
- * reads a delta_light structure from a CFILE
+ * reads a tLightDelta structure from a CFILE
  */
-void delta_light_read(delta_light *dl, CFILE *fp)
+void delta_light_read(tLightDelta *dl, CFILE *fp)
 {
 	dl->nSegment = CFReadShort (fp);
 	dl->nSide = CFReadByte (fp);

@@ -208,6 +208,7 @@ static struct {
 
 static struct {
 	int	nCoronas;
+	int	nCoronaStyle;
 	int	nShotCoronas;
 	int	nWeaponCoronas;
 	int	nPowerupCoronas;
@@ -1839,19 +1840,12 @@ return j;
 //------------------------------------------------------------------------------
 
 char *pszCoronaInt [3];
-char *pszExplShrapnels [5];
 
-void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+void CoronaOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
 	int			v;
 
-m = menus + effectOpts.nLightTrails;
-v = m->value;
-if (extraGameInfo [0].bLightTrails != v) {
-	extraGameInfo [0].bLightTrails = v;
-	*key = -2;
-	}	
 m = menus + effectOpts.nCoronas;
 v = m->value;
 if (gameOpts->render.bCoronas != v) {
@@ -1873,36 +1867,21 @@ if (effectOpts.nCoronaIntensity >= 0) {
 		m->rebuild = -1;
 		}
 	}
-m = menus + effectOpts.nExplShrapnels;
-v = m->value;
-if (gameOpts->render.nExplShrapnels != v) {
-	gameOpts->render.nExplShrapnels = v;
-	sprintf (m->text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
-	m->rebuild = -1;
-	}
 }
 
 //------------------------------------------------------------------------------
 
-void EffectOptionsMenu ()
+void CoronaOptionsMenu ()
 {
-	tMenuItem m [25];
-	int	i, j, choice = 0;
+	tMenuItem m [30];
+	int	i, choice = 0;
 	int	opt;
-	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
-			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast;
-	char	szCoronaInt [50], szExplShrapnels [50];
+	char	szCoronaInt [50];
 
 pszCoronaInt [0] = TXT_VERY_LOW;
 pszCoronaInt [1] = TXT_LOW;
 pszCoronaInt [2] = TXT_MEDIUM;
 pszCoronaInt [3] = TXT_HIGH;
-
-pszExplShrapnels [0] = TXT_NONE;
-pszExplShrapnels [1] = TXT_FEW;
-pszExplShrapnels [2] = TXT_MEDIUM;
-pszExplShrapnels [3] = TXT_MANY;
-pszExplShrapnels [4] = TXT_EXTREME;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1910,6 +1889,10 @@ do {
 
 	ADD_CHECK (opt, TXT_RENDER_CORONAS, gameOpts->render.bCoronas, KEY_C, HTX_ADVRND_CORONAS);
 	effectOpts.nCoronas = opt++;
+	ADD_RADIO (opt, TXT_HARD_CORONAS, 0, KEY_H, gameOpts->render.nCoronaStyle == 0, HTX_CORONA_STYLE);
+	effectOpts.nCoronaStyle = opt++;
+	ADD_RADIO (opt, TXT_SOFT_CORONAS, 0, KEY_S, gameOpts->render.nCoronaStyle == 1, HTX_CORONA_STYLE);
+	opt++;
 	ADD_CHECK (opt, TXT_SHOT_CORONAS, gameOpts->render.bShotCoronas, KEY_S, HTX_SHOT_CORONAS);
 	effectOpts.nShotCoronas = opt++;
 	ADD_CHECK (opt, TXT_POWERUP_CORONAS, gameOpts->render.bPowerupCoronas, KEY_P, HTX_POWERUP_CORONAS);
@@ -1930,6 +1913,67 @@ do {
 		}
 	else	
 		effectOpts.nCoronaIntensity = -1;
+
+	Assert (opt <= sizeofa (m));
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_CORONA_MENUTITLE, opt, m, CoronaOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
+	gameOpts->render.nCoronaStyle = m [effectOpts.nCoronaStyle].value == 0;
+	gameOpts->render.bShotCoronas = m [effectOpts.nShotCoronas].value;
+	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
+	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
+	gameOpts->render.bAdditiveCoronas = m [effectOpts.nAdditiveCoronas].value;
+	gameOpts->render.bAdditiveObjCoronas = m [effectOpts.nAdditiveObjCoronas].value;
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
+char *pszExplShrapnels [5];
+
+void EffectOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+m = menus + effectOpts.nLightTrails;
+v = m->value;
+if (extraGameInfo [0].bLightTrails != v) {
+	extraGameInfo [0].bLightTrails = v;
+	*key = -2;
+	}	
+m = menus + effectOpts.nExplShrapnels;
+v = m->value;
+if (gameOpts->render.nExplShrapnels != v) {
+	gameOpts->render.nExplShrapnels = v;
+	sprintf (m->text, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [v]);
+	m->rebuild = -1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void EffectOptionsMenu ()
+{
+	tMenuItem m [30];
+	int	i, j, choice = 0;
+	int	opt;
+	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
+			optRobotShields, optTracers, optShockwaves, optTrailType, optExplBlast;
+	char	szExplShrapnels [50];
+
+pszCoronaInt [0] = TXT_VERY_LOW;
+pszCoronaInt [1] = TXT_LOW;
+pszCoronaInt [2] = TXT_MEDIUM;
+pszCoronaInt [3] = TXT_HIGH;
+
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
 
 	sprintf (szExplShrapnels + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.nExplShrapnels]);
 	*szExplShrapnels = *(TXT_EXPLOSION_SHRAPNELS - 1);
@@ -1969,8 +2013,6 @@ do {
 		}
 	else
 		optTrailType = -1;
-	ADD_TEXT (opt, "", 0);
-	opt++;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
@@ -1980,12 +2022,6 @@ do {
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
-	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
-	gameOpts->render.bShotCoronas = m [effectOpts.nShotCoronas].value;
-	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
-	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;
-	gameOpts->render.bAdditiveCoronas = m [effectOpts.nAdditiveCoronas].value;
-	gameOpts->render.bAdditiveObjCoronas = m [effectOpts.nAdditiveObjCoronas].value;
 	if (optTrailType >= 0)
 		gameOpts->render.smoke.bPlasmaTrails = (m [optTrailType].value == 0);
 	extraGameInfo [0].bTracers = m [optTracers].value;
@@ -2796,7 +2832,7 @@ do {
 			optSmokeColl = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_DISPERSE, gameOpts->render.smoke.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
 			optSmokeDisp = opt++;
-			ADD_CHECK (opt, TXT_SMOKE_AUXVIEWS, gameOpts->render.smoke.bAuxViews, KEY_D, HTX_SMOKE_AUXVIEWS);
+			ADD_CHECK (opt, TXT_SMOKE_AUXVIEWS, gameOpts->render.smoke.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
 			optAuxViews = opt++;
 			}
 		}
@@ -3315,7 +3351,7 @@ void RenderOptionsMenu ()
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts;
-	int	optUseGamma, optColoredWalls, optDepthSort;
+	int	optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
@@ -3410,6 +3446,8 @@ do {
 			}
 		ADD_MENU (opt, TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
 		optEffectOpts = opt++;
+		ADD_MENU (opt, TXT_CORONA_OPTIONS, KEY_O, HTX_RENDER_CORONAOPTS);
+		optCoronaOpts = opt++;
 		ADD_MENU (opt, TXT_CAMERA_OPTIONS, KEY_C, HTX_RENDER_CAMERAOPTS);
 		optCameraOpts = opt++;
 		ADD_MENU (opt, TXT_POWERUP_OPTIONS, KEY_P, HTX_RENDER_PRUPOPTS);
@@ -3430,6 +3468,7 @@ do {
 		optSmokeOpts =
 		optShadowOpts =
 		optEffectOpts =
+		optCoronaOpts =
 		optCameraOpts = 
 		optMovieOpts = 
 		optAdvOpts = -1;
@@ -3465,6 +3504,8 @@ do {
 				ShadowOptionsMenu ();
 			else if ((optEffectOpts >= 0) && (i == optEffectOpts))
 				EffectOptionsMenu ();
+			else if ((optCoronaOpts >= 0) && (i == optCoronaOpts))
+				CoronaOptionsMenu ();
 			else if ((optCameraOpts >= 0) && (i == optCameraOpts))
 				CameraOptionsMenu ();
 			else if ((optPowerupOpts >= 0) && (i == optPowerupOpts))

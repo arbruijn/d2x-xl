@@ -687,6 +687,7 @@ typedef struct grsFace {
 	short					nWall;
 	short					nBaseTex;
 	short					nOvlTex;
+	short					nCorona;
 #ifdef _DEBUG
 	short					nSegment;
 #endif

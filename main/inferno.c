@@ -1257,6 +1257,7 @@ if (i) {
 	if (gameStates.app.bNostalgia > 2)
 		gameOptions [1].render.nQuality = 0;
 	gameOptions [1].render.bCoronas = 0;
+	gameOptions [1].render.nCoronaStyle = 1;
 	gameOptions [1].render.bShotCoronas = 0;
 	gameOptions [1].render.bPowerupCoronas = 0;
 	gameOptions [1].render.bWeaponCoronas = 0;
@@ -1392,6 +1393,7 @@ else {
 	gameOptions [0].render.smoke.bAuxViews = 0;
 	gameOptions [0].render.lightnings.bAuxViews = 0;
 	gameOptions [0].render.bCoronas = 0;
+	gameOptions [0].render.nCoronaStyle = 1;
 	gameOptions [0].render.bShotCoronas = 0;
 	gameOptions [0].render.bPowerupCoronas = 0;
 	gameOptions [0].render.bWeaponCoronas = 0;
@@ -2420,7 +2422,7 @@ if (!gameStates.app.bNostalgia) {
 	}
 GETMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6, 0);
 GETMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES, 0);
-GETMEM (delta_light, gameData.render.lights.deltas, MAX_DELTA_LIGHTS, 0);
+GETMEM (tLightDelta, gameData.render.lights.deltas, MAX_DELTA_LIGHTS, 0);
 GETMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES, 0);
 GETMEM (tRgbColorf, gameData.render.lights.dynamicColor, MAX_VERTICES, 0);
@@ -2429,6 +2431,8 @@ GETMEM (short, gameData.render.lights.vertices, MAX_VERTICES, 0);
 GETMEM (sbyte, gameData.render.lights.vertexFlags, MAX_VERTICES, 0);
 GETMEM (sbyte, gameData.render.lights.newObjects, MAX_OBJECTS, 0);
 GETMEM (sbyte, gameData.render.lights.objects, MAX_OBJECTS, 0);
+GETMEM (GLuint, gameData.render.lights.coronaQueries, MAX_OGL_LIGHTS, 0);
+GETMEM (GLuint, gameData.render.lights.coronaSamples, MAX_OGL_LIGHTS, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2598,7 +2602,7 @@ if (!gameStates.app.bNostalgia) {
 	}
 FREEMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6);
 FREEMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES);
-FREEMEM (delta_light, gameData.render.lights.deltas, MAX_DELTA_LIGHTS);
+FREEMEM (tLightDelta, gameData.render.lights.deltas, MAX_DELTA_LIGHTS);
 FREEMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS);
 FREEMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES);
 FREEMEM (tRgbColorf, gameData.render.lights.dynamicColor, MAX_VERTICES);
@@ -2607,6 +2611,8 @@ FREEMEM (short, gameData.render.lights.vertices, MAX_VERTICES);
 FREEMEM (sbyte, gameData.render.lights.vertexFlags, MAX_VERTICES);
 FREEMEM (sbyte, gameData.render.lights.newObjects, MAX_OBJECTS);
 FREEMEM (sbyte, gameData.render.lights.objects, MAX_OBJECTS);
+FREEMEM (GLuint, gameData.render.lights.coronaQueries, MAX_OGL_LIGHTS);
+FREEMEM (GLuint, gameData.render.lights.coronaSamples, MAX_OGL_LIGHTS);
 }
 
 // ----------------------------------------------------------------------------

@@ -87,6 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RENDER_LIGHTNING_PLASMA 1
 #define RENDER_LIGHTING_SEGMENTS 0
 #define RENDER_LIGHTNING_OUTLINE 0
+#define RENDER_LIGHTINGS_BUFFERED 1
 #define UPDATE_LIGHTINGS 1
 
 #define STYLE(_pl)	((((_pl)->nStyle < 0) || (gameOpts->render.lightnings.nStyle < (_pl)->nStyle)) ? \
@@ -1678,7 +1679,10 @@ void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthS
 	tLightningNode	*pln;
 	fVector		vPosf [3] = {{{0,0,0}},{{0,0,0}}};
 	int			i;
-	int			h, j, bPlasma;
+#if !RENDER_LIGHTINGS_BUFFERED
+	int			h, j;
+#endif
+	int			bPlasma;
 	tRgbaColorf	color;
 	tObject		*objP = NULL;
 
@@ -1731,7 +1735,7 @@ else {
 			glDisable (GL_CULL_FACE);
 			}
 		}
-#if 1
+#if RENDER_LIGHTINGS_BUFFERED
 #	if 0 // no speed gain here
 	if (gameStates.app.bMultiThreaded && (nLightnings > 1)) {
 		tiRender.pl = pl;
