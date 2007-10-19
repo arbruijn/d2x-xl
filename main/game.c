@@ -2438,7 +2438,7 @@ void SlideTextures (void)
 	ubyte	sides;
 	tSide	*sideP;
 	tUVL	*uvlP;
-	fix	slideU, slideV;
+	fix	slideU, slideV, xDelta;
 
 if (!gameData.segs.bHaveSlideSegs)
 	ComputeSlideSegs ();
@@ -2453,27 +2453,35 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 		slideV = (fix) gameData.pig.tex.pTMapInfo [tmn].slide_v;
 		if (!(slideU || slideV))
 			continue;
+#ifdef _DEBUG
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nSegment = nSegment;
+#endif
 		i = (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ? 2 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
 			uvlP [i].u += slideU;
 			if (uvlP [i].u > f2_0) {
+				xDelta = (uvlP [i].u / F1_0 - 1) * F1_0;
 				for (j = 0; j < 4; j++)
-					uvlP [j].u -= f1_0;
+					uvlP [j].u -= xDelta;
 				}
 			else if (uvlP [i].u < -f2_0) {
+				xDelta = (-uvlP [i].u / F1_0 - 1) * F1_0;
 				for (j = 0; j < 4; j++)
-					uvlP [j].u += f1_0;
+					uvlP [j].u += xDelta;
 				}
 			uvlP [i].v += slideV;
 			if (uvlP [i].v > f2_0) {
+				xDelta = (uvlP [i].v / F1_0 - 1) * F1_0;
 				for (j = 0; j < 4; j++)
-					uvlP [j].v -= f1_0;
+					uvlP [j].v -= xDelta;
 				}
 			else if (uvlP [i].v < -f2_0) {
+				xDelta = (-uvlP [i].v / F1_0 - 1) * F1_0;
 				for (j = 0; j < 4; j++)
-					uvlP [j].v += f1_0;
+					uvlP [j].v += xDelta;
 				}
 			}
 		}

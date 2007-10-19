@@ -446,10 +446,7 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 #ifdef _DEBUG
 				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 					nSegment = nSegment;
-				if (faceP->nCorona == 12)
-					faceP = faceP;
 #endif
-	glClear (GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 				glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 				RenderCorona (nSegment, faceP->nSide, 1);
 				glEndQuery (GL_SAMPLES_PASSED_ARB);
@@ -518,7 +515,7 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		continue;
 	segP = SEGMENTS + nSegment;
 	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
-		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && !faceP->bOverlay && 
+		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && 
 			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
 			faceP->nCorona = ++gameData.render.lights.nCoronas;
 		else
@@ -659,7 +656,7 @@ void UpdateSlidingFaces (void)
 {
 	tSegment		*segP;
 	grsFace		*faceP;
-	short			h, i, j;
+	short			h, i, j, nOffset;
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
 
@@ -673,9 +670,10 @@ for (i = gameData.segs.nSegments, segP = SEGMENTS; i; i--, segP++) {
 			texCoordP = gameData.segs.faces.texCoord + faceP->nIndex;
 			ovlTexCoordP = gameData.segs.faces.ovlTexCoord + faceP->nIndex;
 			uvlP = segP->sides [faceP->nSide].uvls;
+			nOffset = faceP->nType == SIDE_IS_TRI_13;
 			for (h = 0; h < 4; h++) {
-				texCoordP [h].v.u = f2fl (uvlP [h].u);
-				texCoordP [h].v.v = f2fl (uvlP [h].v);
+				texCoordP [h].v.u = f2fl (uvlP [(h + nOffset) % 4].u);
+				texCoordP [h].v.v = f2fl (uvlP [(h + nOffset) % 4].v);
 				RotateTexCoord2f (ovlTexCoordP + h, texCoordP + h, faceP->nOvlOrient);
 				}
 			}
