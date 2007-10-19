@@ -305,7 +305,7 @@ if (IS_WALL (nWallNum)) {
 			gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - c);
 		}
 	else if (gameOpts->render.bAutoTransparency && IsTransparentFace (propsP))
-		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS / 10.0f * 8.0f;
+		gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS * 0.8f;
 	else
 		gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	}
@@ -461,6 +461,8 @@ else
 if (props.segNum == nDbgSeg && props.sideNum == nDbgSide)
 props.segNum = props.segNum;
 #endif
+if ((gameOpts->render.bDepthSort > 0) && (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
+	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - gameStates.render.grAlpha;
 #ifdef _DEBUG
 if (bmTop)
 	fpDrawTexPolyMulti (

@@ -1454,6 +1454,7 @@ void CheckRearView ()
 #else
 	if (Controls [0].rearViewDownCount && !gameStates.render.bExternalView) {		//key/button has gone down
 #endif
+		Controls [0].rearViewDownCount = 0;
 		if (gameStates.render.bRearView) {
 			gameStates.render.bRearView = 0;
 			if (gameStates.render.cockpit.nMode == CM_REAR_VIEW) {

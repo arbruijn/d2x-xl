@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 tRenderItemBuffer	renderItems;
 
-static tTexCoord2f defaultTexCoord [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+static tTexCoord2f tcDefault [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 inline int AllocRenderItems (void)
 {
@@ -231,7 +231,7 @@ item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
 item.bDepthMask = bDepthMask;
 item.bAdditive = bAdditive;
-memcpy (item.texCoord, texCoord ? texCoord : defaultTexCoord, nVertices * sizeof (tTexCoord3f));
+memcpy (item.texCoord, texCoord ? texCoord : tcDefault, nVertices * sizeof (tTexCoord2f));
 if (item.nColors = nColors) {
 	if (nColors < nVertices)
 		nColors = 1;
@@ -382,7 +382,7 @@ return AddRenderItem (riLightningSegment, &item, sizeof (item), z, z);
 
 //------------------------------------------------------------------------------
 
-int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord3f *uvlThruster, fVector *vFlame, tTexCoord3f *uvlFlame)
+int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame)
 {
 	tRIThruster	item;
 	int			i, j;
@@ -390,10 +390,10 @@ int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord3f *uvlThruster,
 
 item.bmP = bmP;
 memcpy (item.vertices, vThruster, 4 * sizeof (fVector));
-memcpy (item.texCoord, uvlThruster, 4 * sizeof (tTexCoord3f));
+memcpy (item.texCoord, tcThruster, 4 * sizeof (tTexCoord2f));
 if (item.bFlame = (vFlame != NULL)) {
 	memcpy (item.vertices + 4, vFlame, 3 * sizeof (fVector));
-	memcpy (item.texCoord + 4, uvlFlame, 3 * sizeof (tTexCoord3f));
+	memcpy (item.texCoord + 4, tcFlame, 3 * sizeof (tTexCoord2f));
 	j = 7;
 	}
 else 
@@ -647,11 +647,12 @@ renderItems.bTextured = 1;
 void RIRenderParticle (tRIParticle *item)
 {
 RISetClientState (1, 1, 1);
-if (renderItems.bTextured < 1) {
+if (renderItems.nPrevType != riParticle) {
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	gameData.smoke.nLastType = -1;
 	renderItems.bTextured = 1;
+	InitParticleBuffer ();
 	}
 if (renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 0);
@@ -697,7 +698,7 @@ glColor3f (0.75f, 0.75f, 0.75f);
 #if 1
 if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
-	glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), item->texCoord);
+	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->bFlame)
 		glDrawArrays (GL_TRIANGLES, 4, 3);
 	glDrawArrays (GL_QUADS, 0, 4);
@@ -730,6 +731,7 @@ void RIFlushParticleBuffer (int nType)
 {
 if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
 	FlushParticleBuffer ();
+	CloseParticleBuffer ();
 	gameData.smoke.nLastType = -1;
 	}
 }
@@ -765,12 +767,14 @@ glDepthFunc (GL_LESS);
 glDepthMask (0);
 glDisable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
+nType = -1;
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {
 	if (pl = *pd) {
 		nDepth = 0;
 		do {
+			renderItems.nPrevType = nType;
 			nType = pl->nType;
 			RIFlushParticleBuffer (nType);
 			if ((nType == riTexPoly) || (nType == riFlatPoly)) {

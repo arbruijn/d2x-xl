@@ -103,7 +103,7 @@ int UpdateLightning (tLightning *pl, int nLightnings, int nDepth);
 
 void TRAP (tLightningNode *pln)
 {
-if ((int) pln->pChild == 0xfeeefeee)
+if ( pln->pChild == (tLightning *) (size_t) 0xfeeefeee)
 	pln = pln;
 }
 

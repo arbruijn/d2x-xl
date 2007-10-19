@@ -2447,8 +2447,6 @@ bool G3DrawTexPolySimple (
 	fVector		vNormal, vVertPos;
 #endif
 
-if (bDynLight)
-	bDynLight = 1;
 if (gameStates.render.nShadowBlurPass == 1) {
 	G3DrawWhitePoly (nVertices, pointList);
 	return 0;

@@ -649,20 +649,22 @@ return 1;
 void FlushParticleBuffer (void)
 {
 if (iBuffer) {
-#if 1
-	tParticleVertex	*pb;
-
-	glBegin (GL_QUADS);
-	for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
-		glTexCoord2fv ((GLfloat *) &pb->texCoord);
-		glColor4fv ((GLfloat *) &pb->color);
-		glVertex3fv ((GLfloat *) &pb->vertex);
+	if (gameStates.render.bVertexArrays) {
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDrawArrays (GL_QUADS, 0, iBuffer);
+		gameStates.render.bVertexArrays = (glGetError () == 0);
 		}
-	glEnd ();
-#else
-	glDrawArrays (GL_QUADS, 0, iBuffer);
-	gameStates.render.bVertexArrays = glGetError () == 0;
-#endif
+	else {
+		tParticleVertex	*pb;
+
+		glBegin (GL_QUADS);
+		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
+			glTexCoord2fv ((GLfloat *) &pb->texCoord);
+			glColor4fv ((GLfloat *) &pb->color);
+			glVertex3fv ((GLfloat *) &pb->vertex);
+			}
+		glEnd ();
+		}
 	iBuffer = 0;
 	}
 }
@@ -872,6 +874,31 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int InitParticleBuffer (void)
+{
+if (gameStates.render.bVertexArrays)
+	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0);
+if (gameStates.render.bVertexArrays) {
+	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
+	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
+	glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);	
+	}
+return gameStates.render.bVertexArrays;
+}
+
+//------------------------------------------------------------------------------
+
+int CloseParticleBuffer (void)
+{
+if (!gameStates.render.bVertexArrays)
+	return 0;
+FlushParticleBuffer ();
+G3DisableClientStates (1, 1, GL_TEXTURE0);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 int BeginRenderSmoke (int nType, float nScale)
 {
 	grsBitmap	*bmP;
@@ -883,13 +910,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 		AnimateParticle (nType);
 	bmP = bmpParticle [0][nType];
 	gameData.smoke.bStencil = StencilOff ();
-	if (gameStates.render.bVertexArrays)
-		gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0);
-	if (gameStates.render.bVertexArrays) {
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
-		glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
-		glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);	
-		}
+	InitParticleBuffer ();
 	glActiveTexture (GL_TEXTURE0);
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);
@@ -918,11 +939,7 @@ return 1;
 int EndRenderSmoke (tCloud *pCloud)
 {
 if (gameOpts->render.bDepthSort <= 0) {
-	if (gameStates.render.bVertexArrays) {
-		FlushParticleBuffer ();
-		G3DisableClientStates (1, 1, GL_TEXTURE0);
-		}
-	else
+	if (!CloseParticleBuffer ())
 		glEnd ();
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);

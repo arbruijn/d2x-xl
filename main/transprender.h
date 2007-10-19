@@ -80,7 +80,7 @@ typedef struct tRILightningSegment {
 typedef struct tRIThruster {
 	grsBitmap				*bmP;
 	fVector					vertices [7];
-	tTexCoord3f				texCoord [7];
+	tTexCoord2f				texCoord [7];
 	char						bFlame;
 } tRIThruster;
 
@@ -104,6 +104,7 @@ typedef struct tRenderItemBuffer {
 	tRenderItem		*pItemList;
 	int				nItems;
 	int				nFreeItems;
+	int				nPrevType;
 	int				zMin;
 	int				zMax;
 	double			zScale;
@@ -132,7 +133,7 @@ int RIAddParticle (tParticle *particle, float fBrightness);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
 int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
 									char bPlasma, char bStart, char bEnd, short nDepth);
-int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord3f *uvlThruster, fVector *vFlame, tTexCoord3f *uvlFlame);
+int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, fVector *vFlame, tTexCoord2f *tcFlame);
 void RenderItems (void);
 void StartRenderThreads (void);
 void EndRenderThreads (void);

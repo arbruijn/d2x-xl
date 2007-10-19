@@ -330,7 +330,7 @@ return fIntensity;
 
 // -----------------------------------------------------------------------------------
 
-void ComputeStandardGlare (fVector *sprite, fVector *vCenter, fVector *vNormal)
+void ComputeHardGlare (fVector *sprite, fVector *vCenter, fVector *vNormal)
 {
 	fVector	u, v, p, q, e, s, t;
 	float		h, g;
@@ -412,8 +412,8 @@ glLineWidth (1);
 
 // -----------------------------------------------------------------------------------
 
-void RenderStandardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLight, 
-								  float fIntensity, tIntervalf *zRangeP, int bAdditive)
+void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLight, 
+							 float fIntensity, tIntervalf *zRangeP, int bAdditive)
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	tFaceColor	*pf;
@@ -457,7 +457,7 @@ RenderCoronaOutline (sprite, vCenter);
 
 // -----------------------------------------------------------------------------------
 
-float ComputeNiceGlare (fVector *sprite, fVector *vLight, fVector *vEye) 
+float ComputeSoftGlare (fVector *sprite, fVector *vLight, fVector *vEye) 
 {
 	fVector 		n, e, s, t, u, v;
 	float 		ul, vl, h, cosine;
@@ -484,11 +484,12 @@ VmVecScaleAddf (&s, &s, &e, VmVecDotf (&e, &s));
 VmVecScaleAddf (&t, &t, &e, VmVecDotf (&e, &t));
 VmVecScalef (&s, &s, 1.8f);
 VmVecScalef (&t, &t, 1.8f);
+v = *vLight;
 for (i = 0; i < 3; i++) {
-	sprite [0].v [i] = vLight->v [i] + s.v [i] + t.v [i];
-	sprite [1].v [i] = vLight->v [i] + s.v [i] - t.v [i];
-	sprite [2].v [i] = vLight->v [i] - s.v [i] - t.v [i];
-	sprite [3].v [i] = vLight->v [i] - s.v [i] + t.v [i];
+	sprite [0].v [i] = v.v [i] + s.v [i] + t.v [i];
+	sprite [1].v [i] = v.v [i] + s.v [i] - t.v [i];
+	sprite [2].v [i] = v.v [i] - s.v [i] - t.v [i];
+	sprite [3].v [i] = v.v [i] - s.v [i] + t.v [i];
 	}
 cosine = VmVecDotf (&e, &n);
 return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.nCoronaIntensity];
@@ -496,7 +497,7 @@ return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.nCoronaIntens
 
 // -----------------------------------------------------------------------------------
 
-void RenderNiceGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive) 
+void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive) 
 {
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{0,0},{1,0},{1,1},{0,1}};
@@ -549,14 +550,14 @@ void RenderCorona (short nSegment, short nSide, float fIntensity)
 	tIntervalf	zRange;
 	float			fAngle, fLight;
 
-if (fIntensity < 0.1f)
+if (fIntensity < 0.25f)
 	return;
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
-	fIntensity *= ComputeNiceGlare (sprite, &vCenter, &vEye);
-	RenderNiceGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
+if (gameOpts->render.nRenderPath && gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
+	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
+	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
 	}
 else {
 	VmVecNormalf (&vNormal, sprite, sprite + 1, sprite + 2);
@@ -571,8 +572,8 @@ else {
 	fIntensity *= coronaIntensities [gameOpts->render.nCoronaIntensity];
 	if (0 == (fIntensity = MoveSpriteIn (sprite, &vCenter, &zRange, fIntensity)))
 		return;
-	ComputeStandardGlare (sprite, &vCenter, &vNormal);
-	RenderStandardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, bAdditive);
+	ComputeHardGlare (sprite, &vCenter, &vNormal);
+	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, bAdditive);
 	}
 }
 

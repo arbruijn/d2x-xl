@@ -940,8 +940,8 @@ if (nThrusters > 1) {
 	}
 glEnable (GL_BLEND);
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
-		static tTexCoord3f	tTexCoord2flThruster [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
-		static tTexCoord3f	tTexCoord2flFlame [3] = {{{0,0,1}},{{1,1,1}},{{1,0,1}}};
+		static tTexCoord2f	tcThruster [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
+		static tTexCoord2f	tcFlame [3] = {{{0,0}},{{1,1}},{{1,0}}};
 		static fVector	vEye = {{0, 0, 0}};
 
 		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
@@ -974,21 +974,21 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		VmVecNormalizef (&v, vThruster);
 		dotThruster = VmVecDotf (&vPosf, &v);
 		if (gameOpts->render.bDepthSort > 0)
-			RIAddThruster (bmpThruster [nStyle], vThruster, tTexCoord2flThruster, (dotFlame < dotThruster) ? vFlame : NULL, tTexCoord2flFlame);
+			RIAddThruster (bmpThruster [nStyle], vThruster, tcThruster, (dotFlame < dotThruster) ? vFlame : NULL, tcFlame);
 		else {
 			glDisable (GL_CULL_FACE);
 			glColor3f (c, c, c);
 			if (dotFlame < dotThruster) {
 				glBegin (GL_TRIANGLES);
 				for (i = 0; i < 3; i++) {
-					glTexCoord2fv ((GLfloat *) (tTexCoord2flFlame + i));
+					glTexCoord2fv ((GLfloat *) (tcFlame + i));
 					glVertex3fv ((GLfloat *) (vFlame + i));
 					}
 				glEnd ();
 				}
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
-				glTexCoord2fv ((GLfloat *) (tTexCoord2flThruster + i));
+				glTexCoord2fv ((GLfloat *) (tcThruster + i));
 				glVertex3fv ((GLfloat *) (vThruster + i));
 				}
 			glEnd ();
@@ -1109,7 +1109,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	tRgbaColorf	color;
 
 	static fVector	vEye = {{0, 0, 0}};
-	static tTexCoord3f	tTexCoord2flCorona [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
@@ -1172,7 +1172,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
 		if (bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0)) {
-			glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), tTexCoord2flCorona);
+			glTexCoordPointer (2, GL_FLOAT, 0, tcCorona);
 			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
 			glDrawArrays (GL_QUADS, 0, 4);
 			G3DisableClientStates (1, 0, -1);
@@ -1180,7 +1180,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 		else {
 			glBegin (GL_QUADS);
 			for (i = 0; i < 4; i++) {
-				glTexCoord2fv ((GLfloat *) (tTexCoord2flCorona + i));
+				glTexCoord2fv ((GLfloat *) (tcCorona + i));
 				glVertex3fv ((GLfloat *) (vCorona + i));
 				}
 			glEnd ();
@@ -1220,7 +1220,7 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
 
-	static tTexCoord3f	tTexCoord2flList [4] = {{{0,0,1}},{{1,0,1}},{{1,1,1}},{{0,1,1}}};
+	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 	vmsVector	vPos = objP->position.vPos;
 	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
@@ -1277,7 +1277,7 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 			for (j = 0; j < 4; j++) {
 				VmVecSubf (&v, quad + j, &vCenter);
 				VmVecScaleIncf3 (quad + j, &v, fScale);
- 				glTexCoord2fv ((GLfloat *) (tTexCoord2flList + j));
+ 				glTexCoord2fv ((GLfloat *) (tcCorona + j));
 				glVertex3fv ((GLfloat *) (quad + j));
 				}
 			glEnd ();
@@ -1539,6 +1539,12 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			RIAddPoly (bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive);
 			}
 		else {
+			glEnable (GL_BLEND);
+			if (bAdditive)
+				glBlendFunc (GL_ONE, GL_ONE);
+			else
+				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glColor4fv ((GLfloat *) &trailColor);
 			bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0);
 			bStencil = StencilOff ();
 			glDisable (GL_CULL_FACE);		
@@ -1547,15 +1553,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			if (OglBindBmTex (bmP, 1, -1)) 
 				return;
 			OglTexWrap (bmP->glTexture, GL_CLAMP);
-			glEnable (GL_BLEND);
-			if (bAdditive)
-				glBlendFunc (GL_ONE, GL_ONE);
-			else
-				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glColor4fv ((GLfloat *) &trailColor);
 			if (bDrawArrays) {
+				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
-				glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), tTexCoordTrail);
 				glDrawArrays (GL_QUADS, 0, 4);
 				G3DisableClientStates (1, 0, -1);
 				}
