@@ -181,8 +181,8 @@ return i;
 // To make it match with the actual orientation of its face, it is rotated with another
 // rotation matrix derived from the face's normal.
 
+#define JAZ_CORONAS		2
 #define ROTATE_CORONA	0
-#define JAZ_CORONAS		1
 #define CORONA_OUTLINE	0
 
 float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
@@ -447,7 +447,8 @@ void RenderGlare (fVector *light, fVector *eye, fVector *u, fVector *v, int nTex
 	tRgbaColorf color;
 	fVector 		n, e, s, t;
 	float 		ul, vl, h,intensity, cosine;
-	float 		sprite [12], texCoords [8] = {0, 0, 1, 0, 1, 1, 0, 1};
+	fVector3		sprite [4];
+	tTexCoord2f	texCoords [4] = {{0,0},{1,0},{1,1},{0,1}};
 	int 			i;
 	grsBitmap	*bmP;
 
@@ -466,10 +467,10 @@ VmVecScaleAddf (&t, &t, &e, VmVecDotf (&e, &t));
 VmVecScalef (&s, &s, 1.8f);
 VmVecScalef (&t, &t, 1.8f);
 for (i = 0; i < 3; i++) {
-	sprite [0+i] = ENTRY (light, i) + ENTRY (&s, i) + ENTRY (&t, i);
-	sprite [3+i] = ENTRY (light, i) + ENTRY (&s, i) - ENTRY (&t, i);
-	sprite [6+i] = ENTRY (light, i) - ENTRY (&s, i) - ENTRY (&t, i);
-	sprite [9+i] = ENTRY (light, i) - ENTRY (&s, i) + ENTRY (&t, i);
+	sprite [0].v [i] = ENTRY (light, i) + ENTRY (&s, i) + ENTRY (&t, i);
+	sprite [1].v [i] = ENTRY (light, i) + ENTRY (&s, i) - ENTRY (&t, i);
+	sprite [2].v [i] = ENTRY (light, i) - ENTRY (&s, i) - ENTRY (&t, i);
+	sprite [3].v [i] = ENTRY (light, i) - ENTRY (&s, i) + ENTRY (&t, i);
 	}
 color = gameData.render.color.textures [nTexture].color;
 intensity = (float) sqrt (cosine) * coronaIntensities [gameOpts->render.nCoronaIntensity];
@@ -482,8 +483,8 @@ glColor4f (intensity * color.red, intensity * color.green, intensity * color.blu
 glDisable (GL_DEPTH_TEST);
 glBegin (GL_QUADS);
 for  (i = 0; i < 4; i++) {
-	glTexCoord2fv (texCoords + 2*i);
-	glVertex3fv (sprite + 3*i);
+	glTexCoord2fv ((GLfloat *) (texCoords + i));
+	glVertex3fv ((GLfloat *) (sprite + i));
 	}
 glEnd ();
 if (bAdditive)
@@ -541,7 +542,7 @@ if  (IS_WALL  (nWall)) {
 	tWall *wallP = gameData.walls.walls + nWall;
 	ubyte nType = wallP->nType;
 
-	if  ( (nType == WALL_BLASTABLE) || 
+	if  ((nType == WALL_BLASTABLE) || 
 		  (nType == WALL_DOOR) ||
 		  (nType == WALL_OPEN) ||
 		  (nType == WALL_CLOAKED))
@@ -609,11 +610,16 @@ GetSideVertIndex  (sideVerts, nSegment, nSide);
 // get the transformed face coordinates and compute their center
 for  (i = 0; i < 4; i++) {
 	l += f2fl  (sideP->uvls [i].l);
-	sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
-	VmVecIncf  (&vCenter, sprite + i);
-	v = sprite [i];
+	if (gameOpts->render.nRenderPath)
+		G3TransformPointf (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);	//already transformed
+	else
+		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
+	if (zMin > sprite [i].p.z)
+		zMin = sprite [i].p.z;
 	}
-VmVecScalef (&vCenter, &vCenter, 0.25f);
+VmsVecToFloat (&v, SIDE_CENTER_I (nSegment, nSide));
+G3TransformPointf (&vCenter, &v, 0);	//already transformed
+vCenter.p.z = zMin;
 VmVecAddf (&u, sprite + 2, sprite + 1);
 VmVecDecf (&u, sprite);
 VmVecDecf (&u, sprite + 3);

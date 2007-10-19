@@ -27,9 +27,11 @@ static char rcsid[] = "$Id: vecmat.c, v 1.6 2004/05/12 07:31:37 btb Exp $";
 #include "vecmat.h"
 #include "inferno.h"
 #include "error.h"
-//#define _DEBUG
+
 #define EXACT_VEC_MAG	1
-#ifdef _WIN32
+#ifdef _DEBUG
+#	define ENABLE_SSE		0
+#elif defined (_WIN32)
 #	define ENABLE_SSE		1
 #else
 #	define ENABLE_SSE		0

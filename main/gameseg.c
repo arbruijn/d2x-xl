@@ -1132,6 +1132,7 @@ return check;		//we haven't found a tSegment
 
 int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 
+// -------------------------------------------------------------------------------
 //Tries to find a tSegment for a point, in the following way:
 // 1. Check the given tSegment
 // 2. Recursively trace through attached segments

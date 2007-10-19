@@ -3470,13 +3470,13 @@ while (stop_loc > 0) {
 		bytes_to_read = stop_loc;
 	else
 		bytes_to_read = BUF_SIZE;
-	read_elems = CFRead (buf, 1, bytes_to_read, ndInFile);
+	read_elems = (int) CFRead (buf, 1, bytes_to_read, ndInFile);
 	CFWrite (buf, 1, read_elems, ndOutFile);
 	stop_loc -= read_elems;
 	}
 stop_loc = CFTell (ndOutFile);
 CFSeek (ndInFile, trailer_start, SEEK_SET);
-while ((read_elems = CFRead (buf, 1, BUF_SIZE, ndInFile)) != 0)
+while ((read_elems = (int) CFRead (buf, 1, BUF_SIZE, ndInFile)))
 	CFWrite (buf, 1, read_elems, ndOutFile);
 CFSeek (ndOutFile, stop_loc, SEEK_SET);
 CFSeek (ndOutFile, 1, SEEK_CUR);

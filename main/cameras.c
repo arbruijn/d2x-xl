@@ -331,6 +331,7 @@ if (bRender2TextureOk)
 	glXMakeCurrent (hGlDC, hGlWindow, hGlRC);
 #	endif
 #endif
+LogErr ("Destroying cameras\n");
 for (i = gameData.cameras.nCameras; i; i--, pc++)
 	DestroyCamera (pc);
 if (gameData.cameras.nSides)

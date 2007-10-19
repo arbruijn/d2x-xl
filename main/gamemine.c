@@ -1985,15 +1985,20 @@ if (!(SHOW_DYN_LIGHT ||
 	return;
 loadOp = 0;
 loadIdx = 0;
+LogErr ("Looking for precompiled light data\n");
 if (LoadPrecompiledLights (nLevel))
 	return;
 else 
 #if MULTI_THREADED_PRECALC
 	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
+	LogErr ("Starting vertex visibility calculation threads\n");
 	StartOglLightThreads (VertVisThread);
+	LogErr ("Starting segment visibility calculation threads\n");
 	StartOglLightThreads (SegVisThread);
+	LogErr ("Starting segment light calculation threads\n");
 	StartOglLightThreads (SegLightsThread);
+	LogErr ("Starting vertex light calculation threads\n");
 	StartOglLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
 	}
@@ -2006,13 +2011,18 @@ else {
 							LoadMineGaugeSize () + PagingGaugeSize (), 
 							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 	else {
+		LogErr ("Computing vertex visibility\n");
 		ComputeVertexVisibility (-1);
+		LogErr ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
+		LogErr ("Computing segment lights\n");
 		ComputeNearestSegmentLights (-1);
+		LogErr ("Computing vertex lights\n");
 		ComputeNearestVertexLights (-1);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
+LogErr ("Saving precompiled light data\n");
 SavePrecompiledLights (nLevel);
 }
 

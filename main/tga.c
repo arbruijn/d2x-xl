@@ -436,51 +436,66 @@ else {
 	UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
 	pDest = pData;
 	}
-for (yDest = 0; yDest < yMax; yDest++) {
-	for (xDest = 0; xDest < xMax; xDest++) {
-		memset (&cSum, 0, sizeof (cSum));
-		ySrc = yDest * yFactor;
-		nSuperTransp = 0;
-		for (y = yFactor; y; ySrc++, y--) {
-			xSrc = xDest * xFactor;
-			pSrc = bmP->bmTexBuf + (ySrc * w + xSrc) * bpp;
-			for (x = xFactor; x; xSrc++, x--) {
-#if 0
-				if (bShaderMerge)
-					bSuperTransp = (pSrc [3] == 1);
-				else
-#endif
-					bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
-				if (bSuperTransp) {
-					nSuperTransp++;
-					pSrc += bpp;
-					}
-				else
+if (bpp == 3) {
+	for (yDest = 0; yDest < yMax; yDest++) {
+		for (xDest = 0; xDest < xMax; xDest++) {
+			memset (&cSum, 0, sizeof (cSum));
+			ySrc = yDest * yFactor;
+			nSuperTransp = 0;
+			for (y = yFactor; y; ySrc++, y--) {
+				xSrc = xDest * xFactor;
+				pSrc = bmP->bmTexBuf + (ySrc * w + xSrc) * bpp;
+				for (x = xFactor; x; xSrc++, x--) {
 					for (i = 0; i < bpp; i++)
 						cSum [i] += *pSrc++;
-				}
-			}
-		if (nSuperTransp >= nFactor2 / 2) {
-			pDest [0] = 120;
-			pDest [1] = 88;
-			pDest [2] = 128;
-			pDest [3] = 0;
-			pDest += bpp;
-			}
-		else {
-			for (i = 0, bSuperTransp = 1; i < bpp; i++)
-				pDest [i] = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
-			if (!(bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)) {
-				for (i = 0; i < 3; i++) 
-					if (pDest [i] != superTranspKeys [i])
-						break;
-				if (i == 3)
-					pDest [0] =
-					pDest [1] =
-					pDest [2] =
-					pDest [3] = 0;
+					}
 				}
 			pDest += bpp;
+			}
+		}
+	}
+else {
+	for (yDest = 0; yDest < yMax; yDest++) {
+		for (xDest = 0; xDest < xMax; xDest++) {
+			memset (&cSum, 0, sizeof (cSum));
+			ySrc = yDest * yFactor;
+			nSuperTransp = 0;
+			for (y = yFactor; y; ySrc++, y--) {
+				xSrc = xDest * xFactor;
+				pSrc = bmP->bmTexBuf + (ySrc * w + xSrc) * bpp;
+				for (x = xFactor; x; xSrc++, x--) {
+						bSuperTransp = (pSrc [0] == 120) && (pSrc [1] == 88) && (pSrc [2] == 128);
+					if (bSuperTransp) {
+						nSuperTransp++;
+						pSrc += bpp;
+						}
+					else
+						for (i = 0; i < bpp; i++)
+							cSum [i] += *pSrc++;
+					}
+				}
+			if (nSuperTransp >= nFactor2 / 2) {
+				pDest [0] = 120;
+				pDest [1] = 88;
+				pDest [2] = 128;
+				pDest [3] = 0;
+				pDest += bpp;
+				}
+			else {
+				for (i = 0, bSuperTransp = 1; i < bpp; i++)
+					pDest [i] = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
+				if (!(bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)) {
+					for (i = 0; i < 3; i++) 
+						if (pDest [i] != superTranspKeys [i])
+							break;
+					if (i == 3)
+						pDest [0] =
+						pDest [1] =
+						pDest [2] =
+						pDest [3] = 0;
+					}
+				pDest += bpp;
+				}
 			}
 		}
 	}

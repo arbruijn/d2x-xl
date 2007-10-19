@@ -1944,7 +1944,7 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;
 
-	//AddDynLights ();
+	LogErr ("Computing static lighting\n");
 	gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);

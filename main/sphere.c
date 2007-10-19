@@ -7,6 +7,7 @@
 #endif
 
 #include "inferno.h"
+#include "error.h"
 #include "network.h"
 #include "sphere.h"
 #include "render.h"
@@ -193,6 +194,7 @@ int CreateSphere (tSphereData *sdP)
 	int			nFaces, i, j;
 	tOOF_vector	*buf [2];
 
+LogErr ("Creating shield sphere\n");
 if (sdP->nFaceNodes == 3) {
 	nFaces = 8;
 	j = 6;

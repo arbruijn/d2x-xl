@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
+			OutputDirectory="e:\programme\d2"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -22,7 +22,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				FavorSizeOrSpeed="1"
+				FavorSizeOrSpeed="0"
 				OptimizeForProcessor="0"
 				AdditionalIncludeDirectories="&quot;D:\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\3d;..\..\3d;..\..\include;..\..\main;..\..\arch\include;..\arch\include;..\..\arch\win32\include;..\..\arch\win32;&quot;..\..\..\..\SDL-1.2.11\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.7&quot;"
 				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
@@ -34,12 +34,14 @@
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				EnableEnhancedInstructionSet="0"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Debug/d2xgl.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="1"
 				CompileAs="0"/>
@@ -53,7 +55,11 @@
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\d2x\sdl-1.2.11\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.7\VisualC\Debug&quot;"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\Debug/d2x-w32-dbg.pdb"
+				ProgramDatabaseFile="d:\programme\d2/d2x-xl-dbg.pdb"
+				GenerateMapFile="FALSE"
+				MapFileName="e:\programme\d2\d2x-xl-dbg.map"
+				MapExports="FALSE"
+				MapLines="FALSE"
 				SubSystem="2"
 				TargetMachine="1"/>
 			<Tool
@@ -73,7 +79,8 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Culture="1033"
+				ShowProgress="TRUE"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -3214,10 +3221,10 @@
 						RelativePath="..\..\main\reorder.h">
 					</File>
 					<File
-						RelativePath="..\..\resource.h">
+						RelativePath=".\resource.h">
 					</File>
 					<File
-						RelativePath=".\resource.h">
+						RelativePath="..\..\resource.h">
 					</File>
 					<File
 						RelativePath="..\..\include\rle.h">
@@ -3488,10 +3495,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

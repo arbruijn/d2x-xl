@@ -322,13 +322,6 @@ void NMLoadBackground (char * filename, bkg *bg, int bRedraw)
 	int			width, height;
 	grsBitmap	*bmP = bg ? bg->background : NULL;
 
-	//@@//I think this only gets called to fill the whole screen
-	//@@Assert (grdCurCanv->cvBitmap.bmProps.w == 320);
-	//@@Assert (grdCurCanv->cvBitmap.bmProps.h == 200);
-#if 0
-	if (bRedraw)
-		bRedraw = gameOpts->menus.nStyle && bmP && pszCurBg && filename && !strcmp (pszCurBg, filename);
-#endif
 if (!(bRedraw && gameOpts->menus.nStyle && bg && bmP)) {
 	if (bmP && (bmP != pAltBg)) {
 		GrFreeBitmap (bmP);
@@ -442,7 +435,6 @@ else {
 	{
 		grsBitmap *tmp = GrCreateBitmap (w, h, 1);
 		GrBitmapScaleTo (&nm_background, tmp);
-		WIN (DDGRLOCK (dd_grd_curcanv);
 		glDisable (GL_BLEND);
 		if (bNoDarkening)
 			GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), tmp, &(grdCurCanv->cvBitmap));
@@ -452,7 +444,6 @@ else {
 		GrFreeBitmap (tmp);
 	}
 #else
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	glDisable (GL_BLEND);
 	if (bNoDarkening)
 		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nm_background, &(grdCurCanv->cvBitmap));
@@ -478,7 +469,6 @@ else {
 		GrURect (x1+0, y2, x2, y2-1);
 		}
 	GrUpdate (0);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 }
@@ -579,10 +569,7 @@ void NMRestoreBackground (int sx, int sy, int dx, int dy, int w, int h)
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
-
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	GrBmBitBlt (w, h, dx, dy, x1, y1, &nm_background, &(grdCurCanv->cvBitmap));
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
 //------------------------------------------------------------------------------
@@ -854,21 +841,19 @@ void NMStringBlack (bkg * b, int w1, int x, int y, char * s)
 	if (w1 == 0) 
 		w1 = w;
 
-	WIN (DDGRLOCK (dd_grd_curcanv));
-		GrSetColorRGBi (RGBA_PAL2 (2, 2, 2));
-  		GrRect (x-1, y-1, x-1, y+h-1);
-		GrRect (x-1, y-1, x+w1-1, y-1);
+GrSetColorRGBi (RGBA_PAL2 (2, 2, 2));
+GrRect (x-1, y-1, x-1, y+h-1);
+GrRect (x-1, y-1, x+w1-1, y-1);
 
-	 
-		GrSetColorRGBi (RGBA_PAL2 (5, 5, 5));
-		GrRect (x, y+h, x+w1, y+h);
-		GrRect (x+w1, y-1, x+w1, y+h);
-     
-		GrSetColorRGB (0, 0, 0, 255);
-		GrRect (x, y, x+w1-1, y+h-1);
-	
-		GrString (x+1, y+1, s, NULL);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
+
+GrSetColorRGBi (RGBA_PAL2 (5, 5, 5));
+GrRect (x, y+h, x+w1, y+h);
+GrRect (x+w1, y-1, x+w1, y+h);
+
+GrSetColorRGB (0, 0, 0, 255);
+GrRect (x, y, x+w1-1, y+h-1);
+
+GrString (x+1, y+1, s, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -888,18 +873,16 @@ void NMRString (tMenuItem *item, bkg * b, int bIsCurrent, int bTiny, char *s)
 		w1 = w;
 
 	// CHANGED
-	WIN (DDGRLOCK (dd_grd_curcanv));
-		if (curDrawBuffer != GL_BACK)
-			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
-		hs = item->text;
-		item->text = s;
-		h = item->x;
-		item->x = x - w;
-		NMHotKeyString (item, bIsCurrent, bTiny, 0, 0);
-		item->text = hs;
-		item->x = h;
+	if (curDrawBuffer != GL_BACK)
+		GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
+	hs = item->text;
+	item->text = s;
+	h = item->x;
+	item->x = x - w;
+	NMHotKeyString (item, bIsCurrent, bTiny, 0, 0);
+	item->text = hs;
+	item->x = h;
 //		GrString (x-w, y, s, NULL);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
 //------------------------------------------------------------------------------
@@ -915,11 +898,9 @@ void NMRStringWXY (bkg * b, int w1, int x, int y, char *s)
 		w1 = w;
 
 	// CHANGED
-	WIN (DDGRLOCK (dd_grd_curcanv));
-		if (curDrawBuffer != GL_BACK)
-			GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
-		GrString (x-w, y, s, NULL);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
+	if (curDrawBuffer != GL_BACK)
+		GrBmBitBlt (w1, h, x-w1, y, x-w1, y, b->background, &(grdCurCanv->cvBitmap));
+	GrString (x-w, y, s, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -947,14 +928,12 @@ void NMUpdateCursor (tMenuItem *item)
 		w = 0;
 	x = item->x+w; y = item->y;
 
-WIN (DDGRLOCK (dd_grd_curcanv));
 	if (time & 0x8000)
 		GrString (x, y, CURSOR_STRING, NULL);
 	else {
 		GrSetColorRGB (0, 0, 0, 255);
 		GrRect (x, y, x+grdCurCanv->cvFont->ftWidth-1, y+grdCurCanv->cvFont->ftHeight-1);
 	}
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
 //------------------------------------------------------------------------------
@@ -1011,7 +990,6 @@ if (item->rebuild) {
 	NMFreeTextBm (item);
 	item->rebuild = 0;
 	}
-WIN (DDGRLOCK (dd_grd_curcanv));	
 	switch (item->nType)	{
 	case NM_TYPE_TEXT:
       // grdCurCanv->cvFont=TEXT_FONT;
@@ -1091,7 +1069,6 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 		}
 		break;
 	}
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 }
 
@@ -1238,12 +1215,10 @@ ubyte Hack_DblClick_MenuMode=0;
 
 void NMDrawCloseBox (int x, int y)
 {
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetColorRGB (0, 0, 0, 255);
 	GrRect (x + CLOSE_X, y + CLOSE_Y, x + CLOSE_X + CLOSE_SIZE, y + CLOSE_Y + CLOSE_SIZE);
 	GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
 	GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE - LHX (1), y + CLOSE_Y + CLOSE_SIZE - LHX (1));
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
 //------------------------------------------------------------------------------
@@ -1258,9 +1233,7 @@ if (title && *title)	{
 	GrGetStringSize (title, &string_width, &nStringHeight, &average_width);
 	tw = string_width;
 	th = nStringHeight;
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	GrPrintF (NULL, 0x8000, ty, title);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	ty += nStringHeight;
 	}
 return ty;
@@ -1519,33 +1492,29 @@ WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
 
 void NMRestoreScreen (char *filename, bkg *bg, gsrCanvas *save_canvas, grsFont *saveFont, int bDontRestore)
 {
-WINDOS (DDGrSetCurrentCanvas (bg->menu_canvas), GrSetCurrentCanvas (bg->menu_canvas));
-if (gameOpts->menus.nStyle)
+GrSetCurrentCanvas (bg->menu_canvas);
+if (gameOpts->menus.nStyle) {
 	NMRemoveBackground (bg);
+	}
 else {
 	if (!filename) {
 		// Save the background under the menu...
-		WIN (DDGRLOCK (dd_grd_curcanv));
 		GrBitmap (0, 0, bg->saved); 	
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		GrFreeBitmap (bg->saved);
 		D2_FREE (bg->background);
 		} 
 	else {
 		if (!bDontRestore) {	//info passed back from subfunction
-			WIN (DDGRLOCK (dd_grd_curcanv));
 			GrBitmap (0, 0, bg->background);
-			WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
 			}
 		GrFreeBitmap (bg->background);
 		}
 	GrUpdate (0);
 	}
-WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), 
-		  GrFreeSubCanvas (bg->menu_canvas));
-WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));			
-grdCurCanv->cvFont	= saveFont;
-WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (save_canvas));
+GrFreeSubCanvas (bg->menu_canvas);
+GrSetCurrentCanvas (NULL);			
+grdCurCanv->cvFont = saveFont;
+GrSetCurrentCanvas (save_canvas);
 memset (bg, 0, sizeof (*bg));
 GrabMouse (1, 0);
 }
@@ -1610,15 +1579,11 @@ FlushInput ();
 PA_DFX (pa_set_frontbuffer_current ());
 PA_DFX (pa_set_front_to_read ());
 
-WIN (if (!_AppActive) {
-	return -1}
-	);		// Don't draw message if minimized!
 SDL_ShowCursor (0);
 if (nItems < 1)
 	return -1;
 SDL_EnableKeyRepeat(60, 30);
 gameStates.menus.nInMenu++;
-WIN (mouse_set_mode (0));		//disable centering mode
 if (!gameOpts->menus.nStyle && (gameStates.app.nFunctionMode == FMODE_GAME) && !(gameData.app.nGameMode & GM_MULTI)) {
 	DigiPauseDigiSounds ();
 	sound_stopped = 1;
@@ -1994,6 +1959,7 @@ radioOption:
 			//int bLoadAltBg = NMFreeAltBg ();
 			NMFreeAllTextBms (item, nItems);
 			NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
+			NMFreeAltBg (1);
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
 			SetScreenMode (SCREEN_MENU);
@@ -2485,7 +2451,6 @@ if (time_stopped) {
   }
 if (sound_stopped)
 	DigiResumeDigiSounds ();
-WIN (mouse_set_mode (1));				//re-enable centering mode
 gameStates.menus.nInMenu--;
 GrPaletteStepUp (0, 0, 0);
 SDL_EnableKeyRepeat(0, 0);
@@ -2639,7 +2604,6 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	char szPattern [40];
 	int nPatternLen = 0;
 	char *pszFn;
-WIN (int win_redraw=0);
 
 	w_x = w_y = w_w = w_h = title_height = 0;
 	box_x = box_y = box_w = box_h = 0;
@@ -2652,7 +2616,6 @@ WIN (int win_redraw=0);
 	cItem = 0;
 	keyd_repeat = 1;
 
-	WIN (mouse_set_mode (0));				//disable centering mode
 
 	if (strstr (filespec, "*.plr"))
 		player_mode = 1;
@@ -2737,12 +2700,7 @@ ReadFileNames:
 //		SetScreenMode (SCREEN_MENU);
 		SetPopupScreenMode ();
 		GrSetCurrentCanvas (NULL);
-		WIN (DDGRLOCK (dd_grd_curcanv))					//mwa put these here -- are these needed Samir???
-		{
-			grdCurCanv->cvFont = SUBTITLE_FONT;
-		}
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
-
+		grdCurCanv->cvFont = SUBTITLE_FONT;
 		w_w = 0;
 		w_h = 0;
 
@@ -2795,18 +2753,10 @@ ReadFileNames:
 			else
 				bg.background = GrCreateBitmap (w_w, w_h, 1);
 			Assert (bg.background != NULL);
-			WIN (DDGRLOCK (dd_grd_curcanv));
 			GrBmBitBlt (w_w, w_h, 0, 0, w_x, w_y, &grdCurCanv->cvBitmap, bg.background);
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			}
 		NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1, 0);
-		WIN (DDGRLOCK (dd_grd_curcanv))
-		{	
-			GrString (0x8000, w_y+10, title, NULL);
-		}
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
-
-		WIN (DDGRRESTORE);
+		GrString (0x8000, w_y+10, title, NULL);
 		initialized = 1;
 	}
 
@@ -3069,17 +3019,12 @@ ReadFileNames:
 			}
 		}
   
-	WIN (DDGRLOCK (dd_grd_curcanv));
 		if ((ofirst_item != first_item) || gameOpts->menus.nStyle) {
 			if (!gameOpts->menus.nStyle) 
 				SDL_ShowCursor (0);
 			NMDrawBackground (&bg, w_x, w_y, w_x+w_w-1, w_y+w_h-1,1);
-			WIN (DDGRLOCK (dd_grd_curcanv))
-			{	
-				grdCurCanv->cvFont = NORMAL_FONT;
-				GrString (0x8000, w_y+10, title, NULL);
-			}
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
+			grdCurCanv->cvFont = NORMAL_FONT;
+			GrString (0x8000, w_y+10, title, NULL);
 			GrSetColorRGB (0, 0, 0, 255);
 			for (i=first_item; i<first_item+NumFiles_displayed; i++)	{
 				int w, h, aw, y;
@@ -3147,7 +3092,6 @@ ReadFileNames:
 			GrUpdate (0);
 			SDL_ShowCursor (1);
 		}
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
 
 //ExitFileMenuEarly:
@@ -3168,9 +3112,7 @@ ExitFileMenu:
 		else {
 			if (gameData.demo.nState != ND_STATE_PLAYBACK)	//horrible hack to prevent restore when screen has been cleared
 			{
-			WIN (DDGRLOCK (dd_grd_curcanv));
 			GrBmBitBlt (w_w, w_h, w_x, w_y, 0, 0, bg.background, &grdCurCanv->cvBitmap);
-			WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
 			}
 			if (bg.background != &gameStates.render.vr.buffers.offscreen->cvBitmap)
 				GrFreeBitmap (bg.background);
@@ -3184,15 +3126,11 @@ ExitFileMenu:
 		);
 #endif
 		GrUpdate (0);
-		WIN (DDGRRESTORE);
 		}
 	}
 
 	if (filenames)
 		D2_FREE (filenames);
-
-	WIN (mouse_set_mode (1));				//re-enable centering mode
-	WIN (SDL_ShowCursor (0));
 
 	SDL_EnableKeyRepeat(0, 0);
 	return exitValue;
@@ -3247,13 +3185,10 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	int nPatternLen = 0;
 	char *pszFn;
 	
-WIN (int win_redraw=0);
-
 	keyd_repeat = 1;
 
    PA_DFX (pa_set_frontbuffer_current ());
 	PA_DFX (pa_set_front_to_read ());
-	WIN (mouse_set_mode (0));				//disable centering mode
 
 //	SetScreenMode (SCREEN_MENU);
 	SetPopupScreenMode ();
@@ -3281,7 +3216,6 @@ WIN (int win_redraw=0);
 	}
 
 	border_size = grd_curfont->ftWidth;
-   WIN (border_size=grd_curfont->ftWidth*2);
 		
 	width += (grd_curfont->ftWidth);
 	if (width > grdCurCanv->cv_w - (grd_curfont->ftWidth * 3))
@@ -3304,10 +3238,7 @@ WIN (int win_redraw=0);
 			//bg.background = GrCreateBitmap (width, (height + title_height));
 			bg.background = GrCreateBitmap (total_width, total_height, 1);
 		Assert (bg.background != NULL);
-		WIN (DDGRLOCK (dd_grd_curcanv));
-			//GrBmBitBlt (wx+width+border_size, wy+height+border_size, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);
-			GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
+		GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);
 		}
 
 #if 0
@@ -3322,12 +3253,7 @@ WIN (int win_redraw=0);
 
 	NMDrawBackground (&bg, wx-border_size, wy-title_height-border_size, wx+width+border_size-1, wy+height+border_size-1,0);
 	GrUpdate (0);
-	WIN (DDGRLOCK (dd_grd_curcanv));
-		GrString (0x8000, wy - title_height, title, NULL);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));	
-
-	WIN (DDGRRESTORE);
-
+	GrString (0x8000, wy - title_height, title, NULL);
 	done = 0;
 	cItem = default_item;
 	if (cItem < 0) 
@@ -3537,7 +3463,6 @@ WIN (int win_redraw=0);
 				NMDrawBackground (&bg, wx-border_size, wy-title_height-border_size, wx+width+border_size-1, wy+height+border_size-1,1);
 			else
 				SDL_ShowCursor (0);
-			WIN (DDGRLOCK (dd_grd_curcanv));
 			if (gameOpts->menus.nStyle) {
 				grdCurCanv->cvFont = NORMAL_FONT;
 				GrString (0x8000, wy - title_height, title, NULL);
@@ -3563,7 +3488,6 @@ WIN (int win_redraw=0);
 
 				
 			// If Win95 port, draw up/down arrows on left tSide of menu
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			SDL_ShowCursor (1);
 			GrUpdate (0);
 		} else if (cItem != ocitem)	{
@@ -3571,8 +3495,6 @@ WIN (int win_redraw=0);
 
 			if (!gameOpts->menus.nStyle) 
 				SDL_ShowCursor (0);
-
-			WIN (DDGRLOCK (dd_grd_curcanv));
 
 			i = ocitem;
 			if ((i>=0) &&(i<nItems))	{
@@ -3597,8 +3519,6 @@ WIN (int win_redraw=0);
 				GrRect (wx, y-1, wx+width-1, y+h);
 				GrString (wx+5, y, items [i], NULL);
 			}
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
-
 			SDL_ShowCursor (1);
 			GrUpdate (0);
 		}
@@ -3619,9 +3539,7 @@ WIN (int win_redraw=0);
 		}
 	else {
 		SDL_ShowCursor (0);
-		WIN (DDGRLOCK (dd_grd_curcanv));
 		GrBmBitBlt (total_width, total_height, wx-border_size, wy-title_height-border_size, 0, 0, bg.background, &grdCurCanv->cvBitmap);
-		WIN (DDGRUNLOCK (dd_grd_curcanv)); 	
 		if (bg.background != &gameStates.render.vr.buffers.offscreen->cvBitmap)
 			GrFreeBitmap (bg.background);
 		GrUpdate (0);
@@ -3637,10 +3555,6 @@ WIN (int win_redraw=0);
 		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cvBitmap), &(grdCurCanv->cvBitmap))
 	);
 #endif
-
-	WIN (DDGRRESTORE);
-
-	WIN (mouse_set_mode (1));				//re-enable centering mode
 
 	SDL_EnableKeyRepeat(0, 0);
 	return cItem;

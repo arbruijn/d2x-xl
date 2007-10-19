@@ -304,6 +304,7 @@ void FreeDeadzone ();
 
 void LoadExtraImages (void)
 {
+LogErr ("Loading extra images\n");
 LoadCorona ();
 LoadGlare ();
 LoadHalo ();
