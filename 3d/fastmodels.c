@@ -653,8 +653,6 @@ void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 	float				fAlpha = GrAlpha ();
 	int				h, i;
 
-if (objP->nType == OBJ_ROBOT)
-	objP = objP;
 if (!gameStates.render.bBrightObject) {
 	VmsVecToFloat (&vPos, &objP->position.vPos);
 	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts; 
@@ -757,7 +755,8 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 if (xModelLight > F1_0)
 	xModelLight = F1_0;
 #endif
-if (!gameStates.render.bCloaked && SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects) {
+if (!gameStates.render.bCloaked && SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects &&
+	 (gameOpts->ogl.bLightPowerups || (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) {
 	if (gameStates.app.bMultiThreaded) {
 		g3ti.objP = objP;
 		g3ti.pm = pm;

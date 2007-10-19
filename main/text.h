@@ -1784,10 +1784,10 @@ void LoadGameTexts(void);
 #define TXT_SOFT_CORONAS			GT(991)
 #define TXT_CORONA_OPTIONS			GT(992)
 #define TXT_CORONA_MENUTITLE		GT(993)
+#define TXT_POWERUP_LIGHTING		GT(994)
 
 #if 0
 
-#define TXT_				GT(994)
 #define TXT_				GT(995)
 #define TXT_				GT(996)
 #define TXT_				GT(997)
@@ -2236,10 +2236,10 @@ void LoadGameTexts(void);
 #define HTX_WEAPON_CORONAS			HT(322)				
 #define HTX_CORONA_STYLE			HT(323)				
 #define HTX_RENDER_CORONAOPTS		HT(324)				
+#define HTX_POWERUP_LIGHTING		HT(325)				
 
 #if 0
 
-#define HTX_					HT(325)				
 #define HTX_					HT(326)				
 #define HTX_					HT(327)				
 #define HTX_					HT(328)				

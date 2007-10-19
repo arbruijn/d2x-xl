@@ -328,6 +328,7 @@ typedef struct tOglOptions {
 	int bSetGammaRamp;
 	int bGlTexMerge;
 	int bLightObjects;
+	int bLightPowerups;
 	int nMaxLights;
 	int bVoodooHack;
 } tOglOptions;

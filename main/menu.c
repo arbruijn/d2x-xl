@@ -152,6 +152,7 @@ static struct {
 	int	nMaxLights;
 	int	nLMapRange;
 	int	nGunColor;
+	int	nObjectLight;
 } lightOpts;
 
 static struct {
@@ -2951,6 +2952,15 @@ if (v != gameOpts->render.color.bGunLight) {
 	*key = -2;
 	return;
 	}
+if (lightOpts.nObjectLight >= 0) {
+	m = menus + lightOpts.nObjectLight;
+	v = m->value;
+	if (v != gameOpts->ogl.bLightObjects) {
+		gameOpts->ogl.bLightObjects = v;
+		*key = -2;
+		return;
+		}
+	}
 if (lightOpts.nMaxLights >= 0) {
 	m = menus + lightOpts.nMaxLights;
 	v = m->value + 4;
@@ -2988,7 +2998,7 @@ void LightingOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
 	int	opt;
-	int	optColoredLight, optObjectLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects;
+	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight;
 #if 0
 	int checks;
 #endif
@@ -3010,7 +3020,7 @@ do {
 	lightOpts.nLMapRange =
 	lightOpts.nMaxLights = 
 	optColorSat = 
-	optObjectLight = -1;
+	lightOpts.nObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
 		ADD_RADIO (opt, TXT_STD_LIGHTING, !(gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting), KEY_S, 1, NULL);
 		lightOpts.nMethod = opt++;
@@ -3031,26 +3041,29 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	if (/*(lightOpts.nMethod >= 0) &&*/ gameOpts->render.bDynLighting && !IsMultiGame) {
-		//if (!gameStates.app.bGameRunning) 
-			{
-			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
-			*szLightRange = *(TXT_LIGHT_RANGE - 1);
-			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 4, KEY_R, HTX_ADVRND_LIGHTRANGE);
-			lightOpts.nLMapRange = opt++;
+	if (gameOpts->render.bDynLighting && !IsMultiGame) {
+		sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
+		*szLightRange = *(TXT_LIGHT_RANGE - 1);
+		ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 4, KEY_R, HTX_ADVRND_LIGHTRANGE);
+		lightOpts.nLMapRange = opt++;
 #if 0
-			ADD_TEXT (opt, "", 0);
-			opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
 #endif
-			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
-			optObjectLight = opt++;
-			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
-			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
-			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
-			lightOpts.nMaxLights = opt++;
-			ADD_TEXT (opt, "", 0);
-			opt++;
+		ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+		lightOpts.nObjectLight = opt++;
+		if (gameOpts->ogl.bLightObjects) {
+			ADD_CHECK (opt, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_O, HTX_POWERUP_LIGHTING);
+			nPowerupLight = opt++;
 			}
+		else
+			nPowerupLight = -1;
+		sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
+		*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
+		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
+		lightOpts.nMaxLights = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
 		ADD_RADIO (opt, TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
 		optColorSat = opt++;
 		ADD_RADIO (opt, TXT_LIMIT_COLORSAT, 0, KEY_L, 2, HTX_COLOR_SATURATION);
@@ -3096,8 +3109,13 @@ do {
 			 !bLightMaps && !HaveLightMaps ())
 			CreateLightMaps ();
 		}
-	if (gameOpts->render.bDynLighting && (optObjectLight >= 0))
-		gameOpts->ogl.bLightObjects = m [optObjectLight].value;
+	if (gameOpts->render.bDynLighting) {
+		if (lightOpts.nObjectLight >= 0) {
+			gameOpts->ogl.bLightObjects = m [lightOpts.nObjectLight].value;
+			if (nPowerupLight >= 0)
+				gameOpts->ogl.bLightPowerups = m [nPowerupLight].value;
+			}
+		}
 	if (optColoredLight >= 0)
 		gameOpts->render.color.bAmbientLight = m [optColoredLight].value;
 	if (lightOpts.nGunColor >= 0)
