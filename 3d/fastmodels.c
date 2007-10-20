@@ -618,10 +618,10 @@ if (pm->bValid > 0)
 	return 1;
 if (pm->bValid < 0)
 	return 0;
-if (!pp->modelData)
-	return 0;
 if (bHires)
 	return G3BuildModelFromOOF (nModel);
+if (!pp->modelData)
+	return 0;
 pm->nSubModels = 1;
 G3CountModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts);
 if (!G3AllocModel (pm))

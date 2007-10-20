@@ -523,6 +523,41 @@ if (po->modelData)
 
 //------------------------------------------------------------------------------
 
+int ObjectHasShadow (tObject *objP)
+{
+if (objP->nType == OBJ_ROBOT) {
+	if (!gameOpts->render.shadows.bRobots)
+		return 0;
+	if (objP->cType.aiInfo.CLOAKED)
+		return 0;
+	}
+else if (objP->nType == OBJ_WEAPON) {
+	if (!gameOpts->render.shadows.bMissiles)
+		return 0;
+	if (!gameData.objs.bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
+		return 0;
+	}
+else if ((objP->nType == OBJ_POWERUP)) {
+	if (!gameOpts->render.shadows.bPowerups)
+		return 0;
+	}
+else if (objP->nType == OBJ_PLAYER) {
+	if (!gameOpts->render.shadows.bPlayers)
+		return 0;
+	if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
+		return 0;
+	}
+else if (objP->nType == OBJ_CNTRLCEN) {
+	if (!gameOpts->render.shadows.bReactors)
+		return 0;
+	}
+else 
+	return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
 {
 	tPolyModel	*po = NULL;
@@ -551,39 +586,8 @@ else if (!po) {
 		po = gameData.models.altPolyModels + nModel;
 	else
 		return NULL;
-	if (gameStates.render.nShadowPass == 2) {
-		if (objP->nType == OBJ_ROBOT) {
-			if (!gameOpts->render.shadows.bRobots)
-				return NULL;
-			if (objP->cType.aiInfo.CLOAKED)
-				return NULL;
-			}
-		else if (objP->nType == OBJ_WEAPON) {
-			if (!gameOpts->render.shadows.bMissiles)
-				return NULL;
-			if (!gameData.objs.bIsMissile [objP->id] && (objP->id != SMALLMINE_ID))
-				return NULL;
-			}
-		else if ((objP->nType == OBJ_POWERUP)) {
-			if (!gameOpts->render.shadows.bPowerups)
-				return NULL;
-			}
-		else if (objP->nType == OBJ_PLAYER) {
-			if (!gameOpts->render.shadows.bPlayers)
-				return NULL;
-			if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
-				return NULL;
-			}
-		else if (objP->nType == OBJ_CNTRLCEN) {
-			if (!gameOpts->render.shadows.bReactors)
-				return NULL;
-			if (!(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
-				po--;
-			}
-		else 
-			return NULL;
-		return po;
-		}
+	if ((gameStates.render.nShadowPass == 2) && (objP->nType == OBJ_CNTRLCEN) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
+		po--;
 	}
 //check if should use simple model (depending on detail level chosen)
 if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && po->nSimplerModel && !flags && pos) {
@@ -655,16 +659,24 @@ void DrawPolygonModel (
 	tRgbaColorf		*color)
 {
 	tPolyModel	*po;
-	int			nTextures;
+	int			nTextures, bHires = 0;
 
-if (!(po = GetPolyModel (objP, pos, nModel, flags)))
+if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return;
+if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
+	if ((gameStates.render.nShadowPass != 2) && gameData.models.modelToOOF [nModel])
+		bHires = 1;
+	else
+		return;
+	}
 if (gameStates.render.nShadowPass == 2) {
-	G3SetModelPoints (gameData.models.polyModelPoints);
-	G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
+	if (!bHires) {
+		G3SetModelPoints (gameData.models.polyModelPoints);
+		G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
+		}
 	return;
 	}
-nTextures = LoadModelTextures (po, altTextures);
+nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
 #ifdef _3DFX
@@ -678,6 +690,8 @@ G3StartInstanceMatrix (pos, orient);
 if (!flags)	{	//draw entire tObject
 	if (!G3RenderModel (objP, nModel, po, gameData.models.textures, animAngles, light, glowValues, color)) {
 		G3DoneInstance ();
+		if (bHires)
+			return;
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects);
 		G3StartInstanceMatrix (pos, orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);

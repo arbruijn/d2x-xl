@@ -25,12 +25,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //figure out what seg the given point is in, tracing through segments
 int get_new_seg(vmsVector *p0,int startseg);
 
-typedef struct segmasks {
+typedef struct tSegMasks {
    short faceMask;     //which faces sphere pokes through (12 bits)
    sbyte sideMask;     //which sides sphere pokes through (6 bits)
    sbyte centerMask;   //which sides center point is on back of (6 bits)
 	sbyte valid;
-} segmasks;
+} tSegMasks;
 
 
 void ComputeSideCenter(vmsVector *vp,tSegment *sp,int tSide);
@@ -94,8 +94,10 @@ void CreateAllVertNumLists(int *num_faces, int *vertnums, int nSegment, int nSid
 extern int GetNumFaces(tSide *sidep);
 
 //returns 3 different bitmasks with info telling if this sphere is in
-//this tSegment.  See segmasks structure for info on fields
-segmasks GetSegMasks(vmsVector *checkp,int nSegment,fix rad);
+//this tSegment.  See tSegMasks structure for info on fields
+tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad);
+
+tSegMasks GetSegMasks(vmsVector *checkp,int nSegment,fix rad);
 
 //this macro returns true if the nSegment for an tObject is correct
 #define check_obj_seg(obj) (GetSegMasks(&(obj)->pos,(obj)->nSegment,0).centermask == 0)

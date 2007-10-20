@@ -699,7 +699,7 @@ void DoRenderObject (int nObject, int nWindow)
 if (!(IsMultiGame || gameOpts->render.bObjects))
 	return;
 Assert(nObject < MAX_OBJECTS);
-#if 1
+#if 0
 if (!(nWindow || gameStates.render.cameras.bActive) && (gameStates.render.nShadowPass < 2) &&
     (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameFlipFlop))	//already rendered this...
 	return;
@@ -1351,7 +1351,7 @@ void BuildRenderObjLists (int nSegCount)
 {
 	tObject	*objP;
 	tSegment	*segP;
-	segmasks	mask;
+	tSegMasks	mask;
 	short		nSegment, nNewSeg, nChild, nSide, sideFlag;
 	int		nListPos, nObject;
 

@@ -970,7 +970,7 @@ switch (trigP->nType) {
 		break;
 	}
 if (trigP->flags & TF_ALTERNATE)
-		trigP->nType = oppTrigTypes [trigP->nType];
+	trigP->nType = oppTrigTypes [trigP->nType];
 return 0;
 }
 

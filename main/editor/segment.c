@@ -2234,7 +2234,7 @@ void med_check_all_vertices()
 void check_for_overlapping_segment(int nSegment)
 {
 	int	i, v;
-	segmasks	masks;
+	tSegMasks	masks;
 	vmsVector	segcenter;
 
 	COMPUTE_SEGMENT_CENTER(&segcenter, &gameData.segs.segments[nSegment]);

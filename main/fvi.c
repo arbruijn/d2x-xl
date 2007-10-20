@@ -1013,7 +1013,7 @@ int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
 	short			nHitSegment, nHitSegment2;
 	vmsVector	vHitPoint;
 	int			i;
-	segmasks		masks;
+	tSegMasks		masks;
 
 Assert(fq->ignoreObjList != (short *)(-1));
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
@@ -1117,7 +1117,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	tSegment		*segP;				//the tSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
 	short			nObject;
-	segmasks		masks;
+	tSegMasks		masks;
 	vmsVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit point
 	int			nObjSegList [7], nObjSegs, iObjSeg, nSegment, i;

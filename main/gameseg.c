@@ -576,12 +576,12 @@ return nFaces;
 
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
-//this tSegment.  See segmasks structure for info on fields  
-segmasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
+//this tSegment.  See tSegMasks structure for info on fields  
+tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad)
 {
 	int			sn, faceBit, sideBit;
 	int			nFaces;
-	int			nVertex, fn;
+	int			nVertex, nFace;
 	int			bSidePokesOut;
 	int			nSideCount, nCenterCount;
 	int			vertexList [6];
@@ -590,7 +590,116 @@ segmasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
 	tSide			*sideP;
 	tSegment2	*seg2P;
 	tSide2		*side2P;
-	segmasks		masks;
+	tSegMasks	masks;
+
+masks.valid = 0;
+masks.centerMask = 0;
+masks.faceMask = 0;
+masks.sideMask = 0;
+masks.valid = 1;
+if (nSegment == -1) {
+	//Error ("nSegment == -1 in GetSegMasks ()");
+	return masks;
+	}
+Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
+segP = gameData.segs.segments + nSegment;
+sideP = segP->sides + nSide;
+seg2P = gameData.segs.segment2s + nSegment;
+side2P = seg2P->sides + nSide;
+//check point against each tSide of tSegment. return bitmask
+// Get number of faces on this tSide, and at vertexList, store vertices.
+//	If one face, then vertexList indicates a quadrilateral.
+//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
+nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
+//ok...this is important.  If a tSide has 2 faces, we need to know if
+//those faces form a concave or convex tSide.  If the tSide pokes out, 
+//then a point is on the back of the tSide if it is behind BOTH faces, 
+//but if the tSide pokes in, a point is on the back if behind EITHER face.
+faceBit = sideBit = 1;
+if (nFaces == 2) {
+	nVertex = min (vertexList [0], vertexList [2]);
+	if (vertexList [4] < vertexList [1])
+		if (gameStates.render.bRendering)
+			xDist = VmDistToPlane (&gameData.segs.points [vertexList [4]].p3_vec, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+		else
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [4], sideP->normals, gameData.segs.vertices + nVertex);
+	else
+		if (gameStates.render.bRendering)
+			xDist = VmDistToPlane (&gameData.segs.points [vertexList [1]].p3_vec, side2P->rotNorms + 1, &gameData.segs.points [nVertex].p3_vec);
+		else
+			xDist = VmDistToPlane (gameData.segs.vertices + vertexList [1], sideP->normals + 1, gameData.segs.vertices + nVertex);
+	bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
+	nSideCount = nCenterCount = 0;
+
+	for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
+		if (gameStates.render.bRendering)
+			xDist = VmDistToPlane (checkP, side2P->rotNorms + nFace, &gameData.segs.points [nVertex].p3_vec);
+		else
+			xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
+		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
+			// check if the intersection of a line through the point that is orthogonal to the 
+			// plane of the current triangle lies in is inside that triangle
+			nCenterCount++;
+		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (xDist + xRad >= -PLANE_DIST_TOLERANCE)) {
+			masks.faceMask |= faceBit;
+			nSideCount++;
+			}
+		}
+	if (bSidePokesOut) {		//must be behind at least one face
+		if (nSideCount)
+			masks.sideMask |= sideBit;
+		if (nCenterCount)
+			masks.centerMask |= sideBit;
+		}
+	else {							//must be behind both faces
+		if (nSideCount == 2)
+			masks.sideMask |= sideBit;
+		if (nCenterCount == 2)
+			masks.centerMask |= sideBit;
+		}
+	}
+else {				//only one face on this tSide
+	//use lowest point number
+	nVertex = vertexList [0];
+	//some manual loop unrolling here ...
+	if (nVertex > vertexList [1])
+		nVertex = vertexList [1];
+	if (nVertex > vertexList [2])
+		nVertex = vertexList [2];
+	if (nVertex > vertexList [3])
+		nVertex = vertexList [3];
+	if (gameStates.render.bRendering)
+		xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
+	else
+		xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
+	if (xDist < -PLANE_DIST_TOLERANCE)
+		masks.centerMask |= 1;
+	if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (xDist + xRad >= -PLANE_DIST_TOLERANCE)) {
+		masks.faceMask |= 1;
+		masks.sideMask |= 1;
+		}
+	}
+masks.valid = 1;
+return masks;
+}
+
+// -------------------------------------------------------------------------------
+//returns 3 different bitmasks with info telling if this sphere is in
+//this tSegment.  See tSegMasks structure for info on fields  
+tSegMasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
+{
+	int			nSide, faceBit, sideBit;
+	int			nFaces;
+	int			nVertex, nFace;
+	int			bSidePokesOut;
+	int			nSideCount, nCenterCount;
+	int			vertexList [6];
+	fix			xDist;
+	tSegment		*segP;
+	tSide			*sideP;
+	tSegment2	*seg2P;
+	tSide2		*side2P;
+	tSegMasks		masks;
 
 masks.valid = 0;
 masks.centerMask = 0;
@@ -607,11 +716,11 @@ sideP = segP->sides;
 seg2P = gameData.segs.segment2s + nSegment;
 side2P = seg2P->sides;
 //check point against each tSide of tSegment. return bitmask
-for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P++) {
+for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP++, side2P++) {
 	// Get number of faces on this tSide, and at vertexList, store vertices.
 	//	If one face, then vertexList indicates a quadrilateral.
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-	nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
+	nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
 	//those faces form a concave or convex tSide.  If the tSide pokes out, 
 	//then a point is on the back of the tSide if it is behind BOTH faces, 
@@ -632,11 +741,11 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nSideCount = nCenterCount = 0;
 
-		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
+		for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (checkP, side2P->rotNorms + fn, &gameData.segs.points [nVertex].p3_vec);
+				xDist = VmDistToPlane (checkP, side2P->rotNorms + nFace, &gameData.segs.points [nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
+				xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
 			if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 				// check if the intersection of a line through the point that is orthogonal to the 
 				// plane of the current triangle lies in is inside that triangle
@@ -692,7 +801,7 @@ return masks;
 //only gets centerMask, and assumes zero rad
 ubyte GetSideDists (vmsVector *checkP, int nSegment, fix *xSideDists, int bBehind)
 {
-	int			sn, faceBit, sideBit;
+	int			nSide, faceBit, sideBit;
 	ubyte			mask;
 	int			nFaces;
 	int			vertexList [6];
@@ -711,15 +820,15 @@ seg2P = gameData.segs.segment2s + nSegment;
 side2P = seg2P->sides;
 //check point against each tSide of tSegment. return bitmask
 mask = 0;
-for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P++) {
+for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP++, side2P++) {
 		int	bSidePokesOut;
-		int	fn;
+		int	nFace;
 
-	xSideDists [sn] = 0;
+	xSideDists [nSide] = 0;
 	// Get number of faces on this tSide, and at vertexList, store vertices.
 	//	If one face, then vertexList indicates a quadrilateral.
 	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
-	nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
+	nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 	//ok...this is important.  If a tSide has 2 faces, we need to know if
 	//those faces form a concave or convex tSide.  If the tSide pokes out, 
 	//then a point is on the back of the tSide if it is behind BOTH faces, 
@@ -732,7 +841,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 		nVertex = min (vertexList [0], vertexList [2]);
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
 		if (vertexList [4] < vertexList [1])
 			if (gameStates.render.bRendering)
@@ -754,27 +863,27 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 											  gameData.segs.vertices + nVertex);
 		bSidePokesOut = (xDist > PLANE_DIST_TOLERANCE);
 		nCenterCount = 0;
-		for (fn = 0; fn < 2; fn++, faceBit <<= 1) {
+		for (nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 			if (gameStates.render.bRendering)
-				xDist = VmDistToPlane (checkP, side2P->rotNorms + fn, &gameData.segs.points [nVertex].p3_vec);
+				xDist = VmDistToPlane (checkP, side2P->rotNorms + nFace, &gameData.segs.points [nVertex].p3_vec);
 			else
-				xDist = VmDistToPlane (checkP, sideP->normals + fn, gameData.segs.vertices + nVertex);
+				xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
 			if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 				nCenterCount++;
-				xSideDists [sn] += xDist;
+				xSideDists [nSide] += xDist;
 				}
 			}
 		if (!bSidePokesOut) {		//must be behind both faces
 			if (nCenterCount == 2) {
 				mask |= sideBit;
-				xSideDists [sn] /= 2;		//get average
+				xSideDists [nSide] /= 2;		//get average
 				}
 			}
 		else {							//must be behind at least one face
 			if (nCenterCount) {
 				mask |= sideBit;
 				if (nCenterCount == 2)
-					xSideDists [sn] /= 2;		//get average
+					xSideDists [nSide] /= 2;		//get average
 				}
 			}
 		}
@@ -791,7 +900,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 			nVertex = vertexList [3];
 #ifdef _DEBUG
 		if ((nVertex < 0) || (nVertex >= gameData.segs.nVertices))
-			nFaces = CreateAbsVertexLists (vertexList, nSegment, sn);
+			nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
 #endif
 			if (gameStates.render.bRendering)
 				xDist = VmDistToPlane (checkP, side2P->rotNorms, &gameData.segs.points [nVertex].p3_vec);
@@ -799,7 +908,7 @@ for (sn = 0, faceBit = sideBit = 1; sn < 6; sn++, sideBit <<= 1, sideP++, side2P
 				xDist = VmDistToPlane (checkP, sideP->normals, gameData.segs.vertices + nVertex);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {
 			mask |= sideBit;
-			xSideDists [sn] = xDist;
+			xSideDists [nSide] = xDist;
 			}
 		faceBit <<= 2;
 		}
@@ -1141,7 +1250,7 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive)
 {
 int nNewSeg;
-segmasks masks;
+tSegMasks masks;
 
 //allow nSegment == -1, meaning we have no idea what tSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
@@ -1158,13 +1267,11 @@ if (bDoingLightingHack || !bExhaustive)
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
 #endif
 for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++) {
-	if (gameData.segs.segment2s [nNewSeg].special == SEGMENT_IS_SKYBOX)
-		continue;
-	do {
-	    masks = GetSegMasks (p, nNewSeg, 0);
-	   } while (!masks.valid);
-	if (!masks.centerMask)
-		return nNewSeg;
+	if (gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) {
+	   masks = GetSegMasks (p, nNewSeg, 0);
+		if (!masks.centerMask)
+			return nNewSeg;
+		}
 	}
 ++nExhaustiveFailedCount;
 #if TRACE

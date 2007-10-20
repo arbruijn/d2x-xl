@@ -114,7 +114,7 @@ void CHECK (tLightning *pl, int i)
 
 for (; i > 0; i--, pl++)
 	if (pl->nNodes > 0)
-		for (j = pl->nNodes, pln = pl->pNodes; j; j--, pln++)
+		for (j = pl->nNodes, pln = pl->pNodes; j > 0; j--, pln++)
 			TRAP (pln);
 }
 
@@ -909,7 +909,7 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 				} while (!j);
 			pl->iStep = pl->nSteps;
 			}
-		for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j; j--, pln++) {
+		for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j > 0; j--, pln++) {
 			TRAP (pln);
 			if (bInit)
 				pln->vPos = pln->vNewPos;
@@ -1111,7 +1111,7 @@ if (SHOW_LIGHTNINGS) {
 				pl->nLength = VmVecMag (&pl->vDir);
 				}
 			if (0 < (h = pl->nNodes)) {
-				for (j = h, pln = pl->pNodes; j; j--, pln++) {
+				for (j = h, pln = pl->pNodes; j > 0; j--, pln++) {
 					TRAP (pln);
 					if (bStretch) {
 						vDelta = vOffs;
@@ -1492,7 +1492,7 @@ void RenderLightningsBuffered (tLightning *plRoot, int nStart, int nLightnings, 
 	tRgbaColorf		color;
 
 bPlasma = SetupLightningPlasma (pl);
-for (h = nLightnings - nStart; h; h--, pl++) {
+for (h = nLightnings - nStart; h > 0; h--, pl++) {
 	if ((pl->nNodes < 0) || (pl->nSteps < 0))
 		continue;
 	if (gameStates.app.bMultiThreaded)
@@ -1528,7 +1528,7 @@ for (h = nLightnings - nStart; h; h--, pl++) {
 		}
 	}
 if (gameOpts->render.lightnings.nQuality)
-	for (pl = plRoot + nStart, h = nLightnings -= nStart; h; h--, pl++)
+	for (pl = plRoot + nStart, h = nLightnings -= nStart; h > 0; h--, pl++)
 		if (0 < (i = pl->nNodes))
 			for (pln = pl->pNodes; i > 0; i--, pln++)
 				if (pln->pChild)

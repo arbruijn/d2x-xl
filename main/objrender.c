@@ -491,8 +491,9 @@ else
 	nModel = objP->rType.polyObjInfo.nModel;
 if (!(po = gameData.models.modelToOOF [nModel]))
 	return 0;
-if (gameData.models.g3Models [1][nModel].bValid > 0)
+if (gameData.models.g3Models [1][nModel].bValid >= 0)
 	return 0;
+//G3RenderModel (objP, nModel, NULL, NULL, NULL, xLight, NULL, color);
 fLight [0] = xLight / 65536.0f;
 fLight [1] = (float) xEngineGlow [0] / 65536.0f;				
 fLight [2] = (float) xEngineGlow [1] / 65536.0f;				

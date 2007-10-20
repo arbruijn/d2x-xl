@@ -84,7 +84,7 @@ else {
 void SplitFace (tSegment *segP, grsFace *faceP)
 {
 if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
-	 !faceP->bSlide && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
+	 !faceP->bSlide && (faceP->nCamera < 0) && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
 		grsFace *newFaceP = segP->pFaces + segP->nFaces++;
 
 	*newFaceP = *faceP;
@@ -198,6 +198,11 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	else
 		nSegment = nSegment;
 #endif
+if ((nSegment == 947) && (faceP->nSide == 0))
+	if (bDepthOnly)
+		nSegment = nSegment;
+	else
+		nSegment = nSegment;
 G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
 				bVertexArrays, bTextured && faceP->bTextured, bDepthOnly);
 #ifdef _DEBUG

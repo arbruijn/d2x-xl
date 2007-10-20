@@ -516,8 +516,8 @@ if (wallP->state == WALL_DOOR_CLOSING) {		//closing, so reuse door
 
 foundDoor:
 
-	Assert(i<gameData.walls.nOpenDoors);				//didn't find door!
-	Assert(d!=NULL); // Get John!
+	Assert(i < gameData.walls.nOpenDoors);				//didn't find door!
+	Assert(d != NULL); // Get John!
 
 	d->time = (fix) (gameData.walls.pAnims [wallP->nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed) - d->time;
 	if (d->time < 0)
@@ -761,20 +761,21 @@ DeleteActiveDoor (nDoor);
 
 //-----------------------------------------------------------------
 
-int CheckPoke (int nObject,int nSegment,short nSide)
+int CheckPoke (int nObject, int nSegment, short nSide)
 {
 tObject *objP = gameData.objs.objects + nObject;
 
 	//note: don't let gameData.objs.objects with zero size block door
-
-if (objP->size && GetSegMasks (&objP->position.vPos,nSegment, objP->size).sideMask & (1 << nSide))
+if (nObject == 126)
+	nObject = nObject;
+if (objP->size && GetSideMasks (&objP->position.vPos, nSegment, nSide, objP->size).sideMask)
 	return 1;		//pokes through nSide!
 return 0;		//does not!
 }
 
 //-----------------------------------------------------------------
 //returns true of door in unobjstructed (& thus can close)
-int IsDoorFree (tSegment *segP,short nSide)
+int DoorIsBlocked (tSegment *segP, short nSide)
 {
 	short		nConnSide;
 	tSegment *connSegP;
@@ -789,12 +790,12 @@ Assert(nConnSide != -1);
 
 for (nObject = segP->objects; nObject != -1; nObject = gameData.objs.objects [nObject].next) {
 	t = gameData.objs.objects [nObject].nType;
-	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION))
+	if ((t == OBJ_WEAPON) || (t == OBJ_FIREBALL) || (t == OBJ_EXPLOSION) || (t == OBJ_EFFECT))
 		continue;
 	if (CheckPoke (nObject, SEG_IDX (segP), nSide) || CheckPoke (nObject, SEG_IDX (connSegP), nConnSide))
-		return 0;	//not D2_FREE
+		return 1;	//not D2_FREE
 		}
-return 1; 	//doorway is D2_FREE!
+return 0; 	//doorway is D2_FREE!
 }
 
 //-----------------------------------------------------------------
@@ -808,14 +809,14 @@ void WallCloseDoor (tSegment *segP, short nSide)
 
 Assert(IS_WALL (WallNumP (segP, nSide))); 	//Opening door on illegal tWall
 
-wallP = &gameData.walls.walls [WallNumP (segP, nSide)];
+wallP = gameData.walls.walls + WallNumP (segP, nSide);
 nWall = WALL_IDX (wallP);
 if ((wallP->state == WALL_DOOR_CLOSING) ||		//already closing
-	 (wallP->state == WALL_DOOR_WAITING)	||		//open, waiting to close
+	 (wallP->state == WALL_DOOR_WAITING) ||		//open, waiting to close
 	 (wallP->state == WALL_DOOR_CLOSED))			//closed
 	return;
 
-if (!IsDoorFree (segP,nSide))
+if (DoorIsBlocked (segP,nSide))
 	return;
 if (wallP->state == WALL_DOOR_OPENING) {	//reuse door
 	int i;
@@ -842,7 +843,7 @@ else {											//create new door
 wallP->state = WALL_DOOR_CLOSING;
 // So that door can't be shot while opening
 connSegP = gameData.segs.segments + segP->children [nSide];
-nConnSide = FindConnectedSide(segP, connSegP);
+nConnSide = FindConnectedSide (segP, connSegP);
 Assert(nConnSide != -1);
 nConnWall = WallNumP (connSegP, nConnSide);
 if (IS_WALL (nConnWall))
@@ -984,8 +985,8 @@ wallP = gameData.walls.walls + doorP->nFrontWall [0];
 
 	//check for gameData.objs.objects in doorway before closing
 if (wallP->flags & WALL_DOOR_AUTO)
-	if (!IsDoorFree (gameData.segs.segments + wallP->nSegment,(short) wallP->nSide)) {
-		DigiKillSoundLinkedToSegment((short) wallP->nSegment,(short) wallP->nSide,-1);
+	if (DoorIsBlocked (gameData.segs.segments + wallP->nSegment,(short) wallP->nSide)) {
+		DigiKillSoundLinkedToSegment ((short) wallP->nSegment,(short) wallP->nSide,-1);
 		WallOpenDoor (&gameData.segs.segments [wallP->nSegment],(short) wallP->nSide);		//re-open door
 		return;
 		}
@@ -1434,7 +1435,7 @@ void WallFrameProcess ()
 	tCloakingWall *cw;
 	tActiveDoor *d = gameData.walls.activeDoors;
 
-for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
+for (i = 0; i < gameData.walls.nOpenDoors; i++, d++) {
 	tWall	*wb = NULL,
 			*w = gameData.walls.walls + d->nFrontWall [0];
 
@@ -1451,7 +1452,7 @@ for (i = 0;i < gameData.walls.nOpenDoors; i++, d++) {
 		if (IS_WALL (d->nBackWall [0]))
 			wb = gameData.walls.walls + d->nBackWall [0];
 		if ((d->time > DOOR_WAIT_TIME) && 
-			 IsDoorFree (gameData.segs.segments + w->nSegment, (short) w->nSide)) {
+			 !DoorIsBlocked (gameData.segs.segments + w->nSegment, (short) w->nSide)) {
 			w->state = WALL_DOOR_CLOSING;
 			if (wb)
 				wb->state = WALL_DOOR_CLOSING;

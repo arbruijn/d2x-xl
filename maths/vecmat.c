@@ -1551,15 +1551,15 @@ return a;
 //of the plane (ebx), a point on the plane (edi), and the point to check (esi).
 //returns distance in eax
 //distance is signed, so negative dist is on the back of the plane
-fix VmDistToPlane (vmsVector *checkp, vmsVector *norm, vmsVector *planep)
+fix VmDistToPlane (vmsVector *vCheck, vmsVector *vNorm, vmsVector *vPlane)
 {
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
 		fVector	c, p, n, t;
 	
-	VmsVecToFloat (&c, checkp);
-	VmsVecToFloat (&p, planep);
-	VmsVecToFloat (&n, norm);
+	VmsVecToFloat (&c, vCheck);
+	VmsVecToFloat (&p, vPlane);
+	VmsVecToFloat (&n, vNorm);
 #if defined (_WIN32)
 	_asm {
 		movups	xmm0,c
@@ -1588,7 +1588,7 @@ else
 	{
 	vmsVector t;
 
-	return VmVecDot (VmVecSub (&t, checkp, planep), norm);
+	return VmVecDot (VmVecSub (&t, vCheck, vPlane), vNorm);
 	}
 }
 

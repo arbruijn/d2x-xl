@@ -3209,7 +3209,8 @@ do {
 	optRobots = 
 	optStatic = 
 	optOmega = 
-	optPlasma = -1;
+	optPlasma = 
+	optAuxViews = -1;
 
 	ADD_CHECK (opt, TXT_LIGHTNING_ENABLE, extraGameInfo [0].bUseLightnings, KEY_U, HTX_LIGHTNING_ENABLE);
 	lightningOpts.nUse = opt++;
