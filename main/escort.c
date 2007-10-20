@@ -994,7 +994,7 @@ if (gameData.escort.xSorryTime + F1_0 > gameData.time.xGame) {
 //	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
 if (!gameData.escort.bMayTalk)
 	if (xDistToPlayer > F1_0*100)
-		aip->SKIP_AI_COUNT = (sbyte) ((F1_0 / 4) / gameData.time.xFrame);
+		aip->SKIP_AI_COUNT = (sbyte) ((F1_0 / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the tObject has been told to get lost and has come to the end of its path.
 //	If the tPlayer is now visible, then create a path.

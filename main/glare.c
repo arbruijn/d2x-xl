@@ -593,8 +593,10 @@ float CoronaVisibility (int nQuery)
 {
 	GLuint	nSamples = 0;
 	GLint		bAvailable = 0;
-	int		glError;
 	float		fIntensity;
+#ifdef _DEBUG
+	GLint		nError;
+#endif
 
 if (!(gameStates.ogl.bOcclusionQuery && nQuery))
 	return 1;
@@ -603,7 +605,7 @@ do {
 	if (glGetError ()) {
 #ifdef _DEBUG
 		glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
-		if (glError = glGetError ())
+		if (nError = glGetError ())
 #endif
 			return 1;
 		}

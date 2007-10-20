@@ -2096,7 +2096,7 @@ nObject = CreateGatedRobot (objP, nSegment, (ubyte) objType, pos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
 	tObject	*newObjP = gameData.objs.objects + nObject;
-	int		force_val = F1_0 / gameData.time.xFrame;
+	int		force_val = F1_0 / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (force_val) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += force_val;
 		newObjP->mType.physInfo.rotThrust.p.x = ((d_rand () - 16384) * force_val)/16;

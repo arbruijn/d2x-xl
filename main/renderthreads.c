@@ -42,7 +42,7 @@ while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 tiRender.nTask = nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
-//LogErr ("running render threads (task: %d)\n", nTask);
+LogErr ("running render threads (task: %d)\n", nTask);
 t1 = clock ();
 while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000)) {
 	G3_SLEEP (0);

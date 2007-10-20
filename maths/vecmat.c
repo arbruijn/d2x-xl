@@ -737,7 +737,7 @@ return dest;
 //make sure a vector is reasonably sized to go into a cross product
 void CheckVec(vmsVector *vp)
 {
-	fix check;
+	unsigned int check;
 	int cnt = 0;
 	vmsVector v = *vp;
 
@@ -746,11 +746,11 @@ if (!(check = labs (v.p.x) | labs (v.p.y) | labs (v.p.z)))
 if (check & 0xfffc0000) {		//too big
 	while (check & 0xfff00000) {
 		cnt += 4;
-		check >>= 4;
+		check /= 16;
 		}
 	while (check & 0xfffc0000) {
 		cnt += 2;
-		check >>= 2;
+		check /= 4;
 		}
 	}
 else if (!(check & 0xffff8000)) {		//yep, too small
@@ -760,7 +760,7 @@ else if (!(check & 0xffff8000)) {		//yep, too small
 		}
 	while (!(check & 0xffff8000)) {
 		cnt += 2;
-		check <<= 2;
+		check *= 4;
 		}
 	}
 else
@@ -863,8 +863,10 @@ vmsVector *VmVecPerp (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *
 
 VmVecSub (&t0, p1, p0);
 VmVecSub (&t1, p2, p1);
+#if 0
 CheckVec (&t0);
 CheckVec (&t1);
+#endif
 return VmVecCrossProd (dest, &t0, &t1);
 }
 

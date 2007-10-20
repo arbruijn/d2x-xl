@@ -744,15 +744,19 @@ for (i = nStart; i < nEnd; i++) {
 					else {
 						nVertex = faceP->index [h];
 						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+#if 0
 							if (gameStates.app.bMultiThreaded) {
 								while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
 									G3_SLEEP (0);
 								gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
 								}
+#endif
 							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
 												NULL, &c, 1, 0, nThread);
+#if 0
 							if (gameStates.app.bMultiThreaded)
 								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
+#endif
 #ifdef _DEBUG
 							if (nVertex == nDbgVertex)
 								nVertex = nVertex;
