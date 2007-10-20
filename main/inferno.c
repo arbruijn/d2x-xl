@@ -3151,7 +3151,6 @@ if (gameStates.app.bMultiThreaded) {
 		gameData.threads.clipDist.info [i].pThread = SDL_CreateThread (ClipDistThread, &gameData.threads.clipDist.info [i].nId);
 #endif
 		}
-	G3StartModelLightThreads ();
 	StartRenderThreads ();
 	}
 gameData.render.vertColor.matAmbient.c.r = 

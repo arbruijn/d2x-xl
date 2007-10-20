@@ -104,8 +104,7 @@ void G3SwapPolyModelData (ubyte *data);
 int G3RenderModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, 
 						 fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor);
 
-void G3StartModelLightThreads (void);
-void G3EndModelLightThreads (void);
+void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
 //------------------------------------------------------------------------------
 

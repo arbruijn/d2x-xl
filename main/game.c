@@ -1814,7 +1814,6 @@ if (gameStates.app.bMultiThreaded) {
 	}
 #endif
 if (gameStates.app.bMultiThreaded) {
-	G3EndModelLightThreads ();
 	EndRenderThreads ();
 	}
 GrClose ();

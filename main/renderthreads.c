@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "render.h"
 #include "fastrender.h"
 #include "renderthreads.h"
+#include "interp.h"
 
 tRenderThreadInfo tiRender;
 
@@ -57,6 +58,8 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000
 			}
 		}
 	}	
+if (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+	gameStates.app.bMultiThreaded = 0;
 return 1;
 }
 
@@ -110,6 +113,23 @@ do {
 			ComputeStaticVertexLights (gameData.segs.nVertices / 2, gameData.segs.nVertices, nId);
 		else
 			ComputeStaticVertexLights (0, gameData.segs.nVertices / 2, nId);
+		}
+	else if (tiRender.nTask == rtPolyModel) {
+		short	iVerts, nVerts, iFaceVerts, nFaceVerts;
+
+		if (nId) {
+			nVerts = tiRender.pm->nVerts;
+			iVerts = nVerts / 2;
+			nFaceVerts = tiRender.pm->nFaceVerts;
+			iFaceVerts = nFaceVerts / 2;
+			}
+		else {
+			iVerts = 0;
+			nVerts = tiRender.pm->nVerts / 2;
+			iFaceVerts = 0;
+			nFaceVerts = tiRender.pm->nFaceVerts / 2;
+			}
+		G3DynLightModel (tiRender.objP, tiRender.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
 		}
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);

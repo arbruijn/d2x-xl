@@ -25,7 +25,8 @@ typedef enum {
 	rtSortSegZRef,
 	rtAnimateLightnings,
 	rtRenderLightnings,
-	rtStaticVertLight
+	rtStaticVertLight,
+	rtPolyModel
 } tRenderTask;
 
 typedef struct tRenderThreadInfo {
@@ -35,6 +36,8 @@ typedef struct tRenderThreadInfo {
 	int			zMax [2];
 	tLightning	*pl;
 	int			nLightnings;
+	tObject		*objP;
+	tG3Model		*pm;
 	tThreadInfo	ti [2];
 	} tRenderThreadInfo;
 

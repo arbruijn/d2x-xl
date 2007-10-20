@@ -39,6 +39,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "gameseg.h"
 #include "lighting.h"
 #include "lightning.h"
+#include "renderthreads.h"
 
 extern tFaceColor tMapColor;
 
@@ -682,66 +683,6 @@ for (i = iFaceVerts, h = iFaceVerts, pmv = pm->pFaceVerts + iFaceVerts; i < nFac
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ G3ModelLightThread (void *pThreadId)
-{
-	int	nId = *((int *) pThreadId);
-	short	iVerts, nVerts, iFaceVerts, nFaceVerts;
-
-do {
-	while (!g3ti.ti [nId].bExec)
-		G3_SLEEP (0);
-	if (nId) {
-		nVerts = g3ti.pm->nVerts;
-		iVerts = nVerts / 2;
-		nFaceVerts = g3ti.pm->nFaceVerts;
-		iFaceVerts = nFaceVerts / 2;
-		}
-	else {
-		iVerts = 0;
-		nVerts = g3ti.pm->nVerts / 2;
-		iFaceVerts = 0;
-		nFaceVerts = g3ti.pm->nFaceVerts / 2;
-		}
-	G3DynLightModel (g3ti.objP, g3ti.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
-	g3ti.ti [nId].bExec = 0;
-	} while (!g3ti.ti [nId].bDone);
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-void G3StartModelLightThreads (void)
-{
-	int	i;
-
-for (i = 0; i < 2; i++) {
-	g3ti.ti [i].bDone = 0;
-	g3ti.ti [i].bExec = 0;
-	g3ti.ti [i].nId = i;
-	g3ti.ti [i].pThread = SDL_CreateThread (G3ModelLightThread, &g3ti.ti [i].nId);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void G3EndModelLightThreads (void)
-{
-	int	i;
-
-for (i = 0; i < 2; i++)
-	g3ti.ti [i].bDone = 1;
-G3_SLEEP (1);
-#if 1
-SDL_KillThread (g3ti.ti [0].pThread);
-SDL_KillThread (g3ti.ti [1].pThread);
-#else
-SDL_WaitThread (g3ti.ti [0].pThread, NULL);
-SDL_WaitThread (g3ti.ti [1].pThread, NULL);
-#endif
-}
-
-//------------------------------------------------------------------------------
-
 void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
@@ -757,16 +698,10 @@ if (xModelLight > F1_0)
 #endif
 if (!gameStates.render.bCloaked && SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects &&
 	 (gameOpts->ogl.bLightPowerups || (objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT))) {
-	if (gameStates.app.bMultiThreaded) {
-		g3ti.objP = objP;
-		g3ti.pm = pm;
-		g3ti.ti [0].bExec = g3ti.ti [1].bExec = 1;
-		while (g3ti.ti [0].bExec || g3ti.ti [1].bExec)
-			G3_SLEEP (0);
-		}
-	else {
+	tiRender.objP = objP;
+	tiRender.pm = pm;
+	if (!RunRenderThreads (rtPolyModel))
 		G3DynLightModel (objP, pm, 0, pm->nVerts, 0, pm->nFaceVerts);
-		}
 	}
 else {
 	if (!gameStates.render.bCloaked && gameData.objs.color.index)
