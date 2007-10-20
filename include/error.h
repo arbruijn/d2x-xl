@@ -17,6 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include "pstypes.h"
+#include "gr.h"
 
 #ifdef __GNUC__
 #define __noreturn __attribute__ ((noreturn))
@@ -36,6 +37,29 @@ void _CDECL_ Error(char *fmt,...) __noreturn __format;				//exit with error code
 void Assert(int expr);
 void _CDECL_ LogErr (char *fmt, ...);
 void Int3();
+
+#ifdef _DEBUG
+
+extern short nDbgSeg, nDbgSide;
+extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex;
+
+int TrapSeg (short nSegment);
+int TrapSegSide (short nSegment, short nSide);
+int TrapVert (int nVertex);
+int TrapTex (int nBaseTex, int nOvlTex);
+int TrapBmp (grsBitmap *bmP, char *pszName);
+
+#else
+
+#define TrapSeg (short nSegment)
+#define TrapSegSide (short nSegment, short nSide)
+#define TrapVert (int nVertex)
+#define TrapTex (int nBaseTex, int nOvlTex)
+#define TrapBmp (grsBitmap *bmP, char *pszName)
+
+#endif
+
+
 #ifndef NDEBUG		//macros for debugging
 
 #ifdef NO_ASM

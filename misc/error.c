@@ -229,4 +229,54 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
+
+#ifdef _DEBUG
+
+short nDbgSeg = -1;
+short nDbgSide = -1;
+int nDbgVertex = -1;
+int nDbgBaseTex = -1;
+int nDbgOvlTex = -1;
+
+int TrapSeg (short nSegment)
+{
+if (nSegment = nDbgSeg)
+	return 1;
+return 0;
+}
+
+
+int TrapSegSide (short nSegment, short nSide)
+{
+if ((nSegment = nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	return 1;
+return 0;
+}
+
+int TrapVert (int nVertex)
+{
+if (nVertex == nDbgVertex)
+	return 1;
+return 0;
+}
+
+
+int TrapBmp (grsBitmap *bmP, char *pszName)
+{
+if (strstr (bmP->szName, pszName))
+	return 1;
+return 0;
+}
+
+
+int TrapTex (int nBaseTex, int nOvlTex)
+{
+if (((nBaseTex < 0) || (nBaseTex == nDbgBaseTex)) && ((nDbgOvlTex < 0) || (nOvlTex == nDbgOvlTex)))
+	return 1;
+return 0;
+}
+
+#endif
+
+//------------------------------------------------------------------------------
 //eof

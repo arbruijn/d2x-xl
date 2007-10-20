@@ -286,7 +286,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	else
 		VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
-return RIAddPoly (faceP->bmBot, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+return RIAddPoly (BmOverride (faceP->bmBot, -1), vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 }
@@ -511,6 +511,10 @@ if (!item->bmP) {
 	glPolygonOffset (1,1);
 	glPolygonMode (GL_FRONT, GL_FILL);
 	}
+#endif
+#ifdef _DEBUG
+if (strstr (item->bmP->szName, "door37#0"))
+	item = item;
 #endif
 #if 1
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3)) {

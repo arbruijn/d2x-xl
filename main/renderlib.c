@@ -68,16 +68,6 @@ extern int bShadowTest;
 
 //------------------------------------------------------------------------------
 
-#ifdef _DEBUG
-short nDbgSeg = -1;
-short nDbgSide = -1;
-int nDbgVertex = -1;
-int nDbgBaseTex = -1;
-int nDbgOvlTex = -1;
-#endif
-
-//------------------------------------------------------------------------------
-
 #ifdef EDITOR
 int bSearchMode = 0;			//true if looking for curseg, tSide, face
 short _search_x, _search_y;	//pixel we're looking at
