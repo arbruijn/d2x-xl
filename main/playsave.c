@@ -311,7 +311,6 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bUseCameras, 0, 0);
 		RP (extraGameInfo [i].bUseSmoke, 0, 0);
 		RP (extraGameInfo [i].bUseLightnings, 0, 0);
-		RP (extraGameInfo [i].bShockwaves, 0, 0);
 		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
 		RP (extraGameInfo [i].bWiggle, 0, 0);
 
@@ -459,7 +458,6 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.smoke.bAuxViews, i, 0);
 		RP (gameOptions [i].render.smoke.bPlasmaTrails, i, 0);
-		RP (gameOptions [i].render.smoke.bCollisions, i, 0);
 		RP (gameOptions [i].render.smoke.bDecreaseLag, i, 0);
 		RP (gameOptions [i].render.smoke.bDebris, i, 0);
 		RP (gameOptions [i].render.smoke.bDisperse, i, 0);
@@ -785,7 +783,6 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bUseCameras", "1"},
 	{"extraGameInfo[0].bUseSmoke", "1"},
 	{"extraGameInfo[0].bUseLightnings", "1"},
-	{"extraGameInfo[0].bShockwaves", "0"},
 	{"extraGameInfo[0].bUseHitAngles", "0"},
 	{"extraGameInfo[0].bWiggle", "1"},
 	{"extraGameInfo[0].grWallTransparency", "19"},
@@ -993,7 +990,6 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.shadows.nReach", "2"},
 	{"gameOptions[0].render.smoke.bAuxViews", "0"},
 	{"gameOptions[0].render.smoke.bPlasmaTrails", "0"},
-	{"gameOptions[0].render.smoke.bCollisions", "0"},
 	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},
 	{"gameOptions[0].render.smoke.bDebris", "1"},
 	{"gameOptions[0].render.smoke.bDisperse", "1"},
@@ -1704,8 +1700,10 @@ for (i = 0; i < 2; i++) {
 			extraGameInfo [0].bThrusterFlames = (int) CFReadByte (fp);
 			}
 		}
-	if (gameStates.input.nPlrFileVersion >= 102)
-		gameOptions [i].render.smoke.bCollisions = (int) CFReadByte (fp);
+	if (gameStates.input.nPlrFileVersion >= 102) {
+		CFReadByte (fp);
+		gameOptions [i].render.smoke.bCollisions = 0;
+		}
 	if (gameStates.input.nPlrFileVersion >= 103)
 		gameOptions [i].gameplay.bShieldWarning = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 104)
@@ -1806,7 +1804,8 @@ for (i = 0; i < 2; i++) {
 	if (!i) {
 		if (gameStates.input.nPlrFileVersion >= 127) {
 			extraGameInfo [i].bTracers = CFReadByte (fp);
-			extraGameInfo [i].bShockwaves = CFReadByte (fp);
+			CFReadByte (fp);
+			extraGameInfo [i].bShockwaves = 0;
 			}
 		}
 	if (gameStates.input.nPlrFileVersion >= 128)
@@ -2316,7 +2315,7 @@ for (i = 0; i < 2; i++) {
 		CFWriteByte ((sbyte) extraGameInfo [0].bDamageExplosions, fp);
 		CFWriteByte ((sbyte) extraGameInfo [0].bThrusterFlames, fp);
 		}
-	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bCollisions, fp);
+	CFWriteByte ((sbyte) 0, fp);
 	CFWriteByte ((sbyte) gameOptions [i].gameplay.bShieldWarning, fp);
 	CFWriteByte ((sbyte) gameOptions [i].app.bExpertMode, fp);
 	if (!i)
