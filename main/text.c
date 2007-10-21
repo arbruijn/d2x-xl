@@ -1557,7 +1557,7 @@ char *defaultGameTexts [][2] = {
 	{"Rauch von ~Truemmern", "Smoke from ~Debris"},
 	{"automatisch ~Transparenz hinzufuegen", "Add ~Transparency automatically"},
 	{"korrekte Abprall~Winkel verwenden", "use hit ~Angles when colliding"},
-	{"~Plasmaspuren zeichen", "render light tra~Ils"},
+	{"~Plasmaspuren zeichen", "render light ~Trails"},
 	{"~Leuchtspuren zeichen", "render tra~Cers"},
 	{"~Schockwellen zeichnen", "render ~Shock waves"},
 	{"~Sammelregler verwenden    ",  "Use ~Master Sliders            "},

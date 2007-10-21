@@ -1932,11 +1932,11 @@ do {
 	effectOpts.nCoronaIntensity = opt++;
 	sprintf (szObjCoronaInt + 1, TXT_OBJCORONA_INTENSITY, pszCoronaInt [gameOpts->render.nObjCoronaIntensity]);
 	*szObjCoronaInt = *(TXT_OBJCORONA_INTENSITY - 1);
-	ADD_SLIDER (opt, szObjCoronaInt + 1, gameOpts->render.nObjCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
+	ADD_SLIDER (opt, szObjCoronaInt + 1, gameOpts->render.nObjCoronaIntensity, 0, 3, KEY_N, HTX_CORONA_INTENSITY);
 	effectOpts.nObjCoronaIntensity = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_I, HTX_RENDER_LGTTRAILS);
+	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
 	effectOpts.nLightTrails = opt++;
 	if (extraGameInfo [0].bLightTrails) {
 		ADD_RADIO (opt, TXT_SOLID_LIGHTTRAILS, 0, KEY_S, 2, HTX_LIGHTTRAIL_TYPE);

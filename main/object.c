@@ -1864,6 +1864,11 @@ int UpdateObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
+if (objP->nType == OBJ_ROBOT) {
+	fix xMaxShields = RobotDefaultShields (objP);
+	if (objP->shields > xMaxShields)
+		objP->shields = xMaxShields;
+	}
 objP->vLastPos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);
 if ((objP->lifeleft != IMMORTAL_TIME) && 

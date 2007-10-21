@@ -89,7 +89,7 @@ if ((IsEnergyPowerup (objP->id) ? gameOpts->render.bPowerupCoronas : gameOpts->r
 		}
 	color.alpha = alpha;
 	if (bAdditive) {
-		fScale = coronaIntensities [gameOpts->render.nCoronaIntensity] / 2;
+		fScale = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
 		color.red *= fScale;
 		color.green *= fScale;
 		color.blue *= fScale;
@@ -1149,7 +1149,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	glColor4fv ((GLfloat *) colorP);
 #endif
 	if (bAdditive) {
-		float fScale = coronaIntensities [gameOpts->render.nCoronaIntensity] / 2;
+		float fScale = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
 		color = *colorP;
 		colorP = &color;
 		color.red *= fScale;
@@ -1530,7 +1530,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 		bmP = bAdditive ? bmpGlare : bmpCorona;
 		memcpy (&trailColor, colorP, 3 * sizeof (float));
 		if (bAdditive) {
-			float fScale = coronaIntensities [gameOpts->render.nCoronaIntensity] / 2;
+			float fScale = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
 			trailColor.red *= fScale;
 			trailColor.green *= fScale;
 			trailColor.blue *= fScale;
