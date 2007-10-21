@@ -1785,10 +1785,10 @@ void LoadGameTexts(void);
 #define TXT_CORONA_OPTIONS			GT(992)
 #define TXT_CORONA_MENUTITLE		GT(993)
 #define TXT_POWERUP_LIGHTING		GT(994)
+#define TXT_OBJCORONA_INTENSITY	GT(995)
 
 #if 0
 
-#define TXT_				GT(995)
 #define TXT_				GT(996)
 #define TXT_				GT(997)
 #define TXT_				GT(998)

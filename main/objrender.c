@@ -286,7 +286,7 @@ xSize = objP->size;
 
 if ((objP->nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.bPowerupCoronas) || (!bEnergy && gameOpts->render.bWeaponCoronas)))
 	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, 
-								coronaIntensities [gameOpts->render.nCoronaIntensity]);
+								coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
 if (gameOpts->render.bDepthSort > 0) {
 	if (0 && bAdditive)
 		color.red = color.green = color.blue = color.alpha = 1;
@@ -814,7 +814,7 @@ switch (objP->renderType) {
 					gameData.models.nScale = 2 * F1_0;
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
-				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nCoronaIntensity]);
+				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
 				DrawPolygonObject (objP);
 				gameData.models.nScale = 0;
 				objP->mType.physInfo.mass = F1_0;
@@ -916,7 +916,7 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (ConvertPowerupToWeapon (objP)) {
-			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nCoronaIntensity]);
+			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
 			DrawPolygonObject (objP);
 			}
 		else if (gameStates.render.nShadowPass != 2)

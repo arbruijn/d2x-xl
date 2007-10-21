@@ -1666,7 +1666,7 @@ char *defaultGameTexts [][2] = {
 	{"Dreifach-F~Usion zulassen", "allow triple f~Usion"},
 	{"Ph~Ysik-Einstellungen...", "ph~Ysics options..."},
 	{"Physik-Einstellungen", "Physics Options"},
-	{"Lichthof-~Intensitaet: %s", "corona ~Intensity: %s"},
+	{"Lichthof-~Intensitaet Lichter: %s", "light corona ~Intensity: %s"},
 	{"Maus-N~Ullbereich: %s", "mo~Use deadzone: %s"},
 	{"keine", "none"},
 	{"NaturalPoint ~TrackIR verwenden", "use NaturalPoint ~TrackIR"},
@@ -1733,7 +1733,7 @@ char *defaultGameTexts [][2] = {
 	{"~Powerups mit Lichthoefen zeichnen", "render coronas for ~Powerups"},
 	{"~Blitze zeichnen", "render ~Lightnings"},
 	{"sehr niedrig", "very low"},
-	{"Koronas ~Additiv einblenden", "~Additive corona blending"},
+	{"Licht-Koronas ~Additiv einblenden", "~Additive light corona blending"},
 	{"~Objekt-Koronas additiv einblenden", "additive ~Object corona blending"},
 	{"po~Werupschatten", "po~Werup shadows"},
 	{"Rauch in Cockpit-~Fenstern zeigen", "show smoke in cockpit ~Windows"},
@@ -1744,6 +1744,7 @@ char *defaultGameTexts [][2] = {
 	{"k~Orona-Einstellungen...", "c~Orona options..."},
 	{"Korona-Einstellungen", "Corona Options"},
 	{"openGL ~Powerup-Beleuchtung", "openGL ~Powerup lighting"},
+	{"Lichthof-i~Ntensitaet Objekte: %s", "object corona i~Ntensity: %s"},
 #if 0
 	{"", ""},
 #endif

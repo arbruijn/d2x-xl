@@ -216,6 +216,7 @@ static struct {
 	int	nAdditiveCoronas;
 	int	nAdditiveObjCoronas;
 	int	nCoronaIntensity;
+	int	nObjCoronaIntensity;
 	int	nLightTrails;
 	int	nExplShrapnels;
 } effectOpts;
@@ -1874,6 +1875,15 @@ if (effectOpts.nCoronaIntensity >= 0) {
 		m->rebuild = -1;
 		}
 	}
+if (effectOpts.nObjCoronaIntensity >= 0) {
+	m = menus + effectOpts.nObjCoronaIntensity;
+	v = m->value;
+	if (gameOpts->render.nObjCoronaIntensity != v) {
+		gameOpts->render.nObjCoronaIntensity = v;
+		sprintf (m->text, TXT_OBJCORONA_INTENSITY, pszCoronaInt [v]);
+		m->rebuild = -1;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1883,7 +1893,7 @@ void CoronaOptionsMenu ()
 	tMenuItem m [30];
 	int	i, choice = 0, optTrailType;
 	int	opt;
-	char	szCoronaInt [50];
+	char	szCoronaInt [50], szObjCoronaInt [50];
 
 pszCoronaInt [0] = TXT_VERY_LOW;
 pszCoronaInt [1] = TXT_LOW;
@@ -1920,6 +1930,10 @@ do {
 	*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
 	ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
 	effectOpts.nCoronaIntensity = opt++;
+	sprintf (szObjCoronaInt + 1, TXT_OBJCORONA_INTENSITY, pszCoronaInt [gameOpts->render.nObjCoronaIntensity]);
+	*szObjCoronaInt = *(TXT_OBJCORONA_INTENSITY - 1);
+	ADD_SLIDER (opt, szObjCoronaInt + 1, gameOpts->render.nObjCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
+	effectOpts.nObjCoronaIntensity = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_I, HTX_RENDER_LGTTRAILS);

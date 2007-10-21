@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "transprender.h"
 
-#define RI_SPLIT_POLYS 0
+#define RI_SPLIT_POLYS 1
 #define RI_POLY_OFFSET 0
 
 //------------------------------------------------------------------------------
