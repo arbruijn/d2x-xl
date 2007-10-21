@@ -206,7 +206,7 @@ else if (nSignal == SIGTERM)
 else
 	LogErr ("Unknown signal\n");
 #ifndef _DEBUG
-exit (1);
+//exit (1);
 #endif
 }
 

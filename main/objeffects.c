@@ -902,7 +902,7 @@ if (gameStates.app.nSDLTicks - tPulse > 10) {
 	nPulse = d_rand () % 11;
 	}
 fPulse = (float) nPulse / 10.0f;
-
+ti.pp = NULL;
 nThrusters = CalcThrusterPos (objP, &ti, 0);
 bStencil = StencilOff ();
 //glDepthMask (0);
