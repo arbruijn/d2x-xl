@@ -2016,8 +2016,10 @@ do {
 	optRobotShields = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
+#if 0
 	ADD_CHECK (opt, TXT_RENDER_SHKWAVES, extraGameInfo [0].bShockwaves, KEY_S, HTX_RENDER_SHKWAVES);
 	optShockwaves = opt++;
+#endif
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_EFFECT_MENUTITLE, opt, m, EffectOptionsCallback, &choice);
@@ -2028,7 +2030,7 @@ do {
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;
-	extraGameInfo [0].bShockwaves = m [optShockwaves].value;
+	extraGameInfo [0].bShockwaves = 0; //m [optShockwaves].value;
 	extraGameInfo [0].bDamageExplosions = m [optDmgExpl].value;
 	for (j = 0; j < 3; j++)
 		if (m [optThrusterFlame + j].value) {
@@ -2831,8 +2833,10 @@ do {
 				}
 			ADD_CHECK (opt, TXT_SMOKE_STATIC, gameOpts->render.smoke.bStatic, KEY_T, HTX_ADVRND_STATICSMOKE);
 			optStaticSmoke = opt++;
+#if 0
 			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
 			optSmokeColl = opt++;
+#endif
 			ADD_CHECK (opt, TXT_SMOKE_DISPERSE, gameOpts->render.smoke.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
 			optSmokeDisp = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_AUXVIEWS, gameOpts->render.smoke.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
@@ -2860,7 +2864,11 @@ do {
 		GET_VAL (gameOpts->render.smoke.bMissiles, smokeOpts.nMissiles);
 		GET_VAL (gameOpts->render.smoke.bDebris, smokeOpts.nDebris);
 		GET_VAL (gameOpts->render.smoke.bStatic, optStaticSmoke);
+#if 0
 		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
+#else
+		gameOpts->render.smoke.bCollisions = 0;
+#endif
 		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);
 		GET_VAL (gameOpts->render.smoke.bAuxViews, optAuxViews);

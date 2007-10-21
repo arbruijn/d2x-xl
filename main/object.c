@@ -851,6 +851,9 @@ int CreateObject (ubyte nType, ubyte id, short owner, short nSegment, vmsVector 
 {
 	short		nObject;
 	tObject	*objP;
+#ifdef _DEBUG
+	short		i;
+#endif
 
 #ifdef _DEBUG
 if (nType == OBJ_WEAPON) {
@@ -951,7 +954,15 @@ if (objP->movementType == MT_PHYSICS) {
 if (objP->renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->shields = 20 * F1_0;
-nSegment = FindSegByPoint (pos, nSegment, 1);		//find correct tSegment
+#ifdef _DEBUG
+i = nSegment;
+#endif
+if (0 > (nSegment = FindSegByPoint (pos, nSegment, 1))) {	//find correct tSegment
+#ifdef _DEBUG
+	FindSegByPoint (pos, i, 1);
+#endif
+	return -1;
+	}
 Assert (nSegment != -1);
 objP->nSegment = -1;					//set to zero by memset, above
 LinkObject (nObject, nSegment);

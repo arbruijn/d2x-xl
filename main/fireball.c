@@ -955,6 +955,7 @@ while ((nSegment == -1) && (nCurDropDepth > BASE_NET_DROP_DEPTH/2)) {
 	special = gameData.segs.segment2s [nSegment].special;
 	if ((special == SEGMENT_IS_CONTROLCEN) ||
 		 (special == SEGMENT_IS_BLOCKED) ||
+		 (special == SEGMENT_IS_SKYBOX) ||
 		 (special == SEGMENT_IS_GOAL_BLUE) ||
 		 (special == SEGMENT_IS_GOAL_RED) ||
 		 (special == SEGMENT_IS_TEAM_BLUE) ||

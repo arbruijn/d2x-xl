@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "gamesave.h"
 #include "lighting.h"
+#include "gameseg.h"
 //#define _DEBUG
 #ifdef RCS
 static char rcsid [] = "$Id: gameseg.c, v 1.5 2004/04/14 08:54:35 btb Exp $";
@@ -579,7 +580,7 @@ return nFaces;
 //this tSegment.  See tSegMasks structure for info on fields  
 tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad)
 {
-	int			sn, faceBit, sideBit;
+	int			faceBit, sideBit;
 	int			nFaces;
 	int			nVertex, nFace;
 	int			bSidePokesOut;
@@ -592,13 +593,11 @@ tSegMasks GetSideMasks (vmsVector *checkP, int nSegment, int nSide, fix xRad)
 	tSide2		*side2P;
 	tSegMasks	masks;
 
-masks.valid = 0;
 masks.centerMask = 0;
 masks.faceMask = 0;
 masks.sideMask = 0;
 masks.valid = 1;
 if (nSegment == -1) {
-	//Error ("nSegment == -1 in GetSegMasks ()");
 	return masks;
 	}
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
@@ -606,15 +605,7 @@ segP = gameData.segs.segments + nSegment;
 sideP = segP->sides + nSide;
 seg2P = gameData.segs.segment2s + nSegment;
 side2P = seg2P->sides + nSide;
-//check point against each tSide of tSegment. return bitmask
-// Get number of faces on this tSide, and at vertexList, store vertices.
-//	If one face, then vertexList indicates a quadrilateral.
-//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
 nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
-//ok...this is important.  If a tSide has 2 faces, we need to know if
-//those faces form a concave or convex tSide.  If the tSide pokes out, 
-//then a point is on the back of the tSide if it is behind BOTH faces, 
-//but if the tSide pokes in, a point is on the back if behind EITHER face.
 faceBit = sideBit = 1;
 if (nFaces == 2) {
 	nVertex = min (vertexList [0], vertexList [2]);
@@ -637,8 +628,6 @@ if (nFaces == 2) {
 		else
 			xDist = VmDistToPlane (checkP, sideP->normals + nFace, gameData.segs.vertices + nVertex);
 		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
-			// check if the intersection of a line through the point that is orthogonal to the 
-			// plane of the current triangle lies in is inside that triangle
 			nCenterCount++;
 		if ((xDist - xRad < -PLANE_DIST_TOLERANCE) && (xDist + xRad >= -PLANE_DIST_TOLERANCE)) {
 			masks.faceMask |= faceBit;
@@ -651,17 +640,15 @@ if (nFaces == 2) {
 		if (nCenterCount)
 			masks.centerMask |= sideBit;
 		}
-	else {							//must be behind both faces
+	else {	//must be behind both faces
 		if (nSideCount == 2)
 			masks.sideMask |= sideBit;
 		if (nCenterCount == 2)
 			masks.centerMask |= sideBit;
 		}
 	}
-else {				//only one face on this tSide
-	//use lowest point number
+else {	//only one face on this tSide
 	nVertex = vertexList [0];
-	//some manual loop unrolling here ...
 	if (nVertex > vertexList [1])
 		nVertex = vertexList [1];
 	if (nVertex > vertexList [2])
@@ -688,20 +675,16 @@ return masks;
 //this tSegment.  See tSegMasks structure for info on fields  
 tSegMasks GetSegMasks (vmsVector *checkP, int nSegment, fix xRad)
 {
-	int			nSide, faceBit, sideBit;
-	int			nFaces;
-	int			nVertex, nFace;
-	int			bSidePokesOut;
-	int			nSideCount, nCenterCount;
+	short			nSide, nFace, nFaces, faceBit, sideBit;
+	int			nVertex, nSideCount, nCenterCount, bSidePokesOut;
 	int			vertexList [6];
 	fix			xDist;
 	tSegment		*segP;
 	tSide			*sideP;
 	tSegment2	*seg2P;
 	tSide2		*side2P;
-	tSegMasks		masks;
+	tSegMasks	masks;
 
-masks.valid = 0;
 masks.centerMask = 0;
 masks.faceMask = 0;
 masks.sideMask = 0;
@@ -801,9 +784,8 @@ return masks;
 //only gets centerMask, and assumes zero rad
 ubyte GetSideDists (vmsVector *checkP, int nSegment, fix *xSideDists, int bBehind)
 {
-	int			nSide, faceBit, sideBit;
+	short			nSide, nFaces, faceBit, sideBit;
 	ubyte			mask;
-	int			nFaces;
 	int			vertexList [6];
 	tSegment		*segP;
 	tSide			*sideP;
@@ -825,15 +807,7 @@ for (nSide = 0, faceBit = sideBit = 1; nSide < 6; nSide++, sideBit <<= 1, sideP+
 		int	nFace;
 
 	xSideDists [nSide] = 0;
-	// Get number of faces on this tSide, and at vertexList, store vertices.
-	//	If one face, then vertexList indicates a quadrilateral.
-	//	If two faces, then 0, 1, 2 define one triangle, 3, 4, 5 define the second.
 	nFaces = CreateAbsVertexLists (vertexList, nSegment, nSide);
-	//ok...this is important.  If a tSide has 2 faces, we need to know if
-	//those faces form a concave or convex tSide.  If the tSide pokes out, 
-	//then a point is on the back of the tSide if it is behind BOTH faces, 
-	//but if the tSide pokes in, a point is on the back if behind EITHER face.
-
 	if (nFaces == 2) {
 		fix	xDist;
 		int	nCenterCount;
@@ -1208,7 +1182,7 @@ if (nTraceDepth >= gameData.segs.nSegments) {
 }
 if (!nTraceDepth)
 	memset (bVisited, 0, sizeof (bVisited));
-if (bVisited [nOldSeg] || (gameData.segs.segment2s [nOldSeg].special == SEGMENT_IS_SKYBOX))
+if (bVisited [nOldSeg])
 	return -1;
 nTraceDepth++;
 bVisited [nOldSeg] = 1;
@@ -1267,11 +1241,9 @@ if (bDoingLightingHack || !bExhaustive)
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
 #endif
 for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++) {
-	if (gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) {
-	   masks = GetSegMasks (p, nNewSeg, 0);
-		if (!masks.centerMask)
-			return nNewSeg;
-		}
+   masks = GetSegMasks (p, nNewSeg, 0);
+	if (!masks.centerMask)
+		return nNewSeg;
 	}
 ++nExhaustiveFailedCount;
 #if TRACE
@@ -1775,7 +1747,7 @@ return ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]));
 
 void AddSideAsTwoTriangles (tSegment *segP, int nSide)
 {
-	vmsVector	norm;
+	vmsVector	vNormal, v;
 	sbyte       *vs = sideToVerts [nSide];
 	short			v0 = segP->verts [vs [0]];
 	short			v1 = segP->verts [vs [1]];
@@ -1791,6 +1763,10 @@ void AddSideAsTwoTriangles (tSegment *segP, int nSide)
 	//		Always triangulate so tSegment is convex.
 	//		Use Matt's formula: Na . AD > 0, where ABCD are vertices on tSide, a is face formed by A, B, C, Na is normal from face a.
 	//	If not a tWall, then triangulate so whatever is on the other tSide is triangulated the same (ie, between the same absoluate vertices)
+#ifdef _DEBUG
+if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	segP = segP;
+#endif
 #if 0
 VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
 VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
@@ -1804,9 +1780,9 @@ else {
 	}
 #else
 if (!IS_CHILD (segP->children [nSide])) {
-	VmVecNormal (&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+	VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
 	VmVecSub (&vec_13, gameData.segs.vertices + v3, gameData.segs.vertices + v1);
-	dot = VmVecDot (&norm, &vec_13);
+	dot = VmVecDot (&vNormal, &vec_13);
 
 	//	Now, signify whether to triangulate from 0:2 or 1:3
 	if (dot >= 0)
@@ -1817,69 +1793,63 @@ if (!IS_CHILD (segP->children [nSide])) {
 	#ifndef COMPACT_SEGS
 	//	Now, based on triangulation nType, set the normals.
 	if (sideP->nType == SIDE_IS_TRI_02) {
-		//VmVecNormal (&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-		sideP->normals [0] = norm;
-		VmVecNormal (&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-		sideP->normals [1] = norm;
+		//VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+		sideP->normals [0] = vNormal;
+		VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		sideP->normals [1] = vNormal;
 		}
 	else {
-		VmVecNormal (&norm, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
-		sideP->normals [0] = norm;
-		VmVecNormal (&norm, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-		sideP->normals [1] = norm;
+		VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
+		sideP->normals [0] = vNormal;
+		VmVecNormal (&vNormal, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		sideP->normals [1] = vNormal;
 		}
 	#endif
 	}
 else {
-	int	i, v [4], vSorted [4];
+	int	i, vSorted [4];
 	int	bFlip;
 
-	for (i=0; i<4; i++)
-		v [i] = segP->verts [vs [i]];
-
-	bFlip = GetVertsForNormal (v [0], v [1], v [2], v [3], vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-	if ((vSorted [0] == v [0]) || (vSorted [0] == v [2])) {
+	bFlip = GetVertsForNormal (v0, v1, v2, v3, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+	if ((vSorted [0] == v0) || (vSorted [0] == v2)) {
 		sideP->nType = SIDE_IS_TRI_02;
 #ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (v [0], v [1], v [2], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (&norm, 
+		bFlip = GetVertsForNormal (v0, v1, v2, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		VmVecNormal (sideP->normals, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
-			VmVecNegate (&norm);
-		sideP->normals [0] = norm;
-		bFlip = GetVertsForNormal (v [0], v [2], v [3], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (&norm, 
+			VmVecNegate (sideP->normals);
+		bFlip = GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		VmVecNormal (sideP->normals + 1, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
-			VmVecNegate (&norm);
-		sideP->normals [1] = norm;
+			VmVecNegate (sideP->normals + 1);
+		GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 #endif
 		}
 	else {
 		sideP->nType = SIDE_IS_TRI_13;
 #ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation nType.
-		bFlip = GetVertsForNormal (v [0], v [1], v [3], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (&norm, 
+		bFlip = GetVertsForNormal (v0, v1, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		VmVecNormal (sideP->normals, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
-			VmVecNegate (&norm);
-		sideP->normals [0] = norm;
-		bFlip = GetVertsForNormal (v [1], v [2], v [3], 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (&norm, 
+			VmVecNegate (sideP->normals);
+		bFlip = GetVertsForNormal (v1, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
+		VmVecNormal (sideP->normals + 1, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
-			VmVecNegate (&norm);
-		sideP->normals [1] = norm;
+			VmVecNegate (sideP->normals + 1);
 #endif
 		}
 	}
@@ -2069,8 +2039,8 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 		ValidateSegment (gameData.segs.segments + s);
 #ifdef EDITOR
 	{
-	int said=0;
-	for (s=gameData.segs.nLastSegment+1; s < MAX_SEGMENTS; s++)
+	int said = 0;
+	for (s = gameData.segs.nLastSegment + 1; s < MAX_SEGMENTS; s++)
 		if (gameData.segs.segments [s].nSegment != -1) {
 			if (!said) {
 #if TRACE		

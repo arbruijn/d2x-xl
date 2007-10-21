@@ -517,8 +517,7 @@ void DrawPolygonObject (tObject *objP)
 	int bBlendPolys = 0;
 	int bBrightPolys = 0;
 	int bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
-	//tRgbColorf color;
-
+	
 #if SHADOWS
 if (FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 

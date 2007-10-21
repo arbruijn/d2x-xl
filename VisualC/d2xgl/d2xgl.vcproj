@@ -108,7 +108,7 @@
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="FALSE"
 				ImproveFloatingPointConsistency="FALSE"
-				FavorSizeOrSpeed="0"
+				FavorSizeOrSpeed="1"
 				OmitFramePointers="FALSE"
 				EnableFiberSafeOptimizations="FALSE"
 				OptimizeForProcessor="3"

@@ -893,6 +893,7 @@ else {
 	c = CFReadInt (loadFile);
 	pc->color.blue = (float) c / (float) 0x7fffffff;
 	}
+pc->color.alpha = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1136,11 +1137,6 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 				texCoordP++;
 				ovlTexCoordP++;
 				colorP = gameData.render.color.ambient + sideVerts [i];
-				fLight = f2fl (sideP->uvls [i].l);
-				colorP->color.red += fLight;
-				colorP->color.green += fLight;
-				colorP->color.blue += fLight;
-				colorP->color.alpha += 1;
 				*faceColorP++ = colorP->color;
 				colorP++;
 				}
@@ -1179,13 +1175,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 			faceP++;
 			}
 		else {
-			for (i = 0; i < 4; i++) {
-				colorP->color.red = 
-				colorP->color.green = 
-				colorP->color.blue = 
-				colorP->color.alpha = 0;
-				colorP++;
-				}
+			colorP += 4;
 			}
 		}
 #if 1
@@ -1374,8 +1364,13 @@ void LoadVertLightsCompiled (int i, CFILE *loadFile)
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
-	for (; i < j; i++)
+	for (; i < j; i++) {
+#ifdef _DEBUG
+		if (i == nDbgVertex)
+			i = i;
+#endif
 		ReadColor (gameData.render.color.ambient + i, loadFile, gameData.segs.nLevelVersion <= 14);
+		}
 	}
 }
 

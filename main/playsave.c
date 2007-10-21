@@ -790,7 +790,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bWiggle", "1"},
 	{"extraGameInfo[0].grWallTransparency", "19"},
 	{"extraGameInfo[0].nFusionPowerMod", "4"},
-	{"extraGameInfo[0].nLightRange", "0"},
+	{"extraGameInfo[0].nLightRange", "2"},
 	{"extraGameInfo[0].nMaxSmokeGrenades", "1"},
 	{"extraGameInfo[0].nMslTurnSpeed", "1"},
 	{"extraGameInfo[0].nRadar", "1"},
@@ -1351,7 +1351,6 @@ void InitGameParams (void)
 	int			i;
 
 for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
-	CBP (!strcmp (pv->pszIdent, "mouse.Slide U/D[1].value"));
 	SetParam (pv->pszIdent, pv->pszValue);
 	}
 }

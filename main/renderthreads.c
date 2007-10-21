@@ -51,17 +51,25 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000
 	if (tiRender.ti [0].bExec != tiRender.ti [1].bExec) {
 		if (!t2)
 			t2 = clock ();
-		else if (clock () - t2 > 10) {	//slower thread must not take more than 10 ms longer than faster one
+		else if (clock () - t2 > 33) {	//slower thread must not take more than 10 ms longer than faster one
+#ifndef _DEBUG
+			t2 = clock ();
+#else
 			LogErr ("threads locked up (task: %d)\n", nTask);
 			tiRender.ti [0].bExec =
 			tiRender.ti [1].bExec = 0;
 			if (++nLockups > 100)
 				gameStates.app.bMultiThreaded = 0;
+#endif
 			}
 		}
 	}	
 if (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
+#ifndef _DEBUG
+	;
+#else
 	gameStates.app.bMultiThreaded = 0;
+#endif
 return 1;
 }
 
@@ -159,13 +167,15 @@ void EndRenderThreads (void)
 
 for (i = 0; i < 2; i++)
 	tiRender.ti [i].bDone = 1;
-G3_SLEEP (1);
-#if 1
+G3_SLEEP (10);
+#if 0
+#	if 1
 SDL_KillThread (tiRender.ti [0].pThread);
 SDL_KillThread (tiRender.ti [1].pThread);
-#else
+#	else
 SDL_WaitThread (tiRender.ti [0].pThread, NULL);
 SDL_WaitThread (tiRender.ti [1].pThread, NULL);
+#	endif
 #endif
 }
 

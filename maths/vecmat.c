@@ -735,6 +735,47 @@ return dest;
 
 // ------------------------------------------------------------------------
 //make sure a vector is reasonably sized to go into a cross product
+
+#if 1
+
+void CheckVec(vmsVector *vp)
+{
+	fix check;
+	int cnt = 0;
+	vmsVector v = *vp;
+
+if (!(check = labs (v.p.x) | labs (v.p.y) | labs (v.p.z)))
+	return;
+if (check & 0xfffc0000) {		//too big
+	while (check & 0xfff00000) {
+		cnt += 4;
+		check >>= 4;
+		}
+	while (check & 0xfffc0000) {
+		cnt += 2;
+		check >>= 2;
+		}
+	}
+else if (!(check & 0xffff8000)) {		//yep, too small
+	while (!(check & 0xfffff000)) {
+		cnt += 4;
+		check <<= 4;
+		}
+	while (!(check & 0xffff8000)) {
+		cnt += 2;
+		check <<= 2;
+		}
+	}
+else
+	return;
+v.p.x >>= cnt;
+v.p.y >>= cnt;
+v.p.z >>= cnt;
+*vp = v;
+}
+
+#else
+
 void CheckVec(vmsVector *vp)
 {
 	unsigned int check;
@@ -770,6 +811,8 @@ v.p.y >>= cnt;
 v.p.z >>= cnt;
 *vp = v;
 }
+
+#endif
 
 // ------------------------------------------------------------------------
 //computes cross product of two vectors. 
@@ -813,12 +856,22 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 
 vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
-#if 1//def _WIN32
+#if 1
 #	if 1
+	fVector	srcf [2], destf;
+
+VmsVecToFloat (srcf, src0);
+VmsVecToFloat (srcf + 1, src1);
+VmVecCrossProdf (&destf, srcf, srcf + 1);
+dest->p.x = fl2f (destf.p.x);
+dest->p.y = fl2f (destf.p.y);
+dest->p.z = fl2f (destf.p.z);
+#	else
 dest->p.x = (fix) (((double) src0->p.y * (double) src1->p.z - (double) src0->p.z * (double) src1->p.y) / 65536.0);
 dest->p.y = (fix) (((double) src0->p.z * (double) src1->p.x - (double) src0->p.x * (double) src1->p.z) / 65536.0);
 dest->p.z = (fix) (((double) src0->p.x * (double) src1->p.y - (double) src0->p.y * (double) src1->p.x) / 65536.0);
-#	else
+#	endif
+#else
 QLONG q = mul64 (src0->p.y, src1->p.z);
 Assert(dest!=src0 && dest!=src1);
 q += mul64 (-src0->p.z, src1->p.y);
@@ -829,24 +882,6 @@ dest->p.y = (fix) (q >> 16);
 q = mul64 (src0->p.x, src1->p.y);
 q += mul64 (-src0->p.y, src1->p.x);
 dest->p.z = (fix) (q >> 16);
-#	endif
-#else
-quadint q;
-Assert(dest!=src0 && dest!=src1);
-q.low = q.high = 0;
-fixmulaccum(&q, src0->p.y, src1->p.z);
-fixmulaccum(&q, -src0->p.z, src1->p.y);
-dest->p.x = fixquadadjust(&q);
-
-q.low = q.high = 0;
-fixmulaccum(&q, src0->p.z, src1->p.x);
-fixmulaccum(&q, -src0->p.x, src1->p.z);
-dest->p.y = fixquadadjust(&q);
-
-q.low = q.high = 0;
-fixmulaccum(&q, src0->p.x, src1->p.y);
-fixmulaccum(&q, -src0->p.y, src1->p.x);
-dest->p.z = fixquadadjust(&q);
 #endif
 return dest;
 }
@@ -863,7 +898,10 @@ vmsVector *VmVecPerp (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *
 
 VmVecSub (&t0, p1, p0);
 VmVecSub (&t1, p2, p1);
-#if 0
+#if 1
+VmVecNormalize (&t0);
+VmVecNormalize (&t1);
+#else
 CheckVec (&t0);
 CheckVec (&t1);
 #endif

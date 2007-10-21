@@ -198,11 +198,6 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	else
 		nSegment = nSegment;
 #endif
-if ((nSegment == 947) && (faceP->nSide == 0))
-	if (bDepthOnly)
-		nSegment = nSegment;
-	else
-		nSegment = nSegment;
 G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
 				bVertexArrays, bTextured && faceP->bTextured, bDepthOnly);
 #ifdef _DEBUG

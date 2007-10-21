@@ -150,12 +150,15 @@ memset (gameData.lightnings.objects, 0xff, MAX_OBJECTS * sizeof (*gameData.light
 
 vmsVector *VmRandomVector (vmsVector *vRand)
 {
+	vmsVector	vr;
+
 do {
-	vRand->p.x = F1_0 / 4 - d_rand ();
-	vRand->p.y = F1_0 / 4 - d_rand ();
-	vRand->p.z = F1_0 / 4 - d_rand ();
-	} while (!(vRand->p.x && vRand->p.y && vRand->p.z));
-VmVecNormalize (vRand);
+	vr.p.x = F1_0 / 4 - d_rand ();
+	vr.p.y = F1_0 / 4 - d_rand ();
+	vr.p.z = F1_0 / 4 - d_rand ();
+} while (!(vr.p.x && vr.p.y && vr.p.z));
+VmVecNormalize (&vr);
+*vRand = vr;
 return vRand;
 }
 
@@ -170,7 +173,7 @@ return vRand;
 vmsVector *DirectedRandomVector (vmsVector *vRand, vmsVector *vDir, int nMinDot, int nMaxDot)
 {
 	vmsVector	vr, vd, vSign;
-	int			nDot, nSign;
+	int			nDot, nSign, i = 0;
 
 VmVecCopyNormalize (&vd, vDir);
 vSign.p.x = vd.p.x ? vd.p.x / abs (vd.p.x) : 0;
@@ -178,20 +181,10 @@ vSign.p.y = vd.p.y ? vd.p.y / abs (vd.p.y) : 0;
 vSign.p.z = vd.p.z ? vd.p.z / abs (vd.p.z) : 0;
 nSign = VECSIGN (vd);
 do {
-	vr.p.x = /*vSign.p.x ? vSign.p.x * d_rand () :*/ F1_0 / 4 - d_rand ();
-	vr.p.y = /*vSign.p.y ? vSign.p.y * d_rand () :*/ F1_0 / 4 - d_rand ();
-	vr.p.z = /*vSign.p.z ? vSign.p.z * d_rand () :*/ F1_0 / 4 - d_rand ();
-	VmVecNormalize (&vr);
-#if 0
-	if (nSign != VECSIGN (vr)) {
-		int i;
-		do {
-			i = d_rand () % 3;
-			} while (!vr.v [i]);
-		vr.v [i] = -vr.v [i];
-		}
-#endif
+	VmRandomVector (&vr);
 	nDot = VmVecDot (&vr, &vd);
+	if (++i == 100)
+		i = 0;
 	} while ((nDot > nMaxDot) || (nDot < nMinDot));
 *vRand = vr;
 return vRand;
@@ -247,10 +240,7 @@ if (pl->bInPlane) {
 	}
 else {
 	do {
-		vDelta->p.x = F1_0 / 4 - d_rand ();
-		vDelta->p.y = F1_0 / 4 - d_rand ();
-		vDelta->p.z = F1_0 / 4 - d_rand ();
-		VmVecNormalize (vDelta);
+		VmRandomVector (vDelta);
 		} while (abs (VmVecDot (&vDir, vDelta)) > 9 * F1_0 / 10);
 	VmVecNormal (vDelta + 1, &vPos, &pl->vEnd, vDelta);
 	VmVecAdd (&v, &vPos, vDelta + 1);
@@ -578,14 +568,18 @@ return nDist;
 vmsVector *CreateLightningPathPoint (vmsVector *vOffs, vmsVector *vAttract, int nDist)
 {
 	vmsVector	va;
-	int			nDot;
+	int			nDot, i = 0;
 
 if (nDist < F1_0 / 16)
 	return VmRandomVector (vOffs);
 VmVecCopyNormalize (&va, vAttract);
+if (!(va.p.x && va.p.y && va.p.z))
+	i = 0;
 do {
 	VmRandomVector (vOffs);
 	nDot = VmVecDot (&va, vOffs);
+	if (++i > 100)
+		i = 0;
 	} while (abs (nDot) < F1_0 / 32);
 if (nDot < 0)
 	VmVecNegate (vOffs);
@@ -902,11 +896,8 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 			pl->nSteps = -pl->nSteps;
 		if (!pl->iStep) {
 			bSeed = 1;
-			do {
-				CreateLightningPath (pl, bSeed, nDepth + 1);
-				CHECK (pl, 1);
-				break;
-				} while (!j);
+			CreateLightningPath (pl, bSeed, nDepth + 1);
+			CHECK (pl, 1);
 			pl->iStep = pl->nSteps;
 			}
 		for (j = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; j > 0; j--, pln++) {

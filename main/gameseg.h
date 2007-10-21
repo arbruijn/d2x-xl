@@ -33,10 +33,10 @@ typedef struct tSegMasks {
 } tSegMasks;
 
 
-void ComputeSideCenter(vmsVector *vp,tSegment *sp,int tSide);
+void ComputeSideCenter (vmsVector *vp,tSegment *sp,int tSide);
 void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax);
-void ComputeSegmentCenter(vmsVector *vp,tSegment *sp);
-int FindConnectedSide(tSegment *base_seg, tSegment *con_seg);
+void ComputeSegmentCenter (vmsVector *vp,tSegment *sp);
+int FindConnectedSide (tSegment *base_seg, tSegment *con_seg);
 
 #define	SEGMENT_CENTER_I(_nSeg)	(gameData.segs.segCenters [0] + (_nSeg))
 

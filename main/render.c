@@ -1495,13 +1495,13 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 {
 	int		lCnt, sCnt, eCnt, wid, nSide;
 	int		l, i, j;
-	short		c;
 	short		nChild;
+	short		nChildSeg;
 	short		*sv;
 	sbyte		*s2v;
 	ubyte		andCodes, andCodes3D, andCodes2D;
-	int		bRotated, nSegment;
-	window	*checkWinP;
+	int		bRotated, nSegment, bNotProjected;
+	window	*curPortal;
 	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
 	int		nChildren, bCheckBehind;					//how many sides in childList
 	tSegment	*segP;
@@ -1556,29 +1556,29 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 			continue;
 		gameData.render.mine.nProcessed [sCnt] = 1;
 		nSegment = gameData.render.mine.nSegRenderList [sCnt];
-		checkWinP = renderWindows + sCnt;
+		curPortal = renderWindows + sCnt;
+		if (nSegment == -1) 
+			continue;
 #ifdef _DEBUG
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-		if (nSegment == -1) 
-			continue;
 		segP = gameData.segs.segments + nSegment;
 		sv = segP->verts;
 		bRotated = 0;
 		//look at all sides of this tSegment.
 		//tricky code to look at sides in correct order follows
-		for (c = nChildren = 0; c < MAX_SIDES_PER_SEGMENT; c++) {		//build list of sides
-			wid = WALL_IS_DOORWAY (segP, c, NULL);
-			nChild = segP->children [c];
+		for (nChild = nChildren = 0; nChild < MAX_SIDES_PER_SEGMENT; nChild++) {		//build list of sides
+			wid = WALL_IS_DOORWAY (segP, nChild, NULL);
+			nChildSeg = segP->children [nChild];
 #ifdef _DEBUG
-			if (nChild == nDbgSeg)
-				nChild = nChild;
+			if (nChildSeg == nDbgSeg)
+				nChildSeg = nChildSeg;
 #endif
-			if ((bWindowCheck || ((nChild > -1) && !VISITED (nChild))) && (wid & WID_RENDPAST_FLAG)) {
+			if ((bWindowCheck || ((nChildSeg > -1) && !VISITED (nChildSeg))) && (wid & WID_RENDPAST_FLAG)) {
 				if (bCheckBehind) {
 					andCodes = 0xff;
-					s2v = sideToVerts [c];
+					s2v = sideToVerts [nChild];
 					if (!bRotated) {
 						RotateVertexList (8, segP->verts);
 						bRotated = 1;
@@ -1588,7 +1588,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					if (andCodes & CC_BEHIND) 
 						continue;
 					}
-				childList [nChildren++] = c;
+				childList [nChildren++] = nChild;
 				}
 			}
 		//now order the sides in some magical way
@@ -1596,20 +1596,20 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		if (bNewSegSorting && (nChildren > 1))
 			SortSegChildren (segP, nChildren, childList);
 #endif
-		for (c = 0; c < nChildren; c++) {
-			nSide = childList [c];
-			nChild = segP->children [nSide];
+		for (nChild = 0; nChild < nChildren; nChild++) {
+			nSide = childList [nChild];
+			nChildSeg = segP->children [nSide];
 #ifdef _DEBUG
-			if (nChild == nDbgSeg)
-				nChild = nChild;
+			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+				nChildSeg = nChildSeg;
 #endif
 #if 0
-			if ((bWindowCheck || !gameData.render.mine.bVisited [nChild]) && (WALL_IS_DOORWAY (segP, c, NULL))) {
+			if ((bWindowCheck || !gameData.render.mine.bVisited [nChildSeg]) && (WALL_IS_DOORWAY (segP, nChild, NULL))) {
 #else
 			if (bWindowCheck) {
 #endif
 				short x, y, xMin = 32767, xMax = -32767, yMin = 32767, yMax = -32767;
-				int bNotProjected = 0;	//a point wasn't projected
+				bNotProjected = 0;	//a point wasn't projected
 				if (bRotated < 2) {
 					if (!bRotated)
 						RotateVertexList (8, segP->verts);
@@ -1627,7 +1627,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 					x = (short) f2i (pnt->p3_screen.x);
 					y = (short) f2i (pnt->p3_screen.y);
 					andCodes3D &= pnt->p3_codes;
-					andCodes2D &= CodeWindowPoint (x, y, checkWinP);
+					andCodes2D &= CodeWindowPoint (x, y, curPortal);
 					if (x < xMin) 
 						xMin = x;
 					if (x > xMax) 
@@ -1638,18 +1638,18 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						yMax = y;
 					}
 				if (bNotProjected || !(andCodes3D || andCodes2D)) {	//maybe add this tSegment
-					int rp = gameData.render.mine.nRenderPos [nChild];
+					int rp = gameData.render.mine.nRenderPos [nChildSeg];
 					window *pNewWin = renderWindows + lCnt;
 
 					if (bNotProjected) 
-						*pNewWin = *checkWinP;
+						*pNewWin = *curPortal;
 					else {
-						pNewWin->left  = max (checkWinP->left, xMin);
-						pNewWin->right = min (checkWinP->right, xMax);
-						pNewWin->top   = max (checkWinP->top, yMin);
-						pNewWin->bot   = min (checkWinP->bot, yMax);
+						pNewWin->left  = max (curPortal->left, xMin);
+						pNewWin->right = min (curPortal->right, xMax);
+						pNewWin->top   = max (curPortal->top, yMin);
+						pNewWin->bot   = min (curPortal->bot, yMax);
 						}
-					//see if this segP already visited, and if so, does current window
+					//see if this segment already visited, and if so, does current window
 					//expand the old window?
 					if (rp != -1) {
 						window *rwP = renderWindows + rp;
@@ -1674,27 +1674,27 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 								}
 							}
 						}
-					gameData.render.mine.nRenderPos [nChild] = lCnt;
-					gameData.render.mine.nSegRenderList [lCnt] = nChild;
-					gameData.render.mine.bRenderSegment [nChild] = gameStates.render.nFrameFlipFlop;
+					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
+					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
+					gameData.render.mine.bRenderSegment [nChildSeg] = gameStates.render.nFrameFlipFlop;
 					gameData.render.mine.nSegDepth [lCnt] = l;
 					if (++lCnt >= MAX_RENDER_SEGS)
 						goto listDone;
-					VISIT (nChild);
+					VISIT (nChildSeg);
 
 dontAdd:
 ;
 					}
 				}
 			else {
-				gameData.render.mine.nSegRenderList [lCnt] = nChild;
+				gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
 				gameData.render.mine.nSegDepth [lCnt] = l;
 				lCnt++;
 				if (lCnt >= MAX_RENDER_SEGS) {
 					LogErr ("Too many segments in tSegment render list!!!\n"); 
 					goto listDone;
 					}
-				VISIT (nChild);
+				VISIT (nChildSeg);
 				}
 			}
 		}

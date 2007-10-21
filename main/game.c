@@ -1804,15 +1804,6 @@ void _CDECL_ CloseGame (void)
 if (bGameClosed)
 	return;
 bGameClosed = 1;
-#if MULTI_THREADED
-gameStates.app.bExit = 1;
-if (gameStates.app.bMultiThreaded) {
-	for (i = 0; i < 2; i++) {
-		SDL_WaitThread (gameData.threads.vertColor.pThread [i]);
-		SDL_DestroySemaphore (gameData.threads.vertColor.exec [i]);
-		}
-	}
-#endif
 if (gameStates.app.bMultiThreaded) {
 	EndRenderThreads ();
 	}

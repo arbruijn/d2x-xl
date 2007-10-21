@@ -806,14 +806,14 @@ void G3GetThrusterPos (short nModel, tG3ModelFace *pmf, vmsVector *vOffset, int 
 if (mtP->nCount >= 2)
 	return;
 VmsVecToFloat (&vn, &pmf->vNormal);
-if (VmVecDotf (&vn, &vForward) > -F1_0 / 3)
+if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
 	return;
 for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
 	VmVecIncf (&v, (fVector *) &pmv [i].vertex);
 v.p.x /= j;
 v.p.y /= j;
 v.p.z /= j;
-v.p.z -= F1_0 / 8;
+v.p.z -= 1.0f / 8.0f;
 if (vOffset) {
 	VmsVecToFloat (&vo, vOffset);
 	VmVecIncf (&v, &vo);
