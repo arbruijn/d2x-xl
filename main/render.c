@@ -743,6 +743,10 @@ if (bSearchMode)
 	else
 #endif
 	//NOTE LINK TO ABOVE
+#ifdef _DEBUG
+if (OBJ_IDX (objP) == 207)
+	objP = objP;
+#endif
 if (RenderObject (objP, nWindow, 0))
 	gameData.render.mine.bObjectRendered [nObject] = gameStates.render.nFrameFlipFlop;
 for (n = objP->attachedObj; n != -1; n = hObj->cType.explInfo.nNextAttach) {

@@ -381,7 +381,8 @@ void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime
 	fix	xCloakFadeinDuration = F1_0;
 	fix	xCloakFadeoutDuration = F1_0;
 
-gameStates.render.bCloaked = 1;
+if (gameStates.render.bQueryCoronas)
+	return;
 if (xCloakStartTime != 0x7fffffff)
 	xTotalCloakedTime = xCloakEndTime - xCloakStartTime;
 else 
@@ -426,7 +427,7 @@ else if (gameData.time.xGame < xCloakEndTime - xCloakFadeoutDuration / 2) {
 	nCloakValue = f2i (FixDiv (xTotalCloakedTime - xCloakFadeoutDuration / 2 - xCloakDeltaTime, xCloakFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
 	} 
 else {
-	xLightScale = FixDiv (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime), xCloakFadeoutDuration / 2);
+	xLightScale = (fix) ((float) (xCloakFadeoutDuration / 2 - (xTotalCloakedTime - xCloakDeltaTime) / (float) (xCloakFadeoutDuration / 2)));
 	bFading = 1;
 	}
 if (bFading) {
@@ -449,6 +450,7 @@ if (bFading) {
 		glow [0] = xSaveGlow;
 	}
 else {
+	gameStates.render.bCloaked = 1;
 	gameStates.render.grAlpha = (float) nCloakValue;
 	GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
@@ -462,8 +464,8 @@ else {
 							NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
+	gameStates.render.bCloaked = 0;
 	}
-gameStates.render.bCloaked = 0;
 }
 
 //------------------------------------------------------------------------------

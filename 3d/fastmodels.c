@@ -215,6 +215,10 @@ else {
 pmf->vNormal = *pn;
 pmf->nIndex = pm->iFaceVert;
 pmv = pm->pFaceVerts + pm->iFaceVert;
+#ifdef _DEBUG
+if (pm->iFaceVert == 53)
+	pm = pm;
+#endif
 if (psm->nIndex < 0)
 	psm->nIndex = pm->iFaceVert;
 pmf->nVerts = nVerts;
@@ -689,7 +693,7 @@ void G3LightModel (tObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 	tG3ModelVertex	*pmv;
 	tG3ModelFace	*pmf;
 	tRgbaColorf		baseColor, *colorP;
-	float				fLight, fAlpha = (float) GrAlpha (); //(float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
+	float				fLight, fAlpha = (float) gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;  //float) GrAlpha (); 
 	int				h, i, j, l;
 
 #if 1
@@ -865,6 +869,10 @@ for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 #endif
 // render the faces
 glDisable (GL_TEXTURE_2D);
+glActiveTexture (GL_TEXTURE0);
+glClientActiveTexture (GL_TEXTURE0);
+glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; ) {
 	if (!gameStates.render.bCloaked && (nBitmap != pmf->nBitmap)) {
 		if (0 <= (nBitmap = pmf->nBitmap)) {
@@ -883,7 +891,7 @@ for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; ) 
 		}
 	nIndex = pmf->nIndex;
 #if G3_DRAW_ARRAYS
-	if ((nFaceVerts = pmf->nVerts) > 4) {
+	if ((nFaceVerts = pmf->nVerts) > 0) {
 		if (pmf->bThruster)
 			G3GetThrusterPos (nModel, pmf, vOffset, bHires);
 		nVerts = nFaceVerts;
@@ -939,8 +947,9 @@ if (gameStates.ogl.bHaveVBOs)
 	tG3ModelVertex	*pmv = pm->pFaceVerts + nIndex;
 	glBegin ((nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN);
 	for (j = nVerts; j; j--, pmv++) {
-		glTexCoord2fv ((GLfloat *) &pmv->texCoord);
-		glColor4fv ((GLfloat *) &pmv->renderColor);
+		if (!gameStates.render.bCloaked)
+			glTexCoord2fv ((GLfloat *) &pmv->texCoord);
+		glColor4fv ((GLfloat *) (pm->pVBColor + pmv->nIndex));
 		glVertex3fv ((GLfloat *) &pmv->vertex);
 		}
 	glEnd ();
@@ -1007,6 +1016,8 @@ int G3RenderModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelB
 	int		i, bHires = 1;
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 
+if (gameStates.render.bQueryCoronas && gameStates.render.bCloaked)
+	return 0;
 #if G3_FAST_MODELS
 if (!gameOpts->render.nRenderPath)
 #endif
@@ -1016,23 +1027,30 @@ if (!gameOpts->render.nRenderPath)
 	return 0;
 	}	
 if (pm->bValid < 1) {
-	i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 1);
-	if (i < 0)	//successfully built new model
+	if (pm->bValid) {
+		i = 0;
+		bHires = 0;
+		}
+	else {
+		i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 1);
+		if (i < 0)	//successfully built new model
+			return 0;
+		pm->bValid = -1;
+		}
+	pm = gameData.models.g3Models [0] + nModel;
+	if (pm->bValid < 0)
 		return 0;
-	pm->bValid = -1;
-	if (!i) {
+	if (!(i || pm->bValid)) {
 		i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 0);
 		if (i <= 0) {
 			if (!i)
 				pm->bValid = -1;
 			return 0;
 			}
-		bHires = 0;
-		pm = gameData.models.g3Models [0] + nModel;
 		}
 	}
 #if G3_DRAW_ARRAYS
-if (!G3EnableClientStates (1, 1, GL_TEXTURE0))
+if (!G3EnableClientStates (!gameStates.render.bCloaked, 1, GL_TEXTURE0))
 	return 0;
 #	if G3_USE_VBOS
 if (gameStates.ogl.bHaveVBOs) {
@@ -1055,20 +1073,27 @@ pm->pVBTexCoord = (tTexCoord2f *) (pm->pVBColor + pm->nFaceVerts);
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
 #endif
-G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
+if (!gameStates.render.bQueryCoronas)
+	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);
+glActiveTexture (GL_TEXTURE0);
+glClientActiveTexture (GL_TEXTURE0);
+glEnable (GL_BLEND);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if G3_DRAW_ARRAYS
 #	if G3_USE_VBOS
 if (gameStates.ogl.bHaveVBOs) {
 	if (!glUnmapBuffer (GL_ARRAY_BUFFER_ARB))
 		return 0;
-	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
+	if (!gameStates.render.bCloaked)
+		glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
 	glColorPointer (4, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * sizeof (fVector3)));
 	glTexCoordPointer (2, GL_FLOAT, 0, G3_BUFFER_OFFSET (pm->nFaceVerts * ((sizeof (fVector3) + sizeof (tRgbaColorf)))));
 	}
 else 
 #	endif
 	{
-	glTexCoordPointer (2, GL_FLOAT, 0, pm->pVBTexCoord);
+	if (!gameStates.render.bCloaked)
+		glTexCoordPointer (2, GL_FLOAT, 0, pm->pVBTexCoord);
 	glColorPointer (4, GL_FLOAT, 0, pm->pVBColor);
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);	
 	}
@@ -1085,7 +1110,7 @@ glDisable (GL_TEXTURE_2D);
 #	if G3_USE_VBOS
 glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
 #	endif
-G3DisableClientStates (1, 1, -1);
+G3DisableClientStates (!gameStates.render.bCloaked, 1, -1);
 #endif
 if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN)))
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);

@@ -429,8 +429,8 @@ void QueryCoronas (int nFaces, int nPass)
 	int			i, j ,bVertexArrays = BeginRenderFaces (3);
 
 gameStates.render.bQueryCoronas = nPass;
+glDepthMask (0);
 if (nPass == 1) {	//find out how many total fragments each corona has
-	glDepthMask (0);
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
@@ -490,6 +490,10 @@ else {
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
 			}
+#ifdef _DEBUG
+		if ((pfr->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+			faceP = faceP;
+#endif
 		glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 		if (!glGetError ())
 			RenderCorona (pfr [i].nSegment, faceP->nSide, 1);
@@ -590,13 +594,17 @@ else {	//front to back
 		}
 #if RENDER_DEPTHMASK_FIRST
 	j = SortFaces ();
-	glDepthMask (0);
-	glDepthFunc (GL_LEQUAL);
 	if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 		EndRenderFaces (nType, bVertexArrays);
+		gameStates.render.bQueryCoronas = 2;
+		gameStates.render.nType = 1;
+		RenderMineObjects (1);
+		gameStates.render.nType = 0;
 		QueryCoronas (j, 2);
 		bVertexArrays = BeginRenderFaces (nType);
 		}
+	glDepthMask (0);
+	glDepthFunc (GL_LEQUAL);
 	glColorMask (1,1,1,1);
 	for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < j; i++) {
 #ifdef _DEBUG
@@ -907,7 +915,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		nSegment = nSegment;
 #endif
 	if (nType == 1) {	// render opaque objects
-		if (gameStates.render.bUseDynLight) {
+		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
 			SetNearestDynamicLights (nSegment, 0, 0);
 			SetNearestStaticLights (nSegment, 1, 0);
 			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
