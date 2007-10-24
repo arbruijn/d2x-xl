@@ -664,7 +664,7 @@ void DrawPolygonModel (
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return;
 if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
-	if ((gameStates.render.nShadowPass != 2) && gameData.models.modelToOOF [nModel])
+	if (!flags && (gameStates.render.nShadowPass != 2) && gameData.models.modelToOOF [nModel])
 		bHires = 1;
 	else
 		return;
@@ -686,13 +686,11 @@ PA_DFX (bSaveLight = gameStates.render.nLighting);
 PA_DFX (gameStates.render.nLighting = 0);
 
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
-G3StartInstanceMatrix (pos, orient);
 if (!flags)	{	//draw entire tObject
 	if (!G3RenderModel (objP, nModel, po, gameData.models.textures, animAngles, light, glowValues, color)) {
-		G3DoneInstance ();
 		if (bHires)
 			return;
-		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && gameOpts->ogl.bLightObjects);
+		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (pos, orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
 		}
@@ -700,6 +698,7 @@ if (!flags)	{	//draw entire tObject
 else {
 	int i;
 
+	G3StartInstanceMatrix (pos, orient);
 	for (i = 0; flags; flags >>= 1, i++)
 		if (flags & 1) {
 			vmsVector vOffs;

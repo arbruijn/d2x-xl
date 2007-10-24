@@ -1745,6 +1745,7 @@ char *defaultGameTexts [][2] = {
 	{"Korona-Einstellungen", "Corona Options"},
 	{"openGL ~Powerup-Beleuchtung", "openGL ~Powerup lighting"},
 	{"Lichthof-i~Ntensitaet Objekte: %s", "object corona i~Ntensity: %s"},
+	{"Beleuchtung per h~Ardware", "h~Ardware lighting"},
 #if 0
 	{"", ""},
 #endif
@@ -2331,6 +2332,7 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann das Erscheinungsbild von Lichthoefen angepasst werden.", "The appearance of light coronas can be adjusted here."},
 	{"Wenn angekreuzt, verwendet D2X-XL die OpenGL-Beleuchtungs-\nmethode auch fuer Hires-Powerups. Nur fuer schnelle\nRechner empfohlen.\n\nWird diese Option ausgeschaltet, berechnet D2X-XL anhand der\ndurchschnittlichen Helligkeit am Ort des Objekts seine Beleuchtung.", 
 	 "If checked, D2X-XL uses the OpenGL lighting method for hires\npowerups. Only recommended for fast computers.\n\nIf unchecked, D2X-XL computes the object's lighting depending\non the average light at the object's location."},
+	{"Mit eingeschalteter Hardware-Beleuchtung werden komplexe Szenen\nmit vielen Objekten mehrfach schneller berechnet.", "With hardware lighting enabled, complex scenes with lots of objects\nare rendered much faster."},
 #if 0
 	{"", ""},
 #endif

@@ -1115,7 +1115,7 @@ if ((t = FindArg ("-gl_texcompress")))
 	gameStates.ogl.bTextureCompression = NumArg (t, 1);
 #endif
 if ((t = FindArg ("-renderpath")))
-	gameOptions [0].render.nRenderPath = NumArg (t, 1);
+	gameOptions [0].render.nPath = NumArg (t, 1);
 }
 
 // ----------------------------------------------------------------------------
@@ -1239,7 +1239,7 @@ if (i) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
-	gameOptions [0].render.nRenderPath = 0;
+	gameOptions [0].render.nPath = 0;
 	gameOptions [1].render.shadows.bPlayers = 0;
 	gameOptions [1].render.shadows.bRobots = 0;
 	gameOptions [1].render.shadows.bMissiles = 0;
@@ -1366,7 +1366,7 @@ if (i) {
 else {
 	extraGameInfo [0].nWeaponIcons = 0;
 	extraGameInfo [0].bShadows = 0;
-	gameOptions [0].render.nRenderPath = 1;
+	gameOptions [0].render.nPath = 1;
 	gameOptions [0].render.shadows.bPlayers = 1;
 	gameOptions [0].render.shadows.bRobots = 0;
 	gameOptions [0].render.shadows.bMissiles = 0;
@@ -1763,6 +1763,7 @@ if (i) {
 	gameOptions [1].render.bDynLighting = 0;
 	gameOptions [1].ogl.bLightObjects = 0;
 	gameOptions [1].ogl.bLightPowerups = 0;
+	gameOptions [1].ogl.bLighting = 0;
 	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bVoodooHack = 0;
@@ -1776,6 +1777,7 @@ else {
 #endif
 	gameOptions [0].ogl.bLightObjects = 0;
 	gameOptions [0].ogl.bLightPowerups = 0;
+	gameOptions [0].ogl.bLighting = 0;
 	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bVoodooHack = 0;

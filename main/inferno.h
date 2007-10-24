@@ -306,7 +306,7 @@ typedef struct tRenderOptions {
 	int nMathFormat;
 	int nDefMathFormat;
 	short nMaxFPS;
-	int nRenderPath;
+	int nPath;
 	int nQuality;
 	int nTextureQuality;
 	int nDebrisLife;
@@ -330,6 +330,7 @@ typedef struct tOglOptions {
 	int bGlTexMerge;
 	int bLightObjects;
 	int bLightPowerups;
+	int bLighting;
 	int nMaxLights;
 	int bVoodooHack;
 } tOglOptions;
@@ -1745,6 +1746,7 @@ typedef struct tPOFObject {
 
 typedef struct tG3RenderVertex {
 	fVector3					vertex;
+	fVector3					normal;
 	tRgbaColorf				color;
 	tTexCoord2f				texCoord;
 	} tG3RenderVertex;
@@ -1786,7 +1788,7 @@ typedef struct tG3VertNorm {
 typedef struct tG3Model {
 	grsBitmap				*pTextures;
 	fVector3					*pVerts;
-	tG3VertNorm				*pVertNorms;
+	fVector3					*pVertNorms;
 	tFaceColor				*pColor;
 	tG3ModelVertex			*pFaceVerts;
 	tG3ModelVertex			*pSortedVerts;
@@ -1794,6 +1796,7 @@ typedef struct tG3Model {
 	tTexCoord2f				*pVBTexCoord;
 	tRgbaColorf				*pVBColor;
 	fVector3					*pVBVerts;
+	fVector3					*pVBNormals;
 	tG3SubModel				*pSubModels;
 	tG3ModelFace			*pFaces;
 	tG3RenderVertex		*pVertBuf;

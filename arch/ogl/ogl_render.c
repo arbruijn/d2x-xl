@@ -1620,12 +1620,14 @@ return glGetError () == 0;
 
 //------------------------------------------------------------------------------
 
-void G3DisableClientStates (int bTexCoord, int bColor, int nTMU)
+void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= 0) {
 	glActiveTexture (nTMU);
 	glClientActiveTexture (nTMU);
 	}
+if (bNormals)
+	glDisableClientState (GL_NORMAL_ARRAY);
 if (bTexCoord)
 	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 if (bColor)
@@ -1635,7 +1637,7 @@ glDisableClientState (GL_VERTEX_ARRAY);
 
 //------------------------------------------------------------------------------
 
-int G3EnableClientStates (int bTexCoord, int bColor, int nTMU)
+int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= 0) {
 	glActiveTexture (nTMU);
@@ -1643,9 +1645,17 @@ if (nTMU >= 0) {
 	}
 if (!G3EnableClientState (GL_VERTEX_ARRAY, -1))
 	return 0;
+if (bNormals) {
+	if (!G3EnableClientState (GL_NORMAL_ARRAY, -1)) {
+		G3DisableClientStates (0, 0, 0, -1);
+		return 0;
+		}
+	}
+else
+	glDisableClientState (GL_NORMAL_ARRAY);
 if (bTexCoord) {
 	if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, -1)) {
-		G3DisableClientStates (0, 0, -1);
+		G3DisableClientStates (0, 0, 0, -1);
 		return 0;
 		}
 	}
@@ -1653,7 +1663,7 @@ else
 	glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 if (bColor) {
 	if (!G3EnableClientState (GL_COLOR_ARRAY, -1)) {
-		G3DisableClientStates (bTexCoord, 0, -1);
+		G3DisableClientStates (bTexCoord, 0, 0, -1);
 		return 0;
 		}
 	}
@@ -2181,7 +2191,7 @@ if (bVertexArrays || bDepthSort) {
 	}
 #if G3_DRAW_ARRAYS
 if (bVertexArrays) {
-	if (!G3EnableClientStates (GL_TEXTURE0)) {
+	if (!G3EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
 		bVertexArrays = 0;
 		goto retry;
 		}
@@ -2191,8 +2201,8 @@ if (bVertexArrays) {
 	if (bLight)
 		glColorPointer (4, GL_FLOAT, sizeof (tFaceColor), vertColors);
 	if (bmTop && !bOverlay) {
-		if (!G3EnableClientStates (GL_TEXTURE1)) {
-			G3DisableClientStates (GL_TEXTURE0);
+		if (!G3EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
+			G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 			bVertexArrays = 0;
 			goto retry;
 			}
@@ -2203,7 +2213,7 @@ if (bVertexArrays) {
 		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoord [1]);
 		}
 	glDrawArrays (GL_TRIANGLE_FAN, 0, nVertices);
-	G3DisableClientStates (GL_TEXTURE0);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 	if (bmTop && !bOverlay)
 		G3DisableClientStates (GL_TEXTURE1);
 	}
@@ -2237,7 +2247,7 @@ else
 	else if (bLight) {
 		if (bOverlay) {
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !gameOpts->render.nRenderPath)
+				if (gameStates.render.nState || !gameOpts->render.nPath)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;
@@ -2250,7 +2260,7 @@ else
 		else {
 			bResetColor = (bOverlay != 1);
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !gameOpts->render.nRenderPath)
+				if (gameStates.render.nState || !gameOpts->render.nPath)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;
@@ -3233,9 +3243,9 @@ void OglEndFrame (void)
 {
 //	OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
 //	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
-G3DisableClientStates (1, 1, GL_TEXTURE2);
-G3DisableClientStates (1, 1, GL_TEXTURE1);
-G3DisableClientStates (1, 1, GL_TEXTURE0);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OGL_VIEWPORT (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #ifndef NMONO
@@ -3322,7 +3332,7 @@ if (gameStates.ogl.bUseTransform || bForce)
 int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
 {
-	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), GL_TEXTURE0);
+	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
 
 if (bVertexArrays)
 if (bmP)

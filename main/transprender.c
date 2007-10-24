@@ -751,9 +751,9 @@ if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nF
 	return;
 	}
 bStencil = StencilOff ();
-G3DisableClientStates (1, 1, GL_TEXTURE2);
-G3DisableClientStates (1, 1, GL_TEXTURE1);
-G3DisableClientStates (1, 1, GL_TEXTURE0);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 renderItems.bTextured = -1;
 renderItems.bClientState = -1;
 renderItems.bClientTexCoord = 0;
@@ -814,7 +814,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
-G3DisableClientStates (1, 1, GL_TEXTURE0);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);

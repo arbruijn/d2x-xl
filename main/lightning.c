@@ -1229,7 +1229,7 @@ if (bPlasma) {
 	glEnable (GL_TEXTURE_2D);
 	glEnable (GL_BLEND);
 #endif
-	bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0);
+	bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 		OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
@@ -1266,7 +1266,7 @@ if (bPlasma) {
 			}
 		}
 	if (bDrawArrays)
-		G3DisableClientStates (1, 0, -1);
+		G3DisableClientStates (1, 0, 0, -1);
 	}
 glBlendFunc (GL_SRC_ALPHA, GL_ONE);
 glColor4fv ((GLfloat *) &color);
@@ -1392,7 +1392,7 @@ void RenderPlasmaBuffer (tLightning *pl, tRgbaColorf *colorP, int nThread)
 {
 	int	bScale;
 
-G3EnableClientStates (1, 0, GL_TEXTURE0);
+G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 glBlendFunc (GL_ONE, GL_ONE);
 for (bScale = 0; bScale < 2; bScale++) {
 	if (bScale)
@@ -1403,7 +1403,7 @@ for (bScale = 0; bScale < 2; bScale++) {
 	glVertexPointer (3, GL_FLOAT, sizeof (tPlasmaSegment), &plasmaBuffer [nThread][bScale][0].vPlasma);
 	glDrawArrays (GL_TRIANGLE_FAN, 0, 4 * (pl->nNodes - 1));
 	}
-G3DisableClientStates (1, 0, GL_TEXTURE0);
+G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 }
 
 //------------------------------------------------------------------------------
@@ -1425,10 +1425,10 @@ for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++, vPosf++) {
 	}
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
-if (G3EnableClientStates (0, 0, GL_TEXTURE0)) {
+if (G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	glDrawArrays (GL_LINE_STRIP, 0, pl->nNodes);
-	G3DisableClientStates (0, 0, GL_TEXTURE0);
+	G3DisableClientStates (0, 0, 0, GL_TEXTURE0);
 	}	
 else {
 	glBegin (GL_LINE_STRIP);
@@ -1459,7 +1459,7 @@ glEnd ();
 
 int SetupLightningPlasma (tLightning *pl)
 {
-if (!(gameOpts->render.lightnings.bPlasma && pl->bPlasma && G3EnableClientStates (1, 0, GL_TEXTURE0)))
+if (!(gameOpts->render.lightnings.bPlasma && pl->bPlasma && G3EnableClientStates (1, 0, 0, GL_TEXTURE0)))
 	return 0;
 glActiveTexture (GL_TEXTURE0);
 glClientActiveTexture (GL_TEXTURE0);
@@ -1468,7 +1468,7 @@ if (LoadCorona () && !OglBindBmTex (bmpCorona, 1, -1)) {
 	OglTexWrap (bmpCorona->glTexture, GL_CLAMP);
 	return 1;
 	}
-G3DisableClientStates (1, 0, GL_TEXTURE0);
+G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 return 0;
 }
 

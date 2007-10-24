@@ -451,8 +451,8 @@ void OglPalColor (ubyte *palette, int c);
 void OglGrsColor (grsColor *pc);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 int G3EnableClientState (GLuint nState, int nTMU);
-int G3EnableClientStates (int bTexCoord, int bColor, int nTMU);
-void G3DisableClientStates (int bTexCoord, int bColor, int nTMU);
+int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
+void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
 int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
 

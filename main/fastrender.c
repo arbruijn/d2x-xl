@@ -117,9 +117,11 @@ void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, 
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
-if (!faceP->bVisible)
+#if 0
+if ((nType != 3) && !faceP->bVisible)
 	return;
-if ((nType != 4) && !(faceP->widFlags & WID_RENDER_FLAG))
+#endif
+if ((nType < 4) && !(faceP->widFlags & WID_RENDER_FLAG))
 	return;
 if ((faceP->nType < 0) && ((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
@@ -332,25 +334,25 @@ glDepthFunc (GL_LEQUAL);
 if (nType == 3)
 	return 0;
 OglSetupTransform (1);
-if (bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0)) {
+if (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 
-	if (bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE1)) {
+	if (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 		}
 	else
-		G3DisableClientStates (1, 1, GL_TEXTURE0);
-	if (G3EnableClientStates (1, 1, GL_TEXTURE2)) {
+		G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+	if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 		}
 	}
 else {
-	G3DisableClientStates (1, 1, GL_TEXTURE1);
-	G3DisableClientStates (1, 1, GL_TEXTURE0);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 	}
 return bVertexArrays;
 }
@@ -363,19 +365,19 @@ void EndRenderFaces (int nType, int bVertexArrays)
 G3FlushFaceBuffer (1);
 #endif
 if (bVertexArrays) {
-	G3DisableClientStates (1, 1, GL_TEXTURE2);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
 	glActiveTexture (GL_TEXTURE2);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 
-	G3DisableClientStates (1, 1, GL_TEXTURE1);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
 	glActiveTexture (GL_TEXTURE1);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 
-	G3DisableClientStates (1, 1, GL_TEXTURE0);
+	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 	glActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
@@ -513,11 +515,17 @@ int SetupCoronaFaces (void)
 	grsFace	*faceP;
 	int		i, j, nSegment;
 
+if (!gameOpts->render.bCoronas)
+	return 0;
 gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
+#ifdef _DEBUG
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
 	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
 		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && 
 			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
@@ -558,11 +566,13 @@ if (nType) {	//back to front
 	}
 else {	//front to back
 #if RENDER_DEPTHMASK_FIRST
-	if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && SetupCoronaFaces ()) {
-		EndRenderFaces (nType, bVertexArrays);
-		glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
-		QueryCoronas (0, 1);
-		bVertexArrays = BeginRenderFaces (nType);
+	if (SetupCoronaFaces ()) {
+		if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
+			EndRenderFaces (nType, bVertexArrays);
+			glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
+			QueryCoronas (0, 1);
+			bVertexArrays = BeginRenderFaces (nType);
+			}
 		}
 	glColorMask (0,0,0,0);
 	glDepthMask (1);
@@ -918,7 +928,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
 			SetNearestDynamicLights (nSegment, 0, 0);
 			SetNearestStaticLights (nSegment, 1, 0);
-			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
+			gameStates.render.bApplyDynLight = gameOpts->ogl.bLighting || gameOpts->ogl.bLightObjects;
 			}
 		else
 			gameStates.render.bApplyDynLight = 0;

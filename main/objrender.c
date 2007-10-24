@@ -729,7 +729,7 @@ switch (objP->renderType) {
 			return 0;
 		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
-			int bDynObjLight = gameOpts->ogl.bLightObjects;
+			int bDynObjLight = (gameOpts->render.nPath && gameOpts->ogl.bLighting) || gameOpts->ogl.bLightObjects;
 			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)))
 				return 0;
 			if (bSpectate) {

@@ -392,6 +392,7 @@ r = f2fl (objP->size);
 r2 = r / 4;
 
 glDisable (GL_CULL_FACE);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 bVertexArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
@@ -1171,11 +1172,11 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 		OglTexWrap (bmP->glTexture, GL_CLAMP);
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
-		if (bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0)) {
+		if (bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
 			glTexCoordPointer (2, GL_FLOAT, 0, tcCorona);
 			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
 			glDrawArrays (GL_QUADS, 0, 4);
-			G3DisableClientStates (1, 0, -1);
+			G3DisableClientStates (1, 0, 0, -1);
 			}
 		else {
 			glBegin (GL_QUADS);
@@ -1545,7 +1546,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			else
 				glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glColor4fv ((GLfloat *) &trailColor);
-			bDrawArrays = G3EnableClientStates (1, 0, GL_TEXTURE0);
+			bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			bStencil = StencilOff ();
 			glDisable (GL_CULL_FACE);		
 			glDepthMask (0);
@@ -1557,7 +1558,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 				glTexCoordPointer (2, GL_FLOAT, 0, tTexCoordTrail);
 				glVertexPointer (3, GL_FLOAT, sizeof (fVector), vTrailVerts);
 				glDrawArrays (GL_QUADS, 0, 4);
-				G3DisableClientStates (1, 0, -1);
+				G3DisableClientStates (1, 0, 0, -1);
 				}
 			else {
 				glBegin (GL_QUADS);

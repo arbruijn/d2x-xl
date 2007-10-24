@@ -271,7 +271,7 @@ float ComputeCoronaSprite (fVector *sprite, fVector *vCenter, short nSegment, sh
 GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
 	fLight += f2fl (sideP->uvls [i].l);
-	if (gameOpts->render.nRenderPath)
+	if (gameOpts->render.nPath)
 		G3TransformPointf (sprite + i, gameData.segs.fVertices + sideVerts [i], 0);
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
@@ -522,14 +522,14 @@ if (gameStates.render.bQueryCoronas != 2) {
 	if (gameStates.render.bQueryCoronas == 1)
 		glDepthFunc (GL_ALWAYS);
 	}
-if (G3EnableClientStates (!gameStates.render.bQueryCoronas, 0, GL_TEXTURE0)) {
+if (G3EnableClientStates (!gameStates.render.bQueryCoronas, 0, 0, GL_TEXTURE0)) {
 	if (!gameStates.render.bQueryCoronas) {
 		OglBindBmTex (bmP, 1, -1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), sprite);
 	glDrawArrays (GL_QUADS, 0, 4);
-	G3DisableClientStates (!gameStates.render.bQueryCoronas, 0, GL_TEXTURE0);
+	G3DisableClientStates (!gameStates.render.bQueryCoronas, 0, 0, GL_TEXTURE0);
 	}
 else {
 	if (!gameStates.render.bQueryCoronas)
@@ -565,7 +565,7 @@ if (fIntensity < 0.01f)
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameOpts->render.nRenderPath && gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
+if (gameOpts->render.nPath && gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
 	}

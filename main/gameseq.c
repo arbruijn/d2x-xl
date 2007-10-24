@@ -1066,7 +1066,7 @@ CreateShieldSphere ();
 SetupEffects ();
 SetVertigoRobotFlags ();
 SetDebrisCollisions ();
-if (gameOpts->render.nRenderPath)
+if (gameOpts->render.nPath)
 	gameOpts->render.bDepthSort = 1;
 return 1;
 }

@@ -877,7 +877,7 @@ return 1;
 int InitParticleBuffer (void)
 {
 if (gameStates.render.bVertexArrays)
-	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, GL_TEXTURE0);
+	gameStates.render.bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0);
 if (gameStates.render.bVertexArrays) {
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
 	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
@@ -893,7 +893,7 @@ int CloseParticleBuffer (void)
 if (!gameStates.render.bVertexArrays)
 	return 0;
 FlushParticleBuffer ();
-G3DisableClientStates (1, 1, GL_TEXTURE0);
+G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 return 1;
 }
 

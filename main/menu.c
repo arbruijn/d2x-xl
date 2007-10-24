@@ -149,6 +149,7 @@ static struct {
 
 static struct {
 	int	nMethod;
+	int	nHWLighting;
 	int	nMaxLights;
 	int	nLMapRange;
 	int	nGunColor;
@@ -2967,6 +2968,13 @@ if (lightOpts.nMethod >= 0) {
 			}
 		}
 	}
+m = menus + lightOpts.nHWLighting;
+v = m->value;
+if (v != gameOpts->ogl.bLighting) {
+	gameOpts->ogl.bLighting = v;
+	*key = -2;
+	return;
+	}
 m = menus + lightOpts.nGunColor;
 v = m->value;
 if (v != gameOpts->render.color.bGunLight) {
@@ -3072,18 +3080,22 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 #endif
-		ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
-		lightOpts.nObjectLight = opt++;
-		if (gameOpts->ogl.bLightObjects) {
-			ADD_CHECK (opt, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_O, HTX_POWERUP_LIGHTING);
-			nPowerupLight = opt++;
+		ADD_CHECK (opt, TXT_HARDWARE_LIGHTING, gameOpts->ogl.bLighting, KEY_A, HTX_HARDWARE_LIGHTING);
+		lightOpts.nHWLighting = opt++;
+		if (!gameOpts->ogl.bLighting) {
+			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
+			lightOpts.nObjectLight = opt++;
+			if (gameOpts->ogl.bLightObjects) {
+				ADD_CHECK (opt, TXT_POWERUP_LIGHTING, gameOpts->ogl.bLightPowerups, KEY_P, HTX_POWERUP_LIGHTING);
+				nPowerupLight = opt++;
+				}
+			else
+				nPowerupLight = -1;
+			sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
+			*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
+			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
+			lightOpts.nMaxLights = opt++;
 			}
-		else
-			nPowerupLight = -1;
-		sprintf (szMaxLights + 1, TXT_OGL_MAXLIGHTS, nMaxNearestLights [gameOpts->ogl.nMaxLights]);
-		*szMaxLights = *(TXT_OGL_MAXLIGHTS - 1);
-		ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
-		lightOpts.nMaxLights = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
@@ -3163,6 +3175,8 @@ if (optColorSat >= 0) {
 			gameOpts->render.color.nSaturation = i;
 			break;
 			}
+	}
+if (gameOpts->ogl.bLighting) {
 	}
 if (nLightRange != extraGameInfo [0].nLightRange)
 	ComputeStaticDynLighting ();
@@ -3461,7 +3475,7 @@ do {
 		renderOpts.nWallTransp = opt++;
 		ADD_CHECK (opt, TXT_COLOR_WALLS, gameOpts->render.color.bWalls, KEY_W, HTX_ADVRND_COLORWALLS);
 		optColoredWalls = opt++;
-		if (gameOpts->render.nRenderPath)
+		if (gameOpts->render.nPath)
 			optDepthSort = -1;
 		else {
 			ADD_CHECK (opt, TXT_TRANSP_DEPTH_SORT, gameOpts->render.bDepthSort, KEY_D, HTX_TRANSP_DEPTH_SORT);

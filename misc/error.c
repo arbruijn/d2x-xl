@@ -234,6 +234,7 @@ return 0;
 
 short nDbgSeg = -1;
 short nDbgSide = -1;
+short nDbgObj = -1;
 int nDbgVertex = -1;
 int nDbgBaseTex = -1;
 int nDbgOvlTex = -1;

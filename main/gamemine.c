@@ -993,8 +993,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		m = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 		if (!SEGVIS (m, i))
 			continue;
-		VmVecSub (&dist, &center, &pl->vPos);
-		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
+		h = VmVecDist (&center, &pl->vPos) - fl2f (pl->rad);
 		if ((pDists [n].nDist = h) <= MAX_LIGHT_RANGE) {
 			pDists [n].nIndex = l;
 			n++;
@@ -1050,6 +1049,8 @@ for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
+			if (h == 0 && (i == 80 || i == 81 || i == 114 || i == 117))
+				h = h;
 		if (!VERTVIS (h, i))
 			continue;
 		VmVecSub (&dist, vertP, &pl->vPos);
@@ -1529,6 +1530,8 @@ if (bSemaphore)
 	return 0;
 bSemaphore = 1;
 gameData.segs.bSegVis [nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
+if (SEGVIS (2,16))
+	nSrcSeg = nSrcSeg;
 bSemaphore = 0;
 return 1;
 }
@@ -1554,6 +1557,8 @@ void ComputeVertexVisibility (int startI)
 {
 	int			i, j, v, endI;
 	vmsVector	c, d, *vertP;
+	tSegment		*segP;
+	tSide			*sideP;
 
 LogErr ("computing vertex visibility (%d)\n", startI);
 if (startI <= 0)
@@ -1563,7 +1568,7 @@ if (gameStates.app.bMultiThreaded)
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 	// every segment can see itself and its neighbours
-for (i = startI; i < endI; i++) {
+for (i = startI, segP = SEGMENTS + i; i < endI; i++, segP++) {
 	for (v = 0, vertP = gameData.segs.vertices; v < gameData.segs.nVertices; v++, vertP++) {
 		if (VERTVIS (i, v) > 0)
 			continue;
@@ -1589,10 +1594,13 @@ for (i = startI; i < endI; i++) {
 		if (VmVecMag (&d) > MAX_LIGHT_RANGE + gameData.segs.segRads [1][i])
 			continue;
 #endif
-		for (j = 0; j < 6; j++) {
+		for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 			COMPUTE_SIDE_CENTER_I (&c, i, j);
 			VmVecSub (&d, &c, vertP);
-			if ((VmVecMag (&d) <= MAX_LIGHT_RANGE) && CanSeePoint (NULL, &c, vertP, i)) {
+			if (VmVecMag (&d) > MAX_LIGHT_RANGE)
+				continue;
+			VmVecInc (&c, sideP->normals);
+			if (CanSeePoint (NULL, &c, vertP, i)) {
 				SetVertVis (i, v, 3);
 				break;
 				}
