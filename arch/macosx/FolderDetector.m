@@ -26,49 +26,71 @@ char *CheckForMacOSXFolders();
 @implementation FolderDetector
 
 char *ReturnContainingFolder() {
-	//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	return [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] cString];
-	//[pool release];
 }
 
 char *CheckForMacOSXFolders() {	
-	//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	// check for the data in '../../..', '../../../data', './' and './data'
-	
 	NSFileManager *manager = [NSFileManager defaultManager];
+	NSString *returnString = nil;
 	
-	NSString *testPath = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"descent2.hog"];
+	NSString *appContainingFolderPath = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
+	// so if the app lives at /Games/D2X-XL/d2x-xl.app, for example, appContainingFolderPath would be /Games/D2X-XL/
+	
+	NSString *executableContainingFolderPath = [[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent];
+	// here, if the app lives at /Games/D2X-XL/d2x-xl.app, executableContainingFolderPath would be /Games/D2X-XL/d2x-xl.app/Contents/MacOS/
+	
+	NSString *testPath = [appContainingFolderPath stringByAppendingPathComponent:@"data/descent2.hog"];
 	if ([manager fileExistsAtPath:testPath]) {
-	// the data dir is at "../../.." in relation to the executable file
-		return [[testPath stringByDeletingLastPathComponent] cString];
+		// the Descent 2 data files are inside /Games/D2X-XL/data/, as per the above example
+		returnString = testPath;
+		
+		
+	
 	} else {
-		testPath = [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"data/descent2.hog"];
+		testPath = [appContainingFolderPath stringByAppendingPathComponent:@"data/data/descent2.hog"];
 		if ([manager fileExistsAtPath:testPath]) {
-		// the data dir is at "../../../data" in relation to the executable file
-			return [[testPath stringByDeletingLastPathComponent] cString];
+			// Descent 2 data files live inside /Games/D2X-XL/data/data/
+			// this exists so you can collect all the other folders (e.g. config, textures, movies, but not the missions folder) in one big data folder
+			// 'cause it's kind of annoying to have them all in your main game folder
+			returnString = testPath;
+			
+			
+			
+			
+			
 		} else {
-			testPath = [[[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"descent2.hog"];
+			testPath = [executableContainingFolderPath stringByAppendingPathComponent:@"data/descent2.hog"];
 			if ([manager fileExistsAtPath:testPath]) {
-			// the data dir is at "./" in relation to the executable file
-				return [[testPath stringByDeletingLastPathComponent] cString];
+				// Descent 2 data files live inside /Games/D2X-XL/d2x-xl.app/Contents/MacOS/data/
+				// this is useful if you want to package up d2x-xl so no datafiles are ever visible to the user
+				returnString = testPath;
+				
+				
+				
+				
+				
 			} else {
-				testPath = [[[[NSBundle mainBundle] executablePath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"data/descent2.hog"];
+				testPath = [executableContainingFolderPath stringByAppendingPathComponent:@"data/data/descent2.hog"];
 				if ([manager fileExistsAtPath:testPath]) {
-				// the data dir is at "./Data" in relation to the executable file
-					return [[testPath stringByDeletingLastPathComponent] cString];
-				} else {
-				// the data is not in any of the Mac OS X-specific locations
-					return "-1";
+				// Descent 2 data files live inside /Games/D2X-XL/d2x-xl.app/Contents/MacOS/data/data/
+				// this is useful if you want to package up d2x-xl so no datafiles are ever visible to the user
+					returnString = testPath;
 				}
 			}
 		}
 	}
 	
-	//[pool release];
+	
+	if (returnString == nil) {
+		return "-1";
+	} else {
+		return [[[returnString stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] cString];
+	}
 }
 
 @end
+
+
 
 void GetOSXAppFolder(char* szDataRootDir, char* szGameDir)
 {

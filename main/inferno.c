@@ -631,8 +631,6 @@ if (!*gameFolders.szGameDir && GetAppFolder ("", gameFolders.szGameDir, SHAREPAT
 		*gameFolders.szGameDir = '\0';
 #	ifdef __macosx__
 GetOSXAppFolder (szDataRootDir, gameFolders.szGameDir);
-if ((psz = strstr (szDataRootDir, "/data")) || (psz = strstr (szDataRootDir, "/Data")))
-	*psz = '\0';
 #	else
 strcpy (szDataRootDir, gameFolders.szGameDir);
 #	endif //__macosx__
@@ -3253,6 +3251,8 @@ InitNetworkData ();
 InitGameOptions (0);
 InitArgs (argc, argv);
 GetAppFolders ();
+InitArgs (argc, argv);
+GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	   char fnErr [FILENAME_LEN];
 #ifdef __linux__
@@ -3264,8 +3264,6 @@ if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 #endif
 	}
 LogErr ("%s\n", DESCENT_VERSION);
-InitArgs (argc, argv);
-GetAppFolders ();
 con_init ();  // Initialise the console
 #ifdef D2X_MEM_HANDLER
 MemInit ();

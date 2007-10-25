@@ -651,7 +651,7 @@
 		70533F5009321B18006BD186 /* scanline.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = scanline.c; sourceTree = "<group>"; };
 		70533F5109321B18006BD186 /* scanline.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = scanline.h; sourceTree = "<group>"; };
 		70533F5209321B18006BD186 /* texmapl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = texmapl.h; sourceTree = "<group>"; };
-		705340BB09321DDF006BD186 /* d2x-xl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "d2x-xl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		705340BB09321DDF006BD186 /* d2x-xl.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "d2x-xl.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		705340EA09322285006BD186 /* ipx_drv.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ipx_drv.h; sourceTree = "<group>"; };
 		705340EB09322285006BD186 /* ipx_hlpr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ipx_hlpr.h; sourceTree = "<group>"; };
 		705340ED09322285006BD186 /* ipx_ld.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ipx_ld.h; sourceTree = "<group>"; };
