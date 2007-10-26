@@ -2169,8 +2169,6 @@ if (bTextured) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, 1);
 				gameStates.render.history.bmBot = bmBot;
 				}
-			gameStates.render.history.bmBot =
-			gameStates.render.history.bmTop = NULL;
 			}
 		gameStates.render.history.nShader = nShader;
 		}
