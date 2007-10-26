@@ -2205,7 +2205,7 @@ if (!bMultiTexture) {
 	glTexCoordPointer (2, GL_FLOAT, 0, ovlTexCoordP);
 	glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-	//gameStates.render.history.bmBot = bmTop;
+	gameStates.render.history.bmBot = bmTop;
 	}
 if (!bBlend)
 	glEnable (GL_BLEND);
