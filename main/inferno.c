@@ -1761,7 +1761,8 @@ if (i) {
 	gameOptions [1].render.bDynLighting = 0;
 	gameOptions [1].ogl.bLightObjects = 0;
 	gameOptions [1].ogl.bLightPowerups = 0;
-	gameOptions [1].ogl.bLighting = 0;
+	gameOptions [1].ogl.bGeoLighting = 0;
+	gameOptions [1].ogl.bObjLighting = 0;
 	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
 	gameOptions [1].ogl.bVoodooHack = 0;
@@ -1775,7 +1776,8 @@ else {
 #endif
 	gameOptions [0].ogl.bLightObjects = 0;
 	gameOptions [0].ogl.bLightPowerups = 0;
-	gameOptions [0].ogl.bLighting = 0;
+	gameOptions [0].ogl.bGeoLighting = 0;
+	gameOptions [0].ogl.bObjLighting = 0;
 	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
 	gameOptions [0].ogl.bVoodooHack = 0;
@@ -2348,8 +2350,10 @@ GETMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
 GETMEM (ubyte, gameData.segs.bVertVis, MAX_VERTICES * MAX_VERTVIS_FLAGS, 0);
 GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
 GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
+GETMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS, 0);
 GETMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6 * 2, 0);
 GETMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4 * 2, 0);
+GETMEM (fVector3, gameData.segs.faces.normals, MAX_SEGMENTS * 6 * 4 * 2, 0);
 GETMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4 * 2, 0);
 GETMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_SEGMENTS * 6 * 4 * 4, 0);
 gameData.segs.faces.ovlTexCoord = gameData.segs.faces.texCoord + MAX_SEGMENTS * 6 * 4 * 2;
@@ -2521,10 +2525,12 @@ FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
 FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
 FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
 #endif
+FREEMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS);
 FREEMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6);
-FREEMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4);
-FREEMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4);
-FREEMEM (tTexCoord2f, gameData.segs.faces.texCoord, 2 * MAX_SEGMENTS * 6 * 4);
+FREEMEM (fVector3, gameData.segs.faces.vertices, MAX_SEGMENTS * 6 * 4 * 2);
+FREEMEM (fVector3, gameData.segs.faces.normals, MAX_SEGMENTS * 6 * 4 * 2);
+FREEMEM (tRgbaColorf, gameData.segs.faces.color, MAX_SEGMENTS * 6 * 4 * 2);
+FREEMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_SEGMENTS * 6 * 4 * 4);
 FREEMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6);

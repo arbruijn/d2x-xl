@@ -149,7 +149,8 @@ static struct {
 
 static struct {
 	int	nMethod;
-	int	nHWLighting;
+	int	nGeoHWLighting;
+	int	nObjHWLighting;
 	int	nMaxLights;
 	int	nLMapRange;
 	int	nGunColor;
@@ -1993,7 +1994,10 @@ void EffectOptionsMenu ()
 	int	i, j, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
-			optRobotShields, optTracers, optShockwaves, optExplBlast;
+			optRobotShields, optTracers, optExplBlast;
+#if 0
+	int	optShockwaves;
+#endif
 	char	szExplShrapnels [50];
 
 pszExplShrapnels [0] = TXT_NONE;
@@ -2968,12 +2972,23 @@ if (lightOpts.nMethod >= 0) {
 			}
 		}
 	}
-m = menus + lightOpts.nHWLighting;
-v = m->value;
-if (v != gameOpts->ogl.bLighting) {
-	gameOpts->ogl.bLighting = v;
-	*key = -2;
-	return;
+if (lightOpts.nGeoHWLighting >= 0) {
+	m = menus + lightOpts.nGeoHWLighting;
+	v = m->value;
+	if (v != gameOpts->ogl.bGeoLighting) {
+		gameOpts->ogl.bGeoLighting = v;
+		*key = -2;
+		return;
+		}
+	}
+if (lightOpts.nObjHWLighting >= 0) {
+	m = menus + lightOpts.nObjHWLighting;
+	v = m->value;
+	if (v != gameOpts->ogl.bObjLighting) {
+		gameOpts->ogl.bObjLighting = v;
+		*key = -2;
+		return;
+		}
 	}
 m = menus + lightOpts.nGunColor;
 v = m->value;
@@ -3049,6 +3064,8 @@ do {
 	lightOpts.nMethod =
 	lightOpts.nLMapRange =
 	lightOpts.nMaxLights = 
+	lightOpts.nGeoHWLighting =
+	lightOpts.nObjHWLighting =
 	optColorSat = 
 	lightOpts.nObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
@@ -3072,17 +3089,17 @@ do {
 		opt++;
 		}
 	if (gameOpts->render.bDynLighting && !IsMultiGame) {
-		sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
-		*szLightRange = *(TXT_LIGHT_RANGE - 1);
-		ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 4, KEY_R, HTX_ADVRND_LIGHTRANGE);
-		lightOpts.nLMapRange = opt++;
 #if 0
 		ADD_TEXT (opt, "", 0);
 		opt++;
 #endif
-		ADD_CHECK (opt, TXT_HARDWARE_LIGHTING, gameOpts->ogl.bLighting, KEY_A, HTX_HARDWARE_LIGHTING);
-		lightOpts.nHWLighting = opt++;
-		if (!gameOpts->ogl.bLighting) {
+#ifdef _DEBUG
+		ADD_CHECK (opt, TXT_GEOMETRY_HWLIGHTING, gameOpts->ogl.bGeoLighting, KEY_A, HTX_GEOMETRY_HWLIGHTING);
+		lightOpts.nGeoHWLighting = opt++;
+#endif
+		ADD_CHECK (opt, TXT_OBJECT_HWLIGHTING, gameOpts->ogl.bObjLighting, KEY_A, HTX_OBJECT_HWLIGHTING);
+		lightOpts.nObjHWLighting = opt++;
+		if (!gameOpts->ogl.bObjLighting) {
 			ADD_CHECK (opt, TXT_OBJECT_LIGHTING, gameOpts->ogl.bLightObjects, KEY_O, HTX_OBJECT_LIGHTING);
 			lightOpts.nObjectLight = opt++;
 			if (gameOpts->ogl.bLightObjects) {
@@ -3096,6 +3113,15 @@ do {
 			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
 			lightOpts.nMaxLights = opt++;
 			}
+		if (gameOpts->ogl.bGeoLighting)
+			lightOpts.nLMapRange = -1;
+		else {
+			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
+			*szLightRange = *(TXT_LIGHT_RANGE - 1);
+			ADD_SLIDER (opt, szLightRange + 1, extraGameInfo [0].nLightRange, 0, 4, KEY_R, HTX_ADVRND_LIGHTRANGE);
+			lightOpts.nLMapRange = opt++;
+			}
+
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_FULL_COLORSAT, 0, KEY_F, 2, HTX_COLOR_SATURATION);
@@ -3176,7 +3202,7 @@ if (optColorSat >= 0) {
 			break;
 			}
 	}
-if (gameOpts->ogl.bLighting) {
+if (gameOpts->ogl.bObjLighting) {
 	}
 if (nLightRange != extraGameInfo [0].nLightRange)
 	ComputeStaticDynLighting ();

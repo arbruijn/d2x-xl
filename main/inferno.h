@@ -330,7 +330,8 @@ typedef struct tOglOptions {
 	int bGlTexMerge;
 	int bLightObjects;
 	int bLightPowerups;
-	int bLighting;
+	int bGeoLighting;
+	int bObjLighting;
 	int nMaxLights;
 	int bVoodooHack;
 } tOglOptions;
@@ -987,6 +988,7 @@ typedef struct tApplicationStates {
 	int bCacheTextures;
 	int bCacheLights;
 	int bUseSwapFile;
+	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
@@ -1461,6 +1463,7 @@ typedef struct tSlideSegs {
 typedef struct tFaceData {
 	grsFace				*faces;
 	fVector3				*vertices;
+	fVector3				*normals;
 	tTexCoord2f			*texCoord;
 	tTexCoord2f			*ovlTexCoord;
 	tRgbaColorf			*color;
@@ -1473,6 +1476,7 @@ typedef struct tSegmentData {
 	tSegment				*segments;
 	tSegment2			*segment2s;
 	xsegment				*xSegments;
+	tSegFaces			*segFaces;
 	g3sPoint				*points;
 #if CALC_SEGRADS
 	fix					*segRads [2];
@@ -1799,8 +1803,8 @@ typedef struct tG3Model {
 	fVector3					*pVBNormals;
 	tG3SubModel				*pSubModels;
 	tG3ModelFace			*pFaces;
-	tG3RenderVertex		*pVertBuf;
-	short						*pIndex;
+	tG3RenderVertex		*pVertBuf [2];
+	short						*pIndex [2];
 	float						fScale;
 	short						nFaces;
 	short						iFace;
@@ -1810,7 +1814,8 @@ typedef struct tG3Model {
 	short						nSubModels;
 	short						iSubModel;
 	short						bValid;
-	GLint						vboHandle;
+	GLint						vboDataHandle;
+	GLint						vboIndexHandle;
 } tG3Model;
 
 //------------------------------------------------------------------------------
@@ -2931,6 +2936,7 @@ extern fix nDebrisLife [];
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 
 #define SEGMENTS	gameData.segs.segments
+#define SEGFACES	gameData.segs.segFaces
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls
 
@@ -2987,6 +2993,8 @@ int TIRUnload (void);
 #else
 #	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
 #endif
+
+#define GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting
 
 //	-----------------------------------------------------------------------------------------------------------
 

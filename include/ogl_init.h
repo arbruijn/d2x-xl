@@ -493,6 +493,9 @@ void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceCo
 void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 
+void OglEnableLighting (int bSpecular);
+void OglDisableLighting (void);
+
 #define BINDTEX_OPT 0
 
 #if BINDTEX_OPT

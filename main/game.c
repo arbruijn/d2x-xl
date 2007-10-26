@@ -1633,6 +1633,8 @@ if (gameStates.app.nFunctionMode != newFuncMode) {
 //editor mode or exit selected
 void game ()
 {
+	int c;
+
 GameSetup ();								// Replaces what was here earlier.
 #ifdef MWPROFILE
 ProfilerSetStatus (1);
@@ -1659,6 +1661,12 @@ for (;;) {
 	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 	if (!GameLoop (1, 1))		// Do game loop with rendering and reading controls.
 		continue;
+	if (gameStates.app.bSingleStep) {
+		while (!(c = KeyInKey ()))
+			;
+		if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
+			gameStates.app.bSingleStep = 0;
+		}
 	//if the tPlayer is taking damage, give up guided missile control
 	if (LOCALPLAYER.shields != player_shields)
 		ReleaseGuidedMissile (gameData.multiplayer.nLocalPlayer);

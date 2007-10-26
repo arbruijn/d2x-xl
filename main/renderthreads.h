@@ -17,6 +17,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "lightning.h"
+#include "transprender.h"
+#include "particles.h"
 
 typedef enum {
 	rtComputeFaceLight,
@@ -26,6 +28,8 @@ typedef enum {
 	rtAnimateLightnings,
 	rtRenderLightnings,
 	rtStaticVertLight,
+	rtUpdateParticles,
+	rtRenderParticles,
 	rtPolyModel
 } tRenderTask;
 
@@ -38,13 +42,24 @@ typedef struct tRenderThreadInfo {
 	int			nLightnings;
 	tObject		*objP;
 	tG3Model		*pm;
+	tCloud		*clouds [2];
+	int			nCurTime [2];
 	tThreadInfo	ti [2];
 	} tRenderThreadInfo;
 
 extern tRenderThreadInfo tiRender;
 
+typedef struct tRenderItemThreadInfo {
+	tRenderItemData	itemData [2];
+	tThreadInfo			ti [2];
+	} tRenderItemThreadInfo;
+
+extern tRenderItemThreadInfo tiRenderItems;
+
 int RunRenderThreads (int nTask);
 void StartRenderThreads (void);
 void EndRenderThreads (void);
+void StartRenderItemThread (void);
+void EndRenderItemThread (void);
 
 #endif // _RENDERTHREADS_H

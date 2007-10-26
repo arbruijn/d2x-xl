@@ -108,10 +108,13 @@ typedef struct tSegment {
 #else
 	int     objects;    // pointer to objects in this tSegment
 #endif
+} tSegment;
+
+typedef struct tSegFaces {
 	grsFace	*pFaces;
 	ubyte		nFaces;
 	ubyte		bVisible;
-} tSegment;
+} tSegFaces;
 
 typedef struct xsegment {
 	char		owner;		  // team owning that tSegment (-1: always neutral, 0: neutral, 1: blue team, 2: red team)

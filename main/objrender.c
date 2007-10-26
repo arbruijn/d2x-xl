@@ -288,19 +288,21 @@ if ((objP->nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.bPowerupCorona
 	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, 
 								coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
 if (gameOpts->render.bDepthSort > 0) {
-	if (0 && bAdditive)
-		color.red = color.green = color.blue = color.alpha = 1;
-	else {
+	if (bAdditive) {
 		color.red = (float) bmP->bmAvgRGB.red / 255.0f;
 		color.green = (float) bmP->bmAvgRGB.green / 255.0f;
 		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
-		color.alpha = fAlpha;
-		}
-	if (bAdditive) {
+#if 0
 		color.red *= color.red;
 		color.green *= color.green;
 		color.blue *= color.blue;
+#endif
 		}
+	else
+		color.red =
+		color.green =
+		color.blue = 1;
+	color.alpha = fAlpha;
 	if (bmP->bmProps.w > bmP->bmProps.h)
 		RIAddSprite (bmP, &objP->position.vPos, &color, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), iFrame, bAdditive);
 	else
@@ -729,7 +731,7 @@ switch (objP->renderType) {
 			return 0;
 		DoObjectSmoke (objP);
 		if (objP->nType == OBJ_PLAYER) {
-			int bDynObjLight = (gameOpts->render.nPath && gameOpts->ogl.bLighting) || gameOpts->ogl.bLightObjects;
+			int bDynObjLight = (gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 			if (gameStates.render.automap.bDisplay && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->id)))
 				return 0;
 			if (bSpectate) {
@@ -746,6 +748,8 @@ switch (objP->renderType) {
 				objP->position = savePos;
 			}
 		else if (objP->nType == OBJ_ROBOT) {
+			if (gameStates.render.nType != 1)
+				return 0;
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
 			DrawPolygonObject (objP);
@@ -773,7 +777,8 @@ switch (objP->renderType) {
 			if (!(gameStates.app.bNostalgia || gameOpts->render.powerups.b3D) && WeaponIsMine (objP->id) && (objP->id != SMALLMINE_ID))
 				ConvertWeaponToVClip (objP);
 			else {
-
+				if (gameStates.render.nType != 1)
+					return 0;
 #if 1//def RELEASE
 #endif
 				if (gameData.objs.bIsMissile [objP->id]) {
@@ -805,6 +810,8 @@ switch (objP->renderType) {
 				}
 			}
 		else if (objP->nType == OBJ_CNTRLCEN) {
+			if (gameStates.render.nType != 1)
+				return 0;
 			DrawPolygonObject (objP);
 			RenderTargetIndicator (objP, NULL);
 			}

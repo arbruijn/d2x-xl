@@ -674,7 +674,7 @@ gameStates.render.nState = 0;
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-SetNearestDynamicLights (nSegment, 0, 0);
+SetNearestDynamicLights (nSegment, 0, 0, 0);
 for (nSide = 0; nSide < 6; nSide++) //segP->nFaces, faceP = segP->pFaces; nSide; nSide--, faceP++)
 	RenderSide (segP, nSide);
 OglResetTransform (0);
@@ -1807,15 +1807,11 @@ else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref 
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	SetNearestStaticLights (nSegment, 1, 0);
-	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && ((gameOpts->render.nPath && gameOpts->ogl.bLighting) || gameOpts->ogl.bLightObjects);
+	SetNearestStaticLights (nSegment, 1, 1, 0);
+	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects);
 	RenderObjList (nListPos, gameStates.render.nWindow);
 	gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
-#if 1
 	gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
-#else
-	SetNearestStaticLights (nSegment, 0, 0);
-#endif
 	}	
 else if (gameStates.render.nType == 2)	// render objects containing transparency, like explosions
 	RenderObjList (nListPos, gameStates.render.nWindow);
@@ -1979,10 +1975,8 @@ gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk &&
 gameStates.render.nWindow = nWindow;
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	if (gameStates.app.bMultiThreaded) {
-		CountRenderFaces ();
+	if (gameStates.app.bMultiThreaded && (CountRenderFaces () > 15)) 
 		RunRenderThreads (rtComputeFaceLight);
-		}
 	else
 		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 	UpdateSlidingFaces ();

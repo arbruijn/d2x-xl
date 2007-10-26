@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 
 tRenderThreadInfo tiRender;
+tRenderItemThreadInfo tiRenderItems;
 
 //------------------------------------------------------------------------------
 
@@ -102,7 +103,7 @@ do {
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
 		if (nId)
-			ComputeFaceLight (tiRender.nMiddle, gameData.render.mine.nRenderSegs, nId);
+			ComputeFaceLight (gameData.render.mine.nRenderSegs - 1, tiRender.nMiddle - 1, nId);
 		else
 			ComputeFaceLight (0, tiRender.nMiddle, nId);
 		}
@@ -141,9 +142,64 @@ do {
 			}
 		G3DynLightModel (tiRender.objP, tiRender.pm, iVerts, nVerts, iFaceVerts, nFaceVerts);
 		}
+	else if (tiRender.nTask == rtUpdateParticles)
+		UpdateCloud (tiRender.clouds [nId], tiRender.nCurTime [nId], nId);
+	else if (tiRender.nTask == rtRenderParticles)
+		RenderCloud (tiRender.clouds [nId], nId);
 	tiRender.ti [nId].bExec = 0;
 	} while (!tiRender.ti [nId].bDone);
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ RenderItemThread (void *pThreadId)
+{
+	int	i;
+
+do {
+	while (!(tiRenderItems.ti [0].bExec || tiRenderItems.ti [1].bExec))
+		G3_SLEEP (0);
+	for (i = 0; i < 2; i++) {
+		if (tiRenderItems.ti [i].bExec) {
+			AddRenderItem (tiRenderItems.itemData [i].nType, 
+								&tiRenderItems.itemData [i].item, 
+								tiRenderItems.itemData [i].nSize, 
+								tiRenderItems.itemData [i].nDepth, 
+								tiRenderItems.itemData [i].nIndex);
+			tiRenderItems.ti [i].bExec = 0;
+			}
+		}
+	} while (!(tiRenderItems.ti [0].bDone && tiRenderItems.ti [1].bDone));
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void StartRenderItemThread (void)
+{
+memset (&tiRenderItems, 0, sizeof (tiRenderItems));
+tiRenderItems.ti [0].pThread = SDL_CreateThread (RenderItemThread, NULL);
+}
+
+//------------------------------------------------------------------------------
+
+void EndRenderItemThread (void)
+{
+	int	i;
+
+for (i = 0; i < 2; i++)
+	tiRenderItems.ti [i].bDone = 1;
+G3_SLEEP (10);
+#if 0
+#	if 1
+SDL_KillThread (tiRender.ti [0].pThread);
+SDL_KillThread (tiRender.ti [1].pThread);
+#	else
+SDL_WaitThread (tiRender.ti [0].pThread, NULL);
+SDL_WaitThread (tiRender.ti [1].pThread, NULL);
+#	endif
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -157,6 +213,7 @@ for (i = 0; i < 2; i++) {
 	tiRender.ti [i].nId = i;
 	tiRender.ti [i].pThread = SDL_CreateThread (RenderThread, &tiRender.ti [i].nId);
 	}
+StartRenderItemThread ();
 }
 
 //------------------------------------------------------------------------------
@@ -177,6 +234,7 @@ SDL_WaitThread (tiRender.ti [0].pThread, NULL);
 SDL_WaitThread (tiRender.ti [1].pThread, NULL);
 #	endif
 #endif
+EndRenderItemThread ();
 }
 
 //------------------------------------------------------------------------------

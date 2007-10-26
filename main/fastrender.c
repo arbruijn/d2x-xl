@@ -81,11 +81,13 @@ else {
 
 #if RENDER_DEPTHMASK_FIRST
 
-void SplitFace (tSegment *segP, grsFace *faceP)
+void SplitFace (tSegFaces *segFaceP, grsFace *faceP)
 {
+if (GEO_LIGHTING)
+	return;
 if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
 	 !faceP->bSlide && (faceP->nCamera < 0) && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
-		grsFace *newFaceP = segP->pFaces + segP->nFaces++;
+		grsFace *newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
 
 	*newFaceP = *faceP;
 	newFaceP->nIndex = (newFaceP - 1)->nIndex + 4;
@@ -108,22 +110,9 @@ if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) &&
 
 //------------------------------------------------------------------------------
 
-void RenderMineFace (tSegment *segP, grsFace *faceP, short nSegment, int nType, int bVertexArrays, int bTextured, int bDepthOnly)
+void FixTriangleFan (tSegment *segP, grsFace *faceP)
 {
-	short special;
-#ifdef _DEBUG
-	static grsFace *prevFaceP = NULL;
-
-if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-	nSegment = nSegment;
-#endif
-#if 0
-if ((nType != 3) && !faceP->bVisible)
-	return;
-#endif
-if ((nType < 4) && !(faceP->widFlags & WID_RENDER_FLAG))
-	return;
-if ((faceP->nType < 0) && ((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
+if (((faceP->nType = segP->sides [faceP->nSide].nType) == SIDE_IS_TRI_13)) {	//rearrange vertex order for TRIANGLE_FAN rendering
 	{
 	short	h = faceP->index [0];
 	memcpy (faceP->index, faceP->index + 1, 3 * sizeof (short));
@@ -145,6 +134,24 @@ if ((faceP->nType < 0) && ((faceP->nType = segP->sides [faceP->nSide].nType) == 
 		}
 	}
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderMineFace (tSegment *segP, tSegFaces *segFaceP, grsFace *faceP, short nSegment, int nType, int bVertexArrays, int bDepthOnly)
+{
+	short				special;
+
+#ifdef _DEBUG
+	static grsFace *prevFaceP = NULL;
+
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nSegment = nSegment;
+#endif
+if ((nType < 4) && !(faceP->widFlags & WID_RENDER_FLAG))
+	return;
+if (faceP->nType < 0)
+	FixTriangleFan (segP, faceP);
 #ifdef _DEBUG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
@@ -201,13 +208,13 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 		nSegment = nSegment;
 #endif
 G3DrawFace (faceP, faceP->bmBot, faceP->bmTop, (faceP->nCamera < 0) || faceP->bTeleport, 
-				bVertexArrays, bTextured && faceP->bTextured, bDepthOnly);
+				!bDepthOnly && faceP->bTextured, bDepthOnly, bVertexArrays);
 #ifdef _DEBUG
 prevFaceP = faceP;
 #endif
 #if RENDER_DEPTHMASK_FIRST
-if (bTextured)
-	SplitFace (segP, faceP);
+if (faceP->bTextured)
+	SplitFace (segFaceP, faceP);
 #endif
 }
 
@@ -280,17 +287,17 @@ if (left < r)
 
 int SortFaces (void)
 {
-	tSegment	*segP;
-	grsFace	*faceP;
-	tFaceRef	*ph, *pi, *pj;
-	int		h, i, j;
-	short		nSegment;
+	tSegFaces	*segFaceP;
+	grsFace		*faceP;
+	tFaceRef		*ph, *pi, *pj;
+	int			h, i, j;
+	short			nSegment;
 
 for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
-	segP = SEGMENTS + nSegment;
-	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++, h++, ph++) {
+	segFaceP = SEGFACES + nSegment;
+	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++, h++, ph++) {
 		ph->nSegment = nSegment;
 		ph->faceP = faceP;
 		}
@@ -334,20 +341,28 @@ glDepthFunc (GL_LEQUAL);
 if (nType == 3)
 	return 0;
 OglSetupTransform (1);
+if (GEO_LIGHTING) {
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
+	G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
+	return 0;
+	}
 if (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 
 	if (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		}
 	else
 		G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 	if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
+		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		}
 	}
 else {
@@ -396,7 +411,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 void RenderSkyBoxFaces (void)
 {
-	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	grsFace		*faceP;
 	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
@@ -405,14 +420,14 @@ if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
 	bVertexArrays = BeginRenderFaces (4);
-	for (i = 0, segP = SEGMENTS; i < gameData.segs.nSegments; i++, segP++) {
+	for (i = 0, segFaceP = SEGFACES; i < gameData.segs.nSegments; i++, segFaceP++) {
 		if (gameData.segs.segment2s [i].special != SEGMENT_IS_SKYBOX)
 			continue;
 		gameStates.render.bHaveSkyBox = 1;
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 			if (!(faceP->bVisible = FaceIsVisible (i, faceP->nSide)))
 				continue;
-			RenderMineFace (segP, faceP, i, 4, bVertexArrays, 1, 0);
+			RenderMineFace (SEGMENTS + i, segFaceP, faceP, i, 4, bVertexArrays, 0);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -426,9 +441,9 @@ void QueryCoronas (int nFaces, int nPass)
 {
 	grsFace		*faceP;
 	tFaceRef		*pfr;
-	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	short			nSegment;
-	int			i, j ,bVertexArrays = BeginRenderFaces (3);
+	int			i, j, bVertexArrays = BeginRenderFaces (3);
 
 gameStates.render.bQueryCoronas = nPass;
 glDepthMask (0);
@@ -442,8 +457,8 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
 			}
-		segP = SEGMENTS + nSegment;
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
+		segFaceP = SEGFACES + nSegment;
+		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
 			if (faceP->nCorona) {
 #ifdef _DEBUG
 				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -468,8 +483,8 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
 			}
-		segP = SEGMENTS + nSegment;
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
+		segFaceP = SEGFACES + nSegment;
+		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
 			if (faceP->nCorona) {
 #ifdef _DEBUG
 				if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -511,9 +526,9 @@ gameStates.render.bQueryCoronas = 0;
 
 int SetupCoronaFaces (void)
 {
-	tSegment	*segP;
-	grsFace	*faceP;
-	int		i, j, nSegment;
+	tSegFaces	*segFaceP;
+	grsFace		*faceP;
+	int			i, j, nSegment;
 
 if (!gameOpts->render.bCoronas)
 	return 0;
@@ -521,12 +536,12 @@ gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
-	segP = SEGMENTS + nSegment;
+	segFaceP = SEGFACES + nSegment;
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
+	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
 		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && 
 			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
 			faceP->nCorona = ++gameData.render.lights.nCoronas;
@@ -538,31 +553,78 @@ return gameData.render.lights.nCoronas;
 
 //------------------------------------------------------------------------------
 
+static inline int VisitSegment (short nSegment, int bAutomap)
+{
+if (nSegment < 0)
+	return 0;
+if (bAutomap) {
+	if (gameStates.render.automap.bDisplay) {
+		if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
+			return 0;
+		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
+			return 0;
+		}
+	else
+		bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+	}
+if (VISITED (nSegment))
+	return 0;
+VISIT (nSegment);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bLighting, int bAutomap)
+{
+	tSegFaces	*segFaceP = SEGFACES + nSegment;
+	grsFace		*faceP;
+	int			i;
+
+if (!VisitSegment (nSegment, bAutomap))
+	return;
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nSegment = nSegment;
+#endif
+if (bLighting)
+	SetNearestDynamicLights (nSegment, 0, 0, 0);
+for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
+#ifdef _DEBUG
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+		nSegment = nSegment;
+#endif
+	RenderMineFace (SEGMENTS + nSegment, segFaceP, faceP, nSegment, nType, bVertexArrays, bDepthOnly);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
+{
+	int				i, bAutomap = (nType == 0), bLighting = GEO_LIGHTING && (nType < 3) && !bDepthOnly;
+
+if (nType) {
+	for (i = gameData.render.mine.nRenderSegs; i; )
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [--i], bVertexArrays, bDepthOnly, bLighting, bAutomap);
+	}
+else {
+	for (i = 0; i < gameData.render.mine.nRenderSegs; i++)
+		RenderSegmentFaces (nType, gameData.render.mine.nSegRenderList [i], bVertexArrays, bDepthOnly, bLighting, bAutomap);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void RenderFaceList (int nType)
 {
-	tSegment		*segP;
-	grsFace		*faceP;
 	tFaceRef		*pfr;
 	short			nSegment;
 	int			i, j, bVertexArrays;
 
 bVertexArrays = BeginRenderFaces (nType);
 if (nType) {	//back to front
-	for (i = gameData.render.mine.nRenderSegs; i; ) {
-		if (0 > (nSegment = gameData.render.mine.nSegRenderList [--i]))
-			continue;
-		if (VISITED (nSegment))
-			return;
-		VISIT (nSegment);
-		segP = SEGMENTS + nSegment;
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
-#ifdef _DEBUG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
-				nSegment = nSegment;
-#endif
-			RenderMineFace (segP, faceP, nSegment, nType, bVertexArrays, 1, 0);
-			}
-		}
+	RenderSegments (nType, bVertexArrays, 0);
 	}
 else {	//front to back
 #if RENDER_DEPTHMASK_FIRST
@@ -577,32 +639,17 @@ else {	//front to back
 	glColorMask (0,0,0,0);
 	glDepthMask (1);
 	glDepthFunc (GL_LESS);
+	glClientActiveTexture (GL_TEXTURE0);
+	glDisableClientState (GL_COLOR_ARRAY);
+	glClientActiveTexture (GL_TEXTURE1);
+	glDisableClientState (GL_COLOR_ARRAY);
 #else
 	glDepthFunc (GL_LEQUAL);
 #endif
-	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
-			continue;
-		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
-				return;
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
-				continue;
-			}
-		else
-			bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
-		if (VISITED (nSegment))
-			return;
-		VISIT (nSegment);
-		segP = SEGMENTS + nSegment;
-#ifdef _DEBUG
-		if (nSegment == nDbgSeg)
-			nSegment = nSegment;
-#endif
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++)
-			RenderMineFace (segP, faceP, nSegment, nType, bVertexArrays, !RENDER_DEPTHMASK_FIRST, RENDER_DEPTHMASK_FIRST);
-		}
+	RenderSegments (nType, bVertexArrays, RENDER_DEPTHMASK_FIRST);
 #if RENDER_DEPTHMASK_FIRST
+	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE1);
+	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
 	j = SortFaces ();
 	if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 		EndRenderFaces (nType, bVertexArrays);
@@ -613,19 +660,26 @@ else {	//front to back
 		QueryCoronas (j, 2);
 		bVertexArrays = BeginRenderFaces (nType);
 		}
-	glDepthMask (0);
+	glDepthMask (1);
 	glDepthFunc (GL_LEQUAL);
 	glColorMask (1,1,1,1);
-	for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < j; i++) {
+	if (GEO_LIGHTING) {
+		gameData.render.mine.nVisited++;
+		RenderSegments (nType, bVertexArrays, 0);
+		}
+	else {
+		for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < j; i++) {
+			nSegment = pfr [i].nSegment;
 #ifdef _DEBUG
-		if ((pfr [i].nSegment == nDbgSeg) && ((nDbgSide < 0) || (pfr[i].faceP->nSide == nDbgSide)))
-			nSegment = nSegment;
+			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (pfr[i].faceP->nSide == nDbgSide)))
+				pfr = pfr;
 #endif
-		if (gameStates.render.automap.bDisplay) {
-			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
-				continue;
+			if (gameStates.render.automap.bDisplay) {
+				if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [pfr [i].nSegment].special == SEGMENT_IS_SKYBOX))
+					continue;
+				}
+			RenderMineFace (SEGMENTS + nSegment, SEGFACES + nSegment, pfr [i].faceP, nSegment, nType, bVertexArrays, 0);
 			}
-		RenderMineFace (SEGMENTS + pfr [i].nSegment, pfr [i].faceP, pfr [i].nSegment, nType, bVertexArrays, 1, 0);
 		}
 	glDepthMask (1);
 #endif
@@ -673,13 +727,14 @@ return nColor;
 void UpdateSlidingFaces (void)
 {
 	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	grsFace		*faceP;
 	short			h, i, j, nOffset;
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
 	tUVL			*uvlP;
 
-for (i = gameData.segs.nSegments, segP = SEGMENTS; i; i--, segP++) {
-	for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+for (i = gameData.segs.nSegments, segP = SEGMENTS, segFaceP = SEGFACES; i; i--, segP++, segFaceP++) {
+	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		if (faceP->bSlide) {
 #ifdef _DEBUG
 			if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -704,38 +759,43 @@ for (i = gameData.segs.nSegments, segP = SEGMENTS; i; i--, segP++) {
 void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	grsFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
-	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~((1 << nThread) | (1 << !nThread))};
+	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 	short			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;
 	int			h, i, j, uvi, nColor, 
+					nIncr = nStart ? -1 : 1,
 					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
 
+gameData.render.lights.dynamic.shader.nActiveLights [0] =
+gameData.render.lights.dynamic.shader.nActiveLights [1] = 0;
 gameOpts->render.color.bAmbientLight = 1;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 if (gameStates.render.bFullBright)
 	c.color.red = c.color.green = c.color.blue = c.color.alpha = 1;
-for (i = nStart; i < nEnd; i++) {
+for (i = nStart; i != nEnd; i += nIncr) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
 	segP = SEGMENTS + nSegment;
+	segFaceP = SEGFACES + nSegment;
 	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
 		gameData.render.mine.nSegRenderList [i] = -1;
 		continue;
 		}
 	if (bDynLight) {
-		if (!gameStates.render.bFullBright)
-			SetNearestDynamicLights (nSegment, 0, nThread);
 #ifdef _DEBUG
 		if (nSegment == nDbgSeg)
 			nSegment = nSegment;
 #endif
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+		if (!(gameStates.render.bFullBright || GEO_LIGHTING))
+			SetNearestDynamicLights (nSegment, 0, 0, nThread);
+		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 			nSide = faceP->nSide;
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
@@ -761,16 +821,22 @@ for (i = nStart; i < nEnd; i++) {
 						*pc = c.color;
 					else {
 						nVertex = faceP->index [h];
+#ifdef _DEBUG
+						if (nVertex == nDbgVertex)
+							nDbgVertex = nDbgVertex;
+#endif
 						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
 #if 0
 							if (gameStates.app.bMultiThreaded) {
-								while (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
-									G3_SLEEP (0);
-								gameData.render.mine.bCalcVertexColor [nVertex] |= nThreadFlags [0];
+								if (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
+									goto skipVertex;
 								}
 #endif
-							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
-												NULL, &c, 1, 0, nThread);
+							if (GEO_LIGHTING)
+								c.color = gameData.render.color.ambient [nVertex].color;
+							else
+								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
+													NULL, &c, 1, 0, nThread);
 #if 0
 							if (gameStates.app.bMultiThreaded)
 								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
@@ -794,7 +860,7 @@ for (i = nStart; i < nEnd; i++) {
 			}
 		}
 	else {
-		for (j = segP->nFaces, faceP = segP->pFaces; j; j--, faceP++) {
+		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 			nSide = faceP->nSide;
 			if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 				continue;
@@ -827,16 +893,18 @@ gameStates.ogl.bUseTransform = 0;
 
 //------------------------------------------------------------------------------
 
-void CountRenderFaces (void)
+int CountRenderFaces (void)
 {
 	tSegment		*segP;
 	short			nSegment;
-	int			h, i, j, nFaces;
+	int			h, i, j, nFaces, nSegments;
 
-for (i = nFaces = 0; i < gameData.render.mine.nRenderSegs; i++) {
+for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	segP = SEGMENTS + gameData.render.mine.nSegRenderList [i];
-	if (SegmentIsVisible (segP))
-		nFaces += segP->nFaces;
+	if (SegmentIsVisible (segP)) {
+		nSegments++;
+		nFaces += SEGFACES [i].nFaces;
+		}
 	else
 		gameData.render.mine.nSegRenderList [i] = -1;
 	}
@@ -846,13 +914,14 @@ else {
 	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
-		j += SEGMENTS [nSegment].nFaces;
+		j += SEGFACES [nSegment].nFaces;
 		if (j > h) {
 			tiRender.nMiddle = i;
 			break;
 			}
 		}
 	}
+return nSegments;
 }
 
 //------------------------------------------------------------------------------
@@ -863,17 +932,19 @@ int	 nRenderVertices;
 
 void GetRenderVertices (void)
 {
-	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	grsFace		*faceP;
+	short			nSegment;
 	int			h, i, j, n;
 
 nRenderVertices = 0;
 for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
-	segP = SEGMENTS + gameData.render.mine.nSegRenderList [h];
-	if (!SegmentIsVisible (segP)) 
+	nSegment = gameData.render.mine.nSegRenderList [h];
+	segFaceP = SEGFACES + nSegment;
+	if (!SegmentIsVisible (SEGMENTS + nSegment)) 
 		gameData.render.mine.nSegRenderList [h] = -1;
 	else {
-		for (i = segP->nFaces, faceP = segP->pFaces; i; i--, faceP++) {
+		for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 			for (j = 0; j < 4; j++) {
 				n = faceP->index [j];
 				if (bIsRenderVertex [n] != gameStates.render.nFrameFlipFlop + 1) {
@@ -890,7 +961,7 @@ for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 
 void SetFaceColors (void)
 {
-	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	grsFace		*faceP;
 	short			nSegment;
 	int			h, i, j;
@@ -899,8 +970,8 @@ nRenderVertices = 0;
 for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [h]))
 		continue;
-	segP = SEGMENTS + gameData.render.mine.nSegRenderList [h];
-	for (i = segP->nFaces, faceP = segP->pFaces; i; i--, faceP++)
+	segFaceP = SEGFACES + gameData.render.mine.nSegRenderList [h];
+	for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++)
 		for (j = 0; j < 4; j++)
 			gameData.segs.faces.color [j] = gameData.render.color.vertices [faceP->index [j]].color;
 	}
@@ -925,20 +996,22 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		nSegment = nSegment;
 #endif
 	if (nType == 1) {	// render opaque objects
+#ifdef _DEBUG
+		if (nSegment == nDbgSeg)
+			nSegment = nSegment;
+#endif
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			SetNearestDynamicLights (nSegment, 0, 0);
-			SetNearestStaticLights (nSegment, 1, 0);
-			gameStates.render.bApplyDynLight = gameOpts->ogl.bLighting || gameOpts->ogl.bLightObjects;
+			SetNearestDynamicLights (nSegment, 0, 1, 0);
+			SetNearestStaticLights (nSegment, 1, 1, 0);
+			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
+			if (gameData.render.lights.dynamic.shader.nActiveLights [0])
+				nType = nType;
 			}
 		else
 			gameStates.render.bApplyDynLight = 0;
 		RenderObjList (nListPos, gameStates.render.nWindow);
 		gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight;
-#if 1
 		gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iStaticLights [0];
-#else
-		SetNearestStaticLights (nSegment, 0, 0);
-#endif
 		}
 	else if (nType == 2)	// render objects containing transparency, like explosions
 		RenderObjList (nListPos, gameStates.render.nWindow);

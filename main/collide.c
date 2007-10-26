@@ -822,7 +822,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CreateWeaponEffects (tObject *objP, int bExplBlast)
+int CreateWeaponEffects (tObject *objP, int bExplBlast)
 {
 if (gameData.objs.bIsMissile [objP->id]) {
 	if (bExplBlast)
@@ -833,11 +833,11 @@ if (gameData.objs.bIsMissile [objP->id]) {
 		CreateShakerMegaLightnings (objP);
 	else if ((objP->id == MEGAMSL_ID) || (objP->id == ROBOT_MEGAMSL_ID))
 		CreateMegaLightnings (objP);
-#ifdef _DEBUG
 	else
-		objP = objP;
-#endif
+		return 0;
+	return 1;
 	}
+return 0;
 }
 
 //	-----------------------------------------------------------------------------

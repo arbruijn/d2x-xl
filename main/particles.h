@@ -131,6 +131,8 @@ int SetSmokeObject (int nObject, int nSmoke);
 void FlushParticleBuffer (void);
 int InitParticleBuffer (void);
 int CloseParticleBuffer (void);
+int UpdateCloud (tCloud *pCloud, int nCurTime, int nThread);
+int RenderCloud (tCloud *pCloud, int nThread);
 
 extern int bUseSmoke;
 extern int nSmokeDensScale;

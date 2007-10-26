@@ -687,10 +687,10 @@ PA_DFX (gameStates.render.nLighting = 0);
 
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
 if (!flags)	{	//draw entire tObject
-	if (!G3RenderModel (objP, nModel, po, gameData.models.textures, animAngles, light, glowValues, color)) {
+	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color)) {
 		if (bHires)
 			return;
-		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bLighting) || gameOpts->ogl.bLightObjects));
+		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (pos, orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
 		}
@@ -701,14 +701,18 @@ else {
 	G3StartInstanceMatrix (pos, orient);
 	for (i = 0; flags; flags >>= 1, i++)
 		if (flags & 1) {
-			vmsVector vOffs;
+			vmsVector vOffset;
 
 			//Assert (i < po->nModels);
 			if (i < po->nModels) {
 			//if submodel, rotate around its center point, not pivot point
-				VmVecAvg (&vOffs, po->subModels.mins + i, po->subModels.maxs + i);
-				VmVecNegate (&vOffs);
-				G3StartInstanceMatrix (&vOffs, NULL);
+				VmVecAvg (&vOffset, po->subModels.mins + i, po->subModels.maxs + i);
+				VmVecNegate (&vOffset);
+				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color)) {
+					if (bHires)
+						return;
+					}
+				G3StartInstanceMatrix (&vOffset, NULL);
 				G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
 									  animAngles, NULL, light, glowValues, color, NULL, nModel);
 				G3DoneInstance ();

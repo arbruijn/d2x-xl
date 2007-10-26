@@ -1478,6 +1478,10 @@ void HandleGameKey(int key)
 			gr_renderstats = !gr_renderstats;
 			break;
 
+		case KEY_CTRLED + KEY_ALTED + KEY_ESC:
+			gameStates.app.bSingleStep = 1;
+			break;
+
 		case KEY_ALTED + KEY_O:
 			gameOpts->render.bOptimize = !gameOpts->render.bOptimize;
 			break;

@@ -16,6 +16,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
+#define LIGHT_VERSION 1
+
 #ifdef RCS
 static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
 #endif
@@ -968,7 +970,7 @@ int ComputeNearestSegmentLights (int i)
 	tSegment				*segP;
 	tDynLight			*pl;
 	int					h, j, k, l, m, n, nMaxLights;
-	vmsVector			center, dist;
+	vmsVector			center;
 	struct tLightDist	*pDists;
 
 LogErr ("computing nearest segment lights (%d)\n", i);
@@ -1078,15 +1080,15 @@ return 1;
 #ifdef _DEBUG
 grsFace *FindDupFace (short nSegment, short nSide)
 {
-	tSegment	*segP = SEGMENTS + nSegment;
-	grsFace	*faceP0, *faceP1;
-	int		i, j;
+	tSegFaces	*segFaceP = SEGFACES + nSegment;
+	grsFace		*faceP0, *faceP1;
+	int			i, j;
 
-for (i = segP->nFaces, faceP0 = segP->pFaces; i; faceP0++, i--)
+for (i = segFaceP->nFaces, faceP0 = segFaceP->pFaces; i; faceP0++, i--)
 	if (faceP0->nSide == nSide)
 		break;
-for (i = 0, segP = SEGMENTS; i < gameData.segs.nSegments; i++, segP++) {
-	for (j = segP->nFaces, faceP1 = segP->pFaces; j; faceP1++, j--) {
+for (i = 0, segFaceP = SEGFACES; i < gameData.segs.nSegments; i++, segFaceP++) {
+	for (j = segFaceP->nFaces, faceP1 = segFaceP->pFaces; j; faceP1++, j--) {
 		if (faceP1 == faceP0)
 			continue;
 		if ((faceP1->nIndex == faceP0->nIndex) || !memcmp (faceP1->index, faceP0->index, sizeof (faceP0->index)))
@@ -1104,19 +1106,21 @@ void CreateFaceList (void)
 {
 	grsFace		*faceP = gameData.segs.faces.faces;
 	fVector3		*vertexP = gameData.segs.faces.vertices;
+	fVector3		*normalP = gameData.segs.faces.normals, vNormalf;
 	tTexCoord2f	*texCoordP = gameData.segs.faces.texCoord;
 	tTexCoord2f	*ovlTexCoordP = gameData.segs.faces.ovlTexCoord;
 	tRgbaColorf	*faceColorP = gameData.segs.faces.color;
 	tFaceColor	*colorP = gameData.render.color.ambient;
 	tSegment		*segP = SEGMENTS;
+	tSegFaces	*segFaceP = SEGFACES;
 	tSide			*sideP;
+	vmsVector	vNormal;
 	short			nSegment, nWall, nOvlTexCount, i, sideVerts [4];
 	ubyte			nSide, bColoredSeg, bWall;
-	float			fLight;
 
 LogErr ("   Creating face list\n");
 gameData.segs.nFaces = 0;
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFaceP++) {
 	bColoredSeg = ((gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_WATER) &&
 					   (gameData.segs.segment2s [nSegment].special <= SEGMENT_IS_TEAM_RED)) ||
 					   (gameData.segs.xSegments [nSegment].group >= 0);
@@ -1169,10 +1173,15 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 			faceP->nWall = nWall;
 			faceP->nIndex = 4 * gameData.segs.nFaces++;
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
-			for (i = 0; i < 4; i++)
+			VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
+			VmVecScale (&vNormal, F1_0 / 2);
+			VmsVecToFloat3 (&vNormalf, &vNormal);
+			for (i = 0; i < 4; i++) {
 				memcpy (vertexP++, gameData.segs.fVertices + sideVerts [i], sizeof (fVector3));
-			if (!segP->nFaces++)
-				segP->pFaces = faceP;
+				*normalP++ = vNormalf;
+				}
+			if (!segFaceP->nFaces++)
+				segFaceP->pFaces = faceP;
 			faceP++;
 			}
 		else {
@@ -1184,6 +1193,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 		gameData.segs.nFaces += nOvlTexCount;
 		faceP += nOvlTexCount;
 		vertexP += nOvlTexCount * 4;
+		normalP += nOvlTexCount * 4;
 		texCoordP += nOvlTexCount * 4;
 		ovlTexCoordP += nOvlTexCount * 4;
 		faceColorP += nOvlTexCount * 4;
@@ -1205,6 +1215,7 @@ void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 {
 	short			lastSeg, nSide, i;
 	tSegment		*segP;
+	tSegFaces	*segFaceP;
 	tSide			*sideP;
 	short			temp_short;
 	ushort		nWall, temp_ushort = 0;
@@ -1212,7 +1223,7 @@ void LoadSegmentsCompiled (short nSegment, CFILE *loadFile)
 	ubyte			bit_mask;
 
 INIT_PROGRESS_LOOP (nSegment, lastSeg, gameData.segs.nSegments);
-for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, segP++) {
+for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < lastSeg; nSegment++, segP++, segFaceP++) {
 
 #ifdef EDITOR
 	segP->nSegment = nSegment;
@@ -1223,7 +1234,7 @@ for (segP = gameData.segs.segments + nSegment; nSegment < lastSeg; nSegment++, s
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	segP->nFaces = 0;
+	segFaceP->nFaces = 0;
 	if (gameStates.app.bD2XLevel) { 
 		gameData.segs.xSegments [nSegment].owner = CFReadByte (loadFile);
 		gameData.segs.xSegments [nSegment].group = CFReadByte (loadFile);
@@ -1840,31 +1851,42 @@ NMProgressBar (TXT_PREP_DESCENT, 0, LoadMineGaugeSize () + PagingGaugeSize () + 
 
 //------------------------------------------------------------------------------
 
+typedef struct tPreFileHeader {
+	int	nVersion;
+	int	nSegments;
+	int	nVertices;
+	int	nLights;
+	} tPreFileHeader;
+
 int LoadPrecompiledLights (int nLevel)
 {
-	CFILE	*fp;
-	int	nSegments, nVertices, bOk;
+	CFILE				*fp;
+	tPreFileHeader	pfh;
+	int	bOk;
 	char	szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, NULL, szFilename, NULL);
+CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
+				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
+				 NULL, szFilename, NULL);
 sprintf (szFullname, "%s-%d.pre", szFilename,nLevel);
 if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "rb", 0)))
 	return 0;
-bOk = (CFRead (&nSegments, sizeof (nSegments), 1, fp) == 1) &&
-		(CFRead (&nVertices, sizeof (nVertices), 1, fp) == 1);
+bOk = (CFRead (&pfh, sizeof (pfh), 1, fp) == 1);
 if (bOk)
-	bOk = (nSegments == gameData.segs.nSegments) && 
-			(nVertices == gameData.segs.nVertices);
+	bOk = (pfh.nVersion == LIGHT_VERSION) && 
+			(pfh.nSegments == gameData.segs.nSegments) && 
+			(pfh.nVertices == gameData.segs.nVertices) && 
+			(pfh.nLights == gameData.render.lights.dynamic.nLights);
 if (bOk)
 	bOk = 
-			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
+			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * pfh.nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
 #if 0
-			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * nVertices * VERTVIS_FLAGS, 1, fp) == 1) &&
+			(CFRead (gameData.segs.bVertVis, sizeof (ubyte) * pfh.nVertices * VERTVIS_FLAGS, 1, fp) == 1) &&
 #endif
-			(CFRead (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
-			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nVertices * MAX_NEAREST_LIGHTS, 1, fp) == 1);
+			(CFRead (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * pfh.nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
+			(CFRead (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * pfh.nVertices * MAX_NEAREST_LIGHTS, 1, fp) == 1);
 CFClose (fp);
 return bOk;
 }
@@ -1873,26 +1895,26 @@ return bOk;
 
 int SavePrecompiledLights (int nLevel)
 {
-	CFILE	*fp;
-	int	nSegments = gameData.segs.nSegments,
-			nVertices = gameData.segs.nVertices,
-			bOk;
-	char	szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
+	CFILE				*fp;
+	tPreFileHeader pfh = {LIGHT_VERSION, gameData.segs.nSegments, gameData.segs.nVertices, gameData.render.lights.dynamic.nLights};
+	int				bOk;
+	char				szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, NULL, szFilename, NULL);
+CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
+				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
+				 NULL, szFilename, NULL);
 sprintf (szFullname, "%s-%d.pre", szFilename,nLevel);
 if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "wb", 0)))
 	return 0;
-bOk = (CFWrite (&nSegments, sizeof (nSegments), 1, fp) == 1) &&
-		(CFWrite (&nVertices, sizeof (nVertices), 1, fp) == 1) &&
-		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
+bOk = (CFWrite (&pfh, sizeof (pfh), 1, fp) == 1) &&
+		(CFWrite (gameData.segs.bSegVis, sizeof (ubyte) * pfh.nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
 #if 0
-		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * nVertices * VERTVIS_FLAGS, 1, fp) == 1) &&
+		(CFWrite (gameData.segs.bVertVis, sizeof (ubyte) * pfh.nVertices * VERTVIS_FLAGS, 1, fp) == 1) &&
 #endif
-		(CFWrite (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
-		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * nVertices * MAX_NEAREST_LIGHTS, 1, fp) == 1);
+		(CFWrite (gameData.render.lights.dynamic.nNearestSegLights, sizeof (short) * pfh.nSegments * MAX_NEAREST_LIGHTS, 1, fp) == 1) &&
+		(CFWrite (gameData.render.lights.dynamic.nNearestVertLights, sizeof (short) * pfh.nVertices * MAX_NEAREST_LIGHTS, 1, fp) == 1);
 CFClose (fp);
 return bOk;
 }

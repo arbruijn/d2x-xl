@@ -119,6 +119,14 @@ typedef struct tRenderItemBuffer {
 	grsBitmap		*bmP;
 } tRenderItemBuffer;
 
+typedef struct tRenderItemData {
+	tRenderItem		item;
+	int				nType;
+	int				nSize;
+	int				nDepth;
+	int				nIndex;
+	} tRenderItemData;
+
 int AllocRenderItemBuffer (void);
 void FreeRenderItemBuffer (void);
 void ResetRenderItemBuffer (void);
@@ -129,7 +137,7 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *t
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);
-int RIAddParticle (tParticle *particle, float fBrightness);
+int RIAddParticle (tParticle *particle, float fBrightness, int nThread);
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth);
 int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color, 
 									char bPlasma, char bStart, char bEnd, short nDepth);

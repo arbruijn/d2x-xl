@@ -65,6 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "hudmsg.h"
 #include "interp.h"
+#include "lightning.h"
 //#define _DEBUG
 #define EXPLOSION_SCALE (F1_0*5/2)		//explosion is the obj size times this 
 
@@ -1537,6 +1538,7 @@ void ExplodePolyModel (tObject *objP)
 {
 Assert (objP->renderType == RT_POLYOBJ);
 CreateExplBlast (objP);
+CreateBlowupLightnings (objP);
 CreateShrapnels (objP);
 if (gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel] != -1)
 	objP->rType.polyObjInfo.nModel = gameData.models.nDyingModels [objP->rType.polyObjInfo.nModel];

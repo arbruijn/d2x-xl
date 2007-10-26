@@ -63,7 +63,7 @@ OglMove (OOF_VecVms2Gl (p, pv));
 inline void VmsRot (vmsMatrix *pm)
 {
 glMatrixf m;
-if (nInstanceDepth)
+if (0 && nInstanceDepth)
 	OglRot (OOF_MatVms2Gl (OOF_GlIdent (m), pm));
 else
 	OglRot (OOF_GlTranspose (NULL, OOF_MatVms2Gl (OOF_GlIdent (m), pm)));

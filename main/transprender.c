@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "network.h"
 #include "transprender.h"
+#include "renderthreads.h"
 
 #define RI_SPLIT_POLYS 1
 #define RI_POLY_OFFSET 0
@@ -129,6 +130,23 @@ else {
 	*pd = ph;
 	}
 return renderItems.nFreeItems;
+}
+
+//------------------------------------------------------------------------------
+
+int AddRenderItemMT (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex, int nThread)
+{
+if (!gameStates.app.bMultiThreaded || (nThread < 0))
+	return AddRenderItem (nType, itemData, itemSize, nDepth, nIndex);
+while (tiRenderItems.ti [nThread].bExec)
+	G3_SLEEP (0);
+tiRenderItems.itemData [nThread].nType = nType;
+tiRenderItems.itemData [nThread].nSize = itemSize;
+tiRenderItems.itemData [nThread].nDepth = nDepth;
+tiRenderItems.itemData [nThread].nIndex = nIndex;
+memcpy (&tiRenderItems.itemData [nThread].item, itemData, itemSize);
+tiRenderItems.ti [nThread].bExec = 1;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -329,14 +347,14 @@ return AddRenderItem (riSphere, &item, sizeof (item), vPos.p.z, vPos.p.z);
 
 //------------------------------------------------------------------------------
 
-int RIAddParticle (tParticle *particle, float fBrightness)
+int RIAddParticle (tParticle *particle, float fBrightness, int nThread)
 {
 	tRIParticle	item;
 
 item.particle = particle;
 item.fBrightness = fBrightness;
 G3TransformPoint (&particle->transPos, &particle->pos, 0);
-return AddRenderItem (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z);
+return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z, particle->transPos.p.z, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -463,6 +481,7 @@ else {
 		glDisableClientState (GL_COLOR_ARRAY);
 		renderItems.bClientColor = 0;
 		}
+	glDisableClientState (GL_VERTEX_ARRAY);
 	renderItems.bClientState = 0;
 	}
 renderItems.bmP = NULL;
@@ -597,7 +616,7 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1))
 	fVector	fPos = item->position;
 
 	if (renderItems.bDepthMask)
-		glDepthMask (renderItems.bDepthMask);
+		glDepthMask (renderItems.bDepthMask = 0);
 	w = (float) f2fl (item->nWidth); 
 	h = (float) f2fl (item->nHeight); 
 	u = item->bmP->glTexture->u;

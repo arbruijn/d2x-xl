@@ -48,7 +48,7 @@ if (!bCorona)
 if (gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 0);
+	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
 	glDepthMask (1);
 	}
 }
@@ -1206,7 +1206,8 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 
 // -----------------------------------------------------------------------------
 
-void RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, float fScale, int bSimple, int bViewerOffset, int bDepthSort)
+void RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, 
+								 float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return;
@@ -1220,6 +1221,7 @@ if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
 else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 	int			bStencil;
 	fix			xSize = (fix) (objP->size * fScale);
+	tRgbaColorf	color;
 
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
@@ -1236,16 +1238,26 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 		}
 	if (xSize < F1_0)
 		xSize = F1_0;
+	color.alpha = alpha;
+	alpha = coronaIntensities [gameOpts->render.nObjCoronaIntensity] / 2;
+	color.red = colorP->red * alpha;
+	color.green = colorP->green * alpha;
+	color.blue = colorP->blue * alpha;
+#if 0
+	color.red *= color.red;
+	color.green *= color.green;
+	color.blue *= color.blue;
+#endif
 	if (bDepthSort) {
-		colorP->alpha = alpha;
-		RIAddSprite (bmpCorona, &vPos, colorP, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 0);
+		RIAddSprite (bmpCorona, &vPos, &color, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, 0, 1);
 		return;
 		}
 	bStencil = StencilOff ();
 	glDepthMask (0);
+	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
 		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, 
-						  colorP, alpha, 1);
+						  &color, alpha, 1);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
@@ -1288,7 +1300,7 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 		glDisable (GL_TEXTURE_2D);
 		glEnable (GL_CULL_FACE);
 		}
-
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthMask (1);
 	StencilOn (bStencil);
 	}

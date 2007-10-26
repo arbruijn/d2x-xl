@@ -24,6 +24,7 @@ void DoLightningFrame (void);
 void CreateShakerLightnings (tObject *objP);
 void CreateShakerMegaLightnings (tObject *objP);
 void CreateMegaLightnings (tObject *objP);
+void CreateBlowupLightnings (tObject *objP);
 void CreateDamageLightnings (tObject *objP, tRgbaColorf *colorP);
 void CreateRobotLightnings (tObject *objP, tRgbaColorf *colorP);
 void CreatePlayerLightnings (tObject *objP, tRgbaColorf *colorP);

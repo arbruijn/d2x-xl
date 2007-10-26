@@ -13,6 +13,7 @@
 #include "render.h"
 #include "maths.h"
 #include "u_mem.h"
+#include "glare.h"
 #include "objeffects.h"
 #include "objrender.h"
 
@@ -328,6 +329,7 @@ if (!bmP) {
 	}
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+fScale *= coronaIntensities [gameOpts->render.nObjCoronaIntensity];
 if (sdP->pPulse && sdP->pPulse->fScale) {
 	red *= fScale;
 	green *= fScale;
@@ -410,6 +412,8 @@ void RenderSphereSimple (float fRadius, int nRings, float red, float green, floa
 	fVector			p;
 	tSphereCoord	*psc [2];
 
+if (gameStates.ogl.bUseTransform)
+	glScalef (fRadius, fRadius, fRadius);
 if (!CreateSphereSimple (nRings))
 	return;
 h = nRings / 2;
@@ -420,15 +424,19 @@ for (nCull = 0; nCull < 2; nCull++) {
 		glBegin (GL_QUAD_STRIP);
 		for (i = 0; i <= nRings; i++) {
 			p = psc [0]->vPos;
-			VmVecScalef (&p, &p, fRadius);
-			G3TransformPointf (&p, &p, 0);
+			if (!gameStates.ogl.bUseTransform) {
+				VmVecScalef (&p, &p, fRadius);
+				G3TransformPointf (&p, &p, 0);
+				}
 			if (bTextured)
 				glTexCoord2f (psc [0]->uvl.v.u * nTiles, psc [0]->uvl.v.v * nTiles);
 			glVertex3fv ((GLfloat *) &p);
 			psc [0]++;
 			p = psc [0]->vPos;
-			VmVecScalef (&p, &p, fRadius);
-			G3TransformPointf (&p, &p, 0);
+			if (!gameStates.ogl.bUseTransform) {
+				VmVecScalef (&p, &p, fRadius);
+				G3TransformPointf (&p, &p, 0);
+				}
 			if (bTextured)
 				glTexCoord2f (psc [0]->uvl.v.u * nTiles, psc [0]->uvl.v.v * nTiles);
 			glVertex3fv ((GLfloat *) &p);
@@ -440,15 +448,19 @@ for (nCull = 0; nCull < 2; nCull++) {
 			glBegin (GL_LINE_STRIP);
 			for (i = 0; i <= nRings; i++) {
 				p = psc [1]->vPos;
-				VmVecScalef (&p, &p, fRadius);
-				G3TransformPointf (&p, &p, 0);
+				if (!gameStates.ogl.bUseTransform) {
+					VmVecScalef (&p, &p, fRadius);
+					G3TransformPointf (&p, &p, 0);
+					}
 				if (bTextured)
 					glTexCoord2f (psc [1]->uvl.v.u * nTiles, psc [1]->uvl.v.v * nTiles);
 				glVertex3fv ((GLfloat *) &p);
 				psc [1]++;
 				p = psc [1]->vPos;
-				VmVecScalef (&p, &p, fRadius);
-				G3TransformPointf (&p, &p, 0);
+				if (!gameStates.ogl.bUseTransform) {
+					VmVecScalef (&p, &p, fRadius);
+					G3TransformPointf (&p, &p, 0);
+					}
 				if (bTextured)
 					glTexCoord2f (psc [1]->uvl.v.u * nTiles, psc [1]->uvl.v.v * nTiles);
 				glVertex3fv ((GLfloat *) &p);
@@ -481,13 +493,17 @@ int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScal
 if (!pRotSphere)
 	return -1;
 #endif
+glEnable (GL_BLEND);
 if (sdP->nFaceNodes == 3)
 	bmP = NULL;
 else 
 	bTextured = InitSphereSurface (sdP, red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
-glEnable (GL_BLEND);
+#if 1
+glBlendFunc (GL_ONE, GL_ONE);
+#else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 #if SIMPLE_SPHERE
 RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
@@ -565,10 +581,12 @@ if (!CreateShieldSphere ())
 if (gameData.render.shield.nFaces > 0) {
 	tOOF_vector	p;
 	float	fScale, r = f2fl (objP->size) * 1.05f;
+	gameStates.ogl.bUseTransform = 1;
 	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
 					  r, r, r, red, green, blue, alpha, bmpShield, 1);
 	G3DoneInstance ();
+	gameStates.ogl.bUseTransform = 0;
 	fScale = gameData.render.shield.pPulse->fScale;
 	RenderObjectHalo (objP, 3 * objP->size / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 	}
