@@ -2220,8 +2220,8 @@ if (i < 0) {
 #endif
 	if (pointList) {
 		vPos = pointList [0]->p3_src;
-		vEnd = pointList [1 + d_rand () % (nVertices - 1)]->p3_src;
-		VmVecNormal (&vNorm, &vPos, &pointList [1]->p3_src, &vEnd);
+		vEnd = gamOpts.pointList [1 + d_rand () % (nVertices - 1)]->p3_vec;
+		VmVecNormal (&vNorm, &vPos, &pointList [1]->p3_vec, &vEnd);
 		VmVecScaleInc (&vPos, &vNorm, F1_0 / 64);
 		VmVecScaleInc (&vEnd, &vNorm, F1_0 / 64);
 		VmVecNormal (&vDelta, &vNorm, &vPos, &vEnd);
