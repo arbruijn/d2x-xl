@@ -1241,9 +1241,11 @@ if (bDoingLightingHack || !bExhaustive)
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
 #endif
 for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++) {
-   masks = GetSegMasks (p, nNewSeg, 0);
-	if (!masks.centerMask)
-		return nNewSeg;
+	if (gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) {
+	   masks = GetSegMasks (p, nNewSeg, 0);
+		if (!masks.centerMask)
+			return nNewSeg;
+		}
 	}
 ++nExhaustiveFailedCount;
 #if TRACE

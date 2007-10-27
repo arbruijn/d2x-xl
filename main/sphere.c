@@ -18,6 +18,7 @@
 #include "objrender.h"
 
 #define SIMPLE_SPHERE	1
+#define ADDITIVE_SPHERE_BLENDING 1
 
 #define SPHERE_MAXLAT	100    /*max number of horiz and vert. divisions of sphere*/
 #define SPHERE_MAXLONG	100
@@ -329,7 +330,9 @@ if (!bmP) {
 	}
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+#if ADDITIVE_SPHERE_BLENDING
 fScale *= coronaIntensities [gameOpts->render.nObjCoronaIntensity];
+#endif
 if (sdP->pPulse && sdP->pPulse->fScale) {
 	red *= fScale;
 	green *= fScale;
@@ -499,7 +502,7 @@ if (sdP->nFaceNodes == 3)
 else 
 	bTextured = InitSphereSurface (sdP, red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
-#if 1
+#if ADDITIVE_SPHERE_BLENDING
 glBlendFunc (GL_ONE, GL_ONE);
 #else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
