@@ -24,9 +24,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"       // because of rle code that has short for row offsets
 #include "inferno.h"
 #include "bitmap.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_bitmap.h"
 #include "error.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 
 int gr_bitblt_dest_step_shift = 0;
 int gr_bitblt_double = 0;

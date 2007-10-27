@@ -98,7 +98,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "d_io.h"
 #include "tracker.h"
 #include "findfile.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "render.h"
 #include "sphere.h"
 #include "endlevel.h"

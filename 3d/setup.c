@@ -28,7 +28,8 @@ static char rcsid[] = "$Id: setup.c,v 1.5 2003/03/19 19:21:34 btb Exp $";
 #include "globvars.h"
 #include "inferno.h"
 #include "clipper.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 
 //initialize the 3d system
 void g3_init(void)

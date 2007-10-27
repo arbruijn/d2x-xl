@@ -33,7 +33,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef __DJGPP__
 #include "modex.h"
 #endif
-#include "ogl_init.h"
+#include "ogl_defs.h"
 
 /*
 Symmetric Double Step Line Algorithm

@@ -21,7 +21,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <math.h>
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_color.h"
 #include "error.h"
 #include "3d.h"
 #include "inferno.h"
@@ -361,8 +363,8 @@ ClearMarkers ();
 gsrCanvas *levelNumCanv, *levelNameCanv;
 #endif
 
-#ifndef M_PI
-#	define M_PI 3.141592653589793240
+#ifndef Pi
+#	define Pi 3.141592653589793240
 #endif
 #define f2glf(x) (f2fl (x))
 
@@ -384,7 +386,7 @@ z = f2glf (p.p3_vec.p.z);
 r = f2glf (rad);
 glBegin (GL_POLYGON);
 for (i = 0; i <= nSides; i++) {
-	ang = 2.0f * (float) M_PI * (i % nSides) / nSides;
+	ang = 2.0f * (float) Pi * (i % nSides) / nSides;
 	hx = x + (float) cos (ang) * r;
 	hy = y + (float) sin (ang) * r;
 	glVertex3f (hx, hy, z);
@@ -414,7 +416,7 @@ r = f2glf (rad);
 glBegin (GL_LINES);
 for (i = 0; i <= nSides; i++)
 	for (j = i; j <= i + 1; j++) {
-		ang = 2.0f * (float) M_PI * (j % nSides) / nSides;
+		ang = 2.0f * (float) Pi * (j % nSides) / nSides;
 		v.p.x = x + (float) cos (ang) * r;
 		v.p.y = y + (float) sin (ang) * r;
 		glVertex3fv ((GLfloat *) &v);

@@ -40,7 +40,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 #include "error.h"
 #include "gameseg.h"
 #include "switch.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "oof.h"
 #include "lightmap.h"
 #include "gameseg.h"

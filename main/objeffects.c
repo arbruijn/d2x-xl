@@ -25,6 +25,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "network.h"
 #include "interp.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "render.h"
 #include "renderlib.h"
 #include "transprender.h"
@@ -365,7 +367,7 @@ void RenderMslLockIndicator (tObject *objP)
 {
 	#define INDICATOR_POSITIONS	60
 
-	static tSinCosd	sinCosInd [INDICATOR_POSITIONS];
+	static tSinCosf	sinCosInd [INDICATOR_POSITIONS];
 	static int			bInitSinCos = 1;
 	static int			nMslLockIndPos = 0;
 	static time_t		t0 = 0;
@@ -407,8 +409,8 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 		bInitSinCos = 0;
 		}
 	m.rVec.p.x =
-	m.uVec.p.y = (float) sinCosInd [nMslLockIndPos].dCos;
-	m.uVec.p.x = (float) sinCosInd [nMslLockIndPos].dSin;
+	m.uVec.p.y = sinCosInd [nMslLockIndPos].fCos;
+	m.uVec.p.x = sinCosInd [nMslLockIndPos].fSin;
 	m.rVec.p.y = -m.uVec.p.x;
 	m.rVec.p.z =
 	m.uVec.p.z =

@@ -1,7 +1,8 @@
 #ifndef __lightmap_h
 #define __lightmap_h
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_texture.h"
 
 typedef struct tLightMap {
 	vmsVector	pos;

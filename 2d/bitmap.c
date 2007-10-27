@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "inferno.h"
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
 
 //------------------------------------------------------------------------------
 

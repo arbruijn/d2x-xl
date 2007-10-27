@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "grdef.h"
 #include "vesa.h"
 #include "modex.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 
 #ifndef D1XD3D
 void gr_upixel( int x, int y )

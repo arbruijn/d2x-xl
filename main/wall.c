@@ -49,7 +49,7 @@ static char rcsid [] = "$Id: tWall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 #include "laser.h"		//	For seeing if a flare is stuck in a tWall.
 #include "collide.h"
 #include "effects.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "render.h"
 #include "hudmsg.h"
 #include "lighting.h"

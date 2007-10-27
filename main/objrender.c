@@ -42,6 +42,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "objrender.h"
 #include "objeffects.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_render.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"

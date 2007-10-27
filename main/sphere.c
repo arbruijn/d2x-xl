@@ -24,7 +24,7 @@
 #define SPHERE_MAXLONG	100
 
 #define SPHERE_BIGNUM 999.0
-#define TORAD(x)    ((x)*M_PI/180.0f)
+#define TORAD(x)    ((x)*Pi/180.0f)
 
 #define	SQRT2 1.414213562f
 #define  ASPECT 1.0f //(4.0f / 3.0f)

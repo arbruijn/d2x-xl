@@ -27,7 +27,8 @@
 # include <SDL.h>
 #endif
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "lightmap.h"
 #include "texmerge.h"
 #include "error.h"

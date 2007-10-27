@@ -65,7 +65,9 @@ static char rcsid [] = "$Id: gamerend.c, v 1.13 2003/10/12 09:38:48 btb Exp $";
 #include "hudmsg.h"
 #include "gamepal.h"
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_bitmap.h"
 
 extern int LinearSVGABuffer;
 

@@ -21,6 +21,7 @@ int d_rand ();			// Random number function which returns in the range 0-0x7FFF
 #  define  Pi    3.141592653589793240
 #endif
 
+
 typedef int32_t fix;		//16 bits int, 16 bits frac
 typedef int16_t fixang;		//angles
 

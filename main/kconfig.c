@@ -61,7 +61,7 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include "cntrlcen.h"
 #include "network.h"
 #include "hudmsg.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "object.h"
 #include "inferno.h"
 #include "input.h"

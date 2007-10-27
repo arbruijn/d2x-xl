@@ -24,7 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "text.h"
 #include "gr.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "bm.h"
 #include "u_mem.h"
 #include "mono.h"

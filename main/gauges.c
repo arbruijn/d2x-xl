@@ -59,7 +59,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamepal.h"
 #include "input.h"
 #include "object.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_bitmap.h"
+#include "ogl_hudstuff.h"
 
 #define SHOW_PLAYER_IP		0
 

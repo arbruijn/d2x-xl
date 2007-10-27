@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "laser.h"
 #include "pa_enabl.h"
 #include "escort.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "network.h"
 #include "gameseg.h"
 

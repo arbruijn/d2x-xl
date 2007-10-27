@@ -439,9 +439,8 @@ VideoOffset1 = y * ROWSIZE + x;
 
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_bitmap.h"
 #include "args.h"
 //font handling routines for OpenGL - Added 9/25/99 Matthew Mueller - they are here instead of in arch/ogl because they use all these defines
 
@@ -713,7 +712,7 @@ grsBitmap *CreateStringBitmap (
 	int			orig_color = FG_COLOR.index;//to allow easy reseting to default string color with colored strings -MPM
 	int			i, x, y, hx, hy, w, h, aw, cw, spacing, nTab, nChars, bHotKey;
 	grsBitmap	*bmP, *bmfP;
-	grs_rgba		hc, kc, *pc;
+	grsRgba		hc, kc, *pc;
 	ubyte			*pf, *palP = NULL;
 	ubyte			c;
 	char			*text_ptr, *text_ptr1, *next_row;
@@ -809,7 +808,7 @@ while (next_row != NULL) {
 		kc.alpha = 255;
 		if (FFLAGS & FT_COLOR) {
 			for (hy = 0; hy < bmfP->bmProps.h; hy++) {
-				pc = ((grs_rgba *) bmP->bmTexBuf) + (y + hy) * w + x;
+				pc = ((grsRgba *) bmP->bmTexBuf) + (y + hy) * w + x;
 				pf = bmfP->bmTexBuf + hy * bmfP->bmProps.rowSize;
 				for (hx = bmfP->bmProps.w; hx; hx--, pc++, pf++)
 					if ((c = *pf) != TRANSPARENCY_COLOR) {
@@ -837,7 +836,7 @@ while (next_row != NULL) {
 					}
 				}
 			for (hy = 0; hy < bmfP->bmProps.h; hy++) {
-				pc = ((grs_rgba *) bmP->bmTexBuf) + (y + hy) * w + x;
+				pc = ((grsRgba *) bmP->bmTexBuf) + (y + hy) * w + x;
 				pf = bmfP->bmTexBuf + hy * bmfP->bmProps.rowSize;
 				for (hx = bmfP->bmProps.w; hx; hx--, pc++, pf++)
 					if (*pf != TRANSPARENCY_COLOR)
@@ -1471,7 +1470,7 @@ BG_COLOR.rgb = 0;
 
 //------------------------------------------------------------------------------
 
-void GrSetFontColorRGB (grs_rgba *fg, grs_rgba *bg)
+void GrSetFontColorRGB (grsRgba *fg, grsRgba *bg)
 {
 if (fg) {
 	FG_COLOR.rgb = 1;

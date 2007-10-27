@@ -1,6 +1,6 @@
 //fog.c
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
 
 typedef struct tFog {
 	float		color [4];

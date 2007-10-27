@@ -44,7 +44,7 @@ PFNGLACTIVETEXTUREARBPROC glActiveTextureARB = NULL;
 PFNGLMULTITEXCOORD2FARBPROC glMultiTexCoord2fARB = NULL;
 PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB = NULL;
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
 
 #if OGL_NEW
 

@@ -29,6 +29,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "lighting.h"
 #include "lightmap.h"
 #include "endlevel.h"
+#include "ogl_defs.h"
+#include "ogl_color.h"
+#include "ogl_render.h"
 #include "renderlib.h"
 
 //------------------------------------------------------------------------------

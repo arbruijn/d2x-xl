@@ -32,7 +32,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "byteswap.h"
 #include "u_mem.h"
 #include "console.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "network.h"
 #include "render.h"
 #include "gameseg.h"

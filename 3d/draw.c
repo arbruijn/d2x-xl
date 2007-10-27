@@ -32,7 +32,8 @@ static char rcsid[] = "$Id: draw.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "globvars.h"
 #include "texmap.h"
 #include "clipper.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_render.h"
 
 #if 1
 tmap_drawer_fp tmap_drawer_ptr = draw_tmap;

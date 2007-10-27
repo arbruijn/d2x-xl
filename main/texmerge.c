@@ -26,10 +26,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mono.h"
 #include "rle.h"
 #include "piggy.h"
-#include "ogl_init.h"
-#include "texmerge.h"
+#include "ogl_defs.h"
+#include "ogl_shader.h"
 
-#include "ogl_init.h"
 #define MAX_NUM_CACHE_BITMAPS 200
 
 //static grsBitmap * cache_bitmaps [MAX_NUM_CACHE_BITMAPS];                     
@@ -51,6 +50,7 @@ static int nCacheMisses = 0;
 
 void MergeTextures (int nType, grsBitmap *bmBot, grsBitmap *bmTop, grsBitmap *dest_bmp, int bSuperTransp);
 void MergeTexturesNormal (int nType, grsBitmap *bmBot, grsBitmap *bmTop, ubyte *dest_data);
+void _CDECL_ TexMergeClose (void);
 
 //----------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ for (i = 0; i < nCacheEntries; i++, cacheP++) {
 	cacheP->bitmap = NULL;
 	cacheP->nOrient = -1;
 	}
-atexit(TexMergeClose);
+atexit (TexMergeClose);
 return 1;
 }
 
@@ -87,7 +87,7 @@ for (i = 0; i < nCacheEntries; i++) {
 
 //-------------------------------------------------------------------------
 
-void _CDECL_ TexMergeClose(void)
+void _CDECL_ TexMergeClose (void)
 {
 	int i;
 

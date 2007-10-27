@@ -21,6 +21,8 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include <string.h>	// for memset ()
 #include "fix.h"
 #include "vecmat.h"
+#include "ogl_defs.h"
+#include "ogl_color.h"
 #include "gr.h"
 #include "inferno.h"
 #include "segment.h"

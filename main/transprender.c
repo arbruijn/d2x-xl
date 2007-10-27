@@ -23,6 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "u_mem.h"
+#include "ogl_lib.h"
 #include "render.h"
 #include "renderlib.h"
 #include "objrender.h"

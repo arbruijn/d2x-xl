@@ -56,7 +56,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vecmat.h"
 #include "interp.h"
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_texcache.h"
 #ifdef __macosx__
 # include <OpenGL/glu.h>
 # undef GL_ARB_multitexture // hack!
@@ -104,17 +106,17 @@ int	briefFgColorIndex [MAX_BRIEFING_COLORS],
 int	Current_color = 0;
 unsigned int nEraseColor = BLACK_RGBA;
 
-grs_rgba briefFgColors [2][MAX_BRIEFING_COLORS] = {
+grsRgba briefFgColors [2][MAX_BRIEFING_COLORS] = {
 	{{0, 160, 0, 255}, {160, 132, 140, 255}, {32, 124, 216, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}, 
 	{{0, 216, 0, 255}, {168, 152, 128, 255}, {252, 0, 0, 255}, {0, 0, 216, 255}, {56, 56, 56, 255}, {216, 216, 0, 255}, {0, 216, 216, 255}, {255, 255, 255, 255}}
 	};
 
-grs_rgba briefBgColors [2][MAX_BRIEFING_COLORS] = {
+grsRgba briefBgColors [2][MAX_BRIEFING_COLORS] = {
 	{{0, 24, 255}, {20, 20, 20, 255}, {4, 16, 28, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}, 
 	{{0, 76, 0, 255}, {56, 56, 56, 255}, {124, 0, 0, 255}, {0, 0, 76, 255}, {0, 0, 0, 255}, {76, 76, 0, 255}, {0, 76, 76, 255}, {255, 255, 255, 255}}
 	};
 
-grs_rgba eraseColorRgb = {0, 0, 0, 255};
+grsRgba eraseColorRgb = {0, 0, 0, 255};
 
 typedef struct tD1ExtraBotSound {
 	char	*pszName;

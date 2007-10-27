@@ -31,7 +31,11 @@
 # include <SDL.h>
 #endif
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_color.h"
+#include "ogl_texcache.h"
+#include "sdlgl.h"
 
 #include "inferno.h"
 #include "hudmsg.h"
@@ -62,6 +66,8 @@ void GrPaletteStepClear(void); // Function prototype for GrInit;
 void ResetHoardData (void);
 
 extern int screenShotIntervals [];
+
+int curDrawBuffer = -1;
 
 //------------------------------------------------------------------------------
 
@@ -196,42 +202,6 @@ GrPaletteStepUp (0,0,0);//in case its left over from in game
 
 //------------------------------------------------------------------------------
 
-GLenum curDrawBuffer = -1;
-
-void OglSetScreenMode (void)
-{
-	GLint	glRes;
-
-if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) && 
-	 (gameStates.ogl.bLastFullScreen == gameStates.ogl.bFullScreen) &&
-	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (curDrawBuffer == GL_FRONT)))
-	return;
-if (gameStates.video.nScreenMode == SCREEN_GAME)
-	glDrawBuffer (curDrawBuffer = GL_BACK);
-else {
-	glDrawBuffer (curDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT));
-	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
-		glGetIntegerv (GL_DRAW_BUFFER, &glRes);
-		glClearColor (0,0,0,0);
-		glClear (GL_COLOR_BUFFER_BIT);
-		glMatrixMode (GL_PROJECTION);
-		glLoadIdentity ();//clear matrix
-		glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-		glMatrixMode (GL_MODELVIEW);
-		glLoadIdentity ();//clear matrix
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable (GL_TEXTURE_2D);
-		glDepthFunc (GL_ALWAYS); //LEQUAL);
-		glDisable (GL_DEPTH_TEST);
-		}
-	}
-gameStates.video.nLastScreenMode = gameStates.video.nScreenMode;
-gameStates.ogl.bLastFullScreen = gameStates.ogl.bFullScreen;
-}
-
-//------------------------------------------------------------------------------
-
 void GrUpdate (int bClear)
 {
 if (gameStates.ogl.bInitialized) {// && (gameStates.video.nScreenMode != SCREEN_GAME))
@@ -240,68 +210,6 @@ if (gameStates.ogl.bInitialized) {// && (gameStates.video.nScreenMode != SCREEN_
 	else
 		glFlush ();
 	}
-}
-
-//------------------------------------------------------------------------------
-
-const char *gl_vendor,*gl_renderer,*gl_version,*gl_extensions;
-
-void OglGetVerInfo (void)
-{
-gl_vendor = (char *) glGetString (GL_VENDOR);
-gl_renderer = (char *) glGetString (GL_RENDERER);
-gl_version = (char *) glGetString (GL_VERSION);
-gl_extensions = (char *) glGetString (GL_EXTENSIONS);
-#if 0 //TRACE
-con_printf(
-	CON_VERBOSE, 
-	"\ngl vendor:%s\nrenderer:%s\nversion:%s\nextensions:%s\n",
-	gl_vendor,gl_renderer,gl_version,gl_extensions);
-#endif
-#if 0 //WGL only, I think
-	dglMultiTexCoord2fARB = (glMultiTexCoord2fARB_fp)wglGetProcAddress("glMultiTexCoord2fARB");
-	dglActiveTextureARB = (glActiveTextureARB_fp)wglGetProcAddress("glActiveTextureARB");
-	dglMultiTexCoord2fSGIS = (glMultiTexCoord2fSGIS_fp)wglGetProcAddress("glMultiTexCoord2fSGIS");
-	dglSelectTextureSGIS = (glSelectTextureSGIS_fp)wglGetProcAddress("glSelectTextureSGIS");
-#endif
-
-//multitexturing doesn't work yet.
-#ifdef GL_ARB_multitexture
-gameOpts->ogl.bArbMultiTexture=0;//(strstr(gl_extensions,"GL_ARB_multitexture")!=0 && glActiveTextureARB!=0 && 0);
-#	if 0 //TRACE	
-con_printf (CONDBG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
-#	endif
-#endif
-#ifdef GL_SGIS_multitexture
-gameOpts->ogl.bSgisMultiTexture=0;//(strstr(gl_extensions,"GL_SGIS_multitexture")!=0 && glSelectTextureSGIS!=0 && 0);
-#	if TRACE	
-con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
-#	endif	
-#endif
-
-//add driver specific hacks here.  whee.
-if (gl_renderer) {
-	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(gl_version,"1.2 Mesa 3.0")==0){
-		gameStates.ogl.bIntensity4 = 0;	//ignores alpha, always black background instead of transparent.
-		gameStates.ogl.bReadPixels = 0;	//either just returns all black, or kills the X server entirely
-		gameStates.ogl.bGetTexLevelParam = 0;	//returns random data..
-		}
-	if (stricmp(gl_vendor,"Matrox Graphics Inc.")==0){
-		//displays garbage. reported by
-		//  redomen@crcwnet.com (render="Matrox G400" version="1.1.3 5.52.015")
-		//  orulz (Matrox G200)
-		gameStates.ogl.bIntensity4=0;
-		}
-	}
-//allow overriding of stuff.
-#if 0 //TRACE	
-con_printf(CON_VERBOSE, 
-	"gl_arb_multitexture:%i, gl_sgis_multitexture:%i\n",
-	gameOpts->ogl.bArbMultiTexture,gameOpts->ogl.bSgisMultiTexture);
-con_printf(CON_VERBOSE, 
-	"gl_intensity4:%i, gl_luminance4_alpha4:%i, gl_readpixels:%i, gl_gettexlevelparam:%i\n",
-	gameStates.ogl.bIntensity4, gameStates.ogl.bLuminance4Alpha4, gameStates.ogl.bReadPixels, gameStates.ogl.bGetTexLevelParam);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -440,22 +348,6 @@ return retcode;
 
 void GrRemapMonoFonts ();
 
-void SetRenderQuality ()
-{
-	static int nCurQual = -1;
-
-if (nCurQual == gameOpts->render.nQuality)
-	return;
-nCurQual = gameOpts->render.nQuality;
-gameStates.ogl.texMagFilter = renderQualities [gameOpts->render.nQuality].texMagFilter;
-gameStates.ogl.texMinFilter = renderQualities [gameOpts->render.nQuality].texMinFilter;
-gameStates.ogl.bNeedMipMaps = renderQualities [gameOpts->render.nQuality].bNeedMipmap;
-gameStates.ogl.bAntiAliasing = renderQualities [gameOpts->render.nQuality].bAntiAliasing;
-ResetTextures (1, gameStates.app.bGameRunning);
-}
-
-//------------------------------------------------------------------------------
-
 void ResetTextures (int bReload, int bGame)
 {
 if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
@@ -481,8 +373,6 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 }
 
 //------------------------------------------------------------------------------
-
-void OglInitExtensions (void);
 
 int GrInit (void)
 {
@@ -518,7 +408,7 @@ if ((t = FindArg("-fullscreen"))) {
 	}
 SetRenderQuality ();
 if ((t=FindArg ("-gl_vidmem"))){
-	ogl_mem_target=atoi(Args[t+1])*1024*1024;
+	nOglMemTarget=atoi(Args[t+1])*1024*1024;
 }
 if ((t=FindArg ("-gl_reticle"))){
 	gameStates.ogl.nReticle=atoi(Args[t+1]);

@@ -22,7 +22,9 @@
 # endif
 #endif
 
-#include "ogl_init.h"
+#include "inferno.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "vers_id.h"
 #include "error.h"
 #include "u_mem.h"
@@ -31,23 +33,23 @@
 #include "oof.h"
 #include "inferno.h"
 #include "menu.h"
+#include "screens.h"
+#include "sdlgl.h"
+
+//------------------------------------------------------------------------------
 
 #define SDL_VIDEO_FLAGS	(SDL_OPENGL | SDL_DOUBLEBUF | SDL_HWSURFACE | (gameStates.ogl.bFullScreen ? SDL_FULLSCREEN : 0))
 
-static int nCurWidth = -1, nCurHeight = -1, bCurFullScr = -1;
-static Uint16 gammaRamp[512];
+//------------------------------------------------------------------------------
 
 void GrRemapMonoFonts (void);
 void FreeInventoryIcons (void);
 
 //------------------------------------------------------------------------------
 
-#include "screens.h"
+static int nCurWidth = -1, nCurHeight = -1, bCurFullScr = -1;
 
-void OglDoFullScreenInternal (int bForce)
-{
-OglInitWindow (nCurWidth, nCurHeight, bForce);
-}
+static Uint16 gammaRamp [512];
 
 //------------------------------------------------------------------------------
 
@@ -72,13 +74,6 @@ return SDL_SetGammaRamp (gammaRamp + gameStates.ogl.bright.red * 4,
 
 //------------------------------------------------------------------------------
 
-void OglSwapBuffersInternal (void)
-{
-SDL_GL_SwapBuffers ();
-}
-
-//------------------------------------------------------------------------------
-
 int OglVideoModeOK (int w, int h)
 {
 int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
@@ -87,6 +82,48 @@ if (!nColorBits)
 	return 0;
 gameStates.ogl.nColorBits = nColorBits;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int OglSetAttribute (char *szSwitch, char *szAttr, SDL_GLattr attr, int value)
+{
+	int	i;
+		
+if (szSwitch && (i = FindArg (szSwitch)) && Args [i + 1])
+	attr = atoi (Args [i + 1]);
+i = SDL_GL_SetAttribute (attr, value);
+/***/LogErr ("   setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
+return i;
+}
+
+//------------------------------------------------------------------------------
+
+void OglInitAttributes (void)
+{
+	int t;
+
+/***/LogErr ("setting OpenGL attributes\n");
+OglSetAttribute ("-gl_red", "SDL_GL_RED_SIZE", SDL_GL_RED_SIZE, 8);
+OglSetAttribute ("-gl_green", "SDL_GL_GREEN_SIZE", SDL_GL_GREEN_SIZE, 8);
+OglSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
+OglSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
+OglSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
+OglSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
+if ((t = FindArg ("-gl_depth")) && Args [t+1]) {
+	gameStates.ogl.nDepthBits = atoi (Args [t + 1]);
+	if (gameStates.ogl.nDepthBits <= 0)
+		gameStates.ogl.nDepthBits = 24;
+	else if (gameStates.ogl.nDepthBits > 24)
+		gameStates.ogl.nDepthBits = 24;
+	OglSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, gameStates.ogl.nDepthBits);
+	OglSetAttribute (NULL, "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
+	}
+OglSetAttribute (NULL, "SDL_GL_ACCUM_RED_SIZE", SDL_GL_ACCUM_RED_SIZE, 5);
+OglSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
+OglSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
+OglSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
+OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -164,44 +201,16 @@ if (gameStates.ogl.bInitialized) {
 
 //------------------------------------------------------------------------------
 
-int OglSetAttribute (char *szSwitch, char *szAttr, SDL_GLattr attr, int value)
+void OglDoFullScreenInternal (int bForce)
 {
-	int	i;
-		
-if (szSwitch && (i = FindArg (szSwitch)) && Args [i + 1])
-	attr = atoi (Args [i + 1]);
-i = SDL_GL_SetAttribute (attr, value);
-/***/LogErr ("   setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
-return i;
+OglInitWindow (nCurWidth, nCurHeight, bForce);
 }
 
 //------------------------------------------------------------------------------
 
-void OglInitAttributes (void)
+void OglSwapBuffersInternal (void)
 {
-	int t;
-
-/***/LogErr ("setting OpenGL attributes\n");
-OglSetAttribute ("-gl_red", "SDL_GL_RED_SIZE", SDL_GL_RED_SIZE, 8);
-OglSetAttribute ("-gl_green", "SDL_GL_GREEN_SIZE", SDL_GL_GREEN_SIZE, 8);
-OglSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
-OglSetAttribute ("-gl_alpha", "SDL_GL_ALPHA_SIZE", SDL_GL_ALPHA_SIZE, 8);
-OglSetAttribute ("-gl_buffer", "SDL_GL_BUFFER_SIZE", SDL_GL_BUFFER_SIZE, 32);
-OglSetAttribute ("-gl_stencil", "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
-if ((t = FindArg ("-gl_depth")) && Args [t+1]) {
-	gameStates.ogl.nDepthBits = atoi (Args [t + 1]);
-	if (gameStates.ogl.nDepthBits <= 0)
-		gameStates.ogl.nDepthBits = 24;
-	else if (gameStates.ogl.nDepthBits > 24)
-		gameStates.ogl.nDepthBits = 24;
-	OglSetAttribute (NULL, "SDL_GL_DEPTH_SIZE", SDL_GL_DEPTH_SIZE, gameStates.ogl.nDepthBits);
-	OglSetAttribute (NULL, "SDL_GL_STENCIL_SIZE", SDL_GL_STENCIL_SIZE, 8);
-	}
-OglSetAttribute (NULL, "SDL_GL_ACCUM_RED_SIZE", SDL_GL_ACCUM_RED_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
-OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
+SDL_GL_SwapBuffers ();
 }
 
 //------------------------------------------------------------------------------

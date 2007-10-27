@@ -20,6 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "vecmat.h"
 
+//-----------------------------------------------------------------------------
+
 #ifdef MACDATA
 #	define SWAP_0_255              // swap black and white
 #	define DEFAULT_TRANSPARENCY_COLOR  0 // palette entry of transparency color -- 255 on the PC
@@ -43,6 +45,27 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SHEIGHT (grdCurScreen->scHeight)
 
 #define MAX_BMP_SIZE(width, height) (4 + ((width) + 2) * (height))
+
+//these are control characters that have special meaning in the font code
+
+#define CC_COLOR        1   //next char is new foreground color
+#define CC_LSPACING     2   //next char specifies line spacing
+#define CC_UNDERLINE    3   //next char is underlined
+
+//now have string versions of these control characters (can concat inside a string)
+
+#define CC_COLOR_S      "\x1"   //next char is new foreground color
+#define CC_LSPACING_S   "\x2"   //next char specifies line spacing
+#define CC_UNDERLINE_S  "\x3"   //next char is underlined
+
+#define BM_LINEAR   0
+#define BM_MODEX    1
+#define BM_SVGA     2
+#define BM_RGB15    3   //5 bits each r, g, b stored at 16 bits
+#define BM_SVGA15   4
+#define BM_OGL      5
+
+//-----------------------------------------------------------------------------
 
 typedef struct grsPoint {
 	fix x, y;
@@ -74,7 +97,6 @@ typedef struct tRgbaColorf {
 	float	alpha;
 } tRgbaColorf;
 
-
 typedef struct tRgbaColorb {
 	ubyte	red, green, blue, alpha;
 } tRgbaColorb;
@@ -87,52 +109,18 @@ typedef struct tRgbColors {
 	short red, green, blue;
 } tRgbColors;
 
-//these are control characters that have special meaning in the font code
+typedef struct tFaceColor {
+	tRgbaColorf	color;
+	char			index;
+} tFaceColor;
 
-#define CC_COLOR        1   //next char is new foreground color
-#define CC_LSPACING     2   //next char specifies line spacing
-#define CC_UNDERLINE    3   //next char is underlined
-
-//now have string versions of these control characters (can concat inside a string)
-
-#define CC_COLOR_S      "\x1"   //next char is new foreground color
-#define CC_LSPACING_S   "\x2"   //next char specifies line spacing
-#define CC_UNDERLINE_S  "\x3"   //next char is underlined
-
-#define BM_LINEAR   0
-#define BM_MODEX    1
-#define BM_SVGA     2
-#define BM_RGB15    3   //5 bits each r, g, b stored at 16 bits
-#define BM_SVGA15   4
-#define BM_OGL      5
-
-//@@// Define these modes for Gameplay too, since the game was developed under
-//@@// DOS, we will adapt these modes to other systems thru rendering.
-//@@#define SM_ORIGINAL		-1
-//@@#define SM_320x200C     0
-//@@#define SM_320x200U     1
-//@@#define SM_320x240U     2
-//@@#define SM_360x200U     3
-//@@#define SM_360x240U     4
-//@@#define SM_376x282U     5
-//@@#define SM_320x400U     6
-//@@#define SM_320x480U     7
-//@@#define SM_360x400U     8
-//@@#define SM_360x480U     9
-//@@#define SM_360x360U     10
-//@@#define SM_376x308U     11
-//@@#define SM_376x564U     12
-//@@#define SM_640x400V     13
-//@@#define SM_640x480V     14
-//@@#define SM_800x600V     15
-//@@#define SM_1024x768V    16
-//@@#define SM_640x480V15   17
-//@@#define SM_800x600V15   18
+//-----------------------------------------------------------------------------
 
 #define SM(w, h) ((((u_int32_t)w)<<16)+(((u_int32_t)h)&0xFFFF))
 #define SM_W(m) (m>>16)
 #define SM_H(m) (m&0xFFFF)
 
+//-----------------------------------------------------------------------------
 
 #define BM_FLAG_TRANSPARENT         1
 #define BM_FLAG_SUPER_TRANSPARENT   2
@@ -207,6 +195,8 @@ typedef struct grsBitmap {
 #define BM_MASK(_bmP)			((_bmP)->bmData.std.bmMask)
 #define BM_PARENT(_bmP)			((_bmP)->bmData.std.bmParent)
 
+//-----------------------------------------------------------------------------
+
 static inline grsBitmap *BmCurFrame (grsBitmap *bmP, int iFrame)
 {
 if (bmP->bmType != BM_TYPE_ALT)
@@ -215,6 +205,8 @@ if (iFrame < 0)
 	return BM_CURFRAME (bmP) ? BM_CURFRAME (bmP) : bmP;
 return BM_CURFRAME (bmP) = ((BM_FRAMES (bmP) ? BM_FRAMES (bmP) + iFrame : bmP));
 }
+
+//-----------------------------------------------------------------------------
 
 static inline grsBitmap *BmOverride (grsBitmap *bmP, int iFrame)
 {
@@ -227,6 +219,8 @@ if (bmP->bmType == BM_TYPE_STD) {
 	}
 return BmCurFrame (bmP, iFrame);
 }
+
+//-----------------------------------------------------------------------------
 
 //font structure
 typedef struct grsFont {
@@ -248,17 +242,32 @@ typedef struct grsFont {
 
 #define GRS_FONT_SIZE 28    // how much space it takes up on disk
 
-typedef struct grs_rgba {
+#define FONT			grdCurCanv->cvFont
+#define FG_COLOR		grdCurCanv->cvFontFgColor
+#define BG_COLOR		grdCurCanv->cvFontBgColor
+#define FWIDTH       FONT->ftWidth
+#define FHEIGHT      FONT->ftHeight
+#define FBASELINE    FONT->ftBaseLine
+#define FFLAGS       FONT->ftFlags
+#define FMINCHAR     FONT->ftMinChar
+#define FMAXCHAR     FONT->ftMaxChar
+#define FDATA        FONT->ftData
+#define FCHARS       FONT->ftChars
+#define FWIDTHS      FONT->ftWidths
+
+//-----------------------------------------------------------------------------
+
+typedef struct grsRgba {
 	ubyte			red;
 	ubyte			green;
 	ubyte			blue;
 	ubyte			alpha;
-} grs_rgba;
+} grsRgba;
 
 typedef struct grsColor {
 	short       index;       // current color
 	ubyte			rgb;
-	grs_rgba		color;
+	grsRgba		color;
 } grsColor;
 
 typedef struct grsCanvas {
@@ -297,7 +306,7 @@ int GrInitScreen(int mode, int w, int h, int x, int y, int rowSize, ubyte *data)
 int GrVideoModeOK(u_int32_t mode);
 int GrSetMode(u_int32_t mode);
 
-
+//-----------------------------------------------------------------------------
 // These 4 functions actuall change screen colors.
 
 extern void gr_pal_fade_out(unsigned char * pal);
@@ -306,9 +315,7 @@ extern void gr_pal_clear(void);
 extern void gr_pal_setblock(int start, int number, unsigned char * pal);
 extern void gr_pal_getblock(int start, int number, unsigned char * pal);
 
-
 extern unsigned char *gr_video_memory;
-	                                            // All graphic modules will define this value.
 
 //shut down the 2d.  Restore the screen mode.
 void _CDECL_ GrClose(void);
@@ -511,7 +518,7 @@ void GrRemapMonoFonts();
 
 // Writes a string using current font. Returns the next column after last char.
 void GrSetFontColor(int fg, int bg);
-void GrSetFontColorRGB (grs_rgba *fg, grs_rgba *bg);
+void GrSetFontColorRGB (grsRgba *fg, grsRgba *bg);
 void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG);
 void GrSetCurFont (grsFont * new);
 int GrString (int x, int y, char *s, int *idP);
@@ -528,6 +535,11 @@ void RotateBitmap(grsBitmap *bp, grsPoint *vertbuf, int lightValue);
 
 // From scale.c
 void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation);
+
+void OglURect(int left,int top,int right,int bot);
+void OglUPixelC (int x, int y, grsColor *c);
+void OglULineC (int left,int top,int right,int bot, grsColor *c);
+void OglUPolyC (int left, int top, int right, int bot, grsColor *c);
 
 //===========================================================================
 // Global variables
@@ -637,6 +649,8 @@ int GrToggleFullScreen(void);
 
 int GrToggleFullScreenMenu(void);//returns state after toggling (ie, same as if you had called check_fullscreen immediatly after)
 
+void OglDoPalFx (void);
+
 void InitStringPool (void);
 void FreeStringPool (void);
 
@@ -646,23 +660,12 @@ typedef struct tScrSize {
 
 extern tScrSize scrSizes [];
 
+extern int curDrawBuffer;
+
 char *ScrSizeArg (int x, int y);
 int SCREENMODE (int x, int y, int c);
 int S_MODE (u_int32_t *VV, int *VG);
 int GrBitmapHasTransparency (grsBitmap *bmP);
-
-#define FONT			grdCurCanv->cvFont
-#define FG_COLOR		grdCurCanv->cvFontFgColor
-#define BG_COLOR		grdCurCanv->cvFontBgColor
-#define FWIDTH       FONT->ftWidth
-#define FHEIGHT      FONT->ftHeight
-#define FBASELINE    FONT->ftBaseLine
-#define FFLAGS       FONT->ftFlags
-#define FMINCHAR     FONT->ftMinChar
-#define FMAXCHAR     FONT->ftMaxChar
-#define FDATA        FONT->ftData
-#define FCHARS       FONT->ftChars
-#define FWIDTHS      FONT->ftWidths
 
 typedef union tTexCoord2f {
 	float a [2];

@@ -13,7 +13,7 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include <string.h>
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "vers_id.h"
 #include "error.h"
 #include "event.h"

@@ -16,7 +16,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "vers_id.h"
 #include "error.h"
 #include "key.h"
@@ -269,7 +269,7 @@ void OglDoFullScreenInternal(void){
 	if (GLPREF_windowed==gameStates.ogl.bFullScreen){
 		OglDestroyWindow();
 		win32_create_window(GLPREF_width,GLPREF_height);
-		ogl_vivify_texture_list_internal();
+		OglVivifyTextureListInternal();
 	}
 }
 
@@ -285,7 +285,7 @@ int OglInitWindow(int x, int y){
 		}else{
 			OglDestroyWindow();
 			win32_create_window(x,y);
-			ogl_vivify_texture_list_internal();
+			OglVivifyTextureListInternal();
 		}
 	}else {
 		win32_create_window(x,y);

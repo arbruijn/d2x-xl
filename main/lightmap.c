@@ -25,7 +25,8 @@ there I just had it exit instead.
 #include <stdio.h>
 
 #include "inferno.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_shader.h"
 #include "lighting.h"
 #include "lightmap.h"
 #include "gameseg.h"

@@ -96,7 +96,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "switch.h"
 #include "escort.h"
 #include "collide.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "object.h"
 #include "sphere.h"
 #include "cheats.h"

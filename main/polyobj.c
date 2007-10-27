@@ -24,12 +24,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 
-// -- I hate this warning in make depend! -- #ifdef DRIVE
-// -- I hate this warning in make depend! -- #include "drive.h"
-// -- I hate this warning in make depend! -- #else
 #include "inferno.h"
-// -- I hate this warning in make depend! -- #endif
-
 #include "polyobj.h"
 
 #include "vecmat.h"
@@ -39,7 +34,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #include "u_mem.h"
 #include "args.h"
 #include "byteswap.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "gamepal.h"
 #include "network.h"
 #include "strutil.h"

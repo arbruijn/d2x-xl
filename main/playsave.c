@@ -32,6 +32,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pa_enabl.h"
 #include "inferno.h"
 #include "strutil.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "game.h"
 #include "gameseq.h"
 #include "player.h"

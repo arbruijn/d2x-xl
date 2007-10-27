@@ -23,6 +23,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "gr.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "gameseg.h"
 #include "lighting.h"
 #include "lightmap.h"

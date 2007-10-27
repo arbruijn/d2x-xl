@@ -565,6 +565,25 @@
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
 				</File>
+				<Filter
+					Name="Header"
+					Filter="">
+					<File
+						RelativePath="..\..\2d\bitmap.h">
+					</File>
+					<File
+						RelativePath="..\..\include\palette.h">
+					</File>
+					<File
+						RelativePath="..\..\include\pcx.h">
+					</File>
+					<File
+						RelativePath="..\..\include\rle.h">
+					</File>
+					<File
+						RelativePath="..\..\texmap\scanline.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="3d"
@@ -758,50 +777,29 @@
 				<File
 					RelativePath="..\..\3d\shadows.c">
 				</File>
+				<Filter
+					Name="Header"
+					Filter="">
+					<File
+						RelativePath="..\..\include\3d.h">
+					</File>
+					<File
+						RelativePath="..\..\3d\clipper.h">
+					</File>
+					<File
+						RelativePath="..\..\main\fastrender.h">
+					</File>
+					<File
+						RelativePath="..\..\3d\globvars.h">
+					</File>
+					<File
+						RelativePath="..\..\include\interp.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="arch"
 				Filter="">
-				<File
-					RelativePath="..\..\misc\args.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\cfile\cfile.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-				</File>
 				<File
 					RelativePath="..\..\arch\sdl\digi.c">
 					<FileConfiguration
@@ -1012,27 +1010,34 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\arch\ogl\ogl.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
+					RelativePath="..\..\arch\ogl\ogl_bitmap.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_color.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_defs.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_fastrender.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_hudstuff.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_lib.c">
 				</File>
 				<File
 					RelativePath="..\..\arch\ogl\ogl_render.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_shader.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_texcache.c">
+				</File>
+				<File
+					RelativePath="..\..\arch\ogl\ogl_texture.c">
 				</File>
 				<File
 					RelativePath="..\..\arch\ogl\pbuffer.c">
@@ -1077,10 +1082,105 @@
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
 				</File>
+				<Filter
+					Name="Header"
+					Filter="">
+					<File
+						RelativePath="..\..\main\digi.h">
+					</File>
+					<File
+						RelativePath="..\..\include\gr.h">
+					</File>
+					<File
+						RelativePath="..\..\include\grdef.h">
+					</File>
+					<File
+						RelativePath="..\..\arch\include\joy.h">
+					</File>
+					<File
+						RelativePath="..\..\main\joydefs.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_bitmap.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_color.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_defs.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_fastrender.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_init.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_lib.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_render.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_shader.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_texcache.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_texture.h">
+					</File>
+					<File
+						RelativePath="..\..\include\ogl_tmu.h">
+					</File>
+					<File
+						RelativePath="..\..\include\sdlgl.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="misc"
 				Filter="">
+				<File
+					RelativePath="..\..\misc\args.c">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="0"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+							BasicRuntimeChecks="3"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="2"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\cfile\cfile.c">
+					<FileConfiguration
+						Name="Debug|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="0"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+							BasicRuntimeChecks="3"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32">
+						<Tool
+							Name="VCCLCompilerTool"
+							Optimization="2"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath="..\..\console\CON_console.c">
 					<FileConfiguration
@@ -1261,6 +1361,34 @@
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
 				</File>
+				<Filter
+					Name="Header"
+					Filter="">
+					<File
+						RelativePath="..\..\include\args.h">
+					</File>
+					<File
+						RelativePath="..\..\include\cfile.h">
+					</File>
+					<File
+						RelativePath="..\..\include\CON_console.h">
+					</File>
+					<File
+						RelativePath="..\..\include\d_io.h">
+					</File>
+					<File
+						RelativePath="..\..\include\error.h">
+					</File>
+					<File
+						RelativePath="..\..\include\strio.h">
+					</File>
+					<File
+						RelativePath="..\..\include\strutil.h">
+					</File>
+					<File
+						RelativePath="..\..\include\u_mem.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="main"
@@ -2858,16 +2986,10 @@
 					Name="Header Files"
 					Filter="h;hpp;hxx;hm;inl">
 					<File
-						RelativePath="..\..\include\3d.h">
-					</File>
-					<File
 						RelativePath="..\..\main\ai.h">
 					</File>
 					<File
 						RelativePath="..\..\main\aistruct.h">
-					</File>
-					<File
-						RelativePath="..\..\include\args.h">
 					</File>
 					<File
 						RelativePath="..\..\main\autodl.h">
@@ -2877,9 +2999,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\banlist.h">
-					</File>
-					<File
-						RelativePath="..\..\2d\bitmap.h">
 					</File>
 					<File
 						RelativePath="..\..\main\bm.h">
@@ -2894,16 +3013,10 @@
 						RelativePath="..\..\main\cameras.h">
 					</File>
 					<File
-						RelativePath="..\..\include\cfile.h">
-					</File>
-					<File
 						RelativePath="..\..\main\cheats.h">
 					</File>
 					<File
 						RelativePath="..\..\2d\clip.h">
-					</File>
-					<File
-						RelativePath="..\..\3d\clipper.h">
 					</File>
 					<File
 						RelativePath="..\..\include\cmd.h">
@@ -2918,9 +3031,6 @@
 						RelativePath="..\..\main\compbit.h">
 					</File>
 					<File
-						RelativePath="..\..\include\CON_console.h">
-					</File>
-					<File
 						RelativePath="..\..\main\config.h">
 					</File>
 					<File
@@ -2933,13 +3043,7 @@
 						RelativePath="..\..\main\credits.h">
 					</File>
 					<File
-						RelativePath="..\..\include\d_io.h">
-					</File>
-					<File
 						RelativePath="..\..\main\desc_id.h">
-					</File>
-					<File
-						RelativePath="..\..\main\digi.h">
 					</File>
 					<File
 						RelativePath="..\..\main\effects.h">
@@ -2948,25 +3052,16 @@
 						RelativePath="..\..\main\endlevel.h">
 					</File>
 					<File
-						RelativePath="..\..\include\error.h">
-					</File>
-					<File
 						RelativePath="..\..\main\escort.h">
 					</File>
 					<File
 						RelativePath="..\..\arch\include\event.h">
 					</File>
 					<File
-						RelativePath="..\..\main\fastrender.h">
-					</File>
-					<File
 						RelativePath="..\..\include\findfile.h">
 					</File>
 					<File
 						RelativePath="..\..\main\fireball.h">
-					</File>
-					<File
-						RelativePath="..\..\include\fix.h">
 					</File>
 					<File
 						RelativePath="..\..\main\flightpath.h">
@@ -2976,9 +3071,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\fvi.h">
-					</File>
-					<File
-						RelativePath="..\..\main\fvi_a.h">
 					</File>
 					<File
 						RelativePath="..\..\main\game.h">
@@ -3014,15 +3106,6 @@
 						RelativePath="..\..\main\glare.h">
 					</File>
 					<File
-						RelativePath="..\..\3d\globvars.h">
-					</File>
-					<File
-						RelativePath="..\..\include\gr.h">
-					</File>
-					<File
-						RelativePath="..\..\include\grdef.h">
-					</File>
-					<File
 						RelativePath="..\..\include\hash.h">
 					</File>
 					<File
@@ -3044,9 +3127,6 @@
 						RelativePath="..\..\main\input.h">
 					</File>
 					<File
-						RelativePath="..\..\include\interp.h">
-					</File>
-					<File
 						RelativePath="..\..\include\ipx.h">
 					</File>
 					<File
@@ -3057,12 +3137,6 @@
 					</File>
 					<File
 						RelativePath="..\..\arch\win32\include\ipx_udp.h">
-					</File>
-					<File
-						RelativePath="..\..\arch\include\joy.h">
-					</File>
-					<File
-						RelativePath="..\..\main\joydefs.h">
 					</File>
 					<File
 						RelativePath="..\..\main\kconfig.h">
@@ -3087,9 +3161,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\makesig.h">
-					</File>
-					<File
-						RelativePath="..\..\include\maths.h">
 					</File>
 					<File
 						RelativePath="..\..\main\menu.h">
@@ -3152,9 +3223,6 @@
 						RelativePath="..\..\main\objsmoke.h">
 					</File>
 					<File
-						RelativePath="..\..\include\ogl_init.h">
-					</File>
-					<File
 						RelativePath="..\..\main\oof.h">
 					</File>
 					<File
@@ -3164,13 +3232,7 @@
 						RelativePath="..\..\main\paging.h">
 					</File>
 					<File
-						RelativePath="..\..\include\palette.h">
-					</File>
-					<File
 						RelativePath="..\..\main\particles.h">
-					</File>
-					<File
-						RelativePath="..\..\include\pcx.h">
 					</File>
 					<File
 						RelativePath="..\..\main\perlin.h">
@@ -3221,19 +3283,7 @@
 						RelativePath="..\..\main\reorder.h">
 					</File>
 					<File
-						RelativePath=".\resource.h">
-					</File>
-					<File
-						RelativePath="..\..\resource.h">
-					</File>
-					<File
-						RelativePath="..\..\include\rle.h">
-					</File>
-					<File
 						RelativePath="..\..\main\robot.h">
-					</File>
-					<File
-						RelativePath="..\..\texmap\scanline.h">
 					</File>
 					<File
 						RelativePath="..\..\main\scores.h">
@@ -3261,12 +3311,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\state.h">
-					</File>
-					<File
-						RelativePath="..\..\include\strio.h">
-					</File>
-					<File
-						RelativePath="..\..\include\strutil.h">
 					</File>
 					<File
 						RelativePath="..\..\main\switch.h">
@@ -3311,13 +3355,7 @@
 						RelativePath="..\..\include\u_dpmi.h">
 					</File>
 					<File
-						RelativePath="..\..\include\u_mem.h">
-					</File>
-					<File
 						RelativePath="..\..\main\vclip.h">
-					</File>
-					<File
-						RelativePath="..\..\include\vecmat.h">
 					</File>
 					<File
 						RelativePath="..\..\main\vers_id.h">
@@ -3416,6 +3454,19 @@
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
 				</File>
+				<Filter
+					Name="Header"
+					Filter="">
+					<File
+						RelativePath="..\..\include\fix.h">
+					</File>
+					<File
+						RelativePath="..\..\include\maths.h">
+					</File>
+					<File
+						RelativePath="..\..\include\vecmat.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="texmap"

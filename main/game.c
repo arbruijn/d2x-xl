@@ -27,7 +27,9 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include <ctype.h>
 #include <time.h>
 
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
+#include "ogl_render.h"
 #include "pstypes.h"
 #include "console.h"
 #include "gr.h"

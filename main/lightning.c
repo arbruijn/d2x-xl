@@ -70,7 +70,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef TACTILE
 #include "tactile.h"
 #endif
-#include "ogl_init.h"
+#include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "input.h"
 #include "automap.h"
 #include "u_mem.h"

@@ -48,7 +48,7 @@
 #include "cameras.h"
 #include "render.h"
 #include "grdef.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "lightmap.h"
 
 //------------------------------------------------------------------------------

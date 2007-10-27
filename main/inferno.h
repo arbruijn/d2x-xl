@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "bm.h"
 #include "gr.h"
 #include "piggy.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "segment.h"
 #include "aistruct.h"
 #include "object.h"
@@ -613,6 +613,7 @@ typedef struct tGfxStates {
 typedef struct tOglStates {
 	int bInitialized;
 	int bShadersOk;
+	int bMultiTexturingOk;
 	int bFullScreen;
 	int bLastFullScreen;
 	int bUseTransform;
