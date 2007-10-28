@@ -42,12 +42,14 @@ int CreateCameras (void);
 void DestroyCameras (void);
 int RenderCameras (void);
 int RenderCamera (tCamera *pc);
-void GetCameraUVL (tCamera *pc, tUVL *uvlCopy);
+void GetCameraUVL (tCamera *pc, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP);
 #if RENDER2TEXTURE
 int OglCamBufAvail (tCamera *pc, int bCheckTexture);
 #endif
 int CreateCamera (tCamera *pc, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
 						tObject *objP, int bShadowMap, int bTeleport);
 void DestroyCamera (tCamera *pc);
+
+#define USE_CAMERAS (extraGameInfo [0].bUseCameras && (!IsMultiGame || (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bUseCameras)))
 
 #endif // _cameras_h

@@ -741,7 +741,7 @@ int SelectPlayer ()
 	int 	i,j, bAutoPlr;
 	char 	filename [FILENAME_LEN];
 	char	filespec [FILENAME_LEN];
-	int 	allow_abortFlag = !bStartup;
+	int 	bAllowAbort = !bStartup;
 
 if (LOCALPLAYER.callsign [0] == 0)	{
 	//---------------------------------------------------------------------
@@ -754,17 +754,17 @@ if (LOCALPLAYER.callsign [0] == 0)	{
 	gameOpts->input.mouse.sensitivity [0] =
 	gameOpts->input.mouse.sensitivity [1] =
 	gameOpts->input.mouse.sensitivity [2] = 8;
-	gameConfig.nControlType =CONTROL_NONE;
-	for (i=0; i<CONTROL_MAX_TYPES; i++)
-		for (j=0; j<MAX_CONTROLS; j++)
+	gameConfig.nControlType = CONTROL_NONE;
+	for (i = 0; i < CONTROL_MAX_TYPES; i++)
+		for (j = 0; j < MAX_CONTROLS; j++)
 			controlSettings.custom [i][j] = controlSettings.defaults [i][j];
 	KCSetControls (0);
 	//----------------------------------------------------------------
 
 	// Read the last tPlayer's name from config file, not lastplr.txt
 	strncpy (LOCALPLAYER.callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
-	if (gameConfig.szLastPlayer [0]==0)
-		allow_abortFlag = 0;
+	if (gameConfig.szLastPlayer [0] == 0)
+		bAllowAbort = 0;
 	}
 if ((bAutoPlr = gameData.multiplayer.autoNG.bValid))
 	strncpy (filename, gameData.multiplayer.autoNG.szPlayer, 8);
@@ -785,13 +785,15 @@ do_menu_again:
 
 bStartup = 0;
 sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : ""); 
-if (!ExecMenuFileSelector (TXT_SELECT_PILOT, filespec, filename, allow_abortFlag))	{
-	if (allow_abortFlag) {
+if (!ExecMenuFileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort))	{
+	if (bAllowAbort) {
 		return 0;
 		}
 	goto do_menu_again; //return 0;		// They hit Esc in file selector
 	}
+
 got_player:
+
 bStartup = 0;
 if (filename [0] == '<')	{
 	// They selected 'create new pilot'

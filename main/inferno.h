@@ -806,6 +806,7 @@ typedef struct tRenderStates {
 	int nShadowBlurPass;
 	int bShadowMaps;
 	int bLoResShadows;
+	int bUseCameras;
 	int bUseDynLight;
 	int bApplyDynLight;
 	int nSoften;

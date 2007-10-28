@@ -341,165 +341,82 @@ gameData.cameras.nCameras = 0;
 
 //------------------------------------------------------------------------------
 
-void GetCameraUVL (tCamera *pc, tUVL *uvlCopy)
+void GetCameraUVL (tCamera *pc, tUVL *uvlP, tTexCoord2f *texCoordP, fVector3 *vertexP)
 {
-	int	i;
-#if 1//ndef _DEBUG
-if (pc->bHaveUVL)
-	memcpy (uvlCopy, pc->uvlList, sizeof (pc->uvlList));
+#ifndef _DEBUG
+if (pc->bHaveUVL) {
+	if (uvlP)
+		memcpy (uvlP, pc->uvlList, sizeof (pc->uvlList));
+	}
 else 
 #endif
 	{
-		fix		h, i, dx, dy, dd = 0;
-		double	ha, va, a, r, d;
-		int		xFlip = (uvlCopy [2].u < uvlCopy [0].u);
-		int		yFlip = (uvlCopy [1].v < uvlCopy [0].v);
-		int		rotLeft = (uvlCopy [1].u < uvlCopy [0].u);
-		int		rotRight = (uvlCopy [1].u > uvlCopy [0].u);
+		fix	i;
+		float	duImage, dvImage, duFace, dvFace, du, dv, dd, aFace, aImage;
+		int	xFlip, yFlip, rotLeft, rotRight;
 #if RENDER2TEXTURE
-		int		bCamBufAvail = OglCamBufAvail (pc, 1) == 1;
-		int		bFitToWall = pc->bTeleport || gameOpts->render.cameras.bFitToWall;
+		int	bCamBufAvail = OglCamBufAvail (pc, 1) == 1;
+		int	bFitToWall = pc->bTeleport || gameOpts->render.cameras.bFitToWall;
 #endif
 
-	h = F1_0; 
-	dd = uvlCopy [1].v - uvlCopy [0].v;
-	if (dd < 0)
-		dd = -dd;
-	dd = (dd % F1_0) ?  (F1_0 - dd % F1_0) / 2 : 0;
-#if RENDER2TEXTURE == 1
-	if (!bFitToWall && bCamBufAvail) {
-		a = (double) grdCurCanv->cvBitmap.bmProps.h / (double) pc->texBuf.bmProps.h;
-		dy = ((fix) ((double) h * (1.0 - a))) / 2 * grdCurCanv->cvBitmap.bmProps.h / (double) grdCurCanv->cvBitmap.bmProps.w;
-		dy -= dd;
-		if (yFlip) {
-			uvlCopy [0].v = -dy;
-			uvlCopy [1].v = F1_0 + dy;
-			}
-		else {
-			uvlCopy [0].v = F1_0 + dy; //-F1_0 - dy;
-			uvlCopy [1].v = -dy; //F1_0;
-			}
-		if (yFlip) {
-			uvlCopy [3].v = -dy;
-			uvlCopy [2].v = F1_0 + dy;
-			}
-		else {
-			uvlCopy [3].v = F1_0 + dy; //-F1_0 - dy;
-			uvlCopy [2].v = -dy; //dy;
-			}
-		a = (double) (pc->texBuf.bmProps.w - grdCurCanv->cvBitmap.bmProps.w) / 
-			 (double) pc->texBuf.bmProps.w;
-		dx = ((fix) ((double) h * a));
-		for (i = 0; i < 2; i++) {
-			if (xFlip) {
-				uvlCopy [i].u = F1_0;
-				uvlCopy [i + 2].u = 0;
-				}
-			else {
-				uvlCopy [i + 2].u = F1_0;
-				uvlCopy [i].u = 0;
-				}
+	if (uvlP) {
+		xFlip = (uvlP [2].u < uvlP [0].u);
+		yFlip = (uvlP [1].v > uvlP [0].v);
+		rotLeft = (uvlP [1].u < uvlP [0].u);
+		rotRight = (uvlP [1].u > uvlP [0].u);
+		dvFace = f2fl (uvlP [1].v - uvlP [0].v);
+		duFace = f2fl (uvlP [2].u - uvlP [0].u);
+		}
+	else {
+		xFlip = (texCoordP [2].v.u < texCoordP [0].v.u);
+		yFlip = (texCoordP [1].v.v > texCoordP [0].v.v);
+		rotLeft = (texCoordP [1].v.u < texCoordP [0].v.u);
+		rotRight = (texCoordP [1].v.u > texCoordP [0].v.u);
+		dvFace = (float) fabs (texCoordP [1].v.v - texCoordP [0].v.v);
+		duFace = (float) fabs (texCoordP [2].v.u - texCoordP [0].v.u);
+		}
+	du = dv = 0;
+	if (bCamBufAvail) {
+		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) pc->texBuf.bmProps.w;
+		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) pc->texBuf.bmProps.h;
+		if (!bFitToWall) {
+			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
+			if (vertexP)
+				aFace = VmVecDistf ((fVector *) vertexP, (fVector *) (vertexP + 1)) / 
+						  VmVecDistf ((fVector *) (vertexP + 1), (fVector *) (vertexP + 2));
+			else
+				aFace = dvFace / duFace;
+			dv = (aImage - aFace) / 2.0f;
+			duImage -= du / 2;
+			dvImage -= dv;
 			}
 		}
-	else 
-#elif RENDER2TEXTURE == 2
-	if (!bFitToWall && bCamBufAvail) {
-		r = (double) (uvlCopy [2].u - uvlCopy [0].u) / (double) (uvlCopy [1].v - uvlCopy [0].v);
-		if (r < 0)
-			r = -r;
-		a = (double) grdCurCanv->cvBitmap.bmProps.h / (double) pc->texBuf.bmProps.h;
-		dy = ((fix) ((double) h * (1.0 - a))) / 2;// * grdCurCanv->cvBitmap.bmProps.h / (double) grdCurCanv->cvBitmap.bmProps.w;
-		d = (double) grdCurCanv->cvBitmap.bmProps.w / (double) grdCurCanv->cvBitmap.bmProps.h;
-		//dy = ((fix) ((double) h * (a))) / 2;// * grdCurCanv->cvBitmap.bmProps.h / (double) grdCurCanv->cvBitmap.bmProps.w;
-		if (d - 1.0)
-			dy = (int) ((double) dy * (d - r) / (d - 1.0));
-		if (yFlip) {
-			uvlCopy [0].v = (int) (-dy * a);
-			uvlCopy [1].v = (int) ((F1_0 + dy) * a);
-			}
-		else {
-			uvlCopy [0].v = (int) ((F1_0 + dy) * a); //-F1_0 - dy;
-			uvlCopy [1].v = (int) (-dy * a); //F1_0;
-			}
-		if (yFlip) {
-			uvlCopy [3].v = (int) (-dy * a);
-			uvlCopy [2].v = (int) ((F1_0 + dy) * a);
-			}
-		else {
-			uvlCopy [3].v = (int) ((F1_0 + dy) * a); //-F1_0 - dy;
-			uvlCopy [2].v = (int) (-dy * a); //dy;
-			}
-		a = (double) grdCurCanv->cvBitmap.bmProps.w / (double) pc->texBuf.bmProps.w;
-		dx = ((fix) ((double) h * a)) / 2;
-		dx = 0;
-		for (i = 0; i < 2; i++) {
-			if (xFlip) {
-				uvlCopy [i].u = (int) (F1_0 * a);
-				uvlCopy [i + 2].u = 0;
-				}
-			else {
-				uvlCopy [i + 2].u = (int) (F1_0 * a);
-				uvlCopy [i].u = 0;
-				}
-			}
+	else {
+		duImage = duFace;
+		dvImage = dvFace;
 		}
-	else 
-#endif // RENDER2TEXTURE
-		{
-		if (0 && bFitToWall)
-			dx = dy = 0;
-		else {
-			ha = 1.0 - (double) grdCurCanv->cvBitmap.bmProps.w / (double) pc->texBuf.bmProps.w;
-			va = 1.0 - (double) grdCurCanv->cvBitmap.bmProps.h / (double) pc->texBuf.bmProps.h;
-			dx = (fix) ((double) F1_0 * ha);
-			dy = (fix) ((double) F1_0 * va);
-			dd = (pc->texBuf.bmProps.w == pc->texBuf.bmProps.h) ? (dy - dx) / 2 : dy;
-			}
-		if (yFlip) {
-			uvlCopy [0].v =
-			uvlCopy [3].v = dy;
-			uvlCopy [1].v =
-			uvlCopy [2].v = F1_0;
-			}
-		else {
-			uvlCopy [0].v =
-			uvlCopy [3].v = -dy;
-			uvlCopy [1].v =
-			uvlCopy [2].v = -F1_0;
-			}
-		if (xFlip) {
-			uvlCopy [0].u =
-			uvlCopy [1].u = -dx - dd;
-			uvlCopy [2].u = 
-			uvlCopy [3].u = -F1_0 + dd;
-			}
-		else {
-			uvlCopy [0].u =
-			uvlCopy [1].u = dx + dd;
-			uvlCopy [2].u = 
-			uvlCopy [3].u = F1_0 - dd;
-			}
-		if (rotLeft) {
-			tUVL	h = uvlCopy [0];
-			uvlCopy [0] = uvlCopy [1];
-			uvlCopy [1] = uvlCopy [2];
-			uvlCopy [2] = uvlCopy [3];
-			uvlCopy [3] = h;
-			}
-		else if (rotRight) {
-			tUVL	h = uvlCopy [0];
-			uvlCopy [0] = uvlCopy [3];
-			uvlCopy [3] = uvlCopy [2];
-			uvlCopy [2] = uvlCopy [1];
-			uvlCopy [1] = h;
-			}
+	if (uvlP) {
+		uvlP [0].v = 
+		uvlP [3].v = fl2f (yFlip ? dvImage : dv / 2);
+		uvlP [1].v = 
+		uvlP [2].v = fl2f (yFlip ? dv / 2 : dvImage);
+		uvlP [0].u = 
+		uvlP [1].u = fl2f (xFlip ? duImage : du / 2);
+		uvlP [2].u = 
+		uvlP [3].u = fl2f (xFlip ? du / 2 : duImage);
+		for (i = 0; i < 4; i++)
+			uvlP [i].l = F1_0;
+		memcpy (pc->uvlList, uvlP, sizeof (pc->uvlList));
 		}
-	for (i = 0; i < 4; i++)
-		uvlCopy [i].l = F1_0;
-	memcpy (pc->uvlList, uvlCopy, sizeof (pc->uvlList));
-	for (i = 0; i < 4; i++) {
-		pc->texCoord [i].v.u = f2fl (uvlCopy [i].u);
-		pc->texCoord [i].v.v = f2fl (uvlCopy [i].v);
+	else {
+		pc->texCoord [0].v.v = 
+		pc->texCoord [3].v.v = yFlip ? dvImage : dv;
+		pc->texCoord [1].v.v = 
+		pc->texCoord [2].v.v = yFlip ? dv : dvImage;
+		pc->texCoord [0].v.u = 
+		pc->texCoord [1].v.u = xFlip ? duImage : du / 2;
+		pc->texCoord [2].v.u = 
+		pc->texCoord [3].v.u = xFlip ? du / 2 : duImage;
 		}
 	pc->bHaveUVL = 1;
 	}

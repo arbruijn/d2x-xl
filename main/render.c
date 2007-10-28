@@ -438,7 +438,7 @@ if (!(bHaveMonitorBg && gameOpts->render.cameras.bFitToWall)) {
 	}
 
 if (bHaveMonitorBg) {
-	GetCameraUVL (pc, props.uvls);
+	GetCameraUVL (pc, props.uvls, NULL, NULL);
 	pc->texBuf.glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
 #ifdef _DEBUG
@@ -1905,6 +1905,7 @@ gameStates.ogl.bScaleLight = EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.
 #else
 gameStates.ogl.bScaleLight = 0;
 #endif
+gameStates.render.bUseCameras = USE_CAMERAS;
 return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ_ROBOT);
 }
 

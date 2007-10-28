@@ -702,7 +702,6 @@ return (gameStates.render.bDoCameras && gameData.cameras.nSides) ? gameData.came
 int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP)
 {
 	tCamera		*pc = gameData.cameras.cameras + nCamera;
-	tUVL			uvls [4];
 	int			bHaveMonitorBg, bIsTeleCam = pc->bTeleport;
 #ifdef RELEASE
 	int			i;
@@ -717,7 +716,7 @@ bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/
 					  (pc->texBuf.glTexture || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));
 if (bHaveMonitorBg) {
-	GetCameraUVL (pc, uvls);
+	GetCameraUVL (pc, NULL, gameData.segs.faces.texCoord + faceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex);
 	pc->texBuf.glTexture->wrapstate = -1;
 	if (bIsTeleCam) {
 #ifdef _DEBUG

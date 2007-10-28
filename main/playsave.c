@@ -2060,6 +2060,9 @@ if (gameStates.gfx.bOverride) {
 	gameData.render.window.w = gameWindowW;
 	gameData.render.window.h = gameWindowH;
 	}
+else if (gameStates.video.nDefaultDisplayMode == NUM_DISPLAY_MODES)
+	displayModeInfo [NUM_DISPLAY_MODES].VGA_mode = ((int) gameData.render.window.w << 16) + gameData.render.window.h;
+
 for (i = 0; i < sizeof (gameData.escort.szName); i++) {
 	if (!gameData.escort.szName [i])
 		break;

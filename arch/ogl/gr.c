@@ -216,31 +216,29 @@ if (gameStates.ogl.bInitialized) {// && (gameStates.video.nScreenMode != SCREEN_
 
 int GrVideoModeOK (u_int32_t mode)
 {
-int w = SM_W(mode);
-int h = SM_H(mode);
-return OglVideoModeOK (w, h); // platform specific code
+return OglVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 }
 
 //------------------------------------------------------------------------------
 
 extern int nCurrentVGAMode; // DPH: kludge - remove at all costs
 
-int GrSetMode(u_int32_t mode)
+int GrSetMode (u_int32_t mode)
 {
-	unsigned int w,h;
+	unsigned int w, h;
 	unsigned char *gr_bm_data;
 	//int bForce = (nCurrentVGAMode < 0);
 
 #ifdef NOGRAPH
 return 0;
 #endif
-if (mode<=0)
+if (mode <= 0)
 	return 0;
-w=SM_W(mode);
-h=SM_H(mode);
+w = SM_W (mode);
+h = SM_H (mode);
 nCurrentVGAMode = mode;
 gr_bm_data = grdCurScreen->scCanvas.cvBitmap.bmTexBuf;//since we use realloc, we want to keep this pointer around.
-memset( grdCurScreen, 0, sizeof(grsScreen));
+memset (grdCurScreen, 0, sizeof(grsScreen));
 grdCurScreen->scMode = mode;
 grdCurScreen->scWidth = w;
 grdCurScreen->scHeight = h;
@@ -256,8 +254,8 @@ grdCurScreen->scCanvas.cvBitmap.bmPalette = defaultPalette; //just need some val
 grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = w;
 grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_OGL;
 //grdCurScreen->scCanvas.cvBitmap.bmTexBuf = (unsigned char *)screen->pixels;
-grdCurScreen->scCanvas.cvBitmap.bmTexBuf = D2_REALLOC(gr_bm_data,w*h);
-GrSetCurrentCanvas(NULL);
+grdCurScreen->scCanvas.cvBitmap.bmTexBuf = D2_REALLOC (gr_bm_data, w * h);
+GrSetCurrentCanvas (NULL);
 //gr_enable_default_palette_loading();
 /***/LogErr ("   initializing OpenGL window\n");
 if (!OglInitWindow (w,h,0))	//platform specific code
@@ -266,7 +264,7 @@ OglGetVerInfo ();
 /***/LogErr ("   initializing OpenGL view port\n");
 OGL_VIEWPORT (0,0,w,h);
 /***/LogErr ("   initializing OpenGL screen mode\n");
-OglSetScreenMode();
+OglSetScreenMode ();
 GrUpdate (0);
 //	gamefont_choose_game_font(w,h);
 return 0;
