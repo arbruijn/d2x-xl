@@ -153,9 +153,6 @@ automapColors.nLgtRed = RGBA_PAL2 (48,0,0);
 }
 
 // Segment visited list
-ubyte bAutomapVisited [MAX_SEGMENTS_D2X];
-ubyte bRadarVisited [MAX_SEGMENTS_D2X];
-
 // Edge list variables
 static int nNumEdges=0;
 static int nMaxEdges;		//set each frame
@@ -353,7 +350,7 @@ for (i = 0; i < NUM_MARKERS; i++) {
 
 void AutomapClearVisited ()	
 {
-memset (bAutomapVisited, 0, sizeof (bAutomapVisited));
+memset (gameData.render.mine.bAutomapVisited, 0, sizeof (gameData.render.mine.bAutomapVisited));
 ClearMarkers ();
 }
 
@@ -579,7 +576,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 				break;
 
 			case OBJ_ROBOT:
-				if (bAutomapVisited [objP->nSegment] && AM_SHOW_ROBOTS) {
+				if (gameData.render.mine.bAutomapVisited [objP->nSegment] && AM_SHOW_ROBOTS) {
 					static int c = 0;
 					static int t = 0;
 					int h = SDL_GetTicks ();
@@ -604,7 +601,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 
 			case OBJ_POWERUP:
 				if (AM_SHOW_POWERUPS (1) && 
-					(gameStates.render.bAllVisited || bAutomapVisited [objP->nSegment]))	{
+					(gameStates.render.bAllVisited || gameData.render.mine.bAutomapVisited [objP->nSegment]))	{
 					switch (objP->id) {
 						case POW_KEY_RED:		
 							GrSetColorRGBi (RGBA_PAL2 (63, 5, 5));	
@@ -847,23 +844,23 @@ pvTAngles->b = 0;
 amData.viewTarget = playerP->position.vPos;
 t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
-//Fill in bAutomapVisited from gameData.objs.objects [LOCALPLAYER.nObject].nSegment
+//Fill in gameData.render.mine.bAutomapVisited from gameData.objs.objects [LOCALPLAYER.nObject].nSegment
 if (gameStates.render.automap.bRadar) {
 #if 1//ndef _DEBUG
 	if (!IsMultiGame)
-		memcpy (bRadarVisited, bAutomapVisited, sizeof (bRadarVisited));
+		memcpy (gameData.render.mine.bRadarVisited, gameData.render.mine.bAutomapVisited, sizeof (gameData.render.mine.bRadarVisited));
 #endif
-	memset (bAutomapVisited, 1, sizeof (*bAutomapVisited) * gameData.segs.nSegments);
+	memset (gameData.render.mine.bAutomapVisited, 1, sizeof (*gameData.render.mine.bAutomapVisited) * gameData.segs.nSegments);
 	}
 *pnSegmentLimit =
 *pnMaxSegsAway = 
 	SetSegmentDepths (
 		gameData.objs.objects [LOCALPLAYER.nObject].nSegment, 
-		bAutomapVisited);
-AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+		gameData.render.mine.bAutomapVisited);
+AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
 #if 1//ndef _DEBUG
 if (gameStates.render.automap.bRadar && !IsMultiGame)
-	memcpy (bAutomapVisited, bRadarVisited, sizeof (bRadarVisited));
+	memcpy (gameData.render.mine.bAutomapVisited, gameData.render.mine.bRadarVisited, sizeof (gameData.render.mine.bRadarVisited));
 #endif
 return bPauseGame;
 }
@@ -947,11 +944,11 @@ while ((c = KeyInKey ())) {
 		case KEYDBGGED+KEY_F: {
 			int i;
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
-				bAutomapVisited [i] = 1;
+				gameData.render.mine.bAutomapVisited [i] = 1;
 			AutomapBuildEdgeList ();
 			*pnSegmentLimit = 
-			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, bAutomapVisited);
-			AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);
+			AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
 			}
 			break;
 #endif
@@ -959,14 +956,14 @@ while ((c = KeyInKey ())) {
 		case KEY_MINUS:
 			if (*pnSegmentLimit > 1) {
 				(*pnSegmentLimit)--;
-				AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+				AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
 				}
 			break;
 
 		case KEY_EQUAL:
 			if (*pnSegmentLimit < *pnMaxSegsAway) {
 				(*pnSegmentLimit)++;
-				AdjustSegmentLimit (*pnSegmentLimit, bAutomapVisited);
+				AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
 				}
 			break;
 
@@ -1474,7 +1471,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL) && 
-				!(gameStates.render.bAllVisited || bAutomapVisited [nSegment]))
+				!(gameStates.render.bAllVisited || gameData.render.mine.bAutomapVisited [nSegment]))
 			color = automapColors.walls.nRevealed;
 
 addEdge:
@@ -1551,7 +1548,7 @@ else {
 #ifdef EDITOR
 		if (gameData.segs.segments [s].nSegment != -1)
 #endif
-		if (bAutomapVisited [s]) {
+		if (gameData.render.mine.bAutomapVisited [s]) {
 			h++;
 			AddSegmentEdges (&gameData.segs.segments [s]);
 			}
@@ -1559,7 +1556,7 @@ else {
 #ifdef EDITOR
 			if (gameData.segs.segments [s].nSegment != -1)
 #endif
-			if (!bAutomapVisited [s]) {
+			if (!gameData.render.mine.bAutomapVisited [s]) {
 				AddUnknownSegmentEdges (&gameData.segs.segments [s]);
 				}
 		}

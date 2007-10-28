@@ -1171,6 +1171,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 #endif
 			faceP->nSide = nSide;
 			faceP->nWall = nWall;
+			faceP->bAnimation = IsAnimatedTexture (faceP->nBaseTex) || IsAnimatedTexture (faceP->nOvlTex);
 			faceP->nIndex = 4 * gameData.segs.nFaces++;
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
 			VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
@@ -1856,6 +1857,7 @@ typedef struct tPreFileHeader {
 	int	nSegments;
 	int	nVertices;
 	int	nLights;
+	int	nMaxLightRange;
 	} tPreFileHeader;
 
 int LoadPrecompiledLights (int nLevel)
@@ -1878,7 +1880,8 @@ if (bOk)
 	bOk = (pfh.nVersion == LIGHT_VERSION) && 
 			(pfh.nSegments == gameData.segs.nSegments) && 
 			(pfh.nVertices == gameData.segs.nVertices) && 
-			(pfh.nLights == gameData.render.lights.dynamic.nLights);
+			(pfh.nLights == gameData.render.lights.dynamic.nLights) && 
+			(pfh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk)
 	bOk = 
 			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * pfh.nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
@@ -1896,7 +1899,7 @@ return bOk;
 int SavePrecompiledLights (int nLevel)
 {
 	CFILE				*fp;
-	tPreFileHeader pfh = {LIGHT_VERSION, gameData.segs.nSegments, gameData.segs.nVertices, gameData.render.lights.dynamic.nLights};
+	tPreFileHeader pfh = {LIGHT_VERSION, gameData.segs.nSegments, gameData.segs.nVertices, gameData.render.lights.dynamic.nLights, MAX_LIGHT_RANGE};
 	int				bOk;
 	char				szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
 

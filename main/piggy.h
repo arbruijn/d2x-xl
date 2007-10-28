@@ -137,6 +137,7 @@ void PiggyFreeHiresAnimations (void);
 
 ubyte *LoadD1Palette (void);
 void UseBitmapCache (grsBitmap *bmP, int nSize);
+int IsAnimatedTexture (short nTexture);
 
 extern int bUseHiresTextures, bD1Data;
 extern size_t bitmapCacheUsed;

@@ -662,7 +662,7 @@ if (!bBetweenLevels)	{
 	AISaveBinState (fp);
 
 // Save the automap visited info
-	CFWrite (bAutomapVisited, sizeof (ubyte) * MAX_SEGMENTS, 1, fp);
+	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ubyte) * MAX_SEGMENTS, 1, fp);
 	}
 CFWrite (&gameData.app.nStateGameId, sizeof (uint), 1, fp);
 CFWrite (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1, fp);
@@ -1259,7 +1259,7 @@ if (!bBetweenLevels)	{
 
 	DBG (fPos = CFTell (fp));
 // Save the automap visited info
-	CFWrite (bAutomapVisited, sizeof (ubyte), MAX_SEGMENTS, fp);
+	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ubyte), MAX_SEGMENTS, fp);
 	DBG (fPos = CFTell (fp));
 	}
 CFWriteInt ((int) gameData.app.nStateGameId, fp);
@@ -2324,7 +2324,7 @@ if (!bBetweenLevels)	{
 	DBG (fPos = CFTell (fp));
 	StateFixObjects ();
 	SpecialResetObjects ();
-	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
+	CFRead (gameData.render.mine.bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 	DBG (fPos = CFTell (fp));
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
@@ -2541,7 +2541,7 @@ if (!bBetweenLevels)	{
 	// Restore the AI state
 	AIRestoreBinState (fp, sgVersion);
 	// Restore the automap visited info
-	CFRead (bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
+	CFRead (gameData.render.mine.bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, fp);
 
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;

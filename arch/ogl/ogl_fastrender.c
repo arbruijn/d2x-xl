@@ -190,7 +190,7 @@ else {
 	if (bMonitor)
 		faceP = faceP;
 #endif
-	if (!bMonitor && bTransparent && !faceP->bOverlay) {
+	if (bTransparent && !(bMonitor || bmTop || faceP->bSplit || faceP->bOverlay)) {
 #ifdef _DEBUG
 		if (gameOpts->render.bDepthSort > 0) 
 #endif
@@ -369,7 +369,7 @@ else {
 	if (bMonitor)
 		faceP = faceP;
 #endif
-	if (bTransparent && !(bMonitor || bmTop || faceP->bOverlay)) {
+	if (bTransparent && !(bMonitor || bmTop || faceP->bSplit || faceP->bOverlay)) {
 #ifdef _DEBUG
 		if (gameOpts->render.bDepthSort > 0) 
 #endif

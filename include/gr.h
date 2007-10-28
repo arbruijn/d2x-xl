@@ -703,6 +703,7 @@ typedef struct grsFace {
 	ubyte					bTransparent :1;
 	ubyte					bIsLight :1;
 	ubyte					bHaveCameraBg :1;
+	ubyte					bAnimation :1;
 	ubyte					bTeleport :1;
 	ubyte					bSlide :1;
 	ubyte					widFlags;

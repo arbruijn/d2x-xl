@@ -85,6 +85,10 @@ int ToggleOutlineMode (void);
 int ToggleShowOnlyCurSide (void);
 void RotateTexCoord2f (tTexCoord2f *pDest, tTexCoord2f *pSrc, ubyte nOrient);
 int FaceIsVisible (short nSegment, short nSide);
+int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist);
+void BumpVisitedFlag (void);
+void BumpProcessedFlag (void);
+void BumpVisibleFlag (void);
 
 #ifdef _DEBUG
 void OutlineSegSide (tSegment *seg, int _side, int edge, int vert);

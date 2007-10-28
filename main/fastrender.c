@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_fastrender.h"
+#include "endlevel.h"
 #include "wall.h"
 #include "glare.h"
 #include "render.h"
@@ -90,7 +91,7 @@ void SplitFace (tSegFaces *segFaceP, grsFace *faceP)
 if (GEO_LIGHTING)
 	return;
 if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
-	 !faceP->bSlide && (faceP->nCamera < 0) && faceP->nOvlTex && faceP->bmTop && !strchr (faceP->bmTop->szName, '#')) {	//last rendered face was multi-textured but not super-transparent
+	 !faceP->bSlide && (faceP->nCamera < 0) && faceP->nOvlTex && faceP->bmTop && !faceP->bAnimation) {	//last rendered face was multi-textured but not super-transparent
 		grsFace *newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
 
 	*newFaceP = *faceP;
@@ -456,7 +457,7 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
 		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
+			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
@@ -482,7 +483,7 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
 		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
+			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
@@ -563,13 +564,13 @@ if (nSegment < 0)
 	return 0;
 if (bAutomap) {
 	if (gameStates.render.automap.bDisplay) {
-		if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
+		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
 			return 0;
 		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 			return 0;
 		}
 	else
-		bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+		gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
 	}
 if (VISITED (nSegment))
 	return 0;
@@ -579,7 +580,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bLighting, int bAutomap)
+static void RenderSegmentFaces (int nType, short nSegment, int bVertexArrays, int bDepthOnly, int bLighting, int bAutomap)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
 	grsFace		*faceP;
@@ -774,10 +775,12 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 	tUVL			*uvlP;
 	int			h, i, j, uvi, nColor, 
 					nIncr = nStart ? -1 : 1,
-					bDynLight = gameStates.render.bApplyDynLight && !gameStates.app.bEndLevelSequence;
+					bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE);
 
 gameData.render.lights.dynamic.shader.nActiveLights [0] =
-gameData.render.lights.dynamic.shader.nActiveLights [1] = 0;
+gameData.render.lights.dynamic.shader.nActiveLights [1] =
+gameData.render.lights.dynamic.shader.nActiveLights [2] =
+gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
 gameOpts->render.color.bAmbientLight = 1;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;

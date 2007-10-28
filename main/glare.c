@@ -174,15 +174,10 @@ int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensi
 {
 	ushort		nWall;
 	tSide			*sideP;
-	int			i, bAdditive, nTexture;
+	int			i, bAdditive, nTexture, nBrightness;
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
-if (gameOpts->render.bDynamicLight) {
-	i = FindDynLight (nSegment, nSide, -1);
-	if ((i >= 0) && !gameData.render.lights.dynamic.lights [i].bOn)
-		return 0;
-	}
 sideP = gameData.segs.segments [nSegment].sides + nSide;
 nWall = sideP->nWall;
 if (IS_WALL (nWall)) {
@@ -198,16 +193,27 @@ if (IS_WALL (nWall)) {
 		return 0;
 	}
 // get and check the corona emitting texture
-if (sideP->nOvlTex && IsLight (sideP->nOvlTex)) {
+if (sideP->nOvlTex && (0 < (nBrightness = IsLight (sideP->nOvlTex)))) {
 	nTexture = sideP->nOvlTex;
 	bAdditive = gameOpts->render.bAdditiveCoronas;
 	}
-else {
+else if (nBrightness = IsLight (sideP->nBaseTex)) {
 	nTexture = sideP->nBaseTex;
 	if (fIntensityP)
 		*fIntensityP /= 2;
 	bAdditive = 0;
 	}
+else
+	return 0;
+if (gameOpts->render.bDynamicLight) {
+	i = FindDynLight (nSegment, nSide, -1);
+	if ((i < 0) || !gameData.render.lights.dynamic.lights [i].bOn)
+		return 0;
+	}
+#if 0
+if (fIntensityP && (nBrightness < F1_0))
+	*fIntensityP *= f2fl (nBrightness);
+#endif
 if (gameStates.app.bD1Mission) {
 	switch (nTexture) {
 		case 289:	//empty light

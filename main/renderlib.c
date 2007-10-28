@@ -876,4 +876,65 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 #endif
 
 //------------------------------------------------------------------------------
+
+void BumpVisitedFlag (void)
+{
+if (!++gameData.render.mine.nVisited) {
+	memset (gameData.render.mine.bVisited, 0, sizeof (gameData.render.mine.bVisited));
+	gameData.render.mine.nVisited = 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void BumpProcessedFlag (void)
+{
+if (!++gameData.render.mine.nProcessed) {
+	memset (gameData.render.mine.bProcessed, 0, sizeof (gameData.render.mine.bProcessed));
+	gameData.render.mine.nProcessed = 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void BumpVisibleFlag (void)
+{
+if (!++gameData.render.mine.nVisible) {
+	memset (gameData.render.mine.bVisible, 0, sizeof (gameData.render.mine.bVisible));
+	gameData.render.mine.nVisible = 1;
+	}
+}
+
+// ----------------------------------------------------------------------------
+
+int SegmentMayBeVisible (short nStartSeg, short nRadius, int nMaxDist)
+{
+	tSegment	*segP;
+	int		nSegment, nChildSeg, nChild, h, i, j;
+
+if (gameData.render.mine.bVisible [nStartSeg] == gameData.render.mine.nVisible)
+	return 1;
+BumpProcessedFlag ();
+gameData.render.mine.nSegRenderList [0] = nStartSeg;
+gameData.render.mine.bProcessed [nStartSeg] = gameData.render.mine.nProcessed;
+if (nMaxDist < 0)
+	nMaxDist = nRadius * 20 * F1_0;
+for (i = 0, j = 1; nRadius; nRadius--) {
+	for (h = i, i = j; h < i; h++) {
+		nSegment = gameData.render.mine.nSegRenderList [h];
+		if ((gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) &&
+			 (!nMaxDist || (VmVecDist (SEGMENT_CENTER_I (nStartSeg), SEGMENT_CENTER_I (nSegment)) <= nMaxDist)))
+			return 1;
+		segP = SEGMENTS + nSegment;
+		for (nChild = 0; nChild < 6; nChild++) {
+			nChildSeg = segP->children [nChild];
+			if ((nChildSeg >= 0) && (WALL_IS_DOORWAY (segP, nChild, NULL) == WID_RENDPAST_FLAG))
+				gameData.render.mine.nSegRenderList [j++] = nChildSeg;
+			}
+		}
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
 // eof

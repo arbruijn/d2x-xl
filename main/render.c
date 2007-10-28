@@ -660,7 +660,7 @@ else {
 
 // -----------------------------------------------------------------------------------
 
-int RenderSegmentFaces (short nSegment, int nWindow)
+static int RenderSegmentFaces (short nSegment, int nWindow)
 {
 	tSegment		*segP = gameData.segs.segments + nSegment;
 	g3sCodes 	cc;
@@ -854,7 +854,7 @@ GrLine(i2f(l), i2f(b), i2f(l), i2f(t));
 
 //------------------------------------------------------------------------------
 
-window renderWindows [MAX_RENDER_SEGS];
+window renderWindows [MAX_SEGMENTS_D2X];
 
 //Given two sides of tSegment, tell the two verts which form the 
 //edge between them
@@ -1512,18 +1512,20 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
 bCheckBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
-if (!++gameData.render.mine.nVisited) {
-	memset (gameData.render.mine.bVisited, 0, sizeof (gameData.render.mine.bVisited));
-	gameData.render.mine.nVisited = 1;
-	}
+BumpVisitedFlag ();
 memset (gameData.render.mine.nRenderPos, -1, sizeof (gameData.render.mine.nRenderPos [0]) * (gameData.segs.nSegments));
-//memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_RENDER_SEGS);
-memset (gameData.render.mine.nProcessed, 0, sizeof (gameData.render.mine.nProcessed));
+//memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_SEGMENTS_D2X);
+#if 1
+BumpProcessedFlag ();
+BumpVisibleFlag ();
+#else
+memset (gameData.render.mine.bProcessed, 0, sizeof (gameData.render.mine.bProcessed));
 memset (gameData.render.mine.nSegRenderList, 0xff, sizeof (gameData.render.mine.nSegRenderList));
+#endif
 
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
-		if (gameStates.render.automap.bFull || bAutomapVisited [i]) {
+		if (gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [i]) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			VISIT (i);
 			}
@@ -1535,6 +1537,7 @@ gameData.render.mine.nSegRenderList [0] = nStartSeg;
 gameData.render.mine.nSegDepth [0] = 0;
 gameData.render.mine.bRenderSegment [nStartSeg] = gameStates.render.nFrameFlipFlop;
 VISIT (nStartSeg);
+gameData.render.mine.bVisible [nStartSeg] = gameData.render.mine.nVisible;
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
 sCnt = 0;
 lCnt = eCnt = 1;
@@ -1555,9 +1558,9 @@ renderWindows [0].bot = grdCurCanv->cvBitmap.bmProps.h - 1;
 for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 	//while (sCnt < eCnt) {
 	for (sCnt = 0; sCnt < eCnt; sCnt++) {
-		if (gameData.render.mine.nProcessed [sCnt])
+		if (gameData.render.mine.bProcessed [sCnt] == gameData.render.mine.nProcessed)
 			continue;
-		gameData.render.mine.nProcessed [sCnt] = 1;
+		gameData.render.mine.bProcessed [sCnt] = gameData.render.mine.nProcessed;
 		nSegment = gameData.render.mine.nSegRenderList [sCnt];
 		curPortal = renderWindows + sCnt;
 		if (nSegment == -1) 
@@ -1670,18 +1673,20 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							if (bMigrateSegs)
 								gameData.render.mine.nSegRenderList [rp] = -1;
 							else {
+								gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [lCnt]] = gameData.render.mine.nVisible - 1;
 								gameData.render.mine.nSegRenderList [lCnt] = -1;
 								*rwP = *pNewWin;		//get updated window
-								gameData.render.mine.nProcessed [rp] = 0;		//force reprocess
+								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
 								goto dontAdd;
 								}
 							}
 						}
 					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
 					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
+					gameData.render.mine.bVisible [nChildSeg] = gameData.render.mine.nVisible;
 					gameData.render.mine.bRenderSegment [nChildSeg] = gameStates.render.nFrameFlipFlop;
 					gameData.render.mine.nSegDepth [lCnt] = l;
-					if (++lCnt >= MAX_RENDER_SEGS)
+					if (++lCnt >= MAX_SEGMENTS_D2X)
 						goto listDone;
 					VISIT (nChildSeg);
 
@@ -1693,7 +1698,7 @@ dontAdd:
 				gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
 				gameData.render.mine.nSegDepth [lCnt] = l;
 				lCnt++;
-				if (lCnt >= MAX_RENDER_SEGS) {
+				if (lCnt >= MAX_SEGMENTS_D2X) {
 					LogErr ("Too many segments in tSegment render list!!!\n"); 
 					goto listDone;
 					}
@@ -1776,8 +1781,6 @@ gameStates.render.detail.nMaxLinearDepth = saveLinDepth;
 
 //------------------------------------------------------------------------------
 
-extern ubyte bAutomapVisited [];
-
 void RenderSegment (int nListPos)
 {
 	int nSegment = (nListPos < 0) ? -nListPos - 1 : gameData.render.mine.nSegRenderList [nListPos];
@@ -1785,7 +1788,7 @@ void RenderSegment (int nListPos)
 if (nSegment == -1)
 	return;
 if (gameStates.render.automap.bDisplay) {
-	if (!(gameStates.render.automap.bFull || bAutomapVisited [nSegment]))
+	if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
 		return;
 	if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 		return;
@@ -1804,7 +1807,7 @@ if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
 	return;
 	}
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)
-	bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
+	gameData.render.mine.bAutomapVisited [nSegment] = gameData.render.mine.bSetAutomapVisited;
 else if ((gameStates.render.nType == 1) && (gameData.render.mine.renderObjs.ref [gameData.render.mine.nSegRenderList [nListPos]] >= 0)) {
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
@@ -1842,7 +1845,6 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
 	SetLightningLights ();
-	TransformDynLights (0, 1);
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif
@@ -1877,6 +1879,7 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 #endif
 		}
 	gameStates.ogl.bUseTransform = 0;
+	TransformDynLights (0, 1);
 	}
 if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
@@ -1934,7 +1937,7 @@ inline int RenderSegmentList (int nType, int bFrontToBack)
 {
 gameStates.render.nType = nType;
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass >= 2))) {
-	gameData.render.mine.nVisited++;
+	BumpVisitedFlag ();
 	if (gameOpts->render.nPath == 1)
 		RenderFaceList (nType);
 	else {
@@ -2043,7 +2046,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 		else
 			bm = gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [tmap1].index;
 
-		for (i=0; i<nVertices; i++) {
+		for (i = 0; i < nVertices; i++) {
 			uvlCopy [i] = uvlp [i];
 			pointList [i] = gameData.segs.points + vp [i];
 		}

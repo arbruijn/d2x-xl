@@ -349,7 +349,7 @@ if (!(bRedraw && gameOpts->menus.nStyle && bg && bmP)) {
 		strcpy (bmP->szName, filename);
 		Assert (bmP != NULL);
 		}
-	nPCXResult = PCXReadBitmap (filename, (gameOpts->menus.altBg.bHave > 0) ? NULL : bmP, bmP ? bmP->bmProps.nType : 0, 0);
+	nPCXResult = PCXReadBitmap (filename, (pAltBg && (bmP == pAltBg)) ? NULL : bmP, bmP ? bmP->bmProps.nType : 0, 0);
 	Assert (nPCXResult == PCX_ERROR_NONE);
 // Remap stuff. this code is kind of a hack. Before we bring up the menu, we need to
 // do some stuff to make sure the palette is ok. First,we need to get our current palette 

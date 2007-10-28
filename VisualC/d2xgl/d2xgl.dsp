@@ -288,11 +288,43 @@ SOURCE=..\..\arch\sdl\mouse.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\arch\ogl\ogl.c
+SOURCE=..\..\arch\ogl\ogl_bitmap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_color.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_defs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_fastrender.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_hudstuff.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_lib.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\arch\ogl\ogl_render.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_shader.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_texcache.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\ogl\ogl_texture.c
 # End Source File
 # Begin Source File
 

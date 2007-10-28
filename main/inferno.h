@@ -1121,7 +1121,7 @@ typedef struct tSphereData {
 //------------------------------------------------------------------------------
 
 #define USE_OGL_LIGHTS	0
-#define MAX_OGL_LIGHTS  (32 * 32) //MUST be a power of 2!
+#define MAX_OGL_LIGHTS  (64 * 64) //MUST be a power of 2!
 
 typedef struct tDynLight {
 	vmsVector	vPos;
@@ -1352,7 +1352,6 @@ typedef struct tThrusterData {
 
 //------------------------------------------------------------------------------
 
-#define MAX_RENDER_SEGS     MAX_SEGMENTS_D2X
 #define OBJS_PER_SEG        5
 #define N_EXTRA_OBJ_LISTS   50
 
@@ -1370,22 +1369,27 @@ typedef struct tObjRenderList {
 
 typedef struct tMineRenderData {
 	vmsVector				viewerEye;
-	short 					nSegRenderList [MAX_RENDER_SEGS];
-	grsFace					*pFaceRenderList [MAX_RENDER_SEGS * 6];
+	short 					nSegRenderList [MAX_SEGMENTS_D2X];
+	grsFace					*pFaceRenderList [MAX_SEGMENTS_D2X * 6];
 	tObjRenderList			renderObjs;
 	int						nRenderSegs;
-	ubyte 					bVisited [MAX_RENDER_SEGS];
+	ubyte 					bVisited [MAX_SEGMENTS_D2X];
+	ubyte 					bVisible [MAX_SEGMENTS_D2X];
+	ubyte 					bProcessed [MAX_SEGMENTS_D2X];		//whether each entry has been nProcessed
 	ubyte 					nVisited;
-	short 					nSegDepth [MAX_RENDER_SEGS];		//depth for each seg in nRenderList
-	ubyte 					nProcessed [MAX_RENDER_SEGS];		//whether each entry has been nProcessed
+	ubyte						nProcessed;
+	ubyte						nVisible;
+	short 					nSegDepth [MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
 	int						lCntSave;
 	int						sCntSave;
 	ubyte						bObjectRendered [MAX_OBJECTS_D2X];
 	ubyte						bRenderSegment [MAX_SEGMENTS_D2X];
-	short						nRenderObjList [MAX_RENDER_SEGS+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
+	short						nRenderObjList [MAX_SEGMENTS_D2X+N_EXTRA_OBJ_LISTS][OBJS_PER_SEG];
 	short						nRenderPos [MAX_SEGMENTS_D2X];
 	int						nRotatedLast [MAX_VERTICES_D2X];
 	ubyte						bCalcVertexColor [MAX_VERTICES_D2X];
+	ubyte						bAutomapVisited [MAX_SEGMENTS_D2X];
+	ubyte						bRadarVisited [MAX_SEGMENTS_D2X];
 	ubyte						bSetAutomapVisited;
 } tMineRenderData;
 

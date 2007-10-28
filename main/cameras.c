@@ -352,7 +352,7 @@ else
 #endif
 	{
 		fix	i;
-		float	duImage, dvImage, duFace, dvFace, du, dv, dd, aFace, aImage;
+		float	duImage, dvImage, duFace, dvFace, du, dv,aFace, aImage;
 		int	xFlip, yFlip, rotLeft, rotRight;
 #if RENDER2TEXTURE
 		int	bCamBufAvail = OglCamBufAvail (pc, 1) == 1;

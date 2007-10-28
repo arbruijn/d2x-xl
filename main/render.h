@@ -58,7 +58,7 @@ extern fix xRenderZoom;     // the tPlayer's zoom factor
 // This is used internally to RenderFrame(), but is included here so AI
 // can use it for its own purposes.
 
-extern short nRenderList [MAX_RENDER_SEGS];
+extern short nRenderList [MAX_SEGMENTS_D2X];
 
 #ifdef EDITOR
 extern int Render_only_bottom;

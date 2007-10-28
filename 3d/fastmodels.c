@@ -981,7 +981,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	tG3Model			*pm;
 	tShaderLight	*psl;
 	int				nPass, iLightSource = 0, iLight, nLights;
-	int				bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
+	int				bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int				bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive);
 	tRgbaColorf		color = {1,1,1,1};
 	GLenum			hLight;
@@ -1101,6 +1101,8 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting;
 
+if (!objP)
+	return 0;
 if (gameStates.render.bQueryCoronas && gameStates.render.bCloaked)
 	return 0;
 #if G3_FAST_MODELS

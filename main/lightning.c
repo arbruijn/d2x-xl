@@ -1672,6 +1672,13 @@ else {
 
 //------------------------------------------------------------------------------
 
+inline int LightningMayBeVisible (tLightning *pl)
+{
+return (pl->nSegment < 0) || SegmentMayBeVisible (pl->nSegment, pl->nLength / 20, 3 * pl->nLength / 2);
+}
+
+//------------------------------------------------------------------------------
+
 void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthSort)
 {
 	tLightningNode	*pln;
@@ -1684,7 +1691,7 @@ void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthS
 	tRgbaColorf	color;
 	tObject		*objP = NULL;
 
-if (!pl)
+if (!pl && LightningMayBeVisible (pl))
 	return;
 if (bDepthSort > 0) {
 	bPlasma = gameOpts->render.lightnings.bPlasma && pl->bPlasma;

@@ -15,6 +15,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _LIGHTING_H
 #define _LIGHTING_H
 
+#include "endlevel.h"
+
 #define MAX_LIGHT       0x10000     // max value
 
 #define MIN_LIGHT_DIST  (F1_0*4)
@@ -86,7 +88,7 @@ tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
 
 #define	SHOW_DYN_LIGHT \
-			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || gameStates.app.bEndLevelSequence) && \
+			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \
 			 gameStates.render.bHaveDynLights && \
 			 gameOpts->render.bDynLighting)
 

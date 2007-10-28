@@ -1365,12 +1365,13 @@ else
 
 //------------------------------------------------------------------------------
 
-void SetCloudPos (tCloud *pCloud, vmsVector *pos)
+void SetCloudPos (tCloud *pCloud, vmsVector *pos, short nSegment)
 {
-int nNewSeg = gameOpts->render.smoke.bCollisions ? FindSegByPoint (pos, pCloud->nSegment, 1) : -1;
+if ((nSegment < 0) && gameOpts->render.smoke.bCollisions) 
+	nSegment = FindSegByPoint (pos, pCloud->nSegment, 1);
 pCloud->pos = *pos;
-if (nNewSeg >= 0)
-	pCloud->nSegment = nNewSeg;
+if (nSegment >= 0)
+	pCloud->nSegment = nSegment;
 }
 
 //------------------------------------------------------------------------------
@@ -1730,6 +1731,13 @@ return j;
 
 //------------------------------------------------------------------------------
 
+inline int CloudMayBeVisible (tCloud *pCloud)
+{
+return (pCloud->nSegment < 0) || SegmentMayBeVisible (pCloud->nSegment, 5, -1);
+}
+
+//------------------------------------------------------------------------------
+
 int CreateCloudList (void)
 {
 	int			h, i, j, nClouds;
@@ -1750,7 +1758,7 @@ for (i = gameData.smoke.iUsed, nClouds = 0; i >= 0; i = pSmoke->nNext) {
 		}
 	if (pSmoke->pClouds) {
 		for (j = pSmoke->nClouds, pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-			if (pCloud->nParts > 0) {
+			if ((pCloud->nParts > 0) && CloudMayBeVisible (pCloud)) {
 				brightness = CloudBrightness (pCloud);
 				pCloud->fBrightness = pCloud->nDefBrightness ? (float) pCloud->nDefBrightness / 100.0f : brightness;
 				pCloudList [nClouds].pCloud = pCloud;
@@ -1848,6 +1856,8 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (j = pSmoke->nClouds)) {
 		for (pCloud = pSmoke->pClouds; j; j--, pCloud++) {
+			if (!CloudMayBeVisible (pCloud))
+				continue;
 			if (nParts = pCloud->nParts) {
 				fBrightness = (float) CloudBrightness (pCloud);
 				nFirstPart = pCloud->nFirstPart;
@@ -1981,13 +1991,13 @@ return (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? Re
 
 //------------------------------------------------------------------------------
 
-void SetSmokePos (int i, vmsVector *pos)
+void SetSmokePos (int i, vmsVector *pos, short nSegment)
 {
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudPos (pSmoke->pClouds, pos);
+			SetCloudPos (pSmoke->pClouds, pos, nSegment);
 #ifdef _DEBUG
 	else if (pSmoke->nObject >= 0) {
 		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);

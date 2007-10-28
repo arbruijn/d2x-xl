@@ -928,7 +928,6 @@ if (gameStates.app.bEndLevelSequence == EL_LOOKBACK) {
 	}
 else
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
-gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 RenderMine (nStartSeg, xEyeOffset, nWindowNum);
 RenderItems ();
 }
@@ -938,6 +937,7 @@ RenderItems ();
 void RenderEndLevelFrame (fix xEyeOffset, int nWindowNum)
 {
 G3StartFrame (0, !nWindowNum);
+//gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 	RenderEndLevelMine (xEyeOffset, nWindowNum);
 else if (!nWindowNum)

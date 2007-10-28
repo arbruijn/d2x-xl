@@ -1583,6 +1583,13 @@ pf->vci.nCurFrame = 0;
 
 //------------------------------------------------------------------------------
 
+int IsAnimatedTexture (short nTexture)
+{
+return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name, '#') != NULL);
+}
+
+//------------------------------------------------------------------------------
+
 void PiggyBitmapPageIn (tBitmapIndex bmi, int bD1)
 {
 	grsBitmap		*bmP, *altBmP = NULL;

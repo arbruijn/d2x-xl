@@ -121,7 +121,7 @@ for (j = 0; j < 2; j++)
 		VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
 		VmVecScaleInc (&pos, &objP->position.mOrient.rVec, j ? d : -d);
 		VmVecScaleInc (&pos, &objP->position.mOrient.uVec,  -objP->size / 25);
-		SetCloudPos (pCloud, &pos);
+		SetCloudPos (pCloud, &pos, objP->nSegment);
 		}
 }
 #endif
@@ -234,7 +234,7 @@ else {
 		CalcThrusterPos (objP, &ti, 0);
 		for (j = 0; j < 2; j++)
 			if ((pCloud = GetCloud (h, j)))
-				SetCloudPos (pCloud, ti.vPos + j);
+				SetCloudPos (pCloud, ti.vPos + j, objP->nSegment);
 		return;
 		}
 	}
@@ -292,7 +292,7 @@ if (nParts > 0) {
 							BOT_PART_SPEED : BOT_PART_SPEED * 2 / 3);
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 2);
-	SetSmokePos (gameData.smoke.objects [i], &pos);
+	SetSmokePos (gameData.smoke.objects [i], &pos, objP->nSegment);
 	}
 else 
 	KillObjectSmoke (i);
@@ -335,7 +335,7 @@ if (nParts > 0) {
 		vDir.p.z = d_rand () - F1_0 / 4;
 		VmVecNormalize (&vDir);
 		VmVecScaleAdd (&vPos, &objP->position.vPos, &vDir, -objP->size / 2);
-		SetSmokePos (gameData.smoke.objects [i], &vPos);
+		SetSmokePos (gameData.smoke.objects [i], &vPos, objP->nSegment);
 		}
 	}
 else 
@@ -381,7 +381,7 @@ if (nParts) {
 												  1, nLife * MSL_PART_LIFE, MSL_PART_SPEED, 1, i, NULL, 1, -1));
 		}
 	CalcThrusterPos (objP, &ti, 0);
-	SetSmokePos (gameData.smoke.objects [i], ti.vPos);
+	SetSmokePos (gameData.smoke.objects [i], ti.vPos, objP->nSegment);
 	}
 else 
 	KillObjectSmoke (i);
@@ -416,7 +416,7 @@ if (nParts) {
 												  nScale, -1, 1, DEBRIS_PART_LIFE, DEBRIS_PART_SPEED, 2, i, NULL, 0, -1));
 		}
 	VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-	SetSmokePos (gameData.smoke.objects [i], &pos);
+	SetSmokePos (gameData.smoke.objects [i], &pos, objP->nSegment);
 	}
 else 
 	KillObjectSmoke (i);
@@ -463,7 +463,7 @@ if (objP->rType.smokeInfo.nSide <= 0) {	//don't vary emitter position for smoke 
 	offs.p.y = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
 	offs.p.z = (F1_0 / 4 - d_rand ()) * (d_rand () % j + i);
 	VmVecAdd (&pos, &objP->position.vPos, &offs);
-	SetSmokePos (gameData.smoke.objects [i], &pos);
+	SetSmokePos (gameData.smoke.objects [i], &pos, objP->nSegment);
 	}
 }
 
@@ -490,7 +490,7 @@ if (nParts) {
 	offs.p.y = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	offs.p.z = (F1_0 / 4 - d_rand ()) * ((d_rand () & 15) + 16);
 	VmVecAdd (&pos, &objP->position.vPos, &offs);
-	SetSmokePos (gameData.smoke.objects [i], &pos);
+	SetSmokePos (gameData.smoke.objects [i], &pos, objP->nSegment);
 	}
 else 
 	KillObjectSmoke (i);
@@ -540,7 +540,7 @@ if (gameData.smoke.objects [i] < 0) {
 											  1, (gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE, LASER_PART_SPEED, 3, i, &c, 0, -1));
 	}
 VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
-SetSmokePos (gameData.smoke.objects [i], &pos);
+SetSmokePos (gameData.smoke.objects [i], &pos, objP->nSegment);
 }
 
 // -----------------------------------------------------------------------------
@@ -653,7 +653,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 	VmVecScale (&vOffs, xSpeed);
 	VmVecInc (&shrapnelP->vPos, &vOffs);
 	}
-SetSmokePos (shrapnelP->nSmoke, &shrapnelP->vPos);
+SetSmokePos (shrapnelP->nSmoke, &shrapnelP->vPos, -1);
 shrapnelP->tUpdate = gameStates.app.nSDLTicks - nTicks;
 }
 

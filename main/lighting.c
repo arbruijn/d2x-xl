@@ -139,7 +139,7 @@ for (i = h; --i; ) {
 int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vObjPos, int nObjSeg, vmsVector *vVertPos)
 {
 	int	cache_val, cache_frame, cache_vis;
-	cache_val = Lighting_cache [ ((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
+	cache_val = Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
 	cache_frame = cache_val >> 1;
 	cache_vis = cache_val & 1;
 	Cache_lookups++;
@@ -278,6 +278,8 @@ if (objP && SHOW_DYN_LIGHT) {
 		}
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
+	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
+		xObjIntensity /= 10;
 	AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
 	return;
 	}
@@ -475,7 +477,9 @@ switch (nObjType) {
 
 	case OBJ_FIREBALL:
 	case OBJ_EXPLOSION:
-		if ((objP->id == 0xff) || (objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS)) 
+		if (objP->id == 0xff)
+			return 0;
+		if ((objP->renderType == RT_THRUSTER) || (objP->renderType == RT_EXPLBLAST) || (objP->renderType == RT_SHRAPNELS)) 
 			return 0;
 		else {
 			tVideoClip *vcP = gameData.eff.vClips [0] + objP->id;
@@ -489,7 +493,6 @@ switch (nObjType) {
 				*pbGotColor = 1;
 				}
 			else {
-#if 1
 				color->red =
 				color->green =
 				color->blue = 0.0f;
@@ -507,16 +510,8 @@ switch (nObjType) {
 					color->red /= j;
 					color->green /= j;
 					color->blue /= j;
+					*pbGotColor = 1;
 					}
-				else 
-#else
-					{
-					color->red = 0.75f;
-					color->green = 0.15f;
-					color->blue = 0.0f;
-					}
-#endif
-				*pbGotColor = 1;
 				}
 #if 0
 			if (objP->renderType != RT_THRUSTER)
@@ -2088,10 +2083,10 @@ if (gameStates.app.bD1Mission)
 	tMapNum = ConvertD1Texture (tMapNum, 1);
 #if 1
 if (gameData.pig.tex.brightness [tMapNum] > 0)
-	return 1;
+	return gameData.pig.tex.brightness [tMapNum];
 #else
 if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
-	return 1;
+	return gameData.pig.tex.pTMapInfo [tMapNum].lighting;
 #endif
 switch (tMapNum) {
 	case 275:
@@ -2143,15 +2138,15 @@ switch (tMapNum) {
 	case 398:
 	case 411:
 	case 412:
-	case 428:
-	case 429:
-	case 430:
-	case 431:
 	case 414:
 	case 416:
 	case 418:
 	case 423:
 	case 424:
+	case 428:
+	case 429:
+	case 430:
+	case 431:
 	case 235:
 	case 236:
 	case 237:
@@ -2175,7 +2170,7 @@ switch (tMapNum) {
 	case 420:
 	case 432:
 	case 433:
-		return 1;
+		return F1_0;
 	default:
 		break;
 	}
