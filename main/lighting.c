@@ -279,7 +279,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
-		xObjIntensity /= 10;
+		xObjIntensity /= 2; //10;
 	AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
 	return;
 	}
@@ -1231,8 +1231,10 @@ int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, 
 	GLint			nMaxLights;
 #endif
 
+#if 0
 if (xBrightness > F1_0)
 	xBrightness = F1_0;
+#endif
 #ifdef _DEBUG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	nSegment = nSegment;
