@@ -541,13 +541,16 @@ gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
+	if ((gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ||
+		 (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_OUTDOOR))
+		continue;
 	segFaceP = SEGFACES + nSegment;
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++)
-		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && 
+		if (faceP->bVisible && (faceP->widFlags & WID_RENDER_FLAG) && faceP->bIsLight && (faceP->nCamera < 0) &&
 			 FaceHasCorona (nSegment, faceP->nSide, NULL, NULL))
 			faceP->nCorona = ++gameData.render.lights.nCoronas;
 		else

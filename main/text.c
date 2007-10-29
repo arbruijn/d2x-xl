@@ -1507,7 +1507,7 @@ char *defaultGameTexts [][2] = {
 	{"Erzeuge Guidebot!", "Creating Guidebot!"},
 	{"auf Abstieg vorbereiten", "Prepare for Descent"},
 	{"Berechne Beleuchtung", "Computing Illumination"},
-	{"Eigene Aufloesung", "Custom Resolution"},
+	{"Spe~Zielle Aufloesung", "C~Ustom Resolution"},
 	{"Mausp~Osition anzeigen", "Display Mouse Indicat~Or"},
 	{"Teleporter zeigen Zielgebiet", "~Teleports show destination"},
 	{"Spielername mehrfach vorhanden", "Duplicate player names"},

@@ -120,12 +120,12 @@ typedef struct tFaceColord {
 
 extern tOglTexture ogl_texture_list[OGL_TEXTURE_LIST_SIZE];
 
-extern int ogl_mem_target;
+extern int nOglMemTarget;
 tOglTexture* OglGetFreeTexture(void);
 void OglInitTexture(tOglTexture* t, int bMask);
 void OglInitTextureListInternal(void);
 void OglSmashTextureListInternal(void);
-void ogl_vivify_texture_list_internal(void);
+void OglVivifyTextureListInternal(void);
 
 extern int ogl_fullscreen;
 void OglDoFullScreenInternal(int);
@@ -482,15 +482,15 @@ static inline int OglUBitMapM (int x, int y,grsBitmap *bm)
 return OglUBitMapMC (x, y, 0, 0, bm, NULL, F1_0, 0);
 }
 
-typedef struct tSinCosd {
+typedef struct tSinCosf {
 	double	dSin, dCos;
-} tSinCosd;
+} tSinCosf;
 
-void OglComputeSinCos (int nSides, tSinCosd *sinCosP);
+void OglComputeSinCos (int nSides, tSinCosf *sinCosP);
 void OglColor4sf (float r, float g, float b, float s);
 void G3VertexColor (fVector *pvVertNorm, fVector *pVertPos, int nVertex, tFaceColor *pVertColor, 
 						  tFaceColor *pBaseColor, float fScale, int bSetColor, int nThread);
-void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosd *sinCosP);
+void OglDrawEllipse (int nSides, int nType, double xsc, double xo, double ysc, double yo, tSinCosf *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 
 void OglEnableLighting (int bSpecular);

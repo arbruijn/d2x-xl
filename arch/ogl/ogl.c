@@ -48,7 +48,7 @@
 #include "cameras.h"
 #include "render.h"
 #include "grdef.h"
-#include "ogl_init.h"
+#include "ogl_defs.h"
 #include "lighting.h"
 #include "lightmap.h"
 #include "gamepal.h"
@@ -58,6 +58,7 @@
 #include "newmenu.h"
 #include "gauges.h"
 #include "hostage.h"
+#include "fastmodels.h"
 #include "gr.h"
 
 //------------------------------------------------------------------------------
@@ -124,8 +125,8 @@ PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
 tTexPolyMultiDrawer	*fpDrawTexPolyMulti = NULL;
 
 //change to 1 for lots of spew.
-#ifndef M_PI
-#	define M_PI 3.141592653589793240
+#ifndef Pi
+#	define Pi 3.141592653589793240
 #endif
 
 #if defined (_WIN32) || defined (__sun__)
@@ -360,7 +361,7 @@ return truebytes;
 
 //------------------------------------------------------------------------------
 
-int ogl_mem_target = -1;
+int nOglMemTarget = -1;
 
 void ogl_clean_texture_cache (void)
 {
@@ -368,20 +369,20 @@ void ogl_clean_texture_cache (void)
 	int i,bytes;
 	int time=120;
 	
-if (ogl_mem_target < 0) {
+if (nOglMemTarget < 0) {
 	if (gr_renderstats)
 		ogl_texture_stats ();
 	return;
 	}
 	
 bytes=ogl_texture_stats ();
-while (bytes>ogl_mem_target){
+while (bytes>nOglMemTarget){
 	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {
 		if (!t->bFrameBuf && (t->handle > 0)) {
 			if (t->lastrend + f1_0 * time < gameData.time.xGame) {
 				OglFreeTexture (t);
 				bytes -= t->bytes;
-				if (bytes < ogl_mem_target)
+				if (bytes < nOglMemTarget)
 					return;
 				}
 			}
@@ -394,7 +395,7 @@ while (bytes>ogl_mem_target){
 
 //------------------------------------------------------------------------------
 
-int ogl_bindteximage (tOglTexture *texP)
+int OglBindTexImage (tOglTexture *texP)
 {
 #if RENDER2TEXTURE == 1
 #	if 1
@@ -449,7 +450,7 @@ bmP = BmOverride (bmP, -1);
 texP = bmP->glTexture;
 #if RENDER2TEXTURE
 if ((bPBuffer = texP && texP->bFrameBuf)) {
-	if (ogl_bindteximage (texP))
+	if (OglBindTexImage (texP))
 		return 1;
 	}
 else
@@ -811,7 +812,7 @@ return (minColor + maxColor) / 2;
 //------------------------------------------------------------------------------
 //GLubyte gameData.render.ogl.texBuf [512*512*4];
 
-int OglFillTexBuf (
+int OglSetupTexBuf (
 	grsBitmap	*bmP,
 	GLubyte		*texBuf,
 	int			truewidth,
@@ -1349,7 +1350,7 @@ if (!texP->bFrameBuf)
 			bufP = OglCopyTexBuf (texP, dxo, dyo, data);
 		else {
 			texP->format = 
-				OglFillTexBuf (bmP, gameData.render.ogl.texBuf, texP->lw, texP->w, texP->h, dxo, dyo, texP->tw, texP->th, 
+				OglSetupTexBuf (bmP, gameData.render.ogl.texBuf, texP->lw, texP->w, texP->h, dxo, dyo, texP->tw, texP->th, 
 									texP->format, nTransp, superTransp);
 			if (texP->format == GL_RGB)
 				texP->internalformat = 3;
@@ -1918,6 +1919,7 @@ LinkShaderProg (NULL);
 
 void RebuildGfxFx (int bGame, int bCameras)
 {
+G3FreeAllPolyModelItems ();
 ResetTextures (1, bGame);
 InitShaders ();
 #if LIGHTMAPS

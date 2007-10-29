@@ -1017,9 +1017,9 @@ for (nPass = 0; nLights; nPass++) {
 			glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos);
 			glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 			glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
-			glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f);
+			glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / psl->brightness);
 			glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
-			glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f);
+			glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 			}
 		OglResetTransform (1);
 		for (; iLight < 8; iLight++)

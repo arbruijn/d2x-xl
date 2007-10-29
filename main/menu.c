@@ -1080,7 +1080,7 @@ do {
 			cShortCut++;
 		ADD_RES_OPT (szMode [i]);
 		}
-	ADD_RADIO (opt, TXT_CUSTOM_SCRRES, 0, -1, 0, HTX_CUSTOM_SCRRES);
+	ADD_RADIO (opt, TXT_CUSTOM_SCRRES, 0, KEY_U, 0, HTX_CUSTOM_SCRRES);
 	optCustRes = opt++;
 	*szCustX = *szCustY = '\0';
 	if (displayModeInfo [NUM_DISPLAY_MODES].w)

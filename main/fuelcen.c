@@ -124,6 +124,7 @@ switch (stationType)	{
 	case SEGMENT_IS_BLOCKED:
 	case SEGMENT_IS_NODAMAGE:
 	case SEGMENT_IS_SKYBOX:
+	case SEGMENT_IS_OUTDOOR:
 		return;
 	case SEGMENT_IS_FUELCEN:
 	case SEGMENT_IS_REPAIRCEN:

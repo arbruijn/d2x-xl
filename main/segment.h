@@ -163,7 +163,8 @@ typedef struct tSegment2 {
 #define SEGMENT_IS_NODAMAGE		13
 #define SEGMENT_IS_SKYBOX			14
 #define SEGMENT_IS_EQUIPMAKER		15
-#define MAX_CENTER_TYPES			16
+#define SEGMENT_IS_OUTDOOR			16
+#define MAX_CENTER_TYPES			17
 
 #ifdef COMPACT_SEGS
 extern void GetSideNormal(tSegment *sp, int nSide, int normal_num, vmsVector * vm );
