@@ -190,36 +190,36 @@ switch (segP->sides [nSide].nType) {
 	case SIDE_IS_QUAD:
 		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]], 
 											&vm0, &vm1, &vm2, &vm3, &bFlip);
-		VmVecNormal (vm, 
-						 gameData.segs.vertices + vm0, 
-						 gameData.segs.vertices + vm1, 
-						 gameData.segs.vertices + vm2);
+		VmVecNormalChecked (vm, 
+								  gameData.segs.vertices + vm0, 
+								  gameData.segs.vertices + vm1, 
+								  gameData.segs.vertices + vm2);
 		if (bFlip)
 			VmVecNegate (vm);
 		break;
 	case SIDE_IS_TRI_02:
 		if (face_num == 0)
-			VmVecNormal (vm, 
-							 gameData.segs.vertices + segP->verts [vs [0]], 
-							 gameData.segs.vertices + segP->verts [vs [1]], 
-							 gameData.segs.vertices + segP->verts [vs [2]]);
+			VmVecNormalChecked (vm, 
+									  gameData.segs.vertices + segP->verts [vs [0]], 
+									  gameData.segs.vertices + segP->verts [vs [1]], 
+									  gameData.segs.vertices + segP->verts [vs [2]]);
 		else
-			VmVecNormal (vm, 
-							 gameData.segs.vertices + segP->verts [vs [0]], 
-							 gameData.segs.vertices + segP->verts [vs [2]], 
-							 gameData.segs.vertices + segP->verts [vs [3]]);
+			VmVecNormalChecked (vm, 
+									  gameData.segs.vertices + segP->verts [vs [0]], 
+									  gameData.segs.vertices + segP->verts [vs [2]], 
+									  gameData.segs.vertices + segP->verts [vs [3]]);
 		break;
 	case SIDE_IS_TRI_13:
 		if (face_num == 0)
-			VmVecNormal (vm, 
-							 gameData.segs.vertices + segP->verts [vs [0]], 
-							 gameData.segs.vertices + segP->verts [vs [1]], 
-							 gameData.segs.vertices + segP->verts [vs [3]]);
+			VmVecNormalChecked (vm, 
+									  gameData.segs.vertices + segP->verts [vs [0]], 
+									  gameData.segs.vertices + segP->verts [vs [1]], 
+									  gameData.segs.vertices + segP->verts [vs [3]]);
 		else
-			VmVecNormal (vm, 
-							 gameData.segs.vertices + segP->verts [vs [1]], 
-							 gameData.segs.vertices + segP->verts [vs [2]], 
-							 gameData.segs.vertices + segP->verts [vs [3]]);
+			VmVecNormalChecked (vm, 
+									  gameData.segs.vertices + segP->verts [vs [1]], 
+									  gameData.segs.vertices + segP->verts [vs [2]], 
+									  gameData.segs.vertices + segP->verts [vs [3]]);
 		break;
 	}
 }
@@ -238,33 +238,33 @@ switch (segP->sides [nSide].nType)	{
 	case SIDE_IS_QUAD:
 		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]], 
 											&vvm0, &vvm1, &vvm2, &vvm3);
-		VmVecNormal (vm1, 
-						 gameData.segs.vertices + vvm0, 
-						 gameData.segs.vertices + vvm1, 
-						 gameData.segs.vertices + vvm2);
+		VmVecNormalChecked (vm1, 
+								  gameData.segs.vertices + vvm0, 
+								  gameData.segs.vertices + vvm1, 
+								  gameData.segs.vertices + vvm2);
 		if (bFlip)
 			VmVecNegate (vm1);
 		*vm2 = *vm1;
 		break;
 	case SIDE_IS_TRI_02:
-		VmVecNormal (vm1, 
-						 gameData.segs.vertices + segP->verts [vs [0]], 
-						 gameData.segs.vertices + segP->verts [vs [1]], 
-						 gameData.segs.vertices + segP->verts [vs [2]]);
-		VmVecNormal (vm2, 
-						 gameData.segs.vertices + segP->verts [vs [0]], 
-						 gameData.segs.vertices + segP->verts [vs [2]], 
-						 gameData.segs.vertices + segP->verts [vs [3]]);
+		VmVecNormalChecked (vm1, 
+								  gameData.segs.vertices + segP->verts [vs [0]], 
+								  gameData.segs.vertices + segP->verts [vs [1]], 
+								  gameData.segs.vertices + segP->verts [vs [2]]);
+		VmVecNormalChecked (vm2, 
+								  gameData.segs.vertices + segP->verts [vs [0]], 
+								  gameData.segs.vertices + segP->verts [vs [2]], 
+								  gameData.segs.vertices + segP->verts [vs [3]]);
 		break;
 	case SIDE_IS_TRI_13:
-		VmVecNormal (vm1, 
-						 gameData.segs.vertices + segP->verts [vs [0]], 
-						 gameData.segs.vertices + segP->verts [vs [1]], 
-						 gameData.segs.vertices + segP->verts [vs [3]]);
-		VmVecNormal (vm2, 
-						 gameData.segs.vertices + segP->verts [vs [1]], 
-						 gameData.segs.vertices + segP->verts [vs [2]], 
-						 gameData.segs.vertices + segP->verts [vs [3]]);
+		VmVecNormalChecked (vm1, 
+								  gameData.segs.vertices + segP->verts [vs [0]], 
+								  gameData.segs.vertices + segP->verts [vs [1]], 
+								  gameData.segs.vertices + segP->verts [vs [3]]);
+		VmVecNormalChecked (vm2, 
+								  gameData.segs.vertices + segP->verts [vs [1]], 
+							 	  gameData.segs.vertices + segP->verts [vs [2]], 
+								  gameData.segs.vertices + segP->verts [vs [3]]);
 		break;
 	}
 }
@@ -1769,20 +1769,8 @@ void AddSideAsTwoTriangles (tSegment *segP, int nSide)
 if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	segP = segP;
 #endif
-#if 0
-VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
-VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-dot = VmVecDot (sideP->normals, sideP->normals + 1);
-if (dot >= 0)
-	sideP->nType = SIDE_IS_TRI_02;
-else {
-	sideP->nType = SIDE_IS_TRI_13;
-	VmVecNormal (sideP->normals, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
-	VmVecNormal (sideP->normals + 1, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
-	}
-#else
 if (!IS_CHILD (segP->children [nSide])) {
-	VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+	VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
 	VmVecSub (&vec_13, gameData.segs.vertices + v3, gameData.segs.vertices + v1);
 	dot = VmVecDot (&vNormal, &vec_13);
 
@@ -1792,21 +1780,21 @@ if (!IS_CHILD (segP->children [nSide])) {
 	else
 		sideP->nType = SIDE_IS_TRI_13;
 
-	#ifndef COMPACT_SEGS
+#	ifndef COMPACT_SEGS
 	//	Now, based on triangulation nType, set the normals.
 	if (sideP->nType == SIDE_IS_TRI_02) {
-		//VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
+		//VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v2);
 		sideP->normals [0] = vNormal;
-		VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
 		sideP->normals [1] = vNormal;
 		}
 	else {
-		VmVecNormal (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
+		VmVecNormalChecked (&vNormal, gameData.segs.vertices + v0, gameData.segs.vertices + v1, gameData.segs.vertices + v3);
 		sideP->normals [0] = vNormal;
-		VmVecNormal (&vNormal, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
+		VmVecNormalChecked (&vNormal, gameData.segs.vertices + v1, gameData.segs.vertices + v2, gameData.segs.vertices + v3);
 		sideP->normals [1] = vNormal;
 		}
-	#endif
+#	endif
 	}
 else {
 	int	i, vSorted [4];
@@ -1815,47 +1803,46 @@ else {
 	bFlip = GetVertsForNormal (v0, v1, v2, v3, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
 	if ((vSorted [0] == v0) || (vSorted [0] == v2)) {
 		sideP->nType = SIDE_IS_TRI_02;
-#ifndef COMPACT_SEGS
+#	ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (v0, v1, v2, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (sideP->normals, 
+		VmVecNormalChecked (sideP->normals, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
 			VmVecNegate (sideP->normals);
 		bFlip = GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (sideP->normals + 1, 
+		VmVecNormalChecked (sideP->normals + 1, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
 			VmVecNegate (sideP->normals + 1);
 		GetVertsForNormal (v0, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-#endif
+#	endif
 		}
 	else {
 		sideP->nType = SIDE_IS_TRI_13;
-#ifndef COMPACT_SEGS
+#	ifndef COMPACT_SEGS
 		//	Now, get vertices for normal for each triangle based on triangulation nType.
 		bFlip = GetVertsForNormal (v0, v1, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (sideP->normals, 
+		VmVecNormalChecked (sideP->normals, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
 			VmVecNegate (sideP->normals);
 		bFlip = GetVertsForNormal (v1, v2, v3, 32767, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);
-		VmVecNormal (sideP->normals + 1, 
+		VmVecNormalChecked (sideP->normals + 1, 
 						 gameData.segs.vertices + vSorted [0], 
 						 gameData.segs.vertices + vSorted [1], 
 						 gameData.segs.vertices + vSorted [2]);
 		if (bFlip)
 			VmVecNegate (sideP->normals + 1);
-#endif
+#	endif
 		}
 	}
-#endif
 }
 
 // -------------------------------------------------------------------------------
@@ -1899,7 +1886,7 @@ void CreateWallsOnSide (tSegment *segP, int nSide)
 	v2 = segP->verts [s2v [2]];
 	v3 = segP->verts [s2v [3]];
 	bFlip = GetVertsForNormal (v0, v1, v2, v3, &vm0, &vm1, &vm2, &vm3);
-	VmVecNormal (&vn, gameData.segs.vertices + vm0, gameData.segs.vertices + vm1, gameData.segs.vertices + vm2);
+	VmVecNormalChecked (&vn, gameData.segs.vertices + vm0, gameData.segs.vertices + vm1, gameData.segs.vertices + vm2);
 	xDistToPlane = abs (VmDistToPlane (gameData.segs.vertices + vm3, &vn, gameData.segs.vertices + vm0));
 	if (bFlip)
 		VmVecNegate (&vn);

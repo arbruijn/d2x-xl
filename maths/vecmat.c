@@ -700,6 +700,12 @@ VmVecNormalize (VmVecPerp (dest, p0, p1, p2));
 return dest;
 }
 
+vmsVector *VmVecNormalChecked (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
+{
+VmVecNormalize (VmVecPerpChecked (dest, p0, p1, p2));
+return dest;
+}
+
 // ------------------------------------------------------------------------
 
 fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1)
@@ -889,6 +895,19 @@ return dest;
 #endif
 
 // ------------------------------------------------------------------------
+
+vmsVector *VmVecPerpChecked (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
+{
+	vmsVector t0, t1;
+
+VmVecSub (&t0, p1, p0);
+VmVecSub (&t1, p2, p1);
+CheckVec (&t0);
+CheckVec (&t1);
+return VmVecCrossProd (dest, &t0, &t1);
+}
+
+// ------------------------------------------------------------------------
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
@@ -898,13 +917,8 @@ vmsVector *VmVecPerp (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *
 
 VmVecSub (&t0, p1, p0);
 VmVecSub (&t1, p2, p1);
-#if 1
 VmVecNormalize (&t0);
 VmVecNormalize (&t1);
-#else
-CheckVec (&t0);
-CheckVec (&t1);
-#endif
 return VmVecCrossProd (dest, &t0, &t1);
 }
 

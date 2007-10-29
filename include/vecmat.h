@@ -284,13 +284,13 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1);
 //returns ptr to dest
 //dest CANNOT equal either source
 vmsVector *VmVecNormal (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2);
-
+vmsVector *VmVecNormalChecked (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2);
 
 //computes non-normalized surface normal from three points. 
 //returns ptr to dest
 //dest CANNOT equal either source
 vmsVector *VmVecPerp (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2);
-
+vmsVector *VmVecPerpChecked (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2);
 
 //computes the delta angle between two vectors. 
 //vectors need not be normalized. if they are, call VmVecDeltaAngNorm()

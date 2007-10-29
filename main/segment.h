@@ -95,20 +95,27 @@ typedef struct tSide {
 } tSide;
 #endif
 
-typedef struct tSegment {
 #ifdef EDITOR
+
+typedef struct tSegment {
 	short   nSegment;     // tSegment number, not sure what it means
-#endif
 	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
 	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
 	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
-#ifdef EDITOR
 	short   group;      // group number to which the tSegment belongs.
 	short   objects;    // pointer to objects in this tSegment
-#else
-	int     objects;    // pointer to objects in this tSegment
-#endif
 } tSegment;
+
+#else //!EDITOR
+
+typedef struct tSegment {
+	tSide   sides [MAX_SIDES_PER_SEGMENT];       // 6 sides
+	short   children [MAX_SIDES_PER_SEGMENT];    // indices of 6 children segments, front, left, top, right, bottom, back
+	short   verts [MAX_VERTICES_PER_SEGMENT];    // vertex ids of 4 front and 4 back vertices
+	int     objects;    // pointer to objects in this tSegment
+} tSegment;
+
+#endif //!EDITOR
 
 typedef struct tSegFaces {
 	grsFace	*pFaces;

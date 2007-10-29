@@ -999,7 +999,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
 	return 0;
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
-networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1));
+networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);
