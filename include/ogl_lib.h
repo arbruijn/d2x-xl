@@ -92,9 +92,4 @@ return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal : pvNormal;
 
 //------------------------------------------------------------------------------
 
-typedef void tInitTMU (int);
-typedef tInitTMU *pInitTMU;
-
-//------------------------------------------------------------------------------
-
 #endif

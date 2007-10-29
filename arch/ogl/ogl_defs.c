@@ -204,7 +204,7 @@ gameStates.ogl.bMultiTexturingOk =
 #endif 
 	glActiveTexture && glClientActiveTexture;
 #	else
-bMultiTexturingOk = 1;
+gameStates.ogl.bMultiTexturingOk = 1;
 #	endif
 #endif
 }
