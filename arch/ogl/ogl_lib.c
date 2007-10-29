@@ -29,6 +29,7 @@
 
 #include "inferno.h"
 #include "maths.h"
+#include "strutil.h"
 #include "gameseg.h"
 #include "lighting.h"
 #include "lightmap.h"
