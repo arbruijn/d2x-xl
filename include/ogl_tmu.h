@@ -167,4 +167,20 @@ else
 
 //------------------------------------------------------------------------------
 
+#define	G3_BIND(_tmu,_bmP,_bClient) \
+			glActiveTexture (_tmu); \
+			if (_bClient) \
+				glClientActiveTexture (_tmu); \
+			if (OglBindBmTex (_bmP, 1, 3)) \
+				return 1; \
+			(_bmP) = BmCurFrame (_bmP, -1); \
+			OglTexWrap ((_bmP)->glTexture, GL_REPEAT);
+
+#define	INIT_TMU(_initTMU,_tmu,_bmP,_bClient) \
+			_initTMU (_bClient); \
+			G3_BIND (_tmu,_bmP,_bClient)
+
+
+//------------------------------------------------------------------------------
+
 #endif

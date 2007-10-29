@@ -24,6 +24,7 @@ static char rcsid[] = "$Id: rod.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "globvars.h"
 #include "fix.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_render.h"
 
 #define RESCALE_ROD	0

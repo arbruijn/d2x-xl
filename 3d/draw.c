@@ -33,6 +33,7 @@ static char rcsid[] = "$Id: draw.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "texmap.h"
 #include "clipper.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_render.h"
 
 #if 1

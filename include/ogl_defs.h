@@ -176,13 +176,13 @@ extern PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB;
 
 // vertex buffer objects -------------------------------------------------------
 
-#	ifdef _WIN32
 extern PFNGLGENBUFFERSPROC					glGenBuffers;
 extern PFNGLBINDBUFFERPROC					glBindBuffer;
 extern PFNGLBUFFERDATAPROC					glBufferData;
 extern PFNGLMAPBUFFERPROC					glMapBuffer;
 extern PFNGLUNMAPBUFFERPROC				glUnmapBuffer;
 extern PFNGLDELETEBUFFERSPROC				glDeleteBuffers;
+#	ifdef _WIN32
 extern PFNGLDRAWRANGEELEMENTSPROC		glDrawRangeElements;
 #	endif
 

@@ -153,18 +153,16 @@ glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glA
 
 void OglInitVBOs (void)
 {
-#ifdef _WIN32
 glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB");
 glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB");
 glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB");
 glMapBuffer = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("glMapBufferARB");
 glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB");
 glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB");
+#ifdef _WIN32
 glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("glDrawRangeElements");
-gameStates.ogl.bHaveVBOs = glGenBuffers && glBindBuffer && glBufferData && glMapBuffer && glUnmapBuffer;
-#else
-gameStates.ogl.bHaveVBOs = 1;
 #endif
+gameStates.ogl.bHaveVBOs = glGenBuffers && glBindBuffer && glBufferData && glMapBuffer && glUnmapBuffer;
 }
 
 //------------------------------------------------------------------------------
