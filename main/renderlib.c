@@ -422,8 +422,12 @@ else {
 	else
 		return NULL;
 	nConnSeg = gameData.segs.segments [nSegment].children [nSide];
-	if ((nConnSeg >= 0) && (special == gameData.segs.segment2s [nConnSeg].special))
-		return NULL;
+	if (nConnSeg >= 0) {
+		if (special == gameData.segs.segment2s [nConnSeg].special)
+			return NULL;
+		if (IS_WALL (gameData.segs.segments [nSegment].sides [nSide].nWall))
+			return NULL;
+		}
 	}
 return segmentColors + nColor;
 }
@@ -712,6 +716,8 @@ int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP
 	int			bCamBufAvail = 0;
 #endif
 
+if (!extraGameInfo [0].bUseCameras)
+	return 0;
 bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/ 
 					  (pc->texBuf.glTexture || bCamBufAvail) &&
 					  (!bIsTeleCam || EGI_FLAG (bTeleporterCams, 0, 1, 0));

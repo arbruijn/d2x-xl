@@ -117,6 +117,8 @@ void ShowReticle(int force_big);
 unsigned int	nClearWindowColor = 0;
 int				nClearWindow = 2;	// 1 = Clear whole background window, 2 = clear view portals into rest of world, 0 = no clear
 
+void RenderSkyBox (int nWindow);
+
 //------------------------------------------------------------------------------
 
 gsrCanvas * reticleCanvas = NULL;
@@ -1314,6 +1316,8 @@ else
 	if (!nWindow || gameOpts->render.smoke.bAuxViews)
 		RenderSmoke ();
 	}
+if ((gameOpts->render.bDepthSort > 0) || gameOpts->render.nPath)
+	RenderSkyBox (nWindow);
 RenderItems ();
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
 	RenderRadar ();
@@ -1916,18 +1920,23 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ
 
 void RenderSkyBox (int nWindow)
 {
-	int	nSegment, bFullBright = gameStates.render.bFullBright;
 
-if (gameStates.render.bHaveSkyBox) {
-	gameStates.render.bHaveSkyBox = 0;
-	gameStates.render.nType = 4;
-	gameStates.render.bFullBright = 1;
-	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
-			gameStates.render.bHaveSkyBox = 1;
-			RenderSegmentFaces (nSegment, nWindow);
-			}
-	gameStates.render.bFullBright = bFullBright;
+if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
+	if (gameOpts->render.nPath)
+		RenderSkyBoxFaces ();
+	else {
+			int	nSegment, bFullBright = gameStates.render.bFullBright;
+
+		gameStates.render.bHaveSkyBox = 0;
+		gameStates.render.nType = 4;
+		gameStates.render.bFullBright = 1;
+		for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
+			if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
+				gameStates.render.bHaveSkyBox = 1;
+				RenderSegmentFaces (nSegment, nWindow);
+				}
+		gameStates.render.bFullBright = bFullBright;
+		}
 	}
 }
 
@@ -1990,11 +1999,8 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	}
 RenderSegmentList (0, 1);	// render opaque geometry
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
-if (!gameStates.render.automap.bDisplay)
-	if (gameOpts->render.nPath)
-		RenderSkyBoxFaces ();
-	else
-		RenderSkyBox (nWindow);
+if ((gameOpts->render.bDepthSort < 1) || gameOpts->render.nPath)
+	RenderSkyBox (nWindow);
 RenderSegmentList (1, 1);		// render objects
 if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {
 	glDepthFunc (GL_LEQUAL);

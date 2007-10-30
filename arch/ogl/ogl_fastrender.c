@@ -354,6 +354,14 @@ bool G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int b
 	grsBitmap	*bmMask = NULL;
 	tTexCoord2f	*ovlTexCoordP;
 
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	if (bDepthOnly)
+		nDbgSeg = nDbgSeg;
+	else
+		nDbgSeg = nDbgSeg;
+#endif
+
 if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
 bTransparent = faceP->bTransparent || (bmBot && (bmBot->bmProps.flags & BM_FLAG_TRANSPARENT));

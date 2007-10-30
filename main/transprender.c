@@ -661,7 +661,6 @@ if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
-glDisable (GL_CULL_FACE);
 renderItems.bmP = NULL;
 renderItems.bTextured = 1;
 }
@@ -789,7 +788,7 @@ glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LESS);
 glDepthMask (0);
-glDisable (GL_CULL_FACE);
+glEnable (GL_CULL_FACE);
 BeginRenderSmoke (-1, 1);
 nType = -1;
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
@@ -839,7 +838,6 @@ OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 glDepthFunc (GL_LEQUAL);
 glDepthMask (1);
-glEnable (GL_CULL_FACE);
 StencilOn (bStencil);
 return;
 }
