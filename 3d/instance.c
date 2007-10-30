@@ -107,8 +107,11 @@ if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	if (nInstanceDepth) {
+		if (mOrient)
+			VmsRot (mOrient);
 		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
+		glScalef (-1.0f, -1.0f, -1.0f);
 		}
 	else {
 		glLoadIdentity ();
@@ -120,11 +123,9 @@ if (gameStates.ogl.bUseTransform) {
 			float fScale = f2fl (gameData.models.nScale);
 			glScalef (fScale, fScale, fScale);
 			}
+		if (mOrient)
+			VmsRot (mOrient);
 		}
-	if (mOrient)
-		VmsRot (mOrient);
-	if (nInstanceDepth)
-		glScalef (-1.0f, -1.0f, -1.0f);
 	}
 
 //Assert (nInstanceDepth < MAX_INSTANCE_DEPTH);
