@@ -107,9 +107,9 @@ if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	if (nInstanceDepth) {
+		glScalef (-1.0f, -1.0f, -1.0f);
 		if (mOrient)
 			VmsRot (mOrient);
-		glScalef (-1.0f, -1.0f, -1.0f);
 		VmsMove (vPos);
 		glScalef (-1.0f, -1.0f, -1.0f);
 		}
