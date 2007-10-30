@@ -34,6 +34,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "u_mem.h"
 #include "console.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_render.h"
 #include "network.h"

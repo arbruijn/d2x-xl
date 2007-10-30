@@ -63,7 +63,7 @@ void OglSwapBuffers (int bForce, int bClear);
 void OglSetupTransform (int bForce);
 void OglResetTransform (int bForce);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
-void RebuildGfxFx (int bGame, int bCameras);
+void RebuildRenderContext (int bGame, int bCameras);
 void OglSetScreenMode (void);
 void OglGetVerInfo (void);
 

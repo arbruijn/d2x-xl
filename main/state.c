@@ -1464,7 +1464,7 @@ gameData.app.bGamePaused = 0;
 /*---*/LogErr ("   rebuilding OpenGL texture data\n");
 /*---*/LogErr ("      rebuilding effects\n");
 if (i)
-	RebuildGfxFx (1, 1);
+	RebuildRenderContext (1, 1);
 StartTime ();
 return i;
 }

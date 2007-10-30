@@ -3944,7 +3944,7 @@ do {
 		physOpts.nSlomoSpeedup = opt++;
 		sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
 		*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
-		ADD_SLIDER (opt, szDebrisLife, gameOpts->render.nDebrisLife, 0, 8, KEY_D, HTX_DEBRIS_LIFE);
+		ADD_SLIDER (opt, szDebrisLife + 1, gameOpts->render.nDebrisLife, 0, 8, KEY_D, HTX_DEBRIS_LIFE);
 		nOptDebrisLife = opt++;
 		sprintf (szDrag + 1, TXT_PLAYER_DRAG, extraGameInfo [0].nDrag * 10, '%');
 		*szDrag = *(TXT_PLAYER_DRAG - 1);

@@ -179,7 +179,7 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 	glViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
 		GrPaletteStepLoad (NULL);
-		RebuildGfxFx (1, 1);
+		RebuildRenderContext (1, 1);
 		}
 	else
 		GrRemapMonoFonts ();

@@ -690,7 +690,7 @@ if (gameStates.ogl.bUseTransform || bForce) {
 
 //------------------------------------------------------------------------------
 
-void RebuildGfxFx (int bGame, int bCameras)
+void RebuildRenderContext (int bGame, int bCameras)
 {
 ResetTextures (1, bGame);
 G3FreeAllPolyModelItems ();

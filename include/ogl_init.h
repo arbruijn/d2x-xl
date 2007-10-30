@@ -358,7 +358,7 @@ void OglUPixelC (int x, int y, grsColor *c);
 void OglULineC (int left,int top,int right,int bot, grsColor *c);
 void OglUPolyC (int left, int top, int right, int bot, grsColor *c);
 void OglTexWrap (tOglTexture *tex, int state);
-void RebuildGfxFx (int bGame, int bCameras);
+void RebuildRenderContext (int bGame, int bCameras);
 
 tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP);
 

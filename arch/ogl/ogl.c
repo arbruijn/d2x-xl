@@ -321,7 +321,7 @@ if (!t) {
 	Warning ("OGL: texture list full!\n");
 #endif
 	// try to recover: flush all textures, reload fonts and this level's textures
-	RebuildGfxFx (gameStates.app.bGameRunning, 1);
+	RebuildRenderContext (gameStates.app.bGameRunning, 1);
 	t = OglGetFreeTextureInternal ();
 	}
 return t;
@@ -1917,7 +1917,7 @@ LinkShaderProg (NULL);
 
 //------------------------------------------------------------------------------
 
-void RebuildGfxFx (int bGame, int bCameras)
+void RebuildRenderContext (int bGame, int bCameras)
 {
 G3FreeAllPolyModelItems ();
 ResetTextures (1, bGame);

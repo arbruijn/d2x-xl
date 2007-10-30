@@ -1492,7 +1492,7 @@ void DoBriefingScreens (char *filename, int nLevel)
 
 LogErr ("Creating cameras\n");
 gameStates.render.bBriefing = 1;
-RebuildGfxFx (1, 1);
+RebuildRenderContext (1, 1);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;

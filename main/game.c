@@ -541,7 +541,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 				if (!gameStates.render.bPaletteFadedOut)
 					GrPaletteStepLoad (NULL);
 				gameStates.menus.bInitBG = 1;
-				RebuildGfxFx (gameStates.app.bGameRunning, 1);
+				RebuildRenderContext (gameStates.app.bGameRunning, 1);
 			}
 
 			GrInitSubCanvas (
@@ -676,7 +676,7 @@ int GrToggleFullScreenMenu (void)
 //	generic_key_handler (KEY_PADENTER,0);
 	FlushInput ();
 	StopPlayerMovement ();
-	RebuildGfxFx (gameStates.app.bGameRunning, 1);
+	RebuildRenderContext (gameStates.app.bGameRunning, 1);
 	return i;
 #else
 	return -1;

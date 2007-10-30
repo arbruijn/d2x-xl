@@ -728,7 +728,7 @@ return (i > 0);
 //------------------------------------------------------------------------------
 
 int CheckTriggerSub (short nObject, tTrigger *triggers, int nTriggerCount, 
-							int nTrigger, int nPlayer, int shot, int bBotTrigger)
+							int nTrigger, int nPlayer, int shot, int bObjTrigger)
 {
 	tTrigger	*trigP;
 	tObject	*objP = gameData.objs.objects + nObject;
@@ -748,7 +748,7 @@ else {
 	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
 		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_CNTRLCEN))
 			return 1;
-		if (!bBotTrigger)
+		if (!bObjTrigger)
 			return 1;
 		}
 	else
@@ -898,7 +898,7 @@ switch (trigP->nType) {
 		break;
 
 	case TT_TELEPORT:
-		if (bBotTrigger) {
+		if (bObjTrigger) {
 			DoTeleportBot (trigP, nObject);
 			PrintTriggerMessage (nPlayer, nTrigger, shot, "Robot is fleeing!");
 			}
