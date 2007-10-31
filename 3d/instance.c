@@ -63,9 +63,11 @@ OglMove (OOF_VecVms2Gl (p, pv));
 inline void VmsRot (vmsMatrix *pm)
 {
 glMatrixf m;
-if (0 && nInstanceDepth)
+#if 0
+if (nInstanceDepth)
 	OglRot (OOF_MatVms2Gl (OOF_GlIdent (m), pm));
 else
+#endif
 	OglRot (OOF_GlTranspose (NULL, OOF_MatVms2Gl (OOF_GlIdent (m), pm)));
 }
 
@@ -108,10 +110,10 @@ if (gameStates.ogl.bUseTransform) {
 	glPushMatrix ();
 	if (nInstanceDepth) {
 		glScalef (-1.0f, -1.0f, -1.0f);
-		if (mOrient)
-			VmsRot (mOrient);
 		VmsMove (vPos);
 		glScalef (-1.0f, -1.0f, -1.0f);
+		if (mOrient)
+			VmsRot (mOrient);
 		}
 	else {
 		glLoadIdentity ();

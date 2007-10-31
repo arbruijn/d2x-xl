@@ -399,6 +399,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nCoronaIntensity, i, 0);
 		RP (gameOptions [i].render.nObjCoronaIntensity, i, 0);
 		RP (gameOptions [i].render.bAdditiveCoronas, i, 0);
+		RP (gameOptions [i].render.bAdditiveObjCoronas, i, 0);
 		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);

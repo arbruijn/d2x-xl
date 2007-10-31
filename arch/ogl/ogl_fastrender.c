@@ -377,7 +377,7 @@ else {
 	if (bMonitor)
 		faceP = faceP;
 #endif
-	if (bTransparent && !(bMonitor || bmTop || faceP->bSplit || faceP->bOverlay)) {
+	if (bTransparent && (gameStates.render.nType < 4) && !(bMonitor || bmTop || faceP->bSplit || faceP->bOverlay)) {
 #ifdef _DEBUG
 		if (gameOpts->render.bDepthSort > 0) 
 #endif

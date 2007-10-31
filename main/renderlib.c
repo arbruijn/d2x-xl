@@ -716,7 +716,7 @@ int SetupMonitorFace (short nSegment, short nSide, short nCamera, grsFace *faceP
 	int			bCamBufAvail = 0;
 #endif
 
-if (!extraGameInfo [0].bUseCameras)
+if (!gameStates.render.bDoCameras)
 	return 0;
 bHaveMonitorBg = pc->bValid && /*!pc->bShadowMap &&*/ 
 					  (pc->texBuf.glTexture || bCamBufAvail) &&

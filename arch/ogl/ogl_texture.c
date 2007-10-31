@@ -1011,6 +1011,12 @@ if (!texP->bFrameBuf)
 		}
 	// Generate OpenGL texture IDs.
 	glGenTextures (1, (GLuint *) &texP->handle);
+	if (!texP->handle) {
+#ifdef _DEBUG
+		int i = glGetError ();
+#endif
+		return 1;
+		}
 	//set priority
 	glPrioritizeTextures (1, (GLuint *) &texP->handle, &texP->prio);
 	// Give our data to OpenGL.

@@ -421,6 +421,7 @@ void RenderSkyBoxFaces (void)
 	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
+	glDepthMask (1);
 	gameStates.render.bHaveSkyBox = 0;
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;

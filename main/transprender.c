@@ -656,6 +656,9 @@ if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1))
 
 void RIRenderSphere (tRISphere *item)
 {
+	int bDepthSort = gameOpts->render.bDepthSort;
+
+gameOpts->render.bDepthSort = -1;
 RISetClientState (0, 0, 0);
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
@@ -663,6 +666,10 @@ if (item->nType == riMonsterball)
 	DrawMonsterball (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 renderItems.bmP = NULL;
 renderItems.bTextured = 1;
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glDepthMask (0);
+glEnable (GL_BLEND);
+gameOpts->render.bDepthSort = bDepthSort;
 }
 
 //------------------------------------------------------------------------------

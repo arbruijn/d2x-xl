@@ -1922,6 +1922,7 @@ void RenderSkyBox (int nWindow)
 {
 
 if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
+	glDepthMask (1);
 	if (gameOpts->render.nPath)
 		RenderSkyBoxFaces ();
 	else {

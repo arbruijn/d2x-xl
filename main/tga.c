@@ -374,6 +374,7 @@ if (!(bmP = GrCreateBitmap (0, 0, 4)))
 	return NULL;
 if (ReadTGA (szFile, NULL, bmP, -1, 1.0, 0, 0)) {
 	bmP->bmType = BM_TYPE_ALT;
+	strncpy (bmP->szName, szFile, sizeof (bmP->szName));
 	return bmP;
 	}
 bmP->bmType = BM_TYPE_ALT;

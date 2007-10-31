@@ -16,6 +16,7 @@
 #include "glare.h"
 #include "objeffects.h"
 #include "objrender.h"
+#include "transprender.h"
 
 #define SIMPLE_SPHERE	1
 #define ADDITIVE_SPHERE_BLENDING 1
@@ -565,6 +566,7 @@ int CreateShieldSphere (void)
 {
 if (!LoadShield ())
 	return 0;
+#if !SIMPLE_SPHERE
 if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2) {
 	if (gameData.render.shield.pSphere)
 		DestroySphere (&gameData.render.shield);
@@ -572,6 +574,7 @@ if (gameData.render.shield.nTessDepth != gameOpts->render.textures.nQuality + 2)
 	}
 if (!gameData.render.shield.pSphere)
 	gameData.render.shield.nFaces = CreateSphere (&gameData.render.shield);
+#endif
 return 1;
 }
 
@@ -581,17 +584,24 @@ void DrawShieldSphere (tObject *objP, float red, float green, float blue, float 
 {
 if (!CreateShieldSphere ())
 	return;
-if (gameData.render.shield.nFaces > 0) {
-	tOOF_vector	p;
-	float	fScale, r = f2fl (objP->size) * 1.05f;
-	gameStates.ogl.bUseTransform = 1;
-	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-	RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
-					  r, r, r, red, green, blue, alpha, bmpShield, 1);
-	G3DoneInstance ();
-	gameStates.ogl.bUseTransform = 0;
-	fScale = gameData.render.shield.pPulse->fScale;
-	RenderObjectHalo (objP, 3 * objP->size / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
+#if !SIMPLE_SPHERE
+if (gameData.render.shield.nFaces > 0) 
+#endif
+	{
+	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
+		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
+	else {
+		tOOF_vector	p;
+		float	fScale, r = f2fl (objP->size) * 1.05f;
+		gameStates.ogl.bUseTransform = 1;
+		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+		RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
+						  r, r, r, red, green, blue, alpha, bmpShield, 1);
+		G3DoneInstance ();
+		gameStates.ogl.bUseTransform = 0;
+		fScale = gameData.render.shield.pPulse->fScale;
+		RenderObjectHalo (objP, 3 * objP->size / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
+		}
 	}
 }
 
@@ -604,12 +614,16 @@ if (!gameData.render.monsterball.pSphere) {
 	gameData.render.monsterball.nFaces = CreateSphere (&gameData.render.monsterball);
 	}
 if (gameData.render.monsterball.nFaces > 0) {
-	tOOF_vector	p;
-	float r = f2fl (objP->size);
-	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-	RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
-					  r, r, r, red, green, blue, alpha, &gameData.hoard.monsterball.bm, 4);
-	G3DoneInstance ();
+	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
+		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
+	else {
+		tOOF_vector	p;
+		float r = f2fl (objP->size);
+		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+		RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
+						r, r, r, red, green, blue, alpha, &gameData.hoard.monsterball.bm, 4);
+		G3DoneInstance ();
+		}
 	}
 }
 
