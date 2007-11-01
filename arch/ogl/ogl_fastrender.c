@@ -175,7 +175,9 @@ bool G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int b
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
-if (bmBot)
+if (!faceP->bTextured)
+	bmBot = NULL;
+else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
 bTransparent = faceP->bTransparent || (bmBot && (bmBot->bmProps.flags & BM_FLAG_TRANSPARENT));
 
@@ -362,7 +364,9 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 		nDbgSeg = nDbgSeg;
 #endif
 
-if (bmBot)
+if (!faceP->bTextured)
+	bmBot = NULL;
+else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
 bTransparent = faceP->bTransparent || (bmBot && (bmBot->bmProps.flags & BM_FLAG_TRANSPARENT));
 

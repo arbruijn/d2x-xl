@@ -1003,14 +1003,16 @@ for (i = 0; i < nSoundNum; i++) {
 	//size -= sizeof (tPIGSoundHeader);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
-	if (!LoadHiresSound (&sound, szSoundName)) {
+	if (LoadHiresSound (&sound, szSoundName)) 
+		sbytes += sound.nLength [0];
+	else {
 		sound.bHires = 0;
 		sound.nLength [0] = sndh.length;
 		sound.data [0] = (ubyte *) (size_t) (sndh.offset + nHeaderSize + nSoundStart);
 		soundOffset [gameStates.app.bD1Data][gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]] = sndh.offset + nHeaderSize + nSoundStart;
+		sbytes += sndh.length;
 		}
 	PiggyRegisterSound (&sound, szSoundName, 1);
-	sbytes += sndh.length;
 	}
 if (!(gameData.pig.sound.data [gameStates.app.bD1Data] = D2_ALLOC (sbytes + 16))) {
 	Error ("Not enough memory to load sounds\n");

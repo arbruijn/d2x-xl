@@ -50,7 +50,7 @@ void LoadFaceBitmaps (tSegment *segP, grsFace *faceP)
 	tSide	*sideP = segP->sides + faceP->nSide;
 	short	nFrame = sideP->nFrame;
 
-if (faceP->nBaseTex < 0)
+if ((faceP->nBaseTex < 0) || !faceP->bTextured)
 	return;
 if (faceP->bOverlay)
 	faceP->nBaseTex = sideP->nOvlTex;

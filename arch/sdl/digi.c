@@ -66,7 +66,7 @@ extern inline fix FixMul (fix x, fix y) { return do_fixmul (x,y); }
 #define SOUND_BUFFER_SIZE 512
 
 #define MIN_VOLUME 10
-#define SOUND_FORMAT	AUDIO_U8	//AUDIO_S16LSB
+#define D2_SOUND_FORMAT	AUDIO_U8	//AUDIO_S16LSB
 
 
 /* This table is used to add two sound values together and pin
@@ -289,13 +289,13 @@ if (!gameOpts->sound.bUseOpenAL)
 if (gameOpts->sound.bUseSDLMixer) {
 	int h;
 	if (gameOpts->sound.bHires == 1)
-		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 16);
+		h = Mix_OpenAudio ((int) (SAMPLE_RATE_22K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 8);
 	else if (gameOpts->sound.bHires == 2)
 		h = Mix_OpenAudio ((int) (SAMPLE_RATE_44K / fSlowDown), AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 16);
 	else if (gameData.songs.user.bMP3)
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), SOUND_FORMAT, SDL_MIXER_CHANNELS, 
+		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, 
 								 2 * SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K));
 	if (h < 0) {
 		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
@@ -417,7 +417,7 @@ else {
 	return i;
 	}
 #endif
-#if SOUND_FORMAT == AUDIO_S16LSB
+#if D2_SOUND_FORMAT == AUDIO_S16LSB
 else
 	l *= 2;
 #endif
@@ -450,7 +450,7 @@ for (;;) {
 			}
 		}
 	else {
-#if SOUND_FORMAT == AUDIO_S16LSB
+#if D2_SOUND_FORMAT == AUDIO_S16LSB
 		h = (((h + 1) << 7) - 1);
 		*(--ps) = (ushort) h;
 #else
@@ -475,7 +475,7 @@ for (;;) {
 				}
 			}
 		else {
-#if SOUND_FORMAT == AUDIO_S16LSB
+#if D2_SOUND_FORMAT == AUDIO_S16LSB
 			*(--ps) = (ushort) h;
 #endif
 #if SDL_MIXER_CHANNELS == 2

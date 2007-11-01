@@ -1222,6 +1222,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\include\d_io.h">
+				</File>
+				<File
 					RelativePath="..\..\misc\error.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -1372,9 +1375,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\CON_console.h">
-					</File>
-					<File
-						RelativePath="..\..\include\d_io.h">
 					</File>
 					<File
 						RelativePath="..\..\include\error.h">
@@ -3546,10 +3546,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

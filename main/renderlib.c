@@ -656,8 +656,8 @@ float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int b
 if (!IS_WALL (nWall))
 	return 1;
 wallP = gameData.walls.walls + nWall;
-if ((bCloaking = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || 
-					  (widFlags & (WID_CLOAKED_FLAG | WID_TRANSPARENT_FLAG)))) {
+bCloaking = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;

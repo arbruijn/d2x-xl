@@ -305,7 +305,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	else
 		VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
-return RIAddPoly (BmOverride (faceP->bmBot, -1), vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+return RIAddPoly (faceP->bTextured ? BmOverride (faceP->bmBot, -1) : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
 }
@@ -500,14 +500,18 @@ if (bmP) {
 		renderItems.bTextured = 1;
 		}
 	if ((bmP != renderItems.bmP) || (nFrame != renderItems.nFrame) || (nWrap != renderItems.nWrap)) {
-		if (OglBindBmTex (bmP, 1, nTransp)) {
-			renderItems.bmP = NULL;
-			return 0;
+		if (bmP) {
+			if (OglBindBmTex (bmP, 1, nTransp)) {
+				renderItems.bmP = NULL;
+				return 0;
+				}
+			bmP = BmOverride (bmP, nFrame);
+			OglTexWrap (bmP->glTexture, nWrap);
+			renderItems.bmP = bmP;
+			renderItems.nWrap = nWrap;
 			}
-		bmP = BmOverride (bmP, nFrame);
-		OglTexWrap (bmP->glTexture, nWrap);
-		renderItems.bmP = bmP;
-		renderItems.nWrap = nWrap;
+		else
+			OGL_BINDTEX (0);
 		}
 	}
 else if (RISetClientState (bClientState, 0, nColors > 1) || renderItems.bTextured) {
@@ -533,7 +537,7 @@ if (!item->bmP) {
 	}
 #endif
 #ifdef _DEBUG
-if (strstr (item->bmP->szName, "door37#0"))
+if (item->bmP && strstr (item->bmP->szName, "door37#0"))
 	item = item;
 #endif
 #if 1
