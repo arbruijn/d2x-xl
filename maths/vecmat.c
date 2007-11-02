@@ -742,15 +742,13 @@ return dest;
 // ------------------------------------------------------------------------
 //make sure a vector is reasonably sized to go into a cross product
 
-#if 1
-
 void CheckVec(vmsVector *vp)
 {
 	fix check;
 	int cnt = 0;
 	vmsVector v = *vp;
 
-if (!(check = labs (v.p.x) | labs (v.p.y) | labs (v.p.z)))
+if (!(check = labs (v.x) | labs (v.y) | labs (v.z)))
 	return;
 if (check & 0xfffc0000) {		//too big
 	while (check & 0xfff00000) {
@@ -774,51 +772,11 @@ else if (!(check & 0xffff8000)) {		//yep, too small
 	}
 else
 	return;
-v.p.x >>= cnt;
-v.p.y >>= cnt;
-v.p.z >>= cnt;
+v.x >>= cnt;
+v.y >>= cnt;
+v.z >>= cnt;
 *vp = v;
 }
-
-#else
-
-void CheckVec(vmsVector *vp)
-{
-	unsigned int check;
-	int cnt = 0;
-	vmsVector v = *vp;
-
-if (!(check = labs (v.p.x) | labs (v.p.y) | labs (v.p.z)))
-	return;
-if (check & 0xfffc0000) {		//too big
-	while (check & 0xfff00000) {
-		cnt += 4;
-		check /= 16;
-		}
-	while (check & 0xfffc0000) {
-		cnt += 2;
-		check /= 4;
-		}
-	}
-else if (!(check & 0xffff8000)) {		//yep, too small
-	while (!(check & 0xfffff000)) {
-		cnt += 4;
-		check <<= 4;
-		}
-	while (!(check & 0xffff8000)) {
-		cnt += 2;
-		check *= 4;
-		}
-	}
-else
-	return;
-v.p.x >>= cnt;
-v.p.y >>= cnt;
-v.p.z >>= cnt;
-*vp = v;
-}
-
-#endif
 
 // ------------------------------------------------------------------------
 //computes cross product of two vectors. 

@@ -785,7 +785,6 @@ gameData.render.lights.dynamic.shader.nActiveLights [0] =
 gameData.render.lights.dynamic.shader.nActiveLights [1] =
 gameData.render.lights.dynamic.shader.nActiveLights [2] =
 gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
-gameOpts->render.color.bAmbientLight = 1;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 if (gameStates.render.bFullBright)

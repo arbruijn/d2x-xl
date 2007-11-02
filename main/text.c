@@ -1703,7 +1703,7 @@ char *defaultGameTexts [][2] = {
 	{"~Volle Farbsaettigung", "~Full color saturation"},
 	{"~Begrenzte Farbsaettigung", "~Limit color saturation"},
 	{"~Keine Farbsaettigung", "~No color saturation"},
-	{"Die Pilotendatei ist beschaedigt und wurde repariert.", "The player file was damaged and has been repaired."},
+	{"Die Pilotendatei ist beschaedigt\nund wurde repariert.", "The player file was damaged\nand has been repaired."},
 	{"~2D-Abgasstrahl", "~2D thruster flames"},
 	{"~3D-Abgasstrahl", "~3D thruster flames"},
 	{"explosions-schra~Pnells: %s", "explosion shra~Pnels: %s"},

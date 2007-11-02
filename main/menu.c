@@ -3135,10 +3135,18 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
-	optColoredLight = opt++;
-	ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
-	lightOpts.nGunColor = opt++;
+	if (gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting)
+		optColoredLight = -1;
+	else {
+		ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
+		optColoredLight = opt++;
+		}
+	if (gameOpts->render.bDynLighting)
+		lightOpts.nGunColor = -1;
+	else {
+		ADD_CHECK (opt, TXT_USE_WPNCOLOR, gameOpts->render.color.bGunLight, KEY_W, HTX_RENDER_WPNCOLOR);
+		lightOpts.nGunColor = opt++;
+		}
 	optMixColors = 
 	optPowerupLights = -1;
 	if (gameOpts->app.bExpertMode) {

@@ -1375,7 +1375,7 @@ if (ControlsLimitTurnRate (bUseMouse)) {
 		KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
 		}
 	if (Controls [1].pitchTime || Controls [2].pitchTime) {
-		KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+		KCCLAMP (Controls [0].pitchTime, nMaxTurnRate * !extraGameInfo [IsMultiGame].bFastPitch);
 		}
 	if (Controls [1].bankTime || Controls [2].bankTime) {
 		KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
@@ -1383,7 +1383,7 @@ if (ControlsLimitTurnRate (bUseMouse)) {
 	}
 else {
 	KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
-	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate * !extraGameInfo [IsMultiGame].bFastPitch);
 	KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
 	}
 if (gameStates.render.nZoomFactor > F1_0) {
