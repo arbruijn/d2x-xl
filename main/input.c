@@ -491,7 +491,7 @@ if (gameStates.render.automap.bDisplay ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
-	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate * !extraGameInfo [IsMultiGame].bFastPitch);
 	KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
 	}
 KCCLAMP (Controls [0].bankTime, gameStates.input.kcFrameTime);

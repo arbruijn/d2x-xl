@@ -1424,7 +1424,7 @@ void RenderLightningCore (tLightning *pl, tRgbaColorf *colorP, int nDepth, int n
 glBlendFunc (GL_ONE, GL_ONE);
 glDisable (GL_TEXTURE_2D);
 glColor4f (colorP->red / 4, colorP->green / 4, colorP->blue / 4, colorP->alpha);
-glLineWidth ((GLfloat) (nDepth ? 1 : 3));
+glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glDisable (GL_SMOOTH);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++, vPosf++) {
 	TRAP (pln);
