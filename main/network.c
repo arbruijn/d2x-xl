@@ -536,7 +536,7 @@ gameData.multiplayer.players [nPlayer].connected = 0;
 KillPlayerSmoke (nPlayer);
 netPlayers.players [nPlayer].connected = 0;
 if (networkData.bVerifyPlayerJoined == nPlayer)
-	networkData.bVerifyPlayerJoined=-1;
+	networkData.bVerifyPlayerJoined = -1;
 //      CreatePlayerAppearanceEffect (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject]);
 MultiMakePlayerGhost (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)

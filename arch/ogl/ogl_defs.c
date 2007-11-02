@@ -73,6 +73,7 @@ PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB = NULL;
 #	endif
 #endif
 
+#ifndef GL_VERSION_20
 PFNGLGENBUFFERSPROC					glGenBuffers = NULL;
 PFNGLBINDBUFFERPROC					glBindBuffer = NULL;
 PFNGLBUFFERDATAPROC					glBufferData = NULL;
@@ -80,6 +81,7 @@ PFNGLMAPBUFFERPROC					glMapBuffer = NULL;
 PFNGLUNMAPBUFFERPROC					glUnmapBuffer = NULL;
 PFNGLDELETEBUFFERSPROC				glDeleteBuffers = NULL;
 PFNGLDRAWRANGEELEMENTSPROC			glDrawRangeElements = NULL;
+#endif
 
 #ifdef _WIN32
 PFNGLACTIVESTENCILFACEEXTPROC		glActiveStencilFaceEXT = NULL;
@@ -151,6 +153,7 @@ glActiveStencilFaceEXT	= (PFNGLACTIVESTENCILFACEEXTPROC) wglGetProcAddress ("glA
 
 void OglInitVBOs (void)
 {
+#ifndef GL_VERSION_20
 glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB");
 glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB");
 glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB");
@@ -159,6 +162,9 @@ glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB");
 glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB");
 glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("glDrawRangeElements");
 gameStates.ogl.bHaveVBOs = glGenBuffers && glBindBuffer && glBufferData && glMapBuffer && glUnmapBuffer;
+#else
+gameStates.ogl.bHaveVBOs = 1;
+#endif
 }
 
 //------------------------------------------------------------------------------

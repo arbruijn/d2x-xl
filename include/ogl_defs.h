@@ -127,8 +127,8 @@ int OglInitLoadLibrary (void);
 // multi texturing -------------------------------------------------------------
 
 #	if OGL_MULTI_TEXTURING
-#		define glActiveTexture				pglActiveTextureARB
-#		define glClientActiveTexture		pglClientActiveTextureARB
+#	define glActiveTexture				pglActiveTextureARB
+#	define glClientActiveTexture		pglClientActiveTextureARB
 
 extern PFNGLACTIVETEXTUREARBPROC			pglActiveTextureARB;
 extern PFNGLMULTITEXCOORD2FARBPROC		pglMultiTexCoord2fARB;
@@ -146,13 +146,13 @@ extern PFNGLCLIENTACTIVETEXTUREARBPROC	glClientActiveTexture;
 // occlusion queries -----------------------------------------------------------
 
 #	if OGL_QUERY
-#		define glGenQueries							pglGenQueriesARB
-#		define glDeleteQueries						pglDeleteQueriesARB
-#		define glIsQuery								pglIsQueryARB
-#		define glBeginQuery							pglBeginQueryARB
+#		define glGenQueries						pglGenQueriesARB
+#		define glDeleteQueries					pglDeleteQueriesARB
+#		define glIsQuery							pglIsQueryARB
+#		define glBeginQuery						pglBeginQueryARB
 #		define glEndQuery							pglEndQueryARB
-#		define glGetQueryiv							pglGetQueryivARB
-#		define glGetQueryObjectiv					pglGetQueryObjectivARB
+#		define glGetQueryiv						pglGetQueryivARB
+#		define glGetQueryObjectiv				pglGetQueryObjectivARB
 #		define glGetQueryObjectuiv				pglGetQueryObjectuivARB
 
 extern PFNGLGENQUERIESARBPROC        	glGenQueries;
@@ -236,7 +236,6 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #	ifndef _WIN32
 #	define	wglGetProcAddress	SDL_GL_GetProcAddress
 #	endif
-
 
 #else //GL_VERSION_20
 
