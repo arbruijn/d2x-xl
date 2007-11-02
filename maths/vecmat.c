@@ -742,13 +742,13 @@ return dest;
 // ------------------------------------------------------------------------
 //make sure a vector is reasonably sized to go into a cross product
 
-void CheckVec(vmsVector *vp)
+void CheckVec (vmsVector *vp)
 {
 	fix check;
 	int cnt = 0;
 	vmsVector v = *vp;
 
-if (!(check = labs (v.x) | labs (v.y) | labs (v.z)))
+if (!(check = labs (v.p.x) | labs (v.p.y) | labs (v.p.z)))
 	return;
 if (check & 0xfffc0000) {		//too big
 	while (check & 0xfff00000) {
@@ -772,9 +772,9 @@ else if (!(check & 0xffff8000)) {		//yep, too small
 	}
 else
 	return;
-v.x >>= cnt;
-v.y >>= cnt;
-v.z >>= cnt;
+v.p.x >>= cnt;
+v.p.y >>= cnt;
+v.p.z >>= cnt;
 *vp = v;
 }
 
