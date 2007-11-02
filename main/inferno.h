@@ -2950,6 +2950,7 @@ extern fix nDebrisLife [];
 
 #define SPECTATOR(_objP)	(gameStates.app.bFreeCam && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->position)
+#define OBJSEG(_objP)		(SPECTATOR (_objP) ? gameStates.app.nPlayerSegment : (_objP)->nSegment)
 
 #ifdef RELEASE
 #	define FAST_SHADOWS	1

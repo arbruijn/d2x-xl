@@ -1025,7 +1025,7 @@ if (objP->mType.physInfo.mass == 0)
 	return;
 if (objP->movementType != MT_PHYSICS)
 	return;
-if (gameStates.render.automap.bDisplay && (objP == gameData.objs.console))
+if ((gameStates.render.automap.bDisplay && (objP == gameData.objs.console)) || SPECTATOR (objP))
 	return;
 #ifdef TACTILE
   if (TactileStick && (obj == gameData.objs.objects + LOCALPLAYER.nObject))

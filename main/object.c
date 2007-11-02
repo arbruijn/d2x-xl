@@ -649,6 +649,11 @@ Assert (nObject != -1);
 objP = gameData.objs.objects + nObject;
 Assert (objP->nSegment == -1);
 Assert (nSegment >= 0 && nSegment <= gameData.segs.nLastSegment);
+if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
+	nSegment = FindSegByPoint (&objP->position.vPos, 0, 0);
+	if (nSegment < 0)
+		return;
+	}
 objP->nSegment = nSegment;
 objP->next = gameData.segs.segments [nSegment].objects;
 objP->prev = -1;

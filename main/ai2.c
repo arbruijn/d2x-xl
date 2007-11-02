@@ -257,8 +257,8 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 #endif
 		return;
 	}
-	COMPUTE_SEGMENT_CENTER_I (&vObjPos, gameData.objs.console->nSegment);
-	CreateMorphRobot (gameData.segs.segments + gameData.objs.console->nSegment, &vObjPos, buddy_id);
+	COMPUTE_SEGMENT_CENTER_I (&vObjPos, OBJSEG (gameData.objs.console));
+	CreateMorphRobot (gameData.segs.segments + OBJSEG (gameData.objs.console), &vObjPos, buddy_id);
 }
 
 #define	QUEUE_SIZE	256
@@ -879,7 +879,7 @@ if (botInfoP->attackType != 1)
 if (ailp->nextPrimaryFire > 0)
 	return;
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)) {
-	if (VmVecDistQuick (&gameData.objs.console->position.vPos, &robot->position.vPos) < 
+	if (VmVecDistQuick (&OBJPOS (gameData.objs.console)->vPos, &robot->position.vPos) < 
 		 robot->size + gameData.objs.console->size + F1_0 * 2) {
 		CollidePlayerAndNastyRobot (playerobjP, robot, vCollision);
 		if (botInfoP->energyDrain && LOCALPLAYER.energy) {
@@ -2121,8 +2121,8 @@ void InitAIForShip (void)
 
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-	gameData.ai.cloakInfo [i].nLastSeg = gameData.objs.console->nSegment;
-	gameData.ai.cloakInfo [i].vLastPos = gameData.objs.console->position.vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.console);
+	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.console)->vPos;
 	}
 }
 

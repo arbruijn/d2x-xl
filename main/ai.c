@@ -315,7 +315,7 @@ void MakeNearbyRobotSnipe (void)
 	int bfs_length, i;
 	short bfs_list [MNRS_SEG_MAX];
 
-	CreateBfsList (gameData.objs.console->nSegment, bfs_list, &bfs_length, MNRS_SEG_MAX);
+	CreateBfsList (OBJSEG (gameData.objs.console), bfs_list, &bfs_length, MNRS_SEG_MAX);
 
 	for (i=0; i<bfs_length; i++) {
 		int nObject = gameData.segs.segments [bfs_list [i]].objects;
@@ -407,7 +407,7 @@ void DoSnipeFrame (tObject *objP)
 		case AIM_SNIPE_FIRE:
 			if (ailp->nextActionTime < 0) {
 				tAIStatic	*aip = &objP->cType.aiInfo;
-				CreateNSegmentPath (objP, 10 + d_rand ()/2048, gameData.objs.console->nSegment);
+				CreateNSegmentPath (objP, 10 + d_rand () / 2048, OBJSEG (gameData.objs.console));
 				aip->nPathLength = SmoothPath (objP, &gameData.ai.pointSegs [aip->nHideIndex], aip->nPathLength);
 				if (d_rand () < 8192)
 					ailp->mode = AIM_SNIPE_RETREAT_BACKWARDS;
@@ -566,7 +566,7 @@ if ((aip->behavior < MIN_BEHAVIOR) || (aip->behavior > MAX_BEHAVIOR)) {
 			vVisPos = objP->position.vPos;
 			ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_REACTION_DIST);
 			if (gameData.ai.nPlayerVisibility) {
-				int ii, min_obj = -1;
+				int ii, nMinObj = -1;
 				fix curDist, minDist = MAX_WAKEUP_DIST;
 
 				for (ii=0; ii <= gameData.objs.nLastObject; ii++)
@@ -576,13 +576,13 @@ if ((aip->behavior < MIN_BEHAVIOR) || (aip->behavior > MAX_BEHAVIOR)) {
 						if (curDist < MAX_WAKEUP_DIST / 2)
 							if (ObjectToObjectVisibility (objP, &gameData.objs.objects [ii], FQ_TRANSWALL))
 								if (curDist < minDist) {
-									min_obj = ii;
+									nMinObj = ii;
 									minDist = curDist;
 								}
 					}
-				if (min_obj != -1) {
-					gameData.ai.vBelievedPlayerPos = gameData.objs.objects [min_obj].position.vPos;
-					gameData.ai.nBelievedPlayerSeg = gameData.objs.objects [min_obj].nSegment;
+				if (nMinObj != -1) {
+					gameData.ai.vBelievedPlayerPos = gameData.objs.objects [nMinObj].position.vPos;
+					gameData.ai.nBelievedPlayerSeg = gameData.objs.objects [nMinObj].nSegment;
 					VmVecNormalizedDirQuick (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 					}
 				else
@@ -597,7 +597,7 @@ _exit_cheat:
 			if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 				gameData.ai.vBelievedPlayerPos = gameData.ai.cloakInfo [nObject & (MAX_AI_CLOAK_INFO-1)].vLastPos;
 			else
-				gameData.ai.vBelievedPlayerPos = gameData.objs.console->position.vPos;
+				gameData.ai.vBelievedPlayerPos = OBJPOS (gameData.objs.console)->vPos;
 			}
 		}
 	gameData.ai.xDistToPlayer = VmVecDistQuick (&gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
@@ -658,7 +658,7 @@ _exit_cheat:
 					break;
 				case AIM_GOTO_OBJECT:
 					gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
-					//if (objP->nSegment == gameData.objs.console->nSegment) {
+					//if (objP->nSegment == OBJSEG (gameData.objs.console)) {
 					//	if (gameData.ai.pointSegs [aip->nHideIndex + aip->nCurPathIndex].nSegment == objP->nSegment)
 					//		if ((aip->nCurPathIndex + aip->PATH_DIR >= 0) && (aip->nCurPathIndex + aip->PATH_DIR < aip->nPathLength-1))
 					//			aip->nCurPathIndex += aip->PATH_DIR;
@@ -820,7 +820,7 @@ switch (ROBOTINFO (objP->id).bossFlag) {
 		// If tPlayer cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			pv = 0;
-			dtp = VmVecDistQuick (&gameData.objs.console->position.vPos, &objP->position.vPos)/4;
+			dtp = VmVecDistQuick (&OBJPOS (gameData.objs.console)->vPos, &objP->position.vPos) / 4;
 			}
 		DoBossStuff (objP, pv);
 		}
@@ -860,7 +860,7 @@ if (objP->id == ROBOT_BRAIN) {
 	// Robots function nicely if behavior is gameData.matCens.fuelCenters.  This
 	// means they won't move until they can see the tPlayer, at
 	// which time they will start wandering about opening doors.
-	if (gameData.objs.console->nSegment == objP->nSegment) {
+	if (OBJSEG (gameData.objs.console) == objP->nSegment) {
 		if (!AIMultiplayerAwareness (objP, 97))
 			goto funcExit;
 		ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, F1_0 * 10000);
@@ -1175,18 +1175,18 @@ switch (ailp->mode) {
 			// Method:
 			// If gameData.ai.vVecToPlayer dot player_rear_vector > 0, behind is goal.
 			// Else choose goal with larger dot from left, right.
-			vmsVector  goal_point, vGoal, vec_to_goal, rand_vec;
+			vmsVector  goal_point, vGoal, vec_to_goal, vRand;
 			fix         dot;
 
-			dot = VmVecDot (&gameData.objs.console->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
+			dot = VmVecDot (&OBJPOS (gameData.objs.console)->mOrient.fVec, &gameData.ai.vVecToPlayer);
 			if (dot > 0) {          // Remember, we're interested in the rear vector dot being < 0.
-				vGoal = gameData.objs.console->position.mOrient.fVec;
+				vGoal = OBJPOS (gameData.objs.console)->mOrient.fVec;
 				VmVecNegate (&vGoal);
 				}
 			else {
 				fix dot;
-				dot = VmVecDot (&gameData.objs.console->position.mOrient.rVec, &gameData.ai.vVecToPlayer);
-				vGoal = gameData.objs.console->position.mOrient.rVec;
+				dot = VmVecDot (&OBJPOS (gameData.objs.console)->mOrient.rVec, &gameData.ai.vVecToPlayer);
+				vGoal = OBJPOS (gameData.objs.console)->mOrient.rVec;
 				if (dot > 0) {
 					VmVecNegate (&vGoal);
 					}
@@ -1194,9 +1194,9 @@ switch (ailp->mode) {
 					;
 				}
 			VmVecScale (&vGoal, 2* (gameData.objs.console->size + objP->size + (((nObject*4 + gameData.app.nFrameCount) & 63) << 12)));
-			VmVecAdd (&goal_point, &gameData.objs.console->position.vPos, &vGoal);
-			MakeRandomVector (&rand_vec);
-			VmVecScaleInc (&goal_point, &rand_vec, F1_0 * 8);
+			VmVecAdd (&goal_point, &OBJPOS (gameData.objs.console)->vPos, &vGoal);
+			MakeRandomVector (&vRand);
+			VmVecScaleInc (&goal_point, &vRand, F1_0 * 8);
 			VmVecSub (&vec_to_goal, &goal_point, &objP->position.vPos);
 			VmVecNormalizeQuick (&vec_to_goal);
 			MoveTowardsVector (objP, &vec_to_goal, 0);
@@ -1499,8 +1499,8 @@ void AIDoCloakStuff (void)
 	int i;
 
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++) {
-	gameData.ai.cloakInfo [i].vLastPos = gameData.objs.console->position.vPos;
-	gameData.ai.cloakInfo [i].nLastSeg = gameData.objs.console->nSegment;
+	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.console)->vPos;
+	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.console);
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 // Make work for control centers.
