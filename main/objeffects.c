@@ -401,22 +401,22 @@ glDisable (GL_TEXTURE_2D);
 glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
 if (gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVector	rotVerts [3];
-	fMatrix	m;
+	fMatrix	mRot;
 	int		h, i, j;
 
 	if (bInitSinCos) {
 		OglComputeSinCos (sizeofa (sinCosInd), sinCosInd);
 		bInitSinCos = 0;
 		}
-	m.rVec.p.x =
-	m.uVec.p.y = sinCosInd [nMslLockIndPos].fCos;
-	m.uVec.p.x = sinCosInd [nMslLockIndPos].fSin;
-	m.rVec.p.y = -m.uVec.p.x;
-	m.rVec.p.z =
-	m.uVec.p.z =
-	m.fVec.p.x = 
-	m.fVec.p.y = 0;
-	m.fVec.p.z = 1;
+	mRot.rVec.p.x =
+	mRot.uVec.p.y = sinCosInd [nMslLockIndPos].fCos;
+	mRot.uVec.p.x = sinCosInd [nMslLockIndPos].fSin;
+	mRot.rVec.p.y = -mRot.uVec.p.x;
+	mRot.rVec.p.z =
+	mRot.uVec.p.z =
+	mRot.fVec.p.x = 
+	mRot.fVec.p.y = 0;
+	mRot.fVec.p.z = 1;
 
 	fVerts [0].p.z =
 	fVerts [1].p.z =
@@ -434,7 +434,7 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 		glVertexPointer (3, GL_FLOAT, sizeof (fVector), rotVerts);
 	for (j = 0; j < 4; j++) {
 		for (i = 0; i < 3; i++) {
-			VmVecRotatef (rotVerts + i, fVerts + i, &m);
+			VmVecRotatef (rotVerts + i, fVerts + i, &mRot);
 			fVerts [i] = rotVerts [i];
 			VmVecIncf (rotVerts + i, &fPos);
 			}	
@@ -447,10 +447,10 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 			glEnd ();
 			}
 		if (!j) {	//now rotate by 90 degrees
-			m.rVec.p.x =
-			m.uVec.p.y = 0;
-			m.uVec.p.x = 1;
-			m.rVec.p.y = -1;
+			mRot.rVec.p.x =
+			mRot.uVec.p.y = 0;
+			mRot.uVec.p.x = 1;
+			mRot.rVec.p.y = -1;
 			}
 		}
 	}

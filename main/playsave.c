@@ -467,6 +467,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.smoke.bDecreaseLag, i, 0);
 		RP (gameOptions [i].render.smoke.bDebris, i, 0);
 		RP (gameOptions [i].render.smoke.bDisperse, i, 0);
+		RP (gameOptions [i].render.smoke.bRotate, i, 0);
 		RP (gameOptions [i].render.smoke.bMissiles, i, 0);
 		RP (gameOptions [i].render.smoke.bPlayers, i, 0);
 		RP (gameOptions [i].render.smoke.bRobots, i, 0);
@@ -1002,6 +1003,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},
 	{"gameOptions[0].render.smoke.bDebris", "1"},
 	{"gameOptions[0].render.smoke.bDisperse", "1"},
+	{"gameOptions[0].render.smoke.bRotate", "1"},
 	{"gameOptions[0].render.smoke.bMissiles", "1"},
 	{"gameOptions[0].render.smoke.bPlayers", "1"},
 	{"gameOptions[0].render.smoke.bRobots", "1"},

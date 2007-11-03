@@ -2754,7 +2754,7 @@ void SmokeOptionsMenu ()
 	tMenuItem m [40];
 	int	i, j, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optStaticSmoke, optSmokeColl, optSmokeDisp, optAuxViews;
+	int	nOptSmokeLag, optStaticSmoke, optCollisions, optDisperse, optRotate, optAuxViews;
 	char	szSmokeQual [50];
 
 pszSmokeSize [0] = TXT_SMALL;
@@ -2786,7 +2786,7 @@ do {
 	memset (m, 0, sizeof (m));
 	memset (&smokeOpts, 0xff, sizeof (smokeOpts));
 	opt = 0;
-	nOptSmokeLag = optStaticSmoke = optSmokeColl = optSmokeDisp = -1;
+	nOptSmokeLag = optStaticSmoke = optCollisions = optDisperse = -1;
 
 	ADD_CHECK (opt, TXT_USE_SMOKE, extraGameInfo [0].bUseSmoke, KEY_U, HTX_ADVRND_USESMOKE);
 	smokeOpts.nUse = opt++;
@@ -2855,10 +2855,12 @@ do {
 			optStaticSmoke = opt++;
 #if 0
 			ADD_CHECK (opt, TXT_SMOKE_COLLISION, gameOpts->render.smoke.bCollisions, KEY_I, HTX_ADVRND_SMOKECOLL);
-			optSmokeColl = opt++;
+			optCollisions = opt++;
 #endif
 			ADD_CHECK (opt, TXT_SMOKE_DISPERSE, gameOpts->render.smoke.bDisperse, KEY_D, HTX_ADVRND_SMOKEDISP);
-			optSmokeDisp = opt++;
+			optDisperse = opt++;
+			ADD_CHECK (opt, TXT_ROTATE_SMOKE, gameOpts->render.smoke.bRotate, KEY_R, HTX_ROTATE_SMOKE);
+			optRotate = opt++;
 			ADD_CHECK (opt, TXT_SMOKE_AUXVIEWS, gameOpts->render.smoke.bAuxViews, KEY_W, HTX_SMOKE_AUXVIEWS);
 			optAuxViews = opt++;
 			}
@@ -2870,8 +2872,9 @@ do {
 		smokeOpts.nMissiles =
 		smokeOpts.nDebris =
 		optStaticSmoke =
-		optSmokeColl =
-		optSmokeDisp = 
+		optCollisions =
+		optDisperse = 
+		optRotate = 
 		optAuxViews = -1;
 
 	Assert (opt <= sizeof (m) / sizeof (m [0]));
@@ -2885,11 +2888,12 @@ do {
 		GET_VAL (gameOpts->render.smoke.bDebris, smokeOpts.nDebris);
 		GET_VAL (gameOpts->render.smoke.bStatic, optStaticSmoke);
 #if 0
-		GET_VAL (gameOpts->render.smoke.bCollisions, optSmokeColl);
+		GET_VAL (gameOpts->render.smoke.bCollisions, optCollisions);
 #else
 		gameOpts->render.smoke.bCollisions = 0;
 #endif
-		GET_VAL (gameOpts->render.smoke.bDisperse, optSmokeDisp);
+		GET_VAL (gameOpts->render.smoke.bDisperse, optDisperse);
+		GET_VAL (gameOpts->render.smoke.bRotate, optRotate);
 		GET_VAL (gameOpts->render.smoke.bDecreaseLag, nOptSmokeLag);
 		GET_VAL (gameOpts->render.smoke.bAuxViews, optAuxViews);
 		//GET_VAL (gameOpts->render.smoke.bSyncSizes, smokeOpts.nSyncSizes);

@@ -1340,6 +1340,7 @@ if (i) {
 	gameOptions [1].render.smoke.bStatic = 0;
 	gameOptions [1].render.smoke.bCollisions = 0;
 	gameOptions [1].render.smoke.bDisperse = 0;
+	gameOptions [1].render.smoke.bRotate = 0;
 	gameOptions [1].render.smoke.bSort = 0;
 	gameOptions [1].render.smoke.bDecreaseLag = 0;
 	gameOptions [1].render.lightnings.bOmega = 0;
@@ -1473,8 +1474,9 @@ else {
 	gameOptions [0].render.smoke.bDebris = 1;
 	gameOptions [0].render.smoke.bStatic = 1;
 	gameOptions [0].render.smoke.bCollisions = 0;
-	gameOptions [0].render.smoke.bDisperse = 0;
-	gameOptions [0].render.smoke.bSort = 0;
+	gameOptions [0].render.smoke.bDisperse = 1;
+	gameOptions [0].render.smoke.bRotate = 1;
+	gameOptions [0].render.smoke.bSort = 1;
 	gameOptions [0].render.smoke.bDecreaseLag = 1;
 	gameOptions [0].render.lightnings.bOmega = 1;
 	gameOptions [0].render.lightnings.bDamage = 1;

@@ -680,7 +680,7 @@ gameOpts->render.bDepthSort = bDepthSort;
 
 void RIRenderParticle (tRIParticle *item)
 {
-RISetClientState (1, 1, 1);
+RISetClientState (0, 0, 0);
 if (renderItems.nPrevType != riParticle) {
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

@@ -1920,7 +1920,6 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ
 
 void RenderSkyBox (int nWindow)
 {
-
 if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
 	glDepthMask (1);
 	if (gameOpts->render.nPath)
@@ -2000,7 +1999,7 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 	}
 RenderSegmentList (0, 1);	// render opaque geometry
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
-if ((gameOpts->render.bDepthSort < 1) || gameOpts->render.nPath)
+if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
 RenderSegmentList (1, 1);		// render objects
 if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nShadowPass != 2)) {

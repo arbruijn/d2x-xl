@@ -458,6 +458,7 @@ else {
 	}
 nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
 pParticle->nFrame = rand () % (nFrames * nFrames);
+pParticle->nRotFrame = pParticle->nFrame / 2;
 pParticle->nOrient = rand () % 4;
 #if 1
 pParticle->color.alpha /= nSmokeType + 2;
@@ -653,14 +654,24 @@ return 1;
 void FlushParticleBuffer (void)
 {
 if (iBuffer) {
-	if (gameStates.render.bVertexArrays) {
+	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
+#if 0
+		grsBitmap *bmP;
+		if (!(bmP = bmpParticle [0][gameData.smoke.nLastType]))
+			return;
+		glEnable (GL_TEXTURE_2D);
+		if (BM_CURFRAME (bmP))
+			bmP = BM_CURFRAME (bmP);
+		if (OglBindBmTex (bmP, 0, 1))
+			return;
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
 		glDrawArrays (GL_QUADS, 0, iBuffer);
 		gameStates.render.bVertexArrays = (glGetError () == 0);
 		}
 	else {
 		tParticleVertex	*pb;
-
+		glEnd ();
 		glBegin (GL_QUADS);
 		for (pb = particleBuffer; iBuffer; iBuffer--, pb++) {
 			glTexCoord2fv ((GLfloat *) &pb->texCoord);
@@ -675,20 +686,26 @@ if (iBuffer) {
 
 //------------------------------------------------------------------------------
 
+#define PARTICLE_POSITIONS 64
+
 int RenderParticle (tParticle *pParticle, float brightness)
 {
 	vmsVector			hp;
-	GLfloat				d, u, v, x, y, z, h, w;
+	GLfloat				d, u, v;
 	grsBitmap			*bmP;
 	tRgbaColorf			pc;
 	tTexCoord2f			texCoord [4];
 	tParticleVertex	*pb;
-	float				decay = (float) pParticle->nLife / (float) pParticle->nTTL;
-	int					i, nType = pParticle->nType,
+	fVector				vOffset, vCenter;
+	float					decay = (float) pParticle->nLife / (float) pParticle->nTTL;
+	int					i, nFrame, nType = pParticle->nType,
 							bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0);
 
 	static int			nFrames = 1;
 	static float		deltaUV = 1.0f;
+	static tSinCosf	sinCosPart [PARTICLE_POSITIONS];
+	static int			bInitSinCos = 1;
+	static fMatrix		mRot;
 
 if (pParticle->nDelay > 0)
 	return 0;
@@ -702,6 +719,8 @@ if (gameOpts->render.bDepthSort > 0) {
 		gameData.smoke.nLastType = nType;
 		if (gameStates.render.bVertexArrays)
 			FlushParticleBuffer ();
+		glActiveTexture (GL_TEXTURE0);
+		glClientActiveTexture (GL_TEXTURE0);
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
 		nFrames = nParticleFrames [0][nType];
@@ -802,9 +821,9 @@ if (!nType) {
 	pc.green *= brightness;
 	pc.blue *= brightness;
 	}
-x = f2fl (hp.p.x);
-y = f2fl (hp.p.y);
-z = f2fl (hp.p.z);
+vCenter.p.x = f2fl (hp.p.x);
+vCenter.p.y = f2fl (hp.p.y);
+vCenter.p.z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
 if (nType) {
 	pc.red /= 50;
@@ -813,14 +832,15 @@ if (nType) {
 	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
 	decay = (float) sqrt (decay);
-	w = f2fl (pParticle->nWidth) / decay;
-	h = f2fl (pParticle->nHeight) / decay;
+	vOffset.p.x = f2fl (pParticle->nWidth) / decay;
+	vOffset.p.y = f2fl (pParticle->nHeight) / decay;
 	}
 else {
-	w = f2fl (pParticle->nWidth) * decay;
-	h = f2fl (pParticle->nHeight) * decay;
+	vOffset.p.x = f2fl (pParticle->nWidth) * decay;
+	vOffset.p.y = f2fl (pParticle->nHeight) * decay;
 	}
 if (gameStates.render.bVertexArrays) {
+	vOffset.p.z = 0;
 	pb = particleBuffer + iBuffer;
 	pb [i].texCoord.v.u =
 	pb [(i + 3) % 4].texCoord.v.u = u;
@@ -834,18 +854,49 @@ if (gameStates.render.bVertexArrays) {
 	pb [1].color =
 	pb [2].color =
 	pb [3].color = pc;
-	pb [0].vertex.p.x =
-	pb [3].vertex.p.x = x - w;
-	pb [1].vertex.p.x =
-	pb [2].vertex.p.x = x + w;
-	pb [0].vertex.p.y =
-	pb [1].vertex.p.y = y + h;
-	pb [2].vertex.p.y =
-	pb [3].vertex.p.y = y - h;
-	pb [0].vertex.p.z =
-	pb [1].vertex.p.z =
-	pb [2].vertex.p.z =
-	pb [3].vertex.p.z = z;
+	if (gameOpts->render.smoke.bRotate) {
+		if (bInitSinCos) {
+			OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
+			bInitSinCos = 0;
+			mRot.rVec.p.z =
+			mRot.uVec.p.z =
+			mRot.fVec.p.x = 
+			mRot.fVec.p.y = 0;
+			mRot.fVec.p.z = 1;
+			}
+		nFrame = (pParticle->nOrient & 1) ? 63 - pParticle->nRotFrame : pParticle->nRotFrame;
+		mRot.rVec.p.x =
+		mRot.uVec.p.y = sinCosPart [nFrame].fCos;
+		mRot.uVec.p.x = sinCosPart [nFrame].fSin;
+		mRot.rVec.p.y = -mRot.uVec.p.x;
+		VmVecRotatef (&vOffset, &vOffset, &mRot);
+		pb [0].vertex.p.x = vCenter.p.x - vOffset.p.x;
+		pb [0].vertex.p.y = vCenter.p.y + vOffset.p.y;
+		pb [1].vertex.p.x = vCenter.p.x + vOffset.p.y;
+		pb [1].vertex.p.y = vCenter.p.y + vOffset.p.x;
+		pb [2].vertex.p.x = vCenter.p.x + vOffset.p.x;
+		pb [2].vertex.p.y = vCenter.p.y - vOffset.p.y;
+		pb [3].vertex.p.x = vCenter.p.x - vOffset.p.y;
+		pb [3].vertex.p.y = vCenter.p.y - vOffset.p.x;
+		pb [0].vertex.p.z =
+		pb [1].vertex.p.z =
+		pb [2].vertex.p.z =
+		pb [3].vertex.p.z = vCenter.p.z;
+		}
+	else {
+		pb [0].vertex.p.x =
+		pb [3].vertex.p.x = vCenter.p.x - vOffset.p.x;
+		pb [1].vertex.p.x =
+		pb [2].vertex.p.x = vCenter.p.x + vOffset.p.x;
+		pb [0].vertex.p.y =
+		pb [1].vertex.p.y = vCenter.p.y + vOffset.p.y;
+		pb [2].vertex.p.y =
+		pb [3].vertex.p.y = vCenter.p.y - vOffset.p.y;
+		pb [0].vertex.p.z =
+		pb [1].vertex.p.z =
+		pb [2].vertex.p.z =
+		pb [3].vertex.p.z = vCenter.p.z;
+		}
 	iBuffer += 4;
 	if (iBuffer >= VERT_BUF_SIZE)
 		FlushParticleBuffer ();
@@ -861,16 +912,19 @@ else {
 	texCoord [3].v.v = v + d;
 	glColor4fv ((GLfloat *) &pc);
 	glTexCoord2fv ((GLfloat *) (texCoord + i));
-	glVertex3f (x - w, y + h, z);
+	glVertex3f (vCenter.p.x - vOffset.p.x, vCenter.p.y + vOffset.p.y, vCenter.p.z);
 	glTexCoord2fv ((GLfloat *) (texCoord + (i + 1) % 4));
-	glVertex3f (x + w, y + h, z);
+	glVertex3f (vCenter.p.x + vOffset.p.x, vCenter.p.y + vOffset.p.y, vCenter.p.z);
 	glTexCoord2fv ((GLfloat *) (texCoord + (i + 2) % 4));
-	glVertex3f (x + w, y - h, z);
+	glVertex3f (vCenter.p.x + vOffset.p.x, vCenter.p.y - vOffset.p.y, vCenter.p.z);
 	glTexCoord2fv ((GLfloat *) (texCoord + (i + 3) % 4));
-	glVertex3f (x - w, y - h, z);
+	glVertex3f (vCenter.p.x - vOffset.p.x, vCenter.p.y - vOffset.p.y, vCenter.p.z);
 	}
-if (gameData.smoke.bAnimate)
+if (gameData.smoke.bAnimate) {
 	pParticle->nFrame = (pParticle->nFrame + 1) % (nFrames * nFrames);
+	if (!(pParticle->nFrame & 1))
+		pParticle->nRotFrame = (pParticle->nRotFrame + 1) % 64;
+	}
 if (gameOpts->render.bDepthSort > 0)
 	glEnd ();
 return 1;
@@ -916,6 +970,7 @@ if (gameOpts->render.bDepthSort <= 0) {
 	gameData.smoke.bStencil = StencilOff ();
 	InitParticleBuffer ();
 	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
 	glDisable (GL_CULL_FACE);
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

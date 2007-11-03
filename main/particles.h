@@ -38,6 +38,7 @@ typedef struct tParticle {
 	char			nFade;
 	char			nClass;
 	char			nFrame;
+	char			nRotFrame;
 	char			nOrient;
 } tParticle;
 

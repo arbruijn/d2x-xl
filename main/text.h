@@ -1788,10 +1788,10 @@ void LoadGameTexts(void);
 #define TXT_OBJCORONA_INTENSITY	GT(995)
 #define TXT_GEOMETRY_HWLIGHTING	GT(996)
 #define TXT_OBJECT_HWLIGHTING		GT(997)
+#define TXT_ROTATE_SMOKE			GT(998)
 
 #if 0
 
-#define TXT_				GT(998)
 #define TXT_				GT(999)
 
 #define TXT_				GT(1000)
@@ -2239,6 +2239,7 @@ void LoadGameTexts(void);
 #define HTX_POWERUP_LIGHTING		HT(325)				
 #define HTX_GEOMETRY_HWLIGHTING	HT(326)				
 #define HTX_OBJECT_HWLIGHTING		HT(327)				
+#define HTX_ROTATE_SMOKE			HT(328)				
 
 #if 0
 

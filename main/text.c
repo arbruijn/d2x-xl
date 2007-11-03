@@ -1747,6 +1747,7 @@ char *defaultGameTexts [][2] = {
 	{"Lichthof-i~Ntensitaet Objekte: %s", "object corona i~Ntensity: %s"},
 	{"~Geometrie-Beleuchtung per hardware", "hardware ~Geometry lighting"},
 	{"Objekt-Beleuchtung per h~Ardware", "h~Ardware object lighting"},
+	{"Rauchpartikel dre~Hen", "~Rotate smoke particles"},
 #if 0
 	{"", ""},
 #endif
@@ -2337,6 +2338,7 @@ char *defaultHelpTexts [][2] = {
 	 "With hardware geometry lighting enabled, complex scenes with\nlots of light sources nare rendered much faster."},
 	{"Mit eingeschalteter Hardware-Beleuchtung der Objekte werden\nkomplexe Szenen mit vielen Objekten mehrfach schneller berechnet.", 
 	 "With hardware object lighting enabled, complex scenes with\nlots of objects are rendered much faster."},
+	{"Wenn angekreuzt, rotieren die Rauchpartikel.", "If checked, smoke particles rotate."},
 #if 0
 	{"", ""},
 #endif
