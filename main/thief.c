@@ -96,28 +96,26 @@ HUDInitMessage(szMsg);
 
 //	------------------------------------------------------------------------------------------------------
 //	Choose tSegment to recreate thief in.
-int ChooseThiefRecreationSegment(void)
+int ChooseThiefRecreationSegment (void)
 {
-	int	nSegment = -1;
-	int	cur_drop_depth;
+	static int	nSegment = -1;
+	int	nCurDropDepth;
 
-	cur_drop_depth = THIEF_DEPTH;
+	nCurDropDepth = THIEF_DEPTH;
 
-	while ((nSegment == -1) && (cur_drop_depth > THIEF_DEPTH/2)) {
-		nSegment = PickConnectedSegment (gameData.objs.objects + LOCALPLAYER.nObject, cur_drop_depth);
-		if (gameData.segs.segment2s[nSegment].special == SEGMENT_IS_CONTROLCEN)
-			nSegment = -1;
-		cur_drop_depth--;
+while ((nSegment == -1) && (nCurDropDepth > THIEF_DEPTH / 2)) {
+	nSegment = PickConnectedSegment (gameData.objs.objects + LOCALPLAYER.nObject, nCurDropDepth);
+	if ((nSegment >= 0) && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_CONTROLCEN))
+		nSegment = -1;
+	nCurDropDepth--;
 	}
 
-	if (nSegment == -1) {
+if (nSegment >= 0)
+	return nSegment;
 #if TRACE
-		con_printf (1, "Warning: Unable to find a connected tSegment for thief recreation.\n");
+con_printf (1, "Warning: Unable to find a connected tSegment for thief recreation.\n");
 #endif
-		return (d_rand() * gameData.segs.nLastSegment) >> 15;
-	} else
-		return nSegment;
-
+return (d_rand() * gameData.segs.nLastSegment) >> 15;
 }
 
 //	----------------------------------------------------------------------
