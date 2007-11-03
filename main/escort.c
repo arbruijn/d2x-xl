@@ -339,6 +339,7 @@ void ChangeGuidebotName ()
 }
 
 //	-----------------------------------------------------------------------------
+
 void _CDECL_ BuddyMessage (char * format, ... )
 {
 if (gameData.escort.bMsgsSuppressed)
@@ -672,6 +673,7 @@ switch (goal_num) {
 }
 
 //	-----------------------------------------------------------------------------
+
 void EscortCreatePathToGoal (tObject *objP)
 {
 	short			nGoalSeg = -1;
@@ -848,6 +850,7 @@ else
 fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 //	-----------------------------------------------------------------------------
+
 int TimeToVisitPlayer (tObject *objP, tAILocal *ailp, tAIStatic *aip)
 {
 	//	Note: This one has highest priority because, even if already going towards tPlayer,
@@ -869,6 +872,7 @@ fix Last_come_back_messageTime = 0;
 fix Buddy_last_missileTime;
 
 //	-----------------------------------------------------------------------------
+
 void BashBuddyWeaponInfo (int nWeaponObj)
 {
 	tObject	*objP = &gameData.objs.objects [nWeaponObj];
@@ -879,6 +883,7 @@ void BashBuddyWeaponInfo (int nWeaponObj)
 }
 
 //	-----------------------------------------------------------------------------
+
 int MaybeBuddyFireMega (short nObject)
 {
 	tObject		*objP = gameData.objs.objects + nObject;
@@ -914,6 +919,7 @@ return 1;
 }
 
 //-----------------------------------------------------------------------------
+
 int MaybeBuddyFireSmart (short nObject)
 {
 	tObject	*objP = &gameData.objs.objects [nObject];
@@ -937,6 +943,7 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
+
 void DoBuddyDudeStuff (void)
 {
 	short	i;

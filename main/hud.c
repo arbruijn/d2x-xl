@@ -193,7 +193,8 @@ if (pMsgs->nMessages > 0) {
 				yStart = SMALL_FONT->ftHeight / 2;
 			else
 				yStart= SMALL_FONT->ftHeight * 2;
-		} else
+			}
+		else
 			yStart = SMALL_FONT->ftHeight / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
 			tObject *gmP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
@@ -204,7 +205,6 @@ if (pMsgs->nMessages > 0) {
 				yStart += SMALL_FONT->ftHeight + 3;
 			}
 
-	WIN (DDGRLOCK (dd_grd_curcanv));
 		for (i = 0, y = yStart; i < pMsgs->nMessages; i++)	{
 			n = (pMsgs->nFirst + i) % HUD_MAX_MSGS;
 			if ((n < 0) || (n >= HUD_MAX_MSGS))
@@ -217,11 +217,14 @@ if (pMsgs->nMessages > 0) {
 			y = yStart + i * (h + 1);
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
+#if 1
+			GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y, pMsgs->szMsgs [n], NULL);
+#else
 			pMsgs->nMsgIds [n] = GrString ((grdCurCanv->cvBitmap.bmProps.w-w)/2, y, pMsgs->szMsgs [n], pMsgs->nMsgIds + n);
+#endif
 			if (!gameOpts->render.cockpit.bSplitHUDMsgs) 
 				y += h + 1;
 			}
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	}
 else if (GetCurrentGameScreen ()->cvBitmap.bmProps.nType == BM_MODEX) {
