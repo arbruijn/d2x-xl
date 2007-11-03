@@ -80,7 +80,9 @@ PFNGLBUFFERDATAPROC					glBufferData = NULL;
 PFNGLMAPBUFFERPROC					glMapBuffer = NULL;
 PFNGLUNMAPBUFFERPROC					glUnmapBuffer = NULL;
 PFNGLDELETEBUFFERSPROC				glDeleteBuffers = NULL;
+#	ifdef _WIN32
 PFNGLDRAWRANGEELEMENTSPROC			glDrawRangeElements = NULL;
+#	endif
 #endif
 
 #ifdef _WIN32
@@ -160,7 +162,9 @@ glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB");
 glMapBuffer = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("glMapBufferARB");
 glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB");
 glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB");
+#	ifdef _WIN32
 glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("glDrawRangeElements");
+#	endif
 gameStates.ogl.bHaveVBOs = glGenBuffers && glBindBuffer && glBufferData && glMapBuffer && glUnmapBuffer;
 #else
 gameStates.ogl.bHaveVBOs = 1;
