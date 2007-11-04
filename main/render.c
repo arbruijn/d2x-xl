@@ -1316,6 +1316,7 @@ else
 	if (!nWindow || gameOpts->render.smoke.bAuxViews)
 		RenderSmoke ();
 	}
+StencilOff ();
 if ((gameOpts->render.bDepthSort > 0) || gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
 RenderItems ();

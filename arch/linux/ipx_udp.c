@@ -816,55 +816,56 @@ return 0;
 static int UDPOpenSocket (ipx_socket_t *sk, int port) 
 {
 	struct sockaddr_in sin;
+	u_short nLocalPort, nServerPort;
 //	u_long sockBlockMode = 1;	//non blocking
 
 udpBasePort [1] = UDP_BASEPORT + networkData.nSocket;
-port = gameStates.multi.bServer ? udpBasePort [1] : mpParams.udpClientPort;	//override with UDP port settings
+nLocalPort = gameStates.multi.bServer ? udpBasePort [1] : mpParams.udpClientPort;	//override with UDP nLocalPort settings
 if (!nOpenSockets)
 	if (UDPGetMyAddress () < 0) 
 		FAIL ("Error getting my address");
 
-//msg ("OpenSocket on D1X socket port %d", port);
+//msg ("OpenSocket on D1X socket nLocalPort %d", nLocalPort);
 
 if (!gameStates.multi.bServer) {
 	if (!ChkDestListSize ())
 		FAIL ("Error allocating client table");
+	nServerPort = udpBasePort [0] + networkData.nSocket;
 	sin.sin_family = AF_INET;
-	* ((short *) (ipx_ServerAddress + 8)) = htons (udpBasePort [0] + networkData.nSocket);
+	*((u_short *) (ipx_ServerAddress + 8)) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
-	sin.sin_port = htons (udpBasePort [0] + networkData.nSocket);
+	sin.sin_port = htons (nServerPort);
 	if (!gameStates.multi.bUseTracker)		
 		AddDestToList (&sin);
 	}
 
-if ((sk->fd = socket (AF_INET,SOCK_DGRAM,IPPROTO_UDP)) < 0) {
+if ((sk->fd = socket (AF_INET,SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 	sk->fd = -1;
-	FAIL ("Couldn't create socket on port %d.\nError code: %d.", port);
+	FAIL ("Couldn't create socket on nLocalPort %d.\nError code: %d.", nLocalPort);
 	}
 //ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
-memcpy (ipx_MyAddress + 8, &mpParams.udpClientPort, 2);
+*((u_short *) (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, &val_one, sizeof (val_one))) {
-	if (close (sk->fd)) //msg ("close () failed during error recovery: %m");
-	sk->fd=-1;
+	close (sk->fd);
+	sk->fd = -1;
 	FAIL ("setsockopt (SO_BROADCAST) failed: %m");
 	}
 #endif
 if (gameStates.multi.bServer || mpParams.udpClientPort) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY);
-	sin.sin_port = htons (port);
+	sin.sin_port = htons ((ushort) nLocalPort);
 	if (bind (sk->fd, (struct sockaddr *) &sin, sizeof (sin))) {
-		if (close (sk->fd)) 
-			//msg ("close () failed during error recovery: %m");
-	sk->fd=-1;
-		FAIL ("bind () to UDP port %d failed: %m", port);
+		close (sk->fd);
+		sk->fd = -1;
+		FAIL ("bind () to UDP nLocalPort %d failed: %m", nLocalPort);
 		}
-	memcpy (ipx_MyAddress + 8, &port, 2);
+	memcpy (ipx_MyAddress + 8, &nLocalPort, 2);
 	}
 nOpenSockets++;
-sk->socket = gameStates.multi.bServer ? udpBasePort [1] : udpBasePort [0] + networkData.nSocket;
+sk->socket = nLocalPort;
 return 0;
 }
 

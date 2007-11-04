@@ -369,26 +369,25 @@ int NetworkWhoIsMaster (void)
 
 	int i;
 
-	if (!(gameData.app.nGameMode & GM_NETWORK))
-		return (gameData.multiplayer.nLocalPlayer == 0);
-
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected)
-			return i;
-	return gameData.multiplayer.nLocalPlayer;
+if (!(gameData.app.nGameMode & GM_NETWORK))
+	return (gameData.multiplayer.nLocalPlayer == 0);
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (gameData.multiplayer.players [i].connected)
+		return i;
+return gameData.multiplayer.nLocalPlayer;
 }
 
 //------------------------------------------------------------------------------
 
 int NetworkHowManyConnected ()
  {
-  int num=0, i;
+  int num = 0, i;
  
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected)
-			num++;
-   return (num);
- }
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (gameData.multiplayer.players [i].connected)
+		num++;
+return num;
+}
 
 //------------------------------------------------------------------------------
 
