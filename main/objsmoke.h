@@ -23,7 +23,7 @@
 #define MSL_PART_SPEED				30
 
 #define LASER_MAX_PARTS				250
-#define LASER_PART_LIFE				-500
+#define LASER_PART_LIFE				-750
 #define LASER_PART_SPEED			0
 
 #define BOMB_MAX_PARTS				250

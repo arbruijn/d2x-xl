@@ -500,7 +500,7 @@ else
 
 void DoParticleTrail (tObject *objP)
 {
-	int			nParts, i;
+	int			nParts, i, id;
 	float			nScale;
 	vmsVector	pos;
 	tRgbaColorf	c;
@@ -523,23 +523,31 @@ c.green = (float) gameData.weapons.color [objP->id].green;
 c.blue = (float) gameData.weapons.color [objP->id].blue;
 c.alpha = 0.5;
 if (gameData.smoke.objects [i] < 0) {
-	nScale = f2fl (objP->size);
-	if (nScale >= 3)
-		nScale = 1.5;
-	else if (nScale >= 2)
-		nScale = 2;
-	else if (nScale >= 1)
-		nScale = 2.5;
-	else if (nScale >= 0.5f)
+	id = objP->id;
+	if (((id >= LASER_ID) && (id < LASER_ID + 4)) || 
+		 (id == SUPERLASER_ID) || (id == SUPERLASER_ID + 1) ||
+		 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
 		nScale = 3;
+	else if ((id == PHOENIX_ID) || (id == ROBOT_SLOW_PHOENIX_ID) || (id == ROBOT_FAST_PHOENIX_ID))
+		nScale = 1.5;
+	else if ((id == PLASMA_ID) || (id == ROBOT_PLASMA_ID))
+		nScale = 1.5;
+	else if (id == FUSION_ID)
+		nScale = 1;
+	else if ((id == SPREADFIRE_ID) || (id == HELIX_ID) || (id == ROBOT_HELIX_ID))
+		nScale = 3;
+	else if (id == FLARE_ID)
+		nScale = 2;
+	else if ((id == ROBOT_BLUE_ENERGY_ID) || (id == ROBOT_WHITE_ENERGY_ID) || (id == ROBOT_PHASE_ENERGY_ID))
+		nScale = 2;
 	else
-		nScale = 4;
+		nScale = 1;
 	c.alpha = 0.1f + nScale / 10;
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, -PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale),
 											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
 											  1, (gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE, LASER_PART_SPEED, 3, i, &c, 0, -1));
 	}
-VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size);
+VmVecScaleAdd (&pos, &objP->position.vPos, &objP->position.mOrient.fVec, -objP->size / 2);
 SetSmokePos (gameData.smoke.objects [i], &pos, objP->nSegment);
 }
 

@@ -655,7 +655,7 @@ void FlushParticleBuffer (void)
 {
 if (iBuffer) {
 	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
-#if 0
+#if 1
 		grsBitmap *bmP;
 		if (!(bmP = bmpParticle [0][gameData.smoke.nLastType]))
 			return;
@@ -664,7 +664,6 @@ if (iBuffer) {
 			bmP = BM_CURFRAME (bmP);
 		if (OglBindBmTex (bmP, 0, 1))
 			return;
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 		glDrawArrays (GL_QUADS, 0, iBuffer);
 		gameStates.render.bVertexArrays = (glGetError () == 0);
@@ -1184,7 +1183,7 @@ else
 		tCloud		c = *pCloud;
 		int			t, h, i, j;
 		float			fDist;
-		float		fBrightness = CloudBrightness (pCloud);
+		float			fBrightness = CloudBrightness (pCloud);
 		vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL),
 						*vEmittingFace = c.bEmittingFace ? c.vEmittingFace : NULL;
 		fVector		vDeltaf, vPosf;
@@ -1219,11 +1218,14 @@ else
 				vDeltaf.p.y /= (float) h;
 				vDeltaf.p.z /= (float) h;
 				}
+			else if (c.nType == 3)
+				goto funcExit;
 			else {
 				VmsVecToFloat (&vPosf, &c.pos);
 				vDeltaf.p.x =
 				vDeltaf.p.y =
 				vDeltaf.p.z = 0.0f;
+				h = 1;
 				}
 			c.nParts += h;
 			for (; h; h--, j = (j + 1) % c.nPartLimit) {
@@ -1522,12 +1524,16 @@ pCloud->nPartScale = nPartScale;
 
 int IsUsedSmoke (int iSmoke)
 {
+#ifdef RELEASE
+return 1;
+#else
 	int	i;
 
 for (i = gameData.smoke.iUsed; i >= 0; i = gameData.smoke.buffer [i].nNext)
 	if (iSmoke == i)
 		return 1;
 return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
