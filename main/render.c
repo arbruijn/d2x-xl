@@ -1381,7 +1381,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 			continue;		//ignore this tObject
 		nNewSeg = nSegment;
 		if (objP->nType != OBJ_CNTRLCEN && ((objP->nType != OBJ_ROBOT) || (objP->id == 65))) { //don't migrate controlcen
-			mask = GetSegMasks (&objP->position.vPos, nNewSeg, objP->size);
+			mask = GetSegMasks (&OBJPOS (objP)->vPos, nNewSeg, objP->size);
 			if (mask.sideMask) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {
 					if (!(mask.sideMask & sideFlag))
@@ -1389,7 +1389,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 					segP = gameData.segs.segments + nNewSeg;
 					if (WALL_IS_DOORWAY (segP, nSide, NULL) & WID_FLY_FLAG) {	//can explosion migrate through
 						nChild = segP->children [nSide];
-						if (gameData.render.mine.bRenderSegment [nChild] == gameStates.render.nFrameFlipFlop)
+						if (gameData.render.mine.bVisible [nChild] == gameData.render.mine.nVisible) 
 							nNewSeg = nChild;	// only migrate to segment in render list
 						}
 					}
@@ -1540,9 +1540,7 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 
 gameData.render.mine.nSegRenderList [0] = nStartSeg; 
 gameData.render.mine.nSegDepth [0] = 0;
-gameData.render.mine.bRenderSegment [nStartSeg] = gameStates.render.nFrameFlipFlop;
 VISIT (nStartSeg);
-gameData.render.mine.bVisible [nStartSeg] = gameData.render.mine.nVisible;
 gameData.render.mine.nRenderPos [nStartSeg] = 0;
 sCnt = 0;
 lCnt = eCnt = 1;
@@ -1678,7 +1676,6 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							if (bMigrateSegs)
 								gameData.render.mine.nSegRenderList [rp] = -1;
 							else {
-								gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [lCnt]] = gameData.render.mine.nVisible - 1;
 								gameData.render.mine.nSegRenderList [lCnt] = -1;
 								*rwP = *pNewWin;		//get updated window
 								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
@@ -1688,8 +1685,6 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 						}
 					gameData.render.mine.nRenderPos [nChildSeg] = lCnt;
 					gameData.render.mine.nSegRenderList [lCnt] = nChildSeg;
-					gameData.render.mine.bVisible [nChildSeg] = gameData.render.mine.nVisible;
-					gameData.render.mine.bRenderSegment [nChildSeg] = gameStates.render.nFrameFlipFlop;
 					gameData.render.mine.nSegDepth [lCnt] = l;
 					if (++lCnt >= MAX_SEGMENTS_D2X)
 						goto listDone;
@@ -1714,12 +1709,22 @@ dontAdd:
 	sCnt = eCnt;
 	eCnt = lCnt;
 	}
+
 listDone:
 
 gameData.render.mine.lCntSave = lCnt;
 gameData.render.mine.sCntSave = sCnt;
 nFirstTerminalSeg = sCnt;
 gameData.render.mine.nRenderSegs = lCnt;
+
+for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
+#ifdef _DEBUG
+	if (gameData.render.mine.nSegRenderList [i] == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
+	if (gameData.render.mine.nSegRenderList [i] >= 0)
+		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [i]] = gameData.render.mine.nVisible;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1808,7 +1813,8 @@ if (nSegment == nDbgSeg)
 #endif
 VISIT (nSegment);
 if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
-	gameData.render.mine.nSegRenderList [nListPos] = -1;
+	gameData.render.mine.nSegRenderList [nListPos] = -gameData.render.mine.nSegRenderList [nListPos];
+	gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [nListPos]] = gameData.render.mine.nVisible - 1;
 	return;
 	}
 if ((gameStates.render.nType == 0) && !gameStates.render.automap.bDisplay)

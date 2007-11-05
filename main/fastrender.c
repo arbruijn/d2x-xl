@@ -795,7 +795,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 	segP = SEGMENTS + nSegment;
 	segFaceP = SEGFACES + nSegment;
 	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
-		gameData.render.mine.nSegRenderList [i] = -1;
+		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
 	if (bDynLight) {
@@ -916,7 +916,7 @@ for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		nFaces += SEGFACES [i].nFaces;
 		}
 	else
-		gameData.render.mine.nSegRenderList [i] = -1;
+		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 	}
 if (!nFaces)
 	tiRender.nMiddle = 0;
@@ -952,7 +952,7 @@ for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	nSegment = gameData.render.mine.nSegRenderList [h];
 	segFaceP = SEGFACES + nSegment;
 	if (!SegmentIsVisible (SEGMENTS + nSegment)) 
-		gameData.render.mine.nSegRenderList [h] = -1;
+		gameData.render.mine.nSegRenderList [h] = -gameData.render.mine.nSegRenderList [i];
 	else {
 		for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 			for (j = 0; j < 4; j++) {
@@ -997,8 +997,11 @@ void RenderMineObjects (int nType)
 if ((nType < 1) || (nType > 2))
 	return;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
-	if (0 > (nSegment = gameData.render.mine.nSegRenderList [--nListPos]))
-		continue;
+	nSegment = abs (gameData.render.mine.nSegRenderList [--nListPos]);
+#ifdef _DEBUG
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
 	if (0 > gameData.render.mine.renderObjs.ref [nSegment]) 
 		continue;
 #ifdef _DEBUG

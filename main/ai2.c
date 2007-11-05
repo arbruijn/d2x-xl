@@ -2198,7 +2198,7 @@ Assert (nObject >= 0);
 i = FindBoss (nObject);
 if (i < 0)
 	return;
-Assert (gameData.boss [i].nTeleportSegs > 0);
+//Assert (gameData.boss [i].nTeleportSegs > 0);
 if (gameData.boss [i].nTeleportSegs <= 0)
 	return;
 do {

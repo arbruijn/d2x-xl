@@ -141,9 +141,9 @@ typedef struct v19_door {
 //End old tWall structures
 
 typedef struct tWall {
-	short   nSegment, nSide;		// Seg & tSide for this tWall
+	int	  nSegment, nSide;		// Seg & tSide for this tWall
 	fix     hps;						// "Hit points" of the tWall.
-	short   nLinkedWall;				// number of linked tWall
+	int     nLinkedWall;				// number of linked tWall
 	ubyte   nType;						// What kind of special tWall.
 	ubyte   flags;						// Flags for the tWall.
 	ubyte   state;						// Opening, closing, etc.

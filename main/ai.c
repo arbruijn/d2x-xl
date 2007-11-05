@@ -1835,20 +1835,25 @@ if (version >= 24) {
 		CFRead (&gameData.boss [i].nGateSegs, sizeof (gameData.boss [i].nGateSegs), 1, fp);
 	for (i = 0; i < MAX_BOSS_COUNT; i++) {
 		if (gameData.boss [i].nGateSegs)
-			CFRead (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs), gameData.boss [i].nGateSegs, fp);
+			CFRead (gameData.boss [i].gateSegs, sizeof (gameData.boss [i].gateSegs [0]), gameData.boss [i].nGateSegs, fp);
 		if (gameData.boss [i].nTeleportSegs)
-			CFRead (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs), gameData.boss [i].nTeleportSegs, fp);
+			CFRead (gameData.boss [i].teleportSegs, sizeof (gameData.boss [i].teleportSegs [0]), gameData.boss [i].nTeleportSegs, fp);
 		}
 	}
 else if (version >= 21) {
-	CFRead (&gameData.boss [0].nTeleportSegs, sizeof (gameData.boss [0].nTeleportSegs), 1, fp);
-	CFRead (&gameData.boss [0].nGateSegs, sizeof (gameData.boss [0].nGateSegs), 1, fp);
+	short nTeleportSegs, nGateSegs;
 
-	if (gameData.boss [0].nGateSegs)
-		CFRead (gameData.boss [0].gateSegs, sizeof (gameData.boss [0].gateSegs), gameData.boss [0].nGateSegs, fp);
+	CFRead (&nTeleportSegs, sizeof (nTeleportSegs), 1, fp);
+	CFRead (&nGateSegs, sizeof (nGateSegs), 1, fp);
 
-	if (gameData.boss [0].nTeleportSegs)
-		CFRead (gameData.boss [0].teleportSegs, sizeof (gameData.boss [0].teleportSegs), gameData.boss [0].nTeleportSegs, fp);
+	if (nGateSegs) {
+		gameData.boss [0].nGateSegs = nGateSegs;
+		CFRead (gameData.boss [0].gateSegs, sizeof (gameData.boss [0].gateSegs [0]), nGateSegs, fp);
+		}
+	if (nTeleportSegs) {
+		gameData.boss [0].nTeleportSegs = nTeleportSegs;
+		CFRead (gameData.boss [0].teleportSegs, sizeof (gameData.boss [0].teleportSegs [0]), nTeleportSegs, fp);
+		}
 } else {
 	// -- gameData.boss.nTeleportSegs = 1;
 	// -- gameData.boss.nGateSegs = 1;
