@@ -1130,6 +1130,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 	faceP->nSegment = nSegment;
 #endif
 	nOvlTexCount = 0;
+	segFaceP->nFaces = 0;
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 		nWall = WallNumI (nSegment, nSide);
 		bWall = (segP->children [nSide] == -1) || IS_WALL (nWall);
@@ -1734,7 +1735,6 @@ else if (loadOp == 6) {
 		}
 	}
 else {
-	CreateFaceList ();
 	*key = -2;
 	GrPaletteStepLoad (NULL);
 	return;
@@ -2121,6 +2121,7 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
+CreateFaceList ();
 if (!(gameStates.app.bNostalgia || (gameStates.render.bColored = HasColoredLight ())))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player

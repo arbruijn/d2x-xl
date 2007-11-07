@@ -403,7 +403,7 @@ if (bVertexArrays) {
 	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}
-if (gameStates.render.history.bOverlay > 0)
+//if (gameStates.render.history.bOverlay > 0)
 	glUseProgramObject (0);
 if (nType != 3)
 	OglResetTransform (1);
@@ -820,6 +820,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 				faceP->bVisible = 0;
 				continue;
 				}
+			faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			for (h = 0; h < 4; h++, pc++) {
@@ -882,6 +883,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 				faceP->bVisible = 0;
 				continue;
 				}
+			faceP->color = faceColor [nColor].color;
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			uvlP = segP->sides [nSide].uvls;
 			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {

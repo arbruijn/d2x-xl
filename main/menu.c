@@ -152,6 +152,7 @@ static struct {
 	int	nMethod;
 	int	nGeoHWLighting;
 	int	nObjHWLighting;
+	int	nHWHeadLight;
 	int	nMaxLights;
 	int	nLMapRange;
 	int	nGunColor;
@@ -3071,6 +3072,7 @@ do {
 	lightOpts.nMaxLights = 
 	lightOpts.nGeoHWLighting =
 	lightOpts.nObjHWLighting =
+	lightOpts.nHWHeadLight =
 	optColorSat = 
 	lightOpts.nObjectLight = -1;
 	if (!gameStates.app.bGameRunning) {
@@ -3102,6 +3104,10 @@ do {
 		ADD_CHECK (opt, TXT_GEOMETRY_HWLIGHTING, gameOpts->ogl.bGeoLighting, KEY_A, HTX_GEOMETRY_HWLIGHTING);
 		lightOpts.nGeoHWLighting = opt++;
 #endif
+		if (gameStates.ogl.bHeadLight) {
+			ADD_CHECK (opt, TXT_HW_HEADLIGHT, gameOpts->ogl.bHeadLight, KEY_H, HTX_HW_HEADLIGHT);
+			lightOpts.nHWHeadLight = opt++;
+			}
 		ADD_CHECK (opt, TXT_OBJECT_HWLIGHTING, gameOpts->ogl.bObjLighting, KEY_A, HTX_OBJECT_HWLIGHTING);
 		lightOpts.nObjHWLighting = opt++;
 		if (!gameOpts->ogl.bObjLighting) {
@@ -3206,6 +3212,7 @@ do {
 			extraGameInfo [0].bPowerupLights = !m [optPowerupLights].value;
 		}
 	extraGameInfo [0].bFlickerLights = m [optFlickerLights].value;
+	GET_VAL (gameOpts->ogl.bHeadLight, lightOpts.nHWHeadLight);
 	GET_VAL (extraGameInfo [0].bBrightObjects, optBrightObjects);
 	} while (i == -2);
 if (optColorSat >= 0) {

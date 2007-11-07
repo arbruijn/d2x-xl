@@ -866,6 +866,7 @@ if (weaponP->id == OMEGA_ID)
 CreateWeaponEffects (weaponP, 1);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
+
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
 #if TRACE
 	con_printf (CONDBG, "Guided missile dot = %7.3f \n", f2fl (dot));

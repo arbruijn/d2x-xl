@@ -944,7 +944,7 @@ else
 	sprintf (szScore + 18, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
 GrGetStringSize (szScore, &w, &h, &aw);
 GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-nIdScore = GrPrintF (&nIdScore, grdCurCanv->cv_w-w-LHX (2), 3, szScore);
+GrPrintF (NULL, grdCurCanv->cv_w-w-LHX (2), 3, szScore);
 }
 
 //	-----------------------------------------------------------------------------

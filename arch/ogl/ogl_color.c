@@ -284,7 +284,9 @@ float fLightRanges [5] = {5, 7.071f, 10, 14.142f, 20};
 
 int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
-	int				h, i, j, nType, bInRad, nSaturation = gameOpts->render.color.nSaturation;
+	int				h, i, j, nType, bInRad, 
+						bSkipHeadLight = gameStates.ogl.bHeadLight && !gameStates.render.nState, 
+						nSaturation = gameOpts->render.color.nSaturation;
 	int				nBrightness, nMaxBrightness = 0;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	float				fLightDist, fAttenuation, spotEffect, fMag, NdotL, RdotE;
@@ -293,6 +295,10 @@ int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
 	tShaderLight	*psl;
 	tVertColorData	vcd = *vcdP;
 
+#ifdef _DEBUG
+if (gameData.render.lights.dynamic.headLights.nLights)
+	return 0;
+#endif
 r_tvertexc++;
 colorSum = *pColorSum;
 h = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
@@ -307,6 +313,8 @@ for (i = j = 0; i < h; i++) {
 	if (i == vcd.nMatLight)
 		continue;
 	nType = psl->nType;
+	if (bSkipHeadLight && (nType == 3))
+		continue;
 	if (psl->bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *((fVector *) &psl->color);
@@ -376,9 +384,12 @@ for (i = j = 0; i < h; i++) {
 		lightDir.p.y = -lightDir.p.y;
 		lightDir.p.z = -lightDir.p.z;
 		spotEffect = G3_DOTF (spotDir, lightDir);
+#if 1
 		if (spotEffect <= psl->spotAngle)
 			continue;
-		spotEffect = (float) pow (spotEffect, psl->spotExponent);
+#endif
+		if (psl->spotExponent)
+			spotEffect = (float) pow (spotEffect, psl->spotExponent);
 		fAttenuation /= spotEffect * 10;
 #if VECMAT_CALLS
 		VmVecScaleAddf (&vertColor, &gameData.render.vertColor.matAmbient, &gameData.render.vertColor.matDiffuse, NdotL);
@@ -675,6 +686,10 @@ else
 	if (colorSum.c.b > 1.0)
 		colorSum.c.b = 1.0;
 	}
+#if 0//def _DEBUG
+if (gameData.render.lights.dynamic.headLights.nLights)
+	colorSum.c.r = colorSum.c.g = colorSum.c.b = 0;
+#endif
 if (bSetColor)
 	OglColor4sf (colorSum.c.r * fScale, colorSum.c.g * fScale, colorSum.c.b * fScale, 1.0);
 #if 1

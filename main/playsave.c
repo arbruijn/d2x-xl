@@ -380,6 +380,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.keyboard.nRamp, i, 0);
 
 		RP (gameOptions [i].ogl.bLightObjects, i, 0);
+		RP (gameOptions [i].ogl.bHeadLight, i, 0);
 		RP (gameOptions [i].ogl.bLightPowerups, i, 0);
 		RP (gameOptions [i].ogl.bGeoLighting, i, 0);
 		RP (gameOptions [i].ogl.bObjLighting, i, 0);
@@ -926,6 +927,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.trackIR.nDeadzone", "4"},
 	{"gameOptions[0].input.keyboard.nRamp", "50"},
 	{"gameOptions[0].ogl.bLightObjects", "1"},
+	{"gameOptions[0].ogl.bHeadLights", "0"},
 	{"gameOptions[0].ogl.bLightPowerups", "0"},
 	{"gameOptions[0].ogl.bGeoLighting", "0"},
 	{"gameOptions[0].ogl.bObjLighting", "0"},

@@ -1563,8 +1563,6 @@ int CheckTransWall (vmsVector *pnt, tSegment *segP, short nSide, short iFace)
 
 //	Assert(WALL_IS_DOORWAY(segP, nSide) == WID_TRANSPARENT_WALL);
 //LogErr ("      FindHitPointUV (%d)...", iFace);
-if ((SEG_IDX (segP) == 519) && (nSide == 0))
-	segP = segP;
 FindHitPointUV (&u, &v, NULL, pnt, segP, nSide, iFace);	//	Don't compute light value.
 //LogErr ("done\n");
 if (sideP->nOvlTex)	{

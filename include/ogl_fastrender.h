@@ -14,6 +14,7 @@
 bool G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 bool G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
+int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf *colorP);
 
 //------------------------------------------------------------------------------
 

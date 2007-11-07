@@ -339,7 +339,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 		color = GetTeam (sorted [i]);
 	else
 		color = sorted [i];
-	if (gameData.multiplayer.players [sorted [i]].connected==0)
+	if (!gameData.multiplayer.players [sorted [i]].connected)
 		GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
 		GrSetFontColorRGBi (RGBA_PAL2 (playerColors  [color].r, playerColors  [color].g, playerColors [color].b), 1, 0, 0);
@@ -431,7 +431,7 @@ memset (&bg, 0, sizeof (bg));
 
 bNetwork=gameData.app.nGameMode & GM_NETWORK;
 
-for (i = 0; i <MAX_NUM_NET_PLAYERS; i++)
+for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	DigiKillSoundLinkedToObject (gameData.multiplayer.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);

@@ -1748,6 +1748,7 @@ char *defaultGameTexts [][2] = {
 	{"~Geometrie-Beleuchtung per hardware", "hardware ~Geometry lighting"},
 	{"Objekt-Beleuchtung per h~Ardware", "h~Ardware object lighting"},
 	{"Rauchpartikel dre~Hen", "~Rotate smoke particles"},
+	{"~Scheinwerfer per Hardware", "hardware ~Headlight"},
 #if 0
 	{"", ""},
 #endif
@@ -2339,6 +2340,8 @@ char *defaultHelpTexts [][2] = {
 	{"Mit eingeschalteter Hardware-Beleuchtung der Objekte werden\nkomplexe Szenen mit vielen Objekten mehrfach schneller berechnet.", 
 	 "With hardware object lighting enabled, complex scenes with\nlots of objects are rendered much faster."},
 	{"Wenn angekreuzt, rotieren die Rauchpartikel.", "If checked, smoke particles rotate."},
+	{"Wenn angekreuzt, wird per Shaderprogramm ein schoenes rundes\nScheinwerferlicht erzeugt. Das kann die Grafik allerdings je nach\nSpielerzahl ziemlich ausbremsen und laeuft auf aelterer Hardware\nunter Umstaenden nicht.", 
+	 "If checked, a nice round headlight shine is created by a\nshader program. Depending on player number this can however slow\nthe renderer down significantly, and it may not run on older\ngraphics hardware.\n"},
 #if 0
 	{"", ""},
 #endif

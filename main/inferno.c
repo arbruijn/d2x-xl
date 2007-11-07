@@ -1764,6 +1764,7 @@ void InitOglOptions (int i)
 if (i) {
 	gameOptions [1].render.bDynLighting = 0;
 	gameOptions [1].ogl.bLightObjects = 0;
+	gameOptions [1].ogl.bHeadLight = 0;
 	gameOptions [1].ogl.bLightPowerups = 0;
 	gameOptions [1].ogl.bGeoLighting = 0;
 	gameOptions [1].ogl.bObjLighting = 0;
@@ -1779,6 +1780,7 @@ else {
 	gameOptions [0].render.bDynLighting = 0;
 #endif
 	gameOptions [0].ogl.bLightObjects = 0;
+	gameOptions [0].ogl.bHeadLight = 0;
 	gameOptions [0].ogl.bLightPowerups = 0;
 	gameOptions [0].ogl.bGeoLighting = 0;
 	gameOptions [0].ogl.bObjLighting = 0;
@@ -3352,6 +3354,7 @@ GameFontInit ();	// must load after palette data loaded.
 InitMovies ();		//init movie libraries
 
 /*---*/LogErr ("Initializing game data\n");
+InitWeaponFlags ();
 #ifdef EDITOR
 bm_init_use_tbl ();
 #else
@@ -3377,12 +3380,11 @@ TexMergeInit (100);		// 100 cache bitmaps
 /*---*/LogErr ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
 InitPowerupTables ();
-InitWeaponFlags ();
 InitGame ();
 InitThreads ();
 PiggyInitMemory ();
 /*---*/LogErr ("Loading hires models\n");
-LoadHiresModels ();
+//LoadHiresModels ();
 /*---*/LogErr ("Enabling TrackIR support\n");
 TIRLoad ();
 return 0;

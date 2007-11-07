@@ -478,8 +478,6 @@ char *texMergeFSData =
 	"uniform sampler2D btmTex, topTex, maskTex;" \
 	"uniform float grAlpha;";
 
-
-
 //-------------------------------------------------------------------------
 
 void InitTexMergeShaders (void)

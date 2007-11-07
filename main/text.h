@@ -1789,10 +1789,10 @@ void LoadGameTexts(void);
 #define TXT_GEOMETRY_HWLIGHTING	GT(996)
 #define TXT_OBJECT_HWLIGHTING		GT(997)
 #define TXT_ROTATE_SMOKE			GT(998)
+#define TXT_HW_HEADLIGHT			GT(999)
 
 #if 0
 
-#define TXT_				GT(999)
 
 #define TXT_				GT(1000)
 #define TXT_				GT(1001)
@@ -2240,11 +2240,10 @@ void LoadGameTexts(void);
 #define HTX_GEOMETRY_HWLIGHTING	HT(326)				
 #define HTX_OBJECT_HWLIGHTING		HT(327)				
 #define HTX_ROTATE_SMOKE			HT(328)				
+#define HTX_HW_HEADLIGHT			HT(329)				
 
 #if 0
 
-#define HTX_					HT(328)				
-#define HTX_					HT(329)				
 #define HTX_					HT(330)				
 #define HTX_					HT(331)				
 #define HTX_					HT(332)				

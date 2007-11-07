@@ -24,6 +24,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "u_mem.h"
 #include "ogl_lib.h"
+#include "ogl_fastrender.h"
 #include "render.h"
 #include "renderlib.h"
 #include "objrender.h"
@@ -491,7 +492,17 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, int bClientState, int nTransp)
+void RIResetShader (void)
+{
+if (gameStates.render.history.nShader >= 0) {
+	glUseProgramObject (0);
+	gameStates.render.history.nShader = -1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int LoadRenderItemImage (grsBitmap *bmP, char nColors, char nFrame, int nWrap, int bClientState, int nTransp, int bShader)
 {
 if (bmP) {
 	if (RISetClientState (bClientState, 1, nColors > 1) || (renderItems.bTextured < 1)) {
@@ -518,6 +529,8 @@ else if (RISetClientState (bClientState, 0, nColors > 1) || renderItems.bTexture
 	glDisable (GL_TEXTURE_2D);
 	renderItems.bTextured = 0;
 	}
+if (!bShader)
+	RIResetShader ();
 return (renderItems.bClientState == bClientState);
 }
 
@@ -541,7 +554,7 @@ if (item->bmP && strstr (item->bmP->szName, "door37#0"))
 	item = item;
 #endif
 #if 1
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 	if (item->bAdditive == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else if (item->bAdditive == 2)
@@ -557,11 +570,12 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3)) {
 		glColorPointer (4, GL_FLOAT, 0, item->color);
 	else
 		glColor3d (1, 1, 1);
+	G3SetupShader (0, 0, item->bmP != NULL, item->color);
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3)) {
+if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
 	if (item->bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);
 	else
@@ -616,7 +630,7 @@ if (item->bAdditive)
 
 void RIRenderSprite (tRISprite *item)
 {
-if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1)) {
+if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 0)) {
 	float		h, w, u, v;
 	fVector	fPos = item->position;
 
@@ -664,6 +678,7 @@ void RIRenderSphere (tRISphere *item)
 
 gameOpts->render.bDepthSort = -1;
 RISetClientState (0, 0, 0);
+RIResetShader ();
 if (item->nType == riSphereShield)
 	DrawShieldSphere (item->objP, item->color.red, item->color.green, item->color.blue, item->color.alpha);
 if (item->nType == riMonsterball)
@@ -681,6 +696,7 @@ gameOpts->render.bDepthSort = bDepthSort;
 void RIRenderParticle (tRIParticle *item)
 {
 RISetClientState (0, 0, 0);
+RIResetShader ();
 if (renderItems.nPrevType != riParticle) {
 	glEnable (GL_TEXTURE_2D);
 	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -701,6 +717,7 @@ void RIRenderLightning (tRILightning *item)
 if (renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 0);
 RISetClientState (0, 0, 0);
+RIResetShader ();
 RenderLightning (item->lightning, item->nLightnings, item->nDepth, 0);
 renderItems.bmP = NULL;
 renderItems.bTextured = 0;
@@ -714,6 +731,7 @@ void RIRenderLightningSegment (tRILightningSegment *item)
 if (renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 0);
 RISetClientState (0, 0, 0);
+RIResetShader ();
 RenderLightningSegment (item->vLine, item->vPlasma, &item->color, item->bPlasma, item->bStart, item->bEnd, item->nDepth);
 if (item->bPlasma) {
 	renderItems.bmP = NULL;
@@ -730,7 +748,7 @@ if (!renderItems.bDepthMask)
 glBlendFunc (GL_ONE, GL_ONE);
 glColor3f (0.75f, 0.75f, 0.75f);
 #if 1
-if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1)) {
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1, 0)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
 	if (item->bFlame)
@@ -739,7 +757,7 @@ if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1)) {
 	}
 else 
 #endif
-if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1)) {
+if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0)) {
 	int i;
 	if (item->bFlame) {
 		glBegin (GL_TRIANGLES);
@@ -844,6 +862,7 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 renderItems.nFreeItems = ITEM_BUFFER_SIZE;
 RIFlushParticleBuffer (-1);
 EndRenderSmoke (NULL);
+RIResetShader ();
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 OGL_BINDTEX (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

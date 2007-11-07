@@ -333,6 +333,7 @@ typedef struct tOglOptions {
 	int bLightPowerups;
 	int bGeoLighting;
 	int bObjLighting;
+	int bHeadLight;
 	int nMaxLights;
 	int bVoodooHack;
 } tOglOptions;
@@ -648,6 +649,7 @@ typedef struct tOglStates {
 	int bpp;
 	int bScaleLight;
 	int bDynObjLight;
+	int bHeadLight;
 	int bStandardContrast;
 	int nRGBAFormat;
 	int nRGBFormat;
@@ -1207,6 +1209,13 @@ typedef struct tShaderLightData {
 
 #define MAX_NEAREST_LIGHTS 32
 
+typedef struct tHeadLightData {
+	fVector3				pos [MAX_PLAYERS];
+	fVector3				dir [MAX_PLAYERS];
+	float					brightness [MAX_PLAYERS];
+	int					nLights;
+} tHeadLightData;
+
 typedef struct tDynLightData {
 	tDynLight			lights [MAX_OGL_LIGHTS];
 	short					*nNearestSegLights;	//the 8 nearest static lights for every tSegment
@@ -1218,6 +1227,7 @@ typedef struct tDynLightData {
 	short					nHeadLights [MAX_PLAYERS];
 	short					nSegment;
 	tShaderLightData	shader;
+	tHeadLightData		headLights;
 	tOglMaterial		material;
 } tDynLightData;
 

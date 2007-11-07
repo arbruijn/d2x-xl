@@ -1530,6 +1530,8 @@ for (i = 0; i < n; i++, pwi++) {
 	pwi->drag = CFReadFix (fp);
 	pwi->thrust = CFReadFix (fp);
 	pwi->po_len_to_width_ratio = CFReadFix (fp);
+	if (gameData.objs.bIsMissile [i])
+		pwi->po_len_to_width_ratio = F1_0 * 10;
 	pwi->light = CFReadFix (fp);
 	if (i == SPREADFIRE_ID)
 		pwi->light = F1_0;
