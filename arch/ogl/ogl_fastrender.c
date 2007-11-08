@@ -407,6 +407,8 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 		nDbgSeg = nDbgSeg;
 	else
 		nDbgSeg = nDbgSeg;
+if (bmBot && strstr (bmBot->szName, "door"))
+	bmBot = bmBot;
 #endif
 
 if (!faceP->bTextured)

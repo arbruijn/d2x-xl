@@ -2185,8 +2185,8 @@ char *lightingFS [12] = {
 	"if (spotEffect < cutOff)" \
 	"   gl_FragColor = vec4 (vec3 (matColor) * vec3 (gl_Color), (matColor.a + gl_Color.a) * grAlpha);"  \
 	"else {" \
-	"	 float attenuation = min (200.0 / lightDist, 1.0);" \
-	"   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	 float attenuation = min (50.0 / lightDist, 1.0);" \
+	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"   gl_FragColor = vec4 (vec3 (matColor) * vec3 (spotColor), matColor.a * grAlpha);"  \
 	"   }" \
@@ -2207,8 +2207,8 @@ char *lightingFS [12] = {
 	"if (spotEffect < cutOff)" \
 	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * gl_Color;" \
 	"else {" \
-	"	 float attenuation = min (200.0 / lightDist, 1.0);" \
-	"   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	 float attenuation = min (50.0 / lightDist, 1.0);" \
+	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"	 }" \
@@ -2230,8 +2230,8 @@ char *lightingFS [12] = {
 	"if (spotEffect < cutOff)" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * gl_Color;" \
 	"else {" \
-	"   float attenuation = min (200.0 / lightDist, 1.0);" \
-	"   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"   float attenuation = min (50.0 / lightDist, 1.0);" \
+	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"	 }" \
@@ -2257,9 +2257,9 @@ char *lightingFS [12] = {
 	"   if (spotEffect < cutOff)" \
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * gl_Color;" \
 	"   else {" \
-	" 		 float attenuation = min (200.0 / lightDist, 1.0);" \
-	"      spotEffect = pow (spotEffect, spotExp) * attenuation;" \
-	"      spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	" 		 float attenuation = min (50.0 / lightDist, 1.0);" \
+	"      spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
+	"      spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"   	}" \
 	"   }" \
@@ -2282,7 +2282,7 @@ char *lightingFS [12] = {
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"   if (spotEffect >= cutOff) {" \
 	"   	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"	   spotColor.r += spotEffect;" \
 	"	   spotColor.g += spotEffect;" \
 	"	   spotColor.b += spotEffect;" \
@@ -2310,7 +2310,7 @@ char *lightingFS [12] = {
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"   if (spotEffect >= cutOff) {" \
 	"   	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"	   spotColor.r += spotEffect;" \
 	"	   spotColor.g += spotEffect;" \
 	"	   spotColor.b += spotEffect;" \
@@ -2339,7 +2339,7 @@ char *lightingFS [12] = {
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"   if (spotEffect >= cutOff) {" \
 	"   	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"	   spotColor.r += spotEffect;" \
 	"	   spotColor.g += spotEffect;" \
 	"	   spotColor.b += spotEffect;" \
@@ -2372,7 +2372,7 @@ char *lightingFS [12] = {
 	"      spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"      if (spotEffect >= cutOff) {" \
 	"      	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"   	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"   	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   	   spotColor.r += spotEffect;" \
 	"   	   spotColor.g += spotEffect;" \
 	"   	   spotColor.b += spotEffect;" \
@@ -2400,7 +2400,7 @@ char *lightingFS [12] = {
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"   if (spotEffect >= cutOff) {" \
 	"   	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"	   spotColor.r += spotEffect;" \
 	"	   spotColor.g += spotEffect;" \
 	"	   spotColor.b += spotEffect;" \
@@ -2428,7 +2428,7 @@ char *lightingFS [12] = {
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"   if (spotEffect >= cutOff) {" \
 	"   	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"	   spotColor.r += spotEffect;" \
 	"	   spotColor.g += spotEffect;" \
 	"	   spotColor.b += spotEffect;" \
@@ -2457,7 +2457,7 @@ char *lightingFS [12] = {
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"   if (spotEffect >= cutOff) {" \
 	"   	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"	   spotColor.r += spotEffect;" \
 	"	   spotColor.g += spotEffect;" \
 	"	   spotColor.b += spotEffect;" \
@@ -2490,7 +2490,7 @@ char *lightingFS [12] = {
 	"      spotEffect = dot (lightDir [i], lightVec / lightDist);" \
 	"      if (spotEffect >= cutOff) {" \
 	"      	float attenuation = min (brightness [i] / lightDist, 1.0);" \
-	"   	   spotEffect = pow (spotEffect, spotExp) * attenuation;" \
+	"   	   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   	   spotColor.r += spotEffect;" \
 	"   	   spotColor.g += spotEffect;" \
 	"   	   spotColor.b += spotEffect;" \
