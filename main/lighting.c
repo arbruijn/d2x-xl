@@ -2547,18 +2547,19 @@ void InitLightingShaders (void)
 gameStates.render.bHaveDynLights = 1;
 LogErr ("building lighting shader programs\n");
 DeleteShaderProg (NULL);
-gameStates.ogl.bHeadLight = 1;
-for (i = 0; i < 12; i++) {
-	if (lightingShaderProgs [i])
-		DeleteShaderProg (lightingShaderProgs + i);
-	bOk = CreateShaderProg (lightingShaderProgs + i) &&
-			CreateShaderFunc (lightingShaderProgs + i, lfs + i, lvs + i, lightingFS [i % 4], lightingVS [i % 4], 1) &&
--			LinkShaderProg (lightingShaderProgs + i);
-	if (!bOk) {
-		gameStates.ogl.bHeadLight = 0;
-		while (i)
-			DeleteShaderProg (lightingShaderProgs + --i);
-		break;
+if (gameStates.ogl.bHeadLight = gameOpts->render.nPath) {
+	for (i = 0; i < 12; i++) {
+		if (lightingShaderProgs [i])
+			DeleteShaderProg (lightingShaderProgs + i);
+		bOk = CreateShaderProg (lightingShaderProgs + i) &&
+				CreateShaderFunc (lightingShaderProgs + i, lfs + i, lvs + i, lightingFS [i % 4], lightingVS [i % 4], 1) &&
+	-			LinkShaderProg (lightingShaderProgs + i);
+		if (!bOk) {
+			gameStates.ogl.bHeadLight = 0;
+			while (i)
+				DeleteShaderProg (lightingShaderProgs + --i);
+			break;
+			}
 		}
 	}
 }
