@@ -180,6 +180,9 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 				}
 			}
 		glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
+		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
+		glUniform1f (glGetUniformLocation (tmProg, "cutOff"), 0.5f);
+		glUniform1f (glGetUniformLocation (tmProg, "spotExp"), 8.0f);
 		glUniform3fv (glGetUniformLocation (tmProg, "lightPos"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.pos);
 		glUniform3fv (glGetUniformLocation (tmProg, "lightDir"), nLights, 

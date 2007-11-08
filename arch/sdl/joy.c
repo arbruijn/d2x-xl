@@ -52,11 +52,11 @@ button = SDL_Joysticks [jbe->which].button_map [jbe->button] + jbe->which * MAX_
 Joystick.buttons [button].state = jbe->state;
 switch (jbe->type) {
 	case SDL_JOYBUTTONDOWN:
-		Joystick.buttons [button].time_wentDown = TimerGetFixedSeconds();
+		Joystick.buttons [button].xTimeWentDown = TimerGetFixedSeconds();
 		Joystick.buttons [button].numDowns++;
 		break;
 	case SDL_JOYBUTTONUP:
-		Joystick.buttons [button].num_ups++;
+		Joystick.buttons [button].numUps++;
 		break;
 	}
 }
@@ -88,13 +88,13 @@ void joy_hat_handler (SDL_JoyHatEvent *jhe)
 	{
 		if(	!Joystick.buttons [hat+hbi].lastState && Joystick.buttons [hat+hbi].state) //lastState up, current state down
 		{
-			Joystick.buttons [hat+hbi].time_wentDown
+			Joystick.buttons [hat+hbi].xTimeWentDown
 				= TimerGetFixedSeconds();
 			Joystick.buttons [hat+hbi].numDowns++;
 		}
 		else if(Joystick.buttons [hat+hbi].lastState && !Joystick.buttons [hat+hbi].state)  //lastState down, current state up
 		{
-			Joystick.buttons [hat+hbi].num_ups++;
+			Joystick.buttons [hat+hbi].numUps++;
 		}
 	}
 }
@@ -263,8 +263,8 @@ if (gameOpts->legacy.bInput)
 #endif
 switch (Joystick.buttons [nButton].state) {
 	case SDL_PRESSED:
-		time = TimerGetFixedSeconds() - Joystick.buttons [nButton].time_wentDown;
-		Joystick.buttons [nButton].time_wentDown = TimerGetFixedSeconds();
+		time = TimerGetFixedSeconds() - Joystick.buttons [nButton].xTimeWentDown;
+		Joystick.buttons [nButton].xTimeWentDown = TimerGetFixedSeconds();
 		break;
 	case SDL_RELEASED:
 		time = 0;
@@ -302,7 +302,7 @@ void JoyFlush()
 		return;
 
 	for (i = 0; i < MAX_JOYSTICKS * JOY_MAX_BUTTONS; i++) {
-		Joystick.buttons [i].time_wentDown = 0;
+		Joystick.buttons [i].xTimeWentDown = 0;
 		Joystick.buttons [i].numDowns = 0;
 	}
 

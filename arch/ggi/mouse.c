@@ -29,10 +29,10 @@
 
 struct tMouseButton {
  ubyte pressed;
- fix time_wentDown;
- fix time_heldDown;
+ fix xTimeWentDown;
+ fix xTimeHeldDown;
  uint numDowns;
- uint num_ups;
+ uint numUps;
 };
 
 #define MOUSE_MAX_BUTTONS 3
@@ -80,12 +80,12 @@ void mouse_handler_button(int button, ubyte state)
 {
 	if (!Mouse.buttons[button].pressed && state)
 	{
-		Mouse.buttons[button].time_wentDown = TimerGetFixedSeconds();
+		Mouse.buttons[button].xTimeWentDown = TimerGetFixedSeconds();
 		Mouse.buttons[button].numDowns++;
 	}
 	else if (Mouse.buttons[button].pressed && !state)
 	{
-		Mouse.buttons[button].num_ups++;
+		Mouse.buttons[button].numUps++;
 	}
 			
 	Mouse.buttons[button].pressed = state;
@@ -109,7 +109,7 @@ mouse_set_limits( int x1, int y1, int x2, int y2 )
 	Mouse.max_y = y2;
 }
 
-void mouse_flush()	// clears all mice events...
+void MouseFlush()	// clears all mice events...
 {
 	Mouse.x = 0;
 	Mouse.y = 0;
@@ -118,7 +118,7 @@ void mouse_flush()	// clears all mice events...
 }
 
 //========================================================================
-void mouse_get_pos( int *x, int *y)
+void MouseGetPos( int *x, int *y)
 {
 	event_poll();
 	*x = Mouse.x;
@@ -158,7 +158,7 @@ void mouse_get_cyberman_pos( int *x, int *y )
 fix MouseButtonDownTime(int button)
 {
 	if (Mouse.buttons[button].pressed)
-		return (TimerGetFixedSeconds() - Mouse.buttons[button].time_wentDown);
+		return (TimerGetFixedSeconds() - Mouse.buttons[button].xTimeWentDown);
 	else
 		return 0;
 }

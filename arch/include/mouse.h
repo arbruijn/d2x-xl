@@ -40,16 +40,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "fix.h"
 
-#define D2_MB_LEFT			0
-#define D2_MB_RIGHT		1
-#define D2_MB_MIDDLE		2
-#define D2_MB_Z_UP			3
-#define D2_MB_Z_DOWN		4
+#define D2_MB_LEFT				0
+#define D2_MB_RIGHT				1
+#define D2_MB_MIDDLE				2
+#define D2_MB_Z_UP				3
+#define D2_MB_Z_DOWN				4
 #define D2_MB_PITCH_BACKWARD	5
 #define D2_MB_PITCH_FORWARD	6
-#define D2_MB_BANK_LEFT		7
+#define D2_MB_BANK_LEFT			7
 #define D2_MB_BANK_RIGHT		8
-#define D2_MB_HEAD_LEFT		9
+#define D2_MB_HEAD_LEFT			9
 #define D2_MB_HEAD_RIGHT		10
 
 #define MOUSE_LBTN 1
@@ -63,11 +63,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef SVGALIB_INPUT
 extern int d_mouse_init(int enable_cyberman); /* conflict with <vgamouse.h> */
 #else
-extern int mouse_init(int enable_cyberman);
+extern int MouseInit (int enable_cyberman);
 #endif
 /* changed from int to void */
-extern void mouse_set_limits( int x1, int y1, int x2, int y2 );
-extern void mouse_flush();	// clears all mice events...
+extern void mouse_set_limits (int x1, int y1, int x2, int y2);
+extern void MouseFlush (void);	// clears all mice events...
 
 //========================================================================
 // Shutdowns mouse system.
@@ -78,15 +78,15 @@ extern void mouse_close();
 #endif
 
 //========================================================================
-extern void mouse_get_pos( int *x, int *y );
-extern void MouseGetDelta( int *dx, int *dy );
+extern void MouseGetPos (int *x, int *y);
+extern void MouseGetDelta (int *dx, int *dy);
 #ifdef SDL_INPUT
-extern void MouseGetPosZ( int *x, int *y, int *z );
-extern void MouseGetDeltaZ( int *dx, int *dy, int *dz );
+extern void MouseGetPosZ (int *x, int *y, int *z);
+extern void MouseGetDeltaZ (int *dx, int *dy, int *dz);
 #endif
-extern int MouseGetButtons();
-extern void mouse_set_pos( int x, int y);
-extern void mouse_get_cyberman_pos( int *x, int *y );
+extern int MouseGetButtons (void);
+extern void mouse_set_pos (int x, int y);
+extern void mouse_get_cyberman_pos (int *x, int *y);
 
 // Returns how long this button has been down since last call.
 extern fix MouseButtonDownTime(int button);
@@ -102,16 +102,18 @@ extern int MouseButtonState(int button);
 typedef struct tMouseButton {
 	ubyte pressed;
 	ubyte rotated;
-	fix time_wentDown;
-	fix time_heldDown;
-	uint numDowns;
-	uint num_ups;
+	fix	xPrevTimeWentDown;
+	fix	xTimeWentDown;
+	fix	xTimeHeldDown;
+	uint	numDowns;
+	uint	numUps;
 } tMouseButton;
 
 typedef struct tMouseInfo {
-	tMouseButton buttons [MOUSE_MAX_BUTTONS];
-	int dx, dy, dz;
-	int x, y, z;
+	tMouseButton	buttons [MOUSE_MAX_BUTTONS];
+	int				dx, dy, dz;
+	int				x, y, z;
+	int				bDoubleClick;
 } tMouseInfo;
 
 extern tMouseInfo mouseData;

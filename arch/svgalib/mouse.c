@@ -36,10 +36,10 @@ ubyte installed = 0;
 
 struct tMouseButton {
  ubyte pressed;
- fix time_wentDown;
- fix time_heldDown;
+ fix xTimeWentDown;
+ fix xTimeHeldDown;
  uint numDowns;
- uint num_ups;
+ uint numUps;
 };
 
 static struct tMouseInfo {
@@ -67,12 +67,12 @@ void mouse_handler (int vga_button, int dx, int dy, int dz, int drx, int dry, in
   state = button & (1 << i);
   if (!Mouse.buttons[i].pressed && state)
     {
-      Mouse.buttons[i].time_wentDown = TimerGetFixedSeconds();
+      Mouse.buttons[i].xTimeWentDown = TimerGetFixedSeconds();
       Mouse.buttons[i].numDowns++;
     }
   else if (Mouse.buttons[i].pressed && !state)
     {
-      Mouse.buttons[i].num_ups++;
+      Mouse.buttons[i].numUps++;
     }
   
   Mouse.buttons[i].pressed = state;
@@ -116,7 +116,7 @@ mouse_set_limits( int x1, int y1, int x2, int y2 )
  Mouse.max_y = y2;
 }
 
-void mouse_flush()	// clears all mice events...
+void MouseFlush()	// clears all mice events...
 {
  int i;
  fix currentTime;
@@ -127,9 +127,9 @@ void mouse_flush()	// clears all mice events...
  for (i=0; i<MOUSE_MAX_BUTTONS; i++)
  {
    Mouse.buttons[i].pressed=0;
-   Mouse.buttons[i].time_wentDown=currentTime;
-   Mouse.buttons[i].time_heldDown=0;
-   Mouse.buttons[i].num_ups=0;
+   Mouse.buttons[i].xTimeWentDown=currentTime;
+   Mouse.buttons[i].xTimeHeldDown=0;
+   Mouse.buttons[i].numUps=0;
    Mouse.buttons[i].numDowns=0;
  }
 //added on 10/17/98 by Hans de Goede for mouse functionality 
@@ -141,7 +141,7 @@ void mouse_flush()	// clears all mice events...
 }
 
 //========================================================================
-void mouse_get_pos( int *x, int *y)
+void MouseGetPos( int *x, int *y)
 {
   event_poll();
   *x = Mouse.x;
@@ -200,12 +200,12 @@ fix MouseButtonDownTime(int button)
  event_poll();
 
  if (!Mouse.buttons[button].pressed) {
-   timeDown = Mouse.buttons[button].time_heldDown;
-   Mouse.buttons[button].time_heldDown = 0;
+   timeDown = Mouse.buttons[button].xTimeHeldDown;
+   Mouse.buttons[button].xTimeHeldDown = 0;
  } else {
    time = TimerGetFixedSeconds();
-   timeDown = time - Mouse.buttons[button].time_heldDown;
-   Mouse.buttons[button].time_heldDown = time;
+   timeDown = time - Mouse.buttons[button].xTimeHeldDown;
+   Mouse.buttons[button].xTimeHeldDown = time;
  }
  return timeDown;
 }

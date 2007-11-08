@@ -1206,7 +1206,7 @@ int NMCheckButtonPress ()
 extern int NetworkRequestPlayerNames (int);
 extern int RestoringMenu;
 
-ubyte Hack_DblClick_MenuMode=0;
+ubyte bHackDblClickMenuMode = 0;
 
 # define JOYDEFS_CALIBRATING 0
 
@@ -1560,9 +1560,9 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
    char			*Temp, TempVal;
 	int			bDontRestore = 0;
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
-	WINDOS (ddgrs_canvas *save_canvas, gsrCanvas *save_canvas);	
-	WINDOS (ddgrs_canvas *game_canvas, gsrCanvas *game_canvas);	
-	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick=0;
+	gsrCanvas	*save_canvas;	
+	gsrCanvas	*game_canvas;	
+	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
 	int			mx=0, my=0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
 	int			bCloseBox = 0;
@@ -1652,7 +1652,7 @@ GrabMouse (0, 0);
 while (!done) {
 	if (cItemP)
 		*cItemP = choice;
-	if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI)) {
+	if (gameStates.app.bGameRunning && IsMultiGame) {
 		gameStates.multi.bPlayerIsTyping [gameData.multiplayer.nLocalPlayer] = 1;
 		MultiSendTyping ();
 		}
@@ -1676,6 +1676,8 @@ while (!done) {
 		k = KEY_DOWN;
 	else
 		k = KeyInKey ();
+	if (mouseData.bDoubleClick)
+		k = KEY_ENTER;
 	if ((ctrl.scWidth != grdCurScreen->scWidth) || (ctrl.scHeight != grdCurScreen->scHeight)) {
 		memset (&ctrl, 0, sizeof (ctrl));
 		ctrl.width = width;
@@ -1707,9 +1709,9 @@ while (!done) {
 		}
 	else {
 		if (gameStates.app.bGameRunning) {
-			WINDOS (ddgrs_canvas *save_canvas, gsrCanvas *save_canvas);	
-			WINDOS (save_canvas = dd_grd_curcanv, save_canvas = grdCurCanv);
-			WINDOS (DDGrSetCurrentCanvas (game_canvas), GrSetCurrentCanvas (game_canvas));
+			gsrCanvas *save_canvas;	
+			save_canvas = grdCurCanv;
+			GrSetCurrentCanvas (game_canvas);
 			//GrPaletteStepLoad (gamePalette);
 			//GrCopyPalette (grPalette, gamePalette, sizeof (grPalette));
 			if (gameData.app.bGamePaused /*|| timer_paused*/) {
@@ -1720,7 +1722,7 @@ while (!done) {
 			else {
 				GameLoop (1, 0);
 				}
-			WINDOS (DDGrSetCurrentCanvas (save_canvas), GrSetCurrentCanvas (save_canvas));
+			GrSetCurrentCanvas (save_canvas);
 			GrPaletteStepLoad (menuPalette);
 			//RemapFontsAndMenus (1);
 			}
@@ -1834,9 +1836,9 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 						choice = nItems - 1;
            		}
 				} while (item [choice].nType == NM_TYPE_TEXT);
-			if ((item [choice].nType==NM_TYPE_INPUT) &&(choice!=old_choice))	
+			if ((item [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))	
 				item [choice].value = -1;
-			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
+			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 				item [old_choice].group=0;
 				strcpy (item [old_choice].text, item [old_choice].saved_text);
 				item [old_choice].value = -1;
@@ -1878,7 +1880,7 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
                                                       
 			if ((item [choice].nType == NM_TYPE_INPUT) && (choice != old_choice))	
 				item [choice].value = -1;
-			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
+			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 				item [old_choice].group=0;
 				strcpy (item [old_choice].text, item [old_choice].saved_text);	
 				item [old_choice].value = -1;
@@ -1887,6 +1889,7 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 				item [old_choice].redraw=1;
 			item [choice].redraw=1;
 			break;
+
 		case KEY_SPACEBAR:
 checkOption:
 radioOption:
@@ -1927,7 +1930,7 @@ radioOption:
 			break;
 
       case KEY_SHIFTED+KEY_UP:
-         if (gameStates.menus.bReordering && choice!=topChoice)
+         if (gameStates.menus.bReordering && choice != topChoice)
          {
             Temp=item [choice].text;
             TempVal=item [choice].value;
@@ -1940,8 +1943,9 @@ radioOption:
             choice--;
          }
          break;
+
       case KEY_SHIFTED+KEY_DOWN:
-         if (gameStates.menus.bReordering && choice!= (nItems-1))
+         if (gameStates.menus.bReordering && choice !=  (nItems-1))
          {
             Temp=item [choice].text;
             TempVal=item [choice].value;
@@ -1976,10 +1980,10 @@ radioOption:
 		case KEY_ENTER:
 		case KEY_PADENTER:
 launchOption:
-			if ((choice>-1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group==0))	{
+			if ((choice > -1) && (item [choice].nType == NM_TYPE_INPUT_MENU) && (item [choice].group == 0)) {
 				item [choice].group = 1;
 				item [choice].redraw = 1;
-				if (!strnicmp (item [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
+				if (!strnicmp (item [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY))) {
 					item [choice].text [0] = 0;
 					item [choice].value = -1;
 					}
@@ -1995,7 +1999,7 @@ launchOption:
 			break;
 
 		case KEY_ESC:
-			if ((choice>-1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group==1))	{
+			if ((choice > -1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group == 1)) {
 				item [choice].group=0;
 				strcpy (item [choice].text, item [choice].saved_text);	
 				item [choice].redraw=1;
@@ -2022,7 +2026,7 @@ launchOption:
 
 		#ifdef _DEBUG
 		case KEY_BACKSP:	
-			if ((choice>-1) &&(item [choice].nType!=NM_TYPE_INPUT)&&(item [choice].nType!=NM_TYPE_INPUT_MENU))
+			if ((choice > -1) && (item [choice].nType != NM_TYPE_INPUT) && (item [choice].nType != NM_TYPE_INPUT_MENU))
 				Int3 (); 
 			break;
 		#endif
@@ -2033,15 +2037,16 @@ launchOption:
 		}
 
 		if (!done && nMouseState && !nOldMouseState && !bAllText) {
-			mouse_get_pos (&mx, &my);
-			for (i=0; i<nItems; i++)	{
+			MouseGetPos (&mx, &my);
+			for (i = 0; i < nItems; i++)	{
 				x1 = grdCurCanv->cvBitmap.bmProps.x + item [i].x - item [i].right_offset - 6;
 				x2 = x1 + item [i].w;
 				y1 = grdCurCanv->cvBitmap.bmProps.y + item [i].y;
 				y2 = y1 + item [i].h;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
 					if (i + ctrl.nScrollOffset - ctrl.nMaxNoScroll != choice) {
-						if (Hack_DblClick_MenuMode) bDblClick = 0; 
+						if (bHackDblClickMenuMode) 
+							bDblClick = 0; 
 					}
 					
 					choice = i + ctrl.nScrollOffset - ctrl.nMaxNoScroll;
@@ -2077,7 +2082,7 @@ launchOption:
 			}
 		
 		if (!done && nMouseState && !bAllText) {
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			
 			// check possible scrollbar stuff first
 			if (ctrl.bIsScrollBox) {
@@ -2123,7 +2128,7 @@ launchOption:
 				y2 = y1 + item [i].h;
 				if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2)) &&(item [i].nType != NM_TYPE_TEXT)) {
 					if (i /*+ ctrl.nScrollOffset - ctrl.nMaxNoScroll*/ != choice) {
-						if (Hack_DblClick_MenuMode) 
+						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
 					}
 
@@ -2169,9 +2174,9 @@ launchOption:
 					}
 					if (choice == old_choice)
 						break;
-					if ((item [choice].nType==NM_TYPE_INPUT) &&(choice!=old_choice))	
+					if ((item [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))	
 						item [choice].value = -1;
-					if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice!=choice))	{
+					if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 						item [old_choice].group=0;
 						strcpy (item [old_choice].text, item [old_choice].saved_text);
 						item [old_choice].value = -1;
@@ -2185,7 +2190,7 @@ launchOption:
 		}
 		
 		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(item [choice].nType == NM_TYPE_MENU)) {
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			x1 = grdCurCanv->cvBitmap.bmProps.x + item [choice].x;
 			x2 = x1 + item [choice].w;
 			y1 = grdCurCanv->cvBitmap.bmProps.y + item [choice].y;
@@ -2193,7 +2198,7 @@ launchOption:
 				y1 -= ((ctrl.nStringHeight + 1) * (ctrl.nScrollOffset - ctrl.nMaxNoScroll));
 			y2 = y1 + item [choice].h;
 			if (((mx > x1) &&(mx < x2)) &&((my > y1) &&(my < y2))) {
-				if (Hack_DblClick_MenuMode) {
+				if (bHackDblClickMenuMode) {
 					if (bDblClick) {
 						if (cItemP)
 							*cItemP = choice;
@@ -2210,7 +2215,8 @@ launchOption:
 			}
 		}
 		
-		if (!done && !nMouseState && nOldMouseState &&(choice>-1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group==0))	{
+		if (!done && !nMouseState && nOldMouseState && (choice > -1) &&
+			 (item [choice].nType == NM_TYPE_INPUT_MENU) && (item [choice].group == 0)) {
 			item [choice].group = 1;
 			item [choice].redraw = 1;
 			if (!strnicmp (item [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
@@ -2222,7 +2228,7 @@ launchOption:
 		}
 		
 		if (!done && !nMouseState && nOldMouseState && bCloseBox) {
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			x1 = (gameOpts->menus.nStyle ? ctrl.x : grdCurCanv->cvBitmap.bmProps.x) + CLOSE_X;
 			x2 = x1 + CLOSE_SIZE;
 			y1 = (gameOpts->menus.nStyle ? ctrl.y : grdCurCanv->cvBitmap.bmProps.y) + CLOSE_Y;
@@ -2242,9 +2248,10 @@ launchOption:
 		if (choice > -1)	{
 			int ascii;
 
-			if (((item [choice].nType==NM_TYPE_INPUT)|| ((item [choice].nType==NM_TYPE_INPUT_MENU)&&(item [choice].group==1)))&&(old_choice==choice))	{
-				if (k==KEY_LEFT || k==KEY_BACKSP || k==KEY_PAD4)	{
-					if (item [choice].value==-1) 
+			if (((item [choice].nType == NM_TYPE_INPUT) || 
+				 ((item [choice].nType == NM_TYPE_INPUT_MENU) && (item [choice].group == 1))) && (old_choice == choice)) {
+				if (k == KEY_LEFT || k == KEY_BACKSP || k == KEY_PAD4)	{
+					if (item [choice].value  == -1) 
 						item [choice].value = (int) strlen (item [choice].text);
 					if (item [choice].value > 0)
 						item [choice].value--;
@@ -2256,7 +2263,7 @@ launchOption:
 					if ((ascii < 255) && (item [choice].value < item [choice].text_len)) {
 						int bAllowed;
 
-						if (item [choice].value==-1)
+						if (item [choice].value  == -1)
 							item [choice].value = 0;
 						bAllowed = NMCharAllowed ((char) ascii);
 						if (!bAllowed && ascii==' ' && NMCharAllowed ('_')) {
@@ -2271,7 +2278,7 @@ launchOption:
 						}
 					}
 				}
-			else if ((item [choice].nType!=NM_TYPE_INPUT) && (item [choice].nType!=NM_TYPE_INPUT_MENU)) {
+			else if ((item [choice].nType != NM_TYPE_INPUT) && (item [choice].nType != NM_TYPE_INPUT_MENU)) {
 				ascii = KeyToASCII (k);
 				if (ascii < 255) {
 					int choice1 = choice;
@@ -2601,7 +2608,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	bkg bg;		// background under listbox
 	int mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
 	int mouse2State, omouse2State, bWheelUp, bWheelDown;
-	int bDblClick=0;
+	int bDblClick = 0;
 	char szPattern [40];
 	int nPatternLen = 0;
 	char *pszFn;
@@ -2973,7 +2980,7 @@ ReadFileNames:
 		if (nMouseState || mouse2State) {
 			int w, h, aw;
 
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			for (i=first_item; i<first_item+NumFiles_displayed; i++)	{
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				x1 = box_x;
@@ -2995,7 +3002,7 @@ ReadFileNames:
 			int w, h, aw;
 
 			GrGetStringSize (&filenames [cItem* (FILENAME_LEN+1)], &w, &h, &aw);
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			x1 = box_x;
 			x2 = box_x + box_w - 1;
 			y1 = (cItem-first_item)* (grd_curfont->ftHeight + 2) + box_y;
@@ -3009,7 +3016,7 @@ ReadFileNames:
 		}
 
 		if (!nMouseState && nOldMouseState) {
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			x1 = w_x + CLOSE_X + 2;
 			x2 = x1 + CLOSE_SIZE - 2;
 			y1 = w_y + CLOSE_Y + 2;
@@ -3425,7 +3432,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		if (nMouseState) {
 			int w, h, aw;
 
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			for (i=first_item; i<first_item+nItemsOnScreen; i++)	{
 				if (i > nItems)
 					break;
@@ -3448,7 +3455,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 
 		//check for close box clicked
 		if (!nMouseState && nOldMouseState) {
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			x1 = close_x + CLOSE_X + 2;
 			x2 = x1 + CLOSE_SIZE - 2;
 			y1 = close_y + CLOSE_Y + 2;

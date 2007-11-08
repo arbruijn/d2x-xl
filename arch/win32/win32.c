@@ -35,7 +35,7 @@ void BlitToPrimaryRect(HDC hSrcDC, int x, int y, int w, int h,
 extern HWND g_hWnd;
 
 void key_init(void);
-void mouse_init(void);
+void MouseInit(void);
 
 
 unsigned char *createdib(void);
@@ -64,7 +64,7 @@ void arch_init()
 
 	timer_init ();
 	key_init();
-	mouse_init();
+	MouseInit();
 
 	//printf("arch_init successfully completed\n");
 }

@@ -23,7 +23,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Import of d2x-0.0.8
  *
  * Revision 1.2  1999/10/09 05:04:34  donut
- * added mouse_init and mouse_close declarations
+ * added MouseInit and mouse_close declarations
  *
  * Revision 1.1.1.1  1999/06/14 22:01:24  donut
  * Import of d1x 1.37 source.
@@ -93,7 +93,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #undef NOMOUSE
 #ifndef NOMOUSE
 
-extern int mouse_init(int unused);
+extern int MouseInit(int unused);
 extern void mouse_close(void);
 
 
@@ -102,10 +102,10 @@ extern void mouse_close(void);
 // buttons if driver is present.
 
 extern int mouse_set_limits( int x1, int y1, int x2, int y2 );
-extern void mouse_flush();	// clears all mice events...
+extern void MouseFlush();	// clears all mice events...
 
 //========================================================================
-extern void mouse_get_pos( int *x, int *y);
+extern void MouseGetPos( int *x, int *y);
 extern void MouseGetDelta( int *dx, int *dy );
 extern int MouseGetButtons();
 extern void mouse_set_pos( int x, int y);
@@ -122,11 +122,11 @@ extern int MouseButtonState(int button);
 
 #else
 // 'Neutered' functions... :-)
-#define mouse_init(a) -1
+#define MouseInit(a) -1
 #define mouse_set_limits(a,b,c,d) -1
-#define mouse_flush()
+#define MouseFlush()
 #define mouse_close()
-#define mouse_get_pos(a,b)
+#define MouseGetPos(a,b)
 #define MouseGetDelta(a,b)
 #define MouseGetButtons() 0
 #define mouse_set_pos(a,b)

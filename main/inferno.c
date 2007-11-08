@@ -3384,7 +3384,7 @@ InitGame ();
 InitThreads ();
 PiggyInitMemory ();
 /*---*/LogErr ("Loading hires models\n");
-//LoadHiresModels ();
+LoadHiresModels ();
 /*---*/LogErr ("Enabling TrackIR support\n");
 TIRLoad ();
 return 0;

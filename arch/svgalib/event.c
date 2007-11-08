@@ -27,8 +27,8 @@
 
 void key_handler(int scancode, int press);
 //added on 10/17/98 by Hans de Goede for mouse functionality
-//extern void mouse_button_handler(SDL_MouseButtonEvent *mbe);
-//extern void mouse_motion_handler(SDL_MouseMotionEvent *mme);
+//extern void MouseButtonHandler(SDL_MouseButtonEvent *mbe);
+//extern void MouseMotionHandler(SDL_MouseMotionEvent *mme);
 //end this section addition - Hans
 
 void event_poll()

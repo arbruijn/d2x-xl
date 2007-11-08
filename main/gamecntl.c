@@ -1992,7 +1992,7 @@ else {
 	}
 if (gameData.demo.nState == ND_STATE_PLAYBACK )
 	update_vcrState();
-while ((key=KeyInKeyTime(&keyTime)) != 0)    {
+while ((key = KeyInKeyTime (&keyTime)) != 0) {
 	if (gameData.marker.nDefiningMsg) {
 		MarkerInputMessage (key);
 			continue;

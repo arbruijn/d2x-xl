@@ -41,7 +41,7 @@ void d_mouse_init(void)
 
 //------------------------------------------------------------------------------
 
-void mouse_button_handler(SDL_MouseButtonEvent *mbe)
+void MouseButtonHandler (SDL_MouseButtonEvent *mbe)
 {
 	// to bad, SDL buttons use a different mapping as descent expects,
 	// this is at least true and tested for the first three buttons 
@@ -59,34 +59,38 @@ void mouse_button_handler(SDL_MouseButtonEvent *mbe)
 		D2_MB_HEAD_RIGHT
 	};
 
-	int button = button_remap[mbe->button - 1]; // -1 since SDL seems to start counting at 1
+	int button = button_remap [mbe->button - 1]; // -1 since SDL seems to start counting at 1
 	struct tMouseButton *mb = mouseData.buttons + button;
+	fix xCurTime = TimerGetFixedSeconds ();
 
-	if (mbe->state == SDL_PRESSED) {
-		mb->pressed = 1;
-		mb->time_wentDown = TimerGetFixedSeconds();
-		mb->numDowns++;
+if (mbe->state == SDL_PRESSED) {
+	mb->pressed = 1;
+	mb->xPrevTimeWentDown = mb->xTimeWentDown;
+	mb->xTimeWentDown = xCurTime;
+	mb->numDowns++;
 
-		if (button == D2_MB_Z_UP) {
-			mouseData.dz += Z_SENSITIVITY;
-			mouseData.z += Z_SENSITIVITY;
-			mb->rotated = 1;
-			}
-		else if (button == D2_MB_Z_DOWN) {
-			mouseData.dz -= Z_SENSITIVITY;
-			mouseData.z -= Z_SENSITIVITY;
-			mb->rotated = 1;
+	if (button == D2_MB_Z_UP) {
+		mouseData.dz += Z_SENSITIVITY;
+		mouseData.z += Z_SENSITIVITY;
+		mb->rotated = 1;
 		}
-	} else {
-		mb->pressed = 0;
-		mb->time_heldDown += TimerGetFixedSeconds() - mb->time_wentDown;
-		mb->num_ups++;
+	else if (button == D2_MB_Z_DOWN) {
+		mouseData.dz -= Z_SENSITIVITY;
+		mouseData.z -= Z_SENSITIVITY;
+		mb->rotated = 1;
+		}
+	}
+else {
+	mb->pressed = 0;
+	mb->xTimeHeldDown += xCurTime - mb->xTimeWentDown;
+	mb->numUps++;
+	mouseData.bDoubleClick = xCurTime - mb->xPrevTimeWentDown < F1_0 / 2;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void mouse_motion_handler(SDL_MouseMotionEvent *mme)
+void MouseMotionHandler (SDL_MouseMotionEvent *mme)
 {
 #ifdef LANDSCAPE
 	mouseData.dy += mme->xrel;
@@ -105,33 +109,22 @@ void mouse_motion_handler(SDL_MouseMotionEvent *mme)
 
 //------------------------------------------------------------------------------
 
-void mouse_flush()	// clears all mice events...
+void MouseFlush (void)	// clears all mouse events...
 {
 	int i;
-	fix currentTime;
+	fix xCurTime;
 
-	event_poll(SDL_MOUSEEVENTMASK);
-
-	currentTime = TimerGetFixedSeconds();
-	for (i=0; i<MOUSE_MAX_BUTTONS; i++) {
-		mouseData.buttons[i].pressed=0;
-		mouseData.buttons[i].time_wentDown=currentTime;
-		mouseData.buttons[i].time_heldDown=0;
-		mouseData.buttons[i].num_ups=0;
-		mouseData.buttons[i].numDowns=0;
-		mouseData.buttons[i].rotated=0;
-	}
-	mouseData.dx = 0;
-	mouseData.dy = 0;
-	mouseData.dz = 0;
-	mouseData.x = 0;
-	mouseData.y = 0;
-	mouseData.z = 0;
-	SDL_GetMouseState(&mouseData.x, &mouseData.y); // necessary because polling only gives us the delta.
+event_poll (SDL_MOUSEEVENTMASK);
+xCurTime = TimerGetFixedSeconds ();
+memset (&mouseData, 0, sizeof (mouseData));
+for (i = 0; i < MOUSE_MAX_BUTTONS; i++)
+	mouseData.buttons [i].xTimeWentDown = xCurTime;
+SDL_GetMouseState (&mouseData.x, &mouseData.y); // necessary because polling only gives us the delta.
 }
 
 //========================================================================
-void mouse_get_pos( int *x, int *y )
+
+void MouseGetPos (int *x, int *y)
 {
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
@@ -139,35 +132,35 @@ if (!bFastPoll)
 #endif
 #ifdef WIN32_WCE // needed here only for touchpens?
 # ifdef LANDSCAPE
-	SDL_GetMouseState(&mouseData.y, &mouseData.x);
+	SDL_GetMouseState (&mouseData.y, &mouseData.x);
 # else
 //	SDL_GetMouseState(&mouseData.x, &mouseData.y);
 # endif
 #endif
-	*x=mouseData.x;
-	*y=mouseData.y;
+*x = mouseData.x;
+*y = mouseData.y;
 }
 
 //------------------------------------------------------------------------------
 
-void MouseGetDelta( int *dx, int *dy )
+void MouseGetDelta (int *dx, int *dy)
 {
 #ifdef FAST_EVENTPOLL
 if (gameOpts->legacy.bInput)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
+   event_poll (SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #else
 if (!bFastPoll)
-   event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
+   event_poll (SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	*dx = mouseData.dx;
-	*dy = mouseData.dy;
-	mouseData.dx = 0;
-	mouseData.dy = 0;
+*dx = mouseData.dx;
+*dy = mouseData.dy;
+mouseData.dx = 0;
+mouseData.dy = 0;
 }
 
 //------------------------------------------------------------------------------
 
-void MouseGetPosZ( int *x, int *y, int *z )
+void MouseGetPosZ (int *x, int *y, int *z)
 {
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
@@ -180,7 +173,7 @@ if (!bFastPoll)
 
 //------------------------------------------------------------------------------
 
-void MouseGetDeltaZ( int *dx, int *dy, int *dz )
+void MouseGetDeltaZ (int *dx, int *dy, int *dz)
 {
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
@@ -196,7 +189,7 @@ if (!bFastPoll)
 
 //------------------------------------------------------------------------------
 
-int MouseGetButtons()
+int MouseGetButtons (void)
 {
 	int i;
 	uint flag = 1;
@@ -217,13 +210,13 @@ if (!bFastPoll)
 
 //------------------------------------------------------------------------------
 
-void mouse_get_cyberman_pos( int *x, int *y )
+void mouse_get_cyberman_pos (int *x, int *y)
 {
 }
 
 //------------------------------------------------------------------------------
 // Returns how many times this button has went down since last call
-int MouseButtonDownCount(int button)
+int MouseButtonDownCount (int button)
 {
 	int count;
 
@@ -231,15 +224,14 @@ int MouseButtonDownCount(int button)
 if (!bFastPoll)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	count = mouseData.buttons[button].numDowns;
-	mouseData.buttons[button].numDowns = 0;
-
-	return count;
+count = mouseData.buttons [button].numDowns;
+mouseData.buttons [button].numDowns = 0;
+return count;
 }
 
 //------------------------------------------------------------------------------
 // Returns how long this button has been down since last call.
-fix MouseButtonDownTime(int button)
+fix MouseButtonDownTime (int button)
 {
 	fix timeDown, time;
 
@@ -247,22 +239,23 @@ fix MouseButtonDownTime(int button)
 if (!bFastPoll)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-	if (!mouseData.buttons[button].pressed) {
-		timeDown = mouseData.buttons[button].time_heldDown;
+	if (!mouseData.buttons [button].pressed) {
+		timeDown = mouseData.buttons [button].xTimeHeldDown;
 		if (!timeDown && mouseData.buttons [button].rotated)
 			timeDown = (fix) (MouseButtonDownCount (button) * gameStates.input.kcPollTime);
-		mouseData.buttons[button].time_heldDown = 0;
-	} else {
+		mouseData.buttons [button].xTimeHeldDown = 0;
+		}
+	else {
 		time = TimerGetFixedSeconds();
-		timeDown = time - mouseData.buttons[button].time_heldDown;
-		mouseData.buttons[button].time_heldDown = time;
+		timeDown = time - mouseData.buttons [button].xTimeHeldDown;
+		mouseData.buttons [button].xTimeHeldDown = time;
 	}
-	return timeDown;
+return timeDown;
 }
 
 //------------------------------------------------------------------------------
 // Returns 1 if this button is currently down
-int MouseButtonState(int button)
+int MouseButtonState (int button)
 {
 	int h;
 
@@ -273,9 +266,9 @@ if (!bFastPoll)
 if (gameOpts->legacy.bInput)
    event_poll(SDL_MOUSEEVENTMASK);	//polled in main/KConfig.c:read_bm_all()
 #endif
-h = mouseData.buttons[button].rotated;
-mouseData.buttons[button].rotated = 0;
-return mouseData.buttons[button].pressed || h;
+h = mouseData.buttons [button].rotated;
+mouseData.buttons [button].rotated = 0;
+return mouseData.buttons [button].pressed || h;
 }
 
 //------------------------------------------------------------------------------

@@ -167,10 +167,10 @@ typedef struct mouse_info {
 	ubyte	cyberman;
 	int		num_buttons;
 	ubyte	pressed[MOUSE_MAX_BUTTONS];
-	fix		time_wentDown[MOUSE_MAX_BUTTONS];
-	fix		time_heldDown[MOUSE_MAX_BUTTONS];
+	fix		xTimeWentDown[MOUSE_MAX_BUTTONS];
+	fix		xTimeHeldDown[MOUSE_MAX_BUTTONS];
 	uint	numDowns[MOUSE_MAX_BUTTONS];
-	uint	num_ups[MOUSE_MAX_BUTTONS];
+	uint	numUps[MOUSE_MAX_BUTTONS];
 	//	ubyte	wentDown; /* Not in PC version, not needed with 'numDowns' etc */
 	event_info *x_info;
 	ushort	button_status;
@@ -276,7 +276,7 @@ void UpdateMouseState (DIDEVICEOBJECTDATA *pdidod)
 				if (!Mouse.pressed [iButton])
 				{
 					Mouse.pressed [iButton] = 1;
-					Mouse.time_wentDown [iButton] = Mouse.ctime;
+					Mouse.xTimeWentDown [iButton] = Mouse.ctime;
 					Mouse.numDowns [iButton]++;
 					//			Mouse.wentDown = 1;
 				}
@@ -287,8 +287,8 @@ void UpdateMouseState (DIDEVICEOBJECTDATA *pdidod)
 				if (Mouse.pressed [iButton])
 				{
 					Mouse.pressed [iButton] = 0;
-					Mouse.time_heldDown [iButton] += Mouse.ctime - Mouse.time_wentDown [iButton];
-					Mouse.num_ups [iButton]++;
+					Mouse.xTimeHeldDown [iButton] += Mouse.ctime - Mouse.xTimeWentDown [iButton];
+					Mouse.numUps [iButton]++;
 					//			Mouse.wentDown = 0;
 				}
 			}
@@ -324,7 +324,7 @@ void mouse_handler()
 	}
 }
 
-void mouse_flush()
+void MouseFlush()
 {
 	int i;
 	fix CurTime;
@@ -337,10 +337,10 @@ void mouse_flush()
 	CurTime = TimerGetFixedSeconds();
 	for (i = 0; i < MOUSE_MAX_BUTTONS; i++) {
 		Mouse.pressed[i] = 0;
-		Mouse.time_wentDown[i] = CurTime;
-		Mouse.time_heldDown[i] = 0;
+		Mouse.xTimeWentDown[i] = CurTime;
+		Mouse.xTimeHeldDown[i] = 0;
 		Mouse.numDowns[i] = 0;
-		Mouse.num_ups[i] = 0;
+		Mouse.numUps[i] = 0;
 	}
 	//	Mouse.wentDown = 0; /* mac only */
 	//	_enable();
@@ -378,7 +378,7 @@ void mouse_close(void)
 
 
 
-int mouse_init(int unused)
+int MouseInit(int unused)
 {
 	if (Mouse_installed)
 		return Mouse.num_buttons;
@@ -418,7 +418,7 @@ int mouse_init(int unused)
 	
 	WMMouse_Handler_Ready=Mouse_installed = 1;
 	atexit(mouse_close);
-	mouse_flush();
+	MouseFlush();
 	//	mouse_set_center();
 	
 	return Mouse.num_buttons;
@@ -430,7 +430,7 @@ void mouse_center() {
 	mouse_y=mouse_saved_y=WIN_HEIGHT/2;
 }
 
-void mouse_get_pos( int *x, int *y)
+void MouseGetPos( int *x, int *y)
 {
 	mouse_handler(); //temp
 	
@@ -560,12 +560,12 @@ fix MouseButtonDownTime(int button)
 	
 	//	_disable();
 	if (!Mouse.pressed[button]) {
-		timeDown = Mouse.time_heldDown[button];
-		Mouse.time_heldDown[button] = 0;
+		timeDown = Mouse.xTimeHeldDown[button];
+		Mouse.xTimeHeldDown[button] = 0;
 	} else {
 		time = TimerGetFixedSeconds();
-		timeDown = time - Mouse.time_heldDown[button];
-		Mouse.time_heldDown[button] = 0;
+		timeDown = time - Mouse.xTimeHeldDown[button];
+		Mouse.xTimeHeldDown[button] = 0;
 	}
 	//	_enable();
 	

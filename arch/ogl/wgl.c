@@ -93,7 +93,7 @@ int wgl_game_activate(int active,int min){
 				vid_susp=1;
 			}
 	}else{
-		mouse_init(0);
+		MouseInit(0);
 		if (!GLPREF_windowed)
 			if (vid_susp){
 				ChangeDisplaySettings(&devmode,CDS_FULLSCREEN);
@@ -237,7 +237,7 @@ void win32_create_window(int x,int y)
 	}
 
 	key_init();
-	mouse_init(0);
+	MouseInit(0);
 	joy_init(JOYSTICKID1);
 	if (!FindArg( "-nosound" ))
 		DigiInit();

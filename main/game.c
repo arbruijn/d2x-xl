@@ -749,7 +749,7 @@ void GameFlushInputs ()
 #else	
 	KeyFlush ();
 	JoyFlush ();
-	mouse_flush ();
+	MouseFlush ();
 #endif	
 	#ifdef MACINTOSH
 	if ((gameStates.app.nFunctionMode != FMODE_MENU) && !joydefs_calibrating)		// only reset mouse when not in menu or not calibrating

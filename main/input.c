@@ -1480,7 +1480,7 @@ gameOpts->legacy.bInput = 1;
 event_poll (SDL_ALLEVENTS);
 gameOpts->legacy.bInput = b;
 KeyFlush ();
-mouse_flush ();
+MouseFlush ();
 JoyFlush ();
 }
 

@@ -26,6 +26,12 @@
 #include "ogl_lib.h"
 #include "ogl_color.h"
 
+#ifdef _DEBUG
+#	define ONLY_HEADLIGHT 0
+#else
+#	define ONLY_HEADLIGHT 0
+#endif
+
 //------------------------------------------------------------------------------
 
 tFaceColor lightColor = {{1.0f, 1.0f, 1.0f, 1.0f}, 0};
@@ -285,7 +291,7 @@ float fLightRanges [5] = {5, 7.071f, 10, 14.142f, 20};
 int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
 	int				h, i, j, nType, bInRad, 
-						bSkipHeadLight = gameStates.ogl.bHeadLight && !gameStates.render.nState, 
+						bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
 						nSaturation = gameOpts->render.color.nSaturation;
 	int				nBrightness, nMaxBrightness = 0;
 	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
@@ -295,7 +301,7 @@ int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
 	tShaderLight	*psl;
 	tVertColorData	vcd = *vcdP;
 
-#ifdef _DEBUG
+#if ONLY_HEADLIGHT
 if (gameData.render.lights.dynamic.headLights.nLights)
 	return 0;
 #endif
@@ -686,7 +692,7 @@ else
 	if (colorSum.c.b > 1.0)
 		colorSum.c.b = 1.0;
 	}
-#if 0//def _DEBUG
+#if ONLY_HEADLIGHT
 if (gameData.render.lights.dynamic.headLights.nLights)
 	colorSum.c.r = colorSum.c.g = colorSum.c.b = 0;
 #endif

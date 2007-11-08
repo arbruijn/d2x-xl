@@ -1456,7 +1456,7 @@ for (;;) {
 
 		if ((mouseState && !omouseState) || (mouseState && omouseState)) {
 			int item_height;
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			mx -= xOffs;
 			my -= yOffs;
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
@@ -1475,7 +1475,7 @@ for (;;) {
 		else if (!mouseState && omouseState) {
 			int item_height;
 			
-			mouse_get_pos (&mx, &my);
+			MouseGetPos (&mx, &my);
 			mx -= xOffs;
 			my -= yOffs;
 			my = (my * 12) / 10;	//y mouse pos is off here, no clue why

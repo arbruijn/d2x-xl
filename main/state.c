@@ -487,7 +487,7 @@ else {
 //	If not in multiplayer, do special secret level stuff.
 //	If secret.sgc exists, then copy it to Nsecret.sgc (where N = filenum).
 //	If it doesn't exist, then delete Nsecret.sgc
-if (!bSecretSave && ! (gameData.app.nGameMode & GM_MULTI)) {
+if (!bSecretSave && !IsMultiGame) {
 	int	rval;
 	char	temp_fname [32], fc;
 
