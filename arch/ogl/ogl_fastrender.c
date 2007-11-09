@@ -198,7 +198,7 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 			color.alpha = colorP->alpha;
 			}
 		else {
-			color.red = color.green = color.blue = (float) pow (1.1, 8.0);
+			color.red = color.green = color.blue = 2.0f;
 			color.alpha = 1;
 			}
 		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) &color);
