@@ -1342,6 +1342,7 @@ typedef struct tOglData {
 typedef struct tTerrainRenderData {
 	ubyte			*pHeightMap;
 	fix			*pLightMap;
+	vmsVector	*pPoints;
 	grsBitmap	*bmP;
 	g3sPoint	saveRow [TERRAIN_GRID_MAX_SIZE];
 	vmsVector	vStartPoint;

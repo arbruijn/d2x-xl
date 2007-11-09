@@ -166,6 +166,8 @@ int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf 
 {
 	int oglRes, nLights, nShader = gameStates.render.history.nShader, bUpdateShader = 0;
 
+	tRgbaColorf	color;
+
 if (gameData.render.lights.dynamic.headLights.nLights) {
 	nLights = IsCoopGame ? 4 : IsMultiGame ? 8 : 1;
 	nShader = (nLights & ~1) + (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
@@ -189,8 +191,17 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.dir);
 		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
-		if (colorP)
-			glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) colorP);
+		if (colorP) {
+			color.red = colorP->red * 1.1f;
+			color.green = colorP->green * 1.1f;
+			color.blue = colorP->blue * 1.1f;
+			color.alpha = colorP->alpha;
+			}
+		else {
+			color.red = color.green = color.blue = (float) pow (1.1, 8.0);
+			color.alpha = 1;
+			}
+		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) &color);
 		oglRes = glGetError ();
 		}
 	}
@@ -292,7 +303,7 @@ if (bTextured) {
 				}
 			gameStates.render.history.bmMask = bmMask;
 			bmTop = NULL;
-			G3SetupShader (bColorKey, 1, 1, &faceP->color);
+			G3SetupShader (bColorKey, 1, 1, NULL);
 			}
 		else {
 			if (gameStates.render.history.bOverlay > 0) {
@@ -309,7 +320,7 @@ if (bTextured) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, 0);
 				}
 			}
-		G3SetupShader (0, bMultiTexture, bmBot != NULL, &faceP->color);
+		G3SetupShader (0, bMultiTexture, bmBot != NULL, bmBot ? NULL : &faceP->color);
 		}
 	gameStates.render.history.bOverlay = bOverlay;
 	}
@@ -480,7 +491,7 @@ if (bTextured) {
 				}
 			INIT_TMU (InitTMU2, GL_TEXTURE2, bmMask, 2);
 			gameStates.render.history.bmMask = bmMask;
-			G3SetupShader (bColorKey, 1, 1, &faceP->color);
+			G3SetupShader (bColorKey, 1, 1, NULL);
 			}
 		else {
 			if (gameStates.render.history.bOverlay > 0) {
@@ -519,7 +530,7 @@ if (bTextured) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, 1);
 				gameStates.render.history.bmBot = bmBot;
 				}
-			G3SetupShader (0, bMultiTexture, bmBot != NULL, &faceP->color);
+			G3SetupShader (0, bMultiTexture, bmBot != NULL, bmBot ? NULL : &faceP->color);
 			}
 		}
 	gameStates.render.history.bOverlay = bOverlay;

@@ -340,6 +340,7 @@ gameStates.render.history.bOverlay = -1;
 gameStates.render.history.bmBot = 
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
+gameStates.render.bQueryCoronas = 0;
 glEnable (GL_CULL_FACE);
 OglTexWrap (NULL, GL_REPEAT);
 glDepthFunc (GL_LEQUAL);
@@ -660,7 +661,7 @@ else {	//front to back
 	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE1);
 	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
 	j = SortFaces ();
-	if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
+	if (gameOpts->render.bCoronas && gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 		EndRenderFaces (nType, bVertexArrays);
 		gameStates.render.bQueryCoronas = 2;
 		gameStates.render.nType = 1;

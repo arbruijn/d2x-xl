@@ -61,7 +61,7 @@ extern inline fix FixMul (fix x, fix y) { return do_fixmul (x,y); }
 //end edit -MM
 
 //changed on 980905 by adb to increase number of concurrent sounds
-#define MAX_SOUND_SLOTS 32
+#define MAX_SOUND_SLOTS 64
 //end changes by adb
 #define SOUND_BUFFER_SIZE 512
 

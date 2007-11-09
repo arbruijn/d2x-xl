@@ -129,7 +129,7 @@ int BeginRenderSmoke (int nType, float nScale);
 int EndRenderSmoke (tCloud *pCloud);
 int RenderParticle (tParticle *pParticle, float brightness);
 int SetSmokeObject (int nObject, int nSmoke);
-void FlushParticleBuffer (void);
+void FlushParticleBuffer (float brightness);
 int InitParticleBuffer (void);
 int CloseParticleBuffer (void);
 int UpdateCloud (tCloud *pCloud, int nCurTime, int nThread);

@@ -105,6 +105,7 @@ typedef struct tParticleVertex {
 	} tParticleVertex;
 
 static tParticleVertex particleBuffer [VERT_BUF_SIZE];
+static float bufferBrightness = -1;
 static int iBuffer = 0;
 
 #define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
@@ -652,10 +653,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void FlushParticleBuffer (void)
+void FlushParticleBuffer (float brightness)
 {
+if (bufferBrightness < 0)
+	bufferBrightness = brightness;
 if (iBuffer) {
-	G3SetupShader (0, 0, 1, NULL);
+	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
+	G3SetupShader (0, 0, 1, &color);
+	bufferBrightness = brightness;
 	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
 #if 1
 		grsBitmap *bmP;
@@ -718,10 +723,10 @@ if (BM_CURFRAME (bmP))
 	bmP = BM_CURFRAME (bmP);
 if (gameOpts->render.bDepthSort > 0) {
 	hp = pParticle->transPos;
-	if (gameData.smoke.nLastType != nType) {
+	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness)) {
 		gameData.smoke.nLastType = nType;
 		if (gameStates.render.bVertexArrays)
-			FlushParticleBuffer ();
+			FlushParticleBuffer (brightness);
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		if (OglBindBmTex (bmP, 0, 1))
@@ -738,10 +743,10 @@ if (gameOpts->render.bDepthSort > 0) {
 	}
 else if (gameOpts->render.smoke.bSort) {
 	hp = pParticle->transPos;
-	if (gameData.smoke.nLastType != nType) {
+	if ((gameData.smoke.nLastType != nType)  || (brightness != bufferBrightness)) {
 		gameData.smoke.nLastType = nType;
 		if (gameStates.render.bVertexArrays)
-			FlushParticleBuffer ();
+			FlushParticleBuffer (brightness);
 		else
 			glEnd ();
 		if (OglBindBmTex (bmP, 0, 1))
@@ -902,7 +907,7 @@ if (gameStates.render.bVertexArrays) {
 		}
 	iBuffer += 4;
 	if (iBuffer >= VERT_BUF_SIZE)
-		FlushParticleBuffer ();
+		FlushParticleBuffer (brightness);
 	}
 else {
 	texCoord [0].v.u =
@@ -953,7 +958,7 @@ int CloseParticleBuffer (void)
 {
 if (!gameStates.render.bVertexArrays)
 	return 0;
-FlushParticleBuffer ();
+FlushParticleBuffer (-1);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 return 1;
 }

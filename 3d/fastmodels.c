@@ -1010,16 +1010,18 @@ for (nPass = 0; nLights; nPass++) {
 			psl = gameData.render.lights.dynamic.shader.activeLights [0][iLightSource];
 			hLight = GL_LIGHT0 + iLight;
 			glEnable (hLight);
-			color.red = psl->color.c.r * psl->brightness;
-			color.green = psl->color.c.g * psl->brightness;
-			color.blue = psl->color.c.b * psl->brightness;
 //			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
-			glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos);
-			glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
-			glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
+			glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
+			glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &(psl->color));
+			glLightfv (hLight, GL_SPECULAR, (GLfloat *) &(psl->color));
 			glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / psl->brightness);
 			glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
 			glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
+			if (psl->bSpot) {
+				glLighti (hLight, GL_SPOT_EXPONENT, 12);
+				glLighti (hLight, GL_SPOT_CUTOFF, 45);
+				glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->dir);
+				}
 			}
 		OglResetTransform (1);
 		for (; iLight < 8; iLight++)

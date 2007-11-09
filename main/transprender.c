@@ -570,7 +570,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 		glColorPointer (4, GL_FLOAT, 0, item->color);
 	else
 		glColor3d (1, 1, 1);
-	G3SetupShader (0, 0, item->bmP != NULL, item->color);
+	G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 else 
@@ -581,7 +581,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
 	else
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	j = item->nVertices;
-	G3SetupShader (0, 0, item->bmP != NULL, item->color);
+	G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
 	glBegin (item->nPrimitive);
 	if (item->nColors > 1) {
 		if (item->bmP) {
@@ -783,7 +783,7 @@ glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 void RIFlushParticleBuffer (int nType)
 {
 if ((nType != riParticle) && (gameData.smoke.nLastType >= 0)) {
-	FlushParticleBuffer ();
+	FlushParticleBuffer (-1);
 	CloseParticleBuffer ();
 	gameData.smoke.nLastType = -1;
 	}

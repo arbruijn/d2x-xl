@@ -1277,6 +1277,7 @@ if (i < gameData.render.lights.dynamic.nLights)
 pl->nSegment = nSegment;
 pl->nSide = nSide;
 pl->nObject = nObject;
+pl->nPlayer = -1;
 pl->bState = 1;
 pl->bSpot = 0;
 //0: static light
@@ -1352,6 +1353,22 @@ return gameData.render.lights.dynamic.nLights++;
 
 //------------------------------------------------------------------------------
 
+void RemoveDynLightFromList (tDynLight *pl, short nLight)
+{
+//LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.dynamic.lights);
+// if not removing last light in list, move last light down to the now free list entry
+// and keep the freed light handle thus avoiding gaps in used handles
+if (nLight < --gameData.render.lights.dynamic.nLights) {
+	*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
+	if (pl->nObject >= 0)
+		gameData.render.lights.dynamic.owners [pl->nObject] = nLight;
+	if (pl->nPlayer >= 0)
+		gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] = nLight;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void DeleteDynLight (short nLight)
 {
 if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
@@ -1361,23 +1378,7 @@ if ((nLight >= 0) && (nLight < gameData.render.lights.dynamic.nLights)) {
 		pl->bState = pl->bOn = 0;
 		return;
 		}
-	//LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.dynamic.lights);
-	// if not removing last light in list, move last light down to the now free list entry
-	// and keep the freed light handle thus avoiding gaps in used handles
-	if (nLight < --gameData.render.lights.dynamic.nLights) {
-		*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
-		if (pl->nObject >= 0)
-			gameData.render.lights.dynamic.owners [pl->nObject] = nLight;
-		else if (pl->nPlayer >= 0)
-			gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] = nLight;
-#if USE_OGL_LIGHTS
-		RefreshDynLight (pl);
-		pl = gameData.render.lights.dynamic.lights + gameData.render.lights.dynamic.nLights;
-#endif
-		}
-#if USE_OGL_LIGHTS
-	glDisable (pl->handle);
-#endif
+	RemoveDynLightFromList (pl, nLight);
 	}
 }
 
@@ -1392,13 +1393,7 @@ for (nLight = gameData.render.lights.dynamic.nLights, pl = gameData.render.light
 	--nLight;
 	--pl;
 	if ((pl->nSegment >= 0) && (pl->nSide < 0))
-		if (nLight < --gameData.render.lights.dynamic.nLights) {
-			*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
-			if (pl->nObject >= 0)
-				gameData.render.lights.dynamic.owners [pl->nObject] = nLight;
-			else if (pl->nPlayer >= 0)
-				gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] = nLight;
-			}
+		RemoveDynLightFromList (pl, nLight);
 	}
 }
 
@@ -1423,7 +1418,7 @@ void RemoveDynLightningLights (void)
 	short			i;
 for (i = 0; i < gameData.render.lights.dynamic.nLights; )
 	if ((pl->nSegment >= 0) && (pl->nSide < 0)) {
-		DeleteDynLight (i);
+		RemoveDynLightFromList (pl, i);
 		}
 	else {
 		i++;
@@ -1584,10 +1579,16 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	VmsVecToFloat (psl->pos, &pl->vPos);
 	if (gameStates.ogl.bUseTransform)
 		psl->pos [1] = psl->pos [0];
-	else
+	else {
 		G3TransformPointf (psl->pos + 1, psl->pos, 0);
+		psl->pos [1].p.w = 1;
+		}
 	psl->brightness = pl->brightness;
 	if ((psl->bSpot = pl->bSpot)) {
+#ifdef _DEBUG
+		if (gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] != i)
+			gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] = i;
+#endif
 		VmsVecToFloat (&psl->dir, &pl->vDir);
 		if (pl->bTransform && !gameStates.ogl.bUseTransform)
 			G3RotatePointf (&psl->dir, &psl->dir, 0);
@@ -1931,7 +1932,7 @@ if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights
 		tDynLight	*pl;
 		int			nLight;
 
-	nLight = AddDynLight (&c, F1_0 * 50, -1, -1, -1, NULL);
+	nLight = AddDynLight (&c, F1_0 * 200, -1, -1, -1, NULL);
 	if (nLight >= 0) {
 		gameData.render.lights.dynamic.nHeadLights [objP->id] = nLight;
 		pl = gameData.render.lights.dynamic.lights + nLight;
@@ -2171,7 +2172,9 @@ return 0;
 #else
 
 char *lightingFS [12] = {
+	//----------------------------------------
 	//single player version - one player
+	//untextured
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos, lightDir;" \
 	"uniform vec4 matColor;" \
@@ -2192,6 +2195,7 @@ char *lightingFS [12] = {
 	"   }" \
 	"}" 
 	,
+	//only base texture
 	"uniform sampler2D btmTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos, lightDir;" \
@@ -2210,10 +2214,12 @@ char *lightingFS [12] = {
 	"	 float attenuation = min (100.0 / lightDist, 1.0);" \
 	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
+	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"	 }" \
 	"}" 
 	,
+	//base texture and decal
 	"uniform sampler2D btmTex, topTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos, lightDir;" \
@@ -2233,10 +2239,12 @@ char *lightingFS [12] = {
 	"   float attenuation = min (100.0 / lightDist, 1.0);" \
 	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
+	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"	 }" \
 	"}" 
 	,
+	//base texture and decal with color key
 	"uniform sampler2D btmTex, topTex, maskTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos, lightDir;" \
@@ -2260,11 +2268,13 @@ char *lightingFS [12] = {
 	" 		 float attenuation = min (100.0 / lightDist, 1.0);" \
 	"      spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"      spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
+	"      spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"   	}" \
 	"   }" \
 	"}" 
 	,
+	// --------------------------------------------------------------------------------
 	//coop version - max. 4 players
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [4], lightDir [4];" \
@@ -2289,9 +2299,11 @@ char *lightingFS [12] = {
 	"	   }" \
 	"	}" \
 	"spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"gl_FragColor = vec4 (vec3 (matColor) * vec3 (spotColor), matColor.a * grAlpha);"  \
 	"}" 
 	,
+	//only base texture
 	"uniform sampler2D btmTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [4], lightDir [4];" \
@@ -2317,9 +2329,11 @@ char *lightingFS [12] = {
 	"	   }" \
 	"	}" \
 	"spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"}" 
 	,
+	//base texture and decal
 	"uniform sampler2D btmTex, topTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [4], lightDir [4];" \
@@ -2346,9 +2360,11 @@ char *lightingFS [12] = {
 	"	   }" \
 	"	}" \
 	"spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"}" 
 	,
+	//base texture and decal with color key
 	"uniform sampler2D btmTex, topTex, maskTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [4], lightDir [4];" \
@@ -2379,11 +2395,14 @@ char *lightingFS [12] = {
 	"   	   }" \
 	"   	}" \
 	"   spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"   }" \
 	"}" 
 	,
+	// --------------------------------------------------------------------------------
 	//multiplayer version - max. 8 players
+	//untextured
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [8], lightDir [8];" \
 	"uniform vec4 matColor;" \
@@ -2407,9 +2426,11 @@ char *lightingFS [12] = {
 	"	   }" \
 	"	}" \
 	"spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"gl_FragColor = vec4 (vec3 (matColor) * vec3 (spotColor), matColor.a * grAlpha);"  \
 	"}" 
 	,
+	//only base texture
 	"uniform sampler2D btmTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [8], lightDir [8];" \
@@ -2435,9 +2456,11 @@ char *lightingFS [12] = {
 	"	   }" \
 	"	}" \
 	"spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"}" 
 	,
+	//base texture and decal
 	"uniform sampler2D btmTex, topTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [8], lightDir [8];" \
@@ -2464,9 +2487,11 @@ char *lightingFS [12] = {
 	"	   }" \
 	"	}" \
 	"spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"}" 
 	,
+	//base texture and decal with color key
 	"uniform sampler2D btmTex, topTex, maskTex;" \
 	"varying vec3 vertPos;" \
 	"uniform vec3 lightPos [8], lightDir [8];" \
@@ -2497,6 +2522,7 @@ char *lightingFS [12] = {
 	"   	   }" \
 	"   	}" \
 	"   spotColor = vec3 (max (spotColor.r, gl_Color.r), max (spotColor.g, gl_Color.g), max (spotColor.b, gl_Color.b));" \
+	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
 	"   }" \
 	"}" 
@@ -2549,7 +2575,7 @@ void InitLightingShaders (void)
 gameStates.render.bHaveDynLights = 1;
 LogErr ("building lighting shader programs\n");
 DeleteShaderProg (NULL);
-if (gameStates.ogl.bHeadLight = gameOpts->render.nPath) {
+if (gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath)) {
 	for (i = 0; i < 12; i++) {
 		if (lightingShaderProgs [i])
 			DeleteShaderProg (lightingShaderProgs + i);

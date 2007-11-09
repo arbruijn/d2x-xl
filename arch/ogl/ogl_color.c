@@ -301,10 +301,6 @@ int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
 	tShaderLight	*psl;
 	tVertColorData	vcd = *vcdP;
 
-#if ONLY_HEADLIGHT
-if (gameData.render.lights.dynamic.headLights.nLights)
-	return 0;
-#endif
 r_tvertexc++;
 colorSum = *pColorSum;
 h = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
@@ -321,6 +317,10 @@ for (i = j = 0; i < h; i++) {
 	nType = psl->nType;
 	if (bSkipHeadLight && (nType == 3))
 		continue;
+#if ONLY_HEADLIGHT
+	if (nType != 3)
+		continue;
+#endif
 	if (psl->bVariable && gameData.render.vertColor.bDarkness)
 		continue;
 	lightColor = *((fVector *) &psl->color);
@@ -679,12 +679,14 @@ else
 #endif
 		G3AccumVertColor (&colorSum, &vcd, nThread);
 		}
+#if !ONLY_HEADLIGHT
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 		tFaceColor *pc = gameData.render.color.ambient + nVertex;
 		colorSum.c.r += pc->color.red;
 		colorSum.c.g += pc->color.green;
 		colorSum.c.b += pc->color.blue;
 		}
+#endif
 	if (colorSum.c.r > 1.0)
 		colorSum.c.r = 1.0;
 	if (colorSum.c.g > 1.0)
@@ -692,10 +694,8 @@ else
 	if (colorSum.c.b > 1.0)
 		colorSum.c.b = 1.0;
 	}
-#if ONLY_HEADLIGHT
 if (gameData.render.lights.dynamic.headLights.nLights)
 	colorSum.c.r = colorSum.c.g = colorSum.c.b = 0;
-#endif
 if (bSetColor)
 	OglColor4sf (colorSum.c.r * fScale, colorSum.c.g * fScale, colorSum.c.b * fScale, 1.0);
 #if 1
