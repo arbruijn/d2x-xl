@@ -189,7 +189,8 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.dir);
 		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
-		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) colorP);
+		if (colorP)
+			glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) colorP);
 		oglRes = glGetError ();
 		}
 	}

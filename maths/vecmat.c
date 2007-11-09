@@ -313,7 +313,7 @@ else {
 	QLONG q = mul64 (v0->p.x, v1->p.x);
 	q += mul64 (v0->p.y, v1->p.y);
 	q += mul64 (v0->p.z, v1->p.z);
-	return (fix) (q >> 16); /// 65536); //>> 16);
+	return (fix) (q >> 16); 
 	}
 }
 

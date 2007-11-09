@@ -24,6 +24,7 @@
 #include "hudmsg.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
+#include "ogl_fastrender.h"
 #include "piggy.h"
 #include "globvars.h"
 #include "gameseg.h"
@@ -654,6 +655,7 @@ return 1;
 void FlushParticleBuffer (void)
 {
 if (iBuffer) {
+	G3SetupShader (0, 0, 1, NULL);
 	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
 #if 1
 		grsBitmap *bmP;
@@ -680,6 +682,8 @@ if (iBuffer) {
 		glEnd ();
 		}
 	iBuffer = 0;
+	glUseProgramObject (0);
+	gameStates.render.history.nShader = -1;
 	}
 }
 

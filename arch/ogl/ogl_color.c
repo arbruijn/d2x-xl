@@ -27,7 +27,7 @@
 #include "ogl_color.h"
 
 #ifdef _DEBUG
-#	define ONLY_HEADLIGHT 0
+#	define ONLY_HEADLIGHT 1
 #else
 #	define ONLY_HEADLIGHT 0
 #endif

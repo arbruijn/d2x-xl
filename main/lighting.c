@@ -1597,7 +1597,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 			G3TransformPointf ((fVector *) (gameData.render.lights.dynamic.headLights.pos + gameData.render.lights.dynamic.headLights.nLights), psl->pos, 0);
 			G3RotatePointf ((fVector *) (gameData.render.lights.dynamic.headLights.dir + gameData.render.lights.dynamic.headLights.nLights), &psl->dir, 0);
 			VmVecNegatef ((fVector *) (gameData.render.lights.dynamic.headLights.dir + gameData.render.lights.dynamic.headLights.nLights));
-			gameData.render.lights.dynamic.headLights.brightness [gameData.render.lights.dynamic.headLights.nLights] = 200.0f;
+			gameData.render.lights.dynamic.headLights.brightness [gameData.render.lights.dynamic.headLights.nLights] = 100.0f;
 			gameData.render.lights.dynamic.headLights.nLights++;
 			}
 		}
@@ -2185,7 +2185,7 @@ char *lightingFS [12] = {
 	"if (spotEffect < cutOff)" \
 	"   gl_FragColor = vec4 (vec3 (matColor) * vec3 (gl_Color), (matColor.a + gl_Color.a) * grAlpha);"  \
 	"else {" \
-	"	 float attenuation = min (50.0 / lightDist, 1.0);" \
+	"	 float attenuation = min (100.0 / lightDist, 1.0);" \
 	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"   gl_FragColor = vec4 (vec3 (matColor) * vec3 (spotColor), matColor.a * grAlpha);"  \
@@ -2207,7 +2207,7 @@ char *lightingFS [12] = {
 	"if (spotEffect < cutOff)" \
 	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * gl_Color;" \
 	"else {" \
-	"	 float attenuation = min (50.0 / lightDist, 1.0);" \
+	"	 float attenuation = min (100.0 / lightDist, 1.0);" \
 	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);" \
@@ -2230,7 +2230,7 @@ char *lightingFS [12] = {
 	"if (spotEffect < cutOff)" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * gl_Color;" \
 	"else {" \
-	"   float attenuation = min (50.0 / lightDist, 1.0);" \
+	"   float attenuation = min (100.0 / lightDist, 1.0);" \
 	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
@@ -2257,7 +2257,7 @@ char *lightingFS [12] = {
 	"   if (spotEffect < cutOff)" \
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * gl_Color;" \
 	"   else {" \
-	" 		 float attenuation = min (50.0 / lightDist, 1.0);" \
+	" 		 float attenuation = min (100.0 / lightDist, 1.0);" \
 	"      spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;" \
 	"      spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));" \
 	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);" \
