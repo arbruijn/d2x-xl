@@ -55,8 +55,10 @@ i = (int) strlen (szRootDir);
 bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
 LogErr ("GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
 sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
-if (!(i = FFF (szDir, &ffs, *szFilter == '\0')))
-	sprintf (szFolder, "%s%s%s", szRootDir, bAddSlash ? "/" : "", szName);
+if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
+	if (szFolder != szName)
+		sprintf (szFolder, "%s%s%s", szRootDir, bAddSlash ? "/" : "", szName);
+	}
 else if (*szRootDir)
 	strcpy (szFolder, szRootDir);
 LogErr ("GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);

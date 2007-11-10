@@ -637,12 +637,21 @@ strcpy (szDataRootDir, gameFolders.szGameDir);
 if (*gameFolders.szGameDir)
 	chdir (gameFolders.szGameDir);
 #endif //Linux, OS X
-if (!(i = FindArg ("-hogdir")) || GetAppFolder ("", gameFolders.szDataDir, Args [i + 1], "descent2.hog"))
-	if (GetAppFolder (szDataRootDir, gameFolders.szDataDir, DATADIR, "descent2.hog"))
-		GetAppFolder (szDataRootDir, gameFolders.szDataDir, DATADIR, "d2demo.hog");
+if ((i = FindArg ("-hogdir")) && !GetAppFolder ("", gameFolders.szDataDir, Args [i + 1], "descent2.hog"))
+	strcpy (szDataRootDir, Args [i + 1]);
+else {
+	sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
+	if (GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "descent2.hog") &&
+		 GetAppFolder ("", gameFolders.szDataDir, gameFolders.szDataDir, "d2demo.hog") &&
+		 GetAppFolder (szDataRootDir, gameFolders.szDataDir, DATADIR, "descent2.hog") &&
+		 GetAppFolder (szDataRootDir, gameFolders.szDataDir, DATADIR, "d2demo.hog"))
+	Error (TXT_NO_HOG2);
+	}
 psz = strstr (gameFolders.szDataDir, DATADIR);
 if (psz && !*(psz + 4)) {
-	if (psz > gameFolders.szDataDir) {
+	if (psz == gameFolders.szDataDir) 
+		sprintf (gameFolders.szDataDir, "%s%s", gameFolders.szGameDir, DATADIR);
+	else {
 		*(psz - 1) = '\0';
 		strcpy (szDataRootDir, gameFolders.szDataDir);
 		*(psz - 1) = '/';
@@ -701,16 +710,8 @@ GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szScrShotDir, SCRSHOTDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szDemoDir, DEMODIR, "");
-if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
-#if 0//def __linux__
-	{
-	*gameFolders.szConfigDir = '\0';
-	if (GetAppFolder (gameFolders.szGameDir, gameFolders.szConfigDir, CONFIGDIR, "*.cfg"))
-		strcpy (gameFolders.szConfigDir, gameFolders.szHomeDir);
-	}
-#else
+if (GetAppFolder (szDataRootDir, gameFolders.szConfigDir, CONFIGDIR, "d2x.ini"))
 	strcpy (gameFolders.szConfigDir, gameFolders.szGameDir);
-#endif
 #ifdef WIN32
 sprintf (gameFolders.szMissionDir, "%s%s", gameFolders.szGameDir, BASE_MISSION_DIR);
 #else
