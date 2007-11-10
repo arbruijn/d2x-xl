@@ -504,7 +504,8 @@ else {
 	if ((plh = PrevLightning (iLightning)))
 		plh->nNext = i;
 	gameData.lightnings.iFree = iLightning;
-	gameData.lightnings.objects [iLightning] = -1;
+	if ((plb->nObject >= 0) && (gameData.lightnings.objects [plb->nObject] == iLightning))
+		gameData.lightnings.objects [plb->nObject] = -1;
 	DestroyLightningSound (plb);
 	i = plb->nLightnings;
 	}
