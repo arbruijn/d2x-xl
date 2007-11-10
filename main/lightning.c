@@ -458,8 +458,12 @@ if (pl && pl->pNodes) {
 
 	for (i = abs (pl->nNodes), pln = pl->pNodes; i > 0; i--, pln++) {
 		if (pln->pChild) {
-			DestroyLightningNodes (pln->pChild);
-			D2_FREE (pln->pChild);
+			if ((int) (size_t) pln->pChild == 0xffffffff)
+				pln->pChild = NULL;
+			else {
+				DestroyLightningNodes (pln->pChild);
+				D2_FREE (pln->pChild);
+				}
 			}
 		}
 	D2_FREE (pl->pNodes);

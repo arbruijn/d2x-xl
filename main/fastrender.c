@@ -405,6 +405,7 @@ if (bVertexArrays) {
 	glDisable (GL_TEXTURE_2D);
 	}
 //if (gameStates.render.history.bOverlay > 0)
+if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);
 if (nType != 3)
 	OglResetTransform (1);

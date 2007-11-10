@@ -687,7 +687,8 @@ if (iBuffer) {
 		glEnd ();
 		}
 	iBuffer = 0;
-	glUseProgramObject (0);
+	if (gameStates.ogl.bShadersOk)
+		glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
 }

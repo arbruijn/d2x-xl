@@ -494,7 +494,7 @@ return 1;
 
 void RIResetShader (void)
 {
-if (gameStates.render.history.nShader >= 0) {
+if (gameStates.ogl.bShadersOk && gameStates.render.history.nShader >= 0) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}

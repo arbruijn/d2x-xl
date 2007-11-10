@@ -168,6 +168,8 @@ int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf 
 
 	tRgbaColorf	color;
 
+if (!gameStates.ogl.bShadersOk)
+	return -1;
 if (gameData.render.lights.dynamic.headLights.nLights) {
 	nLights = IsCoopGame ? 4 : IsMultiGame ? 8 : 1;
 	nShader = (nLights & ~1) + (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
@@ -307,7 +309,8 @@ if (bTextured) {
 			}
 		else {
 			if (gameStates.render.history.bOverlay > 0) {
-				glUseProgramObject (0);
+				if (gameStates.ogl.bShadersOk)
+					glUseProgramObject (0);
 				if (gameStates.render.history.bmMask) {
 					glActiveTexture (GL_TEXTURE2);
 					OGL_BINDTEX (0);
@@ -495,7 +498,8 @@ if (bTextured) {
 			}
 		else {
 			if (gameStates.render.history.bOverlay > 0) {
-				glUseProgramObject (0);
+				if (gameStates.ogl.bShadersOk)
+					glUseProgramObject (0);
 				if (gameStates.render.history.bmMask) {
 					glActiveTexture (GL_TEXTURE2);
 					glClientActiveTexture (GL_TEXTURE2);
