@@ -659,14 +659,20 @@ if (bufferBrightness < 0)
 	bufferBrightness = brightness;
 if (iBuffer) {
 	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
-	G3SetupShader (0, 0, 1, &color);
 	bufferBrightness = brightness;
+	if (gameStates.ogl.bShadersOk) {
+		if (gameData.smoke.nLastType)
+			glUseProgramObject (0);
+		else
+			G3SetupShader (0, 0, 1, &color);
+		}
 	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
 #if 1
 		grsBitmap *bmP;
 		if (!(bmP = bmpParticle [0][gameData.smoke.nLastType]))
 			return;
 		glEnable (GL_TEXTURE_2D);
+		glActiveTexture (GL_TEXTURE0);
 		if (BM_CURFRAME (bmP))
 			bmP = BM_CURFRAME (bmP);
 		if (OglBindBmTex (bmP, 0, 1))
@@ -687,9 +693,10 @@ if (iBuffer) {
 		glEnd ();
 		}
 	iBuffer = 0;
-	if (gameStates.ogl.bShadersOk)
+	if (gameStates.ogl.bShadersOk && !gameData.smoke.nLastType) {
 		glUseProgramObject (0);
-	gameStates.render.history.nShader = -1;
+		gameStates.render.history.nShader = -1;
+		}
 	}
 }
 
@@ -725,9 +732,9 @@ if (BM_CURFRAME (bmP))
 if (gameOpts->render.bDepthSort > 0) {
 	hp = pParticle->transPos;
 	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness)) {
-		gameData.smoke.nLastType = nType;
 		if (gameStates.render.bVertexArrays)
 			FlushParticleBuffer (brightness);
+		gameData.smoke.nLastType = nType;
 		glActiveTexture (GL_TEXTURE0);
 		glClientActiveTexture (GL_TEXTURE0);
 		if (OglBindBmTex (bmP, 0, 1))
@@ -744,12 +751,12 @@ if (gameOpts->render.bDepthSort > 0) {
 	}
 else if (gameOpts->render.smoke.bSort) {
 	hp = pParticle->transPos;
-	if ((gameData.smoke.nLastType != nType)  || (brightness != bufferBrightness)) {
-		gameData.smoke.nLastType = nType;
+	if ((gameData.smoke.nLastType != nType) || (brightness != bufferBrightness)) {
 		if (gameStates.render.bVertexArrays)
 			FlushParticleBuffer (brightness);
 		else
 			glEnd ();
+		gameData.smoke.nLastType = nType;
 		if (OglBindBmTex (bmP, 0, 1))
 			return 0;
 		nFrames = nParticleFrames [bPointSprites][nType];
@@ -835,18 +842,22 @@ vCenter.p.y = f2fl (hp.p.y);
 vCenter.p.z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
 if (nType) {
-	pc.red /= 50;
-	pc.green /= 50;
-	pc.blue /= 50;
+	pc.red *= pc.alpha;
+	pc.green *= pc.alpha;
+	pc.blue *= pc.alpha;
 	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
 	decay = (float) sqrt (decay);
 	vOffset.p.x = f2fl (pParticle->nWidth) / decay;
 	vOffset.p.y = f2fl (pParticle->nHeight) / decay;
 	}
-else {
+else if (!nType) {
 	vOffset.p.x = f2fl (pParticle->nWidth) * decay;
 	vOffset.p.y = f2fl (pParticle->nHeight) * decay;
+	}
+else {
+	vOffset.p.x = f2fl (pParticle->nWidth);
+	vOffset.p.y = f2fl (pParticle->nHeight);
 	}
 if (gameStates.render.bVertexArrays) {
 	vOffset.p.z = 0;
@@ -863,7 +874,7 @@ if (gameStates.render.bVertexArrays) {
 	pb [1].color =
 	pb [2].color =
 	pb [3].color = pc;
-	if (gameOpts->render.smoke.bRotate) {
+	if (!nType && gameOpts->render.smoke.bRotate) {
 		if (bInitSinCos) {
 			OglComputeSinCos (sizeofa (sinCosPart), sinCosPart);
 			bInitSinCos = 0;
