@@ -694,7 +694,7 @@ else {
 	int i;
 
 	G3StartInstanceMatrix (pos, orient);
-	for (i = 0; flags; flags >>= 1, i++)
+	for (i = 0; flags > 0; flags >>= 1, i++)
 		if (flags & 1) {
 			vmsVector vOffset;
 
@@ -706,6 +706,9 @@ else {
 				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color)) {
 					if (bHires)
 						return;
+#ifdef _DEBUG
+					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color);
+#endif
 					}
 				G3StartInstanceMatrix (&vOffset, NULL);
 				G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 

@@ -626,13 +626,15 @@ for (;;) {
 #endif
 			{		//facing
 			//draw back then front
-			G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel);
-			G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel);
+			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel) &&
+					G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel)))
+				return 0;
 			}
 #if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
-			G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel);
-			G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel);
+			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel) &&
+					G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel)))
+				return 0;
 			}
 #endif
 		p += 32;
@@ -655,7 +657,10 @@ for (;;) {
 		G3StartInstanceAngles (&vo, va);
 		if (vOffset)
 			VmVecInc (&vo, vOffset);
-		G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pObjColor, po, nModel);
+		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pObjColor, po, nModel)) {
+			G3DoneInstance ();
+			return 0;
+			}
 		G3DoneInstance ();
 		p += 20;
 		}
@@ -664,8 +669,12 @@ for (;;) {
 			nGlow = WORDVAL (p+2);
 		p += 4;
 		}
-	else 
-		Error ("invalid polygon model\n");
+	else {
+#ifdef _DEBUG
+		LogErr ("invalid polygon model\n");
+#endif
+		return 0;
+		}
 	}
 nDepth--;
 return 1;
