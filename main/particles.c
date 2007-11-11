@@ -842,22 +842,18 @@ vCenter.p.y = f2fl (hp.p.y);
 vCenter.p.z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
 if (nType) {
-	pc.red *= pc.alpha;
-	pc.green *= pc.alpha;
-	pc.blue *= pc.alpha;
+	pc.red /= 50.0f;
+	pc.green /= 50.0f;
+	pc.blue /= 50.0f;
 	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
 	decay = (float) sqrt (decay);
 	vOffset.p.x = f2fl (pParticle->nWidth) / decay;
 	vOffset.p.y = f2fl (pParticle->nHeight) / decay;
 	}
-else if (!nType) {
+else {
 	vOffset.p.x = f2fl (pParticle->nWidth) * decay;
 	vOffset.p.y = f2fl (pParticle->nHeight) * decay;
-	}
-else {
-	vOffset.p.x = f2fl (pParticle->nWidth);
-	vOffset.p.y = f2fl (pParticle->nHeight);
 	}
 if (gameStates.render.bVertexArrays) {
 	vOffset.p.z = 0;
