@@ -174,6 +174,7 @@ int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensi
 {
 	ushort		nWall;
 	tSide			*sideP;
+	char			*pszName;
 	int			i, bAdditive, nTexture, nBrightness;
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
@@ -260,6 +261,9 @@ else {
 			break;
 		}
 	}
+pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [nTexture].index].name;
+if (strstr (pszName, "metl") || strstr (pszName, "rock") || strstr (pszName, "water"))
+	return 0;
 if (bAdditiveP)
 	*bAdditiveP = bAdditive;
 return nTexture;

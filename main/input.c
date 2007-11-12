@@ -96,6 +96,7 @@ static int	kcFrameCount = 0;
 static int	nMaxTurnRate;
 
 #define JOYMOUSE_SENSITIVITY	2
+#define FASTPITCH	(gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? extraGameInfo [IsMultiGame].bFastPitch : 2)
 
 //------------------------------------------------------------------------------
 
@@ -491,7 +492,7 @@ if (gameStates.render.automap.bDisplay ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||
 	 !(bUseMouse && EGI_FLAG (bMouseLook, 0, 1, 0))) {
-	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / FASTPITCH);
 	KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
 	}
 KCCLAMP (Controls [0].bankTime, gameStates.input.kcFrameTime);
@@ -522,7 +523,7 @@ return h;
 void ControlsDoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
 {
 	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) && 
-									 (extraGameInfo [IsMultiGame].bFastPitch == 1)) ? 2 * PH_SCALE : 1;
+									 (FASTPITCH == 1)) ? 2 * PH_SCALE : 1;
 	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
 	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
 
@@ -642,7 +643,7 @@ if (*bBankOn) {
 	}
 if (bGetSlideBank == 2)
 	ControlsLimitTurnRate (0);
-//KCCLAMP (pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+//KCCLAMP (pitchTime, nMaxTurnRate / FASTPITCH);
 *pitchTimeP = Controls [1].pitchTime;
 *headingTimeP = Controls [1].headingTime;
 }
@@ -1375,7 +1376,7 @@ if (ControlsLimitTurnRate (bUseMouse)) {
 		KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
 		}
 	if (Controls [1].pitchTime || Controls [2].pitchTime) {
-		KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+		KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / FASTPITCH);
 		}
 	if (Controls [1].bankTime || Controls [2].bankTime) {
 		KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
@@ -1383,7 +1384,7 @@ if (ControlsLimitTurnRate (bUseMouse)) {
 	}
 else {
 	KCCLAMP (Controls [0].headingTime, nMaxTurnRate);
-	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / extraGameInfo [IsMultiGame].bFastPitch);
+	KCCLAMP (Controls [0].pitchTime, nMaxTurnRate / FASTPITCH);
 	KCCLAMP (Controls [0].bankTime, nMaxTurnRate);
 	}
 if (gameStates.render.nZoomFactor > F1_0) {

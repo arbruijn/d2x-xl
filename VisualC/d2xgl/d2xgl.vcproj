@@ -13,7 +13,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="d:\programme\d2"
+			OutputDirectory="e:\programme\d2"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -24,7 +24,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="0"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="&quot;D:\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\3d;..\..\3d;..\..\include;..\..\main;..\..\arch\include;..\arch\include;..\..\arch\win32\include;..\..\arch\win32;&quot;..\..\..\..\SDL-1.2.11\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.7&quot;"
+				AdditionalIncludeDirectories="&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\3d;..\..\3d;..\..\include;..\..\main;..\..\arch\include;..\arch\include;..\..\arch\win32\include;..\..\arch\win32;&quot;..\..\..\..\SDL-1.2.11\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.7&quot;"
 				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -50,12 +50,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
-				OutputFile="d:\programme\d2\d2x-xl-dbg.exe"
+				OutputFile="e:\programme\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\d2x\sdl-1.2.11\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.7\VisualC\Debug&quot;"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="d:\programme\d2/d2x-xl-dbg.pdb"
+				ProgramDatabaseFile="e:\programme\d2/d2x-xl-dbg.pdb"
 				GenerateMapFile="FALSE"
 				MapFileName="e:\programme\d2\d2x-xl-dbg.map"
 				MapExports="FALSE"
@@ -138,7 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib "
-				OutputFile="d:\programme\d2\d2x-xl.exe"
+				OutputFile="e:\programme\d2\d2x-xl.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Relese&quot;;&quot;\projekte\d2x\sdl-1.2.11\Release&quot;;&quot;\Projekte\SDL_mixer-1.2.7\VisualC\Release&quot;"
@@ -3546,10 +3546,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

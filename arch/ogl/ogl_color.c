@@ -679,14 +679,12 @@ else
 #endif
 		G3AccumVertColor (&colorSum, &vcd, nThread);
 		}
-#if !ONLY_HEADLIGHT
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 		tFaceColor *pc = gameData.render.color.ambient + nVertex;
 		colorSum.c.r += pc->color.red;
 		colorSum.c.g += pc->color.green;
 		colorSum.c.b += pc->color.blue;
 		}
-#endif
 	if (colorSum.c.r > 1.0)
 		colorSum.c.r = 1.0;
 	if (colorSum.c.g > 1.0)
@@ -694,8 +692,10 @@ else
 	if (colorSum.c.b > 1.0)
 		colorSum.c.b = 1.0;
 	}
+#if ONLY_HEADLIGHT
 if (gameData.render.lights.dynamic.headLights.nLights)
 	colorSum.c.r = colorSum.c.g = colorSum.c.b = 0;
+#endif
 if (bSetColor)
 	OglColor4sf (colorSum.c.r * fScale, colorSum.c.g * fScale, colorSum.c.b * fScale, 1.0);
 #if 1
