@@ -1002,6 +1002,7 @@ else
 for (nPass = 0; nLights; nPass++) {
 	if (bLighting) {
 		if (nPass) {
+			glEnable (GL_BLEND);
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (0);
 			}	

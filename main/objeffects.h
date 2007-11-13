@@ -18,6 +18,7 @@ int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob);
 void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona);
 void RenderPowerupCorona (tObject *objP, float red, float green, float blue, float alpha);
 void RenderPlayerShield (tObject *objP);
+void RenderRobotShield (tObject *objP);
 void RenderDamageIndicator (tObject *objP, tRgbColorf *pc);
 void RenderMslLockIndicator (tObject *objP);
 void RenderTargetIndicator (tObject *objP, tRgbColorf *pc);

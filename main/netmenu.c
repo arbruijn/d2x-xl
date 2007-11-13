@@ -2511,9 +2511,9 @@ else
 	else
 		sprintf (mTexts [opt], "Weapon Fx: None");
 	opt++;
-	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.bRenderShield)) {
+	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.bPlayerShield)) {
 		INITFLAGS ("Ship Fx: ");
-		ADDFLAG (AXI.bRenderShield, "Shield");
+		ADDFLAG (AXI.bPlayerShield, "Shield");
 		ADDFLAG (AXI.bDamageExplosions, "Damage");
 		}
 	else

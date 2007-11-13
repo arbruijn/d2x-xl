@@ -4494,7 +4494,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDamageExplosions = 1;
 	extraGameInfo [i].bThrusterFlames = 1;
 	extraGameInfo [i].bShadows = 1;
-	extraGameInfo [i].bRenderShield = 1;
+	extraGameInfo [i].bPlayerShield = 1;
 	extraGameInfo [i].bTeleporterCams = 0;
 	extraGameInfo [i].bDarkness = 0;
 	extraGameInfo [i].bTeamDoors = 0;
@@ -4630,7 +4630,7 @@ else {
 	LogErr ("   bDamageExplosions: %d\n", extraGameInfo [1].bDamageExplosions);
 	LogErr ("   bThrusterFlames: %d\n", extraGameInfo [1].bThrusterFlames);
 	LogErr ("   bShadows: %d\n", extraGameInfo [1].bShadows);
-	LogErr ("   bRenderShield: %d\n", extraGameInfo [1].bRenderShield);
+	LogErr ("   bPlayerShield: %d\n", extraGameInfo [1].bPlayerShield);
 	LogErr ("   bTeleporterCams: %d\n", extraGameInfo [1].bTeleporterCams);
 	LogErr ("   bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	LogErr ("   bTargetIndicators: %d\n", extraGameInfo [1].bTargetIndicators);

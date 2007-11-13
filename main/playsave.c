@@ -299,7 +299,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bLightTrails, 0, 0);
 		RP (extraGameInfo [i].bMultiBosses, 0, 0);
 		RP (extraGameInfo [i].bPowerupsOnRadar, 0, 0);
-		RP (extraGameInfo [i].bRenderShield, 0, 0);
+		RP (extraGameInfo [i].bPlayerShield, 0, 0);
 		RP (extraGameInfo [i].bRobotsHitRobots, 0, 0);
 		RP (extraGameInfo [i].bRobotsOnRadar, 0, 0);
 		RP (extraGameInfo [i].bRotateLevels, 0, 0);
@@ -403,6 +403,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.bAdditiveObjCoronas, i, 0);
 		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
+		RP (gameOptions [i].render.bOnlyShieldHits, 0, 0);
 		RP (gameOptions [i].render.bTransparentEffects, i, 0);
 		RP (gameOptions [i].render.bDepthSort, i, 0);
 
@@ -777,7 +778,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bLightTrails", "1"},
 	{"extraGameInfo[0].bMultiBosses", "1"},
 	{"extraGameInfo[0].bPowerupsOnRadar", "1"},
-	{"extraGameInfo[0].bRenderShield", "0"},
+	{"extraGameInfo[0].bPlayerShield", "0"},
 	{"extraGameInfo[0].bRobotsHitRobots", "1"},
 	{"extraGameInfo[0].bRobotsOnRadar", "1"},
 	{"extraGameInfo[0].bRotateLevels", "0"},
@@ -948,6 +949,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.bAdditiveCoronas", "0"},
 	{"gameOptions[0].render.bBrightObjects", "0"},
 	{"gameOptions[0].render.bRobotShields", "0"},
+	{"gameOptions[0].render.bOnlyShieldHits", "0"},
 	{"gameOptions[0].render.bTransparentEffects", "1"},
 	{"gameOptions[0].render.bDepthSort", "1"},
 	{"gameOptions[0].render.cameras.bFitToWall", "0"},
@@ -1737,7 +1739,7 @@ for (i = 0; i < 2; i++) {
 			gameStates.ogl.nContrast = CFReadInt (fp);
 	if (gameStates.input.nPlrFileVersion >= 107)
 		if (!i)
-			extraGameInfo [0].bRenderShield = CFReadByte (fp);
+			extraGameInfo [0].bPlayerShield = CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 108)
 		gameOptions [i].gameplay.bInventory = (int) CFReadByte (fp);
 	if (gameStates.input.nPlrFileVersion >= 109)
@@ -2340,7 +2342,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteInt (gameOptions [i].render.shadows.nLights, fp);
 	if (!i) {
 		CFWriteInt (gameStates.ogl.nContrast, fp);
-		CFWriteByte ((sbyte) extraGameInfo [0].bRenderShield, fp);
+		CFWriteByte ((sbyte) extraGameInfo [0].bPlayerShield, fp);
 		}
 	CFWriteByte ((sbyte) gameOptions [i].gameplay.bInventory, fp);
 	CFWriteInt (gameOptions [i].input.mouse.bJoystick, fp);

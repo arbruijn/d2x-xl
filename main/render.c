@@ -744,7 +744,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR && nObject == CurObject_index) 
 	g3d_interp_outline=1;
 	}
 if (bSearchMode)
-	RenderObjectSearch(objP);
+	RenderObjectSearch (objP);
 	else
 #endif
 	//NOTE LINK TO ABOVE

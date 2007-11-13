@@ -1263,6 +1263,7 @@ if (i) {
 	gameOptions [1].render.bAdditiveCoronas = 0;
 	gameOptions [1].render.bAdditiveObjCoronas = 0;
 	gameOptions [1].render.bRobotShields = 0;
+	gameOptions [1].render.bOnlyShieldHits = 0;
 	gameOptions [1].render.bBrightObjects = 0;
 	gameOptions [1].render.nCoronaIntensity = 2;
 	gameOptions [1].render.nObjCoronaIntensity = 1;
@@ -1404,6 +1405,7 @@ else {
 	gameOptions [0].render.nCoronaIntensity = 2;
 	gameOptions [0].render.nObjCoronaIntensity = 1;
 	gameOptions [0].render.bRobotShields = 0;
+	gameOptions [0].render.bOnlyShieldHits = 0;
 	gameOptions [0].render.bBrightObjects = 0;
 	gameOptions [0].render.bExplBlast = 1;
 	gameOptions [0].render.nExplShrapnels = 1;

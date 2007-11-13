@@ -1000,7 +1000,7 @@ else {
 		glDepthMask (1);
 		if (bAdditive)
 			glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisable (GL_BLEND);
+		//glDisable (GL_BLEND);
 		}
 	}
 return 0;

@@ -303,6 +303,7 @@ typedef struct tRenderOptions {
 	int bHiresModels;
 	int bBrightObjects;
 	int bRobotShields;
+	int bOnlyShieldHits;
 	int bAutoTransparency;
 	int nMathFormat;
 	int nDefMathFormat;

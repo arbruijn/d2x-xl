@@ -758,18 +758,7 @@ switch (objP->renderType) {
 			DrawPolygonObject (objP);
 			RenderThrusterFlames (objP);
 			if (gameStates.render.nShadowPass != 2) {
-#if RENDER_HITBOX
-				RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
-#else
-				if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
-					if (gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [nObject] < 300)
-						DrawShieldSphere (objP, 1.0f, 0.5f, 0, 0.5f);
-					else if (ROBOTINFO (objP->id).companion)
-						DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
-					else
-						DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP) / 2);
-					}
-#endif
+				RenderRobotShield (objP);
 				RenderTargetIndicator (objP, NULL);
 				SetRobotLocationInfo (objP);
 				}
@@ -907,7 +896,7 @@ switch (objP->renderType) {
 			else
 				DrawWeaponVClip (objP); 
 #if 0//def _DEBUG
-			if (EGI_FLAG (bRenderShield, 0, 1, 0))
+			if (EGI_FLAG (bPlayerShield, 0, 1, 0))
 				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
 #endif
 			}

@@ -1074,7 +1074,7 @@ char *defaultGameTexts [][2] = {
 #endif
 	{"Umsch-F5\t  prim. Waffe abwerfen", "Shift-F5\t  Drop primary"},
 	{"Umsch-F6\t  sek. Waffe abwerfen", "Shift-F6\t  Drop secondary"},
-	{"Alt-F12\t  Verfolgeransicht umsch.", "Shift-F7\t  toggle chase cam"},
+	{"Alt-F12\t  Verfolgeransicht umsch.", "Alt-F12\t  toggle chase cam"},
 	{"Umsch-Ziffer\t  GuideBot-Befehle", "Shift-number\t  GuideBot commands"},
 	{"0. Naechstes Ziel: %s", "0.  Next Goal: %s"},
 	{"1. Finde Energie", "1.  Find Energy Powerup"},
@@ -1749,6 +1749,7 @@ char *defaultGameTexts [][2] = {
 	{"Objekt-Beleuchtung per h~Ardware", "h~Ardware object lighting"},
 	{"Rauchpartikel dre~Hen", "~Rotate smoke particles"},
 	{"~Scheinwerfer per Hardware", "hardware ~Headlight"},
+	{"Schild nur bei ~Treffern zeigen", "show shield only when ~Hit"},
 #if 0
 	{"", ""},
 #endif
@@ -2342,6 +2343,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, rotieren die Rauchpartikel.", "If checked, smoke particles rotate."},
 	{"Wenn angekreuzt, wird per Shaderprogramm ein schoenes rundes\nScheinwerferlicht erzeugt. Das kann die Grafik allerdings je nach\nSpielerzahl ziemlich ausbremsen und laeuft auf aelterer Hardware\nunter Umstaenden nicht.", 
 	 "If checked, a nice round headlight shine is created by a\nshader program. Depending on player number this can however slow\nthe renderer down significantly, and it may not run on older\ngraphics hardware.\n"},
+	{"Wenn angekreuzt, leuchten Schilde nur bei Treffern auf.", "If checked shields only glow when hit."},
 #if 0
 	{"", ""},
 #endif

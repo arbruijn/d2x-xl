@@ -1996,7 +1996,7 @@ void EffectOptionsMenu ()
 	int	i, j, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
-			optRobotShields, optTracers, optExplBlast;
+			optRobotShields, optShieldHits, optTracers, optExplBlast;
 #if 0
 	int	optShockwaves;
 #endif
@@ -2031,10 +2031,12 @@ do {
 	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
-	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bRenderShield, KEY_P, HTX_RENDER_SHIELDS);
+	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bPlayerShield, KEY_P, HTX_RENDER_SHIELDS);
 	optPlayerShields = opt++;
 	ADD_CHECK (opt, TXT_ROBOT_SHIELDS, gameOpts->render.bRobotShields, KEY_O, HTX_ROBOT_SHIELDS);
 	optRobotShields = opt++;
+	ADD_CHECK (opt, TXT_SHIELD_HITS, gameOpts->render.bOnlyShieldHits, KEY_H, HTX_SHIELD_HITS);
+	optShieldHits = opt++;
 	ADD_CHECK (opt, TXT_RENDER_TRACERS, extraGameInfo [0].bTracers, KEY_T, HTX_RENDER_TRACERS);
 	optTracers = opt++;
 #if 0
@@ -2063,8 +2065,9 @@ do {
 			extraGameInfo [0].bThrusterFlames = j;
 			break;
 			}
-	extraGameInfo [0].bRenderShield = m [optPlayerShields].value;
+	extraGameInfo [0].bPlayerShield = m [optPlayerShields].value;
 	gameOpts->render.bRobotShields = m [optRobotShields].value;
+	gameOpts->render.bOnlyShieldHits = m [optShieldHits].value;
 #if EXPMODE_DEFAULTS
 	if (!gameOpts->app.bExpertMode) {
 		gameOpts->render.bTransparentEffects = 1;
@@ -2076,7 +2079,7 @@ do {
 	extraGameInfo [0].bShockwaves = 1;
 	extraGameInfo [0].bDamageExplosions = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
-	extraGameInfo [0].bRenderShield = 1;
+	extraGameInfo [0].bPlayerShield = 1;
 		}
 #endif
 	} while (i == -2);
@@ -4497,7 +4500,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			extraGameInfo [0].bShadows = 0;
 			extraGameInfo [0].bUseSmoke = 0;
 			extraGameInfo [0].bUseCameras = 0;
-			extraGameInfo [0].bRenderShield = 0;
+			extraGameInfo [0].bPlayerShield = 0;
 			extraGameInfo [0].bThrusterFlames = 0;
 			extraGameInfo [0].bDamageExplosions = 0;
 		break;
@@ -4539,7 +4542,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.shadows.nClip = 0;
 			gameOpts->render.shadows.nReach = 0;
 			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bRenderShield = 0;
+			extraGameInfo [0].bPlayerShield = 0;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 0;
 			break;
@@ -4580,7 +4583,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.shadows.nClip = 1;
 			gameOpts->render.shadows.nReach = 1;
 			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bRenderShield = 1;
+			extraGameInfo [0].bPlayerShield = 1;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 1;
 			break;
@@ -4621,7 +4624,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.shadows.nClip = 1;
 			gameOpts->render.shadows.nReach = 1;
 			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bRenderShield = 1;
+			extraGameInfo [0].bPlayerShield = 1;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 1;
 			break;
@@ -4662,7 +4665,7 @@ if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
 			gameOpts->render.shadows.nClip = 1;
 			gameOpts->render.shadows.nReach = 1;
 			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bRenderShield = 1;
+			extraGameInfo [0].bPlayerShield = 1;
 			extraGameInfo [0].bThrusterFlames = 1;
 			extraGameInfo [0].bDamageExplosions = 1;
 			break;

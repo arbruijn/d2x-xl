@@ -360,18 +360,38 @@ else
 #endif
 
 	if (uvlP) {
-		xFlip = (uvlP [2].u < uvlP [0].u);
-		yFlip = (uvlP [1].v > uvlP [0].v);
-		rotLeft = (uvlP [1].u < uvlP [0].u);
-		rotRight = (uvlP [1].u > uvlP [0].u);
+		rotLeft = (uvlP [1].u > uvlP [0].u);
+		rotRight = (uvlP [1].u < uvlP [0].u);
+		if (rotLeft) {
+			yFlip = (uvlP [1].u < uvlP [2].u);
+			xFlip = (uvlP [3].v > uvlP [1].v);
+			}
+		else if (rotRight) {
+			yFlip = (uvlP [3].u < uvlP [0].u);
+			xFlip = (uvlP [1].v > uvlP [3].v);
+			}
+		else {
+			xFlip = (uvlP [2].u < uvlP [0].u);
+			yFlip = (uvlP [1].v > uvlP [0].v);
+			}
 		dvFace = f2fl (uvlP [1].v - uvlP [0].v);
 		duFace = f2fl (uvlP [2].u - uvlP [0].u);
 		}
 	else {
-		xFlip = (texCoordP [2].v.u < texCoordP [0].v.u);
-		yFlip = (texCoordP [1].v.v > texCoordP [0].v.v);
 		rotLeft = (texCoordP [1].v.u < texCoordP [0].v.u);
 		rotRight = (texCoordP [1].v.u > texCoordP [0].v.u);
+		if (rotLeft) {
+			yFlip = (texCoordP [1].v.u > texCoordP [2].v.u);
+			xFlip = (texCoordP [3].v.v < texCoordP [1].v.v);
+			}
+		else if (rotRight) {
+			yFlip = (texCoordP [3].v.u > texCoordP [0].v.u);
+			xFlip = (texCoordP [1].v.v < texCoordP [3].v.v);
+			}
+		else {
+			xFlip = (texCoordP [2].v.u < texCoordP [0].v.u);
+			yFlip = (texCoordP [1].v.v > texCoordP [0].v.v);
+			}
 		dvFace = (float) fabs (texCoordP [1].v.v - texCoordP [0].v.v);
 		duFace = (float) fabs (texCoordP [2].v.u - texCoordP [0].v.u);
 		}
@@ -406,17 +426,42 @@ else
 		uvlP [3].u = fl2f (xFlip ? du / 2 : duImage);
 		for (i = 0; i < 4; i++)
 			uvlP [i].l = F1_0;
-		memcpy (pc->uvlList, uvlP, sizeof (pc->uvlList));
+		if (rotRight) {
+			for (i = 1; i < 5; i++) {
+				pc->uvlList [i - 1] = uvlP [i % 4];
+				}
+			}
+		else if (rotRight) {
+			for (i = 0; i < 4; i++) {
+				pc->uvlList [i] = uvlP [(i + 1) % 4];
+				}
+			}
+		else
+			memcpy (pc->uvlList, uvlP, sizeof (pc->uvlList));
 		}
 	else {
-		pc->texCoord [0].v.v = 
-		pc->texCoord [3].v.v = yFlip ? dvImage : dv;
-		pc->texCoord [1].v.v = 
-		pc->texCoord [2].v.v = yFlip ? dv : dvImage;
-		pc->texCoord [0].v.u = 
-		pc->texCoord [1].v.u = xFlip ? duImage : du / 2;
-		pc->texCoord [2].v.u = 
-		pc->texCoord [3].v.u = xFlip ? du / 2 : duImage;
+		tTexCoord2f texCoord [4];
+
+		texCoord [0].v.v = 
+		texCoord [3].v.v = yFlip ? dvImage : dv;
+		texCoord [1].v.v = 
+		texCoord [2].v.v = yFlip ? dv : dvImage;
+		texCoord [0].v.u = 
+		texCoord [1].v.u = xFlip ? duImage : du / 2;
+		texCoord [2].v.u = 
+		texCoord [3].v.u = xFlip ? du / 2 : duImage;
+		if (rotLeft) {
+			for (i = 1; i < 5; i++) {
+				pc->texCoord [i - 1] = texCoord [i % 4];
+				}
+			}
+		else if (rotRight) {
+			for (i = 0; i < 4; i++) {
+				pc->texCoord [i] = texCoord [(i + 1) % 4];
+				}
+			}
+		else
+			memcpy (pc->texCoord, texCoord, sizeof (pc->texCoord));
 		}
 	pc->bHaveUVL = 1;
 	}

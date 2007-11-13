@@ -136,7 +136,7 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 
 if (!SHOW_OBJ_FX)
 	return;
-if ((objP->nType == OBJ_PLAYER) && (!EGI_FLAG (bRenderShield, 0, 1, 0) || gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
+if ((objP->nType == OBJ_PLAYER) && (!EGI_FLAG (bPlayerShield, 0, 1, 0) || gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
 if ((objP->nType == OBJ_ROBOT) && (!gameOpts->render.bRobotShields || objP->cType.aiInfo.CLOAKED))
 	return;
@@ -205,7 +205,10 @@ glDepthFunc (GL_LESS);
 
 void RenderPlayerShield (tObject *objP)
 {
-	int	bStencil, i = objP->id;
+	int	bStencil, dt, i = objP->id, nColor = 0;
+	float	alpha, scale;
+
+	static tRgbaColorf shieldColors [3] = {{0, 0.5f, 1, 1}, {1, 0.5f, 0, 1}, {1, 0.8f, 0.6f, 1}};
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -214,44 +217,73 @@ if (SHOW_SHADOWS &&
 	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
 #endif
-if (EGI_FLAG (bRenderShield, 0, 1, 0) &&
+if (EGI_FLAG (bPlayerShield, 0, 1, 0) &&
 	 !(gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
 	bStencil = StencilOff ();
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
-	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
-#if RENDER_HITBOX
-		RenderHitbox (objP, 1.0f, 0.8f, 0.6f, 0.6f);
-#else
-		DrawShieldSphere (objP, 1.0f, 0.8f, 0.6f, 1.0f);
-#endif
-	else if (gameData.multiplayer.bWasHit [i]) {
+	if (gameData.multiplayer.bWasHit [i]) {
 		if (gameData.multiplayer.bWasHit [i] < 0) {
 			gameData.multiplayer.bWasHit [i] = 1;
 			gameData.multiplayer.nLastHitTime [i] = gameStates.app.nSDLTicks;
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.1f, 0.5f);
+			dt = 0;
 			}
-		else if (gameStates.app.nSDLTicks - gameData.multiplayer.nLastHitTime [i] >= 300) {
+		else if ((dt = gameStates.app.nSDLTicks - gameData.multiplayer.nLastHitTime [i]) >= 300) {
 			gameData.multiplayer.bWasHit [i] = 0;
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.4f);
 			}
 		}
+	if (gameOpts->render.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i])
+		return;
+	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
+		nColor = 2;
+	else if (gameData.multiplayer.bWasHit [i])
+		nColor = gameOpts->render.bOnlyShieldHits ? 0 : 1;
+	else
+		nColor = 0;
 	if (gameData.multiplayer.bWasHit [i])
-#if RENDER_HITBOX
-		RenderHitbox (objP, 1.0f, 0.5f, 0.0f, 1.0f);
-#else
-		DrawShieldSphere (objP, 1.0f, 0.5f, 0.0f, 1.0f);
-#endif
+		scale = alpha = (gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1);
+	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
+		scale = alpha = 1;
 	else {
+		alpha = f2fl (gameData.multiplayer.players [i].shields) / 100.0f;
+		scale = 1;
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
-#if RENDER_HITBOX
-		RenderHitbox (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 400.0f);
-#else
-		DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, (float) f2fl (gameData.multiplayer.players [i].shields) / 100.0f);
-#endif
 		}
+#if RENDER_HITBOX
+	RenderHitbox (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
+#else
+	DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, alpha);
+#endif
 	StencilOn (bStencil);
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RenderRobotShield (tObject *objP)
+{
+	static tRgbaColorf shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.5f, 0, 1}};
+
+#if RENDER_HITBOX
+RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
+#else
+if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
+	fix dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
+	if (dt < 300) {
+		float scale = gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
+		int nColor = gameOpts->render.bOnlyShieldHits ? ROBOTINFO (objP->id).companion ? 1 : 0 : 2;
+		DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, 0.5f * scale);
+		}
+	else if (!gameOpts->render.bOnlyShieldHits) {
+		if (ROBOTINFO (objP->id).companion)
+			DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
+		else
+			DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP) / 2);
+		}
+	}
+#endif
 }
 
 // -----------------------------------------------------------------------------

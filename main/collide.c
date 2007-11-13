@@ -2234,10 +2234,11 @@ if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 //	Don't Collide own smart mines unless direct hit.
-if (weaponP->id == SMARTMINE_ID)
-	if (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.nParentObj)
-		if (VmVecDistQuick (vHitPt, &playerObjP->position.vPos) > playerObjP->size)
-			return 1;
+if ((weaponP->id == SMARTMINE_ID) &&
+	 (OBJ_IDX (playerObjP) == weaponP->cType.laserInfo.nParentObj) &&
+	 (VmVecDistQuick (vHitPt, &playerObjP->position.vPos) > playerObjP->size))
+	return 1;
+gameData.multiplayer.bWasHit [playerObjP->id] = -1;
 CreateWeaponEffects (weaponP, 1);
 if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
@@ -2270,10 +2271,6 @@ BumpTwoObjects (playerObjP, weaponP, 0, vHitPt);	//no damage from bump
 if (!WI_damage_radius (weaponP->id)) {
 	if (weaponP->cType.laserInfo.nParentObj > -1)
 		killer = gameData.objs.objects + weaponP->cType.laserInfo.nParentObj;
-
-//		if (weaponP->id == SMARTMSL_BLOB_ID)
-//			damage /= 4;
-
 	if (!(weaponP->flags & OF_HARMLESS))
 		ApplyDamageToPlayer (playerObjP, killer, damage);
 }
@@ -2287,7 +2284,7 @@ return 1;
 int CollidePlayerAndNastyRobot (tObject * playerObjP, tObject * robot, vmsVector *vHitPt)
 {
 //	if (!(ROBOTINFO (objP->id).energyDrain && gameData.multiplayer.players [playerObjP->id].energy))
-ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10)/2, VCLIP_PLAYER_HIT);
+ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (playerObjP, robot, 0, vHitPt))	{//no damage from bump
 	DigiLinkSoundToPos (ROBOTINFO (robot->id).clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
 	ApplyDamageToPlayer (playerObjP, robot, F1_0* (gameStates.app.nDifficultyLevel+1));
