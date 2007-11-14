@@ -1015,10 +1015,6 @@ for (nPass = 0; nLights; nPass++) {
 		OglSetupTransform (1);
 		for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) { 
 			psl = gameData.render.lights.dynamic.shader.activeLights [0][iLightSource];
-			if (!psl->bSpot) {
-				iLight--;
-				continue;
-				}
 			hLight = GL_LIGHT0 + iLight;
 			glEnable (hLight);
 //			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
