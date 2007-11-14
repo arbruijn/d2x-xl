@@ -686,7 +686,7 @@ if (!flags)	{	//draw entire tObject
 		if (bHires)
 			return;
 #ifdef _DEBUG
-		if (objP->nType == OBJ_ROBOT)
+		if (objP && (objP->nType == OBJ_ROBOT))
 			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color);
 #endif
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
