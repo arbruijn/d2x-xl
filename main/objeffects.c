@@ -238,7 +238,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0) &&
 	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;
 	else if (gameData.multiplayer.bWasHit [i])
-		nColor = gameOpts->render.bOnlyShieldHits ? 0 : 1;
+		nColor = 1;
 	else
 		nColor = 0;
 	if (gameData.multiplayer.bWasHit [i])
@@ -273,8 +273,7 @@ if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
 	fix dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
 	if (dt < 300) {
 		float scale = gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
-		int nColor = gameOpts->render.bOnlyShieldHits ? ROBOTINFO (objP->id).companion ? 1 : 0 : 2;
-		DrawShieldSphere (objP, shieldColors [nColor].red * scale, shieldColors [nColor].green * scale, shieldColors [nColor].blue * scale, 0.5f * scale);
+		DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
 		}
 	else if (!gameOpts->render.bOnlyShieldHits) {
 		if (ROBOTINFO (objP->id).companion)
