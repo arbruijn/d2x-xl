@@ -692,7 +692,6 @@ if (!flags)	{	//draw entire tObject
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (pos, orient);
 		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
-		G3DoneInstance ();
 		}
 	}
 else {
@@ -722,6 +721,7 @@ else {
 				}
 			}	
 	}
+G3DoneInstance ();
 gameStates.ogl.bUseTransform = 0;
 gameData.render.pVerts = NULL;
 #if 0

@@ -575,9 +575,9 @@ m [PERCENT_ITEM].redraw = 1;
 int DownloadMission (char *pszMission)
 {
 	tMenuItem	m [3];
-	char				szTitle [30];
-	char				szProgress [30];
-	int				i;
+	char			szTitle [30];
+	char			szProgress [30];
+	int			i;
 
 LogErr ("   trying to download mission '%s'\n", pszMission);
 gameStates.multi.bTryAutoDL = 0;

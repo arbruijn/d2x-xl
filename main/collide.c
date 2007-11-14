@@ -2043,7 +2043,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		if (nObject!=-1)
 			gameData.objs.objects [nObject].cType.powerupInfo.count = nVulcanAmmo;
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, GAUSS_INDEX);
-		if (nObject!=-1)
+		if (nObject >= 0)
 			gameData.objs.objects [nObject].cType.powerupInfo.count = nVulcanAmmo;
 
 		//	Drop the rest of the primary weapons
