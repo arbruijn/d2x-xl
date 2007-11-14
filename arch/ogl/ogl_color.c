@@ -369,10 +369,11 @@ for (i = j = 0; i < h; i++) {
 #if VECMAT_CALLS
 	VmVecNormalizef (&lightDir, &lightDir);
 #else
-	fMag = VmVecMagf (&lightDir);
-	lightDir.p.x /= fMag;
-	lightDir.p.y /= fMag;
-	lightDir.p.z /= fMag;
+	if (fMag = VmVecMagf (&lightDir)) {
+		lightDir.p.x /= fMag;
+		lightDir.p.y /= fMag;
+		lightDir.p.z /= fMag;
+		}
 #endif
 	NdotL = bInRad ? 1 : G3_DOTF (vcd.vertNorm, lightDir);
 	if (psl->bSpot) {
@@ -452,10 +453,11 @@ for (i = j = 0; i < h; i++) {
 #if VECMAT_CALLS
 		VmVecNormalizef (&vReflect, &vReflect);
 #else
-		fMag = VmVecMagf (&vReflect);
-		vReflect.p.x /= fMag;
-		vReflect.p.y /= fMag;
-		vReflect.p.z /= fMag;
+		if (fMag = VmVecMagf (&vReflect)) {
+			vReflect.p.x /= fMag;
+			vReflect.p.y /= fMag;
+			vReflect.p.z /= fMag;
+			}
 #endif
 		RdotE = G3_DOTF (vReflect, lightPos);
 		if (RdotE < 0.0)

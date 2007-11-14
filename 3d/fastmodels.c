@@ -572,8 +572,13 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 		else
 			pmf->nBitmap = -1;
 		pfv = pof->pVerts;
-		if (nModel > 200)
-			VmVecNormalf ((fVector *) &vNormal, (fVector *) pfv, (fVector *) (pfv + 1), (fVector *) (pfv + 2));
+		h = pfv->nIndex;
+		if (nModel > 200) {
+			VmVecNormalf ((fVector *) &vNormal, 
+							  (fVector *) (pso->pvVerts + pfv [0].nIndex), 
+							  (fVector *) (pso->pvVerts + pfv [1].nIndex), 
+							  (fVector *) (pso->pvVerts + pfv [2].nIndex));
+			}
 		else
 			memcpy (&vNormal, &pof->vNormal, sizeof (fVector3));
 		for (; n; n--, pfv++, pmv++, pvn++) {
@@ -581,6 +586,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->nIndex = h;
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
+			pmv->normal = vNormal;
 			memcpy (&pmv->vertex, pso->pvVerts + h, sizeof (fVector3));
 			*pvn = vNormal;
 			if (pmv->bTextured = pof->bTextured)
@@ -845,7 +851,7 @@ if (!mtP->nCount++) {
 //------------------------------------------------------------------------------
 
 void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
-						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int bFlat)
+						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
@@ -853,7 +859,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	grsBitmap		*bmP = NULL;
 	vmsAngVec		*va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
 	vmsVector		vo;
-	int				i, j, bTextured = !(gameStates.render.bCloaked /*|| bFlat*/);
+	int				i, j, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
 // set the translation
@@ -868,7 +874,7 @@ if (vOffset && (nExclusive < 0)) {
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
-		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires, bUseVBO, bFlat);
+		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires, bUseVBO, nPass);
 #endif
 // render the faces
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
@@ -898,7 +904,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		nIndex = pmf->nIndex;
 #if G3_DRAW_ARRAYS
 		if ((nFaceVerts = pmf->nVerts) > 4) {
-			if (pmf->bThruster)
+			if (!nPass && pmf->bThruster)
 				G3GetThrusterPos (nModel, pmf, vOffset, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
@@ -908,7 +914,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			nId = pmf->nId;
 			nVerts = 0;
 			do {
-				if (pmf->bThruster)
+				if (!nPass && pmf->bThruster)
 					G3GetThrusterPos (nModel, pmf, vOffset, bHires);
 				nVerts += nFaceVerts;
 				pmf++;
@@ -989,10 +995,11 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 
 if (bLighting) {
 	nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
-	OglEnableLighting (0); //objP->nType == OBJ_POWERUP);
+	OglEnableLighting (0); 
 	}
 else
 	nLights = 1;
+glEnable (GL_BLEND);
 if (bEmissive)
 	glBlendFunc (GL_ONE, GL_ONE);
 else if (gameStates.render.bCloaked)
@@ -1002,13 +1009,16 @@ else
 for (nPass = 0; nLights; nPass++) {
 	if (bLighting) {
 		if (nPass) {
-			glEnable (GL_BLEND);
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (0);
 			}	
 		OglSetupTransform (1);
 		for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) { 
 			psl = gameData.render.lights.dynamic.shader.activeLights [0][iLightSource];
+			if (!psl->bSpot) {
+				iLight--;
+				continue;
+				}
 			hLight = GL_LIGHT0 + iLight;
 			glEnable (hLight);
 //			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
@@ -1016,12 +1026,16 @@ for (nPass = 0; nLights; nPass++) {
 			glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &(psl->color));
 			glLightfv (hLight, GL_SPECULAR, (GLfloat *) &(psl->color));
 			glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f / psl->brightness);
-			glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
+			glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f / psl->brightness);
 			glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
 			if (psl->bSpot) {
+#if 0
+				psl = psl;
+#else
 				glLighti (hLight, GL_SPOT_EXPONENT, 12);
-				glLighti (hLight, GL_SPOT_CUTOFF, 45);
+				glLighti (hLight, GL_SPOT_CUTOFF, 25);
 				glLightfv (hLight, GL_SPOT_DIRECTION, (GLfloat *) &psl->dir);
+#endif
 				}
 			}
 		OglResetTransform (1);
@@ -1102,7 +1116,7 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 						 vmsAngVec *pAnimAngles, vmsVector *vOffset, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
-	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting;
+	int		i, bHires = 1, bUseVBO = 0; //gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting;
 
 if (!objP)
 	return 0;
@@ -1161,7 +1175,8 @@ else {
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
 #else
-gameData.models.nScale = 0;
+if (bHires)
+	gameData.models.nScale = 0;
 #endif
 if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameStates.render.bCloaked))
 	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);

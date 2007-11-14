@@ -555,12 +555,6 @@ if (item->bmP && strstr (item->bmP->szName, "door34#0"))
 #endif
 #if 1
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
-	if (item->bAdditive == 1)
-		glBlendFunc (GL_ONE, GL_ONE);
-	else if (item->bAdditive == 2)
-		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-	else 
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	if (renderItems.bTextured)
 		glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -570,16 +564,35 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 		glColorPointer (4, GL_FLOAT, 0, item->color);
 	else
 		glColor3d (1, 1, 1);
-	G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
+	if (item->bAdditive == 1) {
+		RIResetShader ();
+		glBlendFunc (GL_ONE, GL_ONE);
+		}
+	else if (item->bAdditive == 2) {
+		RIResetShader ();
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		}
+	else {
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
+		}
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 else 
 #endif
 if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
-	if (item->bAdditive)
+	if (item->bAdditive == 1) {
+		RIResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE);
-	else
+		}
+	else if (item->bAdditive == 2) {
+		RIResetShader ();
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		}
+	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
+		}
 	j = item->nVertices;
 	G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
 	glBegin (item->nPrimitive);
