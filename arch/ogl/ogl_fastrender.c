@@ -552,6 +552,9 @@ if (bTextured) {
 	}
 else {
 	bOverlay = 0;
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
+	OGL_BINDTEX (0);
 	glDisable (GL_TEXTURE_2D);
 	}
 #if G3_BUFFER_FACES
@@ -564,7 +567,7 @@ if (!bBlend)
 	glDisable (GL_BLEND);
 glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 
-if (!bMultiTexture) {
+if (!bMultiTexture && bOverlay) {
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	if (bTextured) {
 		INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, 1);

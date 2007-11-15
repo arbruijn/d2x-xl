@@ -236,6 +236,8 @@ if (pIdFn == PID_DL_DATA) {
 	}
 if ((pId == PID_UPLOAD) && (gameStates.multi.nGameType == IPX_GAME))
 	IPXSendBroadcastData (uploadBuf, nSize + 2);
+else if (pId == PID_UPLOAD)
+	IPXSendInternetPacketData (uploadBuf, nSize + 2, ipx_ServerAddress, ipx_ServerAddress + 4);
 else
 	IPXSendInternetPacketData (uploadBuf, nSize + 2, ipx_udpSrc.src_network, ipx_udpSrc.src_node);
 return 1;

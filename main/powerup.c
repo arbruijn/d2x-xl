@@ -1183,13 +1183,13 @@ extern int PowerupTypeInfoReadN (powerupType_info *pti, int n, CFILE *fp)
 {
 	int i;
 
-	for (i = 0; i < n; i++) {
-		pti[i].nClipIndex = CFReadInt (fp);
-		pti[i].hitSound = CFReadInt (fp);
-		pti[i].size = CFReadFix (fp);
-		pti[i].light = CFReadFix (fp);
+for (i = 0; i < n; i++) {
+	pti [i].nClipIndex = CFReadInt (fp);
+	pti [i].hitSound = CFReadInt (fp);
+	pti [i].size = CFReadFix (fp);
+	pti [i].light = CFReadFix (fp);
 	}
-	return i;
+return i;
 }
 #endif
 

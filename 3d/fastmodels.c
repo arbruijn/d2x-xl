@@ -826,11 +826,15 @@ for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
 v.p.x /= j;
 v.p.y /= j;
 v.p.z /= j;
-v.p.z -= 1.0f / 8.0f;
+v.p.z -= 1.0f / 16.0f;
+#if 0
+G3TransformPoint (&v, &v, 0);
+#else
 if (vOffset) {
 	VmsVecToFloat (&vo, vOffset);
 	VmVecIncf (&v, &vo);
 	}
+#endif
 if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
 	return;
 mtP->vPos [mtP->nCount].p.x = fl2f (v.p.x);
@@ -905,7 +909,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #if G3_DRAW_ARRAYS
 		if ((nFaceVerts = pmf->nVerts) > 4) {
 			if (!nPass && pmf->bThruster)
-				G3GetThrusterPos (nModel, pmf, vOffset, bHires);
+				G3GetThrusterPos (nModel, pmf, &vo, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
 			i--;
@@ -915,7 +919,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			nVerts = 0;
 			do {
 				if (!nPass && pmf->bThruster)
-					G3GetThrusterPos (nModel, pmf, vOffset, bHires);
+					G3GetThrusterPos (nModel, pmf, &vo, bHires);
 				nVerts += nFaceVerts;
 				pmf++;
 				i--;

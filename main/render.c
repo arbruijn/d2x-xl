@@ -1859,7 +1859,8 @@ if (((gameStates.render.nRenderPass <= 0) &&
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif
-	RotateSideNorms ();
+	if (!gameOpts->render.nPath)
+		RotateSideNorms ();
 #if defined(EDITOR) && defined (_DEBUG)
 	if (bShowOnlyCurSide) {
 		RotateVertexList (8, Cursegp->verts);

@@ -662,12 +662,10 @@ if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
 		return 1;
 	c = wallP->cloakValue;
 	if (bCloaking) {
-		if (c >= GR_ACTUAL_FADE_LEVELS)
-			return 1;
 		*pc = cloakColor;
 		*nColor = 1;
 		*bTextured = 0;
-		return pc->alpha = (float) c / (float) GR_ACTUAL_FADE_LEVELS;
+		return pc->alpha = (c >= GR_ACTUAL_FADE_LEVELS) ? 0 : 1.0f - (float) c / (float) GR_ACTUAL_FADE_LEVELS;
 		}
 	if (!gameOpts->render.color.bWalls)
 		c = 0;

@@ -30,7 +30,7 @@
 #define BOMB_PART_LIFE				-16000
 #define BOMB_PART_SPEED				200
 
-#define DEBRIS_MAX_PARTS			150
+#define DEBRIS_MAX_PARTS			250
 #define DEBRIS_PART_LIFE			-2000
 #define DEBRIS_PART_SPEED			30
 
@@ -38,7 +38,7 @@
 #define STATIC_SMOKE_PART_LIFE	-3200
 #define STATIC_SMOKE_PART_SPEED	1000
 
-#define REACTOR_MAX_PARTS			250
+#define REACTOR_MAX_PARTS			500
 
 //------------------------------------------------------------------------------
 

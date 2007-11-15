@@ -516,13 +516,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 //draw an tObject which renders as a polygon model
-void DrawPolygonObject (tObject *objP)
+void DrawPolygonObject (tObject *objP, int bDepthSort)
 {
 	fix xLight;
 	int imSave;
 	fix xEngineGlow [2];		//element 0 is for engine glow, 1 for headlight
 	int bBlendPolys = 0;
 	int bBrightPolys = 0;
+	int bCloaked;
 	int bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	
 #if SHADOWS
@@ -532,6 +533,16 @@ if (FAST_SHADOWS &&
 	return;
 #endif
 xLight = CalcObjectLight (objP, xEngineGlow);
+if (objP->nType == OBJ_PLAYER)
+	bCloaked = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
+else if (objP->nType == OBJ_ROBOT)
+	bCloaked = objP->cType.aiInfo.CLOAKED;
+else
+	bCloaked = 0;
+if (bCloaked && bDepthSort) {
+	RIAddObject (objP);
+	return;
+	}
 if (DrawHiresObject (objP, xLight, xEngineGlow))
 	return;
 gameStates.render.bBrightObject = bEnergyWeapon;
@@ -640,7 +651,7 @@ time_t tRenderObject;
 int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {
 	short			nObject = OBJ_IDX (objP);
-	int			mldSave, bSpectate = 0;
+	int			mldSave, bSpectate = 0, bDepthSort = gameOpts->render.nPath || (gameOpts->render.bDepthSort > 0);
 	tPosition	savePos;
 #if 0
 	float			fLight [3];
@@ -741,7 +752,7 @@ switch (objP->renderType) {
 				savePos = objP->position;
 				objP->position = gameStates.app.playerPos;
 				}
-			DrawPolygonObject (objP);
+			DrawPolygonObject (objP, bDepthSort);
 			gameOpts->ogl.bLightObjects = bDynObjLight;
 			RenderThrusterFlames (objP);
 			RenderPlayerShield (objP);
@@ -755,7 +766,7 @@ switch (objP->renderType) {
 				return 0;
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_ROBOTS)
 				return 0;
-			DrawPolygonObject (objP);
+			DrawPolygonObject (objP, bDepthSort);
 			RenderThrusterFlames (objP);
 			if (gameStates.render.nShadowPass != 2) {
 				RenderRobotShield (objP);
@@ -774,7 +785,7 @@ switch (objP->renderType) {
 #if 1//def RELEASE
 #endif
 				if (gameData.objs.bIsMissile [objP->id]) {
-					DrawPolygonObject (objP);
+					DrawPolygonObject (objP, bDepthSort);
 #if RENDER_HITBOX
 #	if 0
 					DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);
@@ -793,18 +804,18 @@ switch (objP->renderType) {
 #	endif
 #endif
 					if (objP->nType != OBJ_WEAPON)
-						DrawPolygonObject (objP);
+						DrawPolygonObject (objP, bDepthSort);
 					if (objP->id != SMALLMINE_ID)
 						RenderLightTrail (objP);
 					if (objP->nType == OBJ_WEAPON)
-						DrawPolygonObject (objP);
+						DrawPolygonObject (objP, bDepthSort);
 					}
 				}
 			}
 		else if (objP->nType == OBJ_CNTRLCEN) {
 			if (gameStates.render.nType != 1)
 				return 0;
-			DrawPolygonObject (objP);
+			DrawPolygonObject (objP, bDepthSort);
 			RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
@@ -816,7 +827,7 @@ switch (objP->renderType) {
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
 				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
-				DrawPolygonObject (objP);
+				DrawPolygonObject (objP, bDepthSort);
 				gameData.models.nScale = 0;
 				objP->mType.physInfo.mass = F1_0;
 				objP->mType.physInfo.drag = 512;
@@ -830,7 +841,7 @@ switch (objP->renderType) {
 			}
 		else {
 #if 1//ndef _DEBUG
-			DrawPolygonObject (objP);
+			DrawPolygonObject (objP, bDepthSort);
 #endif
 			DrawDebrisCorona (objP);
 			}
@@ -906,7 +917,7 @@ switch (objP->renderType) {
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (ConvertHostageToModel (objP))
-			DrawPolygonObject (objP);
+			DrawPolygonObject (objP, bDepthSort);
 		else if (gameStates.render.nShadowPass != 2)
 			DrawHostage (objP); 
 		break;
@@ -918,7 +929,7 @@ switch (objP->renderType) {
 			return 0;
 		if (ConvertPowerupToWeapon (objP)) {
 			RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
-			DrawPolygonObject (objP);
+			DrawPolygonObject (objP, bDepthSort);
 			}
 		else if (gameStates.render.nShadowPass != 2)
 			DrawPowerup (objP); 

@@ -3588,7 +3588,7 @@ if (!listen) {
 	return;
 	}
 NetworkListen ();
-if (networkData.bVerifyPlayerJoined!=-1 && !(gameData.app.nFrameCount & 63))
+if ((networkData.bVerifyPlayerJoined != -1) && !(gameData.app.nFrameCount & 63))
 	ResendSyncDueToPacketLossForAllender (); // This will resend to network_player_rejoining
 if (networkData.bSendObjects)
 	NetworkSendObjects ();

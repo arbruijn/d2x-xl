@@ -315,7 +315,7 @@ else {
 		modtime %= playTime;
 	}
 if (ConvertVClipToPolymodel (objP))
-	DrawPolygonObject (objP);
+	DrawPolygonObject (objP, 0);
 else
 	DrawVClipObject (objP, modtime, 0, nVClip, gameData.weapons.color + objP->id);
 }

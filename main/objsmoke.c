@@ -324,11 +324,11 @@ if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
 	if (gameData.smoke.objects [i] < 0) {
 		//LogErr ("creating robot %d smoke\n", i);
-		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, 3.0,
+		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, fl2f (-4.0),
 												  -1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED, 0, i, NULL, 1, -1));
 		}
 	else {
-		SetSmokePartScale (gameData.smoke.objects [i], 0.5);
+		SetSmokePartScale (gameData.smoke.objects [i], fl2f (-4.0));
 		SetSmokeDensity (gameData.smoke.objects [i], nParts, -1);
 		vDir.p.x = d_rand () - F1_0 / 4;
 		vDir.p.y = d_rand () - F1_0 / 4;

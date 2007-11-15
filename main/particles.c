@@ -1205,11 +1205,13 @@ else
 						*vEmittingFace = c.bEmittingFace ? c.vEmittingFace : NULL;
 		fVector		vDeltaf, vPosf;
 
-	#if SMOKE_SLOWMO
+	if (pCloud == (tCloud *) 0x3ef880)
+		pCloud = pCloud;
+#if SMOKE_SLOWMO
 	t = (int) ((nCurTime - c.nMoved) / gameStates.gameplay.slowmo [0].fSpeed);
-	#else
+#else
 	t = nCurTime - c.nMoved;
-	#endif
+#endif
 	nPartSeg = -1;
 	for (i = c.nParts, j = c.nFirstPart; i; i--, j = (j + 1) % c.nPartLimit)
 		if (!UpdateParticle (c.pParticles + j, nCurTime)) {

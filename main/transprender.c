@@ -238,6 +238,18 @@ return RISplitPoly (split, nDepth + 1) && RISplitPoly (split + 1, nDepth + 1);
 
 //------------------------------------------------------------------------------
 
+int RIAddObject (tObject *objP)
+{
+	tRIObject	item;
+	vmsVector	vPos;
+
+item.objP = objP;
+G3TransformPoint (&vPos, &objP->position.vPos, 0);
+return AddRenderItem (riObject, &item, sizeof (item), vPos.p.z, vPos.p.z);
+}
+
+//------------------------------------------------------------------------------
+
 int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive)
 {
@@ -642,6 +654,16 @@ if (item->bAdditive)
 
 //------------------------------------------------------------------------------
 
+void RIRenderObject (tRIObject *item)
+{
+DrawPolygonObject (item->objP, 0);
+glDisable (GL_TEXTURE_2D);
+renderItems.bTextured = 0;
+renderItems.bClientState = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void RIRenderSprite (tRISprite *item)
 {
 if (LoadRenderItemImage (item->bmP, item->bColor, item->nFrame, GL_CLAMP, 0, 1, 0)) {
@@ -845,6 +867,9 @@ for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1;
 			RIFlushParticleBuffer (nType);
 			if ((nType == riTexPoly) || (nType == riFlatPoly)) {
 				RIRenderPoly (&pl->item.poly);
+				}
+			else if (nType == riObject) {
+				RIRenderObject (&pl->item.object);
 				}
 			else if (nType == riSprite) {
 				RIRenderSprite (&pl->item.sprite);

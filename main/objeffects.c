@@ -1446,7 +1446,7 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
 								gameData.weapons.info [objP->id].po_len_to_width_ratio) / 4;
 	gameData.models.nScale = F1_0 / 4;
-	DrawPolygonObject (objP);
+	DrawPolygonObject (objP, 0);
 	gameData.models.nScale = 0;
 #else
 		fVector			vPosf [2], vDirf;

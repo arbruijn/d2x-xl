@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#define LIGHT_VERSION 1
+#define LIGHT_VERSION 2
 
 #ifdef RCS
 static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
@@ -43,6 +43,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 #include "ogl_defs.h"
 #include "oof.h"
 #include "lightmap.h"
+#include "render.h"
 #include "gameseg.h"
 
 #include "game.h"
@@ -996,10 +997,10 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		if (!SEGVIS (m, i))
 			continue;
 		h = VmVecDist (&center, &pl->vPos) - fl2f (pl->rad);
-		if ((pDists [n].nDist = h) <= MAX_LIGHT_RANGE) {
-			pDists [n].nIndex = l;
-			n++;
-			}
+		if (h > MAX_LIGHT_RANGE)
+			continue;
+		pDists [n].nDist = h;
+		pDists [n++].nIndex = l;
 		}
 	if (n)
 		QSortLightDist (pDists, 0, n - 1);
@@ -1020,15 +1021,16 @@ return 1;
 extern int nDbgVertex;
 #endif
 
-int ComputeNearestVertexLights (int i)
+int ComputeNearestVertexLights (int nVertex)
 {
 	vmsVector			*vertP;
 	tDynLight			*pl;
-	int					h, j, k, l, n, nMaxLights;
-	vmsVector			dist;
+	tSide					*sideP;
+	int					h, j, k, l, n, dot, nMaxLights;
+	vmsVector			vLightToVert, v;
 	struct tLightDist	*pDists;
 
-LogErr ("computing nearest vertex lights (%d)\n", i);
+LogErr ("computing nearest vertex lights (%d)\n", nVertex);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
@@ -1036,36 +1038,49 @@ if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLight
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
+#ifdef _DEBUG
+if (nVertex == nDbgVertex)
+	nDbgVertex = nDbgVertex;
+#endif
 nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
 if (nMaxLights > MAX_NEAREST_LIGHTS)
 	nMaxLights = MAX_NEAREST_LIGHTS;
 if (gameStates.app.bMultiThreaded) 
-	j = i ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
+	j = nVertex ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
 else
-	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
-for (vertP = gameData.segs.vertices + i; i < j; i++, vertP++) {
+	INIT_PROGRESS_LOOP (nVertex, j, gameData.segs.nVertices);
+for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) {
 #ifdef _DEBUG
-	if (i == nDbgVertex)
-		i = i;
+	if (nVertex == nDbgVertex)
+		nVertex = nVertex;
 #endif
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
 		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
-			if (h == 0 && (i == 80 || i == 81 || i == 114 || i == 117))
-				h = h;
-		if (!VERTVIS (h, i))
+		if (!VERTVIS (h, nVertex))
 			continue;
-		VmVecSub (&dist, vertP, &pl->vPos);
-		h = VmVecMag (&dist) - (int) (pl->rad * 65536);
-		if ((pDists [n].nDist = h) <= MAX_LIGHT_RANGE) {
-			pDists [n].nIndex = l;
-			n++;
+		VmVecSub (&vLightToVert, vertP, &pl->vPos);
+		h = VmVecNormalize (&vLightToVert) - (int) (pl->rad * 65536);
+		if (h > MAX_LIGHT_RANGE)
+			continue;
+		if ((pl->nSegment >= 0) && (pl->nSide >= 0)) {
+			sideP = SEGMENTS [pl->nSegment].sides + pl->nSide;
+			if ((VmVecDot (sideP->normals, &vLightToVert) < -F1_0 / 6) && 
+				 ((sideP->nType == SIDE_IS_QUAD) || (VmVecDot (sideP->normals + 1, &vLightToVert) < -F1_0 / 6)))
+				continue;
 			}
-		}
+		pDists [n].nDist = h;
+		pDists [n].nIndex = l;
+		n++;
+	sideP = SEGMENTS [pl->nSegment].sides + pl->nSide;
+	dot = VmVecDot (sideP->normals, &vLightToVert);
+	dot = VmVecDot (sideP->normals + 1, &vLightToVert);
+	COMPUTE_SIDE_CENTER_I (&v, pl->nSegment, pl->nSide);
+	}
 	if (n)
 		QSortLightDist (pDists, 0, n - 1);
 	h = (nMaxLights < n) ? nMaxLights : n;
-	k = i * MAX_NEAREST_LIGHTS;
+	k = nVertex * MAX_NEAREST_LIGHTS;
 	for (l = 0; l < h; l++)
 		gameData.render.lights.dynamic.nNearestVertLights [k + l] = pDists [l].nIndex;
 	for (; l < MAX_NEAREST_LIGHTS; l++)
@@ -1543,8 +1558,6 @@ if (bSemaphore)
 	return 0;
 bSemaphore = 1;
 gameData.segs.bSegVis [nSrcSeg * SEGVIS_FLAGS + (nDestSeg >> 3)] |= (1 << (nDestSeg & 7));
-if (SEGVIS (2,16))
-	nSrcSeg = nSrcSeg;
 bSemaphore = 0;
 return 1;
 }
@@ -1568,7 +1581,7 @@ return 0;
 
 void ComputeVertexVisibility (int startI)
 {
-	int			i, j, v, endI;
+	int			i, j, v, nDist, endI;
 	vmsVector	c, d, *vertP;
 	tSegment		*segP;
 	tSide			*sideP;
@@ -1610,7 +1623,11 @@ for (i = startI, segP = SEGMENTS + i; i < endI; i++, segP++) {
 		for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 			COMPUTE_SIDE_CENTER_I (&c, i, j);
 			VmVecSub (&d, &c, vertP);
-			if (VmVecMag (&d) > MAX_LIGHT_RANGE)
+			nDist = VmVecNormalize (&d);
+			if (nDist > MAX_LIGHT_RANGE)
+				continue;
+			if ((VmVecDot (sideP->normals, &d) < -F1_0 / 6) || 
+				 ((sideP->nType != SIDE_IS_QUAD) && (VmVecDot (sideP->normals + 1, &d) < -F1_0 / 6)))
 				continue;
 			VmVecInc (&c, sideP->normals);
 			if (CanSeePoint (NULL, &c, vertP, i)) {
@@ -1623,22 +1640,70 @@ for (i = startI, segP = SEGMENTS + i; i < endI; i++, segP++) {
 }
 
 //------------------------------------------------------------------------------
+// Check segment to segment visibility by calling the renderer's visibility culling routine
+// Do this for each side of the current segment, using the side normal(s) as forward vector
+// of the viewer
+
+
+void ComputeSingleSegmentVisibility (short nSegment)
+{
+	tSegment		*segP;
+	tSide			*sideP;
+	short			*vertP;
+	short			nSide, i, j, k;
+	vmsVector	vNormal, vPos;
+	vmsAngVec	vAngles;
+	vmsMatrix	mOrient;
+
+gameStates.ogl.bUseTransform = 1;
+#ifdef _DEBUG
+if (nSegment == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
+COMPUTE_SEGMENT_CENTER_I (&vPos, nSegment);
+for (sideP = SEGMENTS [nSegment].sides, nSide = 0; nSide < 6; nSide++) {
+	VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
+	VmVecScale (&vNormal, -F1_0 / 2);
+	VmExtractAnglesVector (&vAngles, &vNormal);
+	VmAngles2Matrix (&mOrient, &vAngles);
+	G3SetViewMatrix (&vPos, &mOrient, gameStates.render.xZoom);
+	BuildRenderSegList (nSegment, 0);		
+	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
+		if (((j = gameData.render.mine.nSegRenderList [i]) >= 0) && !SEGVIS (nSegment, j)) {
+			SetSegVis (nSegment, j);
+			for (k = 8, vertP = SEGMENTS [j].verts; k; k--, vertP++)
+				SetVertVis (nSegment, *vertP, 1);
+			}
+		}
+	}
+gameStates.ogl.bUseTransform = 0;
+}
+
+//------------------------------------------------------------------------------
 
 void ComputeSegmentVisibility (int startI)
 {
 	int			c, i, j, k, v, endI;
 	short			*psv;
 	tSegment		*segP;
+	tViewInfo	vi = viewInfo;
 
 LogErr ("computing segment visibility (%d)\n", startI);
-if (startI <= 0)
+if (startI <= 0) {
+	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS);
 	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
+	}
 if (gameStates.app.bMultiThreaded) {
 	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 	}
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 // every segment can see itself and its neighbours
+#if 1
+for (i = startI; i < endI; i++)
+	ComputeSingleSegmentVisibility (i);
+viewInfo = vi;
+#else
 for (i = startI, segP = gameData.segs.segments + startI; i < endI; i++, segP++) {
 	while (!SetSegVis (i, i))
 		;
@@ -1664,7 +1729,9 @@ for (i = startI; i < endI; i++) {
 			}
 		}
 	}
+#endif
 }
+
 
 //------------------------------------------------------------------------------
 
@@ -1751,7 +1818,7 @@ static void SortLightsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
-	ComputeVertexVisibility (loadIdx);
+	ComputeSegmentVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
@@ -1759,12 +1826,17 @@ if (loadOp == 0) {
 		}
 	}
 if (loadOp == 1) {
-	ComputeSegmentVisibility (loadIdx);
+#if 1
+	loadIdx = 0;
+	loadOp = 2;
+#else
+	ComputeVertexVisibility (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp = 2;
 		}
+#endif
 	}
 if (loadOp == 2) {
 	ComputeNearestSegmentLights (loadIdx);
@@ -1808,8 +1880,11 @@ return
 #if !SHADOWS
 	(!SHOW_DYN_LIGHT && gameStates.app.bD2XLevel) ? 0 :
 #endif
-	PROGRESS_STEPS (gameData.segs.nSegments) * 3 +
-	PROGRESS_STEPS (gameData.segs.nVertices);
+	PROGRESS_STEPS (gameData.segs.nSegments) * 3
+#if 0
+	+ PROGRESS_STEPS (gameData.segs.nVertices)
+#endif
+	;
 }
 
 //------------------------------------------------------------------------------
