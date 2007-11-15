@@ -1644,7 +1644,6 @@ for (i = startI, segP = SEGMENTS + i; i < endI; i++, segP++) {
 // Do this for each side of the current segment, using the side normal(s) as forward vector
 // of the viewer
 
-
 void ComputeSingleSegmentVisibility (short nSegment)
 {
 	tSegment		*segP;
@@ -1686,7 +1685,6 @@ void ComputeSegmentVisibility (int startI)
 	int			c, i, j, k, v, endI;
 	short			*psv;
 	tSegment		*segP;
-	tViewInfo	vi = viewInfo;
 
 LogErr ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
@@ -1700,9 +1698,10 @@ else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 // every segment can see itself and its neighbours
 #if 1
+G3StartFrame (0, 0);
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
-viewInfo = vi;
+G3EndFrame ();
 #else
 for (i = startI, segP = gameData.segs.segments + startI; i < endI; i++, segP++) {
 	while (!SetSegVis (i, i))
@@ -1880,10 +1879,8 @@ return
 #if !SHADOWS
 	(!SHOW_DYN_LIGHT && gameStates.app.bD2XLevel) ? 0 :
 #endif
-	PROGRESS_STEPS (gameData.segs.nSegments) * 3
-#if 0
-	+ PROGRESS_STEPS (gameData.segs.nVertices)
-#endif
+	PROGRESS_STEPS (gameData.segs.nSegments) * 2 +
+	PROGRESS_STEPS (gameData.segs.nVertices)
 	;
 }
 
@@ -2093,12 +2090,16 @@ if (LoadPrecompiledLights (nLevel))
 	return;
 else 
 #if MULTI_THREADED_PRECALC
-	if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
+if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
+	LogErr ("Computing segment visibility\n");
+	ComputeSegmentVisibility (-1);
 	LogErr ("Starting vertex visibility calculation threads\n");
 	StartOglLightThreads (VertVisThread);
+#if 0
 	LogErr ("Starting segment visibility calculation threads\n");
 	StartOglLightThreads (SegVisThread);
+#endif
 	LogErr ("Starting segment light calculation threads\n");
 	StartOglLightThreads (SegLightsThread);
 	LogErr ("Starting vertex light calculation threads\n");
@@ -2114,10 +2115,12 @@ else {
 							LoadMineGaugeSize () + PagingGaugeSize (), 
 							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 	else {
-		LogErr ("Computing vertex visibility\n");
-		ComputeVertexVisibility (-1);
 		LogErr ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
+#if 0
+		LogErr ("Computing vertex visibility\n");
+		ComputeVertexVisibility (-1);
+#endif
 		LogErr ("Computing segment lights\n");
 		ComputeNearestSegmentLights (-1);
 		LogErr ("Computing vertex lights\n");

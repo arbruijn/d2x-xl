@@ -1915,15 +1915,15 @@ return pDest;
 float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc)
 {
 OOF_GlIdent (pDest);
-pDest [0] = ((float) pSrc->rVec.p.x) / 65536.0f;
-pDest [4] = ((float) pSrc->rVec.p.y) / 65536.0f;
-pDest [8] = ((float) pSrc->rVec.p.z) / 65536.0f;
-pDest [1] = ((float) pSrc->uVec.p.x) / 65536.0f;
-pDest [5] = ((float) pSrc->uVec.p.y) / 65536.0f;
-pDest [9] = ((float) pSrc->uVec.p.z) / 65536.0f;
-pDest [2] = ((float) pSrc->fVec.p.x) / 65536.0f;
-pDest [6] = ((float) pSrc->fVec.p.y) / 65536.0f;
-pDest [10] = ((float) pSrc->fVec.p.z) / 65536.0f;
+pDest [0] = f2fl (pSrc->rVec.p.x);
+pDest [4] = f2fl (pSrc->rVec.p.y);
+pDest [8] = f2fl (pSrc->rVec.p.z);
+pDest [1] = f2fl (pSrc->uVec.p.x);
+pDest [5] = f2fl (pSrc->uVec.p.y);
+pDest [9] = f2fl (pSrc->uVec.p.z);
+pDest [2] = f2fl (pSrc->fVec.p.x);
+pDest [6] = f2fl (pSrc->fVec.p.y);
+pDest [10] = f2fl (pSrc->fVec.p.z);
 return pDest;
 }
 

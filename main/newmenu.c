@@ -1216,10 +1216,10 @@ ubyte bHackDblClickMenuMode = 0;
 
 void NMDrawCloseBox (int x, int y)
 {
-	GrSetColorRGB (0, 0, 0, 255);
-	GrRect (x + CLOSE_X, y + CLOSE_Y, x + CLOSE_X + CLOSE_SIZE, y + CLOSE_Y + CLOSE_SIZE);
-	GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
-	GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE - LHX (1), y + CLOSE_Y + CLOSE_SIZE - LHX (1));
+GrSetColorRGB (0, 0, 0, 255);
+GrRect (x + CLOSE_X, y + CLOSE_Y, x + CLOSE_X + CLOSE_SIZE, y + CLOSE_Y + CLOSE_SIZE);
+GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
+GrRect (x + CLOSE_X + LHX (1), y + CLOSE_Y + LHX (1), x + CLOSE_X + CLOSE_SIZE - LHX (1), y + CLOSE_Y + CLOSE_SIZE - LHX (1));
 }
 
 //------------------------------------------------------------------------------
