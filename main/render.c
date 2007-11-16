@@ -1162,7 +1162,7 @@ else {
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv(gameStates.render.xZoom, gameStates.render.nZoomFactor));
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor));
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 		gameStates.render.nMinZoomFactor = (fix) (F1_0 * gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
@@ -1511,12 +1511,12 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 	int		bRotated, nSegment, bNotProjected;
 	window	*curPortal;
 	short		childList [MAX_SIDES_PER_SEGMENT];		//list of ordered sides to process
-	int		nChildren, bCheckBehind;					//how many sides in childList
+	int		nChildren, bCullIfBehind;					//how many sides in childList
 	tSegment	*segP;
 
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
-bCheckBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
+bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
 BumpVisitedFlag ();
 memset (gameData.render.mine.nRenderPos, -1, sizeof (gameData.render.mine.nRenderPos [0]) * (gameData.segs.nSegments));
 //memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_SEGMENTS_D2X);
@@ -1585,7 +1585,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 				nChildSeg = nChildSeg;
 #endif
 			if ((bWindowCheck || ((nChildSeg > -1) && !VISITED (nChildSeg))) && (wid & WID_RENDPAST_FLAG)) {
-				if (bCheckBehind) {
+				if (bCullIfBehind) {
 					andCodes = 0xff;
 					s2v = sideToVerts [nChild];
 					if (!bRotated) {
@@ -1725,6 +1725,31 @@ for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	if (gameData.render.mine.nSegRenderList [i] >= 0)
 		gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [i]] = gameData.render.mine.nVisible;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void BuildRenderSegListFast (short nStartSeg, int nWindow)
+{
+	int	nSegment;
+
+if (1 || !gameOpts->render.nPath)
+	BuildRenderSegList (nStartSeg, nWindow);
+else {
+	gameData.render.mine.nRenderSegs = 0;
+	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+#ifdef _DEBUG
+		if (nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
+		if (SEGVIS (nStartSeg, nSegment)) {
+			gameData.render.mine.bVisible [nSegment] = gameData.render.mine.nVisible;
+			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = nSegment;
+			RotateVertexList (8, SEGMENTS [nSegment].verts);
+			}
+		}
+	}
+HUDMessage (0, "%d", gameData.render.mine.nRenderSegs);
 }
 
 //------------------------------------------------------------------------------

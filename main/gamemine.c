@@ -1644,34 +1644,39 @@ for (i = startI, segP = SEGMENTS + i; i < endI; i++, segP++) {
 // Do this for each side of the current segment, using the side normal(s) as forward vector
 // of the viewer
 
-void ComputeSingleSegmentVisibility (short nSegment)
+void ComputeSingleSegmentVisibility (short nStartSeg)
 {
 	tSegment		*segP;
 	tSide			*sideP;
 	short			*vertP;
-	short			nSide, i, j, k;
-	vmsVector	vNormal, vPos;
+	short			nSegment, nSide, i, j;
+	vmsVector	vNormal;
 	vmsAngVec	vAngles;
-	vmsMatrix	mOrient;
+	tObject		viewer;
 
 gameStates.ogl.bUseTransform = 1;
 #ifdef _DEBUG
-if (nSegment == nDbgSeg)
+if (nStartSeg == nDbgSeg)
 	nDbgSeg = nDbgSeg;
 #endif
-COMPUTE_SEGMENT_CENTER_I (&vPos, nSegment);
-for (sideP = SEGMENTS [nSegment].sides, nSide = 0; nSide < 6; nSide++) {
+gameData.objs.viewer = &viewer;
+viewer.nSegment = nStartSeg;
+COMPUTE_SEGMENT_CENTER_I (&viewer.position.vPos, nStartSeg);
+for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
 	VmVecScale (&vNormal, -F1_0 / 2);
 	VmExtractAnglesVector (&vAngles, &vNormal);
-	VmAngles2Matrix (&mOrient, &vAngles);
-	G3SetViewMatrix (&vPos, &mOrient, gameStates.render.xZoom);
-	BuildRenderSegList (nSegment, 0);		
+	VmAngles2Matrix (&viewer.position.mOrient, &vAngles);
+	G3StartFrame (0, 0);
+	RenderStartFrame ();
+	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom);
+	BuildRenderSegList (nStartSeg, 0);		
+	G3EndFrame ();
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (((j = gameData.render.mine.nSegRenderList [i]) >= 0) && !SEGVIS (nSegment, j)) {
-			SetSegVis (nSegment, j);
-			for (k = 8, vertP = SEGMENTS [j].verts; k; k--, vertP++)
-				SetVertVis (nSegment, *vertP, 1);
+		if (((nSegment = gameData.render.mine.nSegRenderList [i]) >= 0) && !SEGVIS (nStartSeg, nSegment)) {
+			SetSegVis (nStartSeg, nSegment);
+			for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++)
+				SetVertVis (nStartSeg, *vertP, 1);
 			}
 		}
 	}
@@ -1698,10 +1703,8 @@ else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 // every segment can see itself and its neighbours
 #if 1
-G3StartFrame (0, 0);
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
-G3EndFrame ();
 #else
 for (i = startI, segP = gameData.segs.segments + startI; i < endI; i++, segP++) {
 	while (!SetSegVis (i, i))
