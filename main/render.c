@@ -1733,7 +1733,7 @@ void BuildRenderSegListFast (short nStartSeg, int nWindow)
 {
 	int	nSegment;
 
-if (1 || !gameOpts->render.nPath)
+if (!gameOpts->render.nPath)
 	BuildRenderSegList (nStartSeg, nWindow);
 else {
 	gameData.render.mine.nRenderSegs = 0;

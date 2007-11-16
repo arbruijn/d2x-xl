@@ -922,9 +922,8 @@ for (i = nSegments = nFaces = 0; i < gameData.render.mine.nRenderSegs; i++) {
 	else
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 	}
-if (!nFaces)
-	tiRender.nMiddle = 0;
-else {
+tiRender.nMiddle = 0;
+if (nFaces) {
 	for (h = nFaces / 2, i = j = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
