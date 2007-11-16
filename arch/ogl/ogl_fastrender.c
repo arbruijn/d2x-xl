@@ -567,7 +567,7 @@ if (!bBlend)
 	glDisable (GL_BLEND);
 glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
 
-if (!bMultiTexture && bOverlay) {
+if (!bMultiTexture && (bOverlay || bMonitor)) {
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;
 	if (bTextured) {
 		INIT_TMU (InitTMU0, GL_TEXTURE0, bmTop, 1);

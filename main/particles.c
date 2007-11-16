@@ -660,6 +660,7 @@ if (bufferBrightness < 0)
 if (iBuffer) {
 	tRgbaColorf	color = {bufferBrightness, bufferBrightness, bufferBrightness, 1};
 	bufferBrightness = brightness;
+	glEnable (GL_BLEND);
 	if (gameStates.ogl.bShadersOk) {
 		if (gameData.smoke.nLastType)
 			glUseProgramObject (0);
@@ -809,11 +810,6 @@ else if (pParticle->nFade == 0) {
 	}
 pc = pParticle->color;
 //pc.alpha *= /*gameOpts->render.smoke.bDisperse ? decay2 :*/ decay;
-if (nType)
-	;//pc.alpha /= 2;
-else
-	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
-pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
 if (nType) {
 	u = v = 0.0f;
 	d = 1.0f;
@@ -845,6 +841,16 @@ if (nType) {
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;
+	}
+else {
+#if 1
+	pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
+	pc.alpha *= pc.alpha;
+	pc.alpha = pow (pc.alpha, 1.0 / 3.0);
+#else
+	pc.alpha = (float) cos ((double) (sqr (1 - decay) * Pi)) / 2 + 0.5f;
+#endif
+	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
 	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
 	decay = (float) sqrt (decay);
