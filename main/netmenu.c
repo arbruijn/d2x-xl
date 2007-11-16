@@ -660,8 +660,8 @@ if (optDmgInd >= 0) {
 	}
 if (optHeadlights >= 0) {
 	v = menus [optHeadlights].value;
-	if (v == extraGameInfo [1].bHeadLights) {
-		extraGameInfo [1].bHeadLights = !v;
+	if (v == extraGameInfo [1].headlight.bAvailable) {
+		extraGameInfo [1].headlight.bAvailable = !v;
 		*key = -2;
 		return;
 		}
@@ -754,9 +754,9 @@ do {
 	if (extraGameInfo [1].bDarkness) {
 		ADD_CHECK (opt, TXT_POWERUPLIGHTS, !extraGameInfo [1].bPowerupLights, KEY_P, HTX_POWERUPLIGHTS);
 		optPowerupLights = opt++;
-		ADD_CHECK (opt, TXT_HEADLIGHTS, !extraGameInfo [1].bHeadLights, KEY_H, HTX_HEADLIGHTS);
+		ADD_CHECK (opt, TXT_HEADLIGHTS, !extraGameInfo [1].headlight.bAvailable, KEY_H, HTX_HEADLIGHTS);
 		optHeadlights = opt++;
-		if (extraGameInfo [1].bHeadLights) {
+		if (extraGameInfo [1].headlight.bAvailable) {
 			sprintf (szSpotSize + 1, TXT_SPOTSIZE, GT (664 + extraGameInfo [1].nSpotSize));
 			strupr (szSpotSize + 1);
 			*szSpotSize = *(TXT_SPOTSIZE - 1);
@@ -820,7 +820,7 @@ do {
 	extraGameInfo [1].bDarkness = (ubyte) m [optDarkness].value;
 	if (optDarkness >= 0) {
 		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
-			extraGameInfo [1].bHeadLights = !m [optHeadlights].value;
+			extraGameInfo [1].headlight.bAvailable = !m [optHeadlights].value;
 			extraGameInfo [1].bPowerupLights = !m [optPowerupLights].value;
 			}
 		}

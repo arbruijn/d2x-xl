@@ -108,7 +108,7 @@ static tParticleVertex particleBuffer [VERT_BUF_SIZE];
 static float bufferBrightness = -1;
 static int iBuffer = 0;
 
-#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 32 : 64)
+#define SMOKE_START_ALPHA		(gameOpts->render.smoke.bDisperse ? 96 : 128)
 
 //	-----------------------------------------------------------------------------
 
@@ -843,17 +843,23 @@ if (nType) {
 	pc.blue /= 50.0f;
 	}
 else {
-#if 1
+#if 0
 	pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
-	pc.alpha *= pc.alpha;
-	pc.alpha = (float) pow (pc.alpha, 1.0 / 3.0);
+#	if 1
+	pc.alpha = (float) pow (pc.alpha * pc.alpha, 1.0 / 3.0);
+#	endif
 #else
-	pc.alpha = (float) cos ((double) (sqr (1 - decay) * Pi)) / 2 + 0.5f;
+	float fFade = (float) cos ((double) sqr (1 - decay) * Pi) / 2 + 0.5f;
+	pc.alpha *= fFade;
 #endif
 	pc.alpha *= alphaScale [gameOpts->render.smoke.nAlpha [gameOpts->render.smoke.bSyncSizes ? 0 : pParticle->nClass]];
 	}
 if (gameOpts->render.smoke.bDisperse && !nType) {
+#if 0
 	decay = (float) sqrt (decay);
+#else
+	decay = pow (decay * decay * decay, 1.0 / 5.0);
+#endif
 	vOffset.p.x = f2fl (pParticle->nWidth) / decay;
 	vOffset.p.y = f2fl (pParticle->nHeight) / decay;
 	}

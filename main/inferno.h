@@ -360,7 +360,7 @@ typedef struct tGameplayOptions {
 	int nAutoLeveling;
 	int bEscortHotKeys;
 	int bSkipBriefingScreens;
-	int bHeadlightOn;
+	int bHeadLightOnWhenPickedUp;
 	int bShieldWarning;
 	int bInventory;
 	int bIdleAnims;
@@ -814,7 +814,7 @@ typedef struct tRenderStates {
 	int bUseDynLight;
 	int bApplyDynLight;
 	int nSoften;
-	int bHeadlightOn;
+	int bHeadLightOn;
 	int bHaveSkyBox;
 	int bAllVisited;
 	int bViewDist;

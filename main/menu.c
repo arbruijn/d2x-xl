@@ -1300,13 +1300,6 @@ if (gameStates.app.nDifficultyLevel != v) {
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->rebuild = 1;
 	}
-m = menus + gplayOpts.nHeadLightAvailable;
-v = m->value;
-if (extraGameInfo [0].headlight.bAvailable != v) {
-	extraGameInfo [0].headlight.bAvailable = v;
-	*key = -2;
-	return;
-	}
 for (i = 0; i < 3; i++)
 	if (menus [nOptVerFilter + i].value) {
 		gameOpts->app.nVersionFilter = i + 1;
@@ -3698,6 +3691,14 @@ if (gameStates.app.nDifficultyLevel != v) {
 	m->rebuild = 1;
 	}
 
+m = menus + gplayOpts.nHeadLightAvailable;
+v = m->value;
+if (extraGameInfo [0].headlight.bAvailable != v) {
+	extraGameInfo [0].headlight.bAvailable = v;
+	*key = -2;
+	return;
+	}
+
 if (gameOpts->app.bExpertMode) {
 	m = menus + gplayOpts.nSpawnDelay;
 	v = (m->value - 1) * 5;
@@ -3738,7 +3739,7 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
-			optAwareness = -1, optHeadLightBuiltIn = -1, optHeadLightPowerDrain = -1;
+			optAwareness = -1, optHeadLightBuiltIn = -1, optHeadLightPowerDrain = -1, optHeadLightOnWhenPickedUp = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 
@@ -3756,9 +3757,11 @@ do {
 		gplayOpts.nSpawnDelay = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_HEADLIGHT_ON, extraGameInfo [0].headlight.bAvailable, KEY_H, HTX_MISC_HEADLIGHT);
+		ADD_CHECK (opt, TXT_HEADLIGHT_AVAILABLE, extraGameInfo [0].headlight.bAvailable, KEY_A, HTX_HEADLIGHT_AVAILABLE);
 		gplayOpts.nHeadLightAvailable = opt++;
 		if (extraGameInfo [0].headlight.bAvailable) {
+			ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadLightOnWhenPickedUp, KEY_O, HTX_MISC_HEADLIGHT);
+			optHeadLightOnWhenPickedUp = opt++;
 			ADD_CHECK (opt, TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
 			optHeadLightBuiltIn = opt++;
 			ADD_CHECK (opt, TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_H, HTX_HEADLIGHT_POWERDRAIN);
@@ -3847,6 +3850,7 @@ if (gameOpts->app.bExpertMode) {
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
 	GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
+	GET_VAL (gameOpts->gameplay.bHeadLightOnWhenPickedUp, optHeadLightOnWhenPickedUp);
 	GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadLightPowerDrain);
 	GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadLightBuiltIn);
 	}
@@ -3862,7 +3866,7 @@ else {
 	gameOpts->gameplay.bInventory = 0;
 	gameOpts->gameplay.bIdleAnims = 0;
 	gameOpts->gameplay.nAIAwareness = 0;
-	gameOpts->gameplay.bHeadlightOn = 0;
+	gameOpts->gameplay.bHeadLightOnWhenPickedUp = 0;
 #endif
 	}
 for (j = 0; j < 3; j++)
@@ -4377,7 +4381,7 @@ do {
 		optMissileView = opt++;
 		ADD_CHECK (opt, TXT_GUIDED_MAINVIEW, gameOpts->render.cockpit.bGuidedInMainView, KEY_G, HTX_CPIT_GUIDEDVIEW);
 		optGuided = opt++;
-		ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOn, KEY_H, HTX_MISC_HEADLIGHT);
+		ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadLightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
 		optHeadlight = opt++;
 		}
 	ADD_CHECK (opt, TXT_ESCORT_KEYS, gameOpts->gameplay.bEscortHotKeys, KEY_K, HTX_MISC_ESCORTKEYS);
@@ -4455,7 +4459,7 @@ do {
 		gameOpts->render.cockpit.bReticle = m [optReticle].value;
 		gameOpts->render.cockpit.bMissileView = m [optMissileView].value;
 		gameOpts->render.cockpit.bGuidedInMainView = m [optGuided].value;
-		gameOpts->gameplay.bHeadlightOn = m [optHeadlight].value;
+		gameOpts->gameplay.bHeadLightOnWhenPickedUp = m [optHeadlight].value;
 		}
 	gameOpts->gameplay.bEscortHotKeys = m [optEscort].value;
 	gameOpts->multi.bUseMacros = m [optUseMacros].value;

@@ -1531,7 +1531,7 @@ if (i) {
 	gameOptions [1].gameplay.nAutoLeveling = 1;
 	gameOptions [1].gameplay.bEscortHotKeys = 1;
 	gameOptions [1].gameplay.bSkipBriefingScreens = 0;
-	gameOptions [1].gameplay.bHeadlightOn = 1;
+	gameOptions [1].gameplay.bHeadLightOnWhenPickedUp = 1;
 	gameOptions [1].gameplay.bShieldWarning = 0;
 	gameOptions [1].gameplay.bInventory = 0;
 	gameOptions [1].gameplay.bIdleAnims = 0;
@@ -1545,7 +1545,7 @@ else {
 	gameOptions [0].gameplay.nAutoLeveling = 1;
 	gameOptions [0].gameplay.bEscortHotKeys = 1;
 	gameOptions [0].gameplay.bSkipBriefingScreens = 0;
-	gameOptions [0].gameplay.bHeadlightOn = 0;
+	gameOptions [0].gameplay.bHeadLightOnWhenPickedUp = 0;
 	gameOptions [0].gameplay.bShieldWarning = 0;
 	gameOptions [0].gameplay.bInventory = 0;
 	gameOptions [0].gameplay.bIdleAnims = 0;
@@ -2018,7 +2018,7 @@ gameStates.render.bHaveStencilBuffer = 0;
 gameStates.render.nRenderPass = -1;
 gameStates.render.nShadowPass = 0;
 gameStates.render.bShadowMaps = 0;
-gameStates.render.bHeadlightOn = 0;
+gameStates.render.bHeadLightOn = 0;
 gameStates.render.bPaletteFadedOut = 0;
 gameStates.render.nModelQuality = 3;
 gameStates.render.nType = -1;

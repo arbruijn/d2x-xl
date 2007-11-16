@@ -2809,7 +2809,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 		if (objP->id == POW_AMMORACK && ng && !netGame.DoAmmoRack)
 			BashToShield (i, "Ammo rack");
 		if (objP->id == POW_HEADLIGHT && ng && 
-			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (bHeadLights, 0, 0, 0))))
+			 (!netGame.DoHeadlight || (EGI_FLAG (bDarkness, 0, 0, 0) && !EGI_FLAG (headlight.bAvailable, 0, 1, 0))))
 			BashToShield (i, "Headlight");
 		if (objP->id == POW_LASER && ng && !netGame.DoLaserUpgrade)
 			BashToShield (i, "Laser powerup");

@@ -790,12 +790,12 @@ switch (objP->id) {
 		break;
 
 	case POW_HEADLIGHT:
-		sprintf (szTemp, TXT_GOT_HEADLIGHT, EGI_FLAG (headlight.bAvailable, 0, 0, 1) ? TXT_ON : TXT_OFF);
+		sprintf (szTemp, TXT_GOT_HEADLIGHT, (EGI_FLAG (headlight.bAvailable, 0, 0, 1) && gameOpts->gameplay.bHeadLightOnWhenPickedUp) ? TXT_ON : TXT_OFF);
 		HUDInitMessage (szTemp);
 		bUsed = PickupEquipment (objP, PLAYER_FLAGS_HEADLIGHT, TXT_THE_HEADLIGHT, szTemp, nPlayer);
 		if (bUsed < 0) {
 			if (ISLOCALPLAYER (nPlayer)) {
-				if (EGI_FLAG (headlight.bAvailable, 0, 0, 1) && (!EGI_FLAG (bDarkness, 0, 0, 0) || EGI_FLAG (bHeadLights, 0, 0, 0)))
+				if (EGI_FLAG (headlight.bAvailable, 0, 0, 1)  && gameOpts->gameplay.bHeadLightOnWhenPickedUp)
 					playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 				if IsMultiGame
 					MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);

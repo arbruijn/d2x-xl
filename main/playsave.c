@@ -347,7 +347,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].entropy.bBrightenRooms, 0, 0);
 		RP (extraGameInfo [i].entropy.bPlayerHandicap, 0, 0);
 
-		RP (extraGameInfo [i].headlight.bAvailable, 0, 0);
+		RP (extraGameInfo [i].headlight.bAvailable, i, 0);
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
 		RP (extraGameInfo [i].headlight.bBuiltIn, 0, 0);
 
@@ -514,7 +514,6 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].bFastPitch, i, 0);
 	RP (extraGameInfo [i].bFlickerLights, i, 0);
 	RP (extraGameInfo [i].bFriendlyIndicators, i, 0);
-	RP (extraGameInfo [i].bHeadLights, i, 0);
 	RP (extraGameInfo [i].bMslLockIndicators, i, 0);
 	RP (extraGameInfo [i].bMouseLook, i, 0);
 	RP (extraGameInfo [i].bPowerupLights, i, 0);
@@ -1796,7 +1795,7 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 121) {
 		extraGameInfo [i].bCloakedIndicators = CFReadByte (fp);
 		extraGameInfo [i].bFriendlyIndicators = CFReadByte (fp);
-		extraGameInfo [i].bHeadLights = CFReadByte (fp);
+		extraGameInfo [i].headlight.bAvailable = CFReadByte (fp);
 		extraGameInfo [i].bPowerupLights = CFReadByte (fp);
 		extraGameInfo [i].nSpotSize = CFReadByte (fp);
 		extraGameInfo [i].nSpotStrength = extraGameInfo [i].nSpotSize;

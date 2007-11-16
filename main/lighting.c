@@ -265,7 +265,7 @@ void ApplyLight (
 
 if (objP && SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
-		if (!gameData.render.vertColor.bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
+		if (EGI_FLAG (headlight.bAvailable, 0, 0, 0)) {
 			if (!HeadLightIsOn (objP->id)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
@@ -333,7 +333,7 @@ if (xObjIntensity) {
 		int	headlightShift = 0;
 		fix	maxHeadlightDist = F1_0 * 200;
 		if (objP && (objP->nType == OBJ_PLAYER))
-			if ((gameStates.render.bHeadlightOn = HeadLightIsOn (objP->id))) {
+			if ((gameStates.render.bHeadLightOn = HeadLightIsOn (objP->id))) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;

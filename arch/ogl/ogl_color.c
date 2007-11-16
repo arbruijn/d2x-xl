@@ -202,7 +202,7 @@ void SetTMapColor (tUVL *uvlList, int i, grsBitmap *bmP, int bResetColor, tFaceC
 
 #if SHADOWS
 if (gameStates.ogl.bScaleLight)
-	s *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
+	s *= gameStates.render.bHeadLightOn ? 0.4f : 0.3f;
 #endif
 if (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)
 	OglColor4sf (l, l, l, s);
@@ -571,7 +571,7 @@ if (!FAST_SHADOWS && (gameStates.render.nShadowPass == 3))
 else if (FAST_SHADOWS || (gameStates.render.nShadowPass != 1))
 	; //fScale = 1.0f;
 else
-	fScale *= gameStates.render.bHeadlightOn ? 0.4f : 0.3f;
+	fScale *= gameStates.render.bHeadLightOn ? 0.4f : 0.3f;
 if (fScale > 1)
 	fScale = 1;
 if (gameData.render.lights.dynamic.material.bValid) {

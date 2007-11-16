@@ -1951,7 +1951,10 @@ if (!gameStates.app.bCacheLights)
 CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
 				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
 				 NULL, szFilename, NULL);
-sprintf (szFullname, "%s-%d.pre", szFilename,nLevel);
+if (nLevel < 0)
+	sprintf (szFullname, "%s-s%d.pre", szFilename, -nLevel);
+else
+	sprintf (szFullname, "%s-%d.pre", szFilename, nLevel);
 if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "rb", 0)))
 	return 0;
 bOk = (CFRead (&pfh, sizeof (pfh), 1, fp) == 1);
@@ -1987,7 +1990,10 @@ if (!gameStates.app.bCacheLights)
 CFSplitPath (*gameHogFiles.AltHogFiles.szName ? gameHogFiles.AltHogFiles.szName : 
 				 gameStates.app.bD1Mission ? gameHogFiles.D1HogFiles.szName : gameHogFiles.D2HogFiles.szName, 
 				 NULL, szFilename, NULL);
-sprintf (szFullname, "%s-%d.pre", szFilename,nLevel);
+if (nLevel < 0)
+	sprintf (szFullname, "%s-s%d.pre", szFilename, -nLevel);
+else
+	sprintf (szFullname, "%s-%d.pre", szFilename, nLevel);
 if (!(fp = CFOpen (szFullname, gameFolders.szTempDir, "wb", 0)))
 	return 0;
 bOk = (CFWrite (&pfh, sizeof (pfh), 1, fp) == 1) &&

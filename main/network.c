@@ -1525,7 +1525,7 @@ extraGameInfo [1].bDualMissileLaunch = egi1Save.bDualMissileLaunch;
 extraGameInfo [1].bDisableReactor = egi1Save.bDisableReactor;
 extraGameInfo [1].bRotateLevels = egi1Save.bRotateLevels;
 extraGameInfo [1].bDarkness = egi1Save.bDarkness;
-extraGameInfo [1].bHeadLights = egi1Save.bHeadLights;
+extraGameInfo [1].headlight.bAvailable = egi1Save.headlight.bAvailable;
 extraGameInfo [1].bPowerupLights = egi1Save.bPowerupLights;
 extraGameInfo [1].bBrightObjects = egi1Save.bBrightObjects;
 extraGameInfo [1].nSpotSize = egi1Save.nSpotSize;
@@ -4617,7 +4617,6 @@ else {
 	LogErr ("   bFluidPhysics: %d\n", extraGameInfo [1].bFluidPhysics);
 	LogErr ("   nWeaponDropMode: %d\n", extraGameInfo [1].nWeaponDropMode);
 	LogErr ("   bDarkness: %d\n", extraGameInfo [1].bDarkness);
-	LogErr ("   bHeadLights: %d\n", extraGameInfo [1].bHeadLights);
 	LogErr ("   bPowerupLights: %d\n", extraGameInfo [1].bPowerupLights);
 	LogErr ("   bBrightObjects: %d\n", extraGameInfo [1].bBrightObjects);
 	LogErr ("   bTeamDoors: %d\n", extraGameInfo [1].bTeamDoors);
