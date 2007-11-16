@@ -1885,14 +1885,12 @@ void KCReadExternalControls ()
 	  {
 	   advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
  
-      temp_ptr->headlightState= (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON);
-		temp_ptr->primaryWeaponFlags=LOCALPLAYER.primaryWeaponFlags;
-		temp_ptr->secondaryWeaponFlags=LOCALPLAYER.secondaryWeaponFlags;
-      temp_ptr->currentPrimary_weapon=gameData.weapons.nPrimary;
-      temp_ptr->currentSecondary_weapon=gameData.weapons.nSecondary;
-
-      temp_ptr->current_guidebot_command=gameData.escort.nGoalObject;
-
+      temp_ptr->headlightState = PlayerHasHeadLight (-1);
+		temp_ptr->primaryWeaponFlags = LOCALPLAYER.primaryWeaponFlags;
+		temp_ptr->secondaryWeaponFlags = LOCALPLAYER.secondaryWeaponFlags;
+      temp_ptr->currentPrimary_weapon = gameData.weapons.nPrimary;
+      temp_ptr->currentSecondary_weapon = gameData.weapons.nSecondary;
+      temp_ptr->current_guidebot_command = gameData.escort.nGoalObject;
 	   temp_ptr->force_vector=ExtForceVec;
 		temp_ptr->force_matrix=ExtApplyForceMatrix;
 	   for (i=0;i<3;i++)

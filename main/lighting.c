@@ -124,13 +124,22 @@ void InitTextureBrightness (void)
 {
 	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2;
 	int			i, j, h = (gameStates.app.bD1Mission ? sizeof (texBrightD1) : sizeof (texBrightD2)) / sizeof (tTexBright);
+	
 memset (gameData.pig.tex.brightness, 0, sizeof (gameData.pig.tex.brightness));
 for (i = 0; i < MAX_WALL_TEXTURES; i++) {
 	j = gameStates.app.bD1Mission ? ConvertD1Texture (i, 1) : i;
+#ifdef _DEBUG
+	if (j == 250)
+		j = j;
+#endif
 	if (gameData.pig.tex.pTMapInfo [j].lighting)
 		gameData.pig.tex.brightness [j] = gameData.pig.tex.pTMapInfo [j].lighting;
 	}
 for (i = h; --i; ) {
+#ifdef _DEBUG
+	if (ptb [i].nTexture == 250)
+		i = i;
+#endif
 	gameData.pig.tex.brightness [ptb [i].nTexture] = 
 		 ((ptb [i].nBrightness * 100 + MAX_BRIGHTNESS / 2) / MAX_BRIGHTNESS) * (MAX_BRIGHTNESS / 100);
 	}
@@ -257,13 +266,13 @@ void ApplyLight (
 if (objP && SHOW_DYN_LIGHT) {
 	if (objP->nType == OBJ_PLAYER) {
 		if (!gameData.render.vertColor.bDarkness || EGI_FLAG (bHeadLights, 0, 0, 0)) {
-			if (!(playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON)) 
+			if (!HeadLightIsOn (objP->id)) 
 				RemoveOglHeadLight (objP);
 			else if (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)
 				gameData.render.lights.dynamic.nHeadLights [objP->id] = AddOglHeadLight (objP);
 			}
 		else {
-			if (playerP->flags & PLAYER_FLAGS_HEADLIGHT_ON) {
+			if (HeadLightIsOn (objP->id)) {
 				playerP->flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 				HUDInitMessage (TXT_NO_HEADLIGHTS);
 				}
@@ -324,7 +333,7 @@ if (xObjIntensity) {
 		int	headlightShift = 0;
 		fix	maxHeadlightDist = F1_0 * 200;
 		if (objP && (objP->nType == OBJ_PLAYER))
-			if ((gameStates.render.bHeadlightOn = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON))) {
+			if ((gameStates.render.bHeadlightOn = HeadLightIsOn (objP->id))) {
 				headlightShift = 3;
 				if (color) {
 					bUseColor = bForceColor = 1;
@@ -453,7 +462,7 @@ color->blue = 1.0;
 switch (nObjType) {
 	case OBJ_PLAYER:
 		*pbGotColor = 1;
-		 if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) {
+		 if (HeadLightIsOn (objP->id)) {
 			if (nHeadLights < MAX_HEADLIGHTS)
 				Headlights [nHeadLights++] = objP;
 			return HEADLIGHT_SCALE;
@@ -708,12 +717,12 @@ if (!bKeepDynColoring)
 
 // ---------------------------------------------------------
 
-void toggle_headlight_active ()
+void ToggleHeadLight ()
 {
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT) {
-		LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
-		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);		
+if (PlayerHasHeadLight (-1)) {
+	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
+	if (IsMultiGame)
+		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);		
 	}
 }
 
@@ -884,9 +893,8 @@ if (objP->movementType == MT_PHYSICS) {
 	}
 //set value for tPlayer headlight
 if (objP->nType == OBJ_PLAYER) {
-	if ((gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT) && 
-		 !gameStates.app.bEndLevelSequence)
-		xEngineGlowValue [1] =  (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_HEADLIGHT_ON) ? -2 : -1;
+	if (PlayerHasHeadLight (objP->id) &&  !gameStates.app.bEndLevelSequence)
+		xEngineGlowValue [1] = HeadLightIsOn (objP->id) ? -2 : -1;
 	else
 		xEngineGlowValue [1] = -3;			//don't draw
 	}
@@ -1522,6 +1530,10 @@ gameData.render.lights.dynamic.material.bValid = 0;
 for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
 	if (gameData.segs.segment2s [i].special == SEGMENT_IS_SKYBOX)
 		continue;
+#ifdef _DEBUG
+	if (i == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		if ((segP->children [j] >= 0) && !IS_WALL (sideP->nWall))
 			continue;

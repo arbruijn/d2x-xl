@@ -46,7 +46,7 @@ fix ComputeSegDynamicLight(int nSegment);
 fix ComputeObjectLight(tObject *obj,vmsVector *rotated_pnt);
 void ComputeEngineGlow (tObject *obj, fix *engine_glowValue);
 // turn headlight boost on & off
-void toggle_headlight_active(void);
+void ToggleHeadLight(void);
 
 // returns ptr to flickering light structure, or NULL if can't find
 tFlickeringLight *FindFlicker(int nSegment, int nSide);

@@ -1517,9 +1517,8 @@ void BuildRenderSegList (short nStartSeg, int nWindow)
 gameData.render.zMin = 0x7fffffff;
 gameData.render.zMax = -0x7fffffff;
 bCullIfBehind = !SHOW_SHADOWS || (gameStates.render.nShadowPass == 1);
-BumpVisitedFlag ();
 memset (gameData.render.mine.nRenderPos, -1, sizeof (gameData.render.mine.nRenderPos [0]) * (gameData.segs.nSegments));
-//memset(no_renderFlag, 0, sizeof(no_renderFlag [0])*(MAX_SEGMENTS_D2X);
+BumpVisitedFlag ();
 #if 1
 BumpProcessedFlag ();
 BumpVisibleFlag ();

@@ -1056,6 +1056,10 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 #endif
 	pl = gameData.render.lights.dynamic.lights;
 	for (l = n = 0; l < gameData.render.lights.dynamic.nLights; l++, pl++) {
+#ifdef _DEBUG
+		if (pl->nSegment == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
 		h = (pl->nSegment < 0) ? gameData.objs.objects [pl->nObject].nSegment : pl->nSegment;
 		if (!VERTVIS (h, nVertex))
 			continue;

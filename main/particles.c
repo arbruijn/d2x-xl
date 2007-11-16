@@ -846,7 +846,7 @@ else {
 #if 1
 	pc.alpha = (pc.alpha - 0.005f) * decay + 0.005f;
 	pc.alpha *= pc.alpha;
-	pc.alpha = pow (pc.alpha, 1.0 / 3.0);
+	pc.alpha = (float) pow (pc.alpha, 1.0 / 3.0);
 #else
 	pc.alpha = (float) cos ((double) (sqr (1 - decay) * Pi)) / 2 + 0.5f;
 #endif

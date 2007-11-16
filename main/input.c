@@ -120,15 +120,12 @@ fix Next_toggleTime [3]={0,0,0};
 
 int AllowToToggle (int i)
 {
-  //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
- 
-	if (Next_toggleTime [i] > gameData.time.xGame)
-		if (Next_toggleTime [i] < gameData.time.xGame + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
-			return 0;
-
-	Next_toggleTime [i] = gameData.time.xGame + (F1_0/8);
-
-	return 1;
+//used for keeping tabs of when its ok to toggle headlight,primary,and secondary
+if (Next_toggleTime [i] > gameData.time.xGame)
+	if (Next_toggleTime [i] < gameData.time.xGame + (F1_0/8))	//	In case time is bogus, never wait > 1 second.
+		return 0;
+Next_toggleTime [i] = gameData.time.xGame + (F1_0/8);
+return 1;
 }
 
 

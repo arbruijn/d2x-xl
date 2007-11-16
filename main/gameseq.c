@@ -951,6 +951,7 @@ gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMiss
 memset (gameData.segs.xSegments, 0xff, sizeof (*gameData.segs.xSegments) * MAX_SEGMENTS);
 memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * MAX_OBJECTS);
 /*---*/LogErr ("   loading texture brightness info\n");
+SetDataVersion (-1);
 LoadTextureBrightness (pszLevelName);
 for (;;) {
 	if (!(nLoadRes = LoadLevelSub (pszLevelName)))

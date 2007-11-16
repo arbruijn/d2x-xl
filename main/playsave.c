@@ -347,6 +347,10 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].entropy.bBrightenRooms, 0, 0);
 		RP (extraGameInfo [i].entropy.bPlayerHandicap, 0, 0);
 
+		RP (extraGameInfo [i].headlight.bAvailable, 0, 0);
+		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
+		RP (extraGameInfo [i].headlight.bBuiltIn, 0, 0);
+
 		RP (extraGameInfo [i].monsterball.nBonus, 0, 0);
 		RP (extraGameInfo [i].monsterball.nSizeMod, 0, 0);
 		for (j = 0; j < MAX_MONSTERBALL_FORCES; j++) {
@@ -531,7 +535,6 @@ for (i = 0; i < 2; i++) {
 
 	RP (gameOptions [i].gameplay.nAutoLeveling, i, 0);
 	RP (gameOptions [i].gameplay.bFastRespawn, i, 0);
-	RP (gameOptions [i].gameplay.bHeadlightOn, 0, 0);
 
 	RP (gameOptions [i].movies.bResize, i, 0);
 	RP (gameOptions [i].movies.bSubTitles, i, 0);
@@ -822,6 +825,9 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].entropy.nOverrideTextures", "2"},
 	{"extraGameInfo[0].entropy.bBrightenRooms", "0"},
 	{"extraGameInfo[0].entropy.bPlayerHandicap", "0"},
+	{"extraGameInfo[0].headlight.bAvailable", "1"},
+	{"extraGameInfo[0].headlight.bDrainPower", "1"},
+	{"extraGameInfo[0].headlight.bBuiltIn", "0"},
 	{"extraGameInfo[0].monsterball.nBonus", "1"},
 	{"extraGameInfo[0].monsterball.nSizeMod", "7"},
 	{"extraGameInfo[0].monsterball.forces[0].nWeaponId", "0"},
@@ -1070,7 +1076,6 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].input.trackIR.bUse", "1"},
 	{"gameOptions[0].gameplay.nAutoLeveling", "0"},
 	{"gameOptions[0].gameplay.bFastRespawn", "0"},
-	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
 	{"gameOptions[0].movies.bResize", "1"},
 	{"gameOptions[0].movies.bSubTitles", "0"},
 	{"gameOptions[0].movies.nQuality", "0"},
@@ -1122,7 +1127,6 @@ tParamValue defaultParams [] = {
 	{"gameOptions[1].input.trackIR.bUse", "0"},
 	{"gameOptions[1].gameplay.nAutoLeveling", "0"},
 	{"gameOptions[1].gameplay.bFastRespawn", "0"},
-	{"gameOptions[0].gameplay.bHeadlightOn", "0"},
 	{"gameOptions[1].movies.bResize", "0"},
 	{"gameOptions[1].movies.bSubTitles", "0"},
 	{"gameOptions[1].movies.nQuality", "0"},
@@ -1980,7 +1984,7 @@ gameStates.render.cockpit.nMode = CFReadByte (fp);
 nDisplayMode = gameStates.video.nDefaultDisplayMode;
 gameStates.video.nDefaultDisplayMode = CFReadByte (fp);
 gameOpts->render.cockpit.bMissileView = CFReadByte (fp);
-gameOpts->gameplay.bHeadlightOn = CFReadByte (fp);
+extraGameInfo [0].headlight.bAvailable = CFReadByte (fp);
 gameOptions [0].render.cockpit.bGuidedInMainView = CFReadByte (fp);
 if (gameStates.input.nPlrFileVersion >= 19)
 	CFReadByte (fp);	//skip obsolete byte value
@@ -2481,7 +2485,7 @@ CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bReticle, fp);
 CFWriteByte ((sbyte) ((gameStates.render.cockpit.nModeSave != -1)?gameStates.render.cockpit.nModeSave:gameStates.render.cockpit.nMode), fp);   //if have saved mode, write it instead of letterbox/rear view
 CFWriteByte ((sbyte) gameStates.video.nDefaultDisplayMode, fp);
 CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bMissileView, fp);
-CFWriteByte ((sbyte) gameOptions [0].gameplay.bHeadlightOn, fp);
+CFWriteByte ((sbyte) extraGameInfo [0].headlight.bAvailable, fp);
 CFWriteByte ((sbyte) gameOptions [0].render.cockpit.bGuidedInMainView, fp);
 CFWriteByte ((sbyte) 0, fp);	//place holder for an obsolete value
 //write higest level info

@@ -162,8 +162,13 @@ typedef struct tMonsterballInfo {
 	char					nBonus;
 	char					nSizeMod;
 	tMonsterballForce forces [MAX_MONSTERBALL_FORCES];
-
 } tMonsterballInfo;
+
+typedef struct tHeadLightInfo {
+	int bAvailable;
+	int bDrainPower;
+	int bBuiltIn;
+}  tHeadLightInfo;
 
 typedef struct tExtraGameInfo {
 	ubyte   	nType;
@@ -242,6 +247,7 @@ typedef struct tExtraGameInfo {
 	tMonsterballInfo	monsterball;
 	char		szGameName [NETGAME_NAME_LEN + 1];
 	int		nSecurity;
+	tHeadLightInfo	headlight;
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {

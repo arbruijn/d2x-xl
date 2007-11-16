@@ -304,7 +304,7 @@ if (Controls [0].cycleSecondaryCount) {
 	}
 if (Controls [0].headlightCount) {
 	for (i = 0; i < Controls [0].headlightCount; i++)
-	toggle_headlight_active ();
+	ToggleHeadLight ();
 	}
 if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;

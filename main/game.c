@@ -2140,6 +2140,62 @@ SaveScreenShot (0, 0);
 }
 
 //-----------------------------------------------------------------------------
+
+int PlayerHasHeadLight (int nPlayer)
+{
+return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
+		 (EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) || 
+		  ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
+}
+
+//-----------------------------------------------------------------------------
+
+int HeadLightIsOn (int nPlayer)
+{
+return PlayerHasHeadLight (nPlayer) && ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
+}
+
+//-----------------------------------------------------------------------------
+
+void SetPlayerHeadLight (int nPlayer, int bOn)
+{
+if (bOn)
+	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
+else
+	gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+}
+
+//-----------------------------------------------------------------------------
+
+void DrainHeadLightPower (void)
+{
+	static int bTurnedOff = 0;
+
+if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
+	return;
+if (!HeadLightIsOn (-1))
+	return;
+
+LOCALPLAYER.energy -= (gameData.time.xFrame * 3 / 8);
+if (LOCALPLAYER.energy < i2f (10)) {
+	if (!bTurnedOff) {
+		LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+		bTurnedOff = 1;
+		if (IsMultiGame)
+			MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
+		}
+	}
+else
+	bTurnedOff = 0;
+if (LOCALPLAYER.energy <= 0) {
+	LOCALPLAYER.energy = 0;
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+	if (IsMultiGame)
+		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
+	}
+}
+
+//-----------------------------------------------------------------------------
 // -- extern void lightning_frame (void);
 
 void GameRenderFrame ();
@@ -2209,37 +2265,7 @@ if (nDebugSlowdown) {
 	DoFinalBossFrame ();
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
-
-	if ((LOCALPLAYER.flags & 
-		  (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) == 
-		 (PLAYER_FLAGS_HEADLIGHT | PLAYER_FLAGS_HEADLIGHT_ON)) {
-		static int bTurnedOff=0;
-		LOCALPLAYER.energy -= (gameData.time.xFrame*3/8);
-		if (LOCALPLAYER.energy < i2f (10)) {
-			if (!bTurnedOff) {
-				LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-				bTurnedOff = 1;
-#ifdef NETWORK
-				if (gameData.app.nGameMode & GM_MULTI)
-					MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
-#endif
-			}
-		}
-		else
-			bTurnedOff = 0;
-
-		if (LOCALPLAYER.energy <= 0) {
-			LOCALPLAYER.energy = 0;
-			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-#ifdef NETWORK
-			if (gameData.app.nGameMode & GM_MULTI) {
-//con_printf (CONDBG, "      MultiSendFlags\n");
-				MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
-				}
-#endif
-		}
-	}
-
+DrainHeadLightPower ();
 #ifdef EDITOR
 	check_create_player_path ();
 	player_follow_path (gameData.objs.console);

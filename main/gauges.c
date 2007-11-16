@@ -1925,7 +1925,7 @@ switch (bFlag) {
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
-		return (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0;
+		return HeadLightIsOn (-1);
 	case PLAYER_FLAGS_MAP_ALL:
 		return 0;
 	case PLAYER_FLAGS_AMMO_RACK:

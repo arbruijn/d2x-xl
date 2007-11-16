@@ -305,7 +305,8 @@ int MaybeStealFlagItem(int player_num, int flagval)
 				case PLAYER_FLAGS_HEADLIGHT:
 					powerup_index = POW_HEADLIGHT;
 					ThiefMessage("Headlight stolen!");
-				   LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+					if (!EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
+				   	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 					break;
 			}
 			Assert(powerup_index != -1);

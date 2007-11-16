@@ -1791,11 +1791,11 @@ void LoadGameTexts(void);
 #define TXT_ROTATE_SMOKE			GT(998)
 #define TXT_HW_HEADLIGHT			GT(999)
 #define TXT_SHIELD_HITS				GT(1000)
+#define TXT_HEADLIGHT_BUILTIN		GT(1001)
+#define TXT_HEADLIGHT_POWERDRAIN	GT(1002)
 
 #if 0
 
-#define TXT_				GT(1001)
-#define TXT_				GT(1002)
 #define TXT_				GT(1003)
 #define TXT_				GT(1004)
 #define TXT_				GT(1005)
@@ -2342,11 +2342,11 @@ void LoadGameTexts(void);
 #define HTX_ROTATE_SMOKE			HT(328)				
 #define HTX_HW_HEADLIGHT			HT(329)				
 #define HTX_SHIELD_HITS				HT(330)				
+#define HTX_HEADLIGHT_BUILTIN		HT(331)
+#define HTX_HEADLIGHT_POWERDRAIN	HT(332)
 
 #if 0
 
-#define HTX_					HT(331)				
-#define HTX_					HT(332)				
 #define HTX_					HT(333)				
 #define HTX_					HT(334)				
 #define HTX_					HT(335)				

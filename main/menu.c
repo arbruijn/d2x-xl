@@ -178,6 +178,7 @@ static struct {
 	int	nSpawnDelay;
 	int	nSmokeGrens;
 	int	nMaxSmokeGrens;
+	int	nHeadLightAvailable;
 } gplayOpts;
 
 static struct {
@@ -1298,6 +1299,13 @@ if (gameStates.app.nDifficultyLevel != v) {
 	InitGateIntervals ();
 	sprintf (m->text, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
 	m->rebuild = 1;
+	}
+m = menus + gplayOpts.nHeadLightAvailable;
+v = m->value;
+if (extraGameInfo [0].headlight.bAvailable != v) {
+	extraGameInfo [0].headlight.bAvailable = v;
+	*key = -2;
+	return;
 	}
 for (i = 0; i < 3; i++)
 	if (menus [nOptVerFilter + i].value) {
@@ -3727,10 +3735,10 @@ void GameplayOptionsMenu ()
 {
 	tMenuItem m [35];
 	int	i, j, opt = 0, choice = 0;
-	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, optHeadlight = -1,
+	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
-			optAwareness = -1;
+			optAwareness = -1, optHeadLightBuiltIn = -1, optHeadLightPowerDrain = -1;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 
@@ -3748,8 +3756,14 @@ do {
 		gplayOpts.nSpawnDelay = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadlightOn, KEY_H, HTX_MISC_HEADLIGHT);
-		optHeadlight = opt++;
+		ADD_CHECK (opt, TXT_HEADLIGHT_ON, extraGameInfo [0].headlight.bAvailable, KEY_H, HTX_MISC_HEADLIGHT);
+		gplayOpts.nHeadLightAvailable = opt++;
+		if (extraGameInfo [0].headlight.bAvailable) {
+			ADD_CHECK (opt, TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
+			optHeadLightBuiltIn = opt++;
+			ADD_CHECK (opt, TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_H, HTX_HEADLIGHT_POWERDRAIN);
+			optHeadLightPowerDrain = opt++;
+			}
 		ADD_CHECK (opt, TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_V, HTX_GPLAY_INVENTORY);
 		optInventory = opt++;
 		ADD_TEXT (opt, "", 0);
@@ -3819,6 +3833,7 @@ do {
 		} while (i >= 0);
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {
+	extraGameInfo [0].headlight.bAvailable = m [gplayOpts.nHeadLightAvailable].value;
 	extraGameInfo [0].bFixedRespawns = m [optFixedSpawn].value;
 	extraGameInfo [0].bSmokeGrenades = m [gplayOpts.nSmokeGrens].value;
 	extraGameInfo [0].bDualMissileLaunch = m [optDualMiss].value;
@@ -3832,7 +3847,8 @@ if (gameOpts->app.bExpertMode) {
 	GET_VAL (gameOpts->gameplay.bInventory, optInventory);
 	GET_VAL (gameOpts->gameplay.bIdleAnims, optIdleAnims);
 	GET_VAL (gameOpts->gameplay.nAIAwareness, optAwareness);
-	GET_VAL (gameOpts->gameplay.bHeadlightOn, optHeadlight);
+	GET_VAL (extraGameInfo [0].headlight.bDrainPower, optHeadLightPowerDrain);
+	GET_VAL (extraGameInfo [0].headlight.bBuiltIn, optHeadLightBuiltIn);
 	}
 else {
 #if EXPMODE_DEFAULTS

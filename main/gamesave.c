@@ -1466,12 +1466,12 @@ int LoadLevelSub(char * filename_passed)
 	int sig, minedata_offset, gamedata_offset;
 	int mine_err, game_err;
 	//int i;
-	gameData.segs.bHaveSlideSegs = 0;
-
-   if (gameData.app.nGameMode & GM_NETWORK) {
-		memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
-		memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
-		}
+SetDataVersion (-1);
+gameData.segs.bHaveSlideSegs = 0;
+if (gameData.app.nGameMode & GM_NETWORK) {
+	memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
+	memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
+	}
 #ifdef _DEBUG
 Level_being_loaded = filename_passed;
 #endif
@@ -1553,7 +1553,7 @@ if (gameData.segs.nLevelVersion >= 7) {
 #if TRACE
 con_printf(CONDBG, "   loading dynamic lights ...\n");
 #endif
-gameData.render.lights.flicker.nLights = CFReadInt(LoadFile);
+gameData.render.lights.flicker.nLights = CFReadInt (LoadFile);
 Assert((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
 for (i = 0; i < gameData.render.lights.flicker.nLights; i++)
 	ReadFlickeringLight(&gameData.render.lights.flicker.lights [i], LoadFile);
@@ -1585,7 +1585,6 @@ if (gameData.segs.nLevelVersion < 6) {
 	gameData.segs.secret.returnOrient.uVec.p.z = CFReadInt(LoadFile);
 }
 
-SetDataVersion (-1);
 #ifdef EDITOR
 if (!use_compiledLevel) {
 	CFSeek(LoadFile,minedata_offset,SEEK_SET);
@@ -1599,9 +1598,9 @@ else
 #endif
 	{
 	//NOTE LINK TO ABOVE!!
-	CFSeek(LoadFile,gamedata_offset,SEEK_SET);
+	CFSeek (LoadFile,gamedata_offset,SEEK_SET);
 	game_err = LoadMineDataCompiled(LoadFile, 1);
-	CFSeek(LoadFile,minedata_offset,SEEK_SET);
+	CFSeek (LoadFile,minedata_offset,SEEK_SET);
 	mine_err = LoadMineSegmentsCompiled(LoadFile);
 	}
 if (mine_err == -1) {   //error!!

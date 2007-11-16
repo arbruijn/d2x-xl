@@ -88,27 +88,40 @@ else {
 
 void SplitFace (tSegFaces *segFaceP, grsFace *faceP)
 {
+	grsFace *newFaceP;
+
 if (GEO_LIGHTING)
 	return;
-if (gameStates.ogl.bGlTexMerge && (gameStates.render.history.bOverlay < 0) && 
-	 !faceP->bSlide && (faceP->nCamera < 0) && faceP->nOvlTex && faceP->bmTop && !faceP->bAnimation) {	//last rendered face was multi-textured but not super-transparent
-		grsFace *newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
-
-	*newFaceP = *faceP;
-	newFaceP->nIndex = (newFaceP - 1)->nIndex + 4;
-	memcpy (newFaceP->index, faceP->index, sizeof (faceP->index));
-	memcpy (gameData.segs.faces.vertices + newFaceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex, 4 * sizeof (fVector3));
-	memcpy (gameData.segs.faces.texCoord + newFaceP->nIndex, gameData.segs.faces.ovlTexCoord + faceP->nIndex, 4 * sizeof (tTexCoord2f));
-	memcpy (gameData.segs.faces.color + newFaceP->nIndex, gameData.segs.faces.color + faceP->nIndex, 4 * sizeof (tRgbaColorf));
-	newFaceP->nBaseTex = faceP->nOvlTex;
-	faceP->nOvlTex = newFaceP->nOvlTex = 0;
-	faceP->bmTop = 
-	newFaceP->bmTop = NULL;
-	faceP->bSplit = 1;
-	newFaceP->bOverlay = 1;
-	if (newFaceP->bIsLight = IsLight (newFaceP->nBaseTex))
-		faceP->bIsLight = 0;
-	}
+if (!gameStates.ogl.bGlTexMerge)
+	return;
+if (faceP->bSolid)
+	return;
+if (faceP->bSlide || !faceP->nOvlTex || !faceP->bmTop || faceP->bAnimation ||
+	 (gameStates.render.history.bOverlay >= 0) || (faceP->nCamera >= 0))
+	faceP->bSolid = 1;
+else if (faceP->bmTop && strstr (faceP->bmTop->szName, "door"))
+	faceP->bAnimation = faceP->bSolid = 1;
+if (faceP->bSolid)
+	return;
+#ifdef _DEBUG
+if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
+newFaceP = segFaceP->pFaces + segFaceP->nFaces++;
+*newFaceP = *faceP;
+newFaceP->nIndex = (newFaceP - 1)->nIndex + 4;
+memcpy (newFaceP->index, faceP->index, sizeof (faceP->index));
+memcpy (gameData.segs.faces.vertices + newFaceP->nIndex, gameData.segs.faces.vertices + faceP->nIndex, 4 * sizeof (fVector3));
+memcpy (gameData.segs.faces.texCoord + newFaceP->nIndex, gameData.segs.faces.ovlTexCoord + faceP->nIndex, 4 * sizeof (tTexCoord2f));
+memcpy (gameData.segs.faces.color + newFaceP->nIndex, gameData.segs.faces.color + faceP->nIndex, 4 * sizeof (tRgbaColorf));
+newFaceP->nBaseTex = faceP->nOvlTex;
+faceP->nOvlTex = newFaceP->nOvlTex = 0;
+faceP->bmTop = 
+newFaceP->bmTop = NULL;
+faceP->bSplit = 1;
+newFaceP->bOverlay = 1;
+if (newFaceP->bIsLight = IsLight (newFaceP->nBaseTex))
+	faceP->bIsLight = 0;
 }
 
 #endif

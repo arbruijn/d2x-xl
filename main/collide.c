@@ -1999,7 +1999,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_AMMORACK);
 		if (playerP->flags & PLAYER_FLAGS_CONVERTER)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CONVERTER);
-		if ((playerP->flags & PLAYER_FLAGS_HEADLIGHT) && 
+		if (PlayerHasHeadLight (nPlayerId) && 
 			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HEADLIGHT);
 		// drop the other enemies flag if you have it

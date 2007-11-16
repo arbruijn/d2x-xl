@@ -196,6 +196,9 @@ int GrToggleFullScreenGame(void);
 
 void ShowInGameWarning (char *s);
 
+int PlayerHasHeadLight (int nPlayer);
+int HeadLightIsOn (int nPlayer);
+
 void GetSlowTicks (void);
 /*
  * reads a tFlickeringLight structure from a CFILE

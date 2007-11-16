@@ -290,8 +290,7 @@ else
 	gameData.ai.nDistToLastPlayerPosFiredAt = F1_0 * 10000;
 abState = gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 			  (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER);
-if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || 
-	 (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON) || abState)
+if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || HeadLightIsOn (-1) || abState)
 	AIDoCloakStuff ();
 gameData.ai.nMaxAwareness = 0;
 }
@@ -770,7 +769,7 @@ _exit_cheat:
 		rval = d_rand ();
 		sval = (gameData.ai.xDistToPlayer * (gameStates.app.nDifficultyLevel + 1)) / 64;
 
-		if ((FixMul (rval, sval) < gameData.time.xFrame) || (LOCALPLAYER.flags & PLAYER_FLAGS_HEADLIGHT_ON)) {
+		if ((FixMul (rval, sval) < gameData.time.xFrame) || HeadLightIsOn (-1)) {
 			ailp->playerAwarenessType = PA_PLAYER_COLLISION;
 			ailp->playerAwarenessTime = xAwarenessTimes [gameOpts->gameplay.nAIAwareness][1];
 			ComputeVisAndVec (objP, &vVisPos, ailp, botInfoP, &bVisAndVecComputed, MAX_REACTION_DIST);
