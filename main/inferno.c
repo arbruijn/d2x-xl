@@ -689,6 +689,7 @@ if (*gameFolders.szHomeDir) {
 	}
 #endif
 if (*gameFolders.szHomeDir) {
+#ifdef __linux__
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 #else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
