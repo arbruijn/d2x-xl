@@ -1490,7 +1490,7 @@ void DoBriefingScreens (char *filename, int nLevel)
 	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, gameData.missions.szEndingFilename);
 	char	fnBriefing [FILENAME_LEN];
 
-LogErr ("Creating cameras\n");
+LogErr ("Starting the briefing\n");
 gameStates.render.bBriefing = 1;
 RebuildRenderContext (1, 1);
 if (gameOpts->gameplay.bSkipBriefingScreens) {

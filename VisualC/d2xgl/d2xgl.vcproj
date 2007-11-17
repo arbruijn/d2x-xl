@@ -50,7 +50,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
-				OutputFile="e:\programme\d2\d2x-xl-dbg.exe"
+				OutputFile="d:\programme\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\d2x\sdl-1.2.11\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.7\VisualC\Debug&quot;"
@@ -138,7 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib "
-				OutputFile="e:\programme\d2\d2x-xl.exe"
+				OutputFile="d:\programme\d2\d2x-xl.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Relese&quot;;&quot;\projekte\d2x\sdl-1.2.11\Release&quot;;&quot;\Projekte\SDL_mixer-1.2.7\VisualC\Release&quot;"
@@ -3546,10 +3546,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

@@ -858,7 +858,7 @@ if (gameOpts->render.smoke.bDisperse && !nType) {
 #if 0
 	decay = (float) sqrt (decay);
 #else
-	decay = pow (decay * decay * decay, 1.0 / 5.0);
+	decay = (float) pow (decay * decay * decay, 1.0 / 5.0);
 #endif
 	vOffset.p.x = f2fl (pParticle->nWidth) / decay;
 	vOffset.p.y = f2fl (pParticle->nHeight) / decay;
