@@ -689,12 +689,11 @@ if (*gameFolders.szHomeDir) {
 	}
 #endif
 if (*gameFolders.szHomeDir) {
-#ifdef _WIN32
+	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
+#else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
 	if (szDataRootDir [i = (int) strlen (szDataRootDir) - 1] == '\\')
 		szDataRootDir [i] = '\0';
-#else
-	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 #endif
 	CFMkDir (szDataRootDir);
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s", szDataRootDir, TEXTUREDIR_D2);
