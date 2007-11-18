@@ -87,6 +87,7 @@ void InitSegZRef (int i, int j, int nThread);
 void QSortSegZRef (short left, short right);
 
 void BuildRenderSegList (short nStartSeg, int nWindow);
+void InitVertLightShader (void);
 
 //------------------------------------------------------------------------------
 

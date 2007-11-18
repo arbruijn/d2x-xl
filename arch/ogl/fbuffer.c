@@ -102,11 +102,11 @@ if (nHeight > 0)
 	fb->nHeight = nHeight;
 #if 1
 if (bDepth)
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, fb->nWidth, fb->nHeight, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
+	glTexImage2D (GL_TEXTURE_2D, 0, 1, fb->nWidth, fb->nHeight, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
 else
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB8, fb->nWidth, fb->nHeight, 0, GL_RGB, GL_INT, NULL);
+	glTexImage2D (GL_TEXTURE_2D, 0, 3, fb->nWidth, fb->nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 #else
-glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8, fb->nWidth, fb->nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+glTexImage2D (GL_TEXTURE_2D, 0, 4, fb->nWidth, fb->nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 #endif
 glGenerateMipmapEXT (GL_TEXTURE_2D);
 glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->texId, 0);

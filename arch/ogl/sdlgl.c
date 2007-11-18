@@ -47,8 +47,6 @@ void FreeInventoryIcons (void);
 
 //------------------------------------------------------------------------------
 
-static int nCurWidth = -1, nCurHeight = -1, bCurFullScr = -1;
-
 static Uint16 gammaRamp [512];
 
 //------------------------------------------------------------------------------
@@ -134,17 +132,17 @@ int OglInitWindow (int w, int h, int bForce)
 	GLint			i;
 
 if (gameStates.ogl.bInitialized) {
-	if (!bForce && (w == nCurWidth) && (h == nCurHeight) && (bCurFullScr == gameStates.ogl.bFullScreen))
+	if (!bForce && (w == gameStates.ogl.nCurWidth) && (h == gameStates.ogl.nCurHeight) && (gameStates.ogl.bCurFullScreen == gameStates.ogl.bFullScreen))
 		return -1;
-	if ((w != nCurWidth) || (h != nCurHeight) || (bCurFullScr != gameStates.ogl.bFullScreen)) {
+	if ((w != gameStates.ogl.nCurWidth) || (h != gameStates.ogl.nCurHeight) || (gameStates.ogl.bCurFullScreen != gameStates.ogl.bFullScreen)) {
 		OglSmashTextureListInternal ();//if we are or were fullscreen, changing vid mode will invalidate current textures
 		bRebuild = 1;
 		}
 	}
 if (w < 0)
-	w = nCurWidth;
+	w = gameStates.ogl.nCurWidth;
 if (h < 0)
-	h = nCurHeight;
+	h = gameStates.ogl.nCurHeight;
 if ((w < 0) || (h < 0))
 	return -1;
 D2SetCaption ();
@@ -172,9 +170,9 @@ glGetIntegerv (GL_DEPTH_BITS, &gameStates.ogl.nDepthBits);
 glGetIntegerv (GL_STENCIL_BITS, &gameStates.ogl.nStencilBits);
 gameStates.render.bHaveStencilBuffer = (gameStates.ogl.nStencilBits > 0);
 SDL_ShowCursor (0);
-nCurWidth = w;
-nCurHeight = h;
-bCurFullScr = gameStates.ogl.bFullScreen;
+gameStates.ogl.nCurWidth = w;
+gameStates.ogl.nCurHeight = h;
+gameStates.ogl.bCurFullScreen = gameStates.ogl.bFullScreen;
 if (gameStates.ogl.bInitialized && bRebuild) {
 	glViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
@@ -203,7 +201,7 @@ if (gameStates.ogl.bInitialized) {
 
 void OglDoFullScreenInternal (int bForce)
 {
-OglInitWindow (nCurWidth, nCurHeight, bForce);
+OglInitWindow (gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, bForce);
 }
 
 //------------------------------------------------------------------------------

@@ -2584,10 +2584,11 @@ void InitLightingShaders (void)
 {
 	int	i, bOk;
 
-gameStates.render.bHaveDynLights = 1;
+gameStates.render.bHaveDynLights = 0;
 LogErr ("building lighting shader programs\n");
 DeleteShaderProg (NULL);
 if (gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath)) {
+	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 12; i++) {
 		if (lightingShaderProgs [i])
 			DeleteShaderProg (lightingShaderProgs + i);

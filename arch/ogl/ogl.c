@@ -1912,6 +1912,7 @@ InitLightmapShaders ();
 #endif
 InitTexMergeShaders ();
 InitLightingShaders ();
+InitVertLightShader ();
 LinkShaderProg (NULL);
 }
 

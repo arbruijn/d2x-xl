@@ -463,7 +463,7 @@ for (i = j = 0; i < h; i++) {
 		if (RdotE < 0.0)
 			RdotE = 0.0;
 		//vertColor += matSpecular * lightColor * pow (RdotE, fMatShininess);
-		if (RdotE && vcd.fMatShininess) {
+		if ((RdotE != 0) && (vcd.fMatShininess > 0)) {
 #if VECMAT_CALLS
 			VmVecScalef (&lightColor, &lightColor, (float) pow (RdotE, vcd.fMatShininess));
 #else

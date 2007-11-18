@@ -32,6 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "ogl_fastrender.h"
+#include "ogl_shader.h"
 #include "endlevel.h"
 #include "wall.h"
 #include "glare.h"
@@ -42,6 +43,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fastrender.h"
 
 #define RENDER_DEPTHMASK_FIRST 1
+
+#define SHADER_VERTEX_LIGHTING 1
+
+GLhandleARB hVertLightShader = 0;
+GLhandleARB hVertLightVS = 0; 
+GLhandleARB hVertLightFS = 0; 
 
 //------------------------------------------------------------------------------
 
@@ -780,6 +787,187 @@ for (i = gameData.segs.nSegments, segP = SEGMENTS, segFaceP = SEGFACES; i; i--, 
 
 //------------------------------------------------------------------------------
 
+GLuint GenVertLightBuffer (GLvoid *buffer, GLint nTMU, GLint nInternalFormat, GLint nFormat, GLint nDataType)
+{
+	GLuint	hBuffer;
+
+//create render texture
+glGenTextures (1, &hBuffer);
+if (!hBuffer)
+	return 0;
+glEnable (GL_TEXTURE_2D);
+glActiveTexture (nTMU);
+glBindTexture (GL_TEXTURE_2D, hBuffer);
+// set up texture parameters, turn off filtering
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+// define texture with same size like viewport
+glTexImage2D (GL_TEXTURE_2D, 0, nInternalFormat, 8, 8, 0, nFormat, nDataType, buffer);
+//use original values of texture (no mix with default color of quad)
+if (!buffer)
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
+return hBuffer;
+}
+
+//------------------------------------------------------------------------------
+
+#define VERTLIGHT_BUFFERS	5
+
+extern float fLightRanges [5];
+
+static int ComputeVertexLight (short nVertex, int nState, tFaceColor *colorP)
+{
+	static GLuint			hBuffer [VERTLIGHT_BUFFERS] = {0,0,0,0,0}, hFBO = 0, hFBOBuffer = 0;
+	static fVector3		buffers [VERTLIGHT_BUFFERS][8 * 8], vertColors [8 + 8];
+	static fVector3		matSpecular = {{1.0f, 1.0f, 1.0f}};
+	static int				nCalls = 0;
+
+	int	nLights, i, j;
+
+if (!gameStates.ogl.bVertexLighting)
+	return 0;
+if (nState == 0) {
+	nCalls++;
+	if (!(hFBOBuffer = GenVertLightBuffer (NULL, GL_TEXTURE0, 3, GL_RGB, GL_FLOAT)))
+		return 0;
+	if (!hFBO) {
+		glGenFramebuffersEXT (1, &hFBO);
+		if (i = glGetError ())
+			i = i;//return 0;
+		}
+	else
+		hFBO = hFBO;
+	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, hFBO);
+	if (i = glGetError ())
+		return 0;
+	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, hFBOBuffer, 0);
+	if (i = glGetError ())
+		return 0;
+	glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT); 
+	if (i = glGetError ())
+		return 0;
+	glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
+	glViewport (0, 0, 8, 8);
+	glMatrixMode (GL_PROJECTION);                                     
+	glLoadIdentity ();
+	gluOrtho2D (0.0, 8.0, 0.0, 8.0);
+	glMatrixMode (GL_MODELVIEW);                         
+	glLoadIdentity ();
+#if 1
+	glUseProgramObject (hVertLightShader);
+	if (i = glGetError ())
+		return 0;
+	glUniform1f (glGetUniformLocation (hVertLightShader, "lightRange"), fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange]);
+	glUniform1f (glGetUniformLocation (hVertLightShader, "shininess"), 96.0f);
+	glUniform3fv (glGetUniformLocation (hVertLightShader, "matAmbient"), 1, (GLfloat *) &gameData.render.vertColor.matAmbient);
+	glUniform3fv (glGetUniformLocation (hVertLightShader, "matDiffuse"), 1, (GLfloat *) &gameData.render.vertColor.matDiffuse);
+	glUniform3fv (glGetUniformLocation (hVertLightShader, "matSpecular"), 1, (GLfloat *) &matSpecular);
+#endif
+	}
+else if (nState == 1) {
+	tShaderLight	*psl;
+	int				bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState;
+	fVector3			vPos = *((fVector3 *) (gameData.segs.fVertices + nVertex)),
+						vNormal = *((fVector3 *) &gameData.segs.points [nVertex].p3_normal.vNormal),
+						testColor = {{1, 0.5f, 0}},
+						*pc;
+	tFaceColor		colorSum = {{0,0,0,0},0}; //gameData.render.color.ambient [nVertex];
+
+	for (i = 0; i < VERTLIGHT_BUFFERS; i++)
+		if (!(hBuffer [i] = GenVertLightBuffer (buffers + i, GL_TEXTURE0 + i, 3, GL_RGB, GL_FLOAT)))
+			return 0;
+
+	for (i = 0; i < 8 * 8; i++) {
+		buffers [0][i] = vPos;
+		buffers [1][i] = vNormal;
+		}
+	j = gameData.render.lights.dynamic.shader.nActiveLights [0];
+	if (j > 8 * 8)
+		j = 8 * 8;
+	for (nLights = i = 0; i < j; i++) {
+		psl = gameData.render.lights.dynamic.shader.activeLights [0][i];
+		if (bSkipHeadLight && (psl->nType == 3))
+			continue;
+		buffers [2][i] = *((fVector3 *) psl->pos);
+		buffers [3][i] = *((fVector3 *) &testColor); //psl->color);
+		buffers [4][i].p.x = psl->nType;
+		buffers [4][i].p.y = psl->rad;
+		buffers [4][i].p.z = psl->brightness;
+		nLights++;
+		}
+
+	for (i = 0; i < VERTLIGHT_BUFFERS; i++) {
+		glActiveTexture (GL_TEXTURE0 + i);
+		glEnable (GL_TEXTURE_2D);
+		OGL_BINDTEX (hBuffer [i]);
+		}
+	glColor3f (1, 0.5f, 0);
+	glBegin (GL_QUADS);
+	glVertex2f (0, 0);
+	glVertex2f (1, 0);
+	glVertex2f (1, 1);
+	glVertex2f (0, 1);
+	glEnd ();
+	for (i = 0; i < VERTLIGHT_BUFFERS; i++)
+		if (hBuffer [i]) {
+			glDeleteTextures (1, hBuffer + i);
+			hBuffer [i] = 0;
+			}
+	memset (vertColors, 0, sizeof (vertColors));
+	glReadPixels (0, 0, 8, 8, GL_RGB, GL_FLOAT, vertColors);
+
+	if (gameOpts->render.color.nSaturation == 2) {
+		for (i = 0, pc = vertColors; i < nLights; i++) {
+			if (colorSum.color.red < pc->c.r)
+				colorSum.color.red = pc->c.r;
+			if (colorSum.color.green < pc->c.g)
+				colorSum.color.green = pc->c.g;
+			if (colorSum.color.blue < pc->c.b)
+				colorSum.color.blue = pc->c.b;
+			}
+		}
+	else {
+		for (i = 0, pc = vertColors; i < nLights; i++) {
+			colorSum.color.red += pc->c.r;
+			colorSum.color.green += pc->c.g;
+			colorSum.color.blue += pc->c.b;
+			}
+		if (gameOpts->render.color.nSaturation) {	//if a color component is > 1, cap color components using highest component value
+			float	cMax = colorSum.color.red;
+			if (cMax < colorSum.color.green)
+				cMax = colorSum.color.green;
+			if (cMax < colorSum.color.blue)
+				cMax = colorSum.color.blue;
+			if (cMax > 1) {
+				colorSum.color.red /= cMax;
+				colorSum.color.green /= cMax;
+				colorSum.color.blue /= cMax;
+				}
+			}
+		}
+	*colorP = colorSum;
+	}	
+else if (nState == 2) {
+	glUseProgramObject (0);
+	glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+	i = glGetError ();
+	if (hFBOBuffer) {
+		glDeleteTextures (1, &hFBOBuffer);
+		hFBOBuffer = 0;
+		}
+	glDeleteFramebuffersEXT (1, &hFBO);
+	i = glGetError ();
+	hFBO = 0;
+	glViewport (0, 0, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight);
+	glDrawBuffer (GL_BACK);
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 void ComputeFaceLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
@@ -802,6 +990,10 @@ gameData.render.lights.dynamic.shader.nActiveLights [2] =
 gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
+#	if SHADER_VERTEX_LIGHTING
+if (bDynLight && gameStates.ogl.bVertexLighting)
+	ComputeVertexLight (-1, 0, NULL);
+#endif
 if (gameStates.render.bFullBright)
 	c.color.red = c.color.green = c.color.blue = c.color.alpha = 1;
 for (i = nStart; i != nEnd; i += nIncr) {
@@ -861,8 +1053,14 @@ for (i = nStart; i != nEnd; i += nIncr) {
 							if (GEO_LIGHTING)
 								c.color = gameData.render.color.ambient [nVertex].color;
 							else
+#	if SHADER_VERTEX_LIGHTING
+								if (gameStates.ogl.bVertexLighting)
+									ComputeVertexLight (nVertex, 1, &c);
+								else
+#	else
 								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
 													NULL, &c, 1, 0, nThread);
+#	endif
 #if 0
 							if (gameStates.app.bMultiThreaded)
 								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
@@ -915,6 +1113,10 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			}
 		}
 	}
+#	if SHADER_VERTEX_LIGHTING
+if (bDynLight && gameStates.ogl.bVertexLighting)
+	ComputeVertexLight (-1, 2, NULL);
+#endif
 gameStates.ogl.bUseTransform = 0;
 }
 
@@ -1046,6 +1248,89 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 		RenderObjList (nListPos, gameStates.render.nWindow);
 	}	
 gameStates.render.nState = 0;
+}
+
+
+//------------------------------------------------------------------------------
+
+char *vertLightFS = 
+	"uniform sampler2D vertPosTex, vertNormTex, lightPosTex, lightColorTex, lightDataTex;\r\n" \
+	"uniform vec3 matAmbient, matDiffuse, matSpecular;\r\n" \
+	"uniform float lightRange, shininess;\r\n" \
+	"void main (void) {\r\n" \
+	"/*	vec3 vertPos = texture2D (vertPosTex, vec2 (gl_TexCoord [0])).xyz;\r\n" \
+	"	vec3 vertNorm = texture2D (vertPosTex, vec2 (gl_TexCoord [1])).xyz;\r\n" \
+	"	vec3 lightPos = texture2D (lightPosTex, vec2 (gl_TexCoord [2])).xyz;\r\n" \
+	"	vec3 lightColor = texture2D (lightColorTex, vec2 (gl_TexCoord [3])).xyz;\r\n" \
+	"	vec3 lightDir = lightPos - vertPos;\r\n" \
+	"	float nType = texture2D (lightDataTex, vec2 (gl_TexCoord [4])).x;\r\n" \
+	"	float radius = texture2D (lightDataTex, vec2 (gl_TexCoord [4])).y;\r\n" \
+	"	float brightness = texture2D (lightDataTex, vec2 (gl_TexCoord [4])).z;\r\n" \
+	"	float attenuation, lightDist, NdotL, RdotE;\r\n" \
+	"  vec3 vertColor;\r\n" \
+	"	if (brightness < 0)\r\n" \
+	"		attenuation = 0.01;\r\n" \
+	"	else {\r\n" \
+	"		lightDist = length (lightDir) / lightRange;\r\n" \
+	"		if (lightDist < 1.0)\r\n" \
+	"			lightDist = 1.4142;\r\n" \
+	"		else {\r\n" \
+	"			lightDist *= lightDist;\r\n" \
+	"			if (nType < 2.0)\r\n" \
+	"				lightDist *= 2.0;\r\n" \
+	"			}\r\n" \
+	"		attenuation = lightDist / brightness;\r\n" \
+	"		}\r\n" \
+	"	lightDir = normalize (lightDir);\r\n" \
+	"	NdotL = (lightDist < 1.0) ? 1.0 : dot (vertNorm, lightDir);\r\n" \
+	"	if (NdotL < 0)\r\n" \
+	"		NdotL = 0;\r\n" \
+	"	else\r\n" \
+	"		vertColor = matAmbient + matDiffuse * NdotL;\r\n" \
+	"	vertColor *= lightColor;\r\n" \
+	"	if (NdotL > 0.0) {\r\n" \
+	"		RdotE = dot (normalize (reflect (-lightDir, vertNorm)), normalize (-lightPos));\r\n" \
+	"		if ((RdotE != 0) && (shininess > 0))\r\n" \
+	"			lightColor *= pow (RdotE, shininess);\r\n" \
+	"		vertColor += lightColor * matSpecular;\r\n" \
+	"		}\r\n" \
+	"  gl_FragColor = vec4 (vertColor / attenuation, 1.0);*/\r\n" \
+	"  gl_FragColor = vec4 (1.0, 0.5, 0.0, 1.0);\r\n" \
+	"	}";
+
+char *vertLightVS = 
+	"void main(void){" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;"\
+	"gl_TexCoord [1] = gl_MultiTexCoord1;"\
+	"gl_TexCoord [2] = gl_MultiTexCoord2;"\
+	"gl_TexCoord [3] = gl_MultiTexCoord3;"\
+	"gl_TexCoord [4] = gl_MultiTexCoord4;"\
+	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;" \
+	"gl_FrontColor=gl_Color;}";
+
+//-------------------------------------------------------------------------
+
+void InitVertLightShader (void)
+{
+	int	bOk;
+
+gameStates.ogl.bVertexLighting = 0;
+#ifdef _DEBUG
+LogErr ("building vertex lighting shader program\n");
+DeleteShaderProg (NULL);
+if (bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
+	gameStates.ogl.bVertexLighting = 1;
+	if (hVertLightShader)
+		DeleteShaderProg (&hVertLightShader);
+	bOk = CreateShaderProg (&hVertLightShader) &&
+			CreateShaderFunc (&hVertLightShader, &hVertLightFS, &hVertLightVS, vertLightFS, vertLightVS, 1) &&
+			LinkShaderProg (&hVertLightShader);
+	if (!bOk) {
+		gameStates.ogl.bVertexLighting = 0;
+		DeleteShaderProg (&hVertLightShader);
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
