@@ -128,18 +128,10 @@ void InitTextureBrightness (void)
 memset (gameData.pig.tex.brightness, 0, sizeof (gameData.pig.tex.brightness));
 for (i = 0; i < MAX_WALL_TEXTURES; i++) {
 	j = gameStates.app.bD1Mission ? ConvertD1Texture (i, 1) : i;
-#ifdef _DEBUG
-	if (j == 250)
-		j = j;
-#endif
 	if (gameData.pig.tex.pTMapInfo [j].lighting)
 		gameData.pig.tex.brightness [j] = gameData.pig.tex.pTMapInfo [j].lighting;
 	}
 for (i = h; --i; ) {
-#ifdef _DEBUG
-	if (ptb [i].nTexture == 250)
-		i = i;
-#endif
 	gameData.pig.tex.brightness [ptb [i].nTexture] = 
 		 ((ptb [i].nBrightness * 100 + MAX_BRIGHTNESS / 2) / MAX_BRIGHTNESS) * (MAX_BRIGHTNESS / 100);
 	}

@@ -1131,6 +1131,8 @@ if ((t = FindArg ("-max_segments")) && *Args [t+1]) {
 		t = MAX_SEGMENTS_D2X;
 	gameData.segs.nMaxSegments = t;
 	}
+if ((t = FindArg ("-gpgpu_lights")))
+	gameStates.ogl.bVertexLighting = NumArg (t, 1);
 if ((t = FindArg ("-cache_lights")))
 	gameStates.app.bCacheLights = NumArg (t, 1);
 if ((t = FindArg ("-enable_shadows")))

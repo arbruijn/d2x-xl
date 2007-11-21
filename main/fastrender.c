@@ -53,8 +53,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define VERTLIGHT_DRAWARRAYS 1
 #define VERTLIGHT_BUFFERS	4
-#define VL_SHADER_BUFFERS 4
-#define VLBUF_WIDTH 64
+#define VL_SHADER_BUFFERS VERTLIGHT_BUFFERS
+#define VLBUF_WIDTH 32
 #define VLBUF_SIZE (VLBUF_WIDTH * VLBUF_WIDTH)
 
 GLhandleARB hVertLightShader = 0;
@@ -937,8 +937,10 @@ int RenderVertLightBuffers (void)
 	short			nVertex, nLights;
 	GLuint		hBuffer [VERTLIGHT_BUFFERS] = {0,0,0,0};
 
+#if !VERTLIGHT_DRAWARRAYS
 	static float	quadCoord [4][2] = {{0, 0}, {0, VLBUF_WIDTH}, {VLBUF_WIDTH, VLBUF_WIDTH}, {VLBUF_WIDTH, 0}};
 	static float	texCoord [4][2] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
+#endif
 
 #if 0
 ComputeFragLight (gameStates.ogl.fLightRange);
@@ -952,13 +954,6 @@ for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 	memset (vld.buffers [i] + vld.nLights, 0, (VLBUF_SIZE - vld.nLights) * sizeof (vld.buffers [i][0]));
 #endif
 	}
-#if 0
-for (i = 0; i < VL_SHADER_BUFFERS; i++) {
-	glActiveTexture (GL_TEXTURE0 + i);
-	glClientActiveTexture (GL_TEXTURE0 + i);
-	glBindTexture (GL_TEXTURE_2D, hBuffer [i]);
-	}
-#endif
 #if VERTLIGHT_DRAWARRAYS
 glDrawArrays (GL_QUADS, 0, 4);
 #else
@@ -970,16 +965,18 @@ for (i = 0; i < 4; i++) {
 	}
 glEnd ();
 #endif
-memset (hBuffer, 0, sizeof (hBuffer));
 #ifdef _DEBUG
 memset (vld.colors, 0, sizeof (vld.colors));
 #endif
+#if 0
 for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 	glActiveTexture (GL_TEXTURE0 + i);
 	glClientActiveTexture (GL_TEXTURE0 + i);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	}
+#endif
 glDeleteTextures (VL_SHADER_BUFFERS, hBuffer);
+memset (hBuffer, 0, sizeof (hBuffer));
 glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
 glReadPixels (0, 0, VLBUF_WIDTH, VLBUF_WIDTH, GL_RGBA, GL_FLOAT, vld.colors);
 #endif
@@ -1100,10 +1097,13 @@ else if (nState == 1) {
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
 	SetNearestVertexLights (nVertex, 1, 0, 1, 0);
-	h = gameData.render.lights.dynamic.shader.nActiveLights [0];
+	if (!(h = gameData.render.lights.dynamic.shader.nActiveLights [0]))
+		return 1;
 	if (h > VLBUF_SIZE)
 		h = VLBUF_SIZE;
-	if (vld.nLights + h > VLBUF_SIZE)
+	if (vld.nVertices >= VLBUF_SIZE)
+		RenderVertLightBuffers ();
+	else if (vld.nLights + h > VLBUF_SIZE)
 		RenderVertLightBuffers ();
 #ifdef _DEBUG
 	if (nVertex == nDbgVertex)
@@ -1123,11 +1123,13 @@ else if (nState == 1) {
 		vld.buffers [3][i].p.w = psl->brightness;
 		nLights++;
 		}
-	vld.index [vld.nVertices].nVertex = nVertex;
-	vld.index [vld.nVertices].nLights = nLights;
-	vld.index [vld.nVertices].color = colorP->color;
-	vld.nVertices++;
-	vld.nLights += nLights;
+	if (nLights) {
+		vld.index [vld.nVertices].nVertex = nVertex;
+		vld.index [vld.nVertices].nLights = nLights;
+		vld.index [vld.nVertices].color = colorP->color;
+		vld.nVertices++;
+		vld.nLights += nLights;
+		}
 
 	gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVariableLights [0];
 	}	
@@ -1440,7 +1442,7 @@ gameStates.render.nState = 0;
 //------------------------------------------------------------------------------
 
 char *vertLightFS = 
-	"uniform sampler2D vertPosTex/*, vertNormTex, lightPosTex, lightColorTex*/;\r\n" \
+	"uniform sampler2D vertPosTex, vertNormTex, lightPosTex, lightColorTex;\r\n" \
 	"uniform float lightRange;\r\n" \
 	"void main (void) {\r\n" \
 	"	vec3 vertPos = texture2D (vertPosTex, gl_TexCoord [0].xy).xyz;\r\n" \
@@ -1489,10 +1491,12 @@ void InitVertLightShader (void)
 {
 	int	bOk;
 
+if (!gameStates.ogl.bVertexLighting)
+	return;
 gameStates.ogl.bVertexLighting = 0;
 #if SHADER_VERTEX_LIGHTING
-LogErr ("building vertex lighting shader program\n");
 if (bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
+	LogErr ("building vertex lighting shader program\n");
 	gameStates.ogl.bVertexLighting = 1;
 	if (hVertLightShader)
 		DeleteShaderProg (&hVertLightShader);

@@ -678,10 +678,10 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 char *glareFS = 
 	"uniform sampler2D glareTex;\r\n" \
-	"uniform sampler2Dshadow depthTex;\r\n" \
+	"uniform sampler2DShadow depthTex;\r\n" \
 	"void main (void) {\r\n" \
 	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);" \
-	"float depth = shadow2D (depthTex, gl_FragCoord.xy);" \
+	"float depth = shadow2D (depthTex, gl_FragCoord.xy).x;" \
 	"if (gl_FragCoord.z < depth)" \
 	"	glareColor.a *= abs (gl_FragCoord.z - depth);" \
 	"gl_FragColor = glareColor * gl_Color;\r\n" \

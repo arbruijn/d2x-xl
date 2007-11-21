@@ -2024,7 +2024,7 @@ gameStates.render.nWindow = nWindow;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
-	if (gameStates.app.bMultiThreaded && (CountRenderFaces () > 15)) 
+	if (!gameStates.ogl.bVertexLighting && gameStates.app.bMultiThreaded && (CountRenderFaces () > 15)) 
 		RunRenderThreads (rtComputeFaceLight);
 	else
 		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
