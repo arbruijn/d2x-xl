@@ -9,14 +9,14 @@
 
 #if RENDER2TEXTURE == 2
 
-typedef struct ogl_fbuffer {
-	GLuint	hBuf;
-	GLuint	hDepthRb;
-	GLuint	texId;
+typedef struct tFrameBuffer {
+	GLuint	hFBO;
+	GLuint	hDepthBuffer;
+	GLuint	hRenderBuffer;
 	int		nWidth;
 	int		nHeight;
 	GLenum	nStatus;
-} ogl_fbuffer;
+} tFrameBuffer;
 
 #ifdef _WIN32
 extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
@@ -39,11 +39,11 @@ extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 #endif
 
 void OglInitFBuffer (void);
-int OglCreateFBuffer (ogl_fbuffer *pb, int nWidth, int nHeight, int nDepth);
-void OglDestroyFBuffer (ogl_fbuffer *pb);
-int OglFBufferAvail (ogl_fbuffer *pb);
-int OglEnableFBuffer (ogl_fbuffer *pb);
-int OglDisableFBuffer (ogl_fbuffer *pb);
+int OglCreateFBuffer (tFrameBuffer *pb, int nWidth, int nHeight, int nType);
+void OglDestroyFBuffer (tFrameBuffer *pb);
+int OglFBufferAvail (tFrameBuffer *pb);
+int OglEnableFBuffer (tFrameBuffer *pb);
+int OglDisableFBuffer (tFrameBuffer *pb);
 
 #endif //RENDER2TEXTURE
 

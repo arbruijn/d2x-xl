@@ -43,7 +43,7 @@ pc->glTexId = pc->pb.texId;
 #elif RENDER2TEXTURE == 2
 if (!OglCreateFBuffer (&pc->fb, pc->texBuf.bmProps.w, pc->texBuf.bmProps.h, pc->bShadowMap))
 	return 0;
-pc->glTexId = pc->fb.texId;
+pc->glTexId = pc->fb.hRenderBuffer;
 #endif
 sprintf (pc->texBuf.szName, "CAM#%04d", CAM_IDX (pc));
 return 1;

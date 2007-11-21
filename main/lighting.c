@@ -1661,7 +1661,7 @@ void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariabl
 	tShaderLight	*psl;
 
 #ifdef _DEBUG
-	if (nVertex == nDbgVertex)
+if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
 	gameData.render.lights.dynamic.shader.iVariableLights [nThread] = gameData.render.lights.dynamic.shader.nActiveLights [nThread];
@@ -1843,7 +1843,6 @@ return gameData.render.lights.dynamic.shader.nActiveLights [nThread];
 
 //------------------------------------------------------------------------------
 
-extern float fLightRanges [3];
 extern short nDbgSeg;
 
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *pvPos)
@@ -2027,6 +2026,7 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 		tSegment2		*seg2P;
 
 	LogErr ("Computing static lighting\n");
+	gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	gameStates.render.nState = 0;
 	TransformDynLights (1, bColorize);
@@ -2214,7 +2214,7 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;" \
 	"void main(void) {" \
-	"vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
+	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
 	"vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);" \
 	"float spotEffect, lightDist;" \
 	"lightVec = v - lightPos;" \
@@ -2238,8 +2238,8 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;" \
 	"void main(void) {" \
-	"vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
-	"vec4 topColor = texture2D (topTex, vec2 (gl_TexCoord [1]));" \
+	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
+	"vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);" \
 	"vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);" \
 	"float spotEffect, lightDist;" \
 	"lightVec = v - lightPos;" \
@@ -2263,12 +2263,12 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;" \
 	"void main (void) {" \
-	"float bMask = texture2D (maskTex, vec2 (gl_TexCoord [2])).r;" \
+	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;" \
 	"if (bMask == 0)" \
 	"   discard;" \
 	"else {" \
-	"   vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
-	"   vec4 topColor = texture2D (topTex, vec2 (gl_TexCoord [1]));" \
+	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
+	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);" \
 	"   vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);" \
 	"   float spotEffect, lightDist;" \
 	"   lightVec = v - lightPos;" \
@@ -2322,7 +2322,7 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [4];" \
 	"void main(void) {" \
-	"vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
+	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
 	"vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z) = vec3 (0,0,0);" \
 	"float spotEffect, lightDist;" \
 	"int i;" \
@@ -2352,8 +2352,8 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [4];" \
 	"void main(void) {" \
-	"vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
-	"vec4 topColor = texture2D (topTex, vec2 (gl_TexCoord [1]));" \
+	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
+	"vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);" \
 	"vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z) = vec3 (0,0,0);" \
 	"float spotEffect, lightDist;" \
 	"int i;" \
@@ -2383,12 +2383,12 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [4];" \
 	"void main (void) {" \
-	"float bMask = texture2D (maskTex, vec2 (gl_TexCoord [2])).r;" \
+	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;" \
 	"if (bMask == 0)" \
 	"   discard;" \
 	"else {" \
-	"   vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
-	"   vec4 topColor = texture2D (topTex, vec2 (gl_TexCoord [1]));" \
+	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
+	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);" \
 	"   vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z) = vec3 (0,0,0);" \
 	"   float spotEffect, lightDist;" \
 	"   int i;" \
@@ -2449,7 +2449,7 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [8];" \
 	"void main(void) {" \
-	"vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
+	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
 	"vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z) = vec3 (0,0,0);" \
 	"float spotEffect, lightDist;" \
 	"int i;" \
@@ -2479,8 +2479,8 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [8];" \
 	"void main(void) {" \
-	"vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
-	"vec4 topColor = texture2D (topTex, vec2 (gl_TexCoord [1]));" \
+	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
+	"vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);" \
 	"vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z) = vec3 (0,0,0);" \
 	"float spotEffect, lightDist;" \
 	"int i;" \
@@ -2510,12 +2510,12 @@ char *lightingFS [12] = {
 	"uniform vec4 matColor;" \
 	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [8];" \
 	"void main (void) {" \
-	"float bMask = texture2D (maskTex, vec2 (gl_TexCoord [2])).r;" \
+	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;" \
 	"if (bMask == 0)" \
 	"   discard;" \
 	"else {" \
-	"   vec4 btmColor = texture2D (btmTex, vec2 (gl_TexCoord [0]));" \
-	"   vec4 topColor = texture2D (topTex, vec2 (gl_TexCoord [1]));" \
+	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);" \
+	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);" \
 	"   vec3 lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z) = vec3 (0,0,0);" \
 	"   float spotEffect, lightDist;" \
 	"   int i;" \
@@ -2586,7 +2586,6 @@ void InitLightingShaders (void)
 
 gameStates.render.bHaveDynLights = 0;
 LogErr ("building lighting shader programs\n");
-DeleteShaderProg (NULL);
 if (gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath)) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 12; i++) {

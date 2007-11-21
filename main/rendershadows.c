@@ -315,7 +315,7 @@ for (i = 0; i < 4; i++)
 glGetFloatv (GL_PROJECTION_MATRIX, mProjectionf);
 glMatrixMode (GL_TEXTURE);
 for (i = 0, pc = gameData.render.shadows.shadowMaps; i < 1/*gameData.render.shadows.nShadowMaps*/; i++) {
-	glBindTexture (GL_TEXTURE_2D, pc->fb.texId);
+	glBindTexture (GL_TEXTURE_2D, pc->fb.hRenderBuffer);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE_ARB, GL_COMPARE_R_TO_TEXTURE_ARB);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC_ARB, GL_LEQUAL);
 	glLoadMatrixf (mTexBiasf);

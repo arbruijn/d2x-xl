@@ -30,6 +30,8 @@ extern tFaceColor vertColors [8];
 extern tRgbaColorf shadowColor [2];
 extern tRgbaColorf modelColor [2];
 
+extern float fLightRanges [5];
+
 //------------------------------------------------------------------------------
 
 void OglPalColor (ubyte *palette, int c);

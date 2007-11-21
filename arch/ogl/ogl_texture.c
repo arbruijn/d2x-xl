@@ -264,7 +264,7 @@ if (!(texP->pbuffer.bBound ||
 #		endif
 #	endif
 #elif RENDER2TEXTURE == 2
-OGL_BINDTEX (texP->fbuffer.texId);
+OGL_BINDTEX (texP->fbuffer.hRenderBuffer);
 #endif
 return 0;
 }
@@ -1071,9 +1071,9 @@ return 0;
 unsigned char decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, tPixelBuffer *pb)
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_fbuffer *fb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, tFrameBuffer *fb)
 #else
 int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, void *pb)
 #endif
@@ -1105,7 +1105,7 @@ if (!(t = bmP->glTexture)) {
 #elif RENDER2TEXTURE == 2
 	if (fb) {
 		t->fbuffer = *fb;
-		t->handle = fb->texId;
+		t->handle = fb->hRenderBuffer;
 		t->bFrameBuf = 1;
 		}
 #endif

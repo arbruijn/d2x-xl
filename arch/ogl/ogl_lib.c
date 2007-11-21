@@ -44,6 +44,7 @@
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "ogl_render.h"
+#include "render.h"
 
 //------------------------------------------------------------------------------
 
@@ -340,6 +341,7 @@ glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 void OglStartFrame (int bFlat, int bResetColorBuf)
 {
+	GLint nError = glGetError ();
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
@@ -494,8 +496,7 @@ else
 		OglSetFOV (gameStates.render.glFOV);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
-		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 
-						  nCanvasWidth, nCanvasHeight);
+		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, nCanvasWidth, nCanvasHeight);
 		}
 	if (gameStates.render.nRenderPass < 0) {
 		glDepthMask (1);
@@ -559,6 +560,7 @@ else
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable (GL_STENCIL_TEST);
 	}
+nError = glGetError ();
 }
 
 //------------------------------------------------------------------------------
@@ -567,11 +569,15 @@ void OglEndFrame (void)
 {
 //	OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
 //	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+glUseProgramObject (0);
+G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OGL_VIEWPORT (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+glDrawBuffer (GL_BACK);
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();
@@ -702,6 +708,8 @@ if (bCameras) {
 	DestroyCameras ();
 	CreateCameras ();		
 	}
+CloseDynLighting ();
+InitDynLighting ();
 }
 
 //------------------------------------------------------------------------------

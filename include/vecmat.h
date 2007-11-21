@@ -374,6 +374,7 @@ fix VmLinePointDist (vmsVector *a, vmsVector *b, vmsVector *p);
 int VmPointLineIntersectionf (fVector *hitP, fVector *p1, fVector *p2, fVector *p3, fVector *vPos, int bClamp);
 float VmLinePointDistf (fVector *a, fVector *b, fVector *p, int bClamp);
 vmsVector *VmVecReflect (vmsVector *vReflect, vmsVector *vDir, vmsVector *vNormal);
+fVector *VmVecReflectf (fVector *vReflect, fVector *vDir, fVector *vNormal);
 
 fVector *VmVecCrossProdf (fVector *dest, fVector *src0, fVector *src1);
 fVector *VmVecPerpf (fVector *dest, fVector *p0, fVector *p1, fVector *p2);

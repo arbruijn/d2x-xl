@@ -35,6 +35,8 @@
 #include "texmerge.h"
 #include "ogl_defs.h"
 #include "ogl_shader.h"
+#include "glare.h"
+#include "render.h"
 
 //------------------------------------------------------------------------------
 
@@ -183,8 +185,10 @@ return 0;
 
 void DeleteShaderProg (GLhandleARB *progP)
 {
+#if 0
 if (!progP)
 	progP = &genShaderProg;
+#endif
 if (progP && *progP) {
 	glDeleteObject (*progP);
 	*progP = 0;
@@ -297,13 +301,13 @@ if (gameStates.ogl.bShadersOk)
 	gameStates.ogl.bShadersOk = (nTMUs > 1);
 if (gameStates.render.color.bLightMapsOk)
 	gameStates.render.color.bLightMapsOk = (nTMUs > 2);
-DeleteShaderProg (NULL);
 #if LIGHTMAPS
 InitLightmapShaders ();
 #endif
 InitTexMergeShaders ();
 InitLightingShaders ();
 InitVertLightShader ();
+InitGlareShader ();
 LinkShaderProg (NULL);
 }
 

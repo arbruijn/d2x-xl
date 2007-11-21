@@ -427,17 +427,17 @@ char *texMergeFS [3] = {
 	"uniform sampler2D btmTex, topTex;" \
 	"uniform float grAlpha;" \
 	"void main(void){" \
-	"vec4 topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"vec4 btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
+	"vec4 topColor=texture2D(topTex,gl_TexCoord [1].xy);" \
+	"vec4 btmColor=texture2D(btmTex,gl_TexCoord [0].xy);" \
 	"gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}"
 ,
 	"uniform sampler2D btmTex, topTex;" \
 	"uniform float grAlpha;" \
 	"vec4 topColor, btmColor;" \
 	"void main(void)" \
-	"{topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
+	"{topColor=texture2D(topTex,gl_TexCoord [1].xy);" \
 	"if((abs(topColor.r-120.0/255.0)<8.0/255.0)&&(abs(topColor.g-88.0/255.0)<8.0/255.0)&&(abs(topColor.b-128.0/255.0)<8.0/255.0))discard;" \
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
+	"btmColor=texture2D(btmTex,gl_TexCoord [0].xy);" \
 	"gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;}"
 ,
 	"uniform sampler2D btmTex, topTex, maskTex;" \
@@ -445,9 +445,9 @@ char *texMergeFS [3] = {
 	"vec4 topColor, btmColor;" \
 	"float bMask;" \
 	"void main(void){" \
-	"bMask=texture2D(maskTex,vec2(gl_TexCoord [2])).r;" \
-	"topColor=texture2D(topTex,vec2(gl_TexCoord [1]));" \
-	"btmColor=texture2D(btmTex,vec2(gl_TexCoord [0]));" \
+	"bMask=texture2D(maskTex,gl_TexCoord [2].xy).r;" \
+	"topColor=texture2D(topTex,gl_TexCoord [1].xy);" \
+	"btmColor=texture2D(btmTex,gl_TexCoord [0].xy);" \
 	"gl_FragColor=vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha*bMask)*gl_Color;}"
 	};
 

@@ -64,6 +64,7 @@ static char rcsid [] = "$Id: gamerend.c, v 1.13 2003/10/12 09:38:48 btb Exp $";
 #include "network.h"
 #include "hudmsg.h"
 #include "gamepal.h"
+#include "lightning.h"
 
 #include "ogl_defs.h"
 #include "ogl_lib.h"
@@ -870,6 +871,7 @@ GrInitSubCanvas (
 	gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.h);
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 
+SetLightningLights ();
 objP = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 if (objP && 
 	 (objP->nType == OBJ_WEAPON) && 
@@ -889,7 +891,7 @@ if (objP &&
   	gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 	UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
 	if (RenderCameras ())
-	GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
+		GrSetCurrentCanvas (&gameStates.render.vr.buffers.subRender [0]);
 	RenderFrame (0, 0);
   	WakeupRenderedObjects (gameData.objs.viewer, 0);
 	gameData.objs.viewer = viewerSave;

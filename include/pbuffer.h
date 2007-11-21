@@ -19,7 +19,7 @@ typedef	GLXPbuffer	HPBUFFER;
 #endif
 
 
-typedef struct ogl_pbuffer {
+typedef struct tPixelBuffer {
 	HPBUFFER	hBuf;
 	HGLDC		hDC;
 	HGLRC		hRC;
@@ -27,7 +27,7 @@ typedef struct ogl_pbuffer {
 	int		nWidth;
 	int		nHeight;
 	char		bBound;
-} ogl_pbuffer;
+} tPixelBuffer;
 
 #	ifdef _WIN32
 extern PFNWGLCREATEPBUFFERARBPROC				wglCreatePbufferARB;
@@ -46,11 +46,11 @@ extern PFNWGLGETCURRENTREADDCARBPROC			wglGetCurrentReadDCARB;
 #	endif
 
 void OglInitPBuffer (void);
-int OglCreatePBuffer (ogl_pbuffer *pb, int nWidth, int nHeight, int nDepth);
-void OglDestroyPBuffer (ogl_pbuffer *pb);
-int OglPBufferAvail (ogl_pbuffer *pb);
-int OglEnablePBuffer (ogl_pbuffer *pb);
-int OglDisablePBuffer (ogl_pbuffer *pb);
+int OglCreatePBuffer (tPixelBuffer *pb, int nWidth, int nHeight, int nDepth);
+void OglDestroyPBuffer (tPixelBuffer *pb);
+int OglPBufferAvail (tPixelBuffer *pb);
+int OglEnablePBuffer (tPixelBuffer *pb);
+int OglDisablePBuffer (tPixelBuffer *pb);
 
 extern HGLDC	hGlDC;
 extern HGLRC	hGlRC;

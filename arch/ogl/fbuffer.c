@@ -32,6 +32,7 @@
 #include "lightmap.h"
 #include "texmerge.h"
 #include "error.h"
+#include "glext.h"
 
 //------------------------------------------------------------------------------
 
@@ -65,7 +66,7 @@ PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
 
 #if RENDER2TEXTURE == 2
 
-int OglFBufferAvail (ogl_fbuffer *fb)
+int OglFBufferAvail (tFrameBuffer *fb)
 {
 if (!bRender2TextureOk)
 	return 0;
@@ -81,75 +82,88 @@ switch (fb->nStatus = glCheckFramebufferStatusEXT (GL_FRAMEBUFFER_EXT)) {
 
 //------------------------------------------------------------------------------
 
-int OglCreateFBuffer (ogl_fbuffer *fb, int nWidth, int nHeight, int bDepth)
+int OglCreateFBuffer (tFrameBuffer *fb, int nWidth, int nHeight, int nType)
 {
 	GLenum	nError;
 
 if (!bRender2TextureOk)
 	return 0;
-glGenFramebuffersEXT (1, &fb->hBuf);
-glGenTextures (1, &fb->texId);
-glGenRenderbuffersEXT (1, &fb->hDepthRb);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hBuf);
-OGL_BINDTEX (fb->texId);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+glGenFramebuffersEXT (1, &fb->hFBO);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hFBO);
+
 if (nWidth > 0)
 	fb->nWidth = nWidth;
 if (nHeight > 0)
 	fb->nHeight = nHeight;
-#if 1
-if (bDepth)
-	glTexImage2D (GL_TEXTURE_2D, 0, 1, fb->nWidth, fb->nHeight, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
-else
-	glTexImage2D (GL_TEXTURE_2D, 0, 3, fb->nWidth, fb->nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-#else
-glTexImage2D (GL_TEXTURE_2D, 0, 4, fb->nWidth, fb->nHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-#endif
-glGenerateMipmapEXT (GL_TEXTURE_2D);
-glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->texId, 0);
-glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hDepthRb);
-glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, fb->nWidth, fb->nHeight);
-if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
-	return 0;
-glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthRb);
-if (OglFBufferAvail (fb) < 0)
-	return 0;
-glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->texId, 0);
-glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthRb);
-if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
-	return 0;
+glGenTextures (1, &fb->hRenderBuffer);
+if (nType == 2) { //GPGPU
+	glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexEnvi (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE); 
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, fb->nWidth, fb->nHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->hRenderBuffer, 0);
+	fb->hDepthBuffer = 0;
+	}
+else {
+	glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	if (nType == 1) //depth texture
+		glTexImage2D (GL_TEXTURE_2D, 0, 1, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_INT, NULL);
+	else {
+		glTexImage2D (GL_TEXTURE_2D, 0, 3, fb->nWidth, fb->nHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glGenerateMipmapEXT (GL_TEXTURE_2D);
+		}
+	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->hRenderBuffer, 0);
+
+	glGenRenderbuffersEXT (1, &fb->hDepthBuffer);
+	glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hDepthBuffer);
+	glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, fb->nWidth, fb->nHeight);
+	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
+		return 0;
+	glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthBuffer);
+	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
+		return 0;
+	if (OglFBufferAvail (fb) < 0)
+		return 0;
+	}
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void OglDestroyFBuffer (ogl_fbuffer *fb)
+void OglDestroyFBuffer (tFrameBuffer *fb)
 {
 if (!bRender2TextureOk)
 	return;
-if (fb->hBuf) {
-	glDeleteFramebuffersEXT (1, &fb->hBuf);
-	if (fb->texId)
-		glDeleteTextures (1, &fb->texId);
-	glDeleteRenderbuffersEXT (1, &fb->hDepthRb);
-	fb->texId = 0;
-	fb->hDepthRb = 0;
-	fb->hBuf = 0;
+if (fb->hFBO) {
+	if (fb->hRenderBuffer) {
+		glDeleteTextures (1, &fb->hRenderBuffer);
+		fb->hRenderBuffer = 0;
+		}
+	if (fb->hDepthBuffer) {
+		glDeleteRenderbuffersEXT (1, &fb->hDepthBuffer);
+		fb->hDepthBuffer = 0;
+		}
+	glDeleteFramebuffersEXT (1, &fb->hFBO);
+	fb->hFBO = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int OglEnableFBuffer (ogl_fbuffer *fb)
+int OglEnableFBuffer (tFrameBuffer *fb)
 {
 if (!bRender2TextureOk)
 	return 0;
-OGL_BINDTEX (0);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hBuf);
+glBindTexture (GL_TEXTURE_2D, 0);
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hFBO);
 //glDrawBuffer (GL_FRONT);
 //glReadBuffer (GL_FRONT);
 return 1;
@@ -157,12 +171,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglDisableFBuffer (ogl_fbuffer *fb)
+int OglDisableFBuffer (tFrameBuffer *fb)
 {
 if (!bRender2TextureOk)
 	return 0;
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
-OGL_BINDTEX (fb->texId);
+glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
 //glDrawBuffer (GL_BACK);
 //glReadBuffer (GL_FRONT);
 return 1;

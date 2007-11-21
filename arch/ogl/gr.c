@@ -501,9 +501,9 @@ glVertex2f (xo,yo);
 glVertex2f (xo,yf);
 glVertex2f (xf,yf);
 glVertex2f (xf,yo);
+glEnd ();
 if (COLOR.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 	glDisable (GL_BLEND);
-glEnd ();
 }
 
 //------------------------------------------------------------------------------
@@ -543,10 +543,9 @@ glVertex2f (xo, yo);
 glVertex2f (xf, yo);
 glVertex2f (xf, yf);
 glVertex2f (xo, yf);
-//glVertex2f (xo, yo);
+glEnd();
 if (c->rgb)
 	glDisable (GL_BLEND);
-glEnd();
 }
 	
 //------------------------------------------------------------------------------

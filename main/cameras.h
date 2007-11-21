@@ -26,10 +26,10 @@ typedef struct tCamera {
 	tUVL			uvlList [4];
 	tTexCoord2f	texCoord [4];
 #if RENDER2TEXTURE == 1
-	ogl_pbuffer	pb;
+	tPixelBuffer	pb;
 	tOglTexture	glTex;
 #elif RENDER2TEXTURE == 2
-	ogl_fbuffer	fb;
+	tFrameBuffer	fb;
 	tOglTexture	glTex;
 #endif
 	vmsMatrix	orient;

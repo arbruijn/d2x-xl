@@ -1879,7 +1879,6 @@ if (((gameStates.render.nRenderPass <= 0) &&
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
 	RenderStartFrame ();
-	SetLightningLights ();
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif
@@ -2008,9 +2007,10 @@ void RenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 #if PROFILING
 	time_t	t = clock ();
 #endif
+	GLint nError = glGetError ();
+
 gameData.render.vertColor.bNoShadow = !FAST_SHADOWS && (gameStates.render.nShadowPass == 4);
 gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
-
 gameStates.render.bApplyDynLight =
 gameStates.render.bUseDynLight = SHOW_DYN_LIGHT;
 gameStates.render.bDoCameras = extraGameInfo [0].bUseCameras && 
@@ -2021,6 +2021,7 @@ gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk &&
 											gameOpts->render.color.bAmbientLight && 
 											!IsMultiGame;
 gameStates.render.nWindow = nWindow;
+gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	if (gameStates.app.bMultiThreaded && (CountRenderFaces () > 15)) 

@@ -1854,6 +1854,7 @@ LogErr ("unloading shield data\n");
 FreeSphereCoord ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
+CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen)	{
 	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
 	gameStates.render.vr.buffers.offscreen = NULL;

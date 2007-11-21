@@ -662,6 +662,7 @@ typedef struct tOglStates {
 	int bLuminance4Alpha4;
 	int bReadPixels;
 	int bOcclusionQuery;
+	int bSoftCoronas;
 	int bGetTexLevelParam;
 #ifdef GL_ARB_multitexture
 	int bArbMultiTexture;
@@ -673,6 +674,7 @@ typedef struct tOglStates {
 	tRgbColorf fBright;
 	tRgbColors palAdd;
 	float fAlpha;
+	float fLightRange;
 } tOglStates;
 
 //------------------------------------------------------------------------------
@@ -1234,6 +1236,7 @@ typedef struct tDynLightData {
 	tShaderLightData	shader;
 	tHeadLightData		headLights;
 	tOglMaterial		material;
+	tFrameBuffer		fb;
 } tDynLightData;
 
 extern int nMaxNearestLights [21];

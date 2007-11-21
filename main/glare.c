@@ -22,9 +22,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <math.h>
 
 #include "inferno.h"
+#include "error.h"
 #include "gr.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
+#include "ogl_shader.h"
 #include "gameseg.h"
 #include "lighting.h"
 #include "lightmap.h"
@@ -33,8 +35,45 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "glare.h"
 
 #define CORONA_OUTLINE	0
+#ifdef _DEBUG
+#	define SHADER_SOFT_CORONAS 0
+#else
+#	define SHADER_SOFT_CORONAS 0
+#endif
 
 float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
+
+GLhandleARB hGlareShader = 0;
+GLhandleARB hGlareVS = 0; 
+GLhandleARB hGlareFS = 0; 
+
+GLuint hDepthBuffer = 0; 
+
+// -----------------------------------------------------------------------------------
+
+void CreateDepthTexture (void)
+{
+glGenTextures (1, &hDepthBuffer);
+if (glGetError ())
+	return;
+glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexImage2D (GL_TEXTURE_2D, 0, 1, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+}
+
+// -----------------------------------------------------------------------------------
+
+void DestroyDepthTexture (void)
+{
+if (hDepthBuffer) {
+	glDeleteTextures (1, &hDepthBuffer);
+	hDepthBuffer = 0;
+	}
+}
 
 // -----------------------------------------------------------------------------------
 
@@ -633,6 +672,78 @@ if (fIntensity > 1)
 	fIntensity = 1;
 #endif
 return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
+}
+
+//------------------------------------------------------------------------------
+
+char *glareFS = 
+	"uniform sampler2D glareTex;\r\n" \
+	"uniform sampler2Dshadow depthTex;\r\n" \
+	"void main (void) {\r\n" \
+	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);" \
+	"float depth = shadow2D (depthTex, gl_FragCoord.xy);" \
+	"if (gl_FragCoord.z < depth)" \
+	"	glareColor.a *= abs (gl_FragCoord.z - depth);" \
+	"gl_FragColor = glareColor * gl_Color;\r\n" \
+	"}";
+
+char *glareVS = 
+	"uniform sampler2D glareTex, depthTex;\r\n" \
+	"void main(void){" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;" \
+	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;" \
+	"gl_FrontColor = gl_Color;}";
+
+//-------------------------------------------------------------------------
+
+void LoadGlareShader (void)
+{
+if (gameStates.ogl.bSoftCoronas) {
+	CreateDepthTexture ();
+	if (hDepthBuffer) {
+		glUseProgramObject (hGlareShader);
+		glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
+		glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
+		glActiveTexture (GL_TEXTURE1);
+		glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+		glDisable (GL_DEPTH_TEST);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
+
+void UnloadGlareShader (void)
+{
+if (gameStates.ogl.bSoftCoronas) {
+	glUseProgramObject (0);
+	DestroyDepthTexture ();
+	}
+}
+
+//-------------------------------------------------------------------------
+
+void InitGlareShader (void)
+{
+	int	bOk;
+
+gameStates.ogl.bSoftCoronas = 0;
+#if SHADER_SOFT_CORONAS
+LogErr ("building corona blending shader program\n");
+DeleteShaderProg (NULL);
+if (bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
+	gameStates.ogl.bSoftCoronas = 1;
+	if (hGlareShader)
+		DeleteShaderProg (&hGlareShader);
+	bOk = CreateShaderProg (&hGlareShader) &&
+			CreateShaderFunc (&hGlareShader, &hGlareFS, &hGlareVS, glareFS, glareVS, 1) &&
+			LinkShaderProg (&hGlareShader);
+	if (!bOk) {
+		gameStates.ogl.bSoftCoronas = 0;
+		DeleteShaderProg (&hGlareShader);
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

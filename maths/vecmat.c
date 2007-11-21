@@ -1806,5 +1806,19 @@ VmVecNegate (VmVecDec (vReflect, vDir));
 return vReflect;
 }
 
+//------------------------------------------------------------------------------
+// Reflect vDir at surface with normal vNormal. Return result in vReflect
+// 2 * n * (l dot n) - l
+
+fVector *VmVecReflectf (fVector *vReflect, fVector *vDir, fVector *vNormal)
+{
+	float dot = VmVecDotf (vDir, vNormal);
+
+vReflect = vNormal;
+VmVecScalef (vReflect, vReflect, 2 * dot);
+VmVecDecf (vReflect, vDir);
+return VmVecNegatef (vReflect);
+}
+
 // ------------------------------------------------------------------------
 // eof

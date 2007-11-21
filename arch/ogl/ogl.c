@@ -51,6 +51,7 @@
 #include "ogl_defs.h"
 #include "lighting.h"
 #include "lightmap.h"
+#include "glare.h"
 #include "gamepal.h"
 #include "particles.h"
 #include "u_mem.h"
@@ -1416,9 +1417,9 @@ return 0;
 unsigned char decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, tPixelBuffer *pb)
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, ogl_fbuffer *fb)
+int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, tFrameBuffer *fb)
 #else
 int OglLoadBmTextureM (grsBitmap *bmP, int bMipMap, int nTransp, int bMask, void *pb)
 #endif
@@ -1913,6 +1914,7 @@ InitLightmapShaders ();
 InitTexMergeShaders ();
 InitLightingShaders ();
 InitVertLightShader ();
+InitGlareShader ();
 LinkShaderProg (NULL);
 }
 

@@ -1089,6 +1089,9 @@
 						RelativePath="..\..\main\digi.h">
 					</File>
 					<File
+						RelativePath="..\..\include\fbuffer.h">
+					</File>
+					<File
 						RelativePath="..\..\include\gr.h">
 					</File>
 					<File
@@ -1132,6 +1135,9 @@
 					</File>
 					<File
 						RelativePath="..\..\include\ogl_tmu.h">
+					</File>
+					<File
+						RelativePath="..\..\include\pbuffer.h">
 					</File>
 					<File
 						RelativePath="..\..\include\sdlgl.h">
@@ -3546,10 +3552,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

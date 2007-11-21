@@ -86,7 +86,7 @@ PFNWGLGETCURRENTREADDCARBPROC			wglGetCurrentReadDCARB = NULL;
 
 #if RENDER2TEXTURE == 1
 
-int OglCreatePBuffer (ogl_pbuffer *pb, int nWidth, int nHeight, int nDepth)
+int OglCreatePBuffer (tPixelBuffer *pb, int nWidth, int nHeight, int nDepth)
 {
 #ifdef _WIN32
 	int	pf;
@@ -203,7 +203,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void OglDestroyPBuffer (ogl_pbuffer *pb)
+void OglDestroyPBuffer (tPixelBuffer *pb)
 {
 if (pb->hBuf) {
 #ifdef _WIN32
@@ -228,7 +228,7 @@ if (pb->hBuf) {
 
 //------------------------------------------------------------------------------
 
-int OglPBufferAvail (ogl_pbuffer *pb)
+int OglPBufferAvail (tPixelBuffer *pb)
 {
 #ifdef _WIN32
 	int	bLost;
@@ -246,7 +246,7 @@ return (pb->hBuf && pb->hRC);
 
 //------------------------------------------------------------------------------
 
-int OglEnablePBuffer (ogl_pbuffer *pb)
+int OglEnablePBuffer (tPixelBuffer *pb)
 {
 if (OglPBufferAvail (pb) < 1)
 	return 0;
@@ -263,7 +263,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OglDisablePBuffer (ogl_pbuffer *pb)
+int OglDisablePBuffer (tPixelBuffer *pb)
 {
 if (OglPBufferAvail (pb) < 1)
 	return 0;

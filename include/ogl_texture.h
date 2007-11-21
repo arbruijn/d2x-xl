@@ -32,9 +32,9 @@ typedef struct tOglTexture {
 	ubyte			bMipMaps;
 	ubyte			bFrameBuf;
 #if RENDER2TEXTURE == 1
-	ogl_pbuffer	pbuffer;
+	tPixelBuffer	pbuffer;
 #elif RENDER2TEXTURE == 2
-	ogl_fbuffer	fbuffer;
+	tFrameBuffer	fbuffer;
 #endif
 } tOglTexture;
 
@@ -51,9 +51,9 @@ int OglTextureStats (void);
 
 int OglBindBmTex (grsBitmap *bmP, int bMipMaps, int nTransp);
 #if RENDER2TEXTURE == 1
-int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, ogl_pbuffer *pb);
+int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, tPixelBuffer *pb);
 #elif RENDER2TEXTURE == 2
-int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, ogl_fbuffer *pb);
+int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, tFrameBuffer *pb);
 #else
 int OglLoadBmTextureM (grsBitmap *bm, int bMipMap, int nTransp, int bMask, void *pb);
 #endif
