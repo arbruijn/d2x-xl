@@ -1942,7 +1942,7 @@ do {
 
 	sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.nCoronaStyle]);
 	*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
-	ADD_SLIDER (opt, szCoronaQual + 1, gameOpts->render.nCoronaStyle, 0, 2, KEY_Q, HTX_CORONA_QUALITY);
+	ADD_SLIDER (opt, szCoronaQual + 1, gameOpts->render.nCoronaStyle, 0, 1 + gameStates.ogl.bDepthBlending, KEY_Q, HTX_CORONA_QUALITY);
 	effectOpts.nCoronaStyle = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;

@@ -615,7 +615,7 @@ if (!*gameFolders.szGameDir) {
 		}
 	}
 strcpy (szDataRootDir, gameFolders.szGameDir);
-strcpy (gameFolders.szHomeDir, *gameFolders.szGameDir ? szDataRootDir);
+strcpy (gameFolders.szHomeDir, *gameFolders.szGameDir ? gameFolders.szGameDir : szDataRootDir);
 #else // Linux, OS X
 #	ifdef __unix__
 if (getenv ("HOME"))
@@ -668,7 +668,7 @@ GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [0], TEXTUREDIR_D2, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szTextureDir [1], TEXTUREDIR_D1, "*.tga");
 GetAppFolder (szDataRootDir, gameFolders.szMovieDir, MOVIEDIR, "*.mvl");
-#ifdef __linux__
+#ifdef __unix__
 if (*gameFolders.szHomeDir) {
 		char	fn [FILENAME_LEN];
 
@@ -689,7 +689,7 @@ if (*gameFolders.szHomeDir) {
 	}
 #endif
 if (*gameFolders.szHomeDir) {
-#ifdef __linux__
+#ifdef __unix__
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 #else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
@@ -3279,7 +3279,7 @@ InitArgs (argc, argv);
 GetAppFolders ();
 if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	   char fnErr [FILENAME_LEN];
-#ifdef __linux__
+#ifdef __unix__
 	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));
 	fErr = fopen (fnErr, "wt");
 #else

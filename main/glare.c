@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _DEBUG
 #	define SHADER_SOFT_CORONAS 1
 #else
-#	define SHADER_SOFT_CORONAS 0
+#	define SHADER_SOFT_CORONAS 1
 #endif
 
 float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
@@ -68,18 +68,18 @@ glEnable (GL_TEXTURE_2D);
 glGenTextures (1, &hDepthBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
-glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+glBindTexture (GL_TEXTURE_RECTANGLE_ARB, hDepthBuffer);
+glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT24, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 #if 0
-glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+glCopyTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
 #else
-glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+glCopyTexSubImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
 //glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_DEPTH_COMPONENT, GL_FLOAT, db);
 if (glGetError ()) {
@@ -630,7 +630,7 @@ if (fIntensity < 0.01f)
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameOpts->render.nPath && gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
+if (gameOpts->render.nPath && (gameOpts->render.nCoronaStyle == 1) && gameStates.ogl.bOcclusionQuery) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
 	}
@@ -692,14 +692,14 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 
 void LoadGlareShader (void)
 {
-if (gameStates.ogl.bSoftCoronas) {
+if (gameStates.ogl.bDepthBlending) {
 	glReadBuffer (GL_BACK);
 	if (CreateDepthTexture ()) {
 		glUseProgramObject (hGlareShader);
 		glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 		glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
 		glUniform2fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
-		glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+		//glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
 		glDisable (GL_DEPTH_TEST);
 		}
 	glActiveTexture (GL_TEXTURE0);
@@ -710,13 +710,14 @@ if (gameStates.ogl.bSoftCoronas) {
 
 void UnloadGlareShader (void)
 {
-if (gameStates.ogl.bSoftCoronas) {
+if (gameStates.ogl.bDepthBlending) {
 	glUseProgramObject (0);
 	DestroyDepthTexture ();
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glActiveTexture (GL_TEXTURE2);
 	glBindTexture (GL_TEXTURE_2D, 0);
+	glEnable (GL_DEPTH_TEST);
 	}
 }
 
@@ -724,23 +725,19 @@ if (gameStates.ogl.bSoftCoronas) {
 
 char *glareFS = 
 	"uniform sampler2D glareTex;\r\n" \
-	"uniform sampler2D depthTex;\r\n" \
-	"uniform vec2 depthScale/* = vec2 (5000.0 / 4999.0, 5000.0 / -4999.0)*/;\r\n" \
-	"uniform vec2 screenScale/* = vec2 (1.0 / 800.0, 1.0 / 600.0)*/;\r\n" \
+	"uniform sampler2DRect depthTex;\r\n" \
+	"uniform vec2 depthScale;\r\n" \
+	"/*uniform vec2 screenScale;*/\r\n" \
 	"void main (void) {\r\n" \
-	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
-	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
+	"float depthZ = depthScale.y / (depthScale.x - texture2DRect (depthTex, gl_FragCoord.xy).r);\r\n" \
 	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
-	"float dist = max (1.0, depthZ - fragZ);\r\n" \
-	"gl_FragColor = glareColor * gl_Color / sqrt (dist);\r\n"
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, depthZ - fragZ));\r\n"
 	"}\r\n";
 
 char *glareVS = 
-	"varying vec3 projPos;\r\n" \
 	"void main(void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
 	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
-	"projPos = vec3 (gl_Position);\r\n" \
 	"gl_FrontColor = gl_Color;}\r\n";
 
 //-------------------------------------------------------------------------
@@ -749,19 +746,19 @@ void InitGlareShader (void)
 {
 	int	bOk;
 
-gameStates.ogl.bSoftCoronas = 0;
+gameStates.ogl.bDepthBlending = 0;
 #if SHADER_SOFT_CORONAS
 LogErr ("building corona blending shader program\n");
 DeleteShaderProg (NULL);
 if (bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
-	gameStates.ogl.bSoftCoronas = 1;
+	gameStates.ogl.bDepthBlending = 1;
 	if (hGlareShader)
 		DeleteShaderProg (&hGlareShader);
 	bOk = CreateShaderProg (&hGlareShader) &&
 			CreateShaderFunc (&hGlareShader, &hGlareFS, &hGlareVS, glareFS, glareVS, 1) &&
 			LinkShaderProg (&hGlareShader);
 	if (!bOk) {
-		gameStates.ogl.bSoftCoronas = 0;
+		gameStates.ogl.bDepthBlending = 0;
 		DeleteShaderProg (&hGlareShader);
 		}
 	}
