@@ -226,6 +226,13 @@ static struct {
 	int	nExplShrapnels;
 } effectOpts;
 
+static struct {
+	int	nOptTextured;
+	int	nOptRadar;
+	int	nOptRadarRange;
+} automapOpts;
+
+
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
 static char *pszTexQual [4];
@@ -2105,7 +2112,6 @@ SetDebrisCollisions ();
 
 //------------------------------------------------------------------------------
 
-static int nOptTextured, nOptRadar, nOptRadarRange;
 static char *pszRadarRange [3];
 
 void AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
@@ -2113,19 +2119,19 @@ void AutomapOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem
 	tMenuItem * m;
 	int			v;
 
-m = menus + nOptTextured;
+m = menus + automapOpts.nOptTextured;
 v = m->value;
 if (v != gameOpts->render.automap.bTextured) {
 	gameOpts->render.automap.bTextured = v;
 	*key = -2;
 	return;
 	}
-if (!m [nOptRadar + extraGameInfo [0].nRadar].value) {
+if (!m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].value) {
 	*key = -2;
 	return;
 	}
-if (nOptRadarRange >= 0) {
-	m = menus + nOptRadarRange;
+if (automapOpts.nOptRadarRange >= 0) {
+	m = menus + automapOpts.nOptRadarRange;
 	v = m->value;
 	if (v != gameOpts->render.automap.nRange) {
 		gameOpts->render.automap.nRange = v;
@@ -2153,7 +2159,7 @@ do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_CHECK (opt, TXT_AUTOMAP_TEXTURED, gameOpts->render.automap.bTextured, KEY_T, HTX_AUTOMAP_TEXTURED);
-	nOptTextured = opt++;
+	automapOpts.nOptTextured = opt++;
 	if (gameOpts->render.automap.bTextured) {
 		ADD_CHECK (opt, TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
 		optBright = opt++;
@@ -2186,7 +2192,7 @@ do {
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_RADIO (opt, TXT_RADAR_OFF, 0, KEY_R, 1, HTX_AUTOMAP_RADAR);
-	nOptRadar = opt++;
+	automapOpts.nOptRadar = opt++;
 	ADD_RADIO (opt, TXT_RADAR_TOP, 0, KEY_T, 1, HTX_AUTOMAP_RADAR);
 	opt++;
 	ADD_RADIO (opt, TXT_RADAR_BOTTOM, 0, KEY_O, 1, HTX_AUTOMAP_RADAR);
@@ -2197,7 +2203,7 @@ do {
 		sprintf (szRadarRange + 1, TXT_RADAR_RANGE, pszRadarRange [gameOpts->render.automap.nRange]);
 		*szRadarRange = *(TXT_RADAR_RANGE - 1);
 		ADD_SLIDER (opt, szRadarRange + 1, gameOpts->render.automap.nRange, 0, 2, KEY_A, HTX_RADAR_RANGE);
-		nOptRadarRange = opt++;
+		automapOpts.nOptRadarRange = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_RADAR_WHITE, 0, KEY_W, 2, NULL);
@@ -2206,24 +2212,24 @@ do {
 		opt++;
 		}
 	else
-		nOptRadarRange =
+		automapOpts.nOptRadarRange =
 		optColor = -1;
 	m [optColor + gameOpts->render.automap.nColor].value = 1;
-	m [nOptRadar + extraGameInfo [0].nRadar].value = 1;
+	m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].value = 1;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_AUTOMAP_MENUTITLE, opt, m, AutomapOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
-	gameOpts->render.automap.bTextured = m [nOptTextured].value;
+	//gameOpts->render.automap.bTextured = m [automapOpts.nOptTextured].value;
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
 	GET_VAL (gameOpts->render.automap.bSmoke, optSmoke);
 	GET_VAL (gameOpts->render.automap.bLightnings, optLightnings);
 	GET_VAL (gameOpts->render.automap.bSkybox, optSkybox);
-	if (nOptRadarRange >= 0)
-		gameOpts->render.automap.nRange = m [nOptRadarRange].value;
+	if (automapOpts.nOptRadarRange >= 0)
+		gameOpts->render.automap.nRange = m [automapOpts.nOptRadarRange].value;
 	extraGameInfo [0].bPowerupsOnRadar = m [optShowPowerups].value;
 	extraGameInfo [0].bRobotsOnRadar = m [optShowRobots].value;
 	for (j = 0; j < 2 + extraGameInfo [0].nRadar; j++)
@@ -2232,7 +2238,7 @@ do {
 			break;
 			}
 	for (j = 0; j < 3; j++)
-		if (m [nOptRadar + j].value) {
+		if (m [automapOpts.nOptRadar + j].value) {
 			extraGameInfo [0].nRadar = j;
 			break;
 			}

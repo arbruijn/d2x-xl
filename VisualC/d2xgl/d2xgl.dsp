@@ -420,6 +420,10 @@ SOURCE=..\..\main\bm.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\briefings.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\cameras.c
 # End Source File
 # Begin Source File
@@ -540,6 +544,10 @@ SOURCE=..\..\main\glare.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\highscores.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\hoard.c
 # End Source File
 # Begin Source File
@@ -577,10 +585,6 @@ SOURCE=..\..\main\kconfig.c
 # Begin Source File
 
 SOURCE=..\..\main\kludge.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\kmatrix.c
 # End Source File
 # Begin Source File
 
@@ -776,10 +780,6 @@ SOURCE=..\..\main\thief.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\titles.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\main\tracker.c
 # End Source File
 # Begin Source File
@@ -882,6 +882,10 @@ SOURCE=..\..\main\bm.h
 # Begin Source File
 
 SOURCE=..\..\main\bmread.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\briefings.h
 # End Source File
 # Begin Source File
 
@@ -1065,6 +1069,10 @@ SOURCE=..\..\include\hash.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\highscores.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\hostage.h
 # End Source File
 # Begin Source File
@@ -1122,10 +1130,6 @@ SOURCE=..\..\main\kconfig.h
 # Begin Source File
 
 SOURCE=..\..\arch\include\key.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\kmatrix.h
 # End Source File
 # Begin Source File
 
@@ -1394,10 +1398,6 @@ SOURCE=..\..\main\tga.h
 # Begin Source File
 
 SOURCE=..\..\include\timer.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\titles.h
 # End Source File
 # Begin Source File
 
