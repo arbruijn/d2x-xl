@@ -322,7 +322,7 @@ h1=grdCurScreen->scHeight;
 
 if (gameStates.ogl.bReadPixels > 0) {
 	glDisable (GL_TEXTURE_2D);
-	glReadBuffer (GL_FRONT);
+	OglReadBuffer (GL_FRONT, 1);
 	if (bTGA)
 		glReadPixels (0, 0, w1, h1, GL_RGBA, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 //			glReadPixels (sx, grdCurScreen->scHeight - (sy + h), w, h, GL_RGBA, GL_UNSIGNED_BYTE, dest->bmTexBuf);
@@ -387,7 +387,7 @@ bool OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * s
 	sx+=src->bmProps.x;
 	sy+=src->bmProps.y;
 	glDisable (GL_TEXTURE_2D);
-	glReadBuffer (GL_FRONT);
+	OglReadBuffer (GL_FRONT, 1);
 	glRasterPos2f (xo, yo);
 //	glReadPixels (0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, gameData.render.ogl.texBuf);
 	glCopyPixels (sx, grdCurScreen->scHeight- (sy+h), w, h, GL_COLOR);

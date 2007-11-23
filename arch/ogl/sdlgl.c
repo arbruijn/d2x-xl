@@ -183,6 +183,7 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 		GrRemapMonoFonts ();
 	//FreeInventoryIcons ();
 	}
+OglCreateDrawBuffer ();
 gameStates.ogl.bInitialized = 1;
 return 1;
 }

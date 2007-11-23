@@ -73,7 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "joydefs.h"
 #include "kconfig.h"
 #include "mouse.h"
-#include "titles.h"
+#include "briefings.h"
 #include "gr.h"
 #include "playsave.h"
 #include "movie.h"

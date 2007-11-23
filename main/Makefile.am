@@ -9,7 +9,7 @@ noinst_LIBRARIES = libmain.a
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/arch/include -I$(top_srcdir)/3d
 
 if USE_NETWORK
-NETWORK_SRCS = kmatrix.c multi.c multibot.c network.c netmisc.c
+NETWORK_SRCS = highscores.c multi.c multibot.c network.c netmisc.c
 endif
 
 if EDITOR
@@ -30,7 +30,7 @@ newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
 piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
 render.c    robot.c     scores.c    segment.c   slew.c      \
 songs.c     state.c     switch.c    terrain.c   texmerge.c  \
-text.c      titles.c    vclip.c     wall.c      weapon.c	\
+text.c      briefings.c vclip.c     wall.c      weapon.c	\
 autodl.c	cameras.c	lightmap.c	tracker.c	objsmoke.c	\
 netmenu.c	cheats.c	banlist.c	thief.c		endlevel.c	\
 multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
@@ -39,7 +39,7 @@ fastrender.c			renderthreads.c			flightpath.c \
 rendershadows.c			objeffects.c
 
 EXTRA_libmain_a_SOURCES = \
-kmatrix.c multi.c multibot.c network.c netmisc.c \
+highscores.c multi.c multibot.c network.c netmisc.c \
 bmread.c dumpmine.c
 
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
@@ -51,12 +51,12 @@ endlevel.h escort.h \
 fireball.h fuelcen.h fvi.h fvi_a.h game.h gamefont.h gamemine.h \
 gamepal.h gamesave.h gameseg.h gameseq.h gamestat.h gauges.h \
 hostage.h hudmsg.h inferno.h joydefs.h kconfig.h \
-kmatrix.h laser.h lighting.h menu.h mission.h modem.h morph.h movie.h multi.h \
+highscores.h laser.h lighting.h menu.h mission.h modem.h morph.h movie.h multi.h \
 multibot.h netmisc.h network.h newdemo.h newmenu.h \
 object.h paging.h physics.h piggy.h player.h playsave.h polyobj.h powerup.h \
 render.h reorder.h robot.h scores.h screens.h segment.h segpoint.h slew.h \
 songs.h sounds.h state.h switch.h terrain.h texmerge.h text.h textures.h \
-titles.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
+briefings.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
 autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
 objeffects.h \

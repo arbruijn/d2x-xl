@@ -166,11 +166,11 @@ return gameStates.ogl.bFullScreen;
 
 int arch_toggle_fullscreen_menu(void)
 {
-	unsigned char *buf=NULL;
+	unsigned char *buf = NULL;
 
 if (gameStates.ogl.bReadPixels) {
 	MALLOC(buf,unsigned char,grdCurScreen->scWidth*grdCurScreen->scHeight*3);
-	glReadBuffer(GL_FRONT);
+	OglReadBuffer(GL_FRONT, 1);
 	glReadPixels(0,0,grdCurScreen->scWidth,grdCurScreen->scHeight,GL_RGB,GL_UNSIGNED_BYTE,buf);
 	}
 GrDoFullScreen(!gameStates.ogl.bFullScreen);
@@ -258,7 +258,7 @@ grdCurScreen->scCanvas.cvBitmap.bmTexBuf = D2_REALLOC (gr_bm_data, w * h);
 GrSetCurrentCanvas (NULL);
 //gr_enable_default_palette_loading();
 /***/LogErr ("   initializing OpenGL window\n");
-if (!OglInitWindow (w,h,0))	//platform specific code
+if (!OglInitWindow (w, h, 0))	//platform specific code
 	return 0;
 OglGetVerInfo ();
 /***/LogErr ("   initializing OpenGL view port\n");
@@ -444,7 +444,10 @@ gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
 /***/LogErr ("   initializing OpenGL extensions\n");
-OglInitExtensions();
+OglInitExtensions ();
+OglDestroyDrawBuffer ();
+OglCreateDrawBuffer ();
+OglDrawBuffer (GL_BACK, 1);
 return 0;
 }
 
@@ -812,7 +815,7 @@ do {
 if ((bTmpBuf = (buf == NULL))) {
 	buf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * 3);
 	glDisable (GL_TEXTURE_2D);
-	glReadBuffer (GL_FRONT);
+	OglReadBuffer (GL_FRONT, 1);
 	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;

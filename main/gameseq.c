@@ -72,7 +72,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "morph.h"
 #include "lighting.h"
 #include "newdemo.h"
-#include "titles.h"
+#include "briefings.h"
 #include "collide.h"
 #include "weapon.h"
 #include "sounds.h"

@@ -48,6 +48,8 @@
 
 //------------------------------------------------------------------------------
 
+#define FBO_DRAW_BUFFER 1
+
 #if DBG_SHADOWS
 int bShadowTest = 0;
 #endif
@@ -348,6 +350,9 @@ glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 void OglStartFrame (int bFlat, int bResetColorBuf)
 {
 	GLint nError = glGetError ();
+
+if (!gameStates.render.cameras.bActive)
+	OglDrawBuffer (GL_BACK, 1);
 #if SHADOWS
 if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
@@ -575,7 +580,10 @@ void OglEndFrame (void)
 {
 //	OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
 //	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
-glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+//OglFlushDrawBuffer ();
+//glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+if (!gameStates.render.cameras.bActive)
+	OglDrawBuffer (GL_BACK, 1);
 glUseProgramObject (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
@@ -583,7 +591,6 @@ G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 OGL_VIEWPORT (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
-glDrawBuffer (GL_BACK);
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();
@@ -671,7 +678,9 @@ if (!gameStates.menus.nInMenu || bForce) {
 #endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
 		OglDoPalFx ();
+	OglFlushDrawBuffer ();
 	SDL_GL_SwapBuffers ();
+	OglDrawBuffer (GL_BACK, 1);
 	if (gameStates.menus.nInMenu || bClear)
 		glClear (GL_COLOR_BUFFER_BIT);
 	}
@@ -716,24 +725,24 @@ if (bCameras) {
 	}
 CloseDynLighting ();
 InitDynLighting ();
+OglDestroyDrawBuffer ();
+OglCreateDrawBuffer ();
+OglDrawBuffer (GL_BACK, 1);
 }
 
 //------------------------------------------------------------------------------
 
 void OglSetScreenMode (void)
 {
-	GLint	glRes;
-
 if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) && 
 	 (gameStates.ogl.bLastFullScreen == gameStates.ogl.bFullScreen) &&
 	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (curDrawBuffer == GL_FRONT)))
 	return;
 if (gameStates.video.nScreenMode == SCREEN_GAME)
-	glDrawBuffer (curDrawBuffer = GL_BACK);
+	OglDrawBuffer (curDrawBuffer = GL_BACK, 1);
 else {
-	glDrawBuffer (curDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT));
+	OglDrawBuffer (curDrawBuffer = (gameOpts->menus.nStyle ? GL_BACK : GL_FRONT), 1);
 	if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle)) {
-		glGetIntegerv (GL_DRAW_BUFFER, &glRes);
 		glClearColor (0,0,0,0);
 		glClear (GL_COLOR_BUFFER_BIT);
 		glMatrixMode (GL_PROJECTION);
@@ -811,6 +820,151 @@ con_printf(CON_VERBOSE,
 con_printf(CON_VERBOSE, 
 	"gl_intensity4:%i, gl_luminance4_alpha4:%i, gl_readpixels:%i, gl_gettexlevelparam:%i\n",
 	gameStates.ogl.bIntensity4, gameStates.ogl.bLuminance4Alpha4, gameStates.ogl.bReadPixels, gameStates.ogl.bGetTexLevelParam);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void OglCreateDrawBuffer (void)
+{
+#if FBO_DRAW_BUFFER
+if (gameStates.ogl.bRender2TextureOk && !gameData.render.ogl.drawBuffer.hFBO)
+	OglCreateFBuffer (&gameData.render.ogl.drawBuffer, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 1);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void OglDestroyDrawBuffer (void)
+{
+#if FBO_DRAW_BUFFER
+if (gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
+	OglDestroyFBuffer (&gameData.render.ogl.drawBuffer);
+	glDrawBuffer (GL_BACK);
+	gameStates.ogl.bDrawBufferActive = 0;
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void OglDrawBuffer (int nBuffer, int bFBO)
+{
+#if 1
+	static int bSemaphore = 0;
+
+if (bSemaphore)
+	return;
+bSemaphore++;
+#endif
+#if FBO_DRAW_BUFFER
+if (bFBO && (nBuffer == GL_BACK) && gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
+	if (!gameStates.ogl.bDrawBufferActive) {
+		OglEnableFBuffer (&gameData.render.ogl.drawBuffer);
+		glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
+		gameStates.ogl.bDrawBufferActive = 1;
+		}
+	}
+else {
+	if (gameStates.ogl.bDrawBufferActive) {
+		OglDisableFBuffer (&gameData.render.ogl.drawBuffer);
+		gameStates.ogl.bDrawBufferActive = 0;
+		}
+	glDrawBuffer (nBuffer);
+	}
+#else
+glDrawBuffer (nBuffer);
+#endif
+#if 1
+bSemaphore--;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void OglReadBuffer (int nBuffer, int bFBO)
+{
+#if FBO_DRAW_BUFFER
+if (bFBO && (nBuffer == GL_BACK) && gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
+	if (!gameStates.ogl.bReadBufferActive) {
+		OglEnableFBuffer (&gameData.render.ogl.drawBuffer);
+		glReadBuffer (GL_COLOR_ATTACHMENT0_EXT);
+		gameStates.ogl.bReadBufferActive = 1;
+		}
+	}
+else {
+	if (gameStates.ogl.bReadBufferActive) {
+		OglDisableFBuffer (&gameData.render.ogl.drawBuffer);
+		gameStates.ogl.bReadBufferActive = 0;
+		}
+	glReadBuffer (nBuffer);
+	}
+#else
+glReadBuffer (nBuffer);
+#endif
+}
+
+// -----------------------------------------------------------------------------------
+
+GLuint OglCreateDepthTexture (int nTMU, int bFBO)
+{
+	GLuint	hDepthBuffer;
+
+if (nTMU > 0)
+	glActiveTexture (nTMU);
+glEnable (GL_TEXTURE_2D);
+glGenTextures (1, &hDepthBuffer);
+if (glGetError ())
+	return hDepthBuffer = 0;
+glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
+				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+if (!bFBO) {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+	}
+if (glGetError ()) {
+	glDeleteTextures (1, &hDepthBuffer);
+	return hDepthBuffer = 0;
+	}
+return hDepthBuffer;
+}
+
+//------------------------------------------------------------------------------
+
+void OglFlushDrawBuffer (void)
+{
+#if FBO_DRAW_BUFFER
+if (OglHaveDrawBuffer ()) {
+	OglDrawBuffer (GL_BACK, 0);
+#if 0
+	glDisable (GL_CULL_FACE);
+	glDisable (GL_BLEND);
+#endif
+	glActiveTexture (GL_TEXTURE0);
+	glEnable (GL_TEXTURE_2D);
+	glBindTexture (GL_TEXTURE_2D, gameData.render.ogl.drawBuffer.hRenderBuffer);
+	glColor3f (1, 1, 1);
+	glBegin (GL_QUADS);
+	glTexCoord2f (0, 0);
+	glVertex2f (0, 0);
+	glTexCoord2f (0, 1);
+	glVertex2f (0, 1);
+	glTexCoord2f (1, 1);
+	glVertex2f (1, 1);
+	glTexCoord2f (1, 0);
+	glVertex2f (1, 0);
+	glEnd ();
+#if 0
+	glEnable (GL_CULL_FACE);
+	glEnable (GL_BLEND);
+#endif
+	//OglDrawBuffer (GL_BACK, 1);
+	}
 #endif
 }
 

@@ -617,6 +617,10 @@ typedef struct tOglStates {
 	int bInitialized;
 	int bShadersOk;
 	int bMultiTexturingOk;
+	int bRender2TextureOk;
+	int bUseRender2Texture;
+	int bDrawBufferActive;
+	int bReadBufferActive;
 	int bFullScreen;
 	int bLastFullScreen;
 	int bUseTransform;
@@ -1343,6 +1347,7 @@ typedef struct tOglData {
 	float						zFar;
 	struct {float x, y;}	depthScale;
 	struct {float x, y;}	screenScale;
+	tFrameBuffer			drawBuffer;
 } tOglData;
 
 //------------------------------------------------------------------------------

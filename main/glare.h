@@ -8,6 +8,7 @@ float CoronaVisibility (int nQuery);
 void LoadGlareShader (void);
 void UnloadGlareShader (void);
 void InitGlareShader (void);
+int CoronaStyle (void);
 
 extern float coronaIntensities [];
 

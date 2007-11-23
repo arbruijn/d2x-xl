@@ -68,7 +68,8 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "palette.h"
 #include "args.h"
 #include "sounds.h"
-#include "titles.h"
+#include "ogl_lib.h"
+#include "briefings.h"
 #include "player.h"
 #include "text.h"
 #include "newdemo.h"
@@ -1083,7 +1084,7 @@ if ((t = FindArg ("-maxfps"))) {
 	}
 #if RENDER2TEXTURE
 if ((t = FindArg ("-render2texture")))
-	bUseRender2Texture = NumArg (t, 1);
+	gameStates.ogl.bUseRender2Texture = NumArg (t, 1);
 #endif
 #if OGL_POINT_SPRITES
 if ((t = FindArg ("-point_sprites")))
@@ -1936,6 +1937,8 @@ void InitOglStates (void)
 {
 gameStates.ogl.bInitialized = 0;
 gameStates.ogl.bShadersOk = 0;
+gameStates.ogl.bRender2TextureOk = 0;
+gameStates.ogl.bUseRender2Texture = 1;
 gameStates.ogl.bVoodooHack = 0;
 gameStates.ogl.bBrightness = 0;
 gameStates.ogl.nContrast = 8;
@@ -3421,6 +3424,7 @@ FreeParams ();
 if (!FindArg ("-notitles"))
 #endif
 	//ShowOrderForm ();
+OglDestroyDrawBuffer ();
 FreeGameData ();
 #ifdef _DEBUG
 if (FindArg ("-showmeminfo"))

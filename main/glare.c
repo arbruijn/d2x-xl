@@ -51,40 +51,50 @@ GLuint hDepthBuffer = 0;
 
 // -----------------------------------------------------------------------------------
 
+int CoronaStyle (void)
+{
+switch (gameOpts->render.nCoronaStyle) {
+	case 2:
+		if (!gameStates.render.cameras.bActive)
+			return 2;
+	case 1:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+// -----------------------------------------------------------------------------------
+
 void DestroyDepthTexture (void)
 {
 if (hDepthBuffer) {
-	glDeleteTextures (1, &hDepthBuffer);
+	if (!OglHaveDrawBuffer ())
+		glDeleteTextures (1, &hDepthBuffer);
 	hDepthBuffer = 0;
 	}
 }
 
 // -----------------------------------------------------------------------------------
 
-GLuint CreateDepthTexture (void)
+GLuint CopyDepthTexture (void)
 {
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
-glGenTextures (1, &hDepthBuffer);
-if (glGetError ())
-	return hDepthBuffer = 0;
-glBindTexture (GL_TEXTURE_RECTANGLE_ARB, hDepthBuffer);
-glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-glTexParameteri (GL_TEXTURE_RECTANGLE_ARB, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
-glTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT24, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+if (OglHaveDrawBuffer ()) {
+	hDepthBuffer = gameData.render.ogl.drawBuffer.hDepthBuffer;
+	glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+	}
+else if (hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0)) {
 #if 0
-glCopyTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+	glCopyTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
 #else
-glCopyTexSubImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
-//glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_DEPTH_COMPONENT, GL_FLOAT, db);
-if (glGetError ()) {
-	DestroyDepthTexture ();
-	return hDepthBuffer = 0;
+	if (glGetError ()) {
+		DestroyDepthTexture ();
+		return hDepthBuffer = 0;
+		}
 	}
 return hDepthBuffer;
 }
@@ -630,7 +640,7 @@ if (fIntensity < 0.01f)
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameOpts->render.nPath && (gameOpts->render.nCoronaStyle == 1) && gameStates.ogl.bOcclusionQuery) {
+if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle () == 1)) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
 	}
@@ -693,13 +703,13 @@ return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 void LoadGlareShader (void)
 {
 if (gameStates.ogl.bDepthBlending) {
-	glReadBuffer (GL_BACK);
-	if (CreateDepthTexture ()) {
+	OglReadBuffer (GL_BACK, 1);
+	if (CopyDepthTexture ()) {
 		glUseProgramObject (hGlareShader);
 		glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 		glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
 		glUniform2fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
-		//glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+		glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
 		glDisable (GL_DEPTH_TEST);
 		}
 	glActiveTexture (GL_TEXTURE0);
@@ -725,11 +735,11 @@ if (gameStates.ogl.bDepthBlending) {
 
 char *glareFS = 
 	"uniform sampler2D glareTex;\r\n" \
-	"uniform sampler2DRect depthTex;\r\n" \
+	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec2 depthScale;\r\n" \
-	"/*uniform vec2 screenScale;*/\r\n" \
+	"uniform vec2 screenScale;\r\n" \
 	"void main (void) {\r\n" \
-	"float depthZ = depthScale.y / (depthScale.x - texture2DRect (depthTex, gl_FragCoord.xy).r);\r\n" \
+	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
 	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, depthZ - fragZ));\r\n"
 	"}\r\n";
@@ -750,7 +760,7 @@ gameStates.ogl.bDepthBlending = 0;
 #if SHADER_SOFT_CORONAS
 LogErr ("building corona blending shader program\n");
 DeleteShaderProg (NULL);
-if (bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
+if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
 	gameStates.ogl.bDepthBlending = 1;
 	if (hGlareShader)
 		DeleteShaderProg (&hGlareShader);

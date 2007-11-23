@@ -66,6 +66,19 @@ void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
 void RebuildRenderContext (int bGame, int bCameras);
 void OglSetScreenMode (void);
 void OglGetVerInfo (void);
+GLuint OglCreateDepthTexture (int nTMU, int bFBO);
+void OglCreateDrawBuffer (void);
+void OglDestroyDrawBuffer (void);
+void OglDrawBuffer (int nBuffer, int bFBO);
+void OglReadBuffer (int nBuffer, int bFBO);
+void OglFlushDrawBuffer (void);
+
+//------------------------------------------------------------------------------
+
+static inline int OglHaveDrawBuffer (void)
+{
+return gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO && gameStates.ogl.bDrawBufferActive;
+}
 
 //------------------------------------------------------------------------------
 

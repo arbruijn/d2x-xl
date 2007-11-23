@@ -62,8 +62,8 @@ GLXDrawable hGlWindow = 0;
 #endif
 
 
-int bUseRender2Texture = 1;
-int bRender2TextureOk = 0;
+int gameStates.ogl.bUseRender2Texture = 1;
+int gameStates.ogl.bRender2TextureOk = 0;
 
 #	ifdef _WIN32
 PFNWGLCREATEPBUFFERARBPROC				wglCreatePbufferARB = NULL;
@@ -112,7 +112,7 @@ int OglCreatePBuffer (tPixelBuffer *pb, int nWidth, int nHeight, int nDepth)
 		WGL_TEXTURE_2D_ARB,
 		0};
 
-if (!bRender2TextureOk)
+if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
 OglDestroyPBuffer (pb);
 hGlDC = wglGetCurrentDC ();
@@ -162,7 +162,7 @@ wglShareLists (hGlRC, pb->hRC);
         None
     };
 
-if (!bRender2TextureOk)
+if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
 hGlWindow = glXGetCurrentDrawable ();
 hGlDC = glXGetCurrentDisplay ();
@@ -256,8 +256,8 @@ if (!wglMakeContextCurrentARB (pb->hDC, pb->hDC, pb->hRC))
 if (!glXMakeCurrent (pb->hDC, pb->hBuf, pb->hRC))
 #endif
 	return 0;
-glDrawBuffer (GL_FRONT);
-glReadBuffer (GL_FRONT);
+OglDrawBuffer (GL_FRONT, 1);
+OglReadBuffer (GL_FRONT, 1);
 return 1;
 }
 
@@ -273,8 +273,8 @@ if (!wglMakeContextCurrentARB (hGlDC, hGlDC, hGlRC))
 if (!glXMakeCurrent (hGlDC, hGlWindow, hGlRC))
 #endif
 	return 0;
-glDrawBuffer (GL_BACK);
-glReadBuffer (GL_FRONT);
+OglDrawBuffer (GL_BACK, 1);
+OglReadBuffer (GL_FRONT, 1);
 return 1;
 }
 
@@ -285,7 +285,7 @@ return 1;
 void OglInitPBuffer (void)
 {
 #if RENDER2TEXTURE == 1
-if (bUseRender2Texture) {
+if (gameStates.ogl.bUseRender2Texture) {
 #	ifdef _WIN32
 	wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC) wglGetProcAddress ("wglCreatePbufferARB");
 	wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC) wglGetProcAddress ("wglGetPbufferDCARB");
@@ -296,12 +296,12 @@ if (bUseRender2Texture) {
 	wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC) wglGetProcAddress ("wglMakeContextCurrentARB");
 	wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC) wglGetProcAddress ("wglBindTexImageARB");
 	wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC) wglGetProcAddress ("wglReleaseTexImageARB");
-	bRender2TextureOk =
+	gameStates.ogl.bRender2TextureOk =
 		wglCreatePbufferARB && wglGetPbufferDCARB && wglReleasePbufferDCARB && wglDestroyPbufferARB && 
 		wglQueryPbufferARB && wglChoosePixelFormatARB && wglMakeContextCurrentARB &&
 		wglBindTexImageARB && wglReleaseTexImageARB;
 #	else
-	bRender2TextureOk = 1;
+	gameStates.ogl.bRender2TextureOk = 1;
 #endif
 	}
 
@@ -315,7 +315,7 @@ if (bUseRender2Texture) {
 #endif
   
 #endif
-LogErr ((bRender2TextureOk == 1) ? "Rendering to pixel buffers is available\n" : "No rendering to pixel buffers available\n");
+LogErr ((gameStates.ogl.bRender2TextureOk == 1) ? "Rendering to pixel buffers is available\n" : "No rendering to pixel buffers available\n");
 
 }
 

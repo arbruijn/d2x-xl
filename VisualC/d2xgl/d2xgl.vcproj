@@ -1506,6 +1506,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\briefings.c">
+				</File>
+				<File
 					RelativePath="..\..\main\cameras.c">
 				</File>
 				<File
@@ -2004,6 +2007,9 @@
 					RelativePath="..\..\main\glare.c">
 				</File>
 				<File
+					RelativePath="..\..\main\highscores.c">
+				</File>
+				<File
 					RelativePath="..\..\main\hoard.c">
 				</File>
 				<File
@@ -2151,26 +2157,6 @@
 				</File>
 				<File
 					RelativePath="..\..\main\kludge.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\main\kmatrix.c">
 					<FileConfiguration
 						Name="Debug|Win32">
 						<Tool
@@ -2883,26 +2869,6 @@
 					RelativePath="..\..\main\thief.c">
 				</File>
 				<File
-					RelativePath="..\..\main\titles.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\main\tracker.c">
 				</File>
 				<File
@@ -3013,6 +2979,9 @@
 						RelativePath="..\..\main\bmread.h">
 					</File>
 					<File
+						RelativePath="..\..\main\briefings.h">
+					</File>
+					<File
 						RelativePath="..\..\include\byteswap.h">
 					</File>
 					<File
@@ -3115,6 +3084,9 @@
 						RelativePath="..\..\include\hash.h">
 					</File>
 					<File
+						RelativePath="..\..\main\highscores.h">
+					</File>
+					<File
 						RelativePath="..\..\main\hostage.h">
 					</File>
 					<File
@@ -3149,9 +3121,6 @@
 					</File>
 					<File
 						RelativePath="..\..\arch\include\key.h">
-					</File>
-					<File
-						RelativePath="..\..\main\kmatrix.h">
 					</File>
 					<File
 						RelativePath="..\..\main\laser.h">
@@ -3344,9 +3313,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\timer.h">
-					</File>
-					<File
-						RelativePath="..\..\main\titles.h">
 					</File>
 					<File
 						RelativePath="..\..\main\tracker.h">

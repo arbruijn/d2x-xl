@@ -56,7 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "modem.h"
 #include "playsave.h"
 #include "kconfig.h"
-#include "titles.h"
+#include "briefings.h"
 #include "credits.h"
 #include "texmap.h"
 #include "polyobj.h"

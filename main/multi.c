@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "newdemo.h"
 #include "text.h"
-#include "kmatrix.h"
+#include "highscores.h"
 #include "multibot.h"
 #include "gameseq.h"
 #include "gameseg.h"

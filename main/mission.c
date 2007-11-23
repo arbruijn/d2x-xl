@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "inferno.h"
 #include "mission.h"
 #include "gameseq.h"
-#include "titles.h"
+#include "briefings.h"
 #include "songs.h"
 #include "mono.h"
 #include "error.h"

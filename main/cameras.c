@@ -11,6 +11,7 @@
 #include "segment.h"
 #include "error.h"
 #include "bm.h"
+#include "ogl_lib.h"
 #include "render.h"
 #include "game.h"
 #include "object.h"
@@ -311,7 +312,7 @@ if (pc->texBuf.bmTexBuf) {
 	pc->texBuf.bmTexBuf = NULL;
 	}
 #if RENDER2TEXTURE
-if (bRender2TextureOk)
+if (gameStates.ogl.bRender2TextureOk)
 	OglDestroyCamBuf (pc);
 #endif
 }
@@ -324,7 +325,7 @@ void DestroyCameras (void)
 	tCamera	*pc = gameData.cameras.cameras;
 
 #if RENDER2TEXTURE == 1
-if (bRender2TextureOk)
+if (gameStates.ogl.bRender2TextureOk)
 #	ifdef _WIN32
 	wglMakeContextCurrentARB (hGlDC, hGlDC, hGlRC);
 #	else

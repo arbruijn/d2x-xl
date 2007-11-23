@@ -71,7 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "piggy.h"
 #include "paging.h"
-#include "titles.h"
+#include "briefings.h"
 #include "text.h"
 #include "mission.h"
 #include "pcx.h"
@@ -1333,7 +1333,7 @@ if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 	else
 		RenderFrame (0, 0);
 #endif
-	glReadBuffer (GL_FRONT);
+	OglReadBuffer (GL_FRONT, 1);
 	bm.bmBPP = 3;
 	buf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * bm.bmBPP);
 	glDisable (GL_TEXTURE_2D);
