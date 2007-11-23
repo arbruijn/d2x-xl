@@ -38,6 +38,28 @@
 #include "glare.h"
 #include "render.h"
 
+#ifndef GL_VERSION_20
+PFNGLCREATESHADEROBJECTARBPROC	glCreateShaderObject = NULL; 
+PFNGLSHADERSOURCEARBPROC			glShaderSource = NULL; 
+PFNGLCOMPILESHADERARBPROC			glCompileShader = NULL; 
+PFNGLCREATEPROGRAMOBJECTARBPROC	glCreateProgramObject = NULL; 
+PFNGLATTACHOBJECTARBPROC			glAttachObject = NULL; 
+PFNGLLINKPROGRAMARBPROC				glLinkProgram = NULL; 
+PFNGLUSEPROGRAMOBJECTARBPROC		glUseProgramObject = NULL; 
+PFNGLDELETEOBJECTARBPROC			glDeleteObject = NULL; 
+PFNGLGETOBJECTPARAMETERIVARBPROC	glGetObjectParameteriv = NULL; 
+PFNGLGETINFOLOGARBPROC				glGetInfoLog = NULL; 
+PFNGLGETUNIFORMLOCATIONARBPROC	glGetUniformLocation = NULL; 
+PFNGLUNIFORM4FARBPROC				glUniform4f = NULL; 
+PFNGLUNIFORM3FARBPROC				glUniform3f = NULL; 
+PFNGLUNIFORM1FARBPROC				glUniform1f = NULL; 
+PFNGLUNIFORM4FVARBPROC				glUniform4fv = NULL; 
+PFNGLUNIFORM3FVARBPROC				glUniform3fv = NULL; 
+PFNGLUNIFORM2FVARBPROC				glUniform2fv = NULL; 
+PFNGLUNIFORM1FVARBPROC				glUniform1fv = NULL; 
+PFNGLUNIFORM1IARBPROC				glUniform1i = NULL; 
+#endif
+
 //------------------------------------------------------------------------------
 
 char *LoadShader (char* fileName) //, char* Shadersource)
@@ -339,6 +361,7 @@ else {
 	glUniform1f						= (PFNGLUNIFORM1FARBPROC) wglGetProcAddress ("glUniform1fARB");
 	glUniform4fv					= (PFNGLUNIFORM4FVARBPROC) wglGetProcAddress ("glUniform4fvARB");
 	glUniform3fv					= (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform3fvARB");
+	glUniform2fv					= (PFNGLUNIFORM3FVARBPROC) wglGetProcAddress ("glUniform2fvARB");
 	glUniform1fv					= (PFNGLUNIFORM1FVARBPROC) wglGetProcAddress ("glUniform1fvARB");
 	glUniform1i						= (PFNGLUNIFORM1IARBPROC) wglGetProcAddress ("glUniform1iARB");
 	gameStates.ogl.bShadersOk =

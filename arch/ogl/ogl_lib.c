@@ -319,6 +319,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+#define ZNEAR	gameData.render.ogl.zNear
+#define ZFAR	gameData.render.ogl.zFar
+
 void OglSetFOV (double fov)
 {
 gameStates.render.glFOV = fov;
@@ -330,8 +333,11 @@ if (gameStates.ogl.bUseTransform)
 else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
-gluPerspective (gameStates.render.glFOV, gameStates.render.glAspect, 0.01, 
-					 (gameStates.ogl.nColorBits == 16) ? 10000.0 : 6553.5);
+gluPerspective (gameStates.render.glFOV, gameStates.render.glAspect, ZNEAR, ZFAR);
+gameData.render.ogl.depthScale.x = (float) (ZFAR / (ZFAR - ZNEAR));
+gameData.render.ogl.depthScale.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
+gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 }
 

@@ -211,6 +211,7 @@ extern PFNGLACTIVESTENCILFACEEXTPROC	glActiveStencilFaceEXT;
 #	define	glUniform1i						pglUniform1iARB
 #	define	glUniform4fv					pglUniform4fvARB
 #	define	glUniform3fv					pglUniform3fvARB
+#	define	glUniform2fv					pglUniform2fvARB
 #	define	glUniform1fv					pglUniform1fvARB
 #	define	glUniform1i						pglUniform1iARB
 
@@ -231,6 +232,7 @@ extern PFNGLUNIFORM1FARBPROC					glUniform1f;
 extern PFNGLUNIFORM1IARBPROC					glUniform1i;
 extern PFNGLUNIFORM4FVARBPROC					glUniform4fv;
 extern PFNGLUNIFORM3FVARBPROC					glUniform3fv;
+extern PFNGLUNIFORM2FVARBPROC					glUniform2fv;
 extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 
 //------------------------------------------------------------------------------

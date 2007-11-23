@@ -1846,7 +1846,8 @@ return j;
 
 //------------------------------------------------------------------------------
 
-char *pszCoronaInt [3];
+char *pszCoronaInt [4];
+char *pszCoronaQual [3];
 
 void CoronaOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -1871,6 +1872,15 @@ if (gameOpts->render.bShotCoronas != v) {
 	gameOpts->render.bShotCoronas = v;
 	*key = -2;
 	}	
+if (effectOpts.nCoronaStyle >= 0) {
+	m = menus + effectOpts.nCoronaStyle;
+	v = m->value;
+	if (gameOpts->render.nCoronaStyle != v) {
+		gameOpts->render.nCoronaStyle = v;
+		sprintf (m->text, TXT_CORONA_QUALITY, pszCoronaQual [v]);
+		m->rebuild = -1;
+		}
+	}
 if (effectOpts.nCoronaIntensity >= 0) {
 	m = menus + effectOpts.nCoronaIntensity;
 	v = m->value;
@@ -1898,12 +1908,16 @@ void CoronaOptionsMenu ()
 	tMenuItem m [30];
 	int	i, choice = 0, optTrailType;
 	int	opt;
-	char	szCoronaInt [50], szObjCoronaInt [50];
+	char	szCoronaQual [50], szCoronaInt [50], szObjCoronaInt [50];
 
 pszCoronaInt [0] = TXT_VERY_LOW;
 pszCoronaInt [1] = TXT_LOW;
 pszCoronaInt [2] = TXT_MEDIUM;
 pszCoronaInt [3] = TXT_HIGH;
+
+pszCoronaQual [0] = TXT_LOW;
+pszCoronaQual [1] = TXT_MEDIUM;
+pszCoronaQual [2] = TXT_HIGH;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -1925,12 +1939,14 @@ do {
 	effectOpts.nAdditiveObjCoronas = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_RADIO (opt, TXT_HARD_CORONAS, gameOpts->render.nCoronaStyle == 0, KEY_H, 0, HTX_CORONA_STYLE);
+
+	sprintf (szCoronaQual + 1, TXT_CORONA_QUALITY, pszCoronaQual [gameOpts->render.nCoronaStyle]);
+	*szCoronaQual = *(TXT_CORONA_QUALITY - 1);
+	ADD_SLIDER (opt, szCoronaQual + 1, gameOpts->render.nCoronaStyle, 0, 2, KEY_Q, HTX_CORONA_QUALITY);
 	effectOpts.nCoronaStyle = opt++;
-	ADD_RADIO (opt, TXT_SOFT_CORONAS, gameOpts->render.nCoronaStyle == 1, KEY_S, 0, HTX_CORONA_STYLE);
-	opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
+
 	sprintf (szCoronaInt + 1, TXT_CORONA_INTENSITY, pszCoronaInt [gameOpts->render.nCoronaIntensity]);
 	*szCoronaInt = *(TXT_CORONA_INTENSITY - 1);
 	ADD_SLIDER (opt, szCoronaInt + 1, gameOpts->render.nCoronaIntensity, 0, 3, KEY_I, HTX_CORONA_INTENSITY);
@@ -1941,6 +1957,7 @@ do {
 	effectOpts.nObjCoronaIntensity = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
+
 	ADD_CHECK (opt, TXT_RENDER_LGTTRAILS, extraGameInfo [0].bLightTrails, KEY_T, HTX_RENDER_LGTTRAILS);
 	effectOpts.nLightTrails = opt++;
 	if (extraGameInfo [0].bLightTrails) {
@@ -1960,7 +1977,6 @@ do {
 			break;
 		} 
 	gameOpts->render.bCoronas = m [effectOpts.nCoronas].value;
-	gameOpts->render.nCoronaStyle = m [effectOpts.nCoronaStyle].value == 0;
 	gameOpts->render.bShotCoronas = m [effectOpts.nShotCoronas].value;
 	gameOpts->render.bPowerupCoronas = m [effectOpts.nPowerupCoronas].value;
 	gameOpts->render.bWeaponCoronas = m [effectOpts.nWeaponCoronas].value;

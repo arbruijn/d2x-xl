@@ -615,7 +615,7 @@ if (!*gameFolders.szGameDir) {
 		}
 	}
 strcpy (szDataRootDir, gameFolders.szGameDir);
-strcpy (gameFolders.szHomeDir, gameFolders.szGameDir);
+strcpy (gameFolders.szHomeDir, *gameFolders.szGameDir ? szDataRootDir);
 #else // Linux, OS X
 #	ifdef __unix__
 if (getenv ("HOME"))
@@ -2325,6 +2325,8 @@ gameData.lightnings.iUsed = -1;
 gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
 gameData.laser.nLightning = -1;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
+gameData.render.ogl.zNear = 1.0f;
+gameData.render.ogl.zFar = 5000.0f;
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);

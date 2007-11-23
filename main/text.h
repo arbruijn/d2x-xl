@@ -1794,10 +1794,10 @@ void LoadGameTexts(void);
 #define TXT_HEADLIGHT_AVAILABLE	GT(1001)
 #define TXT_HEADLIGHT_BUILTIN		GT(1002)
 #define TXT_HEADLIGHT_POWERDRAIN	GT(1003)
+#define TXT_CORONA_QUALITY			GT(1004)
 
 #if 0
 
-#define TXT_				GT(1004)
 #define TXT_				GT(1005)
 #define TXT_				GT(1006)
 #define TXT_				GT(1007)
@@ -2345,10 +2345,10 @@ void LoadGameTexts(void);
 #define HTX_HEADLIGHT_AVAILABLE	HT(331)				
 #define HTX_HEADLIGHT_BUILTIN		HT(332)
 #define HTX_HEADLIGHT_POWERDRAIN	HT(333)
+#define HTX_CORONA_QUALITY			HT(334)				
 
 #if 0
 
-#define HTX_					HT(334)				
 #define HTX_					HT(335)				
 #define HTX_					HT(336)				
 #define HTX_					HT(337)				

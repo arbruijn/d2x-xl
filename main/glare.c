@@ -36,7 +36,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define CORONA_OUTLINE	0
 #ifdef _DEBUG
-#	define SHADER_SOFT_CORONAS 0
+#	define SHADER_SOFT_CORONAS 1
 #else
 #	define SHADER_SOFT_CORONAS 0
 #endif
@@ -51,28 +51,42 @@ GLuint hDepthBuffer = 0;
 
 // -----------------------------------------------------------------------------------
 
-void CreateDepthTexture (void)
-{
-glGenTextures (1, &hDepthBuffer);
-if (glGetError ())
-	return;
-glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-glTexImage2D (GL_TEXTURE_2D, 0, 1, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
-}
-
-// -----------------------------------------------------------------------------------
-
 void DestroyDepthTexture (void)
 {
 if (hDepthBuffer) {
 	glDeleteTextures (1, &hDepthBuffer);
 	hDepthBuffer = 0;
 	}
+}
+
+// -----------------------------------------------------------------------------------
+
+GLuint CreateDepthTexture (void)
+{
+glActiveTexture (GL_TEXTURE1);
+glEnable (GL_TEXTURE_2D);
+glGenTextures (1, &hDepthBuffer);
+if (glGetError ())
+	return hDepthBuffer = 0;
+glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, grdCurScreen->scWidth, grdCurScreen->scHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+#if 0
+glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+#else
+glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+#endif
+//glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_DEPTH_COMPONENT, GL_FLOAT, db);
+if (glGetError ()) {
+	DestroyDepthTexture ();
+	return hDepthBuffer = 0;
+	}
+return hDepthBuffer;
 }
 
 // -----------------------------------------------------------------------------------
@@ -674,40 +688,21 @@ if (fIntensity > 1)
 return (fIntensity > 1) ? 1 : (float) sqrt (fIntensity);
 }
 
-//------------------------------------------------------------------------------
-
-char *glareFS = 
-	"uniform sampler2D glareTex;\r\n" \
-	"uniform sampler2DShadow depthTex;\r\n" \
-	"void main (void) {\r\n" \
-	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);" \
-	"float depth = shadow2D (depthTex, gl_FragCoord.xy).x;" \
-	"if (gl_FragCoord.z < depth)" \
-	"	glareColor.a *= abs (gl_FragCoord.z - depth);" \
-	"gl_FragColor = glareColor * gl_Color;\r\n" \
-	"}";
-
-char *glareVS = 
-	"uniform sampler2D glareTex, depthTex;\r\n" \
-	"void main(void){" \
-	"gl_TexCoord [0] = gl_MultiTexCoord0;" \
-	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;" \
-	"gl_FrontColor = gl_Color;}";
-
 //-------------------------------------------------------------------------
 
 void LoadGlareShader (void)
 {
 if (gameStates.ogl.bSoftCoronas) {
-	CreateDepthTexture ();
-	if (hDepthBuffer) {
+	glReadBuffer (GL_BACK);
+	if (CreateDepthTexture ()) {
 		glUseProgramObject (hGlareShader);
 		glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 		glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
-		glActiveTexture (GL_TEXTURE1);
-		glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+		glUniform2fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
+		glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
 		glDisable (GL_DEPTH_TEST);
 		}
+	glActiveTexture (GL_TEXTURE0);
 	}
 }
 
@@ -718,8 +713,35 @@ void UnloadGlareShader (void)
 if (gameStates.ogl.bSoftCoronas) {
 	glUseProgramObject (0);
 	DestroyDepthTexture ();
+	glActiveTexture (GL_TEXTURE1);
+	glBindTexture (GL_TEXTURE_2D, 0);
+	glActiveTexture (GL_TEXTURE2);
+	glBindTexture (GL_TEXTURE_2D, 0);
 	}
 }
+
+//------------------------------------------------------------------------------
+
+char *glareFS = 
+	"uniform sampler2D glareTex;\r\n" \
+	"uniform sampler2D depthTex;\r\n" \
+	"uniform vec2 depthScale/* = vec2 (5000.0 / 4999.0, 5000.0 / -4999.0)*/;\r\n" \
+	"uniform vec2 screenScale/* = vec2 (1.0 / 800.0, 1.0 / 600.0)*/;\r\n" \
+	"void main (void) {\r\n" \
+	"vec4 glareColor = texture2D (glareTex, gl_TexCoord [0].xy);\r\n" \
+	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
+	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
+	"float dist = max (1.0, depthZ - fragZ);\r\n" \
+	"gl_FragColor = glareColor * gl_Color / sqrt (dist);\r\n"
+	"}\r\n";
+
+char *glareVS = 
+	"varying vec3 projPos;\r\n" \
+	"void main(void){\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
+	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"projPos = vec3 (gl_Position);\r\n" \
+	"gl_FrontColor = gl_Color;}\r\n";
 
 //-------------------------------------------------------------------------
 

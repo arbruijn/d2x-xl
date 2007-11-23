@@ -1339,6 +1339,10 @@ typedef struct tOglData {
 	ubyte						*palette;
 	GLenum					nSrcBlend;
 	GLenum					nDestBlend;
+	float						zNear;
+	float						zFar;
+	struct {float x, y;}	depthScale;
+	struct {float x, y;}	screenScale;
 } tOglData;
 
 //------------------------------------------------------------------------------

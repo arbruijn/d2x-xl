@@ -376,7 +376,7 @@ glEnable (GL_CULL_FACE);
 OglTexWrap (NULL, GL_REPEAT);
 glDepthFunc (GL_LEQUAL);
 if (nType == 3) {
-	if (!gameOpts->render.nCoronaStyle)
+	if (gameOpts->render.nCoronaStyle == 2)
 		LoadGlareShader ();
 	return 0;
 	}
@@ -443,9 +443,9 @@ if (gameStates.ogl.bShadersOk)
 	glUseProgramObject (0);
 if (nType != 3)
 	OglResetTransform (1);
-else 	if (!gameOpts->render.nCoronaStyle)
+else 	if (gameOpts->render.nCoronaStyle == 2)
 	UnloadGlareShader ();
-else if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas)
+else if ((gameOpts->render.nCoronaStyle == 1) && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas)
 	glDeleteQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -676,7 +676,7 @@ if (nType) {	//back to front
 else {	//front to back
 #if RENDER_DEPTHMASK_FIRST
 	if (SetupCoronaFaces ()) {
-		if (gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery) {
+		if ((gameOpts->render.nCoronaStyle == 1) && gameStates.ogl.bOcclusionQuery) {
 			EndRenderFaces (nType, bVertexArrays);
 			glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
 			QueryCoronas (0, 1);
@@ -698,7 +698,7 @@ else {	//front to back
 	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE1);
 	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
 	j = SortFaces ();
-	if (gameOpts->render.bCoronas && gameOpts->render.nCoronaStyle && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
+	if (gameOpts->render.bCoronas && (gameOpts->render.nCoronaStyle == 1) && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas) {
 		EndRenderFaces (nType, bVertexArrays);
 		gameStates.render.bQueryCoronas = 2;
 		gameStates.render.nType = 1;
