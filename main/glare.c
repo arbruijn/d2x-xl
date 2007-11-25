@@ -727,6 +727,7 @@ if (gameStates.ogl.bDepthBlending) {
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glActiveTexture (GL_TEXTURE2);
 	glBindTexture (GL_TEXTURE_2D, 0);
+	glActiveTexture (GL_TEXTURE0);
 	glEnable (GL_DEPTH_TEST);
 	}
 }

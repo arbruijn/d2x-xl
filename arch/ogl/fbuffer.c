@@ -168,6 +168,8 @@ int OglEnableFBuffer (tFrameBuffer *fb)
 {
 if (!gameStates.ogl.bRender2TextureOk)
 	return 0;
+glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
+gameStates.ogl.bDrawBufferActive = 0;
 glBindTexture (GL_TEXTURE_2D, 0);
 glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, fb->hFBO);
 #ifdef _DEBUG

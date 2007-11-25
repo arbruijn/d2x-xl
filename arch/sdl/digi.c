@@ -667,7 +667,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 		ssP->mixChunk = Mix_QuickLoad_WAV ((Uint8 *) ssP->samples);
 #else
 		char	szWAV [FILENAME_LEN];
-		if (!CFExtract (pszWAV, gameFolders.szDataDir, 0, "d2x-temp.wav"))
+		if (!(CFExtract (pszWAV, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
+			   CFExtract (pszWAV, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
 			return -1;
 		sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "");
 		ssP->mixChunk = Mix_LoadWAV (szWAV);

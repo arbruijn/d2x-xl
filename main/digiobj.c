@@ -72,7 +72,7 @@ typedef struct tSoundObject {
 	int			pan;				// Pan value that this sound is playing at
 	int			channel;			// What channel this is playing on, -1 if not playing
 	short			nSound;			// The sound number that is playing
-	char			szSound [SHORT_FILENAME_LEN];	// file name of custom sound to be played
+	char			szSound [FILENAME_LEN];	// file name of custom sound to be played
 	int			nLoopStart;		// The start point of the loop. -1 means no loop
 	int			nLoopEnd;		// The end point of the loop
 	union {	

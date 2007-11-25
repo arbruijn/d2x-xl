@@ -165,6 +165,7 @@ glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
 glLineWidth (3);
 pc = radarColor + gameOpts->render.automap.nColor;

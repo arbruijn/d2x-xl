@@ -828,7 +828,7 @@ con_printf(CON_VERBOSE,
 void OglCreateDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
-if (gameStates.ogl.bRender2TextureOk && !gameData.render.ogl.drawBuffer.hFBO)
+if (gameStates.render.bRenderIndirect && gameStates.ogl.bRender2TextureOk && !gameData.render.ogl.drawBuffer.hFBO) 
 	OglCreateFBuffer (&gameData.render.ogl.drawBuffer, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 1);
 #endif
 }
@@ -941,10 +941,6 @@ void OglFlushDrawBuffer (void)
 #if FBO_DRAW_BUFFER
 if (OglHaveDrawBuffer ()) {
 	OglDrawBuffer (GL_BACK, 0);
-#if 0
-	glDisable (GL_CULL_FACE);
-	glDisable (GL_BLEND);
-#endif
 	glActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	glBindTexture (GL_TEXTURE_2D, gameData.render.ogl.drawBuffer.hRenderBuffer);
@@ -959,11 +955,6 @@ if (OglHaveDrawBuffer ()) {
 	glTexCoord2f (1, 0);
 	glVertex2f (1, 0);
 	glEnd ();
-#if 0
-	glEnable (GL_CULL_FACE);
-	glEnable (GL_BLEND);
-#endif
-	//OglDrawBuffer (GL_BACK, 1);
 	}
 #endif
 }
