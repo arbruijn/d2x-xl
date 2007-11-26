@@ -711,7 +711,7 @@ if (gameStates.ogl.bUseTransform || bForce) {
 
 //------------------------------------------------------------------------------
 
-void RebuildRenderContext (int bGame, int bCameras)
+void RebuildRenderContext (int bGame)
 {
 ResetTextures (1, bGame);
 G3FreeAllPolyModelItems ();
@@ -719,14 +719,10 @@ InitShaders ();
 #if LIGHTMAPS
 CreateLightMaps ();
 #endif
-if (bCameras) {
-	DestroyCameras ();
-	CreateCameras ();		
-	}
 CloseDynLighting ();
 InitDynLighting ();
-OglDestroyDrawBuffer ();
 OglCreateDrawBuffer ();
+CreateCameras ();		
 OglDrawBuffer (GL_BACK, 1);
 }
 
@@ -838,11 +834,21 @@ if (gameStates.render.bRenderIndirect && gameStates.ogl.bRender2TextureOk && !ga
 void OglDestroyDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
+#	if 1
+	static int bSemaphore = 0;
+
+if (bSemaphore)
+	return;
+bSemaphore++;
+#	endif
 if (gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
+	OglDrawBuffer (GL_BACK, 0);
 	OglDestroyFBuffer (&gameData.render.ogl.drawBuffer);
-	glDrawBuffer (GL_BACK);
 	gameStates.ogl.bDrawBufferActive = 0;
 	}
+#	if 1
+bSemaphore--;
+#	endif
 #endif
 }
 
@@ -860,9 +866,16 @@ bSemaphore++;
 #if FBO_DRAW_BUFFER
 if (bFBO && (nBuffer == GL_BACK) && gameStates.ogl.bRender2TextureOk && gameData.render.ogl.drawBuffer.hFBO) {
 	if (!gameStates.ogl.bDrawBufferActive) {
-		OglEnableFBuffer (&gameData.render.ogl.drawBuffer);
-		glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
-		gameStates.ogl.bDrawBufferActive = 1;
+		if (OglEnableFBuffer (&gameData.render.ogl.drawBuffer)) {
+			glDrawBuffer (GL_COLOR_ATTACHMENT0_EXT);
+			gameStates.ogl.bDrawBufferActive = 1;
+			}
+		else {
+			OglDestroyDrawBuffer ();
+			OglCreateDrawBuffer ();
+			glDrawBuffer (GL_BACK);
+			gameStates.ogl.bDrawBufferActive = 0;
+			}
 		}
 	}
 else {
@@ -913,7 +926,7 @@ GLuint OglCreateDepthTexture (int nTMU, int bFBO)
 if (nTMU > 0)
 	glActiveTexture (nTMU);
 glEnable (GL_TEXTURE_2D);
-glGenTextures (1, &hDepthBuffer);
+OglGenTextures (1, &hDepthBuffer);
 if (glGetError ())
 	return hDepthBuffer = 0;
 glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
@@ -928,7 +941,7 @@ if (!bFBO) {
 	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 	}
 if (glGetError ()) {
-	glDeleteTextures (1, &hDepthBuffer);
+	OglDeleteTextures (1, &hDepthBuffer);
 	return hDepthBuffer = 0;
 	}
 return hDepthBuffer;
@@ -955,8 +968,33 @@ if (OglHaveDrawBuffer ()) {
 	glTexCoord2f (1, 0);
 	glVertex2f (1, 0);
 	glEnd ();
+	OglDrawBuffer (GL_BACK, 1);
 	}
 #endif
 }
+
+//------------------------------------------------------------------------------
+
+#ifdef _DEBUG
+
+void OglGenTextures (GLsizei n, GLuint *hTextures)
+{
+glGenTextures (n, hTextures);
+if ((*hTextures == gameData.render.ogl.drawBuffer.hRenderBuffer) && 
+	 (hTextures != &gameData.render.ogl.drawBuffer.hRenderBuffer))
+	OglDestroyDrawBuffer ();
+}
+
+//------------------------------------------------------------------------------
+
+void OglDeleteTextures (GLsizei n, GLuint *hTextures)
+{
+if ((*hTextures == gameData.render.ogl.drawBuffer.hRenderBuffer) &&
+	 (hTextures != &gameData.render.ogl.drawBuffer.hRenderBuffer))
+	OglDestroyDrawBuffer ();
+glDeleteTextures (n, hTextures);
+}
+
+#endif
 
 //------------------------------------------------------------------------------

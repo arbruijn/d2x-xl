@@ -13,6 +13,8 @@ typedef struct tFrameBuffer {
 	GLuint	hFBO;
 	GLuint	hDepthBuffer;
 	GLuint	hRenderBuffer;
+	GLuint	hStencilBuffer;
+	int		nType;
 	int		nWidth;
 	int		nHeight;
 	GLenum	nStatus;

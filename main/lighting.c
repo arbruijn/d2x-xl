@@ -1627,9 +1627,9 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	}
 #	if 0
 if (gameData.render.lights.dynamic.shader.nTexHandle)
-	glDeleteTextures (1, &gameData.render.lights.dynamic.shader.nTexHandle);
+	OglDeleteTextures (1, &gameData.render.lights.dynamic.shader.nTexHandle);
 gameData.render.lights.dynamic.shader.nTexHandle = 0;
-glGenTextures (1, &gameData.render.lights.dynamic.shader.nTexHandle);
+OglGenTextures (1, &gameData.render.lights.dynamic.shader.nTexHandle);
 glBindTexture (GL_TEXTURE_2D, gameData.render.lights.dynamic.shader.nTexHandle);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

@@ -64,7 +64,7 @@ GLuint EmptyTexture(int Xsize, int Ysize)			// Create An Empty Texture
 
 	ZeroMemory(data,((Xsize * Ysize)* 4 * sizeof(unsigned int)));	// Clear Storage Memory
 
-	glGenTextures(1, &txtnumber);					// Create 1 Texture
+	OglGenTextures(1, &txtnumber);					// Create 1 Texture
 	
 	glBindTexture(GL_TEXTURE_2D, txtnumber);			// Bind The Texture
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, Xsize, Ysize, 0,

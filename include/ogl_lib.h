@@ -63,7 +63,7 @@ void OglSwapBuffers (int bForce, int bClear);
 void OglSetupTransform (int bForce);
 void OglResetTransform (int bForce);
 void OglBlendFunc (GLenum nSrcBlend, GLenum nDestBlend);
-void RebuildRenderContext (int bGame, int bCameras);
+void RebuildRenderContext (int bGame);
 void OglSetScreenMode (void);
 void OglGetVerInfo (void);
 GLuint OglCreateDepthTexture (int nTMU, int bFBO);
@@ -86,6 +86,16 @@ static inline fVector *G3GetNormal (g3sPoint *pPoint, fVector *pvNormal)
 {
 return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal : pvNormal;
 }
+
+//------------------------------------------------------------------------------
+
+#ifdef _DEBUG
+void OglGenTextures (GLsizei n, GLuint *hTextures);
+void OglDeleteTextures (GLsizei n, GLuint *hTextures);
+#else
+#	define OglGenTextures glGenTextures
+#	define OglDeleteTextures glDeleteTextures
+#endif
 
 //------------------------------------------------------------------------------
 

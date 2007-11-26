@@ -265,7 +265,7 @@ if (lightData) { //! =  NULL, comparison not explicitly required
 	lightData = NULL; //init to a defined value 
 	for (i = 0; i < MAX_SEGMENTS * 6; i++)
 		if (lightMaps [i].handle)
-			glDeleteTextures (1, (GLuint *) &lightMaps [i].handle);
+			OglDeleteTextures (1, (GLuint *) &lightMaps [i].handle);
 	memset (lightMaps, 0, sizeof (lightMaps));
 	} 
 }
@@ -884,7 +884,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 				(nMinDist < lmapP->range + sideRad)) {
 				// create and initialize an OpenGL texture for the lightmap
 				InitLightMap (lightMap, brightMap, lmapP->color);
-				glGenTextures (1, &lightMapId); 
+				OglGenTextures (1, &lightMapId); 
 				glTexImage1D (GL_TEXTURE_1D, 0, GL_RGB, 512, 1, GL_RGB, GL_UNSIGNED_BYTE, lightMap);
 				OglActiveTexture (GL_TEXTURE0);
 				glEnable (GL_TEXTURE_1D);
@@ -908,7 +908,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 				glEnd ();
 				glDisable (GL_BLEND);
 				glDisable (GL_TEXTURE_1D);
-				glDeleteTextures (1, &lightMapId);
+				OglDeleteTextures (1, &lightMapId);
 				bStart = 0;
 				}
 #else

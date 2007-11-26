@@ -192,7 +192,7 @@ if (!(pb->hRC = glXCreateContext (hGlDC, vi, hGlRC, GL_TRUE))) {// Share display
 	}
 XFree (pfd);
 #endif //!_WIN32
-glGenTextures (1, &pb->texId);
+OglGenTextures (1, &pb->texId);
 OGL_BINDTEX (pb->texId);
 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -219,7 +219,7 @@ if (pb->hBuf) {
 	if (pb->hBuf)
 		glXDestroyPbuffer (pb->hDC, pb->hBuf);
 #endif //!_WIN32
-	glDeleteTextures (1, &pb->texId);
+	OglDeleteTextures (1, &pb->texId);
 	pb->hRC = NULL;
 	pb->hDC = NULL;
 	pb->hBuf = NULL;

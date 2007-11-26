@@ -304,7 +304,7 @@ return gameData.cameras.nCameras;
 void DestroyCamera (tCamera *pc)
 {
 OglFreeBmTexture (&pc->texBuf);
-glDeleteTextures (1, &pc->glTexId);
+OglDeleteTextures (1, &pc->glTexId);
 if (pc->screenBuf && (pc->screenBuf != (char *) pc->texBuf.bmTexBuf))
 	D2_FREE (pc->screenBuf);
 if (pc->texBuf.bmTexBuf) {

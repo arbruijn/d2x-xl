@@ -106,6 +106,8 @@ void OglSmashTextureListInternal (void)
 	tOglTexture *t;
 	grsBitmap	*bmP, *altBmP, *bmfP;
 
+OglDestroyDrawBuffer ();
+DestroyCameras ();
 OglDeleteLists (&hBigSphere, 1);
 OglDeleteLists (&hSmallSphere, 1);
 OglDeleteLists (&circleh5, 1);
@@ -118,7 +120,7 @@ OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
 for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 	if (!t->bFrameBuf && (t->handle > 0)) {
-		glDeleteTextures (1, (GLuint *) &t->handle);
+		OglDeleteTextures (1, (GLuint *) &t->handle);
 		t->handle = -1;
 		bUnlink = 1;
 		}
@@ -190,7 +192,7 @@ if (!t) {
 	Warning ("OGL: texture list full!\n");
 #endif
 	// try to recover: flush all textures, reload fonts and this level's textures
-	RebuildRenderContext (gameStates.app.bGameRunning, 1);
+	RebuildRenderContext (gameStates.app.bGameRunning);
 	t = OglGetFreeTextureInternal ();
 	}
 return t;
@@ -1010,7 +1012,7 @@ if (!texP->bFrameBuf)
 			}
 		}
 	// Generate OpenGL texture IDs.
-	glGenTextures (1, (GLuint *) &texP->handle);
+	OglGenTextures (1, (GLuint *) &texP->handle);
 	if (!texP->handle) {
 #ifdef _DEBUG
 		int i = glGetError ();
@@ -1060,7 +1062,7 @@ if (!texP->bFrameBuf)
 		TexSetSize (texP);
 		}
 	if (bLocalTexture)
-		glDeleteTextures (1, (GLuint *) &texP->handle);
+		OglDeleteTextures (1, (GLuint *) &texP->handle);
 	}
 r_texcount++; 
 return 0;
@@ -1231,7 +1233,7 @@ if (t) {
 	GLuint h = (GLuint) t->handle;
 	if ((GLint) h > 0) {
 		r_texcount--;
-		glDeleteTextures (1, &h);
+		OglDeleteTextures (1, &h);
 		OglInitTexture (t, 0);
 		}
 	}
@@ -1307,7 +1309,7 @@ GLuint EmptyTexture (int Xsize, int Ysize)			// Create An Empty Texture
 	unsigned int *data = (unsigned int*) D2_ALLOC (nSize); 
 
 memset (data, 0, nSize); 	// Clear Storage Memory
-glGenTextures (1, &texId); 					// Create 1 Texture
+OglGenTextures (1, &texId); 					// Create 1 Texture
 OGL_BINDTEX (texId); 			// Bind The Texture
 glTexImage2D (GL_TEXTURE_2D, 0, 4, Xsize, Ysize, 0, gameStates.ogl.nRGBAFormat, GL_UNSIGNED_BYTE, data); 			// Build Texture Using Information In data
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 

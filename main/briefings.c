@@ -1483,7 +1483,7 @@ void DoBriefingScreens (char *filename, int nLevel)
 
 LogErr ("Starting the briefing\n");
 gameStates.render.bBriefing = 1;
-RebuildRenderContext (1, 1);
+RebuildRenderContext (1);
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	con_printf (CONDBG, "Skipping all briefing screens.\n");
 	gameStates.render.bBriefing = 0;

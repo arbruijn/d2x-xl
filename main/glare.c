@@ -70,7 +70,7 @@ void DestroyDepthTexture (void)
 {
 if (hDepthBuffer) {
 	if (!OglHaveDrawBuffer ())
-		glDeleteTextures (1, &hDepthBuffer);
+		OglDeleteTextures (1, &hDepthBuffer);
 	hDepthBuffer = 0;
 	}
 }

@@ -846,7 +846,7 @@ GLuint CreateVertLightBuffer (int i)
 	GLuint	hBuffer;
 
 //create render texture
-glGenTextures (1, &hBuffer);
+OglGenTextures (1, &hBuffer);
 if (!hBuffer)
 	return 0;
 glActiveTexture (GL_TEXTURE0 + i);
@@ -975,7 +975,7 @@ for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 	glBindTexture (GL_TEXTURE_2D, 0);
 	}
 #endif
-glDeleteTextures (VL_SHADER_BUFFERS, hBuffer);
+OglDeleteTextures (VL_SHADER_BUFFERS, hBuffer);
 memset (hBuffer, 0, sizeof (hBuffer));
 OglReadBuffer (GL_COLOR_ATTACHMENT0_EXT, 1);
 glReadPixels (0, 0, VLBUF_WIDTH, VLBUF_WIDTH, GL_RGBA, GL_FLOAT, vld.colors);
@@ -1153,6 +1153,7 @@ else if (nState == 2) {
 	glDepthFunc (GL_LESS);
 	glEnable (GL_ALPHA_TEST);
 	glAlphaFunc (GL_GEQUAL, (float) 0.01);	
+	OglDrawBuffer (GL_BACK, 1);
 	}
 return 1;
 }
