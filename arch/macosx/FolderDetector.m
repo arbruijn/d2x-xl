@@ -18,15 +18,15 @@
 	
 }
 
-char *ReturnContainingFolder();
-char *ReturnMacOSXCacheFolder();
+char *GetContainingFolder();
+char *GetMacOSXCacheFolder();
 char *CheckForMacOSXFolders();
 
 @end
 
 @implementation FolderDetector
 
-char *ReturnContainingFolder() {
+char *GetContainingFolder() {
 	return [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] cString];
 }
 
@@ -37,7 +37,7 @@ char *ReturnContainingFolder() {
 //
 // this method should ideally be called only once, otherwise it will check for the existence
 // of  the cache folders and create them every time it is called
-char *ReturnMacOSXCacheFolder() {
+char *GetMacOSXCacheFolder() {
 	BOOL isDirectory = NO;
 	NSString *folderTestString;
 	NSFileManager *manager = [NSFileManager defaultManager];
@@ -127,7 +127,7 @@ char *CheckForMacOSXFolders() {
 void GetOSXAppFolder(char* szDataRootDir, char* szGameDir)
 {
 	if (! *szGameDir) {
-		char *containingFolder = ReturnContainingFolder();
+		char *containingFolder = GetContainingFolder();
 		strcpy(szGameDir, containingFolder);
 	}
 
