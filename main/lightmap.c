@@ -26,6 +26,7 @@ there I just had it exit instead.
 
 #include "inferno.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_shader.h"
 #include "lighting.h"
 #include "lightmap.h"
