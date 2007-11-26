@@ -19,6 +19,7 @@
 }
 
 char *ReturnContainingFolder();
+char *ReturnMacOSXCacheFolder();
 char *CheckForMacOSXFolders();
 
 @end
@@ -27,6 +28,37 @@ char *CheckForMacOSXFolders();
 
 char *ReturnContainingFolder() {
 	return [[[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent] cString];
+}
+
+
+
+// we want to make sure that the cache folder exists, so we check to see if it's there,
+// and create it if it isn't
+//
+// this method should ideally be called only once, otherwise it will check for the existence
+// of  the cache folders and create them every time it is called
+char *ReturnMacOSXCacheFolder() {
+	BOOL isDirectory = NO;
+	NSString *folderTestString;
+	NSFileManager *manager = [NSFileManager defaultManager];
+	
+	
+	// check if the global caches folder exists and create it if it doesn't
+	folderTestString = [[NSString stringWithString:@"~/Library/Caches"] stringByExpandingTildeInPath];
+	BOOL dirExists = [manager fileExistsAtPath:folderTestString isDirectory:&isDirectory];
+	if (! (dirExists && isDirectory)) {
+		[manager createDirectoryAtPath:folderTestString attributes:nil];
+	}
+	
+	
+	// check if the D2X-XL-specific cache folder exists and create it if it doesn't
+	folderTestString = [[NSString stringWithString:@"~/Library/Caches/D2X-XL"] stringByExpandingTildeInPath];
+	dirExists = [manager fileExistsAtPath:folderTestString isDirectory:&isDirectory];
+	if (! (dirExists && isDirectory)) {
+		[manager createDirectoryAtPath:folderTestString attributes:nil];
+	}
+	
+	return [[@"~/Library/Caches/D2X-XL" stringByExpandingTildeInPath] cString];
 }
 
 char *CheckForMacOSXFolders() {	
@@ -98,7 +130,7 @@ void GetOSXAppFolder(char* szDataRootDir, char* szGameDir)
 		char *containingFolder = ReturnContainingFolder();
 		strcpy(szGameDir, containingFolder);
 	}
-	// check for the data in '../../..', '../../../data', './' and './data'
+
 	char *path = CheckForMacOSXFolders ();
 	if (strcmp (path, "-1") == 0)
 		strcpy (szDataRootDir, szGameDir);

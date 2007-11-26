@@ -6,3 +6,4 @@
 //
 
 void GetOSXAppFolder(char* szDataRootDir, char* szGameDir); 
+char *ReturnMacOSXCacheFolder();
