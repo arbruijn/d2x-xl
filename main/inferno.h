@@ -1472,6 +1472,7 @@ typedef struct tRenderData {
 	tGameWindowData		window;
 	fix						zMin;
 	fix						zMax;
+	tFrameBuffer			glareBuffer;
 } tRenderData;
 
 //------------------------------------------------------------------------------

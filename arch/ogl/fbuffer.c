@@ -126,8 +126,10 @@ else {
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, fb->hDepthBuffer, 0);
 		glGenRenderbuffersEXT (1, &fb->hStencilBuffer);
 		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hStencilBuffer);
-		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX, fb->nWidth, fb->nHeight);
+		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_STENCIL_INDEX8_EXT, fb->nWidth, fb->nHeight);
 		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hStencilBuffer);
+		if (OglFBufferAvail (fb) < 0)
+			return 0;
 		}
 	else 
 #endif
@@ -135,12 +137,12 @@ else {
 		glGenRenderbuffersEXT (1, &fb->hDepthBuffer);
 		glBindRenderbufferEXT (GL_RENDERBUFFER_EXT, fb->hDepthBuffer);
 		glRenderbufferStorageEXT (GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, fb->nWidth, fb->nHeight);
-		if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
-			return 0;
 		glFramebufferRenderbufferEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb->hDepthBuffer);
 		if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
 			return 0;
 		}
+	if ((nError = glGetError ()) == GL_OUT_OF_MEMORY)
+		return 0;
 	if (OglFBufferAvail (fb) < 0)
 		return 0;
 	}

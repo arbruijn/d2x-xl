@@ -48,7 +48,7 @@
 
 //------------------------------------------------------------------------------
 
-#define FBO_DRAW_BUFFER 1
+#define FBO_DRAW_BUFFER 0
 
 #if DBG_SHADOWS
 int bShadowTest = 0;
@@ -917,36 +917,6 @@ glReadBuffer (nBuffer);
 #endif
 }
 
-// -----------------------------------------------------------------------------------
-
-GLuint OglCreateDepthTexture (int nTMU, int bFBO)
-{
-	GLuint	hDepthBuffer;
-
-if (nTMU > 0)
-	glActiveTexture (nTMU);
-glEnable (GL_TEXTURE_2D);
-OglGenTextures (1, &hDepthBuffer);
-if (glGetError ())
-	return hDepthBuffer = 0;
-glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
-glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
-				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-if (!bFBO) {
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
-	}
-if (glGetError ()) {
-	OglDeleteTextures (1, &hDepthBuffer);
-	return hDepthBuffer = 0;
-	}
-return hDepthBuffer;
-}
-
 //------------------------------------------------------------------------------
 
 void OglFlushDrawBuffer (void)
@@ -972,6 +942,66 @@ if (OglHaveDrawBuffer ()) {
 	}
 #endif
 }
+
+// -----------------------------------------------------------------------------------
+
+GLuint OglCreateDepthTexture (int nTMU, int bFBO)
+{
+	GLuint	hBuffer;
+
+if (nTMU > 0)
+	glActiveTexture (nTMU);
+glEnable (GL_TEXTURE_2D);
+OglGenTextures (1, &hBuffer);
+if (glGetError ())
+	return hBuffer = 0;
+glBindTexture (GL_TEXTURE_2D, hBuffer);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
+				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+if (!bFBO) {
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexParameteri (GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+	}
+if (glGetError ()) {
+	OglDeleteTextures (1, &hBuffer);
+	return hBuffer = 0;
+	}
+return hBuffer;
+}
+
+// -----------------------------------------------------------------------------------
+
+#if 0
+
+GLuint OglCreateStencilTexture (int nTMU, int bFBO)
+{
+	GLuint	hBuffer;
+
+if (nTMU > 0)
+	glActiveTexture (nTMU);
+glEnable (GL_TEXTURE_2D);
+OglGenTextures (1, &hBuffer);
+if (glGetError ())
+	return hDepthBuffer = 0;
+glBindTexture (GL_TEXTURE_2D, hBuffer);
+glTexImage2D (GL_TEXTURE_2D, 0, GL_STENCIL_COMPONENT8, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
+				  0, GL_STENCIL_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+if (glGetError ()) {
+	OglDeleteTextures (1, &hBuffer);
+	return hBuffer = 0;
+	}
+return hBuffer;
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 

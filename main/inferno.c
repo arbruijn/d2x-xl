@@ -716,7 +716,6 @@ if (*gameFolders.szHomeDir) {
 	CFMkDir (gameFolders.szModelCacheDir);
 	sprintf (gameFolders.szTempDir, "%s/%s", szDataRootDir, TEMPDIR);
 	CFMkDir (gameFolders.szTempDir);
-#endif // __macosx__
 	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");

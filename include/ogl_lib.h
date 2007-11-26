@@ -67,6 +67,7 @@ void RebuildRenderContext (int bGame);
 void OglSetScreenMode (void);
 void OglGetVerInfo (void);
 GLuint OglCreateDepthTexture (int nTMU, int bFBO);
+GLuint OglCreateStencilTexture (int nTMU, int bFBO);
 void OglCreateDrawBuffer (void);
 void OglDestroyDrawBuffer (void);
 void OglDrawBuffer (int nBuffer, int bFBO);
