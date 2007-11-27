@@ -29,7 +29,7 @@ ushort swapshort(ushort s)
 uint swapint(uint i)
 {
 	ushort s1, s2;
-	
+
 	s1 = (i >> 16) & 0x0000ffff;
 	s2 = i & 0x0000ffff;
 	return ((swapshort(s2) << 16) | swapshort(s1);

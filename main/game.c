@@ -746,11 +746,11 @@ void GameFlushInputs ()
 	int dx,dy;
 #if 1
 	FlushInput ();
-#else	
+#else
 	KeyFlush ();
 	JoyFlush ();
 	MouseFlush ();
-#endif	
+#endif
 	#ifdef MACINTOSH
 	if ((gameStates.app.nFunctionMode != FMODE_MENU) && !joydefs_calibrating)		// only reset mouse when not in menu or not calibrating
 	#endif
@@ -849,7 +849,7 @@ gameData.time.xStops = gameData.time.xStarts = 0;
 //	Set value to determine whether homing missile can see target.
 //	The lower frametime is, the more likely that it can see its target.
 if (gameStates.limitFPS.bHomers)
-	xMinTrackableDot = MIN_TRACKABLE_DOT;	
+	xMinTrackableDot = MIN_TRACKABLE_DOT;
 else if (gameData.time.xFrame <= F1_0/64)
 	xMinTrackableDot = MIN_TRACKABLE_DOT;	// -- 3* (F1_0 - MIN_TRACKABLE_DOT)/4 + MIN_TRACKABLE_DOT;
 else if (gameData.time.xFrame < F1_0/32)
@@ -1303,7 +1303,7 @@ void DeadPlayerFrame (void);
 int AllowedToFireLaser (void)
 {
 	float	s;
-	
+
 if (gameStates.app.bPlayerIsDead) {
 	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
@@ -1346,7 +1346,7 @@ return 1;
 int AllowedToFireMissile (void)
 {
 	float	s;
-	
+
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
 if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
@@ -1679,12 +1679,12 @@ for (;;) {
 	//WIN (mouse_set_mode (0);
 		if (!IsMultiGame) {
 			PaletteSave (); 
-			ResetPaletteAdd ();	
+			ResetPaletteAdd ();
 			ApplyModifiedPalette (); 
 			GrPaletteStepLoad (NULL); 
 			}
 		ConfigMenu ();
-		if (bScanlineDouble != double_save)	
+		if (bScanlineDouble != double_save)
 			InitCockpit ();
 		if (!IsMultiGame) 
 			PaletteRestore ();
@@ -1958,7 +1958,7 @@ void flush_movie_buffer ()
 #if TRACE
 			//con_printf (CONDBG,"%3d/%3d\10\10\10\10\10\10\10",f,nMovieFrames);
 #endif
-		}			
+		}		
 	}
 
 	nMovieFrames=0;
@@ -2100,7 +2100,7 @@ if (gameData.fusion.xAutoFireTime) {
 	else {
 		fix			xBump;
 		vmsVector	vRand;
-		
+	
 		static time_t t0 = 0;
 		time_t t = gameStates.app.nSDLTicks;
 		if (t - t0 < 30)
@@ -2304,7 +2304,7 @@ DrainHeadLightPower ();
 	DeadPlayerFrame ();
 	if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 		DoReactorDeadFrame ();
-		}	
+		}
 //LogErr ("ProcessSmartMinesFrame \n");
 	ProcessSmartMinesFrame ();
 //LogErr ("DoSeismicStuff\n");
@@ -2447,13 +2447,13 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 				bIsSlideSeg = 1;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides = 0;
-				}	
+				}
 			gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides |= (1 << nSide);
 			}
 		}
 	if (bIsSlideSeg)
 		gameData.segs.nSlideSegs++;
-	}	
+	}
 gameData.segs.bHaveSlideSegs = 1;
 }
 

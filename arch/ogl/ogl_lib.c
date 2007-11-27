@@ -83,7 +83,7 @@ tRenderQuality renderQualities [] = {
 	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 0},	//smooth close textures, use smoothed mipmaps for distant ones
 	{GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, 1, 1}	//smooth close textures, use smoothed mipmaps for distant ones, anti-aliasing
 	};
-	
+
 //------------------------------------------------------------------------------
 
 void SetRenderQuality (void)
@@ -358,7 +358,7 @@ if (gameStates.render.nShadowPass) {
 #if GL_INFINITY
 	float	infProj [4][4];	//projection to infinity
 #endif
-	
+
 	if (gameStates.render.nShadowPass == 1) {	//render unlit/final scene
 		if (!gameStates.render.bShadowMaps) {
 #if GL_INFINITY
@@ -378,7 +378,7 @@ if (gameStates.render.nShadowPass) {
 			glEnable (GL_DEPTH_TEST);
 			glDisable (GL_STENCIL_TEST);
 			glDepthFunc (GL_LESS);
-			glEnable (GL_CULL_FACE);		
+			glEnable (GL_CULL_FACE);	
 			glCullFace (GL_BACK);
 			if (!FAST_SHADOWS)
 				glColorMask (0,0,0,0);
@@ -462,7 +462,7 @@ if (gameStates.render.nShadowPass) {
 				glDisable (GL_STENCIL_TEST);
          else if (FAST_SHADOWS) {
 				glStencilFunc (GL_NOTEQUAL, 0, ~0);
-				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);		
+				glStencilOp (GL_REPLACE, GL_KEEP, GL_KEEP);	
 				}
 			else 
 				{
@@ -481,7 +481,7 @@ if (gameStates.render.nShadowPass) {
 	else if (gameStates.render.nShadowPass == 4) {	//render unlit/final scene
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
-		glEnable (GL_CULL_FACE);		
+		glEnable (GL_CULL_FACE);	
 		glCullFace (GL_BACK);
 		}
 #if GL_INFINITY
@@ -548,13 +548,13 @@ else
 		glDisable (GL_CULL_FACE);
 		}
 	else {
-		glEnable (GL_CULL_FACE);		
+		glEnable (GL_CULL_FACE);	
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
 		glCullFace (GL_BACK);
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
 		glEnable (GL_ALPHA_TEST);
-		glAlphaFunc (GL_GEQUAL, (float) 0.01);	
+		glAlphaFunc (GL_GEQUAL, (float) 0.01);
 		}
 #if 0
 	if (SHOW_DYN_LIGHT) {//for optional hardware lighting
@@ -722,7 +722,7 @@ CreateLightMaps ();
 CloseDynLighting ();
 InitDynLighting ();
 OglCreateDrawBuffer ();
-CreateCameras ();		
+CreateCameras ();	
 OglDrawBuffer (GL_BACK, 1);
 }
 
@@ -783,15 +783,15 @@ con_printf(
 //multitexturing doesn't work yet.
 #ifdef GL_ARB_multitexture
 gameOpts->ogl.bArbMultiTexture=0;//(strstr(gl_extensions,"GL_ARB_multitexture")!=0 && glActiveTextureARB!=0 && 0);
-#	if 0 //TRACE	
+#	if 0 //TRACE
 con_printf (CONDBG,"c:%p d:%p e:%p\n",strstr(gl_extensions,"GL_ARB_multitexture"),glActiveTextureARB,glBegin);
 #	endif
 #endif
 #ifdef GL_SGIS_multitexture
 gameOpts->ogl.bSgisMultiTexture=0;//(strstr(gl_extensions,"GL_SGIS_multitexture")!=0 && glSelectTextureSGIS!=0 && 0);
-#	if TRACE	
+#	if TRACE
 con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),glSelectTextureSGIS);
-#	endif	
+#	endif
 #endif
 
 //add driver specific hacks here.  whee.
@@ -809,7 +809,7 @@ if (gl_renderer) {
 		}
 	}
 //allow overriding of stuff.
-#if 0 //TRACE	
+#if 0 //TRACE
 con_printf(CON_VERBOSE, 
 	"gl_arb_multitexture:%i, gl_sgis_multitexture:%i\n",
 	gameOpts->ogl.bArbMultiTexture,gameOpts->ogl.bSgisMultiTexture);

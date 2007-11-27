@@ -124,7 +124,7 @@ typedef struct tSoundObject {
 	int 		pan;			// Pan value that this sound is playing at
 	int		handle; 		// What handle this sound is playing on.  Valid only if SOF_PLAYING is set.
 	short		nSound;		// The sound number that is playing
-	union {	
+	union {
 		struct {
 			short		nSegment; 			// Used if SOF_LINK_TO_POS field is used
 			short		nSide;
@@ -530,7 +530,7 @@ void DigiGetSoundLoc(vmsMatrix * listener, vmsVector * vListenerPos, int nListen
 
 	//	Warning: Made the VmVecNormalizedDir be VmVecNormalizedDirQuick and got illegal values to acos in the fang computation.
 	distance = VmVecNormalizedDirQuick(&vector_toSound, vSoundPos, vListenerPos);
-		
+	
 	if (distance < maxDistance)	{
 		int nSearchSegs = f2i(maxDistance/20);
 		if (nSearchSegs < 1) 
@@ -648,7 +648,7 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 	for (i=0; i<MAX_SOUND_OBJECTS; i++)
 		if (SoundObjects[i].flags==0)
 			break;
-	
+
 	if (i==MAX_SOUND_OBJECTS) {
 		con_printf (1, "Too many sound gameData.objs.objects!\n");
 		return -1;
@@ -671,7 +671,7 @@ int DigiLinkSoundToPos2(int orgSoundnum, short nSegment, short nSide, vmsVector 
 					   &SoundObjects[i].lp_position, SoundObjects[i].lp_segnum,
 					   SoundObjects[i].maxVolume,
                        &SoundObjects[i].volume, &SoundObjects[i].pan, SoundObjects[i].maxDistance);
-	
+
 	if (!forever || SoundObjects[i].volume >= MIN_VOLUME)
 		DigiStartSoundObject(i);
 
@@ -764,8 +764,8 @@ void DigiSyncSounds()
 					}
 					UNLOCK();
 				}
-			}			
-		
+			}		
+	
 			if (SoundObjects[i].flags & SOF_LINK_TO_POS)	{
 				DigiGetSoundLoc(&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 								&SoundObjects[i].lp_position, SoundObjects[i].lp_segnum,
@@ -774,9 +774,9 @@ void DigiSyncSounds()
 
 			} else if (SoundObjects[i].flags & SOF_LINK_TO_OBJ)	{
 				tObject * objP;
-	
+
 				objP = &gameData.objs.objects[SoundObjects[i].lo_objnum];
-		
+	
 				if ((objP->nType==OBJ_NONE) || (objP->nSignature!=SoundObjects[i].lo_objsignature))  {
 					// The tObject that this is linked to is dead, so just end this sound if it is looping.
 					if ((SoundObjects[i].flags & SOF_PLAYING)  && (SoundObjects[i].flags & SOF_PLAY_FOREVER))	{
@@ -812,7 +812,7 @@ void DigiSyncSounds()
 					}
 				}
 			}
-				
+			
 			if (oldpan != SoundObjects[i].pan) 	{
 				if (SoundObjects[i].flags & SOF_PLAYING) {
 					LOCK();

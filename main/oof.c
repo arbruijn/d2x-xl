@@ -325,7 +325,7 @@ float OOF_Centroid (tOOF_vector *pvCentroid, tOOF_vector *pvSrc, int nv)
 pvCentroid->x =
 pvCentroid->y =
 pvCentroid->z = 0.0f;
-	
+
 // First figure out the total area of this polygon
 fTotalArea = OOF_VecMag (OOF_VecPerp (&vNormal, pvSrc, pvSrc + 1, pvSrc + 2)) / 2;
 for (i = 2; i < nv - 1; i++) {
@@ -339,7 +339,7 @@ vCenter = *pvSrc;
 OOF_VecInc (&vCenter, pvSrc + 1);
 OOF_VecInc (&vCenter, pvSrc + 2);
 OOF_VecInc (pvCentroid, OOF_VecScale (&vCenter, 1.0f / (3.0f * (fTotalArea / fArea))));
-// Now do the same for the rest	
+// Now do the same for the rest
 for (i = 2; i < nv - 1; i++) {
 	fArea = OOF_VecMag (OOF_VecPerp (&vNormal, pvSrc, pvSrc + i, pvSrc + i + 1)) / 2;
 	vCenter = *pvSrc;
@@ -358,7 +358,7 @@ memset (pm, 0, sizeof (*pm));
 pm->r.x =
 pm->u.y =
 pm->f.z = 1.0f;
-}	
+}
 
 //------------------------------------------------------------------------------
 
@@ -1166,7 +1166,7 @@ if (pfv) {
 	if (!(f.pVerts = (tOOF_faceVert *) D2_ALLOC (f.nVerts * sizeof (tOOF_faceVert)))) {
 		nIndent -= 2;
 		return OOF_FreeFace (&f);
-		}	
+		}
 #endif
 	OOF_InitMinMax (&f.vMin, &f.vMax);
 	e.v1 [0] = -1;
@@ -1565,7 +1565,7 @@ i = t * y;
 pm->u.y = i * y + c;
 i *= z;
 j = s * x;
-//pm->u.z = t * y * z + s * x;		
+//pm->u.z = t * y * z + s * x;	
 //pm->f.y = t * y * z - s * x;
 pm->u.z = i + j;
 pm->f.y = i - j;
@@ -1617,8 +1617,8 @@ inline void RecursiveAssignBatt (tOOFObject *po, int iObject, int iBatt)
 {
 	tOOF_subObject	*pso = po->pSubObjects + iObject;
 	int				i, nFlags = iBatt << OOF_WB_INDEX_SHIFT;
-	
-pso->nFlags |= nFlags | OOF_SOF_WB;		
+
+pso->nFlags |= nFlags | OOF_SOF_WB;	
 for (i = 0; i < pso->nChildren; i++)
 	RecursiveAssignBatt (po, pso->children [i], iBatt);
 }
@@ -1700,7 +1700,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 
 		for (j = 0; j < pf->nVerts; j++)
 			v [j] = pso->pvVerts [pf->pVerts [j].nIndex];
-		
+	
 		pso->fRadius = (float) (sqrt (OOF_Centroid (&avg, v, pf->nVerts)) / 2);
 		po->nFlags |= OOF_PMF_FACING;
 
@@ -1799,7 +1799,7 @@ if (o.nVersion >= 22) {
 
 while (!CFEoF (fp)) {
 	char chunkId [4];
-	
+
 	if (!CFRead (chunkId, sizeof (chunkId), 1, fp)) {
 		CFClose (fp);
 		return 0;
@@ -2219,7 +2219,7 @@ if (bCullFront) {
 #	endif
 			OOF_VecInc (&v1, &v0);
 			glVertex3fv ((GLfloat *) &v1);
-			}	
+			}
 		glEnd ();
 		if (pf->bReverse)
 			glFrontFace (GL_CW);
@@ -2356,7 +2356,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			glTexCoord2f (pfv->fu, pfv->fv);
 			glVertex3fv ((GLfloat *) phv);
 			//glVertex4f (phv->x, phv->y, phv->z, 0.5);
-			}	
+			}
 		glEnd ();
 #if DBG_SHADOWS
 		if (pf->bFacingLight && (bShadowTest > 3)) {
@@ -2392,7 +2392,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 		glBegin (GL_TRIANGLE_FAN);
 		for (j = pf->nVerts, pfv = pf->pVerts; j; j--, pfv++) {
 			glVertex3fv ((GLfloat *) (pv + pfv->nIndex));
-			}	
+			}
 		glEnd ();
 		}
 	if (pf->bReverse)

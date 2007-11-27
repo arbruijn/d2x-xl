@@ -435,7 +435,7 @@ if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
 
 void ElectroCheat (int bVerbose)
 {
-if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))	
+if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, 
 						 f2ir (LOCALPLAYER.energy));
 else if (bVerbose)
@@ -706,7 +706,7 @@ void WowieCheat (int bVerbose)
 if (bVerbose)
 	HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
-	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);	
+	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);
 	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXMINE_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
 	for (i=0; i < MAX_D1_PRIMARY_WEAPONS; i++)
 		LOCALPLAYER.primaryAmmo [i] = nMaxPrimaryAmmo [i];
@@ -791,7 +791,7 @@ if (bVerbose)
 #define CHEATEND 15
 
 typedef void tCheatFunc (int bVerbose);
-typedef tCheatFunc *pCheatFunc;	
+typedef tCheatFunc *pCheatFunc;
 
 typedef struct tCheat {
 	char			*pszCheat;

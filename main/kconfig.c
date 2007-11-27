@@ -470,7 +470,7 @@ return 0;
 int FindItemAt (kcItem * items, int nItems, int x, int y)
 {
 	int i;
-	
+
 for (i = 0; i < nItems; i++)	{
 	if (((items [i].x + items [i].w1) == x) && (items [i].y == y))
 		return i;
@@ -682,19 +682,19 @@ if (items == kcKeyboard)	{
 	GrSetColorRGBi (RGBA_PAL2 (31, 27, 6));
 	kc_gr_scanline (KC_LHX (98), KC_LHX (106), KC_LHY (42));
 	kc_gr_scanline (KC_LHX (120), KC_LHX (128), KC_LHY (42));
-	kc_gr_pixel (KC_LHX (98), KC_LHY (43));						
-	kc_gr_pixel (KC_LHX (98), KC_LHY (44));						
-	kc_gr_pixel (KC_LHX (128), KC_LHY (43));						
-	kc_gr_pixel (KC_LHX (128), KC_LHY (44));						
-	
+	kc_gr_pixel (KC_LHX (98), KC_LHY (43));					
+	kc_gr_pixel (KC_LHX (98), KC_LHY (44));					
+	kc_gr_pixel (KC_LHX (128), KC_LHY (43));					
+	kc_gr_pixel (KC_LHX (128), KC_LHY (44));					
+
 	GrString (KC_LHX (109), KC_LHY (40), "OR", NULL);
 
 	kc_gr_scanline (KC_LHX (253), KC_LHX (261), KC_LHY (42));
 	kc_gr_scanline (KC_LHX (274), KC_LHX (283), KC_LHY (42));
-	kc_gr_pixel (KC_LHX (253), KC_LHY (43));						
-	kc_gr_pixel (KC_LHX (253), KC_LHY (44));						
-	kc_gr_pixel (KC_LHX (283), KC_LHY (43));						
-	kc_gr_pixel (KC_LHX (283), KC_LHY (44));						
+	kc_gr_pixel (KC_LHX (253), KC_LHY (43));					
+	kc_gr_pixel (KC_LHX (253), KC_LHY (44));					
+	kc_gr_pixel (KC_LHX (283), KC_LHY (43));					
+	kc_gr_pixel (KC_LHX (283), KC_LHY (44));					
 
 	GrString (KC_LHX (264), KC_LHY (40), "OR", NULL);
 
@@ -757,7 +757,7 @@ grdCurCanv->cvFont	= save_font;
 WIN (DEFINE_SCREEN (old_bg_pcx));
 //WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), GrFreeSubCanvas (bg->menu_canvas));
 //bg->menu_canvas = NULL;
-WINDOS (DDGrSetCurrentCanvas (save_canvas), GrSetCurrentCanvas (save_canvas));			
+WINDOS (DDGrSetCurrentCanvas (save_canvas), GrSetCurrentCanvas (save_canvas));		
 GameFlushInputs ();
 NMRemoveBackground (bg);
 SDL_ShowCursor (0);
@@ -803,7 +803,7 @@ void KCDrawQuestion (kcItem *item)
 
 	int x, w, h, aw;
 
-WIN (DDGRLOCK (dd_grd_curcanv));	
+WIN (DDGRLOCK (dd_grd_curcanv));
   // PA_DFX (pa_set_frontbuffer_current ();
 
 	GrGetStringSize ("?", &w, &h, &aw);
@@ -839,7 +839,7 @@ for (i = 0; i < 256; i++)	{
 		for (n = 0; n < sizeof (system_keys); n++)
 			if (system_keys [n] == i)
 				f = 1;
-		if (!f)	
+		if (!f)
 			return (ubyte) i;
 		}
 	}
@@ -891,7 +891,7 @@ ubyte KCMouseBtnCtrlFunc (void)
 {
 int i, b = MouseGetButtons ();
 for (i = 0; i < 16; i++)
-	if (b & (1 << i))	
+	if (b & (1 << i))
 		return (ubyte) i;
 return 255;
 }
@@ -959,8 +959,8 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, char *ps
 WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
-WIN (DDGRUNLOCK (dd_grd_curcanv));	
-{				
+WIN (DDGRUNLOCK (dd_grd_curcanv));
+{			
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
 //		if (gameData.app.nGameMode & GM_MULTI)
@@ -1220,7 +1220,7 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 	}
 
 save_canvas = grdCurCanv;
-GrSetCurrentCanvas (NULL);		
+GrSetCurrentCanvas (NULL);	
 save_font = grdCurCanv->cvFont;
 
 FlushInput ();
@@ -1249,7 +1249,7 @@ for (;;) {
 	do {
 		if (gameOpts->menus.nStyle || !bRedraw) {
 			bRedraw = 1;
-			WIN (DDGRLOCK (dd_grd_curcanv));	
+			WIN (DDGRLOCK (dd_grd_curcanv));
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
 			NMDrawBackground (&bg, xOffs, yOffs, xOffs + 639, yOffs + 479, 1);
@@ -1263,7 +1263,7 @@ for (;;) {
 			GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
 			GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
-			WIN (DDGRUNLOCK (dd_grd_curcanv));	
+			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			KCDrawTable (items, nItems, cItem);
 			}
 		SDL_ShowCursor (0);
@@ -1315,12 +1315,12 @@ for (;;) {
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
 		case KEY_ALTED+KEY_F9:
 			SaveScreenShot (NULL, 0);
-			break;							
+			break;						
 		case KEY_CTRLED+KEY_D:
 			items [cItem].value = 255;
 			KCDrawItem (items + cItem, 1);
 			break;
-		case KEY_CTRLED+KEY_R:	
+		case KEY_CTRLED+KEY_R:
 			if (items==kcKeyboard)	{
 				for (i=0; i<NUM_KEY_CONTROLS; i++) {
 					items [i].value=controlSettings.defaults [0][i];
@@ -1353,7 +1353,7 @@ for (;;) {
 			items [cItem].value = 255;
 			KCDrawItem (items + cItem, 1);
 			break;
-		case KEY_UP: 		
+		case KEY_UP: 	
 		case KEY_PAD8:
 #if TABLE_CREATION
 			if (items [cItem].u == -1) 
@@ -1361,8 +1361,8 @@ for (;;) {
 #endif
 			cItem = items [cItem].u; 
 			break;
-		
-		case KEY_DOWN: 	
+	
+		case KEY_DOWN: 
 		case KEY_PAD2:
 #if TABLE_CREATION
 			if (items [cItem].d == -1) 
@@ -1370,7 +1370,7 @@ for (;;) {
 #endif
 			cItem = items [cItem].d; 
 			break;
-		case KEY_LEFT: 	
+		case KEY_LEFT: 
 		case KEY_PAD4:
 #if TABLE_CREATION
 			if (items [cItem].l == -1) 
@@ -1378,7 +1378,7 @@ for (;;) {
 #endif
 			cItem = items [cItem].l; 
 			break;
-		case KEY_RIGHT: 	
+		case KEY_RIGHT: 
 		case KEY_PAD6:
 #if TABLE_CREATION
 			if (items [cItem].r == -1) 
@@ -1386,19 +1386,19 @@ for (;;) {
 #endif
 			cItem = items [cItem].r; 
 			break;
-		case KEY_ENTER:	
-		case KEY_PADENTER:	
+		case KEY_ENTER:
+		case KEY_PADENTER:
 			nChangeMode = items [cItem].nType;
 			GameFlushInputs ();
 			break;
-		case -2:	
+		case -2:
 		case KEY_ESC:
 			KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
 			return;
 #if TABLE_CREATION
 		case KEYDBGGED+KEY_F12:	{
 			FILE *fp;
-#if TRACE		
+#if TRACE	
 			con_printf (CONDBG, "start table creation\n");
 #endif
 			LinkTableEntries (1 | 2 | 4 | 8);
@@ -1446,7 +1446,7 @@ for (;;) {
 				}
 			fprintf (fp, "};");
 			fclose (fp);
-#if TRACE		
+#if TRACE	
 			con_printf (CONDBG, "end table creation\n");
 #endif
 			}
@@ -1474,7 +1474,7 @@ for (;;) {
 		}
 		else if (!mouseState && omouseState) {
 			int item_height;
-			
+		
 			MouseGetPos (&mx, &my);
 			mx -= xOffs;
 			my -= yOffs;
@@ -1664,22 +1664,22 @@ void KConfig (int n, char * title)
 	ResetCockpit ();		//force cockpit redraw next time
 	// Update save values...
 	if (n == 0) {
-		for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)	
+		for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)
 			controlSettings.custom [0][i] = kcKeyboard [i].value;
 		}
 	else if (n == 1) {
 		if (gameOpts->input.joystick.bUse)
-			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)	
+			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)
 				controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
 		}
 	else if (n == 2) {
 		if (gameOpts->input.mouse.bUse)
-			for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	
+			for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)
 				controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;
 		}
 	else if (n == 3) {
 		if (gameConfig.nControlType == CONTROL_WINJOYSTICK)
-			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)	
+			for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)
 				controlSettings.custom [gameConfig.nControlType][i] = kcSuperJoy [i].value;
 		}
 	else if (n == 4) {
@@ -1718,13 +1718,13 @@ read_head_tracker ()
 	viewInfo.bUsePlayerHeadAngles = 0;
 	if (Last_angles_read)	{
 		fix yaw1 = yaw;
-		
-		yaw1 = yaw;
-		if ((Last_angles_h < (F1_0/4)) && (yaw > ((F1_0*3)/4)))	
-			yaw1 -= F1_0;
-		else if ((yaw < (F1_0/4)) && (Last_angles_h > ((F1_0*3)/4)))	
-			yaw1 += F1_0;
 	
+		yaw1 = yaw;
+		if ((Last_angles_h < (F1_0/4)) && (yaw > ((F1_0*3)/4)))
+			yaw1 -= F1_0;
+		else if ((yaw < (F1_0/4)) && (Last_angles_h > ((F1_0*3)/4)))
+			yaw1 += F1_0;
+
 		Controls [0].pitchTime	+= FixMul ((pitch- Last_angles_p)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
 		Controls [0].headingTime+= FixMul ((yaw1 -  Last_angles_h)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
 		Controls [0].bankTime	+= FixMul ((roll - Last_angles_b)*VR_sense_range [gameStates.render.vr.nSensitivity],gameData.time.xFrame);
@@ -1754,7 +1754,7 @@ void KCInitExternalControls (int intno, int address)
 	kc_enable_external_control  = 1;
 
 	i = FindArg ("-xname");
-	if (i)	
+	if (i)
 		kc_external_name = (ubyte *) Args [i+1];
 	else
 		kc_external_name = (ubyte *) "External Controller";
@@ -1810,17 +1810,17 @@ void KCInitExternalControls (int intno, int address)
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_external_version > 0) {		
+		if (kc_external_version > 0) {	
 			vmsMatrix tempm, ViewMatrix;
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
-	
+
 			Kconfig_abs_movement = (vmsAngVec *) ((uint)kc_external_control + sizeof (tControlInfo);
-	
+
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient,&tempm);
-				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;		
+				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
@@ -1828,20 +1828,20 @@ void KCInitExternalControls (int intno, int address)
 		}
 	}
 
-	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
+	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);					
 	Controls [0].verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
 	Controls [0].headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
 	Controls [0].sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
 	Controls [0].bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
 	Controls [0].forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
-	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;	
-	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;	
+	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;
+	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;
 	Controls [0].firePrimaryDownCount += kc_external_control->firePrimaryDownCount;
 	Controls [0].firePrimaryState |= kc_external_control->firePrimaryState;
 	Controls [0].fireSecondaryState |= kc_external_control->fireSecondaryState;
 	Controls [0].fireSecondaryDownCount += kc_external_control->fireSecondaryDownCount;
 	Controls [0].fireFlareDownCount += kc_external_control->fireFlareDownCount;
-	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;	
+	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;
 	Controls [0].automapDownCount += kc_external_control->automapDownCount;
 	Controls [0].automapState |= kc_external_control->automapState;
 } */
@@ -1858,7 +1858,7 @@ void KCReadExternalControls ()
 	if (kc_external_version == 0) 
 		memset (kc_external_control, 0, sizeof (ext_control_info));
 	else if (kc_external_version > 0) 	{
-    	
+    
 		if (kc_external_version>=4)
 			memset (kc_external_control, 0, sizeof (advanced_ext_control_info));
       else if (kc_external_version>0)     
@@ -1926,17 +1926,17 @@ void KCReadExternalControls ()
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_external_version > 0) {		
+		if (kc_external_version > 0) {	
 			vmsMatrix tempm, ViewMatrix;
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
-	
+
 			Kconfig_abs_movement = (vmsAngVec *) (size_t) ((size_t) kc_external_control + sizeof (ext_control_info));
-	
+
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient,&tempm);
-				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;		
+				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) (size_t) ((size_t)Kconfig_abs_movement + sizeof (vmsAngVec));
 			if (oem_message [0] != '\0')
@@ -1944,23 +1944,23 @@ void KCReadExternalControls ()
 		}
 	}
 
-	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
+	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);					
 	Controls [0].verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
 	Controls [0].headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
 	Controls [0].sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
 	Controls [0].bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
 	Controls [0].forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
-	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;	
-	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;	
+	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;
+	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;
 	Controls [0].firePrimaryDownCount += kc_external_control->firePrimaryDownCount;
 	Controls [0].firePrimaryState |= kc_external_control->firePrimaryState;
 	Controls [0].fireSecondaryState |= kc_external_control->fireSecondaryState;
 	Controls [0].fireSecondaryDownCount += kc_external_control->fireSecondaryDownCount;
 	Controls [0].fireFlareDownCount += kc_external_control->fireFlareDownCount;
-	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;	
+	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;
 	Controls [0].automapDownCount += kc_external_control->automapDownCount;
 	Controls [0].automapState |= kc_external_control->automapState;
-	
+
    if (kc_external_version>=3)
 	 {
 		ubyte *temp_ptr = (ubyte *)kc_external_control;
@@ -2043,7 +2043,7 @@ if (gameOpts->input.mouse.bUse) {
 //else 
 if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
 	for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
-		if (bGet)	
+		if (bGet)
 			controlSettings.custom [gameConfig.nControlType][i] = kcSuperJoy [i].value;
 		else {
 			kcSuperJoy [i].value = controlSettings.custom [gameConfig.nControlType][i];

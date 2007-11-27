@@ -632,7 +632,7 @@ return i / elsize;
 
 // ----------------------------------------------------------------------------
 
-int CFTell (CFILE *fp) 	
+int CFTell (CFILE *fp) 
 {
 return fp ? fp->raw_position : -1;
 }
@@ -655,7 +655,7 @@ switch (where) {
 		break;
 	default:
 		return 1;
-	}	
+	}
 c = fseek (fp->file, fp->lib_offset + goal_position, SEEK_SET);
 CFCriticalError (c);
 fp->raw_position = ftell(fp->file)-fp->lib_offset;

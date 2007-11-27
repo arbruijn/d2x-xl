@@ -83,7 +83,7 @@ int joycal_message( char * title, char * text )
 	return 0;
 }
 
-extern int WriteConfigFile();	
+extern int WriteConfigFile();
 
 extern joystick_device j_joystick[4];
 extern joystick_axis j_axis[MAX_AXES];
@@ -111,7 +111,7 @@ void joydefs_calibrate()
 		joycal_message ("No Calibration", "calibration not required for\njoystick v1.x");
 		return;
 	}
-	
+
 	for (i = 0; i < j_num_axes; i += 2) {
 		sprintf (title, "js%d Calibration", j_axis[i].joydev);
 
@@ -134,7 +134,7 @@ void joydefs_calibrate()
 		j_axis[i + 1].max_val = tempValues[i + 1];
 
 	}
-	
+
 	WriteConfigFile ();
 }
 
@@ -148,7 +148,7 @@ void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 
 	nitems = nitems;
 	last_key = last_key;
-	citem = citem;		
+	citem = citem;	
 
 	for (i=0; i<3; i++ )
 		if (items[i].value) gameConfig.nControlType = i;

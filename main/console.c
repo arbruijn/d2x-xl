@@ -169,7 +169,7 @@ if (priority <= ((int)con_threshold.value)) {
 	if (text_console_enabled) {
 	/* Produce a sanitised version and send it to the console */
 			char *p1, *p2;
-			
+		
 		p1 = p2 = buffer;
 		do {
 			switch (*p1) {

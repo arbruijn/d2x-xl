@@ -67,7 +67,7 @@ void GrPaletteStepClear()
 	gameStates.render.bPaletteFadedOut = 1;
 }
 
-void GrPaletteStepLoad( ubyte *pal )	
+void GrPaletteStepLoad( ubyte *pal )
 {
 	int i, j;
 	PALETTEENTRY pe[256];
@@ -89,7 +89,7 @@ void GrPaletteStepLoad( ubyte *pal )
 	gameStates.render.bPaletteFadedOut = 0;
 }
 
-int GrPaletteFadeOut(ubyte *pal, int nsteps, int allow_keys )	
+int GrPaletteFadeOut(ubyte *pal, int nsteps, int allow_keys )
 {
 	int i,j,k;
 	fix fade_palette[768];
@@ -148,7 +148,7 @@ int GrPaletteFadeOut(ubyte *pal, int nsteps, int allow_keys )
 	return 0;
 }
 
-int GrPaletteFadeIn(ubyte *pal, int nsteps, int allow_keys)	
+int GrPaletteFadeIn(ubyte *pal, int nsteps, int allow_keys)
 {
 	int i,j, k;
 //	ubyte c;

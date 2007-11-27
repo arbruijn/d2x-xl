@@ -100,7 +100,7 @@ void tmap_scanline_flat(int y, fix xleft, fix xright)
 	else	{
 		tmap_flat_shadeValue = gameStates.render.grAlpha;
 		cur_tmap_scanline_shaded();
-	}	
+	}
 }
 
 

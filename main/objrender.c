@@ -80,7 +80,7 @@ return gameData.weapons.info [nId].nModel;
 short WeaponModel (tObject *objP)
 {
 	short	nModel;
-	
+
 if ((nModel = WeaponToModel (objP->id)))
 	return nModel;
 return objP->rType.polyObjInfo.nModel;
@@ -315,7 +315,7 @@ else {
 	if (bmP->bmProps.w > bmP->bmProps.h)
 		G3DrawBitmap (&objP->position.vPos, xSize, FixMulDiv (xSize, bmP->bmProps.h, bmP->bmProps.w), bmP, 
 						  NULL, fAlpha, nTransp);
-	else	
+	else
 		G3DrawBitmap (&objP->position.vPos, FixMulDiv (xSize, bmP->bmProps.w, bmP->bmProps.h), xSize, bmP, 
 						  NULL, fAlpha, nTransp);
 	}
@@ -502,8 +502,8 @@ if (gameData.models.g3Models [1][nModel].bValid >= 0)
 	return 0;
 //G3RenderModel (objP, nModel, NULL, NULL, NULL, xLight, NULL, color);
 fLight [0] = xLight / 65536.0f;
-fLight [1] = (float) xEngineGlow [0] / 65536.0f;				
-fLight [2] = (float) xEngineGlow [1] / 65536.0f;				
+fLight [1] = (float) xEngineGlow [0] / 65536.0f;			
+fLight [2] = (float) xEngineGlow [1] / 65536.0f;			
 if (objP->nType == OBJ_PLAYER)
 	bCloaked = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
 else if (objP->nType == OBJ_ROBOT)
@@ -525,7 +525,7 @@ void DrawPolygonObject (tObject *objP, int bDepthSort)
 	int bBrightPolys = 0;
 	int bCloaked;
 	int bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
-	
+
 #if SHADOWS
 if (FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
@@ -693,15 +693,15 @@ else if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.a
 				 (nWindowNum ||
 				  ((IsMultiGame && !IsCoopGame && !EGI_FLAG (bEnableCheats, 0, 0, 0)) || 
 				  (!gameStates.render.bExternalView && (gameStates.app.bEndLevelSequence < EL_LOOKBACK))))) {
-#endif	 	
+#endif	 
 		if (gameOpts->render.smoke.bPlayers)
 			DoPlayerSmoke (objP, -1);
 		tRenderObject += clock () - t;
-		return 0;		
+		return 0;	
 		}
 	}
 if ((objP->nType == OBJ_NONE)/* || (objP->nType==OBJ_CAMBOT)*/){
-#if TRACE				
+#if TRACE			
 	con_printf (1, "ERROR!!!Bogus obj %d in seg %d is rendering!\n", nObject, objP->nSegment);
 #endif
 	tRenderObject += clock () - t;
@@ -730,7 +730,7 @@ if (objP->nType == OBJ_EXPLOSION) {
 	}
 #endif
 switch (objP->renderType) {
-	case RT_NONE:	
+	case RT_NONE:
 		if (gameStates.render.nType != 1)
 			return 0;
 		RenderTracers (objP);
@@ -847,7 +847,7 @@ switch (objP->renderType) {
 			}
 		break;
 
-	case RT_MORPH:	
+	case RT_MORPH:
 		if (gameStates.render.nType != 1)
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
@@ -859,7 +859,7 @@ switch (objP->renderType) {
 			return 0;
 		if (nWindowNum && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;
-			
+		
 	case RT_FIREBALL: 
 		if (!bForce && (gameStates.render.nType != 1))
 			return 0;
@@ -895,7 +895,7 @@ switch (objP->renderType) {
 				if (WeaponIsMine (objP->id)) {
 					if (!DoObjectSmoke (objP))
 						DrawWeaponVClip (objP); 
-					}	
+					}
 				else if ((objP->id != OMEGA_ID) || !(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega)) {
 					DrawWeaponVClip (objP); 
 					if (objP->id != OMEGA_ID) {
@@ -944,7 +944,7 @@ switch (objP->renderType) {
 				RenderLightTrail (objP);
 			}
 		break;
-		
+	
 	case RT_SMOKE:
 	case RT_LIGHTNING:
 		break;

@@ -30,7 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int stricmp( char *s1, char *s2 )
 {
 	char c1, c2;
-	
+
 for (;;)	{
 	c1 = *s1;
 	c2 = *s2;
@@ -49,7 +49,7 @@ return 0;
 int strnicmp( char *s1, char *s2, int n )
 {
 	char c1, c2;
-	
+
 while (n) {
 	c1 = *s1;
 	c2 = *s2;
@@ -124,12 +124,12 @@ void _splitpath(char *name, char *drive, char *path, char *base, char *ext)
 			return;
 	} else if (drive)
 		*drive = '\0';
-	
+
 	s = strrchr(p, '\\');
 	if ( s != NULL) {
 		if (path) {
 			char c;
-			
+		
 			c = *(s+1);
 			*(s+1) = '\0';
 			strcpy(path, p);
@@ -153,9 +153,9 @@ void _splitpath(char *name, char *drive, char *path, char *base, char *ext)
 			return;
 	} else if (base)
 		*base = '\0';
-		
+	
 	if (ext)
-		strcpy(ext, p);		
+		strcpy(ext, p);	
 }
 #endif
 
@@ -163,7 +163,7 @@ void _splitpath(char *name, char *drive, char *path, char *base, char *ext)
 void main()
 {
 	char drive[10], path[50], name[16], ext[5];
-	
+
 	drive[0] = path[0] = name[0] = ext[0] = '\0';
 	_splitpath("f:\\tmp\\x.out", drive, path, name, ext);
 	drive[0] = path[0] = name[0] = ext[0] = '\0';

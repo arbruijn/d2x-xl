@@ -51,7 +51,7 @@ void RenderRadarBlip (tObject *objP, float r, float g, float b, float a)
 	static tSinCosf sinCosRadar [RADAR_SLICES];
 	static tSinCosf sinCosBlip [BLIP_SLICES];
 	static int bInitSinCos = 1;
-	
+
 if (bInitSinCos) {
 	OglComputeSinCos (sizeofa (sinCosRadar), sinCosRadar);
 	OglComputeSinCos (sizeofa (sinCosBlip), sinCosBlip);
@@ -160,7 +160,7 @@ bStencil = StencilOff ();
 InitShipColors ();
 yRadar = (i == 1) ? 20.0f : -20.0f;
 VmAngles2Matrix (&mRadar, &aRadar);
-glDisable (GL_CULL_FACE);		
+glDisable (GL_CULL_FACE);	
 glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 glDepthFunc (GL_ALWAYS);
 glEnable (GL_BLEND);
@@ -191,7 +191,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	}
 glLineWidth (1);
 glDepthFunc (depthFunc);
-glEnable (GL_CULL_FACE);		
+glEnable (GL_CULL_FACE);	
 StencilOn (bStencil);
 }
 

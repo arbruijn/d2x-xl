@@ -32,7 +32,7 @@ extern unsigned char keyd_repeat;     // 1=allow repeating, 0=dont allow repeat
 
 // keyd_editor_mode... 0=game mode, 1=editor mode.
 // Editor mode makes KeyDownTime always return 0 if modifiers are down.
-extern unsigned char keyd_editor_mode;		
+extern unsigned char keyd_editor_mode;	
 
 // Time in seconds when last key was pressed...
 extern volatile int xLastKeyPressTime;

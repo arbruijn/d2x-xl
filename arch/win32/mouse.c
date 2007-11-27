@@ -304,7 +304,7 @@ void UpdateMouseState (DIDEVICEOBJECTDATA *pdidod)
 		case DIMOFS_Z:
 			break;//hm, handle this?
 		default:
-#if TRACE	
+#if TRACE
 			con_printf (CONDBG,"unknown mouse event %i\n",iEvt);
 #endif
 //			exit (iEvt);//not happy.
@@ -328,7 +328,7 @@ void MouseFlush()
 {
 	int i;
 	fix CurTime;
-	
+
 	if (!Mouse_installed)
 		return;
 
@@ -382,7 +382,7 @@ int MouseInit(int unused)
 {
 	if (Mouse_installed)
 		return Mouse.num_buttons;
-	
+
 	{
 		HRESULT hr;
 
@@ -415,12 +415,12 @@ int MouseInit(int unused)
 		}
 	}
 	Mouse.num_buttons = 3;
-	
+
 	WMMouse_Handler_Ready=Mouse_installed = 1;
 	atexit(mouse_close);
 	MouseFlush();
 	//	mouse_set_center();
-	
+
 	return Mouse.num_buttons;
 }
 
@@ -433,7 +433,7 @@ void mouse_center() {
 void MouseGetPos( int *x, int *y)
 {
 	mouse_handler(); //temp
-	
+
 	*x=(int) mouse_x;
 	*y=(int) mouse_y;
 }
@@ -445,10 +445,10 @@ void MouseGetDelta( int *dx, int *dy )
 		return;
 	}
 	mouse_handler(); //temp
-	
+
 	*dx = (int) mouse_x - WIN_WIDTH/2;
 	*dy = (int) mouse_y - WIN_HEIGHT/2;
-	
+
 	//Now reset the mouse position to the center of the screen
 	mouse_x = (double) WIN_WIDTH/2;
 	mouse_y = (double) WIN_HEIGHT/2;
@@ -461,7 +461,7 @@ void mouse_get_delta_no_reset( int *dx, int *dy )
 		return;
 	}
 	mouse_handler(); //temp
-	
+
 	*dx = (int) mouse_x - WIN_WIDTH/2;
 	*dy = (int) mouse_y - WIN_HEIGHT/2;
 }
@@ -471,12 +471,12 @@ int MouseGetButtons()
 	int  i;
 	uint flag=1;
 	int  status = 0;
-	
+
 	if (!Mouse_installed)
 		return 0;
 
 	mouse_handler(); //temp
-	
+
 	for (i = 0; i < MOUSE_MAX_BUTTONS; i++) {
 		if (Mouse.pressed[i])
 			status |= flag;
@@ -489,36 +489,36 @@ int MouseGetButtons()
 int mouse_wentDown(int button)
 {
 	int count;
-	
+
 	if (!Mouse_installed)
 		return 0;
 
 	mouse_handler(); //temp
-	
+
 	if ((button < 0) || (button >= MOUSE_MAX_BUTTONS))
 		return 0;
-	
-	//	_disable();		
+
+	//	_disable();	
 	count = Mouse.numDowns[button];
 	Mouse.numDowns[button] = 0;
-	
+
 	// 	_enable();
 	return count;
 }
 
 // Returns how many times this button has went down since last call.
-int MouseButtonDownCount(int button)	
+int MouseButtonDownCount(int button)
 {
 	int count;
-	
+
 	if (!Mouse_installed)
 		return 0;
-	
+
 	mouse_handler(); //temp
-	
+
 	if ((button < 0) || (button >= MOUSE_MAX_BUTTONS))
 		return 0;
-	
+
 	//	_disable();
 	count = Mouse.numDowns[button];
 	Mouse.numDowns[button] = 0;
@@ -530,15 +530,15 @@ int MouseButtonDownCount(int button)
 int MouseButtonState(int button)
 {
 	int state;
-	
+
 	if (!Mouse_installed)
 		return 0;
-	
+
 	mouse_handler(); //temp
-	
+
 	if ((button < 0) || (button >= MOUSE_MAX_BUTTONS))
 		return 0;
-	
+
 	//	_disable();
 	state = Mouse.pressed[button];
 	//	_enable();
@@ -546,18 +546,18 @@ int MouseButtonState(int button)
 }
 
 // Returns how long this button has been down since last call.
-fix MouseButtonDownTime(int button)	
+fix MouseButtonDownTime(int button)
 {
 	fix timeDown, time;
-	
+
 	if (!Mouse_installed)
 		return 0;
 
 	mouse_handler(); //temp
-	
+
 	if ((button < 0) || (button >= MOUSE_MAX_BUTTONS))
 		return 0;
-	
+
 	//	_disable();
 	if (!Mouse.pressed[button]) {
 		timeDown = Mouse.xTimeHeldDown[button];
@@ -568,7 +568,7 @@ fix MouseButtonDownTime(int button)
 		Mouse.xTimeHeldDown[button] = 0;
 	}
 	//	_enable();
-	
+
 	return timeDown;
 }
 

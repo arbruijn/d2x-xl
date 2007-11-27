@@ -121,7 +121,7 @@ else {
 		return 0;
 	}
 //do check for potential overflow
-if (labs (num) / (f1_0 / 2) >= labs (den))	
+if (labs (num) / (f1_0 / 2) >= labs (den))
 	return 0;
 VmVecScaleFrac (&d, num, den);
 VmVecAdd (hitP, p0, &d);
@@ -149,7 +149,7 @@ if (!den)
 if (labs (num) > labs (den))
 	return 0;
 //do check for potential overflow
-if (labs (num) / (f1_0 / 2) >= labs (den))	
+if (labs (num) / (f1_0 / 2) >= labs (den))
 	return 0;
 VmVecScaleFrac (&d, num, den);
 VmVecAdd (hitP, p0, &d);
@@ -176,7 +176,7 @@ return 1;	//hits
 int FindLineQuadIntersection (vmsVector *hitP, vmsVector *planeP, vmsVector *planeNormP, vmsVector *p0, vmsVector *p1)
 {
 	vmsVector	vHit, d [2];
-	
+
 if (!FindLineQuadIntersectionSub (&vHit, planeP, planeNormP, p0, p1, 0))
 	return 0;
 VmVecSub (d, &vHit, p0);
@@ -918,7 +918,7 @@ fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 	fix			size, dist;
 	vmsVector	hitP, v0, v1, vn;
 	int			bThisPoly, bOtherPoly;
-	
+
 if (rad < 0)
 	size = 0;
 else {
@@ -1344,7 +1344,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 							dMin = d;
 							vClosestHitPoint = vHitPoint;
 							nHitType = HIT_WALL;
-							gameData.collisions.hitData.vNormal = segP->sides [nSide].normals [iFace];	
+							gameData.collisions.hitData.vNormal = segP->sides [nSide].normals [iFace];
 							if (!GetSegMasks (&vHitPoint, nStartSeg, radP1).centerMask)
 								nHitSegment = nStartSeg;             //hit in this tSegment
 							else
@@ -1419,7 +1419,7 @@ void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *seg, int 
 	int			biggest, ii, jj;
 	tSide			*sideP = &seg->sides [nSide];
 	int			vertList [6], vertnum_list [6];
- 	vec2d			p1, vec0, vec1, checkP;	
+ 	vec2d			p1, vec0, vec1, checkP;
 	tUVL			uvls [3];
 	fix			k0, k1;
 	int			h, i;
@@ -1526,14 +1526,14 @@ else {
 offs = bmy * w + bmx;
 if (bmP->bmProps.flags & BM_FLAG_TGA) {
 	ubyte *p;
-	
+
 	if (bmP->bmBPP == 3)	//no alpha -> no transparency
 		return 0;
 	p = bmP->bmTexBuf + offs * bmP->bmBPP;
 	// check super transparency color
 #if 1
 	if ((p[0] == 120) && (p[1] == 88) && (p[2] == 128))
-#else	
+#else
 	if ((gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) ?
 	    (p [3] == 1) : ((p[0] == 120) && (p[1] == 88) && (p[2] == 128)))
 #endif	    

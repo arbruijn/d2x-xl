@@ -591,7 +591,7 @@ if (gameStates.app.bHaveExtraGameInfo &&
 	h = teamCount [0] - teamCount [1];
 	// don't change teams if 1 tPlayer or less difference
 	if ((h  >= -1) && (h <= 1))
-		return;	
+		return;
 	// don't change teams if smaller team is better
 	if ((h > 1) && (teamScore [1] > teamScore [0]))
 		return; 
@@ -1386,7 +1386,7 @@ if (bMsgBox)
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_ONLY_PLAYER);
 else {
 	char szMsg [100];
-	
+
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	sprintf (szMsg, "%c%c%c%c%s", 1, 127 + 128, 63 + 128, 128, TXT_ONLY_PLAYER);
 	HUDInitMessage (szMsg);
@@ -2445,7 +2445,7 @@ count += 12;
 swapped_vec.p.x = (fix)INTEL_INT ((int)to_goal->p.x);
 swapped_vec.p.y = (fix)INTEL_INT ((int)to_goal->p.y);
 swapped_vec.p.z = (fix)INTEL_INT ((int)to_goal->p.z);
-memcpy (gameData.multigame.msg.buf+count, &swapped_vec, 12);				
+memcpy (gameData.multigame.msg.buf+count, &swapped_vec, 12);			
 count += 12;
 #endif
 gameData.multigame.msg.buf [count++] = (char)nBestGun;                   
@@ -2485,7 +2485,7 @@ count += sizeof (vmsVector);
 swapped_vec.p.x = (fix)INTEL_INT ((int)pos->p.x);
 swapped_vec.p.y = (fix)INTEL_INT ((int)pos->p.y);
 swapped_vec.p.z = (fix)INTEL_INT ((int)pos->p.z);
-memcpy (gameData.multigame.msg.buf+count, &swapped_vec, 12);				
+memcpy (gameData.multigame.msg.buf+count, &swapped_vec, 12);			
 count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 2);
@@ -2601,7 +2601,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	gameData.multigame.msg.buf [0] = MULTI_TRIGGER_EXT;                                
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
 	count += 2;
-	}	
+	}
 else
 	gameData.multigame.msg.buf [0] = MULTI_TRIGGER;                                
 MultiSendData (gameData.multigame.msg.buf, count, 1);
@@ -2827,7 +2827,7 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 	}
 #ifndef _DEBUG
 if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
-#endif	
+#endif
 	InitHoardData ();
 if (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 	MultiApplyGoalTextures ();
@@ -2863,7 +2863,7 @@ return -1;
 void OverrideTextures (tSegment *segP, short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce)
 {
 	int j, v;
-	
+
 nTexture = (nTexture < 0) ? -nTexture : MultiFindGoalTexture (nTexture);
 nOldTexture = (nOldTexture < 0) ? -nOldTexture : MultiFindGoalTexture (nOldTexture);
 if (nTexture >- 1)
@@ -2902,17 +2902,17 @@ void ChangeSegmentTexture (int nSegment, int oldOwner)
 if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrideTextures == 2))
 	return;
 switch (seg2P->special) {
-	case SEGMENT_IS_GOAL_BLUE:		
+	case SEGMENT_IS_GOAL_BLUE:	
 		Goal_blue_segnum = nSegment;
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_BLUE), -1, -1, bFullBright, 1);
 		break;
-		
+	
 	case SEGMENT_IS_GOAL_RED:
 		Goal_red_segnum = nSegment;
 		// Make both textures the same if Hoard mode
 		OverrideTextures (segP, (short) ((gameData.app.nGameMode & GM_HOARD) ? TMI_GOAL_HOARD : TMI_GOAL_RED), -1, -1, bFullBright, 1);
 		break;
-		
+	
 	case SEGMENT_IS_ROBOTMAKER:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
 			OverrideTextures (segP, texOverrides [xSegP->owner], 
@@ -2924,7 +2924,7 @@ switch (seg2P->special) {
 			OverrideTextures (segP, texOverrides [xSegP->owner], 
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
-	
+
 	case SEGMENT_IS_FUELCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
 			OverrideTextures (segP, texOverrides [xSegP->owner], 
@@ -3457,7 +3457,7 @@ void MultiCheckForEntropyWinner ()
 	char		t, bGotRoom [2] = {0, 0};
 
 	static int		countDown;
-	
+
 if (!(gameData.app.nGameMode & GM_ENTROPY))
 	return;
 #if 1//def RELEASE
@@ -3770,7 +3770,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 void MultiDoDropBlob (char *buf)
 {
 	char nPlayer = buf [1];
-	
+
 DropAfterburnerBlobs (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject], 2, i2f (1), -1, NULL, 0);
 }
 
@@ -3832,7 +3832,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 void MultiDoActiveDoor (char *buf)
 {
 	char i = gameData.multigame.msg.buf [1];
-	
+
 gameData.walls.nOpenDoors = buf [2];
 memcpy (&gameData.walls.activeDoors [(int)i], buf+3, sizeof (struct tActiveDoor));
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -3962,7 +3962,7 @@ if (penalty) {
 			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
 			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
-			}		
+			}	
 		}
 #endif
 	}
@@ -4223,7 +4223,7 @@ MapObjnumLocalToLocal (nObject);
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
 	if (gameData.app.nGameMode & GM_NETWORK)
 		gameData.multiplayer.powerupsInMine [objP->id]++;
-#endif		
+#endif	
 MultiSendData (gameData.multigame.msg.buf, 12, 2);
 }
 
@@ -4249,10 +4249,10 @@ if (nObject!=-1)
 if (gameData.app.nGameMode & GM_ENTROPY)
 	gameData.objs.objects [nObject].matCenCreator = GetTeam (nPlayer) + 1;
 else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
-#if 0	
+#if 0
 	if (gameData.app.nGameMode & GM_NETWORK)
 		gameData.multiplayer.powerupsInMine [powerupId]++;
-#endif		
+#endif	
 	gameData.multiplayer.players [nPlayer].flags &= ~ (PLAYER_FLAGS_FLAG);
 	}
 }
@@ -4851,7 +4851,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 
 	{MultiDoSaveGame, 1}, 
 	{MultiDoRestoreGame, 1}, 
-	
+
 	{MultiDoReqPlayer, 1}, 
 	{MultiDoSendPlayer, 1}, 
 	{MultiDoDropMarker, 1}, 

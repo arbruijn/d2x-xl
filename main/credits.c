@@ -144,7 +144,7 @@ void ShowCredits(char *credits_filename)
 	int xOffs, yOffs;
 
 WIN(int credinit = 0;)
-	
+
 	box dirty_box[NUM_LINES_HIRES];
 	gsrCanvas *CreditsOffscreenBuf=NULL;
 
@@ -172,7 +172,7 @@ WIN(int credinit = 0;)
 	file = CFOpen(filename, gameFolders.szDataDir, "rb", 0);
 	if (file == NULL) {
 		char nfile[32];
-		
+	
 		if (credits_filename)
 			return;		//ok to not find special filename
 
@@ -218,7 +218,7 @@ WIN(int credinit = 0;)
 
 if (!gameOpts->menus.nStyle) {
 	WINDOS(
-		DDGrSetCurrentCanvas(NULL),	
+		DDGrSetCurrentCanvas(NULL),
 		GrSetCurrentCanvas(NULL)
 	);
 	WIN(DDGRLOCK(dd_grd_curcanv));
@@ -302,7 +302,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 
 	if (gameOpts->menus.nStyle) {
 		WINDOS(
-			DDGrSetCurrentCanvas(NULL),	
+			DDGrSetCurrentCanvas(NULL),
 			GrSetCurrentCanvas(NULL)
 		);
 		WIN(DDGRLOCK(dd_grd_curcanv));
@@ -321,7 +321,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 		{
 		GrSetCurrentCanvas(CreditsOffscreenBuf);
 		if (gameOpts->menus.nStyle)
-			GrClearCanvas (0);		
+			GrClearCanvas (0);	
 		else
 			GrBitmap(0,0,&bmBackdrop);
 		}
@@ -381,7 +381,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 
 	if (gameOpts->menus.nStyle) 
 		WINDOS(
-			DDGrSetCurrentCanvas(NULL),	
+			DDGrSetCurrentCanvas(NULL),
 			GrSetCurrentCanvas(NULL)
 			);
 

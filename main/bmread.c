@@ -150,7 +150,7 @@ int	linenum;		//line int table currently being parsed
 #define REMOVE_DOTS(bObjectRendered)  	remove_char((bObjectRendered),'.')
 
 #define IFTOK(str) if (!strcmp(arg, str))
-char *space = { " \t" };	
+char *space = { " \t" };
 //--unused-- char *equal = { "=" };
 char *equal_space = { " \t=" };
 
@@ -269,11 +269,11 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 	char tempname[20];
 
 	_splitpath( filename, NULL, NULL, fname, NULL );
-	
+
 	for (i=0; i<MAX_BITMAPS_PER_BRUSH; i++ )	{
 		sprintf( tempname, "%bObjectRendered#%d", fname, i );
 		bi = PiggyFindBitmap( tempname );
-		if ( !bi.index )	
+		if ( !bi.index )
 			break;
 		bmp[i] = bi;
 	}
@@ -491,7 +491,7 @@ int bm_init_use_tbl()
 		have_bin_tbl = 1;
 	}
 	linenum = 0;
-	
+
 	CFSeek( InfoFile, 0L, SEEK_SET);
 
 	while (CFGetS(szInput, LINEBUF_SIZE, InfoFile)) {
@@ -539,7 +539,7 @@ int bm_init_use_tbl()
 				//the superx color isn't kept around, so the new piggy regeneration
 				//code doesn't know what it is, so it assumes that it'bObjectRendered 254, so
 				//this code requires that it be 254
-										
+									
 		}
 
 		arg = strtok( szInput, space );
@@ -619,14 +619,14 @@ int bm_init_use_tbl()
 			else IFTOK("$MARKER")			{bm_read_marker();		continue;}
 			else IFTOK("$PLAYER_SHIP")		{bm_read_player_ship();	continue;}
 			else IFTOK("$EXIT") {
-					bm_read_exitmodel();	
+					bm_read_exitmodel();
 				continue;
 			}
 			else	{		//not a special token, must be a bitmap!
 
 				// Remove any illegal/unwanted spaces and tabs at this point.
 				while ((*arg=='\t') || (*arg==' ')) arg++;
-				if (*arg == '\0') { break; }	
+				if (*arg == '\0') { break; }
 
 				//check for '=' in token, indicating error
 				if (strchr(arg,'='))
@@ -745,9 +745,9 @@ void bm_read_alias()
 //--unused-- 			if ( (*p++)==255 ) k++;
 //--unused-- 		if ( k )	{
 //--unused-- 			fprintf( fp, "'%bObjectRendered' has %d transparent pixels\n", TmapInfo [gameStates.app.bD1Data][i].filename, k );
-//--unused-- 		}				
+//--unused-- 		}			
 //--unused-- 	}
-//--unused-- 	fclose(fp);	
+//--unused-- 	fclose(fp);
 //--unused-- }
 
 
@@ -846,7 +846,7 @@ void bm_read_eclip()
 		Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime = fl2f(time);
 		Effects [gameStates.app.bD1Data][nClip].vc.xFrameTime = Effects [gameStates.app.bD1Data][nClip].vc.xTotalTime/Effects [gameStates.app.bD1Data][nClip].vc.nFrameCount;
 
-		clipCount = 0;	
+		clipCount = 0;
 		set_lightingFlag( &GameBitmaps[bm[clipCount].index].bmProps.flags);
 		Effects [gameStates.app.bD1Data][nClip].vc.frames[clipCount] = bm[clipCount];
 
@@ -998,7 +998,7 @@ void bm_read_wclip()
 
 		WallAnims[nClip].closeSound = wall_closeSound;
 		strcpy(WallAnims[nClip].filename, arg);
-		REMOVE_DOTS(WallAnims[nClip].filename);	
+		REMOVE_DOTS(WallAnims[nClip].filename);
 
 		if (nClip >= Num_wall_anims) Num_wall_anims = nClip+1;
 
@@ -1041,7 +1041,7 @@ void bm_read_vclip()
 		if (rodFlag) {
 			rodFlag=0;
 			Vclip [gameStates.app.bD1Data][nClip].flags |= VF_ROD;
-		}			
+		}		
 
 	} else	{
 		tBitmapIndex bm[MAX_BITMAPS_PER_BRUSH];
@@ -1054,7 +1054,7 @@ void bm_read_vclip()
 			//int i;
 			rodFlag=0;
 			Vclip [gameStates.app.bD1Data][nClip].flags |= VF_ROD;
-		}			
+		}		
 		////printf("VC");
 		Vclip [gameStates.app.bD1Data][nClip].xTotalTime = fl2f(time);
 		Vclip [gameStates.app.bD1Data][nClip].xFrameTime = fl2f(time)/Vclip [gameStates.app.bD1Data][nClip].nFrameCount;
@@ -1157,7 +1157,7 @@ void bm_readSound()
 }
 
 // ------------------------------------------------------------------------------
-void bm_readRobot_ai()	
+void bm_readRobot_ai()
 {
 	char			*robotnum_text;
 	int			robotnum;
@@ -1230,7 +1230,7 @@ grsBitmap *load_polymodel_bitmap(char *name)
 #define MAX_MODEL_VARIANTS	4
 
 // ------------------------------------------------------------------------------
-void bm_readRobot()	
+void bm_readRobot()
 {
 	char			*model_name[MAX_MODEL_VARIANTS];
 	int			nModels,i;
@@ -1386,7 +1386,7 @@ void bm_readRobot()
 #if TRACE
 				con_printf (1, "Invalid parameter, %bObjectRendered=%bObjectRendered in bitmaps.tbl\n", arg, equal_ptr );
 #endif
-			}		
+			}	
 		} else {			// Must be a texture specification...
 			load_polymodel_bitmap(arg);
 		}
@@ -1543,7 +1543,7 @@ void bm_read_reactor()
 #if TRACE
 				con_printf (1, "Invalid parameter, %bObjectRendered=%bObjectRendered in bitmaps.tbl\n", arg, equal_ptr );
 #endif
-			}		
+			}	
 		} else {			// Must be a texture specification...
 			load_polymodel_bitmap(arg);
 		}
@@ -1571,7 +1571,7 @@ void bm_read_reactor()
 	gameData.objs.types.nType[gameData.objs.types.nCount] = nType;
 	gameData.objs.types.nType.nId[gameData.objs.types.nCount] = Num_reactors;
 	gameData.objs.types.nType.nStrength[gameData.objs.types.nCount] = strength;
-	
+
 	////printf( "Object nType %d is a control center\n", gameData.objs.types.nCount );
 	gameData.objs.types.nCount++;
 	Assert(gameData.objs.types.nCount < MAX_OBJTYPE);
@@ -1687,7 +1687,7 @@ void bm_read_player_ship()
 #if TRACE
 				con_printf (1, "Invalid parameter, %bObjectRendered=%bObjectRendered in bitmaps.tbl\n", arg, equal_ptr );
 #endif
-			}		
+			}	
 		}
 		else if (!stricmp( arg, "multi_textures" )) {
 
@@ -1743,7 +1743,7 @@ void bm_read_player_ship()
 		vmsVector pnt;
 		int mn;				//submodel number
 		int gun_num;
-	
+
 		r = &ri;
 		pm = &gameData.models.polyModels[Player_ship->nModel];
 
@@ -1751,7 +1751,7 @@ void bm_read_player_ship()
 
 			pnt = r->gunPoints[gun_num];
 			mn = r->gunSubModels[gun_num];
-		
+	
 			//instance up the tree for this gun
 			while (mn != 0) {
 				vm_vec_add2(&pnt,&pm->subModels.offsets[mn]);
@@ -1759,7 +1759,7 @@ void bm_read_player_ship()
 			}
 
 			Player_ship->gunPoints[gun_num] = pnt;
-		
+	
 		}
 	}
 
@@ -1797,7 +1797,7 @@ void bm_read_some_file()
 	case BM_VCLIP:
 		bm_read_vclip();
 		return;
-		break;					
+		break;				
 	case BM_ECLIP:
 		bm_read_eclip();
 		return;
@@ -1894,7 +1894,7 @@ void bm_read_weapon(int unusedFlag)
 	Weapon_info[n].multi_damage_scale = F1_0;
 	Weapon_info[n].afterburner_size = 0;
 	Weapon_info[n].children = -1;
-	
+
 	// Process arguments
 	arg = strtok( NULL, space );
 
@@ -2038,7 +2038,7 @@ void bm_read_weapon(int unusedFlag)
 #if TRACE
 				con_printf (1, "Invalid parameter, %bObjectRendered=%bObjectRendered in bitmaps.tbl\n", arg, equal_ptr );
 #endif
-			}		
+			}	
 		} else {			// Must be a texture specification...
 			grsBitmap *bm;
 
@@ -2138,7 +2138,7 @@ void bm_read_powerup(int unusedFlag)
 #if TRACE
 				con_printf (1, "Invalid parameter, %bObjectRendered=%bObjectRendered in bitmaps.tbl\n", arg, equal_ptr );
 #endif
-			}		
+			}	
 		} else {			// Must be a texture specification...
 			Int3();
 #if TRACE
@@ -2270,7 +2270,7 @@ fprintf(tfile,"N_weaponTypes = %d, Weapon_info array = %d\n",N_weaponTypes,sizeo
 
 	fwrite( &N_powerupTypes, sizeof(int), 1, fp );
 	fwrite( Powerup_info, sizeof(powerupType_info), N_powerupTypes, fp );
-	
+
 fprintf(tfile,"N_powerupTypes = %d, Powerup_info array = %d\n",N_powerupTypes,sizeof(powerupInfo)*N_powerupTypes);
 
 	t = N_D2_POLYGON_MODELS;

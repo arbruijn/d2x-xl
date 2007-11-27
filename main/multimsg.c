@@ -100,7 +100,7 @@ int MultiMessageFeedback (void)
 {
 	int bFound = 0;
 	int i, l;
-	
+
 char *colon = strrchr (gameData.multigame.msg.szMsg, ':');
 if (!colon)
 	return 0;
@@ -629,7 +629,7 @@ void MultiDoMsg (char *buf)
 	int bufP = 2;
 
 if ((tilde = strchr (buf + bufP, '$'))) { 
-	tloc = (int) (tilde - (buf + bufP));				
+	tloc = (int) (tilde - (buf + bufP));			
 	if (tloc > 0)
 		strncpy (msgBuf, buf + bufP, tloc);
 	strcpy (msgBuf + tloc, LOCALPLAYER.callsign);

@@ -125,7 +125,7 @@ else if (bReverse) {
 			bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
 			}
 		}
-	}	
+	}
 else {
 	tBGRA	c;
 	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
@@ -180,7 +180,7 @@ else {
 			}
 		p -= 2 * w;
 		}
-	}	
+	}
 a = (float) nVisible / 255.0f;
 bmP->bmAvgRGB.red = (ubyte) (avgColor.red / a);
 bmP->bmAvgRGB.green = (ubyte) (avgColor.green / a);
@@ -253,7 +253,7 @@ else {
 			}
 		p -= 2 * w;
 		}
-	}	
+	}
 return 1;
 }
 
@@ -607,7 +607,7 @@ if (bmP) {
 				}
 			}
 		}
-	}	
+	}
 }
 
 //------------------------------------------------------------------------------

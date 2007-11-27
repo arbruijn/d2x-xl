@@ -277,7 +277,7 @@ for (pc = gameData.render.shadows.shadowMaps; gameData.render.shadows.nShadowMap
 //------------------------------------------------------------------------------
 
 void ApplyShadowMaps (short nStartSeg, fix nEyeOffset, int nWindow)
-{	
+{
 	static float mTexBiasf [] = {
 		0.5f, 0.0f, 0.0f, 0.0f, 
 		0.0f, 0.5f, 0.0f, 0.0f, 
@@ -333,7 +333,7 @@ glDisable (GL_TEXTURE_GEN_S);
 glDisable (GL_TEXTURE_GEN_T);
 glDisable (GL_TEXTURE_GEN_R);
 glDisable (GL_TEXTURE_GEN_Q);
-OglActiveTexture (GL_TEXTURE0, 0);		
+OglActiveTexture (GL_TEXTURE0, 0);	
 glDisable (GL_TEXTURE_2D);
 #endif
 DestroyShadowMaps ();
@@ -414,9 +414,9 @@ if (!bShadowTest)
 	if	(gameStates.render.bShadowMaps) {
 #ifdef _DEBUG
 		if (gameStates.render.bExternalView)
-#else		
+#else	
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
-#endif			 	
+#endif			 
 			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : 
 								  &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 		else

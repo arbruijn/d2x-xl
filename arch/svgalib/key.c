@@ -147,7 +147,7 @@ void key_handler(int scancode, int press)
 			state = keyState;
 		else
 			state = key->lastState;
-			
+		
 		if ( key->lastState == state )	{
 			if (state) {
 				key->counter++;
@@ -162,7 +162,7 @@ void key_handler(int scancode, int press)
 				key->state = 1;
 				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
 				key->counter++;
-			} else {	
+			} else {
 				keyd_pressed[keycode] = 0;
 				keyd_last_released = keycode;
 				key->upcount += key->state;

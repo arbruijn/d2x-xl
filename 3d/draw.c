@@ -125,10 +125,10 @@ bool MustClipFlatFace (int nv, g3sCodes cc)
 
 		for (i=0;i<nv;i++) {
 			g3sPoint *p = bufptr[i];
-	
+
 			if (! (p->p3_flags & PF_PROJECTED))
 				G3ProjectPoint (p);
-	
+
 			if (p->p3_flags & PF_OVERFLOW) {
 				ret = 1;
 				goto free_points;
@@ -137,7 +137,7 @@ bool MustClipFlatFace (int nv, g3sCodes cc)
 			polyVertList[i*2]   = p->p3_screen.x;
 			polyVertList[i*2+1] = p->p3_screen.y;
 		}
-	
+
 		 (*flat_drawer_ptr) (nv, (int *)polyVertList);
 	}
 	else 

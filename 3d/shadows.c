@@ -122,7 +122,7 @@ inline tOOF_vector *G3RotateFaceNormal (tPOF_face *pf)
 {
 return (tOOF_vector *) OOF_VecVms2Oof (&pf->vNormf, G3RotatePoint (&pf->vRotNorm, &pf->vNorm, 0));
 }
-					
+				
 //------------------------------------------------------------------------------
 
 inline tOOF_vector *G3TransformFaceCenter (tPOF_face *pf)
@@ -131,7 +131,7 @@ inline tOOF_vector *G3TransformFaceCenter (tPOF_face *pf)
 
 return (tOOF_vector *) OOF_VecVms2Oof (&pf->vCenterf, G3TransformPoint (&v, &pf->vCenter, 0));
 }
-					
+				
 //------------------------------------------------------------------------------
 
 inline int G3FaceIsLit (tPOFObject *po, tPOF_face *pf)
@@ -851,7 +851,7 @@ for (pv += nVerts; nVerts; nVerts--) {
 #endif
 	OOF_VecInc (&v0, &v1);
 	glVertex3fv ((GLfloat *) &v0);
-	}	
+	}
 glEnd ();
 }
 
@@ -985,7 +985,7 @@ VmVecScale (&v, (fix) F1_0 * (fix) G3_INFINITY);
 if (!nVisited++)
 	memset (bVisited, 0, gameData.segs.nSegments * sizeof (unsigned int));
 #ifdef _DEBUG
-if (bPrintLine) {	
+if (bPrintLine) {
 	fVector	vf;
 	glLineWidth (3);
 	if (!bShadowTest) {
@@ -1355,7 +1355,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 #endif
 			}
 		glVertex3fv ((GLfloat *) &v0);
-		}	
+		}
 	glEnd ();
 	}
 #if DBG_SHADOWS

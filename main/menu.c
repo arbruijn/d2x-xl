@@ -279,9 +279,9 @@ dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 	{SM ( 640,  400),  640,  400, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM ( 640,  480),  640,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM ( 800,  600),  800,  600, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (1024,  768), 1024,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 	
-	{SM (1152,  864), 1152,  864, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 	
-	{SM (1280,  960), 1280,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 	
+	{SM (1024,  768), 1024,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	{SM (1152,  864), 1152,  864, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
+	{SM (1280,  960), 1280,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (1280, 1024), 1280, 1024, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (1600, 1200), 1600, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
 	{SM (2048, 1536), 2048, 1536, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
@@ -317,9 +317,9 @@ if (*nLastKey == KEY_ESC)
 if (gameStates.app.bAutoDemos) {
 	curtime = TimerGetApproxSeconds ();
 	if (((xLastKeyPressTime + i2f (/*2*/5)) < curtime)
-#ifdef _DEBUG	
+#ifdef _DEBUG
 		&& !gameData.speedtest.bOn
-#endif		
+#endif	
 		) {
 		int nDemos = NDCountDemos ();
 
@@ -522,9 +522,9 @@ i = ExecMenuListBox (TXT_SELECT_MOVIE, j, m, 1, NULL);
 if (i > -1) {
 	SDL_ShowCursor (0);
 	if (strstr (m [i], "intro"))
-		InitSubTitles ("intro.tex");	
+		InitSubTitles ("intro.tex");
 	else if (strstr (m [i], ENDMOVIE))
-		InitSubTitles (ENDMOVIE ".tex");	
+		InitSubTitles (ENDMOVIE ".tex");
 	PlayMovie (m [i], 1, 1, gameOpts->movies.bResize);
 	SDL_ShowCursor (1);
 	}
@@ -1129,7 +1129,7 @@ do {
 				key = 0;
 			else
 				ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_ERROR_SCRMODE);
-			}	
+			}
 		else
 			continue;
 		}
@@ -1165,7 +1165,7 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
 	char	*szMsnNames [MAX_MISSIONS];
 
 	static char* menuTitles [4];
-	
+
 	menuTitles [0] = TXT_NEW_GAME;
 	menuTitles [1] = TXT_NEW_D1GAME;
 	menuTitles [2] = TXT_NEW_D2GAME;
@@ -1212,7 +1212,7 @@ void LegacyNewGameMenu (void)
 	int			i, choice = 0, nFolder = -1, nDefaultMission = 0;
 	static int	nMission = -1;
 	static char	*menuTitles [4];
-	
+
 menuTitles [0] = TXT_NEW_GAME;
 menuTitles [1] = TXT_NEW_D1GAME;
 menuTitles [2] = TXT_NEW_D2GAME;
@@ -1328,7 +1328,7 @@ void NewGameMenu ()
 
 	static int		nPlayerMaxLevel = 1;
 	static int		nLevel = 1;
-	
+
 if (gameStates.app.bNostalgia) {
 	LegacyNewGameMenu ();
 	return;
@@ -1345,7 +1345,7 @@ for (;;) {
 
 	ADD_MENU (opt, TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 	optSelMsn = opt++;
-	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);	
+	ADD_TEXT (opt, (nMission < 0) ? TXT_NONE_SELECTED : gameData.missions.list [nMission].szMissionName, 0);
 	optMsnName = opt++;
 	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
 #if 0
@@ -1866,19 +1866,19 @@ v = m->value;
 if (extraGameInfo [0].bLightTrails != v) {
 	extraGameInfo [0].bLightTrails = v;
 	*key = -2;
-	}	
+	}
 m = menus + effectOpts.nCoronas;
 v = m->value;
 if (gameOpts->render.bCoronas != v) {
 	gameOpts->render.bCoronas = v;
 	*key = -2;
-	}	
+	}
 m = menus + effectOpts.nShotCoronas;
 v = m->value;
 if (gameOpts->render.bShotCoronas != v) {
 	gameOpts->render.bShotCoronas = v;
 	*key = -2;
-	}	
+	}
 if (effectOpts.nCoronaStyle >= 0) {
 	m = menus + effectOpts.nCoronaStyle;
 	v = m->value;
@@ -2546,7 +2546,7 @@ if (extraGameInfo [0].bUseCameras) {
 			sprintf (m->text, TXT_CAM_REFRESH, gameOpts->render.cameras.nFPS);
 			m->rebuild = 1;
 			}
-		}	
+		}
 	if (gameOpts->app.bExpertMode && (camOpts.nSpeed >= 0)) {
 		m = menus + camOpts.nSpeed;
 		v = (m->value + 1) * 1000;
@@ -2735,7 +2735,7 @@ if (extraGameInfo [0].bUseSmoke) {
 					m->rebuild = 1;
 					}
 				}
-			}	
+			}
 		}
 	}
 else
@@ -2840,7 +2840,7 @@ do {
 			else {
 				smokeOpts.nDensity [0] =
 				smokeOpts.nSize [0] = -1;
-				}	
+				}
 			if (!gameOpts->render.smoke.bSyncSizes && gameOpts->render.smoke.bPlayers) {
 				ADD_TEXT (opt, "", 0);
 				opt++;
@@ -2930,7 +2930,7 @@ do {
 				gameOpts->render.smoke.nDens [j] = gameOpts->render.smoke.nDens [0];
 				}
 			}
-		}	
+		}
 	} while (i == -2);
 }
 
@@ -3478,7 +3478,7 @@ void RenderOptionsMenu ()
 	tMenuItem m [40];
 	int	h, i, choice = 0;
 	int	opt;
-	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,	
+	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts;
 	int	optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts;
 #ifdef _DEBUG
@@ -4157,26 +4157,26 @@ do {
 	i = ExecMenu1 (NULL, TXT_OPTIONS, opt, m, options_menuset, &choice);
 	if (i >= 0) {
 		if (i == optSound)
-			SoundMenu ();			
+			SoundMenu ();		
 		else if (i == optConfig)
-			InputDeviceConfig ();			
+			InputDeviceConfig ();		
 		else if (i == optJoyCal)
-			joydefs_calibrate ();		
+			joydefs_calibrate ();	
 		else if (i == optDetails)
-			DetailLevelMenu (); 	
+			DetailLevelMenu (); 
 		else if (i == optScrRes)
-			ScreenResMenu ();		
+			ScreenResMenu ();	
 		else if (i == optReorderPrim)
-			ReorderPrimary ();			
+			ReorderPrimary ();		
 		else if (i == optReorderSec)
-			ReorderSecondary ();		
+			ReorderSecondary ();	
 		else if (i == optToggles)
-			MiscellaneousMenu ();			
+			MiscellaneousMenu ();		
 		else if (!gameStates.app.bNostalgia) {
 			if (i == optCockpit)
-				CockpitOptionsMenu ();			
+				CockpitOptionsMenu ();		
 			else if (i == optRender)
-				RenderOptionsMenu ();			
+				RenderOptionsMenu ();		
 			else if ((optGameplay >= 0) && (i == optGameplay))
 				GameplayOptionsMenu ();        
 			else if ((optPhysics >= 0) && (i == optPhysics))
@@ -4828,7 +4828,7 @@ else {
 		if (old_game_mode != gameData.app.nGameMode)
 			break;          // leave menu
 		} while (i > -1);
-	}	
+	}
 }
 
 //------------------------------------------------------------------------------

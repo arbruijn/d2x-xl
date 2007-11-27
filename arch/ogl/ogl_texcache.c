@@ -49,13 +49,13 @@ void OglCleanTextureCache (void)
 	tOglTexture* t;
 	int i,bytes;
 	int time=120;
-	
+
 if (nOglMemTarget < 0) {
 	if (gr_renderstats)
 		OglTextureStats ();
 	return;
 	}
-	
+
 bytes = OglTextureStats ();
 while (bytes>nOglMemTarget){
 	for (i = 0, t = oglTextureList; i < OGL_TEXTURE_LIST_SIZE; i++, t++) {

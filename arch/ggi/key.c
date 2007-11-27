@@ -265,7 +265,7 @@ void keyboard_handler(int button, ubyte state)
 			state = keyState;
 		else
 			state = key->lastState;
-			
+		
 		if ( key->lastState == state )	{
 			if (state) {
 				key->counter++;
@@ -280,7 +280,7 @@ void keyboard_handler(int button, ubyte state)
 				key->state = 1;
 				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
 				key->counter++;
-			} else {	
+			} else {
 				keyd_pressed[keycode] = 0;
 				keyd_last_released = keycode;
 				key->upcount += key->state;

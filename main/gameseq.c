@@ -262,7 +262,7 @@ for (i = 0; i < nPlayers; i++) {
 		if (segNum < 0)
 			continue;
 		segType = (gameData.app.nGameMode & GM_MULTI_COOP) ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
-#if 0			
+#if 0		
 		switch (segType) {
 			case SEGMENT_IS_GOAL_RED:
 			case SEGMENT_IS_TEAM_RED:
@@ -279,7 +279,7 @@ for (i = 0; i < nPlayers; i++) {
 			default:
 				break;
 			}
-#endif			
+#endif		
 		objP = gameData.objs.objects + playerObjs [j];
 		objP->nType = OBJ_PLAYER;
 		gameData.multiplayer.playerInit [i].position = objP->position;
@@ -298,7 +298,7 @@ gameData.multiplayer.nPlayerPositions = nPlayers;
 if (( (gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multiplayer.nPlayerPositions != 4)) ||
 	  (!(gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multiplayer.nPlayerPositions != 8)))
 {
-#if TRACE		
+#if TRACE	
 	//con_printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
 #endif
 	//Int3 (); // Not enough positions!!
@@ -307,7 +307,7 @@ if (( (gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multiplayer.nPlayerP
 if (IS_D2_OEM && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel==8) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
-			ExecMessageBox ("Warning!",NULL,1,TXT_OK,"This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");	
+			ExecMessageBox ("Warning!",NULL,1,TXT_OK,"This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}
@@ -375,14 +375,14 @@ void InitPlayerStatsGame ()
 	LOCALPLAYER.numRobotsLevel = 0;
 	LOCALPLAYER.numRobotsTotal = 0;
 	LOCALPLAYER.nKillGoalCount = 0;
-	
+
 	LOCALPLAYER.hostages_rescuedTotal = 0;
 	LOCALPLAYER.hostagesLevel = 0;
 	LOCALPLAYER.hostagesTotal = 0;
 
 	LOCALPLAYER.laserLevel = 0;
 	LOCALPLAYER.flags = 0;
-	
+
 	InitPlayerStatsNewShip ();
 
 	gameStates.app.bFirstSecretVisit = 1;
@@ -931,7 +931,7 @@ InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));
 memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
 gameData.render.lights.flicker.nLights = 0;
-save_player = LOCALPLAYER;	
+save_player = LOCALPLAYER;
 Assert (gameStates.app.bAutoRunMission || 
 		  ((nLevel <= gameData.missions.nLastLevel) && 
 		   (nLevel >= gameData.missions.nLastSecretLevel) && 
@@ -1435,7 +1435,7 @@ if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 if (!gameStates.app.bD1Mission && CFExist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
 	int pw_save = gameData.weapons.nPrimary;
 	int sw_save = gameData.weapons.nSecondary;
-	
+
 	ReturningToLevelMessage ();
 	StateRestoreAll (1, 1, SECRETB_FILENAME);
 	gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
@@ -1549,7 +1549,7 @@ if (!IsMultiGame) {
 		int bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
 
 		if (!gameStates.app.bD1Mission) {
-			InitSubTitles (ENDMOVIE ".tex");	
+			InitSubTitles (ENDMOVIE ".tex");
 			bPlayed = PlayMovie (ENDMOVIE, MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 			CloseSubTitles ();
 			}
@@ -1617,7 +1617,7 @@ if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
 	if (IsMultiGame)
-		MultiEndLevelScore ();		
+		MultiEndLevelScore ();	
 	else
 	// NOTE LINK TO ABOVE!!!
 	DoEndLevelScoreGlitz (0);		//give bonuses
@@ -1758,7 +1758,7 @@ if (gameData.app.nGameMode == GM_EDITOR) {			//test mine, not real level
 if (gameData.app.nGameMode & GM_MULTI)
 	MultiDoDeath (LOCALPLAYER.nObject);
 else {				//Note link to above else!
-	if (!--LOCALPLAYER.lives) {	
+	if (!--LOCALPLAYER.lives) {
 		DoGameOver ();
 		return;
 		}
@@ -1893,7 +1893,7 @@ if (!IsMultiGame)
 TurnCheatsOff ();
 if (!(IsMultiGame || gameStates.app.cheats.bEnabled)) {
 	SetHighestLevel (gameData.missions.nCurrentLevel);
-	}	
+	}
 else
 	ReadPlayerFile (1);		//get window sizes
 ResetSpecialEffects ();
@@ -2029,7 +2029,7 @@ if (!IsMultiGame) {
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
 				if (PlayMovie ("briefa.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize) != MOVIE_ABORTED)
 					 PlayMovie ("briefb.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
-				}			
+				}		
 			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
 			}
 		else {
@@ -2179,16 +2179,16 @@ if (botInfoP->thief || botInfoP->companion) {
 	if (botInfoP->companion) {
 		//	Now, scale guide-bot hits by skill level
 		switch (gameStates.app.nDifficultyLevel) {
-			case 0:	
-				shields = i2f (20000);	
+			case 0:
+				shields = i2f (20000);
 				break;		//	Trainee, basically unkillable
-			case 1:	
-				shields *= 3;				
+			case 1:
+				shields *= 3;			
 				break;		//	Rookie, pretty dang hard
-			case 2:	
-				shields *= 2;				
+			case 2:
+				shields *= 2;			
 				break;		//	Hotshot, a bit tough
-			default:	
+			default:
 				break;
 			}
 		}
@@ -2245,7 +2245,7 @@ if (gameData.app.nGameMode & GM_MULTI) {
 		MultiSendScore ();
 	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendReappear ();
-	}		
+	}	
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkDoFrame (1, 1);
 AIResetAllPaths ();

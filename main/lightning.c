@@ -258,7 +258,7 @@ if (pp = pl->pParent) {
 	}
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 	pln->vBase =
-	pln->vPos = vPos;	
+	pln->vPos = vPos;
 	VmVecZero (&pln->vOffs);
 	memcpy (pln->vDelta, vDelta, sizeof (vDelta));
 	VmVecInc (&vPos, &vDir);
@@ -1441,7 +1441,7 @@ if (G3EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glVertexPointer (3, GL_FLOAT, 0, coreBuffer [nThread]);
 	glDrawArrays (GL_LINE_STRIP, 0, pl->nNodes);
 	G3DisableClientStates (0, 0, 0, GL_TEXTURE0);
-	}	
+	}
 else {
 	glBegin (GL_LINE_STRIP);
 	for (i = 0; i < pl->nNodes; i++)
@@ -1626,7 +1626,7 @@ else {
 			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + 3));
 			glVertex3fv ((GLfloat *) (vPlasma + 3));
 			glEnd ();
-			}	
+			}
 		else if (fDot < 0) {
 			glBegin (GL_TRIANGLES);
 			glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j]));
@@ -1650,7 +1650,7 @@ else {
 			for (i = 0; i < 4; i++) {
 				glTexCoord2fv ((GLfloat *) (plasmaTexCoord [j] + i));
 				glVertex3fv ((GLfloat *) (vPlasma + i));
-				}	
+				}
 			}
 		glEnd ();
 		}
@@ -2147,7 +2147,7 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 	n = f2ir (RobotDefaultShields (objP));
 	h = f2ir (objP->shields) * 100 / n;
 	if ((h < 0) || (h >= 50))
-		return;	
+		return;
 	n = (5 - h / 10) * 2;
 	if (0 <= (h = gameData.lightnings.objects [i])) {
 		plb = gameData.lightnings.buffer + h;

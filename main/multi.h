@@ -283,7 +283,7 @@ typedef struct tNetPlayerInfo {
 	ubyte   version_minor;
 #ifdef _WIN32
 	ubyte   computerType;
-#else	
+#else
 	enum compType computerType;
 #endif
 	sbyte    connected;

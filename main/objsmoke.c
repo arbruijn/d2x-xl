@@ -262,7 +262,7 @@ else {
 	h = f2ir (objP->shields) * 100 / nShields;
 	}
 if (h < 0)
-	return;	
+	return;
 nParts = 10 - h / 5;
 if (nParts > 0) {
 	if (nShields > 4000)
@@ -318,7 +318,7 @@ else {
 	h = nShields ? f2ir (objP->shields) * 100 / nShields : 0;
 	}
 if (h < 0)
-	h = 0;	
+	h = 0;
 nParts = 10 - h / 10;
 if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
@@ -438,7 +438,7 @@ if (!(SHOW_SMOKE && gameOpts->render.smoke.bStatic)) {
 if (gameData.smoke.objects [i] < 0) {
 		tRgbaColorf color;
 		int bColor;
-	
+
 	color.red = (float) objP->rType.smokeInfo.color.red / 255.0f;
 	color.green = (float) objP->rType.smokeInfo.color.green / 255.0f;
 	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;

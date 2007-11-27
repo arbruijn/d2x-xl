@@ -329,9 +329,9 @@ while (new_pof_read_int (id, model_buf) == 1) {
 				VmVecSub (&v, &pmmax, &pmmin);
 				l = v.p.x;
 				if (v.p.y > l) 
-					l = v.p.y;					
+					l = v.p.y;				
 				if (v.p.z > l) 
-					l = v.p.z;					
+					l = v.p.z;				
 				//printf (" -l%.3f", f2fl (l));
 				}
 			break;
@@ -407,7 +407,7 @@ while (new_pof_read_int (id, model_buf) == 1) {
 			pm->nDataSize = len;
 			pof_cfread (pm->modelData, 1, len, model_buf);
 			break;
-	
+
 		default:
 			pof_CFSeek (model_buf, len, SEEK_CUR);
 			break;
@@ -504,7 +504,7 @@ int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, 
 	}
 
 	D2_FREE (model_buf);
-	
+
 	return nGuns;
 }
 
@@ -621,13 +621,13 @@ else {
 #ifdef PIGGY_USE_PAGING
 // Make sure the textures for this tObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;
-for (i = 0; i < nTextures; i++)	
+for (i = 0; i < nTextures; i++)
 	PIGGY_PAGE_IN (gameData.models.textureIndex [i], gameStates.app.bD1Model);
 // Hmmm... cache got flushed in the middle of paging all these in, 
 // so we need to reread them all in.
 if (gameData.pig.tex.bPageFlushed)	{
 	gameData.pig.tex.bPageFlushed = 0;
-	for (i = 0; i < nTextures; i++)	
+	for (i = 0; i < nTextures; i++)
 		PIGGY_PAGE_IN (gameData.models.textureIndex [i], gameStates.app.bD1Model);
 }
 // Make sure that they can all fit in memory.
@@ -720,7 +720,7 @@ else {
 									  animAngles, NULL, light, glowValues, color, NULL, nModel);
 				G3DoneInstance ();
 				}
-			}	
+			}
 	G3DoneInstance ();
 	}
 gameStates.ogl.bUseTransform = 0;
@@ -754,7 +754,7 @@ void PolyObjFindMinMax (tPolyModel *pm)
 	ushort *data, nType;
 	int m;
 	vmsVector *big_mn, *big_mx;
-	
+
 	big_mn = &pm->mins;
 	big_mx = &pm->maxs;
 
@@ -819,7 +819,7 @@ int LoadPolygonModel (char *filename, int nTextures, grsBitmap ***textures)
 	Assert (nTextures < MAX_POLYOBJ_TEXTURES);
 
 	//	MK was real tired of those useless, slow mprintfs...
-#if TRACE	
+#if TRACE
 	if (gameData.models.nPolyModels > MAX_POLYGON_MODELS - 10)
 		con_printf (CON_VERBOSE, "Used %d/%d polygon model slots\n", gameData.models.nPolyModels+1, MAX_POLYGON_MODELS);
 #endif

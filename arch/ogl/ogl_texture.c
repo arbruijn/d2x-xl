@@ -324,7 +324,7 @@ tRgbColorf *BitmapColor (grsBitmap *bmP, ubyte *bufP)
 	int c, h, i, j = 0, r = 0, g = 0, b = 0;
 	tRgbColorf *color;
 	ubyte	*palette;
-		
+	
 if (!(bufP || (bufP = bmP->bmTexBuf)))
 	return NULL;
 h = (int) (bmP - gameData.pig.tex.pBitmaps);
@@ -535,7 +535,7 @@ for (y = 0; y < tHeight; y++) {
 					*((GLuint *) bufP) = nTransp ? 0 : 0xffffffff;
 					bufP += 4;
 					break;
-					
+				
 				case GL_RGBA4:
 					*((GLushort *) bufP) = nTransp ? 0 : 0xffff;
 					bufP += 2;
@@ -646,7 +646,7 @@ if (!dxo && !dyo && (texP->w == texP->tw) && (texP->h == texP->th))
 else {	//need to reformat
 	int		h, w, tw;
 	GLubyte	*bufP;
-	
+
 	h = texP->lw / texP->w;
 	w = (texP->w - dxo) * h;
 	data += texP->lw * dyo + h * dxo;
@@ -689,7 +689,7 @@ switch (texP->format) {
 		if (texP->internalformat == 2)
 			return 1;
 		break;
-		
+	
 	case GL_INTENSITY4:
 		if (gameStates.ogl.bIntensity4 == -1) 
 			return 1; 
@@ -728,7 +728,7 @@ switch (texP->format) {
 	case GL_RGBA4:
 		texP->internalformat = 2;
 		break;
-		
+	
 	case GL_INTENSITY4:
 		gameStates.ogl.bIntensity4 = (nFormat == texP->internalformat) ? -1 : 0;
 		break;
@@ -770,14 +770,14 @@ while (!TexFormatSupported (texP)) {
 			texP->internalformat = 3;
 			texP->format = GL_RGB;
 			break;
-			
+		
 		case GL_RGBA4:
 			texP->internalformat = 4;
 			texP->format = GL_RGBA;
 			break;
 
 		default:
-#if TRACE	
+#if TRACE
 			con_printf (CONDBG,"...no texP format to fall back on\n");
 #endif
 			return 1;

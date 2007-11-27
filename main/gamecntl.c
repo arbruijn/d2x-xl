@@ -511,11 +511,11 @@ while (gameData.app.bGamePaused) {
 			GameRenderFrame();
 			WIN(SetPopupScreenMode());
 			ShowBoxedMessage(msg);
-#if 0			
+#if 0		
 			show_extraViews();
 			if (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR)
 				RenderGauges();
-#endif				
+#endif			
 			}
 		}
 	GrabMouse (1, 0);
@@ -593,7 +593,7 @@ void DoShowNetgameHelp()
   		 sprintf (mtext[num++], "%s", gameData.multiplayer.players [i].callsign); 
 	  }
 
-	
+
   sprintf (mtext[num], " "); num++;
 
   eff=(int)((double)((double)networkData.nNetLifeKills/((double)networkData.nNetLifeKilled+(double)networkData.nNetLifeKills))*100.0);
@@ -621,7 +621,7 @@ void DoShowNetgameHelp()
 		 sprintf (mtext[num], TXT_EFF_SERVEWELL); num++;
 	   }
 	}  
-	
+
 
   	FullPaletteSave();
 
@@ -728,23 +728,23 @@ switch (key) {
 		 break;
 
 	case KEY_SHIFTED+KEY_MINUS:
-	case KEY_MINUS:		
+	case KEY_MINUS:	
 		shrink_window(); 
 		break;
 
 	case KEY_SHIFTED+KEY_EQUAL:
-	case KEY_EQUAL:		
+	case KEY_EQUAL:	
 		grow_window(); 
 		break;
 
-	case KEY_F2:		
+	case KEY_F2:	
 		gameStates.app.bConfigMenu = 1; 
 		break;
 
 	case KEY_F7:
 		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.demo.nGameMode & GM_TEAM) ? 4 : 3);
 		break;
-			
+		
 	case KEY_CTRLED+KEY_F7:
 		if ((gameStates.render.cockpit.bShowPingStats = !gameStates.render.cockpit.bShowPingStats))
 			ResetPingStats ();
@@ -766,7 +766,7 @@ switch (key) {
 		newdemo_single_frameTime = TimerGetFixedSeconds();
 		gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 		break;
-	
+
 	case KEY_RIGHT:
 		newdemo_single_frameTime = TimerGetFixedSeconds();
 		gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
@@ -958,12 +958,12 @@ dump_door_debugging_info()
 
 		nWall = WallNumI (hit_info.hit_seg, hit_info.hit_side);
 		fprintf(dfile, "nWall = %d\n", nWall);
-	
+
 		if (IS_WALL (nWall)) {
 			tWall *tWall = gameData.walls.walls + nWall;
 			tActiveDoor *d;
 			int i;
-	
+
 			fprintf(dfile, "    nSegment = %d\n", tWall->nSegment);
 			fprintf(dfile, "    nSide = %d\n", tWall->nSide);
 			fprintf(dfile, "    hps = %x\n", tWall->hps);
@@ -977,8 +977,8 @@ dump_door_debugging_info()
 			fprintf(dfile, "    controllingTrigger = %d\n", tWall->controllingTrigger);
 			fprintf(dfile, "    cloakValue = %d\n", tWall->cloakValue);
 			fprintf(dfile, "\n");
-	
-	
+
+
 			for (i=0;i<gameData.walls.nOpenDoors;i++) {		//find door
 				d = &gameData.walls.activeDoors[i];
 				if (d->nFrontWall[0]==nWall || 
@@ -986,7 +986,7 @@ dump_door_debugging_info()
 					 (d->nPartCount==2 && (d->nFrontWall[1]==nWall || d->nBackWall[1]==nWall)))
 					break;
 			} 
-	
+
 			if (i>=gameData.walls.nOpenDoors)
 				fprintf(dfile, "No active door.\n");
 			else {
@@ -996,7 +996,7 @@ dump_door_debugging_info()
 				fprintf(dfile, "    nBackWall = %d, %d\n", d->nBackWall[0], d->nBackWall[1]);
 				fprintf(dfile, "    time = %x\n", d->time);
 			}
-	
+
 		}
 	}
 
@@ -1083,7 +1083,7 @@ switch (key) {
 	case KEY_COMMAND+KEY_P: 
 	case KEY_CTRLED+KEY_P: 
 	case KEY_PAUSE: 
-		DoGamePause();				
+		DoGamePause();			
 		break;
 
 	case KEY_CTRLED + KEY_ALTED + KEY_S:
@@ -1102,11 +1102,11 @@ switch (key) {
 	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 	case KEY_PRINT_SCREEN: 
 		bSaveScreenShot = 1;
-		SaveScreenShot (NULL, 0);		
+		SaveScreenShot (NULL, 0);	
 		break;
 
-	case KEY_F1:					
-		DoShowHelp();			
+	case KEY_F1:				
+		DoShowHelp();		
 		break;
 
 	case KEY_F2:					//gameStates.app.bConfigMenu = 1; break;
@@ -1134,7 +1134,7 @@ switch (key) {
 		PA_DFX (break);
 
 		if (!GuidedInMainView ()) {
-			ToggleCockpit();	
+			ToggleCockpit();
 			bScreenChanged=1;
 		}
 		break;
@@ -1146,13 +1146,13 @@ switch (key) {
 		break;
 
 	case KEY_SHIFTED+KEY_MINUS:
-	case KEY_MINUS:	
+	case KEY_MINUS:
 		shrink_window(); 
 		bScreenChanged=1; 
 		break;
 
 	case KEY_SHIFTED+KEY_EQUAL:
-	case KEY_EQUAL:			
+	case KEY_EQUAL:		
 		grow_window();  
 		bScreenChanged=1; 
 		break;
@@ -1206,9 +1206,9 @@ switch (key) {
 		break;
 
 	case KEY_ALTED + KEY_F12:
-#ifndef _DEBUG		
+#ifndef _DEBUG	
 		if (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0))
-#endif			
+#endif		
 			gameStates.render.bExternalView = !gameStates.render.bExternalView;
 		ResetFlightPath (&externalView, -1, -1);
 		break;
@@ -1289,7 +1289,7 @@ switch (key) {
 		GrToggleFullScreenGame();
 		break;
 //end addition -MM
-		
+	
 //added 11/01/98 Matt Mueller
 #if 0
 	case KEY_CTRLED+KEY_ALTED+KEY_LAPOSTRO:
@@ -1460,7 +1460,7 @@ void HandleGameKey(int key)
 				HUDInitMessage (TXT_GB_MULTIPLAYER);
 			break;
 		}
-		
+	
 		case KEY_ALTED + KEY_M:
 			gameStates.app.bMultiThreaded = !gameStates.app.bMultiThreaded;
 			HUDMessage (0, "multi-threading %s", gameStates.app.bMultiThreaded ? "ON" : "OFF");
@@ -1547,11 +1547,11 @@ void HandleTestKey(int key)
 {
 	switch (key) {
 
-		case KEYDBGGED+KEY_0:	
+		case KEYDBGGED+KEY_0:
 			ShowWeaponStatus();   break;
 
 #ifdef SHOW_EXIT_PATH
-		case KEYDBGGED+KEY_1:	
+		case KEYDBGGED+KEY_1:
 			CreateSpecialPath();  
 			break;
 #endif
@@ -1581,7 +1581,7 @@ void HandleTestKey(int key)
 			exit (0);
 			break;
 
-		case KEYDBGGED+KEY_S:				
+		case KEYDBGGED+KEY_S:			
 			DigiReset(); 
 			break;
 
@@ -1593,20 +1593,20 @@ void HandleTestKey(int key)
 			break;
 
 
-		case KEYDBGGED+KEY_K:	
-			LOCALPLAYER.shields = 1;	
+		case KEYDBGGED+KEY_K:
+			LOCALPLAYER.shields = 1;
 			MultiSendShields ();
-			break;				
+			break;			
 						//	a virtual kill
 		case KEYDBGGED+KEY_SHIFTED + KEY_K:  
 			LOCALPLAYER.shields = -1;	 
 			MultiSendShields ();
 			break;  //	an actual kill
-			
+		
 		case KEYDBGGED+KEY_X: 
 			LOCALPLAYER.lives++; 
 			break; // Extra life cheat key.
-			
+		
 		case KEYDBGGED+KEY_H:
 //				if (!(gameData.app.nGameMode & GM_MULTI) )   {
 				LOCALPLAYER.flags ^= PLAYER_FLAGS_CLOAKED;
@@ -1660,7 +1660,7 @@ void HandleTestKey(int key)
 			break;   //move eye to curseg
 
 
-		case KEYDBGGED+KEY_W:	
+		case KEYDBGGED+KEY_W:
 			DrawWorldFromGame(); 
 			break;
 
@@ -1759,7 +1759,7 @@ void HandleTestKey(int key)
 						break;
 		}
 
-		case KEYDBGGED+KEY_F:	
+		case KEYDBGGED+KEY_F:
 		gameStates.render.frameRate.value = !gameStates.render.frameRate.value; 
 		break;
 
@@ -1879,8 +1879,8 @@ void SpeedtestFrame(void)
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % MAX_SIDES_PER_SEGMENT;
 
 	COMPUTE_SEGMENT_CENTER(&gameData.objs.viewer->position.vPos, &gameData.segs.segments[gameData.speedtest.nSegment]);
-	gameData.objs.viewer->position.vPos.p.x += 0x10;		
-	gameData.objs.viewer->position.vPos.p.y -= 0x10;		
+	gameData.objs.viewer->position.vPos.p.x += 0x10;	
+	gameData.objs.viewer->position.vPos.p.y -= 0x10;	
 	gameData.objs.viewer->position.vPos.p.z += 0x17;
 
 	RelinkObject(OBJ_IDX (gameData.objs.viewer), gameData.speedtest.nSegment);

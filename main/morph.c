@@ -328,16 +328,16 @@ for (i = 0; i < sort_n; i++) {
 			gameData.models.textures [i] = gameData.pig.tex.bitmaps [0] + /*gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [pmP->nFirstTexture+i]]*/gameData.models.textureIndex [i].index;
 			}
 
-#ifdef PIGGY_USE_PAGING			
+#ifdef PIGGY_USE_PAGING		
 		// Make sure the textures for this tObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
-		for (i = 0; i < pmP->nTextures;i++)	
+		for (i = 0; i < pmP->nTextures;i++)
 			PIGGY_PAGE_IN (gameData.models.textureIndex [i], 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in, 
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed)	{
 			gameData.pig.tex.bPageFlushed = 0;
-			for (i=0;i<pmP->nTextures;i++)	
+			for (i=0;i<pmP->nTextures;i++)
 				PIGGY_PAGE_IN (gameData.models.textureIndex [i], 0);
 			}
 			// Make sure that they can all fit in memory.

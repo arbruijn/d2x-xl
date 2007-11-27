@@ -82,10 +82,10 @@ normCache.bInitialized = 1;
 void NormCacheFlush ()
 {
 	int i;
-	
+
 for (i = 0; i < MAX_CACHE_NORMALS; i++)
 	normCache.cache [i].nSegment = -1;
-}	
+}
 
 
 // -------------------------------------------------------------------------------
@@ -98,7 +98,7 @@ if (!normCache.bInitialized)
 	NormCacheInit ();
 
 #ifdef CACHEDBG
-#if TRACE		
+#if TRACE	
 	if (( (++normCache.nCounter % 5000) == 1) && (normCache.nHits+normCache.nMisses > 0))
 		con_printf (0, "NCACHE %d%% missed, H:%d, M:%d\n", (normCache.nMisses*100)/ (normCache.nHits+normCache.nMisses), normCache.nHits, normCache.nMisses);
 #endif
@@ -125,7 +125,7 @@ if (!normCache.bInitialized)
 #endif
 
 	switch (faceFlags)	{
-	case 1:	
+	case 1:
 		UncachedGetSideNormal (&gameData.segs.segments [nSegment], nSide, 0, &normCache.cache [i].normals [0]);
 		break;
 	case 2:
@@ -162,7 +162,7 @@ if (0) {
 void GetSideNormals (tSegment *segP, int nSide, vmsVector * vm1, vmsVector * vm2)
 {
 	int i = FindNormCacheElement (SEG_IDX (segP), nSide, 3);
-	
+
 *vm1 = normCache.cache [i].normals [0];
 *vm2 = normCache.cache [i].normals [1];
 
@@ -351,12 +351,12 @@ return -1;
 int GetNumFaces (tSide *sideP)
 {
 switch (sideP->nType) {
-	case SIDE_IS_QUAD:	
-		return 1;	
+	case SIDE_IS_QUAD:
+		return 1;
 		break;
 	case SIDE_IS_TRI_02:
-	case SIDE_IS_TRI_13:	
-		return 2;	
+	case SIDE_IS_TRI_13:
+		return 2;
 		break;
 	default:
 		Error ("Illegal nType = %i\n", sideP->nType);
@@ -524,7 +524,7 @@ if (gameData.physics.side.bCache &&
 	 (gameData.physics.side.nType == sideP->nType)) {
 	memcpy (vertices, gameData.physics.side.vertices, sizeof (gameData.physics.side.vertices));
 	return gameData.physics.side.nFaces;
-	}	
+	}
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
 switch (sideP->nType) {
 	case SIDE_IS_QUAD:
@@ -1090,12 +1090,12 @@ int CheckSegmentConnections (void)
 						}
 						else
 							errors |= CheckNorms (nSegment, nSide, 0, csegnum, csidenum, 0);
-	
+
 					}
 					else {
-	
+
 						if (vertexList [1] == con_vertex_list [1]) {
-		
+	
 							if (vertexList [4] != con_vertex_list [4] ||
 								 vertexList [0] != con_vertex_list [2] ||
 								 vertexList [2] != con_vertex_list [0] ||
@@ -1118,9 +1118,9 @@ int CheckSegmentConnections (void)
 								errors |= CheckNorms (nSegment, nSide, 0, csegnum, csidenum, 0);
 								errors |= CheckNorms (nSegment, nSide, 1, csegnum, csidenum, 1);
 							}
-	
+
 						} else {
-		
+	
 							if (vertexList [1] != con_vertex_list [4] ||
 								 vertexList [4] != con_vertex_list [1] ||
 								 vertexList [0] != con_vertex_list [5] ||
@@ -1171,7 +1171,7 @@ int TraceSegs (vmsVector *p0, int nOldSeg)
 	int				nSide, bit, check = -1;
 	static int		nTraceDepth = 0;
 	static char		bVisited [MAX_SEGMENTS_D2X];
-	
+
 Assert ((nOldSeg <= gameData.segs.nLastSegment) && (nOldSeg >= 0));
 if (nTraceDepth >= gameData.segs.nSegments) {
 #if TRACE
@@ -1306,7 +1306,7 @@ return -1;		//no tSegment found
 //--repair--
 //--repair-- 		clsd_repair_center (nSegment);
 //--repair-- 		clsd_materialization_center (nSegment);
-//--repair-- 	
+//--repair-- 
 //--repair-- 	}
 //--repair--
 //--repair-- 	//	Set check variables.
@@ -1388,9 +1388,9 @@ fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1,
 
 	//	If > this, will overrun pointSegs buffer
 if (nMaxDepth > MAX_LOC_POINT_SEGS-2) {
-#if TRACE		
+#if TRACE	
 	con_printf (1, "Warning: In FindConnectedDistance, nMaxDepth = %i, limited to %i\n", nMaxDepth, MAX_LOC_POINT_SEGS-2);
-#endif		
+#endif	
 	nMaxDepth = MAX_LOC_POINT_SEGS - 2;
 	}
 if (seg0 == seg1) {
@@ -2032,7 +2032,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 	for (s = gameData.segs.nLastSegment + 1; s < MAX_SEGMENTS; s++)
 		if (gameData.segs.segments [s].nSegment != -1) {
 			if (!said) {
-#if TRACE		
+#if TRACE	
 				con_printf (CONDBG, "Segment %i has invalid nSegment.  Bashing to -1.  Silently bashing all others...", s);
 #endif
 				}
@@ -2040,7 +2040,7 @@ for (s = 0; s <= gameData.segs.nLastSegment; s++)
 			gameData.segs.segments [s].nSegment = -1;
 			}
 	if (said) {
-#if TRACE		
+#if TRACE	
 		con_printf (CONDBG, "%i fixed.\n", said);
 #endif
 		}

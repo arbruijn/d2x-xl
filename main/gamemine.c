@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#define LIGHT_VERSION 2
+#define LIGHT_VERSION 3
 
 #ifdef RCS
 static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
@@ -485,7 +485,7 @@ int load_mine_data (CFILE *loadFile)
 	mine_fileinfo.segment2_sizeof    = sizeof (tSegment2);
 
 	// Read in mine_top_fileinfo to get size of saved fileinfo.
-	
+
 	memset ( &mine_top_fileinfo, 0, sizeof (mine_top_fileinfo) );
 
 	if (CFSeek ( loadFile, mine_start, SEEK_SET ))
@@ -533,7 +533,7 @@ int load_mine_data (CFILE *loadFile)
 	{
 		if (CFSeek ( loadFile, mine_fileinfo.header_offset, SEEK_SET ))
 			Error ( "Error seeking to header_offset in gamemine.c" );
-	
+
 		if (CFRead ( &mine_header, mine_fileinfo.header_size, 1, loadFile )!=1)
 			Error ( "Error reading mine_header in gamemine.c" );
 	}
@@ -552,7 +552,7 @@ int load_mine_data (CFILE *loadFile)
 	{
 		if (CFSeek ( loadFile, mine_fileinfo.editor_offset, SEEK_SET ))
 			Error ( "Error seeking to editor_offset in gamemine.c" );
-	
+
 		if (CFRead ( &mine_editor, mine_fileinfo.editor_size, 1, loadFile )!=1)
 			Error ( "Error reading mine_editor in gamemine.c" );
 	}
@@ -574,29 +574,29 @@ int load_mine_data (CFILE *loadFile)
 	//=============== GENERATE TEXTURE TRANSLATION TABLE ===============
 
 	translate = 0;
-	
+
 	Assert (gameData.pig.tex.nTextures < MAX_TEXTURES);
 
 	{
 		hashtable ht;
-	
+
 		hashtable_init ( &ht, gameData.pig.tex.nTextures );
-	
+
 		// Remove all the file extensions in the textures list
-	
+
 		for (i=0;i<gameData.pig.tex.nTextures;i++)	{
 			temptr = strchr (gameData.pig.tex.pTMapInfo [i].filename, '.');
 			if (temptr) *temptr = '\0';
 			hashtable_insert ( &ht, gameData.pig.tex.pTMapInfo [i].filename, i );
 		}
-	
+
 		// For every texture, search through the texture list
 		// to find a matching name.
 		for (j=0;j<mine_fileinfo.texture_howmany;j++) 	{
 			// Remove this texture name's extension
 			temptr = strchr (old_tmap_list [j], '.');
 			if (temptr) *temptr = '\0';
-	
+
 			tmap_xlate_table [j] = hashtable_search ( &ht, old_tmap_list [j]);
 			if (tmap_xlate_table [j]	< 0 )	{
 				//tmap_xlate_table [j] = 0;
@@ -606,7 +606,7 @@ int load_mine_data (CFILE *loadFile)
 			if (tmap_xlate_table [j] >= 0)
 				tmapTimes_used [tmap_xlate_table [j]]++;
 		}
-	
+
 		{
 			int count = 0;
 			for (i=0; i<MAX_TEXTURES; i++ )
@@ -616,7 +616,7 @@ int load_mine_data (CFILE *loadFile)
 			con_printf (CONDBG, "This mine has %d unique textures in it (~%d KB)\n", count, (count*4096) /1024 );
 #endif
 		}
-	
+
 		hashtable_free ( &ht );
 	}
 
@@ -790,7 +790,7 @@ int load_mine_data (CFILE *loadFile)
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].x = 1;
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].y = 1;
 			gameData.segs.vertices [NEW_SEGMENT_VERTICES+i].z = 1;
-			
+		
 			if (CFRead ( &gameData.segs.vertices [NEW_SEGMENT_VERTICES+i], mine_fileinfo.newseg_verts_sizeof, 1, loadFile )!=1)
 				Error ( "Error reading gameData.segs.vertices [NEW_SEGMENT_VERTICES+i] in gamemine.c" );
 
@@ -799,14 +799,14 @@ int load_mine_data (CFILE *loadFile)
 	}
 
 	#endif
-															
+														
 	//========================= UPDATE VARIABLES ======================
 
 	#ifdef EDITOR
 
 	// Setting to Markedsegp to NULL ignores Curside and Markedside, which
 	// we want to do when reading in an old file.
-	
+
  	Markedside = mine_editor.Markedside;
 	Curside = mine_editor.Curside;
 	for (i=0;i<10;i++)
@@ -1539,7 +1539,7 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 		xDist = VmVecMag (&v);
 		if (xMaxDist < xDist)
 			xMaxDist = xDist;
-		}	
+		}
 	gameData.segs.segRads [1][nSegment] = xMaxDist;
 #endif
 	}
@@ -1549,7 +1549,8 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 
 inline void SetVertVis (short nSegment, short nVertex, ubyte b)
 {
-gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nVertex & 3) << 1));
+if (gameData.segs.bVertVis)
+	gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nVertex & 3) << 1));
 }
 
 //------------------------------------------------------------------------------
@@ -1582,75 +1583,12 @@ return 0;
 }
 
 //------------------------------------------------------------------------------
-
-void ComputeVertexVisibility (int startI)
-{
-	int			i, j, v, nDist, endI;
-	vmsVector	c, d, *vertP;
-	tSegment		*segP;
-	tSide			*sideP;
-
-LogErr ("computing vertex visibility (%d)\n", startI);
-if (startI <= 0)
-	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS);
-if (gameStates.app.bMultiThreaded)
-	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
-else
-	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
-	// every segment can see itself and its neighbours
-for (i = startI, segP = SEGMENTS + i; i < endI; i++, segP++) {
-	for (v = 0, vertP = gameData.segs.vertices; v < gameData.segs.nVertices; v++, vertP++) {
-		if (VERTVIS (i, v) > 0)
-			continue;
-		// if v is a vertex of segment i, i is visible from v
-		if (IsSegVert (i, v)) {
-			SetVertVis (i, v, 3);
-			continue;
-			}
-#if 0
-		// mark segment i as visible from v if v is a segment vertex of one if 's children, too
-		// not 100% precise, but speeds up things
-		for (j = 6, pc = gameData.segs.segments [i].children; j; j--, pc++)
-			if (IsSegVert (*pc, v))
-				break;
-		if (j) {
-			SetVertVis (i, v, 3);
-			continue;
-			}
-#endif
-		SetVertVis (i, v, 1);
-#if CALC_SEGRADS
-		VmVecSub (&d, gameData.segs.segCenters [0] + i, vertP);
-		if (VmVecMag (&d) > MAX_LIGHT_RANGE + gameData.segs.segRads [1][i])
-			continue;
-#endif
-		for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
-			COMPUTE_SIDE_CENTER_I (&c, i, j);
-			VmVecSub (&d, &c, vertP);
-			nDist = VmVecNormalize (&d);
-			if (nDist > MAX_LIGHT_RANGE)
-				continue;
-			if ((VmVecDot (sideP->normals, &d) < -F1_0 / 6) || 
-				 ((sideP->nType != SIDE_IS_QUAD) && (VmVecDot (sideP->normals + 1, &d) < -F1_0 / 6)))
-				continue;
-			VmVecInc (&c, sideP->normals);
-			if (CanSeePoint (NULL, &c, vertP, i)) {
-				SetVertVis (i, v, 3);
-				break;
-				}
-			}
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
 // Check segment to segment visibility by calling the renderer's visibility culling routine
 // Do this for each side of the current segment, using the side normal(s) as forward vector
 // of the viewer
 
 void ComputeSingleSegmentVisibility (short nStartSeg)
 {
-	tSegment		*segP;
 	tSide			*sideP;
 	short			*vertP;
 	short			nSegment, nSide, i, j;
@@ -1674,7 +1612,7 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	G3StartFrame (0, 0);
 	RenderStartFrame ();
 	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom);
-	BuildRenderSegList (nStartSeg, 0);		
+	BuildRenderSegList (nStartSeg, 0);	
 	G3EndFrame ();
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (((nSegment = gameData.render.mine.nSegRenderList [i]) >= 0) && !SEGVIS (nStartSeg, nSegment)) {
@@ -1691,15 +1629,17 @@ gameStates.ogl.bUseTransform = 0;
 
 void ComputeSegmentVisibility (int startI)
 {
-	int			c, i, j, k, v, endI;
-	short			*psv;
-	tSegment		*segP;
+	int			i, j, endI;
 
 LogErr ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
+	if (!(gameData.segs.bVertVis = (ubyte *) D2_ALLOC (sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS)))
+		return;
 	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS);
 	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
 	}
+if (!gameData.segs.bVertVis)
+	return;
 if (gameStates.app.bMultiThreaded) {
 	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 	}
@@ -1726,7 +1666,7 @@ for (i = startI; i < endI; i++) {
 			continue;
 		psv = segP->verts;
 		for (k = 0; k < 8; k++) {
-			v = psv [k];	
+			v = psv [k];
 			if (VERTVIS (i, v) > 0) {
 				while (!SetSegVis (i, j))
 					;
@@ -1832,35 +1772,22 @@ if (loadOp == 0) {
 		}
 	}
 if (loadOp == 1) {
-#if 1
-	loadIdx = 0;
-	loadOp = 2;
-#else
-	ComputeVertexVisibility (loadIdx);
+	ComputeNearestSegmentLights (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nSegments) {
 		loadIdx = 0;
 		loadOp = 2;
 		}
-#endif
 	}
-if (loadOp == 2) {
-	ComputeNearestSegmentLights (loadIdx);
-	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nSegments) {
-		loadIdx = 0;
-		loadOp = 3;
-		}
-	}
-else if (loadOp == 3) {
+else if (loadOp == 2) {
 	ComputeNearestVertexLights (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segs.nVertices) {
 		loadIdx = 0;
-		loadOp = 4;
+		loadOp = 3;
 		}
 	}
-if (loadOp == 4) {
+if (loadOp == 3) {
 	*key = -2;
 	GrPaletteStepLoad (NULL);
 	return;
@@ -2013,28 +1940,6 @@ return bOk;
 
 static tThreadInfo	ti [2];
 
-int _CDECL_ SegVisThread (void *pThreadId)
-{
-	int		nId = *((int *) pThreadId);
-
-ComputeSegmentVisibility (nId ? gameData.segs.nSegments / 2 : 0);
-SDL_SemPost (ti [nId].done);
-ti [nId].bDone = 1;
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-int _CDECL_ VertVisThread (void *pThreadId)
-{
-	int		nId = *((int *) pThreadId);
-
-ComputeVertexVisibility (nId ? gameData.segs.nSegments / 2 : 0);
-SDL_SemPost (ti [nId].done);
-ti [nId].bDone = 1;
-return 0;
-}
-
 //------------------------------------------------------------------------------
 
 int _CDECL_ SegLightsThread (void *pThreadId)
@@ -2107,12 +2012,6 @@ if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	LogErr ("Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
-	LogErr ("Starting vertex visibility calculation threads\n");
-	StartOglLightThreads (VertVisThread);
-#if 0
-	LogErr ("Starting segment visibility calculation threads\n");
-	StartOglLightThreads (SegVisThread);
-#endif
 	LogErr ("Starting segment light calculation threads\n");
 	StartOglLightThreads (SegLightsThread);
 	LogErr ("Starting vertex light calculation threads\n");
@@ -2130,10 +2029,6 @@ else {
 	else {
 		LogErr ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
-#if 0
-		LogErr ("Computing vertex visibility\n");
-		ComputeVertexVisibility (-1);
-#endif
 		LogErr ("Computing segment lights\n");
 		ComputeNearestSegmentLights (-1);
 		LogErr ("Computing vertex lights\n");
@@ -2141,6 +2036,7 @@ else {
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
+D2_FREE (gameData.segs.bVertVis);
 LogErr ("Saving precompiled light data\n");
 SavePrecompiledLights (nLevel);
 }

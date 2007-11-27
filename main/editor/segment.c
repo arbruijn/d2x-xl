@@ -387,7 +387,7 @@ int ToggleBottom(void)
 	UpdateFlags = UF_WORLD_CHANGED;
 	return 0;
 }
-		
+	
 // ---------------------------------------------------------------------------------------------
 //           ---------- Segment interrogation functions ----------
 // ----------------------------------------------------------------------------
@@ -564,7 +564,7 @@ int med_create_duplicate_segment(tSegment *sp)
 
 	nSegment = get_free_segment_number();
 
-	gameData.segs.segments[nSegment] = *sp;	
+	gameData.segs.segments[nSegment] = *sp;
 
 	return nSegment;
 }
@@ -923,7 +923,7 @@ void compress_vertices(void)
 				// Ok, hole is the index of a hole, vert is the index of a vertex which follows it.
 				// Copy vert into hole, update pointers to it.
 				gameData.segs.vertices[hole] = gameData.segs.vertices[vert];
-				
+			
 				change_vertex_occurrences(hole, vert);
 
 				vert--;
@@ -1128,7 +1128,7 @@ int med_attach_segment_rotated(tSegment *destseg, tSegment *newseg, int destside
 	// clear all connections
 	for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++) {
 		nsp->children[tSide] = -1;
-		nsp->sides[tSide].nWall = NO_WALL;	
+		nsp->sides[tSide].nWall = NO_WALL;
 	}
 
 	// Form the connection
@@ -1376,7 +1376,7 @@ int med_delete_segment(tSegment *sp)
 	// If deleted tSegment = marked tSegment, then say there is no marked tSegment
 	if (sp == Markedsegp)
 		Markedsegp = 0;
-	
+
 	//	If deleted tSegment = a Group tSegment ptr, then wipe it out.
 	for (s=0;s<num_groups;s++) 
 		if (sp == Groupsegp[s]) 
@@ -1472,7 +1472,7 @@ int med_rotate_segment(tSegment *seg, vmsMatrix *rotmat)
 	destside = 0;
 	while ((destseg->children[destside] != SEG_IDX (seg)) && (destside < MAX_SIDES_PER_SEGMENT))
 		destside++;
-		
+	
 	// Before deleting the tSegment, copy its texture maps to New_segment
 	copy_tmaps_to_segment(&New_segment,seg);
 
@@ -1963,8 +1963,8 @@ int create_new_mine(void)
 	Markedsegp = 0;		// Say there is no marked tSegment.
 	Markedside = WBACK;	//	Shouldn't matter since Markedsegp == 0, but just in case...
 	for (s=0;s<MAX_GROUPS+1;s++) {
-		GroupList[s].num_segments = 0;		
-		GroupList[s].num_vertices = 0;		
+		GroupList[s].num_segments = 0;	
+		GroupList[s].num_vertices = 0;	
 		Groupsegp[s] = NULL;
 		Groupside[s] = 0;
 	}
@@ -2202,7 +2202,7 @@ int med_find_closest_threshold_segment_side(tSegment *sp, int tSide, tSegment **
 						closest_segDist = currentDist;
 					}
 				}
-			}	
+			}
 
 	if (closest_segDist < threshold)
 		return 1;
@@ -2225,7 +2225,7 @@ void med_check_all_vertices()
 		if (sp->nSegment != -1)
 			for (v=0; v<MAX_VERTICES_PER_SEGMENT; v++)
 				Assert(sp->verts[v] <= gameData.segs.nLastVertex);
-					
+				
 	}
 
 }

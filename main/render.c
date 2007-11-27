@@ -1565,7 +1565,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		gameData.render.mine.bProcessed [sCnt] = gameData.render.mine.nProcessed;
 		nSegment = gameData.render.mine.nSegRenderList [sCnt];
 		curPortal = renderWindows + sCnt;
-		if (nSegment == -0x7fffffff) 
+		if (nSegment == -1) 
 			continue;
 #ifdef _DEBUG
 		if (nSegment == nDbgSeg)

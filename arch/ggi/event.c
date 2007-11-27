@@ -56,9 +56,9 @@ void event_poll()
 	tv.tv_usec = 0;
 
 	giiEventPoll(inputs, emAll, &tv);
-	
+
 	n = giiEventsQueued(inputs, emAll);
-	
+
 	while (n-- > 0) 
 	{
 		giiEventRead(inputs, &event, emAll);

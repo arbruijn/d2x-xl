@@ -179,64 +179,64 @@ if (ShowView_textTimer > 0) {
 
 	viewer_id = "";
 	switch (gameData.objs.viewer->nType) {
-		case OBJ_FIREBALL:	
+		case OBJ_FIREBALL:
 			viewer_name = "Fireball"; 
 			break;
-		case OBJ_ROBOT:		
+		case OBJ_ROBOT:	
 			viewer_name = "Robot";
 #ifdef EDITOR
 			viewer_id = gameData.bots.names [gameData.objs.viewer->id];
 #endif
 			break;
-		case OBJ_HOSTAGE:		
+		case OBJ_HOSTAGE:	
 			viewer_name = "Hostage"; 
 			break;
-		case OBJ_PLAYER:		
+		case OBJ_PLAYER:	
 			viewer_name = "Player"; 
 			break;
-		case OBJ_WEAPON:		
+		case OBJ_WEAPON:	
 			viewer_name = "Weapon"; 
 			break;
-		case OBJ_CAMERA:		
+		case OBJ_CAMERA:	
 			viewer_name = "Camera"; 
 			break;
-		case OBJ_POWERUP:		
+		case OBJ_POWERUP:	
 			viewer_name = "Powerup";
 #ifdef EDITOR
 			viewer_id = Powerup_names [gameData.objs.viewer->id];
 #endif
 			break;
-		case OBJ_DEBRIS:		
+		case OBJ_DEBRIS:	
 			viewer_name = "Debris"; 
 			break;
-		case OBJ_CNTRLCEN:	
+		case OBJ_CNTRLCEN:
 			viewer_name = "Reactor"; 
 			break;
-		default:					
+		default:				
 			viewer_name = "Unknown"; 
 			break;
 		}
 
 	switch (gameData.objs.viewer->controlType) {
-		case CT_NONE:			
+		case CT_NONE:		
 			control_name = "Stopped"; 
 			break;
-		case CT_AI:				
+		case CT_AI:			
 			control_name = "AI"; 
 			break;
-		case CT_FLYING:		
+		case CT_FLYING:	
 			control_name = "Flying"; 
 			break;
-		case CT_SLEW:			
+		case CT_SLEW:		
 			control_name = "Slew"; 
 			break;
-		case CT_FLYTHROUGH:	
+		case CT_FLYTHROUGH:
 			control_name = "Flythrough"; 
 			break;
-		case CT_MORPH:			
+		case CT_MORPH:		
 			control_name = "Morphing"; 
 			break;
-		default:					
+		default:				
 			control_name = "Unknown"; 
 			break;
 		}
@@ -371,7 +371,7 @@ extern int gr_bitblt_double;
 void ExpandRow (ubyte * dest, ubyte * src, int num_src_pixels)
 {
 	int i;
-	
+
 for (i = 0; i < num_src_pixels; i++) {
 	*dest++ = *src;
 	*dest++ = *src++;
@@ -390,7 +390,7 @@ switch (flags & 3) {
 		Assert (bmp->bmProps.rowSize == bmp->bmProps.w*2);
 		dptr = &bmp->bmTexBuf [(bmp->bmProps.h-1)*bmp->bmProps.rowSize];
 		for (i=bmp->bmProps.h-1; i>=0; i--)	{
-			ExpandRow (dptr, dptr, bmp->bmProps.w);	
+			ExpandRow (dptr, dptr, bmp->bmProps.w);
 			dptr -= bmp->bmProps.rowSize;
 			}
 		bmp->bmProps.w *= 2;
@@ -400,9 +400,9 @@ switch (flags & 3) {
 		dptr = &bmp->bmTexBuf [(2* (bmp->bmProps.h-1)+1)*bmp->bmProps.rowSize];
 		sptr = &bmp->bmTexBuf [(bmp->bmProps.h-1)*bmp->bmProps.rowSize];
 		for (i=bmp->bmProps.h-1; i>=0; i--)	{
-			memcpy (dptr, sptr, bmp->bmProps.w);	
+			memcpy (dptr, sptr, bmp->bmProps.w);
 			dptr -= bmp->bmProps.rowSize;
-			memcpy (dptr, sptr, bmp->bmProps.w);	
+			memcpy (dptr, sptr, bmp->bmProps.w);
 			dptr -= bmp->bmProps.rowSize;
 			sptr -= bmp->bmProps.rowSize;
 			}
@@ -414,9 +414,9 @@ switch (flags & 3) {
 		dptr = &bmp->bmTexBuf [(2* (bmp->bmProps.h-1)+1)*bmp->bmProps.rowSize];
 		sptr = &bmp->bmTexBuf [(bmp->bmProps.h-1)*bmp->bmProps.rowSize];
 		for (i=bmp->bmProps.h-1; i>=0; i--)	{
-			ExpandRow (dptr, sptr, bmp->bmProps.w);	
+			ExpandRow (dptr, sptr, bmp->bmProps.w);
 			dptr -= bmp->bmProps.rowSize;
-			ExpandRow (dptr, sptr, bmp->bmProps.w);	
+			ExpandRow (dptr, sptr, bmp->bmProps.w);
 			dptr -= bmp->bmProps.rowSize;
 			sptr -= bmp->bmProps.rowSize;
 			}
@@ -449,11 +449,11 @@ void game_render_frame_stereo ()
 	sh = dh = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h;
 
 	if (gameStates.render.vr.nLowRes & 1)	{
-		sh /= 2;				
+		sh /= 2;			
 		grdCurScreen->scAspect *= 2;  //Muck with aspect ratio	                        
 	}
 	if (gameStates.render.vr.nLowRes & 2)	{
-		sw /= 2;				
+		sw /= 2;			
 		grdCurScreen->scAspect /= 2;  //Muck with aspect ratio	                        
 	}
 
@@ -786,11 +786,11 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
-				gameStates.render.nRenderingType=3+ (w<<4);				
+				gameStates.render.nRenderingType=3+ (w<<4);			
 				DoCockpitWindowView (w, gameData.objs.console, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show normal rear view
-				gameStates.render.nRenderingType=3+ (w<<4);				
+				gameStates.render.nRenderingType=3+ (w<<4);			
 				DoCockpitWindowView (w, gameData.objs.console, 1, WBU_REAR, "REAR");
 				}
 			break;
@@ -810,7 +810,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 
 		case CV_COOP: {
 			int nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
-	      gameStates.render.nRenderingType = 255; // don't handle coop stuff			
+	      gameStates.render.nRenderingType = 255; // don't handle coop stuff		
 			if ((nPlayer != -1) && 
 				 gameData.multiplayer.players [nPlayer].connected && 
 				 (IsCoopGame || (IsTeamGame && (GetTeam (nPlayer) == GetTeam (gameData.multiplayer.nLocalPlayer)))))
@@ -903,7 +903,7 @@ if (objP &&
 	HUDRenderMessageFrame ();
 	bNoDrawHUD = 1;
 	}
-else {	
+else {
 	if (gameStates.render.cockpit.bBigWindowSwitch) {
 		gameStates.render.cockpit.bRedraw = 1;
 		gameStates.render.cockpit.nMode = CM_FULL_COCKPIT;
@@ -922,7 +922,7 @@ if (!bNoDrawHUD)
 if (gameStates.render.cockpit.nMode != CM_FULL_COCKPIT)
 	ShowExtraViews ();		//missile view, buddy bot, etc.
 if (!bGameCockpitCopyCode)	{
-	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{	
+	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING)	{
 		gameStates.render.vr.nCurrentPage = !gameStates.render.vr.nCurrentPage;
 		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 		GrBmUBitBlt (gameStates.render.vr.buffers.subRender [0].cv_w, 
@@ -977,7 +977,7 @@ switch (gameStates.render.cockpit.nMode) {
 			return;
 		nNewMode = (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT;
 		break;
-		
+	
 	case CM_FULL_SCREEN:
 		if (gameStates.render.bRearView)
 			return;
@@ -1185,7 +1185,7 @@ void shrink_window ()
 
 		if (gameData.render.window.h < WINDOW_MIN_H)
 			gameData.render.window.h = WINDOW_MIN_H;
-			
+		
 		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
 		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 
@@ -1232,7 +1232,7 @@ if ((gameStates.render.cockpit.nMode != gameStates.render.cockpit.nLastDrawn [ga
 	return;
 gameStates.render.cockpit.nLastDrawn [gameStates.render.vr.nCurrentPage] = gameStates.render.cockpit.nMode;
 //Redraw the on-screen cockpit bitmaps
-if (gameStates.render.vr.nRenderMode != VR_NONE)	
+if (gameStates.render.vr.nRenderMode != VR_NONE)
 	return;
 switch (gameStates.render.cockpit.nMode)	{
 	case CM_FULL_COCKPIT:
@@ -1332,7 +1332,7 @@ bkg bg = {0, 0, 0, 0, NULL, NULL, NULL, NULL, 1, 1};
 
 //show a message in a nice little box
 void ShowBoxedMessage (char *msg)
-{	
+{
 	int w, h, aw;
 	int x, y;
 	//ubyte save_pal [256*3];

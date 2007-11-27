@@ -424,8 +424,8 @@ int	GotoGameCommon(int mode) {
 //@@
 //@@	gameData.multiplayer.playerInit.position.vPos = Player->position.vPos;
 //@@	gameData.multiplayer.playerInit.position.mOrient = Player->position.mOrient;
-//@@	gameData.multiplayer.playerInit.nSegment = Player->nSegment;	
-	
+//@@	gameData.multiplayer.playerInit.nSegment = Player->nSegment;
+
 // -- must always save gamesave.sav because the restore-gameData.objs.objects code relies on it
 // -- that code could be made smarter and use the original file, if appropriate.
 //	if (mine_changed) 
@@ -461,7 +461,7 @@ void ReadLispMacro( FILE * file, char * buffer )
 //	int pcount = 0;
 //	char text[100];
 //	int i=0;
-	
+
 	fscanf( file, " { %s } ", buffer );
 
 /*
@@ -536,11 +536,11 @@ void init_editor()
 	medkey_init();
 
 	editor_font = GrInitFont( "pc8x16.fnt" );
-	
+
 	menubar_init( "MED.MNU" );
 
 	canv_offscreen = GrCreateCanvas(LVIEW_W,LVIEW_H);
-	
+
 	Draw_all_segments = 1;						// Say draw all segments, not just connected ones
 
 	init_autosave();
@@ -651,7 +651,7 @@ void move_player_2_segment_and_rotate(tSegment *seg,int tSide)
 //	VmVector2Matrix(&gameData.objs.console->position.mOrient,&vp,NULL,NULL);
 
 	RelinkObject( OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(seg) );
-	
+
 }
 
 int SetPlayerFromCursegAndRotate()
@@ -864,19 +864,19 @@ int editor_screen_open = 0;
 //setup the editors windows, canvases, gadgets, etc.
 //called whenever the editor screen is selected
 void init_editor_screen()
-{	
+{
 //	grsBitmap * bmp;
 
 	if (editor_screen_open) return;
 
 	grdCurScreen->scCanvas.cvFont = editor_font;
-	
+
 	//create canvas for game on the editor screen
 	initializing = 1;
 	GrSetCurrentCanvas(Canv_editor);
 	Canv_editor->cvFont = editor_font;
 	GrInitSubCanvas(Canv_editor_game,Canv_editor,GAMEVIEW_X,GAMEVIEW_Y,GAMEVIEW_W,GAMEVIEW_H);
-	
+
 	//Editor renders into full (320x200) game screen 
 
 	init_info = 1;
@@ -1014,9 +1014,9 @@ void med_show_warning(char *s)
 int SafetyCheck()
 {
 	int x;
-			
+		
 	if (mine_changed) {
-		StopTime();				
+		StopTime();			
 		x = ExecMessageBox( "Warning!", 2, "Cancel", "OK", "You are about to lose work." );
 		if (x<1) {
 			StartTime();
@@ -1033,7 +1033,7 @@ void close_editor() {
 	close_autosave();
 
 	menubar_close();
-	
+
 	GrCloseFont(editor_font);
 
 	GrFreeCanvas(canv_offscreen); canv_offscreen = NULL;
@@ -1086,7 +1086,7 @@ void gamestate_restore_check() {
 
 	if (gamestate_not_restored) {
 		sprintf( Message, "Do you wish to restore game state?\n");
-	
+
 		if (MessageBox( -2, -2, 2, Message, "Yes", "No" )==1) {
 
 			// Save current position
@@ -1104,7 +1104,7 @@ void gamestate_restore_check() {
 			}
 
 			gamestate_not_restored = 0;
-			UpdateFlags |= UF_WORLD_CHANGED;	
+			UpdateFlags |= UF_WORLD_CHANGED;
 			}
 		else
 			gamestate_not_restored = 1;
@@ -1176,7 +1176,7 @@ void editor(void)
 
 	w = GameViewBox->canvas->cvBitmap.bmProps.w;
 	h = GameViewBox->canvas->cvBitmap.bmProps.h;
-	
+
 	savedbitmap = GrCreateBitmap(w, h );
 
 	GrBmUBitBlt( w, h, 0, 0, 0, 0, &GameViewBox->canvas->cvBitmap, savedbitmap );
@@ -1186,7 +1186,7 @@ void editor(void)
 	//GrSetColor( CBLACK );
 	//gr_deaccent_canvas();
 	//gr_grey_canvas();
-	
+
 	ui_mouse_show();
 
 	GrSetCurFont(editor_font);
@@ -1246,7 +1246,7 @@ void editor(void)
 		TimedAutosave(mine_filename);
 		set_editorTime_of_day();
 		GrSetCurrentCanvas( GameViewBox->canvas );
-		
+	
 		// Remove keys used for slew
 		switch(last_keypress)
 		{
@@ -1299,7 +1299,7 @@ void editor(void)
 		case KEY_F1:
 			render_3d_in_big_window = !render_3d_in_big_window;
 			UpdateFlags |= UF_ALL;
-			break;			
+			break;		
 		default:
 			{
 			char kdesc[100];
@@ -1384,8 +1384,8 @@ void editor(void)
 			else
 				add_found_segments_to_selected_list();
 
-  			Found_seg_index = 0;	
-		
+  			Found_seg_index = 0;
+	
 			if (N_found_segs > 0) {
 				sort_seg_list(N_found_segs,Found_segs,&gameData.objs.console->position.vPos);
 				Cursegp = &gameData.segs.segments[Found_segs[0]];
@@ -1409,7 +1409,7 @@ void editor(void)
 			ui_mouse_show();
 
 		}
-		
+	
 		// Set current tSegment and tSide by clicking on a polygon in game window.
 		//	If ctrl pressed, also assign current texture map to that tSide.
 		//if (GameViewBox->mouse_onme && (GameViewBox->b1_done_dragging || GameViewBox->b1_clicked)) {
@@ -1427,7 +1427,7 @@ void editor(void)
 				xcrd = GameViewBox->b1_drag_x1;
 				ycrd = GameViewBox->b1_drag_y1;
 			}
-	
+
 			//Int3();
 
 			if (FindSegSideFace(xcrd,ycrd,&seg,&tSide,&face,&poly)) {

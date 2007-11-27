@@ -167,7 +167,7 @@ key_props key_properties[256] = {
 { "",       255,    255,    -1                 },
 { "F11",    255,    255,    SDLK_F11           },
 { "F12",    255,    255,    SDLK_F12           },
-{ "",       255,    255,    -1                 },	
+{ "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
@@ -381,7 +381,7 @@ void key_handler(SDL_KeyboardEvent *event)
 			state = keyState;
 		else
 			state = key->lastState;
-			
+		
 		if ( key->lastState == state )	{
 			if (state) {
 				key->counter++;
@@ -413,7 +413,7 @@ void key_handler(SDL_KeyboardEvent *event)
 				if (keyd_pressed [KEY_LCTRL] || keyd_pressed [KEY_RCTRL])
 					key->flags |= (ubyte) (KEY_CTRLED / 256);
 //				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
-			} else {	
+			} else {
 				keyd_pressed [keycode] = 0;
 				keyd_last_released = keycode;
 				key->upcount += key->state;
@@ -434,7 +434,7 @@ void key_handler(SDL_KeyboardEvent *event)
 #ifdef _DEBUG
       if ( keyd_pressed[KEY_DELETE] )
 				keycode |= KEYDBGGED;
-#endif				
+#endif			
 			temp = key_data.keytail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{

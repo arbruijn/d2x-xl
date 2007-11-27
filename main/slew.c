@@ -53,7 +53,7 @@ int slew_stop(void);
 void slew_init(tObject *objP)
 {
 	slewObjP = objP;
-	
+
 	slewObjP->controlType = CT_SLEW;
 	slewObjP->movementType = MT_NONE;
 
@@ -129,13 +129,13 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 	if (check_joy && joy_present && (gameStates.app.nFunctionMode == FMODE_EDITOR) )	{
 		JoyGetPos(&joy_x,&joy_y);
 		btns=JoyGetBtns();
-	
+
 		joyx_moved = (abs(joy_x - old_joy_x)>JOY_NULL);
 		joyy_moved = (abs(joy_y - old_joy_y)>JOY_NULL);
-	
+
 		if (abs(joy_x) < JOY_NULL) joy_x = 0;
 		if (abs(joy_y) < JOY_NULL) joy_y = 0;
-	
+
 		if (btns) {
 			if (!rotang.p) 
 				rotang.p = (fixang) FixMul (-joy_y * 512,gameData.time.xFrame);
@@ -146,7 +146,7 @@ int do_slew_movement(tObject *objP, int check_keys, int check_joy )
 			}
 		if (!rotang.h) 
 			rotang.h = (fixang) FixMul(joy_x * 512,gameData.time.xFrame);
-	
+
 		if (joyx_moved) old_joy_x = joy_x;
 		if (joyy_moved) old_joy_y = joy_y;
 	}

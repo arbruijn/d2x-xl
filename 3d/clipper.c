@@ -87,7 +87,7 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 
 	psx_ratio = FixDiv( kn, kd );
 
-	
+
 // PSX_HACK!!!!
 //	tmp->p3_x = on_pnt->p3_x + FixMulDiv(off_pnt->p3_x-on_pnt->p3_x,kn,kd);
 //	tmp->p3_y = on_pnt->p3_y + FixMulDiv(off_pnt->p3_y-on_pnt->p3_y,kn,kd);
@@ -126,7 +126,7 @@ g3sPoint *clip_edge(int planeFlag,g3sPoint *on_pnt,g3sPoint *off_pnt)
 
 	G3EncodePoint(tmp);
 
-	return tmp;	
+	return tmp;
 }
 
 //clips a line to the viewing pyramid.

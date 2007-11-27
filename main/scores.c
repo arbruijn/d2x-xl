@@ -133,7 +133,7 @@ void scores_read ()
 			Scores.stats[i].score = (10-i)*1000;
 		return;
 	}
-		
+	
 	fsize = CFLength (fp,0);
 
 	if (fsize != sizeof (all_scores))	{
@@ -207,12 +207,12 @@ void scores_fill_struct (stats_info * stats)
 		strcpy (stats->name, LOCALPLAYER.callsign);
 		stats->score = LOCALPLAYER.score;
 		stats->endingLevel = LOCALPLAYER.level;
-		if (LOCALPLAYER.numRobotsTotal > 0)	
+		if (LOCALPLAYER.numRobotsTotal > 0)
 			stats->kill_ratio = (LOCALPLAYER.numKillsTotal*100)/LOCALPLAYER.numRobotsTotal;
 		else
 			stats->kill_ratio = 0;
 
-		if (LOCALPLAYER.hostagesTotal > 0)	
+		if (LOCALPLAYER.hostagesTotal > 0)
 			stats->hostage_ratio = (LOCALPLAYER.hostages_rescuedTotal*100)/LOCALPLAYER.hostagesTotal;
 		else
 			stats->hostage_ratio = 0;
@@ -240,7 +240,7 @@ void MaybeAddPlayerScore (int abortFlag)
 		return;
   
 	scores_read ();
-	
+
 	position = MAX_HIGH_SCORES;
 	for (i=0; i<MAX_HIGH_SCORES; i++)	{
 		if (LOCALPLAYER.score > Scores.stats[i].score)	{
@@ -248,7 +248,7 @@ void MaybeAddPlayerScore (int abortFlag)
 			break;
 		}
 	}
-	
+
 	if (position == MAX_HIGH_SCORES) {
 		if (abortFlag)
 			return;
@@ -271,14 +271,14 @@ void MaybeAddPlayerScore (int abortFlag)
 		} else {
 			ExecMessageBox (TXT_HIGH_SCORE, NULL, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
 		}
-	
+
 		// move everyone down...
 		for (i=MAX_HIGH_SCORES-1; i>position; i--)	{
 			Scores.stats[i] = Scores.stats[i-1];
 		}
 
 		scores_fill_struct (&Scores.stats[position]);
-	
+
 		scores_write ();
 
 	}
@@ -368,7 +368,7 @@ void ScoresView (int citem)
 	int k, bRedraw = 0;
 	sbyte fades[64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 	bkg bg;
-	
+
 	memset (&bg, 0, sizeof (bg));
 
 ReshowScores:
@@ -379,7 +379,7 @@ ReshowScores:
 	WINDOS (	DDGrSetCurrentCanvas (NULL),
 				GrSetCurrentCanvas (NULL)
 	);
-	
+
 	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
 	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 	if (xOffs < 0)
@@ -408,11 +408,11 @@ ReshowScores:
 		//	GrString (202, 46, "Kills");
 		//	GrString (234, 46, "Rescues");
 			GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME, NULL);
-			if (citem < 0)	
+			if (citem < 0)
 				GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
 			GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
 			//GrPrintF (NULL, 0x8000, yOffs + LHY (31), "%c%s%c  - %s", 34, Scores.cool_saying, 34, Scores.stats[0].name);
-		WIN (DDGRUNLOCK (dd_grd_curcanv));	
+		WIN (DDGRUNLOCK (dd_grd_curcanv));
 			for (i = 0; i < MAX_HIGH_SCORES; i++) {
 				//@@if (i==0)	{
 				//@@	GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
@@ -431,7 +431,7 @@ ReshowScores:
 			bRedraw = 1;
 			}
 		if (citem > -1)	{
-	
+
 			t1	= TimerGetFixedSeconds ();
 			//if (t1 - t0 >= F1_0/128) 
 			{
@@ -449,9 +449,9 @@ ReshowScores:
 			GrUpdate (0);
 		}
 
-		for (i=0; i<4; i++)	
+		for (i=0; i<4; i++)
 			if (JoyGetButtonDownCnt (i)>0) done=1;
-		for (i=0; i<3; i++)	
+		for (i=0; i<3; i++)
 			if (MouseButtonDownCount (i)>0) done=1;
 
 		//see if redbook song needs to be restarted
@@ -459,7 +459,7 @@ ReshowScores:
 
 		k = KeyInKey ();
 		switch (k)	{
-		case KEY_CTRLED+KEY_R:		
+		case KEY_CTRLED+KEY_R:	
 			if (citem < 0)		{
 				// Reset scores...
 				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
@@ -471,7 +471,7 @@ ReshowScores:
 			break;
 		case KEY_BACKSP:				Int3 (); k = 0; break;
 		case KEY_PRINT_SCREEN:		SaveScreenShot (NULL, 0); k = 0; break;
-			
+		
 		case KEY_ENTER:
 		case KEY_SPACEBAR:
 		case KEY_ESC:
@@ -489,7 +489,7 @@ ReshowScores:
 
 	GameFlushInputs ();
 	NMRemoveBackground (&bg);
-	
+
 }
 
 //------------------------------------------------------------------------------

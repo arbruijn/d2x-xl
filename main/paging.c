@@ -188,7 +188,7 @@ void PagingTouchObject (tObject *objP)
 	int v;
 
 switch (objP->renderType) {
-	case RT_NONE:	
+	case RT_NONE:
 		break;		//doesn't render, like the tPlayer
 
 	case RT_POLYOBJ:
@@ -206,7 +206,7 @@ switch (objP->renderType) {
 			objP->rType.vClipInfo.nClipIndex = -1;
 		break;
 
-	case RT_MORPH:	
+	case RT_MORPH:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
 	case RT_WEAPON_VCLIP: 
@@ -220,8 +220,8 @@ switch (objP->renderType) {
 		break;
  	}
 
-switch (objP->nType) {	
-	case OBJ_PLAYER:	
+switch (objP->nType) {
+	case OBJ_PLAYER:
 		v = GetExplosionVClip (objP, 0);
 		if (v > -1)
 			PagingTouchVClip (gameData.eff.vClips [0] + v, 0);
@@ -247,7 +247,7 @@ void PagingTouchSide (tSegment * segP, short nSide)
 
 if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
 	return;
-	
+
 tmap1 = segP->sides [nSide].nBaseTex;
 PagingTouchWallEffects (tmap1);
 tmap2 = segP->sides [nSide].nOvlTex;
@@ -319,7 +319,7 @@ void PagingTouchSegment (tSegment * segP)
 
 if (SEG_IDX (segP) == 150)
 	segP = segP;
-if (seg2p->special == SEGMENT_IS_ROBOTMAKER)	
+if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
 	PagingTouchRobotMaker (segP);
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 
 	PagingTouchSide (segP, nSide);
@@ -368,7 +368,7 @@ void PagingTouchPowerups (void)
 	int	s;
 
 for (s = 0; s < gameData.objs.pwrUp.nTypes; s++)
-	if (gameData.objs.pwrUp.info [s].nClipIndex > -1)	
+	if (gameData.objs.pwrUp.info [s].nClipIndex > -1)
 		PagingTouchVClip (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [s].nClipIndex], 0);
 }
 
@@ -398,17 +398,17 @@ for (s = 0; s < MAX_GAUGE_BMS; s++)
 void PagingTouchAllSub ()
 {
 	int 			bBlackScreen;
-	
+
 	StopTime ();
 	bBlackScreen = gameStates.render.bPaletteFadedOut;
 	if (gameStates.render.bPaletteFadedOut)	{
 		GrClearCanvas (BLACK_RGBA);
 		GrPaletteStepLoad (NULL);
 	}
-	
+
 //	ShowBoxedMessage (TXT_LOADING);
 
-#if TRACE				
+#if TRACE			
 	con_printf (CON_VERBOSE, "Loading all textures in mine...");
 #endif
 	PagingTouchSegments ();
@@ -513,7 +513,7 @@ void PagingTouchAllSub ()
 	}
 #endif
 
-#if TRACE				
+#if TRACE			
 	con_printf (CON_VERBOSE, "... loading all textures in mine done\n");
 #endif
 //@@	ClearBoxedMessage ();
@@ -562,7 +562,7 @@ else if (nTouchWall < gameData.walls.nWalls) {
 	}
 else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)
-		if (gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex > -1)	
+		if (gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex > -1)
 			PagingTouchVClip (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex], 0);
 	}
 else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
@@ -571,7 +571,7 @@ else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
 	}
 else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup2 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup2++)
-		if (gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex > -1)	
+		if (gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex > -1)
 			PagingTouchVClip (&gameData.eff.vClips [0][gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex], 0);
 	}
 else if (nTouchGauge < MAX_GAUGE_BMS) {

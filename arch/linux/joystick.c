@@ -43,7 +43,7 @@ int j_Get_joydev_axis_number (int all_axis_number) {
 
 	for (i = 0; i < j_axis[all_axis_number].joydev; i++) {
 		joy_axis_number -= j_joystick[i].num_axes;
-	}		
+	}	
 
 	return joy_axis_number;
 }
@@ -54,7 +54,7 @@ int j_Get_joydev_button_number (int all_button_number) {
 
 	for (i = 0; i < j_button[all_button_number].joydev; i++) {
 		joy_button_number -= j_joystick[i].num_buttons;
-	}		
+	}	
 
 	return joy_button_number;
 }
@@ -169,16 +169,16 @@ void JoyFlush () {
 	if (!joy_installed) return;
 
 	for (i = 0; i < j_num_buttons; i++) {
-		j_button[i].timedown = 0;	
-		j_button[i].downcount = 0;	
+		j_button[i].timedown = 0;
+		j_button[i].downcount = 0;
 	}
-	
+
 }
 
 
 ubyte JoyReadRawAxis (ubyte mask, int *axes) {
 	int i;
-	
+
 	j_UpdateState();
 
 	for (i = 0; i < j_num_axes; i++) {
@@ -206,7 +206,7 @@ int joy_init () {
 		j_joystick[1].buffer = open ("/dev/js1", O_NONBLOCK);
 		j_joystick[2].buffer = open ("/dev/js2", O_NONBLOCK);
 		j_joystick[3].buffer = open ("/dev/js3", O_NONBLOCK);
-		
+	
 		if (j_joystick[0].buffer >= 0 || j_joystick[1].buffer >= 0 || j_joystick[2].buffer >= 0 || j_joystick[3].buffer >= 0) {
 			//printf ("found: ");
 			for (i = 0; i < 4; i++) {
@@ -224,7 +224,7 @@ int joy_init () {
 							(j_joystick[i].version & 0xff0000) >> 16,
 							(j_joystick[i].version & 0xff00) >> 8,
 							j_joystick[i].version & 0xff);
-					}						
+					}					
 
 					for (j = j_num_axes; j < (j_num_axes + j_joystick[i].num_axes); j++) {
 						j_axis[j].joydev = i;
@@ -240,11 +240,11 @@ int joy_init () {
 
 					j_num_axes += j_joystick[i].num_axes;
 					j_num_buttons += j_joystick[i].num_buttons;
-					
+				
 				} else {
 					j_joystick[i].num_buttons = 0;
 					j_joystick[i].num_axes = 0;
-				}	
+				}
 
 				for (j = 0; j < i; j++) {
 					j_axes_in_sticks[i] += j_joystick[j].num_axes;
@@ -254,7 +254,7 @@ int joy_init () {
 		} else {
 			//printf ("no joysticks found\n");
 			return 0;
-		}		
+		}	
 
 		//printf ("\n");
 

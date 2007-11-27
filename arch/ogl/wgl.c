@@ -191,7 +191,7 @@ void win32_create_window(int x,int y)
 	wcDescentClass.style         = CS_OWNDC;
 	wcDescentClass.cbClsExtra    = 0;
 	wcDescentClass.cbWndExtra    = 0;
-		
+	
 	// Register the class
 	if (!RegisterClass(&wcDescentClass)){
 //		//printf("RegisterClass==0?\n");
@@ -327,7 +327,7 @@ bool OpenGL_Initialize(void)
 	PIXELFORMATDESCRIPTOR pfd;//, pfd_copy;
 
 	GLPREF_windowed=!gameStates.ogl.bFullScreen;
-	
+
 	if (FindArg("-gl_test1")){
 		GLSTATE_width = GLPREF_width;
 		GLSTATE_height = GLPREF_height;
@@ -405,9 +405,9 @@ bool OpenGL_Initialize(void)
 		GLSTATE_height = height;
 
 	}
-	
+
 	hDC = GetDC(g_hWnd);
-	
+
 	// Now we finally setup OpenGL
 	// If OpenGL is to be dynamically loaded, do this now (if the DLL isn't already
 	// loaded)
@@ -440,7 +440,7 @@ bool OpenGL_Initialize(void)
 	if(pf == 0) 
 	{
 		errstr="ChoosePixelFormat";
-		// no pixel format closely matches	
+		// no pixel format closely matches
 		goto OpenGLError;
 	} 
 
@@ -504,7 +504,7 @@ void OpenGL_Shutdown(void)
 
 	if(wglDeleteContext)//check to make sure the function is valid (dyanmic loaded OpenGL)
 		wglDeleteContext(GL_ResourceContext);
-	
+
 	// Restore back to user screen settings
 	if(!GLPREF_windowed)
 		ChangeDisplaySettings(NULL,0);
@@ -512,6 +512,6 @@ void OpenGL_Shutdown(void)
 	// Restore gamma values
 
 //	SetDeviceGammaRamp(hDC,(LPVOID)Saved_gammaValues);
-	
+
 	ReleaseDC(g_hWnd,hDC);
 }

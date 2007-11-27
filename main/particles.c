@@ -119,9 +119,9 @@ void InitSmoke (void)
 	GLfloat	pf = colorBuffer;
 
 for (i = 0; i < VERT_BUFFER_SIZE; i++, pf++) {
-	*pf++ = 1.0f;	
-	*pf++ = 1.0f;	
-	*pf++ = 1.0f;	
+	*pf++ = 1.0f;
+	*pf++ = 1.0f;
+	*pf++ = 1.0f;
 	}
 #endif
 for (i = 0, j = 1; j < MAX_SMOKE; i++, j++) 
@@ -646,7 +646,7 @@ else {
 				}
 			}
 		}
-	}	
+	}
 pParticle->nMoved = nCurTime;
 return 1;
 }
@@ -967,7 +967,7 @@ if (gameStates.render.bVertexArrays)
 if (gameStates.render.bVertexArrays) {
 	glTexCoordPointer (2, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].texCoord);
 	glColorPointer (4, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].color);
-	glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);	
+	glVertexPointer (3, GL_FLOAT, sizeof (tParticleVertex), &particleBuffer [0].vertex);
 	}
 return gameStates.render.bVertexArrays;
 }
@@ -1661,7 +1661,7 @@ else if (!LoadParticleImage (nType)) {
 else {
 		int			i, t = gameStates.app.nSDLTicks;
 		tSmoke		*pSmoke;
-		vmsVector	vEmittingFace [4];	
+		vmsVector	vEmittingFace [4];
 
 	if (nSide >= 0)
 		GetSideVerts (vEmittingFace, nSegment, nSide);

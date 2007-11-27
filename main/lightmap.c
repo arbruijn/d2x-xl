@@ -214,7 +214,7 @@ for (segNum = 0, segP = gameData.segs.segments;
 #endif
 			}
 		}
-	}	
+	}
 return nLights; 
 }
 
@@ -330,7 +330,7 @@ switch (tMapNum) {
 	case 276:
 	case 278:
 	case 288:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0]  = 
 		tempLight.color [1] = (GLfloat) 1.0; 
 		tempLight.color [2] = (GLfloat) 0.75; 
@@ -351,7 +351,7 @@ switch (tMapNum) {
 	case 307:
 	case 348:
 	case 349:
-		bIsLight = 1; 			
+		bIsLight = 1; 		
 		tempLight.color [0] = 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 1; 
@@ -361,7 +361,7 @@ switch (tMapNum) {
 	case 341:
 	case 345:
 	case 382:
-		bIsLight = 1; 			
+		bIsLight = 1; 		
 		tempLight.color [0] = 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 1; 
@@ -370,49 +370,49 @@ switch (tMapNum) {
 	case 343:
 	case 344:
 	case 377:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = 
 		tempLight.color [1] = (GLfloat) 0.75; 
 		tempLight.color [2] = (GLfloat) 1; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 346:
-		bIsLight = 1; 			
+		bIsLight = 1; 		
 		tempLight.color [0] = (GLfloat) 0.5; 
 		tempLight.color [1] = (GLfloat) 1; 
 		tempLight.color [2] = (GLfloat) 0.5; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 351:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.95; 
 		tempLight.color [1] = (GLfloat) 0.84; 
 		tempLight.color [2] = (GLfloat) 0.56; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 352:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 0.25; 
 		tempLight.range = baseRange; 
 		break; 
 	case 364:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.1; 
 		tempLight.color [1] = (GLfloat) 0.9; 
 		tempLight.color [2] = (GLfloat) 0.1; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 366:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = (GLfloat) 0.9; 
 		tempLight.color [2] = (GLfloat) 1; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 368:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 0.5; 
@@ -420,14 +420,14 @@ switch (tMapNum) {
 		break; 
 	case 370:
 	case 372:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.95; 
 		tempLight.color [1] = (GLfloat) 0.84; 
 		tempLight.color [2] = (GLfloat) 0.56; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 380:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.65; 
 		tempLight.color [1] = (GLfloat) 0.6; 
 		tempLight.color [2] = (GLfloat) 0.75; 
@@ -435,7 +435,7 @@ switch (tMapNum) {
 		break; 
 	case 410:
 	case 427:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = 
 		tempLight.color [1] = (GLfloat) 0.25; 
 		tempLight.color [2] = (GLfloat) 1; 
@@ -455,7 +455,7 @@ switch (tMapNum) {
 	case 429:
 	case 430:
 	case 431:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 0.25; 
@@ -463,7 +463,7 @@ switch (tMapNum) {
 		break; 
 	case 411:
 	case 428:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = 
 		tempLight.color [1] = (GLfloat) 1; 
 		tempLight.color [2] = (GLfloat) 0.25; 
@@ -472,21 +472,21 @@ switch (tMapNum) {
 	case 414:
 	case 416:
 	case 418:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1.0; 
 		tempLight.color [1] = (GLfloat) 0.75; 
 		tempLight.color [2] = (GLfloat) 0.25; 
 		tempLight.range = baseRange / 3; 
 		break; 
 	case 423:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.25; 
 		tempLight.color [1] = (GLfloat) 0.75; 
 		tempLight.color [2] = (GLfloat) 0.25; 
 		tempLight.range = baseRange; 
 		break; 
 	case 424:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.85; 
 		tempLight.color [1] = (GLfloat) 0.65; 
 		tempLight.color [2] = (GLfloat) 0.25; 
@@ -497,21 +497,21 @@ switch (tMapNum) {
 	case 237:
 	case 243:
 	case 244:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1.0; 
 		tempLight.color [1] = (GLfloat) 0.95; 
 		tempLight.color [2] = (GLfloat) 1.0; 
 		tempLight.range = baseRange; 
 		break; 
 	case 333:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.5; 
 		tempLight.color [1] = (GLfloat) 0.33; 
 		tempLight.color [2] = (GLfloat) 0; 
 		tempLight.range = baseRange / 2; 
 		break; 
 	case 353:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0.75; 
 		tempLight.color [1] = (GLfloat) 0.375; 
 		tempLight.color [2] = (GLfloat) 0; 
@@ -520,14 +520,14 @@ switch (tMapNum) {
 	case 356:
 	case 357:
 	case 358:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 0.25; 
 		tempLight.range = baseRange; 
 		break; 
 	case 359:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = 
 		tempLight.color [2] = (GLfloat) 0; 
@@ -540,7 +540,7 @@ switch (tMapNum) {
 	case 406:
 	case 407:
 	case 408:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = (GLfloat) 0.5; 
 		tempLight.color [2] = (GLfloat) 0; 
@@ -549,7 +549,7 @@ switch (tMapNum) {
 	case 409:
 	case 426:
 	case 434:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 1; 
 		tempLight.color [1] = (GLfloat) 0.25; 
 		tempLight.color [2] = (GLfloat) 0; 
@@ -558,7 +558,7 @@ switch (tMapNum) {
 	case 420:
 	case 432:
 	case 433:
-		bIsLight = 1; 	
+		bIsLight = 1; 
 		tempLight.color [0] = (GLfloat) 0; 
 		tempLight.color [1] = (GLfloat) 0.25; 
 		tempLight.color [2] = (GLfloat) 1; 
@@ -566,7 +566,7 @@ switch (tMapNum) {
 		break; 
 	default:
 		if (gameData.pig.tex.pTMapInfo [tMapNum].lighting) {
-			bIsLight = 1; 	
+			bIsLight = 1; 
 			tempLight.color [0] = 
 			tempLight.color [1] = 
 			tempLight.color [2] = (GLfloat) 1; 
@@ -778,7 +778,7 @@ for (mapNum = 6 * segNum, segP = gameData.segs.segments + segNum;
 #if TEXTURE_CHECK
 		if ((segP->children [sideNum] >= 0) && !IS_WALL (WallNumS (sideP)))
 			continue; 	//skip open sides
-#endif			
+#endif		
 		GetSideVertIndex (sideVerts, segNum, sideNum); 
 #if LMAP_REND2TEX
 		OglCreateFBuffer (&lightMaps [mapNum].fbuffer, 64, 64);

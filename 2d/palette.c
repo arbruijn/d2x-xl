@@ -87,7 +87,7 @@ ubyte *GrUsePaletteTable (char *pszFile, char *pszLevel)
 
 if (pszLevel) {
 	char ifile_name [FILENAME_LEN];
-	
+
 	ChangeFilenameExtension (ifile_name, pszLevel, ".pal");
 	fp = CFOpen (ifile_name, gameFolders.szDataDir, "rb", 0);
 	}
@@ -177,7 +177,7 @@ int GrFindClosestColor (ubyte *palette, int r, int g, int b)
 	int				nBestValue, nBestIndex, value;
 	color_record	*pci, *pcj;
 	tPaletteList	*plP;
-	
+
 if (!palette)
 	palette = defaultPalette;
 if (!palette)

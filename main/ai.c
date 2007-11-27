@@ -331,7 +331,7 @@ void MakeNearbyRobotSnipe (void)
 					objP->cType.aiInfo.behavior = AIB_SNIPE;
 					Assert (nObject >= 0);
 					gameData.ai.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
-#if TRACE	
+#if TRACE
 					con_printf (CONDBG, "Making robot #%i go into snipe mode!\n", nObject);
 #endif
 					return;
@@ -340,7 +340,7 @@ void MakeNearbyRobotSnipe (void)
 			nObject = objP->next;
 		}
 	}
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG, "Couldn't find a robot to make snipe!\n");
 #endif
 }
@@ -523,13 +523,13 @@ if (nBreakOnObject != -1)
 	if ((OBJ_IDX (objP)) == nBreakOnObject)
 		Int3 (); // Contact Mike: This is a debug break
 #endif
-#if TRACE	
+#if TRACE
 	//con_printf (CONDBG, "Object %i: behavior = %02x, mode = %i, awareness = %i, time = %7.3f\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, f2fl (ailp->playerAwarenessTime));
 	//con_printf (CONDBG, "Object %i: behavior = %02x, mode = %i, awareness = %i, cur=%i, goal=%i\n", OBJ_IDX (objP), aip->behavior, ailp->mode, ailp->playerAwarenessType, aip->CURRENT_STATE, aip->GOAL_STATE);
 #endif
 	//Assert ((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR);
 if ((aip->behavior < MIN_BEHAVIOR) || (aip->behavior > MAX_BEHAVIOR)) {
-#if TRACE	
+#if TRACE
 		//con_printf (CONDBG, "Object %i behavior is %i, setting to AIB_NORMAL, fix in editor!\n", nObject, aip->behavior);
 #endif
 		aip->behavior = AIB_NORMAL;
@@ -687,7 +687,7 @@ _exit_cheat:
 					ailp->mode = AIM_RUN_FROM_OBJECT;
 					break;
 				case AIM_BEHIND:
-#if TRACE	
+#if TRACE
 					con_printf (CONDBG, "Hiding robot (%i) collided much.\n", OBJ_IDX (objP));
 #endif
 					MoveTowardsSegmentCenter (objP);
@@ -935,7 +935,7 @@ if (botInfoP->companion) {
 
 	if (ReadyToFire (botInfoP, ailp)) {
 		int bDoStuff = 0;
-		
+	
 		if (OpenableDoorsInSegment (objP->nSegment) != -1)
 			bDoStuff = 1;
 		else if (OpenableDoorsInSegment ((short) gameData.ai.pointSegs [aip->nHideIndex + aip->nCurPathIndex + aip->PATH_DIR].nSegment) != -1)
@@ -1309,7 +1309,7 @@ switch (ailp->mode) {
 		break;
 
 	default:
-#if TRACE	
+#if TRACE
 		con_printf (CONDBG, "Unknown mode = %i in robot %i, behavior = %i\n", ailp->mode, OBJ_IDX (objP), aip->behavior);
 #endif
 		ailp->mode = AIM_CHASE_OBJECT;
@@ -1457,7 +1457,7 @@ if ((aip->GOAL_STATE != AIS_FLIN) && (objP->id != ROBOT_BRAIN)) {
 			break;
 
 		default:
-#if TRACE	
+#if TRACE
 			con_printf (1, "Unknown AI mode for object #%i\n", nObject);
 #endif
 			aip->GOAL_STATE = AIS_REST;
@@ -1471,12 +1471,12 @@ if (!gameData.ai.nPlayerVisibility) {
 	if (++(aip->CURRENT_GUN) >= ROBOTINFO (objP->id).nGuns) {
 #if 0
 		aip->CURRENT_GUN = 0;
-#else			
+#else		
 		if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))  // Two weapon types hack.
 			aip->CURRENT_GUN = 0;
 		else
 			aip->CURRENT_GUN = 1;
-#endif				
+#endif			
 		}
 	}
 
@@ -1859,7 +1859,7 @@ else if (version >= 21) {
 	// -- gameData.boss.teleportSegs [0] = 0;
 	// -- gameData.boss.gateSegs [0] = 0;
 	// Note: Maybe better to leave alone...will probably be ok.
-#if TRACE	
+#if TRACE
 	con_printf (1, "Warning: If you fight the boss, he might teleport to tSegment #0!\n");
 #endif
 	}
@@ -2095,7 +2095,7 @@ else
 	AIResetAllPaths ();
 
 if (version < 21) {
-	#if TRACE	
+	#if TRACE
 	con_printf (1, "Warning: If you fight the boss, he might teleport to tSegment #0!\n");
 	#endif
 	}

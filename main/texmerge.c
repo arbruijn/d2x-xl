@@ -124,7 +124,7 @@ for (i = 0, cacheP = texCache; i < nCacheEntries; i++,cacheP++) {
 		nCacheHits++;
 		cacheP->last_frame_used = gameData.app.nFrameCount;
 		return cacheP->bitmap;
-	}	
+	}
 #endif
 	if (cacheP->last_frame_used < nLowestFrame)	{
 		nLowestFrame = cacheP->last_frame_used;

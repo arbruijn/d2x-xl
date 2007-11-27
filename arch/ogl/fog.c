@@ -11,7 +11,7 @@ tFog fog = {{0.6f,0.58f,0.79f,0.0f}, 0.1f, 0.05f, 200.0f, GL_EXP};
 void init_fog (void)
 {
 glClearColor (fog.color[0], fog.color[1], fog.color[2], 0.0f);
-	
+
 #ifdef WIN32
 glFogCoordfEXT       = (PFNGLFOGCOORDFEXTPROC) sdlGetProcAddress ("glFogCoordfEXT");
 glFogCoordfvEXT      = (PFNGLFOGCOORDFVEXTPROC) sdlGetProcAddress ("glFogCoordfvEXT");
@@ -72,7 +72,7 @@ void render_fog (vmsVector *pos)
 		}
 
 	glEnd();
-	
+
 	glutSwapBuffers();
 }
 

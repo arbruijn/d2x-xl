@@ -357,7 +357,7 @@ void G3SortFaces (tG3SubModel *psm, int left, int right)
 	int				l = left,
 						r = right;
 	tG3ModelFace	m = psm->pFaces [(l + r) / 2];
-			
+		
 do {
 	while (G3CmpFaces (psm->pFaces + l, &m) < 0)
 		l++;
@@ -424,7 +424,7 @@ if (gameStates.ogl.bHaveVBOs) {
 			gameStates.ogl.bHaveVBOs = 0;
 			return G3FreeModelItems (pm);
 			}
-		}	
+		}
 	glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
 	if (i = glGetError ()) {
 #	ifdef _DEBUG
@@ -432,7 +432,7 @@ if (gameStates.ogl.bHaveVBOs) {
 #	endif
 		gameStates.ogl.bHaveVBOs = 0;
 		return G3FreeModelItems (pm);
-		}	
+		}
 	glBufferData (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (tG3RenderVertex), NULL, GL_STATIC_DRAW_ARB);
 	pm->pVertBuf [1] = (tG3RenderVertex *) glMapBuffer (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
 	pm->vboIndexHandle = 0;
@@ -479,7 +479,7 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 		pfj = pfi++;
 		if (G3CmpFaces (pfi, pfj))
 			nId++;
-		}	
+		}
 	pfi->nId = nId;
 	}
 pm->pVBVerts = (fVector3 *) pm->pVertBuf [0];
@@ -1015,7 +1015,7 @@ for (nPass = 0; nLights; nPass++) {
 		if (nPass) {
 			glBlendFunc (GL_ONE, GL_ONE);
 			glDepthMask (0);
-			}	
+			}
 		OglSetupTransform (1);
 		for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) { 
 			psl = gameData.render.lights.dynamic.shader.activeLights [0][iLightSource];
@@ -1129,7 +1129,7 @@ if (!gameOpts->render.nPath)
 	gameData.models.g3Models [0][nModel].bValid =
 	gameData.models.g3Models [1][nModel].bValid = -1;
 	return 0;
-	}	
+	}
 if (pm->bValid < 1) {
 	if (pm->bValid) {
 		i = 0;
@@ -1170,7 +1170,7 @@ else {
 	pm->pVBVerts = (fVector3 *) pm->pVertBuf [0];
 	pm->pVBNormals = pm->pVBVerts + pm->nFaceVerts;
 	pm->pVBColor = (tRgbaColorf *) (pm->pVBNormals + pm->nFaceVerts);
-	pm->pVBTexCoord = (tTexCoord2f *) (pm->pVBColor + pm->nFaceVerts);	
+	pm->pVBTexCoord = (tTexCoord2f *) (pm->pVBColor + pm->nFaceVerts);
 	}
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
@@ -1195,10 +1195,10 @@ else
 	if (!gameStates.render.bCloaked) {
 		glTexCoordPointer (2, GL_FLOAT, 0, pm->pVBTexCoord);
 		if (gameOpts->ogl.bObjLighting)
-			glNormalPointer (GL_FLOAT, 0, pm->pVBNormals);	
+			glNormalPointer (GL_FLOAT, 0, pm->pVBNormals);
 		glColorPointer (4, GL_FLOAT, 0, pm->pVBColor);
 		}
-	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);	
+	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
 	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO);
 glDisable (GL_TEXTURE_2D);

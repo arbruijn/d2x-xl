@@ -91,7 +91,7 @@ int IxpGeneralPacketReady (ipx_socket_t *s)
 {
 	fd_set set;
 	struct timeval tv;
-	
+
 FD_ZERO (&set);
 FD_SET (s->fd, &set);
 tv.tv_sec = tv.tv_usec = 0;
@@ -205,7 +205,7 @@ void IPXSendPacketData
 {
 	static u_char buf[MAX_IPX_DATA];
 	IPXPacket_t ipxHeader;
-	
+
 if (datasize <= MAX_IPX_DATA - 4) {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
@@ -229,7 +229,7 @@ int IpxGetPacketData (ubyte * data)
 	char buf[MAX_IPX_DATA];
 	int size;
 	int best_size = 0;
-	
+
 while (driver->PacketReady (&ipxSocketData)) {
 	if ((size = driver->ReceivePacket (&ipxSocketData, buf, sizeof (buf), &rd)) > 4) {
    	if (!memcmp (rd.src_network, ipx_MyAddress, 10)) 
@@ -249,7 +249,7 @@ void IPXSendPacketData (ubyte * data, int datasize, ubyte *network, ubyte *addre
 	IPXPacket_t ipxHeader;
 
 	Assert (datasize <= MAX_IPX_DATA+4);
-	
+
 memcpy (ipxHeader.Destination.Network, network, 4);
 memcpy (ipxHeader.Destination.Node, immediate_address, 6);
 *(u_short *) ipxHeader.Destination.Socket = htons (ipxSocketData.socket);
@@ -270,7 +270,7 @@ void IpxGetLocalTarget (ubyte * server, ubyte * node, ubyte * local_target)
 
 //------------------------------------------------------------------------------
 
-void IPXSendBroadcastData (ubyte * data, int datasize)	
+void IPXSendBroadcastData (ubyte * data, int datasize)
 {
 	int i, j;
 	ubyte broadcast[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -437,7 +437,7 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 #endif
 	if (nIpxNetworks < MAX_NETWORKS)	{
 		int j;
-		for (j=0; j<nIpxNetworks; j++)	
+		for (j=0; j<nIpxNetworks; j++)
 			if (!memcmp (ipxNetworks + j, tmp.network, 4))
 				break;
 		if (j >= nIpxNetworks)	{

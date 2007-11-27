@@ -132,7 +132,7 @@ for (i = 0; scrSizes [i].x && scrSizes [i].y; i++)
 		return h;
 		}
 return -1;
-}	
+}
 
 //------------------------------------------------------------------------------
 
@@ -329,9 +329,9 @@ if ((t = FindArg ("-gl_library")))
 	OglLibPath = Args [t + 1];
 retcode = OpenGL_LoadLibrary(true);
 if (retcode) {
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG,"OpenGL successfully loaded\n");
-#endif	
+#endif
 	if(!glEnd)
 		Error("Opengl: Functions not imported\n");
 	else
@@ -389,7 +389,7 @@ OglInitLoadLibrary();
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 #else
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
-#endif	
+#endif
 {
 	LogErr ("SDL library video initialisation failed: %s.\n", SDL_GetError());
 	Error("SDL library video initialisation failed: %s.", SDL_GetError());
@@ -491,12 +491,12 @@ glEnd();
 void OglURect(int left,int top,int right,int bot)
 {
 	GLfloat		xo, yo, xf, yf;
-	
+
 xo = ((float) left + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
 xf = (float) (right + grdCurCanv->cvBitmap.bmProps.x)/ (float) gameStates.ogl.nLastW;
 yo = 1.0f - (float) (top + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
 yf = 1.0f - (float) (bot + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
-	
+
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&COLOR);
 glBegin (GL_QUADS);
@@ -514,7 +514,7 @@ if (COLOR.rgb || (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS))
 void OglULineC(int left,int top,int right,int bot, grsColor *c)
 {
 	GLfloat xo, yo, xf, yf;
-	
+
 xo = (left + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
 xf = (right + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
 yo = 1.0f - (top + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
@@ -528,13 +528,13 @@ if (c->rgb)
 	glDisable (GL_BLEND);
 glEnd();
 }
-	
+
 //------------------------------------------------------------------------------
 
 void OglUPolyC (int left, int top, int right, int bot, grsColor *c)
 {
 	GLfloat xo, yo, xf, yf;
-	
+
 xo = (left + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
 xf = (right + grdCurCanv->cvBitmap.bmProps.x) / (float) gameStates.ogl.nLastW;
 yo = 1.0f - (top + grdCurCanv->cvBitmap.bmProps.y) / (float) gameStates.ogl.nLastH;
@@ -550,14 +550,14 @@ glEnd();
 if (c->rgb)
 	glDisable (GL_BLEND);
 }
-	
+
 //------------------------------------------------------------------------------
 
 void OglDoPalFx (void)
 {
 	int	bDepthTest, bBlend;
 	GLint	blendSrc, blendDest;
-	
+
 if (gameStates.render.bPaletteFadedOut) {
 	if ((bBlend = glIsEnabled (GL_BLEND))) {
 		glGetIntegerv (GL_BLEND_SRC, &blendSrc);
@@ -652,7 +652,7 @@ static inline int min(int x, int y) { return x < y ? x : y; }
 
 ubyte *pCurPal = NULL;
 
-int GrPaletteStepLoad (ubyte *pal)	
+int GrPaletteStepLoad (ubyte *pal)
 {
 	static int nCurPalGamma = -1;
 
@@ -722,7 +722,7 @@ void WriteScreenShot (char *szSaveName, int w, int h, unsigned char *buf, int nF
 {
 	FILE *f = fopen (szSaveName, "wb");
 if (!f) {
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG,"screenshot error, couldn't open %s (err %i)\n",szSaveName,errno);
 #endif
 	}
@@ -759,7 +759,7 @@ else {
 			}
 		}
 	r = (int) fwrite (outBuf, w * h * 3, 1, f);
-#if TRACE	
+#if TRACE
 	if (r <= 0)
 		con_printf (CONDBG,"screenshot error, couldn't write to %s (err %i)\n",szSaveName,errno);
 #endif
@@ -779,7 +779,7 @@ void SaveScreenShot (unsigned char *buf, int bAutomap)
 	int				i, j, bTmpBuf;
 	static int		nSaveNum = 0;
 	GLenum			glErrCode;
-	
+
 if (!bSaveScreenShot)
 	return;
 bSaveScreenShot = 0;

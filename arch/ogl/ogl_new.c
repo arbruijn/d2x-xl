@@ -54,7 +54,7 @@ tOglTexture TestTex;  //Test Lightmap
 
 GLuint EmptyTexture(int Xsize, int Ysize)			// Create An Empty Texture
 {
-	//This is code from a tutorial.  Function is not currently used, but will become useful shortly.	
+	//This is code from a tutorial.  Function is not currently used, but will become useful shortly.
 
 	GLuint txtnumber;						// Texture ID
 	//unsigned int* data;						// Stored Data
@@ -65,7 +65,7 @@ GLuint EmptyTexture(int Xsize, int Ysize)			// Create An Empty Texture
 	ZeroMemory(data,((Xsize * Ysize)* 4 * sizeof(unsigned int)));	// Clear Storage Memory
 
 	OglGenTextures(1, &txtnumber);					// Create 1 Texture
-	
+
 	glBindTexture(GL_TEXTURE_2D, txtnumber);			// Bind The Texture
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, Xsize, Ysize, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, data);			// Build Texture Using Information In data
@@ -83,7 +83,7 @@ void OglInitExtensions(void)
 {
 //This function initializes the multitexturing stuff.  Pixel Shader stuff should be put here eventually.
 glMultiTexCoord2fARB	=  (PFNGLMULTITEXCOORD2FARBPROC)	wglGetProcAddress("glMultiTexCoord2fARB");
-glActiveTextureARB =  (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress("glActiveTextureARB");		
+glActiveTextureARB =  (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress("glActiveTextureARB");	
 glClientActiveTextureARB =  (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress("glClientActiveTextureARB");
 }
 
@@ -164,7 +164,7 @@ else {//lightmapping disabled - render old way
 		glBegin(GL_TRIANGLE_FAN);
 		for (c = 0; c < nv; c++, pointlist++) {
 			set_tmap_color (uvl_list + c, c, bmbot);
-			
+		
 			glTexCoord2d (f2glf(uvl_list[c].u), f2glf(uvl_list[c].v));
 			p = *pointlist;
 			glVertex3d (f2glf(p->p3_vec.x), f2glf(p->p3_vec.y), f2glf(p->p3_vec.z));
@@ -173,14 +173,14 @@ else {//lightmapping disabled - render old way
 		pointlist=pointlist-4;
 		}
 	else {
-	#if TRACE	
+	#if TRACE
 			con_printf (CONDBG,"G3DrawTexPoly: unhandled tmap_drawer %p\n",tmap_drawer_ptr);
 	#endif
 		}
 	tMapColor.index =
 	lightColor.index = 0;
 	//G3DrawTexPoly (nv,pointlist,uvl_list,bmbot);//draw the bottom texture first.. could be optimized with multitexturing..
-	
+
 	//then draw the second layer
 	if (bm) {
 		glDepthFunc(GL_LEQUAL);
@@ -190,7 +190,7 @@ else {//lightmapping disabled - render old way
 		OglBindBmTex(bm);
 		OglTexWrap(bm->glTexture,GL_REPEAT);
 		cap_tmap_color (uvl_list, nv, bm);
-		
+	
 		glBegin(GL_TRIANGLE_FAN);
 			for (c = 0; c < nv; c++, pointlist++) {
 			set_tmap_color (uvl_list + c, c, bm);

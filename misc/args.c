@@ -41,7 +41,7 @@ char * Args [MAX_ARGS], *ps;
 
 //------------------------------------------------------------------------------
 
-int FindArg (char * s)	
+int FindArg (char * s)
 {
 	int i;
   

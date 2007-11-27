@@ -178,7 +178,7 @@ if (f2i (oldTime + F1_0*7/8) != gameData.reactor.countdown.nSecsLeft) {
 		DigiPlaySample ((short) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), F3_0);
 	if (gameData.reactor.countdown.nSecsLeft == gameData.reactor.countdown.nTotalTime - 1)
 		DigiPlaySample (SOUND_COUNTDOWN_29_SECS, F3_0);
-	}						
+	}					
 if (gameData.reactor.countdown.nTimer > 0) {
 	fix size,old_size;
 	size = (i2f (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / fl2f (0.65);
@@ -205,7 +205,7 @@ else {
 		//controlcen->MaxCapacity = gameData.matCens.xFuelMaxAmount;
 		//gauge_message ("Control Center Reset");
 		DoPlayerDead ();		//kill_player ();
-		}																				
+		}																			
 	}
 }
 
@@ -339,7 +339,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
 			}
-		}			
+		}		
 	return;
 	}
 
@@ -388,7 +388,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			return;
 			}
 		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));	
+			MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 		CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 1);
 		//	some of time, based on level, fire another thing, not directly at tPlayer, so it might hit him if he's constantly moving.
 		nRandProb = F1_0 / (abs (gameData.missions.nCurrentLevel) / 4 + 2);
@@ -462,7 +462,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 			con_printf (1, "Warning: Two or more control centers including %i and %i\n", 
 							gameData.reactor.states [0].nObject, i);
 #endif
-			}				
+			}			
 		//else 
 			{
 			//	Compute all gun positions.
@@ -502,7 +502,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 #if TRACE
 			con_printf (1, "Warning: Two or more bosses including %i and %i\n", i, nBossObj);
 #endif
-			}				
+			}			
 		else
 			nBossObj = i;
 		}

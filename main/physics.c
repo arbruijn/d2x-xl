@@ -481,7 +481,7 @@ void DoPhysicsSim (tObject *objP)
 	int					nBadSeg = 0, bBounced = 0;
 	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
 	int					bDoSpeedBoost = sbd.bBoosted; // && (objP == gameData.objs.console);
-	
+
 Assert (objP->nType != OBJ_NONE);
 Assert (objP->movementType == MT_PHYSICS);
 #ifdef _DEBUG
@@ -611,7 +611,7 @@ retryMove:
 	if (iSeg < 0) {
 #if 0//def _DEBUG
 		static int nBadSegs = 0;
-		
+	
 		HUDMessage (0, "bad dest seg %d", nBadSegs++);
 #endif
 		nBadSeg++; 
@@ -700,7 +700,7 @@ retryMove:
 			physSegList [nPhysSegs++] = hi.segList [i++];
 			}
 #endif
-		}	
+		}
 	iPos = hi.hit.vPoint;
 	iSeg = hi.hit.nSegment;
 	nWallHitSide = hi.hit.nSide;
@@ -779,7 +779,7 @@ retryMove:
 	if (fviResult == HIT_WALL) {
 		vmsVector	vMoved;
 		fix			xHitSpeed, xWallPart;
-		// Find hit speed	
+		// Find hit speed
 
 #if 0//def _DEBUG
 		if (objP->nType == OBJ_PLAYER)
@@ -896,7 +896,7 @@ retryMove:
 				bRetry = 1;
 				}
 			}
-		}	
+		}
 	else if (fviResult == HIT_NONE) {
 #ifdef TACTILE
 		if (TactileStick && (objP == gameData.objs.console) && !(FrameCount & 15))
@@ -906,7 +906,7 @@ retryMove:
 #ifdef _DEBUG
 	else if (fviResult == HIT_BAD_P0) {
 		Int3 ();		// Unexpected collision nType: start point not in specified tSegment.
-#if TRACE				
+#if TRACE			
 		con_printf (CONDBG, "Warning: Bad p0 in physics!!!\n");
 #endif
 		}

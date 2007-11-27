@@ -87,7 +87,7 @@ return 1;
 int OglSetAttribute (char *szSwitch, char *szAttr, SDL_GLattr attr, int value)
 {
 	int	i;
-		
+	
 if (szSwitch && (i = FindArg (szSwitch)) && Args [i + 1])
 	attr = atoi (Args [i + 1]);
 i = SDL_GL_SetAttribute (attr, value);

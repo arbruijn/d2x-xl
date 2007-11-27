@@ -433,7 +433,7 @@ BE_GET_BYTE (netgame->bShortPackets);
 
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]._m = INTEL_INT (*((int *) (nmBufP + ((char *) &extraGameInfo [1]._m - (char *) &extraGameInfo [1]))));
-	
+
 void BESendExtraGameInfo (ubyte *server, ubyte *node, ubyte *netAddress)
 {
 nmBufP = nmDataBuf;

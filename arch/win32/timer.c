@@ -42,7 +42,7 @@ fix TimerGetFixedSeconds()
 void delay(int dTime)
 {
 	fix t, total;
-	
+
 	total = (F1_0 * dTime) / 1000;
 	t = TimerGetFixedSeconds();
 	while (TimerGetFixedSeconds() - t < total) ;
@@ -58,7 +58,7 @@ void timer_init()
 
 	if (Installed)
 		return;
-	Installed = 1;		
+	Installed = 1;	
 
 /* DPH: Using timeGetTime will fail approximately 47 days after Windows was
    started as the timer wraps around to 0. Ever had Windows not crash for 47

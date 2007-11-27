@@ -113,7 +113,7 @@ for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) {
 	if (psl->nType > 1) {
 		iLight--;
 		continue;
-		}	
+		}
 #endif
 	hLight = GL_LIGHT0 + iLight;
 	glEnable (hLight);
@@ -134,7 +134,7 @@ for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) {
 		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
 		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.04f);
 		}
-	}	
+	}
 for (; iLight < 8; iLight++)
 	glDisable (GL_LIGHT0 + iLight);
 return nLights;
@@ -287,7 +287,7 @@ if (bTextured) {
 	if ((bmBot != gameStates.render.history.bmBot) || 
 		 (bmTop != gameStates.render.history.bmTop) || 
 		 (bOverlay != gameStates.render.history.bOverlay)) {
-		if (bOverlay > 0) {	
+		if (bOverlay > 0) {
 			bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 			// set base texture
 			if (bmBot != gameStates.render.history.bmBot) {
@@ -476,7 +476,7 @@ if (bTextured) {
 	if ((bmBot != gameStates.render.history.bmBot) || 
 		 (bmTop != gameStates.render.history.bmTop) || 
 		 (bOverlay != gameStates.render.history.bOverlay)) {
-		if (bOverlay > 0) {	
+		if (bOverlay > 0) {
 #ifdef _DEBUG
 		if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 			if (bDepthOnly)

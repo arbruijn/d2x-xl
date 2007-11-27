@@ -231,7 +231,7 @@ static inline ubyte G3TransformAndEncodePoint (g3sPoint *pDest, vmsVector *pSrc)
 {
 pDest->p3_src = *pSrc;
 G3TransformPoint (&pDest->p3_vec, pSrc, 0);
-pDest->p3_flags = 0;	
+pDest->p3_flags = 0;
 return G3EncodePoint (pDest);
 }
 

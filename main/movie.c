@@ -535,7 +535,7 @@ if (readCount != size) {
 p = subTitles.rawDataP;
 while (p && (p < subTitles.rawDataP + size)) {
 	char *endp = strchr ((char *) p, '\n'); 
-	
+
 	if (endp) {
 		if (endp [-1] == '\r')
 			endp [-1] = 0;		//handle 0d0a pair
@@ -972,7 +972,7 @@ return (nLib < N_MOVIE_LIBS) && (nMovie < movies.libs [nLib]->n_movies) ? movies
 
 //-----------------------------------------------------------------------
 
-char *CycleThroughMovies (int bRestart, int bPlayMovie)	
+char *CycleThroughMovies (int bRestart, int bPlayMovie)
 {
 	static int nMovieLibs = -1;
 	static int iMovieLib = -1;

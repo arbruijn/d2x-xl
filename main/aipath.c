@@ -317,7 +317,7 @@ if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_RUN_FROM))
 	if (nAvoidSeg != -32767) {
 		bRandom = 1;
 		nAvoidSeg = gameData.objs.console->nSegment;
-		}	
+		}
 	// Int3 ();
 	}
 bAvoidPlayer = gameData.objs.console->nSegment == nAvoidSeg;
@@ -366,7 +366,7 @@ while (nCurSeg != nEndSeg) {
 			fq.ignoreObjList	= NULL;
 			fq.flags				= 0;
 			hitType = FindVectorIntersection (&fq, &hit_data);
-			if (hitType != HIT_NONE)	
+			if (hitType != HIT_NONE)
 				continue;
 			}
 		Assert (nThisSeg > -1 && nThisSeg <= gameData.segs.nLastSegment);

@@ -71,7 +71,7 @@ void joydef_menuset_1(int nitems, tMenuItem * items, int *last_key, int citem )
 
 	nitems = nitems;
 	last_key = last_key;
-	citem = citem;		
+	citem = citem;	
 
 	for (i=0; i<3; i++ )
 		if (items[i].value) gameConfig.nControlType = i;

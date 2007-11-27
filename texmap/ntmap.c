@@ -468,7 +468,7 @@ void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix u
 	fx_u = uleft;
 	fx_v = vleft;
 	fx_z = zleft;
-	
+
 	fx_du_dx = FixMul(uright - uleft,recip_dx);
 	fx_dv_dx = FixMul(vright - vleft,recip_dx);
 	fx_dz_dx = FixMul(zright - zleft,recip_dx);
@@ -483,7 +483,7 @@ void ntmap_scanline_lighted(grsBitmap *srcb, int y, fix xleft, fix xright, fix u
 			//end addition -MM
 			if (fx_xright > nWindowClipRight)
 				fx_xright = nWindowClipRight;
-			
+		
 			cur_tmap_scanline_per();
 			break;
 		case 1: {
@@ -765,7 +765,7 @@ void ntmap_scanline_lighted_linear(grsBitmap *srcb, int y, fix xleft, fix xright
 				if (fx_xleft < 0)
 					fx_xleft = 0;
 				//end addition -adb
-				
+			
 				cur_tmap_scanline_lin_nolight();
 				break;
 			case 1:

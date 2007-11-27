@@ -117,8 +117,8 @@ Cursor blankcursor=None;
 
 void set_wm_hints(int fullscreen){
 	XSizeHints *hints=NULL;
-		
 	
+
 //	return;//seems screwed.
 	if (!hints) hints=XAllocSizeHints();
 	hints->width=hints->min_width=hints->max_width=hints->base_width=grdCurScreen->scWidth;
@@ -183,14 +183,14 @@ int OglInitWindow(int x, int y){
 		swa.event_mask=ExposureMask | StructureNotifyMask | KeyPressMask | KeyReleaseMask| ButtonPressMask | ButtonReleaseMask | PointerMotionMask;
 		//win = XCreateWindow(dpy,RootWindow(dpy,visinfo->screen),0,0,x,y,0,visinfo->depth,InputOutput,visinfo->visual,CWBorderPixel|CWColormap|CWEventMask,&swa);
 		win = XCreateWindow(dpy,RootWindow(dpy,visinfo->screen),0,0,x,y,0,visinfo->depth,InputOutput,visinfo->visual,CWColormap|CWEventMask,&swa);
-	
+
 		XStoreName(dpy,win,DESCENT_VERSION);
 //		XStoreName(dpy,win,"agry");
-		
+	
 		XMapWindow(dpy,win);
-		
+	
 		glXMakeCurrent(dpy,win,glxcontext);
-		
+	
 		set_wm_hints(gameStates.ogl.bFullScreen);
 
 		gameStates.ogl.bInitialized=1;
@@ -208,7 +208,7 @@ int OglInitWindow(int x, int y){
 			D2_FREE(blankdata);
 //			sleep(1);
 		}
-		
+	
 		if (gameStates.ogl.bFullScreen)
 			OglDoFullScreenInternal();
 //			GrDoFullScreen(gameStates.ogl.bFullScreen);

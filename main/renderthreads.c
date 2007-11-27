@@ -64,7 +64,7 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000
 #endif
 			}
 		}
-	}	
+	}
 if (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 #ifndef _DEBUG
 	;

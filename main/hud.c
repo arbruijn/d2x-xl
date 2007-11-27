@@ -284,7 +284,7 @@ else {
 	}
 con_message [4] = '\0';
 strcat (con_message, pszMsg);
-#if TRACE		
+#if TRACE	
 con_printf (CON_NORMAL, "%s\n", con_message);
 #endif
 // Added by Leighton
@@ -330,7 +330,7 @@ return 1;
 int _CDECL_ HUDInitMessage (char *format, ...)
 {
 	int ret = 0;
-	
+
 if (gameOpts->render.cockpit.bHUDMsgs) {
 	va_list args;
 

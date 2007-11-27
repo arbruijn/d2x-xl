@@ -323,7 +323,7 @@ return 0;
 
 void gr_upoly_tmap (int nverts, int *vert )
 {
-#if TRACE	
+#if TRACE
 con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
 #endif
 }
@@ -332,7 +332,7 @@ con_printf (CONDBG, "gr_upoly_tmap: unhandled\n");//should never get called
 
 void DrawTexPolyFlat (grsBitmap *bmP, int nVertices, g3sPoint **vertlist)
 {
-#if TRACE	
+#if TRACE
 con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
 #endif
 }
@@ -467,7 +467,7 @@ else
 #if G3_DRAW_ARRAYS
 retry:
 #endif
-if (bShaderMerge) {	
+if (bShaderMerge) {
 	bmMask = gameStates.render.textures.bHaveMaskShader ? BM_MASK (bmTop) : NULL;
 	nShader = bSuperTransp ? bmMask ? 2 : 1 : 0;
 	glUseProgramObject (tmProg = tmShaderProgs [nShader]);

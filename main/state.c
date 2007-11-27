@@ -214,7 +214,7 @@ int StateGetSaveFile (char * fname, char * dsc, int bMulti)
 	char filename [NUM_SAVES+1] [30];
 	char id [5];
 	int valid=0;
-	
+
 memset (m, 0, sizeof (m));
 for (i = 0; i < NUM_SAVES; i++)	{
 	sc_bmp [i] = NULL;
@@ -278,7 +278,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 	memset (m, 0, sizeof (m));
 	for (i = 0; i < NM_IMG_SPACE; i++) {
 		m [i].nType = NM_TYPE_TEXT; 
-		m [i].text = "";	
+		m [i].text = "";
 		m [i].noscroll = 1;
 		}
 	if (gameStates.app.bGameRunning) {
@@ -1320,10 +1320,10 @@ if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
 		int			k, x, y;
 		gsrCanvas * cnv_save;
 		cnv_save = grdCurCanv;
-		
+	
 	GrSetCurrentCanvas (cnv);
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-		
+	
 	//buf = D2_ALLOC (THUMBNAIL_LW * THUMBNAIL_LH * 3);
 #if 1
 	if (curDrawBuffer == GL_BACK) {
@@ -1653,7 +1653,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		else
 			objP->shields /= 2;  //give tPlayer a break
 		}
-	}	
+	}
 }
 
 //------------------------------------------------------------------------------

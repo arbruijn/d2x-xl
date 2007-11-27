@@ -120,9 +120,9 @@ int GrSetMode(int mode)
 	grdCurScreen->scCanvas.cvBitmap.bmProps.h = h;
 	grdCurScreen->scCanvas.cvBitmap.bmBPP = 1;
 	grdCurScreen->scCanvas.cvBitmap.bmProps.rowSize = w;
-	
+
 	gamefont_choose_game_font(w,h);
-	
+
 	return 0;
 }
 
@@ -241,7 +241,7 @@ unsigned char *createdib(void)
 	int i;
 	unsigned char *p;
 	unsigned char *buffer;
-	
+
 	if (!(bmHdr = D2_ALLOC(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD))))
 		return NULL;
 
@@ -284,7 +284,7 @@ void Win32_BlitLinearToDirectX_bm(grsBitmap *bm, int sx, int sy,
 	int i;
 
 	dest = backbuffer + dy * 320 + dx;
-	
+
 	if (bm->bmProps.flags & BM_FLAG_RLE) {
 		src = bm->bmTexBuf + 4 + bm->bmProps.h;
 		rle_w = bm->bmTexBuf + 4;
@@ -327,7 +327,7 @@ void Win32_BlitLinearToDirectX_bm(grsBitmap *bm, int sx, int sy,
 }
 
 void Win32_MakePalVisible(void) {
-	GrUpdate (0);	
+	GrUpdate (0);
 }
 
 void Win32_InvalidatePages(void) {

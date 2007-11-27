@@ -1562,7 +1562,7 @@ bool OpenGL_LoadLibrary(bool load)
 		dglVertex4sv = (glVertex4sv_fp)dll_GetSymbol(OpenGLModuleHandle,"glVertex4sv");
 		dglVertexPointer = (glVertexPointer_fp)dll_GetSymbol(OpenGLModuleHandle,"glVertexPointer");
 		dglViewport = (glViewport_fp)dll_GetSymbol(OpenGLModuleHandle,"glViewport");
-	
+
 #ifdef _WIN32
 		dwglCopyContext = (wglCopyContext_fp)dll_GetSymbol(OpenGLModuleHandle,"wglCopyContext");
 		dwglCreateContext = (wglCreateContext_fp)dll_GetSymbol(OpenGLModuleHandle,"wglCreateContext");

@@ -75,10 +75,10 @@ typedef struct tSoundObject {
 	char			szSound [FILENAME_LEN];	// file name of custom sound to be played
 	int			nLoopStart;		// The start point of the loop. -1 means no loop
 	int			nLoopEnd;		// The end point of the loop
-	union {	
+	union {
 		struct {
 			short			nSegment;				// Used if SOF_LINK_TO_POS field is used
-			short			nSide;				
+			short			nSide;			
 			vmsVector	position;
 		} pos;
 		struct {
@@ -128,7 +128,7 @@ return 0;
 
 void DigiGetSoundLoc (
 	vmsMatrix * mListener, vmsVector * vListenerPos, short nListenerSeg, vmsVector * vSoundPos, 
-	short nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance)	
+	short nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance)
 {	  
 	vmsVector	vecToSound;
 	fix 			angleFromEar, cosang,sinang;
@@ -162,7 +162,7 @@ if (distance < maxDistance) {
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySampleOnce (short nSound, fix maxVolume)	
+void DigiPlaySampleOnce (short nSound, fix maxVolume)
 {
 	int channel;
 
@@ -230,7 +230,7 @@ return DigiPlaySampleSpeed (-1, maxVolume, F1_0, nLoops, pszWAV);
 
 //------------------------------------------------------------------------------
 
-void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, char *pszSound)	
+void DigiPlaySample3D (short nSound, int angle, int volume, int no_dups, vmsVector *vPos, char *pszSound)
 {
 
 	no_dups = 1;
@@ -331,7 +331,7 @@ if (gameStates.sound.digi.nLoopingChannel > -1)
 gameStates.sound.digi.nLoopingChannel = -1;
 gameStates.sound.digi.nLoopingSound = -1;
 }
-	
+
 //------------------------------------------------------------------------------
 
 void DigiPauseLoopingSound ()
@@ -465,14 +465,14 @@ return soP->nSignature;
 
 int DigiLinkSoundToObject2 (
 	short nOrgSound, short nObject, int bForever, fix maxVolume, fix maxDistance)
-{		
+{	
 return DigiLinkSoundToObject3 (nOrgSound, nObject, bForever, maxVolume, maxDistance, -1, -1, NULL);
 }
 
 //------------------------------------------------------------------------------
 
 int DigiLinkSoundToObject (short nSound, short nObject, int bForever, fix maxVolume)
-{		
+{	
 return DigiLinkSoundToObject2 (nSound, nObject, bForever, maxVolume, 256 * F1_0);
 }
 
@@ -676,7 +676,7 @@ for (i = 0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 			soP->flags = 0;	// Mark as dead, so some other sound can use this sound
 			gameStates.sound.digi.nActiveObjects--;
 			continue;		// Go on to next sound...
-			}			
+			}		
 		if (soP->flags & SOF_LINK_TO_POS) {
 			DigiGetSoundLoc (
 				&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
@@ -745,7 +745,7 @@ for (i = 0, soP = SoundObjects; i < MAX_SOUND_OBJECTS; i++, soP++) {
 			DigiSetChannelPan (soP->channel, soP->pan);
 	}
 }
-	
+
 //------------------------------------------------------------------------------
 
 #ifdef _DEBUG
@@ -765,7 +765,7 @@ for (i = 0; i < MAX_SOUND_OBJECTS; i++)	{
 			SoundObjects [i].flags = 0;	// Mark as dead, so some other sound can use this sound
 		gameStates.sound.digi.nActiveObjects--;
 		SoundObjects [i].channel = -1;
-		}			
+		}		
 	}
 DigiStopAllChannels ();
 SoundQPause ();
@@ -888,7 +888,7 @@ soundQueue.nChannel = -1;
 //------------------------------------------------------------------------------
 
 void SoundQPause ()
-{	
+{
 soundQueue.nChannel = -1;
 }
 
@@ -906,7 +906,7 @@ soundQueue.nChannel = -1;
 //------------------------------------------------------------------------------
 
 void SoundQProcess ()
-{	
+{
 	fix curtime = TimerGetApproxSeconds ();
 	tSoundQueueEntry *q;
 
@@ -961,7 +961,7 @@ int DigiGetSoundByName (char *pszSound)
 {
 	char	szSound [FILENAME_LEN];
 	int	nSound;
-	
+
 strcpy (szSound, pszSound);
 nSound = PiggyFindSound (szSound);
 return (nSound == 255) ? -1 : DigiUnXlatSound (nSound);

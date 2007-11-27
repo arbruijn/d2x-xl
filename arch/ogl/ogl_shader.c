@@ -242,7 +242,7 @@ if (!(fs = glCreateShaderObject (GL_FRAGMENT_SHADER))) {
 	glDeleteObject (vs);
 	return 0;
 	}
-#if DBG_SHADERS	
+#if DBG_SHADERS
 if (bFromFile) {
 	vsName = LoadShader (vsName); 
 	fsName = LoadShader (fsName); 
@@ -252,7 +252,7 @@ if (bFromFile) {
 #endif
 glShaderSource (vs, 1, (const GLcharARB **) &vsName, NULL); 
 glShaderSource (fs, 1, (const GLcharARB **) &fsName, NULL); 
-#if DBG_SHADERS	
+#if DBG_SHADERS
 if (bFromFile) {
 	D2_FREE (vsName); 
 	D2_FREE (fsName); 
@@ -317,7 +317,7 @@ return 0;
 void InitShaders (void)
 {
 	GLint	nTMUs;
-	
+
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 if (gameStates.ogl.bShadersOk)
 	gameStates.ogl.bShadersOk = (nTMUs > 1);

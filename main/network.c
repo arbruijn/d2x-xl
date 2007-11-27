@@ -322,7 +322,7 @@ networkData.mySeq.nType = PID_REQUEST;
 memcpy (networkData.mySeq.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 networkData.mySeq.player.version_major=D2X_MAJOR;
 networkData.mySeq.player.version_minor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
-networkData.mySeq.player.rank=GetMyNetRanking ();	
+networkData.mySeq.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.mySeq.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	if (gameStates.multi.nGameType == UDP_GAME)
@@ -542,7 +542,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDisconnect (nPlayer);
 MultiStripRobots (nPlayer);
 }
-		
+	
 //------------------------------------------------------------------------------
 
 void NetworkNewPlayer (tSequencePacket *their)
@@ -749,7 +749,7 @@ if (nPlayer == -1) {
 	}
 else {
 	// Player is reconnecting
-#if 0		
+#if 0	
 	if (gameData.multiplayer.players [nPlayer].connected)	{
 #if 1      
 		con_printf (CONDBG, "Extra REQUEST from tPlayer ignored.\n");
@@ -810,7 +810,7 @@ extern void MultiSendDoorOpenSpecific (int, int, int, ubyte);
 void NetworkSendDoorUpdates (int pnum)
 {
 	// Send door status when new tPlayer joins
-	
+
 	int i;
 	tWall *wallP;
    
@@ -854,7 +854,7 @@ void NetworkProcessMonitorVector (int vector)
 	int		count = 0;
 	tSegment	*segP = gameData.segs.segments ;
 	tSide		*sideP;
-	
+
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		if (((tm = sideP->nOvlTex) != 0) &&
@@ -894,7 +894,7 @@ for (i = 0; i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++) {
 			}
 		}
 	}               
-		
+	
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
 		if ((tm = sideP->nOvlTex) != 0) {
@@ -988,7 +988,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 		objCount_frame = 1;
 		nFrame = 0;
 		}
-	
+
 	for (i = networkData.nSendObjNum; i <= gameData.objs.nLastObject; i++) {
 		t = gameData.objs.objects [i].nType;
 		if ((t != OBJ_POWERUP) && (t != OBJ_PLAYER) &&
@@ -1057,8 +1057,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			//OLD IPXSendPacketData (object_buffer, 8, &networkData.playerRejoining.player.node);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (object_buffer, 8, networkData.playerRejoining.player.network.ipx.server, networkData.playerRejoining.player.network.ipx.node);
-			
 		
+	
 			// Send sync packet which tells the tPlayer who he is and to start!
 			NetworkSendRejoinSync (nPlayer);
 			networkData.bVerifyPlayerJoined = nPlayer;
@@ -1193,7 +1193,7 @@ return gameData.multiplayer.players [gameData.objs.objects [nObject].id].callsig
 int NetworkFindPlayer (tNetPlayerInfo *playerP)
 {
 	int	i;
-	
+
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (!CmpNetPlayers (NULL, NULL, &netPlayers.players [i].network, &playerP->network))
 		return i;         // already got them
@@ -1205,7 +1205,7 @@ return -1;
 void NetworkAddPlayer (tSequencePacket *pkt)
 {
 	tNetPlayerInfo	*playerP;
-	
+
 if (NetworkFindPlayer (&pkt->player) > -1)
 	return;
 playerP = netPlayers.players + gameData.multiplayer.nPlayers;
@@ -1246,7 +1246,7 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	netPlayers.players [j].version_minor = netPlayers.players [i].version_minor;
    netPlayers.players [j].rank=netPlayers.players [i].rank;
 	ClipRank ((char *) &netPlayers.players [j].rank);
-   NetworkCheckForOldVersion ((char) i);	
+   NetworkCheckForOldVersion ((char) i);
 	}
 gameData.multiplayer.nPlayers--;
 netGame.nNumPlayers = gameData.multiplayer.nPlayers;
@@ -1674,7 +1674,7 @@ if (i < --networkData.nActiveGames) {
 	memcpy (activeNetGames + i, activeNetGames + i + 1, sizeof (tNetgameInfo) * h);
 	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, sizeof (tAllNetPlayersInfo) * h);
 	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int) * h);
-	}	   	
+	}	   
 networkData.bGamesChanged = 1;
 }
 
@@ -1714,7 +1714,7 @@ return i;
 //------------------------------------------------------------------------------
 
 int nSecurityCheck = 0;
-	
+
 void NetworkProcessGameInfo (ubyte *data)
 {
 	int i;
@@ -1740,7 +1740,7 @@ i = FindActiveNetGame (newGame->szGameName, newGame->nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
 	con_printf (CONDBG, "Too many netgames.\n");
-#endif		
+#endif	
 	return;
 	}
 if (i == networkData.nActiveGames) {
@@ -1862,7 +1862,7 @@ else {
 		   }
  		}
 	}
-}	
+}
 
 //------------------------------------------------------------------------------
 
@@ -1953,7 +1953,7 @@ switch (pid) {
 		pid = PID_GAME_INFO;
 #endif
 	 	break;
-	
+
     //-------------------------------------------
 	case PID_PLAYERSINFO:
 		con_printf (0, "received PID_PLAYERSINFO\n");
@@ -2011,7 +2011,7 @@ switch (pid) {
 				 !NetworkBadSecurity (their->nSecurity, "PID_SEND_ALL_GAMEINFO"))
 				NetworkSendGameInfo (their);
 		break;
-	
+
     //-------------------------------------------
 	case PID_ADDPLAYER:
 		con_printf (0, "received PID_ADDPLAYER\n");
@@ -2083,9 +2083,9 @@ switch (pid) {
 					NetworkReadSyncPacket (&TempNetInfo, 0);
 					networkData.nSecurityFlag = 0;
 					networkData.nSecurityNum = 0;
-					}	
+					}
 				}
-			else {	
+			else {
 				networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 				networkData.nSecurityNum = TempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ())
@@ -2158,7 +2158,7 @@ switch (pid) {
 		if ((networkData.nStatus == NETSTAT_ENDLEVEL) || 
 			 (networkData.nStatus == NETSTAT_PLAYING))
 			NetworkReadEndLevelPacket (data);
-#if 1				
+#if 1			
 		else
 			con_printf (CONDBG, "Junked endlevel packet.\n");
 #endif
@@ -2170,7 +2170,7 @@ switch (pid) {
 		if ((networkData.nStatus == NETSTAT_ENDLEVEL) || 
 			 (networkData.nStatus == NETSTAT_PLAYING))
 			NetworkReadEndLevelShortPacket (data);
-#if 1				
+#if 1			
 		else
 			con_printf (CONDBG, "Junked short endlevel packet!\n");
 #endif
@@ -2236,7 +2236,7 @@ switch (pid) {
 		break;
 
 	default:
-#if 1				
+#if 1			
 		con_printf (CONDBG, "Ignoring invalid packet nType %d.\n", pid);
 		LogErr ("Netgame: Ignoring invalid packet nType %d.\n", pid);
 #endif
@@ -2378,7 +2378,7 @@ void NetworkReadObjectPacket (ubyte *data)
 	int nobj = data [1];
 	int loc = 3;
 	int nRemoteFrame = data [2];
-	
+
 nFrame++;
 for (i = 0; i < nobj; i++) {
 	GET_SHORT (data, loc, nObject);                   
@@ -2400,7 +2400,7 @@ for (i = 0; i < nobj; i++) {
 			NetworkPackObjects ();
 			mode = 0;
 			}
-#if 1				
+#if 1			
 		con_printf (CONDBG, "Objnum -2 found in frame local %d remote %d.\n", nFrame, nRemoteFrame);
 		con_printf (CONDBG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, nRemoteObj);
 #endif
@@ -2418,7 +2418,7 @@ for (i = 0; i < nobj; i++) {
 	else {
 		if (nFrame != nRemoteFrame)
 			Int3 ();
-#if 1				
+#if 1			
 		con_printf (CONDBG, "Got a nType 3 tObject packet!\n");
 #endif
 		objectCount++;
@@ -2467,7 +2467,7 @@ for (i = 0; i < nobj; i++) {
 gameData.objs.nObjects = objectCount;
 //gameData.objs.nLastObject = gameData.objs.nObjects - 1;
 }
-	
+
 //------------------------------------------------------------------------------
 
 void NetworkSetGameMode (int gameMode)
@@ -2564,7 +2564,7 @@ int TeamSpawnPos (int i)
 for (h = j = 0; j < i; j++)
 	if (GetTeam (j) == t)
 		h++;
-// assign the spawn location # (h+1) to tPlayer i	
+// assign the spawn location # (h+1) to tPlayer i
 for (j = 0; j < gameData.multiplayer.nPlayerPositions; j++) {
 	switch (gameData.multiplayer.playerInit [j].nSegType) {
 		case SEGMENT_IS_GOAL_BLUE:
@@ -2652,7 +2652,7 @@ gameStates.app.nDifficultyLevel = sp->difficulty;
 networkData.nStatus = sp->gameStatus;
 //Assert (gameStates.app.nFunctionMode != FMODE_GAME);
 // New code, 11/27
-#if 1				
+#if 1			
 con_printf (1, "netGame.checksum = %d, calculated checksum = %d.\n", 
 			   netGame.segments_checksum, networkData.nMySegsCheckSum);
 #endif
@@ -2888,7 +2888,7 @@ else if (!networkData.bRejoined && (TimerGetApproxSeconds () > t1 + F1_0 * 2)) {
 
 	// Poll time expired, re-send request
 	t1 = TimerGetApproxSeconds ();
-#if 1				
+#if 1			
 	con_printf (CONDBG, "Re-sending join request.\n");
 #endif
 	i = NetworkSendRequest ();
@@ -2905,7 +2905,7 @@ int NetworkWaitForSync (void)
 	tMenuItem		m [2];
 	int					i, choice;
 	tSequencePacket	me;
-	
+
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
 m [0].nType = NM_TYPE_TEXT; 
@@ -2928,7 +2928,7 @@ if (networkData.nStatus == NETSTAT_PLAYING)
 else if (networkData.nStatus == NETSTAT_AUTODL)
 	if (DownloadMission (netGame.szMissionName))
 		return 1;
-#if 1				
+#if 1			
 con_printf (CONDBG, "Aborting join.\n");
 #endif
 me.nType = PID_QUIT_JOINING;
@@ -2973,7 +2973,7 @@ void NetworkWaitForRequests (void)
 	// Wait for other players to load the level before we send the sync
 	int choice, i;
 	tMenuItem m [1];
-	
+
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
 m [0].nType=NM_TYPE_TEXT; 
@@ -2992,7 +2992,7 @@ if (choice == -1) {
 		return;
 	if (choice != 0)
 		goto do_menu;
-		
+	
 	// User confirmed abort
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((gameData.multiplayer.players [i].connected != 0) && (i != gameData.multiplayer.nLocalPlayer)) {
@@ -3150,7 +3150,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 				networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_PLAYERS;
 				networkData.nSecurityNum=TempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
-#if 1				
+#if 1			
 					con_printf (CONDBG, "HUH? Game=%d Player=%d\n", 
 									networkData.nSecurityNum, tmpPlayersInfo->nSecurity);
 #endif
@@ -3202,7 +3202,7 @@ while (0 < (size = IpxGetPacketData (packet))) {
 void NetworkLeaveGame ()
 { 
    int nsave;
-		
+	
 NetworkDoFrame (1, 1);
 #ifdef NETPROFILING
 fclose (SendLogFile);
@@ -3232,7 +3232,7 @@ NetworkFlush ();
 void NetworkFlush ()
 {
 	ubyte packet [IPX_MAX_DATA_SIZE];
-	
+
 if (gameStates.multi.nGameType >= IPX_GAME)
 	if (!networkData.bActive) 
 		return;
@@ -3253,10 +3253,10 @@ AddServerToTracker ();
 if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.bSendObjects)
 	loopmax = gameData.multiplayer.nPlayers * netGame.nPacketsPerSec;
 
-if (gameStates.multi.nGameType >= IPX_GAME)	
+if (gameStates.multi.nGameType >= IPX_GAME)
 	if (!networkData.bActive) 
 		return -1;
-#if 1				
+#if 1			
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
 	con_printf (CONDBG, "Calling NetworkListen () when not in net game.\n");
 #endif
@@ -3292,10 +3292,10 @@ int NetworkWaitForPlayerInfo ()
 if (gameStates.multi.nGameType >= IPX_GAME)
 	if (!networkData.bActive) 
 		return 0;
-#if 1				
+#if 1			
 if (!(gameData.app.nGameMode & GM_NETWORK) && (gameStates.app.nFunctionMode == FMODE_GAME))
 	con_printf (CONDBG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
-#endif		
+#endif	
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	Int3 (); //MY GOD! Get Jason...this is the source of many problems
 	return 0;
@@ -3366,14 +3366,14 @@ if ((networkData.mySyncPack.data_size + len) > networkData.nMaxXDataSize) {
 	bCheck = ptr [0];
 	NetworkDoFrame (1, 0);
 	if (networkData.mySyncPack.data_size != 0) {
-#if 1				
+#if 1			
 	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.mySyncPack.data_size);
 #endif
 	Int3 ();
 	}
 //              Int3 ();         // Trying to send too much!
 //              return;
-#if 1				
+#if 1			
 	con_printf (CONDBG, "Packet overflow, sending additional packet, nType %d len %d.\n", ptr [0], len);
 #endif
 	Assert (bCheck == ptr [0]);
@@ -3428,7 +3428,7 @@ void SquishShortFrameInfo (tFrameInfoShort old_info, ubyte *data)
 	int 	loc = 0;
 	int 	tmpi;
 	short tmps;
-		
+	
 SET_BYTE (data, loc, old_info.nType);                                            
 loc += 3;
 SET_INT (data, loc, old_info.numpackets);
@@ -3633,7 +3633,7 @@ void NetworkReadPDataPacket (tFrameInfo *pd)
 	int nTheirPlayer;
 	int theirObjNum;
 	tObject * theirObjP = NULL;
-	
+
 // tFrameInfo should be aligned...for mac, make the necessary adjustments
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -3685,7 +3685,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	return;
 	}
 if ((sbyte)pd->level_num != gameData.missions.nCurrentLevel) {
-#if 1				
+#if 1			
 	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", pd->nPlayer, pd->level_num);
 #endif
 	return;
@@ -3700,7 +3700,7 @@ if  (pd->numpackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGot) 
 	int nMissedPackets = pd->numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
 	if ((pd->numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot)>0)
 		networkData.nTotalMissedPackets += pd->numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
-#if 1				
+#if 1			
 	if (nMissedPackets > 0)       
 		con_printf (0, 
 			"Missed %d packets from tPlayer #%d (%d total)\n", 
@@ -3753,7 +3753,7 @@ if (pd->data_size > 0)
 void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
 {
 	int loc = 0;
-	
+
 GET_BYTE (old_info, loc, new_info->nType);
 /* skip three for pad byte */                                       
 loc += 3;
@@ -3824,7 +3824,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	return;
 	}
 if ((sbyte)new_pd.level_num != gameData.missions.nCurrentLevel) {
-#if 1				
+#if 1			
 	con_printf (CONDBG, "Got frame packet from tPlayer %d wrong level %d!\n", new_pd.nPlayer, new_pd.level_num);
 #endif
 	return;
@@ -3838,7 +3838,7 @@ if  (new_pd.numpackets != gameData.multiplayer.players [nTheirPlayer].nPacketsGo
 	int nMissedPackets = new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
 	if ((new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot)>0)
 		networkData.nTotalMissedPackets += new_pd.numpackets-gameData.multiplayer.players [nTheirPlayer].nPacketsGot;
-#if 1				
+#if 1			
 	if (nMissedPackets > 0)       
 		con_printf (CONDBG, 
 			"Missed %d packets from tPlayer #%d (%d total)\n", 
@@ -3942,7 +3942,7 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 void NetworkHandlePingReturn (ubyte pnum)
 {
 if ((pnum >= gameData.multiplayer.nPlayers) || !pingStats [pnum].launchTime) {
-#if 1				
+#if 1			
 	 con_printf (CONDBG, "Got invalid PING RETURN from %s!\n", gameData.multiplayer.players [pnum].callsign);
 #endif
    return;
@@ -3954,7 +3954,7 @@ if (!gameStates.render.cockpit.bShowPingStats)
 pingStats [pnum].launchTime = 0;
 pingStats [pnum].received++;
 }
-	
+
 //------------------------------------------------------------------------------
 
 void NetworkSendPing (ubyte pnum)
@@ -4039,7 +4039,7 @@ else {
 int GetNewPlayerNumber (tSequencePacket *their)
   {
 	 int i;
-	
+
 if (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)
 	return (gameData.multiplayer.nPlayers);
 else {
@@ -4065,7 +4065,7 @@ void NetworkSendExtras ()
 {
 Assert (networkData.nPlayerJoiningExtras >- 1);
 if (!NetworkIAmMaster ()) {
-#if 1				
+#if 1			
   con_printf (CONDBG, "Hey! I'm not the master and I was gonna send info!\n");
 #endif
 	}
@@ -4130,7 +4130,7 @@ void NetworkProcessNakedPData (char *data, int len)
    Assert (data [0]=PID_NAKED_PDATA);
 
 if (pnum < 0) {
-#if 1				
+#if 1			
    con_printf (CONDBG, "Naked packet is bad!\n");
 #endif
 	Int3 (); // This packet is bogus!!
@@ -4200,7 +4200,7 @@ if (rank < 0)
 else if (rank > 8)
 	rank = 8;
 
-#if 1				
+#if 1			
 con_printf (CONDBG, "Rank is %d (%s)\n", rank+1, pszRankStrings [rank+1]);
 #endif
 return (rank+1);
@@ -4234,7 +4234,7 @@ void NetworkProcessNamesReturn (char *data)
 	int i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    
 if (networkData.nNamesInfoSecurity != (*(int *) (data+1))) {
-#if 1				
+#if 1			
   con_printf (CONDBG, "Bad security on names return!\n");
   con_printf (CONDBG, "NIS=%d data=%d\n", networkData.nNamesInfoSecurity, (*(int *) (data+1)));
 #endif
@@ -4242,7 +4242,7 @@ if (networkData.nNamesInfoSecurity != (*(int *) (data+1))) {
 	}
 nPlayers = data [count++]; 
 if (nPlayers == 255) {
-	gameStates.multi.bSurfingNet = 0;	
+	gameStates.multi.bSurfingNet = 0;
 	networkData.nNamesInfoSecurity = -1;
 	ExecMessageBox (NULL, NULL, 1, "OK", "That game is refusing\nname requests.\n");
 	gameStates.multi.bSurfingNet=1;
@@ -4252,7 +4252,7 @@ Assert ((nPlayers > 0) && (nPlayers < MAX_NUM_NET_PLAYERS));
 memset (m, 0, sizeof (m));
 for (i = 0; i < 12; i++) {
 	m [i].text = (char *)(mtext + i);
-	m [i].nType = NM_TYPE_TEXT;		
+	m [i].nType = NM_TYPE_TEXT;	
 	}
 #if SECURITY_CHECK
 for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
@@ -4277,23 +4277,23 @@ for (i = 0; i < nPlayers; i++) {
 	l = data [count++];
 	memcpy (temp, data + count, CALLSIGN_LEN + 1);
 	count += CALLSIGN_LEN + 1;
-	if (gameOpts->multi.bNoRankings)	
+	if (gameOpts->multi.bNoRankings)
 		sprintf (mtext [num], "%s", temp);
 	else
 		sprintf (mtext [num], "%s%s", pszRankStrings [l], temp);
-	num++;	
+	num++;
 	}
 if (data [count] == 99) {
 	sprintf (mtext [num++], " ");
 	sprintf (mtext [num++], TXT_SHORT_PACKETS2, data [count+1]? TXT_ON : TXT_OFF);
 	sprintf (mtext [num++], TXT_PPS2, data [count+2]);
 	}
-bAlreadyShowingInfo = 1;	
+bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 ExecMenutiny2 (NULL, NULL, num, m, NULL);
 gameStates.menus.nInMenu = nInMenu;
-bAlreadyShowingInfo = 0;	
+bAlreadyShowingInfo = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -4306,7 +4306,7 @@ void NetworkSendPlayerNames (tSequencePacket *their)
 	char buf [80];
 
 if (!their) {
-#if 1				
+#if 1			
 	con_printf (CONDBG, "Got a tPlayer name without a return address! Get Jason\n");
 #endif
 	return;
@@ -4330,7 +4330,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		count += CALLSIGN_LEN + 1;
 		}
 buf [count++] = 99;
-buf [count++] = netGame.bShortPackets;		
+buf [count++] = netGame.bShortPackets;	
 buf [count++] = (char) netGame.nPacketsPerSec;
  
 sendit:	   
@@ -4579,10 +4579,10 @@ if (gameData.multiplayer.autoNG.bHost) {
 else {
 	memcpy (ipx_ServerAddress + 4, gameData.multiplayer.autoNG.ipAddr, sizeof (gameData.multiplayer.autoNG.ipAddr));
 	mpParams.udpClientPort = gameData.multiplayer.autoNG.nPort;
-	}	
+	}
 return 1;
 }
-	
+
 //------------------------------------------------------------------------------
 
 void LogExtraGameInfo (void)

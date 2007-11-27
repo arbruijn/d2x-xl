@@ -111,17 +111,17 @@ void parse_args(int argc,char **argv,void (*handler_func)(char *arg),int flags)
 				done = _dos_findfirst(*argv,0,&ffblk);
 
 				if (done) handler_func(*argv);
-			
+		
 				else while (!done) {
 
 					strcpy(nptr,ffblk.name);	//copy name after path
 
 					handler_func(filename);
-			
+		
 					done = _dos_findnext(&ffblk);
-			
+		
 				}
-	
+
 			}
 			else
 				handler_func(*argv);

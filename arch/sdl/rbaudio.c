@@ -49,7 +49,7 @@ void RBAInit()
 {
 	int	d, i, j;
 	char	szDrive [FILENAME_LEN], sz [FILENAME_LEN];
-	
+
 if (initialised) 
 	return;
 if (FindArg("-nocdrom")) 

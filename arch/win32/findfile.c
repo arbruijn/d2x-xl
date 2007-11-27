@@ -141,7 +141,7 @@ int SetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 	int retval;
 
 	DosDateTimeToFileTime(ftstruct->date, ftstruct->time, &ft);
-	retval = SetFileTime((HANDLE)filehandle, NULL, NULL, &ft);	
+	retval = SetFileTime((HANDLE)filehandle, NULL, NULL, &ft);
 	if (retval) return 0;
 	else return 1;
 }

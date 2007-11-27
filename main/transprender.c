@@ -376,7 +376,7 @@ return AddRenderItemMT (riParticle, &item, sizeof (item), particle->transPos.p.z
 int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth)
 {
 	tRILightning item;
-	vmsVector vPos;	
+	vmsVector vPos;
 	int z;
 
 item.lightning = lightnings;
@@ -646,7 +646,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
 if (!item->bmP) {
 	glPolygonOffset (0,0);
 	glDisable (GL_POLYGON_OFFSET_FILL);
-	}	
+	}
 #endif
 if (item->bAdditive)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

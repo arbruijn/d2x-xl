@@ -485,7 +485,7 @@ void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf, int orientation )
 		clipped_v1 = FIND_SCALED_NUM(ymax,y0,y1,v0,v1);
 		clipped_y1 = ymax;
 	}
-	
+
 	dx0 = f2i(clipped_x0); dx1 = f2i(clipped_x1);
 	dy0 = f2i(clipped_y0); dy1 = f2i(clipped_y1);
 

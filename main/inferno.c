@@ -262,7 +262,7 @@ void PrintVersionInfo (void)
 		GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 
 		GrGetStringSize ("V2.2", &w, &h, &aw);
-	
+
 		WIN (DDGRLOCK (dd_grd_curcanv));
 	   GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, TXT_COPYRIGHT);
 		GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w-w-2, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
@@ -2276,7 +2276,7 @@ for (i = 0; i < MAX_BOSS_COUNT; i++) {
 	gameData.boss [i].nCloakDuration = BOSS_CLOAK_DURATION;
 	gameData.boss [i].nLastGateTime = 0;
 	gameData.boss [i].nGateInterval = F1_0 * 6;
-	}	
+	}
 gameData.ai.bInitialized = 0;
 gameData.ai.bEvaded = 0;
 gameData.ai.bEnableAnimation = 1;
@@ -2381,7 +2381,6 @@ GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6, 0);
-GETMEM (ubyte, gameData.segs.bVertVis, MAX_VERTICES * MAX_VERTVIS_FLAGS, 0);
 GETMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS, 0);
 GETMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS, 0);
 GETMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS, 0);
@@ -2568,7 +2567,6 @@ FREEMEM (tTexCoord2f, gameData.segs.faces.texCoord, MAX_SEGMENTS * 6 * 4 * 4);
 FREEMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS);
 FREEMEM (vmsVector, gameData.segs.sideCenters, MAX_SEGMENTS * 6);
-FREEMEM (ubyte, gameData.segs.bVertVis, MAX_SEGMENTS * MAX_VERTVIS_FLAGS);
 FREEMEM (ubyte, gameData.segs.bSegVis, MAX_SEGMENTS * MAX_SEGVIS_FLAGS);
 FREEMEM (tSlideSegs, gameData.segs.slideSegs, MAX_SEGMENTS);
 }
@@ -2786,7 +2784,7 @@ void ShowLoadingScreen (void)
 	int pcx_error;
 	char filename[14];
 
-#if TRACE		
+#if TRACE	
 con_printf(CONDBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
 strcpy (filename, gameStates.menus.bHires?"descentb.pcx":"descent.pcx");
@@ -2829,9 +2827,9 @@ if (FindArg ("-hoarddata")) {
 	FILE *ofile;
 	int iff_error, i;
 
-	char *sounds[] = {"selforb.raw", "selforb.r22", 		//SOUND_YOU_GOT_ORB			
-							"teamorb.raw", "teamorb.r22", 		//SOUND_FRIEND_GOT_ORB			
-							"enemyorb.raw", "enemyorb.r22", 	//SOUND_OPPONENT_GOT_ORB	
+	char *sounds[] = {"selforb.raw", "selforb.r22", 		//SOUND_YOU_GOT_ORB		
+							"teamorb.raw", "teamorb.r22", 		//SOUND_FRIEND_GOT_ORB		
+							"enemyorb.raw", "enemyorb.r22", 	//SOUND_OPPONENT_GOT_ORB
 							"OPSCORE1.raw", "OPSCORE1.r22"};	//SOUND_OPPONENT_HAS_SCORED
 
 	ofile = fopen ("hoard.ham", "wb");
@@ -2905,7 +2903,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			SetScreenMode (SCREEN_MENU);
 			if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 				NDStartPlayback (NULL);		// Randomly pick a file
-				if (gameData.demo.nState != ND_STATE_PLAYBACK)	
+				if (gameData.demo.nState != ND_STATE_PLAYBACK)
 				Error ("No demo files were found for autodemo mode!");
 				}
 			else {
@@ -2919,7 +2917,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 #endif
 				check_joystick_calibration ();
 				GrPaletteStepClear ();		//I'm not sure why we need this, but we do
-				CallMenu ();	
+				CallMenu ();
 #ifdef EDITOR
 				if (gameStates.app.nFunctionMode == FMODE_EDITOR)	{
 					create_new_mine ();
@@ -3100,7 +3098,7 @@ if (loadOp == 0) {
 		loadOp = 1;
 		loadIdx = 0;
 		}
-	}	
+	}
 else if (loadOp == 1) {
 	loadIdx = LoadLoresModel (loadIdx);
 	if (loadIdx >= sizeofa (oofToModel)) {
@@ -3475,7 +3473,7 @@ if (gameStates.app.bAutoRunMission) {
 	}
 // handle automatic launch of a demo playback
 if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
-	NDStartPlayback (gameData.demo.fnAuto);		
+	NDStartPlayback (gameData.demo.fnAuto);	
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);
 	}
@@ -3491,9 +3489,9 @@ return 0;		//presumably successful exit
 
 // ----------------------------------------------------------------------------
 
-void check_joystick_calibration ()	
+void check_joystick_calibration ()
 {
-#if 0//ndef _WIN32	
+#if 0//ndef _WIN32
 	int x1, y1, x2, y2, c;
 	fix t1;
 

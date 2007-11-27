@@ -100,7 +100,7 @@ void GenerateStarfield ();
 void StartEndLevelFlyThrough (int n, tObject *objP, fix speed);
 void StartRenderedEndLevelSequence ();
 
-char movieTable [2][30] = {	
+char movieTable [2][30] = {
 	{'a', 'b', 'c', 
 	'a', 
 	'd', 'f', 'd', 'f', 
@@ -1166,9 +1166,9 @@ int ConvertExt (char *dest, char *ext)
 	char *t = strchr (dest, '.');
 
 if (t && (t-dest <= 8)) {
-	t [1] = ext [0];			
-	t [2] = ext [1];			
-	t [3] = ext [2];	
+	t [1] = ext [0];		
+	t [2] = ext [1];		
+	t [3] = ext [2];
 	return 1;
 	}
 return 0;

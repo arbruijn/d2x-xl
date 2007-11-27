@@ -58,7 +58,7 @@ int put_sig(long sig,FILE *f)
 	return putc(s[0],f);
 
 }
-	
+
 int get_word(FILE *f)
 {
 	unsigned char c0,c1;
@@ -173,14 +173,14 @@ int parse_body_pbm(FILE *ifile,long len,struct bitmap_header *bitmap_header)
 	else if (bitmap_header->compression == cmpByteRun1)
 		for (old_cnt=cnt=len,wid_cnt=width;cnt>0;) {
 			unsigned char c;
-	
+
 			if (old_cnt-cnt > 2048) {
 //				//printf(".");
 				old_cnt=cnt;
 			}
-	
+
 			if (wid_cnt <= 0) wid_cnt = width;
-	
+
 			n=getc(ifile);
 			if (n >= 0) {						// copy next n+1 bytes from source, they are not compressed
 				nn = (int) n+1;
@@ -198,9 +198,9 @@ int parse_body_pbm(FILE *ifile,long len,struct bitmap_header *bitmap_header)
 				if (wid_cnt==-1) --nn;
 				while (nn--) *p++=c;
 			}
-	
+
 		}
-	
+
 	if (len & 1) ignore = getc(ifile);
 
 	if (ignore) ignore++;	// haha, suppress the evil warning message
@@ -230,14 +230,14 @@ int parse_body_ilbm(FILE *ifile,long len,struct bitmap_header *bitmap_header)
 	else if (bitmap_header->compression == cmpByteRun1)
 		for (old_cnt=cnt=len,wid_cnt=width;cnt>0;) {
 			unsigned char c;
-	
+
 			if (old_cnt-cnt > 2048) {
 //				//printf(".");
 				old_cnt=cnt;
 			}
-	
+
 			if (wid_cnt <= 0) wid_cnt = width;
-	
+
 			n=getc(ifile);
 			if (n >= 0) {						// copy next n+1 bytes from source, they are not compressed
 				nn = (int) n+1;
@@ -255,9 +255,9 @@ int parse_body_ilbm(FILE *ifile,long len,struct bitmap_header *bitmap_header)
 				if (wid_cnt==-1) --nn;
 				while (nn--) *p++=c;
 			}
-	
+
 		}
-	
+
 	if (len & 1) ignore = getc(ifile);
 
 	if (ignore) ignore++;	// haha, suppress the evil warning message
@@ -314,14 +314,14 @@ int parse_iff(FILE *ifile,struct bitmap_header *bitmap_header)
 						parse_bmhd(ifile,len,bitmap_header);
 
 						if (! (bitmap_header->raw_data = farmalloc((long) bitmap_header->w * bitmap_header->h))) return IFF_NO_MEM;
-						
+					
 						break;
 
 					case cmap_sig:
 					{
 						int ncolors=(int) (len/3),cnum;
 						unsigned char r,g,b;
-	
+
 						for (cnum=0;cnum<ncolors;cnum++) {
 							r=getc(ifile);
 							g=getc(ifile);

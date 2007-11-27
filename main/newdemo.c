@@ -432,7 +432,7 @@ if (bOldFormat) {
 	NDWriteShort (sp.velz);
 	}
 else {
-	NDWriteVector (&objP->position.vPos);	
+	NDWriteVector (&objP->position.vPos);
 	NDWriteShort (objP->nSegment);
 	NDWriteVector (&objP->mType.physInfo.velocity);
 	}
@@ -2668,7 +2668,7 @@ LastReadValue = c;
 if (bNDBadRead)
 	NDErrorMsg (TXT_DEMO_ERR_READING, TXT_DEMO_OLD_CORRUPT, NULL);
 else
-	NDUpdateSmoke ();	
+	NDUpdateSmoke ();
 return bDone;
 }
 
@@ -3343,7 +3343,7 @@ if (!filename)
 strcpy (filename2, filename);
 bRevertFormat = gameOpts->demo.bRevertFormat ? 1 : -1;
 if (!(ndInFile = CFOpen (filename2, gameFolders.szDemoDir, "rb", 0))) {
-#if TRACE				
+#if TRACE			
 	con_printf (CONDBG, "Error reading '%s'\n", filename);
 #endif
 	return;

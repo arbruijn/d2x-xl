@@ -121,7 +121,7 @@ int joy_init()
 	struct sdl_joystick	*jp = SDL_Joysticks;
 
 	if (SDL_Init(SDL_INIT_JOYSTICK) < 0) {
-#if TRACE	
+#if TRACE
 		con_printf(CON_VERBOSE, "sdl-joystick: initialisation failed: %s.",SDL_GetError());
 #endif
 		return 0;
@@ -129,11 +129,11 @@ int joy_init()
 	memset (&Joystick, 0, sizeof (Joystick));
 	n = SDL_NumJoysticks();
 
-#if TRACE	
+#if TRACE
 	con_printf(CON_VERBOSE, "sdl-joystick: found %d joysticks\n", n);
 #endif
 	for (i = 0; (i < n) && (gameStates.input.nJoysticks < MAX_JOYSTICKS); i++) {
-#if TRACE	
+#if TRACE
 		con_printf(CON_VERBOSE, "sdl-joystick %d: %s\n", i, SDL_JoystickName (i));
 #endif
 		jp->handle = SDL_JoystickOpen (i);
@@ -152,7 +152,7 @@ int joy_init()
 				Warning (TXT_JOY_HATNO, jp->n_hats, MAX_HATS_PER_JOYSTICK);
 				jp->n_hats = MAX_HATS_PER_JOYSTICK;
 				}
-#if TRACE	
+#if TRACE
 			con_printf(CON_VERBOSE, "sdl-joystick: %d axes\n", jp->n_axes);
 			con_printf(CON_VERBOSE, "sdl-joystick: %d buttons\n", jp->n_buttons);
 			con_printf(CON_VERBOSE, "sdl-joystick: %d hats\n", jp->n_hats);
@@ -174,11 +174,11 @@ int joy_init()
 			gameStates.input.nJoysticks++;
 			}
 		else {
-#if TRACE	
+#if TRACE
 			con_printf(CON_VERBOSE, "sdl-joystick: initialization failed!\n");
-#endif			
+#endif		
 		}
-#if TRACE	
+#if TRACE
 		con_printf(CON_VERBOSE, "sdl-joystick: %d axes (total)\n", Joystick.n_axes);
 		con_printf(CON_VERBOSE, "sdl-joystick: %d buttons (total)\n", Joystick.n_buttons);
 #endif

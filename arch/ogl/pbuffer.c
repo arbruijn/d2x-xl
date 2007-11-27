@@ -91,7 +91,7 @@ int OglCreatePBuffer (tPixelBuffer *pb, int nWidth, int nHeight, int nDepth)
 #ifdef _WIN32
 	int	pf;
 	UINT	nPf;
-	
+
 	static int pfAttribs [] = {
 		WGL_SUPPORT_OPENGL_ARB, TRUE,
 		WGL_DRAW_TO_PBUFFER_ARB, TRUE,

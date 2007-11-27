@@ -228,7 +228,7 @@ else if (h < -joyDeadzoneScaled)
 	h = ((h + joyDeadzoneScaled) * 128) / (128 - joyDeadzoneScaled);
 else
 	h = 0;
-return (int) ((AttenuateAxis (h, i) * gameStates.input.kcPollTime) / 128);	
+return (int) ((AttenuateAxis (h, i) * gameStates.input.kcPollTime) / 128);
 }
 
 //------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ if (gameStates.limitFPS.bJoystick) {
 					else
 						joyAxis [i] = 0;
 #endif
-				}	
+				}
 			}
 		bUseJoystick = 1;
 		}
@@ -285,7 +285,7 @@ else {   // LIMIT_JOY_FPS
 					joyAxis [i] = ControlsReadJoyAxis (i, rawJoyAxis);
 				else
 					joyAxis [i] = 0;
-				}	
+				}
 			}
 		bUseJoystick = 1;
 		}
@@ -316,8 +316,8 @@ else {
 		}
 	else
 		upcount=1;
-	}				
-JoySetBtnValues (btn, state, timeDown, downcount, upcount);			
+	}			
+JoySetBtnValues (btn, state, timeDown, downcount, upcount);		
 }
 
 //------------------------------------------------------------------------------
@@ -341,14 +341,14 @@ else if (raw_button > 39)
 	button = 11;
 else if (raw_button > 15)
 	button = 15;
-else	
+else
 	button = 19;
 ControlsSetFCSButton (19, button);
 ControlsSetFCSButton (15, button);
 ControlsSetFCSButton (11, button);
 ControlsSetFCSButton (7, button);
 }
-		
+	
 //------------------------------------------------------------------------------
 
 int ControlsReadCyberman (int *mouseAxis, int *nMouseButtons)
@@ -1199,7 +1199,7 @@ else {
 			}
 		}
 	}
-}	
+}
 
 //------------------------------------------------------------------------------
 
@@ -1278,7 +1278,7 @@ Controls [0].toggleIconsCount = 0;
 Controls [0].zoomDownCount = 0;
 Controls [0].headlightCount = 0; 
 Controls [0].fireFlareDownCount = 0;
-Controls [0].dropBombDownCount = 0;	
+Controls [0].dropBombDownCount = 0;
 Controls [0].automapDownCount = 0;
 Controls [0].rearViewDownCount = 0;
 gameStates.input.bControlsSkipFrame = 1;
@@ -1354,7 +1354,7 @@ if (nBankSensMod > 2) {
 if (gameStates.input.kcPollTime > F1_0) {
 #if TRACE
 	con_printf (1, "Bogus frame time of %.2f seconds\n", f2fl (gameStates.input.kcPollTime));
-#endif	
+#endif
 	gameStates.input.kcPollTime = F1_0;
 	}
 #if 0
@@ -1422,17 +1422,17 @@ void CybermouseAdjust ()
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_external_version > 0) {		
+		if (kc_external_version > 0) {	
 			vmsMatrix tempm, ViewMatrix;
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
-	
+
 			Kconfig_abs_movement = (vmsAngVec *) ((uint)kc_external_control + sizeof (tControlInfo);
-	
+
 			if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h)	{
 				VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 				VmMatMul (&ViewMatrix,&gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient,&tempm);
-				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;		
+				gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient = ViewMatrix;	
 			}
 			oem_message = (char *) ((uint)Kconfig_abs_movement + sizeof (vmsAngVec);
 			if (oem_message [0] != '\0')
@@ -1440,20 +1440,20 @@ void CybermouseAdjust ()
 		}
 	}*/
 
-	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);						
+	Controls [0].pitchTime += FixMul (kc_external_control->pitchTime,gameData.time.xFrame);					
 	Controls [0].verticalThrustTime += FixMul (kc_external_control->verticalThrustTime,gameData.time.xFrame);
 	Controls [0].headingTime += FixMul (kc_external_control->headingTime,gameData.time.xFrame);
 	Controls [0].sidewaysThrustTime += FixMul (kc_external_control->sidewaysThrustTime ,gameData.time.xFrame);
 	Controls [0].bankTime += FixMul (kc_external_control->bankTime ,gameData.time.xFrame);
 	Controls [0].forwardThrustTime += FixMul (kc_external_control->forwardThrustTime ,gameData.time.xFrame);
-//	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;	
-//	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;	
+//	Controls [0].rearViewDownCount += kc_external_control->rearViewDownCount;
+//	Controls [0].rearViewDownState |= kc_external_control->rearViewDownState;
 	Controls [0].firePrimaryDownCount += kc_external_control->firePrimaryDownCount;
 	Controls [0].firePrimaryState |= kc_external_control->firePrimaryState;
 	Controls [0].fireSecondaryState |= kc_external_control->fireSecondaryState;
 	Controls [0].fireSecondaryDownCount += kc_external_control->fireSecondaryDownCount;
 	Controls [0].fireFlareDownCount += kc_external_control->fireFlareDownCount;
-	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;	
+	Controls [0].dropBombDownCount += kc_external_control->dropBombDownCount;
 //	Controls [0].automapDownCount += kc_external_control->automapDownCount;
 // 	Controls [0].automapState |= kc_external_control->automapState;
   } 

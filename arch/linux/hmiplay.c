@@ -94,34 +94,34 @@ void my_quit()
 int seq_init()
 {
 	int nrmidis,nrsynths,i;
-	
+
 	if ((seqfd = open(SEQ_DEV, O_WRONLY, 0)) < 0)
 	{
 		perror ("Error opening sequencer device");
 		return (-1);
 	}
-	
+
 	if (ioctl(seqfd, SNDCTL_SEQ_NRSYNTHS, &nrsynths) == -1)
 	{
 		perror ("There is no soundcard");
 		return (-1);
 	}
-	
+
 	if (ioctl(seqfd, SNDCTL_SEQ_NRMIDIS, &nrmidis) == -1)
 	{
 		perror ("There is no soundcard");
 		return (-1);
 	}
-	
-	
+
+
 	if(nrsynths < 1 && nrmidis < 1)
 	{
 		//printf("No synth or midi device!\n");
 		return -1;
 	}
-	
+
 	synth_dev = 0;
-	
+
 	//Check if we have wavetable synth device
 	for (i=0; i < nrsynths; i++)
 	{
@@ -131,14 +131,14 @@ int seq_init()
 			perror("cannot get info on soundcard");
 			return (-1);
 		}
-		
+	
 		if (card_info.synthType == SYNTH_TYPE_SAMPLE)
 		{    
 			synth_dev = i;
 			break;
 		}
 	}
-	
+
 #ifdef WANT_AWE32
 	for (i=0; i < nrsynths; i++)
 	{
@@ -148,7 +148,7 @@ int seq_init()
 			perror("cannot get info on soundcard");
 			return (-1);
 		}
-		
+	
 		if (card_info.synthType==SYNTH_TYPE_SAMPLE
 		    &&card_info.synth_subtype==SAMPLE_TYPE_AWE32) {
 			synth_dev = i;
@@ -156,7 +156,7 @@ int seq_init()
 		}
 	}
 #endif
-	
+
 #ifdef WANT_MPU401
 	for (i=0; i < nrmidis; i++)
 	{
@@ -167,27 +167,27 @@ int seq_init()
 			perror("cannot get info on soundcard");
 			return (-1);
 		}
-		
+	
 		// Just take first available for now.
 		card_info.synthType=SYNTH_TYPE_MIDI;
 		card_info.device=i;
 		synth_dev=i;
 		break;
 	}
-	
+
 	if (card_info.synthType!=SYNTH_TYPE_MIDI) {
 #endif
-		
+	
 		card_info.device = synth_dev;
 		if (ioctl(seqfd, SNDCTL_SYNTH_INFO, &card_info) == -1)
 		{
 			perror("cannot get info on soundcard");
 			return (-1);
 		}
-		
+	
 #ifdef WANT_MPU401
 	}
-	
+
 	if (card_info.synthType==SYNTH_TYPE_MIDI) {
 		// Insert some sort of midi reset here later.
 	} else
@@ -209,7 +209,7 @@ int seq_init()
 			voices[i].channel = -1;
 		}
 	}
-	
+
 	return(0);
 }
 
@@ -237,7 +237,7 @@ void set_program(int channel, int pgm)
 void start_note(int channel, int note, int vel)
 {
 	int i;
-	
+
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
@@ -255,7 +255,7 @@ void start_note(int channel, int note, int vel)
 			voices[i].note = note;
 			voices[i].channel = channel;
 			if (((1<<channel) & drumflag))         /* drum note */
-			{	
+			{
 				SEQ_SET_PATCH(synth_dev, i, note + 128);
 			}
 			else
@@ -270,7 +270,7 @@ void start_note(int channel, int note, int vel)
 void stop_note(int channel, int note, int vel)
 {
 	int i;
-	
+
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
@@ -295,7 +295,7 @@ void stop_note(int channel, int note, int vel)
 void set_control(int channel,int ctrl,int value)
 {
 	int i;
-	
+
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
@@ -315,7 +315,7 @@ void set_control(int channel,int ctrl,int value)
 void set_pitchbend(int channel, int bend)
 {
 	int i;
-	
+
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
@@ -337,7 +337,7 @@ void set_pitchbend(int channel, int bend)
 void set_key_pressure(int channel, int note, int vel)
 {
 	int i;
-	
+
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)
@@ -356,7 +356,7 @@ void set_key_pressure(int channel, int note, int vel)
 void set_chn_pressure(int channel, int vel)
 {    
 	int i;
-	
+
 #ifdef WANT_AWE32
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
 	    && card_info.synth_subtype == SAMPLE_TYPE_AWE32)    
@@ -375,7 +375,7 @@ void set_chn_pressure(int channel, int vel)
 void stop_all()
 {
 	int i;
-	
+
 #ifdef WANT_AWE32
 	int j;
 	if (card_info.synthType == SYNTH_TYPE_SAMPLE
@@ -402,11 +402,11 @@ int get_dtime(unsigned char *data, int *pos)
 	char buf;
 	int result;
 	result =0;
-	
+
 	buf = data[*pos];
 	*pos +=1;
 	result = (0x7f & buf);
-	
+
 	if (!(buf & 0x80))
 	{
 		buf = data[*pos];
@@ -425,7 +425,7 @@ int get_dtime(unsigned char *data, int *pos)
 			}
 		}
 	}
-	
+
 	return result;
 }
 
@@ -433,7 +433,7 @@ int do_track_event(unsigned char *data, int *pos)
 {
 	char channel;
 	unsigned char buf[5];
-	
+
 	buf[0]=data[*pos];
 	*pos +=1;
 	channel = buf[0] & 0xf;
@@ -463,7 +463,7 @@ int do_track_event(unsigned char *data, int *pos)
 		return 0;
 	}
 #endif
-	
+
 	switch((buf[0] & 0xf0))
 	{
 	 case 0x80:
@@ -561,9 +561,9 @@ int do_ipc(int qid, struct msgbuf *buf, int flags)
 	int ipc_read;
 	CFILE *fptr;
 	int l=0;
-	
+
 	ipc_read = msgrcv(qid,buf,16,0,flags | MSG_NOERROR);
-	
+
 	switch (ipc_read)
 	{
 	 case -1:
@@ -581,7 +581,7 @@ int do_ipc(int qid, struct msgbuf *buf, int flags)
 			volume=(double) ((double) buf->mtext[0]/127.0);
 			break;
 		 case 'p':
-			fptr=CFOpen((buf->mtext+1), gameFolders.szDataDir,"rb", 0);		
+			fptr=CFOpen((buf->mtext+1), gameFolders.szDataDir,"rb", 0);	
 			if(fptr != NULL)
 			{
 				l = CFLength(fptr);
@@ -600,7 +600,7 @@ int do_ipc(int qid, struct msgbuf *buf, int flags)
 			break;  
 		}
 	}
-	
+
 	return ipc_read;
 }
 
@@ -616,13 +616,13 @@ void play_hmi (void * arg)
 	int qid;
 	int ipc_read = 0;
 	int k=0;
-	
+
 	struct msgbuf *rcv;
-	
+
 	Track_info *t_info;
 
 	//printf ("play_hmi\n");//#########
-	
+
 	stop = 0;
 	ipc_read=0;
 //	loc_pid=fork();
@@ -637,39 +637,39 @@ void play_hmi (void * arg)
 		atexit(kill_ipc);
 		return loc_pid;
 	}*/
-	
+
 //	signal(SIGTERM, my_quit);
 	rcv=D2_ALLOC(sizeof(long) + 16);
-	
+
 	rcv->mType=1;
 	rcv->mtext[0]='0';
-	
+
 	sleep(2);
-	
+
 	qid=msgget ((key_t) ('l'<<24) | ('d'<<16) | ('e'<<8) | 's', 0660);
 	if(qid == -1)
-	{	
+	{
 		return;
 	}
-	
+
 	do
 	{
 		ipc_read=do_ipc(qid,rcv,0);
 	}
 	while(rcv->mtext[0] != 'p');
-	
+
 	stop=0;
 	rcv->mtext[0] = '0';
-	
+
 	seq_init();
-	
+
 	n_chunks=data[0x30];
-	
+
 	t_info = D2_ALLOC(sizeof(Track_info)*n_chunks);
-	
+
 	while(1)
 	{
-		
+	
 		for(i=0;i<n_chunks;i++)
 		{
 			t_info[i].position.vPosition = pos + 12;
@@ -677,7 +677,7 @@ void play_hmi (void * arg)
 			t_info[i].time = get_dtime(data,&t_info[i].position.vPosition);
 			pos += (( (0xff & data[pos + 5]) << 8 ) + (0xff & data[pos + 4]);
 		}
-		
+	
 		SEQ_START_TIMER();
 		do
 		{
@@ -691,12 +691,12 @@ void play_hmi (void * arg)
 				i++;
 			}
 			while((low_chunk <=0) && (i<n_chunks);
-			
+		
 			if (low_chunk == -1)
 			  break;
-			
+		
 			low_dtime = t_info[low_chunk].time;
-			
+		
 			for(i=1;i<n_chunks;i++)
 			{
 				if ((t_info[i].time < low_dtime) && 
@@ -706,37 +706,37 @@ void play_hmi (void * arg)
 					low_chunk = i;
 				}
 			}
-			
+		
 			//if (low_dtime < 0)
 			  //printf("Serious warning: dTime negative!!!!!!\n");
-			
+		
 			csec = 0.86 * low_dtime;
-			
+		
 			//flush sequencer buffer after 20 events
 			if (k == 20)
 			{
 				ioctl(seqfd, SNDCTL_SEQ_SYNC);
 				k = 0;
 			}
-			
+		
 			SEQ_WAIT_TIME(csec);
-			
+		
 			t_info[low_chunk].status = do_track_event(data,&t_info[low_chunk].position.vPosition);
-			
+		
 			if (t_info[low_chunk].status == 3)
 			{
 				//printf("Error playing data in chunk %d\n",low_chunk);
 				t_info[low_chunk].status = STOPPED;
 			}
-			
+		
 			if (t_info[low_chunk].status == PLAYING)
 			  t_info[low_chunk].time += get_dtime(data,&t_info[low_chunk].position.vPosition);
-			
+		
 			//Check if the song has reached the end
 			stop = t_info[0].status;
 			for(i=1;i<n_chunks;i++)
 			  stop &= t_info[i].status;
-			
+		
 			if((do_ipc(qid,rcv,IPC_NOWAIT) > 0) && (rcv->mtext[0]=='p'))
 			{
 				n_chunks=data[0x30];
@@ -766,7 +766,7 @@ void play_hmi (void * arg)
 	D2_FREE(data);
 	D2_FREE(t_info);
 	D2_FREE(rcv);
-	
+
 }
 
 int DigiPlayMidiSong( char * filename, char * melodic_bank, char * drum_bank, int loop ) {

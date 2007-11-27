@@ -190,7 +190,7 @@ void err_printf(FILE *my_file, char * format, ... )
 	va_end(args);
 #if TRACE
 	con_printf (1, "%s", message);
-#endif	
+#endif
 	fprintf(my_file, "%s", message);
 	Errors_in_mine++;
 }
@@ -205,7 +205,7 @@ void warning_printf(FILE *my_file, char * format, ... )
 	va_end(args);
 #if TRACE
 	con_printf (CONDBG, "%s", message);
-#endif	
+#endif
 	fprintf(my_file, "%s", message);
 }
 
@@ -465,7 +465,7 @@ void write_segment_text(FILE *my_file)
 
 		if (gameData.segs.segment2s[i].nMatCen != -1)
 			fprintf(my_file, "matcen = %3i, ", gameData.segs.segment2s[i].nMatCen);
-		
+	
 		fprintf(my_file, "\n");
 	}
 

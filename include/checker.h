@@ -27,8 +27,8 @@
 
 int __chcklongjmp(jmp_buf buf,int val);
 int __chcksetjmp(jmp_buf buf);
-	
+
 void chcksetwritable(char * p, int size);
 void chcksetunwritable(char * p, int size);
 
-#endif	
+#endif

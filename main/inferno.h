@@ -123,7 +123,7 @@ typedef tThreadFunc *pThreadFunc;
 
 typedef struct tThreadInfo {
 	SDL_Thread		*pThread;
-	SDL_sem			*done;	
+	SDL_sem			*done;
 	SDL_sem			*exec;
 	int				nId;
 	int				bExec;
@@ -2087,9 +2087,9 @@ typedef struct tLeftoverPowerup {
 } tLeftoverPowerup;
 
 typedef struct tMultiplayerData {
-	int 					nPlayers;					
+	int 					nPlayers;				
 	int					nMaxPlayers;
-	int 					nLocalPlayer;					
+	int 					nLocalPlayer;				
 	int					nPlayerPositions;
 	tPlayer				players [MAX_PLAYERS + 4];                   
 	tObjPosition		playerInit [MAX_PLAYERS];
@@ -2957,12 +2957,16 @@ return 1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 
 static inline int VERTVIS (short nSegment, short nVertex)
 {
+if (!gameData.segs.bVertVis)
+	return 0;
+else {
 	ubyte	b = (nVertex & 3) << 1,
 			b1 = 3 << b,
 			b0 = 1 << b;
 
-b = gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] & b1;
-return (b == b1) ? 1 : (b == b0) ? -1 : 0;
+	b = gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] & b1;
+	return (b == b1) ? 1 : (b == b0) ? -1 : 0;
+	}
 }
 
 //	-----------------------------------------------------------------------------------------------------------

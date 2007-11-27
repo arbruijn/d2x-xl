@@ -214,7 +214,7 @@ else if (vertColor) {
 			tMapColor.color.red =
 			tMapColor.color.green =
 			tMapColor.color.blue = 1.0;
-		}	
+		}
 	else if (i >= sizeof (vertColors) / sizeof (tFaceColor))
 		return;
 	else if (vertColors [i].index) {
@@ -227,7 +227,7 @@ else if (vertColor) {
 			pvc->color.blue = 1.0;
 			pvc->index = 0;
 			}
-		}	
+		}
 	else {
 		vertColor->color.red = 
 		vertColor->color.green = 
@@ -243,7 +243,7 @@ else {
 			tMapColor.color.red =
 			tMapColor.color.green =
 			tMapColor.color.blue = 1.0;
-		}	
+		}
 	else if (i >= sizeof (vertColors) / sizeof (tFaceColor))
 		return;
 	else if (vertColors [i].index) {
@@ -256,7 +256,7 @@ else {
 			pvc->color.blue = 1.0;
 			pvc->index = 0;
 			}
-		}	
+		}
 	else {
 		OglColor4sf (l, l, l, s);
 		}

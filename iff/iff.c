@@ -146,7 +146,7 @@ int put_sig(int sig,FILE *f)
 	return fputc(s[0],f);
 
 }
-	
+
 char get_byte(FFILE *f)
 {
 	//return CFGetC(f);
@@ -379,7 +379,7 @@ int parse_body(FFILE *ifile,int len,iff_bitmap_header *bmheader)
 	//we got the while bitmap, and that's what really counts.
 
 	ifile->position = end_pos;
-	
+
 	if (ignore) ignore++;   // haha, suppress the evil warning message
 
 	return IFF_NO_ERROR;
@@ -714,7 +714,7 @@ void copy_iff_togrs(grsBitmap *bm,iff_bitmap_header *bmheader)
 	bm->bmTexBuf = bmheader->raw_data;
 	bm->bmProps.flags = 0;
 	//bm->bmHandle = 0;
-	
+
 }
 
 //if bm->bmTexBuf is set, use it (making sure w & h are correct), else

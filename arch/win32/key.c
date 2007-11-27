@@ -261,7 +261,7 @@ void keyboard_handler()
 	while (SUCCEEDED (ReadKey (&didod)))
 	{
 		UpdateState (&didod);
-		
+	
 		//added 02/20/99 by adb to prevent message overflow
 		//(this should probably go somewhere else...)
 //              if (++peekmsgcount == 64) // 64 = wild guess...

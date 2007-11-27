@@ -110,7 +110,7 @@ void ReadFlyingControls (tObject *objP)
 		VmVecZero(&objP->mType.physInfo.rotThrust);
 		VmVecZero(&objP->mType.physInfo.thrust);
 		VmVecZero(&objP->mType.physInfo.velocity);
-*/		
+*/	
 		gameStates.app.bEnterGame--;
 		return;
 	}
@@ -154,7 +154,7 @@ void ReadFlyingControls (tObject *objP)
 			{
 				fix afterburner_scale;
 				int oldCount,newCount;
-	
+
 				//add in value from 0..1
 				afterburner_scale = f1_0 + min (f1_0/2, gameData.physics.xAfterburnerCharge) * 2;
 				forwardThrustTime = FixMul (gameData.time.xFrame, afterburner_scale);	//based on full thrust
@@ -170,7 +170,7 @@ void ReadFlyingControls (tObject *objP)
 		}
 		else {
 			fix cur_energy,charge_up;
-	
+
 			//charge up to full
 			charge_up = min(gameData.time.xFrame/8,f1_0 - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
 			cur_energy = LOCALPLAYER.energy - i2f (10);
@@ -195,7 +195,7 @@ void ReadFlyingControls (tObject *objP)
 #if 1//ndef _DEBUG
 		wiggleTime = gameData.time.xFrame;
 		WiggleObject (objP);
-#endif		
+#endif	
 	}
 	// As of now, objP->mType.physInfo.thrust & objP->mType.physInfo.rotThrust are 
 	// in units of time... In other words, if thrust==gameData.time.xFrame, that

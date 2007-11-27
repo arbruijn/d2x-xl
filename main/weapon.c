@@ -213,7 +213,7 @@ sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES] = {
 // Bits set:
 //		HAS_WEAPON_FLAG
 //		HAS_ENERGY_FLAG
-//		HAS_AMMO_FLAG	
+//		HAS_AMMO_FLAG
 // See weapon.h for bit values
 int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer)
 {
@@ -258,7 +258,7 @@ if (!bSecondary) {
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 
-	// Special case: Gauss cannon uses vulcan ammo.		
+	// Special case: Gauss cannon uses vulcan ammo.	
 	if (nWeapon == GAUSS_INDEX) {
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [VULCAN_INDEX])
 			returnValue |= HAS_AMMO_FLAG;
@@ -272,7 +272,7 @@ if (!bSecondary) {
 		}
 	else {
 /*
-		if (nWeapon == SUPER_LASER_INDEX) {	
+		if (nWeapon == SUPER_LASER_INDEX) {
 			if (playerP->energy || gameData.laser.xOmegaCharge)
 				returnValue |= HAS_ENERGY_FLAG;
 		}
@@ -309,7 +309,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
 	primaryOrder [i] = defaultPrimaryOrder [i];
 for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 	secondaryOrder [i] = defaultSecondaryOrder [i];
- }	
+ }
 
 //	------------------------------------------------------------------------------------
 
@@ -963,7 +963,7 @@ void InitShakerDetonates (void)
 	int	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	eshakerDetonateTimes [i] = 0;	
+	eshakerDetonateTimes [i] = 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1142,7 +1142,7 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 				if ((gameData.objs.objects[j].nType == OBJ_PLAYER) || 
 					 (gameData.objs.objects[j].nType == OBJ_ROBOT)) {
 					fix	dist = VmVecDistQuick(vBombPos, &gameData.objs.objects[j].position.vPos);
-	
+
 					if (j != nParentObj)
 						if (dist - gameData.objs.objects[j].size < F1_0*20) {
 							if (gameData.objs.objects[i].nSegment == gameData.objs.objects[j].nSegment)
@@ -1284,7 +1284,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
-#if 0	
+#if 0
 	// cannot drop standard lasers because picking up super lasers will automatically
 	// give you laser level 4, allowing an exploit by dropping all lasers, picking up
 	// the super lasers first, thus receiving laser level 4, etc.

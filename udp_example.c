@@ -21,7 +21,7 @@ enum ProgramMode { Talk, Listen };
 void PrintUsage(void)
 {
 	cout << "  USAGE:" << endl;
-	
+
 	cout << "    Listen mode:" << endl;
 	cout << "      udpspeed PORT_NUMBER" << endl;
 	cout << endl;
@@ -59,7 +59,7 @@ bool InitializeWinsock(void)
 {
 	WSADATA wsaData;
 	WORD wVersionRequested = MAKEWORD(2,2);
-	
+
 if(WSAStartup(wVersionRequested, &wsaData)) {
 	cout << "Could not initialize Winsock 2.2.";
 	return false;

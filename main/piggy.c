@@ -686,7 +686,7 @@ void FreeSoundReplacements (void)
 	tDigiSound	*dsP;
 	int			i, j;
 
-LogErr ("unloading custom sounds\n");	
+LogErr ("unloading custom sounds\n");
 for (i = 0; i < 2; i++)
 	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bDTX) {
@@ -867,7 +867,7 @@ void piggy_new_pigfile (char *pigname)
 				sprintf (abmname, "%s.abm", basename);
 				iff_error = iff_read_animbrush (abmname,bm,MAX_BITMAPS_PER_BRUSH,&nframes,newpal);
 				if (iff_error != IFF_NO_ERROR) {
-#if TRACE				
+#if TRACE			
 					con_printf (1,"File %s - IFF error: %s",abmname,iff_errormsg (iff_error));
 #endif
 					Error ("File %s - IFF error: %s",abmname,iff_errormsg (iff_error);
@@ -911,7 +911,7 @@ void piggy_new_pigfile (char *pigname)
 				iff_error = iff_read_bitmap (bbmname,newBm,BM_LINEAR,newpal);
 				newBm->bmHandle=0;
 				if (iff_error != IFF_NO_ERROR) {
-#if TRACE				
+#if TRACE			
 					con_printf (1, "File %s - IFF error: %s",bbmname,iff_errormsg (iff_error));
 #endif
 					Error ("File %s - IFF error: %s",bbmname,iff_errormsg (iff_error);
@@ -1018,7 +1018,7 @@ if (!(gameData.pig.sound.data [gameStates.app.bD1Data] = D2_ALLOC (sbytes + 16))
 	Error ("Not enough memory to load sounds\n");
 	return 0;
 	}
-#if TRACE				
+#if TRACE			
 con_printf (CON_VERBOSE, "\nBitmapNum: %d KB   Sounds [gameStates.app.bD1Data]: %d KB\n", 
 				bitmapCacheSize / 1024, sbytes / 1024);
 #endif
@@ -1131,7 +1131,7 @@ int ReadSoundFile ()
 	int size, length;
 
 	snd_fp = CFOpen (DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0);
-	
+
 	if (snd_fp == NULL)
 		return 0;
 
@@ -1315,7 +1315,7 @@ for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; 
 		}
 	}
 CFClose (fp);
-#if TRACE				
+#if TRACE			
 	con_printf (CON_VERBOSE, "\nActual Sound usage: %d KB\n", sbytes/1024);
 #endif
 }
@@ -1519,8 +1519,8 @@ void PiggyBitmapPageOutAll (int bAll)
 {
 	int			i, bD1;
 	grsBitmap	*bmP;
-	
-#if TRACE				
+
+#if TRACE			
 con_printf (CON_VERBOSE, "Flushing piggy bitmap cache\n");
 #endif
 gameData.pig.tex.bPageFlushed++;
@@ -1701,7 +1701,7 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 					else {
 						LogErr ("   couldn't find animation for '%s'\n", bmName);
 						}
-					}	
+					}
 				}
 			}
 		}
@@ -1938,7 +1938,7 @@ void PiggyWritePigFile (char *filename)
 		fwrite (&bmh, sizeof (tPIGBitmapHeader), 1, pig_fp);  // Mark as a bitmap
 		}
 	fclose (pig_fp);
-#if TRACE				
+#if TRACE			
 	con_printf (CONDBG, " Dumped %d assorted bitmaps.\n", gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
 #endif
 	fprintf (fp1, " Dumped %d assorted bitmaps.\n", gameData.pig.tex.nBitmaps [gameStates.app.bD1Data]);
@@ -1982,88 +1982,88 @@ void PiggyDumpAll ()
 
 	if (bMustWriteHamFile || nBitmapFilesNew) {
 
-#if TRACE				
+#if TRACE			
 		con_printf (CONDBG, "Creating %s...",DEFAULT_HAMFILE);
 #endif
 
 		fpHAM = fopen (DEFAULT_HAMFILE, "wb");                       //open HAM file
 		Assert (fpHAM!=NULL);
-	
+
 		write_int (HAMFILE_ID,fpHAM);
 		write_int (HAMFILE_VERSION,fpHAM);
-	
+
 		bm_write_all (fpHAM);
 		xlatOffset = ftell (fpHAM);
 		fwrite (gameData.pig.tex.bitmapXlat, sizeof (ushort)*MAX_BITMAP_FILES, 1, fpHAM);
 		//Dump bitmaps
-	
+
 		if (nBitmapFilesNew)
 			PiggyWritePigFile (DEFAULT_PIGFILE);
-	
+
 		//D2_FREE up memeory used by new bitmaps
 		for (i=gameData.pig.tex.nBitmaps-nBitmapFilesNew;i<gameData.pig.tex.nBitmaps;i++)
 			D2_FREE (gameData.pig.tex.bitmaps [i].bmTexBuf);
-	
+
 		//next thing must be done after pig written
 		fseek (fpHAM, xlatOffset, SEEK_SET);
 		fwrite (gameData.pig.tex.bitmapXlat, sizeof (ushort)*MAX_BITMAP_FILES, 1, fpHAM);
-	
+
 		fclose (fpHAM);
-#if TRACE				
+#if TRACE			
 		con_printf (CONDBG, "\n");
 #endif
 	}
-	
+
 	if (nSoundFilesNew) {
 
-#if TRACE				
+#if TRACE			
 		con_printf (CONDBG, "Creating %s...",DEFAULT_HAMFILE);
 #endif
 		// Now dump sound file
 		fpHAM = fopen (DEFAULT_SNDFILE, "wb");
 		Assert (fpHAM!=NULL);
-	
+
 		write_int (SNDFILE_ID,fpHAM);
 		write_int (SNDFILE_VERSION,fpHAM);
 
 		fwrite (&gameData.pig.sound.nSoundFiles [0], sizeof (int), 1, fpHAM);
-	
-#if TRACE				
+
+#if TRACE			
 		con_printf (CONDBG, "\nDumping sounds...");
-#endif	
+#endif
 		sound_data_start = ftell (fpHAM);
 		sound_data_start += gameData.pig.sound.nSoundFiles [0]*sizeof (tPIGSoundHeader);
 		data_offset = sound_data_start;
-	
+
 		for (i=0; i < gameData.pig.sound.nSoundFiles [0]; i++) {
 			tDigiSound *snd;
-	
+
 			snd = &gameData.pig.sound.sounds [0][i];
 			strcpy (sndh.name, sounds [0][i].name);
 			sndh.length = gameData.pig.sound.sounds [0][i].nLength;
 			sndh.offset = data_offset - sound_data_start;
-	
+
 			org_offset = ftell (fpHAM);
 			fseek (fpHAM, data_offset, SEEK_SET);
-	
+
 			sndh.data_length = gameData.pig.sound.sounds [0][i].nLength;
 			fwrite (snd->data, sizeof (ubyte), snd->length, fpHAM);
 			data_offset += snd->length;
 			fseek (fpHAM, org_offset, SEEK_SET);
 			fwrite (&sndh, sizeof (tPIGSoundHeader), 1, fpHAM);                    // Mark as a bitmap
-	
+
 			fprintf (fp1, "SND: %s, size %d bytes\n", sounds [i].name, snd->length);
 			fprintf (fp2, "%s.raw\n", sounds [i].name);
 		}
 
 		fclose (fpHAM);
-#if TRACE				
+#if TRACE			
 		con_printf (CONDBG, "\n");
 #endif
 	}
 
 	fprintf (fp1, "Total sound size: %d bytes\n", data_offset-sound_data_start);
-#if TRACE				
+#if TRACE			
 	con_printf (CONDBG, " Dumped %d assorted sounds.\n", gameData.pig.sound.nSoundFiles [0]);
 #endif
 	fprintf (fp1, " Dumped %d assorted sounds.\n", gameData.pig.sound.nSoundFiles [0]);
@@ -2084,9 +2084,9 @@ void _CDECL_ PiggyClose (void)
 	int			i, j;
 	tDigiSound	*dsP;
 
-LogErr ("unloading textures\n");	
+LogErr ("unloading textures\n");
 PiggyCloseFile ();
-LogErr ("unloading sounds\n");	
+LogErr ("unloading sounds\n");
 for (i = 0; i < 2; i++) {
 	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bHires) {
@@ -2155,7 +2155,7 @@ int PiggyIsSubstitutableBitmap (char * name, char * subst_name)
 	int frame;
 	char * p;
 	char base_name [ 16 ];
-	
+
 	strcpy (subst_name, name);
 	p = strchr (subst_name, '#');
 	if (p) {
@@ -2599,7 +2599,7 @@ for (i = 0; i < nBitmapNum; i++) {
 		break;
 	}
 if (i >= nBitmapNum) {
-#if TRACE				
+#if TRACE			
 	con_printf (CONDBG, "could not find bitmap %s\n", name);
 #endif
 	return bmi;

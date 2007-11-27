@@ -169,7 +169,7 @@ vmsVector *VmVecDec (vmsVector *dest, vmsVector *src);
 
 #endif
 
-#else	
+#else
 
 #define	VmVecAdd(dest,src0,src1) \
 			(dest)->p.x = (src0)->p.x + (src1)->p.x, (dest)->p.y = (src0)->p.y + (src1)->p.y, (dest)->p.z = (src0)->p.z + (src1)->p.z;

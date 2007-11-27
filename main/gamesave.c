@@ -129,7 +129,7 @@ char Save_pof_names [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 void CheckAndFixMatrix(vmsMatrix *m);
 
-void VerifyObject(tObject * objP)	
+void VerifyObject(tObject * objP)
 {
 objP->lifeleft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
 if (objP->nType == OBJ_ROBOT) {
@@ -163,7 +163,7 @@ else {		//Robots taken care of above
 		int i;
 		char *name = Save_pof_names [objP->rType.polyObjInfo.nModel];
 		for (i = 0; i < gameData.models.nPolyModels; i++)
-			if (!stricmp (Pof_names [i], name)) {		//found it!	
+			if (!stricmp (Pof_names [i], name)) {		//found it!
 				objP->rType.polyObjInfo.nModel = i;
 				break;
 				}
@@ -200,7 +200,7 @@ if (objP->nType == OBJ_WEAPON)	{
 		objP->mType.physInfo.mass = gameData.weapons.info[objP->id].mass;
 		objP->mType.physInfo.drag = gameData.weapons.info[objP->id].drag;
 		objP->mType.physInfo.flags |= PF_FREE_SPINNING;
-		// Make sure model number & size are correct...		
+		// Make sure model number & size are correct...	
 		Assert(objP->renderType == RT_POLYOBJ);
 		objP->rType.polyObjInfo.nModel = gameData.weapons.info[objP->id].nModel;
 		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
@@ -217,18 +217,18 @@ if (objP->nType == OBJ_CNTRLCEN) {
 	{
 	int i;
 	// Check, and set, strength of reactor
-	for (i = 0; i < gameData.objs.types.nCount; i++)	
+	for (i = 0; i < gameData.objs.types.nCount; i++)
 		if ((gameData.objs.types.nType [i] == OL_CONTROL_CENTER) && 
 			 (gameData.objs.types.nType.nId [i] == objP->id)) {
 			objP->shields = gameData.objs.types.nType.nStrength [i];
-			break;		
+			break;	
 			}
 		Assert(i < gameData.objs.types.nCount);		//make sure we found it
 		}
 #endif
 	}
 if (objP->nType == OBJ_PLAYER) {
-	if (objP == gameData.objs.console)		
+	if (objP == gameData.objs.console)	
 		InitPlayerObject();
 	else
 		if (objP->renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
@@ -637,7 +637,7 @@ void writeObject(tObject *objP,FILE *f)
 		case CT_FLYTHROUGH:
 		default:
 			Int3();
-	
+
 	}
 
 	switch (objP->renderType) {
@@ -865,7 +865,7 @@ gameFileInfo.level = CFReadInt(LoadFile);
 gameFileInfo.player.offset = CFReadInt(LoadFile);				// Player info
 gameFileInfo.player.size = CFReadInt(LoadFile);
 gameFileInfo.objects.offset = CFReadInt(LoadFile);				// Object info
-gameFileInfo.objects.count = CFReadInt(LoadFile);    	
+gameFileInfo.objects.count = CFReadInt(LoadFile);    
 gameFileInfo.objects.size = CFReadInt(LoadFile);  
 gameFileInfo.walls.offset = CFReadInt(LoadFile);
 gameFileInfo.walls.count = CFReadInt(LoadFile);
@@ -1158,7 +1158,7 @@ if (gameFileInfo.control.offset > -1) {
 		Assert(gameFileInfo.control.size == sizeof(tReactorTriggers));
 		ControlCenterTriggersReadN(&gameData.reactor.triggers, gameFileInfo.control.count, LoadFile);
 	}
-}	
+}
 
 //================ READ MATERIALIZATION CENTERS INFO ===============
 if (gameFileInfo.botGen.offset > -1) {
@@ -1487,7 +1487,7 @@ strcpy(filename,filename_passed);
 	if (!CFExist(filename))	{
 		ChangeFilenameExtension(filename,filename,".rl2");
 		use_compiledLevel = 1;
-	}		
+	}	
 #endif
 
 LoadFile = CFOpen (filename, "", "rb", gameStates.app.bD1Mission);
@@ -1880,7 +1880,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 		if (Errors_in_mine) {
 			if (is_realLevel(filename)) {
 				char  ErrorMessage[200];
-	
+
 				sprintf(ErrorMessage, TXT_MINE_ERRORS2, Errors_in_mine);
 				StopTime();
 				GrPaletteStepLoad (NULL);
@@ -1957,7 +1957,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 
 	gs_write_int(gameData.render.lights.flicker.nLights,SaveFile);
 	fwrite(gameData.render.lights.flicker.lights,sizeof(*gameData.render.lights.flicker.lights),gameData.render.lights.flicker.nLights,SaveFile);
-	
+
 	gs_write_int(gameData.segs.secret.nReturnSegment, SaveFile);
 	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.x, SaveFile);
 	gs_write_int(gameData.segs.secret.returnOrient.rVec.p.y, SaveFile);
@@ -1970,7 +1970,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.z, SaveFile);
 
 	minedata_offset = ftell(SaveFile);
-	if (!compiled_version)	
+	if (!compiled_version)
 		save_mine_data(SaveFile);
 	else
 		save_mine_data_compiled(SaveFile);

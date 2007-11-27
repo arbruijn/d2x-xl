@@ -178,7 +178,7 @@ void arch_init()
 			DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN|DDSCL_ALLOWREBOOT);
 #endif
 	}
-	
+
 	if (ddrval!=DD_OK)
 	{
 	  fprintf(stderr,"SetCooperativeLevel() failed\n");

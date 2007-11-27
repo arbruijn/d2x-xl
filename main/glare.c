@@ -242,6 +242,10 @@ int FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensi
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
+#ifdef _DEBUG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 sideP = gameData.segs.segments [nSegment].sides + nSide;
 nWall = sideP->nWall;
 if (IS_WALL (nWall)) {
@@ -269,7 +273,7 @@ else if (nBrightness = IsLight (sideP->nBaseTex)) {
 	}
 else
 	return 0;
-if (gameOpts->render.bDynamicLight) {
+if (gameOpts->render.bDynLighting) {
 	i = FindDynLight (nSegment, nSide, -1);
 	if ((i < 0) || !gameData.render.lights.dynamic.lights [i].bOn)
 		return 0;
@@ -584,7 +588,7 @@ if (gameStates.render.bQueryCoronas)
 else {
 	glEnable (GL_TEXTURE_2D);
 	if (bAdditive)
-		glBlendFunc (GL_ONE, GL_ONE);		
+		glBlendFunc (GL_ONE, GL_ONE);	
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	}
 color = gameData.render.color.textures [nTexture].color;

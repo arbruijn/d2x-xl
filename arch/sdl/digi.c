@@ -269,7 +269,7 @@ if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
 	Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
 	return 1;
 	}
-memset (SoundSlots, 0, sizeof (SoundSlots));	
+memset (SoundSlots, 0, sizeof (SoundSlots));
 if (gameStates.app.bDemoData)
 	gameOpts->sound.digiSampleRate = SAMPLE_RATE_11K;
 #if USE_OPENAL
@@ -571,7 +571,7 @@ return alcGetError (gameData.pig.sound.openAL.device) != AL_NO_ERROR;
 
 //------------------------------------------------------------------------------
 
-extern void DigiEndSoundObj (int channel);	
+extern void DigiEndSoundObj (int channel);
 extern void SoundQEnd ();
 
 int VerifySoundChannelFree (int channel);
@@ -602,7 +602,7 @@ for(;;) {
 	if (!SoundSlots [gameStates.sound.digi.nNextChannel].playing)
 		break;
 	if (!SoundSlots [gameStates.sound.digi.nNextChannel].persistent)
-		break;	// use this channel!	
+		break;	// use this channel!
 	gameStates.sound.digi.nNextChannel++;
 	if (gameStates.sound.digi.nNextChannel >= gameStates.sound.digi.nMaxChannels)
 		gameStates.sound.digi.nNextChannel = 0;
@@ -867,7 +867,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 void DigiStopSound (int channel)
 {
 	tSoundSlot *ssP = SoundSlots + channel;
-		
+	
 if (!gameStates.app.bUseSound)
 	return;
 ssP->playing = 0;

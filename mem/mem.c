@@ -93,7 +93,7 @@ void MemInit ()
 {
 if (!bMemInitialized) {
 	int i;
-	
+
 	bMemInitialized = 1;
 	MEM_INIT (pMallocBase);
 	MEM_INIT (nMallocSize);
@@ -168,7 +168,7 @@ void _CDECL_ MemDisplayBlocks (void)
 
 if (!bMemInitialized) 
 	return;
-	
+
 #if MEMSTATS
 if (bMemStatsFileInitialized) {
 	unsigned long	nFreeMem = FreeMem ();
@@ -201,7 +201,7 @@ if (numleft && !bOutOfMemory)
 void MemValidateHeap ()
 {
 	int i;
-	
+
 for (i = 0; i < nLargestIndex; i++)
 	if (bPresent [i])
 		MemCheckIntegrity (i);
@@ -299,7 +299,7 @@ void MemFree (void *buffer)
 #if !DBG_MALLOC
 if (buffer)
 	free (buffer);
-#else	
+#else
 #if FULL_MEM_CHECKING
 	int id;
 #endif
@@ -319,7 +319,7 @@ if (bMemStatsFileInitialized) {
 #ifdef FULL_MEM_CHECKING
 if (!(buffer || bOutOfMemory))
 #else
-if (!buffer)	
+if (!buffer)
 #endif
 	{
 	//LogErr ("\nMEM_FREE_NULL: An attempt was made to free the null pointer.\n");
@@ -400,7 +400,7 @@ if (bMemStatsFileInitialized) {
 
 #if FULL_MEM_CHECKING
 if (iFreeList < 0) {
-	LogErr ("\nMEM_OUT_OF_SLOTS: Not enough space in mem.c to hold all the mallocs.\n");		
+	LogErr ("\nMEM_OUT_OF_SLOTS: Not enough space in mem.c to hold all the mallocs.\n");	
 	LogErr ("\tBlock '%s' created in %s, line %d.\n", var, filename, line);
 	Error ("Out of free memory slots");
 	}
@@ -410,7 +410,7 @@ iFreeList = nFreeList [iFreeList];
 if (id > nLargestIndex) 
 	nLargestIndex = id;
 if (id == -1) {
-	LogErr ("\nMEM_OUT_OF_SLOTS: Not enough space in mem.c to hold all the mallocs.\n");		
+	LogErr ("\nMEM_OUT_OF_SLOTS: Not enough space in mem.c to hold all the mallocs.\n");	
 	LogErr ("\tBlock '%s' created in %s, line %d.\n", szVarname [id], szFilename [id], nLineNum [id]);
 	Error ("Out of free memory slots");
 	}
@@ -493,7 +493,7 @@ else if (! (newbuffer = realloc (buffer, size))) {
 #if TRACE
 	con_printf (CON_MALLOC, "reallocating %d bytes in %s:%d failed.\n", size, filename, line);
 #endif
-	}	
+	}
 #else
 	int id;
 

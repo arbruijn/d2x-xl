@@ -244,7 +244,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameData.render.window.h, 0, 0);
 
 		RP (iDlTimeout, 0, 0);
-		
+	
 		RP (gameStates.render.cockpit.nMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
 		RP (gameStates.video.nDefaultDisplayMode, 0, 0);
@@ -1437,7 +1437,7 @@ strcpy(gameData.multigame.msg.szMacro[1], TXT_GOT_PRESENT);
 strcpy(gameData.multigame.msg.szMacro[2], TXT_HANKERING);
 strcpy(gameData.multigame.msg.szMacro[3], TXT_URANUS);
 networkData.nNetLifeKills = 0; 
-networkData.nNetLifeKilled = 0;	
+networkData.nNetLifeKilled = 0;
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 InitGameParams ();
 #if 0
@@ -1573,7 +1573,7 @@ for (i = 0; i < 2; i++) {
 			extraGameInfo [0].bMouseLook = (int) CFReadByte (fp);
 		if	(gameStates.input.nPlrFileVersion >= 66)
 			extraGameInfo [0].bMultiBosses = (int) CFReadByte (fp);
-		}	
+		}
 	if (gameStates.input.nPlrFileVersion >= 67)
 		gameOptions [i].app.nVersionFilter = (int) CFReadByte (fp);
 	if (!i) {
@@ -1920,7 +1920,6 @@ for (i = 0; i < 2; i++) {
 
 //this length must match the value in escort.c
 #define GUIDEBOT_NAME_LEN 9
-WIN(extern char win95_current_joyname[]);
 
 ubyte dosControlType,winControlType;
 
@@ -1939,7 +1938,7 @@ Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer
 
 sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!(fp = CFOpen (filename, gameFolders.szProfDir, "rb", 0))) {
-	LogErr ("   couldn't read tPlayer file '%s'\n", filename);
+	LogErr ("   couldn't read player file '%s'\n", filename);
 	return errno;
 	}
 id = CFReadInt (fp);
@@ -2522,7 +2521,7 @@ CFWriteInt(gameStates.render.cockpit.n3DView [1], fp);
 CFWriteInt(networkData.nNetLifeKills, fp);
 CFWriteInt(networkData.nNetLifeKilled, fp);
 i = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
-#if TRACE				
+#if TRACE			
 con_printf (CONDBG,"Writing: Lifetime checksum is %d\n",i);
 #endif
 CFWriteInt(i,fp);

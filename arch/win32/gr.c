@@ -232,7 +232,7 @@ int GrSetMode(u_int32_t mode)
 //        DDSCAPS             ddcaps;
         HRESULT             ddrval;
 	unsigned int w,h;
-	
+
 	if (mode<=0)
 		return 0;
 
@@ -327,7 +327,7 @@ int GrSetMode(u_int32_t mode)
        IDirectDrawSurface_Unlock(lpDDSPrimary,NULL);
 
        GrSetCurrentCanvas(NULL);
-	
+
 	   gamefont_choose_game_font(w,h);
 
        //printf("Successfully completed set_mode\n");

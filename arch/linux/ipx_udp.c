@@ -325,7 +325,7 @@ typedef struct tDestListEntry {
 	char						bSafeMode;
 	char						bOurSafeMode;
 	char						modeCountdown;
-#endif	
+#endif
 } tDestListEntry;
 
 static tDestListEntry *destList = NULL;
@@ -350,7 +350,7 @@ static void QuerySafeMode (tDestListEntry *pdl);
 static void dumpraddr (unsigned char *a)
 {
 unsigned short port;
-	
+
 LogErr (" [%u.%u.%u.%u",a [0],a [1],a [2],a [3]);
 port= (unsigned short)ntohs (* (unsigned short *) (a+4));
 if (port) 
@@ -835,7 +835,7 @@ if (!gameStates.multi.bServer) {
 	*((u_short *) (ipx_ServerAddress + 8)) = htons (nServerPort);
 	memcpy (&sin.sin_addr.s_addr, ipx_ServerAddress + 4, 4);
 	sin.sin_port = htons (nServerPort);
-	if (!gameStates.multi.bUseTracker)		
+	if (!gameStates.multi.bUseTracker)	
 		AddDestToList (&sin);
 	}
 
@@ -1012,7 +1012,7 @@ for (; iDest < destAddrNum; iDest++) {
 		if (pdl->bOurSafeMode < 0)
 			ReportSafeMode (pdl);
 		if (pdl->bSafeMode <= 0) {
-#endif			
+#endif		
 			memcpy (buf + 8 + dataLen, &dest->sin_addr, 4);
 			memcpy (buf + 12 + dataLen, &dest->sin_port, 2);
 			extraDataLen = 14;
@@ -1032,7 +1032,7 @@ for (; iDest < destAddrNum; iDest++) {
 					bResend = 1;
 					}
 				}
-			if (!bResend) {				
+			if (!bResend) {			
 				if (pdl->numPackets < MAX_BUF_PACKETS)
 					pdl->numPackets++;
 				else
@@ -1049,7 +1049,7 @@ for (; iDest < destAddrNum; iDest++) {
 				}
 			ppp->timeStamp = SDL_GetTicks ();
 			}
-#endif			
+#endif		
 		}
 
 #if UDPDEBUG
@@ -1259,7 +1259,7 @@ if (!(bTracker
 				return -1;
 				}
 			}
-#endif			
+#endif		
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
 	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);

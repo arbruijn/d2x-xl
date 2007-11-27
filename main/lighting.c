@@ -124,7 +124,7 @@ void InitTextureBrightness (void)
 {
 	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2;
 	int			i, j, h = (gameStates.app.bD1Mission ? sizeof (texBrightD1) : sizeof (texBrightD2)) / sizeof (tTexBright);
-	
+
 memset (gameData.pig.tex.brightness, 0, sizeof (gameData.pig.tex.brightness));
 for (i = 0; i < MAX_WALL_TEXTURES; i++) {
 	j = gameStates.app.bD1Mission ? ConvertD1Texture (i, 1) : i;
@@ -188,7 +188,7 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vOb
 	} else {
 Cache_hits++;
 		return cache_vis;
-	}	
+	}
 }
 #define	HEADLIGHT_CONE_DOT	 (F1_0*9/10)
 #define	HEADLIGHT_SCALE		 (F1_0*10)
@@ -289,7 +289,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	}
 if (xObjIntensity) {
 	fix	obji_64 = xObjIntensity * 64;
-	
+
 	if (gameData.render.vertColor.bDarkness) {
 		if (objP->nType == OBJ_PLAYER)
 			xObjIntensity = 0;
@@ -446,7 +446,7 @@ fix ComputeLightIntensity (int nObject, tRgbaColorf *color, char *pbGotColor)
 	static tRgbaColorf powerupColors [9] = {
 		{0,1,0,1},{1,0.8f,0,1},{0,0,1,1},{1,1,1,1},{0,0,1,1},{1,0,0,1},{1,0.8f,0,1},{0,1,0,1},{1,0.8f,0,1}
 	};
-	
+
 color->red =
 color->green =
 color->blue = 1.0;
@@ -460,7 +460,7 @@ switch (nObjType) {
 			return HEADLIGHT_SCALE;
 			}
 		 else if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) && gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX]) {
-		
+	
 		// If hoard game and tPlayer, add extra light based on how many orbs you have
 		// Pulse as well.
 		  	hoardlight = i2f (gameData.multiplayer.players [objP->id].secondaryAmmo [PROXMINE_INDEX])/2; //i2f (12);
@@ -712,9 +712,9 @@ if (!bKeepDynColoring)
 void ToggleHeadLight ()
 {
 if (PlayerHasHeadLight (-1)) {
-	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;			
+	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;		
 	if (IsMultiGame)
-		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);		
+		MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);	
 	}
 }
 
@@ -1303,7 +1303,7 @@ else if (nSegment >= 0) {
 			pl->vPos = *vPos;
 		else
 			COMPUTE_SEGMENT_CENTER_I (&pl->vPos, nSegment);
-		}	
+		}
 	else {
 		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
 		pl->nType = 0;
@@ -1345,7 +1345,7 @@ glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 #if 0
 LogErr ("adding light %d,%d\n", 
 		  gameData.render.lights.dynamic.nLights, pl - gameData.render.lights.dynamic.lights);
-#endif	
+#endif
 pl->bOn = 1;
 pl->bTransform = 1;
 return gameData.render.lights.dynamic.nLights++;
@@ -1452,7 +1452,7 @@ if (nLight >= 0) {
 		gameData.render.lights.dynamic.material.nLight = nLight;
 		return;
 		}
-	}	
+	}
 gameData.render.lights.dynamic.material.bValid = 0;
 }
 
@@ -1470,7 +1470,7 @@ void QSortStaticLights (int left, int right)
 	int	l = left,
 			r = right;
 			tDynLight m = gameData.render.lights.dynamic.lights [(l + r) / 2];
-			
+		
 do {
 	while (QCmpStaticLights (gameData.render.lights.dynamic.lights + l, &m) < 0)
 		l++;
@@ -1736,7 +1736,7 @@ void QSortDynamicLights (int left, int right, int nThread)
 	int	l = left,
 			r = right,
 			m = gameData.render.lights.dynamic.shader.activeLights [nThread][(l + r) / 2]->xDistance;
-			
+		
 do {
 	while (gameData.render.lights.dynamic.shader.activeLights [nThread][l]->xDistance < m)
 		l++;

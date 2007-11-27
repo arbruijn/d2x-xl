@@ -91,15 +91,15 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 	count = i - x1;
 	i = x1;
 	// we know have '*count' pixels of 'color'.
-	
+
 	if (x1+count > x2)	{
 		count = x2-x1+1;
-		if (color != TRANSPARENCY_COLOR)	
+		if (color != TRANSPARENCY_COLOR)
 			rle_stosb ((char* )dest, count, color);
 		return;
 	}
 
-	if (color != TRANSPARENCY_COLOR)	
+	if (color != TRANSPARENCY_COLOR)
 		rle_stosb ((char* )dest, count, color);
 	dest += count;
 	i += count;
@@ -128,7 +128,7 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 			dest += count;
 		}
 
-	}	
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
 	count = i - x1;
 	i = x1;
 	// we know have '*count' pixels of 'color'.
-	
+
 	if (x1+count > x2)	{
 		count = x2-x1+1;
 		rle_stosb ((char* )dest, count, color);
@@ -374,7 +374,7 @@ if (rle_cache_initialized)	{
 void RLECacheInit ()
 {
 	int i;
-	
+
 for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
 	rle_cache[i].rle_bitmap = NULL;
 	rle_cache[i].expanded_bitmap = GrCreateBitmap (64, 64, 1);
@@ -390,7 +390,7 @@ rle_cache_initialized = 1;
 void RLECacheFlush ()
 {
 	int i;
-	
+
 for (i=0; i<MAX_CACHE_BITMAPS; i++)	{
 	rle_cache [i].rle_bitmap = NULL;
 	rle_cache [i].last_used = 0;
@@ -749,7 +749,7 @@ for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 			if (pDest - expandBuf > bmP->bmProps.h * bmP->bmProps.rowSize) {
 				D2_FREE (expandBuf);
 				return -1;
-				}	
+				}
 			*pDest++ = c;
 			}
 		else if ((l = (h & NOT_RLE_CODE))) {
@@ -765,7 +765,7 @@ for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 			if (pDest - expandBuf + l > bmP->bmProps.h * bmP->bmProps.rowSize) {
 				D2_FREE (expandBuf);
 				return -1;
-				}	
+				}
 			memset (pDest, c, l);
 			pDest += l;
 			}

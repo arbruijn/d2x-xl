@@ -28,8 +28,8 @@ static char rcsid[] = "$Id: hash.c,v 1.3 2003/02/18 20:35:35 btb Exp $";
 #include "strutil.h"
 #include "error.h"
 #include "hash.h"
-	
-int hashtable_init( hashtable *ht, int size )	
+
+int hashtable_init( hashtable *ht, int size )
 {
 	int i;
 
@@ -61,7 +61,7 @@ return 0;
 }
 
 
-void hashtable_free( hashtable *ht )	
+void hashtable_free( hashtable *ht )
 {
 if (ht->key != NULL)
 	D2_FREE( ht->key);
@@ -71,7 +71,7 @@ ht->size = 0;
 }
 
 
-int hashtable_getkey( char *key )	
+int hashtable_getkey( char *key )
 {
 	int k = 0, i=0;
 
@@ -83,7 +83,7 @@ return k;
 }
 
 
-int hashtable_search( hashtable *ht, char *key )	
+int hashtable_search( hashtable *ht, char *key )
 {
 	int i,j,k;
 
@@ -101,7 +101,7 @@ return -1;
 }
 
 
-void hashtable_insert( hashtable *ht, char *key, int value )	
+void hashtable_insert( hashtable *ht, char *key, int value )
 {
 	int i,j,k;
 

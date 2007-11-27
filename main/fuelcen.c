@@ -111,7 +111,7 @@ void FuelCenCreate (tSegment *segP, int oldType)
 	short			nSegment = SEG_IDX (segP);
 	tSegment2	*seg2p = gameData.segs.segment2s + nSegment;
 	int			i, stationType = seg2p->special;
-	
+
 switch (stationType)	{
 	case SEGMENT_IS_NOTHING:
 	case SEGMENT_IS_GOAL_BLUE:
@@ -532,7 +532,7 @@ if (nMatCen == -1) {
 	}
 matCenP->xTimer += gameData.time.xFrame;
 if (!matCenP->bFlag) {
-	topTime = EQUIP_GEN_TIME;	
+	topTime = EQUIP_GEN_TIME;
 	if (matCenP->xTimer < topTime)
 		return;
 	nObject = gameData.segs.segments [matCenP->nSegment].objects;
@@ -598,7 +598,7 @@ if (nMatCen == -1) {
 	}
 matCenP->xTimer += gameData.time.xFrame;
 if (!matCenP->bFlag) {
-	topTime = i2f (extraGameInfo [1].entropy.nVirusGenTime);	
+	topTime = i2f (extraGameInfo [1].entropy.nVirusGenTime);
 	if (matCenP->xTimer < topTime)
 		return;
 	nObject = gameData.segs.segments [matCenP->nSegment].objects;
@@ -706,7 +706,7 @@ if ((LOCALPLAYER.numRobotsLevel -
 matCenP->xTimer += gameData.time.xFrame;
 if (!matCenP->bFlag) {
 	if (IsMultiGame)
-		topTime = ROBOT_GEN_TIME;	
+		topTime = ROBOT_GEN_TIME;
 	else {
 		xDistToPlayer = VmVecDistQuick (&gameData.objs.console->position.vPos, &matCenP->vCenter);
 		topTime = xDistToPlayer / 64 + d_rand () * 2 + F1_0*2;
@@ -1002,7 +1002,7 @@ return amount;
 //--unused-- //--			}
 //--unused-- //--		}
 //--unused-- 		break;
-//--unused-- 	case SEGMENT_IS_FUELCEN:	
+//--unused-- 	case SEGMENT_IS_FUELCEN:
 //--unused-- //--		DigiPlaySample (SOUND_REFUEL_STATION_HIT);
 //--unused-- //--		if (gameData.matCens.fuelCenters [station_num].xMaxCapacity>0)	{
 //--unused-- //--			gameData.matCens.fuelCenters [station_num].xMaxCapacity -= damage;
@@ -1082,18 +1082,18 @@ return amount;
 //--repair--
 //--repair-- 	// Find time for this movement
 //--repair-- 	deltaTime = F1_0;		// one second...
-//--repair-- 		
+//--repair-- 	
 //--repair-- 	// Find start and goal position
 //--repair-- 	start_pos = objP->position.vPos;
-//--repair-- 	
+//--repair-- 
 //--repair-- 	// Find delta position to get to goal position
 //--repair-- 	COMPUTE_SEGMENT_CENTER (&goal_pos,&gameData.segs.segments [repair_seg]);
 //--repair-- 	VmVecSub (&delta_pos,&goal_pos,&start_pos);
-//--repair-- 	
+//--repair-- 
 //--repair-- 	// Find start angles
 //--repair-- 	//angles_from_vector (&start_angles,&objP->position.mOrient.fVec);
 //--repair-- 	VmExtractAnglesMatrix (&start_angles,&objP->position.mOrient);
-//--repair-- 	
+//--repair-- 
 //--repair-- 	// Find delta angles to get to goal orientation
 //--repair-- 	med_compute_center_point_on_side (&nextcenter,&gameData.segs.segments [repair_seg],next_side);
 //--repair-- 	VmVecSub (&headfvec,&nextcenter,&goal_pos);
@@ -1133,9 +1133,9 @@ return amount;
 //--repair-- //	----------------------------------------------------------------------------------------------------------
 //--repair-- int refuel_do_repair_effect (tObject * objP, int firstTime, int repair_seg)	{
 //--repair--
-//--repair-- 	objP->mType.physInfo.velocity.x = 0;				
-//--repair-- 	objP->mType.physInfo.velocity.y = 0;				
-//--repair-- 	objP->mType.physInfo.velocity.z = 0;				
+//--repair-- 	objP->mType.physInfo.velocity.x = 0;			
+//--repair-- 	objP->mType.physInfo.velocity.y = 0;			
+//--repair-- 	objP->mType.physInfo.velocity.z = 0;			
 //--repair--
 //--repair-- 	if (firstTime)	{
 //--repair-- 		int entry_side;
@@ -1177,7 +1177,7 @@ return amount;
 //--repair-- 		av	= goalAngles;
 //--repair-- 		VmAngles2Matrix (&objP->position.mOrient,&av);
 //--repair--
-//--repair-- 		if (side_index >= 5)	
+//--repair-- 		if (side_index >= 5)
 //--repair-- 			return 1;		// Done being repaired...
 //--repair--
 //--repair-- 		if (Repairing==0)		{
@@ -1192,7 +1192,7 @@ return amount;
 //--repair-- 			case 4:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_1,F1_0); break;
 //--repair-- 			case 5:	DigiPlaySample (SOUND_REPAIR_STATION_FIXING_2,F1_0); break;
 //--repair-- 			}
-//--repair-- 		
+//--repair-- 	
 //--repair-- 			repair_ship_damage ();
 //--repair--
 //--repair-- 		}
@@ -1203,12 +1203,12 @@ return amount;
 //--repair-- 			side_index++;
 //--repair-- 			if (side_index >= 6) return 1;
 //--repair-- 			next_side = sidelist [side_index];
-//--repair-- 	
+//--repair-- 
 //--repair-- 			refuel_calc_deltas (objP, next_side, repair_seg);
 //--repair-- 		}
 //--repair--
 //--repair-- 	} else {
-//--repair-- 		fix factor, p,b,h;	
+//--repair-- 		fix factor, p,b,h;
 //--repair-- 		vmsAngVec av;
 //--repair--
 //--repair-- 		factor = FixDiv (currentTime,deltaTime);
@@ -1217,7 +1217,7 @@ return amount;
 //--repair-- 		objP->position.vPos = delta_pos;
 //--repair-- 		VmVecScale (&objP->position.vPos, factor);
 //--repair-- 		VmVecInc (&objP->position.vPos, &start_pos);
-//--repair-- 			
+//--repair-- 		
 //--repair-- 		// Find tObject's current orientation
 //--repair-- 		p	= FixMul (deltaAngles.p,factor);
 //--repair-- 		b	= FixMul (deltaAngles.b,factor);
@@ -1463,14 +1463,14 @@ CheckFlagDrop (seg2p, TEAM_RED, POW_BLUEFLAG, SEGMENT_IS_GOAL_RED);
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 	return;
 if (seg2p->special == SEGMENT_IS_GOAL_BLUE)	{
-	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {		
+	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_BLUE) && FlagAtHome (POW_BLUEFLAG)) {	
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_REDFLAG, FORCE_DROP);
 		}
 	}
 else if (seg2p->special == SEGMENT_IS_GOAL_RED) {
-	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {		
+	if (GetTeam (gameData.multiplayer.nLocalPlayer) == TEAM_RED) && FlagAtHome (POW_REDFLAG)) {	
 		MultiSendCaptureBonus (gameData.multiplayer.nLocalPlayer);
 		LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG);
 		MaybeDropNetPowerup (-1, POW_BLUEFLAG, FORCE_DROP);

@@ -34,7 +34,7 @@ void arch_init()
  // Initialise the library
 	arch_sdl_init();
 	if (!FindArg( "-nojoystick" ))  {
-#if TRACE	
+#if TRACE
 		con_printf(CON_VERBOSE, "\n%s", TXT_VERBOSE_6);
 #endif
 		joy_init();

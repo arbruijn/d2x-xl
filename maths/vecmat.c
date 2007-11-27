@@ -263,7 +263,7 @@ if (gameStates.render.bEnableSSE) {
 		: "=m" (dest)
 		: "m" (src0), "m" (src1)
 		: "%rsi"
-		);	
+		);
 #endif
 	return dest;
 	}
@@ -281,7 +281,7 @@ fix VmVecDotProd (vmsVector *v0, vmsVector *v1)
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
 		fVector	v0h, v1h;
-	
+
 	VmsVecToFloat (&v0h, v0);
 	VmsVecToFloat (&v1h, v1);
 #if defined (_WIN32)
@@ -299,7 +299,7 @@ if (gameStates.render.bEnableSSE) {
 		"movups	%%xmm0,%0\n\t"
 		: "=m" (v0h)
 		: "m" (v0h), "m" (v1h)
-		);	
+		);
 #endif
 	return (fix) ((v0h.p.x + v0h.p.y + v0h.p.z) * 65536);
 	}
@@ -345,7 +345,7 @@ if (gameStates.render.bEnableSSE) {
 		: "=m" (v)
 		: "m" (v0), "m" (v1)
 		: "%rsi"
-		);	
+		);
 #endif
 	return v.p.x + v.p.y + v.p.z;
 	}
@@ -458,7 +458,7 @@ if (gameOpts->render.nMathFormat == 2) {
 		: "=m" (h)
 		: "m" (h)
 		: "%rsi"
-		);	
+		);
 #endif
 	return (fix) (sqrt (h.p.x + h.p.y + h.p.z) * 65536);
 #else
@@ -969,15 +969,15 @@ sbsh = sinb * sinh;
 cbch = cosb * cosh;
 cbsh = cosb * sinh;
 sbch = sinb * cosh;
-m->rVec.p.x = (float) (cbch + sinp * sbsh);		
-m->uVec.p.z = (float) (sbsh + sinp * cbch);		
-m->uVec.p.x = (float) (sinp * cbsh - sbch);		
-m->rVec.p.z = (float) (sinp * sbch - cbsh);		
-m->fVec.p.x = (float) (sinh * cosp);				
-m->rVec.p.y = (float) (sinb * cosp);				
-m->uVec.p.y = (float) (cosb * cosp);				
-m->fVec.p.z = (float) (cosh * cosp);				
-m->fVec.p.y = (float) (-sinp);						
+m->rVec.p.x = (float) (cbch + sinp * sbsh);	
+m->uVec.p.z = (float) (sbsh + sinp * cbch);	
+m->uVec.p.x = (float) (sinp * cbsh - sbch);	
+m->rVec.p.z = (float) (sinp * sbch - cbsh);	
+m->fVec.p.x = (float) (sinh * cosp);			
+m->rVec.p.y = (float) (sinb * cosp);			
+m->uVec.p.y = (float) (cosb * cosp);			
+m->fVec.p.z = (float) (cosh * cosp);			
+m->fVec.p.y = (float) (-sinp);					
 #else
 #endif
 return m;
@@ -1566,7 +1566,7 @@ fix VmDistToPlane (vmsVector *vCheck, vmsVector *vNorm, vmsVector *vPlane)
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
 		fVector	c, p, n, t;
-	
+
 	VmsVecToFloat (&c, vCheck);
 	VmsVecToFloat (&p, vPlane);
 	VmsVecToFloat (&n, vNorm);
@@ -1589,7 +1589,7 @@ if (gameStates.render.bEnableSSE) {
 		"movups	%%xmm0,%0\n\t"
 		: "=m" (t)
 		: "m" (c), "m" (p), "m" (n)
-		);	
+		);
 #endif
 	return (fix) ((t.p.x + t.p.y + t.p.z) * 65536);
 	}

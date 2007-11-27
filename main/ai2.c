@@ -117,12 +117,12 @@ void InitAISystem (void)
 #if 0
 	int	i;
 
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG, "Trying to D2_ALLOC %i bytes for gameData.bots.pInfo.\n", 
 					gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
 #endif
 	gameData.bots.pInfo = (tRobotInfo *) D2_ALLOC (gameData.bots.nTypes * sizeof (*gameData.bots.pInfo));
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG, "gameData.bots.pInfo = %i\n", gameData.bots.pInfo);
 #endif
 	for (i = 0; i < gameData.bots.nTypes; i++) {
@@ -143,19 +143,19 @@ void InitAISystem (void)
 int AIBehaviorToMode (int behavior)
 {
 switch (behavior) {
-	case AIB_IDLING:			
+	case AIB_IDLING:		
 		return AIM_IDLING;
-	case AIB_NORMAL:			
+	case AIB_NORMAL:		
 		return AIM_CHASE_OBJECT;
-	case AIB_BEHIND:			
+	case AIB_BEHIND:		
 		return AIM_BEHIND;
-	case AIB_RUN_FROM:		
+	case AIB_RUN_FROM:	
 		return AIM_RUN_FROM_OBJECT;
-	case AIB_SNIPE:			
+	case AIB_SNIPE:		
 		return AIM_IDLING;	//	Changed, 09/13/95, MK, snipers are still until they see you or are hit.
-	case AIB_STATION:			
+	case AIB_STATION:		
 		return AIM_IDLING;
-	case AIB_FOLLOW:			
+	case AIB_FOLLOW:		
 		return AIM_FOLLOW_PATH;
 	default:	Int3 ();	//	Contact Mike: Error, illegal behavior nType
 	}
@@ -194,7 +194,7 @@ if (behavior != -1) {
 	ailp->mode = AIBehaviorToMode (aip->behavior);
 	} 
 else if (!((aip->behavior >= MIN_BEHAVIOR) && (aip->behavior <= MAX_BEHAVIOR))) {
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG, " [obj %i -> normal] ", nObject);
 #endif
 	aip->behavior = AIB_NORMAL;
@@ -252,7 +252,7 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 		break;
 
 	if (buddy_id == gameData.bots.nTypes [0]) {
-#if TRACE	
+#if TRACE
 		con_printf (CONDBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.pInfo!\n");
 #endif
 		return;
@@ -527,7 +527,7 @@ if (dot < (F1_0 - gameData.time.xFrame/2)) {
 	VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
 	mag = VmVecNormalizeQuick (&new_fvec);
 	if (mag < F1_0/256) {
-#if TRACE	
+#if TRACE
 		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", f2fl (mag));
 #endif
 		new_fvec = *vGoal;		//	if degenerate vector, go right to goal
@@ -566,7 +566,7 @@ if ((pos->p.x != objP->position.vPos.p.x) ||
 	if (nSegment == -1) {
 		fq.startSeg = objP->nSegment;
 		*pos = objP->position.vPos;
-#if TRACE	
+#if TRACE
 		con_printf (1, "Object %i, gun is outside mine, moving towards center.\n", OBJ_IDX (objP));
 #endif
 		MoveTowardsSegmentCenter (objP);
@@ -1301,19 +1301,19 @@ void MoveAwayFromPlayer (tObject *objP, vmsVector *vVecToPlayer, int attackType)
 		objref = ((OBJ_IDX (objP)) ^ ((gameData.app.nFrameCount + 3* (OBJ_IDX (objP))) >> 5)) & 3;
 
 		switch (objref) {
-			case 0:	
-				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, gameData.time.xFrame << 5);	
+			case 0:
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, gameData.time.xFrame << 5);
 				break;
-			case 1:	
-				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, -gameData.time.xFrame << 5);	
+			case 1:
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.uVec, -gameData.time.xFrame << 5);
 				break;
-			case 2:	
-				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, gameData.time.xFrame << 5);	
+			case 2:
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, gameData.time.xFrame << 5);
 				break;
-			case 3:	
-				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, -gameData.time.xFrame << 5);	
+			case 3:
+				VmVecScaleInc (&pptr->velocity, &objP->position.mOrient.rVec, -gameData.time.xFrame << 5);
 				break;
-			default:	
+			default:
 				Int3 ();	//	Impossible, bogus value on objref, must be in 0d:\temp\dm_test3
 		}
 	}
@@ -1444,7 +1444,7 @@ void mprintf_animation_info (tObject *objP)
 
 	if (!gameData.ai.bInfoEnabled)
 		return;
-#if TRACE	
+#if TRACE
 	con_printf (CONDBG, "Goal = ");
 	switch (aip->GOAL_STATE) {
 		case AIS_NONE:	con_printf (CONDBG, "NONE ");	break;
@@ -1668,7 +1668,7 @@ else {
 	if (ailp->playerAwarenessType >= PA_NEARBY_ROBOT_FIRED)
 		if (gameData.ai.nPlayerVisibility == 1)
 			gameData.ai.nPlayerVisibility = 2;
-			
+		
 	if (gameData.ai.nPlayerVisibility) {
 		ailp->timePlayerSeen = gameData.time.xGame;
 		}
@@ -1815,7 +1815,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->id).companion == 1)) {
 		else if ((wallP->nType == WALL_ILLUSION) && !(wallP->flags & WALL_ILLUSION_OFF))
 			return 0;
 		}
-			
+		
 	if (wallP->keys != KEY_NONE) {
 		if (wallP->keys == KEY_BLUE)
 			return (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY);
@@ -2076,7 +2076,7 @@ if (nSegment == -1) {
 	con_printf (CONDBG, "Tried to spew a bot outside the mine! Aborting!\n");
 #endif
 	return -1;
-	}	
+	}
 if (!pos) {
 	pos = &vPos;
 	COMPUTE_SEGMENT_CENTER_I (pos, nSegment);
@@ -2202,7 +2202,7 @@ if (i < 0)
 if (gameData.boss [i].nTeleportSegs <= 0)
 	return;
 do {
-	nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;	
+	nRandIndex = (d_rand () * gameData.boss [i].nTeleportSegs) >> 15;
 	nRandSeg = gameData.boss [i].teleportSegs [nRandIndex];
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 	if (IsMultiGame)

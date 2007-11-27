@@ -50,7 +50,7 @@ main(int argc,char **argv)
 		gr_vesa_setmode(0x110);
 
 		draw_ubitmap(0,0,&my_bitmap);
-	
+
 		getch();
 
 	}

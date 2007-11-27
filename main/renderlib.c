@@ -553,7 +553,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 				pc->color.red =
 				pc->color.green =
 				pc->color.blue = fl + dl;
-				}	
+				}
 			if (gameOpts->render.color.bCap) {
 				if (pc->color.red > 1.0)
 					pc->color.red = 1.0;

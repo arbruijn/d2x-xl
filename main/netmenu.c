@@ -368,7 +368,7 @@ else if (n > netGame.nNumPlayers) {
 	// One got removed...
    DigiPlaySample (SOUND_HUD_KILL, F1_0);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (gameOpts->multi.bNoRankings)	
+		if (gameOpts->multi.bNoRankings)
 			sprintf (menus [i].text, "%d. %-20s", i+1, netPlayers.players [i].callsign);
 		else
 			sprintf (menus [i].text, "%d. %s%-20s", i+1, pszRankStrings [netPlayers.players [i].rank], netPlayers.players [i].callsign);
@@ -590,7 +590,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		}
 	}
 
-netGame.invul = m [optStartInvul].value;	
+netGame.invul = m [optStartInvul].value;
 mpParams.bInvul = (ubyte) netGame.invul;
 netGame.BrightPlayers = m [optBrightPlayers].value ? 0 : 1;
 mpParams.bBrightPlayers = (ubyte) netGame.BrightPlayers;
@@ -748,7 +748,7 @@ do {
 	if (extraGameInfo [1].bDarkness) {
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		}	
+		}
 	ADD_CHECK (opt, TXT_DARKNESS, extraGameInfo [1].bDarkness, KEY_D, HTX_DARKNESS);
 	optDarkness = opt++;
 	if (extraGameInfo [1].bDarkness) {
@@ -1278,7 +1278,7 @@ if (!(FindArg ("-pps") && FindArg ("-shortpackets")))
 	if (!NetworkChooseConnect ())
 		return -1;
 
-sprintf (name, "%s%s", LOCALPLAYER.callsign, TXT_S_GAME);	
+sprintf (name, "%s%s", LOCALPLAYER.callsign, TXT_S_GAME);
 if (bAutoRun)
 	return 1;
 
@@ -1362,7 +1362,7 @@ ADD_TEXT (opt, "", 0);
 opt++; 
 
 m [optGameTypes + NMCLAMP (mpParams.nGameType, 0, opt - optGameTypes - 1)].value = 1;
-	
+
 ADD_RADIO (opt, TXT_OPEN_GAME, 0, KEY_O, 1, HTX_MULTI_OPENGAME);
 optOpenGame = opt++;
 ADD_RADIO (opt, TXT_CLOSED_GAME, 0, KEY_C, 1, HTX_MULTI_CLOSEDGAME);
@@ -1475,7 +1475,7 @@ if (key != -1) {
 		   
 	gameData.multiplayer.nMaxPlayers = m [optMaxNet].value + 2;
 	netGame.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
-				
+			
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].szGameName, name)) {
 			ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
@@ -1663,7 +1663,7 @@ doMenu:
 	opt++;
 
 	Assert (opt <= MAX_PLAYERS+4);
-	
+
 	choice = ExecMenu (NULL, TXT_TEAM_SELECTION, opt, m, NULL, NULL);
 
 	if (choice == opt-1)
@@ -1672,7 +1672,7 @@ doMenu:
 		{
 			ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		}
-		
+	
 		netGame.teamVector = teamVector;
 		strcpy (netGame.team_name [0], team_names [0]);
 		strcpy (netGame.team_name [1], team_names [1]);
@@ -1703,7 +1703,7 @@ int NetworkSelectPlayers (int bAutoRun)
 NetworkAddPlayer (&networkData.mySeq);
 if (bAutoRun)
 	return 1;
-	
+
 memset (m, 0, sizeof (m));
 for (i = 0; i< MAX_PLAYERS+4; i++) {
 	sprintf (text [i], "%d.  %-20s", i+1, "");
@@ -1771,9 +1771,9 @@ if ((netGame.gameMode == NETGAME_TEAM_ANARCHY ||
 	 (gameData.multiplayer.nPlayers < 2)) {
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
 	gameData.multiplayer.nPlayers = nSavePlayers;
-#if 0		
+#if 0	
 	goto GetPlayersAgain;
-#endif		
+#endif	
 	}
 #endif
 
@@ -1826,7 +1826,7 @@ for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers.players [i].version_minor = 0;
 	netPlayers.players [i].rank = 0;
 	}
-#if 1				
+#if 1			
 con_printf (CONDBG, "Select teams: Game mode is %d\n", netGame.gameMode);
 #endif
 if (netGame.gameMode == NETGAME_TEAM_ANARCHY ||
@@ -1959,7 +1959,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 					 (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", 
 					 networkData.nSocket);
 		menus [0].rebuild = 1;
-#if 1				
+#if 1			
 		con_printf (0, TXT_CHANGE_SOCK, networkData.nSocket);
 #endif
 		NetworkListen ();
@@ -1986,7 +1986,7 @@ t = SDL_GetTicks ();
 if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastActiveGames)) {
 	networkData.bGamesChanged = 0;
 	networkData.nLastActiveGames = networkData.nActiveGames;
-#if 1				
+#if 1			
 	con_printf (CONDBG, "Found %d netgames.\n", networkData.nActiveGames);
 #endif
 	// Copy the active games data into the menu options
@@ -2280,7 +2280,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
    return 1;
 	}
-return 0;	
+return 0;
 }
 #endif
 
@@ -2472,7 +2472,7 @@ memset (m, 0, sizeof (m));
 memset (mTexts, 0, sizeof (mTexts));
 for (i = 0; i < 20; i++) {
 	m [i].text = (char *) (mTexts + i);
-	m [i].nType = NM_TYPE_TEXT;		
+	m [i].nType = NM_TYPE_TEXT;	
 	}
 sprintf (mTexts [opt], TXT_NGI_GAME, AGI.szGameName); 
 opt++;
@@ -2567,12 +2567,12 @@ else
 		strcat (mTexts [opt], "Gameplay ext.: None");
 	opt++;
 	}
-bAlreadyShowingInfo = 1;	
+bAlreadyShowingInfo = 1;
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 ExecMenutiny2 (NULL, TXT_NETGAME_INFO, opt, m, NULL);
 gameStates.menus.nInMenu = nInMenu;
-bAlreadyShowingInfo = 0;	
+bAlreadyShowingInfo = 0;
  }
 
 //------------------------------------------------------------------------------

@@ -139,7 +139,7 @@ void RenderLaser (tObject *objP)
 		Error ("Invalid weapon nType in RenderLaser\n");
 	}
 #endif
-	
+
 switch (gameData.weapons.info [objP->id].renderType)	{
 	case WEAPON_RENDER_LASER:
 		Int3 ();	// Not supported anymore!
@@ -205,7 +205,7 @@ int LasersAreRelated (int o1, int o2)
 	short		id1, id2;
 	fix		ct1, ct2;
 
-if ((o1 < 0) || (o2 < 0))	
+if ((o1 < 0) || (o2 < 0))
 	return 0;
 objP1 = gameData.objs.objects + o1;
 objP2 = gameData.objs.objects + o2;
@@ -238,7 +238,7 @@ if (objP2->nType == OBJ_WEAPON)
 		}
 
 // They must both be weapons
-if (objP1->nType != OBJ_WEAPON || objP2->nType != OBJ_WEAPON)	
+if (objP1->nType != OBJ_WEAPON || objP2->nType != OBJ_WEAPON)
 	return 0;
 
 //	Here is the 09/07/94 change -- Siblings must be identical, others can hurt each other
@@ -762,7 +762,7 @@ if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	VmVector2Matrix (&objP->position.mOrient, vDirection, SPECTATOR (pParent) ? &gameStates.app.playerPos.mOrient.uVec : &pParent->position.mOrient.uVec, NULL);
 	if ((gameData.objs.objects + nParent != gameData.objs.viewer) && (pParent->nType != OBJ_WEAPON)) {
-		// Muzzle flash		
+		// Muzzle flash	
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
 			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
 											 gameData.weapons.info [objP->id].flash_vclip);
@@ -842,7 +842,7 @@ if (pParent->nType == OBJ_WEAPON) {
 	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec ,NULL);
 if (((gameData.objs.objects + nParent) != gameData.objs.viewer) && 
 		(pParent->nType != OBJ_WEAPON))	{
-	// Muzzle flash		
+	// Muzzle flash	
 	if (gameData.weapons.info [objP->id].flash_vclip > -1)
 		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
 											gameData.weapons.info [objP->id].flash_vclip);
@@ -1375,7 +1375,7 @@ if (nFate == HIT_OBJECT) {
 //		if (gameData.objs.objects [hit_data.hitObject].nType == OBJ_ROBOT)
 //			KillObject (gameData.objs.objects + hit_data.hitObject);
 //		if (gameData.objs.objects [hit_data.hitObject].nType != OBJ_POWERUP)
-//			return;		
+//			return;	
 //as of 12/6/94, we don't care if the laser is stuck in an tObject. We
 //just fire away normally
 	}
@@ -1451,7 +1451,7 @@ if (gameStates.app.nDifficultyLevel < 2)
 // -- 	if (LOCALPLAYER.energy >= energy_usage) {
 LOCALPLAYER.energy -= energy_usage;
 if (LOCALPLAYER.energy <= 0) {
-	LOCALPLAYER.energy = 0;	
+	LOCALPLAYER.energy = 0;
 	// -- AutoSelectWeapon (0);
 	}
 LaserPlayerFire (objP, FLARE_ID, 6, 1, 0);
@@ -1549,7 +1549,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			xDistToPlayer = VmVecDistQuick (&objP->position.vPos, &gameData.objs.objects [nMslLock].position.vPos);
 			if ((xDistToPlayer < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 				LOCALPLAYER.homingObjectDist = xDistToPlayer;
-				
+			
 			}
 		if (nMslLock != -1) {
 			VmVecSub (&vVecToObject, &gameData.objs.objects [nMslLock].position.vPos, &objP->position.vPos);
@@ -1697,7 +1697,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 		break;	//	Couldn't fire weapon, so abort.
 		}
 	}
-gameData.laser.nGlobalFiringCount = 0;	
+gameData.laser.nGlobalFiringCount = 0;
 return rVal;
 }
 
@@ -1737,7 +1737,7 @@ return rVal;
 // -- 		LOCALPLAYER.energy -= F1_0;
 // -- 
 // -- 	if (LOCALPLAYER.energy <= F1_0) {
-// -- 		LOCALPLAYER.energy = 0;	
+// -- 		LOCALPLAYER.energy = 0;
 // -- 		AutoSelectWeapon (0);
 // -- 		return -1;
 // -- 	}
@@ -1945,7 +1945,7 @@ switch (nWeapon) {
 			case 3: spreadr =  F1_0/42; spreadu = F1_0/17; break; //  67.5 degrees
 			case 4: spreadr =  0;       spreadu = F1_0/16; break; //  90   degrees
 			case 5: spreadr = -F1_0/42; spreadu = F1_0/17; break; // 112.5 degrees
-			case 6: spreadr = -F1_0/22; spreadu = F1_0/22; break; // 135   degrees	
+			case 6: spreadr = -F1_0/22; spreadu = F1_0/22; break; // 135   degrees
 			case 7: spreadr = -F1_0/17; spreadu = F1_0/42; break; // 157.5 degrees
 			default:
 				Error ("Invalid helix_orientation value %x\n",helix_orient);
@@ -2004,7 +2004,7 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 		MakeRandomVector (&random_vector);
 		VmVecScaleInc (&vGoal, &random_vector, F1_0/4);
 		VmVecNormalizeQuick (&vGoal);
-	}		
+	}	
 
 	//	Create a vector towards the goal, then add some noise to it.
 	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->nSegment, 
@@ -2162,7 +2162,7 @@ void CreateSmartChildren (tObject *objP, int num_smart_children)
 //give up control of the guided missile
 void ReleaseGuidedMissile (int nPlayer)
 {
-if (nPlayer == gameData.multiplayer.nLocalPlayer) {			
+if (nPlayer == gameData.multiplayer.nLocalPlayer) {		
 	if (!gameData.objs.guidedMissile [nPlayer])
 		return;
 	gameData.objs.missileViewer = gameData.objs.guidedMissile [nPlayer];
@@ -2170,7 +2170,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	 	MultiSendGuidedInfo (gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer], 1);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 	 	NDRecordGuidedEnd ();
-	 }	
+	 }
 gameData.objs.guidedMissile [nPlayer] = NULL;
 }
 

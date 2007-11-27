@@ -61,8 +61,8 @@ int GrSetMode(u_int32_t mode)
 
 	w=SM_W(mode);
 	h=SM_H(mode);
-	
-	
+
+
 	GrPaletteStepClear();
 
 	if(ggiCheckGraphMode(screenvis, w, h, GGI_AUTO, GGI_AUTO, GT_8BIT, &other_mode))
@@ -71,11 +71,11 @@ int GrSetMode(u_int32_t mode)
 		ggiSetGraphMode(screenvis, w, h, GGI_AUTO, GGI_AUTO, GT_8BIT);
 
 	ggiSetFlags(screenvis, GGIFLAG_ASYNC);
-		
+	
 	if (!ggiDBGetNumBuffers(screenvis))
 		use_directbuffer = 0;
 	else
-	{	
+	{
 		dbuffer = ggiDBGetBuffer(screenvis, 0);
 		if (!(dbuffer->nType & GGI_DB_SIMPLE_PLB))
 			use_directbuffer = 0;
@@ -110,9 +110,9 @@ int GrSetMode(u_int32_t mode)
 	}
 
 	GrSetCurrentCanvas(NULL);
-	
+
 	//gamefont_choose_game_font(w,h);
-	
+
 	return 0;
 }
 
@@ -125,14 +125,14 @@ int GrInit(void)
 		return -1;
 	MALLOC(grdCurScreen,grsScreen, 1);
 	memset(grdCurScreen, 0, sizeof(grsScreen);
-	
+
 	ggiInit();
 	screenvis = ggiOpen(NULL);
 	ggiGetMode(screenvis, &init_mode);
 
 	if ((retcode=GrSetMode(mode)))
 		return retcode;
-	
+
 	grdCurScreen->scCanvas.cvColor = 0;
 	grdCurScreen->scCanvas.cvDrawMode = 0;
 	grdCurScreen->scCanvas.cvFont = NULL;
@@ -211,7 +211,7 @@ void GrPaletteStepUp (int r, int g, int b)
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb
 
-void GrPaletteStepLoad (ubyte *pal)	
+void GrPaletteStepLoad (ubyte *pal)
 {
 	int i, j;
 	ggi_color colors[256];
@@ -299,7 +299,7 @@ int GrPaletteFadeIn (ubyte *pal, int nsteps, int allow_keys)
 	ggi_color fade_colors[256];
 
 	if (!gameStates.render.bPaletteFadedOut) return 0;
-	
+
 	if (nsteps <= 0)
 		nsteps = 1;
 

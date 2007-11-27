@@ -298,9 +298,9 @@ void LoadTerrain (char *filename)
 LogErr ("            loading terrain height map\n");
 iff_error = iff_read_bitmap (filename, &bmHeight, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR) {
-#if TRACE		
+#if TRACE	
 	con_printf (1, "File %s - IFF error: %s", filename, iff_errormsg (iff_error));
-#endif		
+#endif	
 	Error ("File %s - IFF error: %s", filename, iff_errormsg (iff_error));
 }
 if (gameData.render.terrain.pHeightMap)

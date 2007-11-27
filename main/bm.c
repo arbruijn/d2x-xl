@@ -166,7 +166,7 @@ return 0;
 void BMSetAfterburnerSizes (void)
 {
 	sbyte	nSize = gameData.weapons.info [MERCURYMSL_ID].afterburner_size;
-	
+
 //gameData.weapons.info [VULCAN_ID].afterburner_size = 
 //gameData.weapons.info [GAUSS_ID].afterburner_size = nSize / 8;
 gameData.weapons.info [CONCUSSION_ID].afterburner_size =
@@ -432,14 +432,14 @@ while (CFGetS (szInput, LINEBUF_SIZE, infoFile)) {
 		else IFTOK ("$MARKER")			{bm_read_marker ();		continue;}
 		else IFTOK ("$PLAYER_SHIP")		{bm_read_player_ship ();	continue;}
 		else IFTOK ("$EXIT") {
-				bm_read_exitmodel ();	
+				bm_read_exitmodel ();
 			continue;
 		}
 		else	{		//not a special token, must be a bitmap!
 
 			// Remove any illegal/unwanted spaces and tabs at this point.
 			while ((*arg=='\t') || (*arg==' ')) arg++;
-			if (*arg == '\0') { break; }	
+			if (*arg == '\0') { break; }
 
 			//check for '=' in token, indicating error
 			if (strchr (arg,'='))
@@ -470,10 +470,10 @@ void BMReadWeaponInfoD1N (CFILE * fp, int i)
 {
 	tD1WeaponInfo	*wiP = gameData.weapons.infoD1 + i;
 
-wiP->renderType = CFReadByte (fp);	
+wiP->renderType = CFReadByte (fp);
 wiP->nModel = CFReadByte (fp);
-wiP->nInnerModel = CFReadByte (fp);	
-wiP->persistent = CFReadByte (fp);	
+wiP->nInnerModel = CFReadByte (fp);
+wiP->persistent = CFReadByte (fp);
 wiP->flash_vclip = CFReadByte (fp);
 wiP->flashSound = CFReadShort (fp);
 wiP->robot_hit_vclip = CFReadByte (fp);
@@ -481,7 +481,7 @@ wiP->robot_hitSound = CFReadShort (fp);
 wiP->wall_hit_vclip = CFReadByte (fp);
 wiP->wall_hitSound = CFReadShort (fp);
 wiP->fireCount = CFReadByte (fp);
-wiP->ammo_usage = CFReadByte (fp);	
+wiP->ammo_usage = CFReadByte (fp);
 wiP->nVClipIndex = CFReadByte (fp);
 wiP->destroyable = CFReadByte (fp);
 wiP->matter = CFReadByte (fp);
@@ -794,12 +794,12 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	fprintf (f, "D2D1_weapon_info weaponInfoD2D1 [D1_MAX_WEAPON_TYPES] = {\r\n");
 	for (i = 0;i < D1_MAX_WEAPON_TYPES;i++) {
 		fprintf (f, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,{",
-			gameData.weapons.infoD1 [i].persistent,	
-			gameData.weapons.infoD1 [i].fireCount,	
-			gameData.weapons.infoD1 [i].ammo_usage,	
+			gameData.weapons.infoD1 [i].persistent,
+			gameData.weapons.infoD1 [i].fireCount,
+			gameData.weapons.infoD1 [i].ammo_usage,
 			gameData.weapons.infoD1 [i].destroyable,
-			gameData.weapons.infoD1 [i].matter,		
-			gameData.weapons.infoD1 [i].bounce,		
+			gameData.weapons.infoD1 [i].matter,	
+			gameData.weapons.infoD1 [i].bounce,	
 			gameData.weapons.infoD1 [i].homingFlag,
 			gameData.weapons.infoD1 [i].energy_usage,
 			gameData.weapons.infoD1 [i].fire_wait);
@@ -811,10 +811,10 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 			fprintf (f, "%s%d", j ? "," : "", 
 				gameData.weapons.infoD1 [i].speed [j]);
 		fprintf (f, "},%d,%d,%d,%d,%d,%d}%s",
-			gameData.weapons.infoD1 [i].mass,		
-			gameData.weapons.infoD1 [i].drag,		
-			gameData.weapons.infoD1 [i].thrust,	
-			gameData.weapons.infoD1 [i].light,	
+			gameData.weapons.infoD1 [i].mass,	
+			gameData.weapons.infoD1 [i].drag,	
+			gameData.weapons.infoD1 [i].thrust,
+			gameData.weapons.infoD1 [i].light,
 			gameData.weapons.infoD1 [i].lifetime,
 			gameData.weapons.infoD1 [i].damage_radius,
 			 (i < D1_MAX_WEAPON_TYPES - 1) ? ",\r\n" : "};\r\n");
@@ -826,7 +826,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 	CFRead (&gameData.pig.tex.nTextures, sizeof (int), 1, fp);
 	CFRead (gameData.pig.tex.bmIndex, sizeof (tBitmapIndex), MAX_TEXTURES, fp);
 	CFRead (gameData.pig.tex.tMapInfo, sizeof (tTexMapInfo), MAX_TEXTURES, fp);
-	
+
 	CFRead (Sounds [0], sizeof (ubyte), MAX_SOUNDS, fp);
 	CFRead (AltSounds, sizeof (ubyte), MAX_SOUNDS, fp);
 
@@ -850,7 +850,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 
 	CFRead (&gameData.objs.pwrUp.nTypes, sizeof (int), 1, fp);
 	CFRead (gameData.objs.pwrUp.info, sizeof (powerupType_info), MAX_POWERUP_TYPES, fp);
-	
+
 	CFRead (&gameData.models.nPolyModels, sizeof (int), 1, fp);
 	CFRead (gameData.models.polyModels, sizeof (tPolyModel), gameData.models.nPolyModels, fp);
 
@@ -1399,7 +1399,7 @@ tBitmapIndex ReadExtraBitmapIFF (char * filename)
 		con_printf (CONDBG, 
 			"Error loading exit model bitmap <%s> - IFF error: %s\n", 
 			filename, iff_errormsg (iff_error));
-#endif			
+#endif		
 		return bitmap_num;
 	}
 	if (iff_has_transparency)

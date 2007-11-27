@@ -468,7 +468,7 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 			VmVecRotatef (rotVerts + i, fVerts + i, &mRot);
 			fVerts [i] = rotVerts [i];
 			VmVecIncf (rotVerts + i, &fPos);
-			}	
+			}
 		if (bVertexArrays)
 			glDrawArrays (GL_TRIANGLES, 0, 3);
 		else {
@@ -896,7 +896,7 @@ void RenderThrusterFlames (tObject *objP)
 	fVector				v;
 	float					fSpeed, fPulse, fFade [4];
 	tThrusterData		*pt = NULL;
-	
+
 	static time_t		tPulse = 0;
 	static int			nPulse = 10;
 
@@ -1369,7 +1369,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 		glDepthMask (0);
 		glDisable (GL_TEXTURE_2D);
 		//glCullFace (GL_FRONT);
-		glDisable (GL_CULL_FACE);		
+		glDisable (GL_CULL_FACE);	
 		r [3] = f2fl (objP->size);
 		if (r [3] >= 3.0f)
 			r [3] /= 1.5f;
@@ -1402,7 +1402,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 				}
 			glEnd ();
 			}
-		glEnable (GL_CULL_FACE);		
+		glEnable (GL_CULL_FACE);	
 		for (h = 0; h < 3; h += 2) {
 			glCullFace (h ? GL_FRONT : GL_BACK);
 			glColor4f (pc->red, pc->green, pc->blue, h ? 0.1f : alpha);
@@ -1543,7 +1543,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
 			static tTexCoord2f	tTexCoordTrail [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-			
+		
 		if (r >= 3.0f)
 			r /= 1.5f;
 		else if (r < 1)
@@ -1593,7 +1593,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 			glColor4fv ((GLfloat *) &trailColor);
 			bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			bStencil = StencilOff ();
-			glDisable (GL_CULL_FACE);		
+			glDisable (GL_CULL_FACE);	
 			glDepthMask (0);
 			glEnable (GL_TEXTURE_2D);
 			if (OglBindBmTex (bmP, 1, -1)) 

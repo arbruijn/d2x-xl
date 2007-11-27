@@ -136,7 +136,7 @@ typedef struct grsBmProps {
 	short   w, h;		// width, height
 	short   rowSize;	// unsigned char offset to next row
 	sbyte	  nType;		// 0=Linear, 1=ModeX, 2=SVGA
-	ubyte	  flags;			
+	ubyte	  flags;		
 } grsBmProps;
 
 typedef struct grsStdBmData {
@@ -414,7 +414,7 @@ void GrSetColor(int color);
 void GrSetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
 void GrSetColorRGB15bpp (ushort c, ubyte alpha);
 void GrFadeColorRGB (double dFade);
-	
+
 #define GrSetColorRGBi(_c)	GrSetColorRGB (RGBA_RED (_c), RGBA_GREEN (_c), RGBA_BLUE (_c), RGBA_ALPHA (_c))
 
 //	-----------------------------------------------------------------------------

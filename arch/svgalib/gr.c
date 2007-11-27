@@ -55,7 +55,7 @@ int GrSetMode(u_int32_t mode)
 	vga_modeinfo *modeinfo;
 	int modenum, rowSize;
 	void *framebuffer;
-	
+
 #ifdef NOGRAPH
 	return 0;
 #endif
@@ -68,7 +68,7 @@ int GrSetMode(u_int32_t mode)
 	GrPaletteStepClear();
 
 	sprintf(vgamode, "G%dx%dx256", w, h);
-	modenum = vga_getmodenumber(vgamode);	
+	modenum = vga_getmodenumber(vgamode);
 	vga_setmode(modenum);
 #ifdef SVGALIB_INPUT
 	mouse_seteventhandler(mouse_handler);
@@ -122,9 +122,9 @@ int GrSetMode(u_int32_t mode)
 	grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_LINEAR;
 	grdCurScreen->scCanvas.cvBitmap.bmTexBuf = framebuffer;
 	GrSetCurrentCanvas(NULL);
-	
+
 	//gamefont_choose_game_font(w,h);
-	
+
 	return 0;
 }
 
@@ -138,12 +138,12 @@ int GrInit(void)
 		return -1;
 	MALLOC(grdCurScreen,grsScreen, 1);
 	memset(grdCurScreen, 0, sizeof(grsScreen);
-	
+
 	vga_init();
 
 	if ((retcode=GrSetMode(mode)))
 		return retcode;
-	
+
 	grdCurScreen->scCanvas.cvColor = 0;
 	grdCurScreen->scCanvas.cvDrawMode = 0;
 	grdCurScreen->scCanvas.cvFont = NULL;
@@ -222,7 +222,7 @@ void GrPaletteStepUp (int r, int g, int b)
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb
 
-void GrPaletteStepLoad (ubyte *pal)	
+void GrPaletteStepLoad (ubyte *pal)
 {
 	int i;
 	int colors[768];

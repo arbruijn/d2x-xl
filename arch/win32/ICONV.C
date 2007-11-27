@@ -383,7 +383,7 @@ FOREVER
 	if (++i % 3 == 0)
 		*ps++ = '.';
 	ENDFOR
-return strrev (pszVal);	
+return strrev (pszVal);
 ENDFUNC
 
 								/*---------------------------*/

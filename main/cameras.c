@@ -198,7 +198,7 @@ if (!OglCreateCamBuf (pc))
 			gameOpts->render.cameras.bFitToWall = 1;
 			pc->screenBuf = pc->texBuf.bmTexBuf;
 			}
-		}	
+		}
 	memset (pc->texBuf.bmTexBuf, 0, pc->texBuf.bmProps.w * pc->texBuf.bmProps.h * 4);
 #else
 	return 0;
@@ -589,7 +589,7 @@ int RenderCameras (void)
 	int		cm = gameStates.render.cockpit.nMode;
 	int		frameCap = gameOpts->render.nMaxFPS;
 	int		nMaxWaitFrames = -1;
-	
+
 if (!gameStates.app.bD2XLevel)
 	return 0;
 if (!extraGameInfo [0].bUseCameras)

@@ -265,7 +265,7 @@ while (next_row != NULL) {
 				if ((r == FBASELINE + 2) || (r == FBASELINE + 3))
 					underline = 1;
 				text_ptr++;
-				}	
+				}
 			get_char_width (text_ptr[0], text_ptr[1], &width, &spacing);
 			letter = *text_ptr - FMINCHAR;
 			if (!INFONT (letter)) {	//not in font, draw as space
@@ -501,7 +501,7 @@ void ogl_font_choose_size (grsFont * font, int gap, int *rw, int *rh){
 					break;
 				y+=font->ftHeight+gap;
 			}
-			
+		
 			tries++;
 		}while (nc!=nchars);
 		if (nc!=nchars)
@@ -550,10 +550,10 @@ void ogl_init_font (grsFont * font)
 		font->ftParentBitmap.glTexture = OglGetFreeTexture ();
 	font->ftBitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
 	memset (font->ftBitmaps, 0, nchars * sizeof (grsBitmap));
-#if TRACE	
+#if TRACE
 //	con_printf (CONDBG, "ogl_init_font %s, %s, nchars=%i, (%ix%i tex)\n", 
 //		 (font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth", (font->ftFlags & FT_COLOR)?"color":"mono", nchars, tw, th);
-#endif		
+#endif	
 	//	s[1]=0;
 	h = font->ftHeight;
 	//	sleep (5);
@@ -954,7 +954,7 @@ int GrString (int x, int y, char *s, int *idP)
 	int			w, h, aw, clipped = 0;
 #if STRINGPOOL
 	grsString	*ps;
-	
+
 if ((TYPE == BM_OGL) && (ps = GetPoolString (s, idP))) {
 	OglUBitMapMC (x, y, 0, 0, ps->bmP, &FG_COLOR, F1_0, 0);
 	return (int) (ps - stringPool) + 1;
@@ -1254,15 +1254,15 @@ grsFont * GrInitFont (char * fontname)
 	if (!fontfile) {
 #if TRACE
 		con_printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
-#endif		
+#endif	
 		return NULL;
 	}
 
 	CFRead (file_id, 4, 1, fontfile);
 	if (!strncmp (file_id, "NFSP", 4)) {
-#if TRACE		
+#if TRACE	
 		con_printf (CON_NORMAL, "File %s is not a font file\n", fontname);
-#endif		
+#endif	
 		return NULL;
 	}
 

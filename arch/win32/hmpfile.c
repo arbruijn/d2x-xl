@@ -101,7 +101,7 @@ void hmp_stop(hmp_file *hmp)
 		hmp->evbuf = mhdr->lpNext;
 		D2_FREE(mhdr);
 	}
-	
+
 	if (hmp->hmidi) {
 		midiStreamClose(hmp->hmidi);
 		hmp->hmidi = NULL;
@@ -318,7 +318,7 @@ static void _stdcall midi_callback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD
 
 	if (uMsg != MOM_DONE)
 		return;
-	
+
 	mhdr = ((MIDIHDR *)(size_t)dw1);
 	mhdr->dwBytesRecorded = 0;
 	hmp = (hmp_file *)(mhdr->dwUser);
@@ -446,7 +446,7 @@ static int hmp_track_to_midi (ubyte* track, int size, FILE *f)
 	int n1, n2;
 	int startOffs = ftell (f);
 
-while (track < pt + size) {		
+while (track < pt + size) {	
 	if (track [0] &0x80) {
 		ubyte b = track [0] & 0x7F;
 		fwrite (&b, sizeof (b), 1, f);
@@ -468,7 +468,7 @@ while (track < pt + size) {
 			}
 		for(n2 = 0;n2 <= n1; n2++) {
 			ubyte b = track [n1 - n2] & 0x7F;
-			
+		
 			if (n2 != n1) 
 				b |= 0x80;
 			fwrite (&b, sizeof (b), 1, f);
@@ -533,7 +533,7 @@ fwrite (&s, sizeof (s), 1, f);	//format
 s = BE_SHORT (hmp->num_trks);
 fwrite (&s, sizeof (s), 1, f);
 i = 0xC0;								//hmp->midi_division;
-s = BE_SHORT ((short) i);	
+s = BE_SHORT ((short) i);
 fwrite (&s, sizeof (s), 1, f);	//tempo
 fwrite (midiSetTempo, sizeof (midiSetTempo), 1, f);
 

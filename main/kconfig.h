@@ -186,7 +186,7 @@ typedef struct advanced_ext_control_info {
 
 typedef struct kcItem {
 	short id;				// The id of this item
-	short x, y;				
+	short x, y;			
 	short w1;
 	short w2;
 	short u,d,l,r;

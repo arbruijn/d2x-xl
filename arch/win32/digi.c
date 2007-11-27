@@ -113,7 +113,7 @@ int DigiInit()
 	    IDirectSound_Release(lpds);
 	    return -1;
 	   }
-	
+
 	 memset(&dsbd, 0, sizeof(dsbd));
 	 dsbd.dwSize = sizeof(dsbd);
 	 dsbd.dwFlags = DSBCAPS_CTRLDEFAULT | DSBCAPS_GETCURRENTPOSITION2;

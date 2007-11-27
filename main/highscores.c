@@ -115,7 +115,7 @@ for (j=0; j<gameData.multiplayer.nPlayers; j++) {
 if (gameData.multiplayer.players [sorted [i]].netKilledTotal + gameData.multiplayer.players [sorted [i]].netKillsTotal==0)
 	sprintf (temp,"N/A");
 else
-   sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multiplayer.players [sorted [i]].netKillsTotal/ ((double)gameData.multiplayer.players [sorted [i]].netKilledTotal+ (double)gameData.multiplayer.players [sorted [i]].netKillsTotal))*100.0));		
+   sprintf (temp,"%d%%", (int) ((double) ((double)gameData.multiplayer.players [sorted [i]].netKillsTotal/ ((double)gameData.multiplayer.players [sorted [i]].netKilledTotal+ (double)gameData.multiplayer.players [sorted [i]].netKillsTotal))*100.0));	
 x = LHX (60 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
 GrSetFontColorRGBi (RGBA_PAL2 (25,25,25),1, 0, 0);
 GrPrintF (NULL, x ,y,"%4d/%s",gameData.multiplayer.players [sorted [i]].netKillsTotal,temp);
@@ -194,7 +194,7 @@ void kmatrix_draw_deaths (int *sorted)
 y = LHY (55 + 72 + 35) + yOffs;
 x = LHX (35) + xOffs;
          
-	   				
+	   			
 GrSetFontColorRGBi (RGBA_PAL2 (63,20,0), 1, 0, 0);
 GrGetStringSize ("P-Playing E-Escaped D-Died", &sw, &sh, &aw);
 if (! ((gameData.app.nGameMode & GM_MODEM) || (gameData.app.nGameMode & GM_SERIAL)))
@@ -230,7 +230,7 @@ void kmatrix_draw_coop_deaths (int *sorted)
 	int	j, x, y;
 	int	sw, sh, aw;
 	char	reactor_message [50];
-	
+
 y = LHY (55 + gameData.multiplayer.nPlayers * 9) + yOffs;
 //	GrSetFontColor (gr_getcolor (playerColors [j].r,playerColors [j].g,playerColors [j].b),-1);
 GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
@@ -460,18 +460,18 @@ while (!done) {
 			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
-			} 			
-	for (i = 0; i < 3; i++)	
+			} 		
+	for (i = 0; i < 3; i++)
 		if (MouseButtonDownCount (i)) {
 			if (LAST_OEM_LEVEL) {
 				KMatrixQuit (&bg, 1, bNetwork);
-				return;	
+				return;
 				}
 			LOCALPLAYER.connected=7;
 			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
-			}			
+			}		
 	//see if redbook song needs to be restarted
 	SongsCheckRedbookRepeat ();
 	k = KeyInKey ();
@@ -487,7 +487,7 @@ while (!done) {
 				return;
 				}
 			gameData.multiplayer.players  [gameData.multiplayer.nLocalPlayer].connected = 7;
-			if (bNetwork)	
+			if (bNetwork)
 				NetworkSendEndLevelPacket ();
 			break;
 
@@ -529,7 +529,7 @@ while (!done) {
 		LOCALPLAYER.connected = 7;
 		if (bNetwork)
 			NetworkSendEndLevelPacket ();
-		}	
+		}
 	if (bNetwork && (gameData.app.nGameMode & GM_NETWORK)) {
 		NetworkEndLevelPoll2 (0, NULL, &key, 0);
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {

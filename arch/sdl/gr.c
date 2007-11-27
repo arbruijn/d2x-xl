@@ -329,7 +329,7 @@ void GrPaletteStepUp( int r, int g, int b )
 static inline int min(int x, int y) { return x < y ? x : y; }
 //end changes by adb
 
-void GrPaletteStepLoad( ubyte *pal )	
+void GrPaletteStepLoad( ubyte *pal )
 {
 #if 0
  int i, j;

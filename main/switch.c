@@ -182,7 +182,7 @@ if (trigP->nLinks) {
 			if (i >= 0)
 				InitBossData (i, nObject);
 			}
-		}	
+		}
 	}
 }
 
@@ -338,10 +338,10 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 		case TT_OPEN_WALL:
 			nNewWallType = WALL_OPEN; 
 			break;
-		case TT_CLOSE_WALL:		
+		case TT_CLOSE_WALL:	
 			nNewWallType = WALL_CLOSED; 
 			break;
-		case TT_ILLUSORY_WALL:	
+		case TT_ILLUSORY_WALL:
 			nNewWallType = WALL_ILLUSION; 
 			break;
 		default:
@@ -1049,7 +1049,7 @@ for (i = gameData.trigs.nTriggers; i; i--, trigP++)
 static inline int TriggerHasTarget (tTrigger *triggerP, short nSegment, short nSide)
 {
 	int	i;
-			
+		
 for (i = 0; i < triggerP->nLinks; i++)
 	if ((triggerP->nSegment [i] == nSegment) && 
 		 ((nSide < 0) || (triggerP->nSide [i] == nSide)))

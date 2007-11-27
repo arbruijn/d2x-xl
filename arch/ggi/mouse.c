@@ -74,7 +74,7 @@ void mouse_handler_relative(int x, int y)
 	Mouse.x += x;
 	Mouse.y += y;
 //	mouse_correct();
-}	
+}
 
 void mouse_handler_button(int button, ubyte state)
 {
@@ -87,7 +87,7 @@ void mouse_handler_button(int button, ubyte state)
 	{
 		Mouse.buttons[button].numUps++;
 	}
-			
+		
 	Mouse.buttons[button].pressed = state;
 }
 
@@ -168,7 +168,7 @@ int MouseButtonDownCount(int button)
 {
 	int count = Mouse.buttons[button].numDowns;
 	Mouse.buttons[button].numDowns = 0;
-	return count;	
+	return count;
 }
 
 // Returns 1 if this button is currently down

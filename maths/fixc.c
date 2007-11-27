@@ -188,14 +188,14 @@ int32_t fixdivquadlong(u_int32_t nl,u_int32_t nh,u_int32_t d)
 	if (M == 0)
 	{
 		for (i=0; i<32; i++ )   {
-	
+
 			r <<= 1;
 			r |= T;
 			T = ((nl&0x80000000L)!=0);
 			nl <<= 1;
-	
+
 			switch( Q ) {
-		
+	
 			case 0:
 				Q = (unsigned char)((0x80000000L & nh) != 0 );
 				nh = (nh << 1) | (u_int32_t)T;
@@ -227,14 +227,14 @@ int32_t fixdivquadlong(u_int32_t nl,u_int32_t nh,u_int32_t d)
 	else
 	{
 		for (i=0; i<32; i++ )   {
-	
+
 			r <<= 1;
 			r |= T;
 			T = ((nl&0x80000000L)!=0);
 			nl <<= 1;
-	
+
 			switch( Q ) {
-		
+	
 			case 0:
 				Q = (unsigned char)((0x80000000L & nh) != 0 );
 				nh = (nh << 1) | (u_int32_t)T;
@@ -338,7 +338,7 @@ u_int32_t quad_sqrt(u_int32_t low,int32_t high)
 	} else {
 		cnt=0+16; i = high;
 	}
-	
+
 	r = guess_table[i]<<cnt;
 
 	//quad loop usually executed 4 times
@@ -383,7 +383,7 @@ ushort long_sqrt(int32_t a)
 		cnt=4;
 	else
 		cnt=0;
-	
+
 	r = guess_table[(a>>cnt)&0xff]<<cnt;
 
 	//the loop nearly always executes 3 times, so we'll unroll it 2 times and
@@ -541,7 +541,7 @@ fix fix_isqrt( fix a )
 		r = FixMul( ( (3*65536) - FixMul(FixMul(r,r),a) ), r) / 2;
 		if ( old_r >= r ) return (r+old_r)/2;
 	}
-	return r;	
+	return r;
 }
 
 // ------------------------------------------------------------------------

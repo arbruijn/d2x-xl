@@ -324,7 +324,7 @@ if (cycdir) {
 		cyc = 43;
 		cycdir = 0;
 		}
-	}	
+	}
 else {
 	cyc -= 2;
 	if (cyc < 10) {
@@ -348,7 +348,7 @@ for (i = 0; i < NUM_MARKERS; i++) {
 
 //------------------------------------------------------------------------------
 
-void AutomapClearVisited ()	
+void AutomapClearVisited ()
 {
 memset (gameData.render.mine.bAutomapVisited, 0, sizeof (gameData.render.mine.bAutomapVisited));
 ClearMarkers ();
@@ -546,7 +546,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			GrSetColorRGB (196, 0, 0, 255);
 			ModexPrintF (5,20,msg,SMALL_FONT,automapColors.nDkGray);
 			}
-		}				
+		}			
 	// Draw tPlayer (s)...
 	if (AM_SHOW_PLAYERS) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -558,7 +558,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 					}
 				}
 			}
-		}	
+		}
 	objP = gameData.objs.objects;
 	for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		size = objP->size;
@@ -566,13 +566,13 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 			case OBJ_HOSTAGE:
 				GrSetColorRGBi (automapColors.nHostage);
 				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
-				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);	
+				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
 				break;
 
 			case OBJ_MONSTERBALL:
 				GrSetColorRGBi (automapColors.nMonsterball);
 				G3TransformAndEncodePoint (&spherePoint,&objP->position.vPos);
-				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);	
+				G3DrawSphere (&spherePoint,size, !gameStates.render.automap.bRadar);
 				break;
 
 			case OBJ_ROBOT:
@@ -595,7 +595,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 						else
 							GrSetColorRGB (78, 0, 96, 255); //gr_getcolor (47, 1, 47)); 
 					G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
-					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);	
+					G3DrawSphere (&spherePoint, (size * 3) / 2, !gameStates.render.automap.bRadar);
 					}
 				break;
 
@@ -603,15 +603,15 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 				if (AM_SHOW_POWERUPS (1) && 
 					(gameStates.render.bAllVisited || gameData.render.mine.bAutomapVisited [objP->nSegment]))	{
 					switch (objP->id) {
-						case POW_KEY_RED:		
-							GrSetColorRGBi (RGBA_PAL2 (63, 5, 5));	
+						case POW_KEY_RED:	
+							GrSetColorRGBi (RGBA_PAL2 (63, 5, 5));
 							size *= 4;
 							break;
-						case POW_KEY_BLUE:	
+						case POW_KEY_BLUE:
 							GrSetColorRGBi (RGBA_PAL2 (5, 5, 63)); 
 							size *= 4;
 							break;
-						case POW_KEY_GOLD:	
+						case POW_KEY_GOLD:
 							GrSetColorRGBi (RGBA_PAL2 (63, 63, 10)); 
 							size *= 4;
 							break;
@@ -620,7 +620,7 @@ if (!gameOpts->render.automap.bTextured || gameStates.render.automap.bRadar) {
 							//Error ("Illegal key nType: %i", objP->id);
 						}
 					G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
-					G3DrawSphere (&spherePoint, size, !gameStates.render.automap.bRadar);	
+					G3DrawSphere (&spherePoint, size, !gameStates.render.automap.bRadar);
 					}
 				break;
 			}
@@ -765,7 +765,7 @@ if (gameData.marker.nHighlight > -1 && gameData.marker.objects [gameData.marker.
 			gameData.marker.objects [i] = -1;
 			gameData.marker.szMessage [i][0] = '\0';
 			}
-		}					
+		}				
 	}
 }
 
@@ -906,7 +906,7 @@ int AMReadControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsA
 {
 	int	c, nMarker, nMaxDrop;
 
-ControlsReadAll ();		
+ControlsReadAll ();	
 if (Controls [0].automapDownCount && !nLeaveMode)
 	return 1;
 while ((c = KeyInKey ())) {
@@ -1045,7 +1045,7 @@ return bDone;
 
 //------------------------------------------------------------------------------
 
-void DoAutomap (int nKeyCode, int bRadar)	
+void DoAutomap (int nKeyCode, int bRadar)
 {
 	int			bDone = 0;
 	vmsAngVec	vTAngles;
@@ -1164,7 +1164,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 				nnfacing++;
 			j++;
 			}
-	
+
 		if (nfacing && nnfacing) {
 			// a contour line
 			DrawingListBright [nbright++] = EDGE_IDX (e);
@@ -1277,7 +1277,7 @@ return ret ? hash : -1;
 //------------------------------------------------------------------------------
 
 void AddOneEdge (int va, int vb, unsigned int color, ubyte tSide, short nSegment, 
-					  int hidden, int grate, int bNoFade)	
+					  int hidden, int grate, int bNoFade)
 {
 	int found;
 	tEdgeInfo *e;
@@ -1335,7 +1335,7 @@ if (bNoFade)
 
 //------------------------------------------------------------------------------
 
-void AddOneUnknownEdge (int va, int vb)	
+void AddOneUnknownEdge (int va, int vb)
 {
 	int found;
 	tEdgeInfo *e;
@@ -1428,16 +1428,16 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 					if (connected_seg != -1) {
 						short connected_side = FindConnectedSide (segP, &gameData.segs.segments [connected_seg]);
 						switch (gameData.walls.walls [WallNumI (connected_seg, connected_side)].keys) {
-							case KEY_BLUE:	
-								color = automapColors.walls.nDoorBlue;	
+							case KEY_BLUE:
+								color = automapColors.walls.nDoorBlue;
 								bNoFade = 1; 
 								break;
-							case KEY_GOLD:	
-								color = automapColors.walls.nDoorGold;	
+							case KEY_GOLD:
+								color = automapColors.walls.nDoorGold;
 								bNoFade = 1; 
 								break;
-							case KEY_RED:	
-								color = automapColors.walls.nDoorRed;	
+							case KEY_RED:
+								color = automapColors.walls.nDoorRed;
 								bNoFade = 1; 
 								break;
 							default:

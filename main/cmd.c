@@ -24,7 +24,7 @@ void cmd_parse(char *input)
 	int i, l;
 
 	Assert(input != NULL);
-	
+
 	/* Strip leading spaces */
 	for (i=0; isspace(input[i]); i++) ;
 	strncpy( buffer, &input[i], CMD_MAX_LENGTH );

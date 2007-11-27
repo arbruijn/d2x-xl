@@ -143,7 +143,7 @@ void SongsStopRedbook(void)
 	}
 	RBAStop();              	// Stop CD, if playing
 	RBASetVolume(oldVolume);	//restore volume
-	gameStates.sound.bRedbookPlaying = 0;		
+	gameStates.sound.bRedbookPlaying = 0;	
 }
 
 //------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ switch (discid) {
 int SongsHaveD2CD()
 {
 	char temp [128],cwd [128];
-	
+
 getcwd(cwd, 128);
 strcpy(temp,CDROM_dir);
 if (temp [strlen(temp)-1] == '\\')
@@ -350,7 +350,7 @@ if (bFromHog) {
 	MakeLevelFilename (nLevel, szFilename, ".ogg");
 	if (CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
-		
+	
 		sprintf (szSong, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", szFilename);
 		if (DigiPlayMidiSong (szSong, NULL, NULL, 1, 0))
 			return;
@@ -393,10 +393,10 @@ void SongsCheckRedbookRepeat()
 				PlayRedbookTrack(REDBOOK_CREDITS_TRACK,0);
 			else {
 				//SongsGotoNextSong();
-	
+
 				//new code plays all tracks to end of disk, so if disk has
 				//stopped we must be at end.  So start again with level 1 song.
-	
+
 				PlayLevelSong (1, 0);
 			}
 			StartTime();

@@ -250,7 +250,7 @@ typedef struct tExtraGameInfo {
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {
-	char	szGameName [NETGAME_NAME_LEN + 1];	
+	char	szGameName [NETGAME_NAME_LEN + 1];
 	char	szServerIpAddr [22];
 	int	udpClientPort;
 	ubyte	nLevel;

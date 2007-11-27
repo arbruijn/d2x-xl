@@ -577,7 +577,7 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 
 #define BUF2_EGI_INTEL_INT(_m) \
 	extraGameInfo [1]. _m = INTEL_INT (*((int *) (out_buffer + ((char *) &extraGameInfo [1]. _m - (char *) &extraGameInfo [1]))));
-	
+
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress)
 {
 memcpy (out_buffer, &extraGameInfo [1], sizeof (tExtraGameInfo));

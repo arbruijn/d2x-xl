@@ -544,7 +544,7 @@ void AddMissionsToList
 
 	#if TRACE
 				con_printf (CONDBG, "Warning: more missions than D2X-XL can handle\n");
-	#endif			
+	#endif		
 			}
 		}
 	*count = c;
@@ -729,10 +729,10 @@ while (MsnGetS (buf, 80, fp)) {
 	else if (MsnIsTok (buf, "d2x-name")) {
 		if (gameStates.app.bNostalgia > 2)
 			return 0;
-		gameData.missions.nEnhancedMission = 3;	
+		gameData.missions.nEnhancedMission = 3;
 		}
 	else if (MsnIsTok (buf, "type"))
-		;	
+		;
 	else if (MsnIsTok (buf, "hog")) {
 		bufP = buf;
 		while (*(bufP++) != '=')
@@ -824,7 +824,7 @@ int LoadMission (int nMission)
 	CFILE		*fp;
 	char		szFolder [FILENAME_LEN], szFile [FILENAME_LEN];
 	int		i, bFoundHogFile = 0;
-	
+
 gameData.missions.nEnhancedMission = 0;
 if (nMission == gameData.missions.nD1BuiltinMission) {
 	CFUseD1HogFile("descent.hog");

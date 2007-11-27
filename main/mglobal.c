@@ -56,7 +56,7 @@ sbyte sideToVerts[MAX_SIDES_PER_SEGMENT][4] = {
 			{ encrypt(2,6,5,1) },			// bottom
 			{ encrypt(4,5,6,7) },			// back
 			{ encrypt(3,2,1,0) },			// front
-};		
+};	
 
 //	Note, this MUST be the same as sideToVerts, it is an int for speed reasons.
 int sideToVertsInt[MAX_SIDES_PER_SEGMENT][4] = {
@@ -66,5 +66,5 @@ int sideToVertsInt[MAX_SIDES_PER_SEGMENT][4] = {
 			{ encrypt(2,6,5,1) },			// bottom
 			{ encrypt(4,5,6,7) },			// back
 			{ encrypt(3,2,1,0) },			// front
-};		
+};	
 

@@ -376,10 +376,10 @@ bool OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * s
 {
 #if 0 //just seems to cause a mess.
 	GLdouble xo, yo;//, xs, ys;
-	
+
 	dx+=dest->bmProps.x;
 	dy+=dest->bmProps.y;
-	
+
 //	xo=dx/ (double)gameStates.ogl.nLastW;
 	xo=dx/ (double)grdCurScreen->scWidth;
 //	yo=1.0- (dy+h)/ (double)gameStates.ogl.nLastH;

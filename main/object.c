@@ -40,7 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "objsmoke.h"
 #include "physics.h"
-#include "slew.h"		
+#include "slew.h"	
 #include "render.h"
 #include "wall.h"
 #include "vclip.h"
@@ -196,7 +196,7 @@ return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 int FindBoss (int nBossObj)
 {
 	int	i, j = BOSS_COUNT;
-	
+
 for (i = 0; i < j; i++)
 	if (gameData.boss [i].nObject == nBossObj)
 		return i;
@@ -312,13 +312,13 @@ int obj_return_num_ofTypeid (int nType, int id)
 //091494: {
 //091494: 	fix dist;
 //091494:
-//091494: 	if ((objP->nType != OBJ_ROBOT) || (Object_draw_lock_boxes == 0))	
+//091494: 	if ((objP->nType != OBJ_ROBOT) || (Object_draw_lock_boxes == 0))
 //091494: 		return;
 //091494:
 //091494: 	// The following code keeps a list of the 10 closest robots to the
 //091494: 	// viewer.  See comments in front of this function for how this works.
 //091494: 	dist = VmVecDist (&objP->position.vPos, &gameData.objs.viewer->position.vPos);
-//091494: 	if (dist < i2f (20*10))	{				
+//091494: 	if (dist < i2f (20*10))	{			
 //091494: 		if (Object_num_close < MAX_CLOSE_ROBOTS)	{
 //091494: 			Object_close_ones [Object_num_close] = obj;
 //091494: 			Object_closeDistance [Object_num_close] = dist;
@@ -564,7 +564,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		count++;
 		#ifdef _DEBUG
 		if (count > MAX_OBJECTS)	{
-#if TRACE				
+#if TRACE			
 			con_printf (1, "Object list in tSegment %d is circular.\n", nSegment);
 #endif
 			Int3 ();
@@ -572,7 +572,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++) {
 		#endif
 		if (gameData.objs.objects [nObject].nSegment != nSegment)	{
 			#ifdef _DEBUG
-#if TRACE				
+#if TRACE			
 			con_printf (CONDBG, "Removing tObject %d from tSegment %d.\n", nObject, nSegment);
 #endif
 			Int3 ();
@@ -600,13 +600,13 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++)
 int check_duplicateObjects ()
 {
 	int i, count = 0;
-	
+
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].nType != OBJ_NONE)	{
 		count = SearchAllSegsForObject (i);
 		if (count > 1)	{
 #ifdef _DEBUG
-#	if TRACE				
+#	if TRACE			
 			con_printf (1, "Object %d is in %d segments!\n", i, count);
 #	endif
 			Int3 ();
@@ -644,7 +644,7 @@ return;
 void LinkObject (int nObject, int nSegment)
 {
 	tObject *objP;
-	
+
 Assert (nObject != -1);
 objP = gameData.objs.objects + nObject;
 Assert (objP->nSegment == -1);
@@ -802,7 +802,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 nToFree = MAX_OBJECTS - num_used - nAlreadyFree;
 nOrgNumToFree = nToFree;
 if (nToFree > olind) {
-#if TRACE				
+#if TRACE			
 	con_printf (1, "Warning: Asked to D2_FREE %i gameData.objs.objects, but can only D2_FREE %i.\n", nToFree, olind);
 #endif
 	nToFree = olind;
@@ -867,7 +867,7 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (id == FLARE_ID)
 		nType = nType;
-	}	
+	}
 else if (nType == OBJ_ROBOT) {
 	if (ROBOTINFO (id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
@@ -904,7 +904,7 @@ if ((nType == OBJ_DEBRIS) && (nDebrisObjectCount >= gameStates.render.detail.nMa
 if (GetSegMasks (pos, nSegment, 0).centerMask)
 	if ((nSegment = FindSegByPoint (pos, nSegment, 1)) == -1) {
 #ifdef _DEBUG
-#	if TRACE				
+#	if TRACE			
 		con_printf (CONDBG, "Bad segment in CreateObject (nType=%d)\n", nType);
 #	endif
 #endif
@@ -987,8 +987,8 @@ else if (objP->controlType == CT_EXPLOSION)
 	objP->cType.explInfo.nPrevAttach = 
 	objP->cType.explInfo.nAttachParent = -1;
 #ifdef _DEBUG
-#if TRACE				
-if (bPrintObjectInfo)	
+#if TRACE			
+if (bPrintObjectInfo)
 	con_printf (CONDBG, "Created tObject %d of nType %d\n", nObject, objP->nType);
 #endif
 #endif
@@ -1182,7 +1182,7 @@ if (gameStates.app.bPlayerIsDead) {
 			gameData.objs.viewer = gameData.objs.deadPlayerCamera = gameData.objs.objects + nObject;
 		else
 			Int3 ();
-		}		
+		}	
 	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
 	h = max (0, h);
 	gameData.objs.console->mType.physInfo.rotVel.p.x = h / 4;
@@ -1224,7 +1224,7 @@ if (gameStates.app.bPlayerIsDead) {
 #if 0
 			if (gameOpts->gameplay.bFastRespawn)
 				gameStates.app.bDeathSequenceAborted = 1;
-#endif					
+#endif				
 			}
 		}
 	else {
@@ -1277,7 +1277,7 @@ extern char bMultiSuicide;
 void StartPlayerDeathSequence (tObject *player)
 {
 	int	nObject;
-	
+
 Assert (player == gameData.objs.console);
 gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted = 0;
 if (gameStates.app.bPlayerIsDead)
@@ -1400,7 +1400,7 @@ Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
 UnlinkObject (nObject);
 LinkObject (nObject, newsegnum);
 #ifdef _DEBUG
-#if TRACE				
+#if TRACE			
 if (GetSegMasks (&gameData.objs.objects [nObject].position.vPos, 
 					  gameData.objs.objects [nObject].nSegment, 0).centerMask)
 	con_printf (1, "RelinkObject violates seg masks.\n");
@@ -1470,11 +1470,11 @@ if (!gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted) {
 void MoveCamera (tObject *objP)
 {
 
-#define	DEG90		 (F1_0 / 4)		
-#define	DEG45		 (F1_0 / 8)				
+#define	DEG90		 (F1_0 / 4)	
+#define	DEG45		 (F1_0 / 8)			
 #define	DEG675	 (DEG45 + (F1_0 / 16))
-#define	DEG1		 (F1_0 / (4 * 90))	
-	
+#define	DEG1		 (F1_0 / (4 * 90))
+
 	tCamera	*pc = gameData.cameras.cameras + gameData.objs.cameraRef [OBJ_IDX (objP)];
 	fixang	curAngle = pc->curAngle;
 	fixang	curDelta = pc->curDelta;
@@ -1503,7 +1503,7 @@ if ((t0 < 0) || (t - t0 >= 1000 / 90))
 			curAngle = s * DEG45 + curDelta - s;
 		curDelta = -curDelta;
 		}
-	
+
 	curAngle += curDelta;
 	a.h = curAngle;
 	a.b =	a.p = 0;
@@ -1652,15 +1652,15 @@ switch (objP->controlType) {
 			DoAIFrame (objP);
 		break;
 
-	case CT_CAMERA:		
+	case CT_CAMERA:	
 		MoveCamera (objP); 
 		break;
 
-	case CT_WEAPON:		
+	case CT_WEAPON:	
 		LaserDoWeaponSequence (objP); 
 		break;
 
-	case CT_EXPLOSION:	
+	case CT_EXPLOSION:
 		DoExplosionSequence (objP); 
 		break;
 
@@ -1707,20 +1707,20 @@ return 0;
 void HandleObjectMovement (tObject *objP)
 {
 switch (objP->movementType) {
-	case MT_NONE:			
+	case MT_NONE:		
 		break;								//this doesn't move
 
-	case MT_PHYSICS:	
+	case MT_PHYSICS:
 #ifdef _DEBUG
 		if (objP->nType != OBJ_PLAYER)
 			objP = objP;
 #endif
-		DoPhysicsSim (objP);	
+		DoPhysicsSim (objP);
 		SetDynLightPos (OBJ_IDX (objP));
 		MoveObjectLightnings (objP);
 		break;	//move by physics
 
-	case MT_SPINNING:		
+	case MT_SPINNING:	
 		SpinObject (objP); 
 		break;
 	}
@@ -2062,7 +2062,7 @@ int ToggleSlowMotion (void)
 	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER));
 	int	bSlowMotion = bSlowMotionOk && (Controls [0].slowMotionCount > 0);
 	int	bBulletTime = bBulletTimeOk && (Controls [0].bulletTimeCount > 0);
-	
+
 Controls [0].bulletTimeCount =
 Controls [0].slowMotionCount = 0;
 #if 1//def RELEASE
@@ -2216,7 +2216,7 @@ void compressObjects (void)
 			while (gameData.objs.objects [--gameData.objs.nLastObject].nType == OBJ_NONE);
 
 			//last_i = find_last_obj (last_i);
-			
+		
 		}
 
 	ResetObjects (gameData.objs.nObjects);
@@ -2382,7 +2382,7 @@ return;
 for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType != OBJ_NONE)
 		if (UpdateObjectSeg (gameData.objs.objects + i) == 0) {
-#if TRACE				
+#if TRACE			
 			con_printf (1, "Cannot find tSegment for tObject %d in FixObjectSegs ()\n");
 #endif
 			Int3 ();
@@ -2420,7 +2420,7 @@ void ClearTransientObjects (int clear_all)
 			   ((objP->nType != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
 
 			#ifdef _DEBUG
-#if TRACE				
+#if TRACE			
 			if (gameData.objs.objects [nObject].lifeleft > i2f (2))
 				con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
 								nObject, gameData.objs.objects [nObject].nType, 
@@ -2430,7 +2430,7 @@ void ClearTransientObjects (int clear_all)
 			ReleaseObject (nObject);
 		}
 		#ifdef _DEBUG
-#if TRACE				
+#if TRACE			
 		 else if (gameData.objs.objects [nObject].nType!=OBJ_NONE && gameData.objs.objects [nObject].lifeleft < i2f (2))
 			con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
 							nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, 
@@ -2512,7 +2512,7 @@ if (nObject >= 0) {
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
 	objP->lifeleft = IMMORTAL_TIME - 1;
 	}
-return nObject;	
+return nObject;
 }
 
 //------------------------------------------------------------------------------
@@ -2527,7 +2527,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 
 	//	Make sure that we are processing current data.
 	if (gameData.app.nFrameCount != windowRenderedData [window_num].frame) {
-#if TRACE				
+#if TRACE			
 		con_printf (1, "Warning: Called WakeupRenderedObjects with a bogus window.\n");
 #endif
 		return;
@@ -2543,7 +2543,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 		nObject = windowRenderedData [window_num].renderedObjects [i];
 		if ((nObject & 3) == fcval) {
 			objP = &gameData.objs.objects [nObject];
-	
+
 			if (objP->nType == OBJ_ROBOT) {
 				if (VmVecDistQuick (&viewer->position.vPos, &objP->position.vPos) < F1_0*100) {
 					tAILocal		*ailp = &gameData.ai.localInfo [nObject];
@@ -2679,7 +2679,7 @@ return DelObjChildN (OBJ_IDX (pChild));
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef)
 {
 	int i = pChildRef ? pChildRef->nextObj : gameData.objs.firstChild [nParent];
-	
+
 return (i < 0) ? NULL : gameData.objs.childObjs + i;
 }
 

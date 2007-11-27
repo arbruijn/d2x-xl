@@ -29,7 +29,7 @@ struct CPaletteInfo
 	{
 		DWORD dwPal = *(DWORD*) &m_rgpe [b];
 		WORD w;
-		
+	
 		w  = ShiftLeft (dwPal, m_cshftR -  8) & m_mskR;
 		w |= ShiftLeft (dwPal, m_cshftG - 16) & m_mskG;
 		w |= ShiftLeft (dwPal, m_cshftB - 24) & m_mskB;

@@ -198,7 +198,7 @@ else {
 			BM_OVERRIDE (hbmP) = bmfP;
 			bmfP->bmHandle = j;
 			bmfP += nFrameStep;
-			}	
+			}
 		}
 	else {
 		for (i = 0; i < nFrames; i++) {
@@ -358,7 +358,7 @@ void RestoreEffectBitmapIcons()
 	int i,j;
 	tEffectClip *ecP;
 	tBitmapIndex	bmi;
-	
+
 for (i=0, j=gameData.eff.nEffects [gameStates.app.bD1Data], ecP = gameData.eff.pEffects;i<j;i++, ecP++)
 	if (!(ecP->flags & EF_CRITICAL))	{
 		bmi = ecP->vc.frames [0];

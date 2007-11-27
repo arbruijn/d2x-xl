@@ -164,7 +164,7 @@ int MouseGetButtons()
 	int status = 0;
 
         event_poll();
-	
+
 	for (i=0; i<MOUSE_MAX_BUTTONS; i++ )
         {
 		if (Mouse.buttons[i].pressed)

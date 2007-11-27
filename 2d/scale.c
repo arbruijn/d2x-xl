@@ -56,7 +56,7 @@ void scale_row_c( ubyte * sbits, ubyte * dbits, int width, fix u, fix du )
 
 		if ( c != Transparency_color )
 			*dbits = c;
-			
+		
 		dbits++;
 		u += du;
 	}
@@ -120,7 +120,7 @@ void ScaleBitmap(grsBitmap *bp, grsPoint *vertbuf ,int orientation)
 		clipped_v1 = FIND_SCALED_NUM(ymax,y0,y1,v0,v1);
 		clipped_y1 = ymax;
 	}
-	
+
 	dx0 = f2i(clipped_x0); dx1 = f2i(clipped_x1);
 	dy0 = f2i(clipped_y0); dy1 = f2i(clipped_y1);
 
@@ -198,7 +198,7 @@ ubyte scale_rle_data[1600];
 void decode_row( grsBitmap * bmp, int y )
 {
 	int i, offset=4+bmp->bmProps.h;
-	
+
 	for (i=0; i<y; i++ )
 		offset += bmp->bmTexBuf[4+i];
 	gr_rle_decode( &bmp->bmTexBuf[offset], scale_rle_data );
@@ -231,7 +231,7 @@ void scale_bitmap_cc_asm(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0, int
 	int y;
 
 	dv = (v1-v0) / (y1-y0);
-		
+	
 	rls_stretch_scanline_setup( (int)(x1-x0), f2i(u1)-f2i(u0) );
 	if ( scale_ydelta_minus_1 < 1 ) return;
 	rls_do_cc_setup_asm();
@@ -252,7 +252,7 @@ void scale_bitmap_cc_asm_rle(grsBitmap *source_bmp, grsBitmap *dest_bmp, int x0,
 	int y, last_row = -1;
 
 	dv = (v1-v0) / (y1-y0);
-		
+	
 	rls_stretch_scanline_setup( (int)(x1-x0), f2i(u1)-f2i(u0) );
 	if ( scale_ydelta_minus_1 < 1 ) return;
 	rls_do_cc_setup_asm();

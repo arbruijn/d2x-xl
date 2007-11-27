@@ -283,12 +283,12 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 		if (nParent > -1) {
 			killerP = gameData.objs.objects + nParent;
 			if (killerP != gameData.objs.console)		// if someone else whacks you, cut force by 2x
-				vForce2.p.x /= 2;	
-				vForce2.p.y /= 2;	
+				vForce2.p.x /= 2;
+				vForce2.p.y /= 2;
 				vForce2.p.z /= 2;
 			}
-		vForce2.p.x /= 2;	
-		vForce2.p.y /= 2;	
+		vForce2.p.x /= 2;
+		vForce2.p.y /= 2;
 		vForce2.p.z /= 2;
 		PhysApplyForce (obj0P, &vForce);
 		PhysApplyRot (obj0P, &vForce2);
@@ -635,7 +635,7 @@ if (!objCount)		//no gameData.objs.objects of this nType had initially been plac
 d_srand (TimerGetFixedSeconds ());
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
-h = d_rand () % objCount + 1;	
+h = d_rand () % objCount + 1;
 for (i = 0, objP = gameData.objs.init; i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->nType != nType) || (objP->id != id))
 		continue;
@@ -1195,29 +1195,29 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 		return;
 	}
 	switch (delObjP->containsId) {
-		case POW_VULCAN:			
-			weapon_index = VULCAN_INDEX;		
+		case POW_VULCAN:		
+			weapon_index = VULCAN_INDEX;	
 			break;
-		case POW_GAUSS:			
-			weapon_index = GAUSS_INDEX;		
+		case POW_GAUSS:		
+			weapon_index = GAUSS_INDEX;	
 			break;
-		case POW_SPREADFIRE:	
-			weapon_index = SPREADFIRE_INDEX;	
+		case POW_SPREADFIRE:
+			weapon_index = SPREADFIRE_INDEX;
 			break;
-		case POW_PLASMA:			
-			weapon_index = PLASMA_INDEX;		
+		case POW_PLASMA:		
+			weapon_index = PLASMA_INDEX;	
 			break;
-		case POW_FUSION:			
-			weapon_index = FUSION_INDEX;		
+		case POW_FUSION:		
+			weapon_index = FUSION_INDEX;	
 			break;
-		case POW_HELIX:			
-			weapon_index = HELIX_INDEX;		
+		case POW_HELIX:		
+			weapon_index = HELIX_INDEX;	
 			break;
-		case POW_PHOENIX:		
-			weapon_index = PHOENIX_INDEX;		
+		case POW_PHOENIX:	
+			weapon_index = PHOENIX_INDEX;	
 			break;
-		case POW_OMEGA:			
-			weapon_index = OMEGA_INDEX;		
+		case POW_OMEGA:		
+			weapon_index = OMEGA_INDEX;	
 			break;
 
 	}
@@ -1306,7 +1306,7 @@ switch (nType) {
 				VmVecZero (&new_velocity);
 			vNewPos = *pos;
 
-			if (gameData.app.nGameMode & GM_MULTI) {	
+			if (gameData.app.nGameMode & GM_MULTI) {
 				if (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
 #if TRACE
 					con_printf (1, "Not enough slots to drop all powerups!\n");
@@ -1320,7 +1320,7 @@ switch (nType) {
 #endif
 					return -1;
 					}
-#endif					
+#endif				
 				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
 					return -1;
 				}
@@ -1614,7 +1614,7 @@ else {
 		}
 	//don't make debris explosions have physics, because they often
 	//happen when the debris has hit the tWall, so the fireball is trying
-	//to move into the tWall, which shows off FVI problems.   	
+	//to move into the tWall, which shows off FVI problems.   
 	if ((hitObjP->nType != OBJ_DEBRIS) && (hitObjP->movementType == MT_PHYSICS)) {
 		explObjP->movementType = MT_PHYSICS;
 		explObjP->mType.physInfo = hitObjP->mType.physInfo;

@@ -36,7 +36,7 @@ grsScreen * grdCurScreen = NULL;  //active screen
 gsrCanvas *GrCreateCanvas(int w, int h)
 {
 	gsrCanvas *newCanv;
-	
+
 	newCanv = (gsrCanvas *)D2_ALLOC( sizeof(gsrCanvas) );
 	GrInitBitmapAlloc (&newCanv->cvBitmap, BM_LINEAR, 0, 0, w, h, w, 1);
 

@@ -200,11 +200,11 @@ glMultiTexCoord2d			= (PFNGLMULTITEXCOORD2DARBPROC) wglGetProcAddress ("glMultiT
 glMultiTexCoord2f			= (PFNGLMULTITEXCOORD2FARBPROC) wglGetProcAddress ("glMultiTexCoord2fARB");
 glMultiTexCoord2fv		= (PFNGLMULTITEXCOORD2FVARBPROC) wglGetProcAddress ("glMultiTexCoord2fvARB");
 #		endif
-glActiveTexture			= (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB");		
+glActiveTexture			= (PFNGLACTIVETEXTUREARBPROC) wglGetProcAddress ("glActiveTextureARB");	
 glClientActiveTexture	= (PFNGLCLIENTACTIVETEXTUREARBPROC) wglGetProcAddress ("glClientActiveTextureARB");
 gameStates.ogl.bMultiTexturingOk =
 #ifdef _WIN32
-	glMultiTexCoord2d && glMultiTexCoord2f	&& glMultiTexCoord2fv &&	
+	glMultiTexCoord2d && glMultiTexCoord2f	&& glMultiTexCoord2fv &&
 #endif 
 	glActiveTexture && glClientActiveTexture;
 #	else

@@ -61,7 +61,7 @@ typedef union dSwap {
 
 static inline double SWAPDOUBLE (double i) 
 {
-char	h;	
+char	h;
 #if 0
 dSwap	s;
 
@@ -106,7 +106,7 @@ typedef union fSwap {
 
 static inline float SWAPFLOAT (float i) 
 {
-char	h;	
+char	h;
 #if 0
 fSwap	s;
 
@@ -143,7 +143,7 @@ typedef union iSwap {
 
 static inline int SWAPINT (int i) 
 {
-char	h;	
+char	h;
 #if 0
 iSwap	s;
 
@@ -180,7 +180,7 @@ typedef union sSwap {
 
 static inline short SWAPSHORT (short i) 
 {
-char	h;	
+char	h;
 #if 0
 sSwap	s;
 s.i = i;

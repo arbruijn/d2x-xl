@@ -128,7 +128,7 @@ void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 	static fix	xPowerupTime = 0;
 	int			h, nFrames = SetupHiresVClip (vcP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
-	
+
 xPowerupTime += gameData.physics.xTime;
 xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
 if ((xTime < 0) && (vcP->xFrameTime > 0)) {
@@ -391,7 +391,7 @@ int PickUpVulcanAmmo (int nPlayer)
 {
 	int		bUsed=0, max;
 
-int	pwSave = gameData.weapons.nPrimary;		
+int	pwSave = gameData.weapons.nPrimary;	
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
 if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_AMMO_AMOUNT, nPlayer)) {
@@ -813,7 +813,7 @@ switch (objP->id) {
 		break;
 
 	case POW_HOARD_ORB:
-		if (gameData.app.nGameMode & GM_HOARD) {	
+		if (gameData.app.nGameMode & GM_HOARD) {
 			if (playerP->secondaryAmmo [PROXMINE_INDEX] < 12) {
 				if (ISLOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
@@ -843,7 +843,7 @@ switch (objP->id) {
 				bUsed = 1;
 				}
 			}
-		break;	
+		break;
 
 	default:
 		break;

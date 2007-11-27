@@ -146,7 +146,7 @@ extern	int	Interpolation_method;
 extern	int	Lighting_on;
 
 // HACK INTERFACE: how far away the current tSegment (& thus texture) is
-extern	int	nCurrentSegDepth;		
+extern	int	nCurrentSegDepth;	
 extern	int	Max_perspective_depth;		//	Deepest tSegment at which perspective interpolation will be used.
 extern	int	Max_linear_depth;				//	Deepest tSegment at which linear interpolation will be used.
 extern	int	Max_flat_depth;				//	Deepest tSegment at which flat shading will be used. (If not flat shading, then what?)

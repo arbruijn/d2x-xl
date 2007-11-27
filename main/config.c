@@ -221,7 +221,7 @@ int ReadConfigFile()
 						gameStates.sound.nMaxSoundChannels = sc;
 						InitCustomDetails();
 					}
-				  #ifdef PA_3DFX_VOODOO   // Set to highest detail because you can't change em	
+				  #ifdef PA_3DFX_VOODOO   // Set to highest detail because you can't change em
 					   gameStates.render.detail.nObjectComplexity=gameStates.render.detail.nObjectDetail=gameStates.render.detail.nWallDetail=
 						gameStates.render.detail.nWallRenderDepth=gameStates.render.detail.nDebrisAmount=SoundChannels = NUM_DETAIL_LEVELS-1;
 						gameStates.app.nDetailLevel=NUM_DETAIL_LEVELS-1;
@@ -263,7 +263,7 @@ int ReadConfigFile()
 	CFClose(infile);
 	JoySetCalVals(joy_axis_min, joy_axis_center, joy_axis_max);
 	i = FindArg( "-volume" );
-	
+
 	if ( i > 0 )	{
 		i = atoi( Args[i+1] );
 		if ( i < 0 ) i = 0;
@@ -447,7 +447,7 @@ con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 	CFClose(infile);
 
 	return 0;
-}		
+}	
 
 // ----------------------------------------------------------------------------
 //eof

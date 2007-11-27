@@ -200,7 +200,7 @@ if (gameOpts->menus.nStyle) {
 		if (bg->menu_canvas) {
 			WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), 
 					  GrFreeSubCanvas (bg->menu_canvas));
-			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));			
+			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
 			bg->menu_canvas = NULL;
 			}
 #endif
@@ -217,7 +217,7 @@ if (gameStates.app.bGameRunning) {
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ NewMenuClose (void)	
+void _CDECL_ NewMenuClose (void)
 {
 LogErr ("unloading menu data\n");
 if (nm_background.bmTexBuf)
@@ -309,7 +309,7 @@ if (bForce || !--gameOpts->menus.altBg.bHave) {
 	gameOpts->menus.altBg.bHave = 0;
 	GrFreeBitmap (pAltBg);
 	pAltBg = NULL;
-	}	
+	}
 return 1;
 }
 
@@ -418,7 +418,7 @@ else {
 		nPCXResult = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
 		Assert (nPCXResult == PCX_ERROR_NONE);
 		nm_background = nm_background_save;
-		nm_background.bmTexBuf = NULL;		
+		nm_background.bmTexBuf = NULL;	
 		NMRemapBackground ();
 		bHiresBackground = gameStates.menus.bHires;
 		}
@@ -582,7 +582,7 @@ if (bTiny) {
 		gameData.menu.warnColor = RED_RGBA;
 		gameData.menu.keyColor = RGBA_PAL (57, 49, 20);
 		gameData.menu.tabbedColor = WHITE_RGBA;
-		gameData.menu.tinyColors [0][0] = RGBA_PAL (29, 29, 47);	
+		gameData.menu.tinyColors [0][0] = RGBA_PAL (29, 29, 47);
 		gameData.menu.tinyColors [0][1] = RED_RGBA;
 		gameData.menu.tinyColors [1][0] = RGBA_PAL (57, 49, 20);
 		gameData.menu.tinyColors [1][1] = ORANGE_RGBA;
@@ -954,7 +954,7 @@ void NMStringInputBox (bkg *b, int w, int x, int y, char * text, int current)
 		w1 = 0;
 
    NMStringBlack (b, w, x, y, text);
-		
+	
 	if (current)	{
 		GrString (x+w1+1, y, CURSOR_STRING, NULL);
 	}
@@ -1027,7 +1027,7 @@ if (item->rebuild) {
 		break;
 
 	case NM_TYPE_INPUT_MENU:
-		if (item->group)	
+		if (item->group)
 			NMStringInputBox (b, item->w, item->x, item->y, item->text, bIsCurrent);
 		else
 			NMString (item, b, bIsCurrent, bTiny);
@@ -1057,7 +1057,7 @@ if (item->rebuild) {
 			NMRString (item, b, bIsCurrent, bTiny, NORMAL_RADIO_BOX);
 		break;
 
-	case NM_TYPE_NUMBER:	
+	case NM_TYPE_NUMBER:
 		{
 		char text [10];
 		if (item->value < item->minValue) 
@@ -1181,7 +1181,7 @@ int NMCheckButtonPress ()
 	case	CONTROL_FLIGHTSTICK_PRO:
 	case	CONTROL_THRUSTMASTER_FCS:
 	case	CONTROL_GRAVIS_GAMEPAD:
-		for (i=0; i<4; i++)	
+		for (i=0; i<4; i++)
 	 		if (JoyGetButtonDownCnt (i)>0) return 1;
 		break;
 	case	CONTROL_MOUSE:
@@ -1190,7 +1190,7 @@ int NMCheckButtonPress ()
 		break;
 	case	CONTROL_NONE:		//keyboard only
 		#ifdef APPLE_DEMO
-			if (key_checkch ())	return 1;			
+			if (key_checkch ())	return 1;		
 		#endif
 
 		break;
@@ -1281,7 +1281,7 @@ for (i = 0; i < nItems; i++) {
 	item [i].y = *h;
 	GrGetStringSize (item [i].text, &string_width, &nStringHeight, &average_width);
 	item [i].right_offset = 0;
-	
+
 	if (gameStates.multi.bSurfingNet)
 		nStringHeight+=LHY (3);
 
@@ -1384,7 +1384,7 @@ for (i = 0; i < nItems; i++)	{
 				item [j].value = 0;
 				}
 			}
-		if ( fm >= 0)	
+		if ( fm >= 0)
 			item [fm].value = 1;
 		else
 			item [i].value = 1;
@@ -1500,7 +1500,7 @@ if (gameOpts->menus.nStyle) {
 else {
 	if (!filename) {
 		// Save the background under the menu...
-		GrBitmap (0, 0, bg->saved); 	
+		GrBitmap (0, 0, bg->saved); 
 		GrFreeBitmap (bg->saved);
 		D2_FREE (bg->background);
 		} 
@@ -1513,7 +1513,7 @@ else {
 	GrUpdate (0);
 	}
 GrFreeSubCanvas (bg->menu_canvas);
-GrSetCurrentCanvas (NULL);			
+GrSetCurrentCanvas (NULL);		
 grdCurCanv->cvFont = saveFont;
 GrSetCurrentCanvas (save_canvas);
 memset (bg, 0, sizeof (*bg));
@@ -1560,8 +1560,8 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
    char			*Temp, TempVal;
 	int			bDontRestore = 0;
 	int			bRedraw = 0, bRedrawAll = 0, bStart = 1;
-	gsrCanvas	*save_canvas;	
-	gsrCanvas	*game_canvas;	
+	gsrCanvas	*save_canvas;
+	gsrCanvas	*game_canvas;
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
 	int			mx=0, my=0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
@@ -1594,8 +1594,8 @@ if (!(gameOpts->menus.nStyle || ((gameData.app.nGameMode & GM_MULTI) && (gameSta
 	time_stopped = 1;
 	StopTime ();
 	#ifdef TACTILE 
-	  if (TactileStick)	
-		  DisableForces ();	
+	  if (TactileStick)
+		  DisableForces ();
 	#endif
 	}
 
@@ -1709,7 +1709,7 @@ while (!done) {
 		}
 	else {
 		if (gameStates.app.bGameRunning) {
-			gsrCanvas *save_canvas;	
+			gsrCanvas *save_canvas;
 			save_canvas = grdCurCanv;
 			GrSetCurrentCanvas (game_canvas);
 			//GrPaletteStepLoad (gamePalette);
@@ -1797,7 +1797,7 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 		case KEY_COMMAND + KEY_P:
 		case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
-		 if (Pauseable_menu) {	
+		 if (Pauseable_menu) {
 			 Pauseable_menu=0;
 			 done=1;
 		 	 choice=-1;
@@ -1836,7 +1836,7 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 						choice = nItems - 1;
            		}
 				} while (item [choice].nType == NM_TYPE_TEXT);
-			if ((item [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))	
+			if ((item [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))
 				item [choice].value = -1;
 			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 				item [old_choice].group=0;
@@ -1878,11 +1878,11 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
            		}
 				} while (item [choice].nType==NM_TYPE_TEXT);
                                                       
-			if ((item [choice].nType == NM_TYPE_INPUT) && (choice != old_choice))	
+			if ((item [choice].nType == NM_TYPE_INPUT) && (choice != old_choice))
 				item [choice].value = -1;
 			if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 				item [old_choice].group=0;
-				strcpy (item [old_choice].text, item [old_choice].saved_text);	
+				strcpy (item [old_choice].text, item [old_choice].saved_text);
 				item [old_choice].value = -1;
 			}
 			if (old_choice>-1)
@@ -1906,9 +1906,9 @@ radioOption:
 						item [choice].value = 1;
 					if (ctrl.bIsScrollBox) {
 						if (choice== (ctrl.nMaxOnMenu+ctrl.nScrollOffset-1) || choice==ctrl.nScrollOffset)
-							nLastScrollCheck=-1;					
+							nLastScrollCheck=-1;				
 						 }
-				
+			
 					item [choice].redraw=1;
 					if (bLaunchOption)
 						goto launchOption;
@@ -1925,7 +1925,7 @@ radioOption:
 					if (bLaunchOption)
 						goto launchOption;
 					break;
-				}	
+				}
 			}
 			break;
 
@@ -1987,7 +1987,7 @@ launchOption:
 					item [choice].text [0] = 0;
 					item [choice].value = -1;
 					}
-				else {	
+				else {
 					NMTrimWhitespace (item [choice].text);
 					}
 				}
@@ -2001,7 +2001,7 @@ launchOption:
 		case KEY_ESC:
 			if ((choice > -1) &&(item [choice].nType==NM_TYPE_INPUT_MENU) &&(item [choice].group == 1)) {
 				item [choice].group=0;
-				strcpy (item [choice].text, item [choice].saved_text);	
+				strcpy (item [choice].text, item [choice].saved_text);
 				item [choice].redraw=1;
 				item [choice].value = -1;
 				}
@@ -2021,11 +2021,11 @@ launchOption:
 			PA_DFX (pa_set_front_to_read ());
 			for (i=0;i<nItems;i++)
 				item [i].redraw=1;
-			
+		
 			break;
 
 		#ifdef _DEBUG
-		case KEY_BACKSP:	
+		case KEY_BACKSP:
 			if ((choice > -1) && (item [choice].nType != NM_TYPE_INPUT) && (item [choice].nType != NM_TYPE_INPUT_MENU))
 				Int3 (); 
 			break;
@@ -2048,7 +2048,7 @@ launchOption:
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
 					}
-					
+				
 					choice = i + ctrl.nScrollOffset - ctrl.nMaxNoScroll;
 					if (choice >= 0 && choice < nItems)
 						switch (item [choice].nType)	{
@@ -2080,14 +2080,14 @@ launchOption:
 				*cItemP = choice;
 			done = 1;
 			}
-		
+	
 		if (!done && nMouseState && !bAllText) {
 			MouseGetPos (&mx, &my);
-			
+		
 			// check possible scrollbar stuff first
 			if (ctrl.bIsScrollBox) {
 				int i, arrow_width, arrow_height, aw;
-				
+			
 				if (ctrl.nScrollOffset > ctrl.nMaxNoScroll) {
 					GrGetStringSize (UP_ARROW_MARKER, &arrow_width, &arrow_height, &aw);
 					x2 = grdCurCanv->cvBitmap.bmProps.x + item [ctrl.nScrollOffset].x- (gameStates.menus.bHires?24:12);
@@ -2119,7 +2119,7 @@ launchOption:
 						}
 					}
 				}
-			
+		
 			for (i = ctrl.nScrollOffset; i < nItems; i++)	{
 				x1 = grdCurCanv->cvBitmap.bmProps.x + item [i].x - item [i].right_offset - 6;
 				x2 = x1 + item [i].w;
@@ -2137,7 +2137,7 @@ launchOption:
 					if (item [choice].nType == NM_TYPE_SLIDER) {
 						char slider_text [NM_MAX_TEXT_LEN+1], *p, *s1;
 						int slider_width, height, aw, sleft_width, sright_width, smiddle_width;
-						
+					
 						strcpy (slider_text, item [choice].saved_text);
 						p = strchr (slider_text, '\t');
 						if (p) {
@@ -2160,7 +2160,7 @@ launchOption:
 								item [choice].redraw = 2;
 							} else if ((mx > (x1 + sleft_width)) &&(mx < (x2 - sright_width))) {
 								int numValues, value_width, newValue;
-								
+							
 								numValues = item [choice].maxValue - item [choice].minValue + 1;
 								value_width = (slider_width - sleft_width - sright_width) / numValues;
 								newValue = (mx - x1 - sleft_width) / value_width;
@@ -2174,7 +2174,7 @@ launchOption:
 					}
 					if (choice == old_choice)
 						break;
-					if ((item [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))	
+					if ((item [choice].nType==NM_TYPE_INPUT) &&(choice != old_choice))
 						item [choice].value = -1;
 					if ((old_choice>-1) &&(item [old_choice].nType==NM_TYPE_INPUT_MENU) &&(old_choice != choice))	{
 						item [old_choice].group=0;
@@ -2188,7 +2188,7 @@ launchOption:
 				}
 			}
 		}
-		
+	
 		if (!done && !nMouseState && nOldMouseState && !bAllText &&(choice != -1) &&(item [choice].nType == NM_TYPE_MENU)) {
 			MouseGetPos (&mx, &my);
 			x1 = grdCurCanv->cvBitmap.bmProps.x + item [choice].x;
@@ -2214,7 +2214,7 @@ launchOption:
 				}
 			}
 		}
-		
+	
 		if (!done && !nMouseState && nOldMouseState && (choice > -1) &&
 			 (item [choice].nType == NM_TYPE_INPUT_MENU) && (item [choice].group == 0)) {
 			item [choice].group = 1;
@@ -2222,11 +2222,11 @@ launchOption:
 			if (!strnicmp (item [choice].saved_text, TXT_EMPTY, strlen (TXT_EMPTY)))	{
 				item [choice].text [0] = 0;
 				item [choice].value = -1;
-			} else {	
+			} else {
 				NMTrimWhitespace (item [choice].text);
 			}
 		}
-		
+	
 		if (!done && !nMouseState && nOldMouseState && bCloseBox) {
 			MouseGetPos (&mx, &my);
 			x1 = (gameOpts->menus.nStyle ? ctrl.x : grdCurCanv->cvBitmap.bmProps.x) + CLOSE_X;
@@ -2256,7 +2256,7 @@ launchOption:
 					if (item [choice].value > 0)
 						item [choice].value--;
 					item [choice].text [item [choice].value] = 0;
-					item [choice].redraw = 1;	
+					item [choice].redraw = 1;
 					}
 				else {
 					ascii = KeyToASCII (k);
@@ -2273,7 +2273,7 @@ launchOption:
 						if (bAllowed) {
 							item [choice].text [item [choice].value++] = ascii;
 							item [choice].text [item [choice].value] = 0;
-							item [choice].redraw=1;	
+							item [choice].redraw=1;
 							}
 						}
 					}
@@ -2332,7 +2332,7 @@ launchOption:
 									goto launchOption;
 						}
 					} while (choice1 != choice);
-				}	
+				}
 			}
 
 			if ((item [choice].nType==NM_TYPE_NUMBER) || (item [choice].nType==NM_TYPE_SLIDER)) 	{
@@ -2366,7 +2366,7 @@ launchOption:
 				if (ov!=item [choice].value)
 					item [choice].redraw=1;
 			}
-	
+
 		}
 
 
@@ -2576,7 +2576,7 @@ void DeletePlayerSavedGames (char * name)
 {
 	int i;
 	char filename [16];
-	
+
 for (i = 0; i < 10; i++) {
 	sprintf (filename, "%s.sg%d", name, i);
 	CFDelete (filename, gameFolders.szSaveDir);
@@ -2633,7 +2633,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 ReadFileNames:
 	done = 0;
 	NumFiles=0;
-	
+
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
 	if (player_mode)	{
 		strncpy (filenames + NumFiles * (FILENAME_LEN + 1), TXT_CREATE_NEW, FILENAME_LEN);
@@ -2704,7 +2704,7 @@ ReadFileNames:
 		goto ExitFileMenu;
 	}
 
-	if (!initialized) {	
+	if (!initialized) {
 //		SetScreenMode (SCREEN_MENU);
 		SetPopupScreenMode ();
 		GrSetCurrentCanvas (NULL);
@@ -2714,13 +2714,13 @@ ReadFileNames:
 
 		for (i=0; i<NumFiles; i++) {
 			int w, h, aw;
-			GrGetStringSize (filenames+i* (FILENAME_LEN+1), &w, &h, &aw);		
+			GrGetStringSize (filenames+i* (FILENAME_LEN+1), &w, &h, &aw);	
 			if (w > w_w)
 				w_w = w;
 		}
 		if (title) {
 			int w, h, aw;
-			GrGetStringSize (title, &w, &h, &aw);		
+			GrGetStringSize (title, &w, &h, &aw);	
 			if (w > w_w)
 				w_w = w;
 			title_height = h + (grd_curfont->ftHeight*2);		// add a little space at the bottom of the title
@@ -2740,10 +2740,10 @@ ReadFileNames:
 			w_w = 640;
 		if (w_h > 480)
 			w_h = 480;
-	
+
 		w_x = (grdCurCanv->cv_w-w_w)/2;
 		w_y = (grdCurCanv->cv_h-w_h)/2;
-	
+
 		if (w_x < 0) 
 			w_x = 0;
 		if (w_y < 0) 
@@ -2817,7 +2817,7 @@ ReadFileNames:
 			SaveScreenShot (NULL, 0);
 			PA_DFX (pa_set_frontbuffer_current ());
 			PA_DFX (pa_set_front_to_read ());
-			
+		
 			break;
 
 		case KEY_CTRLED+KEY_S:
@@ -2851,7 +2851,7 @@ ReadFileNames:
 					_splitpath (filespec, NULL, name, dir, NULL);
 					strcat (name, dir);
 					//strcat (name, &filenames [cItem* (FILENAME_LEN+1)]);
-#endif					
+#endif				
 					ret = CFDelete (pszFile, player_mode ? gameFolders.szProfDir : gameFolders.szDemoDir);
 					if (player_mode)
 						*p = 0;
@@ -2883,11 +2883,11 @@ ReadFileNames:
 			break;
 		case KEY_UP:
 		case KEY_PAD8:
-			cItem--;			
+			cItem--;		
 			break;
 		case KEY_DOWN:
 		case KEY_PAD2:
-			cItem++;			
+			cItem++;		
 			break;
  		case KEY_PAGEDOWN:
 		case KEY_PAD3:
@@ -2913,8 +2913,8 @@ ReadFileNames:
 				break;
 			if (nPatternLen > 0)
 				szPattern [--nPatternLen] = '\0';
-					
-		default:	
+				
+		default:
 			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < sizeof (szPattern) - 1)) {
 				int nStart, ascii = KeyToASCII (key);
 				if ((key == KEY_BACKSP) || (ascii < 255)) {
@@ -2997,7 +2997,7 @@ ReadFileNames:
 				}
 			}
 		}
-		
+	
 		if (!nMouseState && nOldMouseState) {
 			int w, h, aw;
 
@@ -3037,34 +3037,34 @@ ReadFileNames:
 			for (i=first_item; i<first_item+NumFiles_displayed; i++)	{
 				int w, h, aw, y;
 				y = (i-first_item)* (grd_curfont->ftHeight + 2) + box_y;
-			
+		
 				if (i >= NumFiles)	{
 
 					GrSetColorRGBi (RGBA_PAL2 (5, 5, 5));
 					GrRect (box_x + box_w, y-1, box_x + box_w, y + grd_curfont->ftHeight + 1);
 					//GrRect (box_x, y + grd_curfont->ftHeight + 2, box_x + box_w, y + grd_curfont->ftHeight + 2);
-					
+				
 					GrSetColorRGBi (RGBA_PAL2 (2, 2, 2));
 					GrRect (box_x - 1, y - 1, box_x - 1, y + grd_curfont->ftHeight + 2);
-					
+				
 					GrSetColorRGB (0, 0, 0, 255);
 					GrRect (box_x, y - 1, box_x + box_w - 1, y + grd_curfont->ftHeight + 1);
-					
+				
 				} else {
-					if (i == cItem)	
+					if (i == cItem)
 						grdCurCanv->cvFont = SELECTED_FONT;
-					else	
+					else
 						grdCurCanv->cvFont = NORMAL_FONT;
 					GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 
 					GrSetColorRGBi (RGBA_PAL2 (5, 5, 5));
 				  //	GrRect (box_x, y + h + 2, box_x + box_w, y + h + 2);
 					GrRect (box_x + box_w, y - 1, box_x + box_w, y + h + 1);
-					
+				
 					GrSetColorRGBi (RGBA_PAL2 (2, 2, 2));
 					GrRect (box_x - 1, y - 1, box_x - 1, y + h + 1);
 					GrSetColorRGB (0, 0, 0, 255);
-							
+						
 					GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
 					GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 				}
@@ -3078,9 +3078,9 @@ ReadFileNames:
 			i = ocitem;
 			if ((i>=0) &&(i<NumFiles))	{
 				y = (i-first_item)* (grd_curfont->ftHeight+2)+box_y;
-				if (i == cItem)	
+				if (i == cItem)
 					grdCurCanv->cvFont = SELECTED_FONT;
-				else	
+				else
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
@@ -3089,9 +3089,9 @@ ReadFileNames:
 			i = cItem;
 			if ((i>=0) &&(i<NumFiles))	{
 				y = (i-first_item)* (grd_curfont->ftHeight+2)+box_y;
-				if (i == cItem)	
+				if (i == cItem)
 					grdCurCanv->cvFont = SELECTED_FONT;
-				else	
+				else
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
@@ -3163,7 +3163,7 @@ ExitFileMenu:
 // 			return 1;	// redraw;
 // 		}
 //			*keypress = 0;
-// 	}			
+// 	}		
 // 	return 0;
 // }
 
@@ -3192,7 +3192,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	char szPattern [40];
 	int nPatternLen = 0;
 	char *pszFn;
-	
+
 	keyd_repeat = 1;
 
    PA_DFX (pa_set_frontbuffer_current ());
@@ -3208,7 +3208,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	width = 0;
 	for (i=0; i<nItems; i++)	{
 		int w, h, aw;
-		GrGetStringSize (items [i], &w, &h, &aw);		
+		GrGetStringSize (items [i], &w, &h, &aw);	
 		if (w > width)
 			width = w;
 	}
@@ -3217,14 +3217,14 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 
 	{
 		int w, h, aw;
-		GrGetStringSize (title, &w, &h, &aw);		
+		GrGetStringSize (title, &w, &h, &aw);	
 		if (w > width)
 			width = w;
 		title_height = h + 5;
 	}
 
 	border_size = grd_curfont->ftWidth;
-		
+	
 	width += (grd_curfont->ftWidth);
 	if (width > grdCurCanv->cv_w - (grd_curfont->ftWidth * 3))
 		width = grdCurCanv->cv_w - (grd_curfont->ftWidth * 3);
@@ -3322,10 +3322,10 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 			break;
 
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
-		case KEY_PRINT_SCREEN: 		
+		case KEY_PRINT_SCREEN: 	
 			SaveScreenShot (NULL, 0); 
 			PA_DFX (pa_set_frontbuffer_current ());
-			PA_DFX (pa_set_front_to_read ());			
+			PA_DFX (pa_set_front_to_read ());		
 			break;
 		case KEY_HOME:
 		case KEY_PAD7:
@@ -3337,11 +3337,11 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 			break;
 		case KEY_UP:
 		case KEY_PAD8:
-			cItem--;			
+			cItem--;		
 			break;
 		case KEY_DOWN:
 		case KEY_PAD2:
-			cItem++;			
+			cItem++;		
 			break;
  		case KEY_PAGEDOWN:
 		case KEY_PAD3:
@@ -3367,8 +3367,8 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 				break;
 			if (nPatternLen > 0)
 				szPattern [--nPatternLen] = '\0';
-					
-		default:	
+				
+		default:
 			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < sizeof (szPattern) - 1)) {
 				int nStart,
 					 ascii = KeyToASCII (key);
@@ -3484,17 +3484,17 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 					GrSetColorRGB (0, 0, 0, 255);
 					GrRect (wx, y-1, wx+width-1, y+grd_curfont->ftHeight + 1);
 				} else {
-					if (i == cItem)	
+					if (i == cItem)
 						grdCurCanv->cvFont = SELECTED_FONT;
-					else	
+					else
 						grdCurCanv->cvFont = NORMAL_FONT;
 					GrGetStringSize (items [i], &w, &h, &aw);
 					GrRect (wx, y-1, wx+width-1, y+h+1);
 					GrString (wx+5, y, items [i], NULL);
 				}
-			}		
+			}	
 
-				
+			
 			// If Win95 port, draw up/down arrows on left tSide of menu
 			SDL_ShowCursor (1);
 			GrUpdate (0);
@@ -3507,9 +3507,9 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 			i = ocitem;
 			if ((i>=0) &&(i<nItems))	{
 				y = (i-first_item)* (grd_curfont->ftHeight+2)+wy;
-				if (i == cItem)	
+				if (i == cItem)
 					grdCurCanv->cvFont = SELECTED_FONT;
-				else	
+				else
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (items [i], &w, &h, &aw);
 				GrRect (wx, y-1, wx+width-1, y+h+1);
@@ -3519,9 +3519,9 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 			i = cItem;
 			if ((i>=0) &&(i<nItems))	{
 				y = (i-first_item)* (grd_curfont->ftHeight+2)+wy;
-				if (i == cItem)	
+				if (i == cItem)
 					grdCurCanv->cvFont = SELECTED_FONT;
-				else	
+				else
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (items [i], &w, &h, &aw);
 				GrRect (wx, y-1, wx+width-1, y+h);
@@ -3540,7 +3540,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		if (bg.menu_canvas) {
 			WINDOS (DDGrFreeSubCanvas (bg.menu_canvas), 
 					  GrFreeSubCanvas (bg.menu_canvas));
-			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));			
+			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
 			bg.menu_canvas = NULL;
 			}
 #endif

@@ -242,7 +242,7 @@ else
 int WALL_IS_DOORWAY (tSegment *segP, short nSide, tObject *objP)
 {
 	int	nWall, bIsWall, nSegment, nChild = segP->children [nSide];
-	
+
 if (nChild == -1)
 	return WID_RENDER_FLAG;
 if (nChild == -2) 
@@ -1025,7 +1025,7 @@ for (p = 0; p < doorP->nPartCount; p++) {
 if (bFlags & 1)
 	WallCloseDoorNum (nDoor);
 else
-	gameData.walls.activeDoors [gameData.walls.nOpenDoors].time = 0;		//counts up	
+	gameData.walls.activeDoors [gameData.walls.nOpenDoors].time = 0;		//counts up
 }
 
 
@@ -1421,7 +1421,7 @@ else {		//cloaking in
 		backWallP->cloakValue = frontWallP->cloakValue;
 		backWallP->nType = WALL_CLOAKED;
 		}
-	}	
+	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	tUVL *uvlP = gameData.segs.segments [frontWallP->nSegment].sides [frontWallP->nSide].uvls;
 	NDRecordCloakingWall (d->nFrontWall, d->nBackWall, frontWallP->nType, frontWallP->state, frontWallP->cloakValue, 
@@ -1675,7 +1675,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 			ecP = (ec < 0) ? NULL : gameData.eff.pEffects + ec;
 			db = ecP ? ecP->nDestBm : -1;
 
-			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||	
+			if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 			 	 ((ec == -1) && (gameData.pig.tex.pTMapInfo [tm].destroyed != -1))) {
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
 				dist = VmVecDistQuick(&pnt, &objP->position.vPos);

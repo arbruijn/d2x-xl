@@ -415,7 +415,7 @@ void EscortSetSpecialGoal (int special_key)
 	special_key = special_key & (~KEY_SHIFTED);
 
 	marker_key = special_key;
-	
+
 
 	if (gameData.escort.nLastKey == special_key)
 	{
@@ -436,40 +436,40 @@ void EscortSetSpecialGoal (int special_key)
 
 	if (special_key == KEY_0)
 		gameData.escort.bSearchingMarker = -1;
-		
+	
 	if ( gameData.escort.bSearchingMarker != -1 )
 		gameData.escort.nSpecialGoal = ESCORT_GOAL_MARKER1 + marker_key - KEY_1;
 	else {
 		switch (special_key) {
-			case KEY_1:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGY;			
+			case KEY_1:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGY;		
 				break;
-			case KEY_2:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGYCEN;		
+			case KEY_2:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_ENERGYCEN;	
 				break;
-			case KEY_3:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_SHIELD;			
+			case KEY_3:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_SHIELD;		
 				break;
-			case KEY_4:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_POWERUP;		
+			case KEY_4:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_POWERUP;	
 				break;
-			case KEY_5:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_ROBOT;			
+			case KEY_5:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_ROBOT;		
 				break;
-			case KEY_6:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_HOSTAGE;		
+			case KEY_6:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_HOSTAGE;	
 				break;
-			case KEY_7:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;			
+			case KEY_7:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_SCRAM;		
 				break;
-			case KEY_8:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_PLAYER_SPEW;	
+			case KEY_8:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_PLAYER_SPEW;
 				break;
-			case KEY_9:	
-				gameData.escort.nSpecialGoal = ESCORT_GOAL_EXIT;			
+			case KEY_9:
+				gameData.escort.nSpecialGoal = ESCORT_GOAL_EXIT;		
 				break;
-			case KEY_0:	
-				gameData.escort.nSpecialGoal = -1;								
+			case KEY_0:
+				gameData.escort.nSpecialGoal = -1;							
 				break;
 			default:
 				Int3 ();		//	Oops, called with illegal key value.
@@ -490,7 +490,7 @@ int GetBossId (void)
 {
 	int	h, i;
 	int	nObject;
-	
+
 	for (h = BOSS_COUNT, i = 0; i < BOSS_COUNT; i++) {
 		if (0 <= (nObject = gameData.boss [i].nObject))
 			return gameData.objs.objects [nObject].id;
@@ -611,47 +611,47 @@ void SayEscortGoal (int goal_num)
 if (gameStates.app.bPlayerIsDead)
 	return;
 switch (goal_num) {
-	case ESCORT_GOAL_BLUE_KEY:		
-		BuddyMessage (TXT_FIND_BLUEKEY);			
+	case ESCORT_GOAL_BLUE_KEY:	
+		BuddyMessage (TXT_FIND_BLUEKEY);		
 		break;
-	case ESCORT_GOAL_GOLD_KEY:		
-		BuddyMessage (TXT_FIND_GOLDKEY);		
+	case ESCORT_GOAL_GOLD_KEY:	
+		BuddyMessage (TXT_FIND_GOLDKEY);	
 		break;
-	case ESCORT_GOAL_RED_KEY:		
-		BuddyMessage (TXT_FIND_REDKEY);			
+	case ESCORT_GOAL_RED_KEY:	
+		BuddyMessage (TXT_FIND_REDKEY);		
 		break;
-	case ESCORT_GOAL_CONTROLCEN:	
-		BuddyMessage (TXT_FIND_REACTOR);			
+	case ESCORT_GOAL_CONTROLCEN:
+		BuddyMessage (TXT_FIND_REACTOR);		
 		break;
-	case ESCORT_GOAL_EXIT:			
-		BuddyMessage (TXT_FIND_EXIT);				
+	case ESCORT_GOAL_EXIT:		
+		BuddyMessage (TXT_FIND_EXIT);			
 		break;
-	case ESCORT_GOAL_ENERGY:		
-		BuddyMessage (TXT_FIND_ENERGY);				
+	case ESCORT_GOAL_ENERGY:	
+		BuddyMessage (TXT_FIND_ENERGY);			
 		break;
-	case ESCORT_GOAL_ENERGYCEN:	
-		BuddyMessage (TXT_FIND_ECENTER);	
+	case ESCORT_GOAL_ENERGYCEN:
+		BuddyMessage (TXT_FIND_ECENTER);
 		break;
-	case ESCORT_GOAL_SHIELD:		
-		BuddyMessage (TXT_FIND_SHIELD);			
+	case ESCORT_GOAL_SHIELD:	
+		BuddyMessage (TXT_FIND_SHIELD);		
 		break;
-	case ESCORT_GOAL_POWERUP:		
-		BuddyMessage (TXT_FIND_POWERUP);			
+	case ESCORT_GOAL_POWERUP:	
+		BuddyMessage (TXT_FIND_POWERUP);		
 		break;
-	case ESCORT_GOAL_ROBOT:			
-		BuddyMessage (TXT_FIND_ROBOT);			
+	case ESCORT_GOAL_ROBOT:		
+		BuddyMessage (TXT_FIND_ROBOT);		
 		break;
-	case ESCORT_GOAL_HOSTAGE:		
-		BuddyMessage (TXT_FIND_HOSTAGE);			
+	case ESCORT_GOAL_HOSTAGE:	
+		BuddyMessage (TXT_FIND_HOSTAGE);		
 		break;
-	case ESCORT_GOAL_SCRAM:			
-		BuddyMessage (TXT_STAYING_AWAY);			
+	case ESCORT_GOAL_SCRAM:		
+		BuddyMessage (TXT_STAYING_AWAY);		
 		break;
-	case ESCORT_GOAL_BOSS:			
-		BuddyMessage (TXT_FIND_BOSS);		
+	case ESCORT_GOAL_BOSS:		
+		BuddyMessage (TXT_FIND_BOSS);	
 		break;
-	case ESCORT_GOAL_PLAYER_SPEW:	
-		BuddyMessage (TXT_FIND_YOURSTUFF);	
+	case ESCORT_GOAL_PLAYER_SPEW:
+		BuddyMessage (TXT_FIND_YOURSTUFF);
 		break;
 	case ESCORT_GOAL_MARKER1:
 	case ESCORT_GOAL_MARKER2:
@@ -663,7 +663,7 @@ switch (goal_num) {
 	case ESCORT_GOAL_MARKER8:
 	case ESCORT_GOAL_MARKER9: { 
 			char marker_text [BUDDY_MARKER_TEXT_LEN];
-			
+		
 		strncpy (marker_text, gameData.marker.szMessage [goal_num-ESCORT_GOAL_MARKER1], BUDDY_MARKER_TEXT_LEN-1);
 		marker_text [BUDDY_MARKER_TEXT_LEN-1] = 0;
 		BuddyMessage (TXT_FIND_MARKER, goal_num-ESCORT_GOAL_MARKER1+1, marker_text);
@@ -835,7 +835,7 @@ else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) &&
 	return ESCORT_GOAL_RED_KEY;
 else if (gameData.reactor.bDestroyed == 0) {
 	int	i;
-	
+
 	for (i = 0; i < extraGameInfo [0].nBossCount; i++)
 		if ((gameData.boss [i].nObject >= 0) && gameData.boss [i].nTeleportSegs)
 			return ESCORT_GOAL_BOSS;
@@ -1046,7 +1046,7 @@ if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (ob
 	CreatePathToPlayer (objP, nMaxLen, 1);	//	MK!: Last parm used to be 1!
 	aip->nPathLength = SmoothPath (objP, gameData.ai.pointSegs + aip->nHideIndex, aip->nPathLength);
 	ailp->mode = AIM_GOTO_PLAYER;
-	}	
+	}
 else if (gameData.time.xGame - xBuddyLastSeenPlayer > MAX_ESCORT_TIME_AWAY) {
 	//	This is to prevent buddy from looking for a goal, which he will do because we only allow path creation once/second.
 	return;
@@ -1192,7 +1192,7 @@ void DoEscortMenu (void)
 			sprintf (szGoal, "ERROR");
 			break;
 	#endif
-			
+		
 		case ESCORT_GOAL_BLUE_KEY:
 			sprintf (szGoal, TXT_GB_BLUEKEY);
 			break;
@@ -1224,7 +1224,7 @@ void DoEscortMenu (void)
 			break;
 
 	}
-			
+		
 	if (!gameData.escort.bMsgsSuppressed)
 		sprintf (tstr, TXT_GB_SUPPRESS);
 	else
@@ -1254,7 +1254,7 @@ void DoEscortMenu (void)
 //	Show the Buddy menu!
 #if 0 //obsolete in d2x-xl
 void ShowEscortMenu (char *msg)
-{	
+{
 	int	w,h,aw;
 	int	x,y;
 	bkg	bg;

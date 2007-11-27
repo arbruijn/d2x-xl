@@ -61,7 +61,7 @@ if (bmpDeadzone) {
 void OglDrawMouseIndicator (void)
 {
 	float 	scale = (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight;
-	
+
 	static tSinCosf sinCos30 [30];
 	static tSinCosf sinCos12 [12];
 	static int bInitSinCos = 1;
@@ -147,7 +147,7 @@ void OglDrawReticle (int cross, int primary, int secondary)
 	static tSinCosf sinCos12 [12];
 	static tSinCosf sinCos16 [16];
 	static int bInitSinCos = 1;
-	
+
 if (bInitSinCos) {
 	OglComputeSinCos (sizeofa (sinCos8), sinCos8);
 	OglComputeSinCos (sizeofa (sinCos12), sinCos12);

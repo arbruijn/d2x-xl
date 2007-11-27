@@ -143,7 +143,7 @@ void c_tmap_scanline_lin(void)
 				j = x;
 
 			while (j > 0)
-				{	
+				{
 				//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 				*dest++ = (ubyte) (unsigned int) fadeTableLocalCopy[ (l&(0x7f00)) + (uint) pixPtrLocalCopy[ (f2i(v)&(64*63)) + (f2i(u)&63) ] ];
 				//end edit -MM
@@ -830,7 +830,7 @@ void c_tmap_scanline_per(void)
 				j = x;
 
 			while (j > 0)
-				{	
+				{
 				//edited 05/18/99 Matt Mueller - changed from 0xff00 to 0x7f00 to fix glitches
 				*dest++ = fadeTableLocalCopy[ (l&(0x7f00)) + (uint)pixPtrLocalCopy[ ( (v/z)&(64*63) ) + ((u/z)&63) ] ];
 				//end edit -MM
