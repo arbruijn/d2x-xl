@@ -1404,7 +1404,12 @@ void RenderMineObjects (int nType)
 if ((nType < 1) || (nType > 2))
 	return;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
-	nSegment = abs (gameData.render.mine.nSegRenderList [--nListPos]);
+	nSegment =gameData.render.mine.nSegRenderList [--nListPos];
+	if (nSegment < 0) {
+		if (nSegment == -0x7fffffff)
+			continue;
+		nSegment = -nSegment - 1;
+		}
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
@@ -1424,8 +1429,6 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			SetNearestDynamicLights (nSegment, 0, 1, 0);
 			SetNearestStaticLights (nSegment, 1, 1, 0);
 			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
-			if (gameData.render.lights.dynamic.shader.nActiveLights [0])
-				nType = nType;
 			}
 		else
 			gameStates.render.bApplyDynLight = 0;

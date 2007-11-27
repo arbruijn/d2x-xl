@@ -110,7 +110,7 @@ extern struct ipx_driver ipx_win;
 
 int ipx_fd;
 ipx_socket_t ipxSocketData;
-ubyte bIpxInstalled=0;
+ubyte bIpxInstalled = 0;
 ushort ipx_socket = 0;
 uint ipx_network = 0;
 ubyte ipx_MyAddress [10];

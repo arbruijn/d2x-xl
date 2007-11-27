@@ -1062,7 +1062,7 @@ int sscTotal=0, ssc_swaps=0;
 
 //short the children of tSegment to render in the correct order
 //returns non-zero if swaps were made
-int SortSegChildren(tSegment *seg, int n_children, short *childList)
+int SortSegChildren (tSegment *seg, int n_children, short *childList)
 {
 #if 1
 
@@ -1368,7 +1368,7 @@ gameData.render.mine.renderObjs.nUsed = 0;
 
 for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	nSegment = gameData.render.mine.nSegRenderList [nListPos];
-	if (nSegment == -1)
+	if (nSegment == -0x7fffffff)
 		continue;
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
@@ -1565,7 +1565,7 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 		gameData.render.mine.bProcessed [sCnt] = gameData.render.mine.nProcessed;
 		nSegment = gameData.render.mine.nSegRenderList [sCnt];
 		curPortal = renderWindows + sCnt;
-		if (nSegment == -1) 
+		if (nSegment == -0x7fffffff) 
 			continue;
 #ifdef _DEBUG
 		if (nSegment == nDbgSeg)
@@ -1819,7 +1819,7 @@ void RenderSegment (int nListPos)
 {
 	int nSegment = (nListPos < 0) ? -nListPos - 1 : gameData.render.mine.nSegRenderList [nListPos];
 
-if (nSegment == -1)
+if (nSegment < 0)
 	return;
 if (gameStates.render.automap.bDisplay) {
 	if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
@@ -1837,7 +1837,7 @@ if (nSegment == nDbgSeg)
 #endif
 VISIT (nSegment);
 if (!RenderSegmentFaces (nSegment, gameStates.render.nWindow)) {
-	gameData.render.mine.nSegRenderList [nListPos] = -gameData.render.mine.nSegRenderList [nListPos];
+	gameData.render.mine.nSegRenderList [nListPos] = -gameData.render.mine.nSegRenderList [nListPos] - 1;
 	gameData.render.mine.bVisible [gameData.render.mine.nSegRenderList [nListPos]] = gameData.render.mine.nVisible - 1;
 	return;
 	}
@@ -1924,7 +1924,7 @@ if (nClearWindow == 2) {
 			nClearWindowColor = BLACK_RGBA;
 		GrSetColor (nClearWindowColor);
 		for (i = nFirstTerminalSeg, rwP = renderWindows; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
-			if (gameData.render.mine.nSegRenderList [i] != -1) {
+			if (gameData.render.mine.nSegRenderList [i] != -0x7fffffff) {
 #ifdef _DEBUG
 				if ((rwP->left == -1) || (rwP->top == -1) || (rwP->right == -1) || (rwP->bot == -1))
 					Int3();

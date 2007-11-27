@@ -700,7 +700,7 @@ return 0;
 //------------------------------------------------------------------------------
 // The same comment as in previous "UDPOpenSocket"...
 
-static void UDPCloseSocket(ipx_socket_t *mysock) 
+static void UDPCloseSocket (ipx_socket_t *mysock) 
 {
 FreeDestList ();
 gameStates.multi.bHaveLocalAddress = 0;
@@ -813,7 +813,7 @@ if (gameStates.multi.bTrackerCall)
 	memcpy (buf, data, dataLen);
 else {
 	memcpy (buf, D2XUDP, 6);
-	memcpy (buf + 6, ipxHeader->Destination.Socket, 2);	//telling the receiver *his* port number here
+	memcpy (buf + 6, ipxHeader->Destination.Socket, 2);	//telling the receiver *my* port number here
 	memcpy (buf + 8, data, dataLen);
 	}
 destAddr.sin_family = AF_INET;
