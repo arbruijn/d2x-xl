@@ -701,13 +701,13 @@ if (*gameFolders.szHomeDir) {
 	sprintf (gameFolders.szTempDir, "%s/%s", pszOSXCacheDir, TEMPDIR);
 	CFMkDir (gameFolders.szTempDir);
 #else
-	#if defined (__unix__)
+#	if defined (__unix__)
 	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
-	#else
+#	else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
 	if (szDataRootDir [i = (int) strlen (szDataRootDir) - 1] == '\\')
 		szDataRootDir [i] = '\0';
-	#endif // __unix__
+#	endif // __unix__
 	CFMkDir (szDataRootDir);
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s", szDataRootDir, TEXTUREDIR_D2);
 	CFMkDir (gameFolders.szTextureCacheDir [0]);
@@ -2345,6 +2345,7 @@ gameData.laser.nLightning = -1;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 gameData.render.ogl.zNear = 1.0f;
 gameData.render.ogl.zFar = 5000.0f;
+gameData.score.nPhallicMan = -1;
 InitEndLevelData ();
 InitStringPool ();
 SetDataVersion (-1);

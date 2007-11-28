@@ -1354,10 +1354,6 @@ if (found != -1)
 
 //------------------------------------------------------------------------------
 
-#ifndef _GAMESEQ_H
-extern tObjPosition gameData.multiplayer.playerInit [];
-#endif
-
 void AddSegmentEdges (tSegment *segP)
 {
 	int		 		bIsGrate, bNoFade;

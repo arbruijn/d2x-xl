@@ -1753,7 +1753,7 @@ return ((((w [0] + 3) % 4) == w [1]) || (((w [1] + 3) % 4) == w [2]));
 
 void AddSideAsTwoTriangles (tSegment *segP, int nSide)
 {
-	vmsVector	vNormal, v;
+	vmsVector	vNormal;
 	sbyte       *vs = sideToVerts [nSide];
 	short			v0 = segP->verts [vs [0]];
 	short			v1 = segP->verts [vs [1]];
@@ -1801,7 +1801,7 @@ if (!IS_CHILD (segP->children [nSide])) {
 #	endif
 	}
 else {
-	int	i, vSorted [4];
+	int	vSorted [4];
 	int	bFlip;
 
 	bFlip = GetVertsForNormal (v0, v1, v2, v3, vSorted, vSorted + 1, vSorted + 2, vSorted + 3);

@@ -1629,7 +1629,7 @@ gameStates.ogl.bUseTransform = 0;
 
 void ComputeSegmentVisibility (int startI)
 {
-	int			i, j, endI;
+	int			i, endI;
 
 LogErr ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
@@ -1646,36 +1646,8 @@ if (gameStates.app.bMultiThreaded) {
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
 // every segment can see itself and its neighbours
-#if 1
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);
-#else
-for (i = startI, segP = gameData.segs.segments + startI; i < endI; i++, segP++) {
-	while (!SetSegVis (i, i))
-		;
-	for (j = 0; j < 6; j++) {
-		c = segP->children [j];
-		if (c >= 0)
-			while (!SetSegVis (i, c))
-				;
-		}
-	}
-for (i = startI; i < endI; i++) {
-	for (j = 0, segP = gameData.segs.segments; j < gameData.segs.nSegments; j++, segP++) {
-		if ((i == j) || SEGVIS (i, j))
-			continue;
-		psv = segP->verts;
-		for (k = 0; k < 8; k++) {
-			v = psv [k];
-			if (VERTVIS (i, v) > 0) {
-				while (!SetSegVis (i, j))
-					;
-				break;
-				}
-			}
-		}
-	}
-#endif
 }
 
 

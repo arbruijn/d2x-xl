@@ -12,36 +12,9 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Kill matrix.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:58:35  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:28:51  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.3  1995/02/15  14:47:39  john
- * Added code to keep track of kills during endlevel.
- *
- * Revision 1.2  1994/12/09  16:19:46  yuan
- * kill matrix stuff.
- *
- * Revision 1.1  1994/12/09  15:58:33  yuan
- * Initial revision
- *
- *
- */
+#ifndef _HIGHSCORES_H
+#define _HIGHSCORES_H
 
+void ScoreTableView();
 
-#ifndef _KMATRIX_H
-#define _KMATRIX_H
-
-extern int nKMatrixKillsChanged;
-
-void KMatrixView();
-
-#endif /* _KMATRIX_H */
+#endif //_HIGHSCORES_H

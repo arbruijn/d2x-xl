@@ -159,7 +159,6 @@ return -1;
 }
 
 //------------------------------------------------------------------------------
-extern int Kmatrix_nomovie_message;
 
 #define MOVIE_REQUIRED 1
 
@@ -196,9 +195,9 @@ return 0;	// movie not played for shareware
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	SetScreenMode (SCREEN_GAME);
 if (r==MOVIE_NOT_PLAYED && (gameData.app.nGameMode & GM_MULTI))
-	Kmatrix_nomovie_message=1;
+	gameData.score.bNoMovieMessage = 1;
 else
- 	Kmatrix_nomovie_message=0;
+ 	gameData.score.bNoMovieMessage = 0;
 return (r);
 }
 

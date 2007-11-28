@@ -531,7 +531,6 @@ return key;
 extern int NetworkWhoIsMaster(), NetworkHowManyConnected(), GetMyNetRanking();
 extern char Pauseable_menu;
 //char *NetworkModeNames[]={"Anarchy", "Team Anarchy", "Robo Anarchy", "Cooperative", "Capture the Flag", "Hoard", "Team Hoard", "Unknown"};
-extern int PhallicLimit, PhallicMan;
 
 void DoShowNetgameHelp()
  {
@@ -603,10 +602,10 @@ void DoShowNetgameHelp()
   
   if (gameData.app.nGameMode & GM_HOARD)
 	{
-	 if (PhallicMan==-1)
+	 if (gameData.score.nPhallicMan==-1)
 		 sprintf (mtext[num], TXT_NO_RECORD2); 
 	 else
-		 sprintf (mtext[num], TXT_RECORD3, gameData.multiplayer.players [PhallicMan].callsign, PhallicLimit); 
+		 sprintf (mtext[num], TXT_RECORD3, gameData.multiplayer.players [gameData.score.nPhallicMan].callsign, gameData.score.nPhallicLimit); 
 	num++;
 	}
   else if (!gameOpts->multi.bNoRankings)

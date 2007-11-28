@@ -1493,7 +1493,9 @@ char *vertLightVS =
 
 void InitVertLightShader (void)
 {
+#if SHADER_VERTEX_LIGHTING
 	int	bOk;
+#endif
 
 if (!gameStates.ogl.bVertexLighting)
 	return;

@@ -12,8 +12,8 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _GAMESEQ_H
-#define _GAMESEQ_H
+#ifndef _LOADGAME_H
+#define _LOADGAME_H
 
 #include "player.h"
 #include "mission.h"
@@ -117,4 +117,4 @@ fix RobotDefaultShields (tObject *objP);
 char *LevelName (int nLevel);
 char *MakeLevelFilename (int nLevel, char *pszFilename, char *pszFileExt);
 
-#endif /* _GAMESEQ_H */
+#endif /* _LOADGAME_H */

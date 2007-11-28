@@ -445,7 +445,7 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	}
 // Do the actual screen we wish to show
 SetFunctionMode (FMODE_MENU);
-KMatrixView (gameData.app.nGameMode & GM_NETWORK);
+ScoreTableView (gameData.app.nGameMode & GM_NETWORK);
 SetFunctionMode (FMODE_GAME);
 // Restore connect state
 if (gameData.app.nGameMode & GM_NETWORK)
@@ -770,7 +770,7 @@ void MultiComputeKill (int nKiller, int nKilled)
 	tPlayer	*pKiller, *pKilled;
 	tObject	*objP;
 
-nKMatrixKillsChanged = 1;
+gameData.score.nKillsChanged = 1;
 bMultiSuicide = 0;
 
 // Both tObject numbers are localized already!
@@ -2647,8 +2647,6 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 //-----------------------------------------------------------------------------
 
 extern int nConsistencyErrorCount;
-int PhallicLimit = 0;
-int PhallicMan = -1;
 
 void MultiPrepLevel (void)
 {
@@ -2667,8 +2665,8 @@ void MultiPrepLevel (void)
 
 Assert (gameData.app.nGameMode & GM_MULTI);
 Assert (gameData.multiplayer.nPlayerPositions > 0);
-PhallicLimit = 0;
-PhallicMan = -1;
+gameData.score.nPhallicLimit = 0;
+gameData.score.nPhallicMan = -1;
 gameStates.render.bDropAfterburnerBlob = 0;
 nConsistencyErrorCount = 0;
 memset (gameData.multigame.kills.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.kills.pFlags [0]));
@@ -3933,7 +3931,7 @@ else if (gameData.app.nGameMode & GM_MONSTERBALL)
 	bonus = extraGameInfo [1].monsterball.nBonus;
 else
 	bonus = 1;
-nKMatrixKillsChanged = 1;
+gameData.score.nKillsChanged = 1;
 if (nPlayer < 0) {
 	penalty = 1;
 	nPlayer = -nPlayer - 1;
@@ -4007,7 +4005,7 @@ void MultiDoOrbBonus (char *buf)
 	int nKillGoal;
 	int bonus = GetOrbBonus (buf [2]);
 
-nKMatrixKillsChanged = 1;
+gameData.score.nKillsChanged = 1;
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	HUDInitMessage (TXT_SCORED_ORBS, bonus);
 else
@@ -4022,14 +4020,14 @@ else if (gameData.app.nGameMode & GM_TEAM) {
 	}
 else
 	DigiPlaySample (SOUND_OPPONENT_HAS_SCORED, F1_0*2);
-if (bonus>PhallicLimit) {
+if (bonus>gameData.score.nPhallicLimit) {
 	if (nPlayer == gameData.multiplayer.nLocalPlayer)
 		HUDInitMessage (TXT_RECORD, bonus);
 	else
 		HUDInitMessage (TXT_RECORD2, gameData.multiplayer.players [nPlayer].callsign, bonus);
 	DigiPlaySample (SOUND_BUDDY_MET_GOAL, F1_0*2);
-	PhallicMan = nPlayer;
-	PhallicLimit = bonus;
+	gameData.score.nPhallicMan = nPlayer;
+	gameData.score.nPhallicLimit = bonus;
 	}
 gameData.multiplayer.players [nPlayer].flags &= ~(PLAYER_FLAGS_FLAG);  // Clear orb flag
 gameData.multigame.kills.nTeam [GetTeam (nPlayer)] += bonus;

@@ -2807,6 +2807,17 @@ typedef struct tTrackIRData {
 	int	x, y;
 } tTrackIRData;
 
+
+//------------------------------------------------------------------------------
+
+typedef struct tScoreData {
+	int nKillsChanged;
+	int bNoMovieMessage;
+	int nPhallicLimit;
+	int nPhallicMan;
+	int bWaitingForOthers;
+} tScoreData;
+
 //------------------------------------------------------------------------------
 
 #define MAX_GAUGE_BMS 100   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
@@ -2862,6 +2873,7 @@ typedef struct tGameData {
 	tCameraData			cameras;
 	tCockpitData		cockpit;
 	tCollisionData		collisions;
+	tScoreData			score;
 	tTrackIRData		trackIR;
 	tStatsData			stats;
 	tApplicationData	app;

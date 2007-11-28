@@ -12,8 +12,8 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _LIGHTING_H
-#define _LIGHTING_H
+#ifndef _LIGHT_H
+#define _LIGHT_H
 
 #include "endlevel.h"
 
@@ -97,4 +97,4 @@ int IsLight (int tMapNum);
 
 extern tFaceColor tMapColor, lightColor, vertColors [8];
 
-#endif /* _LIGHTING_H */
+#endif /* _LIGHT_H */

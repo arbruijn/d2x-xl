@@ -62,30 +62,20 @@ OglMove (OOF_VecVms2Gl (p, pv));
 
 inline void VmsRot (vmsMatrix *pm)
 {
-glMatrixf m, m2, mTrans;
-#if 0
-if (nInstanceDepth)
-	OglRot (OOF_MatVms2Gl (OOF_GlIdent (m), pm));
-else
-#endif
-	{
-	memset (m, 0, sizeof (m));
-	m [0] = f2fl (pm->rVec.p.x);
-	m [1] = f2fl (pm->rVec.p.y);
-	m [2] = f2fl (pm->rVec.p.z);
-	m [4] = f2fl (pm->uVec.p.x);
-	m [5] = f2fl (pm->uVec.p.y);
-	m [6] = f2fl (pm->uVec.p.z);
-	m [8] = f2fl (pm->fVec.p.x);
-	m [9] = f2fl (pm->fVec.p.y);
-	m [10] = f2fl (pm->fVec.p.z);
-	m [15] = 1;
-#if 1
-	OglRot (m);
-#else
-	OglRot (OOF_GlTranspose (&mTrans, OOF_MatVms2Gl (m2, pm)));
-#endif
-	}
+glMatrixf m;
+
+memset (m, 0, sizeof (m));
+m [0] = f2fl (pm->rVec.p.x);
+m [1] = f2fl (pm->rVec.p.y);
+m [2] = f2fl (pm->rVec.p.z);
+m [4] = f2fl (pm->uVec.p.x);
+m [5] = f2fl (pm->uVec.p.y);
+m [6] = f2fl (pm->uVec.p.z);
+m [8] = f2fl (pm->fVec.p.x);
+m [9] = f2fl (pm->fVec.p.y);
+m [10] = f2fl (pm->fVec.p.z);
+m [15] = 1;
+OglRot (m);
 }
 
 //------------------------------------------------------------------------------
