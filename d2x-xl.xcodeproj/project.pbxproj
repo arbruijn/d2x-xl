@@ -93,7 +93,6 @@
 		70533FE309321DDF006BD186 /* gamepal.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E28093219E2006BD186 /* gamepal.h */; };
 		70533FE409321DDF006BD186 /* gamesave.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E2B093219E2006BD186 /* gamesave.h */; };
 		70533FE509321DDF006BD186 /* gameseg.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E2D093219E2006BD186 /* gameseg.h */; };
-		70533FE609321DDF006BD186 /* gameseq.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E2F093219E2006BD186 /* gameseq.h */; };
 		70533FE709321DDF006BD186 /* gamestat.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E30093219E2006BD186 /* gamestat.h */; };
 		70533FE809321DDF006BD186 /* gauges.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E32093219E2006BD186 /* gauges.h */; };
 		70533FEA09321DDF006BD186 /* hostage.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E35093219E2006BD186 /* hostage.h */; };
@@ -102,7 +101,6 @@
 		70533FED09321DDF006BD186 /* joydefs.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E3B093219E2006BD186 /* joydefs.h */; };
 		70533FEE09321DDF006BD186 /* kconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E3D093219E2006BD186 /* kconfig.h */; };
 		70533FF009321DDF006BD186 /* laser.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E42093219E2006BD186 /* laser.h */; };
-		70533FF109321DDF006BD186 /* lighting.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E44093219E2006BD186 /* lighting.h */; };
 		70533FF209321DDF006BD186 /* lightmap.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E46093219E2006BD186 /* lightmap.h */; };
 		70533FF309321DDF006BD186 /* menu.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E48093219E2006BD186 /* menu.h */; };
 		70533FF409321DDF006BD186 /* mission.h in Headers */ = {isa = PBXBuildFile; fileRef = 70533E4B093219E2006BD186 /* mission.h */; };
@@ -218,7 +216,6 @@
 		7053407309321DDF006BD186 /* gamerend.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E29093219E2006BD186 /* gamerend.c */; };
 		7053407409321DDF006BD186 /* gamesave.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E2A093219E2006BD186 /* gamesave.c */; };
 		7053407509321DDF006BD186 /* gameseg.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E2C093219E2006BD186 /* gameseg.c */; };
-		7053407609321DDF006BD186 /* gameseq.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E2E093219E2006BD186 /* gameseq.c */; };
 		7053407709321DDF006BD186 /* gauges.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E31093219E2006BD186 /* gauges.c */; };
 		7053407809321DDF006BD186 /* hostage.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E34093219E2006BD186 /* hostage.c */; };
 		7053407909321DDF006BD186 /* hud.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E36093219E2006BD186 /* hud.c */; };
@@ -226,7 +223,6 @@
 		7053407C09321DDF006BD186 /* kconfig.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E3C093219E2006BD186 /* kconfig.c */; };
 		7053407D09321DDF006BD186 /* kludge.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E3E093219E2006BD186 /* kludge.c */; };
 		7053407F09321DDF006BD186 /* laser.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E41093219E2006BD186 /* laser.c */; };
-		7053408009321DDF006BD186 /* lighting.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E43093219E2006BD186 /* lighting.c */; };
 		7053408109321DDF006BD186 /* lightmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E45093219E2006BD186 /* lightmap.c */; };
 		7053408209321DDF006BD186 /* menu.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E47093219E2006BD186 /* menu.c */; };
 		7053408309321DDF006BD186 /* mglobal.c in Sources */ = {isa = PBXBuildFile; fileRef = 70533E49093219E2006BD186 /* mglobal.c */; };
@@ -366,6 +362,10 @@
 		A44BC45A0CD55D2B00A1C727 /* ogl_texcache.h in Headers */ = {isa = PBXBuildFile; fileRef = A44BC44E0CD55D2A00A1C727 /* ogl_texcache.h */; };
 		A44BC45B0CD55D2B00A1C727 /* ogl_shader.h in Headers */ = {isa = PBXBuildFile; fileRef = A44BC44F0CD55D2A00A1C727 /* ogl_shader.h */; };
 		A44BC45C0CD55D2B00A1C727 /* ogl_render.h in Headers */ = {isa = PBXBuildFile; fileRef = A44BC4500CD55D2A00A1C727 /* ogl_render.h */; };
+		A47DC72F0CFCF67000B22692 /* loadgame.c in Sources */ = {isa = PBXBuildFile; fileRef = A47DC72D0CFCF66F00B22692 /* loadgame.c */; };
+		A47DC7300CFCF67000B22692 /* loadgame.h in Headers */ = {isa = PBXBuildFile; fileRef = A47DC72E0CFCF67000B22692 /* loadgame.h */; };
+		A47DC7500CFCFE0C00B22692 /* light.c in Sources */ = {isa = PBXBuildFile; fileRef = A47DC74E0CFCFE0C00B22692 /* light.c */; };
+		A47DC7510CFCFE0C00B22692 /* light.h in Headers */ = {isa = PBXBuildFile; fileRef = A47DC74F0CFCFE0C00B22692 /* light.h */; };
 		A4917A710CDB28DF00342B96 /* ogl_defs.h in Headers */ = {isa = PBXBuildFile; fileRef = A44BC44A0CD55D2A00A1C727 /* ogl_defs.h */; };
 		A4AD3E2E0C9E062F00B91962 /* lightning.c in Sources */ = {isa = PBXBuildFile; fileRef = A4AD3E260C9E062E00B91962 /* lightning.c */; };
 		A4AD3E2F0C9E062F00B91962 /* lightning.h in Headers */ = {isa = PBXBuildFile; fileRef = A4AD3E270C9E062E00B91962 /* lightning.h */; };
@@ -557,8 +557,6 @@
 		70533E2B093219E2006BD186 /* gamesave.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = gamesave.h; sourceTree = "<group>"; };
 		70533E2C093219E2006BD186 /* gameseg.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = gameseg.c; sourceTree = "<group>"; };
 		70533E2D093219E2006BD186 /* gameseg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = gameseg.h; sourceTree = "<group>"; };
-		70533E2E093219E2006BD186 /* gameseq.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = gameseq.c; sourceTree = "<group>"; };
-		70533E2F093219E2006BD186 /* gameseq.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = gameseq.h; sourceTree = "<group>"; };
 		70533E30093219E2006BD186 /* gamestat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = gamestat.h; sourceTree = "<group>"; };
 		70533E31093219E2006BD186 /* gauges.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = gauges.c; sourceTree = "<group>"; };
 		70533E32093219E2006BD186 /* gauges.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = gauges.h; sourceTree = "<group>"; };
@@ -574,8 +572,6 @@
 		70533E3E093219E2006BD186 /* kludge.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = kludge.c; sourceTree = "<group>"; };
 		70533E41093219E2006BD186 /* laser.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = laser.c; sourceTree = "<group>"; };
 		70533E42093219E2006BD186 /* laser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = laser.h; sourceTree = "<group>"; };
-		70533E43093219E2006BD186 /* lighting.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = lighting.c; sourceTree = "<group>"; };
-		70533E44093219E2006BD186 /* lighting.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = lighting.h; sourceTree = "<group>"; };
 		70533E45093219E2006BD186 /* lightmap.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = lightmap.c; sourceTree = "<group>"; };
 		70533E46093219E2006BD186 /* lightmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = lightmap.h; sourceTree = "<group>"; };
 		70533E47093219E2006BD186 /* menu.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = menu.c; sourceTree = "<group>"; };
@@ -750,6 +746,10 @@
 		A44BC44E0CD55D2A00A1C727 /* ogl_texcache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ogl_texcache.h; sourceTree = "<group>"; };
 		A44BC44F0CD55D2A00A1C727 /* ogl_shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ogl_shader.h; sourceTree = "<group>"; };
 		A44BC4500CD55D2A00A1C727 /* ogl_render.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ogl_render.h; sourceTree = "<group>"; };
+		A47DC72D0CFCF66F00B22692 /* loadgame.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = loadgame.c; sourceTree = "<group>"; };
+		A47DC72E0CFCF67000B22692 /* loadgame.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = loadgame.h; sourceTree = "<group>"; };
+		A47DC74E0CFCFE0C00B22692 /* light.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = light.c; sourceTree = "<group>"; };
+		A47DC74F0CFCFE0C00B22692 /* light.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = light.h; sourceTree = "<group>"; };
 		A4AD3E260C9E062E00B91962 /* lightning.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = lightning.c; sourceTree = "<group>"; };
 		A4AD3E270C9E062E00B91962 /* lightning.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = lightning.h; sourceTree = "<group>"; };
 		A4AD3E280C9E062F00B91962 /* objrender.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = objrender.c; sourceTree = "<group>"; };
@@ -1153,8 +1153,6 @@
 				70533E2B093219E2006BD186 /* gamesave.h */,
 				70533E2C093219E2006BD186 /* gameseg.c */,
 				70533E2D093219E2006BD186 /* gameseg.h */,
-				70533E2E093219E2006BD186 /* gameseq.c */,
-				70533E2F093219E2006BD186 /* gameseq.h */,
 				70533E30093219E2006BD186 /* gamestat.h */,
 				70533E31093219E2006BD186 /* gauges.c */,
 				70533E32093219E2006BD186 /* gauges.h */,
@@ -1177,12 +1175,14 @@
 				70533E3E093219E2006BD186 /* kludge.c */,
 				70533E41093219E2006BD186 /* laser.c */,
 				70533E42093219E2006BD186 /* laser.h */,
-				70533E43093219E2006BD186 /* lighting.c */,
-				70533E44093219E2006BD186 /* lighting.h */,
+				A47DC74E0CFCFE0C00B22692 /* light.c */,
+				A47DC74F0CFCFE0C00B22692 /* light.h */,
 				A4AD3E260C9E062E00B91962 /* lightning.c */,
 				A4AD3E270C9E062E00B91962 /* lightning.h */,
 				70533E45093219E2006BD186 /* lightmap.c */,
 				70533E46093219E2006BD186 /* lightmap.h */,
+				A47DC72D0CFCF66F00B22692 /* loadgame.c */,
+				A47DC72E0CFCF67000B22692 /* loadgame.h */,
 				70533E47093219E2006BD186 /* menu.c */,
 				70533E48093219E2006BD186 /* menu.h */,
 				70533E49093219E2006BD186 /* mglobal.c */,
@@ -1463,7 +1463,6 @@
 				70533FE309321DDF006BD186 /* gamepal.h in Headers */,
 				70533FE409321DDF006BD186 /* gamesave.h in Headers */,
 				70533FE509321DDF006BD186 /* gameseg.h in Headers */,
-				70533FE609321DDF006BD186 /* gameseq.h in Headers */,
 				70533FE709321DDF006BD186 /* gamestat.h in Headers */,
 				70533FE809321DDF006BD186 /* gauges.h in Headers */,
 				70533FEA09321DDF006BD186 /* hostage.h in Headers */,
@@ -1472,7 +1471,6 @@
 				70533FED09321DDF006BD186 /* joydefs.h in Headers */,
 				70533FEE09321DDF006BD186 /* kconfig.h in Headers */,
 				70533FF009321DDF006BD186 /* laser.h in Headers */,
-				70533FF109321DDF006BD186 /* lighting.h in Headers */,
 				70533FF209321DDF006BD186 /* lightmap.h in Headers */,
 				70533FF309321DDF006BD186 /* menu.h in Headers */,
 				70533FF409321DDF006BD186 /* mission.h in Headers */,
@@ -1567,6 +1565,8 @@
 				A4917A710CDB28DF00342B96 /* ogl_defs.h in Headers */,
 				A4E74EBB0CFA443900870B5E /* highscores.h in Headers */,
 				A4E74EBE0CFA444100870B5E /* briefings.h in Headers */,
+				A47DC7300CFCF67000B22692 /* loadgame.h in Headers */,
+				A47DC7510CFCFE0C00B22692 /* light.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1704,7 +1704,6 @@
 				7053407309321DDF006BD186 /* gamerend.c in Sources */,
 				7053407409321DDF006BD186 /* gamesave.c in Sources */,
 				7053407509321DDF006BD186 /* gameseg.c in Sources */,
-				7053407609321DDF006BD186 /* gameseq.c in Sources */,
 				7053407709321DDF006BD186 /* gauges.c in Sources */,
 				7053407809321DDF006BD186 /* hostage.c in Sources */,
 				7053407909321DDF006BD186 /* hud.c in Sources */,
@@ -1712,7 +1711,6 @@
 				7053407C09321DDF006BD186 /* kconfig.c in Sources */,
 				7053407D09321DDF006BD186 /* kludge.c in Sources */,
 				7053407F09321DDF006BD186 /* laser.c in Sources */,
-				7053408009321DDF006BD186 /* lighting.c in Sources */,
 				7053408109321DDF006BD186 /* lightmap.c in Sources */,
 				7053408209321DDF006BD186 /* menu.c in Sources */,
 				7053408309321DDF006BD186 /* mglobal.c in Sources */,
@@ -1812,6 +1810,8 @@
 				A44BC43A0CD55CC800A1C727 /* ogl_hudstuff.c in Sources */,
 				A4E74EBC0CFA443B00870B5E /* highscores.c in Sources */,
 				A4E74EBD0CFA444000870B5E /* briefings.c in Sources */,
+				A47DC72F0CFCF67000B22692 /* loadgame.c in Sources */,
+				A47DC7500CFCFE0C00B22692 /* light.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
