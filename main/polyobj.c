@@ -44,7 +44,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #include "bm.h"
 #include "textures.h"
 #include "object.h"
-#include "lighting.h"
+#include "light.h"
 #include "cfile.h"
 #include "piggy.h"
 #endif

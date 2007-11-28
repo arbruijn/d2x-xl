@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cntrlcen.h"
 #include "makesig.h"
 #include "interp.h"
-#include "lighting.h"
+#include "light.h"
 #include "byteswap.h"
 
 ubyte Sounds [2][MAX_SOUNDS];

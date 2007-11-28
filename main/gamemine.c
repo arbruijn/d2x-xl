@@ -69,7 +69,7 @@ static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Ex
 #include "paging.h"
 #include "maths.h"
 #include "network.h"
-#include "lighting.h"
+#include "light.h"
 #include "renderlib.h"
 
 //------------------------------------------------------------------------------

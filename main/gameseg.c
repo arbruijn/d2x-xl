@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "player.h"
 #include "gamesave.h"
-#include "lighting.h"
+#include "light.h"
 #include "gameseg.h"
 //#define _DEBUG
 #ifdef RCS

@@ -51,7 +51,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "segment.h"
 #include "input.h"
 #include "text.h"
-#include "lighting.h"
+#include "light.h"
 #include "hudmsg.h"
 
 #ifdef EDITOR

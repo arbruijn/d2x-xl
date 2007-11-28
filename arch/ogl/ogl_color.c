@@ -21,7 +21,7 @@
 #include "maths.h"
 #include "error.h"
 #include "network.h"
-#include "lighting.h"
+#include "light.h"
 #include "endlevel.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"

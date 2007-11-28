@@ -31,7 +31,7 @@
 #include "maths.h"
 #include "strutil.h"
 #include "gameseg.h"
-#include "lighting.h"
+#include "light.h"
 #include "lightmap.h"
 #include "network.h"
 #include "gr.h"

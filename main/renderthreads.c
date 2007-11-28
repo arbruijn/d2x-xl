@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "inferno.h"
 #include "error.h"
-#include "lighting.h"
+#include "light.h"
 #include "render.h"
 #include "fastrender.h"
 #include "renderthreads.h"

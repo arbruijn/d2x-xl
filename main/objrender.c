@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "paging.h"
 #include "endlevel.h"
-#include "lighting.h"
+#include "light.h"
 #include "lightning.h"
 #include "hostage.h"
 #include "interp.h"

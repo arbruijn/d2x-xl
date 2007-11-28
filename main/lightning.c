@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sounds.h"
 #include "collide.h"
 
-#include "lighting.h"
+#include "light.h"
 #include "interp.h"
 #include "player.h"
 #include "weapon.h"

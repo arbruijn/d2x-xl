@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: KConfig.c,v 1.27 2003/12/18 11:24:04 btb Exp $";
 #include "menu.h"
 #include "automap.h"
 #include "args.h"
-#include "lighting.h"
+#include "light.h"
 #include "ai.h"
 #include "cntrlcen.h"
 #include "network.h"

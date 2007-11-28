@@ -65,7 +65,7 @@ char gamesave_rcsid[] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "multi.h"
 #include "makesig.h"
 #include "gameseg.h"
-#include "lighting.h"
+#include "light.h"
 
 #define GAME_VERSION            32
 #define GAME_COMPATIBLE_VERSION 22

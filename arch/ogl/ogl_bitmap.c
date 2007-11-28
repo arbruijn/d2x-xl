@@ -37,7 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_render.h"
 #include "ogl_tmu.h"
-#include "lighting.h"
+#include "light.h"
 #include "lightmap.h"
 #include "texmerge.h"
 #include "transprender.h"

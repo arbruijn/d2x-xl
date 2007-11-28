@@ -34,7 +34,7 @@ static char rcsid [] = "$Id: morph.c, v 1.3 2003/01/02 23:31:50 btb Exp $";
 #include "morph.h"
 #include "polyobj.h"
 #include "game.h"
-#include "lighting.h"
+#include "light.h"
 #include "newdemo.h"
 #include "piggy.h"
 

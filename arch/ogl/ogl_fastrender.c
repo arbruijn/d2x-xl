@@ -30,7 +30,7 @@
 #include "inferno.h"
 #include "error.h"
 #include "maths.h"
-#include "lighting.h"
+#include "light.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_texture.h"

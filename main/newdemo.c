@@ -66,7 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sounds.h"
 #include "collide.h"
 
-#include "lighting.h"
+#include "light.h"
 #include "newdemo.h"
 #include "loadgame.h"
 #include "gamesave.h"

@@ -29,7 +29,7 @@
 #include "globvars.h"
 #include "gameseg.h"
 #include "network.h"
-#include "lighting.h"
+#include "light.h"
 #include "render.h"
 #include "transprender.h"
 #include "objsmoke.h"

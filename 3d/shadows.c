@@ -36,7 +36,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "network.h"
 #include "render.h"
 #include "gameseg.h"
-#include "lighting.h"
+#include "light.h"
 #include "lightning.h"
 
 extern tFaceColor tMapColor;

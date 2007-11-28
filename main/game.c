@@ -67,7 +67,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "u_mem.h"
 #include "palette.h"
 #include "morph.h"
-#include "lighting.h"
+#include "light.h"
 #include "newdemo.h"
 #include "collide.h"
 #include "weapon.h"

@@ -87,7 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "state.h"
 #include "strutil.h"
-#include "lighting.h"
+#include "light.h"
 #include "ipx.h"
 #include "gr.h"
 

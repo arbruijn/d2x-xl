@@ -70,7 +70,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "u_mem.h"
 #include "palette.h"
 #include "morph.h"
-#include "lighting.h"
+#include "light.h"
 #include "newdemo.h"
 #include "briefings.h"
 #include "collide.h"
@@ -1000,11 +1000,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
 	return 0;
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
-#ifdef _DEBUG
-networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * 27);
-#else
 networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);
-#endif
 ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);

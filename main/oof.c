@@ -15,7 +15,7 @@
 #include "error.h"
 #include "globvars.h"
 #include "3d.h"
-#include "lighting.h"
+#include "light.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"

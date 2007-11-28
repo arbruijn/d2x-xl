@@ -30,7 +30,7 @@
 #include "inferno.h"
 #include "error.h"
 #include "u_mem.h"
-#include "lighting.h"
+#include "light.h"
 #include "lightmap.h"
 #include "texmerge.h"
 #include "ogl_defs.h"

@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3d.h"
 #include "gameseg.h"
 #include "vclip.h"
-#include "lighting.h"
+#include "light.h"
 #include "cntrlcen.h"
 #include "newdemo.h"
 #include "automap.h"

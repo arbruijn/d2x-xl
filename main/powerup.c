@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "laser.h"
 #include "scores.h"
 #include "multi.h"
-#include "lighting.h"
+#include "light.h"
 #include "controls.h"
 #include "hudmsg.h"
 #include "kconfig.h"
