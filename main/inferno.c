@@ -700,13 +700,14 @@ if (*gameFolders.szHomeDir) {
 	CFMkDir (gameFolders.szModelCacheDir);
 	sprintf (gameFolders.szTempDir, "%s/%s", pszOSXCacheDir, TEMPDIR);
 	CFMkDir (gameFolders.szTempDir);
-#elif defined (__unix__)
-	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
 #else
+	#if defined (__unix__)
+	sprintf (szDataRootDir, "%s/.d2x-xl", gameFolders.szHomeDir);
+	#else
 	strcpy (szDataRootDir, gameFolders.szHomeDir);
 	if (szDataRootDir [i = (int) strlen (szDataRootDir) - 1] == '\\')
 		szDataRootDir [i] = '\0';
-#endif // __unix__
+	#endif // __unix__
 	CFMkDir (szDataRootDir);
 	sprintf (gameFolders.szTextureCacheDir [0], "%s/%s", szDataRootDir, TEXTUREDIR_D2);
 	CFMkDir (gameFolders.szTextureCacheDir [0]);
@@ -716,6 +717,7 @@ if (*gameFolders.szHomeDir) {
 	CFMkDir (gameFolders.szModelCacheDir);
 	sprintf (gameFolders.szTempDir, "%s/%s", szDataRootDir, TEMPDIR);
 	CFMkDir (gameFolders.szTempDir);
+#endif // __macosx__
 	}
 GetAppFolder (szDataRootDir, gameFolders.szProfDir, PROFDIR, "");
 GetAppFolder (szDataRootDir, gameFolders.szSaveDir, SAVEDIR, "");
