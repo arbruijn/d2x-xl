@@ -2176,24 +2176,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\main\lighting.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
+					RelativePath="..\..\main\light.c">
 				</File>
 				<File
 					RelativePath="..\..\main\lightmap.c">
@@ -3106,7 +3089,7 @@
 						RelativePath="..\..\main\laser.h">
 					</File>
 					<File
-						RelativePath="..\..\main\lighting.h">
+						RelativePath="..\..\main\light.h">
 					</File>
 					<File
 						RelativePath="..\..\main\lightmap.h">
