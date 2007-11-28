@@ -24,7 +24,7 @@ escort.c    fireball.c  fuelcen.c   fvi.c       game.c      \
 gamecntl.c  gamefont.c  gamemine.c  gamepal.c   gamerend.c  \
 gamesave.c  gameseg.c   loadgame.c  gauges.c    hostage.c   \
 hud.c       inferno.c   kconfig.c   kludge.c    laser.c     \
-lighting.c  menu.c      mglobal.c   mission.c   morph.c     \
+light.c  menu.c      mglobal.c   mission.c   morph.c     \
 movie.c     particles.c oof.c 		sphere.c 	input.c		\
 newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
 piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
@@ -51,7 +51,7 @@ endlevel.h escort.h \
 fireball.h fuelcen.h fvi.h fvi_a.h game.h gamefont.h gamemine.h \
 gamepal.h gamesave.h gameseg.h loadgame.h gamestat.h gauges.h \
 hostage.h hudmsg.h inferno.h joydefs.h kconfig.h \
-highscores.h laser.h lighting.h menu.h mission.h modem.h morph.h movie.h multi.h \
+highscores.h laser.h light.h menu.h mission.h modem.h morph.h movie.h multi.h \
 multibot.h netmisc.h network.h newdemo.h newmenu.h \
 object.h paging.h physics.h piggy.h player.h playsave.h polyobj.h powerup.h \
 render.h reorder.h robot.h scores.h screens.h segment.h segpoint.h slew.h \

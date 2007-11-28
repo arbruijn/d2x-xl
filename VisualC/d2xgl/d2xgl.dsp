@@ -532,10 +532,6 @@ SOURCE=..\..\main\gameseg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\gameseq.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\main\gauges.c
 # End Source File
 # Begin Source File
@@ -592,7 +588,7 @@ SOURCE=..\..\main\laser.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\lighting.c
+SOURCE=..\..\main\light.c
 # End Source File
 # Begin Source File
 
@@ -601,6 +597,10 @@ SOURCE=..\..\main\lightmap.c
 # Begin Source File
 
 SOURCE=..\..\main\lightning.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\loadgame.c
 # End Source File
 # Begin Source File
 
@@ -1037,10 +1037,6 @@ SOURCE=..\..\main\gameseg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\gameseq.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\main\gamestat.h
 # End Source File
 # Begin Source File
@@ -1137,7 +1133,7 @@ SOURCE=..\..\main\laser.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\lighting.h
+SOURCE=..\..\main\light.h
 # End Source File
 # Begin Source File
 
@@ -1146,6 +1142,10 @@ SOURCE=..\..\main\lightmap.h
 # Begin Source File
 
 SOURCE=..\..\main\lightning.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\loadgame.h
 # End Source File
 # Begin Source File
 
