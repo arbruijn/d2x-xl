@@ -57,7 +57,7 @@ static char rcsid [] = "$Id: endlevel.c, v 1.20 2003/10/12 09:38:48 btb Exp $";
 #include "terrain.h"
 #include "polyobj.h"
 #include "bm.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "newdemo.h"
 #include "multi.h"
 #include "vclip.h"

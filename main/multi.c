@@ -56,7 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "highscores.h"
 #include "multibot.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "gameseg.h"
 #include "physics.h"
 #include "config.h"

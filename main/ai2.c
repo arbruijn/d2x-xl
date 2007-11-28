@@ -55,7 +55,7 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "multibot.h"
 #include "multi.h"
 #include "network.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "key.h"
 #include "powerup.h"
 #include "gauges.h"

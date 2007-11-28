@@ -152,7 +152,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Cleaned up includes
  *
  * Revision 1.2  1994/07/02  13:10:03  matt
- * Moved tPlayer stats struct from gameseq.h to player.h
+ * Moved tPlayer stats struct from loadgame.h to player.h
  *
  * Revision 1.1  1994/07/02  11:00:43  matt
  * Initial revision

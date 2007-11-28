@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "weapon.h"
 #include "sounds.h"
 #include "args.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "automap.h"
 #include "text.h"
 #include "powerup.h"

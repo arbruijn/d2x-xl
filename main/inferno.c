@@ -90,7 +90,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "multi.h"
 #include "songs.h"
 #include "cfile.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "gamepal.h"
 #include "mission.h"
 #include "movie.h"

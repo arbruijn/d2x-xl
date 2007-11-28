@@ -143,7 +143,7 @@ static char rcsid[] = "$Id: dumpmine.c,v 1.4 2003/10/10 09:36:34 btb Exp $";
 #include "switch.h"
 #include "fuelcen.h"
 #include "powerup.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "polyobj.h"
 #include "gamesave.h"
 

@@ -74,7 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_bitmap.h"
 #include "render.h"
 #include "input.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "netmenu.h"
 
 #if defined (TACTILE)

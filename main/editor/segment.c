@@ -180,7 +180,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fuelcen.h"
 #include "cntrlcen.h"
 #include "seguvs.h"
-#include "gameseq.h"
+#include "loadgame.h"
 
 #include "medwall.h"
 #include "hostage.h"

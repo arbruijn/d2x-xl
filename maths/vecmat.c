@@ -821,7 +821,7 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
 #if 1
-#	if 1
+#	if 0
 	fVector	srcf [2], destf;
 
 VmsVecToFloat (srcf, src0);

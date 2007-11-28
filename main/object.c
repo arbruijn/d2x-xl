@@ -75,7 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 #include "piggy.h"
 #include "switch.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "vecmat.h"
 #include "particles.h"
 #include "hudmsg.h"

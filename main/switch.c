@@ -41,7 +41,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "newdemo.h"
 #include "player.h"
 #include "endlevel.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "multi.h"
 #include "network.h"
 #include "palette.h"

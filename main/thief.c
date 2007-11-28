@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamefont.h"
 #include "newmenu.h"
 #include "playsave.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "automap.h"
 #include "laser.h"
 #include "pa_enabl.h"

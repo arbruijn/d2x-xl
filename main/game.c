@@ -73,7 +73,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "weapon.h"
 #include "sounds.h"
 #include "args.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "automap.h"
 #include "text.h"
 #include "powerup.h"

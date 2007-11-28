@@ -1964,26 +1964,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\main\gameseq.c">
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BasicRuntimeChecks="3"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\main\gauges.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -2220,6 +2200,9 @@
 				</File>
 				<File
 					RelativePath="..\..\main\lightning.c">
+				</File>
+				<File
+					RelativePath="..\..\main\loadgame.c">
 				</File>
 				<File
 					RelativePath="..\..\main\menu.c">
@@ -3069,9 +3052,6 @@
 						RelativePath="..\..\main\gameseg.h">
 					</File>
 					<File
-						RelativePath="..\..\main\gameseq.h">
-					</File>
-					<File
 						RelativePath="..\..\main\gamestat.h">
 					</File>
 					<File
@@ -3133,6 +3113,9 @@
 					</File>
 					<File
 						RelativePath="..\..\main\lightning.h">
+					</File>
+					<File
+						RelativePath="..\..\main\loadgame.h">
 					</File>
 					<File
 						RelativePath="..\..\include\makesig.h">
@@ -3518,10 +3501,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

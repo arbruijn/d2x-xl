@@ -53,7 +53,7 @@ char gamesave_rcsid[] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "powerup.h"
 #include "weapon.h"
 #include "newdemo.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "automap.h"
 #include "polyobj.h"
 #include "text.h"

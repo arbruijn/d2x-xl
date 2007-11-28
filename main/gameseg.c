@@ -234,6 +234,10 @@ void GetSideNormals (tSegment *segP, int nSide, vmsVector * vm1, vmsVector * vm2
 	int	vvm0, vvm1, vvm2, vvm3, bFlip;
 	sbyte	*vs = sideToVerts [nSide];
 
+#ifdef _DEBUG
+if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 switch (segP->sides [nSide].nType)	{
 	case SIDE_IS_QUAD:
 		bFlip = GetVertsForNormal (segP->verts [vs [0]], segP->verts [vs [1]], segP->verts [vs [2]], segP->verts [vs [3]], 

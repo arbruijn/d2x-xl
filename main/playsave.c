@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "game.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "player.h"
 #include "playsave.h"
 #include "joy.h"

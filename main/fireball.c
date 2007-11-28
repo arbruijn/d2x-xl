@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "newmenu.h"
 #include "network.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "physics.h"
 #include "scores.h"
 #include "laser.h"

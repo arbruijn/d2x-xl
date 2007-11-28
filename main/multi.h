@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_MESSAGE_LEN 35
 
 // Defines
-#include "gameseq.h"
+#include "loadgame.h"
 #include "piggy.h"
 
 // What version of the multiplayer protocol is this?

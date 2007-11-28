@@ -50,7 +50,7 @@ char ai_rcsid [] = "$Id: ai.c,v 1.7 2003/10/04 02:58:23 btb Exp $";
 #include "multibot.h"
 #include "multi.h"
 #include "network.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "key.h"
 #include "powerup.h"
 #include "gauges.h"

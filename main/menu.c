@@ -42,7 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "timer.h"
 #include "sounds.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "text.h"
 #include "gamefont.h"
 #include "newmenu.h"

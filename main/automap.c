@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 #include "palette.h"
 #include "wall.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "gamefont.h"
 #include "network.h"
 #include "kconfig.h"

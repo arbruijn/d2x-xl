@@ -15,7 +15,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _NETWORK_H
 #define _NETWORK_H
 
-#include "gameseq.h"
+#include "loadgame.h"
 #include "multi.h"
 #include "newmenu.h"
 

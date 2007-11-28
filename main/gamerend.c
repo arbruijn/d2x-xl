@@ -60,7 +60,7 @@ static char rcsid [] = "$Id: gamerend.c, v 1.13 2003/10/12 09:38:48 btb Exp $";
 #include "playsave.h"
 #include "automap.h"
 #include "mission.h"
-#include "gameseq.h"
+#include "loadgame.h"
 #include "network.h"
 #include "hudmsg.h"
 #include "gamepal.h"
