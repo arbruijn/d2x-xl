@@ -787,9 +787,6 @@
 						RelativePath="..\..\3d\clipper.h">
 					</File>
 					<File
-						RelativePath="..\..\main\fastrender.h">
-					</File>
-					<File
 						RelativePath="..\..\3d\globvars.h">
 					</File>
 					<File
@@ -2999,6 +2996,9 @@
 						RelativePath="..\..\arch\include\event.h">
 					</File>
 					<File
+						RelativePath="..\..\main\fastrender.h">
+					</File>
+					<File
 						RelativePath="..\..\include\findfile.h">
 					</File>
 					<File
@@ -3484,10 +3484,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

@@ -1814,6 +1814,8 @@ typedef struct tG3ModelFace {
 
 typedef struct tG3SubModel {
 	vmsVector				vOffset;
+	fVector3					vMin;
+	fVector3					vMax;
 	tG3ModelFace			*pFaces;
 	short						nParent;
 	short						nFaces;
@@ -1850,6 +1852,7 @@ typedef struct tG3Model {
 	short						iFaceVert;
 	short						nSubModels;
 	short						iSubModel;
+	short						bHasTransparency;
 	short						bValid;
 	GLint						vboDataHandle;
 	GLint						vboIndexHandle;
@@ -2017,9 +2020,11 @@ typedef struct tWeaponData {
 #define OOF_PYRO			0
 #define OOF_MEGA			1
 
+#define MAX_HITBOXES		100
+
 typedef struct tModelHitboxes {
 	ubyte					nSubModels;
-	tHitbox				hitboxes [MAX_SUBMODELS + 1];
+	tHitbox				hitboxes [MAX_HITBOXES + 1];
 #ifdef _DEBUG
 	vmsVector			vHit;
 	time_t				tHit;

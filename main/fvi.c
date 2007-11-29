@@ -814,8 +814,8 @@ fix CheckHitboxToHitbox (vmsVector *intP, tObject *objP1, tObject *objP2, vmsVec
 	int				iModel1, nModels1, iModel2, nModels2, nHits = 0;
 	tModelHitboxes	*pmhb1 = gameData.models.hitboxes + objP1->rType.polyObjInfo.nModel;
 	tModelHitboxes	*pmhb2 = gameData.models.hitboxes + objP2->rType.polyObjInfo.nModel;
-	tBox				hb1 [MAX_SUBMODELS + 1];
-	tBox				hb2 [MAX_SUBMODELS + 1];
+	tBox				hb1 [MAX_HITBOXES + 1];
+	tBox				hb2 [MAX_HITBOXES + 1];
 	fix				dMax = 0;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -870,7 +870,7 @@ fix CheckVectorToHitbox (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVecto
 	int				i, iModel, nModels;
 	fix				h, d, xDist = 0x7fffffff;
 	tModelHitboxes	*pmhb = gameData.models.hitboxes + objP->rType.polyObjInfo.nModel;
-	tBox				hb [MAX_SUBMODELS + 1];
+	tBox				hb [MAX_HITBOXES + 1];
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	iModel =

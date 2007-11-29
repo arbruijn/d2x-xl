@@ -106,6 +106,8 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 
 void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, short iFaceVerts, short nFaceVerts);
 
+int G3ModelMinMax (int nModel, tHitbox *phb);
+
 //------------------------------------------------------------------------------
 
 extern g3sPoint *pointList [MAX_POINTS_PER_POLY];

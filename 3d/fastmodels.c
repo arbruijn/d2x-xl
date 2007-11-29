@@ -176,6 +176,41 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void G3InitSubModelMinMax (tG3SubModel *psm)
+{
+psm->vMin.p.x = 
+psm->vMin.p.y = 
+psm->vMin.p.z = (float) 1e30;
+psm->vMax.p.x = 
+psm->vMax.p.y = 
+psm->vMax.p.z = (float) -1e30;
+}
+
+//------------------------------------------------------------------------------
+
+void G3SetSubModelMinMax (tG3SubModel *psm, fVector3 *vertexP)
+{
+	fVector3	v = *vertexP;
+
+v.p.x += f2fl (psm->vOffset.p.x);
+v.p.y += f2fl (psm->vOffset.p.y);
+v.p.z += f2fl (psm->vOffset.p.z);
+if (psm->vMin.p.x > v.p.x)
+	psm->vMin.p.x = v.p.x;
+if (psm->vMin.p.y > v.p.y)
+	psm->vMin.p.y = v.p.y;
+if (psm->vMin.p.z > v.p.z)
+	psm->vMin.p.z = v.p.z;
+if (psm->vMax.p.x < v.p.x)
+	psm->vMax.p.x = v.p.x;
+if (psm->vMax.p.y < v.p.y)
+	psm->vMax.p.y = v.p.y;
+if (psm->vMax.p.z < v.p.z)
+	psm->vMax.p.z = v.p.z;
+}
+
+//------------------------------------------------------------------------------
+
 tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf, vmsVector *pn, ubyte *p, 
 										grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
@@ -237,6 +272,7 @@ for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	pmv->bTextured = bTextured;
 	pmv->nIndex = j;
 	pmv->normal = *pvn = n;
+	G3SetSubModelMinMax (psm, &pmv->vertex);
 	}
 pm->iFaceVert += nVerts;
 pmf++;
@@ -318,6 +354,7 @@ for (;;)
 			nChild = ++pm->iSubModel;
 			pm->pSubModels [nChild].vOffset = *VECPTR (p+4);
 			pm->pSubModels [nChild].nAngles = WORDVAL (p+2);
+			G3InitSubModelMinMax (pm->pSubModels + nChild);
 			G3GetModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, modelBitmaps, pObjColor);
 			pmf = pm->pFaces + pm->iFace;
 			p += 20;
@@ -337,8 +374,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm)
+inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, grsBitmap *pTextures)
 {
+if (pTextures) {
+	if (pTextures [pmf->nBitmap].bmBPP < pTextures [pm->nBitmap].bmBPP)
+		return -1;
+	if (pTextures [pmf->nBitmap].bmBPP > pTextures [pm->nBitmap].bmBPP)
+		return 1;
+	}
 if (pmf->nBitmap < pm->nBitmap)
 	return -1;
 if (pmf->nBitmap > pm->nBitmap)
@@ -352,16 +395,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void G3SortFaces (tG3SubModel *psm, int left, int right)
+void G3SortFaces (tG3SubModel *psm, int left, int right, grsBitmap *pTextures)
 {
 	int				l = left,
 						r = right;
 	tG3ModelFace	m = psm->pFaces [(l + r) / 2];
 		
 do {
-	while (G3CmpFaces (psm->pFaces + l, &m) < 0)
+	while (G3CmpFaces (psm->pFaces + l, &m, pTextures) < 0)
 		l++;
-	while (G3CmpFaces (psm->pFaces + r, &m) > 0)
+	while (G3CmpFaces (psm->pFaces + r, &m, pTextures) > 0)
 		r--;
 	if (l <= r) {
 		if (l < r) {
@@ -374,9 +417,9 @@ do {
 		}
 	} while (l <= r);
 if (l < right)
-	G3SortFaces (psm, l, right);
+	G3SortFaces (psm, l, right, pTextures);
 if (left < r)
-	G3SortFaces (psm, left, r);
+	G3SortFaces (psm, left, r, pTextures);
 }
 
 //------------------------------------------------------------------------------
@@ -463,6 +506,7 @@ void G3SetupModel (tG3Model *pm, int bHires)
 	fVector3			*pv, *pn;
 	tTexCoord2f		*pt;
 	tRgbaColorf		*pc;
+	grsBitmap		*pTextures = bHires ? pm->pTextures : NULL;
 	int				i, j;
 	short				nId;
 
@@ -472,13 +516,15 @@ for (i = 0, j = pm->nFaceVerts; i < j; i++)
 	pm->pIndex [0][i] = i;
 //sort each submodel's faces
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
-	G3SortFaces (psm, 0, psm->nFaces - 1);
+	G3SortFaces (psm, 0, psm->nFaces - 1, pTextures);
 	G3SortFaceVerts (pm, psm, pSortedVerts);
 	for (nId = 0, j = psm->nFaces - 1, pfi = psm->pFaces; j; j--) {
 		pfi->nId = nId;
 		pfj = pfi++;
-		if (G3CmpFaces (pfi, pfj))
+		if (G3CmpFaces (pfi, pfj, pTextures))
 			nId++;
+		if (pTextures && (pTextures [pfi->nBitmap].bmBPP == 4))
+			pm->bHasTransparency = 1;
 		}
 	pfi->nId = nId;
 	}
@@ -588,6 +634,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->texCoord.v.v = pfv->fv;
 			pmv->normal = vNormal;
 			memcpy (&pmv->vertex, pso->pvVerts + h, sizeof (fVector3));
+			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;
 			if (pmv->bTextured = pof->bTextured)
 				pmv->baseColor.red = 
@@ -619,9 +666,11 @@ pm = gameData.models.g3Models [1] + nModel;
 G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
 	return 0;
+G3InitSubModelMinMax (pm->pSubModels);
 G3GetOOFModelItems (nModel, po, pm);
-G3SetupModel (pm, 1);
 pm->pTextures = po->textures.pBitmaps;
+G3SetupModel (pm, 1);
+gameData.models.polyModels [nModel].rad = G3PolyModelSize (gameData.models.polyModels + nModel, nModel);
 return -1;
 }
 
@@ -643,10 +692,33 @@ pm->nSubModels = 1;
 G3CountModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts);
 if (!G3AllocModel (pm))
 	return 0;
+G3InitSubModelMinMax (pm->pSubModels);
 G3GetModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
 G3SetupModel (pm, 0);
 pm->iSubModel = 0;
 return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int G3ModelMinMax (int nModel, tHitbox *phb)
+{
+	tG3Model		*pm;
+	tG3SubModel	*psm;
+	int			i;
+
+if (!((pm = gameData.models.g3Models [1] + nModel) || 
+	   (pm = gameData.models.g3Models [0] + nModel)))
+	return 0;
+for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++, phb++) {
+	phb->vMin.p.x = fl2f (psm->vMin.p.x);
+	phb->vMin.p.y = fl2f (psm->vMin.p.y);
+	phb->vMin.p.z = fl2f (psm->vMin.p.z);
+	phb->vMax.p.x = fl2f (psm->vMax.p.x);
+	phb->vMax.p.y = fl2f (psm->vMax.p.y);
+	phb->vMax.p.z = fl2f (psm->vMax.p.z);
+	}
+return pm->nSubModels;
 }
 
 //------------------------------------------------------------------------------
@@ -855,7 +927,7 @@ if (!mtP->nCount++) {
 //------------------------------------------------------------------------------
 
 void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
-						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass)
+						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass, int bTransparency)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
@@ -863,7 +935,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	grsBitmap		*bmP = NULL;
 	vmsAngVec		*va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
 	vmsVector		vo;
-	int				i, j, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
+	int				i, j, bTransparent, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
 // set the translation
@@ -878,7 +950,7 @@ if (vOffset && (nExclusive < 0)) {
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
-		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires, bUseVBO, nPass);
+		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires, bUseVBO, nPass, bTransparency);
 #endif
 // render the faces
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
@@ -907,6 +979,14 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			}
 		nIndex = pmf->nIndex;
 #if G3_DRAW_ARRAYS
+		bTransparent = bmP && (bmP->bmBPP == 4);
+		if (bTransparent != bTransparency) {
+			if (bTransparent)
+				pm->bHasTransparency = 1;
+			pmf++;
+			i--;
+			continue;
+			}
 		if ((nFaceVerts = pmf->nVerts) > 4) {
 			if (!nPass && pmf->bThruster)
 				G3GetThrusterPos (nModel, pmf, &vo, bHires);
@@ -986,7 +1066,7 @@ if (vOffset)
 //------------------------------------------------------------------------------
 
 void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps, 
-						vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO)
+						vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int bTransparency)
 {
 	tG3Model			*pm;
 	tShaderLight	*psl;
@@ -1008,6 +1088,10 @@ if (bEmissive)
 	glBlendFunc (GL_ONE, GL_ONE);
 else if (gameStates.render.bCloaked)
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+else if (bTransparency) {
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask (0);
+	}
 else
 	glBlendFunc (GL_ONE, GL_ZERO);
 for (nPass = 0; nLights; nPass++) {
@@ -1048,10 +1132,10 @@ for (nPass = 0; nLights; nPass++) {
 		int i;
 		for (i = 0; i < pm->nSubModels; i++)
 			if (pm->pSubModels [i].nParent == -1) 
-				G3DrawSubModel (objP, nModel, i, -1, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : NULL, bHires, bUseVBO, nPass);
+				G3DrawSubModel (objP, nModel, i, -1, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : NULL, bHires, bUseVBO, nPass, bTransparency);
 		}
 	else
-		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : vOffset, bHires, bUseVBO, nPass);
+		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : vOffset, bHires, bUseVBO, nPass, bTransparency);
 	G3DoneInstance ();
 	if (!bLighting)
 		break;
@@ -1200,7 +1284,9 @@ else
 		}
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
 	}
-G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO);
+G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 0);
+if (bHires && pm->bHasTransparency)
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 1);
 glDisable (GL_TEXTURE_2D);
 glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
 glBindBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);

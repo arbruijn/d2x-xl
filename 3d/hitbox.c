@@ -44,7 +44,7 @@ extern tFaceColor tMapColor;
 //------------------------------------------------------------------------------
 
 //walks through all submodels of a polymodel and determines the coordinate extremes
-int G3GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
+int GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
 {
 	ubyte			*p = modelP;
 	int			i, n, nVerts;
@@ -111,12 +111,12 @@ for (;;)
 		case OP_SORTNORM:
 			*phb = hb;
 			if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) {		//facing
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), phb, nSubModels);
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), phb, nSubModels);
+				nSubModels = GetPolyModelMinMax (p + WORDVAL (p+30), phb, nSubModels);
+				nSubModels = GetPolyModelMinMax (p + WORDVAL (p+28), phb, nSubModels);
 				}
 			else {
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+28), phb, nSubModels);
-				nSubModels = G3GetPolyModelMinMax (p + WORDVAL (p+30), phb, nSubModels);
+				nSubModels = GetPolyModelMinMax (p + WORDVAL (p+28), phb, nSubModels);
+				nSubModels = GetPolyModelMinMax (p + WORDVAL (p+30), phb, nSubModels);
 				}
 			hb = *phb;
 			p += 32;
@@ -133,7 +133,7 @@ for (;;)
 #else
 			pvOffs [nSubModels] = *VECPTR (p+4);
 #endif
-			nSubModels += G3GetPolyModelMinMax (p + WORDVAL (p+16), phb + nSubModels, 0);
+			nSubModels += GetPolyModelMinMax (p + WORDVAL (p+16), phb + nSubModels, 0);
 			p += 20;
 			break;
 
@@ -315,12 +315,13 @@ fix G3PolyModelSize (tPolyModel *pm, int nModel)
 	vmsVector	hv;
 	double		dx, dy, dz;
 
-for (i = 0; i <= MAX_SUBMODELS; i++) {
+for (i = 0; i <= MAX_HITBOXES; i++) {
 	phb [i].vMin.p.x = phb [i].vMin.p.y = phb [i].vMin.p.z = 0x7fffffff;
 	phb [i].vMax.p.x = phb [i].vMax.p.y = phb [i].vMax.p.z = -0x7fffffff;
 	phb [i].vOffset.p.x = phb [i].vOffset.p.y = phb [i].vOffset.p.z = 0;
 	}
-nSubModels = G3GetPolyModelMinMax ((void *) pm->modelData, phb + 1, 0) + 1;
+if (!(nSubModels = G3ModelMinMax (nModel, phb + 1)))
+	nSubModels = GetPolyModelMinMax ((void *) pm->modelData, phb + 1, 0) + 1;
 for (i = 1; i <= nSubModels; i++) {
 	dx = (phb [i].vMax.p.x - phb [i].vMin.p.x) / 2;
 	dy = (phb [i].vMax.p.y - phb [i].vMin.p.y) / 2;

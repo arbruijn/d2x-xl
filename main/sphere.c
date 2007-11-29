@@ -592,7 +592,8 @@ if (gameData.render.shield.nFaces > 0)
 		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
 	else {
 		tOOF_vector	p;
-		float	fScale, r = f2fl (objP->size) * 1.05f;
+		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
+		float	fScale, r = f2fl (nSize) * 1.05f;
 		gameStates.ogl.bUseTransform = 1;
 		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 		RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos),
@@ -600,7 +601,7 @@ if (gameData.render.shield.nFaces > 0)
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
-		RenderObjectHalo (objP, 3 * objP->size / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
+		RenderObjectHalo (objP, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		}
 	}
 }
