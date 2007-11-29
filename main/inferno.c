@@ -557,6 +557,7 @@ exit (0);
 #	define	DATADIR			"Data"
 #	define	SHADERDIR		"Shaders"
 #	define	MODELDIR			"Models"
+#	define	ROBOTDIR			"Models/Robots"
 #	define	SOUNDDIR1		"Sounds1"
 #	define	SOUNDDIR2		"Sounds2"
 #	define	CONFIGDIR		"Config"
@@ -572,6 +573,7 @@ exit (0);
 #	define	DATADIR			"data"
 #	define	SHADERDIR		"shaders"
 #	define	MODELDIR			"models"
+#	define	ROBOTDIR			"models/robots"
 #	define	SOUNDDIR1		"sounds1"
 #	define	SOUNDDIR2		"sounds2"
 #	define	CONFIGDIR		"config"
@@ -662,7 +664,8 @@ else
 	strcpy (szDataRootDir, gameFolders.szDataDir);
 /*---*/LogErr ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/LogErr ("expected game data folder = '%s'\n", gameFolders.szDataDir);
-GetAppFolder (szDataRootDir, gameFolders.szModelDir, MODELDIR, "*.oof");
+GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
+GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.oof");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
@@ -2978,61 +2981,147 @@ typedef struct tOOFToModel {
 	char	*pszOOF;
 	char	*pszPOL;
 	short	nModel;
+	short	nType;
 } tOOFToModel;
 
 static tOOFToModel oofToModel [] = {
-	{"pyrogl.oof", NULL, 108}, 
-	{NULL, NULL, 110}, 	//negative means this is an additional model number to be used with an existing oof
-	{"concussion.oof", NULL, 127}, 
-	{NULL, NULL, 137}, 
-	{"homer.oof", NULL, 133}, 
-	{NULL, NULL, 136}, 
-	{"smartmsl.oof", NULL, 134}, 
-	{NULL, NULL, 162}, 
-	{"mega.oof", NULL, 135}, 
-	{NULL, NULL, 142}, 
-	{"flashmsl.oof", NULL, 151}, 
-	{NULL, NULL, 158}, 
-	{NULL, NULL, 165}, 
-	{"guided.oof", NULL, 152}, 
-	{"mercury.oof", NULL, 153}, 
-	{NULL, NULL, 161}, 
-	{"eshaker.oof", NULL, 154}, 
-	{NULL, NULL, 163}, 
-	{"shakrsub.oof", NULL, 160},
-	{"pminepack.oof", "pminpack.pol", MAX_POLYGON_MODELS - 1},
-	{"proxmine.oof", "proxmine.pol", MAX_POLYGON_MODELS - 2},
-	{"sminepack.oof", "sminpack.pol", MAX_POLYGON_MODELS - 3},
-	{"smartmine.oof", "smrtmine.pol", MAX_POLYGON_MODELS - 4},
-	{"concussion4.oof", "concpack.pol", MAX_POLYGON_MODELS - 5},
-	{"homer4.oof", "homrpack.pol", MAX_POLYGON_MODELS - 6},
-	{"flash4.oof", "flshpack.pol", MAX_POLYGON_MODELS - 7},
-	{"guided4.oof", "guidpack.pol", MAX_POLYGON_MODELS - 8},
-	{"mercury4.oof", "mercpack.pol", MAX_POLYGON_MODELS - 9},
-	{"laser.oof", NULL, MAX_POLYGON_MODELS - 10},
-	{"vulcan.oof", NULL, MAX_POLYGON_MODELS - 11},
-	{"spreadfire.oof", NULL, MAX_POLYGON_MODELS - 12},
-	{"plasma.oof", NULL, MAX_POLYGON_MODELS - 13},
-	{"fusion.oof", NULL, MAX_POLYGON_MODELS - 14},
-	{"superlaser.oof", NULL, MAX_POLYGON_MODELS - 15},
-	{"gauss.oof", NULL, MAX_POLYGON_MODELS - 16},
-	{"helix.oof", NULL, MAX_POLYGON_MODELS - 17},
-	{"phoenix.oof", NULL, MAX_POLYGON_MODELS - 18},
-	{"omega.oof", NULL, MAX_POLYGON_MODELS - 19},
-	{"quadlaser.oof", NULL, MAX_POLYGON_MODELS - 20},
-	{"afterburner.oof", NULL, MAX_POLYGON_MODELS - 21},
-	{"headlight.oof", NULL, MAX_POLYGON_MODELS - 22},
-	{"ammorack.oof", NULL, MAX_POLYGON_MODELS - 23},
-	{"converter.oof", NULL, MAX_POLYGON_MODELS - 24},
-	{"fullmap.oof", NULL, MAX_POLYGON_MODELS - 25},
-	{"cloak.oof", NULL, MAX_POLYGON_MODELS - 26},
-	{"invul.oof", NULL, MAX_POLYGON_MODELS - 27},
-	{"extralife.oof", NULL, MAX_POLYGON_MODELS - 28},
-	{"bluekey.oof", NULL, MAX_POLYGON_MODELS - 29},
-	{"redkey.oof", NULL, MAX_POLYGON_MODELS - 30},
-	{"goldkey.oof", NULL, MAX_POLYGON_MODELS - 31},
-	{"vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32},
-	{"hostage.oof", NULL, HOSTAGE_MODEL}
+	// player ship
+	{"pyrogl.oof", NULL, 108, 0}, 
+	{NULL, NULL, 110, 0}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
+#ifdef _DEBUG	//D3 robots for testing
+	{"thresherboss.oof", NULL, 39, 1}, 
+	{"orbot.oof", NULL, 58, 1}, 
+	{"thresh.oof", NULL, 60, 1}, 
+	{"squid.oof", NULL, 68, 1}, 
+	{"pumpingpipesmall.oof", NULL, 56, 1}, 
+#endif
+	// robots
+	{"smallhulk.oof", NULL, 0, 1}, 
+	{"mediumlifter.oof", NULL, 2, 1}, 
+	{"spider.oof", NULL, 4, 1}, 
+	{"class1drone.oof", NULL, 6, 1}, 
+	{"class2drone.oof", NULL, 8, 1}, 
+	{"class1driller-cloaked.oof", NULL, 10, 1}, 
+	{"class2supervisor.oof", NULL, 14, 1}, 
+	{"secondarylifter.oof", NULL, 15, 1}, 
+	{"class1heavydriller.oof", NULL, 17, 1}, 
+	{"class3gopher.oof", NULL, 19, 1}, 
+	{"class1platform.oof", NULL, 20, 1}, 
+	{"class2platform.oof", NULL, 21, 1}, 
+	{"smallspider.oof", NULL, 23, 1}, 
+	{"fusionhulk.oof", NULL, 25, 1}, 
+	{"superhulk.oof", NULL, 26, 1}, 
+	{"d1boss1.oof", NULL, 28, 1}, 
+	{NULL, NULL, 50, 1}, 
+	{"cloakedlifter.oof", NULL, 29, 1}, 
+	{"class1driller.oof", NULL, 31, 1}, 
+	{"mediumhulk.oof", NULL, 33, 1}, 
+	{"advancedlifter.oof", NULL, 35, 1}, 
+	{"ptmcdefense.oof", NULL, 37, 1}, 
+	{"d1boss2.oof", NULL, 39, 1}, 
+	{"bper.oof", NULL, 40, 1}, 
+	{"smelter.oof", NULL, 41, 1}, 
+	{"icespider.oof", NULL, 43, 1}, 
+	{"bulkdestroyer.oof", NULL, 44, 1}, 
+	{"trnracer.oof", NULL, 45, 1}, 
+	{"foxattackbot.oof", NULL, 46, 1}, 
+	{"sidarm.oof", NULL, 47, 1}, 
+	{"redfattyboss.oof", NULL, 49, 1}, 
+	{"guidebot.oof", NULL, 51, 1}, 
+	{"eviltwin.oof", NULL, 54, 1}, 
+	{"itsc.oof", NULL, 55, 1}, 
+	{"itdroid.oof", NULL, 56, 1}, 
+	{"pest.oof", NULL, 58, 1}, 
+	{"pig.oof", NULL, 60, 1}, 
+	{"d-claw.oof", NULL, 62, 1}, 
+	{"redhornet.oof", NULL, 64, 1}, 
+	{"thief.oof", NULL, 65, 1}, 
+	{"seeker.oof", NULL, 67, 1}, 
+	{"e-bandit.oof", NULL, 68, 1}, 
+	{"fireboss.oof", NULL, 69, 1}, 
+	{"waterboss.oof", NULL, 70, 1}, 
+	{"boarshead.oof", NULL, 71, 1}, 
+	{"greenspider.oof", NULL, 72, 1}, 
+	{"omega.oof", NULL, 73, 1}, 
+	{"louguard.oof", NULL, 75, 1}, 
+	{"alienboss1.oof", NULL, 76, 1}, 
+	{"redfattyjunior.oof", NULL, 77, 1}, 
+	{"d-claw-cloaked.oof", NULL, 78, 1}, 
+	{NULL, NULL, 79, 1}, 
+	{"smelter-cloaked.oof", NULL, 80, 1}, 
+	{"smelterclone-cloaked.oof", NULL, 81, 1}, 
+	{"smelterclone.oof", NULL, 83, 1}, 
+	{"omegaclone.oof", NULL, 85, 1}, 
+	{"bperclone.oof", NULL, 86, 1}, 
+	{"spiderclone.oof", NULL, 87, 1}, 
+	{"spiderspawn.oof", NULL, 88, 1}, 
+	{"iceboss.oof", NULL, 89, 1}, 
+	{"spiderspawnclone.oof", NULL, 90, 1}, 
+	{"alienboss2.oof", NULL, 91, 1}, 
+	// Vertigo robots
+	{"compactlifter.oof", NULL, 166, 0}, 
+	{"fervid99.oof", NULL, 167, 0}, 
+	{"fiddler.oof", NULL, 168, 0}, 
+	{"class2heavydriller.oof", NULL, 169, 0}, 
+	{"smelter2.oof", NULL, 170, 0}, 
+	{"max.oof", NULL, 171, 0}, 
+	{"sniperng.oof", NULL, 172, 0}, 
+	{"logikill.oof", NULL, 173, 0}, 
+	{"canary.oof", NULL, 174, 0}, 
+	{"vertigoboss.oof", NULL, 175, 0}, 
+	{"redguard.oof", NULL, 176, 0}, 
+	{"spike.oof", NULL, 177, 0}, 
+	// powerups/missiles
+	{"concussion.oof", NULL, 127, 0}, 
+	{NULL, NULL, 137, 0}, 
+	{"homer.oof", NULL, 133, 0}, 
+	{NULL, NULL, 136, 0}, 
+	{"smartmsl.oof", NULL, 134, 0}, 
+	{NULL, NULL, 162, 0}, 
+	{"mega.oof", NULL, 135, 0}, 
+	{NULL, NULL, 142, 0}, 
+	{"flashmsl.oof", NULL, 151, 0}, 
+	{NULL, NULL, 158, 0}, 
+	{NULL, NULL, 165, 0}, 
+	{"guided.oof", NULL, 152, 0}, 
+	{"mercury.oof", NULL, 153, 0}, 
+	{NULL, NULL, 161, 0}, 
+	{"eshaker.oof", NULL, 154, 0}, 
+	{NULL, NULL, 163, 0}, 
+	{"shakrsub.oof", NULL, 160, 0},
+	{"pminepack.oof", "pminpack.pol", MAX_POLYGON_MODELS - 1, 0},
+	{"proxmine.oof", "proxmine.pol", MAX_POLYGON_MODELS - 2, 0},
+	{"sminepack.oof", "sminpack.pol", MAX_POLYGON_MODELS - 3, 0},
+	{"smartmine.oof", "smrtmine.pol", MAX_POLYGON_MODELS - 4, 0},
+	{"concussion4.oof", "concpack.pol", MAX_POLYGON_MODELS - 5, 0},
+	{"homer4.oof", "homrpack.pol", MAX_POLYGON_MODELS - 6, 0},
+	{"flash4.oof", "flshpack.pol", MAX_POLYGON_MODELS - 7, 0},
+	{"guided4.oof", "guidpack.pol", MAX_POLYGON_MODELS - 8, 0},
+	{"mercury4.oof", "mercpack.pol", MAX_POLYGON_MODELS - 9, 0},
+	{"laser.oof", NULL, MAX_POLYGON_MODELS - 10, 0},
+	{"vulcan.oof", NULL, MAX_POLYGON_MODELS - 11, 0},
+	{"spreadfire.oof", NULL, MAX_POLYGON_MODELS - 12, 0},
+	{"plasma.oof", NULL, MAX_POLYGON_MODELS - 13, 0},
+	{"fusion.oof", NULL, MAX_POLYGON_MODELS - 14, 0},
+	{"superlaser.oof", NULL, MAX_POLYGON_MODELS - 15, 0},
+	{"gauss.oof", NULL, MAX_POLYGON_MODELS - 16, 0},
+	{"helix.oof", NULL, MAX_POLYGON_MODELS - 17, 0},
+	{"phoenix.oof", NULL, MAX_POLYGON_MODELS - 18, 0},
+	{"omega.oof", NULL, MAX_POLYGON_MODELS - 19, 0},
+	{"quadlaser.oof", NULL, MAX_POLYGON_MODELS - 20, 0},
+	{"afterburner.oof", NULL, MAX_POLYGON_MODELS - 21, 0},
+	{"headlight.oof", NULL, MAX_POLYGON_MODELS - 22, 0},
+	{"ammorack.oof", NULL, MAX_POLYGON_MODELS - 23, 0},
+	{"converter.oof", NULL, MAX_POLYGON_MODELS - 24, 0},
+	{"fullmap.oof", NULL, MAX_POLYGON_MODELS - 25, 0},
+	{"cloak.oof", NULL, MAX_POLYGON_MODELS - 26, 0},
+	{"invul.oof", NULL, MAX_POLYGON_MODELS - 27, 0},
+	{"extralife.oof", NULL, MAX_POLYGON_MODELS - 28, 0},
+	{"bluekey.oof", NULL, MAX_POLYGON_MODELS - 29, 0},
+	{"redkey.oof", NULL, MAX_POLYGON_MODELS - 30, 0},
+	{"goldkey.oof", NULL, MAX_POLYGON_MODELS - 31, 0},
+	{"vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32, 0},
+	{"hostage.oof", NULL, HOSTAGE_MODEL, 0}
 	};
 
 void InitModelToOOF (void)
@@ -3048,8 +3137,12 @@ short LoadLoresModel (short i)
 	CFILE			*fp;
 	tPolyModel	*pm;
 	short			nModel, j = sizeofa (oofToModel);
+	char			szModel [FILENAME_LEN];
 
-if (!(oofToModel [i].pszPOL && (fp = CFOpen (oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0))))
+sprintf (szModel, "model%d.pol", oofToModel [i].nModel);
+if (!(oofToModel [i].pszPOL && 
+	  ((fp = CFOpen (oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0)) ||
+	   (fp = CFOpen (szModel, gameFolders.szDataDir, "rb", 0)))))
 	return ++i;
 if (!PolyModelRead (pm = gameData.models.polyModels + (nModel = oofToModel [i].nModel), fp, 1)) {
 	CFClose (fp);
@@ -3072,12 +3165,18 @@ return i;
 short LoadHiresModel (tOOFObject *po, short i)
 {
 	short	j = sizeofa (oofToModel);
+	char	szModel [FILENAME_LEN];
 
+sprintf (szModel, "model%d.oof", oofToModel [i].nModel);
+#ifdef _DEBUG
+if (oofToModel [i].pszOOF && !strcmp (oofToModel [i].pszOOF, "squid.oof"))
+	j = j;
+#endif
 #if OOF_TEST_CUBE
 if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
 	oofToModel [i].pszOOF = "cube.oof";
 #endif
-if (!(oofToModel [i].pszOOF && OOF_ReadFile (oofToModel [i].pszOOF, po)))
+if (!(oofToModel [i].pszOOF && (OOF_ReadFile (oofToModel [i].pszOOF, po, oofToModel [i].nType) || OOF_ReadFile (szModel, po, oofToModel [i].nType))))
 	return LoadLoresModel (i);
 do {
 	CBP (!oofToModel [i].nModel);

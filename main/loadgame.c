@@ -1206,7 +1206,8 @@ if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages_on_board == LOCALPL
 	}
 else
 	all_hostage_points = 0;
-if (!gameStates.app.cheats.bEnabled && !(gameData.app.nGameMode & GM_MULTI) && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
+if (!gameStates.app.cheats.bEnabled && !IsMultiGame && LOCALPLAYER.lives && 
+	 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
 	endgame_points = LOCALPLAYER.lives * 10000;
 	sprintf (endgame_text, "%s%i\n", TXT_SHIP_BONUS, endgame_points);
 	is_lastLevel=1;

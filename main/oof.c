@@ -669,13 +669,13 @@ OOF_ReadFrameInfo (fp, po, &a.frameInfo, bTimed);
 if (!(a.pFrames = (tOOF_rotFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_rotFrame))))
 	return 0;
 if (bTimed &&
-	 (a.nTicks = a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) &&
+	 (a.nTicks = abs (a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) + 1) &&
 	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
 	return OOF_FreeRotAnim (&a);
 if (a.nTicks)
-for (i = 0; i < a.frameInfo.nFrames; i++)
-	if (!OOF_ReadRotFrame (fp, a.pFrames + i, bTimed))
-		return OOF_FreeRotAnim (&a);
+	for (i = 0; i < a.frameInfo.nFrames; i++)
+		if (!OOF_ReadRotFrame (fp, a.pFrames + i, bTimed))
+			return OOF_FreeRotAnim (&a);
 *pa = a;
 return 1;
 }
@@ -1365,7 +1365,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTGA (char *pszFile, grsBitmap *bmP)
+int OOF_ReadTGA (char *pszFile, grsBitmap *bmP, short nType)
 {
 	char			fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
@@ -1381,7 +1381,7 @@ if (nShrinkFactor > 1) {
 		return 1;
 		}
 	}
-if (!ReadTGA (pszFile, gameFolders.szModelDir, bmP, -1, 1.0, 0, 0))
+if (!ReadTGA (pszFile, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
 	return 0;
 UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
 if ((nShrinkFactor > 1) && (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
@@ -1390,7 +1390,7 @@ if ((nShrinkFactor > 1) && (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFac
 		CFILE			*fp;
 
 		strcat (fn, ".tga");
-		if (!(fp = CFOpen (fn, gameFolders.szModelDir, "rb", 0)))
+		if (!(fp = CFOpen (fn, gameFolders.szModelDir [nType], "rb", 0)))
 			return 1;
 		if (ReadTGAHeader (fp, &h, NULL))
 			SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
@@ -1410,7 +1410,7 @@ int OOF_ReloadTextures (void)
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
 	if (po->textures.pszNames && po->textures.pBitmaps)
 		for (j = 0; j < po->textures.nTextures; j++)
-			if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j))
+			if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType))
 				OOF_FreeObject (po);
 return 1;
 }
@@ -1435,11 +1435,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTextures (CFILE *fp, tOOFObject *po)
+int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType)
 {
 	tOOFObject	o = *po;
 	int			i;
 	char			szId [30];
+#ifdef _DEBUG
+	int			bOk = 1;
+#endif
 
 nIndent += 2;
 OOF_PrintLog ("reading textures\n");
@@ -1474,11 +1477,21 @@ if (!i)
 o.textures.pszNames [i] = D2_ALLOC (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
-	if (!OOF_ReadTGA (o.textures.pszNames [i], o.textures.pBitmaps + i)) {
+	if (!OOF_ReadTGA (o.textures.pszNames [i], o.textures.pBitmaps + i, nType)) {
+#ifdef _DEBUG
+		bOk = 0;
+#else
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
+#endif
 		}
 	}
+#ifdef _DEBUG
+if (!bOk) {
+	nIndent -= 2;
+	return OOF_FreeTextures (&o);
+	}
+#endif
 *po = o;
 return 1;
 }
@@ -1760,7 +1773,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po)
+int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType)
 {
 	CFILE				*fp;
 	char				fileId [4];
@@ -1769,8 +1782,8 @@ int OOF_ReadFile (char *pszFile, tOOFObject *po)
 
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
-OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir, pszFile);
-if (!(fp = CFOpen (pszFile, gameFolders.szModelDir, "rb", 0))) {
+OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [nType], pszFile);
+if (!(fp = CFOpen (pszFile, gameFolders.szModelDir [nType], "rb", 0))) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
@@ -1795,7 +1808,7 @@ if (o.nVersion >= 22) {
 	o.frameInfo.nFirstFrame = 0;
 	o.frameInfo.nLastFrame = 0;
 	}
-
+o.nType = nType;
 
 while (!CFEoF (fp)) {
 	char chunkId [4];
@@ -1808,7 +1821,7 @@ while (!CFEoF (fp)) {
 	nLength = OOF_ReadInt (fp, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!OOF_ReadTextures (fp, &o))
+			if (!OOF_ReadTextures (fp, &o, nType))
 				return OOF_FreeObject (&o);
 			break;
 
@@ -1855,7 +1868,7 @@ while (!CFEoF (fp)) {
 				o.frameInfo.nFrames = OOF_ReadInt (fp, "nFrames");
 			for (i = 0; i < o.nSubObjects; i++)
 				if (!OOF_ReadRotAnim (fp, &o, &o.pSubObjects [i].rotAnim, bTimed))
-				return OOF_FreeObject (&o);
+					return OOF_FreeObject (&o);
 			if (o.frameInfo.nFrames < nFrames)
 				o.frameInfo.nFrames = nFrames;
 			break;
