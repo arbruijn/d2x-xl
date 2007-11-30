@@ -674,6 +674,8 @@ if (fp->file) {
 	result = fclose (fp->file);
 	fp->file = NULL;
 	}
+else
+	result = 0;
 D2_FREE (fp);
 return result;
 }

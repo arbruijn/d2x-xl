@@ -35,7 +35,9 @@ tRenderItemThreadInfo tiRenderItems;
 int RunRenderThreads (int nTask)
 {
 	time_t	t1 = 0, t2 = 0;
+#ifdef _DEBUG
 	static	int nLockups = 0;
+#endif
 
 if (!gameStates.app.bMultiThreaded)
 	return 0;

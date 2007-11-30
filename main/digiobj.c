@@ -117,7 +117,7 @@ int DigiUnXlatSound (int nSound)
 
 if (nSound < 0) 
 	return -1;
-for (i = 0;i < MAX_SOUNDS; i++)
+for (i = 0; i < MAX_SOUNDS; i++)
 	if (table [i] == nSound)
 		return i;
 Int3 ();
@@ -392,7 +392,7 @@ int DigiLinkSoundToObject3 (
 	tObject			*objP;
 	tSoundObject 	*soP;
 	int				i, volume, pan;
-	short				nSound;
+	short				nSound = 0;
 
 if (maxVolume < 0) 
 	return -1;

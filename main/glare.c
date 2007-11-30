@@ -204,7 +204,7 @@ if (!pSideVerts) {
 	GetSideVertIndex (sideVerts, nSegment, nSide);
 	pSideVerts = sideVerts;
 	}
-for (j = 0; j < 4; j++) {
+for (i = j = 0; j < 4; j++) {
 	d = VmVecDist (gameData.segs.vertices + pSideVerts [j], gameData.segs.vertices + pSideVerts [(j + 1) % 4]);
 	if (dMax < d) {
 		dMax = d;

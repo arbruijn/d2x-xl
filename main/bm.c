@@ -293,6 +293,8 @@ else
 
 #if 0
 
+static int	nTMaps [2] = {0,0};
+
 #define LINEBUF_SIZE 600
 
 #define REMOVE_EOL (s)		remove_char ((s),'\n')
@@ -526,8 +528,6 @@ wiP->picture.index = CFReadShort (fp);
 #define POLYMODEL_SIZE				734
 #define PLAYER_SHIP_SIZE			132
 #define MODEL_DATA_SIZE_OFFS		4
-
-static int	nTMaps [2] = {0,0};
 
 void BMReadGameDataD1 (CFILE * fp)
 {
