@@ -15,6 +15,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
+#ifndef _WIN32
+#	include <unistd.h>
+#endif
 
 #include "inferno.h"
 #include "error.h"

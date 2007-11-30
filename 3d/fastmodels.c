@@ -258,7 +258,7 @@ pvn = pm->pVertNorms + pm->iFaceVert;
 if (psm->nIndex < 0)
 	psm->nIndex = pm->iFaceVert;
 pmf->nVerts = nVerts;
-if (pmf->bGlow = (nGlow >= 0))
+if ((pmf->bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
 VmsVecToFloat3 (&n, pn);
@@ -425,7 +425,7 @@ if (left < r)
 //------------------------------------------------------------------------------
 
 #define	G3_ALLOC(_buf,_count,_type,_fill) \
-			if ((_buf) = (_type *) D2_ALLOC (_count * sizeof (_type))) \
+			if (((_buf) = (_type *) D2_ALLOC (_count * sizeof (_type)))) \
 				memset (_buf, (char) _fill, _count * sizeof (_type)); \
 			else \
 				return G3FreeModelItems (pm);
@@ -458,9 +458,9 @@ G3_ALLOC (pm->pColor, pm->nVerts, tFaceColor, 0xff);
 if (gameStates.ogl.bHaveVBOs) {
 	int i;
 	glGenBuffers (1, &pm->vboDataHandle);
-	if (i = glGetError ()) {
+	if ((i = glGetError ())) {
 		glGenBuffers (1, &pm->vboDataHandle);
-		if (i = glGetError ()) {
+		if ((i = glGetError ())) {
 #	ifdef _DEBUG
 			HUDMessage (0, "glGenBuffers failed (%d)", i);
 #	endif
@@ -469,7 +469,7 @@ if (gameStates.ogl.bHaveVBOs) {
 			}
 		}
 	glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
-	if (i = glGetError ()) {
+	if ((i = glGetError ())) {
 #	ifdef _DEBUG
 		HUDMessage (0, "glBindBuffer failed (%d)", i);
 #	endif
@@ -1073,9 +1073,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	int				nPass, iLightSource = 0, iLight, nLights;
 	int				bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int				bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive);
-	tRgbaColorf		color = {1,1,1,1};
 	GLenum			hLight;
-//	char				szLightSources [200] = {'\0'};
 
 if (bLighting) {
 	nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
@@ -1156,7 +1154,6 @@ void G3RenderDamageLightnings (tObject *objP, short nModel, short nSubModel,
 	tG3Model			*pm;
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
-	grsBitmap		*bmP = NULL;
 	vmsAngVec		*va;
 	vmsVector		vo;
 	int				i, j;
@@ -1244,9 +1241,9 @@ if (!(gameStates.render.bCloaked ?
 if (bUseVBO) {
 	int i;
 	glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
-	if (i = glGetError ()) {
+	if ((i = glGetError ())) {
 		glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
-		if (i = glGetError ())
+		if ((i = glGetError ()))
 			return 0;
 		}
 	}

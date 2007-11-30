@@ -14,8 +14,8 @@
 #	include <windows.h>
 #	include <stddef.h>
 #	include <io.h>
-#	include <math.h>
 #endif
+#include <math.h>
 
 #include "inferno.h"
 #include "maths.h"
@@ -48,8 +48,6 @@ tFaceColor vertColors [8] = {
 	};
 tRgbaColorf shadowColor [2] = {{1.0f, 0.0f, 0.0f, 0.25f}, {0.0f, 0.0f, 1.0f, 0.25f}};
 tRgbaColorf modelColor [2] = {{0.0f, 0.5f, 1.0f, 0.5f}, {0.0f, 1.0f, 0.5f, 0.5f}};
-
-static Uint16 gammaRamp [512];
 
 //------------------------------------------------------------------------------
 
@@ -487,7 +485,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 #if VECMAT_CALLS
 	VmVecNormalizef (&lightDir, &lightDir);
 #else
-	if (fMag = VmVecMagf (&lightDir)) {
+	if ((fMag = VmVecMagf (&lightDir))) {
 		lightDir.p.x /= fMag;
 		lightDir.p.y /= fMag;
 		lightDir.p.z /= fMag;
@@ -554,7 +552,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 		VmVecNegatef (&lightPos);	//create vector from light to eye
 		VmVecNormalizef (&lightPos, &lightPos);
 #else
-		if (fMag = -VmVecMagf (&lightPos)) {
+		if ((fMag = -VmVecMagf (&lightPos))) {
 			lightPos.p.x /= fMag;
 			lightPos.p.y /= fMag;
 			lightPos.p.z /= fMag;
@@ -569,7 +567,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 #if VECMAT_CALLS
 		VmVecNormalizef (&vReflect, &vReflect);
 #else
-		if (fMag = VmVecMagf (&vReflect)) {
+		if ((fMag = VmVecMagf (&vReflect))) {
 			vReflect.p.x /= fMag;
 			vReflect.p.y /= fMag;
 			vReflect.p.z /= fMag;
@@ -754,7 +752,7 @@ else {
 	else 
 		G3RotatePointf (&vcd.vertNorm, pvVertNorm, 0);
 	}
-if (bVertexLights = !(gameStates.render.nState || pVertColor)) {
+if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	VmsVecToFloat (&vertPos, gameData.segs.vertices + nVertex);
 	pVertPos = &vertPos;
 	SetNearestVertexLights (nVertex, 1, 0, 1, nThread);

@@ -500,6 +500,7 @@ int FindNextItemUp (kcItem * items, int nItems, int cItem, tKCItemPos *pos, int 
 {
 	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
+h = 0;
 i = j = ref [cItem];
 l = pos [i].l;
 r = pos [i].r;
@@ -542,6 +543,7 @@ int FindNextItemDown (kcItem * items, int nItems, int cItem, tKCItemPos *pos, in
 {
 	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
+h = 0;
 i = j = ref [cItem];
 l = pos [i].l;
 r = pos [i].r;
@@ -1095,7 +1097,7 @@ void LinkKbdEntries (void)
 	tKCItemPos	*pos = GetItemPos (kcKeyboard, NUM_KEY_CONTROLS);
 
 if (pos) {
-	if (ref = GetItemRef (kcKeyboard, NUM_KEY_CONTROLS, pos)) {
+	if ((ref = GetItemRef (kcKeyboard, NUM_KEY_CONTROLS, pos))) {
 		for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++) {
 			kcKeyboard [i].u = FindNextItemUp (kcKeyboard, j, i, pos, ref);
 			kcKeyboard [i].d = FindNextItemDown (kcKeyboard, j, i, pos, ref);
@@ -1116,7 +1118,7 @@ void LinkJoyEntries (void)
 	tKCItemPos	*pos = GetItemPos (kcJoystick, NUM_JOY_CONTROLS);
 
 if (pos) {
-	if (ref = GetItemRef (kcJoystick, NUM_JOY_CONTROLS, pos)) {
+	if ((ref = GetItemRef (kcJoystick, NUM_JOY_CONTROLS, pos))) {
 		for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++) {
 			kcJoystick [i].u = FindNextItemUp (kcJoystick, j, i, pos, ref);
 			kcJoystick [i].d = FindNextItemDown (kcJoystick, j, i, pos, ref);
@@ -1137,7 +1139,7 @@ void LinkMouseEntries (void)
 	tKCItemPos	*pos = GetItemPos (kcMouse, NUM_MOUSE_CONTROLS);
 
 if (pos) {
-	if (ref = GetItemRef (kcMouse, NUM_MOUSE_CONTROLS, pos)) {
+	if ((ref = GetItemRef (kcMouse, NUM_MOUSE_CONTROLS, pos))) {
 		for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)	{
 			kcMouse [i].u = FindNextItemUp (kcMouse, j, i, pos, ref);
 			kcMouse [i].d = FindNextItemDown (kcMouse, j, i, pos, ref);
@@ -1158,7 +1160,7 @@ void LinkHotkeyEntries (void)
 	tKCItemPos	*pos = GetItemPos (kcHotkeys, NUM_HOTKEY_CONTROLS);
 
 if (pos) {
-	if (ref = GetItemRef (kcHotkeys, NUM_HOTKEY_CONTROLS, pos)) {
+	if ((ref = GetItemRef (kcHotkeys, NUM_HOTKEY_CONTROLS, pos))) {
 		for (i = 0, j = NUM_HOTKEY_CONTROLS; i < j; i++)	{
 			kcHotkeys [i].u = FindNextItemUp (kcHotkeys, j, i, pos, ref);
 			kcHotkeys [i].d = FindNextItemDown (kcHotkeys, j, i, pos, ref);

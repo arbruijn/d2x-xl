@@ -1366,7 +1366,7 @@ void NMSetItemPos (tMenuItem *item, int nItems, int twidth, int xOffs, int yOffs
 	int	i, j;
 
 for (i = 0; i < nItems; i++)	{
-	if (gameOpts->menus.nStyle && (item [i].x == (short) 0x8000) || item [i].centered) {
+	if (gameOpts->menus.nStyle && ((item [i].x == (short) 0x8000) || item [i].centered)) {
 		item [i].centered = 1;
 		item [i].x = GetCenteredX (item [i].text);
 		}

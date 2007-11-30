@@ -205,7 +205,7 @@ glDepthFunc (GL_LESS);
 
 void RenderPlayerShield (tObject *objP)
 {
-	int	bStencil, dt, i = objP->id, nColor = 0;
+	int	bStencil, dt = 0, i = objP->id, nColor = 0;
 	float	alpha, scale;
 
 	static tRgbaColorf shieldColors [3] = {{0, 0.5f, 1, 1}, {1, 0.5f, 0, 1}, {1, 0.8f, 0.6f, 1}};
@@ -351,7 +351,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	glColor4f (pc->red, pc->green, pc->blue, 2.0f / 3.0f);
 	glDisable (GL_TEXTURE_2D);
 #if 1
-	if (bDrawArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)) {
+	if ((bDrawArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0))) {
 		glVertexPointer (4, GL_FLOAT, 0, fVerts);
 		glDrawArrays (GL_QUADS, 0, 4);
 		}
@@ -587,7 +587,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [1].p.z =
 		fVerts [2].p.z =
 		fVerts [3].p.z = fPos.p.z;
-		if (bDrawArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0))
+		if ((bDrawArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
 			glDrawArrays (GL_LINE_STRIP, 0, 4);
 		else {
 			glBegin (GL_LINE_STRIP);
@@ -618,7 +618,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 		fVerts [0].p.z =
 		fVerts [1].p.z =
 		fVerts [2].p.z = fPos.p.z;
-		if (bDrawArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0))
+		if ((bDrawArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0)))
 			glDrawArrays (GL_LINE_LOOP, 0, 3);
 		else {
 			glBegin (GL_LINE_LOOP);
@@ -667,7 +667,7 @@ void RenderTowedFlag (tObject *objP)
 		{{0.0f, -(1.0f / 3.0f), 0.0f, 1.0f}}
 	};
 
-	static tTexCoord2f texCoordList [4] = {{0.0f, -0.3f}, {1.0f, -0.3f}, {1.0f, 0.7f}, {0.0f, 0.7f}};
+	static tTexCoord2f texCoordList [4] = {{{0.0f, -0.3f}}, {{1.0f, -0.3f}}, {{1.0f, 0.7f}}, {{0.0f, 0.7f}}};
 
 if (gameStates.app.bNostalgia)
 	return;
@@ -1207,7 +1207,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 		OglTexWrap (bmP->glTexture, GL_CLAMP);
 		if (bAdditive)
 			glBlendFunc (GL_ONE, GL_ONE);
-		if (bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
+		if ((bDrawArrays = G3EnableClientStates (1, 0, 0, GL_TEXTURE0))) {
 			glTexCoordPointer (2, GL_FLOAT, 0, tcCorona);
 			glVertexPointer (3, GL_FLOAT, sizeof (fVector), vCorona);
 			glDrawArrays (GL_QUADS, 0, 4);
@@ -1502,8 +1502,10 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
+#if 0
 static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
 												{{{0,0,0}},{{0,10,-5}},{{0,10,-50}},{{0,0,-50}}}};
+#endif
 
 void RenderLightTrail (tObject *objP)
 {

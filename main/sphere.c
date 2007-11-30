@@ -484,7 +484,7 @@ glCullFace (GL_BACK);
 int RenderSphere (tSphereData *sdP, tOOF_vector *pPos, float xScale, float yScale, float zScale,
 					   float red, float green, float blue, float alpha, grsBitmap *bmP, int nTiles)
 {
-	static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
+	//static float fTexCoord [4][2] = {{0,0},{1,0},{1,1},{0,1}};
 
 	float			fScale = 1.0f;
 	int			bTextured = 0;

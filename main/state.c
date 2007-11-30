@@ -38,6 +38,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #  include <GL/gl.h>
 #endif
 
+#ifndef _WIN32
+#	include <arpa/inet.h>
+#	include <netinet/in.h> /* for htons & co. */
+#endif
+
 #include "pstypes.h"
 #include "mono.h"
 #include "inferno.h"
@@ -1314,7 +1319,7 @@ CFWrite (&i, sizeof (int), 1, fp);
 //Save description
 CFWrite (szDesc, sizeof (char) * DESC_LENGTH, 1, fp);
 // Save the current screen shot...
-if (cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH)) {
+if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 		ubyte			*buf;
 		grsBitmap	bm;
 		int			k, x, y;

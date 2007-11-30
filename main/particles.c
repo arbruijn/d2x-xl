@@ -177,7 +177,9 @@ if (nFrames > 1) {
 
 	time_t		t = gameStates.app.nSDLTicks;
 	int			iFrame = iParticleFrames [bPointSprites][nType];
+#if 0
 	int			iFrameIncr = iPartFrameIncr [bPointSprites][nType];
+#endif
 	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort;
 	grsBitmap	*bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType == PARTICLE_TYPES - 1];
 
@@ -448,7 +450,7 @@ pParticle->nTTL = nLife;
 pParticle->nMoved = nCurTime;
 pParticle->nDelay = 0; //bStart ? randN (nLife) : 0;
 nRad += nType ? nRad : randN (nRad);
-if (pParticle->bBlowUp = bBlowUp) {
+if ((pParticle->bBlowUp = bBlowUp)) {
 	pParticle->nRad = nRad;
 	pParticle->nWidth =
 	pParticle->nHeight = nRad / 2;
@@ -618,7 +620,7 @@ else {
 #else
 		pParticle->nLife -= t;
 #endif
-		if (nRad = pParticle->nRad) {
+		if ((nRad = pParticle->nRad)) {
 			if (pParticle->bBlowUp) {
 				if (pParticle->nWidth >= nRad)
 					pParticle->nRad = 0;
@@ -1122,7 +1124,7 @@ pCloud->nLife = nLife;
 pCloud->nBirth = nCurTime;
 pCloud->nSpeed = nSpeed;
 pCloud->nType = nType;
-if (pCloud->bHaveColor = (pColor != NULL))
+if ((pCloud->bHaveColor = (pColor != NULL)))
 	pCloud->color = *pColor;
 if ((pCloud->bHaveDir = (pDir != NULL)))
 	pCloud->dir = *pDir;
@@ -1148,7 +1150,7 @@ pCloud->nClass = SmokeObjClass (nObject);
 pCloud->fPartsPerTick = (float) nMaxParts / (float) abs (nLife);
 pCloud->nTicks = 0;
 pCloud->nDefBrightness = 0;
-if (pCloud->bEmittingFace = (vEmittingFace != NULL))
+if ((pCloud->bEmittingFace = (vEmittingFace != NULL)))
 	memcpy (pCloud->vEmittingFace, vEmittingFace, sizeof (pCloud->vEmittingFace));
 pCloud->fBrightness = (nObject < 0) ? 0.5f : CloudBrightness (pCloud);
 return 1;
@@ -1895,7 +1897,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 	pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (j = pSmoke->nClouds)) {
 		for (pCloud = pSmoke->pClouds; j; j--, pCloud++) {
-			if (nParts = pCloud->nParts) {
+			if ((nParts = pCloud->nParts)) {
 				nFirstPart = pCloud->nFirstPart;
 				nPartLimit = pCloud->nPartLimit;
 				for (pParticle = pCloud->pParticles + nFirstPart; nParts; nParts--, nFirstPart++, pParticle++) {
@@ -1950,7 +1952,7 @@ for (i = gameData.smoke.iUsed; i >= 0; i = pSmoke->nNext) {
 		for (pCloud = pSmoke->pClouds; j; j--, pCloud++) {
 			if (!CloudMayBeVisible (pCloud))
 				continue;
-			if (nParts = pCloud->nParts) {
+			if ((nParts = pCloud->nParts)) {
 				fBrightness = (float) CloudBrightness (pCloud);
 				nFirstPart = pCloud->nFirstPart;
 				nPartLimit = pCloud->nPartLimit;
@@ -2019,7 +2021,7 @@ BeginRenderSmoke (-1, 1);
 for (pd = gameData.smoke.depthBuf.pDepthBuffer + PART_DEPTHBUFFER_SIZE - 1; 
 	  pd >= gameData.smoke.depthBuf.pDepthBuffer; 
 	  pd--) {
-		if (pl = *pd) {
+		if ((pl = *pd)) {
 		do {
 			RenderParticle (pl->pParticle, pl->fBrightness);
 			pn = pl->pNextPart;

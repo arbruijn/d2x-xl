@@ -202,7 +202,7 @@ return t;
 
 int OglTextureStats (void)
 {
-	int used=0,usedl4a4=0,usedrgba=0,databytes=0,truebytes=0,datatexel=0,truetexel=0,i;
+	int used=0,databytes=0,truebytes=0,datatexel=0,truetexel=0,i;
 	int prio0=0,prio1=0,prio2=0,prio3=0,prioh=0;
 //	int grabbed=0;
 	tOglTexture* t;
@@ -304,7 +304,7 @@ else
 #endif
 		}
 	OGL_BINDTEX (texP->handle);
-	if (bmMask = BM_MASK (bmP)) {
+	if ((bmMask = BM_MASK (bmP))) {
 		texP = bmMask->glTexture;
 		if (!(texP && (texP->handle > 0)))
 			OglLoadBmTexture (bmMask, 0, -1, 1);
@@ -482,7 +482,7 @@ int OglFillTexBuf (
 	GLubyte	*bufP;
 	int		x, y, c, i, j;
 	ushort	r, g, b, a;
-	int		bTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int		bTransp;
 
 #ifdef _DEBUG
 if (strstr (bmP->szName, "door42"))
@@ -1217,7 +1217,7 @@ else if (!BM_FRAMES (bmP)) {
 
 	OglSetupBmFrames (bmP, bDoMipMap, nTransp, bLoad);
 	BM_CURFRAME (bmP) = BM_FRAMES (bmP);
-	if (i = CreateSuperTranspMasks (bmP))
+	if ((i = CreateSuperTranspMasks (bmP)))
 		for (i = nFrames, bmfP = BM_FRAMES (bmP); i; i--, bmfP++)
 			if (bLoad && BM_MASK (bmfP))
 				OglLoadBmTextureM (BM_MASK (bmfP), 0, -1, 1, NULL);

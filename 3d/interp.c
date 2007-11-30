@@ -81,8 +81,8 @@ g3sPoint	*modelPointList = NULL;
 struct {short pal_entry, rgb15;} interpColorTable [MAX_INTERP_COLORS];
 
 //static int bIntrinsicFacing = 0;
-static int bFlatPolys = 1;
-static int bTexPolys = 1;
+//static int bFlatPolys = 1;
+//static int bTexPolys = 1;
 
 vmsAngVec avZero = {0, 0, 0};
 vmsVector vZero = ZERO_VECTOR;

@@ -1810,7 +1810,7 @@ if ((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].afterburner
 	else
 		delay = DEG90;
 
-	if (bSmoke = SHOW_SMOKE && gameOpts->render.smoke.bMissiles) {
+	if ((bSmoke = SHOW_SMOKE && gameOpts->render.smoke.bMissiles)) {
 		nSize = F1_0 * 3;
 		lifetime = F1_0 / 12;
 		delay = 0;
@@ -1956,8 +1956,6 @@ static int nSlowMotionChannel = -1;
 
 void SetSlowMotionState (int i)
 {
-	int	nState = 0;
-
 if (gameStates.gameplay.slowmo [i].nState) {
 	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
 	if (nSlowMotionChannel >= 0) {

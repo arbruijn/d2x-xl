@@ -164,7 +164,7 @@ extern GLhandleARB lightingShaderProgs [12];
 
 int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf *colorP)
 {
-	int oglRes, nLights, nShader = gameStates.render.history.nShader, bUpdateShader = 0;
+	int oglRes, nLights, nShader = gameStates.render.history.nShader;
 
 	tRgbaColorf	color;
 
@@ -229,8 +229,8 @@ return nShader;
 bool G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			h, i, j, nTextures, nRemainingLights, nLights [4], nPass = 0;
-	int			bColorKey, bOverlay, bTransparent, 
-					bMonitor = 0, 
+	int			bOverlay, bTransparent, 
+					bColorKey = 0, bMonitor = 0, 
 					bLighting = GEO_LIGHTING && !bDepthOnly, 
 					bMultiTexture = 0;
 	grsBitmap	*bmMask = NULL, *bmP [2];
@@ -412,7 +412,7 @@ return 0;
 
 bool G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
-	int			bColorKey, bOverlay, bTransparent, bMonitor = 0, bMultiTexture = 0;
+	int			bOverlay, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0;
 	grsBitmap	*bmMask = NULL;
 	tTexCoord2f	*ovlTexCoordP;
 

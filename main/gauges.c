@@ -914,8 +914,6 @@ void HUDShowScore ()
 	char	szScore [40];
 	int	w, h, aw;
 
-	static int nIdScore = 0;
-
 if (HIDE_HUD)
 	return;
 if ((gameData.hud.msgs [0].nMessages > 0) && 
@@ -4240,8 +4238,6 @@ void ShowRenderItems ()
 
 if ((gameOpts->render.bDepthSort > 0) && renderItems.bDisplay) {
 		char szItems [50];
-		static time_t t, t0 = -1;
-		static fix rate = 0;
 		int x = 9, y = 5; // position measured from lower right corner
 	   //static int q;
 

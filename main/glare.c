@@ -85,7 +85,7 @@ if (OglHaveDrawBuffer ()) {
 	hDepthBuffer = gameData.render.ogl.drawBuffer.hDepthBuffer;
 	glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
 	}
-else if (hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0)) {
+else if ((hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
 #if 0
 	glCopyTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
 #else
@@ -265,7 +265,7 @@ if (sideP->nOvlTex && (0 < (nBrightness = IsLight (sideP->nOvlTex)))) {
 	nTexture = sideP->nOvlTex;
 	bAdditive = gameOpts->render.bAdditiveCoronas;
 	}
-else if (nBrightness = IsLight (sideP->nBaseTex)) {
+else if ((nBrightness = IsLight (sideP->nBaseTex))) {
 	nTexture = sideP->nBaseTex;
 	if (fIntensityP)
 		*fIntensityP /= 2;
@@ -345,7 +345,6 @@ float ComputeCoronaSprite (fVector *sprite, fVector *vCenter, short nSegment, sh
 	int		i;
 	float		fLight = 0;
 	fVector	v;
-	float		zMin = 1000000000.0f, zMax = -1000000000.0f;
 
 GetSideVertIndex (sideVerts, nSegment, nSide);
 for (i = 0; i < 4; i++) {
@@ -579,9 +578,9 @@ return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.nCoronaIntens
 void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive) 
 {
 	tRgbaColorf color;
-	tTexCoord2f	tcGlare [4] = {{0,0},{1,0},{1,1},{0,1}};
+	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	int 			i;
-	grsBitmap	*bmP;
+	grsBitmap	*bmP = NULL;
 
 if (gameStates.render.bQueryCoronas)
 	glDisable (GL_TEXTURE_2D);

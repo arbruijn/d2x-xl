@@ -108,7 +108,7 @@ int AddAxisControls (tMenuItem *m, char *szText, char *szFmtSyncd, char *szFmt, 
 							int nControls, int *pnValues, int nValues, int *pnIntervals, 
 							char nKeySyncd, char *pnKeys, int bSyncControls, int *pnOpt)
 {
-	int	h, i, j, v, opt = *pnOpt; 
+	int	h = 0, i, j, v, opt = *pnOpt; 
 
 j = bSyncControls ? 1 : nControls;
 for (i = 0; i < j; i++) {

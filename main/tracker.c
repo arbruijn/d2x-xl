@@ -14,6 +14,11 @@
 #	include <sys/socket.h>
 #endif
 
+#ifndef _WIN32
+#	include <arpa/inet.h>
+#	include <netinet/in.h> /* for htons & co. */
+#endif
+
 #include "inferno.h"
 #include "args.h"
 #include "u_mem.h"

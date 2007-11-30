@@ -490,7 +490,7 @@ switch (nObjType) {
 			fix xLight = vcP->lightValue;
 			int i, j;
 			grsBitmap *bmP;
-			if (bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index)) {
+			if ((bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + vcP->frames [0].index))) {
 				color->red = (float) bmP->bmAvgRGB.red;
 				color->green = (float) bmP->bmAvgRGB.green;
 				color->blue = (float) bmP->bmAvgRGB.blue;
@@ -1686,12 +1686,13 @@ if (nVertex == nDbgVertex)
 
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread)
 {
-	static int nLastSeg [4] = {-1, -1, -1, -1};
 	static int nActiveLights [4] = {-1, -1, -1, -1};
+#if 0
 	static int nFrameFlipFlop = -1;
+	static int nLastSeg [4] = {-1, -1, -1, -1};
 	static ubyte nLastType [4] = {255, 255, 255, 255};
-
-	tShaderLight *psl;
+#endif
+   tShaderLight *psl;
 	int nMaxLights = gameOpts->ogl.bObjLighting ? 8 : gameOpts->ogl.nMaxLights;
 
 #if 0
@@ -2578,7 +2579,7 @@ void InitLightingShaders (void)
 
 gameStates.render.bHaveDynLights = 0;
 LogErr ("building lighting shader programs\n");
-if (gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath)) {
+if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 12; i++) {
 		if (lightingShaderProgs [i])

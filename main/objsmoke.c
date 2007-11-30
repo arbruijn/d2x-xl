@@ -138,7 +138,6 @@ void DoPlayerSmoke (tObject *objP, int i)
 	tThrusterInfo	ti;
 
 	static int	bForward = 1;
-	static int	t0 = -1;
 
 if (i < 0)
 	i = objP->id;
@@ -442,7 +441,7 @@ if (gameData.smoke.objects [i] < 0) {
 	color.red = (float) objP->rType.smokeInfo.color.red / 255.0f;
 	color.green = (float) objP->rType.smokeInfo.color.green / 255.0f;
 	color.blue = (float) objP->rType.smokeInfo.color.blue / 255.0f;
-	if (bColor = (color.red + color.green + color.blue > 0))
+	if ((bColor = (color.red + color.green + color.blue > 0)))
 		color.alpha = (float) objP->rType.smokeInfo.color.alpha / 255.0f;
 	VmVecCopyScale (&dir, &objP->position.mOrient.fVec, objP->rType.smokeInfo.nSpeed * 2 * F1_0 / 55);
 	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, &dir, 
@@ -715,7 +714,7 @@ if (objP->lifeleft > 0) {
 				*shrapnelP = sdP->shrapnels [h];
 			}
 		}
-	if (sdP->nShrapnels = h)
+	if ((sdP->nShrapnels = h))
 		return 1;
 	}
 DestroyShrapnels (objP);

@@ -178,11 +178,12 @@ for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) {
 			}
 		}
 	else if (objP->nType == OBJ_ROBOT) {
-		if (AM_SHOW_ROBOTS)
+		if (AM_SHOW_ROBOTS) {
 			if (ROBOTINFO (objP->id).companion)
 				RenderRadarBlip (objP, guidebotColor.red, guidebotColor.green, guidebotColor.blue, 0.9f / 4);
 			else
 				RenderRadarBlip (objP, robotColor.red, robotColor.green, robotColor.blue, 0.9f / 4);
+			}
 		}
 	else if (objP->nType == OBJ_POWERUP) {
 		if (AM_SHOW_POWERUPS (2))

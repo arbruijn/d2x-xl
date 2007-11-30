@@ -352,7 +352,6 @@ bool G3DrawTexPolyFlat (
 	int			bBlend)
 {
 	int			i;
-	grsBitmap	*bmP = NULL;
 	g3sPoint		**ppl;
 
 if (FAST_SHADOWS) {
@@ -732,7 +731,6 @@ bool G3DrawTexPolyLightmap (
 	int			bBlend)
 {
 	int			i, nFrame, bShaderMerge;
-	int			bLight = 1;
 	grsBitmap	*bmP = NULL;
 	g3sPoint		**ppl;
 
@@ -769,7 +767,7 @@ else
 if (!lightMap) //lightMapping enabled
 	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend);
 // chose shaders depending on whether overlay bitmap present or not
-if (bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge) {
+if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];
 	glUseProgramObject (lmProg);
 	}
@@ -1013,7 +1011,6 @@ int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices
 {
 	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
 
-if (bVertexArrays)
 if (bmP)
 	glEnable (GL_TEXTURE_2D);
 else

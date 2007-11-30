@@ -374,7 +374,7 @@ if (parentObjP) {
 	if (targetObjP != gameData.laser.targetObjP)
 		return 0;
 	}
-if (bSpectate = SPECTATOR (gameData.laser.parentObjP)) {
+if ((bSpectate = SPECTATOR (gameData.laser.parentObjP))) {
 	VmVecSub (&vFiringPos, &gameStates.app.playerPos.vPos, &gameStates.app.playerPos.mOrient.uVec);
 	VmVecInc (&vFiringPos, &gameStates.app.playerPos.mOrient.fVec);
 	}
@@ -2280,7 +2280,7 @@ void GetPlayerMslLock (void)
 
 gameData.objs.trackGoals [0] =
 gameData.objs.trackGoals [1] = NULL;
-if (objP = GuidedInMainView ()) {
+if ((objP = GuidedInMainView ())) {
 	nObject = FindHomingObject (&objP->position.vPos, objP);
 	gameData.objs.trackGoals [0] = 
 	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;

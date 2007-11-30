@@ -138,7 +138,7 @@ faceP->bmTop =
 newFaceP->bmTop = NULL;
 faceP->bSplit = 1;
 newFaceP->bOverlay = 1;
-if (newFaceP->bIsLight = IsLight (newFaceP->nBaseTex))
+if ((newFaceP->bIsLight = IsLight (newFaceP->nBaseTex)))
 	faceP->bIsLight = 0;
 }
 
@@ -387,12 +387,12 @@ if (GEO_LIGHTING) {
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 	return 0;
 	}
-if (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0)) {
+if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0))) {
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 
-	if (bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1)) {
+	if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1))) {
 		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
@@ -839,7 +839,9 @@ if (gameStates.ogl.bVertexLighting) {
 
 //------------------------------------------------------------------------------
 
+#if SHADER_VERTEX_LIGHTING 0
 static char	*szTexNames [VERTLIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
+#endif
 
 GLuint CreateVertLightBuffer (int i)
 {
@@ -875,8 +877,8 @@ void ComputeFragLight (float lightRange)
 	int		i;
 
 	static fVector matAmbient = {{0.01f, 0.01f, 0.01f, 1.0f}};
-	static fVector matDiffuse = {{1.0f, 1.0f, 1.0f, 1.0f}};
-	static fVector matSpecular = {{1.0f, 1.0f, 1.0f, 1.0f}};
+	//static fVector matDiffuse = {{1.0f, 1.0f, 1.0f, 1.0f}};
+	//static fVector matSpecular = {{1.0f, 1.0f, 1.0f, 1.0f}};
 	static float shininess = 96.0;
 
 for (i = 0; i < vld.nLights; i++) {
@@ -1057,7 +1059,7 @@ if (nState == 0) {
 	glUseProgramObject (hVertLightShader);
 	for (i = 0; i < VL_SHADER_BUFFERS; i++) {
 		glUniform1i (glGetUniformLocation (hVertLightShader, szTexNames [i]), i);
-		if (j = glGetError ()) {
+		if ((j = glGetError ())) {
 			ComputeVertexLight (-1, 2, NULL);
 			return 0;
 			}
@@ -1084,7 +1086,7 @@ if (nState == 0) {
 		glVertexPointer (2, GL_FLOAT, 0, quadCoord);
 		}
 #endif
-	if (j = glGetError ()) {
+	if ((j = glGetError ())) {
 		ComputeVertexLight (-1, 2, NULL);
 		return 0;
 		}
@@ -1355,7 +1357,7 @@ void GetRenderVertices (void)
 	int			h, i, j, n;
 
 nRenderVertices = 0;
-for (h = 0; h < gameData.render.mine.nRenderSegs; h++) {
+for (h = i = 0; h < gameData.render.mine.nRenderSegs; h++) {
 	nSegment = gameData.render.mine.nSegRenderList [h];
 	segFaceP = SEGFACES + nSegment;
 	if (!SegmentIsVisible (SEGMENTS + nSegment)) 

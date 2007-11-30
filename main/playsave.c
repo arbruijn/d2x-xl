@@ -694,7 +694,7 @@ int ReadParam (CFILE *fp)
 
 CFGetS (szParam, sizeof (szParam), fp);
 szParam [sizeof (szParam) - 1] = '\0';
-if (pszValue = strchr (szParam, '\n'))
+if ((pszValue = strchr (szParam, '\n')))
 	*pszValue = '\0';
 if (!(pszValue = strchr (szParam, '=')))
 	return 0;
@@ -1932,7 +1932,7 @@ int ReadPlayerFile (int bOnlyWindowSizes)
 	short		nControlTypes, gameWindowW, gameWindowH;
 	int		funcRes = EZERO;
 	int		id, i;
-	int		bRewriteIt = 0, gameOptsSize = 0, nMaxControls;
+	int		bRewriteIt = 0, nMaxControls;
 
 Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer<MAX_PLAYERS);
 

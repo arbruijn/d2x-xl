@@ -739,7 +739,7 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
 	nDemoDoingLeft = nDemoDoingRight = 0;
    return;
    } 
-if (objP = GuidedMslView ()) {
+if ((objP = GuidedMslView ())) {
 	if (gameOpts->render.cockpit.bGuidedInMainView)	{
 		gameStates.render.nRenderingType=6+ (1<<4);
 		DoCockpitWindowView (1, gameData.objs.viewer, 0, WBUMSL, "SHIP");

@@ -174,7 +174,6 @@ for (;;)
 
 		case OP_DEFP_START: {
 			int n = WORDVAL (p+2);
-			int s = (int) WORDVAL (p+4);
 			p += n * sizeof (vmsVector) + 8;
 			(*pnVerts) += n;
 			break;

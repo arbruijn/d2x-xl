@@ -20,6 +20,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#ifndef _WIN32
+#	include <unistd.h>
+#endif
 
 #include "inferno.h"
 #include "u_mem.h"
@@ -162,7 +165,7 @@ int RISplitPoly (tRIPoly *item, int nDepth)
 	float			z, zMin, zMax, *c, *c0, *c1;
 
 split [0] = split [1] = *item;
-for (i = 0; i < split [0].nVertices; i++) {
+for (i = i0 = 0; i < split [0].nVertices; i++) {
 	l = split [0].sideLength [i];
 	if (nMaxLen < l) { 
 		nMaxLen = l;
@@ -264,7 +267,7 @@ item.nWrap = nWrap;
 item.bDepthMask = bDepthMask;
 item.bAdditive = bAdditive;
 memcpy (item.texCoord, texCoord ? texCoord : tcDefault, nVertices * sizeof (tTexCoord2f));
-if (item.nColors = nColors) {
+if ((item.nColors = nColors)) {
 	if (nColors < nVertices)
 		nColors = 1;
 	if (color) {
@@ -331,7 +334,7 @@ int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nW
 	vmsVector	vPos;
 
 item.bmP = bmP;
-if (item.bColor = (color != NULL))
+if ((item.bColor = (color != NULL)))
 	item.color = *color;
 item.nWidth = nWidth;
 item.nHeight = nHeight;
@@ -379,6 +382,8 @@ int RIAddLightnings (tLightning *lightnings, short nLightnings, short nDepth)
 	vmsVector vPos;
 	int z;
 
+if (nLightnings < 1)
+	return 0;
 item.lightning = lightnings;
 item.nLightnings = nLightnings;
 item.nDepth = nDepth;
@@ -402,7 +407,7 @@ int RIAddLightningSegment (fVector *vLine, fVector *vPlasma, tRgbaColorf *color,
 	fix z;
 
 memcpy (item.vLine, vLine, 2 * sizeof (fVector));
-if (item.bPlasma = bPlasma)
+if ((item.bPlasma = bPlasma))
 	memcpy (item.vPlasma, vPlasma, 4 * sizeof (fVector));
 memcpy (&item.color, color, sizeof (tRgbaColorf));
 item.bStart = bStart;
@@ -423,7 +428,7 @@ int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, 
 item.bmP = bmP;
 memcpy (item.vertices, vThruster, 4 * sizeof (fVector));
 memcpy (item.texCoord, tcThruster, 4 * sizeof (tTexCoord2f));
-if (item.bFlame = (vFlame != NULL)) {
+if ((item.bFlame = (vFlame != NULL))) {
 	memcpy (item.vertices + 4, vFlame, 3 * sizeof (fVector));
 	memcpy (item.texCoord + 4, tcFlame, 3 * sizeof (tTexCoord2f));
 	j = 7;
@@ -444,13 +449,13 @@ if (renderItems.bClientState == bClientState) {
 	if (bClientState) {
 		glClientActiveTexture (GL_TEXTURE0);
 		if (renderItems.bClientTexCoord != bTexCoord) {
-			if (renderItems.bClientTexCoord = bTexCoord)
+			if ((renderItems.bClientTexCoord = bTexCoord))
 				glEnableClientState (GL_TEXTURE_COORD_ARRAY);
 			else
 				glDisableClientState (GL_TEXTURE_COORD_ARRAY);
 			}
 		if (renderItems.bClientColor != bColor) {
-			if (renderItems.bClientColor = bColor)
+			if ((renderItems.bClientColor = bColor))
 				glEnableClientState (GL_COLOR_ARRAY);
 			else
 				glDisableClientState (GL_COLOR_ARRAY);
@@ -859,7 +864,7 @@ nType = -1;
 for (pd = renderItems.pDepthBuffer + ITEM_DEPTHBUFFER_SIZE - 1; 
 	  pd >= renderItems.pDepthBuffer; 
 	  pd--) {
-	if (pl = *pd) {
+	if ((pl = *pd)) {
 		nDepth = 0;
 		do {
 			renderItems.nPrevType = nType;

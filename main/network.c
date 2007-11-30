@@ -30,6 +30,10 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #else
 #	include <sys/socket.h>
 #endif
+#ifndef _WIN32
+#	include <arpa/inet.h>
+#	include <netinet/in.h> /* for htons & co. */
+#endif
 
 #include "inferno.h"
 #include "strutil.h"

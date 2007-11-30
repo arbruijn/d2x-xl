@@ -167,13 +167,13 @@ void DrawExplBlast (tObject *objP)
 	tOOF_vector	p = {0,0,0};
 #endif
 	tRgbaColorf	color;
-
+#if 0
 	static tRgbaColorf blastColors [] = {
 		{0.5, 0.0f, 0.5f, 1},
 		{1, 0.5f, 0, 1},
 		{1, 0.75f, 0, 1},
 		{1, 1, 1, 3}};
-
+#endif
 if (objP->lifeleft <= 0)
 	return;
 if (!LoadExplBlast ())

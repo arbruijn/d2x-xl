@@ -74,7 +74,7 @@ if (ph->bits == 24) {
 else if (bReverse) {
 	tRGBA	c;
 	tRgbaColorb	*p = (tRgbaColorb *) bmP->bmTexBuf;
-	int nSuperTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int nSuperTransp;
 
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
@@ -129,7 +129,7 @@ else if (bReverse) {
 else {
 	tBGRA	c;
 	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
-	int nSuperTransp, bShaderMerge = gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
+	int nSuperTransp;
 
 	nFrames = h / w - 1;
 	for (i = 0; i < h; i++) {
@@ -412,7 +412,6 @@ int ShrinkTGA (grsBitmap *bmP, int xFactor, int yFactor, int bRealloc)
 {
 	int		bpp = bmP->bmBPP;
 	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
-	int		bShaderMerge = (bpp == 4) && gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk;
 	ubyte		*pData, *pSrc, *pDest;
 	int		cSum [4];
 
@@ -546,13 +545,11 @@ else {
 
 void TGAChangeBrightness (grsBitmap *bmP, double dScale, int bInverse, int nOffset, int bSkipAlpha)
 {
-	int h = 0;
-
 if (bmP) {
 		int		bpp = bmP->bmBPP, h, i, j, c, bAlpha = (bpp == 4);
 		ubyte		*pData;
 
-	if (pData = bmP->bmTexBuf) {
+	if ((pData = bmP->bmTexBuf)) {
 	if (!bAlpha)
 		bSkipAlpha = 1;
 	else if (bSkipAlpha)
@@ -567,7 +564,7 @@ if (bmP) {
 				if (bSkipAlpha)
 					pData++;
 				else if (bAlpha) {
-					if (c = *pData) {
+					if ((c = *pData)) {
 						c += nOffset;
 						*pData = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 						}
@@ -588,7 +585,7 @@ if (bmP) {
 				dScale = 1.0 / dScale;
 				for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
 					for (j = bpp; j; j--, pData++)
-						if (c = 255 - *pData)
+						if ((c = 255 - *pData))
 							*pData = 255 - (ubyte) (c * dScale);
 					if (bSkipAlpha)
 						pData++;
@@ -597,7 +594,7 @@ if (bmP) {
 			else {
 				for (i = bmP->bmProps.w * bmP->bmProps.h; i; i--) {
 					for (j = bpp; j; j--, pData++)
-						if (c = 255 - *pData) {
+						if ((c = 255 - *pData)) {
 							c = (int) (*pData * dScale);
 							*pData = (ubyte) ((c > 255) ? 255 : c);
 							}

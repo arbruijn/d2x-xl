@@ -919,7 +919,7 @@ if ((t = FindArg ("-noredbook")))
 	gameOptions [0].sound.bUseRedbook = 0;
 #if USE_SDL_MIXER
 if (gameOptions [0].sound.bUseSDLMixer) {
-	if (t = FindArg ("-hires_sound"))
+	if ((t = FindArg ("-hires_sound")))
 		gameOptions [0].sound.bHires = NumArg (t, 1);
 	}
 #endif
@@ -3059,18 +3059,18 @@ static tOOFToModel oofToModel [] = {
 	{"spiderspawnclone.oof", NULL, 90, 1}, 
 	{"alienboss2.oof", NULL, 91, 1}, 
 	// Vertigo robots
-	{"compactlifter.oof", NULL, 166, 0}, 
-	{"fervid99.oof", NULL, 167, 0}, 
-	{"fiddler.oof", NULL, 168, 0}, 
-	{"class2heavydriller.oof", NULL, 169, 0}, 
-	{"smelter2.oof", NULL, 170, 0}, 
-	{"max.oof", NULL, 171, 0}, 
-	{"sniperng.oof", NULL, 172, 0}, 
-	{"logikill.oof", NULL, 173, 0}, 
-	{"canary.oof", NULL, 174, 0}, 
-	{"vertigoboss.oof", NULL, 175, 0}, 
-	{"redguard.oof", NULL, 176, 0}, 
-	{"spike.oof", NULL, 177, 0}, 
+	{"compactlifter.oof", NULL, 166, 1}, 
+	{"fervid99.oof", NULL, 167, 1}, 
+	{"fiddler.oof", NULL, 168, 1}, 
+	{"class2heavydriller.oof", NULL, 169, 1}, 
+	{"smelter2.oof", NULL, 170, 1}, 
+	{"max.oof", NULL, 171, 1}, 
+	{"sniperng.oof", NULL, 172, 1}, 
+	{"logikill.oof", NULL, 173, 1}, 
+	{"canary.oof", NULL, 174, 1}, 
+	{"vertigoboss.oof", NULL, 175, 1}, 
+	{"redguard.oof", NULL, 176, 1}, 
+	{"spike.oof", NULL, 177, 1}, 
 	// powerups/missiles
 	{"concussion.oof", NULL, 127, 0}, 
 	{NULL, NULL, 137, 0}, 

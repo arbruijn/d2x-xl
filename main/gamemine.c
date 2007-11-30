@@ -1173,7 +1173,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 			memset (faceP, 0, sizeof (*faceP));
 			if (bWall) {
 				faceP->nBaseTex = sideP->nBaseTex;
-				if (faceP->nOvlTex = sideP->nOvlTex)
+				if ((faceP->nOvlTex = sideP->nOvlTex))
 					nOvlTexCount++;
 				faceP->bSlide = (gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_u || gameData.pig.tex.pTMapInfo [faceP->nBaseTex].slide_v);
 				faceP->bIsLight = IsLight (faceP->nBaseTex) || (faceP->nOvlTex && IsLight (faceP->nOvlTex));

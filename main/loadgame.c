@@ -1152,18 +1152,17 @@ extern int NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int c
 //	Call with deadFlag = 1 if tPlayer died, but deserves some portion of bonus (only skill points), anyway.
 void DoEndLevelScoreGlitz (int network)
 {
-	int level_points, skill_points, energy_points, shield_points, hostage_points;
-	int	all_hostage_points;
-	int	endgame_points;
-	char	all_hostage_text [64];
-	char	endgame_text [64];
 	#define N_GLITZITEMS 11
-	char				m_str [N_GLITZITEMS][30];
+
+	int			nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
+	char			szAllHostages [64];
+	char			szEndGame [64];
+	char			szMenu [N_GLITZITEMS][30];
 	tMenuItem	m [N_GLITZITEMS+1];
-	int				i,c;
-	char				title [128];
-	int				is_lastLevel;
-	int				mineLevel;
+	int			i,c;
+	char			szTitle [128];
+	int			bIsLastLevel;
+	int			nMineLevel = 0;
 
 DigiStopAllChannels ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
@@ -1175,64 +1174,64 @@ if (TactileStick)
 #endif
 
 	//	Compute level tPlayer is on, deal with secret levels (negative numbers)
-mineLevel = LOCALPLAYER.level;
-if (mineLevel < 0)
-	mineLevel *= - (gameData.missions.nLastLevel/gameData.missions.nSecretLevels);
-level_points = LOCALPLAYER.score-LOCALPLAYER.last_score;
+nMineLevel = LOCALPLAYER.level;
+if (nMineLevel < 0)
+	nMineLevel *= - (gameData.missions.nLastLevel/gameData.missions.nSecretLevels);
+nLevelPoints = LOCALPLAYER.score-LOCALPLAYER.last_score;
 if (!gameStates.app.cheats.bEnabled) {
 	if (gameStates.app.nDifficultyLevel > 1) {
-		skill_points = level_points* (gameStates.app.nDifficultyLevel)/4;
-		skill_points -= skill_points % 100;
+		nSkillPoints = nLevelPoints* (gameStates.app.nDifficultyLevel)/4;
+		nSkillPoints -= nSkillPoints % 100;
 		}
 	else
-		skill_points = 0;
-	shield_points = f2i (LOCALPLAYER.shields) * 5 * mineLevel;
-	energy_points = f2i (LOCALPLAYER.energy) * 2 * mineLevel;
-	hostage_points = LOCALPLAYER.hostages_on_board * 500 * (gameStates.app.nDifficultyLevel+1);
-	shield_points -= shield_points % 50;
-	energy_points -= energy_points % 50;
+		nSkillPoints = 0;
+	nShieldPoints = f2i (LOCALPLAYER.shields) * 5 * nMineLevel;
+	nEnergyPoints = f2i (LOCALPLAYER.energy) * 2 * nMineLevel;
+	nHostagePoints = LOCALPLAYER.hostages_on_board * 500 * (gameStates.app.nDifficultyLevel+1);
+	nShieldPoints -= nShieldPoints % 50;
+	nEnergyPoints -= nEnergyPoints % 50;
 	}
 else {
-	skill_points = 0;
-	shield_points = 0;
-	energy_points = 0;
-	hostage_points = 0;
+	nSkillPoints = 0;
+	nShieldPoints = 0;
+	nEnergyPoints = 0;
+	nHostagePoints = 0;
 	}
-all_hostage_text [0] = 0;
-endgame_text [0] = 0;
+szAllHostages [0] = 0;
+szEndGame [0] = 0;
 if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages_on_board == LOCALPLAYER.hostagesLevel)) {
-	all_hostage_points = LOCALPLAYER.hostages_on_board * 1000 * (gameStates.app.nDifficultyLevel+1);
-	sprintf (all_hostage_text, "%s%i\n", TXT_FULL_RESCUE_BONUS, all_hostage_points);
+	nAllHostagePoints = LOCALPLAYER.hostages_on_board * 1000 * (gameStates.app.nDifficultyLevel+1);
+	sprintf (szAllHostages, "%s%i\n", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
 	}
 else
-	all_hostage_points = 0;
+	nAllHostagePoints = 0;
 if (!gameStates.app.cheats.bEnabled && !IsMultiGame && LOCALPLAYER.lives && 
 	 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
-	endgame_points = LOCALPLAYER.lives * 10000;
-	sprintf (endgame_text, "%s%i\n", TXT_SHIP_BONUS, endgame_points);
-	is_lastLevel=1;
+	nEndGamePoints = LOCALPLAYER.lives * 10000;
+	sprintf (szEndGame, "%s%i\n", TXT_SHIP_BONUS, nEndGamePoints);
+	bIsLastLevel=1;
 	}
 else
-	endgame_points = is_lastLevel = 0;
-AddBonusPointsToScore (skill_points + energy_points + shield_points + hostage_points + all_hostage_points + endgame_points);
+	nEndGamePoints = bIsLastLevel = 0;
+AddBonusPointsToScore (nSkillPoints + nEnergyPoints + nShieldPoints + nHostagePoints + nAllHostagePoints + nEndGamePoints);
 c = 0;
-sprintf (m_str [c++], "%s%i", TXT_SHIELD_BONUS, shield_points);		// Return at start to lower menu...
-sprintf (m_str [c++], "%s%i", TXT_ENERGY_BONUS, energy_points);
-sprintf (m_str [c++], "%s%i", TXT_HOSTAGE_BONUS, hostage_points);
-sprintf (m_str [c++], "%s%i", TXT_SKILL_BONUS, skill_points);
-sprintf (m_str [c++], "%s", all_hostage_text);
+sprintf (szMenu [c++], "%s%i", TXT_SHIELD_BONUS, nShieldPoints);		// Return at start to lower menu...
+sprintf (szMenu [c++], "%s%i", TXT_ENERGY_BONUS, nEnergyPoints);
+sprintf (szMenu [c++], "%s%i", TXT_HOSTAGE_BONUS, nHostagePoints);
+sprintf (szMenu [c++], "%s%i", TXT_SKILL_BONUS, nSkillPoints);
+sprintf (szMenu [c++], "%s", szAllHostages);
 if (!(gameData.app.nGameMode & GM_MULTI) && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
-	sprintf (m_str [c++], "%s", endgame_text);
-sprintf (m_str [c++], "%s%i\n", TXT_TOTAL_BONUS, shield_points+energy_points+hostage_points+skill_points+all_hostage_points+endgame_points);
-sprintf (m_str [c++], "%s%i", TXT_TOTAL_SCORE, LOCALPLAYER.score);
+	sprintf (szMenu [c++], "%s", szEndGame);
+sprintf (szMenu [c++], "%s%i\n", TXT_TOTAL_BONUS, nShieldPoints+nEnergyPoints+nHostagePoints+nSkillPoints+nAllHostagePoints+nEndGamePoints);
+sprintf (szMenu [c++], "%s%i", TXT_TOTAL_SCORE, LOCALPLAYER.score);
 memset (m, 0, sizeof (m));
 for (i=0; i<c; i++) {
 	m [i].nType = NM_TYPE_TEXT;
-	m [i].text = m_str [i];
+	m [i].text = szMenu [i];
 	}
-sprintf (title,
+sprintf (szTitle,
 			"%s%s %d %s\n%s %s",
-			gameOpts->menus.nStyle ? "" : is_lastLevel ? "\n\n\n":"\n",
+			gameOpts->menus.nStyle ? "" : bIsLastLevel ? "\n\n\n":"\n",
 			 (gameData.missions.nCurrentLevel < 0) ? TXT_SECRET_LEVEL : TXT_LEVEL, 
 			 (gameData.missions.nCurrentLevel < 0) ? -gameData.missions.nCurrentLevel : gameData.missions.nCurrentLevel, 
 			TXT_COMPLETE, 
@@ -1242,11 +1241,11 @@ Assert (c <= N_GLITZITEMS);
 GrPaletteFadeOut (NULL, 32, 0);
 PA_DFX (pa_alpha_always ());
 if (network && (gameData.app.nGameMode & GM_NETWORK))
-	ExecMenu2 (NULL, title, c, m, (void (*))NetworkEndLevelPoll2, 0, STARS_BACKGROUND);
+	ExecMenu2 (NULL, szTitle, c, m, (void (*))NetworkEndLevelPoll2, 0, STARS_BACKGROUND);
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-ExecMenu2 (NULL, title, c, m, NULL, 0, STARS_BACKGROUND);
+ExecMenu2 (NULL, szTitle, c, m, NULL, 0, STARS_BACKGROUND);
 }
 
 //	-----------------------------------------------------------------------------------------------------

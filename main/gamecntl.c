@@ -22,6 +22,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#ifndef _WIN32
+#	include <unistd.h>
+#endif
 
 #include "pstypes.h"
 #include "console.h"

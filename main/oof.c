@@ -1355,7 +1355,7 @@ int OOF_ReleaseTextures (void)
 	int			i, j;
 
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
-	if (bmP = po->textures.pBitmaps)
+	if ((bmP = po->textures.pBitmaps))
 		for (j = po->textures.nTextures; j; j--, bmP++) {
 			UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
 			GrFreeBitmapData (bmP);
@@ -2277,7 +2277,7 @@ int OOF_DrawSubObject (tObject *objP, tOOFObject *po, tOOF_subObject *pso, float
 	tOOF_face		*pf;
 	tOOF_faceVert	*pfv;
 	tOOF_vector		*pv, *pvn, *phv;
-	tFaceColor		*pvc, vc, sc;
+	tFaceColor		*pvc, vc, sc = {{1,1,1,1}};
 	grsBitmap		*bmP;
 	int				h, i, j;
 	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0);

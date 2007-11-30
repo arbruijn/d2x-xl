@@ -20,6 +20,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#ifndef _WIN32
+#	include <unistd.h>
+#endif
 
 #include "inferno.h"
 #include "perlin.h"
@@ -250,7 +253,7 @@ else {
 VmVecScaleFrac (&vDir, pl->nLength, (pl->nNodes - 1) * F1_0);
 pl->nNodes = abs (pl->nNodes);
 pl->iStep = 0;
-if (pp = pl->pParent) {
+if ((pp = pl->pParent)) {
 	i = pp->nChildren + 1;
 	l = pp->nLength / i;
 	pl->nLength = ComputeChildEnd (&pl->vPos, &pl->vEnd, &pl->vDir, &pp->vDir, l + 3 * l / (pl->nNode + 1)); 
@@ -332,7 +335,7 @@ for (i = nLightnings, pl = pfRoot; i > 0; i--, pl++) {
 		pl->vRefEnd = *vEnd;
 	if (!(pl->bRandom = bRandom))
 		pl->vEnd = *vEnd;
-	if (pl->bInPlane = (vDelta != NULL))
+	if ((pl->bInPlane = (vDelta != NULL)))
 		pl->vDelta = *vDelta;
 	SetupLightning (pl, 1);
 	if (gameOpts->render.lightnings.nQuality && nDepth && nChildren) {
@@ -370,7 +373,7 @@ return pfRoot;
 
 void CreateLightningSound (tLightningBundle *plb, int bSound)
 {
-if (plb->bSound = bSound) {
+if ((plb->bSound = bSound)) {
 	DigiSetObjectSound (plb->nObject, -1, "lightng.wav");
 	if (plb->bForcefield) {
 		if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
@@ -763,7 +766,7 @@ for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i > 0; i--, pln++)
 		h = i;
 		}
 	}
-if (h = nAmplitude - nMaxDist) {
+if ((h = nAmplitude - nMaxDist)) {
 	if (pl->nNodes > 0) {
 		nMaxDist += (d_rand () % 5) * h / 4;
 		for (i = pl->nNodes - 1 - !pl->bRandom, pln = pl->pNodes + 1; i > 0; i--, pln++)
@@ -898,7 +901,7 @@ for (i = nStart, pl += nStart; i < nLightnings; i++, pl++) {
 	pl->nTTL -= gameStates.app.tick40fps.nTime;
 #endif
 	if (pl->nNodes > 0) {
-		if (bInit = (pl->nSteps < 0))
+		if ((bInit = (pl->nSteps < 0)))
 			pl->nSteps = -pl->nSteps;
 		if (!pl->iStep) {
 			bSeed = 1;
@@ -1687,14 +1690,16 @@ return (pl->nSegment < 0) || SegmentMayBeVisible (pl->nSegment, pl->nLength / 20
 void RenderLightning (tLightning *pl, int nLightnings, short nDepth, int bDepthSort)
 {
 	tLightningNode	*pln;
-	fVector		vPosf [3] = {{{0,0,0}},{{0,0,0}}};
 	int			i;
 #if !RENDER_LIGHTINGS_BUFFERED
 	int			h, j;
 #endif
 	int			bPlasma =  gameOpts->render.lightnings.bPlasma && pl->bPlasma;
 	tRgbaColorf	color;
+#if RENDER_LIGHTING_SEGMENTS
+	fVector		vPosf [3] = {{{0,0,0}},{{0,0,0}}};
 	tObject		*objP = NULL;
+#endif
 
 if (!pl && LightningMayBeVisible (pl))
 	return;
@@ -1913,7 +1918,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		continue;
 	if (pli->bRandom && !pli->nAngle)
 		vEnd = NULL;
-	else if (vEnd = FindLightningTargetPos (objP, pli->nTarget))
+	else if ((vEnd = FindLightningTargetPos (objP, pli->nTarget)))
 		pli->nLength = VmVecDist (&objP->position.vPos, vEnd) / F1_0;
 	else {
 		VmVecScaleAdd (&v, &objP->position.vPos, &objP->position.mOrient.fVec, F1_0 * pli->nLength);
@@ -2003,7 +2008,7 @@ void ResetLightningLights (int bForce)
 {
 if (SHOW_LIGHTNINGS || bForce) {
 		tLightningLight	*pll;
-		int					i, nLights = 0;
+		int					i;
 
 	for (i = gameData.lightnings.nFirstLight; i >= 0; ) {
 		pll = gameData.lightnings.lights + i;

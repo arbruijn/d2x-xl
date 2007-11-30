@@ -348,7 +348,6 @@ try_again:;
 
 //------------------------------------------------------------------------------
 //static int FirstTime = 1;
-static int nD1Opt = -1, nD2Opt = -1;
 
 static struct {
 	int	nNew;
@@ -2264,7 +2263,7 @@ void PowerupOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem
 m = menus + nOpt3D;
 v = m->value;
 if (v != gameOpts->render.powerups.b3D) {
-	if (gameOpts->render.powerups.b3D = v)
+	if ((gameOpts->render.powerups.b3D = v))
 		ConvertAllPowerupsToWeapons ();
 	*key = -2;
 	return;
@@ -2781,7 +2780,7 @@ void SmokeOptionsMenu ()
 	tMenuItem m [40];
 	int	i, j, choice = 0;
 	int	opt;
-	int	nOptSmokeLag, optStaticSmoke, optCollisions, optDisperse, optRotate, optAuxViews;
+	int	nOptSmokeLag, optStaticSmoke, optCollisions, optDisperse, optRotate = -1, optAuxViews = -1;
 	char	szSmokeQual [50];
 
 pszSmokeSize [0] = TXT_SMALL;
@@ -3075,7 +3074,7 @@ void LightingOptionsMenu ()
 	tMenuItem m [20];
 	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
 	int	opt;
-	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight;
+	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight = -1;
 #if 0
 	int checks;
 #endif
@@ -4102,7 +4101,7 @@ void ConfigMenu ()
 	tMenuItem m [20];
 	int i, opt, choice = 0;
 	int optSound, optConfig, optJoyCal, optDetails, optScrRes, optReorderPrim, optReorderSec, 
-		 optToggles, optRender, optGameplay, optCockpit, optPhysics;
+		 optToggles, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
 	memset (m, 0, sizeof (m));

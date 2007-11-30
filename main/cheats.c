@@ -495,7 +495,7 @@ void HomingCheat (int bVerbose)
 {
 	int	i;
 
-if (gameStates.app.cheats.bHomingWeapons = !gameStates.app.cheats.bHomingWeapons) {
+if ((gameStates.app.cheats.bHomingWeapons = !gameStates.app.cheats.bHomingWeapons)) {
 	for (i = 0; i < 20; i++) {
 		bOldHomingStates [i] = WI_homingFlag (i);
 		WI_set_homingFlag (i, 1);
@@ -643,7 +643,7 @@ else {
 
 void SpeedCheat (int bVerbose)
 {
-if (gameStates.app.cheats.bSpeed = !gameStates.app.cheats.bSpeed) {
+if ((gameStates.app.cheats.bSpeed = !gameStates.app.cheats.bSpeed)) {
 	BulletTimeOn ();
 	DoCheatPenalty ();
 	}
