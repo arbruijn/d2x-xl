@@ -839,7 +839,7 @@ if (gameStates.ogl.bVertexLighting) {
 
 //------------------------------------------------------------------------------
 
-#if SHADER_VERTEX_LIGHTING 0
+#if SHADER_VERTEX_LIGHTING
 static char	*szTexNames [VERTLIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
 #endif
 
