@@ -71,6 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "strutil.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "ogl_bitmap.h"
 #include "render.h"
 #include "input.h"
@@ -149,13 +150,13 @@ void ShowNetGameInfo (int choice);
 int bNewMenuFirstTime = 1;
 //--unused-- int Newmenu_fade_in = 1;
 
-grsBitmap nm_background, nm_background_save;
+grsBitmap nmBackground, nmBackgroundSave;
 
 #define MESSAGEBOX_TEXT_SIZE 10000		// How many characters in messagebox
 #define MAX_TEXT_WIDTH 	200				// How many pixels wide a input box can be
 
-char Pauseable_menu=0;
-char bAlreadyShowingInfo=0;
+char bPauseableMenu = 0;
+char bAlreadyShowingInfo = 0;
 
 void NMInitBackground (char *filename, bkg *bg, int x, int y, int w, int h, int bRedraw);
 
@@ -198,9 +199,8 @@ if (gameOpts->menus.nStyle) {
 			pszCurBg = bg->pszPrevBg;
 #if 1
 		if (bg->menu_canvas) {
-			WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), 
-					  GrFreeSubCanvas (bg->menu_canvas));
-			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
+			GrFreeSubCanvas (bg->menu_canvas);
+			GrSetCurrentCanvas (NULL);		
 			bg->menu_canvas = NULL;
 			}
 #endif
@@ -220,10 +220,10 @@ if (gameStates.app.bGameRunning) {
 void _CDECL_ NewMenuClose (void)
 {
 LogErr ("unloading menu data\n");
-if (nm_background.bmTexBuf)
-	D2_FREE (nm_background.bmTexBuf);
-if (nm_background_save.bmTexBuf)
-	D2_FREE (nm_background_save.bmTexBuf);
+if (nmBackground.bmTexBuf)
+	D2_FREE (nmBackground.bmTexBuf);
+if (nmBackgroundSave.bmTexBuf)
+	D2_FREE (nmBackgroundSave.bmTexBuf);
 bNewMenuFirstTime = 1;
 }
 
@@ -234,10 +234,10 @@ ubyte bgPalette [256*3];
 void NMRemapBackground ()
 {
 if (!bNewMenuFirstTime) {
-	if (!nm_background.bmTexBuf)
-		nm_background.bmTexBuf = D2_ALLOC (nm_background.bmProps.w * nm_background.bmProps.h);
-	memcpy (nm_background.bmTexBuf, nm_background_save.bmTexBuf, nm_background.bmProps.w * nm_background.bmProps.h);
-	//GrRemapBitmapGood (&nm_background, bgPalette, -1, -1);
+	if (!nmBackground.bmTexBuf)
+		nmBackground.bmTexBuf = D2_ALLOC (nmBackground.bmProps.w * nmBackground.bmProps.h);
+	memcpy (nmBackground.bmTexBuf, nmBackgroundSave.bmTexBuf, nmBackground.bmProps.w * nmBackground.bmProps.h);
+	//GrRemapBitmapGood (&nmBackground, bgPalette, -1, -1);
 	}
 }
 
@@ -246,7 +246,7 @@ if (!bNewMenuFirstTime) {
 void NMBlueBox (int x1, int y1, int x2, int y2)
 {
 gameStates.render.nFlashScale = 0;
-if ((gameOpts->menus.nStyle == 1)) {// && ((gameOpts->menus.altBg.bHave < 1) || gameStates.app.bGameRunning)) {
+if (gameOpts->menus.nStyle == 1) {
 	if (x1 <= 0)
 		x1 = 1;
 	if (y1 <= 0)
@@ -255,17 +255,11 @@ if ((gameOpts->menus.nStyle == 1)) {// && ((gameOpts->menus.altBg.bHave < 1) || 
 		x2 = grdCurScreen->scWidth - 1;
 	if (y2 >= grdCurScreen->scHeight)
 		y2 = grdCurScreen->scHeight - 1;
-#if 0
-	if ((gameOpts->menus.altBg.bHave > 0) && !gameStates.app.bGameRunning)
-		GrSetColorRGB (PAL2RGBA (15), PAL2RGBA (15), PAL2RGBA (27), 80);
-	else
-#endif
-		GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
+	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
 	gameStates.render.grAlpha = (float) gameData.menu.alpha / 255.0f;
 	GrURect (x1, y1, x2, y2);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-	//GrSetColorRGBi (D2BLUE_RGBA);
 	GrUBox (x1, y1, x2, y2);
 	}
 }
@@ -384,7 +378,7 @@ else
 #define MENU_BACKGROUND_BITMAP_HIRES (CFExist ("scoresb.pcx", gameFolders.szDataDir, 0)?"scoresb.pcx":"scores.pcx")
 #define MENU_BACKGROUND_BITMAP_LORES (CFExist ("scores.pcx", gameFolders.szDataDir, 0)?"scores.pcx":"scoresb.pcx") // Mac datafiles only have scoresb.pcx
 
-#define MENU_BACKGROUND_BITMAP (gameStates.menus.bHires?MENU_BACKGROUND_BITMAP_HIRES:MENU_BACKGROUND_BITMAP_LORES)
+#define MENU_BACKGROUND_BITMAP (gameStates.menus.bHires ? MENU_BACKGROUND_BITMAP_HIRES : MENU_BACKGROUND_BITMAP_LORES)
 
 int bHiresBackground;
 int bNoDarkening = 0;
@@ -401,24 +395,24 @@ if (gameOpts->menus.nStyle) {
 //		NMBlueBox (x1, y1, x2, y2);
 	}
 else {
-	if (bNewMenuFirstTime || gameStates.menus.bHires!=bHiresBackground)	{
+	if (bNewMenuFirstTime || (gameStates.menus.bHires != bHiresBackground)) {
 		int nPCXResult;
 
 		if (bNewMenuFirstTime) {
 			atexit (NewMenuClose);
 			bNewMenuFirstTime = 0;
-			nm_background_save.bmTexBuf = NULL;
+			nmBackgroundSave.bmTexBuf = NULL;
 			}
 		else {
-			if (nm_background_save.bmTexBuf)
-				D2_FREE (nm_background_save.bmTexBuf);
-			if (nm_background.bmTexBuf)
-				D2_FREE (nm_background.bmTexBuf);
+			if (nmBackgroundSave.bmTexBuf)
+				D2_FREE (nmBackgroundSave.bmTexBuf);
+			if (nmBackground.bmTexBuf)
+				D2_FREE (nmBackground.bmTexBuf);
 			}
-		nPCXResult = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nm_background_save, BM_LINEAR, 0);
+		nPCXResult = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nmBackgroundSave, BM_LINEAR, 0);
 		Assert (nPCXResult == PCX_ERROR_NONE);
-		nm_background = nm_background_save;
-		nm_background.bmTexBuf = NULL;	
+		nmBackground = nmBackgroundSave;
+		nmBackground.bmTexBuf = NULL;	
 		NMRemapBackground ();
 		bHiresBackground = gameStates.menus.bHires;
 		}
@@ -428,30 +422,16 @@ else {
 		y1 = 0;
 	w = x2-x1+1;
 	h = y2-y1+1;
-	//if (w > nm_background.bmProps.w) w = nm_background.bmProps.w;
-	//if (h > nm_background.bmProps.h) h = nm_background.bmProps.h;
+	//if (w > nmBackground.bmProps.w) w = nmBackground.bmProps.w;
+	//if (h > nmBackground.bmProps.h) h = nmBackground.bmProps.h;
 	x2 = x1 + w - 1;
 	y2 = y1 + h - 1;
-#if 0
-	{
-		grsBitmap *tmp = GrCreateBitmap (w, h, 1);
-		GrBitmapScaleTo (&nm_background, tmp);
-		glDisable (GL_BLEND);
-		if (bNoDarkening)
-			GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), tmp, &(grdCurCanv->cvBitmap));
-		else
-			GrBmBitBlt (w, h, x1, y1, 0, 0, tmp, &(grdCurCanv->cvBitmap));
-		glEnable (GL_BLEND);
-		GrFreeBitmap (tmp);
-	}
-#else
 	glDisable (GL_BLEND);
 	if (bNoDarkening)
-		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nm_background, &(grdCurCanv->cvBitmap));
+		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nmBackground, &(grdCurCanv->cvBitmap));
 	else
-		GrBmBitBlt (w, h, x1, y1, 0, 0, &nm_background, &(grdCurCanv->cvBitmap));
+		GrBmBitBlt (w, h, x1, y1, 0, 0, &nmBackground, &(grdCurCanv->cvBitmap));
 	glEnable (GL_BLEND);
-#endif
 	if (!bNoDarkening) {
 		// give the menu background box a 3D look by changing its edges' brightness
 		gameStates.render.grAlpha = 2*7;
@@ -542,8 +522,7 @@ if (bg && !(gameOpts->menus.nStyle || filename)) {
 	NMDrawBackground (bg, x, y, x + w - 1, y + h - 1, bRedraw);
 	GrUpdate (0);
 	GrSetCurrentCanvas (bg->menu_canvas);
-	bg->background = GrCreateSubBitmap (&nm_background, 0, 0, w, h);
-	GrUpdate (0);
+	bg->background = GrCreateSubBitmap (&nmBackground, 0, 0, w, h);
 	}
 }
 
@@ -563,14 +542,14 @@ void NMRestoreBackground (int sx, int sy, int dx, int dy, int w, int h)
 	if (y1 < 0) 
 		y1 = 0;
 
-	if (x2 >= nm_background.bmProps.w) 
-		x2=nm_background.bmProps.w-1;
-	if (y2 >= nm_background.bmProps.h) 
-		y2=nm_background.bmProps.h-1;
+	if (x2 >= nmBackground.bmProps.w) 
+		x2=nmBackground.bmProps.w-1;
+	if (y2 >= nmBackground.bmProps.h) 
+		y2=nmBackground.bmProps.h-1;
 
 	w = x2 - x1 + 1;
 	h = y2 - y1 + 1;
-	GrBmBitBlt (w, h, dx, dy, x1, y1, &nm_background, &(grdCurCanv->cvBitmap));
+	GrBmBitBlt (w, h, dx, dy, x1, y1, &nmBackground, &(grdCurCanv->cvBitmap));
 }
 
 //------------------------------------------------------------------------------
@@ -1204,7 +1183,7 @@ int NMCheckButtonPress ()
 //------------------------------------------------------------------------------
 
 extern int NetworkRequestPlayerNames (int);
-extern int RestoringMenu;
+extern int bRestoringMenu;
 
 ubyte bHackDblClickMenuMode = 0;
 
@@ -1446,7 +1425,7 @@ if ((ctrlP->scWidth != grdCurScreen->scWidth) || (ctrlP->scHeight != grdCurScree
 		ctrl.w = ctrl.tw;
 	}
 
-	if (RestoringMenu) { 
+	if (bRestoringMenu) { 
 		ctrl.right_offset = 0; 
 		ctrl.twidth = 0;
 		}
@@ -1483,10 +1462,10 @@ return 0;
 
 void NMSaveScreen (gsrCanvas **save_canvas, gsrCanvas **game_canvas, grsFont **saveFont)
 {
-WINDOS (*game_canvas = dd_grd_curcanv, *game_canvas = grdCurCanv);
-WINDOS (*save_canvas = dd_grd_curcanv, *save_canvas = grdCurCanv);
+*game_canvas = grdCurCanv;
+*save_canvas = grdCurCanv;
 *saveFont = grdCurCanv->cvFont;
-WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
+GrSetCurrentCanvas (NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -1577,8 +1556,6 @@ ctrl.width = width;
 ctrl.height = height;
 ctrl.bTinyMode = bTinyMode;
 FlushInput ();
-PA_DFX (pa_set_frontbuffer_current ());
-PA_DFX (pa_set_front_to_read ());
 
 SDL_ShowCursor (0);
 if (nItems < 1)
@@ -1590,7 +1567,7 @@ if (!gameOpts->menus.nStyle && (gameStates.app.nFunctionMode == FMODE_GAME) && !
 	sound_stopped = 1;
 	}
 
-if (!(gameOpts->menus.nStyle || ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) &&(!gameStates.app.bEndLevelSequence)))) {
+if (!(gameOpts->menus.nStyle || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) &&(!gameStates.app.bEndLevelSequence)))) {
 	time_stopped = 1;
 	StopTime ();
 	#ifdef TACTILE 
@@ -1599,10 +1576,15 @@ if (!(gameOpts->menus.nStyle || ((gameData.app.nGameMode & GM_MULTI) && (gameSta
 	#endif
 	}
 
-if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI))
+if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
+if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
+	OglDrawBuffer (GL_FRONT, 1);
+	NMLoadBackground (NULL, NULL, 0);
+	GrUpdate (0);
+	}
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
 old_keyd_repeat = keyd_repeat;
 keyd_repeat = 1;
@@ -1797,8 +1779,8 @@ if (k && (con_events (k) || bWheelUp || bWheelDown))
 		case KEY_COMMAND + KEY_P:
 		case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
-		 if (Pauseable_menu) {
-			 Pauseable_menu=0;
+		 if (bPauseableMenu) {
+			 bPauseableMenu=0;
 			 done=1;
 		 	 choice=-1;
 			}
@@ -2242,7 +2224,7 @@ launchOption:
 			}
 
 //	 HACK! Don't redraw loadgame preview
-		if (RestoringMenu) 
+		if (bRestoringMenu) 
 			item [0].redraw = 0;
 
 		if (choice > -1)	{
@@ -3195,9 +3177,6 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 
 	keyd_repeat = 1;
 
-   PA_DFX (pa_set_frontbuffer_current ());
-	PA_DFX (pa_set_front_to_read ());
-
 //	SetScreenMode (SCREEN_MENU);
 	SetPopupScreenMode ();
 	memset (&bg, 0, sizeof (bg));
@@ -3240,10 +3219,12 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	bg.saved = NULL;
 
 	if (!gameOpts->menus.nStyle) {
-		if ((gameStates.render.vr.buffers.offscreen->cv_w >= total_width) &&(gameStates.render.vr.buffers.offscreen->cv_h >= total_height))
+#if 0
+		if ((gameStates.render.vr.buffers.offscreen->cv_w >= total_width) &&
+			 (gameStates.render.vr.buffers.offscreen->cv_h >= total_height))
 			bg.background = &gameStates.render.vr.buffers.offscreen->cvBitmap;
 		else
-			//bg.background = GrCreateBitmap (width, (height + title_height));
+#endif
 			bg.background = GrCreateBitmap (total_width, total_height, 1);
 		Assert (bg.background != NULL);
 		GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);

@@ -938,12 +938,16 @@ Assert (gameStates.app.bAutoRunMission ||
 			(nLevel != 0)));
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/LogErr ("   loading level '%s'\n", pszLevelName);
+#if 0
 GrSetCurrentCanvas (NULL);
 GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
+#endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 /*---*/LogErr ("   loading palette\n");
 GrPaletteStepLoad (NULL);
  //LoadPalette ("groupa.256", NULL, 0, 0, 1);		//don't change screen
+if (!gameOpts->menus.nStyle)
+	NMLoadBackground (NULL, NULL, 0);
 ShowBoxedMessage (TXT_LOADING);
 /*---*/LogErr ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :

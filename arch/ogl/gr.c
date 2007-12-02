@@ -204,11 +204,11 @@ GrPaletteStepUp (0,0,0);//in case its left over from in game
 
 void GrUpdate (int bClear)
 {
-if (gameStates.ogl.bInitialized) {// && (gameStates.video.nScreenMode != SCREEN_GAME))
-	if ((curDrawBuffer == GL_BACK) && (gameOpts->menus.nStyle || !gameStates.menus.nInMenu))
-		OglSwapBuffers (1, bClear);
-	else
+if (gameStates.ogl.bInitialized) {
+	if ((curDrawBuffer == GL_FRONT) || (!gameOpts->menus.nStyle && gameStates.menus.nInMenu))
 		glFlush ();
+	else
+		OglSwapBuffers (1, bClear);
 	}
 }
 

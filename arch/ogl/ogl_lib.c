@@ -886,7 +886,7 @@ else {
 	glDrawBuffer (nBuffer);
 	}
 #else
-glDrawBuffer (nBuffer);
+glDrawBuffer (curDrawBuffer = nBuffer);
 #endif
 #if 1
 bSemaphore--;

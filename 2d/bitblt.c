@@ -681,7 +681,7 @@ if (sx2-sx1+1 < w)
 	w = sx2-sx1+1;
 if (sy2-sy1+1 < h)
 	h = sy2-sy1+1;
-GrBmUBitBlt(w,h, dx1, dy1, sx1, sy1, src, dest, 1);
+GrBmUBitBlt (w, h, dx1, dy1, sx1, sy1, src, dest, 1);
 }
 
 //------------------------------------------------------------------------------

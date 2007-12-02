@@ -268,7 +268,7 @@ return choice + 1;
 
 //------------------------------------------------------------------------------
 
-int RestoringMenu=0;
+int bRestoringMenu=0;
 
 int StateGetRestoreFile (char * fname, int bMulti)
 {
@@ -370,13 +370,13 @@ int StateGetRestoreFile (char * fname, int bMulti)
 
 	sc_last_item = -1;
 
-   RestoringMenu=1;
+   bRestoringMenu=1;
 	choice = state_default_item + NM_IMG_SPACE;
 	i = ExecMenu3 (NULL, TXT_LOAD_GAME_MENU, j + NM_IMG_SPACE, m, state_callback, 
 					   &choice, NULL, 190, -1);
 	if (i < 0)
 		return 0;
-   RestoringMenu=0;
+   bRestoringMenu=0;
 	choice -= NM_IMG_SPACE;
 
 	for (i=0; i<NUM_SAVES+1; i++)	{

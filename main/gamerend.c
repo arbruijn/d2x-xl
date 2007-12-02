@@ -1338,34 +1338,29 @@ void ShowBoxedMessage (char *msg)
 	//ubyte save_pal [256*3];
 
 	//memcpy (save_pal, grPalette, sizeof (save_pal));
-	WINDOS (
-		DDGrSetCurrentCanvas (&dd_VR_screen_pages [gameStates.render.vr.nCurrentPage]), 
-		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage])
-	);
-	GrSetCurFont (MEDIUM1_FONT);
-	GrGetStringSize (msg, &w, &h, &aw);
-	x = (grdCurScreen->scWidth-w)/2;
-	y = (grdCurScreen->scHeight-h)/2;
-	if (bg.bmp) {
-		GrFreeBitmap (bg.bmp);
-		bg.bmp = NULL;
+GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
+GrSetCurFont (MEDIUM1_FONT);
+GrGetStringSize (msg, &w, &h, &aw);
+x = (grdCurScreen->scWidth-w)/2;
+y = (grdCurScreen->scHeight-h)/2;
+if (bg.bmp) {
+	GrFreeBitmap (bg.bmp);
+	bg.bmp = NULL;
 	}
-	// Save the background of the display
-	bg.x=x; bg.y=y; bg.w=w; bg.h=h;
-	if (!gameOpts->menus.nStyle) {
-		bg.bmp = GrCreateBitmap (w+BOX_BORDER, h+BOX_BORDER, 1);
-		WIN (DDGRLOCK (dd_grd_curcanv));
-		GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, & (grdCurCanv->cvBitmap), bg.bmp, 1);
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
-		}
-	NMDrawBackground (&bg, x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1, 0);
-	GrSetFontColorRGBi (DKGRAY_RGBA, 1, 0, 0);
-	WIN (DDGRLOCK (dd_grd_curcanv));
-	GrUString (0x8000, y, msg);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	WIN (DDGRRESTORE);
-	GrUpdate (0);
-	NMRemoveBackground (&bg);
+// Save the background of the display
+bg.x = x; 
+bg.y = y; 
+bg.w = w; 
+bg.h = h;
+if (!gameOpts->menus.nStyle) {
+	bg.bmp = GrCreateBitmap (w+BOX_BORDER, h+BOX_BORDER, 1);
+	GrBmUBitBlt (w+BOX_BORDER, h+BOX_BORDER, 0, 0, x-BOX_BORDER/2, y-BOX_BORDER/2, &(grdCurCanv->cvBitmap), bg.bmp, 1);
+	}
+NMDrawBackground (&bg, x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1, 0);
+GrSetFontColorRGBi (DKGRAY_RGBA, 1, 0, 0);
+GrUString (0x8000, y, msg);
+GrUpdate (0);
+NMRemoveBackground (&bg);
 }
 
 //------------------------------------------------------------------------------

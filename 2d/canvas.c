@@ -138,21 +138,9 @@ void GrShowCanvas( gsrCanvas *canv )
 
 //	-----------------------------------------------------------------------------
 
-void GrSetCurrentCanvas( gsrCanvas *canv )
+void GrSetCurrentCanvas (gsrCanvas *canv)
 {
-#if 0 //TRACE
-con_printf (CONDBG, 
-	"grd_set_current_canvas (canv=%p, grdCurCanv=%p, grdCurScreen=%p)\n", 
-	canv, grdCurCanv, grdCurScreen);
-#endif
 grdCurCanv = canv ? canv : &(grdCurScreen->scCanvas);
-#ifndef NO_ASM
-gr_var_color = 
-	(!grdCurCanv->cv_color_rgb && (grdCurCanv->cvColor >= 0) && (grdCurCanv->cvColor <= 255)) ? 
-	grdCurCanv->cvColor : 0;
-gr_var_bitmap = grdCurCanv->cvBitmap.bmTexBuf;
-gr_var_bwidth = grdCurCanv->cvBitmap.bmProps.rowSize;
-#endif
 }
 
 //	-----------------------------------------------------------------------------

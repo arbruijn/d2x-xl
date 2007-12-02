@@ -532,7 +532,7 @@ return key;
 //------------------------------------------------------------------------------
 
 extern int NetworkWhoIsMaster(), NetworkHowManyConnected(), GetMyNetRanking();
-extern char Pauseable_menu;
+extern char bPauseableMenu;
 //char *NetworkModeNames[]={"Anarchy", "Team Anarchy", "Robo Anarchy", "Cooperative", "Capture the Flag", "Hoard", "Team Hoard", "Unknown"};
 
 void DoShowNetgameHelp()
@@ -627,7 +627,7 @@ void DoShowNetgameHelp()
 
   	FullPaletteSave();
 
-   Pauseable_menu=1;
+   bPauseableMenu=1;
 	ExecMenutiny2( NULL, "netGame Information", num, m, NULL);
 
 	PaletteRestore();

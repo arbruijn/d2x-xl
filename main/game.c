@@ -1707,7 +1707,7 @@ for (;;) {
 		}
 	if ((gameStates.app.nFunctionMode != FMODE_GAME) && 
 		 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat && 
-		 (gameData.demo.nState != ND_STATE_NORMAL))	{
+		 (gameData.demo.nState != ND_STATE_NORMAL)) {
 		int choice, fmode;
 		fmode = gameStates.app.nFunctionMode;
 		SetFunctionMode (FMODE_GAME);
@@ -1728,28 +1728,11 @@ for (;;) {
 		}
 	if ((gameStates.app.nFunctionMode != FMODE_GAME) &&  
 		 (gameData.demo.nState != ND_STATE_PLAYBACK) &&  
-		 (gameStates.app.nFunctionMode != FMODE_EDITOR)
-	#ifdef NETWORK
-			&& !gameStates.multi.bIWasKicked
-	#endif
-			) {
-#if 1
-		int choice = QuitSaveLoadMenu ();
-#else
-			int choice, fmode = gameStates.app.nFunctionMode;
+		 (gameStates.app.nFunctionMode != FMODE_EDITOR) &&
+		 !gameStates.multi.bIWasKicked) {
+		if (QuitSaveLoadMenu ())
 			SetFunctionMode (FMODE_GAME);
-			PaletteSave ();
-			ApplyModifiedPalette ();
-			ResetPaletteAdd ();
-			GrPaletteStepLoad (NULL);
-			gameStates.app.nExtGameStatus = GAMESTAT_ABORT_GAME;
-			choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
-			PaletteRestore ();
-			SetFunctionMode (fmode);
-#endif
-			if (choice)
-				SetFunctionMode (FMODE_GAME);
-			}
+		}
 	gameStates.multi.bIWasKicked = 0;
 	if (gameStates.app.nFunctionMode != FMODE_GAME)
 		longjmp (gameExitPoint, 0);
