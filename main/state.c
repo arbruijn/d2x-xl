@@ -1333,16 +1333,22 @@ if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 	else
 		RenderFrame (0, 0);
 #endif
-	OglReadBuffer (GL_FRONT, 1);
-	bm.bmProps.w = grdCurScreen->scWidth;
-	bm.bmProps.h = grdCurScreen->scHeight;
+	bm.bmProps.w = (grdCurScreen->scWidth / THUMBNAIL_LW) * THUMBNAIL_LW;
+	bm.bmProps.h = bm.bmProps.w * 3 / 5;	//force 5:3 aspect ratio
+	if (bm.bmProps.h > grdCurScreen->scHeight) {
+		bm.bmProps.h = (grdCurScreen->scHeight / THUMBNAIL_LH) * THUMBNAIL_LH;
+		bm.bmProps.w = bm.bmProps.h * 5 / 3;
+		}
+	x = (grdCurScreen->scWidth - bm.bmProps.w) / 2;
+	y = (grdCurScreen->scHeight - bm.bmProps.h) / 2;
 	bm.bmBPP = 3;
 	bm.bmProps.rowSize = bm.bmProps.w * bm.bmBPP;
-	bm.bmTexBuf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * bm.bmBPP);
-	glDisable (GL_TEXTURE_2D);
-	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, bm.bmTexBuf);
+	bm.bmTexBuf = D2_ALLOC (bm.bmProps.w * bm.bmProps.h * bm.bmBPP);
+	//glDisable (GL_TEXTURE_2D);
+	OglReadBuffer (GL_FRONT, 1);
+	glReadPixels (x, y, bm.bmProps.w, bm.bmProps.h, GL_RGB, GL_UNSIGNED_BYTE, bm.bmTexBuf);
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-	ShrinkTGA (&bm, grdCurScreen->scWidth / THUMBNAIL_LW, grdCurScreen->scHeight / THUMBNAIL_LH, 0);
+	ShrinkTGA (&bm, bm.bmProps.w / THUMBNAIL_LW, bm.bmProps.h / THUMBNAIL_LH, 0);
 	GrPaletteStepLoad (NULL);
 	// convert the resized TGA to bmp
 	for (y = 0; y < THUMBNAIL_LH; y++) {
