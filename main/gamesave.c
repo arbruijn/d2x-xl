@@ -1598,17 +1598,17 @@ else
 #endif
 	{
 	//NOTE LINK TO ABOVE!!
-	CFSeek (LoadFile,gamedata_offset,SEEK_SET);
-	game_err = LoadMineDataCompiled(LoadFile, 1);
-	CFSeek (LoadFile,minedata_offset,SEEK_SET);
-	mine_err = LoadMineSegmentsCompiled(LoadFile);
+	CFSeek (LoadFile, gamedata_offset, SEEK_SET);
+	game_err = LoadMineDataCompiled (LoadFile, 1);
+	CFSeek (LoadFile, minedata_offset, SEEK_SET);
+	mine_err = LoadMineSegmentsCompiled( LoadFile);
 	}
 if (mine_err == -1) {   //error!!
 	CFClose(LoadFile);
 	return 2;
 }
-CFSeek(LoadFile,gamedata_offset,SEEK_SET);
-game_err = LoadMineDataCompiled(LoadFile, 0);
+CFSeek (LoadFile, gamedata_offset, SEEK_SET);
+game_err = LoadMineDataCompiled (LoadFile, 0);
 if (game_err == -1) {   //error!!
 	CFClose(LoadFile);
 	return 3;

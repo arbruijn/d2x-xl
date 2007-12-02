@@ -268,18 +268,19 @@ return choice + 1;
 
 //------------------------------------------------------------------------------
 
-int bRestoringMenu=0;
+int bRestoringMenu = 0;
 
 int StateGetRestoreFile (char * fname, int bMulti)
 {
-	CFILE				*fp;
-	int				i, j, choice = -1, sgVersion, nsaves;
+	CFILE			*fp;
+	int			i, j, choice = -1, sgVersion, nSaves;
 	tMenuItem	m [NUM_SAVES + NM_IMG_SPACE + 1];
-	char				filename [NUM_SAVES+1] [30];
-	char				id [5];
-	int				valid;
+	char			filename [NUM_SAVES+1] [30];
+	char			id [5];
+	ubyte			pal [256 * 3];
+	int			valid;
 
-	nsaves=0;
+	nSaves = 0;
 	memset (m, 0, sizeof (m));
 	for (i = 0; i < NM_IMG_SPACE; i++) {
 		m [i].nType = NM_TYPE_TEXT; 
@@ -291,50 +292,46 @@ int StateGetRestoreFile (char * fname, int bMulti)
 		}
 	for (i = 0, j = 0; i < NUM_SAVES + 1; i++, j++) {
 		sc_bmp [i] = NULL;
-		if (!bMulti)
-			sprintf (filename [i], "%s.sg%x", LOCALPLAYER.callsign, i);
-		else
-			sprintf (filename [i], "%s.mg%x", LOCALPLAYER.callsign, i);
+		sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
 		valid = 0;
 		fp = CFOpen (filename [i], gameFolders.szSaveDir, "rb", 0);
 		if (fp) {
 			//Read id
-			CFRead (id, sizeof (char)*4, 1, fp);
+			CFRead (id, sizeof (char) * 4, 1, fp);
 			if (!memcmp (id, dgss_id, 4)) {
 				//Read sgVersion
 				CFRead (&sgVersion, sizeof (int), 1, fp);
 				if (sgVersion >= STATE_COMPATIBLE_VERSION)	{
 					// Read description
-					CFRead (szDesc [j], sizeof (char)*DESC_LENGTH, 1, fp);
-					//rpad_string (szDesc [i], DESC_LENGTH-1);
+					CFRead (szDesc [j], sizeof (char) * DESC_LENGTH, 1, fp);
+					// rpad_string (szDesc [i], DESC_LENGTH-1);
 					m [j+NM_IMG_SPACE].nType = NM_TYPE_MENU; 
 					m [j+NM_IMG_SPACE].text = szDesc [j];
 					// Read thumbnail
 					if (sgVersion < 26) {
-						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_W,THUMBNAIL_H, 1);
+						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_W, THUMBNAIL_H, 1);
 						CFRead (sc_bmp [i]->bmTexBuf, THUMBNAIL_W * THUMBNAIL_H, 1, fp);
 						}
 					else {
-						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_LW,THUMBNAIL_LH, 1);
+						sc_bmp [i] = GrCreateBitmap (THUMBNAIL_LW, THUMBNAIL_LH, 1);
 						CFRead (sc_bmp [i]->bmTexBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
 						}
 					if (sgVersion >= 9) {
-						ubyte pal [256*3];
 						CFRead (pal, 3, 256, fp);
 						GrRemapBitmapGood (sc_bmp [i], pal, -1, -1);
-					}
-					nsaves++;
+						}
+					nSaves++;
 					valid = 1;
+					}
 				}
-			}
 			CFClose (fp);
-		}
+			}
 		if (valid) {
 			if (bShowTime) {
 				struct tm	*t;
 				int			h;
 #ifdef _WIN32
-				char			fn [FILENAME_LEN];
+				char	fn [FILENAME_LEN];
 
 				struct _stat statBuf;
 				sprintf (fn, "%s/%s", gameFolders.szSaveDir, filename [i]);
@@ -360,7 +357,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
 		GrPaletteStepLoad (NULL);
 		}
 
-	if (nsaves < 1)	{
+	if (nSaves < 1)	{
 		ExecMessageBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
 		return 0;
 	}
@@ -379,7 +376,7 @@ int StateGetRestoreFile (char * fname, int bMulti)
    bRestoringMenu=0;
 	choice -= NM_IMG_SPACE;
 
-	for (i=0; i<NUM_SAVES+1; i++)	{
+	for (i = 0; i < NUM_SAVES + 1; i++)	{
 		if (sc_bmp [i])
 			GrFreeBitmap (sc_bmp [i]);
 	}
@@ -1320,7 +1317,6 @@ CFWrite (&i, sizeof (int), 1, fp);
 CFWrite (szDesc, sizeof (char) * DESC_LENGTH, 1, fp);
 // Save the current screen shot...
 if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
-		ubyte			*buf;
 		grsBitmap	bm;
 		int			k, x, y;
 		gsrCanvas * cnv_save;
@@ -1329,7 +1325,6 @@ if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 	GrSetCurrentCanvas (cnv);
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	
-	//buf = D2_ALLOC (THUMBNAIL_LW * THUMBNAIL_LH * 3);
 #if 1
 	if (curDrawBuffer == GL_BACK) {
 		gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
@@ -1339,14 +1334,13 @@ if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 		RenderFrame (0, 0);
 #endif
 	OglReadBuffer (GL_FRONT, 1);
-	bm.bmBPP = 3;
-	buf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * bm.bmBPP);
-	glDisable (GL_TEXTURE_2D);
-	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, buf);
 	bm.bmProps.w = grdCurScreen->scWidth;
 	bm.bmProps.h = grdCurScreen->scHeight;
+	bm.bmBPP = 3;
 	bm.bmProps.rowSize = bm.bmProps.w * bm.bmBPP;
-	bm.bmTexBuf = buf;
+	bm.bmTexBuf = D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * bm.bmBPP);
+	glDisable (GL_TEXTURE_2D);
+	glReadPixels (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, GL_RGB, GL_UNSIGNED_BYTE, bm.bmTexBuf);
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
 	ShrinkTGA (&bm, grdCurScreen->scWidth / THUMBNAIL_LW, grdCurScreen->scHeight / THUMBNAIL_LH, 0);
 	GrPaletteStepLoad (NULL);
@@ -1355,11 +1349,10 @@ if ((cnv = GrCreateCanvas (THUMBNAIL_LW, THUMBNAIL_LH))) {
 		i = y * THUMBNAIL_LW * 3;
 		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			cnv->cvBitmap.bmTexBuf [k] =
-				GrFindClosestColor (gamePalette, buf [i] / 4, buf [i+1] / 4, buf [i+2] / 4);
+			cnv->cvBitmap.bmTexBuf [k] = GrFindClosestColor (gamePalette, bm.bmTexBuf [i] / 4, bm.bmTexBuf [i+1] / 4, bm.bmTexBuf [i+2] / 4);
 			}
 	GrPaletteStepLoad (NULL);
-	D2_FREE (buf);
+	D2_FREE (bm.bmTexBuf);
 	CFWrite (cnv->cvBitmap.bmTexBuf, THUMBNAIL_LW * THUMBNAIL_LH, 1, fp);
 	GrSetCurrentCanvas (cnv_save);
 	GrFreeCanvas (cnv);
@@ -2028,6 +2021,7 @@ void StateRestoreTrigger (tTrigger *triggerP, CFILE *fp)
 {
 	int	i;
 
+i = CFTell (fp);
 triggerP->nType = (ubyte) CFReadByte (fp); 
 triggerP->flags = (ubyte) CFReadByte (fp); 
 triggerP->nLinks = CFReadByte (fp);
@@ -2663,7 +2657,7 @@ if (sgVersion < STATE_COMPATIBLE_VERSION)	{
 // Read description
 CFRead (szDesc, sizeof (char) * DESC_LENGTH, 1, fp);
 // Skip the current screen shot...
-CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W*THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
+CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W * THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
 // And now...skip the goddamn palette stuff that somebody forgot to add
 CFSeek (fp, 768, SEEK_CUR);
 if (sgVersion < 27)
@@ -2754,7 +2748,7 @@ int StateGetGameId (char *filename)
 	CFRead (szDesc, sizeof (char)*DESC_LENGTH, 1, fp);
 
 // Skip the current screen shot...
-	CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W*THUMBNAIL_H : THUMBNAIL_LW*THUMBNAIL_LH, SEEK_CUR);
+	CFSeek (fp, (sgVersion < 26) ? THUMBNAIL_W * THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
 
 // And now...skip the palette stuff that somebody forgot to add
 	CFSeek (fp, 768, SEEK_CUR);
