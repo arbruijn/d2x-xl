@@ -982,13 +982,15 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		nIndex = pmf->nIndex;
 #if G3_DRAW_ARRAYS
 #	if G3_ALLOW_TRANSPARENCY
-		bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
-		if (bTransparent != bTransparency) {
-			if (bTransparent)
-				pm->bHasTransparency = 1;
-			pmf++;
-			i--;
-			continue;
+		if (bHires) {
+			bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
+			if (bTransparent != bTransparency) {
+				if (bTransparent)
+					pm->bHasTransparency = 1;
+				pmf++;
+				i--;
+				continue;
+				}
 			}
 #	endif
 #if G3_DRAW_ARRAYS
@@ -1307,7 +1309,7 @@ else
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
 	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 0);
-if (/*bHires &&*/ pm->bHasTransparency)
+if (bHires && pm->bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 1);
 glDisable (GL_TEXTURE_2D);
 glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);

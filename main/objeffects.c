@@ -1293,8 +1293,7 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 	glDepthMask (0);
 	glBlendFunc (GL_ONE, GL_ONE);
 	if (bSimple) {
-		G3DrawBitmap (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, 
-						  &color, alpha, 1);
+		G3DrawSprite (&vPos, FixMulDiv (xSize, bmpCorona->bmProps.w, bmpCorona->bmProps.h), xSize, bmpCorona, &color, alpha, 1);
 		}
 	else {
 		fVector	quad [4], verts [8], vCenter, vNormal, v;
