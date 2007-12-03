@@ -964,7 +964,9 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		glColor4f (0, 0, 0, GrAlpha ());
 	for (psm = pm->pSubModels + nSubModel, i = psm->nFaces, pmf = psm->pFaces; i; ) {
 		if (bTextured && (nBitmap != pmf->nBitmap)) {
-			if (0 <= (nBitmap = pmf->nBitmap)) {
+			if (0 > (nBitmap = pmf->nBitmap)) 
+				glDisable (GL_TEXTURE_2D);
+			else {
 				bmP = bHires ? pm->pTextures + nBitmap : modelBitmaps [nBitmap];
 				glActiveTexture (GL_TEXTURE0);
 				glClientActiveTexture (GL_TEXTURE0);
@@ -975,10 +977,6 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				if (OglBindBmTex (bmP, 1, 3))
 					continue;
 				OglTexWrap (bmP->glTexture, GL_REPEAT);
-				}
-			else {
-				glColor3f (1,1,1);
-				//glDisable (GL_TEXTURE_2D);
 				}
 			}
 		nIndex = pmf->nIndex;
@@ -1309,7 +1307,7 @@ else
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
 	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 0);
-if (bHires && pm->bHasTransparency)
+if (/*bHires &&*/ pm->bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 1);
 glDisable (GL_TEXTURE_2D);
 glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);

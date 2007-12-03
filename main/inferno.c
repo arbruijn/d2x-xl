@@ -2988,7 +2988,6 @@ static tOOFToModel oofToModel [] = {
 	// player ship
 	{"pyrogl.oof", NULL, 108, 0}, 
 	{NULL, NULL, 110, 0}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
-#if 0
 #ifdef _DEBUG	//D3 robots for testing
 	{"thresherboss.oof", NULL, 39, 1}, 
 	{"orbot.oof", NULL, 58, 1}, 
@@ -3122,7 +3121,6 @@ static tOOFToModel oofToModel [] = {
 	{"redkey.oof", NULL, MAX_POLYGON_MODELS - 30, 0},
 	{"goldkey.oof", NULL, MAX_POLYGON_MODELS - 31, 0},
 	{"vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32, 0},
-#endif
 	{"hostage.oof", NULL, HOSTAGE_MODEL, 0}
 	};
 
