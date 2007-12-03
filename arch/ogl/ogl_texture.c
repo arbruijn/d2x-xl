@@ -1290,13 +1290,15 @@ void OglTexWrap (tOglTexture *tex, int state)
 #if 0
 if (tex->handle < 0)
 	state = GL_CLAMP;
-#endif
 if (!tex || (tex->wrapstate != state) || (tex->numrend < 1)) {
+#endif
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, state);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, state);
+#if 0
 	if (tex)
 		tex->wrapstate = state;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

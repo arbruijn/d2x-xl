@@ -64,7 +64,8 @@ extern int bZPass;
 #define G3_DRAW_RANGE_ELEMENTS	1
 #define G3_SW_SCALING				0
 #define G3_HW_LIGHTING				1
-#define G3_USE_VBOS					1//G3_HW_LIGHTING
+#define G3_USE_VBOS					1 //G3_HW_LIGHTING
+#define G3_ALLOW_TRANSPARENCY		1
 
 #define G3_BUFFER_OFFSET(_i)	(GLvoid *) ((char *) NULL + (_i))
 
@@ -523,8 +524,10 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
 		pfj = pfi++;
 		if (G3CmpFaces (pfi, pfj, pTextures))
 			nId++;
-		if (pTextures && (pTextures [pfi->nBitmap].bmBPP == 4))
+#if G3_ALLOW_TRANSPARENCY
+		if (pTextures && (pTextures [pfi->nBitmap].bmProps.flags & BM_FLAG_TRANSPARENT))
 			pm->bHasTransparency = 1;
+#endif
 		}
 	pfi->nId = nId;
 	}
@@ -974,12 +977,14 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				OglTexWrap (bmP->glTexture, GL_REPEAT);
 				}
 			else {
+				glColor3f (1,1,1);
 				//glDisable (GL_TEXTURE_2D);
 				}
 			}
 		nIndex = pmf->nIndex;
 #if G3_DRAW_ARRAYS
-		bTransparent = bmP && (bmP->bmBPP == 4);
+#	if G3_ALLOW_TRANSPARENCY
+		bTransparent = bmP && ((bmP->bmProps.flags & BM_FLAG_TRANSPARENT) != 0);
 		if (bTransparent != bTransparency) {
 			if (bTransparent)
 				pm->bHasTransparency = 1;
@@ -987,7 +992,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			i--;
 			continue;
 			}
+#	endif
+#if G3_DRAW_ARRAYS
 		if ((nFaceVerts = pmf->nVerts) > 4) {
+#else
+		if ((nFaceVerts = pmf->nVerts) > 0) {
+#endif
 			if (!nPass && pmf->bThruster)
 				G3GetThrusterPos (nModel, pmf, &vo, bHires);
 			nVerts = nFaceVerts;
@@ -1055,6 +1065,23 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			glVertex3fv ((GLfloat *) &pmv->vertex);
 			}
 		glEnd ();
+		pmv -= nVerts;
+#	if 0
+		glDisable (GL_TEXTURE_2D);
+		glBegin (GL_LINE_LOOP);
+		for (j = nVerts; j; j--, pmv++) {
+			if (!gameStates.render.bCloaked) {
+				glTexCoord2fv ((GLfloat *) &pmv->texCoord);
+				glColor4fv ((GLfloat *) (pm->pVBColor + pmv->nIndex));
+				}
+			if (gameOpts->ogl.bObjLighting)
+				glNormal3fv ((GLfloat *) &pmv->normal);
+			glVertex3fv ((GLfloat *) &pmv->vertex);
+			}
+		glEnd ();
+		if (bmP)
+			glEnable (GL_TEXTURE_2D);
+#	endif
 		}
 #endif
 		}

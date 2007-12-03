@@ -167,7 +167,7 @@ typedef struct grsBitmap {
 											//   ModeX = *parent+(rowSize*y+x/4)
 											//   SVGA = *parent+(rowSize*y+x)
 	ushort			bmHandle;		//for application.  initialized to 0
-	ubyte				bmAvgColor;	//  Average color of all pixels in texture map.
+	ubyte				bmAvgColor;		//  Average color of all pixels in texture map.
 	tRgbColorb		bmAvgRGB;
 	ubyte				bmBPP :3;
 	ubyte				bmType :3;

@@ -361,6 +361,9 @@ if (r && CompressTGA (bmP))
 #endif
 if (fp)
 	CFClose (fp);
+strncpy (bmP->szName, pszFile, sizeof (bmP->szName));
+if ((psz = strrchr (bmP->szName, '.')))
+	*psz = '\0';
 return r;
 }
 

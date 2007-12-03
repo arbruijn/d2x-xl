@@ -913,8 +913,10 @@ if (!EGI_FLAG (bThrusterFlames, 1, 1, 0))
 #endif
 if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
 	return;
+#if 0
 if (gameData.models.modelToOOF [objP->rType.polyObjInfo.nModel])
 	return;
+#endif
 fSpeed = f2fl (VmVecMag (&objP->mType.physInfo.velocity));
 ti.fLength = fSpeed / 60.0f + 0.5f + (float) (rand () % 100) / 1000.0f;
 if (!pt || (fSpeed >= pt->fSpeed)) {

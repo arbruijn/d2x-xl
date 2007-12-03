@@ -977,7 +977,7 @@ nIndent += 2;
 OOF_PrintLog ("reading face vertex\n");
 pfv->nIndex = OOF_ReadInt (fp, "nIndex");
 pfv->fu = OOF_ReadFloat (fp, "fu");
-pfv->fv = -OOF_ReadFloat (fp, "fv");
+pfv->fv = /*-*/OOF_ReadFloat (fp, "fv");
 #if OOF_TEST_CUBE
 /*!!!*/if (pfv->fu == 0.5) pfv->fu = 1.0;
 /*!!!*/if (pfv->fv == 0.5) pfv->fv = 1.0;
