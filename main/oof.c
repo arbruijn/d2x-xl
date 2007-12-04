@@ -971,14 +971,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFaceVert (CFILE *fp, tOOF_faceVert *pfv, int bFlipY)
+int OOF_ReadFaceVert (CFILE *fp, tOOF_faceVert *pfv, int bFlipV)
 {
 nIndent += 2;
 OOF_PrintLog ("reading face vertex\n");
 pfv->nIndex = OOF_ReadInt (fp, "nIndex");
 pfv->fu = OOF_ReadFloat (fp, "fu");
 pfv->fv = OOF_ReadFloat (fp, "fv");
-if (bFlipY)
+if (bFlipV)
 	pfv->fv = -pfv->fv;
 #if OOF_TEST_CUBE
 /*!!!*/if (pfv->fu == 0.5) pfv->fu = 1.0;
@@ -1132,7 +1132,7 @@ return OOF_VecNormal (&pf->vRotNormal, pv + pfv [0].nIndex, pv + pfv [1].nIndex,
 /*!!!*/static int nTexId = 0;
 #endif
 
-int OOF_ReadFace (CFILE *fp, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *pfv, int bFlipY)
+int OOF_ReadFace (CFILE *fp, tOOF_subObject *pso, tOOF_face *pf, tOOF_faceVert *pfv, int bFlipV)
 {
 	tOOF_face	f;
 	int			i, v0 = 0;
@@ -1173,7 +1173,7 @@ if (pfv) {
 	OOF_InitMinMax (&f.vMin, &f.vMax);
 	e.v1 [0] = -1;
 	for (i = 0; i < f.nVerts; i++)
-		if (!OOF_ReadFaceVert (fp, f.pVerts + i, bFlipY)) {
+		if (!OOF_ReadFaceVert (fp, f.pVerts + i, bFlipV)) {
 			nIndent -= 2;
 			return OOF_FreeFace (&f);
 			}
@@ -1233,7 +1233,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadSubObject (CFILE *fp, tOOFObject *po, int bFlipY)
+int OOF_ReadSubObject (CFILE *fp, tOOFObject *po, int bFlipV)
 {
 	tOOF_subObject	so;
 	int				h, i;
@@ -1329,7 +1329,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 		so.edges.nEdges = 0;
 		}
 	for (i = 0, nFaceVerts = 0; i < so.faces.nFaces; i++) {
-		if (!(h = OOF_ReadFace (fp, &so, so.faces.pFaces + i, bReadData ? so.faces.pFaceVerts + nFaceVerts : NULL, bFlipY))) {
+		if (!(h = OOF_ReadFace (fp, &so, so.faces.pFaces + i, bReadData ? so.faces.pFaceVerts + nFaceVerts : NULL, bFlipV))) {
 			nIndent -= 2;
 			return OOF_FreeSubObject (&so);
 			}
@@ -1338,7 +1338,7 @@ for (bReadData = 0; bReadData < 2; bReadData++) {
 	}
 #else
 for (i = 0; i < so.faces.nFaces; i++)
-	if (!OOF_ReadFace (fp, &so, so.faces.pFaces + i, NULL, bFlipY)) {
+	if (!OOF_ReadFace (fp, &so, so.faces.pFaces + i, NULL, bFlipV)) {
 		nIndent -= 2;
 		return OOF_FreeSubObject (&so);
 		}
@@ -1775,7 +1775,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipY)
+int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV)
 {
 	CFILE				*fp;
 	char				fileId [4];
@@ -1833,7 +1833,7 @@ while (!CFEoF (fp)) {
 			break;
 
 		case 2:
-			if (!OOF_ReadSubObject (fp, &o, bFlipY))
+			if (!OOF_ReadSubObject (fp, &o, bFlipV))
 				return OOF_FreeObject (&o);
 			break;
 

@@ -3166,7 +3166,7 @@ short LoadHiresModel (tOOFObject *po, short i)
 {
 	short	j = sizeofa (oofToModel);
 	char	szModel [FILENAME_LEN];
-	int	bFlipY = oofToModel [i].nModel > 200;
+	int	bFlipV = oofToModel [i].nModel > 200;
 
 sprintf (szModel, "model%d.oof", oofToModel [i].nModel);
 #ifdef _DEBUG
@@ -3178,7 +3178,7 @@ if (!strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
 	oofToModel [i].pszOOF = "cube.oof";
 #endif
 if (!(oofToModel [i].pszOOF && 
-	 (OOF_ReadFile (oofToModel [i].pszOOF, po, oofToModel [i].nType, bFlipY) || OOF_ReadFile (szModel, po, oofToModel [i].nType, bFlipY))))
+	 (OOF_ReadFile (oofToModel [i].pszOOF, po, oofToModel [i].nType, bFlipV) || OOF_ReadFile (szModel, po, oofToModel [i].nType, bFlipV))))
 	return LoadLoresModel (i);
 do {
 	CBP (!oofToModel [i].nModel);

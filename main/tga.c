@@ -361,9 +361,13 @@ if (r && CompressTGA (bmP))
 #endif
 if (fp)
 	CFClose (fp);
-strncpy (bmP->szName, pszFile, sizeof (bmP->szName));
+#ifdef _DEBUG
+strncpy (bmP->szName, pszFile, sizeof (bmP->szName) - 1);
 if ((psz = strrchr (bmP->szName, '.')))
 	*psz = '\0';
+else
+	bmP->szName [sizeof (bmP->szName) - 1] = '\0';
+#endif
 return r;
 }
 
