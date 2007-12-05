@@ -197,7 +197,7 @@ void EndRenderItemThread (void)
 
 for (i = 0; i < 2; i++)
 	tiRenderItems.ti [i].bDone = 1;
-G3_SLEEP (10);
+G3_SLEEP (100);
 #if KILL_RENDER_THREADS
 #	if 1
 SDL_KillThread (tiRender.ti [0].pThread);
@@ -231,7 +231,7 @@ void EndRenderThreads (void)
 
 for (i = 0; i < 2; i++)
 	tiRender.ti [i].bDone = 1;
-G3_SLEEP (10);
+G3_SLEEP (100);
 #if KILL_RENDER_THREADS
 #	if 1
 SDL_KillThread (tiRender.ti [0].pThread);
