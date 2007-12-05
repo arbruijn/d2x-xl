@@ -1178,6 +1178,8 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 					nIncr = nStart ? -1 : 1,
 					bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE);
 
+	static		tFaceColor brightColor = {{1,1,1,1},1};
+
 gameData.render.lights.dynamic.shader.nActiveLights [0] =
 gameData.render.lights.dynamic.shader.nActiveLights [1] =
 gameData.render.lights.dynamic.shader.nActiveLights [2] =
@@ -1188,8 +1190,6 @@ gameStates.render.nState = 0;
 if (bDynLight && gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
-if (gameStates.render.bFullBright)
-	c.color.red = c.color.green = c.color.blue = c.color.alpha = 1;
 for (i = nStart; i != nEnd; i += nIncr) {
 	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 		continue;
@@ -1226,7 +1226,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			for (h = 0; h < 4; h++, pc++) {
 				if (gameStates.render.bFullBright) 
-					*pc = c.color;
+					*pc = nColor ? faceColor [nColor].color : brightColor.color;
 				else {
 					c = faceColor [nColor];
 					if (nColor)

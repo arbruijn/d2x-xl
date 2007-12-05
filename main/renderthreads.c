@@ -27,6 +27,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "interp.h"
 
+#define KILL_RENDER_THREADS 1
+
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;
 
@@ -196,7 +198,7 @@ void EndRenderItemThread (void)
 for (i = 0; i < 2; i++)
 	tiRenderItems.ti [i].bDone = 1;
 G3_SLEEP (10);
-#if 0
+#if KILL_RENDER_THREADS
 #	if 1
 SDL_KillThread (tiRender.ti [0].pThread);
 SDL_KillThread (tiRender.ti [1].pThread);
@@ -230,7 +232,7 @@ void EndRenderThreads (void)
 for (i = 0; i < 2; i++)
 	tiRender.ti [i].bDone = 1;
 G3_SLEEP (10);
-#if 0
+#if KILL_RENDER_THREADS
 #	if 1
 SDL_KillThread (tiRender.ti [0].pThread);
 SDL_KillThread (tiRender.ti [1].pThread);
