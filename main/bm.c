@@ -1067,7 +1067,7 @@ for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i;
 	OglFreeBmTexture (bmP);
 	if (bmP->bmTexBuf) {
 		D2_FREE (bmP->bmTexBuf);
-		UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
+		UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];

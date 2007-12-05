@@ -440,7 +440,7 @@ if (!bRealloc)
 else {
 	if (!(pData = D2_ALLOC (xMax * yMax * bpp)))
 		return 0;
-	UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 	pDest = pData;
 	}
 if (bpp == 3) {
@@ -514,7 +514,7 @@ bmP->bmProps.w = xMax;
 bmP->bmProps.h = yMax;
 bmP->bmProps.rowSize /= xFactor;
 if (bRealloc)
-	UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 return 1;
 }
 
@@ -628,7 +628,10 @@ if (BM_MASK (bmP))
 	return BM_MASK (bmP);
 if (!(BM_MASK (bmP) = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))
 	return NULL;
-UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
+#ifdef _DEBUG
+sprintf (BM_MASK (bmP)->szName, "{%s}", bmP->szName);
+#endif
+UseBitmapCache (BM_MASK (bmP), (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 if (bmP->bmProps.flags & BM_FLAG_TGA) {
 	for (pi = bmP->bmTexBuf, pm = BM_MASK (bmP)->bmTexBuf; i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128)) {

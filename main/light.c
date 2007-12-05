@@ -1496,7 +1496,7 @@ if (left < r)
 
 void AddDynLights (void)
 {
-	int			i, j, t;
+	int			nSegment, nSide, t;
 	tSegment		*segP;
 	tSide			*sideP;
 	tFaceColor	*pc;
@@ -1519,27 +1519,31 @@ gameData.render.lights.dynamic.nNearestVertLights = pVertLights;
 gameData.render.lights.dynamic.owners = pOwners;
 gameData.render.lights.dynamic.nLights = 0;
 gameData.render.lights.dynamic.material.bValid = 0;
-for (i = 0, segP = gameData.segs.segments; i < gameData.segs.nSegments; i++, segP++) {
-	if (gameData.segs.segment2s [i].special == SEGMENT_IS_SKYBOX)
+for (nSegment = 0, segP = gameData.segs.segments; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX)
 		continue;
 #ifdef _DEBUG
-	if (i == nDbgSeg)
+	if (nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;
 #endif
-	for (j = 0, sideP = segP->sides; j < 6; j++, sideP++) {
-		if ((segP->children [j] >= 0) && !IS_WALL (sideP->nWall))
+	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nDbgSeg = nDbgSeg;
+#endif
+		if ((segP->children [nSide] >= 0) && !IS_WALL (sideP->nWall))
 			continue;
 		t = sideP->nBaseTex;
 		if (t >= MAX_WALL_TEXTURES) 
 			continue;
 		pc = gameData.render.color.textures + t;
 		if (gameData.pig.tex.brightness [t])
-			AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1, NULL);
+			AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) nSegment, (short) nSide, -1, NULL);
 		t = sideP->nOvlTex;
 		if ((t > 0) && (t < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [t]) {
 			pc = gameData.render.color.textures + t;
 			if ((pc->color.red > 0.0f) || (pc->color.green > 0.0f) || (pc->color.blue > 0.0f))
-				AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) i, (short) j, -1, NULL);
+				AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) nSegment, (short) nSide, -1, NULL);
 			}
 		//if (gameData.render.lights.dynamic.nLights)
 		//	return;

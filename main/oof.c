@@ -1359,7 +1359,7 @@ int OOF_ReleaseTextures (void)
 for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
 	if ((bmP = po->textures.pBitmaps))
 		for (j = po->textures.nTextures; j; j--, bmP++) {
-			UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
+			UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 			GrFreeBitmapData (bmP);
 			}
 return 0;
@@ -1379,13 +1379,13 @@ if (nShrinkFactor > 1) {
 #ifdef _DEBUG
 		strncpy (bmP->szName, fn, sizeof (bmP->szName));
 #endif
-		UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
+		UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 		return 1;
 		}
 	}
 if (!ReadTGA (pszFile, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
 	return 0;
-UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
+UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 if ((nShrinkFactor > 1) && (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	if (gameStates.app.bCacheTextures) {
 		tTgaHeader	h;

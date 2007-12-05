@@ -1425,7 +1425,7 @@ inline void PiggyFreeBitmapData (grsBitmap *bmP)
 {
 if (bmP->bmTexBuf) {
 	D2_FREE (bmP->bmTexBuf);
-	UseBitmapCache (bmP, -bmP->bmProps.h * bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 	}
 }
 
@@ -1632,11 +1632,11 @@ bmP = gameData.pig.tex.bitmaps [bD1] + i;
 if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 #endif
 	StopTime ();
-	nSize = bmP->bmProps.h * bmP->bmProps.rowSize;
+	nSize = (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize;
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "host")) {
+	if (strstr (bmName, "misc075")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
@@ -1674,7 +1674,7 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 			BM_OVERRIDE (bmP) = altBmP;
 			bmP = altBmP;
 			ReadTGAHeader (fp, &h, bmP);
-			nSize = h.width * h.height * bmP->bmBPP;
+			nSize = (int) h.width * (int) h.height * bmP->bmBPP;
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
 			nOffset = CFTell (fp);
@@ -2251,8 +2251,6 @@ if (fp) {
 			int			nFrames = bm.bmProps.h / bm.bmProps.w;
 			tTgaHeader	h;
 
-			if (indices [i] == 1483)
-				i = i;
 			h.width = bm.bmProps.w;
 			h.height = bm.bmProps.h;
 			h.bits = 32;
@@ -2284,7 +2282,7 @@ if (fp) {
 			j = indices [i];
 			}
 		else {
-			int nSize = bm.bmProps.w * bm.bmProps.h;
+			int nSize = (int) bm.bmProps.w * (int) bm.bmProps.h;
 			if (nSize != (int) CFRead (bm.bmTexBuf, 1, nSize, fp)) {
 				D2_FREE (bm.bmTexBuf);
 				break;
@@ -2313,7 +2311,7 @@ if (fp) {
 		if (c && !bmP->bmAvgColor)
 			bmP->bmAvgColor = GrFindClosestColor (bmP->bmPalette, (int) c->red, (int) c->green, (int) c->blue);
 		}
-		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, bm.bmProps.h * bm.bmProps.rowSize);
+		UseBitmapCache (gameData.pig.tex.pAltBitmaps + j, (int) bm.bmProps.h * (int) bm.bmProps.rowSize);
 		}
 	D2_FREE (indices);
 	D2_FREE (bmh);
@@ -2376,7 +2374,7 @@ if (pNextBmP) {
 	}
 else {
 	bmP->bmTexBuf = D2_ALLOC (bmP->bmProps.h * bmP->bmProps.rowSize);
-	UseBitmapCache (bmP, bmP->bmProps.h * bmP->bmProps.rowSize);
+	UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 	}
 CFRead (bmP->bmTexBuf, 1, zSize, piggyFP);
 bSwap0255 = 0;

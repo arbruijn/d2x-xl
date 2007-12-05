@@ -643,7 +643,7 @@ if (fIntensity < 0.01f)
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
-if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle () == 1)) {
+if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
 	}
