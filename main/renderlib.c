@@ -464,8 +464,10 @@ if (gameOpts->render.color.bAmbientLight && !USE_LIGHTMAPS) {
 	pc->color.green += gameData.render.color.ambient [nVertex].color.green;
 	pc->color.blue += gameData.render.color.ambient [nVertex].color.blue;
 	}
+#if 0
 else
 	memset (pc, 0, sizeof (*pc));
+#endif
 return 1;
 }
 
@@ -547,7 +549,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 					pc->color.red = fl + pdc->red * dl;
 					pc->color.green = fl + pdc->green * dl;
 					pc->color.blue = fl + pdc->blue * dl;
-					ScaleColor (pc, dl);
+					ScaleColor (pc, fl + dl);
 					}
 				}
 			else {
@@ -573,15 +575,11 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 			}
 		}
 	else {
-		pc->color.red =
-		pc->color.green =
-		pc->color.blue = fl + dl;
+		ScaleColor (pc, fl + dl);
 		}
 	}
 else {
-	pc->color.red =
-	pc->color.green =
-	pc->color.blue = fl + dl;
+	ScaleColor (pc, fl + dl);
 	}
 pc->index = gameOpts->render.nPath;
 //saturate at max value

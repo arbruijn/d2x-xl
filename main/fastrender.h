@@ -16,17 +16,29 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _FASTRENDER_H
 
 #include "inferno.h"
+#include "endlevel.h"
 
 //------------------------------------------------------------------------------
 
 void QSortFaces (int left, int right);
 void RenderFaceList (int nType);
-void ComputeFaceLight (int nStart, int nEnd, int nThread);
+void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread);
+void ComputeStaticFaceLight (int nStart, int nEnd, int nThread);
 void UpdateSlidingFaces (void);
 int CountRenderFaces (void);
 void GetRenderVertices (void);
 void RenderMineObjects (int nType);
 void RenderSkyBoxFaces (void);
+
+//------------------------------------------------------------------------------
+
+static inline void ComputeFaceLight (int nStart, int nEnd, int nThread)
+{
+if (gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE))
+	ComputeDynamicFaceLight (nStart, nEnd, nThread);
+else
+	ComputeStaticFaceLight (nStart, nEnd, nThread);
+}
 
 //------------------------------------------------------------------------------
 

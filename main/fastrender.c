@@ -1162,7 +1162,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void ComputeFaceLight (int nStart, int nEnd, int nThread)
+void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 {
 	tSegment		*segP;
 	tSegFaces	*segFaceP;
@@ -1171,12 +1171,9 @@ void ComputeFaceLight (int nStart, int nEnd, int nThread)
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 	short			nVertex, nSegment, nSide;
-	fix			xLight;
 	float			fAlpha;
-	tUVL			*uvlP;
-	int			h, i, j, uvi, nColor, 
-					nIncr = nStart ? -1 : 1,
-					bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE);
+	int			h, i, j, nColor, 
+					nIncr = nStart ? -1 : 1;
 
 	static		tFaceColor brightColor = {{1,1,1,1},1};
 
@@ -1187,7 +1184,7 @@ gameData.render.lights.dynamic.shader.nActiveLights [3] = 0;
 gameStates.ogl.bUseTransform = 1;
 gameStates.render.nState = 0;
 #	if SHADER_VERTEX_LIGHTING
-if (bDynLight && gameStates.ogl.bVertexLighting)
+if (gameStates.ogl.bVertexLighting)
 	gameStates.ogl.bVertexLighting = ComputeVertexLight (-1, 0, NULL);
 #endif
 for (i = nStart; i != nEnd; i += nIncr) {
@@ -1199,117 +1196,151 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
 		continue;
 		}
-	if (bDynLight) {
 #ifdef _DEBUG
-		if (nSegment == nDbgSeg)
+	if (nSegment == nDbgSeg)
+		nSegment = nSegment;
+#endif
+	if (!(gameStates.render.bFullBright || GEO_LIGHTING))
+		SetNearestDynamicLights (nSegment, 0, 0, nThread);
+	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+		nSide = faceP->nSide;
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			nSegment = nSegment;
-#endif
-		if (!(gameStates.render.bFullBright || GEO_LIGHTING))
-			SetNearestDynamicLights (nSegment, 0, 0, nThread);
-		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
-			nSide = faceP->nSide;
-#ifdef _DEBUG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
+			if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
 				nSegment = nSegment;
-				if (gameData.render.lights.dynamic.shader.nActiveLights [nThread])
-					nSegment = nSegment;
-				}
+			}
 #endif
-			if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
-				continue;
-			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
-				faceP->bVisible = 0;
-				continue;
-				}
-			faceP->color = faceColor [nColor].color;
+		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
+			continue;
+		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+			faceP->bVisible = 0;
+			continue;
+			}
+		faceP->color = faceColor [nColor].color;
 //			SetDynLightMaterial (nSegment, faceP->nSide, -1);
-			pc = gameData.segs.faces.color + faceP->nIndex;
-			for (h = 0; h < 4; h++, pc++) {
-				if (gameStates.render.bFullBright) 
-					*pc = nColor ? faceColor [nColor].color : brightColor.color;
+		pc = gameData.segs.faces.color + faceP->nIndex;
+		for (h = 0; h < 4; h++, pc++) {
+			if (gameStates.render.bFullBright) 
+				*pc = nColor ? faceColor [nColor].color : brightColor.color;
+			else {
+				c = faceColor [nColor];
+				if (nColor)
+					*pc = c.color;
 				else {
-					c = faceColor [nColor];
-					if (nColor)
-						*pc = c.color;
-					else {
-						nVertex = faceP->index [h];
+					nVertex = faceP->index [h];
+#ifdef _DEBUG
+					if (nVertex == nDbgVertex)
+						nDbgVertex = nDbgVertex;
+#endif
+					if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
+#if 0
+						if (gameStates.app.bMultiThreaded) {
+							if (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
+								goto skipVertex;
+							}
+#endif
+						if (GEO_LIGHTING)
+							c.color = gameData.render.color.ambient [nVertex].color;
+						else
+#	if SHADER_VERTEX_LIGHTING
+							if (!ComputeVertexLight (nVertex, 1, &c))
+#	endif
+							G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
+												NULL, &c, 1, 0, nThread);
+#if 0
+						if (gameStates.app.bMultiThreaded)
+							gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
+#endif
 #ifdef _DEBUG
 						if (nVertex == nDbgVertex)
-							nDbgVertex = nDbgVertex;
+							nVertex = nVertex;
 #endif
-						if (gameData.render.color.vertices [nVertex].index != gameStates.render.nFrameFlipFlop + 1) {
-#if 0
-							if (gameStates.app.bMultiThreaded) {
-								if (gameData.render.mine.bCalcVertexColor [nVertex] & nThreadFlags [1])
-									goto skipVertex;
-								}
-#endif
-							if (GEO_LIGHTING)
-								c.color = gameData.render.color.ambient [nVertex].color;
-							else
-#	if SHADER_VERTEX_LIGHTING
-								if (!ComputeVertexLight (nVertex, 1, &c))
-#	endif
-								G3VertexColor (&gameData.segs.points [nVertex].p3_normal.vNormal, gameData.segs.fVertices + nVertex, nVertex, 
-													NULL, &c, 1, 0, nThread);
-#if 0
-							if (gameStates.app.bMultiThreaded)
-								gameData.render.mine.bCalcVertexColor [nVertex] &= nThreadFlags [2];
-#endif
-#ifdef _DEBUG
-							if (nVertex == nDbgVertex)
-								nVertex = nVertex;
-#endif
-							}
-						*pc = gameData.render.color.vertices [nVertex].color;
 						}
-					if (nColor == 1) {
-						pc->red *= fAlpha;
-						pc->blue *= fAlpha;
-						pc->green *= fAlpha;
-						}
-					pc->alpha = fAlpha;
+					*pc = gameData.render.color.vertices [nVertex].color;
 					}
-				}
-			gameData.render.lights.dynamic.material.bValid = 0;
-			}
-		}
-	else {
-		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
-			nSide = faceP->nSide;
-			if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
-				continue;
-#ifdef _DEBUG
-			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nSegment = nSegment;
-#endif
-			if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
-				faceP->bVisible = 0;
-				continue;
-				}
-			faceP->color = faceColor [nColor].color;
-			pc = gameData.segs.faces.color + faceP->nIndex;
-			uvlP = segP->sides [nSide].uvls;
-			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
-				if (gameStates.render.bFullBright) 
-					*pc = nColor ? faceColor [nColor].color : brightColor.color;
-				else {
-					c = faceColor [nColor];
-					nVertex = faceP->index [h];
-					SetVertexColor (nVertex, &c);
-					xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
-					AdjustVertexColor (NULL, &c, xLight);
+				if (nColor == 1) {
+					pc->red *= fAlpha;
+					pc->blue *= fAlpha;
+					pc->green *= fAlpha;
 					}
-				*pc = c.color;
 				pc->alpha = fAlpha;
 				}
 			}
+		gameData.render.lights.dynamic.material.bValid = 0;
 		}
 	}
 #	if SHADER_VERTEX_LIGHTING
-if (bDynLight && gameStates.ogl.bVertexLighting)
+if (gameStates.ogl.bVertexLighting)
 	ComputeVertexLight (-1, 2, NULL);
 #endif
+gameStates.ogl.bUseTransform = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
+{
+	tSegment		*segP;
+	tSegFaces	*segFaceP;
+	grsFace		*faceP;
+	tRgbaColorf	*pc;
+	tFaceColor	c, faceColor [3] = {{{1,1,1,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+	short			nVertex, nSegment, nSide;
+	fix			xLight;
+	float			fAlpha;
+	tUVL			*uvlP;
+	int			h, i, j, uvi, nColor, 
+					nIncr = nStart ? -1 : 1;
+
+	static		tFaceColor brightColor = {{1,1,1,1},1};
+
+gameStates.ogl.bUseTransform = 1;
+gameStates.render.nState = 0;
+for (i = nStart; i != nEnd; i += nIncr) {
+	if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+		continue;
+	segP = SEGMENTS + nSegment;
+	segFaceP = SEGFACES + nSegment;
+	if (!(gameStates.app.bMultiThreaded || SegmentIsVisible (segP))) {
+		gameData.render.mine.nSegRenderList [i] = -gameData.render.mine.nSegRenderList [i];
+		continue;
+		}
+	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
+		nSide = faceP->nSide;
+		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
+			continue;
+#ifdef _DEBUG
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+			nSegment = nSegment;
+#endif
+		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
+			faceP->bVisible = 0;
+			continue;
+			}
+		faceP->color = faceColor [nColor].color;
+		pc = gameData.segs.faces.color + faceP->nIndex;
+		uvlP = segP->sides [nSide].uvls;
+		for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
+			if (gameStates.render.bFullBright) 
+				*pc = nColor ? faceColor [nColor].color : brightColor.color;
+			else {
+				c = faceColor [nColor];
+				nVertex = faceP->index [h];
+#ifdef _DEBUG
+				if (nVertex == nDbgVertex)
+					nDbgVertex = nDbgVertex;
+#endif
+				SetVertexColor (nVertex, &c);
+				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % 4].l);
+				AdjustVertexColor (NULL, &c, xLight);
+				}
+			*pc = c.color;
+			pc->alpha = fAlpha;
+			}
+		}
+	}
 gameStates.ogl.bUseTransform = 0;
 }
 
