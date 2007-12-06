@@ -443,7 +443,7 @@ if (m < pc->color.green)
 	m = pc->color.green;
 if (m < pc->color.blue)
 	m = pc->color.blue;
-if (m) {
+if (m > 0.0f) {
 	m = l / m;
 	pc->color.red *= m;
 	pc->color.green *= m;
@@ -547,6 +547,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 					pc->color.red = fl + pdc->red * dl;
 					pc->color.green = fl + pdc->green * dl;
 					pc->color.blue = fl + pdc->blue * dl;
+					ScaleColor (pc, dl);
 					}
 				}
 			else {
@@ -572,12 +573,17 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 			}
 		}
 	else {
-		ScaleColor (pc, fl);
+		pc->color.red =
+		pc->color.green =
+		pc->color.blue = fl + dl;
 		}
 	}
 else {
-	ScaleColor (pc, fl);
+	pc->color.red =
+	pc->color.green =
+	pc->color.blue = fl + dl;
 	}
+pc->index = gameOpts->render.nPath;
 //saturate at max value
 if (light > MAX_LIGHT)
 	light = MAX_LIGHT;
@@ -788,7 +794,7 @@ if (gameStates.ogl.bScaleLight)
 if (!pc->index || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) {
 	pc->color.red =
 	pc->color.green =
-	pc->color.blue = s;
+	pc->color.blue = l * s;
 	}
 else if (s != 1) {
 	pc->color.red *= s;

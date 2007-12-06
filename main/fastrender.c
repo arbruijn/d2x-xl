@@ -1291,7 +1291,9 @@ for (i = nStart; i != nEnd; i += nIncr) {
 			pc = gameData.segs.faces.color + faceP->nIndex;
 			uvlP = segP->sides [nSide].uvls;
 			for (h = 0, uvi = (segP->sides [nSide].nType == SIDE_IS_TRI_13); h < 4; h++, pc++, uvi++) {
-				if (!gameStates.render.bFullBright) {
+				if (gameStates.render.bFullBright) 
+					*pc = nColor ? faceColor [nColor].color : brightColor.color;
+				else {
 					c = faceColor [nColor];
 					nVertex = faceP->index [h];
 					SetVertexColor (nVertex, &c);
