@@ -618,22 +618,28 @@ if (bmP) {
 
 grsBitmap *CreateSuperTranspMask (grsBitmap *bmP)
 {
-	int		i = bmP->bmProps.w * bmP->bmProps.h;
-	ubyte		*pi;
-	ubyte		*pm;
+	grsBitmap	*bmMask;
+	int			i = (int) bmP->bmProps.w * (int) bmP->bmProps.h;
+	ubyte			*pi;
+	ubyte			*pm;
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
 if (BM_MASK (bmP))
 	return BM_MASK (bmP);
-if (!(BM_MASK (bmP) = GrCreateBitmap (bmP->bmProps.w, bmP->bmProps.h, 1)))
+if (!(bmMask = GrCreateBitmap (bmP->bmProps.w / 2, bmP->bmProps.h / 2, 4)))
 	return NULL;
+BM_MASK (bmP) = bmMask;
 #ifdef _DEBUG
-sprintf (BM_MASK (bmP)->szName, "{%s}", bmP->szName);
+sprintf (bmMask->szName, "{%s}", bmP->szName);
 #endif
-UseBitmapCache (BM_MASK (bmP), (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+bmMask->bmProps.w *= 2;
+bmMask->bmProps.h *= 2;
+bmMask->bmProps.rowSize /= bmP->bmBPP;
+bmMask->bmBPP = 1;
+UseBitmapCache (bmMask, (int) bmMask->bmProps.h * (int) bmMask->bmProps.rowSize);
 if (bmP->bmProps.flags & BM_FLAG_TGA) {
-	for (pi = bmP->bmTexBuf, pm = BM_MASK (bmP)->bmTexBuf; i; i--, pi += 4, pm++)
+	for (pi = bmP->bmTexBuf, pm = bmMask->bmTexBuf; i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128)) {
 			*pm = 0;
 			//pi [0] = pi [1] = pi [2] = 0;
@@ -642,7 +648,7 @@ if (bmP->bmProps.flags & BM_FLAG_TGA) {
 			*pm = 0xff;
 	}
 else {
-	for (pi = bmP->bmTexBuf, pm = BM_MASK (bmP)->bmTexBuf; i; i--, pi++, pm++)
+	for (pi = bmP->bmTexBuf, pm = bmMask->bmTexBuf; i; i--, pi++, pm++)
 		if (*pi == SUPER_TRANSP_COLOR) {
 			*pm = 0;
 			//*pi = 0;

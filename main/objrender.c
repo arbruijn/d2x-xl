@@ -104,11 +104,34 @@ objP->mType.physInfo.drag = 512;
 
 int ConvertHostageToModel (tObject *objP)
 {
+if (objP->renderType == RT_POLYOBJ)
+	return 1;
+if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
+	return 0;
 if (!gameData.models.modelToOOF [HOSTAGE_MODEL])
 	return 0;
 objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
 objP->rType.polyObjInfo.nTexOverride = -1;
+objP->mType.physInfo.rotVel.p.x = 
+objP->mType.physInfo.rotVel.p.y = 
+objP->mType.physInfo.rotVel.p.z = 0;
+memset (objP->rType.polyObjInfo.animAngles, 0, sizeof (objP->rType.polyObjInfo.animAngles));
+return 1;
+}
+
+// -----------------------------------------------------------------------------
+
+int ConvertModelToHostage (tObject *objP)
+{
+objP->rType.vClipInfo.nClipIndex = nHostageVClips [0];
+objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+objP->rType.vClipInfo.nCurFrame = 0;
+objP->size = 289845;
+objP->controlType = CT_POWERUP;
+objP->renderType = RT_HOSTAGE;
+objP->mType.physInfo.mass = F1_0;
+objP->mType.physInfo.drag = 512;
 return 1;
 }
 
@@ -623,7 +646,7 @@ else {
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
 		DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
-			(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
+			objP->rType.polyObjInfo.animAngles, 
 			objP->rType.polyObjInfo.nModel, 
 			objP->rType.polyObjInfo.nSubObjFlags, 
 			bBrightPolys ? F1_0 : xLight, 
@@ -838,6 +861,12 @@ switch (objP->renderType) {
 				}
 			else
 				ConvertWeaponToPowerup (objP);
+			}
+		else if (objP->nType == OBJ_HOSTAGE) {
+			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D)
+				DrawPolygonObject (objP, bDepthSort);
+			else
+				ConvertModelToHostage (objP);
 			}
 		else {
 #if 1//ndef _DEBUG

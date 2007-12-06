@@ -40,8 +40,8 @@ static char rcsid[] = "$Id: hostage.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 
 //------------- Globaly used hostage variables --------------------------------
 
-int nHostageTypes = 0;		  			// Number of hostage types
-int nHostageVClips [MAX_HOSTAGE_TYPES];	// tVideoClip num for each tpye of hostage
+int nHostageTypes = MAX_HOSTAGE_TYPES;		  			// Number of hostage types
+int nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye of hostage
 
 
 //-------------- Renders a hostage --------------------------------------------

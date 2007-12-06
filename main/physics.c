@@ -676,6 +676,9 @@ retryMove:
 
 		if (ObjIsPlayerMine (hitObjP))
 			nTries--;
+#ifdef _DEBUG
+		fviResult = FindVectorIntersection (&fq, &hi);
+#endif
 		}
 
 	if (bGetPhysSegs) {
@@ -875,9 +878,12 @@ retryMove:
 		size1 = objP->size;
 		//	Calculcate the hit point between the two objects.
 		Assert (size0 + size1 != 0);	// Error, both sizes are 0, so how did they collide, anyway?!?
-		if (0 && EGI_FLAG (nHitboxes, 0, 0, 0)) 
+#if 0
+		if (EGI_FLAG (nHitboxes, 0, 0, 0)) 
 			vHitPos = hi.hit.vPoint;
-		else {
+		else 
+#endif
+			{
 			VmVecSub (&vHitPos, ppos1, ppos0);
 			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
 			}
@@ -891,10 +897,15 @@ retryMove:
 				 (vOldVel.p.x == objP->mType.physInfo.velocity.p.x && 
 				  vOldVel.p.y == objP->mType.physInfo.velocity.p.y && 
 				  vOldVel.p.z == objP->mType.physInfo.velocity.p.z)) {
-				//if (gameData.objs.objects [hi.hit.nObject].nType == OBJ_POWERUP)
-					gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
+				if (gameData.objs.objects [hi.hit.nObject].nType == OBJ_POWERUP)
+					nTries--;
+				gameData.physics.ignoreObjs [nIgnoreObjs++] = hi.hit.nObject;
 				bRetry = 1;
 				}
+#ifdef _DEBUG
+			else
+				bRetry = bRetry;
+#endif
 			}
 		}
 	else if (fviResult == HIT_NONE) {

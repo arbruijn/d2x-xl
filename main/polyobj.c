@@ -674,12 +674,6 @@ if (gameStates.render.nShadowPass == 2) {
 nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
-#ifdef _3DFX
-_3dfx_rendering_poly_obj = 1;
-#endif
-PA_DFX (bSaveLight = gameStates.render.nLighting);
-PA_DFX (gameStates.render.nLighting = 0);
-
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
 if (!flags)	{	//draw entire tObject
 	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color)) {

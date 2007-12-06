@@ -212,6 +212,10 @@ if (nSize < 0) {
 			}
 	}
 else {
+#ifdef _DEBUG
+	if ((*bmP->szName == '{') && (nSize > (int) bmP->bmProps.w * (int) bmP->bmProps.h))
+		bmP = bmP;
+#endif
 	trackedBitmaps [nTrackedBitmaps].bmP = bmP;
 	trackedBitmaps [nTrackedBitmaps++].nSize = nSize;
 	}

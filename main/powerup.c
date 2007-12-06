@@ -169,7 +169,8 @@ void DoPowerupFrame (tObject *objP)
 	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
 	int			i = OBJ_IDX (objP);
 
-UpdatePowerupClip (vcP, vciP, i);
+if (objP->renderType != RT_POLYOBJ)
+	UpdatePowerupClip (vcP, vciP, i);
 if (objP->lifeleft <= 0) {
 	ObjectCreateExplosion (objP->nSegment, &objP->position.vPos, F1_0 * 7 / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
