@@ -1028,7 +1028,7 @@ if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
 	return 0;
 if (!pfnTIRQuery (&tirInfo)) {
 	pfnTIRExit ();
-	if (gameStates.input.bHaveTrackIR = pfnTIRInit (SDL_GetWindowHandle ()))
+	if ((gameStates.input.bHaveTrackIR = pfnTIRInit (SDL_GetWindowHandle ())))
 		pfnTIRStart ();
 	return 0;
 	}

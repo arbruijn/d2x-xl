@@ -639,7 +639,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			memcpy (&pmv->vertex, pso->pvVerts + h, sizeof (fVector3));
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;
-			if (pmv->bTextured = pof->bTextured)
+			if ((pmv->bTextured = pof->bTextured))
 				pmv->baseColor.red = 
 				pmv->baseColor.green =
 				pmv->baseColor.blue = 1.0f;
@@ -726,6 +726,8 @@ return pm->nSubModels;
 
 //------------------------------------------------------------------------------
 
+#if !G3_HW_LIGHTING
+
 typedef struct tG3ThreadInfo {
 	tObject		*objP;
 	tG3Model		*pm;
@@ -733,6 +735,8 @@ typedef struct tG3ThreadInfo {
 } tG3ThreadInfo;
 
 static tG3ThreadInfo g3ti;
+
+#endif
 
 //------------------------------------------------------------------------------
 

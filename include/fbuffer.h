@@ -2,7 +2,7 @@
 #ifndef _FBUFFER_H_
 #define _FBUFFER_H_
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
 #endif

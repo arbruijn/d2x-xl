@@ -48,7 +48,7 @@ typedef unsigned int uint;
  typedef Uint64 u_int64_t;
 #endif // defined(_WIN32) || defined(__sun__)
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 # include <stdlib.h> // this is where min and max are defined
 #endif
 #ifndef min
@@ -91,7 +91,7 @@ typedef ubyte bool;
 // and since this file is included everywhere, it's here.
 #ifdef __GNUC__
 # define __pack__ __attribute__((packed))
-#elif defined(_MSC_VER)
+#elif defined(_WIN32)
 # pragma pack(push, packing)
 # pragma pack(1)
 # define __pack__
@@ -99,7 +99,7 @@ typedef ubyte bool;
 # error d2x will not work without packed structures
 #endif
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 # define inline __inline
 #endif
 

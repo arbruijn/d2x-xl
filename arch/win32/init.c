@@ -7,7 +7,7 @@
 #include "args.h"
 
 #ifdef _DEBUG
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <crtdbg.h>
 #endif
 #endif
@@ -109,7 +109,7 @@ void arch_init_start()
 	WNDCLASS wcDescentClass;
 
 	#ifdef _DEBUG
-	#ifdef _MSC_VER
+	#ifdef _WIN32
 	if (FindArg("-memdbg"))
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | /* _CRTDBG_CHECK_ALWAYS_DF | */
 			/*_CRTDBG_CHECK_CRT_DF |*/

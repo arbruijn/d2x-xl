@@ -753,7 +753,11 @@ while (changed) {
 extern tObject *objP_find_first_ofType (int);
 char bMultiSuicide = 0;
 
-#include "ipx_drv.h"
+#ifdef _WIN32
+#	include "../arch/win32/ipx_drv.h"
+#else
+#	include "../arch/linux/include/ipx_drv.h"
+#endif
 
 extern struct ipx_recv_data ipx_udpSrc;
 

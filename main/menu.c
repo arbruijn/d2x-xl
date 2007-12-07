@@ -77,7 +77,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cameras.h"
 #include "texmerge.h"
 #include "render.h"
-#include "ipx_udp.h"
 #include "light.h"
 #include "lightmap.h"
 #include "autodl.h"
@@ -88,6 +87,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "collide.h"
 #include "objrender.h"
+#ifdef _WIN32
+#	include "../arch/win32/include/ipx_udp.h"
+#else
+#	include "../arch/linux/include/ipx_udp.h"
+#endif
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -3477,7 +3481,7 @@ void RenderOptionsMenu ()
 	tMenuItem m [40];
 	int	h, i, choice = 0;
 	int	opt;
-	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightingOpts, optMovieOpts,
+	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts;
 	int	optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts;
 #ifdef _DEBUG
@@ -3561,7 +3565,7 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_MENU (opt, TXT_LIGHTING_OPTIONS, KEY_L, HTX_RENDER_LIGHTINGOPTS);
-		optLightingOpts = opt++;
+		optLightOpts = opt++;
 		ADD_MENU (opt, TXT_SMOKE_OPTIONS, KEY_S, HTX_RENDER_SMOKEOPTS);
 		optSmokeOpts = opt++;
 		ADD_MENU (opt, TXT_LIGHTNING_OPTIONS, KEY_I, HTX_LIGHTNING_OPTIONS);
@@ -3589,10 +3593,12 @@ do {
 		renderOpts.nRenderQual =
 		renderOpts.nTexQual =
 		renderOpts.nWallTransp = 
+		optUseGamma = 
 		optColoredWalls =
 		optDepthSort =
 		optContrast =
-		optLightingOpts =
+		optLightOpts =
+		optLightningOpts =
 		optSmokeOpts =
 		optShadowOpts =
 		optEffectOpts =
@@ -3622,7 +3628,7 @@ do {
 		if (i < 0)
 			break;
 		if (gameOpts->app.bExpertMode) {
-			if ((optLightingOpts >= 0) && (i == optLightingOpts))
+			if ((optLightOpts >= 0) && (i == optLightOpts))
 				LightingOptionsMenu ();
 			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
 				SmokeOptionsMenu ();
@@ -4405,6 +4411,9 @@ do {
 		ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadLightOnWhenPickedUp, KEY_H, HTX_MISC_HEADLIGHT);
 		optHeadlight = opt++;
 		}
+	else
+		optHeadlight = 
+		optAutoLevel = -1;
 	ADD_CHECK (opt, TXT_ESCORT_KEYS, gameOpts->gameplay.bEscortHotKeys, KEY_K, HTX_MISC_ESCORTKEYS);
 	optEscort = opt++;
 #if 0
@@ -4753,7 +4762,7 @@ return *(((int *) &multiOpts) + 2 * nType + bJoin);
 void MultiplayerMenu ()
 {
 	tMenuItem	m [15];
-	int choice = 0, opt = 0, i, optCreate, optJoin, optConn, nConnections;
+	int choice = 0, opt = 0, i, optCreate, optJoin = -1, optConn = -1, nConnections = 0;
 	int old_game_mode;
 
 if ((gameStates.app.bNostalgia < 2) && gameData.multiplayer.autoNG.bValid) {

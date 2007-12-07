@@ -2,7 +2,7 @@
 #ifndef _OGL_RENDER_H
 #define _OGL_RENDER_H
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 #include <stddef.h>
 #endif

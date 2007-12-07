@@ -1194,13 +1194,13 @@ static int UDPReceivePacket (
 	ipx_socket_t *s, char *outBuf, int outBufSize, struct ipx_recv_data *rd) 
 {
 	struct sockaddr_in 	fromAddr;
-	int						i, dataLen, bTracker, bSafeMode = 0;  
+	int						i, dataLen, bTracker;  
 	unsigned int			fromAddrSize = sizeof (fromAddr);
 	unsigned short 		srcPort;
 	//char 						szIP [30];
 #if UDP_SAFEMODE
 	tDestListEntry			pdl;
-	int						packetId = -1;
+	int						packetId = -1, bSafeMode = 0;
 #endif
 
 dataLen = recvfrom (s->fd, outBuf, outBufSize, 0, (struct sockaddr *) &fromAddr, &fromAddrSize);
@@ -1240,8 +1240,8 @@ if (!(bTracker
 	if (i < 0)
 		return -1;
 	if (i < destAddrNum) {	//i.e. sender already in list or successfully added to list
-		bSafeMode = 0;
 #if UDP_SAFEMODE
+		bSafeMode = 0;
 		*pdl = destList + i;
 		pdl->fd = s->fd;
 		pdl->bOurSafeMode = (memcmp (outBuf + dataLen - 10, "SAFE", 4) == 0);
@@ -1263,7 +1263,11 @@ if (!(bTracker
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
 	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
+#if UDP_SAFEMODE
 	dataLen -= bSafeMode ? 22 : 14;
+#else
+	dataLen -= 14;
+#endif
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker
 #ifdef _DEBUG

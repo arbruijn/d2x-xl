@@ -15,9 +15,13 @@
 # include <SDL.h>
 #endif
 #include "inferno.h"
-#include "key.h"
 #include "ipx.h"
-#include "ipx_drv.h"
+#ifdef _WIN32
+#	include "../arch/win32/ipx_drv.h"
+#else
+#	include "../arch/linux/include/ipx_drv.h"
+#endif
+#include "key.h"
 #include "network.h"
 #include "menu.h"
 #include "newmenu.h"

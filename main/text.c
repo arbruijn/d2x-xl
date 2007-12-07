@@ -2532,7 +2532,7 @@ fprintf (fTxt, "%s\n", pi);
 
 //------------------------------------------------------------------------------
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 

@@ -735,7 +735,7 @@ void DrawCommandLine() {
 #endif
 }
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 # define vsnprintf _vsnprintf
 #endif
 

@@ -362,9 +362,9 @@ if (!(fp = fopen (filename, "rt")))
 //printf ("Broadcast Users:\n");
 while (fgets (szTemp, sizeof (szTemp), fp)) {
 	ln++;
-	if (p1 = strchr (szTemp,'\n'))
+	if ((p1 = strchr (szTemp,'\n')))
 		*p1 = '\0';
-	if (p1 = strchr (szTemp,';'))
+	if ((p1 = strchr (szTemp,';')))
 		*p1 = '\0';
 	if ((strlen (szTemp) < 21) || (szTemp [8] != '/'))
 		continue;
@@ -383,7 +383,6 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 	if (n != 6)
 		continue;
 	if (nIpxUsers < MAX_USERS)	{
-		ubyte *ipx_real_buffer = (ubyte *)&tmp;
 		IpxGetLocalTarget (tmp.network, tmp.node, tmp.address);
 		ipxUsers [nIpxUsers++] = tmp;
 		} 
@@ -408,17 +407,12 @@ if (!(filename && *filename))
 	return;
 if (!(fp = fopen (filename, "rt")))
 	return;
-//printf ("Using Networks:\n");
-for (i = 0; i < nIpxNetworks; i++)		{
-	ubyte *n1 = ((ubyte *) ipxNetworks) + i;
-	//printf ("* %02x%02x%02x%02x\n", n1 [0], n1 [1], n1 [2], n1 [3]);
-	}
 
 while (fgets (szTemp, sizeof (szTemp), fp)) {
 	ln++;
-	if (p1 = strchr (szTemp,'\n'))
+	if ((p1 = strchr (szTemp,'\n')))
 		*p1 = '\0';
-	if (p1 = strchr (szTemp,';'))
+	if ((p1 = strchr (szTemp,';')))
 		*p1 = '\0';
 	if (strlen (szTemp) < 8)
 		continue;

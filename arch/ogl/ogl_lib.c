@@ -622,9 +622,11 @@ void OglEnableLighting (int bSpecular)
 if (gameOpts->ogl.bObjLighting || GEO_LIGHTING) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
 		static GLfloat fWhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
+		static GLfloat fSpecular [] = {0.5f, 0.5f, 0.5f, 1.0f};
+#if 0
 		static GLfloat fAmbient [] = {0.2f, 0.2f, 0.2f, 1.0f};
 		static GLfloat fDiffuse [] = {0.8f, 0.8f, 0.8f, 1.0f};
-		static GLfloat fSpecular [] = {0.5f, 0.5f, 0.5f, 1.0f};
+#endif
 
 	glEnable (GL_LIGHTING);
 	glShadeModel (GL_SMOOTH);

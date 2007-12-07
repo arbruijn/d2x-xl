@@ -2,7 +2,7 @@
 #ifndef _OGL_TEXCACHE_H
 #define _OGL_TEXCACHE_H
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 #include <stddef.h>
 #endif

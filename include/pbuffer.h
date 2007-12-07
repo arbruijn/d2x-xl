@@ -2,7 +2,7 @@
 #ifndef _PBUFFER_H_
 #define _PBUFFER_H_
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	include <windows.h>
 #	include <stddef.h>
 #endif

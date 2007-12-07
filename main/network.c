@@ -76,9 +76,6 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "kconfig.h"
 #include "playsave.h"
 #include "cfile.h"
-#include "ipx.h"
-#include "ipx_udp.h"
-#include "ipx_drv.h"
 #include "autodl.h"
 #include "tracker.h"
 #include "newmenu.h"
@@ -89,6 +86,14 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "netmenu.h"
 #include "banlist.h"
 #include "collide.h"
+#include "ipx.h"
+#ifdef _WIN32
+#	include "../arch/win32/include/ipx_udp.h"
+#	include "../arch/win32/ipx_drv.h"
+#else
+#	include "../arch/linux/include/ipx_udp.h"
+#	include "../arch/linux/include/ipx_drv.h"
+#endif
 
 /*
 The general proceedings of D2X-XL when establishing a UDP/IP communication between two peers is as follows:

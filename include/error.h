@@ -93,7 +93,7 @@ static inline void _Int3()
 void Int3(void);								      //generate int3
 #pragma aux Int3 = "int 3h";
 
-#elif defined _MSC_VER
+#elif defined _WIN32
 static __inline void _Int3()
 {
 	__asm { int 3 }

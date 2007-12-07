@@ -34,7 +34,7 @@ char *backbuffer = NULL;
 int gameStates.gfx.bInstalled = 0;
 
 // Min without sideeffects.
-#ifdef _MSC_VER
+#ifdef _WIN32
 #define inline __inline
 #endif
 

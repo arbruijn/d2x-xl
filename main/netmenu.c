@@ -59,8 +59,13 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "playsave.h"
 #include "cfile.h"
 #include "ipx.h"
-#include "ipx_udp.h"
-#include "ipx_drv.h"
+#ifdef _WIN32
+#	include "../arch/win32/include/ipx_udp.h"
+#	include "../arch/win32/ipx_drv.h"
+#else
+#	include "../arch/linux/include/ipx_udp.h"
+#	include "../arch/linux/include/ipx_drv.h"
+#endif
 #include "autodl.h"
 #include "tracker.h"
 #include "newmenu.h"
@@ -1323,6 +1328,8 @@ if ((nNewMission >= 0) && (gameData.missions.nLastLevel > 1)) {
 	ADD_INPUT (opt, szLevel, 4, HTX_MULTI_LEVEL);
 	optLevel = opt++;
 	}
+else
+	optLevelText = -1;
 //	m [opt].nType = NM_TYPE_TEXT; m [opt].text = TXT_OPTIONS; opt++;
 
 ADD_TEXT (opt, "", 0); 

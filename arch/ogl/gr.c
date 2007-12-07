@@ -13,12 +13,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <io.h>
 #include <windows.h>
 #endif
 
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <sys/types.h>

@@ -1039,8 +1039,10 @@ static int ComputeVertexLight (short nVertex, int nState, tFaceColor *colorP)
 
 	static float		quadCoord [4][2] = {{0, 0}, {0, VLBUF_WIDTH}, {VLBUF_WIDTH, VLBUF_WIDTH}, {VLBUF_WIDTH, 0}};
 	static float		texCoord [4][2] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
-	static fVector3	matSpecular = {{1.0f, 1.0f, 1.0f}};
 	static char			*szTexNames [VERTLIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
+#if 0
+	static fVector3	matSpecular = {{1.0f, 1.0f, 1.0f}};
+#endif
 
 if (!gameStates.ogl.bVertexLighting)
 	return 0;
@@ -1169,7 +1171,9 @@ void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 	grsFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+#if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+#endif
 	short			nVertex, nSegment, nSide;
 	float			fAlpha;
 	int			h, i, j, nColor, 

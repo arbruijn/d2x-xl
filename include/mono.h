@@ -19,7 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 
 static 
-#ifdef _WIN32
+#ifdef _MSC_VER
 _inline
 #else
 inline

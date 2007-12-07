@@ -7,9 +7,9 @@
 
 #ifdef _WIN32
 
-#if _MSC_VER >= 1000
+#if _WIN32 >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
+#endif // _WIN32 >= 1000
 
 #pragma pack(push,2)
 #  include <winsock.h>

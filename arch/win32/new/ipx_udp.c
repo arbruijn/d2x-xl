@@ -73,7 +73,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <stdarg.h>
@@ -162,7 +162,7 @@ static void chk(void *p)
 	exit(EXIT_FAILURE);
 }
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #define FAIL Warning
 #else
 #define FAIL(m...) do { msg(#m); return -1; } while (0)

@@ -572,6 +572,9 @@
 						RelativePath="..\..\2d\bitmap.h">
 					</File>
 					<File
+						RelativePath="..\..\include\mono.h">
+					</File>
+					<File
 						RelativePath="..\..\include\palette.h">
 					</File>
 					<File
@@ -3114,9 +3117,6 @@
 					</File>
 					<File
 						RelativePath="..\..\include\modex.h">
-					</File>
-					<File
-						RelativePath="..\..\include\mono.h">
 					</File>
 					<File
 						RelativePath="..\..\main\morph.h">

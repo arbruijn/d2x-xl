@@ -28,7 +28,7 @@ static char rcsid[] = "$Id: fixc.c,v 1.6 2004/01/08 16:48:35 schaffner Exp $";
 #include "maths.h"
 
 #if NO_FIX_INLINE
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma message ("warning: FIX NOT INLINED")
 #else
 // #warning "FIX NOT INLINED"        fixc is now stable

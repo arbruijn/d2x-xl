@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <stdlib.h>
@@ -61,12 +61,16 @@ static void _CDECL_ msg(const char *fmt,...)
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 static void chk(void *p)
 {
 	if (p) return;
 	msg("FATAL: Virtual memory exhausted!");
 	exit(EXIT_FAILURE);
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 

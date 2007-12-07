@@ -25,7 +25,7 @@
 
 #define MAX_PACKET_DATA 1500
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma pack (push, 1)
 #endif
 
@@ -44,7 +44,7 @@ typedef struct IPXPacketStructure {
 	IPXAddress_t Source __pack__;
 } IPXPacket_t;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #pragma pack (pop)
 #endif
 

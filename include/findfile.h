@@ -3,6 +3,8 @@
 
 #ifdef _WIN32
 
+#include <windows.h>
+
 // Empty file
 typedef struct FILEFINDSTRUCT {
 	unsigned long size;

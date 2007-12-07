@@ -138,7 +138,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 #include <stdio.h>
 #include <string.h>
-#ifndef _MSC_VER
+#ifndef _WIN32
 #include <unistd.h>
 #endif
 #include <stdarg.h>
@@ -643,7 +643,9 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 {
 	struct sockaddr_in sin;
 	u_long sockBlockMode = 1;	//non blocking
+#if 0 //for testing only
 	static ubyte inAddrLoopBack [4] = {127,0,0,1};
+#endif
 	u_short	nLocalPort, nServerPort;
 
 udpBasePort [1] = UDP_BASEPORT + networkData.nSocket;	//server port as set by the server
@@ -801,7 +803,6 @@ static int UDPSendPacket
 	int				j;
 #endif
 	static ubyte	buf [MAX_PACKETSIZE];
-	static ubyte	bCastAddr[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	ubyte				*bufP = buf;
 
 #ifdef UDPDEBUG
@@ -895,11 +896,11 @@ for (; iDest < destAddrNum; iDest++) {
 	if (!gameStates.multi.bTrackerCall && (nUdpRes < extraDataLen + 8))
 		h = WSAGetLastError ();
 #endif
-	if (bBroadcast <= 0) 
+	if (bBroadcast <= 0) {
 		if (gameStates.multi.bTrackerCall)
 			return ((nUdpRes < 1) ? -1 : nUdpRes);
-		else
-			return ((nUdpRes < extraDataLen + 8) ? -1 : nUdpRes - extraDataLen);
+		return ((nUdpRes < extraDataLen + 8) ? -1 : nUdpRes - extraDataLen);
+		}
 	}
 return(dataLen);
 }
@@ -1016,10 +1017,13 @@ static int UDPReceivePacket
 	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, struct ipx_recv_data *rd) 
 {
 	struct sockaddr_in	fromAddr;
-	int						i, dataLen, packetId = -1, bTracker, bSafeMode, 
+	int						i, dataLen, bTracker, 
 								fromAddrSize = sizeof (fromAddr);
 	tDestListEntry			*pdl;
 	unsigned short			srcPort;
+#if UDP_SAFEMODE
+	int						packetId = -1, bSafeMode = 0;
+#endif
 #ifdef _DEBUG
 	//char						szIP [30];
 #endif
@@ -1058,8 +1062,8 @@ if (!(bTracker
 		return -1;
 	if (i < destAddrNum) {	//i.e. sender already in list or successfully added to list
 		pdl = destList + i;
-		bSafeMode = 0;
 #if UDP_SAFEMODE
+		bSafeMode = 0;
 		pdl->fd = s->fd;
 		pdl->bOurSafeMode = (memcmp (outBuf + dataLen - 10, "SAFE", 4) == 0);
 		if (pdl->bOurSafeMode != extraGameInfo [0].bSafeUDP)
@@ -1083,7 +1087,11 @@ if (!(bTracker
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
 	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, ipx_LocalAddress + 4, 6);
+#if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
+#else
+	dataLen -= 14;
+#endif
 	memcpy (outBuf, outBuf + 8, dataLen);
 	} //bTracker
 #ifdef _DEBUG

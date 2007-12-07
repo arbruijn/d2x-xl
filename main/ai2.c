@@ -2247,40 +2247,40 @@ if (ROBOTINFO (objP->id).bossFlag) {
 //	General purpose robot-dies-with-death-roll-and-groan code.
 //	Return true if tObject just died.
 //	scale: F1_0*4 for boss, much smaller for much smaller guys
-int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *bDyingSoundPlaying, short deathSound, fix expl_scale, fix sound_scale)
+int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale)
 {
-	fix	roll_val, temp;
-	fix	sound_duration;
+	fix	xRollVal, temp;
+	fix	xSoundDuration;
 
 	if (!roll_duration)
 		roll_duration = F1_0/4;
 
-	roll_val = FixDiv (gameData.time.xGame - StartTime, roll_duration);
+	xRollVal = FixDiv (gameData.time.xGame - StartTime, roll_duration);
 
-	FixSinCos (FixMul (roll_val, roll_val), &temp, &objP->mType.physInfo.rotVel.p.x);
-	FixSinCos (roll_val, &temp, &objP->mType.physInfo.rotVel.p.y);
-	FixSinCos (roll_val-F1_0/8, &temp, &objP->mType.physInfo.rotVel.p.z);
+	FixSinCos (FixMul (xRollVal, xRollVal), &temp, &objP->mType.physInfo.rotVel.p.x);
+	FixSinCos (xRollVal, &temp, &objP->mType.physInfo.rotVel.p.y);
+	FixSinCos (xRollVal-F1_0/8, &temp, &objP->mType.physInfo.rotVel.p.z);
 
 	objP->mType.physInfo.rotVel.p.x = (gameData.time.xGame - StartTime)/9;
 	objP->mType.physInfo.rotVel.p.y = (gameData.time.xGame - StartTime)/5;
 	objP->mType.physInfo.rotVel.p.z = (gameData.time.xGame - StartTime)/7;
 
 	if (gameOpts->sound.digiSampleRate)
-		sound_duration = FixDiv (gameData.pig.sound.pSounds [DigiXlatSound (deathSound)].nLength, gameOpts->sound.digiSampleRate);
+		xSoundDuration = FixDiv (gameData.pig.sound.pSounds [DigiXlatSound (deathSound)].nLength, gameOpts->sound.digiSampleRate);
 	else
-		sound_duration = F1_0;
+		xSoundDuration = F1_0;
 
-	if (StartTime + roll_duration - sound_duration < gameData.time.xGame) {
+	if (StartTime + roll_duration - xSoundDuration < gameData.time.xGame) {
 		if (!*bDyingSoundPlaying) {
 #if TRACE
 			con_printf (CONDBG, "Starting death sound!\n");
 #endif
 			*bDyingSoundPlaying = 1;
-			DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, sound_scale, sound_scale*256);	//	F1_0*512 means play twice as loud
+			DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, xSoundScale, xSoundScale*256);	//	F1_0*512 means play twice as loud
 		} else if (d_rand () < gameData.time.xFrame*16)
-			CreateSmallFireballOnObject (objP, (F1_0 + d_rand ()) * (16 * expl_scale/F1_0)/8, 0);
+			CreateSmallFireballOnObject (objP, (F1_0 + d_rand ()) * (16 * xExplScale/F1_0)/8, 0);
 	} else if (d_rand () < gameData.time.xFrame*8)
-		CreateSmallFireballOnObject (objP, (F1_0/2 + d_rand ()) * (16 * expl_scale/F1_0)/8, 1);
+		CreateSmallFireballOnObject (objP, (F1_0/2 + d_rand ()) * (16 * xExplScale/F1_0)/8, 1);
 
 	if (StartTime + roll_duration < gameData.time.xGame)
 		return 1;

@@ -65,7 +65,7 @@ quadint;
 #define F0_5 	f0_5
 #define F0_1 	f0_1
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	define QLONG __int64
 #else
 #	define QLONG long long

@@ -58,7 +58,7 @@ static inline void gr_linear_darken( ubyte * dest, int darkeningLevel, int count
    : "%ebx");
 }
 
-#elif !defined(NO_ASM) && defined(_MSC_VER)
+#elif !defined(NO_ASM) && defined(_WIN32)
 
 __inline void gr_linear_darken( ubyte * dest, int darkeningLevel, int count, ubyte * fade_table )
 {

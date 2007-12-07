@@ -23,8 +23,13 @@
 #include "args.h"
 #include "u_mem.h"
 #include "ipx.h"
-#include "ipx_drv.h"
-#include "ipx_udp.h"
+#ifdef _WIN32
+#	include "../arch/win32/include/ipx_udp.h"
+#	include "../arch/win32/ipx_drv.h"
+#else
+#	include "../arch/linux/include/ipx_udp.h"
+#	include "../arch/linux/include/ipx_drv.h"
+#endif
 #include "network.h"
 #include "key.h"
 #include "menu.h"

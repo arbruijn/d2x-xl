@@ -110,7 +110,7 @@ extern int dpmi_modify_selector_base( ushort selector, void * address );
 extern int dpmi_modify_selector_limit( ushort selector, int size  );
 
 
-#if defined(__GNUC__) || defined(_MSC_VER)
+#if defined(__GNUC__) || defined(_WIN32)
 # define _far
 #else
 # define _far far

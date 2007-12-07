@@ -2,7 +2,7 @@
 #ifndef _OGL_INIT_H_
 #define _OGL_INIT_H_
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 #include <stddef.h>
 #endif
@@ -314,7 +314,7 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 
 //platform specific funcs
 //MSVC seems to have problems with inline funcs not being found during linking
-#ifndef _MSC_VER
+#ifndef _WIN32
 inline
 #endif
 void OglSwapBuffersInternal (void);

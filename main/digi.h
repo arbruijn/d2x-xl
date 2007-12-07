@@ -32,7 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include "efx.h"
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _DEBUG
 #		define USE_SDL_MIXER	1
 #	else
