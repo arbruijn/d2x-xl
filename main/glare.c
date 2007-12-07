@@ -79,22 +79,30 @@ if (hDepthBuffer) {
 
 GLuint CopyDepthTexture (void)
 {
+	static time_t	t0 = 0;
+	time_t	t;
+
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
-if (OglHaveDrawBuffer ()) {
-	hDepthBuffer = gameData.render.ogl.drawBuffer.hDepthBuffer;
-	glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
-	}
-else if ((hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
+t = SDL_GetTicks ();
+if (!hDepthBuffer || (t - t0 > 40)) {
+	if (OglHaveDrawBuffer ()) {
+		hDepthBuffer = gameData.render.ogl.drawBuffer.hDepthBuffer;
+		glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+		}
+	else if ((hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
 #if 0
-	glCopyTexImage2D (GL_TEXTURE_RECTANGLE_ARB, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
+	glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
 #else
 	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
-	if (glGetError ()) {
-		DestroyDepthTexture ();
-		return hDepthBuffer = 0;
+		if (glGetError ()) {
+			DestroyDepthTexture ();
+			return hDepthBuffer = 0;
+			}
+		glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
 		}
+	t0 = SDL_GetTicks ();
 	}
 return hDepthBuffer;
 }
@@ -711,7 +719,7 @@ if (gameStates.ogl.bDepthBlending) {
 		glUseProgramObject (hGlareShader);
 		glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 		glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
-		glUniform2fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
+		glUniform3fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 		glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
 		glDisable (GL_DEPTH_TEST);
 		}
@@ -740,12 +748,12 @@ if (gameStates.ogl.bDepthBlending) {
 char *glareFS = 
 	"uniform sampler2D glareTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform vec2 depthScale;\r\n" \
+	"uniform vec3 depthScale;\r\n" \
 	"uniform vec2 screenScale;\r\n" \
 	"void main (void) {\r\n" \
 	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, depthZ - fragZ));\r\n"
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / max (1.0, depthZ - fragZ);\r\n" \
 	"}\r\n";
 
 char *glareVS = 

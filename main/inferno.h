@@ -1346,7 +1346,7 @@ typedef struct tOglData {
 	GLenum					nDestBlend;
 	float						zNear;
 	float						zFar;
-	struct {float x, y;}	depthScale;
+	fVector3					depthScale;
 	struct {float x, y;}	screenScale;
 	tFrameBuffer			drawBuffer;
 } tOglData;

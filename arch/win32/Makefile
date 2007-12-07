@@ -179,7 +179,7 @@ INCLUDES = -I$(top_srcdir)/arch/include -I$(top_srcdir)/include -I$(top_srcdir)/
 
 NETWORK_SRCS = ipx_mcast4.c ipx_win.c ipx_udp.c winnet.c
 
-libarch_win32_a_SOURCES = ${NETWORK_SRCS} hmpfile.c midi.c mingw_init.c
+libarch_win32_a_SOURCES = ${NETWORK_SRCS} hmpfile.c midi.c mingw_init.c findfile.c
 
 EXTRA_libarch_win32_a_SOURCES = ipx_mcast4.c ipx_win.c ipx_udp.c winnet.c
 
@@ -198,20 +198,20 @@ LIBRARIES = $(noinst_LIBRARIES)
 libarch_win32_a_AR = $(AR) cru
 libarch_win32_a_LIBADD =
 am__libarch_win32_a_SOURCES_DIST = ipx_mcast4.c ipx_win.c ipx_udp.c \
-	winnet.c hmpfile.c midi.c mingw_init.c
+	winnet.c hmpfile.c midi.c mingw_init.c findfile.c
 am__objects_1 = ipx_mcast4.$(OBJEXT) ipx_win.$(OBJEXT) \
 	ipx_udp.$(OBJEXT) winnet.$(OBJEXT)
 am_libarch_win32_a_OBJECTS = $(am__objects_1) hmpfile.$(OBJEXT) \
-	midi.$(OBJEXT) mingw_init.$(OBJEXT)
+	midi.$(OBJEXT) mingw_init.$(OBJEXT) findfile.$(OBJEXT)
 libarch_win32_a_OBJECTS = $(am_libarch_win32_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-DEP_FILES = ./$(DEPDIR)/hmpfile.Po ./$(DEPDIR)/ipx_mcast4.Po \
-	./$(DEPDIR)/ipx_udp.Po ./$(DEPDIR)/ipx_win.Po \
-	./$(DEPDIR)/midi.Po ./$(DEPDIR)/mingw_init.Po \
-	./$(DEPDIR)/winnet.Po
+DEP_FILES = ./$(DEPDIR)/findfile.Po ./$(DEPDIR)/hmpfile.Po \
+	./$(DEPDIR)/ipx_mcast4.Po ./$(DEPDIR)/ipx_udp.Po \
+	./$(DEPDIR)/ipx_win.Po ./$(DEPDIR)/midi.Po \
+	./$(DEPDIR)/mingw_init.Po ./$(DEPDIR)/winnet.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -244,6 +244,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/findfile.Po
 include ./$(DEPDIR)/hmpfile.Po
 include ./$(DEPDIR)/ipx_mcast4.Po
 include ./$(DEPDIR)/ipx_udp.Po

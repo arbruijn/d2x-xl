@@ -581,7 +581,7 @@ int DigiStartSound (short nSound, fix volume, int pan, int looping,
 						  int loop_start, int loop_end, int soundobj, int speed, 
 						  char *pszWAV, vmsVector *vPos)
 {
-	int			i, l, nStartChannel;
+	int			i, nStartChannel;
 	tSoundSlot	*ssP;
 	tDigiSound	*dsP = NULL;
 

@@ -390,7 +390,7 @@ if (objP->renderType != RT_POLYOBJ)
 else {
 	size = 0;
 	pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
-	if (i = objP->rType.polyObjInfo.nSubObjFlags) {
+	if ((i = objP->rType.polyObjInfo.nSubObjFlags)) {
 		for (j = 0; i && (j < pm->nModels); i >>= 1, j++)
 			if (i & 1)
 				size += VectorVolume (pm->subModels.mins + j, pm->subModels.maxs + j);
