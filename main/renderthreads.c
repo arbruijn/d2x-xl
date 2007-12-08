@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "interp.h"
 
-#define KILL_RENDER_THREADS 1
+#define KILL_RENDER_THREADS 0
 
 tRenderThreadInfo tiRender;
 tRenderItemThreadInfo tiRenderItems;

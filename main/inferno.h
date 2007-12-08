@@ -668,6 +668,7 @@ typedef struct tOglStates {
 	int bOcclusionQuery;
 	int bDepthBlending;
 	int bGetTexLevelParam;
+	int nStencil;
 #ifdef GL_ARB_multitexture
 	int bArbMultiTexture;
 #endif

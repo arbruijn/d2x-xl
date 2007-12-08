@@ -2987,7 +2987,7 @@ typedef struct tOOFToModel {
 
 static tOOFToModel oofToModel [] = {
 	// player ship
-	{"pyrogl.oof", NULL, 108, 0, 0}, 
+	{"pyrogl.oof", "pyrogl.pol", 108, 0, 0}, 
 	{NULL, NULL, 110, 0, 0}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
 #ifdef _DEBUG	//D3 robots for testing
 	{"thresherboss.oof", NULL, 39, 1, 0}, 
@@ -3145,7 +3145,8 @@ if (!(oofToModel [i].pszPOL &&
 	  ((fp = CFOpen (oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0)) ||
 	   (fp = CFOpen (szModel, gameFolders.szDataDir, "rb", 0)))))
 	return ++i;
-if (!PolyModelRead (pm = gameData.models.polyModels + (nModel = oofToModel [i].nModel), fp, 1)) {
+nModel = oofToModel [i].nModel;
+if (!PolyModelRead (pm = gameData.models.altPolyModels + nModel, fp, 1)) {
 	CFClose (fp);
 	return ++i;
 	}

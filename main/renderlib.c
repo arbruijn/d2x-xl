@@ -443,7 +443,7 @@ if (m < pc->color.green)
 	m = pc->color.green;
 if (m < pc->color.blue)
 	m = pc->color.blue;
-if (m > 0.0f) {
+if (m > l) {
 	m = l / m;
 	pc->color.red *= m;
 	pc->color.green *= m;
@@ -581,7 +581,6 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 else {
 	ScaleColor (pc, fl + dl);
 	}
-pc->index = gameOpts->render.nPath;
 //saturate at max value
 if (light > MAX_LIGHT)
 	light = MAX_LIGHT;

@@ -336,8 +336,9 @@ else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
 gluPerspective (gameStates.render.glFOV, gameStates.render.glAspect, ZNEAR, ZFAR);
-gameData.render.ogl.depthScale.x = (float) (ZFAR / (ZFAR - ZNEAR));
-gameData.render.ogl.depthScale.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
+gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
+gameData.render.ogl.depthScale.p.z = (float) (ZFAR - ZNEAR);
 gameData.render.ogl.screenScale.x = 1.0f / (float) grdCurScreen->scWidth;
 gameData.render.ogl.screenScale.y = 1.0f / (float) grdCurScreen->scHeight;
 glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
@@ -622,11 +623,9 @@ void OglEnableLighting (int bSpecular)
 if (gameOpts->ogl.bObjLighting || GEO_LIGHTING) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
 		static GLfloat fWhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-		static GLfloat fSpecular [] = {0.5f, 0.5f, 0.5f, 1.0f};
-#if 0
 		static GLfloat fAmbient [] = {0.2f, 0.2f, 0.2f, 1.0f};
 		static GLfloat fDiffuse [] = {0.8f, 0.8f, 0.8f, 1.0f};
-#endif
+		static GLfloat fSpecular [] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 	glEnable (GL_LIGHTING);
 	glShadeModel (GL_SMOOTH);

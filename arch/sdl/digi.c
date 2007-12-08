@@ -675,6 +675,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 #endif
 		}
 	else {
+		int l;
 		if (dsP->bHires) {
 			l = dsP->nLength [0];
 			ssP->samples = dsP->data [0];

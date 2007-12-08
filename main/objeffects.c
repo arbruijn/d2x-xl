@@ -50,7 +50,7 @@ if (!bCorona)
 if (gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
-	G3DrawSprite (&objP->position.vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
+	G3DrawSprite (&(OBJPOS (objP)->vPos), xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
 	glDepthMask (1);
 	}
 }
@@ -869,10 +869,11 @@ else if ((objP->nType == OBJ_PLAYER) ||
 		CalcShipThrusterPos (objP, ti.vPos);
 		}
 	else {
-		VmCopyTransposeMatrix (&m, &objP->position.mOrient);
+		tPosition *posP = OBJPOS (objP);
+		VmCopyTransposeMatrix (&m, &posP->mOrient);
 		for (i = 0; i < nThrusters; i++) {
 			VmVecRotate (ti.vPos + i, ti.mtP->vPos + i, &m);
-			VmVecInc (ti.vPos + i, &objP->position.vPos);
+			VmVecInc (ti.vPos + i, &posP->vPos);
 			VmVecRotate (ti.vDir + i, ti.mtP->vDir + i, &m);
 			}
 		ti.fSize = ti.mtP->fSize;

@@ -1289,7 +1289,7 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	tSegFaces	*segFaceP;
 	grsFace		*faceP;
 	tRgbaColorf	*pc;
-	tFaceColor	c, faceColor [3] = {{{1,1,1,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 	short			nVertex, nSegment, nSide;
 	fix			xLight;

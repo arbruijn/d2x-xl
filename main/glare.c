@@ -753,7 +753,7 @@ char *glareFS =
 	"void main (void) {\r\n" \
 	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / max (1.0, depthZ - fragZ);\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, depthZ - fragZ));\r\n" \
 	"}\r\n";
 
 char *glareVS = 

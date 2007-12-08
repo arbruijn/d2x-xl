@@ -118,13 +118,16 @@ static inline int StencilOff (void)
 if (!SHOW_SHADOWS || (gameStates.render.nShadowPass != 3))
 	return 0;
 glDisable (GL_STENCIL_TEST);
+gameStates.ogl.nStencil--;
 return 1;
 }
 
 static inline void StencilOn (int bStencil)
 {
-if (bStencil) 
+if (bStencil) {
 	glEnable (GL_STENCIL_TEST);
+	gameStates.ogl.nStencil++;
+	}
 }
 
 //------------------------------------------------------------------------------

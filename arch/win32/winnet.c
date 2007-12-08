@@ -401,7 +401,7 @@ void IpxReadNetworkFile (char * filename)
 	FILE * fp;
 	user_address tmp;
 	char szTemp [132], *p1;
-	int i, j, n, ln = 0, x;
+	int j, n, ln = 0, x;
 
 if (!(filename && *filename)) 
 	return;

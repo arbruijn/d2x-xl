@@ -881,9 +881,7 @@ G3SetCullAndStencil (bCullFront, bZPass);
 pvf = po->pvVertsf;
 #if DBG_SHADOWS
 if (bShadowTest < 2)
-#endif
-glEnableClientState (GL_VERTEX_ARRAY);
-#if DBG_SHADOWS
+	;
 else if (bShadowTest == 2)
 	glLineWidth (3);
 else {
@@ -893,6 +891,7 @@ else {
 #endif
 nClip = gameOpts->render.shadows.nClip ? po->pfClipDist ? gameOpts->render.shadows.nClip : 1 : 0;
 fClipDist = (nClip >= 2) ? pso->fClipDist : fInf;
+glVertexPointer (3, GL_FLOAT, 0, v);
 for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	pf = *ppf;
 	paf = po->pAdjFaces + pf->nAdjFaces;
@@ -917,7 +916,6 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 				OOF_VecInc (v+2, v+1);
 				OOF_VecInc (v+3, v);
 #if 1//def RELEASE
-				glVertexPointer (3, GL_FLOAT, 0, v);
 				glDrawArrays (GL_QUADS, 0, 4);
 #else
 				glVertex3fv ((GLfloat *) v);
@@ -938,9 +936,7 @@ for (i = pso->litFaces.nFaces, ppf = pso->litFaces.pFaces; i; i--, ppf++) {
 	}
 #if DBG_SHADOWS
 glLineWidth (1);
-if (bShadowTest != 2)
 #endif
-glDisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }
 
@@ -1484,7 +1480,8 @@ if (!gameStates.render.bShadowMaps) {
 		return 0;
 	}
 OglActiveTexture (GL_TEXTURE0, 0);
-glEnable (GL_TEXTURE_2D);
+glDisable (GL_TEXTURE_2D);
+glEnableClientState (GL_VERTEX_ARRAY);
 pnl = gameData.render.lights.dynamic.nNearestSegLights + objP->nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
@@ -1545,8 +1542,8 @@ else {
 			}
 		}
 	}
-glDisable (GL_TEXTURE_2D);
 #endif
+glDisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }
 

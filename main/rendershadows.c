@@ -87,6 +87,7 @@ glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
 glOrtho (0, 1, 1, 0, 0, 1);
+glDisable (GL_TEXTURE_2D);
 glDisable (GL_DEPTH_TEST);
 glEnable (GL_STENCIL_TEST);
 glDepthMask (0);

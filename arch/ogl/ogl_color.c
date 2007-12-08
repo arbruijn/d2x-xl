@@ -147,24 +147,18 @@ if (! (bm->bmProps.flags & BM_FLAG_NO_LIGHTING) && color) {
 static inline void ScaleColor (tFaceColor *color, float l)
 {
 if (l >= 0) {
-#if 1
-#	if 0
-	color->color.red *= l;
-	color->color.green *= l;
-	color->color.blue *= l;
-#	else
 		float m = color->color.red;
 
 	if (m < color->color.green)
 		m = color->color.green;
 	if (m < color->color.blue)
 		m = color->color.blue;
-	m = l / m;
-	color->color.red *= m;
-	color->color.green *= m;
-	color->color.blue *= m;
-#	endif
-#endif
+	if (m > 0.0f) {
+		m = l / m;
+		color->color.red *= m;
+		color->color.green *= m;
+		color->color.blue *= m;
+		}
 	}
 }
 
