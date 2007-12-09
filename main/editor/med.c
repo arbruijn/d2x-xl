@@ -481,7 +481,7 @@ void ReadLispMacro( FILE * file, char * buffer )
 
 static int (*KeyFunction[2048])();
 
-void medkey_init()
+void medKeyInit()
 {
 	FILE * keyfile;
 	char keypress[100];
@@ -533,7 +533,7 @@ void init_editor()
 	ui_pad_read( 7, "lighting.pad" );
 	ui_pad_read( 8, "test.pad" );
 
-	medkey_init();
+	medKeyInit();
 
 	editor_font = GrInitFont( "pc8x16.fnt" );
 
@@ -784,7 +784,7 @@ int DosShell()
 #else
         system("");
 #endif
-	key_init();
+	KeyInit();
 
 	GrSetMode(grdCurScreen->scMode);
 	GrBmUBitBlt(w, h, 0, 0, 0, 0, save_bitmap, &(grdCurScreen->scCanvas.cvBitmap);

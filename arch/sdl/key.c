@@ -460,7 +460,7 @@ void _CDECL_ KeyClose(void)
 
 //------------------------------------------------------------------------------
 
-void key_init()
+void KeyInit()
 {
   int i;
   
@@ -488,7 +488,7 @@ void KeyFlush()
 	fix curtime;
 
 	if (!bInstalled)
-		key_init();
+		KeyInit();
 
 	keyData.nKeyHead = keyData.nKeyTail = 0;
 
@@ -541,7 +541,7 @@ int KeyInKey()
 	int b = gameOpts->legacy.bInput;
 	gameOpts->legacy.bInput = 1;
 	if (!bInstalled)
-		key_init();
+		KeyInit();
    event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 	if (keyData.nKeyTail!=keyData.nKeyHead) {
 		key = keyData.keybuffer[keyData.nKeyHead];
@@ -563,7 +563,7 @@ int KeyInKeyTime(fix * time)
 	int key = 0;
 
 	if (!bInstalled)
-		key_init();
+		KeyInit();
         event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 	if (keyData.nKeyTail!=keyData.nKeyHead)	{
 		key = keyData.keybuffer[keyData.nKeyHead];

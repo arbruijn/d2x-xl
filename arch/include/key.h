@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //==========================================================================
 // This installs the int9 vector and initializes the keyboard in buffered
 // ASCII mode. KeyClose simply undoes that.
-extern void key_init();
+extern void KeyInit();
 extern void _CDECL_ KeyClose(void);
 
 //==========================================================================

@@ -236,7 +236,7 @@ void win32_create_window(int x,int y)
         mouse_hidden = 1;
 	}
 
-	key_init();
+	KeyInit();
 	MouseInit(0);
 	joy_init(JOYSTICKID1);
 	if (!FindArg( "-nosound" ))

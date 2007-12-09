@@ -147,7 +147,7 @@ static BOOL EnsureInit (void)
 {
 	if (g_lpdidKeybd == NULL)
 	{
-		key_init ();
+		KeyInit ();
 	}
 
 	return g_lpdidKeybd != NULL;
@@ -155,7 +155,7 @@ static BOOL EnsureInit (void)
 
 void KeyClose(void);
 
-void key_init()
+void KeyInit()
 {
 	HRESULT hr;
 	// my kingdom, my kingdom for C++...

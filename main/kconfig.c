@@ -1985,7 +1985,7 @@ void KCReadExternalControls ()
      
      for (i=0;i<128;i++)
 	   if (temp_ptr->keyboard [i])
-			key_putkey ((char) i);
+			KeyPutKey ((char) i);
 
      if (temp_ptr->Reactor_blown)
       {

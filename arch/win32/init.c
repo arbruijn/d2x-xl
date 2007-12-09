@@ -148,7 +148,7 @@ void arch_init_start()
 	UpdateWindow(g_hWnd);
 }
 
-extern void key_init(void);
+extern void KeyInit(void);
 extern void MouseInit(void);
 //added/changed 3/7/99 Owen Evans (next line)
 extern void joy_init(int joyid);
@@ -190,7 +190,7 @@ void arch_init()
 
 	SetPriorityClass(GetCurrentProcess(),HIGH_PRIORITY_CLASS);
 
-	key_init();
+	KeyInit();
 	MouseInit();
 //added/changed 3/7/99 Owen Evans (next line)
         joy_init(JOYSTICKID1);

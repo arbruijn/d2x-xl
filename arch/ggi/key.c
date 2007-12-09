@@ -315,7 +315,7 @@ void KeyClose()
 	Installed = 0;
 }
 
-void key_init()
+void KeyInit()
 {
 	Installed=1;
 
@@ -334,7 +334,7 @@ void KeyFlush()
 	fix curtime;
 
 	if (!Installed)
-		key_init();
+		KeyInit();
 
 	key_data.keyhead = key_data.keytail = 0;
 
@@ -378,7 +378,7 @@ int KeyInKey()
 {
 	int key = 0;
 	if (!Installed)
-		key_init();
+		KeyInit();
         event_poll();
 	if (key_data.keytail!=key_data.keyhead) {
 		key = key_data.keybuffer[key_data.keyhead];
@@ -395,7 +395,7 @@ int KeyInKeyTime(fix * time)
 	int key = 0;
 
 	if (!Installed)
-		key_init();
+		KeyInit();
         event_poll();
 	if (key_data.keytail!=key_data.keyhead)	{
 		key = key_data.keybuffer[key_data.keyhead];

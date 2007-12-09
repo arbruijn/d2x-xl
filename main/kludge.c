@@ -31,7 +31,7 @@ void JoySetBtnValues( int btn, int state, int timeDown, int downcount, int upcou
 }
 #endif
 
-void key_putkey(char i)
+void KeyPutKey(char i)
 {
 
 }

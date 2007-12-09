@@ -198,7 +198,7 @@ void KeyClose()
 	keyboard_close();
 }
 
-void key_init()
+void KeyInit()
 {
 	if (keyboard_init())
 		Error ("SVGAlib Keyboard Init Failed");
@@ -220,7 +220,7 @@ void KeyFlush()
 	fix curtime;
 
 	if (!Installed)
-		key_init();
+		KeyInit();
 
 	key_data.keyhead = key_data.keytail = 0;
 
@@ -265,7 +265,7 @@ int KeyInKey()
 {
 	int key = 0;
 	if (!Installed)
-		key_init();
+		KeyInit();
         event_poll();
 	if (key_data.keytail!=key_data.keyhead) {
 		key = key_data.keybuffer[key_data.keyhead];
@@ -282,7 +282,7 @@ int KeyInKeyTime(fix * time)
 	int key = 0;
 
 	if (!Installed)
-		key_init();
+		KeyInit();
         event_poll();
 	if (key_data.keytail!=key_data.keyhead)	{
 		key = key_data.keybuffer[key_data.keyhead];

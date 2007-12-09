@@ -25,7 +25,7 @@
 
 extern void arch_sdl_init();
 extern void arch_svgalib_init();
-extern void key_init();
+extern void KeyInit();
 extern int com_init();
 extern void timer_init();
 
@@ -49,5 +49,5 @@ void arch_init()
 //end this section addition - Victor 
 	//added 06/09/99 Matt Mueller - fix nonetwork compile
 	//end addition -MM
-    key_init();
+    KeyInit();
 }

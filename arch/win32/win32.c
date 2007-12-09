@@ -34,7 +34,7 @@ void BlitToPrimaryRect(HDC hSrcDC, int x, int y, int w, int h,
 	unsigned char *dst);
 extern HWND g_hWnd;
 
-void key_init(void);
+void KeyInit(void);
 void MouseInit(void);
 
 
@@ -63,7 +63,7 @@ void arch_init()
 	//SetPriorityClass (GetCurrentProcess(),HIGH_PRIORITY_CLASS);
 
 	timer_init ();
-	key_init();
+	KeyInit();
 	MouseInit();
 
 	//printf("arch_init successfully completed\n");
