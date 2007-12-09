@@ -2467,7 +2467,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nSegment = nSegment;
 #endif
-		i = (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ? 2 : 8;
+		i = (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);
 		slideV = FixMul (gameData.time.xFrame, slideV << i);
 		for (i = 0, uvlP = sideP->uvls; i < 4; i++) {
