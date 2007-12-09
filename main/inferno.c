@@ -3146,7 +3146,8 @@ if (!(oofToModel [i].pszPOL &&
 	   (fp = CFOpen (szModel, gameFolders.szDataDir, "rb", 0)))))
 	return ++i;
 nModel = oofToModel [i].nModel;
-if (!PolyModelRead (pm = gameData.models.altPolyModels + nModel, fp, 1)) {
+pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
+if (!PolyModelRead (pm, fp, 1)) {
 	CFClose (fp);
 	return ++i;
 	}
