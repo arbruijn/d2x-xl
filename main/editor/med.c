@@ -778,7 +778,7 @@ int DosShell()
 	//printf( "\n\nType EXIT to return to Inferno" );
 	//fflush(stdout);
 
-	key_close();
+	KeyClose();
 #ifndef __LINUX__
 	ok = spawnl(P_WAIT,getenv("COMSPEC"), NULL );
 #else
@@ -1205,7 +1205,7 @@ void editor(void)
 
 		// Only update if there is no key waiting and we're not in
 		// fast play mode.
-		if (!key_peekkey()) //-- && (MacroStatus != UI_STATUS_FASTPLAY))
+		if (!KeyPeekKey()) //-- && (MacroStatus != UI_STATUS_FASTPLAY))
 			medlisp_update_screen();
 
 		//do editor stuff

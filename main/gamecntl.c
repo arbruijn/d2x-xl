@@ -493,7 +493,7 @@ if (!gameOpts->menus.nStyle) {
 GrabMouse (0, 0);
 while (gameData.app.bGamePaused) {
 	if (!(gameOpts->menus.nStyle && gameStates.app.bGameRunning))
-		key = key_getch();
+		key = KeyGetChar();
 	else {
 		gameStates.menus.nInMenu++;
 		while (!(key = KeyInKey ())) {

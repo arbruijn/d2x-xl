@@ -153,7 +153,7 @@ static BOOL EnsureInit (void)
 	return g_lpdidKeybd != NULL;
 }
 
-void key_close(void);
+void KeyClose(void);
 
 void key_init()
 {
@@ -182,7 +182,7 @@ void key_init()
 				// Clear the keyboard array
 				KeyFlush();
 
-				atexit(key_close);
+				atexit(KeyClose);
 			}
 			else
 			{
@@ -193,7 +193,7 @@ void key_init()
 	}
 }
 
-void key_close(void)
+void KeyClose(void)
 {
 	WMKey_Handler_Ready = 0;
 	if (g_lpdidKeybd != NULL)
@@ -301,7 +301,7 @@ void KeyFlush()
 	}
 }
 
-int key_getch()
+int KeyGetChar()
 {
 	KEYCODE kcKey;
 		keyboard_handler();
@@ -329,13 +329,13 @@ KEYCODE KeyInKey ()
 	return KeyInKeyTime (NULL);
 }
 
-KEYCODE key_peekkey ()
+KEYCODE KeyPeekKey ()
 {
 		keyboard_handler();
 	return 0;
 }
 
-int key_checkch()
+int KeyCheckChar()
 {
   return 1; // FIXME
 } 
@@ -389,7 +389,7 @@ fix KeyDownTime(KEYCODE kcKey)
 }
 
 
-unsigned int keyDownCount(KEYCODE kcKey)
+unsigned int KeyDownCount(KEYCODE kcKey)
 {
 	int n;
 		keyboard_handler();
@@ -406,7 +406,7 @@ unsigned int keyDownCount(KEYCODE kcKey)
 	return n;
 }
 
-unsigned int key_upCount(KEYCODE kcKey)
+unsigned int KeyUpCount(KEYCODE kcKey)
 {
 	int n;
 
@@ -451,7 +451,7 @@ ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___,
 };
 #undef ___
 
-char * key_text[256] = {
+char * pszKeyText[256] = {
 "","ESC","1","2","3","4","5","6","7","8","9","0","-",
 "=","BSPC","TAB","Q","W","E","R","T","Y","U","I","O",
 "P","[","]","ƒ","LCTRL","A","S","D","F",

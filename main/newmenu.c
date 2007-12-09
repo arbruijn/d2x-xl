@@ -1169,7 +1169,7 @@ int NMCheckButtonPress ()
 		break;
 	case	CONTROL_NONE:		//keyboard only
 		#ifdef APPLE_DEMO
-			if (key_checkch ())	return 1;		
+			if (KeyCheckChar ())	return 1;		
 		#endif
 
 		break;

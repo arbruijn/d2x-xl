@@ -1,7 +1,7 @@
 /* $Id: key.c,v 1.3 2003/02/27 22:07:21 btb Exp $ */
 /*
  *
- * SDL keyboard input support
+ * SDL tKeyboard input support
  *
  *
  */
@@ -42,7 +42,7 @@ volatile unsigned char	keyd_pressed[256];
 volatile unsigned char	keydFlags[256];
 volatile int		xLastKeyPressTime;
 
-typedef struct Key_info {
+typedef struct tKeyInfo {
 	ubyte		state;			// state of key 1 == down, 0 == up
 	ubyte		lastState;		// previous state of key
 	int		counter;		// incremented each time key is down in handler
@@ -51,25 +51,25 @@ typedef struct Key_info {
 	ubyte		downcount;		// number of key counts key was down
 	ubyte		upcount;		// number of times key was released
 	ubyte		flags;
-} Key_info;
+} tKeyInfo;
 
-typedef struct keyboard	{
-	unsigned short		keybuffer[KEY_BUFFER_SIZE];
-	Key_info				keys[256];
-	fix					time_pressed[KEY_BUFFER_SIZE];
-	unsigned int 		keyhead, keytail;
-} keyboard;
+typedef struct tKeyboard	{
+	unsigned short		keybuffer [KEY_BUFFER_SIZE];
+	tKeyInfo				keys [256];
+	fix					xTimePressed [KEY_BUFFER_SIZE];
+	unsigned int 		nKeyHead, nKeyTail;
+} tKeyboard;
 
-static keyboard key_data;
+static tKeyboard keyData;
 
-typedef struct key_props {
-	char *key_text;
+typedef struct tKeyProps {
+	char *pszKeyText;
 	unsigned char asciiValue;
-	unsigned char shifted_asciiValue;
+	unsigned char shiftedAsciiValue;
 	SDLKey sym;
-} key_props;
+} tKeyProps;
 
-key_props key_properties[256] = {
+tKeyProps keyProperties [256] = {
 { "",       255,    255,    -1                 },
 { "ESC",    255,    255,    SDLK_ESCAPE        },
 { "1",      '1',    '!',    SDLK_1             },
@@ -98,7 +98,7 @@ key_props key_properties[256] = {
 { "P",      'p',    'P',    SDLK_p             },
 { "[",      '[',    '{',    SDLK_LEFTBRACKET   },
 { "]",      ']',    '}',    SDLK_RIGHTBRACKET  },
-//edited 06/08/99 Matt Mueller - set to correct key_text
+//edited 06/08/99 Matt Mueller - set to correct text
 { "ƒ",      255,    255,    SDLK_RETURN        },
 //end edit -MM
 { "LCTRL",  255,    255,    SDLK_LCTRL         },
@@ -112,7 +112,7 @@ key_props key_properties[256] = {
 { "K",      'k',    'K',    SDLK_k             },
 { "L",      'l',    'L',    SDLK_l             },
 //edited 06/08/99 Matt Mueller - set to correct sym
-{ ";",      ';',    ':',    SDLK_SEMICOLON         },
+{ ";",      ';',    ':',    SDLK_SEMICOLON     },
 //end edit -MM
 { "'",      '\'',   '"',    SDLK_QUOTE         },
 //edited 06/08/99 Matt Mueller - set to correct sym
@@ -128,11 +128,11 @@ key_props key_properties[256] = {
 { "N",      'n',    'N',    SDLK_n             },
 { "M",      'm',    'M',    SDLK_m             },
 //edited 06/08/99 Matt Mueller - set to correct syms
-{ ",",      ',',    '<',    SDLK_COMMA	},
-{ ".",      '.',    '>',    SDLK_PERIOD	},
-{ "/",      '/',    '?',    SDLK_SLASH	},
+{ ",",      ',',    '<',    SDLK_COMMA			  },
+{ ".",      '.',    '>',    SDLK_PERIOD		  },
+{ "/",      '/',    '?',    SDLK_SLASH			  },
 //end edit -MM
-{ "RSHFT",  255,    255,    SDLK_RSHIFT	},
+{ "RSHFT",  255,    255,    SDLK_RSHIFT		  },
 { "PAD*",   '*',    255,    SDLK_KP_MULTIPLY   },
 { "LALT",   255,    255,    SDLK_LALT          },
 { "SPC",    ' ',    ' ',    SDLK_SPACE         },
@@ -176,7 +176,7 @@ key_props key_properties[256] = {
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
 //edited 06/08/99 Matt Mueller - add pause ability
-{ "PAUSE",       255,    255,    SDLK_PAUSE                 },
+{ "PAUSE",       255,    255,    SDLK_PAUSE    },
 //end edit -MM
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
@@ -236,11 +236,11 @@ key_props key_properties[256] = {
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
-//edited 06/08/99 Matt Mueller - set to correct key_text
+//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "PADƒ",   255,    255,    SDLK_KP_ENTER      },
 //end edit -MM
 //edited 06/08/99 Matt Mueller - set to correct sym
-{ "RCTRL",  255,    255,    SDLK_RCTRL            },
+{ "RCTRL",  255,    255,    SDLK_RCTRL         },
 //end edit -MM
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
@@ -268,7 +268,7 @@ key_props key_properties[256] = {
 { "PAD/",   255,    255,    SDLK_KP_DIVIDE     },
 { "",       255,    255,    -1                 },
 //edited 06/08/99 Matt Mueller - add printscreen ability
-{ "PRSCR",       255,    255,    SDLK_PRINT                 },
+{ "PRSCR",  255,    255,    SDLK_PRINT         },
 //end edit -MM
 { "RALT",   255,    255,    SDLK_RALT          },
 { "",       255,    255,    -1                 },
@@ -286,20 +286,20 @@ key_props key_properties[256] = {
 { "",       255,    255,    -1                 },
 { "",       255,    255,    -1                 },
 { "HOME",   255,    255,    SDLK_HOME          },
-//edited 06/08/99 Matt Mueller - set to correct key_text
+//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "UP",		255,    255,    SDLK_UP            },
 //end edit -MM
 { "PGUP",   255,    255,    SDLK_PAGEUP        },
 { "",       255,    255,    -1                 },
-//edited 06/08/99 Matt Mueller - set to correct key_text
+//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "LEFT",	255,    255,    SDLK_LEFT          },
 //end edit -MM
 { "",       255,    255,    -1                 },
-//edited 06/08/99 Matt Mueller - set to correct key_text
+//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "RIGHT",	255,    255,    SDLK_RIGHT         },
 //end edit -MM
 { "",       255,    255,    -1                 },
-//edited 06/08/99 Matt Mueller - set to correct key_text
+//edited 06/08/99 Matt Mueller - set to correct pszKeyText
 { "END",    255,    255,    SDLK_END           },
 //end edit -MM
 { "DOWN",	255,    255,    SDLK_DOWN          },
@@ -351,7 +351,9 @@ key_props key_properties[256] = {
 { "LCMD",   255,    255,    SDLK_LMETA         }
 };
 
-char *key_text[256];
+char *pszKeyText[256];
+
+//------------------------------------------------------------------------------
 
 unsigned char KeyToASCII(int keycode )
 {
@@ -359,14 +361,16 @@ unsigned char KeyToASCII(int keycode )
 
 shifted = keycode & KEY_SHIFTED;
 keycode &= 0xFF;
-return shifted ? key_properties [keycode].shifted_asciiValue : key_properties [keycode].asciiValue;
+return shifted ? keyProperties [keycode].shiftedAsciiValue : keyProperties [keycode].asciiValue;
 }
 
-void key_handler(SDL_KeyboardEvent *event)
+//------------------------------------------------------------------------------
+
+void KeyHandler(SDL_KeyboardEvent *event)
 {
 	ubyte				state;
 	int				i, keycode, event_key, keyState;
-	Key_info			*key;
+	tKeyInfo			*key;
 	unsigned char	temp;
 
    event_key = event->keysym.sym;
@@ -376,8 +380,8 @@ void key_handler(SDL_KeyboardEvent *event)
 	//=====================================================
 	for (i = 255; i >= 0; i--) {
 		keycode = i;
-		key = key_data.keys + keycode;
-      if (key_properties [i].sym == event_key)
+		key = keyData.keys + keycode;
+      if (keyProperties [i].sym == event_key)
 			state = keyState;
 		else
 			state = key->lastState;
@@ -400,7 +404,7 @@ void key_handler(SDL_KeyboardEvent *event)
 			if (state) {
 				keyd_last_pressed = keycode;
 				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
-				key_data.keys [keycode].timehelddown = 0;
+				keyData.keys [keycode].timehelddown = 0;
 				keyd_pressed [keycode] = 1;
 				key->downcount += state;
 				key->counter++;
@@ -435,22 +439,26 @@ void key_handler(SDL_KeyboardEvent *event)
       if ( keyd_pressed[KEY_DELETE] )
 				keycode |= KEYDBGGED;
 #endif			
-			temp = key_data.keytail+1;
+			temp = keyData.nKeyTail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
-			if (temp!=key_data.keyhead)	{
-				key_data.keybuffer[key_data.keytail] = keycode;
-				key_data.time_pressed[key_data.keytail] = xLastKeyPressTime;
-				key_data.keytail = temp;
+			if (temp!=keyData.nKeyHead)	{
+				keyData.keybuffer[keyData.nKeyTail] = keycode;
+				keyData.xTimePressed[keyData.nKeyTail] = xLastKeyPressTime;
+				keyData.nKeyTail = temp;
 			}
 		}
 		key->lastState = state;
 	}
 }
 
-void _CDECL_ key_close(void)
+//------------------------------------------------------------------------------
+
+void _CDECL_ KeyClose(void)
 {
  bInstalled = 0;
 }
+
+//------------------------------------------------------------------------------
 
 void key_init()
 {
@@ -465,12 +473,14 @@ void key_init()
   keyd_repeat = 1;
   
   for(i=0; i<256; i++)
-     key_text[i] = key_properties[i].key_text;
+     pszKeyText[i] = keyProperties[i].pszKeyText;
      
-  // Clear the keyboard array
+  // Clear the tKeyboard array
   KeyFlush();
-  atexit(key_close);
+  atexit(KeyClose);
 }
+
+//------------------------------------------------------------------------------
 
 void KeyFlush()
 {
@@ -480,12 +490,12 @@ void KeyFlush()
 	if (!bInstalled)
 		key_init();
 
-	key_data.keyhead = key_data.keytail = 0;
+	keyData.nKeyHead = keyData.nKeyTail = 0;
 
-	//Clear the keyboard buffer
+	//Clear the tKeyboard buffer
 	for (i=0; i<KEY_BUFFER_SIZE; i++ )	{
-		key_data.keybuffer[i] = 0;
-		key_data.time_pressed[i] = 0;
+		keyData.keybuffer[i] = 0;
+		keyData.xTimePressed[i] = 0;
 	}
 
 //use gettimeofday here:
@@ -493,31 +503,37 @@ void KeyFlush()
 
 	for (i=0; i<256; i++ )	{
 		keyd_pressed[i] = 0;
-		key_data.keys[i].state = 1;
-		key_data.keys[i].lastState = 0;
-		key_data.keys[i].timewentdown = curtime;
-		key_data.keys[i].downcount=0;
-		key_data.keys[i].upcount=0;
-		key_data.keys[i].timehelddown = 0;
-		key_data.keys[i].counter = 0;
+		keyData.keys[i].state = 1;
+		keyData.keys[i].lastState = 0;
+		keyData.keys[i].timewentdown = curtime;
+		keyData.keys[i].downcount=0;
+		keyData.keys[i].upcount=0;
+		keyData.keys[i].timehelddown = 0;
+		keyData.keys[i].counter = 0;
 	}
 }
 
-int add_one(int n)
+//------------------------------------------------------------------------------
+
+int KeyAddKey(int n)
 {
  n++;
  if ( n >= KEY_BUFFER_SIZE ) n=0;
  return n;
 }
 
-int key_checkch()
+//------------------------------------------------------------------------------
+
+int KeyCheckChar()
 {
 	int is_one_waiting = 0;
 	event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-	if (key_data.keytail!=key_data.keyhead)
+	if (keyData.nKeyTail!=keyData.nKeyHead)
 		is_one_waiting = 1;
 	return is_one_waiting;
 }
+
+//------------------------------------------------------------------------------
 
 int KeyInKey()
 {
@@ -527,9 +543,9 @@ int KeyInKey()
 	if (!bInstalled)
 		key_init();
    event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-	if (key_data.keytail!=key_data.keyhead) {
-		key = key_data.keybuffer[key_data.keyhead];
-		key_data.keyhead = add_one(key_data.keyhead);
+	if (keyData.nKeyTail!=keyData.nKeyHead) {
+		key = keyData.keybuffer[keyData.nKeyHead];
+		keyData.nKeyHead = KeyAddKey(keyData.nKeyHead);
 		if (key == KEY_CTRLED+KEY_ALTED+KEY_ENTER)
 			exit (0);
 	}
@@ -540,6 +556,8 @@ int KeyInKey()
 	return key;
 }
 
+//------------------------------------------------------------------------------
+
 int KeyInKeyTime(fix * time)
 {
 	int key = 0;
@@ -547,27 +565,31 @@ int KeyInKeyTime(fix * time)
 	if (!bInstalled)
 		key_init();
         event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-	if (key_data.keytail!=key_data.keyhead)	{
-		key = key_data.keybuffer[key_data.keyhead];
-		*time = key_data.time_pressed[key_data.keyhead];
-		key_data.keyhead = add_one(key_data.keyhead);
+	if (keyData.nKeyTail!=keyData.nKeyHead)	{
+		key = keyData.keybuffer[keyData.nKeyHead];
+		*time = keyData.xTimePressed[keyData.nKeyHead];
+		keyData.nKeyHead = KeyAddKey(keyData.nKeyHead);
 	}
 	if (key == KEY_CTRLED+KEY_ALTED+KEY_ENTER)
 		exit (0);
 	return key;
 }
 
-int key_peekkey()
+//------------------------------------------------------------------------------
+
+int KeyPeekKey()
 {
 	int key = 0;
         event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
-	if (key_data.keytail!=key_data.keyhead)
-		key = key_data.keybuffer[key_data.keyhead];
+	if (keyData.nKeyTail!=keyData.nKeyHead)
+		key = keyData.keybuffer[keyData.nKeyHead];
 
 	return key;
 }
 
-int key_getch()
+//------------------------------------------------------------------------------
+
+int KeyGetChar()
 {
 	int dummy=0;
 
@@ -575,12 +597,14 @@ int key_getch()
 		return 0;
 //		return getch();
 
-	while (!key_checkch())
+	while (!KeyCheckChar())
 		dummy++;
 	return KeyInKey();
 }
 
-unsigned int key_get_shift_status()
+//------------------------------------------------------------------------------
+
+unsigned int KeyGetShiftStatus()
 {
 	unsigned int shift_status = 0;
 
@@ -600,6 +624,8 @@ unsigned int key_get_shift_status()
 
 	return shift_status;
 }
+
+//------------------------------------------------------------------------------
 // Returns the number of seconds this key has been down since last call.
 fix KeyDownTime(int scancode)
 {
@@ -612,18 +638,18 @@ if (!bFastPoll)
    if ((scancode<0)|| (scancode>255)) return 0;
 
 	if (!keyd_pressed[scancode]) {
-		timeDown = key_data.keys[scancode].timehelddown;
-		key_data.keys[scancode].timehelddown = 0;
+		timeDown = keyData.keys[scancode].timehelddown;
+		keyData.keys[scancode].timehelddown = 0;
 	} else {
 		QLONG s, ms;
 
 		time = TimerGetFixedSeconds();
-		timeDown = time - key_data.keys[scancode].timewentdown;
+		timeDown = time - keyData.keys[scancode].timewentdown;
 		s = timeDown / 65536;
 		ms = (timeDown & 0xFFFF);
 		ms *= 1000;
 		ms >>= 16;
-		key_data.keys[scancode].timehelddown += (int) (s * 1000 + ms);
+		keyData.keys[scancode].timehelddown += (int) (s * 1000 + ms);
 		// the following code takes care of clamping in KConfig.c::control_read_all()
 		if (gameStates.input.bKeepSlackTime && (timeDown > gameStates.input.kcPollTime)) {
 			slack = (fix) (timeDown - gameStates.input.kcPollTime);
@@ -632,7 +658,7 @@ if (!bFastPoll)
 				time = lastTime;
 			timeDown = (fix) gameStates.input.kcPollTime;
 			}
-		key_data.keys[scancode].timewentdown = time;
+		keyData.keys[scancode].timewentdown = time;
 		lastTime = time;
 if (timeDown && timeDown < gameStates.input.kcPollTime)
 	timeDown = (fix) gameStates.input.kcPollTime;
@@ -640,7 +666,9 @@ if (timeDown && timeDown < gameStates.input.kcPollTime)
 	return timeDown;
 }
 
-unsigned int keyDownCount(int scancode)
+//------------------------------------------------------------------------------
+
+unsigned int KeyDownCount(int scancode)
 {
 	int n;
 #ifndef FAST_EVENTPOLL
@@ -649,23 +677,27 @@ if (!bFastPoll)
 #endif
    if ((scancode<0)|| (scancode>255)) return 0;
 
-	n = key_data.keys[scancode].downcount;
-	key_data.keys[scancode].downcount = 0;
-	key_data.keys[scancode].flags = 0;
+	n = keyData.keys[scancode].downcount;
+	keyData.keys[scancode].downcount = 0;
+	keyData.keys[scancode].flags = 0;
 	return n;
 }
 
-ubyte keyFlags (int scancode)
+//------------------------------------------------------------------------------
+
+ubyte KeyFlags (int scancode)
 {
 #ifndef FAST_EVENTPOLL
 if (!bFastPoll)
 	event_poll(SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 #endif
    if ((scancode<0)|| (scancode>255)) return 0;
-	return key_data.keys[scancode].flags;
+	return keyData.keys[scancode].flags;
 }
 
-unsigned int key_upCount(int scancode)
+//------------------------------------------------------------------------------
+
+unsigned int KeyUpCount(int scancode)
 {
 	int n;
 #ifndef FAST_EVENTPOLL
@@ -674,20 +706,21 @@ if (!bFastPoll)
 #endif
         if ((scancode<0)|| (scancode>255)) return 0;
 
-	n = key_data.keys[scancode].upcount;
-	key_data.keys[scancode].upcount = 0;
+	n = keyData.keys[scancode].upcount;
+	keyData.keys[scancode].upcount = 0;
 
 	return n;
 }
 
+//------------------------------------------------------------------------------
 
-fix key_ramp (int scancode)
+fix KeyRamp (int scancode)
 {
 if (!gameOpts->input.keyboard.nRamp)
 	return 1;
 else {
 		int maxRampTime = gameOpts->input.keyboard.nRamp * 20; // / gameOpts->input.keyboard.nRamp;
-		fix t = key_data.keys [scancode].timehelddown;
+		fix t = keyData.keys [scancode].timehelddown;
 
 	if (!t)
 		return maxRampTime;
@@ -698,4 +731,5 @@ else {
 	}
 }
 
-
+//------------------------------------------------------------------------------
+//eof

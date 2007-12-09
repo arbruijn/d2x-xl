@@ -251,7 +251,7 @@ void OglDestroyWindow(void){
 			mouse_hidden = 0;
 		}
 		if (g_hWnd){
-			key_close();
+			KeyClose();
 			mouse_close();
 			joy_close();
 			if (!FindArg( "-nosound" ))

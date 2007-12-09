@@ -28,7 +28,7 @@
 
 #include "inferno.h"
 
-extern void key_handler(SDL_KeyboardEvent *event);
+extern void KeyHandler(SDL_KeyboardEvent *event);
 extern void MouseButtonHandler(SDL_MouseButtonEvent *mbe);
 extern void MouseMotionHandler(SDL_MouseMotionEvent *mme);
 #ifndef USE_LINUX_JOY // stpohle - so we can choose at compile time..
@@ -70,10 +70,10 @@ void event_poll(Uint32 mask)
 #endif
 		switch(event.type) {
 			case SDL_KEYDOWN:
-				key_handler((SDL_KeyboardEvent *)&event);
+				KeyHandler((SDL_KeyboardEvent *)&event);
 				break;
 			case SDL_KEYUP:
-				key_handler((SDL_KeyboardEvent *)&event);
+				KeyHandler((SDL_KeyboardEvent *)&event);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:

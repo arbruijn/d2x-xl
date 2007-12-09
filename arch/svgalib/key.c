@@ -65,7 +65,7 @@ typedef struct keyboard	{
 
 static /*volatile*/ keyboard key_data;
 
-char *key_text[256];
+char *pszKeyText[256];
 
 unsigned char ascii_table[128] = 
 { 255, 255, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',255,255,
@@ -119,7 +119,7 @@ unsigned char KeyToASCII(int keycode)
 }
 //end addition -MM
 
-void key_handler(int scancode, int press)
+void KeyHandler(int scancode, int press)
 {
 	ubyte state, keyState;
 	int i, keycode, event_key;
@@ -192,7 +192,7 @@ void key_handler(int scancode, int press)
 	}
 }
 
-void key_close()
+void KeyClose()
 {
 	Installed = 0;
 	keyboard_close();
@@ -204,14 +204,14 @@ void key_init()
 		Error ("SVGAlib Keyboard Init Failed");
 	Installed=1;
 
-	keyboard_seteventhandler (key_handler);
+	keyboard_seteventhandler (KeyHandler);
 	xLastKeyPressTime = TimerGetFixedSeconds();
 	keyd_bufferType = 1;
 	keyd_repeat = 1;
 
 // Clear the keyboard array
 	KeyFlush();
-	atexit(key_close);
+	atexit(KeyClose);
 }
 
 void KeyFlush()
@@ -252,7 +252,7 @@ int add_one(int n)
  return n;
 }
 
-int key_checkch()
+int KeyCheckChar()
 {
 	int is_one_waiting = 0;
 	event_poll();
@@ -292,7 +292,7 @@ int KeyInKeyTime(fix * time)
 	return key;
 }
 
-int key_peekkey()
+int KeyPeekKey()
 {
 	int key = 0;
         event_poll();
@@ -302,7 +302,7 @@ int key_peekkey()
 	return key;
 }
 
-int key_getch()
+int KeyGetChar()
 {
 	int dummy=0;
 
@@ -310,12 +310,12 @@ int key_getch()
 		return 0;
 //		return getch();
 
-	while (!key_checkch())
+	while (!KeyCheckChar())
 		dummy++;
 	return KeyInKey();
 }
 
-unsigned int key_get_shift_status()
+unsigned int KeyGetShiftStatus()
 {
 	unsigned int shift_status = 0;
 
@@ -356,7 +356,7 @@ fix KeyDownTime(int scancode)
 	return timeDown;
 }
 
-unsigned int keyDownCount(int scancode)
+unsigned int KeyDownCount(int scancode)
 {
 	int n;
         event_poll();
@@ -368,7 +368,7 @@ unsigned int keyDownCount(int scancode)
 	return n;
 }
 
-unsigned int key_upCount(int scancode)
+unsigned int KeyUpCount(int scancode)
 {
 	int n;
         event_poll();

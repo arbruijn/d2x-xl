@@ -832,7 +832,7 @@ if (xFixedFrameTime)
 if (Debug_pause) {
 	int c = 0;
 	while (!c)
-		c = key_peekkey ();
+		c = KeyPeekKey ();
 	if (c == KEY_P)       {
 		Debug_pause = 0;
 		c = KeyInKey ();

@@ -285,7 +285,7 @@ int ReadConfigFile()
 	//printf( "DigiDma: 0x%x\n",	digi_driver_dma	);
 	//printf( "MidiDeviceID: 0x%x\n", digi_midiType	);
 	//printf( "MidiPort: 0x%x\n", digi_midi_port		);
-  	key_getch();
+  	KeyGetChar();
 */
 
 	/*gameConfig.nMidiType = digi_midiType;

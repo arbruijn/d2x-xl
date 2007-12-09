@@ -73,7 +73,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * changed the #defines for scan codes.
  * 
  * Revision 1.4  1993/09/28  11:35:20  john
- * added key_peekkey
+ * added KeyPeekKey
  * 
  * Revision 1.3  1993/09/20  18:36:43  john
  * *** empty log message ***
@@ -93,9 +93,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //==========================================================================
 // This installs the int9 vector and initializes the keyboard in buffered
-// ASCII mode. key_close simply undoes that.
+// ASCII mode. KeyClose simply undoes that.
 extern void key_init();
-extern void _CDECL_ key_close();
+extern void _CDECL_ KeyClose();
 
 //==========================================================================
 // These are configuration parameters to setup how the buffer works.
@@ -116,11 +116,11 @@ extern volatile int xLastKeyPressTime;
 // "keyd_bufferType" variable.
 
 extern void KeyFlush();    // Clears the 256 char buffer
-extern int key_checkch();   // Returns 1 if a char is waiting
-extern int key_getch();     // Gets key if one waiting other waits for one.
+extern int KeyCheckChar();   // Returns 1 if a char is waiting
+extern int KeyGetChar();     // Gets key if one waiting other waits for one.
 extern int KeyInKey();     // Gets key if one, other returns 0.
 extern int KeyInKeyTime(fix *time);     // Same as inkey, but returns the time the key was pressed down.
-extern int key_peekkey();   // Same as inkey, but doesn't remove key from buffer.
+extern int KeyPeekKey();   // Same as inkey, but doesn't remove key from buffer.
 
 extern unsigned char KeyToASCII(int keycode );
 extern char *key_name(int keycode); // Convert keycode to the name of the key
@@ -142,14 +142,14 @@ extern fix KeyDownTime(int scancode);
 extern unsigned int keyDownCount(int scancode);
 
 // Returns number of times key has went from down to up since last call.
-extern unsigned int key_upCount(int scancode);
+extern unsigned int KeyUpCount(int scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();
 //void key_clearTimes();
 //void key_clearCounts();
 
-extern char * key_text[256];
+extern char * pszKeyText[256];
 
 #define KEY_SHIFTED     0x100
 #define KEY_ALTED       0x200

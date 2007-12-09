@@ -378,12 +378,12 @@ inline int HaveKeyCount (kcItem *k, int i)
 if (v == 255)
 	return 0;
 #ifdef _DEBUG
-v = keyDownCount (v);
+v = KeyDownCount (v);
 if (!v)
 	return 0;
 return v;
 #else
-return keyDownCount (v);
+return KeyDownCount (v);
 #endif
 }
 
@@ -395,14 +395,14 @@ inline int HaveD2XKey (kcItem *k, int i)
 
 if (v == 255)
 	return 0;
-if (keyFlags (v))
+if (KeyFlags (v))
 	return 0;
 #ifdef _DEBUG
-if (v = keyDownCount (v))
+if (v = KeyDownCount (v))
 	return v;
 return 0;
 #else
-return keyDownCount (v);
+return KeyDownCount (v);
 #endif
 }
 
@@ -498,7 +498,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern fix key_ramp (int scancode);
+extern fix KeyRamp (int scancode);
 
 inline int DeltaCtrl (v, speedFactor, keyRampScale, i)
 {
@@ -510,7 +510,7 @@ h = speedFactor * KeyDownTime (v);
 if (!h)
 	return 0;
 if (gameOpts->input.keyboard.bRamp [i])
-	return h / key_ramp (v);
+	return h / KeyRamp (v);
 return h;
 }
 
@@ -541,14 +541,14 @@ if (bGetSlideBank == 2) {
 	for (i = 0; i < 2; i++) {
 		if ((v = HaveKey (kcKeyboard, 24 + i)) < 255) {
 			Controls [0].firePrimaryState |= keyd_pressed [v];
-			Controls [0].firePrimaryDownCount += keyDownCount (v);
+			Controls [0].firePrimaryDownCount += KeyDownCount (v);
 			}
 		if ((v = HaveKey (kcKeyboard, 26 + i)) < 255) {
 			Controls [0].fireSecondaryState |= keyd_pressed [v];
-			Controls [0].fireSecondaryDownCount += keyDownCount (v);
+			Controls [0].fireSecondaryDownCount += KeyDownCount (v);
 			}
 		if ((v = HaveKey (kcKeyboard, 28 + i)) < 255) 
-			Controls [0].fireFlareDownCount += keyDownCount (v);
+			Controls [0].fireFlareDownCount += KeyDownCount (v);
 		}
 
 	for (i = 0; i < 2; i++) {
@@ -564,7 +564,7 @@ if (bGetSlideBank == 2) {
 			Controls [0].afterburnerState |= keyd_pressed [v];
 		// count bomb drops
 		if ((v = HaveKey (kcKeyboard, 34 + i)) < 255) 
-			Controls [0].dropBombDownCount += keyDownCount (v);
+			Controls [0].dropBombDownCount += KeyDownCount (v);
 		// charge chield
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER) {
 			if (keyd_pressed [v = HaveKey (kcKeyboard, 56 + i)])
@@ -572,18 +572,18 @@ if (bGetSlideBank == 2) {
 			}
 		// rear view
 		if ((v = HaveKey (kcKeyboard, 36 + i)) < 255) {
-			Controls [0].rearViewDownCount += keyDownCount (v);
+			Controls [0].rearViewDownCount += KeyDownCount (v);
 			Controls [0].rearViewDownState |= keyd_pressed [v];
 			}
 		// automap
 		if ((v = HaveKey (kcKeyboard, 44 + i)) < 255) {
-			Controls [0].automapDownCount += keyDownCount (v);
+			Controls [0].automapDownCount += KeyDownCount (v);
 			Controls [0].automapState |= keyd_pressed [v];
 			}
 	}
 	// headlight and weapon cycling
 	if ((v = HaveKey (kcKeyboard, 54)) < 255)
-		Controls [0].headlightCount = keyDownCount (v);
+		Controls [0].headlightCount = KeyDownCount (v);
 	Controls [0].headlightCount += HaveKeyCount (kcKeyboard, 55);
 	Controls [0].cyclePrimaryCount = HaveKeyCount (kcKeyboard, 48);
 	Controls [0].cyclePrimaryCount += HaveKeyCount (kcKeyboard, 49);
@@ -600,7 +600,7 @@ if (bGetSlideBank == 2) {
 	Controls [0].bulletTimeCount += HaveKeyCount (kcKeyboard, 65);
 
 	// toggle bomb
-	if (((v = HaveKey (kcKeyboard, 58)) < 255) && keyDownCount (v))
+	if (((v = HaveKey (kcKeyboard, 58)) < 255) && KeyDownCount (v))
 		ToggleBomb ();
 
 	// cruise speed
@@ -608,7 +608,7 @@ if (bGetSlideBank == 2) {
 		if ((v = HaveKey (kcKeyboard, 38 + i)) < 255) 
 			*nCruiseSpeed += key_signs [i] * FixDiv (speedFactor * KeyDownTime (v) * 5, gameStates.input.kcPollTime);
 	for (i = 0; i < 2; i++)
-		if (((v = HaveKey (kcKeyboard, 42 + i)) < 255) && keyDownCount (v))
+		if (((v = HaveKey (kcKeyboard, 42 + i)) < 255) && KeyDownCount (v))
 			*nCruiseSpeed = 0;
 	}
 

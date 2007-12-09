@@ -597,7 +597,7 @@ int KCGetItemHeight (kcItem *item)
 	} else {
 		switch (item->nType)	{
 			case BT_KEY:
-				strncpy (btext, key_text [item->value], 10); 
+				strncpy (btext, pszKeyText [item->value], 10); 
 				break;
 			case BT_MOUSE_BUTTON:
 				strncpy (btext, MouseTextString (item->value), 10); 
@@ -836,7 +836,7 @@ ubyte KCKeyCtrlFunc (void)
 	int	i, n, f;
 
 for (i = 0; i < 256; i++)	{
-	if (keyd_pressed [i] && strlen (key_text [i]))	{
+	if (keyd_pressed [i] && strlen (pszKeyText [i]))	{
 		f = 0;
 		for (n = 0; n < sizeof (system_keys); n++)
 			if (system_keys [n] == i)
@@ -1533,7 +1533,7 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 	if (item->value != 255) {
 		switch (item->nType)	{
 			case BT_KEY:
-				strncat (btext, key_text [item->value], 10); 
+				strncat (btext, pszKeyText [item->value], 10); 
 				break;
 
 			case BT_MOUSE_BUTTON:
