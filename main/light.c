@@ -120,6 +120,17 @@ void UpdateOglHeadLight (void);
 
 //--------------------------------------------------------------------------
 
+int LightingMethod (void)
+{
+if (gameOpts->render.bDynLighting)
+	return 2 + gameOpts->render.color.bAmbientLight;
+if (gameOpts->render.color.bUseLightMaps)
+	return 4;
+return gameOpts->render.color.bAmbientLight;
+}
+
+//--------------------------------------------------------------------------
+
 void InitTextureBrightness (void)
 {
 	tTexBright	*ptb = gameStates.app.bD1Mission ? texBrightD1  : texBrightD2;
@@ -756,7 +767,7 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 // -- Unused -- //  point - the 3d coords of the point
 // -- Unused -- //  face_light - a scale factor derived from the surface normal of the face
 // -- Unused -- //If no surface normal effect is wanted, pass F1_0 for face_light
-// -- Unused -- fix compute_headlight_light (vmsVector *point,fix face_light)
+// -- Unused -- fix ComputeHeadLight (vmsVector *point,fix face_light)
 // -- Unused -- {
 // -- Unused -- 	fix light;
 // -- Unused -- 	int use_beam = 0;		//flag for beam effect
@@ -862,7 +873,7 @@ else {		//new tObject, initialize
 	gameData.objs.xLight [nObject] = light;
 	}
 //Next, add in headlight on this tObject
-// -- Matt code: light += compute_headlight_light (vRotated,f1_0);
+// -- Matt code: light += ComputeHeadLight (vRotated,f1_0);
 light += ComputeHeadlightLightOnObject (objP);
 //Finally, add in dynamic light for this tSegment
 light += ComputeSegDynamicLight (objP->nSegment);
@@ -894,7 +905,7 @@ if (objP->nType == OBJ_PLAYER) {
 //-----------------------------------------------------------------------------
 static int IsFlickeringLight (short nSegment, short nSide)
 {
-	tFlickeringLight	*flP = gameData.render.lights.flicker.lights;
+	tVariableLight	*flP = gameData.render.lights.flicker.lights;
 	int					l;
 for (l = gameData.render.lights.flicker.nLights; l; l--, flP++)
 	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))
@@ -919,7 +930,7 @@ else {
 //-----------------------------------------------------------------------------
 void FlickerLights ()
 {
-	tFlickeringLight	*flP = gameData.render.lights.flicker.lights;
+	tVariableLight	*flP = gameData.render.lights.flicker.lights;
 	int					l;
 	tSide					*sideP;
 	short					nSegment, nSide;
@@ -948,10 +959,10 @@ for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++) {
 }
 //-----------------------------------------------------------------------------
 //returns ptr to flickering light structure, or NULL if can't find
-tFlickeringLight *FindFlicker (int nSegment,int nSide)
+tVariableLight *FindVariableLight (int nSegment,int nSide)
 {
 	int l;
-	tFlickeringLight *flP = gameData.render.lights.flicker.lights;
+	tVariableLight *flP = gameData.render.lights.flicker.lights;
 for (l = 0; l < gameData.render.lights.flicker.nLights; l++, flP++)
 	if ((flP->nSegment == nSegment) && (flP->nSide == nSide))	//found it!
 		return flP;
@@ -959,29 +970,32 @@ return NULL;
 }
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned off)
-void DisableFlicker (int nSegment,int nSide)
+void DisableVariableLight (int nSegment,int nSide)
 {
-	tFlickeringLight *flP = FindFlicker (nSegment ,nSide);
+tVariableLight *flP = FindVariableLight (nSegment ,nSide);
+
 if (flP)
 	flP->timer = 0x80000000;
 }
+
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned on)
-void EnableFlicker (int nSegment,int nSide)
+void EnableVariableLight (int nSegment,int nSide)
 {
-	tFlickeringLight *flP = FindFlicker (nSegment, nSide);
+	tVariableLight *flP = FindVariableLight (nSegment, nSide);
+
 if (flP)
 	flP->timer = 0;
 }
 
 #ifdef EDITOR
 //returns 1 if ok, 0 if error
-int AddFlicker (int nSegment, int nSide, fix delay, unsigned int mask)
+int AddVariableLight (int nSegment, int nSide, fix delay, unsigned int mask)
 {
 	int l;
-	tFlickeringLight *flP;
+	tVariableLight *flP;
 #if TRACE
-	//con_printf (CONDBG,"AddFlicker: %d:%d %x %x\n",nSegment,nSide,delay,mask);
+	//con_printf (CONDBG,"AddVariableLight: %d:%d %x %x\n",nSegment,nSide,delay,mask);
 #endif
 	//see if there's already an entry for this seg/tSide
 	flP = gameData.render.lights.flicker.lights;

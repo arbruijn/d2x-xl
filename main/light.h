@@ -30,15 +30,17 @@ extern char bGotDynColor [MAX_VERTICES];
 
 extern void SetDynamicLight(void);
 
+int LightingMethod (void);
+
 // Compute the lighting from the headlight for a given vertex on a face.
 // Takes:
 //  point - the 3d coords of the point
 //  face_light - a scale factor derived from the surface normal of the face
 // If no surface normal effect is wanted, pass F1_0 for face_light
-fix compute_headlight_light(vmsVector *point,fix face_light);
+fix ComputeHeadLight (vmsVector *point,fix face_light);
 
 // compute the average dynamic light in a tSegment.  Takes the tSegment number
-fix ComputeSegDynamicLight(int nSegment);
+fix ComputeSegDynamicLight (int nSegment);
 
 // compute the lighting for an tObject.  Takes a pointer to the tObject,
 // and possibly a rotated 3d point.  If the point isn't specified, the
@@ -46,21 +48,21 @@ fix ComputeSegDynamicLight(int nSegment);
 fix ComputeObjectLight(tObject *obj,vmsVector *rotated_pnt);
 void ComputeEngineGlow (tObject *obj, fix *engine_glowValue);
 // turn headlight boost on & off
-void ToggleHeadLight(void);
+void ToggleHeadLight (void);
 
 // returns ptr to flickering light structure, or NULL if can't find
-tFlickeringLight *FindFlicker(int nSegment, int nSide);
+tVariableLight *FindVariableLight (int nSegment, int nSide);
 
 // turn flickering off (because light has been turned off)
-void DisableFlicker(int nSegment, int nSide);
+void DisableVariableLight (int nSegment, int nSide);
 
 // turn flickering off (because light has been turned on)
-void EnableFlicker(int nSegment, int nSide);
+void EnableVariableLight (int nSegment, int nSide);
 
 // returns 1 if ok, 0 if error
-int AddFlicker(int nSegment, int nSide, fix delay, unsigned long mask);
+int AddVariableLight(int nSegment, int nSide, fix delay, unsigned long mask);
 
-void ReadFlickeringLight(tFlickeringLight *fl, CFILE *fp);
+void ReadVariableLight (tVariableLight *fl, CFILE *fp);
 
 void InitTextureBrightness (void);
 

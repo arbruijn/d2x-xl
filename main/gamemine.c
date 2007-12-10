@@ -1836,14 +1836,15 @@ typedef struct tPreFileHeader {
 	int	nVertices;
 	int	nLights;
 	int	nMaxLightRange;
+	int	nMethod;
 	} tPreFileHeader;
 
 int LoadPrecompiledLights (int nLevel)
 {
 	CFILE				*fp;
 	tPreFileHeader	pfh;
-	int	bOk;
-	char	szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
+	int				bOk;
+	char				szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
 
 if (!gameStates.app.bCacheLights)
 	return 0;
@@ -1862,7 +1863,8 @@ if (bOk)
 			(pfh.nSegments == gameData.segs.nSegments) && 
 			(pfh.nVertices == gameData.segs.nVertices) && 
 			(pfh.nLights == gameData.render.lights.dynamic.nLights) && 
-			(pfh.nMaxLightRange == MAX_LIGHT_RANGE);
+			(pfh.nMaxLightRange == MAX_LIGHT_RANGE) &&
+			(pfh.nMethod = LightingMethod ());
 if (bOk)
 	bOk = 
 			(CFRead (gameData.segs.bSegVis, sizeof (ubyte) * pfh.nSegments * SEGVIS_FLAGS, 1, fp) == 1) &&
@@ -1880,7 +1882,12 @@ return bOk;
 int SavePrecompiledLights (int nLevel)
 {
 	CFILE				*fp;
-	tPreFileHeader pfh = {LIGHT_VERSION, gameData.segs.nSegments, gameData.segs.nVertices, gameData.render.lights.dynamic.nLights, MAX_LIGHT_RANGE};
+	tPreFileHeader pfh = {LIGHT_VERSION, 
+								 gameData.segs.nSegments, 
+								 gameData.segs.nVertices, 
+								 gameData.render.lights.dynamic.nLights, 
+								 MAX_LIGHT_RANGE, 
+								 LightingMethod ()};
 	int				bOk;
 	char				szFilename [FILENAME_LEN], szFullname [FILENAME_LEN];
 

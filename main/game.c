@@ -2717,9 +2717,9 @@ void show_freeObjects (void)
 
 //-----------------------------------------------------------------------------
 /*
- * reads a tFlickeringLight structure from a CFILE
+ * reads a tVariableLight structure from a CFILE
  */
-void ReadFlickeringLight (tFlickeringLight *fl, CFILE *fp)
+void ReadVariableLight (tVariableLight *fl, CFILE *fp)
 {
 	fl->nSegment = CFReadShort (fp);
 	fl->nSide = CFReadShort (fp);

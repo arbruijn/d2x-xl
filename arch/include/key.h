@@ -66,7 +66,7 @@ extern volatile unsigned char keyd_last_released;
 extern fix KeyDownTime(int scancode);
 
 // Returns number of times key has went from up to down since last call.
-extern unsigned int keyDownCount(int scancode);
+extern unsigned int KeyDownCount(int scancode);
 
 extern ubyte KeyFlags(int scancode);
 // Returns number of times key has went from down to up since last call.

@@ -216,7 +216,7 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 	//is to keep us from turning on blown-out lights
 	if (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nSegment].sides [nSide].nOvlTex].lighting) {
 		ret |= AddLight (nSegment, nSide); 		//any light sets flag
-		EnableFlicker (nSegment, nSide);
+		EnableVariableLight (nSegment, nSide);
 	}
 }
 return ret;
@@ -240,7 +240,7 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 	//is to keep us from turning off blown-out lights
 	if (gameData.pig.tex.pTMapInfo [gameData.segs.segments [nSegment].sides [nSide].nOvlTex].lighting) {
 		ret |= SubtractLight (nSegment, nSide); 	//any light sets flag
-		DisableFlicker (nSegment, nSide);
+		DisableVariableLight (nSegment, nSide);
 	}
 }
 return ret;

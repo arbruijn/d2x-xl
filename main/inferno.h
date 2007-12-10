@@ -1250,18 +1250,18 @@ extern int nMaxNearestLights [21];
 //------------------------------------------------------------------------------
 
 //Flickering light system
-typedef struct tFlickeringLight {
+typedef struct tVariableLight {
 	short				nSegment;
 	short				nSide;
 	unsigned int	mask;     // determines flicker pattern
 	fix				timer;    // time until next change
 	fix				delay;    // time between changes
-} tFlickeringLight;
+} tVariableLight;
 
 #define MAX_FLICKERING_LIGHTS 1000
 
 typedef struct tFlickerLightData {
-	tFlickeringLight	lights [MAX_FLICKERING_LIGHTS];
+	tVariableLight	lights [MAX_FLICKERING_LIGHTS];
 	int					nLights;
 } tFlickerLightData;
 

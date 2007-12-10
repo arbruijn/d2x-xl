@@ -1104,6 +1104,9 @@
 						RelativePath="..\..\main\joydefs.h">
 					</File>
 					<File
+						RelativePath="..\..\arch\include\key.h">
+					</File>
+					<File
 						RelativePath="..\..\include\ogl_bitmap.h">
 					</File>
 					<File
@@ -3086,9 +3089,6 @@
 						RelativePath="..\..\main\kconfig.h">
 					</File>
 					<File
-						RelativePath="..\..\arch\include\key.h">
-					</File>
-					<File
 						RelativePath="..\..\main\laser.h">
 					</File>
 					<File
@@ -3484,10 +3484,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

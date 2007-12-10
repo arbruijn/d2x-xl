@@ -201,7 +201,7 @@ int HeadLightIsOn (int nPlayer);
 
 void GetSlowTicks (void);
 /*
- * reads a tFlickeringLight structure from a CFILE
+ * reads a tVariableLight structure from a CFILE
  */
 extern short maxfps;
 extern int timer_paused;

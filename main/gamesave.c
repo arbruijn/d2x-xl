@@ -1556,7 +1556,7 @@ con_printf(CONDBG, "   loading dynamic lights ...\n");
 gameData.render.lights.flicker.nLights = CFReadInt (LoadFile);
 Assert((gameData.render.lights.flicker.nLights >= 0) && (gameData.render.lights.flicker.nLights < MAX_FLICKERING_LIGHTS));
 for (i = 0; i < gameData.render.lights.flicker.nLights; i++)
-	ReadFlickeringLight(&gameData.render.lights.flicker.lights [i], LoadFile);
+	ReadVariableLight(&gameData.render.lights.flicker.lights [i], LoadFile);
 }
 else
 	gameData.render.lights.flicker.nLights = 0;

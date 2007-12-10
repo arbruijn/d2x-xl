@@ -2984,7 +2984,7 @@ if (gameOpts->app.bExpertMode) {
 
 static	char *pszLightRange [5];
 
-void LightingOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+void LightOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
 	int			v;
@@ -3073,7 +3073,7 @@ if (lightOpts.nLMapRange >= 0) {
 
 //------------------------------------------------------------------------------
 
-void LightingOptionsMenu ()
+void LightOptionsMenu ()
 {
 	tMenuItem m [20];
 	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
@@ -3206,7 +3206,7 @@ do {
 		optBrightObjects = -1;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
-		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightingOptionsCallback, &choice);
+		i = ExecMenu1 (NULL, TXT_LIGHTING_MENUTITLE, opt, m, &LightOptionsCallback, &choice);
 		if (i < 0)
 			break;
 		} 
@@ -3629,7 +3629,7 @@ do {
 			break;
 		if (gameOpts->app.bExpertMode) {
 			if ((optLightOpts >= 0) && (i == optLightOpts))
-				LightingOptionsMenu ();
+				LightOptionsMenu ();
 			else if ((optSmokeOpts >= 0) && (i == optSmokeOpts))
 				SmokeOptionsMenu ();
 			else if ((optLightningOpts >= 0) && (i == optLightningOpts))
