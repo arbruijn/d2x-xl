@@ -157,6 +157,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 									 vmsVector *pSrcPt, vmsVector *pDestPt,
 									 int bSetOrient);
 
+void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep);
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);
 int FindTriggerTarget (short nSegment, short nSide);

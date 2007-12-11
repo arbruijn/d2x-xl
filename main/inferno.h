@@ -1525,8 +1525,8 @@ typedef struct tSegmentData {
 	ubyte					*bSegVis;
 	int					nVertices;
 	int					nLastVertex;
-	short					nSegments;
-	short					nLastSegment;
+	int					nSegments;
+	int					nLastSegment;
 	int					nFaces;
 	int					nLevelVersion;
 	char					szLevelFilename [FILENAME_LEN];

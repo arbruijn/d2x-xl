@@ -38,6 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudmsg.h"
 #include "sphere.h"
 #include "escort.h"
+#include "switch.h"
 #include "key.h"
 
 //	Cheat functions ------------------------------------------------------------
@@ -89,20 +90,22 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int MenuGetValue (char *pszMsg)
+int MenuGetValues (char *pszMsg, int *valueP, int nValues)
 {
 	tMenuItem	m;
-	char			text[10] = "";
-	int			item;
+	char			text [20] = "", *psz;
+	int			i = 0;
 
 memset (&m, 0, sizeof (m));
 m.nType = NM_TYPE_INPUT; 
-m.text_len = 10; 
+m.text_len = 20; 
 m.text = text;
-item = ExecMenu (NULL, pszMsg, 1, &m, NULL, NULL);
-if (item >= 0)
-	item = atoi (m.text);
-return item;
+if (ExecMenu (NULL, pszMsg, 1, &m, NULL, NULL) >= 0) {
+	valueP [0] = atoi (m.text);
+	for (i = 1, psz = m.text; --nValues && (psz = strchr (psz, ',')); i++)
+		valueP [i] = atoi (++psz);
+	}
+return i;
 }
 
 //------------------------------------------------------------------------------
@@ -423,11 +426,17 @@ LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + i2f (
 
 void CubeWarpCheat (int bVerbose)
 {
-int nNewCube = MenuGetValue (TXT_ENTER_SEGNUM);
-if ((nNewCube >= 0) && (nNewCube <= gameData.segs.nLastSegment)) {
+	int nNewSegSide [2] = {0, 0};
+
+MenuGetValues (TXT_ENTER_SEGNUM, nNewSegSide, 2);
+if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
 	DoCheatPenalty ();
-	COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [LOCALPLAYER.nObject].position.vPos, nNewCube); 
-	RelinkObject (LOCALPLAYER.nObject, nNewCube);
+	if (nNewSegSide [1] < 0)
+		nNewSegSide [1] = 0;
+	else if (nNewSegSide [1] > 5)
+		nNewSegSide [1] = 5;
+	TriggerSetObjOrient (LOCALPLAYER.nObject, (short) nNewSegSide [0], (short) nNewSegSide [1], 1, 0);
+	TriggerSetObjPos (LOCALPLAYER.nObject, (short) nNewSegSide [0]);
 	}
 }
 
@@ -581,7 +590,9 @@ ShakerRockStuff ();
 
 void LevelWarpCheat (int bVerbose)
 {
-int nNewLevel = MenuGetValue (TXT_WARP_TO_LEVEL);
+int nNewLevel;
+
+MenuGetValues (TXT_WARP_TO_LEVEL, &nNewLevel, 1);
 if ((nNewLevel > 0) && (nNewLevel <= gameData.missions.nLastLevel)) {
 	DoCheatPenalty ();
 	StartNewLevel (nNewLevel, 0);

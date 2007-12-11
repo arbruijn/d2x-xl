@@ -309,7 +309,7 @@ Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 srcdir=.
-INSTALL="/bin/install -c"
+INSTALL="/usr/bin/install -c"
 # If no file are specified by the user, then we need to provide default
 # value.  By we need to know if files were specified by the user.
 ac_need_defaults=:
@@ -515,13 +515,13 @@ s,@INSTALL_DATA@,${INSTALL} -m 644,;t t
 s,@CYGPATH_W@,echo,;t t
 s,@PACKAGE@,d2x-xl,;t t
 s,@VERSION@,1.11.67,;t t
-s,@ACLOCAL@,${SHELL} /d/projekte/d2x-xl-svn/trunk/missing --run aclocal-1.7,;t t
-s,@AUTOCONF@,${SHELL} /d/projekte/d2x-xl-svn/trunk/missing --run autoconf,;t t
-s,@AUTOMAKE@,${SHELL} /d/projekte/d2x-xl-svn/trunk/missing --run automake-1.7,;t t
-s,@AUTOHEADER@,${SHELL} /d/projekte/d2x-xl-svn/trunk/missing --run autoheader,;t t
-s,@MAKEINFO@,${SHELL} /d/projekte/d2x-xl-svn/trunk/missing --run makeinfo,;t t
-s,@AMTAR@,${SHELL} /d/projekte/d2x-xl-svn/trunk/missing --run tar,;t t
-s,@install_sh@,/d/projekte/d2x-xl-svn/trunk/install-sh,;t t
+s,@ACLOCAL@,aclocal-1.7,;t t
+s,@AUTOCONF@,autoconf,;t t
+s,@AUTOMAKE@,automake-1.7,;t t
+s,@AUTOHEADER@,autoheader,;t t
+s,@MAKEINFO@,makeinfo,;t t
+s,@AMTAR@,tar,;t t
+s,@install_sh@,D:\Projekte\d2x-xl-svn\trunk/install-sh,;t t
 s,@STRIP@,strip,;t t
 s,@ac_ct_STRIP@,strip,;t t
 s,@INSTALL_STRIP_PROGRAM@,${SHELL} $(install_sh) -c -s,;t t

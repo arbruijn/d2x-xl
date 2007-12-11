@@ -1653,7 +1653,7 @@ for (i = startI; i < endI; i++)
 
 //------------------------------------------------------------------------------
 
-static short loadIdx = 0;
+static int loadIdx = 0;
 static int loadOp = 0;
 static CFILE *mineDataFile;
 
