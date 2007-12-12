@@ -584,50 +584,47 @@ int CheckVolatileSegment (tObject *objP, int nSegment)
 	fix d;
 
 //	Assert (objP->nType==OBJ_PLAYER);
-
-	if (!EGI_FLAG (bFluidPhysics, 1, 0, 0))
-		return 0;
-	if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_WATER)
-		d = 0;
-	else if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_LAVA)
-		d = gameData.pig.tex.tMapInfo [0][404].damage / 2;
-	else {
+if (!EGI_FLAG (bFluidPhysics, 1, 0, 0))
+	return 0;
+if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_WATER)
+	d = 0;
+else if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_LAVA)
+	d = gameData.pig.tex.tMapInfo [0][404].damage / 2;
+else {
 #ifdef TACTILE
-		if (TactileStick && !(gameData.app.nFrameCount & 15))
-			Tactile_Xvibrate_clear ();
+	if (TactileStick && !(gameData.app.nFrameCount & 15))
+		Tactile_Xvibrate_clear ();
 #endif
-		return 0;
+	return 0;
+	}
+if (d > 0) {
+	fix damage = FixMul (d, gameData.time.xFrame) / 2;
+	if (gameStates.app.nDifficultyLevel == 0)
+		damage /= 2;
+	if (objP->nType == OBJ_PLAYER) {
+		if (!(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_INVULNERABLE))
+			ApplyDamageToPlayer (objP, objP, damage);
 		}
-	if (d > 0) {
-		fix damage = FixMul (d, gameData.time.xFrame) / 2;
-		if (gameStates.app.nDifficultyLevel == 0)
-			damage /= 2;
-		if (objP->nType == OBJ_PLAYER) {
-			if (!(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_INVULNERABLE))
-				ApplyDamageToPlayer (objP, objP, damage);
-			}
-		if (objP->nType == OBJ_ROBOT) {
-			ApplyDamageToRobot (objP, objP->shields + 1, OBJ_IDX (objP));
-			}
+	if (objP->nType == OBJ_ROBOT) {
+		ApplyDamageToRobot (objP, objP->shields + 1, OBJ_IDX (objP));
+		}
 
 #ifdef TACTILE
-		if (TactileStick)
-			Tactile_Xvibrate (50, 25);
+	if (TactileStick)
+		Tactile_Xvibrate (50, 25);
 #endif
 	if ((objP->nType == OBJ_PLAYER) && (objP->id == gameData.multiplayer.nLocalPlayer))
 		PALETTE_FLASH_ADD (f2i (damage*4), 0, 0);	//flash red
 	if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) {
-		objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384) / 2;
-		objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384) / 2;
+		objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384) / 4;
+		objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384) / 4;
 		}
 	return (d > 0) ? 1 : 2;
 	}
 if (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) && 
-	 (objP->mType.physInfo.thrust.p.x || 
-	  objP->mType.physInfo.thrust.p.y ||
-	  objP->mType.physInfo.thrust.p.z)) {
-	objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384) / 4;
-	objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384) / 4;
+	 (objP->mType.physInfo.thrust.p.x || objP->mType.physInfo.thrust.p.y || objP->mType.physInfo.thrust.p.z)) {
+	objP->mType.physInfo.rotVel.p.x = (d_rand () - 16384) / 8;
+	objP->mType.physInfo.rotVel.p.z = (d_rand () - 16384) / 8;
 	}
 return 0;
 }
