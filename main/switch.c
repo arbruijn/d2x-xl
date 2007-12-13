@@ -309,15 +309,34 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 }
 
 //------------------------------------------------------------------------------
+// Changes player spawns according to triggers segments,sides list
+
+int DoSetSpawnPoints (tTrigger *trigP, short nObject)
+{
+	int 		h, i, j;
+	short 	*segs = trigP->nSegment;
+	short 	*sides = trigP->nSide;
+	short		nSegment;
+
+for (h = trigP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
+	nSegment = segs [j];
+	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, sides [j], 1, 0);
+	gameData.multiplayer.playerInit [i].nSegment = nSegment;
+	gameData.multiplayer.playerInit [i].nSegType = gameData.segs.segment2s [nSegment].special;
+	j = (j + 1) % h;
+	}
+}
+
+//------------------------------------------------------------------------------
 // Changes walls pointed to by a tTrigger. returns true if any walls changed
 int DoChangeWalls (tTrigger *trigP)
 {
-	int 		i,ret=0;
+	int 		i,ret = 0;
 	short 	*segs = trigP->nSegment;
 	short 	*sides = trigP->nSide;
 	short 	nSide,nConnSide,nWall,nConnWall;
 	int 		nNewWallType;
-	tSegment *segP,*cSegP;
+	tSegment *segP, *cSegP;
 
 for (i = trigP->nLinks; i; i--, segs++, sides++) {
 
@@ -476,12 +495,10 @@ for (i = trigP->nLinks; i; i--, segs++, sides++) {
 
 //------------------------------------------------------------------------------
 
-void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep)
+void TriggerSetOrient (tPosition *posP, short nSegment, short nSide, int bSetPos, int nStep)
 {
-	vmsAngVec	ad, an, av;
-	vmsVector	n, vel;
-	vmsMatrix	rm;
-	tObject		*objP = gameData.objs.objects + nObject;
+	vmsAngVec	an;
+	vmsVector	n;
 
 if (nStep <= 0) {
 	n = *gameData.segs.segments [nSegment].sides [nSide].normals;
@@ -500,10 +517,35 @@ else
 VmExtractAnglesVector (&an, &n);
 // create new orientation matrix
 if (!nStep)
-	VmAngles2Matrix (&objP->position.mOrient, &an);
+	VmAngles2Matrix (&posP->mOrient, &an);
 if (bSetPos)
-	COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, + nSegment); 
+	COMPUTE_SEGMENT_CENTER_I (&posP->vPos, + nSegment); 
 // rotate the ships vel vector accordingly
+//StopPlayerMovement ();
+}
+
+//------------------------------------------------------------------------------
+
+void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep)
+{
+	vmsAngVec	ad, an, av;
+	vmsVector	vel, n;
+	vmsMatrix	rm;
+	tObject		*objP = gameData.objs.objects + nObject;
+
+TriggerSetOrient (&objP->position, nSegment, nSide, bSetPos, nStep);
+if (nStep <= 0) {
+	n = *gameData.segs.segments [nSegment].sides [nSide].normals;
+	n.p.x = -n.p.x;
+	n.p.y = -n.p.y;
+	n.p.z = -n.p.z;
+	gameStates.gameplay.vTgtDir = n;
+	if (nStep < 0)
+		nStep = MAX_ORIENT_STEPS;
+	}
+else
+	n = gameStates.gameplay.vTgtDir;
+VmExtractAnglesVector (&an, &n);
 VmExtractAnglesVector (&av, &objP->mType.physInfo.velocity);
 av.p -= an.p;
 av.b -= an.b;
@@ -946,12 +988,17 @@ switch (trigP->nType) {
 
 	case TT_CHANGE_TEXTURE:
 		DoChangeTexture (trigP);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Changing Wall!");
+		PrintTriggerMessage (nPlayer, nTrigger, 2, "Walls have been changed!");
 		break;
 
 	case TT_SPAWN_BOT:
 		DoSpawnBot (trigP, nObject);
-		PrintTriggerMessage (nPlayer, nTrigger, shot, "Robot is summoning help!");
+		PrintTriggerMessage (nPlayer, nTrigger, 1, "Robot is summoning help!");
+		break;
+
+	case TT_SET_SPAWN:
+		DoSetSpawnPoints (trigP, nObject);
+		PrintTriggerMessage (nPlayer, nTrigger, 1, "New spawn points set!");
 		break;
 
 	case TT_SMOKE_LIFE:

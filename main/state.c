@@ -103,7 +103,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define DBG(_expr)
 #endif
 
-#define STATE_VERSION				36
+#define STATE_VERSION				37
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -1093,6 +1093,16 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
+void StateSaveSpawnPoint (int i, CFILE *fp)
+{
+CFWriteVector (&gameData.multiplayer.playerInit [i].position.vPos, fp);     
+CFWriteMatrix (&gameData.multiplayer.playerInit [i].position.mOrient, fp);  
+CFWriteShort (gameData.multiplayer.playerInit [i].nSegment, fp);
+CFWriteShort (gameData.multiplayer.playerInit [i].nSegType, fp);
+}
+
+//------------------------------------------------------------------------------
+
 DBG (static int fPos);
 
 void StateSaveUniGameData (CFILE *fp, int bBetweenLevels)
@@ -1287,7 +1297,8 @@ CFWrite (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtr
 CFWriteInt (gameStates.app.bFirstSecretVisit, fp);
 CFWriteFix (gameData.laser.xOmegaCharge, fp);
 CFWriteShort (gameData.missions.nEnteredFromLevel, fp);
-
+for (i = 0; i < MAX_PLAYERS; i++)
+	StateSaveSpawnPoint (i, fp);
 }
 
 //------------------------------------------------------------------------------
@@ -2093,6 +2104,16 @@ for (i = 0; i < MAX_CONTROLCEN_LINKS; i++) {
 
 //------------------------------------------------------------------------------
 
+void StateRestoreSpawnPoint (int i, CFILE *fp)
+{
+CFReadVector (&gameData.multiplayer.playerInit [i].position.vPos, fp);     
+CFReadMatrix (&gameData.multiplayer.playerInit [i].position.mOrient, fp);  
+gameData.multiplayer.playerInit [i].nSegment = CFReadShort (fp);
+gameData.multiplayer.playerInit [i].nSegType = CFReadShort (fp);
+}
+
+//------------------------------------------------------------------------------
+
 int StateRestoreUniGameData (CFILE *fp, int sgVersion, int bMulti, int bSecretRestore, fix xOldGameTime, int *nLevel)
 {
 	tPlayer	restoredPlayers [MAX_PLAYERS];
@@ -2380,6 +2401,9 @@ else
 if (sgVersion > 27)
 	gameData.missions.nEnteredFromLevel = CFReadShort (fp);
 *nLevel = nCurrentLevel;
+if (sgVersion >= 37)
+	for (i = 0; i < MAX_PLAYERS; i++)
+		StateRestoreSpawnPoint (i, fp);
 return 1;
 }
 

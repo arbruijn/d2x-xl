@@ -53,7 +53,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TT_COUNTDOWN			 25
 #define TT_SPAWN_BOT			 26
 #define TT_SMOKE_BRIGHTNESS 27
-#define NUM_TRIGGER_TYPES   28
+#define TT_SET_SPAWN			 28
+#define NUM_TRIGGER_TYPES   29
 
 // Trigger flags
 
@@ -157,6 +158,7 @@ void SetSpeedBoostVelocity (short nObject, fix speed,
 									 vmsVector *pSrcPt, vmsVector *pDestPt,
 									 int bSetOrient);
 
+void TriggerSetOrient (tPosition *posP, short nSegment, short nSide, int bSetPos, int nStep);
 void TriggerSetObjOrient (short nObject, short nSegment, short nSide, int bSetPos, int nStep);
 void TriggerSetObjPos (short nObject, short nSegment);
 void UpdatePlayerOrient (void);

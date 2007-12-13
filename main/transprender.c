@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define RI_SPLIT_POLYS 1
 #define RI_POLY_OFFSET 0
+#define RI_POLY_CENTER 1
 
 //------------------------------------------------------------------------------
 
@@ -182,7 +183,11 @@ if ((nDepth > 1) || !nMaxLen || (nMaxLen < 10) || ((nMaxLen <= 30) && ((split [0
 		if (zMin > z)
 			zMin = z;
 		}
+#if RI_POLY_CENTER
+	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), fl2f (zMax), fl2f ((zMax + zMin) / 2));
+#else
 	return AddRenderItem (item->bmP ? riTexPoly : riFlatPoly, item, sizeof (*item), fl2f (zMax), fl2f (zMin));
+#endif
 	}
 if (split [0].nVertices == 3) {
 	i1 = (i0 + 1) % 3;
@@ -295,9 +300,16 @@ else
 #endif
 	{
 	for (i = 0, z = 0; i < item.nVertices; i++) {
+#if RI_POLY_CENTER
+			z += item.vertices [i].p.z;
+#else
 		if (z < item.vertices [i].p.z)
 			z = item.vertices [i].p.z;
+#endif
 		}
+#if RI_POLY_CENTER
+	z /= item.nVertices;
+#endif
 	if ((z < renderItems.zMin) || (z > renderItems.zMax))
 		return 0;
 	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (z), fl2f (z));

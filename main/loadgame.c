@@ -295,27 +295,26 @@ gameData.objs.viewer = gameData.objs.console = gameData.objs.objects; // + LOCAL
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #ifdef _DEBUG
-if (( (gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multiplayer.nPlayerPositions != 4)) ||
-	  (!(gameData.app.nGameMode & GM_MULTI_COOP) && (gameData.multiplayer.nPlayerPositions != 8)))
-{
+if (gameData.multiplayer.nPlayerPositions != (IsCoopGame ? 4 : 8)) {
 #if TRACE	
 	//con_printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
 #endif
 	//Int3 (); // Not enough positions!!
 }
 #endif
-if (IS_D2_OEM && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel==8) {
+if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
-			ExecMessageBox ("Warning!",NULL,1,TXT_OK,"This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
+			ExecMessageBox ("Warning!", NULL, 1, TXT_OK,
+								 "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}
-
-if (IS_MAC_SHARE && (gameData.app.nGameMode & GM_MULTI) && gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == 4) {
+if (IS_MAC_SHARE && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
-			ExecMessageBox ("Warning!",NULL , 1 ,TXT_OK, "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
+			ExecMessageBox ("Warning!", NULL, 1 , TXT_OK, 
+								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}

@@ -666,10 +666,23 @@ retryMove:
 			}
 #endif
 		}
+	else if (fviResult == HIT_WALL) {
 #ifdef _DEBUG
-	else if (fviResult == HIT_WALL)
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
+#if 0 //cannot work this way :(
+		if (objP->nType == OBJ_WEAPON) {	//make shots and missiles pass through skyboxes
+			short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
+			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
+				if ((nConnSeg < 0) && (objP->lifeleft > F1_0))	//leaving the mine
+					objP->lifeleft = F1_0;	
+				fviResult = HIT_NONE;
+				}
+			else if ((nConnSeg >= 0) && (gameData.segs.segment2s [nConnSeg].special == SEGMENT_IS_SKYBOX))
+				fviResult = HIT_NONE;
+			}
+#endif
+		}
 	//	Matt: Mike's hack.
 	else if (fviResult == HIT_OBJECT) {
 		tObject	*hitObjP = gameData.objs.objects + hi.hit.nObject;

@@ -328,7 +328,7 @@ typedef struct {
 	int     rearView;
 	int     user;
 	int     numObjects;
-	short   renderedObjects[MAX_RENDERED_OBJECTS];
+	short   renderedObjects [MAX_RENDERED_OBJECTS];
 } tWindowRenderedData;
 
 typedef struct tObjDropInfo {
