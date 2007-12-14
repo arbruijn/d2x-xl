@@ -1,4 +1,4 @@
-/* $Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $ */
+	/* $Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -247,7 +247,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 		j++;
 		}
 	else if (t == OBJ_ROBOT) {
-		if (ROBOTINFO (objP->id).companion && (gameData.app.nGameMode & GM_MULTI))
+		if (ROBOTINFO (objP->id).companion && IsMultiGame)
 			ReleaseObject ((short) i);		//kill the buddy in netgames
 		}
 	}
@@ -261,7 +261,7 @@ for (i = 0; i < nPlayers; i++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
-		segType = (gameData.app.nGameMode & GM_MULTI_COOP) ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
+		segType = IsCoopGame ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
 #if 0		
 		switch (segType) {
 			case SEGMENT_IS_GOAL_RED:

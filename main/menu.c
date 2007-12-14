@@ -3174,7 +3174,7 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	if (gameOpts->render.color.bUseLightMaps || gameOpts->render.bDynLighting)
+	if (gameOpts->render.color.bUseLightMaps)
 		optColoredLight = -1;
 	else {
 		ADD_CHECK (opt, TXT_USE_COLOR, gameOpts->render.color.bAmbientLight, KEY_C, HTX_RENDER_AMBICOLOR);
