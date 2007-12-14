@@ -325,6 +325,7 @@ for (h = trigP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
 	gameData.multiplayer.playerInit [i].nSegType = gameData.segs.segment2s [nSegment].special;
 	j = (j + 1) % h;
 	}
+return 1;
 }
 
 //------------------------------------------------------------------------------

@@ -1150,7 +1150,7 @@ int  CollideRobotAndPlayer (tObject *robot, tObject *playerObjP, vmsVector *vHit
 
 if (robot->flags & OF_EXPLODING)
 	return 1;
-nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment, 1);
+nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment, 1, 0);
 if (nCollisionSeg != -1)
 	ObjectCreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
@@ -1556,7 +1556,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		short	nNewObj;
 		short	nSegment;
 
-		nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1);
+		nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1, 0);
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 		bDamage = 0;
 
@@ -1624,7 +1624,7 @@ else if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulK
 		   (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulEnergy)) {
 	short	nSegment;
 
-	nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1);
+	nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1, 0);
 	DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 	bDamage = 0;
 	}
@@ -1951,7 +1951,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MakeRandomVector (&vRandom);
 		rthresh /= 2;
 		VmVecAdd (&tvec, &playerObjP->position.vPos, &vRandom);
-		nNewSeg = FindSegByPoint (&tvec, playerObjP->nSegment, 1);
+		nNewSeg = FindSegByPoint (&tvec, playerObjP->nSegment, 1, 0);
 		if (nNewSeg != -1)
 			CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, SMARTMINE_ID, 0);
 	  	}
@@ -1966,7 +1966,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 				MakeRandomVector (&vRandom);
 				rthresh /= 2;
 				VmVecAdd (&tvec, &playerObjP->position.vPos, &vRandom);
-				nNewSeg = FindSegByPoint (&tvec, playerObjP->nSegment, 1);
+				nNewSeg = FindSegByPoint (&tvec, playerObjP->nSegment, 1, 0);
 				if (nNewSeg != -1)
 					CreateNewLaser (&vRandom, &tvec, nNewSeg, plrObjNum, PROXMINE_ID, 0);
 			}

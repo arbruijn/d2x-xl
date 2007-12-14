@@ -499,7 +499,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		VmVecScaleInc (&vPerturb, &vTemp, F1_0/4);
 		}
 	VmVecScaleAdd (&vTempPos, &vBlobPos, &vPerturb, xPerturbArray [i]);
-	nSegment = FindSegByPoint (&vTempPos, nLastSeg, 1);
+	nSegment = FindSegByPoint (&vTempPos, nLastSeg, 1, 0);
 	if (nSegment != -1) {
 		tObject		*objP;
 
@@ -636,7 +636,7 @@ else
 	nTargetObj = FindHomingObject (vFiringPos, weaponObjP);
 nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment;
 
-if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, nParentSeg, 1))) {
+if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, nParentSeg, 1, 0))) {
 	DestroyOmegaLightnings ();
 	return;
 	}
@@ -870,7 +870,7 @@ if ((pParent->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 	int			nEndSeg;
 
 	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset + (xLaserLength / 2));
-	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment, 1);
+	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment, 1, 0);
 	if (nEndSeg == objP->nSegment) 
 		objP->position.vPos = vEndPos;
 	else if (nEndSeg != -1) {
@@ -957,7 +957,8 @@ int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
 
 do {
 	if (nTries++)
-		fq.startSeg		= bSpectate ? FindSegByPoint (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1) : FindSegByPoint (&objP1->position.vPos, objP1->nSegment, 1);
+		fq.startSeg		= bSpectate ? FindSegByPoint (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) : 
+							  FindSegByPoint (&objP1->position.vPos, objP1->nSegment, 1, 0);
 	else
 		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->nSegment;
 	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->position.vPos;
@@ -1783,7 +1784,7 @@ return rVal;
 // -- 		tObject		*obj;
 // -- 
 // -- 		VmVecInc (&point_pos, &delta_pos);
-// -- 		tPointSeg = FindSegByPoint (&point_pos, start_segnum, 1);
+// -- 		tPointSeg = FindSegByPoint (&point_pos, start_segnum, 1, 0);
 // -- 		if (tPointSeg == -1)	//	Hey, we thought we were creating points on a line, but we left the mine!
 // -- 			continue;
 // -- 

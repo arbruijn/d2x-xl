@@ -1992,7 +1992,7 @@ for (nLights = 1; i > 0; i--, pl++) {
 		for (h = nStep; h < j; h += nStep) {
 			TRAP (pln);
 			vPos = &pln [(int) h].vPos;
-			if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 0)))
+			if (0 > (nSegment = FindSegByPoint (vPos, nSegment, 0, 0)))
 				break;
 			SetLightningSegLight (nSegment, vPos, &pl->color);
 			nLights++;

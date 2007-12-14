@@ -4,16 +4,18 @@
 
 #include "inferno.h"
 #include "cfile.h"
+#include "u_mem.h"
 
 #ifdef RCS
 static char rcsid[] = "$Id: tSegment.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 #endif
 
 #if 1//ndef FAST_FILE_IO /*permanently enabled for a reason!*/
-/*
- * reads a tSegment2 structure from a CFILE
- */
-void segment2_read(tSegment2 *s2, CFILE *fp)
+
+//------------------------------------------------------------------------------
+// reads a tSegment2 structure from a CFILE
+ 
+void ReadSegment2 (tSegment2 *s2, CFILE *fp)
 {
 	s2->special = CFReadByte (fp);
 	s2->nMatCen = CFReadByte (fp);
@@ -22,10 +24,10 @@ void segment2_read(tSegment2 *s2, CFILE *fp)
 	s2->xAvgSegLight = CFReadFix (fp);
 }
 
-/*
- * reads a tLightDelta structure from a CFILE
- */
-void delta_light_read(tLightDelta *dl, CFILE *fp)
+//------------------------------------------------------------------------------
+// reads a tLightDelta structure from a CFILE
+
+void ReadLightDelta (tLightDelta *dl, CFILE *fp)
 {
 	dl->nSegment = CFReadShort (fp);
 	dl->nSide = CFReadByte (fp);
@@ -37,10 +39,10 @@ void delta_light_read(tLightDelta *dl, CFILE *fp)
 }
 
 
-/*
- * reads a dl_index structure from a CFILE
- */
-void dl_index_read(dl_index *di, CFILE *fp)
+//------------------------------------------------------------------------------
+// reads a tLightDeltaIndex structure from a CFILE
+
+void ReadLightDeltaIndex (tLightDeltaIndex *di, CFILE *fp)
 {
 if (gameStates.render.bD2XLights) {
 	short	i, j;
@@ -59,3 +61,47 @@ else {
 	}
 }
 #endif
+
+//------------------------------------------------------------------------------
+
+int CountSkyBoxSegments (void)
+{
+	tSegment2	*seg2P;
+	int			i, nSegments;
+
+for (i = gameData.segs.nSegments, nSegments = 0, seg2P = SEGMENT2S; i; i--, seg2P++)
+	if (seg2P->special == SEGMENT_IS_SKYBOX)
+		nSegments++;
+return nSegments;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeSkyBoxSegList (void)
+{
+D2_FREE (gameData.segs.skybox.segments);
+}
+
+//------------------------------------------------------------------------------
+
+int BuildSkyBoxSegList (void)
+{
+FreeSkyBoxSegList ();
+if (gameData.segs.skybox.nSegments = CountSkyBoxSegments ()) {
+	tSegment2	*seg2P;
+	short			*segP;
+	int			h, i;
+
+if (!(gameData.segs.skybox.segments = D2_ALLOC (gameData.segs.nSegments * sizeof (short))))
+	return 0;
+segP = gameData.segs.skybox.segments;
+for (h = gameData.segs.nSegments, i = 0, seg2P = SEGMENT2S; i < h; i++, seg2P++)
+	if (seg2P->special == SEGMENT_IS_SKYBOX)
+		*segP++ = i;
+	}
+gameStates.render.bHaveSkyBox = (gameData.segs.skybox.nSegments > 0);
+return gameData.segs.skybox.nSegments;
+}
+
+//------------------------------------------------------------------------------
+//eof

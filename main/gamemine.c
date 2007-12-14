@@ -472,7 +472,7 @@ int load_mine_data (CFILE *loadFile)
 //	if (mine_top_fileinfo.fileinfo_version >= 19) {
 		mine_fileinfo.gameData.render.lights.deltaIndices.offset		=	-1;
 		mine_fileinfo.gameData.render.lights.deltaIndices.count		=	0;
-		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (dl_index);  
+		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (tLightDeltaIndex);  
 
 		mine_fileinfo.deltaLight.offset		=	-1;
 		mine_fileinfo.deltaLight.count		=	0;
@@ -1383,7 +1383,7 @@ void LoadSegment2sCompiled (CFILE *loadFile)
 
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
-		segment2_read (gameData.segs.segment2s + i, loadFile);
+		ReadSegment2 (gameData.segs.segment2s + i, loadFile);
 	FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special);
 	}
 }

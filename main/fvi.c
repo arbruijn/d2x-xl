@@ -1044,11 +1044,11 @@ nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
 nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
 							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
 							  hitData->segList, &hitData->nSegments, -2);
-//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg, 1);
+//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg, 1, 0);
 if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
 	nHitSegment = nHitSegment2;
 else {
-	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg, 1);
+	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg, 1, 0);
 	}
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((nHitType == HIT_WALL) && (nHitSegment == -1))
@@ -1351,6 +1351,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 								gameData.collisions.hitData.nSegment2 = nStartSeg;
 							gameData.collisions.hitData.nSegment = nHitSegment;
 							gameData.collisions.hitData.nSide = nSide;
+							gameData.collisions.hitData.nFace = iFace;
 							gameData.collisions.hitData.nSideSegment = nStartSeg;
 							}
 						}
@@ -1653,7 +1654,7 @@ fq.radP1 = 0;
 fq.thisObjNum = objP ? OBJ_IDX (objP) : -1;
 fq.flags = FQ_TRANSWALL;
 if (SPECTATOR (objP))
-	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
+	fq.startSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 else
 	fq.startSeg = objP ? objP->nSegment : nSegment;
 fq.ignoreObjList = NULL;

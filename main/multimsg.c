@@ -36,7 +36,6 @@
 
 //-----------------------------------------------------------------------------
 
-extern fix xStartingShields;
 fix xPingReturnTime;
 
 extern void NetworkSendPing (ubyte);
@@ -361,19 +360,19 @@ int HandicapPlayer (void)
 {
 	char *mytempbuf = gameData.multigame.msg.szMsg + 9;
 
-xStartingShields = atol (mytempbuf);
-if (xStartingShields < 10) {
-	xStartingShields = 10;
-	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, xStartingShields);
+gameStates.gameplay.xStartingShields = atol (mytempbuf);
+if (gameStates.gameplay.xStartingShields < 10) {
+	gameStates.gameplay.xStartingShields = 10;
+	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, gameStates.gameplay.xStartingShields);
 	}
-else if (xStartingShields > 100) {
+else if (gameStates.gameplay.xStartingShields > 100) {
 	sprintf (gameData.multigame.msg.szMsg, TXT_CHEAT_ALERT, LOCALPLAYER.callsign);
-	xStartingShields = 100;
+	gameStates.gameplay.xStartingShields = 100;
 	}
 else
-	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, xStartingShields);
-HUDInitMessage (TXT_HANDICAP_ALERT, xStartingShields);
-xStartingShields = i2f (xStartingShields);
+	sprintf (gameData.multigame.msg.szMsg, TXT_NEW_HANDICAP, LOCALPLAYER.callsign, gameStates.gameplay.xStartingShields);
+HUDInitMessage (TXT_HANDICAP_ALERT, gameStates.gameplay.xStartingShields);
+gameStates.gameplay.xStartingShields = i2f (gameStates.gameplay.xStartingShields);
 return 0;
 }
 

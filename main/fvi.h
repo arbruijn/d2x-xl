@@ -32,6 +32,7 @@ typedef struct tFVIHitInfo {
 	short 		nSegment;					//what tSegment hit_pnt is in
 	short			nSegment2;
 	short 		nSide;						//if hit tWall, which tSide
+	short			nFace;
 	short 		nSideSegment;				//what tSegment the hit tSide is in
 	short 		nObject;						//if tObject hit, which tObject
 	vmsVector	vPoint;						//where we hit
@@ -90,6 +91,8 @@ int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1,
 							short nSegment, short nSide, short iFace, int nv, fix rad);
 
 int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
+
+int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace);
 
 #endif
 

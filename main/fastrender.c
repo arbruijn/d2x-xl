@@ -456,22 +456,21 @@ void RenderSkyBoxFaces (void)
 {
 	tSegFaces	*segFaceP;
 	grsFace		*faceP;
-	int			i, j, bVertexArrays, bFullBright = gameStates.render.bFullBright;
+	short			*segP;
+	int			i, j, nSegment, bVertexArrays, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
 	glDepthMask (1);
-	gameStates.render.bHaveSkyBox = 0;
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
 	bVertexArrays = BeginRenderFaces (4);
-	for (i = 0, segFaceP = SEGFACES; i < gameData.segs.nSegments; i++, segFaceP++) {
-		if (gameData.segs.segment2s [i].special != SEGMENT_IS_SKYBOX)
-			continue;
-		gameStates.render.bHaveSkyBox = 1;
+	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) {
+		nSegment = *segP;
+		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
-			if (!(faceP->bVisible = FaceIsVisible (i, faceP->nSide)))
+			if (!(faceP->bVisible = FaceIsVisible (nSegment, faceP->nSide)))
 				continue;
-			RenderMineFace (SEGMENTS + i, segFaceP, faceP, i, 4, bVertexArrays, 0);
+			RenderMineFace (SEGMENTS + nSegment, segFaceP, faceP, nSegment, 4, bVertexArrays, 0);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -1443,7 +1442,7 @@ void RenderMineObjects (int nType)
 if ((nType < 1) || (nType > 2))
 	return;
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
-	nSegment =gameData.render.mine.nSegRenderList [--nListPos];
+	nSegment = gameData.render.mine.nSegRenderList [--nListPos];
 	if (nSegment < 0) {
 		if (nSegment == -0x7fffffff)
 			continue;
@@ -1480,7 +1479,6 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	}	
 gameStates.render.nState = 0;
 }
-
 
 //------------------------------------------------------------------------------
 

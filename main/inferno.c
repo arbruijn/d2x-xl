@@ -1874,6 +1874,7 @@ gameStates.gameplay.seismic.nShakeDuration = 0;
 gameStates.gameplay.seismic.nSound = SOUND_SEISMIC_DISTURBANCE_START;
 gameStates.gameplay.seismic.bSound = 0;
 gameStates.gameplay.seismic.nVolume = 0;
+gameStates.gameplay.xStartingShields = INITIAL_SHIELDS;
 gameStates.gameplay.slowmo [0].nState = 0;
 gameStates.gameplay.slowmo [0].fSpeed = 1;
 gameStates.gameplay.slowmo [0].tUpdate = 0;
@@ -2468,7 +2469,7 @@ if (!gameStates.app.bNostalgia) {
 	GETMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS, (char) 0xff);
 	}
 GETMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6, 0);
-GETMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES, 0);
+GETMEM (tLightDeltaIndex, gameData.render.lights.deltaIndices, MAX_DL_INDICES, 0);
 GETMEM (tLightDelta, gameData.render.lights.deltas, MAX_DELTA_LIGHTS, 0);
 GETMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES, 0);
@@ -2649,7 +2650,7 @@ if (!gameStates.app.bNostalgia) {
 	FREEMEM (short, gameData.render.lights.dynamic.owners, MAX_OBJECTS);
 	}
 FREEMEM (fix, gameData.render.lights.segDeltas, MAX_SEGMENTS * 6);
-FREEMEM (dl_index, gameData.render.lights.deltaIndices, MAX_DL_INDICES);
+FREEMEM (tLightDeltaIndex, gameData.render.lights.deltaIndices, MAX_DL_INDICES);
 FREEMEM (tLightDelta, gameData.render.lights.deltas, MAX_DELTA_LIGHTS);
 FREEMEM (ubyte, gameData.render.lights.subtracted, MAX_SEGMENTS);
 FREEMEM (fix, gameData.render.lights.dynamicLight, MAX_VERTICES);

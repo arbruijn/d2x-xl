@@ -1877,7 +1877,7 @@ void DropAfterburnerBlobs (tObject *objP, int count, fix xSizeScale, fix xLifeTi
 
 nThrusters = CalcThrusterPos (objP, &ti, 1);
 for (i = 0; i < nThrusters; i++) {
-	nSegment = FindSegByPoint (ti.vPos + i, objP->nSegment, 1);
+	nSegment = FindSegByPoint (ti.vPos + i, objP->nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
 	if (!(blobObjP = ObjectCreateExplosion (nSegment, ti.vPos + i, xSizeScale, VCLIP_AFTERBURNER_BLOB)))

@@ -77,6 +77,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "weapon.h"
 #include "sounds.h"
 #include "args.h"
+#include "segment.h"
 #include "loadgame.h"
 #include "gamefont.h"
 #include "newmenu.h"
@@ -328,63 +329,48 @@ void GameSeqRemoveUnusedPlayers ()
 
 	// 'Remove' the unused players
 
-	if (gameData.app.nGameMode & GM_MULTI)
-	{
-		for (i=0; i < gameData.multiplayer.nPlayerPositions; i++)
-		{
-			if ((!gameData.multiplayer.players [i].connected) || (i >= gameData.multiplayer.nPlayers))
-			{
+if (IsMultiGame) {
+	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
+		if ((!gameData.multiplayer.players [i].connected) || (i >= gameData.multiplayer.nPlayers))
 			MultiMakePlayerGhost (i);
-			}
 		}
 	}
-	else
-	{		// Note link to above if!!!
-		for (i=1; i < gameData.multiplayer.nPlayerPositions; i++)
-		{
-			ReleaseObject ((short) gameData.multiplayer.players [i].nObject);
-		}
+else {		// Note link to above if!!!
+	for (i = 1; i < gameData.multiplayer.nPlayerPositions; i++)
+		ReleaseObject ((short) gameData.multiplayer.players [i].nObject);
 	}
 }
 
-fix xStartingShields=INITIAL_SHIELDS;
+//------------------------------------------------------------------------------
 
 // Setup tPlayer for new game
 void InitPlayerStatsGame ()
 {
-	LOCALPLAYER.score = 0;
-	LOCALPLAYER.last_score = 0;
-	LOCALPLAYER.lives = INITIAL_LIVES;
-	LOCALPLAYER.level = 1;
-
-	LOCALPLAYER.timeLevel = 0;
-	LOCALPLAYER.timeTotal = 0;
-	LOCALPLAYER.hoursLevel = 0;
-	LOCALPLAYER.hoursTotal = 0;
-
-	LOCALPLAYER.energy = INITIAL_ENERGY;
-	LOCALPLAYER.shields = xStartingShields;
-	LOCALPLAYER.nKillerObj = -1;
-
-	LOCALPLAYER.netKilledTotal = 0;
-	LOCALPLAYER.netKillsTotal = 0;
-
-	LOCALPLAYER.numKillsLevel = 0;
-	LOCALPLAYER.numKillsTotal = 0;
-	LOCALPLAYER.numRobotsLevel = 0;
-	LOCALPLAYER.numRobotsTotal = 0;
-	LOCALPLAYER.nKillGoalCount = 0;
-
-	LOCALPLAYER.hostages_rescuedTotal = 0;
-	LOCALPLAYER.hostagesLevel = 0;
-	LOCALPLAYER.hostagesTotal = 0;
-
-	LOCALPLAYER.laserLevel = 0;
-	LOCALPLAYER.flags = 0;
-
-	InitPlayerStatsNewShip ();
-
-	gameStates.app.bFirstSecretVisit = 1;
+LOCALPLAYER.score = 0;
+LOCALPLAYER.last_score = 0;
+LOCALPLAYER.lives = INITIAL_LIVES;
+LOCALPLAYER.level = 1;
+LOCALPLAYER.timeLevel = 0;
+LOCALPLAYER.timeTotal = 0;
+LOCALPLAYER.hoursLevel = 0;
+LOCALPLAYER.hoursTotal = 0;
+LOCALPLAYER.energy = INITIAL_ENERGY;
+LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
+LOCALPLAYER.nKillerObj = -1;
+LOCALPLAYER.netKilledTotal = 0;
+LOCALPLAYER.netKillsTotal = 0;
+LOCALPLAYER.numKillsLevel = 0;
+LOCALPLAYER.numKillsTotal = 0;
+LOCALPLAYER.numRobotsLevel = 0;
+LOCALPLAYER.numRobotsTotal = 0;
+LOCALPLAYER.nKillGoalCount = 0;
+LOCALPLAYER.hostages_rescuedTotal = 0;
+LOCALPLAYER.hostagesLevel = 0;
+LOCALPLAYER.hostagesTotal = 0;
+LOCALPLAYER.laserLevel = 0;
+LOCALPLAYER.flags = 0;
+InitPlayerStatsNewShip ();
+gameStates.app.bFirstSecretVisit = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -393,23 +379,13 @@ void InitPlayerStatsGame ()
 
 void InitAmmoAndEnergy (void)
 {
-	if (LOCALPLAYER.energy < INITIAL_ENERGY)
-		LOCALPLAYER.energy = INITIAL_ENERGY;
-	if (LOCALPLAYER.shields < xStartingShields)
-		LOCALPLAYER.shields = xStartingShields;
-
-//	for (i=0; i<MAX_PRIMARY_WEAPONS; i++)
-//		if (LOCALPLAYER.primaryAmmo [i] < DefaultPrimaryAmmoLevel [i])
-//			LOCALPLAYER.primaryAmmo [i] = DefaultPrimaryAmmoLevel [i];
-
-//	for (i=0; i<MAX_SECONDARY_WEAPONS; i++)
-//		if (LOCALPLAYER.secondaryAmmo [i] < DefaultSecondaryAmmoLevel [i])
-//			LOCALPLAYER.secondaryAmmo [i] = DefaultSecondaryAmmoLevel [i];
-	if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
-		LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
+if (LOCALPLAYER.energy < INITIAL_ENERGY)
+	LOCALPLAYER.energy = INITIAL_ENERGY;
+if (LOCALPLAYER.shields < gameStates.gameplay.xStartingShields)
+	LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
+if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
+	LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
 }
-
-extern	ubyte	bLastAfterburnerState;
 
 //------------------------------------------------------------------------------
 
@@ -452,7 +428,7 @@ gameData.laser.xNextFireTime =
 gameData.missiles.xLastFiredTime = 
 gameData.missiles.xNextFireTime = gameData.time.xGame; // added by RH, solved demo playback bug
 Controls [0].afterburnerState = 0;
-bLastAfterburnerState = 0;
+gameStates.gameplay.bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 InitGauges ();
 #ifdef TACTILE
@@ -478,7 +454,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	}
 
 LOCALPLAYER.energy = INITIAL_ENERGY;
-LOCALPLAYER.shields = xStartingShields;
+LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.hostages_on_board = 0;
@@ -517,7 +493,7 @@ LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
 LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
 Controls [0].afterburnerState = 0;
-bLastAfterburnerState = 0;
+gameStates.gameplay.bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 gameData.objs.missileViewer=NULL;		///reset missile camera if out there
 #ifdef TACTILE
@@ -1074,6 +1050,7 @@ CreateShieldSphere ();
 SetupEffects ();
 SetVertigoRobotFlags ();
 SetDebrisCollisions ();
+BuildSkyBoxSegList ();
 if (gameOpts->render.nPath)
 	gameOpts->render.bDepthSort = 1;
 return 1;

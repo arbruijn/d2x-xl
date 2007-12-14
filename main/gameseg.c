@@ -1225,10 +1225,10 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive)
+int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive, int bSkyBox)
 {
-int nNewSeg;
-tSegMasks masks;
+	int			nNewSeg, i;
+	short			*segP;
 
 //allow nSegment == -1, meaning we have no idea what tSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));
@@ -1244,12 +1244,15 @@ if (bDoingLightingHack || !bExhaustive)
 #if 0 //TRACE
 con_printf (1, "Warning: doing exhaustive search to find point tSegment (%i times)\n", nExhaustiveCount);
 #endif
-for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++) {
-	if (gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) {
-	   masks = GetSegMasks (p, nNewSeg, 0);
-		if (!masks.centerMask)
+if (bSkyBox) {
+	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) 
+		if (!GetSegMasks (p, *segP, 0).centerMask)
 			return nNewSeg;
-		}
+	}
+else {
+	for (nNewSeg = 0; nNewSeg <= gameData.segs.nLastSegment; nNewSeg++)
+		if ((gameData.segs.segment2s [nNewSeg].special != SEGMENT_IS_SKYBOX) && !GetSegMasks (p, nNewSeg, 0).centerMask)
+			return nNewSeg;
 	}
 ++nExhaustiveFailedCount;
 #if TRACE
@@ -2220,7 +2223,7 @@ int FindDLIndexD2X (short nSegment, short nSide)
 int	m, 
 		l = 0, 
 		r = gameData.render.lights.nStatic;
-dl_index	*p;
+tLightDeltaIndex	*p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
@@ -2245,7 +2248,7 @@ int	m,
 		l = 0, 
 		r = gameData.render.lights.nStatic;
 
-dl_index	*p;
+tLightDeltaIndex	*p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
@@ -2281,7 +2284,7 @@ void ChangeLight (short nSegment, short nSide, int dir)
 	int			i, j, k;
 	fix			dl, lNew, *pSegLightDelta;
 	tUVL			*uvlP;
-	dl_index		*dliP;
+	tLightDeltaIndex		*dliP;
 	tLightDelta	*dlP;
 	short			iSeg, iSide;
 

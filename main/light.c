@@ -165,7 +165,7 @@ int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vOb
 		int			nSegment, hitType;
 		nSegment = -1;
 		#ifdef _DEBUG
-		nSegment = FindSegByPoint (vObjPos, nObjSeg, 1);
+		nSegment = FindSegByPoint (vObjPos, nObjSeg, 1, 0);
 		if (nSegment == -1) {
 			Int3 ();		//	Obj_pos is not in nObjSeg!
 			return 0;		//	Done processing this tObject.
@@ -1869,75 +1869,81 @@ if (nSegment == nDbgSeg)
 #endif
 if (psc->index == gameStates.render.nFrameFlipFlop + 1)
 	return psc;
-if (pvPos) {
-	COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
-	//G3TransformPoint (&vCenter, &vCenter);
-	ds = 0.0f;
+if (SEGMENT2S [nSegment].special == SEGMENT_IS_SKYBOX) {
+	psc->color.red = psc->color.green = psc->color.blue = 1.0f;
+	psc->index = 1;
 	}
-else
-	ds = 1.0f;
-pv = gameData.segs.segments [nSegment].verts;
-c.color.red = c.color.green = c.color.blue = 0.0f;
-c.index = 0;
-for (i = 0; i < 8; i++, pv++) {
-	pvc = gameData.render.color.vertices + *pv;
+else {
 	if (pvPos) {
-		vVertex = gameData.segs.vertices [*pv];
-		//G3TransformPoint (&vVertex, &vVertex);
-		d = 2.0f - f2fl (VmVecDist (&vVertex, pvPos)) / f2fl (VmVecDist (&vCenter, &vVertex));
-		c.color.red += pvc->color.red * d;
-		c.color.green += pvc->color.green * d;
-		c.color.blue += pvc->color.blue * d;
-		ds += d;
+		COMPUTE_SEGMENT_CENTER_I (&vCenter, nSegment);
+		//G3TransformPoint (&vCenter, &vCenter);
+		ds = 0.0f;
 		}
-	else {
-		c.color.red += pvc->color.red;
-		c.color.green += pvc->color.green;
-		c.color.blue += pvc->color.blue;
-		}
-	}
-psc->color.red = c.color.red / 8.0f;
-psc->color.green = c.color.green / 8.0f;
-psc->color.blue = c.color.blue / 8.0f;
-#if 0
-if (SetNearestDynamicLights (nSegment, 1)) {
-	short				nLights = gameData.render.lights.dynamic.shader.nLights;
-	tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + nLights;
-	float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
-	float				fLightDist, fAttenuation;
-	fVector			vPosf;
-	if (pvPos)
-		VmsVecToFloat (&vPosf, pvPos);
-	for (i = 0; i < gameData.render.lights.dynamic.shader.nActiveLights; i++) {
-		psl = gameData.render.lights.dynamic.shader.activeLights [i];
-#if 1
+	else
+		ds = 1.0f;
+	pv = gameData.segs.segments [nSegment].verts;
+	c.color.red = c.color.green = c.color.blue = 0.0f;
+	c.index = 0;
+	for (i = 0; i < 8; i++, pv++) {
+		pvc = gameData.render.color.vertices + *pv;
 		if (pvPos) {
 			vVertex = gameData.segs.vertices [*pv];
 			//G3TransformPoint (&vVertex, &vVertex);
-			fLightDist = VmVecDistf (psl->pos, &vPosf) / fLightRange;
-			fAttenuation = fLightDist / psl->brightness;
-			VmVecScaleAddf ((fVector *) &c.color, (fVector *) &c.color, (fVector *) &psl->color, 1.0f / fAttenuation);
+			d = 2.0f - f2fl (VmVecDist (&vVertex, pvPos)) / f2fl (VmVecDist (&vCenter, &vVertex));
+			c.color.red += pvc->color.red * d;
+			c.color.green += pvc->color.green * d;
+			c.color.blue += pvc->color.blue * d;
+			ds += d;
 			}
-		else 
-#endif
-			{
-			VmVecIncf ((fVector *) &psc->color, (fVector *) &psl->color);
+		else {
+			c.color.red += pvc->color.red;
+			c.color.green += pvc->color.green;
+			c.color.blue += pvc->color.blue;
 			}
 		}
+	psc->color.red = c.color.red / 8.0f;
+	psc->color.green = c.color.green / 8.0f;
+	psc->color.blue = c.color.blue / 8.0f;
+	#if 0
+	if (SetNearestDynamicLights (nSegment, 1)) {
+		short				nLights = gameData.render.lights.dynamic.shader.nLights;
+		tShaderLight	*psl = gameData.render.lights.dynamic.shader.lights + nLights;
+		float				fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
+		float				fLightDist, fAttenuation;
+		fVector			vPosf;
+		if (pvPos)
+			VmsVecToFloat (&vPosf, pvPos);
+		for (i = 0; i < gameData.render.lights.dynamic.shader.nActiveLights; i++) {
+			psl = gameData.render.lights.dynamic.shader.activeLights [i];
+	#if 1
+			if (pvPos) {
+				vVertex = gameData.segs.vertices [*pv];
+				//G3TransformPoint (&vVertex, &vVertex);
+				fLightDist = VmVecDistf (psl->pos, &vPosf) / fLightRange;
+				fAttenuation = fLightDist / psl->brightness;
+				VmVecScaleAddf ((fVector *) &c.color, (fVector *) &c.color, (fVector *) &psl->color, 1.0f / fAttenuation);
+				}
+			else 
+	#endif
+				{
+				VmVecIncf ((fVector *) &psc->color, (fVector *) &psl->color);
+				}
+			}
+		}
+	#endif
+	#if 0
+	d = psc->color.red;
+	if (d < psc->color.green)
+		d = psc->color.green;
+	if (d < psc->color.blue)
+		d = psc->color.blue;
+	if (d > 1.0f) {
+		psc->color.red /= d;
+		psc->color.green /= d;
+		psc->color.blue /= d;
+		}
+	#endif
 	}
-#endif
-#if 0
-d = psc->color.red;
-if (d < psc->color.green)
-	d = psc->color.green;
-if (d < psc->color.blue)
-	d = psc->color.blue;
-if (d > 1.0f) {
-	psc->color.red /= d;
-	psc->color.green /= d;
-	psc->color.blue /= d;
-	}
-#endif
 psc->index = gameStates.render.nFrameFlipFlop + 1;
 return psc;
 }

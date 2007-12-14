@@ -1144,7 +1144,7 @@ if (gameStates.render.cameras.bActive) {
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
 	}
 else {
-	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1);
+	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console)
@@ -1949,6 +1949,19 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewer->nType != OBJ
 
 //------------------------------------------------------------------------------
 
+void RenderSkyBoxObjects (void)
+{
+	int		i, nObject;
+	short		*segP;
+
+gameStates.render.nType = 1;
+for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) 
+	for (nObject = gameData.segs.segments [*segP].objects; nObject != -1; nObject = OBJECTS [nObject].next) 
+		DoRenderObject (nObject, gameStates.render.nWindow);
+}
+
+//------------------------------------------------------------------------------
+
 void RenderSkyBox (int nWindow)
 {
 if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gameOpts->render.automap.bSkybox)) {
@@ -1956,18 +1969,16 @@ if (gameStates.render.bHaveSkyBox && (!gameStates.render.automap.bDisplay || gam
 	if (gameOpts->render.nPath)
 		RenderSkyBoxFaces ();
 	else {
-			int	nSegment, bFullBright = gameStates.render.bFullBright;
+			int	i, bFullBright = gameStates.render.bFullBright;
+			short	*segP;
 
-		gameStates.render.bHaveSkyBox = 0;
 		gameStates.render.nType = 4;
 		gameStates.render.bFullBright = 1;
-		for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-			if (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX) {
-				gameStates.render.bHaveSkyBox = 1;
-				RenderSegmentFaces (nSegment, nWindow);
-				}
+		for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++)
+			RenderSegmentFaces (*segP, nWindow);
 		gameStates.render.bFullBright = bFullBright;
 		}
+	RenderSkyBoxObjects ();
 	}
 }
 

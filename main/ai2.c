@@ -562,7 +562,7 @@ fq.p0	= pos;
 if ((pos->p.x != objP->position.vPos.p.x) || 
 	 (pos->p.y != objP->position.vPos.p.y) || 
 	 (pos->p.z != objP->position.vPos.p.z)) {
-	short nSegment = FindSegByPoint (pos, objP->nSegment, 1);
+	short nSegment = FindSegByPoint (pos, objP->nSegment, 1, 0);
 	if (nSegment == -1) {
 		fq.startSeg = objP->nSegment;
 		*pos = objP->position.vPos;
@@ -614,7 +614,7 @@ if ((vGun->p.x == objP->position.vPos.p.x) &&
 	 (vGun->p.z == objP->position.vPos.p.z))
 	fq.startSeg	= objP->nSegment;
 else {
-	short nSegment = FindSegByPoint (vGun, objP->nSegment, 1);
+	short nSegment = FindSegByPoint (vGun, objP->nSegment, 1, 0);
 	if (nSegment == -1)
 		return -1;
 	if (nSegment != objP->nSegment)
@@ -1039,7 +1039,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different tSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
-	int	nGunSeg = FindSegByPoint (vFirePoint, objP->nSegment, 1);
+	int	nGunSeg = FindSegByPoint (vFirePoint, objP->nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
 	short nConnSide = FindConnectedSide (&gameData.segs.segments [nGunSeg], &gameData.segs.segments [objP->nSegment]);
 	if (nConnSide != -1) {
@@ -1711,7 +1711,7 @@ else {
 			if (ObjectIntersectsWall (objP))
 				objP->position.vPos = vOrigPos;
 			else {
-				int nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
+				int nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 				if (nNewSeg != -1) {
 					RelinkObject (OBJ_IDX (objP), nNewSeg);
 					return;
@@ -1762,7 +1762,7 @@ else {
 	//	Move one radius towards center.
 	VmVecScale (&vGoalDir, xScale);
 	VmVecInc (&objP->position.vPos, &vGoalDir);
-	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
+	nNewSeg = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 	if (nNewSeg == -1) {
 		objP->position.vPos = *vGoal;
 		MoveObjectToLegalSpot (objP, xMinDist > 0);
@@ -2070,7 +2070,7 @@ int BossSpewRobot (tObject *objP, vmsVector *pos, short objType)
 
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
-nSegment = pos ? FindSegByPoint (pos, objP->nSegment, 1) : objP->nSegment;
+nSegment = pos ? FindSegByPoint (pos, objP->nSegment, 1, 0) : objP->nSegment;
 if (nSegment == -1) {
 #if TRACE
 	con_printf (CONDBG, "Tried to spew a bot outside the mine! Aborting!\n");

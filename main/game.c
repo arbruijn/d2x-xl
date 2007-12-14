@@ -1077,9 +1077,6 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	}
 }
 
-ubyte	bLastAfterburnerState = 0;
-fix xLastAfterburnerCharge = 0;
-
 #define AFTERBURNER_LOOP_START	 ((gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
 #define AFTERBURNER_LOOP_END		 ((gameOpts->sound.digiSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
 
@@ -1114,8 +1111,8 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 #endif
 	 	;
 	}
-else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfterburnerState)) || 
-	 		(bLastAfterburnerState && (xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
+else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
+	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge))) {
 	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) LOCALPLAYER.nObject, 
@@ -1135,8 +1132,8 @@ else if ((xLastAfterburnerCharge && (Controls [0].afterburnerState != bLastAfter
 #endif
 		}
 	}
-bLastAfterburnerState = Controls [0].afterburnerState;
-xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge;
+gameStates.gameplay.bLastAfterburnerState = Controls [0].afterburnerState;
+gameStates.gameplay.xLastAfterburnerCharge = gameData.physics.xAfterburnerCharge;
 }
 
 // -- //	------------------------------------------------------------------------------------
@@ -1837,6 +1834,7 @@ LogErr ("unloading shield data\n");
 FreeSphereCoord ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
+FreeSkyBoxSegList ();
 CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen)	{
 	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);

@@ -537,7 +537,10 @@ typedef struct tGameplayStates {
 	int bMineMineCheat;
 	int bAfterburnerCheat;
 	int bTripleFusion;
+	int bLastAfterburnerState;
+	fix xLastAfterburnerCharge;
 	fix nPlayerSpeed;
+	fix xStartingShields;
 	vmsVector vTgtDir;
 	int nDirSteps;
 	tSeismicStates seismic;
@@ -1271,7 +1274,7 @@ typedef struct tLightData {
 	int					nStatic;
 	int					nCoronas;
 	fix					*segDeltas;
-	dl_index				*deltaIndices;
+	tLightDeltaIndex				*deltaIndices;
 	tLightDelta			*deltas;
 	ubyte					*subtracted;
 	tDynLightData		dynamic;
@@ -1507,6 +1510,11 @@ typedef struct tFaceData {
 	tRgbaColorf			*color;
 	} tFaceData;
 
+typedef struct tSegList {
+	int					nSegments;
+	short					*segments;
+} tSegList;
+
 typedef struct tSegmentData {
 	int					nMaxSegments;
 	vmsVector			*vertices;
@@ -1516,6 +1524,7 @@ typedef struct tSegmentData {
 	xsegment				*xSegments;
 	tSegFaces			*segFaces;
 	g3sPoint				*points;
+	tSegList				skybox;
 #if CALC_SEGRADS
 	fix					*segRads [2];
 #endif
@@ -2995,6 +3004,7 @@ extern fix nDebrisLife [];
 #define sizeofa(_a)	(sizeof (_a) / sizeof ((_a) [0]))	//number of array elements
 
 #define SEGMENTS	gameData.segs.segments
+#define SEGMENT2S	gameData.segs.segment2s
 #define SEGFACES	gameData.segs.segFaces
 #define OBJECTS	gameData.objs.objects
 #define WALLS		gameData.walls.walls

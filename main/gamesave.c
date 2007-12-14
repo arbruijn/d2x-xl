@@ -697,7 +697,7 @@ void SortDLIndexD2X (int left, int right)
 			m = (left + right) / 2;
 	short	mSeg = DLIndex (m)->d2x.nSegment, 
 			mSide = DLIndex (m)->d2x.nSide;
-	dl_index	*pl, *pr;
+	tLightDeltaIndex	*pl, *pr;
 
 do {
 	pl = DLIndex (l);
@@ -712,7 +712,7 @@ do {
 		}
 	if (l <= r) {
 		if (l < r) {
-			dl_index	h = *pl;
+			tLightDeltaIndex	h = *pl;
 			*pl = *pr;
 			*pr = h;
 			}
@@ -735,7 +735,7 @@ void SortDLIndexD2 (int left, int right)
 			m = (left + right) / 2;
 	short	mSeg = DLIndex (m)->d2.nSegment, 
 			mSide = DLIndex (m)->d2.nSide;
-	dl_index	*pl, *pr;
+	tLightDeltaIndex	*pl, *pr;
 
 do {
 	pl = DLIndex (l);
@@ -750,7 +750,7 @@ do {
 		}
 	if (l <= r) {
 		if (l < r) {
-			dl_index	h = *pl;
+			tLightDeltaIndex	h = *pl;
 			*pl = *pr;
 			*pr = h;
 			}
@@ -822,7 +822,7 @@ gameFileInfo.equipGen.size		=	sizeof(tMatCenInfo);
 
 gameFileInfo.lightDeltaIndices.offset	=	-1;
 gameFileInfo.lightDeltaIndices.count	=	0;
-gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
+gameFileInfo.lightDeltaIndices.size		=	sizeof(tLightDeltaIndex);
 
 gameFileInfo.lightDeltas.offset	=	-1;
 gameFileInfo.lightDeltas.count	=	0;
@@ -1257,7 +1257,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 		else
 			for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
 				//LogErr ("reading DL index %d\n", i);
-				dl_index_read(gameData.render.lights.deltaIndices + i, LoadFile);
+				ReadLightDeltaIndex(gameData.render.lights.deltaIndices + i, LoadFile);
 				}
 		}
 	SortDLIndex ();
@@ -1281,7 +1281,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 				con_printf (CONDBG, "Warning: Old mine version.  Not reading delta light info.\n");
 #endif
 			} else
-				delta_light_read(&gameData.render.lights.deltas [i], LoadFile);
+				ReadLightDelta(&gameData.render.lights.deltas [i], LoadFile);
 		}
 	}
 }
@@ -1774,7 +1774,7 @@ int SaveGameData(FILE * SaveFile)
 
  	gameFileInfo.lightDeltaIndices.offset		=	-1;
 	gameFileInfo.lightDeltaIndices.count		=	gameData.render.lights.nStatic;
-	gameFileInfo.lightDeltaIndices.size		=	sizeof(dl_index);
+	gameFileInfo.lightDeltaIndices.size		=	sizeof(tLightDeltaIndex);
 
  	gameFileInfo.lightDeltas.offset		=	-1;
 	gameFileInfo.lightDeltas.count	=	CountDeltaLightRecords();
@@ -1832,7 +1832,7 @@ int SaveGameData(FILE * SaveFile)
 
 	//================ SAVE DELTA LIGHT INFO ===============
 	gameData.render.lights.deltaIndices.offset = ftell(SaveFile);
-	fwrite(gameData.render.lights.deltaIndices, sizeof(dl_index), gameFileInfo.lightDeltaIndices.count, SaveFile);
+	fwrite(gameData.render.lights.deltaIndices, sizeof(tLightDeltaIndex), gameFileInfo.lightDeltaIndices.count, SaveFile);
 
 	deltaLight.offset = ftell(SaveFile);
 	fwrite(gameData.render.lights.deltas, sizeof(tLightDelta), gameFileInfo.lightDeltas.count, SaveFile);

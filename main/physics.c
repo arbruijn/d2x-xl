@@ -324,10 +324,10 @@ if (/*(0 <= xSideDist) && */
 	objP->position.vPos.p.y += (fix) ((float) hi.hit.vNormal.p.y * fOffs);
 	objP->position.vPos.p.z += (fix) ((float) hi.hit.vNormal.p.z * fOffs);
 #endif
-	nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
+	nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments)) {
 		objP->position.vPos = objP->vLastPos;
-		nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1);
+		nSegment = FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 		}
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->nSegment))
 		return 0;
@@ -607,7 +607,7 @@ retryMove:
 		}
 	VmVecAdd (&vNewPos, &objP->position.vPos, &vFrame);
 #if 0
-	iSeg = FindSegByPoint (&vNewPos, objP->nSegment, 1);
+	iSeg = FindSegByPoint (&vNewPos, objP->nSegment, 1, 0);
 	if (iSeg < 0) {
 #if 0//def _DEBUG
 		static int nBadSegs = 0;
@@ -654,7 +654,7 @@ retryMove:
 #else
 		memset (&hi, 0, sizeof (hi));
 		fviResult = FindVectorIntersection (&fq, &hi);
-		fq.startSeg = FindSegByPoint (&vNewPos, objP->nSegment, 1);
+		fq.startSeg = FindSegByPoint (&vNewPos, objP->nSegment, 1, 0);
 		if ((fq.startSeg < 0) || (fq.startSeg == objP->nSegment)) {
 			objP->position.vPos = vSavePos;
 			break;
@@ -670,16 +670,23 @@ retryMove:
 #ifdef _DEBUG
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
-#if 0 //cannot work this way :(
-		if (objP->nType == OBJ_WEAPON) {	//make shots and missiles pass through skyboxes
-			short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
+#if 1 //make shots and missiles pass through skyboxes
+		if (gameStates.render.bHaveSkyBox && (objP->nType == OBJ_WEAPON)) {
 			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
-				if ((nConnSeg < 0) && (objP->lifeleft > F1_0))	//leaving the mine
-					objP->lifeleft = F1_0;	
+				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
+				if ((nConnSeg < 0) && (objP->lifeleft > F1_0)) {	//leaving the mine
+					objP->lifeleft = 0;	
+					objP->flags |= OF_SHOULD_BE_DEAD;
+					}
 				fviResult = HIT_NONE;
 				}
-			else if ((nConnSeg >= 0) && (gameData.segs.segment2s [nConnSeg].special == SEGMENT_IS_SKYBOX))
-				fviResult = HIT_NONE;
+			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSegment, hi.hit.nSide, hi.hit.nFace)) {	
+				short nNewSeg = FindSegByPoint (&vNewPos, gameData.segs.skybox.segments [0], 1, 1);
+				if ((nNewSeg >= 0) && (gameData.segs.segment2s [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
+					hi.hit.nSegment = nNewSeg;
+					fviResult = HIT_NONE;
+					}
+				}
 			}
 #endif
 		}
@@ -736,7 +743,7 @@ retryMove:
 		int n = FindObjectSeg (objP);
 		if (n == -1) {
 			if (bGetPhysSegs)
-				n = FindSegByPoint (&objP->vLastPos, objP->nSegment, 1);
+				n = FindSegByPoint (&objP->vLastPos, objP->nSegment, 1, 0);
 			if (n == -1) {
 				objP->position.vPos = objP->vLastPos;
 				RelinkObject (nObject, objP->nSegment);
@@ -1016,7 +1023,7 @@ if (GetSegMasks (&objP->position.vPos, objP->nSegment, 0).centerMask) {
 	if (FindObjectSeg (objP) == -1) {
 		int n;
 
-		if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPoint (&objP->vLastPos, objP->nSegment, 1)) != -1) {
+		if ((objP->nType == OBJ_PLAYER) && (n = FindSegByPoint (&objP->vLastPos, objP->nSegment, 1, 0)) != -1) {
 			objP->position.vPos = objP->vLastPos;
 			RelinkObject (nObject, n);
 			}

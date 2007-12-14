@@ -1458,7 +1458,7 @@ else
 void SetCloudPos (tCloud *pCloud, vmsVector *pos, short nSegment)
 {
 if ((nSegment < 0) && gameOpts->render.smoke.bCollisions) 
-	nSegment = FindSegByPoint (pos, pCloud->nSegment, 1);
+	nSegment = FindSegByPoint (pos, pCloud->nSegment, 1, 0);
 pCloud->pos = *pos;
 if (nSegment >= 0)
 	pCloud->nSegment = nSegment;
