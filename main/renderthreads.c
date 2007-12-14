@@ -88,8 +88,11 @@ int _CDECL_ RenderThread (void *pThreadId)
 	int	nId = *((int *) pThreadId);
 
 do {
-	while (!tiRender.ti [nId].bExec)
+	while (!tiRender.ti [nId].bExec) {
 		G3_SLEEP (0);
+		if (tiRender.ti [nId].bDone)
+			return 0;
+		}
 	if (tiRender.nTask == rtSortSegZRef) {
 		if (nId)
 			QSortSegZRef (gameData.render.mine.nRenderSegs / 2, gameData.render.mine.nRenderSegs - 1);
