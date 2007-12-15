@@ -544,6 +544,10 @@ SOURCE=..\..\main\highscores.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\hiresmodels.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\hoard.c
 # End Source File
 # Begin Source File
@@ -1066,6 +1070,10 @@ SOURCE=..\..\include\hash.h
 # Begin Source File
 
 SOURCE=..\..\main\highscores.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\hiresmodels.h
 # End Source File
 # Begin Source File
 
