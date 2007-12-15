@@ -660,11 +660,14 @@ return 1;
 
 int G3BuildModelFromOOF (int nModel)
 {
-	tOOFObject	*po = gameData.models.modelToOOF [nModel];
+	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
 	tG3Model		*pm;
 
-if (!po)
-	return 0;
+if (!po) {
+	po = gameData.models.modelToOOF [0][nModel];
+	if (!po)
+		return 0;
+	}
 pm = gameData.models.g3Models [1] + nModel;
 G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))

@@ -108,7 +108,7 @@ if (objP->renderType == RT_POLYOBJ)
 	return 1;
 if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 	return 0;
-if (!gameData.models.modelToOOF [HOSTAGE_MODEL])
+if (!gameData.models.modelToOOF [0][HOSTAGE_MODEL])
 	return 0;
 objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = HOSTAGE_MODEL;
@@ -161,7 +161,7 @@ else {
 		}
 	}
 if (!bHasModel && ((objP->nType != OBJ_WEAPON) || !gameData.objs.bIsMissile [objP->id]) &&
-	 !(nModel && (gameData.models.modelToOOF [nModel] || gameData.models.modelToPOL [nModel])))
+	 !(nModel && (gameData.models.modelToOOF [0][nModel] || gameData.models.modelToOOF [1][nModel] || gameData.models.modelToPOL [nModel])))
 		return 0;
 
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
@@ -519,7 +519,7 @@ else if ((objP->nType == OBJ_POWERUP) || (objP->nType == OBJ_WEAPON)) {
 	}
 else
 	nModel = objP->rType.polyObjInfo.nModel;
-if (!(po = gameData.models.modelToOOF [nModel]))
+if (!((po = gameData.models.modelToOOF [1][nModel]) || (po = gameData.models.modelToOOF [0][nModel])))
 	return 0;
 if (gameData.models.g3Models [1][nModel].bValid >= 0)
 	return 0;

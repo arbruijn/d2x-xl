@@ -127,16 +127,18 @@ OOF_PrintLog ("      %s = %1.4f,%1.4f,%1.4f\n", pszIdent, pv->x, pv->y, pv->z);
 
 //------------------------------------------------------------------------------
 
-char *OOF_ReadString (CFILE *fp, char *pszIdent)
+char *OOF_ReadString (CFILE *fp, char *pszIdent, char *pszPrefix)
 {
 	char	*psz;
-	int	l;
+	int	l, lPrefix = pszPrefix ? (int) strlen (pszPrefix) : 0;
 
 l = OOF_ReadInt (fp, "string length");
-if (!(psz = D2_ALLOC (l + 1)))
+if (!(psz = D2_ALLOC (l + lPrefix + 1)))
 	return NULL;
-if (CFRead (psz, l, 1, fp)) {
-	psz [l] = '\0';
+if (lPrefix)
+	memcpy (psz, pszPrefix, lPrefix);
+if (CFRead (psz + lPrefix, l, 1, fp)) {
+	psz [l + lPrefix] = '\0';
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
 	}
@@ -741,11 +743,11 @@ int OOF_ReadSpecialPoint (CFILE *fp, tOOF_specialPoint *pVert)
 
 nIndent += 2;
 OOF_PrintLog ("reading special point\n");
-if (!(pVert->pszName = OOF_ReadString (fp, "pszName"))) {
+if (!(pVert->pszName = OOF_ReadString (fp, "pszName", NULL))) {
 	nIndent -= 2;
 	return 0;
 	}
-if (!(pVert->pszProps = OOF_ReadString (fp, "pszProps"))) {
+if (!(pVert->pszProps = OOF_ReadString (fp, "pszProps", NULL))) {
 	nIndent -= 2;
 	return 0;
 	}
@@ -1260,9 +1262,9 @@ so.nTreeOffset = OOF_ReadInt (fp, "nTreeOffset");
 so.nDataOffset = OOF_ReadInt (fp, "nDataOffset");
 if (po->nVersion > 1805)
 	OOF_ReadVector (fp, &so.vCenter, "vCenter");
-if (!(so.pszName = OOF_ReadString (fp, "pszName")))
+if (!(so.pszName = OOF_ReadString (fp, "pszName", NULL)))
 	return OOF_FreeSubObject (&so);
-if (!(so.pszProps = OOF_ReadString (fp, "pszProps")))
+if (!(so.pszProps = OOF_ReadString (fp, "pszProps", NULL)))
 	return OOF_FreeSubObject (&so);
 OOF_SetModelProps (&so, so.pszProps);
 so.nMovementType = OOF_ReadInt (fp, "nMovementType");
@@ -1354,26 +1356,27 @@ int OOF_ReleaseTextures (void)
 {
 	tOOFObject	*po;
 	grsBitmap	*bmP;
-	int			i, j;
+	int			h, i, j;
 
-for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
-	if ((bmP = po->textures.pBitmaps))
-		for (j = po->textures.nTextures; j; j--, bmP++) {
-			UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
-			GrFreeBitmapData (bmP);
-			}
+for (h = 0; h < 2; h++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels [h]; i; i--, po++)
+		if ((bmP = po->textures.pBitmaps))
+			for (j = po->textures.nTextures; j; j--, bmP++) {
+				UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+				GrFreeBitmapData (bmP);
+				}
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTGA (char *pszFile, grsBitmap *bmP, short nType)
+int OOF_ReadTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom)
 {
 	char			fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
 
 CFSplitPath (pszFile, NULL, fn, NULL);
-if (nShrinkFactor > 1) {
+if (!bCustom && (nShrinkFactor > 1)) {
 	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
 	if (ReadTGA (fnShrunk, gameFolders.szModelCacheDir, bmP, -1, 1.0, 0, 0)) {
 #ifdef _DEBUG
@@ -1383,21 +1386,20 @@ if (nShrinkFactor > 1) {
 		return 1;
 		}
 	}
-if (!ReadTGA (pszFile, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
+if (!ReadTGA (pszFile + !bCustom, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
 	return 0;
 UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
-if ((nShrinkFactor > 1) && (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
-	if (gameStates.app.bCacheTextures) {
-		tTgaHeader	h;
-		CFILE			*fp;
+if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) && 
+	 (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
+	tTgaHeader	h;
+	CFILE			*fp;
 
-		strcat (fn, ".tga");
-		if (!(fp = CFOpen (fn, gameFolders.szModelDir [nType], "rb", 0)))
-			return 1;
-		if (ReadTGAHeader (fp, &h, NULL))
-			SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
-		CFClose (fp);
-		}
+	strcat (fn, ".tga");
+	if (!(fp = CFOpen (fn, gameFolders.szModelDir [nType], "rb", 0)))
+		return 1;
+	if (ReadTGAHeader (fp, &h, NULL))
+		SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
+	CFClose (fp);
 	}
 return 1;
 }
@@ -1407,13 +1409,14 @@ return 1;
 int OOF_ReloadTextures (void)
 {
 	tOOFObject *po;
-	int			i, j;
+	int			bCustom, i, j;
 
-for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels; i; i--, po++)
-	if (po->textures.pszNames && po->textures.pBitmaps)
-		for (j = 0; j < po->textures.nTextures; j++)
-			if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType))
-				OOF_FreeObject (po);
+for (bCustom = 0; bCustom < 2; bCustom++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels [bCustom]; i; i--, po++)
+		if (po->textures.pszNames && po->textures.pBitmaps)
+			for (j = 0; j < po->textures.nTextures; j++)
+				if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType, bCustom))
+					OOF_FreeObject (po);
 return 1;
 }
 
@@ -1437,7 +1440,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType)
+int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType, int bCustom)
 {
 	tOOFObject	o = *po;
 	int			i;
@@ -1469,7 +1472,7 @@ for (i = 0; i < o.textures.nTextures; i++) {
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!(o.textures.pszNames [i] = OOF_ReadString (fp, szId))) {
+	if (!(o.textures.pszNames [i] = OOF_ReadString (fp, szId, bCustom ? "\001" : NULL))) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
@@ -1479,7 +1482,7 @@ if (!i)
 o.textures.pszNames [i] = D2_ALLOC (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
-	if (!OOF_ReadTGA (o.textures.pszNames [i], o.textures.pBitmaps + i, nType)) {
+	if (!OOF_ReadTGA (o.textures.pszNames [i], o.textures.pBitmaps + i, nType, bCustom)) {
 #ifdef _DEBUG
 		bOk = 0;
 #else
@@ -1775,7 +1778,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV)
+int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bCustom)
 {
 	CFILE				*fp;
 	char				fileId [4];
@@ -1823,7 +1826,7 @@ while (!CFEoF (fp)) {
 	nLength = OOF_ReadInt (fp, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!OOF_ReadTextures (fp, &o, nType))
+			if (!OOF_ReadTextures (fp, &o, nType, bCustom))
 				return OOF_FreeObject (&o);
 			break;
 
@@ -1898,7 +1901,7 @@ AssignBatteries (&o);
 BuildPosTickRemapList (po);
 BuildRotTickRemapList (po);
 *po = o;
-gameData.models.bHaveHiresModel [po - gameData.models.hiresModels] = 1;
+gameData.models.bHaveHiresModel [po - gameData.models.hiresModels [bCustom]] = 1;
 return 1;
 }
 

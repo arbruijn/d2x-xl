@@ -117,6 +117,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "rle.h"
 #include "digi.h"
 #include "sphere.h"
+#include "hiresmodels.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1770,16 +1771,6 @@ if (pfnTIRStop)
 	pfnTIRStop ();
 }
 
-// ----------------------------------------------------------------------------
-
-void FreeHiresModels (void)
-{
-	int	i;
-
-for (i = 0; i < gameData.models.nHiresModels; i++)
-	OOF_FreeObject (gameData.models.hiresModels + i);
-}
-
 //-----------------------------------------------------------------------------
 //called at the end of the program
 
@@ -1815,7 +1806,7 @@ FreeHoardData ();
 LogErr ("unloading auxiliary poly model data\n");
 G3FreeAllPolyModelItems ();
 LogErr ("unloading hires models\n");
-FreeHiresModels ();
+FreeHiresModels (0);
 LogErr ("unloading tracker list\n");
 DestroyTrackerList ();
 LogErr ("unloading lightmap data\n");

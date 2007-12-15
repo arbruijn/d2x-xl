@@ -104,7 +104,7 @@ else if (bReverse) {
 					p->green =
 					p->blue = 0;
 				}
-			if (p->alpha < 196) {
+			if (p->alpha && (p->alpha < 196)) {
 				if (!n)
 					bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
 				if (bmP)
@@ -159,7 +159,7 @@ else {
 					p->green =
 					p->blue = 0;
 				}
-			if (p->alpha < 196) {
+			if (p->alpha && (p->alpha < 196)) {
 				if (!n)
 					bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
 				bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
@@ -346,14 +346,15 @@ if (!pszFolder)
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;
 #endif
-if (!(psz = strstr (pszFile, ".tga"))) {
+fp = CFOpen (pszFile, pszFolder, "rb", 0);
+if (!fp && !(psz = strstr (pszFile, ".tga"))) {
 	strcpy (fn, pszFile);
 	if ((psz = strchr (fn, '.')))
 		*psz = '\0';
 	strcat (fn, ".tga");
 	pszFile = fn;
+	fp = CFOpen (pszFile, pszFolder, "rb", 0);
 	}
-fp = CFOpen (pszFile, pszFolder, "rb", 0);
 r = (fp != NULL) && LoadTGA (fp, bmP, alpha, brightness, bGrayScale, bReverse);
 #if TEXTURE_COMPRESSION
 if (r && CompressTGA (bmP))

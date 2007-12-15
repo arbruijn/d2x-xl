@@ -115,6 +115,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "particles.h"
 #include "interp.h"
 #include "sphere.h"
+#include "hiresmodels.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -855,6 +856,8 @@ PiggyBitmapPageOutAll (0);
 FreeSoundReplacements ();
 /*---*/LogErr ("   unloading hardware lights\n");
 RemoveDynLights ();
+/*---*/LogErr ("   unloading hires models\n");
+FreeHiresModels (1);
 /*---*/LogErr ("   unloading cambot\n");
 UnloadCamBot ();
 /*---*/LogErr ("   unloading additional models\n");
@@ -977,6 +980,7 @@ gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 /*---*/LogErr ("   loading replacement robots\n");
 if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
 	return 0;
+LoadHiresModels (1);
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
 networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);

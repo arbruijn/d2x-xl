@@ -130,8 +130,6 @@ if (pi) {
 	pi->pNextItem = ph;
 	}
 else {
-	if (*pd)
-		pd = pd;
 	ph->pNextItem = *pd;
 	*pd = ph;
 	}
@@ -291,7 +289,7 @@ if ((item.nColors = nColors)) {
 	}
 memcpy (item.vertices, vertices, nVertices * sizeof (fVector));
 #if RI_SPLIT_POLYS
-if (bDepthMask) {
+if (bDepthMask && gameStates.render.bSplitPolys) {
 	for (i = 0; i < nVertices; i++)
 		item.sideLength [i] = (short) (VmVecDistf (vertices + i, vertices + (i + 1) % nVertices) + 0.5f);
 	return RISplitPoly (&item, 0);
