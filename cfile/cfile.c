@@ -19,9 +19,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 #if defined (_WIN32_WCE) || defined (_WIN32)
-# include <windows.h>
+#	include <windows.h>
+#	include <sys/stat.h>
 #else
-#include <sys/stat.h>
+#	include <sys/stat.h>
 #endif
 
 #include "pstypes.h"
@@ -180,8 +181,8 @@ for (;;) {
 		fclose(fp);
 		return 0;
 		}
-	hog_files[*nfiles].length = INTEL_INT(len);
-	hog_files[*nfiles].offset = ftell (fp);
+	hog_files [*nfiles].length = INTEL_INT(len);
+	hog_files [*nfiles].offset = ftell (fp);
 	*nfiles = (*nfiles) + 1;
 	// Skip over
 	i = fseek (fp, INTEL_INT(len), SEEK_CUR);
@@ -268,7 +269,7 @@ return 0;	//not loaded!
 
 // ----------------------------------------------------------------------------
 
-int CFSize(char *hogname, char *folder, int bUseD1Hog)
+int CFSize (char *hogname, char *folder, int bUseD1Hog)
 {
 	CFILE *fp;
 //	char fn [FILENAME_LEN];
@@ -276,10 +277,10 @@ int CFSize(char *hogname, char *folder, int bUseD1Hog)
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-fp = CFOpen(hogname, gameFolders.szDataDir, "rb", bUseD1Hog);
+fp = CFOpen (hogname, gameFolders.szDataDir, "rb", bUseD1Hog);
 if (fp == NULL)
 	return -1;
-fstat (fileno(fp->file), &statbuf);
+fstat (fileno (fp->file), &statbuf);
 CFClose(fp);
 return statbuf.st_size;
 #else
@@ -1017,3 +1018,18 @@ if (i < 123) {
 
 // ----------------------------------------------------------------------------
 
+time_t CFDate (char *filename, char *folder, int bUseD1Hog)
+{
+	CFILE *fp;
+	struct stat statbuf;
+
+//	sprintf (fn, "%s/%s", folder, hogname);
+fp = CFOpen (filename, folder, "rb", bUseD1Hog);
+if (fp == NULL)
+	return -1;
+fstat (fileno (fp->file), &statbuf);
+CFClose (fp);
+return statbuf.st_mtime;
+}
+
+// ----------------------------------------------------------------------------

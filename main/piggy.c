@@ -1597,6 +1597,7 @@ void PiggyBitmapPageIn (tBitmapIndex bmi, int bD1)
 	grsBitmap		*bmP, *altBmP = NULL;
 	int				i, org_i, temp, nSize, nOffset, nFrames, nShrinkFactor, 
 						bRedone = 0, bTGA;
+	time_t			tBase, tShrunk;
 	CFILE				*fp = NULL;
 	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN], bmName [20];
 	tTgaHeader		h;
@@ -1636,7 +1637,7 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "misc075")) {
+	if (strstr (bmName, "rock014")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
@@ -1644,8 +1645,16 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 #endif
 	sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
-	sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureCacheDir [bD1], 
-				*gameFolders.szTextureDir [bD1] ? "/" : "", bmName, 512 / nShrinkFactor);
+	tBase = CFDate (fn, "", 0);
+	if (tBase < 0) 
+		*fnShrunk = '\0';
+	else {
+		sprintf (fnShrunk, "%s%s%s-%d.tga", gameFolders.szTextureCacheDir [bD1], 
+					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName, 512 / nShrinkFactor);
+		tShrunk = CFDate (fnShrunk, "", 0);
+		if (tShrunk < tBase)
+			*fnShrunk = '\0';
+		}
 	bTGA = 0;
 	bmP->bmBPP = 1;
 	if (gameStates.app.bNostalgia)
@@ -1665,7 +1674,7 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 			}
 		else 
 #endif
-		if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && (fp = CFOpen (fnShrunk, "", "rb", 0))) || 
+		if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && *fnShrunk && (fp = CFOpen (fnShrunk, "", "rb", 0))) || 
 			 (fp = CFOpen (fn, "", "rb", 0))) {
 			LogErr ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 			bTGA = 1;

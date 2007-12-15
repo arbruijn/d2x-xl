@@ -16,6 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _CFILE_H
 
 #include <stdio.h>
+#include <sys/types.h>
 
 #include "maths.h"
 #include "vecmat.h"
@@ -170,6 +171,7 @@ void CFWriteVector (vmsVector *v, CFILE *file);
 void CFWriteMatrix (vmsMatrix *m,CFILE *file);
 void CFSplitPath (char *szFullPath, char *szFolder, char *szFile, char *szExt);
 void ChangeFilenameExtension (char *dest, char *src, char *new_ext);
+time_t CFDate (char *hogname, char *folder, int bUseD1Hog);
 
 // writes variable length, null-termined string.
 int CFWriteString (char *buf, CFILE *file);

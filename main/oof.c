@@ -1372,13 +1372,17 @@ return 0;
 
 int OOF_ReadTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom)
 {
-	char			fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
+	char			fn [FILENAME_LEN], fnBase [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
+	time_t		tBase, tShrunk;
 
-CFSplitPath (pszFile, NULL, fn, NULL);
+CFSplitPath (pszFile + 1, NULL, fn, NULL);
 if (!bCustom && (nShrinkFactor > 1)) {
+	sprintf (fnBase, "%s.tga", fn);
 	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
-	if (ReadTGA (fnShrunk, gameFolders.szModelCacheDir, bmP, -1, 1.0, 0, 0)) {
+	tBase = CFDate (fnBase, gameFolders.szModelDir [nType], 0);
+	tShrunk = CFDate (fnShrunk, gameFolders.szModelCacheDir, 0);
+	if ((tShrunk > tBase) && ReadTGA (fnShrunk, gameFolders.szModelCacheDir, bmP, -1, 1.0, 0, 0)) {
 #ifdef _DEBUG
 		strncpy (bmP->szName, fn, sizeof (bmP->szName));
 #endif
@@ -1472,7 +1476,7 @@ for (i = 0; i < o.textures.nTextures; i++) {
 #if OOF_TEST_CUBE
 if (!i)	//cube.oof only contains one texture
 #endif
-	if (!(o.textures.pszNames [i] = OOF_ReadString (fp, szId, bCustom ? "\001" : NULL))) {
+	if (!(o.textures.pszNames [i] = OOF_ReadString (fp, szId, "\001"))) {
 		nIndent -= 2;
 		return OOF_FreeTextures (&o);
 		}
