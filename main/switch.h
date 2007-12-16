@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //old tTrigger structs
 
-typedef struct v29_trigger {
+typedef struct tTriggerV29 {
 	sbyte   nType;
 	short   flags;
 	fix     value;
@@ -78,9 +78,9 @@ typedef struct v29_trigger {
 	short   nLinks;
 	short   nSegment [MAX_WALLS_PER_LINK];
 	short   nSide [MAX_WALLS_PER_LINK];
-} __pack__ v29_trigger;
+} __pack__ tTriggerV29;
 
-typedef struct v30_trigger {
+typedef struct tTriggerV30 {
 	short   flags;
 	sbyte   nLinks;
 	sbyte   pad;                        //keep alignment
@@ -88,7 +88,7 @@ typedef struct v30_trigger {
 	fix     time;
 	short   nSegment [MAX_WALLS_PER_LINK];
 	short   nSide [MAX_WALLS_PER_LINK];
-} __pack__ v30_trigger;
+} __pack__ tTriggerV30;
 
 //flags for V30 & below triggers
 #define TRIGGER_CONTROL_DOORS      1    // Control Trigger
@@ -132,19 +132,19 @@ void TriggersFrameProcess();
 void ExecObjTriggers (short nObject, int bDamage);
 
 #if 0
-#define v29_trigger_read(t, fp) CFRead(t, sizeof(v29_trigger), 1, fp)
-#define v30_trigger_read(t, fp) CFRead(t, sizeof(v30_trigger), 1, fp)
+#define V29TriggerRead(t, fp) CFRead(t, sizeof(tTriggerV29), 1, fp)
+#define V30TriggerRead(t, fp) CFRead(t, sizeof(tTriggerV30), 1, fp)
 #define TriggerRead(t, fp) CFRead(t, sizeof(tTrigger), 1, fp)
 #else
 /*
- * reads a v29_trigger structure from a CFILE
+ * reads a tTriggerV29 structure from a CFILE
  */
-void v29_trigger_read(v29_trigger *t, CFILE *fp);
+void V29TriggerRead(tTriggerV29 *t, CFILE *fp);
 
 /*
- * reads a v30_trigger structure from a CFILE
+ * reads a tTriggerV30 structure from a CFILE
  */
-void v30_trigger_read(v30_trigger *t, CFILE *fp);
+void V30TriggerRead(tTriggerV30 *t, CFILE *fp);
 
 /*
  * reads a tTrigger structure from a CFILE

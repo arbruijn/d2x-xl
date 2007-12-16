@@ -118,7 +118,7 @@ void DoLink (tTrigger *trigP)
 
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
-for (i = trigP->nLinks; i; i--, segs++, sides++)
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
 	WallToggle (gameData.segs.segments + *segs, *sides);
 }
 
@@ -132,7 +132,7 @@ void DoChangeTexture (tTrigger *trigP)
 
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	gameData.segs.segments [*segs].sides [*sides].nBaseTex = baseTex;
 	if (ovlTex > 0)
 		gameData.segs.segments [*segs].sides [*sides].nOvlTex = ovlTex;
@@ -194,7 +194,7 @@ void DoCloseDoor (tTrigger *trigP)
 
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
-for (i = trigP->nLinks; i; i--, segs++, sides++)
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
 	WallCloseDoor (gameData.segs.segments+*segs, *sides);
 }
 
@@ -208,7 +208,7 @@ int DoLightOn (tTrigger *trigP)
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
 short nSegment,nSide;
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	nSegment = *segs;
 	nSide = *sides;
 
@@ -232,7 +232,7 @@ int DoLightOff (tTrigger *trigP)
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
 short nSegment,nSide;
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	nSegment = *segs;
 	nSide = *sides;
 
@@ -255,7 +255,7 @@ void DoUnlockDoors (tTrigger *trigP)
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
 short nSegment,nSide, nWall;
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	nSegment = *segs;
 	nSide = *sides;
 	nWall=WallNumI (nSegment, nSide);
@@ -275,7 +275,7 @@ int DoorIsWallSwitched (int nWall)
 for (nTrigger=0; nTrigger < gameData.trigs.nTriggers; nTrigger++, trigP++) {
 	segs = trigP->nSegment;
 	sides = trigP->nSide;
-	for (i = trigP->nLinks; i; i--, segs++, sides++) {
+	for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 		if (WallNumI (*segs, *sides) == nWall) {
 			return nTrigger;
 			}
@@ -303,7 +303,7 @@ void DoLockDoors (tTrigger *trigP)
 	short *segs = trigP->nSegment;
 	short *sides = trigP->nSide;
 
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	gameData.walls.walls [WallNumI (*segs, *sides)].flags |= WALL_DOOR_LOCKED;
 }
 }
@@ -339,7 +339,7 @@ int DoChangeWalls (tTrigger *trigP)
 	int 		nNewWallType;
 	tSegment *segP, *cSegP;
 
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 
 	segP = gameData.segs.segments + *segs;
 	nSide = *sides;
@@ -453,7 +453,7 @@ void DoMatCen (tTrigger *trigP, int bMessage)
 	int i, h [3] = {0,0,0};
 
 short *segs = trigP->nSegment;
-for (i = trigP->nLinks; i; i--, segs++)
+for (i = trigP->nLinks; i > 0; i--, segs++)
 	h [MatCenTrigger (*segs)]++;
 if (bMessage) {
 	if (h [1])
@@ -471,7 +471,7 @@ void DoIllusionOn (tTrigger *trigP)
 
 short *segs = trigP->nSegment;
 short *sides = trigP->nSide;
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	WallIllusionOn (&gameData.segs.segments [*segs], *sides);
 }
 }
@@ -485,7 +485,7 @@ void DoIllusionOff (tTrigger *trigP)
 	short *sides = trigP->nSide;
 	tSegment *seg;
 
-for (i = trigP->nLinks; i; i--, segs++, sides++) {
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++) {
 	vmsVector	cp;
 	seg = gameData.segs.segments + *segs;
 	WallIllusionOff (seg, *sides);
@@ -762,7 +762,7 @@ int WallIsForceField (tTrigger *trigP)
 	short *segs = trigP->nSegment;
 	short *sides = trigP->nSide;
 
-for (i = trigP->nLinks; i; i--, segs++, sides++)
+for (i = trigP->nLinks; i > 0; i--, segs++, sides++)
 	if ((gameData.pig.tex.pTMapInfo [gameData.segs.segments [*segs].sides [*sides].nBaseTex].flags & TMI_FORCE_FIELD))
 		break;
 return (i > 0);
@@ -1087,7 +1087,7 @@ void TriggersFrameProcess ()
 	int		i;
 	tTrigger	*trigP = gameData.trigs.triggers;
 
-for (i = gameData.trigs.nTriggers; i; i--, trigP++)
+for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
 	if ((trigP->nType != TT_COUNTDOWN) && (trigP->time >= 0))
 		trigP->time -= gameData.time.xFrame;
 }
@@ -1219,9 +1219,9 @@ return 0;
 #endif
 
 /*
- * reads a v29_trigger structure from a CFILE
+ * reads a tTriggerV29 structure from a CFILE
  */
-extern void v29_trigger_read (v29_trigger *trigP, CFILE *fp)
+extern void V29TriggerRead (tTriggerV29 *trigP, CFILE *fp)
 {
 	int	i;
 
@@ -1231,31 +1231,18 @@ trigP->value = CFReadFix (fp);
 trigP->time = CFReadFix (fp);
 trigP->link_num = CFReadByte (fp);
 trigP->nLinks = CFReadShort (fp);
-for (i=0; i<MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_WALLS_PER_LINK; i++)
 	trigP->nSegment [i] = CFReadShort (fp);
-for (i=0; i<MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_WALLS_PER_LINK; i++)
 	trigP->nSide [i] = CFReadShort (fp);
-/*
-for (i = 0; i < 10; i++)
-	if ((d2TriggerMap [i] >= 0) && (flags & (1 << i))) {
-		trigP->nType = d2TriggerMap [i];
-		break;
-		}
-trigP->flags = 0;
-for (i = 0; i < 10; i++)
-	if ((d2FlagMap [i] > 0) && (flags & (1 << i))) {
-		trigP->flags |= d2FlagMap [i];
-		break;
-		}
-*/
 }
 
 //------------------------------------------------------------------------------
 
 /*
- * reads a v30_trigger structure from a CFILE
+ * reads a tTriggerV30 structure from a CFILE
  */
-extern void v30_trigger_read (v30_trigger *trigP, CFILE *fp)
+extern void V30TriggerRead (tTriggerV30 *trigP, CFILE *fp)
 {
 	int i;
 
@@ -1264,9 +1251,9 @@ trigP->nLinks = CFReadByte (fp);
 trigP->pad = CFReadByte (fp);
 trigP->value = CFReadFix (fp);
 trigP->time = CFReadFix (fp);
-for (i=0; i<MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_WALLS_PER_LINK; i++)
 	trigP->nSegment [i] = CFReadShort (fp);
-for (i=0; i<MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_WALLS_PER_LINK; i++)
 	trigP->nSide [i] = CFReadShort (fp);
 }
 

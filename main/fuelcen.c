@@ -692,7 +692,7 @@ if (!(gameData.matCens.botGens [nMatCen].objFlags [0] ||
 // Wait until we have a D2_FREE slot for this puppy...
 if ((LOCALPLAYER.numRobotsLevel - 
 	  LOCALPLAYER.numKillsLevel) >= 
-	 (Gamesave_num_orgRobots + Num_extryRobots)) {
+	 (nGameSaveOrgRobots + Num_extryRobots)) {
 #ifdef _DEBUG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE

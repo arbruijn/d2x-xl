@@ -110,16 +110,16 @@ typedef struct stuckobj {
 
 //Start old tWall structures
 
-typedef struct v16_wall {
+typedef struct tWallV16 {
 	sbyte   nType;             // What kind of special tWall.
 	sbyte   flags;             // Flags for the tWall.
 	fix     hps;               // "Hit points" of the tWall.
 	sbyte   nTrigger;          // Which tTrigger is associated with the tWall.
 	sbyte   nClip;					// Which animation associated with the tWall.
 	sbyte   keys;
-} __pack__ v16_wall;
+} __pack__ tWallV16;
 
-typedef struct v19_wall {
+typedef struct tWallV19 {
 	int     nSegment,nSide;     // Seg & tSide for this tWall
 	sbyte   nType;              // What kind of special tWall.
 	sbyte   flags;              // Flags for the tWall.
@@ -128,7 +128,7 @@ typedef struct v19_wall {
 	sbyte   nClip;           // Which animation associated with the tWall.
 	sbyte   keys;
 	int nLinkedWall;            // number of linked tWall
-} __pack__ v19_wall;
+} __pack__ tWallV19;
 
 typedef struct v19_door {
 	int     nPartCount;            // for linked walls
@@ -288,11 +288,11 @@ void StartWallDecloak(tSegment *seg, short tSide);
 extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
 #if 0
 #define WClipReadN(wc, n, fp) CFRead(wc, sizeof(tWallClip), n, fp)
-#define v16_wall_read(w, fp) CFRead(w, sizeof(v16_wall), 1, fp)
-#define v19_wall_read(w, fp) CFRead(w, sizeof(v19_wall), 1, fp)
-#define wall_read(w, fp) CFRead(w, sizeof(tWall), 1, fp)
-#define v19_door_read(d, fp) CFRead(d, sizeof(v19_door), 1, fp)
-#define active_door_read(d, fp) CFRead(d, sizeof(tActiveDoor), 1, fp)
+#define ReadWallV16(w, fp) CFRead(w, sizeof(tWallV16), 1, fp)
+#define ReadWallV19(w, fp) CFRead(w, sizeof(tWallV19), 1, fp)
+#define ReadWall(w, fp) CFRead(w, sizeof(tWall), 1, fp)
+#define ReadActiveDoorV19(d, fp) CFRead(d, sizeof(v19_door), 1, fp)
+#define ReadActiveDoor(d, fp) CFRead(d, sizeof(tActiveDoor), 1, fp)
 #else
 /*
  * reads n tWallClip structs from a CFILE
@@ -300,29 +300,29 @@ extern int wclip_read_n_d1(tWallClip *wc, int n, CFILE *fp);
 extern int WClipReadN(tWallClip *wc, int n, CFILE *fp);
 
 /*
- * reads a v16_wall structure from a CFILE
+ * reads a tWallV16 structure from a CFILE
  */
-extern void v16_wall_read(v16_wall *w, CFILE *fp);
+extern void ReadWallV16(tWallV16 *w, CFILE *fp);
 
 /*
- * reads a v19_wall structure from a CFILE
+ * reads a tWallV19 structure from a CFILE
  */
-extern void v19_wall_read(v19_wall *w, CFILE *fp);
+extern void ReadWallV19(tWallV19 *w, CFILE *fp);
 
 /*
  * reads a tWall structure from a CFILE
  */
-extern void wall_read(tWall *w, CFILE *fp);
+extern void ReadWall(tWall *w, CFILE *fp);
 
 /*
  * reads a v19_door structure from a CFILE
  */
-extern void v19_door_read(v19_door *d, CFILE *fp);
+extern void ReadActiveDoorV19(v19_door *d, CFILE *fp);
 
 /*
  * reads an tActiveDoor structure from a CFILE
  */
-extern void active_door_read(tActiveDoor *ad, CFILE *fp);
+extern void ReadActiveDoor(tActiveDoor *ad, CFILE *fp);
 #endif
 
 #endif

@@ -1767,9 +1767,9 @@ int WClipReadN(tWallClip *wc, int n, CFILE *fp)
 }
 
 /*
- * reads a v16_wall structure from a CFILE
+ * reads a tWallV16 structure from a CFILE
  */
-extern void v16_wall_read(v16_wall *w, CFILE *fp)
+extern void ReadWallV16(tWallV16 *w, CFILE *fp)
 {
 	w->nType = CFReadByte(fp);
 	w->flags = CFReadByte(fp);
@@ -1780,9 +1780,9 @@ extern void v16_wall_read(v16_wall *w, CFILE *fp)
 }
 
 /*
- * reads a v19_wall structure from a CFILE
+ * reads a tWallV19 structure from a CFILE
  */
-extern void v19_wall_read(v19_wall *w, CFILE *fp)
+extern void ReadWallV19(tWallV19 *w, CFILE *fp)
 {
 	w->nSegment = CFReadInt(fp);
 	w->nSide = CFReadInt(fp);
@@ -1798,7 +1798,7 @@ extern void v19_wall_read(v19_wall *w, CFILE *fp)
 /*
  * reads a tWall structure from a CFILE
  */
-extern void wall_read(tWall *w, CFILE *fp)
+extern void ReadWall(tWall *w, CFILE *fp)
 {
 	w->nSegment = CFReadInt(fp);
 	w->nSide = CFReadInt(fp);
@@ -1817,7 +1817,7 @@ extern void wall_read(tWall *w, CFILE *fp)
 /*
  * reads a v19_door structure from a CFILE
  */
-extern void v19_door_read(v19_door *d, CFILE *fp)
+extern void ReadActiveDoorV19(v19_door *d, CFILE *fp)
 {
 	d->nPartCount = CFReadInt(fp);
 	d->seg [0] = CFReadShort(fp);
@@ -1832,7 +1832,7 @@ extern void v19_door_read(v19_door *d, CFILE *fp)
 /*
  * reads an tActiveDoor structure from a CFILE
  */
-extern void active_door_read(tActiveDoor *ad, CFILE *fp)
+extern void ReadActiveDoor(tActiveDoor *ad, CFILE *fp)
 {
 	ad->nPartCount = CFReadInt(fp);
 	ad->nFrontWall [0] = CFReadShort(fp);

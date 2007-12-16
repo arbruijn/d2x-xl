@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  * Added getLevel_name() prototype
  *
  * Revision 1.4  1994/06/20  22:19:41  john
- * Added Gamesave_num_orgRobots.
+ * Added nGameSaveOrgRobots.
  *
  * Revision 1.3  1994/06/14  11:32:49  john
  * Made Newdemo record & restore the current mine.
@@ -106,7 +106,7 @@ extern int SaveLevel(char *filename);
 extern void load_mine_only(char * filename);
 
 extern char Gamesave_current_filename[];
-extern int Gamesave_num_orgRobots;
+extern int nGameSaveOrgRobots;
 
 // In dumpmine.c
 extern void write_game_text_file(char *filename);

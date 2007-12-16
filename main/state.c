@@ -2694,9 +2694,9 @@ if (sgVersion < 27)
 	i = StateRestoreBinGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
 else
 	i = StateRestoreUniGameData (fp, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
-CFClose (fp);
 if (!i)
 	return 0;
+CFClose (fp);
 FixObjectSegs ();
 FixObjectSizes ();
 ComputeNearestLights (nLevel);
