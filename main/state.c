@@ -2667,7 +2667,7 @@ int StateRestoreAllSub (char *filename, int bMulti, int bSecretRestore)
 	int		nLevel, sgVersion, i;
 	fix		xOldGameTime = gameData.time.xGame;
 
-if (! (fp = CFOpen (filename, gameFolders.szSaveDir, "rb", 0)))
+if (!(fp = CFOpen (filename, gameFolders.szSaveDir, "rb", 0)))
 	return 0;
 StopTime ();
 //Read id

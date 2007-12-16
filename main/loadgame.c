@@ -910,10 +910,17 @@ memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors)
 memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
 gameData.render.lights.flicker.nLights = 0;
 save_player = LOCALPLAYER;
+#if 0
 Assert (gameStates.app.bAutoRunMission || 
 		  ((nLevel <= gameData.missions.nLastLevel) && 
 		   (nLevel >= gameData.missions.nLastSecretLevel) && 
 			(nLevel != 0)));
+#endif
+if (!gameStates.app.bAutoRunMission && 
+	 (!nLevel || (nLevel > gameData.missions.nLastLevel) || (nLevel < gameData.missions.nLastSecretLevel))) {
+	Warning ("Invalid level number!");
+	return 0;
+	}
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/LogErr ("   loading level '%s'\n", pszLevelName);
 #if 0

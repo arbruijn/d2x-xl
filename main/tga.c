@@ -71,122 +71,135 @@ if (ph->bits == 24) {
 		nVisible = w * h * 255;
 		}
 	}
-else if (bReverse) {
-	tRGBA	c;
-	tRgbaColorb	*p = (tRgbaColorb *) bmP->bmTexBuf;
-	int nSuperTransp;
+else {
+	bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+	if (bReverse) {
+		tRGBA	c;
+		tRgbaColorb	*p = (tRgbaColorb *) bmP->bmTexBuf;
+		int nSuperTransp;
 
-	nFrames = h / w - 1;
-	for (i = 0; i < h; i++) {
-		n = nFrames - i / w;
-		nSuperTransp = 0;
-		for (j = w; j; j--, p++) {
-			if (CFRead (&c, 1, 4, fp) != (size_t) 4)
-				return 0;
-			if (bGrayScale) {
-				p->red =
-				p->green =
-				p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
-				}
-			else if (c.a) {
-				p->red = (ubyte) (c.r * brightness);
-				p->green = (ubyte) (c.g * brightness);
-				p->blue = (ubyte) (c.b * brightness);
-				}
-			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-				nSuperTransp++;
-				p->alpha = 0;
-				}
-			else {
-				p->alpha = (alpha < 0) ? c.a : alpha;
-				if (!p->alpha)
-					p->red =		//avoid colored transparent areas interfering with visible image edges
+		nFrames = h / w - 1;
+		for (i = 0; i < h; i++) {
+			n = nFrames - i / w;
+			nSuperTransp = 0;
+			for (j = w; j; j--, p++) {
+				if (CFRead (&c, 1, 4, fp) != (size_t) 4)
+					return 0;
+				if (bGrayScale) {
+					p->red =
 					p->green =
-					p->blue = 0;
+					p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
+					}
+				else if (c.a) {
+					p->red = (ubyte) (c.r * brightness);
+					p->green = (ubyte) (c.g * brightness);
+					p->blue = (ubyte) (c.b * brightness);
+					}
+				if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
+					nSuperTransp++;
+					p->alpha = 0;
+					}
+				else {
+					p->alpha = (alpha < 0) ? c.a : alpha;
+					if (!p->alpha)
+						p->red =		//avoid colored transparent areas interfering with visible image edges
+						p->green =
+						p->blue = 0;
+					}
+				if (p->alpha < 196) {
+					if (!n) {
+						bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+						if (p->alpha)
+							bmP->bmProps.flags &= ~BM_FLAG_SEE_THRU;
+						}
+					if (bmP)
+						bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
+					avgAlpha += p->alpha;
+					nAlpha++;
+					}
+				nVisible += p->alpha;
+				a = (float) p->alpha / 255;
+				avgColor.red += p->red * a;
+				avgColor.green += p->green * a;
+				avgColor.blue += p->blue * a;
 				}
-			if (p->alpha && (p->alpha < 196)) {
+			if (nSuperTransp > 50) {
 				if (!n)
-					bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
-				if (bmP)
-					bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
-				avgAlpha += p->alpha;
-				nAlpha++;
+					bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+				bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
 				}
-			nVisible += p->alpha;
-			a = (float) p->alpha / 255;
-			avgColor.red += p->red * a;
-			avgColor.green += p->green * a;
-			avgColor.blue += p->blue * a;
-			}
-		if (nSuperTransp > 50) {
-			if (!n)
-				bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-			bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
-			bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
 			}
 		}
-	}
-else {
-	tBGRA	c;
-	tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
-	int nSuperTransp;
+	else {
+		tBGRA	c;
+		tRgbaColorb *p = ((tRgbaColorb *) (bmP->bmTexBuf)) + w * (bmP->bmProps.h - 1);
+		int nSuperTransp;
 
-	nFrames = h / w - 1;
-	for (i = 0; i < h; i++) {
-		n = nFrames - i / w;
-		nSuperTransp = 0;
-		for (j = w; j; j--, p++) {
-			if (CFRead (&c, 1, 4, fp) != (size_t) 4)
-				return 0;
-			if (bGrayScale) {
-				p->red =
-				p->green =
-				p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
-				}
-			else {
-				p->red = (ubyte) (c.r * brightness);
-				p->green = (ubyte) (c.g * brightness);
-				p->blue = (ubyte) (c.b * brightness);
-				}
-			if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
-				nSuperTransp++;
-				p->alpha = 0;
-				}
-			else {
-				p->alpha = (alpha < 0) ? c.a : alpha;
-				if (!p->alpha)
-					p->red =		//avoid colored transparent areas interfering with visible image edges
+		nFrames = h / w - 1;
+		for (i = 0; i < h; i++) {
+			n = nFrames - i / w;
+			nSuperTransp = 0;
+			for (j = w; j; j--, p++) {
+				if (CFRead (&c, 1, 4, fp) != (size_t) 4)
+					return 0;
+				if (bGrayScale) {
+					p->red =
 					p->green =
-					p->blue = 0;
+					p->blue = (ubyte) (((int) c.r + (int) c.g + (int) c.b) / 3 * brightness);
+					}
+				else {
+					p->red = (ubyte) (c.r * brightness);
+					p->green = (ubyte) (c.g * brightness);
+					p->blue = (ubyte) (c.b * brightness);
+					}
+				if ((c.r == 120) && (c.g == 88) && (c.b == 128)) {
+					nSuperTransp++;
+					p->alpha = 0;
+					}
+				else {
+					p->alpha = (alpha < 0) ? c.a : alpha;
+					if (!p->alpha)
+						p->red =		//avoid colored transparent areas interfering with visible image edges
+						p->green =
+						p->blue = 0;
+					}
+				if (p->alpha < 196) {
+					if (!n) {
+						bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+						if (p->alpha)
+							bmP->bmProps.flags &= ~BM_FLAG_SEE_THRU;
+						}
+					bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
+					avgAlpha += p->alpha;
+					nAlpha++;
+					}
+				nVisible += p->alpha;
+				a = (float) p->alpha / 255;
+				avgColor.red += p->red * a;
+				avgColor.green += p->green * a;
+				avgColor.blue += p->blue * a;
 				}
-			if (p->alpha && (p->alpha < 196)) {
+			if (nSuperTransp > w * w / 2000) {
 				if (!n)
-					bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
-				bmP->bmTransparentFrames [n / 32] |= (1 << (n % 32));
-				avgAlpha += p->alpha;
-				nAlpha++;
+					bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+				bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
 				}
-			nVisible += p->alpha;
-			a = (float) p->alpha / 255;
-			avgColor.red += p->red * a;
-			avgColor.green += p->green * a;
-			avgColor.blue += p->blue * a;
+			p -= 2 * w;
 			}
-		if (nSuperTransp > w * w / 2000) {
-			if (!n)
-				bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
-			bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
-			bmP->bmSupertranspFrames [n / 32] |= (1 << (n % 32));
-			}
-		p -= 2 * w;
 		}
 	}
 a = (float) nVisible / 255.0f;
 bmP->bmAvgRGB.red = (ubyte) (avgColor.red / a);
 bmP->bmAvgRGB.green = (ubyte) (avgColor.green / a);
 bmP->bmAvgRGB.blue = (ubyte) (avgColor.blue / a);
+if (!nAlpha)
+	bmP->bmProps.flags &= ~BM_FLAG_SEE_THRU;
+#if 0
 if (nAlpha && ((ubyte) (avgAlpha / nAlpha) < 2))
 	bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
+#endif
 return 1;
 }
 
