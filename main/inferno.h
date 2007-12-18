@@ -52,6 +52,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	endif
 #endif
 
+#define FBO_DRAW_BUFFER 1
+
 #include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"
@@ -1498,9 +1500,9 @@ typedef struct tSlideSegs {
 //------------------------------------------------------------------------------
 
 #define MAX_SEGVIS_FLAGS	((MAX_SEGMENTS + 7) >> 3)
-#define MAX_VERTVIS_FLAGS	((MAX_VERTICES + 3) >> 2)
+#define MAX_VERTVIS_FLAGS	((MAX_VERTICES + 7) >> 3)
 #define SEGVIS_FLAGS			((gameData.segs.nSegments + 7) >> 3)
-#define VERTVIS_FLAGS		((gameData.segs.nVertices + 3) >> 2)
+#define VERTVIS_FLAGS		((gameData.segs.nVertices + 7) >> 3)
 
 typedef struct tFaceData {
 	grsFace				*faces;
@@ -2980,22 +2982,6 @@ return 1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS;
 #define MAX_LIGHT_RANGE	(125 * F1_0)
 
 #define SEGVIS(_i,_j)	((gameData.segs.bSegVis [SEGVIS_FLAGS * (_i) + ((_j) >> 3)] & (1 << ((_j) & 7))) != 0)
-
-//	-----------------------------------------------------------------------------------------------------------
-
-static inline int VERTVIS (short nSegment, short nVertex)
-{
-if (!gameData.segs.bVertVis)
-	return 0;
-else {
-	ubyte	b = (nVertex & 3) << 1,
-			b1 = 3 << b,
-			b0 = 1 << b;
-
-	b = gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] & b1;
-	return (b == b1) ? 1 : (b == b0) ? -1 : 0;
-	}
-}
 
 //	-----------------------------------------------------------------------------------------------------------
 

@@ -668,6 +668,9 @@ if (!po) {
 	if (!po)
 		return 0;
 	}
+#ifdef _DEBUG
+HUDMessage (0, "optimizing model");
+#endif
 pm = gameData.models.g3Models [1] + nModel;
 G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
@@ -695,6 +698,9 @@ if (bHires)
 if (!pp->modelData)
 	return 0;
 pm->nSubModels = 1;
+#ifdef _DEBUG
+HUDMessage (0, "optimizing model");
+#endif
 G3CountModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts);
 if (!G3AllocModel (pm))
 	return 0;

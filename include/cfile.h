@@ -33,14 +33,14 @@ typedef struct CFILE {
 	int     raw_position;
 } CFILE;
 
-typedef struct hogfile {
-	char    name[13];
+typedef struct tHogFile {
+	char    name [13];
 	int     offset;
 	int     length;
-} hogfile;
+} tHogFile;
 
 typedef struct tHogFileList {
-	hogfile		files [MAX_HOGFILES];
+	tHogFile		files [MAX_HOGFILES];
 	char			szName [FILENAME_LEN];
 	int			nFiles;
 	int			bInitialized;
@@ -83,7 +83,7 @@ typedef struct tGameFolders {
 
 int GetAppFolder (char *szRootDir, char *szFolder, char *szName, char *szFilter);
 
-//Specify the name of the hogfile.  Returns 1 if hogfile found & had files
+//Specify the name of the tHogFile.  Returns 1 if tHogFile found & had files
 int CFileInit (char *hogname, char *folder);
 
 int CFSize (char *hogname, char *folder, int bUseD1Hog);
@@ -122,13 +122,13 @@ int CFPutS (char *str, CFILE *cfile);
 
 // Allows files to be gotten from an alternate hog file.
 // Passing NULL disables this.
-// Returns 1 if hogfile found (& contains file), else 0.  
+// Returns 1 if tHogFile found (& contains file), else 0.  
 // If NULL passed, returns 1
 int CFUseAltHogFile (char *name);
 
 // Allows files to be gotten from the Descent 1 hog file.
 // Passing NULL disables this.
-// Returns 1 if hogfile found (& contains file), else 0.
+// Returns 1 if tHogFile found (& contains file), else 0.
 // If NULL passed, returns 1
 int CFUseD1HogFile (char *name);
 

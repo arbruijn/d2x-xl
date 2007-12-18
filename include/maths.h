@@ -85,9 +85,9 @@ fix FixMulDiv (fix a, fix b, fix c);
 
 #else
 
-#define FixMul(_a, _b)	((fix) ((((QLONG) (_a)) * (_b)) / 65536))
-#define FixDiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / (_b)) : 1))
-#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * (_b)) / (_c)) : 1))
+#define FixMul(_a, _b)	((fix) ((((QLONG) (_a)) * ((QLONG) (_b))) / 65536))
+#define FixDiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / ((QLONG) (_b))) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * ((QLONG) (_b))) / ((QLONG) (_c))) : 1))
 
 #endif
 

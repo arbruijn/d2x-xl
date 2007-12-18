@@ -9,6 +9,7 @@ void LoadGlareShader (void);
 void UnloadGlareShader (void);
 void InitGlareShader (void);
 int CoronaStyle (void);
+void DestroyGlareDepthTexture (void);
 
 extern float coronaIntensities [];
 

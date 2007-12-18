@@ -614,7 +614,7 @@ else {
 			break;
 		for (s2 = s; *s2 && *s2 != ','; s2++)
 			;
-		chk(ns=D2_ALLOC( s2 - s + 1));
+		chk (ns = D2_ALLOC ((unsigned int) (s2 - s + 1)));
 		memcpy(ns,s,s2-s);
 		ns[s2-s]='\0';
 		if (!queryhost(ns)) 

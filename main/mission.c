@@ -860,7 +860,7 @@ if (nMission == gameData.missions.nBuiltinMission) {
 	case FULL_MISSION_HOGSIZE:
 	case FULL_10_MISSION_HOGSIZE:
 	case MAC_FULL_MISSION_HOGSIZE:
-		// continue on... (use d2.mn2 from hogfile)
+		// continue on... (use d2.mn2 from tHogFile)
 		break;
 		}
 	}

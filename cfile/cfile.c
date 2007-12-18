@@ -133,9 +133,9 @@ return fp;
 
 // ----------------------------------------------------------------------------
 //returns 1 if file loaded with no errors
-int CFInitHogFile (char *fname, char *folder, hogfile *hog_files, int *nfiles) 
+int CFInitHogFile (char *pszFile, char *folder, tHogFile *hogFiles, int *nFiles) 
 {
-	char	id[4];
+	char	id [4];
 	FILE	*fp;
 	int	i, len;
 	char	fn [FILENAME_LEN];
@@ -143,66 +143,67 @@ int CFInitHogFile (char *fname, char *folder, hogfile *hog_files, int *nfiles)
 
 CFCriticalError (0);
 if (*folder) {
-	sprintf (fn, "%s/%s", folder, fname);
-	fname = fn;
+	sprintf (fn, "%s/%s", folder, pszFile);
+	pszFile = fn;
 	}
-*nfiles = 0;
-fp = CFGetFileHandle (fname, "", "rb");
-if (fp == NULL)
+*nFiles = 0;
+if (!(fp = CFGetFileHandle (pszFile, "", "rb")))
 	return 0;
-if ((psz = strstr (fname, ".rdl")) || (psz = strstr (fname, ".rl2"))) {
-	while ((psz >= fname) && (*psz != '\\') && (*psz != '/') && (*psz != ':'))
+if ((psz = strstr (pszFile, ".rdl")) || (psz = strstr (pszFile, ".rl2"))) {
+	while ((psz >= pszFile) && (*psz != '\\') && (*psz != '/') && (*psz != ':'))
 		psz--;
-	*nfiles = 1;
-	strncpy (hog_files [0].name, psz + 1, 13);
-	hog_files [0].offset = 0;
-	hog_files [0].length = -1;
+	*nFiles = 1;
+	strncpy (hogFiles [0].name, psz + 1, 13);
+	hogFiles [0].offset = 0;
+	hogFiles [0].length = -1;
 	return 1;
 	}
 
 fread (id, 3, 1, fp);
 if (strncmp (id, "DHF", 3)) {
-	fclose(fp);
+	fclose (fp);
 	return 0;
 	}
 
 for (;;) {
-	if (*nfiles >= MAX_HOGFILES) {
-		fclose(fp);
+	if (*nFiles >= MAX_HOGFILES) {
+		fclose (fp);
 		Error ("HOGFILE is limited to %d files.\n",  MAX_HOGFILES);
 		}
-	i = (int) fread (hog_files[*nfiles].name, 13, 1, fp);
+	i = (int) fread (hogFiles [*nFiles].name, 13, 1, fp);
 	if (i != 1) 	{		//eof here is ok
-		fclose(fp);
+		fclose (fp);
 		return 1;
 		}
+	hogFiles [*nFiles].name [12] = '\0';
 	i = (int) fread (&len, 4, 1, fp);
-	if (i != 1) 	{
-		fclose(fp);
+	if (i != 1)	{
+		fclose (fp);
 		return 0;
 		}
-	hog_files [*nfiles].length = INTEL_INT(len);
-	hog_files [*nfiles].offset = ftell (fp);
-	*nfiles = (*nfiles) + 1;
+	len = INTEL_INT (len);
+	hogFiles [*nFiles].length = len;
+	hogFiles [*nFiles].offset = ftell (fp);
+	(*nFiles)++;
 	// Skip over
-	i = fseek (fp, INTEL_INT(len), SEEK_CUR);
+	i = fseek (fp, len, SEEK_CUR);
 	}
 }
 
 // ----------------------------------------------------------------------------
 
-int CFUseHogFile (tHogFileList *hog, char *name, char *folder)
+int CFUseHogFile (tHogFileList *hogP, char *name, char *folder)
 {
-if (hog->bInitialized)
+if (hogP->bInitialized)
 	return 1;
 if (name) {
-	strcpy (hog->szName, name);
-	hog->bInitialized = 
+	strcpy (hogP->szName, name);
+	hogP->bInitialized = 
 		*name && 
-		CFInitHogFile (hog->szName, folder, hog->files, &hog->nFiles);
-	if (*(hog->szName))
-		LogErr ("   found hog file '%s'\n", hog->szName);
-	return hog->bInitialized && (hog->nFiles > 0);
+		CFInitHogFile (hogP->szName, folder, hogP->files, &hogP->nFiles);
+	if (*(hogP->szName))
+		LogErr ("   found hogP file '%s'\n", hogP->szName);
+	return hogP->bInitialized && (hogP->nFiles > 0);
 	} 
 return 0;
 }
@@ -246,17 +247,17 @@ return CFUseHogFile (&gameHogFiles.D1HogFiles, name, gameFolders.szDataDir);
 }
 
 // ----------------------------------------------------------------------------
-//Specify the name of the hogfile.  Returns 1 if hogfile found & had files
-int CFileInit (char *hogname, char *folder)
+//Specify the name of the tHogFile.  Returns 1 if tHogFile found & had files
+int CFileInit (char *pszHogName, char *pszFolder)
 {
-if (!*hogname) {
+if (!*pszHogName) {
 	memset (&gameHogFiles, 0, sizeof (gameHogFiles));
 	memset (&gameFolders, 0, sizeof (gameFolders));
 	return 1;
 	}
 Assert(gameHogFiles.D2HogFiles.bInitialized == 0);
-if (CFInitHogFile (hogname, folder, gameHogFiles.D2HogFiles.files, &gameHogFiles.D2HogFiles.nFiles)) {
-	strcpy (gameHogFiles.D2HogFiles.szName, hogname);
+if (CFInitHogFile (pszHogName, pszFolder, gameHogFiles.D2HogFiles.files, &gameHogFiles.D2HogFiles.nFiles)) {
+	strcpy (gameHogFiles.D2HogFiles.szName, pszHogName);
 	gameHogFiles.D2HogFiles.bInitialized = 1;
 	CFUseD2XHogFile ("d2x.hog");
 	CFUseXLHogFile ("d2x-xl.hog");
@@ -306,7 +307,7 @@ FILE *CFFindHogFile (tHogFileList *hog, char *folder, char *name, int *length)
 {
 	FILE		*fp;
 	int		i;
-	hogfile	*phf;
+	tHogFile	*phf;
 	char		*hogFilename = hog->szName;
   
 if (!(hog->bInitialized && *hogFilename))
@@ -391,18 +392,18 @@ if (*filename != '\x01') {
 	fp = CFGetFileHandle (filename + bNoHOG, folder, "rb"); // Check for non-hog file first...
 	}
 else {
-	fp = NULL;		//don't look in dir, only in hogfile
+	fp = NULL;		//don't look in dir, only in tHogFile
 	filename++;
 	}
 if (fp) {
-	fclose(fp);
+	fclose (fp);
 	return 1;
 	}
 if (bNoHOG)
 	return 0;
 fp = CFFindLibFile (filename, &length, bUseD1Hog);
 if (fp) {
-	fclose(fp);
+	fclose (fp);
 	return 2;		// file found in hog
 	}
 return 0;		// Couldn't find it.
@@ -468,7 +469,7 @@ if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
 		fp = CFGetFileHandle (gameHogFiles.szAltHogFile, folder, mode);		// Check for non-hog file first...
 	}
 else {
-	fp = NULL;		//don't look in dir, only in hogfile
+	fp = NULL;		//don't look in dir, only in tHogFile
 	if (*filename == '\x01')
 		filename++;
 	}
@@ -951,7 +952,7 @@ char *CFReadData (char *filename, char *folder, int bUseD1Hog)
 if (!fp)
 	return NULL;
 nSize = CFLength (fp, bUseD1Hog);
-if (!(pData = (char *) D2_ALLOC (nSize)))
+if (!(pData = (char *) D2_ALLOC ((unsigned int) nSize)))
 	return NULL;
 if (!CFRead (pData, nSize, 1, fp)) {
 	D2_FREE (pData);

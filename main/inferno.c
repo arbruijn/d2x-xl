@@ -1072,8 +1072,10 @@ if ((t = FindArg ("-render_quality")) && *Args [t+1]) {
 	else if (gameOpts->render.nQuality > 3)
 		gameOpts->render.nQuality = 3;
 	}
+#if FBO_DRAW_BUFFER
 if ((t = FindArg ("-render_indirect")))
 	gameStates.render.bRenderIndirect = NumArg (t, 1);
+#endif
 if ((t = FindArg ("-use_shaders")))
 	gameOptions [0].render.bUseShaders = NumArg (t, 1);
 if ((t = FindArg ("-shadows")))
@@ -2050,7 +2052,7 @@ gameStates.render.nShadowPass = 0;
 gameStates.render.bShadowMaps = 0;
 gameStates.render.bHeadLightOn = 0;
 gameStates.render.bPaletteFadedOut = 0;
-gameStates.render.bRenderIndirect = 1;
+gameStates.render.bRenderIndirect = 0;
 gameStates.render.nModelQuality = 3;
 gameStates.render.nType = -1;
 gameStates.render.cockpit.bShowPingStats = 0;
@@ -2365,7 +2367,7 @@ SetDataVersion (-1);
 
 void *GetMem (size_t size, char filler)
 {
-	void	*p = D2_ALLOC (size);
+	void	*p = D2_ALLOC ((unsigned int) size);
 
 if (p) {
 	memset (p, filler, size);

@@ -184,6 +184,10 @@ return 0;
 
 #define TMAP_NUM_MASK 0x3FFF
 
+#define	VERTVIS(_nSegment, _nVertex) \
+	(gameData.segs.bVertVis ? gameData.segs.bVertVis [(_nSegment) * VERTVIS_FLAGS + ((_nVertex) >> 3)] & (1 << ((_nVertex) & 7)) : 0)
+
+//	-----------------------------------------------------------------------------------------------------------
 /* Converts descent 1 texture numbers to descent 2 texture numbers.
  * gameData.pig.tex.bmIndex from d1 which are unique to d1 have extra spaces around "return".
  * If we can load the original d1 pig, we make sure this function is bijective.
@@ -1547,10 +1551,17 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 
 //------------------------------------------------------------------------------
 
-inline void SetVertVis (short nSegment, short nVertex, ubyte b)
+inline int SetVertVis (short nSegment, short nVertex, ubyte b)
 {
+	static int bSemaphore = 0;
+
+if (bSemaphore)
+	return 0;
+bSemaphore = 1;
 if (gameData.segs.bVertVis)
-	gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 2)] |= (b << ((nVertex & 3) << 1));
+	gameData.segs.bVertVis [nSegment * VERTVIS_FLAGS + (nVertex >> 3)] |= (1 << (nVertex & 7));
+bSemaphore = 0;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1616,9 +1627,11 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	G3EndFrame ();
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (((nSegment = gameData.render.mine.nSegRenderList [i]) >= 0) && !SEGVIS (nStartSeg, nSegment)) {
-			SetSegVis (nStartSeg, nSegment);
+			while (!SetSegVis (nStartSeg, nSegment))
+				;
 			for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++)
-				SetVertVis (nStartSeg, *vertP, 1);
+				while (!SetVertVis (nStartSeg, *vertP, 1))
+					;
 			}
 		}
 	}
@@ -1633,12 +1646,13 @@ void ComputeSegmentVisibility (int startI)
 
 LogErr ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
-	if (!(gameData.segs.bVertVis = (ubyte *) D2_ALLOC (sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS)))
+	i = sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS;
+	if (!(gameData.segs.bVertVis = (ubyte *) D2_ALLOC (i)))
 		return;
-	memset (gameData.segs.bVertVis, 0, sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS);
+	memset (gameData.segs.bVertVis, 0, i);
 	memset (gameData.segs.bSegVis, 0, sizeof (*gameData.segs.bSegVis) * gameData.segs.nSegments * SEGVIS_FLAGS);
 	}
-if (!gameData.segs.bVertVis)
+else if (!gameData.segs.bVertVis)
 	return;
 if (gameStates.app.bMultiThreaded) {
 	endI = startI ? gameData.segs.nSegments : gameData.segs.nSegments / 2;

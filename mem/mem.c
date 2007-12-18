@@ -220,12 +220,12 @@ return nErrorCount;
 void _CDECL_ MemDisplayBlocks (void)
 {
 #if DBG_MALLOC
-	int i, numleft;
+	int i, numleft = 0;
 
 if (!bMemInitialized) 
 	return;
 
-#if MEMSTATS
+#	if MEMSTATS
 if (bMemStatsFileInitialized) {
 	unsigned long	nFreeMem = FreeMem ();
 	fprintf (sMemStatsFile,
@@ -233,8 +233,8 @@ if (bMemStatsFileInitialized) {
 	fprintf (sMemStatsFile, "\nMemory Stats File Closed.");
 	fclose (sMemStatsFile);
 	}
-#endif	// end of ifdef memstats
-#if 1
+#	endif	// end of ifdef memstats
+#	if 1
 if (nMemBlocks) {
 	LogErr ("\nMEMORY LEAKS:\n");
 	for (i = 0; i < nMemBlocks; i++)
@@ -242,7 +242,7 @@ if (nMemBlocks) {
 	for (i = 0; i < nMemBlocks; i++)
 		D2_FREE (memBlocks [i].p);
 	}
-#else
+#	else
 numleft = 0;
 for (i = 0; i <= nLargestIndex; i++) {
 	if (bPresent [i] && !bOutOfMemory) {
@@ -254,9 +254,9 @@ for (i = 0; i <= nLargestIndex; i++) {
 		MemFree ((void *) pMallocBase [i]);
 		}
 	}
-#endif
 if (numleft && !bOutOfMemory)
 	Warning ("MEM: %d blocks were left allocated!\n", numleft);
+#	endif
 #endif
 }
 

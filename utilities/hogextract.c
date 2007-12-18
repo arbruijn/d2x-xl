@@ -20,7 +20,7 @@
 int
 main(int argc, char *argv[])
 {
-	FILE *hogfile, *writefile;
+	FILE *tHogFile, *writefile;
 	int len;
 	char filename[13];
 	char *buf;
@@ -34,37 +34,37 @@ main(int argc, char *argv[])
 	}
 
 	if (argc < 2) {
-		//printf("Usage: hogextract [v] hogfile [filename]\n"
-		       "extracts all the files in hogfile into the current directory\n"
+		//printf("Usage: hogextract [v] tHogFile [filename]\n"
+		       "extracts all the files in tHogFile into the current directory\n"
 			   "Options:\n"
 			   "  v    View files, don't extract\n");
 		exit(0);
 	}
-	hogfile = fopen(argv[1], "rb");
+	tHogFile = fopen(argv[1], "rb");
 	stat(argv[1], &statbuf);
 	//printf("%i\n", (int)statbuf.st_size);
 	buf = (char *)malloc(3);
-	fread(buf, 3, 1, hogfile);
+	fread(buf, 3, 1, tHogFile);
 	//printf("Extracting from: %s\n", argv[1]);
 	D2_FREE(buf);
-	while(ftell(hogfile)<statbuf.st_size) {
-		fread(filename, 13, 1, hogfile);
-		fread(&len, 1, 4, hogfile);
+	while(ftell(tHogFile)<statbuf.st_size) {
+		fread(filename, 13, 1, tHogFile);
+		fread(&len, 1, 4, tHogFile);
 #ifdef WORDS_BIGENDIAN
 		len = SWAPINT(len);
 #endif
 		if (argc > 2 && strcmp(argv[2], filename))
-			fseek(hogfile, len, SEEK_CUR);
+			fseek(tHogFile, len, SEEK_CUR);
 		else {
 			//printf("Filename: %s \tLength: %i\n", filename, len);
 			if (v)
-				fseek(hogfile, len, SEEK_CUR);
+				fseek(tHogFile, len, SEEK_CUR);
 			else {
 				buf = (char *)malloc(len);
 				if (buf == NULL) {
 					//printf("Unable to allocate memory\n");
 				} else {
-					fread(buf, len, 1, hogfile);
+					fread(buf, len, 1, tHogFile);
 					writefile = fopen(filename, "wb");
 					fwrite(buf, len, 1, writefile);
 					fclose(writefile);
@@ -73,7 +73,7 @@ main(int argc, char *argv[])
 			}
 		}
 	}
-	fclose(hogfile);
+	fclose(tHogFile);
 
 	return 0;
 }

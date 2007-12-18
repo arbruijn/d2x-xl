@@ -21,7 +21,7 @@
 int
 main(int argc, char *argv[])
 {
-	FILE *hogfile, *readfile;
+	FILE *tHogFile, *readfile;
 	DIR *dp;
 	struct dirent *ep;
 	char filename[13];
@@ -30,14 +30,14 @@ main(int argc, char *argv[])
 	int tmp;
 
 	if (argc != 2) {
-		//printf("Usage: hogcreate hogfile\n"
-		       "creates hogfile using all the files in the current directory\n");
+		//printf("Usage: hogcreate tHogFile\n"
+		       "creates tHogFile using all the files in the current directory\n");
 		exit(0);
 	}
-	hogfile = fopen(argv[1], "wb");
+	tHogFile = fopen(argv[1], "wb");
 	buf = (char *)malloc(3);
 	strncpy(buf, "DHF", 3);
-	fwrite(buf, 3, 1, hogfile);
+	fwrite(buf, 3, 1, tHogFile);
 	//printf("Creating: %s\n", argv[1]);
 	D2_FREE(buf);
 	dp = opendir("./");
@@ -57,14 +57,14 @@ main(int argc, char *argv[])
 				if (buf == NULL) {
 					//printf("Unable to allocate memery\n");
 				} else {
-					fwrite(filename, 13, 1, hogfile);
+					fwrite(filename, 13, 1, tHogFile);
 					tmp = (int)statbuf.st_size;
 #ifdef WORDS_BIGENDIAN
 					tmp = SWAPINT(tmp);
 #endif
-					fwrite(&tmp, 4, 1, hogfile);
+					fwrite(&tmp, 4, 1, tHogFile);
 					fread(buf, statbuf.st_size, 1, readfile);
-					fwrite(buf, statbuf.st_size, 1, hogfile);
+					fwrite(buf, statbuf.st_size, 1, tHogFile);
 				}
 				fclose(readfile);
 
@@ -72,7 +72,7 @@ main(int argc, char *argv[])
 		}
 		closedir(dp);
 	}
-	fclose(hogfile);
+	fclose(tHogFile);
 
 	return 0;
 }

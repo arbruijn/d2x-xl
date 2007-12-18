@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "makesig.h"
 
-#define STRINGPOOL 0
+#define STRINGPOOL 1
 #define MAX_OPEN_FONTS	50
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
@@ -1391,7 +1391,7 @@ void GrRemapFont (grsFont *font, char * fontname, char *font_data)
 	datasize = CFReadInt (fontfile);
 	datasize -= GRS_FONT_SIZE; // subtract the size of the header.
 	D2_FREE (font->ftChars);
-	grs_font_read (font, fontfile); // have to reread in case mission hogfile overrides font.
+	grs_font_read (font, fontfile); // have to reread in case mission tHogFile overrides font.
 	CFRead (font_data, 1, datasize, fontfile);  //read raw data
 	// make these offsets relative to font_data
 	font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);

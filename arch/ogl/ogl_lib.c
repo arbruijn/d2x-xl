@@ -48,8 +48,6 @@
 
 //------------------------------------------------------------------------------
 
-#define FBO_DRAW_BUFFER 0
-
 #if DBG_SHADOWS
 int bShadowTest = 0;
 #endif
@@ -959,6 +957,10 @@ if (glGetError ())
 glBindTexture (GL_TEXTURE_2D, hBuffer);
 glTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 
 				  0, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, NULL);
+if (glGetError ()) {
+	OglDeleteTextures (1, &hBuffer);
+	return hBuffer = 0;
+	}
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

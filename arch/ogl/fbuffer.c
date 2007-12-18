@@ -34,6 +34,8 @@
 #include "error.h"
 #include "glext.h"
 
+#define FBO_STENCIL_BUFFER	0
+
 //------------------------------------------------------------------------------
 
 #if RENDER2TEXTURE == 2
@@ -107,8 +109,8 @@ if (nType == 2) { //GPGPU
 	}
 else {
 	glBindTexture (GL_TEXTURE_2D, fb->hRenderBuffer);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
-	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //LINEAR /*GL_LINEAR_MIPMAP_LINEAR*/);
+	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //LINEAR);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 #if 0
@@ -121,7 +123,7 @@ else {
 		glGenerateMipmapEXT (GL_TEXTURE_2D);
 		}
 	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb->hRenderBuffer, 0);
-#if 1
+#if FBO_STENCIL_BUFFER
 	if ((nType == 1) && (fb->hDepthBuffer = OglCreateDepthTexture (0, 1))) {
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, fb->hDepthBuffer, 0);
 		glGenRenderbuffersEXT (1, &fb->hStencilBuffer);
@@ -132,6 +134,8 @@ else {
 			return 0;
 		}
 	else 
+#else
+	fb->hStencilBuffer = 0;
 #endif
 		{
 		glGenRenderbuffersEXT (1, &fb->hDepthBuffer);
@@ -166,8 +170,10 @@ if (fb->hFBO) {
 #if 1
 		if (fb->nType == 1) {
 			OglDeleteTextures (1, &fb->hDepthBuffer);
+#if FBO_STENCIL_BUFFER
 			glDeleteRenderbuffersEXT (1, &fb->hStencilBuffer);
 			fb->hStencilBuffer = 0;
+#endif
 			}
 		else
 #endif

@@ -47,7 +47,7 @@ GLhandleARB hGlareShader = 0;
 GLhandleARB hGlareVS = 0; 
 GLhandleARB hGlareFS = 0; 
 
-GLuint hDepthBuffer = 0; 
+static GLuint hDepthBuffer = 0; 
 
 // -----------------------------------------------------------------------------------
 
@@ -66,11 +66,10 @@ switch (gameOpts->render.nCoronaStyle) {
 
 // -----------------------------------------------------------------------------------
 
-void DestroyDepthTexture (void)
+void DestroyGlareDepthTexture (void)
 {
 if (hDepthBuffer) {
-	if (!OglHaveDrawBuffer ())
-		OglDeleteTextures (1, &hDepthBuffer);
+	OglDeleteTextures (1, &hDepthBuffer);
 	hDepthBuffer = 0;
 	}
 }
@@ -79,30 +78,19 @@ if (hDepthBuffer) {
 
 GLuint CopyDepthTexture (void)
 {
-	static time_t	t0 = 0;
-	time_t	t;
-
 glActiveTexture (GL_TEXTURE1);
 glEnable (GL_TEXTURE_2D);
-t = SDL_GetTicks ();
-if (!hDepthBuffer || (t - t0 > 40)) {
-	if (OglHaveDrawBuffer ()) {
-		hDepthBuffer = gameData.render.ogl.drawBuffer.hDepthBuffer;
-		glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
-		}
-	else if ((hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
+if (hDepthBuffer || (hDepthBuffer = OglCreateDepthTexture (GL_TEXTURE1, 0))) {
+	glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
 #if 0
 	glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, 0);
 #else
 	glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #endif
-		if (glGetError ()) {
-			DestroyDepthTexture ();
-			return hDepthBuffer = 0;
-			}
-		glBindTexture (GL_TEXTURE_2D, hDepthBuffer);
+	if (glGetError ()) {
+		DestroyGlareDepthTexture ();
+		return hDepthBuffer = 0;
 		}
-	t0 = SDL_GetTicks ();
 	}
 return hDepthBuffer;
 }
@@ -733,7 +721,7 @@ void UnloadGlareShader (void)
 {
 if (gameStates.ogl.bDepthBlending) {
 	glUseProgramObject (0);
-	DestroyDepthTexture ();
+	//DestroyGlareDepthTexture ();
 	glActiveTexture (GL_TEXTURE1);
 	glBindTexture (GL_TEXTURE_2D, 0);
 	glActiveTexture (GL_TEXTURE2);
