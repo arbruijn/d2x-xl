@@ -146,6 +146,7 @@ bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, in
 	GLfloat	dx, dy;
 
 bmP = BmOverride (bmP, -1);
+bmP->bmProps.flags &= ~BM_FLAG_SUPER_TRANSPARENT;
 if (dw < 0)
 	dw = grdCurCanv->cvBitmap.bmProps.w;
 else if (dw == 0)

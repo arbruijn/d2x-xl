@@ -237,7 +237,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 			if (ApplyDamageToRobot (obj0P, damage, nParent) && objP && (nParent == LOCALPLAYER.nObject))
 				AddPointsToScore (ROBOTINFO (obj0P->id).scoreValue);
 			}
-		if (objP && (ROBOTINFO (obj0P->id).companion) && (!gameData.weapons.info [objP->id].flash)) {
+		if (objP && (ROBOTINFO (obj0P->id).companion) && !gameData.weapons.info [objP->id].flash) {
 			int	i, count;
 			char	szOuch [6*4 + 2];
 

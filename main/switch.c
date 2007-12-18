@@ -1231,9 +1231,9 @@ trigP->value = CFReadFix (fp);
 trigP->time = CFReadFix (fp);
 trigP->link_num = CFReadByte (fp);
 trigP->nLinks = CFReadShort (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigP->nSegment [i] = CFReadShort (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigP->nSide [i] = CFReadShort (fp);
 }
 
@@ -1251,9 +1251,9 @@ trigP->nLinks = CFReadByte (fp);
 trigP->pad = CFReadByte (fp);
 trigP->value = CFReadFix (fp);
 trigP->time = CFReadFix (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigP->nSegment [i] = CFReadShort (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigP->nSide [i] = CFReadShort (fp);
 }
 
@@ -1275,9 +1275,9 @@ trigP->nLinks = CFReadByte (fp);
 CFReadByte (fp);
 trigP->value = CFReadFix (fp);
 trigP->time = CFReadFix (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigP->nSegment [i] = CFReadShort (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++)
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 	trigP->nSide [i] = CFReadShort (fp);
 }
 #endif

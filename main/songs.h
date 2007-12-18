@@ -62,5 +62,6 @@ void SongsStopAll(void);
 void SongsCheckRedbookRepeat(void);
 void SongsPlayCurrentSong(int repeat);
 int LoadPlayList (char *pszPlayList);
+void FreeUserSongs (void);
 
 #endif /* _SONGS_H */

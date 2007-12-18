@@ -670,6 +670,7 @@ memset (&a, 0, sizeof (a));
 OOF_ReadFrameInfo (fp, po, &a.frameInfo, bTimed);
 if (!(a.pFrames = (tOOF_rotFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_rotFrame))))
 	return 0;
+memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_rotFrame));
 if (bTimed &&
 	 (a.nTicks = abs (a.frameInfo.nLastFrame - a.frameInfo.nFirstFrame) + 1) &&
 	 !(a.pRemapTicks = (ubyte *) D2_ALLOC (a.nTicks * sizeof (ubyte))))
@@ -719,6 +720,7 @@ if (bTimed &&
 	return OOF_FreePosAnim (&a);
 if (!(a.pFrames = (tOOF_posFrame *) D2_ALLOC (a.frameInfo.nFrames * sizeof (tOOF_posFrame))))
 	return OOF_FreePosAnim (pa);
+memset (a.pFrames, 0, a.frameInfo.nFrames * sizeof (tOOF_posFrame));
 for (i = 0; i < a.frameInfo.nFrames; i++)
 	if (!OOF_ReadPosFrame (fp, a.pFrames + i, bTimed))
 		return OOF_FreePosAnim (pa);

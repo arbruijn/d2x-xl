@@ -152,6 +152,7 @@ int RIAddThruster (grsBitmap *bmP, fVector *vThruster, tTexCoord2f *tcThruster, 
 void RenderItems (void);
 void StartRenderThreads (void);
 void EndRenderThreads (void);
+void FreeRenderItems (void);
 
 extern tRenderItemBuffer renderItems;
 

@@ -91,8 +91,10 @@ int IsLight (int tMapNum);
 
 #define	SHOW_DYN_LIGHT \
 			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \
-			 gameStates.render.bHaveDynLights && \
+			 /*gameStates.render.bHaveDynLights &&*/ \
 			 gameOpts->render.bDynLighting)
+
+#define HAVE_DYN_LIGHT	(gameStates.render.bHaveDynLights && SHOW_DYN_LIGHT)
 
 #define	APPLY_DYN_LIGHT \
 			(gameStates.render.bUseDynLight && (gameOpts->ogl.bLightObjects || gameStates.render.nState))

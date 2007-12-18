@@ -589,8 +589,8 @@ void write_wall_text(FILE *my_file)
 //	fix		time;
 //	byte		link_num;
 //	short 	nLinks;
-//	short 	seg[MAX_WALLS_PER_LINK];
-//	short		tSide[MAX_WALLS_PER_LINK];
+//	short 	seg[MAX_TRIGGER_TARGETS];
+//	short		tSide[MAX_TRIGGER_TARGETS];
 //	} tTrigger;
 
 // ----------------------------------------------------------------------------

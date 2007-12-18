@@ -722,14 +722,13 @@ int rle_expand (grsBitmap *bmP, ubyte *colorMap, int bSwap0255)
 
 if (!(bmP->bmProps.flags & BM_FLAG_RLE))
 	return bmP->bmProps.h * bmP->bmProps.rowSize;
-if (!(expandBuf = D2_ALLOC (bmP->bmProps.h * bmP->bmProps.rowSize)))
-	return -1;
-
 bBigRLE = (bmP->bmProps.flags & BM_FLAG_RLE_BIG) != 0;
 if (bBigRLE)
 	pSrc = bmP->bmTexBuf + 4 + 2 * bmP->bmProps.h;
 else
 	pSrc = bmP->bmTexBuf + 4 + bmP->bmProps.h;
+if (!(expandBuf = D2_ALLOC (2 * (bBigRLE + 1) * bmP->bmProps.h * bmP->bmProps.rowSize)))
+	return -1;
 pDest = expandBuf;
 for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 	if (bBigRLE)
@@ -773,6 +772,8 @@ for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 	}
 l = (int) (pDest - expandBuf);
 Assert (l <= bmP->bmProps.h * bmP->bmProps.rowSize);
+if (l > bmP->bmProps.h * bmP->bmProps.rowSize)
+	l = bmP->bmProps.h * bmP->bmProps.rowSize;
 memcpy (bmP->bmTexBuf, expandBuf, l);
 bmP->bmProps.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
 D2_FREE (expandBuf);

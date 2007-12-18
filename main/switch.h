@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_TRIGGERS        254
 #define MAX_OBJ_TRIGGERS	 254
 #define NO_TRIGGER			 255
-#define MAX_WALLS_PER_LINK  10
+#define MAX_TRIGGER_TARGETS  10
 
 // Trigger types
 
@@ -76,8 +76,8 @@ typedef struct tTriggerV29 {
 	fix     time;
 	sbyte   link_num;
 	short   nLinks;
-	short   nSegment [MAX_WALLS_PER_LINK];
-	short   nSide [MAX_WALLS_PER_LINK];
+	short   nSegment [MAX_TRIGGER_TARGETS];
+	short   nSide [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV29;
 
 typedef struct tTriggerV30 {
@@ -86,8 +86,8 @@ typedef struct tTriggerV30 {
 	sbyte   pad;                        //keep alignment
 	fix     value;
 	fix     time;
-	short   nSegment [MAX_WALLS_PER_LINK];
-	short   nSide [MAX_WALLS_PER_LINK];
+	short   nSegment [MAX_TRIGGER_TARGETS];
+	short   nSide [MAX_TRIGGER_TARGETS];
 } __pack__ tTriggerV30;
 
 //flags for V30 & below triggers
@@ -114,8 +114,8 @@ typedef struct tTrigger {
 	sbyte   nLinks;  //how many doors, etc. linked to this
 	fix     value;
 	fix     time;
-	short   nSegment [MAX_WALLS_PER_LINK];
-	short   nSide [MAX_WALLS_PER_LINK];
+	short   nSegment [MAX_TRIGGER_TARGETS];
+	short   nSide [MAX_TRIGGER_TARGETS];
 } __pack__ tTrigger;
 
 typedef struct tObjTriggerRef {

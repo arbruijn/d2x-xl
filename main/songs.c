@@ -473,4 +473,16 @@ return gameData.songs.user.nLevelSongs = nSongs;
 }
 
 //------------------------------------------------------------------------------
+
+void FreeUserSongs (void)
+{
+	int	i;
+
+for (i = 0; i < gameData.songs.user.nLevelSongs; i++)
+	D2_FREE (gameData.songs.user.pszLevelSongs [i]);
+D2_FREE (gameData.songs.user.pszLevelSongs);
+gameData.songs.user.nLevelSongs = 0;
+}
+
+//------------------------------------------------------------------------------
 //eof

@@ -1122,7 +1122,8 @@ else {
 		}
 	}
 #if 1
-rle_expand (bmP, NULL, 0);
+if (bmP->bmProps.flags & BM_FLAG_RLE)
+	rle_expand (bmP, NULL, 0);
 buf = bmP->bmTexBuf;
 #else
 if (bmP->bmProps.flags & BM_FLAG_RLE) {

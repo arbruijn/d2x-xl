@@ -203,7 +203,7 @@ if (nSize < 0) {
 	int i;
 	for (i = 0; i < nTrackedBitmaps; i++)
 		if (trackedBitmaps [i].bmP == bmP) {
-			CBP (trackedBitmaps [i].nSize != -nSize);
+			//CBP (trackedBitmaps [i].nSize != -nSize);
 			if (i < --nTrackedBitmaps)
 				trackedBitmaps [i] = trackedBitmaps [nTrackedBitmaps];
 			trackedBitmaps [nTrackedBitmaps].bmP = NULL;
@@ -976,6 +976,7 @@ if (CFRead (soundP->data [0], soundP->nLength [0], 1, fp) != 1) {
 	CFClose (fp);
 	return 0;
 	}
+CFClose (fp);
 soundP->bHires = 1;
 return 1;
 }
@@ -1474,6 +1475,8 @@ if (altBmP->bmType != BM_TYPE_ALT)
 if ((bmfP = BM_FRAMES (altBmP)))
 	for (i = BM_FRAMECOUNT (altBmP); i; i--, bmfP++)
 		PiggyFreeHiresFrame (bmfP, bD1);
+else
+	PiggyFreeMask (altBmP);
 OglFreeBmTexture (altBmP);
 D2_FREE (BM_FRAMES (altBmP));
 altBmP->bmData.alt.bmFrameCount = 0;
@@ -1637,7 +1640,7 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
 	GetFlagData (bmName, bmi);
 #ifdef _DEBUG
-	if (strstr (bmName, "rock014")) {
+	if (strstr (bmName, "gauge01b")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
 					*gameFolders.szTextureDir [bD1] ? "/" : "", bmName);
 		}
@@ -2305,11 +2308,10 @@ if (fp) {
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.bmFromPog = 1;
 		bm.bmHandle = j;
-#if 1//def _DEBUG
-		sprintf (bm.szName, "[%s]", gameData.pig.tex.pBitmaps [j].szName);
-#else
-		sprintf (bm.szName, "POG#%04d", j);
-#endif
+		if (*gameData.pig.tex.pBitmaps [j].szName)
+			sprintf (bm.szName, "[%s]", gameData.pig.tex.pBitmaps [j].szName);
+		else
+			sprintf (bm.szName, "POG#%04d", j);
 		gameData.pig.tex.pAltBitmaps [j] = bm;
 		BM_OVERRIDE (gameData.pig.tex.pBitmaps + j) = gameData.pig.tex.pAltBitmaps + j;
 		{

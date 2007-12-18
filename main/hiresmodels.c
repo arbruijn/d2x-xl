@@ -26,11 +26,13 @@ static tOOFToModel oofToModel [] = {
 	// player ship
 	{"\001pyrogl.oof", "pyrogl.pol", 108, 0, 0}, 
 	{NULL, NULL, 110, 0, 0}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
-#ifdef _DEBUG	//D3 robots for testing
+#if 0//def _DEBUG	//D3 robots for testing
+/*
 	{"\001thresherboss.oof", NULL, 39, 1, 0}, 
 	{"\001orbot.oof", NULL, 58, 1, 0}, 
 	{"\001thresh.oof", NULL, 60, 1, 0}, 
 	{"\001squid.oof", NULL, 68, 1, 0}, 
+*/
 	{"\001pumpingpipesmall.oof", NULL, 56, 1, 0}, 
 #endif
 	// robots
@@ -304,8 +306,10 @@ else /*if (gameOpts->render.bHiresModels)*/ {
 				i = LoadHiresModel (gameData.models.hiresModels [bCustom] + gameData.models.nHiresModels, i, bCustom);
 			i = 0;
 			}
-		while (i < j)
-			i = LoadLoresModel (i);
+		if (!bCustom) {
+			while (i < j)
+				i = LoadLoresModel (i);
+			}
 		}
 	ClearBoxedMessage ();
 	}

@@ -1443,7 +1443,8 @@ if ((bIsBoss = ROBOTINFO (robotP->id).bossFlag)) {
 //	Also invulnerable if his cheat for firing weapons is in effect.
 if (ROBOTINFO (robotP->id).companion) {
 //		if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel) || gameStates.app.cheats.bMadBuddy)
-	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission && gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
+	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
+		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
 		return 0;
 	}
 gameData.objs.xTimeLastHit [OBJ_IDX (robotP)] = gameStates.app.nSDLTicks;
@@ -1692,9 +1693,9 @@ if (botInfoP->bossFlag) {
 
 //	Put in at request of Jasen (and Adam) because the Buddy-Bot gets in their way.
 //	MK has so much fun whacking his butt around the mine he never cared...
-if ((botInfoP->companion) && 
-	 (weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && 
-	  !gameStates.app.cheats.bRobotsKillRobots)
+if ((weaponP->cType.laserInfo.parentType == OBJ_ROBOT) && !gameStates.app.cheats.bRobotsKillRobots)
+	return 1;
+if (botInfoP->companion && (weaponP->cType.laserInfo.parentType != OBJ_ROBOT))
 	return 1;
 CreateWeaponEffects (weaponP, 1);
 if (weaponP->id == EARTHSHAKER_ID)
@@ -1713,7 +1714,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 	if ((robotP->shields > 0) && bIsEnergyWeapon [weaponP->id]) {
 		int	nBlobs;
 		fix	xProb = (gameStates.app.nDifficultyLevel+2) * min (weaponP->shields, robotP->shields);
-		xProb = botInfoP->energyBlobs * xProb/ (NDL*32);
+		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
 		nBlobs = xProb >> 16;
 		if (2 * d_rand () < (xProb & 0xffff))
 			nBlobs++;
@@ -1744,7 +1745,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 		 !(robotP->flags & OF_EXPLODING)) {
 		tObject *explObjP = NULL;
 		if (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
-			CreateAwarenessEvent (weaponP, PA_WEAPON_ROBOT_COLLISION);			// tObject "weaponP" can attract attention to tPlayer
+			CreateAwarenessEvent (weaponP, PA_WEAPON_ROBOT_COLLISION);			// object "weaponP" can attract attention to tPlayer
 			DoAiRobotHit (robotP, PA_WEAPON_ROBOT_COLLISION);
 			}
 	  	else

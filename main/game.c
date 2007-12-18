@@ -1790,9 +1790,12 @@ if (gameStates.app.bMultiThreaded) {
 	}
 GrClose ();
 DigiClose ();
+FreeUserSongs ();
 RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
+LogErr ("unloading render buffers\n");
+FreeRenderItems ();
 LogErr ("unloading string pool\n");
 FreeStringPool ();
 LogErr ("unloading hires animations\n");

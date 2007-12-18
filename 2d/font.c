@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "makesig.h"
 
-#define STRINGPOOL 1
+#define STRINGPOOL 0
 #define MAX_OPEN_FONTS	50
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
@@ -464,7 +464,7 @@ int get_fontTotal_width (grsFont * font){
 
 //------------------------------------------------------------------------------
 
-void ogl_font_choose_size (grsFont * font, int gap, int *rw, int *rh){
+void OglFontChooseSize (grsFont * font, int gap, int *rw, int *rh){
 	int	nchars = font->ftMaxChar-font->ftMinChar+1;
 	int r, x, y, nc=0, smallest=999999, smallr=-1, tries;
 	int smallprop=10000;
@@ -533,7 +533,7 @@ void ogl_font_choose_size (grsFont * font, int gap, int *rw, int *rh){
 
 //------------------------------------------------------------------------------
 
-void ogl_init_font (grsFont * font)
+void OglInitFont (grsFont * font)
 {
 	int	nchars = font->ftMaxChar-font->ftMinChar+1;
 	int i, w, h, tw, th, x, y, curx=0, cury=0;
@@ -541,7 +541,7 @@ void ogl_init_font (grsFont * font)
 	//	char data[32*32*4];
 	int gap=0;//having a gap just wastes ram, since we don't filter text textures at all.
 	//	char s[2];
-	ogl_font_choose_size (font, gap, &tw, &th);
+	OglFontChooseSize (font, gap, &tw, &th);
 	data=D2_ALLOC (tw*th);
 	palette = font->ftParentBitmap.bmPalette;
 	GrInitBitmap (&font->ftParentBitmap, BM_LINEAR, 0, 0, tw, th, tw, data, 1);
@@ -551,7 +551,7 @@ void ogl_init_font (grsFont * font)
 	font->ftBitmaps = (grsBitmap*) D2_ALLOC (nchars * sizeof (grsBitmap));
 	memset (font->ftBitmaps, 0, nchars * sizeof (grsBitmap));
 #if TRACE
-//	con_printf (CONDBG, "ogl_init_font %s, %s, nchars=%i, (%ix%i tex)\n", 
+//	con_printf (CONDBG, "OglInitFont %s, %s, nchars=%i, (%ix%i tex)\n", 
 //		 (font->ftFlags & FT_PROPORTIONAL)?"proportional":"fixedwidth", (font->ftFlags & FT_COLOR)?"color":"mono", nchars, tw, th);
 #endif	
 	//	s[1]=0;
@@ -588,7 +588,7 @@ void ogl_init_font (grsFont * font)
 		else {
 			int BitMask, bits = 0, white = GrFindClosestColor (palette, 63, 63, 63);
 			//			if (w*h>sizeof (data))
-			//				Error ("ogl_init_font: toobig\n");
+			//				Error ("OglInitFont: toobig\n");
 			if (font->ftFlags & FT_PROPORTIONAL)
 				fp = font->ftChars [i];
 			else
@@ -1363,7 +1363,7 @@ grsFont * GrInitFont (char * fontname)
 //		newfont->ft_aw = x/ (double)strlen (tests);
 	}
 
-	ogl_init_font (font);
+	OglInitFont (font);
 	return font;
 
 }
@@ -1447,13 +1447,12 @@ void GrRemapFont (grsFont *font, char * fontname, char *font_data)
 		GrCountColors (font->ftData, (int) (ptr - font->ftData), freq);
 		GrSetPalette (&font->ftParentBitmap, palette, TRANSPARENCY_COLOR, -1, freq);
 	}
-	CFClose (fontfile);
-	if (font->ftBitmaps) {
-		D2_FREE (font->ftBitmaps);
-		font->ftBitmaps = NULL;
-		}
-	GrFreeBitmapData (&font->ftParentBitmap);
-	ogl_init_font (font);
+CFClose (fontfile);
+if (font->ftBitmaps) {
+	D2_FREE (font->ftBitmaps);
+	}
+GrFreeBitmapData (&font->ftParentBitmap);
+OglInitFont (font);
 }
 
 //------------------------------------------------------------------------------

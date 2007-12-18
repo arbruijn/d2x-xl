@@ -613,10 +613,6 @@ void SetDynamicLight (void)
 	tRgbaColorf	color;
 	nHeadLights = 0;
 
-#if 0
-if (SHOW_DYN_LIGHT)
-	return;
-#endif
 if (!gameOpts->render.bDynamicLight)
 	return;
 memset (gameData.render.lights.vertexFlags, 0, gameData.segs.nLastVertex + 1);

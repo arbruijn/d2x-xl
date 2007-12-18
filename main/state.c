@@ -1033,7 +1033,7 @@ CFWriteByte ((sbyte) triggerP->flags, fp);
 CFWriteByte (triggerP->nLinks, fp);
 CFWriteFix (triggerP->value, fp);
 CFWriteFix (triggerP->time, fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++) {
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	CFWriteShort (triggerP->nSegment [i], fp);
 	CFWriteShort (triggerP->nSide [i], fp);
 	}
@@ -2044,7 +2044,7 @@ triggerP->flags = (ubyte) CFReadByte (fp);
 triggerP->nLinks = CFReadByte (fp);
 triggerP->value = CFReadFix (fp);
 triggerP->time = CFReadFix (fp);
-for (i = 0; i < MAX_WALLS_PER_LINK; i++) {
+for (i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 	triggerP->nSegment [i] = CFReadShort (fp);
 	triggerP->nSide [i] = CFReadShort (fp);
 	}
