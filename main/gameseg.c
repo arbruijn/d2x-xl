@@ -2227,9 +2227,9 @@ tLightDeltaIndex	*p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
-	if ((p->d2x.nSegment < nSegment) || ((p->d2x.nSegment == nSegment) && (p->d2x.nSide < nSide)))
+	if ((nSegment < p->d2x.nSegment) || ((nSegment == p->d2x.nSegment) && (nSide < p->d2x.nSide)))
 		r = m - 1;
-	else if ((p->d2x.nSegment > nSegment) || ((p->d2x.nSegment == nSegment) && (p->d2x.nSide > nSide)))
+	else if ((nSegment > p->d2x.nSegment) || ((nSegment == p->d2x.nSegment) && (nSide > p->d2x.nSide)))
 		l = m + 1;
 	else {
 		while ((p->d2x.nSegment == nSegment) && (p->d2x.nSide == nSide))
@@ -2252,9 +2252,9 @@ tLightDeltaIndex	*p;
 do {
 	m = (l + r) / 2;
 	p = gameData.render.lights.deltaIndices + m;
-	if ((p->d2.nSegment < nSegment) || ((p->d2.nSegment == nSegment) && (p->d2.nSide < nSide)))
+	if ((nSegment < p->d2.nSegment) || ((nSegment == p->d2.nSegment) && (nSide < p->d2.nSide)))
 		r = m - 1;
-	else if ((p->d2.nSegment > nSegment) || ((p->d2.nSegment == nSegment) && (p->d2.nSide > nSide)))
+	else if ((nSegment > p->d2.nSegment) || ((nSegment == p->d2.nSegment) && (nSide > p->d2.nSide)))
 		l = m + 1;
 	else {
 		while ((p->d2.nSegment == nSegment) && (p->d2.nSide == nSide))
@@ -2281,12 +2281,12 @@ return gameStates.render.bD2XLights ?
 //	dir =  0 -> you are dumb
 void ChangeLight (short nSegment, short nSide, int dir)
 {
-	int			i, j, k;
-	fix			dl, lNew, *pSegLightDelta;
-	tUVL			*uvlP;
-	tLightDeltaIndex		*dliP;
-	tLightDelta	*dlP;
-	short			iSeg, iSide;
+	int					i, j, k;
+	fix					dl, lNew, *pSegLightDelta;
+	tUVL					*uvlP;
+	tLightDeltaIndex	*dliP;
+	tLightDelta			*dlP;
+	short					iSeg, iSide;
 
 if ((dir < 0) && RemoveDynLight (nSegment, nSide, -1))
 	return;
@@ -2302,15 +2302,21 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		iSeg = dliP->d2.nSegment;
 		iSide = dliP->d2.nSide;
 		}
+#ifndef _DEBUG
 	if ((iSeg > nSegment) || ((iSeg == nSegment) && (iSide > nSide)))
 		return;
+#endif
 	if ((iSeg == nSegment) && (iSide == nSide)) {
+		if ((dliP->d2.index < 0) || (dliP->d2.index >= MAX_DELTA_LIGHTS))
+			continue;	//ouch - bogus data!
 		dlP = gameData.render.lights.deltas + dliP->d2.index;
 		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {
+			if (!dlP->bValid)
+				continue;	//bogus data!
 			uvlP = gameData.segs.segments [dlP->nSegment].sides [dlP->nSide].uvls;
 			pSegLightDelta = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
 			for (k = 0; k < 4; k++, uvlP++) {
-				dl = dir * dlP->vert_light [k] * DL_SCALE;
+				dl = dir * dlP->vertLight [k] * DL_SCALE;
 				lNew = (uvlP->l += dl);
 				if (lNew < 0)
 					uvlP->l = 0;

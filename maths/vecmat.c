@@ -1814,8 +1814,7 @@ fVector *VmVecReflectf (fVector *vReflect, fVector *vDir, fVector *vNormal)
 {
 	float dot = VmVecDotf (vDir, vNormal);
 
-vReflect = vNormal;
-VmVecScalef (vReflect, vReflect, 2 * dot);
+VmVecScalef (vReflect, vNormal, 2 * dot);
 VmVecDecf (vReflect, vDir);
 return VmVecNegatef (vReflect);
 }

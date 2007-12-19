@@ -1477,7 +1477,7 @@ if ((pCloud->bHaveDir = (pDir != NULL)))
 void SetCloudLife (tCloud *pCloud, int nLife)
 {
 pCloud->nLife = nLife;
-pCloud->fPartsPerTick = (float) pCloud->nMaxParts / (float) abs (nLife);
+pCloud->fPartsPerTick = nLife ? (float) pCloud->nMaxParts / (float) abs (nLife) : 0.0f;
 pCloud->nTicks = 0;
 }
 

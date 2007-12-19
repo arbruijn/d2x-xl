@@ -5,6 +5,7 @@
 #include "inferno.h"
 #include "cfile.h"
 #include "u_mem.h"
+#include "error.h"
 
 #ifdef RCS
 static char rcsid[] = "$Id: tSegment.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
@@ -27,15 +28,14 @@ void ReadSegment2 (tSegment2 *s2, CFILE *fp)
 //------------------------------------------------------------------------------
 // reads a tLightDelta structure from a CFILE
 
-void ReadLightDelta (tLightDelta *dl, CFILE *fp)
+void ReadLightDelta (tLightDelta *dlP, CFILE *fp)
 {
-	dl->nSegment = CFReadShort (fp);
-	dl->nSide = CFReadByte (fp);
-	dl->dummy = CFReadByte (fp);
-	dl->vert_light[0] = CFReadByte (fp);
-	dl->vert_light[1] = CFReadByte (fp);
-	dl->vert_light[2] = CFReadByte (fp);
-	dl->vert_light[3] = CFReadByte (fp);
+dlP->nSegment = CFReadShort (fp);
+dlP->nSide = CFReadByte (fp);
+CFReadByte (fp);
+if (!(dlP->bValid = (dlP->nSegment >= 0) && (dlP->nSegment < gameData.segs.nSegments) && (dlP->nSide >= 0) && (dlP->nSide < 6)))
+	LogErr ("Invalid delta light data %d (%d,%d)\n", dlP - gameData.render.lights.deltas, dlP->nSegment, dlP->nSide);
+CFRead (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight), fp);
 }
 
 

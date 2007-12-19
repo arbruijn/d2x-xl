@@ -1979,13 +1979,15 @@ int SetLightningLight (tLightning *pl, int i)
 	tLightningNode	*pln;
 	vmsVector		*vPos;
 	short				nSegment;
-	int				j, nLights;
+	int				j, nLights, nStride;
 	double			h, nStep;
 
 SetLightningSegLight (pl->nSegment, &pl->vPos, &pl->color);
 for (nLights = 1; i > 0; i--, pl++) {
 	if (0 < (j = pl->nNodes)) {
-		if (!(nStep = (double) (j - 1) / (double) ((int) ((double) pl->nLength / F1_0 / 20 + 0.5))))
+		if (!(nStride = (int) ((double) pl->nLength / F1_0 / 20 + 0.5)))
+			nStride = 1;
+		if (!(nStep = (double) (j - 1) / (double) nStride))
 			nStep = (double) ((int) (j + 0.5));
 		nSegment = pl->nSegment;
 		pln = pl->pNodes;

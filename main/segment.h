@@ -200,12 +200,12 @@ extern int  sideToVertsInt[MAX_SIDES_PER_SEGMENT][4];    // sideToVerts[my_side]
 extern char sideOpposite[];                                // sideOpposite[my_side] returns tSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
-// Light cast upon vert_light vertices in nSegment:nSide by some light
+// Light cast upon vertLight vertices in nSegment:nSide by some light
 typedef struct {
 	short   nSegment;
 	sbyte   nSide;
-	sbyte   dummy;
-	ubyte   vert_light[4];
+	sbyte   bValid;
+	ubyte   vertLight [4];
 } tLightDelta;
 
 // Light at nSegment:nSide casts light on count sides beginning at index (in array gameData.render.lightDeltas)
@@ -214,18 +214,18 @@ typedef struct {
 	ubyte   nSide;
 	ubyte   count;
 	unsigned short   index;
-} dl_index_d2;
+} tDlIndexD2;
 
 typedef struct {
 	short   nSegment;
 	unsigned short nSide :3;
 	unsigned short count :13;
-	unsigned short   index;
-} dl_index_d2x;
+	unsigned short index;
+} tDlIndexD2X;
 
 typedef union {
-	dl_index_d2x	d2x;
-	dl_index_d2		d2;
+	tDlIndexD2X		d2x;
+	tDlIndexD2		d2;
 } tLightDeltaIndex;
 
 #define MAX_DL_INDICES_D2    500
@@ -236,10 +236,9 @@ typedef union {
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
-int SubtractLight(short nSegment, short nSide);
-int AddLight(short nSegment, short nSide);
-void restore_all_lights_in_mine(void);
-void ClearLightSubtracted(void);
+int SubtractLight (short nSegment, short nSide);
+int AddLight (short nSegment, short nSide);
+void ClearLightSubtracted (void);
 
 // ----------------------------------------------------------------------------
 // --------------------- Segment interrogation functions ----------------------

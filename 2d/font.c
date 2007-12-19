@@ -53,14 +53,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OPEN_FONTS	50
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
-typedef struct openfont {
+typedef struct tOpenFont {
 	char filename[SHORT_FILENAME_LEN];
 	grsFont *ptr;
-	char *dataptr;
-} openfont;
+	char *pData;
+} tOpenFont;
 
 //list of open fonts, for use (for now) for palette remapping
-openfont open_font[MAX_OPEN_FONTS];
+tOpenFont openFont [MAX_OPEN_FONTS];
 
 #define BITS_TO_BYTES(x)    (( (x)+7)>>3)
 
@@ -1146,13 +1146,13 @@ void GrCloseFont (grsFont * font)
 		char * font_data;
 
 		//find font in list
-	for (fontnum=0;fontnum<MAX_OPEN_FONTS && open_font[fontnum].ptr!=font;fontnum++)
+	for (fontnum=0;fontnum<MAX_OPEN_FONTS && openFont[fontnum].ptr!=font;fontnum++)
 		;
 	Assert (fontnum<MAX_OPEN_FONTS);	//did we find slot?
-	font_data = open_font[fontnum].dataptr;
+	font_data = openFont[fontnum].pData;
 	D2_FREE (font_data);
-	open_font[fontnum].ptr = NULL;
-	open_font[fontnum].dataptr = NULL;
+	openFont[fontnum].ptr = NULL;
+	openFont[fontnum].pData = NULL;
 	if (font->ftChars) {
 		D2_FREE (font->ftChars);
 		font->ftChars = NULL;
@@ -1175,9 +1175,9 @@ void GrRemapMonoFonts ()
 
 	for (fontnum=0;fontnum<MAX_OPEN_FONTS;fontnum++) {
 		grsFont *font;
-		font = open_font[fontnum].ptr;
+		font = openFont[fontnum].ptr;
 		if (font && !(font->ftFlags & FT_COLOR))
-			GrRemapFont (font, open_font[fontnum].filename, open_font[fontnum].dataptr);
+			GrRemapFont (font, openFont[fontnum].filename, openFont[fontnum].pData);
 	}
 }
 
@@ -1189,9 +1189,9 @@ void GrRemapColorFonts ()
 
 for (fontnum=0;fontnum<MAX_OPEN_FONTS;fontnum++) {
 	grsFont *font;
-	font = open_font[fontnum].ptr;
+	font = openFont[fontnum].ptr;
 	if (font && (font->ftFlags & FT_COLOR))
-		GrRemapFont (font, open_font[fontnum].filename, open_font[fontnum].dataptr);
+		GrRemapFont (font, openFont[fontnum].filename, openFont[fontnum].pData);
 	}
 }
 
@@ -1237,17 +1237,17 @@ grsFont * GrInitFont (char * fontname)
 	if (firstTime) {
 		int i;
 		for (i=0;i<MAX_OPEN_FONTS;i++) {
-			open_font[i].ptr = NULL;
-			open_font[i].dataptr = NULL;
+			openFont[i].ptr = NULL;
+			openFont[i].pData = NULL;
     }
 		firstTime=0;
 	}
 
 	//find D2_FREE font slot
-	for (fontnum=0;fontnum<MAX_OPEN_FONTS && open_font[fontnum].ptr!=NULL;fontnum++);
+	for (fontnum=0;fontnum<MAX_OPEN_FONTS && openFont[fontnum].ptr!=NULL;fontnum++);
 	Assert (fontnum<MAX_OPEN_FONTS);	//did we find one?
 
-	strncpy (open_font[fontnum].filename, fontname, SHORT_FILENAME_LEN);
+	strncpy (openFont[fontnum].filename, fontname, SHORT_FILENAME_LEN);
 
 	fontfile = CFOpen (fontname, gameFolders.szDataDir, "rb", 0);
 
@@ -1275,8 +1275,8 @@ grsFont * GrInitFont (char * fontname)
 	MALLOC (font_data, char, datasize);
 	CFRead (font_data, 1, datasize, fontfile);
 
-	open_font[fontnum].ptr = font;
-	open_font[fontnum].dataptr = font_data;
+	openFont[fontnum].ptr = font;
+	openFont[fontnum].pData = font_data;
 
 	// make these offsets relative to font_data
 	font->ftData = (ubyte *) ((size_t)font->ftData - GRS_FONT_SIZE);

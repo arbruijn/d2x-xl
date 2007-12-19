@@ -1251,13 +1251,13 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 #if TRACE
 	con_printf(CONDBG, "   loading light data ...\n");
 #endif
-	if (CFSeek (fp, gameFileInfo.lightDeltaIndices.offset, SEEK_SET)) {
+	if (CFSeek (fp, gameFileInfo.lightDeltas.offset, SEEK_SET)) {
 		Error ("Error seeking to light delta data\n(file damaged or invalid)");
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
 		if (gameTopFileInfo.fileinfo_version >= 29) 
-			ReadLightDelta (&gameData.render.lights.deltas [i], fp);
+			ReadLightDelta (gameData.render.lights.deltas + i, fp);
 		else {
 #if TRACE
 			con_printf (CONDBG, "Warning: Old mine version.  Not reading delta light info.\n");

@@ -364,7 +364,7 @@ for (i = j = 0; i < h; i++) {
 		VmVecNormalizef (&lightPos, &lightPos);
 		if (!psl->bSpot)	//need direction from light to vertex now
 			VmVecNegatef (&lightDir);
-		VmVecReflectf (&vReflect, &lightDir, &gameData.render.vertColor.vertNorm);
+		VmVecReflectf (&vReflect, &lightDir, &vcd.vertNorm);
 		VmVecNormalizef (&vReflect, &vReflect);
 		RdotE = VmVecDotf (&vReflect, &lightPos);
 		if (RdotE < 0)
@@ -557,7 +557,7 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			lightDir.p.y = -lightDir.p.y;
 			lightDir.p.z = -lightDir.p.z;
 			}
-		G3_REFLECT (vReflect, lightDir, gameData.render.vertColor.vertNorm);
+		G3_REFLECT (vReflect, lightDir, vcd.vertNorm);
 #if VECMAT_CALLS
 		VmVecNormalizef (&vReflect, &vReflect);
 #else

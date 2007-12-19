@@ -1948,8 +1948,8 @@ return psc;
 
 int AddOglHeadLight (tObject *objP)
 {
-	static float spotExps [] = {10.0f, 5.0f, 0.0f};
-	static float spotAngles [] = {0.75f, 0.5f, 0.25f};
+	static float spotExps [] = {12.0f, 5.0f, 0.0f};
+	static float spotAngles [] = {0.9f, 0.75f, 0.5f};
 
 if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
@@ -1962,8 +1962,8 @@ if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights
 		pl = gameData.render.lights.dynamic.lights + nLight;
 		pl->nPlayer = objP->id;
 		pl->bSpot = 1;
-		pl->spotAngle = spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
-		pl->spotExponent = spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
+		pl->spotAngle = 0.9f; //spotAngles [extraGameInfo [IsMultiGame].nSpotSize];
+		pl->spotExponent = 12.0f; //spotExps [extraGameInfo [IsMultiGame].nSpotStrength];
 		pl->bTransform = 0;
 		}
 	return nLight;
