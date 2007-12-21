@@ -110,8 +110,15 @@ VmVecSub (&w, p0, vPlanePoint);
 VmVecSub (&d, p1, p0);
 num = VmVecDot (vPlaneNorm, &w) - rad;
 den = -VmVecDot (vPlaneNorm, &d);
-if (!den)
+if (!den) {
+	fVector	nf, df;
+	float denf;
+	VmsVecToFloat (&nf, vPlaneNorm);
+	VmsVecToFloat (&df, &d);
+	denf = -VmVecDotf (&nf, &df);
+	denf = -VmVecDotf (&nf, &df);
 	return 0;
+	}
 if (den > 0) {
 	if ((num > den) || ((-num >> 15) >= den)) //frac greater than one
 		return 0;
@@ -706,7 +713,7 @@ if ((SEG_IDX (segP)) == -1)
 nFaces = CreateAbsVertexLists (vertList, nSegment, nSide);
 //LogErr ("done\n");
 VmVecSub (&move_vec, p1, p0);
-//figure out which edge(sideP) to check against
+//figure out which edge(side) to check against
 //LogErr ("      CheckPointToSegFace ...\n");
 if (!(nEdgeMask = CheckPointToSegFace (p0, nSegment, nSide, iFace, nv, vertList))) {
 	//LogErr ("      CheckLineToSegFace ...");
@@ -750,7 +757,7 @@ VmVecScaleAdd (&closest_point_move, p0, &move_vec, move_t2);
 closestDist = VmVecDist (&closest_point_edge, &closest_point_move);
 //could we hit with this dist?
 //note massive tolerance here
-if (closestDist < (rad * 15) / 20) {		//we hit.  figure out where
+if (closestDist < (rad * 9) / 10) {		//we hit.  figure out where
 	//now figure out where we hit
 	VmVecScaleAdd (newP, p0, &move_vec, move_t-rad);
 	return IT_EDGE;
@@ -1016,6 +1023,8 @@ int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
 	tSegMasks		masks;
 
 Assert(fq->ignoreObjList != (short *)(-1));
+VmVecZero (&gameData.collisions.hitData.vNormal);
+gameData.collisions.hitData.nNormals = 0;
 Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
 
 gameData.collisions.hitData.nSegment = -1;
@@ -1117,7 +1126,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	tSegment		*segP;				//the tSegment we're looking at
 	int			startMask, endMask, centerMask;	//mask of faces
 	short			nObject;
-	tSegMasks		masks;
+	tSegMasks	masks;
 	vmsVector	vHitPoint, vClosestHitPoint; 	//where we hit
 	fix			d, dMin = 0x7fffffff;					//distance to hit point
 	int			nObjSegList [7], nObjSegs, iObjSeg, nSegment, i;
@@ -1129,6 +1138,11 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 	int			nCurNestLevel = gameData.collisions.hitData.nNestCount;
 #if FVI_NEWCODE
 	int			nFudgedRad;
+	int			nFaces;
+#if 0
+	int			nFaceHitType;
+#endif
+	int			widResult;
 	int			nThisType, nOtherType;
 	tObject		*otherObjP,
 					*thisObjP = (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject;
@@ -1206,20 +1220,26 @@ if (flags & FQ_CHECK_OBJS) {
 			if (flags & FQ_ANY_OBJECT)
 				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			else
-			d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
 				gameData.collisions.hitData.nObject = nObject;
 				Assert(gameData.collisions.hitData.nObject != -1);
 				dMin = d;
 				vClosestHitPoint = vHitPoint;
 				nHitType = HIT_OBJECT;
+#ifdef _DEBUG
+				CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+#endif
 				if (flags & FQ_ANY_OBJECT)
-					goto quit_looking;
+					goto fviObjsDone;
 				}
 			}
 		}
 	}
 #endif
+
+fviObjsDone:
+
 segP = gameData.segs.segments + nStartSeg;
 if ((nThisObject > -1) && (gameData.objs.collisionResult [nThisType][OBJ_WALL] == RESULT_NOTHING))
 	radP1 = 0;		//HACK - ignore when edges hit walls
@@ -1231,136 +1251,142 @@ if (!(centerMask = masks.centerMask))
 if ((endMask = masks.faceMask)) { //on the back of at least one face
 	short nSide, iFace, bit;
 
-	//for each iFace we are on the back of, check if intersected
+	//for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
-		int nFaces = GetNumFaces (segP->sides + nSide);
-		if (!nFaces)
+		if (!(nFaces = GetNumFaces (segP->sides + nSide)))
 			nFaces = 1;
-		// commented out by mk on 02/13/94:: if ((nFaces=segP->sides [nSide].nFaces)==0) nFaces=1;
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
-			if (endMask & bit) {            //on the back of this iFace
-				int nFaceHitType;      //in what way did we hit the iFace?
-				if (segP->children [nSide] == nEntrySeg)
-					continue;		//don't go back through entry nSide
-				//did we go through this tWall/door?
-				nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
-					SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
-					CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1);
-				if (nFaceHitType) { //through this tWall/door
-					int widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject);
-					//LogErr ("done\n");
-					//if what we have hit is a door, check the adjoining segP
-					if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
-						int childSide = segP->children [nSide];
-						if (childSide >= 0) {
-							int special = gameData.segs.segment2s [childSide].special;
-							if (((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
-								 (gameData.objs.speedBoost [nThisObject].bBoosted &&
-								  ((gameData.segs.segment2s [nStartSeg].special != SEGMENT_IS_SPEEDBOOST) ||
-								   (special == SEGMENT_IS_SPEEDBOOST))))
- 								widResult |= WID_FLY_FLAG;
-							}
-						}
-
-					if ((widResult & WID_FLY_FLAG) ||
-						 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
-						  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, iFace))))) {
-
-						int			i, nNewSeg, subHitType;
-						short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
-						vmsVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
-
-						//do the check recursively on the next tSegment.p.
-						nNewSeg = segP->children [nSide];
-						//LogErr ("   check next seg (%d)\n", nNewSeg);
-						for (i = 0; i < gameData.collisions.nSegsVisited && (nNewSeg != gameData.collisions.segsVisited [i]); i++)
-							;
-						if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
-							short tempSegList [MAX_FVI_SEGS], nTempSegs;
-							if (gameData.collisions.nSegsVisited >= MAX_SEGS_VISITED)
-								goto quit_looking;		//we've looked a long time, so give up
-							gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
-							subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg, 
-															 p1, radP0, radP1, nThisObject, ignoreObjList, flags, 
-															 tempSegList, &nTempSegs, nStartSeg);
-							if (subHitType != HIT_NONE) {
-								d = VmVecDist (&subHitPoint, p0);
-								if (d < dMin) {
-									dMin = d;
-									vClosestHitPoint = subHitPoint;
-									nHitType = subHitType;
-									if (subHitSeg != -1) 
-										nHitSegment = subHitSeg;
-									//copy segList
-									if (flags & FQ_GET_SEGLIST) {
-#if FVI_NEWCODE != 2
-										int i;
-										for (i = 0; (i < nTempSegs) && (*nSegments < MAX_FVI_SEGS - 1); i++)
-											segList [(*nSegments)++] = tempSegList [i];
-#else
-										int i = MAX_FVI_SEGS - 1 - *nSegments;
-										if (i > nTempSegs)
-											i = nTempSegs;
-										//LogErr ("   segList <- tempSegList ...");
-										memcpy (segList + *nSegments, tempSegList, i * sizeof (*segList));
-										//LogErr ("done\n");
-										*nSegments += i;
+			if (segP->children [nSide] == nEntrySeg)	//must be executed here to have bit shifted
+				continue;		//don't go back through entry nSide
+			if (!(endMask & bit))	//on the back of this face?
+				continue;
+			//did we go through this tWall/door?
+#if 0
+			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
+				SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
+				CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1);
+			if (!nFaceHitType) 
+				continue;
 #endif
-										}
-									Assert (*nSegments < MAX_FVI_SEGS);
-									}
-								else {
-									gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
-									gameData.collisions.hitData.nObject = nSaveHitObj;
- 									}
-								}
-							else {
-								gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
-								if (subHitSeg != -1) 
-									nHitNoneSegment = subHitSeg;
-								//copy segList
-								if (flags & FQ_GET_SEGLIST) {
-#if FVI_NEWCODE != 2
-									int i;
-									for (i = 0; (i < nTempSegs) && (i < MAX_FVI_SEGS - 1); i++)
-										hitNoneSegList [i] = tempSegList [i];
-#else
-									int i = MAX_FVI_SEGS - 1;
-									if (i > nTempSegs)
-										i = nTempSegs;
-									//LogErr ("   hitNoneSegList <- tempSegList ...");
-									memcpy (hitNoneSegList, tempSegList, i * sizeof (*hitNoneSegList));
-									//LogErr ("done\n");
-#endif
-									}
-								nHitNoneSegs = nTempSegs;
-								}
-							}
-						}
-					else {          //a tWall
-						//is this the closest hit?
-						d = VmVecDist (&vHitPoint, p0);
+			widResult = WALL_IS_DOORWAY (segP, nSide, (nThisObject < 0) ? NULL : gameData.objs.objects + nThisObject);
+			//LogErr ("done\n");
+			//if what we have hit is a door, check the adjoining segP
+			if ((nThisObject == LOCALPLAYER.nObject) && (gameStates.app.cheats.bPhysics == 0xBADA55)) {
+				int childSide = segP->children [nSide];
+				if (childSide >= 0) {
+					int special = gameData.segs.segment2s [childSide].special;
+					if (((special != SEGMENT_IS_BLOCKED) && (special != SEGMENT_IS_SKYBOX)) ||
+							(gameData.objs.speedBoost [nThisObject].bBoosted &&
+							((gameData.segs.segment2s [nStartSeg].special != SEGMENT_IS_SPEEDBOOST) ||
+							(special == SEGMENT_IS_SPEEDBOOST))))
+ 						widResult |= WID_FLY_FLAG;
+					}
+				}
+			if ((widResult & WID_FLY_FLAG) ||
+				 (((widResult & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) == (WID_RENDER_FLAG | WID_RENDPAST_FLAG)) &&
+				  ((flags & FQ_TRANSWALL) || ((flags & FQ_TRANSPOINT) && CheckTransWall (&vHitPoint, segP, nSide, iFace))))) {
+
+				int			i, nNewSeg, subHitType;
+				short			subHitSeg, nSaveHitObj = gameData.collisions.hitData.nObject;
+				vmsVector	subHitPoint, vSaveWallNorm = gameData.collisions.hitData.vNormal;
+
+				//do the check recursively on the next tSegment.p.
+				nNewSeg = segP->children [nSide];
+				//LogErr ("   check next seg (%d)\n", nNewSeg);
+				for (i = 0; i < gameData.collisions.nSegsVisited && (nNewSeg != gameData.collisions.segsVisited [i]); i++)
+					;
+				if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
+					short tempSegList [MAX_FVI_SEGS], nTempSegs;
+					if (gameData.collisions.nSegsVisited >= MAX_SEGS_VISITED)
+						goto fviSegsDone;		//we've looked a long time, so give up
+					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
+					subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg, 
+														p1, radP0, radP1, nThisObject, ignoreObjList, flags, 
+														tempSegList, &nTempSegs, nStartSeg);
+					if (subHitType != HIT_NONE) {
+						d = VmVecDist (&subHitPoint, p0);
 						if (d < dMin) {
 							dMin = d;
-							vClosestHitPoint = vHitPoint;
-							nHitType = HIT_WALL;
-							gameData.collisions.hitData.vNormal = segP->sides [nSide].normals [iFace];
-							if (!GetSegMasks (&vHitPoint, nStartSeg, radP1).centerMask)
-								nHitSegment = nStartSeg;             //hit in this tSegment
-							else
-								gameData.collisions.hitData.nSegment2 = nStartSeg;
-							gameData.collisions.hitData.nSegment = nHitSegment;
-							gameData.collisions.hitData.nSide = nSide;
-							gameData.collisions.hitData.nFace = iFace;
-							gameData.collisions.hitData.nSideSegment = nStartSeg;
+							vClosestHitPoint = subHitPoint;
+							nHitType = subHitType;
+							if (subHitSeg != -1) 
+								nHitSegment = subHitSeg;
+							//copy segList
+							if (flags & FQ_GET_SEGLIST) {
+#if FVI_NEWCODE != 2
+								int i;
+								for (i = 0; (i < nTempSegs) && (*nSegments < MAX_FVI_SEGS - 1); i++)
+									segList [(*nSegments)++] = tempSegList [i];
+#else
+								int i = MAX_FVI_SEGS - 1 - *nSegments;
+								if (i > nTempSegs)
+									i = nTempSegs;
+								//LogErr ("   segList <- tempSegList ...");
+								memcpy (segList + *nSegments, tempSegList, i * sizeof (*segList));
+								//LogErr ("done\n");
+								*nSegments += i;
+#endif
+								}
+							Assert (*nSegments < MAX_FVI_SEGS);
 							}
+						else {
+							gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
+							gameData.collisions.hitData.nObject = nSaveHitObj;
+ 							}
+						}
+					else {
+						gameData.collisions.hitData.vNormal = vSaveWallNorm;     //global could be trashed
+						if (subHitSeg != -1) 
+							nHitNoneSegment = subHitSeg;
+						//copy segList
+						if (flags & FQ_GET_SEGLIST) {
+#if FVI_NEWCODE != 2
+							int i;
+							for (i = 0; (i < nTempSegs) && (i < MAX_FVI_SEGS - 1); i++)
+								hitNoneSegList [i] = tempSegList [i];
+#else
+							int i = MAX_FVI_SEGS - 1;
+							if (i > nTempSegs)
+								i = nTempSegs;
+							//LogErr ("   hitNoneSegList <- tempSegList ...");
+							memcpy (hitNoneSegList, tempSegList, i * sizeof (*hitNoneSegList));
+							//LogErr ("done\n");
+#endif
+							}
+						nHitNoneSegs = nTempSegs;
+						}
+					}
+				}
+			else {//a wall
+#if 1
+				if ((startMask & bit)	?	//start was also though.  Do extra check
+					 SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
+					 CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1)) 
+#endif
+					{
+					//is this the closest hit?
+					d = VmVecDist (&vHitPoint, p0);
+					if (d < dMin) {
+						dMin = d;
+						vClosestHitPoint = vHitPoint;
+						nHitType = HIT_WALL;
+						VmVecInc (&gameData.collisions.hitData.vNormal, segP->sides [nSide].normals + iFace);
+						gameData.collisions.hitData.nNormals++;
+						if (!GetSegMasks (&vHitPoint, nStartSeg, radP1).centerMask)
+							nHitSegment = nStartSeg;             //hit in this tSegment
+						else
+							gameData.collisions.hitData.nSegment2 = nStartSeg;
+						gameData.collisions.hitData.nSegment = nHitSegment;
+						gameData.collisions.hitData.nSide = nSide;
+						gameData.collisions.hitData.nFace = iFace;
+						gameData.collisions.hitData.nSideSegment = nStartSeg;
 						}
 					}
 				}
 			}
 		}
 	}
-quit_looking:
+fviSegsDone:
 	;
 
 if (nHitType == HIT_NONE) {     //didn't hit anything, return end point

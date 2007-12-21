@@ -37,6 +37,7 @@ typedef struct tFVIHitInfo {
 	short 		nObject;						//if tObject hit, which tObject
 	vmsVector	vPoint;						//where we hit
 	vmsVector 	vNormal;						//if hit tWall, ptr to its surface normal
+	int			nNormals;
 	int			nNestCount;
 } tFVIHitInfo;
 

@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 //#define _DEBUG
 #define FLUID_PHYSICS	0
-#define UNSTICK_OBJS		1
+#define UNSTICK_OBJS		0
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -298,6 +298,27 @@ CheckAndFixMatrix (&objP->position.mOrient);
 
 //	-----------------------------------------------------------------------------------------------------------
 
+void DoBumpHack (tObject *objP)
+{
+	vmsVector vCenter, vBump;
+#ifdef _DEBUG
+HUDMessage (0, "BUMP HACK");
+#endif
+//bump tPlayer a little towards vCenter of tSegment to unstick
+COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
+//HUDMessage (0, "BUMP! %d %d", d1, d2);
+//don't bump tPlayer towards center of reactor tSegment
+VmVecNormalizedDirQuick (&vBump, &vCenter, &objP->position.vPos);
+if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
+	VmVecNegate (&vBump);
+VmVecScaleInc (&objP->position.vPos, &vBump, objP->size / 5);
+//if moving away from seg, might move out of seg, so update
+if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
+	UpdateObjectSeg (objP);
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 #if UNSTICK_OBJS
 
 int BounceObject (tObject *objP, tFVIData	hi, float fOffs, fix *pxSideDists)
@@ -339,27 +360,6 @@ if (/*(0 <= xSideDist) && */
 	return 1;
 	}
 return 0;
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-void DoBumpHack (tObject *objP)
-{
-	vmsVector vCenter, vBump;
-#ifdef _DEBUG
-HUDMessage (0, "BUMP HACK");
-#endif
-//bump tPlayer a little towards vCenter of tSegment to unstick
-COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
-//HUDMessage (0, "BUMP! %d %d", d1, d2);
-//don't bump tPlayer towards center of reactor tSegment
-VmVecNormalizedDirQuick (&vBump, &vCenter, &objP->position.vPos);
-if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-	VmVecNegate (&vBump);
-VmVecScaleInc (&objP->position.vPos, &vBump, objP->size / 5);
-//if moving away from seg, might move out of seg, so update
-if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
-	UpdateObjectSeg (objP);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -576,6 +576,7 @@ if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	}
 else
 	xTimeScale = 100;
+nTries = 0;
 do {
 	bRetry = 0;
 	//Move the tObject
@@ -593,10 +594,9 @@ do {
 		break;
 
 retryMove:
-
-	nTries++;
+#if 1//ndef _DEBUG
 	//	If retry count is getting large, then we are trying to do something stupid.
-	if (nTries > 3) {
+	if (++nTries > 3) {
 		if (objP->nType != OBJ_PLAYER)
 			break;
 		if (nTries > 8) {
@@ -605,6 +605,7 @@ retryMove:
 			break;
 			}
 		}
+#endif
 	VmVecAdd (&vNewPos, &objP->position.vPos, &vFrame);
 #if 0
 	iSeg = FindSegByPoint (&vNewPos, objP->nSegment, 1, 0);
@@ -669,6 +670,9 @@ retryMove:
 	else if (fviResult == HIT_WALL) {
 #ifdef _DEBUG
 		fviResult = FindVectorIntersection (&fq, &hi);
+#	if 0
+		HUDMessage (0, "hit wall %d:%d (%d)", hi.hit.nSideSegment, hi.hit.nSide, gameData.objs.objects->nSegment);
+#	endif
 #endif
 #if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->nType == OBJ_WEAPON)) {
@@ -959,11 +963,10 @@ if (objP->controlType == CT_AI) {
 #endif
 		}
 	}
-
 	// If the ship has thrust, but the velocity is zero or the current position equals the start position
 	// stored when entering this function, it has been stopped forcefully by something, so bounce it back to 
 	// avoid that the ship gets driven into the obstacle (most likely a wall, as that doesn't give in ;)
-	if (((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&
+	if (/*((fviResult == HIT_WALL) || (fviResult == HIT_BAD_P0)) &&*/
 		 !(sbd.bBoosted || bObjStopped || bBounced))	{	//Set velocity from actual movement
 		vmsVector vMoved;
 		fix s = FixMulDiv (FixDiv (F1_0, gameData.physics.xTime), xTimeScale, 100);

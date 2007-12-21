@@ -567,7 +567,6 @@ int UpdateParticle (tParticle *pParticle, int nCurTime)
 	vmsVector	pos, drift;
 	fix			drag = fl2f ((float) pParticle->nLife / (float) pParticle->nTTL);
 
-
 if ((pParticle->nLife <= 0) /*|| (pParticle->color.alpha < 0.0f1)*/)
 	return 0;
 t = nCurTime - pParticle->nMoved;
