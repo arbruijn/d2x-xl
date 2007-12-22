@@ -2601,63 +2601,52 @@ int MarkPlayerPathToSegment (int nSegment)
 	short		player_path_length=0;
 	int		player_hide_index=-1;
 
-	if (nLastLevelPathCreated == gameData.missions.nCurrentLevel) {
-		return 0;
-	}
-
-	nLastLevelPathCreated = gameData.missions.nCurrentLevel;
-
-	if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
+if (nLastLevelPathCreated == gameData.missions.nCurrentLevel)
+	return 0;
+nLastLevelPathCreated = gameData.missions.nCurrentLevel;
+if (CreatePathPoints (objP, objP->nSegment, nSegment, gameData.ai.freePointSegs, &player_path_length, 100, 0, 0, -1) == -1) {
 #if TRACE
-		//con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
+	//con_printf (CONDBG, "Unable to form path of length %i for myself\n", 100);
 #endif
-		return 0;
+	return 0;
 	}
-
-	player_hide_index = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
-	gameData.ai.freePointSegs += player_path_length;
-
-	if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
+player_hide_index = (int) (gameData.ai.freePointSegs - gameData.ai.pointSegs);
+gameData.ai.freePointSegs += player_path_length;
+if ((int) (gameData.ai.freePointSegs - gameData.ai.pointSegs) + MAX_PATH_LENGTH*2 > MAX_POINT_SEGS) {
 #if TRACE
-		//con_printf (1, "Can't create path.  Not enough tPointSegs.\n");
+	//con_printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
-		AIResetAllPaths ();
-		return 0;
+	AIResetAllPaths ();
+	return 0;
 	}
+for (i = 1; i < player_path_length; i++) {
+	short			nSegment, nObject;
+	vmsVector	seg_center;
+	tObject		*objP;
 
-	for (i=1; i<player_path_length; i++) {
-		short			nSegment, nObject;
-		vmsVector	seg_center;
-		tObject		*obj;
-
-		nSegment = gameData.ai.pointSegs[player_hide_index+i].nSegment;
+	nSegment = gameData.ai.pointSegs [player_hide_index + i].nSegment;
 #if TRACE
-		//con_printf (CONDBG, "%3i ", nSegment);
+	//con_printf (CONDBG, "%3i ", nSegment);
 #endif
-		seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
-
-		nObject = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, nSegment, &seg_center, &vmdIdentityMatrix,
-									  gameData.objs.pwrUp.info[POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP, 1);
-		if (nObject == -1) {
-			Int3 ();		//	Unable to drop energy powerup for path
-			return 1;
+	seg_center = gameData.ai.pointSegs[player_hide_index+i].point;
+	nObject = CreateObject (OBJ_POWERUP, POW_ENERGY, -1, nSegment, &seg_center, &vmdIdentityMatrix,
+								   gameData.objs.pwrUp.info [POW_ENERGY].size, CT_POWERUP, MT_NONE, RT_POWERUP, 1);
+	if (nObject == -1) {
+		Int3 ();		//	Unable to drop energy powerup for path
+		return 1;
 		}
-
-		obj = &gameData.objs.objects[nObject];
-		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info[objP->id].nClipIndex;
-		objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-		objP->rType.vClipInfo.nCurFrame = 0;
-		objP->lifeleft = F1_0*100 + d_rand () * 4;
+	objP = gameData.objs.objects + nObject;
+	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+	objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->lifeleft = F1_0*100 + d_rand () * 4;
 	}
-#if TRACE
-	//con_printf (CONDBG, "\n");
-#endif
-	return 1;
+return 1;
 }
 
 //-----------------------------------------------------------------------------
 //	Return true if it happened, else return false.
-int CreateSpecialPath (void)
+int MarkPathToExit (void)
 {
 	int	i,j;
 

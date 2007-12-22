@@ -151,25 +151,24 @@ extern fix	ShowView_textTimer;
 //	Function prototypes --------------------------------------------------------
 
 
-extern void CyclePrimary();
-extern void CycleSecondary();
-extern void InitMarkerInput();
-extern void MarkerInputMessage (int);
-extern void grow_window(void);
-extern void shrink_window(void);
-extern int	AllowedToFireMissile(void);
-extern int	AllowedToFireFlare(void);
-extern void	CheckRearView(void);
-extern int	CreateSpecialPath(void);
-extern void MovePlayerToSegment(tSegment *seg, int tSide);
-extern void	kconfig_center_headset(void);
-extern void GameRenderFrameMono(void);
-extern void NewDemoStripFrames(char *, int);
-extern void ToggleCockpit(void);
-extern int  dump_used_textures_all(void);
-extern void DropMarker();
-extern void DropSecondaryWeapon(int nWeapon);
-extern void DropCurrentWeapon();
+void CyclePrimary();
+void CycleSecondary();
+void InitMarkerInput();
+void MarkerInputMessage (int);
+void grow_window(void);
+void shrink_window(void);
+int AllowedToFireMissile(void);
+int AllowedToFireFlare(void);
+void CheckRearView(void);
+void MovePlayerToSegment(tSegment *seg, int tSide);
+void kconfig_center_headset(void);
+void GameRenderFrameMono(void);
+void NewDemoStripFrames(char *, int);
+void ToggleCockpit(void);
+int  dump_used_textures_all(void);
+void DropMarker();
+void DropSecondaryWeapon(int nWeapon);
+void DropCurrentWeapon();
 
 void FinalCheats(int key);
 
@@ -1554,7 +1553,7 @@ void HandleTestKey(int key)
 
 #ifdef SHOW_EXIT_PATH
 		case KEYDBGGED+KEY_1:
-			CreateSpecialPath();  
+			MarkPathToExit();  
 			break;
 #endif
 

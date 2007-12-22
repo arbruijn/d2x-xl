@@ -453,6 +453,13 @@ else if (bVerbose)
 
 //------------------------------------------------------------------------------
 
+void ExitPathCheat (int bVerbose)
+{
+MarkPathToExit ();
+}
+
+//------------------------------------------------------------------------------
+
 void ExtraLifeCheat (int bVerbose)
 {
 LOCALPLAYER.lives++;
@@ -863,6 +870,7 @@ char szBuddyLifeCheat [9]			= "%A-BECuY";		//only Matt knows / he-lpvishnu
 char szCloakCheat [9]				= "itsarock";
 char szCubeWarpCheat [9]			= "subspace";		// subspace
 char szElectroCheat [8]				= "electro";
+char szExitPathCheat [8]			= "glebells";		//jin-glebless
 char szFinishLevelCheat [9]		= "%bG_bZ<D";		//only Matt knows / d-elshiftb
 char szFramerateCheat [9]			= "rQ60#ZBN";		// f-rametime
 char szFullMapCheat [9]				= "PI<XQHRI";		//only Matt knows / rockrgrl
@@ -898,6 +906,7 @@ tCheat cheats [] = {
 	{szCloakCheat, CloakCheat, 1, 0, 0}, 
 	{szCubeWarpCheat, CubeWarpCheat, -1, 0, 0}, 
 	{szElectroCheat, ElectroCheat, 1, 0, 0}, 
+	{szExitPathCheat, ExitPathCheat, 1, 0, 0}, 
 	{szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
 	{szFramerateCheat, FramerateCheat, 0, 1, -1}, 
 	{szGasolineCheat, GasolineCheat, 1, 1, 0}, 
@@ -925,7 +934,7 @@ tCheat cheats [] = {
 	{"bigred", WowieCheat, 1, 0, 1}, 
 	{"bruin", ExtraLifeCheat, 1, 0, 1}, 
 	{"buggin", TurboCheat, -1, 0, 1}, 
-	{"flash", NULL, 1, 0, 1}, 
+	{"flash", ExitPathCheat, 1, 0, 1}, 
 	{"gabbahey", EnableD1Cheats, 0, 0, -1}, 
 	{"guile", CloakCheat, 0, 0, -1}, 
 	{"lunacy", AhimsaCheat, 1, 0, 1}, 
