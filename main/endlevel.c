@@ -1181,7 +1181,7 @@ void LoadEndLevelData (int level_num)
 {
 	char filename [13];
 	char line [LINE_LEN], *p;
-	CFILE *ifile;
+	CFILE cf;
 	int var, nSegment, nSide;
 	int nExitSide=0, i;
 	int bHaveBinary = 0;
@@ -1200,12 +1200,10 @@ else					//normal level
 	strcpy (filename, gameData.missions.szLevelNames [level_num-1]);
 if (!ConvertExt (filename, "end"))
 	Error ("Error converting filename\n'<%s>'\nfor endlevel data\n", filename);
-ifile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission);
-if (!ifile) {
+if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
 	ConvertExt (filename, "txb");
-	ifile = CFOpen (filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission);
-	if (!ifile) {
-		if (level_num==1) {
+	if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
+		if (level_num == 1) {
 #if TRACE
 			con_printf (CONDBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
 #endif
@@ -1224,7 +1222,7 @@ if (!ifile) {
 //everything else must be in the right place
 var = 0;
 LogErr ("      parsing endlevel description\n");
-while (CFGetS (line, LINE_LEN, ifile)) {
+while (CFGetS (line, LINE_LEN, &cf)) {
 	if (bHaveBinary) {
 		int l = (int) strlen (line) - 1;
 		for (i = 0; i < l; i++)
@@ -1360,7 +1358,7 @@ VmVecScaleAdd (&gameData.endLevel.exit.vGroundExit, &gameData.endLevel.exit.vMin
 	VmVector2Matrix (&tm, &tv, &mSurfaceOrient.uVec, NULL);
 	VmVecCopyScale (&gameData.endLevel.satellite.vUp, &tm.uVec, SATELLITE_HEIGHT);
 	}
-CFClose (ifile);
+CFClose (&cf);
 gameStates.app.bEndLevelDataLoaded = 1;
 }
 

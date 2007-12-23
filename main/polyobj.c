@@ -288,7 +288,7 @@ void AlignPolyModelData (tPolyModel *pm)
 //reads a binary file containing a 3d model
 tPolyModel *ReadModelFile (tPolyModel *pm, char *filename, tRobotInfo *r)
 {
-	CFILE *ifile;
+	CFILE cf;
 	short version;
 	int id, len, next_chunk;
 	int animFlag = 0;
@@ -296,12 +296,12 @@ tPolyModel *ReadModelFile (tPolyModel *pm, char *filename, tRobotInfo *r)
 
 if (!(model_buf = (ubyte *)D2_ALLOC (MODEL_BUF_SIZE * sizeof (ubyte))))
 	Error ("Can't allocate space to read model %s\n", filename);
-if (!(ifile=CFOpen (filename, gameFolders.szDataDir, "rb", 0)))
+if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0))
 	Error ("Can't open file <%s>", filename);
-Assert (CFLength (ifile, 0) <= MODEL_BUF_SIZE);
+Assert (CFLength (&cf, 0) <= MODEL_BUF_SIZE);
 Pof_addr = 0;
-Pof_file_end = (int) CFRead (model_buf, 1, CFLength (ifile, 0), ifile);
-CFClose (ifile);
+Pof_file_end = (int) CFRead (model_buf, 1, CFLength (&cf, 0), &cf);
+CFClose (&cf);
 id = pof_read_int (model_buf);
 if (id!=0x4f505350) /* 'OPSP' */
 	Error ("Bad ID in model file <%s>", filename);
@@ -441,7 +441,7 @@ return pm;
 //fills in arrays gunPoints & gun_dirs, returns the number of guns read
 int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, int *gunSubModels)
 {
-	CFILE *ifile;
+	CFILE cf;
 	short version;
 	int id, len;
 	int nGuns=0;
@@ -451,14 +451,14 @@ int read_model_guns (char *filename, vmsVector *gunPoints, vmsVector *gun_dirs, 
 	if (!model_buf)
 		Error ("Can't allocate space to read model %s\n", filename);
 
-	if ((ifile=CFOpen (filename, gameFolders.szDataDir, "rb", 0))==NULL)
+	if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0))
 		Error ("Can't open file <%s>", filename);
 
-	Assert (CFLength (ifile, 0) <= MODEL_BUF_SIZE);
+	Assert (CFLength (&cf, 0) <= MODEL_BUF_SIZE);
 
 	Pof_addr = 0;
-	Pof_file_end = (int) CFRead (model_buf, 1, CFLength (ifile, 0), ifile);
-	CFClose (ifile);
+	Pof_file_end = (int) CFRead (model_buf, 1, CFLength (&cf, 0), &cf);
+	CFClose (&cf);
 
 	id = pof_read_int (model_buf);
 

@@ -106,16 +106,14 @@ char *get_scores_filename ()
 
 void scores_read ()
 {
-	CFILE *fp;
+	CFILE cf;
 	int fsize;
 
 	// clear score array...
 	memset (&Scores, 0, sizeof (all_scores));
 
-	fp = CFOpen (get_scores_filename (), gameFolders.szDataDir, "rb", 0);
-	if (fp==NULL) {
+	if (!CFOpen (&cf, get_scores_filename (), gameFolders.szDataDir, "rb", 0)) {
 		int i;
-
 	 	// No error message needed, code will work without a scores file
 		sprintf (Scores.cool_saying, COOL_SAYING);
 		sprintf (Scores.stats[0].name, "Parallax");
@@ -134,15 +132,15 @@ void scores_read ()
 		return;
 	}
 	
-	fsize = CFLength (fp,0);
+	fsize = CFLength (&cf,0);
 
 	if (fsize != sizeof (all_scores))	{
-		CFClose (fp);
+		CFClose (&cf);
 		return;
 	}
 	// Read 'em in...
-	CFRead (&Scores, sizeof (all_scores), 1, fp);
-	CFClose (fp);
+	CFRead (&Scores, sizeof (all_scores), 1, &cf);
+	CFClose (&cf);
 
 	if ((Scores.version!=VERSION_NUMBER)|| (Scores.nSignature[0]!='D')|| (Scores.nSignature[1]!='H')|| (Scores.nSignature[2]!='S'))	{
 		memset (&Scores, 0, sizeof (all_scores));
@@ -154,20 +152,19 @@ void scores_read ()
 
 void scores_write ()
 {
-	CFILE *fp;
+	CFILE cf;
 
-	fp = CFOpen (get_scores_filename (), gameFolders.szDataDir, "wb", 0);
-	if (fp==NULL) {
-		ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, get_scores_filename () );
-		return;
+if (!CFOpen (&cf, get_scores_filename (), gameFolders.szDataDir, "wb", 0)) {
+	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, get_scores_filename () );
+	return;
 	}
 
-	Scores.nSignature[0]='D';
-	Scores.nSignature[1]='H';
-	Scores.nSignature[2]='S';
-	Scores.version = VERSION_NUMBER;
-	CFWrite (&Scores,sizeof (all_scores),1, fp);
-	CFClose (fp);
+Scores.nSignature[0]='D';
+Scores.nSignature[1]='H';
+Scores.nSignature[2]='S';
+Scores.version = VERSION_NUMBER;
+CFWrite (&Scores,sizeof (all_scores),1, &cf);
+CFClose (&cf);
 }
 
 //------------------------------------------------------------------------------

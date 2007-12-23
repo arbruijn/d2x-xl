@@ -115,12 +115,12 @@ void LoadD1BitmapReplacements();
 /*
  * reads a tBitmapIndex structure from a CFILE
  */
-void BitmapIndexRead(tBitmapIndex *bi, CFILE *fp);
+void BitmapIndexRead (tBitmapIndex *bi, CFILE *fp);
 
 /*
  * reads n tBitmapIndex structs from a CFILE
  */
-int BitmapIndexReadN(tBitmapIndex *bi, int n, CFILE *fp);
+int BitmapIndexReadN (tBitmapIndex *bi, int n, CFILE *fp);
 #endif // FAST_FILE_IO
 
 /*

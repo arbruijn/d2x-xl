@@ -367,6 +367,7 @@ if (rle_cache_initialized)	{
 	for (i=0; i<MAX_CACHE_BITMAPS; i++)
 		GrFreeBitmap (rle_cache[i].expanded_bitmap);
 	}
+D2_FREE (gameData.pig.tex.rleBuffer);
 }
 
 //------------------------------------------------------------------------------
@@ -715,10 +716,12 @@ return len;
 
 int rle_expand (grsBitmap *bmP, ubyte *colorMap, int bSwap0255)
 {
-	ubyte				*expandBuf, *pSrc, *pDest;
+	ubyte				*pSrc, *pDest;
 	ubyte				c, h;
 	int				i, j, l, bBigRLE;
 	unsigned short nLineSize;
+
+	static int		rleBufSize = 0;
 
 if (!(bmP->bmProps.flags & BM_FLAG_RLE))
 	return bmP->bmProps.h * bmP->bmProps.rowSize;
@@ -727,9 +730,16 @@ if (bBigRLE)
 	pSrc = bmP->bmTexBuf + 4 + 2 * bmP->bmProps.h;
 else
 	pSrc = bmP->bmTexBuf + 4 + bmP->bmProps.h;
-if (!(expandBuf = D2_ALLOC (2 * (bBigRLE + 1) * bmP->bmProps.h * bmP->bmProps.rowSize)))
+i = 2 * (bBigRLE + 1) * bmP->bmProps.h * bmP->bmProps.rowSize;
+if (rleBufSize < i) {
+	rleBufSize = i;
+	if (gameData.pig.tex.rleBuffer)
+		D2_FREE (gameData.pig.tex.rleBuffer);
+	gameData.pig.tex.rleBuffer = D2_ALLOC (i);
+	}
+if (!gameData.pig.tex.rleBuffer)
 	return -1;
-pDest = expandBuf;
+pDest = gameData.pig.tex.rleBuffer;
 for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 	if (bBigRLE)
 		nLineSize = INTEL_SHORT (*((unsigned short *) (bmP->bmTexBuf + 4 + 2 * i)));
@@ -745,8 +755,8 @@ for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 				else if (c == 255)
 					c = 0;
 				}
-			if (pDest - expandBuf > bmP->bmProps.h * bmP->bmProps.rowSize) {
-				D2_FREE (expandBuf);
+			if (pDest - gameData.pig.tex.rleBuffer > bmP->bmProps.h * bmP->bmProps.rowSize) {
+				D2_FREE (gameData.pig.tex.rleBuffer);
 				return -1;
 				}
 			*pDest++ = c;
@@ -761,8 +771,8 @@ for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 				else if (c == 255)
 					c = 0;
 				}
-			if (pDest - expandBuf + l > bmP->bmProps.h * bmP->bmProps.rowSize) {
-				D2_FREE (expandBuf);
+			if (pDest - gameData.pig.tex.rleBuffer + l > bmP->bmProps.h * bmP->bmProps.rowSize) {
+				D2_FREE (gameData.pig.tex.rleBuffer);
 				return -1;
 				}
 			memset (pDest, c, l);
@@ -770,13 +780,12 @@ for (i = 0; i < bmP->bmProps.h; i++, pSrc += nLineSize) {
 			}
 		}
 	}
-l = (int) (pDest - expandBuf);
+l = (int) (pDest - gameData.pig.tex.rleBuffer);
 Assert (l <= bmP->bmProps.h * bmP->bmProps.rowSize);
 if (l > bmP->bmProps.h * bmP->bmProps.rowSize)
 	l = bmP->bmProps.h * bmP->bmProps.rowSize;
-memcpy (bmP->bmTexBuf, expandBuf, l);
+memcpy (bmP->bmTexBuf, gameData.pig.tex.rleBuffer, l);
 bmP->bmProps.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
-D2_FREE (expandBuf);
 return l;
 }
 

@@ -29,7 +29,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 
 int pcx_encode_byte(ubyte byt, ubyte cnt, CFILE *fid);
-int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *fp);
+int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *cfp);
 
 /* PCX Header data nType */
 typedef struct {
@@ -55,31 +55,31 @@ typedef struct {
 //------------------------------------------------------------------------------
 
 #if 0//def FAST_FILE_IO /*disabled for a reason!*/
-#define PCXHeader_read_n(ph, n, fp) CFRead(ph, sizeof(PCXHeader), n, fp)
+#define PCXHeader_read_n(ph, n, cfp) CFRead(ph, sizeof(PCXHeader), n, cfp)
 #else
 /*
  * reads n PCXHeader structs from a CFILE
  */
-int PCXHeader_read_n(PCXHeader *ph, int n, CFILE *fp)
+int PCXHeader_read_n(PCXHeader *ph, int n, CFILE *cfp)
 {
 	int i;
 
 	for (i = 0; i < n; i++) {
-		ph->Manufacturer = CFReadByte(fp);
-		ph->Version = CFReadByte(fp);
-		ph->Encoding = CFReadByte(fp);
-		ph->BitsPerPixel = CFReadByte(fp);
-		ph->Xmin = CFReadShort(fp);
-		ph->Ymin = CFReadShort(fp);
-		ph->Xmax = CFReadShort(fp);
-		ph->Ymax = CFReadShort(fp);
-		ph->Hdpi = CFReadShort(fp);
-		ph->Vdpi = CFReadShort(fp);
-		CFRead(&ph->ColorMap, 16*3, 1, fp);
-		ph->Reserved = CFReadByte(fp);
-		ph->Nplanes = CFReadByte(fp);
-		ph->BytesPerLine = CFReadShort(fp);
-		CFRead(&ph->filler, 60, 1, fp);
+		ph->Manufacturer = CFReadByte(cfp);
+		ph->Version = CFReadByte(cfp);
+		ph->Encoding = CFReadByte(cfp);
+		ph->BitsPerPixel = CFReadByte(cfp);
+		ph->Xmin = CFReadShort(cfp);
+		ph->Ymin = CFReadShort(cfp);
+		ph->Xmax = CFReadShort(cfp);
+		ph->Ymax = CFReadShort(cfp);
+		ph->Hdpi = CFReadShort(cfp);
+		ph->Vdpi = CFReadShort(cfp);
+		CFRead(&ph->ColorMap, 16*3, 1, cfp);
+		ph->Reserved = CFReadByte(cfp);
+		ph->Nplanes = CFReadByte(cfp);
+		ph->BytesPerLine = CFReadShort(cfp);
+		CFRead(&ph->filler, 60, 1, cfp);
 	}
 	return i;
 }
@@ -89,17 +89,17 @@ int PCXHeader_read_n(PCXHeader *ph, int n, CFILE *fp)
 
 int PCXGetDimensions( char *filename, int *width, int *height)
 {
-	CFILE *PCXfile;
+	CFILE cfPCX;
 	PCXHeader header;
 
-	PCXfile = CFOpen(filename, gameFolders.szDataDir, "rb", 0);
-	if (!PCXfile) return PCX_ERROR_OPENING;
+if (!CFOpen(&cfPCX, filename, gameFolders.szDataDir, "rb", 0))
+	return PCX_ERROR_OPENING;
 
-	if (PCXHeader_read_n(&header, 1, PCXfile) != 1) {
-		CFClose(PCXfile);
+	if (PCXHeader_read_n(&header, 1, &cfPCX) != 1) {
+		CFClose(&cfPCX);
 		return PCX_ERROR_NO_HEADER;
 	}
-	CFClose(PCXfile);
+	CFClose(&cfPCX);
 
 	*width = header.Xmax - header.Xmin+1;
 	*height = header.Ymax - header.Ymin+1;
@@ -112,24 +112,23 @@ int PCXGetDimensions( char *filename, int *width, int *height)
 int PCXReadBitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Mission)
 {
 	PCXHeader header;
-	CFILE * PCXfile;
+	CFILE cfPCX;
 	int i, row, col, count, xsize, ysize;
 	ubyte data, *pixdata;
     ubyte palette [768];
 
-PCXfile = CFOpen( filename, gameFolders.szDataDir, "rb", bD1Mission );
-if ( !PCXfile )
+if (!CFOpen(&cfPCX, filename, gameFolders.szDataDir, "rb", bD1Mission))
 	return PCX_ERROR_OPENING;
 
 // read 128 char PCX header
-if (PCXHeader_read_n( &header, 1, PCXfile )!=1) {
-	CFClose( PCXfile );
+if (PCXHeader_read_n( &header, 1, &cfPCX )!=1) {
+	CFClose( &cfPCX );
 	return PCX_ERROR_NO_HEADER;
 	}
 
 // Is it a 256 color PCX file?
 if ((header.Manufacturer != 10)||(header.Encoding != 1)||(header.Nplanes != 1)||(header.BitsPerPixel != 8)||(header.Version != 5))	{
-	CFClose( PCXfile );
+	CFClose( &cfPCX );
 	return PCX_ERROR_WRONG_VERSION;
 	}
 
@@ -139,12 +138,12 @@ ysize = header.Ymax - header.Ymin + 1;
 
 	if (palette && !bmP)
     {
-        CFSeek( PCXfile, -768, SEEK_END );
-        CFRead( palette, 3, 256, PCXfile );
-        CFSeek( PCXfile, PCXHEADER_SIZE, SEEK_SET );
+        CFSeek( &cfPCX, -768, SEEK_END );
+        CFRead( palette, 3, 256, &cfPCX );
+        CFSeek( &cfPCX, PCXHEADER_SIZE, SEEK_SET );
         for (i=0; i<768; i++ )
             palette [i] >>= 2;
-		CFClose(PCXfile);
+		CFClose(&cfPCX);
 		return PCX_ERROR_NONE;
     }
 
@@ -158,14 +157,14 @@ ysize = header.Ymax - header.Ymin + 1;
 		for (row=0; row< ysize ; row++)      {
 			pixdata = &bmP->bmTexBuf [bmP->bmProps.rowSize*row];
 			for (col=0; col< xsize ; )      {
-				if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
-					CFClose( PCXfile );
+				if (CFRead( &data, 1, 1, &cfPCX )!=1 )	{
+					CFClose( &cfPCX );
 					return PCX_ERROR_READING;
 				}
 				if ((data & 0xC0) == 0xC0)     {
 					count =  data & 0x3F;
-					if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
-						CFClose( PCXfile );
+					if (CFRead( &data, 1, 1, &cfPCX )!=1 )	{
+						CFClose( &cfPCX );
 						return PCX_ERROR_READING;
 					}
 					memset( pixdata, data, count );
@@ -180,14 +179,14 @@ ysize = header.Ymax - header.Ymin + 1;
 	} else {
 		for (row=0; row< ysize ; row++)      {
 			for (col=0; col< xsize ; )      {
-				if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
-					CFClose( PCXfile );
+				if (CFRead( &data, 1, 1, &cfPCX )!=1 )	{
+					CFClose( &cfPCX );
 					return PCX_ERROR_READING;
 				}
 				if ((data & 0xC0) == 0xC0)     {
 					count =  data & 0x3F;
-					if (CFRead( &data, 1, 1, PCXfile )!=1 )	{
-						CFClose( PCXfile );
+					if (CFRead( &data, 1, 1, &cfPCX )!=1 )	{
+						CFClose( &cfPCX );
 						return PCX_ERROR_READING;
 					}
 					for (i=0;i<count;i++)
@@ -203,10 +202,10 @@ ysize = header.Ymax - header.Ymin + 1;
 
 // Read the extended palette at the end of PCX file
 // Read in a character which should be 12 to be extended palette file
-if (CFRead( &data, 1, 1, PCXfile )==1)	{
+if (CFRead( &data, 1, 1, &cfPCX )==1)	{
 	if ( data == 12 )	{
-		if (CFRead(palette,768, 1, PCXfile)!=1)	{
-			CFClose( PCXfile );
+		if (CFRead(palette,768, 1, &cfPCX)!=1)	{
+			CFClose( &cfPCX );
 			return PCX_ERROR_READING;
 			}
 		for (i=0; i<768; i++ )
@@ -214,11 +213,11 @@ if (CFRead( &data, 1, 1, PCXfile )==1)	{
 		}
 	}
 else {
-	CFClose( PCXfile );
+	CFClose( &cfPCX );
 	return PCX_ERROR_NO_PALETTE;
 	}
 bmP->bmPalette = AddPalette (palette);
-CFClose(PCXfile);
+CFClose(&cfPCX);
 return PCX_ERROR_NONE;
 }
 
@@ -230,7 +229,7 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 	int i;
 	ubyte data;
 	PCXHeader header;
-	CFILE *PCXfile;
+	CFILE cfPCX;
 	tPalette	palette;
 
 	memset( &header, 0, PCXHEADER_SIZE );
@@ -244,28 +243,27 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 	header.Ymax = bmP->bmProps.h-1;
 	header.BytesPerLine = bmP->bmProps.w;
 
-	PCXfile = CFOpen(filename, gameFolders.szDataDir, "wb", 0);
-	if ( !PCXfile )
+	if (!CFOpen(&cfPCX, filename, gameFolders.szDataDir, "wb", 0))
 		return PCX_ERROR_OPENING;
 
-	if (CFWrite(&header, PCXHEADER_SIZE, 1, PCXfile) != 1)
+	if (CFWrite(&header, PCXHEADER_SIZE, 1, &cfPCX) != 1)
 	{
-		CFClose(PCXfile);
+		CFClose(&cfPCX);
 		return PCX_ERROR_WRITING;
 	}
 
 	for (i=0; i<bmP->bmProps.h; i++ )	{
-		if (!pcx_encode_line( &bmP->bmTexBuf[bmP->bmProps.rowSize*i], bmP->bmProps.w, PCXfile ))	{
-			CFClose(PCXfile);
+		if (!pcx_encode_line( &bmP->bmTexBuf[bmP->bmProps.rowSize*i], bmP->bmProps.w, &cfPCX ))	{
+			CFClose(&cfPCX);
 			return PCX_ERROR_WRITING;
 		}
 	}
 
 	// Mark an extended palette
 	data = 12;
-	if (CFWrite(&data, 1, 1, PCXfile) != 1)
+	if (CFWrite(&data, 1, 1, &cfPCX) != 1)
 	{
-		CFClose(PCXfile);
+		CFClose(&cfPCX);
 		return PCX_ERROR_WRITING;
 	}
 
@@ -273,24 +271,24 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 	for (i=0; i<768; i++ )
 		palette[i] = bmP->bmPalette [i] << 2;
 
-	retval = CFWrite(palette, 768, 1, PCXfile);
+	retval = CFWrite(palette, 768, 1, &cfPCX);
 
 	for (i=0; i<768; i++ )
 		palette[i] >>= 2;
 
 	if (retval !=1)	{
-		CFClose(PCXfile);
+		CFClose(&cfPCX);
 		return PCX_ERROR_WRITING;
 	}
 
-	CFClose(PCXfile);
+	CFClose(&cfPCX);
 	return PCX_ERROR_NONE;
 
 }
 
 //------------------------------------------------------------------------------
 // returns number of bytes written into outBuff, 0 if failed
-int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *fp)
+int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *cfp)
 {
 	ubyte this, last;
 	int srcIndex, i;
@@ -305,14 +303,14 @@ int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *fp)
 		if (this == last)	{
 			runCount++;			// it encodes
 			if (runCount == 63)	{
-				if (!(i=pcx_encode_byte(last, runCount, fp)))
+				if (!(i=pcx_encode_byte(last, runCount, cfp)))
 					return(0);
 				total += i;
 				runCount = 0;
 			}
 		} else {   	// this != last
 			if (runCount)	{
-				if (!(i=pcx_encode_byte(last, runCount, fp)))
+				if (!(i=pcx_encode_byte(last, runCount, cfp)))
 					return(0);
 				total += i;
 			}
@@ -322,7 +320,7 @@ int pcx_encode_line(ubyte *inBuff, int inLen, CFILE *fp)
 	}
 
 	if (runCount)	{		// finish up
-		if (!(i=pcx_encode_byte(last, runCount, fp)))
+		if (!(i=pcx_encode_byte(last, runCount, cfp)))
 			return 0;
 		return total + i;
 	}

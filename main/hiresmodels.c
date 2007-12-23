@@ -174,26 +174,26 @@ memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
 
 short LoadLoresModel (short i)
 {
-	CFILE			*fp;
+	CFILE			cf;
 	tPolyModel	*pm;
 	short			nModel, j = sizeofa (oofToModel);
 	char			szModel [FILENAME_LEN];
 
 sprintf (szModel, "model%d.pol", oofToModel [i].nModel);
 if (!(oofToModel [i].pszPOL && 
-	  ((fp = CFOpen (oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0)) ||
-	   (fp = CFOpen (szModel, gameFolders.szDataDir, "rb", 0)))))
+	  (CFOpen (&cf, oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0) ||
+	   CFOpen (&cf, szModel, gameFolders.szDataDir, "rb", 0))))
 	return ++i;
 nModel = oofToModel [i].nModel;
 pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
-if (!PolyModelRead (pm, fp, 1)) {
-	CFClose (fp);
+if (!PolyModelRead (pm, &cf, 1)) {
+	CFClose (&cf);
 	return ++i;
 	}
 pm->modelData = 
 pm->modelData = NULL;
-PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, fp);
-CFClose (fp);
+PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, &cf);
+CFClose (&cf);
 pm->rad = G3PolyModelSize (pm, nModel);
 do {
 	gameData.models.modelToPOL [oofToModel [i].nModel] = pm;

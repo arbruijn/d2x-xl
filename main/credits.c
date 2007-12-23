@@ -128,7 +128,7 @@ typedef struct box {
 void ShowCredits(char *credits_filename)
 {
 	int i, j, l, done;
-	CFILE * file;
+	CFILE cf;
 	char buffer[NUM_LINES_HIRES][80];
 	grsBitmap bmBackdrop;
 	int pcx_error;
@@ -169,8 +169,7 @@ WIN(int credinit = 0;)
 		strcpy(filename,credits_filename);
 		have_bin_file = 1;
 	}
-	file = CFOpen(filename, gameFolders.szDataDir, "rb", 0);
-	if (file == NULL) {
+	if (!CFOpen(&cf, filename, gameFolders.szDataDir, "rb", 0)) {
 		char nfile[32];
 	
 		if (credits_filename)
@@ -179,9 +178,8 @@ WIN(int credinit = 0;)
 		tempp = strchr(filename, '.');
 		*tempp = '\0';
 		sprintf(nfile, "%s.txb", filename);
-		file = CFOpen(nfile, gameFolders.szDataDir, "rb", 0);
-		if (file == NULL)
-			Error("Missing CREDITS.TEX and CREDITS.TXB file\n");
+		if (!CFOpen(&cf, nfile, gameFolders.szDataDir, "rb", 0))
+			Error("Missing CREDITS.TEX and CREDITS.TXB &cf\n");
 		have_bin_file = 1;
 	}
 
@@ -210,7 +208,7 @@ WIN(int credinit = 0;)
 
 	pcx_error = PCXReadBitmap (CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 	if (pcx_error != PCX_ERROR_NONE) {
-		CFClose(file);
+		CFClose(&cf);
 		return;
 	}
 	SongsPlaySong(SONG_CREDITS, 1);
@@ -269,9 +267,9 @@ KeyFlush();
 		do {
 			buffer_line = (buffer_line+1) % NUM_LINES;
 get_line:;
-			if (CFGetS(buffer[buffer_line], 80, file))	{
+			if (CFGetS(buffer[buffer_line], 80, &cf))	{
 				char *p = buffer [buffer_line];
-				if (have_bin_file) {				// is this a binary tbl file
+				if (have_bin_file) {				// is this a binary tbl &cf
 					for (i = (int) strlen(buffer[buffer_line]) - 1; i; i--, p++) {
 						*p = EncodeRotateLeft ((char) (EncodeRotateLeft (*p) ^ BITMAP_TBL_XOR));
 					}
@@ -289,7 +287,7 @@ get_line:;
 				if (p) *p = '\0';
 				} 
 			else{
-				//fseek(file, 0, SEEK_SET);
+				//fseek(&cf, 0, SEEK_SET);
 				buffer[buffer_line][0] = 0;
 				done++;
 			}
@@ -428,7 +426,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 					GrPaletteFadeOut(NULL, 32, 0);
 					GrUsePaletteTable(D2_DEFAULT_PALETTE, NULL);
 					D2_FREE(bmBackdrop.bmTexBuf);
-					CFClose(file);
+					CFClose(&cf);
 				WINDOS(
 					DDGrSetCurrentCanvas(save_canv),
 					GrSetCurrentCanvas(save_canv)

@@ -106,6 +106,7 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "banlist.h"
 #include "collide.h"
 #include "interp.h"
+#include "autodl.h"
 #include "hiresmodels.h"
 
 //#  include "3dfx_des.h"
@@ -303,21 +304,18 @@ void PrintVersionInfo (void)
 //read help from a file & print to screen
 void PrintCmdLineHelp ()
 {
-	CFILE *ifile;
-	int have_binary=0;
+	CFILE cf;
+	int bHaveBinary = 0;
 	char line[LINE_LEN];
 
-	ifile = CFOpen ("help.tex", gameFolders.szDataDir, "rb", 0);
-	if (!ifile) {
-		ifile = CFOpen ("help.txb", gameFolders.szDataDir, "rb", 0);
-		if (!ifile)
+	if (!(CFOpen (&cf, "help.tex", gameFolders.szDataDir, "rb", 0) || 
+			CFOpen (&cf, "help.txb", gameFolders.szDataDir, "rb", 0))) {
 			Warning (TXT_NO_HELP);
-		have_binary = 1;
+		bHaveBinary = 1;
 	}
-	if (ifile)
-	{
-		while (CFGetS (line, LINE_LEN, ifile)) {
-			if (have_binary) {
+	if (cf.file) {
+		while (CFGetS (line, LINE_LEN, &cf)) {
+			if (bHaveBinary) {
 				int i;
 				for (i = 0; i < (int) strlen (line) - 1; i++) {
 					line[i] = EncodeRotateLeft ((char) (EncodeRotateLeft (line [i]) ^ BITMAP_TBL_XOR));
@@ -326,7 +324,7 @@ void PrintCmdLineHelp ()
 			if (line[0] == ';')
 				continue;		//don't show comments
 		}
-		CFClose (ifile);
+		CFClose (&cf);
 	}
 
 	con_printf ((int) con_threshold.value, " D2X Options:\n\n");
@@ -2876,18 +2874,18 @@ if (FindArg ("-hoarddata")) {
 		}
 
 	for (i=0;i<sizeof (sounds)/sizeof (*sounds);i++) {
-		FILE *ifile;
+		FILE *cf;
 		int size;
 		ubyte *buf;
-		ifile = fopen (sounds[i], "rb");
-		Assert (ifile != NULL);
-		size = ffilelength (ifile);
+		cf = fopen (sounds[i], "rb");
+		Assert (cf != NULL);
+		size = ffilelength (cf);
 		buf = D2_ALLOC (size);
-		fread (buf, 1, size, ifile);
+		fread (buf, 1, size, cf);
 		fwrite (&size, sizeof (size), 1, ofile);
 		fwrite (buf, 1, size, ofile);
 		D2_FREE (buf);
-		fclose (ifile);
+		fclose (cf);
 		}
 	fclose (ofile);
 	exit (1);
@@ -3103,6 +3101,7 @@ InitGameData ();
 InitGameStates ();
 InitExtraGameInfo ();
 InitNetworkData ();
+InitAutoDL ();
 InitGameOptions (0);
 InitArgs (argc, argv);
 GetAppFolders ();

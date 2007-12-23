@@ -76,7 +76,7 @@ static char *szDlStates [] = {
 typedef struct tUploadDest {
 	ipx_addr	addr;
 	ubyte		dlState;
-	CFILE		*fp;
+	CFILE		cf;
 	int		fLen;
 	int		nPacketId;
 	int		nTimeout;
@@ -91,7 +91,7 @@ static ubyte dlState = PID_DL_OPEN;
 static int dlResult = 1;
 static int nSrcLen, nDestLen, nPercent;
 static int nTimeout;
-static CFILE *fp = NULL;
+static CFILE cf = {NULL, 0, 0, 0};
 
 // upload buffer
 // format:
@@ -105,6 +105,13 @@ static CFILE *fp = NULL;
 static ubyte uploadBuf [DL_BUFSIZE];
 
 int bDownloading [MAX_PLAYERS] = {0,0,0,0,0,0,0,0};
+
+//------------------------------------------------------------------------------
+
+void InitAutoDL (void)
+{
+memset (uploadDests, 0, sizeof (uploadDests));
+}
 
 //------------------------------------------------------------------------------
 
@@ -174,8 +181,8 @@ static int AddUploadDest (void)
 	int	i = FindUploadDest ();
 
 if (i >= 0) {
-	if (uploadDests [i].dlState && uploadDests [i].fp) {
-		CFClose (uploadDests [i].fp);
+	if (uploadDests [i].dlState && uploadDests [i].cf.file) {
+		CFClose (&uploadDests [i].cf);
 		}
 	}
 else {
@@ -188,7 +195,7 @@ else {
 	uploadDests [i].nTimeout = SDL_GetTicks ();
 	}
 uploadDests [i].dlState = DL_OPEN_HOG;
-uploadDests [i].fp = NULL;
+uploadDests [i].cf.file = NULL;
 return 1;
 }
 
@@ -200,8 +207,7 @@ if (i < 0)
 	i = FindUploadDest ();
 if (i < 0)
 	return 0;
-if (uploadDests [i].fp)
-	CFClose (uploadDests [i].fp);
+CFClose (&uploadDests [i].cf);
 SetDownloadFlag (i, 0);
 if (i < --nUploadDests)
 	memcpy (uploadDests + i, uploadDests + i + 1, (nUploadDests - i) * sizeof (tUploadDest));
@@ -291,11 +297,11 @@ static int UploadOpenFile (int i, char *pszExt)
 sprintf (szFile, "%s%s%s%s", 
 			gameFolders.szMissionDirs [0], (l && (gameFolders.szMissionDirs [0][l-1] != '/')) ? "/" : "", 
 			netGame.szMissionName, pszExt);
-if (uploadDests [i].fp)
-	CFClose (uploadDests [i].fp);
-if (!(uploadDests [i].fp = CFOpen (szFile, "", "rb", 0)))
+if (uploadDests [i].cf.file)
+	CFClose (&uploadDests [i].cf);
+if (!CFOpen (&uploadDests [i].cf, szFile, "", "rb", 0))
 	return UploadError ();
-uploadDests [i].fLen = CFLength (uploadDests [i].fp, 0);
+uploadDests [i].fLen = CFLength (&uploadDests [i].cf, 0);
 PUT_INTEL_INT (uploadBuf + 2, uploadDests [i].fLen);
 sprintf (szFile, "%s%s", netGame.szMissionName, pszExt);
 l = (int) strlen (szFile) + 1;
@@ -319,7 +325,7 @@ if (!h || (uploadDests [i].fLen > 0)) {
 		l = (int) uploadDests [i].fLen;
 		if (l > 512) //DL_BUFSIZE - 6)
 			l = 512; //DL_BUFSIZE - 6;
-		if ((int) CFRead (uploadBuf + 10, 1, l, uploadDests [i].fp) != l)
+		if ((int) CFRead (uploadBuf + 10, 1, l, &uploadDests [i].cf) != l)
 			return UploadError ();
 		PUT_INTEL_INT (uploadBuf + 2, nPacketId);
 		PUT_INTEL_INT (uploadBuf + 6, l);
@@ -331,8 +337,7 @@ if (!h || (uploadDests [i].fLen > 0)) {
 	uploadDests [i].fLen -= l;
 	}
 else {
-	CFClose (uploadDests [i].fp);
-	uploadDests [i].fp = NULL;
+	CFClose (&uploadDests [i].cf);
 	RequestDownload (PID_DL_CLOSE, 0, -1);
 	return -1;
 	}
@@ -423,10 +428,7 @@ else if (nReason == 3)
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
-if (fp) {
-	CFClose (fp);
-	fp = NULL;
-	}
+CFClose (&cf);
 RequestUpload (PID_DL_ERROR, 0);
 dlResult = 0;
 dlState = PID_DL_OPEN;
@@ -452,9 +454,8 @@ switch (pId) {
 		break;
 
 	case PID_DL_ERROR:
-		if (fp) {
-			CFClose (fp);
-			fp = NULL;
+		if (cf.file) {
+			CFClose (&cf);
 			dlResult = 0;
 			dlState = PID_DL_OPEN;
 			}
@@ -471,8 +472,7 @@ switch (pId) {
 			return DownloadError (2);
 		strlwr (pszFile);
 		sprintf (szDest, "%s%s%s", gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
-		fp = CFOpen (szDest, "", "wb", 0);
-		if (!fp)
+		if (!CFOpen (&cf, szDest, "", "wb", 0))
 			return DownloadError (2);
 		nSrcLen = GET_INTEL_INT (data + 2);
 		nPercent = 0;
@@ -493,7 +493,7 @@ switch (pId) {
 			if (!h) {	// receiving the requested packet
 				int l = GET_INTEL_INT (data + 6);
 
-				if (CFWrite (data + 10, 1, l, fp) != l)
+				if (CFWrite (data + 10, 1, l, &cf) != l)
 					return DownloadError (2);
 				nPacketId++;
 				nDestLen += l;
@@ -507,10 +507,8 @@ switch (pId) {
 	case PID_DL_CLOSE:
 		if (dlState != PID_DL_DATA)
 			return DownloadError (1);
-		if (fp) {
-			CFClose (fp);
-			fp = NULL;
-			}
+		if (cf.file)
+			CFClose (&cf);
 		dlState = PID_DL_OPEN;
 		nPacketId = -1;
 		RequestUpload (PID_DL_DATA, 0);
@@ -606,10 +604,7 @@ sprintf (szTitle, "Downloading <%s>", pszMission);
 do {
 	i = ExecMenu2 (NULL, szTitle, 3, m, (void (*)) DownloadPoll, 0, NULL);
 	} while (i >= 0);
-if (fp) {
-	CFClose (fp);
-	fp = NULL;
-	}
+CFClose (&cf);
 dlState = PID_DL_END;
 return (i == -3);
 }

@@ -1398,14 +1398,14 @@ UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) && 
 	 (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
 	tTgaHeader	h;
-	CFILE			*fp;
+	CFILE			cf;
 
 	strcat (fn, ".tga");
-	if (!(fp = CFOpen (fn, gameFolders.szModelDir [nType], "rb", 0)))
+	if (!CFOpen (&cf, fn, gameFolders.szModelDir [nType], "rb", 0))
 		return 1;
-	if (ReadTGAHeader (fp, &h, NULL))
+	if (ReadTGAHeader (&cf, &h, NULL))
 		SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
-	CFClose (fp);
+	CFClose (&cf);
 	}
 return 1;
 }
@@ -1786,7 +1786,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bCustom)
 {
-	CFILE				*fp;
+	CFILE				cf;
 	char				fileId [4];
 	tOOFObject		o;
 	int				i, nLength, nFrames, bTimed = 0;
@@ -1794,23 +1794,23 @@ int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bC
 bLogOOF = (fErr != NULL) && FindArg ("-printoof");
 nIndent = 0;
 OOF_PrintLog ("\nreading %s/%s\n", gameFolders.szModelDir [nType], pszFile);
-if (!(fp = CFOpen (pszFile, gameFolders.szModelDir [nType], "rb", 0))) {
+if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 	OOF_PrintLog ("  file not found");
 	return 0;
 	}
 
-if (!CFRead (fileId, sizeof (fileId), 1, fp)) {
+if (!CFRead (fileId, sizeof (fileId), 1, &cf)) {
 	OOF_PrintLog ("  invalid file id\n");
-	CFClose (fp);
+	CFClose (&cf);
 	return 0;
 	}
 if (strncmp (fileId, "PSPO", 4)) {
 	OOF_PrintLog ("  invalid file id\n");
-	CFClose (fp);
+	CFClose (&cf);
 	return 0;
 	}
 memset (&o, 0, sizeof (o));
-o.nVersion = OOF_ReadInt (fp, "nVersion");
+o.nVersion = OOF_ReadInt (&cf, "nVersion");
 if (o.nVersion >= 2100)
 	o.nFlags |= OOF_PMF_LIGHTMAP_RES;
 if (o.nVersion >= 22) {
@@ -1821,52 +1821,52 @@ if (o.nVersion >= 22) {
 	}
 o.nType = nType;
 
-while (!CFEoF (fp)) {
+while (!CFEoF (&cf)) {
 	char chunkId [4];
 
-	if (!CFRead (chunkId, sizeof (chunkId), 1, fp)) {
-		CFClose (fp);
+	if (!CFRead (chunkId, sizeof (chunkId), 1, &cf)) {
+		CFClose (&cf);
 		return 0;
 		}
 	OOF_PrintLog ("  chunkId = '%c%c%c%c'\n", chunkId [0], chunkId [1], chunkId [2], chunkId [3]);
-	nLength = OOF_ReadInt (fp, "nLength");
+	nLength = OOF_ReadInt (&cf, "nLength");
 	switch (ListType (chunkId)) {
 		case 0:
-			if (!OOF_ReadTextures (fp, &o, nType, bCustom))
+			if (!OOF_ReadTextures (&cf, &o, nType, bCustom))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 1:
-			if (!OOF_ReadObject (fp, &o))
+			if (!OOF_ReadObject (&cf, &o))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 2:
-			if (!OOF_ReadSubObject (fp, &o, bFlipV))
+			if (!OOF_ReadSubObject (&cf, &o, bFlipV))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 3:
-			if (!OOF_ReadPointList (fp, &o.gunPoints, o.nVersion >= 1908))
+			if (!OOF_ReadPointList (&cf, &o.gunPoints, o.nVersion >= 1908))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 4:
-			if (!OOF_ReadSpecialList (fp, &o.specialPoints))
+			if (!OOF_ReadSpecialList (&cf, &o.specialPoints))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 5:
-			if (!OOF_ReadAttachList (fp, &o.attachPoints))
+			if (!OOF_ReadAttachList (&cf, &o.attachPoints))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 6:
 			nFrames = o.frameInfo.nFrames;
 			if (!bTimed)
-				o.frameInfo.nFrames = OOF_ReadInt (fp, "nFrames");
+				o.frameInfo.nFrames = OOF_ReadInt (&cf, "nFrames");
 			for (i = 0; i < o.nSubObjects; i++)
-				if (!OOF_ReadPosAnim (fp, &o, &o.pSubObjects [i].posAnim, bTimed))
+				if (!OOF_ReadPosAnim (&cf, &o, &o.pSubObjects [i].posAnim, bTimed))
 				return OOF_FreeObject (&o);
 			if (o.frameInfo.nFrames < nFrames)
 				o.frameInfo.nFrames = nFrames;
@@ -1876,30 +1876,30 @@ while (!CFEoF (fp)) {
 		case 8:
 			nFrames = o.frameInfo.nFrames;
 			if (!bTimed)
-				o.frameInfo.nFrames = OOF_ReadInt (fp, "nFrames");
+				o.frameInfo.nFrames = OOF_ReadInt (&cf, "nFrames");
 			for (i = 0; i < o.nSubObjects; i++)
-				if (!OOF_ReadRotAnim (fp, &o, &o.pSubObjects [i].rotAnim, bTimed))
+				if (!OOF_ReadRotAnim (&cf, &o, &o.pSubObjects [i].rotAnim, bTimed))
 					return OOF_FreeObject (&o);
 			if (o.frameInfo.nFrames < nFrames)
 				o.frameInfo.nFrames = nFrames;
 			break;
 
 		case 9:
-			if (!OOF_ReadArmament (fp, &o.armament))
+			if (!OOF_ReadArmament (&cf, &o.armament))
 				return OOF_FreeObject (&o);
 			break;
 
 		case 10:
-			if (!OOF_ReadAttachNormals (fp, &o.attachPoints))
+			if (!OOF_ReadAttachNormals (&cf, &o.attachPoints))
 				return OOF_FreeObject (&o);
 			break;
 
 		default:
-			CFSeek (fp, nLength, SEEK_CUR);
+			CFSeek (&cf, nLength, SEEK_CUR);
 			break;
 		}
 	}
-CFClose (fp);
+CFClose (&cf);
 ConfigureSubObjects (&o);
 BuildAnimMatrices (&o);
 AssignChildren (&o);

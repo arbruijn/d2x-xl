@@ -123,7 +123,7 @@ char pszMovieLibs [][FILENAME_LEN] = {
 #define EXTRA_ROBOT_LIB				N_BUILTIN_MOVIE_LIBS
 
 typedef struct tRobotMovie {
-	CFILE		*file;
+	CFILE		cf;
 	int		nFilePos;
 	int		bLittleEndian;
 } tRobotMovie;
@@ -139,10 +139,10 @@ tMovieData	movies;
 // Function Prototypes
 int RunMovie (char *filename, int highresFlag, int allow_abort, int dx, int dy);
 
-CFILE *OpenMovieFile (char *filename, int bRequired);
-int ResetMovieFile (CFILE *handle);
+int OpenMovieFile (CFILE *cfp, char *filename, int bRequired);
+int ResetMovieFile (CFILE *cfp);
 
-void change_filename_ext (char *dest, char *src, char *ext);
+void ChangeFilenameExt (char *dest, char *src, char *ext);
 void DecodeTextLine (char *p);
 void DrawSubTitles (int nFrame);
 tMovieLib *FindMovieLib (char *pszTargetMovie);
@@ -331,7 +331,7 @@ if (movie_bg.bmp) {
 //returns status.  see movie.h
 int RunMovie (char *filename, int hiresFlag, int bRequired, int dx, int dy)
 {
-	CFILE			*pf;
+	CFILE			cf;
 	int			result=1, aborted=0;
 	int			track = 0;
 	int			nFrame;
@@ -340,7 +340,7 @@ int RunMovie (char *filename, int hiresFlag, int bRequired, int dx, int dy)
 
 result = 1;
 // Open Movie file.  If it doesn't exist, no movie, just return.
-if (!((pf = CFOpen (filename, gameFolders.szDataDir, "rb", 0)) || (pf = OpenMovieFile (filename, bRequired)))) {
+if (!(CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0) || OpenMovieFile (&cf, filename, bRequired))) {
 	if (bRequired) {
 #if TRACE
 		con_printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);
@@ -354,7 +354,7 @@ SetScreenMode (SCREEN_MENU);
 GrPaletteStepLoad (NULL);
 MVE_sfCallbacks (MovieShowFrame);
 MVE_palCallbacks (MovieSetPalette);
-if (MVE_rmPrepMovie ((void *) pf, dx, dy, track, libP ? libP->bLittleEndian : 1)) {
+if (MVE_rmPrepMovie ((void *) &cf, dx, dy, track, libP ? libP->bLittleEndian : 1)) {
 	Int3 ();
 	return MOVIE_NOT_PLAYED;
 	}
@@ -384,7 +384,7 @@ while ((result = MVE_rmStepMovie ()) == 0) {
 	}
 Assert (aborted || result == MVE_ERR_EOF);	 ///movie should be over
 MVE_rmEndMovie ();
-CFClose (pf);                           // Close Movie File
+CFClose (&cf);                           // Close Movie File
 // Restore old graphic state
 gameStates.video.nScreenMode = -1;  //force reset of screen mode
 GrPaletteStepLoad (NULL);
@@ -418,8 +418,8 @@ if (curDrawBuffer == GL_BACK)
 err = MVE_rmStepMovie ();
 GrPaletteStepLoad (NULL);
 if (err == MVE_ERR_EOF) {   //end of movie, so reset
-	ResetMovieFile (movies.robot.file);
-	if (MVE_rmPrepMovie ((void *)movies.robot.file, 
+	ResetMovieFile (&movies.robot.cf);
+	if (MVE_rmPrepMovie ((void *) &movies.robot.cf, 
 								gameStates.menus.bHires ? 280 : 140, 
 								gameStates.menus.bHires ? 200 : 80, 0,
 								movies.robot.bLittleEndian)) {
@@ -439,7 +439,7 @@ return 1;
 void DeInitRobotMovie (void)
 {
 MVE_rmEndMovie ();
-CFClose (movies.robot.file);                           // Close Movie File
+CFClose (&movies.robot.cf);                           // Close Movie File
 }
 
 //-----------------------------------------------------------------------
@@ -452,10 +452,10 @@ if (gameOpts->movies.nLevel < 1)
 	return 0;
 
 #if TRACE
-con_printf (DEBUG_LEVEL, "movies.robot.file=%s\n", filename);
+con_printf (DEBUG_LEVEL, "movies.robot.cf=%s\n", filename);
 #endif
 MVE_sndInit (-1);        //tell movies to play no sound for robots
-if (!(movies.robot.file = OpenMovieFile (filename, 1))) {
+if (!OpenMovieFile (&movies.robot.cf, filename, 1)) {
 #ifdef _DEBUG
 	Warning (TXT_MOVIE_ROBOT, filename);
 #endif
@@ -468,14 +468,14 @@ MVE_memCallbacks (MPlayAlloc, MPlayFree);
 MVE_ioCallbacks (FileRead);
 MVE_sfCallbacks (MovieShowFrame);
 MVE_palCallbacks (MovieSetPalette);
-if (MVE_rmPrepMovie ((void *) movies.robot.file, 
+if (MVE_rmPrepMovie ((void *) &movies.robot.cf, 
 							gameStates.menus.bHires ? 280 : 140, 
 							gameStates.menus.bHires ? 200 : 80, 0,
 							movies.robot.bLittleEndian)) {
 	Int3 ();
 	return 0;
 	}
-movies.robot.nFilePos = CFSeek (movies.robot.file, 0L, SEEK_CUR);
+movies.robot.nFilePos = CFSeek (&movies.robot.cf, 0L, SEEK_CUR);
 #if TRACE
 con_printf (DEBUG_LEVEL, "movies.robot.nFilePos=%d!\n", movies.robot.nFilePos);
 #endif
@@ -505,7 +505,7 @@ return p;
 
 int InitSubTitles (char *filename)
 {
-	CFILE *ifile;
+	CFILE cf;
 	int 	size, readCount;
 	ubyte	*p;
 	int 	bHaveBinary = 0;
@@ -513,20 +513,18 @@ int InitSubTitles (char *filename)
 subTitles.nCaptions = 0;
 if (!gameOpts->movies.bSubTitles)
 	return 0;
-ifile = CFOpen (filename, gameFolders.szDataDir, "rb", 0);		//try text version
-if (!ifile) {								//no text version, try binary version
-	char filename2 [FILENAME_LEN];
-	change_filename_ext (filename2, filename, ".txb");
-	ifile = CFOpen (filename2, gameFolders.szDataDir, "rb", 0);
-	if (!ifile)
+if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", 0)) { // first try text version
+	char filename2 [FILENAME_LEN];	//no text version, try binary version
+	ChangeFilenameExt (filename2, filename, ".txb");
+	if (!CFOpen (&cf, filename2, gameFolders.szDataDir, "rb", 0))
 		return 0;
 	bHaveBinary = 1;
 	}
 
-size = CFLength (ifile, 0);
+size = CFLength (&cf, 0);
 MALLOC (subTitles.rawDataP, ubyte, size+1);
-readCount = (int) CFRead (subTitles.rawDataP, 1, size, ifile);
-CFClose (ifile);
+readCount = (int) CFRead (subTitles.rawDataP, 1, size, &cf);
+CFClose (&cf);
 subTitles.rawDataP [size] = 0;
 if (readCount != size) {
 	D2_FREE (subTitles.rawDataP);
@@ -707,19 +705,19 @@ tMovieLib *InitMovieLib (char *filename)
 	//note: this based on CFInitHogFile ()
 
 	char id [4];
-	CFILE *fp;
+	CFILE cf;
 
-if (!(fp = CFOpen (filename, gameFolders.szMovieDir, "rb", 0)))
+if (!CFOpen (&cf, filename, gameFolders.szMovieDir, "rb", 0))
 	return NULL;
-CFRead (id, 4, 1, fp);
+CFRead (id, 4, 1, &cf);
 if (!strncmp (id, "DMVL", 4))
-	return InitNewMovieLib (filename, fp);
+	return InitNewMovieLib (filename, &cf);
 else if (!strncmp (id, "DHF", 3)) {
-	CFSeek (fp, -1, SEEK_CUR);		//old file had 3 char id
-	return InitOldMovieLib (filename, fp);
+	CFSeek (&cf, -1, SEEK_CUR);		//old file had 3 char id
+	return InitOldMovieLib (filename, &cf);
 	}
 else {
-	CFClose (fp);
+	CFClose (&cf);
 	return NULL;
 	}
 }
@@ -729,7 +727,7 @@ else {
 //ask user to put the D2 CD in.
 //returns -1 if ESC pressed, 0 if OK chosen
 //CD may not have been inserted
-int request_cd (void)
+int RequestCD (void)
 {
 #if 0
 	ubyte save_pal [256*3];
@@ -768,7 +766,7 @@ int request_cd (void)
 	return ret;
 #else
 #if TRACE
-	con_printf (DEBUG_LEVEL, "STUB: movie: request_cd\n");
+	con_printf (DEBUG_LEVEL, "STUB: movie: RequestCD\n");
 #endif
 	return 0;
 #endif
@@ -890,61 +888,57 @@ void InitExtraRobotMovie (char *filename)
 
 //-----------------------------------------------------------------------
 
-CFILE *movie_handle;
-int movie_start;
+CFILE cfMovies = {NULL, 0, 0, 0};
+int nMovieStart = -1;
 
 //looks through a movie library for a movie file
 //returns filehandle, with fileposition at movie, or -1 if can't find
-CFILE *SearchMovieLib (tMovieLib *lib, char *filename, int bRequired)
+int SearchMovieLib (CFILE *cfp, tMovieLib *lib, char *filename, int bRequired)
 {
-	int i;
-	CFILE *filehandle;
+	int i, bFromCD;
 
-if (lib == NULL)
-	return NULL;
+if (!lib)
+	return 0;
 for (i = 0; i < lib->n_movies; i++)
 	if (!stricmp (filename, lib->movies [i].name)) {	//found the movie in a library 
-		int from_cd;
-		from_cd = (lib->flags & MLF_ON_CD);
-		if (from_cd)
+		if (bFromCD = (lib->flags & MLF_ON_CD))
 			SongsStopRedbook ();		//ready to read from CD
 		do {		//keep trying until we get the file handle
-			movie_handle = filehandle = CFOpen (lib->name, gameFolders.szMovieDir, "rb", 0);
-			if (bRequired && from_cd && filehandle == NULL) {   //didn't get file!
-				if (request_cd () == -1)		//ESC from requester
+			CFOpen (cfp, lib->name, gameFolders.szMovieDir, "rb", 0);
+			if (bRequired && bFromCD && !cfp->file) {   //didn't get file!
+				if (RequestCD () == -1)		//ESC from requester
 					break;						//bail from here. will get error later
 				}
-			} while (bRequired && from_cd && filehandle == NULL);
-		if (filehandle)
-			CFSeek (filehandle, (movie_start = lib->movies [i].offset), SEEK_SET);
-		return filehandle;
+			} while (bRequired && bFromCD && !cfp->file);
+		if (cfp->file)
+			CFSeek (cfp, nMovieStart = lib->movies [i].offset, SEEK_SET);
+		return 1;
 	}
-return NULL;
+return 0;
 }
 
 //-----------------------------------------------------------------------
 //returns file handle
-CFILE *OpenMovieFile (char *filename, int bRequired)
+int OpenMovieFile (CFILE *cfp, char *filename, int bRequired)
 {
-	CFILE *filehandle;
 	int i;
 
 for (i = 0; i < N_MOVIE_LIBS; i++)
-	if ((filehandle = SearchMovieLib (movies.libs [i], filename, bRequired)) != NULL)
-		return filehandle;
-return NULL;    //couldn't find it
+	if (SearchMovieLib (cfp, movies.libs [i], filename, bRequired))
+		return 1;
+return 0;    //couldn't find it
 }
 
 //-----------------------------------------------------------------------
 //sets the file position to the start of this already-open file
-int ResetMovieFile (CFILE *handle)
+int ResetMovieFile (CFILE *cfp)
 {
-	Assert (handle == movie_handle);
-
-	CFSeek (handle, movie_start, SEEK_SET);
-
-	return 0;       //everything is cool
+Assert (cfp == &cfMovies);
+CFSeek (cfp, nMovieStart, SEEK_SET);
+return 0;       //everything is cool
 }
+
+//-----------------------------------------------------------------------
 
 int GetNumMovieLibs (void)
 {

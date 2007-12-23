@@ -1139,7 +1139,7 @@ int FVICompute (vmsVector *vIntP, short *intS, vmsVector *p0, short nStartSeg, v
 #if FVI_NEWCODE
 	int			nFudgedRad;
 	int			nFaces;
-#if 0
+#if 1
 	int			nFaceHitType;
 #endif
 	int			widResult;
@@ -1261,10 +1261,10 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 			if (!(endMask & bit))	//on the back of this face?
 				continue;
 			//did we go through this tWall/door?
-#if 0
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
 				SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
 				CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1);
+#if 0
 			if (!nFaceHitType) 
 				continue;
 #endif
@@ -1359,9 +1359,7 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				}
 			else {//a wall
 #if 1
-				if ((startMask & bit)	?	//start was also though.  Do extra check
-					 SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
-					 CheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1)) 
+				if (nFaceHitType) 
 #endif
 					{
 					//is this the closest hit?

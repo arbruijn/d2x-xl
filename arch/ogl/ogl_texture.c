@@ -506,6 +506,7 @@ restart:
 
 i = 0;
 bufP = texBuf;
+//bmP->bmProps.flags &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 for (y = 0; y < tHeight; y++) {
 	i = dxo + truewidth *(y + dyo);
 	for (x = 0; x < tWidth; x++){
@@ -514,7 +515,7 @@ for (y = 0; y < tHeight; y++) {
 		else
 			c = TRANSPARENCY_COLOR;	//fill the pad space with transparancy
 		if (nTransp && ((int) c == TRANSPARENCY_COLOR)) {
-			bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
+			//bmP->bmProps.flags |= BM_FLAG_TRANSPARENT;
 			switch (nFormat) {
 				case GL_LUMINANCE:
 					(*(bufP++)) = 0;
@@ -557,6 +558,7 @@ for (y = 0; y < tHeight; y++) {
 				case GL_RGB:
 				case GL_RGB5:
 					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
+						//bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
 						nFormat = gameStates.ogl.nRGBAFormat;
 						goto restart;
 						}
@@ -583,7 +585,7 @@ for (y = 0; y < tHeight; y++) {
 				case GL_RGBA:
 				case GL_RGBA4: {
 					if (bSuperTransp && (c == SUPER_TRANSP_COLOR)) {
-						bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
+						//bmP->bmProps.flags |= BM_FLAG_SUPER_TRANSPARENT;
 #if 0
 						if (bShaderMerge) {
 							r = g = b = 0;
@@ -1206,6 +1208,8 @@ h = bmP->bmProps.h;
 w = bmP->bmProps.w;
 if (!(h * w))
 	return 1;
+if (!strcmp (bmP->szName, "exp06#0"))
+	bmP = bmP;
 nFrames = (bmP->bmType == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
 if (!(bmP->bmProps.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && OglLoadBmTextureM (bmP, bDoMipMap, nTransp, 0, NULL))

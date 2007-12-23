@@ -541,13 +541,13 @@ static void PlayMenuSong (void)
 {
 	int h, i, j = 0;
 	char * m [MAX_NUM_SONGS + 2];
-	CFILE *fp;
+	CFILE cf;
 	char	szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
 
 m [j++] = szSongTitles [0];
 for (i = 0; i < gameData.songs.nSongs; i++) {
-	if ((fp = CFOpen ((char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nD2Songs))) {
-		CFClose (fp);
+	if (CFOpen (&cf, (char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nD2Songs)) {
+		CFClose (&cf);
 		if (i == gameData.songs.nD2Songs)
 			m [j++] = szSongTitles [1];
 		m [j++] = gameData.songs.info [i].filename;

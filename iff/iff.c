@@ -675,23 +675,23 @@ int convert_rgb15(grsBitmap *bm,iff_bitmap_header *bmheader)
 //read in a entire file into a fake file structure
 int open_fake_file(char *ifilename,FFILE *ffile)
 {
-	CFILE *ifile;
+	CFILE ifile;
 	int ret;
 
 	////printf( "Reading %s\n", ifilename );
 
 	ffile->data=NULL;
 
-	if ((ifile = CFOpen(ifilename, gameFolders.szDataDir,"rb", gameStates.app.bD1Mission)) == NULL) 
+	if (!CFOpen(&ifile, ifilename, gameFolders.szDataDir,"rb", gameStates.app.bD1Mission))
 		return IFF_NO_FILE;
-	ffile->length = CFLength(ifile, 0);
+	ffile->length = CFLength(&ifile, 0);
 	MALLOC(ffile->data,ubyte,ffile->length);
-	if (CFRead(ffile->data, 1, ffile->length, ifile) < (size_t) ffile->length)
+	if (CFRead(ffile->data, 1, ffile->length, &ifile) < (size_t) ffile->length)
 		ret = IFF_READ_ERROR;
 	else
 		ret = IFF_NO_ERROR;
 	ffile->position = 0;
-	if (ifile) CFClose(ifile);
+	CFClose(&ifile);
 	return ret;
 }
 

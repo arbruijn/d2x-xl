@@ -559,7 +559,7 @@ void kill_ipc()
 int do_ipc(int qid, struct msgbuf *buf, int flags)
 {
 	int ipc_read;
-	CFILE *fptr;
+	CFILE cf;
 	int l=0;
 
 	ipc_read = msgrcv(qid,buf,16,0,flags | MSG_NOERROR);
@@ -581,13 +581,11 @@ int do_ipc(int qid, struct msgbuf *buf, int flags)
 			volume=(double) ((double) buf->mtext[0]/127.0);
 			break;
 		 case 'p':
-			fptr=CFOpen((buf->mtext+1), gameFolders.szDataDir,"rb", 0);	
-			if(fptr != NULL)
-			{
-				l = CFLength(fptr);
+			if (CFOpen(&cf, (buf->mtext+1), gameFolders.szDataDir,"rb", 0)) {
+				l = CFLength(&cf);
 				data=realloc(data,(size_t) l);
-				CFRead(data, l, 1, fptr);
-				CFClose(fptr);
+				CFRead(data, l, 1, &cf);
+				CFClose(&cf);
 				//printf ("good. fpr=%p l=%i data=%p\n", fptr, l, data);//##########3
 			}
 			stop = 0;

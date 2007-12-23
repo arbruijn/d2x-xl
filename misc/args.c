@@ -102,7 +102,7 @@ return fnIni;
 void InitArgs (int argc, char **argv)
 {
 	int 		i, j;
-	CFILE 	*f;
+	CFILE 	cf = {NULL, 0, 0, 0};
 	char 		*pszLine, *pszToken, fnIni [FILENAME_LEN];
 	static	char **pszArgs = NULL;
 	static	int  nArgs = 0;
@@ -133,16 +133,16 @@ GetIniFileName (fnIni, 1);
 #else
 GetIniFileName (fnIni, 0);
 #endif
-f = CFOpen (fnIni, "", "rt", 0);
+CFOpen (&cf, fnIni, "", "rt", 0);
 #ifdef _DEBUG
-if (!f) {
+if (!cf.file) {
 	GetIniFileName (fnIni, 0);
-	f = CFOpen (fnIni, "", "rt", 0);
+	CFOpen (&cf, fnIni, "", "rt", 0);
 	}
 #endif
-if (f) {
-	while (!CFEoF (f)) {
-		pszLine = fsplitword (f, '\n');
+if (cf.file) {
+	while (!CFEoF (&cf)) {
+		pszLine = fsplitword (&cf, '\n');
 		if (*pszLine && (*pszLine != ';')) {
 			pszToken = splitword (pszLine, ' ');
 			if (Num_args >= MAX_ARGS)
@@ -158,7 +158,7 @@ if (f) {
 			}
 		D2_FREE (pszLine); 
 		}
-	CFClose (f);
+	CFClose (&cf);
 	}
 LogErr ("   ");
 for (i = j = 0; i < Num_args; i++, j++) {

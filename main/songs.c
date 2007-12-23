@@ -62,7 +62,7 @@ void SongsInit()
 {
 	int i, bD1Songs;
 	char inputline [80+1];
-	CFILE * fp;
+	CFILE cf;
 
 if (gameData.songs.bInitialized) 
 	return;
@@ -71,14 +71,14 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		if (!FindArg("-nomixer"))
 			CD_blast_mixer();   // Crank it!
 	if (CFExist("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
-		if (!(fp = CFOpen ("descent.sng", gameFolders.szDataDir, "rb", bD1Songs))) {
+		if (!CFOpen (&cf, "descent.sng", gameFolders.szDataDir, "rb", bD1Songs)) {
 			if (bD1Songs)
 				break;
 			else
 				Error ("Couldn't open descent.sng");
 			}
 		i = gameData.songs.nSongs;
-		while (CFGetS(inputline, 80, fp)) {
+		while (CFGetS(inputline, 80, &cf)) {
 			char *p = strchr(inputline,'\n');
 			if (p) *p = '\0';
 			if (strlen(inputline)) {
@@ -104,7 +104,7 @@ for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		gameData.songs.nLevelSongs [bD1Songs] = gameData.songs.nSongs - gameData.songs.nFirstLevelSong [bD1Songs];
 		if (!gameData.songs.nFirstLevelSong [bD1Songs])
 			Error("gameData.songs.info are missing.");
-		CFClose(fp);
+		CFClose(&cf);
 		}
 	gameData.songs.bInitialized = 1;
 	//	RBA Hook
@@ -428,16 +428,16 @@ if (nCurrentLevelSong > 1)
 
 int LoadPlayList (char *pszPlayList)
 {
-	CFILE	*fp;
+	CFILE	cf;
 	char	szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
 	int	l, bRead, nSongs, bMP3;
 
 CFSplitPath (pszPlayList, szListFolder, NULL, NULL);
 for (bRead = 0; bRead < 2; bRead++) {
-	if (!(fp = CFOpen (pszPlayList, "", "rt", 0)))
+	if (!CFOpen (&cf, pszPlayList, "", "rt", 0))
 		return 0;
 	nSongs = 0;
-	while (CFGetS (szSong, sizeof (szSong), fp)) {
+	while (CFGetS (szSong, sizeof (szSong), &cf)) {
 		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg")) {
 			if (bRead) {
 				if (bMP3)
@@ -451,7 +451,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
 				if (!(pszSong = (char *) D2_ALLOC (l))) {
-					CFClose (fp);
+					CFClose (&cf);
 					return nSongs = nSongs;
 					}
 				if (*szSongFolder)
@@ -463,7 +463,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 			nSongs++;
 			}
 		}
-	CFClose (fp);
+	CFClose (&cf);
 	if (!bRead) {
 		if (!(gameData.songs.user.pszLevelSongs = (char **) D2_ALLOC (nSongs * sizeof (char **))))
 			return 0;

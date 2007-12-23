@@ -196,29 +196,33 @@ for (; i; i--)
 
 //------------------------------------------------------------------------------
 
-void GrSetBitmapFlags (grsBitmap *pbm, int flags)
+void GrSetBitmapFlags (grsBitmap *bmP, int flags)
 {
-pbm->bmProps.flags = flags;
+bmP->bmProps.flags = flags;
 }
 
 //------------------------------------------------------------------------------
 
-void GrSetTransparent (grsBitmap *pbm, int bTransparent)
+void GrSetTransparent (grsBitmap *bmP, int bTransparent)
 {
 if (bTransparent)
-	GrSetBitmapFlags (pbm, pbm->bmProps.flags | BM_FLAG_TRANSPARENT);
+	GrSetBitmapFlags (bmP, bmP->bmProps.flags | BM_FLAG_TRANSPARENT);
 else
-	GrSetBitmapFlags (pbm, pbm->bmProps.flags & ~BM_FLAG_TRANSPARENT);
+	GrSetBitmapFlags (bmP, bmP->bmProps.flags & ~BM_FLAG_TRANSPARENT);
 }
 
 //------------------------------------------------------------------------------
 
-void GrSetSuperTransparent (grsBitmap *pbm, int bTransparent)
+void GrSetSuperTransparent (grsBitmap *bmP, int bTransparent)
 {
-if (bTransparent)
-	GrSetBitmapFlags (pbm, pbm->bmProps.flags & ~BM_FLAG_SUPER_TRANSPARENT);
-else
-	GrSetBitmapFlags (pbm, pbm->bmProps.flags | BM_FLAG_SUPER_TRANSPARENT);
+if (!strcmp (bmP->szName, "exp06#0"))
+	bmP = bmP;
+if (gameData.pig.tex.textureIndex [0][bmP->bmHandle] >= 0) {
+	if (bTransparent)
+		GrSetBitmapFlags (bmP, bmP->bmProps.flags | BM_FLAG_SUPER_TRANSPARENT);
+	else
+		GrSetBitmapFlags (bmP, bmP->bmProps.flags & ~BM_FLAG_SUPER_TRANSPARENT);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -233,7 +237,7 @@ if ((transparentColor >= 0) && (transparentColor <= 255)) {
 if ((superTranspColor >= 0) && (superTranspColor <= 255)) {
 	//palette [254] = transparentColor;
 	if (freq [superTranspColor])
-		GrSetSuperTransparent (bmP, 0);
+		GrSetSuperTransparent (bmP, 1);
 	}
 bmP->bmPalette = AddPalette (palette);
 }

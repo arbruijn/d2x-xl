@@ -1930,6 +1930,7 @@ typedef struct tTextureData {
 	alias					aliases [MAX_ALIASES];
 	tBitmapIndex		bmIndex [2][MAX_TEXTURES];
 	tBitmapIndex		objBmIndex [MAX_OBJ_BITMAPS];
+	short					textureIndex [2][MAX_BITMAP_FILES];
 	ushort				pObjBmIndex [MAX_OBJ_BITMAPS];
 	tBitmapIndex		cockpitBmIndex [N_COCKPIT_BITMAPS];
 	tRgbColorf			bitmapColors [MAX_BITMAP_FILES];
@@ -1947,6 +1948,7 @@ typedef struct tTextureData {
 	grsBitmap			*pAltBitmaps;
 	tBitmapIndex		*pBmIndex;
 	tTexMapInfo			*pTMapInfo;
+	ubyte					*rleBuffer;
 	int					brightness [MAX_WALL_TEXTURES];
 } tTextureData;
 

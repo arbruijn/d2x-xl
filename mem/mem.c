@@ -308,10 +308,10 @@ void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZ
 
 if (!bMemInitialized)
 	MemInit ();
-
 if (!size)
 	return NULL;
-
+if (nMemBlockId == nDbgMemBlockId)
+	nDbgMemBlockId = nDbgMemBlockId;
 #if LONG_MEM_ID
 ptr = malloc (size + CHECKSIZE + sizeof (int) + 256);
 #else

@@ -49,7 +49,7 @@ char szCurrentLevelPalette[SHORT_FILENAME_LEN];
 extern int Color_0_31_0;
 
 //give a filename a new extension
-void change_filename_ext( char *dest, char *src, char *ext )
+void ChangeFilenameExt( char *dest, char *src, char *ext )
 {
 	char *p;
 

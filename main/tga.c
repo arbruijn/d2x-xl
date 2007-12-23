@@ -24,7 +24,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
+int ReadTGAImage (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP, int alpha, 
 						double brightness, int bGrayScale, int bReverse)
 {
 	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames, nBytes = ph->bits / 8;
@@ -50,7 +50,7 @@ if (ph->bits == 24) {
 
 	for (i = bmP->bmProps.h; i; i--) {
 		for (j = w; j; j--, p++) {
-			if (CFRead (&c, 1, 3, fp) != (size_t) 3)
+			if (CFRead (&c, 1, 3, cfp) != (size_t) 3)
 				return 0;
 			if (bGrayScale) {
 				p->red =
@@ -83,7 +83,7 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (CFRead (&c, 1, 4, fp) != (size_t) 4)
+				if (CFRead (&c, 1, 4, cfp) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
@@ -141,7 +141,7 @@ else {
 			n = nFrames - i / w;
 			nSuperTransp = 0;
 			for (j = w; j; j--, p++) {
-				if (CFRead (&c, 1, 4, fp) != (size_t) 4)
+				if (CFRead (&c, 1, 4, cfp) != (size_t) 4)
 					return 0;
 				if (bGrayScale) {
 					p->red =
@@ -205,7 +205,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int WriteTGAImage (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGAImage (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
 {
 	int				i, j, n, nFrames;
 	int				h = bmP->bmProps.h;
@@ -220,7 +220,7 @@ if (ph->bits == 24) {
 				c.r = p->red;
 				c.g = p->green;
 				c.b = p->blue;
-				if (CFWrite (&c, 1, 3, fp) != (size_t) 3)
+				if (CFWrite (&c, 1, 3, cfp) != (size_t) 3)
 					return 0;
 				}
 			p -= 2 * w;
@@ -234,7 +234,7 @@ if (ph->bits == 24) {
 				c.r = p->red;
 				c.g = p->green;
 				c.b = p->blue;
-				if (CFWrite (&c, 1, 3, fp) != (size_t) 3)
+				if (CFWrite (&c, 1, 3, cfp) != (size_t) 3)
 					return 0;
 				}
 			p -= 2 * w;
@@ -261,7 +261,7 @@ else {
 				c.b = p->blue;
 				c.a = ((p->red == 120) && (p->green == 88) && (p->blue == 128)) ? 255 : p->alpha;
 				}
-			if (CFWrite (&c, 1, 4, fp) != (size_t) 4)
+			if (CFWrite (&c, 1, 4, cfp) != (size_t) 4)
 				return 0;
 			}
 		p -= 2 * w;
@@ -272,24 +272,24 @@ return 1;
 
 //---------------------------------------------------------------
 
-int ReadTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
+int ReadTGAHeader (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
 {
 	tTgaHeader	h;
 
-h.identSize = (char) CFReadByte (fp);
-h.colorMapType = (char) CFReadByte (fp);
-h.imageType = (char) CFReadByte (fp);
-h.colorMapStart = CFReadShort (fp);
-h.colorMapLength = CFReadShort (fp);
-h.colorMapBits = (char) CFReadByte (fp);
-h.xStart = CFReadShort (fp);
-h.yStart = CFReadShort (fp);
-h.width = CFReadShort (fp);
-h.height = CFReadShort (fp);
-h.bits = (char) CFReadByte (fp);
-h.descriptor = (char) CFReadByte (fp);
+h.identSize = (char) CFReadByte (cfp);
+h.colorMapType = (char) CFReadByte (cfp);
+h.imageType = (char) CFReadByte (cfp);
+h.colorMapStart = CFReadShort (cfp);
+h.colorMapLength = CFReadShort (cfp);
+h.colorMapBits = (char) CFReadByte (cfp);
+h.xStart = CFReadShort (cfp);
+h.yStart = CFReadShort (cfp);
+h.width = CFReadShort (cfp);
+h.height = CFReadShort (cfp);
+h.bits = (char) CFReadByte (cfp);
+h.descriptor = (char) CFReadByte (cfp);
 if (h.identSize)
-	CFSeek (fp, h.identSize, SEEK_CUR);
+	CFSeek (cfp, h.identSize, SEEK_CUR);
 if (bmP) {
 	GrInitBitmap (bmP, 0, 0, 0, h.width, h.height, h.width, NULL, bmP->bmBPP = h.bits / 8);
 	}
@@ -300,48 +300,48 @@ return 1;
 
 //---------------------------------------------------------------
 
-int WriteTGAHeader (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGAHeader (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
 {
 memset (ph, 0, sizeof (*ph));
 ph->width = bmP->bmProps.w;
 ph->height = bmP->bmProps.h;
 ph->bits = bmP->bmBPP * 8;
 ph->imageType = 2;
-CFWriteByte (ph->identSize, fp);
-CFWriteByte (ph->colorMapType, fp);
-CFWriteByte (ph->imageType, fp);
-CFWriteShort (ph->colorMapStart, fp);
-CFWriteShort (ph->colorMapLength, fp);
-CFWriteByte (ph->colorMapBits, fp);
-CFWriteShort (ph->xStart, fp);
-CFWriteShort (ph->yStart, fp);
-CFWriteShort (ph->width, fp);
-CFWriteShort (ph->height, fp);
+CFWriteByte (ph->identSize, cfp);
+CFWriteByte (ph->colorMapType, cfp);
+CFWriteByte (ph->imageType, cfp);
+CFWriteShort (ph->colorMapStart, cfp);
+CFWriteShort (ph->colorMapLength, cfp);
+CFWriteByte (ph->colorMapBits, cfp);
+CFWriteShort (ph->xStart, cfp);
+CFWriteShort (ph->yStart, cfp);
+CFWriteShort (ph->width, cfp);
+CFWriteShort (ph->height, cfp);
 if (!GrBitmapHasTransparency (bmP))
 	ph->bits = 24;
-CFWriteByte (ph->bits, fp);
-CFWriteByte (ph->descriptor, fp);
+CFWriteByte (ph->bits, cfp);
+CFWriteByte (ph->descriptor, cfp);
 if (ph->identSize)
-	CFSeek (fp, ph->identSize, SEEK_CUR);
+	CFSeek (cfp, ph->identSize, SEEK_CUR);
 return 1;
 }
 
 //---------------------------------------------------------------
 
-int LoadTGA (CFILE *fp, grsBitmap *bmP, int alpha, double brightness, 
+int LoadTGA (CFILE *cfp, grsBitmap *bmP, int alpha, double brightness, 
 				 int bGrayScale, int bReverse)
 {
 	tTgaHeader	h;
 
-return ReadTGAHeader (fp, &h, bmP) &&
-		 ReadTGAImage (fp, &h, bmP, alpha, brightness, bGrayScale, bReverse);
+return ReadTGAHeader (cfp, &h, bmP) &&
+		 ReadTGAImage (cfp, &h, bmP, alpha, brightness, bGrayScale, bReverse);
 }
 
 //---------------------------------------------------------------
 
-int WriteTGA (CFILE *fp, tTgaHeader *ph, grsBitmap *bmP)
+int WriteTGA (CFILE *cfp, tTgaHeader *ph, grsBitmap *bmP)
 {
-return WriteTGAHeader (fp, ph, bmP) && WriteTGAImage (fp, ph, bmP);
+return WriteTGAHeader (cfp, ph, bmP) && WriteTGAImage (cfp, ph, bmP);
 }
 
 //---------------------------------------------------------------
@@ -349,7 +349,7 @@ return WriteTGAHeader (fp, ph, bmP) && WriteTGAImage (fp, ph, bmP);
 int ReadTGA (char *pszFile, char *pszFolder, grsBitmap *bmP, int alpha, 
 				 double brightness, int bGrayScale, int bReverse)
 {
-	CFILE	*fp;
+	CFILE	cf = {NULL, 0, 0, 0};
 	char	fn [FILENAME_LEN], *psz;
 	int	r;
 
@@ -359,22 +359,21 @@ if (!pszFolder)
 if (ReadS3TC (bmP, pszFolder, pszFile))
 	return 1;
 #endif
-fp = CFOpen (pszFile, pszFolder, "rb", 0);
-if (!fp && !(psz = strstr (pszFile, ".tga"))) {
+if (!CFOpen (&cf, pszFile, pszFolder, "rb", 0) && !(psz = strstr (pszFile, ".tga"))) {
 	strcpy (fn, pszFile);
 	if ((psz = strchr (fn, '.')))
 		*psz = '\0';
 	strcat (fn, ".tga");
 	pszFile = fn;
-	fp = CFOpen (pszFile, pszFolder, "rb", 0);
+	CFOpen (&cf, pszFile, pszFolder, "rb", 0);
 	}
-r = (fp != NULL) && LoadTGA (fp, bmP, alpha, brightness, bGrayScale, bReverse);
+r = (cf.file != NULL) && LoadTGA (&cf, bmP, alpha, brightness, bGrayScale, bReverse);
 #if TEXTURE_COMPRESSION
 if (r && CompressTGA (bmP))
 	SaveS3TC (bmP, pszFolder, pszFile);
 #endif
-if (fp)
-	CFClose (fp);
+if (&cf)
+	CFClose (&cf);
 #ifdef _DEBUG
 strncpy (bmP->szName, pszFile, sizeof (bmP->szName) - 1);
 if ((psz = strrchr (bmP->szName, '.')))
@@ -407,7 +406,7 @@ return NULL;
 
 int SaveTGA (char *pszFile, char *pszFolder, tTgaHeader *ph, grsBitmap *bmP)
 {
-	CFILE			*fp;
+	CFILE			cf = {NULL, 0, 0, 0};
 	char			fn [FILENAME_LEN], fs [5];
 	int			r;
 	tTgaHeader	h;
@@ -420,10 +419,9 @@ CFSplitPath (pszFile, NULL, fn, NULL);
 sprintf (fs, "-%d", bmP->bmProps.w);
 strcat (fn, fs);
 strcat (fn, ".tga");
-fp = CFOpen (fn, pszFolder, "wb", 0);
-r = (fp != NULL) && WriteTGA (fp, ph, bmP);
-if (fp)
-	CFClose (fp);
+r = CFOpen (&cf, fn, pszFolder, "wb", 0) && WriteTGA (&cf, ph, bmP);
+if (cf.file)
+	CFClose (&cf);
 return r;
 }
 
@@ -641,15 +639,16 @@ if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
 if (BM_MASK (bmP))
 	return BM_MASK (bmP);
-if (!(bmMask = GrCreateBitmap (bmP->bmProps.w / 2, bmP->bmProps.h / 2, 4)))
+bmP->bmBPP = 4;
+if (!(bmMask = GrCreateBitmap ((bmP->bmProps.w  + 1) / 2, (bmP->bmProps.h + 1) / 2, 4)))
 	return NULL;
 BM_MASK (bmP) = bmMask;
 #ifdef _DEBUG
 sprintf (bmMask->szName, "{%s}", bmP->szName);
 #endif
-bmMask->bmProps.w *= 2;
-bmMask->bmProps.h *= 2;
-bmMask->bmProps.rowSize /= bmP->bmBPP;
+bmMask->bmProps.w = bmP->bmProps.w;
+bmMask->bmProps.h = bmP->bmProps.w;
+bmMask->bmProps.rowSize = bmMask->bmProps.w;
 bmMask->bmBPP = 1;
 UseBitmapCache (bmMask, (int) bmMask->bmProps.h * (int) bmMask->bmProps.rowSize);
 if (bmP->bmProps.flags & BM_FLAG_TGA) {

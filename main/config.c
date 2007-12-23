@@ -131,7 +131,7 @@ int bRedbookEnabledSave;
 
 int ReadConfigFile()
 {
-	CFILE *infile;
+	CFILE cf;
 	char line[80], *token, *value, *ptr;
 	ubyte gamma;
 	int joy_axis_min[7];
@@ -155,14 +155,13 @@ int ReadConfigFile()
 	bHiresMoviesSave = gameOpts->movies.bHires;
 	bRedbookEnabledSave = gameStates.sound.bRedbookEnabled;
 
-	infile = CFOpen("descent.cfg", gameFolders.szConfigDir, "rt", 0);
-	if (infile == NULL) {
+	if (!CFOpen (&cf, "descent.cfg", gameFolders.szConfigDir, "rt", 0)) {
 		WIN(CheckMovieAttributes());
 		return 1;
 	}
-	while (!CFEoF(infile)) {
+	while (!CFEoF(&cf)) {
 		memset(line, 0, 80);
-		CFGetS(line, 80, infile);
+		CFGetS(line, 80, &cf);
 		ptr = &(line[0]);
 		while (isspace(*ptr))
 			ptr++;
@@ -260,7 +259,7 @@ int ReadConfigFile()
 			}
 		}
 	}
-	CFClose(infile);
+	CFClose(&cf);
 	JoySetCalVals(joy_axis_min, joy_axis_center, joy_axis_max);
 	i = FindArg( "-volume" );
 
@@ -322,12 +321,10 @@ int ReadConfigFile()
 	} else
 		digi_driver_board		= digi_driver_board;
 #else
-	infile = CFOpen("descentw.cfg", gameFolders.szConfigDir, "rt", 0);
-	if (infile) {
-		while (!CFEoF(infile))
-		{
+	if (CFOpen (&cf, "descentw.cfg", gameFolders.szConfigDir, "rt", 0)) {
+		while (!CFEoF(&cf)) {
 			memset(line, 0, 80);
-			CFGetS(line, 80, infile);
+			CFGetS(line, 80, &cf);
 			ptr = &(line[0]);
 			while (isspace(*ptr))
 				ptr++;
@@ -351,7 +348,7 @@ int ReadConfigFile()
 				}
 			}
 		}
-		CFClose(infile);
+		CFClose(&cf);
 	}
 #endif
 
@@ -362,7 +359,7 @@ int ReadConfigFile()
 
 int WriteConfigFile()
 {
-	CFILE *infile;
+	CFILE cf;
 	char str[256];
 	int i;
 	int joy_axis_min[JOY_MAX_AXES];
@@ -373,38 +370,36 @@ con_printf (CON_VERBOSE, "writing config file ...\n");
 con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 	JoyGetCalVals(joy_axis_min, joy_axis_center, joy_axis_max);
 
-	infile = CFOpen("descent.cfg", gameFolders.szConfigDir, "wt", 0);
-	if (infile == NULL) {
+	if (!CFOpen (&cf, "descent.cfg", gameFolders.szConfigDir, "wt", 0))
 		return 1;
-	}
 	/*sprintf (str, "%s=0x%x\n", digi_dev8_str, gameConfig.nDigiType);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=0x%x\n", digi_dev16_str, digi_driver_board_16);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=0x%x\n", digi_port_str, digi_driver_port);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", digi_irq_str, digi_driver_irq);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", digi_dma8_str, gameConfig.nDigiDMA);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", digi_dma16_str, digi_driver_dma_16);
-	CFPutS(str, infile);*/
+	CFPutS(str, &cf);*/
 	sprintf (str, "%s=%d\n", pszDigiVolume, gameConfig.nDigiVolume);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	/*sprintf (str, "%s=0x%x\n", midi_dev_str, gameConfig.nMidiType);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=0x%x\n", midi_port_str, digi_midi_port);
-	CFPutS(str, infile);*/
+	CFPutS(str, &cf);*/
 	sprintf (str, "%s=%d\n", pszMidiVolume, gameConfig.nMidiVolume);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszRedbookEnabled, FindArg("-noredbook")?bRedbookEnabledSave:gameStates.sound.bRedbookEnabled);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszRedbookVolume, gameConfig.nRedbookVolume);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszStereoRev, gameConfig.bReverseChannels);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszGammaLevel, gamma);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	if (gameStates.app.nDetailLevel == NUM_DETAIL_LEVELS-1)
 		sprintf (str, "%s=%d,%d,%d,%d,%d,%d,%d\n", 
 					pszDetailLevel, 
@@ -417,34 +412,34 @@ con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 					gameStates.sound.nMaxSoundChannels);
 	else
 		sprintf (str, "%s=%d\n", pszDetailLevel, gameStates.app.nDetailLevel);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 
 	sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMin, joy_axis_min[0], joy_axis_min[1], joy_axis_min[2], joy_axis_min[3] );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickCen, joy_axis_center[0], joy_axis_center[1], joy_axis_center[2], joy_axis_center[3] );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d,%d,%d,%d\n", pszJoystickMax, joy_axis_max[0], joy_axis_max[1], joy_axis_max[2], joy_axis_max[3] );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 
 	sprintf (str, "%s=%s\n", pszLastPlayer, LOCALPLAYER.callsign );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	for (i = 0; gameConfig.szLastMission [i]; i++)
 		if (!isprint (gameConfig.szLastMission [i])) {
 			*gameConfig.szLastMission = '\0';
 			break;
 			}
 	sprintf (str, "%s=%s\n", pszLastMission, gameConfig.szLastMission );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszVrType, gameConfig.vrType );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszVrResolution, gameConfig.vrResolution );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszVrTracking, gameConfig.vrTracking );
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 	sprintf (str, "%s=%d\n", pszHiresMovies, (FindArg("-nohires") || FindArg("-nohighres") || FindArg("-lowresmovies"))?bHiresMoviesSave:gameOpts->movies.bHires);
-	CFPutS(str, infile);
+	CFPutS(str, &cf);
 
-	CFClose(infile);
+	CFClose(&cf);
 
 	return 0;
 }	

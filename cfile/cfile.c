@@ -1,4 +1,4 @@
-/* $Id: cfile.c,v 1.23 2003/11/27 00:36:14 btb Exp $ */
+/* $Id: cfp.c,v 1.23 2003/11/27 00:36:14 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -83,8 +83,8 @@ int defaultErrorCounter = 0;
 int *criticalErrorCounterPtr = &defaultErrorCounter;
 
 // ----------------------------------------------------------------------------
-//tell cfile about your critical error counter
-void CFSetCriticalErrorCounterPtr(int *ptr)
+//tell cfp about your critical error counter
+void CFSetCriticalErrorCounterPtr (int *ptr)
 {
 criticalErrorCounterPtr = ptr;
 }
@@ -255,7 +255,7 @@ if (!*pszHogName) {
 	memset (&gameFolders, 0, sizeof (gameFolders));
 	return 1;
 	}
-Assert(gameHogFiles.D2HogFiles.bInitialized == 0);
+Assert (gameHogFiles.D2HogFiles.bInitialized == 0);
 if (CFInitHogFile (pszHogName, pszFolder, gameHogFiles.D2HogFiles.files, &gameHogFiles.D2HogFiles.nFiles)) {
 	strcpy (gameHogFiles.D2HogFiles.szName, pszHogName);
 	gameHogFiles.D2HogFiles.bInitialized = 1;
@@ -272,28 +272,27 @@ return 0;	//not loaded!
 
 int CFSize (char *hogname, char *folder, int bUseD1Hog)
 {
-	CFILE *fp;
+	CFILE cf;
 //	char fn [FILENAME_LEN];
 #if !(defined (_WIN32_WCE) || defined (_WIN32))
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-fp = CFOpen (hogname, gameFolders.szDataDir, "rb", bUseD1Hog);
-if (fp == NULL)
+if (!CFOpen (&cf, hogname, gameFolders.szDataDir, "rb", bUseD1Hog))
 	return -1;
-fstat (fileno (fp->file), &statbuf);
-CFClose(fp);
+fstat (fileno (cf.file), &statbuf);
+CFClose (&cf);
 return statbuf.st_size;
 #else
 	DWORD size;
 
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
-if (!(fp = CFOpen(hogname, gameFolders.szDataDir, "rb", bUseD1Hog)))
+if (!CFOpen (&cf, hogname, gameFolders.szDataDir, "rb", bUseD1Hog))
 	return -1;
-if (fseek (fp->file, 0, SEEK_END))
+if (fseek (cf.file, 0, SEEK_END))
 	return -1;
-size = ftell (fp->file);
-CFClose(fp);
+size = ftell (cf.file);
+CFClose (&cf);
 return size;
 #endif
 }
@@ -366,18 +365,20 @@ return NULL;
 // past the end of the file. It returns 0 if the current position is not end of file.
 // There is no error return.
 
-int CFEoF(CFILE *cfile)
+int CFEoF (CFILE *cfp)
 {
-Assert(cfile != NULL);
-Assert(cfile->file != NULL);
-return (cfile->raw_position >= cfile->size);
+#ifdef _DEBUG
+if (!(cfp && cfp->file))
+	return 1;
+#endif
+return (cfp->raw_position >= cfp->size);
 }
 
 // ----------------------------------------------------------------------------
 
-int CFError(CFILE *cfile)
+int CFError (CFILE *cfp)
 {
-	return ferror(cfile->file);
+return ferror (cfp->file);
 }
 
 // ----------------------------------------------------------------------------
@@ -411,7 +412,7 @@ return 0;		// Couldn't find it.
 
 // ----------------------------------------------------------------------------
 // Deletes a file.
-int CFDelete(char *filename, char*folder)
+int CFDelete (char *filename, char*folder)
 {
 	char	fn [FILENAME_LEN];
 
@@ -425,7 +426,7 @@ sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", filename);
 
 // ----------------------------------------------------------------------------
 // Rename a file.
-int CFRename(char *oldname, char *newname, char *folder)
+int CFRename (char *oldname, char *newname, char *folder)
 {
 	char	fno [FILENAME_LEN], fnn [FILENAME_LEN];
 
@@ -440,7 +441,7 @@ sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
 
 // ----------------------------------------------------------------------------
 // Make a directory.
-int CFMkDir(char *pathname)
+int CFMkDir (char *pathname)
 {
 #if defined (_WIN32_WCE) || defined (_WIN32)
 	return !CreateDirectory(pathname, NULL);
@@ -451,15 +452,15 @@ int CFMkDir(char *pathname)
 
 // ----------------------------------------------------------------------------
 
-CFILE * CFOpen (char *filename, char *folder, char *mode, int bUseD1Hog) 
+int CFOpen (CFILE *cfp, char *filename, char *folder, char *mode, int bUseD1Hog) 
 {
 	int	length = -1;
 	FILE	*fp = NULL;
-	CFILE *cfile = NULL;
 	char	*pszHogExt, *pszFileExt;
 
+cfp->file = NULL;
 if (!(filename && *filename))
-	return NULL;
+	return 0;
 if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
 	fp = CFGetFileHandle (filename, folder, mode);		// Check for non-hog file first...
 	if (!fp && 
@@ -478,28 +479,23 @@ if (!fp) {
 	if ((fp = CFFindLibFile (filename, &length, bUseD1Hog)))
 		if (stricmp (mode, "rb")) {
 			Error ("Cannot read hog file\n(wrong file io mode).\n");
-			return NULL;
+			return 0;
 			}
 	}
-if (fp) {
-	if (!(cfile = D2_ALLOC (sizeof (CFILE))))
-		fclose (fp);
-	else {
-		cfile->file = fp;
-		cfile->raw_position = 0;
-		cfile->size = (length < 0) ? ffilelength (fp) : length;
-		cfile->lib_offset = (length < 0) ? 0 : ftell (fp);
-		}
-	}
-//if (!cfile) LogErr ("CFOpen(): error opening %s\n", filename);
-return cfile;
+if (!fp) 
+	return 0;
+cfp->file = fp;
+cfp->raw_position = 0;
+cfp->size = (length < 0) ? ffilelength (fp) : length;
+cfp->lib_offset = (length < 0) ? 0 : ftell (fp);
+return 1;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFLength (CFILE *fp, int bUseD1Hog) 
+int CFLength (CFILE *cfp, int bUseD1Hog) 
 {
-return fp ? fp->size : 0;
+return cfp ? cfp->size : 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -508,21 +504,21 @@ return fp ? fp->size : 0;
 // returns:   number of full elements actually written
 //
 //
-int CFWrite (void *buf, int nElemSize, int nElemCount, CFILE *fp)
+int CFWrite (void *buf, int nElemSize, int nElemCount, CFILE *cfp)
 {
 	int nWritten;
 
-if (!fp) {
+if (!cfp) {
 	CFCriticalError (1);
 	return 0;
 	}
-Assert(fp != NULL);
-Assert(buf != NULL);
-Assert(nElemSize > 0);
-Assert(fp->file != NULL);
-Assert(fp->lib_offset == 0);
-nWritten = (int) fwrite (buf, nElemSize, nElemCount, fp->file);
-fp->raw_position = ftell(fp->file);
+Assert (cfp != NULL);
+Assert (buf != NULL);
+Assert (nElemSize > 0);
+Assert (cfp->file != NULL);
+Assert (cfp->lib_offset == 0);
+nWritten = (int) fwrite (buf, nElemSize, nElemCount, cfp->file);
+cfp->raw_position = ftell (cfp->file);
 CFCriticalError (nWritten != nElemCount);
 return nWritten;
 }
@@ -533,29 +529,29 @@ return nWritten;
 // returns:   success ==> returns character written
 //            error   ==> EOF
 //
-int CFPutC(int c, CFILE *cfile)
+int CFPutC (int c, CFILE *cfp)
 {
 	int char_written;
 
-Assert(cfile != NULL);
-Assert(cfile->file != NULL);
-Assert(cfile->lib_offset == 0);
-char_written = fputc(c, cfile->file);
-cfile->raw_position = ftell(cfile->file);
+Assert (cfp != NULL);
+Assert (cfp->file != NULL);
+Assert (cfp->lib_offset == 0);
+char_written = fputc (c, cfp->file);
+cfp->raw_position = ftell (cfp->file);
 return char_written;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFGetC (CFILE * fp) 
+int CFGetC (CFILE *cfp) 
 {
 	int c;
 
-if (fp->raw_position >= fp->size) 
+if (cfp->raw_position >= cfp->size) 
 	return EOF;
-c = getc (fp->file);
+c = getc (cfp->file);
 if (c != EOF)
-	fp->raw_position = ftell (fp->file) - fp->lib_offset;
+	cfp->raw_position = ftell (cfp->file) - cfp->lib_offset;
 return c;
 }
 
@@ -565,21 +561,21 @@ return c;
 // returns:   success ==> non-negative value
 //            error   ==> EOF
 //
-int CFPutS(char *str, CFILE *cfile)
+int CFPutS (char *str, CFILE *cfp)
 {
 	int ret;
 
-Assert(cfile != NULL);
-Assert(str != NULL);
-Assert(cfile->file != NULL);
-ret = fputs(str, cfile->file);
-cfile->raw_position = ftell(cfile->file);
+Assert (cfp != NULL);
+Assert (str != NULL);
+Assert (cfp->file != NULL);
+ret = fputs(str, cfp->file);
+cfp->raw_position = ftell(cfp->file);
 return ret;
 }
 
 // ----------------------------------------------------------------------------
 
-char * CFGetS (char * buf, size_t n, CFILE * fp) 
+char * CFGetS (char * buf, size_t n, CFILE *cfp) 
 {
 	char * t = buf;
 	size_t i;
@@ -587,18 +583,18 @@ char * CFGetS (char * buf, size_t n, CFILE * fp)
 
 for (i = 0; i < n - 1; i++) {
 	do {
-		if (fp->raw_position >= fp->size) {
+		if (cfp->raw_position >= cfp->size) {
 			*buf = 0;
 			return (buf == t) ? NULL : t;
 			}
-		c = CFGetC (fp);
+		c = CFGetC (cfp);
 		if (c == 0 || c == 10)       // Unix line ending
 			break;
 		if (c == 13) {      // Mac or DOS line ending
 			int c1;
 
-			c1 = CFGetC (fp);
-			CFSeek (fp, -1, SEEK_CUR);
+			c1 = CFGetC (cfp);
+			CFSeek (cfp, -1, SEEK_CUR);
 			if (c1 == 10) // DOS line ending
 				continue;
 			else            // Mac line ending
@@ -617,31 +613,31 @@ return  t;
 
 // ----------------------------------------------------------------------------
 
-size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE * fp) 
+size_t CFRead (void * buf, size_t elsize, size_t nelem, CFILE *cfp) 
 {
 unsigned int i, size = (int) (elsize * nelem);
 
-if (!fp || (size < 1)) {
+if (!cfp || (size < 1)) {
 	CFCriticalError (1);
 	return 0;
 	}
-i = (int) fread (buf, 1, size, fp->file);
+i = (int) fread (buf, 1, size, cfp->file);
 CFCriticalError (i != size);
-fp->raw_position += i;
+cfp->raw_position += i;
 return i / elsize;
 }
 
 
 // ----------------------------------------------------------------------------
 
-int CFTell (CFILE *fp) 
+int CFTell (CFILE *cfp) 
 {
-return fp ? fp->raw_position : -1;
+return cfp ? cfp->raw_position : -1;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFSeek (CFILE *fp, long int offset, int where) 
+int CFSeek (CFILE *cfp, long int offset, int where) 
 {
 	int c, goal_position;
 
@@ -650,35 +646,30 @@ switch (where) {
 		goal_position = offset;
 		break;
 	case SEEK_CUR:
-		goal_position = fp->raw_position+offset;
+		goal_position = cfp->raw_position+offset;
 		break;
 	case SEEK_END:
-		goal_position = fp->size+offset;
+		goal_position = cfp->size+offset;
 		break;
 	default:
 		return 1;
 	}
-c = fseek (fp->file, fp->lib_offset + goal_position, SEEK_SET);
+c = fseek (cfp->file, cfp->lib_offset + goal_position, SEEK_SET);
 CFCriticalError (c);
-fp->raw_position = ftell(fp->file)-fp->lib_offset;
+cfp->raw_position = ftell(cfp->file)-cfp->lib_offset;
 return c;
 }
 
 // ----------------------------------------------------------------------------
 
-int CFClose(CFILE *fp)
+int CFClose (CFILE *cfp)
 {
 	int result;
 
-if (!fp)
+if (!(cfp && cfp->file))
 	return 0;
-if (fp->file) {
-	result = fclose (fp->file);
-	fp->file = NULL;
-	}
-else
-	result = 0;
-D2_FREE (fp);
+result = fclose (cfp->file);
+cfp->file = NULL;
 return result;
 }
 
@@ -904,13 +895,13 @@ return 0;
 
 int CFExtract (char *filename, char *folder, int bUseD1Hog, char *szDestName)
 {
-	CFILE		*fp = CFOpen (filename, folder, "rb", bUseD1Hog);
-	FILE		*f;
+	CFILE		cf;
+	FILE		*fp;
 	char		szDest [FILENAME_LEN], fn [FILENAME_LEN];
 	static	char buf [4096];
 	int		h, l;
 
-if (!fp)
+if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 	return 0;
 strcpy (fn, filename);
 if (*szDestName) {
@@ -925,19 +916,19 @@ if (*szDestName) {
 		strcpy (fn, szDestName);
 	}
 sprintf (szDest, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", fn);
-f = fopen (szDest, "wb");
-if (!f) {
-	CFClose (fp);
+fp = fopen (szDest, "wb");
+if (!fp) {
+	CFClose (&cf);
 	return 0;
 	}
-for (h = sizeof (buf), l = fp->size; l; l -= h) {
+for (h = sizeof (buf), l = cf.size; l; l -= h) {
 	if (h > l)
 		h = l;
-	CFRead (buf, h, 1, fp);
-	fwrite (buf, h, 1, f);
+	CFRead (buf, h, 1, &cf);
+	fwrite (buf, h, 1, fp);
 	}
-CFClose (fp);
-fclose (f);
+CFClose (&cf);
+fclose (fp);
 return 1;
 }
 
@@ -945,20 +936,20 @@ return 1;
 
 char *CFReadData (char *filename, char *folder, int bUseD1Hog)
 {
-	CFILE		*fp = CFOpen (filename, folder, "rb", bUseD1Hog);
+	CFILE		cf;
 	char		*pData = NULL;
 	size_t	nSize;
 
-if (!fp)
+if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 	return NULL;
-nSize = CFLength (fp, bUseD1Hog);
+nSize = CFLength (&cf, bUseD1Hog);
 if (!(pData = (char *) D2_ALLOC ((unsigned int) nSize)))
 	return NULL;
-if (!CFRead (pData, nSize, 1, fp)) {
+if (!CFRead (pData, nSize, 1, &cf)) {
 	D2_FREE (pData);
 	pData = NULL;
 	}
-CFClose (fp);
+CFClose (&cf);
 return pData;
 }
 
@@ -1021,15 +1012,14 @@ if (i < 123) {
 
 time_t CFDate (char *filename, char *folder, int bUseD1Hog)
 {
-	CFILE *fp;
+	CFILE cf;
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-fp = CFOpen (filename, folder, "rb", bUseD1Hog);
-if (fp == NULL)
+if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 	return -1;
-fstat (fileno (fp->file), &statbuf);
-CFClose (fp);
+fstat (fileno (cf.file), &statbuf);
+CFClose (&cf);
 return statbuf.st_mtime;
 }
 

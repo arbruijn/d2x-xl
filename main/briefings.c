@@ -1330,7 +1330,7 @@ return (NULL);
 //	Load Descent briefing text.
 int LoadScreenText (char *filename, char **buf)
 {
-	CFILE *fp;
+	CFILE cf;
 	int	len, i;
 	int	bHaveBinary;
 	char	*bufP;
@@ -1338,39 +1338,39 @@ int LoadScreenText (char *filename, char **buf)
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!(fp = CFOpen (filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission))) {
+if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission)) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!(fp = CFOpen (filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission))) {
+	if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission)) {
 		LogErr ("can't open briefing '%s'!\n", filename);
 		return (0);
 		}
 	}
 if (bHaveBinary) {
-	len = CFLength (fp, 0);
+	len = CFLength (&cf, 0);
 	MALLOC (bufP, char, len);
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
-		CFRead (bufP, 1, 1, fp);
+		CFRead (bufP, 1, 1, &cf);
 			if (*bufP == 13)
 				bufP--;
 		}
-	CFClose (fp);
+	CFClose (&cf);
 	for (i = 0, bufP = *buf; i < len; i++, bufP++)
 		if (*bufP != '\n')
 			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
 	}
 else {
-	len = CFLength (fp, 0);
+	len = CFLength (&cf, 0);
 	MALLOC (bufP, char, len+500);
 	*buf = bufP;
 	for (i = 0; i < len; i++, bufP++) {
-		CFRead (bufP, 1, 1, fp);
+		CFRead (bufP, 1, 1, &cf);
 			if (*bufP == 13)
 				bufP--;
 		}
 	*bufP = 0;
-	CFClose (fp);
+	CFClose (&cf);
 	}
 briefingTextLen = (int) (bufP - *buf);
 return (1);

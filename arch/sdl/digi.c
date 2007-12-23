@@ -494,18 +494,18 @@ return ssP->length = l;
 
 int DigiReadWAV (tSoundSlot *ssP)
 {
-	CFILE	*fp;
+	CFILE	cf;
 	int	l;
 
-if (!(fp = CFOpen ("d2x-temp.wav", gameFolders.szDataDir, "rb", 0)))
+if (!CFOpen (&cf, "d2x-temp.wav", gameFolders.szDataDir, "rb", 0))
 	return 0;
-if (0 >= (l = CFLength (fp, 0)))
+if (0 >= (l = CFLength (&cf, 0)))
 	l = -1;
 else if (!(ssP->samples = (ubyte *) D2_ALLOC (l)))
 	l = -1;
-else if (CFRead (ssP->samples, 1, l, fp) != (size_t) l)
+else if (CFRead (ssP->samples, 1, l, &cf) != (size_t) l)
 	l = -1;
-CFClose (fp);
+CFClose (&cf);
 if ((l < 0) && ssP->samples) {
 	D2_FREE (ssP->samples);
 	ssP->samples = NULL;

@@ -106,7 +106,7 @@ return nBitmap;
 void InitHoardData (void)
 {
 	ubyte					palette [256*3];
-	CFILE					*fp;
+	CFILE					cf;
 	int					i, fPos, nBitmap;
 	tVideoClip			*vcP;
 	tEffectClip			*ecP;
@@ -123,19 +123,19 @@ if (gameStates.app.bDemoData) {
 #endif
 	return;
 	}
-if (!(fp = CFOpen ("hoard.ham", gameFolders.szDataDir, "rb", 0))) {
+if (!CFOpen (&cf, "hoard.ham", gameFolders.szDataDir, "rb", 0)) {
 	Warning ("Cannot open hoard data file <hoard.ham>.");
 	return;
 	}
 
-gameData.hoard.orb.nFrames = CFReadShort (fp);
-gameData.hoard.orb.nWidth = CFReadShort (fp);
-gameData.hoard.orb.nHeight = CFReadShort (fp);
+gameData.hoard.orb.nFrames = CFReadShort (&cf);
+gameData.hoard.orb.nWidth = CFReadShort (&cf);
+gameData.hoard.orb.nHeight = CFReadShort (&cf);
 CalcHoardItemSizes (gameData.hoard.orb);
-fPos = CFTell (fp);
-CFSeek (fp, sizeof (palette) + gameData.hoard.orb.nSize, SEEK_CUR);
-gameData.hoard.goal.nFrames = CFReadShort (fp);
-CFSeek (fp, fPos, SEEK_SET);
+fPos = CFTell (&cf);
+CFSeek (&cf, sizeof (palette) + gameData.hoard.orb.nSize, SEEK_CUR);
+gameData.hoard.goal.nFrames = CFReadShort (&cf);
+CFSeek (&cf, fPos, SEEK_SET);
 
 if (!gameData.hoard.bInitialized) {
 	gameData.hoard.goal.nWidth  = 
@@ -203,7 +203,7 @@ else {
 	}
 
 //Load and remap bitmap data for orb
-CFRead (palette, 3, 256, fp);
+CFRead (palette, 3, 256, &cf);
 gameData.hoard.orb.palette = AddPalette (palette);
 vcP = &gameData.eff.vClips [0][gameData.hoard.orb.nClip];
 bmDataP = gameData.hoard.orb.bm.bmTexBuf;
@@ -211,28 +211,28 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 	grsBitmap *bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	CFRead (bmP->bmTexBuf, 1, gameData.hoard.orb.nFrameSize, fp);
+	CFRead (bmP->bmTexBuf, 1, gameData.hoard.orb.nFrameSize, &cf);
 	GrRemapBitmapGood (bmP, gameData.hoard.orb.palette, 255, -1);
 	}
 
 //Load and remap bitmap data for goal texture
-CFReadShort (fp);        //skip frame count
-CFRead (palette, 3, 256, fp);
+CFReadShort (&cf);        //skip frame count
+CFRead (palette, 3, 256, &cf);
 gameData.hoard.goal.palette = AddPalette (palette);
 bmDataP = gameData.hoard.goal.bm.bmTexBuf;
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
 	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + ecP->vc.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
-	CFRead (bmP->bmTexBuf, 1, gameData.hoard.goal.nFrameSize, fp);
+	CFRead (bmP->bmTexBuf, 1, gameData.hoard.goal.nFrameSize, &cf);
 	GrRemapBitmapGood (bmP, gameData.hoard.goal.palette, 255, -1);
 	}
 
 //Load and remap bitmap data for HUD icons
 for (i = 0; i < 2; i++) {
 	gameData.hoard.icon [i].nFrames = 1;
-	gameData.hoard.icon [i].nHeight = CFReadShort (fp);
-	gameData.hoard.icon [i].nWidth = CFReadShort (fp);
+	gameData.hoard.icon [i].nHeight = CFReadShort (&cf);
+	gameData.hoard.icon [i].nWidth = CFReadShort (&cf);
 	CalcHoardItemSizes (gameData.hoard.icon [i]);
 	if (!gameData.hoard.bInitialized) {
 		gameData.hoard.icon [i].bm.bmTexBuf = (ubyte *) D2_ALLOC (gameData.hoard.icon [i].nSize);
@@ -242,33 +242,33 @@ for (i = 0; i < 2; i++) {
 							  BM_FLAG_TRANSPARENT, 
 							  gameData.hoard.icon [i].bm.bmTexBuf);
 		}
-	CFRead (palette, 3, 256, fp);
+	CFRead (palette, 3, 256, &cf);
 	gameData.hoard.icon [i].palette = AddPalette (palette);
-	CFRead (gameData.hoard.icon [i].bm.bmTexBuf, 1, gameData.hoard.icon [i].nFrameSize, fp);
+	CFRead (gameData.hoard.icon [i].bm.bmTexBuf, 1, gameData.hoard.icon [i].nFrameSize, &cf);
 	GrRemapBitmapGood (&gameData.hoard.icon [i].bm, gameData.hoard.icon [i].palette, 255, -1);
 	}
 
 if (!gameData.hoard.bInitialized) {
 	//Load sounds for orb game
 	for (i = 0; i < 4; i++) {
-		int len = CFReadInt (fp);        //get 11k len
+		int len = CFReadInt (&cf);        //get 11k len
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_22K) {
-			CFSeek (fp, len, SEEK_CUR);     //skip over 11k sample
-			len = CFReadInt (fp);    //get 22k len
+			CFSeek (&cf, len, SEEK_CUR);     //skip over 11k sample
+			len = CFReadInt (&cf);    //get 22k len
 			}
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].nLength [0] = len;
 		gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0] = D2_ALLOC (len);
-		CFRead (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0], 1, len, fp);
+		CFRead (gameData.pig.sound.sounds [0][gameData.pig.sound.nSoundFiles [0] + i].data [0], 1, len, &cf);
 		if (gameOpts->sound.digiSampleRate == SAMPLE_RATE_11K) {
-			len = CFReadInt (fp);    //get 22k len
-			CFSeek (fp, len, SEEK_CUR);     //skip over 22k sample
+			len = CFReadInt (&cf);    //get 22k len
+			CFSeek (&cf, len, SEEK_CUR);     //skip over 22k sample
 			}
 		Sounds [0][SOUND_YOU_GOT_ORB + i] = gameData.pig.sound.nSoundFiles [0] + i;
 		AltSounds [0][SOUND_YOU_GOT_ORB + i] = Sounds [0][SOUND_YOU_GOT_ORB + i];
 		}
 	gameData.pig.sound.nSoundFiles [0] += 4;
 	}
-CFClose (fp);
+CFClose (&cf);
 gameData.hoard.bInitialized = 1;
 }
 

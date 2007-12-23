@@ -1,4 +1,4 @@
-/*$Id: cfile.h,v 1.10 2003/10/04 02:58:23 btb Exp $ */
+/*$Id: fp.h,v 1.10 2003/10/04 02:58:23 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -88,17 +88,17 @@ int CFileInit (char *hogname, char *folder);
 
 int CFSize (char *hogname, char *folder, int bUseD1Hog);
 
-CFILE *CFOpen (char *filename, char *folder, char *mode, int bUseD1Hog);
+int CFOpen (CFILE *fp, char *filename, char *folder, char *mode, int bUseD1Hog);
 int CFLength (CFILE *fp, int bUseD1Hog);							// Returns actual size of file...
 size_t CFRead (void *buf, size_t elsize, size_t nelem, CFILE *fp);
-int CFClose (CFILE *cfile);
+int CFClose (CFILE *fp);
 int CFGetC (CFILE *fp);
 int CFSeek (CFILE *fp, long int offset, int where);
 int CFTell (CFILE *fp);
 char *CFGetS (char *buf, size_t n, CFILE *fp);
 
-int CFEoF (CFILE *cfile);
-int CFError (CFILE *cfile);
+int CFEoF (CFILE *fp);
+int CFError (CFILE *fp);
 
 int CFExist (char *filename, char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
 
@@ -112,13 +112,13 @@ int CFRename (char *oldname, char *newname, char *folder);
 int CFMkDir (char *pathname);
 
 // CFWrite () writes to the file
-int CFWrite (void *buf, int elsize, int nelem, CFILE *cfile);
+int CFWrite (void *buf, int elsize, int nelem, CFILE *fp);
 
 // CFPutC () writes a character to a file
-int CFPutC (int c, CFILE *cfile);
+int CFPutC (int c, CFILE *fp);
 
 // CFPutS () writes a string to a file
-int CFPutS (char *str, CFILE *cfile);
+int CFPutS (char *str, CFILE *fp);
 
 // Allows files to be gotten from an alternate hog file.
 // Passing NULL disables this.
@@ -132,18 +132,18 @@ int CFUseAltHogFile (char *name);
 // If NULL passed, returns 1
 int CFUseD1HogFile (char *name);
 
-// All cfile functions will check this directory if no file exists
+// All fp functions will check this directory if no file exists
 // in the current directory.
 void CFUseAltHogDir (char *path);
 
-//tell cfile about your critical error counter 
+//tell fp about your critical error counter 
 void CFSetCriticalErrorCounterPtr (int *ptr);
 
 FILE *CFFindHogFile (tHogFileList *hog, char *folder, char *name, int *length);
 
 int CFExtract (char *filename, char *folder, int bUseD1Hog, char *szDest);
 
-// prototypes for reading basic types from cfile
+// prototypes for reading basic types from fp
 int CFReadInt (CFILE *file);
 short CFReadShort (CFILE *file);
 sbyte CFReadByte (CFILE *file);

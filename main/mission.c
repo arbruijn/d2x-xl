@@ -210,12 +210,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 //strips damn newline from end of line
-char *MsnGetS (char *s, int n, CFILE *fp)
+char *MsnGetS (char *s, int n, CFILE *cfp)
 {
 	char *r;
 	int	l;
 
-r = CFGetS (s, n, fp);
+r = CFGetS (s, n, cfp);
 if (r) {
 	l = (int) strlen (s) - 1;
 	if (s [l] == '\n')
@@ -297,7 +297,7 @@ extern char CDROM_dir [];
 int ReadMissionFile (char *filename, int count, int location)
 {
 	char	filename2 [100];
-	CFILE *fp;
+	CFILE cf;
 	char	*p, temp [FILENAME_LEN],*t;
 
 switch (location) {
@@ -319,8 +319,7 @@ switch (location) {
 		break;
 }
 strcat(filename2, filename);
-fp = CFOpen (filename2, "", "rb", 0);
-if (!fp)
+if (!CFOpen (&cf, filename2, "", "rb", 0))
 	return 0;
 
 strcpy(temp,filename);
@@ -333,18 +332,18 @@ strcpy( gameData.missions.list [count].filename, temp);
 gameData.missions.list [count].bAnarchyOnly = 0;
 gameData.missions.list [count].location = location;
 
-p = GetParmValue("name",fp);
+p = GetParmValue("name",&cf);
 if (!p) {		//try enhanced mission
-	CFSeek(fp,0,SEEK_SET);
-	p = GetParmValue ("xname", fp);
+	CFSeek(&cf,0,SEEK_SET);
+	p = GetParmValue ("xname", &cf);
 	}
 if (!p) {       //try super-enhanced mission!
-	CFSeek(fp,0,SEEK_SET);
-	p = GetParmValue( "zname", fp);
+	CFSeek(&cf,0,SEEK_SET);
+	p = GetParmValue( "zname", &cf);
 	}
 if (!p && (gameStates.app.bNostalgia < 3)) {       //try super-enhanced mission!
-	CFSeek(fp,0,SEEK_SET);
-	p = GetParmValue ("d2x-name", fp);
+	CFSeek(&cf,0,SEEK_SET);
+	p = GetParmValue ("d2x-name", &cf);
 	}
 
 if (p) {
@@ -363,14 +362,14 @@ if (p) {
 		strcpy(gameData.missions.list [count].szMissionName,p);
 	}
 else {
-	CFClose(fp);
+	CFClose(&cf);
 	return 0;
 	}
-p = GetParmValue("nType",fp);
+p = GetParmValue("nType",&cf);
 //get mission nType
 if (p)
 	gameData.missions.list [count].bAnarchyOnly = MsnIsTok (p,"anarchy");
-CFClose(fp);
+CFClose(&cf);
 return 1;
 }
 
@@ -704,7 +703,7 @@ return buf;
 
 //------------------------------------------------------------------------------
 
-int ParseMissionFile (CFILE *fp)
+int ParseMissionFile (CFILE *cfp)
 {
 	int	i;
 	char	*t, *v;
@@ -715,7 +714,7 @@ gameData.missions.nLastLevel = 0;
 gameData.missions.nLastSecretLevel = 0;
 *gameData.missions.szBriefingFilename = '\0';
 *gameData.missions.szEndingFilename = '\0';
-while (MsnGetS (buf, 80, fp)) {
+while (MsnGetS (buf, 80, cfp)) {
 	LogErr ("      '%s'\n", buf);
 	MsnTrimComment (buf);
 	if (MsnIsTok (buf, "name"))
@@ -764,7 +763,7 @@ while (MsnGetS (buf, 80, fp)) {
 			int nLevels = atoi (v);
 			if (nLevels)
 				LogErr ("      parsing level list\n");
-			for (i = 0; (i < nLevels) && MsnGetS (buf, 80, fp); i++) {
+			for (i = 0; (i < nLevels) && MsnGetS (buf, 80, cfp); i++) {
 				LogErr ("         '%s'\n", buf);
 				MsnTrimComment (buf);
 				MsnAddStrTerm (buf);
@@ -782,7 +781,7 @@ while (MsnGetS (buf, 80, fp)) {
 		if ((v = MsnGetValue (buf))) {
 			gameData.missions.nSecretLevels = atoi (v);
 			Assert(gameData.missions.nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
-			for (i = 0; (i < gameData.missions.nSecretLevels) && MsnGetS (buf, 80, fp); i++) {
+			for (i = 0; (i < gameData.missions.nSecretLevels) && MsnGetS (buf, 80, cfp); i++) {
 				LogErr ("         '%s'\n", buf);
 				MsnTrimComment (buf);
 				if (!(t = strchr (buf, ','))) {
@@ -821,7 +820,7 @@ void InitExtraRobotMovie (char *filename);
 //Returns true if mission loaded ok, else false.
 int LoadMission (int nMission)
 {
-	CFILE		*fp;
+	CFILE		cf;
 	char		szFolder [FILENAME_LEN], szFile [FILENAME_LEN];
 	int		i, bFoundHogFile = 0;
 
@@ -893,12 +892,12 @@ sprintf (szFile, "%s%s",
 			gameData.missions.list [nMission].filename,
 			(gameData.missions.list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");
 strlwr (szFile);
-if (!(fp = CFOpen (szFile, szFolder, "rb", 0))) {
+if (!CFOpen (&cf, szFile, szFolder, "rb", 0)) {
 	gameData.missions.nCurrentMission = -1;
 	return 0;		//error!
 	}
-i = ParseMissionFile (fp);
-CFClose(fp);
+i = ParseMissionFile (&cf);
+CFClose(&cf);
 if (!i) {
 	gameData.missions.nCurrentMission = -1;
 	ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_MSNFILE_ERROR);
