@@ -363,8 +363,8 @@ if (!size)
 	MemFree (buffer);
 else {
 	newbuffer = MemAlloc (size, var, pszFile, nLine, 0);
-	if (buffer) {
-		memcpy (newbuffer, buffer, size);
+	if (FindMemBlock (buffer) >= 0) {
+		memcpy (newbuffer, buffer, *(((int *) buffer) - 1));
 		MemFree (buffer);
 		}
 	}
