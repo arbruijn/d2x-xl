@@ -583,7 +583,8 @@ void OglEndFrame (void)
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
 if (!gameStates.render.cameras.bActive)
 	OglDrawBuffer (GL_BACK, 1);
-glUseProgramObject (0);
+if (gameStates.ogl.bShadersOk)
+	glUseProgramObject (0);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE3);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
