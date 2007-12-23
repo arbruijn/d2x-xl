@@ -147,20 +147,6 @@ return i;
 void MemInit ()
 {
 if (!bMemInitialized) {
-	int i;
-
-	bMemInitialized = 1;
-	MEM_INIT (pMallocBase);
-	MEM_INIT (nMallocSize);
-	MEM_INIT (bPresent);
-	MEM_INIT (szFilename);
-	MEM_INIT (szVarname);
-	MEM_INIT (nLineNum);
-	for (i = 0; i < MEM_MAX_INDEX - 1; i++)
-		nFreeList [i] = i + 1;
-	nFreeList [i] = -1;
-	nLargestIndex = 0;
-	nMemId = 0;
 	atexit (MemDisplayBlocks);
 	}
 }
@@ -175,44 +161,28 @@ LogErr ("\tBlock '%s' created in %s, nLine %d.\n",
 
 //------------------------------------------------------------------------------
 
-int MemFindId (void *buffer)
+int MemCheckIntegrity (void *buffer)
 {
-	int id;
-
-buffer = (void *) (((int *) buffer) - 2);
-id = *((int *) buffer);
-if ((id < 0) || (id > nLargestIndex))
-	return -1;
-else if (!bPresent [id])
-	return -1;
-else if (pMallocBase [id] != buffer)
-	return -1;
-else
-	return id;
-}
-
-//------------------------------------------------------------------------------
-
-int MemCheckIntegrity (int block_number)
-{
-	int	i, nErrorCount;
+	int	i, nSize, nErrors;
 	ubyte	*pCheckData;
 
-pCheckData = (ubyte *) ((char *) pMallocBase [block_number] + nMallocSize [block_number] + 2 * sizeof (int));
-nErrorCount = 0;
-for (i = 0; i < CHECKSIZE; i++)
+nSize = *((int *) buffer);
+pCheckData = (ubyte*) (((int *) buffer) + 1) + nSize;
+for (i = 0, nErrors = 0; i < CHECKSIZE; i++)
 	if (pCheckData [i] != CHECKBYTE) {
-		nErrorCount++;
+		nErrors++;
 		LogErr ("OA: %p ", pCheckData + i);
 		}
 
-if (nErrorCount && !bOutOfMemory)	{
+if (nErrors && !bOutOfMemory)	{
 	LogErr ("\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
-	PrintInfo (block_number);
-	LogErr ("\t%d/%d check bytes were overwritten.\n", nErrorCount, CHECKSIZE);
+#if LONG_MEM_ID
+	LogErr ("%s\n", (char *) buffer - 256);
+#endif
+	LogErr ("\t%d/%d check bytes were overwritten.\n", nErrors, CHECKSIZE);
 	Int3 ();
 	}
-return nErrorCount;
+return nErrors;
 }
 
 //------------------------------------------------------------------------------
@@ -225,16 +195,6 @@ void _CDECL_ MemDisplayBlocks (void)
 if (!bMemInitialized) 
 	return;
 
-#	if MEMSTATS
-if (bMemStatsFileInitialized) {
-	unsigned long	nFreeMem = FreeMem ();
-	fprintf (sMemStatsFile,
-			"\n%9u bytes free before closing MEMSTATS file.", nFreeMem);
-	fprintf (sMemStatsFile, "\nMemory Stats File Closed.");
-	fclose (sMemStatsFile);
-	}
-#	endif	// end of ifdef memstats
-#	if 1
 if (nMemBlocks) {
 	LogErr ("\nMEMORY LEAKS:\n");
 	for (i = 0; i < nMemBlocks; i++)
@@ -242,51 +202,7 @@ if (nMemBlocks) {
 	for (i = 0; i < nMemBlocks; i++)
 		D2_FREE (memBlocks [i].p);
 	}
-#	else
-numleft = 0;
-for (i = 0; i <= nLargestIndex; i++) {
-	if (bPresent [i] && !bOutOfMemory) {
-		numleft++;
-		if (bShowMemInfo)	{
-			LogErr ("\nMEM_LEAKAGE: Memory block has not been freed.\n");
-			PrintInfo (i);
-			}
-		MemFree ((void *) pMallocBase [i]);
-		}
-	}
-if (numleft && !bOutOfMemory)
-	Warning ("MEM: %d blocks were left allocated!\n", numleft);
-#	endif
 #endif
-}
-
-//------------------------------------------------------------------------------
-
-void MemValidateHeap ()
-{
-	int i;
-
-for (i = 0; i < nLargestIndex; i++)
-	if (bPresent [i])
-		MemCheckIntegrity (i);
-}
-
-//------------------------------------------------------------------------------
-
-void MemPrintAll ()
-{
-	FILE * ef;
-	int i, size = 0;
-
-ef = fopen ("DESCENT.MEM", "wt");
-for (i = 0; i < nLargestIndex; i++)
-	if (bPresent [i])	{
-		size += nMallocSize [i];
-		//fprintf (ef, "Var:%s\t File:%s\t Line:%d\t Size:%d Base:%x\n", szVarname [i], szFilename [i], Line [i], nMallocSize [i], pMallocBase [i]);
-		fprintf (ef, "%12d bytes in %s declared in %s, nLine %d\n", nMallocSize [i], szVarname [i], szFilename [i], nLineNum [i] );
-		}
-fprintf (ef, "%d bytes (%d Kbytes) allocated.\n", size, size/1024); 
-fclose (ef);
 }
 
 #else
@@ -315,34 +231,6 @@ atexit (MemDisplayBlocks);
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ MemDisplayBlocks (void)
-{
-if (!bMemInitialized) 
-	return;
-
-#if MEMSTATS
-if (bMemStatsFileInitialized) {
-	unsigned long	nFreeMem = FreeMem ();
-	fprintf (sMemStatsFile,
-			"\n%9u bytes free before closing MEMSTATS file.", nFreeMem);
-	fprintf (sMemStatsFile, "\nMemory Stats File Closed.");
-	fclose (sMemStatsFile);
-	}
-#endif	// end of ifdef memstats
-if (nBytesMalloced) {
-	LogErr ("\nMEM_LEAKAGE: %d bytes of memory have not been freed.\n", nBytesMalloced);
-	}
-if (bShowMemInfo)	{
-	LogErr ("\n\nMEMORY USAGE:\n");
-	LogErr ("  %u Kbytes dynamic data\n", (nLargestAddress-nSmallestAddress+512)/1024);
-	LogErr ("  %u Kbytes code/static data.\n", (nSmallestAddress- (4*1024*1024)+512)/1024);
-	LogErr ("  ---------------------------\n");
-	LogErr ("  %u Kbytes required.\n", 	 (nLargestAddress- (4*1024*1024)+512)/1024);
-	}
-}
-
-//------------------------------------------------------------------------------
-
 void MemValidateHeap ()
 {
 }
@@ -358,83 +246,37 @@ void MemPrintAll ()
 
 //------------------------------------------------------------------------------
 
+#if !DBG_MALLOC
+
 void MemFree (void *buffer)
 {
-#if !DBG_MALLOC
 if (!buffer)
 	return;
-if (buffer)
-	free (buffer);
+free (buffer);
+}
+
 #else
-#if FULL_MEM_CHECKING
-	int id;
-#endif
-if (!buffer)
-	return;
-#if DBG_MALLOC
-if (UnregisterMemBlock (buffer) < 0)
-	return;
-#endif
+
+void MemFree (void *buffer)
+{
 if (!bMemInitialized)
 	MemInit ();
-
-#if MEMSTATS
-{
-unsigned long	nFreeMem = 0;
-if (bMemStatsFileInitialized) {
-	nFreeMem = FreeMem ();
-	fprintf (sMemStatsFile, "\n%9u bytes free before attempting: FREE", nFreeMem);
-	}
-}
-#endif	// end of ifdef memstats
-
-#ifdef FULL_MEM_CHECKING
-if (!(buffer || bOutOfMemory))
-#else
 if (!buffer)
-#endif
-	{
-	//LogErr ("\nMEM_FREE_NULL: An attempt was made to free the null pointer.\n");
-#if DBG_MALLOC
-	//Warning ("MEM: Freeing the NULL pointer!");
-#endif
-	Int3 ();
 	return;
-	}
-#if FULL_MEM_CHECKING
-#	if LONG_MEM_ID
-buffer = (void *) (((char *) buffer) - 256);
-#	endif
-id = MemFindId (buffer);
-if ((id == -1) && !bOutOfMemory) {
-	LogErr ("\nMEM_FREE_NOMALLOC: An attempt was made to free a ptr that wasn't\nallocated with mem.h included.\n");
-#if DBG_MALLOC
-	//Warning ("Freeing a non-allocated pointer!");
-#endif
-	Int3 ();
+if (UnregisterMemBlock (buffer) < 0)
 	return;
-	}
-MemCheckIntegrity (id);
-#endif
+buffer = (void *) (((int *) buffer) - 1);
 #ifndef __macosx__
-nBytesMalloced -= *(((int *) buffer) - 1);
+nBytesMalloced -= *((int *) buffer);
 #endif
-free (((int *) buffer) - 2);
-#if FULL_MEM_CHECKING
-bPresent [id] = 0;
-#if DBG_MALLOC
-if (id == CHECKID1)
-	id = CHECKID1;
-if (id == CHECKID2)
-	id = CHECKID2;
+MemCheckIntegrity (buffer);
+#if LONG_MEM_ID
+buffer = (void *) (((char *) buffer) - 256);
 #endif
-pMallocBase [id] = 0;
-nMallocSize [id] = 0;
-nFreeList [id] = iFreeList;
-iFreeList = id;
-#	endif
-#endif
+free (buffer);
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -442,118 +284,60 @@ iFreeList = id;
 #	undef malloc
 #endif
 
+#ifndef _DEBUG
+
 void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZeroFill)
 {
 	int *ptr;
 
-#ifndef _DEBUG
-
 if (!(ptr = (int *) malloc (size))) {
 #if 1//TRACE
-	LogErr ("allocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
+	if (size)
+		LogErr ("allocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
 #endif
 	}
 else if (bZeroFill)
 	memset (ptr, 0, size);
+}
 
 #else	//!RELEASE
 
-#if FULL_MEM_CHECKING
-	int id;
-#endif
+void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZeroFill)
+{
+	int *ptr;
+
 if (!bMemInitialized)
 	MemInit ();
 
-#if MEMSTATS
-{
-unsigned long	nFreeMem = 0;
-if (bMemStatsFileInitialized) {
-	nFreeMem = FreeMem ();
-	fprintf (sMemStatsFile, "\n%9u bytes free before attempting: MALLOC %9u bytes.", nFreeMem, size);
-	}
-}
-#endif	// end of ifdef memstats
-
-#if FULL_MEM_CHECKING
-if (iFreeList < 0) {
-	LogErr ("\nMEM_OUT_OF_SLOTS: Not enough space in mem.c to hold all the mallocs.\n");	
-	LogErr ("\tBlock '%s' created in %s, nLine %d.\n", var, pszFile, nLine);
-	Error ("Out of free memory slots");
-	}
-
-id = iFreeList;
-iFreeList = nFreeList [iFreeList];
-if (id > nLargestIndex) 
-	nLargestIndex = id;
-if (id == -1) {
-	LogErr ("\nMEM_OUT_OF_SLOTS: Not enough space in mem.c to hold all the mallocs.\n");	
-	LogErr ("\tBlock '%s' created in %s, nLine %d.\n", szVarname [id], szFilename [id], nLineNum [id]);
-	Error ("Out of free memory slots");
-	}
-#endif
-
-if (!size)	{
-	LogErr ("\nMEM_MALLOC_ZERO: Attempting to malloc 0 bytes.\n");
-	LogErr ("\tVar %s, file %s, nLine %d.\n", var, pszFile, nLine);
-	Error ("Tried to allocate block of 0 bytes");
-	Int3 ();
-	}
+if (!size)
+	return NULL;
 
 #if LONG_MEM_ID
-ptr = malloc (size + CHECKSIZE + 2 * sizeof (int) + 256);
+ptr = malloc (size + CHECKSIZE + sizeof (int) + 256);
 #else
-ptr = malloc (size + CHECKSIZE + 2 * sizeof (int));
+ptr = malloc (size + CHECKSIZE + sizeof (int));
 #endif
 if (!ptr) {
 	LogErr ("\nMEM_OUT_OF_MEMORY: Malloc returned NULL\n");
 	LogErr ("\tVar %s, file %s, nLine %d.\n", var, pszFile, nLine);
-	//Error ("MEM_OUT_OF_MEMORY");
 	Int3 ();
 	return NULL;
 	}
 
-#if FULL_MEM_CHECKING
-pMallocBase [id] = ptr;
-nMallocSize [id] = size;
-szVarname [id] = var;
-szFilename [id] = pszFile;
-nLineNum [id] = nLine;
-nId [id] = nMemId++;
-#if DBG_MALLOC
-if (id == CHECKID1)
-	id = CHECKID1;
-if (id == CHECKID2)
-	id = CHECKID2;
-#endif
-bPresent [id] = 1;
-#else
-{
-unsigned int base = (unsigned int) ptr;
-if (base < nSmallestAddress) 
-	nSmallestAddress = base;
-if ((base + size) > nLargestAddress) 
-	nLargestAddress = base+size;
-}
-#endif
-
-*ptr++ = id;
-*ptr++ = size;
 #if LONG_MEM_ID
 sprintf ((char *) ptr, "%s:%d", pszFile, nLine);
 ptr = (int *) (((char *) ptr) + 256);
 #endif
+*ptr++ = size;
 nBytesMalloced += size;
-#if FULL_MEM_CHECKING
 memset ((char *) ptr + size, CHECKBYTE, CHECKSIZE);
-#endif
 if (bZeroFill)
 	memset (ptr, 0, size);
-#endif //!RELEASE
-#if DBG_MALLOC
 RegisterMemBlock (ptr, pszFile, nLine);
-#endif
 return (void *) ptr;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -566,14 +350,12 @@ if (!size)
 	MemFree (buffer);
 else if (!buffer)
 	newbuffer = MemAlloc (size, var, pszFile, nLine, 0);
-else if (! (newbuffer = realloc (buffer, size))) {
+else if (!(newbuffer = realloc (buffer, size))) {
 #if TRACE
 	con_printf (CON_MALLOC, "reallocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
 #endif
 	}
 #else
-	int id;
-
 if (!bMemInitialized)
 	MemInit ();
 
@@ -582,9 +364,6 @@ if (!size)
 else {
 	newbuffer = MemAlloc (size, var, pszFile, nLine, 0);
 	if (buffer) {
-		id = MemFindId (buffer);
-		if (nMallocSize [id] < size)
-			size = nMallocSize [id];
 		memcpy (newbuffer, buffer, size);
 		MemFree (buffer);
 		}
