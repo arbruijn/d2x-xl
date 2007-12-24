@@ -3789,9 +3789,9 @@ do {
 		if (extraGameInfo [0].headlight.bAvailable) {
 			ADD_CHECK (opt, TXT_HEADLIGHT_ON, gameOpts->gameplay.bHeadLightOnWhenPickedUp, KEY_O, HTX_MISC_HEADLIGHT);
 			optHeadLightOnWhenPickedUp = opt++;
-			ADD_CHECK (opt, TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_H, HTX_HEADLIGHT_BUILTIN);
+			ADD_CHECK (opt, TXT_HEADLIGHT_BUILTIN, extraGameInfo [0].headlight.bBuiltIn, KEY_L, HTX_HEADLIGHT_BUILTIN);
 			optHeadLightBuiltIn = opt++;
-			ADD_CHECK (opt, TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_H, HTX_HEADLIGHT_POWERDRAIN);
+			ADD_CHECK (opt, TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_W, HTX_HEADLIGHT_POWERDRAIN);
 			optHeadLightPowerDrain = opt++;
 			}
 		ADD_CHECK (opt, TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_V, HTX_GPLAY_INVENTORY);

@@ -81,6 +81,7 @@ gsrCanvas *Canv_RightEnergyGauge;
 gsrCanvas *Canv_NumericalGauge;
 
 #define NUM_INV_ITEMS			8
+#define INV_ITEM_HEADLIGHT		2
 #define INV_ITEM_QUADLASERS	5
 #define INV_ITEM_CLOAK			6
 #define INV_ITEM_INVUL			7
@@ -1923,7 +1924,7 @@ switch (bFlag) {
 	case PLAYER_FLAGS_CONVERTER:
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
-		return HeadLightIsOn (-1);
+		return HeadLightIsOn (-1) != 0;
 	case PLAYER_FLAGS_MAP_ALL:
 		return 0;
 	case PLAYER_FLAGS_AMMO_RACK:
@@ -1983,7 +1984,9 @@ for (j = firstItem; j < n; j++) {
 	HUDBitBlt (nIconScale * - (x + (w - bmP->bmProps.w) / (2 * nIconScale)), nIconScale * - (y - hIcon), bmP, nIconScale * F1_0, 0);
 	//m = 9 - j;
 	*szCount = '\0';
-	if (j == INV_ITEM_INVUL) {
+	if (j == INV_ITEM_HEADLIGHT)
+		bHave = PlayerHasHeadLight (-1);
+	else if (j == INV_ITEM_INVUL) {
 		if ((bHave = (LOCALPLAYER.nInvuls > 0)))
 			sprintf (szCount, "%d", LOCALPLAYER.nInvuls);
 		else

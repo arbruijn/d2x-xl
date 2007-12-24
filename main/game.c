@@ -2128,7 +2128,15 @@ return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
 
 int HeadLightIsOn (int nPlayer)
 {
-return PlayerHasHeadLight (nPlayer) && ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
+#ifdef _DEBUG
+if (!PlayerHasHeadLight (nPlayer))
+	return 0;
+if (!(gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON))
+	return 0;
+return 1;
+#else
+return PlayerHasHeadLight (nPlayer) && ((gameData.multiplayer.players [(nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
+#endif
 }
 
 //-----------------------------------------------------------------------------
