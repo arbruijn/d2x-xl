@@ -1099,7 +1099,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 		}
 	}
-if (vOffset)
+if ((nExclusive < 0) || (nSubModel == nExclusive))
 	G3DoneInstance ();
 }
 
@@ -1164,17 +1164,19 @@ for (nPass = 0; nLights; nPass++) {
 		for (; iLight < 8; iLight++)
 			glDisable (GL_LIGHT0 + iLight);
 		}
-	G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+	if (nSubModel < 0)
+		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 	pm = gameData.models.g3Models [bHires] + nModel;
 	if (bHires) {
 		int i;
 		for (i = 0; i < pm->nSubModels; i++)
 			if (pm->pSubModels [i].nParent == -1) 
-				G3DrawSubModel (objP, nModel, i, -1, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : NULL, bHires, bUseVBO, nPass, bTransparency);
+				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffset, bHires, bUseVBO, nPass, bTransparency);
 		}
 	else
-		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, bHires ? &pm->pSubModels->vOffset : vOffset, bHires, bUseVBO, nPass, bTransparency);
-	G3DoneInstance ();
+		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffset, bHires, bUseVBO, nPass, bTransparency);
+	if (nSubModel < 0)
+		G3DoneInstance ();
 	if (!bLighting)
 		break;
 	}
@@ -1322,7 +1324,7 @@ else
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
 	}
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 0);
-if (bHires && pm->bHasTransparency)
+if ((objP->nType != OBJ_DEBRIS) && bHires && pm->bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 1);
 glDisable (GL_TEXTURE_2D);
 glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);

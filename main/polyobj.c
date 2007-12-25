@@ -709,11 +709,11 @@ else {
 #ifdef _DEBUG
 					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color);
 #endif
+					G3StartInstanceMatrix (&vOffset, NULL);
+					G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
+										  animAngles, NULL, light, glowValues, color, NULL, nModel);
+					G3DoneInstance ();
 					}
-				G3StartInstanceMatrix (&vOffset, NULL);
-				G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
-									  animAngles, NULL, light, glowValues, color, NULL, nModel);
-				G3DoneInstance ();
 				}
 			}
 	G3DoneInstance ();
