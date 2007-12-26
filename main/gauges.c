@@ -3194,7 +3194,7 @@ void DrawWeaponBoxes ()
 
 //	-----------------------------------------------------------------------------
 
-void SBDrawEnergyBar (energy)
+void SBDrawEnergyBar (int nEnergy)
 {
 	int erase_height, w, h, aw;
 	char energy_str [20];
@@ -3211,7 +3211,7 @@ void SBDrawEnergyBar (energy)
 	else
 	HUDBitBlt (SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 
 									  gameData.pig.tex.bitmaps [0] + GET_GAUGE_INDEX (SB_GAUGE_ENERGY), F1_0, 0);
-	erase_height = (100 - energy) * SB_ENERGY_GAUGE_H / 100;
+	erase_height = (100 - nEnergy) * SB_ENERGY_GAUGE_H / 100;
 	if (erase_height > 0) {
 		GrSetColorRGBi (BLACK_RGBA);
 		glDisable (GL_BLEND);
@@ -3224,13 +3224,13 @@ void SBDrawEnergyBar (energy)
 	}
 GrSetCurrentCanvas (GetCurrentGameScreen ());
 //draw numbers
-sprintf (energy_str, "%d", energy);
+sprintf (energy_str, "%d", nEnergy);
 GrGetStringSize (energy_str, &w, &h, &aw);
 GrSetFontColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 nIdEnergyBar = HUDPrintF (&nIdEnergyBar, 
 								  SB_ENERGY_GAUGE_X + ((SB_ENERGY_GAUGE_W - w)/2), 
 								  SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - GAME_FONT->ftHeight - (GAME_FONT->ftHeight / 4), 
-							     "%d", energy);
+							     "%d", nEnergy);
 OglFreeBmTexture (&Canv_SBEnergyGauge->cvBitmap);
 }
 
@@ -3875,14 +3875,14 @@ if (gameStates.render.bRearView && gameStates.render.cockpit.nMode!=CM_REAR_VIEW
 void RenderGauges ()
 {
 	static int old_display_mode = 0;
-	int energy = f2ir (LOCALPLAYER.energy);
-	int shields = f2ir (LOCALPLAYER.shields);
+	int nEnergy = f2ir (LOCALPLAYER.energy);
+	int nShields = f2ir (LOCALPLAYER.shields);
 	int bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 
 if (HIDE_HUD)
 	return;
 SetCMScales ();
-Assert (gameStates.render.cockpit.nMode==CM_FULL_COCKPIT || gameStates.render.cockpit.nMode==CM_STATUS_BAR);
+Assert ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR));
 // check to see if our display mode has changed since last render time --
 // if so, then we need to make new gauge canvases.
 if (old_display_mode != gameStates.video.nDisplayMode) {
@@ -3890,8 +3890,8 @@ if (old_display_mode != gameStates.video.nDisplayMode) {
 	InitGaugeCanvases ();
 	old_display_mode = gameStates.video.nDisplayMode;
 	}
-if (shields < 0) 
-	shields = 0;
+if (nShields < 0) 
+	nShields = 0;
 GrSetCurrentCanvas (GetCurrentGameScreen ());
 GrSetCurFont (GAME_FONT);
 if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -3900,14 +3900,14 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 
 DrawWeaponBoxes ();
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-	if (energy != old_energy [gameStates.render.vr.nCurrentPage]) {
+	if (nEnergy != old_energy [gameStates.render.vr.nCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING) {
-			NDRecordPlayerEnergy (old_energy [gameStates.render.vr.nCurrentPage], energy);
+			NDRecordPlayerEnergy (old_energy [gameStates.render.vr.nCurrentPage], nEnergy);
 			}
 		}
-	DrawEnergyBar (energy);
-	DrawNumericalDisplay (shields, energy);
-	old_energy [gameStates.render.vr.nCurrentPage] = energy;
+	DrawEnergyBar (nEnergy);
+	DrawNumericalDisplay (nShields, nEnergy);
+	old_energy [gameStates.render.vr.nCurrentPage] = nEnergy;
 
 	if (gameData.physics.xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING) {
@@ -3918,19 +3918,19 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	old_afterburner [gameStates.render.vr.nCurrentPage] = gameData.physics.xAfterburnerCharge;
 
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
-		DrawNumericalDisplay (shields, energy);
+		DrawNumericalDisplay (nShields, nEnergy);
 		DrawInvulnerableShip ();
-		old_shields [gameStates.render.vr.nCurrentPage] = shields ^ 1;
+		old_shields [gameStates.render.vr.nCurrentPage] = nShields ^ 1;
 		}
 	else {
-		if (shields != old_shields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
+		if (nShields != old_shields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
 			if (gameData.demo.nState == ND_STATE_RECORDING) {
-				NDRecordPlayerShields (old_shields [gameStates.render.vr.nCurrentPage], shields);
+				NDRecordPlayerShields (old_shields [gameStates.render.vr.nCurrentPage], nShields);
 				}
 			}
-		DrawShieldBar (shields);
-		DrawNumericalDisplay (shields, energy);
-		old_shields [gameStates.render.vr.nCurrentPage] = shields;
+		DrawShieldBar (nShields);
+		DrawNumericalDisplay (nShields, nEnergy);
+		old_shields [gameStates.render.vr.nCurrentPage] = nShields;
 		}
 
 	if (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage]) {
@@ -3943,12 +3943,12 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	ShowBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, gameStates.render.cockpit.nMode == CM_FULL_COCKPIT);
 	}
 else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
-	if (energy != old_energy [gameStates.render.vr.nCurrentPage])  {
+	if (nEnergy != old_energy [gameStates.render.vr.nCurrentPage])  {
 		if (gameData.demo.nState==ND_STATE_RECORDING) {
-			NDRecordPlayerEnergy (old_energy [gameStates.render.vr.nCurrentPage], energy);
+			NDRecordPlayerEnergy (old_energy [gameStates.render.vr.nCurrentPage], nEnergy);
 			}
-		SBDrawEnergyBar (energy);
-		old_energy [gameStates.render.vr.nCurrentPage] = energy;
+		SBDrawEnergyBar (nEnergy);
+		old_energy [gameStates.render.vr.nCurrentPage] = nEnergy;
 		}
 	if (gameData.physics.xAfterburnerCharge != old_afterburner [gameStates.render.vr.nCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING) {
@@ -3959,17 +3959,17 @@ else if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {
 		}
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) {
 		DrawInvulnerableShip ();
-		old_shields [gameStates.render.vr.nCurrentPage] = shields ^ 1;
-		SBDrawShieldNum (shields);
+		old_shields [gameStates.render.vr.nCurrentPage] = nShields ^ 1;
+		SBDrawShieldNum (nShields);
 		} 
 	else {
-		if (shields != old_shields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
+		if (nShields != old_shields [gameStates.render.vr.nCurrentPage]) {		// Draw the shield gauge
 			if (gameData.demo.nState == ND_STATE_RECORDING) {
-				NDRecordPlayerShields (old_shields [gameStates.render.vr.nCurrentPage], shields);
+				NDRecordPlayerShields (old_shields [gameStates.render.vr.nCurrentPage], nShields);
 				}
-			SBDrawShieldBar (shields);
-			old_shields [gameStates.render.vr.nCurrentPage] = shields;
-			SBDrawShieldNum (shields);
+			SBDrawShieldBar (nShields);
+			old_shields [gameStates.render.vr.nCurrentPage] = nShields;
+			SBDrawShieldNum (nShields);
 			}
 		}
 	if (LOCALPLAYER.flags != oldFlags [gameStates.render.vr.nCurrentPage]) {

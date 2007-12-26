@@ -47,7 +47,7 @@ if (!gameStates.app.bMultiThreaded)
 while (tiRender.ti [0].bExec || tiRender.ti [1].bExec)
 	G3_SLEEP (0);	//already running, so wait
 #endif
-tiRender.nTask = nTask;
+tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
 #if 0
@@ -172,7 +172,7 @@ do {
 		G3_SLEEP (0);
 	for (i = 0; i < 2; i++) {
 		if (tiRenderItems.ti [i].bExec) {
-			AddRenderItem (tiRenderItems.itemData [i].nType, 
+			AddRenderItem ((tRenderItemType) tiRenderItems.itemData [i].nType, 
 								&tiRenderItems.itemData [i].item, 
 								tiRenderItems.itemData [i].nSize, 
 								tiRenderItems.itemData [i].nDepth, 

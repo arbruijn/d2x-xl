@@ -2331,7 +2331,7 @@ for (i = pso->faces.nFaces, pf = pso->faces.pFaces; i; i--, pf++) {
 			fl = 1;
 //		fl = 1.0f;
 		bmP = po->textures.pBitmaps + pf->texProps.nTexId;
-		if (bmP->glTexture && (bmP->glTexture->handle < 0))
+		if (bmP->glTexture && ((int) bmP->glTexture->handle < 0))
 			bmP->glTexture->handle = 0;
 		if (OglBindBmTex (bmP, 1, 0))
 			return 0;

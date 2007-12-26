@@ -93,12 +93,14 @@ void joydefs_calibrate()
 
 int AddDeadzoneControl (tMenuItem *m, char *szText, char *szFmt, char *szHelp, char **szSizes, ubyte nValue, char nKey, int *pnOpt)
 {
+	int nOpt = *pnOpt;
+
 if (szSizes)
 	sprintf (szText + 1, szFmt, szSizes [nValue]);
 else
 	sprintf (szText + 1, szFmt);
 *szText = *(szFmt - 1);
-ADD_SLIDER (*pnOpt, szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, szHelp);
+ADD_SLIDER (nOpt, szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, szHelp);
 return (*pnOpt)++;
 }
 

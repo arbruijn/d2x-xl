@@ -1600,7 +1600,7 @@ ADD_TEXT (2, TXT_PRESS_ESC, 0);
 m [2].centered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {
-	i = ExecMenu2 (NULL, TXT_NET_SEARCH, 3, m, (void (*)) QueryPoll, 0, NULL);
+	i = ExecMenu2 (NULL, TXT_NET_SEARCH, 3, m, QueryPoll, 0, NULL);
 	} while (i >= 0);
 return (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES);
 }

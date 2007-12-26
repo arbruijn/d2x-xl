@@ -1372,7 +1372,7 @@ if (nLight < --gameData.render.lights.dynamic.nLights) {
 	*pl = gameData.render.lights.dynamic.lights [gameData.render.lights.dynamic.nLights];
 	if (pl->nObject >= 0)
 		gameData.render.lights.dynamic.owners [pl->nObject] = nLight;
-	if (pl->nPlayer >= 0)
+	if (pl->nPlayer < MAX_PLAYERS)
 		gameData.render.lights.dynamic.nHeadLights [pl->nPlayer] = nLight;
 	}
 }

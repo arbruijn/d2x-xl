@@ -580,7 +580,7 @@ return pos [h].i;
 
 //------------------------------------------------------------------------------
 
-inline char *MouseTextString (i)
+inline char *MouseTextString (int i)
 {
 return (i < 3) ? baseGameTexts [mousebutton_text [i]] : mousebutton_textra [i - 3];
 }

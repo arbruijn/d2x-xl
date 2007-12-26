@@ -157,7 +157,7 @@ memset (plP->computedColors, 0xff, sizeof (plP->computedColors));
 
 //	-----------------------------------------------------------------------------
 
-inline int Sqr (i)
+inline int Sqr (int i)
 {
 return i * i;
 }

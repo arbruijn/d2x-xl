@@ -111,10 +111,10 @@ return bufP;
 
 #ifdef GL_VERSION_20
 
-void PrintShaderInfoLog (GLuint handle, int bProgram)
+void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
 {
-   int nLogLen = 0;
-   int charsWritten = 0;
+   GLint nLogLen = 0;
+   GLint charsWritten = 0;
    char *infoLog;
 
 if (bProgram) {
@@ -142,8 +142,8 @@ else {
 
 void PrintShaderInfoLog (GLhandleARB handle, int bProgram)
 {
-   int nLogLen = 0;
-   int charsWritten = 0;
+   GLint nLogLen = 0;
+   GLint charsWritten = 0;
    char *infoLog;
 
 glGetObjectParameteriv (handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);

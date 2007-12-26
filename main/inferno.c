@@ -789,7 +789,7 @@ else
 	gameData.multiplayer.autoNG.nLevel = 1;
 if ((t = FindArg ("-ng_name")) && (p = Args [t+1])) {
 	strncpy (gameData.multiplayer.autoNG.szName, Args [t+1], 80);
-	gameData.multiplayer.autoNG.szPlayer [80] = '\0';
+	gameData.multiplayer.autoNG.szName [80] = '\0';
 	}
 if ((t = FindArg ("-ng_ipaddr")) && (p = Args [t+1]))
 	bHaveIp = stoip (Args [t+1], gameData.multiplayer.autoNG.ipAddr);

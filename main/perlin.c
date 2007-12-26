@@ -12,7 +12,7 @@ double Noise1D (long x)
 #if 1
 srand (randSeed * (x + 2));
 x = rand ();
-return (double) (x - ((RAND_MAX + 1) / 2)) / (double) ((RAND_MAX + 1) / 2);
+return (double) (x - (((long) RAND_MAX + 1) / 2)) / (double) (((long) RAND_MAX + 1) / 2);
 #else
 double h;
 x = randSeed + x * x;

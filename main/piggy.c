@@ -194,9 +194,7 @@ int					nTrackedBitmaps = 0;
 void UseBitmapCache (grsBitmap *bmP, int nSize)
 {
 bitmapCacheUsed += nSize;
-if (0 > bitmapCacheUsed)
-	bitmapCacheUsed = 0;
-else if (0 > (int) bitmapCacheUsed)
+if (0x7fffffff < bitmapCacheUsed)
 	bitmapCacheUsed = 0;
 #ifdef _DEBUG
 if (nSize < 0) {

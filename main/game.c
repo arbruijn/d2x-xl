@@ -487,7 +487,7 @@ void SetPopupScreenMode (void)
 {
 	//WIN (LoadCursorWin (MOUSE_DEFAULT_CURSOR);
 
-if (!gameOpts->menus.nStyle || (gameStates.video.nScreenMode < 0)) {
+if (!gameOpts->menus.nStyle) {
 	SetScreenMode (SCREEN_MENU);		//must switch to menu mode
 	}
 }

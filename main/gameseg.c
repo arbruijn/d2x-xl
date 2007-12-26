@@ -2307,7 +2307,7 @@ for (dliP = gameData.render.lights.deltaIndices + i; i < gameData.render.lights.
 		return;
 #endif
 	if ((iSeg == nSegment) && (iSide == nSide)) {
-		if ((dliP->d2.index < 0) || (dliP->d2.index >= MAX_DELTA_LIGHTS))
+		if (dliP->d2.index >= MAX_DELTA_LIGHTS)
 			continue;	//ouch - bogus data!
 		dlP = gameData.render.lights.deltas + dliP->d2.index;
 		for (j = (gameStates.render.bD2XLights ? dliP->d2x.count : dliP->d2.count); j; j--, dlP++) {

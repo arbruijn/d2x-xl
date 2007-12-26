@@ -1788,7 +1788,7 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFRead (netPlayers.players [i].network.ipx.node, 1, 6, cfp);
 	netPlayers.players [i].version_major = (ubyte) CFReadByte (cfp);
 	netPlayers.players [i].version_minor = (ubyte) CFReadByte (cfp);
-	netPlayers.players [i].computerType = (ubyte) CFReadByte (cfp);
+	netPlayers.players [i].computerType = (enum compType) CFReadByte (cfp);
 	netPlayers.players [i].connected = CFReadByte (cfp);
 	netPlayers.players [i].socket = (ushort) CFReadShort (cfp);
 	netPlayers.players [i].rank = (ubyte) CFReadByte (cfp);

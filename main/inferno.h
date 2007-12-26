@@ -633,8 +633,8 @@ typedef struct tOglStates {
 	int bBrightness;
 	int bDoPalStep;
 	int nColorBits;
-	int nDepthBits;
-	int nStencilBits;
+	GLint nDepthBits;
+	GLint nStencilBits;
 	int bEnableTexture2D;
 	int bEnableTexClamp;
 	int bEnableScissor;
@@ -1867,8 +1867,8 @@ typedef struct tG3Model {
 	short						iSubModel;
 	short						bHasTransparency;
 	short						bValid;
-	GLint						vboDataHandle;
-	GLint						vboIndexHandle;
+	GLuint					vboDataHandle;
+	GLuint					vboIndexHandle;
 } tG3Model;
 
 //------------------------------------------------------------------------------

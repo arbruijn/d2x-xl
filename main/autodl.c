@@ -602,7 +602,7 @@ nTimeout = SDL_GetTicks ();
 sprintf (szTitle, "Downloading <%s>", pszMission);
 *gameFolders.szMsnSubDir = '\0';
 do {
-	i = ExecMenu2 (NULL, szTitle, 3, m, (void (*)) DownloadPoll, 0, NULL);
+	i = ExecMenu2 (NULL, szTitle, 3, m, DownloadPoll, 0, NULL);
 	} while (i >= 0);
 CFClose (&cf);
 dlState = PID_DL_END;

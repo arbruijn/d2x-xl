@@ -200,7 +200,7 @@ m [2].centered = 1;
 nCacheSeg = 0;
 nCacheObj = -3;
 do {
-	i = ExecMenu2 (NULL, "Loading textures", 1, m, (void (*)) TexCachePoll, 0, NULL);
+	i = ExecMenu2 (NULL, "Loading textures", 1, m, TexCachePoll, 0, NULL);
 	} while (i >= 0);
 return 1;
 }

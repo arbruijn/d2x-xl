@@ -73,11 +73,9 @@ tServerList trackerList;
 int FindTracker (tUdpAddress *addr)
 {
 	int				i;
-	unsigned	int	a;
-	short				p;
+	unsigned	int	a = UDP_ADDR (addr);
+	short				p = (short) ntohs (UDP_PORT (addr));
 
-a = UDP_ADDR (addr);
-p = (short) ntohs (UDP_PORT (addr));
 for (i = 0; i < trackerList.nServers; i++)
 	if ((a == UDP_ADDR (trackerList.servers + i)) && 
 		 (p == UDP_PORT (trackerList.servers + i)))
@@ -289,7 +287,7 @@ ADD_TEXT (2, "(Press Escape to cancel)", 0);
 m [2].centered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {
-	i = ExecMenu2 (NULL, "Looking for Trackers", 3, m, (void (*)) TrackerPoll, 0, NULL);
+	i = ExecMenu2 (NULL, "Looking for Trackers", 3, m, TrackerPoll, 0, NULL);
 	} while (i >= 0);
 return i;
 }
@@ -318,13 +316,13 @@ szAddr [21] = '\0';
 if (!(pszPort = strchr (szAddr, ':')))
 	return 0;
 *pszPort++ = '\0';
-if (!stoip (szAddr, (char *) ((size_t) (UDP_ADDR (addr)))))
+if (!stoip (szAddr, (char *) addr)) 
 	return 0;
 if (!stoport (pszPort, &port, NULL))
 	return 0;
 if (port > 0xFFFF)
 	return 0;
-UDP_PORT (addr) = port; //(unsigned short) htons (port);
+UDP_PORT (addr) = port; 
 return 1;
 }
 

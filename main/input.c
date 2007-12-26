@@ -500,7 +500,7 @@ return 1;
 
 extern fix KeyRamp (int scancode);
 
-inline int DeltaCtrl (v, speedFactor, keyRampScale, i)
+inline int DeltaCtrl (ubyte v, int speedFactor, int keyRampScale, int i)
 {
 	int	h;
 
