@@ -627,7 +627,7 @@ if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
 			DigiSetObjectSound (i, nSound, NULL);
 			}
 	}
-gameOpts->sound.bD1Sound = 0;
+//gameOpts->sound.bD1Sound = 0;
 gameStates.sound.bDontStartObjects = 0;
 }
 

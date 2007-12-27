@@ -1000,109 +1000,6 @@ return dist;
 
 //	-----------------------------------------------------------------------------
 
-int FVICompute (vmsVector *intP, short *intS, vmsVector *p0, short nStartSeg, vmsVector *p1, 
-					 fix radP0, fix radP1, short nThisObject, short *ignoreObjList, int flags, short *segList, 
-					 short *nSegments, int nEntrySeg);
-
-//Find out if a vector intersects with anything.
-//Fills in hitData, an tFVIData structure (see header file).
-//Parms:
-//  p0 & startseg 	describe the start of the vector
-//  p1 					the end of the vector
-//  rad 					the radius of the cylinder
-//  thisObjNum 		used to prevent an tObject with colliding with itself
-//  ingore_obj			ignore collisions with this tObject
-//  check_objFlag	determines whether collisions with gameData.objs.objects are checked
-//Returns the hitData->nHitType
-int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
-{
-	int			nHitType, nNewHitType;
-	short			nHitSegment, nHitSegment2;
-	vmsVector	vHitPoint;
-	int			i;
-	tSegMasks		masks;
-
-Assert(fq->ignoreObjList != (short *)(-1));
-VmVecZero (&gameData.collisions.hitData.vNormal);
-gameData.collisions.hitData.nNormals = 0;
-Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
-
-gameData.collisions.hitData.nSegment = -1;
-gameData.collisions.hitData.nSide = -1;
-gameData.collisions.hitData.nObject = -1;
-
-//check to make sure start point is in seg its supposed to be in
-//Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start point not in seg
-
-// gameData.objs.viewer is not in tSegment as claimed, so say there is no hit.
-masks = GetSegMasks (fq->p0, fq->startSeg, 0);
-if (masks.centerMask) {
-	hitData->hit.nType = HIT_BAD_P0;
-	hitData->hit.vPoint = *fq->p0;
-	hitData->hit.nSegment = fq->startSeg;
-	hitData->hit.nSide = 0;
-	hitData->hit.nObject = 0;
-	hitData->hit.nSideSegment = -1;
-	hitData->nSegments = 0;
-	return hitData->hit.nType;
-	}
-gameData.collisions.segsVisited [0] = fq->startSeg;
-gameData.collisions.nSegsVisited = 1;
-gameData.collisions.hitData.nNestCount = 0;
-nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
-nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
-							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
-							  hitData->segList, &hitData->nSegments, -2);
-//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg, 1, 0);
-if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
-	nHitSegment = nHitSegment2;
-else {
-	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg, 1, 0);
-	}
-//MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
-if ((nHitType == HIT_WALL) && (nHitSegment == -1))
-	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (&vHitPoint, gameData.collisions.hitData.nSegment2, 0).centerMask)
-		nHitSegment = gameData.collisions.hitData.nSegment2;
-
-if (nHitSegment == -1) {
-	//int nNewHitType;
-	short nNewHitSeg2=-1;
-	vmsVector vNewHitPoint;
-
-	//because of code that deal with tObject with non-zero radius has
-	//problems, try using zero radius and see if we hit a tWall
-	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
-								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList, 
-									  &hitData->nSegments, -2);
-	if (nNewHitSeg2 != -1) {
-		nHitType = nNewHitType;
-		nHitSegment = nNewHitSeg2;
-		vHitPoint = vNewHitPoint;
-		}
-	}
-
-if ((nHitSegment != -1) && (fq->flags & FQ_GET_SEGLIST))
-	if ((nHitSegment != hitData->segList [hitData->nSegments - 1]) && 
-		 (hitData->nSegments < MAX_FVI_SEGS - 1))
-		hitData->segList [hitData->nSegments++] = nHitSegment;
-
-if ((nHitSegment != -1) && (fq->flags & FQ_GET_SEGLIST))
-	for (i = 0; i < (hitData->nSegments) && i < (MAX_FVI_SEGS - 1); i++)
-		if (hitData->segList [i] == nHitSegment) {
-			hitData->nSegments = i + 1;
-			break;
-		}
-Assert ((nHitType != HIT_OBJECT) || (gameData.collisions.hitData.nObject != -1));
-hitData->hit = gameData.collisions.hitData;
-hitData->hit.nType = nHitType;
-hitData->hit.vPoint = vHitPoint;
-hitData->hit.nSegment = nHitSegment;
-return nHitType;
-}
-
-
-//	-----------------------------------------------------------------------------
-
 int ObjectInList (short nObject, short *objListP)
 {
 	short t;
@@ -1368,8 +1265,13 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						dMin = d;
 						vClosestHitPoint = vHitPoint;
 						nHitType = HIT_WALL;
+#if 1
+						gameData.collisions.hitData.vNormal = segP->sides [nSide].normals [iFace];
+						gameData.collisions.hitData.nNormals = 1;
+#else
 						VmVecInc (&gameData.collisions.hitData.vNormal, segP->sides [nSide].normals + iFace);
 						gameData.collisions.hitData.nNormals++;
+#endif
 						if (!GetSegMasks (&vHitPoint, nStartSeg, radP1).centerMask)
 							nHitSegment = nStartSeg;             //hit in this tSegment
 						else
@@ -1431,6 +1333,104 @@ return nHitType;
 #include "texmerge.h"
 
 #define Cross(v0, v1) (FixMul((v0)->i, (v1)->j) - FixMul((v0)->j, (v1)->i))
+
+//	-----------------------------------------------------------------------------
+
+//Find out if a vector intersects with anything.
+//Fills in hitData, an tFVIData structure (see header file).
+//Parms:
+//  p0 & startseg 	describe the start of the vector
+//  p1 					the end of the vector
+//  rad 					the radius of the cylinder
+//  thisObjNum 		used to prevent an tObject with colliding with itself
+//  ingore_obj			ignore collisions with this tObject
+//  check_objFlag	determines whether collisions with gameData.objs.objects are checked
+//Returns the hitData->nHitType
+int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
+{
+	int			nHitType, nNewHitType;
+	short			nHitSegment, nHitSegment2;
+	vmsVector	vHitPoint;
+	int			i;
+	tSegMasks		masks;
+
+Assert(fq->ignoreObjList != (short *)(-1));
+VmVecZero (&gameData.collisions.hitData.vNormal);
+gameData.collisions.hitData.nNormals = 0;
+Assert((fq->startSeg <= gameData.segs.nLastSegment) && (fq->startSeg >= 0));
+
+gameData.collisions.hitData.nSegment = -1;
+gameData.collisions.hitData.nSide = -1;
+gameData.collisions.hitData.nObject = -1;
+
+//check to make sure start point is in seg its supposed to be in
+//Assert(check_point_in_seg(p0, startseg, 0).centerMask==0);	//start point not in seg
+
+// gameData.objs.viewer is not in tSegment as claimed, so say there is no hit.
+masks = GetSegMasks (fq->p0, fq->startSeg, 0);
+if (masks.centerMask) {
+	hitData->hit.nType = HIT_BAD_P0;
+	hitData->hit.vPoint = *fq->p0;
+	hitData->hit.nSegment = fq->startSeg;
+	hitData->hit.nSide = 0;
+	hitData->hit.nObject = 0;
+	hitData->hit.nSideSegment = -1;
+	hitData->nSegments = 0;
+	return hitData->hit.nType;
+	}
+gameData.collisions.segsVisited [0] = fq->startSeg;
+gameData.collisions.nSegsVisited = 1;
+gameData.collisions.hitData.nNestCount = 0;
+nHitSegment2 = gameData.collisions.hitData.nSegment2 = -1;
+nHitType = FVICompute (&vHitPoint, &nHitSegment2, fq->p0, (short) fq->startSeg, fq->p1, 
+							  fq->radP0, fq->radP1, (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, 
+							  hitData->segList, &hitData->nSegments, -2);
+//!!nHitSegment = FindSegByPoint(&vHitPoint, fq->startSeg, 1, 0);
+if ((nHitSegment2 != -1) && !GetSegMasks (&vHitPoint, nHitSegment2, 0).centerMask)
+	nHitSegment = nHitSegment2;
+else {
+	nHitSegment = FindSegByPoint (&vHitPoint, fq->startSeg, 1, 0);
+	}
+//MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
+if ((nHitType == HIT_WALL) && (nHitSegment == -1))
+	if ((gameData.collisions.hitData.nSegment2 != -1) && !GetSegMasks (&vHitPoint, gameData.collisions.hitData.nSegment2, 0).centerMask)
+		nHitSegment = gameData.collisions.hitData.nSegment2;
+
+if (nHitSegment == -1) {
+	//int nNewHitType;
+	short nNewHitSeg2=-1;
+	vmsVector vNewHitPoint;
+
+	//because of code that deal with tObject with non-zero radius has
+	//problems, try using zero radius and see if we hit a tWall
+	nNewHitType = FVICompute (&vNewHitPoint, &nNewHitSeg2, fq->p0, (short) fq->startSeg, fq->p1, 0, 0,
+								     (short) fq->thisObjNum, fq->ignoreObjList, fq->flags, hitData->segList, 
+									  &hitData->nSegments, -2);
+	if (nNewHitSeg2 != -1) {
+		nHitType = nNewHitType;
+		nHitSegment = nNewHitSeg2;
+		vHitPoint = vNewHitPoint;
+		}
+	}
+
+if ((nHitSegment != -1) && (fq->flags & FQ_GET_SEGLIST))
+	if ((nHitSegment != hitData->segList [hitData->nSegments - 1]) && 
+		 (hitData->nSegments < MAX_FVI_SEGS - 1))
+		hitData->segList [hitData->nSegments++] = nHitSegment;
+
+if ((nHitSegment != -1) && (fq->flags & FQ_GET_SEGLIST))
+	for (i = 0; i < (hitData->nSegments) && i < (MAX_FVI_SEGS - 1); i++)
+		if (hitData->segList [i] == nHitSegment) {
+			hitData->nSegments = i + 1;
+			break;
+		}
+Assert ((nHitType != HIT_OBJECT) || (gameData.collisions.hitData.nObject != -1));
+hitData->hit = gameData.collisions.hitData;
+hitData->hit.nType = nHitType;
+hitData->hit.vPoint = vHitPoint;
+hitData->hit.nSegment = nHitSegment;
+return nHitType;
+}
 
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given point on the given seg & side

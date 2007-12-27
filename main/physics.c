@@ -56,7 +56,7 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 //Global variables for physics system
 //#define _DEBUG
 #define FLUID_PHYSICS	0
-#define UNSTICK_OBJS		1
+#define UNSTICK_OBJS		0
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -336,8 +336,8 @@ if (/*(0 <= xSideDist) && */
 #if 0
 	objP->position.vPos = objP->vLastPos;
 #else
-#	if 0
-	float fOffs;
+#	if 1
+	float r;
 	xSideDist = objP->size - xSideDist;
 	r = ((float) xSideDist / (float) objP->size) * f2fl (objP->size);
 #	endif
@@ -353,7 +353,7 @@ if (/*(0 <= xSideDist) && */
 	if ((nSegment < 0) || (nSegment > gameData.segs.nSegments) || (nSegment == objP->nSegment))
 		return 0;
 	RelinkObject (OBJ_IDX (objP), nSegment);
-#if 0//def _DEBUG
+#ifdef _DEBUG
 	if (objP->nType == OBJ_PLAYER)
 		HUDMessage (0, "PENETRATING WALL (%d, %1.4f)", objP->size - pxSideDists [hi.hit.nSide], r);
 #endif
@@ -814,16 +814,12 @@ retryMove:
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
 		VmVecSub (&vMoved, &objP->position.vPos, &vSavePos);
-		xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal);
-#ifdef _DEBUG
-		if (objP->nType == OBJ_ROBOT)
-			objP = objP;
-#endif
+		xWallPart = VmVecDot (&vMoved, &hi.hit.vNormal) / gameData.collisions.hitData.nNormals;
 		if (xWallPart && (xMovedTime > 0) && ((xHitSpeed = -FixDiv (xWallPart, xMovedTime)) > 0)) {
 			CollideObjectWithWall (objP, xHitSpeed, nWallHitSeg, nWallHitSide, &hi.hit.vPoint);
 #if 0//def _DEBUG
 			if (objP->nType == OBJ_PLAYER)
-				HUDMessage (0, "BUMP!");
+				HUDMessage (0, "BUMP %1.2f (%d,%d)!", f2fl (xHitSpeed), nWallHitSeg, nWallHitSide);
 #endif
 			}
 		else {
@@ -835,7 +831,7 @@ retryMove:
 			}
 		Assert (nWallHitSeg > -1);
 		Assert (nWallHitSide > -1);
-#if UNSTICK_OBJECT == 2
+#if UNSTICK_OBJS == 2
 		{
 		fix	xSideDists [6];
 		GetSideDistsAll (&objP->position.vPos, nWallHitSeg, xSideDists);

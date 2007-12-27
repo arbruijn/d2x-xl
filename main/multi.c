@@ -2137,7 +2137,7 @@ if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
 	gameData.multiplayer.maxPowerupsAllowed [POW_AMMORACK]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
 	gameData.multiplayer.maxPowerupsAllowed [POW_CONVERTER]++;
-if (PlayerHasHeadLight (nPlayer))
+if (PlayerHasHeadLight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	gameData.multiplayer.maxPowerupsAllowed [POW_HEADLIGHT]++;
 }
 
@@ -2180,7 +2180,7 @@ if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AMMO_RACK)
 	gameData.multiplayer.powerupsInMine [POW_AMMORACK]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CONVERTER)
 	gameData.multiplayer.powerupsInMine [POW_CONVERTER]++;
-if (PlayerHasHeadLight (nPlayer))
+if (PlayerHasHeadLight (nPlayer) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0))
 	gameData.multiplayer.powerupsInMine [POW_HEADLIGHT]++;
 }
 
