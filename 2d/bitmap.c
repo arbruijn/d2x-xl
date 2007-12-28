@@ -215,8 +215,6 @@ else
 
 void GrSetSuperTransparent (grsBitmap *bmP, int bTransparent)
 {
-if (!strcmp (bmP->szName, "exp06#0"))
-	bmP = bmP;
 if (gameData.pig.tex.textureIndex [0][bmP->bmHandle] >= 0) {
 	if (bTransparent)
 		GrSetBitmapFlags (bmP, bmP->bmProps.flags | BM_FLAG_SUPER_TRANSPARENT);

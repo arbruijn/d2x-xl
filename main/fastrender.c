@@ -375,6 +375,7 @@ gameStates.render.bQueryCoronas = 0;
 glEnable (GL_CULL_FACE);
 OglTexWrap (NULL, GL_REPEAT);
 glDepthFunc (GL_LEQUAL);
+glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (nType == 3) {
 	if (CoronaStyle () == 2)
 		LoadGlareShader ();
