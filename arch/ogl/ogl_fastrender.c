@@ -430,7 +430,7 @@ if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-bTransparent = faceP->bTransparent || (bmBot && (((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) == BM_FLAG_TRANSPARENT)));
+bTransparent = faceP->bTransparent || (bmBot && (((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU | BM_FLAG_TGA)) == (BM_FLAG_TRANSPARENT | BM_FLAG_TGA))));
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)

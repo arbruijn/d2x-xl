@@ -261,7 +261,10 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *t
 {
 	tRIPoly	item;
 	int		i;
-	float		z, s = GrAlpha ();
+	float		z, zMin, zMax, s = GrAlpha ();
+#if RI_POLY_CENTER
+	float		zCenter;
+#endif
 
 item.bmP = bmP;
 item.nVertices = nVertices;
@@ -297,20 +300,33 @@ if (bDepthMask && gameStates.render.bSplitPolys) {
 else 
 #endif
 	{
-	for (i = 0, z = 0; i < item.nVertices; i++) {
 #if RI_POLY_CENTER
-			z += item.vertices [i].p.z;
-#else
-		if (z < item.vertices [i].p.z)
-			z = item.vertices [i].p.z;
+	zCenter = 0;
+	zMin = 1e30;
+	zMax = -1e30;
 #endif
+	for (i = 0; i < item.nVertices; i++) {
+		z = item.vertices [i].p.z;
+#if RI_POLY_CENTER
+		zCenter += z;
+#endif
+		if (zMin > z)
+			zMin = z;
+		if (zMax < z)
+			zMax = z;
 		}
-#if RI_POLY_CENTER
-	z /= item.nVertices;
-#endif
-	if ((z < renderItems.zMin) || (z > renderItems.zMax))
+	if ((zMax < renderItems.zMin) || (zMin > renderItems.zMax))
 		return 0;
-	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (z), fl2f (z));
+#if RI_POLY_CENTER
+	zCenter /= item.nVertices;
+	if (zCenter < zMin)
+		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zMin), fl2f (zMin));
+	if (zCenter < zMax)
+		return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zMax), fl2f (zMax));
+	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zCenter), fl2f (zCenter));
+#else
+	return AddRenderItem (item.bmP ? riTexPoly : riFlatPoly, &item, sizeof (item), fl2f (zMin), fl2f (zMin));
+#endif
 	}
 }
 
