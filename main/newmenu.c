@@ -587,12 +587,11 @@ return grdCurCanv->cvFontFgColor.index;
 
 int nTabIndex = -1;
 int nTabs [] = {15, 87, 124, 162, 228, 253};
-int qqqi = 0;
 
 void NMHotKeyString (tMenuItem *item, int bIsCurrent, int bTiny, int bCreateTextBms, int nDepth)
 {
 #if 1
-	grsBitmap	*bm = item->text_bm [bIsCurrent];
+	grsBitmap	*bmP = item->text_bm [bIsCurrent];
 
 if (!*item->text)
 	return;
@@ -600,13 +599,13 @@ if (item->color)
 	GrSetFontColorRGBi (item->color, 1, 0, 0);
 else
 	NMSetItemColor (item, bIsCurrent, bTiny);
-if (/*!strchr (item->text, '\t') &&*/ bCreateTextBms && gameOpts->menus.bFastMenus &&
-	 (bm || (bm = CreateStringBitmap (item->text, MENU_KEY (item->key, -1), 
+if (bCreateTextBms && gameOpts->menus.bFastMenus &&
+	 (bmP || (bmP = CreateStringBitmap (item->text, MENU_KEY (item->key, -1), 
 												 gameData.menu.keyColor,
 												 nTabs, item->centered, item->w, 0)))) {
-	OglUBitBltI (bm->bmProps.w, bm->bmProps.h, item->x, item->y, bm->bmProps.w, bm->bmProps.h, 0, 0, 
-					 bm, &grdCurCanv->cvBitmap, 0, 1);
-	item->text_bm [bIsCurrent] = bm;
+	OglUBitBltI (bmP->bmProps.w, bmP->bmProps.h, item->x, item->y, bmP->bmProps.w, bmP->bmProps.h, 0, 0, 
+					 bmP, &grdCurCanv->cvBitmap, 0, 1);
+	item->text_bm [bIsCurrent] = bmP;
 	}
 else 
 #endif
@@ -1095,12 +1094,13 @@ int ExecMenu (char * title, char * subtitle, int nItems, tMenuItem * item,
 					void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem),
 					char *filename)
 {
-	return ExecMenu3 (title, subtitle, nItems, item, subfunction, NULL, filename, -1, -1);
+return ExecMenu3 (title, subtitle, nItems, item, subfunction, NULL, filename, -1, -1);
 }
-int ExecMenutiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
+
+int ExecMenuTiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
 						 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem))
 {
-        return ExecMenu4 (title, subtitle, nItems, item, subfunction, NULL, NULL, LHX (310), -1, 1);
+return ExecMenu4 (title, subtitle, nItems, item, subfunction, NULL, NULL, LHX (310), -1, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -1108,7 +1108,7 @@ int ExecMenutiny (char * title, char * subtitle, int nItems, tMenuItem * item,
 int ExecMenutiny2 (char * title, char * subtitle, int nItems, tMenuItem * item, 
 						  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem))
 {
-        return ExecMenu4 (title, subtitle, nItems, item, subfunction, 0, NULL, -1, -1, 1);
+return ExecMenu4 (title, subtitle, nItems, item, subfunction, 0, NULL, -1, -1, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -1117,7 +1117,7 @@ int ExecMenu1 (char * title, char * subtitle, int nItems, tMenuItem * item,
 					 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					 int *cItemP)
 {
-	return ExecMenu3 (title, subtitle, nItems, item, subfunction, cItemP, NULL, -1, -1);
+return ExecMenu3 (title, subtitle, nItems, item, subfunction, cItemP, NULL, -1, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -1126,7 +1126,7 @@ int ExecMenu2 (char * title, char * subtitle, int nItems, tMenuItem * item,
 					 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					 int *cItemP, char * filename)
 {
-	return ExecMenu3 (title, subtitle, nItems, item, subfunction, cItemP, filename, -1, -1);
+return ExecMenu3 (title, subtitle, nItems, item, subfunction, cItemP, filename, -1, -1);
 }
 
 //------------------------------------------------------------------------------
@@ -1135,7 +1135,7 @@ int ExecMenu3 (char * title, char * subtitle, int nItems, tMenuItem * item,
 					 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 					 int *cItemP, char * filename, int width, int height)
  {
-  return ExecMenu4 (title, subtitle, nItems, item, subfunction, cItemP, filename, width, height, 0);
+ return ExecMenu4 (title, subtitle, nItems, item, subfunction, cItemP, filename, width, height, 0);
  }
 
 //------------------------------------------------------------------------------
@@ -1143,9 +1143,9 @@ int ExecMenu3 (char * title, char * subtitle, int nItems, tMenuItem * item,
 int ExecMenuFixedFont (char * title, char * subtitle, int nItems, tMenuItem * item, 
 							  void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int cItem), 
 							  int *cItemP, char * filename, int width, int height){
-	SetScreenMode (SCREEN_MENU);//hafta set the screen mode before calling or fonts might get changed/freed up if screen res changes
+SetScreenMode (SCREEN_MENU);//hafta set the screen mode before calling or fonts might get changed/freed up if screen res changes
 //	return ExecMenu3_real (title, subtitle, nItems, item, subfunction, cItem, filename, width, height, GAME_FONT, GAME_FONT, GAME_FONT, GAME_FONT);
-	return ExecMenu4 (title, subtitle, nItems, item, subfunction, cItemP, filename, width, height, 0);
+return ExecMenu4 (title, subtitle, nItems, item, subfunction, cItemP, filename, width, height, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -2462,23 +2462,22 @@ int _CDECL_ ExecMessageBox1 (
 	char *s;
 	char nm_text [MESSAGEBOX_TEXT_SIZE];
 	tMenuItem nmMsgItems [5];
-	va_start (args, nChoices);
-	Assert (nChoices <= 5);
-	memset (nmMsgItems, 0, sizeof (nmMsgItems));
-	for (i=0; i<nChoices; i++)	{
-      s = va_arg (args, char *);
-      nmMsgItems [i].nType = NM_TYPE_MENU; 
-		nmMsgItems [i].text = s;
-		nmMsgItems [i].key = -1;
+
+va_start (args, nChoices);
+Assert (nChoices <= 5);
+memset (nmMsgItems, 0, sizeof (nmMsgItems));
+for (i=0; i<nChoices; i++)	{
+   s = va_arg (args, char *);
+   nmMsgItems [i].nType = NM_TYPE_MENU; 
+	nmMsgItems [i].text = s;
+	nmMsgItems [i].key = -1;
 	}
-	format = va_arg (args, char *);
-	strcpy (nm_text, "");
-	vsprintf (nm_text, format, args);
-	va_end (args);
-
-	Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
-
-	return ExecMenu (title, nm_text, nChoices, nmMsgItems, subfunction, filename);
+format = va_arg (args, char *);
+strcpy (nm_text, "");
+vsprintf (nm_text, format, args);
+va_end (args);
+Assert (strlen (nm_text) < MESSAGEBOX_TEXT_SIZE);
+return ExecMenu (title, nm_text, nChoices, nmMsgItems, subfunction, filename);
 }
 
 //------------------------------------------------------------------------------
@@ -2521,7 +2520,7 @@ if (!bTiny) {
 	va_end (args);
 	}
 i = bTiny ? 
-	 ExecMenutiny (NULL, title, nChoices, nmMsgItems, NULL) :
+	 ExecMenuTiny (NULL, title, nChoices, nmMsgItems, NULL) :
 	 ExecMenu (title, nm_text, nChoices, nmMsgItems, NULL, filename);
 return i;
 }
@@ -2580,8 +2579,8 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	int NumFiles_displayed = 8;
 	int first_item = -1, ofirst_item;
 	int old_keyd_repeat = keyd_repeat;
-	int player_mode=0;
-	int demo_mode=0;
+	int bPlayerMode=0;
+	int bDemoMode=0;
 	int demos_deleted=0;
 	int initialized = 0;
 	int exitValue = 0;
@@ -2608,16 +2607,16 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 
 
 	if (strstr (filespec, "*.plr"))
-		player_mode = 1;
+		bPlayerMode = 1;
 	else if (strstr (filespec, "*.dem"))
-		demo_mode = 1;
+		bDemoMode = 1;
 
 ReadFileNames:
 	done = 0;
 	NumFiles=0;
 
 #if !defined (APPLE_DEMO)		// no new pilots for special apple oem version
-	if (player_mode)	{
+	if (bPlayerMode)	{
 		strncpy (filenames + NumFiles * (FILENAME_LEN + 1), TXT_CREATE_NEW, FILENAME_LEN);
 		NumFiles++;
 	}
@@ -2628,7 +2627,7 @@ ReadFileNames:
 		do	{
 			if (NumFiles < MAX_FILES)	{
             strncpy (pszFn, ffs.name, FILENAME_LEN);
-				if (player_mode)	{
+				if (bPlayerMode)	{
 					char * p = strchr (pszFn, '.');
 					if (p) 
 						*p = '\0';
@@ -2644,7 +2643,7 @@ ReadFileNames:
 		} while (!FFN (&ffs, 0));
 		FFC (&ffs);
 	}
-	if (demo_mode && gameFolders.bAltHogDirInited) {
+	if (bDemoMode && gameFolders.bAltHogDirInited) {
 		char filespec2 [PATH_MAX + FILENAME_LEN];
 		sprintf (filespec2, "%s/%s", gameFolders.szAltHogDir, filespec);
 		if (!FFF (filespec2, &ffs, 0)) {
@@ -2664,14 +2663,14 @@ ReadFileNames:
 		exitValue = 0;
 		goto ExitFileMenu;
 	}
-	if ((NumFiles < 1) && demo_mode) {
+	if ((NumFiles < 1) && bDemoMode) {
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
 		exitValue = 0;
 		goto ExitFileMenu;
 	}
 
 #if 0//ndef APPLE_DEMO
-	if ((NumFiles < 2) && player_mode) {
+	if ((NumFiles < 2) && bPlayerMode) {
 		cItem = 0;
 		goto ExitFileMenuEarly;
 	}
@@ -2750,7 +2749,7 @@ ReadFileNames:
 		initialized = 1;
 	}
 
-	if (!player_mode)	{
+	if (!bPlayerMode)	{
 		NMFileSort (NumFiles, filenames);
 	} else {
 		NMFileSort (NumFiles-1, filenames+ (FILENAME_LEN+1));		// Don't sort first one!
@@ -2811,15 +2810,15 @@ ReadFileNames:
 
 		case KEY_CTRLED+KEY_D:
 
-			if (((player_mode) && (cItem > 0)) || ((demo_mode) && (cItem >= 0))) {
+			if (((bPlayerMode) && (cItem > 0)) || ((bDemoMode) && (cItem >= 0))) {
 				int x = 1;
 				char *pszFile = filenames + cItem * (FILENAME_LEN+1);
 				if (*pszFile == '$')
 					pszFile++;
 				SDL_ShowCursor (0);
-				if (player_mode)
+				if (bPlayerMode)
 					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_PILOT, pszFile);
-				else if (demo_mode)
+				else if (bDemoMode)
 					x = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", TXT_DELETE_DEMO, pszFile);
 				SDL_ShowCursor (1);
  				if (!x)	{
@@ -2827,28 +2826,31 @@ ReadFileNames:
 					int ret;
 
 					p = pszFile + strlen (pszFile);
-					if (player_mode)
+					if (bPlayerMode)
 						*p = '.';
 #if 0
 					_splitpath (filespec, NULL, name, dir, NULL);
 					strcat (name, dir);
 					//strcat (name, &filenames [cItem* (FILENAME_LEN+1)]);
 #endif				
-					ret = CFDelete (pszFile, player_mode ? gameFolders.szProfDir : gameFolders.szDemoDir);
-					if (player_mode)
+					ret = CFDelete (pszFile, bPlayerMode ? gameFolders.szProfDir : gameFolders.szDemoDir);
+					if (bPlayerMode) {
+						if (!ret) {
+							p [3] = 'x';	//turn ".plr" to ".plx"
+							CFDelete (pszFile, gameFolders.szProfDir);
+							*p = 0;
+							DeletePlayerSavedGames (pszFile);
+							}
 						*p = 0;
-
-					if ((!ret) && player_mode)	{
-						DeletePlayerSavedGames (pszFile);
-					}
+						}
 
 					if (ret) {
-						if (player_mode)
+						if (bPlayerMode)
 							ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
-						else if (demo_mode)
+						else if (bDemoMode)
 							ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
 						}
-					else if (demo_mode)
+					else if (bDemoMode)
 						demos_deleted = 1;
 					first_item = -1;
 					goto ReadFileNames;
@@ -3048,7 +3050,7 @@ ReadFileNames:
 					GrSetColorRGB (0, 0, 0, 255);
 						
 					GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-					GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
+					GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 				}
 			}	 
 			SDL_ShowCursor (1);
@@ -3066,7 +3068,7 @@ ReadFileNames:
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
+				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
 			i = cItem;
 			if ((i>=0) &&(i<NumFiles))	{
@@ -3077,7 +3079,7 @@ ReadFileNames:
 					grdCurCanv->cvFont = NORMAL_FONT;
 				GrGetStringSize (&filenames [i* (FILENAME_LEN+1)], &w, &h, &aw);
 				GrRect (box_x, y-1, box_x + box_w - 1, y + h + 1);
-				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((player_mode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
+				GrString (box_x + 5, y, (&filenames [i* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [i* (FILENAME_LEN+1)]=='$')?1:0), NULL);
 			}
 			GrUpdate (0);
 			SDL_ShowCursor (1);
@@ -3086,7 +3088,7 @@ ReadFileNames:
 
 //ExitFileMenuEarly:
 	if (cItem > -1)	{
-		strncpy (filename, (&filenames [cItem* (FILENAME_LEN+1)])+ ((player_mode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0), FILENAME_LEN);
+		strncpy (filename, (&filenames [cItem* (FILENAME_LEN+1)])+ ((bPlayerMode && filenames [cItem* (FILENAME_LEN+1)]=='$')?1:0), FILENAME_LEN);
 		exitValue = 1;
 	} else {
 		exitValue = 0;

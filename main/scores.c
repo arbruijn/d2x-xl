@@ -84,7 +84,7 @@ char scores_filename[128];
 
 //------------------------------------------------------------------------------
 
-char *get_scores_filename ()
+char *GetScoresFilename ()
 {
 #ifdef _DEBUG
 	// Only use the MINER variable for internal developement
@@ -112,7 +112,7 @@ void scores_read ()
 	// clear score array...
 	memset (&Scores, 0, sizeof (all_scores));
 
-	if (!CFOpen (&cf, get_scores_filename (), gameFolders.szDataDir, "rb", 0)) {
+	if (!CFOpen (&cf, GetScoresFilename (), gameFolders.szDataDir, "rb", 0)) {
 		int i;
 	 	// No error message needed, code will work without a scores file
 		sprintf (Scores.cool_saying, COOL_SAYING);
@@ -154,8 +154,8 @@ void scores_write ()
 {
 	CFILE cf;
 
-if (!CFOpen (&cf, get_scores_filename (), gameFolders.szDataDir, "wb", 0)) {
-	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, get_scores_filename () );
+if (!CFOpen (&cf, GetScoresFilename (), gameFolders.szDataDir, "wb", 0)) {
+	ExecMessageBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
 	return;
 	}
 
@@ -460,7 +460,7 @@ ReshowScores:
 			if (citem < 0)		{
 				// Reset scores...
 				if (ExecMessageBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES)==1)	{
-					CFDelete (get_scores_filename (), gameFolders.szDataDir);
+					CFDelete (GetScoresFilename (), gameFolders.szDataDir);
 					GrPaletteFadeOut (NULL, 32, 0);
 					goto ReshowScores;
 				}

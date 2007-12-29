@@ -3326,7 +3326,7 @@ void check_joystick_calibration ()
 		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30))	{
 			c = ExecMessageBox (NULL, NULL, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
 			if (c==0)	{
-				joydefs_calibrate ();
+				JoyDefsCalibrate ();
 			}
 		}
 	}

@@ -12,7 +12,7 @@
 
 bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grsColor *c, int scale, int orient);
 bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, 
-						grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp);
+						grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp, float fAlpha);
 bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 
@@ -21,7 +21,7 @@ bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src,
 static inline int OglUBitBlt (int w,int h,int dx,int dy, int sx, int sy, 
 										grsBitmap *src, grsBitmap *dest, int bTransp)
 {
-return OglUBitBltI (w, h, dx, dy, w, h, sx, sy, src, dest, 0, bTransp);
+return OglUBitBltI (w, h, dx, dy, w, h, sx, sy, src, dest, 0, bTransp, 1.0f);
 }
 
 static inline int OglUBitMapM (int x, int y,grsBitmap *bm)

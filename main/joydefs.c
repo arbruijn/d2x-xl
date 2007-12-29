@@ -374,7 +374,7 @@ int joycal_message( char * title, char * text )
 
 extern int WriteConfigFile();
 
-void joydefs_calibrate(void)
+void JoyDefsCalibrate(void)
 {
 	#ifndef MACINTOSH
 	if ( (gameConfig.nControlType!=CONTROL_JOYSTICK) && (gameConfig.nControlType!=CONTROL_FLIGHTSTICK_PRO) && (gameConfig.nControlType!=CONTROL_THRUSTMASTER_FCS) )
@@ -969,7 +969,7 @@ void InputDeviceConfig()
 	case	CONTROL_THRUSTMASTER_FCS:
 	case	CONTROL_GRAVIS_GAMEPAD:
 		if ( joydefs_calibrateFlag )
-			joydefs_calibrate();
+			JoyDefsCalibrate();
 		break;
 	}
 
@@ -1087,7 +1087,7 @@ void InputDeviceConfig()
 	case	CONTROL_FLIGHTSTICK_PRO:
 	case	CONTROL_THRUSTMASTER_FCS:
 		if ( joydefs_calibrateFlag )
-			joydefs_calibrate();
+			JoyDefsCalibrate();
 		break;
 	}
 
@@ -1220,7 +1220,7 @@ void InputDeviceConfig()
 	case	CONTROL_FLIGHTSTICK_PRO:
 	case	CONTROL_THRUSTMASTER_FCS:
 		if ( joydefs_calibrateFlag )
-			joydefs_calibrate();
+			JoyDefsCalibrate();
 		break;
 	}
 

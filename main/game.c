@@ -102,6 +102,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "pcx.h"
 #include "state.h"
 #include "piggy.h"
+#include "textdata.h"
 #include "multibot.h"
 #include "ai.h"
 #include "robot.h"
@@ -565,7 +566,7 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 			}
 			#ifdef MACINTOSH
 			if ((gameConfig.nControlType == 1) && (gameStates.app.nFunctionMode == FMODE_GAME))
-				joydefs_calibrate ();
+				JoyDefsCalibrate ();
 			#endif
 			ResetCockpit ();
 		}
@@ -1798,6 +1799,9 @@ LogErr ("unloading render buffers\n");
 FreeRenderItems ();
 LogErr ("unloading string pool\n");
 FreeStringPool ();
+LogErr ("unloading level messages\n");
+FreeTextData (&gameData.messages);
+FreeTextData (&gameData.sounds);
 LogErr ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();
 PiggyBitmapPageOutAll (0);

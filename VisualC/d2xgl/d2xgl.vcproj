@@ -2836,6 +2836,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\textdata.c">
+				</File>
+				<File
 					RelativePath="..\..\main\tga.c">
 				</File>
 				<File
@@ -3279,6 +3282,9 @@
 						RelativePath="..\..\main\text.h">
 					</File>
 					<File
+						RelativePath="..\..\main\textdata.h">
+					</File>
+					<File
 						RelativePath="..\..\main\textures.h">
 					</File>
 					<File
@@ -3491,10 +3497,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

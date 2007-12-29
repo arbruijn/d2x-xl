@@ -78,7 +78,7 @@ int joydefs_calibrateFlag = 0;
 
 //------------------------------------------------------------------------------
 
-void joydefs_calibrate()
+void JoyDefsCalibrate()
 {
 	joydefs_calibrateFlag = 0;
 

@@ -329,6 +329,40 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+// Changes player spawns according to triggers segments,sides list
+
+int DoMasterTrigger (tTrigger *masterP, short nObject)
+{
+	int 		h, i, j;
+	short 	*segs = masterP->nSegment;
+	short 	*sides = masterP->nSide;
+	short		nWall, nTrigger;
+	tWall		*wallP;
+
+for (h = masterP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
+	if (IS_WALL (nWall = WallNumP (SEGMENTS + *segs, *sides))) {
+		wallP = WALLS + nWall;
+		nTrigger = wallP->nTrigger;
+		if ((nTrigger >= 0) && (nTrigger < gameData.trigs.nTriggers)) 
+			CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, nTrigger, gameData.multiplayer.nLocalPlayer, 0, 0);
+		}
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int DoShowMessage (tTrigger *masterP, short nObject)
+{
+}
+
+//------------------------------------------------------------------------------
+
+int DoPlaySound (tTrigger *masterP, short nObject)
+{
+}
+
+//------------------------------------------------------------------------------
 // Changes walls pointed to by a tTrigger. returns true if any walls changed
 int DoChangeWalls (tTrigger *trigP)
 {
@@ -808,7 +842,7 @@ if ((triggers == gameData.trigs.triggers) &&
 	}
 #endif
 if (trigP->flags & TF_ONE_SHOT)		//if this is a one-shot...
-	trigP->flags |= TF_DISABLED;		//..then don'trigP let it happen again
+	trigP->flags |= TF_DISABLED;		//..then don't let it happen again
 
 switch (trigP->nType) {
 
@@ -1012,6 +1046,17 @@ switch (trigP->nType) {
 	case TT_COUNTDOWN:
 		InitCountdown (trigP, 1);
 		break;
+
+	case TT_MESSAGE:
+		DoShowMessage (trigP, nObject);
+		break;
+
+	case TT_SOUND:
+		DoPlaySound (trigP, nObject);
+		break;
+
+	case TT_MASTER:
+		DoMasterTrigger (trigP, nObject);
 
 	default:
 		Int3 ();

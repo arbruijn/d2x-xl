@@ -145,6 +145,7 @@ void NMLoadAltBg (void);
 int NMFreeAltBg (int bForce);
 
 void NMRestoreScreen (char *filename, bkg *bg, gsrCanvas *save_canvas, grsFont *saveFont, int bDontRestore);
+void NMBlueBox (int x1, int y1, int x2, int y2);
 
 extern double altBgAlpha;
 extern double altBgBrightness;

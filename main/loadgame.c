@@ -99,6 +99,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "text.h"
 #include "cfile.h"
 #include "piggy.h"
+#include "textdata.h"
 #include "texmerge.h"
 #include "paging.h"
 #include "mission.h"
@@ -976,6 +977,8 @@ if (gameStates.app.bD1Mission) {
 else {
 	if (bPageInTextures)
 		PiggyLoadLevelData ();
+	LoadTextData (pszLevelName, ".msg", &gameData.messages);
+	LoadTextData (pszLevelName, ".snd", &gameData.sounds);
 	LoadBitmapReplacements (pszLevelName);
 	LoadSoundReplacements (pszLevelName);
 	}

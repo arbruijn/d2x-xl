@@ -4166,7 +4166,7 @@ do {
 		else if (i == optConfig)
 			InputDeviceConfig ();		
 		else if (i == optJoyCal)
-			joydefs_calibrate ();	
+			JoyDefsCalibrate ();	
 		else if (i == optDetails)
 			DetailLevelMenu (); 
 		else if (i == optScrRes)

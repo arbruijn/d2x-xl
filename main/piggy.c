@@ -2286,6 +2286,7 @@ if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 					}
 				}
 			j = indices [i];
+			bm.bmHandle = j;
 			}
 		else {
 			int nSize = (int) bm.bmProps.w * (int) bm.bmProps.h;
@@ -2295,13 +2296,13 @@ if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 				}
 			bm.bmPalette = gamePalette;
 			j = indices [i];
+			bm.bmHandle = j;
 			rle_expand (&bm, NULL, 0);
 			bm.bmProps = gameData.pig.tex.pBitmaps [j].bmProps;
 			GrRemapBitmapGood (&bm, gamePalette, TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 			}
 		PiggyFreeBitmap (NULL, j, 0);
 		bm.bmFromPog = 1;
-		bm.bmHandle = j;
 		if (*gameData.pig.tex.pBitmaps [j].szName)
 			sprintf (bm.szName, "[%s]", gameData.pig.tex.pBitmaps [j].szName);
 		else
@@ -2700,6 +2701,70 @@ if (CFRead (bmp->bmTexBuf, bih.biWidth * bih.biHeight, 1, &cf) != 1) {
 	}
 CFClose (&cf);
 return bmp;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeTextData (tTextData *msgP)
+{
+D2_FREE (msgP->text);
+D2_FREE (msgP->index);
+msgP->nLines = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void LoadTextData (char *pszLevelName, char *pszExt, tTextData *msgP)
+{
+	char			szFilename [SHORT_FILENAME_LEN];
+	CFILE			cf;
+	int			bufSize, nLines;
+	char			*p, *q;
+	tTextIndex	*pi;
+
+	//first, D2_FREE up data allocated for old bitmaps
+LogErr ("   loading mission messages\n");
+FreeTextData (msgP);
+ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
+bufSize = CFSize (szFilename, gameFolders.szDataDir, 0);
+if (bufSize <= 0)
+	return;
+if (!(msgP->text = D2_ALLOC (bufSize + 2)))
+	return;
+if (!CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
+	FreeTextMessages (msgP);
+	return;
+	}
+CFRead (msgP->text + 1, bufSize, 1, &cf);
+CFClose (&cf);
+msgP->text [0] = '\n';
+msgP->text [bufSize] = '\0';
+for (p = msgP->text, nLines = 0; *p; p++) {
+	if (*p == '\n')
+		nLines++;
+	}
+if (!(msgP->index = (tTextIndex *) D2_ALLOC (nLines * sizeof (tTextIndex)))) {
+	FreeTextMessages (msgP);
+	return;
+	}
+msgP->nLines = nLines;
+for (p = q = msgP->text, pi = msgP->index; *p; p++) {
+	if (*p == '\n') {
+		*q = '\0';
+		p++;
+		pi->id = atoi (p);
+		while (isdigit (*p))
+			p++;
+		pi->pszText = q;
+		pi++;
+		}
+	else if ((*p = '\\') && (*(p + 1) == 'n')) {
+		*q++ = '\n';
+		p++;
+		}
+	else
+		*q++ = *p;
+	}
 }
 
 //------------------------------------------------------------------------------

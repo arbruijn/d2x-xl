@@ -89,7 +89,7 @@ extern joystick_device j_joystick[4];
 extern joystick_axis j_axis[MAX_AXES];
 extern joystick_button j_button[MAX_BUTTONS];
 
-void joydefs_calibrate()
+void JoyDefsCalibrate()
 {
 
 	int i;

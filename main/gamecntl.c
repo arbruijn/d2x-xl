@@ -1142,7 +1142,7 @@ switch (key) {
 
 	case KEY_F7+KEY_SHIFTED: 
 		PaletteSave(); 
-		joydefs_calibrate(); 
+		JoyDefsCalibrate(); 
 		PaletteRestore(); 
 		break;
 

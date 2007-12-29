@@ -243,7 +243,7 @@ bool OglUBitBltI (
 	int dw, int dh, int dx, int dy, 
 	int sw, int sh, int sx, int sy, 
 	grsBitmap *src, grsBitmap *dest, 
-	int bMipMaps, int bTransp)
+	int bMipMaps, int bTransp, float fAlpha)
 {
 	GLfloat xo, yo, xs, ys;
 	GLfloat u1, v1;//, u2, v2;
@@ -283,7 +283,7 @@ glDepthFunc (GL_ALWAYS);
 if (bTransp && nTransp) {
 	glEnable (GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f (1.0, 1.0, 1.0, 1.0);
+	glColor4f (1.0, 1.0, 1.0, fAlpha);
 	}
 else {
 	glDisable (GL_BLEND);

@@ -58,7 +58,7 @@ int joycal_message( char * title, char * text )
 	return 0;
 }
 
-void joydefs_calibrate()
+void JoyDefsCalibrate()
 {
   joycal_message("No Calibration", "calibration should be performed\nthrough windows");
   return;

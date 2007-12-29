@@ -1414,7 +1414,7 @@ if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
 		goto RetrySelection;
 	}
 if ((gameConfig.nControlType > 0) && (gameConfig.nControlType < 5))
-	joydefs_calibrate();
+	JoyDefsCalibrate();
 gameStates.app.nDifficultyLevel = DEFAULT_DIFFICULTY;
 gameOptions [0].gameplay.nAutoLeveling = 1;
 nHighestLevels = 1;

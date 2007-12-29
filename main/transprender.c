@@ -302,8 +302,8 @@ else
 	{
 #if RI_POLY_CENTER
 	zCenter = 0;
-	zMin = 1e30;
-	zMax = -1e30;
+	zMin = 1e30f;
+	zMax = -1e30f;
 #endif
 	for (i = 0; i < item.nVertices; i++) {
 		z = item.vertices [i].p.z;

@@ -797,9 +797,9 @@ do {
 			sideDists [l] = sideDists [r];
 			sideDists [r] = hd;
 			}
+		++l;
+		--r;
 		}
-	++l;
-	--r;
 	} while (l <= r);
 if (right > l)
    SortSidesByDist (sideDists, sideNums, l, right);
