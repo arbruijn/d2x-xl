@@ -126,7 +126,7 @@ QSortTextData (msgP->index, 0, msgP->nLines - 1);
 
 //------------------------------------------------------------------------------
 
-tTextIndex *FindGameMessage (tTextData *msgP, int nId)
+tTextIndex *FindTextData (tTextData *msgP, int nId)
 {
 	int	h, m, l = 0, r = msgP->nLines - 1;
 
@@ -161,7 +161,7 @@ if (nId < 0) {
 		}
 	}
 else {
-	if (!(indexP = FindGameMessage (msgP, nId)))
+	if (!(indexP = FindTextData (msgP, nId)))
 		return;
 	msgP->currentMsg = indexP;
 	msgP->nStartTime = gameStates.app.nSDLTicks;
