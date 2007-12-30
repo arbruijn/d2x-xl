@@ -255,13 +255,13 @@ if (bForce || (gameOpts->menus.nStyle == 1)) {
 		x2 = grdCurScreen->scWidth - 1;
 	if (y2 >= grdCurScreen->scHeight)
 		y2 = grdCurScreen->scHeight - 1;
-	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha * fAlpha);
+	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 	gameStates.render.grAlpha = (float) gameData.menu.alpha * fAlpha / 255.0f;
 	glDisable (GL_TEXTURE_2D);
 	GrURect (x1, y1, x2, y2);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255 * fAlpha);
-	glLineWidth (nLineWidth);
+	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (255 * fAlpha));
+	glLineWidth ((GLfloat) nLineWidth);
 	GrUBox (x1, y1, x2, y2);
 	glLineWidth (1);
 	}

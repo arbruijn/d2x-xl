@@ -9,6 +9,7 @@
 #include "ogl_bitmap.h"
 #include "newmenu.h"
 #include "gamefont.h"
+#include "gamecntl.h"
 #include "text.h"
 #include "textdata.h"
 
@@ -149,7 +150,6 @@ void ShowGameMessage (tTextData *msgP, int nId, int nDuration)
 {
 	tTextIndex	*indexP;
 	short			w, h, x, y;
-	char			c;
 	float			fAlpha;
 
 if (nId < 0) {
