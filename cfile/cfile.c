@@ -289,9 +289,7 @@ return statbuf.st_size;
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
 if (!CFOpen (&cf, hogname, gameFolders.szDataDir, "rb", bUseD1Hog))
 	return -1;
-if (fseek (cf.file, 0, SEEK_END))
-	return -1;
-size = ftell (cf.file);
+size = cf.size;
 CFClose (&cf);
 return size;
 #endif

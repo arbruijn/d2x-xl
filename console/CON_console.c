@@ -23,6 +23,7 @@
 #include "timer.h"
 #include "inferno.h"
 #include "gamefont.h"
+#include "newmenu.h"
 
 #define FG_COLOR    grdCurCanv->cvFontFgColor
 #define get_msecs() approx_fsec_to_msec(TimerGetApproxSeconds())
@@ -364,8 +365,6 @@ void CON_UpdateOffset(ConsoleInformation* console) {
 //------------------------------------------------------------------------------
 /* Draws the console buffer to the screen if the console is "visible" */
 
-void NMBlueBox (int x1, int y1, int x2, int y2);
-
 void CON_DrawConsole(ConsoleInformation *console) {
 	gsrCanvas *canv_save;
 	grsBitmap *clip;
@@ -391,7 +390,7 @@ void CON_DrawConsole(ConsoleInformation *console) {
 #endif
 
 	if (gameOpts->menus.nStyle)
-		NMBlueBox (0, 0, console->ConsoleSurface->cv_w, console->RaiseOffset);
+		NMBlueBox (0, 0, console->ConsoleSurface->cv_w, console->RaiseOffset, 1, 1.0f, 0);
 	else {
 		canv_save = grdCurCanv;
 		GrSetCurrentCanvas(&console->OutputScreen->scCanvas);

@@ -8,6 +8,8 @@
 #include "key.h"
 #include "ogl_bitmap.h"
 #include "newmenu.h"
+#include "gamefont.h"
+#include "text.h"
 #include "textdata.h"
 
 //------------------------------------------------------------------------------
@@ -75,7 +77,7 @@ CFRead (msgP->textBuffer + 1, bufSize, 1, &cf);
 CFClose (&cf);
 msgP->textBuffer [0] = '\n';
 msgP->textBuffer [bufSize] = '\0';
-for (p = msgP->textBuffer, nLines = 0; *p; p++) {
+for (p = msgP->textBuffer + 1, nLines = 1; *p; p++) {
 	if (*p == '\n')
 		nLines++;
 	}
@@ -87,22 +89,31 @@ msgP->nLines = nLines;
 nLines = 0;
 for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	if (!*p) {
+		*q++ = *p;
 		pi->nLines = nLines;
 		break;
 		}
-	else if (*p == '\n') {
+	else if ((*p == '\r') || (*p == '\n')) {
 		if (nLines)
 			(pi - 1)->nLines = nLines;
 		*q++ = '\0';
-		p++;
+		if ((*p == '\r') && (*(p + 1) == '\n'))
+			p += 2;
+		else
+			p++;
 		pi->nId = atoi (p);
+		if (!(*p && pi->nId)) {
+			*q++ = '\0';
+			pi->nLines = nLines;
+			break;
+			}
 		while (isdigit (*p))
 			p++;
-		pi->pszText = ++p;
+		pi->pszText = q;
 		pi++;
-		*q++ = *p;
+		nLines = 1;
 		}
-	else if ((*p = '\\') && (*(p + 1) == 'n')) {
+	else if ((*p == '\\') && (*(p + 1) == 'n')) {
 		*q++ = '\n';
 		nLines++;
 		p++;
@@ -138,6 +149,8 @@ void ShowGameMessage (tTextData *msgP, int nId, int nDuration)
 {
 	tTextIndex	*indexP;
 	short			w, h, x, y;
+	char			c;
+	float			fAlpha;
 
 if (nId < 0) {
 	if (!(indexP = msgP->currentMsg))
@@ -151,24 +164,42 @@ else {
 	if (!(indexP = FindGameMessage (msgP, nId)))
 		return;
 	msgP->currentMsg = indexP;
+	msgP->nStartTime = gameStates.app.nSDLTicks;
 	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks + 1000 * nDuration;
 	if (msgP->bmP) {
 		GrFreeBitmap (msgP->bmP);
 		msgP->bmP = NULL;
 		}
 	}
-if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, 0))) {
-	w = msgP->bmP->bmProps.w;
-	h = msgP->bmP->bmProps.h;
-	x = (grdCurCanv->cv_w - w) / 2;
-	y = (grdCurCanv->cv_h - h) / 2;
-	NMBlueBox (x - 4, y - 4, x + w + 4, y + w + 4);
-	OglUBitBltI (w, h, x, y, w, h, 0, 0, msgP->bmP, &grdCurCanv->cvBitmap, 0, 1,
-					 (msgP->nEndTime < 0) ? 1.0f : (float) (msgP->nEndTime - gameStates.app.nSDLTicks) / 1000.0f);
-	}
 if (msgP->nEndTime < 0) {
-	while (KeyInKey () != KEY_ESC)
-		;
+	if (nId < 0)
+		return;
+	PauseGame ();
+	ExecMessageBox (NULL, NULL, 1, TXT_CLOSE, indexP->pszText);
+	msgP->currentMsg = NULL;
+	ResumeGame ();
+	}
+else {
+	if (!msgP->bmP) {
+		grdCurCanv->cvFont = NORMAL_FONT;
+		GrSetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
+		}
+	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, 0))) {
+		w = msgP->bmP->bmProps.w;
+		h = msgP->bmP->bmProps.h;
+		x = (grdCurCanv->cv_w - w) / 2;
+		y = (grdCurCanv->cv_h - h) * 2 / 5;
+		if (msgP->nEndTime < 0)
+			fAlpha = 1.0f;
+		else if (gameStates.app.nSDLTicks - msgP->nStartTime < 250)
+			fAlpha = (float) (gameStates.app.nSDLTicks - msgP->nStartTime) / 250.0f;
+		else if (msgP->nEndTime - gameStates.app.nSDLTicks < 500)
+			fAlpha = (float) (msgP->nEndTime - gameStates.app.nSDLTicks) / 500.0f;
+		else
+			fAlpha = 1.0f;
+		NMBlueBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);
+		OglUBitBltI (w, h, x, y, w, h, 0, 0, msgP->bmP, &grdCurCanv->cvBitmap, 0, 1, fAlpha);
+		}
 	}
 }
 

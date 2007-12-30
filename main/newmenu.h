@@ -126,7 +126,7 @@ int ExecMenuListBox1(char *title, int nitems, char *items[], int allow_abortFlag
 
 int ExecMenuFileList(char *title, char *filespace, char *filename);
 
-int ExecMenutiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
+int ExecMenuTiny (char * title, char * subtitle, int nItems, tMenuItem * item, 
 						 void (*subfunction) (int nItems, tMenuItem * items, int * last_key, int citem));
 
 int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, 
@@ -145,7 +145,7 @@ void NMLoadAltBg (void);
 int NMFreeAltBg (int bForce);
 
 void NMRestoreScreen (char *filename, bkg *bg, gsrCanvas *save_canvas, grsFont *saveFont, int bDontRestore);
-void NMBlueBox (int x1, int y1, int x2, int y2);
+void NMBlueBox (int x1, int y1, int x2, int y2, int nLineWidth, float fAlpha, int bForce);
 
 extern double altBgAlpha;
 extern double altBgBrightness;

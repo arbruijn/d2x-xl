@@ -79,6 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "input.h"
 #include "shadows.h"
+#include "textdata.h"
 
 //------------------------------------------------------------------------------
 
@@ -1320,12 +1321,14 @@ StencilOff ();
 if ((gameOpts->render.bDepthSort > 0) || gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
 RenderItems ();
-if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ()))
+if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	RenderRadar ();
-gameStates.render.nShadowPass = 0;
+	}
 if (viewInfo.bUsePlayerHeadAngles) 
 	Draw3DReticle (nEyeOffset);
+gameStates.render.nShadowPass = 0;
 G3EndFrame ();
+ShowGameMessage (&gameData.messages, -1, -1);
 }
 
 //------------------------------------------------------------------------------

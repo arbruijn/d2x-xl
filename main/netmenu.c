@@ -2147,7 +2147,7 @@ else {
 	gameStates.multi.bSurfingNet = 1;
 	NMLoadBackground (MENU_PCX_NAME, &bg, 0);             //load this here so if we abort after loading level, we restore the palette
 	GrPaletteStepLoad (NULL);
-	choice = ExecMenutiny (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll);
+	choice = ExecMenuTiny (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll);
 	NMRemoveBackground (&bg);
 	gameStates.multi.bSurfingNet = 0;
 	}

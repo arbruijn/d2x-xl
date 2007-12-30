@@ -863,7 +863,7 @@ void ShowFullscreenImage (grsBitmap *src)
 if ((src->bmProps.nType == BM_LINEAR) && (dest->bmProps.nType == BM_OGL)) {
 	if (!gameStates.render.bBlendBackground)
 		glDisable (GL_BLEND);
-	OglUBitBltI (dest->bmProps.w, dest->bmProps.h, 0, 0, src->bmProps.w, src->bmProps.h, 0, 0, src, dest, 0, 0);
+	OglUBitBltI (dest->bmProps.w, dest->bmProps.h, 0, 0, src->bmProps.w, src->bmProps.h, 0, 0, src, dest, 0, 0, 1.0f);
 	if (!gameStates.render.bBlendBackground)
 		glEnable (GL_BLEND);
 	return;

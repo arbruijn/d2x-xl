@@ -2851,6 +2851,7 @@ typedef struct tTextData {
 	tTextIndex	*index;
 	tTextIndex	*currentMsg;
 	int			nLines;
+	int			nStartTime;
 	int			nEndTime;
 	grsBitmap	*bmP;
 } tTextData;

@@ -52,6 +52,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "input.h"
 #include "text.h"
 #include "light.h"
+#include "textdata.h"
 #include "hudmsg.h"
 
 #ifdef EDITOR
@@ -352,14 +353,17 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int DoShowMessage (tTrigger *masterP, short nObject)
+int DoShowMessage (tTrigger *trigP, short nObject)
 {
+ShowGameMessage (&gameData.messages, f2i (trigP->value), trigP->time);
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int DoPlaySound (tTrigger *masterP, short nObject)
+int DoPlaySound (tTrigger *trigP, short nObject)
 {
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1133,7 +1137,7 @@ void TriggersFrameProcess ()
 	tTrigger	*trigP = gameData.trigs.triggers;
 
 for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
-	if ((trigP->nType != TT_COUNTDOWN) && (trigP->time >= 0))
+	if ((trigP->nType != TT_COUNTDOWN) && (trigP->nType != TT_MESSAGE) && (trigP->time >= 0))
 		trigP->time -= gameData.time.xFrame;
 }
 

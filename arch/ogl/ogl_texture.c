@@ -1208,8 +1208,6 @@ h = bmP->bmProps.h;
 w = bmP->bmProps.w;
 if (!(h * w))
 	return 1;
-if (!strcmp (bmP->szName, "exp06#0"))
-	bmP = bmP;
 nFrames = (bmP->bmType == BM_TYPE_ALT) ? BM_FRAMECOUNT (bmP) : 0;
 if (!(bmP->bmProps.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	if (bLoad && OglLoadBmTextureM (bmP, bDoMipMap, nTransp, 0, NULL))

@@ -243,10 +243,10 @@ if (!bNewMenuFirstTime) {
 
 //------------------------------------------------------------------------------
 
-void NMBlueBox (int x1, int y1, int x2, int y2)
+void NMBlueBox (int x1, int y1, int x2, int y2, int nLineWidth, float fAlpha, int bForce)
 {
 gameStates.render.nFlashScale = 0;
-if (gameOpts->menus.nStyle == 1) {
+if (bForce || (gameOpts->menus.nStyle == 1)) {
 	if (x1 <= 0)
 		x1 = 1;
 	if (y1 <= 0)
@@ -255,12 +255,15 @@ if (gameOpts->menus.nStyle == 1) {
 		x2 = grdCurScreen->scWidth - 1;
 	if (y2 >= grdCurScreen->scHeight)
 		y2 = grdCurScreen->scHeight - 1;
-	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
-	gameStates.render.grAlpha = (float) gameData.menu.alpha / 255.0f;
+	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha * fAlpha);
+	gameStates.render.grAlpha = (float) gameData.menu.alpha * fAlpha / 255.0f;
+	glDisable (GL_TEXTURE_2D);
 	GrURect (x1, y1, x2, y2);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
-	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
+	GrSetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255 * fAlpha);
+	glLineWidth (nLineWidth);
 	GrUBox (x1, y1, x2, y2);
+	glLineWidth (1);
 	}
 }
 
@@ -478,7 +481,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 			if (bVerInfo)
 				PrintVersionInfo ();
 			}
-		NMBlueBox (x, y, x + w, y + h);
+		NMBlueBox (x, y, x + w, y + h, 1, 1.0f, 0);
 		}
 	if (bg && !bg->bIgnoreBg) {
 		GrPaletteStepLoad (NULL);
@@ -604,7 +607,7 @@ if (bCreateTextBms && gameOpts->menus.bFastMenus &&
 												 gameData.menu.keyColor,
 												 nTabs, item->centered, item->w, 0)))) {
 	OglUBitBltI (bmP->bmProps.w, bmP->bmProps.h, item->x, item->y, bmP->bmProps.w, bmP->bmProps.h, 0, 0, 
-					 bmP, &grdCurCanv->cvBitmap, 0, 1);
+					 bmP, &grdCurCanv->cvBitmap, 0, 1, 1.0f);
 	item->text_bm [bIsCurrent] = bmP;
 	}
 else 

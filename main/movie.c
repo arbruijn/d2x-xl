@@ -233,7 +233,7 @@ if (gameOpts->movies.bFullScreen) {
 	OglUBitBltI (grdCurCanv->cvBitmap.bmProps.w, dh, 0, yOffs, 
 					 bufw, bufh, sx, sy, 
 					 &bmFrame, &grdCurCanv->cvBitmap, 
-					 gameOpts->movies.nQuality, 1);
+					 gameOpts->movies.nQuality, 1, 1.0f);
 	glEnable (GL_BLEND);
 	}
 else {

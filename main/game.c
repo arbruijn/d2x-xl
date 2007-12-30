@@ -713,7 +713,8 @@ gameData.time.xStops++;
 
 void StartTime ()
 {
-Assert (gameData.time.nPaused > 0);
+if (gameData.time.nPaused <= 0)
+	return;
 if (!--gameData.time.nPaused) {
 	fix xTime = TimerGetFixedSeconds ();
 #if defined (TIMER_TEST) && defined (_DEBUG)
