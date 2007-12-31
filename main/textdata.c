@@ -49,6 +49,10 @@ do {
 		r--;
 		}
 	} while (l <= r);
+if (l < right)
+	QSortTextData (indexP, l, right);
+if (left < r)
+	QSortTextData (indexP, left, r);
 }
 
 //------------------------------------------------------------------------------
@@ -102,11 +106,13 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 			p += 2;
 		else
 			p++;
-		pi->nId = atoi (p);
-		if (!(*p && pi->nId)) {
+		if (!*p) {
 			*q++ = '\0';
 			break;
 			}
+		pi->nId = atoi (p);
+		if (!pi->nId)
+			continue;
 		while (isdigit (*p))
 			p++;
 		pi->pszText = q;
@@ -121,6 +127,7 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	else
 		*q++ = *p;
 	}
+msgP->nLines = (int) (pi - msgP->index);
 QSortTextData (msgP->index, 0, msgP->nLines - 1);
 }
 
