@@ -1795,16 +1795,16 @@ void LoadGameTexts(void);
 #define TXT_HEADLIGHT_BUILTIN		GT(1002)
 #define TXT_HEADLIGHT_POWERDRAIN	GT(1003)
 #define TXT_CORONA_QUALITY			GT(1004)
+#define TXT_AUXWIN_POSITION		GT(1005)
+#define TXT_POS_TOP					GT(1006)
+#define TXT_POS_BOTTOM				GT(1007)
+#define TXT_AUXWIN_ALIGNMENT		GT(1008)
+#define TXT_ALIGN_CENTER			GT(1009)
+#define TXT_ALIGN_MIDDLE			GT(1010)
+#define TXT_ALIGN_CORNERS			GT(1011)
 
 #if 0
 
-#define TXT_				GT(1005)
-#define TXT_				GT(1006)
-#define TXT_				GT(1007)
-#define TXT_				GT(1008)
-#define TXT_				GT(1009)
-#define TXT_				GT(1010)
-#define TXT_				GT(1011)
 #define TXT_				GT(1012)
 #define TXT_				GT(1013)
 #define TXT_				GT(1014)
@@ -2346,11 +2346,11 @@ void LoadGameTexts(void);
 #define HTX_HEADLIGHT_BUILTIN		HT(332)
 #define HTX_HEADLIGHT_POWERDRAIN	HT(333)
 #define HTX_CORONA_QUALITY			HT(334)			
+#define HTX_AUXWIN_POSITION		HT(335)			
+#define HTX_AUXWIN_ALIGNMENT		HT(336)			
 
 #if 0
 
-#define HTX_					HT(335)			
-#define HTX_					HT(336)			
 #define HTX_					HT(337)			
 #define HTX_					HT(338)			
 #define HTX_					HT(339)			

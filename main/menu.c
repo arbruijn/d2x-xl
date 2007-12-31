@@ -1750,9 +1750,12 @@ if (gameOpts->app.bExpertMode) {
 
 void CockpitOptionsMenu (void)
 {
-	tMenuItem m [25];
-	int	i, opt, choice = 0;
-	int	optGauges, optHUD, optReticle, optGuided, 
+	tMenuItem m [30];
+	int	i, opt, 
+			nPosition = gameOpts->render.cockpit.nWindowPos / 3, 
+			nAlignment = gameOpts->render.cockpit.nWindowPos % 3, 
+			choice = 0;
+	int	optGauges, optHUD, optReticle, optGuided, optPosition, optAlignment,
 			optMissileView, optMouseInd, optSplitMsgs, optHUDMsgs, optTgtInd, optWeaponIcons;
 
 	char szCockpitWindowZoom [40];
@@ -1761,7 +1764,7 @@ szCWS [0] = TXT_CWS_SMALL;
 szCWS [1] = TXT_CWS_MEDIUM;
 szCWS [2] = TXT_CWS_LARGE;
 szCWS [3] = TXT_CWS_HUGE;
-nCWSopt = nCWZopt = optTextGauges = optWeaponIcons = optIconAlpha = -1;
+optPosition = optAlignment = nCWSopt = nCWZopt = optTextGauges = optWeaponIcons = optIconAlpha = -1;
 bShowWeaponIcons = (extraGameInfo [0].nWeaponIcons != 0);
 do {
 	memset (m, 0, sizeof (m));
@@ -1773,6 +1776,24 @@ do {
 		sprintf (szCockpitWindowZoom, TXT_CW_ZOOM, gameOpts->render.cockpit.nWindowZoom + 1);
 		ADD_SLIDER (opt, szCockpitWindowZoom, gameOpts->render.cockpit.nWindowZoom, 0, 3, KEY_Z, HTX_CPIT_WINZOOM);
 		nCWZopt = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_TEXT (opt, TXT_AUXWIN_POSITION, 0);
+		opt++;
+		ADD_RADIO (opt, TXT_POS_BOTTOM, nPosition == 0, KEY_B, 10, HTX_AUXWIN_POSITION);
+		optPosition = opt++;
+		ADD_RADIO (opt, TXT_POS_TOP, nPosition == 1, KEY_T, 10, HTX_AUXWIN_POSITION);
+		opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_TEXT (opt, TXT_AUXWIN_ALIGNMENT, 0);
+		opt++;
+		ADD_RADIO (opt, TXT_ALIGN_CORNERS, nAlignment == 0, KEY_O, 11, HTX_AUXWIN_ALIGNMENT);
+		optAlignment = opt++;
+		ADD_RADIO (opt, TXT_ALIGN_MIDDLE, nAlignment == 1, KEY_I, 11, HTX_AUXWIN_ALIGNMENT);
+		opt++;
+		ADD_RADIO (opt, TXT_ALIGN_CENTER, nAlignment == 2, KEY_E, 11, HTX_AUXWIN_ALIGNMENT);
+		opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
@@ -1826,6 +1847,15 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bHUD, optHUD);
 	GET_VAL (gameOpts->render.cockpit.bHUDMsgs, optHUDMsgs);
 	GET_VAL (gameOpts->render.cockpit.bSplitHUDMsgs, optSplitMsgs);
+	if ((optAlignment >= 0) && (optPosition >= 0)) {
+		for (nPosition = 0; nPosition < 2; nPosition++)
+			if (m [optPosition + nPosition].value)
+				break;
+		for (nAlignment = 0; nAlignment < 3; nAlignment++)
+			if (m [optAlignment + nAlignment].value)
+				break;
+		gameOpts->render.cockpit.nWindowPos = nPosition * 3 + nAlignment;
+		}
 	} while (i == -2);
 }
 

@@ -1754,6 +1754,13 @@ char *defaultGameTexts [][2] = {
 	{"eingebauter schein~Werfer", "built-in head~Light"},
 	{"Scheinwerfer verbraucht s~Trom", "headlight drains po~Wer"},
 	{"korona-~Qualitaet: %s", "corona ~Quality: %s"},
+	{"Cockpit-Fenster-Position", "cockpit window position"},
+	{"~Oben", "~Top"},
+	{"~Unten", "~Bottom"},
+	{"Cockpit-Fenster-Ausrichtung", "cockpit window alignment"},
+	{"~Zentrum", "C~Enter"},
+	{"~Mitte", "M~Iddle"},
+	{"~Ecken", "C~Orners"},
 #if 0
 	{"", ""},
 #endif
@@ -2354,6 +2361,9 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, verbrauchen eingeschaltete Scheinwerfer\n(wie gehabt) Strom. Andernfalls benoetigen sie keine Energie.", "If checked turned on headlights drain the ship's power (as usual).\nOtherwise, no energy is consumed by the headlight."},
 	{"Bei geringer Qualitaet haben Lichthoefe an Waenden scharfe Kanten.\nBei mittlerer Qualitaet haben sie weiche Kanten,\nscheinen aber durch vor ihnen liegende Hindernisse durch.\nBei hoher Qualitaet sind die Kanten weich und die\nKoronas werden von vor ihnen liegenden Hindernissen verdeckt.", 
 	 "At low quality coronas have sharp edges at walls.\nAt medium quality they have soft edges,\nbut may shine through obstacles in front of them.\nAt hight quality, the edges are soft and the\ncoronas will be occluded by obstacles in front of them."},
+	{"Hier kann die Position der Cockpit-Fenster ausgewaehlt werden.", "Here you can chose the cockpit window position."},
+	{"Hier kann die Ausrichtung der Cockpit-Fenster ausgewaehlt werden.\nZentrum: Fenster werden in der Bildschirmmitte angezeigt\n(Fenster koennen ueberlappen).\nMitte: Fenster werden auf halbem Weg zwischen Bildschirmmitte und\nBildschirmecken angezeigt.\nEcken: Fenster werden nahe den Bildschirmecken angezeigt.", 
+	 "Here you can chose the cockpit window alignment.\nCenter: Windows are displayed in the screen center\n(windows may overlap).\nMiddle: Windows are displayed halfway between the screen center and\nscreen corners.\nCorners: Windows are displayed near the screen corners."},
 #if 0
 	{"", ""},
 #endif

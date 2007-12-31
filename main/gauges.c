@@ -4080,35 +4080,35 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)	{
 	switch (gameOpts->render.cockpit.nWindowPos) {
 		case 0:
 			window_x = win ? 
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w-w-h/10 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
 				h / 10;
-			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h-h- (h/10);
+			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 1:
 			window_x = win ? 
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w/3*2-w/3 :
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w/3-2*w/3;
-			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h-h- (h/10);
+				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
+			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 2:	// only makes sense if there's only one cockpit window
-			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w/2-w/2;
-			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h-h- (h/10);
+			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 2 - w / 2;
+			window_y = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.h - h - h / 10;
 			break;
 		case 3:
 			window_x = win ? 
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w-w-h/10 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w - w - h / 10 :
 				h / 10;
-			window_y = h/10;
+			window_y = h / 10;
 			break;
 		case 4:
 			window_x = win ? 
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w/3*2-w/3 :
-				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w/3-2*w/3;
-			window_y = h/10;
+				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 * 2 - w / 3 :
+				gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 3 - 2 * w / 3;
+			window_y = h / 10;
 			break;
 		case 5:	// only makes sense if there's only one cockpit window
-			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w/2-w/2;
-			window_y = h/10;
+			window_x = gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / 2 - w / 2;
+			window_y = h / 10;
 			break;
 		}
 	if ((gameOpts->render.cockpit.nWindowPos < 3) && 
