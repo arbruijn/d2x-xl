@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern int bShowMemInfo;
 
 #ifdef _DEBUG
-#	define DBG_MALLOC	1
+#	define DBG_MALLOC	0
 #else
 #	define DBG_MALLOC 0
 #endif
@@ -51,7 +51,7 @@ void MemValidateHeap ();
 #define D2_ALLOC(size)			malloc (size)
 #define D2_CALLOC(n, size)		calloc (n, size)
 #define D2_REALLOC(ptr,size)	realloc (ptr,size)
-#define D2_FREE(ptr)				{free (ptr); ptr = NULL;}
+#define D2_FREE(ptr)				{free (ptr); (ptr) = NULL;}
 #define D2_STRDUP(str)			strdup (str)
 
 #define MALLOC(_var, _type, _count)   ((_var) = (_type *) malloc ((_count) * sizeof (_type)))

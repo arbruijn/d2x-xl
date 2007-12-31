@@ -74,10 +74,10 @@ if (!CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 	FreeTextData (msgP);
 	return;
 	}
-CFRead (msgP->textBuffer + 1, bufSize, 1, &cf);
+CFRead (msgP->textBuffer + 1, 1, bufSize, &cf);
 CFClose (&cf);
 msgP->textBuffer [0] = '\n';
-msgP->textBuffer [bufSize] = '\0';
+msgP->textBuffer [bufSize + 1] = '\0';
 for (p = msgP->textBuffer + 1, nLines = 1; *p; p++) {
 	if (*p == '\n')
 		nLines++;
@@ -91,7 +91,7 @@ nLines = 0;
 for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	if (!*p) {
 		*q++ = *p;
-		pi->nLines = nLines;
+		(pi - 1)->nLines = nLines;
 		break;
 		}
 	else if ((*p == '\r') || (*p == '\n')) {
@@ -105,7 +105,6 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 		pi->nId = atoi (p);
 		if (!(*p && pi->nId)) {
 			*q++ = '\0';
-			pi->nLines = nLines;
 			break;
 			}
 		while (isdigit (*p))
