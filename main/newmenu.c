@@ -481,7 +481,7 @@ if (filename || gameOpts->menus.nStyle) {	// background image file present
 			if (bVerInfo)
 				PrintVersionInfo ();
 			}
-		NMBlueBox (x, y, x + w, y + h, 1, 1.0f, 0);
+		NMBlueBox (x, y, x + w, y + h, gameData.menu.nLineWidth, 1.0f, 0);
 		}
 	if (bg && !bg->bIgnoreBg) {
 		GrPaletteStepLoad (NULL);

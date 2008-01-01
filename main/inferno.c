@@ -2296,6 +2296,7 @@ gameData.ai.nDistToLastPlayerPosFiredAt = 0;
 gameData.ai.freePointSegs = gameData.ai.pointSegs;
 gameData.menu.colorOverride = 0;
 gameData.menu.alpha = 5 * 16 - 1;	//~ 0.3
+gameData.menu.nLineWidth = 1;
 gameData.matCens.xFuelRefillSpeed = i2f (1);
 gameData.matCens.xFuelGiveAmount = i2f (25);
 gameData.matCens.xFuelMaxAmount = i2f (100);

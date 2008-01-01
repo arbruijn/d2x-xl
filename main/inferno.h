@@ -2448,6 +2448,7 @@ typedef struct tMenuData {
 	unsigned int		tabbedColor;
 	unsigned int		helpColor;
 	unsigned int		colorOverride;
+	int					nLineWidth;
 	ubyte					alpha;
 } tMenuData;
 
