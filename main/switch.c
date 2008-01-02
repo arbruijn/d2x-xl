@@ -334,14 +334,14 @@ return 1;
 
 int DoMasterTrigger (tTrigger *masterP, short nObject)
 {
-	int 		h, i, j;
+	int 		h, i;
 	short 	*segs = masterP->nSegment;
 	short 	*sides = masterP->nSide;
 	short		nWall, nTrigger;
 	tWall		*wallP;
 
-for (h = masterP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
-	if (IS_WALL (nWall = WallNumP (SEGMENTS + *segs, *sides))) {
+for (h = masterP->nLinks, i = 0; i < h; i++) {
+	if (IS_WALL (nWall = WallNumP (SEGMENTS + segs [i], sides [i]))) {
 		wallP = WALLS + nWall;
 		nTrigger = wallP->nTrigger;
 		if ((nTrigger >= 0) && (nTrigger < gameData.trigs.nTriggers)) 
@@ -1145,7 +1145,7 @@ void TriggersFrameProcess ()
 	tTrigger	*trigP = gameData.trigs.triggers;
 
 for (i = gameData.trigs.nTriggers; i > 0; i--, trigP++)
-	if ((trigP->nType != TT_COUNTDOWN) && (trigP->nType != TT_MESSAGE) && (trigP->time >= 0))
+	if ((trigP->nType != TT_COUNTDOWN) && (trigP->nType != TT_MESSAGE) && (trigP->nType != TT_SOUND) && (trigP->time >= 0))
 		trigP->time -= gameData.time.xFrame;
 }
 
