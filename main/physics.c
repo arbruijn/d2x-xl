@@ -668,12 +668,20 @@ retryMove:
 #endif
 		}
 	else if (fviResult == HIT_WALL) {
-#ifdef _DEBUG
+#if 0//def _DEBUG
+		tFVIData hiSave = hi;
 		fviResult = FindVectorIntersection (&fq, &hi);
+		{
+		int vertList [6];
+		int nFaces = CreateAbsVertexLists (vertList, hi.hit.nSideSegment, hi.hit.nSide);
+		if (hi.hit.nFace >= nFaces)
+			fviResult = FindVectorIntersection (&fq, &hi);
+		}
 #	if 0
 		HUDMessage (0, "hit wall %d:%d (%d)", hi.hit.nSideSegment, hi.hit.nSide, gameData.objs.objects->nSegment);
 #	endif
 #endif
+			fviResult = FindVectorIntersection (&fq, &hi);
 #if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->nType == OBJ_WEAPON)) {
 			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
@@ -684,7 +692,7 @@ retryMove:
 					}
 				fviResult = HIT_NONE;
 				}
-			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSegment, hi.hit.nSide, hi.hit.nFace)) {	
+			else if (CheckTransWall (&hi.hit.vPoint, SEGMENTS + hi.hit.nSideSegment, hi.hit.nSide, hi.hit.nFace)) {	
 				short nNewSeg = FindSegByPoint (&vNewPos, gameData.segs.skybox.segments [0], 1, 1);
 				if ((nNewSeg >= 0) && (gameData.segs.segment2s [nNewSeg].special == SEGMENT_IS_SKYBOX)) {
 					hi.hit.nSegment = nNewSeg;
@@ -700,7 +708,7 @@ retryMove:
 
 		if (ObjIsPlayerMine (hitObjP))
 			nTries--;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		fviResult = FindVectorIntersection (&fq, &hi);
 #endif
 		}

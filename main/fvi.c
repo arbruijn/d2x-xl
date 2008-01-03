@@ -1157,6 +1157,8 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				continue;		//don't go back through entry nSide
 			if (!(endMask & bit))	//on the back of this face?
 				continue;
+			if (iFace >= nFaces)
+				continue;
 			//did we go through this tWall/door?
 			nFaceHitType = (startMask & bit)	?	//start was also though.  Do extra check
 				SpecialCheckLineToSegFace (&vHitPoint, p0, p1, nStartSeg, nSide, iFace, 5 - nFaces, radP1) :
@@ -1198,8 +1200,8 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 						goto fviSegsDone;		//we've looked a long time, so give up
 					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nNewSeg;
 					subHitType = FVICompute (&subHitPoint, &subHitSeg, p0, (short) nNewSeg, 
-														p1, radP0, radP1, nThisObject, ignoreObjList, flags, 
-														tempSegList, &nTempSegs, nStartSeg);
+													 p1, radP0, radP1, nThisObject, ignoreObjList, flags, 
+													 tempSegList, &nTempSegs, nStartSeg);
 					if (subHitType != HIT_NONE) {
 						d = VmVecDist (&subHitPoint, p0);
 						if (d < dMin) {
@@ -1259,6 +1261,13 @@ if ((endMask = masks.faceMask)) { //on the back of at least one face
 				if (nFaceHitType) 
 #endif
 					{
+#ifdef _DEBUG
+					int vertList [6];
+					int nFaces = CreateAbsVertexLists (vertList, SEG_IDX (segP), nSide);
+					if (iFace >= nFaces)
+						d = dMin + 1;
+					else
+#endif
 					//is this the closest hit?
 					d = VmVecDist (&vHitPoint, p0);
 					if (d < dMin) {
@@ -1435,15 +1444,15 @@ return nHitType;
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given point on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *seg, int nSide, int iFace)
+void FindHitPointUV (fix *u, fix *v, fix *l, vmsVector *pnt, tSegment *segP, int nSide, int iFace)
 {
-	vmsVector	*pnt_array;
-	vmsVector	normal_array;
-	int			nSegment = SEG_IDX (seg);
+	vmsVector	*vPoints;
+	vmsVector	vNormals;
+	int			nSegment = SEG_IDX (segP);
 	int			nFaces;
 	int			biggest, ii, jj;
-	tSide			*sideP = &seg->sides [nSide];
-	int			vertList [6], vertnum_list [6];
+	tSide			*sideP = &segP->sides [nSide];
+	int			vertList [6], vertNumList [6];
  	vec2d			p1, vec0, vec1, checkP;
 	tUVL			uvls [3];
 	fix			k0, k1;
@@ -1463,37 +1472,42 @@ if (nSegment == -1) {
 	return;
 	}
 nFaces = CreateAbsVertexLists (vertList, nSegment, nSide);
-CreateAllVertNumLists (&nFaces, vertnum_list, nSegment, nSide);
+if (iFace >= nFaces) {
+	LogErr ("invalid face number in FindHitPointUV\n");
+	*u = *v = 0;
+	return;
+	}
+CreateAllVertNumLists (&nFaces, vertNumList, nSegment, nSide);
 //now the hard work.
 //1. find what plane to project this tWall onto to make it a 2d case
-memcpy (&normal_array, sideP->normals + iFace, sizeof (vmsVector));
+memcpy (&vNormals, sideP->normals + iFace, sizeof (vmsVector));
 biggest = 0;
-if (abs (normal_array.v [1]) > abs (normal_array.v [biggest])) 
+if (abs (vNormals.v [1]) > abs (vNormals.v [biggest])) 
 	biggest = 1;
-if (abs (normal_array.v [2]) > abs (normal_array.v [biggest])) 
+if (abs (vNormals.v [2]) > abs (vNormals.v [biggest])) 
 	biggest = 2;
 ii = (biggest == 0);
 jj = (biggest == 2) ? 1 : 2;
 //2. compute u, v of intersection point
 //vec from 1 -> 0
 h = iFace * 3;
-pnt_array = (vmsVector *) (gameData.segs.vertices + vertList [h+1]);
-p1.i = pnt_array->v [ii];
-p1.j = pnt_array->v [jj];
+vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h+1]);
+p1.i = vPoints->v [ii];
+p1.j = vPoints->v [jj];
 
-pnt_array = (vmsVector *) (gameData.segs.vertices + vertList [h]);
-vec0.i = pnt_array->v [ii] - p1.i;
-vec0.j = pnt_array->v [jj] - p1.j;
+vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h]);
+vec0.i = vPoints->v [ii] - p1.i;
+vec0.j = vPoints->v [jj] - p1.j;
 
 //vec from 1 -> 2
-pnt_array = (vmsVector *) (gameData.segs.vertices + vertList [h+2]);
-vec1.i = pnt_array->v [ii] - p1.i;
-vec1.j = pnt_array->v [jj] - p1.j;
+vPoints = (vmsVector *) (gameData.segs.vertices + vertList [h+2]);
+vec1.i = vPoints->v [ii] - p1.i;
+vec1.j = vPoints->v [jj] - p1.j;
 
 //vec from 1 -> checkPoint
-pnt_array = (vmsVector *)pnt;
-checkP.i = pnt_array->v [ii];
-checkP.j = pnt_array->v [jj];
+vPoints = (vmsVector *)pnt;
+checkP.i = vPoints->v [ii];
+checkP.j = vPoints->v [jj];
 
 k1 = -FixDiv (Cross (&checkP, &vec0) + Cross (&vec0, &p1), Cross (&vec0, &vec1));
 if (abs(vec0.i) > abs(vec0.j))
@@ -1501,7 +1515,7 @@ if (abs(vec0.i) > abs(vec0.j))
 else
 	k0 = FixDiv (FixMul (-k1, vec1.j) + checkP.j - p1.j, vec0.j);
 for (i = 0; i < 3; i++)
-	uvls [i] = sideP->uvls [vertnum_list [h+i]];
+	uvls [i] = sideP->uvls [vertNumList [h+i]];
 *u = uvls [1].u + FixMul (k0, uvls [0].u - uvls [1].u) + FixMul (k1, uvls [2].u - uvls [1].u);
 *v = uvls [1].v + FixMul (k0, uvls [0].v - uvls [1].v) + FixMul (k1, uvls [2].v - uvls [1].v);
 if (l)
