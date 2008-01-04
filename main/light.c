@@ -2557,14 +2557,14 @@ char *lightingVS [4] = {
 	"varying vec3 vertPos;\r\n" \
 	"void main(void){\r\n" \
 	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"gl_Position=gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
    "gl_FrontColor=gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
 	"void main(void){\r\n" \
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"gl_Position=gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
    "gl_FrontColor=gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
@@ -2572,7 +2572,7 @@ char *lightingVS [4] = {
 	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"gl_Position=gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
    "gl_FrontColor=gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
@@ -2581,7 +2581,7 @@ char *lightingVS [4] = {
 	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
 	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
 	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
-	"gl_Position=gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
    "gl_FrontColor=gl_Color;}"
 	};
 

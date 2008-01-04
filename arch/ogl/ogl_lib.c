@@ -265,6 +265,18 @@ return glGetError () == 0;
 
 //------------------------------------------------------------------------------
 
+int G3DisableClientState (GLuint nState, int nTMU)
+{
+if (nTMU >= 0) {
+	glActiveTexture (nTMU);
+	glClientActiveTexture (nTMU);
+	}
+glDisableClientState (nState);
+return glGetError () == 0;
+}
+
+//------------------------------------------------------------------------------
+
 void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
 {
 if (nTMU >= 0) {

@@ -1421,8 +1421,10 @@ for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels [bCustom]; i; i--, po++)
 		if (po->textures.pszNames && po->textures.pBitmaps)
 			for (j = 0; j < po->textures.nTextures; j++)
-				if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType, bCustom))
+				if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType, bCustom)) {
 					OOF_FreeObject (po);
+					return 0;
+					}
 return 1;
 }
 

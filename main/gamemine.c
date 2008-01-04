@@ -1607,6 +1607,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 	vmsAngVec	vAngles;
 	tObject		viewer;
 
+LogErr ("computing visibility of segment %d\n", nStartSeg);
 gameStates.ogl.bUseTransform = 1;
 #ifdef _DEBUG
 if (nStartSeg == nDbgSeg)
@@ -1625,13 +1626,25 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom);
 	BuildRenderSegList (nStartSeg, 0);	
 	G3EndFrame ();
+	LogErr ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
-		if (((nSegment = gameData.render.mine.nSegRenderList [i]) >= 0) && !SEGVIS (nStartSeg, nSegment)) {
-			while (!SetSegVis (nStartSeg, nSegment))
+		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
+			continue;
+#ifdef _DEBUG
+		if (nSegment >= gameData.segs.nSegments)
+			continue;
+#endif
+		if (SEGVIS (nStartSeg, nSegment))
+			continue;
+		while (!SetSegVis (nStartSeg, nSegment))
+			;
+		for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++) {
+#ifdef _DEBUG
+			if ((*vertP < 0) || (*vertP >= gameData.segs.nVertices))
+				continue;
+#endif
+			while (!SetVertVis (nStartSeg, *vertP, 1))
 				;
-			for (j = 8, vertP = SEGMENTS [nSegment].verts; j; j--, vertP++)
-				while (!SetVertVis (nStartSeg, *vertP, 1))
-					;
 			}
 		}
 	}
@@ -1659,6 +1672,8 @@ if (gameStates.app.bMultiThreaded) {
 	}
 else
 	INIT_PROGRESS_LOOP (startI, endI, gameData.segs.nSegments);
+if (startI < 0)
+	startI = 0;
 // every segment can see itself and its neighbours
 for (i = startI; i < endI; i++)
 	ComputeSingleSegmentVisibility (i);

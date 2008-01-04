@@ -52,6 +52,7 @@ void G3CalcNormal (g3sPoint **pointList, fVector *pvNormal);
 static inline fVector *G3GetNormal (g3sPoint *pPoint, fVector *pvNormal);
 fVector *G3Reflect (fVector *vReflect, fVector *vLight, fVector *vNormal);
 int G3EnableClientState (GLuint nState, int nTMU);
+int G3DisableClientState (GLuint nState, int nTMU);
 void G3DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
 int G3EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU);
 void OglSetFOV (double fov);

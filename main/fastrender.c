@@ -360,7 +360,7 @@ return tiRender.nFaces;
 
 //------------------------------------------------------------------------------
 
-int BeginRenderFaces (int nType)
+int BeginRenderFaces (int nType, int bDepthOnly)
 {
 	int	bVertexArrays;
 
@@ -374,8 +374,14 @@ gameStates.render.history.bmMask = NULL;
 gameStates.render.bQueryCoronas = 0;
 glEnable (GL_CULL_FACE);
 OglTexWrap (NULL, GL_REPEAT);
-glDepthFunc (GL_LEQUAL);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+if (!bDepthOnly) 
+	glDepthFunc (GL_LEQUAL);
+else {
+	glColorMask (0,0,0,0);
+	glDepthMask (1);
+	glDepthFunc (GL_LESS);
+	}
 if (nType == 3) {
 	if (CoronaStyle () == 2)
 		LoadGlareShader ();
@@ -388,22 +394,26 @@ if (GEO_LIGHTING) {
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 	return 0;
 	}
-if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE0))) {
-	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
-	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-	glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
-
-	if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1))) {
-		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+if ((bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, 0, GL_TEXTURE0))) {
+	if (!bDepthOnly) {
+		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
 		}
-	else
-		G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
-	if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
-		glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
-		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
-		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+
+	if (!bDepthOnly) {
+		if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1))) {
+			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+			}
+		else
+			G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+		if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
+			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
+			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
+			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+			}
 		}
 	}
 else {
@@ -415,25 +425,26 @@ return bVertexArrays;
 
 //------------------------------------------------------------------------------
 
-void EndRenderFaces (int nType, int bVertexArrays)
+void EndRenderFaces (int nType, int bVertexArrays, int bDepthOnly)
 {
 #if 0
 G3FlushFaceBuffer (1);
 #endif
 if (bVertexArrays) {
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
-	glActiveTexture (GL_TEXTURE2);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
+	if (!bDepthOnly) {
+		G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
+		glActiveTexture (GL_TEXTURE2);
+		glEnable (GL_TEXTURE_2D);
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
 
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
-	glActiveTexture (GL_TEXTURE1);
-	glEnable (GL_TEXTURE_2D);
-	OGL_BINDTEX (0);
-	glDisable (GL_TEXTURE_2D);
-
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+		G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
+		glActiveTexture (GL_TEXTURE1);
+		glEnable (GL_TEXTURE_2D);
+		OGL_BINDTEX (0);
+		glDisable (GL_TEXTURE_2D);
+		}
+	G3DisableClientStates (!bDepthOnly, !bDepthOnly, 0, GL_TEXTURE0);
 	glActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	OGL_BINDTEX (0);
@@ -442,7 +453,7 @@ if (bVertexArrays) {
 //if (gameStates.render.history.bOverlay > 0)
 if (gameStates.ogl.bShadersOk) {
 	glUseProgramObject (0);
-	gameStates.render.history.nShader = 0;
+	gameStates.render.history.nShader = -1;
 	}
 if (nType != 3)
 	OglResetTransform (1);
@@ -466,7 +477,7 @@ if (gameStates.render.bHaveSkyBox) {
 	glDepthMask (1);
 	gameStates.render.nType = 4;
 	gameStates.render.bFullBright = 1;
-	bVertexArrays = BeginRenderFaces (4);
+	bVertexArrays = BeginRenderFaces (4, 0);
 	for (i = gameData.segs.skybox.nSegments, segP = gameData.segs.skybox.segments; i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
@@ -477,7 +488,7 @@ if (gameStates.render.bHaveSkyBox) {
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
-	EndRenderFaces (4, bVertexArrays);
+	EndRenderFaces (4, bVertexArrays, 0);
 	}
 }
 
@@ -489,11 +500,12 @@ void QueryCoronas (int nFaces, int nPass)
 	tFaceRef		*pfr;
 	tSegFaces	*segFaceP;
 	short			nSegment;
-	int			i, j, bVertexArrays = BeginRenderFaces (3);
+	int			i, j,  bVertexArrays = BeginRenderFaces (3, 0);
 
-gameStates.render.bQueryCoronas = nPass;
 glDepthMask (0);
+glColorMask (1,1,1,1);
 if (nPass == 1) {	//find out how many total fragments each corona has
+	gameStates.render.bQueryCoronas = 1;
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
@@ -513,13 +525,9 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 				glBeginQuery (GL_SAMPLES_PASSED_ARB, gameData.render.lights.coronaQueries [faceP->nCorona - 1]);
 				RenderCorona (nSegment, faceP->nSide, 1);
 				glEndQuery (GL_SAMPLES_PASSED_ARB);
-#if 0
-				CoronaVisibility (faceP->nCorona);
-#endif
 				}
 		}
 	glFlush ();
-#if 1
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
@@ -539,12 +547,11 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 				CoronaVisibility (faceP->nCorona);
 				}
 		}
-#endif
-	glColorMask (1,1,1,1);
-	glClearColor (0,0,0,0);
-	glClear (GL_COLOR_BUFFER_BIT);
+	//glClearColor (0,0,0,0);
+	//glClear (GL_COLOR_BUFFER_BIT);
 	}
 else {
+	gameStates.render.bQueryCoronas = 2;
 	for (i = 0, pfr = faceRef [gameStates.app.bMultiThreaded]; i < nFaces; i++) {
 		faceP = pfr [i].faceP;
 		if (!faceP->nCorona)
@@ -564,7 +571,7 @@ else {
 		}
 	glFlush ();
 	}
-EndRenderFaces (3, bVertexArrays);
+EndRenderFaces (3, bVertexArrays, 0);
 gameStates.render.bQueryCoronas = 0;
 }
 
@@ -671,46 +678,36 @@ void RenderFaceList (int nType)
 	short			nSegment;
 	int			i, j, bVertexArrays;
 
-bVertexArrays = BeginRenderFaces (nType);
 if (nType) {	//back to front
+	//return;
+	bVertexArrays = BeginRenderFaces (nType, 0);
 	RenderSegments (nType, bVertexArrays, 0);
 	}
 else {	//front to back
 #if RENDER_DEPTHMASK_FIRST
 	if (SetupCoronaFaces ()) {
 		if ((CoronaStyle () == 1) && gameStates.ogl.bOcclusionQuery) {
-			EndRenderFaces (nType, bVertexArrays);
 			glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
 			QueryCoronas (0, 1);
-			bVertexArrays = BeginRenderFaces (nType);
+			//return;
 			}
 		}
-	glColorMask (0,0,0,0);
-	glDepthMask (1);
-	glDepthFunc (GL_LESS);
-	glClientActiveTexture (GL_TEXTURE0);
-	glDisableClientState (GL_COLOR_ARRAY);
-	glClientActiveTexture (GL_TEXTURE1);
-	glDisableClientState (GL_COLOR_ARRAY);
-#else
-	glDepthFunc (GL_LEQUAL);
 #endif
+	bVertexArrays = BeginRenderFaces (0, RENDER_DEPTHMASK_FIRST);
 	RenderSegments (nType, bVertexArrays, RENDER_DEPTHMASK_FIRST);
 #if RENDER_DEPTHMASK_FIRST
-	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE1);
-	G3EnableClientState (GL_COLOR_ARRAY, GL_TEXTURE0);
+	EndRenderFaces (0, bVertexArrays, 1);
 	j = SortFaces ();
 	if (gameOpts->render.bCoronas && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && (CoronaStyle () == 1)) {
-		EndRenderFaces (nType, bVertexArrays);
 		gameStates.render.bQueryCoronas = 2;
 		gameStates.render.nType = 1;
 		RenderMineObjects (1);
 		gameStates.render.nType = 0;
 		QueryCoronas (j, 2);
-		bVertexArrays = BeginRenderFaces (nType);
 		}
-	glDepthMask (1);
-	glDepthFunc (GL_LEQUAL);
+	EndRenderFaces (0, bVertexArrays, 1);
+	bVertexArrays = BeginRenderFaces (0, 0);
+	//glDepthMask (0);
 	glColorMask (1,1,1,1);
 	if (GEO_LIGHTING) {
 		gameData.render.mine.nVisited++;
@@ -733,7 +730,7 @@ else {	//front to back
 	glDepthMask (1);
 #endif
 	}
-EndRenderFaces (nType, bVertexArrays);
+EndRenderFaces (nType, bVertexArrays, 0);
 }
 
 // -----------------------------------------------------------------------------------
@@ -1526,7 +1523,7 @@ char *vertLightVS =
 	"/*gl_TexCoord [1] = gl_MultiTexCoord1;"\
 	"gl_TexCoord [2] = gl_MultiTexCoord2;"\
 	"gl_TexCoord [3] = gl_MultiTexCoord3;*/"\
-	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;" \
+	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;" \
 	"gl_FrontColor = gl_Color;}";
 
 //-------------------------------------------------------------------------

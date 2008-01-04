@@ -183,6 +183,7 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 				}
 			}
+#if 1
 		glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
 		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 		glUniform1f (glGetUniformLocation (tmProg, "cutOff"), 0.5f);
@@ -193,6 +194,7 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.dir);
 		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
+#endif
 		if (colorP) {
 			color.red = colorP->red * 1.1f;
 			color.green = colorP->green * 1.1f;
@@ -565,7 +567,20 @@ if (!(bMonitor || bOverlay)) {
 #endif
 if (!bBlend)
 	glDisable (GL_BLEND);
+#if 0
+{
+	int i;
+glBegin (GL_TRIANGLE_FAN);
+for (i = 0; i < 4; i++) {
+	glTexCoord2fv ((GLfloat *) (gameData.segs.faces.texCoord + faceP->nIndex + i));
+	glColor3fv ((GLfloat *) (gameData.segs.faces.color + faceP->nIndex + i));
+	glVertex3fv ((GLfloat *) (gameData.segs.faces.vertices + faceP->nIndex + i));
+	}
+glEnd ();
+}
+#else
 glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#endif
 
 if (!bMultiTexture && (bOverlay || bMonitor)) {
 	ovlTexCoordP = bMonitor ? faceP->pTexCoord - faceP->nIndex : gameData.segs.faces.ovlTexCoord;

@@ -681,7 +681,6 @@ retryMove:
 		HUDMessage (0, "hit wall %d:%d (%d)", hi.hit.nSideSegment, hi.hit.nSide, gameData.objs.objects->nSegment);
 #	endif
 #endif
-			fviResult = FindVectorIntersection (&fq, &hi);
 #if 1 //make shots and missiles pass through skyboxes
 		if (gameStates.render.bHaveSkyBox && (objP->nType == OBJ_WEAPON)) {
 			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {

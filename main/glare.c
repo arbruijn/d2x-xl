@@ -352,12 +352,14 @@ for (i = 0; i < 4; i++) {
 	}
 VmsVecToFloat (&v, SIDE_CENTER_I (nSegment, nSide));
 G3TransformPointf (vCenter, &v, 0);
+#if 0
 if (gameStates.render.bQueryCoronas) {
 	for (i = 0; i < 4; i++) {
 		VmVecSubf (&v, sprite + i, vCenter);
 		VmVecScaleAddf (sprite + i, vCenter, &v, 0.5f);
 		}
-	}
+}
+#endif
 return fLight;
 }
 
@@ -577,10 +579,14 @@ void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIn
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	int 			i;
 	grsBitmap	*bmP = NULL;
-
-if (gameStates.render.bQueryCoronas)
+#if 0
+if (gameStates.render.bQueryCoronas) {
 	glDisable (GL_TEXTURE_2D);
-else {
+	glBlendFunc (GL_ONE, GL_ZERO);
+	}
+else 
+#endif
+	{
 	glEnable (GL_TEXTURE_2D);
 	if (bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);	
@@ -593,20 +599,24 @@ else
 	glColor4f (color.red, color.green, color.blue, fIntensity);
 if (gameStates.render.bQueryCoronas != 2) {
 	glDisable (GL_DEPTH_TEST);
+#if 0
 	if (gameStates.render.bQueryCoronas == 1)
 		glDepthFunc (GL_ALWAYS);
+#endif
 	}
-if (G3EnableClientStates (!gameStates.render.bQueryCoronas, 0, 0, GL_TEXTURE0)) {
-	if (!gameStates.render.bQueryCoronas) {
+if (G3EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
+
+	//if (gameStates.render.bQueryCoronas == 0) 
+		{
 		OglBindBmTex (bmP, 1, -1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), sprite);
 	glDrawArrays (GL_QUADS, 0, 4);
-	G3DisableClientStates (!gameStates.render.bQueryCoronas, 0, 0, GL_TEXTURE0);
+	G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
 	}
 else {
-	if (!gameStates.render.bQueryCoronas)
+	if (gameStates.render.bQueryCoronas == 0)
 		OglBindBmTex (bmP, 1, -1);
 	glBegin (GL_QUADS);
 	for  (i = 0; i < 4; i++) {
@@ -638,10 +648,18 @@ if (fIntensity < 0.01f)
 	return;
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
+#ifdef _DEBUG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
+#ifdef _DEBUG
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		nDbgSeg = nDbgSeg;
+#endif
 	}
 else {
 	VmVecNormalf (&vNormal, sprite, sprite + 1, sprite + 2);
@@ -672,7 +690,9 @@ float CoronaVisibility (int nQuery)
 	GLint		nError;
 #endif
 
-if (!(gameStates.ogl.bOcclusionQuery && nQuery))
+if (!(gameStates.ogl.bOcclusionQuery && nQuery) || (CoronaStyle () != 1))
+	return 1;
+if (!(gameStates.render.bQueryCoronas || gameData.render.lights.coronaSamples [nQuery - 1]))
 	return 1;
 do {
 	glGetQueryObjectiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_AVAILABLE_ARB, &bAvailable);
@@ -689,7 +709,7 @@ if (glGetError ())
 	return 1;
 if (gameStates.render.bQueryCoronas == 1)
 	return (float) (gameData.render.lights.coronaSamples [nQuery - 1] = nSamples);
-fIntensity = gameData.render.lights.coronaSamples [nQuery - 1] ? (float) nSamples / (float) gameData.render.lights.coronaSamples [nQuery - 1] : 0;
+fIntensity = (float) nSamples / (float) gameData.render.lights.coronaSamples [nQuery - 1];
 #ifdef _DEBUG
 if (fIntensity > 1)
 	fIntensity = 1;
@@ -747,7 +767,7 @@ char *glareFS =
 char *glareVS = 
 	"void main(void){\r\n" \
 	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n" \
-	"gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\r\n" \
+	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
 	"gl_FrontColor = gl_Color;}\r\n";
 
 //-------------------------------------------------------------------------
