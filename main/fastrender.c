@@ -547,8 +547,6 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 				CoronaVisibility (faceP->nCorona);
 				}
 		}
-	//glClearColor (0,0,0,0);
-	//glClear (GL_COLOR_BUFFER_BIT);
 	}
 else {
 	gameStates.render.bQueryCoronas = 2;
@@ -571,6 +569,7 @@ else {
 		}
 	glFlush ();
 	}
+//glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 EndRenderFaces (3, bVertexArrays, 0);
 gameStates.render.bQueryCoronas = 0;
 }

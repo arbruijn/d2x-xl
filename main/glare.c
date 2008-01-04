@@ -579,14 +579,12 @@ void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIn
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	int 			i;
 	grsBitmap	*bmP = NULL;
-#if 0
+
 if (gameStates.render.bQueryCoronas) {
 	glDisable (GL_TEXTURE_2D);
 	glBlendFunc (GL_ONE, GL_ZERO);
 	}
-else 
-#endif
-	{
+else {
 	glEnable (GL_TEXTURE_2D);
 	if (bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);	
@@ -604,16 +602,14 @@ if (gameStates.render.bQueryCoronas != 2) {
 		glDepthFunc (GL_ALWAYS);
 #endif
 	}
-if (G3EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
-
-	//if (gameStates.render.bQueryCoronas == 0) 
-		{
+if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
+	if (gameStates.render.bQueryCoronas == 0) {
 		OglBindBmTex (bmP, 1, -1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
 		}
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), sprite);
 	glDrawArrays (GL_QUADS, 0, 4);
-	G3DisableClientStates (1, 0, 0, GL_TEXTURE0);
+	G3DisableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0);
 	}
 else {
 	if (gameStates.render.bQueryCoronas == 0)
@@ -707,8 +703,15 @@ do {
 glGetQueryObjectuiv (gameData.render.lights.coronaQueries [nQuery - 1], GL_QUERY_RESULT_ARB, &nSamples);
 if (glGetError ())
 	return 1;
-if (gameStates.render.bQueryCoronas == 1)
+if (gameStates.render.bQueryCoronas == 1) {
+#ifdef _DEBUG
+	if (!nSamples) {
+		GLint nBits;
+		glGetQueryiv (GL_SAMPLES_PASSED, GL_QUERY_COUNTER_BITS, &nBits);
+		}
+#endif
 	return (float) (gameData.render.lights.coronaSamples [nQuery - 1] = nSamples);
+	}
 fIntensity = (float) nSamples / (float) gameData.render.lights.coronaSamples [nQuery - 1];
 #ifdef _DEBUG
 if (fIntensity > 1)
