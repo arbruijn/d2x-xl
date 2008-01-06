@@ -383,7 +383,7 @@ pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
 pParticle->bBright = (rand () % 50) == 0;
-if (pColor) {
+if (pParticle->bColored = (pColor != NULL)) {
 	pParticle->color.red = pColor->red * RANDOM_FADE;
 	pParticle->color.green = pColor->green * RANDOM_FADE;
 	pParticle->color.blue = pColor->blue * RANDOM_FADE;
@@ -418,8 +418,9 @@ if (pDir) {
 		d = (float) exp ((F1_0 / 8) / d);
 		nSpeed = (fix) ((float) nSpeed / d);
 		}
-	pParticle->color.green =
-	pParticle->color.blue = 1.0f;//(float) (64 + randN (64)) / 255.0f;
+	if (!pParticle->bColored)
+		pParticle->color.green =
+		pParticle->color.blue = 1.0f;//(float) (64 + randN (64)) / 255.0f;
 	VmVecScale (&vDrift, nSpeed);
 	pParticle->dir = *pDir;
 	pParticle->bHaveDir = 1;
@@ -780,7 +781,7 @@ if (nType) {
 	//pParticle->color.green *= 0.99;
 	//pParticle->color.blue *= 0.99;
 	}
-else if (pParticle->nFade > 0) {
+else if (!pParticle->bColored && (pParticle->nFade > 0)) {
 	if (pParticle->color.green < 1.0f) {
 #if SMOKE_SLOWMO
 		pParticle->color.green += 1.0f / 20.0f / (float) gameStates.gameplay.slowmo [0].fSpeed;
