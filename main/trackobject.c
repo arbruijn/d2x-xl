@@ -153,7 +153,7 @@ else {
 				continue;
 			}
 		else if (curObjP->nType == OBJ_WEAPON) {
-			if (trackerP->id != OMEGA_ID)
+			if ((trackerP->id != OMEGA_ID) || !bIsMissile [curObjP->id])
 				continue;
 			}
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);

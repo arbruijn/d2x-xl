@@ -3309,6 +3309,9 @@
 						RelativePath="..\..\trackir\trackir.h">
 					</File>
 					<File
+						RelativePath="..\..\main\trackobject.h">
+					</File>
+					<File
 						RelativePath="..\..\main\transprender.h">
 					</File>
 					<File
