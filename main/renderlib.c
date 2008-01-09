@@ -805,6 +805,7 @@ pc->color.alpha = 1;
 //Given a list of point numbers, rotate any that haven't been bRotated this frame
 //cc.and and cc.or will contain the position/orientation of the face that is determined 
 //by the vertices passed relative to the viewer
+
 g3sCodes RotateVertexList (int nVertices, short *vertexIndexP)
 {
 	int			i, j;

@@ -331,13 +331,15 @@ if (!bmP) {
 	}
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) GR_ACTUAL_FADE_LEVELS);
+if (alpha < 1.0f) {
 #if ADDITIVE_SPHERE_BLENDING
-fScale *= coronaIntensities [gameOpts->render.nObjCoronaIntensity];
+	fScale *= coronaIntensities [gameOpts->render.nObjCoronaIntensity];
 #endif
-if (sdP->pPulse && sdP->pPulse->fScale) {
-	red *= fScale;
-	green *= fScale;
-	blue *= fScale; 
+	if (sdP->pPulse && sdP->pPulse->fScale) {
+		red *= fScale;
+		green *= fScale;
+		blue *= fScale; 
+		}
 	}
 glColor4f (red, green, blue, alpha);
 *pfScale = fScale;
@@ -504,7 +506,10 @@ else
 	bTextured = InitSphereSurface (sdP, red, green, blue, alpha, bmP, &fScale);
 glDepthFunc (GL_LEQUAL);
 #if ADDITIVE_SPHERE_BLENDING
-glBlendFunc (GL_ONE, GL_ONE);
+if (alpha < 1.0f)
+	glBlendFunc (GL_ONE, GL_ONE);
+else
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
@@ -617,13 +622,14 @@ if (!gameData.render.monsterball.pSphere) {
 	}
 if (gameData.render.monsterball.nFaces > 0) {
 	if ((gameOpts->render.bDepthSort > 0) || (gameOpts->render.nPath && !gameOpts->render.bDepthSort))
-		RIAddSphere (riSphereShield, red, green, blue, alpha, objP);
+		RIAddSphere (riMonsterball, red, green, blue, alpha, objP);
 	else {
 		tOOF_vector	p;
 		float r = f2fl (objP->size);
 		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
 		RenderSphere (&gameData.render.monsterball, (tOOF_vector *) OOF_VecVms2Oof (&p, &objP->position.vPos), 
-						r, r, r, red, green, blue, alpha, &gameData.hoard.monsterball.bm, 4);
+						  r, r, r, red, green, blue, gameData.hoard.monsterball.bm.bmTexBuf ? 1.0f : alpha, 
+						  &gameData.hoard.monsterball.bm, 4);
 		G3DoneInstance ();
 		}
 	}

@@ -231,11 +231,15 @@ if ((transparentColor >= 0) && (transparentColor <= 255)) {
 	//palette [255] = transparentColor;
 	if (freq [transparentColor])
 		GrSetTransparent (bmP, 1);
+	else
+		GrSetTransparent (bmP, 0);
 	}
 if ((superTranspColor >= 0) && (superTranspColor <= 255)) {
 	//palette [254] = transparentColor;
 	if (freq [superTranspColor])
 		GrSetSuperTransparent (bmP, 1);
+	else
+		GrSetSuperTransparent (bmP, 0);
 	}
 bmP->bmPalette = AddPalette (palette);
 }

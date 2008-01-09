@@ -1452,10 +1452,13 @@ void InitSegZRef (int i, int j, int nThread)
 	tSegZRef		*ps = segZRef [0] + i;
 	vmsVector	v;
 	int			zMax = -0x7fffffff;
+	short			nSegment;
 
 for (; i < j; i++, ps++) {
-	COMPUTE_SEGMENT_CENTER_I (&v, gameData.render.mine.nSegRenderList [i]);
+	nSegment = gameData.render.mine.nSegRenderList [i];
+	COMPUTE_SEGMENT_CENTER_I (&v, nSegment);
 	G3TransformPoint (&v, &v, 0);
+	v.p.z += gameData.segs.segRads [1][nSegment];
 	if (zMax < v.p.z)
 		zMax = v.p.z;
 	ps->z = v.p.z;
@@ -2043,8 +2046,8 @@ if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameState
 		ComputeFaceLight (0, gameData.render.mine.nRenderSegs, 0);
 	UpdateSlidingFaces ();
 	}
-RenderSegmentList (0, 1);	// render opaque geometry
 InitRenderItemBuffer (gameData.render.zMin, gameData.render.zMax);
+RenderSegmentList (0, 1);	// render opaque geometry
 if ((gameOpts->render.bDepthSort < 1) && !gameOpts->render.nPath)
 	RenderSkyBox (nWindow);
 RenderSegmentList (1, 1);		// render objects

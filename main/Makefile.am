@@ -36,7 +36,8 @@ netmenu.c	cheats.c	banlist.c	thief.c		endlevel.c	\
 multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
 tga.c		glare.c		radar.c		renderlib.c	transprender.c \
 fastrender.c			renderthreads.c			flightpath.c \
-rendershadows.c		objeffects.c	hiresmodels.c textdata.c
+rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
+omega.c trackobject.c
 
 EXTRA_libmain_a_SOURCES = \
 highscores.c multi.c multibot.c network.c netmisc.c \
@@ -59,5 +60,5 @@ songs.h sounds.h state.h switch.h terrain.h texmerge.h text.h textures.h \
 briefings.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
 autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
-objeffects.h hiresmodels.h textdata.h \
+objeffects.h hiresmodels.h textdata.h omega.h trackobject.h \
 joydefs.c
