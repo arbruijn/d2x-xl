@@ -267,13 +267,13 @@ if (!bSecondary) {
 		if (WI_ammo_usage (nWeaponIndex) <= playerP->primaryAmmo [nWeapon])
 			returnValue |= HAS_AMMO_FLAG;
 	if (nWeapon == OMEGA_INDEX) {	// Hack: Make sure tPlayer has energy to omega
-		if (playerP->energy || gameData.laser.xOmegaCharge)
+		if (playerP->energy || gameData.omega.xCharge)
 			returnValue |= HAS_ENERGY_FLAG;
 		}
 	else {
 /*
 		if (nWeapon == SUPER_LASER_INDEX) {
-			if (playerP->energy || gameData.laser.xOmegaCharge)
+			if (playerP->energy || gameData.omega.xCharge)
 				returnValue |= HAS_ENERGY_FLAG;
 		}
 */
@@ -1326,9 +1326,9 @@ if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary ==
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
 	if (nObject != -1)
-		gameData.objs.objects[nObject].cType.powerupInfo.count = gameData.laser.xOmegaCharge;
+		gameData.objs.objects [nObject].cType.powerupInfo.count = gameData.omega.xCharge [IsMultiGame];
 	}
-if (gameData.app.nGameMode & GM_MULTI) {
+if (IsMultiGame) {
 	MultiSendDropWeapon (nObject, seed);
 	MultiSendWeapons (1);
 	}

@@ -93,6 +93,8 @@ int CheckLineToSegFace (vmsVector *newP, vmsVector *p0, vmsVector *p1,
 
 int CanSeePoint (tObject *objP, vmsVector *vSource, vmsVector *vDest, short nSegment);
 
+int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType);
+
 int CheckTransWall (vmsVector *vPoint, tSegment *segP, short nSide, short iFace);
 
 #endif

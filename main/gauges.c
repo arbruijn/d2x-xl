@@ -336,7 +336,7 @@ static int old_shields [2]			= {-1, -1};
 static uint oldFlags [2]			= {(uint) -1, (uint) -1};
 static int old_weapon [2][2]		= {{-1, -1}, {-1, -1}};
 static int old_ammoCount [2][2]	= {{-1, -1}, {-1, -1}};
-static int Old_Omega_charge [2]	= {-1, -1};
+static int xOldOmegaCharge [2]	= {-1, -1};
 static int old_laserLevel [2]		= {-1, -1};
 static int bOldCloak [2]			= {0, 0};
 static int nOldLives [2]			= {-1, -1};
@@ -2115,7 +2115,7 @@ switch (gameData.weapons.nPrimary) {
 		break;
 
 	case OMEGA_INDEX:
-		sprintf (szWeapon, "%s: %03i", pszWeapon, gameData.laser.xOmegaCharge * 100/MAX_OMEGA_CHARGE);
+		sprintf (szWeapon, "%s: %03i", pszWeapon, gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
 		convert_1s (szWeapon);
 		break;
 
@@ -2137,10 +2137,10 @@ if (gameData.weapons.nPrimary == VULCAN_INDEX) {
 	}
 
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-	if (gameData.laser.xOmegaCharge != Old_Omega_charge [gameStates.render.vr.nCurrentPage]) {
+	if (gameData.omega.xCharge [IsMultiGame] != xOldOmegaCharge [gameStates.render.vr.nCurrentPage]) {
 		if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordPrimaryAmmo (Old_Omega_charge [gameStates.render.vr.nCurrentPage], gameData.laser.xOmegaCharge);
-		Old_Omega_charge [gameStates.render.vr.nCurrentPage] = gameData.laser.xOmegaCharge;
+			NDRecordPrimaryAmmo (xOldOmegaCharge [gameStates.render.vr.nCurrentPage], gameData.omega.xCharge [IsMultiGame]);
+		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = gameData.omega.xCharge [IsMultiGame];
 		}
 	}
 
@@ -2480,7 +2480,7 @@ for (i=0; i<2; i++)	{
 
 	old_weapon [0][i] = old_weapon [1][i] = -1;
 	old_ammoCount [0][i] = old_ammoCount [1][i] = -1;
-	Old_Omega_charge [i] = -1;
+	xOldOmegaCharge [i] = -1;
 	}
 nCloakFadeState = 0;
 weapon_box_user [0] = weapon_box_user [1] = WBU_WEAPON;
@@ -3059,7 +3059,7 @@ if ((old_weapon [nWeaponType][gameStates.render.vr.nCurrentPage] == -1) || 1/* (
 	DrawWeaponInfo (nWeaponType, nWeaponNum, LOCALPLAYER.laserLevel);
 	old_weapon [nWeaponType][gameStates.render.vr.nCurrentPage] = nWeaponNum;
 	old_ammoCount [nWeaponType][gameStates.render.vr.nCurrentPage] = -1;
-	Old_Omega_charge [gameStates.render.vr.nCurrentPage] = -1;
+	xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 	old_laserLevel [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.laserLevel;
 	bDrew = 1;
 	weapon_boxStates [nWeaponType] = WS_SET;
@@ -3068,7 +3068,7 @@ if ((old_weapon [nWeaponType][gameStates.render.vr.nCurrentPage] == -1) || 1/* (
 if (weapon_boxStates [nWeaponType] == WS_FADING_OUT) {
 	DrawWeaponInfo (nWeaponType, old_weapon [nWeaponType][gameStates.render.vr.nCurrentPage], old_laserLevel [gameStates.render.vr.nCurrentPage]);
 	old_ammoCount [nWeaponType][gameStates.render.vr.nCurrentPage] = -1;
-	Old_Omega_charge [gameStates.render.vr.nCurrentPage] = -1;
+	xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 	bDrew = 1;
 	weapon_box_fadeValues [nWeaponType] -= gameData.time.xFrame * FADE_SCALE;
 	if (weapon_box_fadeValues [nWeaponType] <= 0) {
@@ -3087,7 +3087,7 @@ else if (weapon_boxStates [nWeaponType] == WS_FADING_IN) {
 	else {
 		DrawWeaponInfo (nWeaponType, nWeaponNum, LOCALPLAYER.laserLevel);
 		old_ammoCount [nWeaponType][gameStates.render.vr.nCurrentPage] = -1;
-		Old_Omega_charge [gameStates.render.vr.nCurrentPage] = -1;
+		xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = -1;
 		bDrew=1;
 		weapon_box_fadeValues [nWeaponType] += gameData.time.xFrame * FADE_SCALE;
 		if (weapon_box_fadeValues [nWeaponType] >= i2f (GR_ACTUAL_FADE_LEVELS-1)) {
@@ -3162,11 +3162,11 @@ void DrawWeaponBoxes ()
 			}
 
 			if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-				if (gameData.laser.xOmegaCharge != Old_Omega_charge [gameStates.render.vr.nCurrentPage]) {
+				if (gameData.omega.xCharge [IsMultiGame] != xOldOmegaCharge [gameStates.render.vr.nCurrentPage]) {
 					if (gameData.demo.nState == ND_STATE_RECORDING)
-						NDRecordPrimaryAmmo (Old_Omega_charge [gameStates.render.vr.nCurrentPage], gameData.laser.xOmegaCharge);
-					DrawPrimaryAmmoInfo (gameData.laser.xOmegaCharge * 100/MAX_OMEGA_CHARGE);
-					Old_Omega_charge [gameStates.render.vr.nCurrentPage] = gameData.laser.xOmegaCharge;
+						NDRecordPrimaryAmmo (xOldOmegaCharge [gameStates.render.vr.nCurrentPage], gameData.omega.xCharge [IsMultiGame]);
+					DrawPrimaryAmmoInfo (gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
+					xOldOmegaCharge [gameStates.render.vr.nCurrentPage] = gameData.omega.xCharge [IsMultiGame];
 				}
 			}
 		}
@@ -3835,11 +3835,11 @@ if (!(gameStates.render.bRearView || (gameStates.render.cockpit.nMode == CM_REAR
 			oldFlags [gameStates.render.vr.nCurrentPage] = LOCALPLAYER.flags;
 			}
 		}
-#ifdef _DEBUG
+#if 1//def _DEBUG
 	if (!(IsMultiGame && gameData.multigame.kills.bShowList) && !Saving_movie_frames)
 		ShowTime ();
 #endif
-	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead /*&& gameStates.render.cockpit.nMode != CM_LETTERBOX*/ && (!viewInfo.bUsePlayerHeadAngles))
+	if (gameOpts->render.cockpit.bReticle && !gameStates.app.bPlayerIsDead && !viewInfo.bUsePlayerHeadAngles)
 		ShowReticle (0);
 
 	ShowHUDNames ();

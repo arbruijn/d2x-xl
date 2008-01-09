@@ -2556,16 +2556,16 @@ else
 	opt++;
 	if (!AXI.bCompetition && 
 		 (AXI.bDualMissileLaunch || !AXI.bFriendlyFire || AXI.bInhibitSuicide || 
-		  AXI.bEnableCheats || AXI.bDarkness || (AXI.nFusionPowerMod != 2))) {
+		  AXI.bEnableCheats || AXI.bDarkness || (AXI.nFusionRamp != 2))) {
 		INITFLAGS ("Gameplay ext.: ");
 		ADDFLAG (AXI.bEnableCheats, "Cheats");
 		ADDFLAG (AXI.bDarkness, "Darkness");
 		ADDFLAG (AXI.bSmokeGrenades, "Smoke Grens");
 		ADDFLAG (AXI.bDualMissileLaunch, "Dual Msls");
-		ADDFLAG (AXI.nFusionPowerMod != 2, "Fusion ramp");
+		ADDFLAG (AXI.nFusionRamp != 2, "Fusion ramp");
 		ADDFLAG (!AXI.bFriendlyFire, "no FF");
 		ADDFLAG (AXI.bInhibitSuicide, "no suicide");
-		ADDFLAG (AXI.bShootMissiles, "shoot msls");
+		ADDFLAG (AXI.bKillMissiles, "shoot msls");
 		ADDFLAG (AXI.bTripleFusion, "tri fusion");
 		ADDFLAG (AXI.bEnhancedShakers, "enh shakers");
 		ADDFLAG (AXI.nHitboxes, "hit boxes");

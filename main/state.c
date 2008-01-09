@@ -124,7 +124,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 18- Took out saving of old cheat status
 // 19- Saved cheats_enabled flag
 // 20- gameStates.app.bFirstSecretVisit
-// 22- gameData.laser.xOmegaCharge
+// 22- gameData.omega.xCharge
 
 #define NUM_SAVES		9
 #define THUMBNAIL_W	100
@@ -681,7 +681,7 @@ CFWrite (&gameStates.ogl.palAdd.green, sizeof (int), 1, &cf);
 CFWrite (&gameStates.ogl.palAdd.blue, sizeof (int), 1, &cf);
 CFWrite (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS, &cf);
 CFWrite (&gameStates.app.bFirstSecretVisit, sizeof (gameStates.app.bFirstSecretVisit), 1, &cf);
-CFWrite (&gameData.laser.xOmegaCharge, sizeof (gameData.laser.xOmegaCharge), 1, &cf);
+CFWrite (&gameData.omega.xCharge, sizeof (gameData.omega.xCharge), 1, &cf);
 }
 
 //------------------------------------------------------------------------------
@@ -1290,7 +1290,7 @@ CFWriteShort (gameStates.ogl.palAdd.green, cfp);
 CFWriteShort (gameStates.ogl.palAdd.blue, cfp);
 CFWrite (gameData.render.lights.subtracted, sizeof (gameData.render.lights.subtracted [0]), MAX_SEGMENTS, cfp);
 CFWriteInt (gameStates.app.bFirstSecretVisit, cfp);
-CFWriteFix (gameData.laser.xOmegaCharge, cfp);
+CFWriteFix (gameData.omega.xCharge [0], cfp);
 CFWriteShort (gameData.missions.nEnteredFromLevel, cfp);
 for (i = 0; i < MAX_PLAYERS; i++)
 	StateSaveSpawnPoint (i, cfp);
@@ -2389,7 +2389,8 @@ else
 	gameStates.app.bFirstSecretVisit = CFReadInt (cfp);
 
 if (bSecretRestore != 1)
-	gameData.laser.xOmegaCharge = CFReadFix (cfp);
+	gameData.omega.xCharge [0] = 
+	gameData.omega.xCharge [1] = CFReadFix (cfp);
 else
 	CFReadFix (cfp);
 if (sgVersion > 27)
@@ -2641,7 +2642,7 @@ else
 
 if (sgVersion >= 22) {
 	if (bSecretRestore != 1)
-		CFRead (&gameData.laser.xOmegaCharge, sizeof (fix), 1, cfp);
+		CFRead (&gameData.omega.xCharge, sizeof (fix), 1, cfp);
 	else {
 		fix	dummy_fix;
 		CFRead (&dummy_fix, sizeof (fix), 1, cfp);
@@ -2696,6 +2697,7 @@ FixObjectSizes ();
 ComputeNearestLights (nLevel);
 ComputeStaticDynLighting ();
 InitReactorForLevel (1);
+SetMaxOmegaCharge ();
 SetEquipGenStates ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers

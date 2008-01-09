@@ -864,7 +864,7 @@ void LoadGameTexts(void);
 #define TXT_RESPAWN_DELAY			GT(75)
 #define TXT_DIFFICULTY2				GT(76)
 #define TXT_SPEEDBOOST				GT(77)
-#define TXT_FUSION_PWR				GT(78)
+#define TXT_FUSION_RAMP				GT(78)
 #define TXT_FIXED_SPAWN				GT(79)
 #define TXT_DUAL_LAUNCH				GT(80)
 #define TXT_DROP_ALL					GT(81)
@@ -1670,7 +1670,7 @@ void LoadGameTexts(void);
 #define TXT_COOP_PENALTY			GT(877)
 #define TXT_OUT_OF_MEMORY			GT(878)
 #define TXT_LEVEL_TOO_LARGE		GT(879)
-#define TXT_SHOOT_MISSILES			GT(880)
+#define TXT_KILL_MISSILES			GT(880)
 #define TXT_AB_CHEAT					GT(881)
 #define TXT_DEMO_CONVERSION		GT(882)
 #define TXT_HIT_SPHERES				GT(883)
@@ -1802,12 +1802,12 @@ void LoadGameTexts(void);
 #define TXT_ALIGN_CENTER			GT(1009)
 #define TXT_ALIGN_MIDDLE			GT(1010)
 #define TXT_ALIGN_CORNERS			GT(1011)
+#define TXT_OMEGA_RAMP				GT(1012)
+#define TXT_IMMUNE_MISSILES		GT(1013)
+#define TXT_OMEGA_KILLS_MISSILES	GT(1014)
 
 #if 0
 
-#define TXT_				GT(1012)
-#define TXT_				GT(1013)
-#define TXT_				GT(1014)
 #define TXT_				GT(1015)
 #define TXT_				GT(1016)
 #define TXT_				GT(1017)
@@ -2125,7 +2125,7 @@ void LoadGameTexts(void);
 #define HTX_GPLAY_DIFFICULTY		HT(117)			
 #define HTX_GPLAY_SPAWNDELAY		HT(118)			
 #define HTX_GPLAY_SPEEDBOOST		HT(119)			
-#define HTX_GPLAY_FUSIONPOWER		HT(120)			
+#define HTX_FUSION_RAMP				HT(120)			
 #define HTX_GPLAY_FIXEDSPAWN		HT(121)			
 #define HTX_GPLAY_DUALLAUNCH		HT(122)			
 #define HTX_GPLAY_DROPALL			HT(123)			
@@ -2268,7 +2268,7 @@ void LoadGameTexts(void);
 #define HTX_GPLAY_AWARENESS		HT(254)			
 #define HTX_MULTI2_CHECKPORT		HT(255)			
 #define HTX_COOP_PENALTY			HT(256)			
-#define HTX_GPLAY_SHOOTMISSILES	HT(257)			
+#define HTX_KILL_MISSILES	      HT(257)			
 #define HTX_GPLAY_HITBOXES			HT(258)			
 #define HTX_CPIT_PLAYERSTATS		HT(259)			
 #define HTX_ADVRND_CORONAS			HT(260)			
@@ -2348,10 +2348,10 @@ void LoadGameTexts(void);
 #define HTX_CORONA_QUALITY			HT(334)			
 #define HTX_AUXWIN_POSITION		HT(335)			
 #define HTX_AUXWIN_ALIGNMENT		HT(336)			
+#define HTX_OMEGA_RAMP				HT(337)			
 
 #if 0
 
-#define HTX_					HT(337)			
 #define HTX_					HT(338)			
 #define HTX_					HT(339)			
 #define HTX_					HT(340)			

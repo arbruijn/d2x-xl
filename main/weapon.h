@@ -152,7 +152,7 @@ typedef struct D2D1_weapon_info {
 #define WI_persistent(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].persistent : gameData.weapons.info [_i].persistent)
 #define WI_fireCount(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].fireCount : gameData.weapons.info [_i].fireCount)
 #define WI_ammo_usage(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].ammo_usage : gameData.weapons.info [_i].ammo_usage)
-#define WI_destructable(_i)	(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].destroyable : gameData.weapons.info [_i].destroyable)
+#define WI_destructible(_i)	(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].destroyable : gameData.weapons.info [_i].destroyable)
 #define WI_matter(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].matter : gameData.weapons.info [_i].matter)
 #define WI_bounce(_i)			(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].bounce : gameData.weapons.info [_i].bounce)
 #define WI_homingFlag(_i)		(gameStates.app.bD1Mission ? weaponInfoD2D1 [_i].homingFlag : gameData.weapons.info [_i].homingFlag)

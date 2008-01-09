@@ -4485,7 +4485,8 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDropAllMissiles = 1;
 	extraGameInfo [i].bImmortalPowerups = 0;
 	extraGameInfo [i].bUseCameras = 1;
-	extraGameInfo [i].nFusionPowerMod = 2;
+	extraGameInfo [i].nFusionRamp = 2;
+	extraGameInfo [i].nOmegaRamp = 2;
 	extraGameInfo [i].bWiggle = 1;
 	extraGameInfo [i].bMultiBosses = 0;
 	extraGameInfo [i].nBossCount = 0;
@@ -4526,7 +4527,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bSmokeGrenades = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nCoopPenalty = 0;
-	extraGameInfo [i].bShootMissiles = 0;
+	extraGameInfo [i].bKillMissiles = 0;
 	extraGameInfo [i].bTripleFusion = 0;
 	extraGameInfo [i].bEnhancedShakers = 0;
 	extraGameInfo [i].nHitboxes = 0;
@@ -4618,7 +4619,8 @@ else {
 	LogErr ("   bDropAllMissiles: %d\n", extraGameInfo [1].bDropAllMissiles);
 	LogErr ("   bImmortalPowerups: %d\n", extraGameInfo [1].bImmortalPowerups);
 	LogErr ("   bUseCameras: %d\n", extraGameInfo [1].bUseCameras);
-	LogErr ("   nFusionPowerMod: %d\n", extraGameInfo [1].nFusionPowerMod);
+	LogErr ("   nFusionRamp: %d\n", extraGameInfo [1].nFusionRamp);
+	LogErr ("   nOmegaRamp: %d\n", extraGameInfo [1].nOmegaRamp);
 	LogErr ("   bWiggle: %d\n", extraGameInfo [1].bWiggle);
 	LogErr ("   bMultiBosses: %d\n", extraGameInfo [1].bMultiBosses);
 	LogErr ("   nBossCount: %d\n", extraGameInfo [1].nBossCount);
@@ -4663,7 +4665,7 @@ else {
 	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
 	LogErr ("   nCoopPenalty: %d\n", nCoopPenalties [extraGameInfo [1].nCoopPenalty]);
-	LogErr ("   bShootMissiles: %d\n", extraGameInfo [1].bShootMissiles);
+	LogErr ("   bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	LogErr ("   bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	LogErr ("   bEnhancedShakers: %d\n", extraGameInfo [1].bEnhancedShakers);
 	LogErr ("   nHitboxes: %d\n", extraGameInfo [1].nHitboxes);

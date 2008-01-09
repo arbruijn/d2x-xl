@@ -1532,7 +1532,7 @@ void InitGameplayOptions (int i)
 {
 if (i) {
 	extraGameInfo [0].nSpawnDelay = 0;
-	extraGameInfo [0].nFusionPowerMod = 2;
+	extraGameInfo [0].nFusionRamp = 2;
 	extraGameInfo [0].bFixedRespawns = 0;
 	extraGameInfo [0].bRobotsHitRobots = 0;
 	extraGameInfo [0].bDualMissileLaunch = 0;
@@ -1546,7 +1546,7 @@ if (i) {
 	extraGameInfo [0].nZoomMode = 0;
 	extraGameInfo [0].nHitboxes = 0;
 	extraGameInfo [0].bTripleFusion = 0;
-	extraGameInfo [0].bShootMissiles = 0;
+	extraGameInfo [0].bKillMissiles = 0;
 	gameOptions [1].gameplay.nAutoSelectWeapon = 2;
 	gameOptions [1].gameplay.bSecretSave = 0;
 	gameOptions [1].gameplay.bTurboMode = 0;
@@ -2349,7 +2349,9 @@ gameData.smoke.iUsed = -1;
 gameData.smoke.nLastType = -1;
 gameData.lightnings.iFree = -1;
 gameData.lightnings.iUsed = -1;
-gameData.laser.xOmegaCharge = MAX_OMEGA_CHARGE;
+gameData.omega.xCharge [0] = 
+gameData.omega.xCharge [1] = 
+gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE;
 gameData.laser.nLightning = -1;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 gameData.render.ogl.zNear = 1.0f;

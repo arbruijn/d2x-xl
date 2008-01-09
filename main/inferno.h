@@ -2767,8 +2767,6 @@ typedef struct tSpeedtestData {
 typedef struct tLaserData {
 	fix		xLastFiredTime;
 	fix		xNextFireTime;
-	fix		xOmegaCharge;
-	int		nLastOmegaFireFrame;
 	int		nGlobalFiringCount;
 	int		nMissileGun;
 	int		nLightning;
@@ -2784,6 +2782,14 @@ typedef struct tFusionData {
 	fix	xNextSoundTime;
 	fix	xLastSoundTime;
 } tFusionData;
+
+//------------------------------------------------------------------------------
+
+typedef struct tOmegaData {
+	fix		xCharge [2];
+	fix		xMaxCharge;
+	int		nLastFireFrame;
+} tOmegaData;
 
 //------------------------------------------------------------------------------
 
@@ -2908,6 +2914,7 @@ typedef struct tGameData {
 	tPhysicsData		physics;
 	tLaserData			laser;
 	tFusionData			fusion;
+	tOmegaData			omega;
 	tMissileData		missiles;
 	tCameraData			cameras;
 	tCockpitData		cockpit;

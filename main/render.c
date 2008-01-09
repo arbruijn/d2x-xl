@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "objrender.h"
 #include "lightning.h"
+#include "trackobject.h"
 #include "laser.h"
 #include "textures.h"
 #include "screens.h"
@@ -722,7 +723,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 //	I didn't know we had guided missiles before the release of D1. --MK
 nType = objP->nType;
 if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
-	 ((nType == OBJ_WEAPON) && WeaponIsPlayerMine (objP->id))) {
+	 ((nType == OBJ_WEAPON) && (WeaponIsPlayerMine (objP->id)) || (gameData.objs.bIsMissile [objP->id] && EGI_FLAG (bKillMissiles, 0, 0, 0)))) {
 	//Assert(windowRenderedData [nWindow].renderedObjects < MAX_RENDERED_OBJECTS);
 	//	This peculiar piece of code makes us keep track of the most recently rendered objects, which
 	//	are probably the higher priority objects, without overflowing the buffer

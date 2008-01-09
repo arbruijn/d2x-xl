@@ -1700,5 +1700,33 @@ nHitType = FindVectorIntersection (&fq, &hit_data);
 return nHitType != HIT_WALL;
 }
 
+//	-----------------------------------------------------------------------------------------------------------
+//	Determine if two gameData.objs.objects are on a line of sight.  If so, return true, else return false.
+//	Calls fvi.
+int ObjectToObjectVisibility (tObject *objP1, tObject *objP2, int transType)
+{
+	tVFIQuery	fq;
+	tFVIData		hit_data;
+	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
+
+do {
+	if (nTries++)
+		fq.startSeg		= bSpectate ? FindSegByPoint (&gameStates.app.playerPos.vPos, gameStates.app.nPlayerSegment, 1, 0) : 
+							  FindSegByPoint (&objP1->position.vPos, objP1->nSegment, 1, 0);
+	else
+		fq.startSeg		= bSpectate ? gameStates.app.nPlayerSegment : objP1->nSegment;
+	fq.p0					= bSpectate ? &gameStates.app.playerPos.vPos : &objP1->position.vPos;
+	fq.p1					= SPECTATOR (objP2) ? &gameStates.app.playerPos.vPos : &objP2->position.vPos;
+	fq.radP0				= 
+	fq.radP1				= 0x10;
+	fq.thisObjNum		= OBJ_IDX (objP1);
+	fq.ignoreObjList	= NULL;
+	fq.flags				= transType;
+	fate = FindVectorIntersection (&fq, &hit_data);
+	}
+while ((fate == HIT_BAD_P0) && (nTries < 2));
+return fate == HIT_NONE;
+}
+
 //	-----------------------------------------------------------------------------
 //eof

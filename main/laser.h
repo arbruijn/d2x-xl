@@ -151,10 +151,10 @@ int CreateWeaponObject(ubyte weaponType, short nSegment,vmsVector *position);
 void ReleaseGuidedMissile(int player_num);
 
 void CreateSmartChildren(tObject *objp, int count);
-int ObjectToObjectVisibility(tObject *obj1, tObject *obj2, int transType);
 int FindHomingObject (vmsVector *curpos, tObject *tracker);
 int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
 void DestroyOmegaLightnings (void);
+void SetMaxOmegaCharge (void);
 
 void GetPlayerMslLock (void);
 
@@ -165,8 +165,9 @@ typedef struct tMuzzleInfo {
 } tMuzzleInfo;
 
 // Omega cannon stuff.
-#define MAX_OMEGA_CHARGE    (F1_0)  //  Maximum charge level for omega cannonw
-extern fix xOmegaCharge;
+#define DEFAULT_MAX_OMEGA_CHARGE    (F1_0)  //  Maximum charge level for omega cannonw
+extern int nOmegaDuration [7];
+
 // NOTE: OMEGA_CHARGE_SCALE moved to laser.c to avoid long rebuilds if changed
 
 //	-----------------------------------------------------------------------------------------------------------
@@ -210,6 +211,10 @@ static inline int ObjIsMine (tObject *objP)
 {
 return (objP->nType == OBJ_WEAPON) && WeaponIsMine (objP->id);
 }
+
+// ---------------------------------------------------------------------------------
+
+#define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omega.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
 
 //	-----------------------------------------------------------------------------------------------------------
 

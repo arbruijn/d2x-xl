@@ -190,7 +190,8 @@ typedef struct tExtraGameInfo {
 	char		bDropAllMissiles;
 	char		bImmortalPowerups;
 	char		bUseCameras;
-	char		nFusionPowerMod;
+	char		nFusionRamp;
+	char		nOmegaRamp;
 	char		bWiggle;
 	char		bMultiBosses;
 	char		nBossCount;
@@ -234,7 +235,7 @@ typedef struct tExtraGameInfo {
 	char		nMaxSmokeGrenades;
 	char		nMslTurnSpeed;
 	char		nCoopPenalty;
-	char		bShootMissiles;
+	char		bKillMissiles;
 	char		bTripleFusion;
 	char		bEnhancedShakers;
 	char		nHitboxes;

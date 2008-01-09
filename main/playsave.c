@@ -318,7 +318,8 @@ for (i = 0; i < 2; i++) {
 
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
 
-		RP (extraGameInfo [i].nFusionPowerMod, 0, 0);
+		RP (extraGameInfo [i].nFusionRamp, 0, 0);
+		RP (extraGameInfo [i].nOmegaRamp, 0, 0);
 		RP (extraGameInfo [i].nLightRange, 0, 0);
 		RP (extraGameInfo [i].nMaxSmokeGrenades, 0, 0);
 		RP (extraGameInfo [i].nMslTurnSpeed, 0, 0);
@@ -517,7 +518,7 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].bMslLockIndicators, i, 0);
 	RP (extraGameInfo [i].bMouseLook, i, 0);
 	RP (extraGameInfo [i].bPowerupLights, i, 0);
-	RP (extraGameInfo [i].bShootMissiles, i, 0);
+	RP (extraGameInfo [i].bKillMissiles, i, 0);
 	RP (extraGameInfo [i].bTripleFusion, i, 0);
 	RP (extraGameInfo [i].bEnhancedShakers, i, 0);
 	RP (extraGameInfo [i].bTagOnlyHitObjs, i, 0);
@@ -797,7 +798,8 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bUseHitAngles", "0"},
 	{"extraGameInfo[0].bWiggle", "1"},
 	{"extraGameInfo[0].grWallTransparency", "19"},
-	{"extraGameInfo[0].nFusionPowerMod", "4"},
+	{"extraGameInfo[0].nFusionRamp", "4"},
+	{"extraGameInfo[0].nOmegaRamp", "4"},
 	{"extraGameInfo[0].nLightRange", "2"},
 	{"extraGameInfo[0].nMaxSmokeGrenades", "1"},
 	{"extraGameInfo[0].nMslTurnSpeed", "1"},
@@ -1060,7 +1062,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bMslLockIndicators", "1"},
 	{"extraGameInfo[0].bMouseLook", "0"},
 	{"extraGameInfo[0].bPowerupLights", "1"},
-	{"extraGameInfo[0].bShootMissiles", "0"},
+	{"extraGameInfo[0].bKillMissiles", "0"},
 	{"extraGameInfo[0].bTripleFusion", "1"},
 	{"extraGameInfo[0].bEnhancedShakers", "0"},
 	{"extraGameInfo[0].bTagOnlyHitObjs", "1"},
@@ -1112,7 +1114,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[1].bMslLockIndicators", "1"},
 	{"extraGameInfo[1].bMouseLook", "0"},
 	{"extraGameInfo[1].bPowerupLights", "0"},
-	{"extraGameInfo[1].bShootMissiles", "0"},
+	{"extraGameInfo[1].bKillMissiles", "0"},
 	{"extraGameInfo[1].bTripleFusion", "1"},
 	{"extraGameInfo[1].bTagOnlyHitObjs", "0"},
 	{"extraGameInfo[1].bTargetIndicators", "1"},
@@ -1560,7 +1562,7 @@ for (i = 0; i < 2; i++) {
 		gameOptions [i].render.cameras.bFitToWall = (int) CFReadByte (pcf);
 		gameOptions [i].render.cameras.nFPS = (int) CFReadByte (pcf);
 		if (!i)
-			extraGameInfo [0].nFusionPowerMod = (int) CFReadByte (pcf);
+			extraGameInfo [0].nFusionRamp = (int) CFReadByte (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 62)
 		gameOptions [i].render.color.bUseLightMaps = (int) CFReadByte (pcf);
@@ -1884,7 +1886,7 @@ for (i = 0; i < 2; i++) {
 		gameOptions [i].gameplay.nAIAwareness = (int) CFReadByte (pcf);
 	if (gameStates.input.nPlrFileVersion >= 149) {
 		extraGameInfo [i].nCoopPenalty = CFReadByte (pcf);
-		extraGameInfo [i].bShootMissiles = CFReadByte (pcf);
+		extraGameInfo [i].bKillMissiles = CFReadByte (pcf);
 		}
 	if (gameStates.input.nPlrFileVersion >= 150)
 		extraGameInfo [i].nHitboxes = CFReadByte (pcf);
@@ -2090,6 +2092,7 @@ extraGameInfo [1].bDisableReactor = 0;
 ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
 ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
 SetDebrisCollisions ();
+SetMaxOmegaCharge ();
 
 done:
 
@@ -2222,7 +2225,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].render.cameras.bFitToWall, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.cameras.nFPS, &cf);
 	if (!i)
-		CFWriteByte ((sbyte) extraGameInfo [0].nFusionPowerMod, &cf);
+		CFWriteByte ((sbyte) extraGameInfo [0].nFusionRamp, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.color.bUseLightMaps, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bHUD, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.color.nLightMapRange, &cf);
@@ -2428,7 +2431,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteByte ((sbyte) gameOptions [i].render.smoke.bStatic, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].gameplay.nAIAwareness, &cf);
 	CFWriteByte ((sbyte) extraGameInfo [i].nCoopPenalty, &cf);
-	CFWriteByte ((sbyte) extraGameInfo [i].bShootMissiles, &cf);
+	CFWriteByte ((sbyte) extraGameInfo [i].bKillMissiles, &cf);
 	CFWriteByte ((sbyte) extraGameInfo [i].nHitboxes, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.cockpit.bPlayerStats, &cf);
 	CFWriteByte ((sbyte) gameOptions [i].render.bCoronas, &cf);

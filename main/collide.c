@@ -799,21 +799,21 @@ return 1;		//blew up!
 //	Return true if ok to do Omega damage.
 int OkToDoOmegaDamage (tObject *weaponP)
 {
-	int	parent_sig = weaponP->cType.laserInfo.nParentSig;
+if (IsMultiGame) {
+	int	nParentSig = weaponP->cType.laserInfo.nParentSig;
 	int	nParentObj = weaponP->cType.laserInfo.nParentObj;
 	fix	dist;
 
-if (!IsMultiGame)
-	return 1;
-if (gameData.objs.objects [nParentObj].nSignature != parent_sig) {
+	if (gameData.objs.objects [nParentObj].nSignature != nParentSig) {
 #if TRACE
-	con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
+		con_printf (CONDBG, "Parent of omega blob not consistent with tObject information. \n");
 #endif
-	return 1;
+		return 1;
+		}
+	dist = VmVecDistQuick (&gameData.objs.objects [nParentObj].position.vPos, &weaponP->position.vPos);
+	if (dist > MAX_OMEGA_DIST)
+		return 0;
 	}
-dist = VmVecDistQuick (&gameData.objs.objects [nParentObj].position.vPos, &weaponP->position.vPos);
-if (dist > MAX_OMEGA_DIST)
-	return 0;
 return 1;
 }
 
@@ -1331,7 +1331,7 @@ if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 if (weaponP->cType.laserInfo.parentType == OBJ_PLAYER) {
-	fix	damage = weaponP->shields;
+	fix damage = weaponP->shields;
 	if (gameData.objs.objects [weaponP->cType.laserInfo.nParentObj].id == gameData.multiplayer.nLocalPlayer)
 		if (0 <= (i = FindReactor (controlcen)))
 			gameData.reactor.states [i].bHit = 1;
@@ -1771,7 +1771,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) && botInfoP->energyBlobs
 					damage *= (2 * NDL - gameStates.app.nDifficultyLevel) / (2 * NDL);
 				}
 			else if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weaponP->id == FUSION_ID))
-				damage *= extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
+				damage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
 			if (!ApplyDamageToRobot (robotP, damage, weaponP->cType.laserInfo.nParentObj))
 				BumpTwoObjects (robotP, weaponP, 0, vHitPt);		//only bump if not dead. no damage from bump
 			else if (weaponP->cType.laserInfo.nParentSig == gameData.objs.console->nSignature) {
@@ -2051,8 +2051,9 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MaybeDropPrimaryWeaponEgg (playerObjP, HELIX_INDEX);
 		MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
-		if (nObject!=-1)
-			gameData.objs.objects [nObject].cType.powerupInfo.count = (playerObjP->id==gameData.multiplayer.nLocalPlayer)?gameData.laser.xOmegaCharge:MAX_OMEGA_CHARGE;
+		if (nObject != -1)
+			gameData.objs.objects [nObject].cType.powerupInfo.count = 
+				(playerObjP->id == gameData.multiplayer.nLocalPlayer) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 		//	Drop the secondary weapons
 		//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
 		if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
@@ -2242,7 +2243,7 @@ if (weaponP->id == EARTHSHAKER_ID)
 	ShakerRockStuff ();
 damage = FixMul (damage, weaponP->cType.laserInfo.multiplier);
 if (!COMPETITION && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (weaponP->id == FUSION_ID))
-	damage *= extraGameInfo [IsMultiGame].nFusionPowerMod / 2;
+	damage *= extraGameInfo [IsMultiGame].nFusionRamp / 2;
 if (IsMultiGame)
 	damage = FixMul (damage, gameData.weapons.info [weaponP->id].multi_damage_scale);
 if (weaponP->mType.physInfo.flags & PF_PERSISTENT) {
@@ -2439,26 +2440,40 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
+inline int DestroyWeapon (int nTarget, int nWeapon)
+{
+if (WI_destructible (nTarget))
+	return 1;
+if (COMPETITION)
+	return 0;
+if (!gameData.objs.bIsMissile [nTarget])
+	return 0;
+if (EGI_FLAG (bKillMissiles, 0, 0, 0) == 2)
+	return 1;
+if (nWeapon != OMEGA_ID)
+	return 0;
+if (EGI_FLAG (bKillMissiles, 0, 0, 0) == 1)
+	return 1;
+return 0;
+}
+
+//	-----------------------------------------------------------------------------
+
 int CollideWeaponAndWeapon (tObject * weapon1, tObject * weapon2, vmsVector *vHitPt)
 { 
 	int	id1 = weapon1->id;
 	int	id2 = weapon2->id;
 	int	bKill1, bKill2;
-	// -- Does this look buggy??:  if (weapon1->id == SMALLMINE_ID && weapon1->id == SMALLMINE_ID)
+	
 if (id1 == SMALLMINE_ID && id2 == SMALLMINE_ID)
 	return 1;		//these can't blow each other up  
 if ((id1 == PROXMINE_ID || id2 == PROXMINE_ID) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	return 1;
-if (id1 == OMEGA_ID) {
-	if (!OkToDoOmegaDamage (weapon1))
-		return 1;
-	}
-else if (id2 == OMEGA_ID) {
-	if (!OkToDoOmegaDamage (weapon2))
-		return 1;
-	}
-bKill1 = WI_destructable (id1) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && gameData.objs.bIsMissile [id1]);
-bKill2 = WI_destructable (id2) || (!COMPETITION && EGI_FLAG (bShootMissiles, 0, 0, 0) && gameData.objs.bIsMissile [id2]);
+if (((id1 == OMEGA_ID) && !OkToDoOmegaDamage (weapon1)) ||
+    ((id2 == OMEGA_ID) && !OkToDoOmegaDamage (weapon2)))
+	return 1;
+bKill1 = DestroyWeapon (id1, id2);
+bKill2 = DestroyWeapon (id2, id1);
 if (bKill1 || bKill2) {
 	//	Bug reported by Adam Q. Pletcher on September 9, 1994, smart bomb homing missiles were toasting each other.
 	if ((id1 == id2) && (weapon1->cType.laserInfo.nParentObj == weapon2->cType.laserInfo.nParentObj))

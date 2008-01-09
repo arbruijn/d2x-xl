@@ -119,7 +119,7 @@ int KillAllBuddyBots (int bVerbose)
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).companion) {
 		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else 
 			ApplyDamageToRobot (objP, objP->shields + 1, -1);
 		if (bVerbose)
@@ -200,7 +200,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	switch (gameData.objs.objects [i].nType) {
 		case OBJ_ROBOT:
 		case OBJ_CNTRLCEN:
-			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 			break;
 		case OBJ_POWERUP:
 			DoPowerup (gameData.objs.objects + i, -1);
@@ -238,7 +238,7 @@ void KillThief (int bVerbose)
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++)
 	if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).thief) {
 		if (gameStates.app.bNostalgia)
-			objP->flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			objP->flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
 			ApplyDamageToRobot (objP, objP->shields + 1, -1);
 			objP->flags |= OF_ARMAGEDDON;
@@ -261,7 +261,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
 		if (gameData.objs.objects [i].cType.aiInfo.behavior == AIB_SNIPE) {
 			nKilled++;
-			gameData.objs.objects [i].flags |= OF_EXPLODING|OF_SHOULD_BE_DEAD;
+			gameData.objs.objects [i].flags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		}
 if (bVerbose)
 	HUDInitMessage (TXT_BOTS_TOASTED, nKilled);

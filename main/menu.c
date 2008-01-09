@@ -82,6 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "autodl.h"
 #include "tracker.h"
 #include "particles.h"
+#include "laser.h"
 #include "lightning.h"
 #include "vers_id.h"
 #include "input.h"
@@ -172,6 +173,7 @@ static struct {
 static struct {
 	int	nSpeedboost;
 	int	nFusionRamp;
+	int	nOmegaRamp;
 	int	nMslTurnSpeed;
 	int	nSlomoSpeedup;
 	int	nDrag;
@@ -3948,6 +3950,20 @@ static int nOptDebrisLife;
 
 static char *pszMslTurnSpeeds [3];
 
+//------------------------------------------------------------------------------
+
+static char *OmegaRampStr (void)
+{
+	static char szRamp [20];
+
+if (extraGameInfo [0].nOmegaRamp == 0)
+	return "1 sec";
+sprintf (szRamp, "%d secs", nOmegaDuration [extraGameInfo [0].nOmegaRamp]);
+return szRamp;
+}
+
+//------------------------------------------------------------------------------
+
 void PhysicsOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
@@ -3972,9 +3988,18 @@ if (gameOpts->app.bExpertMode) {
 
 	m = menus + physOpts.nFusionRamp;
 	v = m->value + 2;
-	if (extraGameInfo [0].nFusionPowerMod != v) {
-		extraGameInfo [0].nFusionPowerMod = v;
-		sprintf (m->text, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
+	if (extraGameInfo [0].nFusionRamp != v) {
+		extraGameInfo [0].nFusionRamp = v;
+		sprintf (m->text, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
+		m->rebuild = 1;
+		}
+
+	m = menus + physOpts.nOmegaRamp;
+	v = m->value;
+	if (extraGameInfo [0].nOmegaRamp != v) {
+		extraGameInfo [0].nOmegaRamp = v;
+		SetMaxOmegaCharge ();
+		sprintf (m->text, TXT_OMEGA_RAMP, OmegaRampStr ());
 		m->rebuild = 1;
 		}
 
@@ -4014,8 +4039,9 @@ void PhysicsOptionsMenu ()
 	tMenuItem m [25];
 	int	i, opt = 0, choice = 0;
 	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
-			optFluidPhysics = -1, optHitAngles = -1, optShootMissiles = -1, optHitboxes = -1;
-	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionPower [50], szDebrisLife [50], szDrag [50];
+			optFluidPhysics = -1, optHitAngles = -1, optKillMissiles = -1, optHitboxes = -1;
+	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionRamp [50], 
+			szOmegaRamp [50], szDebrisLife [50], szDrag [50];
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
@@ -4029,10 +4055,14 @@ do {
 		*szSpeedBoost = *(TXT_SPEEDBOOST - 1);
 		ADD_SLIDER (opt, szSpeedBoost + 1, extraGameInfo [0].nSpeedBoost, 0, 10, KEY_B, HTX_GPLAY_SPEEDBOOST);
 		physOpts.nSpeedboost = opt++;
-		sprintf (szFusionPower + 1, TXT_FUSION_PWR, extraGameInfo [0].nFusionPowerMod * 50, '%');
-		*szFusionPower = *(TXT_FUSION_PWR - 1);
-		ADD_SLIDER (opt, szFusionPower + 1, extraGameInfo [0].nFusionPowerMod - 2, 0, 6, KEY_U, HTX_GPLAY_FUSIONPOWER);
+		sprintf (szFusionRamp + 1, TXT_FUSION_RAMP, extraGameInfo [0].nFusionRamp * 50, '%');
+		*szFusionRamp = *(TXT_FUSION_RAMP - 1);
+		ADD_SLIDER (opt, szFusionRamp + 1, extraGameInfo [0].nFusionRamp - 2, 0, 6, KEY_U, HTX_FUSION_RAMP);
 		physOpts.nFusionRamp = opt++;
+		sprintf (szOmegaRamp + 1, TXT_OMEGA_RAMP, OmegaRampStr ());
+		*szOmegaRamp = *(TXT_OMEGA_RAMP - 1);
+		ADD_SLIDER (opt, szOmegaRamp + 1, extraGameInfo [0].nOmegaRamp, 0, 6, KEY_O, HTX_OMEGA_RAMP);
+		physOpts.nOmegaRamp = opt++;
 		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [extraGameInfo [0].nMslTurnSpeed]);
 		*szMslTurnSpeed = *(TXT_MSL_TURNSPEED - 1);
 		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
@@ -4064,8 +4094,15 @@ do {
 		optFluidPhysics = opt++;
 		ADD_CHECK (opt, TXT_USE_HITANGLES, extraGameInfo [0].bUseHitAngles, KEY_H, HTX_GPLAY_HITANGLES);
 		optHitAngles = opt++;
-		ADD_CHECK (opt, TXT_SHOOT_MISSILES, extraGameInfo [0].bShootMissiles, KEY_S, HTX_GPLAY_SHOOTMISSILES);
-		optShootMissiles = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_RADIO (opt, TXT_IMMUNE_MISSILES, 0, KEY_I, 2, HTX_KILL_MISSILES);
+		optKillMissiles = opt++;
+		ADD_RADIO (opt, TXT_OMEGA_KILLS_MISSILES, 0, KEY_K, 2, HTX_KILL_MISSILES);
+		opt++;
+		ADD_RADIO (opt, TXT_KILL_MISSILES, 0, KEY_A, 2, HTX_KILL_MISSILES);
+		opt++;
+		m [optKillMissiles + extraGameInfo [0].bKillMissiles].value = 1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_RADIO (opt, TXT_AUTOLEVEL_NONE, 0, KEY_N, 1, HTX_AUTO_LEVELLING);
@@ -4095,11 +4132,16 @@ do {
 if (gameOpts->app.bExpertMode) {
 	gameOpts->gameplay.nAutoLeveling = m [optAutoLevel].value;
 	extraGameInfo [0].bRobotsHitRobots = m [optRobHits].value;
-	extraGameInfo [0].bShootMissiles = m [optShootMissiles].value;
+	extraGameInfo [0].bKillMissiles = m [optKillMissiles].value;
 	extraGameInfo [0].bFluidPhysics = m [optFluidPhysics].value;
 	extraGameInfo [0].bUseHitAngles = m [optHitAngles].value;
 	if (optWiggle >= 0)
 		extraGameInfo [0].bWiggle = m [optWiggle].value;
+	for (i = 0; i < 3; i++)
+		if (m [optKillMissiles + i].value) {
+			extraGameInfo [0].bKillMissiles = i;
+			break;
+			}
 	for (i = 0; i < 3; i++)
 		if (m [optHitboxes + i].value) {
 			extraGameInfo [0].nHitboxes = i;
@@ -4120,7 +4162,7 @@ if (gameOpts->app.bExpertMode) {
 else {
 #if EXPMODE_DEFAULTS
 	extraGameInfo [0].bRobotsHitRobots = 0;
-	extraGameInfo [0].bShootMissiles = 0;
+	extraGameInfo [0].bKillMissiles = 0;
 	extraGameInfo [0].bFluidPhysics = 1;
 	extraGameInfo [0].nHitboxes = 0;
 	extraGameInfo [0].bWiggle = 0;
