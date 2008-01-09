@@ -2,15 +2,11 @@
 #include "error.h"
 #include "network.h"
 #include "render.h"
+#include "omega.h"
 #include "trackobject.h"
 
 #define	OMEGA_MIN_TRACKABLE_DOT			 (15 * F1_0 / 16)		//	Larger values mean narrower cone.  F1_0 means damn near impossible.  0 means 180 degree field of view.
 #define	OMEGA_MAX_TRACKABLE_DIST		MAX_OMEGA_DIST	//	An tObject must be at least this close to be tracked.
-
-#define	DESIRED_OMEGA_DIST	(F1_0*5)		//	This is the desired distance between blobs.  For distances > MIN_OMEGA_BLOBS*DESIRED_OMEGA_DIST, but not very large, this will apply.
-#define	MIN_OMEGA_BLOBS		3				//	No matter how close the obstruction, at this many blobs created.
-#define	MAX_OMEGA_BLOBS		16				//	No matter how far away the obstruction, this is the maximum number of blobs.
-#define	MAX_OMEGA_DIST			(MAX_OMEGA_BLOBS * DESIRED_OMEGA_DIST)		//	Maximum extent of lightning blobs.
 
 fix	xMinTrackableDot = MIN_TRACKABLE_DOT;
 
@@ -153,7 +149,7 @@ else {
 				continue;
 			}
 		else if (curObjP->nType == OBJ_WEAPON) {
-			if ((trackerP->id != OMEGA_ID) || !bIsMissile [curObjP->id])
+			if ((trackerP->id != OMEGA_ID) || !gameData.objs.bIsMissile [curObjP->id])
 				continue;
 			}
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
