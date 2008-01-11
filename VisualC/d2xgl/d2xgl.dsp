@@ -25,7 +25,7 @@ CFG=d2xgl - Win32 Release
 # PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
-CPP=xicl6.exe
+CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
@@ -52,7 +52,7 @@ RSC=rc.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib /nologo /subsystem:windows /pdb:none /machine:I386 /out:"d:\programme\d2\d2x-xl-win16.exe" /libpath:"C:\Programme\Microsoft Platform SDK for Windows XP SP2\Lib" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDLmain\Release" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDL\Release" /libpath:"\Projekte\SDL_mixer-1.2.7\VisualC\Release"
 # SUBTRACT LINK32 /debug
@@ -80,7 +80,7 @@ LINK32=xilink6.exe
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
-LINK32=xilink6.exe
+LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib sdl-win16.lib sdl_mixer-win16.lib /nologo /subsystem:windows /debug /machine:I386 /out:"d:\programme\d2\d2x-xl-win16-dbg.exe" /libpath:"C:\Programme\Microsoft Platform SDK for Windows XP SP2\Lib" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDL\Debug" /libpath:"D:\Projekte\SDL_mixer-1.2.7\VisualC\Debug" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDLmain\Debug"
 # SUBTRACT LINK32 /profile
@@ -676,6 +676,10 @@ SOURCE=..\..\main\objsmoke.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\omega.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\oof.c
 # End Source File
 # Begin Source File
@@ -789,6 +793,10 @@ SOURCE=..\..\main\thief.c
 # Begin Source File
 
 SOURCE=..\..\main\tracker.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\trackobject.c
 # End Source File
 # Begin Source File
 
@@ -1245,6 +1253,10 @@ SOURCE=..\..\include\ogl_init.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\omega.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\oof.h
 # End Source File
 # Begin Source File
@@ -1418,6 +1430,10 @@ SOURCE=..\..\include\timer.h
 # Begin Source File
 
 SOURCE=..\..\main\tracker.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\trackobject.h
 # End Source File
 # Begin Source File
 
