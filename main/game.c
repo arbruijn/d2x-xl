@@ -1119,7 +1119,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) LOCALPLAYER.nObject, 
-										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL);
+										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);

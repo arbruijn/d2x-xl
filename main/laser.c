@@ -484,7 +484,7 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
 			volume = F1_0 / 2;
 		DigiPlaySample (gameData.weapons.info [objP->id].flashSound, volume);
 		if (gameData.objs.bIsMissile [nWeaponType])
-			DigiSetObjectSound (nObject, -1, "missileflight.wav");
+			DigiLinkSoundToObject3 (-1, nObject, 1, F1_0 / 2, i2f (256), -1, -1, "missileflight.wav", 1);
 		else if (nWeaponType == FLARE_ID)
 			DigiSetObjectSound (nObject, -1, "flareburning.wav");
 		}

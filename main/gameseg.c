@@ -1418,12 +1418,13 @@ if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
 	}
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
+#if 0
 for (i = MAX_FCD_CACHE, pc = gameData.fcd.cache; i; i--, pc++)
 	if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
 		gameData.fcd.nConnSegDist = pc->csd;
 		return pc->dist;
 		}
-
+#endif
 memset (visited, 0, gameData.segs.nLastSegment + 1);
 memset (nDepth, 0, sizeof (nDepth [0]) * (gameData.segs.nLastSegment + 1));
 
