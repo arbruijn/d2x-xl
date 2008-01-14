@@ -27,7 +27,6 @@ Mix_Music *mixMusic = NULL;
 hmp_file *hmp = NULL;
 
 int midiVolume = 255;
-int gameData.songs.bPlaying = 0;
 
 //------------------------------------------------------------------------------
 
