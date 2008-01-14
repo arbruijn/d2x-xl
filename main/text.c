@@ -1494,7 +1494,7 @@ char *defaultGameTexts [][2] = {
 	{"schnell", "fast"},
 	{"sehr schnell", "very fast"},
 	{"~Computergeschw.: %s", "~Computer Speed: %s"},
-	{"~Standardeinstellungen verwenden", "~Use default values"},
+	{"~Einstellungen an Rechnerleistung anpassen", "t~Une settings to computer speed"},
 	{"Kehre aus Geheimlevel zurueck", "Returning from secret level"},
 	{"Ladekapazitaet ueberschritten", "Inventory full"},
 	{"Inventarsystem ~Verwenden", "use in~Ventory"},
