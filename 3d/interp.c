@@ -609,10 +609,12 @@ for (;;) {
 				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1);
 			else
 				G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
-			if (bLightnings)
-				RenderDamageLightnings (objP, pointList, NULL, nVerts);
-			if (bGetThrusterPos)
-				GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
+			if (!gameStates.render.bBriefing) {
+				if (bLightnings)
+					RenderDamageLightnings (objP, pointList, NULL, nVerts);
+				if (bGetThrusterPos)
+					GetThrusterPos (nModel, pvn, vOffset, modelBitmaps [WORDVAL (p-2)], nVerts);
+				}
 			}
 #if CHECK_NORMAL_FACING
 		else

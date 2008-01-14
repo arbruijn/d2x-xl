@@ -2954,6 +2954,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 			GrPaletteFadeIn (NULL, 0, 0);
 			ResetPaletteAdd ();
 			GrPaletteFadeOut (NULL, 0, 0);
+			gameStates.app.bD1Mission = 0;
 			if (gameData.multiplayer.autoNG.bValid)
 				gameStates.app.nFunctionMode = FMODE_EXIT;
 			if (gameStates.app.nFunctionMode == FMODE_MENU) {

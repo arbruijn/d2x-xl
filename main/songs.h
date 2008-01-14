@@ -25,29 +25,13 @@ typedef struct tSongInfo {
 
 extern tSongInfo Songs[MAX_NUM_SONGS];
 
-#define SONG_D2_TITLE            0
-#define SONG_D2_BRIEFING         1
-#define SONG_D2_ENDLEVEL         2
-#define SONG_D2_ENDGAME          3
-#define SONG_D2_CREDITS          4
-#define SONG_D2_FIRST_LEVEL_SONG 5
-#define SONG_D2_INTER				16
-
-#define SONG_D1_TITLE            9
-#define SONG_D1_BRIEFING			10
-#define SONG_D1_ENDLEVEL         11
-#define SONG_D1_ENDGAME          12
-#define SONG_D1_CREDITS          13
-#define SONG_D1_FIRST_LEVEL_SONG 14
-#define SONG_D1_INTER				15
-
-#define SONG_TITLE            (gameStates.app.bD1Mission ? SONG_D1_TITLE : SONG_D2_TITLE)
-#define SONG_BRIEFING         (gameStates.app.bD1Mission ? SONG_D1_BRIEFING : SONG_D2_BRIEFING)
-#define SONG_ENDLEVEL         (gameStates.app.bD1Mission ? SONG_D1_ENDLEVEL : SONG_D2_ENDLEVEL)
-#define SONG_ENDGAME          (gameStates.app.bD1Mission ? SONG_D1_ENDGAME : SONG_D2_ENDGAME)
-#define SONG_CREDITS          (gameStates.app.bD1Mission ? SONG_D1_CREDITS : SONG_D2_CREDITS)
-#define SONG_FIRST_LEVEL_SONG (gameStates.app.bD1Mission ? SONG_D1_FIRST_LEVEL_SONG : SONG_D2_FIRST_LEVEL_SONG)
-#define SONG_INTER				(gameStates.app.bD1Mission ? SONG_D1_INTER : SONG_D2_INTER)
+#define SONG_TITLE            0
+#define SONG_BRIEFING         1
+#define SONG_ENDLEVEL         2
+#define SONG_ENDGAME          3
+#define SONG_CREDITS          4
+#define SONG_FIRST_LEVEL_SONG 5
+#define SONG_INTER				2
 
 extern int Num_songs, nD1SongNum, nD2SongNum;   //how many MIDI songs
 

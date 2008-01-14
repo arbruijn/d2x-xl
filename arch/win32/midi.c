@@ -20,7 +20,6 @@ Mix_Music *mixMusic = NULL;
 hmp_file *hmp = NULL;
 
 int midiVolume = 255;
-int bDigiMidiSongPlaying = 0;
 
 //------------------------------------------------------------------------------
 
@@ -56,7 +55,7 @@ if (hmp) {
 
 void DigiStopCurrentSong()
 {
-if (bDigiMidiSongPlaying) {
+if (gameData.songs.bPlaying) {
 	int h = midiVolume;	// preserve it for another song being started
 	DigiSetMidiVolume(0);
 	midiVolume = h;
@@ -75,7 +74,7 @@ else
 		{
 		hmp_close (hmp);
 		hmp = NULL;
-		bDigiMidiSongPlaying = 0;
+		gameData.songs.bPlaying = 0;
 		}
 #endif
 	}
@@ -133,7 +132,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		return 0;
 		}
 	LogErr ("SDL_mixer playing %s\n", pszSong);
-	bDigiMidiSongPlaying = 1;
+	gameData.songs.bPlaying = 1;
 	DigiSetMidiVolume (midiVolume);
 	return 1;
 	}
@@ -144,7 +143,7 @@ if (bCustom) {
 	return 0;
 	}
 hmp_play (hmp, bLoop);
-bDigiMidiSongPlaying = 1;
+gameData.songs.bPlaying = 1;
 DigiSetMidiVolume (midiVolume);
 #endif
 return 1;

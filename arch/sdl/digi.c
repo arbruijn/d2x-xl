@@ -542,17 +542,19 @@ return ssP->length = j;
 
 //------------------------------------------------------------------------------
 
-void Mix_VolPan (int channel, int vol, int pan)
+void Mix_VolPan (int channel, int volume, int pan)
 {
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer && (channel >= 0)) {
-	if (vol) {
-		vol = (FixMul (vol, gameStates.sound.digi.nVolume) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
-		if (!vol)
-			vol = 1;
-		Mix_Volume (channel, vol);
-		pan /= (32767 / 127);
-		Mix_SetPanning (channel, (ubyte) pan, (ubyte) (254 - pan));
+	if (volume) {
+		volume = (FixMul (volume, gameStates.sound.digi.nVolume) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
+		if (!volume)
+			volume = 1;
+		Mix_Volume (channel, volume);
+		if (pan >= 0) {
+			pan /= (32767 / 127);
+			Mix_SetPanning (channel, (ubyte) pan, (ubyte) (254 - pan));
+			}
 		}
 	}
 #endif
@@ -835,12 +837,12 @@ if (!gameStates.app.bUseSound)
 	return;
 if (!gameStates.sound.digi.bInitialized)
 	return;
-if (!SoundSlots[channel].playing)
+if (!SoundSlots [channel].playing)
 	return;
-SoundSlots[channel].volume = FixMulDiv (volume, gameStates.sound.digi.nVolume, F1_0);
+SoundSlots [channel].volume = FixMulDiv (volume, gameStates.sound.digi.nVolume, F1_0);
 #if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer)
-	Mix_Volume (channel, (volume * gameStates.sound.digi.nVolume / F1_0) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME));
+	Mix_VolPan (channel, volume, -1);
 #endif
 }
 

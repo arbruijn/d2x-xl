@@ -103,7 +103,7 @@ char bRobotPlaying=0;
 //	Can be set by -noscreens command line option.  Causes bypassing of all briefing screens.
 int	briefFgColorIndex [MAX_BRIEFING_COLORS], 
 		briefBgColorIndex [MAX_BRIEFING_COLORS];
-int	Current_color = 0;
+int	nCurrentColor = 0;
 unsigned int nEraseColor = BLACK_RGBA;
 
 grsRgba briefFgColors [2][MAX_BRIEFING_COLORS] = {
@@ -227,7 +227,7 @@ return y * GHEIGHT / 200;
 
 //-----------------------------------------------------------------------------
 
-int local_key_inkey (void)
+int BriefingInKey (void)
 {
 	int	rval = KeyInKey ();
 
@@ -321,7 +321,7 @@ if (GrPaletteFadeIn (NULL, 32, bAllowKeys))
 GrPaletteStepLoad (NULL);
 timer	= TimerGetFixedSeconds () + i2f (3);
 while (1) {
-	if (local_key_inkey () && bAllowKeys) break;
+	if (BriefingInKey () && bAllowKeys) break;
 	if (TimerGetFixedSeconds () > timer) break;
 }
 if (GrPaletteFadeOut (NULL, 32, bAllowKeys))
@@ -412,7 +412,7 @@ int	Briefing_text_x, Briefing_text_y;
 gsrCanvas	*robotCanv = NULL;
 vmsAngVec	Robot_angles;
 
-char    Bitmap_name [32] = "";
+char    szBitmapName [32] = "";
 #define EXIT_DOOR_MAX   14
 #define OTHER_THING_MAX 10      //  Adam: This is the number of frames in your new animating thing.
 #define DOOR_DIV_INIT   6
@@ -452,7 +452,7 @@ void ShowBitmapFrame (int bRedraw)
 			return;
 	}
 
-	if (Bitmap_name [0] != 0) {
+	if (*szBitmapName) {
 		char		*pound_signp;
 		int		num, dig1, dig2;
 		//	Set supertransparency color to black
@@ -471,7 +471,7 @@ void ShowBitmapFrame (int bRedraw)
 		grdCurCanv = bitmap_canv;
 		GrClearCanvas (0);
 		if (!bRedraw) {	//extract current bitmap number from bitmap name (<name>#<number>)
-			pound_signp = strchr (Bitmap_name, '#');
+			pound_signp = strchr (szBitmapName, '#');
 			Assert (pound_signp != NULL);
 
 			dig1 = * (pound_signp+1);
@@ -516,7 +516,7 @@ void ShowBitmapFrame (int bRedraw)
 
 		LoadPalette ("", "", 0, 0, 1);
 		{
-		tBitmapIndex bmi = PiggyFindBitmap (Bitmap_name, 0);
+		tBitmapIndex bmi = PiggyFindBitmap (szBitmapName, 0);
 		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 		PIGGY_PAGE_IN (bmi, 0);
 		}
@@ -632,68 +632,66 @@ int PrintCharDelayed (char the_char, int delay, int nRobot, int cursorFlag, int 
 {
 	int w, h, aw;
 	char message [2];
-	static fix	t, t0, StartTime=0;
+	static fix	t, tText = 0, tImage = 0;
 
 	message [0] = the_char;
 	message [1] = 0;
 
-if (StartTime==0 && TimerGetFixedSeconds ()<0)
-	StartTime=TimerGetFixedSeconds ();
+if (!tText)
+	tText = SDL_GetTicks ();
+if ((nRobot < 0) && !*szBitmapName)
+	tImage = 0;
+else if (!tImage)
+	tImage = SDL_GetTicks ();
 
 GrGetStringSize (message, &w, &h, &aw);
-Assert ((Current_color >= 0) && (Current_color < MAX_BRIEFING_COLORS));
+Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 
 //	Draw cursor if there is some delay and caller says to draw cursor
 if (cursorFlag && !bRedraw) {
-	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NULL);
+	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
 }
 
 if (delay > 0)
-	delay=FixDiv (F1_0, i2f (15));
+	delay = 1000 / 15;
 
 if ((delay > 0) && !bRedraw) {
-	if (Bitmap_name [0] != 0)
+	if (*szBitmapName)
 		ShowBitmapFrame (0);
 	if (bRobotPlaying)
 		RotateBriefingRobot ();
-	t0 = StartTime;
-	while ((t = TimerGetFixedSeconds ()) < (StartTime + delay)) {
+	while ((t = SDL_GetTicks ()) < (tText + delay)) {
 		if (bRobotPlaying)
 			RotateBriefingRobot ();
-		if (t >= t0 + KEY_DELAY_DEFAULT/2) {
-			if ((Bitmap_name [0] != 0) && (delay != 0))
+		if (tImage && (t - tImage >= 10)) {
+			if (*szBitmapName && (delay != 0))
 				ShowBitmapFrame (0);
 			if (nRobot != -1)
 				ShowSpinningRobotFrame (nRobot);
-				t0 = t;
+			tImage = t;
 			}
 		}
 	}
 
-StartTime = TimerGetFixedSeconds ();
+tText = SDL_GetTicks ();
 
 //	Erase cursor
 if (cursorFlag && (delay > 0) && !bRedraw) {
 	GrSetFontColorRGBi (nEraseColor, 1, 0, 0);
 	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
 	//	erase the character
-	GrSetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + Current_color, NULL);
+	GrSetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 	GrPrintF (NULL, Briefing_text_x, Briefing_text_y, message);
 }
 //draw the character
-GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NULL);
+GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, message);
 
 if (!(bRedraw || gameOpts->menus.nStyle)) 
 	GrUpdate (0);
-
-//	if (the_char != ' ')
-//		if (!DigiIsSoundPlaying (SOUND_MARKER_HIT))
-//			DigiPlaySample (SOUND_MARKER_HIT, F1_0);
-
 return w;
 }
 
@@ -796,7 +794,7 @@ void FlashCursor (int cursorFlag)
 if (cursorFlag == 0)
 	return;
 if ((TimerGetFixedSeconds () % (F1_0/2)) > (F1_0/4))
-	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + Current_color, NULL);
+	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 else
 	GrSetFontColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
@@ -898,19 +896,19 @@ int ShowBriefingMessage (int nScreen, char *message, int nLevel)
 	short 		nBot = 0;
 	//char			*pEnd = strstr (message, "$S");
 	int			bOnlyRobots, bExtraSounds;
-	WIN (int wpage_done=0);
+	time_t		t, t0 = 0;
 
-Bitmap_name [0] = 0;
-Current_color = 0;
-bRobotPlaying=0;
+szBitmapName [0] = 0;
+nCurrentColor = 0;
+bRobotPlaying = 0;
 
 InitMovieBriefing ();
 
 bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 				  (gameData.missions.nCurrentMission == gameData.missions.nD1BuiltinMission);
 bOnlyRobots = gameStates.app.bHaveExtraMovies && bExtraSounds && (nLevel == 1) && (nScreen < 4);
-
-nHumChannel = StartBriefingHum (nHumChannel, nLevel, nScreen, bExtraSounds);
+if (!gameData.songs.bPlaying)
+	nHumChannel = StartBriefingHum (nHumChannel, nLevel, nScreen, bExtraSounds);
 
 GrSetCurFont (GAME_FONT);
 
@@ -977,8 +975,8 @@ while (!done) {
 				prev_ch = 10;                                   // read to eoln
 				}
 			else if (ch == 'C') {
-				Current_color = GetMessageNum (&message) - 1;
-				Assert ((Current_color >= 0) && (Current_color < MAX_BRIEFING_COLORS));
+				nCurrentColor = GetMessageNum (&message) - 1;
+				Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 				prev_ch = 10;
 				}
 			else if (ch == 'F') {     // toggle flashing cursor
@@ -1002,9 +1000,11 @@ while (!done) {
 						bRobotPlaying = 0;
 						}
 					InitSpinningRobot ();
-					nBotChannel = StartExtraBotSound (nBotChannel, (short) nLevel, nBot++);
-					if (nBotChannel >= 0)
-						StopBriefingSound (&nHumChannel);
+					if (!gameData.songs.bPlaying) {
+						nBotChannel = StartExtraBotSound (nBotChannel, (short) nLevel, nBot++);
+						if (nBotChannel >= 0)
+							StopBriefingSound (&nHumChannel);
+						}
 					}
 				if (gameStates.app.bD1Mission) {
 					nRobot = GetMessageNum (&message);
@@ -1033,8 +1033,8 @@ while (!done) {
 					if (robotCanv != NULL)
 						D2_FREE (robotCanv);
 					StopBriefingSound (&nBotChannel);
-					GetMessageName (&message, Bitmap_name);
-					strcat (Bitmap_name, "#0");
+					GetMessageName (&message, szBitmapName);
+					strcat (szBitmapName, "#0");
 					Animating_bitmapType = 0;
 					}
 				prev_ch = 10;
@@ -1043,8 +1043,8 @@ while (!done) {
 				if (message > pj) {
 					if (robotCanv != NULL)
 						D2_FREE (robotCanv);
-					GetMessageName (&message, Bitmap_name);
-					strcat (Bitmap_name, "#0");
+					GetMessageName (&message, szBitmapName);
+					strcat (szBitmapName, "#0");
 					Animating_bitmapType = 1;
 					}
 				prev_ch = 10;
@@ -1098,25 +1098,25 @@ while (!done) {
 				}
 			else if (ch == 'S') {
 				int keypress = 0;
-				fix StartTime;
 
-				chattering=0;
+				chattering = 0;
 				StopBriefingSound (&nPrintingChannel);
 
-				StartTime = TimerGetFixedSeconds ();
+				if (!t0)
+					t0 = SDL_GetTicks ();
 				do {		//	Wait for a key
-					while (TimerGetFixedSeconds () < StartTime + KEY_DELAY_DEFAULT / 2)
+					while ((t = SDL_GetTicks ()) - t0 < 10)
 						;
 					FlashCursor (flashing_cursor);
 					if (bRobotPlaying)
 						RotateBriefingRobot ();
 					if (nRobot != -1)
 						ShowSpinningRobotFrame (nRobot);
-					if (Bitmap_name [0] != 0)
+					if (*szBitmapName)
 						ShowBitmapFrame (0);
-					StartTime += KEY_DELAY_DEFAULT/2;
+					t0 = t;
 					//GrUpdate (0);
-					keypress = local_key_inkey ();
+					keypress = BriefingInKey ();
 					if (curDrawBuffer == GL_BACK)
 						break;
 					} while (!keypress);
@@ -1203,7 +1203,7 @@ while (!done) {
 
 		//	Check for Esc -> abort.
 		if (!bRedraw) {
-			key_check = delayCount ? local_key_inkey () : 0;
+			key_check = delayCount ? BriefingInKey () : 0;
 			if (key_check == KEY_ESC) {
 				rval = 1;
 				done = 1;
@@ -1224,26 +1224,26 @@ while (!done) {
 		}
 
 		if (new_page || (Briefing_text_y > bsp->text_uly + bsp->text_height)) {
-			fix	StartTime = 0;
-			int	keypress = 0;
+			int		keypress = 0;
 
 			new_page = 0;
 			StopBriefingSound (&nPrintingChannel);
-			chattering=0;
+			chattering = 0;
 			{
-				StartTime = TimerGetFixedSeconds ();
+				if (!t0)
+					t0 = SDL_GetTicks ();
 				do {		//	Wait for a key
-					while (TimerGetFixedSeconds () < StartTime + KEY_DELAY_DEFAULT/2)
+					while ((t = SDL_GetTicks ()) - t0 < 10)
 						;
 					FlashCursor (flashing_cursor);
 					if (bRobotPlaying)
 						RotateBriefingRobot ();
 					if (nRobot != -1)
 						ShowSpinningRobotFrame (nRobot);
-					if (Bitmap_name [0] != 0)
+					if (*szBitmapName)
 						ShowBitmapFrame (0);
-					StartTime += KEY_DELAY_DEFAULT / 2;
-					keypress = local_key_inkey ();
+					t0 = t;
+					keypress = BriefingInKey ();
 					if (curDrawBuffer == GL_BACK)
 						break;
  					GrUpdate (0);
@@ -1251,7 +1251,7 @@ while (!done) {
 				if (keypress) {
 					if (bRobotPlaying)
 						DeInitRobotMovie ();
-					bRobotPlaying=0;
+					bRobotPlaying = 0;
 					nRobot = -1;
 #ifdef _DEBUG
 					if (keypress == KEY_BACKSP)
@@ -1296,7 +1296,8 @@ if (bRobotPlaying) {
 	}
 if (robotCanv)
 	D2_FREE (robotCanv);
-StopBriefingSound (&nHumChannel);
+if (!gameData.songs.bPlaying)
+	StopBriefingSound (&nHumChannel);
 StopBriefingSound (&nPrintingChannel);
 StopBriefingSound (&nBotChannel);
 return rval;

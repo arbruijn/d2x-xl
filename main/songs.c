@@ -60,52 +60,47 @@ extern char CDROM_dir [];
 
 void SongsInit()
 {
-	int i, bD1Songs;
-	char inputline [80+1];
-	CFILE cf;
+	int	i, bD1Songs;
+	char	*p, inputline [81];
+	CFILE	cf;
 
 if (gameData.songs.bInitialized) 
 	return;
 CFUseD1HogFile("descent.hog");
-for (bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
-		if (!FindArg("-nomixer"))
+for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
+		if (!FindArg ("-nomixer"))
 			CD_blast_mixer();   // Crank it!
-	if (CFExist("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
+	if (CFExist ("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
 		if (!CFOpen (&cf, "descent.sng", gameFolders.szDataDir, "rb", bD1Songs)) {
 			if (bD1Songs)
 				break;
 			else
 				Error ("Couldn't open descent.sng");
 			}
-		i = gameData.songs.nSongs;
-		while (CFGetS(inputline, 80, &cf)) {
-			char *p = strchr(inputline,'\n');
-			if (p) *p = '\0';
-			if (strlen(inputline)) {
+		while (CFGetS (inputline, 80, &cf)) {
+			if (p = strchr (inputline,'\n'))
+				*p = '\0';
+			if (*inputline) {
 				Assert(i < MAX_NUM_SONGS);
-				sscanf(inputline, "%s %s %s",
-						gameData.songs.info [i].filename,
-						gameData.songs.info [i].melodicBankFile,
-						gameData.songs.info [i].drumBankFile);
-				if (!gameData.songs.nFirstLevelSong [bD1Songs] && strstr (gameData.songs.info [i].filename, "game01.hmp"))
-					 gameData.songs.nFirstLevelSong [bD1Songs] = i;
-				if (bD1Songs && strstr (gameData.songs.info [i].filename, "endlevel.hmp"))
-					gameData.songs.nD1EndLevelSong = i;
-
-				////printf("%d. '%s' '%s' '%s'\n",i,gameData.songs.info [i].filename,gameData.songs.info [i].melodicBankFile,gameData.songs.info [i].drumBankFile);
-				i++;
+				if (3 == sscanf (inputline, "%s %s %s",
+									  gameData.songs.info [i].filename,
+									  gameData.songs.info [i].melodicBankFile,
+									  gameData.songs.info [i].drumBankFile)) {
+					if (!gameData.songs.nFirstLevelSong [bD1Songs] && strstr (gameData.songs.info [i].filename, "game01.hmp"))
+						 gameData.songs.nFirstLevelSong [bD1Songs] = i;
+					if (bD1Songs && strstr (gameData.songs.info [i].filename, "endlevel.hmp"))
+						gameData.songs.nD1EndLevelSong = i;
+					i++;
+					}
 				}
 			}
-		if (bD1Songs) 
-			gameData.songs.nD1Songs = i - gameData.songs.nSongs;
-		else
-			gameData.songs.nD2Songs = i - gameData.songs.nSongs;
-		gameData.songs.nSongs = i;
+		gameData.songs.nSongs [bD1Songs] = i;
 		gameData.songs.nLevelSongs [bD1Songs] = gameData.songs.nSongs - gameData.songs.nFirstLevelSong [bD1Songs];
 		if (!gameData.songs.nFirstLevelSong [bD1Songs])
 			Error("gameData.songs.info are missing.");
 		CFClose(&cf);
 		}
+	gameData.songs.nTotalSongs = i;
 	gameData.songs.bInitialized = 1;
 	//	RBA Hook
 		if (!gameOpts->sound.bUseRedbook)
@@ -309,7 +304,7 @@ if (!gameStates.sound.bRedbookPlaying) {		//not playing redbook, so play midi
 		gameData.songs.info [nSong].filename, 
 		gameData.songs.info [nSong].melodicBankFile, 
 		gameData.songs.info [nSong].drumBankFile, 
-		repeat, gameData.songs.nD1Songs && (nSong >= gameData.songs.nD2Songs));
+		repeat, gameData.songs.nSongs [1] && (nSong >= gameData.songs.nSongs [0]));
 	}
 }
 

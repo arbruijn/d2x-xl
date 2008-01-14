@@ -2429,12 +2429,12 @@ typedef struct tUserMusicData {
 typedef struct tSongData {
 	tSongInfo			info [MAX_NUM_SONGS];
 	int					bInitialized;
-	int					nSongs;
-	int					nD1Songs;
-	int					nD2Songs;
+	int					nTotalSongs;
+	int					nSongs [2];
 	int					nFirstLevelSong [2];
 	int					nLevelSongs [2];
 	int					nD1EndLevelSong;
+	int					bPlaying;
 	tUserMusicData		user;
 } tSongData;
 

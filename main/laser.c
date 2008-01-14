@@ -483,11 +483,11 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
 		DigiPlaySample (gameData.weapons.info [objP->id].flashSound, volume);
-		if (gameData.objs.bIsMissile [nWeaponType])
-			DigiLinkSoundToObject3 (-1, nObject, 1, F1_0 / 2, i2f (256), -1, -1, "missileflight.wav", 1);
-		else if (nWeaponType == FLARE_ID)
-			DigiSetObjectSound (nObject, -1, "flareburning.wav");
 		}
+	if (gameData.objs.bIsMissile [nWeaponType])
+		DigiLinkSoundToObject3 (-1, nObject, 1, F1_0 / 2, i2f (256), -1, -1, "missileflight.wav", 1);
+	else if (nWeaponType == FLARE_ID)
+		DigiSetObjectSound (nObject, -1, "flareburning.wav");
 	}
 //	Fire the laser from the gun tip so that the back end of the laser bolt is at the gun tip.
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.

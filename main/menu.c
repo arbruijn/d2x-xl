@@ -547,10 +547,10 @@ static void PlayMenuSong (void)
 	char	szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
 
 m [j++] = szSongTitles [0];
-for (i = 0; i < gameData.songs.nSongs; i++) {
-	if (CFOpen (&cf, (char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nD2Songs)) {
+for (i = 0; i < gameData.songs.nTotalSongs; i++) {
+	if (CFOpen (&cf, (char *) gameData.songs.info [i].filename, gameFolders.szDataDir, "rb", i >= gameData.songs.nSongs [0])) {
 		CFClose (&cf);
-		if (i == gameData.songs.nD2Songs)
+		if (i == gameData.songs.nSongs [0])
 			m [j++] = szSongTitles [1];
 		m [j++] = gameData.songs.info [i].filename;
 		}
@@ -561,7 +561,7 @@ for (;;) {
 		return;
 	if (!strstr (m [h], ".hmp"))
 		continue;
-	for (i = 0; i < gameData.songs.nSongs; i++)
+	for (i = 0; i < gameData.songs.nTotalSongs; i++)
 		if (gameData.songs.info [i].filename == m [h]) {
 			SongsPlaySong (i, 0);
 			return;

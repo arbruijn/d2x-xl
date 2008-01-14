@@ -139,8 +139,10 @@ void DigiGetSoundLoc (
 
 *volume = 0;
 *pan = 0;
-maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
-//	Warning: Made the VmVecNormalizedDir be VmVecNormalizedDirQuick and got illegal values to acos in the fang computation.
+if (nDecay)
+	maxDistance *= 2;
+else
+	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
 distance = VmVecNormalizedDirQuick (&vecToSound, vSoundPos, vListenerPos);
 if (distance < maxDistance) {
 	int nSearchSegs = f2i (maxDistance / 10);
@@ -151,7 +153,7 @@ if (distance < maxDistance) {
 		if (!nDecay) 
 			*volume = maxVolume - FixDiv (pathDistance, maxDistance);
 		else if (nDecay == 1) { 
-			fDecay = (float) exp (-log (2) * 4.0 * f2fl (pathDistance) / f2fl (maxDistance));
+			fDecay = (float) exp (-log (2) * 4.0 * f2fl (pathDistance) / f2fl (maxDistance / 2));
 			*volume = (int) (maxVolume * fDecay);
 			}
 		else {

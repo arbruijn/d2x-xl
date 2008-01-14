@@ -858,9 +858,9 @@ if (bGetSlideBank == 2) {
 	if ((v = kcMouse [9].value) < 255) 
 		Controls [0].verticalThrustTime -= MouseButtonDownTime (v);
 	if ((v = kcMouse [11].value) < 255) 
-		Controls [0].bankTime += MouseButtonDownTime (v);
+		Controls [3].bankTime += MouseButtonDownTime (v);
 	if ((v = kcMouse [12].value) < 255) 
-		Controls [0].bankTime -= MouseButtonDownTime (v);
+		Controls [3].bankTime -= MouseButtonDownTime (v);
 	if ((v = kcMouse [25].value) < 255) {
 		Controls [0].rearViewDownCount += MouseButtonDownCount (v);
 		Controls [0].rearViewDownState |= MouseButtonState (v);
@@ -888,11 +888,11 @@ if (bGetSlideBank == 2) {
 		else
 			Controls [0].verticalThrustTime += mouseAxis [v];
 		}
-	if ((v = kcMouse [21].value) < 255) {
+	if (((v = kcMouse [21].value) < 255) && mouseAxis [v]) {
 		if (kcMouse [22].value)		// If inverted...
-			Controls [0].bankTime -= mouseAxis [v];
+			Controls [3].bankTime -= mouseAxis [v];
 		else
-			Controls [0].bankTime += mouseAxis [v];
+			Controls [3].bankTime += mouseAxis [v];
 		}
 	if ((v = kcMouse [23].value) < 255) {
 		if (kcMouse [24].value)		// If inverted...
@@ -1010,8 +1010,8 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN)	{
 		}
 	if (*bBankOn) {
 		if (bGetSlideBank == 2) {
-			Controls [0].bankTime -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
-			Controls [0].bankTime += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
+			Controls [3].bankTime -= MouseButtonDownTime (D2_MB_HEAD_LEFT);
+			Controls [3].bankTime += MouseButtonDownTime (D2_MB_HEAD_RIGHT);
 			}
 		}
 	}
