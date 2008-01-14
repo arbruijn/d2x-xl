@@ -95,7 +95,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 				}
 			}
 		gameData.songs.nSongs [bD1Songs] = i;
-		gameData.songs.nLevelSongs [bD1Songs] = gameData.songs.nSongs - gameData.songs.nFirstLevelSong [bD1Songs];
+		gameData.songs.nLevelSongs [bD1Songs] = gameData.songs.nSongs [bD1Songs] - gameData.songs.nFirstLevelSong [bD1Songs];
 		if (!gameData.songs.nFirstLevelSong [bD1Songs])
 			Error("gameData.songs.info are missing.");
 		CFClose(&cf);
