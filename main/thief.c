@@ -57,6 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "network.h"
 #include "gameseg.h"
+#include "dropobject.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -69,8 +70,6 @@ extern void MultiSendStolenItems();
 //	-------------------------------------------------------------------------------------------------
 
 #define	THIEF_DEPTH	20
-
-extern int PickConnectedSegment(tObject *objP, int max_depth);
 
 //	-----------------------------------------------------------------------------
 void _CDECL_ ThiefMessage(char * format, ... )
@@ -172,7 +171,7 @@ void DoThiefFrame(tObject *objP)
 
 			ailp->nextActionTime = gameData.thief.xWaitTimes[gameStates.app.nDifficultyLevel]/2;
 
-			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
+			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 			if (connectedDistance < F1_0*500) {
 				CreatePathToPlayer(objP, 30, 1);
 				ailp->mode = AIM_THIEF_ATTACK;

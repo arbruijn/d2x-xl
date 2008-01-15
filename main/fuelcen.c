@@ -53,6 +53,7 @@ static char rcsid [] = "$Id: fuelcen.c,v 1.8 2003/10/04 03:30:27 btb Exp $";
 #include "multi.h"
 #include "multibot.h"
 #include "escort.h"
+#include "dropobject.h"
 
 // The max number of fuel stations per mine.
 

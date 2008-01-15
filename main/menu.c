@@ -238,6 +238,25 @@ static struct {
 	int	nOptRadarRange;
 } automapOpts;
 
+static struct {
+	int	nDigiVol;
+	int	nMusicVol;
+	int	nRedbook;
+	int	nChannels;
+} soundOpts;
+
+static struct {
+	int	nDlTimeout;
+	int	nAutoDl;
+	int	nExpertMode;
+	int	nScreenshots;
+} miscOpts;
+
+static struct {
+	int	nUseCompSpeed;
+	int	nCompSpeed;
+} performanceOpts;
+
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -757,10 +776,10 @@ typedef struct tDetailData {
 	sbyte		maxDebrisObjects [NUM_DETAIL_LEVELS - 1];
 	sbyte		maxObjsOnScreenDetailed [NUM_DETAIL_LEVELS - 1];
 	sbyte		simpleModelThresholdScales [NUM_DETAIL_LEVELS - 1];
-	sbyte		maxSoundChannels [NUM_DETAIL_LEVELS - 1];
+	sbyte		nSoundChannels [NUM_DETAIL_LEVELS - 1];
 } tDetailData;
 
-tDetailData	details = {
+tDetailData	detailData = {
 	{15, 31, 63, 127, 255},
 	{ 1,  2,  3,   5,   8},
 	{ 3,  5,  7,  10,  50},
@@ -768,7 +787,7 @@ tDetailData	details = {
 	{ 2,  4,  7,  10,  15},
 	{ 2,  4,  7,  10,  15},
 	{ 2,  4,  8,  16,  50},
-	{ 2,  4,  8,  12,  16}};
+	{ 2,  8, 16,  32,  64}};
 
 
 //      -----------------------------------------------------------------------------
@@ -779,21 +798,21 @@ void InitDetailLevels (int nDetailLevel)
 	Assert ((nDetailLevel >= 0) && (nDetailLevel < NUM_DETAIL_LEVELS));
 
 if (nDetailLevel < NUM_DETAIL_LEVELS - 1) {
-	gameStates.render.detail.nRenderDepth = details.renderDepths [nDetailLevel];
-	gameStates.render.detail.nMaxPerspectiveDepth = details.maxPerspectiveDepths [nDetailLevel];
-	gameStates.render.detail.nMaxLinearDepth = details.maxLinearDepths [nDetailLevel];
-	gameStates.render.detail.nMaxLinearDepthObjects = details.maxLinearDepthObjects [nDetailLevel];
-	gameStates.render.detail.nMaxDebrisObjects = details.maxDebrisObjects [nDetailLevel];
-	gameStates.render.detail.nMaxObjectsOnScreenDetailed = details.maxObjsOnScreenDetailed [nDetailLevel];
-	gameData.models.nSimpleModelThresholdScale = details.simpleModelThresholdScales [nDetailLevel];
-	DigiSetMaxChannels (details.maxSoundChannels [ nDetailLevel ]);
+	gameStates.render.detail.nRenderDepth = detailData.renderDepths [nDetailLevel];
+	gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [nDetailLevel];
+	gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [nDetailLevel];
+	gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [nDetailLevel];
+	gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [nDetailLevel];
+	gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [nDetailLevel];
+	gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [nDetailLevel];
+	DigiSetMaxChannels (detailData.nSoundChannels [nDetailLevel]);
 	//      Set custom menu defaults.
 	gameStates.render.detail.nObjectComplexity = nDetailLevel;
 	gameStates.render.detail.nWallRenderDepth = nDetailLevel;
 	gameStates.render.detail.nObjectDetail = nDetailLevel;
 	gameStates.render.detail.nWallDetail = nDetailLevel;
 	gameStates.render.detail.nDebrisAmount = nDetailLevel;
-	gameStates.sound.nMaxSoundChannels = nDetailLevel;
+	gameStates.sound.nSoundChannels = nDetailLevel;
 	gameStates.render.detail.nLevel = nDetailLevel;
 	}
 }
@@ -821,7 +840,7 @@ for (i = 0; i < 5; i++)
 ADD_TEXT (5, "", 0);
 ADD_MENU (6, MENU_DETAIL_TEXT (5), KEY_C, HTX_ONLINE_MANUAL);
 ADD_CHECK (7, TXT_HIRES_MOVIES, gameOpts->movies.bHires, KEY_S, HTX_ONLINE_MANUAL);
-i = ExecMenu1 (NULL, TXT_DETAIL_LEVEL , NDL+3, m, NULL, &choice);
+i = ExecMenu1 (NULL, TXT_DETAIL_LEVEL, NDL + 3, m, NULL, &choice);
 if (i > -1) {
 	switch (choice) {
 		case 0:
@@ -854,21 +873,35 @@ gameStates.render.detail.nObjectDetail = items [1].value;
 gameStates.render.detail.nWallDetail = items [2].value;
 gameStates.render.detail.nWallRenderDepth = items [3].value;
 gameStates.render.detail.nDebrisAmount = items [4].value;
-gameStates.sound.nMaxSoundChannels = items [5].value;
+if (!gameStates.app.bGameRunning)
+	gameStates.sound.nSoundChannels = items [5].value;
+}
+
+// -----------------------------------------------------------------------------
+
+void SetMaxCustomDetails (void)
+{
+gameStates.render.detail.nRenderDepth = detailData.renderDepths [NDL - 1];
+gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [NDL - 1];
+gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [NDL - 1];
+gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [NDL - 1];
+gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [NDL - 1];
+gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [NDL - 1];
+gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [NDL - 1];
 }
 
 // -----------------------------------------------------------------------------
 
 void InitCustomDetails (void)
 {
-gameStates.render.detail.nRenderDepth = details.renderDepths [gameStates.render.detail.nWallRenderDepth];
-gameStates.render.detail.nMaxPerspectiveDepth = details.maxPerspectiveDepths [gameStates.render.detail.nWallDetail];
-gameStates.render.detail.nMaxLinearDepth = details.maxLinearDepths [gameStates.render.detail.nWallDetail];
-gameStates.render.detail.nMaxDebrisObjects = details.maxDebrisObjects [gameStates.render.detail.nDebrisAmount];
-gameStates.render.detail.nMaxObjectsOnScreenDetailed = details.maxObjsOnScreenDetailed [gameStates.render.detail.nObjectComplexity];
-gameData.models.nSimpleModelThresholdScale = details.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
-gameStates.render.detail.nMaxLinearDepthObjects = details.maxLinearDepthObjects [gameStates.render.detail.nObjectDetail];
-DigiSetMaxChannels (details.maxSoundChannels [gameStates.sound.nMaxSoundChannels ]);
+gameStates.render.detail.nRenderDepth = detailData.renderDepths [gameStates.render.detail.nWallRenderDepth];
+gameStates.render.detail.nMaxPerspectiveDepth = detailData.maxPerspectiveDepths [gameStates.render.detail.nWallDetail];
+gameStates.render.detail.nMaxLinearDepth = detailData.maxLinearDepths [gameStates.render.detail.nWallDetail];
+gameStates.render.detail.nMaxDebrisObjects = detailData.maxDebrisObjects [gameStates.render.detail.nDebrisAmount];
+gameStates.render.detail.nMaxObjectsOnScreenDetailed = detailData.maxObjsOnScreenDetailed [gameStates.render.detail.nObjectComplexity];
+gameData.models.nSimpleModelThresholdScale = detailData.simpleModelThresholdScales [gameStates.render.detail.nObjectComplexity];
+gameStates.render.detail.nMaxLinearDepthObjects = detailData.maxLinearDepthObjects [gameStates.render.detail.nObjectDetail];
+DigiSetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels]);
 }
 
 #define	DL_MAX	10
@@ -894,16 +927,291 @@ do {
 	opt++;
 	ADD_SLIDER (opt, TXT_DEBRIS_AMOUNT, gameStates.render.detail.nDebrisAmount, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
 	opt++;
-	ADD_SLIDER (opt, TXT_SOUND_CHANNELS, gameStates.sound.nMaxSoundChannels, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
-	opt++;
+	if (!gameStates.app.bGameRunning) {
+		ADD_SLIDER (opt, TXT_SOUND_CHANNELS, gameStates.sound.nSoundChannels, 0, NDL-1, 0, HTX_ONLINE_MANUAL);
+		opt++;
+		}
 	ADD_TEXT (opt, TXT_LO_HI, 0);
 	opt++;
-
 	Assert (opt <= sizeof (m) / sizeof (m [0]));
-
 	i = ExecMenu1 (NULL, TXT_DETAIL_CUSTOM, opt, m, CustomDetailsCallback, &choice);
 } while (i > -1);
 InitCustomDetails ();
+}
+
+//------------------------------------------------------------------------------
+
+void UseDefaultPerformanceSettings (void)
+{
+if (gameStates.app.bNostalgia || !gameStates.app.bUseDefaults)
+	return;
+	
+SetMaxCustomDetails ();
+gameOpts->render.nMaxFPS = 60;
+gameOpts->render.bTransparentEffects = 1;
+gameOpts->render.color.nLightMapRange = 5;
+gameOpts->render.color.bMix = 1;
+gameOpts->render.color.bWalls = 1;
+gameOpts->render.cameras.bFitToWall = 0;
+gameOpts->render.cameras.nSpeed = 5000;
+gameOpts->ogl.bSetGammaRamp = 0;
+gameStates.ogl.nContrast = 8;
+if (gameStates.app.nCompSpeed == 0) {
+	gameOpts->render.color.bUseLightMaps = 0;
+	gameOpts->render.nQuality = 1;
+	gameOpts->render.cockpit.bTextGauges = 1;
+	gameOpts->render.bDynLighting = 0;
+	gameOpts->ogl.bLightObjects = 0;
+	gameOpts->movies.nQuality = 0;
+	gameOpts->movies.bResize = 0;
+	gameOpts->render.shadows.nClip = 0;
+	gameOpts->render.shadows.nReach = 0;
+	gameOpts->render.nExplShrapnels = 0;
+	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->render.nCoronaStyle = 0;
+	extraGameInfo [0].bShadows = 0;
+	extraGameInfo [0].bUseSmoke = 0;
+	extraGameInfo [0].bUseCameras = 0;
+	extraGameInfo [0].bPlayerShield = 0;
+	extraGameInfo [0].bThrusterFlames = 0;
+	extraGameInfo [0].bDamageExplosions = 0;
+	}
+else if (gameStates.app.nCompSpeed == 1) {
+	gameOpts->render.nQuality = 2;
+	extraGameInfo [0].bUseSmoke = 1;
+	gameOpts->render.smoke.bPlayers = 0;
+	gameOpts->render.smoke.bRobots = 1;
+	gameOpts->render.smoke.bMissiles = 1;
+	gameOpts->render.smoke.bCollisions = 0;
+	gameOpts->render.nExplShrapnels = 1;
+	gameOpts->render.smoke.bStatic = 0;
+	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->render.smoke.nDens [0] =
+	gameOpts->render.smoke.nDens [1] =
+	gameOpts->render.smoke.nDens [2] =
+	gameOpts->render.smoke.nDens [3] =
+	gameOpts->render.smoke.nDens [4] = 0;
+	gameOpts->render.smoke.nSize [0] =
+	gameOpts->render.smoke.nSize [1] =
+	gameOpts->render.smoke.nSize [2] =
+	gameOpts->render.smoke.nSize [3] =
+	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nLife [0] =
+	gameOpts->render.smoke.nLife [1] =
+	gameOpts->render.smoke.nLife [2] =
+	gameOpts->render.smoke.nLife [4] = 0;
+	gameOpts->render.smoke.nLife [3] = 1;
+	gameOpts->render.smoke.bPlasmaTrails = 0;
+	gameOpts->render.nCoronaStyle = 0;
+	gameOpts->render.cockpit.bTextGauges = 1;
+	gameOpts->render.bDynLighting = 0;
+	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->ogl.bLightObjects = 0;
+	extraGameInfo [0].bUseCameras = 1;
+	gameOpts->render.cameras.nFPS = 5;
+	gameOpts->movies.nQuality = 0;
+	gameOpts->movies.bResize = 1;
+	gameOpts->render.shadows.nClip = 0;
+	gameOpts->render.shadows.nReach = 0;
+	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bPlayerShield = 0;
+	extraGameInfo [0].bThrusterFlames = 1;
+	extraGameInfo [0].bDamageExplosions = 0;
+	}
+else if (gameStates.app.nCompSpeed == 2) {
+	gameOpts->render.nQuality = 2;
+	extraGameInfo [0].bUseSmoke = 1;
+	gameOpts->render.smoke.bPlayers = 0;
+	gameOpts->render.smoke.bRobots = 1;
+	gameOpts->render.smoke.bMissiles = 1;
+	gameOpts->render.smoke.bCollisions = 0;
+	gameOpts->render.nExplShrapnels = 2;
+	gameOpts->render.smoke.bStatic = 1;
+	gameOpts->render.smoke.nDens [0] =
+	gameOpts->render.smoke.nDens [1] =
+	gameOpts->render.smoke.nDens [2] =
+	gameOpts->render.smoke.nDens [3] =
+	gameOpts->render.smoke.nDens [4] = 1;
+	gameOpts->render.smoke.nSize [0] =
+	gameOpts->render.smoke.nSize [1] =
+	gameOpts->render.smoke.nSize [2] =
+	gameOpts->render.smoke.nSize [3] =
+	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nLife [0] =
+	gameOpts->render.smoke.nLife [1] =
+	gameOpts->render.smoke.nLife [2] =
+	gameOpts->render.smoke.nLife [4] = 0;
+	gameOpts->render.smoke.nLife [3] = 1;
+	gameOpts->render.smoke.bPlasmaTrails = 0;
+	gameOpts->render.nCoronaStyle = 1;
+	gameOpts->render.cockpit.bTextGauges = 0;
+	gameOpts->render.bDynLighting = 1;
+	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->ogl.bLightObjects = 0;
+	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
+	extraGameInfo [0].bUseCameras = 1;
+	gameOpts->render.cameras.nFPS = 0;
+	gameOpts->movies.nQuality = 0;
+	gameOpts->movies.bResize = 1;
+	gameOpts->render.shadows.nClip = 1;
+	gameOpts->render.shadows.nReach = 1;
+	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bPlayerShield = 1;
+	extraGameInfo [0].bThrusterFlames = 1;
+	extraGameInfo [0].bDamageExplosions = 1;
+	}
+else if (gameStates.app.nCompSpeed == 3) {
+	gameOpts->render.nQuality = 3;
+	extraGameInfo [0].bUseSmoke = 1;
+	gameOpts->render.smoke.bPlayers = 1;
+	gameOpts->render.smoke.bRobots = 1;
+	gameOpts->render.smoke.bMissiles = 1;
+	gameOpts->render.smoke.bCollisions = 0;
+	gameOpts->render.nExplShrapnels = 3;
+	gameOpts->render.smoke.bStatic = 1;
+	gameOpts->render.smoke.nDens [0] =
+	gameOpts->render.smoke.nDens [1] =
+	gameOpts->render.smoke.nDens [2] =
+	gameOpts->render.smoke.nDens [3] =
+	gameOpts->render.smoke.nDens [4] = 2;
+	gameOpts->render.smoke.nSize [0] =
+	gameOpts->render.smoke.nSize [1] =
+	gameOpts->render.smoke.nSize [2] =
+	gameOpts->render.smoke.nSize [3] =
+	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nLife [0] =
+	gameOpts->render.smoke.nLife [1] =
+	gameOpts->render.smoke.nLife [2] =
+	gameOpts->render.smoke.nLife [4] = 0;
+	gameOpts->render.smoke.nLife [3] = 2;
+	gameOpts->render.smoke.bPlasmaTrails = 1;
+	gameOpts->render.nCoronaStyle = 2;
+	gameOpts->render.cockpit.bTextGauges = 0;
+	gameOpts->render.bDynLighting = 1;
+	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.bAuxViews = 0;
+	gameOpts->ogl.bLightObjects = 0;
+	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
+	extraGameInfo [0].bUseCameras = 1;
+	gameOpts->render.cameras.nFPS = 0;
+	gameOpts->movies.nQuality = 1;
+	gameOpts->movies.bResize = 1;
+	gameOpts->render.shadows.nClip = 1;
+	gameOpts->render.shadows.nReach = 1;
+	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bPlayerShield = 1;
+	extraGameInfo [0].bThrusterFlames = 1;
+	extraGameInfo [0].bDamageExplosions = 1;
+	}
+else if (gameStates.app.nCompSpeed == 4) {
+	gameOpts->render.nQuality = 4;
+	extraGameInfo [0].bUseSmoke = 1;
+	gameOpts->render.smoke.bPlayers = 1;
+	gameOpts->render.smoke.bRobots = 1;
+	gameOpts->render.smoke.bMissiles = 1;
+	gameOpts->render.smoke.bCollisions = 1;
+	gameOpts->render.nExplShrapnels = 4;
+	gameOpts->render.smoke.bStatic = 1;
+	gameOpts->render.smoke.nDens [0] =
+	gameOpts->render.smoke.nDens [1] =
+	gameOpts->render.smoke.nDens [2] =
+	gameOpts->render.smoke.nDens [3] =
+	gameOpts->render.smoke.nDens [4] = 3;
+	gameOpts->render.smoke.nSize [0] =
+	gameOpts->render.smoke.nSize [1] =
+	gameOpts->render.smoke.nSize [2] =
+	gameOpts->render.smoke.nSize [3] =
+	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nLife [0] =
+	gameOpts->render.smoke.nLife [1] =
+	gameOpts->render.smoke.nLife [2] =
+	gameOpts->render.smoke.nLife [4] = 0;
+	gameOpts->render.smoke.nLife [3] = 2;
+	gameOpts->render.smoke.bPlasmaTrails = 1;
+	gameOpts->render.nCoronaStyle = 2;
+	gameOpts->render.bDynLighting = 1;
+	gameOpts->render.smoke.bAuxViews = 1;
+	gameOpts->render.lightnings.bAuxViews = 1;
+	gameOpts->ogl.bLightObjects = 1;
+	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
+	extraGameInfo [0].bUseCameras = 1;
+	gameOpts->render.cockpit.bTextGauges = 0;
+	gameOpts->render.cameras.nFPS = 0;
+	gameOpts->movies.nQuality = 1;
+	gameOpts->movies.bResize = 1;
+	gameOpts->render.shadows.nClip = 1;
+	gameOpts->render.shadows.nReach = 1;
+	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bPlayerShield = 1;
+	extraGameInfo [0].bThrusterFlames = 1;
+	extraGameInfo [0].bDamageExplosions = 1;
+	}
+}
+
+//      -----------------------------------------------------------------------------
+
+static char *pszCompSpeeds [5];
+
+void PerformanceSettingsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem * m;
+	int			v;
+
+m = menus + performanceOpts.nUseCompSpeed;
+v = m->value;
+if (gameStates.app.bUseDefaults != v) {
+	gameStates.app.bUseDefaults = v;
+	*key = -2;
+	return;
+	}
+if (gameStates.app.bUseDefaults) {
+	m = menus + performanceOpts.nCompSpeed;
+	v = m->value;
+	if (gameStates.app.nCompSpeed != v) {
+		gameStates.app.nCompSpeed = v;
+		sprintf (m->text, TXT_COMP_SPEED, pszCompSpeeds [v]);
+		}
+	m->rebuild = 1;
+	}
+}
+
+//      -----------------------------------------------------------------------------
+
+void PerformanceSettingsMenu (void)
+{
+	int		i, opt, choice = gameStates.app.nDetailLevel;
+	char		szCompSpeed [50];
+	tMenuItem m [10];
+
+pszCompSpeeds [0] = TXT_VERY_SLOW;
+pszCompSpeeds [1] = TXT_SLOW;
+pszCompSpeeds [2] = TXT_MEDIUM;
+pszCompSpeeds [3] = TXT_FAST;
+pszCompSpeeds [4] = TXT_VERY_FAST;
+
+do {
+	i = opt = 0;
+	memset (m, 0, sizeof (m));
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_CHECK (opt, TXT_USE_DEFAULTS, gameStates.app.bUseDefaults, KEY_U, HTX_MISC_DEFAULTS);
+	performanceOpts.nUseCompSpeed = opt++;
+	if (gameStates.app.bUseDefaults) {
+		sprintf (szCompSpeed + 1, TXT_COMP_SPEED, pszCompSpeeds [gameStates.app.nCompSpeed]);
+		*szCompSpeed = *(TXT_COMP_SPEED - 1);
+		ADD_SLIDER (opt, szCompSpeed + 1, gameStates.app.nCompSpeed, 0, 4, KEY_C, HTX_MISC_COMPSPEED);
+		performanceOpts.nCompSpeed = opt++;
+		}
+	Assert (sizeofa (m) >= opt);
+	do {
+		i = ExecMenu1 (NULL, TXT_SETPERF_MENUTITLE, opt, m, PerformanceSettingsCallback, &choice);
+		} while (i >= 0);
+	} while (i == -2);
+UseDefaultPerformanceSettings ();
 }
 
 //------------------------------------------------------------------------------
@@ -4178,7 +4486,7 @@ void ConfigMenu ()
 {
 	tMenuItem m [20];
 	int i, opt, choice = 0;
-	int optSound, optConfig, optJoyCal, optDetails, optScrRes, optReorderPrim, optReorderSec, 
+	int optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, 
 		 optToggles, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
@@ -4203,8 +4511,11 @@ do {
 		ADD_SLIDER (opt, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 		optBrightness = opt++;
 		}
-	ADD_MENU (opt, TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	optDetails = opt++;
+	if (gameStates.app.bNostalgia)
+		ADD_MENU (opt, TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
+	else
+		ADD_MENU (opt, TXT_SETPERF_OPTION, KEY_E, HTX_PERFORMANCE_SETTINGS);
+	optPerformance = opt++;
 	ADD_MENU (opt, TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	optScrRes = opt++;
 	ADD_TEXT (opt, "", 0);
@@ -4239,8 +4550,12 @@ do {
 			InputDeviceConfig ();		
 		else if (i == optJoyCal)
 			JoyDefsCalibrate ();	
-		else if (i == optDetails)
-			DetailLevelMenu (); 
+		else if (i == optPerformance) {
+			if (gameStates.app.bNostalgia)
+				DetailLevelMenu (); 
+			else
+				PerformanceSettingsMenu ();
+			}
 		else if (i == optScrRes)
 			ScreenResMenu ();	
 		else if (i == optReorderPrim)
@@ -4268,29 +4583,43 @@ WritePlayerFile ();
 
 void SetRedbookVolume (int volume);
 
-WIN (extern int RBCDROM_State);
-WIN (static BOOL windigi_driver_off=FALSE);
+//------------------------------------------------------------------------------
 
-static int optDigiVol, optMusicVol, optRedbook;
-
-void SoundMenuCallback (int nitems, tMenuItem * items, int *nLastKey, int citem)
+int SoundChannelIndex (void)
 {
-	nitems=nitems;          
+	int	h, i;
+
+for (h = sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
+	if (gameStates.sound.digi.nMaxChannels < detailData.nSoundChannels [i])
+		break;
+return i - 1;
+}
+
+//------------------------------------------------------------------------------
+
+void SoundMenuCallback (int nitems, tMenuItem * m, int *nLastKey, int citem)
+{
+	nitems = nitems;          
 	*nLastKey = *nLastKey;
 
-if (gameConfig.nDigiVolume != items [optDigiVol].value)     {
-	gameConfig.nDigiVolume = items [optDigiVol].value;
+if (gameConfig.nDigiVolume != m [soundOpts.nDigiVol].value) {
+	gameConfig.nDigiVolume = m [soundOpts.nDigiVol].value;
 	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8);
 	DigiPlaySampleOnce (SOUND_DROP_BOMB, F1_0);
 	}
-
-if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
-	if (items [optRedbook].value && !gameOpts->sound.bUseRedbook) {
+if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != m [soundOpts.nChannels].value)) {
+	gameStates.sound.nSoundChannels = m [soundOpts.nChannels].value;
+	gameStates.sound.digi.nMaxChannels = detailData.nSoundChannels [gameStates.sound.nSoundChannels];
+	sprintf (m [soundOpts.nChannels].text, TXT_SOUND_CHANNEL_COUNT, gameStates.sound.digi.nMaxChannels);
+	m [soundOpts.nChannels].rebuild = 1;
+	}
+if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
+	if (m [soundOpts.nRedbook].value && !gameOpts->sound.bUseRedbook) {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
-		items [optRedbook].value = 0;
-		items [optRedbook].rebuild = 1;
+		m [soundOpts.nRedbook].value = 0;
+		m [soundOpts.nRedbook].rebuild = 1;
 		}
-	else if ((gameStates.sound.bRedbookEnabled = items [optRedbook].value)) {
+	else if ((gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].value)) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
 			SongsPlaySong (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
@@ -4298,31 +4627,31 @@ if (items [optRedbook].value != gameStates.sound.bRedbookEnabled) {
 		else
 			Int3 ();
 
-		if (items [optRedbook].value && !gameStates.sound.bRedbookPlaying) {
+		if (m [soundOpts.nRedbook].value && !gameStates.sound.bRedbookPlaying) {
 			gameStates.sound.bRedbookEnabled = 0;
 			gameStates.menus.nInMenu = 0;
 			ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_MUSIC_NOCD);
 			gameStates.menus.nInMenu = 1;
-			items [optRedbook].value = 0;
-			items [optRedbook].rebuild = 1;
+			m [soundOpts.nRedbook].value = 0;
+			m [soundOpts.nRedbook].rebuild = 1;
 			}
 		}
-	items [optMusicVol].text = gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME;
-	items [optMusicVol].rebuild = 1;
+	m [soundOpts.nMusicVol].text = gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME;
+	m [soundOpts.nMusicVol].rebuild = 1;
 	}
 
 if (gameStates.sound.bRedbookEnabled) {
-	if (gameConfig.nRedbookVolume != items [optMusicVol].value)   {
-		gameConfig.nRedbookVolume = items [optMusicVol].value;
+	if (gameConfig.nRedbookVolume != m [soundOpts.nMusicVol].value)   {
+		gameConfig.nRedbookVolume = m [soundOpts.nMusicVol].value;
 		SetRedbookVolume (gameConfig.nRedbookVolume);
 		}
 	}
 else 
 	{
-	if (gameConfig.nMidiVolume != items [optMusicVol].value) {
+	if (gameConfig.nMidiVolume != m [soundOpts.nMusicVol].value) {
 		int bSongPlaying = (gameConfig.nMidiVolume > 0);
 
- 		gameConfig.nMidiVolume = items [optMusicVol].value;
+ 		gameConfig.nMidiVolume = m [soundOpts.nMusicVol].value;
 		DigiSetMidiVolume ((gameConfig.nMidiVolume*128)/8);
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
@@ -4343,29 +4672,48 @@ citem++;		//kill warning
 
 void SoundMenu ()
 {
-   tMenuItem m [6];
-	int	i, opt, choice = 0, 
-			optReverse,
-			bSongPlaying = (gameConfig.nMidiVolume > 0);
+   tMenuItem	m [10];
+	char			szChannels [50];
+	int			i, opt, choice = 0, 
+					optReverse, optShipSound = -1, optMslSound = -1,
+					bSongPlaying = (gameConfig.nMidiVolume > 0);
 
+gameStates.sound.nSoundChannels = SoundChannelIndex ();
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
 	ADD_SLIDER (opt, TXT_FX_VOLUME, gameConfig.nDigiVolume, 0, 8, KEY_F, HTX_ONLINE_MANUAL);
-	optDigiVol = opt++;
+	soundOpts.nDigiVol = opt++;
 	ADD_SLIDER (opt, gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
 					gameStates.sound.bRedbookEnabled ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume, 
 					0, 8, KEY_M, HTX_ONLINE_MANUAL);
-	optMusicVol = opt++;
-
+	soundOpts.nMusicVol = opt++;
+	if (gameStates.app.bGameRunning || gameStates.app.bNostalgia)
+		soundOpts.nChannels = -1;
+	else {
+		sprintf (szChannels + 1, TXT_SOUND_CHANNEL_COUNT, gameStates.sound.digi.nMaxChannels);
+		*szChannels = *(TXT_SOUND_CHANNEL_COUNT - 1);
+		ADD_SLIDER (opt, szChannels + 1, gameStates.sound.nSoundChannels, 0, 
+						sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
+		soundOpts.nChannels = opt++;
+		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
 	ADD_CHECK (opt, TXT_REDBOOK_ENABLED, gameStates.sound.bRedbookPlaying, KEY_C, HTX_ONLINE_MANUAL);
-	optRedbook = opt++;
+	soundOpts.nRedbook = opt++;
 	ADD_CHECK (opt, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
 	optReverse = opt++;
+	if (!gameStates.app.bNostalgia) {
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_CHECK (opt, TXT_SHIP_SOUND, gameOpts->sound.bShip, KEY_S, HTX_SHIP_SOUND);
+		optShipSound = opt++;
+		ADD_CHECK (opt, TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
+		optMslSound = opt++;
+		}
+	Assert (sizeofa (m) >= opt);
 	i = ExecMenu1 (NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallback, &choice);
-	gameStates.sound.bRedbookEnabled = m [optRedbook].value;
+	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].value;
 	gameConfig.bReverseChannels = m [optReverse].value;
 } while (i > -1);
 
@@ -4374,35 +4722,32 @@ if (gameConfig.nMidiVolume < 1)   {
 	}
 else if (!bSongPlaying)
 	SongsPlaySong (gameStates.sound.nCurrentSong, 1);
+if (!gameStates.app.bNostalgia) {
+	gameOpts->sound.bShip = m [optShipSound].value;
+	gameOpts->sound.bMissiles = m [optMslSound].value;
+	if (!gameOpts->sound.bShip)
+		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+	}
 }
 
 //------------------------------------------------------------------------------
 
-static int nDlTimeoutOpt, nAutoDlOpt, nExpModeOpt, nUseDefOpt, nCompSpeedOpt, nScreenShotOpt;
-static char *pszCompSpeeds [5];
 extern int screenShotIntervals [];
 
 void MiscellaneousCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem * m;
-	int				v;
+	int			v;
 
 if (!gameStates.app.bNostalgia) {
-	m = menus + nUseDefOpt;
+	m = menus + performanceOpts.nUseCompSpeed;
 	v = m->value;
 	if (gameStates.app.bUseDefaults != v) {
 		gameStates.app.bUseDefaults = v;
 		*key = -2;
 		return;
 		}
-	if (gameStates.app.bUseDefaults) {
-		m = menus + nCompSpeedOpt;
-		v = m->value;
-		if (gameStates.app.nCompSpeed != v)
-			sprintf (m->text, TXT_COMP_SPEED, pszCompSpeeds [v]);
-		m->rebuild = 1;
-		}
-	m = menus + nScreenShotOpt;
+	m = menus + miscOpts.nScreenshots;
 	v = m->value;
 	if (gameOpts->app.nScreenShotInterval != v) {
 		gameOpts->app.nScreenShotInterval = v;
@@ -4415,14 +4760,14 @@ if (!gameStates.app.bNostalgia) {
 		return;
 		}
 	}
-m = menus + nExpModeOpt;
+m = menus + miscOpts.nExpertMode;
 v = m->value;
 if (gameOpts->app.bExpertMode != v) {
 	gameOpts->app.bExpertMode = v;
 	*key = -2;
 	return;
 	}
-m = menus + nAutoDlOpt;
+m = menus + miscOpts.nAutoDl;
 v = m->value;
 if (extraGameInfo [0].bAutoDownload != v) {
 	extraGameInfo [0].bAutoDownload = v;
@@ -4431,7 +4776,7 @@ if (extraGameInfo [0].bAutoDownload != v) {
 	}
 if (gameOpts->app.bExpertMode) {
 	if (extraGameInfo [0].bAutoDownload) {
-		m = menus + nDlTimeoutOpt;
+		m = menus + miscOpts.nDlTimeout;
 		v = m->value;
 		if (GetDlTimeout () != v) {
 			v = SetDlTimeout (v);
@@ -4459,14 +4804,8 @@ void MiscellaneousMenu ()
 	int	optSafeUDP;
 #endif
 	char  szDlTimeout [50];
-	char  szCompSpeed [50];
 	char	szScreenShots [50];
 
-pszCompSpeeds [0] = TXT_VERY_SLOW;
-pszCompSpeeds [1] = TXT_SLOW;
-pszCompSpeeds [2] = TXT_MEDIUM;
-pszCompSpeeds [3] = TXT_FAST;
-pszCompSpeeds [4] = TXT_VERY_FAST;
 do {
 	i = opt = 0;
 	memset (m, 0, sizeof (m));
@@ -4511,7 +4850,7 @@ do {
 			optSmartSearch =
 			optLevelVer = -1;
 		ADD_CHECK (opt, TXT_EXPERT_MODE, gameOpts->app.bExpertMode, KEY_X, HTX_MISC_EXPMODE);
-		nExpModeOpt = opt++;
+		miscOpts.nExpertMode = opt++;
 		ADD_CHECK (opt, TXT_OLD_DEMO_FORMAT, gameOpts->demo.bOldFormat, KEY_C, HTX_OLD_DEMO_FORMAT);
 		optDemoFmt = opt++;
 		}
@@ -4521,12 +4860,12 @@ do {
 			opt++;
 			}
 		ADD_CHECK (opt, TXT_AUTODL_ENABLE, extraGameInfo [0].bAutoDownload, KEY_A, HTX_MISC_AUTODL);
-		nAutoDlOpt = opt++;
+		miscOpts.nAutoDl = opt++;
 		if (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode) {
 			sprintf (szDlTimeout + 1, TXT_AUTODL_TO, GetDlTimeoutSecs ());
 			*szDlTimeout = *(TXT_AUTODL_TO - 1);
 			ADD_SLIDER (opt, szDlTimeout + 1, GetDlTimeout (), 0, MaxDlTimeout (), KEY_T, HTX_MISC_AUTODLTO);  
-			nDlTimeoutOpt = opt++;
+			miscOpts.nDlTimeout = opt++;
 			}
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -4536,21 +4875,7 @@ do {
 			strcpy (szScreenShots + 1, TXT_NO_SCREENSHOTS);
 		*szScreenShots = *(TXT_SCREENSHOTS - 1);
 		ADD_SLIDER (opt, szScreenShots + 1, gameOpts->app.nScreenShotInterval, 0, 7, KEY_S, HTX_MISC_SCREENSHOTS);  
-		nScreenShotOpt = opt++;
-		}
-	if (!gameStates.app.bNostalgia) {
-		if (gameStates.app.bUseDefaults || (extraGameInfo [0].bAutoDownload && gameOpts->app.bExpertMode)) {
-			ADD_TEXT (opt, "", 0);
-			opt++;
-			}
-		ADD_CHECK (opt, TXT_USE_DEFAULTS, gameStates.app.bUseDefaults, KEY_U, HTX_MISC_DEFAULTS);
-		nUseDefOpt = opt++;
-		if (gameStates.app.bUseDefaults) {
-			sprintf (szCompSpeed + 1, TXT_COMP_SPEED, pszCompSpeeds [gameStates.app.nCompSpeed]);
-			*szCompSpeed = *(TXT_COMP_SPEED - 1);
-			ADD_SLIDER (opt, szCompSpeed + 1, gameStates.app.nCompSpeed, 0, 4, KEY_C, HTX_MISC_COMPSPEED);
-			nCompSpeedOpt = opt++;
-			}
+		miscOpts.nScreenshots = opt++;
 		}
 	Assert (sizeofa (m) >= opt);
 	do {
@@ -4566,7 +4891,7 @@ do {
 	gameOpts->gameplay.bEscortHotKeys = m [optEscort].value;
 	gameOpts->multi.bUseMacros = m [optUseMacros].value;
 	if (!gameStates.app.bNostalgia) {
-		gameOpts->app.bExpertMode = m [nExpModeOpt].value;
+		gameOpts->app.bExpertMode = m [miscOpts.nExpertMode].value;
 		gameOpts->demo.bOldFormat = m [optDemoFmt].value;
 		if (gameOpts->app.bExpertMode) {
 #if UDP_SAFEMODE
@@ -4593,206 +4918,8 @@ do {
 	if (gameStates.app.bNostalgia > 1)
 		extraGameInfo [0].bAutoDownload = 0;
 	else
-		extraGameInfo [0].bAutoDownload = m [nAutoDlOpt].value;
+		extraGameInfo [0].bAutoDownload = m [miscOpts.nAutoDl].value;
 	} while (i == -2);
-if (!gameStates.app.bNostalgia && gameStates.app.bUseDefaults) {
-	gameOpts->render.nMaxFPS = 60;
-	gameOpts->render.bTransparentEffects = 1;
-	gameOpts->render.color.nLightMapRange = 5;
-	gameOpts->render.color.bMix = 1;
-	gameOpts->render.color.bWalls = 1;
-	gameOpts->render.cameras.bFitToWall = 0;
-	gameOpts->render.cameras.nSpeed = 5000;
-	gameOpts->ogl.bSetGammaRamp = 0;
-	gameStates.ogl.nContrast = 8;
-	switch (gameStates.app.nCompSpeed = m [nCompSpeedOpt].value) {
-		case 0:
-			gameOpts->render.color.bUseLightMaps = 0;
-			gameOpts->render.nQuality = 1;
-			gameOpts->render.cockpit.bTextGauges = 1;
-			gameOpts->render.bDynLighting = 0;
-			gameOpts->ogl.bLightObjects = 0;
-			gameOpts->movies.nQuality = 0;
-			gameOpts->movies.bResize = 0;
-			gameOpts->render.shadows.nClip = 0;
-			gameOpts->render.shadows.nReach = 0;
-			gameOpts->render.nExplShrapnels = 0;
-			gameOpts->render.smoke.bAuxViews = 0;
-			gameOpts->render.lightnings.bAuxViews = 0;
-			extraGameInfo [0].bShadows = 0;
-			extraGameInfo [0].bUseSmoke = 0;
-			extraGameInfo [0].bUseCameras = 0;
-			extraGameInfo [0].bPlayerShield = 0;
-			extraGameInfo [0].bThrusterFlames = 0;
-			extraGameInfo [0].bDamageExplosions = 0;
-		break;
-		case 1:
-			gameOpts->render.nQuality = 2;
-			extraGameInfo [0].bUseSmoke = 1;
-			gameOpts->render.smoke.bPlayers = 0;
-			gameOpts->render.smoke.bRobots = 1;
-			gameOpts->render.smoke.bMissiles = 1;
-			gameOpts->render.smoke.bCollisions = 0;
-			gameOpts->render.nExplShrapnels = 1;
-			gameOpts->render.smoke.bStatic = 0;
-			gameOpts->render.smoke.bAuxViews = 0;
-			gameOpts->render.lightnings.bAuxViews = 0;
-			gameOpts->render.smoke.nDens [0] =
-			gameOpts->render.smoke.nDens [1] =
-			gameOpts->render.smoke.nDens [2] =
-			gameOpts->render.smoke.nDens [3] =
-			gameOpts->render.smoke.nDens [4] = 0;
-			gameOpts->render.smoke.nSize [0] =
-			gameOpts->render.smoke.nSize [1] =
-			gameOpts->render.smoke.nSize [2] =
-			gameOpts->render.smoke.nSize [3] =
-			gameOpts->render.smoke.nSize [4] = 3;
-			gameOpts->render.smoke.nLife [0] =
-			gameOpts->render.smoke.nLife [1] =
-			gameOpts->render.smoke.nLife [2] =
-			gameOpts->render.smoke.nLife [4] = 0;
-			gameOpts->render.smoke.nLife [3] = 1;
-			gameOpts->render.cockpit.bTextGauges = 1;
-			gameOpts->render.bDynLighting = 0;
-			gameOpts->render.smoke.bAuxViews = 0;
-			gameOpts->render.lightnings.bAuxViews = 0;
-			gameOpts->ogl.bLightObjects = 0;
-			extraGameInfo [0].bUseCameras = 1;
-			gameOpts->render.cameras.nFPS = 5;
-			gameOpts->movies.nQuality = 0;
-			gameOpts->movies.bResize = 1;
-			gameOpts->render.shadows.nClip = 0;
-			gameOpts->render.shadows.nReach = 0;
-			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bPlayerShield = 0;
-			extraGameInfo [0].bThrusterFlames = 1;
-			extraGameInfo [0].bDamageExplosions = 0;
-			break;
-		case 2:
-			gameOpts->render.nQuality = 2;
-			extraGameInfo [0].bUseSmoke = 1;
-			gameOpts->render.smoke.bPlayers = 0;
-			gameOpts->render.smoke.bRobots = 1;
-			gameOpts->render.smoke.bMissiles = 1;
-			gameOpts->render.smoke.bCollisions = 0;
-			gameOpts->render.nExplShrapnels = 2;
-			gameOpts->render.smoke.bStatic = 1;
-			gameOpts->render.smoke.nDens [0] =
-			gameOpts->render.smoke.nDens [1] =
-			gameOpts->render.smoke.nDens [2] =
-			gameOpts->render.smoke.nDens [3] =
-			gameOpts->render.smoke.nDens [4] = 1;
-			gameOpts->render.smoke.nSize [0] =
-			gameOpts->render.smoke.nSize [1] =
-			gameOpts->render.smoke.nSize [2] =
-			gameOpts->render.smoke.nSize [3] =
-			gameOpts->render.smoke.nSize [4] = 3;
-			gameOpts->render.smoke.nLife [0] =
-			gameOpts->render.smoke.nLife [1] =
-			gameOpts->render.smoke.nLife [2] =
-			gameOpts->render.smoke.nLife [4] = 0;
-			gameOpts->render.smoke.nLife [3] = 1;
-			gameOpts->render.cockpit.bTextGauges = 0;
-			gameOpts->render.bDynLighting = 1;
-			gameOpts->render.smoke.bAuxViews = 0;
-			gameOpts->render.lightnings.bAuxViews = 0;
-			gameOpts->ogl.bLightObjects = 0;
-			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
-			extraGameInfo [0].bUseCameras = 1;
-			gameOpts->render.cameras.nFPS = 0;
-			gameOpts->movies.nQuality = 0;
-			gameOpts->movies.bResize = 1;
-			gameOpts->render.shadows.nClip = 1;
-			gameOpts->render.shadows.nReach = 1;
-			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bPlayerShield = 1;
-			extraGameInfo [0].bThrusterFlames = 1;
-			extraGameInfo [0].bDamageExplosions = 1;
-			break;
-		case 3:
-			gameOpts->render.nQuality = 3;
-			extraGameInfo [0].bUseSmoke = 1;
-			gameOpts->render.smoke.bPlayers = 1;
-			gameOpts->render.smoke.bRobots = 1;
-			gameOpts->render.smoke.bMissiles = 1;
-			gameOpts->render.smoke.bCollisions = 0;
-			gameOpts->render.nExplShrapnels = 3;
-			gameOpts->render.smoke.bStatic = 1;
-			gameOpts->render.smoke.nDens [0] =
-			gameOpts->render.smoke.nDens [1] =
-			gameOpts->render.smoke.nDens [2] =
-			gameOpts->render.smoke.nDens [3] =
-			gameOpts->render.smoke.nDens [4] = 2;
-			gameOpts->render.smoke.nSize [0] =
-			gameOpts->render.smoke.nSize [1] =
-			gameOpts->render.smoke.nSize [2] =
-			gameOpts->render.smoke.nSize [3] =
-			gameOpts->render.smoke.nSize [4] = 3;
-			gameOpts->render.smoke.nLife [0] =
-			gameOpts->render.smoke.nLife [1] =
-			gameOpts->render.smoke.nLife [2] =
-			gameOpts->render.smoke.nLife [4] = 0;
-			gameOpts->render.smoke.nLife [3] = 2;
-			gameOpts->render.cockpit.bTextGauges = 0;
-			gameOpts->render.bDynLighting = 1;
-			gameOpts->render.smoke.bAuxViews = 0;
-			gameOpts->render.lightnings.bAuxViews = 0;
-			gameOpts->ogl.bLightObjects = 0;
-			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
-			extraGameInfo [0].bUseCameras = 1;
-			gameOpts->render.cameras.nFPS = 0;
-			gameOpts->movies.nQuality = 1;
-			gameOpts->movies.bResize = 1;
-			gameOpts->render.shadows.nClip = 1;
-			gameOpts->render.shadows.nReach = 1;
-			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bPlayerShield = 1;
-			extraGameInfo [0].bThrusterFlames = 1;
-			extraGameInfo [0].bDamageExplosions = 1;
-			break;
-		case 4:
-			gameOpts->render.nQuality = 4;
-			extraGameInfo [0].bUseSmoke = 1;
-			gameOpts->render.smoke.bPlayers = 1;
-			gameOpts->render.smoke.bRobots = 1;
-			gameOpts->render.smoke.bMissiles = 1;
-			gameOpts->render.smoke.bCollisions = 1;
-			gameOpts->render.nExplShrapnels = 4;
-			gameOpts->render.smoke.bStatic = 1;
-			gameOpts->render.smoke.nDens [0] =
-			gameOpts->render.smoke.nDens [1] =
-			gameOpts->render.smoke.nDens [2] =
-			gameOpts->render.smoke.nDens [3] =
-			gameOpts->render.smoke.nDens [4] = 3;
-			gameOpts->render.smoke.nSize [0] =
-			gameOpts->render.smoke.nSize [1] =
-			gameOpts->render.smoke.nSize [2] =
-			gameOpts->render.smoke.nSize [3] =
-			gameOpts->render.smoke.nSize [4] = 3;
-			gameOpts->render.smoke.nLife [0] =
-			gameOpts->render.smoke.nLife [1] =
-			gameOpts->render.smoke.nLife [2] =
-			gameOpts->render.smoke.nLife [4] = 0;
-			gameOpts->render.smoke.nLife [3] = 2;
-			gameOpts->render.bDynLighting = 1;
-			gameOpts->render.smoke.bAuxViews = 1;
-			gameOpts->render.lightnings.bAuxViews = 1;
-			gameOpts->ogl.bLightObjects = 1;
-			gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
-			extraGameInfo [0].bUseCameras = 1;
-			gameOpts->render.cockpit.bTextGauges = 0;
-			gameOpts->render.cameras.nFPS = 0;
-			gameOpts->movies.nQuality = 1;
-			gameOpts->movies.bResize = 1;
-			gameOpts->render.shadows.nClip = 1;
-			gameOpts->render.shadows.nReach = 1;
-			extraGameInfo [0].bShadows = 1;
-			extraGameInfo [0].bPlayerShield = 1;
-			extraGameInfo [0].bThrusterFlames = 1;
-			extraGameInfo [0].bDamageExplosions = 1;
-			break;
-		}
-	}
 }
 
 //------------------------------------------------------------------------------

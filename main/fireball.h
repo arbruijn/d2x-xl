@@ -20,16 +20,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ET_MULTI_START  1   //first part of multi-part explosion
 #define ET_MULTI_SECOND 2   //second part of multi-part explosion
 
-#define FORCE_DROP	0
-#define INIT_DROP		1
-#define CHECK_DROP	2
-#define EXEC_DROP		3
-
 #define BLAST_LIFE	(2 * F1_0 / 5)
 #define BLAST_SCALE	(5 * F1_0 / BLAST_LIFE)
 
-tObject *ObjectCreateExplosion(short nSegment, vmsVector *position, fix size, ubyte vclipType);
-tObject *ObjectCreateMuzzleFlash(short nSegment, vmsVector *position, fix size, ubyte vclipType);
+tObject *ObjectCreateExplosion (short nSegment, vmsVector *position, fix size, ubyte vclipType);
+tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector *position, fix size, ubyte vclipType);
 
 tObject *ObjectCreateBadassExplosion(tObject *objp, short nSegment,
 		vmsVector *position, fix size, ubyte vclipType,
@@ -46,32 +41,31 @@ tObject *CreateExplBlast (tObject *objP);
 void ExplodeObject(tObject *obj,fix delayTime);
 void DoExplosionSequence(tObject *obj);
 void DoDebrisFrame(tObject *obj);      // deal with debris for this frame
-
 void DrawFireball(tObject *obj);
+tObject *ObjectCreateExplosionSub (tObject *objP, short nSegment, vmsVector *vPos, fix xSize, 
+											  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent);
+
 
 void ExplodeWall(short nSegment, short nSide);
 void DoExplodingWallFrame(void);
 void InitExplodingWalls(void);
-int MaybeDropNetPowerup(short nObject, int powerupType, int nDropState);
-void RespawnDestroyedWeapon (short nObject);
-void MaybeReplacePowerupWithEnergy(tObject *del_obj);
-void DropPowerups();
 
 short GetExplosionVClip(tObject *obj, int stage);
-int DropPowerup(ubyte nType, ubyte id, short owner, int num, vmsVector *init_vel, vmsVector *pos, short nSegment);
 
-// creates afterburner blobs behind the specified tObject
-void DropAfterburnerBlobs(tObject *obj, int count, fix size_scale, fix lifetime, tObject *pParent, int bThruster);
+//------------------------------------------------------------------------------
 
-int ReturnFlagHome (tObject *pObj);
-int CountRooms (void);
-int GatherFlagGoals (void);
-int CheckConquerRoom (xsegment *segP);
-void ConquerRoom (int newOwner, int oldOwner, int roomId);
-void StartConquerWarning (void);
-void StopConquerWarning (void);
-int FindMonsterball (void);
-int CreateMonsterball (void);
-int CheckMonsterballScore (void);
+static inline tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector * position, fix size, ubyte nVClip)
+{
+return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
+}
+
+//------------------------------------------------------------------------------
+
+static inline tObject *ObjectCreateExplosion (short nSegment, vmsVector * position, fix size, ubyte nVClip)
+{
+return ObjectCreateExplosionSub (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
+}
+
+//------------------------------------------------------------------------------
 
 #endif /* _FIREBALL_H */

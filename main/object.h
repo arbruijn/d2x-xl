@@ -500,14 +500,10 @@ void ResetPlayerObject(void);
 void StopObjectMovement (tObject *obj);
 void StopPlayerMovement (void);
 
-void DoSmokeFrame (void);
-void InitObjectSmoke (void);
-void ResetPlayerSmoke (void);
-void ResetRobotSmoke (void);
+int ObjectSoundClass (tObject *objP);
 
 void ObjectGotoNextViewer();
 void ObjectGotoPrevViewer();
-void KillPlayerSmoke (int i);
 
 int ObjectCount (int nType);
 
@@ -530,10 +526,6 @@ void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
-int SlowMotionActive (void);
-int BulletTimeActive (void);
-void SlowMotionOff (void);
-void BulletTimeOn (void);
 
 extern ubyte bIsMissile [];
 

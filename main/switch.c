@@ -368,9 +368,9 @@ int DoPlaySound (tTrigger *trigP, short nObject)
 if (!indexP)
 	return 0;
 if (trigP->time < 0)
-	DigiStartSound (-1, F1_0, 0xffff / 2, -1, -1, -1, -1, F1_0, indexP->pszText, NULL);
+	DigiStartSound (-1, F1_0, 0xffff / 2, -1, -1, -1, -1, F1_0, indexP->pszText, NULL, 0);
 else
-	DigiStartSound (-1, F1_0, 0xffff / 2, 0, 0, trigP->time - 1, -1, F1_0, indexP->pszText, NULL);
+	DigiStartSound (-1, F1_0, 0xffff / 2, 0, 0, trigP->time - 1, -1, F1_0, indexP->pszText, NULL, 0);
 return 1;
 }
 

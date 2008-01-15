@@ -2222,7 +2222,7 @@ VmVecSub (&vBossDir, &gameData.objs.objects [LOCALPLAYER.nObject].position.vPos,
 VmVector2Matrix (&objP->position.mOrient, &vBossDir, NULL, NULL);
 DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, &objP->position.vPos, 0 , F1_0);
 DigiKillSoundLinkedToObject (nObject);
-DigiLinkSoundToObject2 (ROBOTINFO (objP->id).seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
+DigiLinkSoundToObject2 (ROBOTINFO (objP->id).seeSound, OBJ_IDX (objP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -2276,7 +2276,7 @@ int DoRobotDyingFrame (tObject *objP, fix StartTime, fix roll_duration, sbyte *b
 			con_printf (CONDBG, "Starting death sound!\n");
 #endif
 			*bDyingSoundPlaying = 1;
-			DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, xSoundScale, xSoundScale*256);	//	F1_0*512 means play twice as loud
+			DigiLinkSoundToObject2 (deathSound, OBJ_IDX (objP), 0, xSoundScale, xSoundScale*256, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 		} else if (d_rand () < gameData.time.xFrame*16)
 			CreateSmallFireballOnObject (objP, (F1_0 + d_rand ()) * (16 * xExplScale/F1_0)/8, 0);
 	} else if (d_rand () < gameData.time.xFrame*8)
@@ -2313,7 +2313,7 @@ if (rval) {
 	RemoveBoss (i);
 	DoReactorDestroyedStuff (NULL);
 	ExplodeObject (objP, F1_0/4);
-	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
+	DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
 	}
 }
 
@@ -2328,7 +2328,7 @@ if (objP->cType.aiInfo.xDyingStartTime) {
 	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, min (bDeathRoll/2+1,6)*F1_0, &objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->id).deathrollSound, bDeathRoll*F1_0/8, bDeathRoll*F1_0/2); 
 	if (rval) {
 		ExplodeObject (objP, F1_0/4);
-		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512);
+		DigiLinkSoundToObject2 (SOUND_BADASS_EXPLOSION, OBJ_IDX (objP), 0, F2_0, F1_0*512, SOUNDCLASS_EXPLOSION);
 		if ((gameData.missions.nCurrentLevel < 0) && (ROBOTINFO (objP->id).thief))
 			RecreateThief (objP);
 		}

@@ -1378,7 +1378,7 @@ void AddToFCDCache (int seg0, int seg1, int nDepth, fix dist)
 //	Determine whether seg0 and seg1 are reachable in a way that allows sound to pass.
 //	Search up to a maximum nDepth of nMaxDepth.
 //	Return the distance.
-fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1, int nMaxDepth, int widFlag)
+fix FindConnectedDistance (vmsVector *p0, short seg0, vmsVector *p1, short seg1, int nMaxDepth, int widFlag, int bUseCache)
 {
 	short				nConnSide;
 	short				nCurSeg, nParentSeg, nThisSeg;
@@ -1418,13 +1418,13 @@ if ((gameData.time.xGame - gameData.fcd.xLastFlushTime > F1_0*2) ||
 	}
 
 //	Can't quickly get distance, so see if in gameData.fcd.cache.
-#if 0
-for (i = MAX_FCD_CACHE, pc = gameData.fcd.cache; i; i--, pc++)
-	if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
-		gameData.fcd.nConnSegDist = pc->csd;
-		return pc->dist;
-		}
-#endif
+if (bUseCache) {
+	for (i = MAX_FCD_CACHE, pc = gameData.fcd.cache; i; i--, pc++)
+		if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
+			gameData.fcd.nConnSegDist = pc->csd;
+			return pc->dist;
+			}
+	}
 memset (visited, 0, gameData.segs.nLastSegment + 1);
 memset (nDepth, 0, sizeof (nDepth [0]) * (gameData.segs.nLastSegment + 1));
 
@@ -2390,7 +2390,7 @@ fix FindConnectedDistanceSegments (short seg0, short seg1, int nDepth, int widFl
 
 COMPUTE_SEGMENT_CENTER_I (&p0, seg0);
 COMPUTE_SEGMENT_CENTER_I (&p1, seg1);
-return FindConnectedDistance (&p0, seg0, &p1, seg1, nDepth, widFlag);
+return FindConnectedDistance (&p0, seg0, &p1, seg1, nDepth, widFlag, 0);
 }
 
 #define	AMBIENT_SEGMENT_DEPTH		5

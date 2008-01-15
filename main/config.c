@@ -217,7 +217,7 @@ int ReadConfigFile()
 						gameStates.render.detail.nWallDetail = wd;
 						gameStates.render.detail.nWallRenderDepth = wrd;
 						gameStates.render.detail.nDebrisAmount = da;
-						gameStates.sound.nMaxSoundChannels = sc;
+						gameStates.sound.nSoundChannels = sc;
 						InitCustomDetails();
 					}
 				  #ifdef PA_3DFX_VOODOO   // Set to highest detail because you can't change em
@@ -409,7 +409,7 @@ con_printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 					gameStates.render.detail.nWallDetail,
 					gameStates.render.detail.nWallRenderDepth,
 					gameStates.render.detail.nDebrisAmount,
-					gameStates.sound.nMaxSoundChannels);
+					gameStates.sound.nSoundChannels);
 	else
 		sprintf (str, "%s=%d\n", pszDetailLevel, gameStates.app.nDetailLevel);
 	CFPutS(str, &cf);

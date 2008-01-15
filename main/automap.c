@@ -70,6 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "gamecntl.h"
 #include "input.h"
+#include "slowmotion.h"
 
 #define EF_USED     1   // This edge is used
 #define EF_DEFINING 2   // A structure defining edge that should always draw.

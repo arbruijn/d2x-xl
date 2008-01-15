@@ -1805,14 +1805,14 @@ void LoadGameTexts(void);
 #define TXT_OMEGA_RAMP				GT(1012)
 #define TXT_IMMUNE_MISSILES		GT(1013)
 #define TXT_OMEGA_KILLS_MISSILES	GT(1014)
+#define TXT_SHIP_SOUND				GT(1015)
+#define TXT_MISSILE_SOUND			GT(1016)
+#define TXT_SOUND_CHANNEL_COUNT	GT(1017)
+#define TXT_SETPERF_MENUTITLE		GT(1018)
+#define TXT_SETPERF_OPTION			GT(1019)
 
 #if 0
 
-#define TXT_				GT(1015)
-#define TXT_				GT(1016)
-#define TXT_				GT(1017)
-#define TXT_				GT(1018)
-#define TXT_				GT(1019)
 #define TXT_				GT(1020)
 #define TXT_				GT(1021)
 #define TXT_				GT(1022)
@@ -2349,13 +2349,13 @@ void LoadGameTexts(void);
 #define HTX_AUXWIN_POSITION		HT(335)			
 #define HTX_AUXWIN_ALIGNMENT		HT(336)			
 #define HTX_OMEGA_RAMP				HT(337)			
+#define HTX_SHIP_SOUND				HT(338)			
+#define HTX_MISSILE_SOUND			HT(339)			
+#define HTX_SOUND_CHANNEL_COUNT	HT(340)			
+#define HTX_PERFORMANCE_SETTINGS	HT(341)			
 
 #if 0
 
-#define HTX_					HT(338)			
-#define HTX_					HT(339)			
-#define HTX_					HT(340)			
-#define HTX_					HT(341)			
 #define HTX_					HT(342)			
 #define HTX_					HT(343)			
 #define HTX_					HT(344)			

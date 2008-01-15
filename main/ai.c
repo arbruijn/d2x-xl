@@ -367,7 +367,7 @@ void DoSnipeFrame (tObject *objP)
 			ailp->nextActionTime = SNIPE_WAIT_TIME;
 
 			connectedDistance = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, 
-																	 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG);
+																	 gameData.ai.nBelievedPlayerSeg, 30, WID_FLY_FLAG, 0);
 			if (connectedDistance < MAX_SNIPE_DIST) {
 				CreatePathToPlayer (objP, 30, 1);
 				ailp->mode = AIM_SNIPE_ATTACK;

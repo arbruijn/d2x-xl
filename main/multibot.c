@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "physics.h" 
 #include "byteswap.h"
 #include "gameseg.h"
+#include "dropobject.h"
 
 int MultiAddControlledRobot (int nObject, int agitation);
 void MultiSendReleaseRobot (int nObject);
@@ -870,7 +871,7 @@ switch (action)  {
 		VmVector2Matrix (&bossObjP->position.mOrient, &vBossDir, NULL, NULL);
 		DigiLinkSoundToPos (gameData.eff.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, &bossObjP->position.vPos, 0 , F1_0);
 		DigiKillSoundLinkedToObject (OBJ_IDX (bossObjP));
-		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512);	//	F1_0*512 means play twice as loud
+		DigiLinkSoundToObject2 (SOUND_BOSS_SHARE_SEE, OBJ_IDX (bossObjP), 1, F1_0, F1_0*512, SOUNDCLASS_ROBOT);	//	F1_0*512 means play twice as loud
 		gameData.ai.localInfo [OBJ_IDX (bossObjP)].nextPrimaryFire = 0;
 		if (bossObjP->cType.aiInfo.REMOTE_OWNER == gameData.multiplayer.nLocalPlayer) {
 			MultiDeleteControlledRobot (nBossObj);

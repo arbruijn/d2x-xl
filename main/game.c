@@ -38,6 +38,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "key.h"
 #include "object.h"
 #include "objrender.h"
+#include "objsmoke.h"
 #include "transprender.h"
 #include "lightning.h"
 #include "physics.h"
@@ -119,6 +120,10 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "digi.h"
 #include "sphere.h"
 #include "hiresmodels.h"
+#include "dropobject.h"
+#include "monsterball.h"
+#include "dropobject.h"
+#include "slowmotion.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -1119,7 +1124,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	if (gameData.physics.xAfterburnerCharge && Controls [0].afterburnerState && 
 		 (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		DigiLinkSoundToObject3 ((short) SOUND_AFTERBURNER_IGNITE, (short) LOCALPLAYER.nObject, 
-										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0);
+										1, F1_0, i2f (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0, SOUNDCLASS_PLAYER);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 			MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
@@ -1128,7 +1133,7 @@ else if ((gameStates.gameplay.xLastAfterburnerCharge && (Controls [0].afterburne
 	else {
 		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 		DigiLinkSoundToObject2 ((short) SOUND_AFTERBURNER_PLAY, (short) LOCALPLAYER.nObject, 
-										0, F1_0, i2f (256));
+										0, F1_0, i2f (256), SOUNDCLASS_PLAYER);
 #ifdef NETWORK
 		if (gameData.app.nGameMode & GM_MULTI)
 		 	MultiSendSoundFunction (0,0);

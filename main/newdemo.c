@@ -1948,7 +1948,7 @@ while (!bDone) {
 			loop_end = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				DigiLinkSoundToObject3 ((short) soundno, (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end, NULL, 0);
+				DigiLinkSoundToObject3 ((short) soundno, (short) nObject, 1, maxVolume, maxDistance, loop_start, loop_end, NULL, 0, ObjectSoundClass (OBJECTS + nObject));
 			}
 			break;
 

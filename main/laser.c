@@ -64,6 +64,7 @@ char laser_rcsid [] = "$Id: laser.c,v 1.10 2003/10/10 09:36:35 btb Exp $";
 #include "hudmsg.h"
 #include "gameseg.h"
 #include "input.h"
+#include "dropobject.h"
 
 #ifdef TACTILE
 #include "tactile.h"
@@ -312,7 +313,7 @@ return nObject;
 int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment, 
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
-	int		nObject;
+	int		nObject, nViewer;
 	tObject	*objP, *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
 	fix		xParentSpeed, xWeaponSpeed;
 	fix		volume;
@@ -386,10 +387,11 @@ objP->cType.laserInfo.parentType = pParent->nType;
 objP->cType.laserInfo.nParentSig = pParent->nSignature;
 //	Do the special Omega Cannon stuff.  Then return on account of everything that follows does
 //	not apply to the Omega Cannon.
+nViewer = OBJ_IDX (gameData.objs.viewer);
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	VmVector2Matrix (&objP->position.mOrient, vDirection, SPECTATOR (pParent) ? &gameStates.app.playerPos.mOrient.uVec : &pParent->position.mOrient.uVec, NULL);
-	if ((gameData.objs.objects + nParent != gameData.objs.viewer) && (pParent->nType != OBJ_WEAPON)) {
+	if ((nParent != nViewer) && (pParent->nType != OBJ_WEAPON)) {
 		// Muzzle flash	
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
 			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
@@ -468,8 +470,7 @@ if (pParent->nType == OBJ_WEAPON) {
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->renderType == RT_POLYOBJ) || (WI_homingFlag (objP->id)))
 	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec ,NULL);
-if (((gameData.objs.objects + nParent) != gameData.objs.viewer) && 
-		(pParent->nType != OBJ_WEAPON))	{
+if ((nParent != nViewer) && (pParent->nType != OBJ_WEAPON)) {
 	// Muzzle flash	
 	if (gameData.weapons.info [objP->id].flash_vclip > -1)
 		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
@@ -477,15 +478,24 @@ if (((gameData.objs.objects + nParent) != gameData.objs.viewer) &&
 	}
 volume = F1_0;
 if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
-	if (nParent != OBJ_IDX (gameData.objs.viewer))
+	if (nParent != nViewer)
 		DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
-		DigiPlaySample (gameData.weapons.info [objP->id].flashSound, volume);
+		DigiPlaySampleClass (gameData.weapons.info [objP->id].flashSound, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		}
-	if (gameData.objs.bIsMissile [nWeaponType])
-		DigiLinkSoundToObject3 (-1, nObject, 1, F1_0 / 2, i2f (256), -1, -1, "missileflight.wav", 1);
+	if (gameOpts->sound.bMissiles && gameData.objs.bIsMissile [nWeaponType]) {
+		if ((nWeaponType == SMARTMSL_ID) ||
+			 (nWeaponType == MEGAMSL_ID) ||
+			 (nWeaponType == EARTHSHAKER_ID) ||
+			 (nWeaponType == ROBOT_SMARTMSL_ID) ||
+			 (nWeaponType == ROBOT_MEGAMSL_ID) ||
+			 (nWeaponType == ROBOT_EARTHSHAKER_ID))
+			DigiLinkSoundToObject3 (-1, nObject, 1, F1_0, i2f (256), -1, -1, "missileflight-big.wav", 1, SOUNDCLASS_MISSILE);
+		else
+			DigiLinkSoundToObject3 (-1, nObject, 1, F1_0 / 4, i2f (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_MISSILE);
+		}
 	else if (nWeaponType == FLARE_ID)
 		DigiSetObjectSound (nObject, -1, "flareburning.wav");
 	}

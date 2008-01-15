@@ -74,6 +74,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 #include "sphere.h"
 #include "text.h"
+#include "dropobject.h"
 
 //#define _DEBUG
 
@@ -958,7 +959,7 @@ else if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_WATER) ||
 	if (wInfoP->matter) {
 		DigiLinkSoundToPos (SOUNDMSL_HIT_WATER, hitseg, 0, vHitPt, 0, F1_0);
 		if (wInfoP->damage_radius) {
-			DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (weaponP), 0, F1_0);
+			DigiLinkSoundToObject (SOUND_BADASS_EXPLOSION, OBJ_IDX (weaponP), 0, F1_0, SOUNDCLASS_EXPLOSION);
 			//	MK: 09/13/95: Badass in water is 1/2 normal intensity.
 			ObjectCreateBadassExplosion (weaponP, hitseg, vHitPt, 
 				wInfoP->impact_size/2, 

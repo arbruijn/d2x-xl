@@ -803,7 +803,7 @@ else {
 			BuddyMessage (TXT_CANT_REACH, GT (nEscortGoalText [gameData.escort.nGoalObject-1]));
 			gameData.escort.bSearchingMarker = -1;
 			gameData.escort.nGoalObject = ESCORT_GOAL_SCRAM;
-			xDistToPlayer = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG);
+			xDistToPlayer = FindConnectedDistance (&objP->position.vPos, objP->nSegment, &gameData.ai.vBelievedPlayerPos, gameData.ai.nBelievedPlayerSeg, 100, WID_FLY_FLAG, 0);
 			if (xDistToPlayer > MIN_ESCORT_DISTANCE)
 				CreatePathToPlayer (objP, gameData.escort.nMaxLength, 1);	//	MK!: Last parm used to be 1!
 			else {

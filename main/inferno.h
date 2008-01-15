@@ -435,6 +435,8 @@ typedef struct tSoundOptions {
 	int bUseSDLMixer;
 	int bUseOpenAL;
 	int digiSampleRate;
+	int bShip;
+	int bMissiles;
 } tSoundOptions;
 
 //------------------------------------------------------------------------------
@@ -878,7 +880,7 @@ typedef struct tDigiStates {
 	int bSoundsInitialized;
 	int bLoMem;
 	int nMaxChannels;
-	int nNextChannel;
+	int nFreeChannel;
 	int nVolume;
 	int nNextSignature;
 	int nActiveObjects;
@@ -898,7 +900,7 @@ typedef struct tSoundStates {
 	int bWasRecording;
 	int bDontStartObjects;
 	int nConquerWarningSoundChannel;
-	int nMaxSoundChannels;
+	int nSoundChannels;
 	tDigiStates digi;
 } tSoundStates;
 
@@ -2111,6 +2113,7 @@ typedef struct tMultiplayerData {
 	int					nMaxPlayers;
 	int 					nLocalPlayer;				
 	int					nPlayerPositions;
+	int					bMoving;
 	tPlayer				players [MAX_PLAYERS + 4];                   
 	tObjPosition		playerInit [MAX_PLAYERS];
 	short					nVirusCapacity [MAX_PLAYERS];

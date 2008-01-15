@@ -55,6 +55,10 @@ int DoObjectSmoke (tObject *objP);
 void PlayerSmokeFrame (void);
 void RobotSmokeFrame (void);
 void DoSmokeFrame (void);
+void DoSmokeFrame (void);
+void InitObjectSmoke (void);
+void ResetPlayerSmoke (void);
+void ResetRobotSmoke (void);
 
 int CreateShrapnels (tObject *parentObjP);
 void DestroyShrapnels (tObject *objP);

@@ -39,6 +39,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "key.h"
 #include "object.h"
 #include "objrender.h"
+#include "objsmoke.h"
 #include "lightning.h"
 #include "physics.h"
 #include "error.h"
@@ -117,6 +118,8 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "interp.h"
 #include "sphere.h"
 #include "hiresmodels.h"
+#include "entropy.h"
+#include "monsterball.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -655,7 +658,7 @@ effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size
 if (effectObjP) {
 	effectObjP->position.mOrient = playerObjP->position.mOrient;
 	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0);
+		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0, SOUNDCLASS_PLAYER);
 	}
 }
 
@@ -846,6 +849,7 @@ memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
 memset (gameData.render.mine.bCalcVertexColor, 0, sizeof (gameData.render.mine.bCalcVertexColor));
+gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/LogErr ("   stopping music\n");
 SongsStopAll ();
@@ -2132,7 +2136,7 @@ void InitPlayerPosition (int bRandom)
 															 pObj->nSegment, 
 															 &gameData.multiplayer.playerInit [bNewPlayer].position.vPos, 
 															 gameData.multiplayer.playerInit [bNewPlayer].nSegment, 
-															 10, WID_FLY_FLAG);	//	Used to be 5, search up to 10 segments
+															 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
 					if ((dist < closestDist) && (dist >= 0))	{
 						closestDist = dist;
 						closest = i;

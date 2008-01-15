@@ -24,20 +24,20 @@ escort.c    fireball.c  fuelcen.c   fvi.c       game.c      \
 gamecntl.c  gamefont.c  gamemine.c  gamepal.c   gamerend.c  \
 gamesave.c  gameseg.c   loadgame.c  gauges.c    hostage.c   \
 hud.c       inferno.c   kconfig.c   kludge.c    laser.c     \
-light.c  menu.c      mglobal.c   mission.c   morph.c     \
+light.c		menu.c      mglobal.c   mission.c   morph.c     \
 movie.c     particles.c oof.c 		sphere.c 	input.c		\
 newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
 piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
 render.c    robot.c     scores.c    segment.c   slew.c      \
 songs.c     state.c     switch.c    terrain.c   texmerge.c  \
 text.c      briefings.c vclip.c     wall.c      weapon.c	\
-autodl.c	cameras.c	lightmap.c	tracker.c	objsmoke.c	\
-netmenu.c	cheats.c	banlist.c	thief.c		endlevel.c	\
+autodl.c		cameras.c	lightmap.c	tracker.c	objsmoke.c	\
+netmenu.c	cheats.c		banlist.c	thief.c		endlevel.c	\
 multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
-tga.c		glare.c		radar.c		renderlib.c	transprender.c \
-fastrender.c			renderthreads.c			flightpath.c \
+tga.c			glare.c		radar.c		renderlib.c	transprender.c \
+fastrender.c	renderthreads.c		flightpath.c \
 rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
-omega.c trackobject.c
+omega.c trackobject.c	monsterball.c	slowmotion.c	dropobjects.c	
 
 EXTRA_libmain_a_SOURCES = \
 highscores.c multi.c multibot.c network.c netmisc.c \
@@ -61,4 +61,4 @@ briefings.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
 autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
 objeffects.h hiresmodels.h textdata.h omega.h trackobject.h \
-joydefs.c
+joydefs.h monsterball.h slowmotion.h dropobjects.h

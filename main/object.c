@@ -89,6 +89,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "automap.h"
 #include "u_mem.h"
+#include "entropy.h"
+#include "dropobject.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -370,7 +372,7 @@ if (nSegment != -1) {
 		if (objP->nType == OBJ_ROBOT)
 			vol *= 2;
 		else if (bSound)
-			DigiLinkSoundToObject (SOUND_EXPLODING_WALL, OBJ_IDX (objP), 0, vol);
+			DigiLinkSoundToObject (SOUND_EXPLODING_WALL, OBJ_IDX (objP), 0, vol, SOUNDCLASS_EXPLOSION);
 		}
 	}
 }
@@ -1541,7 +1543,7 @@ if (sideMask) {
 			bUnderLavaFall = 1;
 			bChkVolaSeg = 0;
 			if (!nLavaFallHissPlaying [objP->id]) {
-				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL, 0);
+				DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
 				nLavaFallHissPlaying [objP->id] = 1;
 				}
 			}
@@ -1552,7 +1554,7 @@ if (bChkVolaSeg) {
 		short sound = (nType==1) ? SOUND_LAVAFALL_HISS : SOUND_SHIP_IN_WATERFALL;
 		bUnderLavaFall = 1;
 		if (!nLavaFallHissPlaying [objP->id]) {
-			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL, 0);
+			DigiLinkSoundToObject3 (sound, OBJ_IDX (objP), 1, F1_0, i2f (256), -1, -1, NULL, 0, SOUNDCLASS_GENERIC);
 			nLavaFallHissPlaying [objP->id] = 1;
 			}
 		}
@@ -1704,6 +1706,29 @@ return 0;
 
 //--------------------------------------------------------------------
 
+void UpdateShipSound (tObject *objP)
+{
+	int	nSpeed = VmVecMag (&objP->mType.physInfo.velocity);
+	int	nObject = OBJ_IDX (objP);
+
+if (!gameOpts->sound.bShip)
+	return;
+if (nObject != LOCALPLAYER.nObject)
+	return;
+if (gameData.multiplayer.bMoving == nSpeed)
+	return;
+nSpeed -= 2 * F1_0;
+if (nSpeed < 0)
+	nSpeed = 0;
+if (gameData.multiplayer.bMoving < 0)
+	DigiLinkSoundToObject3 (-1, OBJ_IDX (objP), 1, F1_0 / 32 + nSpeed * 128 / F1_0, i2f (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
+else
+	DigiChangeSoundLinkedToObject (OBJ_IDX (objP), F1_0 / 128 + nSpeed * 128 / F1_0);
+gameData.multiplayer.bMoving = nSpeed;
+}
+
+//--------------------------------------------------------------------
+
 void HandleObjectMovement (tObject *objP)
 {
 switch (objP->movementType) {
@@ -1718,6 +1743,8 @@ switch (objP->movementType) {
 		DoPhysicsSim (objP);
 		SetDynLightPos (OBJ_IDX (objP));
 		MoveObjectLightnings (objP);
+		if (objP->nType == OBJ_PLAYER)
+			UpdateShipSound (objP);
 		break;	//move by physics
 
 	case MT_SPINNING:	
@@ -1945,242 +1972,24 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	i = 0;	//kill warning
 #endif
 return 1;
-//	check_duplicateObjects ();
-//	RemoveIncorrectObjects ();
-
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static int nSlowMotionChannel = -1;
-
-void SetSlowMotionState (int i)
+int ObjectSoundClass (tObject *objP)
 {
-if (gameStates.gameplay.slowmo [i].nState) {
-	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
-	if (nSlowMotionChannel >= 0) {
-		DigiStopSound (nSlowMotionChannel);
-		nSlowMotionChannel = -1;
-		}
-	}
-else if (gameStates.gameplay.slowmo [i].fSpeed > 1) {
-	gameStates.gameplay.slowmo [i].nState = -1;
-	}
-else {
-	gameStates.gameplay.slowmo [i].nState = 1;
-	}
-gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
+	short nType = objP->nType;
+
+if (nType == OBJ_PLAYER)
+	return SOUNDCLASS_PLAYER;
+if (nType == OBJ_ROBOT)
+	return SOUNDCLASS_ROBOT;
+if (nType == OBJ_WEAPON)
+	return gameData.objs.bIsMissile [objP->id] ? SOUNDCLASS_MISSILE : SOUNDCLASS_GENERIC;
+return SOUNDCLASS_GENERIC;
 }
 
 //	-----------------------------------------------------------------------------------------------------------
-
-void SlowMotionMessage (void)
-{
-if (gameStates.gameplay.slowmo [0].nState > 0) {
-	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("slowdown.wav", F1_0);
-	HUDInitMessage (TXT_SLOWING_DOWN);
-	}
-else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
-			((gameStates.gameplay.slowmo [0].nState == 0) && (gameStates.gameplay.slowmo [0].fSpeed == 1)) || 
-			(gameStates.gameplay.slowmo [1].nState < 0) || 
-			((gameStates.gameplay.slowmo [1].nState == 0) && (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
-	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("speedup.wav", F1_0);
-	HUDInitMessage (TXT_SPEEDING_UP);
-	}
-else {
-	if (gameOpts->sound.bUseSDLMixer)
-		nSlowMotionChannel = DigiPlayWAV ("slowdown.wav", F1_0);
-	HUDInitMessage (TXT_SLOWING_DOWN);
-	}
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-void InitBulletTime (int nState)
-{
-gameStates.gameplay.slowmo [1].nState = nState;
-SetSlowMotionState (1);
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-void InitSlowMotion (int nState)
-{
-gameStates.gameplay.slowmo [0].nState = nState;
-SetSlowMotionState (0);
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-int SlowMotionActive (void)
-{
-return gameStates.gameplay.slowmo [0].bActive =
-		 (gameStates.gameplay.slowmo [0].nState > 0) || (gameStates.gameplay.slowmo [0].fSpeed > 1);
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-int BulletTimeActive (void)
-{
-return gameStates.gameplay.slowmo [1].bActive =
-		 SlowMotionActive () && 
-		 ((gameStates.gameplay.slowmo [1].nState < 0) || (gameStates.gameplay.slowmo [1].fSpeed == 1));
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-void SlowMotionOff (void)
-{
-if (SlowMotionActive () && (gameStates.gameplay.slowmo [0].nState != -1)) {
-	InitSlowMotion (1);
-	if (!BulletTimeActive ())
-		InitBulletTime (1);
-	SlowMotionMessage ();
-	}
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-void BulletTimeOn (void)
-{
-if (!BulletTimeActive ())
-	InitBulletTime (1);
-if (!SlowMotionActive ())
-	InitSlowMotion (-1);
-SlowMotionMessage ();
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-int ToggleSlowMotion (void)
-{
-	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER));
-	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER));
-	int	bSlowMotion = bSlowMotionOk && (Controls [0].slowMotionCount > 0);
-	int	bBulletTime = bBulletTimeOk && (Controls [0].bulletTimeCount > 0);
-
-Controls [0].bulletTimeCount =
-Controls [0].slowMotionCount = 0;
-#if 1//def RELEASE
-if (SlowMotionActive ()) {
-	if (!gameStates.app.cheats.bSpeed)
-#if 0
-		LOCALPLAYER.energy -= gameData.time.xFrame * (1 + BulletTimeActive ());
-#else
-		LOCALPLAYER.energy -= ((4 + gameStates.app.nDifficultyLevel) * gameData.time.xFrame * (1 + BulletTimeActive ())) / 6;
-#endif
-	if (!bSlowMotionOk) {
-		if (gameStates.gameplay.slowmo [0].nState != -1) {
-			InitSlowMotion (1);
-			if (!BulletTimeActive () && (gameStates.gameplay.slowmo [1].nState != -1))
-				InitBulletTime (1);
-			SlowMotionMessage ();
-			}
-		return 0;
-		}
-	if (!bBulletTimeOk) {
-		if (gameStates.gameplay.slowmo [1].nState != -1)
-			InitBulletTime (-1);
-		bBulletTime = 0;
-		}
-	}
-#endif
-if (!(bSlowMotion || bBulletTime))
-	return 0;
-if (bBulletTime) {	//toggle bullet time and slow motion
-	if (SlowMotionActive ()) {
-		if (BulletTimeActive ())
-			InitSlowMotion (1);
-		InitBulletTime (1);
-		}
-	else {
-		InitSlowMotion (-1);
-		if (!BulletTimeActive ())
-			InitBulletTime (1);
-		}
-	}
-else {
-	if (SlowMotionActive ()) {
-		if (BulletTimeActive ())
-			InitBulletTime (-1);
-		else {
-			InitSlowMotion (1);
-			if (!BulletTimeActive ())
-				InitBulletTime (1);
-			}
-		}
-	else {
-		InitSlowMotion (-1);
-		if (BulletTimeActive ())
-			InitBulletTime (-1);
-		}
-	}
-return 1;
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-#define SLOWDOWN_SECS	2
-#define SLOWDOWN_FPS		40
-
-void DoSlowMotionFrame (void)
-{
-	int	i, bMsg;
-	float	f, h;
-
-if (gameStates.app.bNostalgia || IsMultiGame)
-	return;
-bMsg = ToggleSlowMotion ();
-f = (float) gameOpts->gameplay.nSlowMotionSpeedup / 2;
-h = (f - 1) / (SLOWDOWN_SECS * SLOWDOWN_FPS);
-for (i = 0; i < 2; i++) {
-	if (gameStates.gameplay.slowmo [i].nState && (gameStates.app.nSDLTicks - gameStates.gameplay.slowmo [i].tUpdate > 25)) {
-		gameStates.gameplay.slowmo [i].fSpeed += gameStates.gameplay.slowmo [i].nState * h;
-		if (gameStates.gameplay.slowmo [i].fSpeed >= f) {
-			gameStates.gameplay.slowmo [i].fSpeed = f;
-			gameStates.gameplay.slowmo [i].nState = 0;
-			if (!i) {
-				DigiExit ();
-				DigiInit (f);
-				}
-			}
-		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
-			gameStates.gameplay.slowmo [i].fSpeed = 1;
-			gameStates.gameplay.slowmo [i].nState = 0;
-			if (!i) {
-				DigiExit ();
-				DigiInit (1);
-				PlayLevelSong (gameData.missions.nCurrentLevel, 0);
-				}
-			}
-		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;
-		}
-	}
-if (bMsg)
-	SlowMotionMessage ();
-#if 0//def _DEBUG
-HUDMessage (0, "%1.2f %1.2f %d", 
-				gameStates.gameplay.slowmo [0].fSpeed, gameStates.gameplay.slowmo [1].fSpeed,
-				gameStates.gameplay.slowmo [1].bActive);
-#endif
-}
-
-//	-----------------------------------------------------------------------------------------------------------
-
-//--unused-- // -----------------------------------------------------------
-//--unused-- //	Moved here from eobject.c on 02/09/94 by MK.
-//--unused-- int find_last_obj (int i)
-//--unused-- {
-//--unused-- 	for (i=MAX_OBJECTS;--i >= 0;)
-//--unused-- 		if (gameData.objs.objects [i].nType != OBJ_NONE) break;
-//--unused--
-//--unused-- 	return i;
-//--unused--
-//--unused-- }
-
-
 //make tObject array non-sparse
 void compressObjects (void)
 {

@@ -817,7 +817,7 @@ Assert (objP->nSegment != -1);
 #ifdef _DEBUG
 if (objP->nSegment != nGoalSeg)
 	if (FindConnectedSide (gameData.segs.segments + objP->nSegment, gameData.segs.segments + nGoalSeg) == -1) {
-		fix dist = FindConnectedDistance (&objP->position.vPos, objP->nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG);
+		fix dist = FindConnectedDistance (&objP->position.vPos, objP->nSegment, vGoalPoint, nGoalSeg, 30, WID_FLY_FLAG, 0);
 #	if TRACE
 		if (gameData.fcd.nConnSegDist > 2)	//	This global is set in FindConnectedDistance
 			con_printf (1, "Warning: Object %i hopped across %i segments, a distance of %7.3f.\n", OBJ_IDX (objP), gameData.fcd.nConnSegDist, f2fl (dist));

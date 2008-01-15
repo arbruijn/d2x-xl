@@ -1645,6 +1645,8 @@ else {
 #endif
 	}
 gameOptions [i].sound.bHires = 0;
+gameOptions [i].sound.bShip = 0;
+gameOptions [i].sound.bMissiles = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2089,9 +2091,9 @@ gameStates.sound.bRedbookPlaying = 0;
 gameStates.sound.bWasRecording = 0;
 gameStates.sound.bDontStartObjects = 0;
 gameStates.sound.nConquerWarningSoundChannel = -1;
-gameStates.sound.nMaxSoundChannels = 2;
+gameStates.sound.nSoundChannels = 2;
 gameStates.sound.digi.nMaxChannels = 16;
-gameStates.sound.digi.nNextChannel = 0;
+gameStates.sound.digi.nFreeChannel = 0;
 gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
 gameStates.sound.digi.bInitialized = 0;
 gameStates.sound.digi.nNextSignature=0;

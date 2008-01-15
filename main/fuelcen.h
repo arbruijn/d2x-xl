@@ -72,6 +72,7 @@ void FuelcenUpdateAll();
 // Called when hit by laser.
 void FuelCenDamage(tSegment *segp, fix AmountOfDamage );
 
+int GatherFlagGoals (void);
 // Called to repair an tObject
 //--repair-- int refuel_do_repair_effect( tObject * obj, int firstTime, int repair_seg );
 

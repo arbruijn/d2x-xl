@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "switch.h"
 #include "key.h"
+#include "slowmotion.h"
 
 //	Cheat functions ------------------------------------------------------------
 
@@ -52,7 +53,7 @@ char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 
 void DoCheatPenalty ()
 {
-DigiPlaySample (SOUND_CHEATER, F1_0);
+DigiPlaySampleClass (SOUND_CHEATER, F1_0, SOUNDCLASS_PLAYER);
 gameStates.app.cheats.bEnabled = 1;
 LOCALPLAYER.score = 0;
 }

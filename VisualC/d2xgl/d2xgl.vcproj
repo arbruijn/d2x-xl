@@ -1682,6 +1682,9 @@
 					RelativePath="..\..\main\digiobj.c">
 				</File>
 				<File
+					RelativePath="..\..\main\dropobject.c">
+				</File>
+				<File
 					RelativePath="..\..\main\effects.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -1720,6 +1723,9 @@
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\main\entropy.c">
 				</File>
 				<File
 					RelativePath="..\..\main\escort.c">
@@ -2256,6 +2262,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\monsterball.c">
+				</File>
+				<File
 					RelativePath="..\..\main\morph.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -2715,6 +2724,9 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\main\slowmotion.c">
+				</File>
+				<File
 					RelativePath="..\..\main\songs.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -3003,10 +3015,16 @@
 						RelativePath="..\..\main\desc_id.h">
 					</File>
 					<File
+						RelativePath="..\..\main\dropobject.h">
+					</File>
+					<File
 						RelativePath="..\..\main\effects.h">
 					</File>
 					<File
 						RelativePath="..\..\main\endlevel.h">
+					</File>
+					<File
+						RelativePath="..\..\main\entropy.h">
 					</File>
 					<File
 						RelativePath="..\..\main\escort.h">
@@ -3135,6 +3153,9 @@
 						RelativePath="..\..\include\modex.h">
 					</File>
 					<File
+						RelativePath="..\..\main\monsterball.h">
+					</File>
+					<File
 						RelativePath="..\..\main\morph.h">
 					</File>
 					<File
@@ -3259,6 +3280,9 @@
 					</File>
 					<File
 						RelativePath="..\..\main\slew.h">
+					</File>
+					<File
+						RelativePath="..\..\main\slowmotion.h">
 					</File>
 					<File
 						RelativePath="..\..\main\songs.h">
@@ -3509,10 +3533,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

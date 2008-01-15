@@ -45,6 +45,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "key.h"
 #include "gauges.h"
 #include "object.h"
+#include "objsmoke.h"
 #include "error.h"
 #include "laser.h"
 #include "gamesave.h"

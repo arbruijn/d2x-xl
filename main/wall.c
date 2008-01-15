@@ -1680,7 +1680,7 @@ void BngProcessSegment(tObject *objP, fix damage, tSegment *segp, int depth, sby
 				COMPUTE_SIDE_CENTER(&pnt, segp, nSide);
 				dist = VmVecDistQuick(&pnt, &objP->position.vPos);
 				if (dist < damage/2) {
-					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG);
+					dist = FindConnectedDistance(&pnt, SEG_IDX (segp), &objP->position.vPos, objP->nSegment, MAX_BLAST_GLASS_DEPTH, WID_RENDPAST_FLAG, 0);
 					if ((dist > 0) && (dist < damage/2))
 						CheckEffectBlowup(segp, nSide, &pnt, gameData.objs.objects + objP->cType.laserInfo.nParentObj, 1);
 				}

@@ -30,6 +30,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "multi.h"
 #include "object.h"
+#include "objsmoke.h"
 #include "laser.h"
 #include "fuelcen.h"
 #include "scores.h"
@@ -75,6 +76,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "banlist.h"
 #include "render.h"
 #include "multimsg.h"
+#include "dropobject.h"
+#include "entropy.h"
+#include "monsterball.h"
+#include "dropobject.h"
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;
@@ -1603,7 +1608,7 @@ if (!gameData.multiplayer.players [nPlayer].connected)
 	return;
 Assert (gameData.multiplayer.players [nPlayer].nObject  >= 0);
 Assert (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject);
-DigiLinkSoundToObject (nSound, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume);
+DigiLinkSoundToObject (nSound, (short) gameData.multiplayer.players [nPlayer].nObject, 0, volume, SOUNDCLASS_PLAYER);
 }
 
 //-----------------------------------------------------------------------------
@@ -3888,7 +3893,7 @@ if (whichfunc == 0)
 	DigiKillSoundLinkedToObject (gameData.multiplayer.players [nPlayer].nObject);
 else if (whichfunc == 3)
 	DigiLinkSoundToObject3 (sound, (short) gameData.multiplayer.players [nPlayer].nObject, 1, F1_0, i2f (256), 
-									AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0);
+									AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END, NULL, 0, SOUNDCLASS_PLAYER);
 }
 
 //-----------------------------------------------------------------------------
