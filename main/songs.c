@@ -97,7 +97,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		gameData.songs.nSongs [bD1Songs] = i;
 		gameData.songs.nLevelSongs [bD1Songs] = gameData.songs.nSongs [bD1Songs] - gameData.songs.nFirstLevelSong [bD1Songs];
 		if (!gameData.songs.nFirstLevelSong [bD1Songs])
-			Error("gameData.songs.info are missing.");
+			Error ("Descent 1 songs are missing.");
 		CFClose(&cf);
 		}
 	gameData.songs.nTotalSongs = i;
