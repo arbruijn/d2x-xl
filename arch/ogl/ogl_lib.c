@@ -564,10 +564,8 @@ else
 		glCullFace (GL_BACK);
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
-#if 0
 		glEnable (GL_ALPHA_TEST);
 		glAlphaFunc (GL_GEQUAL, (float) 0.01);
-#endif
 		}
 #if 0
 	if (SHOW_DYN_LIGHT) {//for optional hardware lighting
