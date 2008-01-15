@@ -468,11 +468,19 @@ SOURCE=..\..\main\digiobj.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\dropobject.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\effects.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\main\endlevel.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\entropy.c
 # End Source File
 # Begin Source File
 
@@ -620,6 +628,10 @@ SOURCE=..\..\main\mission.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\monsterball.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\morph.c
 # End Source File
 # Begin Source File
@@ -749,6 +761,10 @@ SOURCE=..\..\main\scores.c
 # Begin Source File
 
 SOURCE=..\..\main\segment.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\slowmotion.c
 # End Source File
 # Begin Source File
 
@@ -977,11 +993,19 @@ SOURCE=..\..\main\digi.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\dropobject.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\effects.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\main\endlevel.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\entropy.h
 # End Source File
 # Begin Source File
 
@@ -1197,6 +1221,10 @@ SOURCE=..\..\include\mono.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\monsterball.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\morph.h
 # End Source File
 # Begin Source File
@@ -1362,6 +1390,10 @@ SOURCE=..\..\main\slew.c
 # Begin Source File
 
 SOURCE=..\..\main\slew.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\slowmotion.h
 # End Source File
 # Begin Source File
 
