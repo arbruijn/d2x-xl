@@ -565,8 +565,10 @@ if (!(bMonitor || bOverlay)) {
 	return 0;
 	}
 #endif
+#if 0
 if (!bBlend)
 	glDisable (GL_BLEND);
+#endif
 #if 0
 {
 	int i;
@@ -603,8 +605,10 @@ if (!bMultiTexture && (bOverlay || bMonitor)) {
 	glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 	gameStates.render.history.bmBot = bmTop;
 	}
+#if 0
 if (!bBlend)
 	glEnable (GL_BLEND);
+#endif
 return 0;
 }
 

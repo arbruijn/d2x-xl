@@ -82,7 +82,7 @@ return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, gameStates.app.che
 //	Scan list of gameData.objs.objects rendered last frame, find one that satisfies function of nearness to center and distance.
 int FindHomingObject (vmsVector *curpos, tObject *trackerP)
 {
-	int	i;
+	int	i, bOmega = (trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID);
 	fix	maxDot = -F1_0*2;
 	int	nBestObj = -1;
 	int	curMinTrackableDot;
@@ -94,7 +94,7 @@ Assert (gameStates.app.cheats.bHomingWeapons ||
 		  (trackerP->nType == OBJ_PLAYER) || 
 		  bGuidedMslView || 
 		  WI_homingFlag (trackerP->id) || 
-		  (trackerP->id == OMEGA_ID));
+		  bOmega);
 
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
 
@@ -102,7 +102,7 @@ if (IsMultiGame)
 	return CallFindHomingObjectComplete (trackerP, curpos);
 
 curMinTrackableDot = MIN_TRACKABLE_DOT;
-if ((trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID))
+if (bOmega)
 	curMinTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 
 //	Not in network mode.  If not fired by tPlayer, then track player.
@@ -130,7 +130,7 @@ else {
 	maxTrackableDist = MAX_TRACKABLE_DIST;
 	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->nType == OBJ_WEAPON) && (trackerP->id == EARTHSHAKER_MEGA_ID))
 		maxTrackableDist *= 2;
-	else if (trackerP->id == OMEGA_ID)
+	else if (bOmega)
 		maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
 
 	//	Not in network mode and fired by player.
@@ -153,9 +153,11 @@ else {
 				continue;
 			}
 		else if (curObjP->nType == OBJ_WEAPON) {
-			if ((trackerP->id != OMEGA_ID) || !gameData.objs.bIsMissile [curObjP->id])
+			if (!EGI_FLAG (bKillMissiles, 0, 1, 0) || !bOmega || !(gameData.objs.bIsMissile [curObjP->id] || WeaponIsMine (curObjP->id)))
 				continue;
 			}
+		else if (curObjP->nType != OBJ_PLAYER)
+			continue;
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
 		dist = VmVecNormalizeQuick (&vecToCurObj);
 		if (dist < maxTrackableDist) {
@@ -196,7 +198,7 @@ return nBestObj;
 //	Can track two kinds of gameData.objs.objects.  If you are only interested in one nType, set track_objType2 to NULL
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing gameData.objs.objects not track parent's prox bombs.
-int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_objType1, int track_objType2)
+int FindHomingObjectComplete (vmsVector *curpos, tObject *trackerP, int track_objType1, int track_objType2)
 {
 	int	nObject;
 	fix	maxDot = -F1_0*2;
@@ -205,10 +207,10 @@ int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_obj
 	fix	minTrackableDot;
 
 	//	Contact Mike: This is a bad and stupid thing.  Who called this routine with an illegal laser nType??
-//Assert ((WI_homingFlag (tracker->id)) || (tracker->id == OMEGA_ID));
+//Assert ((WI_homingFlag (trackerP->id)) || (trackerP->id == OMEGA_ID));
 
 maxTrackableDist = MAX_TRACKABLE_DIST;
-if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (tracker->nType == OBJ_WEAPON) && (tracker->id == EARTHSHAKER_MEGA_ID)) {
+if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->nType == OBJ_WEAPON) && (trackerP->id == EARTHSHAKER_MEGA_ID)) {
 	maxTrackableDist *= 2;
 	minTrackableDot = -F1_0;
 	}
@@ -219,7 +221,7 @@ else
 	minTrackableDot = MIN_TRACKABLE_DOT;
 #endif
 
-if (tracker->id == OMEGA_ID) {
+if ((trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID)) {
 	maxTrackableDist = OMEGA_MAX_TRACKABLE_DIST;
 	minTrackableDot = OMEGA_MIN_TRACKABLE_DOT;
 	}
@@ -235,11 +237,11 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 			continue;
 		if (!WeaponIsPlayerMine (curObjP->id))
 			continue;
-		if (curObjP->cType.laserInfo.nParentSig == tracker->cType.laserInfo.nParentSig)
+		if (curObjP->cType.laserInfo.nParentSig == trackerP->cType.laserInfo.nParentSig)
 			continue;
 		bIsProximity = 1;
 		}
-	if (nObject == tracker->cType.laserInfo.nParentObj) // Don't track shooter
+	if (nObject == trackerP->cType.laserInfo.nParentObj) // Don't track shooter
 		continue;
 
 	//	Don't track cloaked players.
@@ -247,7 +249,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 		if (gameData.multiplayer.players [curObjP->id].flags & PLAYER_FLAGS_CLOAKED)
 			continue;
 		// Don't track teammates in team games
-		if (IsTeamGame && (gameData.objs.objects [tracker->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) && (GetTeam (curObjP->id) == GetTeam (gameData.objs.objects [tracker->cType.laserInfo.nParentObj].id)))
+		if (IsTeamGame && (gameData.objs.objects [trackerP->cType.laserInfo.nParentObj].nType == OBJ_PLAYER) && (GetTeam (curObjP->id) == GetTeam (gameData.objs.objects [trackerP->cType.laserInfo.nParentObj].id)))
 			continue;
 		}
 
@@ -255,7 +257,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	if ((curObjP->nType == OBJ_ROBOT) && (curObjP->cType.aiInfo.CLOAKED))
 		continue;
 	//	Your missiles don't track your escort.
-	if ((ROBOTINFO (curObjP->id).companion) && (tracker->cType.laserInfo.parentType == OBJ_PLAYER))
+	if ((ROBOTINFO (curObjP->id).companion) && (trackerP->cType.laserInfo.parentType == OBJ_PLAYER))
 		continue;
 
 	VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
@@ -263,7 +265,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 
 	if (dist < maxTrackableDist) {
 		VmVecNormalizeQuick (&vecToCurObj);
-		dot = VmVecDot (&vecToCurObj, &tracker->position.mOrient.fVec);
+		dot = VmVecDot (&vecToCurObj, &trackerP->position.mOrient.fVec);
 		if (bIsProximity)
 			dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...
 
@@ -271,7 +273,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 		//	to determine if an tObject is initially trackable.  FindHomingObject is called on subsequent
 		//	frames to determine if the tObject remains trackable.
 		if ((dot > minTrackableDot) && (dot > maxDot) &&
-			 (ObjectToObjectVisibility (tracker, gameData.objs.objects + nObject, FQ_TRANSWALL))) {
+			 (ObjectToObjectVisibility (trackerP, gameData.objs.objects + nObject, FQ_TRANSWALL))) {
 			maxDot = dot;
 			nBestObj = nObject;
 			}
