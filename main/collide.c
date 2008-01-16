@@ -2802,3 +2802,6 @@ void SetDebrisCollisions (void)
 SET_COLLISION (OBJ_PLAYER, OBJ_DEBRIS, h);
 SET_COLLISION (OBJ_ROBOT, OBJ_DEBRIS, h);
 }
+
+//	-----------------------------------------------------------------------------
+// eof

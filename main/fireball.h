@@ -23,9 +23,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BLAST_LIFE	(2 * F1_0 / 5)
 #define BLAST_SCALE	(5 * F1_0 / BLAST_LIFE)
 
-tObject *ObjectCreateExplosion (short nSegment, vmsVector *position, fix size, ubyte vclipType);
-tObject *ObjectCreateMuzzleFlash (short nSegment, vmsVector *position, fix size, ubyte vclipType);
-
 tObject *ObjectCreateBadassExplosion(tObject *objp, short nSegment,
 		vmsVector *position, fix size, ubyte vclipType,
 		fix maxdamage, fix maxdistance, fix maxforce, short parent);

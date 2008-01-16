@@ -572,52 +572,52 @@ subTitles.nCaptions = 0;
 //draw the subtitles for this frame
 void DrawSubTitles (int nFrame)
 {
-	static int active_subtitles [MAX_ACTIVE_SUBTITLES];
-	static int num_active_subtitles, next_subtitle, line_spacing;
+	static int activeSubTitleList [MAX_ACTIVE_SUBTITLES];
+	static int nActiveSubTitles, nNextSubTitle, nLineSpacing;
 	int t, y;
-	int must_erase=0;
+	int bMustErase = 0;
 
 if (nFrame == 0) {
-	num_active_subtitles = 0;
-	next_subtitle = 0;
+	nActiveSubTitles = 0;
+	nNextSubTitle = 0;
 	GrSetCurFont (GAME_FONT);
-	line_spacing = grdCurCanv->cvFont->ftHeight + (grdCurCanv->cvFont->ftHeight >> 2);
+	nLineSpacing = grdCurCanv->cvFont->ftHeight + (grdCurCanv->cvFont->ftHeight >> 2);
 	GrSetFontColor (255, -1);
 	}
 
 //get rid of any subtitles that have expired
-for (t=0;t<num_active_subtitles;)
-	if (nFrame > subTitles.captions [active_subtitles [t]].last_frame) {
+for (t = 0; t <nActiveSubTitles; )
+	if (nFrame > subTitles.captions [activeSubTitleList [t]].last_frame) {
 		int t2;
-		for (t2=t;t2<num_active_subtitles-1;t2++)
-			active_subtitles [t2] = active_subtitles [t2+1];
-		num_active_subtitles--;
-		must_erase = 1;
+		for (t2 = t; t2 < nActiveSubTitles - 1; t2++)
+			activeSubTitleList [t2] = activeSubTitleList [t2+1];
+		nActiveSubTitles--;
+		bMustErase = 1;
 	}
 	else
 		t++;
 
 //get any subtitles new for this frame 
-while (next_subtitle < subTitles.nCaptions && nFrame >= subTitles.captions [next_subtitle].first_frame) {
-	if (num_active_subtitles >= MAX_ACTIVE_SUBTITLES)
+while (nNextSubTitle < subTitles.nCaptions && nFrame >= subTitles.captions [nNextSubTitle].first_frame) {
+	if (nActiveSubTitles >= MAX_ACTIVE_SUBTITLES)
 		Error ("Too many active subtitles!");
-	active_subtitles [num_active_subtitles++] = next_subtitle;
-	next_subtitle++;
+	activeSubTitleList [nActiveSubTitles++] = nNextSubTitle;
+	nNextSubTitle++;
 	}
 
 //find y coordinate for first line of subtitles
-y = grdCurCanv->cvBitmap.bmProps.h- ((line_spacing+1)*MAX_ACTIVE_SUBTITLES+2);
+y = grdCurCanv->cvBitmap.bmProps.h- ((nLineSpacing+1)*MAX_ACTIVE_SUBTITLES+2);
 
 //erase old subtitles if necessary
-if (must_erase) {
+if (bMustErase) {
 	GrSetColorRGB (0, 0, 0, 255);
 	GrRect (0, y, grdCurCanv->cvBitmap.bmProps.w-1, grdCurCanv->cvBitmap.bmProps.h-1);
 	}
 //now draw the current subtitles
-for (t=0;t<num_active_subtitles;t++)
-	if (active_subtitles [t] != -1) {
-		GrString (0x8000, y, subTitles.captions [active_subtitles [t]].msg, NULL);
-		y += line_spacing+1;
+for (t=0;t<nActiveSubTitles;t++)
+	if (activeSubTitleList [t] != -1) {
+		GrString (0x8000, y, subTitles.captions [activeSubTitleList [t]].msg, NULL);
+		y += nLineSpacing+1;
 	}
 }
 
@@ -776,7 +776,7 @@ int RequestCD (void)
 
 void init_movie (char *filename, int libnum, int isRobots, int required)
 {
-	int high_res, try;
+	int bHighRes, try;
 	char *res = strchr (filename, '.') - 1; // 'h' == high resolution, 'l' == low
 
 #if 0//ndef RELEASE
@@ -787,8 +787,8 @@ void init_movie (char *filename, int libnum, int isRobots, int required)
 #endif
 
 	//for robots, load highres versions if highres menus set
-	high_res = isRobots ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
-	if (high_res)
+	bHighRes = isRobots ? gameStates.menus.bHiresAvailable : gameOpts->movies.bHires;
+	if (bHighRes)
 		*res = 'h';
 	for (try = 0; (movies.libs [libnum] = InitMovieLib (filename)) == NULL; try++) {
 		char name2 [100];
@@ -800,22 +800,26 @@ void init_movie (char *filename, int libnum, int isRobots, int required)
 		if (movies.libs [libnum] != NULL) {
 			movies.libs [libnum]->flags |= MLF_ON_CD;
 			break; // we found our movie on the CD
-		} else {
+			}
+		else {
 			if (try == 0) { // first try
 				if (*res == 'h') { // try low res instead
 					*res = 'l';
-					high_res = 0;
-				} else if (*res == 'l') { // try high
+					bHighRes = 0;
+					}
+				else if (*res == 'l') { // try high
 					*res = 'h';
-					high_res = 1;
-				} else {
+					bHighRes = 1;
+					}
+				else {
 #ifdef _DEBUG
 					if (required)
 						Warning (TXT_MOVIE_FILE, filename);
 #endif
 					break;
+					}
 				}
-			} else { // try == 1
+			else { // try == 1
 				if (required) {
 					*res = '*';
 #ifdef _DEBUG
@@ -827,17 +831,17 @@ void init_movie (char *filename, int libnum, int isRobots, int required)
 		}
 	}
 
-	if (isRobots && movies.libs [libnum]!=NULL)
-		gameStates.movies.nRobots = high_res?2:1;
+	if (isRobots && movies.libs [libnum] != NULL)
+		gameStates.movies.nRobots = bHighRes ? 2 : 1;
 }
 
 //-----------------------------------------------------------------------
 
 void close_movie (int i)
 {
-	if (movies.libs [i]) {
-		D2_FREE (movies.libs [i]->movies);
-		D2_FREE (movies.libs [i]);
+if (movies.libs [i]) {
+	D2_FREE (movies.libs [i]->movies);
+	D2_FREE (movies.libs [i]);
 	}
 }
 
@@ -901,7 +905,7 @@ if (!lib)
 	return 0;
 for (i = 0; i < lib->n_movies; i++)
 	if (!stricmp (filename, lib->movies [i].name)) {	//found the movie in a library 
-		if (bFromCD = (lib->flags & MLF_ON_CD))
+		if ((bFromCD = (lib->flags & MLF_ON_CD)))
 			SongsStopRedbook ();		//ready to read from CD
 		do {		//keep trying until we get the file handle
 			CFOpen (cfp, lib->name, gameFolders.szMovieDir, "rb", 0);
