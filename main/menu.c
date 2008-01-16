@@ -4404,31 +4404,31 @@ do {
 		optHitAngles = opt++;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_RADIO (opt, TXT_IMMUNE_MISSILES, 0, KEY_I, 2, HTX_KILL_MISSILES);
+		ADD_RADIO (opt, TXT_IMMUNE_MISSILES, 0, KEY_I, 1, HTX_KILL_MISSILES);
 		optKillMissiles = opt++;
-		ADD_RADIO (opt, TXT_OMEGA_KILLS_MISSILES, 0, KEY_K, 2, HTX_KILL_MISSILES);
+		ADD_RADIO (opt, TXT_OMEGA_KILLS_MISSILES, 0, KEY_K, 1, HTX_KILL_MISSILES);
 		opt++;
-		ADD_RADIO (opt, TXT_KILL_MISSILES, 0, KEY_A, 2, HTX_KILL_MISSILES);
+		ADD_RADIO (opt, TXT_KILL_MISSILES, 0, KEY_A, 1, HTX_KILL_MISSILES);
 		opt++;
 		m [optKillMissiles + extraGameInfo [0].bKillMissiles].value = 1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_RADIO (opt, TXT_AUTOLEVEL_NONE, 0, KEY_N, 1, HTX_AUTO_LEVELLING);
+		ADD_RADIO (opt, TXT_AUTOLEVEL_NONE, 0, KEY_N, 2, HTX_AUTO_LEVELLING);
 		optAutoLevel = opt++;
-		ADD_RADIO (opt, TXT_AUTOLEVEL_SIDE, 0, KEY_S, 1, HTX_AUTO_LEVELLING);
+		ADD_RADIO (opt, TXT_AUTOLEVEL_SIDE, 0, KEY_S, 2, HTX_AUTO_LEVELLING);
 		opt++;
-		ADD_RADIO (opt, TXT_AUTOLEVEL_FLOOR, 0, KEY_F, 1, HTX_AUTO_LEVELLING);
+		ADD_RADIO (opt, TXT_AUTOLEVEL_FLOOR, 0, KEY_F, 2, HTX_AUTO_LEVELLING);
 		opt++;
-		ADD_RADIO (opt, TXT_AUTOLEVEL_GLOBAL, 0, KEY_M, 1, HTX_AUTO_LEVELLING);
+		ADD_RADIO (opt, TXT_AUTOLEVEL_GLOBAL, 0, KEY_M, 2, HTX_AUTO_LEVELLING);
 		opt++;
 		m [optAutoLevel + NMCLAMP (gameOpts->gameplay.nAutoLeveling, 0, 3)].value = 1;
 		ADD_TEXT (opt, "", 0);
 		opt++;
-		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 2, HTX_GPLAY_HITBOXES);
+		ADD_RADIO (opt, TXT_HIT_SPHERES, 0, KEY_W, 3, HTX_GPLAY_HITBOXES);
 		optHitboxes = opt++;
-		ADD_RADIO (opt, TXT_SIMPLE_HITBOXES, 0, KEY_W, 2, HTX_GPLAY_HITBOXES);
+		ADD_RADIO (opt, TXT_SIMPLE_HITBOXES, 0, KEY_W, 3, HTX_GPLAY_HITBOXES);
 		opt++;
-		ADD_RADIO (opt, TXT_COMPLEX_HITBOXES, 0, KEY_W, 2, HTX_GPLAY_HITBOXES);
+		ADD_RADIO (opt, TXT_COMPLEX_HITBOXES, 0, KEY_W, 3, HTX_GPLAY_HITBOXES);
 		opt++;
 		m [optHitboxes + NMCLAMP (extraGameInfo [0].nHitboxes, 0, 2)].value = 1;
 		}
@@ -4646,8 +4646,7 @@ if (gameStates.sound.bRedbookEnabled) {
 		SetRedbookVolume (gameConfig.nRedbookVolume);
 		}
 	}
-else 
-	{
+else {
 	if (gameConfig.nMidiVolume != m [soundOpts.nMusicVol].value) {
 		int bSongPlaying = (gameConfig.nMidiVolume > 0);
 

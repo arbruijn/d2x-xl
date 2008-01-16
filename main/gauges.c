@@ -62,6 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_bitmap.h"
 #include "ogl_hudstuff.h"
+#include "slowmotion.h"
 
 #define SHOW_PLAYER_IP		0
 
