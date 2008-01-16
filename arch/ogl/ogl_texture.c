@@ -485,7 +485,7 @@ int OglFillTexBuf (
 	int		bTransp;
 
 #ifdef _DEBUG
-if (strstr (bmP->szName, "door42"))
+if (strstr (bmP->szName, "ceil024"))
 	bmP = bmP;
 #endif
 gameData.render.ogl.palette = (BM_PARENT (bmP) ? BM_PARENT (bmP)->bmPalette : bmP->bmPalette);
@@ -533,12 +533,12 @@ for (y = 0; y < tHeight; y++) {
 					break;
 
 				case GL_RGBA:
-					*((GLuint *) bufP) = nTransp ? 0 : 0xffffffff;
+					*((GLuint *) bufP) = (nTransp ? 0 : 0xffffffff);
 					bufP += 4;
 					break;
 				
 				case GL_RGBA4:
-					*((GLushort *) bufP) = nTransp ? 0 : 0xffff;
+					*((GLushort *) bufP) = (nTransp ? 0 : 0xffff);
 					bufP += 2;
 					break;
 				}
@@ -934,7 +934,7 @@ int OglLoadTexture (grsBitmap *bmP, int dxo, int dyo, tOglTexture *texP, int nTr
 if (!bmP)
 	return 1;
 #ifdef _DEBUG
-if (strstr (bmP->szName, "plasblob"))
+if (strstr (bmP->szName, "ceil024"))
 	bmP = bmP;
 #endif
 if (texP) {
@@ -1204,6 +1204,10 @@ int OglLoadBmTexture (grsBitmap *bmP, int bDoMipMap, int nTransp, int bLoad)
 	int	i, h, w, nFrames;
 
 bmP = BmOverride (bmP, -1);
+#ifdef _DEBUG
+if (strstr (bmP->szName, "ceil024"))
+	bmP = bmP;
+#endif
 h = bmP->bmProps.h;
 w = bmP->bmProps.w;
 if (!(h * w))

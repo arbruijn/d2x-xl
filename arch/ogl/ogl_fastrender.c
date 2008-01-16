@@ -218,7 +218,7 @@ else if (bColorKey || bMultiTexture) {
 	glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 	glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
 	}
-else if (gameStates.render.history.nShader > 0) {
+else if (gameStates.render.history.nShader >= 0) {
 	glUseProgramObject (0);
 	nShader = -1;
 	}

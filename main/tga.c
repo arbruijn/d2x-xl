@@ -653,19 +653,15 @@ bmMask->bmBPP = 1;
 UseBitmapCache (bmMask, (int) bmMask->bmProps.h * (int) bmMask->bmProps.rowSize);
 if (bmP->bmProps.flags & BM_FLAG_TGA) {
 	for (pi = bmP->bmTexBuf, pm = bmMask->bmTexBuf; i; i--, pi += 4, pm++)
-		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128)) {
+		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
 			*pm = 0;
-			//pi [0] = pi [1] = pi [2] = 0;
-			}
 		else
 			*pm = 0xff;
 	}
 else {
 	for (pi = bmP->bmTexBuf, pm = bmMask->bmTexBuf; i; i--, pi++, pm++)
-		if (*pi == SUPER_TRANSP_COLOR) {
+		if (*pi == SUPER_TRANSP_COLOR)
 			*pm = 0;
-			//*pi = 0;
-			}
 		else
 			*pm = 0xff;
 	}
