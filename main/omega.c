@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#	include <conf.h>
+#endif
+
 #include "inferno.h"
 #include "error.h"
 #include "gameseg.h"
