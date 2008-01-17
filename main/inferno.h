@@ -437,6 +437,7 @@ typedef struct tSoundOptions {
 	int digiSampleRate;
 	int bShip;
 	int bMissiles;
+	fix xCustomSoundVolume;
 } tSoundOptions;
 
 //------------------------------------------------------------------------------

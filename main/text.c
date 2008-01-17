@@ -1769,6 +1769,7 @@ char *defaultGameTexts [][2] = {
 	{"~Klangkanaele: %d", "sound ~Channels: %d"},
 	{"Leistungs-Einstellungen", "Performance Settings"},
 	{"~Leistungs-Einstellungen...", "p~Erformance Settings..."},
+	{"Lautstaerke ~Zusatzklaenge: %d%c", "~Custom sound volume: %d%c"},
 #if 0
 	{"", ""},
 #endif

@@ -1810,10 +1810,10 @@ void LoadGameTexts(void);
 #define TXT_SOUND_CHANNEL_COUNT	GT(1017)
 #define TXT_SETPERF_MENUTITLE		GT(1018)
 #define TXT_SETPERF_OPTION			GT(1019)
+#define TXT_CUSTOM_SOUNDVOL		GT(1020)
 
 #if 0
 
-#define TXT_				GT(1020)
 #define TXT_				GT(1021)
 #define TXT_				GT(1022)
 #define TXT_				GT(1023)
@@ -2353,10 +2353,10 @@ void LoadGameTexts(void);
 #define HTX_MISSILE_SOUND			HT(339)			
 #define HTX_SOUND_CHANNEL_COUNT	HT(340)			
 #define HTX_PERFORMANCE_SETTINGS	HT(341)			
+#define HTX_CUSTOM_SOUNDVOL		HT(342)			
 
 #if 0
 
-#define HTX_					HT(342)			
 #define HTX_					HT(343)			
 #define HTX_					HT(344)			
 #define HTX_					HT(345)			

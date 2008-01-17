@@ -313,13 +313,18 @@ return nObject;
 int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment, 
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
-	int		nObject, nViewer;
+	int		nObject, nViewer, bPlayerMsl, bBigMsl;
 	tObject	*objP, *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
 	fix		xParentSpeed, xWeaponSpeed;
 	fix		volume;
 	fix		xLaserLength = 0;
-	Assert (nWeaponType < gameData.weapons.nTypes [0]);
 
+	static char *szMslSounds [2][2] = {
+		{"robotmissile-small.wav", "robotmissile-big.wav"},
+		{"playermissile-small.wav", "playermissile-big.wav"}
+		};
+
+Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
 	nWeaponType = 0;
 //	Don't let homing blobs make muzzle flash.
@@ -486,15 +491,15 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
 		DigiPlaySampleClass (gameData.weapons.info [objP->id].flashSound, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		}
 	if (gameOpts->sound.bMissiles && gameData.objs.bIsMissile [nWeaponType]) {
-		if ((nWeaponType == SMARTMSL_ID) ||
-			 (nWeaponType == MEGAMSL_ID) ||
-			 (nWeaponType == EARTHSHAKER_ID) ||
-			 (nWeaponType == ROBOT_SMARTMSL_ID) ||
-			 (nWeaponType == ROBOT_MEGAMSL_ID) ||
-			 (nWeaponType == ROBOT_EARTHSHAKER_ID))
-			DigiLinkSoundToObject3 (-1, nObject, 1, F1_0, i2f (256), -1, -1, "missileflight-big.wav", 1, SOUNDCLASS_MISSILE);
-		else
-			DigiLinkSoundToObject3 (-1, nObject, 1, F1_0 / 4, i2f (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_MISSILE);
+		bBigMsl = (nWeaponType == SMARTMSL_ID) ||
+					 (nWeaponType == MEGAMSL_ID) ||
+					 (nWeaponType == EARTHSHAKER_ID) ||
+					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
+					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
+					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
+		bPlayerMsl = pParent && (pParent->nType == OBJ_PLAYER);
+		DigiLinkSoundToObject3 (-1, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, i2f (256), -1, -1, 
+										szMslSounds [bPlayerMsl][bBigMsl], 1, SOUNDCLASS_MISSILE);
 		}
 	else if (nWeaponType == FLARE_ID)
 		DigiSetObjectSound (nObject, -1, "flareburning.wav");

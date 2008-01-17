@@ -243,6 +243,7 @@ static struct {
 	int	nMusicVol;
 	int	nRedbook;
 	int	nChannels;
+	int	nVolume;
 } soundOpts;
 
 static struct {
@@ -4613,6 +4614,15 @@ if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != m [soundOp
 	sprintf (m [soundOpts.nChannels].text, TXT_SOUND_CHANNEL_COUNT, gameStates.sound.digi.nMaxChannels);
 	m [soundOpts.nChannels].rebuild = 1;
 	}
+if ((soundOpts.nVolume >= 0) && (gameOpts->sound.xCustomSoundVolume != m [soundOpts.nVolume].value)) {
+	if (!gameOpts->sound.xCustomSoundVolume || !m [soundOpts.nVolume].value)
+		*nLastKey = -2;
+	else
+		m [soundOpts.nVolume].rebuild = 1;
+	gameOpts->sound.xCustomSoundVolume = m [soundOpts.nVolume].value;
+	sprintf (m [soundOpts.nVolume].text, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
+	return;
+	}
 if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
 	if (m [soundOpts.nRedbook].value && !gameOpts->sound.bUseRedbook) {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_REDBOOK_DISABLED);
@@ -4672,7 +4682,7 @@ citem++;		//kill warning
 void SoundMenu ()
 {
    tMenuItem	m [10];
-	char			szChannels [50];
+	char			szChannels [50], szVolume [50];
 	int			i, opt, choice = 0, 
 					optReverse, optShipSound = -1, optMslSound = -1,
 					bSongPlaying = (gameConfig.nMidiVolume > 0);
@@ -4695,14 +4705,16 @@ do {
 		ADD_SLIDER (opt, szChannels + 1, gameStates.sound.nSoundChannels, 0, 
 						sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
 		soundOpts.nChannels = opt++;
+		sprintf (szVolume + 1, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
+		*szVolume = *(TXT_CUSTOM_SOUNDVOL - 1);
+		ADD_SLIDER (opt, szVolume + 1, gameOpts->sound.xCustomSoundVolume, 0, 
+						10, KEY_C, HTX_CUSTOM_SOUNDVOL);  
+		soundOpts.nVolume = opt++;
 		}
-	ADD_TEXT (opt, "", 0);
-	opt++;
-	ADD_CHECK (opt, TXT_REDBOOK_ENABLED, gameStates.sound.bRedbookPlaying, KEY_C, HTX_ONLINE_MANUAL);
-	soundOpts.nRedbook = opt++;
-	ADD_CHECK (opt, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
-	optReverse = opt++;
-	if (!gameStates.app.bNostalgia) {
+	if (gameStates.app.bNostalgia || !gameOpts->sound.xCustomSoundVolume) 
+		optShipSound = 
+		optMslSound = -1;
+	else {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		ADD_CHECK (opt, TXT_SHIP_SOUND, gameOpts->sound.bShip, KEY_S, HTX_SHIP_SOUND);
@@ -4710,11 +4722,17 @@ do {
 		ADD_CHECK (opt, TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
 		optMslSound = opt++;
 		}
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_CHECK (opt, TXT_REDBOOK_ENABLED, gameStates.sound.bRedbookPlaying, KEY_C, HTX_ONLINE_MANUAL);
+	soundOpts.nRedbook = opt++;
+	ADD_CHECK (opt, TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
+	optReverse = opt++;
 	Assert (sizeofa (m) >= opt);
 	i = ExecMenu1 (NULL, TXT_SOUND_OPTS, opt, m, SoundMenuCallback, &choice);
 	gameStates.sound.bRedbookEnabled = m [soundOpts.nRedbook].value;
 	gameConfig.bReverseChannels = m [optReverse].value;
-} while (i > -1);
+} while (i == -2);
 
 if (gameConfig.nMidiVolume < 1)   {
 		DigiPlayMidiSong (NULL, NULL, NULL, 0, 0);
@@ -4722,8 +4740,8 @@ if (gameConfig.nMidiVolume < 1)   {
 else if (!bSongPlaying)
 	SongsPlaySong (gameStates.sound.nCurrentSong, 1);
 if (!gameStates.app.bNostalgia) {
-	gameOpts->sound.bShip = m [optShipSound].value;
-	gameOpts->sound.bMissiles = m [optMslSound].value;
+	GET_VAL (gameOpts->sound.bShip, optShipSound);
+	GET_VAL (gameOpts->sound.bMissiles, optMslSound);
 	if (!gameOpts->sound.bShip)
 		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 	}

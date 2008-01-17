@@ -49,7 +49,7 @@ CC = gcc
 CCAS = $(CC)
 CCASFLAGS = $(CFLAGS)
 CCDEPMODE = depmode=gcc3
-CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main -pipe -O2 -Wall -Wno-char-subscripts  
+CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main -pipe -O3 -Wall -Wno-char-subscripts  
 CONSOLE_FALSE = 
 CONSOLE_TRUE = #
 CPP = gcc -E
@@ -96,9 +96,9 @@ OGL_LIBS =  -lopengl32 -lglu32
 PACKAGE = d2x-xl
 PACKAGE_BUGREPORT = karx11erx@hotmail.com
 PACKAGE_NAME = d2x-xl
-PACKAGE_STRING = d2x-xl 1.11.67
+PACKAGE_STRING = d2x-xl 1.11.105
 PACKAGE_TARNAME = d2x-xl
-PACKAGE_VERSION = 1.11.67
+PACKAGE_VERSION = 1.11.105
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SDL_CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main
@@ -127,7 +127,7 @@ USE_OPENGL_FALSE = #
 USE_OPENGL_TRUE = 
 USE_SVGALIB_FALSE = 
 USE_SVGALIB_TRUE = #
-VERSION = 1.11.67
+VERSION = 1.11.105
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -193,19 +193,21 @@ escort.c    fireball.c  fuelcen.c   fvi.c       game.c      \
 gamecntl.c  gamefont.c  gamemine.c  gamepal.c   gamerend.c  \
 gamesave.c  gameseg.c   loadgame.c  gauges.c    hostage.c   \
 hud.c       inferno.c   kconfig.c   kludge.c    laser.c     \
-light.c  menu.c      mglobal.c   mission.c   morph.c     \
+light.c		menu.c      mglobal.c   mission.c   morph.c     \
 movie.c     particles.c oof.c 		sphere.c 	input.c		\
 newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
 piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
 render.c    robot.c     scores.c    segment.c   slew.c      \
 songs.c     state.c     switch.c    terrain.c   texmerge.c  \
 text.c      briefings.c vclip.c     wall.c      weapon.c	\
-autodl.c	cameras.c	lightmap.c	tracker.c	objsmoke.c	\
-netmenu.c	cheats.c	banlist.c	thief.c		endlevel.c	\
+autodl.c		cameras.c	lightmap.c	tracker.c	objsmoke.c	\
+netmenu.c	cheats.c		banlist.c	thief.c		endlevel.c	\
 multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
-tga.c		glare.c		radar.c		renderlib.c	transprender.c \
-fastrender.c			renderthreads.c			flightpath.c \
-rendershadows.c			objeffects.c
+tga.c			glare.c		radar.c		renderlib.c	transprender.c \
+fastrender.c	renderthreads.c		flightpath.c \
+rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
+omega.c trackobject.c	monsterball.c	slowmotion.c	dropobject.c	\
+entropy.c
 
 
 EXTRA_libmain_a_SOURCES = \
@@ -230,8 +232,8 @@ songs.h sounds.h state.h switch.h terrain.h texmerge.h text.h textures.h \
 briefings.h vclip.h vers_id.h wall.h weapon.h objrender.h lightning.h perlin.h \
 autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
-objeffects.h \
-joydefs.c
+objeffects.h hiresmodels.h textdata.h omega.h trackobject.h \
+joydefs.h monsterball.h slowmotion.h dropobject.h entropy.h
 
 subdir = main
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -257,7 +259,9 @@ am__libmain_a_SOURCES_DIST = bmread.c dumpmine.c highscores.c multi.c \
 	netmenu.c cheats.c banlist.c thief.c endlevel.c multimsg.c \
 	hoard.c objrender.c lightning.c perlin.c tga.c glare.c radar.c \
 	renderlib.c transprender.c fastrender.c renderthreads.c \
-	flightpath.c rendershadows.c objeffects.c
+	flightpath.c rendershadows.c objeffects.c hiresmodels.c \
+	textdata.c omega.c trackobject.c monsterball.c slowmotion.c \
+	dropobject.c entropy.c
 #am__objects_1 = bmread.$(OBJEXT) dumpmine.$(OBJEXT)
 am__objects_2 = highscores.$(OBJEXT) multi.$(OBJEXT) \
 	multibot.$(OBJEXT) network.$(OBJEXT) \
@@ -293,7 +297,10 @@ am_libmain_a_OBJECTS = $(am__objects_1) $(am__objects_2) ai.$(OBJEXT) \
 	perlin.$(OBJEXT) tga.$(OBJEXT) glare.$(OBJEXT) radar.$(OBJEXT) \
 	renderlib.$(OBJEXT) transprender.$(OBJEXT) fastrender.$(OBJEXT) \
 	renderthreads.$(OBJEXT) flightpath.$(OBJEXT) \
-	rendershadows.$(OBJEXT) objeffects.$(OBJEXT)
+	rendershadows.$(OBJEXT) objeffects.$(OBJEXT) \
+	hiresmodels.$(OBJEXT) textdata.$(OBJEXT) omega.$(OBJEXT) \
+	trackobject.$(OBJEXT) monsterball.$(OBJEXT) \
+	slowmotion.$(OBJEXT) dropobject.$(OBJEXT) entropy.$(OBJEXT)
 libmain_a_OBJECTS = $(am_libmain_a_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
@@ -309,8 +316,9 @@ DEP_FILES = ./$(DEPDIR)/ai.Po ./$(DEPDIR)/ai2.Po \
 	./$(DEPDIR)/config.Po ./$(DEPDIR)/console.Po \
 	./$(DEPDIR)/controls.Po ./$(DEPDIR)/credits.Po \
 	./$(DEPDIR)/crypt.Po ./$(DEPDIR)/digiobj.Po \
-	./$(DEPDIR)/dumpmine.Po ./$(DEPDIR)/effects.Po \
-	./$(DEPDIR)/endlevel.Po ./$(DEPDIR)/escort.Po \
+	./$(DEPDIR)/dropobject.Po ./$(DEPDIR)/dumpmine.Po \
+	./$(DEPDIR)/effects.Po ./$(DEPDIR)/endlevel.Po \
+	./$(DEPDIR)/entropy.Po ./$(DEPDIR)/escort.Po \
 	./$(DEPDIR)/fastrender.Po ./$(DEPDIR)/fireball.Po \
 	./$(DEPDIR)/flightpath.Po ./$(DEPDIR)/fuelcen.Po \
 	./$(DEPDIR)/fvi.Po ./$(DEPDIR)/game.Po \
@@ -319,38 +327,41 @@ DEP_FILES = ./$(DEPDIR)/ai.Po ./$(DEPDIR)/ai2.Po \
 	./$(DEPDIR)/gamerend.Po ./$(DEPDIR)/gamesave.Po \
 	./$(DEPDIR)/gameseg.Po ./$(DEPDIR)/gauges.Po \
 	./$(DEPDIR)/glare.Po ./$(DEPDIR)/highscores.Po \
-	./$(DEPDIR)/hoard.Po ./$(DEPDIR)/hostage.Po \
-	./$(DEPDIR)/hud.Po ./$(DEPDIR)/inferno.Po \
-	./$(DEPDIR)/input.Po ./$(DEPDIR)/kconfig.Po \
-	./$(DEPDIR)/kludge.Po ./$(DEPDIR)/laser.Po \
-	./$(DEPDIR)/light.Po ./$(DEPDIR)/lightmap.Po \
-	./$(DEPDIR)/lightning.Po ./$(DEPDIR)/loadgame.Po \
-	./$(DEPDIR)/menu.Po ./$(DEPDIR)/mglobal.Po \
-	./$(DEPDIR)/mission.Po ./$(DEPDIR)/morph.Po \
+	./$(DEPDIR)/hiresmodels.Po ./$(DEPDIR)/hoard.Po \
+	./$(DEPDIR)/hostage.Po ./$(DEPDIR)/hud.Po \
+	./$(DEPDIR)/inferno.Po ./$(DEPDIR)/input.Po \
+	./$(DEPDIR)/kconfig.Po ./$(DEPDIR)/kludge.Po \
+	./$(DEPDIR)/laser.Po ./$(DEPDIR)/light.Po \
+	./$(DEPDIR)/lightmap.Po ./$(DEPDIR)/lightning.Po \
+	./$(DEPDIR)/loadgame.Po ./$(DEPDIR)/menu.Po \
+	./$(DEPDIR)/mglobal.Po ./$(DEPDIR)/mission.Po \
+	./$(DEPDIR)/monsterball.Po ./$(DEPDIR)/morph.Po \
 	./$(DEPDIR)/movie.Po ./$(DEPDIR)/multi.Po \
 	./$(DEPDIR)/multibot.Po ./$(DEPDIR)/multimsg.Po \
 	./$(DEPDIR)/netmenu.Po ./$(DEPDIR)/netmisc.Po \
 	./$(DEPDIR)/network.Po ./$(DEPDIR)/newdemo.Po \
 	./$(DEPDIR)/newmenu.Po ./$(DEPDIR)/object.Po \
 	./$(DEPDIR)/objeffects.Po ./$(DEPDIR)/objrender.Po \
-	./$(DEPDIR)/objsmoke.Po ./$(DEPDIR)/oof.Po \
-	./$(DEPDIR)/paging.Po ./$(DEPDIR)/particles.Po \
-	./$(DEPDIR)/perlin.Po ./$(DEPDIR)/physics.Po \
-	./$(DEPDIR)/piggy.Po ./$(DEPDIR)/player.Po \
-	./$(DEPDIR)/playsave.Po ./$(DEPDIR)/polyobj.Po \
-	./$(DEPDIR)/powerup.Po ./$(DEPDIR)/radar.Po \
-	./$(DEPDIR)/render.Po ./$(DEPDIR)/renderlib.Po \
+	./$(DEPDIR)/objsmoke.Po ./$(DEPDIR)/omega.Po \
+	./$(DEPDIR)/oof.Po ./$(DEPDIR)/paging.Po \
+	./$(DEPDIR)/particles.Po ./$(DEPDIR)/perlin.Po \
+	./$(DEPDIR)/physics.Po ./$(DEPDIR)/piggy.Po \
+	./$(DEPDIR)/player.Po ./$(DEPDIR)/playsave.Po \
+	./$(DEPDIR)/polyobj.Po ./$(DEPDIR)/powerup.Po \
+	./$(DEPDIR)/radar.Po ./$(DEPDIR)/render.Po \
+	./$(DEPDIR)/renderlib.Po \
 	./$(DEPDIR)/rendershadows.Po \
 	./$(DEPDIR)/renderthreads.Po ./$(DEPDIR)/robot.Po \
 	./$(DEPDIR)/scores.Po ./$(DEPDIR)/segment.Po \
-	./$(DEPDIR)/slew.Po ./$(DEPDIR)/songs.Po \
-	./$(DEPDIR)/sphere.Po ./$(DEPDIR)/state.Po \
-	./$(DEPDIR)/switch.Po ./$(DEPDIR)/terrain.Po \
-	./$(DEPDIR)/texmerge.Po ./$(DEPDIR)/text.Po \
+	./$(DEPDIR)/slew.Po ./$(DEPDIR)/slowmotion.Po \
+	./$(DEPDIR)/songs.Po ./$(DEPDIR)/sphere.Po \
+	./$(DEPDIR)/state.Po ./$(DEPDIR)/switch.Po \
+	./$(DEPDIR)/terrain.Po ./$(DEPDIR)/texmerge.Po \
+	./$(DEPDIR)/text.Po ./$(DEPDIR)/textdata.Po \
 	./$(DEPDIR)/tga.Po ./$(DEPDIR)/thief.Po \
-	./$(DEPDIR)/tracker.Po ./$(DEPDIR)/transprender.Po \
-	./$(DEPDIR)/vclip.Po ./$(DEPDIR)/wall.Po \
-	./$(DEPDIR)/weapon.Po
+	./$(DEPDIR)/tracker.Po ./$(DEPDIR)/trackobject.Po \
+	./$(DEPDIR)/transprender.Po ./$(DEPDIR)/vclip.Po \
+	./$(DEPDIR)/wall.Po ./$(DEPDIR)/weapon.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -408,9 +419,11 @@ include ./$(DEPDIR)/controls.Po
 include ./$(DEPDIR)/credits.Po
 include ./$(DEPDIR)/crypt.Po
 include ./$(DEPDIR)/digiobj.Po
+include ./$(DEPDIR)/dropobject.Po
 include ./$(DEPDIR)/dumpmine.Po
 include ./$(DEPDIR)/effects.Po
 include ./$(DEPDIR)/endlevel.Po
+include ./$(DEPDIR)/entropy.Po
 include ./$(DEPDIR)/escort.Po
 include ./$(DEPDIR)/fastrender.Po
 include ./$(DEPDIR)/fireball.Po
@@ -428,6 +441,7 @@ include ./$(DEPDIR)/gameseg.Po
 include ./$(DEPDIR)/gauges.Po
 include ./$(DEPDIR)/glare.Po
 include ./$(DEPDIR)/highscores.Po
+include ./$(DEPDIR)/hiresmodels.Po
 include ./$(DEPDIR)/hoard.Po
 include ./$(DEPDIR)/hostage.Po
 include ./$(DEPDIR)/hud.Po
@@ -443,6 +457,7 @@ include ./$(DEPDIR)/loadgame.Po
 include ./$(DEPDIR)/menu.Po
 include ./$(DEPDIR)/mglobal.Po
 include ./$(DEPDIR)/mission.Po
+include ./$(DEPDIR)/monsterball.Po
 include ./$(DEPDIR)/morph.Po
 include ./$(DEPDIR)/movie.Po
 include ./$(DEPDIR)/multi.Po
@@ -457,6 +472,7 @@ include ./$(DEPDIR)/object.Po
 include ./$(DEPDIR)/objeffects.Po
 include ./$(DEPDIR)/objrender.Po
 include ./$(DEPDIR)/objsmoke.Po
+include ./$(DEPDIR)/omega.Po
 include ./$(DEPDIR)/oof.Po
 include ./$(DEPDIR)/paging.Po
 include ./$(DEPDIR)/particles.Po
@@ -476,6 +492,7 @@ include ./$(DEPDIR)/robot.Po
 include ./$(DEPDIR)/scores.Po
 include ./$(DEPDIR)/segment.Po
 include ./$(DEPDIR)/slew.Po
+include ./$(DEPDIR)/slowmotion.Po
 include ./$(DEPDIR)/songs.Po
 include ./$(DEPDIR)/sphere.Po
 include ./$(DEPDIR)/state.Po
@@ -483,9 +500,11 @@ include ./$(DEPDIR)/switch.Po
 include ./$(DEPDIR)/terrain.Po
 include ./$(DEPDIR)/texmerge.Po
 include ./$(DEPDIR)/text.Po
+include ./$(DEPDIR)/textdata.Po
 include ./$(DEPDIR)/tga.Po
 include ./$(DEPDIR)/thief.Po
 include ./$(DEPDIR)/tracker.Po
+include ./$(DEPDIR)/trackobject.Po
 include ./$(DEPDIR)/transprender.Po
 include ./$(DEPDIR)/vclip.Po
 include ./$(DEPDIR)/wall.Po

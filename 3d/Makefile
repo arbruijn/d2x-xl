@@ -49,7 +49,7 @@ CC = gcc
 CCAS = $(CC)
 CCASFLAGS = $(CFLAGS)
 CCDEPMODE = depmode=gcc3
-CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main -pipe -O2 -Wall -Wno-char-subscripts  
+CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main -pipe -O3 -Wall -Wno-char-subscripts  
 CONSOLE_FALSE = 
 CONSOLE_TRUE = #
 CPP = gcc -E
@@ -96,9 +96,9 @@ OGL_LIBS =  -lopengl32 -lglu32
 PACKAGE = d2x-xl
 PACKAGE_BUGREPORT = karx11erx@hotmail.com
 PACKAGE_NAME = d2x-xl
-PACKAGE_STRING = d2x-xl 1.11.67
+PACKAGE_STRING = d2x-xl 1.11.105
 PACKAGE_TARNAME = d2x-xl
-PACKAGE_VERSION = 1.11.67
+PACKAGE_VERSION = 1.11.105
 PATH_SEPARATOR = :
 RANLIB = ranlib
 SDL_CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main
@@ -127,7 +127,7 @@ USE_OPENGL_FALSE = #
 USE_OPENGL_TRUE = 
 USE_SVGALIB_FALSE = 
 USE_SVGALIB_TRUE = #
-VERSION = 1.11.67
+VERSION = 1.11.105
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
