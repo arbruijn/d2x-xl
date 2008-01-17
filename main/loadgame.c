@@ -388,6 +388,8 @@ if (LOCALPLAYER.energy < INITIAL_ENERGY)
 	LOCALPLAYER.energy = INITIAL_ENERGY;
 if (LOCALPLAYER.shields < gameStates.gameplay.xStartingShields)
 	LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
+if (LOCALPLAYER.primaryWeaponFlags & (1 << OMEGA_INDEX))
+	SetMaxOmegaCharge ();
 if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 	LOCALPLAYER.secondaryAmmo [0] = 2 + NDL - gameStates.app.nDifficultyLevel;
 }

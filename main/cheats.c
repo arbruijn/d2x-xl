@@ -296,6 +296,7 @@ if (!gameStates.app.bD1Mission) {
 		PLAYER_FLAGS_AFTERBURNER | 
 		PLAYER_FLAGS_AMMO_RACK | 
 		PLAYER_FLAGS_CONVERTER;
+	gameData.physics.xAfterburnerCharge = f1_0;
 	}
 if (bVerbose)
 	HUDInitMessage (TXT_ACCESSORIES);
@@ -771,6 +772,8 @@ if (gameStates.app.bD1Mission)
 else
 	LOCALPLAYER.laserLevel = MAX_SUPER_LASER_LEVEL;
 LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
+gameData.physics.xAfterburnerCharge = f1_0;
+SetMaxOmegaCharge ();
 UpdateLaserWeaponInfo ();
 SetLastSuperWeaponStates ();
 }

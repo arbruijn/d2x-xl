@@ -2194,11 +2194,10 @@ if (LOCALPLAYER.energy <= 0) {
 // -- extern void lightning_frame (void);
 
 void GameRenderFrame ();
-extern void OmegaChargeFrame (void);
+void OmegaChargeFrame (void);
+void FlickerLights ();
 
 extern time_t t_currentTime, t_savedTime;
-
-void FlickerLights ();
 
 int GameLoop (int RenderFlag, int bReadControls)
 {
@@ -2210,18 +2209,10 @@ GetSlowTicks ();
 //	RenderFlag = 1; // DEBUG
 //	GrPaletteStepLoad (gamePalette);
 if (nDebugSlowdown) {
-#if 1
 	time_t	t = SDL_GetTicks ();
 	while (SDL_GetTicks () - t < nDebugSlowdown)
 		;
-#else
-	int	h, i, j=0;
-
-	for (h=0; h<nDebugSlowdown; h++)
-		for (i=0; i<1000; i++)
-			j += i;
-#endif
-}
+	}
 #endif
 
 #ifdef _DEBUG
