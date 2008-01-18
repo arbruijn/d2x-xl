@@ -176,7 +176,7 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	objP = nPlayer ? OBJECTS + nPlayer : gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
 	pl->vPos = OBJPOS (objP)->vPos;
 	pl->vDir = OBJPOS (objP)->mOrient.fVec;
-	//VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 4);
+	VmVecScaleInc (&pl->vPos, &pl->vDir, objP->size / 4);
 	}
 }
 

@@ -679,12 +679,14 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGB
 				  GL_FLOAT, gameData.render.lights.dynamic.shader.lights);
 #	endif
 #endif
-#if 0
+#if 1
 if (gameData.render.lights.dynamic.headLights.nLights) {
-	G3EndFrame ();
+	//G3EndFrame ();
+#if 1
 	G3SetViewMatrix (&gameData.objs.viewer->position.vPos, 
 						  &gameData.objs.viewer->position.mOrient, 
 						  gameStates.render.xZoom, 1);
+#endif
 	}
 #endif
 }

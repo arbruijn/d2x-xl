@@ -1141,6 +1141,7 @@ void CreateFaceList (void)
 	vmsVector	vNormal;
 	short			nSegment, nWall, nOvlTexCount, i, sideVerts [4];
 	ubyte			nSide, bColoredSeg, bWall;
+	char			*pszName;
 
 LogErr ("   Creating face list\n");
 gameData.segs.nFaces = 0;
@@ -1185,10 +1186,13 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 				faceP->nOvlOrient = (ubyte) sideP->nOvlOrient;
 				faceP->bTextured = 1;
 				faceP->bTransparent = 0;
+				pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [faceP->nBaseTex].index].name;
+				faceP->bAdditive = strstr (pszName, "force") || strstr (pszName, "lava");
 				} 
 			else if (bColoredSeg) {
 				faceP->nBaseTex = -1;
 				faceP->bTransparent = 1;
+				faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LAVA;
 				}
 			faceP->nType = -1;
 #ifdef _DEBUG

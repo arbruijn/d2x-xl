@@ -349,7 +349,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	}
 return RIAddPoly (faceP->bTextured ? BmOverride (faceP->bmBot, -1) : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
-						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
+						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, faceP->bAdditive);
 }
 
 //------------------------------------------------------------------------------
