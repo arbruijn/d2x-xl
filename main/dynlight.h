@@ -24,6 +24,7 @@ void DeleteLightningLights (void);
 void RemoveDynLights (void);
 void RemoveDynLightningLights (void);
 void SetDynLightPos (short nObject);
+void SetDynLightMaterial (short nSegment, short nSide, short nObject);
 void MoveDynLight (short nObject);
 void TransformDynLights (int bStatic, int bVariable);
 short FindDynLight (short nSegment, short nSide, short nObject);

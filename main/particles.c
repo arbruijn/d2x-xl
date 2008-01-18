@@ -30,6 +30,7 @@
 #include "gameseg.h"
 #include "network.h"
 #include "light.h"
+#include "dynlight.h"
 #include "render.h"
 #include "transprender.h"
 #include "objsmoke.h"

@@ -55,6 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 
 #include "light.h"
+#include "dynlight.h"
 #include "interp.h"
 #include "player.h"
 #include "weapon.h"

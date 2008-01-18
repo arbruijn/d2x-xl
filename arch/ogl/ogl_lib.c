@@ -32,6 +32,7 @@
 #include "strutil.h"
 #include "gameseg.h"
 #include "light.h"
+#include "dynlight.h"
 #include "lightmap.h"
 #include "network.h"
 #include "gr.h"

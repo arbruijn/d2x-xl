@@ -93,6 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "state.h"
 #include "strutil.h"
 #include "light.h"
+#include "dynlight.h"
 #include "ipx.h"
 #include "gr.h"
 

@@ -60,6 +60,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "morph.h"
 #include "light.h"
+#include "dynlight.h"
+#include "headlight.h"
 #include "newdemo.h"
 #include "weapon.h"
 #include "sounds.h"
@@ -1704,7 +1706,7 @@ void HandleTestKey(int key)
 				gameStates.render.nLighting = 0; 
 			break;
 		case KEYDBGGED + KEY_SHIFTED + KEY_L:
-			Beam_brightness=0x38000-Beam_brightness; 
+			xBeamBrightness = 0x38000 - xBeamBrightness; 
 			break;
 		case KEY_PAD5: 
 			slew_stop(); 

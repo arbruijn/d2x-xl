@@ -53,6 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "vclip.h"
 #include "light.h"
+#include "dynlight.h"
 #include "cntrlcen.h"
 #include "newdemo.h"
 #include "automap.h"

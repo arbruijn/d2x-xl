@@ -53,6 +53,7 @@ static char rcsid [] = "$Id: tWall.c,v 1.10 2003/10/04 03:14:48 btb Exp $";
 #include "render.h"
 #include "hudmsg.h"
 #include "light.h"
+#include "dynlight.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"

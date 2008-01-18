@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "player.h"
 #include "gamesave.h"
 #include "light.h"
+#include "dynlight.h"
 #include "gameseg.h"
 //#define _DEBUG
 #ifdef RCS

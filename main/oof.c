@@ -16,6 +16,7 @@
 #include "globvars.h"
 #include "3d.h"
 #include "light.h"
+#include "dynlight.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"

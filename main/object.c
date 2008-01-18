@@ -62,6 +62,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 
 #include "light.h"
+#include "dynlight.h"
+#include "headlight.h"
 #include "interp.h"
 #include "newdemo.h"
 #include "player.h"
@@ -1901,7 +1903,7 @@ if (objP->nType == OBJ_ROBOT) {
 	if (objP->shields > xMaxShields)
 		objP->shields = xMaxShields;
 #ifdef _DEBUG
-	AddOglHeadLight (objP);
+	//AddOglHeadLight (objP);
 #endif
 	}
 objP->vLastPos = objP->position.vPos;			// Save the current position
