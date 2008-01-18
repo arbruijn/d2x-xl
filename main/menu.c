@@ -4706,6 +4706,8 @@ do {
 		ADD_SLIDER (opt, szChannels + 1, gameStates.sound.nSoundChannels, 0, 
 						sizeofa (detailData.nSoundChannels) - 1, KEY_C, HTX_SOUND_CHANNEL_COUNT);  
 		soundOpts.nChannels = opt++;
+		}
+	if (!gameStates.app.bNostalgia) {
 		sprintf (szVolume + 1, TXT_CUSTOM_SOUNDVOL, gameOpts->sound.xCustomSoundVolume * 10, '%');
 		*szVolume = *(TXT_CUSTOM_SOUNDVOL - 1);
 		ADD_SLIDER (opt, szVolume + 1, gameOpts->sound.xCustomSoundVolume, 0, 
