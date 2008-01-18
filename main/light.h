@@ -18,26 +18,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "endlevel.h"
 
 #define MAX_LIGHT       0x10000     // max value
-
 #define MIN_LIGHT_DIST  (F1_0*4)
 
-extern fix Beam_brightness;
-#if 0
-extern fix dynamicLight[MAX_VERTICES];
-extern tRgbColorf dynamicColor[MAX_VERTICES];
-extern char bGotDynColor [MAX_VERTICES];
-#endif
+extern fix xBeamBrightness;
 
-extern void SetDynamicLight(void);
+extern void SetDynamicLight (void);
 
 int LightingMethod (void);
-
-// Compute the lighting from the headlight for a given vertex on a face.
-// Takes:
-//  point - the 3d coords of the point
-//  face_light - a scale factor derived from the surface normal of the face
-// If no surface normal effect is wanted, pass F1_0 for face_light
-fix ComputeHeadLight (vmsVector *point,fix face_light);
 
 // compute the average dynamic light in a tSegment.  Takes the tSegment number
 fix ComputeSegDynamicLight (int nSegment);
@@ -46,9 +33,8 @@ fix ComputeSegDynamicLight (int nSegment);
 // and possibly a rotated 3d point.  If the point isn't specified, the
 // tObject's center point is rotated.
 fix ComputeObjectLight(tObject *obj,vmsVector *rotated_pnt);
+
 void ComputeEngineGlow (tObject *obj, fix *engine_glowValue);
-// turn headlight boost on & off
-void ToggleHeadLight (void);
 
 // returns ptr to flickering light structure, or NULL if can't find
 tVariableLight *FindVariableLight (int nSegment, int nSide);
@@ -66,39 +52,5 @@ void ReadVariableLight (tVariableLight *fl, CFILE *fp);
 
 void InitTextureBrightness (void);
 
-void RegisterLight (tFaceColor *pc, short nSegment, short nSide);
-int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, short nOwner, vmsVector *vPos);
-int RemoveDynLight (short nSegment, short nSide, short nObject);
-void AddDynLights (void);
-void DeleteDynLight (short nLight);
-void DeleteLightningLights (void);
-void RemoveDynLights (void);
-void RemoveDynLightningLights (void);
-void SetDynLightPos (short nObject);
-void MoveDynLight (short nObject);
-void TransformDynLights (int bStatic, int bVariable);
-short FindDynLight (short nSegment, short nSide, short nObject);
-int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
-void SetDynLightMaterial (short nSegment, short nSide, short nObject);
-void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable, int nThread);
-void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
-short SetNearestDynamicLights (int nSegment, int bVariable, int nType, int nThread);
-void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
-void ComputeStaticDynLighting (void);
-void InitLightingShaders (void);
-tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
-
-#define	SHOW_DYN_LIGHT \
-			(!(gameStates.app.bNostalgia || gameStates.render.bBriefing || (gameStates.app.bEndLevelSequence >= EL_OUTSIDE)) && \
-			 /*gameStates.render.bHaveDynLights &&*/ \
-			 gameOpts->render.bDynLighting)
-
-#define HAVE_DYN_LIGHT	(gameStates.render.bHaveDynLights && SHOW_DYN_LIGHT)
-
-#define	APPLY_DYN_LIGHT \
-			(gameStates.render.bUseDynLight && (gameOpts->ogl.bLightObjects || gameStates.render.nState))
-
-extern tFaceColor tMapColor, lightColor, vertColors [8];
-
-#endif /* _LIGHT_H */
+#endif //_LIGHT_H

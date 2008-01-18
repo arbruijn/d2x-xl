@@ -160,20 +160,22 @@ OglEnableLighting (0);
 
 //------------------------------------------------------------------------------
 
-extern GLhandleARB lightingShaderProgs [12];
+extern GLhandleARB lightingShaderProgs [4];
 
 int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf *colorP)
 {
-	int oglRes, nLights, nShader = gameStates.render.history.nShader;
-
+	int			oglRes, nLights, nShader = gameStates.render.history.nShader;
 	tRgbaColorf	color;
+	fVector		vEye;
 
 if (!gameStates.ogl.bShadersOk)
 	return -1;
 if (gameData.render.lights.dynamic.headLights.nLights) {
-	nLights = IsCoopGame ? 4 : IsMultiGame ? 8 : 1;
-	nShader = (nLights & ~1) + (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
+	nLights = IsMultiGame ? gameData.multiplayer.nPlayers : 1;
+	InitLightingShaders (nLights);
+	nShader = (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
 	if (nShader != gameStates.render.history.nShader) {
+		glUseProgramObject (0);
 		glUseProgramObject (tmProg = lightingShaderProgs [nShader - 4]);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
@@ -208,6 +210,8 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) &color);
 		oglRes = glGetError ();
 		}
+	VmsVecToFloat (&vEye, &gameData.objs.viewer->position.vPos);
+	glUniform3fv (glGetUniformLocation (tmProg, "vEye"), 1, (GLfloat *) &vEye);
 	}
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;

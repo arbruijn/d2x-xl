@@ -327,7 +327,7 @@ if (gameStates.render.color.bLightMapsOk)
 InitLightmapShaders ();
 #endif
 InitTexMergeShaders ();
-InitLightingShaders ();
+InitLightingShaders (1);
 InitVertLightShader ();
 InitGlareShader ();
 LinkShaderProg (NULL);

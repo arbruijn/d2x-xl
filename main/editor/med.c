@@ -689,7 +689,7 @@ int SetPlayerFromCursegMinusOne()
 
 	GrSetCurrentCanvas(Canv_editor_game);
 	G3StartFrame();
-	G3SetViewMatrix(&gameData.objs.console->position.vPos,&gameData.objs.console->position.mOrient,gameStates.render.xZoom);
+	G3SetViewMatrix(&gameData.objs.console->position.vPos,&gameData.objs.console->position.mOrient,gameStates.render.xZoom, 1);
 
 	for (i=max=0;i<4;i++) {
 		corner_v[i] = gameData.segs.vertices[Cursegp->verts[sideToVerts[Curside][i]]];

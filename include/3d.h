@@ -118,7 +118,7 @@ void G3StartFrame(int bFlat, int bResetColorBuf);
 void G3SetViewAngles(vmsVector *view_pos,vmsAngVec *view_orient,fix zoom);
 
 //set view from x,y,z, viewer matrix, and zoom.  Must call one of g3_setView_*()
-void G3SetViewMatrix(vmsVector *view_pos,vmsMatrix *view_matrix,fix zoom);
+void G3SetViewMatrix(vmsVector *view_pos,vmsMatrix *view_matrix,fix zoom, int bOglScale);
 
 //end the frame
 void G3EndFrame(void);

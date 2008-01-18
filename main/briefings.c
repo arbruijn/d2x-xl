@@ -524,7 +524,7 @@ void ShowBitmapFrame (int bRedraw)
 		{
 		GLint	depthFunc;
 		G3StartFrame (1, 0);
-		G3SetViewMatrix (&p, &mIdentity, gameStates.render.xZoom);
+		G3SetViewMatrix (&p, &mIdentity, gameStates.render.xZoom, 1);
 		p.p.z = 2 * w * F1_0;
 		glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 		glDepthFunc (GL_ALWAYS);

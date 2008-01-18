@@ -26,7 +26,7 @@ static char rcsid[] = "$Id: matrix.c,v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #include "inferno.h"
 #include "oof.h"
 
-void ScaleMatrix(void);
+void ScaleMatrix (int bOglScale);
 
 //------------------------------------------------------------------------------
 //set view from x,y,z & p,b,h, xZoom.  Must call one of g3_setView_*() 
@@ -37,12 +37,12 @@ viewInfo.pos = *vPos;
 VmAngles2Matrix (&viewInfo.view [0], mOrient);
 VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
-ScaleMatrix();
+ScaleMatrix (1);
 }
 
 //------------------------------------------------------------------------------
 //set view from x,y,z, viewer matrix, and xZoom.  Must call one of g3_setView_*() 
-void G3SetViewMatrix (vmsVector *vPos, vmsMatrix *mOrient, fix xZoom)
+void G3SetViewMatrix (vmsVector *vPos, vmsMatrix *mOrient, fix xZoom, int bOglScale)
 {
 viewInfo.zoom = xZoom;
 viewInfo.glZoom = (float) xZoom / 65536.0f;
@@ -56,12 +56,12 @@ if (mOrient) {
 	VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 	OOF_MatVms2Gl (OOF_GlIdent (viewInfo.glViewf), viewInfo.view);
 	}
-ScaleMatrix ();
+ScaleMatrix (bOglScale);
 }
 
 //------------------------------------------------------------------------------
 //performs aspect scaling on global view matrix
-void ScaleMatrix (void)
+void ScaleMatrix (int bOglScale)
 {
 	viewInfo.view [1] = viewInfo.view [0];		//so we can use unscaled if we want
 	viewInfo.viewf [1] = viewInfo.viewf [0];		//so we can use unscaled if we want
@@ -76,14 +76,14 @@ else {			//xZoom out by scaling x&y
 	viewInfo.scale.p.y = FixMul (viewInfo.scale.p.y, s);
 	}
 //now scale matrix elements
-#if 1
-glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
-#else
-VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.p.x);
-VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.p.y);
-VmVecScale (&viewInfo.view [0].fVec, viewInfo.scale.p.z);
-glScalef (1,1,-1);
-#endif
+if (bOglScale)
+	glScalef (f2fl (viewInfo.scale.p.x), f2fl (viewInfo.scale.p.y), -f2fl (viewInfo.scale.p.z));
+else {
+	//VmVecScale (&viewInfo.view [0].rVec, viewInfo.scale.p.x);
+	//VmVecScale (&viewInfo.view [0].uVec, viewInfo.scale.p.y);
+	VmVecScale (&viewInfo.view [0].fVec, -viewInfo.scale.p.z);
+	glScalef (1, 1, 1);
+	}
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 }
 

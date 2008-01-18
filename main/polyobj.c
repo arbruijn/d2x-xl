@@ -870,7 +870,7 @@ void DrawModelPicture (int nModel, vmsAngVec *orient_angles)
 Assert ((nModel >= 0) && (nModel < gameData.models.nPolyModels));
 G3StartFrame (0, 0);
 glDisable (GL_BLEND);
-G3SetViewMatrix (&p, &o, gameStates.render.xZoom);
+G3SetViewMatrix (&p, &o, gameStates.render.xZoom, 1);
 if (gameData.models.polyModels [nModel].rad != 0)
 	p.p.z = FixMulDiv (DEFAULT_VIEW_DIST, gameData.models.polyModels [nModel].rad, BASE_MODEL_SIZE);
 else

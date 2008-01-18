@@ -1623,7 +1623,7 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	VmAngles2Matrix (&viewer.position.mOrient, &vAngles);
 	G3StartFrame (0, 0);
 	RenderStartFrame ();
-	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom);
+	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom, 1);
 	BuildRenderSegList (nStartSeg, 0);	
 	G3EndFrame ();
 	LogErr ("   flagging visible segments\n");

@@ -419,10 +419,10 @@ if (!bShadowTest)
 		if (gameStates.render.bExternalView && (!IsMultiGame || IsCoopGame || EGI_FLAG (bEnableCheats, 0, 0, 0)))
 #endif			 
 			G3SetViewMatrix (&gameData.render.mine.viewerEye, externalView.pPos ? &externalView.pPos->mOrient : 
-								  &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
+								  &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, 1);
 		else
 			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, 
-								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor));
+								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), 1);
 		ApplyShadowMaps (nStartSeg, nEyeOffset, nWindow);
 		}
 	else {

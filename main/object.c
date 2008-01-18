@@ -461,7 +461,7 @@ gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 void InitObjects ()
 {
 	int i;
-	tSegment *pSeg;
+	tSegment *segP;
 
 CollideInit ();
 for (i = 0; i < MAX_OBJECTS; i++) {
@@ -474,8 +474,8 @@ for (i = 0; i < MAX_OBJECTS; i++) {
 	gameData.objs.objects [i].attachedObj = -1;
 	gameData.objs.objects [i].flags = 0;
 	}
-for (i = 0, pSeg = gameData.segs.segments;i<MAX_SEGMENTS;i++, pSeg++)
-	pSeg->objects = -1;
+for (i = 0, segP = gameData.segs.segments; i < MAX_SEGMENTS; i++, segP++)
+	segP->objects = -1;
 gameData.objs.console = 
 gameData.objs.viewer = gameData.objs.objects;
 InitPlayerObject ();
@@ -1900,6 +1900,9 @@ if (objP->nType == OBJ_ROBOT) {
 	fix xMaxShields = RobotDefaultShields (objP);
 	if (objP->shields > xMaxShields)
 		objP->shields = xMaxShields;
+#ifdef _DEBUG
+	AddOglHeadLight (objP);
+#endif
 	}
 objP->vLastPos = objP->position.vPos;			// Save the current position
 HandleSpecialSegments (objP);

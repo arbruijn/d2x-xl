@@ -1359,6 +1359,7 @@ typedef struct tOglData {
 	fVector3					depthScale;
 	struct {float x, y;}	screenScale;
 	tFrameBuffer			drawBuffer;
+	int						nHeadLights;
 } tOglData;
 
 //------------------------------------------------------------------------------

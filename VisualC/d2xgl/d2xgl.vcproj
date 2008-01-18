@@ -1685,6 +1685,9 @@
 					RelativePath="..\..\main\dropobject.c">
 				</File>
 				<File
+					RelativePath="..\..\main\dynlight.c">
+				</File>
+				<File
 					RelativePath="..\..\main\effects.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -1995,6 +1998,9 @@
 				</File>
 				<File
 					RelativePath="..\..\main\glare.c">
+				</File>
+				<File
+					RelativePath="..\..\main\headlight.c">
 				</File>
 				<File
 					RelativePath="..\..\main\highscores.c">
@@ -3018,6 +3024,9 @@
 						RelativePath="..\..\main\dropobject.h">
 					</File>
 					<File
+						RelativePath="..\..\main\dynlight.h">
+					</File>
+					<File
 						RelativePath="..\..\main\effects.h">
 					</File>
 					<File
@@ -3082,6 +3091,9 @@
 					</File>
 					<File
 						RelativePath="..\..\include\hash.h">
+					</File>
+					<File
+						RelativePath="..\..\main\headlight.h">
 					</File>
 					<File
 						RelativePath="..\..\main\highscores.h">
@@ -3533,10 +3545,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

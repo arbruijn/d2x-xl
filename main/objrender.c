@@ -58,8 +58,6 @@ static int nGlobalOrientation = 0;
 
 //------------------------------------------------------------------------------
 
-void SetRenderView (fix nEyeOffset, short *pnStartSeg);
-
 extern vmsAngVec avZero;
 
 //------------------------------------------------------------------------------

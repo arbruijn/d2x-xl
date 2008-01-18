@@ -74,7 +74,7 @@ extern vmsAngVec Player_head_angles;
 
 // This must be called at the start of the frame if RotateVertexList() will be used
 void RenderStartFrame (void);
-void SetRenderView (fix nEyeOffset, short *pnStartSeg);
+void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale);
 
 void RenderMine (short nStartSeg, fix xExeOffset, int nWindow);
 void RenderShadowQuad (int bWhite);

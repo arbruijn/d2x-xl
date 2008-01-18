@@ -1126,7 +1126,7 @@ return (Controls [0].zoomDownCount > 0);
 
 //------------------------------------------------------------------------------
 
-void SetRenderView (fix nEyeOffset, short *pnStartSeg)
+void SetRenderView (fix nEyeOffset, short *pnStartSeg, int bOglScale)
 {
 	static int bStopZoom;
 	short nStartSeg;
@@ -1143,7 +1143,7 @@ if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 externalView.pPos = NULL;
 if (gameStates.render.cameras.bActive) {
 	nStartSeg = gameData.objs.viewer->nSegment;
-	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
+	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
 	}
 else {
 	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
@@ -1155,7 +1155,7 @@ else {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, gameStates.render.xZoom);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, gameStates.render.xZoom, bOglScale);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer == gameData.objs.console)) {
 		vmsMatrix mHead, mView;
@@ -1164,7 +1164,7 @@ else {
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor));
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 		gameStates.render.nMinZoomFactor = (fix) (F1_0 * gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
@@ -1211,15 +1211,14 @@ else {
 			GetViewPoint ();
 			G3SetViewMatrix (&gameData.render.mine.viewerEye,
 								  externalView.pPos ? &externalView.pPos->mOrient : &gameData.objs.viewer->position.mOrient, 
-								  gameStates.render.xZoom);
+								  gameStates.render.xZoom, bOglScale);
 			}
 		else
-			G3SetViewMatrix (&gameData.render.mine.viewerEye, 
-								  &gameData.objs.viewer->position.mOrient, FixDiv (gameStates.render.xZoom, 
-								  gameStates.render.nZoomFactor));
+			G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, 
+								  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		}
 	else
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
 	}
 if (pnStartSeg)
 	*pnStartSeg = nStartSeg;
@@ -1248,7 +1247,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0))	{
 StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing hack
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
-SetRenderView (nEyeOffset, &nStartSeg);
+SetRenderView (nEyeOffset, &nStartSeg, 1);
 if (nClearWindow == 1) {
 	if (!nClearWindowColor)
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
@@ -1290,7 +1289,7 @@ if (SHOW_SHADOWS &&
 			gameStates.render.nShadowPass = 0;
 #if 1
 			OglStartFrame (0, 1);
-			SetRenderView (nEyeOffset, &nStartSeg);
+			SetRenderView (nEyeOffset, &nStartSeg, 1);
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 #endif
 			RenderShadowTexture ();
