@@ -472,6 +472,10 @@ SOURCE=..\..\main\dropobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\dynlight.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\effects.c
 # End Source File
 # Begin Source File
@@ -545,6 +549,10 @@ SOURCE=..\..\main\gauges.c
 # Begin Source File
 
 SOURCE=..\..\main\glare.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\headlight.c
 # End Source File
 # Begin Source File
 
@@ -997,6 +1005,10 @@ SOURCE=..\..\main\dropobject.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\dynlight.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\effects.h
 # End Source File
 # Begin Source File
@@ -1102,6 +1114,10 @@ SOURCE=..\..\include\grdef.h
 # Begin Source File
 
 SOURCE=..\..\include\hash.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\headlight.h
 # End Source File
 # Begin Source File
 

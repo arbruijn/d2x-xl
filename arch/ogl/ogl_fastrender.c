@@ -31,6 +31,8 @@
 #include "error.h"
 #include "maths.h"
 #include "light.h"
+#include "dynlight.h"
+#include "headlight.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_texture.h"
@@ -166,7 +168,6 @@ int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf 
 {
 	int			oglRes, nLights, nShader = gameStates.render.history.nShader;
 	tRgbaColorf	color;
-	fVector		vEye;
 
 if (!gameStates.ogl.bShadersOk)
 	return -1;
@@ -210,8 +211,9 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) &color);
 		oglRes = glGetError ();
 		}
-	VmsVecToFloat (&vEye, &gameData.objs.viewer->position.vPos);
-	glUniform3fv (glGetUniformLocation (tmProg, "vEye"), 1, (GLfloat *) &vEye);
+#if HEADLIGHT_TRANSFORMATION == 2
+	glUniform3fv (glGetUniformLocation (tmProg, "vEye"), 1, (GLfloat *) &viewInfo.posf);
+#endif
 	}
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;

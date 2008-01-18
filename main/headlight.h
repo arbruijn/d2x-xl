@@ -21,6 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_DIST						(f1_0<<MAX_DIST_LOG)	//no light beyond this dist
 #define	HEADLIGHT_CONE_DOT		(F1_0*9/10)
 #define	HEADLIGHT_SCALE			(F1_0*10)
+#define HEADLIGHT_TRANSFORMATION	0
 
 extern tObject	*Headlights [MAX_HEADLIGHTS];
 extern int		nHeadLights;
