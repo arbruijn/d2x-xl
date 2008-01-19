@@ -45,6 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
+#include "marker.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -871,6 +872,8 @@ switch (objP->renderType) {
 			DrawPolygonObject (objP, bDepthSort);
 #endif
 			DrawDebrisCorona (objP);
+			if (IsSpawnMarkerObject (objP))
+				RenderMslLockIndicator (objP);
 			}
 		break;
 

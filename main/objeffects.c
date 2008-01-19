@@ -390,9 +390,9 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 
 // -----------------------------------------------------------------------------
 
-static tRgbColorf	trackGoalColor = {1, 0.5f, 0};
-static int	nMslLockColor = 0;
-static int	nMslLockColorIncr = -1;
+static tRgbaColorf	trackGoalColor [2] = {{1, 0.5f, 0, 0.8f}, {1, 0.5f, 0, 0.8f}};
+static int	nMslLockColor [2] = {0, 0};
+static int	nMslLockColorIncr [2] = {-1, -1};
 
 void RenderMslLockIndicator (tObject *objP)
 {
@@ -400,28 +400,32 @@ void RenderMslLockIndicator (tObject *objP)
 
 	static tSinCosf	sinCosInd [INDICATOR_POSITIONS];
 	static int			bInitSinCos = 1;
-	static int			nMslLockIndPos = 0;
-	static time_t		t0 = 0;
+	static int			nMslLockIndPos [2] = {0, 0};
+	static time_t		t0 [2] = {0, 0}, tDelay [2] = {25, 40};
 
 	fVector				fPos, fVerts [3];
 	float					r, r2;
-	int					nTgtInd, bHasDmg, bVertexArrays;
+	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->nType == OBJ_MARKER);
 
-if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0))
-	return;
-if (!IS_TRACK_GOAL (objP))
-	return;
-if (gameStates.app.nSDLTicks - t0 > 25) {
-	t0 = gameStates.app.nSDLTicks;
-	if (!nMslLockColor || (nMslLockColor == 15))
-		nMslLockColorIncr = -nMslLockColorIncr;
-	nMslLockColor += nMslLockColorIncr;
-	trackGoalColor.green = 0.65f + (float) nMslLockColor / 100.0f;
-	nMslLockIndPos = (nMslLockIndPos + 1) % INDICATOR_POSITIONS;
+if (!bMarker) {
+	if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0))
+		return;
+	if (!IS_TRACK_GOAL (objP))
+		return;
+	}
+if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
+	t0 [bMarker] = gameStates.app.nSDLTicks;
+	if (!nMslLockColor [bMarker] || (nMslLockColor [bMarker] == 15))
+		nMslLockColorIncr [bMarker] = -nMslLockColorIncr [bMarker];
+	nMslLockColor [bMarker] += nMslLockColorIncr [bMarker];
+	trackGoalColor [bMarker].green = 0.65f + (float) nMslLockColor [bMarker] / 100.0f;
+	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 VmsVecToFloat (&fPos, &objP->position.vPos);
 G3TransformPointf (&fPos, &fPos, 0);
 r = f2fl (objP->size);
+if (bMarker)
+	r = 17 * r / 12;
 r2 = r / 4;
 
 glDisable (GL_CULL_FACE);
@@ -429,8 +433,8 @@ G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 bVertexArrays = G3EnableClientState (GL_VERTEX_ARRAY, GL_TEXTURE0);
 glActiveTexture (GL_TEXTURE0);
 glDisable (GL_TEXTURE_2D);
-glColor4f (trackGoalColor.red, trackGoalColor.green, trackGoalColor.blue, 0.8f);
-if (gameOpts->render.cockpit.bRotateMslLockInd) {
+glColor4fv ((GLfloat *) (trackGoalColor + bMarker));
+if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	fVector	rotVerts [3];
 	fMatrix	mRot;
 	int		h, i, j;
@@ -440,8 +444,8 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 		bInitSinCos = 0;
 		}
 	mRot.rVec.p.x =
-	mRot.uVec.p.y = sinCosInd [nMslLockIndPos].fCos;
-	mRot.uVec.p.x = sinCosInd [nMslLockIndPos].fSin;
+	mRot.uVec.p.y = sinCosInd [nMslLockIndPos [bMarker]].fCos;
+	mRot.uVec.p.x = sinCosInd [nMslLockIndPos [bMarker]].fSin;
 	mRot.rVec.p.y = -mRot.uVec.p.x;
 	mRot.rVec.p.z =
 	mRot.uVec.p.z =
@@ -469,14 +473,18 @@ if (gameOpts->render.cockpit.bRotateMslLockInd) {
 			fVerts [i] = rotVerts [i];
 			VmVecIncf (rotVerts + i, &fPos);
 			}
+		if (bMarker)
+			glLineWidth (2);
 		if (bVertexArrays)
-			glDrawArrays (GL_TRIANGLES, 0, 3);
+			glDrawArrays (bMarker ? GL_LINE_LOOP : GL_TRIANGLES, 0, 3);
 		else {
-			glBegin (GL_TRIANGLES);
+			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
 			for (h = 0; h < 3; h++)
 				glVertex3fv ((GLfloat *) (rotVerts + h));
 			glEnd ();
 			}
+		if (bMarker)
+			glLineWidth (1);
 		if (!j) {	//now rotate by 90 degrees
 			mRot.rVec.p.x =
 			mRot.uVec.p.y = 0;
@@ -570,7 +578,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	glDisable (GL_TEXTURE_2D);
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
-		  &trackGoalColor : ObjectFrameColor (objP, pc);
+		  (tRgbColorf *) &trackGoalColor [0] : ObjectFrameColor (objP, pc);
 	VmsVecToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
 	r = f2fl (objP->size);

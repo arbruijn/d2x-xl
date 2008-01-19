@@ -527,6 +527,10 @@ int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
 
+vmsVector *PlayerSpawnPos (int nPlayer);
+vmsMatrix *PlayerSpawnOrient (int nPlayer);
+void GetPlayerSpawn (int nPlayer, tObject *objP);
+
 extern ubyte bIsMissile [];
 
 #define	OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])

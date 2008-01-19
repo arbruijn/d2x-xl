@@ -130,7 +130,7 @@ if (gameOpts->gameplay.nAutoLeveling == 1) {	 // new tPlayer leveling code: use 
 else if (gameOpts->gameplay.nAutoLeveling == 2)	// old way: used floor's normal as upvec
 	desiredUpVec = gameData.segs.segments [objP->nSegment].sides [3].normals [0];
 else if (gameOpts->gameplay.nAutoLeveling == 3)	// mine's up vector
-	desiredUpVec = gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient.uVec;
+	desiredUpVec = PlayerSpawnOrient (gameData.multiplayer.nLocalPlayer)->uVec;
 else
 	return;
 if (labs (VmVecDot (&desiredUpVec, &objP->position.mOrient.fVec)) < f1_0/2) {

@@ -624,6 +624,10 @@ SOURCE=..\..\main\loadgame.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\marker.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\menu.c
 # End Source File
 # Begin Source File
@@ -1210,6 +1214,10 @@ SOURCE=..\..\main\loadgame.h
 # Begin Source File
 
 SOURCE=..\..\include\makesig.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\marker.h
 # End Source File
 # Begin Source File
 

@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_shader.h"
 #include "gameseg.h"
 #include "light.h"
+#include "dynlight.h"
 #include "lightmap.h"
 #include "renderlib.h"
 #include "network.h"

@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gameseg.h"
 #include "gamesave.h"
 #include "automap.h"
+#include "marker.h"
 #include "kconfig.h"
 #include "text.h"
 #include "hudmsg.h"

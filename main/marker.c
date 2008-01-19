@@ -29,13 +29,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 
 #define	MAX_DROP_MULTI		2
+#define	MAX_DROP_COOP		3
 #define	MAX_DROP_SINGLE	9
 
 // -------------------------------------------------------------
 
-static inline tObject *MarkerObj (int nMarker)
+static inline int MaxDrop (void)
 {
-short nObject = gameData.marker.objects [gameData.multiplayer.nLocalPlayer * 2 + nMarker];
+return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
+}
+
+// -------------------------------------------------------------
+
+static inline tObject *MarkerObj (int nPlayer, int nMarker)
+{
+short nObject = gameData.marker.objects [((nPlayer < 0) ? gameData.multiplayer.nLocalPlayer : nPlayer) * 2 + nMarker];
 return (nObject < 0) ? NULL : OBJECTS + nObject;
 }
 
@@ -75,9 +83,11 @@ for (i = 0; i < nPoints [nMarker]; i++) {
 	}
 if (nMarker == gameData.marker.nHighlight)
 	GrSetColorRGB (255, 255, 255, 255);
+else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
+	GrSetColorRGBi (RGBA_PAL2 (63, 47, 0));
 else
 	GrSetColorRGBi (RGBA_PAL2 (48, 0, 0));
-G3TransformAndEncodePoint (&basePoint, &MarkerObj (nMarker)->position.vPos);
+G3TransformAndEncodePoint (&basePoint, &MarkerObj (-1, nMarker)->position.vPos);
 fromPoint.p3_index =
 toPoint.p3_index =
 basePoint.p3_index = -1;
@@ -108,10 +118,10 @@ void DrawMarkers (void)
 
 	static int cyc = 10, cycdir = 1;
 
-nMaxDrop = IsMultiGame ? 2 : 9;
+nMaxDrop = MaxDrop ();
 spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
-	if ((objP = MarkerObj (i))) {
+	if ((objP = MarkerObj (-1, i))) {
 		G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
 		GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
 		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE, 1);
@@ -141,16 +151,23 @@ else {
 
 void DropMarker (char nPlayerMarker)
 {
-	ubyte nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
-	tObject *playerP = gameData.objs.objects + LOCALPLAYER.nObject;
+	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
+	tObject	*markerP, *playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 
-gameData.marker.point [nMarker] = playerP->position.vPos;
-if (gameData.marker.objects [nMarker] != -1)
-	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [nMarker] = 
-	DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
-	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
+if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN") && (markerP = SpawnMarkerObject (-1))) {
+	markerP->position = playerP->position;
+	RelinkObject (OBJ_IDX (markerP), playerP->nSegment);
+	*gameData.marker.szMessage [nMarker] = '\0';
+	}
+else {
+	gameData.marker.point [nMarker] = playerP->position.vPos;
+	if (gameData.marker.objects [nMarker] != -1)
+		ReleaseObject (gameData.marker.objects [nMarker]);
+	gameData.marker.objects [nMarker] = 
+		DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
+		if (IsMultiGame)
+			MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -189,7 +206,7 @@ int LastMarker (void)
 	int nMaxDrop, h, i;
 
 //find free marker slot
-nMaxDrop = IsMultiGame ? MAX_DROP_MULTI : MAX_DROP_SINGLE;
+nMaxDrop = MaxDrop ();
 h = gameData.multiplayer.nLocalPlayer * 2 + nMaxDrop;
 for (i = nMaxDrop; i; i--)
 	if (gameData.marker.objects [--h] > -1)		//found free slot!
@@ -199,9 +216,52 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+int SpawnMarkerIndex (int nPlayer)
+{
+	int nMaxDrop, h, i;
+
+//find free marker slot
+nMaxDrop = MaxDrop ();
+if (nPlayer < 0)
+	nPlayer = gameData.multiplayer.nLocalPlayer;
+for (i = nPlayer * 2, h = i + nMaxDrop; i < h; i++) {
+	if (gameData.marker.objects [i] < 0)		//found free slot!
+		break;
+	if (!strcmp (gameData.marker.szMessage [i], "SPAWN"))
+		return i;
+	}
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+tObject *SpawnMarkerObject (int nPlayer)
+{
+	int	i = IsCoopGame || !IsMultiGame ? SpawnMarkerIndex (nPlayer) : -1;
+
+return (i < 0) ? NULL : OBJECTS + gameData.marker.objects [i];
+}
+
+//------------------------------------------------------------------------------
+
+int IsSpawnMarkerObject (tObject *objP)
+{
+if (objP->nType == OBJ_MARKER) {
+	int nMaxDrop, h, i, nObject = OBJ_IDX (objP);
+
+	nMaxDrop = MaxDrop ();
+	for (i = gameData.multiplayer.nLocalPlayer * 2, h = i + nMaxDrop; i < h; i++)
+		if (gameData.marker.objects [i] == nObject)		//found free slot!
+			return 1;
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 void DeleteMarker (void)
 {
-if (gameData.marker.nHighlight > -1 && gameData.marker.objects [gameData.marker.nHighlight] != -1) {
+if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
 	if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
 		int	h, i;
 		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
@@ -238,7 +298,7 @@ void InitMarkerInput (void)
 
 //find free marker slot
 i = LastMarker () + 1;
-nMaxDrop = (gameData.app.nGameMode & GM_MULTI) ? MAX_DROP_MULTI : MAX_DROP_SINGLE;
+nMaxDrop = MaxDrop ();
 if (i == nMaxDrop) {		//no free slot
 	if (gameData.app.nGameMode & GM_MULTI)
 		i = !nLastMarkerDropped;		//in multi, replace older of two
@@ -274,9 +334,10 @@ switch (key) {
 		break;
 
 	case KEY_ENTER:
+		strupr (gameData.marker.szInput);
 		strcpy (gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker], gameData.marker.szInput);
 		if (IsMultiGame)
-		 strcpy (gameData.marker.nOwner [ (gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],LOCALPLAYER.callsign);
+		 strcpy (gameData.marker.nOwner [(gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],LOCALPLAYER.callsign);
 		DropMarker (nDefiningMarker);
 		nLastMarkerDropped = nDefiningMarker;
 		GameFlushInputs ();

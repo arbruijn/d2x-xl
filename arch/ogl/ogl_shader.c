@@ -31,6 +31,7 @@
 #include "error.h"
 #include "u_mem.h"
 #include "light.h"
+#include "dynlight.h"
 #include "lightmap.h"
 #include "texmerge.h"
 #include "ogl_defs.h"

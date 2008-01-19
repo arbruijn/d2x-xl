@@ -93,6 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "u_mem.h"
 #include "entropy.h"
 #include "dropobject.h"
+#include "marker.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -2310,15 +2311,15 @@ while (parent->attachedObj != -1)
 
 //------------------------------------------------------------------------------
 //creates a marker tObject in the world.  returns the tObject number
-int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte marker_num)
+int DropMarkerObject (vmsVector *pos, short nSegment, vmsMatrix *orient, ubyte nMarker)
 {
 	short nObject;
 
 Assert (gameData.models.nMarkerModel != -1);
-nObject = CreateObject (OBJ_MARKER, marker_num, -1, nSegment, pos, orient, 
+nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, pos, orient, 
 								gameData.models.polyModels [gameData.models.nMarkerModel].rad, CT_NONE, MT_NONE, RT_POLYOBJ, 1);
 if (nObject >= 0) {
-	tObject *objP = &gameData.objs.objects [nObject];
+	tObject *objP = OBJECTS + nObject;
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
 	VmVecCopyScale (&objP->mType.spinRate, &objP->position.mOrient.uVec, F1_0 / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all gameData.objs.objects.
@@ -2515,6 +2516,41 @@ for (i = gameData.objs.nLastObject + 1, objP = gameData.objs.objects; i; i--, ob
 		 (gameData.objs.objects [objP->cType.laserInfo.nParentObj].id == nPlayer))
 	h++;
 return h;
+}
+
+//------------------------------------------------------------------------------
+
+void GetPlayerSpawn (int nPlayer, tObject *objP)
+{
+	tObject	*markerP = SpawnMarkerObject (nPlayer);
+
+if (markerP) {
+	objP->position = markerP->position;
+ 	RelinkObject (OBJ_IDX (objP), markerP->nSegment);
+
+	}
+else {
+	objP->position = gameData.multiplayer.playerInit [nPlayer].position;
+ 	RelinkObject (OBJ_IDX (objP), gameData.multiplayer.playerInit [nPlayer].nSegment);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+vmsVector *PlayerSpawnPos (int nPlayer)
+{
+	tObject	*markerP = SpawnMarkerObject (nPlayer);
+
+return markerP ? &markerP->position.vPos : &gameData.multiplayer.playerInit [nPlayer].position.vPos;
+}
+
+//------------------------------------------------------------------------------
+
+vmsMatrix *PlayerSpawnOrient (int nPlayer)
+{
+	tObject	*markerP = SpawnMarkerObject (nPlayer);
+
+return markerP ? &markerP->position.mOrient : &gameData.multiplayer.playerInit [nPlayer].position.mOrient;
 }
 
 //------------------------------------------------------------------------------

@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "u_mem.h"
 #include "light.h"
+#include "dynlight.h"
 #include "lightmap.h"
 #include "automap.h"
 #include "texmerge.h"

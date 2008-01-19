@@ -25,5 +25,8 @@ void ClearMarkers (void);
 int LastMarker (void);
 void InitMarkerInput (void);
 void MarkerInputMessage (int key);
+int SpawnMarkerIndex (int nPlayer);
+tObject *SpawnMarkerObject (int nPlayer);
+int IsSpawnMarkerObject (tObject *objP);
 
 #endif //_MARKER_H

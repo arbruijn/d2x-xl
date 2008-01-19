@@ -22,6 +22,7 @@
 #include "error.h"
 #include "network.h"
 #include "light.h"
+#include "dynlight.h"
 #include "endlevel.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"

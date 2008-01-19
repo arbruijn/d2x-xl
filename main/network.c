@@ -2547,7 +2547,7 @@ int GotTeamSpawnPos (void)
 	int	i, j;
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-	j = FindSegByPoint (&gameData.multiplayer.playerInit [i].position.vPos, -1, 1, 0);
+	j = FindSegByPoint (PlayerSpawnPos (i), -1, 1, 0);
 	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_IS_NOTHING : gameData.segs.segment2s [j].special;
 	switch (gameData.multiplayer.playerInit [i].nSegType) {
 		case SEGMENT_IS_GOAL_BLUE:
@@ -2754,9 +2754,7 @@ if (!networkData.bRejoined) {
 			}
 		else
 			j = netGame.locations [i];
-		gameData.objs.objects [gameData.multiplayer.players [i].nObject].position.vPos = gameData.multiplayer.playerInit [j].position.vPos;
-		gameData.objs.objects [gameData.multiplayer.players [i].nObject].position.mOrient = gameData.multiplayer.playerInit [j].position.mOrient;
-		RelinkObject (gameData.multiplayer.players [i].nObject, gameData.multiplayer.playerInit [j].nSegment);
+		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
 		}
 	}
 gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;

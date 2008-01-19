@@ -2154,9 +2154,7 @@ void InitPlayerPosition (int bRandom)
 	Assert (bNewPlayer >= 0);
 	Assert (bNewPlayer < gameData.multiplayer.nPlayerPositions);
 
-	gameData.objs.console->position.vPos = gameData.multiplayer.playerInit [bNewPlayer].position.vPos;
-	gameData.objs.console->position.mOrient = gameData.multiplayer.playerInit [bNewPlayer].position.mOrient;
- 	RelinkObject (OBJ_IDX (gameData.objs.console), gameData.multiplayer.playerInit [bNewPlayer].nSegment);
+	GetPlayerSpawn (bNewPlayer, gameData.objs.console);
 done:
 	ResetPlayerObject ();
 	ResetCruise ();
