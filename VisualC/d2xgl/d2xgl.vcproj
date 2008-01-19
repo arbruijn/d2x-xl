@@ -2207,6 +2207,9 @@
 					RelativePath="..\..\main\loadgame.c">
 				</File>
 				<File
+					RelativePath="..\..\main\marker.c">
+				</File>
+				<File
 					RelativePath="..\..\main\menu.c">
 					<FileConfiguration
 						Name="Debug|Win32">
@@ -3545,10 +3548,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

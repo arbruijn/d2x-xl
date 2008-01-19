@@ -12,22 +12,18 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _AUTOMAP_H
-#define _AUTOMAP_H
+#ifndef _MARKER_H
+#define _MARKER_H
 
 #include "player.h"
 
-void DoAutomap (int key_code, int bRadar);
-void AutomapClearVisited ();
+void DropMarker (char nPlayerMarker);
+void DropBuddyMarker (tObject *objP);
+void DrawMarkers (void);
+void DeleteMarker (void);
+void ClearMarkers (void);
+int LastMarker (void);
+void InitMarkerInput (void);
+void MarkerInputMessage (int key);
 
-extern ubyte bAutomapVisited [MAX_SEGMENTS_D2X];
-
-#define AM_SHOW_PLAYERS			(!IsMultiGame || (gameData.app.nGameMode & (GM_TEAM | GM_MULTI_COOP)) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
-#define AM_SHOW_PLAYER(_i)		(!IsMultiGame || \
-										 (gameData.app.nGameMode & GM_MULTI_COOP) || \
-										 (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
-										 (GetTeam (gameData.multiplayer.nLocalPlayer) == GetTeam (_i)))
-#define AM_SHOW_ROBOTS			EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
-#define AM_SHOW_POWERUPS(_i)	((EGI_FLAG (bPowerupsOnRadar, 0, 1, 0) >= (_i)) && !IsMultiGame)
-
-#endif //_AUTOMAP_H
+#endif //_MARKER_H

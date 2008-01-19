@@ -21,13 +21,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <math.h>
 
+#include "inferno.h"
+#include "error.h"
+#include "3d.h"
+#include "u_mem.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
-#include "error.h"
-#include "3d.h"
-#include "inferno.h"
-#include "u_mem.h"
 #include "render.h"
 #include "transprender.h"
 #include "object.h"
@@ -62,7 +62,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "powerup.h"
 #include "switch.h"
-#include "automap.h"
 #include "cntrlcen.h"
 #include "hudmsg.h"
 #include "inferno.h"
@@ -71,6 +70,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gamecntl.h"
 #include "input.h"
 #include "slowmotion.h"
+#include "marker.h"
+#include "automap.h"
 
 #define EF_USED     1   // This edge is used
 #define EF_DEFINING 2   // A structure defining edge that should always draw.
@@ -81,7 +82,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_TOO_FAR  64  // An edge that is too far away
 
 void ModexPrintF (int x,int y, char *s, grsFont *font, unsigned int color);
-int LastMarker (void);
 
 typedef struct tEdgeInfo {
 	short verts [2];     // 4 bytes
@@ -201,152 +201,6 @@ void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited);
 void DrawAllEdges (void);
 void AutomapBuildEdgeList (void);
 
-#define	MAX_DROP_MULTI		2
-#define	MAX_DROP_SINGLE	9
-
-#define	AutomapDrawLine G3DrawLine
-
-// -------------------------------------------------------------
-
-void DrawMarkerNumber (int num)
- {
-  int i;
-  g3sPoint basePoint,fromPoint,toPoint;
-
-  float ArrayX [10][20]={ {-.25, 0.0, 0.0, 0.0, -1.0, 1.0},
-                         {-1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, 1.0},
-                         {-1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 0.0, 1.0},
-                         {-1.0, -1.0, -1.0, 1.0, 1.0, 1.0},
-                         {-1.0, 1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0},
-                         {-1.0, 1.0, -1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0},
-                         {-1.0, 1.0, 1.0, 1.0},
-                         {-1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, 1.0},
-                         {-1.0, 1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0}
-
-                       };
-  float ArrayY [10][20]={ {.75, 1.0, 1.0, -1.0, -1.0, -1.0},
-                         {1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, -1.0, -1.0},
-                         {1.0, 1.0, 1.0, -1.0, -1.0, -1.0, 0.0, 0.0},
-                         {1.0, 0.0, 0.0, 0.0, 1.0, -1.0},
-                         {1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0, -1.0, -1.0},
-                         {1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 0.0, 0.0, 0.0},
-                         {1.0, 1.0, 1.0, -1.0},
-                         {1.0, 1.0, 1.0, -1.0, -1.0, -1.0, -1.0, 1.0, 0.0, 0.0},
-                         {1.0, 1.0, 1.0, -1.0, 0.0, 0.0, 0.0, 1.0}
-                       };
-  int NumOfPoints []={6,10,8,6,10,10,4,10,8};
-
-for (i = 0; i < NumOfPoints [num]; i++) {
-	ArrayX [num][i]*=gameData.marker.fScale;
-	ArrayY [num][i]*=gameData.marker.fScale;
-	}
-if (num == gameData.marker.nHighlight)
-	GrSetColorRGB (255, 255, 255, 255);
-else
-	GrSetColorRGBi (RGBA_PAL2 (48, 0, 0));
-G3TransformAndEncodePoint (&basePoint, &gameData.objs.objects [gameData.marker.objects [(gameData.multiplayer.nLocalPlayer*2)+num]].position.vPos);
-fromPoint.p3_index =
-toPoint.p3_index =
-basePoint.p3_index = -1;
-for (i = 0; i < NumOfPoints [num]; i += 2) {
-	fromPoint = basePoint;
-	toPoint = basePoint;
-	fromPoint.p3_x += fl2f (ArrayX [num][i]); //FixMul ((fl2f (ArrayX [num][i])),viewInfo.scale.x);
-	fromPoint.p3_y += fl2f (ArrayY [num][i]); //FixMul ((fl2f (ArrayY [num][i])),viewInfo.scale.y);
-	G3EncodePoint (&fromPoint);
-	G3ProjectPoint (&fromPoint);
-	toPoint.p3_x += fl2f (ArrayX [num][i+1]); //FixMul ((fl2f (ArrayX [num][i+1])),viewInfo.scale.x);
-	toPoint.p3_y += fl2f (ArrayY [num][i+1]); //FixMul ((fl2f (ArrayY [num][i+1])),viewInfo.scale.y);
-	G3EncodePoint (&toPoint);
-	G3ProjectPoint (&toPoint);
-	AutomapDrawLine (&fromPoint, &toPoint);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void DropMarker (char nPlayerMarker)
-{
-	ubyte nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
-	tObject *playerP = gameData.objs.objects + LOCALPLAYER.nObject;
-
-gameData.marker.point [nMarker] = playerP->position.vPos;
-if (gameData.marker.objects [nMarker] != -1)
-	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [nMarker] = 
-	DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
-	if (gameData.app.nGameMode & GM_MULTI)
-		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
-}
-
-//------------------------------------------------------------------------------
-
-void DropBuddyMarker (tObject *objP)
-{
-	ubyte	nMarker;
-
-	//	Find spare marker slot.  "if" code below should be an assert, but what if someone changes NUM_MARKERS or MAX_CROP_SINGLE and it never gets hit?
-nMarker = MAX_DROP_SINGLE+1;
-if (nMarker > NUM_MARKERS-1)
-	nMarker = NUM_MARKERS-1;
-sprintf (gameData.marker.szMessage [nMarker], "RIP: %s",gameData.escort.szName);
-gameData.marker.point [nMarker] = objP->position.vPos;
-if (gameData.marker.objects [nMarker] != -1 && gameData.marker.objects [nMarker] !=0)
-	ReleaseObject (gameData.marker.objects [nMarker]);
-gameData.marker.objects [nMarker] = DropMarkerObject (&objP->position.vPos, (short) objP->nSegment, &objP->position.mOrient, nMarker);
-}
-
-//------------------------------------------------------------------------------
-
-#define MARKER_SPHERE_SIZE 0x58000
-
-void DrawMarkers ()
- {
-	int i,nMaxDrop;
-	static int cyc=10,cycdir=1;
-	g3sPoint spherePoint;
-
-nMaxDrop = IsMultiGame ? 2 : 9;
-spherePoint.p3_index = -1;
-for (i = 0; i < nMaxDrop; i++)
-	if (gameData.marker.objects [(gameData.multiplayer.nLocalPlayer*2)+i] != -1) {
-		G3TransformAndEncodePoint (&spherePoint,&gameData.objs.objects [gameData.marker.objects [ (gameData.multiplayer.nLocalPlayer*2)+i]].position.vPos);
-		GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
-		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE, 1);
-		GrSetColorRGB (PAL2RGBA (20), 0, 0, 255);
-		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE / 2, 1);
-		GrSetColorRGB (PAL2RGBA (30), 0, 0, 255);
-		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE / 4, 1);
-		DrawMarkerNumber (i);
-		}
-if (cycdir) {
-	cyc += 2;
-	if (cyc > 43) {
-		cyc = 43;
-		cycdir = 0;
-		}
-	}
-else {
-	cyc -= 2;
-	if (cyc < 10) {
-		cyc = 10;
-		cycdir = 1;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void ClearMarkers ()
- {
-int i;
-
-for (i = 0; i < NUM_MARKERS; i++) {
-	gameData.marker.szMessage [i][0] = 0;
-	gameData.marker.objects [i] = -1;
-	}
-}
-
 //------------------------------------------------------------------------------
 
 void AutomapClearVisited ()
@@ -446,24 +300,24 @@ if (gameStates.render.automap.bRadar && (OBJ_IDX (objP) != LOCALPLAYER.nObject))
 // Draw shaft of arrow
 VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*3);
 G3TransformAndEncodePoint (&arrowPoint,&vArrowPos);
-AutomapDrawLine (&spherePoint, &arrowPoint);
+G3DrawLine (&spherePoint, &arrowPoint);
 
 // Draw right head of arrow
 VmVecScaleAdd (&vHeadPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*2);
 VmVecScaleInc (&vHeadPos, &objP->position.mOrient.rVec, size*1);
 G3TransformAndEncodePoint (&headPoint,&vHeadPos);
-AutomapDrawLine (&arrowPoint, &headPoint);
+G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw left head of arrow
 VmVecScaleAdd (&vHeadPos, &objP->position.vPos, &objP->position.mOrient.fVec, size*2);
 VmVecScaleInc (&vHeadPos, &objP->position.mOrient.rVec, size* (-1));
 G3TransformAndEncodePoint (&headPoint,&vHeadPos);
-AutomapDrawLine (&arrowPoint, &headPoint);
+G3DrawLine (&arrowPoint, &headPoint);
 
 // Draw tPlayer's up vector
 VmVecScaleAdd (&vArrowPos, &objP->position.vPos, &objP->position.mOrient.uVec, size*2);
 G3TransformAndEncodePoint (&arrowPoint,&vArrowPos);
-AutomapDrawLine (&spherePoint, &arrowPoint);
+G3DrawLine (&spherePoint, &arrowPoint);
 }
 
 //------------------------------------------------------------------------------
@@ -743,35 +597,6 @@ levelNameCanv = PrintToCanvas (amLevelName, SMALL_FONT, automapColors.nMedGreen,
 
 //------------------------------------------------------------------------------
 
-void AMDeleteMarker (void)
-{
-if (gameData.marker.nHighlight > -1 && gameData.marker.objects [gameData.marker.nHighlight] != -1) {
-	if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
-		int	h, i;
-		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
-		i = LastMarker ();
-		if (i == gameData.marker.nHighlight) {
-			gameData.marker.objects [gameData.marker.nHighlight] = -1;
-			gameData.marker.szMessage [gameData.marker.nHighlight][0] = '\0';
-			gameData.marker.nHighlight = i ? 0 : -1;
-			}
-		else {
-			h = i - gameData.marker.nHighlight;
-			memcpy (gameData.marker.objects + gameData.marker.nHighlight,
-						gameData.marker.objects + gameData.marker.nHighlight + 1,
-						h * sizeof (gameData.marker.objects [0]));
-			memcpy (gameData.marker.szMessage [gameData.marker.nHighlight],
-						gameData.marker.szMessage [gameData.marker.nHighlight + 1],
-						h * sizeof (gameData.marker.szMessage [0]));
-			gameData.marker.objects [i] = -1;
-			gameData.marker.szMessage [i][0] = '\0';
-			}
-		}				
-	}
-}
-
-//------------------------------------------------------------------------------
-
 extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
 
 #ifndef _DEBUG
@@ -903,7 +728,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int AMReadControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsAway, int *pnSegmentLimit)
+int ReadAutomapControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsAway, int *pnSegmentLimit)
 {
 	int	c, nMarker, nMaxDrop;
 
@@ -990,7 +815,7 @@ while ((c = KeyInKey ())) {
 		break;
 
 		case KEY_D+KEY_CTRLED:
-			AMDeleteMarker ();
+			DeleteMarker ();
 			break;
 
 		case KEY_ALTED + KEY_P:
@@ -1080,7 +905,7 @@ while (!bDone)	{
 		bDone = 1;
 	bDone = AMGameFrame (bPauseGame, bDone);
 	SongsCheckRedbookRepeat ();
-	bDone = AMReadControls (nLeaveMode, bDone, &bPauseGame, &nMaxSegsAway, &nSegmentLimit);
+	bDone = ReadAutomapControls (nLeaveMode, bDone, &bPauseGame, &nMaxSegsAway, &nSegmentLimit);
 	UpdateAutomap (&vTAngles);
 	DrawAutomap ();
 	if (bFirstTime) {
@@ -1577,91 +1402,6 @@ else {
 		}
 	}
 }
-
-//------------------------------------------------------------------------------
-
-int LastMarker (void)
-{
-	int nMaxDrop, h, i;
-
-//find free marker slot
-nMaxDrop = IsMultiGame ? MAX_DROP_MULTI : MAX_DROP_SINGLE;
-h = gameData.multiplayer.nLocalPlayer * 2 + nMaxDrop;
-for (i = nMaxDrop; i; i--)
-	if (gameData.marker.objects [--h] > -1)		//found free slot!
-		return i - 1;
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
-static int	 nMarkerIndex=0;
-static ubyte nDefiningMarker;
-static ubyte nLastMarkerDropped;
-
-void InitMarkerInput ()
-{
-	int nMaxDrop, i;
-
-//find free marker slot
-i = LastMarker () + 1;
-nMaxDrop = (gameData.app.nGameMode & GM_MULTI) ? MAX_DROP_MULTI : MAX_DROP_SINGLE;
-if (i == nMaxDrop) {		//no free slot
-	if (gameData.app.nGameMode & GM_MULTI)
-		i = !nLastMarkerDropped;		//in multi, replace older of two
-	else {
-		HUDInitMessage (TXT_MARKER_SLOTS);
-		return;
-		}
-	}
-//got a D2_FREE slot.  start inputting marker message
-gameData.marker.szInput [0] = '\0';
-nMarkerIndex = 0;
-gameData.marker.nDefiningMsg = 1;
-nDefiningMarker = i;
-}
-
-//------------------------------------------------------------------------------
-
-void MarkerInputMessage (int key)
- {
-	switch (key)	{
-	case KEY_F8:
-	case KEY_ESC:
-		gameData.marker.nDefiningMsg = 0;
-		GameFlushInputs ();
-		break;
-	case KEY_LEFT:
-	case KEY_BACKSP:
-	case KEY_PAD4:
-		if (nMarkerIndex > 0)
-			nMarkerIndex--;
-		gameData.marker.szInput [nMarkerIndex] = 0;
-		break;
-	case KEY_ENTER:
-		strcpy (gameData.marker.szMessage [ (gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],gameData.marker.szInput);
-		if (gameData.app.nGameMode & GM_MULTI)
-		 strcpy (gameData.marker.nOwner [ (gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],LOCALPLAYER.callsign);
-		DropMarker (nDefiningMarker);
-		nLastMarkerDropped = nDefiningMarker;
-		GameFlushInputs ();
-		gameData.marker.nDefiningMsg = 0;
-		break;
-	default:
-		if (key > 0)
-		 {
-		  int ascii = KeyToASCII (key);
-		  if ((ascii < 255))
-		    if (nMarkerIndex < 38)
-		      {
-			gameData.marker.szInput [nMarkerIndex++] = ascii;
-			gameData.marker.szInput [nMarkerIndex] = 0;
-		      }
-		 }
-		break;
-
-	}
- }
 
 //------------------------------------------------------------------------------
 //eof
