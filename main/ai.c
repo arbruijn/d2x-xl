@@ -316,7 +316,7 @@ void MakeNearbyRobotSnipe (void)
 
 	CreateBfsList (OBJSEG (gameData.objs.console), bfs_list, &bfs_length, MNRS_SEG_MAX);
 
-	for (i=0; i<bfs_length; i++) {
+	for (i = 0; i < bfs_length; i++) {
 		int nObject = gameData.segs.segments [bfs_list [i]].objects;
 
 		while (nObject != -1) {
@@ -481,6 +481,10 @@ void DoAIFrame (tObject *objP)
 	int			bMultiGame = !IsRobotGame;
 	vmsVector	vVisPos;
 
+#ifdef _DEBUG
+if (aip->behavior == AIB_STILL)
+	aip = aip;
+#endif
 gameData.ai.nPlayerVisibility = -1;
 ailp->nextActionTime -= gameData.time.xFrame;
 
@@ -627,7 +631,7 @@ _exit_cheat:
 		}
 	// - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - 
 	// Occasionally make non-still robots make a path to the player.  Based on agitation and distance from player.
-	if ((aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_IDLING) && 
+	if ((aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_STILL) && 
 		 !(bMultiGame || botInfoP->companion || botInfoP->thief))
 		if (gameData.ai.nOverallAgitation > 70) {
 			if ((gameData.ai.xDistToPlayer < MAX_REACTION_DIST) && (d_rand () < gameData.time.xFrame/4)) {
@@ -669,7 +673,7 @@ _exit_cheat:
 				case AIM_IDLING:
 					if (botInfoP->attackType)
 						MoveTowardsSegmentCenter (objP);
-					else if (!((aip->behavior == AIB_IDLING) || (aip->behavior == AIB_STATION) || (aip->behavior == AIB_FOLLOW)))    // Behavior is still, so don't follow path.
+					else if ((aip->behavior != AIB_STILL) && (aip->behavior != AIB_STATION) && (aip->behavior != AIB_FOLLOW))    // Behavior is still, so don't follow path.
 						AttemptToResumePath (objP);
 					break;
 				case AIM_FOLLOW_PATH:
@@ -744,7 +748,7 @@ _exit_cheat:
 
 	if (gameStates.app.bPlayerIsDead && (ailp->playerAwarenessType == 0))
 		if ((gameData.ai.xDistToPlayer < MAX_REACTION_DIST) && (d_rand () < gameData.time.xFrame / 8)) {
-			if ((aip->behavior != AIB_IDLING) && (aip->behavior != AIB_RUN_FROM)) {
+			if ((aip->behavior != AIB_STILL) && (aip->behavior != AIB_RUN_FROM)) {
 				if (!AIMultiplayerAwareness (objP, 30))
 					goto funcExit;
 				AIMultiSendRobotPos (nObject, -1);
@@ -841,7 +845,7 @@ switch (ROBOTINFO (objP->id).bossFlag) {
 					goto funcExit;
 					}
 				}
-			else if (!ailp->nPrevVisibility && ((gameData.ai.xDistToPlayer >> 7) > ailp->timeSinceProcessed)) {  // 128 units away (6.4 segments) processed after 1 second.
+			else if ((aip->behavior != AIB_STILL) && !ailp->nPrevVisibility && ((gameData.ai.xDistToPlayer >> 7) > ailp->timeSinceProcessed)) {  // 128 units away (6.4 segments) processed after 1 second.
 				AIIdleAnimation (objP);
 				goto funcExit;
 				}
@@ -1141,7 +1145,7 @@ switch (ailp->mode) {
 		if (aip->behavior != AIB_RUN_FROM)
 			DoFiringStuff (objP, gameData.ai.nPlayerVisibility, &gameData.ai.vVecToPlayer);
 		if ((gameData.ai.nPlayerVisibility == 2) && 
-			 (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && (aip->behavior != AIB_RUN_FROM) && (objP->id != ROBOT_BRAIN) && 
+			 (aip->behavior != AIB_STILL) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && (aip->behavior != AIB_RUN_FROM) && (objP->id != ROBOT_BRAIN) && 
 			 !(botInfoP->companion || botInfoP->thief)) {
 			if (botInfoP->attackType == 0)
 				ailp->mode = AIM_CHASE_OBJECT;
@@ -1248,7 +1252,10 @@ switch (ailp->mode) {
 							AIDoActualFiringStuff (objP, aip, ailp, botInfoP, aip->CURRENT_GUN);
 						goto funcExit;
 						}
-					AIMoveRelativeToPlayer (objP, ailp, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, 0, 1, gameData.ai.nPlayerVisibility);
+					if (aip->behavior != AIB_STILL)
+						AIMoveRelativeToPlayer (objP, ailp, gameData.ai.xDistToPlayer, &gameData.ai.vVecToPlayer, 0, 1, gameData.ai.nPlayerVisibility);
+					else
+						gameData.ai.bEvaded = 0;
 					if (gameData.ai.bEvaded) {
 						AIMultiSendRobotPos (nObject, -1);
 						gameData.ai.bEvaded = 0;

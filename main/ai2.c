@@ -143,7 +143,7 @@ void InitAISystem (void)
 int AIBehaviorToMode (int behavior)
 {
 switch (behavior) {
-	case AIB_IDLING:		
+	case AIB_STILL:		
 		return AIM_IDLING;
 	case AIB_NORMAL:		
 		return AIM_CHASE_OBJECT;
@@ -182,6 +182,10 @@ void InitAIObject (short nObject, short behavior, short nHideSegment)
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->id);
 
 Assert (nObject >= 0);
+if (behavior == AIB_STATIC) {
+	objP->controlType = CT_NONE;
+	objP->movementType = MT_NONE;
+	}
 if (behavior == 0) {
 	behavior = AIB_NORMAL;
 	aip->behavior = (ubyte) behavior;
@@ -211,7 +215,6 @@ if (botInfoP->attackType) {
 	aip->behavior = AIB_NORMAL;
 	ailp->mode = AIBehaviorToMode (aip->behavior);
 	}
-// This is astonishingly stupid! This routine gets called by matcens!KILL KILL KILL!!!gameData.ai.freePointSegs = gameData.ai.pointSegs;
 VmVecZero (&objP->mType.physInfo.velocity);
 // -- ailp->waitTime = F1_0*5;
 ailp->playerAwarenessTime = 0;
@@ -228,7 +231,7 @@ if ((behavior == AIB_SNIPE) || (behavior == AIB_STATION) || (behavior == AIB_RUN
 	aip->nCurPathIndex = 0;
 	}
 aip->SKIP_AI_COUNT = 0;
-aip->CLOAKED =  (botInfoP->cloakType == RI_CLOAKED_ALWAYS);
+aip->CLOAKED = (botInfoP->cloakType == RI_CLOAKED_ALWAYS);
 objP->mType.physInfo.flags |= (PF_BOUNCE | PF_TURNROLL);
 aip->REMOTE_OWNER = -1;
 aip->bDyingSoundPlaying = 0;
@@ -1529,7 +1532,7 @@ if (objP->controlType != CT_AI)
 	return;
 if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
 	return;
-if (objP->cType.aiInfo.behavior != AIB_IDLING)
+if (objP->cType.aiInfo.behavior == AIB_STILL)
 	return;
 r = d_rand ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
@@ -2513,7 +2516,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 
 					//	Wants to fire, so should go into chase mode, probably.
 					if ((aip->behavior != AIB_RUN_FROM)
-						 && (aip->behavior != AIB_IDLING)
+						 && (aip->behavior != AIB_STILL)
 						 && (aip->behavior != AIB_SNIPE)
 						 && (aip->behavior != AIB_FOLLOW)
 						 && !botInfoP->attackType
@@ -2600,7 +2603,7 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 							}
 						}
 					//	Wants to fire, so should go into chase mode, probably.
-					if ((aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_IDLING) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
+					if ((aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_STILL) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
 						ailp->mode = AIM_CHASE_OBJECT;
 					}
 				aip->GOAL_STATE = AIS_RECO;

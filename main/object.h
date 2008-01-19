@@ -87,6 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Movement types
 #define MT_NONE         0   // doesn't move
 #define MT_PHYSICS      1   // moves by physics
+#define MT_STATIC			2	 // completely still and immoveable
 #define MT_SPINNING     3   // this tObject doesn't move, just sits and spins
 
 // Render types

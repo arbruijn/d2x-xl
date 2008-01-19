@@ -39,16 +39,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AI_DIR_BACKWARD (-AI_DIR_FORWARD)
 
 // Behaviors
-#define AIB_IDLING                      0x80
-#define AIB_NORMAL                      0x81
-#define AIB_BEHIND                      0x82
-#define AIB_RUN_FROM                    0x83
-#define AIB_SNIPE                       0x84
-#define AIB_STATION                     0x85
-#define AIB_FOLLOW                      0x86
+#define AIB_STILL      					0x80
+#define AIB_NORMAL      				0x81
+#define AIB_BEHIND      				0x82
+#define AIB_RUN_FROM    				0x83
+#define AIB_SNIPE       				0x84
+#define AIB_STATION     				0x85
+#define AIB_FOLLOW      				0x86
+#define AIB_STATIC						0x87
 
-#define MIN_BEHAVIOR    0x80
-#define MAX_BEHAVIOR    0x86
+#define MIN_BEHAVIOR						0x80
+#define MAX_BEHAVIOR						0x87
 
 //  Modes
 #define AIM_IDLING                  0

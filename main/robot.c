@@ -246,7 +246,7 @@ gameData.bots.info [0][gameData.bots.nCamBotId].seeSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].attackSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].clawSound = 0;
 gameData.bots.info [0][gameData.bots.nCamBotId].tauntSound = 0;
-gameData.bots.info [0][gameData.bots.nCamBotId].behavior = AIB_IDLING;
+gameData.bots.info [0][gameData.bots.nCamBotId].behavior = AIB_STILL;
 gameData.bots.info [0][gameData.bots.nCamBotId].aim = AIM_IDLING;
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].turnTime));
 memset (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed, 0, sizeof (gameData.bots.info [0][gameData.bots.nCamBotId].xMaxSpeed));
