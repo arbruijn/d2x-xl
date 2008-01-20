@@ -32,9 +32,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_DROP_COOP		3
 #define	MAX_DROP_SINGLE	9
 
-static int	 nMarkerIndex = 0;
-static ubyte nDefiningMarker;
-static ubyte nLastMarkerDropped = 0;
+static int	nMarkerIndex = 0;
+static char	nDefiningMarker;
+static char	nLastMarkerDropped = -1;
 
 // -------------------------------------------------------------
 
@@ -180,6 +180,8 @@ void DropSpawnMarker (void)
 {
 	char nMarker = (char) SpawnMarkerIndex (-1);
 
+if (nLastMarkerDropped < 0)
+	nLastMarkerDropped = MaxDrop ();
 if (nMarker < 0)
 	nMarker = (nLastMarkerDropped + 1) % MaxDrop ();
 else
@@ -310,6 +312,8 @@ void InitMarkerInput (void)
 {
 	int nMaxDrop, i;
 
+if (nLastMarkerDropped < 0)
+	nLastMarkerDropped = MaxDrop ();
 //find free marker slot
 i = LastMarker () + 1;
 nMaxDrop = MaxDrop ();
