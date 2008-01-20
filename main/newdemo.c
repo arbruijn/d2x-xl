@@ -3420,7 +3420,7 @@ longjmp (gameExitPoint, 0);               // Exit game loop
 
 #define BUF_SIZE 16384
 
-void NewDemoStripFrames (char *outname, int bytes_to_strip)
+void NDStripFrames (char *outname, int bytes_to_strip)
 {
 	CFILE	ndOutFile;
 	char	*buf;

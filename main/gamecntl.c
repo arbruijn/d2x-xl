@@ -69,6 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "automap.h"
 #include "text.h"
+#include "gamerend.h"
 #include "powerup.h"
 #include "newmenu.h"
 #include "network.h"
@@ -107,6 +108,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cheats.h"
 #include "input.h"
 #include "render.h"
+#include "marker.h"
 
 //------------------------------------------------------------------------------
 //#define TEST_TIMER    1		//if this is set, do checking on timer
@@ -151,28 +153,6 @@ extern int	Debug_pause;
 extern fix	ShowView_textTimer;
 
 //	Function prototypes --------------------------------------------------------
-
-
-void CyclePrimary();
-void CycleSecondary();
-void InitMarkerInput();
-void MarkerInputMessage (int);
-void grow_window(void);
-void shrink_window(void);
-int AllowedToFireMissile(void);
-int AllowedToFireFlare(void);
-void CheckRearView(void);
-void MovePlayerToSegment(tSegment *seg, int tSide);
-void kconfig_center_headset(void);
-void GameRenderFrameMono(void);
-void NewDemoStripFrames(char *, int);
-void ToggleCockpit(void);
-int  dump_used_textures_all(void);
-void DropMarker();
-void DropSecondaryWeapon(int nWeapon);
-void DropCurrentWeapon();
-
-void FinalCheats(int key);
 
 void HandleGameKey(int key);
 int HandleSystemKey(int key);
@@ -732,12 +712,12 @@ switch (key) {
 
 	case KEY_SHIFTED+KEY_MINUS:
 	case KEY_MINUS:	
-		shrink_window(); 
+		ShrinkWindow(); 
 		break;
 
 	case KEY_SHIFTED+KEY_EQUAL:
 	case KEY_EQUAL:	
-		grow_window(); 
+		GrowWindow(); 
 		break;
 
 	case KEY_F2:	
@@ -838,7 +818,7 @@ switch (key) {
 		how_many = atoi(num);
 		if (how_many <= 0)
 			break;
-		NewDemoStripFrames(filename, how_many);
+		NDStripFrames(filename, how_many);
 
 		break;
 		}
@@ -1150,7 +1130,7 @@ switch (key) {
 
 	case KEY_SHIFTED+KEY_MINUS:
 	case KEY_MINUS:
-		shrink_window(); 
+		ShrinkWindow(); 
 		bScreenChanged=1; 
 		break;
 
@@ -1502,9 +1482,14 @@ void HandleGameKey(int key)
 			break;
 
 		case KEY_F4:
-		if (!gameData.marker.nDefiningMsg)
-		  InitMarkerInput();
-		 break;
+			if (!gameData.marker.nDefiningMsg)
+				InitMarkerInput();
+			break;
+
+		case KEY_F4 + KEY_CTRLED:
+			if (!gameData.marker.nDefiningMsg)
+				DropSpawnMarker ();
+			break;
 
 		case KEY_ALTED + KEY_CTRLED + KEY_T:
 			SwitchTeam (gameData.multiplayer.nLocalPlayer, 0);

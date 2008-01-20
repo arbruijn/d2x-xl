@@ -3156,6 +3156,9 @@
 						RelativePath="..\..\include\makesig.h">
 					</File>
 					<File
+						RelativePath="..\..\main\marker.h">
+					</File>
+					<File
 						RelativePath="..\..\main\menu.h">
 					</File>
 					<File
@@ -3548,10 +3551,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

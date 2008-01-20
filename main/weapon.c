@@ -208,6 +208,72 @@ sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES] = {
 // ; (34) ---------- Super Plasma Cannon ----------
 // ; (35) ---------- Super Fusion Cannon ----------
 
+//	-----------------------------------------------------------------------------
+
+int AllowedToFireLaser (void)
+{
+	float	s;
+
+if (gameStates.app.bPlayerIsDead) {
+	gameData.missiles.nGlobalFiringCount = 0;
+	return 0;
+	}
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+	return 0;
+//	Make sure enough time has elapsed to fire laser, but if it looks like it will
+//	be a long while before laser can be fired, then there must be some mistake!
+if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
+	fix t = gameData.laser.xLastFiredTime + (fix) ((gameData.laser.xNextFireTime - gameData.laser.xLastFiredTime) * s);
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 2 * F1_0 * s))
+		return 0;
+	}
+else {
+	if ((gameData.laser.xNextFireTime > gameData.time.xGame) &&  (gameData.laser.xNextFireTime < gameData.time.xGame + 2 * F1_0))
+		return 0;
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+fix	xNextFlareFireTime = 0;
+#define	FLARE_BIG_DELAY	 (F1_0*2)
+
+int AllowedToFireFlare (void)
+{
+if ((xNextFlareFireTime > gameData.time.xGame) &&
+	 (xNextFlareFireTime < gameData.time.xGame + FLARE_BIG_DELAY))	//	In case time is bogus, never wait > 1 second.
+		return 0;
+if (LOCALPLAYER.energy >= WI_energy_usage (FLARE_ID))
+	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * F1_0 / 4);
+else
+	xNextFlareFireTime = gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [0].fSpeed * FLARE_BIG_DELAY);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int AllowedToFireMissile (void)
+{
+	float	s;
+
+//	Make sure enough time has elapsed to fire missile, but if it looks like it will
+//	be a long while before missile can be fired, then there must be some mistake!
+if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+	return 0;
+if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
+	fix t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 5 * F1_0 * s))
+		return 0;
+	}
+else {
+	if ((gameData.missiles.xNextFireTime > gameData.time.xGame) && 
+		 (gameData.missiles.xNextFireTime < gameData.time.xGame + 5 * F1_0))
+		return 0;
+	}
+return 1;
+}
+
 //	------------------------------------------------------------------------------------
 //	Return:
 // Bits set:
@@ -1250,7 +1316,7 @@ return nObject;
 
 //	-----------------------------------------------------------------------------
 
-void DropCurrentWeapon ()
+void DropCurrentWeapon (void)
 {
 	int	nObject = -1, 
 			ammo = 0, 

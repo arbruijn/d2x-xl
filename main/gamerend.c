@@ -963,93 +963,49 @@ if (bSaveScreenShot)
 
 //------------------------------------------------------------------------------
 
-void ToggleCockpit ()
-{
-	int nNewMode;
-
-switch (gameStates.render.cockpit.nMode) {
-	case CM_FULL_COCKPIT:
-		nNewMode = CM_STATUS_BAR;
-		break;
-
-	case CM_STATUS_BAR:
-		if (gameStates.render.bRearView)
-			return;
-		nNewMode = (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT;
-		break;
-	
-	case CM_FULL_SCREEN:
-		if (gameStates.render.bRearView)
-			return;
-		nNewMode = CM_LETTERBOX;
-		break;
-
-	case CM_LETTERBOX:
-		nNewMode = CM_FULL_COCKPIT;
-		break;
-
-	case CM_REAR_VIEW:
-   default:
-		return;			//do nothing
-		break;
-	}
-gameStates.render.cockpit.nNextMode = -1;
-SelectCockpit (nNewMode);
-HUDClearMessages ();
-WritePlayerFile ();
-}
-
-//------------------------------------------------------------------------------
-
 #define WINDOW_W_DELTA	 ((gameData.render.window.wMax / 16)&~1)	//24	//20
 #define WINDOW_H_DELTA	 ((gameData.render.window.hMax / 16)&~1)	//12	//10
 
 #define WINDOW_MIN_W		 ((gameData.render.window.wMax * 10) / 22)	//160
 #define WINDOW_MIN_H		 ((gameData.render.window.hMax * 10) / 22)
 
-void grow_window ()
+void GrowWindow ()
 {
-	StopTime ();
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
-		gameData.render.window.h = gameData.render.window.hMax;
-		gameData.render.window.w = gameData.render.window.wMax;
-		ToggleCockpit ();
-		HUDInitMessage (TXT_COCKPIT_F3);
-		StartTime ();
-		return;
-	}
-
-	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
-		StartTime ();
-		return;
-		}
-
-	if (gameData.render.window.h>=gameData.render.window.hMax || gameData.render.window.w>=gameData.render.window.wMax) {
-		//gameData.render.window.w = gameData.render.window.wMax;
-		//gameData.render.window.h = gameData.render.window.hMax;
-		SelectCockpit (CM_FULL_SCREEN);
-	} else {
-		//int x, y;
-
-		gameData.render.window.w += WINDOW_W_DELTA;
-		gameData.render.window.h += WINDOW_H_DELTA;
-
-		if (gameData.render.window.h > gameData.render.window.hMax)
-			gameData.render.window.h = gameData.render.window.hMax;
-
-		if (gameData.render.window.w > gameData.render.window.wMax)
-			gameData.render.window.w = gameData.render.window.wMax;
-
-		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
-
-		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
-	}
-
-	HUDClearMessages ();	//	@mk, 11/11/94
-
-	WritePlayerFile ();
+StopTime ();
+if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
+	gameData.render.window.h = gameData.render.window.hMax;
+	gameData.render.window.w = gameData.render.window.wMax;
+	ToggleCockpit ();
+	HUDInitMessage (TXT_COCKPIT_F3);
 	StartTime ();
+	return;
+	}
+
+if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+	StartTime ();
+	return;
+	}
+
+if (gameData.render.window.h>=gameData.render.window.hMax || gameData.render.window.w>=gameData.render.window.wMax) {
+	//gameData.render.window.w = gameData.render.window.wMax;
+	//gameData.render.window.h = gameData.render.window.hMax;
+	SelectCockpit (CM_FULL_SCREEN);
+	} 
+else {
+	//int x, y;
+	gameData.render.window.w += WINDOW_W_DELTA;
+	gameData.render.window.h += WINDOW_H_DELTA;
+	if (gameData.render.window.h > gameData.render.window.hMax)
+		gameData.render.window.h = gameData.render.window.hMax;
+	if (gameData.render.window.w > gameData.render.window.wMax)
+		gameData.render.window.w = gameData.render.window.wMax;
+	gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+	gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+	GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+	}
+HUDClearMessages ();	//	@mk, 11/11/94
+WritePlayerFile ();
+StartTime ();
 }
 
 //------------------------------------------------------------------------------
@@ -1136,64 +1092,63 @@ void FillBackground ()
 
 //------------------------------------------------------------------------------
 
-void shrink_window ()
+void ShrinkWindow ()
 {
-	StopTime ();
-	if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
-		gameData.render.window.h = gameData.render.window.hMax;
-		gameData.render.window.w = gameData.render.window.wMax;
-		//!!ToggleCockpit ();
-		gameStates.render.cockpit.nNextMode = CM_FULL_COCKPIT;
-		SelectCockpit (CM_STATUS_BAR);
-//		shrink_window ();
-//		shrink_window ();
-		HUDInitMessage (TXT_COCKPIT_F3);
-		WritePlayerFile ();
-		StartTime ();
-		return;
+StopTime ();
+if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+	gameData.render.window.h = gameData.render.window.hMax;
+	gameData.render.window.w = gameData.render.window.wMax;
+	//!!ToggleCockpit ();
+	gameStates.render.cockpit.nNextMode = CM_FULL_COCKPIT;
+	SelectCockpit (CM_STATUS_BAR);
+//		ShrinkWindow ();
+//		ShrinkWindow ();
+	HUDInitMessage (TXT_COCKPIT_F3);
+	WritePlayerFile ();
+	StartTime ();
+	return;
 	}
 
-	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT))
-	{
-		//gameData.render.window.w = gameData.render.window.wMax;
-		//gameData.render.window.h = gameData.render.window.hMax;
-		SelectCockpit (CM_STATUS_BAR);
-		WritePlayerFile ();
-		StartTime ();
-		return;
+if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+	//gameData.render.window.w = gameData.render.window.wMax;
+	//gameData.render.window.h = gameData.render.window.hMax;
+	SelectCockpit (CM_STATUS_BAR);
+	WritePlayerFile ();
+	StartTime ();
+	return;
 	}
 
-	if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
-		StartTime ();
-		return;
-		}
+if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
+	StartTime ();
+	return;
+	}
 
 #if TRACE
-   con_printf (CONDBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nMode);
+con_printf (CONDBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nMode);
 #endif
-	if (gameData.render.window.w > WINDOW_MIN_W) {
-		//int x, y;
+if (gameData.render.window.w > WINDOW_MIN_W) {
+	//int x, y;
 
-      gameData.render.window.w -= WINDOW_W_DELTA;
-		gameData.render.window.h -= WINDOW_H_DELTA;
+   gameData.render.window.w -= WINDOW_W_DELTA;
+	gameData.render.window.h -= WINDOW_H_DELTA;
 
 #if TRACE
   con_printf (CONDBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.window.w, gameData.render.window.h, gameData.render.window.wMax, gameData.render.window.hMax);
 #endif                  
-		if (gameData.render.window.w < WINDOW_MIN_W)
-			gameData.render.window.w = WINDOW_MIN_W;
+	if (gameData.render.window.w < WINDOW_MIN_W)
+		gameData.render.window.w = WINDOW_MIN_W;
 
-		if (gameData.render.window.h < WINDOW_MIN_H)
-			gameData.render.window.h = WINDOW_MIN_H;
-		
-		gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
-		gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
+	if (gameData.render.window.h < WINDOW_MIN_H)
+		gameData.render.window.h = WINDOW_MIN_H;
+	
+	gameData.render.window.x = (gameData.render.window.wMax - gameData.render.window.w)/2;
+	gameData.render.window.y = (gameData.render.window.hMax - gameData.render.window.h)/2;
 
-		FillBackground ();
+	FillBackground ();
 
-		GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
-		HUDClearMessages ();
-		WritePlayerFile ();
+	GameInitRenderSubBuffers (gameData.render.window.x, gameData.render.window.y, gameData.render.window.w, gameData.render.window.h);
+	HUDClearMessages ();
+	WritePlayerFile ();
 	}
 StartTime ();
 }

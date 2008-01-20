@@ -32,6 +32,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_DROP_COOP		3
 #define	MAX_DROP_SINGLE	9
 
+static int	 nMarkerIndex = 0;
+static ubyte nDefiningMarker;
+static ubyte nLastMarkerDropped = 0;
+
 // -------------------------------------------------------------
 
 static inline int MaxDrop (void)
@@ -172,6 +176,20 @@ else {
 
 //------------------------------------------------------------------------------
 
+void DropSpawnMarker (void)
+{
+	char nMarker = (char) SpawnMarkerIndex (-1);
+
+if (nMarker < 0)
+	nMarker = (nLastMarkerDropped + 1) % MaxDrop ();
+else
+	nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
+strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
+DropMarker (nMarker);
+}
+
+//------------------------------------------------------------------------------
+
 void DropBuddyMarker (tObject *objP)
 {
 	ubyte	nMarker;
@@ -288,10 +306,6 @@ if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.mark
 
 //------------------------------------------------------------------------------
 
-static int	 nMarkerIndex=0;
-static ubyte nDefiningMarker;
-static ubyte nLastMarkerDropped;
-
 void InitMarkerInput (void)
 {
 	int nMaxDrop, i;
@@ -300,7 +314,9 @@ void InitMarkerInput (void)
 i = LastMarker () + 1;
 nMaxDrop = MaxDrop ();
 if (i == nMaxDrop) {		//no free slot
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsCoopGame)
+		i = (nLastMarkerDropped + 1) % nMaxDrop;
+	else if (IsMultiGame)
 		i = !nLastMarkerDropped;		//in multi, replace older of two
 	else {
 		HUDInitMessage (TXT_MARKER_SLOTS);

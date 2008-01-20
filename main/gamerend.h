@@ -1,4 +1,4 @@
-/* $Id: automap.h,v 1.4 2003/11/15 00:36:54 btb Exp $ */
+/* $Id: game.h,v 1.6 2003/12/08 22:32:56 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -12,22 +12,10 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _MARKER_H
-#define _MARKER_H
+#ifndef _GAMEREND_H
+#define _GAMEREND_H
 
-#include "player.h"
+void ShrinkWindow ();
+void GrowWindow ();
 
-void DropMarker (char nPlayerMarker);
-void DropBuddyMarker (tObject *objP);
-void DropSpawnMarker (void);
-void DrawMarkers (void);
-void DeleteMarker (void);
-void ClearMarkers (void);
-int LastMarker (void);
-void InitMarkerInput (void);
-void MarkerInputMessage (int key);
-int SpawnMarkerIndex (int nPlayer);
-tObject *SpawnMarkerObject (int nPlayer);
-int IsSpawnMarkerObject (tObject *objP);
-
-#endif //_MARKER_H
+#endif /* _GAMEREND_H */

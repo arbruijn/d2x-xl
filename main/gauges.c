@@ -4304,5 +4304,43 @@ if (gameStates.render.frameRate.value) {
 ShowRenderItems ();
 }
 
+//------------------------------------------------------------------------------
+
+void ToggleCockpit ()
+{
+	int nNewMode;
+
+switch (gameStates.render.cockpit.nMode) {
+	case CM_FULL_COCKPIT:
+		nNewMode = CM_STATUS_BAR;
+		break;
+
+	case CM_STATUS_BAR:
+		if (gameStates.render.bRearView)
+			return;
+		nNewMode = (gameStates.render.cockpit.nNextMode < 0) ? CM_FULL_SCREEN : CM_FULL_COCKPIT;
+		break;
+	
+	case CM_FULL_SCREEN:
+		if (gameStates.render.bRearView)
+			return;
+		nNewMode = CM_LETTERBOX;
+		break;
+
+	case CM_LETTERBOX:
+		nNewMode = CM_FULL_COCKPIT;
+		break;
+
+	case CM_REAR_VIEW:
+   default:
+		return;			//do nothing
+		break;
+	}
+gameStates.render.cockpit.nNextMode = -1;
+SelectCockpit (nNewMode);
+HUDClearMessages ();
+WritePlayerFile ();
+}
+
 //	-----------------------------------------------------------------------------
 

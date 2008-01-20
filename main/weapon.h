@@ -320,8 +320,16 @@ extern ubyte nDefaultWeaponOrder [2][11];
 #define defaultPrimaryOrder	(nDefaultWeaponOrder [0])
 #define defaultSecondaryOrder	(nDefaultWeaponOrder [1])
 
+int AllowedToFireFlare (void);
+int AllowedToFireMissile (void);
+
+void DropCurrentWeapon (void);
+void DropSecondaryWeapon (int nWeapon);
+
 void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n);
 void SetLastSuperWeaponStates (void);
 void ToggleBomb (void);
+void CyclePrimary ();
+void CycleSecondary ();
 
 #endif

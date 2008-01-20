@@ -199,6 +199,7 @@ void ShowInGameWarning (char *s);
 int PlayerHasHeadLight (int nPlayer);
 int HeadLightIsOn (int nPlayer);
 int MarkPathToExit ();
+void CheckRearView ();
 
 void GetSlowTicks (void);
 /*
