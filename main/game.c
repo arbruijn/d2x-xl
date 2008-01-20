@@ -96,6 +96,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "lightmap.h"
 #include "oof.h"
 #include "sphere.h"
+#include "weapon.h"
 
 #include "multi.h"
 #include "desc_id.h"
