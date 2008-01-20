@@ -1136,7 +1136,7 @@ switch (key) {
 
 	case KEY_SHIFTED+KEY_EQUAL:
 	case KEY_EQUAL:		
-		grow_window();  
+		GrowWindow();  
 		bScreenChanged=1; 
 		break;
 

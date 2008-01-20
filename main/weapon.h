@@ -320,6 +320,7 @@ extern ubyte nDefaultWeaponOrder [2][11];
 #define defaultPrimaryOrder	(nDefaultWeaponOrder [0])
 #define defaultSecondaryOrder	(nDefaultWeaponOrder [1])
 
+int AllowedToFireLaser (void);
 int AllowedToFireFlare (void);
 int AllowedToFireMissile (void);
 

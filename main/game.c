@@ -210,7 +210,7 @@ void RestoreGameSurfaces ();
 
 // window functions
 
-void grow_window (void);
+void GrowWindow (void);
 void ShrinkWindow (void);
 
 // text functions
