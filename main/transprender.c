@@ -336,6 +336,7 @@ int RIAddFace (grsFace *faceP)
 {
 	fVector		vertices [4];
 	int			i, j;
+	grsBitmap	*bmP = BmOverride (faceP->bmBot, -1);
 
 #ifdef _DEBUG
 if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -347,9 +348,9 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	else
 		VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
-return RIAddPoly (faceP->bTextured ? BmOverride (faceP->bmBot, -1) : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+return RIAddPoly (faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
-						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, faceP->bAdditive);
+						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, faceP->bAdditive && !bmP->bmFromPog);
 }
 
 //------------------------------------------------------------------------------
