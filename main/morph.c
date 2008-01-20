@@ -332,13 +332,13 @@ for (i = 0; i < sort_n; i++) {
 		// Make sure the textures for this tObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
 		for (i = 0; i < pmP->nTextures;i++)
-			PIGGY_PAGE_IN (gameData.models.textureIndex [i], 0);
+			PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in, 
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed)	{
 			gameData.pig.tex.bPageFlushed = 0;
 			for (i=0;i<pmP->nTextures;i++)
-				PIGGY_PAGE_IN (gameData.models.textureIndex [i], 0);
+				PIGGY_PAGE_IN (gameData.models.textureIndex [i].index, 0);
 			}
 			// Make sure that they can all fit in memory.
 		Assert ( gameData.pig.tex.bPageFlushed == 0);

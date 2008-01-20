@@ -9,11 +9,12 @@
 #	define	RENDER_HITBOX	0
 #endif
 
-void DrawObjectBlob (tObject *obj, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *color, float alpha);
+void DrawObjectBlob (tObject *obj, int bmi0, int bmi, int iFrame, tRgbaColorf *color, float alpha);
 // draw an tObject that is a texture-mapped rod
 void DrawObjectRodTexPoly (tObject *obj, tBitmapIndex bitmap, int bLit, int iFrame);
 void DrawPolygonObject (tObject *objP, int bDepthSort);
 void CalcShipThrusterPos (tObject *objP, vmsVector *vPos);
+int InitAddonPowerup (tObject *objP);
 void ConvertWeaponToPowerup (tObject *objP);
 int ConvertPowerupToWeapon (tObject *objP);
 void ConvertAllPowerupsToWeapons (void);

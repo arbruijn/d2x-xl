@@ -85,14 +85,31 @@ if ((nModel = WeaponToModel (objP->id)))
 return objP->rType.polyObjInfo.nModel;
 }
 
+//------------------------------------------------------------------------------
+
+int InitAddonPowerup (tObject *objP)
+{
+if (objP->id == POW_SLOWMOTION)
+	objP->rType.vClipInfo.nClipIndex = -1;
+else if (objP->id == POW_BULLETTIME)
+	objP->rType.vClipInfo.nClipIndex = -2;
+else
+	return 0;
+objP->rType.vClipInfo.nCurFrame = 0;
+objP->rType.vClipInfo.xTotalTime = 0;
+return 1;
+}
+
 // -----------------------------------------------------------------------------
 
 void ConvertWeaponToPowerup (tObject *objP)
 {
-objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
-objP->rType.vClipInfo.nCurFrame = 0;
-objP->size = gameData.objs.pwrUp.info [objP->id].size;
+if (!InitAddonPowerup (objP)) {
+	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
+	objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
+	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->size = gameData.objs.pwrUp.info [objP->id].size;
+	}
 objP->controlType = CT_POWERUP;
 objP->renderType = RT_POWERUP;
 objP->mType.physInfo.mass = F1_0;
@@ -263,7 +280,7 @@ return xLight;
 //------------------------------------------------------------------------------
 //draw an tObject that has one bitmap & doesn't rotate
 
-void DrawObjectBlob (tObject *objP, tBitmapIndex bmi0, tBitmapIndex bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
+void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
 {
 	grsBitmap	*bmP;
 	tRgbaColorf	color;
@@ -294,9 +311,21 @@ else {
 	nTransp = 3;
 	fAlpha = 1.0f;
 	}
-PIGGY_PAGE_IN (bmi, 0);
-bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
+if (bmi < 0) {
+	PageInAddonBitmap (bmi);
+	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
+#ifdef _DEBUG
+	if (objP->rType.vClipInfo.nCurFrame >= BM_FRAMECOUNT (bmP))
+		bmP = bmP;
+#endif
+	}
+else {
+	PIGGY_PAGE_IN (bmi, 0);
+	bmP = gameData.pig.tex.bitmaps [0] + bmi;
+	}
+if (!(bmP && bmP->bmTexBuf))
+	return;
+if ((bmi < 0) || ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BmOverride (bmP, iFrame);
 	//fAlpha = 1;
@@ -304,8 +333,8 @@ if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 else if (colorP && gameOpts->render.bDepthSort)
 	OglLoadBmTexture (bmP, 1, nTransp, 0);
 
-if (colorP)
-	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi.index, sizeof (tRgbaColorf));
+if (colorP && (bmi >= 0))
+	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
 
 xSize = objP->size;
 
@@ -352,7 +381,7 @@ void DrawObjectRodTexPoly (tObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 	vmsVector delta, top_v, bot_v;
 	g3sPoint top_p, bot_p;
 
-PIGGY_PAGE_IN (bmi, 0);
+PIGGY_PAGE_IN (bmi.index, 0);
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP)) {
 	OglLoadBmTexture (bmP, 1, -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BmOverride (bmP, iFrame);

@@ -1211,7 +1211,7 @@ if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL
 	grsBitmap *bmP = gameData.pig.tex.bitmaps [0] + i; 
 	grsColor c;
 
-	PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [h], 0);
+	PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [h].index, 0);
 	OglLoadBmTexture (bmP, 0, 3, 1);
    GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
 	c.index = 255;

@@ -67,7 +67,7 @@ void PagingTouchVClip (tVideoClip * vc, int bD1)
 	int i;
 
 for (i = 0; i < vc->nFrameCount; i++)
-	PIGGY_PAGE_IN (vc->frames [i], bD1);
+	PIGGY_PAGE_IN (vc->frames [i].index, bD1);
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ for (i = gameData.eff.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
 		PagingTouchVClip (&ecP->vc, gameStates.app.bD1Data);
 		if (ecP->nDestBm > -1)
-			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->nDestBm], gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+			PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->dest_vclip > -1)
 			PagingTouchVClip (&gameData.eff.pVClips [ecP->dest_vclip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->dest_eclip > -1)
@@ -114,7 +114,7 @@ void PagingTouchModel (int nModel)
 
 for (i = pm->nTextures, pi = gameData.pig.tex.pObjBmIndex + pm->nFirstTexture; i; i--, pi++) {
 	j = *pi;
-	PIGGY_PAGE_IN (gameData.pig.tex.objBmIndex [j], 0);
+	PIGGY_PAGE_IN (gameData.pig.tex.objBmIndex [j].index, 0);
 	PagingTouchObjectEffects (j);
 	}
 }
@@ -128,7 +128,7 @@ void PagingTouchWeapon (int nWeaponType)
 if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
 	return;
 if (gameData.weapons.info [nWeaponType].picture.index)
-	PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].picture,0);
+	PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].picture.index, 0);
 if (gameData.weapons.info [nWeaponType].flash_vclip > -1)
 	PagingTouchVClip (&gameData.eff.vClips [0][gameData.weapons.info [nWeaponType].flash_vclip], 0);
 if (gameData.weapons.info [nWeaponType].wall_hit_vclip > -1)
@@ -152,7 +152,7 @@ switch (gameData.weapons.info [nWeaponType].renderType)	{
 		break;
 
 	case WEAPON_RENDER_BLOB:
-		PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].bitmap, 0);
+		PIGGY_PAGE_IN (gameData.weapons.info [nWeaponType].bitmap.index, 0);
 		break;
 	}
 }
@@ -195,15 +195,14 @@ switch (objP->renderType) {
 		if (objP->rType.polyObjInfo.nTexOverride == -1)
 			PagingTouchModel (objP->rType.polyObjInfo.nModel);
 		else
-			PIGGY_PAGE_IN (gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride], 0);
+			PIGGY_PAGE_IN (gameData.pig.tex.bmIndex [0][objP->rType.polyObjInfo.nTexOverride].index, 0);
 		break;
 
 	case RT_POWERUP:
 		if (ConvertPowerupToWeapon (objP))
 			PagingTouchObject (objP);
-		else if ((objP->rType.vClipInfo.nClipIndex < 0) || 
-					(objP->rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0])) 
-			objP->rType.vClipInfo.nClipIndex = -1;
+		else if (objP->rType.vClipInfo.nClipIndex >= gameData.eff.nClips [0])
+			objP->rType.vClipInfo.nClipIndex = -MAX_ADDON_BITMAP_FILES - 1;
 		break;
 
 	case RT_MORPH:
@@ -252,11 +251,11 @@ tmap1 = segP->sides [nSide].nBaseTex;
 PagingTouchWallEffects (tmap1);
 tmap2 = segP->sides [nSide].nOvlTex;
 if (tmap2) {
-	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap2], gameStates.app.bD1Data);
+	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap2].index, gameStates.app.bD1Data);
 	PagingTouchWallEffects (tmap2);
 	}
 else
-	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap1], gameStates.app.bD1Data);
+	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap1].index, gameStates.app.bD1Data);
 
 // PSX STUFF
 #ifdef PSX_BUILD_TOOLS
@@ -264,15 +263,15 @@ else
 if (!(gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_VOLATILE) && (gameData.pig.tex.pTMapInfo [tmap1].flags & TMI_WATER)) {
 	tBitmapIndex Splash;
 	Splash.index = 1098;
-	PIGGY_PAGE_IN (Splash);
+	PIGGY_PAGE_IN (Splash.index);
 	Splash.index = 1099;
-	PIGGY_PAGE_IN (Splash);
+	PIGGY_PAGE_IN (Splash.index);
 	Splash.index = 1100;
-	PIGGY_PAGE_IN (Splash);
+	PIGGY_PAGE_IN (Splash.index);
 	Splash.index = 1101;
-	PIGGY_PAGE_IN (Splash);
+	PIGGY_PAGE_IN (Splash.index);
 	Splash.index = 1102;
-	PIGGY_PAGE_IN (Splash);
+	PIGGY_PAGE_IN (Splash.index);
 	}
 #endif
 }
@@ -337,7 +336,7 @@ void PagingTouchWall (tWall *wallP)
 if (wallP->nClip > -1)	{
 	anim = gameData.walls.pAnims + wallP->nClip;
 	for (j=0; j < anim->nFrameCount; j++)
-		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [anim->frames [j]], gameStates.app.bD1Data);
+		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [anim->frames [j]].index, gameStates.app.bD1Data);
 	}
 }
 
@@ -390,7 +389,17 @@ void PagingTouchGauges (void)
 
 for (s = 0; s < MAX_GAUGE_BMS; s++)
 	if (gameData.cockpit.gauges [1] [s].index)
-		PIGGY_PAGE_IN (gameData.cockpit.gauges [1] [s], 0);
+		PIGGY_PAGE_IN (gameData.cockpit.gauges [1][s].index, 0);
+}
+
+//------------------------------------------------------------------------------
+
+void PagingTouchAddonTextures (void)
+{
+	int	i;
+
+for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
+	PageInAddonBitmap (-i - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -399,36 +408,33 @@ void PagingTouchAllSub ()
 {
 	int 			bBlackScreen;
 
-	StopTime ();
-	bBlackScreen = gameStates.render.bPaletteFadedOut;
-	if (gameStates.render.bPaletteFadedOut)	{
-		GrClearCanvas (BLACK_RGBA);
-		GrPaletteStepLoad (NULL);
+StopTime ();
+bBlackScreen = gameStates.render.bPaletteFadedOut;
+if (gameStates.render.bPaletteFadedOut)	{
+	GrClearCanvas (BLACK_RGBA);
+	GrPaletteStepLoad (NULL);
 	}
-
 //	ShowBoxedMessage (TXT_LOADING);
-
 #if TRACE			
-	con_printf (CON_VERBOSE, "Loading all textures in mine...");
+con_printf (CON_VERBOSE, "Loading all textures in mine...");
 #endif
-	PagingTouchSegments ();
-	PagingTouchWalls ();
-	PagingTouchPowerups ();
-	PagingTouchWeapons ();
-	PagingTouchPowerups ();
-	PagingTouchGauges ();
-	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
-	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
-
+PagingTouchSegments ();
+PagingTouchWalls ();
+PagingTouchPowerups ();
+PagingTouchWeapons ();
+PagingTouchPowerups ();
+PagingTouchGauges ();
+PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);
+PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_POWERUP_DISAPPEARANCE], 0);
+PagingTouchAddonTextures ();
 
 #ifdef PSX_BUILD_TOOLS
 
-	//PSX STUFF
-	PagingTouchWalls ();
-	for (s=0; s<=gameData.objs.nLastObject; s++) {
-		PagingTouchObject (gameData.objs.objects + s);
+//PSX STUFF
+PagingTouchWalls ();
+for (s = 0; s <= gameData.objs.nLastObject; s++) {
+	PagingTouchObject (gameData.objs.objects + s);
 	}
-
 
 	{
 		char * p;
@@ -462,7 +468,7 @@ void PagingTouchAllSub ()
 				bmUsed [gameData.pig.tex.pBmIndex [i].index] > 0 &&
 				gameData.pig.tex.pTMapInfo [i].destroyed > 0 && gameData.pig.tex.pTMapInfo [i].destroyed < MAX_BITMAP_FILES) {
 				bmUsed [gameData.pig.tex.pBmIndex [gameData.pig.tex.pTMapInfo [i].destroyed].index] += 1;
-				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [gameData.pig.tex.pTMapInfo [i].destroyed]);
+				PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [gameData.pig.tex.pTMapInfo [i].destroyed].index);
 
 			}
 		}
@@ -471,22 +477,22 @@ void PagingTouchAllSub ()
 		{
 			tBitmapIndex bonk;
 			bonk.index = 109;
-			PIGGY_PAGE_IN (bonk);
+			PIGGY_PAGE_IN (bonk.index);
 		}
 
 		// Force in the frames for markers
 		{
 			tBitmapIndex bonk2;
 			bonk2.index = 2014;
-			PIGGY_PAGE_IN (bonk2);
+			PIGGY_PAGE_IN (bonk2.index);
 			bonk2.index = 2015;
-			PIGGY_PAGE_IN (bonk2);
+			PIGGY_PAGE_IN (bonk2.index);
 			bonk2.index = 2016;
-			PIGGY_PAGE_IN (bonk2);
+			PIGGY_PAGE_IN (bonk2.index);
 			bonk2.index = 2017;
-			PIGGY_PAGE_IN (bonk2);
+			PIGGY_PAGE_IN (bonk2.index);
 			bonk2.index = 2018;
-			PIGGY_PAGE_IN (bonk2);
+			PIGGY_PAGE_IN (bonk2.index);
 		}
 
 		for (i = 0, bmP = gameData.pig.tex.pBitmaps; i < MAX_BITMAP_FILES; i++, bmP++) {
@@ -577,7 +583,7 @@ else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 else if (nTouchGauge < MAX_GAUGE_BMS) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchGauge < MAX_GAUGE_BMS); i++, nTouchGauge++)
 		if (gameData.cockpit.gauges [1] [nTouchGauge].index)
-			PIGGY_PAGE_IN (gameData.cockpit.gauges [1] [nTouchGauge], 0);
+			PIGGY_PAGE_IN (gameData.cockpit.gauges [1] [nTouchGauge].index, 0);
 	}
 else {
 	PagingTouchVClip (&gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);

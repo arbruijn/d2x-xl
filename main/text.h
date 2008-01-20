@@ -1811,13 +1811,13 @@ void LoadGameTexts(void);
 #define TXT_SETPERF_MENUTITLE		GT(1018)
 #define TXT_SETPERF_OPTION			GT(1019)
 #define TXT_CUSTOM_SOUNDVOL		GT(1020)
+#define TXT_THE_SLOWMOTION			GT(1021)
+#define TXT_GOT_SLOWMOTION			GT(1022)
+#define TXT_THE_BULLETTIME			GT(1023)
+#define TXT_GOT_BULLETTIME			GT(1024)
 
 #if 0
 
-#define TXT_				GT(1021)
-#define TXT_				GT(1022)
-#define TXT_				GT(1023)
-#define TXT_				GT(1024)
 #define TXT_				GT(1025)
 #define TXT_				GT(1026)
 #define TXT_				GT(1027)

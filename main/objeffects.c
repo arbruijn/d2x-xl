@@ -698,7 +698,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_
 		OglActiveTexture (GL_TEXTURE0, 0);
 		glEnable (GL_TEXTURE_2D);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		PIGGY_PAGE_IN (pf->bmi, 0);
+		PIGGY_PAGE_IN (pf->bmi.index, 0);
 		bmP = gameData.pig.tex.pBitmaps + pf->vcP->frames [pf->vci.nCurFrame].index;
 		if (OglBindBmTex (bmP, 1, 2))
 			return;

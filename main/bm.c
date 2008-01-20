@@ -725,7 +725,7 @@ CFSeek (cfp,
 	sizeof (int) +
 	D1_WEAPON_INFO_SIZE * D1_MAX_WEAPON_TYPES +
 	sizeof (int) +
-	POWERUP_TYPE_INFO_SIZE * D1_MAX_POWERUP_TYPES,
+	POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,
 	SEEK_CUR);
 i = CFReadInt (cfp);
 /*---*/LogErr ("         Acquiring model data size of %d polymodels\n", i);
@@ -946,7 +946,7 @@ void BMReadWeaponInfoD1 (CFILE * fp)
 #define D1_MAX_ROBOT_TYPES 30
 #define D1_MAX_ROBOT_JOINTS 600
 #define D1_MAX_WEAPON_TYPES 30
-#define D1_MAX_POWERUP_TYPES 29
+#define MAX_POWERUP_TYPES_D1 29
 #define D1_MAX_GAUGE_BMS 80
 #define D1_MAX_OBJ_BITMAPS 210
 #define D1_MAX_COCKPIT_BITMAPS 4
@@ -1029,7 +1029,7 @@ void BMReadAllD1 (CFILE * fp)
 	CFSeek (fp, D1_MAX_WEAPON_TYPES * D1_WEAPON_INFO_SIZE, SEEK_CUR);
 
 	gameData.objs.pwrUp.nTypes = CFReadInt (fp);
-	PowerupTypeInfoReadN (gameData.objs.pwrUp.info, D1_MAX_POWERUP_TYPES, fp);
+	PowerupTypeInfoReadN (gameData.objs.pwrUp.info, MAX_POWERUP_TYPES_D1, fp);
 	*/
 
 	/* in the following code are bugs, solved by hack

@@ -125,29 +125,46 @@ char *pszPowerup [MAX_POWERUP_TYPES] = {
 
 void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 {
+if (vcP) {
 	static fix	xPowerupTime = 0;
 	int			h, nFrames = SetupHiresVClip (vcP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 
-xPowerupTime += gameData.physics.xTime;
-xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
-if ((xTime < 0) && (vcP->xFrameTime > 0)) {
-	h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
-	xTime += h * vcP->xFrameTime;
-	h %= nFrames;
-	if ((nObject & 1) && (OBJECTS [nObject].nType != OBJ_EXPLOSION)) {
-		vciP->nCurFrame -= h;
-		if (0 > vciP->nCurFrame)
-			vciP->nCurFrame = nFrames - 1;
+	xPowerupTime += gameData.physics.xTime;
+	xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
+	if ((xTime < 0) && (vcP->xFrameTime > 0)) {
+		h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
+		xTime += h * vcP->xFrameTime;
+		h %= nFrames;
+		if ((nObject & 1) && (OBJECTS [nObject].nType != OBJ_EXPLOSION)) {
+			vciP->nCurFrame -= h;
+			if (0 > vciP->nCurFrame)
+				vciP->nCurFrame = nFrames - 1;
+			}
+		else {
+			vciP->nCurFrame += h;
+			if (vciP->nCurFrame >= nFrames)
+				vciP->nCurFrame = 0;
+			}
 		}
-	else {
-		vciP->nCurFrame += h;
-		if (vciP->nCurFrame >= nFrames)
-			vciP->nCurFrame = 0;
+	vciP->xFrameTime = xTime;
+	xPowerupTime = 0;
+	}
+else {
+	int	h, nFrames;
+
+	if ((h = (gameStates.app.nSDLTicks - vciP->xTotalTime) / 80) &&
+		 (nFrames = BM_FRAMECOUNT (gameData.pig.tex.addonBitmaps - vciP->nClipIndex - 1))) {
+		vciP->xTotalTime += h * 80;
+		if (nObject & 1)
+			vciP->nCurFrame = (vciP->nCurFrame + h) % nFrames;
+		else {
+			vciP->nCurFrame -= h;
+			if (vciP->nCurFrame < 0)
+				vciP->nCurFrame += nFrames;
+			}
 		}
 	}
-vciP->xFrameTime = xTime;
-xPowerupTime = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -166,7 +183,7 @@ void DoPowerupFrame (tObject *objP)
 {
 //if (gameStates.app.tick40fps.bTick) 
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
-	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
+	tVideoClip	*vcP = (vciP->nClipIndex < 0) ? NULL : gameData.eff.vClips [0] + vciP->nClipIndex;
 	int			i = OBJ_IDX (objP);
 
 if (objP->renderType != RT_POLYOBJ)
@@ -209,18 +226,21 @@ void DrawPowerup (tObject *objP)
 #endif
 if (objP->nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
-else {
+else if (objP->id < MAX_POWERUP_TYPES_D2) {
 		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 		int				iFrame = objP->rType.vClipInfo.nCurFrame;
 #ifdef EDITOR
 		blob_vertices[0] = 0x80000;
 #endif
-	DrawObjectBlob (objP, *frameP, frameP [iFrame], iFrame, NULL, 0);
+	DrawObjectBlob (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 #ifdef EDITOR
 	if ((gameStates.app.nFunctionMode == FMODE_EDITOR) && (CurObject_index == OBJ_IDX (objP)))
 		if (blob_vertices[0] != 0x80000)
 			DrawBlobOutline ();
 #endif
+	}
+else {
+	DrawObjectBlob (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);
 	}
 }
 
@@ -790,6 +810,20 @@ switch (objP->id) {
 			}
 		break;
 
+	case POW_SLOWMOTION:
+		bUsed = PickupEquipment (objP, PLAYER_FLAGS_SLOWMOTION, TXT_THE_SLOWMOTION, TXT_GOT_SLOWMOTION, nPlayer);
+		if (bUsed < 0) {
+			bUsed = 1;
+			}
+		break;
+
+	case POW_BULLETTIME:
+		bUsed = PickupEquipment (objP, PLAYER_FLAGS_BULLETTIME, TXT_THE_BULLETTIME, TXT_GOT_BULLETTIME, nPlayer);
+		if (bUsed < 0) {
+			bUsed = 1;
+			}
+		break;
+
 	case POW_HEADLIGHT:
 		sprintf (szTemp, TXT_GOT_HEADLIGHT, (EGI_FLAG (headlight.bAvailable, 0, 0, 1) && gameOpts->gameplay.bHeadLightOnWhenPickedUp) ? TXT_ON : TXT_OFF);
 		HUDInitMessage (szTemp);
@@ -1087,6 +1121,8 @@ powerupToModel [POW_KEY_BLUE] = MAX_POLYGON_MODELS - 29;
 powerupToModel [POW_KEY_RED] = MAX_POLYGON_MODELS - 30;
 powerupToModel [POW_KEY_GOLD] = MAX_POLYGON_MODELS - 31;
 powerupToModel [POW_VULCAN_AMMO] = MAX_POLYGON_MODELS - 32;
+powerupToModel [POW_SLOWMOTION] = MAX_POLYGON_MODELS - 33;
+powerupToModel [POW_BULLETTIME] = MAX_POLYGON_MODELS - 34;
 
 memset (weaponToModel, 0, sizeof (weaponToModel));
 weaponToModel [PROXMINE_ID] = MAX_POLYGON_MODELS - 2;

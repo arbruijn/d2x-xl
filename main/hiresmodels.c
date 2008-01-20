@@ -161,6 +161,8 @@ static tOOFToModel oofToModel [] = {
 	{"\001redkey.oof", NULL, MAX_POLYGON_MODELS - 30, 0, 1},
 	{"\001goldkey.oof", NULL, MAX_POLYGON_MODELS - 31, 0, 1},
 	{"\001vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32, 0, 1},
+	{"\001slowmotion.oof", NULL, MAX_POLYGON_MODELS - 33, 0, 1},
+	{"\001bullettime.oof", NULL, MAX_POLYGON_MODELS - 34, 0, 1},
 	{"\001hostage.oof", NULL, HOSTAGE_MODEL, 0, 1}
 	};
 

@@ -113,8 +113,8 @@ SlowMotionMessage ();
 
 int ToggleSlowMotion (void)
 {
-	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER));
-	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER));
+	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.energy > F1_0 * 10) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
+	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & (PLAYER_FLAGS_SLOWMOTION | PLAYER_FLAGS_BULLETTIME)));
 	int	bSlowMotion = bSlowMotionOk && (Controls [0].slowMotionCount > 0);
 	int	bBulletTime = bBulletTimeOk && (Controls [0].bulletTimeCount > 0);
 

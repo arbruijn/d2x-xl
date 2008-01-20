@@ -124,7 +124,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 	for (i = 0, ecP = gameData.eff.effects [bD1]; i < gameData.eff.nEffects [bD1]; i++, ecP++)
 		if ((ecP->changingObjectTexture != -1) && !(ecP->flags & EF_ALTFMT))
 			for (j = 0; j < ecP->vc.nFrameCount; j++)
-				PIGGY_PAGE_IN (ecP->vc.frames [j], bD1);
+				PIGGY_PAGE_IN (ecP->vc.frames [j].index, bD1);
 }
 
 // ----------------------------------------------------------------------------

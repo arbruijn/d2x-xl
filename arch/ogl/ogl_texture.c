@@ -410,7 +410,7 @@ grsBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx)
 	grsBitmap	*bmP;
 	int			nFrames;
 
-PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [nTexture], gameStates.app.bD1Mission);
+PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [nTexture].index, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [nTexture].index;
 if (BM_OVERRIDE (bmP)) {
 	bmP = BM_OVERRIDE (bmP);

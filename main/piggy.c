@@ -95,6 +95,11 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 
 short *d1_tmap_nums = NULL;
 
+char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
+	"slowmotion#0",
+	"bullettime#0"
+	};
+
 static short d2OpaqueDoors [] = {
 	440, 451, 463, 477, /*483,*/ 488, 
 	500, 508, 523, 550, 556, 564, 572, 579, 585, 593, 536, 
@@ -222,9 +227,10 @@ int IsOpaqueDoor (int i)
 {
 	short	*p;
 
-for (p = d2OpaqueDoors; *p >= 0; p++)
-	if (i == gameData.pig.tex.pBmIndex [*p].index)
-		return 1;
+if (i >= 0)
+	for (p = d2OpaqueDoors; *p >= 0; p++)
+		if (i == gameData.pig.tex.pBmIndex [*p].index)
+			return 1;
 return 0;
 }
 
@@ -1534,6 +1540,8 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 			}
 		}
 	}
+for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
+	PiggyFreeBitmap (gameData.pig.tex.addonBitmaps + i, i, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1561,7 +1569,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void GetFlagData (char *bmName, tBitmapIndex bmi)
+void GetFlagData (char *bmName, int nIndex)
 {
 	int			i;
 	tFlagData	*pf;
@@ -1573,8 +1581,8 @@ else if (strstr (bmName, "flag02#0") == bmName)
 else
 	return;
 pf = gameData.pig.flags + i;
-pf->bmi = bmi;
-pf->vcP = FindVClip (bmi.index);
+pf->bmi.index = nIndex;
+pf->vcP = FindVClip (nIndex);
 pf->vci.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
 pf->vci.xFrameTime = gameData.eff.vClips [0][pf->vci.nClipIndex].xFrameTime;
 pf->vci.nCurFrame = 0;
@@ -1589,50 +1597,22 @@ return (nTexture > 0) && (strchr (gameData.pig.tex.bitmapFiles [gameStates.app.b
 
 //------------------------------------------------------------------------------
 
-void PiggyBitmapPageIn (tBitmapIndex bmi, int bD1)
+void PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
 {
-	grsBitmap		*bmP, *altBmP = NULL;
-	int				i, org_i, temp, nSize, nOffset, nFrames, nShrinkFactor, 
+	grsBitmap		*altBmP = NULL;
+	int				temp, nSize, nOffset, nFrames, nShrinkFactor, 
 						bRedone = 0, bTGA, bDefault = 0;
 	time_t			tBase, tShrunk;
 	CFILE				cf = {NULL, 0, 0, 0};
-	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN], bmName [20];
+	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	tTgaHeader		h;
 
-	//bD1 = gameStates.app.bD1Mission;
-org_i = 0;
-i = bmi.index;
-nShrinkFactor = 1 << (3 - gameOpts->render.textures.nQuality);
-#if 0
-Assert (i >= 0);
-Assert (i < MAX_BITMAP_FILES);
-Assert (i < gameData.pig.tex.nBitmaps [bD1]);
-Assert (bitmapCacheSize > 0);
-#endif
-if (i < 1) 
-	return;
-if (i >= MAX_BITMAP_FILES) 
-	return;
-if (i >= gameData.pig.tex.nBitmaps [bD1]) 
-	return;
-if (bitmapOffsets [bD1][i] == 0) 
-	return;		// A read-from-disk bmi!!!
-
-if (bLowMemory) {
-	org_i = i;
-	i = gameData.pig.tex.bitmapXlat [i];          // Xlat for low-memory settings!
-	}
-#if 1
-bmP = BmOverride (gameData.pig.tex.bitmaps [bD1] + i, -1);
 if (!bmP->bmTexBuf) {
-#else
-bmP = gameData.pig.tex.bitmaps [bD1] + i;
-if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
-#endif
 	StopTime ();
+	nShrinkFactor = 1 << (3 - gameOpts->render.textures.nQuality);
 	nSize = (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize;
-	strcpy (bmName, gameData.pig.tex.bitmapFiles [bD1][i].name);
-	GetFlagData (bmName, bmi);
+	if (nIndex >= 0)
+		GetFlagData (bmName, nIndex);
 #ifdef _DEBUG
 	if (strstr (bmName, "exp06#0")) {
 		sprintf (fn, "%s%s%s.tga", gameFolders.szTextureDir [bD1], 
@@ -1656,16 +1636,15 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 	bmP->bmBPP = 1;
 	if (gameStates.app.bNostalgia)
 		gameOpts->render.textures.bUseHires = 0;
-	if (*bmName && gameOpts->render.textures.bUseHires &&
-		 (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)) {
+	if (*bmName && ((nIndex < 0) || (gameOpts->render.textures.bUseHires && (!gameOpts->ogl.bGlTexMerge || gameStates.render.textures.bGlsTexMergeOk)))) {
 #if 0
-		if (ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + i, gameFolders.szTextureDir [bD1], bmName)) {
-			altBmP = gameData.pig.tex.altBitmaps [bD1] + i;
+		if ((nIndex >= 0) && ReadS3TC (gameData.pig.tex.altBitmaps [bD1] + nIndex, gameFolders.szTextureDir [bD1], bmName)) {
+			altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
 			altBmP->bmType = BM_TYPE_ALT;
 			BM_OVERRIDE (bmP) = altBmP;
 			BM_FRAMECOUNT (altBmP) = 1;
-			gameData.pig.tex.bitmapFlags [bD1][i] &= ~BM_FLAG_RLE;
-			gameData.pig.tex.bitmapFlags [bD1][i] |= BM_FLAG_TGA;
+			gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~BM_FLAG_RLE;
+			gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
 			bmP = altBmP;
 			altBmP = NULL;
 			}
@@ -1675,7 +1654,10 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 			 CFOpen (&cf, fn, "", "rb", 0)) {
 			LogErr ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 			bTGA = 1;
-			altBmP = gameData.pig.tex.altBitmaps [bD1] + i;
+			if (nIndex < 0)
+				altBmP = gameData.pig.tex.addonBitmaps - nIndex - 1;
+			else
+				altBmP = gameData.pig.tex.altBitmaps [bD1] + nIndex;
 			altBmP->bmType = BM_TYPE_ALT;
 			BM_OVERRIDE (bmP) = altBmP;
 			bmP = altBmP;
@@ -1684,36 +1666,40 @@ if (bmP->bmProps.flags & BM_FLAG_PAGED_OUT) {
 			nFrames = (h.height % h.width) ? 1 : h.height / h.width;
 			BM_FRAMECOUNT (bmP) = (ubyte) nFrames;
 			nOffset = CFTell (&cf);
-			gameData.pig.tex.bitmapFlags [bD1][i] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
-			gameData.pig.tex.bitmapFlags [bD1][i] |= BM_FLAG_TGA;
-			if (bmP->bmProps.h > bmP->bmProps.w) {
-				tEffectClip	*ecP = NULL;
-				tWallClip *wcP;
-				tVideoClip *vcP;
-				while ((ecP = FindEffect (ecP, i))) {
-					//e->vc.nFrameCount = nFrames;
-					ecP->flags |= EF_ALTFMT;
-					//ecP->vc.flags |= WCF_ALTFMT;
-					}
-				if (!ecP) {
-					if ((wcP = FindWallAnim (i))) {
-					//w->nFrameCount = nFrames;
-						wcP->flags |= WCF_ALTFMT;
+			if (nIndex >= 0) {
+				gameData.pig.tex.bitmapFlags [bD1][nIndex] &= ~(BM_FLAG_RLE | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
+				gameData.pig.tex.bitmapFlags [bD1][nIndex] |= BM_FLAG_TGA;
+				if (bmP->bmProps.h > bmP->bmProps.w) {
+					tEffectClip	*ecP = NULL;
+					tWallClip *wcP;
+					tVideoClip *vcP;
+					while ((ecP = FindEffect (ecP, nIndex))) {
+						//e->vc.nFrameCount = nFrames;
+						ecP->flags |= EF_ALTFMT;
+						//ecP->vc.flags |= WCF_ALTFMT;
 						}
-					else if ((vcP = FindVClip (i))) {
-						//v->nFrameCount = nFrames;
-						vcP->flags |= WCF_ALTFMT;
-						}
-					else {
-						LogErr ("   couldn't find animation for '%s'\n", bmName);
+					if (!ecP) {
+						if ((wcP = FindWallAnim (nIndex))) {
+						//w->nFrameCount = nFrames;
+							wcP->flags |= WCF_ALTFMT;
+							}
+						else if ((vcP = FindVClip (nIndex))) {
+							//v->nFrameCount = nFrames;
+							vcP->flags |= WCF_ALTFMT;
+							}
+						else {
+							LogErr ("   couldn't find animation for '%s'\n", bmName);
+							}
 						}
 					}
 				}
 			}
 		}
 	if (!altBmP) {
+		if (nIndex < 0)
+			return;
 		cf = cfPiggy [bD1];
-		nOffset = bitmapOffsets [bD1][i];
+		nOffset = bitmapOffsets [bD1][nIndex];
 		bDefault = 1;
 		}
 
@@ -1722,16 +1708,19 @@ reloadTextures:
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
 #ifndef _DEBUG
+		if (!bDefault)
+			CFClose (&cf);
 		return;
 #endif
 		}
+
 	bRedone = 1;
 	if (CFSeek (&cf, nOffset, SEEK_SET)) {
 		PiggyCriticalError ();
 		goto reloadTextures;
 		}
 #if 1//def _DEBUG
-strncpy (bmP->szName, bmName, sizeof (bmP->szName));
+	strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 #endif
 #if TEXTURE_COMPRESSION
 	if (bmP->bmCompressed)
@@ -1748,8 +1737,9 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 		PiggyBitmapPageOutAll (0);
 		goto reloadTextures;
 		}
-	bmP->bmProps.flags = gameData.pig.tex.bitmapFlags [bD1][i];
-	bmP->bmHandle = i;
+	if (nIndex >= 0)
+		bmP->bmProps.flags = gameData.pig.tex.bitmapFlags [bD1][nIndex];
+	bmP->bmHandle = nIndex;
 	if (bmP->bmProps.flags & BM_FLAG_RLE) {
 		int zSize = 0;
 		nDescentCriticalError = 0;
@@ -1787,7 +1777,7 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 			if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 				bmP->bmProps.flags |= BM_FLAG_SEE_THRU;
 			bmP->bmType = BM_TYPE_ALT;
-			if (IsOpaqueDoor (i)) {
+			if (IsOpaqueDoor (nIndex)) {
 				bmP->bmProps.flags &= ~BM_FLAG_TRANSPARENT;
 				bmP->bmTransparentFrames [0] &= ~1;
 				}
@@ -1813,16 +1803,48 @@ strncpy (bmP->szName, bmName, sizeof (bmP->szName));
 #endif
 	StartTime ();
 	}
-
-if (bLowMemory) {
-	if (org_i != i) {
-		gameData.pig.tex.bitmaps [bD1][org_i] = gameData.pig.tex.bitmaps [bD1][i];
-		i = org_i;
-		}
-	}
-gameData.pig.tex.bitmaps [bD1][i].bmProps.flags &= ~BM_FLAG_PAGED_OUT;
 if (!bDefault)
 	CFClose (&cf);
+}
+
+//------------------------------------------------------------------------------
+
+void PiggyBitmapPageIn (int bmi, int bD1)
+{
+	grsBitmap		*bmP;
+	int				bmiSave;
+
+	//bD1 = gameStates.app.bD1Mission;
+bmiSave = 0;
+#if 0
+Assert (bmi >= 0);
+Assert (bmi < MAX_BITMAP_FILES);
+Assert (bmi < gameData.pig.tex.nBitmaps [bD1]);
+Assert (bitmapCacheSize > 0);
+#endif
+if (bmi < 1) 
+	return;
+if (bmi >= MAX_BITMAP_FILES) 
+	return;
+if (bmi >= gameData.pig.tex.nBitmaps [bD1]) 
+	return;
+if (bitmapOffsets [bD1][bmi] == 0) 
+	return;		// A read-from-disk bmi!!!
+
+if (bLowMemory) {
+	bmiSave = bmi;
+	bmi = gameData.pig.tex.bitmapXlat [bmi];          // Xlat for low-memory settings!
+	}
+bmP = BmOverride (gameData.pig.tex.bitmaps [bD1] + bmi, -1);
+PageInBitmap (bmP, gameData.pig.tex.bitmapFiles [bD1][bmi].name, bmi, bD1);
+
+if (bLowMemory) {
+	if (bmiSave != bmi) {
+		gameData.pig.tex.bitmaps [bD1][bmiSave] = gameData.pig.tex.bitmaps [bD1][bmi];
+		bmi = bmiSave;
+		}
+	}
+gameData.pig.tex.bitmaps [bD1][bmi].bmProps.flags &= ~BM_FLAG_PAGED_OUT;
 }
 
 //------------------------------------------------------------------------------

@@ -1770,6 +1770,10 @@ char *defaultGameTexts [][2] = {
 	{"Leistungs-Einstellungen", "Performance Settings"},
 	{"~Leistungs-Einstellungen...", "p~Erformance Settings..."},
 	{"Lautstaerke ~Zusatzklaenge: %d%c", "~Custom sound volume: %d%c"},
+	{"Die Zeitlupe!!", "The Slow Motion!!"},
+	{"Zeitlupe!!", "Slow Motion!!"},
+	{"Die Hochgeschwindigkeit!!", "The Bullet Time!!"},
+	{"Hochgeschwindigkeit!!", "Bullet Time!!"},
 #if 0
 	{"", ""},
 #endif

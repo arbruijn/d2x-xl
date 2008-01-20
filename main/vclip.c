@@ -70,7 +70,7 @@ if (nVClip) {
 	}
 else
 	bmi = gameData.weapons.info [objP->id].bitmap;
-PIGGY_PAGE_IN (bmi, 0);
+PIGGY_PAGE_IN (bmi.index, 0);
 bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 if ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))
 	bmP = BM_OVERRIDE (bmP);
@@ -142,7 +142,7 @@ if (vcP->flags & VF_ROD)
 	DrawObjectRodTexPoly (objP, vcP->frames [iFrame], bLit, iFrame);
 else {
 	Assert(bLit == 0);		//blob cannot now be bLit
-	DrawObjectBlob (objP, vcP->frames [0], vcP->frames [iFrame], iFrame, color, (float) alpha);
+	DrawObjectBlob (objP, vcP->frames [0].index, vcP->frames [iFrame].index, iFrame, color, (float) alpha);
 	}
 #if 1
 if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))

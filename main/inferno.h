@@ -1930,6 +1930,7 @@ typedef struct tTextureData {
 	sbyte					bitmapFlags [2][MAX_BITMAP_FILES];
 	grsBitmap			bitmaps [2][MAX_BITMAP_FILES];
 	grsBitmap			altBitmaps [2][MAX_BITMAP_FILES];
+	grsBitmap			addonBitmaps [MAX_ADDON_BITMAP_FILES];
 	ushort				bitmapXlat [MAX_BITMAP_FILES];
 	alias					aliases [MAX_ALIASES];
 	tBitmapIndex		bmIndex [2][MAX_TEXTURES];
@@ -2970,9 +2971,9 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(ga
 
 #ifdef PIGGY_USE_PAGING
 
-static inline void PIGGY_PAGE_IN (tBitmapIndex bmi, int bD1) 
+static inline void PIGGY_PAGE_IN (int bmi, int bD1) 
 {
-grsBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi.index;
+grsBitmap *bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
 if (!bmP->bmTexBuf || (bmP->bmProps.flags & BM_FLAG_PAGED_OUT))
 	PiggyBitmapPageIn (bmi, bD1);
 }

@@ -30,6 +30,9 @@ void DropPowerups ();
 int DropPowerup (ubyte nType, ubyte id, short owner, int num, vmsVector *init_vel, vmsVector *pos, short nSegment);
 // creates afterburner blobs behind the specified tObject
 void DropAfterburnerBlobs (tObject *obj, int count, fix size_scale, fix lifetime, tObject *pParent, int bThruster);
+int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int weapon_index);
+void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int weapon_index, int count);
+void DropPlayerEggs (tObject *playerObjP);
 int ReturnFlagHome (tObject *pObj);
 int PickConnectedSegment (tObject *objP, int max_depth);
 

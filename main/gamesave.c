@@ -66,6 +66,7 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "makesig.h"
 #include "gameseg.h"
 #include "light.h"
+#include "objrender.h"
 
 #define GAME_VERSION            32
 #define GAME_COMPATIBLE_VERSION 22
@@ -128,7 +129,7 @@ return !strnicmp(&filename [len-11], "level", 5);
 
 void CheckAndFixMatrix(vmsMatrix *m);
 
-void VerifyObject(tObject * objP)
+void VerifyObject (tObject * objP)
 {
 objP->lifeleft = IMMORTAL_TIME;		//all loaded tObject are immortal, for now
 if (objP->nType == OBJ_ROBOT) {
@@ -169,25 +170,29 @@ else {		//Robots taken care of above
 		}
 	}
 if (objP->nType == OBJ_POWERUP) {
-	if (objP->id >= gameData.objs.pwrUp.nTypes) {
+	if (objP->id >= gameData.objs.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
 		objP->id = 0;
 		Assert(objP->renderType != RT_POLYOBJ);
 		}
 	objP->controlType = CT_POWERUP;
-	objP->size = gameData.objs.pwrUp.info [objP->id].size;
-	objP->cType.powerupInfo.creationTime = 0;
-	if (gameData.app.nGameMode & GM_NETWORK) {
-	  if (MultiPowerupIs4Pack(objP->id)) {
-			gameData.multiplayer.powerupsInMine [objP->id-1]+=4;
-	 		gameData.multiplayer.maxPowerupsAllowed [objP->id-1]+=4;
-			}
-		gameData.multiplayer.powerupsInMine [objP->id]++;
-		gameData.multiplayer.maxPowerupsAllowed [objP->id]++;
+	if (objP->id >= MAX_POWERUP_TYPES_D2)
+		InitAddonPowerup (objP);
+	else {
+		objP->size = gameData.objs.pwrUp.info [objP->id].size;
+		objP->cType.powerupInfo.creationTime = 0;
+		if (gameData.app.nGameMode & GM_NETWORK) {
+		if (MultiPowerupIs4Pack(objP->id)) {
+				gameData.multiplayer.powerupsInMine [objP->id-1]+=4;
+	 			gameData.multiplayer.maxPowerupsAllowed [objP->id-1]+=4;
+				}
+			gameData.multiplayer.powerupsInMine [objP->id]++;
+			gameData.multiplayer.maxPowerupsAllowed [objP->id]++;
 #if TRACE
-		con_printf (CONDBG,"PowerupLimiter: ID=%d\n",objP->id);
-		if (objP->id>MAX_POWERUP_TYPES)
-			con_printf (1,"POWERUP: Overwriting array bounds!\n");
+			con_printf (CONDBG,"PowerupLimiter: ID=%d\n",objP->id);
+			if (objP->id>MAX_POWERUP_TYPES)
+				con_printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
+			}
 		}
 	}
 if (objP->nType == OBJ_WEAPON)	{
@@ -397,9 +402,9 @@ switch (objP->controlType) {
 			objP->cType.powerupInfo.count = 1;
 		if (objP->id == POW_VULCAN)
 			objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		if (objP->id == POW_GAUSS)
+		else if (objP->id == POW_GAUSS)
 			objP->cType.powerupInfo.count = VULCAN_WEAPON_AMMO_AMOUNT;
-		if (objP->id == POW_OMEGA)
+		else if (objP->id == POW_OMEGA)
 			objP->cType.powerupInfo.count = MAX_OMEGA_CHARGE;
 		break;
 

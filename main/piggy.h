@@ -87,13 +87,15 @@ void piggy_readSound_data(tDigiSound *snd);
 
 void PiggyLoadLevelData();
 
-#define MAX_BITMAP_FILES    2620 // Upped for CD Enhanced
-#define D1_MAX_BITMAP_FILES 1555 // Upped for CD Enhanced
-#define MAX_WALL_TEXTURES	 910
-#define MAX_SOUND_FILES     MAX_SOUNDS
+#define MAX_BITMAP_FILES			2620 // Upped for CD Enhanced
+#define D1_MAX_BITMAP_FILES		1555 // Upped for CD Enhanced
+#define MAX_ADDON_BITMAP_FILES	2
+#define MAX_WALL_TEXTURES			910
+#define MAX_SOUND_FILES				MAX_SOUNDS
 
 #ifdef PIGGY_USE_PAGING
-void PiggyBitmapPageIn (tBitmapIndex bmp, int bD1);
+void PiggyBitmapPageIn (int bmi, int bD1);
+void PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1);
 void PiggyBitmapPageOutAll(int bAll);
 #endif
 
@@ -142,5 +144,9 @@ int IsAnimatedTexture (short nTexture);
 extern int bUseHiresTextures, bD1Data;
 extern size_t bitmapCacheUsed;
 extern size_t bitmapCacheSize;
+extern char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
+
+#define	PageInAddonBitmap(bmi) \
+			{if (bmi >= -MAX_ADDON_BITMAP_FILES) PageInBitmap (gameData.pig.tex.addonBitmaps - bmi - 1, szAddonTextures [-bmi - 1], bmi, 0);}
 
 #endif //_PIGGY_H

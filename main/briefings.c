@@ -518,7 +518,7 @@ void ShowBitmapFrame (int bRedraw)
 		{
 		tBitmapIndex bmi = PiggyFindBitmap (szBitmapName, 0);
 		bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
-		PIGGY_PAGE_IN (bmi, 0);
+		PIGGY_PAGE_IN (bmi.index, 0);
 		}
 
 		{

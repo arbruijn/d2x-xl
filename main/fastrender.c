@@ -96,7 +96,7 @@ else {
 		}
 	else {
 		faceP->bmBot = gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [faceP->nBaseTex].index;
-		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [faceP->nBaseTex], gameStates.app.bD1Mission);
+		PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [faceP->nBaseTex].index, gameStates.app.bD1Mission);
 		}
 	}
 }

@@ -81,11 +81,13 @@ gsrCanvas *Canv_SBAfterburnerGauge;
 gsrCanvas *Canv_RightEnergyGauge;
 gsrCanvas *Canv_NumericalGauge;
 
-#define NUM_INV_ITEMS			8
+#define NUM_INV_ITEMS			10
 #define INV_ITEM_HEADLIGHT		2
 #define INV_ITEM_QUADLASERS	5
 #define INV_ITEM_CLOAK			6
 #define INV_ITEM_INVUL			7
+#define INV_ITEM_SLOWMOTION	8
+#define INV_ITEM_BULLETTIME	9
 
 grsBitmap	*bmpInventory = NULL;
 grsBitmap	bmInvItems [NUM_INV_ITEMS];
@@ -156,15 +158,15 @@ int bHaveObjTallyBms = -1;
 #define PAGE_IN_GAUGE(x) _page_in_gauge (x)
 static inline void _page_in_gauge (int x)
 {
-PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0] [x] : gameData.cockpit.gauges [1] [x], 0);
+PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index, 0);
 }
 
 #else
-#define PAGE_IN_GAUGE(x)	PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0] [x] : gameData.cockpit.gauges [1] [x], 0);
+#define PAGE_IN_GAUGE(x)	PIGGY_PAGE_IN (gameStates.render.fonts.bHires ? gameData.cockpit.gauges [0][x].index : gameData.cockpit.gauges [1][x].index, 0);
 
 #endif
 
-#define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires?gameData.cockpit.gauges [0] [x].index:gameData.cockpit.gauges [1] [x].index)
+#define GET_GAUGE_INDEX(x)	 (gameStates.render.fonts.bHires?gameData.cockpit.gauges [0][x].index:gameData.cockpit.gauges [1][x].index)
 
 //change MAX_GAUGE_BMS when adding gauges
 
@@ -1752,11 +1754,11 @@ for (i = 0; i < 2; i++) {
 		m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 		if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hires_picture.index;
-			PIGGY_PAGE_IN (gameData.weapons.info [m].hires_picture, 0);
+			PIGGY_PAGE_IN (gameData.weapons.info [m].hires_picture.index, 0);
 			}
 		else {
 			bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
-			PIGGY_PAGE_IN (gameData.weapons.info [m].picture, 0);
+			PIGGY_PAGE_IN (gameData.weapons.info [m].picture.index, 0);
 			}
 		Assert (bmP != NULL);
 		if (w < bmP->bmProps.w)
@@ -1936,6 +1938,10 @@ switch (bFlag) {
 		return (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
 	case PLAYER_FLAGS_INVULNERABLE:
 		return (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
+	case PLAYER_FLAGS_SLOWMOTION:
+		return SlowMotionActive ();
+	case PLAYER_FLAGS_BULLETTIME:
+		return BulletTimeActive ();
 	}
 return 0;
 }
@@ -1966,10 +1972,12 @@ void HUDShowInventoryIcons (void)
 		PLAYER_FLAGS_AMMO_RACK, 
 		PLAYER_FLAGS_QUAD_LASERS, 
 		PLAYER_FLAGS_CLOAKED, 
-		PLAYER_FLAGS_INVULNERABLE
+		PLAYER_FLAGS_INVULNERABLE,
+		PLAYER_FLAGS_SLOWMOTION,
+		PLAYER_FLAGS_BULLETTIME
 		};
-	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0};
-	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0};
+	static int nEnergyType [NUM_INV_ITEMS] = {F1_0, 100 * F1_0, 0, F1_0, 0, F1_0, 0, 0, F1_0, F1_0};
+	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 dy = (grdCurScreen->scHeight - grdCurCanv->cvBitmap.bmProps.h);
 if (gameStates.render.cockpit.nMode != CM_STATUS_BAR) //(!SHOW_COCKPIT)
@@ -2913,11 +2921,11 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, ch
 #endif
 	if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].hires_picture.index;
-		PIGGY_PAGE_IN (gameData.weapons.info [info_index].hires_picture, 0);
+		PIGGY_PAGE_IN (gameData.weapons.info [info_index].hires_picture.index, 0);
 		}
 	else {
 		bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [info_index].picture.index;
-		PIGGY_PAGE_IN (gameData.weapons.info [info_index].picture, 0);
+		PIGGY_PAGE_IN (gameData.weapons.info [info_index].picture.index, 0);
 		}
 	Assert (bmP != NULL);
 
@@ -3130,7 +3138,7 @@ void DrawStatic (int win)
 		return;
 		}
 	framenum = staticTime [win] * vc->nFrameCount / vc->xTotalTime;
-	PIGGY_PAGE_IN (vc->frames [framenum], 0);
+	PIGGY_PAGE_IN (vc->frames [framenum].index, 0);
 	bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 	GrSetCurrentCanvas (&gameStates.render.vr.buffers.render [0]);
 	for (x=gaugeBoxes [boxofs+win].left;x<gaugeBoxes [boxofs+win].right;x+=bmp->bmProps.w)
@@ -3289,7 +3297,7 @@ void SBDrawShieldNum (int shield)
 GrSetCurFont (GAME_FONT);
 GrSetFontColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 //erase old one
-PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode+ (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)], 0);
+PIGGY_PAGE_IN (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nMode + (gameStates.video.nDisplayMode? (gameData.models.nCockpits/2):0)].index, 0);
 HUDRect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X+ (gameStates.video.nDisplayMode?27:13), SB_SHIELD_NUM_Y+GAME_FONT->ftHeight);
 nIdShieldNum = HUDPrintF (&nIdShieldNum, (shield>99)?SB_SHIELD_NUM_X: ((shield>9)?SB_SHIELD_NUM_X+2:SB_SHIELD_NUM_X+4), SB_SHIELD_NUM_Y, "%d", shield);
 }

@@ -136,12 +136,12 @@ nCacheMisses++;
 // Make sure the bitmaps are paged in...
 #ifdef PIGGY_USE_PAGING
 gameData.pig.tex.bPageFlushed = 0;
-PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapTop], gameStates.app.bD1Mission);
-PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapBot], gameStates.app.bD1Mission);
+PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapTop].index, gameStates.app.bD1Mission);
+PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapBot].index, gameStates.app.bD1Mission);
 if (gameData.pig.tex.bPageFlushed)	{	// If cache got flushed, re-read 'em.
 	gameData.pig.tex.bPageFlushed = 0;
-	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapTop], gameStates.app.bD1Mission);
-	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapBot], gameStates.app.bD1Mission);
+	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapTop].index, gameStates.app.bD1Mission);
+	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tMapBot].index, gameStates.app.bD1Mission);
 	}
 Assert (gameData.pig.tex.bPageFlushed == 0);
 #endif
