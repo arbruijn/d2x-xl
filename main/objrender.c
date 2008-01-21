@@ -312,11 +312,13 @@ else {
 	fAlpha = 1.0f;
 	}
 if (bmi < 0) {
+	static int qqq = 0;
+	qqq++;
 	PageInAddonBitmap (bmi);
 	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
 #ifdef _DEBUG
-	if (objP->rType.vClipInfo.nCurFrame >= BM_FRAMECOUNT (bmP))
-		bmP = bmP;
+	if ((objP->rType.vClipInfo.nCurFrame < 0) || (objP->rType.vClipInfo.nCurFrame >= BM_FRAMECOUNT (bmP)))
+		objP->rType.vClipInfo.nCurFrame = 0;
 #endif
 	}
 else {

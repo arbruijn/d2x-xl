@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Various tWall flags.
 #define WALL_BLASTED            1   // Blasted out tWall.
 #define WALL_DOOR_OPENED        2   // Open door.
+#define WALL_RENDER_ADDITIVE	  4
 #define WALL_DOOR_LOCKED        8   // Door is locked.
 #define WALL_DOOR_AUTO          16  // Door automatically closes after time.
 #define WALL_ILLUSION_OFF       32  // Illusionary tWall is shut off.

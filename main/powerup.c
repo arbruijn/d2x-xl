@@ -161,7 +161,9 @@ else {
 		else {
 			vciP->nCurFrame -= h;
 			if (vciP->nCurFrame < 0)
-				vciP->nCurFrame += nFrames;
+				vciP->nCurFrame = nFrames - (-vciP->nCurFrame % nFrames);
+			else
+				vciP->nCurFrame %= nFrames;
 			}
 		}
 	}

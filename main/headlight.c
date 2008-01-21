@@ -29,6 +29,7 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "ogl_color.h"
 #include "ogl_shader.h"
 #include "dynlight.h"
+#include "headlight.h"
 
 // ---------------------------------------------------------
 
@@ -189,27 +190,26 @@ for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 
 #else
 
-char *lightingFS [12] = {
+char *lightingFS [8] = {
 	//----------------------------------------
 	//single player version - one player
 	//untextured
 	"varying vec3 vertPos;\r\n" \
 	"uniform vec3 lightPos, lightDir;\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;\r\n" \
-	"void main(void) {\r\n" \
-	"vec3 lightVec, spotColor = vec3 (0.0, 0.0, 0.0), v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
-	"float spotEffect, lightDist;\r\n" \
-	"lightVec = v - lightPos;\r\n" \
-	"lightDist = length (lightVec);\r\n" \
-	"spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
-	"if (spotEffect < cutOff)\r\n" \
-	"   gl_FragColor = vec4 (vec3 (matColor) * vec3 (gl_Color), (matColor.a + gl_Color.a) * grAlpha);"  \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness;*/\r\n" \
+	"void main (void) {\r\n" \
+	"vec3 spotColor;\r\n" \
+	"vec3 lightVec = vertPos - lightPos;\r\n" \
+	"float lightDist = length (lightVec);\r\n" \
+	"float spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
+	"if (spotEffect < 0.5 /*cutOff*/)\r\n" \
+	"   gl_FragColor = vec4 (matColor.rgb * vec3 (gl_Color), (matColor.a + gl_Color.a) /** grAlpha*/);"  \
 	"else {\r\n" \
-	"	 float attenuation = min (100.0 / lightDist, 1.0);\r\n" \
-	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
-	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));\r\n" \
-	"   gl_FragColor = vec4 (vec3 (matColor) * vec3 (spotColor), matColor.a * grAlpha);"  \
+	"	 float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"   spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
+	"   spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
+	"   gl_FragColor = vec4 (matColor.rgb * spotColor.rgb, matColor.a /** grAlpha*/);"  \
 	"   }\r\n" \
 	"}" 
 	,
@@ -218,22 +218,21 @@ char *lightingFS [12] = {
 	"varying vec3 vertPos;\r\n" \
 	"uniform vec3 lightPos, lightDir;\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;\r\n" \
-	"void main(void) {\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness;*/\r\n" \
+	"void main (void) {\r\n" \
 	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"vec3 lightVec, spotColor = vec3 (0.0, 0.0, 0.0), v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
-	"float spotEffect, lightDist;\r\n" \
-	"lightVec = v - lightPos;\r\n" \
-	"lightDist = length (lightVec);\r\n" \
-	"spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
-	"if (spotEffect < cutOff)\r\n" \
-	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * gl_Color;\r\n" \
+	"vec3 spotColor;\r\n" \
+	"vec3 lightVec = vertPos - lightPos;\r\n" \
+	"float lightDist = length (lightVec);\r\n" \
+	"float spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
+	"if (spotEffect < 0.5 /*cutOff*/)\r\n" \
+	"   gl_FragColor = btmColor /*vec4 (btmColor.rgb, btmColor.a * grAlpha)*/ * gl_Color;\r\n" \
 	"else {\r\n" \
-	"	 float attenuation = min (100.0 / lightDist, 1.0);\r\n" \
-	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
-	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));\r\n" \
-	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"   gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);\r\n" \
+	"	 float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"   spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
+	"   spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
+	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"   gl_FragColor = btmColor /*vec4 (btmColor.rgb, btmColor.a * grAlpha)*/ * vec4 (spotColor, gl_Color.a);\r\n" \
 	"	 }\r\n" \
 	"}" 
 	,
@@ -242,23 +241,22 @@ char *lightingFS [12] = {
 	"varying vec3 vertPos;\r\n" \
 	"uniform vec3 lightPos, lightDir;\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;\r\n" \
-	"void main(void) {\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness;*/\r\n" \
+	"void main (void) {\r\n" \
 	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
-	"vec3 lightVec, spotColor = vec3 (0.0, 0.0, 0.0), v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
-	"float spotEffect, lightDist;\r\n" \
-	"lightVec = v - lightPos;\r\n" \
-	"lightDist = length (lightVec);\r\n" \
-	"spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
-	"if (spotEffect < cutOff)\r\n" \
-	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * gl_Color;\r\n" \
+	"vec3 spotColor;\r\n" \
+	"vec3 lightVec = vertPos - lightPos;\r\n" \
+	"float lightDist = length (lightVec);\r\n" \
+	"float spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
+	"if (spotEffect < 0.5 /*cutOff*/)\r\n" \
+	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * gl_Color;\r\n" \
 	"else {\r\n" \
-	"   float attenuation = min (100.0 / lightDist, 1.0);\r\n" \
-	"   spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
-	"   spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));\r\n" \
-	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);\r\n" \
+	"   float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"   spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
+	"   spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
+	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * vec4 (spotColor, gl_Color.a);\r\n" \
 	"	 }\r\n" \
 	"}" 
 	,
@@ -267,7 +265,7 @@ char *lightingFS [12] = {
 	"varying vec3 vertPos;\r\n" \
 	"uniform vec3 lightPos, lightDir;\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness;\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness;*/\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -275,118 +273,103 @@ char *lightingFS [12] = {
 	"else {\r\n" \
 	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
-	"   vec3 lightVec, spotColor = vec3 (0.0, 0.0, 0.0), v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
-	"   float spotEffect, lightDist;\r\n" \
-	"   lightVec = v - lightPos;\r\n" \
-	"   lightDist = length (lightVec);\r\n" \
-	"   spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
-	"   if (spotEffect < cutOff)\r\n" \
-	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * gl_Color;\r\n" \
+	"   vec3 spotColor;\r\n" \
+	"   vec3 lightVec = vertPos - lightPos;\r\n" \
+	"   float lightDist = length (lightVec);\r\n" \
+	"   float spotEffect = dot (lightDir, lightVec / lightDist);\r\n" \
+	"   if (spotEffect < 0.5 /*cutOff*/)\r\n" \
+	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * gl_Color;\r\n" \
 	"   else {\r\n" \
-	" 		 float attenuation = min (100.0 / lightDist, 1.0);\r\n" \
-	"      spotEffect = pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
-	"      spotColor = vec3 (max (spotEffect, gl_Color.r), max (spotEffect, gl_Color.g), max (spotEffect, gl_Color.b));\r\n" \
-	"      spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);\r\n" \
+	" 		 float attenuation = min (100.0 /*brightness*/ / lightDist, 1.0);\r\n" \
+	"      spotEffect = pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
+	"      spotColor = max (vec3 (spotEffect, spotEffect, spotEffect), gl_Color.rgb);\r\n" \
+	"      spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"      gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * vec4 (spotColor, gl_Color.a);\r\n" \
 	"   	}\r\n" \
 	"   }\r\n" \
 	"}" 
 	,
 	// --------------------------------------------------------------------------------
-	//coop version - max. 4 players
-	//code for HEADLIGHT_TRANSFORMATION 2 is commented out
-	//code for HEADLIGHT_TRANSFORMATION 1 can be easily derived from method 2
+	//multiplayer version - 1 - 8 players
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 /*vEye,*/ lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [X];\r\n" \
-	"void main(void) {\r\n" \
-	"vec3 /*lp, ld,*/ lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"void main (void) {\r\n" \
+	"vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < X; i++) {\r\n" \
-	"/*   lp = lightPos [i] - vEye;\r\n" \
-	"   ld = vec3 (gl_ModelViewMatrix * vec4 (lp + lightDir [i], 1.0));\r\n" \
-	"   lp = vec3 (gl_ModelViewMatrix * vec4 (lp, 1.0));\r\n" \
-	"   ld = normalize (ld - lp);*/\r\n" \
-	"   lightVec = v - lightPos [i];\r\n" \
+	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
-	"   if (spotEffect >= cutOff) {\r\n" \
-	"   	float attenuation = min (brightness [i] / lightDist, 1.0);\r\n" \
-	" 	   spotBrightness += pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
+	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
+	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"spotColor = vec3 (max (spotBrightness, gl_Color.r), max (spotBrightness, gl_Color.g), max (spotBrightness, gl_Color.b));\r\n" \
-	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"gl_FragColor = vec4 (vec3 (matColor) * vec3 (spotColor), matColor.a * grAlpha);"  \
+	"spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"gl_FragColor = vec4 (matColor.rgb * spotColor.rgb, matColor.a /** grAlpha*/);"  \
 	"}" 
 	,
 	//only base texture
 	"uniform sampler2D btmTex;\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 /*vEye,*/ lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [X];\r\n" \
-	"void main(void) {\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"void main (void) {\r\n" \
 	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
-	"vec3 /*lp, ld,*/ lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
+	"vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < X; i++) {\r\n" \
-	"/*   lp = lightPos [i] - vEye;\r\n" \
-	"   ld = vec3 (gl_ModelViewMatrix * vec4 (lp + lightDir [i], 1.0));\r\n" \
-	"   lp = vec3 (gl_ModelViewMatrix * vec4 (lp, 1.0));\r\n" \
-	"   ld = normalize (ld - lp);*/\r\n" \
-	"   lightVec = v - lightPos [i];\r\n" \
+	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
-	"   if (spotEffect >= cutOff) {\r\n" \
-	"   	float attenuation = min (brightness [i] / lightDist, 1.0);\r\n" \
-	" 	   spotBrightness += pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
+	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
+	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"spotColor = vec3 (max (spotBrightness, gl_Color.r), max (spotBrightness, gl_Color.g), max (spotBrightness, gl_Color.b));\r\n" \
-	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"gl_FragColor = vec4 (vec3 (btmColor), btmColor.a * grAlpha) * vec4 (spotColor, gl_Color.a);\r\n" \
+	"spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"gl_FragColor = btmColor /*vec4 (btmColor.rgb, btmColor.a * grAlpha)*/ * vec4 (spotColor, gl_Color.a);\r\n" \
 	"}" 
 	,
 	//base texture and decal
 	"uniform sampler2D btmTex, topTex;\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 /*vEye,*/ lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [X];\r\n" \
-	"void main(void) {\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
+	"void main (void) {\r\n" \
 	"vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
-	"vec3 /*lp, ld,*/ lightVec, spotColor, v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
+	"vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < X; i++) {\r\n" \
-	"/*   lp = lightPos [i] - vEye;\r\n" \
-	"   ld = vec3 (gl_ModelViewMatrix * vec4 (lp + lightDir [i], 1.0));\r\n" \
-	"   lp = vec3 (gl_ModelViewMatrix * vec4 (lp, 1.0));\r\n" \
-	"   ld = normalize (ld - lp);*/\r\n" \
-	"   lightVec = v - lightPos [i];\r\n" \
+	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
-	"   if (spotEffect >= cutOff) {\r\n" \
-	"   	float attenuation = min (brightness [i] / lightDist, 1.0);\r\n" \
-	" 	   spotBrightness += pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
+	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
+	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"spotColor = vec3 (max (spotBrightness, gl_Color.r), max (spotBrightness, gl_Color.g), max (spotBrightness, gl_Color.b));\r\n" \
-	"spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);\r\n" \
+	"spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * vec4 (spotColor, gl_Color.a);\r\n" \
 	"}" 
 	,
 	//base texture and decal with color key
 	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
 	"varying vec3 vertPos;\r\n" \
-	"uniform vec3 /*vEye,*/ lightPos [X], lightDir [X];\r\n" \
+	"uniform vec3 lightPos [X], lightDir [X];\r\n" \
 	"uniform vec4 matColor;\r\n" \
-	"uniform float grAlpha, aspect, cutOff, spotExp, brightness [X];\r\n" \
+	"/*uniform float grAlpha, cutOff, spotExp, brightness [X];*/\r\n" \
 	"void main (void) {\r\n" \
 	"float bMask = texture2D (maskTex, gl_TexCoord [2].xy).r;\r\n" \
 	"if (bMask < 0.5)\r\n" \
@@ -394,59 +377,63 @@ char *lightingFS [12] = {
 	"else {\r\n" \
 	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
-	"   vec3 /*lp, ld,*/ lightVec, spotColor = vec3 (0.0, 0.0, 0.0), v = vec3 (vertPos.x * aspect, vertPos.y, vertPos.z);\r\n" \
+	"   vec3 lightVec, spotColor;\r\n" \
 	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
 	"int i;\r\n" \
 	"for (i = 0; i < X; i++) {\r\n" \
-	"/*   lp = lightPos [i] - vEye;\r\n" \
-	"   ld = vec3 (gl_ModelViewMatrix * vec4 (lp + lightDir [i], 1.0));\r\n" \
-	"   lp = vec3 (gl_ModelViewMatrix * vec4 (lp, 1.0));\r\n" \
-	"   ld = normalize (ld - lp);*/\r\n" \
-	"   lightVec = v - lightPos [i];\r\n" \
+	"   lightVec = vertPos - lightPos [i];\r\n" \
 	"   lightDist = length (lightVec);\r\n" \
 	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
-	"   if (spotEffect >= cutOff) {\r\n" \
-	"   	float attenuation = min (brightness [i] / lightDist, 1.0);\r\n" \
-	" 	   spotBrightness += pow (spotEffect * 1.1, spotExp) * attenuation;\r\n" \
+	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
+	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
 	" 	   }\r\n" \
 	" 	}\r\n" \
-	"   spotColor = vec3 (max (spotBrightness, gl_Color.r), max (spotBrightness, gl_Color.g), max (spotBrightness, gl_Color.b));\r\n" \
-	"   spotColor = vec3 (min (spotColor.r, matColor.r), min (spotColor.g, matColor.g), min (spotColor.b, matColor.b));\r\n" \
-	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) * grAlpha) * vec4 (spotColor, gl_Color.a);\r\n" \
+	"   spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
+	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
+	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * vec4 (spotColor, gl_Color.a);\r\n" \
 	"   }\r\n" \
 	"}" 
 	};
 
 char *lightingVS [4] = {
 	"varying vec3 vertPos;\r\n" \
-	"void main(void){\r\n" \
-	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"uniform float aspect;\r\n" \
+	"void main (void) {\r\n" \
+	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"vertPos.x *= aspect;\r\n" \
 	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
-   "gl_FrontColor=gl_Color;}"
+   "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
-	"void main(void){\r\n" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"uniform float aspect;\r\n" \
+	"void main (void) {\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
+	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"vertPos.x *= aspect;\r\n" \
 	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
-   "gl_FrontColor=gl_Color;}"
+   "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
-	"void main(void){\r\n" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"uniform float aspect;\r\n" \
+	"void main (void) {\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
+	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
+	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"vertPos.x *= aspect;\r\n" \
 	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
-   "gl_FrontColor=gl_Color;}"
+   "gl_FrontColor = gl_Color;}"
 	,
 	"varying vec3 vertPos;\r\n" \
-	"void main(void){\r\n" \
-	"gl_TexCoord [0]=gl_MultiTexCoord0;"\
-	"gl_TexCoord [1]=gl_MultiTexCoord1;"\
-	"gl_TexCoord [2]=gl_MultiTexCoord2;"\
-	"vertPos=vec3(gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"uniform float aspect;\r\n" \
+	"void main (void) {\r\n" \
+	"gl_TexCoord [0] = gl_MultiTexCoord0;\r\n"\
+	"gl_TexCoord [1] = gl_MultiTexCoord1;\r\n"\
+	"gl_TexCoord [2] = gl_MultiTexCoord2;\r\n"\
+	"vertPos = vec3 (gl_ModelViewMatrix * gl_Vertex);\r\n" \
+	"vertPos.x *= aspect;\r\n" \
 	"gl_Position = ftransform() /*gl_ModelViewProjectionMatrix * gl_Vertex*/;\r\n" \
-   "gl_FrontColor=gl_Color;}"
+   "gl_FrontColor = gl_Color;}"
 	};
 
 #endif
@@ -496,7 +483,7 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 	for (i = 0; i < 4; i++) {
 		if (lightingShaderProgs [i])
 			DeleteShaderProg (lightingShaderProgs + i);
-#ifndef _DEBUG
+#if 1//ndef _DEBUG
 		if (nLights == 1)
 			pszFS = lightingFS [i];
 		else
@@ -505,7 +492,7 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 		bOk = (pszFS != NULL) &&
 				CreateShaderProg (lightingShaderProgs + i) &&
 				CreateShaderFunc (lightingShaderProgs + i, lfs + i, lvs + i, pszFS, lightingVS [i % 4], 1) &&
-	-			LinkShaderProg (lightingShaderProgs + i);
+				LinkShaderProg (lightingShaderProgs + i);
 		if (pszFS && (nLights > 1))
 			D2_FREE (pszFS);
 		if (!bOk) {

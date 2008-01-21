@@ -679,7 +679,7 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGB
 				  GL_FLOAT, gameData.render.lights.dynamic.shader.lights);
 #	endif
 #endif
-#if 1
+#if HEADLIGHT_TRANSFORMATION == 0
 if (gameData.render.lights.dynamic.headLights.nLights) {
 	//G3EndFrame ();
 #if 1

@@ -350,7 +350,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	}
 return RIAddPoly (faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
-						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, faceP->bAdditive && !bmP->bmFromPog);
+						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, (faceP->bAdditive == 2) || ((faceP->bAdditive == 1) && !bmP->bmFromPog));
 }
 
 //------------------------------------------------------------------------------

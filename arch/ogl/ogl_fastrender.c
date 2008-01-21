@@ -187,16 +187,18 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 				}
 			}
 #if 1
-		glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
-		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
+#	if 0
 		glUniform1f (glGetUniformLocation (tmProg, "cutOff"), 0.5f);
 		glUniform1f (glGetUniformLocation (tmProg, "spotExp"), 8.0f);
+		glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
+		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
+						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
+#endif
+		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 		glUniform3fv (glGetUniformLocation (tmProg, "lightPos"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.pos);
 		glUniform3fv (glGetUniformLocation (tmProg, "lightDir"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.dir);
-		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
-						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
 #endif
 		if (colorP) {
 			color.red = colorP->red * 1.1f;
@@ -211,9 +213,6 @@ if (gameData.render.lights.dynamic.headLights.nLights) {
 		glUniform4fv (glGetUniformLocation (tmProg, "matColor"), 1, (GLfloat *) &color);
 		oglRes = glGetError ();
 		}
-#if HEADLIGHT_TRANSFORMATION == 2
-	glUniform3fv (glGetUniformLocation (tmProg, "vEye"), 1, (GLfloat *) &viewInfo.posf);
-#endif
 	}
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;

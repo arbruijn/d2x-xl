@@ -28,7 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "modem.h"
 #include "network.h"
-#include "multi.h"
+#include "ogl_lib.h"
 #include "object.h"
 #include "objsmoke.h"
 #include "laser.h"
@@ -80,6 +80,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "entropy.h"
 #include "monsterball.h"
 #include "dropobject.h"
+#include "multi.h"
 
 typedef void tMultiHandler (char *);
 typedef tMultiHandler *pMultiHandler;

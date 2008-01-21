@@ -1158,7 +1158,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 	segFaceP->nFaces = 0;
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {
 		nWall = WallNumI (nSegment, nSide);
-		bWall = (segP->children [nSide] == -1) || IS_WALL (nWall);
+		bWall = IS_WALL (nWall) ? 2 : (segP->children [nSide] == -1) ? 1 : 0;
 		if (bColoredSeg || bWall) {
 			GetSideVertIndex (sideVerts, nSegment, nSide);
 			for (i = 0; i < 4; i++) {
@@ -1187,7 +1187,12 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 				faceP->bTextured = 1;
 				faceP->bTransparent = 0;
 				pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [faceP->nBaseTex].index].name;
-				faceP->bAdditive = strstr (pszName, "force") || strstr (pszName, "lava");
+				if (bWall < 2)
+					faceP->bAdditive = 0;
+				else if (WALLS [nWall].flags & WALL_RENDER_ADDITIVE)
+					faceP->bAdditive = 2;
+				else
+					faceP->bAdditive = (strstr (pszName, "force") || strstr (pszName, "lava")) ? 1 : 0;
 				} 
 			else if (bColoredSeg) {
 				faceP->nBaseTex = -1;

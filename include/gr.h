@@ -708,7 +708,7 @@ typedef struct grsFace {
 	ubyte					bTeleport :1;
 	ubyte					bSlide :1;
 	ubyte					bSolid :1;
-	ubyte					bAdditive :1;
+	ubyte					bAdditive :2;
 	ubyte					widFlags;
 	char					nCamera;
 	char					nType;
