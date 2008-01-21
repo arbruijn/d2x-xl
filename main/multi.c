@@ -3131,6 +3131,7 @@ if (thisid != id) {
 	return;
 	}
 nPlayer = StateRestoreAllSub (filename, 1, 0);
+RebuildRenderContext (1);
 gameData.app.bGamePaused = 0;
 }
 

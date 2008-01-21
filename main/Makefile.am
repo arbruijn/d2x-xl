@@ -63,5 +63,5 @@ autodl.h cameras.h lightmap.h tracker.h findfile.h tga.h \
 glare.h radar.h renderlib.h transprender.h fastrender.h renderthreads.h flightpath.h \
 objeffects.h hiresmodels.h textdata.h omega.h trackobject.h \
 joydefs.h monsterball.h slowmotion.h dropobject.h entropy.h \
-dynlight.h headlight.h marker.h
+dynlight.h headlight.h marker.h gamerend.h
 

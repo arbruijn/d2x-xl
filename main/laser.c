@@ -313,16 +313,13 @@ return nObject;
 int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment, 
 						  short nParent, ubyte nWeaponType, int bMakeSound)
 {
-	int		nObject, nViewer, bPlayerMsl, bBigMsl;
+	int		nObject, nViewer, bBigMsl;
 	tObject	*objP, *pParent = (nParent < 0) ? NULL : gameData.objs.objects + nParent;
 	fix		xParentSpeed, xWeaponSpeed;
 	fix		volume;
 	fix		xLaserLength = 0;
 
-	static char *szMslSounds [2][2] = {
-		{"robotmissile-small.wav", "robotmissile-big.wav"},
-		{"playermissile-small.wav", "playermissile-big.wav"}
-		};
+	static char *szMslSounds [2] = {"missileflight-small.wav", "missileflight-big.wav"};
 
 Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
@@ -497,9 +494,8 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
 					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
-		bPlayerMsl = pParent && (pParent->nType == OBJ_PLAYER);
 		DigiLinkSoundToObject3 (-1, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, i2f (256), -1, -1, 
-										szMslSounds [bPlayerMsl][bBigMsl], 1, SOUNDCLASS_MISSILE);
+										szMslSounds [bBigMsl], 1, SOUNDCLASS_MISSILE);
 		}
 	else if (nWeaponType == FLARE_ID)
 		DigiSetObjectSound (nObject, -1, "flareburning.wav");
