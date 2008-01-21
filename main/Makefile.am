@@ -1,6 +1,8 @@
  SUBDIRS = @D2X_MAIN_SUBDIRS@
 
+if EDITOR
 DIST_SUBDIRS = editor
+endif
 
 EXTRA_SUBDIRS = old
 

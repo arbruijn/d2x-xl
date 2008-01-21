@@ -2,7 +2,7 @@ DIST_SUBDIRS = 2d 3d arch console iff libmve main maths mem misc texmap cfile
 
 SUBDIRS = ${DIST_SUBDIRS} @D2X_SUBDIRS@
 
-EXTRA_SUBDIRS = ui include unused debian rpm VisualC VisualCE English.lproj d2x.xcode
+EXTRA_SUBDIRS = include unused debian rpm VisualC VisualCE English.lproj d2x.xcode
 
 bin_PROGRAMS = @TARGETS@
 
@@ -19,7 +19,8 @@ AM_LDFLAGS = -all_load
 endif
 
 if EDITOR
-EDITOR_LIBS = main/editor/libeditor.a ui/libui.a
+EDITOR_LIBS = main/editor/libeditor.a
+#deprecated? ui/libui.a
 endif
 
 if CONSOLE
