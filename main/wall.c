@@ -132,6 +132,8 @@ if (sideP->nOvlTex) {
 	bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nOvlTex].index, -1);
 	if (bmP->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT)
 		return 1;
+	if (!(bmP->bmProps.flags & BM_FLAG_TRANSPARENT))
+		return 0;
 	}
 bmP = BmOverride (gameData.pig.tex.pBitmaps + gameData.pig.tex.pBmIndex [sideP->nBaseTex].index, -1);
 if (bmP->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
@@ -171,17 +173,6 @@ int WallIsDoorWay (tSegment * segP, short nSide)
 Assert(nSegment>=0 && nSegment<=gameData.segs.nLastSegment);
 Assert(nSide>=0 && nSide<6);
 #endif
-//--Covered by macro	// No child.
-//--Covered by macro	if (segP->children [nSide] == -1)
-//--Covered by macro		return WID_WALL;
-
-//--Covered by macro	if (segP->children [nSide] == -2)
-//--Covered by macro		return WID_EXTERNAL_FLAG;
-
-//--Covered by macro // No tWall present.
-//--Covered by macro	if (!IS_WALL (WallNumP (segP, nSide)))
-//--Covered by macro		return WID_NO_WALL;
-
 nType = wallP->nType;
 flags = wallP->flags;
 
@@ -191,12 +182,9 @@ if (nType == WALL_OPEN)
 if (nType == WALL_ILLUSION) {
 	if (flags & WALL_ILLUSION_OFF)
 		return WID_NO_WALL;
-	else {
-		if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency (segP, nSide))
-			return WID_TRANSILLUSORY_WALL;
-		else
-			return WID_ILLUSORY_WALL;
-		}
+	if ((wallP->cloakValue < GR_ACTUAL_FADE_LEVELS) || CheckTransparency (segP, nSide))
+		return WID_TRANSILLUSORY_WALL;
+	return WID_ILLUSORY_WALL;
 	}
 
 if (nType == WALL_BLASTABLE) {
@@ -214,28 +202,27 @@ if (nType == WALL_CLOAKED)
 	return WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_CLOAKED_FLAG;
 
 if (nType == WALL_TRANSPARENT)
-	return 
-#if 1
-		(wallP->hps < 0) ? 
-		WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG | WID_FLY_FLAG : 
-#endif
-		WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG;
+	return (wallP->hps < 0) ? 
+			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG | WID_FLY_FLAG : 
+			 WID_RENDER_FLAG | WID_RENDPAST_FLAG | WID_TRANSPARENT_FLAG;
 
 state = wallP->state;
 if (nType == WALL_DOOR) { 
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
-	else if (CheckTransparency (segP, nSide))
+	if (CheckTransparency (segP, nSide))
 		return WID_TRANSPARENT_WALL;
-	else
-		return WID_WALL;
+	return WID_WALL;
 	}
 // If none of the above flags are set, there is no doorway.
 if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || 
-	 CheckTransparency (segP, nSide))
+	 CheckTransparency (segP, nSide)) {
+#ifdef _DEBUG
+	CheckTransparency (segP, nSide);
+#endif
 	return WID_TRANSPARENT_WALL;
-else
-	return WID_WALL; // There are children behind the door.
+	 }
+return WID_WALL; // There are children behind the door.
 }
 
 //-----------------------------------------------------------------

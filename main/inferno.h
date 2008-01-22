@@ -2117,7 +2117,7 @@ typedef struct tMultiplayerData {
 	int 					nLocalPlayer;				
 	int					nPlayerPositions;
 	int					bMoving;
-	tPlayer				players [MAX_PLAYERS + 4];                   
+	tPlayer				players [MAX_PLAYERS + 4];  
 	tObjPosition		playerInit [MAX_PLAYERS];
 	short					nVirusCapacity [MAX_PLAYERS];
 	int					nLastHitTime [MAX_PLAYERS];

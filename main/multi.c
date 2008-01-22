@@ -1194,7 +1194,7 @@ void MultiDoReappear (char *buf)
 	short nObject = GET_INTEL_SHORT (buf + 1);
 	tObject *objP = gameData.objs.objects + nObject;
 
-Assert (nObject  >= 0);
+Assert (nObject >= 0);
 MultiMakeGhostPlayer (objP->id);
 CreatePlayerAppearanceEffect (objP);
 gameData.multigame.kills.pFlags [objP->id] = 0;

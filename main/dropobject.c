@@ -480,7 +480,7 @@ int WeaponNearby (tObject *objP, int weapon_id)
 
 void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 {
-	int	weapon_index=-1;
+	int	nWeapon=-1;
 
 	if (delObjP->containsType != OBJ_POWERUP)
 		return;
@@ -496,45 +496,45 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 	}
 	switch (delObjP->containsId) {
 		case POW_VULCAN:		
-			weapon_index = VULCAN_INDEX;	
+			nWeapon = VULCAN_INDEX;	
 			break;
 		case POW_GAUSS:		
-			weapon_index = GAUSS_INDEX;	
+			nWeapon = GAUSS_INDEX;	
 			break;
 		case POW_SPREADFIRE:
-			weapon_index = SPREADFIRE_INDEX;
+			nWeapon = SPREADFIRE_INDEX;
 			break;
 		case POW_PLASMA:		
-			weapon_index = PLASMA_INDEX;	
+			nWeapon = PLASMA_INDEX;	
 			break;
 		case POW_FUSION:		
-			weapon_index = FUSION_INDEX;	
+			nWeapon = FUSION_INDEX;	
 			break;
 		case POW_HELIX:		
-			weapon_index = HELIX_INDEX;	
+			nWeapon = HELIX_INDEX;	
 			break;
 		case POW_PHOENIX:	
-			weapon_index = PHOENIX_INDEX;	
+			nWeapon = PHOENIX_INDEX;	
 			break;
 		case POW_OMEGA:		
-			weapon_index = OMEGA_INDEX;	
+			nWeapon = OMEGA_INDEX;	
 			break;
 
 	}
 
 	//	Don't drop vulcan ammo if tPlayer maxed out.
-	if (( (weapon_index == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	if (( (nWeapon == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
-	else if (( (weapon_index == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	else if (( (nWeapon == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
-	else if (weapon_index != -1) {
-		if ((PlayerHasWeapon (weapon_index, 0, -1) & HAS_WEAPON_FLAG) || 
+	else if (nWeapon != -1) {
+		if ((PlayerHasWeapon (nWeapon, 0, -1) & HAS_WEAPON_FLAG) || 
 			 WeaponNearby (delObjP, delObjP->containsId)) {
 			if (d_rand () > 16384) {
 				delObjP->containsType = OBJ_POWERUP;
-				if (weapon_index == VULCAN_INDEX) {
+				if (nWeapon == VULCAN_INDEX) {
 					delObjP->containsId = POW_VULCAN_AMMO;
-				} else if (weapon_index == GAUSS_INDEX) {
+				} else if (nWeapon == GAUSS_INDEX) {
 					delObjP->containsId = POW_VULCAN_AMMO;
 				} else {
 					delObjP->containsId = POW_ENERGY;
@@ -842,12 +842,13 @@ for (i = 0; i < nThrusters; i++) {
 
 //	-----------------------------------------------------------------------------
 
-int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int weapon_index)
+int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int nWeapon)
 {
-	int weaponFlag = HAS_FLAG (weapon_index);
-	int nPowerup = primaryWeaponToPowerup [weapon_index];
+	int nWeaponFlag = HAS_FLAG (nWeapon);
+	int nPowerup = primaryWeaponToPowerup [nWeapon];
 
-if (gameData.multiplayer.players [playerObjP->id].primaryWeaponFlags & weaponFlag)
+if ((gameData.multiplayer.players [playerObjP->id].primaryWeaponFlags & nWeaponFlag) &&
+	 !(IsMultiGame && (extraGameInfo [1].loadout.nGuns & nWeaponFlag)))
 	return CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
 else
 	return -1;
@@ -855,16 +856,26 @@ else
 
 //	-----------------------------------------------------------------------------
 
-void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int weapon_index, int count)
+void MaybeDropSecondaryWeaponEgg (tObject *playerObjP, int nWeapon, int count)
 {
-	int weaponFlag = HAS_FLAG (weapon_index);
-	int nPowerup = secondaryWeaponToPowerup [weapon_index];
+	int nWeaponFlag = HAS_FLAG (nWeapon);
+	int nPowerup = secondaryWeaponToPowerup [nWeapon];
 
-if (gameData.multiplayer.players [playerObjP->id].secondaryWeaponFlags & weaponFlag) {
-	int	i, maxCount = (EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min (count, 3);
-	for (i=0; i<maxCount; i++)
+if (gameData.multiplayer.players [playerObjP->id].secondaryWeaponFlags & nWeaponFlag) {
+	int i, maxCount = ((EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min (count, 3));
+
+	for (i = 0; i < maxCount; i++)
 		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+MaybeDropDeviceEgg (tPlayer *playerP, tObject *playerObjP, int nDeviceFlag, int nPowerupId)
+{
+if ((playerP->flags & PLAYER_FLAGS_QUAD_LASERS) && 
+	 !(IsMultiGame && (extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag)))
+	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerupId);
 }
 
 //	-----------------------------------------------------------------------------
@@ -900,14 +911,14 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 	// Seed the random number generator so in net play the eggs will always
 	// drop the same way
-	if (gameData.app.nGameMode & GM_MULTI) {
+	if (IsMultiGame) {
 		gameData.multigame.create.nLoc = 0;
 		d_srand (5483L);
 	}
 
 	//	If the tPlayer had smart mines, maybe arm one of them.
 	rthresh = 30000;
-	while ((playerP->secondaryAmmo [SMARTMINE_INDEX]%4==1) && (d_rand () < rthresh)) {
+	while ((playerP->secondaryAmmo [SMARTMINE_INDEX] % 4 == 1) && (d_rand () < rthresh)) {
 		short			nNewSeg;
 		vmsVector	tvec;
 
@@ -938,34 +949,26 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
 
 		if (playerP->laserLevel > MAX_LASER_LEVEL)
-			CallObjectCreateEgg (playerObjP, playerP->laserLevel-MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
+			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
 		else if (playerP->laserLevel >= 1)
 			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 
 		//	Drop quad laser if appropos
-		if (playerP->flags & PLAYER_FLAGS_QUAD_LASERS)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_QUADLASER);
-		if (playerP->flags & PLAYER_FLAGS_CLOAKED)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CLOAKED, POW_CLOAK);
 		while (playerP->nInvuls--)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
 		while (playerP->nCloaks--)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
-		if (playerP->flags & PLAYER_FLAGS_MAP_ALL)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_FULL_MAP);
-		if (playerP->flags & PLAYER_FLAGS_AFTERBURNER)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_AFTERBURNER);
-		if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_AMMORACK);
-		if (playerP->flags & PLAYER_FLAGS_CONVERTER)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CONVERTER);
-		if (playerP->flags & PLAYER_FLAGS_SLOWMOTION)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_SLOWMOTION);
-		if (playerP->flags & PLAYER_FLAGS_BULLETTIME)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_BULLETTIME);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_MAP_ALL, POW_FULL_MAP);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_SLOWMOTION, POW_SLOWMOTION);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_BULLETTIME, POW_BULLETTIME);
 		if (PlayerHasHeadLight (nPlayerId) && !EGI_FLAG (headlight.bBuiltIn, 0, 1, 0) &&
 			 !(gameStates.app.bHaveExtraGameInfo [1] && IsMultiGame && extraGameInfo [1].bDarkness))
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HEADLIGHT);
+			MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_HEADLIGHT, POW_HEADLIGHT);
 		// drop the other enemies flag if you have it
 
 	playerP->nInvuls =

@@ -352,6 +352,9 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
 		RP (extraGameInfo [i].headlight.bBuiltIn, 0, 0);
 
+		RP (extraGameInfo [i].loadout.nGuns, 0, 0);
+		RP (extraGameInfo [i].loadout.nDevices, 0, 0);
+
 		RP (extraGameInfo [i].monsterball.nBonus, 0, 0);
 		RP (extraGameInfo [i].monsterball.nSizeMod, 0, 0);
 		for (j = 0; j < MAX_MONSTERBALL_FORCES; j++) {
@@ -885,6 +888,11 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].monsterball.forces[23].nForce", "-56"},
 	{"extraGameInfo[0].monsterball.forces[24].nWeaponId", "-1"},
 	{"extraGameInfo[0].monsterball.forces[24].nForce", "4"},
+	{"extraGameInfo[0].headlight.bAvailable", "1"},
+	{"extraGameInfo[0].headlight.bDrainPower", "1"},
+	{"extraGameInfo[0].headlight.bBuiltIn", "0"},
+	{"extraGameInfo[1].loadout.nGuns", "0"},
+	{"extraGameInfo[1].loadout.nDevices", "0"},
 	{"gameOptions[0].input.keyboard.bRamp[0]", "0"},
 	{"gameOptions[0].input.mouse.sensitivity[0]", "8"},
 	{"gameOptions[0].input.trackIR.sensitivity[0]", "8"},

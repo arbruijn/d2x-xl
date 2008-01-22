@@ -872,7 +872,7 @@ void piggy_new_pigfile (char *pigname)
 #endif
 					Error ("File %s - IFF error: %s",abmname,iff_errormsg (iff_error);
 				}
-				for (fnum=0;fnum<nframes; fnum++) {
+				for (fnum = 0; fnum < nframes; fnum++) {
 					char tempname [20];
 					int SuperX;
 					sprintf (tempname, "%s#%d", basename, fnum);

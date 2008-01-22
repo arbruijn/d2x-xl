@@ -1,4 +1,4 @@
-	/* $Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $ */
+/* $Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -1064,7 +1064,7 @@ if (!bRestore) {
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
 	gameData.render.lights.bInitDynColoring = 1;
-	gameData.omega.xCharge [IsMultiGame] = DEFAULT_MAX_OMEGA_CHARGE;
+	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
 	SetMaxOmegaCharge ();
 	ConvertObjects ();
 	ComputeNearestLights (nLevel);
@@ -2244,8 +2244,8 @@ DisableMatCens ();
 ClearTransientObjects (0);		//0 means leave proximity bombs
 // CreatePlayerAppearanceEffect (gameData.objs.console);
 gameStates.render.bDoAppearanceEffect = 1;
-if (gameData.app.nGameMode & GM_MULTI) {
-	if (gameData.app.nGameMode & GM_MULTI_COOP)
+if (IsMultiGame) {
+	if (IsCoopGame)
 		MultiSendScore ();
 	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendReappear ();

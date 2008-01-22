@@ -587,11 +587,10 @@ fq.radP0				=
 fq.radP1				= F1_0 / 4;
 fq.thisObjNum		= OBJ_IDX (objP);
 fq.ignoreObjList	= NULL;
-fq.flags				= FQ_TRANSWALL; // -- Why were we checking gameData.objs.objects? | FQ_CHECK_OBJS;		//what about trans walls???
+fq.flags				= FQ_TRANSWALL; 
 gameData.ai.nHitType = FindVectorIntersection (&fq, &gameData.ai.hitData);
 gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitData.hit.nSegment;
-// -- when we stupidly checked gameData.objs.objects -- if ((gameData.ai.nHitType == HIT_NONE) || ((gameData.ai.nHitType == HIT_OBJECT) && (gameData.ai.hitData.hitObject == LOCALPLAYER.nObject))) {
 if (gameData.ai.nHitType != HIT_NONE)
 	return 0;
 dot = VmVecDot (vVecToPlayer, &objP->position.mOrient.fVec);

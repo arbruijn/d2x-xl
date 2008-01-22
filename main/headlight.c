@@ -96,7 +96,7 @@ if (pl->bTransform && !gameStates.ogl.bUseTransform)
 	G3RotatePointf (&psl->dir, &psl->dir, 0);
 psl->spotAngle = pl->spotAngle;
 psl->spotExponent = pl->spotExponent;
-if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight) {
+if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.automap.bDisplay) {
 #if HEADLIGHT_TRANSFORMATION == 0
 	// method 1: Emulate OpenGL's transformation
 	if (!gameData.render.lights.dynamic.headLights.nLights) {

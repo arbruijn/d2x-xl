@@ -1815,13 +1815,13 @@ void LoadGameTexts(void);
 #define TXT_GOT_SLOWMOTION			GT(1022)
 #define TXT_THE_BULLETTIME			GT(1023)
 #define TXT_GOT_BULLETTIME			GT(1024)
+#define TXT_GUN_LOADOUT				GT(1025)
+#define TXT_DEVICE_LOADOUT			GT(1026)
+#define TXT_LOADOUT_MENUTITLE		GT(1027)
+#define TXT_LOADOUT_OPTION			GT(1028)
 
 #if 0
 
-#define TXT_				GT(1025)
-#define TXT_				GT(1026)
-#define TXT_				GT(1027)
-#define TXT_				GT(1028)
 #define TXT_				GT(1029)
 #define TXT_				GT(1030)
 #define TXT_				GT(1031)
@@ -2354,12 +2354,12 @@ void LoadGameTexts(void);
 #define HTX_SOUND_CHANNEL_COUNT	HT(340)			
 #define HTX_PERFORMANCE_SETTINGS	HT(341)			
 #define HTX_CUSTOM_SOUNDVOL		HT(342)			
+#define HTX_GUN_LOADOUT				HT(343)			
+#define HTX_DEVICE_LOADOUT			HT(344)			
+#define HTX_MULTI_LOADOUT			HT(345)			
 
 #if 0
 
-#define HTX_					HT(343)			
-#define HTX_					HT(344)			
-#define HTX_					HT(345)			
 #define HTX_					HT(346)			
 #define HTX_					HT(347)			
 #define HTX_					HT(348)			

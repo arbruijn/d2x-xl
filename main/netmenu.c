@@ -966,10 +966,10 @@ for (extraGameInfo [0].entropy.nOverrideTextures = 0;
 void NetworkEntropyOptions (void)
 {
 	tMenuItem	m [25];
-	int				i, opt = 0;
-	char				szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
-						szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
-						szEnergyFill [10], szShieldFill [10], szShieldDmg [10];
+	int			i, opt = 0;
+	char			szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
+					szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
+					szEnergyFill [10], szShieldFill [10], szShieldDmg [10];
 
 memset (m, 0, sizeof (m));
 
@@ -1024,6 +1024,46 @@ extraGameInfo [0].entropy.nVirusLifespan = (char) atol (m [optVirLife].text);
 extraGameInfo [0].entropy.nEnergyFillRate = (ushort) atol (m [optEnergyFill].text);
 extraGameInfo [0].entropy.nShieldFillRate = (ushort) atol (m [optShieldFill].text);
 extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].text);
+}
+
+//------------------------------------------------------------------------------
+
+static char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
+static char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight"};
+static char nDeviceFlags [] = {PLAYER_FLAGS_MAP_ALL, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT};
+
+void NetworkLoadoutOptions (void)
+{
+	tMenuItem	m [25];
+	int			i, opt = 0, optGuns, optDevices;
+
+memset (m, 0, sizeof (m));
+ADD_TEXT (opt, TXT_GUN_LOADOUT, 0);
+opt++;
+for (i = 0, optGuns = opt; i < sizeofa (pszGuns); i++, opt++)
+	ADD_CHECK (opt, pszGuns [i], (extraGameInfo [1].loadout.nGuns & (i << 1)) != 0, 0, HTX_GUN_LOADOUT);
+ADD_TEXT (opt, "", 0);
+opt++;
+ADD_TEXT (opt, TXT_DEVICE_LOADOUT, 0);
+opt++;
+for (i = 0, optDevices = opt; i < sizeofa (pszDevices); i++, opt++)
+	ADD_CHECK (opt, pszDevices [i], (extraGameInfo [1].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
+Assert (opt <= sizeofa (m));
+do {
+	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, NULL, 0);
+	} while (i != -1);
+for (i = 0; i < sizeofa (pszGuns); i++) {
+	if (m [optGuns + i].value)
+		extraGameInfo [1].loadout.nGuns |= (1 << i);
+	else
+		extraGameInfo [1].loadout.nGuns &= ~(1 << i);
+	}
+for (i = 0; i < sizeofa (pszDevices); i++) {
+	if (m [optDevices + i].value)
+		extraGameInfo [1].loadout.nDevices |= (nDeviceFlags [i] << i);
+	else
+		extraGameInfo [1].loadout.nDevices &= ~(nDeviceFlags [i]  << i);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1249,7 +1289,7 @@ int NetworkGetGameParams (int bAutoRun)
 {
 	int i, key, choice = 1;
 	int opt, optGameName, optLevel, optLevelText, optMoreOpts, 
-		 optMission, optMissionName, optD2XOpts, optConfigMenu;
+		 optMission, optMissionName, optD2XOpts, optLoadoutOpts, optConfigMenu;
 	tMenuItem m [35];
 	char name [NETGAME_NAME_LEN+1];
 	char szLevelText [32];
@@ -1394,11 +1434,14 @@ ADD_MENU (opt, TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
 optMoreOpts = opt++;
 optConfigMenu =
 optD2XOpts =
+optLoadoutOpts =
 optEntOpts =
 optMBallOpts = -1;
 if (!gameStates.app.bNostalgia) {
 	ADD_MENU (opt, TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
 	optD2XOpts = opt++;
+	ADD_MENU (opt, TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
+	optLoadoutOpts = opt++;
 	if (m [optEntropy].value) {
 		ADD_MENU (opt, TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
 		optEntOpts = opt++;

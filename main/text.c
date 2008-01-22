@@ -1774,6 +1774,10 @@ char *defaultGameTexts [][2] = {
 	{"Zeitlupe!!", "Slow Motion!!"},
 	{"Die Hochgeschwindigkeit!!", "The Bullet Time!!"},
 	{"Hochgeschwindigkeit!!", "Bullet Time!!"},
+	{"Startausstattung", "Initial Loadout"},
+	{"~Startausstattung...", "Initial ~Loadout..."},
+	{"Waffen-Ausstattung", "Gun Loadout"},
+	{"Geraete-Ausstattung", "Device Loadout"},
 #if 0
 	{"", ""},
 #endif
@@ -2383,6 +2387,9 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt erzeugen Raketen Triebwerksgeraeusche.", "If checked rockets emit engine sounds."},
 	{"Hier kann die maximale Anzahl gleichzeitig abspielbarer\nKlaenge eingestellt werden.", "Adjust the maximum number of sounds that can be played\nsimultaneously."},
 	{"Hier koennen Programmeinstellungen an die Leistungs-\nfaehigkeit des Rechners angepasst werden.", "Here you can adjust program settings to your computers\nperformance."},
+	{"Wenn angekreuzt, werden Spielerschiffe immer mit dieser\nWaffe ausgestattet.", "If checked, player ships are equipped with this\ngun when entering a game or respawning."},
+	{"Wenn angekreuzt, werden Spielerschiffe immer mit diesem\nGeraet ausgestattet.", "If checked, player ships are equipped with this\ndevice when entering a game or respawning."},
+	{"Hier kann die Startausstattung der Spielerschiffe mit\nWaffen und Geraeten eingestellt werden.", "Adjust the initial loadout of player ships\nwith guns and devices here."},
 #if 0
 	{"", ""},
 #endif

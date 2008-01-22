@@ -38,33 +38,33 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define NETGAMEIPX                  1
 #define NETGAMETCP                  2
 
-#define PID_LITE_INFO       43 // 0x2B lite game info
-#define PID_SEND_ALL_GAMEINFO 44 // 0x2C plz send more than lite only
-#define PID_PLAYERSINFO     45 // 0x2D here's my name & personal data
-#define PID_REQUEST         46 // 0x2E may i join, plz send sync
-#define PID_SYNC            47 // 0x2F master says: enter mine now!
-#define PID_PDATA           48 // 0x30
-#define PID_ADDPLAYER       49
+#define PID_LITE_INFO					43 // 0x2B lite game info
+#define PID_SEND_ALL_GAMEINFO			44 // 0x2C plz send more than lite only
+#define PID_PLAYERSINFO					45 // 0x2D here's my name & personal data
+#define PID_REQUEST						46 // 0x2E may i join, plz send sync
+#define PID_SYNC							47 // 0x2F master says: enter mine now!
+#define PID_PDATA							48 // 0x30
+#define PID_ADDPLAYER					49
 
-#define PID_DUMP            51 // 0x33 you can't join this game
-#define PID_ENDLEVEL        52
+#define PID_DUMP							51 // 0x33 you can't join this game
+#define PID_ENDLEVEL						52
 
-#define PID_QUIT_JOINING    54
-#define PID_OBJECT_DATA     55 // array of bots, players, powerups, ...
-#define PID_GAME_LIST       56 // 0x38 give me the list of your games
-#define PID_GAME_INFO       57 // 0x39 here's a game i've started
-#define PID_PING_SEND       58
-#define PID_PING_RETURN     59
-#define PID_GAME_UPDATE     60 // inform about new tPlayer/team change
-#define PID_ENDLEVEL_SHORT  61
-#define PID_NAKED_PDATA     62
-#define PID_GAME_PLAYERS    63
-#define PID_NAMES_RETURN    64 // 0x40
+#define PID_QUIT_JOINING				54
+#define PID_OBJECT_DATA					55 // array of bots, players, powerups, ...
+#define PID_GAME_LIST					56 // 0x38 give me the list of your games
+#define PID_GAME_INFO					57 // 0x39 here's a game i've started
+#define PID_PING_SEND					58
+#define PID_PING_RETURN					59
+#define PID_GAME_UPDATE					60 // inform about new tPlayer/team change
+#define PID_ENDLEVEL_SHORT				61
+#define PID_NAKED_PDATA					62
+#define PID_GAME_PLAYERS				63
+#define PID_NAMES_RETURN				64 // 0x40
 
-#define PID_EXTRA_GAMEINFO	 65
-#define PID_DOWNLOAD			 66
-#define PID_UPLOAD			 67
-#define PID_SEND_EXTRA_GAMEINFO 68
+#define PID_EXTRA_GAMEINFO				65
+#define PID_DOWNLOAD						66
+#define PID_UPLOAD						67
+#define PID_SEND_EXTRA_GAMEINFO		68
 
 #define PID_TRACKER_ADD_SERVER		'S'
 #define PID_TRACKER_GET_SERVERLIST	'R'
@@ -170,6 +170,12 @@ typedef struct tHeadLightInfo {
 	int bBuiltIn;
 }  tHeadLightInfo;
 
+typedef struct tLoadoutInfo {
+	uint					nGuns;
+	uint					nDevices;
+	ubyte					nMissiles [10];
+} tLoadoutInfo;
+
 typedef struct tExtraGameInfo {
 	ubyte   	nType;
 	char		bFriendlyFire;
@@ -248,6 +254,7 @@ typedef struct tExtraGameInfo {
 	char		szGameName [NETGAME_NAME_LEN + 1];
 	int		nSecurity;
 	tHeadLightInfo	headlight;
+	tLoadoutInfo	loadout;
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {
