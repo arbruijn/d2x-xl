@@ -32,10 +32,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	MAX_DROP_COOP		3
 #define	MAX_DROP_SINGLE	9
 
-static int	nMarkerIndex = 0;
-static char	nDefiningMarker;
-static char	nLastMarkerDropped = -1;
-
 // -------------------------------------------------------------
 
 static inline int MaxDrop (void)
@@ -180,10 +176,8 @@ void DropSpawnMarker (void)
 {
 	char nMarker = (char) SpawnMarkerIndex (-1);
 
-if (nLastMarkerDropped < 0)
-	nLastMarkerDropped = MaxDrop ();
 if (nMarker < 0)
-	nMarker = (nLastMarkerDropped + 1) % MaxDrop ();
+	nMarker = (gameData.marker.nLast + 1) % MaxDrop ();
 else
 	nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
 strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
@@ -312,16 +306,19 @@ void InitMarkerInput (void)
 {
 	int nMaxDrop, i;
 
-if (nLastMarkerDropped < 0)
-	nLastMarkerDropped = MaxDrop ();
+if (gameData.marker.nLast < 0)
+	gameData.marker.nLast = MaxDrop ();
 //find free marker slot
 i = LastMarker () + 1;
 nMaxDrop = MaxDrop ();
 if (i == nMaxDrop) {		//no free slot
 	if (IsCoopGame)
-		i = (nLastMarkerDropped + 1) % nMaxDrop;
-	else if (IsMultiGame)
-		i = !nLastMarkerDropped;		//in multi, replace older of two
+		i = (gameData.marker.nLast + 1) % nMaxDrop;
+	else if (IsMultiGame) {
+		if (gameData.marker.nLast < 0)
+			gameData.marker.nLast = MaxDrop ();
+		i = !gameData.marker.nLast;		//in multi, replace older of two
+		}
 	else {
 		HUDInitMessage (TXT_MARKER_SLOTS);
 		return;
@@ -329,9 +326,9 @@ if (i == nMaxDrop) {		//no free slot
 	}
 //got a D2_FREE slot.  start inputting marker message
 gameData.marker.szInput [0] = '\0';
-nMarkerIndex = 0;
+gameData.marker.nIndex = 0;
 gameData.marker.nDefiningMsg = 1;
-nDefiningMarker = i;
+gameData.marker.nCurrent = i;
 }
 
 //------------------------------------------------------------------------------
@@ -348,18 +345,18 @@ switch (key) {
 	case KEY_LEFT:
 	case KEY_BACKSP:
 	case KEY_PAD4:
-		if (nMarkerIndex > 0)
-			nMarkerIndex--;
-		gameData.marker.szInput [nMarkerIndex] = 0;
+		if (gameData.marker.nIndex > 0)
+			gameData.marker.nIndex--;
+		gameData.marker.szInput [gameData.marker.nIndex] = 0;
 		break;
 
 	case KEY_ENTER:
 		strupr (gameData.marker.szInput);
-		strcpy (gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker], gameData.marker.szInput);
+		strcpy (gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer*2)+gameData.marker.nCurrent], gameData.marker.szInput);
 		if (IsMultiGame)
-		 strcpy (gameData.marker.nOwner [(gameData.multiplayer.nLocalPlayer*2)+nDefiningMarker],LOCALPLAYER.callsign);
-		DropMarker (nDefiningMarker);
-		nLastMarkerDropped = nDefiningMarker;
+		 strcpy (gameData.marker.nOwner [(gameData.multiplayer.nLocalPlayer*2)+gameData.marker.nCurrent],LOCALPLAYER.callsign);
+		DropMarker (gameData.marker.nCurrent);
+		gameData.marker.nLast = gameData.marker.nCurrent;
 		GameFlushInputs ();
 		gameData.marker.nDefiningMsg = 0;
 		break;
@@ -367,9 +364,9 @@ switch (key) {
 	default:
 		if (key > 0) {
 			int ascii = KeyToASCII (key);
-			if ((ascii < 255) && (nMarkerIndex < 38)) {
-				gameData.marker.szInput [nMarkerIndex++] = ascii;
-				gameData.marker.szInput [nMarkerIndex] = 0;
+			if ((ascii < 255) && (gameData.marker.nIndex < 38)) {
+				gameData.marker.szInput [gameData.marker.nIndex++] = ascii;
+				gameData.marker.szInput [gameData.marker.nIndex] = 0;
 				}
 			}
 		break;

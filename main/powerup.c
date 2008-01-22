@@ -157,14 +157,13 @@ else {
 		 (nFrames = BM_FRAMECOUNT (gameData.pig.tex.addonBitmaps - vciP->nClipIndex - 1))) {
 		vciP->xTotalTime += h * 80;
 		if (nObject & 1)
-			vciP->nCurFrame = (vciP->nCurFrame + h) % nFrames;
-		else {
+			vciP->nCurFrame += h;
+		else
 			vciP->nCurFrame -= h;
-			if (vciP->nCurFrame < 0)
-				vciP->nCurFrame = nFrames - (-vciP->nCurFrame % nFrames);
-			else
-				vciP->nCurFrame %= nFrames;
-			}
+		if (vciP->nCurFrame < 0)
+			vciP->nCurFrame = -(-vciP->nCurFrame % nFrames);
+		else 
+			vciP->nCurFrame %= nFrames;
 		}
 	}
 }

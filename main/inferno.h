@@ -2255,6 +2255,9 @@ typedef struct tMarkerData {
 	float					fScale;
 	ubyte					nDefiningMsg;
 	char					szInput [40];
+	int					nIndex;
+	int					nCurrent;
+	int					nLast;
 } tMarkerData;
 
 //------------------------------------------------------------------------------
