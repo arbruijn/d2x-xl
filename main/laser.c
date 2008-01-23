@@ -627,14 +627,14 @@ if (bSpectate)
    VmCopyTransposeMatrix (viewP = &m, &pPos->mOrient);
 else
    viewP = ObjectView (objP);
-VmVecRotate (&vGunPoint, &v, &m);
+VmVecRotate (&vGunPoint, &v, viewP);
 memcpy (&m, &pPos->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
-	VmVecScaleInc (&vGunPoint, &m.uVec, -2 * VmVecMag (&v));
+	VmVecScaleInc (&vGunPoint, &viewP->uVec, -2 * VmVecMag (&v));
 VmVecAdd (&vLaserPos, &pPos->vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (delayTime), then move this point backwards.
 if (delayTime)
-	VmVecScaleInc (&vLaserPos, &m.fVec, -FixMul (delayTime, WI_speed (laserType,gameStates.app.nDifficultyLevel)));
+	VmVecScaleInc (&vLaserPos, &viewP->fVec, -FixMul (delayTime, WI_speed (laserType,gameStates.app.nDifficultyLevel)));
 
 //	DoMuzzleStuff (objP, &Pos);
 
@@ -669,13 +669,13 @@ if (nFate == HIT_OBJECT) {
 	}
 
 //	Now, make laser spread out.
-vLaserDir = m.fVec;
+vLaserDir = viewP->fVec;
 if (spreadr || spreadu) {
-	VmVecScaleInc (&vLaserDir, &m.rVec, spreadr);
-	VmVecScaleInc (&vLaserDir, &m.uVec, spreadu);
+	VmVecScaleInc (&vLaserDir, &viewP->rVec, spreadr);
+	VmVecScaleInc (&vLaserDir, &viewP->uVec, spreadu);
 	}
 if (bLaserOffs)
-	VmVecScaleInc (&vLaserDir, &m.uVec, LASER_OFFS);
+	VmVecScaleInc (&vLaserDir, &viewP->uVec, LASER_OFFS);
 nObject = CreateNewLaser (&vLaserDir, &vLaserPos, nLaserSeg, OBJ_IDX (objP), laserType, bMakeSound);
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (laserType == OMEGA_ID)
