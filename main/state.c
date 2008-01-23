@@ -1572,10 +1572,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		else if (!gameData.multiplayer.nLocalPlayer)
 			gameData.multiplayer.nLocalPlayer = nServerPlayer;
 		}
+#if 0
 	memcpy (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node, 
 			 IpxGetMyLocalAddress (), 6);
-	* ((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
-		htons (* ((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
+	*((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)) = 
+		htons (*((ushort *) (netPlayers.players [gameData.multiplayer.nLocalPlayer].network.ipx.node + 4)));
+#endif
 	}
 *pnOtherObjNum = nOtherObjNum;
 *pnServerObjNum = nServerObjNum;
@@ -1590,11 +1592,24 @@ void StateGetConnectedPlayers (tPlayer *restoredPlayers, int nPlayers)
 
 for (i = 0; i < nPlayers; i++) {
 	for (j = 0; j < nPlayers; j++) {
-      if ((!stricmp (restoredPlayers [i].callsign, gameData.multiplayer.players [j].callsign)) && 
-			 gameData.multiplayer.players [j].connected) {
-			restoredPlayers [i].connected = 1;
-			break;
+		if (!stricmp (restoredPlayers [i].callsign, gameData.multiplayer.players [j].callsign)) {
+			if (gameData.multiplayer.players [j].connected) {
+				if (gameStates.multi.nGameType == UDP_GAME) {
+					memcpy (restoredPlayers [i].netAddress, gameData.multiplayer.players [j].netAddress, 
+							  sizeof (gameData.multiplayer.players [j].netAddress));
+					memcpy (netPlayers.players [i].network.ipx.node, gameData.multiplayer.players [j].netAddress, 
+							  sizeof (gameData.multiplayer.players [j].netAddress));
+					}
+				restoredPlayers [i].connected = 1;
+				break;
+				}
 			}
+		}
+	}
+for (i = 0; i < MAX_PLAYERS; i++) {
+	if (!restoredPlayers [i].connected) {
+		memset (restoredPlayers [i].netAddress, 0xFF, sizeof (restoredPlayers [i].netAddress));
+		memset (netPlayers.players [i].network.ipx.node, 0xFF, sizeof (netPlayers.players [i].network.ipx.node));
 		}
 	}
 memcpy (gameData.multiplayer.players, restoredPlayers, sizeof (tPlayer) * nPlayers);
@@ -2145,8 +2160,10 @@ if (IsMultiGame) {
 	nPlayers = CFReadInt (cfp);
 	nSavedLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	gameData.multiplayer.nLocalPlayer = CFReadInt (cfp);
-	for (i = 0; i < nPlayers; i++)
+	for (i = 0; i < nPlayers; i++) {
 		StateRestorePlayer (restoredPlayers + i, cfp);
+		restoredPlayers [i].connected = 0;
+		}
 	DBG (fPos = CFTell (cfp));
 	// make sure the current game host is in tPlayer slot #0
 	nServerPlayer = StateSetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);

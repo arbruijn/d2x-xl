@@ -3497,21 +3497,21 @@ n_left = (n_players <= 4) ? n_players : (n_players+1)/2;
 //Assert (GAME_FONT->ftHeight==5 && GAME_FONT->ftWidth==7);
 fth = GAME_FONT->ftHeight;
 x0 = LHX (1); 
-x1 = (gameData.app.nGameMode & GM_MULTI_COOP) ? LHX (31) : LHX (43);
+x1 = (IsCoopGame) ? LHX (43) : LHX (43);
 save_y = y = grdCurCanv->cv_h - n_left* (fth+1);
 if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	save_y = y -= LHX (6);
-	x1 = (gameData.app.nGameMode & GM_MULTI_COOP) ? LHX (33) : LHX (43);
+	x1 = (IsCoopGame) ? LHX (43) : LHX (43);
 	}
 if (gameStates.render.cockpit.bShowPingStats) {
 	if (faw < 0)
 		faw = get_fontTotal_width (GAME_FONT) / (GAME_FONT->ftMaxChar - GAME_FONT->ftMinChar + 1);
 		if (gameData.multigame.kills.bShowList == 2)
-			xo = faw*24;//was +25;
-		else if (gameData.app.nGameMode & GM_MULTI_COOP)
-			xo = faw*14;//was +30;
+			xo = faw * 24;//was +25;
+		else if (IsCoopGame)
+			xo = faw * 14;//was +30;
 		else
-			xo = faw*8; //was +20;
+			xo = faw * 8; //was +20;
 	}
 for (i = 0; i < n_players; i++) {
 	int nPlayer;
@@ -3539,7 +3539,7 @@ for (i = 0; i < n_players; i++) {
 		if (gameData.multiplayer.players [nPlayer].connected != 1)
 			GrSetFontColorRGBi (RGBA_PAL2 (12, 12, 12), 1, 0, 0);
 		else {
-			if (gameData.app.nGameMode & GM_TEAM)
+			if (IsTeamGame)
 				color = GetTeam (nPlayer);
 			else
 				color = nPlayer;
@@ -3604,7 +3604,7 @@ for (i = 0; i < n_players; i++) {
 		}
 	nIdKillList [0][i] = GrPrintF (nIdKillList [0] + i, x0 + indent, y, "%s", name);
 
-	if (gameData.multigame.kills.bShowList==2) {
+	if (gameData.multigame.kills.bShowList == 2) {
 		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, TXT_NOT_AVAIL);
 		else
@@ -3621,7 +3621,7 @@ for (i = 0; i < n_players; i++) {
 		else
 			nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d", gameData.multigame.kills.nTeam [i]);
 		}
-	else if (gameData.app.nGameMode & GM_MULTI_COOP)
+	else if (IsCoopGame)
 		nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%-6d", gameData.multiplayer.players [nPlayer].score);
    else if (netGame.xPlayTimeAllowed || netGame.KillGoal)
       nIdKillList [1][i] = GrPrintF (nIdKillList [1] + i, x1, y, "%3d (%d)", 

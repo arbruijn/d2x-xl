@@ -239,7 +239,11 @@ if (bRegistered)
 bRegistered = 1;
 
 for (i = 0; i < 2; i++) {
-	if (!i) {	// i == 1: nostalgia/pure D2 mode
+	if (i) {	// i == 1: nostalgia/pure D2 mode
+		RP (extraGameInfo [i].loadout.nGuns, 0, 0);
+		RP (extraGameInfo [i].loadout.nDevices, 0, 0);
+		}
+	else {
 		RP (gameData.render.window.w, 0, 0);
 		RP (gameData.render.window.h, 0, 0);
 
@@ -351,9 +355,6 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].headlight.bAvailable, i, 0);
 		RP (extraGameInfo [i].headlight.bDrainPower, 0, 0);
 		RP (extraGameInfo [i].headlight.bBuiltIn, 0, 0);
-
-		RP (extraGameInfo [i].loadout.nGuns, 0, 0);
-		RP (extraGameInfo [i].loadout.nDevices, 0, 0);
 
 		RP (extraGameInfo [i].monsterball.nBonus, 0, 0);
 		RP (extraGameInfo [i].monsterball.nSizeMod, 0, 0);

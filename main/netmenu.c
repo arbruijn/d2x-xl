@@ -1041,7 +1041,7 @@ memset (m, 0, sizeof (m));
 ADD_TEXT (opt, TXT_GUN_LOADOUT, 0);
 opt++;
 for (i = 0, optGuns = opt; i < sizeofa (pszGuns); i++, opt++)
-	ADD_CHECK (opt, pszGuns [i], (extraGameInfo [1].loadout.nGuns & (i << 1)) != 0, 0, HTX_GUN_LOADOUT);
+	ADD_CHECK (opt, pszGuns [i], (extraGameInfo [1].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
 ADD_TEXT (opt, "", 0);
 opt++;
 ADD_TEXT (opt, TXT_DEVICE_LOADOUT, 0);
@@ -1509,6 +1509,10 @@ else if (!gameStates.app.bNostalgia && (optMBallOpts >= 0) && (choice == optMBal
 	}
 else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optConfigMenu)) {
 	ConfigMenu ();
+	goto doMenu;
+	}
+else if (!gameStates.app.bNostalgia && (optLoadoutOpts >= 0) && (choice == optLoadoutOpts)) {
+	NetworkLoadoutOptions ();
 	goto doMenu;
 	}
 else if (choice == optMission) {

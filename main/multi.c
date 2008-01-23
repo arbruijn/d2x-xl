@@ -2161,7 +2161,7 @@ if (!(gameData.app.nGameMode & GM_NETWORK) || (gameStates.multi.nGameType == UDP
 for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
 	nType = primaryWeaponToPowerup [nIndex];
 	if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << nIndex))
-		   gameData.multiplayer.powerupsInMine [(int)nType]++;
+	   gameData.multiplayer.powerupsInMine [(int)nType]++;
 	}
 for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 	nType = secondaryWeaponToPowerup [nIndex];
@@ -3114,13 +3114,13 @@ StateSaveAllSub (filename, desc, 0);
 void MultiRestoreGame (ubyte slot, uint id)
 {
 	char filename [128];
-	tPlayer saved_player;
+	tPlayer nSavedPlayer;
 	int nPlayer, i;
 	uint thisid;
 
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
-saved_player = LOCALPLAYER;
+nSavedPlayer = LOCALPLAYER;
 sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)

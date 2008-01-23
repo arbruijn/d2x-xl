@@ -558,41 +558,41 @@ MultiStripRobots (nPlayer);
 void NetworkNewPlayer (tSequencePacket *their)
 {
 	int	nObject;
-	int	pnum;
+	int	nPlayer;
 
-pnum = their->player.connected;
-Assert (pnum >= 0);
-Assert (pnum < gameData.multiplayer.nMaxPlayers);        
-nObject = gameData.multiplayer.players [pnum].nObject;
+nPlayer = their->player.connected;
+Assert (nPlayer >= 0);
+Assert (nPlayer < gameData.multiplayer.nMaxPlayers);        
+nObject = gameData.multiplayer.players [nPlayer].nObject;
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordMultiConnect (pnum, pnum == gameData.multiplayer.nPlayers, their->player.callsign);
-memcpy (gameData.multiplayer.players [pnum].callsign, their->player.callsign, CALLSIGN_LEN+1);
-memcpy (netPlayers.players [pnum].callsign, their->player.callsign, CALLSIGN_LEN+1);
+	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
+memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
+memcpy (netPlayers.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
 ClipRank ((char *) &their->player.rank);
-netPlayers.players [pnum].rank = their->player.rank;
-netPlayers.players [pnum].version_major = their->player.version_major;
-netPlayers.players [pnum].version_minor = their->player.version_minor;
-NetworkCheckForOldVersion ((char) pnum);
+netPlayers.players [nPlayer].rank = their->player.rank;
+netPlayers.players [nPlayer].version_major = their->player.version_major;
+netPlayers.players [nPlayer].version_minor = their->player.version_minor;
+NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if ((* (uint *)their->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			their->player.network.ipx.server, 
 			their->player.network.ipx.node, 
-			gameData.multiplayer.players [pnum].netAddress);
+			gameData.multiplayer.players [nPlayer].netAddress);
 	else
-		memcpy (gameData.multiplayer.players [pnum].netAddress, their->player.network.ipx.node, 6);
+		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.ipx.node, 6);
 	}
-memcpy (&netPlayers.players [pnum].network, &their->player.network, sizeof (network_info));
-gameData.multiplayer.players [pnum].nPacketsGot = 0;
-gameData.multiplayer.players [pnum].connected = 1;
-gameData.multiplayer.players [pnum].netKillsTotal = 0;
-gameData.multiplayer.players [pnum].netKilledTotal = 0;
-memset (gameData.multigame.kills.matrix [pnum], 0, MAX_PLAYERS*sizeof (short)); 
-gameData.multiplayer.players [pnum].score = 0;
-gameData.multiplayer.players [pnum].flags = 0;
-gameData.multiplayer.players [pnum].nKillGoalCount=0;
-if (pnum == gameData.multiplayer.nPlayers) {
+memcpy (&netPlayers.players [nPlayer].network, &their->player.network, sizeof (network_info));
+gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
+gameData.multiplayer.players [nPlayer].connected = 1;
+gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
+gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
+memset (gameData.multigame.kills.matrix [nPlayer], 0, MAX_PLAYERS*sizeof (short)); 
+gameData.multiplayer.players [nPlayer].score = 0;
+gameData.multiplayer.players [nPlayer].flags = 0;
+gameData.multiplayer.players [nPlayer].nKillGoalCount=0;
+if (nPlayer == gameData.multiplayer.nPlayers) {
 	gameData.multiplayer.nPlayers++;
 	netGame.nNumPlayers = gameData.multiplayer.nPlayers;
 	}
@@ -602,7 +602,7 @@ if (gameOpts->multi.bNoRankings)
 	HUDInitMessage ("'%s' %s\n", their->player.callsign, TXT_JOINING);
 else   
    HUDInitMessage ("%s'%s' %s\n", pszRankStrings [their->player.rank], their->player.callsign, TXT_JOINING);
-MultiMakeGhostPlayer (pnum);
+MultiMakeGhostPlayer (nPlayer);
 MultiSendScore ();
 MultiSortKillList ();
 //      CreatePlayerAppearanceEffect (&gameData.objs.objects [nObject]);
@@ -617,11 +617,11 @@ fix RefuseTimeLimit=0;
 void NetworkWelcomePlayer (tSequencePacket *their)
 {
 	// Add a tPlayer to a game already in progress
-	ubyte local_address [6];
+	ubyte newAddress [6], anyAddress [6];
 	int nPlayer;
 	int i;
 
-bWaitForRefuseAnswer=0;
+bWaitForRefuseAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((their->player.version_minor & 0x0F) < 3) {
 		NetworkDumpPlayer (
@@ -684,27 +684,39 @@ nPlayer = -1;
 memset (&networkData.playerRejoining, 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if ((* (uint *)their->player.network.ipx.server) != 0)
+	if ((*(uint *)their->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			their->player.network.ipx.server, 
 			their->player.network.ipx.node, 
-			local_address);
+			newAddress);
 	else
-		memcpy (local_address, their->player.network.ipx.node, 6);
+		memcpy (newAddress, their->player.network.ipx.node, 6);
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameStates.multi.nGameType == IPX_GAME) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, local_address, 6) &&
+		if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, 6) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, their->player.callsign)) {
 			nPlayer = i;
 			break;
 			}
 		}
 	else if (gameStates.multi.nGameType == UDP_GAME) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, local_address, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
+		if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
 			 !stricmp (gameData.multiplayer.players [i].callsign, their->player.callsign)) {
 			nPlayer = i;
-			memcpy (gameData.multiplayer.players [i].netAddress, local_address, 6);
+			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
+			break;
+			}
+		}
+	}
+if ((nPlayer == -1) && (gameStates.multi.nGameType == UDP_GAME)) {
+	memset (&anyAddress, 0xFF, sizeof (newAddress));
+	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
+			 !stricmp (gameData.multiplayer.players [i].callsign, their->player.callsign)) {
+			nPlayer = i;
+			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
+			memcpy (netPlayers.players [i].network.ipx.node, newAddress, 6);
 			break;
 			}
 		}
@@ -715,7 +727,7 @@ if (nPlayer == -1) {
 		  (gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers)) {
 		// Add tPlayer in an open slot, game not full yet
 		nPlayer = gameData.multiplayer.nPlayers;
-		if (gameData.app.nGameMode & GM_TEAM)
+		if (IsTeamGame)
 			ChoseTeam (nPlayer);
 		networkData.bPlayerAdded = 1;
 		}
@@ -774,10 +786,11 @@ else {
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nPlayer].rank], gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nPlayer].rank], 
+							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
-gameData.multiplayer.players [nPlayer].nKillGoalCount=0;
-gameData.multiplayer.players [nPlayer].connected=0;
+gameData.multiplayer.players [nPlayer].nKillGoalCount = 0;
+gameData.multiplayer.players [nPlayer].connected = 0;
 // Send updated gameData.objs.objects data to the new/returning tPlayer
 networkData.playerRejoining = *their;
 networkData.playerRejoining.player.connected = nPlayer;
@@ -2746,7 +2759,7 @@ LOCALPLAYER.connected = 1;
 netPlayers.players [gameData.multiplayer.nLocalPlayer].connected = 1;
 netPlayers.players [gameData.multiplayer.nLocalPlayer].rank=GetMyNetRanking ();
 if (!networkData.bRejoined) {
-	int	j, bGotTeamSpawnPos = (gameData.app.nGameMode & GM_TEAM) && GotTeamSpawnPos ();
+	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (bGotTeamSpawnPos) {
 			j = TeamSpawnPos (i);
@@ -2775,7 +2788,7 @@ d_srand (TimerGetFixedSeconds ());
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	if (gameData.multiplayer.players [i].connected)
 		gameData.multiplayer.players [i].connected = 1; // Get rid of endlevel connect statuses
-	if (gameData.app.nGameMode & GM_MULTI_COOP)
+	if (IsCoopGame)
 		netGame.locations [i] = i;
 	else {
 		do {
