@@ -215,14 +215,13 @@ void TransformHitbox (tObject *objP, vmsVector *vPos, int iSubObj)
 	tHitbox			*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes + iSubObj;
 	tQuad				*pf = phb->faces;
 	vmsVector		rotVerts [8];
-	vmsMatrix		m;
+	vmsMatrix		*viewP = ObjectView (objP);
 	int				i, j;
 
 if (!vPos)
 	vPos = &objP->position.vPos;
-VmCopyTransposeMatrix (&m, &objP->position.mOrient);
 for (i = 0; i < 8; i++) {
-	VmVecRotate (rotVerts + i, phb->vertices + i, &m);
+	VmVecRotate (rotVerts + i, phb->vertices + i, viewP);
 	VmVecInc (rotVerts + i, vPos);
 	}
 for (i = 0; i < 6; i++, pf++) {
@@ -276,7 +275,7 @@ void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb)
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	tQuad			*pf;
 	vmsVector	rotVerts [8];
-	vmsMatrix	m;
+	vmsMatrix	*viewP = ObjectView (objP);
 	int			i, j, iModel, nModels;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
@@ -289,10 +288,9 @@ else {
 	}
 if (!vPos)
 	vPos = &objP->position.vPos;
-VmCopyTransposeMatrix (&m, &objP->position.mOrient);
 for (phb += iModel, pmhb += iModel; iModel <= nModels; iModel++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
-		VmVecRotate (rotVerts + i, pmhb->box.vertices + i, &m);
+		VmVecRotate (rotVerts + i, pmhb->box.vertices + i, viewP);
 		VmVecInc (rotVerts + i, vPos);
 		}
 	for (i = 0, pf = phb->faces; i < 6; i++, pf++) {

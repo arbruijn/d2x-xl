@@ -312,8 +312,6 @@ else {
 	fAlpha = 1.0f;
 	}
 if (bmi < 0) {
-	static int qqq = 0;
-	qqq++;
 	PageInAddonBitmap (bmi);
 	bmP = gameData.pig.tex.addonBitmaps - bmi - 1;
 #ifdef _DEBUG
@@ -325,8 +323,6 @@ else {
 	PIGGY_PAGE_IN (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
-if (!(bmP && bmP->bmTexBuf))
-	return;
 if ((bmi < 0) || ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BmOverride (bmP, iFrame);
@@ -334,7 +330,8 @@ if ((bmi < 0) || ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))) {
 	}
 else if (colorP && gameOpts->render.bDepthSort)
 	OglLoadBmTexture (bmP, 1, nTransp, 0);
-
+if (!(bmP && bmP->bmTexBuf))
+	return;
 if (colorP && (bmi >= 0))
 	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));
 
@@ -430,17 +427,18 @@ extern fix MaxThrust;
 
 //------------------------------------------------------------------------------
 //do special cloaked render
-void DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
+int DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
 	fix	xCloakDeltaTime, xTotalCloakedTime;
 	fix	xLightScale = F1_0;
 	int	nCloakValue = 0;
 	int	bFading = 0;		//if true, bFading, else cloaking
+	int	bOk = 0;
 	fix	xCloakFadeinDuration = F1_0;
 	fix	xCloakFadeoutDuration = F1_0;
 
 if (gameStates.render.bQueryCoronas)
-	return;
+	return 1;
 if (xCloakStartTime != 0x7fffffff)
 	xTotalCloakedTime = xCloakEndTime - xCloakStartTime;
 else 
@@ -497,14 +495,14 @@ if (bFading) {
 	xNewLight = FixMul (light, xLightScale);
 	xSaveGlow = glow [0];
 	glow [0] = FixMul (glow [0], xLightScale);
-	DrawPolygonModel (objP, &objP->position.vPos, 
-							&objP->position.mOrient, 
-							(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
-							objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
-							xNewLight, 
-							glow, 
-							nAltTextures, 
-							NULL);
+	bOk = DrawPolygonModel (objP, &objP->position.vPos, 
+									&objP->position.mOrient, 
+									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
+									xNewLight, 
+									glow, 
+									nAltTextures, 
+									NULL);
 		glow [0] = xSaveGlow;
 	}
 else {
@@ -512,18 +510,19 @@ else {
 	gameStates.render.grAlpha = (float) nCloakValue;
 	GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
-	DrawPolygonModel (objP, &objP->position.vPos, 
-						   &objP->position.mOrient, 
-							(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
-							objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
-							light, 
-							glow, 
-							NULL, 
-							NULL);
+	bOk = DrawPolygonModel (objP, &objP->position.vPos, 
+									&objP->position.mOrient, 
+									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
+									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
+									light, 
+									glow, 
+									NULL, 
+									NULL);
 	G3SetSpecialRender (NULL, NULL, NULL);
 	gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
 	gameStates.render.bCloaked = 0;
 	}
+return bOk;
 }
 
 //------------------------------------------------------------------------------
@@ -569,7 +568,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 //draw an tObject which renders as a polygon model
-void DrawPolygonObject (tObject *objP, int bDepthSort)
+int DrawPolygonObject (tObject *objP, int bDepthSort)
 {
 	fix xLight;
 	int imSave;
@@ -578,12 +577,13 @@ void DrawPolygonObject (tObject *objP, int bDepthSort)
 	int bBrightPolys = 0;
 	int bCloaked;
 	int bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
+	int bOk = 0;
 
 #if SHADOWS
 if (FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
 	 (gameStates.render.nShadowPass == 3))
-	return;
+	return 1;
 #endif
 xLight = CalcObjectLight (objP, xEngineGlow);
 if (objP->nType == OBJ_PLAYER)
@@ -594,10 +594,10 @@ else
 	bCloaked = 0;
 if (bCloaked && bDepthSort) {
 	RIAddObject (objP);
-	return;
+	return 1;
 	}
 if (DrawHiresObject (objP, xLight, xEngineGlow))
-	return;
+	return 1;
 gameStates.render.bBrightObject = bEnergyWeapon;
 gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
 imSave = gameStates.render.nInterpolationMethod;
@@ -617,28 +617,28 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 #endif
 	for (i = 0; i < 12; i++)		//fill whole array, in case simple model needs more
 		bmiP [i] = bm;
-	DrawPolygonModel (objP, &objP->position.vPos, 
-							&objP->position.mOrient, 
-							(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
-							objP->rType.polyObjInfo.nModel, 
-							objP->rType.polyObjInfo.nSubObjFlags, 
-							xLight, 
-							xEngineGlow, 
-							bmiP, 
-							NULL);
+	bOk = DrawPolygonModel (objP, &objP->position.vPos, 
+									&objP->position.mOrient, 
+									(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
+									objP->rType.polyObjInfo.nModel, 
+									objP->rType.polyObjInfo.nSubObjFlags, 
+									xLight, 
+									xEngineGlow, 
+									bmiP, 
+									NULL);
 }
 else {
 	if ((objP->nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
-		DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [objP->id].cloakTime, 
-								 gameData.multiplayer.players [objP->id].cloakTime + CLOAK_TIME_MAX);
+		bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [objP->id].cloakTime, 
+										 gameData.multiplayer.players [objP->id].cloakTime + CLOAK_TIME_MAX);
 	else if ((objP->nType == OBJ_ROBOT) && (objP->cType.aiInfo.CLOAKED)) {
 		if (ROBOTINFO (objP->id).bossFlag) {
 			int i = FindBoss (OBJ_IDX (objP));
 			if (i >= 0)
-				DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
+				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
 			}
 		else
-			DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - F1_0 * 10, gameData.time.xGame + F1_0 * 10);
+			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - F1_0 * 10, gameData.time.xGame + F1_0 * 10);
 		}
 	else {
 		tBitmapIndex *bmiAltTex = NULL;
@@ -660,7 +660,7 @@ else {
 		if (bBlendPolys) {
 			fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
 			if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
-				DrawPolygonModel (
+				bOk = DrawPolygonModel (
 					objP, &objP->position.vPos, &objP->position.mOrient, 
 					(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
 					gameData.weapons.info [objP->id].nInnerModel, 
@@ -674,7 +674,7 @@ else {
 			gameStates.render.grAlpha = 4 * (float) GR_ACTUAL_FADE_LEVELS / 5;
 		else if (!bBlendPolys)
 			gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;
-		DrawPolygonModel (
+		bOk = DrawPolygonModel (
 			objP, &objP->position.vPos, &objP->position.mOrient, 
 			objP->rType.polyObjInfo.animAngles, 
 			objP->rType.polyObjInfo.nModel, 
@@ -693,6 +693,7 @@ else {
 gameStates.render.nInterpolationMethod = imSave;
 gameStates.render.bBrightObject = 0;
 gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
+return bOk;
 }
 
 // -----------------------------------------------------------------------------
@@ -880,22 +881,23 @@ switch (objP->renderType) {
 				else
 					gameData.models.nScale = 3 * F1_0 / 2;
 				RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
-				DrawPolygonObject (objP, bDepthSort);
-				gameData.models.nScale = 0;
-				objP->mType.physInfo.mass = F1_0;
-				objP->mType.physInfo.drag = 512;
-				if (gameOpts->render.powerups.nSpin != 
-					((objP->mType.physInfo.rotVel.p.y | objP->mType.physInfo.rotVel.p.z) != 0))
-					objP->mType.physInfo.rotVel.p.y = 
-					objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+				if (!DrawPolygonObject (objP, bDepthSort))
+					ConvertWeaponToPowerup (objP);
+				else {
+					gameData.models.nScale = 0;
+					objP->mType.physInfo.mass = F1_0;
+					objP->mType.physInfo.drag = 512;
+					if (gameOpts->render.powerups.nSpin != 
+						((objP->mType.physInfo.rotVel.p.y | objP->mType.physInfo.rotVel.p.z) != 0))
+						objP->mType.physInfo.rotVel.p.y = 
+						objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
+					}
 				}
 			else
 				ConvertWeaponToPowerup (objP);
 			}
 		else if (objP->nType == OBJ_HOSTAGE) {
-			if (!gameStates.app.bNostalgia && gameOpts->render.powerups.b3D)
-				DrawPolygonObject (objP, bDepthSort);
-			else
+			if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort)))
 				ConvertModelToHostage (objP);
 			}
 		else {

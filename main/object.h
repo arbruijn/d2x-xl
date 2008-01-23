@@ -527,6 +527,7 @@ void InitGateIntervals (void);
 int CountPlayerObjects (int nPlayer, int nType, int nId);
 void FixObjectSizes (void);
 void DoSlowMotionFrame (void);
+vmsMatrix *ObjectView (tObject *objP);
 
 vmsVector *PlayerSpawnPos (int nPlayer);
 vmsMatrix *PlayerSpawnOrient (int nPlayer);

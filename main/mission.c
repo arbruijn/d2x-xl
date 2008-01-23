@@ -975,7 +975,7 @@ return 0;		//couldn't ffs mission
 //------------------------------------------------------------------------------
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int FindMissionByName(char *szMissionName, int nSubFolder)
+int FindMissionByName (char *szMissionName, int nSubFolder)
 {
 	int n,i,j;
 

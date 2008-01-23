@@ -273,10 +273,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void DeleteMarker (void)
+void DeleteMarker (int bForce)
 {
 if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
-	if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
+	if (bForce || !ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
 		int	h, i;
 		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
 		i = LastMarker ();

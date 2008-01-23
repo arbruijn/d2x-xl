@@ -15,7 +15,7 @@ void TransformHitboxf (tObject *objP, fVector *vertList, int iSubObj);
 void RenderHitbox (tObject *objP, float red, float green, float blue, float alpha);
 #endif
 int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob);
-void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona);
+void RenderObjectHalo (vmsVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona);
 void RenderPowerupCorona (tObject *objP, float red, float green, float blue, float alpha);
 void RenderPlayerShield (tObject *objP);
 void RenderRobotShield (tObject *objP);

@@ -885,6 +885,8 @@ else if (nType == OBJ_CNTRLCEN)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)
 	nType = nType;
+else if (nType == OBJ_PLAYER)
+	nType = nType;
 else
 #endif
 if (nType == OBJ_POWERUP) {
@@ -1947,6 +1949,7 @@ int UpdateAllObjects ()
 
 //	check_duplicateObjects ();
 //	RemoveIncorrectObjects ();
+gameData.objs.nFrameCount++;
 if (gameData.objs.nLastObject > gameData.objs.nMaxUsedObjects)
 	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible tObject slots.
 #if LIMIT_PHYSICS_FPS
@@ -2551,6 +2554,19 @@ vmsMatrix *PlayerSpawnOrient (int nPlayer)
 	tObject	*markerP = SpawnMarkerObject (nPlayer);
 
 return markerP ? &markerP->position.mOrient : &gameData.multiplayer.playerInit [nPlayer].position.mOrient;
+}
+
+//------------------------------------------------------------------------------
+
+vmsMatrix *ObjectView (tObject *objP)
+{
+	tObjectViewData	*viewP = gameData.objs.viewData + OBJ_IDX (objP);
+
+if (viewP->nFrame != gameData.objs.nFrameCount) {
+	VmCopyTransposeMatrix (&viewP->mView, &objP->position.mOrient);
+	viewP->nFrame = gameStates.render.nFrameCount;
+	}
+return &viewP->mView;
 }
 
 //------------------------------------------------------------------------------

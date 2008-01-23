@@ -56,16 +56,15 @@ void DoCountdownFrame ();
 void CalcReactorGunPoint (vmsVector *gun_point, vmsVector *vGunDir, tObject *objP, int gun_num)
 {
 	tReactorProps	*props;
-	vmsMatrix		m;
+	vmsMatrix		*viewP = ObjectView (objP);
 
 Assert (objP->nType == OBJ_CNTRLCEN);
 Assert (objP->renderType == RT_POLYOBJ);
 props = &gameData.reactor.props [objP->id];
 //instance gun position & orientation
-VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-VmVecRotate (gun_point, &props->gunPoints [gun_num], &m);
+VmVecRotate (gun_point, &props->gunPoints [gun_num], viewP);
 VmVecInc (gun_point, &objP->position.vPos);
-VmVecRotate (vGunDir, &props->gun_dirs [gun_num], &m);
+VmVecRotate (vGunDir, &props->gun_dirs [gun_num], viewP);
 }
 
 //	-----------------------------------------------------------------------------

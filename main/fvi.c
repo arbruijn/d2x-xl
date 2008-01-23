@@ -923,7 +923,7 @@ fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 								 tObject *thisObjP, tObject *otherObjP)
 {
 	fix			size, dist;
-	vmsVector	hitP, v0, v1, vn;
+	vmsVector	hitP, v0, v1, vn, vPos;
 	int			bThisPoly, bOtherPoly;
 
 if (rad < 0)
@@ -940,7 +940,9 @@ else {
 	}
 
 	// check hit sphere collisions
-if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &thisObjP->position.vPos, size + rad)))
+VmVecRotate (&vPos, gameData.models.offsets + thisObjP->rType.polyObjInfo.nModel, ObjectView (thisObjP));
+VmVecInc (&vPos, &thisObjP->position.vPos);
+if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &vPos, 2 * size + rad)))
 	return 0;
 
 bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [thisObjP->id]);

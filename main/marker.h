@@ -21,7 +21,7 @@ void DropMarker (char nPlayerMarker);
 void DropBuddyMarker (tObject *objP);
 void DropSpawnMarker (void);
 void DrawMarkers (void);
-void DeleteMarker (void);
+void DeleteMarker (int bForce);
 void ClearMarkers (void);
 int LastMarker (void);
 void InitMarkerInput (void);

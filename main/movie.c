@@ -937,7 +937,6 @@ return 0;    //couldn't find it
 //sets the file position to the start of this already-open file
 int ResetMovieFile (CFILE *cfp)
 {
-Assert (cfp == &cfMovies);
 CFSeek (cfp, nMovieStart, SEEK_SET);
 return 0;       //everything is cool
 }

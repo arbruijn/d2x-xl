@@ -164,8 +164,8 @@ if (!(bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame)))
 	return NULL;
 if (BM_FRAMECOUNT (bmP) < 2)
 	return NULL;
+OglLoadBmTexture (bmP, 1, 3, 1);
 if (gameOpts->ogl.bGlTexMerge) {
-	OglLoadBmTexture (bmP, 1, 3, 1);
 	pBitmaps = bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.pBitmaps;
 	for (i = 0; i < nFrames; i++) {
 		j = BM_INDEX (frameP, i, bIndirect, bObject);
@@ -180,7 +180,6 @@ if (gameOpts->ogl.bGlTexMerge) {
 else {
 	grsBitmap *bmfP, *hbmP;
 
-	OglLoadBmTexture (bmP, 1, 3, 1);
 #ifdef _DEBUG
 	if (!BM_FRAMES (bmP))
 		OglLoadBmTexture (bmP, 1, 3, 1);
@@ -301,13 +300,20 @@ xEffectTime += gameData.time.xFrame;
 		ft = EffectFrameTime (ecP);
 		nFrames = ecP->vc.nFrameCount;
 		if (ecP->flags & EF_ALTFMT) {
-			bmP = SetupHiresAnim ((short *) ecP->vc.frames, nFrames, t, 0, 1, &nFrames);
-			if (!bmP)
-				ecP->flags &= ~EF_ALTFMT;
-			else if (!gameOpts->ogl.bGlTexMerge)
-				ecP->flags &= ~EF_ALTFMT;
-			else
-				ecP->flags |= EF_INITIALIZED;
+			if (ecP->flags & EF_INITIALIZED) {
+				bmP = BM_OVERRIDE (gameData.pig.tex.pBitmaps + ecP->vc.frames [0].index);
+				if (gameOpts->ogl.bGlTexMerge)
+					nFrames = ((bmP->bmType != BM_TYPE_ALT) && BM_PARENT (bmP)) ? BM_FRAMECOUNT (BM_PARENT (bmP)) : BM_FRAMECOUNT (bmP);
+				}
+			else {
+   			bmP = SetupHiresAnim ((short *) ecP->vc.frames, nFrames, t, 0, 1, &nFrames);
+	   		if (!bmP)
+		   		ecP->flags &= ~EF_ALTFMT;
+			   else if (!gameOpts->ogl.bGlTexMerge)
+				   ecP->flags &= ~EF_ALTFMT;
+   			else
+	   			ecP->flags |= EF_INITIALIZED;
+	   		}
 			}
 		while (ft && (ecP->time_left < 0)) {
 			ecP->time_left += ft;

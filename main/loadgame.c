@@ -195,7 +195,7 @@ void VerifyConsoleObject ()
 
 //------------------------------------------------------------------------------
 
-int count_number_ofRobots ()
+int CountRobotsInLevel ()
 {
 	int robotCount;
 	int i;
@@ -211,7 +211,7 @@ int count_number_ofRobots ()
 
 //------------------------------------------------------------------------------
 
-int count_number_of_hostages ()
+int CountHostagesInLevel ()
 {
 	int count;
 	int i;
@@ -409,9 +409,9 @@ if (!networkData.bRejoined) {
 	}
 LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.numKillsLevel = 0;
-LOCALPLAYER.numRobotsLevel = count_number_ofRobots ();
+LOCALPLAYER.numRobotsLevel = CountRobotsInLevel ();
 LOCALPLAYER.numRobotsTotal += LOCALPLAYER.numRobotsLevel;
-LOCALPLAYER.hostagesLevel = count_number_of_hostages ();
+LOCALPLAYER.hostagesLevel = CountHostagesInLevel ();
 LOCALPLAYER.hostagesTotal += LOCALPLAYER.hostagesLevel;
 LOCALPLAYER.hostages_on_board = 0;
 if (!bSecret) {
@@ -421,7 +421,7 @@ if (!bSecret) {
 	LOCALPLAYER.cloakTime = 0;
 	LOCALPLAYER.invulnerableTime = 0;
 	if (IsMultiGame && !IsCoopGame) {
-		if ((gameData.app.nGameMode & GM_TEAM) && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
+		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
 			LOCALPLAYER.flags |= KEY_GOLD | TEAMKEY (gameData.multiplayer.nLocalPlayer);
 		else
 			LOCALPLAYER.flags |= (KEY_BLUE | KEY_RED | KEY_GOLD);
@@ -451,7 +451,7 @@ gameData.objs.missileViewer = NULL;
 extern	void InitAIForShip (void);
 
 // Setup tPlayer for a brand-new ship
-void InitPlayerStatsNewShip ()
+void InitPlayerStatsNewShip (void)
 {
 	int	i;
 
@@ -494,8 +494,14 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bDarkness)
-	LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
+if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1]) {
+	LOCALPLAYER.primaryWeaponFlags  |= extraGameInfo [1].loadout.nGuns;
+	if (extraGameInfo [1].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
+		LOCALPLAYER.primaryAmmo [1] = i2f (5000) / VULCAN_AMMO_SCALE;
+	LOCALPLAYER.flags |= extraGameInfo [1].loadout.nDevices;
+	if (extraGameInfo [1].bDarkness)
+		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
+	}
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
 gameStates.app.bPlayerIsDead = 0;		//tPlayer no longer dead
@@ -1183,11 +1189,13 @@ if (TactileStick)
 	//	Compute level tPlayer is on, deal with secret levels (negative numbers)
 nMineLevel = LOCALPLAYER.level;
 if (nMineLevel < 0)
-	nMineLevel *= - (gameData.missions.nLastLevel/gameData.missions.nSecretLevels);
-nLevelPoints = LOCALPLAYER.score-LOCALPLAYER.last_score;
+	nMineLevel *= - (gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
+else if (nMineLevel == 0)
+	nMineLevel = 1;
+nLevelPoints = LOCALPLAYER.score - LOCALPLAYER.last_score;
 if (!gameStates.app.cheats.bEnabled) {
 	if (gameStates.app.nDifficultyLevel > 1) {
-		nSkillPoints = nLevelPoints* (gameStates.app.nDifficultyLevel)/4;
+		nSkillPoints = nLevelPoints * (gameStates.app.nDifficultyLevel) / 4;
 		nSkillPoints -= nSkillPoints % 100;
 		}
 	else
@@ -1534,6 +1542,29 @@ else
 
 //------------------------------------------------------------------------------
 
+void PlayLevelMovie (char *pszExt)
+{
+	char szFilename [FILENAME_LEN];
+
+PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, pszExt), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
+}
+
+//------------------------------------------------------------------------------
+
+void PlayLevelIntroMovie (void)
+{
+PlayLevelMovie (".mvi");
+}
+
+//------------------------------------------------------------------------------
+
+void PlayLevelExtroMovie (void)
+{
+PlayLevelMovie (".mvx");
+}
+
+//------------------------------------------------------------------------------
+
 #define MOVIE_REQUIRED 1
 
 void show_order_form ();
@@ -1542,8 +1573,6 @@ extern void com_hangup (void);
 //called when the tPlayer has finished the last level
 void DoEndGame (void)
 {
-	char  szFilename [FILENAME_LEN];
-
 SetFunctionMode (FMODE_MENU);
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
@@ -1576,14 +1605,14 @@ if (!IsMultiGame) {
 			}
 		}
 	else {    //not multi
-		char tname [FILENAME_LEN];
-		PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, ".mvx"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
-		sprintf (tname, "%s.tex", gameStates.app.szCurrentMissionFile);
-		DoBriefingScreens (tname, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
+		char szBriefing [FILENAME_LEN];
+		PlayLevelExtroMovie ();
+		sprintf (szBriefing, "%s.tex", gameStates.app.szCurrentMissionFile);
+		DoBriefingScreens (szBriefing, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
 
 		//try doing special credits
-		sprintf (tname,"%s.ctb",gameStates.app.szCurrentMissionFile);
-		ShowCredits (tname);
+		sprintf (szBriefing,"%s.ctb",gameStates.app.szCurrentMissionFile);
+		ShowCredits (szBriefing);
 		}
 	}
 KeyFlush ();
@@ -1624,16 +1653,17 @@ if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	  extraGameInfo [IsMultiGame].bRotateLevels)) {
 	if (IsMultiGame)
 		MultiEndLevelScore ();	
-	else
-	// NOTE LINK TO ABOVE!!!
-	DoEndLevelScoreGlitz (0);		//give bonuses
+	else {
+		PlayLevelExtroMovie ();
+		DoEndLevelScoreGlitz (0);		//give bonuses
+		}
 	}
 gameData.reactor.bDestroyed = 0;
 #ifdef EDITOR
 if (gameData.missions.nCurrentLevel == 0)
 	return;		//not a real level
 #endif
-if (gameData.app.nGameMode & GM_MULTI)	{
+if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
 		if (gameData.missions.nCurrentLevel != gameData.missions.nLastLevel)		//tPlayer has finished the game!
 			return;
@@ -1992,10 +2022,8 @@ void ShowLevelIntro (int nLevel)
 //if shareware, show a briefing?
 if (!IsMultiGame) {
 	int i, bPlayed = 0;
-	char szFilename [FILENAME_LEN];
 
-	if (PlayMovie (MakeLevelFilename (nLevel, szFilename, ".mvi"), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize))
-		return;
+	PlayLevelIntroMovie ();
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)
@@ -2039,9 +2067,9 @@ if (!IsMultiGame) {
 			DoBriefingScreens (gameData.missions.szBriefingFilename, nLevel);
 			}
 		else {
-			char tname [FILENAME_LEN];
-			sprintf (tname, "%s.tex", gameStates.app.szCurrentMissionFile);
-			DoBriefingScreens (tname, nLevel);
+			char szBriefing [FILENAME_LEN];
+			sprintf (szBriefing, "%s.tex", gameStates.app.szCurrentMissionFile);
+			DoBriefingScreens (szBriefing, nLevel);
 			}
 		}
 	}
@@ -2068,7 +2096,7 @@ void MaybeSetFirstSecretVisit (int nLevel)
 //	bSecret if came from a secret level
 int StartNewLevel (int nLevel, int bSecret)
 {
-	ThisLevelTime=0;
+	ThisLevelTime = 0;
 
 if ((nLevel > 0) && !bSecret)
 	MaybeSetFirstSecretVisit (nLevel);
@@ -2081,86 +2109,86 @@ return StartNewLevelSub (nLevel, 1, bSecret, 0);
 //initialize the tPlayer tObject position & orientation (at start of game, or new ship)
 void InitPlayerPosition (int bRandom)
 {
-	int bNewPlayer=0;
+	int bNewPlayer = 0;
 
-	if (!((gameData.app.nGameMode & GM_MULTI) && !(gameData.app.nGameMode&GM_MULTI_COOP))) // If not deathmatch
-		bNewPlayer = gameData.multiplayer.nLocalPlayer;
-	else if (bRandom == 1) {
-		tObject *pObj;
-		int spawnMap [MAX_NUM_NET_PLAYERS];
-		int nSpawnSegs = 0;
-		int i, closest = -1, trys = 0;
-		fix closestDist = 0x7ffffff, dist;
+if (!(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) // If not deathmatch
+	bNewPlayer = gameData.multiplayer.nLocalPlayer;
+else if (bRandom == 1) {
+	tObject *pObj;
+	int spawnMap [MAX_NUM_NET_PLAYERS];
+	int nSpawnSegs = 0;
+	int i, closest = -1, trys = 0;
+	fix closestDist = 0x7ffffff, dist;
 
 
-		for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
-			spawnMap [i] = i;
+	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
+		spawnMap [i] = i;
 
-		d_srand (SDL_GetTicks ());
+	d_srand (SDL_GetTicks ());
 
-		do {
-			trys++;
-			if (gameData.app.nGameMode & GM_TEAM) {
-				if (!nSpawnSegs) {
-					for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
-						spawnMap [i] = i;
-					nSpawnSegs = gameData.multiplayer.nPlayerPositions;
-					}
-				if (nSpawnSegs) {		//try to find a spawn location owned by the tPlayer's team
-					closestDist = 0;
-					i = d_rand () % nSpawnSegs;
-					bNewPlayer = spawnMap [i];
-					if (i < --nSpawnSegs)
-						spawnMap [i] = spawnMap [nSpawnSegs];
-					switch (gameData.multiplayer.playerInit [bNewPlayer].nSegType) {
-						case SEGMENT_IS_GOAL_RED:
-						case SEGMENT_IS_TEAM_RED:
-							if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_RED)
-								continue;
-							break;
-						case SEGMENT_IS_GOAL_BLUE:
-						case SEGMENT_IS_TEAM_BLUE:
-							if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_BLUE)
-								continue;
-							break;
-						default:
-							break;
-						}
+	do {
+		trys++;
+		if (gameData.app.nGameMode & GM_TEAM) {
+			if (!nSpawnSegs) {
+				for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
+					spawnMap [i] = i;
+				nSpawnSegs = gameData.multiplayer.nPlayerPositions;
+				}
+			if (nSpawnSegs) {		//try to find a spawn location owned by the tPlayer's team
+				closestDist = 0;
+				i = d_rand () % nSpawnSegs;
+				bNewPlayer = spawnMap [i];
+				if (i < --nSpawnSegs)
+					spawnMap [i] = spawnMap [nSpawnSegs];
+				switch (gameData.multiplayer.playerInit [bNewPlayer].nSegType) {
+					case SEGMENT_IS_GOAL_RED:
+					case SEGMENT_IS_TEAM_RED:
+						if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_RED)
+							continue;
+						break;
+					case SEGMENT_IS_GOAL_BLUE:
+					case SEGMENT_IS_TEAM_BLUE:
+						if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_BLUE)
+							continue;
+						break;
+					default:
+						break;
 					}
 				}
-			else {
-				bNewPlayer = d_rand () % gameData.multiplayer.nPlayerPositions;
-				}
-			closest = -1;
-			closestDist = 0x7fffffff;
-			for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-				if (i == gameData.multiplayer.nLocalPlayer)
-					continue;
-				pObj = gameData.objs.objects + gameData.multiplayer.players [i].nObject; 
-				if ((pObj->nType == OBJ_PLAYER))	{
-					dist = FindConnectedDistance (&pObj->position.vPos, 
-															 pObj->nSegment, 
-															 &gameData.multiplayer.playerInit [bNewPlayer].position.vPos, 
-															 gameData.multiplayer.playerInit [bNewPlayer].nSegment, 
-															 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
-					if ((dist < closestDist) && (dist >= 0))	{
-						closestDist = dist;
-						closest = i;
+			}
+		else {
+			bNewPlayer = d_rand () % gameData.multiplayer.nPlayerPositions;
+			}
+		closest = -1;
+		closestDist = 0x7fffffff;
+		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if (i == gameData.multiplayer.nLocalPlayer)
+				continue;
+			pObj = gameData.objs.objects + gameData.multiplayer.players [i].nObject; 
+			if ((pObj->nType == OBJ_PLAYER))	{
+				dist = FindConnectedDistance (&pObj->position.vPos, 
+															pObj->nSegment, 
+															&gameData.multiplayer.playerInit [bNewPlayer].position.vPos, 
+															gameData.multiplayer.playerInit [bNewPlayer].nSegment, 
+															10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
+				if ((dist < closestDist) && (dist >= 0))	{
+					closestDist = dist;
+					closest = i;
 					}
 				}
 			}
 		} while ((closestDist < i2f (15 * 20)) && (trys < MAX_NUM_NET_PLAYERS * 2));
 	}
-	else {
-		goto done; // If deathmatch and not random, positions were already determined by sync packet
+else {
+	goto done; // If deathmatch and not random, positions were already determined by sync packet
 	}
-	Assert (bNewPlayer >= 0);
-	Assert (bNewPlayer < gameData.multiplayer.nPlayerPositions);
+Assert (bNewPlayer >= 0);
+Assert (bNewPlayer < gameData.multiplayer.nPlayerPositions);
 
-	GetPlayerSpawn (bNewPlayer, gameData.objs.console);
+GetPlayerSpawn (bNewPlayer, gameData.objs.console);
 done:
-	ResetPlayerObject ();
-	ResetCruise ();
+ResetPlayerObject ();
+ResetCruise ();
 }
 
 //------------------------------------------------------------------------------

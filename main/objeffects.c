@@ -43,14 +43,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -----------------------------------------------------------------------------
 
-void RenderObjectHalo (tObject *objP, fix xSize, float red, float green, float blue, float alpha, int bCorona)
+void RenderObjectHalo (vmsVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona)
 {
 if (!bCorona)
 	bCorona = 0;
 if (gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
-	G3DrawSprite (&(OBJPOS (objP)->vPos), xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
+	G3DrawSprite (vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
 	glDepthMask (1);
 	}
 }
@@ -859,7 +859,7 @@ else if (bAfterburnerBlob || (gameOpts->render.bHiresModels && (objP->nType == O
 else if ((objP->nType == OBJ_PLAYER) || 
 			((objP->nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) || 
 			((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])) {
-	vmsMatrix	m;
+	vmsMatrix	m, *viewP;
 	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
 		pt = gameData.render.thrusters + objP->id;
 		ti.pp = GetPathPoint (&pt->path);
@@ -878,11 +878,14 @@ else if ((objP->nType == OBJ_PLAYER) ||
 		}
 	else {
 		tPosition *posP = OBJPOS (objP);
-		VmCopyTransposeMatrix (&m, &posP->mOrient);
+		if (SPECTATOR (objP))
+			VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
+		else
+			viewP = ObjectView (objP);
 		for (i = 0; i < nThrusters; i++) {
-			VmVecRotate (ti.vPos + i, ti.mtP->vPos + i, &m);
+			VmVecRotate (ti.vPos + i, ti.mtP->vPos + i, viewP);
 			VmVecInc (ti.vPos + i, &posP->vPos);
-			VmVecRotate (ti.vDir + i, ti.mtP->vDir + i, &m);
+			VmVecRotate (ti.vDir + i, ti.mtP->vDir + i, viewP);
 			}
 		ti.fSize = ti.mtP->fSize;
 		if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id] && (nThrusters > 1))

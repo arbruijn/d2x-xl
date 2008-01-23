@@ -974,18 +974,14 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 	playerP->nInvuls =
 	playerP->nCloaks = 0;
 	playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
-	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG)) {
-		if ((GetTeam (nPlayerId)==TEAM_RED))
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_BLUEFLAG);
-		else
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_REDFLAG);
-		}
+	if ((gameData.app.nGameMode & GM_CAPTURE) && (playerP->flags & PLAYER_FLAGS_FLAG))
+		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayerId) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
 #ifndef _DEBUG		
 		if (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))
 #endif
-		if ((gameData.app.nGameMode & GM_HOARD) || 
-		    ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.nVirusStability)) {
+		if (IsHoardGame || 
+		    (IsEntropyGame && extraGameInfo [1].entropy.nVirusStability)) {
 			// Drop hoard orbs
 		
 			int maxCount, i;

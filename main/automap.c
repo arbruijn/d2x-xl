@@ -815,7 +815,7 @@ while ((c = KeyInKey ())) {
 		break;
 
 		case KEY_D+KEY_CTRLED:
-			DeleteMarker ();
+			DeleteMarker (0);
 			break;
 
 		case KEY_ALTED + KEY_P:

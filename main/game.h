@@ -61,10 +61,12 @@ extern int ft_preference;
 #define GM_NORMAL       0       // You are in normal play mode, no multiplayer stuff
 #define GM_MULTI        38      // You are in some nType of multiplayer game
 
-#define IsMultiGame	((gameData.app.nGameMode & GM_MULTI) != 0)
-#define IsTeamGame	((gameData.app.nGameMode & GM_TEAM) != 0)
-#define IsCoopGame	((gameData.app.nGameMode & GM_MULTI_COOP) != 0)
-#define IsRobotGame	(!IsMultiGame || (gameData.app.nGameMode & (GM_MULTI_ROBOTS | GM_MULTI_COOP)))
+#define IsMultiGame		((gameData.app.nGameMode & GM_MULTI) != 0)
+#define IsTeamGame		((gameData.app.nGameMode & GM_TEAM) != 0)
+#define IsCoopGame		((gameData.app.nGameMode & GM_MULTI_COOP) != 0)
+#define IsRobotGame		(!IsMultiGame || (gameData.app.nGameMode & (GM_MULTI_ROBOTS | GM_MULTI_COOP)))
+#define IsHoardGame		((gameData.app.nGameMode & GM_HOARD) != 0)
+#define IsEntropyGame	((gameData.app.nGameMode & GM_ENTROPY) != 0)
 // Examples:
 // Deathmatch mode on a network is GM_NETWORK
 // Deathmatch mode via modem with robots is GM_MODEM | GM_MULTI_ROBOTS

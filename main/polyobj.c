@@ -642,7 +642,7 @@ return nTextures;
 //draw a polygon model
 extern int nInstanceDepth;
 
-void DrawPolygonModel (
+int DrawPolygonModel (
 	tObject			*objP, 
 	vmsVector		*pos, 
 	vmsMatrix		*orient, 
@@ -658,20 +658,20 @@ void DrawPolygonModel (
 	int			nTextures, bHires = 0;
 
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
-	return;
+	return 1;
 if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
 	if (!flags && (gameStates.render.nShadowPass != 2) && 
 		 (gameData.models.modelToOOF [0][nModel] || gameData.models.modelToOOF [1][nModel]))
 		bHires = 1;
 	else
-		return;
+		return 0;
 	}
 if (gameStates.render.nShadowPass == 2) {
 	if (!bHires) {
 		G3SetModelPoints (gameData.models.polyModelPoints);
 		G3DrawPolyModelShadow (objP, po->modelData, animAngles, nModel);
 		}
-	return;
+	return 1;
 	}
 nTextures = bHires ? 0 : LoadModelTextures (po, altTextures);
 gameStates.ogl.bUseTransform = 1;
@@ -680,7 +680,7 @@ gameData.render.pVerts = gameData.models.fPolyModelVerts;
 if (!flags)	{	//draw entire tObject
 	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color)) {
 		if (bHires)
-			return;
+			return 0;
 #ifdef _DEBUG
 		if (objP && (objP->nType == OBJ_ROBOT))
 			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color);
@@ -706,7 +706,7 @@ else {
 				VmVecNegate (&vOffset);
 				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color)) {
 					if (bHires)
-						return;
+						return 0;
 #ifdef _DEBUG
 					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color);
 #endif
@@ -739,6 +739,7 @@ glEnd ();
 glLineWidth (1);
 }
 #endif
+return 1;
 }
 
 //------------------------------------------------------------------------------

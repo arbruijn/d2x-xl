@@ -514,6 +514,7 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if SIMPLE_SPHERE
+glTranslatef (-pPos->x, -pPos->y, pPos->z);
 RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 #	if 1
@@ -600,14 +601,17 @@ if (gameData.render.shield.nFaces > 0)
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		float	fScale, r = f2fl (nSize);// * 1.05f;
 		tPosition *posP = OBJPOS (objP);
+		vmsVector vPos;
 		gameStates.ogl.bUseTransform = 1;
 		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
-		RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, &posP->vPos),
+		RenderSphere (&gameData.render.shield, (tOOF_vector *) OOF_VecVms2Oof (&p, gameData.models.offsets + objP->rType.polyObjInfo.nModel),
 						  r, r, r, red, green, blue, alpha, bmpShield, 1);
 		G3DoneInstance ();
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
-		RenderObjectHalo (objP, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
+		VmVecRotate (&vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
+		VmVecInc (&vPos, &objP->position.vPos);
+		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		}
 	}
 }

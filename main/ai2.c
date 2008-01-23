@@ -1535,7 +1535,7 @@ if (objP->cType.aiInfo.behavior == AIB_STILL)
 	return;
 r = d_rand ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
-Assert (ROBOTINFO (objP->id).attackType == 0);
+//Assert (ROBOTINFO (objP->id).attackType == 0);
 //	1/8 time, charge tPlayer, 1/4 time create path, rest of time, do nothing
 if (r < 4096) {
 	CreatePathToPlayer (objP, 10, 1);

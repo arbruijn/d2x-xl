@@ -79,7 +79,7 @@ return &bmP->bmAvgRGB;
 
 //------------------------------------------------------------------------------
 
-int SetupHiresVClip (tVideoClip *vcP)
+int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP)
 {
 	int nFrames = vcP->nFrameCount;
 
@@ -97,6 +97,7 @@ if (vcP->flags & WCF_ALTFMT) {
 			vcP->flags &= ~WCF_ALTFMT;
 		else 
 			vcP->flags |= WCF_INITIALIZED;
+		vciP->nCurFrame = d_rand () % nFrames;
 		}
 	}
 return nFrames;
@@ -113,7 +114,7 @@ void DrawVClipObject (tObject *objP, fix timeToLive, int bLit, int nVClip, tRgba
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + nVClip;
-	int			nFrames = SetupHiresVClip (vcP);
+	int			nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
 	int			iFrame = CurFrame (objP, nVClip, timeToLive);
 	int			bThruster = (objP->renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 

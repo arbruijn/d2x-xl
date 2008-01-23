@@ -54,6 +54,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "light.h"
 #include "textdata.h"
 #include "hudmsg.h"
+#include "marker.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -326,6 +327,10 @@ for (h = trigP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
 	gameData.multiplayer.playerInit [i].nSegType = gameData.segs.segment2s [nSegment].special;
 	j = (j + 1) % h;
 	}
+// delete any spawn markers that have been set before passing through this trigger to 
+// avoid players getting stuck when respawning at that marker
+if (0 <= (gameData.marker.nHighlight = SpawnMarkerIndex (-1)))
+	DeleteMarker (1);
 return 1;
 }
 

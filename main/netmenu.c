@@ -1032,10 +1032,62 @@ static char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", 
 static char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight"};
 static char nDeviceFlags [] = {PLAYER_FLAGS_MAP_ALL, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT};
 
+static int optGuns, optDevices;
+
+//------------------------------------------------------------------------------
+
+static inline void SetGunLoadoutFlag (int i, int v)
+{
+if (v)
+	extraGameInfo [1].loadout.nGuns |= (1 << i);
+else
+	extraGameInfo [1].loadout.nGuns &= ~(1 << i);
+}
+
+//------------------------------------------------------------------------------
+
+static inline int GetGunLoadoutFlag (int i)
+{
+return (extraGameInfo [1].loadout.nGuns & (1 << i)) != 0;
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkLoadoutCallback (int nitems, tMenuItem * menus, int * key, int cItem)
+{
+	tMenuItem	*m;
+	int			v;
+
+if (cItem == optGuns) {	//checked/unchecked lasers
+	m = menus + optGuns;
+	v = m->value;
+	if (v != GetGunLoadoutFlag (0)) {
+		SetGunLoadoutFlag (0, v);
+		if (!v) {	//if lasers unchecked, also uncheck super lasers
+			SetGunLoadoutFlag (5, 0);
+			menus [optGuns + 5].value = 0;
+			}
+		}
+	}
+else if (cItem == optGuns + 5) {	//checked/unchecked super lasers
+	m = menus + optGuns + 5;
+	v = m->value;
+	if (v != GetGunLoadoutFlag (5)) {
+		SetGunLoadoutFlag (5, v);
+		if (v) {	// if super lasers checked, also check lasers
+			SetGunLoadoutFlag (0, 1);
+			menus [optGuns].value = 1;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkLoadoutOptions (void)
 {
 	tMenuItem	m [25];
-	int			i, opt = 0, optGuns, optDevices;
+	int			i, opt = 0;
 
 memset (m, 0, sizeof (m));
 ADD_TEXT (opt, TXT_GUN_LOADOUT, 0);
@@ -1050,7 +1102,7 @@ for (i = 0, optDevices = opt; i < sizeofa (pszDevices); i++, opt++)
 	ADD_CHECK (opt, pszDevices [i], (extraGameInfo [1].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
 Assert (opt <= sizeofa (m));
 do {
-	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, NULL, 0);
+	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, NetworkLoadoutCallback, 0);
 	} while (i != -1);
 for (i = 0; i < sizeofa (pszGuns); i++) {
 	if (m [optGuns + i].value)
@@ -1062,7 +1114,7 @@ for (i = 0; i < sizeofa (pszDevices); i++) {
 	if (m [optDevices + i].value)
 		extraGameInfo [1].loadout.nDevices |= (nDeviceFlags [i] << i);
 	else
-		extraGameInfo [1].loadout.nDevices &= ~(nDeviceFlags [i]  << i);
+		extraGameInfo [1].loadout.nDevices &= ~(nDeviceFlags [i] << i);
 	}
 }
 
@@ -1072,8 +1124,8 @@ static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
 void MonsterballMenuCallback (int nitems, tMenuItem * menus, int * key, int cItem)
 {
-	tMenuItem * m;
-	int				v;
+	tMenuItem	*m;
+	int			v;
 
 m = menus + nPyroForceOpt;
 v = m->value + 1;

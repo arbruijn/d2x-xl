@@ -1662,6 +1662,11 @@ typedef struct tShrapnelData {
 
 //------------------------------------------------------------------------------
 
+typedef struct tObjectViewData {
+	vmsMatrix			mView;
+	int					nFrame;
+} tObjectViewData;
+
 typedef struct tObjectData {
 	tObjTypeData		types;
 	tObject				*objects;
@@ -1706,10 +1711,12 @@ typedef struct tObjectData {
 	tShrapnelData		*shrapnels;
 	tPowerupData		pwrUp;
 	ubyte					collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
+	tObjectViewData	*viewData;
 	ubyte					bIsMissile [100];
 	ubyte					bIsWeapon [100];
 	ubyte					bIsSlowWeapon [100];
 	short					idToOOF [100];
+	int					nFrameCount;
 } tObjectData;
 
 //------------------------------------------------------------------------------
@@ -2083,6 +2090,7 @@ typedef struct tModelData {
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
 	tG3Model				g3Models [2][MAX_POLYGON_MODELS];
+	vmsVector			offsets [MAX_POLYGON_MODELS];
 	int					nScale;
 } tModelData;
 

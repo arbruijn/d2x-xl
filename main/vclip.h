@@ -55,7 +55,7 @@ void DrawVClipObject (tObject *objP, fix timeleft, int lighted, int vclip_num, t
 void DrawWeaponVClip (tObject *objP);
 void DrawExplBlast (tObject *objP);
 void ConvertWeaponToVClip (tObject *objP);
-int SetupHiresVClip (tVideoClip *vcP);
+int SetupHiresVClip (tVideoClip *vcP, tVClipInfo *vciP);
 tRgbColorb *VClipColor (tObject *objP);
 
 #if 0

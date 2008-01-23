@@ -659,6 +659,65 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+fix G3ModelSize (tG3Model *pm, int nModel)
+{
+	int			nSubModels = pm->nSubModels;
+	tG3SubModel	*psm;
+	int			i;
+	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
+	vmsVector	hv;
+	double		dx, dy, dz;
+
+for (i = 0; i <= MAX_HITBOXES; i++) {
+	phb [i].vMin.p.x = phb [i].vMin.p.y = phb [i].vMin.p.z = 0x7fffffff;
+	phb [i].vMax.p.x = phb [i].vMax.p.y = phb [i].vMax.p.z = -0x7fffffff;
+	phb [i].vOffset.p.x = phb [i].vOffset.p.y = phb [i].vOffset.p.z = 0;
+	}
+for (i = 1, psm = pm->pSubModels; i <= nSubModels; i++, psm++) {
+	phb [i].vMin.p.x = fl2f (psm->vMin.p.x);
+	phb [i].vMin.p.y = fl2f (psm->vMin.p.y);
+	phb [i].vMin.p.z = fl2f (psm->vMin.p.z);
+	phb [i].vMax.p.x = fl2f (psm->vMax.p.x);
+	phb [i].vMax.p.y = fl2f (psm->vMax.p.y);
+	phb [i].vMax.p.z = fl2f (psm->vMax.p.z);
+	dx = (phb [i].vMax.p.x - phb [i].vMin.p.x) / 2;
+	dy = (phb [i].vMax.p.y - phb [i].vMin.p.y) / 2;
+	dz = (phb [i].vMax.p.z - phb [i].vMin.p.z) / 2;
+	phb [i].vSize.p.x = (fix) dx;
+	phb [i].vSize.p.y = (fix) dy;
+	phb [i].vSize.p.z = (fix) dz;
+	VmVecAdd (&hv, &phb [i].vMin, &psm->vOffset);
+	if (phb [0].vMin.p.x > hv.p.x)
+		phb [0].vMin.p.x = hv.p.x;
+	if (phb [0].vMin.p.y > hv.p.y)
+		phb [0].vMin.p.y = hv.p.y;
+	if (phb [0].vMin.p.z > hv.p.z)
+		phb [0].vMin.p.z = hv.p.z;
+	VmVecAdd (&hv, &phb [i].vMax, &psm->vOffset);
+	if (phb [0].vMax.p.x < hv.p.x)
+		phb [0].vMax.p.x = hv.p.x;
+	if (phb [0].vMax.p.y < hv.p.y)
+		phb [0].vMax.p.y = hv.p.y;
+	if (phb [0].vMax.p.z < hv.p.z)
+		phb [0].vMax.p.z = hv.p.z;
+	}
+dx = (phb [0].vMax.p.x - phb [0].vMin.p.x) / 2;
+dy = (phb [0].vMax.p.y - phb [0].vMin.p.y) / 2;
+dz = (phb [0].vMax.p.z - phb [0].vMin.p.z) / 2;
+phb [0].vSize.p.x = (fix) dx;
+phb [0].vSize.p.y = (fix) dy;
+phb [0].vSize.p.z = (fix) dz;
+gameData.models.hitboxes [nModel].nSubModels = nSubModels;
+for (i = 0; i <= nSubModels; i++)
+	ComputeHitbox (nModel, i);
+gameData.models.offsets [nModel].p.x = (abs (phb [0].vMax.p.x) - abs (phb [0].vMin.p.x)) / 2;
+gameData.models.offsets [nModel].p.y = (abs (phb [0].vMax.p.y) - abs (phb [0].vMin.p.y)) / 2;
+gameData.models.offsets [nModel].p.z = (abs (phb [0].vMax.p.z) - abs (phb [0].vMin.p.z)) / 2;
+return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
+}
+
+//------------------------------------------------------------------------------
+
 int G3BuildModelFromOOF (int nModel)
 {
 	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
@@ -680,7 +739,7 @@ G3InitSubModelMinMax (pm->pSubModels);
 G3GetOOFModelItems (nModel, po, pm);
 pm->pTextures = po->textures.pBitmaps;
 G3SetupModel (pm, 1);
-gameData.models.polyModels [nModel].rad = G3PolyModelSize (gameData.models.polyModels + nModel, nModel);
+gameData.models.polyModels [nModel].rad = G3ModelSize (pm, nModel);
 return -1;
 }
 
@@ -708,6 +767,7 @@ if (!G3AllocModel (pm))
 G3InitSubModelMinMax (pm->pSubModels);
 G3GetModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
 G3SetupModel (pm, 0);
+gameData.models.polyModels [nModel].rad = G3ModelSize (pm, nModel);
 pm->iSubModel = 0;
 return -1;
 }

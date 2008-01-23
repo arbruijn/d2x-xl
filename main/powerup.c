@@ -127,7 +127,7 @@ void UpdatePowerupClip (tVideoClip *vcP, tVClipInfo *vciP, int nObject)
 {
 if (vcP) {
 	static fix	xPowerupTime = 0;
-	int			h, nFrames = SetupHiresVClip (vcP);
+	int			h, nFrames = SetupHiresVClip (vcP, vciP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 
 	xPowerupTime += gameData.physics.xTime;
@@ -136,16 +136,14 @@ if (vcP) {
 		h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
 		xTime += h * vcP->xFrameTime;
 		h %= nFrames;
-		if ((nObject & 1) && (OBJECTS [nObject].nType != OBJ_EXPLOSION)) {
+		if ((nObject & 1) && (OBJECTS [nObject].nType != OBJ_EXPLOSION)) 
 			vciP->nCurFrame -= h;
-			if (0 > vciP->nCurFrame)
-				vciP->nCurFrame = nFrames - 1;
-			}
-		else {
+		else
 			vciP->nCurFrame += h;
-			if (vciP->nCurFrame >= nFrames)
-				vciP->nCurFrame = 0;
-			}
+		if (vciP->nCurFrame < 0)
+			vciP->nCurFrame = nFrames - (-vciP->nCurFrame % nFrames);
+		else 
+			vciP->nCurFrame %= nFrames;
 		}
 	vciP->xFrameTime = xTime;
 	xPowerupTime = 0;
@@ -161,7 +159,7 @@ else {
 		else
 			vciP->nCurFrame -= h;
 		if (vciP->nCurFrame < 0)
-			vciP->nCurFrame = -(-vciP->nCurFrame % nFrames);
+			vciP->nCurFrame = nFrames - (-vciP->nCurFrame % nFrames);
 		else 
 			vciP->nCurFrame %= nFrames;
 		}

@@ -1645,10 +1645,10 @@ oldBombcount [gameStates.render.vr.nCurrentPage] = countx;
 
 void DrawPrimaryAmmoInfo (int ammoCount)
 {
-	if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
-		DrawAmmoInfo (SB_PRIMARY_AMMO_X, SB_PRIMARY_AMMO_Y, ammoCount, 1);
-	else
-		DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammoCount, 1);
+if (gameStates.render.cockpit.nMode == CM_STATUS_BAR)
+	DrawAmmoInfo (SB_PRIMARY_AMMO_X, SB_PRIMARY_AMMO_Y, ammoCount, 1);
+else
+	DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammoCount, 1);
 }
 
 //	-----------------------------------------------------------------------------

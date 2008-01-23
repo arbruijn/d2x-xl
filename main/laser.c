@@ -602,7 +602,7 @@ int LaserPlayerFireSpreadDelay (
 	vmsVector	v, vLaserPos, vLaserDir, vGunPoint;
 	tVFIQuery	fq;
 	tFVIData		hit_data;
-	vmsMatrix	m;
+	vmsMatrix	m, *viewP;
 	int			nObject;
 	tObject		*laserP;
 #if FULL_COCKPIT_OFFS
@@ -623,7 +623,10 @@ else {
 	if (bLaserOffs)
 		VmVecScaleInc (&v, &pPos->mOrient.uVec, LASER_OFFS);
 	}
-VmCopyTransposeMatrix (&m, &pPos->mOrient);
+if (bSpectate)
+   VmCopyTransposeMatrix (viewP = &m, &pPos->mOrient);
+else
+   viewP = ObjectView (objP);
 VmVecRotate (&vGunPoint, &v, &m);
 memcpy (&m, &pPos->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
@@ -1560,7 +1563,7 @@ void GetPlayerMslLock (void)
 {
 	int			nWeapon, nObject, nGun, h, i, j;
 	vmsVector	vGunPos;
-	vmsMatrix	m;
+	vmsMatrix	*viewP;
 	tObject		*objP;
 
 gameData.objs.trackGoals [0] =
@@ -1586,11 +1589,11 @@ if (!gameStates.app.cheats.bHomingWeapons &&
 //pnt = gameData.pig.ship.player->gunPoints [nGun];
 j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
 h = gameData.laser.nMissileGun & 1;
-VmCopyTransposeMatrix (&m, &gameData.objs.console->position.mOrient);
+viewP = ObjectView (gameData.objs.console);
 for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
 	vGunPos = gameData.pig.ship.player->gunPoints [nGun];
-	VmVecRotate (&vGunPos, &vGunPos, &m);
+	VmVecRotate (&vGunPos, &vGunPos, viewP);
 	VmVecInc (&vGunPos, &gameData.objs.console->position.vPos);
 	nObject = FindHomingObject (&vGunPos, gameData.objs.console);
 	gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
