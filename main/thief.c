@@ -281,7 +281,7 @@ int MaybeStealFlagItem(int player_num, int flagval)
 					powerup_index = POW_CLOAK;
 					ThiefMessage("Cloak stolen!");
 					break;
-				case PLAYER_FLAGS_MAP_ALL:
+				case PLAYER_FLAGS_FULLMAP:
 					powerup_index = POW_FULL_MAP;
 					ThiefMessage("Full map stolen!");
 					break;
@@ -426,7 +426,7 @@ int AttemptToStealItem3(tObject *objP, int player_num)
 // --		return 1;
 	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_HEADLIGHT))
 		return 1;
-	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_MAP_ALL))
+	if (MaybeStealFlagItem(player_num, PLAYER_FLAGS_FULLMAP))
 		return 1;
 
 	for (i=MAX_SECONDARY_WEAPONS-1; i>=0; i--) {

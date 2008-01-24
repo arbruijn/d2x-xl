@@ -38,10 +38,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PLAYER_FLAGS_GOLD_KEY       8       // Player has gold key
 #define PLAYER_FLAGS_FLAG           16      // Player has his team's flag
 #define PLAYER_FLAGS_UNUSED         32      //
-#define PLAYER_FLAGS_MAP_ALL        64      // Player can see unvisited areas on map
+#define PLAYER_FLAGS_FULLMAP        64      // Player can see unvisited areas on map
 #define PLAYER_FLAGS_AMMO_RACK      128     // Player has ammo rack
 #define PLAYER_FLAGS_CONVERTER      256     // Player has energy->shield converter
-#define PLAYER_FLAGS_MAP_ALL_CHEAT  512     // Player can see unvisited areas on map normally
+#define PLAYER_FLAGS_FULLMAP_CHEAT  512     // Player can see unvisited areas on map normally
 #define PLAYER_FLAGS_QUAD_LASERS    1024    // Player shoots 4 at once
 #define PLAYER_FLAGS_CLOAKED        2048    // Player is cloaked for awhile
 #define PLAYER_FLAGS_AFTERBURNER    4096    // Player's afterburner is engaged

@@ -1929,7 +1929,7 @@ switch (bFlag) {
 		return gameStates.app.bUsingConverter;
 	case PLAYER_FLAGS_HEADLIGHT:
 		return HeadLightIsOn (-1) != 0;
-	case PLAYER_FLAGS_MAP_ALL:
+	case PLAYER_FLAGS_FULLMAP:
 		return 0;
 	case PLAYER_FLAGS_AMMO_RACK:
 		return 0;
@@ -1969,7 +1969,7 @@ void HUDShowInventoryIcons (void)
 		PLAYER_FLAGS_AFTERBURNER, 
 		PLAYER_FLAGS_CONVERTER, 
 		PLAYER_FLAGS_HEADLIGHT, 
-		PLAYER_FLAGS_MAP_ALL, 
+		PLAYER_FLAGS_FULLMAP, 
 		PLAYER_FLAGS_AMMO_RACK, 
 		PLAYER_FLAGS_QUAD_LASERS, 
 		PLAYER_FLAGS_CLOAKED, 

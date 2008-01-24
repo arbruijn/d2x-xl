@@ -325,6 +325,8 @@ for (h = trigP->nLinks, i = j = 0; i < MAX_PLAYERS; i++) {
 	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, sides [j], 1, 0);
 	gameData.multiplayer.playerInit [i].nSegment = nSegment;
 	gameData.multiplayer.playerInit [i].nSegType = gameData.segs.segment2s [nSegment].special;
+	if (i == gameData.multiplayer.nLocalPlayer)
+		MoveSpawnMarker (&gameData.multiplayer.playerInit [i].position, nSegment);
 	j = (j + 1) % h;
 	}
 // delete any spawn markers that have been set before passing through this trigger to 

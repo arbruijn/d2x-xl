@@ -2078,9 +2078,9 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	if (gameData.multiplayer.powerupsInMine [POW_CLOAK] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_CLOAK])
 		LOCALPLAYER.flags &= (~PLAYER_FLAGS_CLOAKED);
 
-if (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL)
+if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)
 	if (gameData.multiplayer.powerupsInMine [POW_FULL_MAP] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_FULL_MAP])
-		LOCALPLAYER.flags &= (~PLAYER_FLAGS_MAP_ALL);
+		LOCALPLAYER.flags &= (~PLAYER_FLAGS_FULLMAP);
 
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 	if (gameData.multiplayer.powerupsInMine [POW_AFTERBURNER] + 1 > gameData.multiplayer.maxPowerupsAllowed [POW_AFTERBURNER])
@@ -2135,7 +2135,7 @@ if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
 	gameData.multiplayer.maxPowerupsAllowed [POW_QUADLASER]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 	gameData.multiplayer.maxPowerupsAllowed [POW_CLOAK]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_MAP_ALL)
+if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FULLMAP)
 	gameData.multiplayer.maxPowerupsAllowed [POW_FULL_MAP]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
 	gameData.multiplayer.maxPowerupsAllowed [POW_AFTERBURNER]++;
@@ -2178,7 +2178,7 @@ if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
 	gameData.multiplayer.powerupsInMine [POW_QUADLASER]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
 	gameData.multiplayer.powerupsInMine [POW_CLOAK]++;
-if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_MAP_ALL)
+if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FULLMAP)
 	gameData.multiplayer.powerupsInMine [POW_FULL_MAP]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_AFTERBURNER)
 	gameData.multiplayer.powerupsInMine [POW_AFTERBURNER]++;

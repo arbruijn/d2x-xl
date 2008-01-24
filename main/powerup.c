@@ -762,7 +762,7 @@ switch (objP->id) {
 #endif
 
 	case POW_FULL_MAP:
-		bUsed = PickupEquipment (objP, PLAYER_FLAGS_MAP_ALL, TXT_THE_FULLMAP, TXT_GOT_FULLMAP, nPlayer) ? 1 : 0;
+		bUsed = PickupEquipment (objP, PLAYER_FLAGS_FULLMAP, TXT_THE_FULLMAP, TXT_GOT_FULLMAP, nPlayer) ? 1 : 0;
 		break;
 
 	case POW_CONVERTER:

@@ -164,14 +164,18 @@ return gameOpts->render.bAutoTransparency && IsTransparentTexture (sideP->nBaseT
 //		WID_NO_WALL					5	//	1/0/1		no tWall, can fly through
 int WallIsDoorWay (tSegment * segP, short nSide)
 {
-	int flags, nType;
-	int state;
-	tWall * wallP = gameData.walls.walls + WallNumP (segP, nSide);
+	int	flags, nType;
+	int	state;
+	tWall *wallP = gameData.walls.walls + WallNumP (segP, nSide);
 #ifdef _DEBUG
 	short nSegment = SEG_IDX (segP);
 
 Assert(nSegment>=0 && nSegment<=gameData.segs.nLastSegment);
 Assert(nSide>=0 && nSide<6);
+#endif
+#ifdef _DEBUG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
 #endif
 nType = wallP->nType;
 flags = wallP->flags;
@@ -210,13 +214,12 @@ state = wallP->state;
 if (nType == WALL_DOOR) { 
 	if ((state == WALL_DOOR_OPENING) || (state == WALL_DOOR_CLOSING))
 		return WID_TRANSPARENT_WALL;
-	if (CheckTransparency (segP, nSide))
+	if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide))
 		return WID_TRANSPARENT_WALL;
 	return WID_WALL;
 	}
 // If none of the above flags are set, there is no doorway.
-if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || 
-	 CheckTransparency (segP, nSide)) {
+if ((wallP->cloakValue && (wallP->cloakValue < GR_ACTUAL_FADE_LEVELS)) || CheckTransparency (segP, nSide)) {
 #ifdef _DEBUG
 	CheckTransparency (segP, nSide);
 #endif

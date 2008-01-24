@@ -149,14 +149,25 @@ else {
 
 //------------------------------------------------------------------------------
 
+int MoveSpawnMarker (tPosition *posP, short nSegment)
+{
+	tObject	*markerP;
+
+if (!(markerP = SpawnMarkerObject (-1)))
+	return 0;
+markerP->position = *posP;
+RelinkObject (OBJ_IDX (markerP), nSegment);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 void DropMarker (char nPlayerMarker)
 {
 	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
-	tObject	*markerP, *playerP = gameData.objs.objects + LOCALPLAYER.nObject;
+	tObject	*playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 
-if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN") && (markerP = SpawnMarkerObject (-1))) {
-	markerP->position = playerP->position;
-	RelinkObject (OBJ_IDX (markerP), playerP->nSegment);
+if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN") && MoveSpawnMarker (&playerP->position, playerP->nSegment)) {
 	*gameData.marker.szMessage [nMarker] = '\0';
 	}
 else {

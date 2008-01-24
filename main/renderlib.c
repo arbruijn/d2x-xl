@@ -648,7 +648,7 @@ return !gameStates.app.bD1Mission &&
 
 //------------------------------------------------------------------------------
 
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *pc, int *nColor, ubyte *bTextured)
+float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, tRgbaColorf *colorP, int *nColor, ubyte *bTextured)
 {
 	static tRgbaColorf cloakColor = {0, 0, 0, 0};
 
@@ -659,6 +659,10 @@ float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int b
 
 if (!IS_WALL (nWall))
 	return 1;
+#ifdef _DEBUG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 wallP = gameData.walls.walls + nWall;
 bCloaking = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
 if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
@@ -666,10 +670,10 @@ if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
 		return 1;
 	c = wallP->cloakValue;
 	if (bCloaking) {
-		*pc = cloakColor;
+		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = 0;
-		return pc->alpha = (c >= GR_ACTUAL_FADE_LEVELS) ? 0 : 1.0f - (float) c / (float) GR_ACTUAL_FADE_LEVELS;
+		return colorP->alpha = (c >= GR_ACTUAL_FADE_LEVELS) ? 0 : 1.0f - (float) c / (float) GR_ACTUAL_FADE_LEVELS;
 		}
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
@@ -680,21 +684,21 @@ if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
 	else
 		fAlpha = extraGameInfo [0].grWallTransparency / (float) GR_ACTUAL_FADE_LEVELS;
 	if (fAlpha < 1) {
-		pc->red = (float) CPAL2Tr (gamePalette, c) / fAlpha;
-		pc->green = (float) CPAL2Tg (gamePalette, c) / fAlpha;
-		pc->blue = (float) CPAL2Tb (gamePalette, c) / fAlpha;
+		colorP->red = (float) CPAL2Tr (gamePalette, c) / fAlpha;
+		colorP->green = (float) CPAL2Tg (gamePalette, c) / fAlpha;
+		colorP->blue = (float) CPAL2Tb (gamePalette, c) / fAlpha;
 		*bTextured = 0;
 		*nColor = 1;
 		}
-	return pc->alpha = fAlpha;
+	return colorP->alpha = fAlpha;
 	}
 if (gameStates.app.bD2XLevel) {
-	c = gameData.walls.walls [nWall].cloakValue;
-	return pc->alpha = (c && (c < GR_ACTUAL_FADE_LEVELS)) ? (float) (GR_ACTUAL_FADE_LEVELS - c) / (float) GR_ACTUAL_FADE_LEVELS : 1;
+	c = wallP->cloakValue;
+	return colorP->alpha = (c && (c < GR_ACTUAL_FADE_LEVELS)) ? (float) (GR_ACTUAL_FADE_LEVELS - c) / (float) GR_ACTUAL_FADE_LEVELS : 1;
 	}
 if (gameOpts->render.bAutoTransparency && IsTransparentTexture (gameData.segs.segments [nSegment].sides [nSide].nBaseTex))
-	return pc->alpha = 0.8f;
-return pc->alpha = 1;
+	return colorP->alpha = 0.8f;
+return colorP->alpha = 1;
 }
 
 //------------------------------------------------------------------------------

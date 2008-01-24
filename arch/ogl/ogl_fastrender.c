@@ -570,8 +570,10 @@ if (!(bMonitor || bOverlay)) {
 	return 0;
 	}
 #endif
-#if 0
-if (!bBlend)
+#if 1
+if (bBlend)
+	glEnable (GL_BLEND);
+else
 	glDisable (GL_BLEND);
 #endif
 #if 0

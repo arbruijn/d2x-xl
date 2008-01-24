@@ -883,7 +883,7 @@ void read_children (int nSegment, ubyte bit_mask, CFILE *loadFile)
 
 //------------------------------------------------------------------------------
 
-void ReadColor (tFaceColor *pc, CFILE *loadFile, int bFloatData)
+void ReadColor (tFaceColor *pc, CFILE *loadFile, int bFloatData, int bRegisterColor)
 {
 pc->index = CFReadByte (loadFile);
 if (bFloatData) {
@@ -901,6 +901,11 @@ else {
 	c = CFReadInt (loadFile);
 	pc->color.blue = (float) c / (float) 0x7fffffff;
 	}
+if (bRegisterColor &&
+	 (((pc->color.red > 0) && (pc->color.red < 1)) ||
+	 ((pc->color.green > 0) && (pc->color.green < 1)) ||
+	 ((pc->color.blue > 0) && (pc->color.blue < 1))))
+	gameStates.render.bColored = 1;
 pc->color.alpha = 1;
 }
 
@@ -1412,11 +1417,7 @@ gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
 	for (; i < j; i++) {
-#ifdef _DEBUG
-		if (i == nDbgVertex)
-			i = i;
-#endif
-		ReadColor (gameData.render.color.ambient + i, loadFile, gameData.segs.nLevelVersion <= 14);
+		ReadColor (gameData.render.color.ambient + i, loadFile, gameData.segs.nLevelVersion <= 14, 1);
 		}
 	}
 }
@@ -1476,7 +1477,7 @@ void LoadTexColorsCompiled (int i, CFILE *loadFile)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15);
+		ReadColor (gameData.render.color.textures + i, loadFile, gameData.segs.nLevelVersion <= 15, gameOpts->render.bDynLighting);
 	}
 }
 
@@ -1493,7 +1494,7 @@ if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
 	pc = gameData.render.color.lights + i;
 	for (; i < j; i++, pc++) {
-		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13);
+		ReadColor (pc, loadFile, gameData.segs.nLevelVersion <= 13, 1);
 #if 0//SHADOWS
 		RegisterLight (pc, (short) (i / 6), (short) (i % 6));
 #endif
@@ -2067,6 +2068,7 @@ int LoadMineSegmentsCompiled (CFILE *loadFile)
 	ubyte			nCompiledVersion;
 	char			*psz;
 
+gameStates.render.bColored = 0;
 bD1PigPresent = CFExist (D1_PIGFILE, gameFolders.szDataDir, 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
@@ -2127,7 +2129,7 @@ else {
 	ComputeSegSideCenters (-1);
 	}
 CreateFaceList ();
-if (!(gameStates.app.bNostalgia || (gameStates.render.bColored = HasColoredLight ())))
+if (!(gameStates.app.bNostalgia || gameStates.render.bColored || (gameStates.render.bColored = HasColoredLight ())))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player
 #if !SHADOWS

@@ -402,7 +402,6 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 // Setup tPlayer for new level (After completion of previous level)
 void InitPlayerStatsLevel (int bSecret)
 {
-	// int	i;
 LOCALPLAYER.last_score = LOCALPLAYER.score;
 LOCALPLAYER.level = gameData.missions.nCurrentLevel;
 if (!networkData.bRejoined) {
@@ -419,7 +418,7 @@ LOCALPLAYER.hostages_on_board = 0;
 if (!bSecret) {
 	InitAmmoAndEnergy ();
 	LOCALPLAYER.flags &=  
-		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_MAP_ALL | KEY_BLUE | KEY_RED | KEY_GOLD);
+		~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_FULLMAP | KEY_BLUE | KEY_RED | KEY_GOLD);
 	LOCALPLAYER.cloakTime = 0;
 	LOCALPLAYER.invulnerableTime = 0;
 	if (IsMultiGame && !IsCoopGame) {
@@ -490,7 +489,7 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_AFTERBURNER |
 	 PLAYER_FLAGS_CLOAKED |
 	 PLAYER_FLAGS_INVULNERABLE |
-	 PLAYER_FLAGS_MAP_ALL |
+	 PLAYER_FLAGS_FULLMAP |
 	 PLAYER_FLAGS_CONVERTER |
 	 PLAYER_FLAGS_AMMO_RACK |
 	 PLAYER_FLAGS_HEADLIGHT |
@@ -1544,25 +1543,25 @@ else
 
 //------------------------------------------------------------------------------
 
-void PlayLevelMovie (char *pszExt)
+void PlayLevelMovie (char *pszExt, int nLevel)
 {
 	char szFilename [FILENAME_LEN];
 
-PlayMovie (MakeLevelFilename (gameData.missions.nCurrentLevel, szFilename, pszExt), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
+PlayMovie (MakeLevelFilename (nLevel, szFilename, pszExt), MOVIE_OPTIONAL, 0, gameOpts->movies.bResize);
 }
 
 //------------------------------------------------------------------------------
 
-void PlayLevelIntroMovie (void)
+void PlayLevelIntroMovie (int nLevel)
 {
-PlayLevelMovie (".mvi");
+PlayLevelMovie (".mvi", nLevel);
 }
 
 //------------------------------------------------------------------------------
 
-void PlayLevelExtroMovie (void)
+void PlayLevelExtroMovie (int nLevel)
 {
-PlayLevelMovie (".mvx");
+PlayLevelMovie (".mvx", nLevel);
 }
 
 //------------------------------------------------------------------------------
@@ -1608,7 +1607,7 @@ if (!IsMultiGame) {
 		}
 	else {    //not multi
 		char szBriefing [FILENAME_LEN];
-		PlayLevelExtroMovie ();
+		PlayLevelExtroMovie (gameData.missions.nCurrentLevel);
 		sprintf (szBriefing, "%s.tex", gameStates.app.szCurrentMissionFile);
 		DoBriefingScreens (szBriefing, gameData.missions.nLastLevel + 1);   //level past last is endgame breifing
 
@@ -1656,7 +1655,7 @@ if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	if (IsMultiGame)
 		MultiEndLevelScore ();	
 	else {
-		PlayLevelExtroMovie ();
+		PlayLevelExtroMovie (gameData.missions.nCurrentLevel);
 		DoEndLevelScoreGlitz (0);		//give bonuses
 		}
 	}
@@ -2025,7 +2024,7 @@ void ShowLevelIntro (int nLevel)
 if (!IsMultiGame) {
 	int i, bPlayed = 0;
 
-	PlayLevelIntroMovie ();
+	PlayLevelIntroMovie (nLevel);
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)

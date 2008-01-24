@@ -1742,6 +1742,7 @@ if (gameStates.app.nDifficultyLevel != i) {
 WritePlayerFile ();
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].text);
+nLevel;
 GrPaletteFadeOut (NULL, 32, 0);
 if (!bMsnLoaded)
 	LoadMission (nMission);

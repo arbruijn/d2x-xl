@@ -490,10 +490,10 @@ void FullMapCheat (int bVerbose)
 {
 if (gameStates.render.bAllVisited)
 	gameStates.render.bViewDist++;
-else if (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL)
+else if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)
 	gameStates.render.bAllVisited = 1;
 else
-	LOCALPLAYER.flags |= PLAYER_FLAGS_MAP_ALL;
+	LOCALPLAYER.flags |= PLAYER_FLAGS_FULLMAP;
 if (bVerbose)
 	HUDInitMessage (TXT_FULL_MAP);
 }

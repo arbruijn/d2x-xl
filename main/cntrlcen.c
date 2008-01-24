@@ -135,7 +135,7 @@ if (!gameData.reactor.bDestroyed) {
 	cdtFrameTime = 0;
 	return;
 	}
-#ifdef _DEBUG
+#if 0//def _DEBUG
 return;
 #endif
 cdtFrameTime += gameData.time.xRealFrame;

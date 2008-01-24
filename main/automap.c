@@ -339,7 +339,7 @@ void DrawAutomap (void)
 	g3sPoint		spherePoint;
 	vmsMatrix	vmRadar;
 
-gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_MAP_ALL_CHEAT | PLAYER_FLAGS_MAP_ALL)) != 0;
+gameStates.render.automap.bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	vmsMatrix *po = &gameData.multiplayer.playerInit [gameData.multiplayer.nLocalPlayer].position.mOrient;
 	vmRadar.rVec.p.x = po->rVec.p.x;
@@ -1292,7 +1292,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 
 	if (color != WHITE_RGBA) {
 		// If they have a map powerup, draw unvisited areas in dark blue.
-		if ((LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL) && 
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP) && 
 				!(gameStates.render.bAllVisited || gameData.render.mine.bAutomapVisited [nSegment]))
 			color = automapColors.walls.nRevealed;
 
@@ -1343,7 +1343,7 @@ void AutomapBuildEdgeList ()
 	tEdgeInfo * e;
 
 amData.bCheat = 0;
-if (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL_CHEAT)
+if (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP_CHEAT)
 	amData.bCheat = 1;		// Damn cheaters...
 
 	// clear edge list
@@ -1354,7 +1354,7 @@ for (i=0; i < nMaxEdges; i++) {
 nNumEdges = 0;
 nHighestEdgeIndex = -1;
 
-if (amData.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_MAP_ALL))	{
+if (amData.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP))	{
 	// Cheating, add all edges as visited
 	for (s=0; s<=gameData.segs.nLastSegment; s++)
 #ifdef EDITOR

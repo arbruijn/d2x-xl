@@ -960,7 +960,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
 		while (playerP->nCloaks--)
 			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
-		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_MAP_ALL, POW_FULL_MAP);
+		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_FULLMAP, POW_FULL_MAP);
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
 		MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CONVERTER, POW_CONVERTER);
