@@ -134,6 +134,8 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "rle.h"
 #include "input.h"
 
+#define SPAWN_MIN_DIST	i2f (15 * 20)
+
 //------------------------------------------------------------------------------
 
 void ShowLevelIntro (int nLevel);
@@ -2106,87 +2108,112 @@ return StartNewLevelSub (nLevel, 1, bSecret, 0);
 }
 
 //------------------------------------------------------------------------------
+
+typedef struct tSpawnMap {
+	int	i;
+	fix	xDist;
+	} tSpawnMap;
+
+void SortSpawnMap (tSpawnMap *spawnMap, int left, int right)
+{
+	int	l = left,
+			r = right;
+	fix	m = spawnMap [(l + r) / 2].xDist;
+
+do {
+	while (spawnMap [l].xDist > m)
+		l++;
+	while (spawnMap [r].xDist < m)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			tSpawnMap h = spawnMap [l];
+			spawnMap [l] = spawnMap [r];
+			spawnMap [r] = h;
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	SortSpawnMap (spawnMap, l, right);
+if (left < r)
+	SortSpawnMap (spawnMap, left, r);
+}
+
+//------------------------------------------------------------------------------
 //initialize the tPlayer tObject position & orientation (at start of game, or new ship)
 void InitPlayerPosition (int bRandom)
 {
-	int bNewPlayer = 0;
+	int nSpawnPos = 0;
 
 if (!(gameData.app.nGameMode & (GM_MULTI | GM_MULTI_COOP))) // If not deathmatch
-	bNewPlayer = gameData.multiplayer.nLocalPlayer;
+	nSpawnPos = gameData.multiplayer.nLocalPlayer;
 else if (bRandom == 1) {
-	tObject *pObj;
-	int spawnMap [MAX_NUM_NET_PLAYERS];
-	int nSpawnSegs = 0;
-	int i, closest = -1, trys = 0;
-	fix closestDist = 0x7ffffff, dist;
+	tObject		*objP;
+	tSpawnMap	spawnMap [MAX_NUM_NET_PLAYERS];
+	int			nSpawnSegs = 0;
+	int			i, j, nMinPos = -1, nMaxPos = -1, trys = 0;
+	fix			xDist, 
+					xMaxDist = 0;
 
-
-	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
-		spawnMap [i] = i;
+	// find the smallest distance between each spawn point and any player in the mine
+	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
+		spawnMap [i].i = i;
+		for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
+			if (j != gameData.multiplayer.nLocalPlayer) {
+				objP = gameData.objs.objects + gameData.multiplayer.players [j].nObject; 
+				if ((objP->nType == OBJ_PLAYER))	{
+					xDist = FindConnectedDistance (&objP->position.vPos, 
+															 objP->nSegment, 
+															 &gameData.multiplayer.playerInit [nSpawnPos].position.vPos, 
+															 gameData.multiplayer.playerInit [nSpawnPos].nSegment, 
+															 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
+					if (spawnMap [i].xDist > xDist)
+						spawnMap [i].xDist = xDist;
+					}
+				}
+			}
+		}
+	nSpawnSegs = gameData.multiplayer.nPlayerPositions;
+	SortSpawnMap (spawnMap, 0, nSpawnSegs - 1);
+	bRandom = (spawnMap [0].xDist >= SPAWN_MIN_DIST);
 
 	d_srand (SDL_GetTicks ());
-
+	j = 0;
 	do {
-		trys++;
-		if (gameData.app.nGameMode & GM_TEAM) {
-			if (!nSpawnSegs) {
-				for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
-					spawnMap [i] = i;
-				nSpawnSegs = gameData.multiplayer.nPlayerPositions;
-				}
-			if (nSpawnSegs) {		//try to find a spawn location owned by the tPlayer's team
-				closestDist = 0;
-				i = d_rand () % nSpawnSegs;
-				bNewPlayer = spawnMap [i];
-				if (i < --nSpawnSegs)
-					spawnMap [i] = spawnMap [nSpawnSegs];
-				switch (gameData.multiplayer.playerInit [bNewPlayer].nSegType) {
-					case SEGMENT_IS_GOAL_RED:
-					case SEGMENT_IS_TEAM_RED:
-						if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_RED)
-							continue;
-						break;
-					case SEGMENT_IS_GOAL_BLUE:
-					case SEGMENT_IS_TEAM_BLUE:
-						if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_BLUE)
-							continue;
-						break;
-					default:
-						break;
-					}
+		i = bRandom ? d_rand () % nSpawnSegs : j++;
+		nSpawnPos = spawnMap [i].i;
+		if (i < --nSpawnSegs)
+			memcpy (spawnMap + i, spawnMap + i + 1, nSpawnSegs - i);
+		if (IsTeamGame) {
+			switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {
+				case SEGMENT_IS_GOAL_RED:
+				case SEGMENT_IS_TEAM_RED:
+					if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_RED)
+						continue;
+					break;
+				case SEGMENT_IS_GOAL_BLUE:
+				case SEGMENT_IS_TEAM_BLUE:
+					if (GetTeam (gameData.multiplayer.nLocalPlayer) != TEAM_BLUE)
+						continue;
+					break;
+				default:
+					break;
 				}
 			}
-		else {
-			bNewPlayer = d_rand () % gameData.multiplayer.nPlayerPositions;
-			}
-		closest = -1;
-		closestDist = 0x7fffffff;
-		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (i == gameData.multiplayer.nLocalPlayer)
-				continue;
-			pObj = gameData.objs.objects + gameData.multiplayer.players [i].nObject; 
-			if ((pObj->nType == OBJ_PLAYER))	{
-				dist = FindConnectedDistance (&pObj->position.vPos, 
-															pObj->nSegment, 
-															&gameData.multiplayer.playerInit [bNewPlayer].position.vPos, 
-															gameData.multiplayer.playerInit [bNewPlayer].nSegment, 
-															10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
-				if ((dist < closestDist) && (dist >= 0))	{
-					closestDist = dist;
-					closest = i;
-					}
-				}
-			}
-		} while ((closestDist < i2f (15 * 20)) && (trys < MAX_NUM_NET_PLAYERS * 2));
+		} while (!bRandom || (spawnMap [i].xDist < SPAWN_MIN_DIST));
 	}
 else {
 	goto done; // If deathmatch and not random, positions were already determined by sync packet
 	}
-Assert (bNewPlayer >= 0);
-Assert (bNewPlayer < gameData.multiplayer.nPlayerPositions);
+Assert (nSpawnPos >= 0);
+Assert (nSpawnPos < gameData.multiplayer.nPlayerPositions);
 
-GetPlayerSpawn (bNewPlayer, gameData.objs.console);
+GetPlayerSpawn (nSpawnPos, gameData.objs.console);
+
 done:
+
 ResetPlayerObject ();
 ResetCruise ();
 }
