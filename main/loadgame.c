@@ -2181,11 +2181,9 @@ else if (bRandom == 1) {
 
 	d_srand (SDL_GetTicks ());
 	j = 0;
-	do {
+	for (;;) {
 		i = bRandom ? d_rand () % nSpawnSegs : j++;
 		nSpawnPos = spawnMap [i].i;
-		if (i < --nSpawnSegs)
-			memcpy (spawnMap + i, spawnMap + i + 1, nSpawnSegs - i);
 		if (IsTeamGame) {
 			switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {
 				case SEGMENT_IS_GOAL_RED:
@@ -2202,7 +2200,11 @@ else if (bRandom == 1) {
 					break;
 				}
 			}
-		} while (!bRandom || (spawnMap [i].xDist < SPAWN_MIN_DIST));
+		if (!bRandom || (spawnMap [i].xDist < SPAWN_MIN_DIST))
+			break;
+		if (i < --nSpawnSegs)
+			memcpy (spawnMap + i, spawnMap + i + 1, nSpawnSegs - i);
+		}
 	}
 else {
 	goto done; // If deathmatch and not random, positions were already determined by sync packet
