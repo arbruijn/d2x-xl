@@ -2153,22 +2153,24 @@ else if (bRandom == 1) {
 	tObject		*objP;
 	tSpawnMap	spawnMap [MAX_NUM_NET_PLAYERS];
 	int			nSpawnSegs = 0;
-	int			i, j, nMinPos = -1, nMaxPos = -1, trys = 0;
-	fix			xDist, 
-					xMaxDist = 0;
+	int			i, j;
+	fix			xDist;
 
 	// find the smallest distance between each spawn point and any player in the mine
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		spawnMap [i].i = i;
+		spawnMap [i].xDist = 0x7fffffff;
 		for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 			if (j != gameData.multiplayer.nLocalPlayer) {
 				objP = gameData.objs.objects + gameData.multiplayer.players [j].nObject; 
 				if ((objP->nType == OBJ_PLAYER))	{
 					xDist = FindConnectedDistance (&objP->position.vPos, 
 															 objP->nSegment, 
-															 &gameData.multiplayer.playerInit [nSpawnPos].position.vPos, 
-															 gameData.multiplayer.playerInit [nSpawnPos].nSegment, 
+															 &gameData.multiplayer.playerInit [i].position.vPos, 
+															 gameData.multiplayer.playerInit [i].nSegment, 
 															 10, WID_FLY_FLAG, 0);	//	Used to be 5, search up to 10 segments
+					if (xDist < 0)
+						continue;
 					if (spawnMap [i].xDist > xDist)
 						spawnMap [i].xDist = xDist;
 					}
