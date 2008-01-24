@@ -2523,9 +2523,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-void GetPlayerSpawn (int nPlayer, tObject *objP)
+void GetPlayerSpawn (int nSpawnPos, tObject *objP)
 {
-	tObject	*markerP = SpawnMarkerObject (nPlayer);
+	tObject	*markerP = SpawnMarkerObject (-1);
 
 if (markerP) {
 	objP->position = markerP->position;
@@ -2533,8 +2533,8 @@ if (markerP) {
 
 	}
 else {
-	objP->position = gameData.multiplayer.playerInit [nPlayer].position;
- 	RelinkObject (OBJ_IDX (objP), gameData.multiplayer.playerInit [nPlayer].nSegment);
+	objP->position = gameData.multiplayer.playerInit [nSpawnPos].position;
+ 	RelinkObject (OBJ_IDX (objP), gameData.multiplayer.playerInit [nSpawnPos].nSegment);
 	}
 }
 
