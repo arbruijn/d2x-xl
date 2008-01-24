@@ -847,7 +847,7 @@ switch (objP->id) {
 		break;
 
 	case POW_HOARD_ORB:
-		if (gameData.app.nGameMode & GM_HOARD) {
+		if (IsHoardGame) {
 			if (playerP->secondaryAmmo [PROXMINE_INDEX] < 12) {
 				if (ISLOCALPLAYER (nPlayer)) {
 					MultiSendGotOrb ((char) gameData.multiplayer.nLocalPlayer);
@@ -858,7 +858,7 @@ switch (objP->id) {
 				bUsed = 1;
 				}
 			}
-		else if (gameData.app.nGameMode & GM_ENTROPY) {
+		else if (IsEntropyGame) {
 			if (objP->matCenCreator != GetTeam ((char) gameData.multiplayer.nLocalPlayer) + 1) {
 				if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 					 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
