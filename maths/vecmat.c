@@ -462,7 +462,7 @@ if (gameOpts->render.nMathFormat == 2) {
 #endif
 	return (fix) (sqrt (h.p.x + h.p.y + h.p.z) * 65536);
 #else
-	return (fix) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((double) v->p.z)); 
+	return fl2f (sqrt (sqrd ((double) f2fl (v->p.x)) + sqrd ((double) f2fl (v->p.y)) + sqrd ((double) f2fl (v->p.z)))); 
 #endif
 	}
 else {
@@ -515,12 +515,17 @@ return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((do
 
 // ------------------------------------------------------------------------
 //computes the distance between two points. (does sub and mag)
+#if !INLINE_VEC_ADD
+
 fix VmVecDist(vmsVector *v0, vmsVector *v1)
 {
-	vmsVector t;
+	vmsVector d;
 
-return VmVecMag (VmVecSub (&t, v0, v1));
+VmVecSub (&d, v0, v1);
+return VmVecMag (&d);
 }
+
+#endif
 
 // ------------------------------------------------------------------------
 

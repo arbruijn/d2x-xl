@@ -102,8 +102,8 @@ if (gameStates.ogl.bHeadLight && gameOpts->ogl.bHeadLight && !gameStates.render.
 	if (!gameData.render.lights.dynamic.headLights.nLights) {
 		G3StartFrame (0, 0);
 		G3SetViewMatrix (&gameData.objs.viewer->position.vPos, 
-								&gameData.objs.viewer->position.mOrient, 
-								gameStates.render.xZoom, 0);
+							  &gameData.objs.viewer->position.mOrient, 
+							  gameStates.render.xZoom, 0);
 		}
 	G3TransformPointf (&vPos, psl->pos, 0);
 	G3TransformPointf (&vDir, VmVecAddf (&vDir, psl->pos, &psl->dir), 0);
@@ -483,7 +483,7 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 	for (i = 0; i < 4; i++) {
 		if (lightingShaderProgs [i])
 			DeleteShaderProg (lightingShaderProgs + i);
-#if 1//ndef _DEBUG
+#if 0//ndef _DEBUG
 		if (nLights == 1)
 			pszFS = lightingFS [i];
 		else

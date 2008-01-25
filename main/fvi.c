@@ -775,8 +775,8 @@ return IT_NONE;			//no hit
 int CheckVectorToSphere1 (vmsVector *intP, vmsVector *p0, vmsVector *p1, vmsVector *vSpherePos, 
 								  fix xSphereRad)
 {
-	vmsVector d, dn, w, vClosestPoint;
-	fix mag_d, dist, wDist, intDist;
+	vmsVector	d, dn, w, vClosestPoint;
+	fix			mag_d, dist, wDist, intDist;
 
 //this routine could be optimized if it's taking too much time!
 
@@ -924,7 +924,7 @@ fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 {
 	fix			size, dist;
 	vmsVector	hitP, v0, v1, vn, vPos;
-	int			bThisPoly, bOtherPoly;
+	int			bThisPoly, bOtherPoly, bHitBoxes = EGI_FLAG (nHitboxes, 0, 0, 0);
 
 if (rad < 0)
 	size = 0;
@@ -942,12 +942,18 @@ else {
 	// check hit sphere collisions
 VmVecRotate (&vPos, gameData.models.offsets + thisObjP->rType.polyObjInfo.nModel, ObjectView (thisObjP));
 VmVecInc (&vPos, &thisObjP->position.vPos);
-if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &vPos, 2 * size + rad)))
-	return 0;
+if (bHitBoxes) {
+	if (VmLinePointDist (p0, p1, &vPos) > 2 * (thisObjP->size + otherObjP->size))
+		return 0;
+	}
+else {
+	if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &vPos, size + rad)))
+		return 0;
+	}
 
 bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [thisObjP->id]);
 bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [otherObjP->id]);
-if (EGI_FLAG (nHitboxes, 0, 0, 0) && (bThisPoly || bOtherPoly) && 
+if (bHitBoxes && (bThisPoly || bOtherPoly) && 
 	 (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL) && 
 	 (thisObjP->nType != OBJ_HOSTAGE) && (otherObjP->nType != OBJ_HOSTAGE) && 
 	 (thisObjP->nType != OBJ_POWERUP) && (otherObjP->nType != OBJ_POWERUP)) {
@@ -1363,7 +1369,7 @@ int FindVectorIntersection (tVFIQuery *fq, tFVIData *hitData)
 	short			nHitSegment, nHitSegment2;
 	vmsVector	vHitPoint;
 	int			i;
-	tSegMasks		masks;
+	tSegMasks	masks;
 
 Assert(fq->ignoreObjList != (short *)(-1));
 VmVecZero (&gameData.collisions.hitData.vNormal);

@@ -884,7 +884,6 @@ switch (objP->renderType) {
 				if (!DrawPolygonObject (objP, bDepthSort))
 					ConvertWeaponToPowerup (objP);
 				else {
-					gameData.models.nScale = 0;
 					objP->mType.physInfo.mass = F1_0;
 					objP->mType.physInfo.drag = 512;
 					if (gameOpts->render.powerups.nSpin != 
@@ -892,6 +891,7 @@ switch (objP->renderType) {
 						objP->mType.physInfo.rotVel.p.y = 
 						objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 					}
+				gameData.models.nScale = 0;
 				}
 			else
 				ConvertWeaponToPowerup (objP);

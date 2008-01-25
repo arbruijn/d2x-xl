@@ -162,22 +162,24 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void DropMarker (char nPlayerMarker)
+void DropMarker (char nPlayerMarker, int bSpawn)
 {
 	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
 	tObject	*playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 
-if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN") && MoveSpawnMarker (&playerP->position, playerP->nSegment)) {
+if (bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment)) {
 	*gameData.marker.szMessage [nMarker] = '\0';
 	}
 else {
 	gameData.marker.point [nMarker] = playerP->position.vPos;
 	if (gameData.marker.objects [nMarker] != -1)
 		ReleaseObject (gameData.marker.objects [nMarker]);
+	if (bSpawn)
+		strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
 	gameData.marker.objects [nMarker] = 
 		DropMarkerObject (&playerP->position.vPos, (short) playerP->nSegment, &playerP->position.mOrient, nMarker);
-		if (IsMultiGame)
-			MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
+	if (IsMultiGame)
+		MultiSendDropMarker (gameData.multiplayer.nLocalPlayer, playerP->position.vPos, nPlayerMarker, gameData.marker.szMessage [nMarker]);
 	}
 }
 
@@ -191,8 +193,7 @@ if (nMarker < 0)
 	nMarker = (gameData.marker.nLast + 1) % MaxDrop ();
 else
 	nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
-strcpy (gameData.marker.szMessage [nMarker], "SPAWN");
-DropMarker (nMarker);
+DropMarker (nMarker, 1);
 }
 
 //------------------------------------------------------------------------------
@@ -262,7 +263,7 @@ return -1;
 
 tObject *SpawnMarkerObject (int nPlayer)
 {
-	int	i = IsCoopGame || !IsMultiGame ? SpawnMarkerIndex (nPlayer) : -1;
+	int	i = (IsCoopGame || !IsMultiGame) ? SpawnMarkerIndex (nPlayer) : -1;
 
 return (i < 0) ? NULL : OBJECTS + gameData.marker.objects [i];
 }
@@ -346,6 +347,8 @@ gameData.marker.nCurrent = i;
 
 void MarkerInputMessage (int key)
 {
+	int nMarker, bSpawn;
+
 switch (key) {
 	case KEY_F8:
 	case KEY_ESC:
@@ -362,11 +365,14 @@ switch (key) {
 		break;
 
 	case KEY_ENTER:
+		nMarker = (gameData.multiplayer.nLocalPlayer * 2)+gameData.marker.nCurrent;
 		strupr (gameData.marker.szInput);
-		strcpy (gameData.marker.szMessage [(gameData.multiplayer.nLocalPlayer*2)+gameData.marker.nCurrent], gameData.marker.szInput);
+		strcpy (gameData.marker.szMessage [nMarker], gameData.marker.szInput);
 		if (IsMultiGame)
-		 strcpy (gameData.marker.nOwner [(gameData.multiplayer.nLocalPlayer*2)+gameData.marker.nCurrent],LOCALPLAYER.callsign);
-		DropMarker (gameData.marker.nCurrent);
+			strcpy (gameData.marker.nOwner [nMarker], LOCALPLAYER.callsign);
+		if (bSpawn = !strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
+			*gameData.marker.szMessage [nMarker] = '\0';
+		DropMarker (gameData.marker.nCurrent, bSpawn);
 		gameData.marker.nLast = gameData.marker.nCurrent;
 		GameFlushInputs ();
 		gameData.marker.nDefiningMsg = 0;

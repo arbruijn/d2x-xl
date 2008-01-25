@@ -1885,7 +1885,8 @@ gameStates.ogl.fAlpha = GR_ACTUAL_FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) && 
 	  (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) ||
 	 gameStates.render.bShadowMaps) {
-	RenderStartFrame ();
+	if (!gameStates.render.automap.bDisplay)
+		RenderStartFrame ();
 #if USE_SEGRADS
 	TransformSideCenters ();
 #endif

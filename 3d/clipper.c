@@ -30,8 +30,8 @@ void init_free_points(void)
 {
 	int i;
 
-	for (i=0;i<MAX_POINTS_IN_POLY;i++)
-		free_points[i] = &temp_points[i];
+for (i = 0; i < MAX_POINTS_IN_POLY; i++)
+	free_points [i] = temp_points + i;
 }
 
 

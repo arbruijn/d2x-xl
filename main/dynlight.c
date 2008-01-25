@@ -681,8 +681,12 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGB
 #endif
 #if HEADLIGHT_TRANSFORMATION == 0
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
+#if 0
 	glMatrixMode (GL_MODELVIEW);
 	glLoadIdentity ();
+#else
+	G3StartFrame (0, 0);
+#endif
 	G3SetViewMatrix (&gameData.objs.viewer->position.vPos, 
 						  &gameData.objs.viewer->position.mOrient, 
 						  gameStates.render.xZoom, 1);

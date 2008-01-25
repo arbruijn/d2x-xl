@@ -33,6 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "glare.h"
 #include "sphere.h"
 #include "flightpath.h"
+#include "marker.h"
 #include "objsmoke.h"
 #include "objrender.h"
 #include "objeffects.h"
@@ -45,9 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void RenderObjectHalo (vmsVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona)
 {
-if (!bCorona)
-	bCorona = 0;
-if (gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ())) {
+if ((gameOpts->render.bShotCoronas && (bCorona ? LoadCorona () : LoadHalo ()))) {
 	tRgbaColorf	c = {red, green, blue, alpha};
 	glDepthMask (0);
 	G3DrawSprite (vPos, xSize, xSize, bCorona ? bmpCorona : bmpHalo, &c, alpha * 4.0f / 3.0f, 1);
@@ -407,7 +406,11 @@ void RenderMslLockIndicator (tObject *objP)
 	float					r, r2;
 	int					nTgtInd, bHasDmg, bVertexArrays, bMarker = (objP->nType == OBJ_MARKER);
 
-if (!bMarker) {
+if (bMarker) {
+	if (objP != SpawnMarkerObject (-1))
+		return;
+	}
+else {
 	if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0))
 		return;
 	if (!IS_TRACK_GOAL (objP))

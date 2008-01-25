@@ -328,6 +328,7 @@ if (gameStates.render.color.bLightMapsOk)
 InitLightmapShaders ();
 #endif
 InitTexMergeShaders ();
+gameData.render.ogl.nHeadLights = 0;
 InitLightingShaders (1);
 InitVertLightShader ();
 InitGlareShader ();

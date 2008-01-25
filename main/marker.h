@@ -17,7 +17,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "player.h"
 
-void DropMarker (char nPlayerMarker);
 void DropBuddyMarker (tObject *objP);
 void DropSpawnMarker (void);
 void DrawMarkers (void);

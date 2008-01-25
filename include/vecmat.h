@@ -95,6 +95,10 @@ vmsAngVec *VmAngVecMake (vmsAngVec * v, fixang p, fixang b, fixang h);
 extern vmsVector vmdZeroVector;
 extern vmsMatrix vmdIdentityMatrix;
 
+//returns magnitude of a vector
+fix VmVecMag (vmsVector *v);
+float VmVecMagf (fVector *v);
+
 //Here's a handy constant
 
 #define ZERO_VECTOR {{0,0,0}}
@@ -116,10 +120,10 @@ static inline fVector *VmVecNegatef (fVector *v)
 #if INLINE_VEC_ADD
 
 static inline vmsVector *VmVecAdd (vmsVector *d, vmsVector *s0, vmsVector *s1)
-	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z;return d;}
+	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z; return d;}
 
 static inline vmsVector *VmVecSub (vmsVector *d, vmsVector *s0, vmsVector *s1)
-	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z;return d;}
+	{d->p.x = s0->p.x - s1->p.x; d->p.y = s0->p.y - s1->p.y; d->p.z = s0->p.z - s1->p.z; return d;}
 
 static inline fVector *VmVecAddf (fVector *d, fVector *s0, fVector *s1)
 	{d->p.x = s0->p.x + s1->p.x; d->p.y = s0->p.y + s1->p.y; d->p.z = s0->p.z + s1->p.z; return d;}
@@ -147,6 +151,8 @@ static inline fVector *VmsVecToFloat (fVector *d, vmsVector *s)
 
 static inline fVector3 *VmsVecToFloat3 (fVector3 *d, vmsVector *s)
 	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); return d;}
+
+static inline fix VmVecDist(vmsVector *v0, vmsVector *v1) {vmsVector d; VmVecSub (&d, v0, v1); return VmVecMag (&d); }
 
 fMatrix *VmsMatToFloat (fMatrix *dest, vmsMatrix *src);
 
@@ -220,10 +226,6 @@ fVector *VmVecScaleIncf3 (fVector *dest, fVector *src, float scale);
 //scales a vector in place, taking n/d for scale.  returns ptr to vector
 //dest *= n/d
 vmsVector *VmVecScaleFrac (vmsVector *dest, fix n, fix d);
-
-//returns magnitude of a vector
-fix VmVecMag (vmsVector *v);
-float VmVecMagf (fVector *v);
 
 //computes the distance between two points. (does sub and mag)
 fix VmVecDist (vmsVector *v0, vmsVector *v1);
