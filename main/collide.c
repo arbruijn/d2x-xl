@@ -2114,19 +2114,19 @@ return 1;
 
 extern int Network_gotPowerup; // HACK!!!
 
-int CollidePlayerAndPowerup (tObject * playerObjP, tObject * powerup, vmsVector *vHitPt) 
+int CollidePlayerAndPowerup (tObject * playerObjP, tObject * powerupP, vmsVector *vHitPt) 
 { 
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && 
 	(playerObjP->id == gameData.multiplayer.nLocalPlayer)) {
-	int bPowerupUsed = DoPowerup (powerup, playerObjP->id);
+	int bPowerupUsed = DoPowerup (powerupP, playerObjP->id);
 	if (bPowerupUsed) {
-		KillObject (powerup);
-		if (gameData.app.nGameMode & GM_MULTI)
-			MultiSendRemObj (OBJ_IDX (powerup));
+		KillObject (powerupP);
+		if (IsMultiGame)
+			MultiSendRemObj (OBJ_IDX (powerupP));
 		}
 	}
 else if (IsCoopGame && (playerObjP->id != gameData.multiplayer.nLocalPlayer)) {
-	switch (powerup->id) {
+	switch (powerupP->id) {
 		case POW_KEY_BLUE:
 			gameData.multiplayer.players [playerObjP->id].flags |= PLAYER_FLAGS_BLUE_KEY;
 			break;
@@ -2140,7 +2140,7 @@ else if (IsCoopGame && (playerObjP->id != gameData.multiplayer.nLocalPlayer)) {
 			break;
 		}
 	}
-DetectEscortGoalAccomplished (OBJ_IDX (powerup));
+DetectEscortGoalAccomplished (OBJ_IDX (powerupP));
 return 1; 
 }
 

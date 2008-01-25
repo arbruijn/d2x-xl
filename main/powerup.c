@@ -520,7 +520,7 @@ if (nPlayer < 0)
 playerP = gameData.multiplayer.players + nPlayer;
 bLocalPlayer = (nPlayer == gameData.multiplayer.nLocalPlayer);
 if (bLocalPlayer &&
-	 ((gameStates.app.bPlayerIsDead) || 
+	 (gameStates.app.bPlayerIsDead || 
 	  (gameData.objs.console->nType == OBJ_GHOST) || 
 	  (playerP->shields < 0)))
 	return 0;

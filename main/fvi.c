@@ -917,6 +917,22 @@ return xDist;
 }
 
 //	-----------------------------------------------------------------------------
+
+static inline int UseHitbox (tObject *objP)
+{
+return (objP->renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0); // && ((objP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [objP->id]);
+}
+
+//	-----------------------------------------------------------------------------
+
+static inline int UseSphere (tObject *objP)
+{
+	int nType = objP->nType;
+
+return (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP);
+}
+
+//	-----------------------------------------------------------------------------
 //determine if a vector intersects with an tObject
 //if no intersects, returns 0, else fills in intP and returns dist
 fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad, 
@@ -924,7 +940,7 @@ fix CheckVectorToObject (vmsVector *intP, vmsVector *p0, vmsVector *p1, fix rad,
 {
 	fix			size, dist;
 	vmsVector	hitP, v0, v1, vn, vPos;
-	int			bThisPoly, bOtherPoly, bHitBoxes = EGI_FLAG (nHitboxes, 0, 0, 0);
+	int			bThisPoly, bOtherPoly;
 
 if (rad < 0)
 	size = 0;
@@ -942,38 +958,15 @@ else {
 	// check hit sphere collisions
 VmVecRotate (&vPos, gameData.models.offsets + thisObjP->rType.polyObjInfo.nModel, ObjectView (thisObjP));
 VmVecInc (&vPos, &thisObjP->position.vPos);
-if (bHitBoxes) {
-	if (VmLinePointDist (p0, p1, &vPos) > 2 * (thisObjP->size + otherObjP->size))
+bThisPoly = UseHitbox (thisObjP);
+bOtherPoly = UseHitbox (otherObjP);
+if (EGI_FLAG (nHitboxes, 0, 0, 0) && 
+	 !(UseSphere (thisObjP) || UseSphere (otherObjP)) && 
+	 (bThisPoly || bOtherPoly)) {
+	VmPointLineIntersection (&hitP, p0, p1, &vPos, NULL, 0);
+	dist = VmVecDist (&hitP, &vPos);
+	if (dist > 2 * (thisObjP->size + otherObjP->size))
 		return 0;
-	}
-else {
-	if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &vPos, size + rad)))
-		return 0;
-	}
-
-bThisPoly = (thisObjP->renderType == RT_POLYOBJ) && (thisObjP->rType.polyObjInfo.nModel >= 0); // && ((thisObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [thisObjP->id]);
-bOtherPoly = (otherObjP->renderType == RT_POLYOBJ) && (otherObjP->rType.polyObjInfo.nModel >= 0); // && ((otherObjP->nType != OBJ_WEAPON) || gameData.objs.bIsMissile [otherObjP->id]);
-if (bHitBoxes && (bThisPoly || bOtherPoly) && 
-	 (thisObjP->nType != OBJ_MONSTERBALL) && (otherObjP->nType != OBJ_MONSTERBALL) && 
-	 (thisObjP->nType != OBJ_HOSTAGE) && (otherObjP->nType != OBJ_HOSTAGE) && 
-	 (thisObjP->nType != OBJ_POWERUP) && (otherObjP->nType != OBJ_POWERUP)) {
-#if 0//def RELEASE
-	dist = VmLinePointDist (p0, p1, &thisObjP->position.vPos);
-	//HUDMessage (0, "%1.2f %1.2f", f2fl (dist), f2fl (thisObjP->size + otherObjP->size));
-	if (dist > (size = thisObjP->size + otherObjP->size))
-		return 0;
-#	if 0
-	if (((thisObjP->nType == OBJ_PLAYER) || (thisObjP->nType == OBJ_ROBOT)) && 
-		 ((otherObjP->nType == OBJ_PLAYER) || (otherObjP->nType == OBJ_ROBOT)))
-		size /= 2;
-	else
-		size /= 4;
-	if (dist < size) {	// objects probably already stuck in each other
-		VmVecScaleFrac (VmVecAdd (intP, &thisObjP->position.vPos, &otherObjP->position.vPos), 1, 2);
-		return 1;
-		}
-#	endif
-#endif
 	// check hitbox collisions for all polygonal objects
 	if (bThisPoly && bOtherPoly) {
 		if (!(dist = CheckHitboxToHitbox (&hitP, otherObjP, thisObjP, p0, p1)))
@@ -1001,6 +994,10 @@ if (bHitBoxes && (bThisPoly || bOtherPoly) &&
 			VmPointLineIntersection (&hitP, p0, p1, &hitP, &thisObjP->position.vPos, 1);
 			}
 		}
+	}
+else {
+	if (!(dist = CheckVectorToSphere1 (&hitP, p0, p1, &vPos, size + rad)))
+		return 0;
 	}
 *intP = hitP;
 return dist;

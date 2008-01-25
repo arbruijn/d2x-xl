@@ -873,7 +873,7 @@ if (gameData.multiplayer.players [playerObjP->id].secondaryWeaponFlags & nWeapon
 
 MaybeDropDeviceEgg (tPlayer *playerP, tObject *playerObjP, int nDeviceFlag, int nPowerupId)
 {
-if ((playerP->flags & PLAYER_FLAGS_QUAD_LASERS) && 
+if ((gameData.multiplayer.players [playerObjP->id].flags & nDeviceFlag) &&
 	 !(IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && (extraGameInfo [1].loadout.nDevices & nDeviceFlag)))
 	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerupId);
 }
