@@ -466,7 +466,7 @@ if (gameOpts->render.nMathFormat == 2) {
 #endif
 	}
 else {
-#if 1//def _WIN32
+#if 0//def _WIN32
 	QLONG q = mul64 (v->p.x, v->p.x);
 	q += mul64 (v->p.y, v->p.y);
 	q += mul64 (v->p.z, v->p.z);
