@@ -496,7 +496,11 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
 if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1]) {
-	LOCALPLAYER.primaryWeaponFlags  |= extraGameInfo [1].loadout.nGuns;
+	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [1].loadout.nGuns;
+	if (extraGameInfo [1].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX))
+		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
+	else if (extraGameInfo [1].loadout.nGuns & HAS_FLAG (LASER_INDEX))
+		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
 	if (extraGameInfo [1].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
 		LOCALPLAYER.primaryAmmo [1] = i2f (5000) / VULCAN_AMMO_SCALE;
 	LOCALPLAYER.flags |= extraGameInfo [1].loadout.nDevices;
@@ -510,7 +514,7 @@ LOCALPLAYER.homingObjectDist = -F1_0; // Added by RH
 Controls [0].afterburnerState = 0;
 gameStates.gameplay.bLastAfterburnerState = 0;
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
-gameData.objs.missileViewer=NULL;		///reset missile camera if out there
+gameData.objs.missileViewer = NULL;		///reset missile camera if out there
 #ifdef TACTILE
 	if (TactileStick)
 	{
@@ -2201,7 +2205,7 @@ else if (bRandom == 1) {
 					break;
 				}
 			}
-		if (!bRandom || (spawnMap [i].xDist < SPAWN_MIN_DIST))
+		if (!bRandom || (spawnMap [i].xDist > SPAWN_MIN_DIST))
 			break;
 		if (i < --nSpawnSegs)
 			memcpy (spawnMap + i, spawnMap + i + 1, nSpawnSegs - i);

@@ -1316,23 +1316,29 @@ return nObject;
 
 //	-----------------------------------------------------------------------------
 
+static inline int IsBuiltInDevice (int nDeviceFlag)
+{
+return IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && ((extraGameInfo [1].loadout.nDevices & nDeviceFlag) != 0);
+}
+
+//	-----------------------------------------------------------------------------
+
+static inline int IsBuiltInGun (int nGunIndex)
+{
+return IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && ((extraGameInfo [1].loadout.nGuns & HAS_FLAG (nGunIndex)) != 0);
+}
+
+//	-----------------------------------------------------------------------------
+
 void DropCurrentWeapon (void)
 {
 	int	nObject = -1, 
 			ammo = 0, 
 			seed;
-#if 0
-if (gameData.weapons.nPrimary == 0) {
-	if (extraGameInfo [IsMultiGame].nWeaponDropMode ||
-		((LOCALPLAYER.laserLevel <= MAX_LASER_LEVEL) &&
-			!(LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))) {
-	HUDInitMessage (TXT_CANT_DROP_PRIM);
-	return;
-	}
-#endif
+
 seed = d_rand ();
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
+	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
 		nObject = SpitPowerup (gameData.objs.console, POW_QUADLASER, seed);
 		if (nObject == -1) {
@@ -1341,7 +1347,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 			}
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
-	else if (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) {
+	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltInGun (SUPER_LASER_INDEX)) {
 		LOCALPLAYER.laserLevel--;
 		nObject = SpitPowerup (gameData.objs.console, POW_SUPERLASER, seed);
 		if (nObject == -1) {
@@ -1350,27 +1356,14 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 			}
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
-#if 0
-	// cannot drop standard lasers because picking up super lasers will automatically
-	// give you laser level 4, allowing an exploit by dropping all lasers, picking up
-	// the super lasers first, thus receiving laser level 4, etc.
-	else if (LOCALPLAYER.primaryWeaponFlags & 1) {
-		if (0 > (nObject = SpitPowerup (gameData.objs.console, POW_LASER, seed)))
-			return;
-		if (LOCALPLAYER.laserLevel)
-			LOCALPLAYER.laserLevel--;
-		else
-			LOCALPLAYER.primaryWeaponFlags &= ~1;
-		HUDInitMessage(TXT_DROP_LASER);
-		}
-#endif
 	}
 else {
 	if ((gameData.weapons.nPrimary == 4) && gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
 		gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
-	else if (gameData.weapons.nPrimary)	//if selected weapon was not the laser
+	else if (gameData.weapons.nPrimary && !IsBuiltInGun (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
-	nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
+		nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
+		}
 	if (nObject == -1) {
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
 			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);

@@ -1104,17 +1104,15 @@ Assert (opt <= sizeofa (m));
 do {
 	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, NetworkLoadoutCallback, 0);
 	} while (i != -1);
+extraGameInfo [1].loadout.nGuns = 0;
 for (i = 0; i < sizeofa (pszGuns); i++) {
 	if (m [optGuns + i].value)
 		extraGameInfo [1].loadout.nGuns |= (1 << i);
-	else
-		extraGameInfo [1].loadout.nGuns &= ~(1 << i);
 	}
+extraGameInfo [1].loadout.nDevices = 0;
 for (i = 0; i < sizeofa (pszDevices); i++) {
 	if (m [optDevices + i].value)
-		extraGameInfo [1].loadout.nDevices |= (nDeviceFlags [i] << i);
-	else
-		extraGameInfo [1].loadout.nDevices &= ~(nDeviceFlags [i] << i);
+		extraGameInfo [1].loadout.nDevices |= nDeviceFlags [i];
 	}
 }
 
