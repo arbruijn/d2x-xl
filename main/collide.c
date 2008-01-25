@@ -1281,7 +1281,7 @@ con_printf (CONDBG, "Collided with marker %d! \n", marker->id);
 if (playerObjP->id==gameData.multiplayer.nLocalPlayer) {
 	int drawn;
 
-	if (gameData.app.nGameMode & GM_MULTI)
+	if (IsMultiGame && !IsCoopGame)
 		drawn = HUDInitMessage (TXT_MARKER_PLRMSG, gameData.multiplayer.players [marker->id/2].callsign, gameData.marker.szMessage [marker->id]);
 	else
 		if (gameData.marker.szMessage [marker->id][0])

@@ -167,10 +167,7 @@ void DropMarker (char nPlayerMarker, int bSpawn)
 	ubyte		nMarker = (gameData.multiplayer.nLocalPlayer * 2) + nPlayerMarker;
 	tObject	*playerP = gameData.objs.objects + LOCALPLAYER.nObject;
 
-if (bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment)) {
-	*gameData.marker.szMessage [nMarker] = '\0';
-	}
-else {
+if (!(bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment))) {
 	gameData.marker.point [nMarker] = playerP->position.vPos;
 	if (gameData.marker.objects [nMarker] != -1)
 		ReleaseObject (gameData.marker.objects [nMarker]);
@@ -252,7 +249,7 @@ if (nPlayer < 0)
 	nPlayer = gameData.multiplayer.nLocalPlayer;
 for (i = nPlayer * 2, h = i + nMaxDrop; i < h; i++) {
 	if (gameData.marker.objects [i] < 0)		//found free slot!
-		break;
+		continue;
 	if (!strcmp (gameData.marker.szMessage [i], "SPAWN"))
 		return i;
 	}
