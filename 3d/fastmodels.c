@@ -672,19 +672,19 @@ VmsVecToFloat (&vOffset, gameData.models.offsets + nModel);
 if (IsMultiGame || !(vOffset.p.x || vOffset.p.y || vOffset.p.z))
 	return 0;
 for (i = pm->nVerts, pv = pm->pVerts; i; i--, pv++) {
-	pv->p.x -= vOffset.p.x;
-	pv->p.y -= vOffset.p.y;
-	pv->p.z -= vOffset.p.z;
+	pv->p.x += vOffset.p.x;
+	pv->p.y += vOffset.p.y;
+	pv->p.z += vOffset.p.z;
 	}
 for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++)
 	pmv->vertex = pm->pVerts [pmv->nIndex];
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
-	psm->vMin.p.x -= vOffset.p.x;
-	psm->vMin.p.y -= vOffset.p.y;
-	psm->vMin.p.z -= vOffset.p.z;
-	psm->vMax.p.x -= vOffset.p.x;
-	psm->vMax.p.y -= vOffset.p.y;
-	psm->vMax.p.z -= vOffset.p.z;
+	psm->vMin.p.x += vOffset.p.x;
+	psm->vMin.p.y += vOffset.p.y;
+	psm->vMin.p.z += vOffset.p.z;
+	psm->vMax.p.x += vOffset.p.x;
+	psm->vMax.p.y += vOffset.p.y;
+	psm->vMax.p.z += vOffset.p.z;
 	}
 return 1;
 }
@@ -734,9 +734,15 @@ do {
 		if (phb [0].vMax.p.z < hv.p.z)
 			phb [0].vMax.p.z = hv.p.z;
 		}
-	gameData.models.offsets [nModel].p.x = (phb [0].vMax.p.x + phb [0].vMin.p.x) / 2;
-	gameData.models.offsets [nModel].p.y = (phb [0].vMax.p.y + phb [0].vMin.p.y) / 2;
-	gameData.models.offsets [nModel].p.z = (phb [0].vMax.p.z + phb [0].vMin.p.z) / 2;
+	if (IsMultiGame)
+		gameData.models.offsets [nModel].p.x =
+		gameData.models.offsets [nModel].p.y =
+		gameData.models.offsets [nModel].p.z = 0;
+	else {
+		gameData.models.offsets [nModel].p.x = (phb [0].vMin.p.x + phb [0].vMax.p.x) / 2;
+		gameData.models.offsets [nModel].p.y = (phb [0].vMin.p.y + phb [0].vMax.p.y) / 2;
+		gameData.models.offsets [nModel].p.z = (phb [0].vMin.p.z + phb [0].vMax.p.z) / 2;
+		}
 	} while (G3ShiftModel (nModel, bHires));
 dx = (phb [0].vMax.p.x - phb [0].vMin.p.x) / 2;
 dy = (phb [0].vMax.p.y - phb [0].vMin.p.y) / 2;

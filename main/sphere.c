@@ -514,7 +514,7 @@ else
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
 #if SIMPLE_SPHERE
-glTranslatef (-pPos->x, -pPos->y, pPos->z);
+glTranslatef (pPos->x, pPos->y, pPos->z);
 RenderSphereSimple (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 #else
 #	if 1
