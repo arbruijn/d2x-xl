@@ -483,7 +483,7 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 	for (i = 0; i < 4; i++) {
 		if (lightingShaderProgs [i])
 			DeleteShaderProg (lightingShaderProgs + i);
-#if 0//ndef _DEBUG
+#ifndef _DEBUG
 		if (nLights == 1)
 			pszFS = lightingFS [i];
 		else
