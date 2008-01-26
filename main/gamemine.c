@@ -2128,7 +2128,6 @@ else {
 	LoadTexColorsCompiled (-1, loadFile);
 	ComputeSegSideCenters (-1);
 	}
-CreateFaceList ();
 if (!(gameStates.app.bNostalgia || gameStates.render.bColored || (gameStates.render.bColored = HasColoredLight ())))
 	InitTexColors ();
 ResetObjects (1);		//one tObject, the player

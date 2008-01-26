@@ -1499,12 +1499,13 @@ char *Level_being_loaded=NULL;
 
 int no_oldLevel_file_error=0;
 
+// ----------------------------------------------------------------------------
 //loads a level (.LVL) file from disk
 //returns 0 if success, else error code
 int LoadLevelSub(char * filename_passed)
 {
 #ifdef EDITOR
-	int use_compiledLevel=1;
+	int bUseCompiledLevel = 1;
 #endif
 	CFILE cf;
 	char filename [128];
@@ -1527,11 +1528,11 @@ strcpy(filename,filename_passed);
 	//if we don't have the editor, we just use what was passed
 
 	ChangeFilenameExtension(filename,filename_passed,".lvl");
-	use_compiledLevel = 0;
+	bUseCompiledLevel = 0;
 
 	if (!CFExist(filename))	{
 		ChangeFilenameExtension(filename,filename,".rl2");
-		use_compiledLevel = 1;
+		bUseCompiledLevel = 1;
 	}	
 #endif
 
@@ -1630,7 +1631,7 @@ if (gameData.segs.nLevelVersion < 6) {
 }
 
 #ifdef EDITOR
-if (!use_compiledLevel) {
+if (!bUseCompiledLevel) {
 	CFSeek (&cf,minedata_offset, SEEK_SET);
 	mine_err = load_mine_data(&cf);
 #if 0 // get from d1src if needed
@@ -1645,7 +1646,7 @@ else
 	CFSeek (&cf, gamedata_offset, SEEK_SET);
 	game_err = LoadMineDataCompiled (&cf, 1);
 	CFSeek (&cf, minedata_offset, SEEK_SET);
-	mine_err = LoadMineSegmentsCompiled( &cf);
+	mine_err = LoadMineSegmentsCompiled (&cf);
 	}
 if (mine_err == -1) {   //error!!
 	CFClose(&cf);
@@ -1658,6 +1659,7 @@ if (game_err == -1) {   //error!!
 	return 3;
 	}
 CFClose(&cf);
+CreateFaceList ();
 SetAmbientSoundFlags ();
 #ifdef EDITOR
 write_game_text_file(filename);

@@ -1743,66 +1743,66 @@ int WClipReadN(tWallClip *wc, int n, CFILE *fp)
 {
 	int i, j;
 
-	for (i = 0; i < n; i++) {
-		wc [i].xTotalTime = CFReadFix(fp);
-		wc [i].nFrameCount = CFReadShort(fp);
-		for (j = 0; j < MAX_CLIP_FRAMES; j++)
-			wc [i].frames [j] = CFReadShort(fp);
-		wc [i].openSound = CFReadShort(fp);
-		wc [i].closeSound = CFReadShort(fp);
-		wc [i].flags = CFReadShort(fp);
-		CFRead(wc [i].filename, 13, 1, fp);
-		wc [i].pad = CFReadByte(fp);
+for (i = 0; i < n; i++) {
+	wc [i].xTotalTime = CFReadFix(fp);
+	wc [i].nFrameCount = CFReadShort(fp);
+	for (j = 0; j < MAX_CLIP_FRAMES; j++)
+		wc [i].frames [j] = CFReadShort(fp);
+	wc [i].openSound = CFReadShort(fp);
+	wc [i].closeSound = CFReadShort(fp);
+	wc [i].flags = CFReadShort(fp);
+	CFRead(wc [i].filename, 13, 1, fp);
+	wc [i].pad = CFReadByte(fp);
 	}
-	return i;
+return i;
 }
 
 /*
  * reads a tWallV16 structure from a CFILE
  */
-extern void ReadWallV16(tWallV16 *w, CFILE *fp)
+void ReadWallV16(tWallV16 *w, CFILE *fp)
 {
-	w->nType = CFReadByte(fp);
-	w->flags = CFReadByte(fp);
-	w->hps = CFReadFix(fp);
-	w->nTrigger = (ubyte) CFReadByte(fp);
-	w->nClip = CFReadByte(fp);
-	w->keys = CFReadByte(fp);
+w->nType = CFReadByte(fp);
+w->flags = CFReadByte(fp);
+w->hps = CFReadFix(fp);
+w->nTrigger = (ubyte) CFReadByte(fp);
+w->nClip = CFReadByte(fp);
+w->keys = CFReadByte(fp);
 }
 
 /*
  * reads a tWallV19 structure from a CFILE
  */
-extern void ReadWallV19(tWallV19 *w, CFILE *fp)
+void ReadWallV19(tWallV19 *w, CFILE *fp)
 {
-	w->nSegment = CFReadInt(fp);
-	w->nSide = CFReadInt(fp);
-	w->nType = CFReadByte(fp);
-	w->flags = CFReadByte(fp);
-	w->hps = CFReadFix(fp);
-	w->nTrigger = (ubyte) CFReadByte(fp);
-	w->nClip = CFReadByte(fp);
-	w->keys = CFReadByte(fp);
-	w->nLinkedWall = CFReadInt(fp);
+w->nSegment = CFReadInt(fp);
+w->nSide = CFReadInt(fp);
+w->nType = CFReadByte(fp);
+w->flags = CFReadByte(fp);
+w->hps = CFReadFix(fp);
+w->nTrigger = (ubyte) CFReadByte(fp);
+w->nClip = CFReadByte(fp);
+w->keys = CFReadByte(fp);
+w->nLinkedWall = CFReadInt(fp);
 }
 
 /*
  * reads a tWall structure from a CFILE
  */
-extern void ReadWall(tWall *w, CFILE *fp)
+void ReadWall(tWall *w, CFILE *fp)
 {
-	w->nSegment = CFReadInt(fp);
-	w->nSide = CFReadInt(fp);
-	w->hps = CFReadFix(fp);
-	w->nLinkedWall = CFReadInt(fp);
-	w->nType = CFReadByte(fp);
-	w->flags = CFReadByte(fp);
-	w->state = CFReadByte(fp);
-	w->nTrigger = (ubyte) CFReadByte(fp);
-	w->nClip = CFReadByte(fp);
-	w->keys = CFReadByte(fp);
-	w->controllingTrigger = CFReadByte(fp);
-	w->cloakValue = CFReadByte(fp);
+w->nSegment = CFReadInt(fp);
+w->nSide = CFReadInt(fp);
+w->hps = CFReadFix(fp);
+w->nLinkedWall = CFReadInt(fp);
+w->nType = CFReadByte(fp);
+w->flags = CFReadByte(fp);
+w->state = CFReadByte(fp);
+w->nTrigger = (ubyte) CFReadByte(fp);
+w->nClip = CFReadByte(fp);
+w->keys = CFReadByte(fp);
+w->controllingTrigger = CFReadByte(fp);
+w->cloakValue = CFReadByte(fp);
 }
 
 /*

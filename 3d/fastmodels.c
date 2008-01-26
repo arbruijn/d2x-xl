@@ -659,7 +659,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3ShiftModel (int nModel, int bHires)
+int G3ShiftModel (tObject *objP, int nModel, int bHires)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm;
@@ -669,7 +669,8 @@ int G3ShiftModel (int nModel, int bHires)
 	tG3ModelVertex	*pmv;
 
 VmsVecToFloat (&vOffset, gameData.models.offsets + nModel);
-if (IsMultiGame || !(vOffset.p.x || vOffset.p.y || vOffset.p.z))
+if (IsMultiGame || !(vOffset.p.x || vOffset.p.y || vOffset.p.z) ||
+	 ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_ROBOT)))
 	return 0;
 for (i = pm->nVerts, pv = pm->pVerts; i; i--, pv++) {
 	pv->p.x += vOffset.p.x;
@@ -691,7 +692,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-fix G3ModelSize (tG3Model *pm, int nModel, int bHires)
+fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 {
 	int			nSubModels = pm->nSubModels;
 	tG3SubModel	*psm;
@@ -739,11 +740,11 @@ do {
 		gameData.models.offsets [nModel].p.y =
 		gameData.models.offsets [nModel].p.z = 0;
 	else {
-		gameData.models.offsets [nModel].p.x = (phb [0].vMin.p.x + phb [0].vMax.p.x) / 2;
-		gameData.models.offsets [nModel].p.y = (phb [0].vMin.p.y + phb [0].vMax.p.y) / 2;
-		gameData.models.offsets [nModel].p.z = (phb [0].vMin.p.z + phb [0].vMax.p.z) / 2;
+		gameData.models.offsets [nModel].p.x = (phb [0].vMin.p.x + phb [0].vMax.p.x) / -2;
+		gameData.models.offsets [nModel].p.y = (phb [0].vMin.p.y + phb [0].vMax.p.y) / -2;
+		gameData.models.offsets [nModel].p.z = (phb [0].vMin.p.z + phb [0].vMax.p.z) / -2;
 		}
-	} while (G3ShiftModel (nModel, bHires));
+	} while (G3ShiftModel (objP, nModel, bHires));
 dx = (phb [0].vMax.p.x - phb [0].vMin.p.x) / 2;
 dy = (phb [0].vMax.p.y - phb [0].vMin.p.y) / 2;
 dz = (phb [0].vMax.p.z - phb [0].vMin.p.z) / 2;
@@ -758,7 +759,7 @@ return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
 
 //------------------------------------------------------------------------------
 
-int G3BuildModelFromOOF (int nModel)
+int G3BuildModelFromOOF (tObject *objP, int nModel)
 {
 	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
 	tG3Model		*pm;
@@ -778,14 +779,14 @@ if (!G3AllocModel (pm))
 G3InitSubModelMinMax (pm->pSubModels);
 G3GetOOFModelItems (nModel, po, pm);
 pm->pTextures = po->textures.pBitmaps;
-gameData.models.polyModels [nModel].rad = G3ModelSize (pm, nModel, 1);
+gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1);
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
+int G3BuildModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
 {
 	tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
 
@@ -794,7 +795,7 @@ if (pm->bValid > 0)
 if (pm->bValid < 0)
 	return 0;
 if (bHires)
-	return G3BuildModelFromOOF (nModel);
+	return G3BuildModelFromOOF (objP, nModel);
 if (!pp->modelData)
 	return 0;
 pm->nSubModels = 1;
@@ -806,7 +807,7 @@ if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
 G3GetModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
-gameData.models.polyModels [nModel].rad = G3ModelSize (pm, nModel, 0);
+gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
 G3SetupModel (pm, 0);
 pm->iSubModel = 0;
 return -1;
@@ -1360,7 +1361,7 @@ if (pm->bValid < 1) {
 		bHires = 0;
 		}
 	else {
-		i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 1);
+		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
 		if (i < 0)	//successfully built new model
 			return 0;
 		pm->bValid = -1;
@@ -1369,7 +1370,7 @@ if (pm->bValid < 1) {
 	if (pm->bValid < 0)
 		return 0;
 	if (!(i || pm->bValid)) {
-		i = G3BuildModel (nModel, pp, modelBitmaps, pObjColor, 0);
+		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 0);
 		if (i <= 0) {
 			if (!i)
 				pm->bValid = -1;

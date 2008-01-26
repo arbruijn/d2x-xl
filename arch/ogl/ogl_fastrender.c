@@ -571,8 +571,13 @@ if (!(bMonitor || bOverlay)) {
 	}
 #endif
 #if 1
-if (bBlend)
+if (bBlend) {
 	glEnable (GL_BLEND);
+	if (FaceIsAdditive (faceP))
+		glBlendFunc (GL_ONE, GL_ONE);
+	else
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 else
 	glDisable (GL_BLEND);
 #endif

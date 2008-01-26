@@ -18,6 +18,13 @@ int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf 
 
 //------------------------------------------------------------------------------
 
+static inline bool FaceIsAdditive (grsFace *faceP)
+{
+return (faceP->bAdditive == 2) || ((faceP->bAdditive == 1) && !(faceP->bmBot && faceP->bmBot->bmFromPog));
+}
+
+//------------------------------------------------------------------------------
+
 static inline bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, 
 										 int bBlend, int bTextured, int bDepthOnly, int bVertexArrays)
 {
