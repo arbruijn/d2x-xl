@@ -147,6 +147,7 @@ extern size_t bitmapCacheSize;
 extern char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
 
 #define	PageInAddonBitmap(bmi) \
-			{if (bmi >= -MAX_ADDON_BITMAP_FILES) PageInBitmap (gameData.pig.tex.addonBitmaps - bmi - 1, szAddonTextures [-bmi - 1], bmi, 0);}
+			{if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES)) \
+			 PageInBitmap (gameData.pig.tex.addonBitmaps - bmi - 1, szAddonTextures [-bmi - 1], bmi, 0);}
 
 #endif //_PIGGY_H

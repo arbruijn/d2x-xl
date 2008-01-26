@@ -348,10 +348,6 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	else
 		VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
-#ifdef _DEBUG
-if (!bmP)
-	faceP = faceP;
-#endif
 return RIAddPoly (faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 

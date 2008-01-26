@@ -1607,6 +1607,10 @@ void PageInBitmap (grsBitmap *bmP, char *bmName, int nIndex, int bD1)
 	char				fn [FILENAME_LEN], fnShrunk [FILENAME_LEN];
 	tTgaHeader		h;
 
+#ifdef _DEBUG
+if (!bmName)
+	return;
+#endif
 if (!bmP->bmTexBuf) {
 	StopTime ();
 	nShrinkFactor = 1 << (3 - gameOpts->render.textures.nQuality);

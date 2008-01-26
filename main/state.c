@@ -1446,7 +1446,7 @@ if (!bSecretRestore && !IsMultiGame) {
 		else
 			fc = '0' + nFile;
 		sprintf (temp_fname, "%csecret.sgc", fc);
-		if (CFExist (temp_fname,gameFolders.szSaveDir,0)) {
+		if (CFExist (temp_fname, gameFolders.szSaveDir, 0)) {
 			rval = copy_file (temp_fname, SECRETC_FILENAME);
 			Assert (rval == 0);	//	Oops, error copying temp_fname to secret.sgc!
 			}
