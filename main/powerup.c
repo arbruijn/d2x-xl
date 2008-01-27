@@ -385,7 +385,7 @@ return 0;
 int PickupEquipment (tObject *objP, int nEquipment, char *pszHave, char *pszGot, int nPlayer)
 {
 	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
-	int		bUsed = 0;
+	int		id, bUsed = 0;
 
 if (playerP->flags & nEquipment) {
 	if (ISLOCALPLAYER (nPlayer))
@@ -396,8 +396,11 @@ if (playerP->flags & nEquipment) {
 else {
 	playerP->flags |= nEquipment;
 	if (ISLOCALPLAYER (nPlayer)) {
-		MultiSendPlaySound (gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
-		DigiPlaySample ((short) gameData.objs.pwrUp.info [objP->id].hitSound, F1_0);
+		id = objP->id;
+		if (id >= MAX_POWERUP_TYPES_D2)
+			id = POW_AFTERBURNER;
+		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, F1_0);
+		DigiPlaySample ((short) gameData.objs.pwrUp.info [id].hitSound, F1_0);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
 		}
 	bUsed = -1;

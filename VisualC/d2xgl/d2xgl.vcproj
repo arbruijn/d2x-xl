@@ -1771,6 +1771,9 @@
 						RelativePath="..\..\main\sounds.h">
 					</File>
 					<File
+						RelativePath="..\..\main\soundthreads.h">
+					</File>
+					<File
 						RelativePath="..\..\main\sphere.h">
 					</File>
 					<File
@@ -3193,6 +3196,9 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\soundthreads.c">
+					</File>
+					<File
 						RelativePath="..\..\main\sphere.c">
 					</File>
 					<File
@@ -3575,10 +3581,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

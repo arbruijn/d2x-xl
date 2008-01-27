@@ -130,6 +130,8 @@ static const Uint8 mix8[] =
 
 //end edit by adb
 
+//------------------------------------------------------------------------------
+
 static SDL_AudioSpec WaveSpec;
 
 typedef struct tSoundSlot {
@@ -1012,3 +1014,4 @@ for (i = 0; i < gameStates.sound.digi.nMaxChannels; i++) {
 #endif
 
 //------------------------------------------------------------------------------
+//eof

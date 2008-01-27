@@ -6,6 +6,9 @@
 #include "error.h"
 #include "input.h"
 #include "text.h"
+#include "soundthreads.h"
+
+#define USE_SOUND_THREADS	1
 
 static int nSlowMotionChannel = -1;
 
@@ -199,22 +202,32 @@ for (i = 0; i < 2; i++) {
 			gameStates.gameplay.slowmo [i].fSpeed = f;
 			gameStates.gameplay.slowmo [i].nState = 0;
 			if (!i) {
+#if USE_SOUND_THREADS
+				tiSound.fSlowDown = f;
+				RunSoundThread (stReconfigureAudio);
+#else
 				DigiExit ();
 				DigiInit (f);
 				gameData.songs.tSlowDown = SDL_GetTicks ();
 				gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
 				PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+#endif
 				}
 			}
 		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
 			gameStates.gameplay.slowmo [i].fSpeed = 1;
 			gameStates.gameplay.slowmo [i].nState = 0;
 			if (!i) {
+#if USE_SOUND_THREADS
+				tiSound.fSlowDown = 1.0f;
+				RunSoundThread (stReconfigureAudio);
+#else
 				DigiExit ();
 				DigiInit (1);
 				gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
 											 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
 				PlayLevelSong (gameData.missions.nCurrentLevel, 1);
+#endif
 				}
 			}
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;

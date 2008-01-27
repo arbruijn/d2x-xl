@@ -4635,7 +4635,7 @@ if (m [soundOpts.nRedbook].value != gameStates.sound.bRedbookEnabled) {
 		if (gameStates.app.nFunctionMode == FMODE_MENU)
 			SongsPlaySong (SONG_TITLE, 1);
 		else if (gameStates.app.nFunctionMode == FMODE_GAME)
-			PlayLevelSong (gameData.missions.nCurrentLevel, 0);
+			PlayLevelSong (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
 		else
 			Int3 ();
 
@@ -4668,10 +4668,7 @@ else {
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
 			DigiStopAllChannels ();
-			if (gameStates.app.bGameRunning)
-				PlayLevelSong (gameData.missions.nCurrentLevel, 0);
-			else
-				SongsPlaySong (gameStates.sound.nCurrentSong, 1);
+			PlayLevelSong (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
 			}
 		}
 	}

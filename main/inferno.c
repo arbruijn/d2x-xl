@@ -3016,6 +3016,7 @@ if (gameStates.app.bMultiThreaded) {
 		}
 	StartRenderThreads ();
 	}
+StartSoundThread ();
 gameData.render.vertColor.matAmbient.c.r = 
 gameData.render.vertColor.matAmbient.c.g = 
 gameData.render.vertColor.matAmbient.c.b = 0.01f;

@@ -1731,6 +1731,7 @@ bGameClosed = 1;
 if (gameStates.app.bMultiThreaded) {
 	EndRenderThreads ();
 	}
+EndSoundThread ();
 GrClose ();
 DigiClose ();
 FreeUserSongs ();
