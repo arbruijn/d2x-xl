@@ -38,12 +38,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mission.h"
 #include "u_mem.h"
 
-extern void DigiStopCurrentSong();
+extern void DigiStopCurrentSong ();
 
 
 //0 if redbook is no playing, else the track number
 
-extern int CD_blast_mixer();
+extern int CD_blast_mixer ();
 
 #define REDBOOK_VOLUME_SCALE  (255/3)		//255 is MAX
 
@@ -58,7 +58,7 @@ extern char CDROM_dir [];
 
 //------------------------------------------------------------------------------
 
-void SongsInit()
+void SongsInit ()
 {
 	int	i, bD1Songs;
 	char	*p, inputline [81];
@@ -66,10 +66,10 @@ void SongsInit()
 
 if (gameData.songs.bInitialized) 
 	return;
-CFUseD1HogFile("descent.hog");
+CFUseD1HogFile ("descent.hog");
 for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		if (!FindArg ("-nomixer"))
-			CD_blast_mixer();   // Crank it!
+			CD_blast_mixer ();   // Crank it!
 	if (CFExist ("descent.sng", gameFolders.szDataDir, bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
 		if (!CFOpen (&cf, "descent.sng", gameFolders.szDataDir, "rb", bD1Songs)) {
 			if (bD1Songs)
@@ -103,17 +103,17 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 	gameData.songs.nTotalSongs = i;
 	gameData.songs.bInitialized = 1;
 	//	RBA Hook
-		if (!gameOpts->sound.bUseRedbook)
-			gameStates.sound.bRedbookEnabled = 0;
-		else {	// use redbook
-				RBAInit();
-			if (RBAEnabled()) {
-				SetRedbookVolume(gameConfig.nRedbookVolume);
-				RBARegisterCD();
-				}
+	if (!gameOpts->sound.bUseRedbook)
+		gameStates.sound.bRedbookEnabled = 0;
+	else {	// use redbook
+			RBAInit ();
+		if (RBAEnabled ()) {
+			SetRedbookVolume(gameConfig.nRedbookVolume);
+			RBARegisterCD ();
 			}
-		atexit(RBAStop);    // stop song on exit
 		}
+	atexit(RBAStop);    // stop song on exit
+	}
 }
 
 #define FADE_TIME (f1_0/2)
@@ -123,74 +123,72 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 void SongsStopRedbook(void)
 {
 	int oldVolume = gameConfig.nRedbookVolume*REDBOOK_VOLUME_SCALE/8;
-	fix oldTime = TimerGetFixedSeconds();
+	fix oldTime = TimerGetFixedSeconds ();
 
-	if (gameStates.sound.bRedbookPlaying) {		//fade out volume
-		int newVolume;
-		do {
-			fix t = TimerGetFixedSeconds();
+if (gameStates.sound.bRedbookPlaying) {		//fade out volume
+	int newVolume;
+	do {
+		fix t = TimerGetFixedSeconds ();
 
-			newVolume = FixMulDiv(oldVolume,(FADE_TIME - (t-oldTime)),FADE_TIME);
-			if (newVolume < 0)
-				newVolume = 0;
-			RBASetVolume(newVolume);
-		} while (newVolume > 0);
-	}
-	RBAStop();              	// Stop CD, if playing
-	RBASetVolume(oldVolume);	//restore volume
-	gameStates.sound.bRedbookPlaying = 0;	
+		newVolume = FixMulDiv (oldVolume, (FADE_TIME - (t-oldTime)), FADE_TIME);
+		if (newVolume < 0)
+			newVolume = 0;
+		RBASetVolume(newVolume);
+	} while (newVolume > 0);
+}
+RBAStop ();              	// Stop CD, if playing
+RBASetVolume(oldVolume);	//restore volume
+gameStates.sound.bRedbookPlaying = 0;	
 }
 
 //------------------------------------------------------------------------------
 //stop any songs - midi or redbook - that are currently playing
 void SongsStopAll(void)
 {
-DigiStopCurrentSong();	// Stop midi song, if playing
-SongsStopRedbook();			// Stop CD, if playing
+DigiStopCurrentSong ();	// Stop midi song, if playing
+SongsStopRedbook ();			// Stop CD, if playing
 }
 
 //------------------------------------------------------------------------------
 
-int force_rb_register=0;
+int bForceRBRegister=0;
 
-void ReInitRedbook()
+void ReInitRedbook ()
 {
-RBAInit();
-if (RBAEnabled()) {
-	SetRedbookVolume(gameConfig.nRedbookVolume);
-	RBARegisterCD();
-	force_rb_register=0;
+RBAInit ();
+if (RBAEnabled ()) {
+	SetRedbookVolume (gameConfig.nRedbookVolume);
+	RBARegisterCD ();
+	bForceRBRegister = 0;
 	}
 }
 
 //------------------------------------------------------------------------------
 //returns 1 if track started sucessfully
-//start at tracknum.  if keep_playing set, play to end of disc.  else
+//start at nTrack.  if bKeepPlaying set, play to end of disc.  else
 //play only specified track
-int PlayRedbookTrack(int tracknum,int keep_playing)
+int PlayRedbookTrack (int nTrack, int bKeepPlaying)
 {
-	gameStates.sound.bRedbookPlaying = 0;
+gameStates.sound.bRedbookPlaying = 0;
 #ifdef _DEBUG
-	tracknum = 1;
+nTrack = 1;
 #endif
 
-	if (!RBAEnabled() && gameStates.sound.bRedbookEnabled && !gameOpts->sound.bUseRedbook)
-		ReInitRedbook();
+if (!RBAEnabled () && gameStates.sound.bRedbookEnabled && !gameOpts->sound.bUseRedbook)
+	ReInitRedbook ();
 
-	if (force_rb_register) {
-		RBARegisterCD();			//get new track list for new CD
-		force_rb_register = 0;
+if (bForceRBRegister) {
+	RBARegisterCD ();			//get new track list for new CD
+	bForceRBRegister = 0;
 	}
-
-	if (gameStates.sound.bRedbookEnabled && RBAEnabled()) {
-		int num_tracks = RBAGetNumberOfTracks();
-		if (tracknum <= num_tracks)
-			if (RBAPlayTracks(tracknum,keep_playing?num_tracks:tracknum))  {
-				gameStates.sound.bRedbookPlaying = tracknum;
+if (gameStates.sound.bRedbookEnabled && RBAEnabled ()) {
+	int nTracks = RBAGetNumberOfTracks ();
+	if (nTrack <= nTracks)
+		if (RBAPlayTracks(nTrack, bKeepPlaying ? nTracks : nTrack))  {
+			gameStates.sound.bRedbookPlaying = nTrack;
 			}
 	}
-
-	return (gameStates.sound.bRedbookPlaying != 0);
+return (gameStates.sound.bRedbookPlaying != 0);
 }
 
 //------------------------------------------------------------------------------
@@ -212,7 +210,7 @@ int PlayRedbookTrack(int tracknum,int keep_playing)
 
 #define REDBOOK_TITLE_TRACK         2
 #define REDBOOK_CREDITS_TRACK       3
-#define REDBOOK_FIRST_LEVEL_TRACK   (SongsHaveD2CD()?4:1)
+#define REDBOOK_FIRST_LEVEL_TRACK   (SongsHaveD2CD ()?4:1)
 
 // SongsHaveD2CD returns 1 if the descent 2 CD is in the drive and
 // 0 otherwise
@@ -220,13 +218,13 @@ int PlayRedbookTrack(int tracknum,int keep_playing)
 //------------------------------------------------------------------------------
 
 #if 1
-int SongsHaveD2CD()
+int SongsHaveD2CD ()
 {
 	int discid;
 
 if (!gameStates.sound.bRedbookEnabled)
 	return 0;
-discid = RBAGetDiscID();
+discid = RBAGetDiscID ();
 switch (discid) {
 	case D2_1_DISCID:
 	case D2_2_DISCID:
@@ -249,16 +247,16 @@ switch (discid) {
 
 #else
 
-int SongsHaveD2CD()
+int SongsHaveD2CD ()
 {
 	char temp [128],cwd [128];
 
-getcwd(cwd, 128);
-strcpy(temp,CDROM_dir);
-if (temp [strlen(temp)-1] == '\\')
-	temp [strlen(temp)-1] = 0;
-if (!chdir(temp)) {
-	chdir(cwd);
+getcwd (cwd, 128);
+strcpy (temp, CDROM_dir);
+if (temp [strlen (temp) - 1] == '\\')
+	temp [strlen (temp) - 1] = 0;
+if (!chdir (temp)) {
+	chdir (cwd);
 	return 1;
 	}
 return 0;
@@ -271,15 +269,15 @@ void SongsPlaySong (int nSong, int repeat)
 {
 //Assert(nSong != SONG_ENDLEVEL && nSong != SONG_ENDGAME);	//not in full version
 if (!gameData.songs.bInitialized)
-	SongsInit();
+	SongsInit ();
 //stop any music already playing
 if (!(gameStates.sound.bRedbookEnabled ? gameConfig.nRedbookVolume : gameConfig.nMidiVolume))
 	return;
-SongsStopAll();
+SongsStopAll ();
 //do we want any of these to be redbook songs?
-if (force_rb_register) {
+if (bForceRBRegister) {
 	RBARegisterCD ();			//get new track list for new CD
-	force_rb_register = 0;
+	bForceRBRegister = 0;
 	}
 gameStates.sound.nCurrentSong = nSong;
 if (nSong == SONG_TITLE) {
@@ -330,16 +328,16 @@ void PlayLevelSong (int nLevel, int bFromHog)
 
 Assert(nLevel != 0);
 if (!gameData.songs.bInitialized)
-	SongsInit();
-SongsStopAll();
+	SongsInit ();
+SongsStopAll ();
 nCurrentLevelSong = nLevel;
 nSong = (nLevel > 0) ? nLevel - 1 : -nLevel;
 gameStates.sound.nCurrentSong = nSong;
-if (!RBAEnabled() && gameStates.sound.bRedbookEnabled && gameOpts->sound.bUseRedbook)
-	ReInitRedbook();
-if (force_rb_register) {
-	RBARegisterCD();			//get new track list for new CD
-	force_rb_register = 0;
+if (!RBAEnabled () && gameStates.sound.bRedbookEnabled && gameOpts->sound.bUseRedbook)
+	ReInitRedbook ();
+if (bForceRBRegister) {
+	RBARegisterCD ();			//get new track list for new CD
+	bForceRBRegister = 0;
 	}
 if (bFromHog) {
 	MakeLevelFilename (nLevel, szFilename, ".ogg");
@@ -355,7 +353,7 @@ if ((nLevel > 0) && gameData.songs.user.nLevelSongs) {
 	if (DigiPlayMidiSong (gameData.songs.user.pszLevelSongs [(nLevel - 1) % gameData.songs.user.nLevelSongs], NULL, NULL, 1, 0))
 		return;
 	}
-if (gameStates.sound.bRedbookEnabled && RBAEnabled () && (nTracks = RBAGetNumberOfTracks()) > 1)	//try to play redbook
+if (gameStates.sound.bRedbookEnabled && RBAEnabled () && (nTracks = RBAGetNumberOfTracks ()) > 1)	//try to play redbook
 	PlayRedbookTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks-REDBOOK_FIRST_LEVEL_TRACK+1)),1);
 if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
 	nSong = gameData.songs.nLevelSongs [bD1Song] ? gameData.songs.nFirstLevelSong [bD1Song] + (nSong % gameData.songs.nLevelSongs [bD1Song]) : 0;
@@ -371,30 +369,30 @@ if (!gameStates.sound.bRedbookPlaying) {			//not playing redbook, so play midi
 
 //------------------------------------------------------------------------------
 //this should be called regularly to check for redbook restart
-void SongsCheckRedbookRepeat()
+void SongsCheckRedbookRepeat ()
 {
 	static fix last_checkTime;
 	fix currentTime;
 
 	if (!gameStates.sound.bRedbookPlaying || gameConfig.nRedbookVolume==0) return;
 
-	currentTime = TimerGetFixedSeconds();
+	currentTime = TimerGetFixedSeconds ();
 	if (currentTime < last_checkTime || (currentTime - last_checkTime) >= F2_0) {
-		if (!RBAPeekPlayStatus()) {
-			StopTime();
+		if (!RBAPeekPlayStatus ()) {
+			StopTime ();
 			// if title ends, start credit music
 			// if credits music ends, restart it
 			if (gameStates.sound.bRedbookPlaying == REDBOOK_TITLE_TRACK || gameStates.sound.bRedbookPlaying == REDBOOK_CREDITS_TRACK)
 				PlayRedbookTrack(REDBOOK_CREDITS_TRACK,0);
 			else {
-				//SongsGotoNextSong();
+				//SongsGotoNextSong ();
 
 				//new code plays all tracks to end of disk, so if disk has
 				//stopped we must be at end.  So start again with level 1 song.
 
 				PlayLevelSong (1, 0);
 			}
-			StartTime();
+			StartTime ();
 		}
 		last_checkTime = currentTime;
 	}
@@ -402,19 +400,19 @@ void SongsCheckRedbookRepeat()
 
 //------------------------------------------------------------------------------
 //goto the next level song
-void SongsGotoNextSong()
+void SongsGotoNextSong ()
 {
 if (gameStates.sound.bRedbookPlaying) 		//get correct track
-	nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;
+	nCurrentLevelSong = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 PlayLevelSong(nCurrentLevelSong + 1, 0);
 }
 
 //------------------------------------------------------------------------------
 //goto the previous level song
-void SongsGotoPrevSong()
+void SongsGotoPrevSong ()
 {
 if (gameStates.sound.bRedbookPlaying) 		//get correct track
-	nCurrentLevelSong = RBAGetTrackNum() - REDBOOK_FIRST_LEVEL_TRACK + 1;
+	nCurrentLevelSong = RBAGetTrackNum () - REDBOOK_FIRST_LEVEL_TRACK + 1;
 if (nCurrentLevelSong > 1)
 	PlayLevelSong(nCurrentLevelSong - 1, 0);
 }

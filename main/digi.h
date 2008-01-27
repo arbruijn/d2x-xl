@@ -94,8 +94,9 @@ extern int digiVolume;
 
 int digi_get_settings();
 int DigiInit (float fSlowDown);
-void DigiExit (void);
+void DigiExit ();
 void DigiReset ();
+void DigiFadeoutMusic (void);
 void _CDECL_ DigiClose (void);
 
 // Volume is max at F1_0.

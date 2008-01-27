@@ -53,23 +53,18 @@ if (hmp) {
 
 //------------------------------------------------------------------------------
 
-void DigiStopCurrentSong()
+void DigiStopCurrentSong ()
 {
+	int h;
+
 if (gameData.songs.bPlaying) {
-	int h = midiVolume;	// preserve it for another song being started
+	DigiFadeoutMusic ();
+	h = midiVolume;	// preserve it for another song being started
 	DigiSetMidiVolume(0);
 	midiVolume = h;
-
-#if USE_SDL_MIXER
-	if (gameOpts->sound.bUseSDLMixer) {
-		Mix_HaltMusic ();
-		Mix_FreeMusic (mixMusic);
-		mixMusic = NULL;
-		}
-#endif
 #if defined (_WIN32)
 #	if USE_SDL_MIXER
-else 
+if (!gameOpts->sound.bUseSDLMixer)
 #	endif
 		{
 		hmp_close (hmp);
@@ -127,11 +122,17 @@ if (gameOpts->sound.bUseSDLMixer) {
 		LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
-	if (-1 == Mix_PlayMusic (mixMusic, bLoop ? -1 : 1)) {
+	if (-1 == Mix_FadeInMusicPos (mixMusic, bLoop ? -1 : 1, gameData.songs.tPos ? 1000 : 2000, (double) gameData.songs.tPos / 1000.0)) {
 		LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
+		gameData.songs.tPos = 0;
 		return 0;
 		}
 	LogErr ("SDL_mixer playing %s\n", pszSong);
+	if (gameData.songs.tPos)
+		gameData.songs.tPos = 0;
+	else
+		gameData.songs.tStart = SDL_GetTicks ();
+	
 	gameData.songs.bPlaying = 1;
 	DigiSetMidiVolume (midiVolume);
 	return 1;

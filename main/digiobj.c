@@ -829,7 +829,7 @@ SoundQInit ();
 
 //------------------------------------------------------------------------------
 
-void DigiStopAll ()
+void DigiStopAll (void)
 {
 DigiStopCurrentSong ();
 DigiStopDigiSounds ();

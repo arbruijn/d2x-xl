@@ -297,7 +297,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		h = Mix_OpenAudio (32000, AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
 	else 
 		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, 
-								 SOUND_BUFFER_SIZE);
+								SOUND_BUFFER_SIZE);
 	if (h < 0) {
 		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
@@ -344,7 +344,7 @@ SDL_Delay (500); // CloseAudio hangs if it's called too soon after opening?
 if (gameOpts->sound.bUseOpenAL) {
 	alcMakeContextCurrent (NULL);
 	alcDestroyContext (gameData.pig.sound.openAL.context);
-	alcCloseDevice(gameData.pig.sound.openAL.device);
+	alcCloseDevice (gameData.pig.sound.openAL.device);
 	gameData.pig.sound.openAL.device = NULL;
 	}
 else
@@ -360,8 +360,23 @@ else
 
 //------------------------------------------------------------------------------
 
+void DigiFadeoutMusic (void)
+{
+#if USE_SDL_MIXER
+if (gameOpts->sound.bUseSDLMixer) {
+	while (!Mix_FadeOutMusic (250) && Mix_PlayingMusic ())
+		SDL_Delay (50);		
+	while (Mix_PlayingMusic ())
+		SDL_Delay (1);		
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 void DigiExit (void)
 {
+DigiFadeoutMusic ();
 DigiStopAll ();
 SongsStopAll ();
 DigiClose ();
@@ -944,7 +959,12 @@ DigiStopSound (nChannel);
 // MIDI stuff follows.
 void DigiSetMidiVolume (int mvolume) { }
 
-int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song) {return 0;}
+int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song) 
+{
+return 0;
+}
+
+//------------------------------------------------------------------------------
 
 void DigiStopCurrentSong ()
 {

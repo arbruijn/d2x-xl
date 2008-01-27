@@ -2452,6 +2452,9 @@ typedef struct tSongData {
 	int					nLevelSongs [2];
 	int					nD1EndLevelSong;
 	int					bPlaying;
+	time_t				tStart;
+	time_t				tSlowDown;
+	time_t				tPos;
 	tUserMusicData		user;
 } tSongData;
 

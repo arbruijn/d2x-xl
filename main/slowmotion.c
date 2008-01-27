@@ -201,6 +201,9 @@ for (i = 0; i < 2; i++) {
 			if (!i) {
 				DigiExit ();
 				DigiInit (f);
+				gameData.songs.tSlowDown = SDL_GetTicks ();
+				gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart;
+				PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 				}
 			}
 		else if (gameStates.gameplay.slowmo [i].fSpeed <= 1) {
@@ -209,7 +212,9 @@ for (i = 0; i < 2; i++) {
 			if (!i) {
 				DigiExit ();
 				DigiInit (1);
-				PlayLevelSong (gameData.missions.nCurrentLevel, 0);
+				gameData.songs.tPos = gameData.songs.tSlowDown - gameData.songs.tStart + 
+											 2 * (SDL_GetTicks () - gameData.songs.tSlowDown) / gameOpts->gameplay.nSlowMotionSpeedup;
+				PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 				}
 			}
 		gameStates.gameplay.slowmo [i].tUpdate = gameStates.app.nSDLTicks;

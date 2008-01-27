@@ -2429,7 +2429,7 @@ GETMEM (int, gameData.objs.nLightSig, MAX_OBJECTS, 0);
 GETMEM (ubyte, gameData.objs.nTracers, MAX_OBJECTS, 0);
 GETMEM (ushort, gameData.objs.cameraRef, MAX_OBJECTS, 0);
 GETMEM (short, gameData.objs.nHitObjects, MAX_OBJECTS * MAX_HIT_OBJECTS, 0);
-GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, 0xFF);
+GETMEM (tObjectViewData, gameData.objs.viewData, MAX_OBJECTS, (char) 0xFF);
 GETMEM (tShrapnelData, gameData.objs.shrapnels, MAX_OBJECTS, 0);
 }
 

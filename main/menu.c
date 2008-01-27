@@ -3418,7 +3418,7 @@ if (lightOpts.nLMapRange >= 0) {
 
 void LightOptionsMenu ()
 {
-	tMenuItem m [20];
+	tMenuItem m [30];
 	int	i, choice = 0, nLightRange = extraGameInfo [0].nLightRange;
 	int	opt;
 	int	optColoredLight, optMixColors, optPowerupLights, optFlickerLights, optColorSat, optBrightObjects, nPowerupLight = -1;
