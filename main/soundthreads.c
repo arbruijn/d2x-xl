@@ -1,6 +1,9 @@
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
 #endif
+#ifndef _WIN32
+#	include <unistd.h>
+#endif
 
 #include "soundthreads.h"
 
@@ -10,8 +13,6 @@ tSoundThreadInfo tiSound;
 
 int _CDECL_ SoundThread (void *pThreadId)
 {
-	int	nId = *((int *) pThreadId);
-
 do {
 	while (!tiSound.ti.bExec) {
 		G3_SLEEP (0);
@@ -61,7 +62,7 @@ G3_SLEEP (100);
 
 //------------------------------------------------------------------------------
 
-int RunSoundThread (int nTask)
+int RunSoundThread (tSoundTask nTask)
 {
 	time_t	t1 = 0;
 #ifdef _DEBUG
