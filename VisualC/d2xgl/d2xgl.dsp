@@ -784,6 +784,10 @@ SOURCE=..\..\main\songs.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\soundthreads.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\sphere.c
 # End Source File
 # Begin Source File
@@ -1426,6 +1430,10 @@ SOURCE=..\..\main\songs.h
 # Begin Source File
 
 SOURCE=..\..\main\sounds.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\soundthreads.h
 # End Source File
 # Begin Source File
 
