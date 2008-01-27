@@ -60,26 +60,21 @@ if (hmp) {
 
 //------------------------------------------------------------------------------
 
-void DigiStopCurrentSong()
+void DigiStopCurrentSong ()
 {
+	int h;
+
 if (gameData.songs.bPlaying) {
-	int h = midiVolume;	// preserve it for another song being started
+	DigiFadeoutMusic ();
+	h = midiVolume;	// preserve it for another song being started
 	DigiSetMidiVolume(0);
 	midiVolume = h;
-
-#if USE_SDL_MIXER
-	if (gameOpts->sound.bUseSDLMixer) {
-		Mix_HaltMusic ();
-		Mix_FreeMusic (mixMusic);
-		mixMusic = NULL;
-		}
-#endif
 #if defined (_WIN32)
 #	if USE_SDL_MIXER
-else 
+if (!gameOpts->sound.bUseSDLMixer)
 #	endif
 		{
-		hmp_close(hmp);
+		hmp_close (hmp);
 		hmp = NULL;
 		gameData.songs.bPlaying = 0;
 		}
