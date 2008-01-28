@@ -209,7 +209,7 @@ if (ShowView_textTimer > 0) {
 		case OBJ_DEBRIS:	
 			viewer_name = "Debris"; 
 			break;
-		case OBJ_CNTRLCEN:
+		case OBJ_REACTOR:
 			viewer_name = "Reactor"; 
 			break;
 		default:				

@@ -53,18 +53,18 @@ void DoCountdownFrame ();
 
 //	-----------------------------------------------------------------------------
 //return the position & orientation of a gun on the control center tObject
-void CalcReactorGunPoint (vmsVector *gun_point, vmsVector *vGunDir, tObject *objP, int gun_num)
+void CalcReactorGunPoint (vmsVector *vGunPoint, vmsVector *vGunDir, tObject *objP, int nGun)
 {
 	tReactorProps	*props;
 	vmsMatrix		*viewP = ObjectView (objP);
 
-Assert (objP->nType == OBJ_CNTRLCEN);
+Assert (objP->nType == OBJ_REACTOR);
 Assert (objP->renderType == RT_POLYOBJ);
 props = &gameData.reactor.props [objP->id];
 //instance gun position & orientation
-VmVecRotate (gun_point, &props->gunPoints [gun_num], viewP);
-VmVecInc (gun_point, &objP->position.vPos);
-VmVecRotate (vGunDir, &props->gun_dirs [gun_num], viewP);
+VmVecRotate (vGunPoint, props->gunPoints + nGun, viewP);
+VmVecInc (vGunPoint, &objP->position.vPos);
+VmVecRotate (vGunDir, props->gun_dirs + nGun, viewP);
 }
 
 //	-----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ for (i = 0; i < nGunCount; i++) {
 	fix			dot;
 	vmsVector	vGun;
 
-	VmVecSub (&vGun, vObjPos, &vGunPos[i]);
+	VmVecSub (&vGun, vObjPos, vGunPos + i);
 	VmVecNormalizeQuick (&vGun);
 	dot = VmVecDot (vGunDir + i, &vGun);
 	if (dot > xBestDot) {
@@ -111,7 +111,7 @@ if (gameStates.gameplay.nReactorCount) {
 
 	for (i = 0; i < gameStates.gameplay.nReactorCount; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
-			 (gameData.objs.objects [rStatP->nDeadObj].nType == OBJ_CNTRLCEN) &&
+			 (gameData.objs.objects [rStatP->nDeadObj].nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
 		if (d_rand () < gameData.time.xFrame * 4)
 			CreateSmallFireballOnObject (gameData.objs.objects + rStatP->nDeadObj, F1_0, 1);
@@ -145,7 +145,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {  // get countdown in OEM and
 	// On last level, we don't want a countdown.
 	if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
 		 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {
-		if (!(gameData.app.nGameMode & GM_MULTI))
+		if (!IsMultiGame)
 			return;
 		if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 			return;
@@ -167,6 +167,8 @@ gameData.objs.console->mType.physInfo.rotVel.p.z += (FixMul (d_rand () - 16384, 
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
 	gameData.reactor.countdown.nTimer -= cdtFrameTime;
+if (IsMultiGame &&  NetworkIAmMaster ())
+	MultiSendCountdown ();
 cdtFrameTime = 0;
 gameData.reactor.countdown.nSecsLeft = f2i (gameData.reactor.countdown.nTimer + F1_0 * 7 / 8);
 if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME))	{
@@ -198,11 +200,9 @@ else {
 		WINDOS (
 			dd_gr_clear_canvas (RGBA_PAL2 (31,31,31)),
 			GrClearCanvas (RGBA_PAL2 (31,31,31))
-			);														//make screen all white to match palette effect
-		ResetCockpit ();								//force cockpit redraw next time
-		ResetPaletteAdd ();							//restore palette for death message
-		//controlcen->MaxCapacity = gameData.matCens.xFuelMaxAmount;
-		//gauge_message ("Control Center Reset");
+			);						//make screen all white to match palette effect
+		ResetCockpit ();		//force cockpit redraw next time
+		ResetPaletteAdd ();	//restore palette for death message
 		DoPlayerDead ();		//kill_player ();
 		}																			
 	}
@@ -210,7 +210,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void InitCountdown (tTrigger *trigP, int bReactorDestroyed)
+void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer)
 {
 if (trigP && (trigP->time > 0))
 	gameData.reactor.countdown.nTotalTime = trigP->time;
@@ -218,7 +218,7 @@ else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION
 	gameData.reactor.countdown.nTotalTime = gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL-gameStates.app.nDifficultyLevel-1)/2;
 else
 	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
-gameData.reactor.countdown.nTimer = i2f (gameData.reactor.countdown.nTotalTime);
+gameData.reactor.countdown.nTimer = (nTimer < 0) ? i2f (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : i2f (1));
 if (bReactorDestroyed)
 	gameData.reactor.bDestroyed = 1;
 }
@@ -230,7 +230,7 @@ if (bReactorDestroyed)
 //	if objP == NULL that means the boss was the control center and don't set gameData.reactor.nDeadObj
 void DoReactorDestroyedStuff (tObject *objP)
 {
-	int		i, bFinalCountdown, bReactor = objP && (objP->nType == OBJ_CNTRLCEN);
+	int		i, bFinalCountdown, bReactor = objP && (objP->nType == OBJ_REACTOR);
 	tTrigger	*trigP = NULL;
 
 if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
@@ -248,7 +248,7 @@ if (bFinalCountdown ||
 	if (bFinalCountdown)
 		if (gameData.missions.nCurrentLevel < 0)
 			CFDelete ("secret.sgc", gameFolders.szSaveDir);
-	InitCountdown (trigP, bFinalCountdown || bReactor);
+	InitCountdown (trigP, bFinalCountdown || bReactor, -1);
 	}
 if (bReactor) {
 	ExecObjTriggers (OBJ_IDX (objP), 0);
@@ -455,7 +455,7 @@ else {
 	memset (gameData.reactor.states, 0xff, sizeof (gameData.reactor.states));
 	}
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
-	if (objP->nType == OBJ_CNTRLCEN) {
+	if (objP->nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE
 			con_printf (1, "Warning: Two or more control centers including %i and %i\n", 

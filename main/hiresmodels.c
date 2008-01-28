@@ -213,8 +213,8 @@ short LoadHiresModel (tOOFObject *po, short i, int bCustom)
 
 sprintf (szModel, "\001model%d.oof", oofToModel [i].nModel);
 #ifdef _DEBUG
-if (oofToModel [i].pszOOF && !strcmp (oofToModel [i].pszOOF, "squid.oof"))
-	j = j;
+if (oofToModel [i].pszOOF && !strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
+	;
 #endif
 #if OOF_TEST_CUBE
 if (!strcmp (oofToModel [i].pszOOF + 1, "pyrogl.oof"))

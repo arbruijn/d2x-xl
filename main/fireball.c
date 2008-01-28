@@ -189,7 +189,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 		if ((gameData.objs.objects [nParent].nType == OBJ_ROBOT) && (gameData.objs.objects [nParent].id == id))
 			continue;
 		}
-	else if ((t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER))
+	else if ((t != OBJ_REACTOR) && (t != OBJ_PLAYER))
 		continue;
 	dist = VmVecDistQuick (&obj0P->position.vPos, &explObjP->position.vPos);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
@@ -260,7 +260,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 			BuddyMessage (szOuch);
 			}
 		}
-	else if (t == OBJ_CNTRLCEN) {
+	else if (t == OBJ_REACTOR) {
 		if (obj0P->shields >= 0)
 			ApplyDamageToReactor (obj0P, damage, nParent);
 		}
@@ -620,7 +620,7 @@ if (objP->lifeleft <= objP->cType.explInfo.nSpawnTime) {
 		}
 	vSpawnPos = &delObjP->position.vPos;
 	t = delObjP->nType;
-	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_CNTRLCEN) && (t != OBJ_PLAYER)) || 
+	if (((t != OBJ_ROBOT) && (t != OBJ_CLUTTER) && (t != OBJ_REACTOR) && (t != OBJ_PLAYER)) || 
 			(delObjP->nSegment == -1)) {
 		Int3 ();	//pretty bad
 		return;

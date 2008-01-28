@@ -418,7 +418,7 @@ void write_control_center_text(FILE *my_file)
 			nObject = gameData.segs.segments[i].objects;
 			count2 = 0;
 			while (nObject != -1) {
-				if (gameData.objs.objects[nObject].nType == OBJ_CNTRLCEN)
+				if (gameData.objs.objects[nObject].nType == OBJ_REACTOR)
 					count2++;
 				nObject = gameData.objs.objects[nObject].next;
 			}

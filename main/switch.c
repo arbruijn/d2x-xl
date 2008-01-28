@@ -842,13 +842,13 @@ if (bIsPlayer) {
 else {
 	nPlayer = -1;
 	if ((trigP->nType != TT_TELEPORT) && (trigP->nType != TT_SPEEDBOOST)) {
-		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_CNTRLCEN))
+		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_REACTOR))
 			return 1;
 		if (!bObjTrigger)
 			return 1;
 		}
 	else
-		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_CNTRLCEN))
+		if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_REACTOR))
 			return 1;
 		}
 #if 1
@@ -1063,7 +1063,7 @@ switch (trigP->nType) {
 		break;
 
 	case TT_COUNTDOWN:
-		InitCountdown (trigP, 1);
+		InitCountdown (trigP, 1, -1);
 		break;
 
 	case TT_MESSAGE:

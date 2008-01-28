@@ -866,7 +866,7 @@ switch (objP->renderType) {
 					}
 				}
 			}
-		else if (objP->nType == OBJ_CNTRLCEN) {
+		else if (objP->nType == OBJ_REACTOR) {
 			if (gameStates.render.nType != 1)
 				return 0;
 			DrawPolygonObject (objP, bDepthSort);

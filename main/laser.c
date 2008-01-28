@@ -393,7 +393,7 @@ nViewer = OBJ_IDX (gameData.objs.viewer);
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	VmVector2Matrix (&objP->position.mOrient, vDirection, SPECTATOR (pParent) ? &gameStates.app.playerPos.mOrient.uVec : &pParent->position.mOrient.uVec, NULL);
-	if ((nParent != nViewer) && (pParent->nType != OBJ_WEAPON)) {
+	if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAPON)) {
 		// Muzzle flash	
 		if (gameData.weapons.info [objP->id].flash_vclip > -1)
 			ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
@@ -472,7 +472,7 @@ if (pParent->nType == OBJ_WEAPON) {
 //	Homing missiles also need an orientation matrix so they know if they can make a turn.
 //if ((objP->renderType == RT_POLYOBJ) || (WI_homingFlag (objP->id)))
 	VmVector2Matrix (&objP->position.mOrient, vDirection, &pParent->position.mOrient.uVec ,NULL);
-if ((nParent != nViewer) && (pParent->nType != OBJ_WEAPON)) {
+if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAPON)) {
 	// Muzzle flash	
 	if (gameData.weapons.info [objP->id].flash_vclip > -1)
 		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
@@ -585,6 +585,36 @@ if (fate != HIT_NONE  || hit_data.hit.nSegment==-1)
 return CreateNewLaser (vDirection, &hit_data.hit.vPoint, (short) hit_data.hit.nSegment, parent, nWeaponType, bMakeSound);
 }
 
+//	-----------------------------------------------------------------------------------------------------------
+
+vmsVector *GetGunPoints (tObject *objP, int nGun)
+{
+	tGunInfo		*giP = gameData.models.gunInfo + objP->rType.polyObjInfo.nModel;
+	vmsVector	*vDefaultGunPoints, *vGunPoints;
+	int			nDefaultGuns, nGuns, bCustom = 0;
+
+if (objP->nType == OBJ_PLAYER) {
+	vDefaultGunPoints = gameData.pig.ship.player->gunPoints;
+	nDefaultGuns = N_PLAYER_GUNS;
+	}
+else if (objP->nType == OBJ_ROBOT) {
+	vDefaultGunPoints = ROBOTINFO (objP->id).gunPoints;
+	nDefaultGuns = MAX_GUNS;
+	}
+else
+	return NULL;
+nGuns = giP->nGuns;
+if (nGuns > 0)
+	vGunPoints = giP->vGunPoints;
+else {
+	nGuns = nDefaultGuns;
+	vGunPoints = vDefaultGunPoints;
+	}
+if (!nGuns || (abs (nGun) >= nDefaultGuns))
+	return NULL;
+return vGunPoints;
+}
+
 //-------------- Initializes a laser after Fire is pressed -----------------
 
 int LaserPlayerFireSpreadDelay (
@@ -599,7 +629,7 @@ int LaserPlayerFireSpreadDelay (
 {
 	short			nLaserSeg;
 	int			nFate; 
-	vmsVector	v, vLaserPos, vLaserDir, vGunPoint;
+	vmsVector	v, vLaserPos, vLaserDir, vGunPoint, *vGunPoints;
 	tVFIQuery	fq;
 	tFVIData		hit_data;
 	vmsMatrix	m, *viewP;
@@ -616,10 +646,12 @@ int LaserPlayerFireSpreadDelay (
 
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
+if (!(vGunPoints = GetGunPoints (objP, nGun)))
+	return 0;
 if (nGun < 0)
-	VmVecScale (VmVecAdd (&v, gameData.pig.ship.player->gunPoints - nGun, gameData.pig.ship.player->gunPoints - nGun - 1), F1_0 / 2);
+	VmVecScale (VmVecAdd (&v, vGunPoints - nGun, vGunPoints - nGun - 1), F1_0 / 2);
 else {
-	v = gameData.pig.ship.player->gunPoints [nGun];
+	v = vGunPoints [nGun];
 	if (bLaserOffs)
 		VmVecScaleInc (&v, &pPos->mOrient.uVec, LASER_OFFS);
 	}
@@ -653,7 +685,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
 //SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-if (VmVecDistQuick (&vLaserPos, &pPos->vPos) > 0x50000) {
+if (VmVecDistQuick (&vLaserPos, &pPos->vPos) > 3 * objP->size / 2) {
 	return -1;
 	}
 if (nFate == HIT_WALL)  {
@@ -1257,7 +1289,7 @@ switch (nWeapon) {
 		break;
 
 	case OMEGA_INDEX:
-		LaserPlayerFire (objP, OMEGA_ID, 1, 1, 0);
+		LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0);
 		break;
 
 	default:
@@ -1562,7 +1594,7 @@ int AllowedToFireMissile (void);
 void GetPlayerMslLock (void)
 {
 	int			nWeapon, nObject, nGun, h, i, j;
-	vmsVector	vGunPos;
+	vmsVector	*vGunPoints, vGunPos;
 	vmsMatrix	*viewP;
 	tObject		*objP;
 
@@ -1592,11 +1624,13 @@ h = gameData.laser.nMissileGun & 1;
 viewP = ObjectView (gameData.objs.console);
 for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
-	vGunPos = gameData.pig.ship.player->gunPoints [nGun];
-	VmVecRotate (&vGunPos, &vGunPos, viewP);
-	VmVecInc (&vGunPos, &gameData.objs.console->position.vPos);
-	nObject = FindHomingObject (&vGunPos, gameData.objs.console);
-	gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+	if ((vGunPoints = GetGunPoints (gameData.objs.console, nGun))) {
+		vGunPos = vGunPoints [nGun];
+		VmVecRotate (&vGunPos, &vGunPos, viewP);
+		VmVecInc (&vGunPos, &gameData.objs.console->position.vPos);
+		nObject = FindHomingObject (&vGunPos, gameData.objs.console);
+		gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
+		}
 	}
 }
 

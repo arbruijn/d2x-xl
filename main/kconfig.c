@@ -1990,9 +1990,9 @@ void KCReadExternalControls ()
      if (temp_ptr->Reactor_blown)
       {
        if (gameData.app.nGameMode & GM_MULTI)
-		    NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
+		    NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		 else
-			 DoReactorDestroyedStuff (ObjFindFirstOfType (OBJ_CNTRLCEN));
+			 DoReactorDestroyedStuff (ObjFindFirstOfType (OBJ_REACTOR));
 	   }
     }
   

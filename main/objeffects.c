@@ -296,7 +296,7 @@ static inline tRgbColorf *ObjectFrameColor (tObject *objP, tRgbColorf *pc)
 if (pc)
 	return pc;
 if (objP) {
-	if (objP->nType == OBJ_CNTRLCEN)
+	if (objP->nType == OBJ_REACTOR)
 		return &reactorDefColor;
 	else if (objP->nType == OBJ_ROBOT) {
 		if (!ROBOTINFO (objP->id).companion)

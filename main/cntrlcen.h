@@ -70,6 +70,6 @@ extern int ControlCenterTriggersReadN(tReactorTriggers *cct, int n, CFILE *fp);
 #endif
 
 int FindReactor (tObject *objP);
-void InitCountdown (tTrigger *trigP, int bReactorDestroyed);
+void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer);
 
 #endif /* _CNTRLCEN_H */

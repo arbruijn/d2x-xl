@@ -187,7 +187,7 @@ else if (objP->nType == OBJ_ROBOT) {
 		fDmg /= 2;
 #endif
 	}
-else if (objP->nType == OBJ_CNTRLCEN)
+else if (objP->nType == OBJ_REACTOR)
 	fDmg = f2fl (objP->shields) / f2fl (ReactorStrength ());
 else if ((objP->nType == 255) || (objP->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	fDmg = 0.0f;
@@ -261,38 +261,40 @@ Error ("Couldn't find a viewer tObject!");
 //------------------------------------------------------------------------------
 
 tObject *ObjFindFirstOfType (int nType)
- {
-  int i;
-  tObject	*objP = gameData.objs.objects;
-
-  for (i=gameData.objs.nLastObject+1;i;i--, objP++)
-	if (objP->nType==nType)
-	 return (objP);
-  return ((tObject *)NULL);
- }
-
-
-int obj_return_num_ofType (int nType)
- {
-  int i, count = 0;
-	tObject *objP = gameData.objs.objects;
-
-  for (i=gameData.objs.nLastObject+1;i;i--, objP++)
-	if (objP->nType==nType)
-	 count++;
-  return (count);
- }
-
-
-int obj_return_num_ofTypeid (int nType, int id)
- {
-  int i, count = 0;
+{
+	int		i;
 	tObject	*objP = gameData.objs.objects;
 
-  for (i=gameData.objs.nLastObject+1;i;i--, objP++)
-	if (objP->nType==nType && objP->id==id)
+for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+	if (objP->nType == nType)
+		return (objP);
+return ((tObject *) NULL);
+}
+
+//------------------------------------------------------------------------------
+
+int ObjReturnNumOfType (int nType)
+{
+	int		i, count = 0;
+	tObject	*objP = gameData.objs.objects;
+
+for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+	if (objP->nType == nType)
+		count++;
+return count;
+}
+
+//------------------------------------------------------------------------------
+
+int ObjReturnNumOfTypeAndId (int nType, int id)
+{
+	int		i, count = 0;
+	tObject	*objP = gameData.objs.objects;
+
+for (i = gameData.objs.nLastObject + 1; i; i--, objP++)
+	if ((objP->nType == nType) && (objP->id == id))
 	 count++;
-  return (count);
+ return count;
  }
 
 //------------------------------------------------------------------------------
@@ -793,7 +795,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 			case OBJ_ROBOT:
 			case OBJ_HOSTAGE:
 			case OBJ_PLAYER:
-			case OBJ_CNTRLCEN:
+			case OBJ_REACTOR:
 			case OBJ_CLUTTER:
 			case OBJ_GHOST:
 			case OBJ_LIGHT:
@@ -881,7 +883,7 @@ else if (nType == OBJ_HOSTAGE)
 	nType = nType;
 else if (nType == OBJ_FIREBALL)
 	nType = nType;
-else if (nType == OBJ_CNTRLCEN)
+else if (nType == OBJ_REACTOR)
 	nType = nType;
 else if (nType == OBJ_DEBRIS)
 	nType = nType;
@@ -1013,7 +1015,7 @@ return nObject;
 
 #ifdef EDITOR
 //create a copy of an tObject. returns new tObject number
-int CreateObjectCopy (int nObject, vmsVector *new_pos, int newsegnum)
+int CreateObjectCopy (int nObject, vmsVector *new_pos, int nNewSegnum)
 {
 	tObject *objP;
 	int newObjNum = AllocObject ();
@@ -1025,7 +1027,7 @@ obj = gameData.objs.objects + newObjNum;
 *objP = gameData.objs.objects [nObject];
 objP->position.vPos = objP->vLastPos = *new_pos;
 objP->next = objP->prev = objP->nSegment = -1;
-LinkObject (newObjNum, newsegnum);
+LinkObject (newObjNum, nNewSegnum);
 objP->nSignature = gameData.objs.nNextSignature++;
 //we probably should initialize sub-structures here
 return newObjNum;
@@ -1068,7 +1070,7 @@ if (objP->nType == OBJ_DEBRIS)
 	nDebrisObjectCount--;
 UnlinkObject (nObject);
 Assert (gameData.objs.objects [0].next != 0);
-if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_CNTRLCEN))
+if ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_REACTOR))
 	ExecObjTriggers (nObject, 0);
 objP->nType = OBJ_NONE;		//unused!
 objP->nSignature = -1;
@@ -1400,12 +1402,12 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 //--------------------------------------------------------------------
 //when an tObject has moved into a new tSegment, this function unlinks it
 //from its old tSegment, and links it into the new tSegment
-void RelinkObject (int nObject, int newsegnum)
+void RelinkObject (int nObject, int nNewSegnum)
 {
 Assert ((nObject >= 0) && (nObject <= gameData.objs.nLastObject));
-Assert ((newsegnum <= gameData.segs.nLastSegment) && (newsegnum >= 0));
+Assert ((nNewSegnum <= gameData.segs.nLastSegment) && (nNewSegnum >= 0));
 UnlinkObject (nObject);
-LinkObject (nObject, newsegnum);
+LinkObject (nObject, nNewSegnum);
 #ifdef _DEBUG
 #if TRACE			
 if (GetSegMasks (&gameData.objs.objects [nObject].position.vPos, 
@@ -2179,13 +2181,13 @@ return FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 //callers should generally use FindVectorIntersection ()
 int UpdateObjectSeg (tObject * objP)
 {
-	int newseg;
+	int nNewSeg;
 
-newseg = FindObjectSeg (objP);
-if (newseg == -1)
+nNewSeg = FindObjectSeg (objP);
+if (nNewSeg == -1)
 	return 0;
-if (newseg != objP->nSegment)
-	RelinkObject (OBJ_IDX (objP), newseg);
+if (nNewSeg != objP->nSegment)
+	RelinkObject (OBJ_IDX (objP), nNewSeg);
 return 1;
 }
 
@@ -2223,36 +2225,37 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
 
 //delete gameData.objs.objects, such as weapons & explosions, that shouldn't stay between levels
 //	Changed by MK on 10/15/94, don't remove proximity bombs.
-//if clear_all is set, clear even proximity bombs
-void ClearTransientObjects (int clear_all)
+//if bClearAll is set, clear even proximity bombs
+void ClearTransientObjects (int bClearAll)
 {
 	short nObject;
 	tObject *objP;
 
-	for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++)
-		if (((objP->nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && (clear_all || ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID)))) ||
-			   objP->nType == OBJ_FIREBALL ||
-			   objP->nType == OBJ_DEBRIS ||
-			   ((objP->nType != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
+for (nObject = 0, objP = gameData.objs.objects; nObject <= gameData.objs.nLastObject; nObject++, objP++)
+	if (((objP->nType == OBJ_WEAPON) && !(gameData.weapons.info [objP->id].flags&WIF_PLACABLE) && 
+		  (bClearAll || ((objP->id != PROXMINE_ID) && (objP->id != SMARTMINE_ID)))) ||
+			objP->nType == OBJ_FIREBALL ||
+			objP->nType == OBJ_DEBRIS ||
+			((objP->nType != OBJ_NONE) && (objP->flags & OF_EXPLODING))) {
 
-			#ifdef _DEBUG
-#if TRACE			
-			if (gameData.objs.objects [nObject].lifeleft > i2f (2))
-				con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
-								nObject, gameData.objs.objects [nObject].nType, 
-								gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
+#ifdef _DEBUG
+#	if TRACE			
+		if (gameData.objs.objects [nObject].lifeleft > i2f (2))
+			con_printf (CONDBG, "Note: Clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
+							nObject, gameData.objs.objects [nObject].nType, 
+							gameData.objs.objects [nObject].id, gameData.objs.objects [nObject].lifeleft);
+#	endif
 #endif
-			#endif
-			ReleaseObject (nObject);
-		}
-		#ifdef _DEBUG
-#if TRACE			
-		 else if (gameData.objs.objects [nObject].nType!=OBJ_NONE && gameData.objs.objects [nObject].lifeleft < i2f (2))
-			con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
-							nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, 
-							gameData.objs.objects [nObject].lifeleft);
+		ReleaseObject (nObject);
+	}
+	#ifdef _DEBUG
+#	if TRACE			
+		else if (gameData.objs.objects [nObject].nType!=OBJ_NONE && gameData.objs.objects [nObject].lifeleft < i2f (2))
+		con_printf (CONDBG, "Note: NOT clearing tObject %d (nType=%d, id=%d) with lifeleft=%x\n", 
+						nObject, gameData.objs.objects [nObject].nType, gameData.objs.objects [nObject].id, 
+						gameData.objs.objects [nObject].lifeleft);
+#	endif
 #endif
-		#endif
 }
 
 //------------------------------------------------------------------------------

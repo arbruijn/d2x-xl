@@ -1954,7 +1954,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (Controls [0].automapDownCount && 
 		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.console)].bBoosted && 
-		 !((gameData.app.nGameMode & GM_MULTI) && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
+		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		gameStates.render.automap.bDisplay = 1;
 	DoWeaponStuff();
 	}

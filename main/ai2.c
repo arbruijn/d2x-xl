@@ -1938,7 +1938,7 @@ int OpenableDoorsInSegment (short nSegment)
 // -- 	nObject = gameData.segs.segments [nSegment].objects;
 // -- 
 // -- 	while (nObject != -1) {
-// -- 		if ((gameData.objs.objects [nObject].nType == OBJ_PLAYER) || (gameData.objs.objects [nObject].nType == OBJ_CNTRLCEN)) {
+// -- 		if ((gameData.objs.objects [nObject].nType == OBJ_PLAYER) || (gameData.objs.objects [nObject].nType == OBJ_REACTOR)) {
 // -- 			return 1;
 // -- 		} else
 // -- 			nObject = gameData.objs.objects [nObject].next;
@@ -1974,7 +1974,7 @@ int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segP)
 	curobjnum = segP->objects;
 	while (curobjnum != -1) {
 		tObject *curObjP = &gameData.objs.objects [curobjnum];
-		if ((curObjP->nType == OBJ_PLAYER) || (curObjP->nType == OBJ_ROBOT) || (curObjP->nType == OBJ_CNTRLCEN)) {
+		if ((curObjP->nType == OBJ_PLAYER) || (curObjP->nType == OBJ_ROBOT) || (curObjP->nType == OBJ_REACTOR)) {
 			if (VmVecDistQuick (pos, &curObjP->position.vPos) < size + curObjP->size)
 				return 1;
 		}

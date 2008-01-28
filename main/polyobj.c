@@ -543,7 +543,7 @@ else if (objP->nType == OBJ_PLAYER) {
 	if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED)
 		return 0;
 	}
-else if (objP->nType == OBJ_CNTRLCEN) {
+else if (objP->nType == OBJ_REACTOR) {
 	if (!gameOpts->render.shadows.bReactors)
 		return 0;
 	}
@@ -582,7 +582,7 @@ else if (!po) {
 		po = gameData.models.altPolyModels + nModel;
 	else
 		return NULL;
-	if ((gameStates.render.nShadowPass == 2) && (objP->nType == OBJ_CNTRLCEN) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
+	if ((gameStates.render.nShadowPass == 2) && (objP->nType == OBJ_REACTOR) && !(nModel & 1))	// use the working reactor model for rendering destroyed reactors' shadows
 		po--;
 	}
 //check if should use simple model (depending on detail level chosen)

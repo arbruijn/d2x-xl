@@ -1384,7 +1384,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		if (objP->flags & OF_ATTACHED)
 			continue;		//ignore this tObject
 		nNewSeg = nSegment;
-		if (objP->nType != OBJ_CNTRLCEN && ((objP->nType != OBJ_ROBOT) || (objP->id == 65))) { //don't migrate controlcen
+		if (objP->nType != OBJ_REACTOR && ((objP->nType != OBJ_ROBOT) || (objP->id == 65))) { //don't migrate controlcen
 			mask = GetSegMasks (&OBJPOS (objP)->vPos, nNewSeg, objP->size);
 			if (mask.sideMask) {
 				for (nSide = 0, sideFlag = 1; nSide < 6; nSide++, sideFlag <<= 1) {

@@ -708,7 +708,7 @@ else {
 				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
 			break;
 		case ESCORT_GOAL_CONTROLCEN:
-			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_CNTRLCEN, -1, -1);
+			gameData.escort.nGoalIndex = ExistsInMine (objP->nSegment, OBJ_REACTOR, -1, -1);
 			if (gameData.escort.nGoalIndex > -1) 
 				nGoalSeg = gameData.objs.objects [gameData.escort.nGoalIndex].nSegment;
 			break;
@@ -833,7 +833,7 @@ else if (!(gameData.objs.console->flags & PLAYER_FLAGS_GOLD_KEY) &&
 else if (!(gameData.objs.console->flags & PLAYER_FLAGS_RED_KEY) && 
 			 (ExistsInMine (gameData.objs.console->nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
-else if (gameData.reactor.bDestroyed == 0) {
+else if (!gameData.reactor.bDestroyed) {
 	int	i;
 
 	for (i = 0; i < extraGameInfo [0].nBossCount; i++)

@@ -15,31 +15,31 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _COLLIDE_H
 #define _COLLIDE_H
 
-void CollideInit();
-int CollideTwoObjects(tObject * A, tObject * B, vmsVector *collision_point);
-int CollideObjectWithWall(tObject * A, fix hitspeed, short hitseg, short hitwall, vmsVector * hitpt);
-void ApplyDamageToPlayer(tObject *tPlayer, tObject *killer, fix damage);
+void CollideInit ();
+int CollideTwoObjects (tObject *objP0, tObject *objP1, vmsVector *vCollision);
+int CollideObjectWithWall (tObject *objP, fix xHitSpeed, short nHitSeg, short nHitWall, vmsVector *vHit);
+void ApplyDamageToPlayer (tObject *playerP, tObject *killerP, fix cDamage);
 
 // Returns 1 if robot died, else 0.
-int ApplyDamageToRobot(tObject *robot, fix damage, int nKillerObj);
+int ApplyDamageToRobot (tObject *robotP, fix xDamage, int nKillerObj);
 
-extern int Immaterial;
+int CollidePlayerAndWeapon (tObject *nPlayer, tObject *weaponP, vmsVector *vCollision);
+int CollidePlayerAndMatCen (tObject *objP);
+int CollideRobotAndMatCen (tObject *objP);
 
-int CollidePlayerAndWeapon(tObject * tPlayer, tObject * weapon, vmsVector *collision_point);
-int CollidePlayerAndMatCen(tObject *objp);
-int CollideRobotAndMatCen(tObject *objp);
+void ScrapeObjectOnWall (tObject *objP, short nHitSeg, short nHitWall, vmsVector *vHit);
+int MaybeDetonateWeapon (tObject *obj0p, tObject *obj1P, vmsVector *vPos);
 
-void ScrapeObjectOnWall(tObject *obj, short hitseg, short hitwall, vmsVector * hitpt);
-int MaybeDetonateWeapon(tObject *obj0p, tObject *obj, vmsVector *pos);
+int CollidePlayerAndNastyRobot (tObject * nPlayer, tObject * robot, vmsVector *vCollision);
 
-int CollidePlayerAndNastyRobot(tObject * tPlayer, tObject * robot, vmsVector *collision_point);
-
-void NetDestroyReactor(tObject *controlcen);
-int CollidePlayerAndPowerup(tObject * tPlayer, tObject * powerup, vmsVector *collision_point);
-int CheckEffectBlowup(tSegment *seg,short tSide,vmsVector *pnt, tObject *blower, int force_blowupFlag);
-void ApplyDamageToReactor(tObject *controlcen, fix damage, short who);
-void BumpOneObject(tObject *obj0, vmsVector *hit_dir, fix damage);
+int NetDestroyReactor (tObject *reactorP);
+int CollidePlayerAndPowerup (tObject * nPlayer, tObject * powerup, vmsVector *vCollision);
+int CheckEffectBlowup (tSegment *segP, short nSide, vmsVector *vPos, tObject *blowerP, int bForceBlowup);
+void ApplyDamageToReactor (tObject *reactorP, fix xDamage, short nAttacker);
+void BumpOneObject (tObject *objP, vmsVector *vHitDir, fix xDamage);
 void SetMonsterballForces (void);
 void SetDebrisCollisions (void);
+
+extern int Immaterial;
 
 #endif /* _COLLIDE_H */

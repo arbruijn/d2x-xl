@@ -813,14 +813,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadPointList (CFILE *fp, tOOF_pointList *pList, int bParent)
+int OOF_ReadPointList (CFILE *fp, tOOF_pointList *pList, int bParent, int nSize)
 {
 	int	i;
 
 nIndent += 2;
 OOF_PrintLog ("reading point list\n");
 pList->nPoints = OOF_ReadInt (fp, "nPoints");
-if (!(pList->pPoints = (tOOF_point *) D2_ALLOC (pList->nPoints * sizeof (tOOF_point)))) {
+if (nSize < pList->nPoints)
+	nSize = pList->nPoints;
+if (!(pList->pPoints = (tOOF_point *) D2_ALLOC (nSize * sizeof (tOOF_point)))) {
 	nIndent -= 2;
 	return OOF_FreePointList (pList);
 	}
@@ -1750,22 +1752,23 @@ for (i = po->nSubObjects, pso = po->pSubObjects; i; i--, pso++) {
 void GetSubObjectBounds (tOOFObject *po, tOOF_subObject *pso, tOOF_vector vo)
 {
 	int	i;
+	float	h;
 
 vo.x += pso->vOffset.x;
 vo.y += pso->vOffset.y;
 vo.z += pso->vOffset.z;
-if ((po->vMax.x + vo.x) > pso->vMax.x)
-	 pso->vMax.x = po->vMax.x + vo.x;
-if ((po->vMax.y + vo.y) > pso->vMax.y)
-	 pso->vMax.y = po->vMax.y + vo.y;
-if ((po->vMax.z + vo.z) > pso->vMax.z)
-	 pso->vMax.z = po->vMax.z + vo.z;
-if ((po->vMin.x + vo.x) < pso->vMin.x)
-	 pso->vMin.x = po->vMin.x + vo.x;
-if ((po->vMin.y + vo.y) < pso->vMin.y)
-	 pso->vMin.y = po->vMin.y + vo.y;
-if ((po->vMin.z + vo.z) < pso->vMin.z)
-	 pso->vMin.z = po->vMin.z + vo.z;
+if (po->vMax.x < (h = pso->vMax.x + vo.x))
+	 po->vMax.x = h;
+if (po->vMax.y < (h = pso->vMax.y + vo.y))
+	 po->vMax.y = h;
+if (po->vMax.z < (h = pso->vMax.z + vo.z))
+	 po->vMax.z = h;
+if (po->vMin.x > (h = pso->vMin.x + vo.x))
+	 po->vMin.x = h;
+if (po->vMin.y > (h = pso->vMin.y + vo.y))
+	 po->vMin.y = h;
+if (po->vMin.z > (h = pso->vMin.z + vo.z))
+	 po->vMin.z = h;
 for (i = 0; i < pso->nChildren; i++)
 	GetSubObjectBounds (po, po->pSubObjects + pso->children [i], vo);
 }
@@ -1850,7 +1853,7 @@ while (!CFEoF (&cf)) {
 			break;
 
 		case 3:
-			if (!OOF_ReadPointList (&cf, &o.gunPoints, o.nVersion >= 1908))
+			if (!OOF_ReadPointList (&cf, &o.gunPoints, o.nVersion >= 1908, MAX_GUNS))
 				return OOF_FreeObject (&o);
 			break;
 

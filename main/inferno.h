@@ -2065,6 +2065,11 @@ typedef struct tModelThrusters {
 	ubyte					nCount;
 	} tModelThrusters;
 
+typedef struct tGunInfo {
+	int					nGuns;
+	vmsVector			vGunPoints [MAX_GUNS];
+	} tGunInfo;
+
 typedef struct tModelData {
 	int					nLoresModels;
 	int					nHiresModels;
@@ -2091,6 +2096,7 @@ typedef struct tModelData {
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
 	tG3Model				g3Models [2][MAX_POLYGON_MODELS];
 	vmsVector			offsets [MAX_POLYGON_MODELS];
+	tGunInfo				gunInfo [MAX_POLYGON_MODELS];
 	int					nScale;
 } tModelData;
 

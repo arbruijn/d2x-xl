@@ -148,6 +148,7 @@ void DestroyOmegaLightnings (void);
 void SetMaxOmegaCharge (void);
 
 void GetPlayerMslLock (void);
+vmsVector *GetGunPoints (tObject *objP, int nGun);
 
 typedef struct tMuzzleInfo {
 	fix         createTime;

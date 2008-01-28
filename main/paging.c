@@ -230,7 +230,7 @@ switch (objP->nType) {
 		PagingTouchRobot (objP->id);
 		break;
 
-	case OBJ_CNTRLCEN:
+	case OBJ_REACTOR:
 		PagingTouchWeapon (CONTROLCEN_WEAPON_NUM);
 		if (gameData.models.nDeadModels [objP->rType.polyObjInfo.nModel] != -1)
 			PagingTouchModel (gameData.models.nDeadModels [objP->rType.polyObjInfo.nModel]);

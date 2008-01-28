@@ -599,7 +599,7 @@ if (gameData.render.shield.nFaces > 0)
 	else {
 		tOOF_vector	p;
 		fix nSize = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
-		float	fScale, r = f2fl (nSize);// * 1.05f;
+		float	fScale, r = f2fl (nSize) * 1.05f;
 		tPosition *posP = OBJPOS (objP);
 		vmsVector vPos;
 		gameStates.ogl.bUseTransform = 1;
@@ -610,7 +610,7 @@ if (gameData.render.shield.nFaces > 0)
 		gameStates.ogl.bUseTransform = 0;
 		fScale = gameData.render.shield.pPulse->fScale;
 		VmVecRotate (&vPos, gameData.models.offsets + objP->rType.polyObjInfo.nModel, ObjectView (objP));
-		VmVecInc (&vPos, &objP->position.vPos);
+		VmVecInc (&vPos, &posP->vPos);
 		RenderObjectHalo (&vPos, 3 * nSize / 2, red * fScale, green * fScale, blue * fScale, alpha * fScale, 0);
 		}
 	}

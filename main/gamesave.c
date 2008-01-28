@@ -210,7 +210,7 @@ if (objP->nType == OBJ_WEAPON)	{
 		objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 		}
 	}
-if (objP->nType == OBJ_CNTRLCEN) {
+if (objP->nType == OBJ_REACTOR) {
 	objP->renderType = RT_POLYOBJ;
 	objP->controlType = CT_CNTRLCEN;
 	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor

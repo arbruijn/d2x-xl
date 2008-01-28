@@ -972,7 +972,7 @@ if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	sprintf (szScore, "T - %5d", i);
 	GrGetStringSize (szScore, &w, &h, &aw);
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	if (i>-1 && !gameData.reactor.bDestroyed)
+	if ((i >= 0) && !gameData.reactor.bDestroyed)
 		nIdTimer = GrPrintF (&nIdTimer, grdCurCanv->cv_w-w-LHX (10), LHX (11), szScore);
 	}
 }

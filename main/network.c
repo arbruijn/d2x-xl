@@ -1015,7 +1015,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 	for (i = networkData.nSendObjNum; i <= gameData.objs.nLastObject; i++) {
 		t = gameData.objs.objects [i].nType;
 		if ((t != OBJ_POWERUP) && (t != OBJ_PLAYER) &&
-			 (t != OBJ_CNTRLCEN) && (t != OBJ_GHOST) &&
+			 (t != OBJ_REACTOR) && (t != OBJ_GHOST) &&
 			 (t != OBJ_ROBOT) && (t != OBJ_HOSTAGE) &&
 			 ((t != OBJ_WEAPON) || (gameData.objs.objects [i].id != SMALLMINE_ID)))
 			continue;
@@ -2151,7 +2151,7 @@ switch (pid) {
     //-------------------------------------------
 	case PID_PDATA: 
 		con_printf (0, "received PID_PDATA\n");
-		if ((gameData.app.nGameMode&GM_NETWORK) && 
+		if ((gameData.app.nGameMode & GM_NETWORK) && 
 			 ((networkData.nStatus == NETSTAT_PLAYING)||
 			  (networkData.nStatus == NETSTAT_ENDLEVEL) || 
 			  (networkData.nStatus == NETSTAT_WAITING))) { 
@@ -2162,7 +2162,7 @@ switch (pid) {
     //-------------------------------------------
    case PID_NAKED_PDATA:
 		con_printf (0, "received PID_NAKED_PDATA\n");
-		if ((gameData.app.nGameMode&GM_NETWORK) && 
+		if ((gameData.app.nGameMode & GM_NETWORK) && 
 			 ((networkData.nStatus == NETSTAT_PLAYING)||
 			  (networkData.nStatus == NETSTAT_ENDLEVEL) || 
 			  (networkData.nStatus == NETSTAT_WAITING))) 
@@ -2377,7 +2377,7 @@ for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject; i++) {
 	if (nPlayers > gameData.multiplayer.nMaxPlayers)
 		return 1;
 #if 0
-	if (gameData.objs.objects [i].nType == OBJ_CNTRLCEN)
+	if (gameData.objs.objects [i].nType == OBJ_REACTOR)
 		bHaveReactor = 1;
 #endif
 	}
@@ -3482,7 +3482,7 @@ void NetworkDoFrame (int force, int listen)
 	static fix LastEndlevel=0;
 	int i;
 
-if (!(gameData.app.nGameMode&GM_NETWORK)) 
+if (!(gameData.app.nGameMode & GM_NETWORK)) 
 	return;
 if ((networkData.nStatus != NETSTAT_PLAYING) || (gameStates.app.bEndLevelSequence)) // Don't send postion during escape sequence...
 	goto listen;
@@ -4118,7 +4118,7 @@ if (!networkData.bSendingExtras) {
 
 void NetworkSendNakedPacket (char *buf, short len, int who)
 {
-if (!(gameData.app.nGameMode&GM_NETWORK)) 
+if (!(gameData.app.nGameMode & GM_NETWORK)) 
 	return;
 if (NakedPacketLen == 0) {
 	NakedBuf [0]=PID_NAKED_PDATA;

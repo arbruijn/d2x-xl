@@ -1657,7 +1657,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->nSegment;
 	// hack for a bug I haven't yet been able to fix 
-	if ((objP->nType != OBJ_CNTRLCEN) && (objP->shields < 0)) {
+	if ((objP->nType != OBJ_REACTOR) && (objP->shields < 0)) {
 		j = FindBoss (i);
 		if ((j < 0) || (gameData.boss [j].nDying != i))
 			objP->nType = OBJ_NONE;
@@ -1873,7 +1873,7 @@ void StateRestoreObject (tObject *objP, CFILE *cfp, int sgVersion)
 {
 objP->nSignature = CFReadInt (cfp);      
 objP->nType = (ubyte) CFReadByte (cfp); 
-if (objP->nType == OBJ_CNTRLCEN)
+if (objP->nType == OBJ_REACTOR)
 	objP->nType = objP->nType;
 else if ((sgVersion < 32) && IS_BOSS (objP))
 	gameData.boss [extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);

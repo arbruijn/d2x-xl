@@ -736,7 +736,7 @@ else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
 else if ((t == OBJ_EFFECT) && (objP->id == SMOKE_ID))
 	DoStaticSmoke (objP);
-else if (t == OBJ_CNTRLCEN)
+else if (t == OBJ_REACTOR)
 	DoReactorSmoke (objP);
 else if (t == OBJ_WEAPON) {
 	if (gameData.objs.bIsMissile [objP->id])

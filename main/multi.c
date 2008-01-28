@@ -247,7 +247,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	40, // MULTI_MONSTERBALL
 	2,  //MULTI_CHEATING
 	5,  //MULTI_TRIGGER_EXT
-	16	 //MULTI_SYNC_KILLS
+	16, //MULTI_SYNC_KILLS
+	5	 //MULTI_COUNTDOWN
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -811,7 +812,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 DigiPlaySample (SOUND_HUD_KILL, F3_0);
 if (gameData.reactor.bDestroyed)
 	pKilled->connected = 3;
-if (killerType == OBJ_CNTRLCEN) {
+if (killerType == OBJ_REACTOR) {
 	pKilled->netKilledTotal++;
 	pKilled->netKillsTotal--;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -951,7 +952,7 @@ if (netGame.KillGoal > 0) {
 		else
 			HUDInitMessage (TXT_REACH_KILLGOAL2, pKiller->callsign);
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
-		NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
+		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}
 	}
 MultiSortKillList ();
@@ -1104,7 +1105,7 @@ if (gameStates.app.bEndLevelSequence ||
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
-if ((gameData.reactor.bDestroyed) && (gameData.reactor.countdown.nSecsLeft < 10)) {
+if (gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
@@ -1318,6 +1319,14 @@ if (gameData.reactor.bDestroyed != 1) {
 	else
 		NetDestroyReactor (NULL);
 	}
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoCountdown (char *buf)
+{
+if (NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR)))
+	 InitCountdown (NULL, 1, GET_INTEL_INT (buf + 1));
 }
 
 //-----------------------------------------------------------------------------
@@ -1906,18 +1915,27 @@ gameData.multigame.laser.bFired = 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiSendDestroyReactor (int nObject, int tPlayer)
+void MultiSendDestroyReactor (int nObject, int nPlayer)
 {
-if (tPlayer == gameData.multiplayer.nLocalPlayer)
+if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	HUDInitMessage (TXT_YOU_DEST_CONTROL);
-else if ((tPlayer > 0) && (tPlayer < gameData.multiplayer.nPlayers))
-	HUDInitMessage ("%s %s", gameData.multiplayer.players [tPlayer].callsign, TXT_HAS_DEST_CONTROL);
+else if ((nPlayer > 0) && (nPlayer < gameData.multiplayer.nPlayers))
+	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_HAS_DEST_CONTROL);
 else
 	HUDInitMessage (TXT_CONTROL_DESTROYED);
-gameData.multigame.msg.buf [0] = (char)MULTI_CONTROLCEN;
+gameData.multigame.msg.buf [0] = (char) MULTI_CONTROLCEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nObject);
-gameData.multigame.msg.buf [3] = tPlayer;
+gameData.multigame.msg.buf [3] = nPlayer;
 MultiSendData (gameData.multigame.msg.buf, 4, 2);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendCountdown (void)
+{
+gameData.multigame.msg.buf [0] = (char) MULTI_COUNTDOWN;
+PUT_INTEL_INT (gameData.multigame.msg.buf+1, gameData.reactor.countdown.nTimer);
+MultiSendData (gameData.multigame.msg.buf, 5, 2);
 }
 
 //-----------------------------------------------------------------------------
@@ -2996,7 +3014,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 	else if ((nType == OBJ_ROBOT) && (gameData.app.nGameMode & GM_MULTI_ROBOTS))
 		;
 	else if ((nType != OBJ_NONE) && (nType != OBJ_PLAYER) && (nType != OBJ_POWERUP) && 
-				(nType != OBJ_MONSTERBALL) && (nType != OBJ_EXPLOSION) && (nType != OBJ_CNTRLCEN) && 
+				(nType != OBJ_MONSTERBALL) && (nType != OBJ_EXPLOSION) && (nType != OBJ_REACTOR) && 
 				(nType != OBJ_HOSTAGE) && ((nType != OBJ_WEAPON) || (objP->id != SMALLMINE_ID))) {
 		// Before deleting tObject, if it's a robot, drop it's special powerup, if any
 		if (nType == OBJ_ROBOT)
@@ -3467,7 +3485,7 @@ void MultiCheckForEntropyWinner ()
 
 	static int		countDown;
 
-if (!(gameData.app.nGameMode & GM_ENTROPY))
+if (!IsEntropyGame)
 	return;
 #if 1//def RELEASE
 if (gameData.reactor.bDestroyed) {
@@ -3541,7 +3559,7 @@ if (bestnum == gameData.multiplayer.nLocalPlayer)
 else
 	HUDInitMessage (TXT_BEST_SCORE, gameData.multiplayer.players [bestnum].callsign, best);
 HUDInitMessage (TXT_CTRLCEN_DEAD);
-objP = ObjFindFirstOfType (OBJ_CNTRLCEN);
+objP = ObjFindFirstOfType (OBJ_REACTOR);
 NetDestroyReactor (objP);
 }
 
@@ -3970,7 +3988,7 @@ if (penalty) {
 			sprintf (szTeam, "%s Team", nTeam ? TXT_RED : TXT_BLUE);
 			HUDInitMessage (TXT_REACH_KILLGOAL, szTeam);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
-			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
+			NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 			}	
 		}
 #endif
@@ -3988,7 +4006,7 @@ else {
 			else
 				HUDInitMessage (TXT_REACH_KILLGOAL, gameData.multiplayer.players [nPlayer].callsign);
 			HUDInitMessage (TXT_CTRLCEN_DEAD);
-			NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
+			NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 			}
 		}
 	}
@@ -4057,7 +4075,7 @@ if (netGame.KillGoal>0) {
 		else
 			HUDInitMessage (TXT_REACH_KILLGOAL2, gameData.multiplayer.players [nPlayer].callsign);
 		HUDInitMessage (TXT_CTRLCEN_DEAD);
-		NetDestroyReactor (ObjFindFirstOfType (OBJ_CNTRLCEN));
+		NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR));
 		}
 	}
 MultiSortKillList ();
@@ -4907,6 +4925,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoCheating, 1},
 	{MultiDoTrigger, 1},
 	{MultiDoSyncKills, 1},
+	{MultiDoCountdown, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5240,6 +5259,11 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 	case MULTI_SYNC_KILLS:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoSyncKills (buf); 
+		break;
+	case MULTI_COUNTDOWN:
+		if (!gameStates.app.bEndLevelSequence) 
+			MultiDoCountdown (buf); 
+		break;
 	default:
 		Int3 ();
 	}

@@ -124,7 +124,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_CHEATING					78
 #define MULTI_TRIGGER_EXT				79
 #define MULTI_SYNC_KILLS				80
-#define MULTI_MAX_TYPE					80
+#define MULTI_COUNTDOWN					81
+#define MULTI_MAX_TYPE					81
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -136,77 +137,77 @@ int ObjnumRemoteToLocal (int remote_obj, int owner);
 int ObjnumLocalToRemote (int local_obj, sbyte *owner);
 void MapObjnumLocalToRemote (int local, int remote, int owner);
 void MapObjnumLocalToLocal (int nObject);
-void ResetNetworkObjects();
+void ResetNetworkObjects ();
 
-void multi_initObjects(void);
-void MultiShowPlayerList(void);
-void MultiDoFrame(void);
+void MultiInitObjects (void);
+void MultiShowPlayerList (void);
+void MultiDoFrame (void);
 
 
-void MultiSendFlags(char);
+void MultiSendFlags (char);
 void MultiSendWeapons (int bForce);
 void MultiSendMonsterball (int bForce, int bCreate);
-void MultiSendFire(void);
-void MultiSendDestroyReactor(int nObject, int tPlayer);
-void MultiSendEndLevelStart(int);
-void MultiSendPlayerExplode(char nType);
-void MultiSendMessage(void);
-void MultiSendPosition(int nObject);
-void MultiSendReappear();
-void MultiSendKill(int nObject);
-void MultiSendRemObj(int nObject);
-void MultiSendQuit(int why);
-void MultiSendDoorOpen(int nSegment, int tSide,ubyte flag);
-void MultiSendCreateExplosion(int player_num);
-void MultiSendCtrlcenFire(vmsVector *to_target, int gun_num, int nObject);
-void MultiSendInvul(void);
-void MultiSendDeInvul(void);
-void MultiSendCloak(void);
-void MultiSendDeCloak(void);
-void MultiSendCreatePowerup(int powerupType, int nSegment, int nObject, vmsVector *pos);
-void MultiSendPlaySound(int nSound, fix volume);
-void MultiSendAudioTaunt(int taunt_num);
-void MultiSendScore(void);
-void MultiSendTrigger(int nTrigger, int nObject);
-void MultiSendObjTrigger(int tTrigger);
-void MultiSendHostageDoorStatus(int wallnum);
-void MultiSendNetPlayerStatsRequest(ubyte player_num);
+void MultiSendFire (void);
+void MultiSendDestroyReactor (int nObject, int nPlayer);
+void MultiSendCountdown (void);
+void MultiSendEndLevelStart (int);
+void MultiSendPlayerExplode (char nType);
+void MultiSendMessage (void);
+void MultiSendPosition (int nObject);
+void MultiSendReappear ();
+void MultiSendKill (int nObject);
+void MultiSendRemObj (int nObject);
+void MultiSendQuit (int why);
+void MultiSendDoorOpen (int nSegment, int tSide,ubyte flag);
+void MultiSendCreateExplosion (int nPlayer);
+void MultiSendCtrlcenFire (vmsVector *to_target, int nGun, int nObject);
+void MultiSendInvul (void);
+void MultiSendDeInvul (void);
+void MultiSendCloak (void);
+void MultiSendDeCloak (void);
+void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, vmsVector *pos);
+void MultiSendPlaySound (int nSound, fix volume);
+void MultiSendAudioTaunt (int taunt_num);
+void MultiSendScore (void);
+void MultiSendTrigger (int nTrigger, int nObject);
+void MultiSendObjTrigger (int tTrigger);
+void MultiSendHostageDoorStatus (int wallnum);
+void MultiSendNetPlayerStatsRequest (ubyte nPlayer);
 void MultiSendDropWeapon (int nObject,int seed);
-void MultiSendDropMarker (int tPlayer,vmsVector position,char messagenum,char text[]);
+void MultiSendDropMarker (int nPlayer,vmsVector position,char messagenum,char text[]);
 void MultiSendGuidedInfo (tObject *miss,char);
-void MultiSendReturnFlagHome(short nObject);
+void MultiSendReturnFlagHome (short nObject);
 void MultiSendCaptureBonus (char pnum);
 void MultiSendShields (void);
 void MultiSendCheating (void);
 
-void MultiEndLevelScore(void);
-void MultiPrepLevel(void);
-int MultiEndLevel(int *secret);
-int MultiMenuPoll(void);
-void MultiLeaveGame(void);
-void MultiProcessData(char *dat, int len);
-void MultiProcessBigData(char *buf, int len);
-void MultiDoDeath(int nObject);
-void MultiSendMsgDialog(void);
-int MultiDeleteExtraObjects(void);
-void MultiMakeGhostPlayer(int nObject);
-void MultiMakePlayerGhost(int nObject);
-void MultiDefineMacro(int key);
-void MultiSendMacro(int key);
-int MultiGetKillList(int *plist);
-void MultiNewGame(void);
-void MultiSortKillList(void);
-int MultiChooseMission(int *anarchy_only);
-void MultiResetStuff(void);
+void MultiEndLevelScore (void);
+void MultiPrepLevel (void);
+int MultiEndLevel (int *secret);
+int MultiMenuPoll (void);
+void MultiLeaveGame (void);
+void MultiProcessData (char *dat, int len);
+void MultiProcessBigData (char *buf, int len);
+void MultiDoDeath (int nObject);
+void MultiSendMsgDialog (void);
+int MultiDeleteExtraObjects (void);
+void MultiMakeGhostPlayer (int nObject);
+void MultiMakePlayerGhost (int nObject);
+void MultiDefineMacro (int key);
+void MultiSendMacro (int key);
+int MultiGetKillList (int *plist);
+void MultiNewGame (void);
+void MultiSortKillList (void);
+int MultiChooseMission (int *anarchy_only);
+void MultiResetStuff (void);
 void MultiSendConquerRoom (char owner, char prevOwner, char group);
 void MultiSendConquerWarning ();
 void MultiSendStopConquerWarning ();
-void MultiSendData(char *buf, int len, int repeat);
-void switch_team(int pnum, int bForce);
-void ChoseTeam (int pnum);
+void MultiSendData (char *buf, int len, int repeat);
+void ChoseTeam (int nPlayer);
 void AutoBalanceTeams ();
 
-short GetTeam(int pnum);
+short GetTeam (int nPlayer);
 
 // Exported variables
 
@@ -221,15 +222,15 @@ extern int message_length[MULTI_MAX_TYPE+1];
 extern short kill_matrix[MAX_NUM_NET_PLAYERS][MAX_NUM_NET_PLAYERS];
 
 
-extern void MultiMsgInputSub( int key );
-extern void MultiSendMsgStart(char nMsg);
-extern void MultiSendMsgQuit(void);
+extern void MultiMsgInputSub (int key);
+extern void MultiSendMsgStart (char nMsg);
+extern void MultiSendMsgQuit (void);
 extern void MultiSendTyping (void);
 
-extern int MultiPowerupIs4Pack(int );
-extern void MultiSendOrbBonus( char pnum );
-extern void MultiSendGotOrb( char pnum );
-extern void MultiAddLifetimeKills(void);
+extern int MultiPowerupIs4Pack (int);
+extern void MultiSendOrbBonus (char pnum);
+extern void MultiSendGotOrb (char pnum);
+extern void MultiAddLifetimeKills (void);
 
 extern void MultiSendTeleport (char pnum, short nSegment, char nSide);
 
@@ -247,7 +248,7 @@ extern tBitmapIndex MultiPlayerTextures[MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTU
 #define NETGAME_FLAG_REALLY_ENDLEVEL   32
 #define NETGAME_FLAG_REALLY_FORMING    64
 #define NETGAME_FLAG_ENTROPY				128
-#define NETGAME_FLAG_MONSTERBALL			(NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY)	//ugly hack, but we only have a single byte ... :-/
+#define NETGAME_FLAG_MONSTERBALL			 (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY)	//ugly hack, but we only have a single byte ... :-/
 
 #define NETGAME_NAME_LEN                15
 #define NETGAME_AUX_SIZE                20  // Amount of extra data for the network protocol to store in the netgame packet
@@ -323,7 +324,7 @@ typedef struct tNetgameInfo {
 // doing so will mean I don't have to do screwy things to
 // send this as network information
 
-#if !(defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__))
+#if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 	short DoMegas:1;		//first word
 	short DoSmarts:1;
 	short DoFusions:1;
@@ -428,8 +429,8 @@ typedef struct tMultiRobotData {
 extern struct tNetgameInfo netGame;
 extern struct tAllNetPlayersInfo netPlayers;
 
-int NetworkIAmMaster(void);
-void ChangePlayerNumTo(int new_pnum);
+int NetworkIAmMaster (void);
+void ChangePlayerNumTo (int new_pnum);
 
 void ChangeSegmentTexture (int nSegment, int oldOwner);
 
@@ -443,8 +444,8 @@ int SaveBanList (void);
 void FreeBanList (void);
 int PingPlayer (int n);
 int MultiProtectGame (void);
-void SwitchTeam (int pnum, int bForce);
-void SetTeam (int pnum, int team);
+void SwitchTeam (int nPlayer, int bForce);
+void SetTeam (int nPlayer, int team);
 void MultiSendModemPing ();
 int MultiFindGoalTexture (short t);
 void MultiSetFlagPos (void);
