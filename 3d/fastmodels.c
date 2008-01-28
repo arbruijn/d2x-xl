@@ -1234,7 +1234,7 @@ else if (bTransparency) {
 	}
 else
 	glBlendFunc (GL_ONE, GL_ZERO);
-for (nPass = 0; nLights; nPass++) {
+for (nPass = 0; nLights || !nPass; nPass++) {
 	if (bLighting) {
 		if (nPass) {
 			glBlendFunc (GL_ONE, GL_ONE);
