@@ -299,7 +299,7 @@ if (0 <= (h = UpdateDynLight (pc, f2fl (xBrightness), nSegment, nSide, nObject))
 if (!pc)
 	return -1;
 if ((pc->red == 0.0f) && (pc->green == 0.0f) && (pc->blue == 0.0f)) {
-	if (gameStates.app.bD2XLevel)
+	if (gameStates.app.bD2XLevel && gameStates.render.bColored)
 		return -1;
 	pc->red = pc->green = pc->blue = 1.0f;
 	}
@@ -547,12 +547,16 @@ if (left < r)
 
 void AddDynLights (void)
 {
-	int			nSegment, nSide, t;
+	int			nSegment, nSide, t, nLight;
 	tSegment		*segP;
 	tSide			*sideP;
 	tFaceColor	*pc;
 	short			*pSegLights, *pVertLights, *pOwners;
 
+#if 0
+for (t = 0; t < 910; t++)
+	nLight = IsLight (t);
+#endif
 gameStates.render.bHaveDynLights = 1;
 //glEnable (GL_LIGHTING);
 if (gameOpts->render.bDynLighting)
@@ -588,13 +592,12 @@ for (nSegment = 0, segP = gameData.segs.segments; nSegment < gameData.segs.nSegm
 		if (t >= MAX_WALL_TEXTURES) 
 			continue;
 		pc = gameData.render.color.textures + t;
-		if (gameData.pig.tex.brightness [t])
-			AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) nSegment, (short) nSide, -1, NULL);
+		if (nLight = IsLight (t) /*gameData.pig.tex.brightness [t]*/)
+			AddDynLight (&pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
 		t = sideP->nOvlTex;
-		if ((t > 0) && (t < MAX_WALL_TEXTURES) && gameData.pig.tex.brightness [t]) {
+		if ((t > 0) && (t < MAX_WALL_TEXTURES) && (nLight = IsLight (t)) /*gameData.pig.tex.brightness [t]*/) {
 			pc = gameData.render.color.textures + t;
-			if ((pc->color.red > 0.0f) || (pc->color.green > 0.0f) || (pc->color.blue > 0.0f))
-				AddDynLight (&pc->color, gameData.pig.tex.brightness [t], (short) nSegment, (short) nSide, -1, NULL);
+			AddDynLight (&pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
 			}
 		//if (gameData.render.lights.dynamic.nLights)
 		//	return;

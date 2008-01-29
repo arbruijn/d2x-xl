@@ -831,10 +831,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-vmsVector *SetShipGunPoints (tOOFObject *po, tG3Model *pm)
+void SetShipGunPoints (tOOFObject *po, tG3Model *pm)
 {
-	//static int nParents [] = {6, 7, 5, 4, 9, 10, 3, 3};
-	int nParents [] = {6, 7, 5, 4, 9, 10, 3, 3};
+	static int nParents [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
 	tG3SubModel		*psm;
 	tOOF_point		*pp;
@@ -855,57 +854,57 @@ for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GU
 			pp->vPos.z = (psm->vMax.p.z + psm->vMin.p.z) / 2;
 		}
 	}
-return gameData.pig.ship.player->gunPoints;
+}
+
+//------------------------------------------------------------------------------
+
+void SetRobotGunPoints (tObject *objP, tOOFObject *po, tG3Model *pm)
+{
+	tG3SubModel		*psm;
+	tOOF_point		*pp;
+	int				i, j = po->gunPoints.nPoints;
+
+for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
+	psm = pm->pSubModels + pp->nParent;
+	pp->vPos.x = (psm->vMax.p.x + psm->vMin.p.x) / 2;
+	pp->vPos.y = (psm->vMax.p.y + psm->vMin.p.y) / 2;
+  	pp->vPos.z = psm->vMax.p.z;
+	}
 }
 
 //------------------------------------------------------------------------------
 
 void G3SetGunPoints (tObject *objP, tG3Model *pm, int nModel)
 {
-	vmsVector		v, *vGunPoints;
-	tOOF_vector		fv;
-	int				i, nParent, nUsedGuns [MAX_GUNS];
+	vmsVector		*vGunPoints;
 	tOOFObject		*po = gameData.models.modelToOOF [1][nModel];
 	tOOF_subObject	*pso;
+	tOOF_point		*pp;
+	int				nParent, i, j;
 
 if (!po)
 	po = gameData.models.modelToOOF [0][nModel];
+pp = po->gunPoints.pPoints;
 if (objP->nType == OBJ_PLAYER)
-	vGunPoints = SetShipGunPoints (po, pm); 
+	SetShipGunPoints (po, pm); 
 else if (objP->nType == OBJ_ROBOT)
-	vGunPoints = ROBOTINFO (objP->id).gunPoints;
+	SetShipGunPoints (po, pm); 
 else {
 	gameData.models.gunInfo [nModel].nGuns = 0;
 	return;
 	}
-if (gameData.models.gunInfo [nModel].nGuns = po->gunPoints.nPoints) {
-	if (gameData.models.gunInfo [nModel].nGuns > MAX_GUNS)
-		gameData.models.gunInfo [nModel].nGuns = MAX_GUNS;
-	if (objP->nType == OBJ_PLAYER) {
-		for (i = 0; i < po->gunPoints.nPoints; i++) {
-			fv = po->gunPoints.pPoints [i].vPos;
-			v.p.x = fl2f (fv.x);
-			v.p.y = fl2f (fv.y);
-			v.p.z = fl2f (fv.z);
-			for (nParent = po->gunPoints.pPoints [i].nParent; nParent >= 0; nParent = pso->nParent) {
-				pso = po->pSubObjects + nParent;
-				VmVecInc (&v, &pm->pSubModels [nParent].vOffset);
-				}
-			gameData.models.gunInfo [nModel].vGunPoints [i] = v;
-			}
-		}
-	else {
-		memset (nUsedGuns, 0, sizeof (nUsedGuns));
-		for (i = 0; i < po->gunPoints.nPoints; i++) {
-			fv = po->gunPoints.pPoints [i].vPos;
-			for (nParent = po->gunPoints.pPoints [i].nParent; nParent >= 0; nParent = pso->nParent) {
-				pso = po->pSubObjects + nParent;
-				OOF_VecInc (&fv, &pso->vOffset);
-				}
-			v.p.x = fl2f (fv.x);
-			v.p.y = fl2f (fv.y);
-			v.p.z = fl2f (fv.z);
-			gameData.models.gunInfo [nModel].vGunPoints [NearestGunPoint (vGunPoints, &v, gameData.models.gunInfo [nModel].nGuns, nUsedGuns)] = v;
+if (j = po->gunPoints.nPoints) {
+	if (j > MAX_GUNS)
+		j = MAX_GUNS;
+	gameData.models.gunInfo [nModel].nGuns = j;
+	vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
+	for (i = 0; i < j; i++, pp++, vGunPoints++) {
+		vGunPoints->p.x = fl2f (pp->vPos.x);
+		vGunPoints->p.y = fl2f (pp->vPos.y);
+		vGunPoints->p.z = fl2f (pp->vPos.z);
+		for (nParent = pp->nParent; nParent >= 0; nParent = pso->nParent) {
+			pso = po->pSubObjects + nParent;
+			VmVecInc (vGunPoints, &pm->pSubModels [nParent].vOffset);
 			}
 		}
 	}

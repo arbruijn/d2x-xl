@@ -915,6 +915,8 @@ if (gameData.pig.tex.brightness [tMapNum] > 0)
 if (gameData.pig.tex.pTMapInfo [tMapNum].lighting > 0)
 	return gameData.pig.tex.pTMapInfo [tMapNum].lighting;
 #endif
+if (gameStates.app.bD2XLevel && gameStates.render.bColored)
+	return 0;
 switch (tMapNum) {
 	case 275:
 	case 276:
@@ -943,8 +945,6 @@ switch (tMapNum) {
 	case 344:
 	case 377:
 	case 346:
-	case 351:
-	case 352:
 	case 364:
 	case 366:
 	case 368:
@@ -965,9 +965,6 @@ switch (tMapNum) {
 	case 398:
 	case 411:
 	case 412:
-	case 414:
-	case 416:
-	case 418:
 	case 423:
 	case 424:
 	case 428:
@@ -979,12 +976,8 @@ switch (tMapNum) {
 	case 237:
 	case 243:
 	case 244:
-	case 333:
+	//case 333:
 	case 353:
-	case 356:
-	case 357:
-	case 358:
-	case 359:
 	case 378:
 	case 404:
 	case 405:
@@ -998,6 +991,17 @@ switch (tMapNum) {
 	case 432:
 	case 433:
 		return F1_0;
+	case 351:
+	case 352:
+		return F1_0 / 5;
+	case 356:
+	case 357:
+	case 358:
+	case 359:
+	case 414:
+	case 416:
+	case 418:
+		return F1_0 / 10;
 	default:
 		break;
 	}
