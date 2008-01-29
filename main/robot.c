@@ -89,8 +89,9 @@ tJointPos test_joints [MAX_ROBOT_JOINTS] = {
 //fills in gun_point
 int CalcGunPoint (vmsVector *vGunPoint, tObject *objP, int nGun)
 {
+	tPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
 	tRobotInfo	*botInfoP;
-	vmsVector	*vGunPoints, vGunPos;
+	vmsVector	*vGunPoints, vGunPos, vRot;
 	vmsMatrix	m;
 	int			nSubModel, bCustom = 0;				//submodel number
 
@@ -104,13 +105,11 @@ vGunPos = vGunPoints [nGun];
 nSubModel = botInfoP->gunSubModels [nGun];
 //instance up the tree for this gun
 while (nSubModel != 0) {
-	tPolyModel	*pm = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
-	vmsVector vRot;
-
 	VmAngles2Matrix (&m, &objP->rType.polyObjInfo.animAngles [nSubModel]);
 	VmTransposeMatrix (&m);
 	VmVecRotate (&vRot, &vGunPos, &m);
-	VmVecAdd (&vGunPos, &vRot, &pm->subModels.offsets [nSubModel]);
+	VmVecInc (&vGunPos, &vRot);
+	VmVecInc (&vGunPos, &pm->subModels.offsets [nSubModel]);
 	nSubModel = pm->subModels.parents [nSubModel];
 	}
 //now instance for the entire tObject
