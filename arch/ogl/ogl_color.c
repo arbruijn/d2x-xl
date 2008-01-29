@@ -748,7 +748,7 @@ else {
 		G3RotatePointf (&vcd.vertNorm, pvVertNorm, 0);
 	}
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
-	VmsVecToFloat (&vertPos, gameData.segs.vertices + nVertex);
+	VmVecFixToFloat (&vertPos, gameData.segs.vertices + nVertex);
 	pVertPos = &vertPos;
 	SetNearestVertexLights (nVertex, 1, 0, 1, nThread);
 	}

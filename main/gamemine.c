@@ -1215,7 +1215,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
 			VmVecAdd (&vNormal, sideP->normals, sideP->normals + 1);
 			VmVecScale (&vNormal, F1_0 / 2);
-			VmsVecToFloat3 (&vNormalf, &vNormal);
+			VmVecFixToFloat3 (&vNormalf, &vNormal);
 			for (i = 0; i < 4; i++) {
 				memcpy (vertexP++, gameData.segs.fVertices + sideVerts [i], sizeof (fVector3));
 				*normalP++ = vNormalf;

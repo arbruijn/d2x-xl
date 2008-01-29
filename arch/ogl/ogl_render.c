@@ -381,7 +381,7 @@ return 0;
 
 #define	G3VERTPOS(_dest,_src) \
 			if ((_src)->p3_index < 0) \
-				VmsVecToFloat (&(_dest), &((_src)->p3_vec)); \
+				VmVecFixToFloat (&(_dest), &((_src)->p3_vec)); \
 			else \
 				_dest = gameData.render.pVerts [(_src)->p3_index]; 
 
@@ -507,7 +507,7 @@ if (!bDepthSort) {
 	if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 		if (pvNormal) {
-			VmsVecToFloat (&vNormal, pvNormal);
+			VmVecFixToFloat (&vNormal, pvNormal);
 			G3RotatePointf (&vNormal, &vNormal, 0);
 			}
 	else
@@ -542,7 +542,7 @@ if (bVertexArrays || bDepthSort) {
 		vertIndex [i] = pl->p3_index;
 		//colorIndex [i] = i;
 		if (pl->p3_index < 0)
-			VmsVecToFloat (vertices + i, &pl->p3_vec);
+			VmVecFixToFloat (vertices + i, &pl->p3_vec);
 		else
 			vertices [i] = gameData.render.pVerts [pl->p3_index];
 		texCoord [0][i].v.u = f2fl (uvlList [i].u);
@@ -674,7 +674,7 @@ if (bOverlay > 0) {
 	glBegin (GL_TRIANGLE_FAN);
 	if (bDynLight) {
 		for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-			G3VertexColor (G3GetNormal (*ppl, &vNormal), VmsVecToFloat (&vVertPos, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
+			G3VertexColor (G3GetNormal (*ppl, &vNormal), VmVecFixToFloat (&vVertPos, &((*ppl)->p3_vec)), (*ppl)->p3_index, NULL, NULL, 1, 1, 0);
 			SetTexCoord (uvlList + i, orient, 0, NULL, bmMask != NULL);
 			OglVertex3f (*ppl);
 			}
@@ -870,7 +870,7 @@ else
 if (SHOW_DYN_LIGHT) {
 #if USE_VERTNORMS
 	if (pvNormal)
-		VmsVecToFloat (&vNormal, pvNormal);
+		VmVecFixToFloat (&vNormal, pvNormal);
 else
 		G3CalcNormal (pointList, &vNormal);
 #else

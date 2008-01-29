@@ -346,7 +346,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	if (gameStates.render.automap.bDisplay)
 		G3TransformPointf (vertices + i, gameData.segs.fVertices + faceP->index [i], 0);
 	else
-		VmsVecToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
+		VmVecFixToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
 return RIAddPoly (faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
@@ -369,7 +369,7 @@ item.nHeight = nHeight;
 item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 G3TransformPoint (&vPos, position, 0);
-VmsVecToFloat (&item.position, &vPos);
+VmVecFixToFloat (&item.position, &vPos);
 return AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z, vPos.p.z);
 }
 

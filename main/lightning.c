@@ -1366,13 +1366,13 @@ void ComputePlasmaBuffer (tLightning *pl, int nDepth, int nThread)
 
 for (bScale = 0; bScale < 2; bScale++) {
 	pln = pl->pNodes;
-	VmsVecToFloat (vPosf + 2, &(pln++)->vPos);
+	VmVecFixToFloat (vPosf + 2, &(pln++)->vPos);
 	if (!gameStates.ogl.bUseTransform)
 		G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 	for (i = pl->nNodes - 2, j = 0; j <= i; j++) {
 		TRAP (pln);
 		memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
-		VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
+		VmVecFixToFloat (vPosf + 2, &(++pln)->vPos);
 		if (!gameStates.ogl.bUseTransform)
 			G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 		TRAP (pln);
@@ -1437,7 +1437,7 @@ glLineWidth ((GLfloat) (nDepth ? 2 : 4));
 glDisable (GL_SMOOTH);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++, vPosf++) {
 	TRAP (pln);
-	VmsVecToFloat ((fVector *) vPosf, &pln->vPos);
+	VmVecFixToFloat ((fVector *) vPosf, &pln->vPos);
 	}
 if (!gameStates.ogl.bUseTransform)
 	OglSetupTransform (1);
@@ -1463,7 +1463,7 @@ glLineWidth (1);
 glBegin (GL_LINE_STRIP);
 for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
 	TRAP (pln);
-	VmsVecToFloat (vPosf, &pln->vNewPos);
+	VmVecFixToFloat (vPosf, &pln->vNewPos);
 	G3TransformPointf (vPosf, vPosf, 0);
 	glVertex3fv ((GLfloat *) vPosf);
 	}
@@ -1724,11 +1724,11 @@ if (bDepthSort > 0) {
 			if (j < i)
 				memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
 			if (!j) {
-				VmsVecToFloat (vPosf + 1, &(pln++)->vPos);
+				VmVecFixToFloat (vPosf + 1, &(pln++)->vPos);
 				G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 				}
 			if (j < i) {
-				VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
+				VmVecFixToFloat (vPosf + 2, &(++pln)->vPos);
 				G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 				}
 			if (j)
@@ -1793,12 +1793,12 @@ else {
 					if (j < i)
 						memcpy (vPosf, vPosf + 1, 2 * sizeof (fVector));
 					if (!j) {
-						VmsVecToFloat (vPosf + 1, &(pln++)->vPos);
+						VmVecFixToFloat (vPosf + 1, &(pln++)->vPos);
 						if (!gameStates.ogl.bUseTransform)
 							G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 						}
 					if (j < i) {
-						VmsVecToFloat (vPosf + 2, &(++pln)->vPos);
+						VmVecFixToFloat (vPosf + 2, &(++pln)->vPos);
 						if (!gameStates.ogl.bUseTransform)
 							G3TransformPointf (vPosf + 2, vPosf + 2, 0);
 						}
@@ -1822,7 +1822,7 @@ else {
 		glEnable (GL_SMOOTH);
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
-			VmsVecToFloat (vPosf, &pln->vPos);
+			VmVecFixToFloat (vPosf, &pln->vPos);
 			if (!gameStates.ogl.bUseTransform)
 				G3TransformPointf (vPosf, vPosf, 0);
 			glVertex3fv ((GLfloat *) vPosf);
@@ -1838,7 +1838,7 @@ else {
 		glLineWidth (1);
 		glBegin (GL_LINE_STRIP);
 		for (i = pl->nNodes, pln = pl->pNodes; i > 0; i--, pln++) {
-			VmsVecToFloat (vPosf, &pln->vNewPos);
+			VmVecFixToFloat (vPosf, &pln->vNewPos);
 			G3TransformPointf (vPosf, vPosf, 0);
 			glVertex3fv ((GLfloat *) vPosf);
 			}

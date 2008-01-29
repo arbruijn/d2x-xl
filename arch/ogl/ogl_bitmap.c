@@ -61,7 +61,7 @@ OglActiveTexture (GL_TEXTURE0, 0);
 glEnable (GL_BLEND);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #if 1
-VmsVecToFloat (&fPos, vPos);
+VmVecFixToFloat (&fPos, vPos);
 G3TransformPointf (&fPos, &fPos, 0);
 #else
 VmVecSub (&v1, vPos, &viewInfo.vPos);

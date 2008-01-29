@@ -1247,8 +1247,8 @@ else
 			if (h <= 0)
 				goto funcExit;
 			if (c.bHavePrevPos && (fDist > 0)) {
-				VmsVecToFloat (&vPosf, &c.prevPos);
-				VmsVecToFloat (&vDeltaf, &vDelta);
+				VmVecFixToFloat (&vPosf, &c.prevPos);
+				VmVecFixToFloat (&vDeltaf, &vDelta);
 				vDeltaf.p.x /= (float) h;
 				vDeltaf.p.y /= (float) h;
 				vDeltaf.p.z /= (float) h;
@@ -1256,7 +1256,7 @@ else
 			else if (c.nType == 3)
 				goto funcExit;
 			else {
-				VmsVecToFloat (&vPosf, &c.pos);
+				VmVecFixToFloat (&vPosf, &c.pos);
 				vDeltaf.p.x =
 				vDeltaf.p.y =
 				vDeltaf.p.z = 0.0f;

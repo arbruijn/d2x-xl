@@ -154,7 +154,7 @@ if (mOrient) {
 		VmsMatToFloat (viewInfo.viewf + i, viewInfo.view + i);
 		}
 	}
-VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
 }
 
 //------------------------------------------------------------------------------
@@ -178,7 +178,7 @@ if (gameStates.ogl.bUseTransform) {
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}
-VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 }
 

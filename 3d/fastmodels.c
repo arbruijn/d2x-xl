@@ -265,7 +265,7 @@ pmf->nVerts = nVerts;
 if ((pmf->bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = (tUVL *) (p + 30 + (nVerts | 1) * 2);
-VmsVecToFloat3 (&n, pn);
+VmVecFixToFloat3 (&n, pn);
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	pmv->vertex = pm->pVerts [j];
@@ -312,7 +312,7 @@ for (;;)
 			fVector3 *pfv = pm->pVerts;
 			vmsVector *pv = VECPTR(p+4);
 			for (i = n; i; i--)
-				VmsVecToFloat3 (pfv++, pv++);
+				VmVecFixToFloat3 (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 4;
 			break;
 			}
@@ -323,7 +323,7 @@ for (;;)
 			fVector3 *pfv = pm->pVerts + s;
 			vmsVector *pv = VECPTR(p+8);
 			for (i = n; i; i--)
-				VmsVecToFloat3 (pfv++, pv++);
+				VmVecFixToFloat3 (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 8;
 			break;
 			}
@@ -681,7 +681,7 @@ if (IsMultiGame)
 	return 0;
 if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_ROBOT))
 	return 0;
-VmsVecToFloat (&vOffset, gameData.models.offsets + nModel);
+VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 if (!(vOffset.p.x || vOffset.p.y || vOffset.p.z))
 	return 0;
 for (i = pm->nFaceVerts, pmv = pm->pFaceVerts; i; i--, pmv++) {
@@ -1018,7 +1018,7 @@ void G3DynLightModel (tObject *objP, tG3Model *pm, short iVerts, short nVerts, s
 	int				h, i, bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 
 if (!gameStates.render.bBrightObject) {
-	VmsVecToFloat (&vPos, &objP->position.vPos);
+	VmVecFixToFloat (&vPos, &objP->position.vPos);
 	for (i = iVerts, pv = pm->pVerts + iVerts, pn = pm->pVertNorms + iVerts, pc = pm->pColor + iVerts; 
 		  i < nVerts; 
 		  i++, pv++, pn++, pc++) {
@@ -1165,7 +1165,7 @@ void G3GetThrusterPos (short nModel, tG3ModelFace *pmf, vmsVector *vOffset, int 
 
 if (mtP->nCount >= 2)
 	return;
-VmsVecToFloat (&vn, &pmf->vNormal);
+VmVecFixToFloat (&vn, &pmf->vNormal);
 if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
 	return;
 for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
@@ -1178,7 +1178,7 @@ v.p.z -= 1.0f / 16.0f;
 G3TransformPoint (&v, &v, 0);
 #else
 if (vOffset) {
-	VmsVecToFloat (&vo, vOffset);
+	VmVecFixToFloat (&vo, vOffset);
 	VmVecIncf (&v, &vo);
 	}
 #endif

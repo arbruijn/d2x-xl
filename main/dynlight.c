@@ -635,7 +635,7 @@ UpdateOglHeadLight ();
 for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	memcpy (&psl->color, &pl->color, sizeof (pl->color));
 	psl->vPos = pl->vPos;
-	VmsVecToFloat (psl->pos, &pl->vPos);
+	VmVecFixToFloat (psl->pos, &pl->vPos);
 	if (gameStates.ogl.bUseTransform)
 		psl->pos [1] = psl->pos [0];
 	else {
@@ -946,7 +946,7 @@ else {
 		float				fLightDist, fAttenuation;
 		fVector			vPosf;
 		if (pvPos)
-			VmsVecToFloat (&vPosf, pvPos);
+			VmVecFixToFloat (&vPosf, pvPos);
 		for (i = 0; i < gameData.render.lights.dynamic.shader.nActiveLights; i++) {
 			psl = gameData.render.lights.dynamic.shader.activeLights [i];
 	#if 1
@@ -995,7 +995,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	if (nVertex == nDbgVertex)
 		nVertex = nVertex;
 #endif
-	VmsVecToFloat (&vVertex, gameData.segs.vertices + nVertex);
+	VmVecFixToFloat (&vVertex, gameData.segs.vertices + nVertex);
 	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = 0;
 	SetNearestVertexLights (nVertex, 1, 1, bColorize, nThread);
 	gameData.render.color.vertices [nVertex].index = 0;

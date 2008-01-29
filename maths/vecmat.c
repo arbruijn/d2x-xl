@@ -282,8 +282,8 @@ fix VmVecDotProd (vmsVector *v0, vmsVector *v1)
 if (gameStates.render.bEnableSSE) {
 		fVector	v0h, v1h;
 
-	VmsVecToFloat (&v0h, v0);
-	VmsVecToFloat (&v1h, v1);
+	VmVecFixToFloat (&v0h, v0);
+	VmVecFixToFloat (&v1h, v1);
 #if defined (_WIN32)
 	_asm {
 		movups	xmm0,v0h
@@ -442,7 +442,7 @@ if (gameOpts->render.nMathFormat == 2) {
 #if ENABLE_SSE
 		fVector	h;
 
-	VmsVecToFloat (&h, v);
+	VmVecFixToFloat (&h, v);
 #if defined (_WIN32)
 	__asm {
 		movups	xmm0,h
@@ -829,8 +829,8 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 #	if 0
 	fVector	srcf [2], destf;
 
-VmsVecToFloat (srcf, src0);
-VmsVecToFloat (srcf + 1, src1);
+VmVecFixToFloat (srcf, src0);
+VmVecFixToFloat (srcf + 1, src1);
 VmVecCrossProdf (&destf, srcf, srcf + 1);
 dest->p.x = fl2f (destf.p.x);
 dest->p.y = fl2f (destf.p.y);
@@ -1157,13 +1157,13 @@ if (gameStates.render.bEnableSSE) {
 		fVector	vf;
 		fMatrix	mf, *mfP;
 
-	VmsVecToFloat (&vf, src);
+	VmVecFixToFloat (&vf, src);
 	if (m == &viewInfo.view [0])
 		mfP = &viewInfo.viewf [0];
 	else {
-		VmsVecToFloat (&mf.fVec, &m->fVec);
-		VmsVecToFloat (&mf.rVec, &m->rVec);
-		VmsVecToFloat (&mf.uVec, &m->uVec);
+		VmVecFixToFloat (&mf.fVec, &m->fVec);
+		VmVecFixToFloat (&mf.rVec, &m->rVec);
+		VmVecFixToFloat (&mf.uVec, &m->uVec);
 		mfP = &mf;
 		}
 #if defined (_WIN32)
@@ -1246,9 +1246,9 @@ return dest;
 
 fMatrix *VmsMatToFloat (fMatrix *dest, vmsMatrix *src)
 {
-VmsVecToFloat (&dest->rVec, &src->rVec);
-VmsVecToFloat (&dest->uVec, &src->uVec);
-VmsVecToFloat (&dest->fVec, &src->fVec);
+VmVecFixToFloat (&dest->rVec, &src->rVec);
+VmVecFixToFloat (&dest->uVec, &src->uVec);
+VmVecFixToFloat (&dest->fVec, &src->fVec);
 dest->wVec.p.x = 
 dest->wVec.p.y = 
 dest->wVec.p.z = 0;
@@ -1572,9 +1572,9 @@ fix VmDistToPlane (vmsVector *vCheck, vmsVector *vNorm, vmsVector *vPlane)
 if (gameStates.render.bEnableSSE) {
 		fVector	c, p, n, t;
 
-	VmsVecToFloat (&c, vCheck);
-	VmsVecToFloat (&p, vPlane);
-	VmsVecToFloat (&n, vNorm);
+	VmVecFixToFloat (&c, vCheck);
+	VmVecFixToFloat (&p, vPlane);
+	VmVecFixToFloat (&n, vNorm);
 #if defined (_WIN32)
 	_asm {
 		movups	xmm0,c

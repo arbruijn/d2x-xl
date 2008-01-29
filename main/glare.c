@@ -351,7 +351,7 @@ for (i = 0; i < 4; i++) {
 	else
 		sprite [i] = gameData.segs.fVertices [sideVerts [i]];	//already transformed
 	}
-VmsVecToFloat (&v, SIDE_CENTER_I (nSegment, nSide));
+VmVecFixToFloat (&v, SIDE_CENTER_I (nSegment, nSide));
 G3TransformPointf (vCenter, &v, 0);
 #if 0
 if (gameStates.render.bQueryCoronas) {

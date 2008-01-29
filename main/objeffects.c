@@ -332,7 +332,7 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 	 (extraGameInfo [IsMultiGame].bTargetIndicators < 2)) {
 	bStencil = StencilOff ();
 	pc = ObjectFrameColor (objP, pc);
-	VmsVecToFloat (&fPos, &objP->position.vPos);
+	VmVecFixToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	r2 = r / 10;
@@ -424,7 +424,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	trackGoalColor [bMarker].green = 0.65f + (float) nMslLockColor [bMarker] / 100.0f;
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
-VmsVecToFloat (&fPos, &objP->position.vPos);
+VmVecFixToFloat (&fPos, &objP->position.vPos);
 G3TransformPointf (&fPos, &fPos, 0);
 r = f2fl (objP->size);
 if (bMarker)
@@ -582,7 +582,7 @@ if (EGI_FLAG (bTargetIndicators, 0, 1, 0)) {
 	pc = (EGI_FLAG (bMslLockIndicators, 0, 1, 0) && IS_TRACK_GOAL (objP) && 
 			!gameOpts->render.cockpit.bRotateMslLockInd && (extraGameInfo [IsMultiGame].bTargetIndicators != 1)) ? 
 		  (tRgbColorf *) &trackGoalColor [0] : ObjectFrameColor (objP, pc);
-	VmsVecToFloat (&fPos, &objP->position.vPos);
+	VmVecFixToFloat (&fPos, &objP->position.vPos);
 	G3TransformPointf (&fPos, &fPos, 0);
 	r = f2fl (objP->size);
 	glColor3fv ((GLfloat *) pc);
@@ -1006,12 +1006,12 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 	ti.fSize *= 1.5f;
 #if 1
 	if (!ti.mtP)
-		VmsVecToFloat (&fVecf, ti.pp ? &ti.pp->mOrient.fVec : &objP->position.mOrient.fVec);
+		VmVecFixToFloat (&fVecf, ti.pp ? &ti.pp->mOrient.fVec : &objP->position.mOrient.fVec);
 #endif
 	for (h = 0; h < nThrusters; h++) {
 		if (ti.mtP)
-			VmsVecToFloat (&fVecf, ti.vDir + h);
-		VmsVecToFloat (&vPosf, ti.vPos + h);
+			VmVecFixToFloat (&fVecf, ti.vDir + h);
+		VmVecFixToFloat (&vPosf, ti.vPos + h);
 		VmVecScaleAddf (vFlame + 2, &vPosf, &fVecf, -ti.fLength);
 		G3TransformPointf (vFlame + 2, vFlame + 2, 0);
 		G3TransformPointf (&vPosf, &vPosf, 0);
@@ -1168,8 +1168,8 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	colorP->alpha = alpha;
-	VmsVecToFloat (&vDir, &objP->position.mOrient.fVec);
-	VmsVecToFloat (&vPos, &objP->position.vPos);
+	VmVecFixToFloat (&vDir, &objP->position.mOrient.fVec);
+	VmVecFixToFloat (&vPos, &objP->position.vPos);
 	VmVecScaleAddf (vCorona, &vPos, &vDir, fScale * fLength);
 	vh [4] = vCorona [0];
 	VmVecScaleAddf (vCorona + 3, &vPos, &vDir, -fScale * fLength);
@@ -1474,14 +1474,14 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 		int				bStencil;
 //		static short	patterns [] = {0x0603, 0x0203, 0x0103, 0x0202};
 
-	VmsVecToFloat (vPosf, &objP->position.vPos);
-	VmsVecToFloat (vPosf + 1, &objP->vLastPos);
+	VmVecFixToFloat (vPosf, &objP->position.vPos);
+	VmVecFixToFloat (vPosf + 1, &objP->vLastPos);
 	G3TransformPointf (vPosf, vPosf, 0);
 	G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 	VmVecSubf (&vDirf, vPosf, vPosf + 1);
 	if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z)) {
 		//return;
-		VmsVecToFloat (vPosf + 1, &gameData.objs.objects [objP->cType.laserInfo.nParentObj].position.vPos);
+		VmVecFixToFloat (vPosf + 1, &gameData.objs.objects [objP->cType.laserInfo.nParentObj].position.vPos);
 		G3TransformPointf (vPosf + 1, vPosf + 1, 0);
 		VmVecSubf (&vDirf, vPosf, vPosf + 1);
 		if (!(vDirf.p.x || vDirf.p.y || vDirf.p.z))
@@ -1581,8 +1581,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->id]) {
 		else
 			l = 4 * r;
 
-		VmsVecToFloat (&vOffsf, &objP->position.mOrient.fVec);
-		VmsVecToFloat (vTrailVerts, &objP->position.vPos);
+		VmVecFixToFloat (&vOffsf, &objP->position.mOrient.fVec);
+		VmVecFixToFloat (vTrailVerts, &objP->position.vPos);
 		VmVecScaleIncf3 (vTrailVerts, &vOffsf, l);// * -0.75f);
 		VmVecScaleAddf (vTrailVerts + 2, vTrailVerts, &vOffsf, -100);
 		G3TransformPointf (vTrailVerts, vTrailVerts, 0);

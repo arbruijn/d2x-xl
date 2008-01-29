@@ -73,9 +73,9 @@ int FindPointLineIntersectionf (vmsVector *pv1, vmsVector *pv2, vmsVector *pv3)
 	fVector	p1, p2, p3, d31, d21, h, v [2];
 	float		m, u;
 
-VmsVecToFloat (&p1, pv1);
-VmsVecToFloat (&p2, pv2);
-VmsVecToFloat (&p3, pv3);
+VmVecFixToFloat (&p1, pv1);
+VmVecFixToFloat (&p2, pv2);
+VmVecFixToFloat (&p3, pv3);
 VmVecSubf (&d21, &p2, &p1);
 if (!(m = d21.p.x * d21.p.x + d21.p.y * d21.p.y + d21.p.z * d21.p.z))
 	return 0;
@@ -113,8 +113,8 @@ den = -VmVecDot (vPlaneNorm, &d);
 if (!den) {
 	fVector	nf, df;
 	float denf;
-	VmsVecToFloat (&nf, vPlaneNorm);
-	VmsVecToFloat (&df, &d);
+	VmVecFixToFloat (&nf, vPlaneNorm);
+	VmVecFixToFloat (&df, &d);
 	denf = -VmVecDotf (&nf, &df);
 	denf = -VmVecDotf (&nf, &df);
 	return 0;

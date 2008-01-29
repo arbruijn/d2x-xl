@@ -478,7 +478,7 @@ else {
 	g3sNormal	*pvn;
 
 	pfv = WORDPTR (p+30);
-	VmsVecToFloat (&nf, pn);
+	VmVecFixToFloat (&nf, pn);
 	for (i = 0; i < nVerts; i++) {
 		pvn = po->pVertNorms + pfv [i];
 		VmVecIncf (&pvn->vNormal, &nf);
@@ -989,9 +989,9 @@ if (bPrintLine) {
 		}
 	glColor4d (1,0.8,0,1);
 	glBegin (GL_LINES);
-	VmsVecToFloat (&vf, vPos);
+	VmVecFixToFloat (&vf, vPos);
 	glVertex3fv ((GLfloat*) &vf);
-	VmsVecToFloat (&vf, &v);
+	VmVecFixToFloat (&vf, &v);
 	glVertex3fv ((GLfloat*) &vf);
 	glEnd ();
 	if (!bShadowTest) {

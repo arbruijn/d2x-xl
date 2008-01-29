@@ -227,7 +227,7 @@ else {
 	if (bFlip)
 		VmVecNegate (&vNormal);
 	}
-VmsVecToFloat (pvNormal, &vNormal);
+VmVecFixToFloat (pvNormal, &vNormal);
 }
 
 //------------------------------------------------------------------------------

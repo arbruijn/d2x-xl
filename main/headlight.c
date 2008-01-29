@@ -91,7 +91,7 @@ void TransformOglHeadLight (tDynLight *pl, tShaderLight *psl)
 {
 	fVector	vPos, vDir;
 
-VmsVecToFloat (&psl->dir, &pl->vDir);
+VmVecFixToFloat (&psl->dir, &pl->vDir);
 if (pl->bTransform && !gameStates.ogl.bUseTransform)
 	G3RotatePointf (&psl->dir, &psl->dir, 0);
 psl->spotAngle = pl->spotAngle;

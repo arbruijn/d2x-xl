@@ -35,7 +35,7 @@ void G3SetViewAngles (vmsVector *vPos, vmsAngVec *mOrient, fix xZoom)
 viewInfo.zoom = xZoom;
 viewInfo.pos = *vPos;
 VmAngles2Matrix (&viewInfo.view [0], mOrient);
-VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
 VmsMatToFloat (viewInfo.viewf, viewInfo.view);
 ScaleMatrix (1);
 }
@@ -48,7 +48,7 @@ viewInfo.zoom = xZoom;
 viewInfo.glZoom = (float) xZoom / 65536.0f;
 if (vPos) {
 	viewInfo.pos = *vPos;
-	VmsVecToFloat (&viewInfo.posf, &viewInfo.pos);
+	VmVecFixToFloat (&viewInfo.posf, &viewInfo.pos);
 	OOF_VecVms2Gl (viewInfo.glPosf, &viewInfo.pos);
 	}
 if (mOrient) {
