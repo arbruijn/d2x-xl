@@ -15,7 +15,7 @@ int _CDECL_ SoundThread (void *pThreadId)
 {
 do {
 	while (!tiSound.ti.bExec) {
-		G3_SLEEP (0);
+		G3_SLEEP (1);
 		if (tiSound.ti.bDone)
 			return 0;
 		}

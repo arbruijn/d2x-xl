@@ -345,6 +345,11 @@ if (gameOpts->render.bDepthSort > 0) {
 		color.red = (float) bmP->bmAvgRGB.red / 255.0f;
 		color.green = (float) bmP->bmAvgRGB.green / 255.0f;
 		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+		if (objP->nType == OBJ_FIREBALL) {
+			color.red /= 2;
+			color.green /= 2;
+			color.blue /= 2;
+			}
 #if 0
 		color.red *= color.red;
 		color.green *= color.green;
