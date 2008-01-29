@@ -2288,6 +2288,7 @@ con_printf (CONDBG, TXT_LOADING_MSN, AGI.szMissionName);
 if (!(LoadMissionByName (AGI.szMissionName, -1) ||
 		(DownloadMission (AGI.szMissionName) &&
 		 LoadMissionByName (AGI.szMissionName, -1)))) {
+	LogErr ("Mission '%s' not found%s\n", AGI.szMissionName);
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
