@@ -93,7 +93,7 @@ int CalcGunPoint (vmsVector *vGunPoint, tObject *objP, int nGun)
 	tRobotInfo	*botInfoP;
 	vmsVector	*vGunPoints, vGunPos;
 	vmsMatrix	m;
-	int			mn, bCustom = 0;				//submodel number
+	int			nSubModel, bCustom = 0;				//submodel number
 
 Assert(objP->renderType == RT_POLYOBJ || objP->renderType==RT_MORPH);
 //Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);
@@ -102,20 +102,19 @@ botInfoP = &ROBOTINFO (objP->id);
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
 	return 0;
 vGunPos = vGunPoints [nGun];
-mn = botInfoP->gunSubModels [nGun];
+nSubModel = botInfoP->gunSubModels [nGun];
 //instance up the tree for this gun
-while (mn != 0) {
-	vmsVector tpnt;
+while (nSubModel != 0) {
+	vmsVector vRot;
 
-	VmAngles2Matrix (&m, &objP->rType.polyObjInfo.animAngles [mn]);
+	VmAngles2Matrix (&m, &objP->rType.polyObjInfo.animAngles [nSubModel]);
 	VmTransposeMatrix (&m);
-	VmVecRotate (&tpnt, &vGunPos, &m);
-	VmVecAdd (&vGunPos, &tpnt, &pm->subModels.offsets [mn]);
-	mn = pm->subModels.parents [mn];
+	VmVecRotate (&vRot, &vGunPos, &m);
+	VmVecAdd (&vGunPos, &vRot, &gameData.models.polyModels [objP->rType.polyObjInfo.nModel].subModels.offsets [nSubModel]);
+	nSubModel = pm->subModels.parents [nSubModel];
 	}
 //now instance for the entire tObject
-VmCopyTransposeMatrix (&m, &objP->position.mOrient);
-VmVecRotate (vGunPoint, &vGunPos, &m);
+VmVecRotate (vGunPoint, &vGunPos, ObjectView (objP));
 VmVecInc (vGunPoint, &objP->position.vPos);
 return 1;
 }
