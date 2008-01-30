@@ -108,8 +108,7 @@ while (nSubModel != 0) {
 	VmAngles2Matrix (&m, &objP->rType.polyObjInfo.animAngles [nSubModel]);
 	VmTransposeMatrix (&m);
 	VmVecRotate (&vRot, &vGunPos, &m);
-	VmVecInc (&vGunPos, &vRot);
-	VmVecInc (&vGunPos, &pm->subModels.offsets [nSubModel]);
+	VmVecAdd (&vGunPos, &vRot, &pm->subModels.offsets [nSubModel]);
 	nSubModel = pm->subModels.parents [nSubModel];
 	}
 //now instance for the entire tObject

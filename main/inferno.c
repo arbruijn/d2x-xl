@@ -33,9 +33,11 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 
 #ifdef __macosx__
 #	include "SDL/SDL_main.h"
+#	include "SDL/SDL_keyboard.h"
 #	include "FolderDetector.h"
 #else
 #	include "SDL_main.h"
+#	include "SDL_keyboard.h"
 #endif
 #include "pstypes.h"
 #include "u_mem.h"
@@ -122,6 +124,8 @@ extern void SetFunctionMode (int);
 extern void ShowInGameWarning (char *s);
 extern int cfile_use_d2x_hogfile(char * name);
 extern int cfile_use_XL_hogfile(char * name);
+
+extern int SDL_HandleSpecialKeys;
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -233,6 +237,8 @@ if (*gameData.missions.szCurrentLevel) {
 	}
 SDL_WM_SetCaption (szCaption, "Descent II");
 }
+
+// ----------------------------------------------------------------------------
 
 #define SUBVER_XOFFS	 (gameStates.menus.bHires?45:25)
 
@@ -3106,6 +3112,7 @@ signal (SIGILL, D2SignalHandler);
 signal (SIGINT, D2SignalHandler);
 signal (SIGSEGV, D2SignalHandler);
 signal (SIGTERM, D2SignalHandler);
+SDL_SetSpecialKeyHandling (0);
 CFileInit ("", "");
 InitGameData ();
 InitGameStates ();

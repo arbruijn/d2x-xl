@@ -741,11 +741,11 @@ if (gameData.demo.nState==ND_STATE_PLAYBACK) {
    } 
 if ((objP = GuidedMslView ())) {
 	if (gameOpts->render.cockpit.bGuidedInMainView)	{
-		gameStates.render.nRenderingType=6+ (1<<4);
+		gameStates.render.nRenderingType = 6+ (1<<4);
 		DoCockpitWindowView (1, gameData.objs.viewer, 0, WBUMSL, "SHIP");
 		}
 	else {
-		gameStates.render.nRenderingType=1+ (1<<4);
+		gameStates.render.nRenderingType = 1+ (1<<4);
 		DoCockpitWindowView (1, objP, 0, WBU_GUIDED, "GUIDED");
 	   }
 	bDidMissileView = 1;
@@ -771,7 +771,7 @@ else {
 		else {
 			gameData.objs.missileViewer = NULL;
 			mv_sig = -1;
-			gameStates.render.nRenderingType=255;
+			gameStates.render.nRenderingType = 255;
 			DoCockpitWindowView (1, NULL, 0, WBU_STATIC, NULL);
 			}
 		}
@@ -780,17 +780,17 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 	//show special views if selected
 	switch (gameStates.render.cockpit.n3DView [w]) {
 		case CV_NONE:
-			gameStates.render.nRenderingType=255;
+			gameStates.render.nRenderingType = 255;
 			DoCockpitWindowView (w, NULL, 0, WBU_WEAPON, NULL);
 			break;
 
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
-				gameStates.render.nRenderingType=3+ (w<<4);			
+				gameStates.render.nRenderingType = 3+ (w<<4);			
 				DoCockpitWindowView (w, gameData.objs.console, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show normal rear view
-				gameStates.render.nRenderingType=3+ (w<<4);			
+				gameStates.render.nRenderingType = 3+ (w<<4);			
 				DoCockpitWindowView (w, gameData.objs.console, 1, WBU_REAR, "REAR");
 				}
 			break;
@@ -802,7 +802,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				}
 			else {
-				gameStates.render.nRenderingType=4+ (w<<4);
+				gameStates.render.nRenderingType = 4+ (w<<4);
 				DoCockpitWindowView (w, buddy, 0, WBU_ESCORT, gameData.escort.szName);
 				}
 			break;
@@ -825,7 +825,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_MARKER: {
 			char label [10];
 			short v = gameData.marker.viewers [w];
-			gameStates.render.nRenderingType=5+ (w<<4);
+			gameStates.render.nRenderingType = 5+ (w<<4);
 			if ((v == -1) || (gameData.marker.objects [v] == -1)) {
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
 				break;
@@ -847,7 +847,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			Int3 ();		//invalid window nType
 		}
 	}
-gameStates.render.nRenderingType=0;
+gameStates.render.nRenderingType = 0;
 gameData.demo.nState = saveNewDemoState;
 }
 

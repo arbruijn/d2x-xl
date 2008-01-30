@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vclip.h"
 #include "light.h"
 #include "dynlight.h"
+#include "headlight.h"
 #include "cntrlcen.h"
 #include "newdemo.h"
 #include "automap.h"
@@ -1147,7 +1148,7 @@ if (gameStates.render.cameras.bActive) {
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
 	}
 else {
-	nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
+	nStartSeg = pnStartSeg ? FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0) : gameStates.render.nStartSeg;
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
 	if (gameData.objs.viewer == gameData.objs.console)
@@ -1231,6 +1232,8 @@ void RenderFrame (fix nEyeOffset, int nWindow)
 {
 	short nStartSeg;
 
+gameStates.render.nWindow = nWindow;
+gameStates.render.nEyeOffset = nEyeOffset;
 if (gameStates.app.bEndLevelSequence) {
 	RenderEndLevelFrame (nEyeOffset, nWindow);
 	gameData.app.nFrameCount++;
@@ -1249,6 +1252,7 @@ StartLightingFrame (gameData.objs.viewer);		//this is for ugly light-smoothing h
 gameStates.ogl.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 G3StartFrame (0, !(nWindow || gameStates.render.cameras.bActive));
 SetRenderView (nEyeOffset, &nStartSeg, 1);
+gameStates.render.nStartSeg = nStartSeg;
 if (nClearWindow == 1) {
 	if (!nClearWindowColor)
 		nClearWindowColor = BLACK_RGBA;	//BM_XRGB(31, 15, 7);
@@ -1923,6 +1927,7 @@ if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)
 		}
 	gameStates.ogl.bUseTransform = 0;
 	TransformDynLights (0, 1);
+	TransformHeadLights ();
 	}
 if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
@@ -2037,7 +2042,6 @@ gameStates.render.bDoLightMaps = gameStates.render.color.bLightMapsOk &&
 											gameOpts->render.color.bUseLightMaps && 
 											gameOpts->render.color.bAmbientLight && 
 											!IsMultiGame;
-gameStates.render.nWindow = nWindow;
 gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, nEyeOffset, nWindow);
 if (gameOpts->render.nPath && (gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {

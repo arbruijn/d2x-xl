@@ -1146,22 +1146,6 @@ if (result) {
 return result;
 }
 
-//@@//starts a resumed game loaded from disk
-//@@void ResumeSavedGame (int nStartLevel)
-//@@{
-//@@	gameData.app.nGameMode = GM_NORMAL;
-//@@	SetFunctionMode (FMODE_GAME);
-//@@
-//@@	gameData.multiplayer.nPlayers = 1;
-//@@	networkData.bNewGame = 0;
-//@@
-//@@	InitPlayerObject ();				//make sure tPlayer's tObject set up
-//@@
-//@@	StartNewLevel (nStartLevel, 0);
-//@@
-//@@	GameDisableCheats ();
-//@@}
-
 //------------------------------------------------------------------------------
 
 #ifndef _NETWORK_H
@@ -1951,6 +1935,7 @@ CopyDefaultsToRobotsAll ();
 if (!bRestore)
 	InitReactorForLevel (0);
 InitAIObjects ();
+BuildObjectModels ();
 #if 0
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;

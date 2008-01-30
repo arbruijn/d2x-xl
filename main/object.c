@@ -92,6 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "u_mem.h"
 #include "entropy.h"
+#include "objrender.h"
 #include "dropobject.h"
 #include "marker.h"
 
@@ -2207,6 +2208,20 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].position.vPos, 
 											  gameData.objs.objects [i].nSegment);
 			}
+}
+
+//------------------------------------------------------------------------------
+
+void BuildObjectModels (void)
+{
+	int i;
+	tObject	*objP = gameData.objs.objects;
+
+gameStates.render.nType = 1;
+gameStates.render.nShadowPass = 1;
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ))
+		RenderObject (objP, 0, 1); //DrawPolygonObject (objP, 0);
 }
 
 //------------------------------------------------------------------------------

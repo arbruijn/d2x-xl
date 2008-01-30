@@ -819,6 +819,8 @@ typedef struct tRenderStates {
 	int bCloaked;
 	int bBrightObject;
 	int nWindow;
+	int nEyeOffset;
+	int nStartSeg;
 	int nLighting;
 	int bTransparency;
 	int bSplitPolys;
@@ -1232,6 +1234,8 @@ typedef struct tShaderLightData {
 #define MAX_NEAREST_LIGHTS 32
 
 typedef struct tHeadLightData {
+	tDynLight			*pl [MAX_PLAYERS];
+	tShaderLight		*psl [MAX_PLAYERS];
 	fVector3				pos [MAX_PLAYERS];
 	fVector3				dir [MAX_PLAYERS];
 	float					brightness [MAX_PLAYERS];

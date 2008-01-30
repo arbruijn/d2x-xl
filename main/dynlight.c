@@ -647,7 +647,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 		}
 	psl->brightness = pl->brightness;
 	if ((psl->bSpot = pl->bSpot))
-		TransformOglHeadLight (pl, psl);
+		SetupHeadLight (pl, psl);
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
 	psl->bVariable = pl->bVariable;
 	psl->bOn = pl->bOn;
@@ -682,7 +682,7 @@ glTexImage2D (GL_TEXTURE_2D, 0, 4, MAX_OGL_LIGHTS / 64, 64, 1, GL_COMPRESSED_RGB
 				  GL_FLOAT, gameData.render.lights.dynamic.shader.lights);
 #	endif
 #endif
-#if HEADLIGHT_TRANSFORMATION == 0
+#if 0 //HEADLIGHT_TRANSFORMATION == 0
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 #if 0
 	glMatrixMode (GL_MODELVIEW);

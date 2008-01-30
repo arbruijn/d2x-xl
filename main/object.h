@@ -516,6 +516,8 @@ int DelObjChildrenP (tObject *pParent);
 int DelObjChildN (int nChild);
 int DelObjChildP (tObject *pChild);
 
+void BuildObjectModels (void);
+
 tObjectRef *GetChildObjN (short nParent, tObjectRef *pChildRef);
 tObjectRef *GetChildObjP (tObject *pParent, tObjectRef *pChildRef);
 

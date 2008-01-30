@@ -476,7 +476,7 @@ if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAP
 	// Muzzle flash	
 	if (gameData.weapons.info [objP->id].flash_vclip > -1)
 		ObjectCreateMuzzleFlash (objP->nSegment, &objP->position.vPos, gameData.weapons.info [objP->id].flash_size, 
-											gameData.weapons.info [objP->id].flash_vclip);
+										 gameData.weapons.info [objP->id].flash_vclip);
 	}
 volume = F1_0;
 if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{

@@ -4040,13 +4040,13 @@ int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 //	---------------------------------------------------------------------------------------------------------
 //draws a 3d view into one of the cockpit windows.  win is 0 for left, 
 //1 for right.  viewer is tObject.  NULL tObject means give up window
-//user is one of the WBU_ constants.  If rearViewFlag is set, show a
+//user is one of the WBU_ constants.  If bRearView is set, show a
 //rear view.  If label is non-NULL, print the label at the top of the
 //window.
 
 int cockpitWindowScale [4] = {6, 5, 4, 3};
 
-void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, char *label)
+void DoCockpitWindowView (int win, tObject *viewer, int bRearView, int user, char *label)
 {
 	gsrCanvas window_canv;
 	static gsrCanvas overlap_canv;
@@ -4057,7 +4057,7 @@ void DoCockpitWindowView (int win, tObject *viewer, int rearViewFlag, int user, 
 	int boxnum;
 	static int window_x, window_y;
 	tGaugeBox *box;
-	int rearView_save = gameStates.render.bRearView;
+	int bRearViewSave = gameStates.render.bRearView;
 	int w, h, dx;
 	fix nZoomSave;
 
@@ -4078,10 +4078,10 @@ if (!viewer) {								//this user is done
 		}
 	return;
 	}
-UpdateRenderedData (win+1, viewer, rearViewFlag, user);
+UpdateRenderedData (win+1, viewer, bRearView, user);
 weapon_box_user [win] = user;						//say who's using window
 gameData.objs.viewer = viewer;
-gameStates.render.bRearView = rearViewFlag;
+gameStates.render.bRearView = bRearView;
 
 if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)	{
 	w = (int) (gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
@@ -4222,7 +4222,7 @@ abort:;
 
 gameData.objs.viewer = viewerSave;
 GrSetCurrentCanvas (save_canv);
-gameStates.render.bRearView = rearView_save;
+gameStates.render.bRearView = bRearViewSave;
 }
 
 //------------------------------------------------------------------------------

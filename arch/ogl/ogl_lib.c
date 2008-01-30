@@ -521,6 +521,16 @@ else
 		glLoadIdentity ();
 		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, nCanvasWidth, nCanvasHeight);
 		}
+	if (gameStates.ogl.bEnableScissor) {
+		glScissor (
+			grdCurCanv->cvBitmap.bmProps.x, 
+			grdCurScreen->scCanvas.cvBitmap.bmProps.h - grdCurCanv->cvBitmap.bmProps.y - nCanvasHeight, 
+			nCanvasWidth, 
+			nCanvasHeight);
+		glEnable (GL_SCISSOR_TEST);
+		}
+	else
+		glDisable (GL_SCISSOR_TEST);
 	if (gameStates.render.nRenderPass < 0) {
 		glDepthMask (1);
 		glColorMask (1,1,1,1);
@@ -542,16 +552,6 @@ else
 		glColorMask (0,0,0,0);
 		glClear (GL_DEPTH_BUFFER_BIT);
 		}
-	if (gameStates.ogl.bEnableScissor) {
-		glScissor (
-			grdCurCanv->cvBitmap.bmProps.x, 
-			grdCurScreen->scCanvas.cvBitmap.bmProps.h - grdCurCanv->cvBitmap.bmProps.y - nCanvasHeight, 
-			nCanvasWidth, 
-			nCanvasHeight);
-		glEnable (GL_SCISSOR_TEST);
-		}
-	else
-		glDisable (GL_SCISSOR_TEST);
 	if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 		glEnable (GL_MULTISAMPLE_ARB);
 	if (bFlat) {
