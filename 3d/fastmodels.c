@@ -840,6 +840,8 @@ void SetShipGunPoints (tOOFObject *po, tG3Model *pm)
 	int				i;
 
 for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GUNS); i++, pp++) {
+	if (nParents [i] >= pm->nSubModels)
+		continue;
 	psm = pm->pSubModels + nParents [i];
 	pp->vPos.x = (psm->vMax.p.x + psm->vMin.p.x) / 2;
 	if (3 == (pp->nParent = nParents [i])) {
@@ -858,7 +860,7 @@ for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GU
 
 //------------------------------------------------------------------------------
 
-void SetRobotGunPoints (tObject *objP, tOOFObject *po, tG3Model *pm)
+void SetRobotGunPoints (tOOFObject *po, tG3Model *pm)
 {
 	tG3SubModel		*psm;
 	tOOF_point		*pp;
@@ -888,7 +890,7 @@ pp = po->gunPoints.pPoints;
 if (objP->nType == OBJ_PLAYER)
 	SetShipGunPoints (po, pm); 
 else if (objP->nType == OBJ_ROBOT)
-	SetShipGunPoints (po, pm); 
+	SetRobotGunPoints (po, pm); 
 else {
 	gameData.models.gunInfo [nModel].nGuns = 0;
 	return;

@@ -3,7 +3,7 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "SDL"="..\..\..\SDL-1.2.11\VisualC\SDL\SDL.dsp" - Package Owner=<4>
+Project: "SDL"="..\..\..\SDL-1.2.13\VisualC\SDL\SDL.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -11,33 +11,6 @@ Package=<5>
 
 Package=<4>
 {{{
-}}}
-
-###############################################################################
-
-Project: "SDL_mixer"="..\..\..\SDL_mixer-1.2.7\VisualC\SDL_mixer.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name libmve
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name mikmod
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name native_midi
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name timidity
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name SDL
-    End Project Dependency
     Begin Project Dependency
     Project_Dep_Name SDLmain
     End Project Dependency
@@ -45,7 +18,34 @@ Package=<4>
 
 ###############################################################################
 
-Project: "SDLmain"="..\..\..\SDL-1.2.11\VisualC\SDLmain\SDLmain.dsp" - Package Owner=<4>
+Project: "SDL_mixer"="..\..\..\SDL_mixer-1.2.8\VisualC\SDL_mixer.dsp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name mikmod
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name native_midi
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SDL
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SDLmain
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name timidity
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "SDLmain"="..\..\..\SDL-1.2.13\VisualC\SDLmain\SDLmain.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -69,22 +69,22 @@ Package=<4>
     Project_Dep_Name libmve
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name SDL_mixer
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name mikmod
     End Project Dependency
     Begin Project Dependency
     Project_Dep_Name native_midi
     End Project Dependency
     Begin Project Dependency
-    Project_Dep_Name timidity
-    End Project Dependency
-    Begin Project Dependency
     Project_Dep_Name SDL
     End Project Dependency
     Begin Project Dependency
+    Project_Dep_Name SDL_mixer
+    End Project Dependency
+    Begin Project Dependency
     Project_Dep_Name SDLmain
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name timidity
     End Project Dependency
 }}}
 
@@ -102,7 +102,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "mikmod"="..\..\..\SDL_mixer-1.2.7\VisualC\mikmod\mikmod.dsp" - Package Owner=<4>
+Project: "mikmod"="..\..\..\SDL_mixer-1.2.8\VisualC\mikmod\mikmod.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -114,7 +114,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "native_midi"="..\..\..\SDL_mixer-1.2.7\VisualC\native_midi\native_midi.dsp" - Package Owner=<4>
+Project: "native_midi"="..\..\..\SDL_mixer-1.2.8\VisualC\native_midi\native_midi.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -126,7 +126,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "timidity"="..\..\..\SDL_mixer-1.2.7\VisualC\timidity\timidity.dsp" - Package Owner=<4>
+Project: "timidity"="..\..\..\SDL_mixer-1.2.8\VisualC\timidity\timidity.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

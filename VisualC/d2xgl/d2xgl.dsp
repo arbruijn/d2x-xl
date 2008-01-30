@@ -38,13 +38,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "Release"
-# PROP Intermediate_Dir "Release"
+# PROP Output_Dir "win16/Release"
+# PROP Intermediate_Dir "win16/Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /Gr /Zp1 /MD /W3 /GX /O2 /Ob2 /I "..\..\include" /I "..\..\main" /I "..\..\arch\include" /I "..\..\arch\win32\include" /I "..\arch\win32" /I "..\..\arch\win32" /I "..\3d" /I "..\..\3d" /I "C:\Programme\Microsoft Platform SDK for Windows XP SP2\include" /I "\projekte\SDL-1.2.11\include" /I "\projekte\SDL_mixer-1.2.7" /I "\projekte\libvorbis-1.1.2\include" /I "..\..\d2x-trackir" /D "NDEBUG" /D "RELEASE" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "NO_ASM" /D "NMONO" /D "PIGGY_USE_PAGING" /D "NEWDEMO" /D "SDL_INPUT" /D "SDL_GL_VIDEO" /D "NETWORK" /D "NATIVE_IPX" /D "OGL" /D "OGL_ZBUF" /D "FAST_EVENTPOLL" /D WIN_VER=0x0500 /D "CONSOLE" /YX /FD /c
-# SUBTRACT CPP /Fr
+# ADD CPP /nologo /Gr /Zp1 /MD /W3 /GX /O2 /Ob2 /I "..\..\include" /I "..\..\main" /I "..\..\arch\include" /I "..\..\arch\win32\include" /I "..\arch\win32" /I "..\..\arch\win32" /I "..\3d" /I "..\..\3d" /I "C:\Programme\Microsoft Platform SDK for Windows XP SP2\include" /I "\projekte\SDL-1.2.13\include" /I "\projekte\SDL_mixer-1.2.8" /I "\projekte\libvorbis-1.1.2\include" /I "..\..\d2x-trackir" /D "NDEBUG" /D "RELEASE" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "NO_ASM" /D "NMONO" /D "PIGGY_USE_PAGING" /D "NEWDEMO" /D "SDL_INPUT" /D "SDL_GL_VIDEO" /D "NETWORK" /D "NATIVE_IPX" /D "OGL" /D "OGL_ZBUF" /D "FAST_EVENTPOLL" /D WIN_VER=0x0500 /D "CONSOLE" /FD /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib /nologo /subsystem:windows /pdb:none /machine:I386 /out:"d:\programme\d2\d2x-xl-win16.exe" /libpath:"C:\Programme\Microsoft Platform SDK for Windows XP SP2\Lib" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDLmain\Release" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDL\Release" /libpath:"\Projekte\SDL_mixer-1.2.7\VisualC\Release"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib /nologo /subsystem:windows /pdb:none /machine:I386 /out:"d:\programme\d2\d2x-xl-win16.exe" /libpath:"C:\Programme\Microsoft Platform SDK for Windows XP SP2\Lib" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDLmain\Release" /libpath:"\Projekte\SDL-1.2.13\VisualC\SDL\win16\Release" /libpath:"\Projekte\SDL_mixer-1.2.8\VisualC\win16\Release"
 # SUBTRACT LINK32 /debug
 
 !ELSEIF  "$(CFG)" == "d2xgl - Win32 Debug"
@@ -66,12 +66,12 @@ LINK32=link.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Debug"
-# PROP Intermediate_Dir "Debug"
+# PROP Output_Dir "win16/Debug"
+# PROP Intermediate_Dir "win16/Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /Zp1 /MDd /W3 /GX /ZI /Od /I "..\..\include" /I "..\..\main" /I "..\..\arch\include" /I "..\..\arch\win32\include" /I "..\arch\win32" /I "..\..\arch\win32" /I "..\arch\ogl" /I "..\..\arch\ogl" /I "..\3d" /I "..\..\3d" /I "\projekte\sdl-1.2.11\include" /I "\projekte\sdl_mixer-1.2.7" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "NO_ASM" /D "NMONO" /D "PIGGY_USE_PAGING" /D "NEWDEMO" /D "SDL_INPUT" /D "SDL_GL_VIDEO" /D "CONSOLE" /D "NETWORK" /D "NATIVE_IPX" /D "OGL" /D "OGL_ZBUF" /D "FAST_EVENTPOLL" /D WIN_VER=0x0500 /FR /FD /GZ /c
+# ADD CPP /nologo /Zp1 /MDd /W3 /GX /ZI /Od /I "..\..\include" /I "..\..\main" /I "..\..\arch\include" /I "..\..\arch\win32\include" /I "..\arch\win32" /I "..\..\arch\win32" /I "..\arch\ogl" /I "..\..\arch\ogl" /I "..\3d" /I "..\..\3d" /I "\projekte\sdl-1.2.13\include" /I "\projekte\sdl_mixer-1.2.8" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "NO_ASM" /D "NMONO" /D "PIGGY_USE_PAGING" /D "NEWDEMO" /D "SDL_INPUT" /D "SDL_GL_VIDEO" /D "CONSOLE" /D "NETWORK" /D "NATIVE_IPX" /D "OGL" /D "OGL_ZBUF" /D "FAST_EVENTPOLL" /D WIN_VER=0x0500 /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib sdl-win16.lib sdl_mixer-win16.lib /nologo /subsystem:windows /debug /machine:I386 /out:"d:\programme\d2\d2x-xl-win16-dbg.exe" /libpath:"C:\Programme\Microsoft Platform SDK for Windows XP SP2\Lib" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDL\Debug" /libpath:"D:\Projekte\SDL_mixer-1.2.7\VisualC\Debug" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDLmain\Debug"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib sdl-win16.lib sdl_mixer-win16.lib /nologo /subsystem:windows /debug /machine:I386 /out:"d:\programme\d2\d2x-xl-win16-dbg.exe" /libpath:"C:\Programme\Microsoft Platform SDK for Windows XP SP2\Lib" /libpath:"\Projekte\SDL-1.2.11\VisualC\SDL\Debug" /libpath:"D:\Projekte\SDL_mixer-1.2.7\VisualC\Debug" /libpath:"\Projekte\SDL-1.2.13\VisualC\SDLmain\win16\Debug"
 # SUBTRACT LINK32 /profile
 
 !ENDIF 
