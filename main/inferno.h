@@ -2086,8 +2086,9 @@ typedef struct tModelData {
 	tPolyModel			polyModels [MAX_POLYGON_MODELS];
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
 	tPolyModel			altPolyModels [MAX_POLYGON_MODELS];
-	tOOFObject			*modelToOOF [2][MAX_POLYGON_MODELS];
-	tPolyModel			*modelToPOL [MAX_POLYGON_MODELS];
+	tOOFObject			*oofModels [2][MAX_POLYGON_MODELS];
+	tASEModel			*aseModels [2][MAX_POLYGON_MODELS];
+	tPolyModel			*polModels [MAX_POLYGON_MODELS];
 	int					nPolyModels;
 	int					nDefPolyModels;
 	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];
@@ -2102,7 +2103,6 @@ typedef struct tModelData {
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
 	tG3Model				g3Models [2][MAX_POLYGON_MODELS];
-	tASEModel			aseModels [2][MAX_POLYGON_MODELS];
 	vmsVector			offsets [MAX_POLYGON_MODELS];
 	tGunInfo				gunInfo [MAX_POLYGON_MODELS];
 	int					nScale;

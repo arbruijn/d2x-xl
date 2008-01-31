@@ -14,162 +14,163 @@
 
 // ----------------------------------------------------------------------------
 
-typedef struct tOOFToModel {
-	char	*pszOOF;
-	char	*pszPOL;
+typedef struct tReplacementModel {
+	char	*pszHires;
+	char	*pszLores;
 	short	nModel;
 	short	nType;
 	int	bFlipV;
-} tOOFToModel;
+} tReplacementModel;
 
-static tOOFToModel oofToModel [] = {
+static tReplacementModel replacementModels [] = {
 	// player ship
-	{"\001pyrogl.oof", "pyrogl.pol", 108, 0, 0}, 
+	{"pyrogl", "pyrogl.pol", 108, 0, 0}, 
 	{NULL, NULL, 110, 0, 0}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
 #if 0//def _DEBUG	//D3 robots for testing
 /*
-	{"\001thresherboss.oof", NULL, 39, 1, 0}, 
-	{"\001orbot.oof", NULL, 58, 1, 0}, 
-	{"\001thresh.oof", NULL, 60, 1, 0}, 
-	{"\001squid.oof", NULL, 68, 1, 0}, 
+	{"thresherboss", NULL, 39, 1, 0}, 
+	{"orbot", NULL, 58, 1, 0}, 
+	{"thresh", NULL, 60, 1, 0}, 
+	{"squid", NULL, 68, 1, 0}, 
 */
-	{"\001pumpingpipesmall.oof", NULL, 56, 1, 0}, 
+	{"pumpingpipesmall", NULL, 56, 1, 0}, 
 #endif
 	// robots
-	{"\001smallhulk.oof", NULL, 0, 1, 0}, 
-	{"\001mediumlifter.oof", NULL, 2, 1, 0}, 
-	{"\001spider.oof", NULL, 4, 1, 0}, 
-	{"\001class1drone.oof", NULL, 6, 1, 0}, 
-	{"\001class2drone.oof", NULL, 8, 1, 0}, 
-	{"\001class1driller-cloaked.oof", NULL, 10, 1, 0}, 
-	{"\001class2supervisor.oof", NULL, 14, 1, 0}, 
-	{"\001secondarylifter.oof", NULL, 15, 1, 0}, 
-	{"\001class1heavydriller.oof", NULL, 17, 1, 0}, 
-	{"\001class3gopher.oof", NULL, 19, 1, 0}, 
-	{"\001class1platform.oof", NULL, 20, 1, 0}, 
-	{"\001class2platform.oof", NULL, 21, 1, 0}, 
-	{"\001smallspider.oof", NULL, 23, 1, 0}, 
-	{"\001fusionhulk.oof", NULL, 25, 1, 0}, 
-	{"\001superhulk.oof", NULL, 26, 1, 0}, 
-	{"\001d1boss1.oof", NULL, 28, 1, 0}, 
+	{"smallhulk", NULL, 0, 1, 0}, 
+	{"mediumlifter", NULL, 2, 1, 0}, 
+	{"spider", NULL, 4, 1, 0}, 
+	{"class1drone", NULL, 6, 1, 0}, 
+	{"class2drone", NULL, 8, 1, 0}, 
+	{"class1driller-cloaked", NULL, 10, 1, 0}, 
+	{"class2supervisor", NULL, 14, 1, 0}, 
+	{"secondarylifter", NULL, 15, 1, 0}, 
+	{"class1heavydriller", NULL, 17, 1, 0}, 
+	{"class3gopher", NULL, 19, 1, 0}, 
+	{"class1platform", NULL, 20, 1, 0}, 
+	{"class2platform", NULL, 21, 1, 0}, 
+	{"smallspider", NULL, 23, 1, 0}, 
+	{"fusionhulk", NULL, 25, 1, 0}, 
+	{"superhulk", NULL, 26, 1, 0}, 
+	{"d1boss1", NULL, 28, 1, 0}, 
 	{NULL, NULL, 50, 1, 0}, 
-	{"\001cloakedlifter.oof", NULL, 29, 1, 0}, 
-	{"\001class1driller.oof", NULL, 31, 1, 0}, 
-	{"\001mediumhulk.oof", NULL, 33, 1, 0}, 
-	{"\001advancedlifter.oof", NULL, 35, 1, 0}, 
-	{"\001ptmcdefense.oof", NULL, 37, 1, 0}, 
-	{"\001d1boss2.oof", NULL, 39, 1, 0}, 
-	{"\001bper.oof", NULL, 40, 1, 0}, 
-	{"\001smelter.oof", NULL, 41, 1, 0}, 
-	{"\001icespider.oof", NULL, 43, 1, 0}, 
-	{"\001bulkdestroyer.oof", NULL, 44, 1, 0}, 
-	{"\001trnracer.oof", NULL, 45, 1, 0}, 
-	{"\001foxattackbot.oof", NULL, 46, 1, 0}, 
-	{"\001sidarm.oof", NULL, 47, 1, 0}, 
-	{"\001redfattyboss.oof", NULL, 49, 1, 0}, 
-	{"\001guidebot.oof", NULL, 51, 1, 0}, 
-	{"\001eviltwin.oof", NULL, 54, 1, 0}, 
-	{"\001itsc.oof", NULL, 55, 1, 0}, 
-	{"\001itdroid.oof", NULL, 56, 1, 0}, 
-	{"\001pest.oof", NULL, 58, 1, 0}, 
-	{"\001pig.oof", NULL, 60, 1, 0}, 
-	{"\001d-claw.oof", NULL, 62, 1, 0}, 
-	{"\001redhornet.oof", NULL, 64, 1, 0}, 
-	{"\001thief.oof", NULL, 65, 1, 0}, 
-	{"\001seeker.oof", NULL, 67, 1, 0}, 
-	{"\001e-bandit.oof", NULL, 68, 1, 0}, 
-	{"\001fireboss.oof", NULL, 69, 1, 0}, 
-	{"\001waterboss.oof", NULL, 70, 1, 0}, 
-	{"\001boarshead.oof", NULL, 71, 1, 0}, 
-	{"\001greenspider.oof", NULL, 72, 1, 0}, 
-	{"\001omega.oof", NULL, 73, 1, 0}, 
-	{"\001louguard.oof", NULL, 75, 1, 0}, 
-	{"\001alienboss1.oof", NULL, 76, 1, 0}, 
-	{"\001redfattyjunior.oof", NULL, 77, 1, 0}, 
-	{"\001d-claw-cloaked.oof", NULL, 78, 1, 0}, 
+	{"cloakedlifter", NULL, 29, 1, 0}, 
+	{"class1driller", NULL, 31, 1, 0}, 
+	{"mediumhulk", NULL, 33, 1, 0}, 
+	{"advancedlifter", NULL, 35, 1, 0}, 
+	{"ptmcdefense", NULL, 37, 1, 0}, 
+	{"d1boss2", NULL, 39, 1, 0}, 
+	{"bper", NULL, 40, 1, 0}, 
+	{"smelter", NULL, 41, 1, 0}, 
+	{"icespider", NULL, 43, 1, 0}, 
+	{"bulkdestroyer", NULL, 44, 1, 0}, 
+	{"trnracer", NULL, 45, 1, 0}, 
+	{"foxattackbot", NULL, 46, 1, 0}, 
+	{"sidarm", NULL, 47, 1, 0}, 
+	{"redfattyboss", NULL, 49, 1, 0}, 
+	{"guidebot", NULL, 51, 1, 0}, 
+	{"eviltwin", NULL, 54, 1, 0}, 
+	{"itsc", NULL, 55, 1, 0}, 
+	{"itdroid", NULL, 56, 1, 0}, 
+	{"pest", NULL, 58, 1, 0}, 
+	{"pig", NULL, 60, 1, 0}, 
+	{"d-claw", NULL, 62, 1, 0}, 
+	{"redhornet", NULL, 64, 1, 0}, 
+	{"thief", NULL, 65, 1, 0}, 
+	{"seeker", NULL, 67, 1, 0}, 
+	{"e-bandit", NULL, 68, 1, 0}, 
+	{"fireboss", NULL, 69, 1, 0}, 
+	{"waterboss", NULL, 70, 1, 0}, 
+	{"boarshead", NULL, 71, 1, 0}, 
+	{"greenspider", NULL, 72, 1, 0}, 
+	{"omega", NULL, 73, 1, 0}, 
+	{"louguard", NULL, 75, 1, 0}, 
+	{"alienboss1", NULL, 76, 1, 0}, 
+	{"redfattyjunior", NULL, 77, 1, 0}, 
+	{"d-claw-cloaked", NULL, 78, 1, 0}, 
 	{NULL, NULL, 79, 1, 0}, 
-	{"\001smelter-cloaked.oof", NULL, 80, 1, 0}, 
-	{"\001smelterclone-cloaked.oof", NULL, 81, 1, 0}, 
-	{"\001smelterclone.oof", NULL, 83, 1, 0}, 
-	{"\001omegaclone.oof", NULL, 85, 1, 0}, 
-	{"\001bperclone.oof", NULL, 86, 1, 0}, 
-	{"\001spiderclone.oof", NULL, 87, 1, 0}, 
-	{"\001spiderspawn.oof", NULL, 88, 1, 0}, 
-	{"\001iceboss.oof", NULL, 89, 1, 0}, 
-	{"\001spiderspawnclone.oof", NULL, 90, 1, 0}, 
-	{"\001alienboss2.oof", NULL, 91, 1, 0}, 
+	{"smelter-cloaked", NULL, 80, 1, 0}, 
+	{"smelterclone-cloaked", NULL, 81, 1, 0}, 
+	{"smelterclone", NULL, 83, 1, 0}, 
+	{"omegaclone", NULL, 85, 1, 0}, 
+	{"bperclone", NULL, 86, 1, 0}, 
+	{"spiderclone", NULL, 87, 1, 0}, 
+	{"spiderspawn", NULL, 88, 1, 0}, 
+	{"iceboss", NULL, 89, 1, 0}, 
+	{"spiderspawnclone", NULL, 90, 1, 0}, 
+	{"alienboss2", NULL, 91, 1, 0}, 
 	// Vertigo robots
-	{"\001compactlifter.oof", NULL, 166, 1, 0}, 
-	{"\001fervid99.oof", NULL, 167, 1, 0}, 
-	{"\001fiddler.oof", NULL, 168, 1, 0}, 
-	{"\001class2heavydriller.oof", NULL, 169, 1, 0}, 
-	{"\001smelter2.oof", NULL, 170, 1, 0}, 
-	{"\001max.oof", NULL, 171, 1, 0}, 
-	{"\001sniperng.oof", NULL, 172, 1, 0}, 
-	{"\001logikill.oof", NULL, 173, 1, 0}, 
-	{"\001canary.oof", NULL, 174, 1, 0}, 
-	{"\001vertigoboss.oof", NULL, 175, 1, 0}, 
-	{"\001redguard.oof", NULL, 176, 1, 0}, 
-	{"\001spike.oof", NULL, 177, 1, 0}, 
+	{"compactlifter", NULL, 166, 1, 0}, 
+	{"fervid99", NULL, 167, 1, 0}, 
+	{"fiddler", NULL, 168, 1, 0}, 
+	{"class2heavydriller", NULL, 169, 1, 0}, 
+	{"smelter2", NULL, 170, 1, 0}, 
+	{"max", NULL, 171, 1, 0}, 
+	{"sniperng", NULL, 172, 1, 0}, 
+	{"logikill", NULL, 173, 1, 0}, 
+	{"canary", NULL, 174, 1, 0}, 
+	{"vertigoboss", NULL, 175, 1, 0}, 
+	{"redguard", NULL, 176, 1, 0}, 
+	{"spike", NULL, 177, 1, 0}, 
 	// powerups/missiles
-	{"\001concussion.oof", NULL, 127, 0, 1}, 
+	{"concussion", NULL, 127, 0, 1}, 
 	{NULL, NULL, 137, 0, 1}, 
-	{"\001homer.oof", NULL, 133, 0, 1}, 
+	{"homer", NULL, 133, 0, 1}, 
 	{NULL, NULL, 136, 0, 1}, 
-	{"\001smartmsl.oof", NULL, 134, 0, 1}, 
+	{"smartmsl", NULL, 134, 0, 1}, 
 	{NULL, NULL, 162, 0, 1}, 
-	{"\001mega.oof", NULL, 135, 0, 1}, 
+	{"mega", NULL, 135, 0, 1}, 
 	{NULL, NULL, 142, 0, 1}, 
-	{"\001flashmsl.oof", NULL, 151, 0, 1}, 
+	{"flashmsl", NULL, 151, 0, 1}, 
 	{NULL, NULL, 158, 0, 1}, 
 	{NULL, NULL, 165, 0, 1}, 
-	{"\001guided.oof", NULL, 152, 0, 1}, 
-	{"\001mercury.oof", NULL, 153, 0, 1}, 
+	{"guided", NULL, 152, 0, 1}, 
+	{"mercury", NULL, 153, 0, 1}, 
 	{NULL, NULL, 161, 0, 1}, 
-	{"\001eshaker.oof", NULL, 154, 0, 1}, 
+	{"eshaker", NULL, 154, 0, 1}, 
 	{NULL, NULL, 163, 0, 1}, 
-	{"\001shakrsub.oof", NULL, 160, 0, 1},
-	{"\001pminepack.oof", "pminpack.pol", MAX_POLYGON_MODELS - 1, 0, 1},
-	{"\001proxmine.oof", "proxmine.pol", MAX_POLYGON_MODELS - 2, 0, 1},
-	{"\001sminepack.oof", "sminpack.pol", MAX_POLYGON_MODELS - 3, 0, 1},
-	{"\001smartmine.oof", "smrtmine.pol", MAX_POLYGON_MODELS - 4, 0, 1},
-	{"\001concussion4.oof", "concpack.pol", MAX_POLYGON_MODELS - 5, 0, 1},
-	{"\001homer4.oof", "homrpack.pol", MAX_POLYGON_MODELS - 6, 0, 1},
-	{"\001flash4.oof", "flshpack.pol", MAX_POLYGON_MODELS - 7, 0, 1},
-	{"\001guided4.oof", "guidpack.pol", MAX_POLYGON_MODELS - 8, 0, 1},
-	{"\001mercury4.oof", "mercpack.pol", MAX_POLYGON_MODELS - 9, 0, 1},
-	{"\001laser.oof", NULL, MAX_POLYGON_MODELS - 10, 0, 1},
-	{"\001vulcan.oof", NULL, MAX_POLYGON_MODELS - 11, 0, 1},
-	{"\001spreadfire.oof", NULL, MAX_POLYGON_MODELS - 12, 0, 1},
-	{"\001plasma.oof", NULL, MAX_POLYGON_MODELS - 13, 0, 1},
-	{"\001fusion.oof", NULL, MAX_POLYGON_MODELS - 14, 0, 1},
-	{"\001superlaser.oof", NULL, MAX_POLYGON_MODELS - 15, 0, 1},
-	{"\001gauss.oof", NULL, MAX_POLYGON_MODELS - 16, 0, 1},
-	{"\001helix.oof", NULL, MAX_POLYGON_MODELS - 17, 0, 1},
-	{"\001phoenix.oof", NULL, MAX_POLYGON_MODELS - 18, 0, 1},
-	{"\001omega.oof", NULL, MAX_POLYGON_MODELS - 19, 0, 1},
-	{"\001quadlaser.oof", NULL, MAX_POLYGON_MODELS - 20, 0, 1},
-	{"\001afterburner.oof", NULL, MAX_POLYGON_MODELS - 21, 0, 1},
-	{"\001headlight.oof", NULL, MAX_POLYGON_MODELS - 22, 0, 1},
-	{"\001ammorack.oof", NULL, MAX_POLYGON_MODELS - 23, 0, 1},
-	{"\001converter.oof", NULL, MAX_POLYGON_MODELS - 24, 0, 1},
-	{"\001fullmap.oof", NULL, MAX_POLYGON_MODELS - 25, 0, 1},
-	{"\001cloak.oof", NULL, MAX_POLYGON_MODELS - 26, 0, 1},
-	{"\001invul.oof", NULL, MAX_POLYGON_MODELS - 27, 0, 1},
-	{"\001extralife.oof", NULL, MAX_POLYGON_MODELS - 28, 0, 1},
-	{"\001bluekey.oof", NULL, MAX_POLYGON_MODELS - 29, 0, 1},
-	{"\001redkey.oof", NULL, MAX_POLYGON_MODELS - 30, 0, 1},
-	{"\001goldkey.oof", NULL, MAX_POLYGON_MODELS - 31, 0, 1},
-	{"\001vulcanammo.oof", NULL, MAX_POLYGON_MODELS - 32, 0, 1},
-	{"\001slowmotion.oof", NULL, MAX_POLYGON_MODELS - 33, 0, 1},
-	{"\001bullettime.oof", NULL, MAX_POLYGON_MODELS - 34, 0, 1},
-	{"\001hostage.oof", NULL, HOSTAGE_MODEL, 0, 1}
+	{"shakrsub", NULL, 160, 0, 1},
+	{"pminepack", "pminpack.pol", MAX_POLYGON_MODELS - 1, 0, 1},
+	{"proxmine", "proxmine.pol", MAX_POLYGON_MODELS - 2, 0, 1},
+	{"sminepack", "sminpack.pol", MAX_POLYGON_MODELS - 3, 0, 1},
+	{"smartmine", "smrtmine.pol", MAX_POLYGON_MODELS - 4, 0, 1},
+	{"concussion4", "concpack.pol", MAX_POLYGON_MODELS - 5, 0, 1},
+	{"homer4", "homrpack.pol", MAX_POLYGON_MODELS - 6, 0, 1},
+	{"flash4", "flshpack.pol", MAX_POLYGON_MODELS - 7, 0, 1},
+	{"guided4", "guidpack.pol", MAX_POLYGON_MODELS - 8, 0, 1},
+	{"mercury4", "mercpack.pol", MAX_POLYGON_MODELS - 9, 0, 1},
+	{"laser", NULL, MAX_POLYGON_MODELS - 10, 0, 1},
+	{"vulcan", NULL, MAX_POLYGON_MODELS - 11, 0, 1},
+	{"spreadfire", NULL, MAX_POLYGON_MODELS - 12, 0, 1},
+	{"plasma", NULL, MAX_POLYGON_MODELS - 13, 0, 1},
+	{"fusion", NULL, MAX_POLYGON_MODELS - 14, 0, 1},
+	{"superlaser", NULL, MAX_POLYGON_MODELS - 15, 0, 1},
+	{"gauss", NULL, MAX_POLYGON_MODELS - 16, 0, 1},
+	{"helix", NULL, MAX_POLYGON_MODELS - 17, 0, 1},
+	{"phoenix", NULL, MAX_POLYGON_MODELS - 18, 0, 1},
+	{"omega", NULL, MAX_POLYGON_MODELS - 19, 0, 1},
+	{"quadlaser", NULL, MAX_POLYGON_MODELS - 20, 0, 1},
+	{"afterburner", NULL, MAX_POLYGON_MODELS - 21, 0, 1},
+	{"headlight", NULL, MAX_POLYGON_MODELS - 22, 0, 1},
+	{"ammorack", NULL, MAX_POLYGON_MODELS - 23, 0, 1},
+	{"converter", NULL, MAX_POLYGON_MODELS - 24, 0, 1},
+	{"fullmap", NULL, MAX_POLYGON_MODELS - 25, 0, 1},
+	{"cloak", NULL, MAX_POLYGON_MODELS - 26, 0, 1},
+	{"invul", NULL, MAX_POLYGON_MODELS - 27, 0, 1},
+	{"extralife", NULL, MAX_POLYGON_MODELS - 28, 0, 1},
+	{"bluekey", NULL, MAX_POLYGON_MODELS - 29, 0, 1},
+	{"redkey", NULL, MAX_POLYGON_MODELS - 30, 0, 1},
+	{"goldkey", NULL, MAX_POLYGON_MODELS - 31, 0, 1},
+	{"vulcanammo", NULL, MAX_POLYGON_MODELS - 32, 0, 1},
+	{"slowmotion", NULL, MAX_POLYGON_MODELS - 33, 0, 1},
+	{"bullettime", NULL, MAX_POLYGON_MODELS - 34, 0, 1},
+	{"hostage", NULL, HOSTAGE_MODEL, 0, 1}
 	};
 
-void InitModelToOOF (void)
+void InitReplacementModels (void)
 {
-memset (gameData.models.modelToOOF, 0, sizeof (gameData.models.modelToOOF));
-memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
+memset (gameData.models.oofModels, 0, sizeof (gameData.models.oofModels));
+memset (gameData.models.aseModels, 0, sizeof (gameData.models.aseModels));
+memset (gameData.models.polModels, 0, sizeof (gameData.models.polModels));
 }
 
 // ----------------------------------------------------------------------------
@@ -178,15 +179,15 @@ short LoadLoresModel (short i)
 {
 	CFILE			cf;
 	tPolyModel	*pm;
-	short			nModel, j = sizeofa (oofToModel);
+	short			nModel, j = sizeofa (replacementModels);
 	char			szModel [FILENAME_LEN];
 
-sprintf (szModel, "model%d.pol", oofToModel [i].nModel);
-if (!(oofToModel [i].pszPOL && 
-	  (CFOpen (&cf, oofToModel [i].pszPOL, gameFolders.szDataDir, "rb", 0) ||
+sprintf (szModel, "model%d.pol", replacementModels [i].nModel);
+if (!(replacementModels [i].pszLores && 
+	  (CFOpen (&cf, replacementModels [i].pszLores, gameFolders.szDataDir, "rb", 0) ||
 	   CFOpen (&cf, szModel, gameFolders.szDataDir, "rb", 0))))
 	return ++i;
-nModel = oofToModel [i].nModel;
+nModel = replacementModels [i].nModel;
 pm = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.altPolyModels : gameData.models.polyModels) + nModel;
 if (!PolyModelRead (pm, &cf, 1)) {
 	CFClose (&cf);
@@ -198,9 +199,55 @@ PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, &cf);
 CFClose (&cf);
 pm->rad = G3PolyModelSize (pm, nModel);
 do {
-	gameData.models.modelToPOL [oofToModel [i].nModel] = pm;
-	} while ((++i < j) && !oofToModel [i].pszOOF);
+	gameData.models.polModels [replacementModels [i].nModel] = pm;
+	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nLoresModels++;
+return i;
+}
+
+// ----------------------------------------------------------------------------
+
+short LoadOOFModel (tOOFObject *po, short i, int bCustom)
+{
+	short	j = sizeofa (replacementModels);
+	char	szModel [2][FILENAME_LEN];
+
+sprintf (szModel [0], "\001model%d.oof", replacementModels [i].nModel);
+if (replacementModels [i].pszHires)
+	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
+else
+	szModel [1][0] = '\0';
+if (!(OOF_ReadFile (szModel [1] + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
+	   OOF_ReadFile (szModel [0] + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
+	return bCustom ? ++i : LoadLoresModel (i);
+do {
+	CBP (!replacementModels [i].nModel);
+	gameData.models.oofModels [bCustom][replacementModels [i].nModel] = po;
+	} while ((++i < j) && !replacementModels [i].pszHires);
+gameData.models.nHiresModels++;
+return i;
+}
+
+// ----------------------------------------------------------------------------
+
+short LoadASEModel (tASEModel *pa, short i, int bCustom)
+{
+	short	j = sizeofa (replacementModels);
+	char	szModel [2][FILENAME_LEN];
+
+sprintf (szModel [0], "\001model%d.oof", replacementModels [i].nModel);
+if (replacementModels [i].pszHires)
+	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
+else
+	szModel [1][0] = '\0';
+if (!(OOF_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom) || 
+	   OOF_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom)))
+	return bCustom ? ++i : LoadLoresModel (i);
+do {
+	CBP (!replacementModels [i].nModel);
+	gameData.models.aseModels [bCustom][replacementModels [i].nModel] = pa;
+	} while ((++i < j) && !replacementModels [i].pszHires);
+gameData.models.nHiresModels++;
 return i;
 }
 
@@ -208,26 +255,26 @@ return i;
 
 short LoadHiresModel (tOOFObject *po, short i, int bCustom)
 {
-	short	j = sizeofa (oofToModel);
+	short	j = sizeofa (replacementModels);
 	char	szModel [FILENAME_LEN];
 
-sprintf (szModel, "\001model%d.oof", oofToModel [i].nModel);
+sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
 #ifdef _DEBUG
-if (oofToModel [i].pszOOF && !strcmp (oofToModel [i].pszOOF, "pyrogl.oof"))
+if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "pyrogl.oof"))
 	;
 #endif
 #if OOF_TEST_CUBE
-if (!strcmp (oofToModel [i].pszOOF + 1, "pyrogl.oof"))
-	oofToModel [i].pszOOF = "cube.oof";
+if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
+	replacementModels [i].pszHires = "cube.oof";
 #endif
-if (!(oofToModel [i].pszOOF && 
-	   (OOF_ReadFile (oofToModel [i].pszOOF + !bCustom, po, oofToModel [i].nType, oofToModel [i].bFlipV, bCustom) || 
-	    OOF_ReadFile (szModel + !bCustom, po, oofToModel [i].nType, oofToModel [i].bFlipV, bCustom))))
+if (!(replacementModels [i].pszHires && 
+	   (OOF_ReadFile (replacementModels [i].pszHires + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
+	    OOF_ReadFile (szModel + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom))))
 	return bCustom ? ++i : LoadLoresModel (i);
 do {
-	CBP (!oofToModel [i].nModel);
-	gameData.models.modelToOOF [bCustom][oofToModel [i].nModel] = po;
-	} while ((++i < j) && !oofToModel [i].pszOOF);
+	CBP (!replacementModels [i].nModel);
+	gameData.models.oofModels [bCustom][replacementModels [i].nModel] = po;
+	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 return i;
 }
@@ -242,14 +289,14 @@ static void LoadModelsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
 	loadIdx = LoadHiresModel (gameData.models.hiresModels [0] + gameData.models.nHiresModels, loadIdx, 0);
-	if (loadIdx >= sizeofa (oofToModel)) {
+	if (loadIdx >= sizeofa (replacementModels)) {
 		loadOp = 1;
 		loadIdx = 0;
 		}
 	}
 else if (loadOp == 1) {
 	loadIdx = LoadLoresModel (loadIdx);
-	if (loadIdx >= sizeofa (oofToModel)) {
+	if (loadIdx >= sizeofa (replacementModels)) {
 		*key = -2;
 		GrPaletteStepLoad (NULL);
 		return;
@@ -267,14 +314,14 @@ int ModelsGaugeSize (void)
 {
 	int h, i, j;
 
-for (h = i = 0, j = sizeofa (oofToModel); i < j; i++)
-	if (oofToModel [i].pszOOF) {
+for (h = i = 0, j = sizeofa (replacementModels); i < j; i++)
+	if (replacementModels [i].pszHires) {
 		if (gameOpts->render.bHiresModels)
 			h++;
-		if (oofToModel [i].pszPOL)
+		if (replacementModels [i].pszLores)
 			h++;
 		}
-return h = (gameOpts->render.bHiresModels + 1) * (sizeofa (oofToModel) - 1);
+return h = (gameOpts->render.bHiresModels + 1) * (sizeofa (replacementModels) - 1);
 }
 
 //------------------------------------------------------------------------------
@@ -291,7 +338,7 @@ NMProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll);
 void LoadHiresModels (int bCustom)
 {
 if (!bCustom) {
-	InitModelToOOF ();
+	InitReplacementModels ();
 	gameData.models.nHiresModels = 0;
 	}
 if (gameStates.app.bNostalgia)
@@ -300,7 +347,7 @@ else /*if (gameOpts->render.bHiresModels)*/ {
 	if (!bCustom && gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		LoadModelsGauge ();
 	else {
-		short	i = 0, j = sizeofa (oofToModel);
+		short	i = 0, j = sizeofa (replacementModels);
 		if (!bCustom)
 			ShowBoxedMessage (TXT_LOADING_MODELS);
 		if (gameOpts->render.bHiresModels) {

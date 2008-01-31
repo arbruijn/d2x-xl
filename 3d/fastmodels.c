@@ -878,13 +878,13 @@ for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 void G3SetGunPoints (tObject *objP, tG3Model *pm, int nModel)
 {
 	vmsVector		*vGunPoints;
-	tOOFObject		*po = gameData.models.modelToOOF [1][nModel];
+	tOOFObject		*po = gameData.models.oofModels [1][nModel];
 	tOOF_subObject	*pso;
 	tOOF_point		*pp;
 	int				nParent, i, j;
 
 if (!po)
-	po = gameData.models.modelToOOF [0][nModel];
+	po = gameData.models.oofModels [0][nModel];
 pp = po->gunPoints.pPoints;
 if (objP->nType == OBJ_PLAYER)
 	SetShipGunPoints (po, pm); 
@@ -915,11 +915,11 @@ if (j = po->gunPoints.nPoints) {
 
 int G3BuildModelFromOOF (tObject *objP, int nModel)
 {
-	tOOFObject	*po = gameData.models.modelToOOF [1][nModel];
+	tOOFObject	*po = gameData.models.oofModels [1][nModel];
 	tG3Model		*pm;
 
 if (!po) {
-	po = gameData.models.modelToOOF [0][nModel];
+	po = gameData.models.oofModels [0][nModel];
 	if (!po)
 		return 0;
 	}
