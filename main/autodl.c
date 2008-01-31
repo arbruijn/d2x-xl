@@ -2,9 +2,8 @@
 // automatic level up/download
 
 #ifdef HAVE_CONFIG_H
-#include <conf.h>
+#	include <conf.h>
 #endif
-
 
 #include <time.h>
 #include <string.h>

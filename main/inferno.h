@@ -71,6 +71,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "vclip.h"
 #include "effects.h"
 #include "oof.h"
+#include "ase.h"
 #include "cfile.h"
 #include "segment.h"
 #include "console.h"
@@ -2101,6 +2102,7 @@ typedef struct tModelData {
 	tModelHitboxes		hitboxes [MAX_POLYGON_MODELS];
 	tModelThrusters	thrusters [MAX_POLYGON_MODELS];
 	tG3Model				g3Models [2][MAX_POLYGON_MODELS];
+	tASEModel			aseModels [2][MAX_POLYGON_MODELS];
 	vmsVector			offsets [MAX_POLYGON_MODELS];
 	tGunInfo				gunInfo [MAX_POLYGON_MODELS];
 	int					nScale;

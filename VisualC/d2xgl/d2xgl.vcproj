@@ -1429,6 +1429,9 @@
 						RelativePath="..\..\main\aistruct.h">
 					</File>
 					<File
+						RelativePath="..\..\main\ase.h">
+					</File>
+					<File
 						RelativePath="..\..\main\autodl.h">
 					</File>
 					<File
@@ -3590,10 +3593,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

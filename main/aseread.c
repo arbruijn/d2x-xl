@@ -26,52 +26,39 @@
 #include "strutil.h"
 #include "hudmsg.h"
 #include "tga.h"
-
-typedef struct tASEVertex {
-	fVector3					vertex;
-	fVector3					normal;
-} tASEVertex;
-
-typedef struct tASEFace {
-	fVector3					vNormal;
-	int						nVerts [3];	// indices of vertices 
-	int						nTexCoord [3];
-} tASEFace;
-
-typedef struct tASESubModel {
-	char						szName [256];
-	char						szParent [256];
-	int						nParent;
-	int						nBitmap;
-	int						nFaces;
-	int						nVerts;
-	int						nTexCoord;
-	int						nIndex;
-	fVector3					vOffset;
-	tASEFace					*pFaces;
-	tASEVertex				*pVerts;
-	tTexCoord2f				*pTexCoord;
-} tASESubModel;
-
-typedef struct tSubModelList {
-	struct tSubModelList *pNextModel;
-	tASESubModel			sm;
-} tSubModelList;
-
-typedef struct tASEModel {
-	int				nBitmaps;
-	grsBitmap		*pBitmaps;
-	tSubModelList	*pSubModels;
-	int				nSubModels;
-	int				nVerts;
-	int				nFaces;
-} tASEModel;
+#include "interp.h"
+#include "ase.h"
 
 static char	szLine [1024];
 
 //------------------------------------------------------------------------------
 
-float FloatTok (char *delims)
+void ASE_FreeSubModel (tASESubModel *psm)
+{
+D2_FREE (psm->pFaces);
+D2_FREE (psm->pVerts);
+D2_FREE (psm->pTexCoord);
+}
+
+//------------------------------------------------------------------------------
+
+void ASE_FreeModel (tASEModel *pm)
+{
+	tASESubModelList	*pml, *h;
+
+for (pml = pm->pSubModels; pml; ) {
+	ASE_FreeSubModel (&pml->sm);
+	h = pml;
+	pml = pml->pNextModel;
+	D2_FREE (h);
+	}
+D2_FREE (pm->pBitmaps);
+memset (pm, 0, sizeof (*pm));
+}
+
+//------------------------------------------------------------------------------
+
+static float FloatTok (char *delims)
 {
 	char	*pszToken = strtok (NULL, delims);
 
@@ -80,7 +67,7 @@ return pszToken ? (float) atof (pszToken) : 0;
 
 //------------------------------------------------------------------------------
 
-int IntTok (char *delims)
+static int IntTok (char *delims)
 {
 	char	*pszToken = strtok (NULL, delims);
 
@@ -89,7 +76,7 @@ return pszToken ? atoi (pszToken) : 0;
 
 //------------------------------------------------------------------------------
 
-char CharTok (char *delims)
+static char CharTok (char *delims)
 {
 	char	*pszToken = strtok (NULL, delims);
 
@@ -98,7 +85,7 @@ return pszToken ? *pszToken : '\0';
 
 //------------------------------------------------------------------------------
 
-char *StrTok (char *delims)
+static char *StrTok (char *delims)
 {
 	char	*pszToken = strtok (NULL, delims);
 
@@ -107,7 +94,7 @@ return pszToken ? pszToken : "";
 
 //------------------------------------------------------------------------------
 
-char *ASE_ReadLine (CFILE *cfp)
+static char *ASE_ReadLine (CFILE *cfp)
 {
 	char	*pszToken;
 
@@ -121,7 +108,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadBitmap (CFILE *cfp, tASEModel *pm, grsBitmap *bmP, int nType, int bCustom)
+static int ASE_ReadBitmap (CFILE *cfp, tASEModel *pm, grsBitmap *bmP, int nType, int bCustom)
 {
 	char	*pszToken;
 
@@ -143,7 +130,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMaterial (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
+static int ASE_ReadMaterial (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 {
 	int			i;
 	grsBitmap	*bmP;
@@ -174,7 +161,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMaterialList (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
+static int ASE_ReadMaterialList (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 {
 	char	*pszToken;
 
@@ -202,7 +189,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadNode (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadNode (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	int	i;
 	char	*pszToken;
@@ -228,7 +215,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMeshVertexList (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadMeshVertexList (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	tASEVertex	*pv;
 	int			i;
@@ -250,7 +237,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMeshFace (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadMeshFace (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	tASEFace	*pf;
 	int		i;
@@ -274,7 +261,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMeshFaceList (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadMeshFaceList (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	char	*pszToken;
 
@@ -293,7 +280,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadVertexTexCoord (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadVertexTexCoord (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	tTexCoord2f	*pt;
 	int			i;
@@ -315,7 +302,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadFaceTexCoord (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadFaceTexCoord (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	tASEFace	*pf;
 	int		i;
@@ -337,7 +324,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMeshNormals (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadMeshNormals (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	tASEFace		*pf;
 	tASEVertex	*pv;
@@ -365,7 +352,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadMesh (CFILE *cfp, tASEModel *pm, tSubModelList *pml)
+static int ASE_ReadMesh (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	char	*pszToken;
 
@@ -425,14 +412,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadSubModel (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadSubModel (CFILE *cfp, tASEModel *pm)
 {
-	tSubModelList	*pml;
+	tASESubModelList	*pml;
 	char				*pszToken;
 	
 if (CharTok (" ") != '{')
 	return 0;
-if (!(pml = (tSubModelList *) D2_ALLOC (sizeof (tSubModelList))))
+if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
 	return 0;
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->pSubModels;
@@ -458,29 +445,28 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadFile (char *pszFile, tG3Model *pm, short nType, int bCustom)
+int ASE_ReadFile (char *pszFile, tASEModel *pm, short nType, int bCustom)
 {
 	CFILE			cf;
-	tASEModel	am;
 	char			*pszToken;
 	int			nResult = 1;
 
 if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 	return 0;
 	}
-memset (&am, 0, sizeof (am));
+memset (pm, 0, sizeof (*pm));
 while ((pszToken = ASE_ReadLine (&cf))) {
 	if (!strcmp (pszToken, "*MATERIAL_LIST")) {
-		if (!(nResult = ASE_ReadMaterialList (&cf, &am, nType, bCustom)))
+		if (!(nResult = ASE_ReadMaterialList (&cf, pm, nType, bCustom)))
 			break;
 		}
 	else if (!strcmp (pszToken, "*GEOMOBJECT")) {
-		if (!(nResult = ASE_ReadSubModel (&cf, &am)))
+		if (!(nResult = ASE_ReadSubModel (&cf, pm)))
 			break;
 		}
 	}
 CFClose (&cf);
-gameData.models.bHaveHiresModel [pm - gameData.models.g3Models [1]] = 1;
+gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [1]] = 1;
 return 1;
 }
 
