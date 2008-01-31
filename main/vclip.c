@@ -35,6 +35,7 @@ static char rcsid[] = "$Id: tVideoClip.c,v 1.5 2003/10/10 09:36:35 btb Exp $";
 #include "sphere.h"
 #include "hudmsg.h"
 #include "u_mem.h"
+#include "hiresmodels.h"
 
 #define BLAST_TYPE 0
 #define MOVE_BLAST 1
@@ -257,7 +258,7 @@ if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 if (objP->renderType == RT_POLYOBJ)
 	return 1;
 nModel = WeaponToModel (objP->id);
-if (!(nModel && HaveReplacementModel (nModel])))
+if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
 a.p = (rand () % F1_0) - F1_0 / 2;
 a.b = (rand () % F1_0) - F1_0 / 2;
