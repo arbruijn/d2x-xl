@@ -30,6 +30,7 @@
 #include "ase.h"
 
 static char	szLine [1024];
+static char *pszToken;
 
 //------------------------------------------------------------------------------
 
@@ -60,8 +61,7 @@ memset (pm, 0, sizeof (*pm));
 
 static float FloatTok (char *delims)
 {
-	char	*pszToken = strtok (NULL, delims);
-
+pszToken = strtok (NULL, delims);
 return pszToken ? (float) atof (pszToken) : 0;
 }
 
@@ -69,8 +69,7 @@ return pszToken ? (float) atof (pszToken) : 0;
 
 static int IntTok (char *delims)
 {
-	char	*pszToken = strtok (NULL, delims);
-
+pszToken = strtok (NULL, delims);
 return pszToken ? atoi (pszToken) : 0;
 }
 
@@ -78,8 +77,7 @@ return pszToken ? atoi (pszToken) : 0;
 
 static char CharTok (char *delims)
 {
-	char	*pszToken = strtok (NULL, delims);
-
+pszToken = strtok (NULL, delims);
 return pszToken ? *pszToken : '\0';
 }
 
@@ -87,8 +85,7 @@ return pszToken ? *pszToken : '\0';
 
 static char *StrTok (char *delims)
 {
-	char	*pszToken = strtok (NULL, delims);
-
+pszToken = strtok (NULL, delims);
 return pszToken ? pszToken : "";
 }
 
@@ -96,12 +93,10 @@ return pszToken ? pszToken : "";
 
 static char *ASE_ReadLine (CFILE *cfp)
 {
-	char	*pszToken;
-
 while (!CFEoF (cfp)) {
 	CFGetS (szLine, sizeof (szLine), cfp);
 	strupr (szLine);
-	if (pszToken = strtok (szLine, " "))
+	if (pszToken = strtok (szLine, " \t"))
 		return pszToken;
 	}
 return NULL;
@@ -111,9 +106,9 @@ return NULL;
 
 static int ASE_ReadBitmap (CFILE *cfp, tASEModel *pm, grsBitmap *bmP, int nType, int bCustom)
 {
-	char	*pszToken;
+	char	fn [FILENAME_LEN];
 
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 bmP->bmFlat = 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
@@ -122,7 +117,8 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (bmP->bmTexBuf)	//duplicate
 			return 0;
-		if (!OOF_ReadTGA (strlwr (StrTok (" \"")), bmP, nType, bCustom))
+		CFSplitPath (StrTok (" \t\""), NULL, fn, NULL);
+		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
 			return 0;
 		}
 	}
@@ -135,12 +131,11 @@ static int ASE_ReadMaterial (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 {
 	int			i;
 	grsBitmap	*bmP;
-	char			*pszToken = strtok (szLine, " ");
 
-i = IntTok (" ");
+i = IntTok (" \t");
 if ((i < 0) || (i >= pm->nBitmaps))
 	return 0;
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 bmP = pm->pBitmaps + i;
 bmP->bmFlat = 1;
@@ -148,9 +143,9 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
-		bmP->bmAvgRGB.red = (ubyte) (FloatTok (" ") * 255 + 0.5);
-		bmP->bmAvgRGB.green = (ubyte) (FloatTok (" ") * 255 + 0.5);
-		bmP->bmAvgRGB.blue = (ubyte) (FloatTok (" ") * 255 + 0.5);
+		bmP->bmAvgRGB.red = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->bmAvgRGB.green = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		bmP->bmAvgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
 		if (!ASE_ReadBitmap (cfp, pm, bmP, nType, bCustom))
@@ -164,14 +159,13 @@ return 0;
 
 static int ASE_ReadMaterialList (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 {
-	char	*pszToken;
-
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
-CFGetS (szLine, sizeof (szLine), cfp);
-if (!strcmp (strtok (szLine, " "), "*MATERIAL_COUNT"))
+if (!(pszToken = ASE_ReadLine (cfp)))
 	return 0;
-pm->nBitmaps = atoi (strtok (szLine, " "));
+if (strcmp (pszToken, "*MATERIAL_COUNT"))
+	return 0;
+pm->nBitmaps = IntTok (" \t");
 if (!pm->nBitmaps)
 	return 0;
 if (!(pm->pBitmaps = (grsBitmap *) D2_ALLOC (pm->nBitmaps * sizeof (grsBitmap))))
@@ -193,15 +187,14 @@ return 0;
 static int ASE_ReadNode (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	int	i;
-	char	*pszToken;
 
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
-		strcpy (pml->sm.szName, StrTok (" \""));
+		strcpy (pml->sm.szName, StrTok (" \t\""));
 		if (strstr (pml->sm.szName, "$GUN-"))
 			pml->sm.nGunPoint = atoi (pml->sm.szName + 5);
 		else {
@@ -210,11 +203,11 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			}
 		}
 	if (!strcmp (pszToken, "*NODE_PARENT")) {
-		strcpy (pml->sm.szParent, StrTok (" \""));
+		strcpy (pml->sm.szParent, StrTok (" \t\""));
 		}
 	else if (!strcmp (pszToken, "*TM_POS")) {
 		for (i = 0; i < 3; i++)
-			pml->sm.vOffset.v [i] = FloatTok (" ");
+			pml->sm.vOffset.v [i] = FloatTok (" \t");
 		}
 	}
 return 0;
@@ -226,17 +219,16 @@ static int ASE_ReadMeshVertexList (CFILE *cfp, tASEModel *pm, tASESubModelList *
 {
 	tASEVertex	*pv;
 	int			i;
-	char			*pszToken;
 
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_VERTEX")) {
-		pv = pml->sm.pVerts + IntTok (" ");
+		pv = pml->sm.pVerts + IntTok (" \t");
 		for (i = 0; i < 3; i++)
-			pv->vertex.v [i] = FloatTok (" ");
+			pv->vertex.v [i] = FloatTok (" \t");
 		}	
 	}
 return 0;
@@ -248,11 +240,10 @@ static int ASE_ReadMeshFace (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 	tASEFace	*pf;
 	int		i;
-	char		*pszToken;
 
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
-pf = pml->sm.pFaces + IntTok (" ");
+pf = pml->sm.pFaces + IntTok (" \t");
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -270,9 +261,7 @@ return 0;
 
 static int ASE_ReadMeshFaceList (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
-	char	*pszToken;
-
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
@@ -291,17 +280,15 @@ static int ASE_ReadVertexTexCoord (CFILE *cfp, tASEModel *pm, tASESubModelList *
 {
 	tTexCoord2f	*pt;
 	int			i;
-	char			*pszToken;
-
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_TVERT")) {
-		pt = pml->sm.pTexCoord + IntTok (" ");
+		pt = pml->sm.pTexCoord + IntTok (" \t");
 		for (i = 0; i < 2; i++)
-			pt->a [i] = FloatTok (" ");
+			pt->a [i] = FloatTok (" \t");
 		}	
 	}
 return 0;
@@ -313,17 +300,15 @@ static int ASE_ReadFaceTexCoord (CFILE *cfp, tASEModel *pm, tASESubModelList *pm
 {
 	tASEFace	*pf;
 	int		i;
-	char		*pszToken;
-
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_TFACE")) {
-		pf = pml->sm.pFaces + IntTok (" ");
+		pf = pml->sm.pFaces + IntTok (" \t");
 		for (i = 0; i < 3; i++)
-			pf->nTexCoord [i] = IntTok (" ");
+			pf->nTexCoord [i] = IntTok (" \t");
 		}	
 	}
 return 0;
@@ -336,22 +321,20 @@ static int ASE_ReadMeshNormals (CFILE *cfp, tASEModel *pm, tASESubModelList *pml
 	tASEFace		*pf;
 	tASEVertex	*pv;
 	int			i;
-	char			*pszToken;
-
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_FACENORMAL")) {
-		pf = pml->sm.pFaces + IntTok (" ");
+		pf = pml->sm.pFaces + IntTok (" \t");
 		for (i = 0; i < 3; i++)
-			pf->vNormal.v [i] = FloatTok (" ");
+			pf->vNormal.v [i] = FloatTok (" \t");
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEXNORMAL")) {
-		pv = pml->sm.pVerts + IntTok (" ");
+		pv = pml->sm.pVerts + IntTok (" \t");
 		for (i = 0; i < 3; i++)
-			pv->vertex.v [i] = FloatTok (" ");
+			pv->vertex.v [i] = FloatTok (" \t");
 		}
 	}
 return 0;
@@ -361,15 +344,13 @@ return 0;
 
 static int ASE_ReadMesh (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
-	char	*pszToken;
-
-if (CharTok (" ") != '{')
+if (CharTok (" \t") != '{')
 	return 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_NUMVERTEX")) {
-		pml->sm.nVerts = IntTok (" ");
+		pml->sm.nVerts = IntTok (" \t");
 		if (!pml->sm.nVerts)
 			return 0;
 		pm->nVerts += pml->sm.nVerts;
@@ -378,14 +359,14 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		memset (pml->sm.pVerts, 0, pml->sm.nVerts * sizeof (tASEVertex));
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMTVERTEX")) {
-		pml->sm.nTexCoord = IntTok (" ");
+		pml->sm.nTexCoord = IntTok (" \t");
 		if (pml->sm.nTexCoord) {
 			if (!(pml->sm.pTexCoord = (tTexCoord2f *) D2_ALLOC (pml->sm.nVerts * sizeof (tTexCoord2f))))
 				return 0;
 			}
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMFACES")) {
-		pml->sm.nFaces = IntTok (" ");
+		pml->sm.nFaces = IntTok (" \t");
 		if (!pml->sm.nFaces)
 			return 0;
 		pm->nFaces += pml->sm.nFaces;
@@ -422,9 +403,8 @@ return 0;
 static int ASE_ReadSubModel (CFILE *cfp, tASEModel *pm)
 {
 	tASESubModelList	*pml;
-	char				*pszToken;
-	
-if (CharTok (" ") != '{')
+
+if (CharTok (" \t") != '{')
 	return 0;
 if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
 	return 0;
@@ -444,7 +424,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			return 0;
 		}
 	else if (!strcmp (pszToken, "*MATERIAL_REF")) {
-		pml->sm.nBitmap = IntTok (" ");
+		pml->sm.nBitmap = IntTok (" \t");
 		}
 	}
 return 0;
@@ -477,7 +457,6 @@ for (pml = pm->pSubModels; pml; pml = pml->pNextModel)
 int ASE_ReadFile (char *pszFile, tASEModel *pm, short nType, int bCustom)
 {
 	CFILE			cf;
-	char			*pszToken;
 	int			nResult = 1;
 
 if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {

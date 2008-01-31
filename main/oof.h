@@ -303,7 +303,6 @@ typedef float glMatrixf [4*4];
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom);
 int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bCustom);
 int OOF_FreeObject (tOOFObject *po);
 int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked);

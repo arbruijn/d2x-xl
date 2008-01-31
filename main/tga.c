@@ -772,3 +772,43 @@ return q;
 
 //------------------------------------------------------------------------------
 
+int ReadModelTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom)
+{
+	char			fn [FILENAME_LEN], fnBase [FILENAME_LEN], fnShrunk [FILENAME_LEN];
+	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
+	time_t		tBase, tShrunk;
+
+CFSplitPath (pszFile + 1, NULL, fn, NULL);
+if (!bCustom && (nShrinkFactor > 1)) {
+	sprintf (fnBase, "%s.tga", fn);
+	sprintf (fnShrunk, "%s-%d.tga", fn, 512 / nShrinkFactor);
+	tBase = CFDate (fnBase, gameFolders.szModelDir [nType], 0);
+	tShrunk = CFDate (fnShrunk, gameFolders.szModelCacheDir, 0);
+	if ((tShrunk > tBase) && ReadTGA (fnShrunk, gameFolders.szModelCacheDir, bmP, -1, 1.0, 0, 0)) {
+#ifdef _DEBUG
+		strncpy (bmP->szName, fn, sizeof (bmP->szName));
+#endif
+		UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+		return 1;
+		}
+	}
+if (!ReadTGA (pszFile + !bCustom, gameFolders.szModelDir [nType], bmP, -1, 1.0, 0, 0))
+	return 0;
+UseBitmapCache (bmP, (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) && 
+	 (bmP->bmProps.w == 512) && ShrinkTGA (bmP, nShrinkFactor, nShrinkFactor, 1)) {
+	tTgaHeader	h;
+	CFILE			cf;
+
+	strcat (fn, ".tga");
+	if (!CFOpen (&cf, fn, gameFolders.szModelDir [nType], "rb", 0))
+		return 1;
+	if (ReadTGAHeader (&cf, &h, NULL))
+		SaveTGA (fn, gameFolders.szModelCacheDir, &h, bmP);
+	CFClose (&cf);
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+

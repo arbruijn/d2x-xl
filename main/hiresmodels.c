@@ -241,7 +241,10 @@ if (replacementModels [i].pszHires)
 else
 	szModel [1][0] = '\0';
 if (!(ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom) || 
-	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom)))
+	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom))) {
+	while (!ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom))
+		;
+		}
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
