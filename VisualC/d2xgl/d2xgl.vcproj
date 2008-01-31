@@ -1904,6 +1904,9 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\aseread.c">
+					</File>
+					<File
 						RelativePath="..\..\main\autodl.c">
 					</File>
 					<File
@@ -2912,7 +2915,13 @@
 						RelativePath="..\..\main\omega.c">
 					</File>
 					<File
-						RelativePath="..\..\main\oof.c">
+						RelativePath="..\..\main\oofmath.c">
+					</File>
+					<File
+						RelativePath="..\..\main\oofread.c">
+					</File>
+					<File
+						RelativePath="..\..\main\oofrender.c">
 					</File>
 					<File
 						RelativePath="..\..\main\paging.c">

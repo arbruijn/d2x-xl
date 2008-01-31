@@ -1849,6 +1849,7 @@ typedef struct tG3SubModel {
 	short						nParent;
 	short						nFaces;
 	short						nIndex;
+	short						nBitmap;
 	ushort					nAngles;
 } tG3SubModel;
 

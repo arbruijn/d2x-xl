@@ -173,6 +173,7 @@ typedef struct grsBitmap {
 	ubyte				bmType :3;
 	ubyte				bmWallAnim :1;
 	ubyte				bmFromPog :1;
+	ubyte				bmFlat;			//no texture, just a colored area
 #if TEXTURE_COMPRESSION
 	ubyte				bmCompressed;
 	int				bmFormat;

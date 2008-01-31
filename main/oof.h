@@ -303,6 +303,7 @@ typedef float glMatrixf [4*4];
 
 //------------------------------------------------------------------------------
 
+int OOF_ReadTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom);
 int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bCustom);
 int OOF_FreeObject (tOOFObject *po);
 int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked);
@@ -316,9 +317,11 @@ tOOF_vector *OOF_VecSub (tOOF_vector *pvDest, tOOF_vector *pvMin, tOOF_vector *p
 tOOF_vector *OOF_VecInc (tOOF_vector *pvDest, tOOF_vector *pvSrc);
 tOOF_vector *OOF_VecDec (tOOF_vector *pvDest, tOOF_vector *pvSrc);
 float OOF_VecMul (tOOF_vector *pvSrc, tOOF_vector *pvMul);
-inline float OOF_VecDot (tOOF_vector *pv0, tOOF_vector *pv1);
 tOOF_vector *OOF_VecScale (tOOF_vector *pv, float fScale);
 float OOF_VecMag (tOOF_vector *pv);
+void OOF_MatIdentity (tOOF_matrix *pm);
+void OOF_MatMul (tOOF_matrix *pd, tOOF_matrix *ps0, tOOF_matrix *ps1);
+float OOF_Centroid (tOOF_vector *pvCentroid, tOOF_vector *pvSrc, int nv);
 tOOF_vector *OOF_VecRot (tOOF_vector *pDest, tOOF_vector *pSrc, tOOF_matrix *pRot);
 tOOF_vector *OOF_VecPerp (tOOF_vector *pvPerp, tOOF_vector *pv0, tOOF_vector *pv1, tOOF_vector *pv2);
 tOOF_vector *OOF_VecNormal (tOOF_vector *pvNormal, tOOF_vector *pv0, tOOF_vector *pv1, tOOF_vector *pv2);
@@ -326,6 +329,20 @@ float *OOF_GlIdent (float *pm);
 float *OOF_GlTranspose (float *pDest, float *pSrc);
 int OOF_ReleaseTextures (void);
 int OOF_ReloadTextures (void);
+
+//------------------------------------------------------------------------------
+
+static inline float OOF_VecDot3 (float x, float y, float z, tOOF_vector *pv)
+{
+return (x * pv->x) + (y * pv->y) + (z * pv->z);
+}
+
+//------------------------------------------------------------------------------
+
+static inline float OOF_VecDot (tOOF_vector *pv0, tOOF_vector *pv1)
+{
+return (pv0->x * pv1->x) + (pv0->y * pv1->y) + (pv0->z * pv1->z);
+}
 
 //------------------------------------------------------------------------------
 

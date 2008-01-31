@@ -598,7 +598,6 @@ int G3GetOOFModelItems (int nModel, tOOFObject *po, tG3Model *pm)
 	fVector3			*pvn = pm->pVertNorms, vNormal;
 	tG3ModelVertex	*pmv = pm->pFaceVerts;
 	tG3ModelFace	*pmf = pm->pFaces;
-
 	int				h, i, j, n, nIndex = 0;
 
 for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, pso++, psm++) {
