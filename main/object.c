@@ -2219,9 +2219,15 @@ void BuildObjectModels (void)
 
 gameStates.render.nType = 1;
 gameStates.render.nShadowPass = 1;
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ))
+gameStates.render.bBuildModels = 1;
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+	if (i == 480)
+		i = i;
+	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
+		 !G3HaveModel (objP->rType.polyObjInfo.nModel))
 		RenderObject (objP, 0, 1); //DrawPolygonObject (objP, 0);
+	}
+gameStates.render.bBuildModels = 0;
 }
 
 //------------------------------------------------------------------------------

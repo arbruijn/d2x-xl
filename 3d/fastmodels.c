@@ -1495,6 +1495,13 @@ if (vOffset)
 
 //------------------------------------------------------------------------------
 
+int G3HaveModel (int nModel)
+{
+return (gameData.models.g3Models [0][nModel].bValid != 0) || (gameData.models.g3Models [1][nModel].bValid != 0);
+}
+
+//------------------------------------------------------------------------------
+
 int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp, grsBitmap **modelBitmaps, 
 						 vmsAngVec *pAnimAngles, vmsVector *vOffset, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
@@ -1521,7 +1528,7 @@ if (pm->bValid < 1) {
 	else {
 		i = G3BuildModel (objP, nModel, pp, modelBitmaps, pObjColor, 1);
 		if (i < 0)	//successfully built new model
-			return 0;
+			return gameStates.render.bBuildModels;
 		pm->bValid = -1;
 		}
 	pm = gameData.models.g3Models [0] + nModel;
@@ -1532,7 +1539,7 @@ if (pm->bValid < 1) {
 		if (i <= 0) {
 			if (!i)
 				pm->bValid = -1;
-			return 0;
+			return gameStates.render.bBuildModels;
 			}
 		}
 	}

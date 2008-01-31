@@ -681,7 +681,7 @@ if (!flags)	{	//draw entire tObject
 	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color)) {
 		if (bHires)
 			return 0;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 		if (objP && (objP->nType == OBJ_ROBOT))
 			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color);
 #endif

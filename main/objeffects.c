@@ -390,8 +390,9 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) &&
 // -----------------------------------------------------------------------------
 
 static tRgbaColorf	trackGoalColor [2] = {{1, 0.5f, 0, 0.8f}, {1, 0.5f, 0, 0.8f}};
-static int	nMslLockColor [2] = {0, 0};
-static int	nMslLockColorIncr [2] = {-1, -1};
+static int				nMslLockColor [2] = {0, 0};
+static int				nMslLockColorIncr [2] = {-1, -1};
+static float			fMslLockGreen [2] = {0.65f, 0.0f};
 
 void RenderMslLockIndicator (tObject *objP)
 {
@@ -421,7 +422,7 @@ if (gameStates.app.nSDLTicks - t0 [bMarker] > tDelay [bMarker]) {
 	if (!nMslLockColor [bMarker] || (nMslLockColor [bMarker] == 15))
 		nMslLockColorIncr [bMarker] = -nMslLockColorIncr [bMarker];
 	nMslLockColor [bMarker] += nMslLockColorIncr [bMarker];
-	trackGoalColor [bMarker].green = 0.65f + (float) nMslLockColor [bMarker] / 100.0f;
+	trackGoalColor [bMarker].green = fMslLockGreen [bMarker] + (float) nMslLockColor [bMarker] / 100.0f;
 	nMslLockIndPos [bMarker] = (nMslLockIndPos [bMarker] + 1) % INDICATOR_POSITIONS;
 	}
 VmVecFixToFloat (&fPos, &objP->position.vPos);
