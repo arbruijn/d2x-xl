@@ -46,6 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_render.h"
 #include "marker.h"
+#include "hiresmodels.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"

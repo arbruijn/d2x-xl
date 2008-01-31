@@ -464,7 +464,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void ASE_LinkSubModels (tASEModel *pm, char *pszName)
+void ASE_LinkSubModels (tASEModel *pm)
 {
 	tASESubModelList	*pml;
 
@@ -495,7 +495,7 @@ while ((pszToken = ASE_ReadLine (&cf))) {
 		}
 	}
 CFClose (&cf);
-ASE_LinkSubModels ();
+ASE_LinkSubModels (pm);
 gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [bCustom]] = 1;
 return 1;
 }

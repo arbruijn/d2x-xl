@@ -38,6 +38,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #include "gamepal.h"
 #include "network.h"
 #include "strutil.h"
+#include "hiresmodels.h"
 
 #ifndef DRIVE
 #include "texmap.h"

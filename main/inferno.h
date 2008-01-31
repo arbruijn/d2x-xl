@@ -2082,7 +2082,7 @@ typedef struct tModelData {
 	int					nHiresModels;
 	tASEModel			aseModels [2][MAX_POLYGON_MODELS];
 	tOOFObject			oofModels [2][MAX_POLYGON_MODELS];
-	tPOFObject			pofModels [2][2][MAX_POLYGON_MODELS];
+	tPOFObject			pofData [2][2][MAX_POLYGON_MODELS];
 	ubyte					bHaveHiresModel [MAX_POLYGON_MODELS];
 	tPolyModel			polyModels [MAX_POLYGON_MODELS];
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
