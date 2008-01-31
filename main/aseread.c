@@ -100,6 +100,7 @@ static char *ASE_ReadLine (CFILE *cfp)
 
 while (!CFEoF (cfp)) {
 	CFGetS (szLine, sizeof (szLine), cfp);
+	strupr (szLine);
 	if (pszToken = strtok (szLine, " "))
 		return pszToken;
 	}
@@ -121,7 +122,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (bmP->bmTexBuf)	//duplicate
 			return 0;
-		if (!OOF_ReadTGA (StrTok (" \""), bmP, nType, bCustom))
+		if (!OOF_ReadTGA (strlwr (StrTok (" \"")), bmP, nType, bCustom))
 			return 0;
 		}
 	}
@@ -201,6 +202,12 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
 		strcpy (pml->sm.szName, StrTok (" \""));
+		if (strstr (pml->sm.szName, "$GUN-"))
+			pml->sm.nGunPoint = atoi (pml->sm.szName + 5);
+		else {
+			pml->sm.nGunPoint = -1;
+			pml->sm.bGlow = strstr (pml->sm.szName, "GLOW") != NULL;
+			}
 		}
 	if (!strcmp (pszToken, "*NODE_PARENT")) {
 		strcpy (pml->sm.szParent, StrTok (" \""));
@@ -424,7 +431,7 @@ if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->pSubModels;
 pm->pSubModels = pml;
-pm->nSubModels++;
+pml->sm.nId = pm->nSubModels++;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -441,6 +448,28 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		}
 	}
 return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int ASE_FindSubModel (tASEModel *pm, char *pszName)
+{
+	tASESubModelList	*pml;
+
+for (pml = pm->pSubModels; pml; pml = pml->pNextModel)
+	if (!strcmp (pml->sm.szName, pszName))
+		return pml->sm.nId;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void ASE_LinkSubModels (tASEModel *pm, char *pszName)
+{
+	tASESubModelList	*pml;
+
+for (pml = pm->pSubModels; pml; pml = pml->pNextModel)
+	pml->sm.nParent = ASE_FindSubModel (pm, pml->sm.szParent);
 }
 
 //------------------------------------------------------------------------------
@@ -466,7 +495,8 @@ while ((pszToken = ASE_ReadLine (&cf))) {
 		}
 	}
 CFClose (&cf);
-gameData.models.bHaveHiresModel [pm - gameData.models.modelToASE [1]] = 1;
+ASE_LinkSubModels ();
+gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [bCustom]] = 1;
 return 1;
 }
 

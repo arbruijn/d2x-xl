@@ -43,6 +43,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "dynlight.h"
 #include "lightning.h"
 #include "renderthreads.h"
+#include "hiresmodels.h"
 
 extern tFaceColor tMapColor;
 
@@ -943,6 +944,91 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+void G3CountASEModelItems (tASEModel *pa, tG3Model *pm)
+{
+pm->nFaces = pa->nFaces;
+pm->nSubModels = pa->nSubModels;
+pm->nVerts = pa->nVerts;
+pm->nFaceVerts = pa->nFaces * 3;
+}
+
+//------------------------------------------------------------------------------
+
+void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm)
+{
+	tASESubModelList	*pml = pa->pSubModels;
+	tASESubModel		*psa;
+	tASEFace				*pfa;
+	tG3SubModel			*psm = pm->pSubModels;
+	tG3ModelFace		*pf = pm->pFaces;
+	tG3ModelVertex		*pv = pm->pFaceVerts;
+	grsBitmap			*bmP;
+	int					nFaces, iFace, nFaceIndex = 0, i, nVertIndex = 0;
+	int					bTextured;
+
+for (pml = pa->pSubModels; pml; pml = pml->pNextModel, psm++) {
+	psa = &pml->sm;
+	psm->nParent = psa->nParent;
+	for (pfa = psa->pFaces, nFaces = psa->nFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pf++) {
+		pf->nIndex = nFaceIndex++;
+		bmP = pa->pBitmaps + pf->nBitmap;
+		bTextured = !bmP->bmFlat;
+		pf->nBitmap = bTextured ? psa->nBitmap : -1;
+		pf->nVerts = 3;
+		VmVecFloatToFix (&pf->vNormal, (fVector *) &pfa->vNormal);
+		for (i = 0; i < 3; i++) {
+			nVertIndex = pfa->nVerts [i];
+			pv->nIndex = nVertIndex;
+			if (pv->bTextured = bTextured)
+				pv->baseColor.red =
+				pv->baseColor.green =
+				pv->baseColor.blue = 1;
+			else {
+				pv->baseColor.red = (float) bmP->bmAvgRGB.red / 255.0f;
+				pv->baseColor.green = (float) bmP->bmAvgRGB.green / 255.0f;
+				pv->baseColor.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+				}
+			pv->baseColor.alpha = 1;
+			pv->normal = psa->pVerts [nVertIndex].normal;
+			pv->vertex = psa->pVerts [nVertIndex].vertex;
+			pv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int G3BuildModelFromASE (tObject *objP, int nModel)
+{
+	tASEModel	*pa = gameData.models.modelToASE [1][nModel];
+	tG3Model		*pm;
+
+if (!pa) {
+	pa = gameData.models.modelToASE [0][nModel];
+	if (!pa)
+		return 0;
+	}
+#ifdef _DEBUG
+HUDMessage (0, "optimizing model");
+#endif
+pm = gameData.models.g3Models [1] + nModel;
+G3CountASEModelItems (pa, pm);
+if (!G3AllocModel (pm))
+	return 0;
+G3InitSubModelMinMax (pm->pSubModels);
+G3GetASEModelItems (nModel, pa, pm);
+pm->pTextures = pa->pBitmaps;
+gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
+G3SetupModel (pm, 1);
+#if 1
+G3SetGunPoints (objP, pm, nModel);
+#endif
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
 int G3BuildModel (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor, int bHires)
 {
 	tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
@@ -952,7 +1038,7 @@ if (pm->bValid > 0)
 if (pm->bValid < 0)
 	return 0;
 if (bHires)
-	return G3BuildModelFromOOF (objP, nModel);
+	return ASEModel (nModel) ? G3BuildModelFromASE (objP, nModel) : G3BuildModelFromOOF (objP, nModel);
 if (!pp->modelData)
 	return 0;
 pm->nSubModels = 1;

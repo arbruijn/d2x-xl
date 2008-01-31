@@ -253,7 +253,7 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadHiresModel (tOOFObject *po, short i, int bCustom)
+short LoadHiresModel (int nModel, short i, int bCustom)
 {
 	short	j = sizeofa (replacementModels);
 	char	szModel [FILENAME_LEN];
@@ -267,7 +267,8 @@ if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "
 if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
 	replacementModels [i].pszHires = "cube.oof";
 #endif
-if (!((i = LoadASEModel (, i, bCustom) )|| (i = LoadOOFModel (, i, bCustom))))
+if (!((i = LoadASEModel (gameData.models.aseModels [bCustom] + nModel, i, bCustom)) || 
+	   (i = LoadOOFModel (gameData.models.oofModels [bCustom] + nModel, i, bCustom))))
 	return bCustom ? ++i : LoadLoresModel (i);
 return i;
 }
@@ -281,7 +282,7 @@ static void LoadModelsPoll (int nItems, tMenuItem *m, int *key, int cItem)
 {
 GrPaletteStepLoad (NULL);
 if (loadOp == 0) {
-	loadIdx = LoadHiresModel (gameData.models.hiresModels [0] + gameData.models.nHiresModels, loadIdx, 0);
+	loadIdx = LoadHiresModel (gameData.models.nHiresModels, loadIdx, 0);
 	if (loadIdx >= sizeofa (replacementModels)) {
 		loadOp = 1;
 		loadIdx = 0;
@@ -345,7 +346,7 @@ else /*if (gameOpts->render.bHiresModels)*/ {
 			ShowBoxedMessage (TXT_LOADING_MODELS);
 		if (gameOpts->render.bHiresModels) {
 			while (i < j)
-				i = LoadHiresModel (gameData.models.hiresModels [bCustom] + gameData.models.nHiresModels, i, bCustom);
+				i = LoadHiresModel (gameData.models.nHiresModels, i, bCustom);
 			i = 0;
 			}
 		if (!bCustom) {
@@ -365,7 +366,7 @@ void FreeHiresModels (int bCustom)
 
 for (i = 0; i < gameData.models.nHiresModels; i++)
 	for (j = bCustom; j < 2; j++)
-		OOF_FreeObject (gameData.models.hiresModels [j] + i);
+		OOF_FreeObject (gameData.models.oofModels [j] + i);
 }
 
 // ----------------------------------------------------------------------------

@@ -2080,15 +2080,16 @@ typedef struct tGunInfo {
 typedef struct tModelData {
 	int					nLoresModels;
 	int					nHiresModels;
-	tOOFObject			hiresModels [2][MAX_POLYGON_MODELS];
-	tPOFObject			pofData [2][2][MAX_POLYGON_MODELS];
+	tASEModel			aseModels [2][MAX_POLYGON_MODELS];
+	tOOFObject			oofModels [2][MAX_POLYGON_MODELS];
+	tPOFObject			pofModels [2][2][MAX_POLYGON_MODELS];
 	ubyte					bHaveHiresModel [MAX_POLYGON_MODELS];
 	tPolyModel			polyModels [MAX_POLYGON_MODELS];
 	tPolyModel			defPolyModels [MAX_POLYGON_MODELS];
 	tPolyModel			altPolyModels [MAX_POLYGON_MODELS];
-	tOOFObject			*oofModels [2][MAX_POLYGON_MODELS];
-	tASEModel			*aseModels [2][MAX_POLYGON_MODELS];
-	tPolyModel			*polModels [MAX_POLYGON_MODELS];
+	tOOFObject			*modelToOOF [2][MAX_POLYGON_MODELS];
+	tASEModel			*modelToASE [2][MAX_POLYGON_MODELS];
+	tPolyModel			*modelToPOL [MAX_POLYGON_MODELS];
 	int					nPolyModels;
 	int					nDefPolyModels;
 	g3sPoint				polyModelPoints [MAX_POLYGON_VERTS];

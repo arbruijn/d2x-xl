@@ -660,8 +660,7 @@ int DrawPolygonModel (
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
 if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
-	if (!flags && (gameStates.render.nShadowPass != 2) && 
-		 (gameData.models.modelToOOF [0][nModel] || gameData.models.modelToOOF [1][nModel]))
+	if (!flags && (gameStates.render.nShadowPass != 2) && HaveHiresModel (nModel))
 		bHires = 1;
 	else
 		return 0;

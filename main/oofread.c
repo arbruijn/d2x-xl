@@ -1143,7 +1143,7 @@ int OOF_ReleaseTextures (void)
 	int			h, i, j;
 
 for (h = 0; h < 2; h++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels [h]; i; i--, po++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [h]; i; i--, po++)
 		if ((bmP = po->textures.pBitmaps))
 			for (j = po->textures.nTextures; j; j--, bmP++) {
 				UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
@@ -1200,7 +1200,7 @@ int OOF_ReloadTextures (void)
 	int			bCustom, i, j;
 
 for (bCustom = 0; bCustom < 2; bCustom++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.hiresModels [bCustom]; i; i--, po++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
 		if (po->textures.pszNames && po->textures.pBitmaps)
 			for (j = 0; j < po->textures.nTextures; j++)
 				if (!OOF_ReadTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType, bCustom)) {
@@ -1692,7 +1692,7 @@ AssignBatteries (&o);
 BuildPosTickRemapList (po);
 BuildRotTickRemapList (po);
 *po = o;
-gameData.models.bHaveHiresModel [po - gameData.models.hiresModels [bCustom]] = 1;
+gameData.models.bHaveHiresModel [po - gameData.models.oofModels [bCustom]] = 1;
 return 1;
 }
 
