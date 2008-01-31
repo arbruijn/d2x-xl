@@ -257,7 +257,7 @@ if (gameStates.app.bNostalgia || !gameOpts->render.powerups.b3D)
 if (objP->renderType == RT_POLYOBJ)
 	return 1;
 nModel = WeaponToModel (objP->id);
-if (!(nModel && (gameData.models.oofModels [0][nModel] || gameData.models.oofModels [1][nModel] || gameData.models.polModels [nModel])))
+if (!(nModel && (gameData.models.modelToOOF [0][nModel] || gameData.models.modelToOOF [1][nModel] || gameData.models.modelToPOL [nModel])))
 	return 0;
 a.p = (rand () % F1_0) - F1_0 / 2;
 a.b = (rand () % F1_0) - F1_0 / 2;

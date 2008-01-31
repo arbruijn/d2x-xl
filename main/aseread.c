@@ -466,7 +466,7 @@ while ((pszToken = ASE_ReadLine (&cf))) {
 		}
 	}
 CFClose (&cf);
-gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [1]] = 1;
+gameData.models.bHaveHiresModel [pm - gameData.models.modelToASE [1]] = 1;
 return 1;
 }
 

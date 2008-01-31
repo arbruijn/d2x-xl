@@ -561,7 +561,7 @@ tPolyModel *GetPolyModel (tObject *objP, vmsVector *pos, int nModel, int flags)
 					bIsDefModel = (gameData.models.polyModels [nModel].nDataSize == 
 										gameData.models.defPolyModels [nModel].nDataSize);
 
-if ((nModel >= gameData.models.nPolyModels) && !(po = gameData.models.polModels [nModel]))
+if ((nModel >= gameData.models.nPolyModels) && !(po = gameData.models.modelToPOL [nModel]))
 	return NULL;
 // only render shadows for custom models and for standard models with a shadow proof alternative model
 if (!objP) 
@@ -661,7 +661,7 @@ if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;
 if (!(po = GetPolyModel (objP, pos, nModel, flags))) {
 	if (!flags && (gameStates.render.nShadowPass != 2) && 
-		 (gameData.models.oofModels [0][nModel] || gameData.models.oofModels [1][nModel]))
+		 (gameData.models.modelToOOF [0][nModel] || gameData.models.modelToOOF [1][nModel]))
 		bHires = 1;
 	else
 		return 0;

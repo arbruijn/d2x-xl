@@ -168,9 +168,9 @@ static tReplacementModel replacementModels [] = {
 
 void InitReplacementModels (void)
 {
-memset (gameData.models.oofModels, 0, sizeof (gameData.models.oofModels));
-memset (gameData.models.aseModels, 0, sizeof (gameData.models.aseModels));
-memset (gameData.models.polModels, 0, sizeof (gameData.models.polModels));
+memset (gameData.models.modelToOOF, 0, sizeof (gameData.models.modelToOOF));
+memset (gameData.models.modelToASE, 0, sizeof (gameData.models.modelToASE));
+memset (gameData.models.modelToPOL, 0, sizeof (gameData.models.modelToPOL));
 }
 
 // ----------------------------------------------------------------------------
@@ -199,7 +199,7 @@ PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, &cf);
 CFClose (&cf);
 pm->rad = G3PolyModelSize (pm, nModel);
 do {
-	gameData.models.polModels [replacementModels [i].nModel] = pm;
+	gameData.models.modelToPOL [replacementModels [i].nModel] = pm;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nLoresModels++;
 return i;
@@ -219,10 +219,10 @@ else
 	szModel [1][0] = '\0';
 if (!(OOF_ReadFile (szModel [1] + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
 	   OOF_ReadFile (szModel [0] + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
-	return bCustom ? ++i : LoadLoresModel (i);
+	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
-	gameData.models.oofModels [bCustom][replacementModels [i].nModel] = po;
+	gameData.models.modelToOOF [bCustom][replacementModels [i].nModel] = po;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 return i;
@@ -235,17 +235,17 @@ short LoadASEModel (tASEModel *pa, short i, int bCustom)
 	short	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
-sprintf (szModel [0], "\001model%d.oof", replacementModels [i].nModel);
+sprintf (szModel [0], "\001model%d.ase", replacementModels [i].nModel);
 if (replacementModels [i].pszHires)
-	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
+	sprintf (szModel [1], "\001%s.ase", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-if (!(OOF_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom) || 
-	   OOF_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom)))
-	return bCustom ? ++i : LoadLoresModel (i);
+if (!(ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom) || 
+	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom)))
+	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
-	gameData.models.aseModels [bCustom][replacementModels [i].nModel] = pa;
+	gameData.models.modelToASE [bCustom][replacementModels [i].nModel] = pa;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nHiresModels++;
 return i;
@@ -267,15 +267,8 @@ if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "
 if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
 	replacementModels [i].pszHires = "cube.oof";
 #endif
-if (!(replacementModels [i].pszHires && 
-	   (OOF_ReadFile (replacementModels [i].pszHires + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
-	    OOF_ReadFile (szModel + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom))))
+if (!((i = LoadASEModel (, i, bCustom) )|| (i = LoadOOFModel (, i, bCustom))))
 	return bCustom ? ++i : LoadLoresModel (i);
-do {
-	CBP (!replacementModels [i].nModel);
-	gameData.models.oofModels [bCustom][replacementModels [i].nModel] = po;
-	} while ((++i < j) && !replacementModels [i].pszHires);
-gameData.models.nHiresModels++;
 return i;
 }
 
