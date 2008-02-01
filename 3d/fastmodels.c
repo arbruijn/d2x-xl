@@ -625,6 +625,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->nIndex = nIndex;
 	psm->nFaces = j;
 	psm->pFaces = pmf;
+	G3InitSubModelMinMax (psm);
 	for (pof = pso->faces.pFaces; j; j--, pof++, pmf++) {
 		pmf->nIndex = nIndex;
 		pmf->bThruster = 0;
@@ -715,26 +716,28 @@ void G3SubModelSize (tObject *objP, int nModel, int nSubModel, vmsVector *vOffse
 {
 	tG3Model		*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel	*psm = pm->pSubModels + nSubModel;
-	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes + nSubModel + 1;
+	tHitbox		*phb = (psm->nHitbox < 0) ? NULL : gameData.models.hitboxes [nModel].hitboxes + psm->nHitbox;
+	vmsVector	vMin, vMax, vOffs;
 	int			i, j;
 
-if (vOffset)
-	VmVecAdd (&phb->vOffset, vOffset, &psm->vOffset);	//compute absolute offset (i.e. including offsets of all parent submodels)
-else
-	phb->vOffset = psm->vOffset;
-phb->vMin.p.x = fl2f (psm->vMin.p.x);
-phb->vMin.p.y = fl2f (psm->vMin.p.y);
-phb->vMin.p.z = fl2f (psm->vMin.p.z);
-phb->vMax.p.x = fl2f (psm->vMax.p.x);
-phb->vMax.p.y = fl2f (psm->vMax.p.y);
-phb->vMax.p.z = fl2f (psm->vMax.p.z);
-phb->vSize.p.x = (phb->vMax.p.x - phb->vMin.p.x) / 2;
-phb->vSize.p.y = (phb->vMax.p.y - phb->vMin.p.y) / 2;
-phb->vSize.p.z = (phb->vMax.p.z - phb->vMin.p.z) / 2;
-VmVecAvg (&psm->vCenter, &phb->vMin, &phb->vMax);
+if (phb) {
+	if (vOffset)
+		VmVecAdd (&vOffs, vOffset, &psm->vOffset);	//compute absolute offset (i.e. including offsets of all parent submodels)
+	else
+		vOffs = psm->vOffset;
+	}
+if (phb)
+	phb->vOffset = vOffs;
+vMin.p.x = fl2f (psm->vMin.p.x);
+vMin.p.y = fl2f (psm->vMin.p.y);
+vMin.p.z = fl2f (psm->vMin.p.z);
+vMax.p.x = fl2f (psm->vMax.p.x);
+vMax.p.y = fl2f (psm->vMax.p.y);
+vMax.p.z = fl2f (psm->vMax.p.z);
+VmVecAvg (&psm->vCenter, &vMin, &vMax);
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
-		G3SubModelSize (objP, nModel, i, &phb->vOffset, bHires);
+		G3SubModelSize (objP, nModel, i, &vOffs, bHires);
 }
 
 //------------------------------------------------------------------------------
@@ -743,11 +746,13 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 {
 	int			nSubModels = pm->nSubModels;
 	tG3SubModel	*psm;
-	int			i;
+	int			i, j;
 	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
 	vmsVector	hv;
 	double		dx, dy, dz;
 
+for (i = j = 0, psm = pm->pSubModels; i < pm->nSubModels; i++, psm++)
+	psm->nHitbox = (psm->bThruster || (psm->nGunPoint >= 0)) ? -1 : j++;
 do {
 	// initialize
 	for (i = 0; i <= MAX_HITBOXES; i++) {
@@ -764,33 +769,36 @@ do {
 	else
 		G3SubModelSize (objP, nModel, 0, NULL, bHires);
 	// determine min and max size
-	for (i = 1, psm = pm->pSubModels; i <= nSubModels; i++, psm++) {
-		phb [i].vMin.p.x = fl2f (psm->vMin.p.x);
-		phb [i].vMin.p.y = fl2f (psm->vMin.p.y);
-		phb [i].vMin.p.z = fl2f (psm->vMin.p.z);
-		phb [i].vMax.p.x = fl2f (psm->vMax.p.x);
-		phb [i].vMax.p.y = fl2f (psm->vMax.p.y);
-		phb [i].vMax.p.z = fl2f (psm->vMax.p.z);
-		dx = (phb [i].vMax.p.x - phb [i].vMin.p.x) / 2;
-		dy = (phb [i].vMax.p.y - phb [i].vMin.p.y) / 2;
-		dz = (phb [i].vMax.p.z - phb [i].vMin.p.z) / 2;
-		phb [i].vSize.p.x = (fix) dx;
-		phb [i].vSize.p.y = (fix) dy;
-		phb [i].vSize.p.z = (fix) dz;
-		VmVecAdd (&hv, &phb [i].vMin, &phb [i].vOffset);
+	for (i = j = 1, psm = pm->pSubModels; i <= nSubModels; i++, psm++) {
+		if (psm->bThruster || (psm->nGunPoint >= 0))
+			continue;
+		phb [j].vMin.p.x = fl2f (psm->vMin.p.x);
+		phb [j].vMin.p.y = fl2f (psm->vMin.p.y);
+		phb [j].vMin.p.z = fl2f (psm->vMin.p.z);
+		phb [j].vMax.p.x = fl2f (psm->vMax.p.x);
+		phb [j].vMax.p.y = fl2f (psm->vMax.p.y);
+		phb [j].vMax.p.z = fl2f (psm->vMax.p.z);
+		dx = (phb [j].vMax.p.x - phb [j].vMin.p.x) / 2;
+		dy = (phb [j].vMax.p.y - phb [j].vMin.p.y) / 2;
+		dz = (phb [j].vMax.p.z - phb [j].vMin.p.z) / 2;
+		phb [j].vSize.p.x = (fix) dx;
+		phb [j].vSize.p.y = (fix) dy;
+		phb [j].vSize.p.z = (fix) dz;
+		VmVecAdd (&hv, &phb [j].vMin, &phb [j].vOffset);
 		if (phb [0].vMin.p.x > hv.p.x)
 			phb [0].vMin.p.x = hv.p.x;
 		if (phb [0].vMin.p.y > hv.p.y)
 			phb [0].vMin.p.y = hv.p.y;
 		if (phb [0].vMin.p.z > hv.p.z)
 			phb [0].vMin.p.z = hv.p.z;
-		VmVecAdd (&hv, &phb [i].vMax, &phb [i].vOffset);
+		VmVecAdd (&hv, &phb [j].vMax, &phb [j].vOffset);
 		if (phb [0].vMax.p.x < hv.p.x)
 			phb [0].vMax.p.x = hv.p.x;
 		if (phb [0].vMax.p.y < hv.p.y)
 			phb [0].vMax.p.y = hv.p.y;
 		if (phb [0].vMax.p.z < hv.p.z)
 			phb [0].vMax.p.z = hv.p.z;
+		j++;
 		}
 	if (IsMultiGame)
 		gameData.models.offsets [nModel].p.x =
@@ -808,8 +816,8 @@ dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
 phb [0].vSize.p.x = (fix) dx / 2;
 phb [0].vSize.p.y = (fix) dy / 2;
 phb [0].vSize.p.z = (fix) dz / 2;
-gameData.models.hitboxes [nModel].nSubModels = nSubModels;
-for (i = 0; i <= nSubModels; i++)
+gameData.models.hitboxes [nModel].nHitboxes = j;
+for (i = 0; i <= j; i++)
 	ComputeHitbox (nModel, i);
 return (fix) (sqrt (dx * dx + dy * dy + dz + dz) / 2);
 }
@@ -842,18 +850,19 @@ return h;
 
 void SetShipGunPoints (tOOFObject *po, tG3Model *pm)
 {
-	static int nParents [] = {6, 7, 5, 4, 9, 10, 3, 3};
+	static short nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
 	tG3SubModel		*psm;
 	tOOF_point		*pp;
 	int				i;
 
 for (i = 0, pp = po->gunPoints.pPoints; i < (po->gunPoints.nPoints = N_PLAYER_GUNS); i++, pp++) {
-	if (nParents [i] >= pm->nSubModels)
+	if (nGunSubModels [i] >= pm->nSubModels)
 		continue;
-	psm = pm->pSubModels + nParents [i];
+	pm->nGunSubModels [i] = nGunSubModels [i];
+	psm = pm->pSubModels + nGunSubModels [i];
 	pp->vPos.x = (psm->vMax.p.x + psm->vMin.p.x) / 2;
-	if (3 == (pp->nParent = nParents [i])) {
+	if (3 == (pp->nParent = nGunSubModels [i])) {
 		pp->vPos.y = (psm->vMax.p.z + 3 * psm->vMin.p.y) / 4;
 		pp->vPos.z = 7 * (psm->vMax.p.z + psm->vMin.p.z) / 8;
 		}
@@ -876,6 +885,7 @@ void SetRobotGunPoints (tOOFObject *po, tG3Model *pm)
 	int				i, j = po->gunPoints.nPoints;
 
 for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
+	pm->nGunSubModels [i] = pp->nParent;
 	psm = pm->pSubModels + pp->nParent;
 	pp->vPos.x = (psm->vMax.p.x + psm->vMin.p.x) / 2;
 	pp->vPos.y = (psm->vMax.p.y + psm->vMin.p.y) / 2;
@@ -888,16 +898,18 @@ for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 void G3SetGunPoints (tObject *objP, tG3Model *pm, int nModel, int bASE)
 {
 	vmsVector		*vGunPoints;
-	int				nParent, i, j;
+	int				nParent, h, i, j;
 
 if (bASE) {
 	tG3SubModel	*psm = pm->pSubModels;
 
 	vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
-	for (i = pm->nSubModels, j = 0; i; i--, psm++) {
-		if ((psm->nGunPoint >= 0) && (psm->nGunPoint < MAX_GUNS)) {
+	for (i = 0, j = 0; i < pm->nSubModels; i++, psm++) {
+		h = psm->nGunPoint;
+		if ((h >= 0) && (h < MAX_GUNS)) {
 			j++;
-			vGunPoints [psm->nGunPoint] = psm->vCenter;
+			pm->nGunSubModels [h] = i;
+			vGunPoints [h] = psm->vCenter;
 			}
 		}
 	gameData.models.gunInfo [nModel].nGuns = j;
@@ -955,7 +967,6 @@ pm = gameData.models.g3Models [1] + nModel;
 G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
 	return 0;
-G3InitSubModelMinMax (pm->pSubModels);
 G3GetOOFModelItems (nModel, po, pm);
 pm->pTextures = po->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
@@ -1001,6 +1012,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->nGunPoint = psa->nGunPoint;
 	psm->nIndex = nIndex;
 	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
+	G3InitSubModelMinMax (psm);
 	for (pfa = psa->pFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->nIndex = nIndex;
 #if 1
@@ -1062,7 +1074,6 @@ pm = gameData.models.g3Models [1] + nModel;
 G3CountASEModelItems (pa, pm);
 if (!G3AllocModel (pm))
 	return 0;
-G3InitSubModelMinMax (pm->pSubModels);
 G3GetASEModelItems (nModel, pa, pm);
 pm->pTextures = pa->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
@@ -1084,6 +1095,7 @@ if (pm->bValid > 0)
 if (pm->bValid < 0)
 	return 0;
 pm->bRendered = 0;
+memset (pm->nGunSubModels, 0xff, sizeof (pm->nGunSubModels));
 if (bHires)
 	return ASEModel (nModel) ? G3BuildModelFromASE (objP, nModel) : G3BuildModelFromOOF (objP, nModel);
 if (!pp->modelData)
@@ -1357,8 +1369,10 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
 // set the translation
+#ifndef _DEBUG
 if (psm->nGunPoint >= 0)
 	return;
+#endif
 if (psm->bThruster) {
 	if (!nPass)
 		G3GetThrusterPos (objP, nModel, NULL, VmVecAdd (&vo, &psm->vOffset, &psm->vCenter), bHires);

@@ -186,9 +186,9 @@ int hitboxFaceVerts [6][4] = {
 	{6,7,3,2}
 	};
 
-void ComputeHitbox (int nModel, int iSubObj)
+void ComputeHitbox (int nModel, int iHitbox)
 {
-	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iSubObj;
+	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iHitbox;
 	vmsVector		vMin = phb->vMin;
 	vmsVector		vMax = phb->vMax;
 	vmsVector		vOffset = phb->vOffset;
@@ -276,19 +276,19 @@ void TransformHitboxes (tObject *objP, vmsVector *vPos, tBox *phb)
 	tQuad			*pf;
 	vmsVector	rotVerts [8];
 	vmsMatrix	*viewP = ObjectView (objP);
-	int			i, j, iModel, nModels;
+	int			i, j, iBox, nBoxes;
 
 if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
-	iModel =
-	nModels = 0;
+	iBox =
+	nBoxes = 0;
 	}
 else {
-	iModel = 1;
-	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
+	iBox = 1;
+	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
 	}
 if (!vPos)
 	vPos = &objP->position.vPos;
-for (phb += iModel, pmhb += iModel; iModel <= nModels; iModel++, phb++, pmhb++) {
+for (phb += iBox, pmhb += iBox; iBox <= nBoxes; iBox++, phb++, pmhb++) {
 	for (i = 0; i < 8; i++) {
 		VmVecRotate (rotVerts + i, pmhb->box.vertices + i, viewP);
 		VmVecInc (rotVerts + i, vPos);
@@ -348,7 +348,7 @@ dz = (phb [0].vMax.p.z - phb [0].vMin.p.z) / 2;
 phb [0].vSize.p.x = (fix) dx;
 phb [0].vSize.p.y = (fix) dy;
 phb [0].vSize.p.z = (fix) dz;
-gameData.models.hitboxes [nModel].nSubModels = nSubModels;
+gameData.models.hitboxes [nModel].nHitboxes = nSubModels;
 for (i = 0; i <= nSubModels; i++)
 	ComputeHitbox (nModel, i);
 return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);

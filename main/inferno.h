@@ -1852,6 +1852,7 @@ typedef struct tG3SubModel {
 	short						nFaces;
 	short						nIndex;
 	short						nBitmap;
+	short						nHitbox;
 	ushort					nAngles;
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;
@@ -1879,6 +1880,7 @@ typedef struct tG3Model {
 	tG3ModelFace			*pFaces;
 	tG3RenderVertex		*pVertBuf [2];
 	short						*pIndex [2];
+	short						nGunSubModels [MAX_GUNS];
 	float						fScale;
 	short						nFaces;
 	short						iFace;
@@ -2062,7 +2064,7 @@ typedef struct tWeaponData {
 #define MAX_HITBOXES		100
 
 typedef struct tModelHitboxes {
-	ubyte					nSubModels;
+	ubyte					nHitboxes;
 	tHitbox				hitboxes [MAX_HITBOXES + 1];
 #ifdef _DEBUG
 	vmsVector			vHit;

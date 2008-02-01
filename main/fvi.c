@@ -834,8 +834,8 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 else {
 	iModel1 =
 	iModel2 = 1;
-	nModels1 = pmhb1->nSubModels;
-	nModels2 = pmhb2->nSubModels;
+	nModels1 = pmhb1->nHitboxes;
+	nModels2 = pmhb2->nHitboxes;
 	}
 #ifdef _DEBUG
 memset (hb1, 0, sizeof (hb1));
@@ -885,7 +885,7 @@ if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
 	}
 else {
 	iModel = 1;
-	nModels = pmhb->nSubModels;
+	nModels = pmhb->nHitboxes;
 	}
 TransformHitboxes (objP, vPos, hb);
 for (; iModel <= nModels; iModel++) {
