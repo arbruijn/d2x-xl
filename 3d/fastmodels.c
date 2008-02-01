@@ -302,6 +302,9 @@ if (!psm->pFaces) {
 	psm->pFaces = pmf;
 	psm->nIndex = -1;
 	psm->nParent = nParent;
+	psm->nGunPoint = -1;
+	psm->bThruster = 0;
+	psm->bGlow = 0;
 	}
 for (;;)
 	switch (WORDVAL (p)) {
@@ -503,7 +506,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void G3SetupModel (tG3Model *pm, int bHires)
+void G3SetupModel (tG3Model *pm, int bHires, int bSort)
 {
 	tG3SubModel		*psm;
 	tG3ModelFace	*pfi, *pfj;
@@ -521,12 +524,15 @@ for (i = 0, j = pm->nFaceVerts; i < j; i++)
 	pm->pIndex [0][i] = i;
 //sort each submodel's faces
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
-	G3SortFaces (psm, 0, psm->nFaces - 1, pTextures);
-	G3SortFaceVerts (pm, psm, pSortedVerts);
+	if (bSort) {
+		G3SortFaces (psm, 0, psm->nFaces - 1, pTextures);
+		G3SortFaceVerts (pm, psm, pSortedVerts);
+		}
 	for (nId = 0, j = psm->nFaces - 1, pfi = psm->pFaces; j; j--) {
 		pfi->nId = nId;
 		pfj = pfi++;
 		if (G3CmpFaces (pfi, pfj, pTextures))
+			G3CmpFaces (pfi, pfj, pTextures);
 			nId++;
 #if G3_ALLOW_TRANSPARENCY
 		if (pTextures && (pTextures [pfi->nBitmap].bmProps.flags & BM_FLAG_TRANSPARENT))
@@ -543,18 +549,21 @@ pv = pm->pVBVerts;
 pn = pm->pVBNormals;
 pt = pm->pVBTexCoord;
 pc = pm->pVBColor;
-pmv = pSortedVerts;
-for (i = pm->nFaceVerts; i; i--, pt++, pc++, pv++, pn++, pmv++) {
-	*pv = pmv->vertex;
-	*pn = pmv->normal;
-	*pc = pmv->baseColor;
-	*pt = pmv->texCoord;
+pmv = bSort ? pSortedVerts : pm->pFaceVerts;
+for (i = 0, j = pm->nFaceVerts; i < j; i++, pmv++) {
+	pv [i] = pmv->vertex;
+	pn [i] = pmv->normal;
+	pc [i] = pmv->baseColor;
+	pt [i] = pmv->texCoord;
 	}
 if (pm->pVertBuf [1])
 	memcpy (pm->pVertBuf [1], pm->pVertBuf [0], pm->nFaceVerts * sizeof (tG3RenderVertex));
 if (pm->pIndex [1])
 	memcpy (pm->pIndex [1], pm->pIndex [0], pm->nFaceVerts * sizeof (short));
-memcpy (pm->pFaceVerts, pSortedVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
+if (bSort)
+	memcpy (pm->pFaceVerts, pSortedVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
+else
+	memcpy (pSortedVerts, pm->pFaceVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
 pm->bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
 	glUnmapBuffer (GL_ARRAY_BUFFER_ARB);
@@ -609,6 +618,9 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->vOffset.p.y = fl2f (pso->vOffset.y);
 	psm->vOffset.p.z = fl2f (pso->vOffset.z);
 	psm->nAngles = 0;
+	psm->nGunPoint = -1;
+	psm->bThruster = 0;
+	psm->bGlow = 0;
 	j = pso->faces.nFaces;
 	psm->nIndex = nIndex;
 	psm->nFaces = j;
@@ -673,10 +685,6 @@ return 0;
 	fVector			vOffset;
 	tG3ModelVertex	*pmv;
 
-#if 0
-if (bHires)
-	return 0;
-#endif
 if (IsMultiGame)
 	return 0;
 if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_ROBOT))
@@ -723,6 +731,7 @@ phb->vMax.p.z = fl2f (psm->vMax.p.z);
 phb->vSize.p.x = (phb->vMax.p.x - phb->vMin.p.x) / 2;
 phb->vSize.p.y = (phb->vMax.p.y - phb->vMin.p.y) / 2;
 phb->vSize.p.z = (phb->vMax.p.z - phb->vMin.p.z) / 2;
+VmVecAvg (&psm->vCenter, &phb->vMin, &phb->vMax);
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3SubModelSize (objP, nModel, i, &phb->vOffset, bHires);
@@ -876,37 +885,52 @@ for (i = 0, pp = po->gunPoints.pPoints; i < j; i++, pp++) {
 
 //------------------------------------------------------------------------------
 
-void G3SetGunPoints (tObject *objP, tG3Model *pm, int nModel)
+void G3SetGunPoints (tObject *objP, tG3Model *pm, int nModel, int bASE)
 {
 	vmsVector		*vGunPoints;
-	tOOFObject		*po = gameData.models.modelToOOF [1][nModel];
-	tOOF_subObject	*pso;
-	tOOF_point		*pp;
 	int				nParent, i, j;
 
-if (!po)
-	po = gameData.models.modelToOOF [0][nModel];
-pp = po->gunPoints.pPoints;
-if (objP->nType == OBJ_PLAYER)
-	SetShipGunPoints (po, pm); 
-else if (objP->nType == OBJ_ROBOT)
-	SetRobotGunPoints (po, pm); 
-else {
-	gameData.models.gunInfo [nModel].nGuns = 0;
-	return;
-	}
-if (j = po->gunPoints.nPoints) {
-	if (j > MAX_GUNS)
-		j = MAX_GUNS;
-	gameData.models.gunInfo [nModel].nGuns = j;
+if (bASE) {
+	tG3SubModel	*psm = pm->pSubModels;
+
 	vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
-	for (i = 0; i < j; i++, pp++, vGunPoints++) {
-		vGunPoints->p.x = fl2f (pp->vPos.x);
-		vGunPoints->p.y = fl2f (pp->vPos.y);
-		vGunPoints->p.z = fl2f (pp->vPos.z);
-		for (nParent = pp->nParent; nParent >= 0; nParent = pso->nParent) {
-			pso = po->pSubObjects + nParent;
-			VmVecInc (vGunPoints, &pm->pSubModels [nParent].vOffset);
+	for (i = pm->nSubModels, j = 0; i; i--, psm++) {
+		if ((psm->nGunPoint >= 0) && (psm->nGunPoint < MAX_GUNS)) {
+			j++;
+			vGunPoints [psm->nGunPoint] = psm->vCenter;
+			}
+		}
+	gameData.models.gunInfo [nModel].nGuns = j;
+	}
+else {
+		tOOF_point		*pp;
+		tOOF_subObject	*pso;
+		tOOFObject		*po = gameData.models.modelToOOF [1][nModel];;
+
+	if (!po)
+		po = gameData.models.modelToOOF [0][nModel];
+	pp = po->gunPoints.pPoints;
+	if (objP->nType == OBJ_PLAYER)
+		SetShipGunPoints (po, pm); 
+	else if (objP->nType == OBJ_ROBOT)
+		SetRobotGunPoints (po, pm); 
+	else {
+		gameData.models.gunInfo [nModel].nGuns = 0;
+		return;
+		}
+	if (j = po->gunPoints.nPoints) {
+		if (j > MAX_GUNS)
+			j = MAX_GUNS;
+		gameData.models.gunInfo [nModel].nGuns = j;
+		vGunPoints = gameData.models.gunInfo [nModel].vGunPoints;
+		for (i = 0; i < j; i++, pp++, vGunPoints++) {
+			vGunPoints->p.x = fl2f (pp->vPos.x);
+			vGunPoints->p.y = fl2f (pp->vPos.y);
+			vGunPoints->p.z = fl2f (pp->vPos.z);
+			for (nParent = pp->nParent; nParent >= 0; nParent = pso->nParent) {
+				pso = po->pSubObjects + nParent;
+				VmVecInc (vGunPoints, &pm->pSubModels [nParent].vOffset);
+				}
 			}
 		}
 	}
@@ -935,9 +959,9 @@ G3InitSubModelMinMax (pm->pSubModels);
 G3GetOOFModelItems (nModel, po, pm);
 pm->pTextures = po->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
-G3SetupModel (pm, 1);
+G3SetupModel (pm, 1, 1);
 #if 1
-G3SetGunPoints (objP, pm, nModel);
+G3SetGunPoints (objP, pm, nModel, 0);
 #endif
 return -1;
 }
@@ -984,10 +1008,11 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 #else
 		i = pfa->nBitmap;
 #endif
-		bmP = pa->pBitmaps + i;
+		bmP = pa->textures.pBitmaps + i;
 		bTextured = !bmP->bmFlat;
 		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
+		pmf->nId = iFace;
 		VmVecFloatToFix (&pmf->vNormal, (fVector *) &pfa->vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->nVerts [i];
@@ -1010,7 +1035,6 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 			pm->pVerts [h] = pmv->vertex;
 			pm->pVertNorms [h] = pmv->normal;
 			pmv->nIndex = h;
-			pm->pFaceVerts [nIndex] = *pmv;
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			nIndex++;
 			}
@@ -1040,11 +1064,11 @@ if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
 G3GetASEModelItems (nModel, pa, pm);
-pm->pTextures = pa->pBitmaps;
+pm->pTextures = pa->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
-G3SetupModel (pm, 1);
-#if 0
-G3SetGunPoints (objP, pm, nModel);
+G3SetupModel (pm, 1, 0);
+#if 1
+G3SetGunPoints (objP, pm, nModel, 1);
 #endif
 return -1;
 }
@@ -1059,6 +1083,7 @@ if (pm->bValid > 0)
 	return 1;
 if (pm->bValid < 0)
 	return 0;
+pm->bRendered = 0;
 if (bHires)
 	return ASEModel (nModel) ? G3BuildModelFromASE (objP, nModel) : G3BuildModelFromOOF (objP, nModel);
 if (!pp->modelData)
@@ -1073,7 +1098,7 @@ if (!G3AllocModel (pm))
 G3InitSubModelMinMax (pm->pSubModels);
 G3GetModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
-G3SetupModel (pm, 0);
+G3SetupModel (pm, 0, 1);
 pm->iSubModel = 0;
 return -1;
 }
@@ -1262,25 +1287,31 @@ pm->fScale *= fScale;
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (short nModel, tG3ModelFace *pmf, vmsVector *vOffset, int bHires)
+void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffset, int bHires)
 {
 	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
-	tG3ModelVertex		*pmv;
+	tG3ModelVertex		*pmv = NULL;
 	fVector				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
 	int					i, j;
 	float					h, nSize;
 
-if (mtP->nCount >= 2)
+if (!pm->bRendered)
+	mtP->nCount = 0;
+if (!objP || (mtP->nCount >= 2))
 	return;
-VmVecFixToFloat (&vn, &pmf->vNormal);
-if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
-	return;
-for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
-	VmVecIncf (&v, (fVector *) &pmv [i].vertex);
-v.p.x /= j;
-v.p.y /= j;
-v.p.z /= j;
+if (pmf) {
+	VmVecFixToFloat (&vn, &pmf->vNormal);
+	if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
+		return;
+	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
+		VmVecIncf (&v, (fVector *) &pmv [i].vertex);
+	v.p.x /= j;
+	v.p.y /= j;
+	v.p.z /= j;
+	}
+else
+	v.p.x = v.p.y = v.p.z = 0;
 v.p.z -= 1.0f / 16.0f;
 #if 0
 G3TransformPoint (&v, &v, 0);
@@ -1297,14 +1328,18 @@ mtP->vPos [mtP->nCount].p.y = fl2f (v.p.y);
 mtP->vPos [mtP->nCount].p.z = fl2f (v.p.z);
 if (vOffset)
 	VmVecDecf (&v, &vo);
-mtP->vDir [mtP->nCount] = pmf->vNormal;
+if (pmf)
+	mtP->vDir [mtP->nCount] = pmf->vNormal;
+else
+	mtP->vDir [mtP->nCount] = OBJPOS (objP)->mOrient.fVec;
 VmVecNegate (mtP->vDir + mtP->nCount);
-if (!mtP->nCount++) {
+if (pmf && !mtP->nCount) {
 	for (i = 0, nSize = 1000000000; i < j; i++)
 		if (nSize > (h = VmVecDistf (&v, (fVector *) &pmv [i].vertex)))
 			nSize = h;
 	mtP->fSize = nSize;// * 1.25f;
 	}
+mtP->nCount++;
 }
 
 //------------------------------------------------------------------------------
@@ -1322,8 +1357,13 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
 // set the translation
-if (psm->bThruster || (psm->nGunPoint >= 0))
+if (psm->nGunPoint >= 0)
 	return;
+if (psm->bThruster) {
+	if (!nPass)
+		G3GetThrusterPos (objP, nModel, NULL, VmVecAdd (&vo, &psm->vOffset, &psm->vCenter), bHires);
+	return;
+	}
 vo = psm->vOffset;
 if (gameData.models.nScale)
 	VmVecScale (&vo, gameData.models.nScale);
@@ -1381,7 +1421,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		if ((nFaceVerts = pmf->nVerts) > 0) {
 #endif
 			if (!nPass && pmf->bThruster)
-				G3GetThrusterPos (nModel, pmf, &vo, bHires);
+				G3GetThrusterPos (objP, nModel, pmf, &vo, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
 			i--;
@@ -1391,7 +1431,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			nVerts = 0;
 			do {
 				if (!nPass && pmf->bThruster)
-					G3GetThrusterPos (nModel, pmf, &vo, bHires);
+					G3GetThrusterPos (objP, nModel, pmf, &vo, bHires);
 				nVerts += nFaceVerts;
 				pmf++;
 				i--;
@@ -1400,7 +1440,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #else
 		nFaceVerts = pmf->nVerts;
 		if (pmf->bThruster)
-			G3GetThrusterPos (nModel, pmf, vOffset, bHires);
+			G3GetThrusterPos (objP, nModel, pmf, vOffset, bHires);
 		nVerts = nFaceVerts;
 		pmf++;
 		i--;
@@ -1714,6 +1754,7 @@ if (objP && ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || (objP-
 	G3RenderDamageLightnings (objP, nModel, 0, pAnimAngles, NULL, bHires);
 	G3DoneInstance ();
 	}
+pm->bRendered = 1;
 return 1;
 }
 

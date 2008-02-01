@@ -199,7 +199,7 @@ PolyModelDataRead (pm, nModel, gameData.models.defPolyModels + nModel, &cf);
 CFClose (&cf);
 pm->rad = G3PolyModelSize (pm, nModel);
 do {
-	gameData.models.modelToPOL [replacementModels [i].nModel] = pm;
+	gameData.models.modelToPOL [nModel] = pm;
 	} while ((++i < j) && !replacementModels [i].pszHires);
 gameData.models.nLoresModels++;
 return i;
@@ -217,8 +217,8 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "\001%s.oof", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-if (!(OOF_ReadFile (szModel [1] + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
-	   OOF_ReadFile (szModel [0] + !bCustom, po, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
+if (!(OOF_ReadFile (szModel [1] + !bCustom, po, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom) || 
+	   OOF_ReadFile (szModel [0] + !bCustom, po, replacementModels [i].nModel, replacementModels [i].nType, replacementModels [i].bFlipV, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
@@ -244,8 +244,8 @@ else
 while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
 	;
 #endif
-if (!(ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom) || 
-	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom)))
+if (!(ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nModel, replacementModels [i].nType, bCustom) || 
+	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nModel, replacementModels [i].nType, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);
@@ -271,10 +271,10 @@ if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "
 if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
 	replacementModels [i].pszHires = "cube.oof";
 #endif
-if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + replacementModels [i].nModel, i, bCustom)))
+if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + i, i, bCustom)))
 	return j;
 #if 0
-if ((j = LoadOOFModel (gameData.models.oofModels [bCustom] + replacementModels [i].nModel, i, bCustom)))
+if ((j = LoadOOFModel (gameData.models.oofModels [bCustom] + i, i, bCustom)))
 	return j;
 #endif
 return bCustom ? ++i : LoadLoresModel (i);
@@ -369,12 +369,20 @@ else /*if (gameOpts->render.bHiresModels)*/ {
 
 void FreeHiresModels (int bCustom)
 {
-	int	i, j;
+	int	h, i, j;
 
 for (i = 0; i < gameData.models.nHiresModels; i++)
 	for (j = bCustom; j < 2; j++) {
-		OOF_FreeObject (gameData.models.oofModels [j] + i);
-		ASE_FreeModel (gameData.models.aseModels [j] + i);
+		h = gameData.models.oofModels [j][i].nModel;
+		if (gameData.models.modelToOOF [j][h]) {
+			gameData.models.modelToOOF [j][h] = NULL;
+			OOF_FreeObject (gameData.models.oofModels [j] + i);
+			}
+		h = gameData.models.aseModels [j][i].nModel;
+		if (gameData.models.modelToASE [j][h]) {
+			gameData.models.modelToASE [j][h] = NULL;
+			ASE_FreeModel (gameData.models.aseModels [j] + i);
+			}
 		}
 }
 

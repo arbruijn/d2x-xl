@@ -153,7 +153,7 @@ static inline fVector3 *VmVecFixToFloat3 (fVector3 *d, vmsVector *s)
 	{d->p.x = f2fl (s->p.x); d->p.y = f2fl (s->p.y); d->p.z = f2fl (s->p.z); return d;}
 
 static inline vmsVector *VmVecFloatToFix (vmsVector *d, fVector *s)
-	{d->p.x = fl2f (s->p.x + 0.5f); d->p.y = fl2f (s->p.y + 0.5f); d->p.z = fl2f (s->p.z + 0.5f); return d;}
+	{d->p.x = fl2f (s->p.x); d->p.y = fl2f (s->p.y); d->p.z = fl2f (s->p.z); return d;}
 
 static inline fix VmVecDist(vmsVector *v0, vmsVector *v1) {vmsVector d; VmVecSub (&d, v0, v1); return VmVecMag (&d); }
 

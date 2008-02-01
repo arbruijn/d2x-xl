@@ -44,8 +44,6 @@
 #	endif
 #endif
 
-#define oof_free(_p)	if (_p) {D2_FREE (_p); (_p) = NULL;}
-
 static tOOF_vector vPos;
 static tOOF_vector vrLightPos;
 static tOOF_matrix mView;
@@ -124,7 +122,7 @@ if (CFRead (psz + lPrefix, l, 1, fp)) {
 	OOF_PrintLog ("      %s = '%s'\n", pszIdent, psz);
 	return psz;
 	}
-oof_free (psz);
+D2_FREE (psz);
 return NULL;
 }
 
@@ -434,8 +432,8 @@ return 1;
 
 int OOF_FreeRotAnim (tOOF_rotAnim *pa)
 {
-oof_free (pa->pFrames);
-oof_free (pa->pRemapTicks);
+D2_FREE (pa->pFrames);
+D2_FREE (pa->pRemapTicks);
 return 0;
 }
 
@@ -480,8 +478,8 @@ return 1;
 
 int OOF_FreePosAnim (tOOF_posAnim *pa)
 {
-oof_free (pa->pFrames);
-oof_free (pa->pRemapTicks);
+D2_FREE (pa->pFrames);
+D2_FREE (pa->pRemapTicks);
 return 0;
 }
 
@@ -512,8 +510,8 @@ return 1;
 
 int OOF_FreeSpecialPoint (tOOF_specialPoint *pVert)
 {
-oof_free (pVert->pszName);
-oof_free (pVert->pszProps);
+D2_FREE (pVert->pszName);
+D2_FREE (pVert->pszProps);
 return 0;
 }
 
@@ -548,7 +546,7 @@ int OOF_FreeSpecialList (tOOF_specialList *pList)
 if (pList->pVerts) {
 	for (i = 0; i < pList->nVerts; i++)
 		OOF_FreeSpecialPoint (pList->pVerts + i);
-	oof_free (pList->pVerts);
+	D2_FREE (pList->pVerts);
 	}
 return 0;
 }
@@ -586,7 +584,7 @@ return 1;
 
 int OOF_FreePointList (tOOF_pointList *pList)
 {
-oof_free (pList->pPoints);
+D2_FREE (pList->pPoints);
 return 0;
 }
 
@@ -618,7 +616,7 @@ return 1;
 
 int OOF_FreeAttachList (tOOF_attachList *pList)
 {
-oof_free (pList->pPoints);
+D2_FREE (pList->pPoints);
 return 0;
 }
 
@@ -693,8 +691,8 @@ return nList;
 
 int OOF_FreeBattery (tOOF_battery *pBatt)
 {
-oof_free (pBatt->pVertIndex);
-oof_free (pBatt->pTurretIndex);
+D2_FREE (pBatt->pVertIndex);
+D2_FREE (pBatt->pTurretIndex);
 return 0;
 }
 
@@ -725,7 +723,7 @@ if (pa->pBatts) {
 
 	for (i = 0; i < pa->nBatts; i++)
 		OOF_FreeBattery (pa->pBatts + i);
-	oof_free (pa->pBatts);
+	D2_FREE (pa->pBatts);
 	}
 return 0;
 }
@@ -781,7 +779,7 @@ return 1;
 int OOF_FreeFace (tOOF_face *pf)
 {
 #if !OOF_MEM_OPT
-oof_free (pf->pVerts);
+D2_FREE (pf->pVerts);
 #endif
 return 0;
 }
@@ -995,25 +993,25 @@ int OOF_FreeSubObject (tOOF_subObject *pso)
 	int	i;
 #endif
 
-oof_free (pso->pszName);
-oof_free (pso->pszProps);
-oof_free (pso->pvVerts);
-oof_free (pso->pvRotVerts);
-oof_free (pso->pVertColors);
-oof_free (pso->pvNormals);
-oof_free (pso->pfAlpha);
+D2_FREE (pso->pszName);
+D2_FREE (pso->pszProps);
+D2_FREE (pso->pvVerts);
+D2_FREE (pso->pvRotVerts);
+D2_FREE (pso->pVertColors);
+D2_FREE (pso->pvNormals);
+D2_FREE (pso->pfAlpha);
 OOF_FreePosAnim (&pso->posAnim);
 OOF_FreeRotAnim (&pso->rotAnim);
 if (pso->faces.pFaces) {
 #if OOF_MEM_OPT
-	oof_free (pso->faces.pFaceVerts);
+	D2_FREE (pso->faces.pFaceVerts);
 #else
 	for (i = 0; i < pso->faces.nFaces; i++)
 		OOF_FreeFace (pso->faces.pFaces + i);
 #endif
-	oof_free (pso->faces.pFaces);
+	D2_FREE (pso->faces.pFaces);
 	}
-oof_free (pso->edges.pEdges);
+D2_FREE (pso->edges.pEdges);
 return 0;
 }
 
@@ -1145,7 +1143,7 @@ int OOF_ReleaseTextures (void)
 for (h = 0; h < 2; h++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [h]; i; i--, po++)
 		if ((bmP = po->textures.pBitmaps))
-			for (j = po->textures.nTextures; j; j--, bmP++) {
+			for (j = po->textures.nBitmaps; j; j--, bmP++) {
 				UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
 				GrFreeBitmapData (bmP);
 				}
@@ -1157,16 +1155,14 @@ return 0;
 int OOF_ReloadTextures (void)
 {
 	tOOFObject *po;
-	int			bCustom, i, j;
+	int			bCustom, i;
 
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
-		if (po->textures.pszNames && po->textures.pBitmaps)
-			for (j = 0; j < po->textures.nTextures; j++)
-				if (!ReadModelTGA (po->textures.pszNames [j], po->textures.pBitmaps + j, po->nType, bCustom)) {
-					OOF_FreeObject (po);
-					return 0;
-					}
+		if (!ReadModelTextures (&po->textures, po->nType, bCustom)) {
+			OOF_FreeObject (po);
+			return 0;
+			}
 return 1;
 }
 
@@ -1174,17 +1170,7 @@ return 1;
 
 int OOF_FreeTextures (tOOFObject *po)
 {
-	int	i;
-
-if (po->textures.pszNames) {
-	for (i = 0; i < po->textures.nTextures; i++) {
-		oof_free (po->textures.pszNames [i]);
-		if (po->textures.pBitmaps)
-			GrFreeBitmapData (po->textures.pBitmaps + i);
-		}
-	oof_free (po->textures.pszNames);
-	oof_free (po->textures.pBitmaps);
-	}
+FreeModelTextures (&po->textures);
 return 0;
 }
 
@@ -1201,22 +1187,22 @@ int OOF_ReadTextures (CFILE *fp, tOOFObject *po, short nType, int bCustom)
 
 nIndent += 2;
 OOF_PrintLog ("reading textures\n");
-o.textures.nTextures = OOF_ReadInt (fp, "nTextures");
+o.textures.nBitmaps = OOF_ReadInt (fp, "nBitmaps");
 #if OOF_TEST_CUBE
-/*!!!*/o.textures.nTextures = 6;
+/*!!!*/o.textures.nBitmaps = 6;
 #endif
-if (!(o.textures.pszNames = (char **) D2_ALLOC (o.textures.nTextures * sizeof (char **)))) {
+if (!(o.textures.pszNames = (char **) D2_ALLOC (o.textures.nBitmaps * sizeof (char **)))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
-memset (o.textures.pszNames, 0, o.textures.nTextures * sizeof (char **));
-i = o.textures.nTextures * sizeof (grsBitmap);
+memset (o.textures.pszNames, 0, o.textures.nBitmaps * sizeof (char **));
+i = o.textures.nBitmaps * sizeof (grsBitmap);
 if (!(o.textures.pBitmaps = (grsBitmap *) D2_ALLOC (i))) {
 	nIndent -= 2;
 	return OOF_FreeTextures (&o);
 	}
 memset (o.textures.pBitmaps, 0, i);
-for (i = 0; i < o.textures.nTextures; i++) {
+for (i = 0; i < o.textures.nBitmaps; i++) {
 	if (bLogOOF)
 		sprintf (szId, "textures.pszId [%d]", i);
 #if OOF_TEST_CUBE
@@ -1228,7 +1214,7 @@ if (!i)	//cube.oof only contains one texture
 		}
 #if OOF_TEST_CUBE
 if (!i)
-	oof_free (o.textures.pszNames [i]);
+	D2_FREE (o.textures.pszNames [i]);
 o.textures.pszNames [i] = D2_ALLOC (20);
 sprintf (o.textures.pszNames [i], "%d.tga", i + 1);
 #endif
@@ -1261,7 +1247,7 @@ OOF_FreeTextures (po);
 if (po->pSubObjects) {
 	for (i = 0; i < po->nSubObjects; i++)
 		OOF_FreeSubObject (po->pSubObjects + i);
-	oof_free (po->pSubObjects);
+	D2_FREE (po->pSubObjects);
 	}
 OOF_FreePointList (&po->gunPoints);
 OOF_FreeAttachList (&po->attachPoints);
@@ -1269,7 +1255,7 @@ OOF_FreeSpecialList (&po->specialPoints);
 if (po->armament.pBatts) {
 	for (i = 0; i < po->armament.nBatts; i++)
 		OOF_FreeBattery (po->armament.pBatts + i);
-	oof_free (po->armament.pBatts);
+	D2_FREE (po->armament.pBatts);
 	}
 return 0;
 }
@@ -1529,7 +1515,7 @@ for (i = 0, pso = po->pSubObjects; i < po->nSubObjects; i++, pso++)
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bCustom)
+int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int bFlipV, int bCustom)
 {
 	CFILE				cf;
 	char				fileId [4];
@@ -1564,6 +1550,7 @@ if (o.nVersion >= 22) {
 	o.frameInfo.nFirstFrame = 0;
 	o.frameInfo.nLastFrame = 0;
 	}
+o.nModel = nModel;
 o.nType = nType;
 
 while (!CFEoF (&cf)) {

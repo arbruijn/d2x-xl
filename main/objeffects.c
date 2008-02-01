@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objsmoke.h"
 #include "objrender.h"
 #include "objeffects.h"
+#include "hiresmodels.h"
 
 #define fabsf(_f)	(float) fabs (_f)
 
@@ -832,7 +833,7 @@ int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob)
 ti = *tiP;
 ti.pp = NULL;
 ti.mtP = NULL;
-if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER)) {
+if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER) && !ASEModel (objP->rType.polyObjInfo.nModel)) {
 	if (!bSpectate) {
 		pt = gameData.render.thrusters + objP->id;
 		ti.pp = GetPathPoint (&pt->path);

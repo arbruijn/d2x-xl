@@ -32,21 +32,27 @@
 static char	szLine [1024];
 static char *pszToken;
 
+
+//------------------------------------------------------------------------------
+
+int ASE_Error (void)
+{
+return 0;
+}
+
 //------------------------------------------------------------------------------
 
 int ASE_ReloadTextures (void)
 {
 	tASEModel	*pm;
-	int			bCustom, i, j;
+	int			bCustom, i;
 
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
-		if (pm->pBitmaps)
-			for (j = 0; j < pm->nBitmaps; j++)
-				if (!(pm->pBitmaps [j].bmFlat || ReadModelTGA (pm->pBitmaps [j].szName, pm->pBitmaps + j, pm->nType, bCustom))) {
-					ASE_FreeModel (pm);
-					return 0;
-					}
+		if (!ReadModelTextures (&pm->textures, pm->nType, bCustom)) {
+			ASE_FreeModel (pm);
+			return 0;
+			}
 return 1;
 }
 
@@ -54,15 +60,7 @@ return 1;
 
 int ASE_FreeTextures (tASEModel *pm)
 {
-	int	i;
-
-if (pm->pBitmaps) {
-	for (i = 0; i < pm->nBitmaps; i++) {
-		if (pm->pBitmaps [i].bmFlat)
-			GrFreeBitmapData (pm->pBitmaps + i);
-		}
-	D2_FREE (pm->pBitmaps);
-	}
+FreeModelTextures (&pm->textures);
 return 0;
 }
 //------------------------------------------------------------------------------
@@ -95,6 +93,8 @@ memset (pm, 0, sizeof (*pm));
 static float FloatTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
+if (!(pszToken && *pszToken))
+	ASE_Error ();
 return pszToken ? (float) atof (pszToken) : 0;
 }
 
@@ -103,6 +103,8 @@ return pszToken ? (float) atof (pszToken) : 0;
 static int IntTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
+if (!(pszToken && *pszToken))
+	ASE_Error ();
 return pszToken ? atoi (pszToken) : 0;
 }
 
@@ -111,6 +113,8 @@ return pszToken ? atoi (pszToken) : 0;
 static char CharTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
+if (!(pszToken && *pszToken))
+	ASE_Error ();
 return pszToken ? *pszToken : '\0';
 }
 
@@ -119,6 +123,8 @@ return pszToken ? *pszToken : '\0';
 static char *StrTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
+if (!(pszToken && *pszToken))
+	ASE_Error ();
 return pszToken ? pszToken : "";
 }
 
@@ -137,16 +143,11 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int ASE_Error (void)
+static int ASE_ReadTexture (CFILE *cfp, tASEModel *pm, int nBitmap, int nType, int bCustom)
 {
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-static int ASE_ReadBitmap (CFILE *cfp, tASEModel *pm, grsBitmap *bmP, int nType, int bCustom)
-{
-	char	fn [FILENAME_LEN];
+	grsBitmap	*bmP = pm->textures.pBitmaps + nBitmap;
+	char			fn [FILENAME_LEN];
+	int			l;
 
 if (CharTok (" \t") != '{')
 	return ASE_Error ();
@@ -161,6 +162,10 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		CFSplitPath (StrTok (" \t\""), NULL, fn + 1, NULL);
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
 			return ASE_Error ();
+		l = (int) strlen (fn) + 1;
+		if (!(pm->textures.pszNames [nBitmap] = D2_ALLOC (l)))
+			return ASE_Error ();
+		memcpy (pm->textures.pszNames [nBitmap], fn, l);
 		}
 	}
 return ASE_Error ();
@@ -174,11 +179,11 @@ static int ASE_ReadMaterial (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 	grsBitmap	*bmP;
 
 i = IntTok (" \t");
-if ((i < 0) || (i >= pm->nBitmaps))
+if ((i < 0) || (i >= pm->textures.nBitmaps))
 	return ASE_Error ();
 if (CharTok (" \t") != '{')
 	return ASE_Error ();
-bmP = pm->pBitmaps + i;
+bmP = pm->textures.pBitmaps + i;
 bmP->bmFlat = 1;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
@@ -189,7 +194,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		bmP->bmAvgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
-		if (!ASE_ReadBitmap (cfp, pm, bmP, nType, bCustom))
+		if (!ASE_ReadTexture (cfp, pm, i, nType, bCustom))
 			return ASE_Error ();
 		}
 	}
@@ -206,12 +211,15 @@ if (!(pszToken = ASE_ReadLine (cfp)))
 	return ASE_Error ();
 if (strcmp (pszToken, "*MATERIAL_COUNT"))
 	return ASE_Error ();
-pm->nBitmaps = IntTok (" \t");
-if (!pm->nBitmaps)
+pm->textures.nBitmaps = IntTok (" \t");
+if (!pm->textures.nBitmaps)
 	return ASE_Error ();
-if (!(pm->pBitmaps = (grsBitmap *) D2_ALLOC (pm->nBitmaps * sizeof (grsBitmap))))
+if (!(pm->textures.pBitmaps = (grsBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (grsBitmap))))
 	return ASE_Error ();
-memset (pm->pBitmaps, 0, pm->nBitmaps * sizeof (grsBitmap));
+if (!(pm->textures.pszNames = (char **) D2_ALLOC (pm->textures.nBitmaps * sizeof (char *))))
+	return ASE_Error ();
+memset (pm->textures.pBitmaps, 0, pm->textures.nBitmaps * sizeof (grsBitmap));
+memset (pm->textures.pszNames, 0, pm->textures.nBitmaps * sizeof (char *));
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -266,7 +274,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 #if 0
 		for (i = 0; i < 3; i++)
 			pv->vertex.v [i] = FloatTok (" \t");
-#else
+#else	// need to rotate model for Descent
 		pv->vertex.p.x = FloatTok (" \t");
 		pv->vertex.p.z = -FloatTok (" \t");
 		pv->vertex.p.y = FloatTok (" \t");
@@ -331,8 +339,13 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if ((i < 0) || (i >= psm->nTexCoord))
 			return ASE_Error ();
 		pt = psm->pTexCoord + i;
+#if 0
 		for (i = 0; i < 2; i++)
 			pt->a [i] = FloatTok (" \t");
+#else
+			pt->v.u = FloatTok (" \t");
+			pt->v.v = -FloatTok (" \t");
+#endif
 		}	
 	}
 return ASE_Error ();
@@ -483,7 +496,7 @@ if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->pSubModels;
 pm->pSubModels = pml;
- psm = &pm->pSubModels->sm;
+psm = &pm->pSubModels->sm;
 psm->nId = pm->nSubModels++;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
@@ -494,7 +507,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nGunPoint = atoi (psm->szName + 5);
 		else {
 			psm->nGunPoint = -1;
-			psm->bGlow = strstr (psm->szName, "GLOW") != NULL;
+			psm->bThruster = strstr (psm->szName, "GLOW") != NULL;
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {
@@ -539,7 +552,7 @@ for (pml = pm->pSubModels; pml; pml = pml->pNextModel)
 
 //------------------------------------------------------------------------------
 
-int ASE_ReadFile (char *pszFile, tASEModel *pm, short nType, int bCustom)
+int ASE_ReadFile (char *pszFile, tASEModel *pm, short nModel, short nType, int bCustom)
 {
 	CFILE			cf;
 	int			nResult = 1;
@@ -548,6 +561,7 @@ if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 	return 0;
 	}
 memset (pm, 0, sizeof (*pm));
+pm->nModel = nModel;
 pm->nType = nType;
 while ((pszToken = ASE_ReadLine (&cf))) {
 	if (!strcmp (pszToken, "*MATERIAL_LIST")) {

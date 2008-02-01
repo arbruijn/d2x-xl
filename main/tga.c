@@ -778,6 +778,8 @@ int ReadModelTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom)
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
 	time_t		tBase, tShrunk;
 
+if (!pszFile)
+	return 1;
 CFSplitPath (pszFile + 1, NULL, fn, NULL);
 if (!bCustom && (nShrinkFactor > 1)) {
 	sprintf (fnBase, "%s.tga", fn);
@@ -808,6 +810,35 @@ if (gameStates.app.bCacheTextures && !bCustom && (nShrinkFactor > 1) &&
 	CFClose (&cf);
 	}
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
+{
+	int	i;
+
+for (i = 0; i < pt->nBitmaps; i++)
+	if (!ReadModelTGA (pt->pszNames [i], pt->pBitmaps + i, nType, bCustom))
+		return 0;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void FreeModelTextures (tModelTextures *pt)
+{
+	int	i;
+
+if (pt->pszNames) {
+	for (i = 0; i < pt->nBitmaps; i++) {
+		D2_FREE (pt->pszNames [i]);
+		if (pt->pBitmaps)
+			GrFreeBitmapData (pt->pBitmaps + i);
+		}
+	D2_FREE (pt->pszNames);
+	D2_FREE (pt->pBitmaps);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -1844,6 +1844,7 @@ typedef struct tG3ModelFace {
 
 typedef struct tG3SubModel {
 	vmsVector				vOffset;
+	vmsVector				vCenter;
 	fVector3					vMin;
 	fVector3					vMax;
 	tG3ModelFace			*pFaces;
@@ -1888,6 +1889,7 @@ typedef struct tG3Model {
 	short						iSubModel;
 	short						bHasTransparency;
 	short						bValid;
+	short						bRendered;
 	GLuint					vboDataHandle;
 	GLuint					vboIndexHandle;
 } tG3Model;

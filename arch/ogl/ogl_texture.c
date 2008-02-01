@@ -100,11 +100,42 @@ if (bmP->glTexture && (bmP->glTexture->handle == (unsigned int) -1)) {
 
 //------------------------------------------------------------------------------
 
+void UnlinkBitmap (grsBitmap *bmP)
+{
+	grsBitmap	*altBmP, *bmfP;
+	int			i, j;
+
+if (bmP->bmType == BM_TYPE_STD) {
+	if (BM_MASK (bmP))
+		UnlinkTexture (BM_MASK (bmP));
+	if (!BM_OVERRIDE (bmP))
+		UnlinkTexture (bmP);
+	else {
+		altBmP = BM_OVERRIDE (bmP);
+		if (BM_MASK (altBmP))
+			UnlinkTexture (BM_MASK (altBmP));
+		UnlinkTexture (altBmP);
+		if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
+			i = BM_FRAMECOUNT (altBmP);
+			if (i > 1) {
+				for (j = i, bmfP = BM_FRAMES (altBmP); j; j--, bmfP++) {
+					if (BM_MASK (bmfP))
+						UnlinkTexture (BM_MASK (bmfP));
+					UnlinkTexture (bmfP);
+					}
+				}
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void OglSmashTextureListInternal (void)
 {
-	int			h, i, j, k, bUnlink = 0;
+	grsBitmap	*bmP;
 	tOglTexture *t;
-	grsBitmap	*bmP, *altBmP, *bmfP;
+	int			i, j, bUnlink = 0;
 
 OglDestroyDrawBuffer ();
 DestroyCameras ();
@@ -130,33 +161,13 @@ for (i = OGL_TEXTURE_LIST_SIZE, t = oglTextureList; i; i--, t++) {
 	}
 #if 1
 if (bUnlink) {
-	for (k = 0; k < 2; k++) {
-		bmP = gameData.pig.tex.bitmaps [k];
-		for (i = gameData.pig.tex.nBitmaps [k] + (k ? 0 : gameData.hoard.nBitmaps); i; i--, bmP++) {
-			if (bmP->bmType == BM_TYPE_STD) {
-				if (BM_MASK (bmP))
-					UnlinkTexture (BM_MASK (bmP));
-				if (!BM_OVERRIDE (bmP))
-					UnlinkTexture (bmP);
-				else {
-					altBmP = BM_OVERRIDE (bmP);
-					if (BM_MASK (altBmP))
-						UnlinkTexture (BM_MASK (altBmP));
-					UnlinkTexture (altBmP);
-					if ((altBmP->bmType == BM_TYPE_ALT) && BM_FRAMES (altBmP)) {
-						h = BM_FRAMECOUNT (altBmP);
-						if (h > 1) {
-							for (j = h, bmfP = BM_FRAMES (altBmP); j; j--, bmfP++) {
-								if (BM_MASK (bmfP))
-									UnlinkTexture (BM_MASK (bmfP));
-								UnlinkTexture (bmfP);
-								}
-							}
-						}
-					}
-				}
-			}
+	for (i = 0; i < 2; i++) {
+		bmP = gameData.pig.tex.bitmaps [i];
+		for (j = gameData.pig.tex.nBitmaps [i] + (i ? 0 : gameData.hoard.nBitmaps); j; j--, bmP++)
+			UnlinkBitmap (bmP);
 		}
+	for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
+		UnlinkBitmap (gameData.pig.tex.addonBitmaps + i);
 	}
 oglTexListCur = 0;
 #endif

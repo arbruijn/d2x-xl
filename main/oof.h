@@ -95,12 +95,6 @@ typedef struct tOOF_chunkHeader {
 	int					nLength;
 } tOOF_chunkHeader;
 
-typedef struct tOOF_textures {
-	int					nTextures;
-	char					**pszNames;
-	grsBitmap			*pBitmaps;
-} tOOF_textures;
-
 typedef struct tOOF_faceVert {
 	int					nIndex;
 	float					fu;
@@ -277,7 +271,8 @@ typedef struct tOOF_subObject {
 } tOOF_subObject;
 
 typedef struct tOOFObject {
-	int					nType;
+	short					nModel;
+	short					nType;
 	int					nVersion;
 	int					nFlags;
 	float					fMaxRadius;
@@ -290,7 +285,7 @@ typedef struct tOOFObject {
 	tOOF_attachList	attachPoints;
 	tOOF_specialList	specialPoints;
 	tOOF_armament		armament;
-	tOOF_textures		textures;
+	tModelTextures		textures;
 	tOOF_frameInfo		frameInfo;
 	int					bCloaked;
 	int					nCloakPulse;
@@ -303,7 +298,7 @@ typedef float glMatrixf [4*4];
 
 //------------------------------------------------------------------------------
 
-int OOF_ReadFile (char *pszFile, tOOFObject *po, short nType, int bFlipV, int bCustom);
+int OOF_ReadFile (char *pszFile, tOOFObject *po, short nModel, short nType, int bFlipV, int bCustom);
 int OOF_FreeObject (tOOFObject *po);
 int OOF_Render (tObject *objP, tOOFObject *po, float *fLight, int bCloaked);
 float *OOF_MatVms2Gl (float *pDest, vmsMatrix *pSrc);
