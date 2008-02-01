@@ -267,9 +267,9 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		for (i = 0; i < 3; i++)
 			pv->vertex.v [i] = FloatTok (" \t");
 #else
-		pv->vertex.p.y = -FloatTok (" \t");
 		pv->vertex.p.x = FloatTok (" \t");
-		pv->vertex.p.z = FloatTok (" \t");
+		pv->vertex.p.z = -FloatTok (" \t");
+		pv->vertex.p.y = FloatTok (" \t");
 #endif
 		}	
 	}
@@ -485,8 +485,6 @@ pml->pNextModel = pm->pSubModels;
 pm->pSubModels = pml;
  psm = &pm->pSubModels->sm;
 psm->nId = pm->nSubModels++;
-if (pm->nSubModels == 17)
-	pm = pm;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;

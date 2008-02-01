@@ -271,10 +271,10 @@ if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "
 if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
 	replacementModels [i].pszHires = "cube.oof";
 #endif
-if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + nModel, i, bCustom)))
+if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + replacementModels [i].nModel, i, bCustom)))
 	return j;
 #if 0
-if ((j = LoadOOFModel (gameData.models.oofModels [bCustom] + nModel, i, bCustom)))
+if ((j = LoadOOFModel (gameData.models.oofModels [bCustom] + replacementModels [i].nModel, i, bCustom)))
 	return j;
 #endif
 return bCustom ? ++i : LoadLoresModel (i);
