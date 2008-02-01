@@ -367,6 +367,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		if (bReload) {
 			OglCacheLevelTextures ();
 			OOF_ReloadTextures ();
+			ASE_ReloadTextures ();
 			}
 		}
 	}

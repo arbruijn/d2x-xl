@@ -34,6 +34,39 @@ static char *pszToken;
 
 //------------------------------------------------------------------------------
 
+int ASE_ReloadTextures (void)
+{
+	tASEModel	*pm;
+	int			bCustom, i, j;
+
+for (bCustom = 0; bCustom < 2; bCustom++)
+	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
+		if (pm->pBitmaps)
+			for (j = 0; j < pm->nBitmaps; j++)
+				if (!(pm->pBitmaps [j].bmFlat || ReadModelTGA (pm->pBitmaps [j].szName, pm->pBitmaps + j, pm->nType, bCustom))) {
+					ASE_FreeModel (pm);
+					return 0;
+					}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int ASE_FreeTextures (tASEModel *pm)
+{
+	int	i;
+
+if (pm->pBitmaps) {
+	for (i = 0; i < pm->nBitmaps; i++) {
+		if (pm->pBitmaps [i].bmFlat)
+			GrFreeBitmapData (pm->pBitmaps + i);
+		}
+	D2_FREE (pm->pBitmaps);
+	}
+return 0;
+}
+//------------------------------------------------------------------------------
+
 void ASE_FreeSubModel (tASESubModel *psm)
 {
 D2_FREE (psm->pFaces);
@@ -53,7 +86,7 @@ for (pml = pm->pSubModels; pml; ) {
 	pml = pml->pNextModel;
 	D2_FREE (h);
 	}
-D2_FREE (pm->pBitmaps);
+ASE_FreeTextures (pm);
 memset (pm, 0, sizeof (*pm));
 }
 
@@ -204,7 +237,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		return 1;
 	if (!strcmp (pszToken, "*TM_POS")) {
 		for (i = 0; i < 3; i++)
-			psm->vOffset.v [i] = FloatTok (" \t");
+			psm->vOffset.v [i] = 0; //FloatTok (" \t");
 		}
 	}
 return ASE_Error ();
@@ -230,8 +263,14 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if ((i < 0) || (i >= psm->nVerts))
 			return ASE_Error ();
 		pv = psm->pVerts + i;
+#if 0
 		for (i = 0; i < 3; i++)
 			pv->vertex.v [i] = FloatTok (" \t");
+#else
+		pv->vertex.p.y = -FloatTok (" \t");
+		pv->vertex.p.x = FloatTok (" \t");
+		pv->vertex.p.z = FloatTok (" \t");
+#endif
 		}	
 	}
 return ASE_Error ();
@@ -258,9 +297,15 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			return ASE_Error ();
 		pf = psm->pFaces + i;
 		for (i = 0; i < 3; i++) {
-			strtok (NULL, " :");
-			pf->nVerts [i] = atoi (strtok (NULL, " :"));
+			strtok (NULL, " :\t");
+			pf->nVerts [i] = IntTok (" :\t");
 			}
+		do {
+			pszToken = StrTok (" :\t");
+			if (!*pszToken)
+				return ASE_Error ();
+			} while (strcmp (pszToken, "*MESH_MTLID"));
+		pf->nBitmap = IntTok (" ");
 		}
 	}
 return ASE_Error ();
@@ -505,6 +550,7 @@ if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 	return 0;
 	}
 memset (pm, 0, sizeof (*pm));
+pm->nType = nType;
 while ((pszToken = ASE_ReadLine (&cf))) {
 	if (!strcmp (pszToken, "*MATERIAL_LIST")) {
 		if (!(nResult = ASE_ReadMaterialList (&cf, pm, nType, bCustom)))
@@ -524,6 +570,7 @@ else {
 	}
 return nResult;
 }
+
 
 //------------------------------------------------------------------------------
 //eof

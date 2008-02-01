@@ -372,8 +372,10 @@ void FreeHiresModels (int bCustom)
 	int	i, j;
 
 for (i = 0; i < gameData.models.nHiresModels; i++)
-	for (j = bCustom; j < 2; j++)
+	for (j = bCustom; j < 2; j++) {
 		OOF_FreeObject (gameData.models.oofModels [j] + i);
+		ASE_FreeModel (gameData.models.aseModels [j] + i);
+		}
 }
 
 // ----------------------------------------------------------------------------

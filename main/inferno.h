@@ -1838,8 +1838,8 @@ typedef struct tG3ModelFace {
 	short						nBitmap;
 	short						nIndex;
 	short						nId;
-	char						bGlow;
-	char						bThruster;
+	ubyte						bGlow :1;
+	ubyte						bThruster :1;
 } tG3ModelFace;
 
 typedef struct tG3SubModel {
@@ -1852,6 +1852,9 @@ typedef struct tG3SubModel {
 	short						nIndex;
 	short						nBitmap;
 	ushort					nAngles;
+	ubyte						bGlow :1;
+	ubyte						bThruster :1;
+	char						nGunPoint;
 } tG3SubModel;
 
 typedef struct tG3VertNorm {

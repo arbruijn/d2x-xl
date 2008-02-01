@@ -963,7 +963,7 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm)
 	tG3ModelFace		*pmf = pm->pFaces;
 	tG3ModelVertex		*pmv = pm->pFaceVerts;
 	grsBitmap			*bmP;
-	int					i, nFaces, iFace, nIndex = 0, nVertIndex = 0;
+	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
 	int					bTextured;
 
 for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
@@ -972,17 +972,25 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->nParent = psa->nParent;
 	psm->pFaces = pmf;
 	psm->nFaces = nFaces = psa->nFaces;
+	psm->bGlow = psa->bGlow;
+	psm->bThruster = psa->bThruster;
+	psm->nGunPoint = psa->nGunPoint;
+	psm->nIndex = nIndex;
 	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
 	for (pfa = psa->pFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
 		pmf->nIndex = nIndex;
-		bmP = pa->pBitmaps + psa->nBitmap;
+#if 1
+		i = psa->nBitmap;
+#else
+		i = pfa->nBitmap;
+#endif
+		bmP = pa->pBitmaps + i;
 		bTextured = !bmP->bmFlat;
-		pmf->nBitmap = bTextured ? psa->nBitmap : -1;
+		pmf->nBitmap = bTextured ? i : -1;
 		pmf->nVerts = 3;
 		VmVecFloatToFix (&pmf->vNormal, (fVector *) &pfa->vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
-			nVertIndex = pfa->nVerts [i];
-			pmv->nIndex = nVertIndex;
+			h = pfa->nVerts [i];
 			if (pmv->bTextured = bTextured)
 				pmv->baseColor.red =
 				pmv->baseColor.green =
@@ -994,14 +1002,20 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 				}
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
-			pmv->normal = psa->pVerts [nVertIndex].normal;
-			pmv->vertex = psa->pVerts [nVertIndex].vertex;
-			G3SetSubModelMinMax (psm, &pmv->vertex);
+			pmv->normal = psa->pVerts [h].normal;
+			pmv->vertex = psa->pVerts [h].vertex;
 			if (psa->pTexCoord)
 				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
+			h += nVerts;
+			pm->pVerts [h] = pmv->vertex;
+			pm->pVertNorms [h] = pmv->normal;
+			pmv->nIndex = h;
+			pm->pFaceVerts [nIndex] = *pmv;
+			G3SetSubModelMinMax (psm, &pmv->vertex);
 			nIndex++;
 			}
 		}
+	nVerts += psa->nVerts;
 	}
 }
 
@@ -1308,6 +1322,8 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
 // set the translation
+if (psm->bThruster || (psm->nGunPoint >= 0))
+	return;
 vo = psm->vOffset;
 if (gameData.models.nScale)
 	VmVecScale (&vo, gameData.models.nScale);
