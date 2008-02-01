@@ -240,7 +240,7 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "\001%s.ase", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
-#ifdef _DEBUG
+#if 0//def _DEBUG
 while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
 	;
 #endif
@@ -271,10 +271,13 @@ if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "
 if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
 	replacementModels [i].pszHires = "cube.oof";
 #endif
-if (!((i = LoadASEModel (gameData.models.aseModels [bCustom] + nModel, i, bCustom)) || 
-	   (i = LoadOOFModel (gameData.models.oofModels [bCustom] + nModel, i, bCustom))))
-	return bCustom ? ++i : LoadLoresModel (i);
-return i;
+if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + nModel, i, bCustom)))
+	return j;
+#if 0
+if ((j = LoadOOFModel (gameData.models.oofModels [bCustom] + nModel, i, bCustom)))
+	return j;
+#endif
+return bCustom ? ++i : LoadLoresModel (i);
 }
 
 //------------------------------------------------------------------------------

@@ -959,39 +959,47 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm)
 	tASESubModelList	*pml = pa->pSubModels;
 	tASESubModel		*psa;
 	tASEFace				*pfa;
-	tG3SubModel			*psm = pm->pSubModels;
-	tG3ModelFace		*pf = pm->pFaces;
-	tG3ModelVertex		*pv = pm->pFaceVerts;
+	tG3SubModel			*psm;
+	tG3ModelFace		*pmf = pm->pFaces;
+	tG3ModelVertex		*pmv = pm->pFaceVerts;
 	grsBitmap			*bmP;
-	int					nFaces, iFace, nFaceIndex = 0, i, nVertIndex = 0;
+	int					i, nFaces, iFace, nIndex = 0, nVertIndex = 0;
 	int					bTextured;
 
-for (pml = pa->pSubModels; pml; pml = pml->pNextModel, psm++) {
+for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psa = &pml->sm;
+	psm = pm->pSubModels + psa->nId;
 	psm->nParent = psa->nParent;
-	for (pfa = psa->pFaces, nFaces = psa->nFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pf++) {
-		pf->nIndex = nFaceIndex++;
-		bmP = pa->pBitmaps + pf->nBitmap;
+	psm->pFaces = pmf;
+	psm->nFaces = nFaces = psa->nFaces;
+	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
+	for (pfa = psa->pFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
+		pmf->nIndex = nIndex;
+		bmP = pa->pBitmaps + psa->nBitmap;
 		bTextured = !bmP->bmFlat;
-		pf->nBitmap = bTextured ? psa->nBitmap : -1;
-		pf->nVerts = 3;
-		VmVecFloatToFix (&pf->vNormal, (fVector *) &pfa->vNormal);
-		for (i = 0; i < 3; i++) {
+		pmf->nBitmap = bTextured ? psa->nBitmap : -1;
+		pmf->nVerts = 3;
+		VmVecFloatToFix (&pmf->vNormal, (fVector *) &pfa->vNormal);
+		for (i = 0; i < 3; i++, pmv++) {
 			nVertIndex = pfa->nVerts [i];
-			pv->nIndex = nVertIndex;
-			if (pv->bTextured = bTextured)
-				pv->baseColor.red =
-				pv->baseColor.green =
-				pv->baseColor.blue = 1;
+			pmv->nIndex = nVertIndex;
+			if (pmv->bTextured = bTextured)
+				pmv->baseColor.red =
+				pmv->baseColor.green =
+				pmv->baseColor.blue = 1;
 			else {
-				pv->baseColor.red = (float) bmP->bmAvgRGB.red / 255.0f;
-				pv->baseColor.green = (float) bmP->bmAvgRGB.green / 255.0f;
-				pv->baseColor.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+				pmv->baseColor.red = (float) bmP->bmAvgRGB.red / 255.0f;
+				pmv->baseColor.green = (float) bmP->bmAvgRGB.green / 255.0f;
+				pmv->baseColor.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
 				}
-			pv->baseColor.alpha = 1;
-			pv->normal = psa->pVerts [nVertIndex].normal;
-			pv->vertex = psa->pVerts [nVertIndex].vertex;
-			pv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
+			pmv->baseColor.alpha = 1;
+			pmv->renderColor = pmv->baseColor;
+			pmv->normal = psa->pVerts [nVertIndex].normal;
+			pmv->vertex = psa->pVerts [nVertIndex].vertex;
+			G3SetSubModelMinMax (psm, &pmv->vertex);
+			if (psa->pTexCoord)
+				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
+			nIndex++;
 			}
 		}
 	}
@@ -1021,7 +1029,7 @@ G3GetASEModelItems (nModel, pa, pm);
 pm->pTextures = pa->pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1);
-#if 1
+#if 0
 G3SetGunPoints (objP, pm, nModel);
 #endif
 return -1;
