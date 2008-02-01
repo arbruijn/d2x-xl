@@ -240,11 +240,12 @@ if (replacementModels [i].pszHires)
 	sprintf (szModel [1], "\001%s.ase", replacementModels [i].pszHires);
 else
 	szModel [1][0] = '\0';
+#ifdef _DEBUG
+while (!ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom))
+	;
+#endif
 if (!(ASE_ReadFile (szModel [1] + !bCustom, pa, replacementModels [i].nType, bCustom) || 
-	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom))) {
-	while (!ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom))
-		;
-		}
+	   ASE_ReadFile (szModel [0] + !bCustom, pa, replacementModels [i].nType, bCustom)))
 	return 0;
 do {
 	CBP (!replacementModels [i].nModel);

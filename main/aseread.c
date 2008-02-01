@@ -104,25 +104,33 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
+int ASE_Error (void)
+{
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 static int ASE_ReadBitmap (CFILE *cfp, tASEModel *pm, grsBitmap *bmP, int nType, int bCustom)
 {
 	char	fn [FILENAME_LEN];
 
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 bmP->bmFlat = 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (bmP->bmTexBuf)	//duplicate
-			return 0;
-		CFSplitPath (StrTok (" \t\""), NULL, fn, NULL);
+			return ASE_Error ();
+		*fn = '\001';
+		CFSplitPath (StrTok (" \t\""), NULL, fn + 1, NULL);
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
-			return 0;
+			return ASE_Error ();
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -134,9 +142,9 @@ static int ASE_ReadMaterial (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 
 i = IntTok (" \t");
 if ((i < 0) || (i >= pm->nBitmaps))
-	return 0;
+	return ASE_Error ();
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 bmP = pm->pBitmaps + i;
 bmP->bmFlat = 1;
 while ((pszToken = ASE_ReadLine (cfp))) {
@@ -149,10 +157,10 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
 		if (!ASE_ReadBitmap (cfp, pm, bmP, nType, bCustom))
-			return 0;
+			return ASE_Error ();
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -160,26 +168,26 @@ return 0;
 static int ASE_ReadMaterialList (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
 {
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 if (!(pszToken = ASE_ReadLine (cfp)))
-	return 0;
+	return ASE_Error ();
 if (strcmp (pszToken, "*MATERIAL_COUNT"))
-	return 0;
+	return ASE_Error ();
 pm->nBitmaps = IntTok (" \t");
 if (!pm->nBitmaps)
-	return 0;
+	return ASE_Error ();
 if (!(pm->pBitmaps = (grsBitmap *) D2_ALLOC (pm->nBitmaps * sizeof (grsBitmap))))
-	return 0;
+	return ASE_Error ();
 memset (pm->pBitmaps, 0, pm->nBitmaps * sizeof (grsBitmap));
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERIAL")) {
 		if (!ASE_ReadMaterial (cfp, pm, nType, bCustom))
-			return 0;
+			return ASE_Error ();
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -189,7 +197,7 @@ static int ASE_ReadNode (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 	int	i;
 
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -210,7 +218,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			pml->sm.vOffset.v [i] = FloatTok (" \t");
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -221,57 +229,50 @@ static int ASE_ReadMeshVertexList (CFILE *cfp, tASEModel *pm, tASESubModelList *
 	int			i;
 
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_VERTEX")) {
-		pv = pml->sm.pVerts + IntTok (" \t");
+		if (!pml->sm.pVerts)
+			return ASE_Error ();
+		i = IntTok (" \t");
+		if ((i < 0) || (i >= pml->sm.nVerts))
+			return ASE_Error ();
+		pv = pml->sm.pVerts + i;
 		for (i = 0; i < 3; i++)
 			pv->vertex.v [i] = FloatTok (" \t");
 		}	
 	}
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-static int ASE_ReadMeshFace (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
-{
-	tASEFace	*pf;
-	int		i;
-
-if (CharTok (" \t") != '{')
-	return 0;
-pf = pml->sm.pFaces + IntTok (" \t");
-while ((pszToken = ASE_ReadLine (cfp))) {
-	if (*pszToken == '}')
-		return 1;
-	if (!strcmp (pszToken, "*MESH_FACE")) {
-		for (i = 0; i < 3; i++) {
-			strtok (NULL, " :");
-			pf->nVerts [i] = atoi (strtok (NULL, " :"));
-			}
-		}
-	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
 
 static int ASE_ReadMeshFaceList (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
+	tASEFace	*pf;
+	int		i;
+
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_FACE")) {
-		if (!ASE_ReadMeshFace (cfp, pm, pml))
-			return 0;
+		if (!pml->sm.pFaces)
+			return ASE_Error ();
+		i = IntTok (" \t");
+		if ((i < 0) || (i >= pml->sm.nFaces))
+			return ASE_Error ();
+		pf = pml->sm.pFaces + i;
+		for (i = 0; i < 3; i++) {
+			strtok (NULL, " :");
+			pf->nVerts [i] = atoi (strtok (NULL, " :"));
+			}
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -280,18 +281,24 @@ static int ASE_ReadVertexTexCoord (CFILE *cfp, tASEModel *pm, tASESubModelList *
 {
 	tTexCoord2f	*pt;
 	int			i;
+
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_TVERT")) {
-		pt = pml->sm.pTexCoord + IntTok (" \t");
+		if (!pml->sm.pTexCoord)
+			return ASE_Error ();
+		i = IntTok (" \t");
+		if ((i < 0) || (i >= pml->sm.nTexCoord))
+			return ASE_Error ();
+		pt = pml->sm.pTexCoord + i;
 		for (i = 0; i < 2; i++)
 			pt->a [i] = FloatTok (" \t");
 		}	
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -301,17 +308,22 @@ static int ASE_ReadFaceTexCoord (CFILE *cfp, tASEModel *pm, tASESubModelList *pm
 	tASEFace	*pf;
 	int		i;
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_TFACE")) {
-		pf = pml->sm.pFaces + IntTok (" \t");
+		if (!pml->sm.pFaces)
+			return ASE_Error ();
+		i = IntTok (" \t");
+		if ((i < 0) || (i >= pml->sm.nFaces))
+			return ASE_Error ();
+		pf = pml->sm.pFaces + i;
 		for (i = 0; i < 3; i++)
 			pf->nTexCoord [i] = IntTok (" \t");
 		}	
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -321,23 +333,34 @@ static int ASE_ReadMeshNormals (CFILE *cfp, tASEModel *pm, tASESubModelList *pml
 	tASEFace		*pf;
 	tASEVertex	*pv;
 	int			i;
+
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_FACENORMAL")) {
-		pf = pml->sm.pFaces + IntTok (" \t");
+		if (!pml->sm.pFaces)
+			return ASE_Error ();
+		i = IntTok (" \t");
+		if ((i < 0) || (i >= pml->sm.nFaces))
+			return ASE_Error ();
+		pf = pml->sm.pFaces + i;
 		for (i = 0; i < 3; i++)
 			pf->vNormal.v [i] = FloatTok (" \t");
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEXNORMAL")) {
-		pv = pml->sm.pVerts + IntTok (" \t");
+		if (!pml->sm.pVerts)
+			return ASE_Error ();
+		i = IntTok (" \t");
+		if ((i < 0) || (i >= pml->sm.nVerts))
+			return ASE_Error ();
+		pv = pml->sm.pVerts + i;
 		for (i = 0; i < 3; i++)
-			pv->vertex.v [i] = FloatTok (" \t");
+			pv->normal.v [i] = FloatTok (" \t");
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -345,57 +368,63 @@ return 0;
 static int ASE_ReadMesh (CFILE *cfp, tASEModel *pm, tASESubModelList *pml)
 {
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_NUMVERTEX")) {
+		if (pml->sm.pVerts)
+			return ASE_Error ();
 		pml->sm.nVerts = IntTok (" \t");
 		if (!pml->sm.nVerts)
-			return 0;
+			return ASE_Error ();
 		pm->nVerts += pml->sm.nVerts;
 		if (!(pml->sm.pVerts = (tASEVertex *) D2_ALLOC (pml->sm.nVerts * sizeof (tASEVertex))))
-			return 0;
+			return ASE_Error ();
 		memset (pml->sm.pVerts, 0, pml->sm.nVerts * sizeof (tASEVertex));
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMTVERTEX")) {
+		if (pml->sm.pTexCoord)
+			return ASE_Error ();
 		pml->sm.nTexCoord = IntTok (" \t");
 		if (pml->sm.nTexCoord) {
 			if (!(pml->sm.pTexCoord = (tTexCoord2f *) D2_ALLOC (pml->sm.nVerts * sizeof (tTexCoord2f))))
-				return 0;
+				return ASE_Error ();
 			}
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMFACES")) {
+		if (pml->sm.pFaces)
+			return ASE_Error ();
 		pml->sm.nFaces = IntTok (" \t");
 		if (!pml->sm.nFaces)
-			return 0;
+			return ASE_Error ();
 		pm->nFaces += pml->sm.nFaces;
 		if (!(pml->sm.pFaces = (tASEFace *) D2_ALLOC (pml->sm.nFaces * sizeof (tASEFace))))
-			return 0;
+			return ASE_Error ();
 		memset (pml->sm.pFaces, 0, pml->sm.nFaces * sizeof (tASEFace));
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEX_LIST")) {
 		if (!ASE_ReadMeshVertexList (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	else if (!strcmp (pszToken, "*MESH_FACE_LIST")) {
 		if (!ASE_ReadMeshFaceList (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	else if (!strcmp (pszToken, "*MESH_NORMALS")) {
 		if (!ASE_ReadMeshNormals (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	else if (!strcmp (pszToken, "*MESH_TVERTLIST")) {
 		if (!ASE_ReadVertexTexCoord (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	else if (!strcmp (pszToken, "*MESH_TFACELIST")) {
 		if (!ASE_ReadFaceTexCoord (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -405,29 +434,31 @@ static int ASE_ReadSubModel (CFILE *cfp, tASEModel *pm)
 	tASESubModelList	*pml;
 
 if (CharTok (" \t") != '{')
-	return 0;
+	return ASE_Error ();
 if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
-	return 0;
+	return ASE_Error ();
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->pSubModels;
 pm->pSubModels = pml;
 pml->sm.nId = pm->nSubModels++;
+if (pm->nSubModels == 17)
+	pm = pm;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*NODE_TM")) {
 		if (!ASE_ReadNode (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	else if (!strcmp (pszToken, "*MESH")) {
 		if (!ASE_ReadMesh (cfp, pm, pml))
-			return 0;
+			return ASE_Error ();
 		}
 	else if (!strcmp (pszToken, "*MATERIAL_REF")) {
 		pml->sm.nBitmap = IntTok (" \t");
 		}
 	}
-return 0;
+return ASE_Error ();
 }
 
 //------------------------------------------------------------------------------
@@ -460,7 +491,7 @@ int ASE_ReadFile (char *pszFile, tASEModel *pm, short nType, int bCustom)
 	int			nResult = 1;
 
 if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
-	return 0;
+	return ASE_Error ();
 	}
 memset (pm, 0, sizeof (*pm));
 while ((pszToken = ASE_ReadLine (&cf))) {
@@ -474,9 +505,13 @@ while ((pszToken = ASE_ReadLine (&cf))) {
 		}
 	}
 CFClose (&cf);
-ASE_LinkSubModels (pm);
-gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [bCustom]] = 1;
-return 1;
+if (!nResult)
+	ASE_FreeModel (pm);
+else {
+	ASE_LinkSubModels (pm);
+	gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [bCustom]] = 1;
+	}
+return nResult;
 }
 
 //------------------------------------------------------------------------------
