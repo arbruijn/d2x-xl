@@ -27,7 +27,7 @@ gamecntl.c  gamefont.c  gamemine.c  gamepal.c   gamerend.c  \
 gamesave.c  gameseg.c   loadgame.c  gauges.c    hostage.c   \
 hud.c       inferno.c   kconfig.c   kludge.c    laser.c     \
 light.c		menu.c      mglobal.c   mission.c   morph.c     \
-movie.c     particles.c oof.c 		sphere.c 	input.c		\
+movie.c     particles.c aseread.c 	sphere.c 	input.c		\
 newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
 piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
 render.c    robot.c     scores.c    segment.c   slew.c      \
@@ -40,7 +40,8 @@ tga.c			glare.c		radar.c		renderlib.c	transprender.c \
 fastrender.c	renderthreads.c		flightpath.c \
 rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
 omega.c trackobject.c	monsterball.c	slowmotion.c	dropobject.c	\
-entropy.c	dynlight.c	headlight.c	marker.c	soundthreads.c
+entropy.c	dynlight.c	headlight.c	marker.c	soundthreads.c \
+oofread.c	oofrender.c	oofmath.c
 
 EXTRA_libmain_a_SOURCES = \
 highscores.c multi.c multibot.c network.c netmisc.c \
@@ -51,7 +52,7 @@ descent.cfg inferno.ini \
 link.bat \
 ai.h aistruct.h automap.h bm.h bmread.h cntrlcen.h collide.h \
 config.h controls.h credits.h desc_id.h desw.h digi.h effects.h \
-endlevel.h escort.h \
+endlevel.h escort.h oof.h ase.h \
 fireball.h fuelcen.h fvi.h fvi_a.h game.h gamefont.h gamemine.h \
 gamepal.h gamesave.h gameseg.h loadgame.h gamestat.h gauges.h \
 hostage.h hudmsg.h inferno.h joydefs.h kconfig.h \

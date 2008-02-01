@@ -1369,7 +1369,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
 // set the translation
-#ifndef _DEBUG
+#if 1//ndef _DEBUG
 if (psm->nGunPoint >= 0)
 	return;
 #endif

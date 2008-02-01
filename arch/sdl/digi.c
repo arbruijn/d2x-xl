@@ -365,6 +365,8 @@ else
 void DigiFadeoutMusic (void)
 {
 #if USE_SDL_MIXER
+if (!gameStates.sound.digi.bInitialized) 
+	return;
 if (gameOpts->sound.bUseSDLMixer) {
 	while (!Mix_FadeOutMusic (250) && Mix_PlayingMusic ())
 		SDL_Delay (50);		
@@ -563,6 +565,8 @@ return ssP->nLength = j;
 void Mix_VolPan (int nChannel, int xVolume, int xPan)
 {
 #if USE_SDL_MIXER
+if (!gameStates.sound.digi.bInitialized) 
+	return;
 if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
 	if (xVolume) {
 		xVolume = (FixMul (xVolume, gameStates.sound.digi.nVolume) + (SOUND_MAX_VOLUME / MIX_MAX_VOLUME) / 2) / (SOUND_MAX_VOLUME / MIX_MAX_VOLUME);
@@ -926,7 +930,7 @@ if (gameOpts->sound.bUseOpenAL) {
 	}
 #endif
 #if USE_SDL_MIXER
-if (gameOpts->sound.bUseSDLMixer) {
+if (gameStates.sound.digi.bInitialized && gameOpts->sound.bUseSDLMixer) {
 	if (ssP->mixChunkP) {
 		Mix_HaltChannel (nChannel);
 		Mix_FreeChunk (ssP->mixChunkP);
