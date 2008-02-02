@@ -56,7 +56,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int G3GetOOFModelItems (int nModel, tOOFObject *po, tG3Model *pm)
+int G3GetOOFModelItems (int nModel, tOOFObject *po, tG3Model *pm, float fScale)
 {
 	tOOF_subObject	*pso;
 	tOOF_face		*pof;
@@ -71,9 +71,9 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->nParent = pso->nParent;
 	if (psm->nParent < 0)
 		pm->iSubModel = (short) (psm - pm->pSubModels);
-	psm->vOffset.p.x = fl2f (pso->vOffset.x);
-	psm->vOffset.p.y = fl2f (pso->vOffset.y);
-	psm->vOffset.p.z = fl2f (pso->vOffset.z);
+	psm->vOffset.p.x = fl2f (pso->vOffset.x * fScale);
+	psm->vOffset.p.y = fl2f (pso->vOffset.y * fScale);
+	psm->vOffset.p.z = fl2f (pso->vOffset.z * fScale);
 	psm->nAngles = 0;
 	psm->nGunPoint = -1;
 	psm->bThruster = 0;
@@ -109,8 +109,8 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 			pmv->texCoord.v.u = pfv->fu;
 			pmv->texCoord.v.v = pfv->fv;
 			pmv->normal = vNormal;
-			memcpy (pm->pVerts + h, pso->pvVerts + h, sizeof (fVector3));
-			memcpy (&pmv->vertex, pso->pvVerts + h, sizeof (fVector3));
+			VmVecScalef ((fVector *) (pm->pVerts + h), (fVector *) (pso->pvVerts + h), fScale);
+			pmv->vertex = pm->pVerts [h];
 			G3SetSubModelMinMax (psm, &pmv->vertex);
 			*pvn = vNormal;
 			if ((pmv->bTextured = pof->bTextured))
@@ -149,7 +149,7 @@ pm = gameData.models.g3Models [1] + nModel;
 G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))
 	return 0;
-G3GetOOFModelItems (nModel, po, pm);
+G3GetOOFModelItems (nModel, po, pm, ((nModel == 108) || (nModel == 110)) ? 0.805f : 1.0f);
 pm->pTextures = po->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 1);

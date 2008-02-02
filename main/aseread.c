@@ -520,7 +520,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nGunPoint = atoi (psm->szName + 5);
 		else {
 			psm->nGunPoint = -1;
-			psm->bThruster = strstr (psm->szName, "GLOW") != NULL;
+			psm->bThruster = (strstr (psm->szName, "GLOW") != NULL) || (strstr (psm->szName, "THRUSTER") != NULL);
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {

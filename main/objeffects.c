@@ -999,7 +999,7 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		float		c = 1/*0.7f + 0.03f * fPulse*/, dotFlame, dotThruster;
 
 	ti.fLength *= 4 * ti.fSize;
-	ti.fSize *= 1.5f;
+	ti.fSize *= ((objP->nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1
 	if (!ti.mtP)
 		VmVecFixToFloat (&fVecf, ti.pp ? &ti.pp->mOrient.fVec : &objP->position.mOrient.fVec);
