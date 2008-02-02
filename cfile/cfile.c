@@ -914,8 +914,7 @@ if (*szDestName) {
 		strcpy (fn, szDestName);
 	}
 sprintf (szDest, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", fn);
-fp = fopen (szDest, "wb");
-if (!fp) {
+if (!(fp = fopen (szDest, "wb"))) {
 	CFClose (&cf);
 	return 0;
 	}

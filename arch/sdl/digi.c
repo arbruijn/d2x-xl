@@ -367,6 +367,7 @@ else
 void DigiFadeoutMusic (void)
 {
 #if USE_SDL_MIXER
+extern Mix_Music *mixMusic;
 if (!gameStates.sound.digi.bAvailable) 
 	return;
 if (gameOpts->sound.bUseSDLMixer) {
@@ -374,6 +375,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 		SDL_Delay (50);		
 	while (Mix_PlayingMusic ())
 		SDL_Delay (1);		
+	Mix_HaltMusic ();
+	Mix_FreeMusic (mixMusic);
+	mixMusic = NULL;
 	}
 #endif
 }

@@ -499,7 +499,7 @@ if (bFading) {
 	tBitmapIndex * nAltTextures = NULL;
 
 	if (objP->rType.polyObjInfo.nAltTextures > 0)
-		nAltTextures = MultiPlayerTextures [objP->rType.polyObjInfo.nAltTextures-1];
+		nAltTextures = mpTextureIndex [objP->rType.polyObjInfo.nAltTextures-1];
 	xNewLight = FixMul (light, xLightScale);
 	xSaveGlow = glow [0];
 	glow [0] = FixMul (glow [0], xLightScale);
@@ -651,7 +651,7 @@ else {
 	else {
 		tBitmapIndex *bmiAltTex = NULL;
 		if (objP->rType.polyObjInfo.nAltTextures > 0)
-			bmiAltTex = MultiPlayerTextures [objP->rType.polyObjInfo.nAltTextures-1];
+			bmiAltTex = mpTextureIndex [objP->rType.polyObjInfo.nAltTextures-1];
 
 		//	Snipers get bright when they fire.
 		if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0/8) {

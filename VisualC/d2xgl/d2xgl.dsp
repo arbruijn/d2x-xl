@@ -179,6 +179,14 @@ SOURCE=..\..\2d\tmerge.c
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\3d\ase2model.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\3d\buildmodel.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\3d\clipper.c
 # End Source File
 # Begin Source File
@@ -212,6 +220,14 @@ SOURCE=..\..\3d\intersect.c
 # Begin Source File
 
 SOURCE=..\..\3d\matrix.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\3d\oof2model.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\3d\pof2model.c
 # End Source File
 # Begin Source File
 

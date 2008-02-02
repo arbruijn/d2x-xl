@@ -60,7 +60,7 @@ void DigiStopCurrentSong ()
 if (gameData.songs.bPlaying) {
 	DigiFadeoutMusic ();
 	h = midiVolume;	// preserve it for another song being started
-	DigiSetMidiVolume(0);
+	DigiSetMidiVolume (0);
 	midiVolume = h;
 #if defined (_WIN32)
 #	if USE_SDL_MIXER

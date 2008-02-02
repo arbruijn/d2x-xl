@@ -134,7 +134,7 @@ tNetgameInfo netGame;
 
 tAllNetPlayersInfo netPlayers;
 
-tBitmapIndex MultiPlayerTextures [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
+tBitmapIndex mpTextureIndex [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
 typedef struct tNetPlayerStats {
 	ubyte  messageType;
@@ -1843,20 +1843,23 @@ if (objP->nType == OBJ_GHOST)
 
 void MultiResetObjectTexture (tObject *objP)
 {
-	int id, i;
+	int				id, i, j;
+	tPolyModel		*po = gameData.models.polyModels + objP->rType.polyObjInfo.nModel;
+	tBitmapIndex	*bmiP;
 
-if (gameData.app.nGameMode & GM_TEAM)
+if (IsTeamGame)
 	id = GetTeam (objP->id);
 else
 	id = objP->id;
-if (id == 0)
+if (!id)
 	objP->rType.polyObjInfo.nAltTextures = 0;
 else {
-	Assert (N_PLAYER_SHIP_TEXTURES == gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nTextures);
-	for (i = 0;i<N_PLAYER_SHIP_TEXTURES;i++)
-		MultiPlayerTextures [id-1][i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.models.polyModels [objP->rType.polyObjInfo.nModel].nFirstTexture+i]];
-	MultiPlayerTextures [id-1][4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (id-1)*2]];
-	MultiPlayerTextures [id-1][5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap+ (id-1)*2+1]];
+	//Assert (N_PLAYER_SHIP_TEXTURES == po->nTextures);
+	bmiP = mpTextureIndex [--id];
+	for (i = 0, j = po->nFirstTexture; i < N_PLAYER_SHIP_TEXTURES; i++, j++)
+		bmiP [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [j]];
+	bmiP [4] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + id * 2]];
+	bmiP [5] = gameData.pig.tex.objBmIndex [gameData.pig.tex.pObjBmIndex [gameData.pig.tex.nFirstMultiBitmap + id * 2 + 1]];
 	objP->rType.polyObjInfo.nAltTextures = id;
 	}
 }
