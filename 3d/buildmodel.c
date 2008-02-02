@@ -446,7 +446,7 @@ do {
 		gameData.models.offsets [nModel].p.y = (phb [0].vMin.p.y + phb [0].vMax.p.y) / -2;
 		gameData.models.offsets [nModel].p.z = (phb [0].vMin.p.z + phb [0].vMax.p.z) / -2;
 		}
-	} while (0 && G3ShiftModel (objP, nModel, bHires));
+	} while (G3ShiftModel (objP, nModel, bHires));
 dx = (phb [0].vMax.p.x - phb [0].vMin.p.x);
 dy = (phb [0].vMax.p.y - phb [0].vMin.p.y);
 dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
