@@ -359,12 +359,10 @@ void G3SubModelSize (tObject *objP, int nModel, int nSubModel, vmsVector *vOffse
 	vmsVector	vMin, vMax, vOffs;
 	int			i, j;
 
-if (phb) {
-	if (vOffset)
-		VmVecAdd (&vOffs, vOffset, &psm->vOffset);	//compute absolute offset (i.e. including offsets of all parent submodels)
-	else
-		vOffs = psm->vOffset;
-	}
+if (vOffset)
+	VmVecAdd (&vOffs, vOffset, &psm->vOffset);	//compute absolute offset (i.e. including offsets of all parent submodels)
+else
+	vOffs = psm->vOffset;
 if (phb)
 	phb->vOffset = vOffs;
 vMin.p.x = fl2f (psm->vMin.p.x);
@@ -409,35 +407,35 @@ do {
 		G3SubModelSize (objP, nModel, 0, NULL, bHires);
 	// determine min and max size
 	for (i = j = 1, psm = pm->pSubModels; i <= nSubModels; i++, psm++) {
-		if (psm->bThruster || (psm->nGunPoint >= 0))
-			continue;
-		phb [j].vMin.p.x = fl2f (psm->vMin.p.x);
-		phb [j].vMin.p.y = fl2f (psm->vMin.p.y);
-		phb [j].vMin.p.z = fl2f (psm->vMin.p.z);
-		phb [j].vMax.p.x = fl2f (psm->vMax.p.x);
-		phb [j].vMax.p.y = fl2f (psm->vMax.p.y);
-		phb [j].vMax.p.z = fl2f (psm->vMax.p.z);
-		dx = (phb [j].vMax.p.x - phb [j].vMin.p.x) / 2;
-		dy = (phb [j].vMax.p.y - phb [j].vMin.p.y) / 2;
-		dz = (phb [j].vMax.p.z - phb [j].vMin.p.z) / 2;
-		phb [j].vSize.p.x = (fix) dx;
-		phb [j].vSize.p.y = (fix) dy;
-		phb [j].vSize.p.z = (fix) dz;
-		VmVecAdd (&hv, &phb [j].vMin, &phb [j].vOffset);
-		if (phb [0].vMin.p.x > hv.p.x)
-			phb [0].vMin.p.x = hv.p.x;
-		if (phb [0].vMin.p.y > hv.p.y)
-			phb [0].vMin.p.y = hv.p.y;
-		if (phb [0].vMin.p.z > hv.p.z)
-			phb [0].vMin.p.z = hv.p.z;
-		VmVecAdd (&hv, &phb [j].vMax, &phb [j].vOffset);
-		if (phb [0].vMax.p.x < hv.p.x)
-			phb [0].vMax.p.x = hv.p.x;
-		if (phb [0].vMax.p.y < hv.p.y)
-			phb [0].vMax.p.y = hv.p.y;
-		if (phb [0].vMax.p.z < hv.p.z)
-			phb [0].vMax.p.z = hv.p.z;
-		j++;
+		if (!psm->bThruster & (psm->nGunPoint < 0)) {
+			phb [j].vMin.p.x = fl2f (psm->vMin.p.x);
+			phb [j].vMin.p.y = fl2f (psm->vMin.p.y);
+			phb [j].vMin.p.z = fl2f (psm->vMin.p.z);
+			phb [j].vMax.p.x = fl2f (psm->vMax.p.x);
+			phb [j].vMax.p.y = fl2f (psm->vMax.p.y);
+			phb [j].vMax.p.z = fl2f (psm->vMax.p.z);
+			dx = (phb [j].vMax.p.x - phb [j].vMin.p.x) / 2;
+			dy = (phb [j].vMax.p.y - phb [j].vMin.p.y) / 2;
+			dz = (phb [j].vMax.p.z - phb [j].vMin.p.z) / 2;
+			phb [j].vSize.p.x = (fix) dx;
+			phb [j].vSize.p.y = (fix) dy;
+			phb [j].vSize.p.z = (fix) dz;
+			VmVecAdd (&hv, &phb [j].vMin, &phb [j].vOffset);
+			if (phb [0].vMin.p.x > hv.p.x)
+				phb [0].vMin.p.x = hv.p.x;
+			if (phb [0].vMin.p.y > hv.p.y)
+				phb [0].vMin.p.y = hv.p.y;
+			if (phb [0].vMin.p.z > hv.p.z)
+				phb [0].vMin.p.z = hv.p.z;
+			VmVecAdd (&hv, &phb [j].vMax, &phb [j].vOffset);
+			if (phb [0].vMax.p.x < hv.p.x)
+				phb [0].vMax.p.x = hv.p.x;
+			if (phb [0].vMax.p.y < hv.p.y)
+				phb [0].vMax.p.y = hv.p.y;
+			if (phb [0].vMax.p.z < hv.p.z)
+				phb [0].vMax.p.z = hv.p.z;
+			j++;
+			}
 		}
 	if (IsMultiGame)
 		gameData.models.offsets [nModel].p.x =
@@ -448,7 +446,7 @@ do {
 		gameData.models.offsets [nModel].p.y = (phb [0].vMin.p.y + phb [0].vMax.p.y) / -2;
 		gameData.models.offsets [nModel].p.z = (phb [0].vMin.p.z + phb [0].vMax.p.z) / -2;
 		}
-	} while (G3ShiftModel (objP, nModel, bHires));
+	} while (0 && G3ShiftModel (objP, nModel, bHires));
 dx = (phb [0].vMax.p.x - phb [0].vMin.p.x);
 dy = (phb [0].vMax.p.y - phb [0].vMin.p.y);
 dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
@@ -617,13 +615,16 @@ int G3ModelMinMax (int nModel, tHitbox *phb)
 if (!((pm = gameData.models.g3Models [1] + nModel) || 
 	   (pm = gameData.models.g3Models [0] + nModel)))
 	return 0;
-for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++, phb++) {
-	phb->vMin.p.x = fl2f (psm->vMin.p.x);
-	phb->vMin.p.y = fl2f (psm->vMin.p.y);
-	phb->vMin.p.z = fl2f (psm->vMin.p.z);
-	phb->vMax.p.x = fl2f (psm->vMax.p.x);
-	phb->vMax.p.y = fl2f (psm->vMax.p.y);
-	phb->vMax.p.z = fl2f (psm->vMax.p.z);
+for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) {
+	if (!psm->bThruster && (psm->nGunPoint < 0)) {
+		phb->vMin.p.x = fl2f (psm->vMin.p.x);
+		phb->vMin.p.y = fl2f (psm->vMin.p.y);
+		phb->vMin.p.z = fl2f (psm->vMin.p.z);
+		phb->vMax.p.x = fl2f (psm->vMax.p.x);
+		phb->vMax.p.y = fl2f (psm->vMax.p.y);
+		phb->vMax.p.z = fl2f (psm->vMax.p.z);
+		phb++;
+		}
 	}
 return pm->nSubModels;
 }
