@@ -216,7 +216,7 @@ static void _CDECL_ AudioMixCallback (void *userdata, Uint8 *stream, int len)
 	Uint8 *streamend = stream + len;
 	tSoundSlot *sl;
 
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable)
 	return;
 memset (stream, 0x80, len); // fix "static" sound bug on Mac OS X
 for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
@@ -328,7 +328,8 @@ else
 	SDL_PauseAudio (0);
 	}
 //atexit (DigiClose);
-gameStates.sound.digi.bInitialized = 1;
+gameStates.sound.digi.bInitialized =
+gameStates.sound.digi.bAvailable = 1;
 return 0;
 }
 
@@ -338,7 +339,8 @@ void _CDECL_ DigiClose (void)
 {
 if (!gameStates.sound.digi.bInitialized) 
 	return;
-gameStates.sound.digi.bInitialized = 0;
+gameStates.sound.digi.bInitialized =
+gameStates.sound.digi.bAvailable = 0;
 #if defined (__MINGW32__) || defined (__macosx__)
 SDL_Delay (500); // CloseAudio hangs if it's called too soon after opening?
 #endif
@@ -365,7 +367,7 @@ else
 void DigiFadeoutMusic (void)
 {
 #if USE_SDL_MIXER
-if (!gameStates.sound.digi.bInitialized) 
+if (!gameStates.sound.digi.bAvailable) 
 	return;
 if (gameOpts->sound.bUseSDLMixer) {
 	while (!Mix_FadeOutMusic (250) && Mix_PlayingMusic ())
@@ -380,6 +382,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 void DigiExit (void)
 {
+gameStates.sound.digi.bAvailable = 0;
 DigiFadeoutMusic ();
 DigiStopAll ();
 SongsStopAll ();
@@ -565,7 +568,7 @@ return ssP->nLength = j;
 void Mix_VolPan (int nChannel, int xVolume, int xPan)
 {
 #if USE_SDL_MIXER
-if (!gameStates.sound.digi.bInitialized) 
+if (!gameStates.sound.digi.bAvailable) 
 	return;
 if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
 	if (xVolume) {
@@ -646,7 +649,7 @@ int DigiStartSound (short nSound, fix xVolume, int xPan, int bLooping,
 
 if (!gameStates.app.bUseSound)
 	return -1;
-if (!gameStates.sound.digi.bInitialized) 
+if (!gameStates.sound.digi.bAvailable) 
 	return -1;
 if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	if (nSound < 0)
@@ -787,7 +790,7 @@ int DigiFindChannel (short nSound)
 {
 if (!gameStates.app.bUseSound)
 	return -1;
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable) 
 	return -1;
 if (nSound < 0)
 	return -1;
@@ -812,7 +815,7 @@ else if (dvolume < 0)
 	gameStates.sound.digi.nVolume = 0;
 else
 	gameStates.sound.digi.nVolume = dvolume;
-if (!gameStates.sound.digi.bInitialized) 
+if (!gameStates.sound.digi.bAvailable) 
 	return;
 DigiSyncSounds ();
 }
@@ -854,7 +857,7 @@ if (gameStates.sound.digi.nMaxChannels < 1)
 	gameStates.sound.digi.nMaxChannels = 1;
 if (gameStates.sound.digi.nMaxChannels > MAX_SOUND_SLOTS) 
 	gameStates.sound.digi.nMaxChannels = MAX_SOUND_SLOTS;
-if (!gameStates.sound.digi.bInitialized) 
+if (!gameStates.sound.digi.bAvailable) 
 	return;
 DigiStopAllChannels ();
 }
@@ -871,7 +874,7 @@ return gameStates.sound.digi.nMaxChannels;
 
 int DigiIsChannelPlaying (int nChannel)
 {
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable) 
 	return 0;
 return soundSlots[nChannel].bPlaying;
 }
@@ -882,7 +885,7 @@ void DigiSetChannelVolume (int nChannel, int xVolume)
 {
 if (!gameStates.app.bUseSound)
 	return;
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable) 
 	return;
 if (!soundSlots [nChannel].bPlaying)
 	return;
@@ -899,7 +902,7 @@ void DigiSetChannelPan (int nChannel, int xPan)
 {
 if (!gameStates.app.bUseSound)
 	return;
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable) 
 	return;
 if (!soundSlots [nChannel].bPlaying)
 	return;
@@ -930,7 +933,7 @@ if (gameOpts->sound.bUseOpenAL) {
 	}
 #endif
 #if USE_SDL_MIXER
-if (gameStates.sound.digi.bInitialized && gameOpts->sound.bUseSDLMixer) {
+if (gameStates.sound.digi.bAvailable && gameOpts->sound.bUseSDLMixer) {
 	if (ssP->mixChunkP) {
 		Mix_HaltChannel (nChannel);
 		Mix_FreeChunk (ssP->mixChunkP);
@@ -952,7 +955,7 @@ void DigiEndSound (int nChannel)
 {
 if (!gameStates.app.bUseSound)
 	return;
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable)
 	return;
 if (!soundSlots[nChannel].bPlaying)
 	return;
@@ -1006,7 +1009,7 @@ void DigiDebug ()
 	int i;
 	int n_voices = 0;
 
-if (!gameStates.sound.digi.bInitialized)
+if (!gameStates.sound.digi.bAvailable)
 	return;
 for (i = 0; i < gameStates.sound.digi.nMaxChannels; i++) {
 	if (DigiIsChannelPlaying (i))

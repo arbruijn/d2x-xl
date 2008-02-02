@@ -882,6 +882,7 @@ typedef struct tRenderStates {
 
 typedef struct tDigiStates {
 	int bInitialized;
+	int bAvailable;
 	int bSoundsInitialized;
 	int bLoMem;
 	int nMaxChannels;
