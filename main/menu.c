@@ -4668,7 +4668,10 @@ else {
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
 			DigiStopAllChannels ();
-			PlayLevelSong (gameData.missions.nCurrentLevel, gameStates.app.bGameRunning);
+			if (gameStates.app.bGameRunning)
+				PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, gameStates.app.bGameRunning);
+			else
+				SongsPlaySong (SONG_TITLE, 1);
 			}
 		}
 	}

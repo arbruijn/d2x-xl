@@ -44,6 +44,7 @@ int TGAInterpolate (grsBitmap *bmP, int nScale);
 int TGAMakeSquare (grsBitmap *bmP);
 int ReadModelTGA (char *pszFile, grsBitmap *bmP, short nType, int bCustom);
 int ReadModelTextures (tModelTextures *pt, int nType, int bCustom);
+void ReleaseModelTextures (tModelTextures *pt);
 void FreeModelTextures (tModelTextures *pt);
 
 #endif //_TGA_H

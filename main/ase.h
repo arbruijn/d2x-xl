@@ -50,6 +50,7 @@ typedef struct tASEModel {
 void ASE_FreeModel (tASEModel *pm);
 int ASE_ReadFile (char *pszFile, tASEModel *pm, short nModel, short nType, int bCustom);
 int ASE_ReloadTextures (void);
+int ASE_ReleaseTextures (void);
 int ASE_FreeTextures (tASEModel *pm);
 
 #endif //_ASE_H

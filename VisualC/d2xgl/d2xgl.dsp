@@ -404,6 +404,10 @@ SOURCE=..\..\main\aipath.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\aseread.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\autodl.c
 # End Source File
 # Begin Source File
@@ -704,7 +708,15 @@ SOURCE=..\..\main\omega.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\oof.c
+SOURCE=..\..\main\oofmath.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\oofread.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\oofrender.c
 # End Source File
 # Begin Source File
 
@@ -906,6 +918,10 @@ SOURCE=..\..\main\aistruct.h
 # Begin Source File
 
 SOURCE=..\..\include\args.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\ase.h
 # End Source File
 # Begin Source File
 

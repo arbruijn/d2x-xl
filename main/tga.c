@@ -826,6 +826,20 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void ReleaseModelTextures (tModelTextures *pt)
+{
+	grsBitmap	*bmP;
+	int			i;
+
+if (bmP = pt->pBitmaps)
+	for (i = pt->nBitmaps; i; i--, bmP++) {
+		UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
+		GrFreeBitmapData (bmP);
+		}
+}
+
+//------------------------------------------------------------------------------
+
 void FreeModelTextures (tModelTextures *pt)
 {
 	int	i;

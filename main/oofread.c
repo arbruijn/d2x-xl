@@ -1137,16 +1137,11 @@ return 1;
 int OOF_ReleaseTextures (void)
 {
 	tOOFObject	*po;
-	grsBitmap	*bmP;
-	int			h, i, j;
+	int			bCustom, i;
 
-for (h = 0; h < 2; h++)
-	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [h]; i; i--, po++)
-		if ((bmP = po->textures.pBitmaps))
-			for (j = po->textures.nBitmaps; j; j--, bmP++) {
-				UseBitmapCache (bmP, (int) -bmP->bmProps.h * (int) bmP->bmProps.rowSize);
-				GrFreeBitmapData (bmP);
-				}
+for (bCustom = 0; bCustom < 2; bCustom++)
+	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
+		ReleaseModelTextures (&po->textures);
 return 0;
 }
 

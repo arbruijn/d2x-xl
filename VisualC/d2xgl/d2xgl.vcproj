@@ -603,6 +603,9 @@
 						RelativePath="..\..\include\3d.h">
 					</File>
 					<File
+						RelativePath="..\..\3d\buildmodel.h">
+					</File>
+					<File
 						RelativePath="..\..\3d\clipper.h">
 					</File>
 					<File
@@ -615,6 +618,12 @@
 				<Filter
 					Name="Source Files"
 					Filter="">
+					<File
+						RelativePath="..\..\3d\ase2model.c">
+					</File>
+					<File
+						RelativePath="..\..\3d\buildmodel.c">
+					</File>
 					<File
 						RelativePath="..\..\3d\clipper.c">
 						<FileConfiguration
@@ -740,6 +749,12 @@
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions=""/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\3d\oof2model.c">
+					</File>
+					<File
+						RelativePath="..\..\3d\pof2model.c">
 					</File>
 					<File
 						RelativePath="..\..\3d\points.c">
@@ -3593,10 +3608,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

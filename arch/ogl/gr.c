@@ -364,6 +364,7 @@ if (gameStates.app.bInitialized && gameStates.ogl.bInitialized) {
 		LoadExtraImages ();
 		FreeStringPool ();
 		OOF_ReleaseTextures ();
+		ASE_ReleaseTextures ();
 		if (bReload) {
 			OglCacheLevelTextures ();
 			OOF_ReloadTextures ();

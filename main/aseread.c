@@ -42,6 +42,19 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+int ASE_ReleaseTextures (void)
+{
+	tASEModel	*pm;
+	int			bCustom, i, j;
+
+for (bCustom = 0; bCustom < 2; bCustom++)
+	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
+		ReleaseModelTextures (&pm->textures);
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 int ASE_ReloadTextures (void)
 {
 	tASEModel	*pm;

@@ -3112,7 +3112,9 @@ signal (SIGILL, D2SignalHandler);
 signal (SIGINT, D2SignalHandler);
 signal (SIGSEGV, D2SignalHandler);
 signal (SIGTERM, D2SignalHandler);
+#ifdef _WIN32
 SDL_SetSpecialKeyHandling (0);
+#endif
 CFileInit ("", "");
 InitGameData ();
 InitGameStates ();
