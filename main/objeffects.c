@@ -132,7 +132,7 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 {
 	fVector		vertList [8], v;
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
-	int			i, j, iModel, nModels, bHit = 0;
+	int			i, j, iBox, nBoxes, bHit = 0;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -145,12 +145,12 @@ if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	return;
 	}
 else if (extraGameInfo [IsMultiGame].nHitboxes == 1) {
-	iModel =
-	nModels = 0;
+	iBox =
+	nBoxes = 0;
 	}
 else {
-	iModel = 1;
-	nModels = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nSubModels;
+	iBox = 1;
+	nBoxes = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].nHitboxes;
 	}
 glDepthFunc (GL_LEQUAL);
 glEnable (GL_BLEND);
@@ -159,10 +159,10 @@ glDisable (GL_TEXTURE_2D);
 glDepthMask (0);
 glColor4f (red, green, blue, alpha / 2);
 G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
-for (; iModel <= nModels; iModel++) {
-	if (iModel)
-		G3StartInstanceAngles (&pmhb [iModel].vOffset, &avZero);
-	TransformHitboxf (objP, vertList, iModel);
+for (; iBox <= nBoxes; iBox++) {
+	if (iBox)
+		G3StartInstanceAngles (&pmhb [iBox].vOffset, &avZero);
+	TransformHitboxf (objP, vertList, iBox);
 	glBegin (GL_QUADS);
 	for (i = 0; i < 6; i++) {
 		for (j = 0; j < 4; j++)
@@ -180,7 +180,7 @@ for (; iModel <= nModels; iModel++) {
 		glEnd ();
 		}
 	glLineWidth (1);
-	if (iModel)
+	if (iBox)
 		G3DoneInstance ();
 	}
 G3DoneInstance ();

@@ -43,7 +43,7 @@ pm->nFaceVerts = pa->nFaces * 3;
 
 //------------------------------------------------------------------------------
 
-void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm)
+void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm, float fScale)
 {
 	tASESubModelList	*pml = pa->pSubModels;
 	tASESubModel		*psa;
@@ -94,7 +94,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 			pmv->baseColor.alpha = 1;
 			pmv->renderColor = pmv->baseColor;
 			pmv->normal = psa->pVerts [h].normal;
-			pmv->vertex = psa->pVerts [h].vertex;
+			VmVecScalef ((fVector *) &pmv->vertex, (fVector *) &psa->pVerts [h].vertex, fScale);
 			if (psa->pTexCoord)
 				pmv->texCoord = psa->pTexCoord [pfa->nTexCoord [i]];
 			h += nVerts;
@@ -128,7 +128,7 @@ pm = gameData.models.g3Models [1] + nModel;
 G3CountASEModelItems (pa, pm);
 if (!G3AllocModel (pm))
 	return 0;
-G3GetASEModelItems (nModel, pa, pm);
+G3GetASEModelItems (nModel, pa, pm, ((nModel == 108) || (nModel == 110)) ? 0.801f : 1.0f);
 pm->pTextures = pa->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 0);

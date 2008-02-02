@@ -188,6 +188,7 @@ bool G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int
 G3CheckAndSwap (modelP);
 nGlow = -1;
 if (!psm->pFaces) {
+	G3InitSubModelMinMax (psm);
 	psm->pFaces = pmf;
 	psm->nIndex = -1;
 	psm->nParent = nParent;

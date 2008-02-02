@@ -388,8 +388,9 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	vmsVector	hv;
 	double		dx, dy, dz;
 
-for (i = j = 0, psm = pm->pSubModels; i < pm->nSubModels; i++, psm++)
+for (i = pm->nSubModels, j = 1, psm = pm->pSubModels; i; i--, psm++)
 	psm->nHitbox = (psm->bThruster || (psm->nGunPoint >= 0)) ? -1 : j++;
+gameData.models.hitboxes [nModel].nHitboxes = j - 1;
 do {
 	// initialize
 	for (i = 0; i <= MAX_HITBOXES; i++) {
@@ -406,8 +407,8 @@ do {
 	else
 		G3SubModelSize (objP, nModel, 0, NULL, bHires);
 	// determine min and max size
-	for (i = j = 1, psm = pm->pSubModels; i <= nSubModels; i++, psm++) {
-		if (!psm->bThruster & (psm->nGunPoint < 0)) {
+	for (i = 0, psm = pm->pSubModels; i < nSubModels; i++, psm++) {
+		if (0 <= (j = psm->nHitbox)) {
 			phb [j].vMin.p.x = fl2f (psm->vMin.p.x);
 			phb [j].vMin.p.y = fl2f (psm->vMin.p.y);
 			phb [j].vMin.p.z = fl2f (psm->vMin.p.z);
@@ -434,7 +435,6 @@ do {
 				phb [0].vMax.p.y = hv.p.y;
 			if (phb [0].vMax.p.z < hv.p.z)
 				phb [0].vMax.p.z = hv.p.z;
-			j++;
 			}
 		}
 	if (IsMultiGame)
@@ -453,7 +453,6 @@ dz = (phb [0].vMax.p.z - phb [0].vMin.p.z);
 phb [0].vSize.p.x = (fix) dx / 2;
 phb [0].vSize.p.y = (fix) dy / 2;
 phb [0].vSize.p.z = (fix) dz / 2;
-gameData.models.hitboxes [nModel].nHitboxes = j;
 for (i = 0; i <= j; i++)
 	ComputeHitbox (nModel, i);
 return (fix) (sqrt (dx * dx + dy * dy + dz + dz) / 2);
