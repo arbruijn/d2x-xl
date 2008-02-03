@@ -852,6 +852,7 @@ if (pt->pszNames) {
 		}
 	D2_FREE (pt->pszNames);
 	D2_FREE (pt->pBitmaps);
+	pt->nBitmaps = 0;
 	}
 }
 
