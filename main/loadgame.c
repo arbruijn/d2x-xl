@@ -856,8 +856,7 @@ gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
 gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;
-gameData.marker.nIndex = 0;
-gameData.marker.nCurrent = 0;
+memset (&gameData.marker, 0, sizeof (gameData.marker));
 gameData.marker.nLast = -1;
 gameData.songs.tPos = 
 gameData.songs.tSlowDown = 0;
