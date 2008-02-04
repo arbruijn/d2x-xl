@@ -779,10 +779,10 @@ gameData.time.xLast = TimerGetFixedSeconds ();
 //------------------------------------------------------------------------------
 
 #ifdef _DEBUG
-extern int Saving_movie_frames;
+extern int bSavingMovieFrames;
 int Movie_fixed_frametime;
 #else
-#define Saving_movie_frames	0
+#define bSavingMovieFrames	0
 #define Movie_fixed_frametime	0
 #endif
 
@@ -1847,7 +1847,7 @@ extern void ProcessSmartMinesFrame (void);
 extern void DoSeismicStuff (void);
 
 #ifdef _DEBUG
-int Saving_movie_frames=0;
+int bSavingMovieFrames=0;
 int __Movie_frame_num=0;
 
 #define MAX_MOVIE_BUFFER_FRAMES 250
@@ -1897,9 +1897,9 @@ void toggle_movie_saving ()
 {
 	int exit;
 
-	Saving_movie_frames = !Saving_movie_frames;
+	bSavingMovieFrames = !bSavingMovieFrames;
 
-	if (Saving_movie_frames) {
+	if (bSavingMovieFrames) {
 		tMenuItem m[1];
 
 		memset (m, 0, sizeof (m));
@@ -1909,7 +1909,7 @@ void toggle_movie_saving ()
 		exit = ExecMenu (NULL, "Directory for movie frames?" , 1, & (m[0]), NULL, NULL);
 
 		if (exit==-1) {
-			Saving_movie_frames = 0;
+			bSavingMovieFrames = 0;
 			return;
 		}
 
@@ -1923,7 +1923,7 @@ void toggle_movie_saving ()
 			Movie_frame_buffer = D2_ALLOC (MAX_MOVIE_BUFFER_FRAMES * MOVIE_FRAME_SIZE);
 			if (!Movie_frame_buffer) {
 				Int3 ();
-				Saving_movie_frames=0;
+				bSavingMovieFrames=0;
 			}
 
 			nMovieFrames=0;
@@ -2173,6 +2173,7 @@ if (nDebugSlowdown) {
 	MultiRefillPowerups ();
 	//MultiSendMonsterball (0, 0);
 	UpdatePlayerStats ();
+	UpdatePlayerWeaponInfo ();
 	DiminishPaletteTowardsNormal ();		//	Should leave palette effect up for as long as possible by putting right before render.
 //LogErr ("DoAfterburnerStuff\n");
 	DoAfterburnerStuff ();
@@ -2217,7 +2218,7 @@ DrainHeadLightPower ();
 		//show_extraViews ();		//missile view, buddy bot, etc.
 
 #ifdef _DEBUG
-		if (Saving_movie_frames)
+		if (bSavingMovieFrames)
 			save_movie_frame ();
 #endif
 

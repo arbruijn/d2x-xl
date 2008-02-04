@@ -77,9 +77,9 @@ extern int Debug_pause;				//John's debugging pause system
 #endif
 
 #ifdef _DEBUG
-extern int Saving_movie_frames;
+extern int bSavingMovieFrames;
 #else
-#define Saving_movie_frames 0
+#define bSavingMovieFrames 0
 #endif
 
 //------------------------------------------------------------------------------
@@ -315,7 +315,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 		}
 	else if (gameStates.render.cockpit.nMode == CM_LETTERBOX)
 		h += 7;
-	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !Saving_movie_frames)
+	if (gameStates.render.cockpit.nMode != CM_REAR_VIEW && !bSavingMovieFrames)
 		GrPrintF (NULL, (grdCurCanv->cvBitmap.bmProps.w-w)/2, grdCurCanv->cvBitmap.bmProps.h - h - 2, message);
 	}
 if (gameOpts->render.cockpit.bHUD || (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {

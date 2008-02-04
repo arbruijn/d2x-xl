@@ -25,6 +25,11 @@ typedef struct tASESubModel {
 	short						nIndex;
 	ubyte						bGlow;
 	ubyte						bThruster;
+	ubyte						bWeapon;
+	char						nGun;
+	char						nBomb;
+	char						nMissile;
+	char						nMissilePos;
 	char						nGunPoint;
 	fVector3					vOffset;
 	tASEFace					*pFaces;

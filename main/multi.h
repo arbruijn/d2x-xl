@@ -125,7 +125,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_TRIGGER_EXT				79
 #define MULTI_SYNC_KILLS				80
 #define MULTI_COUNTDOWN					81
-#define MULTI_MAX_TYPE					81
+#define MULTI_PLAYER_WEAPONS			82
+#define MULTI_MAX_TYPE					82
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -143,7 +144,7 @@ void MultiInitObjects (void);
 void MultiShowPlayerList (void);
 void MultiDoFrame (void);
 
-
+void MultiSendPlayerWeapons (int nPlayer);
 void MultiSendFlags (char);
 void MultiSendWeapons (int bForce);
 void MultiSendMonsterball (int bForce, int bCreate);

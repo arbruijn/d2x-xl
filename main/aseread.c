@@ -32,6 +32,8 @@
 static char	szLine [1024];
 static char *pszToken;
 
+#define ASE_ROTATE_MODEL	1
+#define ASE_FLIP_TEXCOORD	1
 
 //------------------------------------------------------------------------------
 
@@ -139,6 +141,22 @@ pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
 	ASE_Error ();
 return pszToken ? pszToken : "";
+}
+
+//------------------------------------------------------------------------------
+
+void ASE_ReadVector (CFILE *cfp, fVector3 *pv)
+{
+#if ASE_ROTATE_MODEL
+pv->p.x = FloatTok (" \t");
+pv->p.z = -FloatTok (" \t");
+pv->p.y = FloatTok (" \t");
+#else	// need to rotate model for Descent
+	int	i;
+
+for (i = 0; i < 3; i++)
+	pv [i] = FloatTok (" \t");
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -284,14 +302,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if ((i < 0) || (i >= psm->nVerts))
 			return ASE_Error ();
 		pv = psm->pVerts + i;
-#if 0
-		for (i = 0; i < 3; i++)
-			pv->vertex.v [i] = FloatTok (" \t");
-#else	// need to rotate model for Descent
-		pv->vertex.p.x = FloatTok (" \t");
-		pv->vertex.p.z = -FloatTok (" \t");
-		pv->vertex.p.y = FloatTok (" \t");
-#endif
+		ASE_ReadVector (cfp, &pv->vertex);
 		}	
 	}
 return ASE_Error ();
@@ -352,12 +363,12 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if ((i < 0) || (i >= psm->nTexCoord))
 			return ASE_Error ();
 		pt = psm->pTexCoord + i;
-#if 0
+#if ASE_FLIP_TEXCOORD
+		pt->v.u = FloatTok (" \t");
+		pt->v.v = -FloatTok (" \t");
+#else
 		for (i = 0; i < 2; i++)
 			pt->a [i] = FloatTok (" \t");
-#else
-			pt->v.u = FloatTok (" \t");
-			pt->v.v = -FloatTok (" \t");
 #endif
 		}	
 	}
@@ -412,8 +423,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if ((i < 0) || (i >= psm->nFaces))
 			return ASE_Error ();
 		pf = psm->pFaces + i;
-		for (i = 0; i < 3; i++)
-			pf->vNormal.v [i] = FloatTok (" \t");
+		ASE_ReadVector (cfp, &pf->vNormal);
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEXNORMAL")) {
 		if (!psm->pVerts)
@@ -422,8 +432,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if ((i < 0) || (i >= psm->nVerts))
 			return ASE_Error ();
 		pv = psm->pVerts + i;
-		for (i = 0; i < 3; i++)
-			pv->normal.v [i] = FloatTok (" \t");
+		ASE_ReadVector (cfp, &pv->normal);
 		}
 	}
 return ASE_Error ();
@@ -511,16 +520,43 @@ pml->pNextModel = pm->pSubModels;
 pm->pSubModels = pml;
 psm = &pm->pSubModels->sm;
 psm->nId = pm->nSubModels++;
+psm->nBomb = -1;
+psm->nMissile = -1;
+psm->nGun = -1;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
 		strcpy (psm->szName, StrTok (" \t\""));
-		if (strstr (psm->szName, "$GUN-"))
+		if (strstr (psm->szName, "$GUNPOINT-"))
+			psm->nGunPoint = atoi (psm->szName + 10);
+		else if (strstr (psm->szName, "$GUN-"))
 			psm->nGunPoint = atoi (psm->szName + 5);
 		else {
 			psm->nGunPoint = -1;
-			psm->bThruster = (strstr (psm->szName, "GLOW") != NULL) || (strstr (psm->szName, "THRUSTER") != NULL);
+			if (strstr (psm->szName, "GLOW") != NULL) 
+				psm->bGlow = 1;
+			else if (strstr (psm->szName, "THRUSTER") != NULL)
+				psm->bThruster = 1;
+			else if (strstr (psm->szName, "LASER") != NULL) {
+				psm->bWeapon = 1;
+				psm->nGun = 1;
+				psm->nBomb =
+				psm->nMissile = -1;
+				}
+			else if (strstr (psm->szName, "$MISSILE") != NULL) {
+				psm->bWeapon = 1;
+				psm->nMissile = atoi (psm->szName + 8) + 1;
+				psm->nMissilePos = atoi (psm->szName + 10) + 1;
+				psm->nGun =
+				psm->nBomb = -1;
+				}
+			else if (strstr (psm->szName, "$BOMB-") != NULL) {
+				psm->bWeapon = 1;
+				psm->nBomb = atoi (psm->szName + 6) + 1;
+				psm->nGun =
+				psm->nMissile = -1;
+				}
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {

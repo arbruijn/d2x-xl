@@ -596,6 +596,10 @@ SOURCE=..\..\main\hud.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\hudicons.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\inferno.c
 # End Source File
 # Begin Source File
@@ -821,6 +825,10 @@ SOURCE=..\..\main\sphere.c
 # Begin Source File
 
 SOURCE=..\..\main\state.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\statusbar.c
 # End Source File
 # Begin Source File
 
@@ -1173,6 +1181,10 @@ SOURCE=..\..\main\hostage.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\hud_defs.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\hudmsg.h
 # End Source File
 # Begin Source File
@@ -1474,6 +1486,10 @@ SOURCE=..\..\main\sphere.h
 # Begin Source File
 
 SOURCE=..\..\main\state.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\statusbar.h
 # End Source File
 # Begin Source File
 

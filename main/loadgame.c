@@ -355,7 +355,7 @@ else {		// Note link to above if!!!
 void InitPlayerStatsGame ()
 {
 LOCALPLAYER.score = 0;
-LOCALPLAYER.last_score = 0;
+LOCALPLAYER.lastScore = 0;
 LOCALPLAYER.lives = INITIAL_LIVES;
 LOCALPLAYER.level = 1;
 LOCALPLAYER.timeLevel = 0;
@@ -372,9 +372,9 @@ LOCALPLAYER.numKillsTotal = 0;
 LOCALPLAYER.numRobotsLevel = 0;
 LOCALPLAYER.numRobotsTotal = 0;
 LOCALPLAYER.nKillGoalCount = 0;
-LOCALPLAYER.hostages_rescuedTotal = 0;
-LOCALPLAYER.hostagesLevel = 0;
-LOCALPLAYER.hostagesTotal = 0;
+LOCALPLAYER.hostages.nRescued = 0;
+LOCALPLAYER.hostages.nLevel = 0;
+LOCALPLAYER.hostages.nTotal = 0;
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.flags = 0;
 InitPlayerStatsNewShip ();
@@ -402,7 +402,7 @@ if (LOCALPLAYER.secondaryAmmo [0] < 2 + NDL - gameStates.app.nDifficultyLevel)
 // Setup tPlayer for new level (After completion of previous level)
 void InitPlayerStatsLevel (int bSecret)
 {
-LOCALPLAYER.last_score = LOCALPLAYER.score;
+LOCALPLAYER.lastScore = LOCALPLAYER.score;
 LOCALPLAYER.level = gameData.missions.nCurrentLevel;
 if (!networkData.bRejoined) {
 	LOCALPLAYER.timeLevel = 0;
@@ -412,9 +412,9 @@ LOCALPLAYER.nKillerObj = -1;
 LOCALPLAYER.numKillsLevel = 0;
 LOCALPLAYER.numRobotsLevel = CountRobotsInLevel ();
 LOCALPLAYER.numRobotsTotal += LOCALPLAYER.numRobotsLevel;
-LOCALPLAYER.hostagesLevel = CountHostagesInLevel ();
-LOCALPLAYER.hostagesTotal += LOCALPLAYER.hostagesLevel;
-LOCALPLAYER.hostages_on_board = 0;
+LOCALPLAYER.hostages.nLevel = CountHostagesInLevel ();
+LOCALPLAYER.hostages.nTotal += LOCALPLAYER.hostages.nLevel;
+LOCALPLAYER.hostages.nOnBoard = 0;
 if (!bSecret) {
 	InitAmmoAndEnergy ();
 	LOCALPLAYER.flags &=  
@@ -466,7 +466,7 @@ LOCALPLAYER.energy = INITIAL_ENERGY;
 LOCALPLAYER.shields = gameStates.gameplay.xStartingShields;
 LOCALPLAYER.laserLevel = 0;
 LOCALPLAYER.nKillerObj = -1;
-LOCALPLAYER.hostages_on_board = 0;
+LOCALPLAYER.hostages.nOnBoard = 0;
 
 gameData.physics.xAfterburnerCharge = 0;
 
@@ -1183,7 +1183,7 @@ if (nMineLevel < 0)
 	nMineLevel *= - (gameData.missions.nLastLevel / gameData.missions.nSecretLevels);
 else if (nMineLevel == 0)
 	nMineLevel = 1;
-nLevelPoints = LOCALPLAYER.score - LOCALPLAYER.last_score;
+nLevelPoints = LOCALPLAYER.score - LOCALPLAYER.lastScore;
 if (!gameStates.app.cheats.bEnabled) {
 	if (gameStates.app.nDifficultyLevel > 1) {
 		nSkillPoints = nLevelPoints * (gameStates.app.nDifficultyLevel) / 4;
@@ -1193,7 +1193,7 @@ if (!gameStates.app.cheats.bEnabled) {
 		nSkillPoints = 0;
 	nShieldPoints = f2i (LOCALPLAYER.shields) * 5 * nMineLevel;
 	nEnergyPoints = f2i (LOCALPLAYER.energy) * 2 * nMineLevel;
-	nHostagePoints = LOCALPLAYER.hostages_on_board * 500 * (gameStates.app.nDifficultyLevel+1);
+	nHostagePoints = LOCALPLAYER.hostages.nOnBoard * 500 * (gameStates.app.nDifficultyLevel+1);
 	nShieldPoints -= nShieldPoints % 50;
 	nEnergyPoints -= nEnergyPoints % 50;
 	}
@@ -1205,8 +1205,8 @@ else {
 	}
 szAllHostages [0] = 0;
 szEndGame [0] = 0;
-if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages_on_board == LOCALPLAYER.hostagesLevel)) {
-	nAllHostagePoints = LOCALPLAYER.hostages_on_board * 1000 * (gameStates.app.nDifficultyLevel+1);
+if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages.nOnBoard == LOCALPLAYER.hostages.nLevel)) {
+	nAllHostagePoints = LOCALPLAYER.hostages.nOnBoard * 1000 * (gameStates.app.nDifficultyLevel+1);
 	sprintf (szAllHostages, "%s%i\n", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
 	}
 else
@@ -1520,7 +1520,7 @@ void PlayerFinishedLevel (int bSecret)
 	Assert (!bSecret);
 
 	//credit the tPlayer for hostages
-LOCALPLAYER.hostages_rescuedTotal += LOCALPLAYER.hostages_on_board;
+LOCALPLAYER.hostages.nRescued += LOCALPLAYER.hostages.nOnBoard;
 if (gameData.app.nGameMode & GM_NETWORK)
 	LOCALPLAYER.connected = 2; // Finished but did not die
 gameStates.render.cockpit.nLastDrawn [0] = -1;
@@ -1792,7 +1792,7 @@ else {				//Note link to above else!
 	}
 if (gameData.reactor.bDestroyed) {
 	//clear out stuff so no bonus
-	LOCALPLAYER.hostages_on_board = 0;
+	LOCALPLAYER.hostages.nOnBoard = 0;
 	LOCALPLAYER.energy = 0;
 	LOCALPLAYER.shields = 0;
 	LOCALPLAYER.connected = 3;

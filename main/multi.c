@@ -148,7 +148,7 @@ typedef struct tNetPlayerStats {
 	ubyte  secondaryWeaponFlags;  // bit set indicates the tPlayer has this weapon.
 	ushort primaryAmmo [MAX_PRIMARY_WEAPONS];     // How much ammo of each nType.
 	ushort secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
-	int    last_score;              // Score at beginning of current level.
+	int    lastScore;              // Score at beginning of current level.
 	int    score;                   // Current score.
 	fix    cloakTime;              // Time cloaked
 	fix    invulnerableTime;       // Time invulnerable
@@ -160,9 +160,9 @@ typedef struct tNetPlayerStats {
 	short  numKillsTotal;         // Number of kills total
 	short  numRobotsLevel;        // Number of initial robots this level
 	short  numRobotsTotal;        // Number of robots total
-	ushort hostages_rescuedTotal;  // Total number of hostages rescued.
-	ushort hostagesTotal;          // Total number of hostages.
-	ubyte  hostages_on_board;       // Number of hostages on ship.
+	ushort nHostagesRescued;  // Total number of hostages rescued.
+	ushort nHostagesTotal;          // Total number of hostages.
+	ubyte  nHostagesOnBoard;       // Number of hostages on ship.
 	ubyte  unused [16];
 } tNetPlayerStats;
 
@@ -248,7 +248,8 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	2,  //MULTI_CHEATING
 	5,  //MULTI_TRIGGER_EXT
 	16, //MULTI_SYNC_KILLS
-	5	 //MULTI_COUNTDOWN
+	5,	 //MULTI_COUNTDOWN
+	5	 //MULTI_PLAYER_WEAPONS
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -481,6 +482,28 @@ if (netGame.teamVector & (1 << nPlayer))
 	return 1;
 else
 	return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendPlayerWeapons (int nPlayer)
+{
+gameData.multigame.msg.buf [0] = (char) MULTI_SET_TEAM;
+gameData.multigame.msg.buf [1] = (char) nPlayer;
+gameData.multigame.msg.buf [2] = gameData.multiplayer.nPrimaryWeapons [nPlayer];
+gameData.multigame.msg.buf [3] = gameData.multiplayer.nSecondaryWeapons [nPlayer];
+gameData.multigame.msg.buf [4] = gameData.multiplayer.nArmedMissiles [nPlayer];
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiDoPlayerWeapons (char *buf)
+{
+	int	nPlayer = (int) buf [1];
+
+gameData.multiplayer.nPrimaryWeapons [nPlayer] = buf [2];
+gameData.multiplayer.nSecondaryWeapons [nPlayer] = buf [3];
+gameData.multiplayer.nArmedMissiles [nPlayer] = buf [4];
 }
 
 //-----------------------------------------------------------------------------
@@ -3176,7 +3199,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 	ps->secondaryAmmo [i] = INTEL_SHORT (pd->secondaryAmmo [i]);
 //memcpy (ps->primaryAmmo, pd->primaryAmmo, MAX_PRIMARY_WEAPONS*sizeof (short));        // How much ammo of each nType.
 //memcpy (ps->secondaryAmmo, pd->secondaryAmmo, MAX_SECONDARY_WEAPONS*sizeof (short)); // How much ammo of each nType.
-ps->last_score = INTEL_INT (pd->last_score);                           // Score at beginning of current level.
+ps->lastScore = INTEL_INT (pd->lastScore);                           // Score at beginning of current level.
 ps->score = INTEL_INT (pd->score);                                     // Current score.
 ps->cloakTime = (fix)INTEL_INT (pd->cloakTime);                      // Time cloaked
 ps->homingObjectDist = (fix)INTEL_INT (pd->homingObjectDist);      // Distance of nearest homing tObject.
@@ -3188,9 +3211,9 @@ ps->numKillsLevel = INTEL_SHORT (pd->numKillsLevel);               // Number of 
 ps->numKillsTotal = INTEL_SHORT (pd->numKillsTotal);               // Number of kills total
 ps->numRobotsLevel = INTEL_SHORT (pd->numRobotsLevel);             // Number of initial robots this level
 ps->numRobotsTotal = INTEL_SHORT (pd->numRobotsTotal);             // Number of robots total
-ps->hostages_rescuedTotal = INTEL_SHORT (pd->hostages_rescuedTotal); // Total number of hostages rescued.
-ps->hostagesTotal = INTEL_SHORT (pd->hostagesTotal);                 // Total number of hostages.
-ps->hostages_on_board = pd->hostages_on_board;                        // Number of hostages on ship.
+ps->nHostagesRescued = INTEL_SHORT (pd->hostages.nRescued); // Total number of hostages rescued.
+ps->nHostagesTotal = INTEL_SHORT (pd->hostages.nTotal);                 // Total number of hostages.
+ps->nHostagesOnBoard = pd->hostages.nOnBoard;                        // Number of hostages on ship.
 }
 
 //-----------------------------------------------------------------------------
@@ -3212,7 +3235,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 	ps->secondaryAmmo [i] = INTEL_SHORT (pd->secondaryAmmo [i]);
 //memcpy (ps->primaryAmmo, pd->primaryAmmo, MAX_PRIMARY_WEAPONS*sizeof (short));  // How much ammo of each nType.
 //memcpy (ps->secondaryAmmo, pd->secondaryAmmo, MAX_SECONDARY_WEAPONS*sizeof (short)); // How much ammo of each nType.
-ps->last_score = INTEL_INT (pd->last_score);             // Score at beginning of current level.
+ps->lastScore = INTEL_INT (pd->lastScore);             // Score at beginning of current level.
 ps->score = INTEL_INT (pd->score);                       // Current score.
 ps->cloakTime = (fix)INTEL_INT ((int)pd->cloakTime);   // Time cloaked
 ps->homingObjectDist = (fix)INTEL_INT ((int)pd->homingObjectDist); // Distance of nearest homing tObject.
@@ -3224,9 +3247,9 @@ ps->numKillsLevel = INTEL_SHORT (pd->numKillsLevel); // Number of kills this lev
 ps->numKillsTotal = INTEL_SHORT (pd->numKillsTotal); // Number of kills total
 ps->numRobotsLevel = INTEL_SHORT (pd->numRobotsLevel); // Number of initial robots this level
 ps->numRobotsTotal = INTEL_SHORT (pd->numRobotsTotal); // Number of robots total
-ps->hostages_rescuedTotal = INTEL_SHORT (pd->hostages_rescuedTotal); // Total number of hostages rescued.
-ps->hostagesTotal = INTEL_SHORT (pd->hostagesTotal);   // Total number of hostages.
-ps->hostages_on_board = pd->hostages_on_board;            // Number of hostages on ship.
+ps->hostages.nRescued = INTEL_SHORT (pd->nHostagesRescued); // Total number of hostages rescued.
+ps->hostages.nTotal = INTEL_SHORT (pd->nHostagesTotal);   // Total number of hostages.
+ps->hostages.nOnBoard = pd->nHostagesOnBoard;            // Number of hostages on ship.
 }
 
 //-----------------------------------------------------------------------------
@@ -4928,7 +4951,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoCheating, 1},
 	{MultiDoTrigger, 1},
 	{MultiDoSyncKills, 1},
-	{MultiDoCountdown, 1}
+	{MultiDoCountdown, 1},
+	{MultiDoPlayerWeapons, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -5266,6 +5290,10 @@ con_printf (CON_VERBOSE, "multi data %d\n", nType);
 	case MULTI_COUNTDOWN:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoCountdown (buf); 
+		break;
+	case MULTI_PLAYER_WEAPONS:
+		if (!gameStates.app.bEndLevelSequence) 
+			MultiDoPlayerWeapons (buf); 
 		break;
 	default:
 		Int3 ();

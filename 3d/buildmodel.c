@@ -389,7 +389,7 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	double		dx, dy, dz;
 
 for (i = pm->nSubModels, j = 1, psm = pm->pSubModels; i; i--, psm++)
-	psm->nHitbox = (psm->bThruster || (psm->nGunPoint >= 0)) ? -1 : j++;
+	psm->nHitbox = (psm->bGlow || psm->bThruster || psm->bWeapon || (psm->nGunPoint >= 0)) ? -1 : j++;
 gameData.models.hitboxes [nModel].nHitboxes = j - 1;
 do {
 	// initialize

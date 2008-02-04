@@ -822,7 +822,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 CFWriteByte ((sbyte) playerP->nInvuls, cfp);
 CFWriteByte ((sbyte) playerP->nCloaks, cfp);
 #endif
-CFWriteInt (playerP->last_score, cfp);             // Score at beginning of current level.
+CFWriteInt (playerP->lastScore, cfp);             // Score at beginning of current level.
 CFWriteInt (playerP->score, cfp);                  // Current score.
 CFWriteFix (playerP->timeLevel, cfp);             // Level time played
 CFWriteFix (playerP->timeTotal, cfp);             // Game time played (high word = seconds)
@@ -841,10 +841,10 @@ CFWriteShort (playerP->numKillsLevel, cfp);        // Number of kills this level
 CFWriteShort (playerP->numKillsTotal, cfp);        // Number of kills total
 CFWriteShort (playerP->numRobotsLevel, cfp);       // Number of initial robots this level
 CFWriteShort (playerP->numRobotsTotal, cfp);       // Number of robots total
-CFWriteShort ((short) playerP->hostages_rescuedTotal, cfp); // Total number of hostages rescued.
-CFWriteShort ((short) playerP->hostagesTotal, cfp);         // Total number of hostages.
-CFWriteByte ((sbyte) playerP->hostages_on_board, cfp);      // Number of hostages on ship.
-CFWriteByte ((sbyte) playerP->hostagesLevel, cfp);         // Number of hostages on this level.
+CFWriteShort ((short) playerP->hostages.nRescued, cfp); // Total number of hostages rescued.
+CFWriteShort ((short) playerP->hostages.nTotal, cfp);         // Total number of hostages.
+CFWriteByte ((sbyte) playerP->hostages.nOnBoard, cfp);      // Number of hostages on ship.
+CFWriteByte ((sbyte) playerP->hostages.nLevel, cfp);         // Number of hostages on this level.
 CFWriteFix (playerP->homingObjectDist, cfp);     // Distance of nearest homing tObject.
 CFWriteByte (playerP->hoursLevel, cfp);            // Hours played (since timeTotal can only go up to 9 hours)
 CFWriteByte (playerP->hoursTotal, cfp);            // Hours played (since timeTotal can only go up to 9 hours)
@@ -1687,15 +1687,15 @@ void StateAwardReturningPlayer (tPlayer *retPlayerP, fix xOldGameTime)
 {
 tPlayer *playerP = gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer;
 playerP->level = retPlayerP->level;
-playerP->last_score = retPlayerP->last_score;
+playerP->lastScore = retPlayerP->lastScore;
 playerP->timeLevel = retPlayerP->timeLevel;
 playerP->flags |= (retPlayerP->flags & PLAYER_FLAGS_ALL_KEYS);
 playerP->numRobotsLevel = retPlayerP->numRobotsLevel;
 playerP->numRobotsTotal = retPlayerP->numRobotsTotal;
-playerP->hostages_rescuedTotal = retPlayerP->hostages_rescuedTotal;
-playerP->hostagesTotal = retPlayerP->hostagesTotal;
-playerP->hostages_on_board = retPlayerP->hostages_on_board;
-playerP->hostagesLevel = retPlayerP->hostagesLevel;
+playerP->hostages.nRescued = retPlayerP->hostages.nRescued;
+playerP->hostages.nTotal = retPlayerP->hostages.nTotal;
+playerP->hostages.nOnBoard = retPlayerP->hostages.nOnBoard;
+playerP->hostages.nLevel = retPlayerP->hostages.nLevel;
 playerP->homingObjectDist = retPlayerP->homingObjectDist;
 playerP->hoursLevel = retPlayerP->hoursLevel;
 playerP->hoursTotal = retPlayerP->hoursTotal;
@@ -1841,7 +1841,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
 playerP->nInvuls = (ubyte) CFReadByte (cfp);
 playerP->nCloaks = (ubyte) CFReadByte (cfp);
 #endif
-playerP->last_score = CFReadInt (cfp);           // Score at beginning of current level.
+playerP->lastScore = CFReadInt (cfp);           // Score at beginning of current level.
 playerP->score = CFReadInt (cfp);                // Current score.
 playerP->timeLevel = CFReadFix (cfp);            // Level time played
 playerP->timeTotal = CFReadFix (cfp);				// Game time played (high word = seconds)
@@ -1858,10 +1858,10 @@ playerP->numKillsLevel = CFReadShort (cfp);        // Number of kills this level
 playerP->numKillsTotal = CFReadShort (cfp);        // Number of kills total
 playerP->numRobotsLevel = CFReadShort (cfp);       // Number of initial robots this level
 playerP->numRobotsTotal = CFReadShort (cfp);       // Number of robots total
-playerP->hostages_rescuedTotal = (ushort) CFReadShort (cfp); // Total number of hostages rescued.
-playerP->hostagesTotal = (ushort) CFReadShort (cfp);         // Total number of hostages.
-playerP->hostages_on_board = (ubyte) CFReadByte (cfp);      // Number of hostages on ship.
-playerP->hostagesLevel = (ubyte) CFReadByte (cfp);         // Number of hostages on this level.
+playerP->hostages.nRescued = (ushort) CFReadShort (cfp); // Total number of hostages rescued.
+playerP->hostages.nTotal = (ushort) CFReadShort (cfp);         // Total number of hostages.
+playerP->hostages.nOnBoard = (ubyte) CFReadByte (cfp);      // Number of hostages on ship.
+playerP->hostages.nLevel = (ubyte) CFReadByte (cfp);         // Number of hostages on this level.
 playerP->homingObjectDist = CFReadFix (cfp);     // Distance of nearest homing tObject.
 playerP->hoursLevel = CFReadByte (cfp);            // Hours played (since timeTotal can only go up to 9 hours)
 playerP->hoursTotal = CFReadByte (cfp);            // Hours played (since timeTotal can only go up to 9 hours)

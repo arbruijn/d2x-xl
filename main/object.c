@@ -1204,9 +1204,9 @@ if (gameStates.app.bPlayerIsDead) {
 	VmVector2Matrix (&gameData.objs.deadPlayerCamera->position.mOrient, &fVec, NULL, NULL);
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!gameStates.app.bPlayerExploded) {
-		if (LOCALPLAYER.hostages_on_board > 1)
-			HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages_on_board);
-		else if (LOCALPLAYER.hostages_on_board == 1)
+		if (LOCALPLAYER.hostages.nOnBoard > 1)
+			HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages.nOnBoard);
+		else if (LOCALPLAYER.hostages.nOnBoard == 1)
 			HUDInitMessage (TXT_SHIP_DESTROYED_1);
 		else
 			HUDInitMessage (TXT_SHIP_DESTROYED_0);

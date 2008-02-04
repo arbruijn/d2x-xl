@@ -20,6 +20,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "piggy.h"
 #include "object.h"
 #include "hudmsg.h"
+#include "ogl_defs.h"
+#include "ogl_bitmap.h"
+#include "ogl_hudstuff.h"
 //from gauges.c
 
 // Flags for gauges/hud stuff
@@ -91,5 +94,35 @@ void ToggleCockpit ();
 #define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
 #define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!gameOpts->render.cockpit.bHUD && (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)))
+
+extern double cmScaleX, cmScaleY;
+extern int nHUDLineSpacing;
+
+//	-----------------------------------------------------------------------------
+
+#define HUD_SCALE(v, s)	((int) ((double) (v) * (s) + 0.5))
+#define HUD_SCALE_X(v)	HUD_SCALE (v, cmScaleX)
+#define HUD_SCALE_Y(v)	HUD_SCALE (v, cmScaleY)
+#define HUD_LHX(x)      (gameStates.menus.bHires ? 2 * (x) : x)
+#define HUD_LHY(y)      (gameStates.menus.bHires? (24 * (y)) / 10 : y)
+#define HUD_ASPECT		((double) grdCurScreen->scHeight / (double) grdCurScreen->scWidth / 0.75)
+
+//	-----------------------------------------------------------------------------
+
+static inline void HUDBitBlt (int x, int y, grsBitmap *bmP, int scale, int orient)
+{
+OglUBitMapMC (
+	 (x < 0) ? -x : HUD_SCALE_X (x), 
+	 (y < 0) ? -y : HUD_SCALE_Y (y), 
+	HUD_SCALE_X (bmP->bmProps.w) * (gameStates.app.bDemoData + 1), 
+	HUD_SCALE_Y (bmP->bmProps.h) * (gameStates.app.bDemoData + 1), 
+	bmP, 
+	NULL, 
+	scale, 
+	orient
+	);
+}
+
+//	-----------------------------------------------------------------------------
 
 #endif /* _GAUGES_H */

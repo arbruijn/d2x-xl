@@ -65,6 +65,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TEAM_BLUE   0
 #define TEAM_RED    1
 
+typedef struct tPlayerHostages {
+	ushort  nRescued;		// Total number of hostages rescued.
+	ushort  nTotal;      // Total number of hostages.
+	ubyte   nOnBoard;    // Number of hostages on ship.
+	ubyte   nLevel;      // Number of hostages on this level.
+} tPlayerHostages;
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
 typedef struct tPlayer {
@@ -100,7 +106,7 @@ typedef struct tPlayer {
 	//  -- make sure you're 4 byte aligned now
 
 	// Statistics...
-	int     last_score;             // Score at beginning of current level.
+	int     lastScore;             // Score at beginning of current level.
 	int     score;                  // Current score.
 	fix     timeLevel;             // Level time played
 	fix     timeTotal;             // Game time played (high word = seconds)
@@ -115,10 +121,7 @@ typedef struct tPlayer {
 	short   numKillsTotal;        // Number of kills total
 	short   numRobotsLevel;       // Number of initial robots this level
 	short   numRobotsTotal;       // Number of robots total
-	ushort  hostages_rescuedTotal; // Total number of hostages rescued.
-	ushort  hostagesTotal;         // Total number of hostages.
-	ubyte   hostages_on_board;      // Number of hostages on ship.
-	ubyte   hostagesLevel;         // Number of hostages on this level.
+	tPlayerHostages	hostages;
 	fix     homingObjectDist;     // Distance of nearest homing tObject.
 	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
 	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
@@ -172,10 +175,7 @@ typedef struct player16 {
 	short   numKillsTotal;        // Number of kills total
 	short   numRobotsLevel;       // Number of initial robots this level
 	short   numRobotsTotal;       // Number of robots total
-	ushort  hostages_rescuedTotal; // Total number of hostages rescued.
-	ushort  hostagesTotal;         // Total number of hostages.
-	ubyte   hostages_on_board;      // Number of hostages on ship.
-	ubyte   hostagesLevel;         // Number of hostages on this level.
+	tPlayerHostages	hostages;
 	fix     homingObjectDist;     // Distance of nearest homing tObject.
 	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
 	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
@@ -185,5 +185,8 @@ typedef struct player16 {
  * reads a tPlayerShip structure from a CFILE
  */
 void PlayerShipRead(tPlayerShip *ps, CFILE *fp);
+int EquippedPlayerBomb (tObject *objP);
+int EquippedPlayerMissile (tObject *objP, int *nMissiles);
+void UpdatePlayerWeaponInfo (void);
 
 #endif

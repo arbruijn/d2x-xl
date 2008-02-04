@@ -460,10 +460,10 @@ formatTime(totalTime, f2i(LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal*3600);
 formatTime(xLevelTime, f2i(LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel*3600);
   if (gameData.demo.nState!=ND_STATE_PLAYBACK)
 	sprintf(msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-			  LOCALPLAYER.hostages_on_board, xLevelTime, totalTime);
+			  LOCALPLAYER.hostages.nOnBoard, xLevelTime, totalTime);
    else
 	  	sprintf(msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
-				  LOCALPLAYER.hostages_on_board);
+				  LOCALPLAYER.hostages.nOnBoard);
 
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;

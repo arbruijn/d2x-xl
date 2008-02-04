@@ -209,8 +209,8 @@ void scores_fill_struct (stats_info * stats)
 		else
 			stats->kill_ratio = 0;
 
-		if (LOCALPLAYER.hostagesTotal > 0)
-			stats->hostage_ratio = (LOCALPLAYER.hostages_rescuedTotal*100)/LOCALPLAYER.hostagesTotal;
+		if (LOCALPLAYER.hostages.nTotal > 0)
+			stats->hostage_ratio = (LOCALPLAYER.hostages.nRescued*100)/LOCALPLAYER.hostages.nTotal;
 		else
 			stats->hostage_ratio = 0;
 

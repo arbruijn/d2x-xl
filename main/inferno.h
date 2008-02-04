@@ -1857,7 +1857,12 @@ typedef struct tG3SubModel {
 	ushort					nAngles;
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;
+	ubyte						bWeapon :1;
 	char						nGunPoint;
+	char						nGun;
+	char						nBomb;
+	char						nMissile;
+	char						nMissilePos;
 } tG3SubModel;
 
 typedef struct tG3VertNorm {
@@ -2152,6 +2157,9 @@ typedef struct tMultiplayerData {
 	tObjPosition		playerInit [MAX_PLAYERS];
 	short					nVirusCapacity [MAX_PLAYERS];
 	int					nLastHitTime [MAX_PLAYERS];
+	char					nPrimaryWeapons [MAX_PLAYERS];
+	char					nSecondaryWeapons [MAX_PLAYERS];
+	char					nArmedMissiles [MAX_PLAYERS];
 	char					bWasHit [MAX_PLAYERS];
 	tPulseData			spherePulse [MAX_PLAYERS];
 	ubyte					powerupsInMine [MAX_POWERUP_TYPES];
