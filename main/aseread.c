@@ -528,8 +528,8 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
 		strcpy (psm->szName, StrTok (" \t\""));
-		if (strstr (psm->szName, "$GUNPOINT-"))
-			psm->nGunPoint = atoi (psm->szName + 10);
+		if (strstr (psm->szName, "$GUNPNT-"))
+			psm->nGunPoint = atoi (psm->szName + 8);
 		else if (strstr (psm->szName, "$GUN-"))
 			psm->nGunPoint = atoi (psm->szName + 5);
 		else {
