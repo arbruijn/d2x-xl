@@ -45,7 +45,6 @@ int EquippedPlayerBomb (tObject *objP)
 {
 if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
-		tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
 		int		i, nWeapon = gameData.multiplayer.nSecondaryWeapons [nPlayer];
 
 	for (i = 0; i < sizeofa (nBombIds); i++)
