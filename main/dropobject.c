@@ -848,7 +848,7 @@ int MaybeDropPrimaryWeaponEgg (tObject *playerObjP, int nWeapon)
 	int nPowerup = primaryWeaponToPowerup [nWeapon];
 
 if ((gameData.multiplayer.players [playerObjP->id].primaryWeaponFlags & nWeaponFlag) &&
-	 !(IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && (extraGameInfo [1].loadout.nGuns & nWeaponFlag)))
+	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & nWeaponFlag)))
 	return CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
 else
 	return -1;
@@ -874,7 +874,7 @@ if (gameData.multiplayer.players [playerObjP->id].secondaryWeaponFlags & nWeapon
 MaybeDropDeviceEgg (tPlayer *playerP, tObject *playerObjP, int nDeviceFlag, int nPowerupId)
 {
 if ((gameData.multiplayer.players [playerObjP->id].flags & nDeviceFlag) &&
-	 !(IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && (extraGameInfo [1].loadout.nDevices & nDeviceFlag)))
+	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag)))
 	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerupId);
 }
 

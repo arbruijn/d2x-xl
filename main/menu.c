@@ -4042,6 +4042,128 @@ do {
 
 //------------------------------------------------------------------------------
 
+static char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
+static char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
+static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, 
+										PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_SLOWMOTION, PLAYER_FLAGS_BULLETTIME};
+
+static int optGuns, optDevices;
+
+//------------------------------------------------------------------------------
+
+static inline void SetGunLoadoutFlag (int i, int v)
+{
+if (v)
+	extraGameInfo [0].loadout.nGuns |= (1 << i);
+else
+	extraGameInfo [0].loadout.nGuns &= ~(1 << i);
+}
+
+//------------------------------------------------------------------------------
+
+static inline int GetGunLoadoutFlag (int i)
+{
+return (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0;
+}
+
+//------------------------------------------------------------------------------
+
+static inline void SetDeviceLoadoutFlag (int i, int v)
+{
+if (v)
+	extraGameInfo [0].loadout.nDevices |= nDeviceFlags [i];
+else
+	extraGameInfo [0].loadout.nDevices &= ~nDeviceFlags [i];
+}
+
+//------------------------------------------------------------------------------
+
+static inline int GetDeviceLoadoutFlag (int i)
+{
+return (extraGameInfo [0].loadout.nDevices & nDeviceFlags [i]) != 0;
+}
+
+//------------------------------------------------------------------------------
+
+void LoadoutCallback (int nitems, tMenuItem * menus, int * key, int cItem)
+{
+	tMenuItem	*m = menus + cItem;
+	int			v = m->value;
+
+if (cItem == optGuns) {	//checked/unchecked lasers
+	if (v != GetGunLoadoutFlag (0)) {
+		SetGunLoadoutFlag (0, v);
+		if (!v) {	//if lasers unchecked, also uncheck super lasers
+			SetGunLoadoutFlag (5, 0);
+			menus [optGuns + 5].value = 0;
+			}
+		}
+	}
+else if (cItem == optGuns + 5) {	//checked/unchecked super lasers
+	if (v != GetGunLoadoutFlag (5)) {
+		SetGunLoadoutFlag (5, v);
+		if (v) {	// if super lasers checked, also check lasers
+			SetGunLoadoutFlag (0, 1);
+			menus [optGuns].value = 1;
+			}
+		}
+	}
+else if (cItem == optDevices + 6) {	//checked/unchecked super lasers
+	if (v != GetDeviceLoadoutFlag (6)) {
+		SetDeviceLoadoutFlag (6, v);
+		if (!v) {	// if super lasers checked, also check lasers
+			SetDeviceLoadoutFlag (7, 0);
+			menus [optDevices + 7].value = 0;
+			}
+		}
+	}
+else if (cItem == optDevices + 7) {	//checked/unchecked super lasers
+	if (v != GetDeviceLoadoutFlag (7)) {
+		SetDeviceLoadoutFlag (7, v);
+		if (v) {	// if super lasers checked, also check lasers
+			SetDeviceLoadoutFlag (6, 1);
+			menus [optDevices + 6].value = 1;
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void LoadoutOptions (void)
+{
+	tMenuItem	m [25];
+	int			i, opt = 0;
+
+memset (m, 0, sizeof (m));
+ADD_TEXT (opt, TXT_GUN_LOADOUT, 0);
+opt++;
+for (i = 0, optGuns = opt; i < sizeofa (pszGuns); i++, opt++)
+	ADD_CHECK (opt, pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
+ADD_TEXT (opt, "", 0);
+opt++;
+ADD_TEXT (opt, TXT_DEVICE_LOADOUT, 0);
+opt++;
+for (i = 0, optDevices = opt; i < sizeofa (pszDevices); i++, opt++)
+	ADD_CHECK (opt, pszDevices [i], (extraGameInfo [0].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
+Assert (opt <= sizeofa (m));
+do {
+	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, LoadoutCallback, 0);
+	} while (i != -1);
+extraGameInfo [0].loadout.nGuns = 0;
+for (i = 0; i < sizeofa (pszGuns); i++) {
+	if (m [optGuns + i].value)
+		extraGameInfo [0].loadout.nGuns |= (1 << i);
+	}
+extraGameInfo [0].loadout.nDevices = 0;
+for (i = 0; i < sizeofa (pszDevices); i++) {
+	if (m [optDevices + i].value)
+		extraGameInfo [0].loadout.nDevices |= nDeviceFlags [i];
+	}
+}
+
+//------------------------------------------------------------------------------
+
 static char *pszMslTurnSpeeds [3];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
@@ -4109,7 +4231,8 @@ void GameplayOptionsMenu ()
 	int	optFixedSpawn = -1, optSnipeMode = -1, optAutoSel = -1, optInventory = -1, 
 			optDualMiss = -1, optDropAll = -1, optImmortal = -1, optMultiBosses = -1, optTripleFusion = -1,
 			optEnhancedShakers = -1, optSmartWeaponSwitch = -1, optWeaponDrop = -1, optIdleAnims = -1, 
-			optAwareness = -1, optHeadLightBuiltIn = -1, optHeadLightPowerDrain = -1, optHeadLightOnWhenPickedUp = -1;
+			optAwareness = -1, optHeadLightBuiltIn = -1, optHeadLightPowerDrain = -1, optHeadLightOnWhenPickedUp = -1,
+			optLoadout;
 	char	szRespawnDelay [60];
 	char	szDifficulty [50], szMaxSmokeGrens [50];
 
@@ -4200,9 +4323,15 @@ do {
 	opt++;
 	m [optAutoSel + NMCLAMP (gameOpts->gameplay.nAutoSelectWeapon, 0, 2)].value = 1;
 	m [optSnipeMode + NMCLAMP (extraGameInfo [0].nZoomMode, 0, 2)].value = 1;
+	ADD_TEXT (opt, "", 0);
+	opt++;
+	ADD_MENU (opt, TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
+	optLoadout = opt++;
 	Assert (sizeofa (m) >= opt);
 	do {
 		i = ExecMenu1 (NULL, TXT_GAMEPLAY_OPTS, opt, m, &GameplayOptionsCallback, &choice);
+		if (choice == optLoadout)
+			LoadoutOptions ();
 		} while (i >= 0);
 	} while (i == -2);
 if (gameOpts->app.bExpertMode) {

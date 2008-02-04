@@ -495,15 +495,15 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_HEADLIGHT |
 	 PLAYER_FLAGS_HEADLIGHT_ON |
 	 PLAYER_FLAGS_FLAG);
-if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1]) {
-	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [1].loadout.nGuns;
-	if (extraGameInfo [1].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX))
+if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
+	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
+	if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
-	else if (extraGameInfo [1].loadout.nGuns & HAS_FLAG (LASER_INDEX))
+	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
-	if (extraGameInfo [1].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
+	if (extraGameInfo [IsMultiGame].loadout.nGuns & (HAS_FLAG (VULCAN_INDEX) | HAS_FLAG (GAUSS_INDEX)))
 		LOCALPLAYER.primaryAmmo [1] = i2f (5000) / VULCAN_AMMO_SCALE;
-	LOCALPLAYER.flags |= extraGameInfo [1].loadout.nDevices;
+	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
 	}
@@ -868,6 +868,9 @@ memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
 memset (gameData.render.mine.bCalcVertexColor, 0, sizeof (gameData.render.mine.bCalcVertexColor));
+memset (gameData.multiplayer.nPrimaryWeapons, 0xff, sizeof (gameData.multiplayer.nPrimaryWeapons));
+memset (gameData.multiplayer.nSecondaryWeapons, 0xff, sizeof (gameData.multiplayer.nSecondaryWeapons));
+memset (gameData.multiplayer.nArmedMissiles, 0xff, sizeof (gameData.multiplayer.nArmedMissiles));
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/LogErr ("   stopping music\n");

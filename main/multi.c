@@ -488,11 +488,12 @@ else
 
 void MultiSendPlayerWeapons (int nPlayer)
 {
-gameData.multigame.msg.buf [0] = (char) MULTI_SET_TEAM;
+gameData.multigame.msg.buf [0] = (char) MULTI_PLAYER_WEAPONS;
 gameData.multigame.msg.buf [1] = (char) nPlayer;
 gameData.multigame.msg.buf [2] = gameData.multiplayer.nPrimaryWeapons [nPlayer];
 gameData.multigame.msg.buf [3] = gameData.multiplayer.nSecondaryWeapons [nPlayer];
 gameData.multigame.msg.buf [4] = gameData.multiplayer.nArmedMissiles [nPlayer];
+MultiSendData (gameData.multigame.msg.buf, 5, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -4962,17 +4963,12 @@ void MultiProcessData (char *buf, int len)
 	// Take an entire message (that has already been checked for validity, 
 	// if necessary) and act on it.
 
-	ubyte nType;
-	len = len;
+	ubyte nType = buf [0];
 
-	nType = buf [0];
-
-	if (nType > MULTI_MAX_TYPE)
-	{
-		Int3 ();
-		return;
+if (nType > MULTI_MAX_TYPE) {
+	Int3 ();
+	return;
 	}
-
 
 #ifdef NETPROFILING
 	TTRecv [nType]++;
@@ -4981,13 +4977,13 @@ void MultiProcessData (char *buf, int len)
 #endif
 con_printf (CON_VERBOSE, "multi data %d\n", nType);
 #ifndef _DEBUG
-	if (nType <= MULTI_MAX_TYPE) {
-		tMultiHandlerInfo	*pmh = multiHandlers + nType;
-		if (pmh->fpMultiHandler && !(gameStates.app.bEndLevelSequence && pmh->noEndLevelSeq))
-			pmh->fpMultiHandler (buf);
-		}
+if (nType <= MULTI_MAX_TYPE) {
+	tMultiHandlerInfo	*pmh = multiHandlers + nType;
+	if (pmh->fpMultiHandler && !(gameStates.app.bEndLevelSequence && pmh->noEndLevelSeq))
+		pmh->fpMultiHandler (buf);
+	}
 #else //_DEBUG
-	switch (nType) {
+switch (nType) {
 	case MULTI_POSITION:
 		if (!gameStates.app.bEndLevelSequence) 
 			MultiDoPosition (buf); 

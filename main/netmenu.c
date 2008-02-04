@@ -1028,96 +1028,6 @@ extraGameInfo [0].entropy.nShieldDamageRate = (ushort) atol (m [optShieldDmg].te
 
 //------------------------------------------------------------------------------
 
-static char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
-static char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight"};
-static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT};
-
-static int optGuns, optDevices;
-
-//------------------------------------------------------------------------------
-
-static inline void SetGunLoadoutFlag (int i, int v)
-{
-if (v)
-	extraGameInfo [1].loadout.nGuns |= (1 << i);
-else
-	extraGameInfo [1].loadout.nGuns &= ~(1 << i);
-}
-
-//------------------------------------------------------------------------------
-
-static inline int GetGunLoadoutFlag (int i)
-{
-return (extraGameInfo [1].loadout.nGuns & (1 << i)) != 0;
-}
-
-//------------------------------------------------------------------------------
-
-void NetworkLoadoutCallback (int nitems, tMenuItem * menus, int * key, int cItem)
-{
-	tMenuItem	*m;
-	int			v;
-
-if (cItem == optGuns) {	//checked/unchecked lasers
-	m = menus + optGuns;
-	v = m->value;
-	if (v != GetGunLoadoutFlag (0)) {
-		SetGunLoadoutFlag (0, v);
-		if (!v) {	//if lasers unchecked, also uncheck super lasers
-			SetGunLoadoutFlag (5, 0);
-			menus [optGuns + 5].value = 0;
-			}
-		}
-	}
-else if (cItem == optGuns + 5) {	//checked/unchecked super lasers
-	m = menus + optGuns + 5;
-	v = m->value;
-	if (v != GetGunLoadoutFlag (5)) {
-		SetGunLoadoutFlag (5, v);
-		if (v) {	// if super lasers checked, also check lasers
-			SetGunLoadoutFlag (0, 1);
-			menus [optGuns].value = 1;
-			}
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void NetworkLoadoutOptions (void)
-{
-	tMenuItem	m [25];
-	int			i, opt = 0;
-
-memset (m, 0, sizeof (m));
-ADD_TEXT (opt, TXT_GUN_LOADOUT, 0);
-opt++;
-for (i = 0, optGuns = opt; i < sizeofa (pszGuns); i++, opt++)
-	ADD_CHECK (opt, pszGuns [i], (extraGameInfo [1].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
-ADD_TEXT (opt, "", 0);
-opt++;
-ADD_TEXT (opt, TXT_DEVICE_LOADOUT, 0);
-opt++;
-for (i = 0, optDevices = opt; i < sizeofa (pszDevices); i++, opt++)
-	ADD_CHECK (opt, pszDevices [i], (extraGameInfo [1].loadout.nDevices & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
-Assert (opt <= sizeofa (m));
-do {
-	i = ExecMenu1 (NULL, TXT_LOADOUT_MENUTITLE, opt, m, NetworkLoadoutCallback, 0);
-	} while (i != -1);
-extraGameInfo [1].loadout.nGuns = 0;
-for (i = 0; i < sizeofa (pszGuns); i++) {
-	if (m [optGuns + i].value)
-		extraGameInfo [1].loadout.nGuns |= (1 << i);
-	}
-extraGameInfo [1].loadout.nDevices = 0;
-for (i = 0; i < sizeofa (pszDevices); i++) {
-	if (m [optDevices + i].value)
-		extraGameInfo [1].loadout.nDevices |= nDeviceFlags [i];
-	}
-}
-
-//------------------------------------------------------------------------------
-
 static int nBonusOpt, nSizeModOpt, nPyroForceOpt;
 
 void MonsterballMenuCallback (int nitems, tMenuItem * menus, int * key, int cItem)
@@ -1339,7 +1249,7 @@ int NetworkGetGameParams (int bAutoRun)
 {
 	int i, key, choice = 1;
 	int opt, optGameName, optLevel, optLevelText, optMoreOpts, 
-		 optMission, optMissionName, optD2XOpts, optLoadoutOpts, optConfigMenu;
+		 optMission, optMissionName, optD2XOpts, optConfigMenu;
 	tMenuItem m [35];
 	char name [NETGAME_NAME_LEN+1];
 	char szLevelText [32];
@@ -1484,14 +1394,11 @@ ADD_MENU (opt, TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
 optMoreOpts = opt++;
 optConfigMenu =
 optD2XOpts =
-optLoadoutOpts =
 optEntOpts =
 optMBallOpts = -1;
 if (!gameStates.app.bNostalgia) {
 	ADD_MENU (opt, TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
 	optD2XOpts = opt++;
-	ADD_MENU (opt, TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
-	optLoadoutOpts = opt++;
 	if (m [optEntropy].value) {
 		ADD_MENU (opt, TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
 		optEntOpts = opt++;
@@ -1559,10 +1466,6 @@ else if (!gameStates.app.bNostalgia && (optMBallOpts >= 0) && (choice == optMBal
 	}
 else if (!gameStates.app.bNostalgia && (optConfigMenu >= 0) && (choice == optConfigMenu)) {
 	ConfigMenu ();
-	goto doMenu;
-	}
-else if (!gameStates.app.bNostalgia && (optLoadoutOpts >= 0) && (choice == optLoadoutOpts)) {
-	NetworkLoadoutOptions ();
 	goto doMenu;
 	}
 else if (choice == optMission) {

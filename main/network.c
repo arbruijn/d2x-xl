@@ -1556,7 +1556,6 @@ extraGameInfo [1].nCoopPenalty = egi1Save.nCoopPenalty;
 extraGameInfo [1].bRadarEnabled = ((netGame.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0);
 extraGameInfo [1].bWiggle = 1;
 extraGameInfo [1].nType = PID_EXTRA_GAMEINFO;
-extraGameInfo [1].loadout = egi1Save.loadout;
 memcpy (extraGameInfo [1].szGameName, mpParams.szGameName, sizeof (mpParams.szGameName));
 extraGameInfo [1].nSecurity = netGame.nSecurity;
 gameStates.app.bHaveExtraGameInfo [1] = 1;

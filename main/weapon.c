@@ -1318,14 +1318,14 @@ return nObject;
 
 static inline int IsBuiltInDevice (int nDeviceFlag)
 {
-return IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && ((extraGameInfo [1].loadout.nDevices & nDeviceFlag) != 0);
+return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag) != 0);
 }
 
 //	-----------------------------------------------------------------------------
 
 static inline int IsBuiltInGun (int nGunIndex)
 {
-return IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && ((extraGameInfo [1].loadout.nGuns & HAS_FLAG (nGunIndex)) != 0);
+return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nGunIndex)) != 0);
 }
 
 //	-----------------------------------------------------------------------------

@@ -92,7 +92,7 @@ if (gameData.multiplayer.nSecondaryWeapons [gameData.multiplayer.nLocalPlayer] !
 	}
 if (gameData.multiplayer.nArmedMissiles [gameData.multiplayer.nLocalPlayer] != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
 	gameData.multiplayer.nArmedMissiles [gameData.multiplayer.nLocalPlayer] = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
-	bUpdate = TRUE;
+	bUpdate = 1;
 	}
 if (bUpdate)
 	MultiSendPlayerWeapons (gameData.multiplayer.nLocalPlayer);
