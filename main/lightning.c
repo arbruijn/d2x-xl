@@ -309,7 +309,8 @@ for (i = nLightnings, pl = pfRoot; i > 0; i--, pl++) {
 		}
 	else {
 		pl->nObject = nObject;
-		pl->nSegment = OBJECTS [nObject].nSegment;
+		if (0 > (pl->nSegment = OBJECTS [nObject].nSegment))
+			return NULL;
 		}
 	pl->pParent = pParent;
 	pl->nNode = nNode;
@@ -1064,6 +1065,8 @@ if (SHOW_LIGHTNINGS) {
 
 void MoveLightnings (int i, tLightning *pl, vmsVector *vNewPos, short nSegment, int bStretch, int bFromEnd)
 {
+if (nSegment < 0)
+	return;
 if (SHOW_LIGHTNINGS) {
 		tLightningNode	*pln;
 		vmsVector		vDelta, vOffs;
@@ -1957,21 +1960,25 @@ else {
 
 void SetLightningSegLight (short nSegment, vmsVector *vPos, tRgbaColorf *colorP)
 {
-	tLightningLight	*pll = gameData.lightnings.lights + nSegment;
+if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
+	return;
+else {
+		tLightningLight	*pll = gameData.lightnings.lights + nSegment;
 
-if (pll->nFrameFlipFlop != gameStates.render.nFrameFlipFlop + 1) {
-	memset (pll, 0, sizeof (*pll));
-	pll->nFrameFlipFlop = gameStates.render.nFrameFlipFlop + 1;
-	pll->nNext = gameData.lightnings.nFirstLight;
-	gameData.lightnings.nFirstLight = nSegment;
+	if (pll->nFrameFlipFlop != gameStates.render.nFrameFlipFlop + 1) {
+		memset (pll, 0, sizeof (*pll));
+		pll->nFrameFlipFlop = gameStates.render.nFrameFlipFlop + 1;
+		pll->nNext = gameData.lightnings.nFirstLight;
+		gameData.lightnings.nFirstLight = nSegment;
+		}
+	pll->nLights++;
+	VmVecInc (&pll->vPos, vPos);
+	pll->color.red += colorP->red;
+	pll->color.green += colorP->green;
+	pll->color.blue += colorP->blue;
+	pll->color.alpha += colorP->alpha;
+	pll->nSegment = nSegment;
 	}
-pll->nLights++;
-VmVecInc (&pll->vPos, vPos);
-pll->color.red += colorP->red;
-pll->color.green += colorP->green;
-pll->color.blue += colorP->blue;
-pll->color.alpha += colorP->alpha;
-pll->nSegment = nSegment;
 }
 
 //------------------------------------------------------------------------------
@@ -2015,6 +2022,8 @@ if (SHOW_LIGHTNINGS || bForce) {
 		int					i;
 
 	for (i = gameData.lightnings.nFirstLight; i >= 0; ) {
+		if ((i < 0) || (i >= MAX_SEGMENTS))
+			continue;
 		pll = gameData.lightnings.lights + i;
 		i = pll->nNext;
 		pll->nNext = -1;
@@ -2049,6 +2058,8 @@ if (SHOW_LIGHTNINGS) {
 		}
 	if (nLights) {
 		for (i = gameData.lightnings.nFirstLight; i >= 0; i = pll->nNext) {
+			if ((i < 0) || (i >= MAX_SEGMENTS))
+				continue;
 			pll = gameData.lightnings.lights + i;
 			n = pll->nLights;
 			VmVecScale (&pll->vPos, F1_0 / n);
