@@ -411,6 +411,7 @@ void DigiStopAllChannels ()
 
 for (i = 0; i < MAX_SOUND_SLOTS; i++)
 	DigiStopSound (i);
+gameData.multiplayer.bMoving = -1;
 }
 
 //------------------------------------------------------------------------------

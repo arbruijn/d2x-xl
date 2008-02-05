@@ -4796,9 +4796,9 @@ else {
 		if (gameConfig.nMidiVolume < 1)
 			DigiPlayMidiSong (NULL, NULL, NULL, 1, 0);
 		else if (!bSongPlaying) {
-			DigiStopAllChannels ();
+			//DigiStopAllChannels ();
 			if (gameStates.app.bGameRunning)
-				PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, gameStates.app.bGameRunning);
+				PlayLevelSong (gameData.missions.nCurrentLevel ? gameData.missions.nCurrentLevel : 1, 1);
 			else
 				SongsPlaySong (SONG_TITLE, 1);
 			}

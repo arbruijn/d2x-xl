@@ -550,7 +550,7 @@ void DigiGetSoundLoc (vmsMatrix * listener, vmsVector * vListenerPos, int nListe
 				angle_from_ear = VmVecDeltaAngNorm(&listener->rVec,&vector_toSound,&listener->uVec);
 				FixSinCos(angle_from_ear,&sinang,&cosang);
 				//con_printf (CONDBG, "volume is %.2f\n", f2fl(*volume));
-				if (gameConfig.bReverseChannels) 
+				if (gameConfig.bReverseChannels || gameOpts->sound.bHires) 
 					cosang = -cosang;
 				*pan = (cosang + F1_0)/2;
 				}

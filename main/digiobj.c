@@ -166,7 +166,7 @@ if (distance < maxDistance) {
 		else {
 			angleFromEar = VmVecDeltaAngNorm (&mListener->rVec, &vecToSound, &mListener->uVec);
 			FixSinCos (angleFromEar, &sinang, &cosang);
-			if (gameConfig.bReverseChannels) 
+			if (gameConfig.bReverseChannels || gameOpts->sound.bHires) 
 				cosang = -cosang;
 			*pan = (cosang + F1_0) / 2;
 			}
