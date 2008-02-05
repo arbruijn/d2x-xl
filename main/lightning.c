@@ -1899,7 +1899,7 @@ return NULL;
 
 void StaticLightningFrame (void)
 {
-	int				i;
+	int				h, i;
 	tObject			*objP;
 	vmsVector		*vEnd, *vDelta, v;
 	tLightningInfo	*pli;
@@ -1930,10 +1930,11 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 	color.blue = (float) pli->color.blue / 255.0f;
 	color.alpha = (float) pli->color.alpha / 255.0f;
 	vDelta = pli->bInPlane ? &objP->position.mOrient.rVec : NULL;
-	gameData.lightnings.objects [i] =
-		CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
-							  pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
-							  pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, pli->nStyle, &color);
+	h = CreateLightning (pli->nLightnings, &objP->position.vPos, vEnd, vDelta, i, -abs (pli->nLife), pli->nDelay, pli->nLength * F1_0,
+							   pli->nAmplitude * F1_0, pli->nAngle, pli->nOffset * F1_0, pli->nNodes, pli->nChildren, pli->nChildren > 0, pli->nSteps,
+							   pli->nSmoothe, pli->bClamp, pli->bPlasma, pli->bSound, pli->nStyle, &color);
+	if (h >= 0)
+		gameData.lightnings.objects [i] = h;
 	}
 }
 
@@ -2117,14 +2118,16 @@ CreateExplosionLightnings (objP, &color, h + rand () % h, h * (F1_0 + F1_0 / 2),
 void CreateRobotLightnings (tObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (objP)) {
-		int i = OBJ_IDX (objP);
+		int h, i = OBJ_IDX (objP);
 
 	if (0 <= gameData.lightnings.objects [i]) 
 		MoveObjectLightnings (objP);
-	else
-		gameData.lightnings.objects [i] = CreateLightning (
-			2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 100, 
-			objP->size, objP->size / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 0, colorP);
+	else {
+		h = CreateLightning (2 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 100, 
+									objP->size, objP->size / 8, 0, 0, 25, 3, 1, 3, 1, 1, 0, 0, 0, colorP);
+		if (h >= 0)
+			gameData.lightnings.objects [i] = h;
+		}
 	}
 }
 
@@ -2133,14 +2136,16 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bRobots && OBJECT_EXISTS (obj
 void CreatePlayerLightnings (tObject *objP, tRgbaColorf *colorP)
 {
 if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bPlayers && OBJECT_EXISTS (objP)) {
-		int i = OBJ_IDX (objP);
+		int h, i = OBJ_IDX (objP);
 
 	if (0 <= gameData.lightnings.objects [i]) 
 		MoveObjectLightnings (objP);
-	else
-		gameData.lightnings.objects [i] = CreateLightning (
-			4 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, 
-			4 * objP->size, objP->size, 0, 2 * objP->size, 50, 5, 1, 5, 1, 1, 0, 1, 1, colorP);
+	else {
+		h = CreateLightning (4 * objP->size / F1_0, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -5000, 1000, 
+									4 * objP->size, objP->size, 0, 2 * objP->size, 50, 5, 1, 5, 1, 1, 0, 1, 1, colorP);
+		if (h >= 0)
+			gameData.lightnings.objects [i] = h;
+		}
 	}
 }
 
@@ -2165,9 +2170,10 @@ if (SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && OBJECT_EXISTS (obj
 			}
 		DestroyLightnings (h, NULL, 0);
 		}
-	gameData.lightnings.objects [i] = CreateLightning (
-		n, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 4000, 
-		objP->size, objP->size / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, -1, colorP);
+	h = CreateLightning (n, &objP->position.vPos, NULL, NULL, OBJ_IDX (objP), -1000, 4000, 
+								objP->size, objP->size / 8, 0, 0, 20, 0, 1, 10, 1, 1, 0, 0, -1, colorP);
+	if (h >= 0)
+		gameData.lightnings.objects [i] = h;
 	}
 }
 
