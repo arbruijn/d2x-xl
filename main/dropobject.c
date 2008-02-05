@@ -1003,7 +1003,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		if (nVulcanAmmo < VULCAN_AMMO_AMOUNT)
 			nVulcanAmmo = VULCAN_AMMO_AMOUNT;	//make sure gun has at least as much as a powerup
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, VULCAN_INDEX);
-		if (nObject!=-1)
+		if (nObject >= 0)
 			gameData.objs.objects [nObject].cType.powerupInfo.count = nVulcanAmmo;
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, GAUSS_INDEX);
 		if (nObject >= 0)
@@ -1016,7 +1016,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		MaybeDropPrimaryWeaponEgg (playerObjP, HELIX_INDEX);
 		MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
 		nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
-		if (nObject != -1)
+		if (nObject >= 0)
 			gameData.objs.objects [nObject].cType.powerupInfo.count = 
 				(playerObjP->id == gameData.multiplayer.nLocalPlayer) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 		//	Drop the secondary weapons

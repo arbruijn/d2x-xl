@@ -658,7 +658,7 @@ if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed)) {
 if (memcmp (&networkData.playerRejoining, their, sizeof (networkData.playerRejoining))) {
 	if (networkData.bSendObjects)
 		return;
-	if (networkData.bSendingExtras && networkData.bVerifyPlayerJoined == -1)
+	if (networkData.bSendingExtras && (networkData.bVerifyPlayerJoined == -1))
 		return;
 	}
 #if 0
