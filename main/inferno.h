@@ -785,6 +785,8 @@ typedef struct tAutomapStates {
 	int bDisplay;
 	int bFull;
 	int bRadar;
+	int nSegmentLimit;
+	int nMaxSegsAway;
 	} tAutomapStates;
 
 typedef struct tRenderHistory {

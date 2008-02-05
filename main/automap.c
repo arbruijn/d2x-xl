@@ -607,7 +607,7 @@ extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
 				((amData.bHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0))?"MAPB.PCX":"MAP.PCX")
 #endif
 
-int InitAutomap (int bPauseGame, fix *pxEntryTime, int *pnMaxSegsAway, int *pnSegmentLimit, vmsAngVec *pvTAngles)
+int InitAutomap (int bPauseGame, fix *pxEntryTime, vmsAngVec *pvTAngles)
 {
 		int	nPCXError;
 		fix	t1, t2;
@@ -678,12 +678,12 @@ if (gameStates.render.automap.bRadar) {
 #endif
 	memset (gameData.render.mine.bAutomapVisited, 1, sizeof (*gameData.render.mine.bAutomapVisited) * gameData.segs.nSegments);
 	}
-*pnSegmentLimit =
-*pnMaxSegsAway = 
-	SetSegmentDepths (
-		gameData.objs.objects [LOCALPLAYER.nObject].nSegment, 
-		gameData.render.mine.bAutomapVisited);
-AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
+else if (gameStates.render.automap.bFull)
+	memset (gameData.render.mine.bAutomapVisited, 1, sizeof (*gameData.render.mine.bAutomapVisited) * gameData.segs.nSegments);
+gameStates.render.automap.nSegmentLimit =
+gameStates.render.automap.nMaxSegsAway = 
+	SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);
+AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
 #if 1//ndef _DEBUG
 if (gameStates.render.automap.bRadar && !IsMultiGame)
 	memcpy (gameData.render.mine.bAutomapVisited, gameData.render.mine.bRadarVisited, sizeof (gameData.render.mine.bRadarVisited));
@@ -728,7 +728,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ReadAutomapControls (int nLeaveMode, int bDone, int *pbPauseGame, int *pnMaxSegsAway, int *pnSegmentLimit)
+int ReadAutomapControls (int nLeaveMode, int bDone, int *pbPauseGame)
 {
 	int	c, nMarker, nMaxDrop;
 
@@ -772,25 +772,24 @@ while ((c = KeyInKey ())) {
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
 				gameData.render.mine.bAutomapVisited [i] = 1;
 			AutomapBuildEdgeList ();
-			*pnSegmentLimit = 
-			*pnMaxSegsAway = SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);
-			AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
+			gameStates.render.automap.nSegmentLimit = 
+			gameStates.render.automap.nMaxSegsAway = 
+				SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);
+			AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
 			}
 			break;
 #endif
 
 		case KEY_MINUS:
-			if (*pnSegmentLimit > 1) {
-				(*pnSegmentLimit)--;
-				AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
-				}
+		case KEY_PADMINUS:
+			if (gameStates.render.automap.nSegmentLimit > 1) 
+				AdjustSegmentLimit (--gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
 			break;
 
 		case KEY_EQUAL:
-			if (*pnSegmentLimit < *pnMaxSegsAway) {
-				(*pnSegmentLimit)++;
-				AdjustSegmentLimit (*pnSegmentLimit, gameData.render.mine.bAutomapVisited);
-				}
+		case KEY_PADPLUS:
+			if (gameStates.render.automap.nSegmentLimit < gameStates.render.automap.nMaxSegsAway)
+				AdjustSegmentLimit (++gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
 			break;
 
 		case KEY_1:
@@ -803,14 +802,11 @@ while ((c = KeyInKey ())) {
 		case KEY_8:
 		case KEY_9:
 		case KEY_0:
-			if (gameData.app.nGameMode & GM_MULTI)
-			   nMaxDrop = 2;
-			else
-			   nMaxDrop = 9;
+			 nMaxDrop = MaxDrop ();
 			nMarker = c - KEY_1;
 			if (nMarker <= nMaxDrop) {
 				if (gameData.marker.objects [nMarker] != -1)
-					gameData.marker.nHighlight=nMarker;
+					gameData.marker.nHighlight = nMarker;
 				}
 		break;
 
@@ -880,15 +876,15 @@ void DoAutomap (int nKeyCode, int bRadar)
 	fix			xEntryTime;
 	int			bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix			t1 = 0, t2 = 0;
-	int			nMaxSegsAway = 0;
-	int			nSegmentLimit = 1;
 	int			nContrast = gameStates.ogl.nContrast;
 	int			bRedrawScreen = 0;
 
 	//static ubyte	automapPal [256*3];
 
+gameStates.render.automap.nMaxSegsAway = 0;
+gameStates.render.automap.nSegmentLimit = 1;
 gameStates.render.automap.bRadar = bRadar;
-bPauseGame = InitAutomap (bPauseGame, &xEntryTime, &nMaxSegsAway, &nSegmentLimit, &vTAngles);
+bPauseGame = InitAutomap (bPauseGame, &xEntryTime, &vTAngles);
 bRedrawScreen = 0;
 if (bRadar) {
 	DrawAutomap ();
@@ -905,7 +901,7 @@ while (!bDone)	{
 		bDone = 1;
 	bDone = AMGameFrame (bPauseGame, bDone);
 	SongsCheckRedbookRepeat ();
-	bDone = ReadAutomapControls (nLeaveMode, bDone, &bPauseGame, &nMaxSegsAway, &nSegmentLimit);
+	bDone = ReadAutomapControls (nLeaveMode, bDone, &bPauseGame);
 	UpdateAutomap (&vTAngles);
 	DrawAutomap ();
 	if (bFirstTime) {
@@ -937,12 +933,12 @@ void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited)
 	int i,e1;
 	tEdgeInfo * e;
 
-for (i=0; i<=nHighestEdgeIndex; i++)	{
+for (i = 0; i <= nHighestEdgeIndex; i++)	{
 	e = Edges + i;
 	e->flags |= EF_TOO_FAR;
-	for (e1=0; e1<e->num_faces; e1++)	{
+	for (e1 = 0; e1 < e->num_faces; e1++)	{
 		if (pVisited [e->nSegment [e1]] <= nSegmentLimit)	{
-			e->flags &= (~EF_TOO_FAR);
+			e->flags &= ~EF_TOO_FAR;
 			break;
 			}
 		}

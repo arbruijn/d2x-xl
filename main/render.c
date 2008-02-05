@@ -676,7 +676,7 @@ OglSetupTransform (0);
 cc = RotateVertexList (8, segP->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
-if (cc.and && !gameStates.render.automap.bDisplay)	//all off screen and not rendering the automap	
+if (cc.and /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap	
 	return 0;
 gameStates.render.nState = 0;
 #ifdef _DEBUG //convenient place for a debug breakpoint
@@ -1540,7 +1540,8 @@ memset (gameData.render.mine.nSegRenderList, 0xff, sizeof (gameData.render.mine.
 
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
-		if (gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [i]) {
+		if ((gameStates.render.automap.bFull && (gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway)) || 
+			 (gameData.render.mine.bAutomapVisited [i] <= gameStates.render.automap.nSegmentLimit)) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			VISIT (i);
 			}

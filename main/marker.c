@@ -28,17 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newmenu.h"
 #include "marker.h"
 
-#define	MAX_DROP_MULTI		2
-#define	MAX_DROP_COOP		3
-#define	MAX_DROP_SINGLE	9
-
-// -------------------------------------------------------------
-
-static inline int MaxDrop (void)
-{
-return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
-}
-
 // -------------------------------------------------------------
 
 static inline tObject *MarkerObj (int nPlayer, int nMarker)

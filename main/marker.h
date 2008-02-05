@@ -17,6 +17,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "player.h"
 
+#define	MAX_DROP_MULTI		2
+#define	MAX_DROP_COOP		3
+#define	MAX_DROP_SINGLE	9
+
+// -------------------------------------------------------------
+
+static inline int MaxDrop (void)
+{
+return IsMultiGame ? IsCoopGame ? MAX_DROP_COOP : MAX_DROP_MULTI : MAX_DROP_SINGLE;
+}
+
+// -------------------------------------------------------------
+
 void DropBuddyMarker (tObject *objP);
 void DropSpawnMarker (void);
 void DrawMarkers (void);
@@ -29,5 +42,7 @@ int SpawnMarkerIndex (int nPlayer);
 tObject *SpawnMarkerObject (int nPlayer);
 int IsSpawnMarkerObject (tObject *objP);
 int MoveSpawnMarker (tPosition *posP, short nSegment);
+
+// -------------------------------------------------------------
 
 #endif //_MARKER_H

@@ -2084,11 +2084,11 @@ void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 
 
 //	----------------------------------------------------------------------------------------------------------
-//	Set the tSegment nDepth of all segments from nStartSeg in *segbuf.
+//	Set the segment depth of all segments from nStartSeg in *segbuf.
 //	Returns maximum nDepth value.
 static int head, tail, nSegment, nChild, nSide;
 
-int SetSegmentDepths (int nStartSeg, ubyte *segbuf)
+int SetSegmentDepths (int nStartSeg, ubyte *pDepthBuf)
 {
 	//int	nSegment, nSide, nChild;
 	ubyte	visited [MAX_SEGMENTS_D2X];
@@ -2105,17 +2105,17 @@ int SetSegmentDepths (int nStartSeg, ubyte *segbuf)
 
 if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
 	return 1;
-if (segbuf [nStartSeg] == 0)
+if (pDepthBuf [nStartSeg] == 0)
 	return 1;
 queue [tail++] = nStartSeg;
-visited [nStartSeg] = 1;
-segbuf [nStartSeg] = nDepth++;
 memset (visited, 0, sizeof (*visited) * gameData.segs.nSegments);
+visited [nStartSeg] = 1;
+pDepthBuf [nStartSeg] = nDepth++;
 if (nDepth == 0)
 	nDepth = 255;
 while (head < tail) {
 	nSegment = queue [head++];
-	nParentDepth = segbuf [nSegment];
+	nParentDepth = pDepthBuf [nSegment];
 	childP = gameData.segs.segments [nSegment].children;
 	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
 		nChild = *childP;
@@ -2128,12 +2128,12 @@ while (head < tail) {
 			return 1;
 			}
 #endif
-		if (!segbuf [nChild])
+		if (!pDepthBuf [nChild])
 			continue;
 		if (visited [nChild])
 			continue;
 		visited [nChild] = 1;
-		segbuf [nChild] = nParentDepth + 1;
+		pDepthBuf [nChild] = nParentDepth + 1;
 		queue [tail++] = nChild;
 		}
 	}
