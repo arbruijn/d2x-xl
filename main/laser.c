@@ -1605,8 +1605,14 @@ if (!gameStates.app.cheats.bHomingWeapons &&
 	 (nWeapon != HOMINGMSL_ID) && (nWeapon != MEGAMSL_ID) && (nWeapon != GUIDEDMSL_ID))
 	return;
 //pnt = gameData.pig.ship.player->gunPoints [nGun];
-j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
-h = gameData.laser.nMissileGun & 1;
+if (nWeapon == MEGAMSL_ID) {
+	j = 1;
+	h = 0;
+	}
+else {
+	j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
+	h = gameData.laser.nMissileGun & 1;
+	}
 viewP = ObjectView (gameData.objs.console);
 for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;

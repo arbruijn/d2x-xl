@@ -80,7 +80,7 @@ return FindHomingObjectComplete (curpos, tracker, OBJ_PLAYER, gameStates.app.che
 //	--------------------------------------------------------------------------------------------
 //	Find tObject to home in on.
 //	Scan list of gameData.objs.objects rendered last frame, find one that satisfies function of nearness to center and distance.
-int FindHomingObject (vmsVector *curpos, tObject *trackerP)
+int FindHomingObject (vmsVector *vTrackerPos, tObject *trackerP)
 {
 	int	i, bOmega = (trackerP->nType == OBJ_WEAPON) && (trackerP->id == OMEGA_ID);
 	fix	maxDot = -F1_0*2;
@@ -99,7 +99,7 @@ Assert (gameStates.app.cheats.bHomingWeapons ||
 	//	Find an tObject to track based on game mode (eg, whether in network play) and who fired it.
 
 if (IsMultiGame)
-	return CallFindHomingObjectComplete (trackerP, curpos);
+	return CallFindHomingObjectComplete (trackerP, vTrackerPos);
 
 curMinTrackableDot = MIN_TRACKABLE_DOT;
 if (bOmega)
@@ -125,7 +125,7 @@ else {
 
 	//	Couldn't find suitable view from this frame, so do complete search.
 	if (nWindow == -1)
-		return CallFindHomingObjectComplete (trackerP, curpos);
+		return CallFindHomingObjectComplete (trackerP, vTrackerPos);
 
 	maxTrackableDist = MAX_TRACKABLE_DIST;
 	if (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (trackerP->nType == OBJ_WEAPON) && (trackerP->id == EARTHSHAKER_MEGA_ID))
@@ -158,7 +158,7 @@ else {
 			}
 		else if (curObjP->nType != OBJ_PLAYER)
 			continue;
-		VmVecSub (&vecToCurObj, &curObjP->position.vPos, curpos);
+		VmVecSub (&vecToCurObj, &curObjP->position.vPos, vTrackerPos);
 		dist = VmVecNormalizeQuick (&vecToCurObj);
 		if (dist < maxTrackableDist) {
 			dot = VmVecDot (&vecToCurObj, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &trackerP->position.mOrient.fVec);
