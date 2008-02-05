@@ -1776,8 +1776,8 @@ char *defaultGameTexts [][2] = {
 	{"Hochgeschwindigkeit!!", "Bullet Time!!"},
 	{"Waffen-Ausstattung", "Gun Loadout"},
 	{"Geraete-Ausstattung", "Device Loadout"},
-	{"Startausstattung", "Initial Loadout"},
-	{"~Startausstattung...", "Initial ~Loadout..."},
+	{"Eingebaute Ausruestung", "Built-in equipment"},
+	{"~Eingebaute Ausruestung...", "~Built-in equipment..."},
 #if 0
 	{"", ""},
 #endif
