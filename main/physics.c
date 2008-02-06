@@ -682,7 +682,7 @@ retryMove:
 #	endif
 #endif
 #if 1 //make shots and missiles pass through skyboxes
-		if (gameStates.render.bHaveSkyBox && (objP->nType == OBJ_WEAPON)) {
+		if (gameStates.render.bHaveSkyBox && (objP->nType == OBJ_WEAPON) && (hi.hit.nSegment >= 0)) {
 			if (gameData.segs.segment2s [hi.hit.nSegment].special == SEGMENT_IS_SKYBOX) {
 				short nConnSeg = SEGMENTS [hi.hit.nSegment].children [hi.hit.nSide];
 				if ((nConnSeg < 0) && (objP->lifeleft > F1_0)) {	//leaving the mine

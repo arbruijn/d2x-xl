@@ -269,17 +269,8 @@ extern PFNGLUNIFORM1FVARBPROC					glUniform1fv;
 #define OGL_TEXENV(p,m) OGL_SETSTATE(p,m,glTexEnvi(GL_TEXTURE_ENV, p,m));
 #define OGL_TEXPARAM(p,m) OGL_SETSTATE(p,m,glTexParameteri(GL_TEXTURE_2D,p,m));
 
-#define	OGL_VIEWPORT(_x,_y,_w,_h) \
-			{if (((int) (_x) != gameStates.ogl.nLastX) || ((int) (_y) != gameStates.ogl.nLastY) || \
-				  ((int) (_w) != gameStates.ogl.nLastW) || ((int) (_h) != gameStates.ogl.nLastH)) \
-				{glViewport ((GLint) (_x), (GLint) (grdCurScreen->scCanvas.cvBitmap.bmProps.h - (_y) - (_h)), (GLsizei) (_w), (GLsizei) (_h));\
-				gameStates.ogl.nLastX = (_x); \
-				gameStates.ogl.nLastY = (_y); \
-				gameStates.ogl.nLastW = (_w); \
-				gameStates.ogl.nLastH = (_h);}}
-
-
 void OglInitExtensions (void);
+void OglViewport (int x, int y, int w, int h);
 
 //------------------------------------------------------------------------------
 

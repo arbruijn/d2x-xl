@@ -263,7 +263,7 @@ if (!OglInitWindow (w, h, 0))	//platform specific code
 	return 0;
 OglGetVerInfo ();
 /***/LogErr ("   initializing OpenGL view port\n");
-OGL_VIEWPORT (0,0,w,h);
+OglViewport (0,0,w,h);
 /***/LogErr ("   initializing OpenGL screen mode\n");
 OglSetScreenMode ();
 GrUpdate (0);

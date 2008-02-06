@@ -358,6 +358,23 @@ glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 //------------------------------------------------------------------------------
 
+void OglViewport (int x, int y, int w, int h)
+{
+x >>= gameStates.render.cameras.bActive;
+y >>= gameStates.render.cameras.bActive;
+w >>= gameStates.render.cameras.bActive;
+h >>= gameStates.render.cameras.bActive;
+if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameStates.ogl.nLastW) || (h != gameStates.ogl.nLastH)) {
+	glViewport ((GLint) x, (GLint) (grdCurScreen->scCanvas.cvBitmap.bmProps.h >> gameStates.render.cameras.bActive) - y - h, (GLsizei) w, (GLsizei) h);
+	gameStates.ogl.nLastX = x; 
+	gameStates.ogl.nLastY = y; 
+	gameStates.ogl.nLastW = w; 
+	gameStates.ogl.nLastH = h;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 #define GL_INFINITY	0
 
 void OglStartFrame (int bFlat, int bResetColorBuf)
@@ -520,7 +537,7 @@ else
 		OglSetFOV (gameStates.render.glFOV);
 		glMatrixMode (GL_MODELVIEW);
 		glLoadIdentity ();
-		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, nCanvasWidth, nCanvasHeight);
+		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, nCanvasWidth, nCanvasHeight);
 		}
 	if (gameStates.ogl.bEnableScissor) {
 		glScissor (
@@ -593,7 +610,7 @@ nError = glGetError ();
 
 void OglEndFrame (void)
 {
-//	OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
+//	OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, );
 //	glViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 //OglFlushDrawBuffer ();
 //glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, 0);
@@ -606,7 +623,7 @@ G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
 G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-OGL_VIEWPORT (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+OglViewport (0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 #ifndef NMONO
 //	merge_textures_stats ();
 //	ogl_texture_stats ();

@@ -249,6 +249,8 @@ int RIAddObject (tObject *objP)
 	tRIObject	item;
 	vmsVector	vPos;
 
+if (objP->nType == 255)
+	return 0;
 item.objP = objP;
 G3TransformPoint (&vPos, &objP->position.vPos, 0);
 return AddRenderItem (riObject, &item, sizeof (item), vPos.p.z, vPos.p.z);

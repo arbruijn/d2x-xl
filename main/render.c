@@ -1276,7 +1276,7 @@ if (SHOW_SHADOWS &&
 #endif
 		OglStartFrame (0, 0);
 #if SOFT_SHADOWS
-		OGL_VIEWPORT (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 128, 128);
+		OglViewport (grdCurCanv->cvBitmap.bmProps.x, grdCurCanv->cvBitmap.bmProps.y, 128, 128);
 #endif
 		RenderMine (nStartSeg, nEyeOffset, nWindow);
 #ifdef RELEASE

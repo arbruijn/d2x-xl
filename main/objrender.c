@@ -587,6 +587,8 @@ int DrawPolygonObject (tObject *objP, int bDepthSort)
 	int bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int bOk = 0;
 
+if (objP->nType == 255)
+	return 0;
 #if SHADOWS
 if (FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
@@ -733,6 +735,10 @@ if (objP == dbgObjP) {
 #endif
 	}
 #endif
+if (objP->nType == 255) {
+	KillObject (objP);
+	return 0;
+	}
 if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
 	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) &&
 	 (gameStates.render.nShadowPass != 2)) {

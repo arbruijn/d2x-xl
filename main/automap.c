@@ -369,7 +369,7 @@ if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_
 	}
 G3StartFrame (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured, 0); //!gameStates.render.automap.bRadar);
 if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN))
-	OGL_VIEWPORT (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
+	OglViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
 if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	VmVecScaleAdd (&amData.viewPos, &amData.viewTarget, &vmRadar.fVec, -amData.nViewDist);

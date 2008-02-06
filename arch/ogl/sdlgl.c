@@ -174,7 +174,7 @@ gameStates.ogl.nCurWidth = w;
 gameStates.ogl.nCurHeight = h;
 gameStates.ogl.bCurFullScreen = gameStates.ogl.bFullScreen;
 if (gameStates.ogl.bInitialized && bRebuild) {
-	glViewport (0, 0, w, h);
+	OglViewport (0, 0, w, h);
 	if (gameStates.app.bGameRunning) {
 		GrPaletteStepLoad (NULL);
 		RebuildRenderContext (1);

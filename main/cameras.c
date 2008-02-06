@@ -172,12 +172,12 @@ if (gameOpts->render.cameras.bFitToWall || bTeleport) {
 else 
 #endif
 	{
-	h = grdCurCanv->cvBitmap.bmProps.w;
-	for (i = 1; i < h; i *= 2)
+	h = grdCurCanv->cvBitmap.bmProps.w / 2;
+	for (i = 1; i < h; i <<= 1)
 		;
 	pc->texBuf.bmProps.w = i;
-	h = grdCurCanv->cvBitmap.bmProps.h;
-	for (i = 1; i < h; i *= 2)
+	h = grdCurCanv->cvBitmap.bmProps.h / 2;
+	for (i = 1; i < h; i <<= 1)
 		;
 	pc->texBuf.bmProps.h = i;
 	}
@@ -398,8 +398,8 @@ else
 		}
 	du = dv = 0;
 	if (bCamBufAvail) {
-		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) pc->texBuf.bmProps.w;
-		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) pc->texBuf.bmProps.h;
+		duImage = (float) grdCurCanv->cvBitmap.bmProps.w / (float) pc->texBuf.bmProps.w / 2;
+		dvImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) pc->texBuf.bmProps.h / 2;
 		if (!bFitToWall && gameOpts->render.nPath) {
 			aImage = (float) grdCurCanv->cvBitmap.bmProps.h / (float) grdCurCanv->cvBitmap.bmProps.w;
 			if (vertexP)
