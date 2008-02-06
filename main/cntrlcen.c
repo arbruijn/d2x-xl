@@ -236,8 +236,6 @@ void DoReactorDestroyedStuff (tObject *objP)
 if ((gameData.app.nGameMode & GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level
 // Must toggle walls whether it is a boss or control center.
-for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
-	WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
 if ((!objP || (objP->nType == OBJ_ROBOT)) && gameStates.gameplay.bKillBossCheat)
 	return;
 // And start the countdown stuff.
@@ -245,9 +243,12 @@ bFinalCountdown = !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses
 if (bFinalCountdown ||
 	 (gameStates.app.bD2XLevel && bReactor && (trigP = FindObjTrigger (OBJ_IDX (objP), TT_COUNTDOWN, -1)))) {
 //	If a secret level, delete secret.sgc to indicate that we can't return to our secret level.
-	if (bFinalCountdown)
+	if (bFinalCountdown) {
+		for (i = 0; i < gameData.reactor.triggers.nLinks; i++)
+			WallToggle (gameData.segs.segments + gameData.reactor.triggers.nSegment [i], gameData.reactor.triggers.nSide [i]);
 		if (gameData.missions.nCurrentLevel < 0)
 			CFDelete ("secret.sgc", gameFolders.szSaveDir);
+		}
 	InitCountdown (trigP, bFinalCountdown || bReactor, -1);
 	}
 if (bReactor) {
