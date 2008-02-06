@@ -177,7 +177,7 @@ if (psm->vMax.p.z < v.p.z)
 
 inline int G3CmpFaces (tG3ModelFace *pmf, tG3ModelFace *pm, grsBitmap *pTextures)
 {
-if (pTextures && pmf->nBitmap && pm->nBitmap) {
+if (pTextures && (pmf->nBitmap >= 0) && (pm->nBitmap >= 0)) {
 	if (pTextures [pmf->nBitmap].bmBPP < pTextures [pm->nBitmap].bmBPP)
 		return -1;
 	if (pTextures [pmf->nBitmap].bmBPP > pTextures [pm->nBitmap].bmBPP)
