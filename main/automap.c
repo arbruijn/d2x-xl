@@ -580,6 +580,7 @@ char *pszSystemNames [] = {
 void CreateNameCanv (void)
 {
 	char	szExplored [40];
+	int	h, i;
 
 if (gameData.missions.nCurrentLevel > 0)
 	sprintf (amLevelNum, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
@@ -593,7 +594,10 @@ if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) &&
 else
 	strcpy (amLevelName, " ");
 strcat (amLevelName, gameData.missions.szCurrentLevel);
-sprintf (szExplored, " (%1.2f %s)", (float) gameData.segs.nSegments / (float) gameData.render.mine.nRenderSegs, TXT_EXPLORED);
+for (h = i = 0; i < gameData.segs.nSegments; i++)
+	if (gameData.render.mine.bAutomapVisited [i])
+		h++;
+sprintf (szExplored, " (%1.2f%c %s)", (float) h / (float) gameData.segs.nSegments, '%', TXT_EXPLORED);
 strcat (amLevelName, szExplored);
 #if 0
 levelNumCanv = PrintToCanvas (amLevelNum, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
@@ -615,8 +619,8 @@ int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 int InitAutomap (int bPauseGame, fix *pxEntryTime, vmsAngVec *pvTAngles)
 {
-		int	nPCXError;
-		fix	t1, t2;
+		int		i, nPCXError;
+		fix		t1, t2;
 		tObject	*playerP;
 
 gameStates.render.automap.bDisplay = 1;
@@ -682,10 +686,13 @@ if (gameStates.render.automap.bRadar) {
 	if (!IsMultiGame)
 		memcpy (gameData.render.mine.bRadarVisited, gameData.render.mine.bAutomapVisited, sizeof (gameData.render.mine.bRadarVisited));
 #endif
-	memset (gameData.render.mine.bAutomapVisited, 1, sizeof (*gameData.render.mine.bAutomapVisited) * gameData.segs.nSegments);
+	for (i = 0; i < gameData.segs.nSegments; i++)
+		gameData.render.mine.bAutomapVisited [i] = 1;
 	}
-else if (gameStates.render.automap.bFull)
-	memset (gameData.render.mine.bAutomapVisited, 1, sizeof (*gameData.render.mine.bAutomapVisited) * gameData.segs.nSegments);
+else if (gameStates.render.automap.bFull) {
+	for (i = 0; i < gameData.segs.nSegments; i++)
+		gameData.render.mine.bAutomapVisited [i] = 1;
+	}
 gameStates.render.automap.nSegmentLimit =
 gameStates.render.automap.nMaxSegsAway = 
 	SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);

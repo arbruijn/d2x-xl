@@ -104,7 +104,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define DBG(_expr)
 #endif
 
-#define STATE_VERSION				37
+#define STATE_VERSION				38
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) id at tof.
 // 1 - Added Difficulty level save
@@ -660,7 +660,7 @@ if (!bBetweenLevels)	{
 	AISaveBinState (&cf);
 
 // Save the automap visited info
-	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ubyte) * MAX_SEGMENTS, 1, &cf);
+	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ushort) * MAX_SEGMENTS, 1, &cf);
 	}
 CFWrite (&gameData.app.nStateGameId, sizeof (uint), 1, &cf);
 CFWrite (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1, &cf);
@@ -1267,7 +1267,7 @@ if (!bBetweenLevels)	{
 
 	DBG (fPos = CFTell (cfp));
 // Save the automap visited info
-	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ubyte), MAX_SEGMENTS, cfp);
+	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ushort), MAX_SEGMENTS, cfp);
 	DBG (fPos = CFTell (cfp));
 	}
 CFWriteInt ((int) gameData.app.nStateGameId, cfp);
@@ -2362,7 +2362,13 @@ if (!bBetweenLevels)	{
 	DBG (fPos = CFTell (cfp));
 	StateFixObjects ();
 	SpecialResetObjects ();
-	CFRead (gameData.render.mine.bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, cfp);
+	if (sgVersion > 37)
+		CFRead (gameData.render.mine.bAutomapVisited, sizeof (ushort), MAX_SEGMENTS, cfp);
+	else {
+		int	i, j = (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+		for (i = 0; i < j; i++)
+			gameData.render.mine.bAutomapVisited [i] = (ushort) CFReadByte (cfp);
+		}
 	DBG (fPos = CFTell (cfp));
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
@@ -2583,6 +2589,14 @@ if (!bBetweenLevels)	{
 	// Restore the AI state
 	AIRestoreBinState (cfp, sgVersion);
 	// Restore the automap visited info
+	if (sgVersion > 37)
+		CFRead (gameData.render.mine.bAutomapVisited, sizeof (ushort), MAX_SEGMENTS, cfp);
+	else {
+		int	i, j = (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+		for (i = 0; i < j; i++)
+			gameData.render.mine.bAutomapVisited [i] = (ushort) CFReadByte (cfp);
+		}
+	
 	CFRead (gameData.render.mine.bAutomapVisited, sizeof (ubyte), (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2, cfp);
 
 	//	Restore hacked up weapon system stuff.
