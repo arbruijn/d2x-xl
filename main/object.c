@@ -1729,9 +1729,9 @@ nSpeed -= 2 * F1_0;
 if (nSpeed < 0)
 	nSpeed = 0;
 if (gameData.multiplayer.bMoving < 0)
-	DigiLinkSoundToObject3 (-1, OBJ_IDX (objP), 1, F1_0 / 32 + nSpeed / 256, i2f (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
+	DigiLinkSoundToObject3 (-1, OBJ_IDX (objP), 1, F1_0 / 64 + nSpeed / 256, i2f (256), -1, -1, "missileflight-small.wav", 1, SOUNDCLASS_PLAYER);
 else
-	DigiChangeSoundLinkedToObject (OBJ_IDX (objP), F1_0 / 32 + nSpeed / 256);
+	DigiChangeSoundLinkedToObject (OBJ_IDX (objP), F1_0 / 64 + nSpeed / 256);
 gameData.multiplayer.bMoving = nSpeed;
 }
 

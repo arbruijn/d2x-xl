@@ -1778,6 +1778,10 @@ char *defaultGameTexts [][2] = {
 	{"Geraete-Ausstattung", "Device Loadout"},
 	{"Eingebaute Ausruestung", "Built-in equipment"},
 	{"~Eingebaute Ausruestung...", "~Built-in equipment..."},
+	{"Boje loeschen?", "Delete Marker?"},
+	{"zu Boje teleportieren?", "Teleport to marker?"},
+	{"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
+	{"erkundet", "explored"},
 #if 0
 	{"", ""},
 #endif

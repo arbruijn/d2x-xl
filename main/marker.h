@@ -34,6 +34,7 @@ void DropBuddyMarker (tObject *objP);
 void DropSpawnMarker (void);
 void DrawMarkers (void);
 void DeleteMarker (int bForce);
+void TeleportToMarker (void);
 void ClearMarkers (void);
 int LastMarker (void);
 void InitMarkerInput (void);

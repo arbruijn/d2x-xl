@@ -2088,16 +2088,14 @@ void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 //	Returns maximum nDepth value.
 static int head, tail, nSegment, nChild, nSide;
 
-int SetSegmentDepths (int nStartSeg, ubyte *pDepthBuf)
+int SetSegmentDepths (int nStartSeg, ushort *pDepthBuf)
 {
 	//int	nSegment, nSide, nChild;
-	ubyte	visited [MAX_SEGMENTS_D2X];
-	short	queue [MAX_SEGMENTS_D2X];
-	//int	head = 0;
-	//int	tail = 0;
-	int	nDepth = 1;
-	int	nParentDepth = 0;
-	short	*childP;
+	ushort	visited [MAX_SEGMENTS_D2X];
+	short		queue [MAX_SEGMENTS_D2X];
+	int		nDepth = 1;
+	int		nParentDepth = 0;
+	short		*childP;
 
 	nDepth = 1;
 	head = 0;
@@ -2112,7 +2110,7 @@ memset (visited, 0, sizeof (*visited) * gameData.segs.nSegments);
 visited [nStartSeg] = 1;
 pDepthBuf [nStartSeg] = nDepth++;
 if (nDepth == 0)
-	nDepth = 255;
+	nDepth = 0xFFFF;
 while (head < tail) {
 	nSegment = queue [head++];
 	nParentDepth = pDepthBuf [nSegment];
@@ -2425,7 +2423,7 @@ void SetAmbientSoundFlagsCommon (int tmi_bit, int s2f_bit)
 
 	//	Now, all segments containing ambient lava or water sound makers are flagged.
 	//	Additionally flag all segments which are within range of them.
-for (i=0; i<=gameData.segs.nLastSegment; i++) {
+for (i = 0; i <= gameData.segs.nLastSegment; i++) {
 	marked_segs [i] = 0;
 	gameData.segs.segment2s [i].s2Flags &= ~s2f_bit;
 	}

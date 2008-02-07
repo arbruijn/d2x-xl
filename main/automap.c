@@ -197,7 +197,7 @@ typedef struct tAutomapData {
 static tAutomapData	amData = {0, 1, 0, F1_0 * 20 * 100, 0x9000, ZERO_VECTOR, ZERO_VECTOR, {{{0,0,0}},{{0,0,0}},{{0,0,0}}}};
 
 //	Function Prototypes
-void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited);
+void AdjustSegmentLimit (int nSegmentLimit, ushort *pVisited);
 void DrawAllEdges (void);
 void AutomapBuildEdgeList (void);
 
@@ -577,18 +577,24 @@ char *pszSystemNames [] = {
 			"Baloris Prime",
 			"Omega System"};
 
-void CreateNameCanv ()
+void CreateNameCanv (void)
 {
+	char	szExplored [40];
+
 if (gameData.missions.nCurrentLevel > 0)
 	sprintf (amLevelNum, "%s %i",TXT_LEVEL, gameData.missions.nCurrentLevel);
 else
-	sprintf (amLevelNum, "Secret Level %i",-gameData.missions.nCurrentLevel);
+	sprintf (amLevelNum, "Secret Level %i", -gameData.missions.nCurrentLevel);
 if ((gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && 
 		(gameData.missions.nCurrentLevel > 0))		//built-in mission
-	sprintf (amLevelName,"%s %d: ",pszSystemNames [(gameData.missions.nCurrentLevel-1)/4], ((gameData.missions.nCurrentLevel-1)%4)+1);
+	sprintf (amLevelName,"%s %d: ",
+				pszSystemNames [(gameData.missions.nCurrentLevel - 1) / 4], 
+				((gameData.missions.nCurrentLevel - 1) % 4) + 1);
 else
 	strcpy (amLevelName, " ");
 strcat (amLevelName, gameData.missions.szCurrentLevel);
+sprintf (szExplored, " (%1.2f %s)", (float) gameData.segs.nSegments / (float) gameData.render.mine.nRenderSegs, TXT_EXPLORED);
+strcat (amLevelName, szExplored);
 #if 0
 levelNumCanv = PrintToCanvas (amLevelNum, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
 levelNameCanv = PrintToCanvas (amLevelName, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);
@@ -597,7 +603,7 @@ levelNameCanv = PrintToCanvas (amLevelName, SMALL_FONT, automapColors.nMedGreen,
 
 //------------------------------------------------------------------------------
 
-extern int SetSegmentDepths (int start_seg, ubyte *segbuf);
+int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 #ifndef _DEBUG
 #	define	MAP_BACKGROUND_FILENAME \
@@ -728,6 +734,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+static inline int ViewDistStep (void)
+{
+	int h = (gameStates.render.automap.nSegmentLimit + 5) / 10;
+
+return h ? h : 1;
+}
+
+//------------------------------------------------------------------------------
+
 int ReadAutomapControls (int nLeaveMode, int bDone, int *pbPauseGame)
 {
 	int	c, nMarker, nMaxDrop;
@@ -782,14 +797,22 @@ while ((c = KeyInKey ())) {
 
 		case KEY_MINUS:
 		case KEY_PADMINUS:
-			if (gameStates.render.automap.nSegmentLimit > 1) 
-				AdjustSegmentLimit (--gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+			if (gameStates.render.automap.nSegmentLimit > 1)  {
+				gameStates.render.automap.nSegmentLimit -= ViewDistStep ();
+				if (!gameStates.render.automap.nSegmentLimit)
+					gameStates.render.automap.nSegmentLimit = 1;
+				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+				}
 			break;
 
 		case KEY_EQUAL:
 		case KEY_PADPLUS:
-			if (gameStates.render.automap.nSegmentLimit < gameStates.render.automap.nMaxSegsAway)
-				AdjustSegmentLimit (++gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+			if (gameStates.render.automap.nSegmentLimit < gameStates.render.automap.nMaxSegsAway) {
+				gameStates.render.automap.nSegmentLimit += ViewDistStep ();
+				if (gameStates.render.automap.nSegmentLimit > gameStates.render.automap.nMaxSegsAway)
+					gameStates.render.automap.nSegmentLimit = gameStates.render.automap.nMaxSegsAway;
+				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+				}
 			break;
 
 		case KEY_1:
@@ -814,6 +837,10 @@ while ((c = KeyInKey ())) {
 			DeleteMarker (0);
 			break;
 
+		case KEY_T+KEY_CTRLED:
+			TeleportToMarker ();
+			break;
+
 		case KEY_ALTED + KEY_P:
 			renderItems.bDisplay = !renderItems.bDisplay;
 			break;
@@ -824,12 +851,12 @@ while ((c = KeyInKey ())) {
 
 #ifdef _DEBUG
 		case KEY_COMMA:
-			if (gameData.marker.fScale>.5)
-				gameData.marker.fScale-=.5;
+			if (gameData.marker.fScale > 0.5)
+				gameData.marker.fScale -= 0.5;
 			break;
 		case KEY_PERIOD:
-			if (gameData.marker.fScale<30.0)
-				gameData.marker.fScale+=.5;
+			if (gameData.marker.fScale < 30.0)
+				gameData.marker.fScale += 0.5;
 			break;
 #endif
 
@@ -928,7 +955,7 @@ gameStates.render.automap.bDisplay = 0;
 
 //------------------------------------------------------------------------------
 
-void AdjustSegmentLimit (int nSegmentLimit, ubyte *pVisited)
+void AdjustSegmentLimit (int nSegmentLimit, ushort *pVisited)
 {
 	int i,e1;
 	tEdgeInfo * e;

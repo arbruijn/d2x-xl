@@ -1819,13 +1819,13 @@ void LoadGameTexts(void);
 #define TXT_DEVICE_LOADOUT			GT(1026)
 #define TXT_LOADOUT_MENUTITLE		GT(1027)
 #define TXT_LOADOUT_OPTION			GT(1028)
+#define TXT_DELETE_MARKER			GT(1029)
+#define TXT_JUMP_TO_MARKER			GT(1030)
+#define TXT_CANNOT_TELEPORT		GT(1031)
+#define TXT_EXPLORED					GT(1032)
 
 #if 0
 
-#define TXT_				GT(1029)
-#define TXT_				GT(1030)
-#define TXT_				GT(1031)
-#define TXT_				GT(1032)
 #define TXT_				GT(1033)
 #define TXT_				GT(1034)
 #define TXT_				GT(1035)

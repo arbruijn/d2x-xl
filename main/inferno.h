@@ -1438,8 +1438,8 @@ typedef struct tMineRenderData {
 	short						nRenderPos [MAX_SEGMENTS_D2X];
 	int						nRotatedLast [MAX_VERTICES_D2X];
 	ubyte						bCalcVertexColor [MAX_VERTICES_D2X];
-	ubyte						bAutomapVisited [MAX_SEGMENTS_D2X];
-	ubyte						bRadarVisited [MAX_SEGMENTS_D2X];
+	ushort					bAutomapVisited [MAX_SEGMENTS_D2X];
+	ushort					bRadarVisited [MAX_SEGMENTS_D2X];
 	ubyte						bSetAutomapVisited;
 } tMineRenderData;
 

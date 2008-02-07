@@ -274,7 +274,7 @@ return 0;
 void DeleteMarker (int bForce)
 {
 if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
-	if (bForce || !ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, "Delete Marker?")) {
+	if (bForce || !ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int	h, i;
 		ReleaseObject (gameData.marker.objects [gameData.marker.nHighlight]);
 		i = LastMarker ();
@@ -293,6 +293,31 @@ if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.mark
 						h * sizeof (gameData.marker.szMessage [0]));
 			gameData.marker.objects [i] = -1;
 			gameData.marker.szMessage [i][0] = '\0';
+			}
+		}				
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void TeleportToMarker (void)
+{
+if (!IsMultiGame || IsCoopGame) {
+#ifndef _DEBUG
+	if (LOCALPLAYER.energy < F1_0 * 25)
+		HUDMessage (0, TXT_CANNOT_TELEPORT);
+	else 
+#endif
+	if ((gameData.marker.nHighlight > -1) && (gameData.marker.objects [gameData.marker.nHighlight] != -1)) {
+		if (!ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
+			tObject	*markerP = OBJECTS + gameData.marker.objects [gameData.marker.nHighlight]; 
+			
+#ifndef _DEBUG
+			LOCALPLAYER.energy -= F1_0 * 25;
+#endif
+			OBJECTS [LOCALPLAYER.nObject].position.vPos = markerP->position.vPos;
+			RelinkObject (LOCALPLAYER.nObject, markerP->nSegment);
+			gameStates.render.bDoAppearanceEffect = 1;
 			}
 		}				
 	}
