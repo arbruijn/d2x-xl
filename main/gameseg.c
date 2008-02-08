@@ -115,9 +115,9 @@ if (!normCache.bInitialized)
 		if ((f1&faceFlags) == faceFlags)
 			return i;
 		if (f1 & 1)
-			UncachedGetSideNormal (&gameData.segs.segments [nSegment], nSide, 1, &normCache.cache [i].normals [1]);
+			UncachedGetSideNormal (SEGMENTS + nSegment, nSide, 1, normCache.cache [i].normals + 1);
 		else
-			UncachedGetSideNormal (&gameData.segs.segments [nSegment], nSide, 0, &normCache.cache [i].normals [0]);
+			UncachedGetSideNormal (SEGMENTS + nSegment, nSide, 0, normCache.cache [i].normals);
 		normCache.cache [i].nSide |= faceFlags<<4;
 		return i;
 	}
@@ -125,19 +125,19 @@ if (!normCache.bInitialized)
 	normCache.nMisses++;
 #endif
 
-	switch (faceFlags)	{
+	switch (faceFlags) {
 	case 1:
-		UncachedGetSideNormal (&gameData.segs.segments [nSegment], nSide, 0, &normCache.cache [i].normals [0]);
+		UncachedGetSideNormal (SEGMENTS + nSegment, nSide, 0, normCache.cache [i].normals);
 		break;
 	case 2:
-		UncachedGetSideNormal (&gameData.segs.segments [nSegment], nSide, 1, normCache.cache [i].normals + 1);
+		UncachedGetSideNormal (SEGMENTS + nSegment, nSide, 1, normCache.cache [i].normals + 1);
 		break;
 	case 3:
-		UncachedGetSideNormals (&gameData.segs.segments [nSegment], nSide, normCache.cache [i].normals, normCache.cache [i].normals + 1);
+		UncachedGetSideNormals (SEGMENTS + nSegment, nSide, normCache.cache [i].normals, normCache.cache [i].normals + 1);
 		break;
 	}
 	normCache.cache [i].nSegment = nSegment;
-	normCache.cache [i].nSide = nSide | (faceFlags<<4);
+	normCache.cache [i].nSide = nSide | (faceFlags << 4);
 	return i;
 }
 
@@ -292,8 +292,8 @@ vp->p.z /= 4;
 }
 
 // ------------------------------------------------------------------------------------------
-// Compute the center point of a tSide of a tSegment.
-//	The center point is defined to be the average of the 4 points defining the tSide.
+// Compute the center point of a side of a tSegment.
+//	The center point is defined to be the average of the 4 points defining the side.
 void ComputeSideRads (short nSegment, short tSide, fix *prMin, fix *prMax)
 {
 	tSegment		*segP = gameData.segs.segments + nSegment;
@@ -320,7 +320,7 @@ if (prMax)
 }
 
 // ------------------------------------------------------------------------------------------
-// Compute tSegment center.
+// Compute sSegment center.
 //	The center point is defined to be the average of the 8 points defining the tSegment.
 void ComputeSegmentCenter (vmsVector *vp, tSegment *segP)
 {
@@ -408,7 +408,7 @@ for (i = 0; i < 4; i++)
 //   adjacent on the diagonal edge
 void CreateAllVertexLists (int *nFaces, int *vertices, int nSegment, int nSide)
 {
-	tSide	*sideP = &gameData.segs.segments [nSegment].sides [nSide];
+	tSide	*sideP = SEGMENTS + nSegment.sides [nSide];
 	int  *sv = sideToVertsInt [nSide];
 
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0);
@@ -416,21 +416,18 @@ Assert ((nSide >= 0) && (nSide < 6);
 
 switch (sideP->nType) {
 	case SIDE_IS_QUAD:
-
+		*nFaces = 1;
 		vertices [0] = sv [0];
 		vertices [1] = sv [1];
 		vertices [2] = sv [2];
 		vertices [3] = sv [3];
-
-		*nFaces = 1;
 		break;
+
 	case SIDE_IS_TRI_02:
 		*nFaces = 2;
-
 		vertices [0] = sv [0];
 		vertices [1] = sv [1];
 		vertices [2] = sv [2];
-
 		vertices [3] = sv [2];
 		vertices [4] = sv [3];
 		vertices [5] = sv [0];
@@ -440,18 +437,16 @@ switch (sideP->nType) {
 		break;
 	case SIDE_IS_TRI_13:
 		*nFaces = 2;
-
 		vertices [0] = sv [3];
 		vertices [1] = sv [0];
 		vertices [2] = sv [1];
-
 		vertices [3] = sv [1];
 		vertices [4] = sv [2];
 		vertices [5] = sv [3];
-
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
+
 	default:
 		Error ("Illegal tSide nType (1), nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, nSegment, nSide);
 		break;
@@ -467,47 +462,42 @@ switch (sideP->nType) {
 //	face #1 is stored in vertices 3, 4, 5.
 void CreateAllVertNumLists (int *nFaces, int *vertnums, int nSegment, int nSide)
 {
-	tSide	*sideP = &gameData.segs.segments [nSegment].sides [nSide];
+	tSide	*sideP = SEGMENTS [nSegment].sides + nSide;
 
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= 0));
 switch (sideP->nType) {
 	case SIDE_IS_QUAD:
-
 		vertnums [0] = 0;
 		vertnums [1] = 1;
 		vertnums [2] = 2;
 		vertnums [3] = 3;
-
 		*nFaces = 1;
 		break;
+
 	case SIDE_IS_TRI_02:
 		*nFaces = 2;
-
 		vertnums [0] = 0;
 		vertnums [1] = 1;
 		vertnums [2] = 2;
-
 		vertnums [3] = 2;
 		vertnums [4] = 3;
 		vertnums [5] = 0;
-
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
+
 	case SIDE_IS_TRI_13:
 		*nFaces = 2;
-
 		vertnums [0] = 3;
 		vertnums [1] = 0;
 		vertnums [2] = 1;
-
 		vertnums [3] = 1;
 		vertnums [4] = 2;
 		vertnums [5] = 3;
-
 		//IMPORTANT: DON'T CHANGE THIS CODE WITHOUT CHANGING GET_SEG_MASKS ()
 		//CREATE_ABS_VERTEX_LISTS (), CREATE_ALL_VERTEX_LISTS (), CREATE_ALL_VERTNUM_LISTS ()
 		break;
+
 	default:
 		Error ("Illegal tSide nType (2), nType = %i, tSegment # = %i, tSide # = %i\n", sideP->nType, nSegment, nSide);
 		break;
@@ -1010,7 +1000,7 @@ int CheckNorms (int nSegment, int nSide, int facenum, int csegnum, int csidenum,
 {
 	vmsVector *n0, *n1;
 
-	n0 = &gameData.segs.segments [nSegment].sides [nSide].normals [facenum];
+	n0 = SEGMENTS + nSegment.sides [nSide].normals [facenum];
 	n1 = &gameData.segs.segments [csegnum].sides [csidenum].normals [cfacenum];
 
 	if (n0->p.x != -n1->p.x  ||  n0->p.y != -n1->p.y  ||  n0->p.z != -n1->p.z) {
@@ -1037,7 +1027,7 @@ int CheckSegmentConnections (void)
 	for (nSegment=0;nSegment<=gameData.segs.nLastSegment;nSegment++) {
 		tSegment *seg;
 
-		seg = &gameData.segs.segments [nSegment];
+		seg = SEGMENTS + nSegment;
 
 		for (nSide=0;nSide<6;nSide++) {
 			tSide *s;
