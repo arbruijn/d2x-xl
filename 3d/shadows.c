@@ -33,6 +33,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "u_mem.h"
 #include "console.h"
 #include "ogl_defs.h"
+#include "ogl_lib.h"
 #include "network.h"
 #include "render.h"
 #include "gameseg.h"
@@ -780,14 +781,14 @@ void G3SetCullAndStencil (int bCullFront, int bZPass)
 {
 glEnable (GL_CULL_FACE);
 if (bCullFront) {
-	glCullFace (GL_FRONT);
+	OglCullFace (1);
 	if (bZPass)
 		glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
 	else
 		glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
 	}
 else {
-	glCullFace (GL_BACK);
+	OglCullFace (0);
 	if (bZPass)
 		glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
 	else

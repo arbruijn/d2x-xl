@@ -134,7 +134,7 @@ typedef struct amColors {
 
 amColors automapColors;
 
-static char	amLevelNum [128], amLevelName [128];
+static char	amLevelNum [200], amLevelName [200];
 
 void InitAutomapColors (void)
 {
@@ -579,7 +579,7 @@ char *pszSystemNames [] = {
 
 void CreateNameCanv (void)
 {
-	char	szExplored [40];
+	char	szExplored [100];
 	int	h, i;
 
 if (gameData.missions.nCurrentLevel > 0)
@@ -597,7 +597,7 @@ strcat (amLevelName, gameData.missions.szCurrentLevel);
 for (h = i = 0; i < gameData.segs.nSegments; i++)
 	if (gameData.render.mine.bAutomapVisited [i])
 		h++;
-sprintf (szExplored, " (%1.2f%c %s)", (float) h / (float) gameData.segs.nSegments, '%', TXT_EXPLORED);
+sprintf (szExplored, " (%1.1f %s)", (float) (h * 100) / (float) gameData.segs.nSegments, TXT_PERCENT_EXPLORED);
 strcat (amLevelName, szExplored);
 #if 0
 levelNumCanv = PrintToCanvas (amLevelNum, SMALL_FONT, automapColors.nMedGreen, 0, !amData.bHires);

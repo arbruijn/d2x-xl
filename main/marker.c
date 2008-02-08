@@ -25,6 +25,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "text.h"
 #include "error.h"
+#include "ogl_lib.h"
+#include "ogl_color.h"
 #include "newmenu.h"
 #include "marker.h"
 
@@ -40,59 +42,58 @@ return (nObject < 0) ? NULL : OBJECTS + nObject;
 
 void DrawMarkerNumber (int nMarker)
 {
-  int i;
-  g3sPoint basePoint, fromPoint, toPoint;
+	g3sPoint	basePoint;
+	int		i;
+	float		*px, *py;
 
-  float xCoord [10][20]={{-.25f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f},
-                         {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f},
-                         {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f},
-                         {-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f},
-                         {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f},
-                         {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f},
-                         {-1.0f, 1.0f, 1.0f, 1.0f},
-                         {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f},
-                         {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f}
+	static float xCoord [10][20] =
+		{{-0.25f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f},
+       {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f},
+       {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f},
+       {-1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f},
+       {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f},
+       {-1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f},
+       {-1.0f, 1.0f, 1.0f, 1.0f},
+       {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f},
+       {-1.0f, 1.0f, 1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f}
+      };
 
-                       };
-  float yCoord [10][20]={{.75f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f},
-                         {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, -1.0f, -1.0f},
-                         {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f},
-                         {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f},
-                         {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, -1.0f, -1.0f},
-                         {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-                         {1.0f, 1.0f, 1.0f, -1.0f},
-                         {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f},
-                         {1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f}
-                       };
+	static float yCoord [10][20] =
+		{{0.75f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f},
+       {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, -1.0f, -1.0f},
+       {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f},
+       {1.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f},
+       {1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, -1.0f, -1.0f},
+       {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f},
+       {1.0f, 1.0f, 1.0f, -1.0f},
+       {1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f},
+       {1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f}
+      };
+
   int nPoints [] = {6, 10, 8, 6, 10, 10, 4, 10, 8};
 
-for (i = 0; i < nPoints [nMarker]; i++) {
-	xCoord [nMarker][i] *= gameData.marker.fScale;
-	yCoord [nMarker][i] *= gameData.marker.fScale;
-	}
+if (gameData.marker.fScale == 0.0f)
+	gameData.marker.fScale = 2.0f;
 if (nMarker == gameData.marker.nHighlight)
 	GrSetColorRGB (255, 255, 255, 255);
 else if (!strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
-	GrSetColorRGBi (RGBA_PAL2 (63, 47, 0));
+	GrSetColorRGBi (RGBA_PAL2 (63, 0, 47));
 else
-	GrSetColorRGBi (RGBA_PAL2 (48, 0, 0));
+	GrSetColorRGBi (RGBA_PAL2 (63, 15, 0));
 G3TransformAndEncodePoint (&basePoint, &MarkerObj (-1, nMarker)->position.vPos);
-fromPoint.p3_index =
-toPoint.p3_index =
-basePoint.p3_index = -1;
-for (i = 0; i < nPoints [nMarker]; i += 2) {
-	fromPoint = basePoint;
-	toPoint = basePoint;
-	fromPoint.p3_x += fl2f (xCoord [nMarker][i]); 
-	fromPoint.p3_y += fl2f (yCoord [nMarker][i]); 
-	G3EncodePoint (&fromPoint);
-	G3ProjectPoint (&fromPoint);
-	toPoint.p3_x += fl2f (xCoord [nMarker][i+1]); 
-	toPoint.p3_y += fl2f (yCoord [nMarker][i+1]); 
-	G3EncodePoint (&toPoint);
-	G3ProjectPoint (&toPoint);
-	G3DrawLine (&fromPoint, &toPoint);
+glPushMatrix ();
+glTranslatef (f2fl (basePoint.p3_vec.p.x), f2fl (basePoint.p3_vec.p.y), f2fl (basePoint.p3_vec.p.z));
+glDisable (GL_TEXTURE_2D);
+OglGrsColor (&grdCurCanv->cvColor);
+glBegin (GL_LINES);
+px = xCoord [nMarker];
+py = yCoord [nMarker];
+for (i = nPoints [nMarker] / 2; i; i--) {
+	glVertex2f (*px++ * gameData.marker.fScale, *py++ * gameData.marker.fScale);
+	glVertex2f (*px++ * gameData.marker.fScale, *py++ * gameData.marker.fScale);
 	}
+glEnd ();
+glPopMatrix ();
 }
 
 //------------------------------------------------------------------------------
@@ -102,22 +103,24 @@ for (i = 0; i < nPoints [nMarker]; i += 2) {
 void DrawMarkers (void)
 {
 	g3sPoint spherePoint;
-	int		i, nMaxDrop;
+	int		i, j, nMaxDrop, bSpawn;
 	tObject	*objP;
 
 	static int cyc = 10, cycdir = 1;
+	static ubyte	colors [2][3] = {{20, 30, 40},{40, 50, 60}};
 
+if (gameData.marker.fScale == 0.0f)
+	gameData.marker.fScale = 2.0f;
 nMaxDrop = MaxDrop ();
 spherePoint.p3_index = -1;
 for (i = 0; i < nMaxDrop; i++)
 	if ((objP = MarkerObj (-1, i))) {
+		bSpawn = (objP == SpawnMarkerObject (-1));
 		G3TransformAndEncodePoint (&spherePoint, &objP->position.vPos);
-		GrSetColorRGB (PAL2RGBA (10), 0, 0, 255);
-		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE, 1);
-		GrSetColorRGB (PAL2RGBA (20), 0, 0, 255);
-		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE / 2, 1);
-		GrSetColorRGB (PAL2RGBA (30), 0, 0, 255);
-		G3DrawSphere (&spherePoint, MARKER_SPHERE_SIZE / 4, 1);
+		for (j = 0; j < 3; j++) {
+			GrSetColorRGB (PAL2RGBA (colors [bSpawn][j]), 0, 0, 255);
+			G3DrawSphere (&spherePoint, (int) (gameData.marker.fScale * MARKER_SPHERE_SIZE) >> j, 1);
+			}
 		DrawMarkerNumber (i);
 		}
 if (cycdir) {

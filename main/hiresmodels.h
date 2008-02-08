@@ -1,9 +1,22 @@
 #ifndef _HIRESMODELS_H
 #define _HIRESMODELS_H
 
+typedef struct tReplacementModel {
+	char	*pszHires;
+	char	*pszLores;
+	short	nModel;
+	short	nType;
+	int	bFlipV;
+} tReplacementModel;
+
+extern tReplacementModel replacementModels [];
+
+// ----------------------------------------------------------------------------
+
 void LoadModelsGauge (void);
 void LoadHiresModels (int bCustom);
 void FreeHiresModels (int bCustom);
+int ReplacementModelCount (void);
 
 // ----------------------------------------------------------------------------
 

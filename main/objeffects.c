@@ -1052,7 +1052,7 @@ else {
 
 	CreateThrusterFlame ();
 	glLineWidth (3);
-	glCullFace (GL_FRONT);
+	OglCullFace (1);
 	tTexCoord2flStep.v.u = 1.0f / RING_SIZE;
 	tTexCoord2flStep.v.v = 0.5f / THRUSTER_SEGS;
 	for (h = 0; h < nThrusters; h++) {
@@ -1115,7 +1115,7 @@ else {
 		G3DoneInstance ();
 		}
 	glLineWidth (1);
-	glCullFace (GL_BACK);
+	OglCullFace (0);
 	}
 glDepthMask (1);
 StencilOn (bStencil);
@@ -1384,7 +1384,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 		G3StartInstanceMatrix (&vPos, &objP->position.mOrient);
 		glDepthMask (0);
 		glDisable (GL_TEXTURE_2D);
-		//glCullFace (GL_FRONT);
+		//OglCullFace (1);
 		glDisable (GL_CULL_FACE);	
 		r [3] = f2fl (objP->size);
 		if (r [3] >= 3.0f)
@@ -1434,7 +1434,7 @@ if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id]) {
 			glEnd ();
 			}
 		glDepthMask (1);
-		glCullFace (GL_BACK);
+		OglCullFace (0);
 		G3DoneInstance ();
 		}
 	StencilOn (bStencil);

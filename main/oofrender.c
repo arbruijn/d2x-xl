@@ -184,14 +184,14 @@ if (bSingleStencil || bShadowTest)
 	{
 	glEnable (GL_CULL_FACE);
 	if (bCullFront) {
-		glCullFace (GL_FRONT);
+		OglCullFace (1);
 		if (bZPass)
 			glStencilOp (GL_KEEP, GL_KEEP, GL_INCR_WRAP);
 		else
 			glStencilOp (GL_KEEP, GL_INCR_WRAP, GL_KEEP);
 		}
 	else {
-		glCullFace (GL_BACK);
+		OglCullFace (0);
 		if (bZPass)
 			glStencilOp (GL_KEEP, GL_KEEP, GL_DECR_WRAP);
 		else
@@ -379,7 +379,7 @@ pvn = pso->pvNormals;
 pvc = pso->pVertColors;
 //memset (pvc, 0, pso->nVerts * sizeof (tFaceColor));
 glEnable (GL_CULL_FACE);
-glCullFace (GL_BACK);
+OglCullFace (0);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 if (!bDynLighting) {
 	sc = *AvgSgmColor (objP->nSegment, &objP->position.vPos);

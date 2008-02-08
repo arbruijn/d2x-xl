@@ -95,6 +95,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "dropobject.h"
 #include "marker.h"
+#include "hiresmodels.h"
 
 #ifdef EDITOR
 #include "editor/editor.h"
@@ -2212,20 +2213,40 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 
 //------------------------------------------------------------------------------
 
+#define BUILD_ALL_MODELS 0
+
 void BuildObjectModels (void)
 {
-	int i;
-	tObject	*objP = gameData.objs.objects;
+	int      i, j;
+	tObject	o, *objP = gameData.objs.objects;
 
 gameStates.render.nType = 1;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
+#if !BUILD_ALL_MODELS
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
-	if (i == 480)
-		i = i;
 	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
 		 !G3HaveModel (objP->rType.polyObjInfo.nModel))
 		RenderObject (objP, 0, 1); //DrawPolygonObject (objP, 0);
+	}
+#endif
+o = *OBJECTS;
+o.nType = OBJ_ROBOT;
+o.nSegment = 0;
+#if BUILD_ALL_MODELS
+j = 0;
+for (i = 0; i < MAX_POLYGON_MODELS; i++) {
+	o.rType.polyObjInfo.nModel = i; //replacementModels [i].nModel;
+#else
+j = ReplacementModelCount ();
+for (i = 0; i < j; i++)
+	if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "concussion"))
+		break;
+for (; i < j; i++) {
+#endif
+	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
+	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
+		DrawPolygonObject (&o, 1);
 	}
 gameStates.render.bBuildModels = 0;
 }

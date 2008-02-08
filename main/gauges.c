@@ -702,9 +702,9 @@ if (HIDE_HUD)
 	return;
 if (LOCALPLAYER.homingObjectDist >= 0) {
 	if (gameData.time.xGame & 0x4000) {
-		int x=0x8000, y=grdCurCanv->cv_h-nHUDLineSpacing;
-		if (weaponBoxUser [0] != WBU_WEAPON || weaponBoxUser [1] != WBU_WEAPON) {
-			int wy = (weaponBoxUser [0] != WBU_WEAPON)?SW_y [0]:SW_y [1];
+		int x = 0x8000, y = grdCurCanv->cv_h-nHUDLineSpacing;
+		if ((weaponBoxUser [0] != WBU_WEAPON) || (weaponBoxUser [1] != WBU_WEAPON)) {
+			int wy = (weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
 			y = min (y, (wy - nHUDLineSpacing - gameData.render.window.y));
 			}
 		GrSetCurFont (GAME_FONT);
@@ -718,8 +718,8 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 
 void HUDShowKeys (void)
 {
-	int y = 3*nHUDLineSpacing;
-	int dx = GAME_FONT->ftWidth+GAME_FONT->ftWidth/2;
+	int y = 3 * nHUDLineSpacing;
+	int dx = GAME_FONT->ftWidth + GAME_FONT->ftWidth / 2;
 
 if (HIDE_HUD)
 	return;
@@ -2791,7 +2791,7 @@ weaponBoxUser [win] = user;						//say who's using window
 gameData.objs.viewer = viewer;
 gameStates.render.bRearView = bRearView;
 
-if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)	{
+if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN) {
 	w = (int) (gameStates.render.vr.buffers.render [0].cvBitmap.bmProps.w / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);			// hmm.  I could probably do the sub_buffer assigment for all macines, but I aint gonna chance it
 	h = i2f (w) / grdCurScreen->scAspect;
 	dx = (win==0)?- (w+ (w/10)): (w/10);
@@ -2836,7 +2836,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)	{
 
 
 	//copy these vars so stereo code can get at them
-	SW_drawn [win]=1; 
+	SW_drawn [win] = 1; 
 	SW_x [win] = window_x; 
 	SW_y [win] = window_y; 
 	SW_w [win] = w; 
@@ -2865,7 +2865,7 @@ nZoomSave = gameStates.render.nZoomFactor;
 gameStates.render.nZoomFactor = F1_0 * (gameOpts->render.cockpit.nWindowZoom + 1);					//the tPlayer's zoom factor
 if ((user == WBU_RADAR_TOPDOWN) || (user == WBU_RADAR_HEADSUP)) {
 	gameStates.render.bTopDownRadar = (user == WBU_RADAR_TOPDOWN);
-	if (!(gameData.app.nGameMode & GM_MULTI) || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
+	if (!IsMultiGame || (netGame.gameFlags & NETGAME_FLAG_SHOW_MAP))
 		DoAutomap (0, 1);
 	else
 		RenderFrame (0, win+1);

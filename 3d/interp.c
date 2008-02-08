@@ -524,7 +524,7 @@ if (SHOW_DYN_LIGHT &&
 	}
 nGlow = -1;		//glow off by default
 glEnable (GL_CULL_FACE);
-glCullFace (GL_BACK);
+OglCullFace (0);
 for (;;) {
 	h = WORDVAL (p);
 	if (h == OP_EOF)

@@ -1822,7 +1822,7 @@ void LoadGameTexts(void);
 #define TXT_DELETE_MARKER			GT(1029)
 #define TXT_JUMP_TO_MARKER			GT(1030)
 #define TXT_CANNOT_TELEPORT		GT(1031)
-#define TXT_EXPLORED					GT(1032)
+#define TXT_PERCENT_EXPLORED		GT(1032)
 
 #if 0
 

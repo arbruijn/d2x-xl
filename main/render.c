@@ -1151,7 +1151,7 @@ else {
 	nStartSeg = pnStartSeg ? FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0) : gameStates.render.nStartSeg;
 	if (nStartSeg == -1)
 		nStartSeg = gameData.objs.viewer->nSegment;
-	if (gameData.objs.viewer == gameData.objs.console)
+	if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.nWindow)
 		SetPathPoint (&externalView, gameData.objs.viewer);
 	if ((gameData.objs.viewer == gameData.objs.console) && viewInfo.bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
@@ -1160,12 +1160,21 @@ else {
 		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, gameStates.render.xZoom, bOglScale);
 		}
 	else if (gameStates.render.bRearView && (gameData.objs.viewer == gameData.objs.console)) {
+#if 1
+		vmsMatrix mView;
+
+		mView = gameData.objs.viewer->position.mOrient;
+		VmVecNegate (&mView.fVec);
+		VmVecNegate (&mView.rVec);
+#else
 		vmsMatrix mHead, mView;
-		viewInfo.playerHeadAngles.p = 
-		viewInfo.playerHeadAngles.b = 0;
+
+		viewInfo.playerHeadAngles.p = 0;
+		viewInfo.playerHeadAngles.b = 0x7fff;
 		viewInfo.playerHeadAngles.h = 0x7fff;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
+#endif
 		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
@@ -1240,7 +1249,7 @@ if (gameStates.app.bEndLevelSequence) {
 	return;
 	}
 #ifdef NEWDEMO
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0))	{
+if ((gameData.demo.nState == ND_STATE_RECORDING) && (nEyeOffset >= 0)) {
    if (!gameStates.render.nRenderingType)
    	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
    if (gameStates.render.nRenderingType != 255)

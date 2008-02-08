@@ -14,6 +14,7 @@
 #include "maths.h"
 #include "u_mem.h"
 #include "glare.h"
+#include "ogl_lib.h"
 #include "objeffects.h"
 #include "objrender.h"
 #include "transprender.h"
@@ -478,7 +479,7 @@ for (nCull = 0; nCull < 2; nCull++) {
 #endif
 		}
 	}
-glCullFace (GL_BACK);
+OglCullFace (0);
 }
 
 //------------------------------------------------------------------------------

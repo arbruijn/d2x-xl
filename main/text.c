@@ -1781,7 +1781,7 @@ char *defaultGameTexts [][2] = {
 	{"Boje loeschen?", "Delete Marker?"},
 	{"zu Boje teleportieren?", "Teleport to marker?"},
 	{"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
-	{"erkundet", "explored"},
+	{"Prozent erkundet", "percent explored"},
 #if 0
 	{"", ""},
 #endif

@@ -14,15 +14,7 @@
 
 // ----------------------------------------------------------------------------
 
-typedef struct tReplacementModel {
-	char	*pszHires;
-	char	*pszLores;
-	short	nModel;
-	short	nType;
-	int	bFlipV;
-} tReplacementModel;
-
-static tReplacementModel replacementModels [] = {
+tReplacementModel replacementModels [] = {
 	// player ship
 	{"pyrogl", "pyrogl.pol", 108, 0, 0}, 
 	{NULL, NULL, 110, 0, 0}, 	//filename NULL means this is an additional model number to be used with the last listed oof filename
@@ -165,6 +157,15 @@ static tReplacementModel replacementModels [] = {
 	{"bullettime", NULL, MAX_POLYGON_MODELS - 34, 0, 1},
 	{"hostage", NULL, HOSTAGE_MODEL, 0, 1}
 	};
+
+// ----------------------------------------------------------------------------
+
+int ReplacementModelCount (void)
+{
+return sizeofa (replacementModels);
+}
+
+// ----------------------------------------------------------------------------
 
 void InitReplacementModels (void)
 {

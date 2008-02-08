@@ -259,6 +259,8 @@ fix CalcObjectLight (tObject *objP, fix *xEngineGlow)
 {
 	fix xLight;
 
+if (gameStates.render.bBuildModels)
+	return F1_0;
 if (IsMultiGame && netGame.BrightPlayers && (objP->nType == OBJ_PLAYER)) {
 	xLight = F1_0; //	If option set for bright players in netgame, brighten them
 	gameOpts->ogl.bLightObjects = 0;

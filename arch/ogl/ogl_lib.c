@@ -347,6 +347,9 @@ if (gameStates.ogl.bUseTransform)
 else
 	gameStates.render.glAspect = 90.0 / gameStates.render.glFOV;
 #endif
+glMatrixMode (GL_PROJECTION);
+if (gameStates.render.bRearView)
+	glScalef (-1.0f, 1.0f, 1.0f);
 gluPerspective (gameStates.render.glFOV, gameStates.render.glAspect, ZNEAR, ZFAR);
 gameData.render.ogl.depthScale.p.x = (float) (ZFAR / (ZFAR - ZNEAR));
 gameData.render.ogl.depthScale.p.y = (float) (ZNEAR * ZFAR / (ZNEAR - ZFAR));
@@ -409,7 +412,7 @@ if (gameStates.render.nShadowPass) {
 			glDisable (GL_STENCIL_TEST);
 			glDepthFunc (GL_LESS);
 			glEnable (GL_CULL_FACE);	
-			glCullFace (GL_BACK);
+			OglCullFace (0);
 			if (!FAST_SHADOWS)
 				glColorMask (0,0,0,0);
 			}
@@ -503,7 +506,7 @@ if (gameStates.render.nShadowPass) {
 				glStencilOp (GL_KEEP, GL_KEEP, GL_KEEP);
 #endif
 				}
-			glCullFace (GL_BACK);
+			OglCullFace (0);
 			glDepthFunc (GL_LESS);
 			glColorMask (1,1,1,1);
 			}
@@ -512,7 +515,7 @@ if (gameStates.render.nShadowPass) {
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
 		glEnable (GL_CULL_FACE);	
-		glCullFace (GL_BACK);
+		OglCullFace (0);
 		}
 #if GL_INFINITY
 	glMatrixMode (GL_MODELVIEW);
@@ -580,7 +583,7 @@ else
 	else {
 		glEnable (GL_CULL_FACE);	
 		glFrontFace (GL_CW);	//Weird, huh? Well, D2 renders everything reverse ...
-		glCullFace (GL_BACK);
+		glCullFace (gameStates.render.bRearView ? GL_FRONT : GL_BACK);
 		glEnable (GL_DEPTH_TEST);
 		glDepthFunc (GL_LESS);
 #if 1
@@ -738,6 +741,7 @@ if (gameStates.ogl.bUseTransform || bForce) {
 void OglResetTransform (int bForce)
 {
 if (gameStates.ogl.bUseTransform || bForce) {
+	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
 	}
 }
@@ -756,6 +760,7 @@ CloseDynLighting ();
 InitDynLighting ();
 OglCreateDrawBuffer ();
 CreateCameras ();	
+BuildObjectModels ();
 OglDrawBuffer (GL_BACK, 1);
 }
 
