@@ -2229,12 +2229,11 @@ gameStates.render.bBuildModels = 1;
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
 		 !G3HaveModel (objP->rType.polyObjInfo.nModel))
-		RenderObject (objP, 0, 1); //DrawPolygonObject (objP, 0);
+		DrawPolygonObject (objP, 1); //DrawPolygonObject (objP, 0);
 	}
 #endif
-o = *OBJECTS;
-o.nType = OBJ_ROBOT;
-o.nSegment = 0;
+memset (&o, 0, sizeof (o));
+o.position = OBJECTS->position;
 #if BUILD_ALL_MODELS
 j = 0;
 for (i = 0; i < MAX_POLYGON_MODELS; i++) {
