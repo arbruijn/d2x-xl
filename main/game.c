@@ -774,6 +774,7 @@ void GameFlushInputs ()
 
 void ResetTime ()
 {
+gameData.time.xFrame = 0;
 gameData.time.xLast = TimerGetFixedSeconds ();
 }
 

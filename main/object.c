@@ -2311,7 +2311,7 @@ Assert (childObjP->controlType == CT_EXPLOSION);
 Assert (childObjP->cType.explInfo.nNextAttach==-1);
 Assert (childObjP->cType.explInfo.nPrevAttach==-1);
 Assert (parentObjP->attachedObj == -1 || 
-			gameData.objs.objects [parentObjP->attachedObj].cType.explInfo.nPrevAttach==-1);
+		  gameData.objs.objects [parentObjP->attachedObj].cType.explInfo.nPrevAttach==-1);
 childObjP->cType.explInfo.nNextAttach = parentObjP->attachedObj;
 if (childObjP->cType.explInfo.nNextAttach != -1)
 	gameData.objs.objects [childObjP->cType.explInfo.nNextAttach].cType.explInfo.nPrevAttach = OBJ_IDX (childObjP);

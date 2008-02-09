@@ -2400,6 +2400,7 @@ GETMEM (g3sPoint, gameData.segs.points, MAX_VERTICES, 0);
 #if CALC_SEGRADS
 GETMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS, 0);
 GETMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS, 0);
+GETMEM (tSegExtent, gameData.segs.extent, MAX_SEGMENTS, 0);
 #endif
 GETMEM (vmsVector, gameData.segs.segCenters [0], MAX_SEGMENTS, 0);
 GETMEM (vmsVector, gameData.segs.segCenters [1], MAX_SEGMENTS, 0);
@@ -2581,6 +2582,7 @@ FREEMEM (g3sPoint, gameData.segs.points, MAX_VERTICES);
 #if CALC_SEGRADS
 FREEMEM (fix, gameData.segs.segRads [0], MAX_SEGMENTS);
 FREEMEM (fix, gameData.segs.segRads [1], MAX_SEGMENTS);
+FREEMEM (tSegExtent, gameData.segs.extent, MAX_SEGMENTS);
 #endif
 FREEMEM (tSegFaces, gameData.segs.segFaces, MAX_SEGMENTS);
 FREEMEM (grsFace, gameData.segs.faces.faces, MAX_SEGMENTS * 6);

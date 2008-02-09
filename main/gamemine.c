@@ -1531,7 +1531,7 @@ void ComputeSegSideCenters (int nSegment)
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist, xMaxDist, xDist;
 	short			k;
-	vmsVector	v;
+	vmsVector	v, vMin, vMax;
 #endif
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
@@ -1551,13 +1551,29 @@ for (i = nSegment * 6, segP = gameData.segs.segments + nSegment; nSegment < j; n
 		}
 #if CALC_SEGRADS
 	gameData.segs.segRads [0][nSegment] = xMinDist;
+	vMin.p.x = vMin.p.y = vMin.p.z = 0x7FFFFFFF;
+	vMax.p.x = vMax.p.y = vMax.p.z = -0x7FFFFFFF;
 	for (k = 0, xMaxDist = 0; k < 8; k++) {
 		VmVecSub (&v, gameData.segs.segCenters [0] + nSegment, gameData.segs.vertices + segP->verts [k]);
+		if (vMin.p.x > v.p.x)
+			vMin.p.x = v.p.x;
+		if (vMin.p.y > v.p.y)
+			vMin.p.y = v.p.y;
+		if (vMin.p.z > v.p.z)
+			vMin.p.z = v.p.z;
+		if (vMax.p.x < v.p.x)
+			vMax.p.x = v.p.x;
+		if (vMax.p.y < v.p.y)
+			vMax.p.y = v.p.y;
+		if (vMax.p.z < v.p.z)
+			vMax.p.z = v.p.z;
 		xDist = VmVecMag (&v);
 		if (xMaxDist < xDist)
 			xMaxDist = xDist;
 		}
 	gameData.segs.segRads [1][nSegment] = xMaxDist;
+	gameData.segs.extent [nSegment].vMin = vMin;
+	gameData.segs.extent [nSegment].vMax = vMax;
 #endif
 	}
 }

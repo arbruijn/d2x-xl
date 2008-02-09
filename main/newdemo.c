@@ -597,7 +597,7 @@ tObject *prevObjP = NULL;      //ptr to last tObject read in
 
 void NDReadObject (tObject *objP)
 {
-	int	bSkip = 0;
+	int		bSkip = 0;
 
 memset (objP, 0, sizeof (tObject));
 /*
@@ -693,17 +693,14 @@ NDReadVector (&objP->vLastPos);
 if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_WEAPON_VCLIP))
 	objP->lifeleft = NDReadFix ();
 else {
-	ubyte b;
-
-	b = NDReadByte ();
+	ubyte b = NDReadByte ();
 	objP->lifeleft = (fix) b;
 	// MWA old way -- won't work with big endian machines       NDReadByte ((sbyte *) (ubyte *)&(objP->lifeleft);
 	objP->lifeleft = (fix) ((int) objP->lifeleft << 12);
 	}
 if (objP->nType == OBJ_ROBOT) {
 	if (ROBOTINFO (objP->id).bossFlag) {
-		sbyte cloaked;
-		cloaked = NDReadByte ();
+		sbyte cloaked = NDReadByte ();
 		objP->cType.aiInfo.CLOAKED = cloaked;
 		}
 	}
@@ -734,7 +731,7 @@ switch (objP->controlType) {
 		objP->cType.explInfo.nPrevAttach = 
 		objP->cType.explInfo.nAttachParent = -1;
 		if (objP->flags & OF_ATTACHED) {     //attach to previous tObject
-			Assert (prevObjP!=NULL);
+			Assert (prevObjP != NULL);
 			if (prevObjP->controlType == CT_EXPLOSION) {
 				if ((prevObjP->flags & OF_ATTACHED) && (prevObjP->cType.explInfo.nAttachParent != -1))
 					AttachObject (gameData.objs.objects + prevObjP->cType.explInfo.nAttachParent, objP);
@@ -786,7 +783,7 @@ switch (objP->renderType) {
 #ifndef EDITOR
 		objP->rType.polyObjInfo.nTexOverride = tmo;
 #else
-		if (tmo==-1)
+		if (tmo == -1)
 			objP->rType.polyObjInfo.nTexOverride = -1;
 		else {
 			int xlated_tmo = tmap_xlate_table [tmo];
@@ -843,6 +840,8 @@ if ((o.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts-
 	return;
 if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
+if (o.cType.aiInfo.behavior == AIB_STATIC)
+	o.movementType = MT_PHYSICS;
 // Do renderType first so on read, we can make determination of
 // what else to read in
 if ((o.nType == OBJ_POWERUP) && (o.renderType == RT_POLYOBJ)) {
@@ -859,7 +858,8 @@ if (!(gameStates.app.bNostalgia || gameOpts->demo.bOldFormat))
 NDWriteByte (o.flags);
 NDWriteShort ((short) o.nSignature);
 NDWritePosition (&o);
-if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && (o.nType != OBJ_POWERUP) && (o.nType != OBJ_CLUTTER)) {
+if ((o.nType != OBJ_HOSTAGE) && (o.nType != OBJ_ROBOT) && (o.nType != OBJ_PLAYER) && 
+	 (o.nType != OBJ_POWERUP) && (o.nType != OBJ_CLUTTER)) {
 	NDWriteByte (o.controlType);
 	NDWriteByte (o.movementType);
 	NDWriteFix (o.size);
@@ -949,11 +949,11 @@ switch (o.renderType) {
 			}
 		if ((o.nType != OBJ_PLAYER) && (o.nType != OBJ_DEBRIS))
 #if 0
-			for (i=0;i<MAX_SUBMODELS;i++)
-				NDWriteAngVec (&o.polyObjInfo.animAngles [i]);
+			for (i = 0; i < MAX_SUBMODELS; i++)
+				NDWriteAngVec (o.polyObjInfo.animAngles + i);
 #endif
 		for (i = 0; i < gameData.models.polyModels [o.rType.polyObjInfo.nModel].nModels; i++)
-			NDWriteAngVec (&o.rType.polyObjInfo.animAngles [i]);
+			NDWriteAngVec (o.rType.polyObjInfo.animAngles + i);
 		NDWriteInt (o.rType.polyObjInfo.nTexOverride);
 		break;
 		}
@@ -1801,7 +1801,7 @@ int NDReadFrameInfo ()
 {
 	int bDone, nSegment, nTexture, nSide, nObject, soundno, angle, volume, i, shot;
 	tObject *objP;
-	ubyte c, WhichWindow;
+	ubyte nTag, nPrevTag, WhichWindow;
 	static sbyte saved_letter_cockpit;
 	static sbyte saved_rearview_cockpit;
 	tObject extraobj;
@@ -1809,6 +1809,7 @@ int NDReadFrameInfo ()
 	tSegment *segP;
 
 bDone = 0;
+nTag = 255;
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		gameData.segs.segments [nSegment].objects = -1;
@@ -1816,9 +1817,10 @@ ResetObjects (1);
 LOCALPLAYER.homingObjectDist = -F1_0;
 prevObjP = NULL;
 while (!bDone) {
-	c = NDReadByte ();
+	nPrevTag = nTag;
+	nTag = NDReadByte ();
 	CATCH_BAD_READ
-	switch (c) {
+	switch (nTag) {
 		case ND_EVENT_START_FRAME: {        // Followed by an integer frame number, then a fix gameData.time.xFrame
 			short nPrevFrameLength;
 
@@ -1890,8 +1892,8 @@ while (!bDone) {
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
 				LinkObject (OBJ_IDX (objP), nSegment);
-				if ((objP->nType == OBJ_PLAYER) && (gameData.demo.nGameMode & GM_MULTI)) {
-					int tPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->id) : objP->id;
+				if ((objP->nType == OBJ_PLAYER) && IsMultiGame) {
+					int tPlayer = IsTeamGame ? GetTeam (objP->id) : objP->id;
 					if (tPlayer == 0)
 						break;
 					tPlayer--;
@@ -1986,8 +1988,8 @@ while (!bDone) {
 				if (gameData.trigs.triggers [gameData.walls.walls [WallNumI ((short) nSegment, (short) nSide)].nTrigger].nType == TT_SECRET_EXIT) {
 					int truth;
 
-					c = NDReadByte ();
-					Assert (c == ND_EVENT_SECRET_THINGY);
+					nTag = NDReadByte ();
+					Assert (nTag == ND_EVENT_SECRET_THINGY);
 					truth = NDReadInt ();
 					if (!truth)
 						CheckTrigger (gameData.segs.segments + nSegment, (short) nSide, (short) nObject, shot);
@@ -2664,7 +2666,7 @@ while (!bDone) {
 			break;
 		}
 	}
-LastReadValue = c;
+LastReadValue = nTag;
 if (bNDBadRead)
 	NDErrorMsg (TXT_DEMO_ERR_READING, TXT_DEMO_OLD_CORRUPT, NULL);
 else
@@ -3382,6 +3384,7 @@ gameStates.render.cockpit.n3DView [0] = CV_NONE;       //turn off 3d views on co
 gameStates.render.cockpit.n3DView [1] = CV_NONE;       //turn off 3d views on cockpit
 SDL_ShowCursor (0);
 NDPlayBackOneFrame ();       // this one loads new level
+ResetTime ();
 NDPlayBackOneFrame ();       // get all of the gameData.objs.objects to renderb game
 }
 
@@ -3503,7 +3506,7 @@ if (w) {
 	}
 else {
 	memcpy (&demoLeftExtra, objP, sizeof (tObject)); 
-	nDemoDoLeft=nType;
+	nDemoDoLeft = nType;
 	}
 }
 
@@ -3533,7 +3536,7 @@ if (!gameData.demo.bFirstTimePlayback) {
 		//	timer_delay (xDelay);
 		}
 	}
-gameData.demo.bFirstTimePlayback=0;
+gameData.demo.bFirstTimePlayback = 0;
 }
 
 //	-----------------------------------------------------------------------------

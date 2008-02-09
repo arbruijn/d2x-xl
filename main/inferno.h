@@ -1533,6 +1533,11 @@ typedef struct tSegList {
 	short					*segments;
 } tSegList;
 
+typedef struct tSegExtent {
+	vmsVector			vMin;
+	vmsVector			vMax;
+	} tSegExtent;
+
 typedef struct tSegmentData {
 	int					nMaxSegments;
 	vmsVector			*vertices;
@@ -1545,6 +1550,7 @@ typedef struct tSegmentData {
 	tSegList				skybox;
 #if CALC_SEGRADS
 	fix					*segRads [2];
+	tSegExtent			*extent;
 #endif
 	vmsVector			*segCenters [2];
 	vmsVector			*sideCenters;
