@@ -246,7 +246,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 		return;
 	//the code below to check for tObject near the center of the screen
 	//completely ignores z, which may not be good
-	if ((abs (temp.p3_x) < F1_0*4) && (abs (temp.p3_y) < F1_0*4)) {
+	if ((abs (temp.p3_x) < F1_0 * 4) && (abs (temp.p3_y) < F1_0 * 4)) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
 		objP->cType.aiInfo.nDangerLaserSig = gameData.objs.objects [gameStates.app.bPlayerFiredLaserThisFrame].nSignature;
 		}

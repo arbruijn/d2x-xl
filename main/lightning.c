@@ -1686,7 +1686,11 @@ else {
 
 inline int LightningMayBeVisible (tLightning *pl)
 {
-return (pl->nSegment < 0) || SegmentMayBeVisible (pl->nSegment, pl->nLength / 20, 3 * pl->nLength / 2);
+if (pl->nSegment >= 0)
+	return SegmentMayBeVisible (pl->nSegment, pl->nLength / 20, 3 * pl->nLength / 2);
+if (pl->nObject >= 0)
+	return (gameData.render.mine.bObjectRendered [pl->nObject] == gameStates.render.nFrameFlipFlop);
+return 1;
 }
 
 //------------------------------------------------------------------------------

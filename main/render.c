@@ -1555,6 +1555,7 @@ if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && 
 		if ((gameStates.render.automap.bFull && (gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway)) || 
 			 (gameData.render.mine.bAutomapVisited [i] && (gameData.render.mine.bAutomapVisited [i] <= gameStates.render.automap.nSegmentLimit))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
+			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
 			}
 	SortRenderSegs ();
