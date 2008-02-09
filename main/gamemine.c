@@ -1192,12 +1192,13 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 				faceP->bTextured = 1;
 				faceP->bTransparent = 0;
 				pszName = gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.pBmIndex [faceP->nBaseTex].index].name;
+				faceP->bSparks = (strstr (pszName, "misc17") != NULL);
 				if (bWall < 2)
 					faceP->bAdditive = 0;
 				else if (WALLS [nWall].flags & WALL_RENDER_ADDITIVE)
 					faceP->bAdditive = 2;
 				else
-					faceP->bAdditive = (strstr (pszName, "force") || strstr (pszName, "lava") || strstr (pszName, "misc17")) ? 1 : 0;
+					faceP->bAdditive = (strstr (pszName, "force") || strstr (pszName, "lava") || faceP->bSparks) ? 1 : 0;
 				} 
 			else if (bColoredSeg) {
 				faceP->nBaseTex = -1;
@@ -1400,6 +1401,7 @@ void LoadSegment2sCompiled (CFILE *loadFile)
 {
 	int	i;
 
+gameData.matCens.nRepairCenters = 0;
 for (i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
 		ReadSegment2 (gameData.segs.segment2s + i, loadFile);

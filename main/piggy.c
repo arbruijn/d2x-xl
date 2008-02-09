@@ -97,7 +97,9 @@ short *d1_tmap_nums = NULL;
 
 char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 	"slowmotion#0",
-	"bullettime#0"
+	"bullettime#0",
+	"repair-spark#0",
+	"energy-spark#0"
 	};
 
 static short d2OpaqueDoors [] = {

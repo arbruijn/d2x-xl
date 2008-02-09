@@ -1216,6 +1216,10 @@ for (i = nStart; i != nEnd; i += nIncr) {
 #endif
 		if (!(faceP->bVisible = FaceIsVisible (nSegment, nSide)))
 			continue;
+		if (faceP->bSparks && gameOpts->render.bEnergySparks) {
+			faceP->bVisible = 0;
+			continue;
+			}
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
 			faceP->bVisible = 0;
 			continue;

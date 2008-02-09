@@ -83,6 +83,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "shadows.h"
 #include "textdata.h"
+#include "sparkeffect.h"
 
 //------------------------------------------------------------------------------
 
@@ -1309,6 +1310,7 @@ if (SHOW_SHADOWS &&
 			RenderShadowTexture ();
 			}
 #endif
+		RenderEnergySparks ();
 		RenderLightnings ();
 		RenderSmoke ();
 		}
@@ -1326,6 +1328,7 @@ else
 			RenderMine (nStartSeg, nEyeOffset, nWindow);
 			}
 		}
+	RenderEnergySparks ();
 	if (!nWindow || gameOpts->render.lightnings.bAuxViews)
 		RenderLightnings ();
 	if (!nWindow || gameOpts->render.smoke.bAuxViews)
@@ -2088,6 +2091,8 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 			RenderLightnings ();
 		if (gameOpts->render.automap.bSmoke)
 			RenderSmoke ();
+		if (gameOpts->render.automap.bSparks)
+			RenderEnergySparks ();
 		}
 	}
 #if PROFILING

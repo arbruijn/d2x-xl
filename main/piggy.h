@@ -89,7 +89,7 @@ void PiggyLoadLevelData();
 
 #define MAX_BITMAP_FILES			2620 // Upped for CD Enhanced
 #define D1_MAX_BITMAP_FILES		1555 // Upped for CD Enhanced
-#define MAX_ADDON_BITMAP_FILES	2
+#define MAX_ADDON_BITMAP_FILES	4
 #define MAX_WALL_TEXTURES			910
 #define MAX_SOUND_FILES				MAX_SOUNDS
 
@@ -147,7 +147,14 @@ extern size_t bitmapCacheSize;
 extern char *szAddonTextures [MAX_ADDON_BITMAP_FILES];
 
 #define	PageInAddonBitmap(bmi) \
-			{if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES)) \
-			 PageInBitmap (gameData.pig.tex.addonBitmaps - bmi - 1, szAddonTextures [-bmi - 1], bmi, 0);}
+			{if (((bmi) < 0) && ((bmi) >= -MAX_ADDON_BITMAP_FILES)) \
+			 PageInBitmap (gameData.pig.tex.addonBitmaps - (bmi) - 1, szAddonTextures [-(bmi) - 1], (bmi), 0);}
+
+#define BM_ADDON_SLOWMOTION		0
+#define BM_ADDON_BULLETTIME		1
+#define BM_ADDON_REPAIRSPARK		2
+#define BM_ADDON_FUELSPARK			3
+
+#define BM_ADDON(_i)	(gameData.pig.tex.addonBitmaps + (_i))
 
 #endif //_PIGGY_H

@@ -127,6 +127,7 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include "trackobject.h"
 #include "slowmotion.h"
 #include "soundthreads.h"
+#include "sparkeffect.h"
 
 u_int32_t nCurrentVGAMode;
 
@@ -2234,6 +2235,7 @@ DrainHeadLightPower ();
 	DoSeismicStuff ();
 //LogErr ("DoSmokeFrame \n");
 	DoSmokeFrame ();
+	DoEnergySparkFrame ();
 //LogErr ("DoFlashFrame \n");
 	DoLightningFrame ();
 //LogErr ("DoAmbientSounds\n");

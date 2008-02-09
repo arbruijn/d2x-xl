@@ -1782,6 +1782,7 @@ char *defaultGameTexts [][2] = {
 	{"zu Boje teleportieren?", "Teleport to marker?"},
 	{"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
 	{"Prozent erkundet", "percent explored"},
+	{"Energiefunken zeichnen", "render energy s~Parks"},
 #if 0
 	{"", ""},
 #endif
@@ -2394,6 +2395,8 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, werden Spielerschiffe immer mit dieser\nWaffe ausgestattet.", "If checked, player ships are equipped with this\ngun when entering a game or respawning."},
 	{"Wenn angekreuzt, werden Spielerschiffe immer mit diesem\nGeraet ausgestattet.", "If checked, player ships are equipped with this\ndevice when entering a game or respawning."},
 	{"Hier kann die Startausstattung der Spielerschiffe mit\nWaffen und Geraeten eingestellt werden.", "Adjust the initial loadout of player ships\nwith guns and devices here."},
+	{"Wenn angekreuzt werden anstelle der zweidimensional angeordneten\nEnergiefunken im gesamten Bereich von Energie-\nund Reparaturzentren Funken gezeichnet.", 
+	 "If checked, energy sparks are not just rendered two dimensionally\naligned, but across the entire space occupied\nby energy and repair centers."},
 #if 0
 	{"", ""},
 #endif

@@ -411,6 +411,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nObjCoronaIntensity, i, 0);
 		RP (gameOptions [i].render.bAdditiveCoronas, i, 0);
 		RP (gameOptions [i].render.bAdditiveObjCoronas, i, 0);
+		RP (gameOptions [i].render.bEnergySparks, i, 0);
 		RP (gameOptions [i].render.bBrightObjects, i, 0);
 		RP (gameOptions [i].render.bRobotShields, i, 0);
 		RP (gameOptions [i].render.bOnlyShieldHits, 0, 0);
@@ -434,6 +435,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.automap.bBright, i, 0);
 		RP (gameOptions [i].render.automap.bCoronas, i, 0);
+		RP (gameOptions [i].render.automap.bSparks, i, 0);
 		RP (gameOptions [i].render.automap.bSmoke, i, 0);
 		RP (gameOptions [i].render.automap.bLightnings, i, 0);
 		RP (gameOptions [i].render.automap.bTextured, i, 0);
@@ -968,6 +970,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.nCoronaIntensity", "2"},
 	{"gameOptions[0].render.nObjCoronaIntensity", "1"},
 	{"gameOptions[0].render.bAdditiveCoronas", "0"},
+	{"gameOptions[0].render.bEnergySparks", "0"},
 	{"gameOptions[0].render.bBrightObjects", "0"},
 	{"gameOptions[0].render.bRobotShields", "0"},
 	{"gameOptions[0].render.bOnlyShieldHits", "0"},
@@ -978,6 +981,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.cameras.nSpeed", "5000"},
 	{"gameOptions[0].render.automap.bBright", "0"},
 	{"gameOptions[0].render.automap.bCoronas", "1"},
+	{"gameOptions[0].render.automap.bSparks", "1"},
 	{"gameOptions[0].render.automap.bSmoke", "1"},
 	{"gameOptions[0].render.automap.bLightnings", "1"},
 	{"gameOptions[0].render.automap.bTextured", "1"},

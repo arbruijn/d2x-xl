@@ -2220,6 +2220,8 @@ void BuildObjectModels (void)
 	int      i, j;
 	tObject	o, *objP = gameData.objs.objects;
 
+if (!gameOpts->render.nPath)
+	return;
 gameStates.render.nType = 1;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;

@@ -1823,10 +1823,10 @@ void LoadGameTexts(void);
 #define TXT_JUMP_TO_MARKER			GT(1030)
 #define TXT_CANNOT_TELEPORT		GT(1031)
 #define TXT_PERCENT_EXPLORED		GT(1032)
+#define TXT_RENDER_SPARKS			GT(1033)
 
 #if 0
 
-#define TXT_				GT(1033)
 #define TXT_				GT(1034)
 #define TXT_				GT(1035)
 #define TXT_				GT(1036)
@@ -2357,10 +2357,10 @@ void LoadGameTexts(void);
 #define HTX_GUN_LOADOUT				HT(343)			
 #define HTX_DEVICE_LOADOUT			HT(344)			
 #define HTX_MULTI_LOADOUT			HT(345)			
+#define HTX_RENDER_SPARKS			HT(346)			
 
 #if 0
 
-#define HTX_					HT(346)			
 #define HTX_					HT(347)			
 #define HTX_					HT(348)			
 #define HTX_					HT(349)			

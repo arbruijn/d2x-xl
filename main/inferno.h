@@ -273,6 +273,7 @@ typedef struct tAutomapOptions {
 	int bBright;
 	int bCoronas;
 	int bSmoke;
+	int bSparks;
 	int bLightnings;
 	int bSkybox;
 	int nColor;
@@ -302,6 +303,7 @@ typedef struct tRenderOptions {
 	int bAdditiveObjCoronas; //additive corona blending for light emitting weapons
 	int nCoronaIntensity;
 	int nObjCoronaIntensity;
+	int bEnergySparks;
 	int bUseShaders;
 	int bHiresModels;
 	int bBrightObjects;
@@ -2513,6 +2515,20 @@ typedef struct tMenuData {
 
 #include "fuelcen.h"
 
+typedef struct tEnergySpark {
+	short				nProb;
+	short				nFrame;
+	fix				xSize;
+	time_t			tRender;
+	time_t			tCreate;
+	vmsVector		vPos;
+	} tEnergySpark;
+
+typedef struct tSegmentSparks {
+	tEnergySpark	*sparks;
+	short				nMaxSparks;
+	} tSegmentSparks;
+
 typedef struct tMatCenData {
 	fix				xFuelRefillSpeed;
 	fix				xFuelGiveAmount;
@@ -2523,8 +2539,12 @@ typedef struct tMatCenData {
 	int				nFuelCenters;
 	int				nBotCenters;
 	int				nEquipCenters;
+	int				nRepairCenters;
 	fix				xEnergyToCreateOneRobot;
 	int				origStationTypes [MAX_FUEL_CENTERS];
+	tSegmentSparks	sparks [2][MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
+	short				sparkSegs [2 * MAX_FUEL_CENTERS];
+	short				nSparkSegs;
 	tSegment			*playerSegP;
 } tMatCenData;
 

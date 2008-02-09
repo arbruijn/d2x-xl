@@ -14,7 +14,6 @@
 void d_srand (unsigned int seed);
 int d_rand ();			// Random number function which returns in the range 0-0x7FFF
 
-
 //=============================== FIXED POINT ===============================
 
 #ifndef Pi
@@ -142,5 +141,28 @@ fixang fix_atan2 (fix cos, fix sin);
 fix fix_isqrt (fix a);
 
 #define fabsf(_f)	(float) fabs (_f)
+
+//-----------------------------------------------------------------------------
+
+static inline void d_srand (unsigned int seed)
+{
+srand(seed);
+}
+
+//-----------------------------------------------------------------------------
+
+static inline int d_rand (void)
+{
+return rand() & 0x7fff;
+}
+
+//-----------------------------------------------------------------------------
+
+static inline float f_rand (void)
+{
+return (float) d_rand() / (float) 0x7fff;
+}
+
+//-----------------------------------------------------------------------------
 
 #endif

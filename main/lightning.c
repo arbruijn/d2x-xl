@@ -131,7 +131,7 @@ for (; i > 0; i--, pl++)
 
 //------------------------------------------------------------------------------
 
-inline double f_rand (void)
+inline double dbl_rand (void)
 {
 return (double) rand () / (double) RAND_MAX;
 }
@@ -199,7 +199,7 @@ return vRand;
 
 int ComputeChildEnd (vmsVector *vPos, vmsVector *vEnd, vmsVector *vDir, vmsVector *vParentDir, int nLength)
 {
-nLength = 3 * nLength / 4 + (int) (f_rand () * nLength / 4);
+nLength = 3 * nLength / 4 + (int) (dbl_rand () * nLength / 4);
 DirectedRandomVector (vDir, vParentDir, 3 * F1_0 / 4, 9 * F1_0 / 10);
 VmVecScaleAdd (vEnd, vPos, vDir, nLength);
 return nLength;
@@ -234,7 +234,7 @@ else {
 	}
 pl->vDir = vDir;
 if (pl->nOffset) {
-	i = pl->nOffset / 2 + (int) (f_rand () * pl->nOffset / 2);
+	i = pl->nOffset / 2 + (int) (dbl_rand () * pl->nOffset / 2);
 	VmVecScaleInc (&pl->vPos, &vDir, i);
 	VmVecScaleInc (&pl->vEnd, &vDir, i);
 	}
@@ -318,9 +318,9 @@ for (i = nLightnings, pl = pfRoot; i > 0; i--, pl++) {
 	pl->nChildren = gameOpts->render.lightnings.nQuality ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
 	pl->nLife = nLife;
 	h = abs (nLife);
-	pl->nTTL = (bRandom) ? 3 * h / 4 + (int) (f_rand () * h / 2) : h;
+	pl->nTTL = (bRandom) ? 3 * h / 4 + (int) (dbl_rand () * h / 2) : h;
 	pl->nDelay = abs (nDelay) * 10;
-	pl->nLength = (bRandom) ? 3 * nLength / 4 + (int) (f_rand () * nLength / 2) : nLength;
+	pl->nLength = (bRandom) ? 3 * nLength / 4 + (int) (dbl_rand () * nLength / 2) : nLength;
 	pl->nAmplitude = (nAmplitude < 0) ? nLength / 6 : nAmplitude;
 	pl->nAngle = vEnd ? nAngle : 0;
 	pl->nOffset = nOffset;
@@ -667,7 +667,7 @@ vmsVector ComputeErraticNode (tLightningNode *pln, vmsVector *vPos, vmsVector *v
 TRAP (pln);
 pln->vNewPos = pln->vBase;
 for (j = 0; j < 2 - bInPlane; j++) {
-	nDelta = nAmplitude / 2 - (int) (f_rand () * nAmplitude);
+	nDelta = nAmplitude / 2 - (int) (dbl_rand () * nAmplitude);
 	if (!bRandom) {
 		i -= bFromEnd;
 		nDelta *= 3;
@@ -944,12 +944,12 @@ for (i = 0; i < nLightnings; i++, pl++) {
 		if (pl->nLife < 0) {
 			if (0 > (pl->nNodes = -pl->nNodes)) {
 				h = pl->nDelay / 2;
-				pl->nTTL = h + (int) (f_rand () * h);
+				pl->nTTL = h + (int) (dbl_rand () * h);
 				}
 			else {
 				if (pl->bRandom) {
 					h = -pl->nLife;
-					pl->nTTL = 3 * h / 4 + (int) (f_rand () * h / 2);
+					pl->nTTL = 3 * h / 4 + (int) (dbl_rand () * h / 2);
 					SetupLightning (pl, 0);
 					CHECK (pl, 1);
 					}
@@ -1514,9 +1514,9 @@ for (h = nLightnings - nStart; h > 0; h--, pl++) {
 		else if (pl->nTTL < pl->nLife / 3)
 			color.alpha *= (float) pl->nTTL / (float) (pl->nLife / 3);
 		}
-	color.red *= (float) (0.9 + f_rand () / 5);
-	color.green *= (float) (0.9 + f_rand () / 5);
-	color.blue *= (float) (0.9 + f_rand () / 5);
+	color.red *= (float) (0.9 + dbl_rand () / 5);
+	color.green *= (float) (0.9 + dbl_rand () / 5);
+	color.blue *= (float) (0.9 + dbl_rand () / 5);
 	if (!bPlasma)
 		color.alpha *= 1.5f;
 	if (nDepth)
@@ -1716,9 +1716,9 @@ if (bDepthSort > 0) {
 		else if (pl->nTTL < pl->nLife / 3)
 			color.alpha *= (float) pl->nTTL / (float) (pl->nLife / 3);
 		}
-	color.red *= (float) (0.9 + f_rand () / 5);
-	color.green *= (float) (0.9 + f_rand () / 5);
-	color.blue *= (float) (0.9 + f_rand () / 5);
+	color.red *= (float) (0.9 + dbl_rand () / 5);
+	color.green *= (float) (0.9 + dbl_rand () / 5);
+	color.blue *= (float) (0.9 + dbl_rand () / 5);
 	for (; nLightnings; nLightnings--, pl++) {
 		if ((pl->nNodes < 0) || (pl->nSteps < 0))
 			continue;
@@ -1777,9 +1777,9 @@ else {
 			else if (pl->nTTL < pl->nLife / 3)
 				color.alpha *= (float) pl->nTTL / (float) (pl->nLife / 3);
 			}
-		color.red *= (float) (0.9 + f_rand () / 5);
-		color.green *= (float) (0.9 + f_rand () / 5);
-		color.blue *= (float) (0.9 + f_rand () / 5);
+		color.red *= (float) (0.9 + dbl_rand () / 5);
+		color.green *= (float) (0.9 + dbl_rand () / 5);
+		color.blue *= (float) (0.9 + dbl_rand () / 5);
 		if (!bPlasma)
 			color.alpha *= 1.5f;
 		if (nDepth)
@@ -2253,7 +2253,7 @@ if (i < 0) {
 		fDamage = (0.5f - ObjectDamage (objP)) / 250.0f;
 		}
 #if 1
-	if (f_rand () > fDamage)
+	if (dbl_rand () > fDamage)
 		return;
 #endif
 	if (pointList) {

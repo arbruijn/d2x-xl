@@ -89,6 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "collide.h"
 #include "objrender.h"
+#include "sparkeffect.h"
 #ifdef _WIN32
 #	include "../arch/win32/include/ipx_udp.h"
 #else
@@ -2366,10 +2367,11 @@ void EffectOptionsMenu ()
 	int	i, j, choice = 0;
 	int	opt;
 	int	optTranspExpl, optThrusterFlame, optDmgExpl, optAutoTransp, optPlayerShields,
-			optRobotShields, optShieldHits, optTracers, optExplBlast;
+			optRobotShields, optShieldHits, optTracers, optExplBlast, optSparks;
 #if 0
 	int	optShockwaves;
 #endif
+	int	bEnergySparks = gameOpts->render.bEnergySparks;
 	char	szExplShrapnels [50];
 
 pszExplShrapnels [0] = TXT_NONE;
@@ -2397,6 +2399,8 @@ do {
 	ADD_RADIO (opt, TXT_3D_THRUSTER_FLAME, 0, KEY_3, 1, HTX_RENDER_THRUSTER);
 	opt++;
 	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].value = 1;
+	ADD_CHECK (opt, TXT_RENDER_SPARKS, gameOpts->render.bEnergySparks, KEY_P, HTX_RENDER_SPARKS);
+	optSparks = opt++;
 	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
 	optTranspExpl = opt++;
 	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
@@ -2419,6 +2423,13 @@ do {
 		if (i < 0)
 			break;
 		} 
+	gameOpts->render.bEnergySparks = m [optSparks].value;
+	if ((gameOpts->render.bEnergySparks != bEnergySparks) && gameStates.app.bGameRunning) {
+		if (gameOpts->render.bEnergySparks)
+			AllocEnergySparks ();
+		else
+			FreeEnergySparks ();
+		}
 	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
@@ -2494,7 +2505,7 @@ void AutomapOptionsMenu ()
 	tMenuItem m [20];
 	int	i, j, choice = 0;
 	int	opt;
-	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox;
+	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
 	char	szRadarRange [50];
 
 pszRadarRange [0] = TXT_SHORT;
@@ -2511,6 +2522,8 @@ do {
 		optBright = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
 		optCoronas = opt++;
+		ADD_CHECK (opt, TXT_RENDER_SPARKS, gameOpts->render.automap.bSparks, KEY_P, HTX_RENDER_SPARKS);
+		optSparks = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_SMOKE, gameOpts->render.automap.bSmoke, KEY_S, HTX_AUTOMAP_SMOKE);
 		optSmoke = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_LIGHTNINGS, gameOpts->render.automap.bLightnings, KEY_S, HTX_AUTOMAP_LIGHTNINGS);
@@ -2571,6 +2584,7 @@ do {
 	//gameOpts->render.automap.bTextured = m [automapOpts.nOptTextured].value;
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
+	GET_VAL (gameOpts->render.automap.bSparks, optSparks);
 	GET_VAL (gameOpts->render.automap.bSmoke, optSmoke);
 	GET_VAL (gameOpts->render.automap.bLightnings, optLightnings);
 	GET_VAL (gameOpts->render.automap.bSkybox, optSkybox);

@@ -121,6 +121,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "hiresmodels.h"
 #include "entropy.h"
 #include "monsterball.h"
+#include "sparkeffect.h"
 
 #if defined (TACTILE)
  #include "tactile.h"
@@ -892,6 +893,8 @@ BMFreeExtraModels ();
 BMFreeExtraObjBitmaps ();
 /*---*/LogErr ("   unloading additional model textures\n");
 PiggyFreeHiresAnimations ();
+/*---*/LogErr ("   freeing spark effect buffers\n");
+FreeEnergySparks ();
 /*---*/LogErr ("   freeing sound buffers\n");
 DigiFreeSoundBufs ();
 /*---*/LogErr ("   freeing auxiliary poly model data\n");
@@ -1089,6 +1092,7 @@ if (!bRestore) {
 LoadExtraImages ();
 CreateShieldSphere ();
 SetupEffects ();
+AllocEnergySparks ();
 SetVertigoRobotFlags ();
 SetDebrisCollisions ();
 BuildSkyBoxSegList ();

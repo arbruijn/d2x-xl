@@ -820,6 +820,10 @@ SOURCE=..\..\main\soundthreads.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\sparkeffect.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\sphere.c
 # End Source File
 # Begin Source File
@@ -1478,6 +1482,10 @@ SOURCE=..\..\main\sounds.h
 # Begin Source File
 
 SOURCE=..\..\main\soundthreads.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\sparkeffect.h
 # End Source File
 # Begin Source File
 
