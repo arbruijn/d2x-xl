@@ -2234,6 +2234,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 #endif
 memset (&o, 0, sizeof (o));
 o.position = OBJECTS->position;
+o.rType.polyObjInfo.nTexOverride = -1;
 #if BUILD_ALL_MODELS
 j = 0;
 for (i = 0; i < MAX_POLYGON_MODELS; i++) {

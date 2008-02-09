@@ -603,7 +603,9 @@ if (FAST_SHADOWS &&
 	 (gameStates.render.nShadowPass == 3))
 	return 1;
 #endif
-if (!gameStates.render.bBuildModels) {
+if (gameStates.render.bBuildModels) 
+	xLight = F1_0;
+else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
 	if (objP->nType == OBJ_PLAYER)
 		bCloaked = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
@@ -661,11 +663,11 @@ else {
 		tBitmapIndex *bmiAltTex = (objP->rType.polyObjInfo.nAltTextures > 0) ? mpTextureIndex [objP->rType.polyObjInfo.nAltTextures - 1] : NULL;
 
 		//	Snipers get bright when they fire.
-		if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0 / 8) {
-			if (objP->cType.aiInfo.behavior == AIB_SNIPE)
-				xLight = 2 * xLight + F1_0;
-			}
 		if (!gameStates.render.bBuildModels) {
+			if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0 / 8) {
+				if (objP->cType.aiInfo.behavior == AIB_SNIPE)
+					xLight = 2 * xLight + F1_0;
+				}
 			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [objP->id].nInnerModel > -1);
 			bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
 			if (bEnergyWeapon) {
@@ -709,9 +711,11 @@ else {
 			}
 		}
 	}
-gameStates.render.nInterpolationMethod = imSave;
-gameStates.render.bBrightObject = 0;
-gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
+if (!gameStates.render.bBuildModels) {
+	gameStates.render.nInterpolationMethod = imSave;
+	gameStates.render.bBrightObject = 0;
+	gameOpts->render.bDepthSort = -gameOpts->render.bDepthSort;
+	}
 return bOk;
 }
 
