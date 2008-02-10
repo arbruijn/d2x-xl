@@ -82,6 +82,7 @@ tReplacementModel replacementModels [] = {
 	{NULL, NULL, 79, 1, 0}, 
 	{"smelter-cloaked", NULL, 80, 1, 0}, 
 	{"smelterclone-cloaked", NULL, 81, 1, 0}, 
+	{"omegaspawn", NULL, 82, 1, 0}, 
 	{"smelterclone", NULL, 83, 1, 0}, 
 	{"omegaclone", NULL, 85, 1, 0}, 
 	{"bperclone", NULL, 86, 1, 0}, 

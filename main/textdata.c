@@ -189,7 +189,7 @@ if (msgP->nEndTime < 0) {
 	msgP->currentMsg = NULL;
 	ResumeGame ();
 	}
-else {
+else if (!gameStates.render.nWindow) {
 	if (!msgP->bmP) {
 		grdCurCanv->cvFont = NORMAL_FONT;
 		GrSetFontColorRGBi (GOLD_RGBA, 1, 0, 0);
