@@ -1267,7 +1267,8 @@ if (!bBetweenLevels)	{
 
 	DBG (fPos = CFTell (cfp));
 // Save the automap visited info
-	CFWrite (gameData.render.mine.bAutomapVisited, sizeof (ushort), MAX_SEGMENTS, cfp);
+	for (i = 0; i < MAX_SEGMENTS; i++)
+		CFWriteShort (gameData.render.mine.bAutomapVisited [i], cfp);
 	DBG (fPos = CFTell (cfp));
 	}
 CFWriteInt ((int) gameData.app.nStateGameId, cfp);
@@ -2362,8 +2363,10 @@ if (!bBetweenLevels)	{
 	DBG (fPos = CFTell (cfp));
 	StateFixObjects ();
 	SpecialResetObjects ();
-	if (sgVersion > 37)
-		CFRead (gameData.render.mine.bAutomapVisited, sizeof (ushort), MAX_SEGMENTS, cfp);
+	if (sgVersion > 37) {
+		for (i = 0; i < MAX_SEGMENTS; i++)
+			gameData.render.mine.bAutomapVisited [i] = (ushort) CFReadShort (cfp);
+		}
 	else {
 		int	i, j = (sgVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)

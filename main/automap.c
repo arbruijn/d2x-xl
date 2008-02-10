@@ -693,6 +693,7 @@ else if (gameStates.render.automap.bFull) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
 		gameData.render.mine.bAutomapVisited [i] = 1;
 	}
+//gameData.render.mine.bAutomapVisited [gameData.objs.objects [LOCALPLAYER.nObject].nSegment] = 1;
 gameStates.render.automap.nSegmentLimit =
 gameStates.render.automap.nMaxSegsAway = 
 	SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);

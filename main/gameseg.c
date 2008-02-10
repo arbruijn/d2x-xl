@@ -2076,20 +2076,17 @@ void PickRandomPointInSeg (vmsVector *new_pos, int nSegment)
 //	----------------------------------------------------------------------------------------------------------
 //	Set the segment depth of all segments from nStartSeg in *segbuf.
 //	Returns maximum nDepth value.
-static int head, tail, nSegment, nChild, nSide;
-
-int SetSegmentDepths (int nStartSeg, ubyte *pDepthBuf)
+int SetSegmentDepths (int nStartSeg, ushort *pDepthBuf)
 {
-	//int	nSegment, nSide, nChild;
-	ubyte	visited [MAX_SEGMENTS_D2X];
-	short	queue [MAX_SEGMENTS_D2X];
-	//int	head = 0;
-	//int	tail = 0;
-	int	nDepth = 1;
-	int	nParentDepth = 0;
-	short	*childP;
+	ubyte		bVisited [MAX_SEGMENTS_D2X];
+	short		queue [MAX_SEGMENTS_D2X];
+	int		head = 0;
+	int		tail = 0;
+	int		nDepth = 1;
+	int		nSegment, nSide, nChild;
+	ushort	nParentDepth = 0;
+	short		*childP;
 
-	nDepth = 1;
 	head = 0;
 	tail = 0;
 
@@ -2098,18 +2095,21 @@ if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
 if (pDepthBuf [nStartSeg] == 0)
 	return 1;
 queue [tail++] = nStartSeg;
-memset (visited, 0, sizeof (*visited) * gameData.segs.nSegments);
-visited [nStartSeg] = 1;
+memset (bVisited, 0, sizeof (*bVisited) * gameData.segs.nSegments);
+bVisited [nStartSeg] = 1;
 pDepthBuf [nStartSeg] = nDepth++;
 if (nDepth == 0)
-	nDepth = 255;
+	nDepth = 0x7fff;
 while (head < tail) {
 	nSegment = queue [head++];
+#ifdef _DEBUG
+	if (nSegment == nDbgSeg)
+		nDbgSeg = nDbgSeg;
+#endif
 	nParentDepth = pDepthBuf [nSegment];
 	childP = gameData.segs.segments [nSegment].children;
 	for (nSide = MAX_SIDES_PER_SEGMENT; nSide; nSide--, childP++) {
-		nChild = *childP;
-		if (nChild < 0)
+		if (0 > (nChild = *childP))
 			continue;
 #ifdef _DEBUG
 		if (nChild >= gameData.segs.nSegments) {
@@ -2118,11 +2118,15 @@ while (head < tail) {
 			return 1;
 			}
 #endif
+#ifdef _DEBUG
+		if (nChild == nDbgSeg)
+			nDbgSeg = nDbgSeg;
+#endif
 		if (!pDepthBuf [nChild])
 			continue;
-		if (visited [nChild])
+		if (bVisited [nChild])
 			continue;
-		visited [nChild] = 1;
+		bVisited [nChild] = 1;
 		pDepthBuf [nChild] = nParentDepth + 1;
 		queue [tail++] = nChild;
 		}
