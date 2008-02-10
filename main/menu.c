@@ -2536,7 +2536,8 @@ do {
 		optLightnings =
 		optCoronas =
 		optSkybox =
-		optBright = -1;
+		optBright =
+		optSparks = -1;
 	ADD_CHECK (opt, TXT_AUTOMAP_ROBOTS, extraGameInfo [0].bRobotsOnRadar, KEY_R, HTX_AUTOMAP_ROBOTS);
 	optShowRobots = opt++;
 	ADD_RADIO (opt, TXT_AUTOMAP_NO_POWERUPS, 0, KEY_D, 3, HTX_AUTOMAP_POWERUPS);

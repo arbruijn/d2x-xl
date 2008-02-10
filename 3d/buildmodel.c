@@ -553,7 +553,7 @@ if (bASE) {
 else {
 		tOOF_point		*pp;
 		tOOF_subObject	*pso;
-		tOOFObject		*po = gameData.models.modelToOOF [1][nModel];;
+		tOOFObject		*po = gameData.models.modelToOOF [1][nModel];
 
 	if (!po)
 		po = gameData.models.modelToOOF [0][nModel];

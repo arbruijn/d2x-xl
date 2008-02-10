@@ -380,7 +380,7 @@ else {
 	if (nType < 0)
 		nType = 255;
 	}
-BossSpewRobot (objP, NULL, nType);
+BossSpewRobot (objP, NULL, nType, 1);
 }
 
 #ifdef EDITOR

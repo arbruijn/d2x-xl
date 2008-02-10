@@ -75,6 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "text.h"
 #include "dropobject.h"
+#include "ai.h"
 
 //#define _DEBUG
 
@@ -1515,8 +1516,6 @@ return 1;
 
 //	------------------------------------------------------------------------------------------------------
 
-extern int BossSpewRobot (tObject *objP, vmsVector *pos, short objType);
-
 int	nBossInvulDot = 0;
 int	nBuddyGaveHintCount = 5;
 fix	xLastTimeBuddyGameHint = 0;
@@ -1538,9 +1537,9 @@ if (weaponP->cType.laserInfo.parentType == OBJ_PLAYER) {
 		int i = FindBoss (OBJ_IDX (robot));
 		if (i >= 0) {
 			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
-				 (BossSpewRobot (robot, vHitPt, -1) != -1))
+				 (BossSpewRobot (robot, vHitPt, -1, 0) != -1))
 				gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
-			BossSpewRobot (robot, vHitPt, -1);
+			BossSpewRobot (robot, vHitPt, -1, 0);
 			}
 		}
 	}

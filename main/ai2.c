@@ -1966,7 +1966,7 @@ int OpenableDoorsInSegment (short nSegment)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if placing an tObject of size size at pos *pos intersects a (tPlayer or robot or control center) in tSegment *segP.
-int checkObjectObject_intersection (vmsVector *pos, fix size, tSegment *segP)
+int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP)
 {
 	int		curobjnum;
 
@@ -2007,9 +2007,9 @@ if (nBoss < 0)
 if (gameData.time.xGame - gameData.boss [nBoss].nLastGateTime < gameData.boss [nBoss].nGateInterval)
 	return -1;
 for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-		if (gameData.objs.objects [i].matCenCreator == BOSS_GATE_MATCEN_NUM)
-			count++;
+	if ((gameData.objs.objects [i].nType == OBJ_ROBOT) &&
+		 (gameData.objs.objects [i].matCenCreator == BOSS_GATE_MATCEN_NUM))
+		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
 	gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 	return -1;
@@ -2022,7 +2022,7 @@ for (;;) {
 		vObjPos = *pos;
 
 	//	See if legal to place tObject here.  If not, move about in tSegment and try again.
-	if (checkObjectObject_intersection (&vObjPos, objsize, segP)) {
+	if (CheckObjectObjectIntersection (&vObjPos, objsize, segP)) {
 		if (!--nTries) {
 			gameData.boss [nBoss].nLastGateTime = gameData.time.xGame - 3 * gameData.boss [nBoss].nGateInterval / 4;
 			return -1;
@@ -2038,9 +2038,9 @@ if (nObject < 0) {
 	return -1;
 	} 
 // added lifetime increase depending on difficulty level 04/26/06 DM
-gameData.objs.objects [nObject].lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
 objP = gameData.objs.objects + nObject;
+objP->lifeleft = F1_0 * 30 + F0_5 * (gameStates.app.nDifficultyLevel * 15);	//	Gated in robots only live 30 seconds.
 //Set polygon-tObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -2063,13 +2063,15 @@ return OBJ_IDX (objP);
 
 //	----------------------------------------------------------------------------------------------------------
 //	objP points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
-int BossSpewRobot (tObject *objP, vmsVector *pos, short objType)
+int BossSpewRobot (tObject *objP, vmsVector *pos, short objType, int bObjTrigger)
 {
 	short			nObject, nSegment, maxRobotTypes;
 	short			nBossIndex, nBossId = ROBOTINFO (objP->id).bossFlag;
 	tRobotInfo	*pri;
 	vmsVector	vPos;
 
+if (!bObjTrigger && FindObjTrigger (OBJ_IDX (objP), TT_SPAWN_BOT, -1))
+	return -1;
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
 nSegment = pos ? FindSegByPoint (pos, objP->nSegment, 1, 0) : objP->nSegment;
@@ -2406,9 +2408,9 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 					VmVecCopyScale (&spewPoint, &objP->position.mOrient.fVec, objP->size * 2);
 					VmVecInc (&spewPoint, &objP->position.vPos);
 					if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewMore && (d_rand () > 16384) &&
-						 (BossSpewRobot (objP, &spewPoint, -1) != -1))
+						 (BossSpewRobot (objP, &spewPoint, -1, 0) != -1))
 						gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
-					BossSpewRobot (objP, &spewPoint, -1);
+					BossSpewRobot (objP, &spewPoint, -1, 0);
 					}
 				}
 			} 
