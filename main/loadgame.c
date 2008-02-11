@@ -1139,6 +1139,7 @@ gameData.missions.nNextLevel = 0;
 InitMultiPlayerObject ();				//make sure tPlayer's tObject set up
 InitPlayerStatsGame ();		//clear all stats
 gameData.multiplayer.nPlayers = 1;
+gameData.objs.nLastObject = 0;
 networkData.bNewGame = 0;
 if (nStartLevel < 0)
 	result = StartNewLevelSecret (nStartLevel, 0);

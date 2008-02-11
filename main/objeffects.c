@@ -1528,8 +1528,6 @@ void RenderLightTrail (tObject *objP)
 
 if (!SHOW_OBJ_FX)
 	return;
-if (!EGI_FLAG (bLightTrails, 0, 0, 0))
-	return;
 if (!gameData.objs.bIsWeapon [objP->id])
 	return;
 #if SHADOWS
@@ -1547,7 +1545,7 @@ else {
 	colorP = &color;
 	}
 
-if (!gameData.objs.bIsSlowWeapon [objP->id]) {
+if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bLightTrails, 0, 0, 0)) {
 	if (gameOpts->render.smoke.bPlasmaTrails)
 		DoObjectSmoke (objP);
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->nType == OBJ_WEAPON) && 

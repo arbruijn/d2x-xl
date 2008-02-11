@@ -2222,6 +2222,8 @@ void BuildObjectModels (void)
 
 if (!gameOpts->render.nPath)
 	return;
+if (!gameData.objs.nLastObject)
+	return;
 gameStates.render.nType = 1;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;

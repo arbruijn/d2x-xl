@@ -486,7 +486,7 @@ if (gameStates.render.automap.bRadar) {
 	gameStates.ogl.bEnableScissor = 0;
 	return;
 	}
-else {
+if (gameOpts->render.cockpit.bHUD) {
 	int offs = amData.bHires ? 10 : 5;
 
 #if 1
