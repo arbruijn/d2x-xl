@@ -743,7 +743,7 @@ else if (t == OBJ_WEAPON) {
 		DoMissileSmoke (objP);
 	else if (!COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) && (objP->id == PROXMINE_ID))
 		DoBombSmoke (objP);
-	else if (gameData.objs.bIsWeapon [objP->id])
+	else if (gameData.objs.bIsWeapon [objP->id] && EGI_FLAG (bLightTrails, 0, 0, 0))
 		DoParticleTrail (objP);
 	else
 		return 0;

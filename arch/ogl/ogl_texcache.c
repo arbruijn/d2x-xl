@@ -207,7 +207,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CacheAddonTextures (void)
+void CacheAddonTextures (void)
 {
 	int	i;
 

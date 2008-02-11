@@ -185,6 +185,8 @@ void RenderMineFace (tSegment *segP, tSegFaces *segFaceP, grsFace *faceP, short 
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
 	nSegment = nSegment;
 #endif
+if (!faceP->bVisible)
+	return;
 if ((nType < 4) && !(faceP->widFlags & WID_RENDER_FLAG))
 	return;
 if (faceP->nType < 0)
@@ -1322,6 +1324,10 @@ for (i = nStart; i != nEnd; i += nIncr) {
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			nSegment = nSegment;
 #endif
+		if (faceP->bSparks && gameOpts->render.bEnergySparks) {
+			faceP->bVisible = 0;
+			continue;
+			}
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, &fAlpha))) {
 			faceP->bVisible = 0;
 			continue;

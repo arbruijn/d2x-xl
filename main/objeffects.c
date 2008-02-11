@@ -1528,6 +1528,8 @@ void RenderLightTrail (tObject *objP)
 
 if (!SHOW_OBJ_FX)
 	return;
+if (!EGI_FLAG (bLightTrails, 0, 0, 0))
+	return;
 if (!gameData.objs.bIsWeapon [objP->id])
 	return;
 #if SHADOWS
