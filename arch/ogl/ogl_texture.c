@@ -100,18 +100,18 @@ if (bmP->glTexture && (bmP->glTexture->handle == (unsigned int) -1)) {
 
 //------------------------------------------------------------------------------
 
-void UnlinkBitmap (grsBitmap *bmP)
+void UnlinkBitmap (grsBitmap *bmP, int bAddon)
 {
 	grsBitmap	*altBmP, *bmfP;
 	int			i, j;
 
-if (bmP->bmType == BM_TYPE_STD) {
+if (bAddon || (bmP->bmType == BM_TYPE_STD)) {
 	if (BM_MASK (bmP))
 		UnlinkTexture (BM_MASK (bmP));
-	if (!BM_OVERRIDE (bmP))
+	if (!(bAddon || BM_OVERRIDE (bmP)))
 		UnlinkTexture (bmP);
 	else {
-		altBmP = BM_OVERRIDE (bmP);
+		altBmP = bAddon ? bmP : BM_OVERRIDE (bmP);
 		if (BM_MASK (altBmP))
 			UnlinkTexture (BM_MASK (altBmP));
 		UnlinkTexture (altBmP);
@@ -164,10 +164,10 @@ if (bUnlink) {
 	for (i = 0; i < 2; i++) {
 		bmP = gameData.pig.tex.bitmaps [i];
 		for (j = gameData.pig.tex.nBitmaps [i] + (i ? 0 : gameData.hoard.nBitmaps); j; j--, bmP++)
-			UnlinkBitmap (bmP);
+			UnlinkBitmap (bmP, 0);
 		}
 	for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
-		UnlinkBitmap (gameData.pig.tex.addonBitmaps + i);
+		UnlinkBitmap (gameData.pig.tex.addonBitmaps + i, 1);
 	}
 oglTexListCur = 0;
 #endif

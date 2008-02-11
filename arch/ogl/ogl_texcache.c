@@ -207,6 +207,18 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+int CacheAddonTextures (void)
+{
+	int	i;
+
+for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
+	PageInAddonBitmap (-i - 1);
+	OglLoadBmTexture (BM_ADDON (i), 1, 0, gameOpts->render.bDepthSort <= 0);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int OglCacheLevelTextures (void)
 {
 	int			i, j, bD1;
@@ -262,6 +274,7 @@ ResetSpecialEffects ();
 InitSpecialEffects ();
 DoSpecialEffects ();
 CacheObjectEffects ();
+CacheAddonTextures ();
 // cache all weapon and powerup textures
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
