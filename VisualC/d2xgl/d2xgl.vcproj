@@ -1061,26 +1061,6 @@
 						RelativePath="..\..\arch\win32\midi.c">
 					</File>
 					<File
-						RelativePath="..\..\arch\win32\mingw_init.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\arch\sdl\mouse.c">
 						<FileConfiguration
 							Name="Debug|Win32">
