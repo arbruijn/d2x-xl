@@ -1398,11 +1398,13 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	}
 else {
 	if (CFExist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
-		int	pw_save, sw_save;
+		int	pw_save, sw_save, nCurrentLevel;
 
 		pw_save = gameData.weapons.nPrimary;
 		sw_save = gameData.weapons.nSecondary;
+		nCurrentLevel = gameData.missions.nCurrentLevel;
 		StateRestoreAll (1, 1, SECRETC_FILENAME);
+		gameData.missions.nEnteredFromLevel = nCurrentLevel;
 		gameData.weapons.nPrimary = pw_save;
 		gameData.weapons.nSecondary = sw_save;
 		ResetSpecialEffects ();
@@ -1497,7 +1499,7 @@ void EnterSecretLevel (void)
 	fix	xOldGameTime;
 	int	i;
 
-Assert (!(gameData.app.nGameMode & GM_MULTI));
+Assert (!IsMultiGame);
 gameData.missions.nEnteredFromLevel = gameData.missions.nCurrentLevel;
 if (gameData.reactor.bDestroyed)
 	DoEndLevelScoreGlitz (0);
@@ -1746,14 +1748,14 @@ void AdvancingToLevelMessage (void)
 
 	//	Only supposed to come here from a secret level.
 Assert (gameData.missions.nCurrentLevel < 0);
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	return;
 GrPaletteFadeOut (NULL, 32, 0);
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 GrSetCurrentCanvas (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel+1);
+sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
