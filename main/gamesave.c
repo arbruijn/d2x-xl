@@ -1095,7 +1095,7 @@ if (gameFileInfo.triggers.offset > -1) {
 			trigP->nLinks = MAX_TRIGGER_TARGETS;
 		for (h = trigP->nLinks, j = 0; j < h; ) {
 			if ((trigP->nSegment [j] >= 0) && (trigP->nSegment [j] < gameData.segs.nSegments) &&
-				 (trigP->nSide [j] >= 0) || (trigP->nSide [j] < 6))
+				 (trigP->nSide [j] >= 0) && (trigP->nSide [j] < 6))
 				j++;
 			else if (--h) {
 				trigP->nSegment [j] = trigP->nSegment [h];

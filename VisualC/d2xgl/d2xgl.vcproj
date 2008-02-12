@@ -1200,6 +1200,9 @@
 						RelativePath="..\..\include\strutil.h">
 					</File>
 					<File
+						RelativePath="..\..\include\timer.h">
+					</File>
+					<File
 						RelativePath="..\..\include\u_mem.h">
 					</File>
 				</Filter>
@@ -1829,9 +1832,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\tga.h">
-					</File>
-					<File
-						RelativePath="..\..\include\timer.h">
 					</File>
 					<File
 						RelativePath="..\..\main\tracker.h">
@@ -3603,10 +3603,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

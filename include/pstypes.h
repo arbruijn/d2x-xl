@@ -18,8 +18,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
  *
  */
 
-#ifndef _TYPES_H
-#define _TYPES_H
+#ifndef _PSTYPES_H
+#define _PSTYPES_H
 
 // define a dboolean
 typedef int dboolean;
@@ -111,5 +111,5 @@ typedef ubyte bool;
 #	define _CDECL_
 #endif
 
-#endif //_TYPES_H
+#endif //_PSTYPES_H
 
