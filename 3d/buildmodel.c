@@ -372,6 +372,7 @@ vMax.p.x = fl2f (psm->vMax.p.x);
 vMax.p.y = fl2f (psm->vMax.p.y);
 vMax.p.z = fl2f (psm->vMax.p.z);
 VmVecAvg (&psm->vCenter, &vMin, &vMax);
+psm->nRad = VmVecDist (&vMin, &vMax) / 2;
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3SubModelSize (objP, nModel, i, &vOffs, bHires);

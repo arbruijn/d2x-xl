@@ -1876,6 +1876,7 @@ typedef struct tG3SubModel {
 	short						nIndex;
 	short						nBitmap;
 	short						nHitbox;
+	int						nRad;
 	ushort					nAngles;
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;

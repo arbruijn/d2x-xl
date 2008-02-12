@@ -824,7 +824,8 @@ if (!renderItems.bDepthMask)
 	glDepthMask (renderItems.bDepthMask = 1);
 glBlendFunc (GL_ONE, GL_ONE);
 glColor3f (0.75f, 0.75f, 0.75f);
-#if 1
+glDisable (GL_CULL_FACE);
+#if 0
 if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 1, 1, 0)) {
 	glVertexPointer (3, GL_FLOAT, sizeof (fVector), item->vertices);
 	glTexCoordPointer (2, GL_FLOAT, 0, item->texCoord);
@@ -851,6 +852,7 @@ if (LoadRenderItemImage (item->bmP, 0, 0, GL_CLAMP, 0, 1, 0)) {
 		}
 	glEnd ();
 	}
+glEnable (GL_CULL_FACE);
 glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 

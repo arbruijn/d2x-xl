@@ -1636,7 +1636,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 	vmsAngVec	vAngles;
 	tObject		viewer;
 
-LogErr ("computing visibility of segment %d\n", nStartSeg);
+//LogErr ("computing visibility of segment %d\n", nStartSeg);
 gameStates.ogl.bUseTransform = 1;
 #ifdef _DEBUG
 if (nStartSeg == nDbgSeg)
@@ -1655,7 +1655,7 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom, 1);
 	BuildRenderSegList (nStartSeg, 0);	
 	G3EndFrame ();
-	LogErr ("   flagging visible segments\n");
+	//LogErr ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;

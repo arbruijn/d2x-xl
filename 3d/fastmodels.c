@@ -220,7 +220,8 @@ pm->fScale *= fScale;
 
 //------------------------------------------------------------------------------
 
-void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffset, vmsVector *vNormal, int bHires)
+void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector *vOffset, 
+							  vmsVector *vNormal, int nRad, int bHires)
 {
 	tG3Model				*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3ModelVertex		*pmv = NULL;
@@ -231,12 +232,15 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 
 if (!pm->bRendered)
 	mtP->nCount = 0;
+#if 0//def _DEBUG
+mtP->nCount = 0;
+#endif
 if (!objP || (mtP->nCount >= 2))
 	return;
+VmVecFixToFloat (&vn, pmf ? &pmf->vNormal : vNormal);
+if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
+	return;
 if (pmf) {
-	VmVecFixToFloat (&vn, &pmf->vNormal);
-	if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
-		return;
 	for (i = 0, j = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; i < j; i++)
 		VmVecIncf (&v, (fVector *) &pmv [i].vertex);
 	v.p.x /= j;
@@ -249,10 +253,12 @@ v.p.z -= 1.0f / 16.0f;
 #if 0
 G3TransformPoint (&v, &v, 0);
 #else
+#	if 1
 if (vOffset) {
 	VmVecFixToFloat (&vo, vOffset);
 	VmVecIncf (&v, &vo);
 	}
+#	endif
 #endif
 if (mtP->nCount && (v.p.x == mtP->vPos [0].p.x) && (v.p.y == mtP->vPos [0].p.y) && (v.p.z == mtP->vPos [0].p.z))
 	return;
@@ -263,11 +269,15 @@ if (vOffset)
 	VmVecDecf (&v, &vo);
 mtP->vDir [mtP->nCount] = *vNormal;
 VmVecNegate (mtP->vDir + mtP->nCount);
-if (pmf && !mtP->nCount) {
-	for (i = 0, nSize = 1000000000; i < j; i++)
-		if (nSize > (h = VmVecDistf (&v, (fVector *) &pmv [i].vertex)))
-			nSize = h;
-	mtP->fSize = nSize;// * 1.25f;
+if (!mtP->nCount) {
+	if (!pmf)
+		mtP->fSize = f2fl (nRad);
+	else {
+		for (i = 0, nSize = 1000000000; i < j; i++)
+			if (nSize > (h = VmVecDistf (&v, (fVector *) &pmv [i].vertex)))
+				nSize = h;
+		mtP->fSize = nSize;// * 1.25f;
+		}
 	}
 mtP->nCount++;
 }
@@ -291,7 +301,8 @@ if (psm->nGunPoint >= 0)
 	return;
 else if (psm->bThruster) {
 	if (!nPass)
-		G3GetThrusterPos (objP, nModel, NULL, VmVecAdd (&vo, &psm->vOffset, &psm->vCenter), &psm->pFaces->vNormal, bHires);
+		G3GetThrusterPos (objP, nModel, NULL, VmVecAdd (&vo, &psm->vOffset, &psm->vCenter), 
+								&psm->pFaces->vNormal, psm->nRad, bHires);
 	return;
 	}
 else if (psm->bWeapon) {
@@ -362,7 +373,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		if ((nFaceVerts = pmf->nVerts) > 0) {
 #endif
 			if (!nPass && pmf->bThruster)
-				G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, bHires);
+				G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
 			i--;
@@ -372,7 +383,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			nVerts = 0;
 			do {
 				if (!nPass && pmf->bThruster)
-					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, bHires);
+					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
 				nVerts += nFaceVerts;
 				pmf++;
 				i--;
@@ -381,7 +392,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #else
 		nFaceVerts = pmf->nVerts;
 		if (pmf->bThruster)
-			G3GetThrusterPos (objP, nModel, pmf, vOffset, &pmf->vNormal, bHires);
+			G3GetThrusterPos (objP, nModel, pmf, vOffset, &pmf->vNormal, 0, bHires);
 		nVerts = nFaceVerts;
 		pmf++;
 		i--;
