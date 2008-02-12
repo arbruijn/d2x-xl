@@ -33,14 +33,6 @@
 static unsigned char bInstalled = 0;
 
 //-------- Variable accessed by outside functions ---------
-unsigned char 		keyd_bufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
-unsigned char 		keyd_repeat;
-unsigned char 		keyd_editor_mode;
-volatile unsigned char 	keyd_last_pressed;
-volatile unsigned char 	keyd_last_released;
-volatile unsigned char	keyd_pressed[256];
-volatile unsigned char	keydFlags[256];
-volatile int		xLastKeyPressTime;
 
 typedef struct tKeyInfo {
 	ubyte		state;			// state of key 1 == down, 0 == up
@@ -389,37 +381,37 @@ void KeyHandler(SDL_KeyboardEvent *event)
 		if ( key->lastState == state )	{
 			if (state) {
 				key->counter++;
-				keyd_last_pressed = keycode;
-				xLastKeyPressTime = TimerGetFixedSeconds();
+				gameStates.input.keys.nLastPressed = keycode;
+				gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 				key->flags = 0;
-				if (keyd_pressed [KEY_LSHIFT] || keyd_pressed [KEY_RSHIFT])
+				if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
 					key->flags |= (ubyte) (KEY_SHIFTED / 256);
-				if (keyd_pressed [KEY_LALT] || keyd_pressed [KEY_RALT])
+				if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 					key->flags |= (ubyte) (KEY_ALTED / 256);
-				if (keyd_pressed [KEY_LCTRL] || keyd_pressed [KEY_RCTRL])
+				if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
 					key->flags |= (ubyte) (KEY_CTRLED / 256);
 				}
 			}
 		else {
 			if (state) {
-				keyd_last_pressed = keycode;
-				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
+				gameStates.input.keys.nLastPressed = keycode;
+				key->timewentdown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 				keyData.keys [keycode].timehelddown = 0;
-				keyd_pressed [keycode] = 1;
+				gameStates.input.keys.pressed [keycode] = 1;
 				key->downcount += state;
 				key->counter++;
 				key->state = 1;
 				key->flags = 0;
-				if (keyd_pressed [KEY_LSHIFT] || keyd_pressed [KEY_RSHIFT])
+				if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
 					key->flags |= (ubyte) (KEY_SHIFTED / 256);
-				if (keyd_pressed [KEY_LALT] || keyd_pressed [KEY_RALT])
+				if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 					key->flags |= (ubyte) (KEY_ALTED / 256);
-				if (keyd_pressed [KEY_LCTRL] || keyd_pressed [KEY_RCTRL])
+				if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
 					key->flags |= (ubyte) (KEY_CTRLED / 256);
-//				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
+//				key->timewentdown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			} else {
-				keyd_pressed [keycode] = 0;
-				keyd_last_released = keycode;
+				gameStates.input.keys.pressed [keycode] = 0;
+				gameStates.input.keys.nLastReleased = keycode;
 				key->upcount += key->state;
 				key->state = 0;
 				key->counter = 0;
@@ -427,23 +419,23 @@ void KeyHandler(SDL_KeyboardEvent *event)
 			}
 		}
 		if ( (state && !key->lastState) || (state && key->lastState && (key->counter > 30) && (key->counter & 0x01)) ) {
-			if ( keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT])
+			if ( gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT])
 				keycode |= KEY_SHIFTED;
-			if ( keyd_pressed[KEY_LALT] || keyd_pressed[KEY_RALT])
+			if ( gameStates.input.keys.pressed[KEY_LALT] || gameStates.input.keys.pressed[KEY_RALT])
 				keycode |= KEY_ALTED;
-			if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL])
+			if ( gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL])
 				keycode |= KEY_CTRLED;
-			if ( keyd_pressed[KEY_LCMD] || keyd_pressed[KEY_RCMD])
+			if ( gameStates.input.keys.pressed[KEY_LCMD] || gameStates.input.keys.pressed[KEY_RCMD])
 				keycode |= KEY_COMMAND;
 #ifdef _DEBUG
-      if ( keyd_pressed[KEY_DELETE] )
+      if ( gameStates.input.keys.pressed[KEY_DELETE] )
 				keycode |= KEYDBGGED;
 #endif			
 			temp = keyData.nKeyTail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=keyData.nKeyHead)	{
 				keyData.keybuffer[keyData.nKeyTail] = keycode;
-				keyData.xTimePressed[keyData.nKeyTail] = xLastKeyPressTime;
+				keyData.xTimePressed[keyData.nKeyTail] = gameStates.input.keys.xLastPressTime;
 				keyData.nKeyTail = temp;
 			}
 		}
@@ -468,9 +460,9 @@ void KeyInit()
 
   bInstalled=1;
 
-  xLastKeyPressTime = TimerGetFixedSeconds();
-  keyd_bufferType = 1;
-  keyd_repeat = 1;
+  gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
+  gameStates.input.keys.nBufferType = 1;
+  gameStates.input.keys.bRepeat = 1;
   
   for(i=0; i<256; i++)
      pszKeyText[i] = keyProperties[i].pszKeyText;
@@ -502,7 +494,7 @@ void KeyFlush()
 	curtime = TimerGetFixedSeconds();
 
 	for (i=0; i<256; i++ )	{
-		keyd_pressed[i] = 0;
+		gameStates.input.keys.pressed[i] = 0;
 		keyData.keys[i].state = 1;
 		keyData.keys[i].lastState = 0;
 		keyData.keys[i].timewentdown = curtime;
@@ -608,17 +600,17 @@ unsigned int KeyGetShiftStatus()
 {
 	unsigned int shift_status = 0;
 
-	if ( keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT] )
+	if ( gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT] )
 		shift_status |= KEY_SHIFTED;
 
-	if ( keyd_pressed[KEY_LALT] || keyd_pressed[KEY_RALT] )
+	if ( gameStates.input.keys.pressed[KEY_LALT] || gameStates.input.keys.pressed[KEY_RALT] )
 		shift_status |= KEY_ALTED;
 
-	if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL] )
+	if ( gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL] )
 		shift_status |= KEY_CTRLED;
 
 #ifdef _DEBUG
-	if (keyd_pressed[KEY_DELETE])
+	if (gameStates.input.keys.pressed[KEY_DELETE])
 		shift_status |=KEYDBGGED;
 #endif
 
@@ -637,7 +629,7 @@ if (!bFastPoll)
 #endif
    if ((scancode<0)|| (scancode>255)) return 0;
 
-	if (!keyd_pressed[scancode]) {
+	if (!gameStates.input.keys.pressed[scancode]) {
 		timeDown = keyData.keys[scancode].timehelddown;
 		keyData.keys[scancode].timehelddown = 0;
 	} else {

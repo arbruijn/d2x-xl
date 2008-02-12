@@ -38,13 +38,13 @@
 static unsigned char Installed = 0;
 
 //-------- Variable accessed by outside functions ---------
-unsigned char 		keyd_bufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
-unsigned char 		keyd_repeat;
-unsigned char 		keyd_editor_mode;
-volatile unsigned char 	keyd_last_pressed;
-volatile unsigned char 	keyd_last_released;
-volatile unsigned char	keyd_pressed[256];
-volatile int		xLastKeyPressTime;
+unsigned char 		gameStates.input.keys.nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+unsigned char 		gameStates.input.keys.bRepeat;
+unsigned char 		gameStates.input.keys.bEditorMode;
+volatile unsigned char 	gameStates.input.keys.nLastPressed;
+volatile unsigned char 	gameStates.input.keys.nLastReleased;
+volatile unsigned char	gameStates.input.keys.pressed[256];
+volatile int		gameStates.input.keys.xLastPressTime;
 
 typedef struct Key_info {
 	ubyte		state;			// state of key 1 == down, 0 == up
@@ -151,20 +151,20 @@ void KeyHandler(int scancode, int press)
 		if ( key->lastState == state )	{
 			if (state) {
 				key->counter++;
-				keyd_last_pressed = keycode;
-				xLastKeyPressTime = TimerGetFixedSeconds();
+				gameStates.input.keys.nLastPressed = keycode;
+				gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			}
 		} else {
 			if (state)	{
-				keyd_last_pressed = keycode;
-				keyd_pressed[keycode] = 1;
+				gameStates.input.keys.nLastPressed = keycode;
+				gameStates.input.keys.pressed[keycode] = 1;
 				key->downcount += state;
 				key->state = 1;
-				key->timewentdown = xLastKeyPressTime = TimerGetFixedSeconds();
+				key->timewentdown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 				key->counter++;
 			} else {
-				keyd_pressed[keycode] = 0;
-				keyd_last_released = keycode;
+				gameStates.input.keys.pressed[keycode] = 0;
+				gameStates.input.keys.nLastReleased = keycode;
 				key->upcount += key->state;
 				key->state = 0;
 				key->counter = 0;
@@ -172,19 +172,19 @@ void KeyHandler(int scancode, int press)
 			}
 		}
 		if ( (state && !key->lastState) || (state && key->lastState && (key->counter > 30) && (key->counter & 0x01)) ) {
-			if ( keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT])
+			if ( gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT])
 				keycode |= KEY_SHIFTED;
-			if ( keyd_pressed[KEY_LALT] || keyd_pressed[KEY_RALT])
+			if ( gameStates.input.keys.pressed[KEY_LALT] || gameStates.input.keys.pressed[KEY_RALT])
 				keycode |= KEY_ALTED;
-			if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL])
+			if ( gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL])
 				keycode |= KEY_CTRLED;
-                        if ( keyd_pressed[KEY_DELETE] )
+                        if ( gameStates.input.keys.pressed[KEY_DELETE] )
                                 keycode |= KEYDBGGED;
 			temp = key_data.keytail+1;
 			if ( temp >= KEY_BUFFER_SIZE ) temp=0;
 			if (temp!=key_data.keyhead)	{
 				key_data.keybuffer[key_data.keytail] = keycode;
-				key_data.time_pressed[key_data.keytail] = xLastKeyPressTime;
+				key_data.time_pressed[key_data.keytail] = gameStates.input.keys.xLastPressTime;
 				key_data.keytail = temp;
 			}
 		}
@@ -205,9 +205,9 @@ void KeyInit()
 	Installed=1;
 
 	keyboard_seteventhandler (KeyHandler);
-	xLastKeyPressTime = TimerGetFixedSeconds();
-	keyd_bufferType = 1;
-	keyd_repeat = 1;
+	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
+	gameStates.input.keys.nBufferType = 1;
+	gameStates.input.keys.bRepeat = 1;
 
 // Clear the keyboard array
 	KeyFlush();
@@ -234,7 +234,7 @@ void KeyFlush()
 	curtime = TimerGetFixedSeconds();
 
 	for (i=0; i<256; i++ )	{
-		keyd_pressed[i] = 0;
+		gameStates.input.keys.pressed[i] = 0;
 		key_data.keys[i].state = 1;
 		key_data.keys[i].lastState = 0;
 		key_data.keys[i].timewentdown = curtime;
@@ -319,17 +319,17 @@ unsigned int KeyGetShiftStatus()
 {
 	unsigned int shift_status = 0;
 
-	if ( keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT] )
+	if ( gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT] )
 		shift_status |= KEY_SHIFTED;
 
-	if ( keyd_pressed[KEY_LALT] || keyd_pressed[KEY_RALT] )
+	if ( gameStates.input.keys.pressed[KEY_LALT] || gameStates.input.keys.pressed[KEY_RALT] )
 		shift_status |= KEY_ALTED;
 
-	if ( keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL] )
+	if ( gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL] )
 		shift_status |= KEY_CTRLED;
 
 #ifdef _DEBUG
-	if (keyd_pressed[KEY_DELETE])
+	if (gameStates.input.keys.pressed[KEY_DELETE])
 		shift_status |=KEYDBGGED;
 #endif
 
@@ -344,7 +344,7 @@ fix KeyDownTime(int scancode)
 	event_poll();
         if ((scancode<0)|| (scancode>255)) return 0;
 
-	if (!keyd_pressed[scancode]) {
+	if (!gameStates.input.keys.pressed[scancode]) {
 		timeDown = key_data.keys[scancode].timehelddown;
 		key_data.keys[scancode].timehelddown = 0;
 	} else {

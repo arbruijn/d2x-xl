@@ -1529,8 +1529,8 @@ InitCockpit ();
 #endif
 InitGauges ();
 //DigiInitSounds ();
-//keyd_repeat = 0;                // Don't allow repeat in game
-keyd_repeat = 1;                // Do allow repeat in game
+//gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
+gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
 	if (gameData.segs.segments[gameData.objs.console->nSegment].nSegment == -1)      //tSegment no longer exists
 		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));

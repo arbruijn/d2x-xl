@@ -23,11 +23,11 @@ extern void PumpMessages(void);
 
 extern void PumpMessages(void);
 
-volatile int xLastKeyPressTime;
-volatile unsigned char 	keyd_last_pressed;
-volatile unsigned char 	keyd_last_released;
-volatile unsigned char	keyd_pressed [256];
-unsigned char 		keyd_repeat;
+volatile int gameStates.input.keys.xLastPressTime;
+volatile unsigned char 	gameStates.input.keys.nLastPressed;
+volatile unsigned char 	gameStates.input.keys.nLastReleased;
+volatile unsigned char	gameStates.input.keys.pressed [256];
+unsigned char 		gameStates.input.keys.bRepeat;
 unsigned char WMKey_Handler_Ready=0;
 
 
@@ -58,20 +58,20 @@ KEYCODE ShiftKeyCode (KEYCODE kcKey)
 {
        KEYCODE kcShifted;
 
-       if (keyd_pressed [kcKey])
+       if (gameStates.input.keys.pressed [kcKey])
        {
                kcShifted = kcKey;
 
                // the key is down
-               if (keyd_pressed [KEY_LSHIFT] || keyd_pressed [KEY_RSHIFT])
+               if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
                {
                        kcShifted |= KEY_SHIFTED;
                }
-               if (keyd_pressed [KEY_LCTRL] || keyd_pressed [KEY_RCTRL])
+               if (gameStates.input.keys.pressed [KEY_LCTRL] || gameStates.input.keys.pressed [KEY_RCTRL])
                {
                        kcShifted |= KEY_CTRLED;
                }
-               if (keyd_pressed [KEY_LALT] || keyd_pressed [KEY_RALT])
+               if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
                {
                        kcShifted |= KEY_ALTED;
                }
@@ -239,16 +239,16 @@ void UpdateState (DIDEVICEOBJECTDATA *pdidod)
 
 	if (pdidod->dwData & 0x80)
 	{
-		keyd_pressed [kcKey] = 1;
-		keyd_last_pressed = kcKey;
-                g_rgtimeDown [kcKey] = xLastKeyPressTime = timeNow;
+		gameStates.input.keys.pressed [kcKey] = 1;
+		gameStates.input.keys.nLastPressed = kcKey;
+                g_rgtimeDown [kcKey] = gameStates.input.keys.xLastPressTime = timeNow;
                 g_rgcDowns [kcKey] ++;
-		PushKey (kcKey, xLastKeyPressTime);
+		PushKey (kcKey, gameStates.input.keys.xLastPressTime);
 	}
 	else
 	{
-		keyd_pressed [kcKey] = 0;
-		keyd_last_released = kcKey;
+		gameStates.input.keys.pressed [kcKey] = 0;
+		gameStates.input.keys.nLastReleased = kcKey;
                 g_rgcUps [kcKey] ++;
 		g_rgtimeElapsed [kcKey] = timeNow - g_rgtimeDown [kcKey];
 	}
@@ -294,7 +294,7 @@ void KeyFlush()
 			g_rgtimeElapsed [kcKey] = 0;
 			g_rgcDowns [kcKey] = 0;
 			g_rgcUps [kcKey] = 0;
-			keyd_pressed [kcKey] = 0;
+			gameStates.input.keys.pressed [kcKey] = 0;
 		}
 
 		FlushQueue ();
@@ -373,7 +373,7 @@ fix KeyDownTime(KEYCODE kcKey)
 		keyboard_handler();
 	if ((kcKey<0) || (kcKey>127)) return 0;
 
-	if (keyd_pressed [kcKey])
+	if (gameStates.input.keys.pressed [kcKey])
 	{
 		fix timeNow = TimerGetFixedSeconds ();
 		timeElapsed = timeNow - g_rgtimeDown [kcKey];

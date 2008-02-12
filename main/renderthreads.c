@@ -61,7 +61,7 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000
 		if (!t2)
 			t2 = clock ();
 		else if (clock () - t2 > 33) {	//slower thread must not take more than 10 ms longer than faster one
-#ifndef _DEBUG
+#if 1//ndef _DEBUG
 			t2 = clock ();
 #else
 			LogErr ("threads locked up (task: %d)\n", nTask);

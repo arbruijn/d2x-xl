@@ -1589,8 +1589,8 @@ if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
 	GrUpdate (0);
 	}
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
-old_keyd_repeat = keyd_repeat;
-keyd_repeat = 1;
+old_keyd_repeat = gameStates.input.keys.bRepeat;
+gameStates.input.keys.bRepeat = 1;
 if (cItem == -1)
 	choice = -1;
 else {
@@ -2433,7 +2433,7 @@ SDL_ShowCursor (0);
 // Restore everything...
 NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
 NMFreeAllTextBms (item, nItems);
-keyd_repeat = old_keyd_repeat;
+gameStates.input.keys.bRepeat = old_keyd_repeat;
 GameFlushInputs ();
 if (time_stopped) {
 	StartTime ();
@@ -2581,7 +2581,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	char *filenames = NULL;
 	int NumFiles_displayed = 8;
 	int first_item = -1, ofirst_item;
-	int old_keyd_repeat = keyd_repeat;
+	int old_keyd_repeat = gameStates.input.keys.bRepeat;
 	int bPlayerMode=0;
 	int bDemoMode=0;
 	int demos_deleted=0;
@@ -2606,7 +2606,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	memset (&bg, 0, sizeof (bg));
 	bg.bIgnoreBg = 1;
 	cItem = 0;
-	keyd_repeat = 1;
+	gameStates.input.keys.bRepeat = 1;
 
 
 	if (strstr (filespec, "*.plr"))
@@ -3098,7 +3098,7 @@ ReadFileNames:
 	}											 
 
 ExitFileMenu:
-	keyd_repeat = old_keyd_repeat;
+	gameStates.input.keys.bRepeat = old_keyd_repeat;
 
 	if (initialized) {
 		if (gameOpts->menus.nStyle) {
@@ -3169,7 +3169,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 {
 	int i;
 	int done, ocitem, cItem, ofirst_item, first_item, key, redraw;
-	int old_keyd_repeat = keyd_repeat;
+	int old_keyd_repeat = gameStates.input.keys.bRepeat;
 	int width, height, wx, wy, title_height, border_size;
 	int total_width, total_height;
 	bkg bg;
@@ -3180,7 +3180,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 	int nPatternLen = 0;
 	char *pszFn;
 
-	keyd_repeat = 1;
+	gameStates.input.keys.bRepeat = 1;
 
 //	SetScreenMode (SCREEN_MENU);
 	SetPopupScreenMode ();
@@ -3518,7 +3518,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		}
 	}
 
-	keyd_repeat = old_keyd_repeat;
+	gameStates.input.keys.bRepeat = old_keyd_repeat;
 
 	if (gameOpts->menus.nStyle) {
 		NMRemoveBackground (&bg);

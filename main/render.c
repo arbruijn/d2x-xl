@@ -1120,7 +1120,7 @@ inline int ZoomKeyPressed (void)
 #if 1
 	int	v;
 
-return keyd_pressed [kcKeyboard [52].value] || keyd_pressed [kcKeyboard [53].value] ||
+return gameStates.input.keys.pressed [kcKeyboard [52].value] || gameStates.input.keys.pressed [kcKeyboard [53].value] ||
 		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));
 #else
 return (Controls [0].zoomDownCount > 0);

@@ -28,7 +28,6 @@ extern void _CDECL_ KeyClose(void);
 // set keyd_bufferType to 0 for no key buffering.
 // set it to 1 and it will buffer scancodes.
 extern unsigned char keyd_bufferType;
-extern unsigned char keyd_repeat;     // 1=allow repeating, 0=dont allow repeat
 
 // keyd_editor_mode... 0=game mode, 1=editor mode.
 // Editor mode makes KeyDownTime always return 0 if modifiers are down.

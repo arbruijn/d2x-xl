@@ -1106,7 +1106,7 @@ int DoSlewMovement (tObject *objP, int check_keys, int check_joy)
 	int joyx_moved, joyy_moved;
 	vmsAngVec rotang;
 
-if (keyd_pressed [KEY_PAD5])
+if (gameStates.input.keys.pressed [KEY_PAD5])
 	VmVecZero (&objP->physInfo.velocity);
 
 if (check_keys) {

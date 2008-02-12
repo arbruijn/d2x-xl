@@ -836,7 +836,7 @@ ubyte KCKeyCtrlFunc (void)
 	int	i, n, f;
 
 for (i = 0; i < 256; i++)	{
-	if (keyd_pressed [i] && strlen (pszKeyText [i]))	{
+	if (gameStates.input.keys.pressed [i] && strlen (pszKeyText [i]))	{
 		f = 0;
 		for (n = 0; n < sizeof (system_keys); n++)
 			if (system_keys [n] == i)

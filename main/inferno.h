@@ -559,20 +559,32 @@ typedef struct tGameplayStates {
 
 #define BOSS_COUNT	(extraGameInfo [0].nBossCount - gameStates.gameplay.nReactorCount)
 
+
+typedef struct tKeyStates {
+	unsigned char 	nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+	unsigned char 	bRepeat;
+	unsigned char 	bEditorMode;
+	unsigned char 	nLastPressed;
+	unsigned char 	nLastReleased;
+	unsigned char	pressed [256];
+	volatile int	xLastPressTime;
+	} tKeyStates;
+
 typedef struct tInputStates {
-	int		nPlrFileVersion;
-	int		nMouseType;
-	int		nJoyType;
-	int		nJoysticks;
-	int		bGrabMouse;
-	int		bHaveTrackIR;
-	ubyte		bCybermouseActive;
-	int		bSkipControls;
-	int		bControlsSkipFrame;
-	int		bKeepSlackTime;
-	time_t	kcPollTime;
-	float		kcFrameTime;
-	fix		nCruiseSpeed;
+	int			nPlrFileVersion;
+	int			nMouseType;
+	int			nJoyType;
+	int			nJoysticks;
+	int			bGrabMouse;
+	int			bHaveTrackIR;
+	ubyte			bCybermouseActive;
+	int			bSkipControls;
+	int			bControlsSkipFrame;
+	int			bKeepSlackTime;
+	time_t		kcPollTime;
+	float			kcFrameTime;
+	fix			nCruiseSpeed;
+	tKeyStates	keys;
 } tInputStates;
 
 //------------------------------------------------------------------------------

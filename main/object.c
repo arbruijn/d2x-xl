@@ -1677,9 +1677,9 @@ switch (objP->controlType) {
 
 	case CT_SLEW:
 #ifdef _DEBUG
-		if (keyd_pressed [KEY_PAD5]) 
+		if (gameStates.input.keys.pressed [KEY_PAD5]) 
 			slew_stop ();
-		if (keyd_pressed [KEY_NUMLOCK]) {
+		if (gameStates.input.keys.pressed [KEY_NUMLOCK]) {
 			slew_reset_orient ();
 			* (ubyte *) 0x417 &= ~0x20;		//kill numlock
 		}
@@ -2176,7 +2176,6 @@ int FindObjectSeg (tObject * objP)
 return FindSegByPoint (&objP->position.vPos, objP->nSegment, 1, 0);
 }
 
-
 //------------------------------------------------------------------------------
 //If an tObject is in a tSegment, set its nSegment field and make sure it's
 //properly linked.  If not in any tSegment, returns 0, else 1.
@@ -2209,50 +2208,6 @@ for (i = 0; i <= gameData.objs.nLastObject; i++)
 			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].position.vPos, 
 											  gameData.objs.objects [i].nSegment);
 			}
-}
-
-//------------------------------------------------------------------------------
-
-#define BUILD_ALL_MODELS 0
-
-void BuildObjectModels (void)
-{
-	int      i, j;
-	tObject	o, *objP = gameData.objs.objects;
-
-if (!gameOpts->render.nPath)
-	return;
-if (!gameData.objs.nLastObject)
-	return;
-gameStates.render.nType = 1;
-gameStates.render.nShadowPass = 1;
-gameStates.render.bBuildModels = 1;
-#if !BUILD_ALL_MODELS
-for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
-	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
-		 !G3HaveModel (objP->rType.polyObjInfo.nModel))
-		DrawPolygonObject (objP, 1); //DrawPolygonObject (objP, 0);
-	}
-#endif
-memset (&o, 0, sizeof (o));
-o.position = OBJECTS->position;
-o.rType.polyObjInfo.nTexOverride = -1;
-#if BUILD_ALL_MODELS
-j = 0;
-for (i = 0; i < MAX_POLYGON_MODELS; i++) {
-	o.rType.polyObjInfo.nModel = i; //replacementModels [i].nModel;
-#else
-j = ReplacementModelCount ();
-for (i = 0; i < j; i++)
-	if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "concussion"))
-		break;
-for (; i < j; i++) {
-#endif
-	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
-	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
-		DrawPolygonObject (&o, 1);
-	}
-gameStates.render.bBuildModels = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2616,6 +2571,50 @@ if (viewP->nFrame != gameData.objs.nFrameCount) {
 	viewP->nFrame = gameStates.render.nFrameCount;
 	}
 return &viewP->mView;
+}
+
+//------------------------------------------------------------------------------
+
+#define BUILD_ALL_MODELS 0
+
+void BuildObjectModels (void)
+{
+	int      i, j;
+	tObject	o, *objP = gameData.objs.objects;
+
+if (!gameOpts->render.nPath)
+	return;
+if (!gameData.objs.nLastObject)
+	return;
+gameStates.render.nType = 1;
+gameStates.render.nShadowPass = 1;
+gameStates.render.bBuildModels = 1;
+#if !BUILD_ALL_MODELS
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
+		 !G3HaveModel (objP->rType.polyObjInfo.nModel))
+		DrawPolygonObject (objP, 1); //DrawPolygonObject (objP, 0);
+	}
+#endif
+memset (&o, 0, sizeof (o));
+o.position = OBJECTS->position;
+o.rType.polyObjInfo.nTexOverride = -1;
+#if BUILD_ALL_MODELS
+j = 0;
+for (i = 0; i < MAX_POLYGON_MODELS; i++) {
+	o.rType.polyObjInfo.nModel = i; //replacementModels [i].nModel;
+#else
+j = ReplacementModelCount ();
+for (i = 0; i < j; i++)
+	if (replacementModels [i].pszHires && (strstr (replacementModels [i].pszHires, "laser") == replacementModels [i].pszHires))
+		break;
+for (; i < j; i++) {
+#endif
+	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
+	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
+		DrawPolygonObject (&o, 1);
+	}
+gameStates.render.bBuildModels = 0;
 }
 
 //------------------------------------------------------------------------------

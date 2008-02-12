@@ -527,12 +527,12 @@ void ControlsDoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *head
 if (bGetSlideBank == 0) {
 	for (i = 0; i < 2; i++) {
 		if ((v = HaveKey (kcKeyboard, 8 + i)) < 255) {
-			if (keyd_pressed [v])
-				*bSlideOn |= keyd_pressed [v];
+			if (gameStates.input.keys.pressed [v])
+				*bSlideOn |= gameStates.input.keys.pressed [v];
 			}
 		if ((v = HaveKey (kcKeyboard, 18 + i)) < 255) 
-			if (keyd_pressed [v])
-				*bBankOn |= keyd_pressed [v];
+			if (gameStates.input.keys.pressed [v])
+				*bBankOn |= gameStates.input.keys.pressed [v];
 		}
 	return;
 	}
@@ -540,11 +540,11 @@ if (bGetSlideBank == 0) {
 if (bGetSlideBank == 2) {
 	for (i = 0; i < 2; i++) {
 		if ((v = HaveKey (kcKeyboard, 24 + i)) < 255) {
-			Controls [0].firePrimaryState |= keyd_pressed [v];
+			Controls [0].firePrimaryState |= gameStates.input.keys.pressed [v];
 			Controls [0].firePrimaryDownCount += KeyDownCount (v);
 			}
 		if ((v = HaveKey (kcKeyboard, 26 + i)) < 255) {
-			Controls [0].fireSecondaryState |= keyd_pressed [v];
+			Controls [0].fireSecondaryState |= gameStates.input.keys.pressed [v];
 			Controls [0].fireSecondaryDownCount += KeyDownCount (v);
 			}
 		if ((v = HaveKey (kcKeyboard, 28 + i)) < 255) 
@@ -561,24 +561,24 @@ if (bGetSlideBank == 2) {
 		Controls [0].forwardThrustTime += DELTACTRL (30 + i, 0);
 		Controls [0].forwardThrustTime -= DELTACTRL (32 + i, 0);
 		if ((v = HaveKey (kcKeyboard, 46 + i)) < 255) 
-			Controls [0].afterburnerState |= keyd_pressed [v];
+			Controls [0].afterburnerState |= gameStates.input.keys.pressed [v];
 		// count bomb drops
 		if ((v = HaveKey (kcKeyboard, 34 + i)) < 255) 
 			Controls [0].dropBombDownCount += KeyDownCount (v);
 		// charge chield
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER) {
-			if (keyd_pressed [v = HaveKey (kcKeyboard, 56 + i)])
+			if (gameStates.input.keys.pressed [v = HaveKey (kcKeyboard, 56 + i)])
 				TransferEnergyToShield (KeyDownTime (v));
 			}
 		// rear view
 		if ((v = HaveKey (kcKeyboard, 36 + i)) < 255) {
 			Controls [0].rearViewDownCount += KeyDownCount (v);
-			Controls [0].rearViewDownState |= keyd_pressed [v];
+			Controls [0].rearViewDownState |= gameStates.input.keys.pressed [v];
 			}
 		// automap
 		if ((v = HaveKey (kcKeyboard, 44 + i)) < 255) {
 			Controls [0].automapDownCount += KeyDownCount (v);
-			Controls [0].automapState |= keyd_pressed [v];
+			Controls [0].automapState |= gameStates.input.keys.pressed [v];
 			}
 	}
 	// headlight and weapon cycling
@@ -1397,7 +1397,7 @@ if (gameStates.render.nZoomFactor > F1_0) {
 	}
 //	KCCLAMP (Controls [0].afterburnerTime, gameStates.input.kcPollTime);
 #ifdef _DEBUG
-if (keyd_pressed [KEY_DELETE])
+if (gameStates.input.keys.pressed [KEY_DELETE])
 	memset (&Controls, 0, sizeof (tControlInfo));
 #endif
 gameStates.input.bKeepSlackTime = 0;

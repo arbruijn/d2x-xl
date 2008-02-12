@@ -344,7 +344,7 @@ if (*nLastKey == KEY_ESC)
 	*nLastKey = 0;
 if (gameStates.app.bAutoDemos) {
 	curtime = TimerGetApproxSeconds ();
-	if (((xLastKeyPressTime + i2f (/*2*/5)) < curtime)
+	if (((gameStates.input.keys.xLastPressTime + i2f (/*2*/5)) < curtime)
 #ifdef _DEBUG
 		&& !gameData.speedtest.bOn
 #endif	
@@ -361,7 +361,7 @@ try_again:;
 				SetScreenMode (SCREEN_MENU);
 			}
 		else {
-			xLastKeyPressTime = curtime;                  // Reset timer so that disk won't thrash if no demos.
+			gameStates.input.keys.xLastPressTime = curtime;                  // Reset timer so that disk won't thrash if no demos.
 			NDStartPlayback (NULL);           // Randomly pick a file
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 				SetFunctionMode (FMODE_GAME);
@@ -505,7 +505,7 @@ if (gameData.multiplayer.autoNG.bValid) {
 LogErr ("launching main menu\n");
 do {
 	nOptions = CreateMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
-	xLastKeyPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
+	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
 	if (nChoice < 0)
 		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;

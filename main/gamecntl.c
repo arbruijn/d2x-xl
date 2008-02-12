@@ -219,13 +219,13 @@ void update_vcrState(void)
 {
 if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
-if ((keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT]) && keyd_pressed[KEY_RIGHT])
+if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) && gameStates.input.keys.pressed[KEY_RIGHT])
 	gameData.demo.nVcrState = ND_STATE_FASTFORWARD;
-else if ((keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT]) && keyd_pressed[KEY_LEFT])
+else if ((gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) && gameStates.input.keys.pressed[KEY_LEFT])
 	gameData.demo.nVcrState = ND_STATE_REWINDING;
-else if (!(keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL]) && keyd_pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
+else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_RIGHT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEFORWARD;
-else if (!(keyd_pressed[KEY_LCTRL] || keyd_pressed[KEY_RCTRL]) && keyd_pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
+else if (!(gameStates.input.keys.pressed[KEY_LCTRL] || gameStates.input.keys.pressed[KEY_RCTRL]) && gameStates.input.keys.pressed[KEY_LEFT] && ((TimerGetFixedSeconds() - newdemo_single_frameTime) >= F1_0))
 	gameData.demo.nVcrState = ND_STATE_ONEFRAMEBACKWARD;
 #if 0
 else if ((gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || (gameData.demo.nVcrState == ND_STATE_REWINDING))

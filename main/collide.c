@@ -890,7 +890,7 @@ if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_FORCE_FIELD) &&
 	}
 
 #ifdef _DEBUG
-if (keyd_pressed [KEY_LAPOSTRO])
+if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
 	if (weaponP->cType.laserInfo.nParentObj == LOCALPLAYER.nObject) {
 		//	MK: Real pain when you need to know a segP:tSide and you've got quad lasers.
 #if TRACE

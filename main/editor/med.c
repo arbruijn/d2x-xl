@@ -1154,7 +1154,7 @@ void editor(void)
 
 	SetWarnFunc(med_show_warning);
 
-	keyd_repeat = 1;		// Allow repeat in editor
+	gameStates.input.keys.bRepeat = 1;		// Allow repeat in editor
 
 //	_MARK_("start of editor");//Nuked to compile -KRB
 
@@ -1379,7 +1379,7 @@ void editor(void)
 			find_segments(xcrd,ycrd,LargeViewBox->canvas,&LargeView,Cursegp,Big_depth);	// Sets globals N_found_segs, Found_segs
 
 			// If shift is down, then add tSegment to found list
-			if (keyd_pressed[ KEY_LSHIFT ] || keyd_pressed[ KEY_RSHIFT ])
+			if (gameStates.input.keys.pressed[ KEY_LSHIFT ] || gameStates.input.keys.pressed[ KEY_RSHIFT ])
 				subtract_found_segments_from_selected_list();
 			else
 				add_found_segments_to_selected_list();
@@ -1443,17 +1443,17 @@ void editor(void)
 				else {
 
 					//	See if either shift key is down and, if so, assign texture map
-					if (keyd_pressed[KEY_LSHIFT] || keyd_pressed[KEY_RSHIFT]) {
+					if (gameStates.input.keys.pressed[KEY_LSHIFT] || gameStates.input.keys.pressed[KEY_RSHIFT]) {
 						Cursegp = &gameData.segs.segments[seg];
 						Curside = tSide;
 						AssignTexture();
 						med_create_new_segment_from_cursegp();
 						editor_status("Texture assigned");
-					} else if (keyd_pressed[KEY_G])	{
+					} else if (gameStates.input.keys.pressed[KEY_G])	{
 						tmap = gameData.segs.segments[seg].sides[tSide].nBaseTex;
 						texpage_grab_current(tmap);
 						editor_status( "Texture grabbed." );
-					} else if (keyd_pressed[ KEY_LAPOSTRO] ) {
+					} else if (gameStates.input.keys.pressed[ KEY_LAPOSTRO] ) {
 						ui_mouse_hide();
 						moveObject_to_mouse_click();
 					} else {
@@ -1472,7 +1472,7 @@ void editor(void)
 		}
 
 		// Allow specification of LargeView using mouse
-		if (keyd_pressed[ KEY_LCTRL ] || keyd_pressed[ KEY_RCTRL ]) {
+		if (gameStates.input.keys.pressed[ KEY_LCTRL ] || gameStates.input.keys.pressed[ KEY_RCTRL ]) {
 			ui_mouse_hide();
 			if ( (Mouse.dx!=0) && (Mouse.dy!=0) ) {
 				GetMouseRotation( Mouse.dx, Mouse.dy, &MouseRotMat );
@@ -1485,7 +1485,7 @@ void editor(void)
 			ui_mouse_show();
 		}
 
-		if ( keyd_pressed[ KEY_Z ] ) {
+		if ( gameStates.input.keys.pressed[ KEY_Z ] ) {
 			ui_mouse_hide();
 			if ( Mouse.dy!=0 ) {
 				currentView->evDist += Mouse.dy*10000;

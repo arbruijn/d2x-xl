@@ -2959,7 +2959,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 		case FMODE_GAME:
 #ifdef EDITOR
-			keyd_editor_mode = 0;
+			gameStates.input.keys.bEditorMode = 0;
 #endif
 			GrabMouse (1, 1);
 			game ();
@@ -2979,7 +2979,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 #ifdef EDITOR
 		case FMODE_EDITOR:
-			keyd_editor_mode = 1;
+			gameStates.input.keys.bEditorMode = 1;
 			editor ();
 #ifdef __WATCOMC__
 			_harderr ((void*)descent_critical_error_handler);		// Reinstall game error handler
