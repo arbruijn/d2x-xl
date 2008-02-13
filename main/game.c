@@ -338,11 +338,7 @@ if (gameStates.render.vr.nRenderMode != VR_NONE)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nMode = CM_FULL_SCREEN;
-
-WINDOS (
-	DDGrSetCurrentCanvas (NULL),
-	GrSetCurrentCanvas (NULL)
-	);
+GrSetCurrentCanvas (NULL);
 GrSetCurFont (GAME_FONT);
 
 if (bGameCockpitCopyCode)
@@ -394,13 +390,8 @@ switch (gameStates.render.cockpit.nMode) {
 		GameInitRenderSubBuffers (x, y, w, h);
 		break;
 		}
-
 	}
-
-WINDOS (
-	DDGrSetCurrentCanvas (NULL),
-	GrSetCurrentCanvas (NULL)
-);
+GrSetCurrentCanvas (NULL);
 gameStates.render.cockpit.nShieldFlash = 0;
 }
 
@@ -495,11 +486,8 @@ GameInitRenderSubBuffers (0, 0, render_w, render_h);
 
 void SetPopupScreenMode (void)
 {
-	//WIN (LoadCursorWin (MOUSE_DEFAULT_CURSOR);
-
-if (!gameOpts->menus.nStyle) {
+if (!gameOpts->menus.nStyle)
 	SetScreenMode (SCREEN_MENU);		//must switch to menu mode
-	}
 }
 
 //------------------------------------------------------------------------------
@@ -508,10 +496,6 @@ if (!gameOpts->menus.nStyle) {
 //mode if cannot init requested mode)
 int SetScreenMode (u_int32_t sm)
 {
-WIN (static int force_mode_change=0);
-WIN (static int saved_window_w);
-WIN (static int saved_window_h);
-
 #ifdef EDITOR
 	if ((sm==SCREEN_MENU) && (gameStates.video.nScreenMode==SCREEN_EDITOR))	{
 		GrSetCurrentCanvas (Canv_editor);
@@ -592,23 +576,17 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 
 	//	Define screen pages for game mode
 	// If we designate through screenFlags to use paging, then do so.
-		WINDOS (
-			DDGrInitSubCanvas (&dd_VR_screen_pages[0], dd_grd_screencanv, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight),
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight)
-		);
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->scCanvas, 
+								  0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
 
 		if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
-		WINDOS (
-			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_backcanv, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight),
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 0, grdCurScreen->scHeight, grdCurScreen->scWidth, grdCurScreen->scHeight)
-		);
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 0, 
+								  grdCurScreen->scHeight, grdCurScreen->scWidth, grdCurScreen->scHeight);
 		}
 		else {
-		WINDOS (
-			DDGrInitSubCanvas (&dd_VR_screen_pages[1], dd_grd_screencanv, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight),
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight)
-		);
-		}
+			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 
+								  0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
+			}
 		InitCockpit ();
 		gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
 		if (gameStates.render.vr.nRenderMode != VR_NONE)	{
@@ -643,22 +621,12 @@ if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.rende
 	default:
 		Error ("Invalid screen mode %d",sm);
 	}
-
-	gameStates.render.vr.nCurrentPage = 0;
-
-	WINDOS (
-		DDGrSetCurrentCanvas (&dd_VR_screen_pages[gameStates.render.vr.nCurrentPage]),
-		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage])
-	);
-
-	if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING)	{
-	WINDOS (
-		dd_gr_flip (),
-		GrShowCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage])
-	);
-	}
-	OglSetScreenMode ();
-	return 1;
+gameStates.render.vr.nCurrentPage = 0;
+GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage]);
+if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING)
+	GrShowCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage]);
+OglSetScreenMode ();
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1620,7 +1588,6 @@ for (;;) {
 	SongsCheckRedbookRepeat ();	// Handle RedBook Audio Repeating.
 	if (gameStates.app.bConfigMenu) {
 		int double_save = bScanlineDouble;
-	//WIN (mouse_set_mode (0);
 		if (!IsMultiGame) {
 			PaletteSave (); 
 			ResetPaletteAdd ();
@@ -1632,7 +1599,6 @@ for (;;) {
 			InitCockpit ();
 		if (!IsMultiGame) 
 			PaletteRestore ();
-		//WIN (mouse_set_mode (1);
 		}
 	if (gameStates.render.automap.bDisplay) {
 		int	save_w = gameData.render.window.w,

@@ -125,10 +125,11 @@ if (!gameStates.app.bEndLevelSequence)
 
 #define COUNTDOWN_VOICE_TIME fl2f (12.75)
 
-void DoCountdownFrame ()
+void DoCountdownFrame (void)
 {
 	fix	oldTime;
-	int	fc, h, div_scale;
+	int	fc, h, xScale;
+
 	static fix cdtFrameTime;
 
 if (!gameData.reactor.bDestroyed) {
@@ -157,12 +158,12 @@ fc = gameData.reactor.countdown.nSecsLeft;
 if (fc > 16)
 	fc = 16;
 //	At Trainee, decrease rocking of ship by 4x.
-div_scale = 1;
+xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
-	div_scale = 4;
+	xScale = 4;
 h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-gameData.objs.console->mType.physInfo.rotVel.p.x += (FixMul (d_rand () - 16384, h)) / div_scale;
-gameData.objs.console->mType.physInfo.rotVel.p.z += (FixMul (d_rand () - 16384, h)) / div_scale;
+gameData.objs.console->mType.physInfo.rotVel.p.x += (FixMul (d_rand () - 16384, h)) / xScale;
+gameData.objs.console->mType.physInfo.rotVel.p.z += (FixMul (d_rand () - 16384, h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -174,17 +175,16 @@ gameData.reactor.countdown.nSecsLeft = f2i (gameData.reactor.countdown.nTimer + 
 if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME))	{
 	DigiPlaySample (SOUND_COUNTDOWN_13_SECS, F3_0);
 	}
-if (f2i (oldTime + F1_0*7/8) != gameData.reactor.countdown.nSecsLeft) {
+if (f2i (oldTime + F1_0 * 7 / 8) != gameData.reactor.countdown.nSecsLeft) {
 	if ((gameData.reactor.countdown.nSecsLeft >= 0) && (gameData.reactor.countdown.nSecsLeft < 10))
 		DigiPlaySample ((short) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), F3_0);
 	if (gameData.reactor.countdown.nSecsLeft == gameData.reactor.countdown.nTotalTime - 1)
 		DigiPlaySample (SOUND_COUNTDOWN_29_SECS, F3_0);
 	}					
 if (gameData.reactor.countdown.nTimer > 0) {
-	fix size,old_size;
-	size = (i2f (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / fl2f (0.65);
-	old_size = (i2f (gameData.reactor.countdown.nTotalTime) - oldTime) / fl2f (0.65);
-	if (size != old_size && (gameData.reactor.countdown.nSecsLeft < (gameData.reactor.countdown.nTotalTime-5)))	// Every 2 seconds!
+	fix size = (i2f (gameData.reactor.countdown.nTotalTime) - gameData.reactor.countdown.nTimer) / fl2f (0.65);
+	fix oldSize = (i2f (gameData.reactor.countdown.nTotalTime) - oldTime) / fl2f (0.65);
+	if ((size != oldSize) && (gameData.reactor.countdown.nSecsLeft < gameData.reactor.countdown.nTotalTime - 5))	// Every 2 seconds!
 		DigiPlaySample (SOUND_CONTROL_CENTER_WARNING_SIREN, F3_0);
 	}
 else {
@@ -193,14 +193,8 @@ else {
 		DigiPlaySample (SOUND_MINE_BLEW_UP, F1_0);
 	PALETTE_FLASH_SET (flashValue, flashValue, flashValue);
 	if (gameStates.ogl.palAdd.blue > 64) {
-		WINDOS (
-			DDGrSetCurrentCanvas (NULL),
-			GrSetCurrentCanvas (NULL)
-			);
-		WINDOS (
-			dd_gr_clear_canvas (RGBA_PAL2 (31,31,31)),
-			GrClearCanvas (RGBA_PAL2 (31,31,31))
-			);						//make screen all white to match palette effect
+		GrSetCurrentCanvas (NULL);
+		GrClearCanvas (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
 		ResetCockpit ();		//force cockpit redraw next time
 		ResetPaletteAdd ();	//restore palette for death message
 		DoPlayerDead ();		//kill_player ();

@@ -1252,7 +1252,6 @@ sprintf (szTitle,
 			TXT_DESTROYED);
 Assert (c <= N_GLITZITEMS);
 GrPaletteFadeOut (NULL, 32, 0);
-PA_DFX (pa_alpha_always ());
 if (network && (gameData.app.nGameMode & GM_NETWORK))
 	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, STARS_BACKGROUND);
 else

@@ -2002,8 +2002,6 @@ launchOption:
 		case KEY_ALTED + KEY_F9:
 			bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 0);
-			PA_DFX (pa_set_frontbuffer_current ());
-			PA_DFX (pa_set_front_to_read ());
 			for (i=0;i<nItems;i++)
 				item [i].redraw=1;
 		
@@ -2365,8 +2363,7 @@ launchOption:
 			NMDrawTitle (subtitle, SUBTITLE_FONT, RGBA_PAL (21, 21, 21), t);
 			bRedrawAll = 0;
 			}
-		WINDOS (	DDGrSetCurrentCanvas (bg.menu_canvas), 
-				GrSetCurrentCanvas (bg.menu_canvas));
+		GrSetCurrentCanvas (bg.menu_canvas);
 		grdCurCanv->cvFont = ctrl.bTinyMode ? SMALL_FONT : NORMAL_FONT;
      	for (i = 0; i < ctrl.nMaxDisplayable + ctrl.nScrollOffset - ctrl.nMaxNoScroll; i++) {
 			if ((i >= ctrl.nMaxNoScroll) && (i < ctrl.nScrollOffset))
@@ -2792,16 +2789,15 @@ ReadFileNames:
 		case KEY_CTRLED+KEY_F1:
 			SwitchDisplayMode (-1);
 			break;
+			
 		case KEY_CTRLED+KEY_F2:
 			SwitchDisplayMode (1);
 			break;
+			
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
 		case KEY_ALTED + KEY_F9:
 			bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 0);
-			PA_DFX (pa_set_frontbuffer_current ());
-			PA_DFX (pa_set_front_to_read ());
-		
 			break;
 
 		case KEY_CTRLED+KEY_S:
@@ -3111,15 +3107,6 @@ ExitFileMenu:
 			}
 			if (bg.background != &gameStates.render.vr.buffers.offscreen->cvBitmap)
 				GrFreeBitmap (bg.background);
-#if 0
-		WINDOS (
-			dd_gr_blt_notrans (dd_VR_offscreen_buffer, 
-				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
-				dd_grd_curcanv, 
-				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-			GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cvBitmap), &(grdCurCanv->cvBitmap))
-		);
-#endif
 		GrUpdate (0);
 		}
 	}
@@ -3235,16 +3222,6 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		GrBmBitBlt (total_width, total_height, 0, 0, wx-border_size, wy-title_height-border_size, &grdCurCanv->cvBitmap, bg.background);
 		}
 
-#if 0
-	WINDOS (
- 		dd_gr_blt_notrans (dd_grd_curcanv, 0, 0, 
-				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
-				dd_VR_offscreen_buffer, 0, 0, 
-				_DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(grdCurCanv->cvBitmap), &(gameStates.render.vr.buffers.offscreen->cvBitmap))
-	);
-#endif
-
 	NMDrawBackground (&bg, wx-border_size, wy-title_height-border_size, wx+width+border_size-1, wy+height+border_size-1,0);
 	GrUpdate (0);
 	GrString (0x8000, wy - title_height, title, NULL);
@@ -3310,8 +3287,6 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		case KEY_COMMAND+KEY_SHIFTED+KEY_P:
 		case KEY_PRINT_SCREEN: 	
 			SaveScreenShot (NULL, 0); 
-			PA_DFX (pa_set_frontbuffer_current ());
-			PA_DFX (pa_set_front_to_read ());		
 			break;
 		case KEY_HOME:
 		case KEY_PAD7:
@@ -3524,9 +3499,8 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		NMRemoveBackground (&bg);
 #if 1
 		if (bg.menu_canvas) {
-			WINDOS (DDGrFreeSubCanvas (bg.menu_canvas), 
-					  GrFreeSubCanvas (bg.menu_canvas));
-			WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));		
+		  	GrFreeSubCanvas (bg.menu_canvas);
+			GrSetCurrentCanvas (NULL);		
 			bg.menu_canvas = NULL;
 			}
 #endif
@@ -3538,20 +3512,8 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 			GrFreeBitmap (bg.background);
 		GrUpdate (0);
 		}
-
-
-#if 0
-	WINDOS (
-		dd_gr_blt_notrans (dd_VR_offscreen_buffer, 
-				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh, 
-				dd_grd_curcanv, 
-				0, 0, _DDModeList [W95DisplayMode].rw, _DDModeList [W95DisplayMode].rh), 
-		GrBmBitBlt (grdCurCanv->cv_w, grdCurCanv->cv_h, 0, 0, 0, 0, &(gameStates.render.vr.buffers.offscreen->cvBitmap), &(grdCurCanv->cvBitmap))
-	);
-#endif
-
-	SDL_EnableKeyRepeat(0, 0);
-	return cItem;
+SDL_EnableKeyRepeat(0, 0);
+return cItem;
 }
 
 //------------------------------------------------------------------------------

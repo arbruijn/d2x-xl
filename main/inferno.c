@@ -265,14 +265,12 @@ void PrintVersionInfo (void)
 		int w, ws, h, hs, aw;
 
 		gameStates.menus.bDrawCopyright = 0;
-		WINDOS (	DDGrSetCurrentCanvas (NULL), 
-					GrSetCurrentCanvas (NULL));
+		GrSetCurrentCanvas (NULL);
 		GrSetCurFont (GAME_FONT);
 		GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 
 		GrGetStringSize ("V2.2", &w, &h, &aw);
 
-		WIN (DDGRLOCK (dd_grd_curcanv));
 	   GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, TXT_COPYRIGHT);
 		GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w-w-2, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 		if (bVertigo < 0)
@@ -303,7 +301,6 @@ void PrintVersionInfo (void)
 			VERSION);
 		GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 		//say this is vertigo version
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
 }
 
@@ -2801,7 +2798,6 @@ else
 	if (!bSongPlaying)
 		SongsPlaySong (SONG_TITLE, 1);
 	}
-PA_DFX (pa_splash ());
 }
 
 // ----------------------------------------------------------------------------

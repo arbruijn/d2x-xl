@@ -1218,14 +1218,6 @@ int PiggyInit (void)
 
 	if (bLowMemory)
 		gameStates.sound.digi.bLoMem = 1;
-#if 0
-	WIN (DDGRLOCK (dd_grd_curcanv));
-		GrSetCurFont (SMALL_FONT);
-		GrSetFontColorRGBi (DKGRAY_RGBA, 1, 0, 0);
-		GrPrintF (0x8000, grdCurCanv->cv_h-20, "%s...", TXT_LOADING_DATA);
-		GrUpdate (0);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-#endif
 /*---*/LogErr ("   Loading game data\n");
 #if 1 //def EDITOR //need for d1 mission briefings
 	PiggyInitPigFile (DEFAULT_PIGFILE);

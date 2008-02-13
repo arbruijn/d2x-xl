@@ -156,7 +156,6 @@ int ReadConfigFile()
 	bRedbookEnabledSave = gameStates.sound.bRedbookEnabled;
 
 	if (!CFOpen (&cf, "descent.cfg", gameFolders.szConfigDir, "rt", 0)) {
-		WIN(CheckMovieAttributes());
 		return 1;
 	}
 	while (!CFEoF(&cf)) {

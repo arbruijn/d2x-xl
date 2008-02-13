@@ -354,7 +354,6 @@ if (gameStates.render.automap.bRadar && gameStates.render.bTopDownRadar) {
 	}
 GrClearCanvas (RGBA_PAL2 (0,0,0));
 if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_FULL_SCREEN)) {
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	ShowFullscreenImage (&bmAutomapBackground);
 	GrSetCurFont (HUGE_FONT);
 	GrSetFontColorRGBi (GRAY_RGBA, 1, 0, 0);
@@ -364,7 +363,6 @@ if (!gameStates.render.automap.bRadar && (gameStates.render.cockpit.nMode != CM_
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
 	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	//GrUpdate (0);
 	}
 G3StartFrame (gameStates.render.automap.bRadar || !gameOpts->render.automap.bTextured, 0); //!gameStates.render.automap.bRadar);
@@ -778,7 +776,7 @@ while ((c = KeyInKey ())) {
 
 		case KEY_PRINT_SCREEN: {
 			if (amData.bHires)
-				WINDOS (DDGrSetCurrentCanvas (NULL), GrSetCurrentCanvas (NULL));
+				GrSetCurrentCanvas (NULL);
 			bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 1);
 			break;

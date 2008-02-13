@@ -246,12 +246,10 @@ else {
 		yOffs = 0;
 	dstx += xOffs;
 	dsty += yOffs;
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
 		GrSetColorRGBi (RGBA_PAL (0, 0, 32));
 		GrUBox (dstx-1, dsty, dstx+w, dsty+h+1);
 		}
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	GrBmUBitBlt (bufw, bufh, dstx, dsty, sx, sy, &bmFrame, &grdCurCanv->cvBitmap, 1);
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;

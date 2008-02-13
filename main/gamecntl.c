@@ -493,7 +493,6 @@ while (gameData.app.bGamePaused) {
 		HandleVRKey(key);
 		if (bScreenChanged) {
 			GameRenderFrame();
-			WIN(SetPopupScreenMode());
 			ShowBoxedMessage(msg);
 #if 0		
 			show_extraViews();
@@ -704,8 +703,6 @@ if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
 switch (key) {
 	case KEY_F3:
-		 PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
-		 PA_DFX (break);
 		 if (!GuidedInMainView ())
 			ToggleCockpit();
 		 break;
@@ -1107,15 +1104,11 @@ switch (key) {
 				PaletteRestore();
 			if (bScanlineSave != bScanlineDouble)   
 				InitCockpit();	// reset the cockpit after changing...
-	      PA_DFX (InitCockpit());
 			break;
 		}
 
 
 	case KEY_F3:
-		PA_DFX (HUDInitMessage (TXT_3DFX_COCKPIT));
-		PA_DFX (break);
-
 		if (!GuidedInMainView ()) {
 			ToggleCockpit();
 			bScreenChanged=1;

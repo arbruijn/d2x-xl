@@ -322,7 +322,6 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	return;
 	}
 MultiSortKillList ();
-WIN (DDGRLOCK (dd_grd_curcanv));
 grdCurCanv->cvFont = MEDIUM3_FONT;
 GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE, NULL);
 grdCurCanv->cvFont = SMALL_FONT;
@@ -340,10 +339,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	ScoreTableDrawItem (i, sorted);
 	}
 ScoreTableDrawDeaths (sorted);
-PA_DFX (pa_set_frontbuffer_current ());
 GrUpdate (0);
-PA_DFX (pa_set_backbuffer_current ());
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 GrPaletteStepLoad (NULL);
 }
 
@@ -355,7 +351,6 @@ void ScoreTableDrawCoop ()
 	int sorted [MAX_NUM_NET_PLAYERS];
 
 MultiSortKillList ();
-WIN (DDGRLOCK (dd_grd_curcanv));
 grdCurCanv->cvFont = MEDIUM3_FONT;
 GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY", NULL);
 grdCurCanv->cvFont = SMALL_FONT;
@@ -370,13 +365,7 @@ for (i=0; i<gameData.multiplayer.nPlayers; i++) {
 	ScoreTableDrawCoopItem (i, sorted);
 	}
 ScoreTableDrawDeaths (sorted);
-WIN (DDGRUNLOCK (dd_grd_curcanv));
-WINDOS (
-	DDGrSetCurrentCanvas (NULL),
-	GrSetCurrentCanvas (NULL)
-	);
-PA_DFX (pa_set_frontbuffer_current ());
-PA_DFX (pa_set_backbuffer_current ());
+GrSetCurrentCanvas (NULL);
 GrPaletteStepLoad (NULL);
 GrUpdate (0);
 }

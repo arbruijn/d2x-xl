@@ -330,8 +330,6 @@ dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 	{              0,    0,    0, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0} 
 	};
 
-WIN (extern int DD_Emulation);
-
 // ------------------------------------------------------------------------
 
 void AutoDemoMenuCheck (int nitems, tMenuItem * items, int *nLastKey, int citem)

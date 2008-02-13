@@ -708,15 +708,11 @@ else
 	szBriefScreen = curBriefScreenName;
 if (*szBriefScreen) {
 	glClear (GL_COLOR_BUFFER_BIT);
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	if ((pcxResult = PcxReadFullScrImage (szBriefScreen, gameStates.app.bD1Mission)) != PCX_ERROR_NONE) {
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef _DEBUG
 		Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
 #endif
 		}
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	WIN (DDGRRESTORE);
 	}
 return 0;
 }
@@ -733,9 +729,7 @@ con_printf (CONDBG, "Loading new briefing <%s>\n", szBriefScreen);
 strcpy (curBriefScreenName, szBriefScreen);
 if (GrPaletteFadeOut (NULL, 32, 0))
 	return 0;
-WIN (DDGRLOCK (dd_grd_curcanv));
 if ((pcxResult = LoadBriefImg (szBriefScreen, NULL, 1)) != PCX_ERROR_NONE) {
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 #ifdef _DEBUG
 	Error ("Error loading briefing screen <%s>, \nPCX load error: %s (%i)\n", 
 			szBriefScreen, pcx_errormsg (pcxResult), pcxResult);
@@ -1130,7 +1124,6 @@ while (!done) {
 						if (keypress == KEY_ESC)
 							rval = 1;
 						flashing_cursor = 0;
-						WIN (wpage_done = 0);
 						goto done;
 						}
 					}
@@ -1277,7 +1270,6 @@ while (!done) {
 						Briefing_text_x = bsp->text_ulx;
 						Briefing_text_y = bsp->text_uly;
 						delayCount = KEY_DELAY_DEFAULT;
-						WIN (wpage_done = 0);
 						goto redrawPage;
 						}
 					}

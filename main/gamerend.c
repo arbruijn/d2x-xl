@@ -481,7 +481,6 @@ void game_render_frame_stereo ()
 
 		gameData.objs.viewer = gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer];
 
-		WIN (DDGRLOCK (dd_grd_curcanv); 	// Must lock DD canvas!!!
   		{
 			UpdateRenderedData (0, gameData.objs.viewer, 0, 0);
 			RenderFrame (0, 0);
@@ -498,7 +497,6 @@ void game_render_frame_stereo ()
 			DrawGuidedCrosshair ();
 			glEnable (GL_DEPTH_TEST);
 		}
-		WIN (DDGRUNLOCK (dd_grd_curcanv);
 
 			HUDRenderMessageFrame ();
 
@@ -1032,7 +1030,6 @@ void copy_background_rect (int left, int top, int right, int bot)
 	ofs_y = top % bm->bmProps.h;
 	dest_y = top;
 
-WIN (DDGRLOCK (dd_grd_curcanv))
 {
 	for (y=tile_top;y<=tile_bot;y++) {
 		int w, h;
@@ -1053,7 +1050,6 @@ WIN (DDGRLOCK (dd_grd_curcanv))
 		dest_y += h;
 		}
 	} 
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
 //------------------------------------------------------------------------------
@@ -1070,18 +1066,14 @@ void FillBackground ()
 	dx = x;
 	dy = y;
 
-	WINDOS (	DDGrSetCurrentCanvas (&dd_VR_screen_pages [gameStates.render.vr.nCurrentPage]), 
-				GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage])
-	);
+	GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 	copy_background_rect (x-dx, y-dy, x-1, y+h+dy-1);
 	copy_background_rect (x+w, y-dy, grdCurCanv->cv_w-1, y+h+dy-1);
 	copy_background_rect (x, y-dy, x+w-1, y-1);
 	copy_background_rect (x, y+h, x+w-1, y+h+dy-1);
 
 	if (gameStates.render.vr.nScreenFlags & VRF_USE_PAGING) {
-		WINDOS (	DDGrSetCurrentCanvas (&dd_VR_screen_pages [!gameStates.render.vr.nCurrentPage]), 
-					GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage])
-		);
+		GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [!gameStates.render.vr.nCurrentPage]);
 		copy_background_rect (x-dx, y-dy, x-1, y+h+dy-1);
 		copy_background_rect (x+w, y-dy, x+w+dx-1, y+h+dy-1);
 		copy_background_rect (x, y-dy, x+w-1, y-1);
@@ -1323,10 +1315,7 @@ NMRemoveBackground (&bg);
 void ClearBoxedMessage ()
 {
 if (bg.bmp) {
-	WIN (DDGRLOCK (dd_grd_curcanv));
 	GrBitmap (bg.x-BOX_BORDER/2, bg.y-BOX_BORDER/2, bg.bmp);
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
-	WIN (DDGRRESTORE);
 	if (bg.bmp) {
 		GrFreeBitmap (bg.bmp);
 		bg.bmp = NULL;

@@ -313,21 +313,18 @@ void scores_draw_item (int  i, stats_info * stats)
 
 		int y;
 
-	WIN (DDGRLOCK (dd_grd_curcanv));
 		y = 7+70+i*9;
-
 		if (i==0) y -= 8;
-
 		if (i==MAX_HIGH_SCORES) 	{
 			y += 8;
 			//scores_rprintf (17+33+XX, y+YY, "");
-		} else {
+			} 
+		else {
 			scores_rprintf (17+33+XX, y+YY, "%d.", i+1);
-		}
+			}
 
 		if (strlen (stats->name)==0) {
 			GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, TXT_EMPTY);
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			return;
 		}
 		GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", stats->name);
@@ -353,7 +350,6 @@ void scores_draw_item (int  i, stats_info * stats)
 			s = s % 60;
 			scores_rprintf (311-42+XX, y+YY, "%d:%02d:%02d", h, m, s);
 		}
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 }
 
 //------------------------------------------------------------------------------
@@ -370,13 +366,8 @@ void ScoresView (int citem)
 
 ReshowScores:
 	scores_read ();
-
 	SetScreenMode (SCREEN_MENU);
- 
-	WINDOS (	DDGrSetCurrentCanvas (NULL),
-				GrSetCurrentCanvas (NULL)
-	);
-
+ 	GrSetCurrentCanvas (NULL);
 	xOffs = (grdCurCanv->cvBitmap.bmProps.w - 640) / 2;
 	yOffs = (grdCurCanv->cvBitmap.bmProps.h - 480) / 2;
 	if (xOffs < 0)
@@ -394,7 +385,6 @@ ReshowScores:
 			NMDrawBackground (&bg,xOffs, yOffs, xOffs + 640, xOffs + 480, bRedraw);
 			grdCurCanv->cvFont = MEDIUM3_FONT;
 
-		WIN (DDGRLOCK (dd_grd_curcanv));
 			GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES, NULL);
 			grdCurCanv->cvFont = SMALL_FONT;
 			GrSetFontColorRGBi (RGBA_PAL (31,26,5), 1, 0, 0);
@@ -409,7 +399,6 @@ ReshowScores:
 				GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R, NULL);
 			GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
 			//GrPrintF (NULL, 0x8000, yOffs + LHY (31), "%c%s%c  - %s", 34, Scores.cool_saying, 34, Scores.stats[0].name);
-		WIN (DDGRUNLOCK (dd_grd_curcanv));
 			for (i = 0; i < MAX_HIGH_SCORES; i++) {
 				//@@if (i==0)	{
 				//@@	GrSetFontColorRGBi (RGBA_PAL (28,28,28), 1, 0, 0);
@@ -466,27 +455,27 @@ ReshowScores:
 				}
 			}
 			break;
-		case KEY_BACKSP:				Int3 (); k = 0; break;
-		case KEY_PRINT_SCREEN:		SaveScreenShot (NULL, 0); k = 0; break;
+		case KEY_BACKSP:				
+			Int3 (); 
+			k = 0; 
+			break;
+		case KEY_PRINT_SCREEN:		
+			SaveScreenShot (NULL, 0); 
+			k = 0; 
+			break;
 		
 		case KEY_ENTER:
 		case KEY_SPACEBAR:
 		case KEY_ESC:
-			done=1;
+			done = 1;
 			break;
 		}
 	}
-
 // Restore background and exit
-	GrPaletteFadeOut (NULL, 32, 0);
-
-	WINDOS (	DDGrSetCurrentCanvas (NULL),
-				GrSetCurrentCanvas (NULL)
-	);
-
-	GameFlushInputs ();
-	NMRemoveBackground (&bg);
-
+GrPaletteFadeOut (NULL, 32, 0);
+GrSetCurrentCanvas (NULL);
+GameFlushInputs ();
+NMRemoveBackground (&bg);
 }
 
 //------------------------------------------------------------------------------

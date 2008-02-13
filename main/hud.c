@@ -67,18 +67,13 @@ extern gsrCanvas *PrintToCanvas (char *s,grsFont *font, unsigned int fc, unsigne
 
 void ClearBackgroundMessages (void)
 {
-if (((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y >= 6)) {
+if (((gameStates.render.cockpit.nMode == CM_STATUS_BAR) || (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)) && 
+	  (nLastMsgYCrd != -1) && (gameStates.render.vr.buffers.subRender [0].cvBitmap.bmProps.y >= 6)) {
 	gsrCanvas	*canv_save = grdCurCanv;
 
-WINDOS (
-	DDGrSetCurrentCanvas (GetCurrentGameScreen ()),
-	GrSetCurrentCanvas (GetCurrentGameScreen ())
-	);
+GrSetCurrentCanvas (GetCurrentGameScreen ());
 copy_background_rect (0, nLastMsgYCrd, grdCurCanv->cvBitmap.bmProps.w, nLastMsgYCrd+nLastMsgHeight-1);
-WINDOS (
-	DDGrSetCurrentCanvas (canv_save),
-	GrSetCurrentCanvas (canv_save)
-	);
+GrSetCurrentCanvas (canv_save);
 	nLastMsgYCrd = -1;
 	}
 szDisplayedBackgroundMsg [gameStates.render.vr.nCurrentPage][0] = 0;
@@ -213,7 +208,6 @@ if (pMsgs->nMessages > 0) {
 				Int3 (); // Get Rob!!
 			GrGetStringSize (pMsgs->szMsgs [n], &w, &h, &aw);
 			GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
-			PA_DFX (pa_set_frontbuffer_current ());
 			y = yStart + i * (h + 1);
 			if (nType)
 				y += ((2 * HUD_MAX_MSGS - 1) * (h + 1)) / 2;
@@ -356,9 +350,9 @@ if (gameOpts->render.cockpit.bHUDMsgs && gameStates.app.bPlayerExploded) {
       h += 8;
       x = (grdCurCanv->cv_w - w) / 2;
       y = (grdCurCanv->cv_h - h) / 2;
-      NO_DFX (gameStates.render.grAlpha = 2*7);
-      NO_DFX (GrSetColorRGB (0, 0, 0, 255));
-      NO_DFX (GrRect (x, y, x+w, y+h));
+      gameStates.render.grAlpha = 2 * 7;
+      GrSetColorRGB (0, 0, 0, 255);
+      GrRect (x, y, x+w, y+h);
       gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
       GrString (0x8000, (grdCurCanv->cv_h - grdCurCanv->cvFont->ftHeight)/2 + h/8, TXT_GAME_OVER, NULL);
 #if 0

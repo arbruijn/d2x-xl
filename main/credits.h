@@ -12,28 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Prototypes for the credit sequence.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:55:39  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:32:30  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.2  1994/11/03  20:17:40  john
- * Added initial code for showing credits.
- *
- * Revision 1.1  1994/11/03  20:09:19  john
- * Initial revision
- *
- *
- */
-
-
 #ifndef _CREDITS_H
 #define _CREDITS_H
 

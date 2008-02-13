@@ -278,10 +278,6 @@ int G3BuildModelFromPOF (tObject *objP, int nModel, tPolyModel *pp, grsBitmap **
 
 if (!pp->modelData)
 	return 0;
-#ifdef _DEBUG
-if (nModel == 131)
-	nModel = nModel;
-#endif
 pm->nSubModels = 1;
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");

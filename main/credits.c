@@ -143,20 +143,9 @@ void ShowCredits(char *credits_filename)
 	char filename[32];
 	int xOffs, yOffs;
 
-WIN(int credinit = 0;)
-
 	box dirty_box[NUM_LINES_HIRES];
 	gsrCanvas *CreditsOffscreenBuf=NULL;
-
-	WINDOS(
-		ddgrs_canvas *save_canv,
-		gsrCanvas *save_canv
-	);
-
-	WINDOS(
-		save_canv = dd_grd_curcanv,
-		save_canv = grdCurCanv
-	);
+	gsrCanvas *save_canv = grdCurCanv;
 
 	// Clear out all tex buffer lines.
 	for (i=0; i<NUM_LINES; i++)
@@ -193,8 +182,6 @@ WIN(int credinit = 0;)
 	if (yOffs < 0)
 		yOffs = 0;
 
-	WIN(DEFINE_SCREEN(NULL));
-
 	creditsPalette = GrUsePaletteTable("credits.256", NULL);
 	GrPaletteStepLoad (NULL);
 	header_font = GrInitFont(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
@@ -215,17 +202,12 @@ WIN(int credinit = 0;)
 	GrRemapBitmapGood(&bmBackdrop, NULL, -1, -1);
 
 if (!gameOpts->menus.nStyle) {
-	WINDOS(
-		DDGrSetCurrentCanvas(NULL),
-		GrSetCurrentCanvas(NULL)
-	);
-	WIN(DDGRLOCK(dd_grd_curcanv));
+	GrSetCurrentCanvas(NULL);
 	GrBitmap(xOffs,yOffs,&bmBackdrop);
 	if ((grdCurCanv->cvBitmap.bmProps.w > 640) || (grdCurCanv->cvBitmap.bmProps.h > 480)) {
 		GrSetColorRGBi (RGBA_PAL (0,0,32));
 		GrUBox(xOffs,yOffs,xOffs+bmBackdrop.bmProps.w+1,yOffs+bmBackdrop.bmProps.h+1);
 		}
-	WIN(DDGRUNLOCK(dd_grd_curcanv));
 	}
    //GrUpdate (0);
 	GrPaletteFadeIn(NULL, 32, 0);
@@ -257,7 +239,6 @@ KeyFlush();
 		first_line_offset = 0;
 	}
 
-	WIN(credinit = 1);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	gameStates.menus.nInMenu = 1;
@@ -294,16 +275,11 @@ get_line:;
 		} while (extra_inc--);
 		extra_inc = 0;
 
-NO_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
-PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
+for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires ? 2 : 1)) {
 	int y;
 
 	if (gameOpts->menus.nStyle) {
-		WINDOS(
-			DDGrSetCurrentCanvas(NULL),
-			GrSetCurrentCanvas(NULL)
-		);
-		WIN(DDGRLOCK(dd_grd_curcanv));
+		GrSetCurrentCanvas(NULL);
 		ShowFullscreenImage (&bmBackdrop);
 //			GrUpdate (0);
 #if 0
@@ -312,7 +288,6 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 			GrUBox (xOffs, yOffs, xOffs + bmBackdrop. bmProps.w + 1, yOffs + bmBackdrop.bmProps.h + 1);
 			}
 #endif
-		WIN(DDGRUNLOCK(dd_grd_curcanv));
 		}
 	y = first_line_offset - i;
 	//if (!gameOpts->menus.nStyle) 
@@ -378,10 +353,7 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 	}
 
 	if (gameOpts->menus.nStyle) 
-		WINDOS(
-			DDGrSetCurrentCanvas(NULL),
-			GrSetCurrentCanvas(NULL)
-			);
+			GrSetCurrentCanvas(NULL);
 
 		{	// Wacky Fast Credits Thing
 		box	*new_box;
@@ -391,12 +363,10 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 			new_box = dirty_box + j;
 			tempbmp = &(CreditsOffscreenBuf->cvBitmap);
 
-	//	WIN(DDGRSCREENLOCK);
-				GrBmBitBlt (new_box->width + 1, new_box->height +4,
-								new_box->left + xOffs, new_box->top + yOffs, 
-								new_box->left, new_box->top,
-								tempbmp, &(grdCurScreen->scCanvas.cvBitmap));
-	//	WIN(DDGRSCREENUNLOCK);
+			GrBmBitBlt (new_box->width + 1, new_box->height +4,
+							new_box->left + xOffs, new_box->top + yOffs, 
+							new_box->left, new_box->top,
+							tempbmp, &(grdCurScreen->scCanvas.cvBitmap));
 		}
 	}
 	GrUpdate (0);
@@ -427,15 +397,11 @@ PA_DFX (for (i=0; i<ROW_SPACING; i += (gameStates.menus.bHires?2:1))	{)
 					GrUsePaletteTable(D2_DEFAULT_PALETTE, NULL);
 					D2_FREE(bmBackdrop.bmTexBuf);
 					CFClose(&cf);
-				WINDOS(
-					DDGrSetCurrentCanvas(save_canv),
-					GrSetCurrentCanvas(save_canv)
-				);
+					GrSetCurrentCanvas(save_canv);
 					SongsPlaySong(SONG_TITLE, 1);
 
 				if (CreditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
 					GrFreeCanvas(CreditsOffscreenBuf);
-				WIN(DEFINE_SCREEN(MENU_PCX_NAME));
 				glDisable (GL_BLEND);
 				gameStates.menus.nInMenu = 0;
 				return;

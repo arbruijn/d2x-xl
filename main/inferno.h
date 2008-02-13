@@ -85,13 +85,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 # include <SDL_thread.h>
 #endif
 
-// MACRO for single line #ifdef WINDOWS #else DOS
-#define WINDOS(x,y) y
-#define WIN(x)
-#define PA_DFX(x)
-#define NO_DFX(x) x
-
-
 /**
  **	Constants
  **/

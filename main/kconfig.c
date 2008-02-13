@@ -756,10 +756,8 @@ KCDrawItemExt (items + cItem, 1, 0);
 void KCQuitMenu (gsrCanvas *save_canvas, grsFont *save_font, bkg *bg, int time_stopped)
 {
 grdCurCanv->cvFont	= save_font;
-WIN (DEFINE_SCREEN (old_bg_pcx));
-//WINDOS (DDGrFreeSubCanvas (bg->menu_canvas), GrFreeSubCanvas (bg->menu_canvas));
 //bg->menu_canvas = NULL;
-WINDOS (DDGrSetCurrentCanvas (save_canvas), GrSetCurrentCanvas (save_canvas));		
+GrSetCurrentCanvas (save_canvas);		
 GameFlushInputs ();
 NMRemoveBackground (bg);
 SDL_ShowCursor (0);
@@ -791,9 +789,7 @@ if (curDrawBuffer == GL_FRONT) {
 	NMRestoreBackground (0, KC_LHY (INFO_Y), xOffs, yOffs, KC_LHX (310), grdCurCanv->cvFont->ftHeight);
 	}
 GameFlushInputs ();
-WIN (DDGRLOCK (dd_grd_curcanv));
 GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 return BT_NONE;
 }
 
@@ -805,11 +801,8 @@ void KCDrawQuestion (kcItem *item)
 
 	int x, w, h, aw;
 
-WIN (DDGRLOCK (dd_grd_curcanv));
-  // PA_DFX (pa_set_frontbuffer_current ();
 
 	GrGetStringSize ("?", &w, &h, &aw);
-	//@@GrSetColor (grFadeTable [fades [looper]*256+c]);
 	GrSetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
 	if (++looper>63) 
 		looper=0;
@@ -818,8 +811,6 @@ WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+xOffs;
 	GrString (x, KC_LHY (item->y), "?", NULL);
-//	PA_DFX (pa_set_backbuffer_current ();
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 if (curDrawBuffer != GL_BACK)
 	GrUpdate (0);
 }
@@ -855,7 +846,6 @@ ubyte KCJoyBtnCtrlFunc (void)
 	int i;
 	ubyte code = 255;
 
-WIN (code = joydefsw_do_button ());
 if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {
 	int axis [JOY_MAX_AXES];
 	JoyReadRawAxis (JOY_ALL_AXIS, axis);
@@ -958,10 +948,8 @@ int KCChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, char *ps
 {
 	int k = 255;
 
-WIN (DDGRLOCK (dd_grd_curcanv));
 	GrSetFontColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg, NULL);
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 {			
 	if ((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME) && (!gameStates.app.bEndLevelSequence))
 		MultiMenuPoll ();
@@ -1194,10 +1182,7 @@ nLinked |= tableFlags;
 
 void KConfigSub (kcItem * items, int nItems, char * title)
 {
-WINDOS (
-	ddgrs_canvas * save_canvas,
-	gsrCanvas * save_canvas
-);
+	gsrCanvas * save_canvas;
 	grsFont * save_font;
 	int	mouseState, omouseState, mx, my, x1, x2, y1, y2;
 	int	close_x = 0, close_y = 0, close_size = 0;
@@ -1251,7 +1236,6 @@ for (;;) {
 	do {
 		if (gameOpts->menus.nStyle || !bRedraw) {
 			bRedraw = 1;
-			WIN (DDGRLOCK (dd_grd_curcanv));
 			if (gameOpts->menus.nStyle && gameStates.app.bGameRunning)
 				GameRenderFrame ();
 			NMDrawBackground (&bg, xOffs, yOffs, xOffs + 639, yOffs + 479, 1);
@@ -1265,7 +1249,6 @@ for (;;) {
 			GrSetColorRGBi (RGBA_PAL2 (21, 21, 21));
 			GrRect (close_x + LHX (1), close_y + LHX (1), close_x + close_size - LHX (1), close_y + close_size - LHX (1));
 			KCDrawHeader (items);
-			WIN (DDGRUNLOCK (dd_grd_curcanv));
 			KCDrawTable (items, nItems, cItem);
 			}
 		SDL_ShowCursor (0);
@@ -1516,18 +1499,15 @@ void KCDrawItemExt (kcItem *item, int is_current, int bRedraw)
 {
 	int x, w, h, aw;
 	char btext [64];
-//	PA_DFX (pa_set_frontbuffer_current ();
 
 if (bRedraw && gameOpts->menus.nStyle)
 	return;
-WIN (DDGRLOCK (dd_grd_curcanv));
 
 	if (is_current)
 		GrSetFontColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 	else
 		GrSetFontColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
    GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text, NULL);
-WIN (DDGRUNLOCK (dd_grd_curcanv));
 
 	*btext = '\0';
 	if (item->value != 255) {
@@ -1590,7 +1570,6 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 		}
 	}
 	if (item->w1) {
-	WIN (DDGRLOCK (dd_grd_curcanv));
 		GrGetStringSize (btext, &w, &h, &aw);
 
 		if (is_current)
@@ -1602,9 +1581,6 @@ WIN (DDGRUNLOCK (dd_grd_curcanv));
 		GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
 		GrString (x, KC_LHY (item->y), btext, NULL);
-//		PA_DFX (pa_set_backbuffer_current ();
-
-	WIN (DDGRUNLOCK (dd_grd_curcanv));
 	}
 }
 
