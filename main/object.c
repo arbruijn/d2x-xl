@@ -2597,6 +2597,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	}
 #endif
 memset (&o, 0, sizeof (o));
+o.nType = OBJ_WEAPON;
 o.position = OBJECTS->position;
 o.rType.polyObjInfo.nTexOverride = -1;
 #if BUILD_ALL_MODELS
@@ -2610,6 +2611,9 @@ for (i = 0; i < j; i++)
 		break;
 for (; i < j; i++) {
 #endif
+	if (replacementModels [i].pszHires && (strstr (replacementModels [i].pszHires, "pminepack") == replacementModels [i].pszHires))
+		o.nType = OBJ_POWERUP;
+	o.id = replacementModels [i].nId;
 	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
 	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
 		DrawPolygonObject (&o, 1);

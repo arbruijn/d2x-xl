@@ -496,7 +496,7 @@ bool G3DrawPolyModel (
 	vmsVector	*vOffset,
 	fix			xModelLight, 
 	fix			*xGlowValues, 
-	tRgbaColorf	*pObjColor,
+	tRgbaColorf	*colorP,
 	tPOFObject  *po,
 	int			nModel)
 {
@@ -553,10 +553,10 @@ for (;;) {
 			//fix l = f2i (32 * xModelLight);
 			GrSetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * GrAlpha ()));
 			GrFadeColorRGB (1.0);
-			if (pObjColor) {
-				pObjColor->red = (float) grdCurCanv->cvColor.color.red / 255.0f; 
-				pObjColor->green = (float) grdCurCanv->cvColor.color.green / 255.0f;
-				pObjColor->blue = (float) grdCurCanv->cvColor.color.blue / 255.0f;
+			if (colorP) {
+				colorP->red = (float) grdCurCanv->cvColor.color.red / 255.0f; 
+				colorP->green = (float) grdCurCanv->cvColor.color.green / 255.0f;
+				colorP->blue = (float) grdCurCanv->cvColor.color.blue / 255.0f;
 				}
 			p += 30;
 			for (i = 0; i < nVerts; i++)
@@ -596,11 +596,11 @@ for (;;) {
 			for (i = 0; i < nVerts; i++)
 				uvlList [i].l = l;
 
-			if (pObjColor) {
+			if (colorP) {
 				unsigned char c = modelBitmaps [WORDVAL (p+28)]->bmAvgColor;
-				pObjColor->red = CPAL2Tr (gamePalette, c);
-				pObjColor->green = CPAL2Tg (gamePalette, c);
-				pObjColor->blue = CPAL2Tb (gamePalette, c);
+				colorP->red = CPAL2Tr (gamePalette, c);
+				colorP->green = CPAL2Tg (gamePalette, c);
+				colorP->blue = CPAL2Tb (gamePalette, c);
 				}
 			p += 30;
 			for (i = 0; i < nVerts; i++)
@@ -629,14 +629,14 @@ for (;;) {
 #endif
 			{		//facing
 			//draw back then front
-			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel) &&
-					G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel)))
+			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
+					G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))
 				return 0;
 			}
 #if CHECK_NORMAL_FACING
 		else {			//not facing.  draw front then back
-			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel) &&
-					G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, pObjColor, po, nModel)))
+			if (!(G3DrawPolyModel (objP, p + WORDVAL (p+28), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel) &&
+					G3DrawPolyModel (objP, p + WORDVAL (p+30), modelBitmaps, pAnimAngles, vOffset, xModelLight, xGlowValues, colorP, po, nModel)))
 				return 0;
 			}
 #endif
@@ -660,7 +660,7 @@ for (;;) {
 		G3StartInstanceAngles (&vo, va);
 		if (vOffset)
 			VmVecInc (&vo, vOffset);
-		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, pObjColor, po, nModel)) {
+		if (!G3DrawPolyModel (objP, p + WORDVAL (p+16), modelBitmaps, pAnimAngles, &vo, xModelLight, xGlowValues, colorP, po, nModel)) {
 			G3DoneInstance ();
 			return 0;
 			}

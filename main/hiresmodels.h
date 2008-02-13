@@ -7,6 +7,7 @@ typedef struct tReplacementModel {
 	short	nModel;
 	short	nType;
 	int	bFlipV;
+	short	nId;
 } tReplacementModel;
 
 extern tReplacementModel replacementModels [];

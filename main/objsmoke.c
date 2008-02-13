@@ -532,7 +532,7 @@ if (gameData.smoke.objects [i] < 0) {
 	else if ((id == PLASMA_ID) || (id == ROBOT_PLASMA_ID))
 		nScale = 1.5;
 	else if (id == FUSION_ID)
-		nScale = 1;
+		nScale = 2;
 	else if ((id == SPREADFIRE_ID) || (id == HELIX_ID) || (id == ROBOT_HELIX_ID))
 		nScale = 3;
 	else if (id == FLARE_ID)

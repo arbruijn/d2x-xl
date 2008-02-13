@@ -1155,7 +1155,9 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	fVector		vCorona [4], vh [5], vPos, vNorm, vDir;
 	tHitbox		*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 	float			fLength = f2fl (phb->vMax.p.z - phb->vMin.p.z) / 2;
-	float			fRad = f2fl (phb->vMax.p.x - phb->vMin.p.x) / 2;
+	float			dx = f2fl (phb->vMax.p.x - phb->vMin.p.x);
+	float			dy = f2fl (phb->vMax.p.y - phb->vMin.p.y);
+	float			fRad = (float) (sqrt (dx * dx + dy * dy) / 2);
 	grsBitmap	*bmP;
 	tRgbaColorf	color;
 
@@ -1173,7 +1175,7 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 	G3TransformPointf (vCorona, vCorona, 0);
 	G3TransformPointf (vCorona + 3, vCorona + 3, 0);
 	VmVecNormalf (&vNorm, &vPos, vCorona, &vEye);
-	fScale *= fRad * 2;
+	fScale *= fRad;
 	VmVecScaleIncf3 (vCorona, &vNorm, fScale);
 	VmVecScaleAddf (vCorona + 1, vCorona, &vNorm, -2 * fScale);
 	VmVecScaleIncf3 (vCorona + 3, &vNorm, fScale);
@@ -1554,7 +1556,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 				(bAdditive ? LoadGlare () : LoadCorona ())) {
 			fVector			vNormf, vOffsf, vTrailVerts [4];
 			int				i, bStencil, bDrawArrays, bDepthSort = (gameOpts->render.bDepthSort > 0);
-			float				l, r = f2fl (objP->size);
+			float				l, r, dx, dy;
 			grsBitmap		*bmP;
 
 			static fVector vEye = {{0, 0, 0}};
@@ -1562,20 +1564,27 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 			static tRgbaColorf	trailColor = {0,0,0,0.33f};
 			static tTexCoord2f	tTexCoordTrail [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 		
-		if (r >= 3.0f)
-			r /= 1.5f;
-		else if (r < 1)
-			r *= 2;
-		else if (r < 2)
-			r *= 1.5f;
 		if (objP->renderType == RT_POLYOBJ) {
 			tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 			l = f2fl (phb->vMax.p.z - phb->vMin.p.z);
-			if (objP->id == FUSION_ID)
-				l *= 1.5;
+			dx = f2fl (phb->vMax.p.x - phb->vMin.p.x);
+			dy = f2fl (phb->vMax.p.y - phb->vMin.p.y);
+			r = (float) (sqrt (dx * dx + dy * dy) / sqrt (2));
+			if (objP->id == FUSION_ID) {
+				l *= 1.5f;
+				r /= 1.5f;
+				}
 			}
-		else
+		else {
+			r = f2fl (objP->size);
 			l = 4 * r;
+			if (r >= 3.0f)
+				r /= 1.5f;
+			else if (r < 1)
+				r *= 2;
+			else if (r < 2)
+				r *= 1.5f;
+			}
 
 		VmVecFixToFloat (&vOffsf, &objP->position.mOrient.fVec);
 		VmVecFixToFloat (vTrailVerts, &objP->position.vPos);

@@ -653,7 +653,7 @@ int DrawPolygonModel (
 	fix				light, 
 	fix				*glowValues, 
 	tBitmapIndex	altTextures [], 
-	tRgbaColorf		*color)
+	tRgbaColorf		*colorP)
 {
 	tPolyModel	*po;
 	int			nTextures, bHires = 0;
@@ -678,16 +678,16 @@ gameStates.ogl.bUseTransform = 1;
 G3SetModelPoints (gameData.models.polyModelPoints);
 gameData.render.pVerts = gameData.models.fPolyModelVerts;
 if (!flags)	{	//draw entire tObject
-	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color)) {
+	if (!G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP)) {
 		if (bHires)
 			return 0;
 #if 0//def _DEBUG
 		if (objP && (objP->nType == OBJ_ROBOT))
-			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, color);
+			G3RenderModel (objP, nModel, -1, po, gameData.models.textures, animAngles, NULL, light, glowValues, colorP);
 #endif
 		gameStates.ogl.bUseTransform = !(SHOW_DYN_LIGHT && ((gameOpts->render.nPath && gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects));
 		G3StartInstanceMatrix (pos, orient);
-		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, color, NULL, nModel);
+		G3DrawPolyModel (objP, po->modelData, gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 		G3DoneInstance ();
 		}
 	}
@@ -704,15 +704,15 @@ else {
 			//if submodel, rotate around its center point, not pivot point
 				VmVecAvg (&vOffset, po->subModels.mins + i, po->subModels.maxs + i);
 				VmVecNegate (&vOffset);
-				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color)) {
+				if (!G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP)) {
 					if (bHires)
 						return 0;
 #ifdef _DEBUG
-					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, color);
+					G3RenderModel (objP, nModel, i, po, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
 #endif
 					G3StartInstanceMatrix (&vOffset, NULL);
 					G3DrawPolyModel (objP, po->modelData + po->subModels.ptrs [i], gameData.models.textures, 
-										  animAngles, NULL, light, glowValues, color, NULL, nModel);
+										  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
 					G3DoneInstance ();
 					}
 				}
