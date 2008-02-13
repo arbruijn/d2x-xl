@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OBJ_CAMERA      6   // a camera to slew around with
 #define OBJ_POWERUP     7   // a powerup you can pick up
 #define OBJ_DEBRIS      8   // a piece of robot
-#define OBJ_REACTOR    9   // the control center
+#define OBJ_REACTOR     9   // the control center
 #define OBJ_FLARE       10  // a flare
 #define OBJ_CLUTTER     11  // misc objects
 #define OBJ_GHOST       12  // what the tPlayer turns into when dead

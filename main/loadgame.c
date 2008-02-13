@@ -642,6 +642,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
 	for (i = 0, objP = OBJECTS; i <= gameData.objs.nLastObject; i++, objP++) 
 		if (objP->nType == OBJ_EXPLOSION) {
+			objP->renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->id;
 			DigiSetObjectSound (i, nSound, NULL);
 			}

@@ -166,7 +166,8 @@ if (!gameOpts->render.powerups.b3D)
 	return 0;
 if (objP->controlType == CT_WEAPON)
 	return 1;
-
+if ((objP->nType != OBJ_POWERUP) && (objP->nType != OBJ_WEAPON))
+	return 0;
 nModel = PowerupToModel (objP->id);
 if (nModel) 
 	nId = objP->id;
@@ -794,6 +795,8 @@ mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
+if (objP->nType == OBJ_EXPLOSION)
+	objP = objP;
 #if 0//def _DEBUG
 if (objP->nType == OBJ_EXPLOSION) {
 	static time_t	t0 = 0;
@@ -983,7 +986,9 @@ switch (objP->renderType) {
 		if (gameStates.render.nShadowPass != 2) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
 				return 0;
-			if (objP->nType == OBJ_WEAPON) {
+			if (objP->nType != OBJ_WEAPON) 
+				DrawWeaponVClip (objP); 
+			else {
 				if (WeaponIsMine (objP->id)) {
 					if (!DoObjectSmoke (objP))
 						DrawWeaponVClip (objP); 
@@ -996,8 +1001,6 @@ switch (objP->renderType) {
 						}
 					}
 				}
-			else
-				DrawWeaponVClip (objP); 
 #if 0//def _DEBUG
 			if (EGI_FLAG (bPlayerShield, 0, 1, 0))
 				DrawShieldSphere (objP, 0.66f, 0.2f, 0.0f, 0.4f);

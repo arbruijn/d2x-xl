@@ -233,7 +233,7 @@ void DrawPowerup (tObject *objP)
 #endif
 if (objP->nType == OBJ_MONSTERBALL)
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
-else if (objP->id < MAX_POWERUP_TYPES_D2) {
+else if ((objP->id < MAX_POWERUP_TYPES_D2) || ((objP->nType == OBJ_EXPLOSION) && (objP->id < VCLIP_MAXNUM))) {
 		tBitmapIndex	*frameP = gameData.eff.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
 		int				iFrame = objP->rType.vClipInfo.nCurFrame;
 #ifdef EDITOR
