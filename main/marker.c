@@ -18,7 +18,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#ifdef __unix__
+#	include <strings.h>
+#else
+#	include <string.h>
+#endif
 
 #include "inferno.h"
 #include "error.h"

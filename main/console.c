@@ -38,6 +38,10 @@
 #include "inferno.h"
 #include "cfile.h"
 
+#ifdef _WIN32
+static int con_initialized = 0;
+#endif
+
 int text_console_enabled = 0;
 
 cvar_t *cvar_vars = NULL;
