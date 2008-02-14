@@ -1151,11 +1151,13 @@ if (gameStates.render.cameras.bActive) {
 else {
 	if (!pnStartSeg)
 		nStartSeg = gameStates.render.nStartSeg;
-	else if (!gameStates.render.nWindow && (gameData.objs.viewer == gameData.objs.console)) {
-		SetPathPoint (&externalView, gameData.objs.viewer);
+	else {
 		nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
-		if (nStartSeg == -1)
-			nStartSeg = gameData.objs.viewer->nSegment;
+		if (!gameStates.render.nWindow && (gameData.objs.viewer == gameData.objs.console)) {
+			SetPathPoint (&externalView, gameData.objs.viewer);
+			if (nStartSeg == -1)
+				nStartSeg = gameData.objs.viewer->nSegment;
+			}
 		}
 	if ((gameData.objs.viewer == gameData.objs.console) && viewInfo.bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
@@ -1701,9 +1703,9 @@ for (l = 0; l < gameStates.render.detail.nRenderDepth; l++) {
 							if (pNewWin->bot < rwP->bot)
 								pNewWin->bot = rwP->bot;
 							if (bMigrateSegs)
-								gameData.render.mine.nSegRenderList [rp] = -1;
+								gameData.render.mine.nSegRenderList [rp] = -0x7fff;
 							else {
-								gameData.render.mine.nSegRenderList [lCnt] = -1;
+								gameData.render.mine.nSegRenderList [lCnt] = -0x7fff;
 								*rwP = *pNewWin;		//get updated window
 								gameData.render.mine.bProcessed [rp] = gameData.render.mine.nProcessed - 1;		//force reprocess
 								goto dontAdd;

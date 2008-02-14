@@ -79,9 +79,9 @@ void TexMergeFlush()
 
 for (i = 0; i < nCacheEntries; i++) {
 	texCache [i].last_frame_used = -1;
-	texCache [i].bmTop = NULL;
-	texCache [i].bmBot = NULL;
 	texCache [i].nOrient = -1;
+	texCache [i].bmTop =
+	texCache [i].bmBot = NULL;
 	}
 }
 
