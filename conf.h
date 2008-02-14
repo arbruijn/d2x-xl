@@ -27,7 +27,7 @@
 
 /* Define to 1 if you have the declaration of `nanosleep', and to 0 if you
    don't. */
-#define HAVE_DECL_NANOSLEEP 0
+#define HAVE_DECL_NANOSLEEP 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -51,7 +51,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if the system has the type `struct timespec'. */
-/* #undef HAVE_STRUCT_TIMESPEC */
+#define HAVE_STRUCT_TIMESPEC 1
 
 /* Define to 1 if the system has the type `struct timeval'. */
 #define HAVE_STRUCT_TIMEVAL 1

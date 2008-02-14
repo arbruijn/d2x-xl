@@ -120,7 +120,6 @@ void CreateSegmentSparks (short nSegment)
 	tEnergySpark	*sparkP = segP->sparks;
 	vmsVector		vOffs;
 	fVector			vMaxf, vMax2f;
-	float				r2 = MaxSegRadf (nSegment) * (float) pow (2, 0.25);
 	int				i;
 
 VmVecFixToFloat (&vMaxf, &gameData.segs.extent [nSegment].vMax);
