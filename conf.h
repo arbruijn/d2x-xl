@@ -8,7 +8,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 26
+#define D2XMICRO 27
 
 /* d2x minor version */
 #define D2XMINOR 12
@@ -36,7 +36,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the <netipx/ipx.h> header file. */
-/* #undef HAVE_NETIPX_IPX_H */
+#define HAVE_NETIPX_IPX_H 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -66,7 +66,7 @@
 #define HAVE_UNISTD_H 1
 
 /* Define to enable use of the KaliNix driver */
-/* #undef KALINIX */
+#define KALINIX 
 
 /* Define if you want to build for mac datafiles */
 /* #undef MACDATA */
@@ -99,13 +99,13 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.12.26"
+#define PACKAGE_STRING "d2x-xl 1.12.27"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.12.26"
+#define PACKAGE_VERSION "1.12.27"
 
 /* Define for a "release" build */
 #define RELEASE 
@@ -123,10 +123,10 @@
 /* #undef USE_LINUX_JOY */
 
 /* Define to enable MIDI playback using SDL_mixer */
-/* #undef USE_SDL_MIXER */
+#define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.12.26"
+#define VERSION "1.12.27"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -141,7 +141,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.12.26"
+#define PACKAGE_STRING "d2x-xl 1.12.27"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1
