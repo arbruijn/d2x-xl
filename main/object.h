@@ -550,21 +550,12 @@ extern ubyte bIsMissile [];
 
 #define	IS_BOSS(_objP)		(((_objP)->nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->id).bossFlag)
 #define	IS_BOSS_I(_i)		IS_BOSS (gameData.objs.objects + (_i))
-#define	IS_MISSILE(_objP)	(((_objP)->nType == OBJ_WEAPON) && bIsMissile [(_objP)->id])
+#define	IS_MISSILE(_objP)	(((_objP)->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [(_objP)->id])
 #define	IS_MISSILE_I(_i)	IS_MISSILE (gameData.objs.objects + (_i))
 
 #ifdef _DEBUG
 extern tObject *dbgObjP;
 #endif
-
-static inline void KillObject (tObject *objP)
-{
-objP->flags |= OF_SHOULD_BE_DEAD;
-#ifdef _DEBUG
-if (objP == dbgObjP)
-	objP = objP;
-#endif
-}
 
 #define SET_COLLISION(type1, type2, result) \
 	gameData.objs.collisionResult [type1][type2] = result; \
@@ -575,6 +566,17 @@ if (objP == dbgObjP)
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
 #define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->flags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
+
+//	-----------------------------------------------------------------------------------------------------------
+
+static inline void KillObject (tObject *objP)
+{
+objP->flags |= OF_SHOULD_BE_DEAD;
+#ifdef _DEBUG
+if (objP == dbgObjP)
+	objP = objP;
+#endif
+}
 
 //	-----------------------------------------------------------------------------------------------------------
 

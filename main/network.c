@@ -684,7 +684,7 @@ nPlayer = -1;
 memset (&networkData.playerRejoining, 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if ((*(uint *)their->player.network.ipx.server) != 0)
+	if ((*(uint *) their->player.network.ipx.server) != 0)
 		IpxGetLocalTarget (
 			their->player.network.ipx.server, 
 			their->player.network.ipx.node, 

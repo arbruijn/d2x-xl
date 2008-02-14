@@ -828,11 +828,14 @@ int CalcThrusterPos (tObject *objP, tThrusterInfo *tiP, int bAfterburnerBlob)
 {
 	tThrusterInfo		ti;
 	tThrusterData		*pt = NULL;
-	int					i, nThrusters, bSpectate = SPECTATOR (objP);
+	int					i, nThrusters, 
+							bMissile = IS_MISSILE (objP),
+							bSpectate = SPECTATOR (objP);
 
 ti = *tiP;
 ti.pp = NULL;
-ti.mtP = NULL;
+ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
+nThrusters = ti.mtP->nCount;
 if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER) && !ASEModel (objP->rType.polyObjInfo.nModel)) {
 	if (!bSpectate) {
 		pt = gameData.render.thrusters + objP->id;
@@ -841,8 +844,9 @@ if (gameOpts->render.bHiresModels && (objP->nType == OBJ_PLAYER) && !ASEModel (o
 	ti.fSize = (ti.fLength + 1) / 2;
 	nThrusters = 2;
 	CalcShipThrusterPos (objP, ti.vPos);
+	ti.mtP = NULL;
 	}
-else if (bAfterburnerBlob || (gameOpts->render.bHiresModels && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])) {
+else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 		tHitbox	*phb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
 		fix		nObjRad = gameOpts->render.nPath ? (phb->vMax.p.z - phb->vMin.p.z) / 2 : 2 * (phb->vMax.p.z - phb->vMin.p.z) / 3;
 
@@ -860,17 +864,17 @@ else if (bAfterburnerBlob || (gameOpts->render.bHiresModels && (objP->nType == O
 	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
 		ti.fLength /= 2;
 	VmVecScaleAdd (ti.vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -nObjRad);
+	ti.mtP = NULL;
 	}
 else if ((objP->nType == OBJ_PLAYER) || 
 			((objP->nType == OBJ_ROBOT) && !objP->cType.aiInfo.CLOAKED) || 
-			((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id])) {
+			bMissile) {
 	vmsMatrix	m, *viewP;
 	if (!bSpectate && (objP->nType == OBJ_PLAYER)) {
 		pt = gameData.render.thrusters + objP->id;
 		ti.pp = GetPathPoint (&pt->path);
 		}
-	ti.mtP = gameData.models.thrusters + objP->rType.polyObjInfo.nModel;
-	if (!(nThrusters = ti.mtP->nCount)) {
+	if (!nThrusters) {
 		if (objP->nType != OBJ_PLAYER)
 			return 0;
 		if (!bSpectate) {
@@ -893,7 +897,7 @@ else if ((objP->nType == OBJ_PLAYER) ||
 			VmVecRotate (ti.vDir + i, ti.mtP->vDir + i, viewP);
 			}
 		ti.fSize = ti.mtP->fSize;
-		if ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id] && (nThrusters > 1))
+		if (bMissile)
 			nThrusters = 1;
 		}
 	}
