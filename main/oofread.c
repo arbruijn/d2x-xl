@@ -44,10 +44,6 @@
 #	endif
 #endif
 
-static tOOF_vector vPos;
-static tOOF_vector vrLightPos;
-static tOOF_matrix mView;
-
 //------------------------------------------------------------------------------
 
 static int nIndent = 0;

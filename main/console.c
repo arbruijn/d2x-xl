@@ -56,7 +56,7 @@ static int  con_line; /* Current display line */
 
 extern FILE* fErr;
 
-static int con_initialized = 0;
+//static int con_initialized = 0;
 #ifdef CONSOLE
 
 ConsoleInformation *Console;

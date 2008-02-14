@@ -1741,7 +1741,6 @@ if (gameStates.app.nDifficultyLevel != i) {
 WritePlayerFile ();
 if (optLevel > 0)
 	nLevel = atoi (m [optLevel].text);
-nLevel;
 GrPaletteFadeOut (NULL, 32, 0);
 if (!bMsnLoaded)
 	LoadMission (nMission);
@@ -4411,7 +4410,7 @@ static char *OmegaRampStr (void)
 
 if (extraGameInfo [0].nOmegaRamp == 0)
 	return "1 sec";
-sprintf (szRamp, "%d secs", nOmegaDuration [extraGameInfo [0].nOmegaRamp]);
+sprintf (szRamp, "%d secs", nOmegaDuration [(int) extraGameInfo [0].nOmegaRamp]);
 return szRamp;
 }
 
@@ -4516,7 +4515,7 @@ do {
 		*szOmegaRamp = *(TXT_OMEGA_RAMP - 1);
 		ADD_SLIDER (opt, szOmegaRamp + 1, extraGameInfo [0].nOmegaRamp, 0, 6, KEY_O, HTX_OMEGA_RAMP);
 		physOpts.nOmegaRamp = opt++;
-		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [extraGameInfo [0].nMslTurnSpeed]);
+		sprintf (szMslTurnSpeed + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [(int) extraGameInfo [0].nMslTurnSpeed]);
 		*szMslTurnSpeed = *(TXT_MSL_TURNSPEED - 1);
 		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		physOpts.nMslTurnSpeed = opt++;

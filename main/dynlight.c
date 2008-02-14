@@ -592,7 +592,7 @@ for (nSegment = 0, segP = gameData.segs.segments; nSegment < gameData.segs.nSegm
 		if (t >= MAX_WALL_TEXTURES) 
 			continue;
 		pc = gameData.render.color.textures + t;
-		if (nLight = IsLight (t) /*gameData.pig.tex.brightness [t]*/)
+		if ((nLight = IsLight (t)))
 			AddDynLight (&pc->color, nLight, (short) nSegment, (short) nSide, -1, NULL);
 		t = sideP->nOvlTex;
 		if ((t > 0) && (t < MAX_WALL_TEXTURES) && (nLight = IsLight (t)) /*gameData.pig.tex.brightness [t]*/) {

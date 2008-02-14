@@ -166,7 +166,7 @@ static char *ASE_ReadLine (CFILE *cfp)
 while (!CFEoF (cfp)) {
 	CFGetS (szLine, sizeof (szLine), cfp);
 	strupr (szLine);
-	if (pszToken = strtok (szLine, " \t"))
+	if ((pszToken = strtok (szLine, " \t")))
 		return pszToken;
 	}
 return NULL;

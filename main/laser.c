@@ -591,7 +591,7 @@ vmsVector *GetGunPoints (tObject *objP, int nGun)
 {
 	tGunInfo		*giP = gameData.models.gunInfo + objP->rType.polyObjInfo.nModel;
 	vmsVector	*vDefaultGunPoints, *vGunPoints;
-	int			nDefaultGuns, nGuns, bCustom = 0;
+	int			nDefaultGuns, nGuns;
 
 if (objP->nType == OBJ_PLAYER) {
 	vDefaultGunPoints = gameData.pig.ship.player->gunPoints;

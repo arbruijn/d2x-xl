@@ -18,7 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <strings.h>
 
 #include "inferno.h"
 #include "error.h"
@@ -384,7 +384,7 @@ switch (key) {
 		strcpy (gameData.marker.szMessage [nMarker], gameData.marker.szInput);
 		if (IsMultiGame)
 			strcpy (gameData.marker.nOwner [nMarker], LOCALPLAYER.callsign);
-		if (bSpawn = !strcmp (gameData.marker.szMessage [nMarker], "SPAWN"))
+		if ((bSpawn = !strcmp (gameData.marker.szMessage [nMarker], "SPAWN")))
 			*gameData.marker.szMessage [nMarker] = '\0';
 		DropMarker (gameData.marker.nCurrent, bSpawn);
 		gameData.marker.nLast = gameData.marker.nCurrent;

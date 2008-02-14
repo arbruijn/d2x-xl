@@ -1391,7 +1391,7 @@ gameData.render.mine.renderObjs.nUsed = 0;
 
 for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	nSegment = gameData.render.mine.nSegRenderList [nListPos];
-	if (nSegment == -0x7fffffff)
+	if (nSegment == -0x7fff)
 		continue;
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
@@ -1955,7 +1955,7 @@ if (nClearWindow == 2) {
 			nClearWindowColor = BLACK_RGBA;
 		GrSetColor (nClearWindowColor);
 		for (i = nFirstTerminalSeg, rwP = renderWindows; i < gameData.render.mine.nRenderSegs; i++, rwP++) {
-			if (gameData.render.mine.nSegRenderList [i] != -0x7fffffff) {
+			if (gameData.render.mine.nSegRenderList [i] != -0x7fff) {
 #ifdef _DEBUG
 				if ((rwP->left == -1) || (rwP->top == -1) || (rwP->right == -1) || (rwP->bot == -1))
 					Int3();

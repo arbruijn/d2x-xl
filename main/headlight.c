@@ -159,9 +159,11 @@ gameData.render.lights.dynamic.headLights.nLights++;
 
 int AddOglHeadLight (tObject *objP)
 {
+#if 0
 	static float spotExps [] = {12.0f, 5.0f, 0.0f};
 	static float spotAngles [] = {0.9f, 0.75f, 0.5f};
-
+#endif
+	
 if (gameOpts->render.bDynLighting && (gameData.render.lights.dynamic.nHeadLights [objP->id] < 0)) {
 		tRgbaColorf	c = {1.0f, 1.0f, 1.0f, 1.0f};
 		tDynLight	*pl;
@@ -477,11 +479,11 @@ char *BuildLightingShader (char *pszTemplate, int nLights)
 if (!(pszFS = (char *) D2_ALLOC (l)))
 	return NULL;
 memcpy (pszFS, pszTemplate, l);
-while (p = strstr (pszFS, "[X]")) {
+while ((p = strstr (pszFS, "[X]"))) {
 	sprintf (p + 1, "%d", nLights);
 	p [2] = ']';
 	}
-if (p = strstr (pszFS, "i < X")) {
+if ((p = strstr (pszFS, "i < X"))) {
 	sprintf (p + 4, "%d", nLights);
 	p [5] = ';';
 	}

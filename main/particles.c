@@ -93,8 +93,9 @@ static char *szParticleImg [2][PARTICLE_TYPES] = {
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
 static int iParticleFrames [2][PARTICLE_TYPES] = {{0,0,0,0},{0,0,0,0}};
+#if 0
 static int iPartFrameIncr  [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
-
+#endif
 static float alphaScale [5] = {6.0f / 6.0f, 5.0f / 6.0f, 4.0f / 6.0f, 3.0f / 6.0f, 2.0f / 6.0f};
 
 #define VERT_BUF_SIZE	(4096 * 4)
@@ -384,7 +385,7 @@ pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
 pParticle->bBright = (rand () % 50) == 0;
-if (pParticle->bColored = (pColor != NULL)) {
+if ((pParticle->bColored = (pColor != NULL))) {
 	pParticle->color.red = pColor->red * RANDOM_FADE;
 	pParticle->color.green = pColor->green * RANDOM_FADE;
 	pParticle->color.blue = pColor->blue * RANDOM_FADE;
@@ -1108,7 +1109,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
-					  short nSegment, short nObject, int nMaxParts, float nPartScale, 
+					  short nSegment, int nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
 					  tRgbaColorf *pColor, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
 {

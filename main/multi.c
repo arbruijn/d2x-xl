@@ -1149,9 +1149,10 @@ if (!(gameData.app.nGameMode & GM_MULTI_COOP))
 
 void MultiDoFire (char *buf)
 {
-char nPlayer = buf [1];
-ubyte weapon = (ubyte) buf [2];
-sbyte flags = buf [4];
+	int nPlayer = (int) buf [1];
+	ubyte weapon = (ubyte) buf [2];
+	sbyte flags = buf [4];
+
 gameData.multigame.laser.nTrack = GET_INTEL_SHORT (buf + 6);
 Assert (nPlayer < gameData.multiplayer.nPlayers);
 if (gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].nType == OBJ_GHOST)
@@ -1585,14 +1586,14 @@ void MultiDoCreatePowerup (char *buf)
 	short nSegment;
 	short nObject;
 	int nMyObj;
-	char nPlayer;
+	int nPlayer;
 	int count = 1;
 	vmsVector vNewPos;
 	char powerupType;
 
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
-nPlayer = buf [count++];
+nPlayer = (int) buf [count++];
 powerupType = buf [count++];
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
@@ -1690,7 +1691,7 @@ CheckTriggerSub (nObject, gameData.trigs.triggers, gameData.trigs.nTriggers, tTr
 
 void MultiDoShields (char *buf)
 {
-	char	nPlayer = (int) (buf [1]);
+	int	nPlayer = (int) buf [1];
 	int	shields = GET_INTEL_INT (buf+2);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
@@ -2968,25 +2969,25 @@ switch (seg2P->special) {
 	
 	case SEGMENT_IS_ROBOTMAKER:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 316, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_IS_REPAIRCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 315, bFullBright, oldOwner < 0);
 		break;
 
 	case SEGMENT_IS_FUELCEN:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
 								   (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), 314, bFullBright, oldOwner < 0);
 		break;
 
 	default:
 		if ((gameData.app.nGameMode & GM_ENTROPY) && (xSegP->owner >= 0))
-			OverrideTextures (segP, texOverrides [xSegP->owner], 
+			OverrideTextures (segP, texOverrides [(int) xSegP->owner], 
 									 (short) ((oldOwner < 0) ? -1 : texOverrides [oldOwner]), -1, bFullBright, oldOwner < 0);
 	}
 }
@@ -3338,7 +3339,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 void MultiDoGuided (char *buf)
 {
-	char nPlayer = buf [1];
+	int nPlayer = (int) buf [1];
 	int count = 3;
 	static int fun = 200;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -3507,8 +3508,8 @@ void MultiCheckForEntropyWinner ()
 {
 #if 1//def RELEASE
 	xsegment *xSegP;
-	int		h, i;
-	char		t, bGotRoom [2] = {0, 0};
+	int		h, i, t;
+	char	bGotRoom [2] = {0, 0};
 
 	static int		countDown;
 
@@ -3524,7 +3525,7 @@ if (gameData.reactor.bDestroyed) {
 countDown = -1;
 gameStates.entropy.bExitSequence = 0;
 for (i = 0, xSegP = gameData.segs.xSegments; i <= gameData.segs.nLastSegment; i++, xSegP++)
-	if ((t = xSegP->owner) > 0) {
+	if ((t = (int) xSegP->owner) > 0) {
 		bGotRoom [--t] = 1;
 		if (bGotRoom [!t])
 			return;
@@ -3659,7 +3660,7 @@ for (i = 0; i < 6; i++, buf += 2) {
 
 void MultiDoFlags (char *buf)
 {
-	char nPlayer = buf [1];
+	int nPlayer = (int) buf [1];
 	uint flags;
 
 flags = GET_INTEL_INT (buf + 2);
@@ -3682,7 +3683,7 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 void MultiDoWeapons (char *buf)
 {
 	int	i, bufP = 1;
-	char	nPlayer = buf [bufP++];
+	int	nPlayer = (int) buf [bufP++];
 
 gameData.multiplayer.players [nPlayer].shields  = 
 gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject].shields = GET_INTEL_INT (buf + bufP);
@@ -3823,9 +3824,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 void MultiDoDropBlob (char *buf)
 {
-	char nPlayer = buf [1];
-
-DropAfterburnerBlobs (&gameData.objs.objects [gameData.multiplayer.players [nPlayer].nObject], 2, i2f (1), -1, NULL, 0);
+DropAfterburnerBlobs (&gameData.objs.objects [gameData.multiplayer.players [(int) buf [1]].nObject], 2, i2f (1), -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -3847,8 +3846,8 @@ void MultiDoPowerupUpdate (char *buf)
 {
 	int i;
 
-for (i = 0;i<MAX_POWERUP_TYPES;i++)
-	if (buf [i+1]>gameData.multiplayer.maxPowerupsAllowed [i])
+for (i = 0; i < MAX_POWERUP_TYPES; i++)
+	if (buf [i+1] > gameData.multiplayer.maxPowerupsAllowed [i])
 		gameData.multiplayer.maxPowerupsAllowed [i] = buf [i+1];
 }
 
@@ -3927,14 +3926,14 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 void MultiDoSoundFunction (char *buf)
 {
 	// for afterburner
-	char nPlayer, whichfunc;
+	int nPlayer, whichfunc;
 	short sound;
 
 if (LOCALPLAYER.connected != 1)
 	return;
 
-nPlayer = buf [1];
-whichfunc = buf [2];
+nPlayer = (int) buf [1];
+whichfunc = (int) buf [2];
 sound = buf [3];
 if (whichfunc == 0)
 	DigiKillSoundLinkedToObject (gameData.multiplayer.players [nPlayer].nObject);
@@ -3975,7 +3974,7 @@ void MultiDoCaptureBonus (char *buf)
 	// Figure out the results of a network kills and add it to the
 	// appropriate tPlayer's tally.
 
-	char 	nPlayer = buf [1];
+	int 	nPlayer = (int) buf [1];
 	short	nTeam, nKillGoal, penalty = 0, bonus;
 	//char	szTeam [20];
 
@@ -4057,7 +4056,7 @@ int GetOrbBonus (char num)
 
 void MultiDoOrbBonus (char *buf)
 {
-	char nPlayer = buf [1];
+	int nPlayer = (int) buf [1];
 	int nKillGoal;
 	int bonus = GetOrbBonus (buf [2]);
 
@@ -4123,9 +4122,7 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 
 void MultiDoCheating (char *buf)
 {
-	char nPlayer = buf [1];
-
-HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multiplayer.players [nPlayer].callsign);
+HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multiplayer.players [(int) buf [1]].callsign);
 DigiPlaySampleLooped (SOUND_CONTROL_CENTER_WARNING_SIREN, F1_0, 3);
 }
 
@@ -4167,7 +4164,7 @@ MultiSendFlags ((char) gameData.multiplayer.nLocalPlayer);
 
 void MultiDoGotFlag (char *buf)
 {
-	char nPlayer = buf [1];
+	int nPlayer = (int) buf [1];
 
 if (nPlayer == gameData.multiplayer.nLocalPlayer)
 	DigiStartSoundQueued (SOUND_HUD_YOU_GOT_FLAG, F1_0*2);
@@ -4184,7 +4181,7 @@ HUDInitMessage (TXT_PICKFLAG2, gameData.multiplayer.players [nPlayer].callsign);
 
 void MultiDoGotOrb (char *buf)
 {
-	char nPlayer = buf [1];
+	int nPlayer = (int) buf [1];
 
 Assert (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY));
 if (gameData.app.nGameMode & GM_TEAM) {
@@ -4633,7 +4630,7 @@ void MultiSendRanking ()
 void MultiDoRanking (char *buf)
 {
 	char rankstr [20];
-	char nPlayer = buf [1];
+	int nPlayer = (int) buf [1];
 	char rank = buf [2];
 
 	if (netPlayers.players [nPlayer].rank<rank)
@@ -4830,7 +4827,7 @@ MultiSendData (gameData.multigame.msg.buf, 5, 0);
 
 void MultiDoTeleport (char *buf)
 {
-	short	nObject = gameData.multiplayer.players [buf [1]].nObject;
+	short	nObject = gameData.multiplayer.players [(int) buf [1]].nObject;
 	short nSegment = GET_INTEL_SHORT (buf + 2);
 //	short	nSide = buf [4];
 

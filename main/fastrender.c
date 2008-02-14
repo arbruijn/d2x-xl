@@ -1295,7 +1295,9 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	grsFace		*faceP;
 	tRgbaColorf	*pc;
 	tFaceColor	c, faceColor [3] = {{{0,0,0,1},1},{{0,0,0,0},1},{{0,0,0,1},1}};
+#if 0
 	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+#endif
 	short			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
@@ -1454,7 +1456,7 @@ if ((nType < 1) || (nType > 2))
 for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 	nSegment = gameData.render.mine.nSegRenderList [--nListPos];
 	if (nSegment < 0) {
-		if (nSegment == -0x7fffffff)
+		if (nSegment == -0x7fff)
 			continue;
 		nSegment = -nSegment - 1;
 		}

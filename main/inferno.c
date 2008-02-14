@@ -1209,7 +1209,7 @@ if ((t = FindArg ("-auto_hogfile"))) {
 	}
 if ((t = FindArg ("-auto_mission"))) {
 	char	c = *Args [++t];
-	char	bDelim = ((c == '\'') || (c == '"'));
+	int		bDelim = ((c == '\'') || (c == '"'));
 
 	strcpy (szAutoMission, &Args [t][bDelim]);
 	if (bDelim)
@@ -3051,7 +3051,9 @@ tpfnTIRQuery	pfnTIRQuery = NULL;
 			if (!((pfn ## _f) = (_t) GetProcAddress (hTIRDll, #_f))) \
 				return TIRUnload ();
 
+#ifdef _WIN32
 static HINSTANCE hTIRDll = 0;
+#endif
 
 // ------------------------------------------------------------------------------------------
 

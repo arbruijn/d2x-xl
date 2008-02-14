@@ -4676,7 +4676,7 @@ else {
 	LogErr ("   bCheckUDPPort: %d\n", extraGameInfo [1].bCheckUDPPort);
 	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
-	LogErr ("   nCoopPenalty: %d\n", nCoopPenalties [extraGameInfo [1].nCoopPenalty]);
+	LogErr ("   nCoopPenalty: %d\n", (int) nCoopPenalties [extraGameInfo [1].nCoopPenalty]);
 	LogErr ("   bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	LogErr ("   bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	LogErr ("   bEnhancedShakers: %d\n", extraGameInfo [1].bEnhancedShakers);

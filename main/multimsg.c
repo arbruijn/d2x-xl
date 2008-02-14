@@ -188,14 +188,14 @@ MultiMessageFeedback ();
 
 void MultiDoStartTyping (char *buf)
 {
-gameStates.multi.bPlayerIsTyping [buf [1]] = 1;
+gameStates.multi.bPlayerIsTyping [(int) buf [1]] = 1;
 }
 
 //-----------------------------------------------------------------------------
 
 void MultiDoQuitTyping (char *buf)
 {
-gameStates.multi.bPlayerIsTyping [buf [1]] = 0;
+gameStates.multi.bPlayerIsTyping [(int) buf [1]] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -646,7 +646,7 @@ msgBuf [0] = (char) 1;
 msgBuf [1] = (char) (127 + 128);
 msgBuf [2] = (char) (95 + 128);
 msgBuf [3] = (char) (0 + 128);
-strcpy (msgBuf + 4, gameData.multiplayer.players [buf [1]].callsign);
+strcpy (msgBuf + 4, gameData.multiplayer.players [(int) buf [1]].callsign);
 t = (int) strlen (msgBuf);
 msgBuf [t] = ':';
 msgBuf [t+1] = ' ';

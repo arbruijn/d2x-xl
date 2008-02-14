@@ -44,11 +44,11 @@ memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners
 memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++)
 	if ((segP->owner >= 0) && (segP->group >= 0) && 
-		 /* (segP->group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [segP->group] < 0))
-		gameData.entropy.nRoomOwners [segP->group] = segP->owner;
+		 /* (segP->group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int) segP->group] < 0))
+		gameData.entropy.nRoomOwners [(int) segP->group] = segP->owner;
 for (i = 0; i < N_MAX_ROOMS; i++)
 	if (gameData.entropy.nRoomOwners [i] >= 0) {
-		gameData.entropy.nTeamRooms [gameData.entropy.nRoomOwners [i]]++;
+		gameData.entropy.nTeamRooms [(int) gameData.entropy.nRoomOwners [i]]++;
 		gameData.entropy.nTotalRooms++;
 		}
 return gameData.entropy.nTotalRooms;

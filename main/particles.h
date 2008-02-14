@@ -67,7 +67,7 @@ typedef struct tCloud {
 	float			fBrightness;
 	int			nMoved;			//time last moved
 	short			nSegment;
-	short			nObject;
+	int			nObject;
 	short			nObjType;
 	short			nObjId;
 	vmsVector	dir;

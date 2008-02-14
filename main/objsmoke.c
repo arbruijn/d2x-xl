@@ -606,7 +606,7 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	if (objP->lifeleft < shrapnelP->xLife)
 		objP->lifeleft = shrapnelP->xLife;
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
-											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1, -1);
+											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fff, &color, 1, -1);
 	}
 objP->lifeleft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;

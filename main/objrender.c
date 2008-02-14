@@ -56,8 +56,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "3dfx_des.h"
 #endif
 
-static int nGlobalOrientation = 0;
-
 //------------------------------------------------------------------------------
 
 extern vmsAngVec avZero;

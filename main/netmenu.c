@@ -779,7 +779,7 @@ do {
 	opt++;
 	if (!extraGameInfo [1].bCompetition) {
 		if (mpParams.nGameMode == NETGAME_COOPERATIVE) {
-			sprintf (szPenalty + 1, TXT_COOP_PENALTY, nCoopPenalties [extraGameInfo [1].nCoopPenalty], '%');
+			sprintf (szPenalty + 1, TXT_COOP_PENALTY, nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty], '%');
 			strupr (szPenalty + 1);
 			*szPenalty = *(TXT_COOP_PENALTY - 1);
 			ADD_SLIDER (opt, szPenalty + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
