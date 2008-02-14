@@ -78,7 +78,7 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 				Error ("Couldn't open descent.sng");
 			}
 		while (CFGetS (inputline, 80, &cf)) {
-			if (p = strchr (inputline,'\n'))
+			if ((p = strchr (inputline,'\n')))
 				*p = '\0';
 			if (*inputline) {
 				Assert(i < MAX_NUM_SONGS);

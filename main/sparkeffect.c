@@ -120,8 +120,7 @@ void CreateSegmentSparks (short nSegment)
 	tEnergySpark	*sparkP = segP->sparks;
 	vmsVector		vOffs;
 	fVector			vMaxf, vMax2f;
-	float				r2 = MaxSegRadf (nSegment) * (float) pow (2, 0.25),
-						r = r2 / 2;
+	float				r2 = MaxSegRadf (nSegment) * (float) pow (2, 0.25);
 	int				i;
 
 VmVecFixToFloat (&vMaxf, &gameData.segs.extent [nSegment].vMax);
@@ -197,7 +196,6 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
 	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
 	tEnergySpark	*sparkP = segP->sparks;
-	time_t			t = gameStates.app.nSDLTicks;
 	int				i;
 	grsBitmap		*bmP = BM_ADDON (BM_ADDON_REPAIRSPARK + bFuel), *bmfP;
 

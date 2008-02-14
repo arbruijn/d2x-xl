@@ -93,7 +93,7 @@ int CalcGunPoint (vmsVector *vGunPoint, tObject *objP, int nGun)
 	tRobotInfo	*botInfoP;
 	vmsVector	*vGunPoints, vGunPos, vRot;
 	vmsMatrix	m;
-	int			nSubModel, bCustom = 0;				//submodel number
+	int			nSubModel;				//submodel number
 
 Assert(objP->renderType == RT_POLYOBJ || objP->renderType == RT_MORPH);
 //Assert(objP->id < gameData.bots.nTypes [gameStates.app.bD1Data]);

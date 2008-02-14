@@ -387,7 +387,6 @@ HUDBitBlt (SB_GAUGE_KEYS_X, SB_GAUGE_RED_KEY_Y, bmP , F1_0, 0);
 //	Draws invulnerable ship, or maybe the flashing ship, depending on invulnerability time left.
 void SBDrawInvulnerableShip (void)
 {
-	static fix time = 0;
 	fix tInvul = LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame;
 
 GrSetCurrentCanvas (GetCurrentGameScreen ());

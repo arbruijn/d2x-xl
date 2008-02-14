@@ -2502,7 +2502,7 @@ for (i = 0; i < j; i++) {
 			k = -1;
 			}
 		}
-	*(pDest - 1) = (k < 0) ? 0 : toupper (pDest [k]);
+	*(pDest - 1) = (k < 0) ? 0 : toupper (pDest [(int) k]);
 	pszTexts [i] = pDest;
 	pszTexts [i + 1] = pDest + l;
 	}

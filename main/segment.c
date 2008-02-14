@@ -87,7 +87,7 @@ D2_FREE (gameData.segs.skybox.segments);
 int BuildSkyBoxSegList (void)
 {
 FreeSkyBoxSegList ();
-if (gameData.segs.skybox.nSegments = CountSkyBoxSegments ()) {
+if ((gameData.segs.skybox.nSegments = CountSkyBoxSegments ())) {
 	tSegment2	*seg2P;
 	short			*segP;
 	int			h, i;

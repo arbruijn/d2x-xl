@@ -781,11 +781,11 @@ if (!++gameStates.render.nFrameCount) {		//wrap!
 
 // -----------------------------------------------------------------------------------
 
-void SortSidesByDist (double *sideDists, char *sideNums, char left, char right)
+void SortSidesByDist (double *sideDists, char *sideNums, int left, int right)
 {
-	char		l = left;
-	char		r = right;
-	char		h, m = (l + r) / 2;
+	int		l = left;
+	int		r = right;
+	int		h, m = (l + r) / 2;
 	double	hd, md = sideDists [m];
 
 do {
