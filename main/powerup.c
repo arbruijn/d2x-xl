@@ -450,6 +450,8 @@ void UsePowerup (int id)
 
 if ((bApply = (id < 0)))
 	id = -id;
+if (id >= MAX_POWERUP_TYPES_D2)
+	id = POW_AFTERBURNER;
 if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;

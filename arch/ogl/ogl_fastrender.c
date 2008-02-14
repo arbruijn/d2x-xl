@@ -176,6 +176,8 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 	InitLightingShaders (nLights);
 	nShader = (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
 	if (nShader != gameStates.render.history.nShader) {
+		glEnable (GL_TEXTURE_2D);
+		glActiveTexture (GL_TEXTURE0);
 		glUseProgramObject (0);
 		glUseProgramObject (tmProg = lightingShaderProgs [nShader - 4]);
 		if (bTextured) {
@@ -193,7 +195,7 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 		glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
 		glUniform1fv (glGetUniformLocation (tmProg, "brightness"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.brightness);
-#endif
+#	endif
 		glUniform1f (glGetUniformLocation (tmProg, "aspect"), (float) grdCurScreen->scWidth / (float) grdCurScreen->scHeight);
 		glUniform3fv (glGetUniformLocation (tmProg, "lightPos"), nLights, 
 						  (GLfloat *) gameData.render.lights.dynamic.headLights.pos);
@@ -429,15 +431,22 @@ if ((faceP->nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide
 		nDbgSeg = nDbgSeg;
 	else
 		nDbgSeg = nDbgSeg;
-if (bmBot && strstr (bmBot->szName, "door"))
+if (bmBot && strstr (bmBot->szName, "door45#4"))
 	bmBot = bmBot;
+if (bmTop && strstr (bmTop->szName, "door35#4"))
+	bmTop = bmTop;
 #endif
 
 if (!faceP->bTextured)
 	bmBot = NULL;
 else if (bmBot)
 	bmBot = BmOverride (bmBot, -1);
-bTransparent = faceP->bTransparent || (bmBot && (((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) == (BM_FLAG_TRANSPARENT))));
+#if 0
+if (bmBot && strstr (bmBot->szName, "door"))
+	bTransparent = 0;
+else
+#endif
+	bTransparent = faceP->bTransparent || (bmBot && (((bmBot->bmProps.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SEE_THRU)) == (BM_FLAG_TRANSPARENT))));
 
 if (bDepthOnly) {
 	if (bTransparent || faceP->bOverlay)
@@ -464,6 +473,7 @@ else {
 			}
 		}
 	}
+
 #if G3_BUFFER_FACES
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif

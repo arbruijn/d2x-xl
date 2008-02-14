@@ -29,10 +29,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_INSTANCE_DEPTH	10
 
-struct instance_context {
-	vmsMatrix m [2];
-	vmsVector p;
-} instanceStack[MAX_INSTANCE_DEPTH];
+struct tViewInfo instanceStack [MAX_INSTANCE_DEPTH];
 
 int nInstanceDepth = 0;
 
@@ -84,9 +81,7 @@ int G3PushMatrix (void)
 {
 if (nInstanceDepth >= MAX_INSTANCE_DEPTH)
 	return 0;
-memcpy (instanceStack [nInstanceDepth].m, viewInfo.view, 2 * sizeof (vmsMatrix));
-instanceStack [nInstanceDepth].p = viewInfo.pos;
-nInstanceDepth++;
+instanceStack [nInstanceDepth++] = viewInfo;
 return 1;
 }
 
@@ -96,9 +91,7 @@ int G3PopMatrix (void)
 {
 if (nInstanceDepth <= 0)
 	return 0;
-nInstanceDepth--;
-viewInfo.pos = instanceStack [nInstanceDepth].p;
-memcpy (viewInfo.view, instanceStack [nInstanceDepth].m, 2 * sizeof (vmsMatrix));
+viewInfo = instanceStack [--nInstanceDepth];
 return 1;
 }
 

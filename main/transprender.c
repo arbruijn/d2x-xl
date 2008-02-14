@@ -603,7 +603,7 @@ if (!item->bmP) {
 	}
 #endif
 #ifdef _DEBUG
-if (item->bmP && strstr (item->bmP->szName, "door34#0"))
+if (item->bmP && strstr (item->bmP->szName, "door45#5"))
 	item = item;
 #endif
 #if 1
@@ -647,7 +647,6 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
 		G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
 		}
 	j = item->nVertices;
-	G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
 	glBegin (item->nPrimitive);
 	if (item->nColors > 1) {
 		if (item->bmP) {
@@ -877,6 +876,7 @@ void RenderItems (void)
 if (!(gameOpts->render.bDepthSort && renderItems.pDepthBuffer && (renderItems.nFreeItems < ITEM_BUFFER_SIZE))) {
 	return;
 	}
+RIResetShader ();
 bStencil = StencilOff ();
 G3DisableClientStates (1, 1, 0, GL_TEXTURE2);
 G3DisableClientStates (1, 1, 0, GL_TEXTURE1);

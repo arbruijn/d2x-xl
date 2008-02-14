@@ -1149,11 +1149,14 @@ if (gameStates.render.cameras.bActive) {
 	G3SetViewMatrix (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient, gameStates.render.xZoom, bOglScale);
 	}
 else {
-	nStartSeg = pnStartSeg ? FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0) : gameStates.render.nStartSeg;
-	if (nStartSeg == -1)
-		nStartSeg = gameData.objs.viewer->nSegment;
-	if ((gameData.objs.viewer == gameData.objs.console) && !gameStates.render.nWindow)
+	if (!pnStartSeg)
+		nStartSeg = gameStates.render.nStartSeg;
+	else if (!gameStates.render.nWindow && (gameData.objs.viewer == gameData.objs.console)) {
 		SetPathPoint (&externalView, gameData.objs.viewer);
+		nStartSeg = FindSegByPoint (&gameData.render.mine.viewerEye, gameData.objs.viewer->nSegment, 1, 0);
+		if (nStartSeg == -1)
+			nStartSeg = gameData.objs.viewer->nSegment;
+		}
 	if ((gameData.objs.viewer == gameData.objs.console) && viewInfo.bUsePlayerHeadAngles) {
 		vmsMatrix mHead, mView;
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
@@ -1893,7 +1896,8 @@ int BeginRenderMine (short nStartSeg, fix nEyeOffset, int nWindow)
 	int		i;
 #endif
 
-GetPlayerMslLock ();
+if (!nWindow)
+	GetPlayerMslLock ();
 windowRenderedData [nWindow].numObjects = 0;
 #ifdef LASER_HACK
 nHackLasers = 0;

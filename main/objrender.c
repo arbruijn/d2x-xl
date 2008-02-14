@@ -595,11 +595,15 @@ int DrawPolygonObject (tObject *objP, int bDepthSort)
 	int	bBlendPolys = 0;
 	int	bBrightPolys = 0;
 	int	bCloaked;
-	int	bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
-	int	i, bOk = 0;
+	int	bEnergyWeapon;
+	int	i, id, bOk = 0;
 
 if (objP->nType == 255)
 	return 0;
+if (0 > (id = objP->id))
+	bEnergyWeapon = id = 0;
+else 
+	bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];
 #if SHADOWS
 if (FAST_SHADOWS && 
 	 !gameOpts->render.shadows.bSoft && 
@@ -611,7 +615,7 @@ if (gameStates.render.bBuildModels)
 else {
 	xLight = CalcObjectLight (objP, xEngineGlow);
 	if (objP->nType == OBJ_PLAYER)
-		bCloaked = (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) != 0;
+		bCloaked = (gameData.multiplayer.players [id].flags & PLAYER_FLAGS_CLOAKED) != 0;
 	else if (objP->nType == OBJ_ROBOT)
 		bCloaked = objP->cType.aiInfo.CLOAKED;
 	else
@@ -653,10 +657,10 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 else {
 	if (ObjectIsCloaked (objP)) {
 		if (objP->nType == OBJ_PLAYER) 
-			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [objP->id].cloakTime, 
-											 gameData.multiplayer.players [objP->id].cloakTime + CLOAK_TIME_MAX);
+			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [id].cloakTime, 
+											 gameData.multiplayer.players [id].cloakTime + CLOAK_TIME_MAX);
 		else if (objP->nType == OBJ_ROBOT) {
-			if (!ROBOTINFO (objP->id).bossFlag)
+			if (!ROBOTINFO (id).bossFlag)
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - F1_0 * 10, gameData.time.xGame + F1_0 * 10);
 			else if (0 <= (i = FindBoss (OBJ_IDX (objP))))
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.boss [i].nCloakStartTime, gameData.boss [i].nCloakEndTime);
@@ -671,8 +675,8 @@ else {
 				if (objP->cType.aiInfo.behavior == AIB_SNIPE)
 					xLight = 2 * xLight + F1_0;
 				}
-			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [objP->id].nInnerModel > -1);
-			bBrightPolys = bBlendPolys && WI_energy_usage (objP->id);
+			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
+			bBrightPolys = bBlendPolys && WI_energy_usage (id);
 			if (bEnergyWeapon) {
 				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
 				if (!gameOpts->legacy.bRender)
@@ -684,12 +688,12 @@ else {
 					bOk = DrawPolygonModel (
 						objP, &objP->position.vPos, &objP->position.mOrient, 
 						(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
-						gameData.weapons.info [objP->id].nInnerModel, 
+						gameData.weapons.info [id].nInnerModel, 
 						objP->rType.polyObjInfo.nSubObjFlags, 
 						bBrightPolys ? F1_0 : xLight, 
 						xEngineGlow, 
 						bmiAltTex, 
-						NULL /*gameData.weapons.color + objP->id*/);
+						NULL);
 				}
 			if (bEnergyWeapon)
 				gameStates.render.grAlpha = 4 * (float) GR_ACTUAL_FADE_LEVELS / 5;
@@ -704,7 +708,7 @@ else {
 			bBrightPolys ? F1_0 : xLight, 
 			xEngineGlow, 
 			bmiAltTex, 
-			bEnergyWeapon ? gameData.weapons.color + objP->id : NULL);
+			bEnergyWeapon ? gameData.weapons.color + id : NULL);
 		if (!gameStates.render.bBuildModels) {
 			if (!gameOpts->legacy.bRender) {
 				gameStates.render.grAlpha = (float) GR_ACTUAL_FADE_LEVELS;

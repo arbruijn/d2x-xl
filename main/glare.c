@@ -652,7 +652,9 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
+	glDepthFunc (GL_ALWAYS);
 	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
+	glDepthFunc (GL_LESS);
 #ifdef _DEBUG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		nDbgSeg = nDbgSeg;

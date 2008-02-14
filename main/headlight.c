@@ -99,6 +99,10 @@ if (!gameData.render.lights.dynamic.headLights.nLights || gameStates.render.auto
 	return;
 #if 1 //HEADLIGHT_TRANSFORMATION == 0
 	// method 1: Emulate OpenGL's transformation
+#if 1
+G3PushMatrix ();
+glPushMatrix ();
+#endif
 SetRenderView (gameStates.render.nEyeOffset, NULL, 0);
 #endif
 for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
@@ -130,8 +134,13 @@ for (i = 0; i < gameData.render.lights.dynamic.headLights.nLights; i++) {
 		gameData.render.lights.dynamic.headLights.brightness [i] = 100.0f;
 		}
 	}
+#if 1
+G3PopMatrix ();
+glPopMatrix ();
+#else
 G3StartFrame (0, !(gameStates.render.nWindow || gameStates.render.cameras.bActive));
 SetRenderView (gameStates.render.nEyeOffset, NULL, 1);
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -667,8 +667,10 @@ else
 	strcpy (szDataRootDir, gameFolders.szDataDir);
 /*---*/LogErr ("expected game app folder = '%s'\n", gameFolders.szGameDir);
 /*---*/LogErr ("expected game data folder = '%s'\n", gameFolders.szDataDir);
-GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof");
-GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.oof");
+if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof"))
+	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase");
+if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.oof"))
+	GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.ase");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [0], SOUNDDIR1, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szSoundDir [1], SOUNDDIR2, "*.wav");
 GetAppFolder (szDataRootDir, gameFolders.szShaderDir, SHADERDIR, "");
