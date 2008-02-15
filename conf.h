@@ -8,7 +8,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 27
+#define D2XMICRO 28
 
 /* d2x minor version */
 #define D2XMINOR 12
@@ -105,7 +105,7 @@
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.12.27"
+#define PACKAGE_VERSION "1.12.28"
 
 /* Define for a "release" build */
 #define RELEASE 
@@ -126,7 +126,7 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.12.27"
+#define VERSION "1.12.28"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -141,7 +141,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.12.27"
+#define PACKAGE_STRING "d2x-xl 1.12.28"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1
