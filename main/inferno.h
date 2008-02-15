@@ -3043,7 +3043,6 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(ga
 
 #define SEG_IDX(_segP)			((short) ((_segP) - gameData.segs.segments))
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))
-#define SEG_PTR_2_NUM(segptr) (Assert(SEG_IDX (segptr) < MAX_SEGMENTS),SEG_IDX (segptr))
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
 #define OBJ_IDX(_objP)			((short) ((_objP) - gameData.objs.objects))
 #define TRIG_IDX(_trigP)		((short) ((_trigP) - gameData.trigs.triggers))

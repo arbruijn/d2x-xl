@@ -614,7 +614,7 @@ int fuelcen_delete_from_curseg() {
 //@@	vmsVector vp;
 //@@
 //@@//	int newseg,newside;
-//@@//	get_previous_segment(SEG_PTR_2_NUM(Cursegp),Curside,&newseg,&newside);
+//@@//	get_previous_segment(SEG_IDX(Cursegp),Curside,&newseg,&newside);
 //@@//	MovePlayerToSegment(&gameData.segs.segments[newseg],newside);
 //@@
 //@@	med_compute_center_point_on_side(&Player->tObjPosition,Cursegp,sideOpposite[Curside]);
@@ -622,7 +622,7 @@ int fuelcen_delete_from_curseg() {
 //@@	VmVecDec(&vp,&Player->position.vPosition);
 //@@	VmVector2Matrix(&Player->position.mOrient,&vp,NULL,NULL);
 //@@
-//@@	Player->seg = SEG_PTR_2_NUM(Cursegp);
+//@@	Player->seg = SEG_IDX(Cursegp);
 //@@
 //@@	UpdateFlags |= UF_GAME_VIEW_CHANGED;
 //@@	return 1;
@@ -650,7 +650,7 @@ void move_player_2_segment_and_rotate(tSegment *seg,int tSide)
 	VmVector2Matrix(&gameData.objs.console->position.mOrient,&vp,&upvec,NULL);
 //	VmVector2Matrix(&gameData.objs.console->position.mOrient,&vp,NULL,NULL);
 
-	RelinkObject( OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(seg) );
+	RelinkObject( OBJ_IDX (gameData.objs.console), SEG_IDX(seg) );
 
 }
 
@@ -702,10 +702,10 @@ int SetPlayerFromCursegMinusOne()
 	VmVecCopyScale(&view_vec2,&view_vec,viewDist);
 	VmVecSub(&gameData.objs.console->position.vPos,&side_center,&view_vec2);
 
-	//RelinkObject(OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM(Cursegp) );
+	//RelinkObject(OBJ_IDX (gameData.objs.console), SEG_IDX(Cursegp) );
 	//UpdateObjectSeg(gameData.objs.console);		//might have backed right out of curseg
 
-	newseg = FindSegByPoint(&gameData.objs.console->position.vPos, SEG_PTR_2_NUM(Cursegp), 1, 0);
+	newseg = FindSegByPoint(&gameData.objs.console->position.vPos, SEG_IDX(Cursegp), 1, 0);
 	if (newseg != -1)
 		RelinkObject(OBJ_IDX (gameData.objs.console),newseg);
 

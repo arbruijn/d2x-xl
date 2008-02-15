@@ -163,9 +163,6 @@ void GrSetColor(int color)
 {
 grdCurCanv->cvColor.index =color % 256;
 grdCurCanv->cvColor.rgb = 0;
-#ifndef NO_ASM
-gr_var_color = color % 256;
-#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -177,9 +174,6 @@ grdCurCanv->cvColor.color.red = red;
 grdCurCanv->cvColor.color.green = green;
 grdCurCanv->cvColor.color.blue = blue;
 grdCurCanv->cvColor.color.alpha = alpha;
-#ifndef NO_ASM
-	gr_var_color = color % 256;
-#endif
 }
 
 //	-----------------------------------------------------------------------------

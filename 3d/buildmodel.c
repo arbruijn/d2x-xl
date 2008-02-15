@@ -567,7 +567,7 @@ else {
 		gameData.models.gunInfo [nModel].nGuns = 0;
 		return;
 		}
-	if (j = po->gunPoints.nPoints) {
+	if ((j = po->gunPoints.nPoints)) {
 		if (j > MAX_GUNS)
 			j = MAX_GUNS;
 		gameData.models.gunInfo [nModel].nGuns = j;

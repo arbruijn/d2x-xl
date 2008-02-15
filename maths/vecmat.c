@@ -409,7 +409,7 @@ inline unsigned int sqrt64 (unsigned QLONG a)
 if (gameOpts->render.nMathFormat == 2)
 	return (unsigned int) sqrt ((double) ((signed QLONG) a));
 else if (gameOpts->render.nMathFormat == 1) {
-	if (a < 0x100000000)
+	if (a <= 0xFFFFFFFF)
 		return sqrt32 ((unsigned long) a);
 	else {
 		unsigned QLONG rem = 0;

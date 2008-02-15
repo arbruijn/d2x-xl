@@ -180,7 +180,6 @@ unsigned char ipx_ServerAddress[10] = {'\0','\0','\0','\0','\0','\0','\0','\0','
 #define D2XUDP "D2XUDP"
 
 static int nOpenSockets = 0;
-static int dynamic_socket = 0x401;
 static const int val_one=1;
 
 //------------------------------------------------------------------------------
@@ -562,7 +561,7 @@ LogErr ("\n");
 
 //------------------------------------------------------------------------------
 // Like dumpraddr() but for structure "sockaddr_in"
-
+#if 0
 static void dumpaddr(struct sockaddr_in *sin)
 {
 unsigned short srcPort;
@@ -572,7 +571,7 @@ srcPort = htons ((u_short) (ntohs (sin->sin_port) - UDP_BASEPORT));
 memcpy(qhbuf + 4, &srcPort, 2);
 dumpraddr (qhbuf);
 }
-
+#endif
 //------------------------------------------------------------------------------
 // Startup... Uninteresting parsing...
 

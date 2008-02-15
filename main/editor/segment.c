@@ -2076,7 +2076,7 @@ void find_concave_segs()
 
 	for (s=gameData.segs.segments,i=gameData.segs.nLastSegment;i>=0;s++,i--)
 		if (s->nSegment != -1)
-			if (check_seg_concavity(s)) Warning_segs[N_warning_segs++]=SEG_PTR_2_NUM(s);
+			if (check_seg_concavity(s)) Warning_segs[N_warning_segs++]=SEG_IDX(s);
 
 
 }

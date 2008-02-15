@@ -2,7 +2,7 @@
 #define __OOF_H
 
 #ifdef HAVE_CONFIG_H
-#include <conf.h>
+#	include <conf.h>
 #endif
 
 #if defined (_DEBUG) && SHADOWS

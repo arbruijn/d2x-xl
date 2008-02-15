@@ -87,7 +87,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 		VmVecFloatToFix (&pmf->vNormal, (fVector *) &pfa->vNormal);
 		for (i = 0; i < 3; i++, pmv++) {
 			h = pfa->nVerts [i];
-			if (pmv->bTextured = bTextured)
+			if ((pmv->bTextured = bTextured))
 				pmv->baseColor.red =
 				pmv->baseColor.green =
 				pmv->baseColor.blue = 1;

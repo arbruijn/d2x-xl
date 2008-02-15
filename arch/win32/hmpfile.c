@@ -438,11 +438,9 @@ if (hmp->devid == -1)
 
 static int hmp_track_to_midi (ubyte* track, int size, FILE *f)
 {
-	unsigned short s_sz = 0;
 	ubyte *pt = track;
 	ubyte lc1 = 0,lastcom = 0;
 	unsigned int t = 0, d;
-	int run = 0;
 	int n1, n2;
 	int startOffs = ftell (f);
 

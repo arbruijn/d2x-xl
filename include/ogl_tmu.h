@@ -25,8 +25,9 @@ else {
 	if (g3InitTMU [i][bVertexArrays])
 		glNewList (g3InitTMU [i][bVertexArrays], GL_COMPILE);
 	OglActiveTexture (tmuIds [i], 0);
-	if (bVertexArrays)
+	if (bVertexArrays) {
 		OglActiveTexture (tmuIds [i], bVertexArrays);
+		}
 	glEnable (GL_TEXTURE_2D);
 	if (i == 0)
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

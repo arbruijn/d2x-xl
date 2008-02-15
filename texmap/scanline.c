@@ -965,61 +965,24 @@ void (*cur_tmap_scanline_shaded)(void);
 //the reason I did it this way rather than having a *tmap_funcs that then points to a c_tmap or fp_tmap struct thats already filled in, is to avoid a second pointer dereference.
 void select_tmap(char *nType)
 {
-	if (!nType){
-#ifndef NO_ASM
-#if defined(__pentiumpro__)
-		select_tmap("ppro");
-#elif defined(__pentium__)
-		select_tmap("pent");
-#else
-		select_tmap("i386");
-#endif
-#else
-		select_tmap("c");
-#endif
-		return;
+if (!nType){
+	select_tmap("c");
+	return;
 	}
-#ifndef NO_ASM
-	if (stricmp(nType,"i386")==0){
-		cur_tmap_scanline_per=asm_tmap_scanline_per;
-		cur_tmap_scanline_per_nolight=asm_tmap_scanline_per;
-		cur_tmap_scanline_lin=asm_tmap_scanline_lin_lighted;
-		cur_tmap_scanline_lin_nolight=asm_tmap_scanline_lin;
-		cur_tmap_scanline_flat=asm_tmap_scanline_flat;
-		cur_tmap_scanline_shaded=asm_tmap_scanline_shaded;
-	}
-	else if (stricmp(nType,"pent")==0){
-		cur_tmap_scanline_per=asm_pent_tmap_scanline_per;
-		cur_tmap_scanline_per_nolight=asm_pent_tmap_scanline_per;
-		cur_tmap_scanline_lin=asm_tmap_scanline_lin_lighted;
-		cur_tmap_scanline_lin_nolight=asm_tmap_scanline_lin;
-		cur_tmap_scanline_flat=asm_tmap_scanline_flat;
-		cur_tmap_scanline_shaded=asm_tmap_scanline_shaded;
-	}
-	else if (stricmp(nType,"ppro")==0){
-		cur_tmap_scanline_per=asm_ppro_tmap_scanline_per;
-		cur_tmap_scanline_per_nolight=asm_ppro_tmap_scanline_per;
-		cur_tmap_scanline_lin=asm_tmap_scanline_lin_lighted;
-		cur_tmap_scanline_lin_nolight=asm_tmap_scanline_lin;
-		cur_tmap_scanline_flat=asm_tmap_scanline_flat;
-		cur_tmap_scanline_shaded=asm_tmap_scanline_shaded;
-	}
-	else
-#endif
-	if (stricmp(nType,"fp")==0){
-		cur_tmap_scanline_per=c_fp_tmap_scanline_per;
-		cur_tmap_scanline_per_nolight=c_fp_tmap_scanline_per_nolight;
-		cur_tmap_scanline_lin=c_tmap_scanline_lin;
-		cur_tmap_scanline_lin_nolight=c_tmap_scanline_lin_nolight;
-		cur_tmap_scanline_flat=c_tmap_scanline_flat;
-		cur_tmap_scanline_shaded=c_tmap_scanline_shaded;
-	}
-	else {
-		cur_tmap_scanline_per=c_tmap_scanline_per;
-		cur_tmap_scanline_per_nolight=c_tmap_scanline_per_nolight;
-		cur_tmap_scanline_lin=c_tmap_scanline_lin;
-		cur_tmap_scanline_lin_nolight=c_tmap_scanline_lin_nolight;
-		cur_tmap_scanline_flat=c_tmap_scanline_flat;
-		cur_tmap_scanline_shaded=c_tmap_scanline_shaded;
+if (!stricmp(nType,"fp")) {
+	cur_tmap_scanline_per = c_fp_tmap_scanline_per;
+	cur_tmap_scanline_per_nolight = c_fp_tmap_scanline_per_nolight;
+	cur_tmap_scanline_lin = c_tmap_scanline_lin;
+	cur_tmap_scanline_lin_nolight = c_tmap_scanline_lin_nolight;
+	cur_tmap_scanline_flat = c_tmap_scanline_flat;
+	cur_tmap_scanline_shaded = c_tmap_scanline_shaded;
+   }
+else {
+	cur_tmap_scanline_per = c_tmap_scanline_per;
+	cur_tmap_scanline_per_nolight = c_tmap_scanline_per_nolight;
+	cur_tmap_scanline_lin = c_tmap_scanline_lin;
+	cur_tmap_scanline_lin_nolight = c_tmap_scanline_lin_nolight;
+	cur_tmap_scanline_flat = c_tmap_scanline_flat;
+	cur_tmap_scanline_shaded = c_tmap_scanline_shaded;
 	}
 }

@@ -853,7 +853,7 @@ COMPUTE_SEGMENT_CENTER (&gameData.objs.console->position.vPos,segP);
 COMPUTE_SIDE_CENTER (&vp,segP,tSide);
 VmVecDec (&vp,&gameData.objs.console->position.vPos);
 VmVector2Matrix (&gameData.objs.console->position.mOrient, &vp, NULL, NULL);
-RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (segP));
+RelinkObject (OBJ_IDX (gameData.objs.console), SEG_IDX (segP));
 }
 
 //------------------------------------------------------------------------------
@@ -1501,7 +1501,7 @@ InitGauges ();
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
 #ifdef EDITOR
 	if (gameData.segs.segments[gameData.objs.console->nSegment].nSegment == -1)      //tSegment no longer exists
-		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_PTR_2_NUM (Cursegp));
+		RelinkObject (OBJ_IDX (gameData.objs.console), SEG_IDX (Cursegp));
 
 	if (!check_obj_seg (gameData.objs.console))
 		MovePlayerToSegment (Cursegp,Curside);

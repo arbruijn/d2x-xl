@@ -42,24 +42,6 @@
 
 #define SDL_MIXER_CHANNELS	2
 
-//edited 05/17/99 Matt Mueller - added ifndef NO_ASM
-//added on 980905 by adb to add inline FixMul for mixer on i386
-#ifndef NO_ASM
-#ifdef __i386__
-#define do_fixmul (x,y)				\
- ({						\
-	int _ax, _dx;				\
-	asm ("imull %2\n\tshrdl %3,%1,%0"	\
-	    : "=a" (_ax), "=d" (_dx)		\
-	    : "rm" (y), "i" (16), "0" (x));	\
-	_ax;					\
-})
-extern inline fix FixMul (fix x, fix y) { return do_fixmul (x,y); }
-#endif
-#endif
-//end edit by adb
-//end edit -MM
-
 //changed on 980905 by adb to increase number of concurrent sounds
 #define MAX_SOUND_SLOTS 64
 //end changes by adb
@@ -168,7 +150,7 @@ soundSlots [nChannel].bPlaying = 0;
 
 //------------------------------------------------------------------------------
 
-#ifdef _WIN32
+#if 0//def _WIN32
 
 static void MixSoundSlot (tSoundSlot *sl, Uint8 *sldata, Uint8 *stream, int len)
 {
@@ -845,7 +827,7 @@ int DigiIsSoundPlaying (short nSound)
 nSound = DigiXlatSound (nSound);
 for (i = 0; i < MAX_SOUND_SLOTS; i++)
   //changed on 980905 by adb: added soundSlots[i].bPlaying &&
-  if (soundSlots[i].bPlaying && soundSlots[i].nSound == nSound)
+  if (soundSlots [i].bPlaying && (soundSlots [i].nSound == nSound))
   //end changes by adb
 		return 1;
 return 0;
