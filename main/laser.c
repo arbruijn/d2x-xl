@@ -136,47 +136,25 @@ switch (gameData.weapons.info [objP->id].renderType)	{
 }
 
 //---------------------------------------------------------------------------------
-// Draws a texture-mapped laser bolt
 
-//void Laser_draw_one (int nObject, grsBitmap * bmp)
-//{
-//	int t1, t2, t3;
-//	g3sPoint p1, p2;
-//	tObject *objP;
-//	vmsVector start_pos,vEndPos;
-//
-//	obj = gameData.objs.objects + nObject;
-//
-//	start_pos = objP->position.vPos;
-//	VmVecScaleAdd (&vEndPos,&start_pos,&objP->position.mOrient.fVec,-Laser_length);
-//
-//	G3TransformAndEncodePoint (&p1,&start_pos);
-//	G3TransformAndEncodePoint (&p2,&vEndPos);
-//
-//	t1 = gameStates.render.nLighting;
-//	t2 = gameStates.render.nInterpolationMethod;
-//	t3 = gameStates.render.bTransparency;
-//
-//	gameStates.render.nLighting  = 0;
-//	//gameStates.render.nInterpolationMethod = 3;	// Full perspective
-//	gameStates.render.nInterpolationMethod = 1;	// Linear
-//	gameStates.render.bTransparency = 1;
-//
-//	//GrSetColor (gr_getcolor (31,15,0);
-//	//g3_draw_line_ptrs (p1,p2);
-//	//g3_draw_rod (p1,0x2000,p2,0x2000);
-//	//g3_draw_rod (p1,Laser_width,p2,Laser_width);
-//	G3DrawRodTexPoly (bmp,&p2,Laser_width,&p1,Laser_width,0);
-//	gameStates.render.nLighting = t1;
-//	gameStates.render.nInterpolationMethod = t2;
-//	gameStates.render.bTransparency = t3;
-//
-//}
+int LaserCreationTimeout (int nId, fix xCreationTime)
+{
+if (nId == PHOENIX_ID)
+	return gameData.time.xGame > xCreationTime + (F1_0 / 4) * gameStates.gameplay.slowmo [0].fSpeed;
+else if (nId == PHOENIX_ID)
+	return gameData.time.xGame > xCreationTime + (F1_0 / 2) * gameStates.gameplay.slowmo [0].fSpeed;
+else if (WeaponIsPlayerMine (nId))
+	return gameData.time.xGame > xCreationTime + (F1_0 / 4) * gameStates.gameplay.slowmo [0].fSpeed;
+else
+	return 0;
+}
 
+//---------------------------------------------------------------------------------
 //	Changed by MK on 09/07/94
 //	I want you to be able to blow up your own bombs.
 //	AND...Your proximity bombs can blow you up if they're 2.0 seconds or more old.
 //	Changed by MK on 06/06/95: Now must be 4.0 seconds old.  Much valid Net-complaining.
+
 int LasersAreRelated (int o1, int o2)
 {
 	tObject	*objP1, *objP2;
@@ -188,29 +166,25 @@ if ((o1 < 0) || (o2 < 0))
 objP1 = gameData.objs.objects + o1;
 objP2 = gameData.objs.objects + o2;
 id1 = objP1->id;
-id2 = objP2->id;
 ct1 = objP1->cType.laserInfo.creationTime;
-ct2 = objP2->cType.laserInfo.creationTime;
 // See if o2 is the parent of o1
 if (objP1->nType == OBJ_WEAPON)
 	if ((objP1->cType.laserInfo.nParentObj == o2) && 
 		 (objP1->cType.laserInfo.nParentSig == objP2->nSignature)) {
 		//	o1 is a weapon, o2 is the parent of 1, so if o1 is PROXIMITY_BOMB and o2 is tPlayer, they are related only if o1 < 2.0 seconds old
-		if (((id1 == PHOENIX_ID) && (gameData.time.xGame > ct1 + F1_0/4)) || 
-		    ((id1 == GUIDEDMSL_ID) && (gameData.time.xGame > ct1 + F1_0*2)) || 
-		    (WeaponIsPlayerMine (id1) && (gameData.time.xGame > ct1 + F1_0*4)))
+		if (LaserCreationTimeout (id1, ct1))
 			return 0;
 		return 1;
 		}
 
-	// See if o1 is the parent of o2
+id2 = objP2->id;
+ct2 = objP2->cType.laserInfo.creationTime;
+// See if o1 is the parent of o2
 if (objP2->nType == OBJ_WEAPON)
 	if ((objP2->cType.laserInfo.nParentObj == o1) && 
 		 (objP2->cType.laserInfo.nParentSig == objP1->nSignature)) {
 		//	o2 is a weapon, o1 is the parent of 2, so if o2 is PROXIMITY_BOMB and o1 is tPlayer, they are related only if o1 < 2.0 seconds old
-		if (((id2 == PHOENIX_ID) && (gameData.time.xGame > ct2 + F1_0/4)) || 
-			 ((id2 == GUIDEDMSL_ID) && (gameData.time.xGame > ct2 + F1_0*2)) || 
-			  (WeaponIsPlayerMine (id2) && (gameData.time.xGame > ct2 + F1_0*4)))
+		if (LaserCreationTimeout (id2, ct2))
 			return 0;
 		return 1;
 		}

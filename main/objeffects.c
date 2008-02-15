@@ -1262,6 +1262,24 @@ if (gameOpts->render.bShotCoronas && (bAdditive ? LoadGlare () : LoadCorona ()))
 
 // -----------------------------------------------------------------------------
 
+static inline float WeaponBlobSize (int nId)
+{
+if (nId == PHOENIX_ID)
+	return 2.25f;
+else if (nId == PLASMA_ID)
+	return 2.25f;
+else if (nId == HELIX_ID)
+	return 1.25f;
+else if (nId == SPREADFIRE_ID)
+	return 1.25f;
+else if (nId == OMEGA_ID)
+	return 1.5f;
+else
+	return 1.0f;
+}
+
+// -----------------------------------------------------------------------------
+
 void RenderWeaponCorona (tObject *objP, tRgbaColorf *colorP, float alpha, fix xOffset, 
 								 float fScale, int bSimple, int bViewerOffset, int bDepthSort)
 {
@@ -1276,12 +1294,14 @@ if ((objP->nType == OBJ_WEAPON) && (objP->renderType == RT_POLYOBJ))
 	RenderLaserCorona (objP, colorP, alpha, fScale);
 else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 	int			bStencil;
-	fix			xSize = (fix) (objP->size * fScale);
+	fix			xSize;
 	tRgbaColorf	color;
 
 	static tTexCoord2f	tcCorona [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 
 	vmsVector	vPos = objP->position.vPos;
+	xSize = (fix) (WeaponBlobSize (objP->id) * fScale * F1_0);
+	HUDMessage (0, "%1.2f", f2fl (xSize));
 	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
 	if (xOffset) {
 		if (bViewerOffset) {
@@ -1521,6 +1541,46 @@ if (EGI_FLAG (bTracers, 0, 1, 0) &&
 }
 
 // -----------------------------------------------------------------------------
+// Draws a texture-mapped laser bolt
+#if 0
+void Laser_draw_one (int nObject, grsBitmap * bmp)
+{
+	int t1, t2, t3;
+	g3sPoint p1, p2;
+	tObject *objP = gameData.objs.objects + nObject;
+	vmsVector start_pos,vEndPos;
+	fix Laser_length = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad * 2;
+	fix Laser_width = Laser_length / 8;
+
+	start_pos = objP->position.vPos;
+	VmVecScaleAdd (&vEndPos,&start_pos,&objP->position.mOrient.fVec,-Laser_length);
+
+	G3TransformAndEncodePoint (&p1,&start_pos);
+	G3TransformAndEncodePoint (&p2,&vEndPos);
+
+	t1 = gameStates.render.nLighting;
+	t2 = gameStates.render.nInterpolationMethod;
+	t3 = gameStates.render.bTransparency;
+
+	gameStates.render.nLighting  = 0;
+	//gameStates.render.nInterpolationMethod = 3;	 //Full perspective
+	gameStates.render.nInterpolationMethod = 1;	//Linear
+	gameStates.render.bTransparency = 1;
+#if 0
+	GrSetColor (gr_getcolor (31,15,0);
+	g3_draw_line_ptrs (p1,p2);
+	g3_draw_rod (p1,0x2000,p2,0x2000);
+	g3_draw_rod (p1,Laser_width,p2,Laser_width);
+#else
+	G3DrawRodTexPoly (bmp,&p2,Laser_width,&p1,Laser_width,0,NULL);
+#endif
+	gameStates.render.nLighting = t1;
+	gameStates.render.nInterpolationMethod = t2;
+	gameStates.render.bTransparency = t3;
+}
+#endif
+
+// -----------------------------------------------------------------------------
 
 #if 0
 static fVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{{0,0,-50}}},
@@ -1580,14 +1640,8 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 				}
 			}
 		else {
-			r = f2fl (objP->size);
+			r = WeaponBlobSize (objP->id) / 1.5f;
 			l = 4 * r;
-			if (r >= 3.0f)
-				r /= 1.5f;
-			else if (r < 1)
-				r *= 2;
-			else if (r < 2)
-				r *= 1.5f;
 			}
 
 		VmVecFixToFloat (&vOffsf, &objP->position.mOrient.fVec);
@@ -1662,9 +1716,9 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 	RenderShockwave (objP);
 	}
 if ((objP->renderType != RT_POLYOBJ) || (objP->id == FUSION_ID))
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 3, 1, 0, 1);
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2, 1, 0, 1);
 else
-	RenderWeaponCorona (objP, colorP, 0.75f, 0, 3, 0, 0, 0);
+	RenderWeaponCorona (objP, colorP, 0.75f, 0, 2, 0, 0, 0);
 }
 
 // -----------------------------------------------------------------------------

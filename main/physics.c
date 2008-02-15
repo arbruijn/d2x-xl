@@ -898,6 +898,11 @@ retryMove:
 		// ignores this tObject.
 		//if (bSpeedBoost && (objP == gameData.objs.console))
 		//	break;
+#ifdef _DEBUG
+		tFVIData				_hi;
+		memset (&_hi, 0, sizeof (_hi));
+		FindVectorIntersection (&fq, &_hi);
+#endif
 		Assert (hi.hit.nObject != -1);
 		ppos0 = &gameData.objs.objects [hi.hit.nObject].position.vPos;
 		ppos1 = &objP->position.vPos;

@@ -2613,7 +2613,7 @@ for (; i < j; i++) {
 #endif
 	if (replacementModels [i].pszHires && (strstr (replacementModels [i].pszHires, "pminepack") == replacementModels [i].pszHires))
 		o.nType = OBJ_POWERUP;
-	o.id = replacementModels [i].nId;
+	o.id = (ubyte) replacementModels [i].nId;
 	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
 	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
 		DrawPolygonObject (&o, 1);

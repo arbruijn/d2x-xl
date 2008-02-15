@@ -232,7 +232,7 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 
 if (!pm->bRendered)
 	mtP->nCount = 0;
-#ifdef _DEBUG
+#if 0//def _DEBUG
 mtP->nCount = 0;
 #endif
 if (!objP || (mtP->nCount >= 2))
