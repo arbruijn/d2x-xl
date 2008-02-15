@@ -1531,7 +1531,7 @@ if (objP->controlType != CT_AI)
 	return;
 if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
 	return;
-if (objP->cType.aiInfo.behavior == AIB_STILL)
+if (objP->cType.aiInfo.behavior != AIB_STILL)
 	return;
 r = d_rand ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
