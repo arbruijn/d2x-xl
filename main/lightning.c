@@ -2051,8 +2051,8 @@ void SetLightningLights (void)
 ResetLightningLights (0);
 if (SHOW_LIGHTNINGS) {
 		tLightningBundle	*plb;
-		tLightningLight	*pll;
-		int					i, n, nLights = 0, bDynLighting = gameOpts->render.bDynLighting;
+		tLightningLight		*pll = NULL;
+		int				i, n, nLights = 0, bDynLighting = gameOpts->render.bDynLighting;
 
 	gameData.lightnings.nFirstLight = -1;
 	for (i = gameData.lightnings.iUsed; i >= 0; i = n) {

@@ -1218,8 +1218,8 @@ int	nExhaustiveCount=0, nExhaustiveFailedCount=0;
 //Returns nSegment if found, or -1
 int FindSegByPoint (vmsVector *p, int nSegment, int bExhaustive, int bSkyBox)
 {
-	int			nNewSeg, i;
-	short			*segP;
+	int			nNewSeg = -1, i;
+	short		*segP;
 
 //allow nSegment == -1, meaning we have no idea what tSegment point is in
 Assert ((nSegment <= gameData.segs.nLastSegment) && (nSegment >= -1));

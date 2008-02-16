@@ -8,7 +8,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 28
+#define D2XMICRO 30
 
 /* d2x minor version */
 #define D2XMINOR 12
@@ -99,13 +99,13 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.12.27"
+#define PACKAGE_STRING "d2x-xl 1.12.30"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.12.28"
+#define PACKAGE_VERSION "1.12.30"
 
 /* Define for a "release" build */
 #define RELEASE 
@@ -126,7 +126,7 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.12.28"
+#define VERSION "1.12.30"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -141,7 +141,7 @@
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.12.28"
+#define PACKAGE_STRING "d2x-xl 1.12.30"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1
@@ -152,31 +152,10 @@
 #define __unix__ /* since we're doing a unix-style compilation... */
 #endif
 
-#ifdef __unix__
-# ifdef GGI
-#  define GII_INPUT 1
-#  define GGI_VIDEO 1
-# else
-#  ifdef SVGA
-#   define SVGALIB_INPUT 1
-#   define SVGALIB_VIDEO 1
-#  else
-#   define SDL_INPUT 1
-#   ifdef OGL
-#    define SDL_GL_VIDEO 1
-#   else
-#    define SDL_VIDEO 1
-#   endif
-#  endif
-# endif
-#endif
-
-#ifdef _WIN32
-# define SDL_INPUT 1
-# ifdef OGL
+#define SDL_INPUT 1
+#ifdef OGL
 #  define SDL_GL_VIDEO 1
-# else
+#else
 #  define SDL_VIDEO 1
-# endif
 #endif
 

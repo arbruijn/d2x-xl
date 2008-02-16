@@ -588,7 +588,7 @@ else
 int DrawPolygonObject (tObject *objP, int bDepthSort)
 {
 	fix	xLight;
-	int	imSave;
+	int	imSave = 0;
 	fix	xEngineGlow [2];		//element 0 is for engine glow, 1 for headlight
 	int	bBlendPolys = 0;
 	int	bBrightPolys = 0;
