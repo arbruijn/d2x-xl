@@ -180,14 +180,14 @@ return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless);
 
 static inline int WeaponIsPlayerMine (int nId)
 {
-return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID) || (nId == ROBOT_SMARTMINE_ID);
+return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline int WeaponIsMine (int nId)
 {
-return (nId == PROXMINE_ID) || (nId == SMARTMINE_ID) || (nId == SMALLMINE_ID) || (nId == ROBOT_SMARTMINE_ID);
+return WeaponIsPlayerMine (nId) || (nId == ROBOT_SMARTMINE_ID);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

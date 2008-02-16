@@ -144,7 +144,7 @@ if (nId == PHOENIX_ID)
 else if (nId == PHOENIX_ID)
 	return gameData.time.xGame > xCreationTime + (F1_0 / 2) * gameStates.gameplay.slowmo [0].fSpeed;
 else if (WeaponIsPlayerMine (nId))
-	return gameData.time.xGame > xCreationTime + (F1_0 / 4) * gameStates.gameplay.slowmo [0].fSpeed;
+	return gameData.time.xGame > xCreationTime + (F1_0 * 4) * gameStates.gameplay.slowmo [0].fSpeed;
 else
 	return 0;
 }
@@ -190,17 +190,18 @@ if (objP2->nType == OBJ_WEAPON)
 		}
 
 // They must both be weapons
-if (objP1->nType != OBJ_WEAPON || objP2->nType != OBJ_WEAPON)
+if ((objP1->nType != OBJ_WEAPON) || (objP2->nType != OBJ_WEAPON))
 	return 0;
 
 //	Here is the 09/07/94 change -- Siblings must be identical, others can hurt each other
 // See if they're siblings...
 //	MK: 06/08/95, Don't allow prox bombs to detonate for 3/4 second.  Else too likely to get toasted by your own bomb if hit by opponent.
 if (objP1->cType.laserInfo.nParentSig == objP2->cType.laserInfo.nParentSig) {
-	if (id1 != PROXMINE_ID  && id2 != PROXMINE_ID && id1 != SMARTMINE_ID && id2 != SMARTMINE_ID)
+	if ((id1 != PROXMINE_ID)  && (id2 != PROXMINE_ID) && (id1 != SMARTMINE_ID) && (id2 != SMARTMINE_ID))
 		return 1;
 	//	If neither is older than 1/2 second, then can't blow up!
-	if ((gameData.time.xGame > (ct1 + F1_0/2)) || (gameData.time.xGame > (ct2 + F1_0/2)))
+	if ((gameData.time.xGame > (ct1 + F1_0/2) * gameStates.gameplay.slowmo [0].fSpeed) || 
+		 (gameData.time.xGame > (ct2 + F1_0/2) * gameStates.gameplay.slowmo [0].fSpeed))
 		return 0;
 	return 1;
 	}
