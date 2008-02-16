@@ -149,6 +149,8 @@ void SetMaxOmegaCharge (void);
 
 void GetPlayerMslLock (void);
 vmsVector *GetGunPoints (tObject *objP, int nGun);
+vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun, 
+										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP);
 
 typedef struct tMuzzleInfo {
 	fix         createTime;

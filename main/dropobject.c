@@ -625,7 +625,7 @@ switch (nType) {
 					return -1;
 				}
 			nObject = CreateObject (nType, id, owner, nSegment, &vNewPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info [id].size, 
-										  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 0);
+										   CT_POWERUP, MT_PHYSICS, RT_POWERUP, 0);
 			if (nObject < 0) {
 #if TRACE
 				con_printf (1, "Can't create tObject in ObjectCreateEgg.  Aborting.\n");

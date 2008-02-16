@@ -1859,6 +1859,9 @@ typedef struct tG3ModelFace {
 } tG3ModelFace;
 
 typedef struct tG3SubModel {
+#ifdef _DEBUG
+	char						szName [256];
+#endif
 	vmsVector				vOffset;
 	vmsVector				vCenter;
 	fVector3					vMin;
@@ -1878,7 +1881,7 @@ typedef struct tG3SubModel {
 	char						nGun;
 	char						nBomb;
 	char						nMissile;
-	char						nMissilePos;
+	char						nWeaponPos;
 } tG3SubModel;
 
 typedef struct tG3VertNorm {

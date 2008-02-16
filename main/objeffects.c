@@ -269,14 +269,14 @@ void RenderRobotShield (tObject *objP)
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
-if (gameOpts->render.bRobotShields && !objP->cType.aiInfo.CLOAKED) {
+if (gameOpts->render.bRobotShields && ((objP->nType != OBJ_ROBOT) || !objP->cType.aiInfo.CLOAKED)) {
 	fix dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
 	if (dt < 300) {
 		float scale = gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
 		DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
 		}
 	else if (!gameOpts->render.bOnlyShieldHits) {
-		if (ROBOTINFO (objP->id).companion)
+		if ((objP->nType != OBJ_ROBOT) || ROBOTINFO (objP->id).companion)
 			DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
 		else
 			DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP) / 2);

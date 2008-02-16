@@ -58,6 +58,9 @@ void G3GetASEModelItems (int nModel, tASEModel *pa, tG3Model *pm, float fScale)
 for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psa = &pml->sm;
 	psm = pm->pSubModels + psa->nId;
+#ifdef _DEBUG
+	strcpy (psm->szName, psa->szName);
+#endif
 	psm->nParent = psa->nParent;
 	psm->pFaces = pmf;
 	psm->nFaces = nFaces = psa->nFaces;
@@ -67,7 +70,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->nGun = psa->nGun;
 	psm->nBomb = psa->nBomb;
 	psm->nMissile = psa->nMissile;
-	psm->nMissilePos = psa->nMissilePos;
+	psm->nWeaponPos = psa->nWeaponPos;
 	psm->nGunPoint = psa->nGunPoint;
 	psm->nIndex = nIndex;
 	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
@@ -133,7 +136,7 @@ pm = gameData.models.g3Models [1] + nModel;
 G3CountASEModelItems (pa, pm);
 if (!G3AllocModel (pm))
 	return 0;
-G3GetASEModelItems (nModel, pa, pm, 1.0f); //((nModel == 108) || (nModel == 110)) ? 0.801f : 1.0f);
+G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
 pm->pTextures = pa->textures.pBitmaps;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 0);

@@ -592,6 +592,46 @@ return vGunPoints;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
+vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun, 
+										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP)
+{
+	int			bSpectate = SPECTATOR (objP);
+	tPosition	*pPos = bSpectate ? &gameStates.app.playerPos : &objP->position;
+	vmsMatrix	m, *viewP;
+	vmsVector	v [2];
+#if FULL_COCKPIT_OFFS
+	int			bLaserOffs = ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) && 
+									  (OBJ_IDX (objP) == LOCALPLAYER.nObject));
+#else
+	int			bLaserOffs = 0;
+#endif
+
+if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
+	VmVecScale (VmVecAdd (v, vGunPoints - nGun, vGunPoints - nGun - 1), F1_0 / 2);
+else {
+	v [0] = vGunPoints [nGun];
+	if (bLaserOffs)
+		VmVecScaleInc (v, &pPos->mOrient.uVec, LASER_OFFS);
+	}
+if (!mP)
+	mP = &m;
+if (bSpectate)
+   VmCopyTransposeMatrix (viewP = mP, &pPos->mOrient);
+else
+   viewP = ObjectView (objP);
+VmVecRotate (v + 1, v, viewP);
+memcpy (mP, &pPos->mOrient, sizeof (vmsMatrix));
+if (nGun < 0)
+	VmVecScaleInc (v + 1, &mP->uVec, -2 * VmVecMag (v));
+VmVecAdd (vMuzzle, &pPos->vPos, v + 1);
+//	If supposed to fire at a delayed time (xDelay), then move this point backwards.
+if (xDelay)
+	VmVecScaleInc (vMuzzle, &mP->fVec, -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+return vMuzzle;
+}
+
+//-------------- Initializes a laser after Fire is pressed -----------------
+
 int LaserPlayerFireSpreadDelay (
 	tObject *objP, 
 	ubyte nLaserType, 
@@ -604,10 +644,9 @@ int LaserPlayerFireSpreadDelay (
 {
 	short			nLaserSeg;
 	int			nFate; 
-	vmsVector	v, vLaserPos, vLaserDir, vGunPoint, *vGunPoints;
+	vmsVector	vLaserPos, vLaserDir, *vGunPoints;
 	tVFIQuery	fq;
 	tFVIData		hitData;
-	vmsMatrix	m, *viewP;
 	int			nObject;
 	tObject		*laserP;
 #if FULL_COCKPIT_OFFS
@@ -616,6 +655,7 @@ int LaserPlayerFireSpreadDelay (
 #else
 	int bLaserOffs = 0;
 #endif
+	vmsMatrix	m;
 	int			bSpectate = SPECTATOR (objP);
 	tPosition	*pPos = bSpectate ? &gameStates.app.playerPos : &objP->position;
 
@@ -623,6 +663,9 @@ CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
 	return 0;
+#if 1
+TransformGunPoint (objP, vGunPoints, nGun, xDelay, nLaserType, &vLaserPos, &m);
+#else
 if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
 	VmVecScale (VmVecAdd (&v, vGunPoints - nGun, vGunPoints - nGun - 1), F1_0 / 2);
 else {
@@ -642,6 +685,7 @@ VmVecAdd (&vLaserPos, &pPos->vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
 	VmVecScaleInc (&vLaserPos, &m.fVec, -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
+#endif
 
 //	DoMuzzleStuff (objP, &Pos);
 

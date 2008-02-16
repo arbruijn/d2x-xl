@@ -30,6 +30,10 @@
 #include "ase.h"
 
 static char	szLine [1024];
+#ifdef _DEBUG
+static char	szLineBackup [1024];
+static int nLine = 0;
+#endif
 static char *pszToken;
 
 #define ASE_ROTATE_MODEL	1
@@ -165,6 +169,10 @@ static char *ASE_ReadLine (CFILE *cfp)
 {
 while (!CFEoF (cfp)) {
 	CFGetS (szLine, sizeof (szLine), cfp);
+#ifdef _DEBUG
+	nLine++;
+	strcpy (szLineBackup, szLine);
+#endif
 	strupr (szLine);
 	if ((pszToken = strtok (szLine, " \t")))
 		return pszToken;
@@ -523,40 +531,49 @@ psm->nId = pm->nSubModels++;
 psm->nBomb = -1;
 psm->nMissile = -1;
 psm->nGun = -1;
+psm->nGunPoint = -1;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
 		strcpy (psm->szName, StrTok (" \t\""));
-		if (strstr (psm->szName, "$GUNPNT-"))
+		if (strstr (psm->szName, "$GUNPNT"))
 			psm->nGunPoint = atoi (psm->szName + 8);
-		else if (strstr (psm->szName, "$GUN-"))
-			psm->nGunPoint = atoi (psm->szName + 5);
-		else {
-			psm->nGunPoint = -1;
-			if (strstr (psm->szName, "GLOW") != NULL) 
-				psm->bGlow = 1;
-			else if (strstr (psm->szName, "THRUSTER") != NULL)
-				psm->bThruster = 1;
-			else if (strstr (psm->szName, "LASER") != NULL) {
-				psm->bWeapon = 1;
-				psm->nGun = 1;
-				psm->nBomb =
-				psm->nMissile = -1;
-				}
-			else if (strstr (psm->szName, "$MISSILE") != NULL) {
-				psm->bWeapon = 1;
-				psm->nMissile = atoi (psm->szName + 8) + 1;
-				psm->nMissilePos = atoi (psm->szName + 10) + 1;
-				psm->nGun =
-				psm->nBomb = -1;
-				}
-			else if (strstr (psm->szName, "$BOMB-") != NULL) {
-				psm->bWeapon = 1;
-				psm->nBomb = atoi (psm->szName + 6) + 1;
-				psm->nGun =
-				psm->nMissile = -1;
-				}
+		else if (strstr (psm->szName, "GLOW") != NULL) 
+			psm->bGlow = 1;
+		else if (strstr (psm->szName, "$THRUSTER") != NULL)
+			psm->bThruster = 1;
+		else if (strstr (psm->szName, "$WINGTIP") != NULL) {
+			psm->bWeapon = 1;
+			psm->nGun = 0;
+			psm->nBomb =
+			psm->nMissile = -1;
+			}
+		else if (strstr (psm->szName, "$STDLAS") != NULL) {
+			psm->bWeapon = 1;
+			psm->nGun = -1;
+			psm->nBomb =
+			psm->nMissile = -1;
+			}
+		else if (strstr (psm->szName, "$GUN") != NULL) {
+			psm->bWeapon = 1;
+			psm->nGun = atoi (psm->szName + 4) + 1;
+			psm->nWeaponPos = atoi (psm->szName + 6) + 1;
+			psm->nBomb =
+			psm->nMissile = -1;
+			}
+		else if (strstr (psm->szName, "$MISSILE") != NULL) {
+			psm->bWeapon = 1;
+			psm->nMissile = atoi (psm->szName + 8) + 1;
+			psm->nWeaponPos = atoi (psm->szName + 10) + 1;
+			psm->nGun =
+			psm->nBomb = -1;
+			}
+		else if (strstr (psm->szName, "$BOMB") != NULL) {
+			psm->bWeapon = 1;
+			psm->nBomb = atoi (psm->szName + 6) + 1;
+			psm->nGun =
+			psm->nMissile = -1;
 			}
 		}
 	else if (!strcmp (pszToken, "*NODE_PARENT")) {
@@ -612,6 +629,9 @@ if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 memset (pm, 0, sizeof (*pm));
 pm->nModel = nModel;
 pm->nType = nType;
+#ifdef _DEBUG
+nLine = 0;
+#endif
 while ((pszToken = ASE_ReadLine (&cf))) {
 	if (!strcmp (pszToken, "*MATERIAL_LIST")) {
 		if (!(nResult = ASE_ReadMaterialList (&cf, pm, nType, bCustom)))

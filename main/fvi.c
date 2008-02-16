@@ -951,7 +951,7 @@ else {
 	//if obj is tPlayer, and bumping into other tPlayer or a weapon of another coop tPlayer, reduce radius
 	if ((thisObjP->nType == OBJ_PLAYER) &&
 		 ((otherObjP->nType == OBJ_PLAYER) ||
- 		 ((IsCoopGame) && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
+ 		 (IsCoopGame && (otherObjP->nType == OBJ_WEAPON) && (otherObjP->cType.laserInfo.parentType == OBJ_PLAYER))))
 		size /= 2;
 	}
 
@@ -1124,6 +1124,9 @@ if (flags & FQ_CHECK_OBJS) {
 			else
 				d = CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
 			if (d && (d < dMin)) {
+#ifdef _DEBUG
+				CheckVectorToObject (&vHitPoint, p0, p1, nFudgedRad, otherObjP, thisObjP);
+#endif
 				gameData.collisions.hitData.nObject = nObject;
 				Assert(gameData.collisions.hitData.nObject != -1);
 				dMin = d;

@@ -127,13 +127,18 @@ if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
 	return 0;
 if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
 	static tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
-	vmsVector	*vEnd, vFiringPos;
+	vmsVector	*vEnd, *vGunPoints, vFiringPos;
 	int			bSpectate = SPECTATOR (parentObjP);
 	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &parentObjP->position;
 
 	DestroyOmegaLightnings ();
-	VmVecSub (&vFiringPos, &posP->vPos, &posP->mOrient.uVec);
-	VmVecInc (&vFiringPos, &posP->mOrient.fVec);
+	if (vGunPoints = GetGunPoints (parentObjP, 6)) {
+		TransformGunPoint (parentObjP, vGunPoints, 6, 0, 0, &vFiringPos, NULL);
+		}
+	else {
+		VmVecSub (&vFiringPos, &posP->vPos, &posP->mOrient.uVec);
+		VmVecInc (&vFiringPos, &posP->mOrient.fVec);
+		}
 	gameData.laser.parentObjP = parentObjP;
 	gameData.laser.targetObjP = targetObjP;
 	vEnd = targetObjP ? &targetObjP->position.vPos : vTargetPos;

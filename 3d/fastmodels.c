@@ -297,6 +297,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	int				i, j, bTransparent, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
 
+#if 1
 if (psm->nGunPoint >= 0)
 	return;
 else if (psm->bThruster) {
@@ -306,15 +307,29 @@ else if (psm->bThruster) {
 	return;
 	}
 else if (psm->bWeapon) {
-	if (psm->nGun > 0)
-		;
+	if (psm->nGun == gameData.weapons.nPrimary + 1) {
+		if (psm->nGun == 5) {
+			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+				return;
+			}
+		else if ((psm->nGun == 1) || (psm->nGun == 6)) {
+			if ((psm->nWeaponPos > 2) && !(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
+				return;
+			}
+		}
+	else if (!psm->nGun) {
+		if (((gameData.weapons.nPrimary == 0) || (gameData.weapons.nPrimary == 5)) &&
+				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
+			return;
+		}
 	else if (psm->nBomb == nBombId)
 		;
-	else if ((psm->nMissile == nMissileId) && (psm->nMissilePos <= nMissiles))
+	else if ((psm->nMissile == nMissileId) && (psm->nWeaponPos <= nMissiles))
 		;
 	else
 		return;
 	}
+#endif
 vo = psm->vOffset;
 if (gameData.models.nScale)
 	VmVecScale (&vo, gameData.models.nScale);

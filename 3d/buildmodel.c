@@ -380,6 +380,31 @@ for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 
 //------------------------------------------------------------------------------
 
+fix G3ModelRad (tObject *objP, int nModel, int bHires)
+{
+	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
+	tG3SubModel		*psm;
+	tG3ModelFace	*pmf;
+	tG3ModelVertex	*pmv;
+	fVector			vOffset;
+	float				fRad = 0, r;
+	int				i, j, k;
+
+VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
+for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
+	if (psm->nHitbox > 0) 
+		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) 
+			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++)
+				if (fRad < (r = VmVecDistf (&vOffset, (fVector *) &pmv->vertex))) {
+					if (r > 349000 / 65536.0)
+						r = r;
+					fRad = r;
+					}
+return fl2f (fRad);
+}
+
+//------------------------------------------------------------------------------
+
 fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 {
 	int			nSubModels = pm->nSubModels;
@@ -387,10 +412,18 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	int			i, j;
 	tHitbox		*phb = gameData.models.hitboxes [nModel].hitboxes;
 	vmsVector	hv;
-	double		dx, dy, dz;
+	double		dx, dy, dz, r;
 
-for (i = pm->nSubModels, j = 1, psm = pm->pSubModels; i; i--, psm++)
-	psm->nHitbox = (psm->bGlow || psm->bThruster || psm->bWeapon || (psm->nGunPoint >= 0)) ? -1 : j++;
+if (nModel == 108)
+	nModel = nModel;
+psm = pm->pSubModels;
+j = 1;
+if (nSubModels == 1)
+	psm->nHitbox = j;
+else {
+	for (i = nSubModels; i; i--, psm++)
+		psm->nHitbox = (psm->bGlow || psm->bThruster || psm->bWeapon || (psm->nGunPoint >= 0)) ? -1 : j++;
+	}
 gameData.models.hitboxes [nModel].nHitboxes = j - 1;
 do {
 	// initialize
@@ -409,7 +442,7 @@ do {
 		G3SubModelSize (objP, nModel, 0, NULL, bHires);
 	// determine min and max size
 	for (i = 0, psm = pm->pSubModels; i < nSubModels; i++, psm++) {
-		if (0 <= (j = psm->nHitbox)) {
+		if (0 < (j = psm->nHitbox)) {
 			phb [j].vMin.p.x = fl2f (psm->vMin.p.x);
 			phb [j].vMin.p.y = fl2f (psm->vMin.p.y);
 			phb [j].vMin.p.z = fl2f (psm->vMin.p.z);
@@ -419,6 +452,7 @@ do {
 			dx = (phb [j].vMax.p.x - phb [j].vMin.p.x) / 2;
 			dy = (phb [j].vMax.p.y - phb [j].vMin.p.y) / 2;
 			dz = (phb [j].vMax.p.z - phb [j].vMin.p.z) / 2;
+			r = sqrt (dx * dx + dy * dy + dz * dz) / 2;
 			phb [j].vSize.p.x = (fix) dx;
 			phb [j].vSize.p.y = (fix) dy;
 			phb [j].vSize.p.z = (fix) dz;
@@ -456,7 +490,7 @@ phb [0].vSize.p.y = (fix) dy / 2;
 phb [0].vSize.p.z = (fix) dz / 2;
 for (i = 0; i <= j; i++)
 	ComputeHitbox (nModel, i);
-return (fix) (sqrt (dx * dx + dy * dy + dz + dz) / 2);
+return G3ModelRad (objP, nModel, bHires);
 }
 
 //------------------------------------------------------------------------------

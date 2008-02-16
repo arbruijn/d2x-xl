@@ -167,6 +167,8 @@ if (objP->controlType == CT_WEAPON)
 if ((objP->nType != OBJ_POWERUP) && (objP->nType != OBJ_WEAPON))
 	return 0;
 nModel = PowerupToModel (objP->id);
+if (objP->id == 33)
+	objP = objP;
 if (nModel) 
 	nId = objP->id;
 else {
@@ -208,10 +210,9 @@ objP->renderType = RT_POLYOBJ;
 objP->movementType = MT_PHYSICS;
 objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 objP->rType.polyObjInfo.nModel = nModel;
-#if 0
+#if 1
 if (bHasModel)
-	objP->size = FixDiv (gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad, 
-								gameData.weapons.info [objP->id].po_len_to_width_ratio);
+	objP->size = gameData.models.polyModels [objP->rType.polyObjInfo.nModel].rad;
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;
 objP->lifeleft = IMMORTAL_TIME;
@@ -350,7 +351,7 @@ if (gameOpts->render.bDepthSort > 0) {
 		color.green = (float) bmP->bmAvgRGB.green / 255.0f;
 		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
 		if (objP->nType == OBJ_FIREBALL) {
-#if 0
+#if 1
 			color.red /= 2;
 			color.green /= 2;
 			color.blue /= 2;
@@ -925,6 +926,7 @@ switch (objP->renderType) {
 						objP->mType.physInfo.rotVel.p.y = 
 						objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 					}
+				RenderRobotShield (objP);
 				gameData.models.nScale = 0;
 				}
 			else
