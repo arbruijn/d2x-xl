@@ -391,10 +391,6 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	float				fRad = 0, r;
 	int				i, j, k;
 
-#ifdef _DEBUG
-if (nModel == 39)
-	nModel = nModel;
-#endif
 VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
 	if (psm->nHitbox > 0) {
@@ -424,8 +420,6 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	vmsVector	hv;
 	double		dx, dy, dz, r;
 
-if (nModel == 108)
-	nModel = nModel;
 psm = pm->pSubModels;
 j = 1;
 if (nSubModels == 1)
