@@ -821,7 +821,7 @@ int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
 for (i = 0; i < pt->nBitmaps; i++) {
 	if (!ReadModelTGA (pt->pszNames [i], pt->pBitmaps + i, nType, bCustom))
 		return 0;
-	pt->pBitmaps [i].bmTeam = pt->nTeam [i];
+	pt->pBitmaps [i].bmTeam = pt->nTeam ? pt->nTeam [i] : 0;
 	}
 return 1;
 }

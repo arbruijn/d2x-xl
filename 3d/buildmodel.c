@@ -386,20 +386,30 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
 	tG3ModelVertex	*pmv;
-	fVector			vOffset;
+	tHitbox			*phb;
+	fVector			vOffset, vo, v;
 	float				fRad = 0, r;
 	int				i, j, k;
 
+#ifdef _DEBUG
+if (nModel == 39)
+	nModel = nModel;
+#endif
 VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
-	if (psm->nHitbox > 0) 
-		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) 
-			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++)
-				if (fRad < (r = VmVecDistf (&vOffset, (fVector *) &pmv->vertex))) {
+	if (psm->nHitbox > 0) {
+		VmVecFixToFloat (&vo, &gameData.models.hitboxes [nModel].hitboxes [psm->nHitbox].vOffset);
+		for (j = psm->nFaces, pmf = psm->pFaces; j; j--, pmf++) {
+			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
+				VmVecAddf (&v, (fVector *) &pmv->vertex, &vo);
+				if (fRad < (r = VmVecDistf (&vOffset, &v))) {
 					if (r > 349000 / 65536.0)
 						r = r;
 					fRad = r;
 					}
+				}
+			}
+		}
 return fl2f (fRad);
 }
 
