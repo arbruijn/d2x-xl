@@ -286,10 +286,14 @@ mtP->nCount++;
 
 int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nBombId, int nMissileId, int nMissiles)
 {
+	int	nGun;
+
 if (psm->nGunPoint >= 0)
 	return 1;
-else if (psm->bWeapon) {
-	if (psm->nGun == gameData.weapons.nPrimary + 1) {
+nGun = gameData.weapons.nPrimary ? gameData.weapons.nPrimary : gameData.multiplayer.players [objP->id].laserLevel <= MAX_LASER_LEVEL ? 0 : 5;
+if (psm->bWeapon) {
+	return 1;
+	if (psm->nGun == nGun + 1) {
 		if (psm->nGun == 5) {
 			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
 				return 1;
@@ -300,7 +304,7 @@ else if (psm->bWeapon) {
 			}
 		}
 	else if (!psm->nGun) {
-		if (((gameData.weapons.nPrimary == 0) || (gameData.weapons.nPrimary == 5)) &&
+		if (((nGun == 0) || (nGun == 5)) &&
 				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
 			return 1;
 		}
@@ -332,7 +336,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
 	nTeamColor = (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1;
 else
-	nTeamColor = 0;
+	nTeamColor = 2;
 #if 1
 if (psm->bThruster) {
 	if (!nPass)

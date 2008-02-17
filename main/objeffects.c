@@ -1301,7 +1301,6 @@ else if (gameOpts->render.bShotCoronas && LoadCorona ()) {
 
 	vmsVector	vPos = objP->position.vPos;
 	xSize = (fix) (WeaponBlobSize (objP->id) * fScale * F1_0);
-	HUDMessage (0, "%1.2f", f2fl (xSize));
 	bDepthSort = bDepthSort && bSimple && (gameOpts->render.bDepthSort > 0);
 	if (xOffset) {
 		if (bViewerOffset) {
