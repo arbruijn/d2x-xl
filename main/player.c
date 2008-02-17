@@ -39,15 +39,13 @@ for (i = 0; i < N_PLAYER_GUNS; i++)
 
 //-------------------------------------------------------------------------
 
-static int nBombIds [] = {SMART_INDEX, MEGA_INDEX, EARTHSHAKER_INDEX};
-
 int EquippedPlayerGun (tObject *objP)
 {
 if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
-		int		i, nWeapon = gameData.multiplayer.nPrimaryWeapons [nPlayer];
+		int		nWeapon = gameData.multiplayer.nPrimaryWeapons [nPlayer];
 
-	return (nWeapon || (gameData.multiplayer.nLaserLevels [nPlayer] <= MAX_LASER_LEVEL)) ? nWeapon : 5;
+	return (nWeapon || (gameData.multiplayer.nLaserLevels [nPlayer] <= MAX_LASER_LEVEL)) ? nWeapon : SUPER_LASER_INDEX;
 	}
 return 0;
 }

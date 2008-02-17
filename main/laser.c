@@ -596,7 +596,7 @@ vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun,
 										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP)
 {
 	int			bSpectate = SPECTATOR (objP);
-	tPosition	*pPos = bSpectate ? &gameStates.app.playerPos : &objP->position;
+	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
 	vmsMatrix	m, *viewP;
 	vmsVector	v [2];
 #if FULL_COCKPIT_OFFS
@@ -611,19 +611,19 @@ if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
 else {
 	v [0] = vGunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (v, &pPos->mOrient.uVec, LASER_OFFS);
+		VmVecScaleInc (v, &posP->mOrient.uVec, LASER_OFFS);
 	}
 if (!mP)
 	mP = &m;
 if (bSpectate)
-   VmCopyTransposeMatrix (viewP = mP, &pPos->mOrient);
+   VmCopyTransposeMatrix (viewP = mP, &posP->mOrient);
 else
    viewP = ObjectView (objP);
 VmVecRotate (v + 1, v, viewP);
-memcpy (mP, &pPos->mOrient, sizeof (vmsMatrix));
+memcpy (mP, &posP->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
 	VmVecScaleInc (v + 1, &mP->uVec, -2 * VmVecMag (v));
-VmVecAdd (vMuzzle, &pPos->vPos, v + 1);
+VmVecAdd (vMuzzle, &posP->vPos, v + 1);
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
 	VmVecScaleInc (vMuzzle, &mP->fVec, -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
@@ -657,7 +657,7 @@ int LaserPlayerFireSpreadDelay (
 #endif
 	vmsMatrix	m;
 	int			bSpectate = SPECTATOR (objP);
-	tPosition	*pPos = bSpectate ? &gameStates.app.playerPos : &objP->position;
+	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
 
 CreateAwarenessEvent (objP, PA_WEAPON_WALL_COLLISION);
 // Find the initial vPosition of the laser
@@ -671,17 +671,17 @@ if (nGun < 0)	// use center between gunPoints nGun and nGun + 1
 else {
 	v = vGunPoints [nGun];
 	if (bLaserOffs)
-		VmVecScaleInc (&v, &pPos->mOrient.uVec, LASER_OFFS);
+		VmVecScaleInc (&v, &posP->mOrient.uVec, LASER_OFFS);
 	}
 if (bSpectate)
-   VmCopyTransposeMatrix (viewP = &m, &pPos->mOrient);
+   VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
 else
    viewP = ObjectView (objP);
 VmVecRotate (&vGunPoint, &v, viewP);
-memcpy (&m, &pPos->mOrient, sizeof (vmsMatrix));
+memcpy (&m, &posP->mOrient, sizeof (vmsMatrix));
 if (nGun < 0)
 	VmVecScaleInc (&vGunPoint, &m.uVec, -2 * VmVecMag (&v));
-VmVecAdd (&vLaserPos, &pPos->vPos, &vGunPoint);
+VmVecAdd (&vLaserPos, &posP->vPos, &vGunPoint);
 //	If supposed to fire at a delayed time (xDelay), then move this point backwards.
 if (xDelay)
 	VmVecScaleInc (&vLaserPos, &m.fVec, -FixMul (xDelay, WI_speed (nLaserType, gameStates.app.nDifficultyLevel)));
@@ -690,7 +690,7 @@ if (xDelay)
 //	DoMuzzleStuff (objP, &Pos);
 
 //--------------- Find vLaserPos and nLaserSeg ------------------
-fq.p0					= &pPos->vPos;
+fq.p0					= &posP->vPos;
 fq.startSeg			= bSpectate ? gameStates.app.nPlayerSegment : objP->nSegment;
 fq.p1					= &vLaserPos;
 fq.radP0				=
@@ -704,7 +704,7 @@ if (nLaserSeg == -1) {	//some sort of annoying error
 	return -1;
 	}
 //SORT OF HACK... IF ABOVE WAS CORRECT THIS WOULDNT BE NECESSARY.
-if (VmVecDistQuick (&vLaserPos, &pPos->vPos) > 3 * objP->size / 2) {
+if (VmVecDistQuick (&vLaserPos, &posP->vPos) > 3 * objP->size / 2) {
 	return -1;
 	}
 if (nFate == HIT_WALL)  {

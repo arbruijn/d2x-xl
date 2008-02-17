@@ -1877,6 +1877,7 @@ typedef struct tG3SubModel {
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;
 	ubyte						bWeapon :1;
+	ubyte						bBullets :1;
 	char						nGunPoint;
 	char						nGun;
 	char						nBomb;
@@ -1919,6 +1920,8 @@ typedef struct tG3Model {
 	short						bHasTransparency;
 	short						bValid;
 	short						bRendered;
+	short						bBullets;
+	vmsVector				vBullets;
 	GLuint					vboDataHandle;
 	GLuint					vboIndexHandle;
 } tG3Model;
@@ -2185,6 +2188,7 @@ typedef struct tMultiplayerData {
 	char						nArmedMissiles [MAX_PLAYERS];
 	char						nLaserLevels [MAX_PLAYERS];
 	char						bWasHit [MAX_PLAYERS];
+	int						bulletEmitters [MAX_PLAYERS];
 	tPulseData				spherePulse [MAX_PLAYERS];
 	ubyte						powerupsInMine [MAX_POWERUP_TYPES];
 	ubyte						powerupsOnShip [MAX_POWERUP_TYPES];

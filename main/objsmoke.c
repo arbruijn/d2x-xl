@@ -11,6 +11,7 @@
 #include "error.h"
 #include "timer.h"
 #include "u_mem.h"
+#include "interp.h"
 #include "particles.h"
 #include "lightning.h"
 #include "laser.h"
@@ -125,6 +126,59 @@ for (j = 0; j < 2; j++)
 		}
 }
 #endif
+
+//------------------------------------------------------------------------------
+
+#define BULLET_MAX_PARTS	50
+#define BULLET_PART_LIFE	-3000
+#define BULLET_PART_SPEED	100
+
+void DoBulletEffect (tObject *objP)
+{
+	int	nModel = objP->rType.polyObjInfo.nModel;
+	int	bHires = G3HaveModel (nModel) - 1;
+
+if (bHires >= 0) {
+		tG3Model	*pm = gameData.models.g3Models [bHires] + nModel;
+
+	if (pm->bBullets) {
+			int			nPlayer = objP->id;
+			int			nGun = EquippedPlayerGun (objP);
+			int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) && gameData.multiplayer.bFiringWeapons [nPlayer][0]; 
+			int			i = gameData.multiplayer.bulletEmitters [nPlayer];
+
+		if (bDoEffect) {
+				int			bSpectate = SPECTATOR (objP);
+				tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
+				vmsVector	vEmitter, vDir;
+				vmsMatrix	m, *viewP;
+
+			if (bSpectate)
+				VmCopyTransposeMatrix (viewP = &m, &posP->mOrient);
+			else
+				viewP = ObjectView (objP);
+			VmVecRotate (&vEmitter, &pm->vBullets, viewP);
+			VmVecInc (&vEmitter, &posP->vPos);
+			vDir = posP->mOrient.uVec;
+			VmVecNegate (&vDir);
+			if (i < 0) {
+				gameData.multiplayer.bulletEmitters [nPlayer] =
+						CreateSmoke (&vEmitter, &vDir, objP->nSegment, 1, BULLET_MAX_PARTS, 1.0f, 1,
+										 1, BULLET_PART_LIFE, BULLET_PART_SPEED, 4, OBJ_IDX (objP), NULL, 0, -1);
+				}
+			else {
+				}
+			}
+		else {
+			if (i >= 0) {
+				SetSmokeLife (i, 0);
+				gameData.multiplayer.bulletEmitters [nPlayer] = -1;
+				}
+			}
+		}
+	}
+}
+
 //------------------------------------------------------------------------------
 
 extern tSmoke	smoke [];

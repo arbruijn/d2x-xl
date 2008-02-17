@@ -70,7 +70,7 @@
 
 #define OGL_VERTEX_ARRAYS	1
 
-#define PARTICLE_TYPES	4
+#define PARTICLE_TYPES	5
 
 #define PARTICLE_FPS	30
 
@@ -81,14 +81,14 @@
 
 static int bHavePartImg [2][PARTICLE_TYPES] = {{0, 0, 0, 0},{0, 0, 0, 0}};
 
-static grsBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL}};
+static grsBitmap *bmpParticle [2][PARTICLE_TYPES] = {{NULL, NULL, NULL, NULL, NULL},{NULL, NULL, NULL, NULL, NULL}};
 #if 0
 static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static char *szParticleImg [2][PARTICLE_TYPES] = {
-	{"smoke.tga", "corona.tga"},
-	{"smoke.tga", "corona.tga"}
+	{"smoke.tga", "corona.tga", "bulletcase.tga"},
+	{"smoke.tga", "corona.tga", "bulletcase.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
@@ -169,6 +169,13 @@ D2_FREE (gameData.smoke.depthBuf.pDepthBuffer);
 
 //	-----------------------------------------------------------------------------
 
+static inline int ParticleImageType (int nType)
+{
+return (nType == 4) ? 2 : (nType == 3) ? 1 : 0;
+}
+
+//	-----------------------------------------------------------------------------
+
 void AnimateParticle (int nType)
 {
 	int	bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort,
@@ -183,7 +190,7 @@ if (nFrames > 1) {
 	int			iFrameIncr = iPartFrameIncr [bPointSprites][nType];
 #endif
 	int			bPointSprites = gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort;
-	grsBitmap	*bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][nType == PARTICLE_TYPES - 1];
+	grsBitmap	*bmP = bmpParticle [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort][ParticleImageType (nType)];
 
 	if (!BM_FRAMES (bmP))
 		return;
@@ -241,7 +248,7 @@ int LoadParticleImage (int nType)
 					*flagP;
 	grsBitmap	*bmP = NULL;
 
-nType = (nType % PARTICLE_TYPES == PARTICLE_TYPES - 1);
+nType = ParticleImageType (nType);
 flagP = bHavePartImg [bPointSprites] + nType;
 if (*flagP < 0)
 	return 0;
@@ -287,7 +294,7 @@ int LoadParticleImages (void)
 {
 	int	i;
 
-for (i = 0; i < 2; i++) {
+for (i = 0; i < 3; i++) {
 	if (!LoadParticleImage (i))
 		return 0;
 	AnimateParticle (i);
@@ -302,7 +309,7 @@ void FreeParticleImages (void)
 	int	i, j;
 
 for (i = 0; i < 2; i++)
-	for (j = 0; j < 2; j++)
+	for (j = 0; j < 3; j++)
 		if (bmpParticle [i][j]) {
 			GrFreeBitmap (bmpParticle [i][j]);
 			bmpParticle [i][j] = NULL;
@@ -368,7 +375,7 @@ int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
 						  float fBrightness, vmsVector *vEmittingFace)
 {
 	vmsVector	vDrift, vPos;
-	int			nRad, nFrames, nType = (nSmokeType == PARTICLE_TYPES - 1);
+	int			nRad, nFrames, nType = ParticleImageType (nSmokeType);
 
 if (vEmittingFace)
 	pPos = RandomPointOnQuad (vEmittingFace, &vPos);
@@ -384,24 +391,34 @@ pParticle->nType = nType;
 pParticle->nClass = nClass;
 pParticle->nSegment = nSegment;
 pParticle->nBounce = 0;
-pParticle->bBright = (rand () % 50) == 0;
-if ((pParticle->bColored = (pColor != NULL))) {
-	pParticle->color.red = pColor->red * RANDOM_FADE;
-	pParticle->color.green = pColor->green * RANDOM_FADE;
-	pParticle->color.blue = pColor->blue * RANDOM_FADE;
-	pParticle->nFade = 0;
+if (nType == 2) {
+	pParticle->bBright = 0;
+	pParticle->color.red = 
+	pParticle->color.green = 
+	pParticle->color.blue = 
+	pParticle->color.alpha = 1;
+	pParticle->nFade = -1;
 	}
 else {
-	pParticle->color.red = 1.0f;
-	pParticle->color.green = 0.5;
-	pParticle->color.blue = 0.0f;//(float) (64 + randN (64)) / 255.0f;
-	pParticle->nFade = 2;
-	}
-pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
+	pParticle->bBright = (rand () % 50) == 0;
+	if ((pParticle->bColored = (pColor != NULL))) {
+		pParticle->color.red = pColor->red * RANDOM_FADE;
+		pParticle->color.green = pColor->green * RANDOM_FADE;
+		pParticle->color.blue = pColor->blue * RANDOM_FADE;
+		pParticle->nFade = 0;
+		}
+	else {
+		pParticle->color.red = 1.0f;
+		pParticle->color.green = 0.5;
+		pParticle->color.blue = 0.0f;//(float) (64 + randN (64)) / 255.0f;
+		pParticle->nFade = 2;
+		}
+	pParticle->color.alpha = (float) (SMOKE_START_ALPHA + randN (64)) / 255.0f;
 #if 1
-if (gameOpts->render.smoke.bDisperse && !pParticle->bBright) {
-	fBrightness = 1.0f - fBrightness;
-	pParticle->color.alpha += fBrightness * fBrightness / 8.0f;
+	if (gameOpts->render.smoke.bDisperse && !pParticle->bBright) {
+		fBrightness = 1.0f - fBrightness;
+		pParticle->color.alpha += fBrightness * fBrightness / 8.0f;
+		}
 	}
 #endif
 //nSpeed = (int) (sqrt (nSpeed) * (float) F1_0);
@@ -579,7 +596,7 @@ if (pParticle->nDelay > 0)
 else {
 	pos = pParticle->pos;
 	drift = pParticle->drift;
-	if (pParticle->nType != 3) {
+	if (!pParticle->nType) {
 		drift.p.x = ChangeDir (drift.p.x);
 		drift.p.y = ChangeDir (drift.p.y);
 		drift.p.z = ChangeDir (drift.p.z);
@@ -623,7 +640,7 @@ else {
 #else
 		pParticle->nLife -= t;
 #endif
-		if ((nRad = pParticle->nRad)) {
+		if ((pParticle->nType < 2) && (nRad = pParticle->nRad)) {
 			if (pParticle->bBlowUp) {
 				if (pParticle->nWidth >= nRad)
 					pParticle->nRad = 0;
@@ -842,7 +859,7 @@ vCenter.p.x = f2fl (hp.p.x);
 vCenter.p.y = f2fl (hp.p.y);
 vCenter.p.z = f2fl (hp.p.z);
 i = pParticle->nOrient; 
-if (nType) {
+if (nType == 1) {
 	pc.red /= 50.0f;
 	pc.green /= 50.0f;
 	pc.blue /= 50.0f;
@@ -1068,7 +1085,7 @@ float CloudBrightness (tCloud *pCloud)
 
 if (pCloud->nObject == 0x7fffffff)
 	return 0.5f;
-if (pCloud->nType == PARTICLE_TYPES - 1)
+if (pCloud->nType >= PARTICLE_TYPES - 2)
 	return 1.0f;
 if (pCloud->nObject < 0)
 	return pCloud->fBrightness;
@@ -1254,7 +1271,7 @@ else
 				vDeltaf.p.y /= (float) h;
 				vDeltaf.p.z /= (float) h;
 				}
-			else if (c.nType == 3)
+			else if (c.nType >= PARTICLE_TYPES - 2)
 				goto funcExit;
 			else {
 				VmVecFixToFloat (&vPosf, &c.pos);

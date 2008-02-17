@@ -130,7 +130,11 @@ while (n--)
 
 static inline int G3HaveModel (int nModel)
 {
-return (gameData.models.g3Models [0][nModel].bValid != 0) || (gameData.models.g3Models [1][nModel].bValid != 0);
+if (gameData.models.g3Models [0][nModel].bValid)
+	return 1;
+if (gameData.models.g3Models [1][nModel].bValid)
+	return 2;
+return 0;
 }
 
 //------------------------------------------------------------------------------

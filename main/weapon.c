@@ -208,26 +208,6 @@ sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES] = {
 // ; (34) ---------- Super Plasma Cannon ----------
 // ; (35) ---------- Super Fusion Cannon ----------
 
-// ---------------------------------------------------------------------------------
-
-int GetPlayerGun (int nPlayer, int *bFiring)
-{
-	int nGun = gameData.multiplayer.weaponStates [nPlayer][0].nWeapon;
-
-if (bFiring)
-	*bFiring = gameData.multiplayer.weaponStates [nPlayer][0].bFiring;
-return nGun ? nGun : gameData.multiplayer.players [nPlayer].laserLevel <= MAX_LASER_LEVEL ? 0 : 5;
-}
-
-// ---------------------------------------------------------------------------------
-
-int GetPlayerMissile (int nPlayer, int *bFiring)
-{
-if (bFiring)
-	*bFiring = gameData.multiplayer.weaponStates [nPlayer][1].bFiring;
-return gameData.multiplayer.weaponStates [nPlayer][1].nWeapon;
-}
-
 //	-----------------------------------------------------------------------------
 
 int AllowedToFireLaser (void)

@@ -72,6 +72,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->nMissile = psa->nMissile;
 	psm->nWeaponPos = psa->nWeaponPos;
 	psm->nGunPoint = psa->nGunPoint;
+	psm->bBullets = (psa->nBullets > 0);
 	psm->nIndex = nIndex;
 	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
 	G3InitSubModelMinMax (psm);

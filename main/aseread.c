@@ -540,6 +540,7 @@ psm->nBomb = -1;
 psm->nMissile = -1;
 psm->nGun = -1;
 psm->nGunPoint = -1;
+psm->nBullets = -1;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -547,6 +548,8 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		strcpy (psm->szName, StrTok (" \t\""));
 		if (strstr (psm->szName, "$GUNPNT"))
 			psm->nGunPoint = atoi (psm->szName + 8);
+		if (strstr (psm->szName, "$BULLETS"))
+			psm->nBullets = 1;
 		else if (strstr (psm->szName, "GLOW") != NULL) 
 			psm->bGlow = 1;
 		else if (strstr (psm->szName, "$THRUSTER") != NULL)
