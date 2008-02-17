@@ -86,10 +86,32 @@ if (gameData.laser.nLightning >= 0) {
 
 // ---------------------------------------------------------------------------------
 
+vmsVector *GetOmegaGunPoint (tObject *objP, vmsVector *vMuzzle)
+{
+	vmsVector	*vGunPoints;
+	int			bSpectate;
+	tPosition	*posP;
+
+if (!objP)
+	objP = gameData.laser.parentObjP;
+bSpectate = SPECTATOR (objP);
+posP = bSpectate ? &gameStates.app.playerPos : &objP->position;
+if ((bSpectate || (objP->id != gameData.multiplayer.nLocalPlayer)) &&
+	 (vGunPoints = GetGunPoints (objP, 6))) {
+	TransformGunPoint (objP, vGunPoints, 6, 0, 0, vMuzzle, NULL);
+	}
+else {
+	VmVecSub (vMuzzle, &posP->vPos, &posP->mOrient.uVec);
+	VmVecScaleInc (vMuzzle, &posP->mOrient.fVec, objP->size / 3);
+	}
+return vMuzzle;
+}
+
+// ---------------------------------------------------------------------------------
+
 int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP)
 {
-	vmsVector	vFiringPos;
-	int			bSpectate;
+	vmsVector	vMuzzle;
 
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
 	return -1;
@@ -97,21 +119,16 @@ if (gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE)
 	DestroyOmegaLightnings ();
 if (gameData.laser.nLightning < 0)
 	return 0;
-if (parentObjP) {
+if (!parentObjP) 
+	parentObjP = gameData.laser.parentObjP;
+else {
 	if (parentObjP != gameData.laser.parentObjP)
 		return 0;
 	if (targetObjP != gameData.laser.targetObjP)
 		return 0;
 	}
-if ((bSpectate = SPECTATOR (gameData.laser.parentObjP))) {
-	VmVecSub (&vFiringPos, &gameStates.app.playerPos.vPos, &gameStates.app.playerPos.mOrient.uVec);
-	VmVecInc (&vFiringPos, &gameStates.app.playerPos.mOrient.fVec);
-	}
-else {
-	VmVecSub (&vFiringPos, &gameData.laser.parentObjP->position.vPos, &gameData.laser.parentObjP->position.mOrient.uVec);
-	VmVecInc (&vFiringPos, &gameData.laser.parentObjP->position.mOrient.fVec);
-	}
-MoveLightnings (gameData.laser.nLightning, NULL, &vFiringPos, bSpectate ? gameStates.app.nPlayerSegment : gameData.laser.parentObjP->nSegment, 1, 0);
+GetOmegaGunPoint (parentObjP, &vMuzzle);
+MoveLightnings (gameData.laser.nLightning, NULL, &vMuzzle, SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : gameData.laser.parentObjP->nSegment, 1, 0);
 if (gameData.laser.targetObjP)
 	MoveLightnings (gameData.laser.nLightning, NULL, &gameData.laser.targetObjP->position.vPos, gameData.laser.targetObjP->nSegment, 1, 1);
 return 1;
@@ -127,27 +144,18 @@ if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
 	return 0;
 if (!UpdateOmegaLightnings (parentObjP, targetObjP)) {
 	static tRgbaColorf	color = {0.9f, 0.6f, 0.6f, 0.3f};
-	vmsVector	*vEnd, *vGunPoints, vFiringPos;
-	int			bSpectate = SPECTATOR (parentObjP);
-	tPosition	*posP = bSpectate ? &gameStates.app.playerPos : &parentObjP->position;
+	vmsVector	vMuzzle, *vTarget;
 
 	DestroyOmegaLightnings ();
-	if (vGunPoints = GetGunPoints (parentObjP, 6)) {
-		TransformGunPoint (parentObjP, vGunPoints, 6, 0, 0, &vFiringPos, NULL);
-		}
-	else {
-		VmVecSub (&vFiringPos, &posP->vPos, &posP->mOrient.uVec);
-		VmVecInc (&vFiringPos, &posP->mOrient.fVec);
-		}
+	GetOmegaGunPoint (parentObjP, &vMuzzle);
 	gameData.laser.parentObjP = parentObjP;
 	gameData.laser.targetObjP = targetObjP;
-	vEnd = targetObjP ? &targetObjP->position.vPos : vTargetPos;
+	vTarget = targetObjP ? &targetObjP->position.vPos : vTargetPos;
 #if OMEGA_PLASMA
 	color.alpha = gameOpts->render.lightnings.bPlasma ? 0.5f : 0.3f;
 #endif
-	gameData.laser.nLightning = CreateLightning (10, &vFiringPos, vEnd, NULL, 
-																-(bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment) - 1, 
-																-5000, 0, VmVecDist (&vFiringPos, vEnd), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1, 
+	gameData.laser.nLightning = CreateLightning (10, &vMuzzle, vTarget, NULL, -OBJSEG (parentObjP) - 1, 
+																-5000, 0, VmVecDist (&vMuzzle, vTarget), F1_0 * 3, 0, 0, 100, 10, 1, 3, 1, 1, 
 #if OMEGA_PLASMA
 																(parentObjP != gameData.objs.viewer) || gameStates.app.bFreeCam || gameStates.render.bExternalView,
 #else
@@ -160,7 +168,7 @@ return (gameData.laser.nLightning >= 0);
 
 // ---------------------------------------------------------------------------------
 
-void CreateOmegaBlobs (short nFiringSeg, vmsVector *vFiringPos, vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
+void CreateOmegaBlobs (short nFiringSeg, vmsVector *vMuzzle, vmsVector *vTargetPos, tObject *parentObjP, tObject *targetObjP)
 {
 	short			nLastSeg, nLastCreatedObj = -1;
 	vmsVector	vGoal;
@@ -175,7 +183,7 @@ void CreateOmegaBlobs (short nFiringSeg, vmsVector *vFiringPos, vmsVector *vTarg
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
 CreateOmegaLightnings (vTargetPos, parentObjP, targetObjP);
-VmVecSub (&vGoal, vTargetPos, vFiringPos);
+VmVecSub (&vGoal, vTargetPos, vMuzzle);
 xGoalDist = VmVecNormalizeQuick (&vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
@@ -198,7 +206,7 @@ else {
 vOmegaDelta = vGoal;
 VmVecScale (&vOmegaDelta, xOmegaBlobDist);
 //	Now, create all the blobs
-vBlobPos = *vFiringPos;
+vBlobPos = *vMuzzle;
 nLastSeg = nFiringSeg;
 
 //	If nearby, don't perturb vector.  If not nearby, start halfway out.
@@ -310,7 +318,7 @@ if (LOCALPLAYER.energy) {
 
 // ---------------------------------------------------------------------------------
 
-void DoOmegaStuff (tObject *parentObjP, vmsVector *vFiringPos, tObject *weaponObjP)
+void DoOmegaStuff (tObject *parentObjP, vmsVector *vMuzzle, tObject *weaponObjP)
 {
 	short			nTargetObj, nFiringSeg, nParentSeg;
 	vmsVector	vTargetPos;
@@ -357,10 +365,10 @@ if (SlowMotionActive ()) {
 	nTargetObj = -1;
 else
 #endif
-	nTargetObj = FindHomingObject (vFiringPos, weaponObjP);
+	nTargetObj = FindHomingObject (vMuzzle, weaponObjP);
 nParentSeg = bSpectate ? gameStates.app.nPlayerSegment : parentObjP->nSegment;
 
-if (0 > (nFiringSeg = FindSegByPoint (vFiringPos, nParentSeg, 1, 0))) {
+if (0 > (nFiringSeg = FindSegByPoint (vMuzzle, nParentSeg, 1, 0))) {
 	DestroyOmegaLightnings ();
 	return;
 	}
@@ -382,9 +390,9 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 
 	MakeRandomVector (&vPerturb);
 	VmVecScaleAdd (&perturbed_fvec, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &parentObjP->position.mOrient.fVec, &vPerturb, F1_0/16);
-	VmVecScaleAdd (&vTargetPos, vFiringPos, &perturbed_fvec, MAX_OMEGA_DIST);
+	VmVecScaleAdd (&vTargetPos, vMuzzle, &perturbed_fvec, MAX_OMEGA_DIST);
 	fq.startSeg = nFiringSeg;
-	fq.p0 = vFiringPos;
+	fq.p0 = vMuzzle;
 	fq.p1	= &vTargetPos;
 	fq.radP0 =
 	fq.radP1 = 0;
@@ -398,7 +406,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 		}
 	}
 //	This is where we create a pile of omega blobs!
-CreateOmegaBlobs (nFiringSeg, vFiringPos, &vTargetPos, parentObjP, (nTargetObj < 0) ? NULL : OBJECTS + nTargetObj);
+CreateOmegaBlobs (nFiringSeg, vMuzzle, &vTargetPos, parentObjP, (nTargetObj < 0) ? NULL : OBJECTS + nTargetObj);
 }
 
 // ---------------------------------------------------------------------------------

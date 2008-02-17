@@ -513,7 +513,7 @@ if (!gameOpts->render.smoke.bPlasmaTrails) {
 	return;
 	}
 #if 1
-nParts = LASER_MAX_PARTS;
+nParts = 2 * LASER_MAX_PARTS / 3;
 #else
 nParts = gameData.weapons.info [objP->id].speed [0] / F1_0; 
 #endif
@@ -528,13 +528,13 @@ if (gameData.smoke.objects [i] < 0) {
 		 (id == ROBOT_BLUE_LASER_ID) || (id == ROBOT_GREEN_LASER_ID) || (id == ROBOT_RED_LASER_ID) || (id == ROBOT_WHITE_LASER_ID))
 		nScale = 3;
 	else if ((id == PHOENIX_ID) || (id == ROBOT_SLOW_PHOENIX_ID) || (id == ROBOT_FAST_PHOENIX_ID))
-		nScale = 1.5;
+		nScale = 1;
 	else if ((id == PLASMA_ID) || (id == ROBOT_PLASMA_ID))
 		nScale = 1.5;
 	else if (id == FUSION_ID)
 		nScale = 2;
 	else if ((id == SPREADFIRE_ID) || (id == HELIX_ID) || (id == ROBOT_HELIX_ID))
-		nScale = 3;
+		nScale = 2;
 	else if (id == FLARE_ID)
 		nScale = 2;
 	else if ((id == ROBOT_BLUE_ENERGY_ID) || (id == ROBOT_WHITE_ENERGY_ID) || (id == ROBOT_PHASE_ENERGY_ID))
@@ -542,7 +542,7 @@ if (gameData.smoke.objects [i] < 0) {
 	else
 		nScale = 1;
 	c.alpha = 0.1f + nScale / 10;
-	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, -PARTICLE_SIZE (gameOpts->render.smoke.nSize [0], nScale),
+	SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, objP->nSegment, 1, nParts, -PARTICLE_SIZE (1, nScale),
 											  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [3],
 											  1, (gameOpts->render.smoke.nLife [3] + 1) * LASER_PART_LIFE, LASER_PART_SPEED, 3, i, &c, 0, -1));
 	}

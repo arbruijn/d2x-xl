@@ -1220,7 +1220,11 @@ switch (nWeapon) {
 		LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
 		LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
 		if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameStates.players [objP->id].bTripleFusion)
+#if 1
+			LaserPlayerFire (objP, FUSION_ID, 6, 1, 0);
+#else
 			LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
+#endif
 		flags = (sbyte) (gameData.fusion.xCharge >> 12);
 		gameData.fusion.xCharge = 0;
 		vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
