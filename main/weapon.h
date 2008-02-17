@@ -332,5 +332,8 @@ void SetLastSuperWeaponStates (void);
 void ToggleBomb (void);
 void CyclePrimary ();
 void CycleSecondary ();
+void SetWeaponState (sbyte nPrimary, sbyte bPrimFire, sbyte nSecondary, sbyte bSecFire);
+int GetPlayerGun (int nPlayer, int *bFiring);
+int GetPlayerMissile (int nPlayer, int *bFiring);
 
 #endif

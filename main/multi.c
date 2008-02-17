@@ -249,7 +249,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	5,  //MULTI_TRIGGER_EXT
 	16, //MULTI_SYNC_KILLS
 	5,	 //MULTI_COUNTDOWN
-	5	 //MULTI_PLAYER_WEAPONS
+	8	 //MULTI_PLAYER_WEAPONS
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -493,7 +493,10 @@ gameData.multigame.msg.buf [1] = (char) nPlayer;
 gameData.multigame.msg.buf [2] = gameData.multiplayer.nPrimaryWeapons [nPlayer];
 gameData.multigame.msg.buf [3] = gameData.multiplayer.nSecondaryWeapons [nPlayer];
 gameData.multigame.msg.buf [4] = gameData.multiplayer.nArmedMissiles [nPlayer];
-MultiSendData (gameData.multigame.msg.buf, 5, 0);
+gameData.multigame.msg.buf [5] = gameData.multiplayer.nLaserLevels [nPlayer];
+gameData.multigame.msg.buf [6] = gameData.multiplayer.bFiringWeapons [nPlayer][0];
+gameData.multigame.msg.buf [7] = gameData.multiplayer.bFiringWeapons [nPlayer][1];
+MultiSendData (gameData.multigame.msg.buf, 8, 0);
 }
 
 //-----------------------------------------------------------------------------

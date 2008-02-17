@@ -147,11 +147,12 @@ int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
 void DestroyOmegaLightnings (void);
 void SetMaxOmegaCharge (void);
 
+int GetPlayerGun (int nPlayer, int *bFiring);
+
 void GetPlayerMslLock (void);
 vmsVector *GetGunPoints (tObject *objP, int nGun);
 vmsVector *TransformGunPoint (tObject *objP, vmsVector *vGunPoints, int nGun, 
 										fix xDelay, ubyte nLaserType, vmsVector *vMuzzle, vmsMatrix *mP);
-
 typedef struct tMuzzleInfo {
 	fix         createTime;
 	short       nSegment;

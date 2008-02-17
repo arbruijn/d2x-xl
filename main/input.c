@@ -1403,6 +1403,8 @@ if (gameStates.input.keys.pressed [KEY_DELETE])
 gameStates.input.bKeepSlackTime = 0;
 kcFrameCount = 0;
 gameStates.input.kcPollTime = 0;
+gameData.weapons.bFiring [0] = (Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0);
+gameData.weapons.bFiring [1] = (Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0);
 return 0;
 }
 

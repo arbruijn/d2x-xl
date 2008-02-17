@@ -185,6 +185,7 @@ typedef struct player16 {
  * reads a tPlayerShip structure from a CFILE
  */
 void PlayerShipRead(tPlayerShip *ps, CFILE *fp);
+int EquippedPlayerGun (tObject *objP);
 int EquippedPlayerBomb (tObject *objP);
 int EquippedPlayerMissile (tObject *objP, int *nMissiles);
 void UpdatePlayerWeaponInfo (void);

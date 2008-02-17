@@ -386,7 +386,6 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	tG3SubModel		*psm;
 	tG3ModelFace	*pmf;
 	tG3ModelVertex	*pmv;
-	tHitbox			*phb;
 	fVector			vOffset, vo, v;
 	float				fRad = 0, r;
 	int				i, j, k;

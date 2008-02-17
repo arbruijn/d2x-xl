@@ -2071,6 +2071,7 @@ typedef struct tWeaponData {
 	sbyte					nPrimary;
 	sbyte					nSecondary;
 	sbyte					nOverridden;
+	sbyte					bFiring [2];
 	int					nTypes [2];
 	tWeaponInfo			info [MAX_WEAPON_TYPES];
 	tD1WeaponInfo		infoD1 [D1_MAX_WEAPON_TYPES];
@@ -2169,26 +2170,28 @@ typedef struct tLeftoverPowerup {
 } tLeftoverPowerup;
 
 typedef struct tMultiplayerData {
-	int 					nPlayers;				
-	int					nMaxPlayers;
-	int 					nLocalPlayer;				
-	int					nPlayerPositions;
-	int					bMoving;
-	tPlayer				players [MAX_PLAYERS + 4];  
-	tObjPosition		playerInit [MAX_PLAYERS];
-	short					nVirusCapacity [MAX_PLAYERS];
-	int					nLastHitTime [MAX_PLAYERS];
-	char					nPrimaryWeapons [MAX_PLAYERS];
-	char					nSecondaryWeapons [MAX_PLAYERS];
-	char					nArmedMissiles [MAX_PLAYERS];
-	char					bWasHit [MAX_PLAYERS];
-	tPulseData			spherePulse [MAX_PLAYERS];
-	ubyte					powerupsInMine [MAX_POWERUP_TYPES];
-	ubyte					powerupsOnShip [MAX_POWERUP_TYPES];
-	ubyte					maxPowerupsAllowed [MAX_POWERUP_TYPES];
-	tLeftoverPowerup	*leftoverPowerups;
-	tAutoNetGame		autoNG;
-	fix					xStartAbortMenuTime;
+	int 						nPlayers;				
+	int						nMaxPlayers;
+	int 						nLocalPlayer;				
+	int						nPlayerPositions;
+	int						bMoving;
+	tPlayer					players [MAX_PLAYERS + 4];  
+	tObjPosition			playerInit [MAX_PLAYERS];
+	short						nVirusCapacity [MAX_PLAYERS];
+	int						nLastHitTime [MAX_PLAYERS];
+	char						nPrimaryWeapons [MAX_PLAYERS];
+	char						nSecondaryWeapons [MAX_PLAYERS];
+	char						bFiringWeapons [MAX_PLAYERS][2];
+	char						nArmedMissiles [MAX_PLAYERS];
+	char						nLaserLevels [MAX_PLAYERS];
+	char						bWasHit [MAX_PLAYERS];
+	tPulseData				spherePulse [MAX_PLAYERS];
+	ubyte						powerupsInMine [MAX_POWERUP_TYPES];
+	ubyte						powerupsOnShip [MAX_POWERUP_TYPES];
+	ubyte						maxPowerupsAllowed [MAX_POWERUP_TYPES];
+	tLeftoverPowerup		*leftoverPowerups;
+	tAutoNetGame			autoNG;
+	fix						xStartAbortMenuTime;
 } tMultiplayerData;
 
 #include "multi.h"

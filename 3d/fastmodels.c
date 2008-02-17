@@ -284,16 +284,13 @@ mtP->nCount++;
 
 //------------------------------------------------------------------------------
 
-int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nBombId, int nMissileId, int nMissiles)
+int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
-	int	nGun;
-
 if (psm->nGunPoint >= 0)
 	return 1;
-nGun = gameData.weapons.nPrimary ? gameData.weapons.nPrimary : gameData.multiplayer.players [objP->id].laserLevel <= MAX_LASER_LEVEL ? 0 : 5;
 if (psm->bWeapon) {
 	return 1;
-	if (psm->nGun == nGun + 1) {
+	if (psm->nGun == nGunId + 1) {
 		if (psm->nGun == 5) {
 			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
 				return 1;
@@ -304,7 +301,7 @@ if (psm->bWeapon) {
 			}
 		}
 	else if (!psm->nGun) {
-		if (((nGun == 0) || (nGun == 5)) &&
+		if (((nGunId == 0) || (nGunId == 5)) &&
 				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
 			return 1;
 		}
@@ -322,7 +319,7 @@ return 0;
 
 void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
 						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass, int bTransparency,
-							int nBombId, int nMissileId, int nMissiles)
+							int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model			*pm = gameData.models.g3Models [bHires] + nModel;
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
@@ -344,7 +341,7 @@ if (psm->bThruster) {
 								&psm->pFaces->vNormal, psm->nRad, bHires);
 	return;
 	}
-if (G3FilterSubModel (objP, psm, nBombId, nMissileId, nMissiles))
+if (G3FilterSubModel (objP, psm, nGunId, nBombId, nMissileId, nMissiles))
 	return;
 #endif
 vo = psm->vOffset;
@@ -359,7 +356,7 @@ if (vOffset && (nExclusive < 0)) {
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)
 	if (psm->nParent == nSubModel)
 		G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, pAnimAngles, &vo, bHires, 
-							 bUseVBO, nPass, bTransparency, nBombId, nMissileId, nMissiles);
+							 bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 #endif
 // render the faces
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
@@ -508,7 +505,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive))
 
 void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **modelBitmaps, 
 						vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int bTransparency,
-						int nBombId, int nMissileId, int nMissiles)
+						int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 	tG3Model			*pm;
 	tShaderLight	*psl;
@@ -574,11 +571,11 @@ for (nPass = 0; nLights || !nPass; nPass++) {
 		for (i = 0; i < pm->nSubModels; i++)
 			if (pm->pSubModels [i].nParent == -1) 
 				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffset, 
-									 bHires, bUseVBO, nPass, bTransparency, nBombId, nMissileId, nMissiles);
+									 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 		}
 	else
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, pAnimAngles, (nSubModel < 0) ? &pm->pSubModels->vOffset : vOffset,
-							 bHires, bUseVBO, nPass, bTransparency, nBombId, nMissileId, nMissiles);
+							 bHires, bUseVBO, nPass, bTransparency, nGunId, nBombId, nMissileId, nMissiles);
 	if (nSubModel < 0)
 		G3DoneInstance ();
 	if (!bLighting)
@@ -644,7 +641,7 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting;
-	int		nBombId, nMissileId, nMissiles;
+	int		nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)
 	return 0;
@@ -728,13 +725,14 @@ else
 		}
 	glVertexPointer (3, GL_FLOAT, 0, pm->pVBVerts);
 	}
+nGunId = EquippedPlayerGun (objP);
 nBombId = EquippedPlayerBomb (objP);
 nMissileId = EquippedPlayerMissile (objP, &nMissiles);
 G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 0,
-				 nBombId, nMissileId, nMissiles);
+				 nGunId, nBombId, nMissileId, nMissiles);
 if ((objP->nType != OBJ_DEBRIS) && bHires && pm->bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 1,
-					 nBombId, nMissileId, nMissiles);
+					 nGunId, nBombId, nMissileId, nMissiles);
 glDisable (GL_TEXTURE_2D);
 glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
 glBindBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
