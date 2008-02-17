@@ -206,9 +206,10 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			return ASE_Error ();
 		memcpy (pm->textures.pszNames [nBitmap], fn, l);
 		if (ps = strstr (fn, "color"))
-			bmP->bmTeam = atoi (ps + 5) + 1;
+			pm->textures.nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else
-			bmP->bmTeam = 0;
+			pm->textures.nTeam [nBitmap] = 0;
+		bmP->bmTeam = pm->textures.nTeam [nBitmap];
 		}
 	}
 return ASE_Error ();
@@ -261,8 +262,11 @@ if (!(pm->textures.pBitmaps = (grsBitmap *) D2_ALLOC (pm->textures.nBitmaps * si
 	return ASE_Error ();
 if (!(pm->textures.pszNames = (char **) D2_ALLOC (pm->textures.nBitmaps * sizeof (char *))))
 	return ASE_Error ();
+if (!(pm->textures.nTeam = (ubyte *) D2_ALLOC (pm->textures.nBitmaps * sizeof (ubyte))))
+	return ASE_Error ();
 memset (pm->textures.pBitmaps, 0, pm->textures.nBitmaps * sizeof (grsBitmap));
 memset (pm->textures.pszNames, 0, pm->textures.nBitmaps * sizeof (char *));
+memset (pm->textures.nTeam, 0, pm->textures.nBitmaps * sizeof (ubyte));
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;

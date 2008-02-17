@@ -287,6 +287,7 @@ if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
 G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
+memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
 G3SetupModel (pm, 0, 1);
 pm->iSubModel = 0;

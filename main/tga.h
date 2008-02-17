@@ -26,6 +26,7 @@ typedef struct tModelTextures {
 	int					nBitmaps;
 	char					**pszNames;
 	grsBitmap			*pBitmaps;
+	ubyte					*nTeam;
 } tModelTextures;
 
 int ShrinkTGA (grsBitmap *bm, int xFactor, int yFactor, int bRealloc);

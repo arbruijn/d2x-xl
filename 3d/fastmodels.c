@@ -332,7 +332,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
 	nTeamColor = (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1;
 else
-	nTeamColor = 1;
+	nTeamColor = 0;
 #if 1
 if (psm->bThruster) {
 	if (!nPass)
@@ -370,12 +370,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				glDisable (GL_TEXTURE_2D);
 			else {
 				if (!bHires)
-					bmP = pm->pTextures + nBitmap;
-				else {
 					bmP = modelBitmaps [nBitmap];
+				else {
+					bmP = pm->pTextures + nBitmap;
 					if (nTeamColor && bmP->bmTeam && (0 <= (h = pm->teamTextures [nTeamColor - 1]))) {
 						nBitmap = h;
-						bmP = modelBitmaps [nBitmap];
+						bmP = pm->pTextures + nBitmap;
 						}
 					}
 				glActiveTexture (GL_TEXTURE0);

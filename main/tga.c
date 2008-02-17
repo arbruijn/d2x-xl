@@ -818,9 +818,11 @@ int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
 {
 	int	i;
 
-for (i = 0; i < pt->nBitmaps; i++)
+for (i = 0; i < pt->nBitmaps; i++) {
 	if (!ReadModelTGA (pt->pszNames [i], pt->pBitmaps + i, nType, bCustom))
 		return 0;
+	pt->pBitmaps [i].bmTeam = pt->nTeam [i];
+	}
 return 1;
 }
 
@@ -850,6 +852,7 @@ if (pt->pszNames) {
 		if (pt->pBitmaps)
 			GrFreeBitmapData (pt->pBitmaps + i);
 		}
+	D2_FREE (pt->nTeam);
 	D2_FREE (pt->pszNames);
 	D2_FREE (pt->pBitmaps);
 	pt->nBitmaps = 0;

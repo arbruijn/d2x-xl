@@ -926,7 +926,9 @@ switch (objP->renderType) {
 						objP->mType.physInfo.rotVel.p.y = 
 						objP->mType.physInfo.rotVel.p.z = gameOpts->render.powerups.nSpin ? F1_0 / (5 - gameOpts->render.powerups.nSpin) : 0;
 					}
+#ifdef _DEBUG
 				RenderRobotShield (objP);
+#endif
 				gameData.models.nScale = 0;
 				}
 			else
