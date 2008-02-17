@@ -123,6 +123,7 @@ int G3BuildModelFromASE (tObject *objP, int nModel)
 {
 	tASEModel	*pa = gameData.models.modelToASE [1][nModel];
 	tG3Model		*pm;
+	int			i, j;
 
 if (!pa) {
 	pa = gameData.models.modelToASE [0][nModel];
@@ -138,6 +139,11 @@ if (!G3AllocModel (pm))
 	return 0;
 G3GetASEModelItems (nModel, pa, pm, 1.0f); //(nModel == 108) || (nModel == 110)) ? 1.145f : 1.0f);
 pm->pTextures = pa->textures.pBitmaps;
+pm->nTextures = pa->textures.nBitmaps;
+memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
+for (i = 0; i < pm->nTextures; i++)
+	if (j = (int) pm->pTextures [i].bmTeam)
+		pm->teamTextures [j - 1] = i;
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 1);
 G3SetupModel (pm, 1, 0);
 #if 1

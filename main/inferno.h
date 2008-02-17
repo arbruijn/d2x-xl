@@ -1891,6 +1891,7 @@ typedef struct tG3VertNorm {
 
 typedef struct tG3Model {
 	grsBitmap				*pTextures;
+	int						teamTextures [8];
 	fVector3					*pVerts;
 	fVector3					*pVertNorms;
 	tFaceColor				*pColor;
@@ -1913,6 +1914,7 @@ typedef struct tG3Model {
 	short						nFaceVerts;
 	short						iFaceVert;
 	short						nSubModels;
+	short						nTextures;
 	short						iSubModel;
 	short						bHasTransparency;
 	short						bValid;

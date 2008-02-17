@@ -185,7 +185,7 @@ return NULL;
 static int ASE_ReadTexture (CFILE *cfp, tASEModel *pm, int nBitmap, int nType, int bCustom)
 {
 	grsBitmap	*bmP = pm->textures.pBitmaps + nBitmap;
-	char			fn [FILENAME_LEN];
+	char			fn [FILENAME_LEN], *ps;
 	int			l;
 
 if (CharTok (" \t") != '{')
@@ -205,6 +205,10 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if (!(pm->textures.pszNames [nBitmap] = D2_ALLOC (l)))
 			return ASE_Error ();
 		memcpy (pm->textures.pszNames [nBitmap], fn, l);
+		if (ps = strstr (fn, "color"))
+			bmP->bmTeam = atoi (ps + 5) + 1;
+		else
+			bmP->bmTeam = 0;
 		}
 	}
 return ASE_Error ();

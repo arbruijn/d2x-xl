@@ -284,6 +284,38 @@ mtP->nCount++;
 
 //------------------------------------------------------------------------------
 
+int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nBombId, int nMissileId, int nMissiles)
+{
+if (psm->nGunPoint >= 0)
+	return 1;
+else if (psm->bWeapon) {
+	if (psm->nGun == gameData.weapons.nPrimary + 1) {
+		if (psm->nGun == 5) {
+			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+				return 1;
+			}
+		else if ((psm->nGun == 1) || (psm->nGun == 6)) {
+			if ((psm->nWeaponPos > 2) && !(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
+				return 1;
+			}
+		}
+	else if (!psm->nGun) {
+		if (((gameData.weapons.nPrimary == 0) || (gameData.weapons.nPrimary == 5)) &&
+				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
+			return 1;
+		}
+	else if (psm->nBomb == nBombId)
+		return 0;
+	else if ((psm->nMissile == nMissileId) && (psm->nWeaponPos <= nMissiles))
+		return 0;
+	else
+		return 1;
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
 						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nBombId, int nMissileId, int nMissiles)
@@ -294,41 +326,22 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	grsBitmap		*bmP = NULL;
 	vmsAngVec		*va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
 	vmsVector		vo;
-	int				i, j, bTransparent, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
-	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1;
+	int				h, i, j, bTransparent, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
+	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
+if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
+	nTeamColor = (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1;
+else
+	nTeamColor = 1;
 #if 1
-if (psm->nGunPoint >= 0)
-	return;
-else if (psm->bThruster) {
+if (psm->bThruster) {
 	if (!nPass)
 		G3GetThrusterPos (objP, nModel, NULL, VmVecAdd (&vo, &psm->vOffset, &psm->vCenter), 
 								&psm->pFaces->vNormal, psm->nRad, bHires);
 	return;
 	}
-else if (psm->bWeapon) {
-	if (psm->nGun == gameData.weapons.nPrimary + 1) {
-		if (psm->nGun == 5) {
-			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
-				return;
-			}
-		else if ((psm->nGun == 1) || (psm->nGun == 6)) {
-			if ((psm->nWeaponPos > 2) && !(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
-				return;
-			}
-		}
-	else if (!psm->nGun) {
-		if (((gameData.weapons.nPrimary == 0) || (gameData.weapons.nPrimary == 5)) &&
-				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
-			return;
-		}
-	else if (psm->nBomb == nBombId)
-		;
-	else if ((psm->nMissile == nMissileId) && (psm->nWeaponPos <= nMissiles))
-		;
-	else
-		return;
-	}
+if (G3FilterSubModel (objP, psm, nBombId, nMissileId, nMissiles))
+	return;
 #endif
 vo = psm->vOffset;
 if (gameData.models.nScale)
@@ -356,7 +369,15 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			if (0 > (nBitmap = pmf->nBitmap)) 
 				glDisable (GL_TEXTURE_2D);
 			else {
-				bmP = bHires ? pm->pTextures + nBitmap : modelBitmaps [nBitmap];
+				if (!bHires)
+					bmP = pm->pTextures + nBitmap;
+				else {
+					bmP = modelBitmaps [nBitmap];
+					if (nTeamColor && bmP->bmTeam && (0 <= (h = pm->teamTextures [nTeamColor - 1]))) {
+						nBitmap = h;
+						bmP = modelBitmaps [nBitmap];
+						}
+					}
 				glActiveTexture (GL_TEXTURE0);
 				glClientActiveTexture (GL_TEXTURE0);
 				glEnable (GL_TEXTURE_2D);
