@@ -1878,6 +1878,7 @@ typedef struct tG3SubModel {
 	ubyte						bThruster :1;
 	ubyte						bWeapon :1;
 	ubyte						bBullets :1;
+	ubyte						nSize :1;
 	char						nGunPoint;
 	char						nGun;
 	char						nBomb;

@@ -75,7 +75,11 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->vOffset.p.y = fl2f (pso->vOffset.y * fScale);
 	psm->vOffset.p.z = fl2f (pso->vOffset.z * fScale);
 	psm->nAngles = 0;
+	psm->nBomb = -1;
+	psm->nMissile = -1;
+	psm->nGun = -1;
 	psm->nGunPoint = -1;
+	psm->bBullets = 0;
 	psm->bThruster = 0;
 	psm->bGlow = 0;
 	j = pso->faces.nFaces;

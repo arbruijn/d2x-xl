@@ -70,6 +70,7 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->nGun = psa->nGun;
 	psm->nBomb = psa->nBomb;
 	psm->nMissile = psa->nMissile;
+	psm->nSize = psa->nSize;
 	psm->nWeaponPos = psa->nWeaponPos;
 	psm->nGunPoint = psa->nGunPoint;
 	psm->bBullets = (psa->nBullets > 0);

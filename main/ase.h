@@ -29,6 +29,7 @@ typedef struct tASESubModel {
 	char						nGun;
 	char						nBomb;
 	char						nMissile;
+	char						nSize;
 	char						nWeaponPos;
 	char						nGunPoint;
 	char						nBullets;

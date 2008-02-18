@@ -541,6 +541,7 @@ psm->nMissile = -1;
 psm->nGun = -1;
 psm->nGunPoint = -1;
 psm->nBullets = -1;
+psm->nSize = 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -559,6 +560,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nGun = 0;
 			psm->nBomb =
 			psm->nMissile = -1;
+			psm->nSize = (strstr (psm->szName, "$WINGTIPL") != NULL) ? 1 : 0;
 			}
 		else if (strstr (psm->szName, "$STDLAS") != NULL) {
 			psm->bWeapon = 1;

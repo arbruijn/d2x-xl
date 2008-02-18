@@ -192,7 +192,11 @@ if (!psm->pFaces) {
 	psm->pFaces = pmf;
 	psm->nIndex = -1;
 	psm->nParent = nParent;
+	psm->nBomb = -1;
+	psm->nMissile = -1;
+	psm->nGun = -1;
 	psm->nGunPoint = -1;
+	psm->bBullets = 0;
 	psm->bThruster = 0;
 	psm->bGlow = 0;
 	}
