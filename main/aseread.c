@@ -541,7 +541,8 @@ psm->nMissile = -1;
 psm->nGun = -1;
 psm->nGunPoint = -1;
 psm->nBullets = -1;
-psm->nSize = 0;
+psm->bRender = 1;
+psm->nType = 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -553,6 +554,8 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nBullets = 1;
 		else if (strstr (psm->szName, "GLOW") != NULL) 
 			psm->bGlow = 1;
+		else if (strstr (psm->szName, "$DUMMY") != NULL)
+			psm->bRender = 0;
 		else if (strstr (psm->szName, "$THRUSTER") != NULL)
 			psm->bThruster = 1;
 		else if (strstr (psm->szName, "$WINGTIP") != NULL) {
@@ -560,11 +563,11 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nGun = 0;
 			psm->nBomb =
 			psm->nMissile = -1;
-			psm->nSize = (strstr (psm->szName, "$WINGTIPL") != NULL) ? 1 : 0;
+			psm->nType = atoi (psm->szName + 8);
 			}
 		else if (strstr (psm->szName, "$STDLAS") != NULL) {
 			psm->bWeapon = 1;
-			psm->nGun = -1;
+			psm->nGun = 127;
 			psm->nBomb =
 			psm->nMissile = -1;
 			}

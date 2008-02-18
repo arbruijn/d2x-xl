@@ -53,7 +53,8 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #ifdef ALLEGRO
 #include "allg_snd.h"
-typedef SAMPLE tDigiSound;
+typedef SAMPLE 
+;
 #else
 typedef struct tDigiSound {
 	ubyte		bHires;

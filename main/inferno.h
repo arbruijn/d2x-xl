@@ -275,6 +275,14 @@ typedef struct tAutomapOptions {
 
 //------------------------------------------------------------------------------
 
+typedef struct tShipRenderOptions {
+	int bWeapons;
+	int nWingtip;
+	int bBullets;
+	} tShipRenderOptions;
+
+//------------------------------------------------------------------------------
+
 typedef struct tRenderOptions {
 	int bAllSegs;
 	int bDynamicLight;
@@ -321,6 +329,7 @@ typedef struct tRenderOptions {
 	tShadowOptions shadows;
 	tPowerupOptions powerups;
 	tAutomapOptions automap;
+	tShipRenderOptions ship;
 } tRenderOptions;
 
 //------------------------------------------------------------------------------
@@ -1053,12 +1062,6 @@ typedef struct tLimitFPSStates {
 
 //------------------------------------------------------------------------------
 
-typedef struct tPlayerStates {
-	int bTripleFusion;
-} tPlayerStates;
-
-//------------------------------------------------------------------------------
-
 typedef struct tGameStates {
 	tGameplayStates		gameplay;
 	tInputStates			input;
@@ -1073,7 +1076,6 @@ typedef struct tGameStates {
 	tApplicationStates	app;
 	tEntropyStates			entropy;
 	tLimitFPSStates		limitFPS;
-	tPlayerStates			players [MAX_PLAYERS];
 } tGameStates;
 
 //------------------------------------------------------------------------------
@@ -1874,11 +1876,12 @@ typedef struct tG3SubModel {
 	short						nHitbox;
 	int						nRad;
 	ushort					nAngles;
+	ubyte						bRender :1;
 	ubyte						bGlow :1;
 	ubyte						bThruster :1;
 	ubyte						bWeapon :1;
 	ubyte						bBullets :1;
-	ubyte						nSize :1;
+	ubyte						nType :2;
 	char						nGunPoint;
 	char						nGun;
 	char						nBomb;
@@ -2075,6 +2078,7 @@ typedef struct tWeaponData {
 	sbyte					nPrimary;
 	sbyte					nSecondary;
 	sbyte					nOverridden;
+	sbyte					bTripleFusion;
 	sbyte					bFiring [2];
 	int					nTypes [2];
 	tWeaponInfo			info [MAX_WEAPON_TYPES];
@@ -2173,6 +2177,15 @@ typedef struct tLeftoverPowerup {
 	ubyte					nType;
 } tLeftoverPowerup;
 
+typedef struct tWeaponState {
+	char						nPrimary;
+	char						nSecondary;
+	char						bFiring [2];
+	char						nMissiles;
+	char						nLaserLevel;
+	char						bTripleFusion;
+	} tWeaponState;
+
 typedef struct tMultiplayerData {
 	int 						nPlayers;				
 	int						nMaxPlayers;
@@ -2183,11 +2196,7 @@ typedef struct tMultiplayerData {
 	tObjPosition			playerInit [MAX_PLAYERS];
 	short						nVirusCapacity [MAX_PLAYERS];
 	int						nLastHitTime [MAX_PLAYERS];
-	char						nPrimaryWeapons [MAX_PLAYERS];
-	char						nSecondaryWeapons [MAX_PLAYERS];
-	char						bFiringWeapons [MAX_PLAYERS][2];
-	char						nArmedMissiles [MAX_PLAYERS];
-	char						nLaserLevels [MAX_PLAYERS];
+	tWeaponState			weaponStates [MAX_PLAYERS];
 	char						bWasHit [MAX_PLAYERS];
 	int						bulletEmitters [MAX_PLAYERS];
 	tPulseData				spherePulse [MAX_PLAYERS];

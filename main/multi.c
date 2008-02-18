@@ -249,7 +249,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	5,  //MULTI_TRIGGER_EXT
 	16, //MULTI_SYNC_KILLS
 	5,	 //MULTI_COUNTDOWN
-	8	 //MULTI_PLAYER_WEAPONS
+	9	 //MULTI_PLAYER_WEAPONS
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -490,13 +490,14 @@ void MultiSendPlayerWeapons (int nPlayer)
 {
 gameData.multigame.msg.buf [0] = (char) MULTI_PLAYER_WEAPONS;
 gameData.multigame.msg.buf [1] = (char) nPlayer;
-gameData.multigame.msg.buf [2] = gameData.multiplayer.nPrimaryWeapons [nPlayer];
-gameData.multigame.msg.buf [3] = gameData.multiplayer.nSecondaryWeapons [nPlayer];
-gameData.multigame.msg.buf [4] = gameData.multiplayer.nArmedMissiles [nPlayer];
-gameData.multigame.msg.buf [5] = gameData.multiplayer.nLaserLevels [nPlayer];
-gameData.multigame.msg.buf [6] = gameData.multiplayer.bFiringWeapons [nPlayer][0];
-gameData.multigame.msg.buf [7] = gameData.multiplayer.bFiringWeapons [nPlayer][1];
-MultiSendData (gameData.multigame.msg.buf, 8, 0);
+gameData.multigame.msg.buf [2] = gameData.multiplayer.weaponStates [nPlayer].nPrimary;
+gameData.multigame.msg.buf [3] = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
+gameData.multigame.msg.buf [4] = gameData.multiplayer.weaponStates [nPlayer].nMissiles;
+gameData.multigame.msg.buf [5] = gameData.multiplayer.weaponStates [nPlayer].nLaserLevel;
+gameData.multigame.msg.buf [6] = gameData.multiplayer.weaponStates [nPlayer].bFiring [0];
+gameData.multigame.msg.buf [7] = gameData.multiplayer.weaponStates [nPlayer].bFiring [1];
+gameData.multigame.msg.buf [7] = gameData.multiplayer.weaponStates [nPlayer].bTripleFusion;
+MultiSendData (gameData.multigame.msg.buf, 9, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -505,9 +506,13 @@ void MultiDoPlayerWeapons (char *buf)
 {
 	int	nPlayer = (int) buf [1];
 
-gameData.multiplayer.nPrimaryWeapons [nPlayer] = buf [2];
-gameData.multiplayer.nSecondaryWeapons [nPlayer] = buf [3];
-gameData.multiplayer.nArmedMissiles [nPlayer] = buf [4];
+gameData.multiplayer.weaponStates [nPlayer].nPrimary = buf [2];
+gameData.multiplayer.weaponStates [nPlayer].nSecondary = buf [3];
+gameData.multiplayer.weaponStates [nPlayer].nMissiles = buf [4];
+gameData.multiplayer.weaponStates [nPlayer].nLaserLevel = gameData.multigame.msg.buf [5];
+gameData.multiplayer.weaponStates [nPlayer].bFiring [0] = gameData.multigame.msg.buf [6];
+gameData.multiplayer.weaponStates [nPlayer].bFiring [1] = gameData.multigame.msg.buf [7];
+gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = gameData.multigame.msg.buf [8];
 }
 
 //-----------------------------------------------------------------------------

@@ -140,7 +140,7 @@ switch (gameData.weapons.info [objP->id].renderType)	{
 int LaserCreationTimeout (int nId, fix xCreationTime)
 {
 if (nId == PHOENIX_ID)
-	return gameData.time.xGame > xCreationTime + (F1_0 / 4) * gameStates.gameplay.slowmo [0].fSpeed;
+	return gameData.time.xGame > xCreationTime + (F1_0 / 3) * gameStates.gameplay.slowmo [0].fSpeed;
 else if (nId == PHOENIX_ID)
 	return gameData.time.xGame > xCreationTime + (F1_0 / 2) * gameStates.gameplay.slowmo [0].fSpeed;
 else if (WeaponIsPlayerMine (nId))
@@ -790,6 +790,19 @@ if (IsMultiGame) {
 }
 
 //-------------------------------------------------------------------------------------------
+
+static int nMslSlowDown [4] = {1, 4, 3, 2};
+
+float MissileSpeedScale (tObject *objP)
+{
+	int	i = extraGameInfo [IsMultiGame].nMslStartSpeed;
+
+if (!i)
+	return 1;
+return nMslSlowDown [i] * f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
+}
+
+//-------------------------------------------------------------------------------------------
 //	Set object *objP's orientation to (or towards if I'm ambitious) its velocity.
 
 #define HOMER_MAX_FPS	40
@@ -1236,7 +1249,7 @@ switch (nWeapon) {
 		vmsVector	vForce;
 		LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
 		LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
-		if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameStates.players [objP->id].bTripleFusion)
+		if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->id].bTripleFusion)
 #if 1
 			LaserPlayerFire (objP, FUSION_ID, 6, 1, 0);
 #else

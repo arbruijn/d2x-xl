@@ -199,6 +199,7 @@ if (!psm->pFaces) {
 	psm->bBullets = 0;
 	psm->bThruster = 0;
 	psm->bGlow = 0;
+	psm->bRender = 1;
 	}
 for (;;)
 	switch (WORDVAL (p)) {

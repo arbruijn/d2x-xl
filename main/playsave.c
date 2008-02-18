@@ -325,6 +325,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].nLightRange, 0, 0);
 		RP (extraGameInfo [i].nMaxSmokeGrenades, 0, 0);
 		RP (extraGameInfo [i].nMslTurnSpeed, 0, 0);
+		RP (extraGameInfo [i].nMslStartSpeed, 0, 0);
 		RP (extraGameInfo [i].nRadar, 0, 0);
 		RP (extraGameInfo [i].nDrag, 0, 0);
 		RP (extraGameInfo [i].nSpawnDelay, 0, 0); // / 1000
@@ -475,6 +476,10 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.shadows.nClip, i, 0);
 		RP (gameOptions [i].render.shadows.nLights, i, 0);
 		RP (gameOptions [i].render.shadows.nReach, i, 0);
+
+		RP (gameOptions [i].render.ship.bWeapons, i, 0);
+		RP (gameOptions [i].render.ship.nWingtip, i, 0);
+		RP (gameOptions [i].render.ship.bBullets, i, 0);
 
 		RP (gameOptions [i].render.smoke.bAuxViews, i, 0);
 		RP (gameOptions [i].render.smoke.bPlasmaTrails, i, 0);
@@ -814,6 +819,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].nLightRange", "2"},
 	{"extraGameInfo[0].nMaxSmokeGrenades", "1"},
 	{"extraGameInfo[0].nMslTurnSpeed", "1"},
+	{"extraGameInfo[0].nMslStartSpeed", "0"},
 	{"extraGameInfo[0].nRadar", "1"},
 	{"extraGameInfo[0].nDrag", "10"},
 	{"extraGameInfo[0].nSpawnDelay", "0"},
@@ -1027,6 +1033,9 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.shadows.nClip", "1"},
 	{"gameOptions[0].render.shadows.nLights", "2"},
 	{"gameOptions[0].render.shadows.nReach", "2"},
+	{"gameOptions[0].render.ship.bWeapons", "1"},
+	{"gameOptions[0].render.ship.nWingtip", "1"},
+	{"gameOptions[0].render.ship.bBullets", "1"},
 	{"gameOptions[0].render.smoke.bAuxViews", "0"},
 	{"gameOptions[0].render.smoke.bPlasmaTrails", "0"},
 	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},

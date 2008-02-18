@@ -23,13 +23,14 @@ typedef struct tASESubModel {
 	short						nVerts;
 	short						nTexCoord;
 	short						nIndex;
+	ubyte						bRender;
 	ubyte						bGlow;
 	ubyte						bThruster;
 	ubyte						bWeapon;
 	char						nGun;
 	char						nBomb;
 	char						nMissile;
-	char						nSize;
+	char						nType;
 	char						nWeaponPos;
 	char						nGunPoint;
 	char						nBullets;

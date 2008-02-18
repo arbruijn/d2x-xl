@@ -82,6 +82,7 @@ for (i = po->nSubObjects, pso = po->pSubObjects, psm = pm->pSubModels; i; i--, p
 	psm->bBullets = 0;
 	psm->bThruster = 0;
 	psm->bGlow = 0;
+	psm->bRender = 1;
 	j = pso->faces.nFaces;
 	psm->nIndex = nIndex;
 	psm->nFaces = j;

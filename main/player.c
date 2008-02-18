@@ -21,7 +21,7 @@ static char rcsid[] = "$Id: player.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 //-------------------------------------------------------------------------
 // reads a tPlayerShip structure from a CFILE
  
-void PlayerShipRead(tPlayerShip *ps, CFILE *fp)
+void PlayerShipRead (tPlayerShip *ps, CFILE *fp)
 {
 	int i;
 
@@ -44,9 +44,9 @@ int EquippedPlayerGun (tObject *objP)
 {
 if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
-		int		nWeapon = gameData.multiplayer.nPrimaryWeapons [nPlayer];
+		int		nWeapon = gameData.multiplayer.weaponStates [nPlayer].nPrimary;
 
-	return (nWeapon || (gameData.multiplayer.nLaserLevels [nPlayer] <= MAX_LASER_LEVEL)) ? nWeapon : SUPER_LASER_INDEX;
+	return (nWeapon || (gameData.multiplayer.weaponStates [nPlayer].nLaserLevel <= MAX_LASER_LEVEL)) ? nWeapon : SUPER_LASER_INDEX;
 	}
 return 0;
 }
@@ -59,7 +59,7 @@ int EquippedPlayerBomb (tObject *objP)
 {
 if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
-		int		i, nWeapon = gameData.multiplayer.nSecondaryWeapons [nPlayer];
+		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
 	for (i = 0; i < sizeofa (nBombIds); i++)
 		if (nWeapon == nBombIds [i])
@@ -76,11 +76,11 @@ int EquippedPlayerMissile (tObject *objP, int *nMissiles)
 {
 if (objP->nType == OBJ_PLAYER) {
 		int		nPlayer = objP->id;
-		int		i, nWeapon = gameData.multiplayer.nSecondaryWeapons [nPlayer];
+		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
 	for (i = 0; i < sizeofa (nMissileIds); i++)
 		if (nWeapon == nMissileIds [i]) {
-			*nMissiles = gameData.multiplayer.nArmedMissiles [nPlayer];
+			*nMissiles = gameData.multiplayer.weaponStates [nPlayer].nMissiles;
 			return i + 1;
 			}
 	}
@@ -96,28 +96,32 @@ void UpdatePlayerWeaponInfo (void)
 
 gameData.weapons.bFiring [0] = (Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0);
 gameData.weapons.bFiring [1] = (Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0);
-if (gameData.multiplayer.nPrimaryWeapons [gameData.multiplayer.nLocalPlayer] != gameData.weapons.nPrimary) {
-	gameData.multiplayer.nPrimaryWeapons [gameData.multiplayer.nLocalPlayer] = gameData.weapons.nPrimary;
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nPrimary != gameData.weapons.nPrimary) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nPrimary = gameData.weapons.nPrimary;
 	bUpdate = 1;
 	}
-if (gameData.multiplayer.nSecondaryWeapons [gameData.multiplayer.nLocalPlayer] != gameData.weapons.nSecondary) {
-	gameData.multiplayer.nSecondaryWeapons [gameData.multiplayer.nLocalPlayer] = gameData.weapons.nSecondary;
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nSecondary != gameData.weapons.nSecondary) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nSecondary = gameData.weapons.nSecondary;
 	bUpdate = 1;
 	}
-if (gameData.multiplayer.bFiringWeapons [gameData.multiplayer.nLocalPlayer][0] != gameData.weapons.bFiring [0]) {
-	gameData.multiplayer.bFiringWeapons [gameData.multiplayer.nLocalPlayer][0] = gameData.weapons.bFiring [0];
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bFiring [0] != gameData.weapons.bFiring [0]) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bFiring [0] = gameData.weapons.bFiring [0];
 	bUpdate = 1;
 	}
-if (gameData.multiplayer.bFiringWeapons [gameData.multiplayer.nLocalPlayer][1] != gameData.weapons.bFiring [1]) {
-	gameData.multiplayer.bFiringWeapons [gameData.multiplayer.nLocalPlayer][1] = gameData.weapons.bFiring [1];
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bFiring [1] != gameData.weapons.bFiring [1]) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bFiring [1] = gameData.weapons.bFiring [1];
 	bUpdate = 1;
 	}
-if (gameData.multiplayer.nArmedMissiles [gameData.multiplayer.nLocalPlayer] != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
-	gameData.multiplayer.nArmedMissiles [gameData.multiplayer.nLocalPlayer] = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
 	bUpdate = 1;
 	}
-if (gameData.multiplayer.nLaserLevels [gameData.multiplayer.nLocalPlayer] != LOCALPLAYER.laserLevel) {
-	gameData.multiplayer.nLaserLevels [gameData.multiplayer.nLocalPlayer] = LOCALPLAYER.laserLevel;
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nLaserLevel != LOCALPLAYER.laserLevel) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nLaserLevel = LOCALPLAYER.laserLevel;
+	bUpdate = 1;
+	}
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion != gameData.weapons.bTripleFusion) {
+	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion = gameData.weapons.bTripleFusion;
 	bUpdate = 1;
 	}
 if (bUpdate)

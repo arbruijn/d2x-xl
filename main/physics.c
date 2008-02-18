@@ -584,6 +584,11 @@ do {
 		&vFrame, 
 		&objP->mType.physInfo.velocity, 
 		FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
+	if (IS_MISSILE (objP)) {
+		float fScale = MissileSpeedScale (objP);
+		if (fScale < 1)
+			VmVecScale (&vFrame, fl2f (fScale * fScale));
+		}
 	if (!IsMultiGame) {
 		int i = (objP != gameData.objs.console) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {

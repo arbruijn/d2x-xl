@@ -286,31 +286,65 @@ mtP->nCount++;
 
 int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
+if (!psm->bRender)
+	return 0;
 if (psm->nGunPoint >= 0)
 	return 1;
 if (psm->bWeapon) {
-	if (psm->nGun == nGunId + 1) {
-		if (psm->nGun == 5) {
-			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
-				return 1;
-			}
-		else if ((psm->nGun == 1) || (psm->nGun == 6)) {
-			if ((psm->nWeaponPos > 2) && !(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
-				return 1;
-			}
-		}
-	else if (!psm->nGun) {
-		if (((nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX)) &&
-				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
+	tPlayer	*playerP = gameData.multiplayer.players + objP->id;
+	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
+	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
+	int		bQuadLasers = (playerP->flags & PLAYER_FLAGS_QUAD_LASERS) != 0;
+	int		bCenter = (nGunId == VULCAN_INDEX) || (nGunId == GAUSS_INDEX) || (nGunId == OMEGA_INDEX);
+
+	if (gameOpts->render.ship.bWeapons) {
+		if (psm->nGun == 127)
 			return 1;
-		return psm->nSize ? 1 : 0;
+		if (psm->nGun == nGunId + 1) {
+			if (psm->nGun == FUSION_INDEX + 1) {
+				if ((psm->nWeaponPos == 3) && !gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+					return 1;
+				}
+			else if (bLasers) {
+				if ((psm->nWeaponPos > 2) && !bQuadLasers)
+					return 1;
+				}
+			}
+		else if (psm->nGun == LASER_INDEX + 1) {
+			if (gameOpts->render.ship.nWingtip)
+				return 1;
+			if (bLasers || bSuperLasers || bQuadLasers)
+				return 1;
+			return !bCenter && (psm->nWeaponPos < 3);
+			}
+		else if (psm->nGun == SUPER_LASER_INDEX + 1) {
+			if (gameOpts->render.ship.nWingtip)
+				return 1;
+			if (bLasers || !bSuperLasers)
+				return 1;
+			return !bCenter && (psm->nWeaponPos < 3);
+			}
+		else if (!psm->nGun) {
+			if (bLasers && bQuadLasers)
+				return 1;
+			if (psm->nType != gameOpts->render.ship.nWingtip)
+				return 1;
+			return 0;
+			}
+		else if (psm->nBomb == nBombId)
+			return 0;
+		else if ((psm->nMissile == nMissileId) && (psm->nWeaponPos <= nMissiles))
+			return 0;
+		else
+			return 1;
 		}
-	else if (psm->nBomb == nBombId)
-		return 0;
-	else if ((psm->nMissile == nMissileId) && (psm->nWeaponPos <= nMissiles))
-		return 0;
-	else
+	else {
+		if (psm->nGun == 127)
+			return 0;
+		if ((psm->nGun < 0) && (psm->nMissile == 1))
+			return 0;
 		return 1;
+		}
 	}
 return 0;
 }
@@ -513,6 +547,7 @@ void G3DrawModel (tObject *objP, short nModel, short nSubModel, grsBitmap **mode
 	int				bEmissive = objP && (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int				bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && !(gameStates.render.bQueryCoronas || gameStates.render.bCloaked || bEmissive);
 	GLenum			hLight;
+	tPosition		*posP = OBJPOS (objP);
 
 if (bLighting) {
 	nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
@@ -564,7 +599,7 @@ for (nPass = 0; nLights || !nPass; nPass++) {
 			glDisable (GL_LIGHT0 + iLight);
 		}
 	if (nSubModel < 0)
-		G3StartInstanceMatrix (&objP->position.vPos, &objP->position.mOrient);
+		G3StartInstanceMatrix (&posP->vPos, &posP->mOrient);
 	pm = gameData.models.g3Models [bHires] + nModel;
 	if (bHires) {
 		int i;

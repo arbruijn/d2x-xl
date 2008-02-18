@@ -148,6 +148,7 @@ void DestroyOmegaLightnings (void);
 void SetMaxOmegaCharge (void);
 void StopPrimaryFire (void);
 void StopSecondaryFire (void);
+float MissileSpeedScale (tObject *objP);
 
 int GetPlayerGun (int nPlayer, int *bFiring);
 

@@ -4537,6 +4537,8 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bBrightObjects = i;
 	extraGameInfo [i].bCheckUDPPort = 1;
 	extraGameInfo [i].bSmokeGrenades = 0;
+	extraGameInfo [i].nMslTurnSpeed = 2;
+	extraGameInfo [i].nMslStartSpeed = 0;
 	extraGameInfo [i].nMaxSmokeGrenades = 2;
 	extraGameInfo [i].nCoopPenalty = 0;
 	extraGameInfo [i].bKillMissiles = 0;
@@ -4676,6 +4678,7 @@ else {
 	LogErr ("   bCheckUDPPort: %d\n", extraGameInfo [1].bCheckUDPPort);
 	LogErr ("   bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	LogErr ("   nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
+	LogErr ("   nMslStartSpeed: %d\n", extraGameInfo [1].nMslStartSpeed);
 	LogErr ("   nCoopPenalty: %d\n", (int) nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty]);
 	LogErr ("   bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	LogErr ("   bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);

@@ -177,6 +177,7 @@ static struct {
 	int	nFusionRamp;
 	int	nOmegaRamp;
 	int	nMslTurnSpeed;
+	int	nMslStartSpeed;
 	int	nSlomoSpeedup;
 	int	nDrag;
 } physOpts;
@@ -260,6 +261,9 @@ static struct {
 	int	nCompSpeed;
 } performanceOpts;
 
+static struct {
+	int	nWeapons;
+} shipRenderOpts;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
 
@@ -973,6 +977,7 @@ if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->render.nCoronaStyle = 0;
 	extraGameInfo [0].bShadows = 0;
 	extraGameInfo [0].bUseSmoke = 0;
+	extraGameInfo [0].bUseLightnings = 0;
 	extraGameInfo [0].bUseCameras = 0;
 	extraGameInfo [0].bPlayerShield = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
@@ -998,12 +1003,17 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.smoke.nSize [1] =
 	gameOpts->render.smoke.nSize [2] =
 	gameOpts->render.smoke.nSize [3] =
-	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nSize [4] = 1;
 	gameOpts->render.smoke.nLife [0] =
 	gameOpts->render.smoke.nLife [1] =
 	gameOpts->render.smoke.nLife [2] =
 	gameOpts->render.smoke.nLife [4] = 0;
 	gameOpts->render.smoke.nLife [3] = 1;
+	gameOpts->render.smoke.nAlpha [0] =
+	gameOpts->render.smoke.nAlpha [1] =
+	gameOpts->render.smoke.nAlpha [2] =
+	gameOpts->render.smoke.nAlpha [3] =
+	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 0;
 	gameOpts->render.nCoronaStyle = 0;
 	gameOpts->render.cockpit.bTextGauges = 1;
@@ -1018,6 +1028,8 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.shadows.nClip = 0;
 	gameOpts->render.shadows.nReach = 0;
 	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 0;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 0;
@@ -1040,17 +1052,31 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.smoke.nSize [1] =
 	gameOpts->render.smoke.nSize [2] =
 	gameOpts->render.smoke.nSize [3] =
-	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nSize [4] = 1;
 	gameOpts->render.smoke.nLife [0] =
 	gameOpts->render.smoke.nLife [1] =
 	gameOpts->render.smoke.nLife [2] =
 	gameOpts->render.smoke.nLife [4] = 0;
 	gameOpts->render.smoke.nLife [3] = 1;
+	gameOpts->render.smoke.nAlpha [0] =
+	gameOpts->render.smoke.nAlpha [1] =
+	gameOpts->render.smoke.nAlpha [2] =
+	gameOpts->render.smoke.nAlpha [3] =
+	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 0;
 	gameOpts->render.nCoronaStyle = 1;
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.bDynLighting = 1;
 	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.nQuality = 1;
+	gameOpts->render.lightnings.nStyle = 1;
+	gameOpts->render.lightnings.bPlasma = 0;
+	gameOpts->render.lightnings.bPlayers = 0;
+	gameOpts->render.lightnings.bRobots = 0;
+	gameOpts->render.lightnings.bDamage = 0;
+	gameOpts->render.lightnings.bExplosions = 0;
+	gameOpts->render.lightnings.bStatic = 0;
+	gameOpts->render.lightnings.bOmega = 1;
 	gameOpts->render.lightnings.bAuxViews = 0;
 	gameOpts->ogl.bLightObjects = 0;
 	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
@@ -1061,6 +1087,8 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.shadows.nClip = 1;
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 1;
@@ -1083,17 +1111,31 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.smoke.nSize [1] =
 	gameOpts->render.smoke.nSize [2] =
 	gameOpts->render.smoke.nSize [3] =
-	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nSize [4] = 1;
 	gameOpts->render.smoke.nLife [0] =
 	gameOpts->render.smoke.nLife [1] =
 	gameOpts->render.smoke.nLife [2] =
 	gameOpts->render.smoke.nLife [4] = 0;
-	gameOpts->render.smoke.nLife [3] = 2;
+	gameOpts->render.smoke.nLife [3] = 1;
+	gameOpts->render.smoke.nAlpha [0] =
+	gameOpts->render.smoke.nAlpha [1] =
+	gameOpts->render.smoke.nAlpha [2] =
+	gameOpts->render.smoke.nAlpha [3] =
+	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 1;
 	gameOpts->render.nCoronaStyle = 2;
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.bDynLighting = 1;
 	gameOpts->render.smoke.bAuxViews = 0;
+	gameOpts->render.lightnings.nQuality = 1;
+	gameOpts->render.lightnings.nStyle = 1;
+	gameOpts->render.lightnings.bPlasma = 0;
+	gameOpts->render.lightnings.bPlayers = 1;
+	gameOpts->render.lightnings.bRobots = 1;
+	gameOpts->render.lightnings.bDamage = 1;
+	gameOpts->render.lightnings.bExplosions = 1;
+	gameOpts->render.lightnings.bStatic = 1;
+	gameOpts->render.lightnings.bOmega = 1;
 	gameOpts->render.lightnings.bAuxViews = 0;
 	gameOpts->ogl.bLightObjects = 0;
 	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
@@ -1104,6 +1146,8 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.shadows.nClip = 1;
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 1;
@@ -1126,16 +1170,30 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.smoke.nSize [1] =
 	gameOpts->render.smoke.nSize [2] =
 	gameOpts->render.smoke.nSize [3] =
-	gameOpts->render.smoke.nSize [4] = 3;
+	gameOpts->render.smoke.nSize [4] = 1;
 	gameOpts->render.smoke.nLife [0] =
 	gameOpts->render.smoke.nLife [1] =
 	gameOpts->render.smoke.nLife [2] =
 	gameOpts->render.smoke.nLife [4] = 0;
-	gameOpts->render.smoke.nLife [3] = 2;
+	gameOpts->render.smoke.nLife [3] = 1;
+	gameOpts->render.smoke.nAlpha [0] =
+	gameOpts->render.smoke.nAlpha [1] =
+	gameOpts->render.smoke.nAlpha [2] =
+	gameOpts->render.smoke.nAlpha [3] =
+	gameOpts->render.smoke.nAlpha [4] = 0;
 	gameOpts->render.smoke.bPlasmaTrails = 1;
 	gameOpts->render.nCoronaStyle = 2;
 	gameOpts->render.bDynLighting = 1;
 	gameOpts->render.smoke.bAuxViews = 1;
+	gameOpts->render.lightnings.nQuality = 1;
+	gameOpts->render.lightnings.nStyle = 2;
+	gameOpts->render.lightnings.bPlasma = 1;
+	gameOpts->render.lightnings.bPlayers = 1;
+	gameOpts->render.lightnings.bRobots = 1;
+	gameOpts->render.lightnings.bDamage = 1;
+	gameOpts->render.lightnings.bExplosions = 1;
+	gameOpts->render.lightnings.bStatic = 1;
+	gameOpts->render.lightnings.bOmega = 1;
 	gameOpts->render.lightnings.bAuxViews = 1;
 	gameOpts->ogl.bLightObjects = 1;
 	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
@@ -1147,6 +1205,8 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.shadows.nClip = 1;
 	gameOpts->render.shadows.nReach = 1;
 	extraGameInfo [0].bShadows = 1;
+	extraGameInfo [0].bUseSmoke = 1;
+	extraGameInfo [0].bUseLightnings = 1;
 	extraGameInfo [0].bPlayerShield = 1;
 	extraGameInfo [0].bThrusterFlames = 1;
 	extraGameInfo [0].bDamageExplosions = 1;
@@ -3772,6 +3832,67 @@ do {
 
 //------------------------------------------------------------------------------
 
+void ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
+{
+	tMenuItem	*m;
+	int			v;
+
+m = menus +shipRenderOpts.nWeapons;
+v = m->value;
+if (v != gameOpts->render.ship.bWeapons) {
+	gameOpts->render.ship.bWeapons = v;
+	*key = -2;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void ShipRenderOptionsMenu ()
+{
+	tMenuItem m [10];
+	int	i, j, choice = 0;
+	int	opt;
+	int	optBullets, optWingtips;
+
+do {
+	memset (m, 0, sizeof (m));
+	opt = 0;
+	ADD_CHECK (opt, TXT_SHIP_WEAPONS, gameOpts->render.ship.bWeapons, KEY_W, HTX_SHIP_WEAPONS);
+	shipRenderOpts.nWeapons = opt++;
+	if (gameOpts->render.ship.bWeapons) {
+		ADD_CHECK (opt, TXT_SHIP_BULLETS, gameOpts->render.ship.bBullets, KEY_B, HTX_SHIP_BULLETS);
+		optBullets = opt++;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_RADIO (opt, TXT_SHIP_WINGTIP_LASER, 0, KEY_A, 1, HTX_SHIP_WINGTIPS);
+		optWingtips = opt++;
+		ADD_RADIO (opt, TXT_SHIP_WINGTIP_SHORT, 0, KEY_S, 1, HTX_SHIP_WINGTIPS);
+		opt++;
+		ADD_RADIO (opt, TXT_SHIP_WINGTIP_LONG, 0, KEY_L, 1, HTX_SHIP_WINGTIPS);
+		opt++;
+		m [optWingtips + gameOpts->render.ship.nWingtip].value = 1;
+		}
+	else
+		optBullets =
+		optWingtips = -1;
+	for (;;) {
+		i = ExecMenu1 (NULL, TXT_SHIP_RENDERMENU, opt, m, ShipRenderOptionsCallback, &choice);
+		if (i < 0)
+			break;
+		} 
+	if (gameOpts->render.ship.bWeapons = m [shipRenderOpts.nWeapons].value) {
+		gameOpts->render.ship.bBullets = m [optBullets].value;
+		for (j = 0; j < 3; j++)
+			if (m [optWingtips + j].value) {
+				gameOpts->render.ship.nWingtip = j;
+				break;
+				}
+		}
+	} while (i == -2);
+}
+
+//------------------------------------------------------------------------------
+
 void RenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
@@ -3838,7 +3959,7 @@ void RenderOptionsMenu ()
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
 			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts;
-	int	optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts;
+	int	optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts, optShipRenderOpts;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif
@@ -3941,6 +4062,8 @@ do {
 		optPowerupOpts = opt++;
 		ADD_MENU (opt, TXT_AUTOMAP_OPTIONS, KEY_M, HTX_RENDER_AUTOMAPOPTS);
 		optAutomapOpts = opt++;
+		ADD_MENU (opt, TXT_SHIP_RENDEROPTIONS, KEY_H, HTX_RENDER_SHIPOPTS);
+		optShipRenderOpts = opt++;
 		ADD_MENU (opt, TXT_MOVIE_OPTIONS, KEY_M, HTX_RENDER_MOVIEOPTS);
 		optMovieOpts = opt++;
 		}
@@ -3960,6 +4083,7 @@ do {
 		optCoronaOpts =
 		optCameraOpts = 
 		optMovieOpts = 
+		optShipRenderOpts =
 		optAdvOpts = -1;
 
 #ifdef _DEBUG
@@ -4003,6 +4127,8 @@ do {
 				AutomapOptionsMenu ();
 			else if ((optMovieOpts >= 0) && (i == optMovieOpts))
 				MovieOptionsMenu ();
+			else if ((optShipRenderOpts >= 0) && (i == optShipRenderOpts))
+				ShipRenderOptionsMenu ();
 			}
 		} 
 	if (!gameStates.app.bNostalgia)
@@ -4177,6 +4303,7 @@ for (i = 0; i < sizeofa (pszDevices); i++) {
 //------------------------------------------------------------------------------
 
 static char *pszMslTurnSpeeds [3];
+static char *pszMslStartSpeeds [4];
 
 void GameplayOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
@@ -4463,6 +4590,14 @@ if (gameOpts->app.bExpertMode) {
 		m->rebuild = 1;
 		}
 
+	m = menus + physOpts.nMslStartSpeed;
+	v = m->value;
+	if (extraGameInfo [0].nMslStartSpeed != 3 - v) {
+		extraGameInfo [0].nMslStartSpeed = 3 - v;
+		sprintf (m->text, TXT_MSL_STARTSPEED, pszMslStartSpeeds [v]);
+		m->rebuild = 1;
+		}
+
 	m = menus + physOpts.nSlomoSpeedup;
 	v = m->value + 4;
 	if (gameOpts->gameplay.nSlowMotionSpeedup != v) {
@@ -4488,16 +4623,21 @@ if (gameOpts->app.bExpertMode) {
 
 void PhysicsOptionsMenu ()
 {
-	tMenuItem m [25];
+	tMenuItem m [30];
 	int	i, opt = 0, choice = 0;
 	int	optRobHits = -1, optWiggle = -1, optAutoLevel = -1,
 			optFluidPhysics = -1, optHitAngles = -1, optKillMissiles = -1, optHitboxes = -1;
-	char	szSpeedBoost [50], szMslTurnSpeed [50], szSlowmoSpeedup [50], szFusionRamp [50], 
-			szOmegaRamp [50], szDebrisLife [50], szDrag [50];
+	char	szSpeedBoost [50], szMslTurnSpeed [50], szMslStartSpeed [50], szSlowmoSpeedup [50], 
+			szFusionRamp [50], szOmegaRamp [50], szDebrisLife [50], szDrag [50];
 
 pszMslTurnSpeeds [0] = TXT_SLOW;
 pszMslTurnSpeeds [1] = TXT_MEDIUM;
 pszMslTurnSpeeds [2] = TXT_STANDARD;
+
+pszMslStartSpeeds [0] = TXT_VERY_SLOW;
+pszMslStartSpeeds [1] = TXT_SLOW;
+pszMslStartSpeeds [2] = TXT_MEDIUM;
+pszMslStartSpeeds [3] = TXT_STANDARD;
 
 do {
 	memset (&m, 0, sizeof (m));
@@ -4519,9 +4659,13 @@ do {
 		*szMslTurnSpeed = *(TXT_MSL_TURNSPEED - 1);
 		ADD_SLIDER (opt, szMslTurnSpeed + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		physOpts.nMslTurnSpeed = opt++;
+		sprintf (szMslStartSpeed + 1, TXT_MSL_STARTSPEED, pszMslStartSpeeds [(int) 3 - extraGameInfo [0].nMslStartSpeed]);
+		*szMslStartSpeed = *(TXT_MSL_STARTSPEED - 1);
+		ADD_SLIDER (opt, szMslStartSpeed + 1, 3 - extraGameInfo [0].nMslStartSpeed, 0, 3, KEY_S, HTX_MSL_STARTSPEED);
+		physOpts.nMslStartSpeed = opt++;
 		sprintf (szSlowmoSpeedup + 1, TXT_SLOWMOTION_SPEEDUP, (float) gameOpts->gameplay.nSlowMotionSpeedup / 2);
 		*szSlowmoSpeedup = *(TXT_SLOWMOTION_SPEEDUP - 1);
-		ADD_SLIDER (opt, szSlowmoSpeedup + 1, gameOpts->gameplay.nSlowMotionSpeedup - 4, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
+		ADD_SLIDER (opt, szSlowmoSpeedup + 1, gameOpts->gameplay.nSlowMotionSpeedup, 0, 4, KEY_M, HTX_SLOWMOTION_SPEEDUP);
 		physOpts.nSlomoSpeedup = opt++;
 		sprintf (szDebrisLife + 1, TXT_DEBRIS_LIFE, nDebrisLife [gameOpts->render.nDebrisLife]);
 		*szDebrisLife = *(TXT_DEBRIS_LIFE - 1);
@@ -4655,11 +4799,15 @@ do {
 		ADD_SLIDER (opt, TXT_BRIGHTNESS, GrGetPaletteGamma (), 0, 16, KEY_B, HTX_RENDER_BRIGHTNESS);
 		optBrightness = opt++;
 		}
+	
 	if (gameStates.app.bNostalgia)
 		ADD_MENU (opt, TXT_DETAIL_LEVELS, KEY_D, HTX_OPTIONS_DETAIL);
-	else
+	else if (gameStates.app.bGameRunning)
+		optPerformance = -1;
+	else {
 		ADD_MENU (opt, TXT_SETPERF_OPTION, KEY_E, HTX_PERFORMANCE_SETTINGS);
-	optPerformance = opt++;
+		optPerformance = opt++;
+		}
 	ADD_MENU (opt, TXT_SCREEN_RES, KEY_S, HTX_OPTIONS_SCRRES);
 	optScrRes = opt++;
 	ADD_TEXT (opt, "", 0);

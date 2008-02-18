@@ -252,7 +252,7 @@ int RIAddObject (tObject *objP)
 if (objP->nType == 255)
 	return 0;
 item.objP = objP;
-G3TransformPoint (&vPos, &objP->position.vPos, 0);
+G3TransformPoint (&vPos, &OBJPOS (objP)->vPos, 0);
 return AddRenderItem (riObject, &item, sizeof (item), vPos.p.z, vPos.p.z);
 }
 

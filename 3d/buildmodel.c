@@ -46,6 +46,8 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "hiresmodels.h"
 #include "buildmodel.h"
 
+static int nDbgModel = -1;
+
 //------------------------------------------------------------------------------
 
 #define	G3_ALLOC(_buf,_count,_type,_fill) \
@@ -325,9 +327,11 @@ return 0;
 	fVector			vOffset;
 	tG3ModelVertex	*pmv;
 
-if (IsMultiGame)
+#if 0 //fixing the model center should always work (even in multiplayer games) as collisions are always resolved locally
+if (IsMultiGame && !IsCoopGame)
 	return 0;
-if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_ROBOT))
+#endif
+if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_HOSTAGE) && (objP->nType != OBJ_POWERUP))
 	return 0;
 VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 if (!(vOffset.p.x || vOffset.p.y || vOffset.p.z))
@@ -394,6 +398,10 @@ fix G3ModelRad (tObject *objP, int nModel, int bHires)
 	float				fRad = 0, r;
 	int				i, j, k;
 
+#ifdef _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++) 
 	if (psm->nHitbox > 0) {
@@ -402,8 +410,6 @@ for (i = pm->nSubModels, psm = pm->pSubModels; i; i--, psm++)
 			for (k = pmf->nVerts, pmv = pm->pFaceVerts + pmf->nIndex; k; k--, pmv++) {
 				VmVecAddf (&v, (fVector *) &pmv->vertex, &vo);
 				if (fRad < (r = VmVecDistf (&vOffset, &v))) {
-					if (r > 349000 / 65536.0)
-						r = r;
 					fRad = r;
 					}
 				}
@@ -423,15 +429,21 @@ fix G3ModelSize (tObject *objP, tG3Model *pm, int nModel, int bHires)
 	vmsVector	hv;
 	double		dx, dy, dz, r;
 
+#ifdef _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 psm = pm->pSubModels;
 j = 1;
-if (nSubModels == 1)
-	psm->nHitbox = j;
+if (nSubModels == 1) {
+	psm->nHitbox = 1;
+	gameData.models.hitboxes [nModel].nHitboxes = 1;
+	}
 else {
 	for (i = nSubModels; i; i--, psm++)
 		psm->nHitbox = (psm->bGlow || psm->bThruster || psm->bWeapon || (psm->nGunPoint >= 0)) ? -1 : j++;
+	gameData.models.hitboxes [nModel].nHitboxes = j - 1;
 	}
-gameData.models.hitboxes [nModel].nHitboxes = j - 1;
 do {
 	// initialize
 	for (i = 0; i <= MAX_HITBOXES; i++) {
@@ -637,6 +649,10 @@ if (pm->bValid > 0)
 if (pm->bValid < 0)
 	return 0;
 pm->bRendered = 0;
+#ifdef _DEBUG
+if (nModel == nDbgModel)
+	nDbgModel = nDbgModel;
+#endif
 memset (pm->nGunSubModels, 0xff, sizeof (pm->nGunSubModels));
 return bHires ? 
 			ASEModel (nModel) ? 

@@ -681,10 +681,10 @@ void TriFusionCheat (int bVerbose)
 {
 	tPlayer	*playerP = &LOCALPLAYER;
 
-if (gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
+if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion)
 	return;
 playerP->primaryWeaponFlags |= 1 << FUSION_INDEX;
-gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 1;
+gameData.weapons.bTripleFusion = 1;
 SelectWeapon (4, 0, 1, 1);
 DoCheatPenalty ();
 }
@@ -796,7 +796,7 @@ else {
 	LOCALPLAYER.cloakTime = 0x7fffffff;
 	gameStates.app.cheats.bSpeed = 1;
 	LOCALPLAYER.primaryWeaponFlags |= 1 << FUSION_INDEX;
-	gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 1;
+	gameData.weapons.bTripleFusion = 1;
 	gameStates.gameplay.bMineMineCheat = 1;
 	SetSpherePulse (gameData.multiplayer.spherePulse + gameData.multiplayer.nLocalPlayer, 0.02f, 0.5f);
 	}

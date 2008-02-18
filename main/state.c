@@ -1142,7 +1142,7 @@ for (i = 0; i < 2; i++) {
 	CFWriteInt (gameStates.gameplay.slowmo [i].nState, cfp);
 	}
 for (i = 0; i < MAX_PLAYERS; i++)
-	CFWriteInt (gameStates.players [i].bTripleFusion, cfp);
+	CFWriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion, cfp);
 if (!bBetweenLevels)	{
 //Finish all morph gameData.objs.objects
 	for (i = 0; i <= gameData.objs.nLastObject; i++) {
@@ -2209,7 +2209,12 @@ for (i = 0; i < 2; i++) {
 	}
 if (sgVersion > 33) {
 	for (i = 0; i < MAX_PLAYERS; i++)
-		gameStates.players [i].bTripleFusion = CFReadInt (cfp);
+	   if (i != gameData.multiplayer.nLocalPlayer)
+		   gameData.multiplayer.weaponStates [i].bTripleFusion = CFReadInt (cfp);
+   	else {
+   	   gameData.weapons.bTripleFusion = CFReadInt (cfp);
+		   gameData.multiplayer.weaponStates [i].bTripleFusion = !gameData.weapons.bTripleFusion;  //force MultiSendWeapons
+		   }
 	}
 if (!bBetweenLevels)	{
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.

@@ -352,9 +352,9 @@ if (gameOpts->render.bDepthSort > 0) {
 		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
 		if (objP->nType == OBJ_FIREBALL) {
 #if 1
-			color.red /= 2;
-			color.green /= 2;
-			color.blue /= 2;
+			color.red *= 0.75;
+			color.green *= 0.75;
+			color.blue *= 0.75;
 #endif
 			}
 #if 0
@@ -448,6 +448,7 @@ int DrawCloakedObject (tObject *objP, fix light, fix *glow, fix xCloakStartTime,
 	int	bOk = 0;
 	fix	xCloakFadeinDuration = F1_0;
 	fix	xCloakFadeoutDuration = F1_0;
+	tPosition *posP = OBJPOS (objP);
 
 if (gameStates.render.bQueryCoronas)
 	return 1;
@@ -507,7 +508,7 @@ if (bFading) {
 	xNewLight = FixMul (light, xLightScale);
 	xSaveGlow = glow [0];
 	glow [0] = FixMul (glow [0], xLightScale);
-	bOk = DrawPolygonModel (objP, &objP->position.vPos, &objP->position.mOrient, 
+	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient,  
 									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 									xNewLight, glow, altTextures, NULL);
@@ -518,7 +519,7 @@ else {
 	gameStates.render.grAlpha = (float) nCloakValue;
 	GrSetColorRGB (0, 0, 0, 255);	//set to black (matters for s3)
 	G3SetSpecialRender (DrawTexPolyFlat, NULL, NULL);		//use special flat drawer
-	bOk = DrawPolygonModel (objP, &objP->position.vPos, &objP->position.mOrient, 
+	bOk = DrawPolygonModel (objP, &posP->vPos, &posP->mOrient, 
 									(vmsAngVec *)&objP->rType.polyObjInfo.animAngles, 
 									objP->rType.polyObjInfo.nModel, objP->rType.polyObjInfo.nSubObjFlags, 
 									light, glow, NULL, NULL);
@@ -937,6 +938,9 @@ switch (objP->renderType) {
 		else if (objP->nType == OBJ_HOSTAGE) {
 			if (gameStates.app.bNostalgia || !(gameOpts->render.powerups.b3D && DrawPolygonObject (objP, bDepthSort)))
 				ConvertModelToHostage (objP);
+#ifdef _DEBUG
+			RenderRobotShield (objP);
+#endif
 			}
 		else {
 #if 1//ndef _DEBUG

@@ -933,7 +933,7 @@ int PickupPrimary (int nWeaponIndex, int nPlayer)
 	ushort flag = 1 << nWeaponIndex;
 	int cutpoint;
 	int supposed_weapon = gameData.weapons.nPrimary;
-	int bTripleFusion = !gameStates.players [nPlayer].bTripleFusion && (nWeaponIndex == FUSION_INDEX) && EGI_FLAG (bTripleFusion, 0, 0, 0);
+	int bTripleFusion = !gameData.multiplayer.weaponStates [nPlayer].bTripleFusion && (nWeaponIndex == FUSION_INDEX) && EGI_FLAG (bTripleFusion, 0, 0, 0);
 
 if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag) && !bTripleFusion) {
 	if (ISLOCALPLAYER (nPlayer))
@@ -942,8 +942,12 @@ if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag) && !bT
 	}
 if (!(playerP->primaryWeaponFlags & flag))
 	playerP->primaryWeaponFlags |= flag;
-else if (bTripleFusion)
-	gameStates.players [nPlayer].bTripleFusion = 1;
+else if (bTripleFusion) {
+	if (nPlayer == gameData.multiplayer.nLocalPlayer)
+   	gameData.weapons.bTripleFusion = 1;
+   else
+	   gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = 1;
+	}
 if (ISLOCALPLAYER (nPlayer)) {
 	cutpoint = POrderList (255);
 	if ((gameData.weapons.nPrimary == LASER_INDEX) && 
@@ -1362,8 +1366,8 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		}
 	}
 else {
-	if ((gameData.weapons.nPrimary == 4) && gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
-		gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion = 0;
+	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion)
+		gameData.weapons.bTripleFusion = 0;
 	else if (gameData.weapons.nPrimary && !IsBuiltInGun (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
 		nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);

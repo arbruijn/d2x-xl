@@ -869,9 +869,7 @@ memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
 memset (gameData.render.mine.bCalcVertexColor, 0, sizeof (gameData.render.mine.bCalcVertexColor));
-memset (gameData.multiplayer.nPrimaryWeapons, 0xff, sizeof (gameData.multiplayer.nPrimaryWeapons));
-memset (gameData.multiplayer.nSecondaryWeapons, 0xff, sizeof (gameData.multiplayer.nSecondaryWeapons));
-memset (gameData.multiplayer.nArmedMissiles, 0xff, sizeof (gameData.multiplayer.nArmedMissiles));
+memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.weaponStates));
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/LogErr ("   stopping music\n");

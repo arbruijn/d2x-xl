@@ -1783,6 +1783,14 @@ char *defaultGameTexts [][2] = {
 	{"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
 	{"Prozent erkundet", "percent explored"},
 	{"Energiefunken zeichnen", "render energy s~Parks"},
+	{"aktuelle ~Waffen zeigen", "show equipped ~Weapons"},
+	{"~Patronenhuelsen zeigen", "show ~Bullet shells"},
+	{"l~Aaser an den Tragflaechenenden", "show l~Asers on wingtips"},
+	{"~Kurzes Tragflaechenende", "show ~Short wingtip"},
+	{"~Langes Tragflaechenende", "show ~Long wingtip"},
+	{"Schiffs-Einstellungen", "Ship options"},
+	{"~Schiffs-Einstellungen...", "s~Hip options..."},
+	{"Raketen~Start: %s", "missile launch ~Speed: %s"},
 #if 0
 	{"", ""},
 #endif
@@ -2397,6 +2405,12 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die Startausstattung der Spielerschiffe mit\nWaffen und Geraeten eingestellt werden.", "Adjust the initial loadout of player ships\nwith guns and devices here."},
 	{"Wenn angekreuzt werden anstelle der zweidimensional angeordneten\nEnergiefunken im gesamten Bereich von Energie-\nund Reparaturzentren Funken gezeichnet.", 
 	 "If checked, energy sparks are not just rendered two dimensionally\naligned, but across the entire space occupied\nby energy and repair centers."},
+	{"Wenn angekreuzt werden die momentan aktiven Waffen an den Spieler-\nschiffen gezeigt.", "If checked the currently equipped weapons are shown\non the player ships."},
+	{"Wenn angekreuzt, rieseln beim Feuern von Vulcan- oder Gauss-Kanone\nPatronenhuelsen aus der Waffe.", "If checked, bullet shells drop out of\nVulcan and Gauss guns when they're fired."},
+	{"Hier kann eingestellt werden, was an den Tragflaechenenden der\nSpielerschiffe gezeigt wird, wenn der Spieler\nkeine Quad Laser hat oder keine Laser einsetzt.", 
+	 "Here you can chose what is shown at the ship's wing tips if a \ndoesn't have quad lasers or hasn't lasers equipped."},
+	{"Hier kann die Darstellung der Spielerschiffe angepasst werden.", "Adjust player ship render settings here."},
+	{"Hier kann die Startgeschwindigkeit von Raketen eingestellt werden.", "Adjust the launch speed of missiles here."},
 #if 0
 	{"", ""},
 #endif

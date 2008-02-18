@@ -1276,6 +1276,9 @@ if (i) {
 	gameOptions [1].render.shadows.bFast = 1;
 	gameOptions [1].render.shadows.nClip = 1;
 	gameOptions [1].render.shadows.nReach = 1;
+	gameOptions [1].render.ship.bWeapons = 1;
+	gameOptions [1].render.ship.nWingtip = 1;
+	gameOptions [1].render.ship.bBullets = 1;
 	gameOptions [1].render.nMaxFPS = 150;
 	gameOptions [1].render.bDepthSort = 0;
 	gameOptions [1].render.bTransparentEffects = 0;
