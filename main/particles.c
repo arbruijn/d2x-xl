@@ -369,7 +369,7 @@ return vPos;
 
 #define RANDOM_FADE	(0.95f + (float) rand () / (float) RAND_MAX / 20.0f)
 
-int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir,
+int CreateParticle (tParticle *pParticle, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 						  short nSegment, int nLife, int nSpeed, char nSmokeType, char nClass,
 						  float nScale, tRgbaColorf *pColor, int nCurTime, int bBlowUp,
 						  float fBrightness, vmsVector *vEmittingFace)
@@ -453,6 +453,8 @@ else {
 	VmVecZero (&pParticle->dir);
 	pParticle->bHaveDir = 1;
 	}
+if (pOrient)
+	pParticle->orient = *pOrient;
 if (vEmittingFace)
 	pParticle->pos = *pPos;
 else
@@ -1132,7 +1134,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir,
+int CreateCloud (tCloud *pCloud, vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 					  short nSegment, int nObject, int nMaxParts, float nPartScale, 
 					  int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
 					  tRgbaColorf *pColor, int nCurTime, int bBlowUpParts, vmsVector *vEmittingFace)
@@ -1157,6 +1159,8 @@ if ((pCloud->bHaveDir = (pDir != NULL)))
 	pCloud->dir = *pDir;
 pCloud->prevPos =
 pCloud->pos = *pPos;
+if (pOrient)
+	pCloud->orient = *pOrient;
 pCloud->bHavePrevPos = 1;
 pCloud->bBlowUpParts = bBlowUpParts;
 pCloud->nParts = 0;
@@ -1242,6 +1246,7 @@ else
 		int			t, h, i, j;
 		float			fDist;
 		float			fBrightness = CloudBrightness (pCloud);
+		vmsMatrix	mOrient = pCloud->orient;
 		vmsVector	vDelta, vPos, *pDir = (pCloud->bHaveDir ? &pCloud->dir : NULL),
 						*vEmittingFace = c.bEmittingFace ? c.vEmittingFace : NULL;
 		fVector		vDeltaf, vPosf;
@@ -1291,7 +1296,7 @@ else
 				vPos.p.x = (fix) (vPosf.p.x * 65536.0f);
 				vPos.p.y = (fix) (vPosf.p.y * 65536.0f);
 				vPos.p.z = (fix) (vPosf.p.z * 65536.0f);
-				CreateParticle (c.pParticles + j, &vPos, pDir, c.nSegment, c.nLife, 
+				CreateParticle (c.pParticles + j, &vPos, pDir, &mOrient, c.nSegment, c.nLife, 
 									c.nSpeed, c.nType, c.nClass, c.nPartScale, c.bHaveColor ? &c.color : NULL,
 									nCurTime, c.bBlowUpParts, fBrightness, vEmittingFace);
 				}
@@ -1480,11 +1485,13 @@ else
 
 //------------------------------------------------------------------------------
 
-void SetCloudPos (tCloud *pCloud, vmsVector *pos, short nSegment)
+void SetCloudPos (tCloud *pCloud, vmsVector *pos, vmsMatrix *orient, short nSegment)
 {
 if ((nSegment < 0) && gameOpts->render.smoke.bCollisions) 
 	nSegment = FindSegByPoint (pos, pCloud->nSegment, 1, 0);
 pCloud->pos = *pos;
+if (orient)
+	pCloud->orient = *orient;
 if (nSegment >= 0)
 	pCloud->nSegment = nSegment;
 }
@@ -1670,7 +1677,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreateSmoke (vmsVector *pPos, vmsVector *pDir, short nSegment, int nMaxClouds, int nMaxParts, 
+int CreateSmoke (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
+					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, int nLife, int nSpeed, char nType, 
 					  int nObject, tRgbaColorf *pColor, int bBlowUpParts, char nSide)
 {
@@ -1710,7 +1718,7 @@ else {
 	pSmoke->nBirth = t;
 	pSmoke->nMaxClouds = nMaxClouds;
 	for (i = 0; i < nMaxClouds; i++)
-		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, nSegment, nObject, nMaxParts, nPartScale, nDensity, 
+		if (CreateCloud (pSmoke->pClouds + i, pPos, pDir, pOrient, nSegment, nObject, nMaxParts, nPartScale, nDensity, 
 							  nPartsPerPos, nLife, nSpeed, nType, pColor, t, bBlowUpParts, (nSide < 0) ? NULL : vEmittingFace))
 			pSmoke->nClouds++;
 		else {
@@ -2111,13 +2119,13 @@ return (gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)) ? Re
 
 //------------------------------------------------------------------------------
 
-void SetSmokePos (int i, vmsVector *pos, short nSegment)
+void SetSmokePos (int i, vmsVector *pos, vmsMatrix *orient, short nSegment)
 {
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds)
 		for (i = 0; i < pSmoke->nClouds; i++)
-			SetCloudPos (pSmoke->pClouds, pos, nSegment);
+			SetCloudPos (pSmoke->pClouds, pos, orient, nSegment);
 #ifdef _DEBUG
 	else if (pSmoke->nObject >= 0) {
 		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);

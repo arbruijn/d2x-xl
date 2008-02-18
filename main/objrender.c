@@ -600,7 +600,8 @@ int DrawPolygonObject (tObject *objP, int bDepthSort)
 
 if (objP->nType == 255)
 	return 0;
-if (0 > (id = (int) objP->id))
+id = (int) objP->id;
+if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;
 else 
 	bEnergyWeapon = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [id] && !gameData.objs.bIsMissile [id];

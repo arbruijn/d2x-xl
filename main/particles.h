@@ -16,6 +16,7 @@ typedef struct tParticle {
 #if !EXTRA_VERTEX_ARRAYS
 	tPartPos		glPos;
 #endif
+	vmsMatrix	orient;
 	vmsVector	pos;				//position
 	vmsVector	transPos;		//transformed position
 	vmsVector	dir;				//movement direction
@@ -70,6 +71,7 @@ typedef struct tCloud {
 	int			nObject;
 	short			nObjType;
 	short			nObjId;
+	vmsMatrix	orient;
 	vmsVector	dir;
 	vmsVector	pos;				//initial particle position
 	vmsVector	prevPos;			//initial particle position
@@ -99,7 +101,7 @@ typedef struct tSmoke {
 	tCloud		*pClouds;		//list of active clouds
 } tSmoke;
 
-int CreateSmoke (vmsVector *pPos, vmsVector *pDir,
+int CreateSmoke (vmsVector *pPos, vmsVector *pDir, vmsMatrix *pOrient,
 					  short nSegment, int nMaxClouds, int nMaxParts, 
 					  float nPartScale, int nDensity, int nPartsPerPos, 
 					  int nLife, int nSpeed, char nType, int nObject,
@@ -110,7 +112,7 @@ int RenderSmoke ();
 int DestroyAllSmoke (void);
 void SetSmokeDensity (int i, int nMaxParts, int nDensity);
 void SetSmokePartScale (int i, float nPartScale);
-void SetSmokePos (int i, vmsVector *pos, short nSegment);
+void SetSmokePos (int i, vmsVector *pos, vmsMatrix *orient, short nSegment);
 void SetSmokeDir (int i, vmsVector *pDir);
 void SetSmokeLife (int i, int nLife);
 void SetSmokeType (int i, int nType);
@@ -119,7 +121,7 @@ void SetSmokeBrightness (int i, int nBrightness);
 tCloud *GetCloud (int i, int j);
 int GetSmokeType (int i);
 void FreeParticleImages (void);
-void SetCloudPos (tCloud *pCloud, vmsVector *pos, short nSegment);
+void SetCloudPos (tCloud *pCloud, vmsVector *pos, vmsMatrix *orient, short nSegment);
 void InitSmoke (void);
 int MaxParticles (int nParts, int nDens);
 float ParticleSize (int nSize, float nScale);

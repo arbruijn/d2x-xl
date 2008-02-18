@@ -2621,6 +2621,8 @@ for (; i < j; i++) {
 	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
 	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
 		DrawPolygonObject (&o, 1);
+	if (o.nType == OBJ_HOSTAGE)
+		o.nType = OBJ_POWERUP;
 	}
 gameStates.render.bBuildModels = 0;
 }

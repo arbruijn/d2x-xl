@@ -769,21 +769,47 @@ gameOpts->render.bDepthSort = bDepthSort;
 
 //------------------------------------------------------------------------------
 
+void RIRenderBullet (tParticle *pParticle)
+{
+	tObject	o;
+	float		fScale = (float) pParticle->nLife / (float) pParticle->nTTL;
+
+memset (&o, 0, sizeof (o));
+o.nType = OBJ_POWERUP;
+o.position.vPos = pParticle->pos;
+o.position.mOrient = pParticle->orient;
+o.renderType = RT_POLYOBJ;
+o.rType.polyObjInfo.nModel = BULLET_MODEL;
+o.rType.polyObjInfo.nTexOverride = -1;
+//gameData.models.nScale = (fix) (sqrt (fScale) * F1_0);
+DrawPolygonObject (&o, 0);
+glDisable (GL_TEXTURE_2D);
+renderItems.bTextured = 0;
+renderItems.bClientState = 0;
+gameData.models.nScale = 0;
+}
+
+//------------------------------------------------------------------------------
+
 void RIRenderParticle (tRIParticle *item)
 {
-RISetClientState (0, 0, 0);
-RIResetShader ();
-if (renderItems.nPrevType != riParticle) {
-	glEnable (GL_TEXTURE_2D);
-	glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	gameData.smoke.nLastType = -1;
-	renderItems.bTextured = 1;
-	InitParticleBuffer ();
+if (item->particle->nType == 2)
+	RIRenderBullet (item->particle);
+else {
+	RISetClientState (0, 0, 0);
+	RIResetShader ();
+	if (renderItems.nPrevType != riParticle) {
+		glEnable (GL_TEXTURE_2D);
+		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		gameData.smoke.nLastType = -1;
+		renderItems.bTextured = 1;
+		InitParticleBuffer ();
+		}
+	if (renderItems.bDepthMask)
+		glDepthMask (renderItems.bDepthMask = 0);
+	RenderParticle (item->particle, item->fBrightness);
+	renderItems.bTextured = 0;
 	}
-if (renderItems.bDepthMask)
-	glDepthMask (renderItems.bDepthMask = 0);
-RenderParticle (item->particle, item->fBrightness);
-renderItems.bTextured = 0;
 }
 
 //------------------------------------------------------------------------------
