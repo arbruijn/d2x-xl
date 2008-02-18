@@ -340,7 +340,7 @@ inline float ParticleBrightness (tRgbaColorf *pColor)
 #if 0
 return (pColor->red + pColor->green + pColor->blue) / 3.0f;
 #else
-return (pColor->red * 3 + pColor->green * 5 + pColor->blue * 2) / 10.0f;
+return pColor ? (pColor->red * 3 + pColor->green * 5 + pColor->blue * 2) / 10.0f : 1.0f;
 #endif
 }
 
@@ -481,12 +481,19 @@ else {
 	pParticle->nRad = nRad / 2;
 	}
 nFrames = nParticleFrames [gameStates.render.bPointSprites && !gameOpts->render.smoke.bSort && (gameOpts->render.bDepthSort <= 0)][nType];
-pParticle->nFrame = rand () % (nFrames * nFrames);
-pParticle->nRotFrame = pParticle->nFrame / 2;
-pParticle->nOrient = rand () % 4;
+if (pParticle->nType == 2) {
+	pParticle->nFrame = 0;
+	pParticle->nRotFrame = 0;
+	pParticle->nOrient = 3;
+	}
+else {
+	pParticle->nFrame = rand () % (nFrames * nFrames);
+	pParticle->nRotFrame = pParticle->nFrame / 2;
+	pParticle->nOrient = rand () % 4;
+	}
 #if 1
 pParticle->color.alpha /= nSmokeType + 2;
-if (nType)
+if (nType == 1)
 	pParticle->color.alpha *= ParticleBrightness (pColor);
 #endif
 return 1;
@@ -1085,7 +1092,7 @@ float CloudBrightness (tCloud *pCloud)
 
 if (pCloud->nObject == 0x7fffffff)
 	return 0.5f;
-if (pCloud->nType >= PARTICLE_TYPES - 2)
+if (pCloud->nType > 2)
 	return 1.0f;
 if (pCloud->nObject < 0)
 	return pCloud->fBrightness;
@@ -1239,8 +1246,6 @@ else
 						*vEmittingFace = c.bEmittingFace ? c.vEmittingFace : NULL;
 		fVector		vDeltaf, vPosf;
 
-	if (pCloud == (tCloud *) 0x3ef880)
-		pCloud = pCloud;
 #if SMOKE_SLOWMO
 	t = (int) ((nCurTime - c.nMoved) / gameStates.gameplay.slowmo [0].fSpeed);
 #else
@@ -1271,7 +1276,7 @@ else
 				vDeltaf.p.y /= (float) h;
 				vDeltaf.p.z /= (float) h;
 				}
-			else if (c.nType >= PARTICLE_TYPES - 2)
+			else if (c.nType == 3)
 				goto funcExit;
 			else {
 				VmVecFixToFloat (&vPosf, &c.pos);
@@ -1757,7 +1762,8 @@ else
 			//continue;
 			}
 #endif
-		if ((pSmoke->nObject == 0x7fffffff) && (gameStates.app.nSDLTicks - pSmoke->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
+		if ((pSmoke->nObject == 0x7fffffff) && (pSmoke->nType < 3) && 
+			 (gameStates.app.nSDLTicks - pSmoke->nBirth > (MAX_SHRAPNEL_LIFE / F1_0) * 1000))
 			SetSmokeLife (i, 0);
 #ifdef _DEBUG
 		if ((pSmoke->nObject != 0x7fffffff) && (gameData.objs.objects [pSmoke->nObject].nType == 255))

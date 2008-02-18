@@ -146,6 +146,8 @@ int FindHomingObject (vmsVector *curpos, tObject *tracker);
 int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
 void DestroyOmegaLightnings (void);
 void SetMaxOmegaCharge (void);
+void StopPrimaryFire (void);
+void StopSecondaryFire (void);
 
 int GetPlayerGun (int nPlayer, int *bFiring);
 

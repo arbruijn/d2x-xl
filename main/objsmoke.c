@@ -130,8 +130,8 @@ for (j = 0; j < 2; j++)
 //------------------------------------------------------------------------------
 
 #define BULLET_MAX_PARTS	50
-#define BULLET_PART_LIFE	-3000
-#define BULLET_PART_SPEED	100
+#define BULLET_PART_LIFE	-2000
+#define BULLET_PART_SPEED	50
 
 void DoBulletEffect (tObject *objP)
 {
@@ -163,10 +163,11 @@ if (bHires >= 0) {
 			VmVecNegate (&vDir);
 			if (i < 0) {
 				gameData.multiplayer.bulletEmitters [nPlayer] =
-						CreateSmoke (&vEmitter, &vDir, objP->nSegment, 1, BULLET_MAX_PARTS, 1.0f, 1,
-										 1, BULLET_PART_LIFE, BULLET_PART_SPEED, 4, OBJ_IDX (objP), NULL, 0, -1);
+					CreateSmoke (&vEmitter, &vDir, objP->nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
+									 1, BULLET_PART_LIFE, BULLET_PART_SPEED, 4, 0x7fffffff, NULL, 0, -1);
 				}
 			else {
+				SetSmokePos (i, &vEmitter, objP->nSegment);
 				}
 			}
 		else {
@@ -200,6 +201,7 @@ if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) ||
 	KillObjectSmoke (i);
 	return;
 	}
+//DoBulletEffect (objP);
 j = OBJ_IDX (objP);
 if (gameOpts->render.smoke.bDecreaseLag && (i == gameData.multiplayer.nLocalPlayer)) {
 	fn = objP->position.mOrient.fVec;
@@ -660,7 +662,7 @@ for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
 	if (objP->lifeleft < shrapnelP->xLife)
 		objP->lifeleft = shrapnelP->xLife;
 	shrapnelP->nSmoke = CreateSmoke (&shrapnelP->vPos, NULL, objP->nSegment, 1, -SHRAPNEL_MAX_PARTS,
-											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fff, &color, 1, -1);
+											   -PARTICLE_SIZE (1, 4), -1, 1, SHRAPNEL_PART_LIFE , SHRAPNEL_PART_SPEED, 1, 0x7fffffff, &color, 1, -1);
 	}
 objP->lifeleft *= 2;
 objP->cType.explInfo.nSpawnTime = -1;

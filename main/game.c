@@ -2416,7 +2416,7 @@ void FireLaser ()
 {
 	int h, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
-gameData.laser.nGlobalFiringCount += WI_fireCount (i) * (Controls [0].firePrimaryState || Controls [0].firePrimaryDownCount);
+gameData.laser.nGlobalFiringCount += WI_fireCount (i) * gameData.weapons.bFiring [0];
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
 	if ((LOCALPLAYER.energy < F1_0 * 2) && 
 		 (gameData.fusion.xAutoFireTime == 0)) {

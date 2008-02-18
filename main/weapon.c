@@ -44,6 +44,7 @@ static char rcsid[] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
 #include "escort.h"
 #include "network.h"
 #include "u_mem.h"
+#include "input.h"
 
 #if defined (TACTILE)
 #include "tactile.h"
@@ -438,12 +439,13 @@ if (!bSecondary) {
 			}
 		}
 	gameData.weapons.nPrimary = (!bSecondary && (nWeaponNum == SUPER_LASER_INDEX)) ? LASER_INDEX : nWeaponNum;
+	StopPrimaryFire ();
 	szWeaponName = PRIMARY_WEAPON_NAMES (nWeaponNum);
    #if defined (TACTILE)
  	tactile_set_button_jolt();
 	#endif
 	//save flag for whether was super version
-	bLastPrimaryWasSuper[nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
+	bLastPrimaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
 	}
 else {
 	if (gameData.weapons.nSecondary != nWeaponNum) {
@@ -466,6 +468,7 @@ else {
 	}
 	if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX) {
 		gameData.weapons.nSecondary = nWeaponNum;
+		StopSecondaryFire ();
 		}
 	szWeaponName = SECONDARY_WEAPON_NAMES (nWeaponNum);
 	//save flag for whether was super version

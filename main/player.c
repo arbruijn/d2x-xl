@@ -12,6 +12,7 @@
 
 #include "inferno.h"
 #include "multi.h"
+#include "input.h"
 
 #ifdef RCS
 static char rcsid[] = "$Id: player.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
@@ -93,6 +94,8 @@ void UpdatePlayerWeaponInfo (void)
 {
 	int	bUpdate = 0;
 
+gameData.weapons.bFiring [0] = (Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0);
+gameData.weapons.bFiring [1] = (Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0);
 if (gameData.multiplayer.nPrimaryWeapons [gameData.multiplayer.nLocalPlayer] != gameData.weapons.nPrimary) {
 	gameData.multiplayer.nPrimaryWeapons [gameData.multiplayer.nLocalPlayer] = gameData.weapons.nPrimary;
 	bUpdate = 1;

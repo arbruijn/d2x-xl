@@ -289,7 +289,6 @@ int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, 
 if (psm->nGunPoint >= 0)
 	return 1;
 if (psm->bWeapon) {
-	return 1;
 	if (psm->nGun == nGunId + 1) {
 		if (psm->nGun == 5) {
 			if ((psm->nWeaponPos == 3) && !gameStates.players [gameData.multiplayer.nLocalPlayer].bTripleFusion)
