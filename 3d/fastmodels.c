@@ -302,7 +302,8 @@ if (psm->bWeapon) {
 	else if (!psm->nGun) {
 		if (((nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX)) &&
 				(gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_QUAD_LASERS))
-			return psm->nSize ? 0 : 1;
+			return 1;
+		return psm->nSize ? 1 : 0;
 		}
 	else if (psm->nBomb == nBombId)
 		return 0;
