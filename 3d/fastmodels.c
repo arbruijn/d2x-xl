@@ -284,7 +284,7 @@ mtP->nCount++;
 
 //------------------------------------------------------------------------------
 
-static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 0};
+static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
 int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
