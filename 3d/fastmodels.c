@@ -292,6 +292,8 @@ if (!psm->bRender)
 	return 0;
 if (psm->nGunPoint >= 0)
 	return 1;
+if (psm->bBullets)
+	return 1;
 if (psm->bWeapon) {
 	tPlayer	*playerP = gameData.multiplayer.players + objP->id;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
@@ -339,7 +341,7 @@ if (psm->bWeapon) {
 			return 1;
 		}
 	else {
-		if (psm->nGun == 0)
+		if (psm->nGun == 1)
 			return 0;
 		if ((psm->nGun < 0) && (psm->nMissile == 1))
 			return 0;

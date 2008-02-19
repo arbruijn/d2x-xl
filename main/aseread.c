@@ -566,12 +566,6 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nMissile = -1;
 			psm->nType = atoi (psm->szName + 8);
 			}
-		else if (strstr (psm->szName, "$STDLAS") != NULL) {
-			psm->bWeapon = 1;
-			psm->nGun = 127;
-			psm->nBomb =
-			psm->nMissile = -1;
-			}
 		else if (strstr (psm->szName, "$GUN") != NULL) {
 			psm->bWeapon = 1;
 			psm->nGun = atoi (psm->szName + 4) + 1;
