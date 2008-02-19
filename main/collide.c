@@ -1950,7 +1950,7 @@ gameData.multiplayer.bWasHit [playerObjP->id] = -1;
 //be a mirror of the value in the Player structure. 
 
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {		//is this the local tPlayer?
-	if ((gameData.app.nGameMode & GM_ENTROPY)&& extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
+	if ((gameData.app.nGameMode & GM_ENTROPY) && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
 		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
 		if (h < 0.5)
 			h = 0.5;

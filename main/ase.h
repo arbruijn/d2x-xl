@@ -34,6 +34,7 @@ typedef struct tASESubModel {
 	char						nWeaponPos;
 	char						nGunPoint;
 	char						nBullets;
+	char						bBarrel;
 	fVector3					vOffset;
 	tASEFace					*pFaces;
 	tASEVertex				*pVerts;

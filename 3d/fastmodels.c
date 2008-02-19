@@ -359,9 +359,9 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	tG3SubModel		*psm = pm->pSubModels + nSubModel;
 	tG3ModelFace	*pmf;
 	grsBitmap		*bmP = NULL;
-	vmsAngVec		*va = pAnimAngles ? pAnimAngles + psm->nAngles : &avZero;
+	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : avZero;
 	vmsVector		vo;
-	int				h, i, j, bTransparent, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
+	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
@@ -382,8 +382,25 @@ vo = psm->vOffset;
 if (gameData.models.nScale)
 	VmVecScale (&vo, gameData.models.nScale);
 if (vOffset && (nExclusive < 0)) {
-	G3StartInstanceAngles (&vo, va);
+	G3StartInstanceAngles (&vo, &va);
 	VmVecInc (&vo, vOffset);
+	}
+if ((bAnimate = psm->nFrames && gameData.multiplayer.weaponStates [objP->id].bFiring [0])) {
+	if (gameStates.app.nSDLTicks - psm->tFrame > 40) {
+		psm->tFrame = gameStates.app.nSDLTicks;
+		psm->iFrame = ++psm->iFrame % psm->nFrames;
+		}
+#if 1
+	glPushMatrix ();
+	glTranslatef (0, f2fl (psm->vCenter.p.y), 0);
+	glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
+	glTranslatef (0, -f2fl (psm->vCenter.p.y), 0);
+#else
+	va.b = (psm->iFrame * F1_0 / psm->nFrames) % F1_0;
+	vo = psm->vCenter;
+	VmVecNegate (&vo);
+	G3StartInstanceAngles (&vo, &va);
+#endif
 	}
 #if G3_DRAW_SUBMODELS
 // render any dependent submodels
@@ -531,6 +548,8 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 		}
 	}
+if (bAnimate)
+	glPopMatrix ();
 if ((nExclusive < 0) || (nSubModel == nExclusive))
 	G3DoneInstance ();
 }

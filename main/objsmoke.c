@@ -159,7 +159,6 @@ if (gameOpts->render.nPath && gameOpts->render.ship.bBullets) {
 				int			nGun = EquippedPlayerGun (objP);
 				int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) && gameData.multiplayer.weaponStates [nPlayer].bFiring [0]; 
 				int			i = gameData.multiplayer.bulletEmitters [nPlayer];
-				vmsMatrix	m;
 
 			if (bDoEffect) {
 					int			bSpectate = SPECTATOR (objP);
@@ -175,16 +174,13 @@ if (gameOpts->render.nPath && gameOpts->render.ship.bBullets) {
 				VmVecInc (&vEmitter, &posP->vPos);
 				vDir = posP->mOrient.uVec;
 				VmVecNegate (&vDir);
-				m.fVec = posP->mOrient.uVec;
-				m.uVec = posP->mOrient.fVec;
-				m.rVec = posP->mOrient.rVec;
 				if (i < 0) {
 					gameData.multiplayer.bulletEmitters [nPlayer] =
-						CreateSmoke (&vEmitter, &vDir, &m, objP->nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
-										1, BULLET_PART_LIFE, BULLET_PART_SPEED, 4, 0x7fffffff, NULL, 0, -1);
+						CreateSmoke (&vEmitter, &vDir, &posP->mOrient, objP->nSegment, 1, BULLET_MAX_PARTS, 15.0f, 1,
+										 1, BULLET_PART_LIFE, BULLET_PART_SPEED, 4, 0x7fffffff, NULL, 0, -1);
 					}
 				else {
-					SetSmokePos (i, &vEmitter, &m, objP->nSegment);
+					SetSmokePos (i, &vEmitter, &posP->mOrient, objP->nSegment);
 					}
 				}
 			else {

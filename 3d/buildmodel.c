@@ -327,11 +327,11 @@ return 0;
 	fVector			vOffset;
 	tG3ModelVertex	*pmv;
 
-#if 0 //fixing the model center should always work (even in multiplayer games) as collisions are always resolved locally
-if (IsMultiGame && !IsCoopGame)
-	return 0;
-#endif
-if ((objP->nType != OBJ_PLAYER) && (objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_HOSTAGE) && (objP->nType != OBJ_POWERUP))
+if (objP->nType == OBJ_PLAYER) {
+	if (IsMultiGame && !IsCoopGame)
+		return 0;
+	}
+else if ((objP->nType != OBJ_ROBOT) && (objP->nType != OBJ_HOSTAGE) && (objP->nType != OBJ_POWERUP))
 	return 0;
 VmVecFixToFloat (&vOffset, gameData.models.offsets + nModel);
 if (!(vOffset.p.x || vOffset.p.y || vOffset.p.z))

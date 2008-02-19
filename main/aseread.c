@@ -198,7 +198,7 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		if (bmP->bmTexBuf)	//duplicate
 			return ASE_Error ();
 		*fn = '\001';
-		CFSplitPath (StrTok (" \t\""), NULL, fn + 1, NULL);
+		CFSplitPath (StrTok ("\""), NULL, fn + 1, NULL);
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
 			return ASE_Error ();
 		l = (int) strlen (fn) + 1;
@@ -543,6 +543,7 @@ psm->nGunPoint = -1;
 psm->nBullets = -1;
 psm->bRender = 1;
 psm->nType = 0;
+psm->bBarrel = 0;
 while ((pszToken = ASE_ReadLine (cfp))) {
 	if (*pszToken == '}')
 		return 1;
@@ -577,6 +578,14 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->nWeaponPos = atoi (psm->szName + 6) + 1;
 			psm->nBomb =
 			psm->nMissile = -1;
+			}
+		else if (strstr (psm->szName, "$BARREL") != NULL) {
+			psm->bWeapon = 1;
+			psm->nGun = atoi (psm->szName + 7) + 1;
+			psm->nWeaponPos = atoi (psm->szName + 9) + 1;
+			psm->nBomb =
+			psm->nMissile = -1;
+			psm->bBarrel = 1;
 			}
 		else if (strstr (psm->szName, "$MISSILE") != NULL) {
 			psm->bWeapon = 1;

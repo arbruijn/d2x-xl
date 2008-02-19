@@ -453,8 +453,17 @@ else {
 	VmVecZero (&pParticle->dir);
 	pParticle->bHaveDir = 1;
 	}
-if (pOrient)
-	pParticle->orient = *pOrient;
+if (pOrient) {
+		vmsAngVec	vRot;
+		vmsMatrix	mRot;
+
+	vRot.b = 0;
+	vRot.p = d_rand () % 2048;
+	vRot.h = d_rand () % 2048;
+	VmAngles2Matrix (&mRot, &vRot);
+	VmMatMul (&pParticle->orient, pOrient, &mRot);
+	//pParticle->orient = *pOrient;
+	}
 if (vEmittingFace)
 	pParticle->pos = *pPos;
 else

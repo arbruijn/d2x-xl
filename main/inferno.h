@@ -1887,6 +1887,9 @@ typedef struct tG3SubModel {
 	char						nBomb;
 	char						nMissile;
 	char						nWeaponPos;
+	ubyte						nFrames;
+	ubyte						iFrame;
+	time_t					tFrame;
 } tG3SubModel;
 
 typedef struct tG3VertNorm {

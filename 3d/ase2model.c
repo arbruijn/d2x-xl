@@ -76,6 +76,9 @@ for (pml = pa->pSubModels; pml; pml = pml->pNextModel) {
 	psm->nGunPoint = psa->nGunPoint;
 	psm->bBullets = (psa->nBullets > 0);
 	psm->nIndex = nIndex;
+	psm->iFrame = 0;
+	psm->tFrame = 0;
+	psm->nFrames = psa->bBarrel ? 32 : 0;
 	VmVecFloatToFix (&psm->vOffset, (fVector *) &psa->vOffset);
 	G3InitSubModelMinMax (psm);
 	for (pfa = psa->pFaces, iFace = 0; iFace < nFaces; iFace++, pfa++, pmf++) {
