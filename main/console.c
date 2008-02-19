@@ -38,7 +38,7 @@
 #include "inferno.h"
 #include "cfile.h"
 
-#ifdef _WIN32
+#ifndef __unix__
 static int con_initialized = 0;
 #endif
 

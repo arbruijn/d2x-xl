@@ -132,7 +132,7 @@ size_t bitmapCacheUsed = 0;
 size_t bitmapCacheSize = 0;
 static int bitmapCacheNext [2] = {0, 0};
 static int bitmapOffsets [2][MAX_BITMAP_FILES];
-#ifdef __unix__
+#ifndef _WIN32
 static ubyte *bitmapBits [2] = {NULL, NULL};
 #endif
 ubyte d1ColorMap [256];
