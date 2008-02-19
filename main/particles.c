@@ -87,8 +87,8 @@ static grsBitmap *bmpBumpMaps [2] = {NULL, NULL};
 #endif
 
 static char *szParticleImg [2][PARTICLE_TYPES] = {
-	{"smoke.tga", "corona.tga", "bulletcase.tga"},
-	{"smoke.tga", "corona.tga", "bulletcase.tga"}
+	{"smoke.tga", "corona.tga", "bullcase.tga"},
+	{"smoke.tga", "corona.tga", "bullcase.tga"}
 	};
 
 static int nParticleFrames [2][PARTICLE_TYPES] = {{1,1,1,1},{1,1,1,1}};
