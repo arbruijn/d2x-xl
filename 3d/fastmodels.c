@@ -386,7 +386,7 @@ if (vOffset && (nExclusive < 0)) {
 	VmVecInc (&vo, vOffset);
 	}
 if ((bAnimate = psm->nFrames && gameData.multiplayer.weaponStates [objP->id].bFiring [0])) {
-	if (gameStates.app.nSDLTicks - psm->tFrame > 40) {
+	if (gameStates.app.nSDLTicks - psm->tFrame > 40 * gameStates.gameplay.slowmo [0].fSpeed) {
 		psm->tFrame = gameStates.app.nSDLTicks;
 		psm->iFrame = ++psm->iFrame % psm->nFrames;
 		}

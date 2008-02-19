@@ -781,7 +781,7 @@ o.position.mOrient = pParticle->orient;
 o.renderType = RT_POLYOBJ;
 o.rType.polyObjInfo.nModel = BULLET_MODEL;
 o.rType.polyObjInfo.nTexOverride = -1;
-//gameData.models.nScale = (fix) (sqrt (fScale) * F1_0);
+gameData.models.nScale = (fix) (sqrt (fScale) * F1_0);
 DrawPolygonObject (&o, 0);
 glDisable (GL_TEXTURE_2D);
 renderItems.bTextured = 0;
