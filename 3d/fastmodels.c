@@ -297,7 +297,7 @@ if (psm->bWeapon) {
 	int		bQuadLasers = (playerP->flags & PLAYER_FLAGS_QUAD_LASERS) != 0;
 	int		bCenter = (nGunId == VULCAN_INDEX) || (nGunId == GAUSS_INDEX) || (nGunId == OMEGA_INDEX);
 
-	if (gameOpts->render.ship.bWeapons) {
+	if (EGI_FLAG (bShowWeapons, 0, 1, 0)) {
 		if (psm->nGun == 127)
 			return 1;
 		if (psm->nGun == nGunId + 1) {
@@ -754,8 +754,10 @@ else {
 #if G3_SW_SCALING
 G3ScaleModel (nModel);
 #else
+#	if 0
 if (bHires)
 	gameData.models.nScale = 0;
+#	endif
 #endif
 if (!(gameOpts->ogl.bObjLighting || gameStates.render.bQueryCoronas || gameStates.render.bCloaked))
 	G3LightModel (objP, nModel, xModelLight, xGlowValues, bHires);

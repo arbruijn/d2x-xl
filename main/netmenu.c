@@ -2515,6 +2515,7 @@ else
 		ADDFLAG (AXI.bLightTrails, "Light trails");
 		ADDFLAG (AXI.bShockwaves, "Shockwaves");
 		ADDFLAG (AXI.bTracers, "Tracers");
+		ADDFLAG (AXI.bShowWeapons, "Weapons");
 		}
 	else
 		sprintf (mTexts [opt], "Weapon Fx: None");

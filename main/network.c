@@ -543,7 +543,7 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	}
 gameData.multiplayer.players [nPlayer].connected = 0;
 KillPlayerSmoke (nPlayer);
-gameData.multiplayer.weaponStates [nPlayer].bFiring [0]
+gameData.multiplayer.weaponStates [nPlayer].bFiring [0] =
 gameData.multiplayer.weaponStates [nPlayer].bFiring [1] = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 netPlayers.players [nPlayer].connected = 0;
@@ -4546,6 +4546,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nCoopPenalty = 0;
 	extraGameInfo [i].bKillMissiles = 0;
 	extraGameInfo [i].bTripleFusion = 0;
+	extraGameInfo [i].bShowWeapons = 0;
 	extraGameInfo [i].bEnhancedShakers = 0;
 	extraGameInfo [i].nHitboxes = 0;
 	extraGameInfo [i].nRadar = 0;
@@ -4685,6 +4686,7 @@ else {
 	LogErr ("   nCoopPenalty: %d\n", (int) nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty]);
 	LogErr ("   bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	LogErr ("   bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
+	LogErr ("   bShowWeapons: %d\n", extraGameInfo [1].bShowWeapons);
 	LogErr ("   bEnhancedShakers: %d\n", extraGameInfo [1].bEnhancedShakers);
 	LogErr ("   nHitboxes: %d\n", extraGameInfo [1].nHitboxes);
 	LogErr ("   nRadar: %d\n", extraGameInfo [1].nRadar);

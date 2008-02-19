@@ -245,6 +245,7 @@ typedef struct tExtraGameInfo {
 	char		bKillMissiles;
 	char		bTripleFusion;
 	char		bEnhancedShakers;
+	char		bShowWeapons;
 	char		nHitboxes;
 	char		nRadar;
 	char		nDrag;

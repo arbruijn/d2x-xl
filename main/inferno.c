@@ -1267,6 +1267,7 @@ if (i) {
 	extraGameInfo [0].bDamageExplosions = 0;
 	extraGameInfo [0].bThrusterFlames = 0;
 	extraGameInfo [0].bShadows = 0;
+	extraGameInfo [0].bShowWeapons = 1;
 	gameOptions [0].render.nPath = 0;
 	gameOptions [1].render.shadows.bPlayers = 0;
 	gameOptions [1].render.shadows.bRobots = 0;
@@ -1276,7 +1277,6 @@ if (i) {
 	gameOptions [1].render.shadows.bFast = 1;
 	gameOptions [1].render.shadows.nClip = 1;
 	gameOptions [1].render.shadows.nReach = 1;
-	gameOptions [1].render.ship.bWeapons = 1;
 	gameOptions [1].render.ship.nWingtip = 1;
 	gameOptions [1].render.ship.bBullets = 1;
 	gameOptions [1].render.nMaxFPS = 150;

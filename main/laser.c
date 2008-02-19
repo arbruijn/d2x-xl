@@ -823,9 +823,9 @@ VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
 
 //-------------------------------------------------------------------------------------------
 
-static inline fix HomingMsgStraightTime (void)
+static inline fix HomingMslStraightTime (void)
 {
-return (extraGameInfo [IsMultiGame].nMslStartSpeed ? HOMINGMSL_STRAIGHT_TIME * 2 : HOMINGMSL_STRAIGHT_TIME;
+return extraGameInfo [IsMultiGame].nMslStartSpeed ? HOMINGMSL_STRAIGHT_TIME * 2 : HOMINGMSL_STRAIGHT_TIME;
 }
 
 //-------------------------------------------------------------------------------------------

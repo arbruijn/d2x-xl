@@ -3839,8 +3839,8 @@ void ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int ci
 
 m = menus +shipRenderOpts.nWeapons;
 v = m->value;
-if (v != gameOpts->render.ship.bWeapons) {
-	gameOpts->render.ship.bWeapons = v;
+if (v != extraGameInfo [0].bShowWeapons) {
+	extraGameInfo [0].bShowWeapons = v;
 	*key = -2;
 	}
 }
@@ -3857,9 +3857,9 @@ void ShipRenderOptionsMenu ()
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
-	ADD_CHECK (opt, TXT_SHIP_WEAPONS, gameOpts->render.ship.bWeapons, KEY_W, HTX_SHIP_WEAPONS);
+	ADD_CHECK (opt, TXT_SHIP_WEAPONS, extraGameInfo [0].bShowWeapons, KEY_W, HTX_SHIP_WEAPONS);
 	shipRenderOpts.nWeapons = opt++;
-	if (gameOpts->render.ship.bWeapons) {
+	if (extraGameInfo [0].bShowWeapons) {
 		ADD_CHECK (opt, TXT_SHIP_BULLETS, gameOpts->render.ship.bBullets, KEY_B, HTX_SHIP_BULLETS);
 		optBullets = opt++;
 		ADD_TEXT (opt, "", 0);
@@ -3880,7 +3880,7 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (gameOpts->render.ship.bWeapons = m [shipRenderOpts.nWeapons].value) {
+	if (extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].value) {
 		gameOpts->render.ship.bBullets = m [optBullets].value;
 		for (j = 0; j < 3; j++)
 			if (m [optWingtips + j].value) {

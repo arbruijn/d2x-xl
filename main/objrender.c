@@ -876,10 +876,10 @@ switch (objP->renderType) {
 #if 1//def RELEASE
 #endif
 				if (gameData.objs.bIsMissile [objP->id]) {	//make missiles smaller during launch
-					fix dt = gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)];
+					float dt = f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
 
-					if (dt < F1_0)
-						gameData.models.nScale = (F1_0 + dt) / 2;
+					if (dt < 1)
+						gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
 					DrawPolygonObject (objP, bDepthSort);
 					gameData.models.nScale = 0;
 #if RENDER_HITBOX

@@ -276,7 +276,6 @@ typedef struct tAutomapOptions {
 //------------------------------------------------------------------------------
 
 typedef struct tShipRenderOptions {
-	int bWeapons;
 	int nWingtip;
 	int bBullets;
 	} tShipRenderOptions;
