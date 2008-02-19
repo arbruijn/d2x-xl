@@ -129,7 +129,7 @@ for (j = 0; j < 2; j++)
 
 //------------------------------------------------------------------------------
 
-void KillBulletEffect (tObject *objP)
+void KillPlayerBullets (tObject *objP)
 {
 	int	i = gameData.multiplayer.bulletEmitters [objP->id];
 
@@ -145,7 +145,7 @@ if (i >= 0) {
 #define BULLET_PART_LIFE	-2000
 #define BULLET_PART_SPEED	50
 
-void DoBulletEffect (tObject *objP)
+void DoPlayerBullets (tObject *objP)
 {
 if (gameOpts->render.nPath && gameOpts->render.ship.bBullets) {
 		int	nModel = objP->rType.polyObjInfo.nModel;
@@ -800,7 +800,7 @@ if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
 	return;
 #endif
 if (t == OBJ_PLAYER) {
-	DoBulletEffect (objP);
+	DoPlayerBullets (objP);
 	DoPlayerSmoke (objP, -1);
 	}
 else if (t == OBJ_ROBOT)

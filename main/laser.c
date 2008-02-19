@@ -822,6 +822,13 @@ VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
 }
 
 //-------------------------------------------------------------------------------------------
+
+static inline fix HomingMsgStraightTime (void)
+{
+return (extraGameInfo [IsMultiGame].nMslStartSpeed ? HOMINGMSL_STRAIGHT_TIME * 2 : HOMINGMSL_STRAIGHT_TIME;
+}
+
+//-------------------------------------------------------------------------------------------
 //sequence this laser tObject for this _frame_ (underscores added here to aid MK in his searching!)
 void LaserDoWeaponSequence (tObject *objP)
 {
@@ -867,9 +874,8 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 	vmsVector		vVecToObject, vTemp;
 	fix				dot = F1_0;
 	fix				speed, xMaxSpeed;
-
 	//	For first 1/2 second of life, missile flies straight.
-	if (objP->cType.laserInfo.creationTime + HOMINGMSL_STRAIGHT_TIME < gameData.time.xGame) {
+	if (objP->cType.laserInfo.creationTime + HomingMslStraightTime () < gameData.time.xGame) {
 		int	nMslLock = objP->cType.laserInfo.nMslLock;
 		int	id = objP->id;
 

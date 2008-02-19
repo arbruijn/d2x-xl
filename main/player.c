@@ -94,8 +94,13 @@ void UpdatePlayerWeaponInfo (void)
 {
 	int	bUpdate = 0;
 
-gameData.weapons.bFiring [0] = (Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0);
-gameData.weapons.bFiring [1] = (Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0);
+if (gameStates.app.bPlayerIsDead)
+	gameData.weapons.bFiring [0] = 
+	gameData.weapons.bFiring [1] = 0;
+else {
+	gameData.weapons.bFiring [0] = (Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0);
+	gameData.weapons.bFiring [1] = (Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0);
+	}
 if (gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nPrimary != gameData.weapons.nPrimary) {
 	gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].nPrimary = gameData.weapons.nPrimary;
 	bUpdate = 1;

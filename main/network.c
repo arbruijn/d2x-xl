@@ -543,6 +543,9 @@ if (nPlayer == gameData.multiplayer.nLocalPlayer) {
 	}
 gameData.multiplayer.players [nPlayer].connected = 0;
 KillPlayerSmoke (nPlayer);
+gameData.multiplayer.weaponStates [nPlayer].bFiring [0]
+gameData.multiplayer.weaponStates [nPlayer].bFiring [1] = 0;
+KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 netPlayers.players [nPlayer].connected = 0;
 if (networkData.bVerifyPlayerJoined == nPlayer)
 	networkData.bVerifyPlayerJoined = -1;
