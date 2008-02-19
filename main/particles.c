@@ -458,8 +458,8 @@ if (pOrient) {
 		vmsMatrix	mRot;
 
 	vRot.b = 0;
-	vRot.p = d_rand () % 2048;
-	vRot.h = d_rand () % 2048;
+	vRot.p = 2048 - ((d_rand () % 9) * 512);
+	vRot.h = 2048 - ((d_rand () % 9) * 512);
 	VmAngles2Matrix (&mRot, &vRot);
 	VmMatMul (&pParticle->orient, pOrient, &mRot);
 	//pParticle->orient = *pOrient;

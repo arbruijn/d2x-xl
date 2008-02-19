@@ -284,6 +284,8 @@ mtP->nCount++;
 
 //------------------------------------------------------------------------------
 
+static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 0};
+
 int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
 if (!psm->bRender)
@@ -295,18 +297,16 @@ if (psm->bWeapon) {
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
 	int		bQuadLasers = (playerP->flags & PLAYER_FLAGS_QUAD_LASERS) != 0;
-	int		bCenter = (nGunId == VULCAN_INDEX) || (nGunId == GAUSS_INDEX) || (nGunId == OMEGA_INDEX);
+	int		bCenter = bCenterGuns [nGunId];
 
 	if (EGI_FLAG (bShowWeapons, 0, 1, 0)) {
-		if (psm->nGun == 127)
-			return 1;
 		if (psm->nGun == nGunId + 1) {
 			if (psm->nGun == FUSION_INDEX + 1) {
 				if ((psm->nWeaponPos == 3) && !gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bTripleFusion)
 					return 1;
 				}
 			else if (bLasers) {
-				if ((psm->nWeaponPos > 2) && !bQuadLasers)
+				if ((psm->nWeaponPos > 2) && !bQuadLasers && gameOpts->render.ship.nWingtip)
 					return 1;
 				}
 			}
@@ -339,7 +339,7 @@ if (psm->bWeapon) {
 			return 1;
 		}
 	else {
-		if (psm->nGun == 127)
+		if (psm->nGun == 0)
 			return 0;
 		if ((psm->nGun < 0) && (psm->nMissile == 1))
 			return 0;
@@ -367,7 +367,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
 	nTeamColor = (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1;
 else
-	nTeamColor = 2;
+	nTeamColor = 0;
 #if 1
 if (psm->bThruster) {
 	if (!nPass)
@@ -386,7 +386,7 @@ if (vOffset && (nExclusive < 0)) {
 	VmVecInc (&vo, vOffset);
 	}
 if ((bAnimate = psm->nFrames && gameData.multiplayer.weaponStates [objP->id].bFiring [0])) {
-	if (gameStates.app.nSDLTicks - psm->tFrame > 40 * gameStates.gameplay.slowmo [0].fSpeed) {
+	if (gameStates.app.nSDLTicks - psm->tFrame > 25 * gameStates.gameplay.slowmo [0].fSpeed) {
 		psm->tFrame = gameStates.app.nSDLTicks;
 		psm->iFrame = ++psm->iFrame % psm->nFrames;
 		}
