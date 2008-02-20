@@ -287,22 +287,32 @@ void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *
 {
 	grsBitmap	*bmP;
 	tRgbaColorf	color;
-	int			bAdditive = 0, bEnergy = 0, nTransp = (objP->nType == OBJ_POWERUP) ? 3 : 2;
+	int			nType = objP->nType;
+	int			nId = objP->id;
+#if 0
+	int			bMuzzleFlash = 0;
+#endif
+	int			bAdditive = 0, bEnergy = 0, nTransp = (nType == OBJ_POWERUP) ? 3 : 2;
 	fix			xSize;
+	float			fScale;
 
 if (gameOpts->render.bTransparentEffects) {
-	if (fAlpha)
-		bAdditive = (objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION);
+	if (fAlpha) {
+		bAdditive = (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION);
+#if 0
+		bMuzzleFlash = (nType == OBJ_FIREBALL) && ((nId == 11) || (nId == 12) || (nId == 15) || (nId == 22) || (nId == 86));
+#endif
+		}
 	else {
-		if (objP->nType == OBJ_POWERUP) {
-			if (IsEnergyPowerup (objP->id)) {
+		if (nType == OBJ_POWERUP) {
+			if (IsEnergyPowerup (nId)) {
 				fAlpha = 2.0f / 3.0f;
 				bEnergy = 1;
 				}
 			else
 				fAlpha = 1.0f;
 			}
-		else if ((objP->nType != OBJ_FIREBALL) && (objP->nType != OBJ_EXPLOSION))
+		else if ((nType != OBJ_FIREBALL) && (nType != OBJ_EXPLOSION))
 			fAlpha = 1.0f;
 		else {
 			fAlpha = 2.0f / 3.0f;
@@ -328,6 +338,15 @@ else {
 	PIGGY_PAGE_IN (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
+color.red = (float) bmP->bmAvgRGB.red / 255.0f;
+color.green = (float) bmP->bmAvgRGB.green / 255.0f;
+color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+fScale = color.red + color.green + color.blue;
+if (fScale == 0) {
+	color.red = 
+	color.green =
+	color.blue = 1;
+	}
 if ((bmi < 0) || ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
 	bmP = BmOverride (bmP, iFrame);
@@ -342,25 +361,22 @@ if (colorP && (bmi >= 0))
 
 xSize = objP->size;
 
-if ((objP->nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.bPowerupCoronas) || (!bEnergy && gameOpts->render.bWeaponCoronas)))
-	RenderPowerupCorona (objP, (float) bmP->bmAvgRGB.red / 255.0f, (float) bmP->bmAvgRGB.green / 255.0f, (float) bmP->bmAvgRGB.blue / 255.0f, 
+if ((nType == OBJ_POWERUP) && ((bEnergy && gameOpts->render.bPowerupCoronas) || (!bEnergy && gameOpts->render.bWeaponCoronas)))
+	RenderPowerupCorona (objP, color.red, color.green, color.blue, 
 								coronaIntensities [gameOpts->render.nObjCoronaIntensity]);
 if (gameOpts->render.bDepthSort > 0) {
 	if (bAdditive) {
-		color.red = (float) bmP->bmAvgRGB.red / 255.0f;
-		color.green = (float) bmP->bmAvgRGB.green / 255.0f;
-		color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
-		if (objP->nType == OBJ_FIREBALL) {
 #if 1
-			color.red *= 0.75;
-			color.green *= 0.75;
-			color.blue *= 0.75;
-#endif
+		color.red = 
+		color.green =
+		color.blue = 0.5f;
+#else
+		if ((nType == OBJ_FIREBALL) && (fScale > 0)) {
+			fScale = 1.0f - fScale / 6.0f;
+			color.red *= fScale;
+			color.green *= fScale;
+			color.blue *= fScale;
 			}
-#if 0
-		color.red *= color.red;
-		color.green *= color.green;
-		color.blue *= color.blue;
 #endif
 		}
 	else
