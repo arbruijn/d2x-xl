@@ -975,6 +975,7 @@ if (gameStates.app.nCompSpeed == 0) {
 	gameOpts->render.smoke.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
 	gameOpts->render.nCoronaStyle = 0;
+	gameOpts->ogl.nMaxLights = 4;
 	extraGameInfo [0].bShadows = 0;
 	extraGameInfo [0].bUseSmoke = 0;
 	extraGameInfo [0].bUseLightnings = 0;
@@ -1021,6 +1022,7 @@ else if (gameStates.app.nCompSpeed == 1) {
 	gameOpts->render.smoke.bAuxViews = 0;
 	gameOpts->render.lightnings.bAuxViews = 0;
 	gameOpts->ogl.bLightObjects = 0;
+	gameOpts->ogl.nMaxLights = 8;
 	extraGameInfo [0].bUseCameras = 1;
 	gameOpts->render.cameras.nFPS = 5;
 	gameOpts->movies.nQuality = 0;
@@ -1079,7 +1081,7 @@ else if (gameStates.app.nCompSpeed == 2) {
 	gameOpts->render.lightnings.bOmega = 1;
 	gameOpts->render.lightnings.bAuxViews = 0;
 	gameOpts->ogl.bLightObjects = 0;
-	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
+	gameOpts->ogl.nMaxLights = 12;
 	extraGameInfo [0].bUseCameras = 1;
 	gameOpts->render.cameras.nFPS = 0;
 	gameOpts->movies.nQuality = 0;
@@ -1138,7 +1140,7 @@ else if (gameStates.app.nCompSpeed == 3) {
 	gameOpts->render.lightnings.bOmega = 1;
 	gameOpts->render.lightnings.bAuxViews = 0;
 	gameOpts->ogl.bLightObjects = 0;
-	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS * 3 / 4;
+	gameOpts->ogl.nMaxLights = 16;
 	extraGameInfo [0].bUseCameras = 1;
 	gameOpts->render.cameras.nFPS = 0;
 	gameOpts->movies.nQuality = 1;
@@ -1196,7 +1198,7 @@ else if (gameStates.app.nCompSpeed == 4) {
 	gameOpts->render.lightnings.bOmega = 1;
 	gameOpts->render.lightnings.bAuxViews = 1;
 	gameOpts->ogl.bLightObjects = 1;
-	gameOpts->ogl.nMaxLights = MAX_NEAREST_LIGHTS;
+	gameOpts->ogl.nMaxLights = 20;
 	extraGameInfo [0].bUseCameras = 1;
 	gameOpts->render.cockpit.bTextGauges = 0;
 	gameOpts->render.cameras.nFPS = 0;

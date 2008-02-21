@@ -1425,9 +1425,6 @@
 					Name="Header Files"
 					Filter="h;hpp;hxx;hm;inl">
 					<File
-						RelativePath="..\..\main\ai.h">
-					</File>
-					<File
 						RelativePath="..\..\main\aistruct.h">
 					</File>
 					<File
@@ -1851,66 +1848,6 @@
 				<Filter
 					Name="Source Files"
 					Filter="">
-					<File
-						RelativePath="..\..\main\ai.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\ai2.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\aipath.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
 					<File
 						RelativePath="..\..\main\aseread.c">
 					</File>
@@ -3573,6 +3510,88 @@
 					</FileConfiguration>
 				</File>
 			</Filter>
+			<Filter
+				Name="ai"
+				Filter="">
+				<Filter
+					Name="Source Files"
+					Filter="">
+					<File
+						RelativePath="..\..\main\ai.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\aianimate.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aiboss.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aifire.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aiframe.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aiinit.c">
+					</File>
+					<File
+						RelativePath="..\..\main\ailib.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aimove.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aipath.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\aisave.c">
+					</File>
+					<File
+						RelativePath="..\..\main\aisnipe.c">
+					</File>
+				</Filter>
+				<Filter
+					Name="Header Files"
+					Filter="">
+					<File
+						RelativePath="..\..\main\ai.h">
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -3587,10 +3606,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

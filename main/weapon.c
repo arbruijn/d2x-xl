@@ -254,22 +254,29 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int AllowedToFireMissile (void)
+int AllowedToFireMissile (int nPlayer, int bCheckSegment)
 {
 	float	s;
+	fix	t;
 
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
+if (gameStates.app.bD2XLevel && bCheckSegment && 
+    (gameData.segs.segment2s [gameData.objs.console->nSegment].special == SEGMENT_IS_NODAMAGE))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
-	fix t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
+	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
 	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 5 * F1_0 * s))
 		return 0;
 	}
-else {
+else if (nPlayer < 0) {
 	if ((gameData.missiles.xNextFireTime > gameData.time.xGame) && 
 		 (gameData.missiles.xNextFireTime < gameData.time.xGame + 5 * F1_0))
+		return 0;
+	}
+else {
+	t = gameData.multiplayer.weaponStates [nPlayer].xMslFireTime;
+	if ((t > gameData.time.xGame) && (t < gameData.time.xGame + 5 * F1_0))
 		return 0;
 	}
 return 1;

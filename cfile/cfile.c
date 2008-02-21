@@ -486,6 +486,7 @@ cfp->file = fp;
 cfp->raw_position = 0;
 cfp->size = (length < 0) ? ffilelength (fp) : length;
 cfp->lib_offset = (length < 0) ? 0 : ftell (fp);
+cfp->filename = filename;
 return 1;
 }
 

@@ -118,6 +118,7 @@ return (d_rand() * gameData.segs.nLastSegment) >> 15;
 }
 
 //	----------------------------------------------------------------------
+
 void RecreateThief(tObject *objP)
 {
 	int			nSegment;

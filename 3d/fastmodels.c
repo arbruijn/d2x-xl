@@ -45,6 +45,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "renderthreads.h"
 #include "hiresmodels.h"
 #include "buildmodel.h"
+#include "weapon.h"
 
 extern tFaceColor tMapColor;
 
@@ -288,6 +289,8 @@ static int bCenterGuns [] = {0, 1, 1, 0, 0, 0, 1, 1, 0, 1};
 
 int G3FilterSubModel (tObject *objP, tG3SubModel *psm, int nGunId, int nBombId, int nMissileId, int nMissiles)
 {
+	int nId = objP->id;
+
 if (!psm->bRender)
 	return 0;
 if (psm->nGunPoint >= 0)
@@ -295,7 +298,7 @@ if (psm->nGunPoint >= 0)
 if (psm->bBullets)
 	return 1;
 if (psm->bWeapon) {
-	tPlayer	*playerP = gameData.multiplayer.players + objP->id;
+	tPlayer	*playerP = gameData.multiplayer.players + nId;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
 	int		bQuadLasers = (playerP->flags & PLAYER_FLAGS_QUAD_LASERS) != 0;
@@ -334,9 +337,17 @@ if (psm->bWeapon) {
 			return 0;
 			}
 		else if (psm->nBomb == nBombId)
-			return 0;
-		else if ((psm->nMissile == nMissileId) && (psm->nWeaponPos <= nMissiles))
-			return 0;
+			return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0);
+		else if (psm->nMissile == nMissileId) {
+			if (psm->nWeaponPos > nMissiles)
+				return 1;
+			else {
+				static int nMslPos [] = {-1, 1, 0, 3, 2};
+				int nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
+				return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0) && 
+						 (nLaunchPos == (nMslPos [psm->nWeaponPos])); 
+				}
+			}
 		else
 			return 1;
 		}

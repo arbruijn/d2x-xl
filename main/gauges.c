@@ -2141,9 +2141,6 @@ else
 
 //	-----------------------------------------------------------------------------
 
-int AllowedToFireLaser (void);
-int AllowedToFireMissile (void);
-
 rgb playerColors [] = {
 	{15, 15, 23}, 
 	{27, 0, 0}, 
@@ -2181,7 +2178,7 @@ if ((gameData.demo.nState==ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided) {
 x = grdCurCanv->cv_w / 2;
 y = grdCurCanv->cv_h / ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2);
 bLaserReady = AllowedToFireLaser ();
-bMissileReady = AllowedToFireMissile ();
+bMissileReady = AllowedToFireMissile (-1, 1);
 bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1);
 bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1);
 nPrimaryBm = (bLaserReady && bLaserAmmo==HAS_ALL);

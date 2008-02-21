@@ -1385,24 +1385,24 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		}
 	}
 
-	//	If only allowed to do evade code, then done.
-	//	Hmm, perhaps brilliant insight.  If want claw-nType guys to keep coming, don't return here after evasion.
-	if (!(botInfoP->attackType || botInfoP->thief) && bEvadeOnly)
-		return;
-
-	//	If we fall out of above, then no tObject to be avoided.
-	objP->cType.aiInfo.nDangerLaser = -1;
-
-	//	Green guy selects move around/towards/away based on firing time, not distance.
-if (botInfoP->attackType == 1)
-	if (((ailp->nextPrimaryFire > botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) && (gameData.ai.xDistToPlayer < F1_0*30)) || gameStates.app.bPlayerIsDead)
-		//	1/4 of time, move around tPlayer, 3/4 of time, move away from tPlayer
-		if (d_rand () < 8192)
-			MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
-		else
-			MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 1);
-	else
+//	If only allowed to do evade code, then done.
+//	Hmm, perhaps brilliant insight.  If want claw-nType guys to keep coming, don't return here after evasion.
+if (!(botInfoP->attackType || botInfoP->thief) && bEvadeOnly)
+	return;
+//	If we fall out of above, then no tObject to be avoided.
+objP->cType.aiInfo.nDangerLaser = -1;
+//	Green guy selects move around/towards/away based on firing time, not distance.
+if (botInfoP->attackType == 1) {
+	if (!!gameStates.app.bPlayerIsDead &&
+		 ((ailp->nextPrimaryFire <= botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/4) || 
+		  (gameData.ai.xDistToPlayer >= F1_0 * 30)))
 		MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
+		//	1/4 of time, move around tPlayer, 3/4 of time, move away from tPlayer
+	else if (d_rand () < 8192)
+		MoveAroundPlayer (objP, &gameData.ai.vVecToPlayer, -1);
+	else
+		MoveAwayFromPlayer (objP, &gameData.ai.vVecToPlayer, 1);
+	}
 else if (botInfoP->thief)
 	MoveTowardsPlayer (objP, &gameData.ai.vVecToPlayer);
 else {
@@ -2345,7 +2345,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Called for an AI tObject if it is fairly aware of the player.
-//	awarenessLevel is in 0d:\temp\dm_test100.  Larger numbers indicate greater awareness (eg, 99 if firing at tPlayer).
+//	awarenessLevel is in 0..100.  Larger numbers indicate greater awareness (eg, 99 if firing at tPlayer).
 //	In a given frame, might not get called for an tObject, or might be called more than once.
 //	The fact that this routine is not called for a given tObject does not mean that tObject is not interested in the player.
 //	gameData.objs.objects are moved by physics, so they can move even if not interested in a player.  However, if their velocity or
@@ -2470,111 +2470,104 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 	 (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 	vmsVector vFirePos = gameData.ai.vBelievedPlayerPos;
 
-		//	Hack: If visibility not == 2, we're here because we're firing at a nearby player.
-		//	So, fire at gameData.ai.vLastPlayerPosFiredAt instead of the tPlayer position.
+	//	Hack: If visibility not == 2, we're here because we're firing at a nearby player.
+	//	So, fire at gameData.ai.vLastPlayerPosFiredAt instead of the tPlayer position.
 	if (!botInfoP->attackType && (gameData.ai.nPlayerVisibility != 2))
 		vFirePos = gameData.ai.vLastPlayerPosFiredAt;
 
-		//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
-		//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
-		if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailp)) {
-			dot = VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
-			if ((dot >= 7 * F1_0 / 8) || ((dot > F1_0 / 4) &&  botInfoP->bossFlag)) {
-				if (nGun < botInfoP->nGuns) {
-					if (botInfoP->attackType == 1) {
-						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->size + gameData.objs.console->size + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
-							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
-								return;
-							DoAiRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
-							}
-						else 
-							return;
-						}
-					else {
+	//	Changed by mk, 01/04/95, onearm would take about 9 seconds until he can fire at you.
+	//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
+	if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailp)) {
+		dot = VmVecDot (&objP->position.mOrient.fVec, &gameData.ai.vVecToPlayer);
+		if ((dot >= 7 * F1_0 / 8) || ((dot > F1_0 / 4) && botInfoP->bossFlag)) {
+			if (nGun < botInfoP->nGuns) {
+				if (botInfoP->attackType == 1) {
+					if (gameStates.app.bPlayerExploded || (gameData.ai.xDistToPlayer >= objP->size + gameData.objs.console->size + F1_0*2))	// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) 
+						return;
+					if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION - 2))
+						return;
+					DoAiRobotHitAttack (objP, gameData.objs.console, &objP->position.vPos);
+					}
+				else {
 #if 1
-						if (AICanFireAtPlayer (objP, &gameData.ai.vGunPoint, &vFirePos)) {
+					if (AICanFireAtPlayer (objP, &gameData.ai.vGunPoint, &vFirePos)) {
 #else
-						if (gameData.ai.vGunPoint.p.x || gameData.ai.vGunPoint.p.y || gameData.ai.vGunPoint.p.z) {
+					if (gameData.ai.vGunPoint.p.x || gameData.ai.vGunPoint.p.y || gameData.ai.vGunPoint.p.z) {
 #endif
-							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
-								return;
-							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
-							if (nGun != 0) {
-								if (ailp->nextPrimaryFire <= 0) {
-									AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, nGun, &vFirePos);
-									gameData.ai.vLastPlayerPosFiredAt = vFirePos;
-									}
-								if ((ailp->nextSecondaryFire <= 0) && (botInfoP->nSecWeaponType != -1)) {
-									CalcGunPoint (&gameData.ai.vGunPoint, objP, 0);
-									AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, 0, &vFirePos);
-									gameData.ai.vLastPlayerPosFiredAt = vFirePos;
-									}
-								}
-							else if (ailp->nextPrimaryFire <= 0) {
+						if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
+							return;
+						//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
+						if (nGun != 0) {
+							if (ailp->nextPrimaryFire <= 0) {
 								AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, nGun, &vFirePos);
 								gameData.ai.vLastPlayerPosFiredAt = vFirePos;
 								}
+							if ((ailp->nextSecondaryFire <= 0) && (botInfoP->nSecWeaponType != -1)) {
+								CalcGunPoint (&gameData.ai.vGunPoint, objP, 0);
+								AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, 0, &vFirePos);
+								gameData.ai.vLastPlayerPosFiredAt = vFirePos;
+								}
+							}
+						else if (ailp->nextPrimaryFire <= 0) {
+							AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, nGun, &vFirePos);
+							gameData.ai.vLastPlayerPosFiredAt = vFirePos;
 							}
 						}
-
-					//	Wants to fire, so should go into chase mode, probably.
-					if ((aip->behavior != AIB_RUN_FROM)
-						 && (aip->behavior != AIB_STILL)
-						 && (aip->behavior != AIB_SNIPE)
-						 && (aip->behavior != AIB_FOLLOW)
-						 && !botInfoP->attackType
-						 && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
-						ailp->mode = AIM_CHASE_OBJECT;
 					}
+				}
 
+			//	Wants to fire, so should go into chase mode, probably.
+			if ((aip->behavior != AIB_RUN_FROM) &&
+				 (aip->behavior != AIB_STILL) &&
+				 (aip->behavior != AIB_SNIPE) &&
+				 (aip->behavior != AIB_FOLLOW) &&
+				 !botInfoP->attackType &&
+				 ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
+				ailp->mode = AIM_CHASE_OBJECT;
 				aip->GOAL_STATE = AIS_RECO;
 				ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
-#if 0
-				// Switch to next gun for next fire.  If has 2 gun types, select gun #1, if exists.
+				// Switch to next gun for next fire.
 				if (++(aip->CURRENT_GUN) >= botInfoP->nGuns) {
 					if ((botInfoP->nGuns == 1) || (botInfoP->nSecWeaponType == -1))
 						aip->CURRENT_GUN = 0;
 					else
 						aip->CURRENT_GUN = 1;
 					}
-#endif
 				}
 			}
 		}
-	else if (((!botInfoP->attackType) &&
-			   (gameData.weapons.info [botInfoP->nWeaponType].homingFlag == 1)) || 
-			  (((botInfoP->nSecWeaponType != -1) && 
-				(gameData.weapons.info [botInfoP->nSecWeaponType].homingFlag == 1)))) {
-		fix dist;
-		//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
-		if ((!gameData.ai.bObjAnimates || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
-			 && (((ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || 
-				  ((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
-			 && ((dist = VmVecDistQuick (&gameData.ai.vHitPos, &objP->position.vPos)) > F1_0*40)) {
-			if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
-				return;
-			AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, nGun, &gameData.ai.vBelievedPlayerPos);
-			aip->GOAL_STATE = AIS_RECO;
-			ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
-			// Switch to next gun for next fire.
-			if (++(aip->CURRENT_GUN) >= botInfoP->nGuns)
-				aip->CURRENT_GUN = 0;
-			}
-		else {
-			// Switch to next gun for next fire.
-			if (++(aip->CURRENT_GUN) >= botInfoP->nGuns)
-				aip->CURRENT_GUN = 0;
-			}
+else if (((!botInfoP->attackType) && (gameData.weapons.info [botInfoP->nWeaponType].homingFlag == 1)) || 
+			(((botInfoP->nSecWeaponType != -1) && (gameData.weapons.info [botInfoP->nSecWeaponType].homingFlag == 1)))) {
+	fix dist;
+	//	Robots which fire homing weapons might fire even if they don't have a bead on the player.
+	if ((!gameData.ai.bObjAnimates || (ailp->achievedState [aip->CURRENT_GUN] == AIS_FIRE))
+			&& (((ailp->nextPrimaryFire <= 0) && (aip->CURRENT_GUN != 0)) || 
+				((ailp->nextSecondaryFire <= 0) && (aip->CURRENT_GUN == 0)))
+			&& ((dist = VmVecDistQuick (&gameData.ai.vHitPos, &objP->position.vPos)) > F1_0*40)) {
+		if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
+			return;
+		AIFireLaserAtPlayer (objP, &gameData.ai.vGunPoint, nGun, &gameData.ai.vBelievedPlayerPos);
+		aip->GOAL_STATE = AIS_RECO;
+		ailp->goalState [aip->CURRENT_GUN] = AIS_RECO;
+		// Switch to next gun for next fire.
+		if (++(aip->CURRENT_GUN) >= botInfoP->nGuns)
+			aip->CURRENT_GUN = 0;
 		}
-	else {	//	---------------------------------------------------------------
-		vmsVector	vec_to_last_pos;
+	else {
+		// Switch to next gun for next fire.
+		if (++(aip->CURRENT_GUN) >= botInfoP->nGuns)
+			aip->CURRENT_GUN = 0;
+		}
+	}
+else {	//	---------------------------------------------------------------
+	vmsVector	vec_to_last_pos;
 
-		if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
-		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailp)) && (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
+	if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
+		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailp)) && 
+			 (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			VmVecNormalizedDirQuick (&vec_to_last_pos, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 			dot = VmVecDot (&objP->position.mOrient.fVec, &vec_to_last_pos);
-			if (dot >= 7*F1_0/8) {
-
+			if (dot >= 7 * F1_0 / 8) {
 				if (aip->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
 						if (!gameStates.app.bPlayerExploded && (gameData.ai.xDistToPlayer < objP->size + gameData.objs.console->size + F1_0*2)) {		// botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.console->size) {
@@ -2606,7 +2599,8 @@ if ((gameData.ai.nPlayerVisibility == 2) ||
 							}
 						}
 					//	Wants to fire, so should go into chase mode, probably.
-					if ((aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_STILL) && (aip->behavior != AIB_SNIPE) && (aip->behavior != AIB_FOLLOW) && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
+					if ((aip->behavior != AIB_RUN_FROM) && (aip->behavior != AIB_STILL) && (aip->behavior != AIB_SNIPE) && 
+						 (aip->behavior != AIB_FOLLOW) && ((ailp->mode == AIM_FOLLOW_PATH) || (ailp->mode == AIM_IDLING)))
 						ailp->mode = AIM_CHASE_OBJECT;
 					}
 				aip->GOAL_STATE = AIS_RECO;

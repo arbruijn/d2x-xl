@@ -799,10 +799,8 @@ int t = objP->nType;
 if (extraGameInfo [0].bShadows && (gameStates.render.nShadowPass < 3))
 	return;
 #endif
-if (t == OBJ_PLAYER) {
-	DoPlayerBullets (objP);
+if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
-	}
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
 else if ((t == OBJ_EFFECT) && (objP->id == SMOKE_ID))
@@ -824,6 +822,18 @@ else if (t == OBJ_DEBRIS)
 else
 	return 0;
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void PlayerBulletFrame (void)
+{
+	int	i;
+
+if (!gameOpts->render.ship.bBullets)
+	return;
+for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	DoPlayerBullets (gameData.objs.objects + gameData.multiplayer.players [i].nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -876,6 +886,7 @@ void DoSmokeFrame (void)
 if (gameStates.render.nShadowPass > 1)
 	return;
 #endif
+PlayerBulletFrame ();
 #ifdef _DEBUG
 if (!gameStates.render.bExternalView)
 #else

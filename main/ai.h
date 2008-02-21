@@ -65,7 +65,6 @@ void InitAIObjects (void);
 void DoAiRobotHit (tObject *robot, int nType);
 void CreateNSegmentPath (tObject *objP, int nPathLength, short avoid_seg);
 void CreateNSegmentPathToDoor (tObject *objP, int nPathLength, short avoid_seg);
-void MakeRandomVector (vmsVector *vec);
 void InitRobotsForLevel (void);
 int AIBehaviorToMode (int behavior);
 int Robot_firing_enabled;
@@ -74,9 +73,12 @@ int ReadyToFire (tRobotInfo *robptr, tAILocal *ailp);
 int SmoothPath (tObject *objP, tPointSeg *psegs, int num_points);
 void MoveTowardsPlayer (tObject *objP, vmsVector *vec_to_player);
 
+int AICanFireAtPlayer (tObject *objP, vmsVector *vGun, vmsVector *vPlayer);
+
 void InitBossData (int i, int nObject);
 int AddBoss (int nObject);
 void RemoveBoss (int i);
+void DoBossDyingFrame (tObject *objP);
 
 // max_length is maximum depth of path to create.
 // If -1, use default: MAX_DEPTH_TO_SEARCH_FOR_PLAYER
@@ -267,34 +269,85 @@ extern void mprintf_animation_info (tObject *objP);
 
 #endif //ifndef NDEBUG
 
-extern void AIFrameAnimation (tObject *objP);
-extern int DoSillyAnimation (tObject *objP);
-extern int OpenableDoorsInSegment (short nSegment);
-extern void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, tRobotInfo *robptr, int *flag, fix xMaxVisibleDist);
-extern void DoFiringStuff (tObject *obj, int player_visibility, vmsVector *vec_to_player);
-extern int AIMaybeDoActualFiringStuff (tObject *obj, tAIStatic *aip);
-extern void AIDoActualFiringStuff (tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, int gun_num);
-extern void DoSuperBossStuff (tObject *objP, fix dist_to_player, int player_visibility);
-extern void DoBossStuff (tObject *objP, int player_visibility);
-// -- unused, 08/07/95 -- extern void ai_turn_randomly (vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);
-extern void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
-extern void MoveAwayFromPlayer (tObject *objP, vmsVector *vec_to_player, int attackType);
-extern void MoveTowardsVector (tObject *objP, vmsVector *vec_goal, int dot_based);
-extern void InitAIFrame (void);
+void AIFrameAnimation (tObject *objP);
+void AIIdleAnimation (tObject *objP);
+int DoSillyAnimation (tObject *objP);
+int OpenableDoorsInSegment (short nSegment);
+void ComputeVisAndVec (tObject *objP, vmsVector *pos, tAILocal *ailp, tRobotInfo *robptr, int *flag, fix xMaxVisibleDist);
+void DoFiringStuff (tObject *obj, int player_visibility, vmsVector *vec_to_player);
+int AIMaybeDoActualFiringStuff (tObject *obj, tAIStatic *aip);
+void AIDoActualFiringStuff (tObject *obj, tAIStatic *aip, tAILocal *ailp, tRobotInfo *robptr, int gun_num);
+void DoSuperBossStuff (tObject *objP, fix dist_to_player, int player_visibility);
+void DoBossStuff (tObject *objP, int player_visibility);
+// -- unused, 08/07/95 -- void ai_turn_randomly (vmsVector *vec_to_player, tObject *obj, fix rate, int previousVisibility);
+void AIMoveRelativeToPlayer (tObject *objP, tAILocal *ailp, fix dist_to_player, vmsVector *vec_to_player, fix circleDistance, int evade_only, int player_visibility);
+void MoveAwayFromPlayer (tObject *objP, vmsVector *vec_to_player, int attackType);
+void MoveTowardsVector (tObject *objP, vmsVector *vec_goal, int dot_based);
+void InitAIFrame (void);
+void MakeNearbyRobotSnipe (void);
 
-extern void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs);
-extern void InitThiefForLevel ();
+void CreateBfsList (int start_seg, short bfs_list [], int *length, int max_segs);
+void InitThiefForLevel ();
 
-extern int AISaveBinState (CFILE *fp);
-extern int AISaveUniState (CFILE *fp);
-extern int AIRestoreBinState (CFILE *fp, int version);
-extern int AIRestoreUniState (CFILE *fp, int version);
+int AISaveBinState (CFILE *fp);
+int AISaveUniState (CFILE *fp);
+int AIRestoreBinState (CFILE *fp, int version);
+int AIRestoreUniState (CFILE *fp, int version);
 
-extern void StartRobotDeathSequence (tObject *objP);
-extern int DoAnyRobotDyingFrame (tObject *objP);
-extern void _CDECL_ BuddyMessage (char * format, ... );
+int CheckObjectObjectIntersection (vmsVector *pos, fix size, tSegment *segP);
+int DoRobotDyingFrame (tObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale);
+
+void TeleportBoss (tObject *objP);
+int BossFitsInSeg (tObject *bossObjP, int nSegment);
+
+void StartRobotDeathSequence (tObject *objP);
+int DoAnyRobotDyingFrame (tObject *objP);
+void _CDECL_ BuddyMessage (char * format, ... );
 
 #define SPECIAL_REACTOR_ROBOT   65
 extern void SpecialReactorStuff (void);
+
+// --------------------------------------------------------------------------------------------------------------------
+
+static inline fix AIMaxDist (int i, tRobotInfo *botInfoP)
+{
+if (gameOpts->gameplay.nAIAwareness) {
+	switch (i) {
+		case 0:
+			return F1_0 * (100 + gameStates.app.nDifficultyLevel * 100);
+		case 1:
+			return F1_0 * 300;
+		case 2:
+			return F1_0 * 500;
+		case 3:
+			return F1_0 * 750;
+		case 4:
+			return F1_0 * (50 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
+		}
+	}
+else {
+	switch (i) {
+		case 0:
+			return F1_0 * (120 + gameStates.app.nDifficultyLevel * 20);
+		case 1:
+			return F1_0 * 80;
+		case 2:
+			return F1_0 * 200;
+		case 3:
+			return F1_0 * 200;
+		case 4:
+			return F1_0 * (20 * (2 * gameStates.app.nDifficultyLevel + botInfoP->pursuit));
+		}
+	}
+return 0;
+}
+
+#define MAX_WAKEUP_DIST		AIMaxDist (0, NULL)
+#define MAX_CHASE_DIST		AIMaxDist (1, NULL)
+#define MAX_SNIPE_DIST		AIMaxDist (2, NULL)
+#define MAX_REACTION_DIST	AIMaxDist (3, NULL)
+#define MAX_PURSUIT_DIST(_botInfoP)	AIMaxDist (4, _botInfoP)
+
+// --------------------------------------------------------------------------------------------------------------------
 
 #endif /* _AI_H */

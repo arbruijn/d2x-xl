@@ -2337,8 +2337,6 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
-extern int nAiLastMissileCamera;
-
 //	*viewer is a viewer, probably a missile.
 //	wake up all robots that were rendered last frame subject to some constraints.
 void WakeupRenderedObjects (tObject *viewer, int window_num)
@@ -2353,7 +2351,7 @@ void WakeupRenderedObjects (tObject *viewer, int window_num)
 		return;
 	}
 
-	nAiLastMissileCamera = OBJ_IDX (viewer);
+	gameData.ai.nLastMissileCamera = OBJ_IDX (viewer);
 
 	for (i = 0; i<windowRenderedData [window_num].numObjects; i++) {
 		int	nObject;

@@ -1824,5 +1824,16 @@ VmVecDecf (vReflect, vDir);
 return VmVecNegatef (vReflect);
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+//	Compute a somewhat random, normalized vector.
+vmsVector *MakeRandomVector (vmsVector *v)
+{
+v->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
+v->p.y = d_rand () - 16384;
+v->p.z = d_rand () - 16384;
+VmVecNormalizeQuick (v);
+return v;
+}
+
 // ------------------------------------------------------------------------
 // eof

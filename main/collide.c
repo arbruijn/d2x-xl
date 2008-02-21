@@ -1516,7 +1516,6 @@ return 1;
 
 //	------------------------------------------------------------------------------------------------------
 
-int	nBossInvulDot = 0;
 int	nBuddyGaveHintCount = 5;
 fix	xLastTimeBuddyGameHint = 0;
 
@@ -1555,7 +1554,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
 #endif
-	if (dot > nBossInvulDot) {
+	if (dot > gameData.physics.xBossInvulDot) {
 		short	nNewObj;
 		short	nSegment;
 

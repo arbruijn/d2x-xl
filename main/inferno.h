@@ -1758,6 +1758,7 @@ typedef struct tPhysicsData {
 	tFVISideData		side;
 	fix					xTime;
 	fix					xAfterburnerCharge;
+	fix					xBossInvulDot;
 } tPhysicsData;
 
 //------------------------------------------------------------------------------
@@ -2180,12 +2181,14 @@ typedef struct tLeftoverPowerup {
 } tLeftoverPowerup;
 
 typedef struct tWeaponState {
+	char						nMissiles;
 	char						nPrimary;
 	char						nSecondary;
 	char						bFiring [2];
-	char						nMissiles;
 	char						nLaserLevel;
 	char						bTripleFusion;
+	char						nMslLaunchPos;
+	fix						xMslFireTime;
 	} tWeaponState;
 
 typedef struct tMultiplayerData {
@@ -2453,6 +2456,7 @@ typedef struct tAIData {
 	vmsVector			vGunPoint;
 	int					nPlayerVisibility;
 	int					bObjAnimates;
+	int					nLastMissileCamera;
 	tAwarenessEvent	awarenessEvents [MAX_AWARENESS_EVENTS];
 } tAIData;
 

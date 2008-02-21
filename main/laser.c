@@ -1634,8 +1634,6 @@ if (bAutoSelect)
 
 // -----------------------------------------------------------------------------
 
-int AllowedToFireMissile (void);
-
 void GetPlayerMslLock (void)
 {
 	int			nWeapon, nObject, nGun, h, i, j;
@@ -1651,7 +1649,7 @@ if ((objP = GuidedInMainView ())) {
 	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : gameData.objs.objects + nObject;
 	return;
 	}
-if (!AllowedToFireMissile ())
+if (!AllowedToFireMissile (-1, 1))
 	return;
 if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0) || COMPETITION)
 	return;

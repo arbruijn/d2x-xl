@@ -27,16 +27,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_HOGFILES 300
 
 typedef struct CFILE {
-	FILE    *file;
-	int     size;
-	int     lib_offset;
-	int     raw_position;
+	FILE		*file;
+	char		*filename;
+	int		size;
+	int		lib_offset;
+	int		raw_position;
 } CFILE;
 
 typedef struct tHogFile {
-	char    name [13];
-	int     offset;
-	int     length;
+	char		name [13];
+	int		offset;
+	int		length;
 } tHogFile;
 
 typedef struct tHogFileList {

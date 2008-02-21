@@ -992,9 +992,7 @@ if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLight
 	gameData.render.shadows.nLights = 0;
 	return 0;
 	}
-nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
-if (nMaxLights > MAX_NEAREST_LIGHTS)
-	nMaxLights = MAX_NEAREST_LIGHTS;
+nMaxLights = MAX_NEAREST_LIGHTS;
 if (gameStates.app.bMultiThreaded)
 	j = i ? gameData.segs.nSegments : gameData.segs.nSegments / 2;
 else
@@ -1052,9 +1050,7 @@ if (!(pDists = D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLight
 if (nVertex == nDbgVertex)
 	nDbgVertex = nDbgVertex;
 #endif
-nMaxLights = nMaxNearestLights [gameOpts->ogl.nMaxLights];
-if (nMaxLights > MAX_NEAREST_LIGHTS)
-	nMaxLights = MAX_NEAREST_LIGHTS;
+nMaxLights = MAX_NEAREST_LIGHTS;
 if (gameStates.app.bMultiThreaded) 
 	j = nVertex ? gameData.segs.nVertices : gameData.segs.nVertices / 2;
 else

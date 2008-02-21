@@ -534,6 +534,7 @@ vmsMatrix *ObjectView (tObject *objP);
 vmsVector *PlayerSpawnPos (int nPlayer);
 vmsMatrix *PlayerSpawnOrient (int nPlayer);
 void GetPlayerSpawn (int nPlayer, tObject *objP);
+void RecreateThief(tObject *objP);
 
 extern ubyte bIsMissile [];
 

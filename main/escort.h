@@ -12,11 +12,10 @@
 extern int Buddy_dude_cheat;
 
 
-extern void ChangeGuidebotName(void);
-
-
-extern void DoEscortMenu(void);
-extern void DetectEscortGoalAccomplished(int index);
-extern void EscortSetSpecialGoal(int key);
+void ChangeGuidebotName(void);
+void DoEscortMenu(void);
+void DetectEscortGoalAccomplished(int index);
+void EscortSetSpecialGoal(int key);
+void InitBuddyForLevel (void);
 
 #endif // _ESCORT_H

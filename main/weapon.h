@@ -322,7 +322,7 @@ extern ubyte nDefaultWeaponOrder [2][11];
 
 int AllowedToFireLaser (void);
 int AllowedToFireFlare (void);
-int AllowedToFireMissile (void);
+int AllowedToFireMissile (int nPlayer, int bCheckSegment);
 
 void DropCurrentWeapon (void);
 void DropSecondaryWeapon (int nWeapon);

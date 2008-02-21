@@ -81,16 +81,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define AIS_NONE        0
 #define AIS_REST        1
-#define AIS_SRCH        2
+#define AIS_SEARCH      2
 #define AIS_LOCK        3
-#define AIS_FLIN        4
+#define AIS_FLINCH      4
 #define AIS_FIRE        5
-#define AIS_RECO        6
-#define AIS_ERR_        7
+#define AIS_RECOVER     6
+#define AIS_ERROR       7
 
 #define AIE_FIRE        0
-#define AIE_HITT        1
-#define AIE_COLL        2
+#define AIE_HIT         1
+#define AIE_COLLIDE     2
 #define AIE_HURT        3
 
 //typedef struct opath {

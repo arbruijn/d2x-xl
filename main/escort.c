@@ -1250,6 +1250,29 @@ void DoEscortMenu (void)
 	DigiResumeDigiSounds ();
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+//	Create a Buddy bot.
+//	This automatically happens when you bring up the Buddy menu in a debug version.
+//	It is available as a cheat in a non-debug (release) version.
+void CreateBuddyBot (void)
+{
+	ubyte	buddy_id;
+	vmsVector	vObjPos;
+
+for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
+	if (gameData.bots.info [0][buddy_id].companion)
+		break;
+
+	if (buddy_id == gameData.bots.nTypes [0]) {
+#if TRACE
+		con_printf (CONDBG, "Can't create Buddy.  No 'companion' bot found in gameData.bots.pInfo!\n");
+#endif
+		return;
+	}
+	COMPUTE_SEGMENT_CENTER_I (&vObjPos, OBJSEG (gameData.objs.console));
+	CreateMorphRobot (gameData.segs.segments + OBJSEG (gameData.objs.console), &vObjPos, buddy_id);
+}
+
 //	-------------------------------------------------------------------------------
 //	Show the Buddy menu!
 #if 0 //obsolete in d2x-xl

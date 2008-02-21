@@ -310,6 +310,8 @@ short LoadHiresModel (int nModel, short i, int bCustom)
 	short	j = sizeofa (replacementModels);
 	char	szModel [FILENAME_LEN];
 
+if (replacementModels [i].pszHires)
+	LogErr ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
 #ifdef _DEBUG
 if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "pyrogl.oof"))

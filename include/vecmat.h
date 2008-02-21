@@ -352,14 +352,13 @@ fMatrix *VmCopyTransposeMatrixf (fMatrix *dest, fMatrix *src);
 //dest CANNOT equal either source
 vmsMatrix *VmMatMul (vmsMatrix * dest, vmsMatrix * src0, vmsMatrix * src1);
 
-
 //extract angles from a matrix 
 vmsAngVec *VmExtractAnglesMatrix (vmsAngVec * a, vmsMatrix * m);
-
 
 //extract heading and pitch from a vector, assuming bank==0
 vmsAngVec *VmExtractAnglesVector (vmsAngVec * a, vmsVector *v);
 
+vmsVector *MakeRandomVector (vmsVector *v);
 
 //compute the distance from a point to a plane.  takes the normalized normal
 //of the plane (ebx), a point on the plane (edi), and the point to check (esi).

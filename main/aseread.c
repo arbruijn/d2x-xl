@@ -30,19 +30,26 @@
 #include "ase.h"
 
 static char	szLine [1024];
-#ifdef _DEBUG
 static char	szLineBackup [1024];
 static int nLine = 0;
-#endif
-static char *pszToken;
+static CFILE *aseFile = NULL;
+static char *pszToken = NULL;
+static int bErrMsg = 0;
 
 #define ASE_ROTATE_MODEL	1
 #define ASE_FLIP_TEXCOORD	1
 
 //------------------------------------------------------------------------------
 
-int ASE_Error (void)
+int ASE_Error (char *pszMsg)
 {
+if (!bErrMsg) {
+	if (pszMsg)
+		LogErr ("   %s: error in line %d (%s)\n", aseFile->filename, nLine, pszMsg);
+	else
+		LogErr ("   %s: error in line %d\n", aseFile->filename, nLine);
+	bErrMsg = 1;
+	}
 return 0;
 }
 
@@ -113,7 +120,7 @@ static float FloatTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
-	ASE_Error ();
+	ASE_Error ("missing data");
 return pszToken ? (float) atof (pszToken) : 0;
 }
 
@@ -123,7 +130,7 @@ static int IntTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
-	ASE_Error ();
+	ASE_Error ("missing data");
 return pszToken ? atoi (pszToken) : 0;
 }
 
@@ -133,7 +140,7 @@ static char CharTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
-	ASE_Error ();
+	ASE_Error ("missing data");
 return pszToken ? *pszToken : '\0';
 }
 
@@ -143,13 +150,13 @@ static char *StrTok (char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
-	ASE_Error ();
+	ASE_Error ("missing data");
 return pszToken ? pszToken : "";
 }
 
 //------------------------------------------------------------------------------
 
-void ASE_ReadVector (CFILE *cfp, fVector3 *pv)
+void ASE_ReadVector (CFILE *cfP, fVector3 *pv)
 {
 #if ASE_ROTATE_MODEL
 pv->p.x = FloatTok (" \t");
@@ -165,14 +172,12 @@ for (i = 0; i < 3; i++)
 
 //------------------------------------------------------------------------------
 
-static char *ASE_ReadLine (CFILE *cfp)
+static char *ASE_ReadLine (CFILE *cfP)
 {
-while (!CFEoF (cfp)) {
-	CFGetS (szLine, sizeof (szLine), cfp);
-#ifdef _DEBUG
+while (!CFEoF (cfP)) {
+	CFGetS (szLine, sizeof (szLine), cfP);
 	nLine++;
 	strcpy (szLineBackup, szLine);
-#endif
 	strupr (szLine);
 	if ((pszToken = strtok (szLine, " \t")))
 		return pszToken;
@@ -182,28 +187,28 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadTexture (CFILE *cfp, tASEModel *pm, int nBitmap, int nType, int bCustom)
+static int ASE_ReadTexture (CFILE *cfP, tASEModel *pm, int nBitmap, int nType, int bCustom)
 {
 	grsBitmap	*bmP = pm->textures.pBitmaps + nBitmap;
 	char			fn [FILENAME_LEN], *ps;
 	int			l;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
+	return ASE_Error ("syntax error");
 bmP->bmFlat = 0;
-while ((pszToken = ASE_ReadLine (cfp))) {
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*BITMAP")) {
 		if (bmP->bmTexBuf)	//duplicate
-			return ASE_Error ();
+			return ASE_Error ("duplicate item");
 		*fn = '\001';
 		CFSplitPath (StrTok ("\""), NULL, fn + 1, NULL);
 		if (!ReadModelTGA (strlwr (fn), bmP, nType, bCustom))
-			return ASE_Error ();
+			return ASE_Error ("texture not found");
 		l = (int) strlen (fn) + 1;
 		if (!(pm->textures.pszNames [nBitmap] = D2_ALLOC (l)))
-			return ASE_Error ();
+			return ASE_Error ("out of memory");
 		memcpy (pm->textures.pszNames [nBitmap], fn, l);
 		if (ps = strstr (fn, "color"))
 			pm->textures.nTeam [nBitmap] = atoi (ps + 5) + 1;
@@ -212,24 +217,24 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		bmP->bmTeam = pm->textures.nTeam [nBitmap];
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadMaterial (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
+static int ASE_ReadMaterial (CFILE *cfP, tASEModel *pm, int nType, int bCustom)
 {
 	int			i;
 	grsBitmap	*bmP;
 
 i = IntTok (" \t");
 if ((i < 0) || (i >= pm->textures.nBitmaps))
-	return ASE_Error ();
+	return ASE_Error ("invalid bitmap number");
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
+	return ASE_Error ("syntax error");
 bmP = pm->textures.pBitmaps + i;
 bmP->bmFlat = 1;
-while ((pszToken = ASE_ReadLine (cfp))) {
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
@@ -238,56 +243,56 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		bmP->bmAvgRGB.blue = (ubyte) (FloatTok (" \t") * 255 + 0.5);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
-		if (!ASE_ReadTexture (cfp, pm, i, nType, bCustom))
-			return ASE_Error ();
+		if (!ASE_ReadTexture (cfP, pm, i, nType, bCustom))
+			return ASE_Error (NULL);
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadMaterialList (CFILE *cfp, tASEModel *pm, int nType, int bCustom)
+static int ASE_ReadMaterialList (CFILE *cfP, tASEModel *pm, int nType, int bCustom)
 {
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-if (!(pszToken = ASE_ReadLine (cfp)))
-	return ASE_Error ();
+	return ASE_Error ("syntax error");
+if (!(pszToken = ASE_ReadLine (cfP)))
+	return ASE_Error ("unexpected end of file");
 if (strcmp (pszToken, "*MATERIAL_COUNT"))
-	return ASE_Error ();
+	return ASE_Error ("material count missing");
 pm->textures.nBitmaps = IntTok (" \t");
 if (!pm->textures.nBitmaps)
-	return ASE_Error ();
+	return ASE_Error ("no bitmaps specified");
 if (!(pm->textures.pBitmaps = (grsBitmap *) D2_ALLOC (pm->textures.nBitmaps * sizeof (grsBitmap))))
-	return ASE_Error ();
+	return ASE_Error ("out of memory");
 if (!(pm->textures.pszNames = (char **) D2_ALLOC (pm->textures.nBitmaps * sizeof (char *))))
-	return ASE_Error ();
+	return ASE_Error ("out of memory");
 if (!(pm->textures.nTeam = (ubyte *) D2_ALLOC (pm->textures.nBitmaps * sizeof (ubyte))))
-	return ASE_Error ();
+	return ASE_Error ("out of memory");
 memset (pm->textures.pBitmaps, 0, pm->textures.nBitmaps * sizeof (grsBitmap));
 memset (pm->textures.pszNames, 0, pm->textures.nBitmaps * sizeof (char *));
 memset (pm->textures.nTeam, 0, pm->textures.nBitmaps * sizeof (ubyte));
-while ((pszToken = ASE_ReadLine (cfp))) {
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MATERIAL")) {
-		if (!ASE_ReadMaterial (cfp, pm, nType, bCustom))
-			return ASE_Error ();
+		if (!ASE_ReadMaterial (cfP, pm, nType, bCustom))
+			return ASE_Error (NULL);
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadNode (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadNode (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 	int				i;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*TM_POS")) {
@@ -295,54 +300,54 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 			psm->vOffset.v [i] = 0; //FloatTok (" \t");
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadMeshVertexList (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadMeshVertexList (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 	tASEVertex		*pv;
 	int				i;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_VERTEX")) {
 		if (!psm->pVerts)
-			return ASE_Error ();
+			return ASE_Error ("no vertices found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= psm->nVerts))
-			return ASE_Error ();
+			return ASE_Error ("invalid vertex number");
 		pv = psm->pVerts + i;
-		ASE_ReadVector (cfp, &pv->vertex);
+		ASE_ReadVector (cfP, &pv->vertex);
 		}	
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadMeshFaceList (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadMeshFaceList (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 	tASEFace			*pf;
 	int				i;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_FACE")) {
 		if (!psm->pFaces)
-			return ASE_Error ();
+			return ASE_Error ("no faces found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= psm->nFaces))
-			return ASE_Error ();
+			return ASE_Error ("invalid face number");
 		pf = psm->pFaces + i;
 		for (i = 0; i < 3; i++) {
 			strtok (NULL, " :\t");
@@ -351,33 +356,33 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		do {
 			pszToken = StrTok (" :\t");
 			if (!*pszToken)
-				return ASE_Error ();
+				return ASE_Error ("unexpected end of file");
 			} while (strcmp (pszToken, "*MESH_MTLID"));
 		pf->nBitmap = IntTok (" ");
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadVertexTexCoord (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadVertexTexCoord (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 	tTexCoord2f		*pt;
 	int				i;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_TVERT")) {
 		if (!psm->pTexCoord)
-			return ASE_Error ();
+			return ASE_Error ("no texture coordinates found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= psm->nTexCoord))
-			return ASE_Error ();
+			return ASE_Error ("invalid texture coordinate number");
 		pt = psm->pTexCoord + i;
 #if ASE_FLIP_TEXCOORD
 		pt->v.u = FloatTok (" \t");
@@ -388,39 +393,39 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 #endif
 		}	
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadFaceTexCoord (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadFaceTexCoord (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 	tASEFace			*pf;
 	int				i;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_TFACE")) {
 		if (!psm->pFaces)
-			return ASE_Error ();
+			return ASE_Error ("no faces found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= psm->nFaces))
-			return ASE_Error ();
+			return ASE_Error ("invalid face number");
 		pf = psm->pFaces + i;
 		for (i = 0; i < 3; i++)
 			pf->nTexCoord [i] = IntTok (" \t");
 		}	
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadMeshNormals (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadMeshNormals (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 	tASEFace			*pf;
@@ -428,109 +433,109 @@ static int ASE_ReadMeshNormals (CFILE *cfp, tASEModel *pm)
 	int				i;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_FACENORMAL")) {
 		if (!psm->pFaces)
-			return ASE_Error ();
+			return ASE_Error ("no faces found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= psm->nFaces))
-			return ASE_Error ();
+			return ASE_Error ("invalid face number");
 		pf = psm->pFaces + i;
-		ASE_ReadVector (cfp, &pf->vNormal);
+		ASE_ReadVector (cfP, &pf->vNormal);
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEXNORMAL")) {
 		if (!psm->pVerts)
-			return ASE_Error ();
+			return ASE_Error ("no vertices found");
 		i = IntTok (" \t");
 		if ((i < 0) || (i >= psm->nVerts))
-			return ASE_Error ();
+			return ASE_Error ("invalid vertex number");
 		pv = psm->pVerts + i;
-		ASE_ReadVector (cfp, &pv->normal);
+		ASE_ReadVector (cfP, &pv->normal);
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadMesh (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadMesh (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModel	*psm = &pm->pSubModels->sm;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
-while ((pszToken = ASE_ReadLine (cfp))) {
+	return ASE_Error ("syntax error");
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*MESH_NUMVERTEX")) {
 		if (psm->pVerts)
-			return ASE_Error ();
+			return ASE_Error ("duplicate vertex list");
 		psm->nVerts = IntTok (" \t");
 		if (!psm->nVerts)
-			return ASE_Error ();
+			return ASE_Error ("no vertices found");
 		pm->nVerts += psm->nVerts;
 		if (!(psm->pVerts = (tASEVertex *) D2_ALLOC (psm->nVerts * sizeof (tASEVertex))))
-			return ASE_Error ();
+			return ASE_Error ("out of memory");
 		memset (psm->pVerts, 0, psm->nVerts * sizeof (tASEVertex));
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMTVERTEX")) {
 		if (psm->pTexCoord)
-			return ASE_Error ();
+			return ASE_Error ("no texture coordinates found");
 		psm->nTexCoord = IntTok (" \t");
 		if (psm->nTexCoord) {
 			if (!(psm->pTexCoord = (tTexCoord2f *) D2_ALLOC (psm->nTexCoord * sizeof (tTexCoord2f))))
-				return ASE_Error ();
+				return ASE_Error ("out of memory");
 			}
 		}
 	else if (!strcmp (pszToken, "*MESH_NUMFACES")) {
 		if (psm->pFaces)
-			return ASE_Error ();
+			return ASE_Error ("no faces found");
 		psm->nFaces = IntTok (" \t");
 		if (!psm->nFaces)
-			return ASE_Error ();
+			return ASE_Error ("no faces specified");
 		pm->nFaces += psm->nFaces;
 		if (!(psm->pFaces = (tASEFace *) D2_ALLOC (psm->nFaces * sizeof (tASEFace))))
-			return ASE_Error ();
+			return ASE_Error ("out of memory");
 		memset (psm->pFaces, 0, psm->nFaces * sizeof (tASEFace));
 		}
 	else if (!strcmp (pszToken, "*MESH_VERTEX_LIST")) {
-		if (!ASE_ReadMeshVertexList (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadMeshVertexList (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MESH_FACE_LIST")) {
-		if (!ASE_ReadMeshFaceList (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadMeshFaceList (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MESH_NORMALS")) {
-		if (!ASE_ReadMeshNormals (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadMeshNormals (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MESH_TVERTLIST")) {
-		if (!ASE_ReadVertexTexCoord (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadVertexTexCoord (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MESH_TFACELIST")) {
-		if (!ASE_ReadFaceTexCoord (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadFaceTexCoord (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
 
-static int ASE_ReadSubModel (CFILE *cfp, tASEModel *pm)
+static int ASE_ReadSubModel (CFILE *cfP, tASEModel *pm)
 {
 	tASESubModelList	*pml;
 	tASESubModel		*psm;
 
 if (CharTok (" \t") != '{')
-	return ASE_Error ();
+	return ASE_Error ("syntax error");
 if (!(pml = (tASESubModelList *) D2_ALLOC (sizeof (tASESubModelList))))
-	return ASE_Error ();
+	return ASE_Error ("out of memory");
 memset (pml, 0, sizeof (*pml));
 pml->pNextModel = pm->pSubModels;
 pm->pSubModels = pml;
@@ -544,7 +549,7 @@ psm->nBullets = -1;
 psm->bRender = 1;
 psm->nType = 0;
 psm->bBarrel = 0;
-while ((pszToken = ASE_ReadLine (cfp))) {
+while ((pszToken = ASE_ReadLine (cfP))) {
 	if (*pszToken == '}')
 		return 1;
 	if (!strcmp (pszToken, "*NODE_NAME")) {
@@ -599,18 +604,18 @@ while ((pszToken = ASE_ReadLine (cfp))) {
 		strcpy (psm->szParent, StrTok (" \t\""));
 		}
 	if (!strcmp (pszToken, "*NODE_TM")) {
-		if (!ASE_ReadNode (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadNode (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MESH")) {
-		if (!ASE_ReadMesh (cfp, pm))
-			return ASE_Error ();
+		if (!ASE_ReadMesh (cfP, pm))
+			return ASE_Error (NULL);
 		}
 	else if (!strcmp (pszToken, "*MATERIAL_REF")) {
 		psm->nBitmap = IntTok (" \t");
 		}
 	}
-return ASE_Error ();
+return ASE_Error ("unexpected end of file");
 }
 
 //------------------------------------------------------------------------------
@@ -645,6 +650,8 @@ int ASE_ReadFile (char *pszFile, tASEModel *pm, short nModel, short nType, int b
 if (!CFOpen (&cf, pszFile, gameFolders.szModelDir [nType], "rb", 0)) {
 	return 0;
 	}
+bErrMsg = 0;
+aseFile = &cf;
 memset (pm, 0, sizeof (*pm));
 pm->nModel = nModel;
 pm->nType = nType;
@@ -668,6 +675,7 @@ else {
 	ASE_LinkSubModels (pm);
 	gameData.models.bHaveHiresModel [pm - gameData.models.aseModels [bCustom]] = 1;
 	}
+aseFile = NULL;
 return nResult;
 }
 
