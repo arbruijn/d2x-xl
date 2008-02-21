@@ -303,6 +303,12 @@ if (psm->bWeapon) {
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
 	int		bQuadLasers = (playerP->flags & PLAYER_FLAGS_QUAD_LASERS) != 0;
 	int		bCenter = bCenterGuns [nGunId];
+	int		nWingtip = gameOpts->render.ship.nWingtip;
+
+	if (nWingtip == 0)
+		nWingtip = bLasers && bSuperLasers && bQuadLasers;
+	else if (nWingtip == 1)
+		nWingtip = !bLasers || bSuperLasers;
 
 	if (EGI_FLAG (bShowWeapons, 0, 1, 0)) {
 		if (psm->nGun == nGunId + 1) {
@@ -311,21 +317,17 @@ if (psm->bWeapon) {
 					return 1;
 				}
 			else if (bLasers) {
-				if ((psm->nWeaponPos > 2) && !bQuadLasers && gameOpts->render.ship.nWingtip)
+				if ((psm->nWeaponPos > 2) && !bQuadLasers && (nWingtip != bSuperLasers))
 					return 1;
 				}
 			}
 		else if (psm->nGun == LASER_INDEX + 1) {
-			if (gameOpts->render.ship.nWingtip)
-				return 1;
-			if (bLasers || bSuperLasers || bQuadLasers)
+			if (nWingtip)
 				return 1;
 			return !bCenter && (psm->nWeaponPos < 3);
 			}
 		else if (psm->nGun == SUPER_LASER_INDEX + 1) {
-			if (gameOpts->render.ship.nWingtip)
-				return 1;
-			if (bLasers || !bSuperLasers)
+			if (nWingtip != 1)
 				return 1;
 			return !bCenter && (psm->nWeaponPos < 3);
 			}

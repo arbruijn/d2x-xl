@@ -19,7 +19,9 @@ EDITOR_SRCS = bmread.c dumpmine.c
 endif
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
-ai.c        ai2.c       aipath.c    automap.c   bm.c        \
+ai.c        aianimate.c	aiboss.c		aifire.c		aiframe.c	\
+aiinit.c		ailib.c		aimove.c		aipath.c		aisave.c		\		
+aisnipe.c	automap.c   bm.c        sparkeffect.c				\
 cmd.c       cntrlcen.c  collide.c   config.c    console.c   \
 controls.c  credits.c   crypt.c     digiobj.c   effects.c   \
 escort.c    fireball.c  fuelcen.c   fvi.c       game.c      \
@@ -41,8 +43,8 @@ fastrender.c	renderthreads.c		flightpath.c \
 rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
 omega.c trackobject.c	monsterball.c	slowmotion.c	dropobject.c	\
 entropy.c	dynlight.c	headlight.c	marker.c	soundthreads.c \
-oofread.c	oofrender.c	oofmath.c	hudicons.c	statusbar.c \
-sparkeffect.c
+oofread.c	oofrender.c	oofmath.c	hudicons.c	statusbar.c 
+
 
 EXTRA_libmain_a_SOURCES = \
 highscores.c multi.c multibot.c network.c netmisc.c \

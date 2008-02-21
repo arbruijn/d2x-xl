@@ -3868,6 +3868,8 @@ do {
 		opt++;
 		ADD_RADIO (opt, TXT_SHIP_WINGTIP_LASER, 0, KEY_A, 1, HTX_SHIP_WINGTIPS);
 		optWingtips = opt++;
+		ADD_RADIO (opt, TXT_SHIP_WINGTIP_SUPLAS, 0, KEY_U, 1, HTX_SHIP_WINGTIPS);
+		opt++;
 		ADD_RADIO (opt, TXT_SHIP_WINGTIP_SHORT, 0, KEY_S, 1, HTX_SHIP_WINGTIPS);
 		opt++;
 		ADD_RADIO (opt, TXT_SHIP_WINGTIP_LONG, 0, KEY_L, 1, HTX_SHIP_WINGTIPS);
@@ -3884,7 +3886,7 @@ do {
 		} 
 	if (extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].value) {
 		gameOpts->render.ship.bBullets = m [optBullets].value;
-		for (j = 0; j < 3; j++)
+		for (j = 0; j < 4; j++)
 			if (m [optWingtips + j].value) {
 				gameOpts->render.ship.nWingtip = j;
 				break;

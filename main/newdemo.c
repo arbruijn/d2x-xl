@@ -826,7 +826,7 @@ void NDSetPowerupClip (tObject *objP)
 	tVClipInfo	*vciP = &objP->rType.vClipInfo;
 	tVideoClip	*vcP = gameData.eff.vClips [0] + vciP->nClipIndex;
 
-vciP->nCurFrame = ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount;
+vciP->nCurFrame = vcP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount : 0;
 }
 
 //	-----------------------------------------------------------------------------
