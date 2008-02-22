@@ -192,7 +192,7 @@ if (gameData.ai.xDistToPlayer <= MAX_SNIPE_DIST) {
 	int			i = ailP->mode;
 
 	if ((i >= AIM_SNIPE_ATTACK) && (i <= AIM_SNIPE_WAIT))
-		aiSnipeHandlers [i] (objP, ailP);
+		aiSnipeHandlers [i - AIM_SNIPE_ATTACK] (objP, ailP);
 	else {
 		Int3 ();	//	Oops, illegal mode for snipe behavior.
 		ailP->mode = AIM_SNIPE_ATTACK;

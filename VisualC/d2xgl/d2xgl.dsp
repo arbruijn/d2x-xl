@@ -408,18 +408,6 @@ SOURCE=..\..\misc\strutil.c
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\main\ai.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\ai2.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\aipath.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\main\aseread.c
 # End Source File
 # Begin Source File
@@ -925,6 +913,54 @@ SOURCE=..\..\texmap\scanline.c
 # Begin Source File
 
 SOURCE=..\..\texmap\tmapflat.c
+# End Source File
+# End Group
+# Begin Group "ai"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\main\ai.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aianimate.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aiboss.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aifire.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aiframe.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aiinit.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\ailib.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aimove.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aipath.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aisave.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\aisnipe.c
 # End Source File
 # End Group
 # End Group
