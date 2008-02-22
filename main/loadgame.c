@@ -842,6 +842,16 @@ return pszFilename;
 }
 
 //------------------------------------------------------------------------------
+
+char *LevelSongName (int nLevel)
+{
+return gameStates.app.bAutoRunMission ? 0 :
+			(nLevel < 0) ? 
+			gameData.missions.szSongNames [-nLevel-1] : 
+			gameData.missions.szSongNames [nLevel-1];
+}
+
+//------------------------------------------------------------------------------
 //load a level off disk. level numbers start at 1.  Secret levels are -1,-2,-3
 
 extern char szAutoMission [255];

@@ -340,8 +340,8 @@ if (bForceRBRegister) {
 	bForceRBRegister = 0;
 	}
 if (bFromHog) {
-	MakeLevelFilename (nLevel, szFilename, ".ogg");
-	if (CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
+	strcpy (szFilename, LevelSongName (nLevel));
+	if (*szFilename && CFExtract (szFilename, gameFolders.szDataDir, 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 	
 		sprintf (szSong, "%s%s%s", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "", szFilename);

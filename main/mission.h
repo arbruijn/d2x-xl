@@ -19,8 +19,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cfile.h"
 
 #define MAX_MISSIONS                    300
-#define MAX_LEVELS_PER_MISSION          30
-#define MAX_SECRET_LEVELS_PER_MISSION   6
+#define MAX_LEVELS_PER_MISSION          100
+#define MAX_SECRET_LEVELS_PER_MISSION   20
 #define MISSION_NAME_LEN                25
 
 #define D1_MISSION_FILENAME             "descent"

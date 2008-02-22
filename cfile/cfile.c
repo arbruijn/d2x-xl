@@ -469,8 +469,7 @@ if ((*filename != '\x01') /*&& !bUseD1Hog*/) {
 	}
 else {
 	fp = NULL;		//don't look in dir, only in tHogFile
-	if (*filename == '\x01')
-		filename++;
+	filename++;
 	}
 
 if (!fp) {
@@ -600,8 +599,8 @@ for (i = 0; i < n - 1; i++) {
 				break;
 			}
 		} while (c == 13);
- 	if (c == 13)  // because cr-lf is a bad thing on the mac
- 		c = '\n';   // and anyway -- 0xod is CR on mac, not 0x0a
+ 	if (c == 0 || c == 10 || c == 13)  // because cr-lf is a bad thing on the mac
+ 		break;   // and anyway -- 0xod is CR on mac, not 0x0a
 	*buf++ = c;
 	if (c == '\n')
 		break;

@@ -2303,6 +2303,7 @@ typedef struct tMissionData {
 	char					szLevelNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 	char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
 	int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
+	char					szSongNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
 } tMissionData;
 
 //------------------------------------------------------------------------------

@@ -811,6 +811,23 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void LoadSongList (char *szFile)
+{
+	CFILE	cf;
+	char	pn [FILENAME_LEN], fn [FILENAME_LEN] = {'\x01'};
+	int	i;
+
+CFSplitPath (szFile, pn, fn + 1, NULL);
+strcat (fn, ".sng");
+if (!CFOpen (&cf, fn, pn, "rb", 0))
+	return;
+for (i = 0; CFGetS (gameData.missions.szSongNames [i], SHORT_FILENAME_LEN, &cf) && (i < MAX_LEVELS_PER_MISSION); i++)
+	;
+CFClose (&cf);
+}
+
+//------------------------------------------------------------------------------
+
 void InitExtraRobotMovie (char *filename);
 
 //values for built-in mission
@@ -821,12 +838,12 @@ void InitExtraRobotMovie (char *filename);
 int LoadMission (int nMission)
 {
 	CFILE		cf;
-	char		szFolder [FILENAME_LEN], szFile [FILENAME_LEN];
+	char		szFolder [FILENAME_LEN] = {'\0'}, szFile [FILENAME_LEN] = {'\0'};
 	int		i, bFoundHogFile = 0;
 
 gameData.missions.nEnhancedMission = 0;
 if (nMission == gameData.missions.nD1BuiltinMission) {
-	CFUseD1HogFile("descent.hog");
+	CFUseD1HogFile ("descent.hog");
 	switch (gameData.missions.nD1BuiltinHogSize) {
 	default:
 		Int3(); // fall through
@@ -941,9 +958,9 @@ if (!bFoundHogFile || (gameData.missions.nLastLevel <= 0)) {
 	gameData.missions.nCurrentMission = -1;		//no valid mission loaded
 	return 0;
 	}
-
 gameStates.app.szCurrentMissionFile = gameData.missions.list [gameData.missions.nCurrentMission].filename;
 gameStates.app.szCurrentMission = gameData.missions.list [gameData.missions.nCurrentMission].szMissionName;
+LoadSongList (szFile);
 return 1;
 }
 
