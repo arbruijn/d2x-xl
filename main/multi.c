@@ -245,11 +245,11 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	2,	 // MULTI_DEINVUL
 	29, // MULTI_WEAPONS
 	40, // MULTI_MONSTERBALL
-	2,  //MULTI_CHEATING
-	5,  //MULTI_TRIGGER_EXT
-	16, //MULTI_SYNC_KILLS
-	5,	 //MULTI_COUNTDOWN
-	14	 //MULTI_PLAYER_WEAPONS
+	2,  // MULTI_CHEATING
+	5,  // MULTI_TRIGGER_EXT
+	16, // MULTI_SYNC_KILLS
+	5,	 // MULTI_COUNTDOWN
+	15	 // MULTI_PLAYER_WEAPONS
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -496,31 +496,31 @@ gameData.multigame.msg.buf [2] = wsP->nPrimary;
 gameData.multigame.msg.buf [3] = wsP->nSecondary;
 gameData.multigame.msg.buf [4] = wsP->nMissiles;
 gameData.multigame.msg.buf [5] = wsP->nLaserLevel;
-gameData.multigame.msg.buf [6] = wsP->bFiring [0];
-gameData.multigame.msg.buf [7] = wsP->bFiring [1];
-gameData.multigame.msg.buf [8] = wsP->bTripleFusion;
-gameData.multigame.msg.buf [9] = wsP->nMslLaunchPos;
-PUT_INTEL_INT (gameData.multigame.msg.buf + 10, wsP->xMslFireTime);
-MultiSendData (gameData.multigame.msg.buf, 14, 0);
+gameData.multigame.msg.buf [6] = wsP->bQuadLasers;
+gameData.multigame.msg.buf [7] = wsP->bFiring [0];
+gameData.multigame.msg.buf [8] = wsP->bFiring [1];
+gameData.multigame.msg.buf [9] = wsP->bTripleFusion;
+gameData.multigame.msg.buf [10] = wsP->nMslLaunchPos;
+PUT_INTEL_INT (gameData.multigame.msg.buf + 11, wsP->xMslFireTime);
+MultiSendData (gameData.multigame.msg.buf, 15, 0);
 }
 
 //-----------------------------------------------------------------------------
 
 void MultiDoPlayerWeapons (char *buf)
 {
-	int				nPlayer = (int) buf [1];
-	tWeaponState	*wsP = gameData.multiplayer.weaponStates + nPlayer;
-
+	tWeaponState	*wsP = gameData.multiplayer.weaponStates + (int) buf [1];
 
 wsP->nPrimary = buf [2];
 wsP->nSecondary = buf [3];
 wsP->nMissiles = buf [4];
 wsP->nLaserLevel = gameData.multigame.msg.buf [5];
-wsP->bFiring [0] = gameData.multigame.msg.buf [6];
-wsP->bFiring [1] = gameData.multigame.msg.buf [7];
-wsP->bTripleFusion = gameData.multigame.msg.buf [8];
-wsP->nMslLaunchPos = gameData.multigame.msg.buf [9];
-wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 10);
+wsP->bQuadLasers = gameData.multigame.msg.buf [6];
+wsP->bFiring [0] = gameData.multigame.msg.buf [7];
+wsP->bFiring [1] = gameData.multigame.msg.buf [8];
+wsP->bTripleFusion = gameData.multigame.msg.buf [9];
+wsP->nMslLaunchPos = gameData.multigame.msg.buf [10];
+wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 11);
 }
 
 //-----------------------------------------------------------------------------
@@ -1865,13 +1865,13 @@ objP->mType.physInfo.brakes = objP->mType.physInfo.turnRoll = 0;
 objP->mType.physInfo.mass = gameData.pig.ship.player->mass;
 objP->mType.physInfo.drag = gameData.pig.ship.player->drag;
 //      objP->mType.physInfo.flags &= ~ (PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST);
-objP->mType.physInfo.flags &= ~ (PF_TURNROLL | PF_LEVELLING | PF_WIGGLE);
+objP->mType.physInfo.flags &= ~(PF_TURNROLL | PF_LEVELLING | PF_WIGGLE);
 //Init render info
 objP->renderType = RT_POLYOBJ;
 objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;               //what model is this?
 objP->rType.polyObjInfo.nSubObjFlags = 0;         //zero the flags
-for (i = 0;i<MAX_SUBMODELS;i++)
-	VmAngVecZero (&objP->rType.polyObjInfo.animAngles [i]);
+for (i = 0; i < MAX_SUBMODELS; i++)
+	VmAngVecZero (objP->rType.polyObjInfo.animAngles + i);
 //reset textures for this, if not tPlayer 0
 MultiResetObjectTexture (objP);
 // Clear misc

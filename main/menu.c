@@ -2460,8 +2460,12 @@ do {
 	m [optThrusterFlame + extraGameInfo [0].bThrusterFlames].value = 1;
 	ADD_CHECK (opt, TXT_RENDER_SPARKS, gameOpts->render.bEnergySparks, KEY_P, HTX_RENDER_SPARKS);
 	optSparks = opt++;
-	ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
-	optTranspExpl = opt++;
+	if (gameOpts->render.textures.bUseHires)
+		optTranspExpl = -1;
+	else {
+		ADD_CHECK (opt, TXT_TRANSP_EFFECTS, gameOpts->render.bTransparentEffects, KEY_E, HTX_ADVRND_TRANSPFX);
+		optTranspExpl = opt++;
+		}
 	ADD_CHECK (opt, TXT_AUTO_TRANSPARENCY, gameOpts->render.bAutoTransparency, KEY_A, HTX_RENDER_AUTOTRANSP);
 	optAutoTransp = opt++;
 	ADD_CHECK (opt, TXT_RENDER_SHIELDS, extraGameInfo [0].bPlayerShield, KEY_P, HTX_RENDER_SHIELDS);
@@ -2489,7 +2493,7 @@ do {
 		else
 			FreeEnergySparks ();
 		}
-	gameOpts->render.bTransparentEffects = m [optTranspExpl].value;
+	GET_VAL (gameOpts->render.bTransparentEffects, optTranspExpl);
 	gameOpts->render.bAutoTransparency = m [optAutoTransp].value;
 	gameOpts->render.bExplBlast = m [optExplBlast].value;
 	extraGameInfo [0].bTracers = m [optTracers].value;

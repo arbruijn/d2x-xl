@@ -2184,6 +2184,7 @@ typedef struct tWeaponState {
 	char						nMissiles;
 	char						nPrimary;
 	char						nSecondary;
+	char						bQuadLasers;
 	char						bFiring [2];
 	char						nLaserLevel;
 	char						bTripleFusion;

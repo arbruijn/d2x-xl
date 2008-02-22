@@ -21,6 +21,7 @@
 
 #define SIMPLE_SPHERE	1
 #define ADDITIVE_SPHERE_BLENDING 1
+#define MAX_SPHERE_RINGS 256
 
 #define SPHERE_MAXLAT	100    /*max number of horiz and vert. divisions of sphere*/
 #define SPHERE_MAXLONG	100
@@ -314,7 +315,8 @@ if (bmP && (bmP == bmpShield)) {
 	}
 #endif
 if (bmP) {
-	OglActiveTexture (GL_TEXTURE0, 0);
+	glActiveTexture (GL_TEXTURE0);
+	glClientActiveTexture (GL_TEXTURE0);
 	glEnable (GL_TEXTURE_2D);
 	if (OglBindBmTex (bmP, 1, 1))
 		bmP = NULL;
@@ -370,12 +372,16 @@ if (sphereCoordP)
 
 int CreateSphereSimple (int nRings)
 {
-	int				h = nRings * (nRings + 1), i, j;
+	int				h, i, j;
 	float				t1, t2, t3, a, sint1, cost1, sint2, cost2, sint3, cost3;
 	tSphereCoord	*psc;
 
+if (nRings > MAX_SPHERE_RINGS)
+	nRings = MAX_SPHERE_RINGS;
+h = nRings * (nRings + 1);
 if (nSphereCoord == h)
 	return (sphereCoordP != NULL);
+
 FreeSphereCoord ();
 if (!(sphereCoordP = (tSphereCoord *) D2_ALLOC (h * sizeof (tSphereCoord))))
 	return 0;
@@ -413,70 +419,108 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+inline void RenderSphereRing (fVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive)
+{
+if (G3EnableClientStates (bTextured, 0, 0, GL_TEXTURE0)) {
+	if (bTextured)
+		glTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
+	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertexP);
+	glDrawArrays (nPrimitive, 0, nItems);
+	G3DisableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+	}
+else {
+	int	i;
+
+	glBegin (nPrimitive);
+	for (i = 0; i < nItems; i++) {
+		if (bTextured)
+			glTexCoord2fv ((GLfloat *) (texCoordP + i));
+		glVertex3fv ((GLfloat *) (vertexP + i));
+		}
+	glEnd ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void RenderSphereSimple (float fRadius, int nRings, float red, float green, float blue, float alpha, int bTextured, int nTiles)
 {
-	int				nCull, h, i, j;
-	fVector			p;
+	int				nCull, h, i, j, nQuads;
+	fVector			p [2 * MAX_SPHERE_RINGS + 2];
+	tTexCoord2f		tc [2 * MAX_SPHERE_RINGS + 2];
 	tSphereCoord	*psc [2];
 
+if (nRings > MAX_SPHERE_RINGS)
+	nRings = MAX_SPHERE_RINGS;
 if (gameStates.ogl.bUseTransform)
 	glScalef (fRadius, fRadius, fRadius);
 if (!CreateSphereSimple (nRings))
 	return;
 h = nRings / 2;
-for (nCull = 0; nCull < 2; nCull++) {
-	psc [0] = psc [1] = sphereCoordP;
-	for (j = 0; j < h; j++) {
+nQuads = 2 * nRings + 2;
+if (gameStates.ogl.bUseTransform) {
+	for (nCull = 0; nCull < 2; nCull++) {
+		psc [0] = psc [1] = sphereCoordP;
 		glCullFace (nCull ? GL_FRONT : GL_BACK);
-		glBegin (GL_QUAD_STRIP);
-		for (i = 0; i <= nRings; i++) {
-			p = psc [0]->vPos;
-			if (!gameStates.ogl.bUseTransform) {
-				VmVecScalef (&p, &p, fRadius);
-				G3TransformPointf (&p, &p, 0);
+		for (j = 0; j < h; j++) {
+			for (i = 0; i < nQuads; i++, psc [0]++) {
+				p [i] = psc [0]->vPos;
+				if (bTextured) {
+					tc [i].v.u = psc [0]->uvl.v.u * nTiles;
+					tc [i].v.v = psc [0]->uvl.v.v * nTiles;
+					//glTexCoord2fv ((GLfloat *) (tc + i));
+					}
 				}
-			if (bTextured)
-				glTexCoord2f (psc [0]->uvl.v.u * nTiles, psc [0]->uvl.v.v * nTiles);
-			glVertex3fv ((GLfloat *) &p);
-			psc [0]++;
-			p = psc [0]->vPos;
-			if (!gameStates.ogl.bUseTransform) {
-				VmVecScalef (&p, &p, fRadius);
-				G3TransformPointf (&p, &p, 0);
-				}
-			if (bTextured)
-				glTexCoord2f (psc [0]->uvl.v.u * nTiles, psc [0]->uvl.v.v * nTiles);
-			glVertex3fv ((GLfloat *) &p);
-			psc [0]++;
-			}
-		glEnd();
+			RenderSphereRing (p, tc, nQuads, bTextured, GL_QUAD_STRIP);
 #if 0
-		if (!bTextured) {
-			glBegin (GL_LINE_STRIP);
-			for (i = 0; i <= nRings; i++) {
-				p = psc [1]->vPos;
-				if (!gameStates.ogl.bUseTransform) {
-					VmVecScalef (&p, &p, fRadius);
-					G3TransformPointf (&p, &p, 0);
+			if (!bTextured) {
+				for (i = 0; i < nQuads; i++, psc [1]++) {
+					p [i] = psc [1]->vPos;
+					if (bTextured) {
+						tc [i].v.u = psc [1]->uvl.v.u * nTiles;
+						tc [i].v.v = psc [1]->uvl.v.v * nTiles;
+						}
 					}
-				if (bTextured)
-					glTexCoord2f (psc [1]->uvl.v.u * nTiles, psc [1]->uvl.v.v * nTiles);
-				glVertex3fv ((GLfloat *) &p);
-				psc [1]++;
-				p = psc [1]->vPos;
-				if (!gameStates.ogl.bUseTransform) {
-					VmVecScalef (&p, &p, fRadius);
-					G3TransformPointf (&p, &p, 0);
-					}
-				if (bTextured)
-					glTexCoord2f (psc [1]->uvl.v.u * nTiles, psc [1]->uvl.v.v * nTiles);
-				glVertex3fv ((GLfloat *) &p);
-				psc [1]++;
+				glLineWidth (2);
+				RenderSphereRing (p, tc, nQuads, 0, GL_LINE_STRIP);
+				glLineWidth (1);
 				}
-			glEnd ();
-			glLineWidth (1);
-			}
 #endif
+			}
+		}
+	}
+else {
+	for (nCull = 0; nCull < 2; nCull++) {
+		glCullFace (nCull ? GL_FRONT : GL_BACK);
+		psc [0] = psc [1] = sphereCoordP;
+		for (j = 0; j < h; j++) {
+			for (i = 0; i < nQuads; i++, psc [0]++) {
+				p [i] = psc [0]->vPos;
+				VmVecScalef (p + i, p + i, fRadius);
+				G3TransformPointf (p + i, p + i, 0);
+				if (bTextured) {
+					tc [i].v.u = psc [0]->uvl.v.u * nTiles;
+					tc [i].v.v = psc [0]->uvl.v.v * nTiles;
+					}
+				}
+			RenderSphereRing (p, tc, nQuads, bTextured, GL_QUAD_STRIP);
+#if 0
+			if (!bTextured) {
+				for (i = 0; i < nQuads; i++, psc [1]++) {
+					p [i] = psc [1]->vPos;
+					VmVecScalef (p + i, p + i, fRadius);
+					G3TransformPointf (p + i, p + i, 0);
+					if (bTextured) {
+						tc [i].v.u = psc [1]->uvl.v.u * nTiles;
+						tc [i].v.v = psc [1]->uvl.v.v * nTiles;
+						}
+					}
+				glLineWidth (2);
+				RenderSphereRing (p, tc, nQuads, 0, GL_LINE_STRIP);
+				glLineWidth (1);
+				}
+#endif
+			}
 		}
 	}
 OglCullFace (0);
@@ -679,6 +723,16 @@ pPulse->fScale =
 pPulse->fMin = fMin;
 pPulse->fSpeed =
 pPulse->fDir = fSpeed;
+}
+
+//------------------------------------------------------------------------------
+
+void InitSpheres (void)
+{
+CreateShieldSphere ();
+#if SIMPLE_SPHERE
+CreateSphereSimple (32);
+#endif
 }
 
 //------------------------------------------------------------------------------

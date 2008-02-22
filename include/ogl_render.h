@@ -63,7 +63,7 @@ bool G3DrawTexPolySimple (
 void OglCachePolyModelTextures (int nModel);
 
 void DrawTexPolyFlat (grsBitmap *bm,int nv,g3sPoint **vertlist);
-int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
+int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap);
 
 void OglURect(int left,int top,int right,int bot);

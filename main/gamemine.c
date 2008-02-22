@@ -1193,8 +1193,10 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 					faceP->bAdditive = 0;
 				else if (WALLS [nWall].flags & WALL_RENDER_ADDITIVE)
 					faceP->bAdditive = 2;
+				else if (strstr (pszName, "lava"))
+					faceP->bAdditive = 3;
 				else
-					faceP->bAdditive = (strstr (pszName, "force") || strstr (pszName, "lava") || faceP->bSparks) ? 1 : 0;
+					faceP->bAdditive = (strstr (pszName, "force") || faceP->bSparks) ? 1 : 0;
 				} 
 			else if (bColoredSeg) {
 				faceP->nBaseTex = -1;

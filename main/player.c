@@ -110,6 +110,10 @@ if (wsP->nSecondary != gameData.weapons.nSecondary) {
 	wsP->nSecondary = gameData.weapons.nSecondary;
 	bUpdate = 1;
 	}
+if (wsP->bQuadLasers != ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0)) {
+	wsP->bQuadLasers = ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0);
+	bUpdate = 1;
+	}
 if (wsP->bFiring [0] != gameData.weapons.bFiring [0]) {
 	wsP->bFiring [0] = gameData.weapons.bFiring [0];
 	bUpdate = 1;

@@ -816,11 +816,16 @@ return 1;
 
 int ReadModelTextures (tModelTextures *pt, int nType, int bCustom)
 {
-	int	i;
+	grsBitmap	*bmP;
+	int			i;
 
 for (i = 0; i < pt->nBitmaps; i++) {
-	if (!ReadModelTGA (pt->pszNames [i], pt->pBitmaps + i, nType, bCustom))
+	if (!ReadModelTGA (pt->pszNames [i], bmP = pt->pBitmaps + i, nType, bCustom))
 		return 0;
+	bmP = BmOverride (bmP, -1);
+	if (BM_FRAMES (bmP))
+		bmP = BM_CURFRAME (bmP);
+	OglBindBmTex (bmP, 1, 3);
 	pt->pBitmaps [i].bmTeam = pt->nTeam ? pt->nTeam [i] : 0;
 	}
 return 1;

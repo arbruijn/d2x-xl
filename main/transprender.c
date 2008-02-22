@@ -625,6 +625,10 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 		RIResetShader ();
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		}
+	else if (item->bAdditive == 3) {
+		RIResetShader ();
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_COLOR);
+		}
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);

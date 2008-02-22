@@ -1007,7 +1007,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord3f *texCoordP, 
+int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices, tTexCoord2f *texCoordP, 
 							tRgbaColorf *colorP, int nColors, int nPrimitive, int nWrap)
 {
 	int	bVertexArrays = G3EnableClientStates (bmP && texCoordP, colorP && (nColors == nVertices), 0, GL_TEXTURE0);
@@ -1025,15 +1025,15 @@ if (bmP) {
 	OglTexWrap (bmP->glTexture, nWrap);
 	}
 if (bVertexArrays) {
-	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertexP);
 	if (texCoordP)
-		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord3f), texCoordP);
+		glTexCoordPointer (2, GL_FLOAT, sizeof (tTexCoord2f), texCoordP);
 	if (colorP) {
 		if (nColors == nVertices)
 			glColorPointer (4, GL_FLOAT, sizeof (tRgbaColorf), colorP);
 		else
 			glColor4fv ((GLfloat *) colorP);
 		}
+	glVertexPointer (3, GL_FLOAT, sizeof (fVector), vertexP);
 	glDrawArrays (nPrimitive, 0, nVertices);
 	glDisableClientState (GL_VERTEX_ARRAY);
 	if (texCoordP)

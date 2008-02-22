@@ -138,16 +138,30 @@ return bShowOnlyCurSide = !bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
+inline int LoadExtraBitmap (grsBitmap **bmPP, char *pszName, int *bHaveP)
+{
+if (!*bHaveP) {
+	grsBitmap *bmP = CreateAndReadTGA (pszName);
+	if (!bmP)
+		*bHaveP = -1;
+	else {
+		*bHaveP = 1;
+		BM_FRAMECOUNT (bmP) = bmP->bmProps.h / bmP->bmProps.w;
+		OglBindBmTex (bmP, 1, 1);
+		}	
+	*bmPP = bmP;
+	}
+return *bHaveP > 0;
+}
+
+//------------------------------------------------------------------------------
+
 grsBitmap *bmpExplBlast = NULL;
 int bHaveExplBlast = 0;
 
 int LoadExplBlast (void)
 {
-if (!bHaveExplBlast) {
-	bmpExplBlast = CreateAndReadTGA ("blast.tga");
-	bHaveExplBlast = (bmpExplBlast ? 1 : -1);
-	}
-return bHaveExplBlast > 0;
+return LoadExtraBitmap (&bmpExplBlast, "blast.tga", &bHaveExplBlast);
 }
 
 //------------------------------------------------------------------------------
@@ -168,11 +182,7 @@ int bHaveCorona = 0;
 
 int LoadCorona (void)
 {
-if (!bHaveCorona) {
-	bmpCorona = CreateAndReadTGA ("corona.tga");
-	bHaveCorona = (bmpCorona ? 1 : -1);
-	}
-return bHaveCorona > 0;
+return LoadExtraBitmap (&bmpCorona, "corona.tga", &bHaveCorona);
 }
 
 //------------------------------------------------------------------------------
@@ -193,11 +203,7 @@ int bHaveGlare = 0;
 
 int LoadGlare (void)
 {
-if (!bHaveGlare) {
-	bmpGlare = CreateAndReadTGA ("glare.tga");
-	bHaveGlare = (bmpGlare ? 1 : -1);
-	}
-return bHaveGlare > 0;
+return LoadExtraBitmap (&bmpGlare, "glare.tga", &bHaveGlare);
 }
 
 //------------------------------------------------------------------------------
@@ -218,11 +224,7 @@ int bHaveHalo = 0;
 
 int LoadHalo (void)
 {
-if (!bHaveHalo) {
-	bmpHalo = CreateAndReadTGA ("halo.tga");
-	bHaveHalo = (bmpHalo ? 1 : -1);
-	}
-return bHaveHalo > 0;
+return LoadExtraBitmap (&bmpHalo, "halo.tga", &bHaveHalo);
 }
 
 //------------------------------------------------------------------------------
@@ -245,11 +247,7 @@ int LoadThruster (void)
 {
 	int nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
 
-if (!bHaveThruster [nStyle]) {
-	bmpThruster [nStyle] = CreateAndReadTGA ((EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) ? "thrust2d.tga" : "thrust3d.tga");
-	bHaveThruster [nStyle] = (bmpThruster [nStyle] ? 1 : -1);
-	}
-return bHaveThruster [nStyle] > 0;
+return LoadExtraBitmap (&bmpThruster [nStyle], (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) ? "thrust2d.tga" : "thrust3d.tga", bHaveThruster + nStyle);
 }
 
 //------------------------------------------------------------------------------
@@ -273,12 +271,7 @@ int bHaveShield = 0;
 
 int LoadShield (void)
 {
-if (!bHaveShield) {
-	bmpShield = CreateAndReadTGA ("shield.tga");
-	if (0 < (bHaveShield = (bmpShield ? 1 : -1)))
-		BM_FRAMECOUNT (bmpShield) = bmpShield->bmProps.h / bmpShield->bmProps.w;
-	}
-return bHaveShield > 0;
+return LoadExtraBitmap (&bmpShield, "shield.tga", &bHaveShield);
 }
 
 //------------------------------------------------------------------------------

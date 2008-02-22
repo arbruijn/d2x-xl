@@ -73,7 +73,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tAIStateInfo {
 	short			nObject;
 	short			nObjRef;
-	tObject		*objP;
 	tRobotInfo	*botInfoP;
 	tAIStatic	*aiP;
 	tAILocal		*ailP;
@@ -245,8 +244,8 @@ return 0;
 
 int AIMGotoPlayerHandler1 (tObject *objP, tAIStateInfo *siP)
 {
-MoveTowardsSegmentCenter (siP->objP);
-CreatePathToPlayer (siP->objP, 100, 1);
+MoveTowardsSegmentCenter (objP);
+CreatePathToPlayer (objP, 100, 1);
 return 0;
 }
 
@@ -770,8 +769,8 @@ static pAIHandler aimHandler1 [] = {
 static pAIHandler aimHandler2 [] = {
 	AIMIdlingHandler2, AINothingHandler, AIMFollowPathHandler2, AIMChaseObjectHandler2, AIMRunFromObjectHandler2,
 	AIMBehindHandler2, AINothingHandler, AIMOpenDoorHandler2, AIMGotoHandler2, AIMGotoHandler2,
-	AIMSnipeHandler2, AIMSnipeHandler2, AIMSnipeHandler2, AINothingHandler, AIMSnipeHandler2, AINothingHandler,
-	AINothingHandler, AINothingHandler, AINothingHandler, AINothingHandler};
+	AIMSnipeHandler2, AIMSnipeHandler2, AINothingHandler, AIMSnipeHandler2, AINothingHandler,
+	AINothingHandler,	AINothingHandler, AINothingHandler};
 
 static pAIHandler aisHandler1 [] = {
 	AISNoneHandler1, AISRestHandler1, AISSearchHandler1, AISLockHandler1, 
@@ -1400,9 +1399,8 @@ if (AIThiefHandler (objP, &si))
 // More special ability stuff, but based on a property of a robot, not its ID.
 if ((ushort) si.ailP->mode > AIM_THIEF_WAIT)
 	AIMDefaultHandler2 (objP, &si);
-else 
-	if (aimHandler2 [si.ailP->mode] (objP, &si))
-		goto funcExit;
+else if (aimHandler2 [si.ailP->mode] (objP, &si))
+	goto funcExit;
 if (AIWakeupHandler (objP, &si))
 	goto funcExit;
 

@@ -47,6 +47,7 @@
 #include "ogl_shader.h"
 #include "ogl_render.h"
 #include "render.h"
+#include "sphere.h"
 
 //------------------------------------------------------------------------------
 
@@ -762,6 +763,7 @@ CloseDynLighting ();
 InitDynLighting ();
 OglCreateDrawBuffer ();
 CreateCameras ();	
+InitSpheres ();
 BuildObjectModels ();
 OglDrawBuffer (GL_BACK, 1);
 }

@@ -296,7 +296,7 @@ void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *
 	fix			xSize;
 	float			fScale;
 
-if (gameOpts->render.bTransparentEffects) {
+if (gameOpts->render.textures.bUseHires || gameOpts->render.bTransparentEffects) {
 	if (fAlpha) {
 		bAdditive = (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION);
 #if 0

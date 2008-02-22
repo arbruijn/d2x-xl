@@ -7,6 +7,8 @@
 
 #include "oof.h"
 
+void InitSpheres (void);
+
 int CreateSphere (tSphereData *sdP);
 
 int CreateShieldSphere (void);

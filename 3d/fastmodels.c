@@ -301,7 +301,7 @@ if (psm->bWeapon) {
 	tPlayer	*playerP = gameData.multiplayer.players + nId;
 	int		bLasers = (nGunId == LASER_INDEX) || (nGunId == SUPER_LASER_INDEX);
 	int		bSuperLasers = playerP->laserLevel > MAX_LASER_LEVEL;
-	int		bQuadLasers = (playerP->flags & PLAYER_FLAGS_QUAD_LASERS) != 0;
+	int		bQuadLasers = gameData.multiplayer.weaponStates [gameData.multiplayer.nLocalPlayer].bQuadLasers;
 	int		bCenter = bCenterGuns [nGunId];
 	int		nWingtip = gameOpts->render.ship.nWingtip;
 
