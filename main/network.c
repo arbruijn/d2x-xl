@@ -977,12 +977,9 @@ void NetworkSendObjects (void)
 	int		loc, i, h, t;
 	tObject	*objP;
 
-
-	int nObjFrame = 0;
-	int nPlayer = networkData.playerRejoining.player.connected;
-
-	// Send clear gameData.objs.objects array tTrigger and send tPlayer num
-
+int nObjFrame = 0;
+int nPlayer = networkData.playerRejoining.player.connected;
+// Send clear gameData.objs.objects array tTrigger and send tPlayer num
 Assert (networkData.bSendObjects != 0);
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nMaxPlayers);
@@ -999,6 +996,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	networkData.bSendObjects = 0; 
 	return;
 	}
+objFilter [OBJ_MARKER] = gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try to speed it up without
 														  // over-stressing the receiver.
 	nObjFrame = 0;
@@ -2935,8 +2933,12 @@ m [1].nType = NM_TYPE_TEXT;
 m [1].text = TXT_NET_LEAVE;
 networkData.bRejoined = 0;
 i = NetworkSendRequest ();
-if (i < 0)
+if (i < 0) {
+#ifdef _DEBUG
+	NetworkSendRequest ();
+#endif
 	return -1;
+	}
 sprintf (m [0].text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
 
 do_menu:   

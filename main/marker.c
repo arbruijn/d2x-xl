@@ -180,13 +180,15 @@ if (!(bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment))) {
 
 void DropSpawnMarker (void)
 {
-	char nMarker = (char) SpawnMarkerIndex (-1);
+if (!IsMultiGame || IsCoopGame && !gameStates.app.bPlayerIsDead) {
+		char nMarker = (char) SpawnMarkerIndex (-1);
 
-if (nMarker < 0)
-	nMarker = (gameData.marker.nLast + 1) % MaxDrop ();
-else
-	nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
-DropMarker (nMarker, 1);
+	if (nMarker < 0)
+		nMarker = (gameData.marker.nLast + 1) % MaxDrop ();
+	else
+		nMarker -= (gameData.multiplayer.nLocalPlayer * 2);
+	DropMarker (nMarker, 1);
+	}
 }
 
 //------------------------------------------------------------------------------
