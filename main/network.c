@@ -956,7 +956,7 @@ if (!CmpNetPlayers (networkData.playerRejoining.player.callsign, their->player.c
 #endif
 	networkData.bSendObjects = 0;
 	networkData.bSendingExtras = 0;
-	networkData.bRejoined=0;
+	networkData.bRejoined = 0;
 	networkData.nPlayerJoiningExtras = -1;
 	networkData.nSendObjNum = -1;
 	}
@@ -964,18 +964,21 @@ if (!CmpNetPlayers (networkData.playerRejoining.player.callsign, their->player.c
 
 //------------------------------------------------------------------------------
 
-ubyte object_buffer [IPX_MAX_DATA_SIZE];
+ubyte objBuf [IPX_MAX_DATA_SIZE];
 
 void NetworkSendObjects (void)
 {
-	short nRemoteObj;
-	sbyte owner;
-	int loc, i, h, t;
-
+	static int objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
 	static int objCount = 0;
 	static int nFrame = 0;
 
-	int objCount_frame = 0;
+	short		nRemoteObj;
+	sbyte		owner;
+	int		loc, i, h, t;
+	tObject	*objP;
+
+
+	int nObjFrame = 0;
 	int nPlayer = networkData.playerRejoining.player.connected;
 
 	// Send clear gameData.objs.objects array tTrigger and send tPlayer num
@@ -998,73 +1001,73 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	}
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try to speed it up without
 														  // over-stressing the receiver.
-	objCount_frame = 0;
-	memset (object_buffer, 0, IPX_MAX_DATA_SIZE);
-	object_buffer [0] = PID_OBJECT_DATA;
+	nObjFrame = 0;
+	memset (objBuf, 0, IPX_MAX_DATA_SIZE);
+	objBuf [0] = PID_OBJECT_DATA;
 	loc = 3;
 
 	if (networkData.nSendObjNum == -1) {
 		objCount = 0;
 		networkData.bSendObjectMode = 0;
-		SET_SHORT (object_buffer, loc, -1);            
-		SET_BYTE (object_buffer, loc, nPlayer);                            
+		SET_SHORT (objBuf, loc, -1);            
+		SET_BYTE (objBuf, loc, nPlayer);                            
 		/* Placeholder for nRemoteObj, not used here */          
 		loc += 2;
 		networkData.nSendObjNum = 0;
-		objCount_frame = 1;
+		nObjFrame = 1;
 		nFrame = 0;
 		}
 
-	for (i = networkData.nSendObjNum; i <= gameData.objs.nLastObject; i++) {
-		t = gameData.objs.objects [i].nType;
-		if ((t != OBJ_POWERUP) && (t != OBJ_PLAYER) &&
-			 (t != OBJ_REACTOR) && (t != OBJ_GHOST) &&
-			 (t != OBJ_ROBOT) && (t != OBJ_HOSTAGE) &&
-			 ((t != OBJ_WEAPON) || (gameData.objs.objects [i].id != SMALLMINE_ID)))
+	for (i = networkData.nSendObjNum, objP = OBJECTS + i; i <= gameData.objs.nLastObject; i++, objP++) {
+		t = objP->nType;
+#ifdef _DEBUG
+		if (t == nDbgObjType)
+			nDbgObjType = nDbgObjType;
+#endif
+#if 0
+		if ((t != OBJ_POWERUP) && (t != OBJ_PLAYER) && (t != OBJ_REACTOR) && (t != OBJ_GHOST) &&
+			 (t != OBJ_ROBOT) && (t != OBJ_HOSTAGE) && (t != OBJ_MARKER) && 
+			 ((t != OBJ_WEAPON) || (objP->id != SMALLMINE_ID)))
 			continue;
-		if ((networkData.bSendObjectMode == 0) && 
-			 ((gameData.multigame.nObjOwner [i] != -1) && (gameData.multigame.nObjOwner [i] != nPlayer)))
+#else
+		if (objFilter [t])
 			continue;
-		if ((networkData.bSendObjectMode == 1) && 
-			 ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer)))
+		if ((t == OBJ_WEAPON) && (objP->id != SMALLMINE_ID))
 			continue;
-
+#endif
+		if (networkData.bSendObjectMode == 0) { 
+			 if ((gameData.multigame.nObjOwner [i] != -1) && (gameData.multigame.nObjOwner [i] != nPlayer))
+				continue;
+			}
+		else if (networkData.bSendObjectMode == 1) {
+			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
+				continue;
+			}
 		if (((IPX_MAX_DATA_SIZE-1) - loc) < (sizeof (tObject)+5))
 			break; // Not enough room for another tObject
-
-		objCount_frame++;
+		nObjFrame++;
 		objCount++;
-
 		nRemoteObj = ObjnumLocalToRemote ((short)i, &owner);
 		Assert (owner == gameData.multigame.nObjOwner [i]);
-
-		SET_SHORT (object_buffer, loc, i);      
-		SET_BYTE (object_buffer, loc, owner);                                 
-		SET_SHORT (object_buffer, loc, nRemoteObj); 
-		SET_BYTES (object_buffer, loc, gameData.objs.objects + i, sizeof (tObject));
+		SET_SHORT (objBuf, loc, i);      
+		SET_BYTE (objBuf, loc, owner);                                 
+		SET_SHORT (objBuf, loc, nRemoteObj); 
+		SET_BYTES (objBuf, loc, objP, sizeof (tObject));
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			SwapObject ((tObject *) (object_buffer + loc - sizeof (tObject)));
+			SwapObject ((tObject *) (objBuf + loc - sizeof (tObject)));
 		}
-
-	if (objCount_frame) {// Send any gameData.objs.objects we've buffered
+	if (nObjFrame) {// Send any gameData.objs.objects we've buffered
 		nFrame++;
-
 		networkData.nSendObjNum = i;
-		object_buffer [1] = objCount_frame;  
-		object_buffer [2] = nFrame;
-
+		objBuf [1] = nObjFrame;  
+		objBuf [2] = nFrame;
 		Assert (loc <= IPX_MAX_DATA_SIZE);
-
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			IPXSendInternetPacketData (
-				object_buffer, 
-				loc, 
+				objBuf, loc, 
 				networkData.playerRejoining.player.network.ipx.server, 
 				networkData.playerRejoining.player.network.ipx.node);
-
-		// OLD IPXSendPacketData (object_buffer, loc, &networkData.playerRejoining.player.node);
 		}
-
 	if (i > gameData.objs.nLastObject) {
 		if (networkData.bSendObjectMode == 0) {
 			networkData.nSendObjNum = 0;
@@ -1072,19 +1075,18 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			}
 		else {
 			Assert (networkData.bSendObjectMode == 1); 
-
 			nFrame++;
 			// Send count so other tSide can make sure he got them all
-			object_buffer [0] = PID_OBJECT_DATA;
-			object_buffer [1] = 1;
-			object_buffer [2] = nFrame;
-			* (short *) (object_buffer+3) = INTEL_SHORT (-2);
-			* (short *) (object_buffer+6) = INTEL_SHORT (objCount);
-			//OLD IPXSendPacketData (object_buffer, 8, &networkData.playerRejoining.player.node);
+			objBuf [0] = PID_OBJECT_DATA;
+			objBuf [1] = 1;
+			objBuf [2] = nFrame;
+			*((short *) (objBuf+3)) = INTEL_SHORT (-2);
+			*((short *) (objBuf+6)) = INTEL_SHORT (objCount);
+			//OLD IPXSendPacketData (objBuf, 8, &networkData.playerRejoining.player.node);
 			if (gameStates.multi.nGameType >= IPX_GAME)
-				IPXSendInternetPacketData (object_buffer, 8, networkData.playerRejoining.player.network.ipx.server, networkData.playerRejoining.player.network.ipx.node);
-		
-	
+				IPXSendInternetPacketData (objBuf, 8, 
+													networkData.playerRejoining.player.network.ipx.server, 
+													networkData.playerRejoining.player.network.ipx.node);
 			// Send sync packet which tells the tPlayer who he is and to start!
 			NetworkSendRejoinSync (nPlayer);
 			networkData.bVerifyPlayerJoined = nPlayer;
@@ -1093,13 +1095,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			networkData.nSendObjNum = -1;
 			networkData.bSendObjects = 0;
 			objCount = 0;
-
-			//if (!NetworkIAmMaster ())
-			// Int3 ();  // Bad!! Get Jason.  Someone goofy is trying to get ahold of the game!
-
 			networkData.bSendingExtras = 40; // start to send extras
 			networkData.nPlayerJoiningExtras=nPlayer;
-
 			return;
 			} // mode == 1;
 		} // i > gameData.objs.nLastObject
@@ -2393,29 +2390,29 @@ void NetworkReadObjectPacket (ubyte *data)
 	// Object from another net tPlayer we need to sync with
 
 	short nObject, nRemoteObj;
-	sbyte obj_owner;
+	sbyte nObjOwner;
 	int nSegment, i;
 	tObject *objP;
 
-	static int my_pnum = 0;
+	static int nPlayer = 0;
 	static int mode = 0;
 	static int objectCount = 0;
 	static int nFrame = 0;
-	int nobj = data [1];
+	int nObjects = data [1];
 	int loc = 3;
 	int nRemoteFrame = data [2];
 
 nFrame++;
-for (i = 0; i < nobj; i++) {
+for (i = 0; i < nObjects; i++) {
 	GET_SHORT (data, loc, nObject);                   
-	GET_BYTE (data, loc, obj_owner);                                          
+	GET_BYTE (data, loc, nObjOwner);                                          
 	GET_SHORT (data, loc, nRemoteObj);
 	if (nObject == -1) {
 		// Clear tObject array
 		InitObjects ();
 		networkData.bRejoined = 1;
-		my_pnum = obj_owner;
-		ChangePlayerNumTo (my_pnum);
+		nPlayer = nObjOwner;
+		ChangePlayerNumTo (nPlayer);
 		mode = 1;
 		objectCount = 0;
 		nFrame = 1;
@@ -2445,18 +2442,15 @@ for (i = 0; i < nobj; i++) {
 		if (nFrame != nRemoteFrame)
 			Int3 ();
 #if 1			
-		con_printf (CONDBG, "Got a nType 3 tObject packet!\n");
+		con_printf (CONDBG, "Got a type 3 object packet!\n");
 #endif
 		objectCount++;
-		if ((obj_owner == my_pnum) || (obj_owner == -1)) {
+		if ((nObjOwner == nPlayer) || (nObjOwner == -1)) {
 			if (mode != 1)
 				Int3 (); // SEE ROB
 			nObject = nRemoteObj;
-			//if (nObject > gameData.objs.nLastObject)
-			//{
-			//      gameData.objs.nLastObject = nObject;
-			//      gameData.objs.nObjects = gameData.objs.nLastObject+1;
-			//}
+			if ((nObject > gameData.objs.nLastObject) && UseObject (nObject))
+				gameData.objs.nLastObject = nObject;
 			}
 		else {
 			if (mode == 1) {
@@ -2477,14 +2471,15 @@ for (i = 0; i < nobj; i++) {
 			nSegment = objP->nSegment;
 			objP->next = objP->prev = objP->nSegment = -1;
 			objP->attachedObj = -1;
-			if (nSegment > -1)
-				LinkObject (OBJ_IDX (objP), nSegment);
+			if (nSegment < 0)
+				nSegment = FindSegByPoint (&objP->position.vPos, -1, 1, 0);
+			LinkObject (OBJ_IDX (objP), nSegment);
 			if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
 				RemapLocalPlayerObject (nObject, nRemoteObj);
-			if (obj_owner == my_pnum) 
+			if (nObjOwner == nPlayer) 
 				MapObjnumLocalToLocal (nObject);
-			else if (obj_owner != -1)
-				MapObjnumLocalToRemote (nObject, nRemoteObj, obj_owner);
+			else if (nObjOwner != -1)
+				MapObjnumLocalToRemote (nObject, nRemoteObj, nObjOwner);
 			else
 				gameData.multigame.nObjOwner [nObject] = -1;
 			}
@@ -2892,7 +2887,7 @@ gameData.multiplayer.nPlayers = 0;
 networkData.nActiveGames = 0;
 memset (activeNetGames, 0, sizeof (tNetgameInfo) * MAX_ACTIVE_NETGAMES);
 InitNetgameMenu (m, 0);
-networkData.nNamesInfoSecurity=-1;
+networkData.nNamesInfoSecurity = -1;
 networkData.bGamesChanged = 1;      
 }
 
@@ -2905,9 +2900,11 @@ void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 	static fix t1 = 0;
 
 NetworkListen ();
-if (networkData.nStatus != NETSTAT_WAITING)  // Status changed to playing, exit the menu
+if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
+	networkData.bRejoined = 2;
 	*key = -2;
-else if (!networkData.bRejoined && (TimerGetApproxSeconds () > t1 + F1_0 * 2)) {
+	}
+else if ((networkData.bRejoined < 2) && (TimerGetApproxSeconds () > t1 + F1_0 * 2)) {
 	int i;
 
 	// Poll time expired, re-send request

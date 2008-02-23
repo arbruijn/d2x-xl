@@ -40,7 +40,7 @@ void Int3();
 
 #ifdef _DEBUG
 
-extern short nDbgSeg, nDbgSide, nDbgObj;
+extern short nDbgSeg, nDbgSide, nDbgObj, nDbgObjType, nDbgObjId;
 extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex;
 
 int TrapSeg (short nSegment);

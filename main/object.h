@@ -472,6 +472,7 @@ void ClearTransientObjects(int clear_all);
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
 int AllocObject(void);
+int UseObject (int nObject);
 
 // frees up an tObject.  Generally, ReleaseObject() should be called to
 // get rid of an tObject.  This function deallocates the tObject entry

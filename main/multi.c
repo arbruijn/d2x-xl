@@ -340,13 +340,13 @@ return nRemoteObj;
 
 void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj)
 {
-	int	i;
+	int	i, nConsole = OBJ_IDX (gameData.objs.console);
 
 if (nLocalObj != nRemoteObj)
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
 		if (gameData.multiplayer.players [i].nObject == nRemoteObj) {
 			gameData.multiplayer.players [i].nObject = nLocalObj;
-			if (OBJ_IDX (gameData.objs.console) == nRemoteObj) {
+			if (nConsole == nRemoteObj) {
 				gameData.objs.objects [nLocalObj] = *gameData.objs.console;
 				gameData.objs.console = gameData.objs.objects + nLocalObj;
 				}
@@ -1578,21 +1578,23 @@ CreateSmallFireballOnObject (&gameData.objs.objects [gameData.multiplayer.player
 void MultiDoCtrlcenFire (char *buf)
 {
 	vmsVector to_target;
-	char gun_num;
+	char nGun;
 	short nObject;
 	int i, count = 1;
 
 memcpy (&to_target, buf + count, 12);          
 count += 12;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)  // swap the vector to_target
-to_target.p.x = (fix)INTEL_INT ((int)to_target.p.x);
-to_target.p.y = (fix)INTEL_INT ((int)to_target.p.y);
-to_target.p.z = (fix)INTEL_INT ((int)to_target.p.z);
+to_target.p.x = (fix)INTEL_INT ((int) to_target.p.x);
+to_target.p.y = (fix)INTEL_INT ((int) to_target.p.y);
+to_target.p.z = (fix)INTEL_INT ((int) to_target.p.z);
 #endif
-gun_num = buf [count++];                       
+nGun = buf [count++];                       
 nObject = GET_INTEL_SHORT (buf + count);      
-if (0 >= (i = FindReactor (gameData.objs.objects + nObject)))
-	CreateNewLaserEasy (&to_target, gameData.reactor.states [i].vGunPos + (int)gun_num, nObject, CONTROLCEN_WEAPON_NUM, 1);
+if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
+	return;
+if (0 <= (i = FindReactor (gameData.objs.objects + nObject)))
+	CreateNewLaserEasy (&to_target, gameData.reactor.states [i].vGunPos + (int) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -3072,13 +3074,13 @@ return nnp;
 
 //-----------------------------------------------------------------------------
 
-void ChangePlayerNumTo (int new_Player_num)
+void ChangePlayerNumTo (int nLocalPlayer)
 {
 if (gameData.multiplayer.nLocalPlayer > -1)
-	memcpy (gameData.multiplayer.players [new_Player_num].callsign, 
+	memcpy (gameData.multiplayer.players [nLocalPlayer].callsign, 
 			  LOCALPLAYER.callsign, 
 			  CALLSIGN_LEN+1);
-gameData.multiplayer.nLocalPlayer = new_Player_num;
+gameData.multiplayer.nLocalPlayer = nLocalPlayer;
 }
 
 //-----------------------------------------------------------------------------

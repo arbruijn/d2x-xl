@@ -703,6 +703,20 @@ Assert (gameData.objs.objects [0].prev != 0);
 
 //------------------------------------------------------------------------------
 
+int UseObject (int nObject)
+{
+	int	i;
+
+for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++)
+	if (gameData.objs.freeList [i] == nObject) {
+		gameData.objs.freeList [i] = gameData.objs.freeList [gameData.objs.nObjects++];
+		return 1;
+		}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 int nDebrisObjectCount = 0;
 int nUnusedObjectsSlots;
 
