@@ -113,84 +113,79 @@ int PickConnectedSegment (tObject *objP, int max_depth)
 	sbyte		depth [MAX_SEGMENTS_D2X];
 	sbyte		side_rand [MAX_SIDES_PER_SEGMENT];
 
-	start_seg = objP->nSegment;
-	head = 0;
-	tail = 0;
-	seg_queue [head++] = start_seg;
+start_seg = objP->nSegment;
+head = 0;
+tail = 0;
+seg_queue [head++] = start_seg;
 
-	memset (bVisited, 0, gameData.segs.nLastSegment+1);
-	memset (depth, 0, gameData.segs.nLastSegment+1);
-	cur_depth = 0;
+memset (bVisited, 0, gameData.segs.nLastSegment+1);
+memset (depth, 0, gameData.segs.nLastSegment+1);
+cur_depth = 0;
 
-	for (i=0; i<MAX_SIDES_PER_SEGMENT; i++)
-		side_rand [i] = i;
+for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
+	side_rand [i] = i;
 
-	//	Now, randomize a bit to start, so we don't always get started in the same direction.
-	for (i=0; i<4; i++) {
-		int	ind1, temp;
+//	Now, randomize a bit to start, so we don't always get started in the same direction.
+for (i = 0; i < 4; i++) {
+	int	ind1, temp;
 
-		ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-		temp = side_rand [ind1];
-		side_rand [ind1] = side_rand [i];
-		side_rand [i] = temp;
+	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
+	temp = side_rand [ind1];
+	side_rand [ind1] = side_rand [i];
+	side_rand [i] = temp;
 	}
 
 
-	while (tail != head) {
-		int		nSide, count;
-		tSegment	*segP;
-		int		ind1, ind2, temp;
+while (tail != head) {
+	int		nSide, count;
+	tSegment	*segP;
+	int		ind1, ind2, temp;
 
-		if (cur_depth >= max_depth) {
-			return seg_queue [tail];
-		}
+	if (cur_depth >= max_depth)
+		return seg_queue [tail];
+	segP = gameData.segs.segments + seg_queue [tail++];
+	tail &= QUEUE_SIZE-1;
 
-		segP = gameData.segs.segments + seg_queue [tail++];
-		tail &= QUEUE_SIZE-1;
+	//	to make random, switch a pair of entries in side_rand.
+	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
+	ind2 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
+	temp = side_rand [ind1];
+	side_rand [ind1] = side_rand [ind2];
+	side_rand [ind2] = temp;
 
-		//	to make random, switch a pair of entries in side_rand.
-		ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-		ind2 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-		temp = side_rand [ind1];
-		side_rand [ind1] = side_rand [ind2];
-		side_rand [ind2] = temp;
-
-		count = 0;
-		for (nSide=ind1; count<MAX_SIDES_PER_SEGMENT; count++) {
-			short	snrand, nWall;
-
-			if (nSide == MAX_SIDES_PER_SEGMENT)
-				nSide = 0;
-
-			snrand = side_rand [nSide];
-			nWall = WallNumP (segP, snrand);
-			nSide++;
-
-			if (( (!IS_WALL (nWall)) && (segP->children [snrand] > -1)) || PlayerCanOpenDoor (segP, snrand)) {
-				if (!bVisited [segP->children [snrand]]) {
-					seg_queue [head++] = segP->children [snrand];
-					bVisited [segP->children [snrand]] = 1;
-					depth [segP->children [snrand]] = cur_depth+1;
-					head &= QUEUE_SIZE-1;
-					if (head > tail) {
-						if (head == tail + QUEUE_SIZE-1)
-							Int3 ();	//	queue overflow.  Make it bigger!
-					} else
-						if (head+QUEUE_SIZE == tail + QUEUE_SIZE-1)
-							Int3 ();	//	queue overflow.  Make it bigger!
+	count = 0;
+	for (nSide = ind1; count < MAX_SIDES_PER_SEGMENT; count++) {
+		short	snrand, nWall;
+		if (nSide == MAX_SIDES_PER_SEGMENT)
+			nSide = 0;
+		snrand = side_rand [nSide];
+		nWall = WallNumP (segP, snrand);
+		nSide++;
+		if (((!IS_WALL (nWall)) && (segP->children [snrand] > -1)) || PlayerCanOpenDoor (segP, snrand)) {
+			if (!bVisited [segP->children [snrand]]) {
+				seg_queue [head++] = segP->children [snrand];
+				bVisited [segP->children [snrand]] = 1;
+				depth [segP->children [snrand]] = cur_depth+1;
+				head &= QUEUE_SIZE-1;
+				if (head > tail) {
+					if (head == tail + QUEUE_SIZE-1)
+						Int3 ();	//	queue overflow.  Make it bigger!
+					}
+				else if (head+QUEUE_SIZE == tail + QUEUE_SIZE-1)
+					Int3 ();	//	queue overflow.  Make it bigger!
 				}
 			}
 		}
-		if ((seg_queue [tail] < 0) || (seg_queue [tail] > gameData.segs.nLastSegment)) {
-			// -- Int3 ();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
-			return -1;
+	if ((seg_queue [tail] < 0) || (seg_queue [tail] > gameData.segs.nLastSegment)) {
+		// -- Int3 ();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
+		return -1;
 		}
-		cur_depth = depth [seg_queue [tail]];
+	cur_depth = depth [seg_queue [tail]];
 	}
 #if TRACE
-	con_printf (CONDBG, "...failed at depth %i, returning -1\n", cur_depth);
+con_printf (CONDBG, "...failed at depth %i, returning -1\n", cur_depth);
 #endif
-	return -1;
+return -1;
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -482,93 +477,95 @@ void MaybeReplacePowerupWithEnergy (tObject *delObjP)
 {
 	int	nWeapon=-1;
 
-	if (delObjP->containsType != OBJ_POWERUP)
-		return;
+if (delObjP->containsType != OBJ_POWERUP)
+	return;
 
-	if (delObjP->containsId == POW_CLOAK) {
-		if (WeaponNearby (delObjP, delObjP->containsId)) {
+if (delObjP->containsId == POW_CLOAK) {
+	if (WeaponNearby (delObjP, delObjP->containsId)) {
 #if TRACE
-			con_printf (CONDBG, "Bashing cloak into nothing because there's one nearby.\n");
+		con_printf (CONDBG, "Bashing cloak into nothing because there's one nearby.\n");
 #endif
-			delObjP->containsCount = 0;
-		}
-		return;
-	}
-	switch (delObjP->containsId) {
-		case POW_VULCAN:		
-			nWeapon = VULCAN_INDEX;	
-			break;
-		case POW_GAUSS:		
-			nWeapon = GAUSS_INDEX;	
-			break;
-		case POW_SPREADFIRE:
-			nWeapon = SPREADFIRE_INDEX;
-			break;
-		case POW_PLASMA:		
-			nWeapon = PLASMA_INDEX;	
-			break;
-		case POW_FUSION:		
-			nWeapon = FUSION_INDEX;	
-			break;
-		case POW_HELIX:		
-			nWeapon = HELIX_INDEX;	
-			break;
-		case POW_PHOENIX:	
-			nWeapon = PHOENIX_INDEX;	
-			break;
-		case POW_OMEGA:		
-			nWeapon = OMEGA_INDEX;	
-			break;
-
-	}
-
-	//	Don't drop vulcan ammo if tPlayer maxed out.
-	if (( (nWeapon == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 		delObjP->containsCount = 0;
-	else if (( (nWeapon == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
-		delObjP->containsCount = 0;
-	else if (nWeapon != -1) {
-		if ((PlayerHasWeapon (nWeapon, 0, -1) & HAS_WEAPON_FLAG) || 
-			 WeaponNearby (delObjP, delObjP->containsId)) {
-			if (d_rand () > 16384) {
-				delObjP->containsType = OBJ_POWERUP;
-				if (nWeapon == VULCAN_INDEX) {
-					delObjP->containsId = POW_VULCAN_AMMO;
-				} else if (nWeapon == GAUSS_INDEX) {
-					delObjP->containsId = POW_VULCAN_AMMO;
-				} else {
-					delObjP->containsId = POW_ENERGY;
+	}
+	return;
+}
+switch (delObjP->containsId) {
+	case POW_VULCAN:		
+		nWeapon = VULCAN_INDEX;	
+		break;
+	case POW_GAUSS:		
+		nWeapon = GAUSS_INDEX;	
+		break;
+	case POW_SPREADFIRE:
+		nWeapon = SPREADFIRE_INDEX;
+		break;
+	case POW_PLASMA:		
+		nWeapon = PLASMA_INDEX;	
+		break;
+	case POW_FUSION:		
+		nWeapon = FUSION_INDEX;	
+		break;
+	case POW_HELIX:		
+		nWeapon = HELIX_INDEX;	
+		break;
+	case POW_PHOENIX:	
+		nWeapon = PHOENIX_INDEX;	
+		break;
+	case POW_OMEGA:		
+		nWeapon = OMEGA_INDEX;	
+		break;
+	}
+
+//	Don't drop vulcan ammo if tPlayer maxed out.
+if (( (nWeapon == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	delObjP->containsCount = 0;
+else if (( (nWeapon == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
+	delObjP->containsCount = 0;
+else if (nWeapon != -1) {
+	if ((PlayerHasWeapon (nWeapon, 0, -1) & HAS_WEAPON_FLAG) || 
+			WeaponNearby (delObjP, delObjP->containsId)) {
+		if (d_rand () > 16384) {
+			delObjP->containsType = OBJ_POWERUP;
+			if (nWeapon == VULCAN_INDEX) {
+				delObjP->containsId = POW_VULCAN_AMMO;
 				}
-			} else {
-				delObjP->containsType = OBJ_POWERUP;
-				delObjP->containsId = POW_SHIELD_BOOST;
-			}
-		}
-	} else if (delObjP->containsId == POW_QUADLASER)
-		if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
-			if (d_rand () > 16384) {
-				delObjP->containsType = OBJ_POWERUP;
+			else if (nWeapon == GAUSS_INDEX) {
+				delObjP->containsId = POW_VULCAN_AMMO;
+				}
+			else {
 				delObjP->containsId = POW_ENERGY;
-			} else {
-				delObjP->containsType = OBJ_POWERUP;
-				delObjP->containsId = POW_SHIELD_BOOST;
+				}
+			}
+		else {
+			delObjP->containsType = OBJ_POWERUP;
+			delObjP->containsId = POW_SHIELD_BOOST;
+			}
+		}
+	}
+else if (delObjP->containsId == POW_QUADLASER)
+	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) || WeaponNearby (delObjP, delObjP->containsId)) {
+		if (d_rand () > 16384) {
+			delObjP->containsType = OBJ_POWERUP;
+			delObjP->containsId = POW_ENERGY;
+			}
+		else {
+			delObjP->containsType = OBJ_POWERUP;
+			delObjP->containsId = POW_SHIELD_BOOST;
 			}
 		}
 
-	//	If this robot was gated in by the boss and it now contains energy, make it contain nothing, 
-	//	else the room gets full of energy.
-	if ((delObjP->matCenCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->containsId == POW_ENERGY) && (delObjP->containsType == OBJ_POWERUP)) {
+//	If this robot was gated in by the boss and it now contains energy, make it contain nothing, 
+//	else the room gets full of energy.
+if ((delObjP->matCenCreator == BOSS_GATE_MATCEN_NUM) && (delObjP->containsId == POW_ENERGY) && (delObjP->containsType == OBJ_POWERUP)) {
 #if TRACE
-		con_printf (CONDBG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
+	con_printf (CONDBG, "Converting energy powerup to nothing because robot %i gated in by boss.\n", OBJ_IDX (delObjP));
 #endif
-		delObjP->containsCount = 0;
+	delObjP->containsCount = 0;
 	}
 
-	// Change multiplayer extra-lives into invulnerability
-	if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->containsId == POW_EXTRA_LIFE))
-	{
-		delObjP->containsId = POW_INVUL;
-	}
+// Change multiplayer extra-lives into invulnerability
+if ((gameData.app.nGameMode & GM_MULTI) && (delObjP->containsId == POW_EXTRA_LIFE))
+	delObjP->containsId = POW_INVUL;
 }
 
 //------------------------------------------------------------------------------
@@ -606,30 +603,16 @@ switch (nType) {
 				VmVecZero (&new_velocity);
 			vNewPos = *pos;
 
-			if (gameData.app.nGameMode & GM_MULTI) {
+			if (IsMultiGame) {
 				if (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS) {
-#if TRACE
-					con_printf (1, "Not enough slots to drop all powerups!\n");
-#endif
 					return -1;
 					}
-#if 0
-				if (TooManyPowerups (id)) {
-#if TRACE
-					con_printf (1, "More powerups of nType %d in mine than at start of game!\n", id);
-#endif
-					return -1;
-					}
-#endif				
 				if ((gameData.app.nGameMode & GM_NETWORK) && networkData.nStatus == NETSTAT_ENDLEVEL)
 					return -1;
 				}
 			nObject = CreateObject (nType, id, owner, nSegment, &vNewPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info [id].size, 
 										   CT_POWERUP, MT_PHYSICS, RT_POWERUP, 0);
 			if (nObject < 0) {
-#if TRACE
-				con_printf (1, "Can't create tObject in ObjectCreateEgg.  Aborting.\n");
-#endif
 				Int3 ();
 				return nObject;
 				}
@@ -729,7 +712,7 @@ int ObjectCreateEgg (tObject *objP)
 {
 	int	rval;
 
-if (!(gameData.app.nGameMode & GM_MULTI) & (objP->nType != OBJ_PLAYER)) {
+if (!IsMultiGame & (objP->nType != OBJ_PLAYER)) {
 	if (objP->containsType == OBJ_POWERUP) {
 		if (objP->containsId == POW_SHIELD_BOOST) {
 			if (LOCALPLAYER.shields >= i2f (100)) {
@@ -948,9 +931,11 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 
 		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
 
-		if (playerP->laserLevel > MAX_LASER_LEVEL)
+		if ((playerP->laserLevel > MAX_LASER_LEVEL) &&
+			!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (POW_SUPERLASER))))
 			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
-		else if (playerP->laserLevel >= 1)
+		else if ((playerP->laserLevel >= 1) &&
+					!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (POW_LASER))))
 			CallObjectCreateEgg (playerObjP, playerP->laserLevel, OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 
 		//	Drop quad laser if appropos

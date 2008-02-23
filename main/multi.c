@@ -514,12 +514,12 @@ void MultiDoPlayerWeapons (char *buf)
 wsP->nPrimary = buf [2];
 wsP->nSecondary = buf [3];
 wsP->nMissiles = buf [4];
-wsP->nLaserLevel = gameData.multigame.msg.buf [5];
-wsP->bQuadLasers = gameData.multigame.msg.buf [6];
-wsP->bFiring [0] = gameData.multigame.msg.buf [7];
-wsP->bFiring [1] = gameData.multigame.msg.buf [8];
-wsP->bTripleFusion = gameData.multigame.msg.buf [9];
-wsP->nMslLaunchPos = gameData.multigame.msg.buf [10];
+wsP->nLaserLevel = buf [5];
+wsP->bQuadLasers = buf [6];
+wsP->bFiring [0] = buf [7];
+wsP->bFiring [1] = buf [8];
+wsP->bTripleFusion = buf [9];
+wsP->nMslLaunchPos = buf [10];
 wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 11);
 }
 

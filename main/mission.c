@@ -817,6 +817,7 @@ void LoadSongList (char *szFile)
 	char	pn [FILENAME_LEN], fn [FILENAME_LEN] = {'\x01'};
 	int	i;
 
+memset (gameData.missions.szSongNames, 0, sizeof (gameData.missions.szSongNames));
 CFSplitPath (szFile, pn, fn + 1, NULL);
 strcat (fn, ".sng");
 if (!CFOpen (&cf, fn, pn, "rb", 0))
