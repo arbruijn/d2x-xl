@@ -281,6 +281,28 @@ return xLight;
 }
 
 //------------------------------------------------------------------------------
+
+static float ObjectBlobColor (tObject *objP, grsBitmap *bmP, tRgbaColorf *colorP)
+{
+	float	fScale;
+
+colorP->red = (float) bmP->bmAvgRGB.red / 255.0f;
+colorP->green = (float) bmP->bmAvgRGB.green / 255.0f;
+colorP->blue = (float) bmP->bmAvgRGB.blue / 255.0f;
+#ifdef _DEBUG
+if ((objP->nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->id == nDbgObjId)))
+	nDbgObjType = nDbgObjType;
+#endif
+fScale = colorP->red + colorP->green + colorP->blue;
+if (fScale == 0) {
+	colorP->red = 
+	colorP->green =
+	colorP->blue = 1;
+	}
+return fScale;
+}
+
+//------------------------------------------------------------------------------
 //draw an tObject that has one bitmap & doesn't rotate
 
 void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *colorP, float fAlpha)
@@ -296,6 +318,10 @@ void DrawObjectBlob (tObject *objP, int bmi0, int bmi, int iFrame, tRgbaColorf *
 	fix			xSize;
 	float			fScale;
 
+#ifdef _DEBUG
+if ((objP->nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->id == nDbgObjId)))
+	nDbgObjType = nDbgObjType;
+#endif
 if (gameOpts->render.textures.bUseHires || gameOpts->render.bTransparentEffects) {
 	if (fAlpha) {
 		bAdditive = (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION);
@@ -338,23 +364,21 @@ else {
 	PIGGY_PAGE_IN (bmi, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + bmi;
 	}
-color.red = (float) bmP->bmAvgRGB.red / 255.0f;
-color.green = (float) bmP->bmAvgRGB.green / 255.0f;
-color.blue = (float) bmP->bmAvgRGB.blue / 255.0f;
-fScale = color.red + color.green + color.blue;
-if (fScale == 0) {
-	color.red = 
-	color.green =
-	color.blue = 1;
-	}
 if ((bmi < 0) || ((bmP->bmType == BM_TYPE_STD) && BM_OVERRIDE (bmP))) {
 	OglLoadBmTexture (bmP, 1, nTransp = -1, gameOpts->render.bDepthSort <= 0);
+	//fScale = ObjectBlobColor (objP, bmP, &color);
 	bmP = BmOverride (bmP, iFrame);
 	//fAlpha = 1;
 	}
-else if (colorP && gameOpts->render.bDepthSort)
-	OglLoadBmTexture (bmP, 1, nTransp, 0);
-if (!(bmP && bmP->bmTexBuf))
+else {
+	if (colorP && gameOpts->render.bDepthSort)
+		OglLoadBmTexture (bmP, 1, nTransp, 0);
+	//fScale = ObjectBlobColor (objP, bmP, &color);
+	}
+if (!bmP)
+	return;
+fScale = ObjectBlobColor (objP, bmP, &color);
+if (!bmP->bmTexBuf)
 	return;
 if (colorP && (bmi >= 0))
 	memcpy (colorP, gameData.pig.tex.bitmapColors + bmi, sizeof (tRgbaColorf));

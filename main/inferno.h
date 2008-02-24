@@ -1182,6 +1182,7 @@ typedef struct tDynLight {
 	short			nSegment;
 	short			nSide;
 	short			nObject;
+	short			nVerts [4];
 	ubyte			nPlayer;
 	ubyte			nType;
 	ubyte			bState;
@@ -1220,6 +1221,7 @@ typedef struct tShaderLight {
 	fix			xDistance;
 	short			nSegment;
 	short			nObject;
+	short			nVerts [4];
 	ubyte			nType;
 	ubyte			bState;
 	ubyte			bVariable;

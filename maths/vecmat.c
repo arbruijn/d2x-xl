@@ -1828,9 +1828,23 @@ return VmVecNegatef (vReflect);
 //	Compute a somewhat random, normalized vector.
 vmsVector *MakeRandomVector (vmsVector *v)
 {
-v->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
-v->p.y = d_rand () - 16384;
-v->p.z = d_rand () - 16384;
+	int i = d_rand () % 3;
+
+if (i == 2) {
+	v->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
+	v->p.y = d_rand () - 16384;
+	v->p.z = d_rand () - 16384;
+	}
+else if (i == 1) {
+	v->p.y = d_rand () - 16384;
+	v->p.z = d_rand () - 16384;
+	v->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
+	}
+else {
+	v->p.z = d_rand () - 16384;
+	v->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
+	v->p.y = d_rand () - 16384;
+	}
 VmVecNormalizeQuick (v);
 return v;
 }

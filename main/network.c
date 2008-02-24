@@ -996,7 +996,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	networkData.bSendObjects = 0; 
 	return;
 	}
-objFilter [OBJ_MARKER] = gameStates.app.bHaveExtraGameInfo [1];
+objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try to speed it up without
 														  // over-stressing the receiver.
 	nObjFrame = 0;
@@ -1028,6 +1028,8 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) { // Do more than 1 per frame, try t
 			 ((t != OBJ_WEAPON) || (objP->id != SMALLMINE_ID)))
 			continue;
 #else
+		if (t >= MAX_OBJECT_TYPES)
+			continue;
 		if (objFilter [t])
 			continue;
 		if ((t == OBJ_WEAPON) && (objP->id != SMALLMINE_ID))
@@ -2351,8 +2353,9 @@ SpecialResetObjects ();
 
 int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs)
 {
-	int i, bCoop = (gameData.app.nGameMode & GM_MULTI_COOP) != 0;
-	int nPlayers, bHaveReactor = 0;
+	int		i, t, bCoop = IsCoopGame;
+	int		nPlayers, bHaveReactor = !bCoop;
+	tObject	*objP = OBJECTS;
 
 if (nRemoteObjNum - nLocalObjs > 10)
 	return -1;
@@ -2360,23 +2363,24 @@ if (nRemoteObjNum - nLocalObjs > 10)
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 #endif
 	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
-for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject; i++) {
-	if (gameData.objs.objects [i].nType == OBJ_GHOST)
+for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject; i++, objP++) {
+	t = objP->nType;
+	if (t == OBJ_GHOST)
 		nPlayers++;
-	else if (gameData.objs.objects [i].nType == OBJ_PLAYER) {
+	else if (t == OBJ_PLAYER) {
 		if (!(i && bCoop))
 			nPlayers++;
 		}
-	else if (gameData.objs.objects [i].nType == OBJ_COOP) {
+	else if (t == OBJ_COOP) {
 		if (bCoop)
 			nPlayers++;
 		}
+	else if (bCoop) {
+		if ((t == OBJ_REACTOR) || ((t == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag))
+			bHaveReactor = 1;
+		}
 	if (nPlayers > gameData.multiplayer.nMaxPlayers)
 		return 1;
-#if 0
-	if (gameData.objs.objects [i].nType == OBJ_REACTOR)
-		bHaveReactor = 1;
-#endif
 	}
 return !bHaveReactor;
 }
@@ -2464,22 +2468,24 @@ for (i = 0; i < nObjects; i++) {
 			Assert (objP->nSegment == -1);
 			Assert (nObject < MAX_OBJECTS);
 			GET_BYTES (data, loc, objP, sizeof (tObject));
-			if (gameStates.multi.nGameType >= IPX_GAME)
-				SwapObject (objP);
-			nSegment = objP->nSegment;
-			objP->next = objP->prev = objP->nSegment = -1;
-			objP->attachedObj = -1;
-			if (nSegment < 0)
-				nSegment = FindSegByPoint (&objP->position.vPos, -1, 1, 0);
-			LinkObject (OBJ_IDX (objP), nSegment);
-			if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
-				RemapLocalPlayerObject (nObject, nRemoteObj);
-			if (nObjOwner == nPlayer) 
-				MapObjnumLocalToLocal (nObject);
-			else if (nObjOwner != -1)
-				MapObjnumLocalToRemote (nObject, nRemoteObj, nObjOwner);
-			else
-				gameData.multigame.nObjOwner [nObject] = -1;
+			if (objP->nType != OBJ_NONE) {
+				if (gameStates.multi.nGameType >= IPX_GAME)
+					SwapObject (objP);
+				nSegment = objP->nSegment;
+				objP->next = objP->prev = objP->nSegment = -1;
+				objP->attachedObj = -1;
+				if (nSegment < 0)
+					nSegment = FindSegByPoint (&objP->position.vPos, -1, 1, 0);
+				LinkObject (OBJ_IDX (objP), nSegment);
+				if ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_GHOST))
+					RemapLocalPlayerObject (nObject, nRemoteObj);
+				if (nObjOwner == nPlayer) 
+					MapObjnumLocalToLocal (nObject);
+				else if (nObjOwner != -1)
+					MapObjnumLocalToRemote (nObject, nRemoteObj, nObjOwner);
+				else
+					gameData.multigame.nObjOwner [nObject] = -1;
+				}
 			}
 		} // For a standard onbject
 	} // For each tObject in packet
@@ -2940,12 +2946,9 @@ if (i < 0) {
 	return -1;
 	}
 sprintf (m [0].text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
-
-do_menu:   
-
-choice = ExecMenu (NULL, TXT_WAIT, 2, m, NetworkSyncPoll, NULL);
-if (choice > -1)
-	goto do_menu;
+do {
+	choice = ExecMenu (NULL, TXT_WAIT, 2, m, NetworkSyncPoll, NULL);
+	} while (choice > -1);
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
 else if (networkData.nStatus == NETSTAT_AUTODL)
@@ -2974,18 +2977,14 @@ void NetworkRequestPoll (int nitems, tMenuItem * menus, int * key, int citem)
 	// Polling loop for waiting-for-requests menu
 
 	int i = 0;
-	int num_ready = 0;
+	int nReady = 0;
 
-menus = menus;
-citem = citem;
-nitems = nitems;
-key = key;
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((gameData.multiplayer.players [i].connected == 1) || (gameData.multiplayer.players [i].connected == 0))
-		num_ready++;
+	if ((ubyte) gameData.multiplayer.players [i].connected < 2)
+		nReady++;
 	}
-if (num_ready == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
+if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
 	*key = -2;
 }
 
@@ -2999,7 +2998,7 @@ void NetworkWaitForRequests (void)
 
 networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
-m [0].nType=NM_TYPE_TEXT; 
+m [0].nType= NM_TYPE_TEXT; 
 m [0].text = TXT_NET_LEAVE;
 networkData.nStatus = NETSTAT_WAITING;
 NetworkFlush ();

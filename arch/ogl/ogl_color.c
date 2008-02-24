@@ -27,6 +27,8 @@
 #include "ogl_lib.h"
 #include "ogl_color.h"
 
+#define CHECK_LIGHT_VERT 0
+
 #ifdef _DEBUG
 #	define ONLY_HEADLIGHT 0
 #else
@@ -277,13 +279,36 @@ return i * i;
 
 //------------------------------------------------------------------------------
 
+#if CHECK_LIGHT_VERT
+
+static inline int IsLightVert (int nVertex, tShaderLight *psl)
+{
+if (psl->nType < 2) {
+		short	*pv = psl->nVerts;
+
+	if (*pv == nVertex)
+		return 1;
+	if (*++pv == nVertex)
+		return 1;
+	if (*++pv == nVertex)
+		return 1;
+	if (*++pv == nVertex)
+		return 1;
+	}
+return 0;
+}
+
+#endif
+
+//------------------------------------------------------------------------------
+
 #define VECMAT_CALLS 0
 
 float fLightRanges [5] = {5, 7.071f, 10, 14.142f, 20};
 
 #ifdef _DEBUG
 
-int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
+int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
 	int				h, i, j, nType, bInRad, 
 						bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
@@ -320,8 +345,14 @@ for (i = j = 0; i < h; i++) {
 	bInRad = 0;
 	fLightDist = VmVecMagf (&lightDir) / gameStates.ogl.fLightRange;
 	VmVecNormalizef (&lightDir, &lightDir);
-	if (gameStates.render.nState || (nType < 2))
-		fLightDist -= psl->rad;	//make light brighter close to light source
+	if (gameStates.render.nState || (nType < 2)) {
+#if CHECK_LIGHT_VERT
+		if (IsLightVert (nVertex, psl))
+			fLightDist = 0;
+		else
+#endif
+			fLightDist -= psl->rad;	//make light brighter close to light source
+		}
 	if (fLightDist < 1.0f) {
 		bInRad = 1;
 		fLightDist = 1.4142f;
@@ -414,7 +445,7 @@ return j;
 
 #else //RELEASE
 
-int G3AccumVertColor (fVector *pColorSum, tVertColorData *vcdP, int nThread)
+int G3AccumVertColor (int nVertex, fVector *pColorSum, tVertColorData *vcdP, int nThread)
 {
 	int				h, i, j, nType, bInRad, 
 						bSkipHeadLight = gameStates.ogl.bHeadLight && (gameData.render.lights.dynamic.headLights.nLights > 0) && !gameStates.render.nState, 
@@ -463,8 +494,14 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 		fAttenuation = 0.01f;
 	else {
 		fLightDist = VmVecMagf (&lightDir) / gameStates.ogl.fLightRange;
-		if (gameStates.render.nState || (psl->nType < 2))
-			fLightDist -= psl->rad;	//make light brighter close to light source
+		if (gameStates.render.nState || (nType < 2)) {
+#if CHECK_LIGHT_VERT
+			if (IsLightVert (nVertex, psl))
+				fLightDist = 0;
+			else
+#endif
+				fLightDist -= psl->rad;	//make light brighter close to light source
+			}
 		if (fLightDist < 1.0f) {
 			bInRad = 1;
 			fLightDist = 1.4142f;
@@ -782,7 +819,7 @@ else
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
 			nVertex = nVertex;
 #endif
-		G3AccumVertColor (&colorSum, &vcd, nThread);
+		G3AccumVertColor (nVertex, &colorSum, &vcd, nThread);
 		}
 	if ((nVertex >= 0) && !(gameStates.render.nState || gameData.render.vertColor.bDarkness)) {
 		tFaceColor *pc = gameData.render.color.ambient + nVertex;

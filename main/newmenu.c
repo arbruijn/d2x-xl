@@ -2484,7 +2484,7 @@ return ExecMenu (title, nm_text, nChoices, nmMsgItems, subfunction, filename);
 
 int _CDECL_ ExecMessageBox (char *title, char *filename, int nChoices, ...)
 {
-	int				h, i, l, bTiny;
+	int				h, i, l, bTiny, nInMenu;
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MESSAGEBOX_TEXT_SIZE];
@@ -2519,9 +2519,12 @@ if (!bTiny) {
 	vsprintf (nm_text, format, args);
 	va_end (args);
 	}
+nInMenu = gameStates.menus.nInMenu;
+gameStates.menus.nInMenu = 0;
 i = bTiny ? 
 	 ExecMenuTiny (NULL, title, nChoices, nmMsgItems, NULL) :
 	 ExecMenu (title, nm_text, nChoices, nmMsgItems, NULL, filename);
+gameStates.menus.nInMenu = nInMenu;
 return i;
 }
 

@@ -282,6 +282,7 @@ int AddDynLight (tRgbaColorf *pc, fix xBrightness, short nSegment, short nSide, 
 	tDynLight	*pl;
 	short			h, i;
 	fix			rMin, rMax;
+	float			rMinf, rMaxf;
 #if USE_OGL_LIGHTS
 	GLint			nMaxLights;
 #endif
@@ -359,9 +360,16 @@ else if (nSegment >= 0) {
 		int	t = gameData.segs.segments [nSegment].sides [nSide].nOvlTex;
 		pl->nType = 0;
 		ComputeSideRads (nSegment, nSide, &rMin, &rMax);
+#if 0
 		pl->rad = f2fl ((rMin + rMax) / 20);
+#else
+		rMinf = f2fl (rMin);
+		rMaxf = f2fl (rMax);
+		pl->rad  = (float) (sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2) / 10.0);
+#endif
 		//RegisterLight (NULL, nSegment, nSide);
 		pl->bVariable = IsDestructibleLight (t) || IsFlickeringLight (nSegment, nSide) || IS_WALL (SEGMENTS [nSegment].sides [nSide].nWall);
+		GetSideVertIndex (pl->nVerts, nSegment, nSide);
 		COMPUTE_SIDE_CENTER_I (&pl->vPos, nSegment, nSide);
 		}
 #if 0
@@ -654,6 +662,8 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 	psl->nType = pl->nType;
 	psl->nSegment = pl->nSegment;
 	psl->nObject = pl->nObject;
+	if (psl->nType < 2)
+		memcpy (psl->nVerts, pl->nVerts, sizeof (pl->nVerts));
 	psl->bLightning = (pl->nObject < 0) && (pl->nSide < 0);
 	psl->bShadow =
 	psl->bExclusive = 0;

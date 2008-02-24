@@ -180,7 +180,7 @@ if (!(bSpawn && MoveSpawnMarker (&playerP->position, playerP->nSegment))) {
 
 void DropSpawnMarker (void)
 {
-if (!IsMultiGame || IsCoopGame && !gameStates.app.bPlayerIsDead) {
+if ((!IsMultiGame || IsCoopGame) && !(gameStates.app.bPlayerExploded || gameStates.app.bPlayerIsDead)) {
 		char nMarker = (char) SpawnMarkerIndex (-1);
 
 	if (nMarker < 0)

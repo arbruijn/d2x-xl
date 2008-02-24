@@ -208,7 +208,7 @@ for (h = BOSS_COUNT, j = 0; j < h; j++)
 		else {
 			tObject *objP = gameData.objs.objects;
 			for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
-				if ((objP->nType == OBJ_ROBOT) && (ROBOTINFO (objP->id).bossFlag))
+				if ((objP->nType == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag)
 					DoBossDyingFrame (objP);
 		}
 	}

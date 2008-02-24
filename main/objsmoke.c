@@ -660,11 +660,15 @@ if (!(sdP->shrapnels = (tShrapnel *) D2_ALLOC (h * sizeof (tShrapnel))))
 	return 0;
 sdP->nShrapnels = h;
 srand (gameStates.app.nSDLTicks);
-for (i = h, shrapnelP = sdP->shrapnels; i; i--, shrapnelP++) {
-	vDir.p.x = F1_0 /4 - d_rand () % (2 * F1_0);
-	vDir.p.y = F1_0 /4 - d_rand () % (2 * F1_0);
-	vDir.p.z = F1_0 /4 - d_rand () % (2 * F1_0);
-	VmVecNormalize (&vDir);
+for (i = 0, shrapnelP = sdP->shrapnels; i < h; i++, shrapnelP++) {
+	if (i & 1) {
+		vDir.p.x = -FixMul (vDir.p.x, F1_0 / 2 + d_rand ()) | 1;
+		vDir.p.y = -FixMul (vDir.p.y, F1_0 / 2 + d_rand ());
+		vDir.p.z = -FixMul (vDir.p.z, F1_0 / 2 + d_rand ());
+		VmVecNormalize (&vDir);
+		}
+	else
+		MakeRandomVector (&vDir);
 	shrapnelP->vDir = vDir;
 	VmVecScaleAdd (&shrapnelP->vPos, &parentObjP->position.vPos, &vDir, parentObjP->size / 4 + rand () % (parentObjP->size / 2));
 	shrapnelP->nTurn = 1;

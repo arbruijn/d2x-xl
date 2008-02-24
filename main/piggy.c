@@ -1694,8 +1694,10 @@ if (!bmP->bmTexBuf) {
 			}
 		}
 	if (!altBmP) {
-		if (nIndex < 0)
+		if (nIndex < 0) {
+			StartTime ();
 			return;
+			}
 		pcf = cfPiggy + bD1;
 		nOffset = bitmapOffsets [bD1][nIndex];
 		bDefault = 1;
@@ -1705,6 +1707,7 @@ reloadTextures:
 
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
+		StartTime ();
 #ifndef _DEBUG
 		if (!bDefault)
 			CFClose (pcf);
