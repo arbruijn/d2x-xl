@@ -3888,7 +3888,7 @@ do {
 		if (i < 0)
 			break;
 		} 
-	if (extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].value) {
+	if ((extraGameInfo [0].bShowWeapons = m [shipRenderOpts.nWeapons].value)) {
 		gameOpts->render.ship.bBullets = m [optBullets].value;
 		for (j = 0; j < 4; j++)
 			if (m [optWingtips + j].value) {
@@ -4787,7 +4787,7 @@ void ConfigMenu ()
 
 do {
 	memset (m, 0, sizeof (m));
-	optRender = optGameplay = optCockpit = -1;
+	optRender = optGameplay = optCockpit = optPerformance = -1;
 	opt = 0;
 	ADD_MENU (opt, TXT_SOUND_MUSIC, KEY_M, HTX_OPTIONS_SOUND);
 	optSound = opt++;

@@ -173,7 +173,7 @@ D2MsgBox (szExitMsg, MB_ICONERROR);
 Int3();
 if (!err_initialized) 
 	print_exit_message();
-#if 0//ndef _DEBUG
+#ifndef _DEBUG
 exit (1);
 #endif
 }

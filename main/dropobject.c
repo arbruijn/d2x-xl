@@ -932,7 +932,7 @@ if ((playerObjP->nType == OBJ_PLAYER) || (playerObjP->nType == OBJ_GHOST)) {
 		//	If the tPlayer dies and he has powerful lasers, create the powerups here.
 
 		if ((playerP->laserLevel > MAX_LASER_LEVEL) &&
-			!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (POW_SUPERLASER))))
+			!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX))))
 			CallObjectCreateEgg (playerObjP, playerP->laserLevel - MAX_LASER_LEVEL, OBJ_POWERUP, POW_SUPERLASER);
 		else if ((playerP->laserLevel >= 1) &&
 					!(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (POW_LASER))))

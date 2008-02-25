@@ -228,7 +228,7 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 	tG3ModelVertex		*pmv = NULL;
 	fVector				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
-	int					i, j;
+	int					i, j = 1;
 	float					h, nSize;
 
 if (!pm->bRendered)
@@ -347,7 +347,7 @@ if (psm->bWeapon) {
 				static int nMslPos [] = {-1, 1, 0, 3, 2};
 				int nLaunchPos = gameData.multiplayer.weaponStates [nId].nMslLaunchPos;
 				return (nId == gameData.multiplayer.nLocalPlayer) && !AllowedToFireMissile (nId, 0) && 
-						 (nLaunchPos == (nMslPos [psm->nWeaponPos])); 
+						 (nLaunchPos == (nMslPos [(int) psm->nWeaponPos])); 
 				}
 			}
 		else

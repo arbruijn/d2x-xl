@@ -210,7 +210,7 @@ while ((pszToken = ASE_ReadLine (cfP))) {
 		if (!(pm->textures.pszNames [nBitmap] = D2_ALLOC (l)))
 			return ASE_Error ("out of memory");
 		memcpy (pm->textures.pszNames [nBitmap], fn, l);
-		if (ps = strstr (fn, "color"))
+		if ((ps = strstr (fn, "color")))
 			pm->textures.nTeam [nBitmap] = atoi (ps + 5) + 1;
 		else
 			pm->textures.nTeam [nBitmap] = 0;
