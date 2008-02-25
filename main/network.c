@@ -899,24 +899,25 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 
 int NetworkCreateMonitorVector (void)
 {
-	int h, i, j, k;
-	int tm, ec;
-	int num_blown_bitmaps = 0;
-	int monitor_num = 0;
-	#define NUM_BLOWN_BITMAPS 20
-	int blown_bitmaps [NUM_BLOWN_BITMAPS];
-	int vector = 0;
+	#define MAX_BLOWN_BITMAPS 100
+	
+	int      blownBitmaps [MAX_BLOWN_BITMAPS];
+	int      nBlownBitmaps = 0;
+	int      nMonitor = 0;
+	int      vector = 0;
 	tSegment *segP = gameData.segs.segments;
-	tSide *sideP;
+	tSide    *sideP;
+	int      h, i, j, k;
+	int      tm, ec;
 
 for (i = 0; i < gameData.eff.nEffects [gameStates.app.bD1Data]; i++) {
-	if ((h = gameData.eff.pEffects[i].nDestBm) > 0) {
-		for (j = 0; j < num_blown_bitmaps; j++)
-			if (blown_bitmaps [j] == h)
+	if ((h = gameData.eff.pEffects [i].nDestBm) > 0) {
+		for (j = 0; j < nBlownBitmaps; j++)
+			if (blownBitmaps [j] == h)
 				break;
-		if (j == num_blown_bitmaps) {
-			blown_bitmaps [num_blown_bitmaps++] = h;
-			Assert (num_blown_bitmaps < NUM_BLOWN_BITMAPS);
+		if (j == nBlownBitmaps) {
+			blownBitmaps [nBlownBitmaps++] = h;
+			Assert (nBlownBitmaps < MAX_BLOWN_BITMAPS);
 			}
 		}
 	}               
@@ -926,15 +927,15 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 		if ((tm = sideP->nOvlTex) != 0) {
 			if (((ec = gameData.pig.tex.pTMapInfo [tm].eclip_num) != -1) &&
 					(gameData.eff.pEffects[ec].nDestBm != -1)) {
-				monitor_num++;
-				Assert (monitor_num < 32);
+				nMonitor++;
+				Assert (nMonitor < 32);
 				}
 			else {
-				for (k = 0; k < num_blown_bitmaps; k++) {
-					if ((tm) == blown_bitmaps [k]) {
-						vector |= (1 << monitor_num);
-						monitor_num++;
-						Assert (monitor_num < 32);
+				for (k = 0; k < nBlownBitmaps; k++) {
+					if ((tm) == blownBitmaps [k]) {
+						vector |= (1 << nMonitor);
+						nMonitor++;
+						Assert (nMonitor < 32);
 						break;
 						}
 					}

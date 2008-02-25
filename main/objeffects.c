@@ -132,14 +132,37 @@ void RenderHitbox (tObject *objP, float red, float green, float blue, float alph
 {
 	fVector		vertList [8], v;
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->rType.polyObjInfo.nModel].hitboxes;
+	tCloakInfo	ci = {0, GR_ACTUAL_FADE_LEVELS, 0, 0, 0, 0, 0};
 	int			i, j, iBox, nBoxes, bHit = 0;
+	float			fFade;
 
 if (!SHOW_OBJ_FX)
 	return;
-if ((objP->nType == OBJ_PLAYER) && (!EGI_FLAG (bPlayerShield, 0, 1, 0) || gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED))
-	return;
-if ((objP->nType == OBJ_ROBOT) && (!gameOpts->render.bRobotShields || objP->cType.aiInfo.CLOAKED))
-	return;
+if ((objP->nType == OBJ_PLAYER) {
+	if (!EGI_FLAG (bPlayerShield, 0, 1, 0))
+		return;
+	if (gameData.multiplayer.players [objP->id].flags & PLAYER_FLAGS_CLOAKED) {
+		if (!GetCloakInfo (objP, 0, 0, &ci))
+			return;
+		fFade = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+		red *= fFade;
+		green *= fFade;
+		blue *= fFade;
+		}
+
+	}
+else if ((objP->nType == OBJ_ROBOT) {
+	if (!gameOpts->render.bRobotShields)
+		return;
+	if (objP->cType.aiInfo.CLOAKED) {
+		if (!GetCloakInfo (objP, 0, 0, &ci))
+			return;
+		fFade = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+		red *= fFade;
+		green *= fFade;
+		blue *= fFade;
+		}
+	}
 if (!EGI_FLAG (nHitboxes, 0, 0, 0)) {
 	DrawShieldSphere (objP, red, green, blue, alpha);
 	return;
@@ -205,8 +228,9 @@ glDepthFunc (GL_LESS);
 
 void RenderPlayerShield (tObject *objP)
 {
-	int	bStencil, dt = 0, i = objP->id, nColor = 0;
-	float	alpha, scale;
+	int			bStencil, dt = 0, i = objP->id, nColor = 0;
+	float			alpha, scale = 1;
+	tCloakInfo	ci;
 
 	static tRgbaColorf shieldColors [3] = {{0, 0.5f, 1, 1}, {1, 0.5f, 0, 1}, {1, 0.8f, 0.6f, 1}};
 
@@ -217,8 +241,13 @@ if (SHOW_SHADOWS &&
 	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
 #endif
-if (EGI_FLAG (bPlayerShield, 0, 1, 0) &&
-	 !(gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED)) {
+if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
+	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) {
+		if (!GetCloakInfo (objP, 0, 0, &ci))
+			return;
+		scale = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+		scale *= scale;
+		}
 	bStencil = StencilOff ();
 	UseSpherePulse (&gameData.render.shield, gameData.multiplayer.spherePulse + i);
 	if (gameData.multiplayer.bWasHit [i]) {
@@ -241,13 +270,15 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0) &&
 		nColor = 1;
 	else
 		nColor = 0;
-	if (gameData.multiplayer.bWasHit [i])
-		scale = alpha = (gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1);
+	if (gameData.multiplayer.bWasHit [i]) {
+		alpha = (gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1);
+		scale *= alpha;
+		}
 	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
-		scale = alpha = 1;
+		alpha = 1;
 	else {
 		alpha = f2fl (gameData.multiplayer.players [i].shields) / 100.0f;
-		scale = 1;
+		scale *= alpha;
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);
 		}
@@ -266,21 +297,31 @@ void RenderRobotShield (tObject *objP)
 {
 	static tRgbaColorf shieldColors [3] = {{0.75f, 0, 0.75f, 1}, {0, 0.5f, 1},{1, 0.5f, 0, 1}};
 
+	tCloakInfo	ci;
+	float			scale = 1;
+	fix			dt;
+
 #if RENDER_HITBOX
 RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 #else
-if (gameOpts->render.bRobotShields && ((objP->nType != OBJ_ROBOT) || !objP->cType.aiInfo.CLOAKED)) {
-	fix dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
-	if (dt < 300) {
-		float scale = gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
-		DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
-		}
-	else if (!gameOpts->render.bOnlyShieldHits) {
-		if ((objP->nType != OBJ_ROBOT) || ROBOTINFO (objP->id).companion)
-			DrawShieldSphere (objP, 0.0f, 0.5f, 1.0f, ObjectDamage (objP) / 2);
-		else
-			DrawShieldSphere (objP, 0.75f, 0.0f, 0.75f, ObjectDamage (objP) / 2);
-		}
+if (!gameOpts->render.bRobotShields)
+	return;
+if ((objP->nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
+	if (!GetCloakInfo (objP, 0, 0, &ci))
+		return;
+	scale = (float) ci.nFadeValue / (float) GR_ACTUAL_FADE_LEVELS;
+	scale *= scale;
+	}
+dt = gameStates.app.nSDLTicks - gameData.objs.xTimeLastHit [OBJ_IDX (objP)];
+if (dt < 300) {
+	scale *= gameOpts->render.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / 300.0) * Pi / 2) : 1;
+	DrawShieldSphere (objP, shieldColors [2].red * scale, shieldColors [2].green * scale, shieldColors [2].blue * scale, 0.5f * scale);
+	}
+else if (!gameOpts->render.bOnlyShieldHits) {
+	if ((objP->nType != OBJ_ROBOT) || ROBOTINFO (objP->id).companion)
+		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, ObjectDamage (objP) / 2 * scale);
+	else
+		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, ObjectDamage (objP) / 2 * scale);
 	}
 #endif
 }
@@ -560,11 +601,11 @@ if (!CanSeeObject (OBJ_IDX (objP), 1))
 #endif
 if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 	if (nPlayer >= 0) {
-		if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)
+		if ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED) && !GetCloakInfo (objP, 0, 0, NULL))
 			return;
 		}
 	else if (objP->nType == OBJ_ROBOT) {
-		if (objP->cType.aiInfo.CLOAKED)
+		if (objP->cType.aiInfo.CLOAKED && !GetCloakInfo (objP, 0, 0, NULL))
 			return;
 		}
 	}
@@ -863,6 +904,8 @@ else if (bAfterburnerBlob || (bMissile && !nThrusters)) {
 	nThrusters = 1;
 	if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2)
 		ti.fLength /= 2;
+	if (gameData.models.nScale)
+		VmVecScale (ti.vPos, gameData.models.nScale);
 	VmVecScaleAdd (ti.vPos, &objP->position.vPos, &objP->position.mOrient.fVec, -nObjRad);
 	ti.mtP = NULL;
 	}
@@ -893,6 +936,8 @@ else if ((objP->nType == OBJ_PLAYER) ||
 			viewP = ObjectView (objP);
 		for (i = 0; i < nThrusters; i++) {
 			VmVecRotate (ti.vPos + i, ti.mtP->vPos + i, viewP);
+			if (gameData.models.nScale)
+				VmVecScale (ti.vPos + i, gameData.models.nScale);
 			VmVecInc (ti.vPos + i, &posP->vPos);
 			VmVecRotate (ti.vDir + i, ti.mtP->vDir + i, viewP);
 			}
@@ -1002,6 +1047,8 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) {
 		fVector	vPosf, vNormf, vFlame [3], vThruster [4], fVecf;
 		float		c = 1/*0.7f + 0.03f * fPulse*/, dotFlame, dotThruster;
 
+	if (gameData.models.nScale)
+		ti.fSize *= f2fl (gameData.models.nScale);
 	ti.fLength *= 4 * ti.fSize;
 	ti.fSize *= ((objP->nType == OBJ_PLAYER) && HaveHiresModel (objP->rType.polyObjInfo.nModel)) ? 1.2f : 1.5f;
 #if 1

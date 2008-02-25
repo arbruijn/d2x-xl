@@ -228,15 +228,14 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 	tG3ModelVertex		*pmv = NULL;
 	fVector				v = {{0,0,0}}, vn, vo, vForward = {{0,0,1}};
 	tModelThrusters	*mtP = gameData.models.thrusters + nModel;
-	int					i, j = 1;
+	int					i, j = 0;
 	float					h, nSize;
 
+if (!objP)
+	return;
 if (!pm->bRendered)
 	mtP->nCount = 0;
-#if 0//def _DEBUG
-mtP->nCount = 0;
-#endif
-if (!objP || (mtP->nCount >= 2))
+if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
 VmVecFixToFloat (&vn, pmf ? &pmf->vNormal : vNormal);
 if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)
@@ -366,6 +365,15 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+static inline int ObjectHasThruster (tObject *objP)
+{
+return (objP->nType == OBJ_PLAYER) || 
+		 (objP->nType == OBJ_ROBOT) || 
+		 ((objP->nType == OBJ_WEAPON) && (gameData.objs.bIsMissile [objP->id]));
+}
+
+//------------------------------------------------------------------------------
+
 void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
 						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
@@ -376,7 +384,8 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 	grsBitmap		*bmP = NULL;
 	vmsAngVec		va = pAnimAngles ? pAnimAngles [psm->nAngles] : avZero;
 	vmsVector		vo;
-	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/);
+	int				h, i, j, bTransparent, bAnimate, bTextured = !(gameStates.render.bCloaked /*|| nPass*/),
+						bGetThruster = !nPass && ObjectHasThruster (objP);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
 if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
@@ -475,7 +484,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #else
 		if ((nFaceVerts = pmf->nVerts) > 0) {
 #endif
-			if (!nPass && pmf->bThruster)
+			if (bGetThruster && pmf->bThruster)
 				G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
 			nVerts = nFaceVerts;
 			pmf++;
@@ -485,7 +494,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			nId = pmf->nId;
 			nVerts = 0;
 			do {
-				if (!nPass && pmf->bThruster)
+				if (bGetThruster && pmf->bThruster)
 					G3GetThrusterPos (objP, nModel, pmf, &vo, &pmf->vNormal, 0, bHires);
 				nVerts += nFaceVerts;
 				pmf++;

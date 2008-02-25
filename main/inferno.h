@@ -2117,7 +2117,7 @@ typedef struct tModelThrusters {
 	vmsVector			vPos [2];
 	vmsVector			vDir [2];
 	float					fSize;
-	ubyte					nCount;
+	ushort				nCount;
 	} tModelThrusters;
 
 typedef struct tGunInfo {
