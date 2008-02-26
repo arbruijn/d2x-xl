@@ -46,7 +46,9 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "hiresmodels.h"
 #include "buildmodel.h"
 
+#ifdef _DEBUG
 static int nDbgModel = -1;
+#endif
 
 //------------------------------------------------------------------------------
 
