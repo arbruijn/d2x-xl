@@ -519,6 +519,8 @@ if ((objP->id == SMARTMSL_BLOB_ID) ||
 if (WIThrust (objP->id) != 0)
 	xWeaponSpeed /= 2;
 /*test*/VmVecCopyScale (&objP->mType.physInfo.velocity, vDirection, (xWeaponSpeed + xParentSpeed));
+if (pParent)
+	gameData.objs.vStartVel [nObject] = pParent->mType.physInfo.velocity;
 //	Set thrust 
 if (WIThrust (nWeaponType) != 0) {
 	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity;

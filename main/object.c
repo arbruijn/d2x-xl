@@ -890,6 +890,8 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (id == FLARE_ID)
 		nType = nType;
+	if (gameData.objs.bIsMissile [id])
+		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
 	if (ROBOTINFO (id).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
@@ -968,19 +970,8 @@ if (objP->controlType == CT_POWERUP)
 	objP->cType.powerupInfo.count = 1;
 
 // Init physics info for this tObject
-if (objP->movementType == MT_PHYSICS) {
-#if 0 //we did memset with 0 further up ...
-	VmVecZero (&objP->mType.physInfo.velocity);
-	VmVecZero (&objP->mType.physInfo.thrust);
-	VmVecZero (&objP->mType.physInfo.rotVel);
-	VmVecZero (&objP->mType.physInfo.rotThrust);
-	objP->mType.physInfo.mass = 0;
-	objP->mType.physInfo.drag = 0;
-	objP->mType.physInfo.brakes = 0;
-	objP->mType.physInfo.turnRoll = 0;
-	objP->mType.physInfo.flags = 0;
-#endif
-	}
+if (objP->movementType == MT_PHYSICS)
+	VmVecZero (gameData.objs.vStartVel + nObject);
 if (objP->renderType == RT_POLYOBJ)
 	objP->rType.polyObjInfo.nTexOverride = -1;
 objP->shields = 20 * F1_0;

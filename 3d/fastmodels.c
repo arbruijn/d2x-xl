@@ -449,7 +449,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 					bmP = modelBitmaps [nBitmap];
 				else {
 					bmP = pm->pTextures + nBitmap;
-					if (nTeamColor && bmP->bmTeam && (0 <= (h = pm->teamTextures [nTeamColor - 1]))) {
+					if (nTeamColor && bmP->bmTeam && (0 <= (h = pm->teamTextures [nTeamColor % MAX_PLAYERS]))) {
 						nBitmap = h;
 						bmP = pm->pTextures + nBitmap;
 						}

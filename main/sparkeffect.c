@@ -88,6 +88,7 @@ if (!(sparkP = (tEnergySpark *) D2_ALLOC (segP->nMaxSparks * sizeof (tEnergySpar
 	segP->nMaxSparks = 0;
 else {
 	segP->sparks = sparkP;
+	segP->bUpdate = 0;
 	memset (sparkP, 0, segP->nMaxSparks * sizeof (tEnergySpark));
 	for (i = segP->nMaxSparks; i; i--, sparkP++)
 		sparkP->nProb = d_rand () % SPARK_MIN_PROB + 1;
@@ -157,10 +158,10 @@ void UpdateSegmentSparks (short nSegment)
 {
 	int				nMatCen = nSegment;
 	tSegment2		*seg2P = gameData.segs.segment2s + (nSegment = gameData.matCens.sparkSegs [nSegment]);
+	int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
+	tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
 
-if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
-		int				bFuel = (seg2P->special == SEGMENT_IS_FUELCEN);
-		tSegmentSparks	*segP = gameData.matCens.sparks [bFuel] + nMatCen;
+if (segP->bUpdate) {
 		tEnergySpark	*sparkP = segP->sparks;
 		int				i, nLastRender [2];
 
@@ -181,6 +182,7 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 			}
 		}
 	CreateSegmentSparks (nMatCen);
+	segP->bUpdate = 0;
 	}
 }
 
@@ -198,6 +200,7 @@ if (gameData.render.mine.bVisible [nSegment] == gameData.render.mine.nVisible) {
 	int				i;
 	grsBitmap		*bmP = BM_ADDON (BM_ADDON_REPAIRSPARK + bFuel), *bmfP;
 
+	segP->bUpdate = 1;
 	for (i = segP->nMaxSparks; i; i--, sparkP++) {
 		if (sparkP->tRender) {
 			if (sparkP->nFrame >= BM_FRAMECOUNT (bmP))

@@ -1703,6 +1703,7 @@ typedef struct tObjectData {
 	tObjDropInfo		*dropInfo;
 	tSpeedBoostData	*speedBoost;
 	vmsVector			*vRobotGoals;
+	vmsVector			*vStartVel;
 	fix					*xLastAfterburnerTime;
 	fix					*xCreationTime;
 	fix					*xTimeLastHit;
@@ -2571,6 +2572,7 @@ typedef struct tEnergySpark {
 typedef struct tSegmentSparks {
 	tEnergySpark	*sparks;
 	short				nMaxSparks;
+	short				bUpdate;
 	} tSegmentSparks;
 
 typedef struct tMatCenData {

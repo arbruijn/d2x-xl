@@ -578,17 +578,18 @@ else
 	xTimeScale = 100;
 nTries = 0;
 do {
-	bRetry = 0;
 	//Move the tObject
-	VmVecCopyScale (
-		&vFrame, 
-		&objP->mType.physInfo.velocity, 
-		FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
-	if (IS_MISSILE (objP)) {
-		float fScale = MissileSpeedScale (objP);
-		if (fScale < 1)
-			VmVecScale (&vFrame, fl2f (fScale * fScale));
+	float fScale = IS_MISSILE (objP) ? MissileSpeedScale (objP) : 1;
+	bRetry = 0;
+	if (fScale < 1) {
+		VmVecSub (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);
+		VmVecScale (&vFrame, fl2f (fScale * fScale));
+		VmVecInc (&vFrame, gameData.objs.vStartVel + nObject);
+		VmVecScale (&vFrame, FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
 		}
+	else
+		VmVecCopyScale (&vFrame, &objP->mType.physInfo.velocity, 
+							 FixMulDiv (xSimTime, xTimeScale, 100 * (nBadSeg + 1)));
 	if (!IsMultiGame) {
 		int i = (objP != gameData.objs.console) ? 0 : 1;
 		if (gameStates.gameplay.slowmo [i].fSpeed != 1) {
