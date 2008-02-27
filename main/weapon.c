@@ -475,7 +475,7 @@ else {
 	}
 	if (nWeaponNum % SUPER_WEAPON != PROXMINE_INDEX) {
 		gameData.weapons.nSecondary = nWeaponNum;
-		StopSecondaryFire ();
+		//StopSecondaryFire ();
 		}
 	szWeaponName = SECONDARY_WEAPON_NAMES (nWeaponNum);
 	//save flag for whether was super version

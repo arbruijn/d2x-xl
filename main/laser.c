@@ -953,7 +953,7 @@ if ((objP->nType == OBJ_WEAPON) &&
 
 void StopPrimaryFire (void)
 {
-gameData.laser.xNextFireTime = gameData.time.xGame + 1;	//	Prevents shots-to-fire from building up.
+gameData.laser.xNextFireTime = gameData.time.xGame;	//	Prevents shots-to-fire from building up.
 gameData.laser.nGlobalFiringCount = 0;
 Controls [0].firePrimaryState = 0;
 Controls [0].firePrimaryDownCount = 0;
@@ -963,7 +963,7 @@ Controls [0].firePrimaryDownCount = 0;
 
 void StopSecondaryFire (void)
 {
-gameData.missiles.xNextFireTime = gameData.time.xGame + 1;	//	Prevents shots-to-fire from building up.
+gameData.missiles.xNextFireTime = gameData.time.xGame;	//	Prevents shots-to-fire from building up.
 gameData.missiles.nGlobalFiringCount = 0;
 Controls [0].fireSecondaryState = 0;
 Controls [0].fireSecondaryDownCount = 0;
