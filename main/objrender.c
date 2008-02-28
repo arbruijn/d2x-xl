@@ -549,7 +549,6 @@ else {
 	}
 if (ciP)
 	*ciP = ci;
-HUDMessage (0, "%d %d", ci.bFading, ci.nFadeValue);
 return ci.bFading;
 }
 

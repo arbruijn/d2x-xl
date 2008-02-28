@@ -102,7 +102,7 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="2"
 			ManagedExtensions="FALSE"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
@@ -111,7 +111,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
 				FavorSizeOrSpeed="1"
-				OmitFramePointers="TRUE"
+				OmitFramePointers="FALSE"
 				EnableFiberSafeOptimizations="TRUE"
 				WholeProgramOptimization="TRUE"
 				OptimizeForProcessor="3"
@@ -133,7 +133,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
@@ -145,7 +145,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release&quot;"
-				GenerateDebugInformation="FALSE"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
@@ -3607,10 +3607,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">
