@@ -2080,9 +2080,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 NetworkInit ();
 gameData.multiplayer.nPlayers = 0;
 setjmp (gameExitPoint);
-networkData.bSendObjects = 0; 
-networkData.bSendingExtras = 0;
-networkData.bRejoined = 0;
+networkData.nSyncState = 0; 
+networkData.nJoinState = 0;
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
 //LogErr ("   NetworkFlush\n");

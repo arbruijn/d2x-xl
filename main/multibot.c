@@ -708,7 +708,7 @@ if (gameData.objs.objects [nRobot].nType != OBJ_ROBOT) // Object is robotP?
 		return 0;
 // Data seems valid, explode the sucker
 if (networkData.bSendObjects && NetworkObjnumIsPast (nRobot))
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 robotP = &gameData.objs.objects [nRobot];
 // Drop non-random KEY powerups locally only!
 if ((robotP->containsCount > 0) && 

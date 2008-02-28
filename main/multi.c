@@ -1265,7 +1265,7 @@ Assert (nPlayer < gameData.multiplayer.nPlayers);
 #endif
 // If we are in the process of sending gameData.objs.objects to a new tPlayer, reset that process
 if (networkData.bSendObjects)
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 // Stuff the gameData.multiplayer.players structure to prepare for the explosion
 playerP = gameData.multiplayer.players + nPlayer;
 count = 2;
@@ -1419,7 +1419,7 @@ if ((gameData.objs.objects [nLocalObj].nType != OBJ_POWERUP) &&
 	 (gameData.objs.objects [nLocalObj].nType != OBJ_HOSTAGE))
 	return;
 if (networkData.bSendObjects && NetworkObjnumIsPast (nLocalObj))
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 if (gameData.objs.objects [nLocalObj].nType == OBJ_POWERUP)
 	if (gameData.app.nGameMode & GM_NETWORK) {
 		id = gameData.objs.objects [nLocalObj].id;
@@ -1637,7 +1637,7 @@ nMyObj = CallObjectCreateEgg (gameData.objs.objects + gameData.multiplayer.playe
 if (nMyObj < 0)
 	return;
 if (networkData.bSendObjects && NetworkObjnumIsPast (nMyObj))
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 gameData.objs.objects [nMyObj].position.vPos = vNewPos;
 VmVecZero (&gameData.objs.objects [nMyObj].mType.physInfo.velocity);
 RelinkObject (nMyObj, nSegment);
@@ -2028,7 +2028,7 @@ void MultiSendPlayerExplode (char nType)
 Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
 MultiSendPosition (LOCALPLAYER.nObject);
 if (networkData.bSendObjects)
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 gameData.multigame.msg.buf [count++] = nType;
 gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, LOCALPLAYER.primaryWeaponFlags);
@@ -2401,7 +2401,7 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network ob
 gameData.multigame.msg.buf [3] = obj_owner;
 MultiSendData (gameData.multigame.msg.buf, 4, 0);
 if (networkData.bSendObjects && NetworkObjnumIsPast (nObject))
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -2564,7 +2564,7 @@ count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 2);
 if (networkData.bSendObjects && NetworkObjnumIsPast (nObject))
-	networkData.nSendObjNum = -1;
+	networkData.nSentObjs = -1;
 MapObjnumLocalToLocal (nObject);
 }
 

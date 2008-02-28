@@ -172,7 +172,7 @@ int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf 
 if (!gameStates.ogl.bShadersOk)
 	return -1;
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
-	nLights = IsMultiGame ? gameData.multiplayer.nPlayers : 1;
+	nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
 	InitLightingShaders (nLights);
 	nShader = (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
 	if (nShader != gameStates.render.history.nShader) {

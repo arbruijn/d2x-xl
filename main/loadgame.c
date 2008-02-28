@@ -405,7 +405,7 @@ void InitPlayerStatsLevel (int bSecret)
 {
 LOCALPLAYER.lastScore = LOCALPLAYER.score;
 LOCALPLAYER.level = gameData.missions.nCurrentLevel;
-if (!networkData.bRejoined) {
+if (!networkData.nJoinState) {
 	LOCALPLAYER.timeLevel = 0;
 	LOCALPLAYER.hoursLevel = 0;
 	}
@@ -1911,7 +1911,7 @@ if (networkData.bNewGame == 1) {
 	InitPlayerStatsNewShip ();
 }
 InitPlayerStatsLevel (bSecret);
-if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.bRejoined) {
+if ((gameData.app.nGameMode & GM_MULTI_COOP) && networkData.nJoinState) {
 	int i;
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.playerFlags [i];
@@ -1943,8 +1943,8 @@ if (!(IsMultiGame || gameStates.app.cheats.bEnabled)) {
 else
 	ReadPlayerFile (1);		//get window sizes
 ResetSpecialEffects ();
-if (networkData.bRejoined == 1){
-	networkData.bRejoined = 0;
+if (networkData.nJoinState == 1){
+	networkData.nJoinState = 0;
 	StartLevel (1);
 	}
 else {

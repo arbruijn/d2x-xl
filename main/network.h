@@ -18,6 +18,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "multi.h"
 #include "newmenu.h"
+#include "ipx.h"
 
 #define NETSTAT_MENU                0
 #define NETSTAT_PLAYING             1
@@ -113,7 +114,7 @@ typedef struct tFrameInfo {
 	ubyte       nPlayer;
 	ubyte       obj_renderType;
 	ubyte       level_num;
-	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
+	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfo;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
@@ -129,7 +130,7 @@ typedef struct tFrameInfoShort {
 	ubyte       nPlayer;
 	ubyte       obj_renderType;
 	ubyte       level_num;
-	ubyte       data[NET_XDATA_SIZE];   // extra data to be tacked on the end
+	ubyte       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoShort;
 
 typedef struct tEntropyGameInfo {
@@ -288,6 +289,12 @@ typedef struct tMpParams {
 
 extern tMpParams mpParams;
 
+typedef struct tNetworkObjInfo {
+	short	nObject;
+	ubyte	nType;
+	ubyte	nId;
+} tNetworkObjInfo;
+
 typedef struct tNetworkData {
 	int					nActiveGames;
 	int					nLastActiveGames;
@@ -304,13 +311,12 @@ typedef struct tNetworkData {
 	int					bAllowSocketChanges;
 	int					nSecurityFlag;
 	int					nSecurityNum;
-	int					bSendingExtras;
 	int					bVerifyPlayerJoined;
 	int					nPlayerJoiningExtras; 
-	int					bRejoined;      
+	int					nJoinState;
 	int					bNewGame;       
 	int					bSendObjects; 
-	int					nSendObjNum;   
+	int					nSentObjs;   
 	int					bPlayerAdded;   
 	int					bSendObjectMode; 
 	int					bD2XData;
@@ -332,6 +338,13 @@ typedef struct tNetworkData {
 	fix					xPingReturnTime;
 	int					bShowPingStats;
 	int					tLastPingStat;
+	int					nSyncState;
+	int					nSyncObjs;
+	ushort				nSyncFrame;
+	short					nSyncExtras;
+	short					missingObjFrames [IPX_MAX_DATA_SIZE / sizeof (short)];
+	short					nMissingObjFrames;
+	short					iMissingObjFrames;
 } tNetworkData;
 
 extern tNetworkData networkData;

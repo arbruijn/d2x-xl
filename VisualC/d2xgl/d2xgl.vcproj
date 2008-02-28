@@ -1594,18 +1594,6 @@
 						RelativePath="..\..\main\input.h">
 					</File>
 					<File
-						RelativePath="..\..\include\ipx.h">
-					</File>
-					<File
-						RelativePath="..\..\arch\win32\ipx_drv.h">
-					</File>
-					<File
-						RelativePath="..\..\arch\win32\include\ipx_mcast4.h">
-					</File>
-					<File
-						RelativePath="..\..\arch\win32\include\ipx_udp.h">
-					</File>
-					<File
 						RelativePath="..\..\main\kconfig.h">
 					</File>
 					<File
@@ -1652,24 +1640,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\movie.h">
-					</File>
-					<File
-						RelativePath="..\..\main\multi.h">
-					</File>
-					<File
-						RelativePath="..\..\main\multibot.h">
-					</File>
-					<File
-						RelativePath="..\..\main\multimsg.h">
-					</File>
-					<File
-						RelativePath="..\..\main\netmenu.h">
-					</File>
-					<File
-						RelativePath="..\..\main\netmisc.h">
-					</File>
-					<File
-						RelativePath="..\..\main\network.h">
 					</File>
 					<File
 						RelativePath="..\..\main\newdemo.h">
@@ -1814,9 +1784,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\tga.h">
-					</File>
-					<File
-						RelativePath="..\..\main\tracker.h">
 					</File>
 					<File
 						RelativePath="..\..\trackir\trackir.h">
@@ -2467,66 +2434,6 @@
 						RelativePath="..\..\main\input.c">
 					</File>
 					<File
-						RelativePath="..\..\arch\win32\ipx_mcast4.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\arch\win32\ipx_udp.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\arch\win32\ipx_win.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\main\kconfig.c">
 						<FileConfiguration
 							Name="Debug|Win32">
@@ -2687,92 +2594,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\movie.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\multi.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\multibot.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\multimsg.c">
-					</File>
-					<File
-						RelativePath="..\..\main\netmenu.c">
-					</File>
-					<File
-						RelativePath="..\..\main\netmisc.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\network.c">
 						<FileConfiguration
 							Name="Debug|Win32">
 							<Tool
@@ -3276,9 +3097,6 @@
 						RelativePath="..\..\main\thief.c">
 					</File>
 					<File
-						RelativePath="..\..\main\tracker.c">
-					</File>
-					<File
 						RelativePath="..\..\main\trackobject.c">
 					</File>
 					<File
@@ -3590,6 +3408,200 @@
 					Filter="">
 					<File
 						RelativePath="..\..\main\ai.h">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="network"
+				Filter="">
+				<Filter
+					Name="Source Files"
+					Filter="">
+					<File
+						RelativePath="..\..\arch\win32\ipx_mcast4.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\arch\win32\ipx_udp.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\arch\win32\ipx_win.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\multi.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\multibot.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\multimsg.c">
+					</File>
+					<File
+						RelativePath="..\..\main\netmenu.c">
+					</File>
+					<File
+						RelativePath="..\..\main\netmisc.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\network.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\tracker.c">
+					</File>
+				</Filter>
+				<Filter
+					Name="Header Files"
+					Filter="">
+					<File
+						RelativePath="..\..\include\ipx.h">
+					</File>
+					<File
+						RelativePath="..\..\arch\win32\ipx_drv.h">
+					</File>
+					<File
+						RelativePath="..\..\arch\win32\include\ipx_mcast4.h">
+					</File>
+					<File
+						RelativePath="..\..\arch\win32\include\ipx_udp.h">
+					</File>
+					<File
+						RelativePath="..\..\main\multi.h">
+					</File>
+					<File
+						RelativePath="..\..\main\multibot.h">
+					</File>
+					<File
+						RelativePath="..\..\main\multimsg.h">
+					</File>
+					<File
+						RelativePath="..\..\main\netmenu.h">
+					</File>
+					<File
+						RelativePath="..\..\main\netmisc.h">
+					</File>
+					<File
+						RelativePath="..\..\main\network.h">
+					</File>
+					<File
+						RelativePath="..\..\main\tracker.h">
 					</File>
 				</Filter>
 			</Filter>
