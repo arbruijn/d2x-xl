@@ -2235,7 +2235,7 @@ switch (pid) {
     //-------------------------------------------
 	case PID_OBJECT_DATA:
 		con_printf (0, "received PID_OBJECT_DATA\n");
-		if ((networkData.nStatus == NETSTAT_WAITING) || networkData.missingObjFrames [0].nFrames)
+		if (networkData.nStatus == NETSTAT_WAITING)
 			NetworkReadObjectPacket (data);
 		break;
 
@@ -2899,8 +2899,7 @@ if (!networkData.nJoinState) {
 		}
 	}
 gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
-if (!networkData.missingObjFrames [0].nFrames)
-	networkData.nStatus = NETSTAT_PLAYING;
+networkData.nStatus = networkData.missingObjFrames [0].nFrames ? NETSTAT_WAITING : NETSTAT_PLAYING;
 SetFunctionMode (FMODE_GAME);
 MultiSortKillList ();
 }
@@ -3031,7 +3030,7 @@ void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 	static fix t1 = 0;
 
 NetworkListen ();
-if ((networkData.nStatus != NETSTAT_WAITING) && !networkData.missingObjFrames [0].nFrames) { // Status changed to playing, exit the menu
+if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
 	networkData.nJoinState = 2;
 	*key = -2;
 	}
@@ -3127,7 +3126,6 @@ networkData.nStatus = NETSTAT_WAITING;
 memset (m, 0, sizeof (m));
 m [0].nType= NM_TYPE_TEXT; 
 m [0].text = TXT_NET_LEAVE;
-networkData.nStatus = NETSTAT_WAITING;
 NetworkFlush ();
 LOCALPLAYER.connected = 1;
 
