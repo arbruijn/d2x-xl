@@ -1101,7 +1101,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				objBuf [2] = (ubyte) networkData.nSyncFrame;
 				bufI = 3;
 				}
-			nRemoteObj = networkData.missingObjFrames [0].nFrames ? -4 : 2;
+			nRemoteObj = networkData.missingObjFrames [0].nFrames ? -4 : -2;
 			SET_SHORT (objBuf, bufI, nRemoteObj);
 			SET_SHORT (objBuf, bufI, networkData.nSyncObjs);
 			networkData.nSyncState = networkData.missingObjFrames [0].nFrames ? 0 : 2;
