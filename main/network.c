@@ -997,7 +997,8 @@ return 0;
 
 static inline int NetworkObjFrameFilter (void)
 {
-networkData.nSyncFrame++;
+if (!networkData.nSyncFrame++)
+	return 1;
 if (!networkData.missingObjFrames [0].nFrames)
 	return 1;
 if (networkData.missingObjFrames [0].iFrame >= networkData.missingObjFrames [0].nFrames)
@@ -2175,7 +2176,7 @@ switch (pid) {
 				networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 				networkData.nSecurityNum = tempNetInfo.nSecurity;
 				if (NetworkWaitForPlayerInfo ())
-					NetworkReadSyncPacket ((tNetgameInfo *)data, 0);
+					NetworkReadSyncPacket ((tNetgameInfo *) data, 0);
 				networkData.nSecurityFlag = 0;
 				networkData.nSecurityNum = 0;
 				}
@@ -2530,6 +2531,7 @@ else {
 				networkData.bTraceFrames = 0;
 				if (networkData.bSyncMissingFrames)
 					networkData.nStatus = NETSTAT_PLAYING;
+				networkData.nJoinState = 2;
 				}
 			networkData.bSyncMissingFrames = 0;
 			}
@@ -2883,7 +2885,7 @@ gameData.multigame.kills.nTeam [0] = sp->teamKills [0];
 gameData.multigame.kills.nTeam [1] = sp->teamKills [1];
 LOCALPLAYER.connected = 1;
 netPlayers.players [gameData.multiplayer.nLocalPlayer].connected = 1;
-netPlayers.players [gameData.multiplayer.nLocalPlayer].rank=GetMyNetRanking ();
+netPlayers.players [gameData.multiplayer.nLocalPlayer].rank = GetMyNetRanking ();
 if (!networkData.nJoinState) {
 	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
@@ -2898,7 +2900,7 @@ if (!networkData.nJoinState) {
 		}
 	}
 gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
-networkData.nStatus = networkData.missingObjFrames [0].nFrames ? NETSTAT_WAITING : NETSTAT_PLAYING;
+networkData.nStatus = (networkData.nJoinState < 2) ? NETSTAT_WAITING : NETSTAT_PLAYING;
 SetFunctionMode (FMODE_GAME);
 MultiSortKillList ();
 }
@@ -3021,33 +3023,46 @@ networkData.bGamesChanged = 1;
 }
 
 //------------------------------------------------------------------------------
+
+static inline fix SyncPollTimeout (void)
+{
+#ifdef _DEBUG
+return F1_0 * 30;
+#else
+if (gameStates.multi.nGameType == UDP_GAME)
+	return F1_0 * 5;
+else
+	return F1_0 * 2;
+#endif
+}
+
+//------------------------------------------------------------------------------
 /* Polling loop waiting for sync packet to start game
  * after having sent request
  */
+static fix toSyncPoll = 0;
+
 void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	static fix t0 = 0;
 	fix	t;
 	int	nPackets = NetworkListen ();
 
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
-	networkData.nJoinState = 2;
 	*key = -2;
 	return;
 	}
 if (nPackets || (networkData.nJoinState >= 2))
 	return;
 t = TimerGetApproxSeconds ();
-if (t > t0) {	// Poll time expired, re-send request
+if (t > toSyncPoll) {	// Poll time expired, re-send request
 #if 1			
 	con_printf (CONDBG, "Re-sending join request.\n");
 #endif
-	t0 = t + F1_0 * 2;
+	toSyncPoll = t + SyncPollTimeout ();
 	if (networkData.missingObjFrames [0].nFrames)
 		NetworkSendMissingObjFrames ();
 	else {
-		int i = NetworkSendRequest ();
-		if (i < 0)
+		if (NetworkSendRequest () < 0)
 			*key = -2;
 		}
 	}
@@ -3077,6 +3092,7 @@ if (i < 0) {
 	return -1;
 	}
 sprintf (m [0].text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
+toSyncPoll = TimerGetFixedSeconds () + SyncPollTimeout ();
 do {
 	choice = ExecMenu (NULL, TXT_WAIT, 2, m, NetworkSyncPoll, NULL);
 	} while (choice > -1);
@@ -3213,16 +3229,29 @@ networkData.nMaxXDataSize = netGame.bShortPackets ? NET_XDATA_SIZE : NET_XDATA_S
 
 //------------------------------------------------------------------------------
 
-#define ALL_INFO_REQUEST_INTERVAL F1_0*3
+static inline fix WaitAllPollTimeout (void)
+{
+#ifdef _DEBUG
+return F1_0 * 5;
+#else
+if (gameStates.multi.nGameType == UDP_GAME)
+	return F1_0 * 5;
+else
+	return F1_0 * 3;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+static fix toWaitAllPoll = 0;
 
 void NetworkWaitAllPoll (int nitems, tMenuItem * menus, int * key, int citem)
 {
-	static fix t1 = 0;
 	fix t = TimerGetApproxSeconds ();
 
-if (t > t1) {
+if (t > toWaitAllPoll) {
 	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, nSecurityCheck);
-	t1 = t + ALL_INFO_REQUEST_INTERVAL;
+	toWaitAllPoll = t + WaitAllPollTimeout ();
 	}
 NetworkDoBigWait (networkData.bWaitAllChoice);  
 if (nSecurityCheck == -1)
@@ -3238,18 +3267,17 @@ int NetworkWaitForAllInfo (int choice)
   tMenuItem m [2];
 
 memset (m, 0, sizeof (m));
-m [0].nType=NM_TYPE_TEXT; 
+m [0].nType = NM_TYPE_TEXT; 
 m [0].text = "Press Escape to cancel";
-networkData.bWaitAllChoice=choice;
+networkData.bWaitAllChoice = choice;
 networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
 nSecurityCheck = activeNetGames [choice].nSecurity;
-networkData.nSecurityFlag=0;
+networkData.nSecurityFlag = 0;
 
-get_menu:
-
-pick = ExecMenu (NULL, TXT_CONNECTING, 1, m, NetworkWaitAllPoll, NULL);
-if ((pick > -1) && (nSecurityCheck != -1))
-	goto get_menu;
+toWaitAllPoll = 0;
+do {
+	pick = ExecMenu (NULL, TXT_CONNECTING, 1, m, NetworkWaitAllPoll, NULL);
+	} while ((pick > -1) && (nSecurityCheck != -1));
 if (nSecurityCheck == -1) {   
 	nSecurityCheck = 0;     
 	return 1;
@@ -3307,8 +3335,8 @@ while (0 < (size = IpxGetPacketData (packet))) {
 					con_printf (CONDBG, "HUH? Game=%d Player=%d\n", 
 									networkData.nSecurityNum, tmpPlayersInfo->nSecurity);
 #endif
-					memcpy (&activeNetGames [choice], (ubyte *)&tempNetInfo, sizeof (tNetgameInfo));
-					memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
+					memcpy (activeNetGames + choice, (ubyte *)&tempNetInfo, sizeof (tNetgameInfo));
+					memcpy (activeNetPlayers + choice, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 					nSecurityCheck = -1;
 					}
 				networkData.nSecurityFlag = 0;
@@ -3433,11 +3461,12 @@ return nPackets;
 
 int NetworkWaitForPlayerInfo ()
 {
-	int size = 0, retries = 0;
-	ubyte packet [IPX_MAX_DATA_SIZE];
-	struct tAllNetPlayersInfo *TempInfo;
-	fix basetime;
-	ubyte id=0;
+	int						size = 0, retries = 0;
+	ubyte						packet [IPX_MAX_DATA_SIZE];
+	tAllNetPlayersInfo	*tempPlayerP;
+	fix						xTimeout;
+	ubyte id = 0;
+
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tAllNetPlayersInfo info_struct;
 #endif
@@ -3453,9 +3482,9 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 	Int3 (); //MY GOD! Get Jason...this is the source of many problems
 	return 0;
 	}
-basetime=TimerGetApproxSeconds ();
+xTimeout = TimerGetApproxSeconds () * F1_0 * 5;
 while (networkData.bWaitingForPlayerInfo && (retries < 50) && 
-	    (TimerGetApproxSeconds ()< (basetime+ (F1_0*5)))) {
+	    (TimerGetApproxSeconds () < xTimeout)) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		size = IpxGetPacketData (packet);
 		id = packet [0];
@@ -3463,29 +3492,29 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) &&
 	if ((size > 0) && (id == PID_PLAYERSINFO)) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &info_struct);
-		TempInfo = &info_struct;
+		tempPlayerP = &info_struct;
 #else
-		TempInfo= (tAllNetPlayersInfo *)packet;
+		tempPlayerP = (tAllNetPlayersInfo *)packet;
 #endif
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {
 #if SECURITY_CHECK
-			if (networkData.nSecurityNum != TempInfo->nSecurity)
+			if (networkData.nSecurityNum != tempPlayerP->nSecurity)
 				continue;
 #endif
-			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (tAllNetPlayersInfo));
-			tmpPlayersInfo=&tmpPlayersBase;
-			networkData.nSecurityFlag=NETSECURITY_OFF;
-			networkData.nSecurityNum=0;
-			networkData.bWaitingForPlayerInfo=0;
+			memcpy (&tmpPlayersBase, (ubyte *) tempPlayerP, sizeof (tAllNetPlayersInfo));
+			tmpPlayersInfo = &tmpPlayersBase;
+			networkData.nSecurityFlag = NETSECURITY_OFF;
+			networkData.nSecurityNum = 0;
+			networkData.bWaitingForPlayerInfo = 0;
 			return 1;
 			}
 		else {
-			networkData.nSecurityNum = TempInfo->nSecurity;
+			networkData.nSecurityNum = tempPlayerP->nSecurity;
 			networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_GAMEINFO;
-			memcpy (&tmpPlayersBase, (ubyte *)TempInfo, sizeof (tAllNetPlayersInfo));
-			tmpPlayersInfo=&tmpPlayersBase;
-			networkData.bWaitingForPlayerInfo=0;
+			memcpy (&tmpPlayersBase, (ubyte *)tempPlayerP, sizeof (tAllNetPlayersInfo));
+			tmpPlayersInfo = &tmpPlayersBase;
+			networkData.bWaitingForPlayerInfo = 0;
 			return 1;
 			}
 		}
@@ -4474,9 +4503,7 @@ void NetworkSendMissingObjFrames (void)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	networkData.missingObjFrames [0].pid = PID_MISSING_OBJ_FRAMES;
 	networkData.missingObjFrames [0].nPlayer = gameData.multiplayer.nLocalPlayer;
-	SendInternetMissingObjFramesPacket (
-		netPlayers.players [networkData.nSyncPlayer].network.ipx.server, 
-		netPlayers.players [networkData.nSyncPlayer].network.ipx.node);
+	SendInternetMissingObjFramesPacket (ipx_ServerAddress, ipx_ServerAddress + 4);
 	} 
 }
 
