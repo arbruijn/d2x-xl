@@ -2235,7 +2235,7 @@ switch (pid) {
     //-------------------------------------------
 	case PID_OBJECT_DATA:
 		con_printf (0, "received PID_OBJECT_DATA\n");
-		if (networkData.nStatus == NETSTAT_WAITING) 
+		if ((networkData.nStatus == NETSTAT_WAITING) || networkData.missingObjFrames [0].nFrames)
 			NetworkReadObjectPacket (data);
 		break;
 
@@ -2521,15 +2521,18 @@ else {
 			//NetworkPackObjects ();
 			nRemoteFrame = 0;
 			nMode = 0;
-			networkData.bSyncMissingFrames = 0;
 			if (networkData.missingObjFrames [0].nFrames) {
 #ifdef _DEBUG
 				LogErr ("Requesting %d missing object packets\n", networkData.missingObjFrames [0].nFrames);
 #endif
 				NetworkSendMissingObjFrames ();
 				}
-			else
+			else {
 				networkData.bTraceFrames = 0;
+				if (networkData.bSyncMissingFrames)
+					networkData.nStatus = NETSTAT_PLAYING;
+				}
+			networkData.bSyncMissingFrames = 0;
 			}
 #if 1			
 		con_printf (CONDBG, "Objnum -2 found in frame local %d remote %d.\n", nPrevFrame, nRemoteFrame);
@@ -2551,7 +2554,7 @@ else {
 						break;
 					networkData.missingObjFrames [0].frames [networkData.missingObjFrames [0].nFrames++] = j;
 #ifdef _DEBUG
-					LogErr ("Object packet %d is missing\n", j);
+					LogErr ("Object packet %d is missing again\n", j);
 #endif
 					}
 				}
@@ -2896,7 +2899,8 @@ if (!networkData.nJoinState) {
 		}
 	}
 gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
-networkData.nStatus = NETSTAT_PLAYING;
+if (!networkData.missingObjFrames [0].nFrames)
+	networkData.nStatus = NETSTAT_PLAYING;
 SetFunctionMode (FMODE_GAME);
 MultiSortKillList ();
 }
@@ -3027,7 +3031,7 @@ void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 	static fix t1 = 0;
 
 NetworkListen ();
-if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
+if ((networkData.nStatus != NETSTAT_WAITING) && !networkData.missingObjFrames [0].nFrames) { // Status changed to playing, exit the menu
 	networkData.nJoinState = 2;
 	*key = -2;
 	}
@@ -4452,6 +4456,8 @@ ReceiveMissingObjFramesPacket (data, &missingObjFrames);
 if (missingObjFrames.nPlayer == networkData.playerRejoining.player.connected) {
 	networkData.missingObjFrames [0] = missingObjFrames;
 	networkData.missingObjFrames [0].iFrame = 0;
+	networkData.nSentObjs = -1;				
+	networkData.nSyncState = 3;
 	}
 else
 	networkData.missingObjFrames [0].nFrames = 0;
