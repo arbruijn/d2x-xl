@@ -703,13 +703,15 @@ Assert (gameData.objs.objects [0].prev != 0);
 
 //------------------------------------------------------------------------------
 
-int UseObject (int nObject)
+int InsertObject (int nObject)
 {
 	int	i;
 
 for (i = gameData.objs.nObjects; i < MAX_OBJECTS; i++)
 	if (gameData.objs.freeList [i] == nObject) {
 		gameData.objs.freeList [i] = gameData.objs.freeList [gameData.objs.nObjects++];
+		if (nObject > gameData.objs.nLastObject) 
+			gameData.objs.nLastObject = nObject;
 		return 1;
 		}
 return 0;
@@ -720,20 +722,24 @@ return 0;
 int nDebrisObjectCount = 0;
 int nUnusedObjectsSlots;
 
-//returns the number of a D2_FREE tObject, updating gameData.objs.nLastObject.
+//returns the number of a free object, updating gameData.objs.nLastObject.
 //Generally, CreateObject () should be called to get an tObject, since it
 //fills in important fields and does the linking.
 //returns -1 if no D2_FREE gameData.objs.objects
 int AllocObject (void)
 {
-	int nObject;
 	tObject *objP;
+	int		nObject;
 
 if (gameData.objs.nObjects >= MAX_OBJECTS - 2)
 	FreeObjectSlots (MAX_OBJECTS - 10);
 if (gameData.objs.nObjects >= MAX_OBJECTS)
 	return -1;
 nObject = gameData.objs.freeList [gameData.objs.nObjects++];
+#ifdef _DEBUG
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 if (nObject > gameData.objs.nLastObject) {
 	gameData.objs.nLastObject = nObject;
 	if (gameData.objs.nLastObject > gameData.objs.nObjectLimit)
@@ -754,6 +760,10 @@ return nObject;
 //the tObject has been unlinked
 void FreeObject (int nObject)
 {
+#ifdef _DEBUG
+if (nObject == nDbgObj)
+	nDbgObj = nDbgObj;
+#endif
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 KillObjectSmoke (nObject);
@@ -770,43 +780,102 @@ if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 }
 
 //-----------------------------------------------------------------------------
+
+#ifdef _WIN32
+typedef int __fastcall tFreeFilter (tObject *objP);
+#else
+typedef int tFreeFilter (tObject *objP);
+#endif
+typedef tFreeFilter *pFreeFilter;
+
+
+int FreeDebrisFilter (tObject *objP)
+{
+return objP->nType == OBJ_DEBRIS;
+}
+
+
+int FreeFireballFilter (tObject *objP)
+{
+return (objP->nType == OBJ_FIREBALL) && (objP->cType.explInfo.nDeleteObj == -1);
+}
+
+
+
+int FreeFlareFilter (tObject *objP)
+{
+return (objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID);
+}
+
+
+
+int FreeWeaponFilter (tObject *objP)
+{
+return (objP->nType == OBJ_WEAPON);
+}
+
+//-----------------------------------------------------------------------------
+
+int FreeCandidates (int *candidateP, int *nCandidateP, int nToFree, pFreeFilter filterP)
+{
+	tObject	*objP;
+	int		h = *nCandidateP, i;
+
+for (i = 0; i < h; ) {
+	objP = gameData.objs.objects + candidateP [i];
+	if (!filterP (objP)) 
+		i++;
+	else {
+		if (i < --h)
+			candidateP [i] = candidateP [h];
+		KillObject (objP);
+		if (!--nToFree)
+			return 0;
+		}
+	}
+*nCandidateP = h;
+return nToFree;
+}
+
+//-----------------------------------------------------------------------------
 //	Scan the tObject list, freeing down to num_used gameData.objs.objects
 //	Returns number of slots freed.
-int FreeObjectSlots (int num_used)
+int FreeObjectSlots (int nUsed)
 {
-	int		i, olind;
-	int		objList [MAX_OBJECTS_D2X];
+	int		i, nCandidates = 0;
+	int		candidates [MAX_OBJECTS_D2X];
 	int		nAlreadyFree, nToFree, nOrgNumToFree;
-	tObject	*objP;
 
-olind = 0;
 nAlreadyFree = MAX_OBJECTS - gameData.objs.nLastObject - 1;
 
-if (MAX_OBJECTS - nAlreadyFree < num_used)
+if (MAX_OBJECTS - nAlreadyFree < nUsed)
 	return 0;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
 	if (gameData.objs.objects [i].flags & OF_SHOULD_BE_DEAD) {
 		nAlreadyFree++;
-		if (MAX_OBJECTS - nAlreadyFree < num_used)
+		if (MAX_OBJECTS - nAlreadyFree < nUsed)
 			return nAlreadyFree;
 		}
 	else
 		switch (gameData.objs.objects [i].nType) {
 			case OBJ_NONE:
 				nAlreadyFree++;
-				if (MAX_OBJECTS - nAlreadyFree < num_used)
+				if (MAX_OBJECTS - nAlreadyFree < nUsed)
 					return 0;
-				break;
-			case OBJ_WALL:
-			case OBJ_FLARE:
-				Int3 ();		//	This is curious.  What is an tObject that is a tWall?
 				break;
 			case OBJ_FIREBALL:
 			case OBJ_EXPLOSION:
 			case OBJ_WEAPON:
 			case OBJ_DEBRIS:
-				objList [olind++] = i;
+				candidates [nCandidates++] = i;
+				break;
+#if 1
+			default:
+#else
+			case OBJ_WALL:
+			case OBJ_FLARE:
+				Int3 ();		//	This is curious.  What is an tObject that is a tWall?
 				break;
 			case OBJ_ROBOT:
 			case OBJ_HOSTAGE:
@@ -818,52 +887,30 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 			case OBJ_CAMERA:
 			case OBJ_POWERUP:
 			case OBJ_MONSTERBALL:
+			case OBJ_SMOKE:
+			case OBJ_EXPLOSION:
+			case OBJ_EFFECT:
+#endif
 				break;
 			}
 	}
 
-nToFree = MAX_OBJECTS - num_used - nAlreadyFree;
+nToFree = MAX_OBJECTS - nUsed - nAlreadyFree;
 nOrgNumToFree = nToFree;
-if (nToFree > olind) {
+if (nToFree > nCandidates) {
 #if TRACE			
-	con_printf (1, "Warning: Asked to D2_FREE %i gameData.objs.objects, but can only D2_FREE %i.\n", nToFree, olind);
+	con_printf (1, "Warning: Asked to D2_FREE %i gameData.objs.objects, but can only D2_FREE %i.\n", nToFree, nCandidates);
 #endif
-	nToFree = olind;
+	nToFree = nCandidates;
 	}
-for (i = 0; i < nToFree; i++) {
-	objP = gameData.objs.objects + objList [i];
-	if (objP->nType == OBJ_DEBRIS) {
-		nToFree--;
-		KillObject (objP);
-		}
-	}
-if (!nToFree)
+if (!(nToFree = FreeCandidates (candidates, &nCandidates, nToFree, FreeDebrisFilter)))
 	return nOrgNumToFree;
-for (i = 0; i < nToFree; i++) {
-	objP = gameData.objs.objects + objList [i];
-	if ((objP->nType == OBJ_FIREBALL) && (objP->cType.explInfo.nDeleteObj == -1)) {
-		nToFree--;
-		KillObject (objP);
-		}
-	}
-if (!nToFree)
+if (!(nToFree = FreeCandidates (candidates, &nCandidates, nToFree, FreeFireballFilter)))
 	return nOrgNumToFree;
-for (i = 0; i < nToFree; i++) {
-	objP = gameData.objs.objects + objList [i];
-	if ((objP->nType == OBJ_WEAPON) && (objP->id == FLARE_ID)) {
-		nToFree--;
-		KillObject (objP);
-		}
-	}
-if (!nToFree)
+if (!(nToFree = FreeCandidates (candidates, &nCandidates, nToFree, FreeFlareFilter)))
 	return nOrgNumToFree;
-for (i = 0; i < nToFree; i++) {
-	objP = gameData.objs.objects + objList [i];
-	if ((objP->nType == OBJ_WEAPON) && (objP->id != FLARE_ID)) {
-		nToFree--;
-		KillObject (objP);
-		}
-	}
+if (!(nToFree = FreeCandidates (candidates, &nCandidates, nToFree, FreeWeaponFilter)))
+	return nOrgNumToFree;
 return nOrgNumToFree - nToFree;
 }
 

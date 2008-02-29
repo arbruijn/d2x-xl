@@ -66,6 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_DOWNLOAD						66
 #define PID_UPLOAD						67
 #define PID_SEND_EXTRA_GAMEINFO		68
+#define PID_MISSING_OBJ_FRAMES		69
 
 #define PID_TRACKER_ADD_SERVER		'S'
 #define PID_TRACKER_GET_SERVERLIST	'R'
@@ -295,6 +296,16 @@ typedef struct tNetworkObjInfo {
 	ubyte	nId;
 } tNetworkObjInfo;
 
+#define MAX_MISSING_OBJ_FRAMES	200
+
+typedef struct tMissingObjFrames {
+	ubyte					pid;
+	ubyte					nPlayer;
+	ushort				nFrames;
+	ushort				iFrame;
+	short					frames [MAX_MISSING_OBJ_FRAMES];
+} tMissingObjFrames;
+
 typedef struct tNetworkData {
 	int					nActiveGames;
 	int					nLastActiveGames;
@@ -341,10 +352,11 @@ typedef struct tNetworkData {
 	int					nSyncState;
 	int					nSyncObjs;
 	ushort				nSyncFrame;
+	int					bTraceFrames;
+	int					bSyncMissingFrames;
 	short					nSyncExtras;
-	short					missingObjFrames [IPX_MAX_DATA_SIZE / sizeof (short)];
-	short					nMissingObjFrames;
-	short					iMissingObjFrames;
+	short					nSyncPlayer;
+	tMissingObjFrames	missingObjFrames [2];
 } tNetworkData;
 
 extern tNetworkData networkData;

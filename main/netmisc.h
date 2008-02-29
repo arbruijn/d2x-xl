@@ -12,27 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Header for netmisc.c
- *
- * Old Log:
- * Revision 1.1  1995/05/16  16:00:08  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:30:18  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.2  1994/08/09  19:31:54  john
- * Networking changes.
- *
- * Revision 1.1  1994/08/08  11:18:40  john
- * Initial revision
- *
- *
- */
-
 #ifndef _NETMISC_H
 #define _NETMISC_H
 
@@ -59,6 +38,8 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag);
 void BESendExtraGameInfo(ubyte *server, ubyte *node, ubyte *netAddress);
 void BEReceiveExtraGameInfo(ubyte *data, tExtraGameInfo *extraGameInfo);
+void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress);
+void BEReceiveMissingObjFrames(ubyte *data, tMissingObjFrames *extraGameInfo);
 void BESwapObject (tObject *obj);
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
@@ -72,6 +53,8 @@ void BESwapObject (tObject *obj);
 #define ReceiveNetGamePacket BEReceiveNetGamePacket
 #define SendExtraGameInfo BESendExtraGameInfo
 #define ReceiveExtraGameInfo BEReceiveExtraGameInfo
+#define SendMissingObjFrames BESendMissingObjFrames
+#define ReceiveMissingObjFrames BEReceiveMissingObjFrames
 #define SwapObject BESwapObject
 
 // some mac only routines to deal with incorrectly aligned network structures
@@ -107,6 +90,11 @@ void BESwapObject (tObject *obj);
 	BESendExtraGameInfo(NULL, NULL, NULL)
 #define ReceiveExtraGameInfoPacket(data, _extraGameInfo) \
 	BEReceiveExtraGameInfo(data, _extraGameInfo);
+
+#define SendBroadcastMissingObjFramesPacket() \
+	BESendMissingObjFrames(NULL, NULL, NULL)
+#define ReceiveMissingObjFramesPacket(data, _extraGameInfo) \
+	BEReceiveMissingObjFrames(data, _extraGameInfo);
 
 #else
 
@@ -144,11 +132,21 @@ void BESwapObject (tObject *obj);
 #define SendExtraGameInfoPacket(server, node, netAddress) \
 	IPXSendPacketData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node, netAddress)
 #define SendInternetExtraGameInfoPacket(server, node) \
-	IPXSendInternetPacketData((ubyte *)(extraGameInfo + 1), sizeof(tExtraGameInfo), server, node)
+	IPXSendInternetPacketData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node)
 #define SendBroadcastExtraGameInfoPacket() \
 	IPXSendBroadcastData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo))
 #define ReceiveExtraGameInfoPacket(data, _extraGameInfo) \
 	memcpy((ubyte *)(_extraGameInfo), data, sizeof(tExtraGameInfo))
+
+#define SendMissingObjFramesPacket(server, node, netAddress) \
+	IPXSendPacketData((ubyte *) networkData.missingObjFrames, sizeof(tMissingObjFrames), server, node, netAddress)
+#define SendInternetMissingObjFramesPacket(server, node) \
+	IPXSendInternetPacketData((ubyte *) networkData.missingObjFrames, sizeof(tMissingObjFrames), server, node)
+#define SendBroadcastMissingObjFramesPacket() \
+	IPXSendBroadcastData((ubyte *) networkData.missingObjFrames, sizeof(tMissingObjFrames))
+#define ReceiveMissingObjFramesPacket(data, _missingObjFrames) \
+	memcpy((ubyte *)(_missingObjFrames), data, sizeof(tMissingObjFrames))
+
 #define SwapObject(obj)
 
 #endif

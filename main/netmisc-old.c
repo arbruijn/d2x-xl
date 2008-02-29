@@ -606,6 +606,35 @@ BUF2_EGI_INTEL_INT (nSpawnDelay);
 }
 
 
+void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
+{
+	int	i;
+	
+memcpy (out_buffer, networkData.missingObjFrames, sizeof (networkData.missingObjFrames));
+((tMissingObjFrames *) &out_buffer [0])->nMissing = INTEL_SHORT (networkData.missingObjFrames [0].nFrames);
+for (i = 0; i < networkData.missingObjFrames [0].nFrames; i++)
+	((tMissingObjFrames *) &out_buffer [0])->frames [i] = INTEL_SHORT (networkData.missingObjFrames [0].frames [i]);
+i = 2 * sizeof (ubyte) + (networkData.missingObjFrames [0].nFrames + 1) * sizeof (ushort);
+if (netAddress != NULL)
+	IPXSendPacketData(out_buffer, i, server, node, netAddress);
+else if ((server == NULL) && (node == NULL))
+	IPXSendBroadcastData(out_buffer, i);
+else
+	IPXSendInternetPacketData(out_buffer, i, server, node);
+}
+
+
+void BEReceiveMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
+{
+	int	i;
+	
+memcpy (networkData.missingObjFrames, out_buffer, sizeof (networkData.missingObjFrames));
+networkData.missingObjFrames [0].nMissing = INTEL_SHORT (networkData.missingObjFrames [0].nFrames);
+for (i = 0; i < networkData.missingObjFrames [0].nFrames; i++)
+	networkData.missingObjFrames [0].frames [i] = INTEL_SHORT (networkData.missingObjFrames [0].frames [i]);
+}
+
+
 void BESwapObject(tObject *objP)
 {
 // swap the short and int entries for this tObject
