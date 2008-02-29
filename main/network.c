@@ -1033,7 +1033,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 	nObjFrames = 0;
 	memset (objBuf, 0, IPX_MAX_DATA_SIZE);
 	objBuf [0] = PID_OBJECT_DATA;
-	bufI = 3;
+	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
 	if (networkData.nSentObjs == -1) {	// first packet tells the receiver to reset it's object data
 		networkData.nSyncObjs = 0;
@@ -1090,9 +1090,17 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			// Send count so other tSide can make sure he got them all
 			objBuf [0] = PID_OBJECT_DATA;
 			objBuf [1] = 1;
-			objBuf [2] = (ubyte) networkData.nSyncFrame;
-			*((short *) (objBuf + 3)) = networkData.missingObjFrames [0].nFrames ? INTEL_SHORT (-4) : INTEL_SHORT (-2);
-			*((short *) (objBuf + 6)) = INTEL_SHORT (networkData.nSyncObjs);
+			if (gameStates.multi.nGameType == UDP_GAME) {
+				bufI = 2;
+				SET_SHORT (objBuf, bufI, nRemoteObj); 
+				}
+			else {
+				objBuf [2] = (ubyte) networkData.nSyncFrame;
+				bufI = 3;
+				}
+			h = networkData.missingObjFrames [0].nFrames ? -4 : 2;
+			SET_SHORT (objBuf, bufI, h);
+			SET_SHORT (objBuf, bufI, networkData.nSyncObjs);
 			networkData.nSyncState = networkData.missingObjFrames [0].nFrames ? 0 : 2;
 			}
 		else {
@@ -2453,20 +2461,29 @@ void NetworkReadObjectPacket (ubyte *data)
 	static int		nPlayer = 0;
 	static int		nMode = 0;
 	static short	objectCount = 0;
-	static ubyte	nRemoteFrame = 0;
-	static ubyte	nPrevFrame = 0;
+	static short	nRemoteFrame = 0;
+	static short	nPrevFrame = 0;
 
 	// Object from another net tPlayer we need to sync with
 	tObject	*objP;
 	short		nObject, nRemoteObj;
 	sbyte		nObjOwner;
-	short		nSegment, i, j;
+	short		nSegment, i, j, nMaxFrame;
 
 	int		nObjects = data [1];
-	int		bufI = 3;
+	int		bufI;
 
 nPrevFrame = nRemoteFrame;
-nRemoteFrame = data [2];
+if (gameStates.multi.nGameType < UDP_GAME) {
+	nRemoteFrame = data [2];
+	bufI = 3;
+	nMaxFrame = 0xff;
+	}
+else {
+	bufI = 2;
+	GET_SHORT (data, bufI, nRemoteFrame);
+	nMaxFrame = 0xffff;
+	}
  for (i = 0; i < nObjects; i++) {
 	GET_SHORT (data, bufI, nObject);                   
 	GET_BYTE (data, bufI, nObjOwner);                                          
@@ -2515,14 +2532,14 @@ nRemoteFrame = data [2];
 			if (nRemoteFrame || networkData.missingObjFrames [1].iFrame) {
 				while (networkData.missingObjFrames [1].iFrame < networkData.missingObjFrames [1].nFrames) {
 					j = networkData.missingObjFrames [1].frames [networkData.missingObjFrames [1].iFrame++];
-					if ((j & 0xff) == nRemoteFrame)
+					if ((j & nMaxFrame) == nRemoteFrame)
 						break;
 					networkData.missingObjFrames [0].frames [networkData.missingObjFrames [0].nFrames++] = j;
 					}
 				}
 			}
 		else {
-			for (j = nPrevFrame + 1; (j & 0xff) != nRemoteFrame; j++) {
+			for (j = nPrevFrame + 1; (j & nMaxFrame) != nRemoteFrame; j++) {
 				if (networkData.missingObjFrames [0].nFrames >= MAX_MISSING_OBJ_FRAMES) {
 					ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_NET_SYNC_FAILED);
 					networkData.nStatus = NETSTAT_MENU;                          
