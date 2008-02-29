@@ -1073,9 +1073,12 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
 		if (NetworkObjFrameFilter ()) {
-			networkData.nSentObjs = i;
+			networkData.nSentObjs = i;	
 			objBuf [1] = nObjFrames;  
-			objBuf [2] = (ubyte) networkData.nSyncFrame;
+			if (gameStates.multi.nGameType == UDP_GAME)
+				*((short *) (objBuf + 2)) = INTEL_SHORT (networkData.nSyncFrame);
+			else
+				objBuf [2] = (ubyte) networkData.nSyncFrame;
 			Assert (bufI <= IPX_MAX_DATA_SIZE);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
@@ -1092,14 +1095,14 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			objBuf [1] = 1;
 			if (gameStates.multi.nGameType == UDP_GAME) {
 				bufI = 2;
-				SET_SHORT (objBuf, bufI, nRemoteObj); 
+				SET_SHORT (objBuf, bufI, networkData.nSyncFrame); 
 				}
 			else {
 				objBuf [2] = (ubyte) networkData.nSyncFrame;
 				bufI = 3;
 				}
-			h = networkData.missingObjFrames [0].nFrames ? -4 : 2;
-			SET_SHORT (objBuf, bufI, h);
+			nRemoteObj = networkData.missingObjFrames [0].nFrames ? -4 : 2;
+			SET_SHORT (objBuf, bufI, nRemoteObj);
 			SET_SHORT (objBuf, bufI, networkData.nSyncObjs);
 			networkData.nSyncState = networkData.missingObjFrames [0].nFrames ? 0 : 2;
 			}
@@ -2525,7 +2528,6 @@ else {
 			networkData.nStatus = NETSTAT_MENU;                          
 			return;
 			}
-		nPrevFrame = 0;
 		}
 	else if (gameStates.app.bHaveExtraGameInfo [1] && networkData.bTraceFrames) {
 		if (networkData.bSyncMissingFrames) {
@@ -2545,9 +2547,9 @@ else {
 					networkData.nStatus = NETSTAT_MENU;                          
 					return;
 					}
+				if (j || networkData.missingObjFrames [0].nFrames)
+					networkData.missingObjFrames [0].frames [networkData.missingObjFrames [0].nFrames++] = j;
 				}
-			if (nRemoteFrame || networkData.missingObjFrames [0].nFrames)
-				networkData.missingObjFrames [0].frames [networkData.missingObjFrames [0].nFrames++] = j;
 			}
 #if 1			
 		con_printf (CONDBG, "Got a type 3 object packet!\n");
