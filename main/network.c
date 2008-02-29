@@ -1143,15 +1143,13 @@ return;
 
 void NetworkDoSyncFrame (void)
 {
-if (networkData.nSyncState == 1)
+if (networkData.nSyncState == 1) {
+	networkData.missingObjFrames [0].nFrames = 0;
 	NetworkSyncObjects ();
+	}
 else if (networkData.nSyncState == 2) 
 	NetworkSyncPlayer ();
 else if (networkData.nSyncState == 3) {
-	if (networkData.nSyncExtras && (networkData.bVerifyPlayerJoined == -1))
-		NetworkSendExtras ();
-	}
-else if (networkData.nSyncState == 4) {
 	if (networkData.missingObjFrames [0].nFrames) {
 		NetworkSyncObjects ();
 		if (!networkData.nSyncState)
@@ -1159,6 +1157,10 @@ else if (networkData.nSyncState == 4) {
 		}
 	else
 		networkData.nSyncState = 0;
+	}
+else {
+	if (networkData.nSyncExtras && (networkData.bVerifyPlayerJoined == -1))
+		NetworkSendExtras ();
 	}
 }
 
@@ -2023,7 +2025,7 @@ if	((gameStates.multi.nGameType == UDP_GAME) &&
 	 (pid != PID_OBJECT_DATA) &&
 	 (pid != PID_PDATA) &&
 	 (pid != PID_UPLOAD) &&
-	 (pid != PID_MISSING_OBJ_FRAMES) &&
+//	 (pid != PID_MISSING_OBJ_FRAMES) &&
 	 (pid != PID_TRACKER_ADD_SERVER) &&
 	 (pid != PID_TRACKER_GET_SERVERLIST)
 	)
@@ -2477,18 +2479,18 @@ void NetworkReadObjectPacket (ubyte *data)
 	int		bufI;
 
 nPrevFrame = nRemoteFrame;
-if (gameStates.multi.nGameType < UDP_GAME) {
-	nRemoteFrame = data [2];
-	bufI = 3;
-	nMaxFrame = 0xff;
-	}
-else {
+if (gameStates.multi.nGameType == UDP_GAME) {
 	bufI = 2;
 	GET_SHORT (data, bufI, nRemoteFrame);
 	nMaxFrame = 0xffff;
 	}
+else {
+	nRemoteFrame = data [2];
+	bufI = 3;
+	nMaxFrame = 0xff;
+	}
 #ifdef _DEBUG
-LogErr ("Receiving object packet %d (prev: %d)\n", nPrevFrame, nRemoteFrame);
+//LogErr ("Receiving object packet %d (prev: %d)\n", nPrevFrame, nRemoteFrame);
 #endif
  for (i = 0; i < nObjects; i++) {
 	GET_SHORT (data, bufI, nObject);                   
@@ -4230,7 +4232,7 @@ else if (networkData.nSyncExtras == 15)
 else if (networkData.nSyncExtras == 10)
 	MultiSendPowerupUpdate ();  
 if (!--networkData.nSyncExtras) {
-	networkData.nSyncState = 4;
+	networkData.nSyncState = 0;
 	networkData.nPlayerJoiningExtras = -1;
 	memset (&networkData.playerRejoining, 0, sizeof (networkData.playerRejoining));
 	}
