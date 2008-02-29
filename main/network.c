@@ -2487,13 +2487,15 @@ else {
 	GET_SHORT (data, bufI, nRemoteFrame);
 	nMaxFrame = 0xffff;
 	}
+#ifdef _DEBUG
+LogErr ("Receiving object packet %d (prev: %d)\n", nPrevFrame, nRemoteFrame);
+#endif
  for (i = 0; i < nObjects; i++) {
 	GET_SHORT (data, bufI, nObject);                   
 	GET_BYTE (data, bufI, nObjOwner);                                          
 	GET_SHORT (data, bufI, nRemoteObj);
 	if ((nObject == -1) || (nObject == -3)) {
 		// Clear tObject array
-		InitObjects ();
 		networkData.nJoinState = 1;
 		nPlayer = nObjOwner;
 		ChangePlayerNumTo (nPlayer);
@@ -2503,7 +2505,12 @@ else {
 		if (networkData.bSyncMissingFrames = (nObject == -3)) {
 			networkData.missingObjFrames [1] = networkData.missingObjFrames [0];
 			networkData.missingObjFrames [1].iFrame = 0;
+#ifdef _DEBUG
+			LogErr ("Receiving missing object packets\n");
+#endif
 			}
+		else
+			InitObjects ();
 		networkData.missingObjFrames [0].nFrames = 0;
 		}
 	else if ((nObject == -2) || (nObject == -4)) {
@@ -2513,8 +2520,12 @@ else {
 			nRemoteFrame = 0;
 			nMode = 0;
 			networkData.bSyncMissingFrames = 0;
-			if (networkData.missingObjFrames [0].nFrames)
+			if (networkData.missingObjFrames [0].nFrames) {
+#ifdef _DEBUG
+				LogErr ("Requesting %d missing object packets\n", networkData.missingObjFrames [0].nFrames);
+#endif
 				NetworkSendMissingObjFrames ();
+				}
 			else
 				networkData.bTraceFrames = 0;
 			}
@@ -2537,6 +2548,9 @@ else {
 					if ((j & nMaxFrame) == nRemoteFrame)
 						break;
 					networkData.missingObjFrames [0].frames [networkData.missingObjFrames [0].nFrames++] = j;
+#ifdef _DEBUG
+					LogErr ("Object packet %d is missing\n", j);
+#endif
 					}
 				}
 			}
@@ -2547,8 +2561,12 @@ else {
 					networkData.nStatus = NETSTAT_MENU;                          
 					return;
 					}
-				if (j || networkData.missingObjFrames [0].nFrames)
+				if (j || networkData.missingObjFrames [0].nFrames) {
 					networkData.missingObjFrames [0].frames [networkData.missingObjFrames [0].nFrames++] = j;
+#ifdef _DEBUG
+					LogErr ("Object packet %d is missing\n", j);
+#endif
+					}
 				}
 			}
 #if 1			
