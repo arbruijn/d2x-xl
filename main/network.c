@@ -360,34 +360,25 @@ netGame.nPacketsPerSec = mpParams.nPPS;
 
 //------------------------------------------------------------------------------
 
-int NetworkIAmMaster (void)
-{
-	// I am the lowest numbered tPlayer in this game?
-
-	int i;
-
-if (!IsMultiGame)
-	return (gameData.multiplayer.nLocalPlayer == 0);
-for (i = 0; i < gameData.multiplayer.nLocalPlayer; i++)
-	if (gameData.multiplayer.players [i].connected)
-		return 0;
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
 int NetworkWhoIsMaster (void)
 {
 	// Who is the master of this game?
 
 	int i;
 
-if (!(gameData.app.nGameMode & GM_NETWORK))
-	return (gameData.multiplayer.nLocalPlayer == 0);
+if (!IsMultiGame)
+	return gameData.multiplayer.nLocalPlayer;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
 		return i;
 return gameData.multiplayer.nLocalPlayer;
+}
+
+//------------------------------------------------------------------------------
+
+int NetworkIAmMaster (void)
+{
+return NetworkWhoIsMaster () == gameData.multiplayer.nLocalPlayer;
 }
 
 //------------------------------------------------------------------------------
@@ -2025,7 +2016,6 @@ if	((gameStates.multi.nGameType == UDP_GAME) &&
 	 (pid != PID_OBJECT_DATA) &&
 	 (pid != PID_PDATA) &&
 	 (pid != PID_UPLOAD) &&
-//	 (pid != PID_MISSING_OBJ_FRAMES) &&
 	 (pid != PID_TRACKER_ADD_SERVER) &&
 	 (pid != PID_TRACKER_GET_SERVERLIST)
 	)
@@ -2054,10 +2044,10 @@ switch (pid) {
 			con_printf (CONDBG, "Got a waiting PID_PLAYERSINFO!\n");
 			if (NetworkBadPacketSize (length, ALLNETPLAYERSINFO_SIZE, "PID_PLAYERSINFO"))
 				return 0;
-			tmpPlayersInfo=&tmpPlayersBase;
-			networkData.bWaitingForPlayerInfo=0;
-			networkData.nSecurityNum=tmpPlayersInfo->nSecurity;
-			networkData.nSecurityFlag=NETSECURITY_WAIT_FOR_SYNC;
+			tmpPlayersInfo = &tmpPlayersBase;
+			networkData.bWaitingForPlayerInfo = 0;
+			networkData.nSecurityNum = tmpPlayersInfo->nSecurity;
+			networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_SYNC;
 		   }
      break;
 
@@ -2205,6 +2195,7 @@ switch (pid) {
 			NetworkDownload (data);
 		break;
 
+    //-------------------------------------------
 	case PID_TRACKER_GET_SERVERLIST:
 	case PID_TRACKER_ADD_SERVER:
 		con_printf (0, "received PID_TRACKER_*\n");
@@ -2214,7 +2205,7 @@ switch (pid) {
     //-------------------------------------------
 	case PID_PDATA: 
 		con_printf (0, "received PID_PDATA\n");
-		if ((gameData.app.nGameMode & GM_NETWORK) && 
+		if (IsNetworkGame && 
 			 ((networkData.nStatus == NETSTAT_PLAYING)||
 			  (networkData.nStatus == NETSTAT_ENDLEVEL) || 
 			  (networkData.nStatus == NETSTAT_WAITING))) { 
@@ -2225,7 +2216,7 @@ switch (pid) {
     //-------------------------------------------
    case PID_NAKED_PDATA:
 		con_printf (0, "received PID_NAKED_PDATA\n");
-		if ((gameData.app.nGameMode & GM_NETWORK) && 
+		if (IsNetworkGame && 
 			 ((networkData.nStatus == NETSTAT_PLAYING)||
 			  (networkData.nStatus == NETSTAT_ENDLEVEL) || 
 			  (networkData.nStatus == NETSTAT_WAITING))) 
@@ -2900,7 +2891,7 @@ if (!networkData.nJoinState) {
 		}
 	}
 gameData.objs.objects [LOCALPLAYER.nObject].nType = OBJ_PLAYER;
-networkData.nStatus = (networkData.nJoinState < 2) ? NETSTAT_WAITING : NETSTAT_PLAYING;
+networkData.nStatus = (NetworkIAmMaster () || (networkData.nJoinState >= 2)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 MultiSortKillList ();
 }
@@ -3430,7 +3421,8 @@ int NetworkListen (void)
 	int i, t, nPackets = 0, nMaxLoops = 999;
 
 CleanUploadDests ();
-AddServerToTracker ();
+if (NetworkIAmMaster ())
+	AddServerToTracker ();
 if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.bShortPackets && !networkData.nSyncState)
 	nMaxLoops = gameData.multiplayer.nPlayers * netGame.nPacketsPerSec;
 
@@ -3773,6 +3765,8 @@ NetworkListen ();
 if ((networkData.bVerifyPlayerJoined != -1) && !(gameData.app.nFrameCount & 63))
 	ResendSyncDueToPacketLossForAllender (); // This will resend to network_player_rejoining
 NetworkDoSyncFrame ();
+if (NetworkIAmMaster ())
+	AddServerToTracker ();
 }
 
 //------------------------------------------------------------------------------

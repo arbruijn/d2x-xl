@@ -59,8 +59,9 @@ extern int ft_preference;
 #define GM_MONSTERBALL	4096	  // Similar to Descent 3's monsterball game mode
 
 #define GM_NORMAL       0       // You are in normal play mode, no multiplayer stuff
-#define GM_MULTI        38      // You are in some nType of multiplayer game
+#define GM_MULTI        (GM_SERIAL | GM_NETWORK | GM_MODEM)      // You are in some nType of multiplayer game
 
+#define IsNetworkGame	((gameData.app.nGameMode & GM_NETWORK) != 0)
 #define IsMultiGame		((gameData.app.nGameMode & GM_MULTI) != 0)
 #define IsTeamGame		((gameData.app.nGameMode & GM_TEAM) != 0)
 #define IsCoopGame		((gameData.app.nGameMode & GM_MULTI_COOP) != 0)

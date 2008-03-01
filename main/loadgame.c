@@ -1864,7 +1864,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDSetNewLevel (nLevel);
 	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
 	}
-if (gameData.app.nGameMode & GM_MULTI)
+if (IsMultiGame)
 	SetFunctionMode (FMODE_MENU); // Cheap fix to prevent problems with errror dialogs in loadlevel.
 SetWarnFunc (ShowInGameWarning);
 funcRes = LoadLevel (nLevel, bPageInTextures, bRestore);

@@ -1,6 +1,7 @@
 # Author: Sebastian "VEX-Munk" Starosielec © 2005
 # Contact: sebastian.starosielec@ruhr-uni-bochum.de
-# License: GNU Public License #!/usr/bin/perl
+# License: GNU Public License 
+#!/usr/bin/perl
 # Server Program
 use IO::Socket::INET;
 use Data::Dumper;
