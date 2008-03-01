@@ -67,7 +67,7 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "netmisc.h"
 #include "error.h"
 
-static ubyte nmDataBuf [IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well as sending tObject data
+static ubyte nmDataBuf [IPX_DATALIMIT];    // used for tmp netgame packets as well as sending tObject data
 static ubyte *nmBufP = NULL;
 
 extern struct ipx_recv_data ipx_udpSrc;
@@ -188,7 +188,7 @@ void BESendNetPlayersPacket (ubyte *server, ubyte *node)
 
 nmBufP = nmDataBuf;
 #ifdef _DEBUG
-memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netPlayers.nType);                            
 BE_SET_INT (netPlayers.nSecurity);
@@ -232,7 +232,7 @@ void BESendSequencePacket (tSequencePacket seq, ubyte *server, ubyte *node, ubyt
 
 nmBufP = nmDataBuf;
 #ifdef _DEBUG
-memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (seq.nType);                                       
 BE_SET_INT (seq.nSecurity);                           
@@ -277,7 +277,7 @@ void BESendNetGamePacket (ubyte *server, ubyte *node, ubyte *netAddress, int bLi
 
 nmBufP = nmDataBuf;
 #ifdef _DEBUG
-memset (nmBufP, 0, IPX_MAX_DATA_SIZE);	//this takes time and shouldn't be necessary
+memset (nmBufP, 0, IPX_DATALIMIT);	//this takes time and shouldn't be necessary
 #endif
 BE_SET_BYTE (netGame.nType);                 
 BE_SET_INT (netGame.nSecurity);                           

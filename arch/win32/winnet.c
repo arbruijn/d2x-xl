@@ -243,7 +243,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (size < 6)
 		continue;
-	if (size > MAX_IPX_DATA - 4)
+	if (size > IPX_DATASIZE - 4)
 		continue;
 	offs = IsTracker (*((unsigned int *) ipx_udpSrc.src_node), *((ushort *) (ipx_udpSrc.src_node + 4))) ? 0 : 4;
 	memcpy (data, buf + offs, size - offs);
@@ -257,10 +257,10 @@ return 0;
 void IPXSendPacketData
 	 (ubyte *data, int datasize, ubyte *network, ubyte *source, ubyte *dest)
 {
-	static u_char buf [MAX_IPX_DATA];
+	static u_char buf [IPX_DATASIZE];
 	IPXPacket_t ipxHeader;
 	
-if (datasize <= MAX_IPX_DATA - 4) {
+if (datasize <= IPX_DATASIZE - 4) {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
 	*((u_short *) ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
@@ -468,8 +468,8 @@ if (driver->HandleLeaveGame)
 // Send a packet to every member of the game.
 int IpxSendGamePacket (ubyte *data, int datasize)
 {
-if ((driver->SendGamePacket) && (datasize <= MAX_IPX_DATA - 4)) {
-	static u_char buf [MAX_IPX_DATA];
+if ((driver->SendGamePacket) && (datasize <= IPX_DATASIZE - 4)) {
+	static u_char buf [IPX_DATASIZE];
 
 	*(uint *) buf = nIpxPacket++;
 	memcpy (buf + 4, data, datasize);

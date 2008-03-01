@@ -99,7 +99,7 @@ static CFILE cf = {NULL, 0, 0, 0};
 // uploadBuf [2..11] == <source address>
 // uploadBuf [12..1035] == <data (max. DL_BUFSIZE bytes)>
 
-#define DL_BUFSIZE (MAX_IPX_DATA - 4 - 14)
+#define DL_BUFSIZE (IPX_DATASIZE - 4 - 14)
 
 static ubyte uploadBuf [DL_BUFSIZE];
 

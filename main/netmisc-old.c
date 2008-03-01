@@ -124,7 +124,7 @@ ushort NetMiscCalcCheckSum(void * vptr, int len)
 #include "powerup.h"
 #include "error.h"
 
-sbyte out_buffer[IPX_MAX_DATA_SIZE];    // used for tmp netgame packets as well as sending tObject data
+sbyte out_buffer[MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
 
 extern struct ipx_recv_data ipx_udpSrc;
 
@@ -266,7 +266,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	int i, j;
 	int loc = 0;
 
-	memset(out_buffer, 0, IPX_MAX_DATA_SIZE);
+	memset(out_buffer, 0, MAX_PACKETSIZE);
 	memcpy(out_buffer + loc, &(netGame.nType), 1);                 
 	loc++;
 	tmpi = INTEL_INT (netGame.nSecurity);
