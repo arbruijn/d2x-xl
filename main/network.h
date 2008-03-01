@@ -580,7 +580,8 @@ extern tAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern tAllNetPlayersInfo *tmpPlayersInfo, tmpPlayersBase;
 extern int nCoopPenalties [10];
 
-
 #define COMPETITION	(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
+
+#define DATALIMIT ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT)
 
 #endif /* _NETWORK_H */

@@ -3377,26 +3377,6 @@
 						RelativePath="..\..\main\aimove.c">
 					</File>
 					<File
-						RelativePath="..\..\main\aipath.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\main\aisave.c">
 					</File>
 					<File
@@ -3417,6 +3397,26 @@
 				<Filter
 					Name="Source Files"
 					Filter="">
+					<File
+						RelativePath="..\..\main\aipath.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
 					<File
 						RelativePath="..\..\arch\win32\ipx_mcast4.c">
 						<FileConfiguration
@@ -3619,10 +3619,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

@@ -53,6 +53,7 @@ typedef struct tServerListTable {
 	time_t						lastActive;
 } tServerListTable;
 
+static tUdpAddress	d2xTracker = {81,169,162,145,0,0};
 static tUdpAddress	vexTracker = {81,169,162,145,0,0};
 static tUdpAddress	dbbTracker = {66,49,167,254,0,0};
 static tUdpAddress	kbTracker = {207,210,100,66,0,0};
@@ -368,8 +369,8 @@ void CreateTrackerList (void)
 
 ResetTrackerList ();
 if (!(a = FindArg ("-internal_tracker")) || atoi (Args [a + 1])) {
-	AddTracker (&vexTracker);
-	AddTracker (&dbbTracker);
+	//AddTracker (&d2xTracker);
+	//AddTracker (&dbbTracker);
 	AddTracker (&kbTracker);
 	}
 AddTrackersFromCmdLine ();

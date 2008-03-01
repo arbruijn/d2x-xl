@@ -243,7 +243,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (size < 6)
 		continue;
-	if (size > IPX_DATASIZE - 4)
+	if (size > DATALIMIT - 4)
 		continue;
 	offs = IsTracker (*((unsigned int *) ipx_udpSrc.src_node), *((ushort *) (ipx_udpSrc.src_node + 4))) ? 0 : 4;
 	memcpy (data, buf + offs, size - offs);

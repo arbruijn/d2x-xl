@@ -241,7 +241,7 @@ static tPacketHandlerInfo packetHandlers [256];
 
 tNetworkData networkData;
 
-static ubyte pIdFilter [256];
+static ubyte addressFilter [256];
 
 void InitPacketHandlers (void);
 
@@ -251,25 +251,28 @@ char *pszRankStrings [] = {
 	};
 
 //------------------------------------------------------------------------------
+// Set a flag for packet types that do not carry a sender IP address
+// All other packets need to be patched with the IP address retrieved when
+// receiving the packet from the network adapter
 
-void InitPIdFilter (void)
+void InitAddressFilter (void)
 {
-memset (pIdFilter, 0, sizeof (pIdFilter));
+memset (addressFilter, 0, sizeof (addressFilter));
 if (gameStates.multi.nGameType == UDP_GAME)
-	 pIdFilter [PID_LITE_INFO] =
-	 pIdFilter [PID_ADDPLAYER] =
-	 pIdFilter [PID_ENDLEVEL] = 
-	 pIdFilter [PID_ENDLEVEL_SHORT] =
-	 pIdFilter [PID_GAME_INFO] =
-	 pIdFilter [PID_NAKED_PDATA] =
-	 pIdFilter [PID_NAMES_RETURN] =
-	 pIdFilter [PID_OBJECT_DATA] =
-	 pIdFilter [PID_PDATA] =
-	 pIdFilter [PID_EXTRA_GAMEINFO] =
-	 pIdFilter [PID_DOWNLOAD] =
-	 pIdFilter [PID_UPLOAD] =
-	 pIdFilter [PID_TRACKER_ADD_SERVER] =
-	 pIdFilter [PID_TRACKER_GET_SERVERLIST] = 1;
+	 addressFilter [PID_LITE_INFO] =
+	 addressFilter [PID_ADDPLAYER] =
+	 addressFilter [PID_ENDLEVEL] = 
+	 addressFilter [PID_ENDLEVEL_SHORT] =
+	 addressFilter [PID_GAME_INFO] =
+	 addressFilter [PID_NAKED_PDATA] =
+	 addressFilter [PID_NAMES_RETURN] =
+	 addressFilter [PID_OBJECT_DATA] =
+	 addressFilter [PID_PDATA] =
+	 addressFilter [PID_EXTRA_GAMEINFO] =
+	 addressFilter [PID_DOWNLOAD] =
+	 addressFilter [PID_UPLOAD] =
+	 addressFilter [PID_TRACKER_ADD_SERVER] =
+	 addressFilter [PID_TRACKER_GET_SERVERLIST] = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -368,7 +371,7 @@ networkData.nNamesInfoSecurity = -1;
 OpenSendLog ();
 OpenReceiveLog (); 
 #endif
-InitPIdFilter ();
+InitAddressFilter ();
 InitPacketHandlers ();
 memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed ));
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
@@ -1048,13 +1051,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline int DataLimit (void)
-{
-return (gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT;
-}
-
-//------------------------------------------------------------------------------
-
 ubyte objBuf [MAX_PACKETSIZE];
 
 void NetworkSyncObjects (void)
@@ -1075,7 +1071,7 @@ objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
 for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.
 	nObjFrames = 0;
-	memset (objBuf, 0, DataLimit ());
+	memset (objBuf, 0, DATALIMIT);
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
@@ -1102,7 +1098,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
 				continue;
 			}
-		if ((DataLimit () - bufI - 1) < (sizeof (tObject) + 5))
+		if ((DATALIMIT - bufI - 1) < (sizeof (tObject) + 5))
 			break; // Not enough room for another tObject
 		nObjFrames++;
 		networkData.nSyncObjs++;
@@ -1123,7 +1119,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				*((short *) (objBuf + 2)) = INTEL_SHORT (networkData.nSyncFrame);
 			else
 				objBuf [2] = (ubyte) networkData.nSyncFrame;
-			Assert (bufI <= DataLimit ());
+			Assert (bufI <= DATALIMIT);
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
@@ -1408,9 +1404,7 @@ int NetworkSendGameListRequest ()
 memset (&me, 0, sizeof (me));
 #endif
 me.nType = PID_GAME_LIST;
-memcpy (me.player.callsign, 
-		  LOCALPLAYER.callsign, 
-		  CALLSIGN_LEN+1);
+memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
@@ -2391,7 +2385,7 @@ else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 	LogErr ("invalid status %d for packet id %d\n", networkData.nStatus, pId);
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	con_printf (0, "received %s\n", piP->pszInfo);
-	if (pIdFilter [pId])
+	if (!addressFilter [pId])
 		memcpy (&THEIR->player.network.ipx.server, &ipx_udpSrc.src_network, 10);
 	return piP->packetHandler ((char *) dataP, nLength);
 	}
@@ -3331,7 +3325,7 @@ int NetworkStartGame ()
 	int i, bAutoRun;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	Assert (FRAME_INFO_SIZE < DataLimit ());
+	Assert (FRAME_INFO_SIZE < DATALIMIT);
 	if (!networkData.bActive) {
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;

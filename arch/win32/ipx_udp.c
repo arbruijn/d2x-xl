@@ -901,7 +901,7 @@ for (; iDest < destAddrNum; iDest++) {
 		return ((nUdpRes < extraDataLen + 8) ? -1 : nUdpRes - extraDataLen);
 		}
 	}
-return(dataLen);
+return dataLen;
 }
 
 //------------------------------------------------------------------------------
@@ -1078,10 +1078,10 @@ if (!(bTracker
 				return -1;
 				}
 			}
-#ifdef _DEBUG
+#	ifdef _DEBUG
 		con_printf (0, "%s: %d bytes, packet id: %d, safe modes: %d,%d", 
 						iptos (szIP, (char *) &fromAddr), dataLen, packetId, pdl->bSafeMode, pdl->bOurSafeMode);
-#endif
+#	endif
 #endif //UDP_SAFEMODE
 		}
 	gameStates.multi.bHaveLocalAddress = 1;
