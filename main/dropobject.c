@@ -8,6 +8,7 @@
 #include "timer.h"
 #include "gameseg.h"
 #include "network.h"
+#include "network_lib.h"
 #include "object.h"
 #include "gamesave.h"
 #include "objeffects.h"

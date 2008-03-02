@@ -336,4 +336,6 @@ void SetWeaponState (sbyte nPrimary, sbyte bPrimFire, sbyte nSecondary, sbyte bS
 int GetPlayerGun (int nPlayer, int *bFiring);
 int GetPlayerMissile (int nPlayer, int *bFiring);
 
+void InitSeismicDisturbances (void);
+
 #endif

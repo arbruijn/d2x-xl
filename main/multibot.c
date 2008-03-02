@@ -26,6 +26,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "modem.h"
 #include "network.h"
+#include "network_lib.h"
 #include "multi.h"
 #include "laser.h"
 #include "error.h"

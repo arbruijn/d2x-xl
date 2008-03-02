@@ -20,6 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newmenu.h"
 #include "ipx.h"
 
+#define NETWORK_OEM						0x10
+
 #define NETSTAT_MENU                0
 #define NETSTAT_PLAYING             1
 #define NETSTAT_BROWSING            2
@@ -295,69 +297,6 @@ typedef struct tNetworkObjInfo {
 	ubyte	nType;
 	ubyte	nId;
 } tNetworkObjInfo;
-
-#define MAX_MISSING_OBJ_FRAMES	200
-
-typedef struct tMissingObjFrames {
-	ubyte					pid;
-	ubyte					nPlayer;
-	ushort				nFrame;
-} tMissingObjFrames;
-
-typedef struct tNetworkData {
-	int					nActiveGames;
-	int					nLastActiveGames;
-	int					nNamesInfoSecurity;
-	int					nPacketsPerSec;
-	int					nMaxXDataSize;
-	int					nNetLifeKills;
-	int					nNetLifeKilled;
-	int					bDebug;
-	int					bActive;
-	int					nStatus;
-	int					bGamesChanged;
-	int					nSocket;
-	int					bAllowSocketChanges;
-	int					nSecurityFlag;
-	int					nSecurityNum;
-	int					bVerifyPlayerJoined;
-	int					nPlayerJoiningExtras; 
-	int					nJoinState;
-	int					bNewGame;       
-	int					bSendObjects; 
-	int					nSentObjs;   
-	int					bPlayerAdded;   
-	int					bSendObjectMode; 
-	int					bD2XData;
-	tSequencePacket	playerRejoining;
-	fix					nLastPacketTime [MAX_PLAYERS];
-	int					bPacketUrgent;
-	int					nGameType;
-	int					nTotalMissedPackets;
-	int					nTotalPacketsGot;
-	tFrameInfo			mySyncPack;
-	tFrameInfo			urgentSyncPack;
-	ubyte					mySyncPackInited;       
-	ushort				nMySegsCheckSum;
-	tSequencePacket	mySeq;
-	char					bWantPlayersInfo;
-	char					bWaitingForPlayerInfo;
-	fix					nStartWaitAllTime;
-	int					bWaitAllChoice;
-	fix					xPingReturnTime;
-	int					bShowPingStats;
-	int					tLastPingStat;
-	int					nSyncState;
-	int					nSyncObjs;
-	ushort				nSyncFrame;
-	int					bTraceFrames;
-	int					bSyncMissingFrames;
-	short					nSyncExtras;
-	short					nSyncPlayer;
-	tMissingObjFrames	missingObjFrames;
-} tNetworkData;
-
-extern tNetworkData networkData;
 
 #if 1
 

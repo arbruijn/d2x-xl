@@ -28,6 +28,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "game.h"
 #include "modem.h"
 #include "network.h"
+#include "network_lib.h"
 #include "ogl_lib.h"
 #include "object.h"
 #include "objsmoke.h"
@@ -254,7 +255,6 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
 void use_netplayer_stats (tPlayer * ps, tNetPlayerStats *pd);
-extern fix ThisLevelTime;
 
 tPlayerShip defaultPlayerShip = {
 	108, 58, 262144, 2162, 511180, 0, 0, F1_0 / 2, 9175, 
@@ -1012,12 +1012,12 @@ if (!(gameData.app.nGameMode & GM_MULTI)) {
 	return;
 	}
 
-if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && lasttime!=f2i (ThisLevelTime)) {
+if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed && lasttime!=f2i (gameStates.app.xThisLevelTime)) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected) {
 			if (i == gameData.multiplayer.nLocalPlayer) {
 				MultiSendHeartBeat ();
-				lasttime = f2i (ThisLevelTime);
+				lasttime = f2i (gameStates.app.xThisLevelTime);
 				}
 			break;
 			}
@@ -2720,8 +2720,6 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 //-----------------------------------------------------------------------------
 
-extern int nConsistencyErrorCount;
-
 void MultiPrepLevel (void)
 {
 	// Do any special stuff to the level required for serial games
@@ -2742,7 +2740,7 @@ Assert (gameData.multiplayer.nPlayerPositions > 0);
 gameData.score.nPhallicLimit = 0;
 gameData.score.nPhallicMan = -1;
 gameStates.render.bDropAfterburnerBlob = 0;
-nConsistencyErrorCount = 0;
+networkData.nConsistencyErrorCount = 0;
 memset (gameData.multigame.kills.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.kills.pFlags [0]));
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	objP = gameData.objs.objects + gameData.multiplayer.players [i].nObject;
@@ -3508,7 +3506,7 @@ void MultiSendHeartBeat ()
 if (!netGame.xPlayTimeAllowed)
 	return;
 gameData.multigame.msg.buf [0] = MULTI_HEARTBEAT;
-PUT_INTEL_INT (gameData.multigame.msg.buf+1, ThisLevelTime);
+PUT_INTEL_INT (gameData.multigame.msg.buf+1, gameStates.app.xThisLevelTime);
 MultiSendData (gameData.multigame.msg.buf, 5, 0);
 }
 
@@ -3517,7 +3515,7 @@ MultiSendData (gameData.multigame.msg.buf, 5, 0);
 void MultiDoHeartBeat (char *buf)
 {
 fix num = GET_INTEL_INT (buf + 1);
-ThisLevelTime = num;
+gameStates.app.xThisLevelTime = num;
 }
 
 //-----------------------------------------------------------------------------

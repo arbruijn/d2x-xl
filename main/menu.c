@@ -48,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newmenu.h"
 #include "piggy.h"
 #include "network.h"
+#include "network_lib.h"
 #include "netmenu.h"
 #include "ipx.h"
 #include "multi.h"

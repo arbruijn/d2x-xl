@@ -73,6 +73,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "powerup.h"
 #include "newmenu.h"
 #include "network.h"
+#include "network_lib.h"
 #include "gamefont.h"
 #include "gamepal.h"
 #include "endlevel.h"
@@ -144,8 +145,6 @@ int	redbookVolume = 255;
 
 
 //	External Variables ---------------------------------------------------------
-
-extern char bWaitForRefuseAnswer, bRefuseThisPlayer, bRefuseTeam;
 
 extern int	*Toggle_var;
 extern int	Debug_pause;
@@ -1488,26 +1487,26 @@ void HandleGameKey(int key)
 			SwitchTeam (gameData.multiplayer.nLocalPlayer, 0);
 			break;
 		case KEY_F6:
-			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && !(gameData.app.nGameMode & GM_TEAM))
+			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && !(gameData.app.nGameMode & GM_TEAM))
 				{
-					bRefuseThisPlayer=1;
+					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
 				}
 			break;
 		case KEY_ALTED + KEY_1:
-			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && (gameData.app.nGameMode & GM_TEAM))
+			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
 				{
-					bRefuseThisPlayer=1;
+					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
-					bRefuseTeam=1;
+					networkData.refuse.bTeam=1;
 				}
 			break;
 		case KEY_ALTED + KEY_2:
-			if (netGame.bRefusePlayers && bWaitForRefuseAnswer && (gameData.app.nGameMode & GM_TEAM))
+			if (netGame.bRefusePlayers && networkData.refuse.bWaitForAnswer && (gameData.app.nGameMode & GM_TEAM))
 				{
-					bRefuseThisPlayer=1;
+					networkData.refuse.bThisPlayer=1;
 					HUDInitMessage (TXT_ACCEPT_PLR);
-					bRefuseTeam=2;
+					networkData.refuse.bTeam=2;
 				}
 			break;
 

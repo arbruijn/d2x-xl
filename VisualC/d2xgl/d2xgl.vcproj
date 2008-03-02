@@ -3564,6 +3564,30 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\main\network_init.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_join.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_lib.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_phandler.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_process.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_read.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_send.c">
+					</File>
+					<File
+						RelativePath="..\..\main\network_sync.c">
+					</File>
+					<File
 						RelativePath="..\..\main\tracker.c">
 					</File>
 				</Filter>
@@ -3599,6 +3623,9 @@
 					</File>
 					<File
 						RelativePath="..\..\main\network.h">
+					</File>
+					<File
+						RelativePath="..\..\main\network_lib.h">
 					</File>
 					<File
 						RelativePath="..\..\main\tracker.h">

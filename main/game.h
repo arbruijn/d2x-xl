@@ -204,7 +204,13 @@ int HeadLightIsOn (int nPlayer);
 int MarkPathToExit ();
 void CheckRearView ();
 
+void GameDisableCheats ();
+void TurnCheatsOff ();
+
 void GetSlowTicks (void);
+
+void SetFunctionMode (int newFuncMode);
+
 /*
  * reads a tVariableLight structure from a CFILE
  */

@@ -47,6 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gauges.h"
 #include "pcx.h"
 #include "network.h"
+#include "network_lib.h"
 #include "ogl_defs.h"
 
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)

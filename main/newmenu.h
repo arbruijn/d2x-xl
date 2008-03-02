@@ -135,6 +135,9 @@ int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item,
 void NMProgressBar (char *szCaption, int nCurProgress, int nMaxProgress, 
 						  void (*doProgress) (int nItems, tMenuItem *items, int *last_key, int cItem));
 
+int ExecMenutiny2 (char * title, char * subtitle, int nitems, tMenuItem * item, 
+						 void (*subfunction) (int nitems, tMenuItem * items, int * last_key, int citem));
+
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
 int _CDECL_ NMMsgBoxFixedFont(char *title, int nchoices, ...);
 //end this section addition

@@ -24,15 +24,15 @@ int QuitSaveLoadMenu (void);
 int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 
 #ifndef _DEBUG  // read only from hog file
-#define MENU_PCX_MAC_SHARE ("\x01menub.pcx")
-#define MENU_PCX_SHAREWARE ("\x01menud.pcx")
-#define MENU_PCX_OEM (gameStates.menus.bHires?"\x01menuob.pcx":"\x01menuo.pcx")
-#define MENU_PCX_FULL (gameStates.menus.bHires?"\x01menub.pcx":"\x01menu.pcx")
+#	define MENU_PCX_MAC_SHARE ("\x01menub.pcx")
+#	define MENU_PCX_SHAREWARE ("\x01menud.pcx")
+#	define MENU_PCX_OEM (gameStates.menus.bHires?"\x01menuob.pcx":"\x01menuo.pcx")
+#	define MENU_PCX_FULL (gameStates.menus.bHires?"\x01menub.pcx":"\x01menu.pcx")
 #else
-#define MENU_PCX_MAC_SHARE ("menub.pcx")
-#define MENU_PCX_SHAREWARE ("menud.pcx")
-#define MENU_PCX_OEM (gameStates.menus.bHires?"menuob.pcx":"menuo.pcx")
-#define MENU_PCX_FULL (gameStates.menus.bHires?"menub.pcx":"menu.pcx")
+#	define MENU_PCX_MAC_SHARE ("menub.pcx")
+#	define MENU_PCX_SHAREWARE ("menud.pcx")
+#	define MENU_PCX_OEM (gameStates.menus.bHires?"menuob.pcx":"menuo.pcx")
+#	define MENU_PCX_FULL (gameStates.menus.bHires?"menub.pcx":"menu.pcx")
 #endif
 
 // name of background bitmap

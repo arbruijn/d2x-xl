@@ -157,6 +157,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "ipx_udp.h"
 #include "inferno.h"
 #include "network.h"
+#include "network_lib.h"
 #include "tracker.h"
 #include "error.h"
 #include "args.h"

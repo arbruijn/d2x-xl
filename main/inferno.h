@@ -1038,6 +1038,7 @@ typedef struct tApplicationStates {
 	int bUseSwapFile;
 	int bSingleStep;
 	int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
+	fix xThisLevelTime;
 	fix nPlayerTimeOfDeath;
 	char *szCurrentMission;
 	char *szCurrentMissionFile;

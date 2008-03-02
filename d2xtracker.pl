@@ -14,7 +14,7 @@ $TIMEOUT = 30;
 $LISTENPORT = 9424;
 
 # Create a new socket
-$InSocket = new IO::Socket::INET->new(LocalPort=>$LISTENPORT,Proto=>'udp');
+$InSocket = new IO::Socket::INET->new(LocalPort=>$LISTENPORT,Proto=>'udp') or die "Can't bind : $@\n";
 print ">> Server Program <<\n";
 %Tracker=();
 

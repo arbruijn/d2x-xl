@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sounds.h"
 #include "multi.h"
 #include "network.h"
+#include "network_lib.h"
 #include "endlevel.h"
 #include "cntrlcen.h"
 #include "controls.h"
@@ -524,8 +525,6 @@ else {
 #define cv_w  cvBitmap.bmProps.w
 #define cv_h  cvBitmap.bmProps.h
 
-extern fix ThisLevelTime;
-
 void HUDShowScore (void)
 {
 	char	szScore [40];
@@ -579,7 +578,7 @@ if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMs
 
 if ((gameData.app.nGameMode & GM_NETWORK) && netGame.xPlayTimeAllowed) {
 	timevar=i2f (netGame.xPlayTimeAllowed*5*60);
-	i=f2i (timevar-ThisLevelTime);
+	i=f2i (timevar-gameStates.app.xThisLevelTime);
 	i++;
 	sprintf (szScore, "T - %5d", i);
 	GrGetStringSize (szScore, &w, &h, &aw);

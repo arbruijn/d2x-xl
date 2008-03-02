@@ -275,12 +275,12 @@ typedef struct appletalk_addr {
 typedef union {
 	ipx_addr			ipx;
 	appletalk_addr	appletalk;
-} network_info;
+} tNetworkInfo;
 
 
 typedef struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];
-	network_info network;
+	tNetworkInfo network;
 	ubyte   version_major;
 	ubyte   version_minor;
 #ifdef _WIN32
@@ -456,5 +456,14 @@ void MultiSyncKills (void);
 void MultiRefillPowerups (void);
 void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj);
 void MultiOnlyPlayerMsg (int bMsgBox);
+
+void MultiSendStolenItems ();
+void MultiSendKillGoalCounts ();
+void MultiSendPowerupUpdate ();
+void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int tSide, ubyte flag);
+void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte flags, ubyte state);
+void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val);
+void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
+void MultiResetObjectTexture (tObject *objP);
 
 #endif /* _MULTI_H */

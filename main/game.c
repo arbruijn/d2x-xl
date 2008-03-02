@@ -159,8 +159,6 @@ int	Speedtest_frame_start;
 int	SpeedtestCount=0;				//	number of times to do the debug test.
 #endif
 
-fix ThisLevelTime=0;
-
 #if defined (TIMER_TEST) && defined (_DEBUG)
 fix TimerValue,actual_lastTimerValue,_last_frametime;
 int gameData.time.xStops,gameData.time.xStarts;
@@ -869,7 +867,7 @@ void GameDrawTimeLeft ()
 GrSetCurFont (GAME_FONT);    //GAME_FONT
 GrSetFontColorRGBi (RED_RGBA, 1, 0, 0);
 timevar=i2f (netGame.xPlayTimeAllowed*5*60);
-i = f2i (timevar-ThisLevelTime) + 1;
+i = f2i (timevar-gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);
 if (i >= 0)
 	nId = GrString (0, 32, temp_string, &nId);
@@ -1465,6 +1463,7 @@ void TurnCheatsOff ()
 	gameStates.app.cheats.bRobotsFiring = 1;
 }
 
+// ----------------------------------------------------------------------------
 //turns off all cheats & resets cheater flag
 void GameDisableCheats ()
 {
@@ -2168,7 +2167,7 @@ DrainHeadLightPower ();
 		AddServerToTracker ();
       MultiDoFrame ();
 		CheckMonsterballScore ();
-		if (netGame.xPlayTimeAllowed && ThisLevelTime>=i2f ((netGame.xPlayTimeAllowed*5*60)))
+		if (netGame.xPlayTimeAllowed && gameStates.app.xThisLevelTime>=i2f ((netGame.xPlayTimeAllowed*5*60)))
           MultiCheckForKillGoalWinner ();
 		else 
 			MultiCheckForEntropyWinner ();
@@ -2232,7 +2231,7 @@ DrainHeadLightPower ();
 #endif
 #ifdef NETWORK
    if ((gameData.app.nGameMode & GM_MULTI) && netGame.xPlayTimeAllowed)
-       ThisLevelTime +=gameData.time.xFrame;
+       gameStates.app.xThisLevelTime +=gameData.time.xFrame;
 #endif
 //LogErr ("DigiSyncSounds\n");
 	DigiSyncSounds ();

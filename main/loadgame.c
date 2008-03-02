@@ -165,8 +165,6 @@ void GrRemapMonoFonts ();
 void SetFunctionMode (int);
 void InitHoardData ();
 
-extern fix ThisLevelTime;
-
 // Extern from game.c to fix a bug in the cockpit!
 
 extern int nLastLevelPathCreated;
@@ -1135,10 +1133,6 @@ gameStates.entropy.nTimeLastMoved = -1;
 
 //------------------------------------------------------------------------------
 
-extern void GameDisableCheats ();
-extern void TurnCheatsOff ();
-extern void InitSeismicDisturbances (void);
-
 //starts a new game on the given level
 int StartNewGame (int nStartLevel)
 {
@@ -1360,7 +1354,7 @@ int StartNewLevelSecret (int nLevel, int bPageInTextures)
 	tMenuItem	m [1];
   //int i;
 
-ThisLevelTime=0;
+gameStates.app.xThisLevelTime=0;
 
 m [0].nType = NM_TYPE_TEXT;
 m [0].text = " ";
@@ -2107,7 +2101,7 @@ void MaybeSetFirstSecretVisit (int nLevel)
 //	bSecret if came from a secret level
 int StartNewLevel (int nLevel, int bSecret)
 {
-	ThisLevelTime = 0;
+	gameStates.app.xThisLevelTime = 0;
 
 if ((nLevel > 0) && !bSecret)
 	MaybeSetFirstSecretVisit (nLevel);

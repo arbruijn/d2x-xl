@@ -57,6 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "byteswap.h"
 #include "escort.h"
 #include "network.h"
+#include "network_lib.h"
 #include "weapon.h"
 #include "autodl.h"
 #include "args.h"
