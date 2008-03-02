@@ -27,7 +27,7 @@
 #include "ogl_lib.h"
 #include "ogl_color.h"
 
-#define CHECK_LIGHT_VERT 0
+#define CHECK_LIGHT_VERT 1
 
 #ifdef _DEBUG
 #	define ONLY_HEADLIGHT 0
@@ -346,7 +346,7 @@ for (i = j = 0; i < h; i++) {
 	fLightDist = VmVecMagf (&lightDir) / gameStates.ogl.fLightRange;
 	VmVecNormalizef (&lightDir, &lightDir);
 	if (gameStates.render.nState || (nType < 2)) {
-#if CHECK_LIGHT_VERT
+#if CHECK_LIGHT_VERT == 2
 		if (IsLightVert (nVertex, psl))
 			fLightDist = 0;
 		else
@@ -358,6 +358,12 @@ for (i = j = 0; i < h; i++) {
 		fLightDist = 1.4142f;
 		NdotL = 1;
 		}
+#if CHECK_LIGHT_VERT == 1
+	else if (IsLightVert (nVertex, psl)) {
+		bInRad = 1;
+		NdotL = 1;
+		}
+#endif
 	else {	//make it decay faster
 		fLightDist *= fLightDist;
 		if (nType < 2)
@@ -507,10 +513,15 @@ lightPos = psl->pos [gameStates.render.nState && !gameStates.ogl.bUseTransform];
 			fLightDist = 1.4142f;
 			NdotL = 1;
 			}
+		else if (IsLightVert (nVertex, psl)) {
+			bInRad = 1;
+			NdotL = 1;
+			}
 		else {	//make it decay faster
 			fLightDist *= fLightDist;
 			if (nType < 2)
 				fLightDist *= 2.0f;
+			NdotL = VmVecDotf (&vcd.vertNorm, &lightDir);
 			}
 		fAttenuation = fLightDist / psl->brightness;
 		}

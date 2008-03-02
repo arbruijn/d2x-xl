@@ -1,8 +1,6 @@
 // tracker.c
 // game server tracker communication
 
-// VEX-D2X-Tracker: 81.169.162.145:9424
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -53,9 +51,7 @@ typedef struct tServerListTable {
 	time_t						lastActive;
 } tServerListTable;
 
-static tUdpAddress	d2xTracker = {81,169,162,145,0,0};
-static tUdpAddress	vexTracker = {81,169,162,145,0,0};
-static tUdpAddress	dbbTracker = {66,49,167,254,0,0};
+static tUdpAddress	d2xTracker = {85,119,152,128,0,0};
 static tUdpAddress	kbTracker = {207,210,100,66,0,0};
 
 tServerListTable *serverListTable = NULL;
@@ -369,8 +365,7 @@ void CreateTrackerList (void)
 
 ResetTrackerList ();
 if (!(a = FindArg ("-internal_tracker")) || atoi (Args [a + 1])) {
-	//AddTracker (&d2xTracker);
-	//AddTracker (&dbbTracker);
+	AddTracker (&d2xTracker);
 	AddTracker (&kbTracker);
 	}
 AddTrackersFromCmdLine ();

@@ -101,9 +101,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define DEFAULT_CONTROL_CENTER_EXPLOSION_TIME 30    // Note: Usually uses Alan_pavlish_reactorTimes, but can be overridden in editor.
 
-#define MAX_PLAYERS 8
-#define MAX_MULTI_PLAYERS MAX_PLAYERS+3
-
 //for Function_mode variable
 #define FMODE_EXIT		0		// leaving the program
 #define FMODE_MENU		1		// Using the menu
@@ -610,6 +607,8 @@ typedef struct tMovieStates {
 } tMovieStates;
 
 //------------------------------------------------------------------------------
+
+#include "player.h"
 
 typedef struct tMultiplayerStates {
 	int bUseTracker;
@@ -2029,23 +2028,6 @@ typedef struct tEffectData {
 	tVideoClip			*pVClips;
 } tEffectData;
 
-//------------------------------------------------------------------------------
-
-#define N_PLAYER_GUNS 8
-
-typedef struct tPlayerShip {
-	int					nModel;
-	int					nExplVClip;
-	fix					mass;
-	fix					drag;
-	fix					maxThrust;
-	fix					reverseThrust;
-	fix					brakes;
-	fix					wiggle;
-	fix					maxRotThrust;
-	vmsVector			gunPoints [N_PLAYER_GUNS];
-} tPlayerShip;
-
 typedef struct tShipData {
 	tPlayerShip			only;
 	tPlayerShip			*player;
@@ -2159,8 +2141,6 @@ typedef struct tModelData {
 } tModelData;
 
 //------------------------------------------------------------------------------
-
-#include "player.h"
 
 typedef struct tAutoNetGame {
 	char					szPlayer [9];		//tPlayer profile name

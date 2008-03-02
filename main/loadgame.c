@@ -232,10 +232,10 @@ int CountHostagesInLevel ()
 //added 10/12/95: delete buddy bot if coop game.  Probably doesn't really belong here. -MT
 void GameSeqInitNetworkPlayers ()
 {
-	int		i, j, t,
+	int		i, j, t, bCoop = IsCoopGame,
 				segNum, segType, 
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
-				nPlayers;
+				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS : MAX_PLAYERS;
 	tObject	*objP;
 
 	// Initialize network tPlayer start locations and tObject numbers
@@ -247,7 +247,7 @@ j = 0;
 for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, objP++) {
 	t = objP->nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
-		if (IsCoopGame ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))
+		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
 			ReleaseObject ((short) i);
 		else {
 			playerObjs [nPlayers] = i;
@@ -271,7 +271,7 @@ for (i = 0; i < nPlayers; i++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
-		segType = IsCoopGame ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
+		segType = bCoop ? gameData.segs.segment2s [segNum].special : SEGMENT_IS_NOTHING;
 #if 0		
 		switch (segType) {
 			case SEGMENT_IS_GOAL_RED:
@@ -305,7 +305,7 @@ gameData.objs.viewer = gameData.objs.console = gameData.objs.objects; // + LOCAL
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #ifdef _DEBUG
-if (gameData.multiplayer.nPlayerPositions != (IsCoopGame ? 4 : 8)) {
+if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #if TRACE	
 	//con_printf (CON_VERBOSE, "--NOT ENOUGH MULTIPLAYER POSITIONS IN THIS MINE!--\n");
 #endif
@@ -340,7 +340,7 @@ void GameSeqRemoveUnusedPlayers ()
 
 if (IsMultiGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-		if ((!gameData.multiplayer.players [i].connected) || (i >= gameData.multiplayer.nPlayers))
+		if (!gameData.multiplayer.players [i].connected || (i >= gameData.multiplayer.nPlayers))
 			MultiMakePlayerGhost (i);
 		}
 	}

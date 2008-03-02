@@ -20,7 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "weapon.h"
 
 #define MAX_PLAYERS 8
-#define MAX_MULTI_PLAYERS MAX_PLAYERS+3
+#define MAX_COOP_PLAYERS 3
+#define MAX_MULTI_PLAYERS (MAX_PLAYERS + MAX_COOP_PLAYERS)
 
 // Initial tPlayer stat values
 #define INITIAL_ENERGY  i2f(100)    // 100% energy to start
@@ -180,6 +181,23 @@ typedef struct player16 {
 	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
 	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
 } __pack__ player16;
+
+//------------------------------------------------------------------------------
+
+#define N_PLAYER_GUNS 8
+
+typedef struct tPlayerShip {
+	int					nModel;
+	int					nExplVClip;
+	fix					mass;
+	fix					drag;
+	fix					maxThrust;
+	fix					reverseThrust;
+	fix					brakes;
+	fix					wiggle;
+	fix					maxRotThrust;
+	vmsVector			gunPoints [N_PLAYER_GUNS];
+} tPlayerShip;
 
 /*
  * reads a tPlayerShip structure from a CFILE

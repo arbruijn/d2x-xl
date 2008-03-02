@@ -403,7 +403,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	for (i = 0; i < MAX_PLAYERS; i++) {
 		memcpy(out_buffer + loc, &(netGame.playerFlags[i]), 1); loc++;
 	}
-	tmps = INTEL_SHORT(netGame.nPacketsPerSec);
+	tmps = INTEL_SHORT(PacketsPerSec ());
 	memcpy(out_buffer + loc, &tmps, 2);                   
 	loc += 2;
 	memcpy(out_buffer + loc, &(netGame.bShortPackets), 1); 

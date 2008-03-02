@@ -807,7 +807,7 @@ static int UDPSendPacket
 #ifdef UDPDEBUG
 msg("SendPacket enter, dataLen=%d",dataLen);
 #endif
-if ((dataLen < 0) || (dataLen > IPX_DATASIZE))
+if ((dataLen < 0) || (dataLen > MAX_DATASIZE))
 	return -1;
 if (gameStates.multi.bTrackerCall) 
 	memcpy (buf, data, dataLen);

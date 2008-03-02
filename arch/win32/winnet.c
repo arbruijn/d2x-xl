@@ -257,10 +257,10 @@ return 0;
 void IPXSendPacketData
 	 (ubyte *data, int datasize, ubyte *network, ubyte *source, ubyte *dest)
 {
-	static u_char buf [IPX_DATASIZE];
+	static u_char buf [MAX_PACKETSIZE];
 	IPXPacket_t ipxHeader;
 	
-if (datasize <= IPX_DATASIZE - 4) {
+if (datasize <= MAX_DATASIZE - 4) {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
 	*((u_short *) ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
@@ -468,8 +468,8 @@ if (driver->HandleLeaveGame)
 // Send a packet to every member of the game.
 int IpxSendGamePacket (ubyte *data, int datasize)
 {
-if ((driver->SendGamePacket) && (datasize <= IPX_DATASIZE - 4)) {
-	static u_char buf [IPX_DATASIZE];
+if ((driver->SendGamePacket) && (datasize <= MAX_DATASIZE - 4)) {
+	static u_char buf [MAX_PACKETSIZE];
 
 	*(uint *) buf = nIpxPacket++;
 	memcpy (buf + 4, data, datasize);

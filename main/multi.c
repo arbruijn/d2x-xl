@@ -708,36 +708,36 @@ gameData.objs.deadPlayerCamera = 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiMakePlayerGhost (int playernum)
+void MultiMakePlayerGhost (int nPlayer)
 {
 	tObject *objP;
 
-if ((playernum == gameData.multiplayer.nLocalPlayer) || 
-		(playernum  >= MAX_NUM_NET_PLAYERS) || 
-		(playernum < 0))	{
+if ((nPlayer == gameData.multiplayer.nLocalPlayer) || 
+		(nPlayer >= MAX_NUM_NET_PLAYERS) || 
+		(nPlayer < 0))	{
 	Int3 (); // Non-terminal, see Rob
 	return;
 	}
-objP = gameData.objs.objects + gameData.multiplayer.players [playernum].nObject;
+objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
 objP->nType = OBJ_GHOST;
 objP->renderType = RT_NONE;
 objP->movementType = MT_NONE;
 MultiResetPlayerObject (objP);
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
-	MultiStripRobots (playernum);
+	MultiStripRobots (nPlayer);
 }
 
 //-----------------------------------------------------------------------------
 
-void MultiMakeGhostPlayer (int playernum)
+void MultiMakeGhostPlayer (int nPlayer)
 {
 	tObject *objP;
 
-if ((playernum == gameData.multiplayer.nLocalPlayer) || (playernum  >= MAX_NUM_NET_PLAYERS)) {
+if ((nPlayer == gameData.multiplayer.nLocalPlayer) || (nPlayer  >= MAX_NUM_NET_PLAYERS)) {
 	Int3 (); // Non-terminal, see rob
 	return;
 	}
-objP = gameData.objs.objects + gameData.multiplayer.players [playernum].nObject;
+objP = gameData.objs.objects + gameData.multiplayer.players [nPlayer].nObject;
 objP->nType = OBJ_PLAYER;
 objP->movementType = MT_PHYSICS;
 MultiResetPlayerObject (objP);
@@ -1691,7 +1691,7 @@ void MultiDoTrigger (char *buf)
 	short nObject;
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got tTrigger from illegal playernum
+	Int3 (); // Got tTrigger from illegal nPlayer
 	return;
 	}
 if ((tTrigger < 0) || (tTrigger  >= gameData.trigs.nTriggers)) {
@@ -1713,7 +1713,7 @@ void MultiDoShields (char *buf)
 	int	shields = GET_INTEL_INT (buf+2);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got tTrigger from illegal playernum
+	Int3 (); // Got tTrigger from illegal nPlayer
 	return;
 	}
 gameData.multiplayer.players [nPlayer].shields  = 
@@ -1728,7 +1728,7 @@ void MultiDoObjTrigger (char *buf)
 	int tTrigger = (int) ((ubyte) buf [2]);
 
 if ((nPlayer < 0) || (nPlayer  >= gameData.multiplayer.nPlayers) || (nPlayer == gameData.multiplayer.nLocalPlayer)) {
-	Int3 (); // Got tTrigger from illegal playernum
+	Int3 (); // Got tTrigger from illegal nPlayer
 	return;
 	}
 if ((tTrigger < 0) || (tTrigger  >= gameData.trigs.nObjTriggers)) {

@@ -178,7 +178,7 @@ struct ipx_recv_data ipx_udpSrc;
 
 int IpxGetPacketData (ubyte * data)
 {
-	static char buf [IPX_DATASIZE];
+	static char buf [MAX_PACKETSIZE];
 	int size, offs;
 
 while (driver->PacketReady (&ipxSocketData)) {
@@ -187,7 +187,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (size < 6)
 		continue;
-	if (size > IPX_DATASIZE - 4)
+	if (size > MAX_DATASIZE - 4)
 		continue;
 	offs = IsTracker (*((unsigned int *) ipx_udpSrc.src_node), *((ushort *) (ipx_udpSrc.src_node + 4))) ? 0 : 4;
 	memcpy (data, buf + offs, size - offs);
@@ -201,10 +201,10 @@ return 0;
 void IPXSendPacketData
 	 (ubyte * data, int datasize, ubyte *network, ubyte *source, ubyte *dest)
 {
-	static u_char buf[IPX_DATASIZE];
+	static u_char buf [MAX_PACKETSIZE];
 	IPXPacket_t ipxHeader;
 
-if (datasize <= IPX_DATASIZE - 4) {
+if (datasize <= MAX_DATASIZE - 4) {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
 	*((u_short *) &ipxHeader.Destination.Socket [0]) = htons (ipxSocketData.socket);
@@ -224,7 +224,7 @@ if (datasize <= IPX_DATASIZE - 4) {
 int IpxGetPacketData (ubyte * data)
 {
 	struct ipx_recv_data rd;
-	char buf[IPX_DATASIZE];
+	char buf[MAX_PACKETSIZE];
 	int size;
 	int best_size = 0;
 
@@ -243,10 +243,10 @@ return best_size;
 
 void IPXSendPacketData (ubyte * data, int datasize, ubyte *network, ubyte *address, ubyte *immediate_address)
 {
-	u_char buf[IPX_DATASIZE];
+	u_char buf [MAX_PACKETSIZE];
 	IPXPacket_t ipxHeader;
 
-	Assert (datasize <= IPX_DATASIZE+4);
+	Assert (datasize <= MAX_DATASIZE + 4);
 
 memcpy (ipxHeader.Destination.Network, network, 4);
 memcpy (ipxHeader.Destination.Node, immediate_address, 6);
@@ -482,7 +482,7 @@ void ipx_handle_leave_game ()
 int IpxSendGamePacket (ubyte *data, int datasize)
 {
 if (driver->SendGamePacket) {
-		u_char buf[IPX_DATASIZE];
+		u_char buf[MAX_PACKETSIZE];
 
 	*((uint *)buf) = nIpxPacket++;
 	memcpy (buf + 4, data, datasize);

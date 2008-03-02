@@ -67,7 +67,7 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "netmisc.h"
 #include "error.h"
 
-static ubyte nmDataBuf [IPX_DATALIMIT];    // used for tmp netgame packets as well as sending tObject data
+static ubyte nmDataBuf [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
 static ubyte *nmBufP = NULL;
 
 extern struct ipx_recv_data ipx_udpSrc;
@@ -337,7 +337,7 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 	BE_SET_INT (netGame.player_score[i]);
 	}
 BE_SET_BYTES (netGame.playerFlags, MAX_PLAYERS);
-BE_SET_SHORT (netGame.nPacketsPerSec);
+BE_SET_SHORT (PacketsPerSec ());
 BE_SET_BYTE (netGame.bShortPackets); 
 
 do_send:

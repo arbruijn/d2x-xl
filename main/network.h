@@ -301,9 +301,7 @@ typedef struct tNetworkObjInfo {
 typedef struct tMissingObjFrames {
 	ubyte					pid;
 	ubyte					nPlayer;
-	ushort				nFrames;
-	ushort				iFrame;
-	short					frames [MAX_MISSING_OBJ_FRAMES];
+	ushort				nFrame;
 } tMissingObjFrames;
 
 typedef struct tNetworkData {
@@ -356,7 +354,7 @@ typedef struct tNetworkData {
 	int					bSyncMissingFrames;
 	short					nSyncExtras;
 	short					nSyncPlayer;
-	tMissingObjFrames	missingObjFrames [2];
+	tMissingObjFrames	missingObjFrames;
 } tNetworkData;
 
 extern tNetworkData networkData;
@@ -582,6 +580,18 @@ extern int nCoopPenalties [10];
 
 #define COMPETITION	(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
 
+#define MAX_DATASIZE ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATASIZE : IPX_DATASIZE)
 #define DATALIMIT ((gameStates.multi.nGameType == UDP_GAME) ? UDP_DATALIMIT : IPX_DATALIMIT)
+
+//------------------------------------------------------------------------------
+
+static inline short PacketsPerSec (void)
+{
+if ((netGame.nPacketsPerSec < 1) || (netGame.nPacketsPerSec > 20))
+	netGame.nPacketsPerSec = 10;
+return netGame.nPacketsPerSec;
+}
+
+//------------------------------------------------------------------------------
 
 #endif /* _NETWORK_H */

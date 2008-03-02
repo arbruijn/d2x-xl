@@ -764,7 +764,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteInt (netGame.player_score [i], cfp);				// 32 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
 	CFWriteByte ((sbyte) netGame.playerFlags [i], cfp);	// 8 bytes
-CFWriteShort (netGame.nPacketsPerSec, cfp);					// 2 bytes
+CFWriteShort (PacketsPerSec (), cfp);					// 2 bytes
 CFWriteByte ((sbyte) netGame.bShortPackets, cfp);			// 1 bytes
 // 279 bytes
 // 355 bytes total
