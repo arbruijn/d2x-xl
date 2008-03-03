@@ -391,8 +391,8 @@ if ((gameData.missions.nCurrentLevel >= gameData.missions.nLastLevel) &&
 
 //-----------------------------------------------------------------------------
 
-#define MAX_VIEW_TIME   F1_0*15
-#define ENDLEVEL_IDLE_TIME	F1_0*10
+#define MAX_VIEW_TIME   	15000
+#define ENDLEVEL_IDLE_TIME	10000
 
 #define LAST_OEM_LEVEL	IS_D2_OEM && (gameData.missions.nCurrentLevel == 8)
 
@@ -401,7 +401,7 @@ extern void NetworkEndLevelPoll3 (int nitems, struct tMenuItem * menus, int * ke
 void ScoreTableView (int bNetwork)
 {											 
    int i, k, done,choice;
-	fix entryTime = TimerGetApproxSeconds ();
+	fix entryTime = SDL_GetTicks ();
 	int key;
    int oldstates [MAX_PLAYERS];
    int previousSeconds_left=-1;
@@ -500,7 +500,7 @@ while (!done) {
 		default:
 			break;
 		}
-	if ((TimerGetApproxSeconds () >= entryTime + MAX_VIEW_TIME) && 
+	if ((SDL_GetTicks () >= entryTime + MAX_VIEW_TIME) && 
 		 (LOCALPLAYER.connected != 7)) {
 		if (LAST_OEM_LEVEL) {
 			ScoreTableQuit (&bg, 1, bNetwork);
@@ -519,7 +519,7 @@ while (!done) {
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (gameData.multiplayer.players [i].connected && i!=gameData.multiplayer.nLocalPlayer) {
 			// Check timeout for idle players
-			if (TimerGetApproxSeconds () > networkData.nLastPacketTime [i]+ENDLEVEL_IDLE_TIME) {
+			if (SDL_GetTicks () > networkData.nLastPacketTime [i]+ENDLEVEL_IDLE_TIME) {
 	#if TRACE
 				con_printf (CONDBG, "idle timeout for tPlayer %d.\n", i);
 	#endif

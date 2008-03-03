@@ -336,7 +336,7 @@ void NetworkDoSyncFrame (void)
 
 if (t < networkData.toSyncFrame)
 	return;
-networkData.toSyncFrame = t + 1000 / PacketsPerSec ();
+networkData.toSyncFrame = t + ((gameStates.multi.nGameType == UDP_GAME) ? 200 : 1000 / PacketsPerSec ());
 if (networkData.nSyncState == 1) {
 	networkData.missingObjFrames.nFrame = 0;
 	NetworkSyncObjects ();
@@ -410,7 +410,7 @@ netGame.nLevel = gameData.missions.nCurrentLevel;
 static inline fix SyncPollTimeout (void)
 {
 #ifdef _DEBUG
-return 30000;
+return 5000;
 #else
 if (gameStates.multi.nGameType == UDP_GAME)
 	return 5000;
@@ -504,7 +504,8 @@ memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.ipx.node, IpxGetMyLocalAddress (), 6);
 	memcpy (me.player.network.ipx.server, IpxGetMyServerAddress (), 4);
-	SendInternetSequencePacket (me, netPlayers.players [0].network.ipx.server, netPlayers.players [0].network.ipx.node);
+	SendInternetSequencePacket (me, netPlayers.players [0].network.ipx.server, 
+										 netPlayers.players [0].network.ipx.node);
 }
 gameData.multiplayer.nPlayers = 0;
 SetFunctionMode (FMODE_MENU);
@@ -674,8 +675,8 @@ while (0 < (size = IpxGetPacketData (packet))) {
 #else
 						{
 #endif
-						memcpy (&activeNetGames [choice], (ubyte *)&tempNetInfo, sizeof (tNetgameInfo));
-						memcpy (&activeNetPlayers [choice], tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
+						memcpy (&activeNetGames + choice, (ubyte *) &tempNetInfo, sizeof (tNetgameInfo));
+						memcpy (activeNetPlayers + choice, tmpPlayersInfo, sizeof (tAllNetPlayersInfo));
 						networkData.nSecurityCheck = -1;
 						}
 					}
@@ -807,15 +808,13 @@ else if (NetworkIAmMaster ()) {
 	}
 else
 	result = NetworkWaitForSync ();
-
-NetworkCountPowerupsInMine ();
-
 if (result < 0) {
 	LOCALPLAYER.connected = 0;
 	NetworkSendEndLevelPacket ();
 	longjmp (gameExitPoint, 0);
 	}
-return (result);
+NetworkCountPowerupsInMine ();
+return result;
 }
 
 //------------------------------------------------------------------------------

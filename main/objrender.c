@@ -941,10 +941,13 @@ switch (objP->renderType) {
 #if 1//def RELEASE
 #endif
 				if (gameData.objs.bIsMissile [objP->id]) {	//make missiles smaller during launch
-					float dt = f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
-
-					if (dt < 1)
-						gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
+					if ((objP->cType.laserInfo.parentType == OBJ_PLAYER) && 
+						 (gameData.models.g3Models [1][108].bValid > 0)) {	//hires player ship
+						float dt = f2fl (gameData.time.xGame - gameData.objs.xCreationTime [OBJ_IDX (objP)]);
+		
+						if (dt < 1)
+							gameData.models.nScale = (fix) (F1_0 + F1_0 * dt * dt) / 2;
+						}
 					DoObjectSmoke (objP);
 					DrawPolygonObject (objP, bDepthSort);
 #if RENDER_HITBOX

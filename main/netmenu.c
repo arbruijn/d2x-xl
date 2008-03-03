@@ -262,8 +262,8 @@ WF (netGame.invul, 27);
 
 //------------------------------------------------------------------------------
 
-#define ENDLEVEL_SEND_INTERVAL  (F1_0*2)
-#define ENDLEVEL_IDLE_TIME      (F1_0*20)
+#define ENDLEVEL_SEND_INTERVAL  2000
+#define ENDLEVEL_IDLE_TIME      20000
 
 void NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int cItem)
 {
@@ -273,11 +273,12 @@ void NetworkEndLevelPoll2 (int nitems, tMenuItem * menus, int * key, int cItem)
 	int i = 0;
 	int num_ready = 0;
 	int goto_secret = 0;
+	fix t;
 
 	// Send our endlevel packet at regular intervals
-if (TimerGetApproxSeconds () > (t1+ENDLEVEL_SEND_INTERVAL)) {
+if ((t = SDL_GetTicks ()) > (t1 + ENDLEVEL_SEND_INTERVAL)) {
 	NetworkSendEndLevelPacket ();
-	t1 = TimerGetApproxSeconds ();
+	t1 = t;
 	}
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -362,9 +363,14 @@ NetworkListen ();
 if (n < netGame.nNumPlayers) {
 	DigiPlaySample (SOUND_HUD_MESSAGE, F1_0);
 	if (gameOpts->multi.bNoRankings)
-	   sprintf (menus [gameData.multiplayer.nPlayers - 1].text, "%d. %-20s", gameData.multiplayer.nPlayers, netPlayers.players [gameData.multiplayer.nPlayers-1].callsign);
+	   sprintf (menus [gameData.multiplayer.nPlayers - 1].text, "%d. %-20s", 
+					gameData.multiplayer.nPlayers, 
+					netPlayers.players [gameData.multiplayer.nPlayers-1].callsign);
 	else
-	   sprintf (menus [gameData.multiplayer.nPlayers - 1].text, "%d. %s%-20s", gameData.multiplayer.nPlayers, pszRankStrings [netPlayers.players [gameData.multiplayer.nPlayers-1].rank], netPlayers.players [gameData.multiplayer.nPlayers-1].callsign);
+	   sprintf (menus [gameData.multiplayer.nPlayers - 1].text, "%d. %s%-20s", 
+					gameData.multiplayer.nPlayers, 
+					pszRankStrings [netPlayers.players [gameData.multiplayer.nPlayers-1].rank], 
+					netPlayers.players [gameData.multiplayer.nPlayers-1].callsign);
 	menus [gameData.multiplayer.nPlayers - 1].rebuild = 1;
 	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
 		menus [gameData.multiplayer.nPlayers - 1].value = 1;
@@ -1927,7 +1933,8 @@ void NetworkJoinPoll (int nitems, tMenuItem * menus, int * key, int cItem)
 {
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
-	int	i, h = 2 + gameStates.multi.bUseTracker, t, osocket, nJoinStatus, bPlaySound = 0;
+	int	t = SDL_GetTicks ();
+	int	i, h = 2 + gameStates.multi.bUseTracker, osocket, nJoinStatus, bPlaySound = 0;
 	char	*psz;
 	char	szOption [200];
 	char	szTrackers [100];
@@ -1981,15 +1988,14 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 if (!networkData.nActiveGames)
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME) {
-		if (TimerGetApproxSeconds () > t1 + F1_0 * 3) {
+		if (t > t1 + 3000) {
 			if (!NetworkSendGameListRequest ())
 				return;
-			t1 = TimerGetApproxSeconds ();
+			t1 = t;
 			}
 		}
 NetworkListen ();
 DeleteTimedOutNetGames ();
-t = SDL_GetTicks ();
 if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastActiveGames)) {
 	networkData.bGamesChanged = 0;
 	networkData.nLastActiveGames = networkData.nActiveGames;
@@ -2063,11 +2069,13 @@ if (bPlaySound)
 
 int NetworkBrowseGames (void)
 {
-	int choice, i, bAutoRun = gameData.multiplayer.autoNG.bValid;
-	bkg bg;
-	tMenuItem m [MAX_ACTIVE_NETGAMES + 5];
+	tMenuItem	m [MAX_ACTIVE_NETGAMES + 5];
+	int			choice, i, bAutoRun = gameData.multiplayer.autoNG.bValid;
+	bkg			bg;
+	char			callsign [CALLSIGN_LEN+1];
 
 //LogErr ("launching netgame browser\n");
+memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -2130,10 +2138,10 @@ doMenu:
 
 gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
 if (bAutoRun) {
-	fix t0 = 0;
+	fix t, t0 = 0;
 	do {
-		if (TimerGetApproxSeconds () > t0 + F1_0) {
-			t0 = TimerGetApproxSeconds ();
+		if ((t = SDL_GetTicks ()) > t0 + F1_0) {
+			t0 = t;
 			NetworkSendGameListRequest ();
 			}
 		NetworkListen ();
@@ -2151,6 +2159,8 @@ else {
 	gameStates.multi.bSurfingNet = 0;
 	}
 if (choice == -1) {
+	ChangePlayerNumTo (0);
+	memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
 	networkData.nStatus = NETSTAT_MENU;
 	return 0; // they cancelled               
 	}               
@@ -2222,6 +2232,7 @@ memcpy (&netPlayers, activeNetPlayers + choice, sizeof (tAllNetPlayersInfo));
 gameStates.app.nDifficultyLevel = netGame.difficulty;
 gameData.multiplayer.nMaxPlayers = netGame.nMaxPlayers;
 ChangePlayerNumTo (1);
+memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
 // Handle the extra data for the network driver
 // For the mcast4 driver, this is the game's multicast address, to
 // which the driver subscribes.

@@ -465,28 +465,28 @@ gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 
 //------------------------------------------------------------------------------
 //sets up the D2_FREE list & init tPlayer & whatever else
-void InitObjects ()
+void InitObjects (void)
 {
-	int i;
-	tSegment *segP;
+	tObject	*objP;
+	int		i;
 
 CollideInit ();
-for (i = 0; i < MAX_OBJECTS; i++) {
+for (i = 0, objP = OBJECTS; i < MAX_OBJECTS; i++, objP++) {
 	gameData.objs.freeList [i] = i;
-	gameData.objs.objects [i].nType = OBJ_NONE;
-	gameData.objs.objects [i].nSegment =
-	gameData.objs.objects [i].cType.explInfo.nNextAttach =
-	gameData.objs.objects [i].cType.explInfo.nPrevAttach =
-	gameData.objs.objects [i].cType.explInfo.nAttachParent =
-	gameData.objs.objects [i].attachedObj = -1;
-	gameData.objs.objects [i].flags = 0;
+	objP->nType = OBJ_NONE;
+	objP->nSegment =
+	objP->cType.explInfo.nNextAttach =
+	objP->cType.explInfo.nPrevAttach =
+	objP->cType.explInfo.nAttachParent =
+	objP->attachedObj = -1;
+	objP->flags = 0;
 	}
-for (i = 0, segP = gameData.segs.segments; i < MAX_SEGMENTS; i++, segP++)
-	segP->objects = -1;
+for (i = 0; i < MAX_SEGMENTS; i++)
+	SEGMENTS [i].objects = -1;
 gameData.objs.console = 
 gameData.objs.viewer = gameData.objs.objects;
 InitPlayerObject ();
-LinkObject (OBJ_IDX (gameData.objs.console), 0);	//put in the world in tSegment 0
+LinkObject (OBJ_IDX (gameData.objs.console), 0);	//put in the world in segment 0
 gameData.objs.nObjects = 1;						//just the tPlayer
 gameData.objs.nLastObject = 0;
 InitIdToOOF ();

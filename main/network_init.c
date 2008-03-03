@@ -157,7 +157,6 @@ void NetworkInit (void)
 GameDisableCheats ();
 gameStates.multi.bIWasKicked = 0;
 gameStates.gameplay.bFinalBossIsDead = 0;
-memset (&networkData, 0, sizeof (networkData));
 networkData.nNamesInfoSecurity = -1;
 #ifdef NETPROFILING
 OpenSendLog ();

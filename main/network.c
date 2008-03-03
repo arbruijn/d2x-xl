@@ -532,18 +532,18 @@ if (!listen)
 	return;
 
 if ((networkData.xLastTimeoutCheck > F1_0) && !gameData.reactor.bDestroyed) {
-	fix approxTime = (fix) SDL_GetTicks ();
+	fix t = (fix) SDL_GetTicks ();
 // Check for tPlayer timeouts
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != gameData.multiplayer.nLocalPlayer) && 
 			 ((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {
 			if ((networkData.nLastPacketTime [i] == 0) || 
-				 (networkData.nLastPacketTime [i] > approxTime)) {
-				ResetPlayerTimeout (i, approxTime);
+				 (networkData.nLastPacketTime [i] > t)) {
+				ResetPlayerTimeout (i, t);
 				continue;
 				}
 #if 1//ndef _DEBUG
-			if (gameOpts->multi.bTimeoutPlayers && (approxTime - networkData.nLastPacketTime [i] > 15000))
+			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
 				NetworkTimeoutPlayer (i);
 #endif
 			}

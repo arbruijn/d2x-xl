@@ -189,7 +189,9 @@ typedef struct tNetworkData {
 	int					tLastPingStat;
 	int					nSyncState;
 	int					nSyncObjs;
+	int					bHaveSync;
 	ushort				nSyncFrame;
+	short					nPrevFrame;
 	int					bTraceFrames;
 	int					bSyncMissingFrames;
 	short					nSyncExtras;

@@ -564,6 +564,8 @@ Assert (i < MAX_NUM_NET_PLAYERS);
 networkData.mySeq.nType = PID_REQUEST;
 networkData.mySeq.player.connected = gameData.missions.nCurrentLevel;
 networkData.nJoinState = 0;
+networkData.nSyncFrame = 0;
+networkData.bHaveSync = 0;
 networkData.missingObjFrames.nFrame = 0;
 networkData.bTraceFrames = 1;
 if (gameStates.multi.nGameType >= IPX_GAME) {

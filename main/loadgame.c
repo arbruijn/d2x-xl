@@ -187,11 +187,11 @@ extern int nLastMsgYCrd;
 
 void VerifyConsoleObject ()
 {
-	Assert (gameData.multiplayer.nLocalPlayer > -1);
-	Assert (LOCALPLAYER.nObject > -1);
-	gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
-	Assert (gameData.objs.console->nType == OBJ_PLAYER);
-	Assert (gameData.objs.console->id==gameData.multiplayer.nLocalPlayer);
+Assert (gameData.multiplayer.nLocalPlayer > -1);
+Assert (LOCALPLAYER.nObject > -1);
+gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
+Assert (gameData.objs.console->nType == OBJ_PLAYER);
+Assert (gameData.objs.console->id==gameData.multiplayer.nLocalPlayer);
 }
 
 //------------------------------------------------------------------------------
