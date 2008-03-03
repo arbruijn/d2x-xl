@@ -1221,7 +1221,7 @@ switch (nWeapon) {
 
 	case VULCAN_INDEX: 
 		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] ||
-			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY) {
+			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY)) {
 			//	Only make sound for 1/4 of vulcan bullets.
 			int	bMakeSound = !gameOpts->sound.bGatling;
 			LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, bMakeSound, 0);
