@@ -244,6 +244,10 @@ void PagingTouchSide (tSegment * segP, short nSide)
 {
 	int tmap1, tmap2;
 
+#ifdef _DEBUG
+if ((SEG_IDX (segP) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	nDbgSeg = nDbgSeg;
+#endif
 if (!(WALL_IS_DOORWAY (segP,nSide, NULL) & WID_RENDER_FLAG))
 	return;
 
@@ -254,7 +258,7 @@ if (tmap2) {
 	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap2].index, gameStates.app.bD1Data);
 	PagingTouchWallEffects (tmap2);
 	}
-else
+//else
 	PIGGY_PAGE_IN (gameData.pig.tex.pBmIndex [tmap1].index, gameStates.app.bD1Data);
 
 // PSX STUFF
@@ -316,8 +320,10 @@ void PagingTouchSegment (tSegment * segP)
 	short			nSide, nObject;
 	tSegment2	*seg2p = &gameData.segs.segment2s [SEG_IDX (segP)];
 
-if (SEG_IDX (segP) == 150)
-	segP = segP;
+#ifdef _DEBUG
+if (SEG_IDX (segP) == nDbgSeg)
+	nDbgSeg = nDbgSeg;
+#endif
 if (seg2p->special == SEGMENT_IS_ROBOTMAKER)
 	PagingTouchRobotMaker (segP);
 for (nSide = 0; nSide < MAX_SIDES_PER_SEGMENT; nSide++) 

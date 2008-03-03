@@ -234,6 +234,7 @@ return 0;
 
 short nDbgSeg = -1;
 short nDbgSide = -1;
+short nDbgFace = -1;
 short nDbgObj = -1;
 short nDbgObjType = -1;
 short nDbgObjId = -1;

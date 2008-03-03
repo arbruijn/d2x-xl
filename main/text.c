@@ -1792,6 +1792,7 @@ char *defaultGameTexts [][2] = {
 	{"Schiffs-Einstellungen", "Ship options"},
 	{"~Schiffs-Einstellungen...", "s~Hip options..."},
 	{"Raketen~Start: %s", "missile launch ~Speed: %s"},
+	{"Gatlinggeraeusche erzeugen", "play ~Gatling sounds"},
 #if 0
 	{"", ""},
 #endif
@@ -2412,6 +2413,7 @@ char *defaultHelpTexts [][2] = {
 	 "Here you can chose what is shown at the ship's wing tips if a \ndoesn't have quad lasers or hasn't lasers equipped."},
 	{"Hier kann die Darstellung der Spielerschiffe angepasst werden.", "Adjust player ship render settings here."},
 	{"Hier kann die Startgeschwindigkeit von Raketen eingestellt werden.", "Adjust the launch speed of missiles here."},
+	{"Wenn angekreuzt haben Maschinenkanonen ein verbessertes\nGerausch.", "If checked gatling guns use an improved sound."},
 #if 0
 	{"", ""},
 #endif

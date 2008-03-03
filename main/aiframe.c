@@ -756,11 +756,10 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 
 #ifdef _WIN32
-typedef int __fastcall tAIHandler (tObject *objP, tAIStateInfo *);
+typedef int (__fastcall * pAIHandler) (tObject *objP, tAIStateInfo *);
 #else
-typedef int tAIHandler (tObject *objP, tAIStateInfo *);
+typedef int (* pAIHandler) (tObject *objP, tAIStateInfo *);
 #endif
-typedef tAIHandler *pAIHandler;
 
 static pAIHandler aimHandler1 [] = {
 	AIMIdlingHandler1, AINothingHandler, AIMFollowPathHandler1, AIMChaseObjectHandler1, AIMRunFromObjectHandler1,
@@ -972,7 +971,7 @@ int AIBossHandler (tObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->bossFlag) {
 		int	pv;
-		fix	dtp = gameData.ai.xDistToPlayer/4;
+		fix	dtp = gameData.ai.xDistToPlayer / 4;
 
 	if (siP->aiP->GOAL_STATE == AIS_FLINCH)
 		siP->aiP->GOAL_STATE = AIS_FIRE;
@@ -1304,7 +1303,7 @@ void DoAIFrame (tObject *objP)
 	tAIStateInfo	si;
 
 Assert (objP->nSegment != -1);
-si.nObject = OBJ_IDX (objP);
+	si.nObject = OBJ_IDX (objP);
 si.nObjRef = si.nObject ^ gameData.app.nFrameCount;
 si.aiP = &objP->cType.aiInfo;
 si.ailP = gameData.ai.localInfo + si.nObject;
@@ -1329,16 +1328,16 @@ if (si.aiP->SKIP_AI_COUNT) {
 		if (!si.aiP->SKIP_AI_COUNT)
 			objP->mType.physInfo.flags &= ~PF_USES_THRUST;
 		}
-	return;
+	goto funcExit;
 	}
 
 Assert (si.botInfoP->always_0xabcd == 0xabcd);
 #if 0//def _DEBUG
 if (!si.botInfoP->bossFlag)
-	return;
+	goto funcExit;
 #endif
 if (DoAnyRobotDyingFrame (objP))
-	return;
+	goto funcExit;
 
 // Kind of a hack.  If a robot is flinching, but it is time for it to fire, unflinch it.
 // Else, you can turn a big nasty robot into a wimp by firing flares at it.

@@ -438,6 +438,7 @@ typedef struct tSoundOptions {
 	int digiSampleRate;
 	int bShip;
 	int bMissiles;
+	int bGatling;
 	fix xCustomSoundVolume;
 } tSoundOptions;
 
@@ -2063,12 +2064,21 @@ typedef struct tMuzzleData {
 
 #include "weapon.h"
 
+#define GATLING_DELAY	700
+
+typedef struct tFiringData {
+	int					nStart;
+	int					nStop;
+	int					nDuration;
+	int					bSound;
+	} tFiringData;
+
 typedef struct tWeaponData {
 	sbyte					nPrimary;
 	sbyte					nSecondary;
 	sbyte					nOverridden;
 	sbyte					bTripleFusion;
-	sbyte					bFiring [2];
+	tFiringData			firing [2];
 	int					nTypes [2];
 	tWeaponInfo			info [MAX_WEAPON_TYPES];
 	tD1WeaponInfo		infoD1 [D1_MAX_WEAPON_TYPES];
@@ -2169,7 +2179,7 @@ typedef struct tWeaponState {
 	char						nPrimary;
 	char						nSecondary;
 	char						bQuadLasers;
-	char						bFiring [2];
+	tFiringData				firing [2];
 	char						nLaserLevel;
 	char						bTripleFusion;
 	char						nMslLaunchPos;
@@ -3061,6 +3071,7 @@ static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(ga
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
 #define OBJ_IDX(_objP)			((short) ((_objP) - gameData.objs.objects))
 #define TRIG_IDX(_trigP)		((short) ((_trigP) - gameData.trigs.triggers))
+#define FACE_IDX(_faceP)		((int) ((_faceP) - gameData.segs.faces.faces))
 
 #ifdef PIGGY_USE_PAGING
 

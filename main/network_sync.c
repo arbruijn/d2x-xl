@@ -412,10 +412,7 @@ static inline fix SyncPollTimeout (void)
 #ifdef _DEBUG
 return 5000;
 #else
-if (gameStates.multi.nGameType == UDP_GAME)
-	return 5000;
-else
-	return 2000;
+return 2000;
 #endif
 }
 
@@ -520,10 +517,7 @@ static inline fix WaitAllPollTimeout (void)
 #ifdef _DEBUG
 return 5000;
 #else
-if (gameStates.multi.nGameType == UDP_GAME)
-	return 5000;
-else
-	return 3000;
+return 3000;
 #endif
 }
 

@@ -926,7 +926,8 @@ retryMove:
 			VmVecScaleAdd (&vHitPos, ppos0, &vHitPos, FixDiv (size0, size0 + size1));
 			}
 		vOldVel = objP->mType.physInfo.velocity;
-		CollideTwoObjects (objP, gameData.objs.objects + hi.hit.nObject, &vHitPos);
+		if (!(SPECTATOR (objP) || SPECTATOR (OBJECTS + hi.hit.nObject)))
+			CollideTwoObjects (objP, OBJECTS + hi.hit.nObject, &vHitPos);
 		if (sbd.bBoosted && (objP == gameData.objs.console))
 			objP->mType.physInfo.velocity = vOldVel;
 		// Let object continue its movement

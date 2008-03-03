@@ -400,14 +400,14 @@ extern void NetworkEndLevelPoll3 (int nitems, struct tMenuItem * menus, int * ke
 
 void ScoreTableView (int bNetwork)
 {											 
-   int i, k, done,choice;
-	fix entryTime = SDL_GetTicks ();
-	int key;
-   int oldstates [MAX_PLAYERS];
-   int previousSeconds_left=-1;
-   int nReady,nEscaped;
-	int bRedraw = 0;
-	bkg bg;
+   int	i, k, done,choice;
+	uint	entryTime = SDL_GetTicks ();
+	int	key;
+   int	oldstates [MAX_PLAYERS];
+   int	previousSeconds_left=-1;
+   int	nReady,nEscaped;
+	int	bRedraw = 0;
+	bkg	bg;
 
 gameStates.menus.nInMenu++;
 gameStates.app.bGameRunning = 0;
@@ -519,7 +519,7 @@ while (!done) {
 		for (nEscaped = 0, nReady = 0, i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (gameData.multiplayer.players [i].connected && i!=gameData.multiplayer.nLocalPlayer) {
 			// Check timeout for idle players
-			if (SDL_GetTicks () > networkData.nLastPacketTime [i]+ENDLEVEL_IDLE_TIME) {
+			if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
 	#if TRACE
 				con_printf (CONDBG, "idle timeout for tPlayer %d.\n", i);
 	#endif
@@ -527,15 +527,15 @@ while (!done) {
 				NetworkSendEndLevelSub (i);
 				}
 			}
-		if (gameData.multiplayer.players [i].connected!=oldstates [i]) {
+		if (gameData.multiplayer.players [i].connected != oldstates [i]) {
 			if (szConditionLetters [gameData.multiplayer.players [i].connected] != szConditionLetters [oldstates [i]])
 				gameData.score.nKillsChanged = 1;
 				oldstates [i] = gameData.multiplayer.players [i].connected;
 				NetworkSendEndLevelPacket ();
 				}
-			if (gameData.multiplayer.players [i].connected==0 || gameData.multiplayer.players [i].connected==7)
+			if ((gameData.multiplayer.players [i].connected == 0) || (gameData.multiplayer.players [i].connected == 7))
 				nReady++;
-			if (gameData.multiplayer.players [i].connected!=1)
+			if (gameData.multiplayer.players [i].connected != 1)
 				nEscaped++;
 			}
 		if (nReady >= gameData.multiplayer.nPlayers)

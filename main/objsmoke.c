@@ -157,7 +157,8 @@ if (gameOpts->render.nPath && gameOpts->render.ship.bBullets) {
 		if (pm->bBullets) {
 				int			nPlayer = objP->id;
 				int			nGun = EquippedPlayerGun (objP);
-				int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) && gameData.multiplayer.weaponStates [nPlayer].bFiring [0]; 
+				int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) && 
+												(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY); 
 				int			i = gameData.multiplayer.bulletEmitters [nPlayer];
 
 			if (bDoEffect) {

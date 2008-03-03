@@ -648,7 +648,7 @@ float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int b
 	tWall	*wallP;
 	float fAlpha;
 	short	c;
-	int	bCloaking;
+	int	bCloaked;
 
 if (!IS_WALL (nWall))
 	return 1;
@@ -657,12 +657,12 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	nDbgSeg = nDbgSeg;
 #endif
 wallP = gameData.walls.walls + nWall;
-bCloaking = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
-if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
+bCloaked = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING) || ((widFlags & WID_CLOAKED_FLAG) != 0);
+if (bCloaked || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (bIsMonitor)
 		return 1;
 	c = wallP->cloakValue;
-	if (bCloaking) {
+	if (bCloaked) {
 		*colorP = cloakColor;
 		*nColor = 1;
 		*bTextured = 0;
@@ -673,10 +673,11 @@ if (bCloaking || (widFlags & WID_TRANSPARENT_FLAG)) {
 	if (gameData.walls.walls [nWall].hps)
 		fAlpha = (float) fabs ((1.0f - (float) gameData.walls.walls [nWall].hps / ((float) F1_0 * 100.0f)));
 	else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
-		fAlpha = COMPETITION ? 3.0f / 2.0f : (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) GR_ACTUAL_FADE_LEVELS;
+		fAlpha = COMPETITION ? 0.5f : (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) GR_ACTUAL_FADE_LEVELS;
 	else
-		fAlpha = extraGameInfo [0].grWallTransparency / (float) GR_ACTUAL_FADE_LEVELS;
+		fAlpha = 1.0f - extraGameInfo [0].grWallTransparency / (float) GR_ACTUAL_FADE_LEVELS;
 	if (fAlpha < 1) {
+		//fAlpha = (float) sqrt (fAlpha);
 		colorP->red = (float) CPAL2Tr (gamePalette, c) / fAlpha;
 		colorP->green = (float) CPAL2Tg (gamePalette, c) / fAlpha;
 		colorP->blue = (float) CPAL2Tb (gamePalette, c) / fAlpha;

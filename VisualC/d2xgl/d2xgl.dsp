@@ -596,18 +596,6 @@ SOURCE=..\..\main\input.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\arch\win32\ipx_mcast4.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\arch\win32\ipx_udp.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\arch\win32\ipx_win.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\main\kconfig.c
 # End Source File
 # Begin Source File
@@ -661,30 +649,6 @@ SOURCE=..\..\main\morph.c
 # Begin Source File
 
 SOURCE=..\..\main\movie.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\multi.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\multibot.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\multimsg.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\netmenu.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\netmisc.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\network.c
 # End Source File
 # Begin Source File
 
@@ -874,10 +838,6 @@ SOURCE=..\..\main\wall.c
 
 SOURCE=..\..\main\weapon.c
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\arch\win32\winnet.c
-# End Source File
 # End Group
 # Begin Group "maths"
 
@@ -961,6 +921,82 @@ SOURCE=..\..\main\aisave.c
 # Begin Source File
 
 SOURCE=..\..\main\aisnipe.c
+# End Source File
+# End Group
+# Begin Group "network"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\arch\win32\ipx_mcast4.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\win32\ipx_udp.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\win32\ipx_win.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\multi.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\multibot.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\multimsg.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\netmenu.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\netmisc.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_init.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_join.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_lib.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_phandler.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_process.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_read.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_send.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_sync.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\arch\win32\winnet.c
 # End Source File
 # End Group
 # End Group
@@ -1366,6 +1402,10 @@ SOURCE=..\..\main\netmisc.h
 # Begin Source File
 
 SOURCE=..\..\main\network.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\network_lib.h
 # End Source File
 # Begin Source File
 

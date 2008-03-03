@@ -443,7 +443,7 @@ void RenderMslLockIndicator (tObject *objP)
 	static tSinCosf	sinCosInd [INDICATOR_POSITIONS];
 	static int			bInitSinCos = 1;
 	static int			nMslLockIndPos [2] = {0, 0};
-	static time_t		t0 [2] = {0, 0}, tDelay [2] = {25, 40};
+	static int			t0 [2] = {0, 0}, tDelay [2] = {25, 40};
 
 	fVector				fPos, fVerts [3];
 	float					r, r2;

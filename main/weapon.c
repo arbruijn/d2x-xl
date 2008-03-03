@@ -997,7 +997,7 @@ return 1;
 
 //called when ammo (for the vulcan cannon) is picked up
 //	Returns the amount picked up
-int PickupAmmo(int classFlag,int nWeaponIndex,int ammoCount, int nPlayer)
+int PickupAmmo (int classFlag,int nWeaponIndex,int ammoCount, int nPlayer)
 {
 	int		max,cutpoint,supposed_weapon=gameData.weapons.nPrimary;
 	int		old_ammo=classFlag;		//kill warning
@@ -1264,11 +1264,12 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 
 //this function is for when the tPlayer intentionally drops a powerup
 //this function is based on DropPowerup()
-int SpitPowerup (tObject *spitter, ubyte id, int seed)
+int SpitPowerup (tObject *spitterP, ubyte id, int seed)
 {
-	short		nObject;
-	tObject	*objP;
+	short			nObject;
+	tObject		*objP;
 	vmsVector	newVelocity, newPos;
+	tPosition	*posP = OBJPOS (spitterP);
 
 #if 0
 if ((gameData.app.nGameMode & GM_NETWORK) &&
@@ -1278,24 +1279,24 @@ if ((gameData.app.nGameMode & GM_NETWORK) &&
 #endif
 d_srand(seed);
 VmVecScaleAdd (&newVelocity,
-					&spitter->mType.physInfo.velocity,
-					&spitter->position.mOrient.fVec,
+					&spitterP->mType.physInfo.velocity,
+					&spitterP->position.mOrient.fVec,
 					i2f (SPIT_SPEED));
 newVelocity.p.x += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity.p.y += (d_rand() - 16384) * SPIT_SPEED * 2;
 newVelocity.p.z += (d_rand() - 16384) * SPIT_SPEED * 2;
 // Give keys zero velocity so they can be tracked better in multi
-if ((gameData.app.nGameMode & GM_MULTI) && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
+if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 	VmVecZero(&newVelocity);
 //there's a piece of code which lets the tPlayer pick up a powerup if
 //the distance between him and the powerup is less than 2 time their
 //combined radii.  So we need to create powerups pretty far out from
 //the player.
-VmVecScaleAdd(&newPos,&spitter->position.vPos,&spitter->position.mOrient.fVec,spitter->size);
-if ((gameData.app.nGameMode & GM_MULTI) && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
+VmVecScaleAdd (&newPos, &posP->vPos, &posP->mOrient.fVec, spitterP->size);
+if (IsMultiGame && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
 	return (-1);
 nObject = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), 
-							  (short) spitter->nSegment, &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
+							  (short) OBJSEG (spitterP), &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
 							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
 if (nObject < 0) {
 	Int3();
@@ -1309,7 +1310,7 @@ objP->mType.physInfo.flags = PF_BOUNCE;
 objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
 objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
 objP->rType.vClipInfo.nCurFrame = 0;
-if (spitter == gameData.objs.console)
+if (spitterP == gameData.objs.console)
 	objP->cType.powerupInfo.flags |= PF_SPAT_BY_PLAYER;
 switch (objP->id) {
 	case POW_CONCUSSION_1:
@@ -1390,8 +1391,7 @@ DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
 if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
 	//if it's one of these, drop some ammo with the weapon
 	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
-	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && 
-		 (LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(GAUSS_INDEX)))
+	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject != -1)

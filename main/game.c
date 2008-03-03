@@ -2415,7 +2415,8 @@ void FireLaser ()
 {
 	int h, i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
-gameData.laser.nGlobalFiringCount += WI_fireCount (i) * gameData.weapons.bFiring [0];
+if (gameData.weapons.firing [0].nDuration)
+	gameData.laser.nGlobalFiringCount += WI_fireCount (i);
 if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringCount) {
 	if ((LOCALPLAYER.energy < F1_0 * 2) && 
 		 (gameData.fusion.xAutoFireTime == 0)) {
@@ -2465,20 +2466,20 @@ if ((gameData.weapons.nPrimary == FUSION_INDEX) && gameData.laser.nGlobalFiringC
 //	-------------------------------------------------------------------------------------------------------
 //	If tPlayer is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
-void PowerupGrabCheat (tObject *player, int nObject)
+void PowerupGrabCheat (tObject *playerP, int nObject)
 {
-	fix	powerup_size = gameData.objs.objects [nObject].size;
-	fix	player_size = player->size;
-	fix	dist;
+	tObject		*powerupP = OBJECTS + nObject;
+	tPosition	*posP = OBJPOS (playerP);
+	vmsVector	vCollision;
 
-Assert (gameData.objs.objects[nObject].nType == OBJ_POWERUP);
-dist = VmVecDistQuick (&gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
-if ((dist < 2 * (powerup_size + player_size)) && 
-	 !(gameData.objs.objects [nObject].flags & OF_SHOULD_BE_DEAD)) {
-	vmsVector	collision_point;
-	VmVecAvg (&collision_point, &gameData.objs.objects[nObject].position.vPos, &player->position.vPos);
-	CollidePlayerAndPowerup (player, gameData.objs.objects + nObject, &collision_point);
-	}
+Assert (powerupP->nType == OBJ_POWERUP);
+if (powerupP->flags & OF_SHOULD_BE_DEAD)
+	return;
+if (VmVecDistQuick (&powerupP->position.vPos, &posP->vPos) >= 
+	 2 * (playerP->size + powerupP->size) / (gameStates.app.bHaveExtraGameInfo [IsMultiGame] + 1))
+	return;
+VmVecAvg (&vCollision, &powerupP->position.vPos, &posP->vPos);
+CollidePlayerAndPowerup (playerP, powerupP, &vCollision);
 }
 
 //	-------------------------------------------------------------------------------------------------------

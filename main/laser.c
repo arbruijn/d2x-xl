@@ -1219,17 +1219,19 @@ switch (nWeapon) {
 		break;
 		}
 
-	case VULCAN_INDEX: {
-		//	Only make sound for 1/4 of vulcan bullets.
-		int	bMakeSound = 1;
-		LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, bMakeSound, 0);
-		if (nFires > 1) {
-			LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
-			if (nFires > 2)
+	case VULCAN_INDEX: 
+		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] ||
+			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY) {
+			//	Only make sound for 1/4 of vulcan bullets.
+			int	bMakeSound = !gameOpts->sound.bGatling;
+			LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, bMakeSound, 0);
+			if (nFires > 1) {
 				LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+				if (nFires > 2)
+					LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+				}
 			}
 		break;
-		}
 
 	case SPREADFIRE_INDEX:
 		if (flags & LASER_SPREADFIRE_TOGGLED) {
@@ -1289,17 +1291,19 @@ switch (nWeapon) {
 		break;
 		}
 
-	case GAUSS_INDEX: {
-		//	Only make sound for 1/4 of vulcan bullets.
-		int	bMakeSound = 1;
-		LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, bMakeSound, 0);
-		if (nFires > 1) {
-			LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
-			if (nFires > 2)
+	case GAUSS_INDEX: 
+		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] ||
+			 gameData.weapons.firing [0].nDuration >= GATLING_DELAY) {
+			//	Only make sound for 1/4 of vulcan bullets.
+			int	bMakeSound = !gameOpts->sound.bGatling;
+			LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, bMakeSound, 0);
+			if (nFires > 1) {
 				LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+				if (nFires > 2)
+					LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+				}
 			}
 		break;
-		}
 
 	case HELIX_INDEX: {
 		int helix_orient;

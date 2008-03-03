@@ -732,9 +732,9 @@ if (bVerbose)
 if (gameStates.app.bD1Mission) {
 	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);
 	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXMINE_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
-	for (i=0; i < MAX_D1_PRIMARY_WEAPONS; i++)
+	for (i = 0; i < MAX_D1_PRIMARY_WEAPONS; i++)
 		LOCALPLAYER.primaryAmmo [i] = nMaxPrimaryAmmo [i];
-	for (i=0; i < MAX_D1_SECONDARY_WEAPONS; i++)
+	for (i = 0; i < MAX_D1_SECONDARY_WEAPONS; i++)
 		LOCALPLAYER.secondaryAmmo [i] = nMaxSecondaryAmmo [i];
 	}
 else {

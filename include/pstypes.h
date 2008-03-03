@@ -37,16 +37,20 @@ typedef unsigned int uint;
 #if defined(_WIN32) || defined(__sun__) // platforms missing (u_)int??_t
 # include <SDL_types.h>
 #endif // macintosh
-#if defined(_WIN32) // platforms missing int??_t
- typedef Sint16 int16_t;
- typedef Sint32 int32_t;
- typedef Sint64 int64_t;
-#endif // defined(_WIN32)
-#if defined(_WIN32) || defined(__sun__) // platforms missing u_int??_t
- typedef Uint16 u_int16_t;
- typedef Uint32 u_int32_t;
- typedef Uint64 u_int64_t;
-#endif // defined(_WIN32) || defined(__sun__)
+#ifndef __MINGW32__
+#	if defined(_WIN32)// platforms missing int??_t
+ 		typedef Sint16 int16_t;
+ 		typedef Sint32 int32_t;
+ 		typedef Sint64 int64_t;
+#	endif // defined(_WIN32)
+#endif
+#if 1//ndef __MINGW32__
+#	if defined(_WIN32) || defined(__sun__) // platforms missing u_int??_t
+ 		typedef Uint16 u_int16_t;
+ 		typedef Uint32 u_int32_t;
+ 		typedef Uint64 u_int64_t;
+#	endif // defined(_WIN32) || defined(__sun__)
+#endif
 
 #ifdef _WIN32
 # include <stdlib.h> // this is where min and max are defined
@@ -59,7 +63,9 @@ typedef unsigned int uint;
 #endif
 
 #if defined(_WIN32)
-# ifndef __MINGW32__
+# ifdef __MINGW32__
+#  include <sys/types.h>
+# else
 #  define PATH_MAX _MAX_PATH
 # endif
 # define FNAME_MAX 256

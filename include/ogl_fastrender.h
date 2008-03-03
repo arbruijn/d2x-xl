@@ -20,7 +20,7 @@ int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, tRgbaColorf 
 
 static inline bool FaceIsAdditive (grsFace *faceP)
 {
-return (faceP->bAdditive == 2) || ((faceP->bAdditive == 1) && !(faceP->bmBot && faceP->bmBot->bmFromPog));
+return (faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->bmFromPog) : faceP->bAdditive;
 }
 
 //------------------------------------------------------------------------------

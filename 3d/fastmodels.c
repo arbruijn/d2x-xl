@@ -374,6 +374,44 @@ return (objP->nType == OBJ_PLAYER) ||
 
 //------------------------------------------------------------------------------
 
+int G3AnimateSubModel (tObject *objP, tG3SubModel *psm)
+{
+	tFiringData	*fP;
+	float			nTimeout;
+	int			nDelay;
+
+if (!psm->nFrames)
+	return 0;
+fP = gameData.multiplayer.weaponStates [objP->id].firing;
+nTimeout = 25 * gameStates.gameplay.slowmo [0].fSpeed;
+if (gameData.weapons.nPrimary == VULCAN_INDEX)
+	nTimeout /= 2;
+if (fP->nStop > 0) {
+	nDelay = gameStates.app.nSDLTicks - fP->nStop;
+	if (nDelay > GATLING_DELAY)
+		return 0;
+	nTimeout += (float) nDelay / 10;
+	}
+else if (fP->nStart > 0) {
+	nDelay = GATLING_DELAY - fP->nDuration;
+	if (nDelay > 0)
+		nTimeout += (float) nDelay / 10;
+	}
+else
+	return 0;
+if (gameStates.app.nSDLTicks - psm->tFrame > nTimeout) {
+	psm->tFrame = gameStates.app.nSDLTicks;
+	psm->iFrame = ++psm->iFrame % psm->nFrames;
+	}
+glPushMatrix ();
+glTranslatef (0, f2fl (psm->vCenter.p.y), 0);
+glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
+glTranslatef (0, -f2fl (psm->vCenter.p.y), 0);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
 void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclusive, grsBitmap **modelBitmaps, 
 						   vmsAngVec *pAnimAngles, vmsVector *vOffset, int bHires, int bUseVBO, int nPass, int bTransparency,
 							int nGunId, int nBombId, int nMissileId, int nMissiles)
@@ -409,23 +447,7 @@ if (vOffset && (nExclusive < 0)) {
 	G3StartInstanceAngles (&vo, &va);
 	VmVecInc (&vo, vOffset);
 	}
-if ((bAnimate = psm->nFrames && gameData.multiplayer.weaponStates [objP->id].bFiring [0])) {
-	if (gameStates.app.nSDLTicks - psm->tFrame > 25 * gameStates.gameplay.slowmo [0].fSpeed) {
-		psm->tFrame = gameStates.app.nSDLTicks;
-		psm->iFrame = ++psm->iFrame % psm->nFrames;
-		}
-#if 1
-	glPushMatrix ();
-	glTranslatef (0, f2fl (psm->vCenter.p.y), 0);
-	glRotatef (360 * (float) psm->iFrame / (float) psm->nFrames, 0, 0, 1);
-	glTranslatef (0, -f2fl (psm->vCenter.p.y), 0);
-#else
-	va.b = (psm->iFrame * F1_0 / psm->nFrames) % F1_0;
-	vo = psm->vCenter;
-	VmVecNegate (&vo);
-	G3StartInstanceAngles (&vo, &va);
-#endif
-	}
+bAnimate = G3AnimateSubModel (objP, psm);
 #if G3_DRAW_SUBMODELS
 // render any dependent submodels
 for (i = 0, j = pm->nSubModels, psm = pm->pSubModels; i < j; i++, psm++)

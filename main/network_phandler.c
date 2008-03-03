@@ -100,11 +100,10 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 //------------------------------------------------------------------------------
 
 #ifdef _WIN32
-typedef int __fastcall tPacketHandler (char *data, int nLength);
+typedef int ( __fastcall * pPacketHandler) (char *dataP, int nLength);
 #else
-typedef int tPacketHandler (char *data, int nLength);
+typedef int (* pPacketHandler) (char *dataP, int nLength);
 #endif
-typedef tPacketHandler *pPacketHandler;
 
 typedef struct tPacketHandlerInfo {
 	pPacketHandler	packetHandler;
@@ -475,29 +474,29 @@ piP->nStatusFilter = nStatusFilter;
 
 void InitPacketHandlers (void)
 {
-PHINIT (PID_GAME_INFO, GameInfoHandler, 0, 0xFFFF);
+PHINIT (PID_GAME_INFO, GameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, 1 << NETSTAT_WAITING);
 PHINIT (PID_LITE_INFO, LiteInfoHandler, LITE_INFO_SIZE, 1 << NETSTAT_BROWSING);
 PHINIT (PID_GAME_LIST, GameListHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_SEND_ALL_GAMEINFO, AllGameInfoHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_ADDPLAYER, AddPlayerHandler, SEQUENCE_PACKET_SIZE, 0xFFFF);
+PHINIT (PID_ADDPLAYER, AddPlayerHandler, SEQUENCE_PACKET_SIZE, (short) 0xFFFF);
 PHINIT (PID_REQUEST, RequestHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
 PHINIT (PID_DUMP, DumpHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
 PHINIT (PID_QUIT_JOINING, QuitJoiningHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING));
 PHINIT (PID_SYNC, SyncHandler, 0, 1 << NETSTAT_WAITING);
-PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, 0xFFFF);
+PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, (short) 0xFFFF);
 PHINIT (PID_UPLOAD, UploadHandler, 0, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_DOWNLOAD, DownloadHandler, 0, 0xFFFF);
-PHINIT (PID_TRACKER_GET_SERVERLIST, TrackerHandler, 0, 0xFFFF);
-PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, 0xFFFF);
+PHINIT (PID_DOWNLOAD, DownloadHandler, 0, (short) 0xFFFF);
+PHINIT (PID_TRACKER_GET_SERVERLIST, TrackerHandler, 0, (short) 0xFFFF);
+PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, (short) 0xFFFF);
 PHINIT (PID_PDATA, PDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_NAKED_PDATA, NakedPDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_OBJECT_DATA, ObjectDataHandler, 0, 1 << NETSTAT_WAITING);
 PHINIT (PID_ENDLEVEL, EndLevelHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_ENDLEVEL_SHORT, EndLevelShortHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_GAME_UPDATE, GameUpdateHandler, 0, 0xFFFF);
-PHINIT (PID_PING_SEND, PingSendHandler, 0, 0xFFFF);
-PHINIT (PID_PING_RETURN, PingReturnHandler, 0, 0xFFFF);
+PHINIT (PID_GAME_UPDATE, GameUpdateHandler, 0, (short) 0xFFFF);
+PHINIT (PID_PING_SEND, PingSendHandler, 0, (short) 0xFFFF);
+PHINIT (PID_PING_RETURN, PingReturnHandler, 0, (short) 0xFFFF);
 PHINIT (PID_NAMES_RETURN, NamesReturnHandler, 0, 1 << NETSTAT_BROWSING);
 PHINIT (PID_GAME_PLAYERS, GamePlayersHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_MISSING_OBJ_FRAMES, MissingObjFramesHandler, 0, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));

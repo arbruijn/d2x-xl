@@ -69,6 +69,10 @@ void LoadFaceBitmaps (tSegment *segP, grsFace *faceP)
 	tSide	*sideP = segP->sides + faceP->nSide;
 	short	nFrame = sideP->nFrame;
 
+#ifdef _DEBUG
+if (FACE_IDX (faceP) == nDbgFace)
+	nDbgFace = nDbgFace;
+#endif
 if ((faceP->nBaseTex < 0) || !faceP->bTextured)
 	return;
 if (faceP->bOverlay)
@@ -751,6 +755,10 @@ int SetupFace (short nSegment, short nSide, tSegment *segP, grsFace *faceP, tFac
 	ubyte	bTextured;
 	int	nColor = 0;
 
+#ifdef _DEBUG
+if (FACE_IDX (faceP) == nDbgFace)
+	nDbgFace = nDbgFace;
+#endif
 faceP->widFlags = WALL_IS_DOORWAY (segP, nSide, NULL);
 if (!(faceP->widFlags & (WID_RENDER_FLAG | WID_RENDPAST_FLAG)))
 	return -1;
