@@ -1834,10 +1834,10 @@ void LoadGameTexts(void);
 #define TXT_SHIP_RENDEROPTIONS	GT(1041)
 #define TXT_MSL_STARTSPEED			GT(1042)
 #define TXT_GATLING_SOUND			GT(1043)
+#define TXT_SPINUP_SOUND			GT(1044)
 
 #if 0
 
-#define TXT_				GT(1044)
 #define TXT_				GT(1045)
 #define TXT_				GT(1046)
 #define TXT_				GT(1047)
@@ -2364,6 +2364,7 @@ void LoadGameTexts(void);
 #define HTX_RENDER_SHIPOPTS		HT(350)			
 #define HTX_MSL_STARTSPEED			HT(351)			
 #define HTX_GATLING_SOUND			HT(352)			
+#define HTX_SPINUP_SOUND			HT(353)			
 
 #if 0
 

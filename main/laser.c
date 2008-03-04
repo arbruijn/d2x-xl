@@ -1006,22 +1006,16 @@ if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xG
 	 (gameData.time.xGame < gameData.laser.xLastFiredTime))
 	gameData.laser.xNextFireTime = gameData.time.xGame;
 gameData.laser.xLastFiredTime = gameData.time.xGame;
-nPrimaryAmmo = (gameData.weapons.nPrimary == GAUSS_INDEX)? playerP->primaryAmmo [VULCAN_INDEX] : playerP->primaryAmmo [gameData.weapons.nPrimary];
+if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
+	playerP->primaryAmmo [gameData.weapons.nPrimary];
+else {
+	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameOpts->sound.bSpinup && 
+		 (gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart < GATLING_DELAY))
+		return;
+	nPrimaryAmmo = playerP->primaryAmmo [VULCAN_INDEX];
+	}
 if	 ((playerP->energy < xEnergyUsed) || (nPrimaryAmmo < nAmmoUsed))
 	AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
-#if 0
-if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX))
-	nAmmo = LOCALPLAYER.primaryAmmo [1];
-else
-	nAmmo = LOCALPLAYER.energy;
-HUDMessage (0, "ammo: %d", nAmmo);
-if (nAmmo <= 0) {
-	gameData.laser.nGlobalFiringCount = 0;
-	Controls [0].firePrimaryState = 0;
-	Controls [0].firePrimaryDownCount = 0;
-	return;
-	}
-#endif
 
 while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 	if	((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)) {
@@ -1220,8 +1214,7 @@ switch (nWeapon) {
 		}
 
 	case VULCAN_INDEX: 
-		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] ||
-			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY)) {
+		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] || (gameData.weapons.firing [0].nDuration >= GATLING_DELAY)) {
 			//	Only make sound for 1/4 of vulcan bullets.
 			int	bMakeSound = !gameOpts->sound.bGatling;
 			LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, bMakeSound, 0);
@@ -1292,8 +1285,7 @@ switch (nWeapon) {
 		}
 
 	case GAUSS_INDEX: 
-		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] ||
-			 gameData.weapons.firing [0].nDuration >= GATLING_DELAY) {
+		if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame] || (gameData.weapons.firing [0].nDuration >= GATLING_DELAY)) {
 			//	Only make sound for 1/4 of vulcan bullets.
 			int	bMakeSound = !gameOpts->sound.bGatling;
 			LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, bMakeSound, 0);

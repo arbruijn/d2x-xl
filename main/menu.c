@@ -248,6 +248,7 @@ static struct {
 	int	nRedbook;
 	int	nChannels;
 	int	nVolume;
+	int	nGatling;
 } soundOpts;
 
 static struct {
@@ -4903,6 +4904,10 @@ void SoundMenuCallback (int nitems, tMenuItem * m, int *nLastKey, int citem)
 	nitems = nitems;          
 	*nLastKey = *nLastKey;
 
+if (gameOpts->sound.bGatling != m [soundOpts.nGatling].value) {
+	gameOpts->sound.bGatling = m [soundOpts.nGatling].value;
+	*nLastKey = -2;
+	}
 if (gameConfig.nDigiVolume != m [soundOpts.nDigiVol].value) {
 	gameConfig.nDigiVolume = m [soundOpts.nDigiVol].value;
 	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8);
@@ -4984,13 +4989,14 @@ void SoundMenu ()
    tMenuItem	m [10];
 	char			szChannels [50], szVolume [50];
 	int			i, opt, choice = 0, 
-					optReverse, optShipSound = -1, optMissileSound = -1, optGatlingSound = -1,
+					optReverse, optShipSound = -1, optMissileSound = -1, optSpinupSound = -1, 
 					bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
+	soundOpts.nGatling = -1;
 	ADD_SLIDER (opt, TXT_FX_VOLUME, gameConfig.nDigiVolume, 0, 8, KEY_F, HTX_ONLINE_MANUAL);
 	soundOpts.nDigiVol = opt++;
 	ADD_SLIDER (opt, gameStates.sound.bRedbookEnabled ? TXT_CD_VOLUME : TXT_MIDI_VOLUME, 
@@ -5016,7 +5022,8 @@ do {
 	if (gameStates.app.bNostalgia || !gameOpts->sound.xCustomSoundVolume) 
 		optShipSound = 
 		optMissileSound =
-		optGatlingSound = -1;
+		optSpinupSound =
+		soundOpts.nGatling = -1;
 	else {
 		ADD_TEXT (opt, "", 0);
 		opt++;
@@ -5025,7 +5032,11 @@ do {
 		ADD_CHECK (opt, TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
 		optMissileSound = opt++;
 		ADD_CHECK (opt, TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_M, HTX_GATLING_SOUND);
-		optGatlingSound = opt++;
+		soundOpts.nGatling = opt++;
+		if (gameOpts->sound.bGatling) {
+			ADD_CHECK (opt, TXT_SPINUP_SOUND, gameOpts->sound.bSpinup, KEY_M, HTX_SPINUP_SOUND);
+			optSpinupSound = opt++;
+			}
 		}
 	ADD_TEXT (opt, "", 0);
 	opt++;
@@ -5047,7 +5058,8 @@ else if (!bSongPlaying)
 if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bShip, optShipSound);
 	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
-	GET_VAL (gameOpts->sound.bGatling, optGatlingSound);
+	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
+	GET_VAL (gameOpts->sound.bSpinup, optSpinupSound);
 	if (!(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 	}
