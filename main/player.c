@@ -107,7 +107,7 @@ else {
 		if (gameData.weapons.firing [0].nStart <= 0) {
 			gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
 			if (!gameOpts->sound.bSpinup)
-				gameData.weapons.firing [0].nStart = -= GATLING_DELAY;
+				gameData.weapons.firing [0].nStart -= GATLING_DELAY;
 			else if (bGatling && gameOpts->sound.bGatling)
 				DigiPlayWAV ("gatling-speedup.wav", F1_0);
 			}
