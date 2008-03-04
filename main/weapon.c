@@ -289,7 +289,7 @@ return 1;
 //		HAS_ENERGY_FLAG
 //		HAS_AMMO_FLAG
 // See weapon.h for bit values
-int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer)
+int PlayerHasWeapon (int nWeapon, int bSecondary, int nPlayer, int bAll)
 {
 	int		returnValue = 0;
 	int		nWeaponIndex;
@@ -307,24 +307,24 @@ if (!bSecondary) {
 
 	if (nWeapon == SUPER_LASER_INDEX) {
 		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) &&
-				(playerP->laserLevel > MAX_LASER_LEVEL))
+				(bAll || (playerP->laserLevel > MAX_LASER_LEVEL)))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == LASER_INDEX) {
 		if ((playerP->primaryWeaponFlags & (1 << LASER_INDEX)) &&
-			 (playerP->laserLevel <= MAX_LASER_LEVEL))
+			 (bAll || (playerP->laserLevel <= MAX_LASER_LEVEL)))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == SPREADFIRE_INDEX) {
 		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) &&
-			!(extraGameInfo [0].bSmartWeaponSwitch && 
-				(playerP->primaryWeaponFlags & (1 << HELIX_INDEX))))
+			 (bAll || !(extraGameInfo [0].bSmartWeaponSwitch && 
+							(playerP->primaryWeaponFlags & (1 << HELIX_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else if (nWeapon == VULCAN_INDEX) {
 		if ((playerP->primaryWeaponFlags & (1 << nWeapon)) &&
-			!(extraGameInfo [0].bSmartWeaponSwitch && 
-				(playerP->primaryWeaponFlags & (1 << GAUSS_INDEX))))
+			(bAll || !(extraGameInfo [0].bSmartWeaponSwitch && 
+						  (playerP->primaryWeaponFlags & (1 << GAUSS_INDEX)))))
 			returnValue |= HAS_WEAPON_FLAG;
 		}
 	else {
@@ -549,17 +549,17 @@ if ((current == nWeapon) || (current == nWeapon + SUPER_WEAPON)) {
 	nWeapon %= SUPER_WEAPON;
 	if (!bLastWasSuper)
 		nWeapon += SUPER_WEAPON;
-	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1);
+	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1, 0);
 	}
 else {
 	//go to last-select version of requested missile
 	if (bLastWasSuper && (nWeapon < SUPER_WEAPON))
 		nWeapon += SUPER_WEAPON;
-	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1);
+	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1, 0);
 	//if don't have last-selected, try other version
 	if ((nWeaponStatus & hasFlag) != hasFlag) {
 		nWeapon = 2 * nWeaponSave + SUPER_WEAPON - nWeapon;
-		nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1);
+		nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1, 0);
 		if ((nWeaponStatus & hasFlag) != hasFlag)
 			nWeapon = 2 * nWeaponSave + SUPER_WEAPON - nWeapon;
 		}
@@ -618,7 +618,7 @@ void AutoSelectWeapon (int nWeaponType, int bAutoSelect)
 if (bAutoSelect && !gameOpts->gameplay.nAutoSelectWeapon)
 	return;
 if (!nWeaponType) {
-	r = PlayerHasWeapon (WeaponId (gameData.weapons.nPrimary), 0, -1);
+	r = PlayerHasWeapon (WeaponId (gameData.weapons.nPrimary), 0, -1, 0);
 	if ((r != HAS_ALL) || bCycling) {
 		int	bTryAgain = 1;
 		int	iCurWeapon = POrderList (WeaponId (gameData.weapons.nOverridden));
@@ -672,7 +672,7 @@ if (!nWeaponType) {
 				return;			// Tried all weapons!
 				} 
 			else {
-				if ((nNewWeapon != 255) && (PlayerHasWeapon (nNewWeapon, 0, -1) == HAS_ALL)) {
+				if ((nNewWeapon != 255) && (PlayerHasWeapon (nNewWeapon, 0, -1, 0) == HAS_ALL)) {
 					SelectWeapon ((nNewWeapon == SUPER_LASER_INDEX) ? LASER_INDEX : nNewWeapon, 0, 1, 1);
 					bLastPrimaryWasSuper [nNewWeapon % SUPER_WEAPON] = (nNewWeapon >= SUPER_WEAPON);
 					return;
@@ -683,7 +683,7 @@ if (!nWeaponType) {
 	} 
 else {
 	Assert(nWeaponType==1);
-	r = PlayerHasWeapon(gameData.weapons.nSecondary, 1, -1);
+	r = PlayerHasWeapon(gameData.weapons.nSecondary, 1, -1, 0);
 	if (r != HAS_ALL || bCycling) {
 		int	bTryAgain = 1;
 		int	iCurWeapon = SOrderList (gameData.weapons.nSecondary);
@@ -710,7 +710,7 @@ else {
 					HUDInitMessage (TXT_NO_SECAVAIL);
 				return;				// Tried all weapons!
 				}
-			else if (PlayerHasWeapon(secondaryOrder [iCurWeapon], 1, -1) == HAS_ALL) {
+			else if (PlayerHasWeapon(secondaryOrder [iCurWeapon], 1, -1, 0) == HAS_ALL) {
 				SelectWeapon(secondaryOrder [iCurWeapon], 1, 1, 1);
 				bTryAgain = 0;
 				}

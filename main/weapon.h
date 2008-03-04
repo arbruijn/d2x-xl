@@ -281,7 +281,7 @@ extern sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES];
 //      HAS_ENERGY_FLAG
 //      HAS_AMMO_FLAG
 //      HAS_SUPER_FLAG
-extern int PlayerHasWeapon(int weapon_num, int secondaryFlag, int nPlayer);
+extern int PlayerHasWeapon(int weapon_num, int secondaryFlag, int nPlayer, int bAll);
 
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it

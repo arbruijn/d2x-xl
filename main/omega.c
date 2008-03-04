@@ -284,7 +284,7 @@ if (gameData.omega.xCharge [IsMultiGame] == MAX_OMEGA_CHARGE) {
 	DestroyOmegaLightnings ();
 	return;
 	}
-if (!(PlayerHasWeapon (OMEGA_INDEX, 0, -1) & HAS_WEAPON_FLAG)) {
+if (!(PlayerHasWeapon (OMEGA_INDEX, 0, -1, 0) & HAS_WEAPON_FLAG)) {
 	DestroyOmegaLightnings ();
 	return;
 	}

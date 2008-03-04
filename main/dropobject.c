@@ -523,7 +523,7 @@ if (( (nWeapon == VULCAN_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && 
 else if (( (nWeapon == GAUSS_INDEX) || (delObjP->containsId == POW_VULCAN_AMMO)) && (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] >= VULCAN_AMMO_MAX))
 	delObjP->containsCount = 0;
 else if (nWeapon != -1) {
-	if ((PlayerHasWeapon (nWeapon, 0, -1) & HAS_WEAPON_FLAG) || 
+	if ((PlayerHasWeapon (nWeapon, 0, -1, 1) & HAS_WEAPON_FLAG) || 
 			WeaponNearby (delObjP, delObjP->containsId)) {
 		if (d_rand () > 16384) {
 			delObjP->containsType = OBJ_POWERUP;

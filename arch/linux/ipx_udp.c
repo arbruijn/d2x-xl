@@ -166,6 +166,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "ipx_drv.h"
 #include "ipx.h"
 #include "network.h"
+#include "network_lib.h"
 #include "tracker.h"
 #include "args.h"
 #include "u_mem.h"

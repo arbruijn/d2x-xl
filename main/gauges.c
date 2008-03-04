@@ -2162,7 +2162,7 @@ xy secondary_offsets [4] =	{{-24, 2}, 	{-12, 0}, {-12, 1}, {-6, -2}};
 void OglDrawMouseIndicator (void);
 
 //draw the reticle
-void ShowReticle (int force_big_one)
+void ShowReticle (int bForceBig)
 {
 	int x, y;
 	int bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
@@ -2178,12 +2178,12 @@ x = grdCurCanv->cv_w / 2;
 y = grdCurCanv->cv_h / ((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 : 2);
 bLaserReady = AllowedToFireLaser ();
 bMissileReady = AllowedToFireMissile (-1, 1);
-bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1);
-bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1);
-nPrimaryBm = (bLaserReady && bLaserAmmo==HAS_ALL);
-nSecondaryBm = (bMissileReady && bMissileAmmo==HAS_ALL);
-if (nPrimaryBm && (gameData.weapons.nPrimary==LASER_INDEX) && 
-		(LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
+bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
+bMissileAmmo = PlayerHasWeapon (gameData.weapons.nSecondary, 1, -1, 1);
+nPrimaryBm = bLaserReady && (bLaserAmmo == HAS_ALL);
+nSecondaryBm = bMissileReady && (bMissileAmmo == HAS_ALL);
+if (nPrimaryBm && (gameData.weapons.nPrimary == LASER_INDEX) && 
+	 (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS))
 	nPrimaryBm++;
 
 if (secondaryWeaponToGunNum [gameData.weapons.nSecondary] == 7)
@@ -2203,12 +2203,11 @@ if (gameStates.render.bExternalView && (!IsMultiGame || EGI_FLAG (bEnableCheats,
 #endif
 	return;
 cmScaleX *= HUD_ASPECT;
-if (gameStates.ogl.nReticle==2 || (gameStates.ogl.nReticle && grdCurCanv->cvBitmap.bmProps.w > 320)){               
+if ((gameStates.ogl.nReticle == 2) || (gameStates.ogl.nReticle && grdCurCanv->cvBitmap.bmProps.w > 320))             
    OglDrawReticle (nCrossBm, nPrimaryBm, nSecondaryBm);
-  } 
 else {
 	bHiresReticle = (gameStates.render.fonts.bHires != 0);
-	bSmallReticle = !(grdCurCanv->cvBitmap.bmProps.w * 3 > gameData.render.window.wMax*2 || force_big_one);
+	bSmallReticle = !bForceBig && (grdCurCanv->cvBitmap.bmProps.w * 3 <= gameData.render.window.wMax * 2);
 	ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 
 	nGaugeIndex = (bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm;

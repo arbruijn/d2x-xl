@@ -55,6 +55,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //end addition -MM
 #include "byteswap.h"
 #include "network.h"
+#include "network_lib.h"
 #include "../../main/player.h"	/* for gameData.multiplayer.players */
 #include "../../main/multi.h"	/* for netPlayers */
 #include "tracker.h"

@@ -428,7 +428,7 @@ if (!(gameStates.app.bPlayerIsDead || gameStates.render.automap.bDisplay)) { {
 		DoSelectWeapon (0,0);
 		/*
 		for (i=MAX_PRIMARY_WEAPONS;i<MAX_PRIMARY_WEAPONS+NEWPRIMS;i++)
-			if (primary_order [i]>primary_order [valu]&&PlayerHasWeapon (i,0))
+			if (primary_order [i]>primary_order [valu]&&PlayerHasWeapon (i,0,1))
 				valu = i;
 		LaserPowSelected = valu;
 		*/
