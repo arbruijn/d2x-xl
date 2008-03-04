@@ -59,7 +59,7 @@ void SetDynLightColor (short nLight, float red, float green, float blue, float b
 	tDynLight	*pl = gameData.render.lights.dynamic.lights + nLight;
 	int			i;
 
-if (pl->nType ? gameOpts->render.color.bGunLight : gameOpts->render.color.bAmbientLight) {
+if ((pl->nType == 1) ? gameOpts->render.color.bGunLight : gameOpts->render.color.bAmbientLight) {
 	pl->color.red = red;
 	pl->color.green = green;
 	pl->color.blue = blue;
@@ -335,7 +335,6 @@ pl->bSpot = 0;
 //0: static light
 //2: object/lightning
 //3: headlight
-SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 if (nObject >= 0) {
 	pl->nType = 2;
 	pl->vPos = gameData.objs.objects [nObject].position.vPos;
@@ -407,6 +406,7 @@ LogErr ("adding light %d,%d\n",
 #endif
 pl->bOn = 1;
 pl->bTransform = 1;
+SetDynLightColor (gameData.render.lights.dynamic.nLights, pc->red, pc->green, pc->blue, f2fl (xBrightness));
 return gameData.render.lights.dynamic.nLights++;
 }
 
