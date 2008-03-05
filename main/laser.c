@@ -1007,11 +1007,11 @@ if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xG
 	gameData.laser.xNextFireTime = gameData.time.xGame;
 gameData.laser.xLastFiredTime = gameData.time.xGame;
 if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
-	playerP->primaryAmmo [gameData.weapons.nPrimary];
+	nPrimaryAmmo = playerP->primaryAmmo [gameData.weapons.nPrimary];
 else {
-	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && gameOpts->sound.bSpinup && 
+	if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) && 
 		 (gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart < GATLING_DELAY))
-		return;
+		return 0;
 	nPrimaryAmmo = playerP->primaryAmmo [VULCAN_INDEX];
 	}
 if	 ((playerP->energy < xEnergyUsed) || (nPrimaryAmmo < nAmmoUsed))

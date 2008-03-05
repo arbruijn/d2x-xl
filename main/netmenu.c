@@ -2534,6 +2534,7 @@ else
 		INITFLAGS ("Ship Fx: ");
 		ADDFLAG (AXI.bPlayerShield, "Shield");
 		ADDFLAG (AXI.bDamageExplosions, "Damage");
+		ADDFLAG (AXI.bGatlingSpeedUp, "Gatling speedup");
 		}
 	else
 		sprintf (mTexts [opt], "Ship Fx: None");

@@ -318,6 +318,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bUseLightnings, 0, 0);
 		RP (extraGameInfo [i].bUseHitAngles, 0, 0);
 		RP (extraGameInfo [i].bWiggle, 0, 0);
+		RP (extraGameInfo [i].bGatlingSpeedUp, i, 0);
 
 		RP (extraGameInfo [i].grWallTransparency, 0, 0);
 
@@ -510,7 +511,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].sound.bGatling, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
 		RP (gameOptions [i].sound.bShip, i, 0);
-		RP (gameOptions [i].sound.bSpinup, i, 0);
 		RP (gameOptions [i].sound.xCustomSoundVolume, i, 0);
 
 		RP (gameOptions [i].gameplay.bIdleAnims, i, 0);
@@ -815,6 +815,7 @@ tParamValue defaultParams [] = {
 	{"extraGameInfo[0].bUseSmoke", "1"},
 	{"extraGameInfo[0].bUseLightnings", "1"},
 	{"extraGameInfo[0].bUseHitAngles", "0"},
+	{"extraGameInfo[0].bGatlingSpeedUp", "0"},
 	{"extraGameInfo[0].bWiggle", "1"},
 	{"extraGameInfo[0].grWallTransparency", "19"},
 	{"extraGameInfo[0].nFusionRamp", "4"},
@@ -1062,7 +1063,6 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].sound.bGatling", "0"},
 	{"gameOptions[0].sound.bMissiles", "0"},
 	{"gameOptions[0].sound.bShip", "0"},
-	{"gameOptions[0].sound.bSpinup", "0"},
 	{"gameOptions[0].sound.xCustomVolume", "5"},
 	{"gameOptions[0].app.bExpertMode", "1"},
 	{"gameOptions[0].app.nVersionFilter", "3"},

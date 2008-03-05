@@ -493,21 +493,28 @@ void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLi
 							 float fIntensity, tIntervalf *zRangeP, int bAdditive)
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
-	tFaceColor	*pf;
+	tRgbaColorf	color;
 	grsBitmap	*bmP;
-	float			a;
 	int			i;
 
 fLight /= 4;
 if (fLight < 0.01f)
 	return;
-a = VmVecMagf (vCenter);
-if (a < zRangeP->fRad)
-	fIntensity *= a / zRangeP->fRad;
-pf = gameData.render.color.textures + nTexture;
-a = (float) (pf->color.red * 3 + pf->color.green * 5 + pf->color.blue * 2) / 30 * 2;
-a *= fIntensity;
-if (a < 0.01f)
+color.alpha = VmVecMagf (vCenter);
+if (color.alpha < zRangeP->fRad)
+	fIntensity *= color.alpha / zRangeP->fRad;
+
+if (gameOpts->render.color.bAmbientLight) {
+	color = gameData.render.color.textures [nTexture].color;
+	color.alpha = (float) (color.red * 3 + color.green * 5 + color.blue * 2) / 30 * 2;
+	}
+else {
+	color.alpha = f2fl (IsLight (nTexture));
+	color.red = color.green = color.blue = color.alpha / 2;
+	color.alpha *= 2.0f / 3.0f;
+	}
+color.alpha *= fIntensity;
+if (color.alpha < 0.01f)
 	return;
 glEnable (GL_TEXTURE_2D);
 bmP = bAdditive ? bmpGlare : bmpCorona;
@@ -516,10 +523,10 @@ if (OglBindBmTex (bmP, 1, -1))
 OglTexWrap (bmP->glTexture, GL_CLAMP);
 glDisable (GL_CULL_FACE);
 if (bAdditive) {
-	fLight *= a;
+	fLight *= color.alpha;
 	glBlendFunc (GL_ONE, GL_ONE);
 	}
-glColor4f (pf->color.red * fLight, pf->color.green * fLight, pf->color.blue * fLight, a);
+glColor4fv ((GLfloat *) &color);
 glBegin (GL_QUADS);
 for (i = 0; i < 4; i++) {
 	glTexCoord2fv ((GLfloat *) (tcGlare + i));
@@ -591,7 +598,10 @@ else {
 		glBlendFunc (GL_ONE, GL_ONE);	
 	bmP = bAdditive ? bmpGlare : bmpCorona;
 	}
-color = gameData.render.color.textures [nTexture].color;
+if (gameOpts->render.color.bAmbientLight)
+	color = gameData.render.color.textures [nTexture].color;
+else
+	color.red = color.green = color.blue = f2fl (IsLight (nTexture)) / 2;
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else

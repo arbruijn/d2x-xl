@@ -633,7 +633,7 @@ for (segP = gameData.segs.segments, nSegment = 0; nSegment <= gameData.segs.nLas
 			if (connSegP->sides [nConnSide].nOvlTex == segP->sides [nSide].nOvlTex)
 				continue;		//skip this one
 			}
-		COMPUTE_SIDE_CENTER (&v,segP,nSide);
+		COMPUTE_SIDE_CENTER (&v, segP, nSide);
 		DigiLinkSoundToPos (nSound, nSegment, nSide, &v, 1, F1_0 / 2);
 		}
 
@@ -873,6 +873,7 @@ gameData.songs.tSlowDown = 0;
 gameStates.gameplay.bKillBossCheat = 0;
 gameStates.render.nFlashScale = F1_0;
 gameOpts->app.nScreenShotInterval = 0;	//better reset this every time a level is loaded
+DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 memset (gameData.render.mine.bObjectRendered, 0xff, sizeof (gameData.render.mine.bObjectRendered));
 memset (gameData.render.mine.bRenderSegment, 0xff, sizeof (gameData.render.mine.bRenderSegment));
@@ -880,6 +881,7 @@ memset (gameData.render.mine.bCalcVertexColor, 0, sizeof (gameData.render.mine.b
 memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.weaponStates));
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
+memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/LogErr ("   stopping music\n");
@@ -1180,6 +1182,7 @@ void DoEndLevelScoreGlitz (int network)
 	int			bIsLastLevel;
 	int			nMineLevel = 0;
 
+DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 DigiStopAllChannels ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 if (gameStates.app.bHaveExtraData)

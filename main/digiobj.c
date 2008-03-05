@@ -495,7 +495,7 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	DigiPlaySample3D (nOrgSound, pan, volume, 0, pos, NULL);
 	return -1;
 	}
-for (i=0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
+for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
 	if (soP->flags == 0)
 		break;
 if (i == MAX_SOUND_OBJECTS) {
@@ -512,6 +512,7 @@ soP->linkType.pos.position = *pos;
 soP->nSound = nSound;
 soP->maxVolume = maxVolume;
 soP->maxDistance = maxDistance;
+*soP->szSound = '\0';
 soP->volume = 0;
 soP->pan = 0;
 soP->nDecay = 0;
@@ -528,7 +529,7 @@ else {
 	DigiStartSoundObject (i);
 	// If it's a one-shot sound effect, and it can't start right away, then
 	// just cancel it and be done with it.
-	if ((soP->channel < 0) && (! (soP->flags & SOF_PLAY_FOREVER)))    {
+	if ((soP->channel < 0) && (! (soP->flags & SOF_PLAY_FOREVER))) {
 		soP->flags = 0;
 		return -1;
 		}
@@ -586,14 +587,16 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordKillSoundLinkedToObject (nObject);
 #endif
 
+if (nObject == LOCALPLAYER.nObject) {
+	gameData.weapons.firing [0].bSound = 0;
+	gameData.multiplayer.bMoving = -1;
+	}
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)	{
 	if ((soP->flags & (SOF_USED | SOF_LINK_TO_OBJ)) == (SOF_USED | SOF_LINK_TO_OBJ))	{
 		if (soP->linkType.obj.nObject == nObject)	{
 			if (soP->channel > -1)	{
 				DigiStopSound (soP->channel);
 				gameStates.sound.digi.nActiveObjects--;
-				if (nObject == LOCALPLAYER.nObject)
-					gameData.multiplayer.bMoving = -1;
 				}
 			soP->channel = -1;
 			soP->flags = 0;	// Mark as dead, so some other sound can use this sound

@@ -4986,10 +4986,10 @@ citem++;		//kill warning
 
 void SoundMenu ()
 {
-   tMenuItem	m [10];
+   tMenuItem	m [20];
 	char			szChannels [50], szVolume [50];
 	int			i, opt, choice = 0, 
-					optReverse, optShipSound = -1, optMissileSound = -1, optSpinupSound = -1, 
+					optReverse, optShipSound = -1, optMissileSound = -1, optSpeedUpSound = -1, 
 					bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 gameStates.sound.nSoundChannels = SoundChannelIndex ();
@@ -5022,7 +5022,7 @@ do {
 	if (gameStates.app.bNostalgia || !gameOpts->sound.xCustomSoundVolume) 
 		optShipSound = 
 		optMissileSound =
-		optSpinupSound =
+		optSpeedUpSound =
 		soundOpts.nGatling = -1;
 	else {
 		ADD_TEXT (opt, "", 0);
@@ -5031,11 +5031,11 @@ do {
 		optShipSound = opt++;
 		ADD_CHECK (opt, TXT_MISSILE_SOUND, gameOpts->sound.bMissiles, KEY_M, HTX_MISSILE_SOUND);
 		optMissileSound = opt++;
-		ADD_CHECK (opt, TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_M, HTX_GATLING_SOUND);
+		ADD_CHECK (opt, TXT_GATLING_SOUND, gameOpts->sound.bGatling, KEY_G, HTX_GATLING_SOUND);
 		soundOpts.nGatling = opt++;
 		if (gameOpts->sound.bGatling) {
-			ADD_CHECK (opt, TXT_SPINUP_SOUND, gameOpts->sound.bSpinup, KEY_M, HTX_SPINUP_SOUND);
-			optSpinupSound = opt++;
+			ADD_CHECK (opt, TXT_SPINUP_SOUND, extraGameInfo [0].bGatlingSpeedUp, KEY_U, HTX_SPINUP_SOUND);
+			optSpeedUpSound = opt++;
 			}
 		}
 	ADD_TEXT (opt, "", 0);
@@ -5059,7 +5059,7 @@ if (!gameStates.app.bNostalgia) {
 	GET_VAL (gameOpts->sound.bShip, optShipSound);
 	GET_VAL (gameOpts->sound.bMissiles, optMissileSound);
 	GET_VAL (gameOpts->sound.bGatling, soundOpts.nGatling);
-	GET_VAL (gameOpts->sound.bSpinup, optSpinupSound);
+	GET_VAL (extraGameInfo [0].bGatlingSpeedUp, optSpeedUpSound);
 	if (!(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
 	}

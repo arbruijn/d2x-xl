@@ -13,6 +13,7 @@
 #include "inferno.h"
 #include "multi.h"
 #include "input.h"
+#include "network.h"
 
 #ifdef RCS
 static char rcsid[] = "$Id: player.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
@@ -106,14 +107,16 @@ else {
 	if ((Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0)) {
 		if (gameData.weapons.firing [0].nStart <= 0) {
 			gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
-			if (!gameOpts->sound.bSpinup)
+			if (!EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
 				gameData.weapons.firing [0].nStart -= GATLING_DELAY;
 			else if (bGatling && gameOpts->sound.bGatling)
 				DigiPlayWAV ("gatling-speedup.wav", F1_0);
 			}
 		gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart;
 		gameData.weapons.firing [0].nStop = 0;
-		if (bGatling && gameOpts->sound.bGatling && (gameData.weapons.firing [0].nDuration >= GATLING_DELAY) && (gameData.weapons.firing [0].bSound <= 0)) {
+		if (bGatling && gameOpts->sound.bGatling && 
+			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY) && 
+			 (gameData.weapons.firing [0].bSound <= 0)) {
 			if (gameData.weapons.nPrimary == VULCAN_INDEX)
 				DigiLinkSoundToObject3 (-1, LOCALPLAYER.nObject, 1, F1_0, i2f (256), -1, -1, "vulcan-firing.wav", 1, SOUNDCLASS_PLAYER);
 			else if (gameData.weapons.nPrimary == GAUSS_INDEX)

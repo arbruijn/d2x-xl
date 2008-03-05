@@ -1793,7 +1793,7 @@ char *defaultGameTexts [][2] = {
 	{"~Schiffs-Einstellungen...", "s~Hip options..."},
 	{"Raketen~Start: %s", "missile launch ~Speed: %s"},
 	{"Gatlinggeraeusche erzeugen", "play ~Gatling sounds"},
-	{"Anlaufgeraeusch abspielen", "play sp~Inup sound"},
+	{"Anlaufgeraeusch abspielen", "play speed~Up sound"},
 #if 0
 	{"", ""},
 #endif
