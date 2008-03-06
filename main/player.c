@@ -91,9 +91,66 @@ return 0;
 
 //-------------------------------------------------------------------------
 
+void UpdateFiringState (void)
+{
+	int	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX),
+			bGatlingSound = (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+
+if ((Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0)) {
+	if (gameData.weapons.firing [0].nStart <= 0) {
+		gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
+		if (!EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
+			gameData.weapons.firing [0].nStart -= GATLING_DELAY;
+		else if (bGatling && bGatlingSound)
+			DigiPlayWAV ("gatling-speedup.wav", F1_0);
+		}
+	gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart;
+	gameData.weapons.firing [0].nStop = 0;
+	if (bGatling && gameOpts->sound.bGatling && 
+			(gameData.weapons.firing [0].nDuration >= GATLING_DELAY) && 
+			(gameData.weapons.firing [0].bSound <= 0)) {
+		if (gameData.weapons.nPrimary == VULCAN_INDEX)
+			DigiLinkSoundToObject3 (-1, LOCALPLAYER.nObject, 1, F1_0, i2f (256), -1, -1, "vulcan-firing.wav", 1, SOUNDCLASS_PLAYER);
+		else if (gameData.weapons.nPrimary == GAUSS_INDEX)
+			DigiLinkSoundToObject3 (-1, LOCALPLAYER.nObject, 1, F1_0, i2f (256), -1, -1, "gauss-firing.wav", 1, SOUNDCLASS_PLAYER);
+		gameData.weapons.firing [0].bSound = 1;
+		}
+	}
+else if (gameData.weapons.firing [0].nDuration) {
+	gameData.weapons.firing [0].nStop = gameStates.app.nSDLTicks;
+	gameData.weapons.firing [0].nDuration = 
+	gameData.weapons.firing [0].nStart = 0;
+	if (bGatling) {
+		if (gameData.weapons.firing [0].bSound > 0) {
+			DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+			gameData.weapons.firing [0].bSound = 0;
+			}
+		if (bGatlingSound)
+			DigiPlayWAV ("gatling-slowdown.wav", F1_0);
+		}
+	}
+if ((Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0)) {
+	if (gameData.weapons.firing [1].nStart <= 0)
+		gameData.weapons.firing [1].nStart = gameStates.app.nSDLTicks;
+	gameData.weapons.firing [1].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [1].nStart;
+	gameData.weapons.firing [1].nStop = 0;
+	}
+else if (gameData.weapons.firing [1].nDuration) {
+	gameData.weapons.firing [1].nStop = gameStates.app.nSDLTicks;
+	gameData.weapons.firing [1].nDuration = 
+	gameData.weapons.firing [1].nStart = 0;
+	if (bGatling && (gameData.weapons.firing [0].bSound > 0)) {
+		DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
+		gameData.weapons.firing [0].bSound = 0;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------
+
 void UpdatePlayerWeaponInfo (void)
 {
-	int				i, bUpdate = 0, bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
+	int				i, bUpdate = 0;
 	tWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
 
 if (gameStates.app.bPlayerIsDead)
@@ -103,56 +160,8 @@ if (gameStates.app.bPlayerIsDead)
 	gameData.weapons.firing [1].nStart = 
 	gameData.weapons.firing [1].nDuration =
 	gameData.weapons.firing [1].nStop = 0;
-else {
-	if ((Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0)) {
-		if (gameData.weapons.firing [0].nStart <= 0) {
-			gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
-			if (!EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
-				gameData.weapons.firing [0].nStart -= GATLING_DELAY;
-			else if (bGatling && gameOpts->sound.bGatling)
-				DigiPlayWAV ("gatling-speedup.wav", F1_0);
-			}
-		gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart;
-		gameData.weapons.firing [0].nStop = 0;
-		if (bGatling && gameOpts->sound.bGatling && 
-			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY) && 
-			 (gameData.weapons.firing [0].bSound <= 0)) {
-			if (gameData.weapons.nPrimary == VULCAN_INDEX)
-				DigiLinkSoundToObject3 (-1, LOCALPLAYER.nObject, 1, F1_0, i2f (256), -1, -1, "vulcan-firing.wav", 1, SOUNDCLASS_PLAYER);
-			else if (gameData.weapons.nPrimary == GAUSS_INDEX)
-				DigiLinkSoundToObject3 (-1, LOCALPLAYER.nObject, 1, F1_0, i2f (256), -1, -1, "gauss-firing.wav", 1, SOUNDCLASS_PLAYER);
-			gameData.weapons.firing [0].bSound = 1;
-			}
-		}
-	else if (gameData.weapons.firing [0].nDuration) {
-		gameData.weapons.firing [0].nStop = gameStates.app.nSDLTicks;
-		gameData.weapons.firing [0].nDuration = 
-		gameData.weapons.firing [0].nStart = 0;
-		if (bGatling) {
-			if (gameData.weapons.firing [0].bSound > 0) {
-				DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
-				gameData.weapons.firing [0].bSound = 0;
-				}
-			if (gameOpts->sound.bGatling)
-				DigiPlayWAV ("gatling-slowdown.wav", F1_0);
-			}
-		}
-	if ((Controls [0].fireSecondaryState != 0) || (Controls [0].fireSecondaryDownCount != 0)) {
-		if (gameData.weapons.firing [1].nStart <= 0)
-			gameData.weapons.firing [1].nStart = gameStates.app.nSDLTicks;
-		gameData.weapons.firing [1].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [1].nStart;
-		gameData.weapons.firing [1].nStop = 0;
-		}
-	else if (gameData.weapons.firing [1].nDuration) {
-		gameData.weapons.firing [1].nStop = gameStates.app.nSDLTicks;
-		gameData.weapons.firing [1].nDuration = 
-		gameData.weapons.firing [1].nStart = 0;
-		if (bGatling && (gameData.weapons.firing [0].bSound > 0)) {
-			DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
-			gameData.weapons.firing [0].bSound = 0;
-			}
-		}
-	}
+else
+	UpdateFiringState ();
 if (wsP->nPrimary != gameData.weapons.nPrimary) {
 	if ((gameData.weapons.firing [0].bSound > 0) && 
 		 ((wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX))) {
