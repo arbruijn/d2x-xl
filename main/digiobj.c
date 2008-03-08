@@ -469,7 +469,7 @@ return DigiLinkSoundToObject2 (nSound, nObject, bForever, maxVolume, 256 * F1_0,
 
 int DigiLinkSoundToPos2 (
 	short nOrgSound, short nSegment, short nSide, vmsVector * pos, int bForever, 
-	fix maxVolume, fix maxDistance)
+	fix maxVolume, fix maxDistance, char *pszSound)
 {
 
 	int i, volume, pan;
@@ -512,7 +512,10 @@ soP->linkType.pos.position = *pos;
 soP->nSound = nSound;
 soP->maxVolume = maxVolume;
 soP->maxDistance = maxDistance;
-*soP->szSound = '\0';
+if (pszSound)
+	strncpy (soP->szSound, pszSound, sizeof (soP->szSound));
+else
+	*soP->szSound = '\0';
 soP->volume = 0;
 soP->pan = 0;
 soP->nDecay = 0;
@@ -542,7 +545,7 @@ return soP->nSignature;
 int DigiLinkSoundToPos (
 	short nSound, short nSegment, short nSide, vmsVector * pos, int bForever, fix maxVolume)
 {
-return DigiLinkSoundToPos2 (nSound, nSegment, nSide, pos, bForever, maxVolume, F1_0 * 256);
+return DigiLinkSoundToPos2 (nSound, nSegment, nSide, pos, bForever, maxVolume, F1_0 * 256, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -588,7 +591,6 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 #endif
 
 if (nObject == LOCALPLAYER.nObject) {
-	gameData.weapons.firing [0].bSound = 0;
 	gameData.multiplayer.bMoving = -1;
 	}
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)	{

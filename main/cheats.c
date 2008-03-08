@@ -54,7 +54,7 @@ char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 void DoCheatPenalty ()
 {
 #ifndef _DEBUG
-DigiPlaySampleClass (SOUND_CHEATER, F1_0, SOUNDCLASS_PLAYER);
+DigiPlaySampleClass (SOUND_CHEATER, NULL, F1_0, SOUNDCLASS_PLAYER);
 gameStates.app.cheats.bEnabled = 1;
 LOCALPLAYER.score = 0;
 #endif

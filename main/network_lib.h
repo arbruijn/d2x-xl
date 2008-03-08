@@ -178,6 +178,7 @@ typedef struct tNetworkData {
 	ubyte					mySyncPackInited;       
 	ushort				nMySegsCheckSum;
 	tSequencePacket	mySeq;
+	tSequencePacket	joinSeq;
 	char					bWantPlayersInfo;
 	char					bWaitingForPlayerInfo;
 	fix					nStartWaitAllTime;

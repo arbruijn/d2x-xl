@@ -333,16 +333,24 @@ networkData.nSyncExtras++;
 void NetworkDoSyncFrame (void)
 {
 	time_t	t = (time_t) SDL_GetTicks ();
+	static	int bExtraGameInfo = 0;
 
 if (t < networkData.toSyncFrame)
 	return;
 networkData.toSyncFrame = t + ((gameStates.multi.nGameType == UDP_GAME) ? 200 : 1000 / PacketsPerSec ());
-if (networkData.nSyncState == 1) {
+if (bExtraGameInfo) {
+	NetworkSendExtraGameInfo (&networkData.joinSeq);
+	bExtraGameInfo = 0;
+	}
+else if (networkData.nSyncState == 1) {
 	networkData.missingObjFrames.nFrame = 0;
 	NetworkSyncObjects ();
+	bExtraGameInfo = 1;
 	}
-else if (networkData.nSyncState == 2) 
+else if (networkData.nSyncState == 2) {
 	NetworkSyncPlayer ();
+	bExtraGameInfo = 1;
+	}
 else if (networkData.nSyncState == 3) {
 	if (networkData.missingObjFrames.nFrame) {
 		NetworkSyncObjects ();
@@ -355,6 +363,7 @@ else if (networkData.nSyncState == 3) {
 else {
 	if (networkData.nSyncExtras && (networkData.bVerifyPlayerJoined == -1))
 		NetworkSyncExtras ();
+		bExtraGameInfo = (networkData.nSyncExtras == 0);
 	}
 }
 

@@ -425,7 +425,7 @@ NW_SET_BYTES (data, bufI, old_info.data, old_info.data_size);
 
 //------------------------------------------------------------------------------
 
-void NetworkDoFrame (int force, int listen)
+void NetworkDoFrame (int bForce, int bListen)
 {
 	tFrameInfoShort ShortSyncPack;
 	static fix xLastEndlevel = 0;
@@ -433,127 +433,124 @@ void NetworkDoFrame (int force, int listen)
 
 if (!(gameData.app.nGameMode & GM_NETWORK)) 
 	return;
-if ((networkData.nStatus != NETSTAT_PLAYING) || (gameStates.app.bEndLevelSequence)) // Don't send postion during escape sequence...
-	goto listen;
+if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send postion during escape sequence...
+	if (nakedData.nLength) {
+		Assert (nakedData.nDestPlayer >- 1);
+		if (gameStates.multi.nGameType >= IPX_GAME) 
+			IPXSendPacketData ((ubyte *) nakedData.buf, nakedData.nLength, 
+									netPlayers.players [nakedData.nDestPlayer].network.ipx.server, 
+									netPlayers.players [nakedData.nDestPlayer].network.ipx.node, 
+									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
+		nakedData.nLength = 0;
+		nakedData.nDestPlayer = -1;
+		}
+	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (F1_0*12)))
+		networkData.refuse.bWaitForAnswer=0;
+	networkData.xLastSendTime += gameData.time.xFrame;
+	networkData.xLastTimeoutCheck += gameData.time.xFrame;
 
-if (nakedData.nLength) {
-	Assert (nakedData.nDestPlayer >- 1);
-	if (gameStates.multi.nGameType >= IPX_GAME) 
-		IPXSendPacketData ((ubyte *) nakedData.buf, nakedData.nLength, 
-								 netPlayers.players [nakedData.nDestPlayer].network.ipx.server, 
-								 netPlayers.players [nakedData.nDestPlayer].network.ipx.node, 
-								 gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
-	nakedData.nLength = 0;
-	nakedData.nDestPlayer = -1;
-	}
-if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (F1_0*12)))
-	networkData.refuse.bWaitForAnswer=0;
-networkData.xLastSendTime += gameData.time.xFrame;
-networkData.xLastTimeoutCheck += gameData.time.xFrame;
-
-// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
-if ((networkData.xLastSendTime > F1_0 / PacketsPerSec ()) || 
-	  (gameData.multigame.laser.bFired) || force || networkData.bPacketUrgent) {        
-	if (LOCALPLAYER.connected) {
-		int nObject = LOCALPLAYER.nObject;
-		networkData.bPacketUrgent = 0;
-		if (listen) {
-			MultiSendRobotFrame (0);
-			MultiSendFire ();              // Do firing if needed..
-			}
-		networkData.xLastSendTime = 0;
-		if (netGame.bShortPackets) {
+	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
+	if ((networkData.xLastSendTime > F1_0 / PacketsPerSec ()) || 
+		(gameData.multigame.laser.bFired) || bForce || networkData.bPacketUrgent) {        
+		if (LOCALPLAYER.connected) {
+			int nObject = LOCALPLAYER.nObject;
+			networkData.bPacketUrgent = 0;
+			if (bListen) {
+				MultiSendRobotFrame (0);
+				MultiSendFire ();              // Do firing if needed..
+				}
+			networkData.xLastSendTime = 0;
+			if (netGame.bShortPackets) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-			ubyte send_data [MAX_PACKETSIZE];
+				ubyte send_data [MAX_PACKETSIZE];
 #endif
-			memset (&ShortSyncPack, 0, sizeof (ShortSyncPack));
-			CreateShortPos (&ShortSyncPack.thepos, gameData.objs.objects+nObject, 0);
-			ShortSyncPack.nType = PID_PDATA;
-			ShortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-			ShortSyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
-			ShortSyncPack.level_num = gameData.missions.nCurrentLevel;
-			ShortSyncPack.data_size = networkData.mySyncPack.data_size;
-			memcpy (ShortSyncPack.data, networkData.mySyncPack.data, networkData.mySyncPack.data_size);
-			networkData.mySyncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
-			ShortSyncPack.numpackets = networkData.mySyncPack.numpackets;
+				memset (&ShortSyncPack, 0, sizeof (ShortSyncPack));
+				CreateShortPos (&ShortSyncPack.thepos, gameData.objs.objects+nObject, 0);
+				ShortSyncPack.nType = PID_PDATA;
+				ShortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
+				ShortSyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
+				ShortSyncPack.level_num = gameData.missions.nCurrentLevel;
+				ShortSyncPack.data_size = networkData.mySyncPack.data_size;
+				memcpy (ShortSyncPack.data, networkData.mySyncPack.data, networkData.mySyncPack.data_size);
+				networkData.mySyncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
+				ShortSyncPack.numpackets = networkData.mySyncPack.numpackets;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-			IpxSendGamePacket (
-				(ubyte*)&ShortSyncPack, 
-				sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.mySyncPack.data_size);
+				IpxSendGamePacket (
+					(ubyte*)&ShortSyncPack, 
+					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.mySyncPack.data_size);
 #else
-			SquishShortFrameInfo (ShortSyncPack, send_data);
-			IpxSendGamePacket (
-				(ubyte*)send_data, 
-				IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.mySyncPack.data_size);
+				SquishShortFrameInfo (ShortSyncPack, send_data);
+				IpxSendGamePacket (
+					(ubyte*)send_data, 
+					IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.mySyncPack.data_size);
 #endif
-			}
-		else {// If long packets
-				int send_data_size;
-
-			networkData.mySyncPack.nType = PID_PDATA;
-			networkData.mySyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-			networkData.mySyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
-			networkData.mySyncPack.level_num = gameData.missions.nCurrentLevel;
-			networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
-			networkData.mySyncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
-			networkData.mySyncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
-			networkData.mySyncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;
-			networkData.mySyncPack.phys_rotvel = gameData.objs.objects [nObject].mType.physInfo.rotVel;
-			send_data_size = networkData.mySyncPack.data_size;                  // do this so correct size data is sent
-	#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
-			if (gameStates.multi.nGameType >= IPX_GAME) {
-				networkData.mySyncPack.obj_segnum = INTEL_SHORT (networkData.mySyncPack.obj_segnum);
-				INTEL_VECTOR (&networkData.mySyncPack.obj_pos);
-				INTEL_MATRIX (&networkData.mySyncPack.obj_orient);
-				INTEL_VECTOR (&networkData.mySyncPack.phys_velocity);
-				INTEL_VECTOR (&networkData.mySyncPack.phys_rotvel);
-				networkData.mySyncPack.data_size = INTEL_SHORT (networkData.mySyncPack.data_size);
 				}
-	#endif
-			networkData.mySyncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
-			IpxSendGamePacket (
-				(ubyte*)&networkData.mySyncPack, 
-				sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_data_size);
-			}
-		networkData.mySyncPack.data_size = 0;               // Start data over at 0 length.
-		networkData.bD2XData = 0;
-		if (gameData.reactor.bDestroyed) {
-			if (gameStates.app.bPlayerIsDead)
-				LOCALPLAYER.connected=3;
-			if (TimerGetApproxSeconds () > (xLastEndlevel+ (F1_0/2))) {
-				NetworkSendEndLevelPacket ();
-				xLastEndlevel = TimerGetApproxSeconds ();
+			else {// If long packets
+					int send_data_size;
+
+				networkData.mySyncPack.nType = PID_PDATA;
+				networkData.mySyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
+				networkData.mySyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
+				networkData.mySyncPack.level_num = gameData.missions.nCurrentLevel;
+				networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
+				networkData.mySyncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
+				networkData.mySyncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
+				networkData.mySyncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;
+				networkData.mySyncPack.phys_rotvel = gameData.objs.objects [nObject].mType.physInfo.rotVel;
+				send_data_size = networkData.mySyncPack.data_size;                  // do this so correct size data is sent
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
+				if (gameStates.multi.nGameType >= IPX_GAME) {
+					networkData.mySyncPack.obj_segnum = INTEL_SHORT (networkData.mySyncPack.obj_segnum);
+					INTEL_VECTOR (&networkData.mySyncPack.obj_pos);
+					INTEL_MATRIX (&networkData.mySyncPack.obj_orient);
+					INTEL_VECTOR (&networkData.mySyncPack.phys_velocity);
+					INTEL_VECTOR (&networkData.mySyncPack.phys_rotvel);
+					networkData.mySyncPack.data_size = INTEL_SHORT (networkData.mySyncPack.data_size);
+					}
+#endif
+				networkData.mySyncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
+				IpxSendGamePacket (
+					(ubyte*)&networkData.mySyncPack, 
+					sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_data_size);
+				}
+			networkData.mySyncPack.data_size = 0;               // Start data over at 0 length.
+			networkData.bD2XData = 0;
+			if (gameData.reactor.bDestroyed) {
+				if (gameStates.app.bPlayerIsDead)
+					LOCALPLAYER.connected=3;
+				if (TimerGetApproxSeconds () > (xLastEndlevel+ (F1_0/2))) {
+					NetworkSendEndLevelPacket ();
+					xLastEndlevel = TimerGetApproxSeconds ();
+					}
 				}
 			}
 		}
-	}
 
-if (!listen)
-	return;
+	if (!bListen)
+		return;
 
-if ((networkData.xLastTimeoutCheck > F1_0) && !gameData.reactor.bDestroyed) {
-	fix t = (fix) SDL_GetTicks ();
-// Check for tPlayer timeouts
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((i != gameData.multiplayer.nLocalPlayer) && 
-			 ((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {
-			if ((networkData.nLastPacketTime [i] == 0) || 
-				 (networkData.nLastPacketTime [i] > t)) {
-				ResetPlayerTimeout (i, t);
-				continue;
-				}
+	if ((networkData.xLastTimeoutCheck > F1_0) && !gameData.reactor.bDestroyed) {
+		fix t = (fix) SDL_GetTicks ();
+	// Check for tPlayer timeouts
+		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if ((i != gameData.multiplayer.nLocalPlayer) && 
+				((gameData.multiplayer.players [i].connected == 1) || bDownloading [i])) {
+				if ((networkData.nLastPacketTime [i] == 0) || 
+					(networkData.nLastPacketTime [i] > t)) {
+					ResetPlayerTimeout (i, t);
+					continue;
+					}
 #if 1//ndef _DEBUG
-			if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
-				NetworkTimeoutPlayer (i);
+				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
+					NetworkTimeoutPlayer (i);
 #endif
+				}
 			}
+		networkData.xLastTimeoutCheck = 0;
 		}
-	networkData.xLastTimeoutCheck = 0;
 	}
 
-listen:
-
-if (!listen) {
+if (!bListen) {
 	networkData.mySyncPack.data_size = 0;
 	return;
 	}

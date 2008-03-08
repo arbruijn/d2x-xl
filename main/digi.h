@@ -107,7 +107,7 @@ int DigiLinkSoundToObject (short nSound, short nObject, int forever, fix maxVolu
 int DigiLinkSoundToPos (short nSound, short nSegment, short nSide, vmsVector *pos, int forever, fix maxVolume);
 // Same as above, but you pass the max distance sound can be heard.  The old way uses f1_0*256 for maxDistance.
 int DigiLinkSoundToObject2 (short nSound, short nObject, int forever, fix maxVolume, fix  maxDistance, int nSoundClass);
-int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance);
+int DigiLinkSoundToPos2 (short nSound, short nSegment, short nSide, vmsVector * pos, int forever, fix maxVolume, fix maxDistance, char *pszSound);
 int DigiLinkSoundToObject3 (short orgSoundnum, short nObject, int forever, fix maxVolume, fix maxDistance, 
 									 int nLoopStart, int nLoopEnd, char *pszSound, int nDecay, int nSoundClass);
 int DigiPlayMidiSong (char * filename, char * melodic_bank, char * drum_bank, int loop, int bD1Song);
@@ -190,9 +190,9 @@ extern tSoundQueue soundQueue;
 
 //------------------------------------------------------------------------------
 
-static inline int DigiPlaySampleClass (short nSound, fix maxVolume, int nSoundClass)
+static inline int DigiPlaySampleClass (short nSound, char *pszSound, fix maxVolume, int nSoundClass)
 {
-return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0, NULL, nSoundClass);
+return DigiPlaySampleSpeed (nSound, maxVolume, F1_0, 0, pszSound, nSoundClass);
 }
 
 //------------------------------------------------------------------------------

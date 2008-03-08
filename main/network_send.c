@@ -404,8 +404,6 @@ netGame.gameStatus = old_status;
 //	if ((gameData.app.nGameMode & GM_ENTROPY) || extraGameInfo [0].bEnhancedCTF)
 //make half-way sure the client gets this data ...
 NetworkSendExtraGameInfo (their);
-NetworkSendExtraGameInfo (their);
-NetworkSendExtraGameInfo (their);
 MultiSendMonsterball (1, 1);
 }       
 

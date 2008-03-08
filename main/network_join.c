@@ -461,6 +461,7 @@ networkData.playerRejoining.player.connected = nPlayer;
 networkData.nSyncState = 1;
 networkData.nSentObjs = -1;
 networkData.toSyncFrame = 0;
+networkData.joinSeq = *their;
 NetworkDoSyncFrame ();
 }
 

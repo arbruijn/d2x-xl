@@ -510,6 +510,7 @@ MultiSendData (gameData.multigame.msg.buf, 21, 0);
 void MultiDoPlayerWeapons (char *buf)
 {
 	tWeaponState	*wsP = gameData.multiplayer.weaponStates + (int) buf [1];
+	int				i;
 
 wsP->nPrimary = buf [2];
 wsP->nSecondary = buf [3];
@@ -521,6 +522,27 @@ wsP->firing [1].nDuration = GET_INTEL_INT (buf + 11);
 wsP->bTripleFusion = buf [15];
 wsP->nMslLaunchPos = buf [16];
 wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 17);
+for (i = 0; i < 2; i++) {
+	if (wsP->firing [i].nDuration) {
+		if (!wsP->firing [i].nStart) {
+			if (!EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) || (wsP->firing [i].nDuration > GATLING_DELAY)) {
+				wsP->firing [i].nStart = gameStates.app.nSDLTicks - wsP->firing [i].nDuration;
+				wsP->firing [i].bSound = 1;
+				}	
+			else {
+				wsP->firing [i].nStart -= GATLING_DELAY + 1;
+				wsP->firing [i].bSound = 2;
+				}	
+			wsP->firing [i].nStop = 0;
+			}
+		}
+	else {
+		if (wsP->firing [i].nStart) {
+			wsP->firing [i].nStart = 0;
+			wsP->firing [i].nStop = gameStates.app.nSDLTicks;
+			}
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

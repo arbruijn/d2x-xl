@@ -51,7 +51,7 @@ typedef struct tServerListTable {
 	time_t						lastActive;
 } tServerListTable;
 
-static tUdpAddress	d2xTracker = {85,119,152,128,0,0};
+static tUdpAddress	d2xTracker = {85,119,152,28,0,0};
 static tUdpAddress	kbTracker = {207,210,100,66,0,0};
 
 tServerListTable *serverListTable = NULL;

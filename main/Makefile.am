@@ -11,7 +11,10 @@ noinst_LIBRARIES = libmain.a
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/arch/include -I$(top_srcdir)/3d
 
 if USE_NETWORK
-NETWORK_SRCS = highscores.c multi.c multibot.c network.c netmisc.c
+NETWORK_SRCS = highscores.c multi.c multibot.c network.c netmisc.c \
+network_init.c network_join.c network_lib.c network_phandler.c \
+network_process.c network_read.c network_send.c network_sync.c \
+bmread.c dumpmine.c
 endif
 
 if EDITOR
@@ -47,10 +50,8 @@ oofread.c	oofrender.c	oofmath.c	hudicons.c	statusbar.c
 
 
 EXTRA_libmain_a_SOURCES = \
-highscores.c multi.c multibot.c network.c netmisc.c \
-network_init.c network_join.c network_lib.c network_phandler.c \
-network_process.c network_read.c network_send.c network_sync.c \
-bmread.c dumpmine.c
+highscores.c multi.c multibot.c network.c netmisc.c
+
 
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
 descent.cfg inferno.ini \

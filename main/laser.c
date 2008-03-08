@@ -72,8 +72,9 @@ char laser_rcsid [] = "$Id: laser.c,v 1.10 2003/10/10 09:36:35 btb Exp $";
 
 int FindHomingObjectComplete (vmsVector *curpos, tObject *tracker, int track_objType1, int track_objType2);
 
-extern void NDRecordGuidedEnd ();
-extern void NDRecordGuidedStart ();
+void BlastNearbyGlass (tObject *objP, fix damage);
+void NDRecordGuidedEnd ();
+void NDRecordGuidedStart ();
 
 extern int bDoingLightingHack;
 
@@ -216,8 +217,6 @@ return 1;
 
 //---------------------------------------------------------------------------------
 //--unused-- int Muzzle_scale=2;
-int nLaserOffset=0;
-
 void DoMuzzleStuff (int nSegment, vmsVector *pos)
 {
 gameData.muzzle.info [gameData.muzzle.queueIndex].createTime = TimerGetFixedSeconds ();
@@ -295,6 +294,7 @@ int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
 	fix		xLaserLength = 0;
 
 	static char *szMslSounds [2] = {"missileflight-small.wav", "missileflight-big.wav"};
+	static char *szGatlingSounds [2] = {"vulcan-firing.wav", "gauss-firing.wav"};
 
 Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
@@ -454,13 +454,21 @@ if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAP
 										 gameData.weapons.info [objP->id].flash_vclip);
 	}
 volume = F1_0;
-if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1))	{
-	if (nParent != nViewer)
-		DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
+if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
+	if (nParent != nViewer) {
+		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+			DigiLinkSoundToPos2 (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume, F1_0 * 256,
+										szGatlingSounds [nWeaponType == GAUSS_ID]);
+		else
+			DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
+		}
 	else {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
-		DigiPlaySampleClass (gameData.weapons.info [objP->id].flashSound, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
+		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+			DigiPlaySampleClass (-1, szGatlingSounds [nWeaponType == GAUSS_ID], volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
+		else
+			DigiPlaySampleClass (gameData.weapons.info [objP->id].flashSound, NULL, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		}
 	if (gameOpts->sound.bMissiles && gameData.objs.bIsMissile [nWeaponType]) {
 		bBigMsl = (nWeaponType == SMARTMSL_ID) ||
@@ -483,7 +491,7 @@ if ((pParent->nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].rende
 	vmsVector	vEndPos;
 	int			nEndSeg;
 
-	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, nLaserOffset + (xLaserLength / 2));
+	VmVecScaleAdd (&vEndPos, &objP->position.vPos, vDirection, gameData.laser.nOffset + (xLaserLength / 2));
 	nEndSeg = FindSegByPoint (&vEndPos, objP->nSegment, 1, 0);
 	if (nEndSeg == objP->nSegment) 
 		objP->position.vPos = vEndPos;
@@ -1002,25 +1010,27 @@ nAmmoUsed = WI_ammo_usage (nWeaponIndex);
 addval = 2 * gameData.time.xFrame;
 if (addval > F1_0)
 	addval = F1_0;
-if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xGame) || 
-	 (gameData.time.xGame < gameData.laser.xLastFiredTime))
-	gameData.laser.xNextFireTime = gameData.time.xGame;
-gameData.laser.xLastFiredTime = gameData.time.xGame;
 if ((gameData.weapons.nPrimary != VULCAN_INDEX) && (gameData.weapons.nPrimary != GAUSS_INDEX))
 	nPrimaryAmmo = playerP->primaryAmmo [gameData.weapons.nPrimary];
 else {
 	if ((gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling &&
 		 gameStates.app.bHaveExtraGameInfo [IsMultiGame] && EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) && 
-		 (gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart < GATLING_DELAY))
+		 (gameData.weapons.firing [0].nDuration < GATLING_DELAY))
 		return 0;
 	nPrimaryAmmo = playerP->primaryAmmo [VULCAN_INDEX];
 	}
 if	 ((playerP->energy < xEnergyUsed) || (nPrimaryAmmo < nAmmoUsed))
 	AutoSelectWeapon (0, 1);		//	Make sure the tPlayer can fire from this weapon.
 
+if ((gameData.laser.xLastFiredTime + 2 * gameData.time.xFrame < gameData.time.xGame) || 
+	 (gameData.time.xGame < gameData.laser.xLastFiredTime))
+	gameData.laser.xNextFireTime = gameData.time.xGame;
+gameData.laser.xLastFiredTime = gameData.time.xGame;
+
 while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 	if	((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)) {
-		int	nLaserLevel, flags = 0;
+			int nLaserLevel, flags = 0;
+
 		if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
 			gameData.laser.xNextFireTime += F1_0 / 25;
 		else
@@ -1041,7 +1051,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
 			playerP->energy = 0;
-		if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
+		if (rVal && ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX))) {
 			if (nAmmoUsed > playerP->primaryAmmo [VULCAN_INDEX])
 				playerP->primaryAmmo [VULCAN_INDEX] = 0;
 			else
@@ -1182,6 +1192,214 @@ return rVal;
 // -- }
 
 //	--------------------------------------------------------------------------------------------------
+
+#ifdef _WIN32
+typedef int ( __fastcall * pWeaponHandler) (tObject *, int, int, int);
+#else
+typedef int (* pWeaponHandler) (tObject *, int, int, int);
+#endif
+
+//-------------------------------------------
+
+int LaserHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+	ubyte	nLaser = (nLevel <= MAX_LASER_LEVEL) ? LASER_ID + nLevel : SUPERLASER_ID + (nLevel - MAX_LASER_LEVEL - 1);
+
+gameData.laser.nOffset = (F1_0 * 2 * (d_rand () % 8)) / 8;
+LaserPlayerFire (objP, nLaser, 0, 1, 0);
+LaserPlayerFire (objP, nLaser, 1, 0, 0);
+if (nFlags & LASER_QUAD) {
+	//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
+	LaserPlayerFire (objP, nLaser, 2, 0, 0);
+	LaserPlayerFire (objP, nLaser, 3, 0, 0);
+	}
+return nFires;
+}
+
+//-------------------------------------------
+
+int VulcanHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+#	define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
+
+	int bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+
+if (bGatlingSound && (gameData.weapons.firing [objP->id].nDuration <= GATLING_DELAY))
+	return 0;
+//	Only make sound for 1/4 of vulcan bullets.
+LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 1, 0);
+if (nFires > 1) {
+	LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+	if (nFires > 2)
+		LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
+	}
+return nFires;
+}
+
+//-------------------------------------------
+
+int SpreadfireHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+if (nFlags & LASER_SPREADFIRE_TOGGLED) {
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, F1_0/16, 0, 0, 0);
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -F1_0/16, 0, 0, 0);
+	}
+else {
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, F1_0/16, 0, 0);
+	LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0);
+	}
+LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
+return nFires;
+}
+
+//-------------------------------------------
+
+int PlasmaHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0);
+LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0);
+if (nFires > 1) {
+	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0);
+	LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0);
+	}
+return nFires;
+}
+
+//-------------------------------------------
+
+int FusionHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+		vmsVector	vForce;
+
+LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
+LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
+if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->id].bTripleFusion)
+#if 1
+	LaserPlayerFire (objP, FUSION_ID, 6, 1, 0);
+#else
+	LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
+#endif
+nFlags = (sbyte) (gameData.fusion.xCharge >> 12);
+gameData.fusion.xCharge = 0;
+vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
+vForce.p.y = -(objP->position.mOrient.fVec.p.y << 7);
+vForce.p.z = -(objP->position.mOrient.fVec.p.z << 7);
+PhysApplyForce (objP, &vForce);
+vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
+vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
+vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
+PhysApplyRot (objP, &vForce);
+return nFires;
+}
+
+//-------------------------------------------
+
+int SuperlaserHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+	ubyte nSuperLevel = 3;		//make some new kind of laser eventually
+
+LaserPlayerFire (objP, nSuperLevel, 0, 1, 0);
+LaserPlayerFire (objP, nSuperLevel, 1, 0, 0);
+
+if (nFlags & LASER_QUAD) {
+	//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
+	LaserPlayerFire (objP, nSuperLevel, 2, 0, 0);
+	LaserPlayerFire (objP, nSuperLevel, 3, 0, 0);
+	}
+return nFires;
+}
+
+//-------------------------------------------
+
+int GaussHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+#	define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
+
+	int			bGatlingSound = gameStates.app.bHaveExtraGameInfo [IsMultiGame] && 
+										 (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+	tFiringData *fP = gameData.multiplayer.weaponStates [objP->id].firing;
+
+if (bGatlingSound && (fP->nDuration <= GATLING_DELAY))
+	return 0;
+//	Only make sound for 1/4 of vulcan bullets.
+LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 
+								(gameData.laser.xNextFireTime > gameData.time.xGame), 0);
+if (nFires > 1) {
+	LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+	if (nFires > 2)
+		LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
+	}
+return nFires;
+}
+
+//-------------------------------------------
+
+int HelixHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+	typedef struct tSpread {
+		fix	r, u;
+		} tSpread;
+
+	static tSpread spreadTable [8] = {
+		{F1_0 / 16, 0},
+		{F1_0 / 17, F1_0 / 42},
+		{F1_0 / 22, F1_0 / 22},
+		{F1_0 / 42, F1_0 / 17},
+		{0, F1_0 / 16},
+		{-F1_0 / 42, F1_0 / 17},
+		{-F1_0 / 22, F1_0 / 22},
+		{-F1_0 / 17, F1_0 / 42}
+		};
+
+	tSpread	spread = spreadTable [(nFlags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK];
+
+LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0);
+LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r,  spread.u, 0, 0);
+LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r, -spread.u, 0, 0);
+LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2, 0, 0);
+LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0);
+return nFires;
+}
+
+//-------------------------------------------
+
+int PhoenixHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0);
+LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0);
+if (nFires > 1) {
+	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0);
+	LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0);
+	}
+return nFires;
+}
+
+//-------------------------------------------
+
+int OmegaHandler (tObject *objP, int nLevel, int nFlags, int nFires)
+{
+LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0);
+return nFires;
+}
+
+//-------------------------------------------
+
+pWeaponHandler weaponHandlers [] = {
+	LaserHandler,
+	VulcanHandler,
+	SpreadfireHandler,
+	PlasmaHandler,
+	FusionHandler,
+	SuperlaserHandler,
+	GaussHandler,
+	HelixHandler,
+	PhoenixHandler,
+	OmegaHandler
+	};
+
+
+
+//	--------------------------------------------------------------------------------------------------
 //	Object "nObject" fires weapon "weapon_num" of level "level". (Right now (9/24/94) level is used only for nType 0 laser.
 //	Flags are the tPlayer flags.  For network mode, set to 0.
 //	It is assumed that this is a tPlayer tObject (as in multiplayer), and therefore the gun positions are known.
@@ -1189,171 +1407,21 @@ return rVal;
 //	More than one shot is fired with a pseudo-delay so that players on show machines can fire (for themselves
 //	or other players) often enough for things like the vulcan cannon.
 
-#define VULCAN_SPREAD	(d_rand ()/8 - 32767/16)
-#define GAUSS_SPREAD		(VULCAN_SPREAD / 5)
-
-int LaserFireObject (short nObject, ubyte nWeapon, int level, int flags, int nFires)
+int LaserFireObject (short nObject, ubyte nWeapon, int nLevel, int nFlags, int nFires)
 {
 	tObject	*objP = gameData.objs.objects + nObject;
 
-switch (nWeapon) {
-	case LASER_INDEX: {
-		ubyte	nLaser;
-		nLaserOffset = ((F1_0*2)* (d_rand ()%8))/8;
-		if (level <= MAX_LASER_LEVEL)
-			nLaser = LASER_ID + level;
-		else
-			nLaser = SUPERLASER_ID + (level - MAX_LASER_LEVEL-1);
-		LaserPlayerFire (objP, nLaser, 0, 1, 0);
-		LaserPlayerFire (objP, nLaser, 1, 0, 0);
-		if (flags & LASER_QUAD) {
-			//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
-			LaserPlayerFire (objP, nLaser, 2, 0, 0);
-			LaserPlayerFire (objP, nLaser, 3, 0, 0);
-			}
-		break;
-		}
-
-	case VULCAN_INDEX: {
-		int bGatlingSound = (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
-		if (!bGatlingSound || !gameStates.app.bHaveExtraGameInfo [IsMultiGame] || 
-			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY)) {
-			//	Only make sound for 1/4 of vulcan bullets.
-			int	bMakeSound = !bGatlingSound;
-			LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, bMakeSound, 0);
-			if (nFires > 1) {
-				LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
-				if (nFires > 2)
-					LaserPlayerFireSpread (objP, VULCAN_ID, 6, VULCAN_SPREAD, VULCAN_SPREAD, 0, 0);
-				}
-			}
-		}
-		break;
-
-	case SPREADFIRE_INDEX:
-		if (flags & LASER_SPREADFIRE_TOGGLED) {
-			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, F1_0/16, 0, 0, 0);
-			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, -F1_0/16, 0, 0, 0);
-			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
-			}
-		else {
-			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, F1_0/16, 0, 0);
-			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, -F1_0/16, 0, 0);
-			LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0);
-			}
-		break;
-
-	case PLASMA_INDEX:
-		LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0);
-		LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0);
-		if (nFires > 1) {
-			LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
-			LaserPlayerFireSpreadDelay (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
-			}
-		break;
-
-	case FUSION_INDEX: {
-		vmsVector	vForce;
-		LaserPlayerFire (objP, FUSION_ID, 0, 1, 0);
-		LaserPlayerFire (objP, FUSION_ID, 1, 1, 0);
-		if (EGI_FLAG (bTripleFusion, 0, 0, 0) && gameData.multiplayer.weaponStates [objP->id].bTripleFusion)
-#if 1
-			LaserPlayerFire (objP, FUSION_ID, 6, 1, 0);
-#else
-			LaserPlayerFire (objP, FUSION_ID, -1, 1, 0);
-#endif
-		flags = (sbyte) (gameData.fusion.xCharge >> 12);
-		gameData.fusion.xCharge = 0;
-		vForce.p.x = -(objP->position.mOrient.fVec.p.x << 7);
-		vForce.p.y = -(objP->position.mOrient.fVec.p.y << 7);
-		vForce.p.z = -(objP->position.mOrient.fVec.p.z << 7);
-		PhysApplyForce (objP, &vForce);
-		vForce.p.x = (vForce.p.x >> 4) + d_rand () - 16384;
-		vForce.p.y = (vForce.p.y >> 4) + d_rand () - 16384;
-		vForce.p.z = (vForce.p.z >> 4) + d_rand () - 16384;
-		PhysApplyRot (objP, &vForce);
-		}
-		break;
-
-	case SUPER_LASER_INDEX: {
-		ubyte superLevel = 3;		//make some new kind of laser eventually
-		LaserPlayerFire (objP, superLevel, 0, 1, 0);
-		LaserPlayerFire (objP, superLevel, 1, 0, 0);
-
-		if (flags & LASER_QUAD) {
-			//	hideous system to make quad laser 1.5x powerful as normal laser, make every other quad laser bolt bHarmless
-			LaserPlayerFire (objP, superLevel, 2, 0, 0);
-			LaserPlayerFire (objP, superLevel, 3, 0, 0);
-			}
-		break;
-		}
-
-	case GAUSS_INDEX: {
-		int bGatlingSound = (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
-		if (!bGatlingSound || !gameStates.app.bHaveExtraGameInfo [IsMultiGame] || 
-			 (gameData.weapons.firing [0].nDuration >= GATLING_DELAY)) {
-			//	Only make sound for 1/4 of vulcan bullets.
-			int	bMakeSound = !bGatlingSound;
-			LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, bMakeSound, 0);
-			if (nFires > 1) {
-				LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
-				if (nFires > 2)
-					LaserPlayerFireSpread (objP, GAUSS_ID, 6, GAUSS_SPREAD, GAUSS_SPREAD, 0, 0);
-				}
-			}
-		}
-		break;
-
-	case HELIX_INDEX: {
-		int helix_orient;
-		fix xSpreadR,xSpreadU;
-		helix_orient = (flags >> LASER_HELIX_SHIFT) & LASER_HELIX_MASK;
-		switch (helix_orient) {
-			case 0: xSpreadR =  F1_0/16; xSpreadU = 0;       break; // Vertical
-			case 1: xSpreadR =  F1_0/17; xSpreadU = F1_0/42; break; //  22.5 degrees
-			case 2: xSpreadR =  F1_0/22; xSpreadU = F1_0/22; break; //  45   degrees
-			case 3: xSpreadR =  F1_0/42; xSpreadU = F1_0/17; break; //  67.5 degrees
-			case 4: xSpreadR =  0;       xSpreadU = F1_0/16; break; //  90   degrees
-			case 5: xSpreadR = -F1_0/42; xSpreadU = F1_0/17; break; // 112.5 degrees
-			case 6: xSpreadR = -F1_0/22; xSpreadU = F1_0/22; break; // 135   degrees
-			case 7: xSpreadR = -F1_0/17; xSpreadU = F1_0/42; break; // 157.5 degrees
-			default:
-				Error ("Invalid helix_orientation value %x\n",helix_orient);
-			}
-
-		LaserPlayerFireSpread (objP, HELIX_ID, 6,  0,  0, 1, 0);
-		LaserPlayerFireSpread (objP, HELIX_ID, 6,  xSpreadR,  xSpreadU, 0, 0);
-		LaserPlayerFireSpread (objP, HELIX_ID, 6, -xSpreadR, -xSpreadU, 0, 0);
-		LaserPlayerFireSpread (objP, HELIX_ID, 6,  xSpreadR*2,  xSpreadU*2, 0, 0);
-		LaserPlayerFireSpread (objP, HELIX_ID, 6, -xSpreadR*2, -xSpreadU*2, 0, 0);
-		break;
-		}
-
-	case PHOENIX_INDEX:
-		LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0);
-		LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0);
-		if (nFires > 1) {
-			LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame/2, 1, 0);
-			LaserPlayerFireSpreadDelay (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame/2, 0, 0);
-			}
-		break;
-
-	case OMEGA_INDEX:
-		LaserPlayerFire (objP, OMEGA_ID, 6, 1, 0);
-		break;
-
-	default:
-		Int3 ();	//	Contact Yuan: Unknown Primary weapon nType, setting to 0.
-		gameData.weapons.nPrimary = 0;
+if (nWeapon > OMEGA_INDEX) {
+	gameData.weapons.nPrimary = 0;
+	nFires = 0;
 	}
-
-// Set values to be recognized during comunication phase, if we are the
-//  one shooting
-if ((IsMultiGame) && (nObject == LOCALPLAYER.nObject)) {
+else
+	nFires = weaponHandlers [nWeapon] (OBJECTS + nObject, nLevel, nFlags, nFires);
+if (IsMultiGame && (nObject == LOCALPLAYER.nObject)) {
 	gameData.multigame.laser.bFired = nFires;
 	gameData.multigame.laser.nGun = nWeapon;
-	gameData.multigame.laser.nFlags = flags;
-	gameData.multigame.laser.nLevel = level;
+	gameData.multigame.laser.nFlags = nFlags;
+	gameData.multigame.laser.nLevel = nLevel;
 	}
 return nFires;
 }
@@ -1392,8 +1460,6 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 
 	return nObject;
 }
-
-extern void BlastNearbyGlass (tObject *objP, fix damage);
 
 //-----------------------------------------------------------------------------
 // Create the children of a smart bomb, which is a bunch of homing missiles.

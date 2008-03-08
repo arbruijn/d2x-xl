@@ -439,6 +439,7 @@ typedef struct tSoundOptions {
 	int bShip;
 	int bMissiles;
 	int bGatling;
+	int bSpeedUp;
 	fix xCustomSoundVolume;
 } tSoundOptions;
 
@@ -2880,6 +2881,7 @@ typedef struct tLaserData {
 	int		nGlobalFiringCount;
 	int		nMissileGun;
 	int		nLightning;
+	int		nOffset;
 	tObject	*parentObjP;
 	tObject	*targetObjP;
 } tLaserData;

@@ -102,7 +102,7 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="2"
 			ManagedExtensions="FALSE"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
@@ -111,7 +111,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
 				FavorSizeOrSpeed="1"
-				OmitFramePointers="TRUE"
+				OmitFramePointers="FALSE"
 				EnableFiberSafeOptimizations="TRUE"
 				WholeProgramOptimization="TRUE"
 				OptimizeForProcessor="3"
@@ -133,7 +133,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				CallingConvention="1"
 				CompileAs="0"/>
 			<Tool
@@ -145,7 +145,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release&quot;"
-				GenerateDebugInformation="FALSE"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
 				TargetMachine="1"/>
@@ -1534,9 +1534,6 @@
 						RelativePath="..\..\main\kconfig.h">
 					</File>
 					<File
-						RelativePath="..\..\main\laser.h">
-					</File>
-					<File
 						RelativePath="..\..\include\makesig.h">
 					</File>
 					<File
@@ -1544,9 +1541,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\menu.h">
-					</File>
-					<File
-						RelativePath="..\..\main\mission.h">
 					</File>
 					<File
 						RelativePath="..\..\main\modem.h">
@@ -1571,9 +1565,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\object.h">
-					</File>
-					<File
-						RelativePath="..\..\main\omega.h">
 					</File>
 					<File
 						RelativePath="..\..\include\pa_enabl.h">
@@ -1664,9 +1655,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\wall.h">
-					</File>
-					<File
-						RelativePath="..\..\main\weapon.h">
 					</File>
 				</Filter>
 				<Filter
@@ -2094,26 +2082,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\laser.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\main\marker.c">
 					</File>
 					<File
@@ -2154,27 +2122,6 @@
 								Optimization="2"
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\mission.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								DebugInformationFormat="0"/>
 						</FileConfiguration>
 					</File>
 					<File
@@ -2276,9 +2223,6 @@
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions=""/>
 						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\omega.c">
 					</File>
 					<File
 						RelativePath="..\..\main\physics.c">
@@ -2532,26 +2476,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\wall.c">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-								BasicRuntimeChecks="3"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="2"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\weapon.c">
 						<FileConfiguration
 							Name="Debug|Win32">
 							<Tool
@@ -3433,6 +3357,27 @@
 						RelativePath="..\..\main\loadgame.c">
 					</File>
 					<File
+						RelativePath="..\..\main\mission.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								DebugInformationFormat="0"/>
+						</FileConfiguration>
+					</File>
+					<File
 						RelativePath="..\..\main\paging.c">
 						<FileConfiguration
 							Name="Debug|Win32">
@@ -3536,6 +3481,9 @@
 					</File>
 					<File
 						RelativePath="..\..\main\loadgame.h">
+					</File>
+					<File
+						RelativePath="..\..\main\mission.h">
 					</File>
 					<File
 						RelativePath="..\..\main\paging.h">
@@ -3722,6 +3670,70 @@
 					</File>
 					<File
 						RelativePath="..\..\main\soundthreads.h">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="weapons"
+				Filter="">
+				<Filter
+					Name="Source Files"
+					Filter="">
+					<File
+						RelativePath="..\..\main\laser.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\omega.c">
+					</File>
+					<File
+						RelativePath="..\..\main\weapon.c">
+						<FileConfiguration
+							Name="Debug|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+								BasicRuntimeChecks="3"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32">
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="2"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+				<Filter
+					Name="Header Files"
+					Filter="">
+					<File
+						RelativePath="..\..\main\laser.h">
+					</File>
+					<File
+						RelativePath="..\..\main\omega.h">
+					</File>
+					<File
+						RelativePath="..\..\main\weapon.h">
 					</File>
 				</Filter>
 			</Filter>
