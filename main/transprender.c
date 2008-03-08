@@ -95,6 +95,8 @@ else if (renderItems.zScale > 1)
 
 //------------------------------------------------------------------------------
 
+static int qqq = 0;
+
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex)
 {
 	tRenderItem *ph, *pi, *pj, **pd;
@@ -116,6 +118,7 @@ else
 if (nOffset >= ITEM_DEPTHBUFFER_SIZE)
 	return 0;
 pd = renderItems.pDepthBuffer + nOffset;
+qqq = nOffset;
 // find the first particle to insert the new one *before* and place in pj; pi will be it's predecessor (NULL if to insert at list start)
 ph = renderItems.pItemList + --renderItems.nFreeItems;
 ph->nType = nType;
@@ -378,7 +381,10 @@ item.nFrame = nFrame;
 item.bAdditive = bAdditive;
 G3TransformPoint (&vPos, position, 0);
 VmVecFixToFloat (&item.position, &vPos);
-return AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z, vPos.p.z);
+AddRenderItem (riSprite, &item, sizeof (item), vPos.p.z, vPos.p.z);
+if (qqq == 51350)
+	qqq = 0;
+return 0;
 }
 
 //------------------------------------------------------------------------------

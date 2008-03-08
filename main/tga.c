@@ -374,7 +374,7 @@ if (r && CompressTGA (bmP))
 #endif
 if (&cf)
 	CFClose (&cf);
-#ifdef _DEBUG
+#if 1//def _DEBUG
 strncpy (bmP->szName, pszFile, sizeof (bmP->szName) - 1);
 if ((psz = strrchr (bmP->szName, '.')))
 	*psz = '\0';
