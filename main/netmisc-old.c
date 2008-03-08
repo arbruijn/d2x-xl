@@ -26,6 +26,7 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "inferno.h"
 #include "pstypes.h"
 #include "mono.h"
+#include "network_lib.h"
 
 //#define WORDS_BIGENDIAN
 
