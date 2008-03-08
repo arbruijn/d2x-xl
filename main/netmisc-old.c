@@ -120,7 +120,6 @@ ushort NetMiscCalcCheckSum(void * vptr, int len)
 
 #include "ipx.h"
 #include "multi.h"
-#include "network.h"
 #include "object.h"
 #include "powerup.h"
 #include "error.h"
@@ -611,7 +610,7 @@ void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	int	i;
 	
-memcpy (out_buffer, networkData.missingObjFrames, sizeof (networkData.missingObjFrames));
+memcpy (out_buffer, &networkData.missingObjFrames, sizeof (networkData.missingObjFrames));
 ((tMissingObjFrames *) &out_buffer [0])->nMissing = INTEL_SHORT (networkData.missingObjFrames [0].nFrames);
 for (i = 0; i < networkData.missingObjFrames [0].nFrames; i++)
 	((tMissingObjFrames *) &out_buffer [0])->frames [i] = INTEL_SHORT (networkData.missingObjFrames [0].frames [i]);
