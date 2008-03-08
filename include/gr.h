@@ -205,7 +205,7 @@ if (bmP->bmType != BM_TYPE_ALT)
 	return bmP;
 if (iFrame < 0)
 	return BM_CURFRAME (bmP) ? BM_CURFRAME (bmP) : bmP;
-return BM_CURFRAME (bmP) = ((BM_FRAMES (bmP) ? BM_FRAMES (bmP) + iFrame % BM_FRAMES (bmP) : bmP));
+return BM_CURFRAME (bmP) = ((BM_FRAMES (bmP) ? BM_FRAMES (bmP) + iFrame % BM_FRAMECOUNT (bmP) : bmP));
 }
 
 //-----------------------------------------------------------------------------
