@@ -26,7 +26,6 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "inferno.h"
 #include "pstypes.h"
 #include "mono.h"
-#include "network_lib.h"
 
 //#define WORDS_BIGENDIAN
 
@@ -36,6 +35,7 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "segment.h"
 #include "gameseg.h"
 #include "network.h"
+#include "network_lib.h"
 #include "wall.h"
 
 // routine to calculate the checksum of the segments.  We add these specialized routines
