@@ -93,7 +93,7 @@ void ToggleCockpit ();
 
 #define SHOW_COCKPIT	((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nMode == CM_STATUS_BAR))
 #define SHOW_HUD		(!gameStates.app.bEndLevelSequence && (gameOpts->render.cockpit.bHUD || !SHOW_COCKPIT))
-#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!gameOpts->render.cockpit.bHUD && (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)))
+#define HIDE_HUD		(gameStates.app.bEndLevelSequence || (!gameOpts->render.cockpit.bHUD && (gameStates.render.cockpit.nMode >= CM_FULL_SCREEN)))
 
 extern double cmScaleX, cmScaleY;
 extern int nHUDLineSpacing;
