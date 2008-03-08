@@ -628,7 +628,7 @@ void BEReceiveMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 {
 	int	i;
 	
-memcpy (networkData.missingObjFrames, out_buffer, sizeof (networkData.missingObjFrames));
+memcpy (&networkData.missingObjFrames, out_buffer, sizeof (networkData.missingObjFrames));
 networkData.missingObjFrames [0].nMissing = INTEL_SHORT (networkData.missingObjFrames [0].nFrames);
 for (i = 0; i < networkData.missingObjFrames [0].nFrames; i++)
 	networkData.missingObjFrames [0].frames [i] = INTEL_SHORT (networkData.missingObjFrames [0].frames [i]);
