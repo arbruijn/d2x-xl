@@ -96,6 +96,8 @@ void BESwapObject (tObject *obj);
 	BESendMissingObjFrames(NULL, NULL, NULL)
 #define ReceiveMissingObjFramesPacket(data, _extraGameInfo) \
 	BEReceiveMissingObjFrames(data, _extraGameInfo);
+#define SendInternetMissingObjFramesPacket(server, node) \
+	BESendInternetMissingObjFrames(server, node, NULL)
 
 #else
 

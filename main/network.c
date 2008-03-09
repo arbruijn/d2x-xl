@@ -580,39 +580,6 @@ SetFunctionMode (FMODE_MENU);
 
 //------------------------------------------------------------------------------
 
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-
-void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
-{
-	int bufI = 0;
-
-NW_GET_BYTE (old_info, bufI, new_info->nType);
-/* skip three for pad byte */                                       
-bufI += 3;
-NW_GET_INT (old_info, bufI, new_info->numpackets);
-NW_GET_BYTES (old_info, bufI, new_info->thepos.bytemat, 9);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.xo);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.yo);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.zo);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.nSegment);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.velx);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.vely);
-NW_GET_SHORT (old_info, bufI, new_info->thepos.velz);
-NW_GET_SHORT (old_info, bufI, new_info->data_size);
-NW_GET_BYTE (old_info, bufI, new_info->nPlayer);
-NW_GET_BYTE (old_info, bufI, new_info->obj_renderType);
-NW_GET_BYTE (old_info, bufI, new_info->level_num);
-NW_GET_BYTES (old_info, bufI, new_info->data, new_info->data_size);
-}
-#else
-
-#define GetShortFrameInfo(old_info, new_info) \
-	memcpy (new_info, old_info, sizeof (tFrameInfoShort))
-
-#endif
-
-//------------------------------------------------------------------------------
-
 void NetworkPing (ubyte flag, int nPlayer)
 {
 	ubyte mybuf [2];

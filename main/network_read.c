@@ -423,6 +423,7 @@ if (pd->data_size > 0)
 //------------------------------------------------------------------------------
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+
 void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
 {
 	int bufI = 0;
@@ -443,7 +444,7 @@ NW_GET_SHORT (old_info, bufI, new_info->data_size);
 NW_GET_BYTE (old_info, bufI, new_info->nPlayer);
 NW_GET_BYTE (old_info, bufI, new_info->obj_renderType);
 NW_GET_BYTE (old_info, bufI, new_info->level_num);
-NW_GET_BYTES (old_info, bufI, new_info->dataP, new_info->data_size);
+NW_GET_BYTES (old_info, bufI, new_info->data, new_info->data_size);
 }
 #else
 
