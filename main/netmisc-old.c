@@ -611,7 +611,6 @@ void BESendMissingObjFrames(ubyte *server, ubyte *node, ubyte *netAddress)
 	int	i;
 	
 memcpy (out_buffer, &networkData.missingObjFrames, sizeof (networkData.missingObjFrames));
-((tMissingObjFrames *) &out_buffer [0])->nMissing = INTEL_SHORT (networkData.missingObjFrames.nFrames);
 ((tMissingObjFrames *) &out_buffer [0])->nFrame = INTEL_SHORT (networkData.missingObjFrames.nFrame);
 i = 2 * sizeof (ubyte) + sizeof (ushort);
 if (netAddress != NULL)
