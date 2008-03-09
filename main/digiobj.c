@@ -230,7 +230,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)	{
 	}
 #endif
 nSound = DigiXlatSound (nSound);
-if (nSound < 0) 
+if ((nSound < 0) && !(pszSound && *pszSound))
 	return;
 if (volume < 10) 
 	return;

@@ -389,7 +389,7 @@ for (i = 0; i < nPlayers; i++) {
 	}
 if (dataP [count] == 99) {
 	sprintf (mtext [num++], " ");
-	sprintf (mtext [num++], TXT_SHORT_PACKETS2, dataP [count+1]? TXT_ON : TXT_OFF);
+	sprintf (mtext [num++], TXT_SHORT_PACKETS2, dataP [count+1] ? TXT_ON : TXT_OFF);
 	sprintf (mtext [num++], TXT_PPS2, dataP [count+2]);
 	}
 bAlreadyShowingInfo = 1;

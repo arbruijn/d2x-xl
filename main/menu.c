@@ -3547,7 +3547,7 @@ do {
 		ADD_TEXT (opt, "", 0);
 		opt++;
 		}
-	if (gameOpts->render.bDynLighting && !IsMultiGame) {
+	if (gameOpts->render.bDynLighting) {
 #if 0
 		ADD_TEXT (opt, "", 0);
 		opt++;

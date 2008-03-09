@@ -110,7 +110,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
-			DigiPlayWAV ("gatling-speedup.wav", F1_0);
+			DigiLinkSoundToObject3 (-1, (short) gameData.multiplayer.players [i].nObject, 0, 
+											F1_0, 256 * F1_0, -1, -1, "gatling-speedup.wav", 0, SOUNDCLASS_PLAYER);
 			fP->bSound = 0;
 			}
 		}
