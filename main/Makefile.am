@@ -14,7 +14,7 @@ if USE_NETWORK
 NETWORK_SRCS = highscores.c multi.c multibot.c network.c netmisc.c \
 network_init.c network_join.c network_lib.c network_phandler.c \
 network_process.c network_read.c network_send.c network_sync.c \
-bmread.c dumpmine.c
+dumpmine.c
 endif
 
 if EDITOR
