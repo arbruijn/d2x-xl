@@ -130,19 +130,12 @@ static inline int NetworkFilterObject (tObject *objP)
 if (t == nDbgObjType)
 	nDbgObjType = nDbgObjType;
 #endif
-#if 0
-if ((t != OBJ_POWERUP) && (t != OBJ_PLAYER) && (t != OBJ_REACTOR) && (t != OBJ_GHOST) &&
-		(t != OBJ_ROBOT) && (t != OBJ_HOSTAGE) && (t != OBJ_MARKER) && 
-		((t != OBJ_WEAPON) || (objP->id != SMALLMINE_ID)))
-	continue;
-#else
 if (t >= MAX_OBJECT_TYPES)
 	return 1;
 if (objFilter [t])
 	return 1;
 if ((t == OBJ_WEAPON) && (objP->id != SMALLMINE_ID))
 	return 1;
-#endif
 return 0;
 }
 
@@ -449,6 +442,8 @@ void NetworkSyncPoll (int nitems, tMenuItem * menus, int * key, int citem)
 	int	nPackets = NetworkListen ();
 
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
+	if (NetworkVerifyPlayers ())
+		NetworkAbortSync ();
 	*key = -2;
 	return;
 	}

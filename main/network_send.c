@@ -180,7 +180,7 @@ if (networkData.bPlayerAdded) {
 NetworkUpdateNetGame ();
 
 // Fill in the kill list
-for (j=0; j<MAX_PLAYERS; j++) {
+for (j = 0; j < MAX_PLAYERS; j++) {
 	for (i = 0; i < MAX_PLAYERS; i++)
 		netGame.kills [j][i] = gameData.multigame.kills.matrix [j][i];
 	netGame.killed [j] = gameData.multiplayer.players [j].netKilledTotal;

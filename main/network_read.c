@@ -558,22 +558,36 @@ if (new_pd.data_size>0) {
 
 //------------------------------------------------------------------------------
 
-int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs)
+int NetworkVerifyObjects (int nRemoteObj, int nLocalObjs)
 {
-	int		i, t, bCoop = IsCoopGame;
-	int		nPlayers, bHaveReactor = !bCoop;
-	tObject	*objP = OBJECTS;
+return !gameStates.app.bHaveExtraGameInfo [1] && (nRemoteObj - nLocalObjs > 10) ? -1 : 0;
+}
 
-if (!gameStates.app.bHaveExtraGameInfo [1] && (nRemoteObjNum - nLocalObjs > 10))
-	return -1;
+//------------------------------------------------------------------------------
+
+int NetworkVerifyPlayers (void)
+{
+	int		i, j, t, bCoop = IsCoopGame;
+	int		nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
+	tObject	*objP = OBJECTS;
+	tPlayer	*playerP;
+
+for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, playerP++)
+	nPlayerObjs [j] = playerP->connected ? playerP->nObject : -1;
 #if 0
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS)
 #endif
 //	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
 for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	t = objP->nType;
-	if (t == OBJ_GHOST)
-		nPlayers++;
+	if (t == OBJ_GHOST) {
+		for (j = 0; j < MAX_PLAYERS; j++) {
+			if (nPlayerObjs [j] == i) {
+				nPlayers++;
+				break;
+				}
+			}
+		}
 	else if (t == OBJ_PLAYER) {
 		if (!(i && bCoop))
 			nPlayers++;
@@ -586,7 +600,7 @@ for (i = 0, nPlayers = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		if ((t == OBJ_REACTOR) || ((t == OBJ_ROBOT) && ROBOTINFO (objP->id).bossFlag))
 			bHaveReactor = 1;
 		}
-	if (nPlayers > gameData.multiplayer.nMaxPlayers)
+	if (nPlayers >= gameData.multiplayer.nMaxPlayers)
 		return 1;
 	}
 return !bHaveReactor;
@@ -688,14 +702,16 @@ else if (i < 0)
 				networkData.nStatus = NETSTAT_PLAYING;
 			networkData.nJoinState = 4;
 			}
-#if 1			
+#if 0		
 		con_printf (CONDBG, "Objnum -2 found in frame local %d remote %d.\n", networkData.nPrevFrame, networkData.nSyncFrame);
 		con_printf (CONDBG, "Got %d gameData.objs.objects, zF %d.\n", objectCount, nRemoteObj);
 #endif
+#if 1
 		if (NetworkVerifyObjects (nRemoteObj, objectCount)) {
 			NetworkAbortSync ();
 			return;
 			}
+#endif
 		}
 	else if (networkData.nJoinState & 1) {
 #if 1			

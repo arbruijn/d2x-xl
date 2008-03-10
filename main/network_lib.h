@@ -56,6 +56,9 @@ void DoRefuseStuff (tSequencePacket *their);
 int GotTeamSpawnPos (void);
 int TeamSpawnPos (int i);
 int NetworkHowManyConnected (void);
+void NetworkAbortSync (void);
+int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
+int NetworkVerifyPlayers (void);
 
 void NetworkNewPlayer (tSequencePacket *their);
 int CanJoinNetgame (tNetgameInfo *game, tAllNetPlayersInfo *people);

@@ -524,14 +524,16 @@ wsP->nMslLaunchPos = buf [16];
 wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 17);
 for (i = 0; i < 2; i++) {
 	if (wsP->firing [i].nDuration) {
-		if (!wsP->firing [i].nStart) {
-			if (!EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) || (wsP->firing [i].nDuration > GATLING_DELAY)) {
-				wsP->firing [i].nStart = gameStates.app.nSDLTicks - wsP->firing [i].nDuration;
+		if (wsP->firing [i].nStart <= 0) {
+			wsP->firing [i].nStart = gameStates.app.nSDLTicks - wsP->firing [i].nDuration;
+			if (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0) && (wsP->firing [i].nDuration < GATLING_DELAY)) {
 				wsP->firing [i].bSound = 1;
 				}	
 			else {
 				wsP->firing [i].nStart -= GATLING_DELAY + 1;
-				wsP->firing [i].bSound = 2;
+				if (wsP->firing [i].nStart < 0)
+					wsP->firing [i].nStart = 0;
+				wsP->firing [i].bSound = 0;
 				}	
 			wsP->firing [i].nStop = 0;
 			}
@@ -1211,7 +1213,7 @@ else if (weapon >= MISSILE_ADJUST) {
 						  weapon_id, weapon_gun, 1, 0);
 	}
 else {
-	fix save_charge = gameData.fusion.xCharge;
+	fix xSaveCharge = gameData.fusion.xCharge;
 	if (weapon == FUSION_INDEX)
 		gameData.fusion.xCharge = flags << 12;
 	if (weapon == LASER_ID) {
@@ -1222,7 +1224,7 @@ else {
 		}
 	LaserFireObject ((short) gameData.multiplayer.players [nPlayer].nObject, weapon, (int)buf [3], flags, (int)buf [5]);
 	if (weapon == FUSION_INDEX)
-		gameData.fusion.xCharge = save_charge;
+		gameData.fusion.xCharge = xSaveCharge;
 	}
 }
 

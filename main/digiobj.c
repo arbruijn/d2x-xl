@@ -492,7 +492,7 @@ if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length 
 	// Hack to keep sounds from building up...
 	DigiGetSoundLoc (&gameData.objs.viewer->position.mOrient, &gameData.objs.viewer->position.vPos, gameData.objs.viewer->nSegment, 
 						  pos, nSegment, maxVolume, &volume, &pan, maxDistance, 0);
-	DigiPlaySample3D (nOrgSound, pan, volume, 0, pos, NULL);
+	DigiPlaySample3D (nOrgSound, pan, volume, 0, pos, pszSound);
 	return -1;
 	}
 for (i = 0, soP = soundObjects; i < MAX_SOUND_OBJECTS; i++, soP++)
