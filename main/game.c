@@ -1711,7 +1711,7 @@ FreeRenderItems ();
 LogErr ("unloading string pool\n");
 FreeStringPool ();
 LogErr ("unloading level messages\n");
-FreeTextData (&gameData.messages);
+FreeTextData (gameData.messages);
 FreeTextData (&gameData.sounds);
 LogErr ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();

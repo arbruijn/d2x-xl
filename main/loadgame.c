@@ -1016,7 +1016,7 @@ if (gameStates.app.bD1Mission) {
 else {
 	if (bPageInTextures)
 		PiggyLoadLevelData ();
-	LoadTextData (pszLevelName, ".msg", &gameData.messages);
+	LoadTextData (pszLevelName, ".msg", gameData.messages);
 	LoadTextData (pszLevelName, ".snd", &gameData.sounds);
 	LoadBitmapReplacements (pszLevelName);
 	LoadSoundReplacements (pszLevelName);

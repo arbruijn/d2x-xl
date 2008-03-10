@@ -2492,8 +2492,12 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 		}
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
-		g3sPoint vPlayerPos;
-		G3TransformAndEncodePoint (&vPlayerPos, &gameData.objs.objects [nObject].position.vPos);
+		g3sPoint		vPlayerPos;
+		vmsVector	vPos;
+
+		vPos = gameData.objs.objects [nObject].position.vPos;
+		vPos.p.y += 2 * F1_0;
+		G3TransformAndEncodePoint (&vPlayerPos, &vPos);
 		if (vPlayerPos.p3_codes == 0) {	//on screen
 			G3ProjectPoint (&vPlayerPos);
 			if (!(vPlayerPos.p3_flags & PF_OVERFLOW)) {
@@ -2517,10 +2521,16 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					sprintf (s, "%s", gameStates.multi.bPlayerIsTyping [p] ? TXT_TYPING : gameData.multiplayer.players [p].callsign);
 					GrGetStringSize (s, &w, &h, &aw);
 					GrSetFontColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b), 1, 0, 0);
-					x1 = f2i (x)-w/2;
-					y1 = f2i (y)-h/2;
+					x1 = f2i (x) - w / 2;
+					y1 = f2i (y) - h / 2;
+					//glBlendFunc (GL_ONE, GL_ONE);
 					nIdNames [p] = GrString (x1, y1, s, nIdNames + p);
-				}
+					GrSetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b));
+					glLineWidth ((GLfloat) 2.0f);
+					GrUBox (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);
+					glLineWidth (1);
+					//glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
 					fix dy = -FixMulDiv (gameData.objs.objects [nObject].size, i2f (grdCurCanv->cv_h)/2, vPlayerPos.p3_z);

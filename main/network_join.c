@@ -523,7 +523,10 @@ NetworkSendGameInfo (NULL);
 
 void DoRefuseStuff (tSequencePacket *their)
 {
-  int i, nNewPlayer;
+  int				i, nNewPlayer;
+
+  static tTextIndex	joinMsgIndex;
+  static char			szJoinMsg [200];
 
 ClipRank ((char *) &their->player.rank);
 
@@ -536,19 +539,44 @@ if (FindPlayerInBanList (their->player.callsign))
 	return;
 if (!networkData.refuse.bWaitForAnswer) {
 	DigiPlaySample (SOUND_HUD_JOIN_REQUEST, F1_0*2);           
-	if (gameData.app.nGameMode & GM_TEAM) {
-		if (!gameOpts->multi.bNoRankings)
-			HUDInitMessage (
-				"%s %s wants to join", 
-				pszRankStrings [their->player.rank], their->player.callsign);
-		HUDInitMessage (
-			"%s joining. Alt-1 assigns to team %s. Alt-2 to team %s", 
-			their->player.callsign, netGame.team_name [0], netGame.team_name [1]);
-//                      HUDInitMessage ("Alt-1 to place on team %s!", netGame.team_name [0]);
-//                      HUDInitMessage ("Alt-2 to place on team %s!", netGame.team_name [1]);
+#if 0
+	if (IsTeamGame) {
+		if (gameOpts->multi.bNoRankings)
+			HUDInitMessage (%s joining", their->player.callsign);
+		else
+			HUDInitMessage ("%s %s wants to join", 
+								 pszRankStrings [their->player.rank], their->player.callsign);
+		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", 
+							 their->player.callsign, netGame.team_name [0], netGame.team_name [1]);
 		}               
 	else    
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);
+#else
+	if (IsTeamGame) {
+		char szRank [20];
+
+		if (gameOpts->multi.bNoRankings)
+			*szRank = '\0';
+		else
+			sprintf (szRank, "%s ", pszRankStrings [their->player.rank]);
+		sprintf (szJoinMsg, "%s%s wants to join.\nAlt-1 assigns to team %s.\nAlt-2 to team %s.", 
+					szRank, their->player.callsign, netGame.team_name [0], netGame.team_name [1]);
+		joinMsgIndex.nLines = 3;
+		}
+	else {
+		sprintf (szJoinMsg, "%s wants to join.\nPress F6 to accept.", their->player.callsign);
+		joinMsgIndex.nLines = 2;
+		}
+	joinMsgIndex.pszText = szJoinMsg;
+	joinMsgIndex.nId = 1;
+	gameData.messages [1].nMessages = 1;
+	gameData.messages [1].index = 
+	gameData.messages [1].currentMsg = &joinMsgIndex;
+	gameData.messages [1].nStartTime = gameStates.app.nSDLTicks;
+	gameData.messages [1].nEndTime = gameStates.app.nSDLTicks + 5000;
+	gameData.messages [1].textBuffer = NULL;
+	gameData.messages [1].bmP = NULL;
+#endif
 	strcpy (networkData.refuse.szPlayer, their->player.callsign);
 	networkData.refuse.xTimeLimit = TimerGetApproxSeconds ();   
 	networkData.refuse.bThisPlayer = 0;

@@ -362,7 +362,7 @@ return 1;
 
 int DoShowMessage (tTrigger *trigP, short nObject)
 {
-ShowGameMessage (&gameData.messages, f2i (trigP->value), trigP->time);
+ShowGameMessage (gameData.messages, f2i (trigP->value), trigP->time);
 return 1;
 }
 

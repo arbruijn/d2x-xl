@@ -2098,7 +2098,7 @@ if (gameStates.input.nPlrFileVersion >= 23) {
 		networkData.nNetLifeKills = 
 		networkData.nNetLifeKilled = 0;
 		gameData.app.nLifetimeChecksum = 0;
- 		ExecMessageBox (NULL, NULL, 1, TXT_WARNING, TXT_PROFILE_DAMAGED);
+ 		ExecMessageBox (NULL, NULL, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
 		bRewriteIt = 1;
 		}
 	}

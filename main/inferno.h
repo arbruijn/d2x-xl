@@ -2970,7 +2970,7 @@ typedef struct tTextData {
 	char			*textBuffer;
 	tTextIndex	*index;
 	tTextIndex	*currentMsg;
-	int			nLines;
+	int			nMessages;
 	int			nStartTime;
 	int			nEndTime;
 	grsBitmap	*bmP;
@@ -3035,7 +3035,7 @@ typedef struct tGameData {
 	tScoreData			score;
 	tTrackIRData		trackIR;
 	tStatsData			stats;
-	tTextData			messages;
+	tTextData			messages [2];
 	tTextData			sounds;
 	tApplicationData	app;
 } tGameData;

@@ -250,7 +250,7 @@ int multiMessageLengths [MULTI_MAX_TYPE+1] = {
 	5,  // MULTI_TRIGGER_EXT
 	16, // MULTI_SYNC_KILLS
 	5,	 // MULTI_COUNTDOWN
-	21	 // MULTI_PLAYER_WEAPONS
+	22	 // MULTI_PLAYER_WEAPONS
 };
 
 void extract_netplayer_stats (tNetPlayerStats *ps, tPlayer * pd);
@@ -499,10 +499,11 @@ gameData.multigame.msg.buf [5] = wsP->nLaserLevel;
 gameData.multigame.msg.buf [6] = wsP->bQuadLasers;
 PUT_INTEL_INT (gameData.multigame.msg.buf + 7, wsP->firing [0].nDuration);
 PUT_INTEL_INT (gameData.multigame.msg.buf + 11, wsP->firing [1].nDuration);
-gameData.multigame.msg.buf [15] = wsP->bTripleFusion;
-gameData.multigame.msg.buf [16] = wsP->nMslLaunchPos;
-PUT_INTEL_INT (gameData.multigame.msg.buf + 17, wsP->xMslFireTime);
-MultiSendData (gameData.multigame.msg.buf, 21, 0);
+gameData.multigame.msg.buf [15] = (ubyte) wsP->firing [0].bSpeedUp;
+gameData.multigame.msg.buf [16] = wsP->bTripleFusion;
+gameData.multigame.msg.buf [17] = wsP->nMslLaunchPos;
+PUT_INTEL_INT (gameData.multigame.msg.buf + 18, wsP->xMslFireTime);
+MultiSendData (gameData.multigame.msg.buf, 22, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -520,9 +521,10 @@ wsP->nLaserLevel = buf [5];
 wsP->bQuadLasers = buf [6];
 wsP->firing [0].nDuration = GET_INTEL_INT (buf + 7);
 wsP->firing [1].nDuration = GET_INTEL_INT (buf + 11);
-wsP->bTripleFusion = buf [15];
-wsP->nMslLaunchPos = buf [16];
-wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 17);
+wsP->firing [0].bSpeedUp = buf [15];
+wsP->bTripleFusion = buf [16];
+wsP->nMslLaunchPos = buf [17];
+wsP->xMslFireTime = GET_INTEL_INT (gameData.multigame.msg.buf + 18);
 for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 	if (fP->nDuration) {
 		if (fP->nStart <= 0) {

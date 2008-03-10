@@ -27,7 +27,7 @@ if (msgP->bmP) {
 	GrFreeBitmap (msgP->bmP);
 	msgP->bmP = NULL;
 	}
-msgP->nLines = 0;
+msgP->nMessages = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ if (!(msgP->index = (tTextIndex *) D2_ALLOC (nLines * sizeof (tTextIndex)))) {
 	FreeTextData (msgP);
 	return;
 	}
-msgP->nLines = nLines;
+msgP->nMessages = nLines;
 nLines = 0;
 for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	if (!*p) {
@@ -131,15 +131,15 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	else
 		*q++ = *p;
 	}
-msgP->nLines = (int) (pi - msgP->index);
-QSortTextData (msgP->index, 0, msgP->nLines - 1);
+msgP->nMessages = (int) (pi - msgP->index);
+QSortTextData (msgP->index, 0, msgP->nMessages - 1);
 }
 
 //------------------------------------------------------------------------------
 
 tTextIndex *FindTextData (tTextData *msgP, int nId)
 {
-	int	h, m, l = 0, r = msgP->nLines - 1;
+	int	h, m, l = 0, r = msgP->nMessages - 1;
 
 do {
 	m = (l + r) / 2;
@@ -156,7 +156,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-void ShowGameMessage (tTextData *msgP, int nId, int nDuration)
+int ShowGameMessage (tTextData *msgP, int nId, int nDuration)
 {
 	tTextIndex	*indexP;
 	short			w, h, x, y;
@@ -164,15 +164,15 @@ void ShowGameMessage (tTextData *msgP, int nId, int nDuration)
 
 if (nId < 0) {
 	if (!(indexP = msgP->currentMsg))
-		return;
+		return 0;
 	if ((msgP->nEndTime > 0) && (msgP->nEndTime <= gameStates.app.nSDLTicks)) {
 		msgP->currentMsg = NULL;
-		return;
+		return 0;
 		}
 	}
 else {
 	if (!(indexP = FindTextData (msgP, nId)))
-		return;
+		return 0;
 	msgP->currentMsg = indexP;
 	msgP->nStartTime = gameStates.app.nSDLTicks;
 	msgP->nEndTime = (nDuration < 0) ? -1 : gameStates.app.nSDLTicks + 1000 * nDuration;
@@ -183,7 +183,7 @@ else {
 	}
 if (msgP->nEndTime < 0) {
 	if (nId < 0)
-		return;
+		return 0;
 	PauseGame ();
 	ExecMessageBox (NULL, NULL, 1, TXT_CLOSE, indexP->pszText);
 	msgP->currentMsg = NULL;
@@ -211,6 +211,7 @@ else if (!gameStates.render.nWindow) {
 		OglUBitBltI (w, h, x, y, w, h, 0, 0, msgP->bmP, &grdCurCanv->cvBitmap, 0, 1, fAlpha);
 		}
 	}
+return 1;
 }
 
 //------------------------------------------------------------------------------

@@ -1350,7 +1350,8 @@ if (viewInfo.bUsePlayerHeadAngles)
 	Draw3DReticle (nEyeOffset);
 gameStates.render.nShadowPass = 0;
 G3EndFrame ();
-ShowGameMessage (&gameData.messages, -1, -1);
+if (!ShowGameMessage (gameData.messages, -1, -1))
+	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
 
 //------------------------------------------------------------------------------
