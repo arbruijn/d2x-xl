@@ -723,12 +723,10 @@ gameStates.app.cheats.nUnlockLevel = 1;
 
 //------------------------------------------------------------------------------
 
-void WowieCheat (int bVerbose)
+void DoWowieCheat (int bVerbose, int bInitialize)
 {
 	int	h, i;
 
-if (bVerbose)
-	HUDInitMessage (TXT_WOWIE_ZOWIE);
 if (gameStates.app.bD1Mission) {
 	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);
 	LOCALPLAYER.secondaryWeaponFlags = (1 << CONCUSSION_INDEX) | (1 << HOMING_INDEX) | (1 << PROXMINE_INDEX) | (1 << SMART_INDEX) | (1 << MEGA_INDEX);
@@ -779,15 +777,29 @@ LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 gameData.physics.xAfterburnerCharge = f1_0;
 SetMaxOmegaCharge ();
 UpdateLaserWeaponInfo ();
-SetLastSuperWeaponStates ();
+if (bInitialize)
+	SetLastSuperWeaponStates ();
+}
+
+//------------------------------------------------------------------------------
+
+void WowieCheat (int bVerbose)
+{
+if (bVerbose)
+	HUDInitMessage (TXT_WOWIE_ZOWIE);
+DoWowieCheat (bVerbose, 1);
 }
 
 //------------------------------------------------------------------------------
 
 void SuperWowieCheat (int bVerbose)
 {
-if (gameStates.gameplay.bMineMineCheat)
+if (gameStates.gameplay.bMineMineCheat) {
 	gameStates.gameplay.bMineMineCheat = 0;
+	LOCALPLAYER.flags &= ~(PLAYER_FLAGS_CLOAKED | PLAYER_FLAGS_INVULNERABLE);
+	LOCALPLAYER.invulnerableTime =
+	LOCALPLAYER.cloakTime = 0;
+	}
 else {
 	AccessoryCheat (bVerbose);
 	WowieCheat (bVerbose);

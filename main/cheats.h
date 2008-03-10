@@ -12,6 +12,7 @@ void FinalCheats (int key);
 void SuperWowieCheat (int bVerbose);
 void WowieCheat (int bVerbose);
 void GasolineCheat (int bVerbose);
+void DoWowieCheat (int bVerbose, int bInitialize);
 
 #ifdef _DEBUG
 void DoCheatMenu ();

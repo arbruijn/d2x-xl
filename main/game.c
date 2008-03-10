@@ -2130,7 +2130,7 @@ if (nDebugSlowdown) {
 		return 1;
 		}
 	if (gameStates.gameplay.bMineMineCheat) {
-		WowieCheat (0);
+		DoWowieCheat (0, 0);
 		GasolineCheat (0);
 		}
 	AutoBalanceTeams ();

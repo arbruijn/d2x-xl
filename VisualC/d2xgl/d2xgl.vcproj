@@ -3680,6 +3680,9 @@
 					Name="Source Files"
 					Filter="">
 					<File
+						RelativePath="..\..\main\dropweapon.c">
+					</File>
+					<File
 						RelativePath="..\..\main\laser.c">
 						<FileConfiguration
 							Name="Debug|Win32">
@@ -3703,6 +3706,12 @@
 						RelativePath="..\..\main\omega.c">
 					</File>
 					<File
+						RelativePath="..\..\main\pickupweapon.c">
+					</File>
+					<File
+						RelativePath="..\..\main\seismic.c">
+					</File>
+					<File
 						RelativePath="..\..\main\weapon.c">
 						<FileConfiguration
 							Name="Debug|Win32">
@@ -3721,6 +3730,9 @@
 								AdditionalIncludeDirectories=""
 								PreprocessorDefinitions=""/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\weaponorder.c">
 					</File>
 				</Filter>
 				<Filter
@@ -3751,10 +3763,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

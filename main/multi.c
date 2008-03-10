@@ -3497,7 +3497,7 @@ if (gameData.walls.walls [wallnum].nType == WALL_OPEN)
 
 //-----------------------------------------------------------------------------
 
-void multi_send_jason_cheat (int num)
+void MultiSendJasonCheat (int num)
 {
 return;
 }
@@ -3634,7 +3634,7 @@ NetDestroyReactor (objP);
 
 //-----------------------------------------------------------------------------
 
-void multi_send_seismic (fix start, fix end)
+void MultiSendSeismic (fix start, fix end)
 {
 gameData.multigame.msg.buf [0] = MULTI_SEISMIC;
 PUT_INTEL_INT (gameData.multigame.msg.buf + 1, start); 

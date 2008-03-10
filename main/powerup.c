@@ -56,6 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "escort.h"
 #include "network.h"
 #include "sphere.h"
+#include "weapon.h"
 
 #ifdef EDITOR
 #include "gr.h"	//	for powerup outline drawing
@@ -65,7 +66,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int ReturnFlagHome (tObject *pObj);
 void InvalidateEscortGoal (void);
 char GetKeyValue (char);
-void CheckToUsePrimary (int);
 void MultiSendGotFlag (char);
 
 char *pszPowerup [MAX_POWERUP_TYPES] = {

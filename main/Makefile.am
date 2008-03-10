@@ -46,7 +46,8 @@ fastrender.c	renderthreads.c		flightpath.c \
 rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
 omega.c trackobject.c	monsterball.c	slowmotion.c	dropobject.c	\
 entropy.c	dynlight.c	headlight.c	marker.c	soundthreads.c \
-oofread.c	oofrender.c	oofmath.c	hudicons.c	statusbar.c 
+oofread.c	oofrender.c	oofmath.c	hudicons.c	statusbar.c \
+dropweapon.c pickupweapon.c weaponorder.c seismic.c
 
 
 EXTRA_libmain_a_SOURCES = \

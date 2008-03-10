@@ -337,5 +337,8 @@ int GetPlayerGun (int nPlayer, int *bFiring);
 int GetPlayerMissile (int nPlayer, int *bFiring);
 
 void InitSeismicDisturbances (void);
+int POrderList (int nWeapon);
+int SOrderList (int nWeapon);
+int CheckToUsePrimary (int nWeaponIndex);
 
 #endif

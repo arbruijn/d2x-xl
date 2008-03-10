@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #ifdef RCS
-static char rcsid[] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
+static char rcsid [] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
 #endif
 
 #include <stdlib.h>
@@ -50,24 +50,22 @@ static char rcsid[] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
 #include "tactile.h"
 #endif
 
-int POrderList (int num);
-int SOrderList (int num);
 //	Note, only Vulcan cannon requires ammo.
 // NOTE: Now Vulcan and Gauss require ammo. -5/3/95 Yuan
-//ubyte	DefaultPrimaryAmmoLevel[MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
-//ubyte	DefaultSecondaryAmmoLevel[MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
+//ubyte	DefaultPrimaryAmmoLevel [MAX_PRIMARY_WEAPONS] = {255, 0, 255, 255, 255};
+//ubyte	DefaultSecondaryAmmoLevel [MAX_SECONDARY_WEAPONS] = {3, 0, 0, 0, 0};
 
 //	Convert primary weapons to indices in gameData.weapons.info array.
-ubyte primaryWeaponToWeaponInfo[MAX_PRIMARY_WEAPONS] = {
+ubyte primaryWeaponToWeaponInfo [MAX_PRIMARY_WEAPONS] = {
 	LASER_ID, VULCAN_ID, SPREADFIRE_ID, PLASMA_ID, FUSION_ID, 
 	SUPERLASER_ID, GAUSS_ID, HELIX_ID, PHOENIX_ID, OMEGA_ID};
 
-ubyte secondaryWeaponToWeaponInfo[MAX_SECONDARY_WEAPONS] = {
+ubyte secondaryWeaponToWeaponInfo [MAX_SECONDARY_WEAPONS] = {
 	CONCUSSION_ID, HOMINGMSL_ID, PROXMINE_ID, SMARTMSL_ID, MEGAMSL_ID, 
 	FLASHMSL_ID, GUIDEDMSL_ID, SMARTMINE_ID, MERCURYMSL_ID, EARTHSHAKER_ID};
 
 //for each Secondary weapon, which gun it fires out of
-ubyte secondaryWeaponToGunNum[MAX_SECONDARY_WEAPONS] = {4,4,7,7,7,4,4,7,4,7};
+ubyte secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS] = {4,4,7,7,7,4,4,7,4,7};
 
 int nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS] = {
 	0, VULCAN_AMMO_MAX, 0, 0, 0, 
@@ -76,12 +74,12 @@ int nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS] = {
 ubyte nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS] = {20, 10, 10, 5, 5, 20, 20, 15, 10, 10};
 
 //for each primary weapon, what kind of powerup gives weapon
-ubyte primaryWeaponToPowerup[MAX_PRIMARY_WEAPONS] = {
+ubyte primaryWeaponToPowerup [MAX_PRIMARY_WEAPONS] = {
 	POW_LASER, POW_VULCAN, POW_SPREADFIRE, POW_PLASMA, POW_FUSION, 
 	POW_LASER, POW_GAUSS, POW_HELIX, POW_PHOENIX, POW_OMEGA};
 
 //for each Secondary weapon, what kind of powerup gives weapon
-ubyte secondaryWeaponToPowerup[MAX_SECONDARY_WEAPONS] = {
+ubyte secondaryWeaponToPowerup [MAX_SECONDARY_WEAPONS] = {
 	POW_CONCUSSION_1, POW_HOMINGMSL_1, POW_PROXMINE, POW_SMARTMSL, POW_MEGAMSL,
 	POW_FLASHMSL_1, POW_GUIDEDMSL_1, POW_SMARTMINE, POW_MERCURYMSL_1, POW_EARTHSHAKER};
 
@@ -129,7 +127,7 @@ ubyte bCycling = 0;
 
 //allow tPlayer to reorder menus?
 
-//char	*Primary_weapon_names[MAX_PRIMARY_WEAPONS] = {
+//char	*Primary_weapon_names [MAX_PRIMARY_WEAPONS] = {
 //	"Laser Cannon",
 //	"Vulcan Cannon",
 //	"Spreadfire Cannon",
@@ -137,7 +135,7 @@ ubyte bCycling = 0;
 //	"Fusion Cannon"
 //};
 
-//char	*pszSecondaryWeaponNames[MAX_SECONDARY_WEAPONS] = {
+//char	*pszSecondaryWeaponNames [MAX_SECONDARY_WEAPONS] = {
 //	"Concussion Missile",
 //	"Homing Missile",
 //	"Proximity Bomb",
@@ -145,7 +143,7 @@ ubyte bCycling = 0;
 //	"Mega Missile"
 //};
 
-//char	*pszShortPrimaryWeaponNames[MAX_PRIMARY_WEAPONS] = {
+//char	*pszShortPrimaryWeaponNames [MAX_PRIMARY_WEAPONS] = {
 //	"Laser",
 //	"Vulcan",
 //	"Spread",
@@ -153,7 +151,7 @@ ubyte bCycling = 0;
 //	"Fusion"
 //};
 
-//char	*pszShortSecondaryWeaponNames[MAX_SECONDARY_WEAPONS] = {
+//char	*pszShortSecondaryWeaponNames [MAX_SECONDARY_WEAPONS] = {
 //	"Concsn\nMissile",
 //	"Homing\nMissile",
 //	"Proxim.\nBomb",
@@ -161,7 +159,7 @@ ubyte bCycling = 0;
 //	"Mega\nMissile"
 //};
 
-sbyte   bIsEnergyWeapon[MAX_WEAPON_TYPES] = {
+sbyte   bIsEnergyWeapon [MAX_WEAPON_TYPES] = {
 	1, 1, 1, 1, 1,
 	1, 1, 1, 0, 1,
 	1, 0, 1, 1, 1,
@@ -356,7 +354,7 @@ if (!bSecondary) {
 		}
 	}
 else {
-	nWeaponIndex = secondaryWeaponToWeaponInfo[nWeapon];
+	nWeaponIndex = secondaryWeaponToWeaponInfo [nWeapon];
 
 	if (playerP->secondaryWeaponFlags & (1 << nWeapon))
 		returnValue |= HAS_WEAPON_FLAG;
@@ -373,7 +371,7 @@ return returnValue;
 
 //	------------------------------------------------------------------------------------
 
-void InitWeaponOrdering ()
+void InitWeaponOrdering (void)
  {
   // short routine to setup default weapon priorities for new pilots
 
@@ -387,7 +385,7 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
 
 //	------------------------------------------------------------------------------------
 
-void CyclePrimary ()
+void CyclePrimary (void)
 {
 bCycling = 1;
 AutoSelectWeapon (0, 0);
@@ -396,7 +394,7 @@ bCycling = 0;
 
 //	------------------------------------------------------------------------------------
 
-void CycleSecondary ()
+void CycleSecondary (void)
 {
 bCycling = 1;
 AutoSelectWeapon (1, 0);
@@ -449,7 +447,7 @@ if (!bSecondary) {
 	StopPrimaryFire ();
 	szWeaponName = PRIMARY_WEAPON_NAMES (nWeaponNum);
    #if defined (TACTILE)
- 	tactile_set_button_jolt();
+ 	TactileSetButtonJolt();
 	#endif
 	//save flag for whether was super version
 	bLastPrimaryWasSuper [nWeaponNum % SUPER_WEAPON] = (nWeaponNum >= SUPER_WEAPON);
@@ -496,8 +494,7 @@ void ToggleBomb (void)
 {
 int bomb = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 if ((gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) ||
-	 (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] &&
-	  !LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
+	 !(LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] || LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX])) {
 	DigiPlaySampleOnce (SOUND_BAD_SELECTION, F1_0);
 	HUDInitMessage (TXT_NOBOMBS);
 	}
@@ -518,13 +515,13 @@ else {
 void DoSelectWeapon (int nWeapon, int bSecondary)
 {
 	int	nWeaponSave = nWeapon;
-	int	nWeaponStatus, current, hasFlag;
+	int	nWeaponStatus, nCurrent, hasFlag;
 	ubyte	bLastWasSuper;
 
 if (!bSecondary) {
-	current = gameData.weapons.nPrimary;
-	if ((current == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
-		current = SUPER_LASER_INDEX;
+	nCurrent = gameData.weapons.nPrimary;
+	if ((nCurrent == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
+		nCurrent = SUPER_LASER_INDEX;
 	bLastWasSuper = bLastPrimaryWasSuper [nWeapon];
 	if ((nWeapon == LASER_INDEX) && (LOCALPLAYER.laserLevel > MAX_LASER_LEVEL))
 		nWeapon = SUPER_LASER_INDEX;
@@ -537,14 +534,14 @@ else if (nWeapon == 2) {
 	return;
 	}
 else {
-	current = gameData.weapons.nSecondary;
+	nCurrent = gameData.weapons.nSecondary;
 	bLastWasSuper = bLastSecondaryWasSuper [nWeapon % SUPER_WEAPON];
 	hasFlag = HAS_WEAPON_FLAG + HAS_AMMO_FLAG;
 	}
 
-if ((current == nWeapon) || (current == nWeapon + SUPER_WEAPON)) {
+if ((nCurrent == nWeapon) || (nCurrent == nWeapon + SUPER_WEAPON)) {
 	//already have this selected, so toggle to other of normal/super version
-	if (!bSecondary && (current == SUPER_LASER_INDEX))
+	if (!bSecondary && (nCurrent == SUPER_LASER_INDEX))
 		return;
 	nWeapon %= SUPER_WEAPON;
 	if (!bLastWasSuper)
@@ -651,7 +648,7 @@ if (!nWeaponType) {
 
 //	Hack alert!  Because the fusion uses 0 energy at the end (it's got the weird chargeup)
 //	it looks like it takes 0 to fire, but it doesn't, so never auto-select.
-// if (primaryOrder[iNewWeapon] == FUSION_INDEX)
+// if (primaryOrder [iNewWeapon] == FUSION_INDEX)
 //	continue;
 
 			nNewWeapon = primaryOrder [iNewWeapon];
@@ -738,7 +735,7 @@ for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 		PRIMARY_WEAPON_NAMES(i), LOCALPLAYER.primaryAmmo [i]);
 	}
 	con_printf (CONDBG, "\n");
-	for (i=0; i<MAX_SECONDARY_WEAPONS; i++) {
+	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 		if (LOCALPLAYER.secondaryWeaponFlags & (1 << i))
 			con_printf (CONDBG, "HAVE");
 		else
@@ -754,504 +751,68 @@ con_printf (CONDBG, "\n");
 
 #endif
 
-//	---------------------------------------------------------------------
-//called when one of these weapons is picked up
-//when you pick up a secondary, you always get the weapon & ammo for it
-//	Returns true if powerup picked up, else returns false.
-int PickupSecondary (tObject *objP, int nWeaponIndex, int count, int nPlayer)
-{
-	int		max;
-	int		nPickedUp;
-	int		cutpoint, bEmpty = 0, bSmokeGrens;
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
-
-if ((nWeaponIndex == PROXMINE_INDEX) && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
-	bSmokeGrens = 1;
-	max = 4;
-	}
-else {
-	bSmokeGrens = 0;
-	max = nMaxSecondaryAmmo [nWeaponIndex];
-	if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-		max *= 2;
-	}
-if (playerP->secondaryAmmo [nWeaponIndex] >= max) {
-	if (ISLOCALPLAYER (nPlayer))
-		HUDInitMessage("%s %i %ss!", 
-			TXT_ALREADY_HAVE, 
-			playerP->secondaryAmmo [nWeaponIndex],
-			bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
-	return 0;
-	}
-playerP->secondaryWeaponFlags |= (1 << nWeaponIndex);
-playerP->secondaryAmmo [nWeaponIndex] += count;
-nPickedUp = count;
-if (playerP->secondaryAmmo [nWeaponIndex] > max) {
-	nPickedUp = count - (playerP->secondaryAmmo [nWeaponIndex] - max);
-	playerP->secondaryAmmo [nWeaponIndex] = max;
-	if ((nPickedUp < count) && (nWeaponIndex != PROXMINE_INDEX) && (nWeaponIndex != SMARTMINE_INDEX)) {
-		short nObject = OBJ_IDX (objP);
-		gameData.multiplayer.leftoverPowerups [nObject].nCount = count - nPickedUp;
-		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [nWeaponIndex];
-		gameData.multiplayer.leftoverPowerups [nObject].spitterP = gameData.objs.objects + playerP->nObject;
-		}
-	}
-if (ISLOCALPLAYER (nPlayer)) {
-	cutpoint = SOrderList (255);
-	bEmpty = playerP->secondaryAmmo [gameData.weapons.nSecondary] == 0;
-	if (gameOpts->gameplay.nAutoSelectWeapon) {
-		if (gameOpts->gameplay.nAutoSelectWeapon == 1) {
-			if (bEmpty)
-				SelectWeapon (nWeaponIndex, 1, 0, 1);
-			}
-		else if ((SOrderList (nWeaponIndex) < cutpoint) && 
-					(bEmpty || (SOrderList (nWeaponIndex) < SOrderList (gameData.weapons.nSecondary))))
-			SelectWeapon(nWeaponIndex,1, 0, 1);
-		else {
-			//if we don't auto-select this weapon, but it's a proxbomb or smart mine,
-			//we want to do a mini-auto-selection that applies to the drop bomb key
-			if ((nWeaponIndex == PROXMINE_INDEX || nWeaponIndex == SMARTMINE_INDEX) &&
-				!(gameData.weapons.nSecondary == PROXMINE_INDEX || gameData.weapons.nSecondary == SMARTMINE_INDEX)) {
-				int cur = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
-				if (SOrderList (nWeaponIndex) < SOrderList (cur))
-					bLastSecondaryWasSuper[PROXMINE_INDEX] = (nWeaponIndex == SMARTMINE_INDEX);
-				}
-			}
-		}
-	//note: flash for all but concussion was 7,14,21
-	if (count>1) {
-		PALETTE_FLASH_ADD (15,15,15);
-		HUDInitMessage("%d %s%s", nPickedUp, bSmokeGrens ? TXT_SMOKE_GRENADES : SECONDARY_WEAPON_NAMES (nWeaponIndex), TXT_SX);
-		}
-	else {
-		PALETTE_FLASH_ADD (10,10,10);
-		HUDInitMessage("%s!", bSmokeGrens ? TXT_SMOKE_GRENADE : SECONDARY_WEAPON_NAMES (nWeaponIndex));
-		}
-	}
-return 1;
-}
-
-//	-----------------------------------------------------------------------------
-
-void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n)
-{
-	ubyte		f [MAX_PRIMSEC_WEAPONS + 1];
-	int		i, s = (n + 1) * sizeof (ubyte);
-
-//check for validity
-memset (f, 0, s);
-for (i = 0; i <= n; i++)
-	if (order [i] == 255)
-		f [10]++;
-	else if (order [i] < n)
-		f [order [i]]++;
-for (i = 0; i <= n; i++)
-	if (f [i] != 1) {
-		memcpy (order, defaultOrder, s);
-		break;
-		}
-}
-
-//	-----------------------------------------------------------------------------
-
-void ReorderPrimary ()
-{
-	tMenuItem	m [MAX_PRIMARY_WEAPONS + 2];
-	int				i;
-
-ValidatePrios (primaryOrder, defaultPrimaryOrder, MAX_PRIMARY_WEAPONS);
-memset (m, 0, sizeof (m));
-for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++) {
-	m [i].nType = NM_TYPE_MENU;
-	if (primaryOrder [i] == 255)
-		m [i].text="������� Never autoselect �������";
-	else
-		m [i].text= (char *) PRIMARY_WEAPON_NAMES (primaryOrder [i]);
-	m [i].value = primaryOrder [i];
-}
-gameStates.menus.bReordering = 1;
-i = ExecMenu ("Reorder Primary", "Shift+Up/Down arrow to move item", i, m, NULL, NULL);
-gameStates.menus.bReordering = 0;
-
-for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
-	primaryOrder [i] = m [i].value;
-}
-
-//	-----------------------------------------------------------------------------
-
-void ReorderSecondary ()
-{
-	tMenuItem m[MAX_SECONDARY_WEAPONS + 2];
-	int i;
-
-ValidatePrios (secondaryOrder, defaultSecondaryOrder, MAX_SECONDARY_WEAPONS);
-memset (m, 0, sizeof (m));
-for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
-{
-	m[i].nType = NM_TYPE_MENU;
-	if (secondaryOrder [i] == 255)
-		m[i].text = "������� Never autoselect �������";
-	else
-		m[i].text = (char *) SECONDARY_WEAPON_NAMES (secondaryOrder[i]);
-	m[i].value=secondaryOrder[i];
-}
-gameStates.menus.bReordering = 1;
-i = ExecMenu ("Reorder Secondary", "Shift+Up/Down arrow to move item", i, m, NULL, NULL);
-gameStates.menus.bReordering = 0;
-for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
-	secondaryOrder [i] = m [i].value;
-}
-
-//	-----------------------------------------------------------------------------
-
-int POrderList (int num)
-{
-	int i;
-
-for (i = 0; i < MAX_PRIMARY_WEAPONS + 1; i++)
-	if (primaryOrder [i] == num)
-		return (i);
-Error ("Primary Weapon is not in order list!!!");
-return 0;
-}
-
-//	-----------------------------------------------------------------------------
-
-int SOrderList (int num)
-{
-	int i;
-
-for (i = 0; i < MAX_SECONDARY_WEAPONS + 1; i++)
-	if (secondaryOrder[i]==num)
-		return i;
-Error ("Secondary Weapon is not in order list!!!");
-return 0;
-}
-
-
-//	-----------------------------------------------------------------------------
-
-//called when a primary weapon is picked up
-//returns true if actually picked up
-int PickupPrimary (int nWeaponIndex, int nPlayer)
-{
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
-	//ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
-	ushort flag = 1 << nWeaponIndex;
-	int cutpoint;
-	int supposed_weapon = gameData.weapons.nPrimary;
-	int bTripleFusion = !gameData.multiplayer.weaponStates [nPlayer].bTripleFusion && (nWeaponIndex == FUSION_INDEX) && EGI_FLAG (bTripleFusion, 0, 0, 0);
-
-if ((nWeaponIndex != LASER_INDEX) && (playerP->primaryWeaponFlags & flag) && !bTripleFusion) {
-	if (ISLOCALPLAYER (nPlayer))
-		HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
-	return 0;
-	}
-if (!(playerP->primaryWeaponFlags & flag))
-	playerP->primaryWeaponFlags |= flag;
-else if (bTripleFusion) {
-	if (nPlayer == gameData.multiplayer.nLocalPlayer)
-   	gameData.weapons.bTripleFusion = 1;
-   else
-	   gameData.multiplayer.weaponStates [nPlayer].bTripleFusion = 1;
-	}
-if (ISLOCALPLAYER (nPlayer)) {
-	cutpoint = POrderList (255);
-	if ((gameData.weapons.nPrimary == LASER_INDEX) && 
-		(playerP->laserLevel >= 4))
-		supposed_weapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
-	if ((gameOpts->gameplay.nAutoSelectWeapon == 2) && 
-		 (POrderList (nWeaponIndex) < cutpoint) && 
-		 (POrderList (nWeaponIndex) < POrderList (supposed_weapon)))
-		SelectWeapon (nWeaponIndex, 0, 0, 1);
-	PALETTE_FLASH_ADD (7,14,21);
-	if (nWeaponIndex != LASER_INDEX)
-  		HUDInitMessage ("%s!", PRIMARY_WEAPON_NAMES (nWeaponIndex));
-	}
-return 1;
-}
-
-//	-----------------------------------------------------------------------------
-
-int CheckToUsePrimary(int nWeaponIndex)
-{
-	ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
-	ushort flag = 1 << nWeaponIndex;
-	int cutpoint;
-
-cutpoint=POrderList (255);
-if (!(oldFlags & flag) && 
-	 (gameOpts->gameplay.nAutoSelectWeapon == 2) &&
-	 POrderList(nWeaponIndex)<cutpoint && 
-	 POrderList(nWeaponIndex)<POrderList(gameData.weapons.nPrimary)) {
-	if (nWeaponIndex==SUPER_LASER_INDEX)
-		SelectWeapon(LASER_INDEX,0,0,1);
-	else
-		SelectWeapon(nWeaponIndex,0,0,1);
-	}
-PALETTE_FLASH_ADD(7,14,21);
-return 1;
-}
-
-//	-----------------------------------------------------------------------------
-
-//called when ammo (for the vulcan cannon) is picked up
-//	Returns the amount picked up
-int PickupAmmo (int classFlag,int nWeaponIndex,int ammoCount, int nPlayer)
-{
-	int		max,cutpoint,supposed_weapon=gameData.weapons.nPrimary;
-	int		old_ammo=classFlag;		//kill warning
-	tPlayer	*playerP = gameData.multiplayer.players + nPlayer;
-
-Assert(classFlag==CLASS_PRIMARY && nWeaponIndex==VULCAN_INDEX);
-
-max = nMaxPrimaryAmmo [nWeaponIndex];
-if (playerP->flags & PLAYER_FLAGS_AMMO_RACK)
-	max *= 2;
-if (playerP->primaryAmmo [nWeaponIndex] == max)
-	return 0;
-old_ammo = playerP->primaryAmmo [nWeaponIndex];
-playerP->primaryAmmo [nWeaponIndex] += ammoCount;
-if (playerP->primaryAmmo [nWeaponIndex] > max) {
-	ammoCount += (max - playerP->primaryAmmo [nWeaponIndex]);
-	playerP->primaryAmmo [nWeaponIndex] = max;
-	}
-if ((nPlayer = gameData.multiplayer.nLocalPlayer)) {
-	cutpoint = POrderList (255);
-	if ((gameData.weapons.nPrimary == LASER_INDEX) && (playerP->laserLevel >= 4))
-		supposed_weapon = SUPER_LASER_INDEX;  // allotment for stupid way of doing super laser
-	if ((playerP->primaryWeaponFlags & (1<<nWeaponIndex)) && 
-		(nWeaponIndex > gameData.weapons.nPrimary) && 
-		(old_ammo == 0) &&
-		(POrderList (nWeaponIndex) < cutpoint) && 
-		(POrderList (nWeaponIndex) < POrderList (supposed_weapon)))
-		SelectWeapon(nWeaponIndex,0,0,1);
-	}
-return ammoCount;	//return amount used
-}
-
-//	-----------------------------------------------------------------------------
-
-#define	ESHAKER_SHAKE_TIME		(F1_0*2)
-#define	MAX_ESHAKER_DETONATES	4
-
-fix	eshakerDetonateTimes [MAX_ESHAKER_DETONATES];
-
-//	Call this to initialize for a new level.
-//	Sets all super mega missile detonation times to 0 which means there aren't any.
-void InitShakerDetonates (void)
-{
-	int	i;
-
-for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	eshakerDetonateTimes [i] = 0;
-}
-
-//	-----------------------------------------------------------------------------
-
-//	If a smega missile been detonated, rock the mine!
-//	This should be called every frame.
-//	Maybe this should affect all robots, being called when they get their physics done.
-void RockTheMineFrame (void)
-{
-	int	i;
-
-for (i = 0; i < MAX_ESHAKER_DETONATES; i++) {
-	if (eshakerDetonateTimes [i] != 0) {
-		fix	deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
-		if (!gameStates.gameplay.seismic.bSound) {
-			DigiPlaySampleLooping ((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
-			gameStates.gameplay.seismic.bSound = 1;
-			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
-			}
-		if (deltaTime < ESHAKER_SHAKE_TIME) {
-			//	Control center destroyed, rock the tPlayer's ship.
-			int	fc, rx, rz;
-			fix	h;
-			// -- fc = abs(deltaTime - ESHAKER_SHAKE_TIME/2);
-			//	Changed 10/23/95 to make decreasing for super mega missile.
-			fc = (ESHAKER_SHAKE_TIME - deltaTime) / (ESHAKER_SHAKE_TIME / 16);
-			if (fc > 16)
-				fc = 16;
-			else if (fc == 0)
-				fc = 1;
-			gameStates.gameplay.seismic.nVolume += fc;
-			h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-			rx = FixMul(d_rand() - 16384, h);
-			rz = FixMul(d_rand() - 16384, h);
-			gameData.objs.console->mType.physInfo.rotVel.p.x += rx;
-			gameData.objs.console->mType.physInfo.rotVel.p.z += rz;
-			//	Shake the buddy!
-			if (gameData.escort.nObjNum != -1) {
-				gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.x += rx*4;
-				gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.z += rz*4;
-				}
-			//	Shake a guided missile!
-			gameStates.gameplay.seismic.nMagnitude += rx;
-			} 
-		else
-			eshakerDetonateTimes [i] = 0;
-		}
-	}
-//	Hook in the rumble sound effect here.
-}
-
-//	-----------------------------------------------------------------------------
-
-extern void multi_send_seismic (fix,fix);
-
-#define	SEISMIC_DISTURBANCE_DURATION	(F1_0*5)
-
-int SeismicLevel (void)
-{
-return gameStates.gameplay.seismic.nLevel;
-}
-
-//	-----------------------------------------------------------------------------
-
-void InitSeismicDisturbances (void)
-{
-gameStates.gameplay.seismic.nStartTime = 0;
-gameStates.gameplay.seismic.nEndTime = 0;
-}
-
-//	-----------------------------------------------------------------------------
-//	Return true if time to start a seismic disturbance.
-int StartSeismicDisturbance (void)
-{
-	int	rval;
-
-if (gameStates.gameplay.seismic.nShakeDuration < 1)
-	return 0;
-rval =  (2 * FixMul(d_rand(), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
-if (rval) {
-	gameStates.gameplay.seismic.nStartTime = gameData.time.xGame;
-	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
-	if (!gameStates.gameplay.seismic.bSound) {
-		DigiPlaySampleLooping((short) gameStates.gameplay.seismic.nSound, F1_0, -1, -1);
-		gameStates.gameplay.seismic.bSound = 1;
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand()/2;
-		}
-	if (gameData.app.nGameMode & GM_MULTI)
-		multi_send_seismic (gameStates.gameplay.seismic.nStartTime,gameStates.gameplay.seismic.nEndTime);
-	}
-return rval;
-}
-
-//	-----------------------------------------------------------------------------
-
-void SeismicDisturbanceFrame (void)
-{
-if (gameStates.gameplay.seismic.nShakeFrequency) {
-	if (((gameStates.gameplay.seismic.nStartTime < gameData.time.xGame) && 
-		  (gameStates.gameplay.seismic.nEndTime > gameData.time.xGame)) || StartSeismicDisturbance()) {
-		fix	deltaTime = gameData.time.xGame - gameStates.gameplay.seismic.nStartTime;
-		int	fc, rx, rz;
-		fix	h;
-
-		fc = abs(deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2);
-		fc /= F1_0 / 16;
-		if (fc > 16)
-			fc = 16;
-		else if (fc == 0)
-			fc = 1;
-		gameStates.gameplay.seismic.nVolume += fc;
-		h = 3 * F1_0 / 16 + (F1_0 * (16 - fc)) / 32;
-		rx = FixMul(d_rand() - 16384, h);
-		rz = FixMul(d_rand() - 16384, h);
-		gameData.objs.console->mType.physInfo.rotVel.p.x += rx;
-		gameData.objs.console->mType.physInfo.rotVel.p.z += rz;
-		//	Shake the buddy!
-		if (gameData.escort.nObjNum != -1) {
-			gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.x += rx*4;
-			gameData.objs.objects[gameData.escort.nObjNum].mType.physInfo.rotVel.p.z += rz*4;
-			}
-		//	Shake a guided missile!
-		gameStates.gameplay.seismic.nMagnitude += rx;
-		}
-	}
-}
-
-
-//	-----------------------------------------------------------------------------
-//	Call this when a smega detonates to start the process of rocking the mine.
-void ShakerRockStuff (void)
-{
-#ifndef _DEBUG
-	int	i;
-
-for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
-		eshakerDetonateTimes [i] = 0;
-for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
-	if (eshakerDetonateTimes [i] == 0) {
-		eshakerDetonateTimes [i] = gameData.time.xGame;
-		break;
-		}
-#endif
-}
-
 //	-----------------------------------------------------------------------------
 
 //	Call this once/frame to process all super mines in the level.
 void ProcessSmartMinesFrame (void)
 {
-	int	i, j;
-	int	start, add;
+	int			i, j;
+	int			nStart, nStep, nParentObj;
+	fix			dist;
+	tObject		*objPi, *objPj;
+	vmsVector	*vBombPos;
 
 	//	If we don't know of there being any super mines in the level, just
 	//	check every 8th tObject each frame.
 if (gameStates.gameplay.bHaveSmartMines == 0) {
-	start = gameData.app.nFrameCount & 7;
-	add = 8;
+	nStart = gameData.app.nFrameCount & 7;
+	nStep = 8;
 	} 
 else {
-	start = 0;
-	add = 1;
+	nStart = 0;
+	nStep = 1;
 	}
 gameStates.gameplay.bHaveSmartMines = 0;
 
-for (i = start; i <= gameData.objs.nLastObject; i += add) {
-	if ((gameData.objs.objects[i].nType == OBJ_WEAPON) && (gameData.objs.objects[i].id == SMARTMINE_ID)) {
-		int	nParentObj = gameData.objs.objects[i].cType.laserInfo.nParentObj;
+for (i = nStart; i <= gameData.objs.nLastObject; i += nStep) {
+	objPi = OBJECTS + i;
+	if ((objPi->nType != OBJ_WEAPON) || (objPi->id != SMARTMINE_ID))
+		continue;
+	nParentObj = objPi->cType.laserInfo.nParentObj;
+	gameStates.gameplay.bHaveSmartMines = 1;
+	if (objPi->lifeleft + F1_0*2 >= gameData.weapons.info [SMARTMINE_ID].lifetime)
+		continue;
+	vBombPos = &objPi->position.vPos;
+	for (j = 0, objPj = OBJECTS; j <= gameData.objs.nLastObject; j++, objPj++) {
+		if (j == nParentObj) 
+			continue;
+		if ((objPj->nType != OBJ_PLAYER) && (objPj->nType != OBJ_ROBOT))
+			continue;
+		dist = VmVecDistQuick (vBombPos, &objPj->position.vPos);
+		if (dist - objPj->size >= F1_0*20)
+			continue;
+		if (objPi->nSegment == objPj->nSegment)
+			objPi->lifeleft = 1;
+		else {
+			//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
+			//	Need to do a more expensive check to make sure there isn't an obstruction.
+			if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
+				tVFIQuery	fq;
+				tFVIData		hit_data;
+				int			fate;
 
-		gameStates.gameplay.bHaveSmartMines = 1;
-		if (gameData.objs.objects[i].lifeleft + F1_0*2 < gameData.weapons.info[SMARTMINE_ID].lifetime) {
-			vmsVector	*vBombPos = &gameData.objs.objects[i].position.vPos;
+				fq.startSeg = objPi->nSegment;
+				fq.p0	= &objPi->position.vPos;
+				fq.p1 = &objPj->position.vPos;
+				fq.radP0 =
+				fq.radP1 = 0;
+				fq.thisObjNum = i;
+				fq.ignoreObjList = NULL;
+				fq.flags	= 0;
 
-			for (j = 0; j <= gameData.objs.nLastObject; j++) {
-				if ((gameData.objs.objects[j].nType == OBJ_PLAYER) || 
-					 (gameData.objs.objects[j].nType == OBJ_ROBOT)) {
-					fix	dist = VmVecDistQuick(vBombPos, &gameData.objs.objects[j].position.vPos);
-
-					if (j != nParentObj)
-						if (dist - gameData.objs.objects[j].size < F1_0*20) {
-							if (gameData.objs.objects[i].nSegment == gameData.objs.objects[j].nSegment)
-								gameData.objs.objects[i].lifeleft = 1;
-							else {
-								//	Object which is close enough to detonate smart mine is not in same tSegment as smart mine.
-								//	Need to do a more expensive check to make sure there isn't an obstruction.
-								if (((gameData.app.nFrameCount ^ (i+j)) % 4) == 0) {
-									tVFIQuery	fq;
-									tFVIData		hit_data;
-									int			fate;
-
-									fq.startSeg = gameData.objs.objects[i].nSegment;
-									fq.p0	= &gameData.objs.objects[i].position.vPos;
-									fq.p1 = &gameData.objs.objects[j].position.vPos;
-									fq.radP0 =
-									fq.radP1 = 0;
-									fq.thisObjNum = i;
-									fq.ignoreObjList = NULL;
-									fq.flags	= 0;
-
-									fate = FindVectorIntersection(&fq, &hit_data);
-									if (fate != HIT_WALL)
-										gameData.objs.objects[i].lifeleft = 1;
-									}
-								}
-							}
-					}
+				fate = FindVectorIntersection(&fq, &hit_data);
+				if (fate != HIT_WALL)
+					objPi->lifeleft = 1;
 				}
 			}
 		}
@@ -1260,243 +821,10 @@ for (i = start; i <= gameData.objs.nLastObject; i += add) {
 
 //	-----------------------------------------------------------------------------
 
-#define SPIT_SPEED 20
+int tactile_fire_duration []={120,80,150,250,150,200,100,180,280,100};
+int tactile_fire_repeat []={260,90,160,160,160,210,110,191,291,111};
 
-//this function is for when the tPlayer intentionally drops a powerup
-//this function is based on DropPowerup()
-int SpitPowerup (tObject *spitterP, ubyte id, int seed)
-{
-	short			nObject;
-	tObject		*objP;
-	vmsVector	newVelocity, newPos;
-	tPosition	*posP = OBJPOS (spitterP);
-
-#if 0
-if ((gameData.app.nGameMode & GM_NETWORK) &&
-	 (gameData.multiplayer.powerupsInMine [(int)id] + PowerupsOnShips (id) >= 
-	  gameData.multiplayer.maxPowerupsAllowed [id]))
-	return -1;
-#endif
-d_srand(seed);
-VmVecScaleAdd (&newVelocity,
-					&spitterP->mType.physInfo.velocity,
-					&spitterP->position.mOrient.fVec,
-					i2f (SPIT_SPEED));
-newVelocity.p.x += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.p.y += (d_rand() - 16384) * SPIT_SPEED * 2;
-newVelocity.p.z += (d_rand() - 16384) * SPIT_SPEED * 2;
-// Give keys zero velocity so they can be tracked better in multi
-if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
-	VmVecZero(&newVelocity);
-//there's a piece of code which lets the tPlayer pick up a powerup if
-//the distance between him and the powerup is less than 2 time their
-//combined radii.  So we need to create powerups pretty far out from
-//the player.
-VmVecScaleAdd (&newPos, &posP->vPos, &posP->mOrient.fVec, spitterP->size);
-if (IsMultiGame && (gameData.multigame.create.nLoc >= MAX_NET_CREATE_OBJECTS))
-	return (-1);
-nObject = CreateObject (OBJ_POWERUP, id, (short) (GetTeam (gameData.multiplayer.nLocalPlayer) + 1), 
-							  (short) OBJSEG (spitterP), &newPos, &vmdIdentityMatrix, gameData.objs.pwrUp.info[id].size, 
-							  CT_POWERUP, MT_PHYSICS, RT_POWERUP, 1);
-if (nObject < 0) {
-	Int3();
-	return nObject;
-	}
-objP = gameData.objs.objects + nObject;
-objP->mType.physInfo.velocity = newVelocity;
-objP->mType.physInfo.drag = 512;	//1024;
-objP->mType.physInfo.mass = F1_0;
-objP->mType.physInfo.flags = PF_BOUNCE;
-objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->id].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.eff.pVClips [objP->rType.vClipInfo.nClipIndex].xFrameTime;
-objP->rType.vClipInfo.nCurFrame = 0;
-if (spitterP == gameData.objs.console)
-	objP->cType.powerupInfo.flags |= PF_SPAT_BY_PLAYER;
-switch (objP->id) {
-	case POW_CONCUSSION_1:
-	case POW_CONCUSSION_4:
-	case POW_SHIELD_BOOST:
-	case POW_ENERGY:
-		objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
-		if (gameData.app.nGameMode & GM_MULTI)
-			objP->lifeleft /= 2;
-		break;
-	default:
-		//if (gameData.app.nGameMode & GM_MULTI)
-		//	objP->lifeleft = (d_rand() + F1_0*3) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
-		break;
-	}
-MultiSendWeapons (1);
-return nObject;
-}
-
-//	-----------------------------------------------------------------------------
-
-static inline int IsBuiltInDevice (int nDeviceFlag)
-{
-return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nDevices & nDeviceFlag) != 0);
-}
-
-//	-----------------------------------------------------------------------------
-
-static inline int IsBuiltInGun (int nGunIndex)
-{
-return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nGunIndex)) != 0);
-}
-
-//	-----------------------------------------------------------------------------
-
-void DropCurrentWeapon (void)
-{
-	int	nObject = -1, 
-			ammo = 0, 
-			seed;
-
-seed = d_rand ();
-if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
-	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
-		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-		nObject = SpitPowerup (gameData.objs.console, POW_QUADLASER, seed);
-		if (nObject == -1) {
-			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
-			return;
-			}
-		HUDInitMessage(TXT_DROP_QLASER);
-		}
-	else if ((LOCALPLAYER.laserLevel > MAX_LASER_LEVEL) && !IsBuiltInGun (SUPER_LASER_INDEX)) {
-		LOCALPLAYER.laserLevel--;
-		nObject = SpitPowerup (gameData.objs.console, POW_SUPERLASER, seed);
-		if (nObject == -1) {
-			LOCALPLAYER.laserLevel++;
-			return;
-			}
-		HUDInitMessage (TXT_DROP_SLASER);
-		}
-	}
-else {
-	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion)
-		gameData.weapons.bTripleFusion = 0;
-	else if (gameData.weapons.nPrimary && !IsBuiltInGun (gameData.weapons.nPrimary)) {//if selected weapon was not the laser
-		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
-		nObject = SpitPowerup (gameData.objs.console, primaryWeaponToPowerup [gameData.weapons.nPrimary], seed);
-		}
-	if (nObject == -1) {
-		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
-			LOCALPLAYER.primaryWeaponFlags |= (1 << gameData.weapons.nPrimary);
-		return;
-		}
-	HUDInitMessage (TXT_DROP_WEAPON, PRIMARY_WEAPON_NAMES (gameData.weapons.nPrimary));
-	}
-DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
-if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX)) {
-	//if it's one of these, drop some ammo with the weapon
-	ammo = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
-	if ((LOCALPLAYER.primaryWeaponFlags & HAS_FLAG(VULCAN_INDEX)) && (gameData.weapons.nPrimary == GAUSS_INDEX))
-		ammo /= 2;		//if both vulcan & gauss, drop half
-	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
-	if (nObject != -1)
-		gameData.objs.objects [nObject].cType.powerupInfo.count = ammo;
-	}
-if (gameData.weapons.nPrimary == OMEGA_INDEX) {
-	//dropped weapon has current energy
-	if (nObject != -1)
-		gameData.objs.objects [nObject].cType.powerupInfo.count = gameData.omega.xCharge [IsMultiGame];
-	}
-if (IsMultiGame) {
-	MultiSendDropWeapon (nObject, seed);
-	MultiSendWeapons (1);
-	}
-if (gameData.weapons.nPrimary) //if selected weapon was not the laser
-	AutoSelectWeapon (0, 0);
-}
-
-//	-----------------------------------------------------------------------------
-
-extern void DropOrb (void);
-
-void DropSecondaryWeapon (int nWeapon)
-{
-	int nObject, seed, nPowerup, bHoardEntropy, bMine;
-
-if (nWeapon < 0)
-	nWeapon = gameData.weapons.nSecondary;
-if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
-	HUDInitMessage (TXT_CANT_DROP_SEC);
-	return;
-	}
-nPowerup = secondaryWeaponToPowerup[nWeapon];
-bHoardEntropy = (gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)) != 0;
-bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
-if (!bHoardEntropy && bMine &&
-	  LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
-	HUDInitMessage(TXT_DROP_NEED4);
-	return;
-	}
-if (bHoardEntropy) {
-	DropOrb ();
-	return;
-	}
-if (bMine)
-	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
-else
-	LOCALPLAYER.secondaryAmmo [nWeapon]--;
-seed = d_rand();
-nObject = SpitPowerup (gameData.objs.console, nPowerup, seed);
-if (nObject == -1) {
-	if (bMine)
-		LOCALPLAYER.secondaryAmmo [nWeapon] += 4;
-	else
-		LOCALPLAYER.secondaryAmmo [nWeapon]++;
-	return;
-	}
-HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
-DigiPlaySample (SOUND_DROP_WEAPON,F1_0);
-if (gameData.app.nGameMode & GM_MULTI) {
-	MultiSendDropWeapon (nObject, seed);
-	MultiSendWeapons (1);
-	}
-if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
-	LOCALPLAYER.secondaryWeaponFlags &= (~(1<<gameData.weapons.nSecondary));
-	AutoSelectWeapon (1, 0);
-	}
-}
-
-//	---------------------------------------------------------------------------------------
-//	Do seismic disturbance stuff including the looping sounds with changing volume.
-
-void DoSeismicStuff (void)
-{
-	int		stv_save;
-
-if (gameStates.limitFPS.bSeismic && !gameStates.app.tick40fps.bTick)
-	return;
-stv_save = gameStates.gameplay.seismic.nVolume;
-gameStates.gameplay.seismic.nMagnitude = 0;
-gameStates.gameplay.seismic.nVolume = 0;
-RockTheMineFrame();
-SeismicDisturbanceFrame();
-if (stv_save != 0) {
-	if (gameStates.gameplay.seismic.nVolume == 0) {
-		DigiStopLoopingSound();
-		gameStates.gameplay.seismic.bSound = 0;
-		}
-
-	if ((gameData.time.xGame > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
-		int volume = gameStates.gameplay.seismic.nVolume * 2048;
-		if (volume > F1_0)
-			volume = F1_0;
-		DigiChangeLoopingVolume (volume);
-		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + d_rand () / 4 + 8192;
-		}
-	}
-}
-
-//	-----------------------------------------------------------------------------
-
-int tactile_fire_duration[]={120,80,150,250,150,200,100,180,280,100};
-int tactile_fire_repeat[]={260,90,160,160,160,210,110,191,291,111};
-
-void tactile_set_button_jolt ()
+void TactileSetButtonJolt ()
  {
   #ifdef TACTILE
 
@@ -1505,19 +833,19 @@ void tactile_set_button_jolt ()
   static int stickmag=-1;
   int dur,rep;
 
-  dur=tactile_fire_duration[gameData.weapons.nPrimary];
-  rep=tactile_fire_repeat[gameData.weapons.nPrimary];
+  dur=tactile_fire_duration [gameData.weapons.nPrimary];
+  rep=tactile_fire_repeat [gameData.weapons.nPrimary];
 
 if (TactileStick) {
 	if (stickmag==-1) {
 		if (t=FindArg("-stickmag"))
-			stickmag=atoi (Args[t+1]);
+			stickmag=atoi (Args [t+1]);
 		else
 			stickmag=50;
 		infile=(FILE *)fopen ("stick.val","rt");
 		if (infile!=NULL) {
 			for (i=0;i<10;i++) {
-				fscanf (infile,"%d %d\n",&tactile_fire_duration[i],&tactile_fire_repeat[i]);
+				fscanf (infile,"%d %d\n",&tactile_fire_duration [i],&tactile_fire_repeat [i]);
 				}
 			fclose (infile);
 			}
@@ -1621,5 +949,6 @@ for (i = 0; i < n; i++, pwi++) {
 	}
 return i;
 }
+
 //	-----------------------------------------------------------------------------
 //eof

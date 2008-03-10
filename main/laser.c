@@ -961,7 +961,14 @@ if ((objP->nType == OBJ_WEAPON) &&
 
 void StopPrimaryFire (void)
 {
+#if 0
 gameData.laser.xNextFireTime = gameData.time.xGame;	//	Prevents shots-to-fire from building up.
+#else
+if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
+	gameData.laser.xNextFireTime = gameData.time.xGame + F1_0 / 25;
+else
+	gameData.laser.xNextFireTime = gameData.time.xGame + WI_fire_wait (gameData.weapons.nPrimary);
+#endif
 gameData.laser.nGlobalFiringCount = 0;
 Controls [0].firePrimaryState = 0;
 Controls [0].firePrimaryDownCount = 0;

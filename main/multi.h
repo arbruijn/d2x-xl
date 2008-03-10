@@ -465,5 +465,6 @@ void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte f
 void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val);
 void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
 void MultiResetObjectTexture (tObject *objP);
+void MultiSendSeismic (fix start, fix end);
 
 #endif /* _MULTI_H */
