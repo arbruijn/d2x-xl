@@ -972,6 +972,9 @@ else
 gameData.laser.nGlobalFiringCount = 0;
 Controls [0].firePrimaryState = 0;
 Controls [0].firePrimaryDownCount = 0;
+gameData.weapons.firing [0].nStart =
+gameData.weapons.firing [0].nStop = 
+gameData.weapons.firing [0].nDuration = 0;
 }
 
 //	--------------------------------------------------------------------------------------------------

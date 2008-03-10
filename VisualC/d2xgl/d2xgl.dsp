@@ -480,6 +480,10 @@ SOURCE=..\..\main\dropobject.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\dropweapon.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\dynlight.c
 # End Source File
 # Begin Source File
@@ -708,6 +712,10 @@ SOURCE=..\..\main\physics.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\pickupweapon.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\piggy.c
 # End Source File
 # Begin Source File
@@ -757,6 +765,10 @@ SOURCE=..\..\main\scores.c
 # Begin Source File
 
 SOURCE=..\..\main\segment.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\seismic.c
 # End Source File
 # Begin Source File
 
@@ -837,6 +849,10 @@ SOURCE=..\..\main\wall.c
 # Begin Source File
 
 SOURCE=..\..\main\weapon.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\main\weaponorder.c
 # End Source File
 # End Group
 # Begin Group "maths"

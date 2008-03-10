@@ -233,9 +233,9 @@ void G3GetThrusterPos (tObject *objP, short nModel, tG3ModelFace *pmf, vmsVector
 
 if (!objP)
 	return;
-if (!pm->bRendered)
+if (!pm->bRendered || gameData.models.nScale)
 	mtP->nCount = 0;
-if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
+else if (mtP->nCount >= (((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT)) ? 2 : 1))
 	return;
 VmVecFixToFloat (&vn, pmf ? &pmf->vNormal : vNormal);
 if (VmVecDotf (&vn, &vForward) > -1.0f / 3.0f)

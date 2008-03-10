@@ -128,11 +128,13 @@ void UpdateFiringState (void)
 if ((Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0)) {
 	if (gameData.weapons.firing [0].nStart <= 0) {
 		gameData.weapons.firing [0].nStart = gameStates.app.nSDLTicks;
-		if (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
-			gameData.weapons.firing [0].bSound = 1;
-		else {
-			gameData.weapons.firing [0].nStart -= GATLING_DELAY + 1;
-			gameData.weapons.firing [0].bSound = 0;
+		if (bGatling) {
+			if (EGI_FLAG (bGatlingSpeedUp, 1, 0, 0))
+				gameData.weapons.firing [0].bSound = 1;
+			else {
+				gameData.weapons.firing [0].nStart -= GATLING_DELAY + 1;
+				gameData.weapons.firing [0].bSound = 0;
+				}
 			}
 		}
 	gameData.weapons.firing [0].nDuration = gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStart;
@@ -144,7 +146,7 @@ else if (gameData.weapons.firing [0].nDuration) {
 	gameData.weapons.firing [0].nStart = 0;
 	}
 else if (gameData.weapons.firing [0].nStop > 0) {
-	if (gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStop >= WIFireTicks (gameData.weapons.nPrimary) * 4 / 5) {
+	if (gameStates.app.nSDLTicks - gameData.weapons.firing [0].nStop >= GATLING_DELAY /*WIFireTicks (gameData.weapons.nPrimary) * 4 / 5*/) {
 		gameData.weapons.firing [0].nStop = 0;
 		}
 	}
