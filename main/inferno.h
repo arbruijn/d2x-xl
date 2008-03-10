@@ -2072,6 +2072,7 @@ typedef struct tFiringData {
 	int					nStop;
 	int					nDuration;
 	int					bSound;
+	int					bSpeedUp;
 	} tFiringData;
 
 typedef struct tWeaponData {

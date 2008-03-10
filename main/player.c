@@ -167,6 +167,7 @@ void UpdatePlayerWeaponInfo (void)
 {
 	int				i, bUpdate = 0;
 	tWeaponState	*wsP = gameData.multiplayer.weaponStates + gameData.multiplayer.nLocalPlayer;
+	tFiringData		*fP;
 
 if (gameStates.app.bPlayerIsDead)
 	gameData.weapons.firing [0].nStart = 
@@ -189,22 +190,26 @@ if (wsP->bQuadLasers != ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0)) {
 	wsP->bQuadLasers = ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0);
 	bUpdate = 1;
 	}
-for (i = 0; i < 2; i++) {
-	if (wsP->firing [i].nStart != gameData.weapons.firing [i].nStart) {
-		wsP->firing [i].nStart = gameData.weapons.firing [i].nStart;
+for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
+	if (fP->nStart != gameData.weapons.firing [i].nStart) {
+		fP->nStart = gameData.weapons.firing [i].nStart;
 		bUpdate = 1;
 		}
-	if (wsP->firing [i].nDuration != gameData.weapons.firing [i].nDuration) {
-		wsP->firing [i].nDuration = gameData.weapons.firing [i].nDuration;
+	if (fP->nDuration != gameData.weapons.firing [i].nDuration) {
+		fP->nDuration = gameData.weapons.firing [i].nDuration;
 		bUpdate = 1;
 		}
-	if (wsP->firing [i].nStop != gameData.weapons.firing [i].nStop) {
-		wsP->firing [i].nStop = gameData.weapons.firing [i].nStop;
+	if (fP->nStop != gameData.weapons.firing [i].nStop) {
+		fP->nStop = gameData.weapons.firing [i].nStop;
 		bUpdate = 1;
 		}
 	if (gameData.weapons.firing [i].bSound == 1) {
-		wsP->firing [i].bSound = 1;
+		fP->bSound = 1;
 		gameData.weapons.firing [i].bSound = 0;
+		}
+	if (fP->bSpeedUp != EGI_FLAG (bGatlingSpeedUp, 1, 0, 0)) {
+		fP->bSpeedUp = EGI_FLAG (bGatlingSpeedUp, 1, 0, 0);
+		bUpdate = 1;
 		}
 	}
 if (wsP->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
