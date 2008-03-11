@@ -2635,12 +2635,12 @@ do {
 		optColor = opt++;
 		ADD_RADIO (opt, TXT_RADAR_BLACK, 0, KEY_L, 2, NULL);
 		opt++;
+		m [optColor + gameOpts->render.automap.nColor].value = 1;
+		m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].value = 1;
 		}
 	else
 		automapOpts.nOptRadarRange =
 		optColor = -1;
-	m [optColor + gameOpts->render.automap.nColor].value = 1;
-	m [automapOpts.nOptRadar + extraGameInfo [0].nRadar].value = 1;
 	Assert (opt <= sizeofa (m));
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_AUTOMAP_MENUTITLE, opt, m, AutomapOptionsCallback, &choice);

@@ -456,7 +456,7 @@ if (((nParent != nViewer) || SPECTATOR (pParent)) && (pParent->nType != OBJ_WEAP
 volume = F1_0;
 if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
 	if (nParent != nViewer) {
-		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
+		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (pParent->nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
 			DigiLinkSoundToPos2 (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume, F1_0 * 256,
 										szGatlingSounds [nWeaponType == GAUSS_ID]);
 		else
