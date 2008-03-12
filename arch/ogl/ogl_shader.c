@@ -332,6 +332,7 @@ gameData.render.ogl.nHeadLights = 0;
 InitLightingShaders (1);
 InitVertLightShader ();
 InitGlareShader ();
+InitGrayScaleShader ();
 LinkShaderProg (NULL);
 }
 

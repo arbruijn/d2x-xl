@@ -199,7 +199,7 @@ GrSetCurrentCanvas(saved_canvas);
 
 saved_interp_method=gameStates.render.nInterpolationMethod;
 gameStates.render.nInterpolationMethod	= 3;		// The best, albiet slowest.
-G3DrawTexPoly (4, pointList, tUVL, &reticleCanvas->cvBitmap, NULL, 1);
+G3DrawTexPoly (4, pointList, tUVL, &reticleCanvas->cvBitmap, NULL, 1, -1);
 gameStates.render.nInterpolationMethod	= saved_interp_method;
 }
 
@@ -254,19 +254,19 @@ if ((gameData.app.nGameMode & GM_ENTROPY) && (extraGameInfo [1].entropy.nOverrid
 	if ((nConnSeg >= 0) && (gameData.segs.xSegments [nConnSeg].owner == owner))
 			return 0;
 	if (owner == 1)
-		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 1, 0);
+		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 1, 0, nSegment);
 	else
-		G3DrawPolyAlpha (nVertices, pointList, segmentColors, 0);
+		G3DrawPolyAlpha (nVertices, pointList, segmentColors, 0, nSegment);
 	return 1;
 	}
 if (special == SEGMENT_IS_WATER) {
 	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].special != SEGMENT_IS_WATER))
-		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 2, 0);	
+		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 2, 0, nSegment);	
 	return 1;
 	}
 if (special == SEGMENT_IS_LAVA) {
 	if ((nConnSeg < 0) || (gameData.segs.segment2s [nConnSeg].special != SEGMENT_IS_LAVA))
-		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 3, 0);	
+		G3DrawPolyAlpha (nVertices, pointList, segmentColors + 3, 0, nSegment);	
 	return 1;
 	}
 return 0;
@@ -287,7 +287,7 @@ if (IS_WALL (nWallNum)) {
 				if (propsP->widFlags & WID_CLOAKED_FLAG) {
 					if (c < GR_ACTUAL_FADE_LEVELS) {
 						gameStates.render.grAlpha = (float) c;
-						G3DrawPolyAlpha (propsP->nVertices, pointList, &cloakColor, 1);		//draw as flat poly
+						G3DrawPolyAlpha (propsP->nVertices, pointList, &cloakColor, 1, propsP->segNum);		//draw as flat poly
 						}
 					}
 				else {
@@ -301,7 +301,7 @@ if (IS_WALL (nWallNum)) {
 						gameStates.render.grAlpha = (float) (GR_ACTUAL_FADE_LEVELS - extraGameInfo [0].grWallTransparency);
 					if (gameStates.render.grAlpha < GR_ACTUAL_FADE_LEVELS) {
 						tRgbaColorf wallColor = {CPAL2Tr (gamePalette, c), CPAL2Tg (gamePalette, c), CPAL2Tb (gamePalette, c), -1};
-						G3DrawPolyAlpha (propsP->nVertices, pointList, &wallColor, 1);	//draw as flat poly
+						G3DrawPolyAlpha (propsP->nVertices, pointList, &wallColor, 1, propsP->segNum);	//draw as flat poly
 						}
 					}
 				}
@@ -464,7 +464,7 @@ if (bHaveMonitorBg) {
 SetFaceLight (&props);
 #ifdef EDITOR
 if (Render_only_bottom && (nSide == WBOTTOM))
-	G3DrawTexPoly (props.nVertices, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1);
+	G3DrawTexPoly (props.nVertices, pointList, props.uvls, gameData.pig.tex.bitmaps + gameData.pig.tex.bmIndex [Bottom_bitmap_num].index, 1, propsP->segNum);
 else
 #endif
 #ifdef _DEBUG //convenient place for a debug breakpoint
@@ -484,15 +484,15 @@ if (bmTop)
 #	if LIGHTMAPS
 		lightMaps + props.segNum * 6 + props.sideNum, 
 #	endif
-		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
+		&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam, props.segNum); 
 else
 #	if LIGHTMAPS == 0
-	G3DrawTexPoly (props.nVertices, pointList, props.uvls, bmBot, &props.vNormal, !bIsMonitor || bIsTeleCam); 
+	G3DrawTexPoly (props.nVertices, pointList, props.uvls, bmBot, &props.vNormal, !bIsMonitor || bIsTeleCam, props.segNum); 
 #	else
 	fpDrawTexPolyMulti (
 		props.nVertices, pointList, props.uvls, props.uvl_lMaps, bmBot, NULL, 
 		lightMaps + props.segNum * 6 + props.sideNum, 
-		&props.vNormal, 0, !bIsMonitor || bIsTeleCam);
+		&props.vNormal, 0, !bIsMonitor || bIsTeleCam, props.segNum);
 #	endif
 #else
 fpDrawTexPolyMulti (
@@ -1559,7 +1559,7 @@ memset (gameData.render.mine.nSegRenderList, 0xff, sizeof (gameData.render.mine.
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
 		if ((gameStates.render.automap.bFull && (gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway)) || 
-			 (gameData.render.mine.bAutomapVisited [i] && (gameData.render.mine.bAutomapVisited [i] <= gameStates.render.automap.nSegmentLimit))) {
+			 (gameData.render.mine.bAutomapVisible [i] && (gameData.render.mine.bAutomapVisible [i] <= gameStates.render.automap.nSegmentLimit))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
@@ -2140,7 +2140,7 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
  save_lighting = gameStates.render.nLighting;
  gameStates.render.nLighting = 2;
 		//G3DrawPoly(nVertices, vp);
-		G3DrawTexPoly (nVertices, pointList, (tUVL *)uvlCopy, bm, 1);
+		G3DrawTexPoly (nVertices, pointList, (tUVL *)uvlCopy, bm, 1, -1);
  gameStates.render.nLighting = save_lighting;
 
 		if (gr_ugpixel(&grdCurCanv->cvBitmap, _search_x, _search_y) == 1) {

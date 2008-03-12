@@ -259,7 +259,8 @@ return AddRenderItem (riObject, &item, sizeof (item), vPos.p.z, vPos.p.z);
 //------------------------------------------------------------------------------
 
 int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
-					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive)
+					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
+					short nSegment)
 {
 	tRIPoly	item;
 	int		i;
@@ -274,6 +275,7 @@ item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
 item.bDepthMask = bDepthMask;
 item.bAdditive = bAdditive;
+item.nSegment = nSegment;
 memcpy (item.texCoord, texCoord ? texCoord : tcDefault, nVertices * sizeof (tTexCoord2f));
 if ((item.nColors = nColors)) {
 	if (nColors < nVertices)
@@ -359,7 +361,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 return RIAddPoly (faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 
-						FaceIsAdditive (faceP));
+						FaceIsAdditive (faceP), faceP->nSegment);
 }
 
 //------------------------------------------------------------------------------
@@ -632,7 +634,9 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 		}
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
+		G3SetupShader (0, 0, item->bmP != NULL, 
+							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
+							item->bmP ? NULL : item->color);
 		}
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
@@ -649,7 +653,9 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
 		}
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		G3SetupShader (0, 0, item->bmP != NULL, item->bmP ? NULL : item->color);
+		G3SetupShader (0, 0, item->bmP != NULL, 
+							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment], 
+							item->bmP ? NULL : item->color);
 		}
 	j = item->nVertices;
 	glBegin (item->nPrimitive);

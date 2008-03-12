@@ -274,7 +274,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask)
+bool G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask, short nSegment)
 {
 	int		i;
 	GLint		depthFunc; 
@@ -291,7 +291,7 @@ if (gameOpts->render.bDepthSort > 0) {
 
 	for (i = 0; i < nVertices; i++)
 		vertices [i] = gameData.render.pVerts [pointList [i]->p3_index];
-	RIAddPoly (NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0);
+	RIAddPoly (NULL, vertices, nVertices, NULL, color, NULL, 1, bDepthMask, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 	}
 else 
 #endif
@@ -350,7 +350,8 @@ bool G3DrawTexPolyFlat (
 	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
-	int			bBlend)
+	int			bBlend,
+	short			nSegment)
 {
 	int			i;
 	g3sPoint		**ppl;
@@ -397,7 +398,8 @@ bool G3DrawTexPolyMulti (
 	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
-	int			bBlend)
+	int			bBlend,
+	short			nSegment)
 {
 	int			i, nShader, nFrame;
 	int			bShaderMerge = 0,
@@ -558,7 +560,7 @@ if (bVertexArrays || bDepthSort) {
 #if 1
 	if (gameOpts->render.bDepthSort > 0) {
 		OglLoadBmTexture (bmBot, 1, 3, 0);
-		RIAddPoly (bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0);
+		RIAddPoly (bmBot, vertices, nVertices, texCoord [0], NULL, vertColors, nVertices, 1, GL_TRIANGLE_FAN, GL_REPEAT, 0, nSegment);
 		return 0;
 		}
 #endif
@@ -729,7 +731,8 @@ bool G3DrawTexPolyLightmap (
 	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
-	int			bBlend)
+	int			bBlend,
+	short			nSegment)
 {
 	int			i, nFrame, bShaderMerge;
 	grsBitmap	*bmP = NULL;
@@ -766,7 +769,7 @@ if ((bmTop = BmOverride (bmTop, -1)) && BM_FRAMES (bmTop)) {
 else
 	nFrame = -1;
 if (!lightMap) //lightMapping enabled
-	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend);
+	return fpDrawTexPolyMulti (nVertices, pointList, uvlList, uvlLMap, bmBot, bmTop, lightMap, pvNormal, orient, bBlend, nSegment);
 // chose shaders depending on whether overlay bitmap present or not
 if ((bShaderMerge = bmTop && gameOpts->ogl.bGlTexMerge)) {
 	lmProg = lmShaderProgs [(bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0];

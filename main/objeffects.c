@@ -1713,7 +1713,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 			trailColor.blue *= fScale;
 			}
 		if (bDepthSort) {
-			RIAddPoly (bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive);
+			RIAddPoly (bmP, vTrailVerts, 4, tTexCoordTrail, &trailColor, NULL, 1, 0, GL_QUADS, GL_CLAMP, bAdditive, -1);
 			}
 		else {
 			glEnable (GL_BLEND);

@@ -37,9 +37,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define CORONA_OUTLINE	0
 #ifdef _DEBUG
-#	define SHADER_SOFT_CORONAS 1
+#	define SHADER_SOFT_CORONAS 2
 #else
-#	define SHADER_SOFT_CORONAS 1
+#	define SHADER_SOFT_CORONAS 2
 #endif
 
 float coronaIntensities [] = {0.25f, 0.5f, 0.75f, 1};
@@ -490,7 +490,7 @@ glLineWidth (1);
 // -----------------------------------------------------------------------------------
 
 void RenderHardGlare (fVector *sprite, fVector *vCenter, int nTexture, float fLight, 
-							 float fIntensity, tIntervalf *zRangeP, int bAdditive)
+							 float fIntensity, tIntervalf *zRangeP, int bAdditive, int bColored)
 {
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
 	tRgbaColorf	color;
@@ -513,6 +513,8 @@ else {
 	color.red = color.green = color.blue = color.alpha / 2;
 	color.alpha *= 2.0f / 3.0f;
 	}
+if (!bColored)
+	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
 color.alpha *= fIntensity;
 if (color.alpha < 0.01f)
 	return;
@@ -581,7 +583,7 @@ return (float) sqrt (cosine) * coronaIntensities [gameOpts->render.nCoronaIntens
 
 // -----------------------------------------------------------------------------------
 
-void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive) 
+void RenderSoftGlare (fVector *sprite, fVector *vCenter, int nTexture, float fIntensity, int bAdditive, int bColored) 
 {
 	tRgbaColorf color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -594,6 +596,7 @@ if (gameStates.render.bQueryCoronas) {
 	}
 else {
 	glEnable (GL_TEXTURE_2D);
+	glDepthFunc (GL_ALWAYS);
 	if (bAdditive)
 		glBlendFunc (GL_ONE, GL_ONE);	
 	bmP = bAdditive ? bmpGlare : bmpCorona;
@@ -602,6 +605,8 @@ if (gameOpts->render.color.bAmbientLight)
 	color = gameData.render.color.textures [nTexture].color;
 else
 	color.red = color.green = color.blue = f2fl (IsLight (nTexture)) / 2;
+if (!bColored)
+	color.red = color.green = color.blue = (color.red + color.green + color.blue) / 4;
 if (bAdditive)
 	glColor4f (fIntensity * color.red, fIntensity * color.green, fIntensity * color.blue, 1);
 else
@@ -613,7 +618,7 @@ if (gameStates.render.bQueryCoronas != 2) {
 		glDepthFunc (GL_ALWAYS);
 #endif
 	}
-if (G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
+if (0 && G3EnableClientStates (gameStates.render.bQueryCoronas == 0, 0, 0, GL_TEXTURE0)) {
 	if (gameStates.render.bQueryCoronas == 0) {
 		OglBindBmTex (bmP, 1, -1);
 		glTexCoordPointer (2, GL_FLOAT, 0, tcGlare);
@@ -653,6 +658,10 @@ void RenderCorona (short nSegment, short nSide, float fIntensity)
 
 if (fIntensity < 0.01f)
 	return;
+#if 0//def _DEBUG
+if ((nSegment != 6) || (nSide != 2))
+	return;
+#endif
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 	return;
 #ifdef _DEBUG
@@ -662,8 +671,8 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 fLight = ComputeCoronaSprite (sprite, &vCenter, nSegment, nSide);
 if (gameOpts->render.nPath && gameStates.ogl.bOcclusionQuery && (CoronaStyle ())) {
 	fIntensity *= ComputeSoftGlare (sprite, &vCenter, &vEye);
-	glDepthFunc (GL_ALWAYS);
-	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive);
+	RenderSoftGlare (sprite, &vCenter, nTexture, fIntensity, bAdditive,
+						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]);
 	glDepthFunc (GL_LESS);
 #ifdef _DEBUG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -684,7 +693,8 @@ else {
 	if (0 == (fIntensity = MoveSpriteIn (sprite, &vCenter, &zRange, fIntensity)))
 		return;
 	ComputeHardGlare (sprite, &vCenter, &vNormal);
-	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, bAdditive);
+	RenderHardGlare (sprite, &vCenter, nTexture, fLight, fIntensity, &zRange, 0,	//bAdditive
+						  !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [nSegment]); 
 	}
 }
 
@@ -743,8 +753,13 @@ if (gameStates.ogl.bDepthBlending) {
 		glUseProgramObject (hGlareShader);
 		glUniform1i (glGetUniformLocation (hGlareShader, "glareTex"), 0);
 		glUniform1i (glGetUniformLocation (hGlareShader, "depthTex"), 1);
-		glUniform3fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 		glUniform2fv (glGetUniformLocation (hGlareShader, "screenScale"), 1, (GLfloat *) &gameData.render.ogl.screenScale);
+#if SHADER_SOFT_CORONAS == 1
+		glUniform3fv (glGetUniformLocation (hGlareShader, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
+#else
+		glUniform1f (glGetUniformLocation (hGlareShader, "depthScale"), (GLfloat) gameData.render.ogl.depthScale.p.z);
+		glUniform1f (glGetUniformLocation (hGlareShader, "dMax"), (GLfloat) 30.0f);
+#endif
 		glDisable (GL_DEPTH_TEST);
 		}
 	glActiveTexture (GL_TEXTURE0);
@@ -770,6 +785,17 @@ if (gameStates.ogl.bDepthBlending) {
 //------------------------------------------------------------------------------
 
 char *glareFS = 
+#if SHADER_SOFT_CORONAS == 2
+	"uniform sampler2D glareTex;\r\n" \
+	"uniform sampler2D depthTex;\r\n" \
+	"uniform float depthScale;\r\n" \
+	"uniform vec2 screenScale;\r\n" \
+	"uniform float dMax;\r\n" \
+	"void main (void) {\r\n" \
+	"float dz = clamp ((gl_FragCoord.z - texture2D (depthTex, screenScale * gl_FragCoord.xy).r) * depthScale, 0.0, dMax);\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color * ((dMax - dz) / dMax);\r\n" \
+	"}\r\n";
+#else
 	"uniform sampler2D glareTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec3 depthScale;\r\n" \
@@ -777,8 +803,9 @@ char *glareFS =
 	"void main (void) {\r\n" \
 	"float depthZ = depthScale.y / (depthScale.x - texture2D (depthTex, screenScale * gl_FragCoord.xy).r);\r\n" \
 	"float fragZ = depthScale.y / (depthScale.x - gl_FragCoord.z);\r\n" \
-	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, depthZ - fragZ));\r\n" \
+	"gl_FragColor = texture2D (glareTex, gl_TexCoord [0].xy) * gl_Color / sqrt (max (1.0, (depthZ - fragZ) / 2));\r\n" \
 	"}\r\n";
+#endif
 
 char *glareVS = 
 	"void main(void){\r\n" \

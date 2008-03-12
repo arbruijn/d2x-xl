@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_DEFINING 2   // A structure defining edge that should always draw.
 #define EF_FRONTIER 4   // An edge between the known and the unknown.
 #define EF_SECRET   8   // An edge that is part of a secret tWall.
-#define EF_GRATE    16  // A grate... draw it all the time.
+#define EF_GRATE    16  // A bGrate... draw it all the time.
 #define EF_NO_FADE  32  // An edge that doesn't fade with distance
 #define EF_TOO_FAR  64  // An edge that is too far away
 
@@ -680,26 +680,22 @@ t1 = *pxEntryTime = TimerGetFixedSeconds ();
 t2 = t1;
 //Fill in gameData.render.mine.bAutomapVisited from gameData.objs.objects [LOCALPLAYER.nObject].nSegment
 if (gameStates.render.automap.bRadar) {
-#if 1//ndef _DEBUG
-	if (!IsMultiGame)
-		memcpy (gameData.render.mine.bRadarVisited, gameData.render.mine.bAutomapVisited, sizeof (gameData.render.mine.bRadarVisited));
-#endif
 	for (i = 0; i < gameData.segs.nSegments; i++)
-		gameData.render.mine.bAutomapVisited [i] = 1;
+		gameData.render.mine.bAutomapVisible [i] = 1;
 	}
 else if (gameStates.render.automap.bFull) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
-		gameData.render.mine.bAutomapVisited [i] = 1;
+		gameData.render.mine.bAutomapVisible [i] = 1;
 	}
+else
+	memcpy (gameData.render.mine.bAutomapVisible, 
+			  gameData.render.mine.bAutomapVisited, 
+			  sizeof (gameData.render.mine.bAutomapVisited));
 //gameData.render.mine.bAutomapVisited [gameData.objs.objects [LOCALPLAYER.nObject].nSegment] = 1;
 gameStates.render.automap.nSegmentLimit =
 gameStates.render.automap.nMaxSegsAway = 
-	SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);
-AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
-#if 1//ndef _DEBUG
-if (gameStates.render.automap.bRadar && !IsMultiGame)
-	memcpy (gameData.render.mine.bAutomapVisited, gameData.render.mine.bRadarVisited, sizeof (gameData.render.mine.bRadarVisited));
-#endif
+	SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
+AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 return bPauseGame;
 }
 
@@ -791,12 +787,12 @@ while ((c = KeyInKey ())) {
 		case KEYDBGGED+KEY_F: {
 			int i;
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
-				gameData.render.mine.bAutomapVisited [i] = 1;
+				gameData.render.mine.bAutomapVisible [i] = 1;
 			AutomapBuildEdgeList ();
 			gameStates.render.automap.nSegmentLimit = 
 			gameStates.render.automap.nMaxSegsAway = 
-				SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisited);
-			AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+				SetSegmentDepths (gameData.objs.objects [LOCALPLAYER.nObject].nSegment, gameData.render.mine.bAutomapVisible);
+			AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 			}
 			break;
 #endif
@@ -807,7 +803,7 @@ while ((c = KeyInKey ())) {
 				gameStates.render.automap.nSegmentLimit -= ViewDistStep ();
 				if (!gameStates.render.automap.nSegmentLimit)
 					gameStates.render.automap.nSegmentLimit = 1;
-				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 				}
 			break;
 
@@ -817,7 +813,7 @@ while ((c = KeyInKey ())) {
 				gameStates.render.automap.nSegmentLimit += ViewDistStep ();
 				if (gameStates.render.automap.nSegmentLimit > gameStates.render.automap.nMaxSegsAway)
 					gameStates.render.automap.nSegmentLimit = gameStates.render.automap.nMaxSegsAway;
-				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisited);
+				AdjustSegmentLimit (gameStates.render.automap.nSegmentLimit, gameData.render.mine.bAutomapVisible);
 				}
 			break;
 
@@ -1132,7 +1128,7 @@ return ret ? hash : -1;
 //------------------------------------------------------------------------------
 
 void AddOneEdge (int va, int vb, unsigned int color, ubyte tSide, short nSegment, 
-					  int hidden, int grate, int bNoFade)
+					  int bHidden, int bGrate, int bNoFade)
 {
 	int found;
 	tEdgeInfo *e;
@@ -1171,19 +1167,18 @@ if (found == -1) {
 	} 
 else {
 	//Assert (e->num_faces < 8);
-	if (color != automapColors.walls.nNormal)
-		if (color != automapColors.walls.nRevealed)
-			e->color = color;
+	if ((color != automapColors.walls.nNormal) && (color != automapColors.walls.nRevealed))
+		e->color = color;
 	if (e->num_faces < 4) {
 		e->sides [e->num_faces] = tSide;
 		e->nSegment [e->num_faces] = nSegment;
 		e->num_faces++;
 		}
 	}
-if (grate)
+if (bGrate)
 	e->flags |= EF_GRATE;
-if (hidden)
-	e->flags|=EF_SECRET;		// Mark this as a hidden edge
+if (bHidden)
+	e->flags |= EF_SECRET;		// Mark this as a bHidden edge
 if (bNoFade)
 	e->flags |= EF_NO_FADE;
 }
@@ -1302,7 +1297,7 @@ for (sn = 0; sn < MAX_SIDES_PER_SEGMENT; sn++) {
 					}
 				break;
 			case WALL_CLOSED:
-				// Make grates draw properly
+				// Make bGrates draw properly
 				if (WALL_IS_DOORWAY (segP, sn, NULL) & WID_RENDPAST_FLAG)
 					bIsGrate = 1;
 				else

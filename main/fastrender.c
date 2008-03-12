@@ -375,6 +375,7 @@ gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
 gameStates.render.history.nShader = -1;
 gameStates.render.history.bOverlay = -1;
+gameStates.render.history.bColored = 1;
 gameStates.render.history.bmBot = 
 gameStates.render.history.bmTop =
 gameStates.render.history.bmMask = NULL;
@@ -517,7 +518,7 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
 		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
+			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
@@ -539,7 +540,7 @@ if (nPass == 1) {	//find out how many total fragments each corona has
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
 		if (gameStates.render.automap.bDisplay) {
-			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
+			if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 				continue;
@@ -621,7 +622,7 @@ if (nSegment < 0)
 	return 0;
 if (bAutomap) {
 	if (gameStates.render.automap.bDisplay) {
-		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [nSegment]))
+		if (!(gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisible [nSegment]))
 			return 0;
 		if (!gameOpts->render.automap.bSkybox && (gameData.segs.segment2s [nSegment].special == SEGMENT_IS_SKYBOX))
 			return 0;

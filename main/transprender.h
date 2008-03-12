@@ -27,6 +27,7 @@ typedef struct tRIPoly {
 	tTexCoord2f			texCoord [4];
 	tRgbaColorf			color [4];
 	short					sideLength [4];
+	short					nSegment;
 	int					nWrap;
 	int					nPrimitive;
 	char					nVertices;
@@ -140,7 +141,8 @@ void InitRenderItemBuffer (int zMin, int zMax);
 int AddRenderItem (tRenderItemType nType, void *itemData, int itemSize, int nDepth, int nIndex);
 int RIAddFace (grsFace *faceP);
 int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
-					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive);
+					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
+					short nSegment);
 int RIAddObject (tObject *objP);
 int RIAddSprite (grsBitmap *bmP, vmsVector *position, tRgbaColorf *color, int nWidth, int nHeight, char nFrame, char bAdditive);
 int RIAddSphere (tRISphereType nType, float red, float green, float blue, float alpha, tObject *objP);

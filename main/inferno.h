@@ -725,6 +725,7 @@ typedef struct tColorStates {
 typedef struct tTextureStates {
 	int bGlsTexMergeOk;
 	int bHaveMaskShader;
+	int bHaveGrayScaleShader;
 } tTextureStates;
 
 //------------------------------------------------------------------------------
@@ -811,8 +812,9 @@ typedef struct tRenderHistory {
 	grsBitmap	*bmMask;
 	ubyte			bSuperTransp;
 	ubyte			bShaderMerge;
-	char			bOverlay;
-	char			nShader;
+	int			bOverlay;
+	int			bColored;
+	int			nShader;
 } tRenderHistory;
 
 typedef struct tRenderStates {
@@ -1451,6 +1453,7 @@ typedef struct tMineRenderData {
 	int						nRotatedLast [MAX_VERTICES_D2X];
 	ubyte						bCalcVertexColor [MAX_VERTICES_D2X];
 	ushort					bAutomapVisited [MAX_SEGMENTS_D2X];
+	ushort					bAutomapVisible [MAX_SEGMENTS_D2X];
 	ushort					bRadarVisited [MAX_SEGMENTS_D2X];
 	ubyte						bSetAutomapVisited;
 } tMineRenderData;

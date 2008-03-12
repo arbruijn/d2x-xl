@@ -607,7 +607,7 @@ for (;;) {
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			tMapColor = gameData.objs.color;
 			if (gameStates.render.bCloaked)
-				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1);
+				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1, -1);
 			else
 				G3DrawTexPolySimple (nVerts, pointList, uvlList, modelBitmaps [WORDVAL (p-2)], VECPTR (p+16), 1);
 			if (!gameStates.render.bBriefing) {

@@ -13,7 +13,7 @@
 void OglDrawEllipse (int nSides, int nType, float xsc, float xo, float ysc, float yo, tSinCosf *sinCosP);
 void OglDrawCircle (int nSides, int nType);
 bool G3DrawWhitePoly (int nv, g3sPoint **pointList);
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask);
+bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask, short nSegment);
 void G3FlushFaceBuffer (int bForce);
 
 bool G3DrawTexPolyMulti (
@@ -26,7 +26,8 @@ bool G3DrawTexPolyMulti (
 	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
-	int			bBlend);
+	int			bBlend,
+	short			nSegment);
 
 bool G3DrawTexPolyLightmap (
 	int			nVerts, 
@@ -38,7 +39,8 @@ bool G3DrawTexPolyLightmap (
 	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
-	int			bBlend);
+	int			bBlend,
+	short			nSegment);
 
 bool G3DrawTexPolyFlat (
 	int			nVerts, 
@@ -50,7 +52,8 @@ bool G3DrawTexPolyFlat (
 	tOglTexture	*lightMap, 
 	vmsVector	*pvNormal,
 	int			orient, 
-	int			bBlend);
+	int			bBlend,
+	short			nSegment);
 
 bool G3DrawTexPolySimple (
 	int			nVertices, 
@@ -68,9 +71,11 @@ int OglRenderArrays (grsBitmap *bmP, int nFrame, fVector *vertexP, int nVertices
 
 void OglURect(int left,int top,int right,int bot);
 
+void InitGrayScaleShader (void);
+
 //------------------------------------------------------------------------------
 
-typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int);
+typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int, short);
 
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
@@ -82,9 +87,9 @@ extern GLhandleARB	tmProg;
 //------------------------------------------------------------------------------
 
 static inline int G3DrawTexPoly (int nVerts, g3sPoint **pointList, tUVL *uvlList,
-											grsBitmap *bmP, vmsVector *pvNormal, int bBlend)
+											grsBitmap *bmP, vmsVector *pvNormal, int bBlend, short nSegment)
 {
-return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend);
+return fpDrawTexPolyMulti (nVerts, pointList, uvlList, NULL, bmP, NULL, NULL, pvNormal, 0, bBlend, nSegment);
 }
 
 //------------------------------------------------------------------------------

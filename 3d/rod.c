@@ -114,7 +114,7 @@ uvlList [0].l =
 uvlList [1].l = 
 uvlList [2].l = 
 uvlList [3].l = light;
-return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1);
+return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, -1);
 }
 
 //------------------------------------------------------------------------------

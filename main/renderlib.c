@@ -327,7 +327,7 @@ void DrawOutline (int nVertices, g3sPoint **pointList)
 #if 1 //def RELEASE
 if (gameStates.render.bQueryOcclusion) {
 	tRgbaColorf outlineColor = {1, 1, 0, -1};
-	G3DrawPolyAlpha (nVertices, pointList, &outlineColor, 1);
+	G3DrawPolyAlpha (nVertices, pointList, &outlineColor, 1, -1);
 	return;
 	}
 #endif
