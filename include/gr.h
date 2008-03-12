@@ -694,9 +694,7 @@ typedef struct grsFace {
 	short					nBaseTex;
 	short					nOvlTex;
 	short					nCorona;
-#ifdef _DEBUG
 	short					nSegment;
-#endif
 	ubyte					nSide;
 	ubyte					nOvlOrient :2;
 	ubyte					bVisible :1;

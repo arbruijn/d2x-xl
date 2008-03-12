@@ -1153,8 +1153,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 #ifdef _DEBUG
 	if (nSegment == nDbgSeg)
 		faceP = faceP;
-	faceP->nSegment = nSegment;
 #endif
+	faceP->nSegment = nSegment;
 	nOvlTexCount = 0;
 	segFaceP->nFaces = 0;
 	for (nSide = 0, sideP = segP->sides; nSide < 6; nSide++, sideP++) {

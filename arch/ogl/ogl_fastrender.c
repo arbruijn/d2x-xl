@@ -255,7 +255,7 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;
 	if (nShader != gameStates.render.history.nShader)
-		glUseProgramObject (tmProg = gsShaderProg);
+		glUseProgramObject (tmProg = tmShaderProgs [nShader]);
 	glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 	glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
 	glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);

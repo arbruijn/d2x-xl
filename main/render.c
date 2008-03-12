@@ -504,7 +504,8 @@ fpDrawTexPolyMulti (
 #	if LIGHTMAPS
 	lightMaps + props.segNum * 6 + props.sideNum, 
 #	endif
-	&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam); 
+	&props.vNormal, props.nOvlOrient, !bIsMonitor || bIsTeleCam,
+	props.segNum); 
 #endif
 	}
 gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS;
