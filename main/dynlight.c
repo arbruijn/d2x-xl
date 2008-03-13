@@ -69,6 +69,7 @@ else
 	pl->color.green =
 	pl->color.blue = 1.0f;
 pl->brightness = brightness;
+pl->range = (float) sqrt (brightness / 2.0f);
 pl->fSpecular.v [0] = red;
 pl->fSpecular.v [1] = green;
 pl->fSpecular.v [2] = blue;
@@ -654,6 +655,7 @@ for (i = 0; i < gameData.render.lights.dynamic.nLights; i++, pl++) {
 		psl->pos [1].p.w = 1;
 		}
 	psl->brightness = pl->brightness;
+	psl->range = pl->range;
 	if ((psl->bSpot = pl->bSpot))
 		SetupHeadLight (pl, psl);
 	psl->bState = pl->bState && (pl->color.red + pl->color.green + pl->color.blue > 0.0);
@@ -877,7 +879,7 @@ if (gameOpts->render.bDynLighting) {
 			nLightSeg = (psl->nSegment < 0) ? (psl->nObject < 0) ? -1 : gameData.objs.objects [psl->nObject].nSegment : psl->nSegment;
 			if ((nLightSeg < 0) || !SEGVIS (nLightSeg, nSegment)) 
 				continue;
-			if ((psl->xDistance = VmVecDist (&c, &psl->vPos)) > MAX_LIGHT_RANGE)
+			if ((psl->xDistance = VmVecDist (&c, &psl->vPos)) > MAX_LIGHT_RANGE * psl->range)
 				continue;
 			}
 		gameData.render.lights.dynamic.shader.activeLights [nThread][gameData.render.lights.dynamic.shader.nActiveLights [nThread]++] = psl;

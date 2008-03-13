@@ -265,6 +265,7 @@ static struct {
 
 static struct {
 	int	nWeapons;
+	int	nColor;
 } shipRenderOpts;
 
 static int fpsTable [16] = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125, 150, 175, 200, 250};
@@ -3845,15 +3846,25 @@ void ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int ci
 	tMenuItem	*m;
 	int			v;
 
-m = menus +shipRenderOpts.nWeapons;
+m = menus + shipRenderOpts.nWeapons;
 v = m->value;
 if (v != extraGameInfo [0].bShowWeapons) {
 	extraGameInfo [0].bShowWeapons = v;
 	*key = -2;
 	}
+if (shipRenderOpts.nColor >= 0) {
+	m = menus + shipRenderOpts.nColor;
+	v = m->value;
+	if (v != gameOpts->render.ship.nColor) {
+		gameOpts->render.ship.nColor = v;
+		m->rebuild = 1;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
+
+static char *pszShipColors [8];
 
 void ShipRenderOptionsMenu ()
 {
@@ -3861,7 +3872,16 @@ void ShipRenderOptionsMenu ()
 	int	i, j, choice = 0;
 	int	opt;
 	int	optBullets, optWingtips;
+	char	szShipColor [50];
 
+pszShipColors [0] = TXT_SHIP_WHITE;
+pszShipColors [1] = TXT_SHIP_BLUE;
+pszShipColors [2] = TXT_RED;
+pszShipColors [3] = TXT_SHIP_GREEN;
+pszShipColors [4] = TXT_SHIP_YELLOW;
+pszShipColors [5] = TXT_SHIP_PURPLE;
+pszShipColors [6] = TXT_SHIP_ORANGE;
+pszShipColors [7] = TXT_SHIP_CYAN;
 do {
 	memset (m, 0, sizeof (m));
 	opt = 0;
@@ -3881,6 +3901,13 @@ do {
 		ADD_RADIO (opt, TXT_SHIP_WINGTIP_LONG, 0, KEY_L, 1, HTX_SHIP_WINGTIPS);
 		opt++;
 		m [optWingtips + gameOpts->render.ship.nWingtip].value = 1;
+		ADD_TEXT (opt, "", 0);
+		opt++;
+		ADD_TEXT (opt, TXT_SHIPCOLOR_HEADER, 0);
+		opt++;
+		sprintf (szShipColor + 1, pszShipColors [gameOpts->render.ship.nColor]);
+		*szShipColor = *(TXT_SHIPCOLOR - 1);
+		ADD_SLIDER (opt, szShipColor + 1, gameOpts->render.ship.nColor, 0, 7, KEY_C, HTX_SHIPCOLOR);
 		}
 	else
 		optBullets =

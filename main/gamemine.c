@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <conf.h>
 #endif
 
-#define LIGHT_VERSION 3
+#define LIGHT_VERSION 4
 
 #ifdef RCS
 static char rcsid [] = "$Id: gamemine.c, v 1.26 2003/10/22 15:00:37 schaffner Exp $";
@@ -974,6 +974,23 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
+static inline int IsLightVert (int nVertex, tDynLight *pl)
+{
+		short	*pv = pl->nVerts;
+
+if (*pv == nVertex)
+	return 1;
+if (*++pv == nVertex)
+	return 1;
+if (*++pv == nVertex)
+	return 1;
+if (*++pv == nVertex)
+	return 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 int nMaxNearestLights [21] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,20,24,28,32};
 
 int ComputeNearestSegmentLights (int i)
@@ -1005,7 +1022,7 @@ for (segP = gameData.segs.segments + i; i < j; i++, segP++) {
 		if (!SEGVIS (m, i))
 			continue;
 		h = VmVecDist (&center, &pl->vPos) - fl2f (pl->rad);
-		if (h > MAX_LIGHT_RANGE)
+		if (h > MAX_LIGHT_RANGE * pl->range)
 			continue;
 		pDists [n].nDist = h;
 		pDists [n++].nIndex = l;
@@ -1071,7 +1088,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 			continue;
 		VmVecSub (&vLightToVert, vertP, &pl->vPos);
 		h = VmVecNormalize (&vLightToVert) - (int) (pl->rad * 65536);
-		if (h > MAX_LIGHT_RANGE)
+		if (!IsLightVert (nVertex, pl) && (h > MAX_LIGHT_RANGE * pl->range))
 			continue;
 		if ((pl->nSegment >= 0) && (pl->nSide >= 0)) {
 			sideP = SEGMENTS [pl->nSegment].sides + pl->nSide;
@@ -1175,8 +1192,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 #ifdef _DEBUG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				faceP = faceP;
-			faceP->nSegment = nSegment;
 #endif
+			faceP->nSegment = nSegment;
 			memset (faceP, 0, sizeof (*faceP));
 			if (bWall) {
 				faceP->nBaseTex = sideP->nBaseTex;
@@ -1204,9 +1221,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 				faceP->bAdditive = gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_LAVA;
 				}
 			faceP->nType = -1;
-#ifdef _DEBUG
 			faceP->nSegment = nSegment;
-#endif
 			faceP->nSide = nSide;
 			faceP->nWall = nWall;
 			faceP->bAnimation = IsAnimatedTexture (faceP->nBaseTex) || IsAnimatedTexture (faceP->nOvlTex);

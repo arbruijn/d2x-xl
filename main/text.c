@@ -1794,6 +1794,16 @@ char *defaultGameTexts [][2] = {
 	{"Raketen~Start: %s", "missile launch ~Speed: %s"},
 	{"Gatlinggeraeusche erzeugen", "play ~Gatling sounds"},
 	{"Anlaufgeraeusch abspielen", "play speed~Up sound"},
+	{"weiss", "white"},
+	{"blau", "blue"},
+	{"rot", "red"},
+	{"gruen", "green"},
+	{"gelb", "yellow"},
+	{"violett", "purple"},
+	{"orange", "orange"},
+	{"tuerkis", "cyan"},
+	{"Einzelspieler-Schiffsfarbe:", "single player ship color:"},
+	{"%s", "%s"},
 #if 0
 	{"", ""},
 #endif
@@ -2416,6 +2426,7 @@ char *defaultHelpTexts [][2] = {
 	{"Hier kann die Startgeschwindigkeit von Raketen eingestellt werden.", "Adjust the launch speed of missiles here."},
 	{"Wenn angekreuzt haben Maschinenkanonen ein verbessertes\nGerausch.", "If checked gatling guns use an improved sound."},
 	{"Wenn angekreuzt, wird ein Hochlaufgeraeusch fuer Maschin-\nnenkanonen abgespielt.", "If checked, a spinup sound is played for gatling guns."},
+	{"Hier kann die Lieblings-Schiffsfarbe ausgesucht werden\n(nur Einzelspieler).", "Chose your favorite ship color here (singleplayer only)."},
 #if 0
 	{"", ""},
 #endif

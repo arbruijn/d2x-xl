@@ -36,6 +36,7 @@
 #include "texmerge.h"
 #include "ogl_defs.h"
 #include "ogl_shader.h"
+#include "ogl_fastrender.h"
 #include "glare.h"
 #include "render.h"
 

@@ -429,7 +429,7 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
 	nTeamColor = (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1;
 else
-	nTeamColor = 0;
+	nTeamColor = gameOpts->render.ship.nColor;
 #if 1
 if (psm->bThruster) {
 	if (!nPass)

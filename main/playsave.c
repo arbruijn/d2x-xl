@@ -482,6 +482,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.ship.nWingtip, i, 0);
 		RP (gameOptions [i].render.ship.bBullets, i, 0);
+		RP (gameOptions [i].render.ship.nColor, i, 0);
 
 		RP (gameOptions [i].render.smoke.bAuxViews, i, 0);
 		RP (gameOptions [i].render.smoke.bPlasmaTrails, i, 0);
@@ -1040,6 +1041,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.shadows.nReach", "2"},
 	{"gameOptions[0].render.ship.nWingtip", "1"},
 	{"gameOptions[0].render.ship.bBullets", "1"},
+	{"gameOptions[0].render.ship.nColor", "1"},
 	{"gameOptions[0].render.smoke.bAuxViews", "0"},
 	{"gameOptions[0].render.smoke.bPlasmaTrails", "0"},
 	{"gameOptions[0].render.smoke.bDecreaseLag", "0"},

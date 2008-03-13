@@ -1835,19 +1835,19 @@ void LoadGameTexts(void);
 #define TXT_MSL_STARTSPEED			GT(1042)
 #define TXT_GATLING_SOUND			GT(1043)
 #define TXT_SPINUP_SOUND			GT(1044)
+#define TXT_SHIP_WHITE				GT(1045)
+#define TXT_SHIP_BLUE				GT(1046)
+#define TXT_SHIP_RED					GT(1047)
+#define TXT_SHIP_GREEN				GT(1048)
+#define TXT_SHIP_YELLOW				GT(1049)
+#define TXT_SHIP_PURPLE				GT(1050)
+#define TXT_SHIP_ORANGE				GT(1051)
+#define TXT_SHIP_CYAN				GT(1052)
+#define TXT_SHIPCOLOR_HEADER		GT(1053)
+#define TXT_SHIPCOLOR				GT(1054)
 
 #if 0
 
-#define TXT_				GT(1045)
-#define TXT_				GT(1046)
-#define TXT_				GT(1047)
-#define TXT_				GT(1048)
-#define TXT_				GT(1049)
-#define TXT_				GT(1050)
-#define TXT_				GT(1051)
-#define TXT_				GT(1052)
-#define TXT_				GT(1053)
-#define TXT_				GT(1054)
 #define TXT_				GT(1055)
 #define TXT_				GT(1056)
 #define TXT_				GT(1057)
@@ -2365,11 +2365,10 @@ void LoadGameTexts(void);
 #define HTX_MSL_STARTSPEED			HT(351)			
 #define HTX_GATLING_SOUND			HT(352)			
 #define HTX_SPINUP_SOUND			HT(353)			
+#define HTX_SHIPCOLOR				HT(354)			
 
 #if 0
 
-#define HTX_					HT(353)			
-#define HTX_					HT(354)			
 #define HTX_					HT(355)			
 #define HTX_					HT(356)			
 #define HTX_					HT(357)			

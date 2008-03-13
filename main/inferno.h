@@ -275,6 +275,7 @@ typedef struct tAutomapOptions {
 typedef struct tShipRenderOptions {
 	int nWingtip;
 	int bBullets;
+	int nColor;
 	} tShipRenderOptions;
 
 //------------------------------------------------------------------------------
@@ -1172,6 +1173,7 @@ typedef struct tDynLight {
 	vmsVector	vDir;
 	tRgbaColorf	color;
 	float			brightness;
+	float			range;
 	float			rad;
 #if USE_OGL_LIGHTS
 	unsigned		handle;
@@ -1220,6 +1222,7 @@ typedef struct tShaderLight {
 	fVector		color;
 	float			rad;
 	float			brightness;
+	float			range;
 	float			spotAngle;
 	float			spotExponent;
 	fix			xDistance;

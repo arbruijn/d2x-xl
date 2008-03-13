@@ -419,7 +419,6 @@ GLhandleARB tmv [6] = {0,0,0,0,0,0};
 char *texMergeFS [6] = {
 	"uniform sampler2D btmTex, topTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
-	"uniform float bColored;\r\n" \
 	"void main(void){" \
 	"vec4 topColor=texture2D(topTex,gl_TexCoord [1].xy);\r\n" \
 	"vec4 btmColor=texture2D(btmTex,gl_TexCoord [0].xy);\r\n" \
@@ -430,7 +429,6 @@ char *texMergeFS [6] = {
 ,
 	"uniform sampler2D btmTex, topTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
-	"uniform float bColored;\r\n" \
 	"vec4 topColor, btmColor;\r\n" \
 	"void main(void)" \
 	"{topColor=texture2D(topTex,gl_TexCoord [1].xy);\r\n" \
@@ -443,20 +441,15 @@ char *texMergeFS [6] = {
 ,
 	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
-	"uniform float bColored;\r\n" \
 	"vec4 topColor, btmColor;\r\n" \
 	"float bMask;\r\n" \
 	"void main(void){" \
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
-	"/*if (bMask < 0.5)" \
-	"   discard;\r\n" \
-	"else*/ {\r\n" \
-	"   topColor=texture2D(topTex,gl_TexCoord [1].xy);\r\n" \
-	"   btmColor=texture2D(btmTex,gl_TexCoord [0].xy);\r\n" \
-	"   vec4 color = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;\r\n" \
-	"   float l = (color.r + color.g + color.b) / 3.0;\r\n" \
-	"   gl_FragColor = bMask * vec4 (l, l, l, color.a);\r\n" \
-   "   }\r\n" \
+	"topColor=texture2D(topTex,gl_TexCoord [1].xy);\r\n" \
+	"btmColor=texture2D(btmTex,gl_TexCoord [0].xy);\r\n" \
+	"vec4 color = vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;\r\n" \
+	"float l = (color.r + color.g + color.b) / 3.0;\r\n" \
+	"gl_FragColor = bMask * vec4 (l, l, l, color.a);\r\n" \
 	"}"
 ,
 	"uniform sampler2D btmTex, topTex;\r\n" \
@@ -479,17 +472,14 @@ char *texMergeFS [6] = {
 ,
 	"uniform sampler2D btmTex, topTex, maskTex;\r\n" \
 	"uniform float grAlpha;\r\n" \
+	"uniform float bColored;\r\n" \
 	"vec4 topColor, btmColor;\r\n" \
 	"float bMask;\r\n" \
 	"void main(void){" \
 	"bMask = texture2D(maskTex,gl_TexCoord [2].xy).r;\r\n" \
-	"/*if (bMask < 0.5)" \
-	"   discard;\r\n" \
-	"else*/ {\r\n" \
-	"   topColor=texture2D(topTex,gl_TexCoord [1].xy);\r\n" \
-	"   btmColor=texture2D(btmTex,gl_TexCoord [0].xy);\r\n" \
-	"   gl_FragColor = bMask * vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;\r\n" \
-   "   }\r\n" \
+	"topColor=texture2D(topTex,gl_TexCoord [1].xy);\r\n" \
+	"btmColor=texture2D(btmTex,gl_TexCoord [0].xy);\r\n" \
+	"gl_FragColor = bMask * vec4(vec3(mix(btmColor,topColor,topColor.a)),(btmColor.a+topColor.a)*grAlpha)*gl_Color;\r\n" \
 	"}"
 	};
 
@@ -535,7 +525,7 @@ else {
 			DeleteShaderProg (tmShaderProgs + i);
 		b = CreateShaderProg (tmShaderProgs + i) &&
 			 CreateShaderFunc (tmShaderProgs + i, tmf + i, tmv + i, texMergeFS [i], texMergeVS [i % 3], 1) &&
-			 LinkShaderProg (tmShaderProgs + i);
+-			 LinkShaderProg (tmShaderProgs + i);
 		if (i == 2)
 			gameStates.render.textures.bHaveMaskShader = b;
 		else

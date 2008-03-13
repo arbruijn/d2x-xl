@@ -1559,8 +1559,9 @@ memset (gameData.render.mine.nSegRenderList, 0xff, sizeof (gameData.render.mine.
 
 if (gameStates.render.automap.bDisplay && gameOpts->render.automap.bTextured && !gameStates.render.automap.bRadar) {
 	for (i = gameData.render.mine.nRenderSegs = 0; i < gameData.segs.nSegments; i++)
-		if ((gameStates.render.automap.bFull && (gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway)) || 
-			 (gameData.render.mine.bAutomapVisible [i] && (gameData.render.mine.bAutomapVisible [i] <= gameStates.render.automap.nSegmentLimit))) {
+		if ((gameStates.render.automap.bFull || gameData.render.mine.bAutomapVisited [i]) && 
+			 ((gameStates.render.automap.nSegmentLimit == gameStates.render.automap.nMaxSegsAway) || 
+			  (gameData.render.mine.bAutomapVisible [i] <= gameStates.render.automap.nSegmentLimit))) {
 			gameData.render.mine.nSegRenderList [gameData.render.mine.nRenderSegs++] = i;
 			gameData.render.mine.bVisible [i] = gameData.render.mine.nVisible;
 			VISIT (i);
