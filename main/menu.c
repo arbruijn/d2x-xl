@@ -3841,6 +3841,8 @@ do {
 
 //------------------------------------------------------------------------------
 
+static char *pszShipColors [8];
+
 void ShipRenderOptionsCallback (int nitems, tMenuItem * menus, int * key, int citem)
 {
 	tMenuItem	*m;
@@ -3857,14 +3859,13 @@ if (shipRenderOpts.nColor >= 0) {
 	v = m->value;
 	if (v != gameOpts->render.ship.nColor) {
 		gameOpts->render.ship.nColor = v;
+		sprintf (m->text, TXT_SHIPCOLOR, pszShipColors [v]);
 		m->rebuild = 1;
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
-
-static char *pszShipColors [8];
 
 void ShipRenderOptionsMenu ()
 {
@@ -3905,13 +3906,15 @@ do {
 		opt++;
 		ADD_TEXT (opt, TXT_SHIPCOLOR_HEADER, 0);
 		opt++;
-		sprintf (szShipColor + 1, pszShipColors [gameOpts->render.ship.nColor]);
-		*szShipColor = *(TXT_SHIPCOLOR - 1);
+		sprintf (szShipColor + 1, TXT_SHIPCOLOR, pszShipColors [gameOpts->render.ship.nColor]);
+		*szShipColor = 0;
 		ADD_SLIDER (opt, szShipColor + 1, gameOpts->render.ship.nColor, 0, 7, KEY_C, HTX_SHIPCOLOR);
+		shipRenderOpts.nColor = opt++;
 		}
 	else
 		optBullets =
-		optWingtips = -1;
+		optWingtips =
+		shipRenderOpts.nColor = -1;
 	for (;;) {
 		i = ExecMenu1 (NULL, TXT_SHIP_RENDERMENU, opt, m, ShipRenderOptionsCallback, &choice);
 		if (i < 0)
