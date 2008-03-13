@@ -255,12 +255,11 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;
 	if (nShader != gameStates.render.history.nShader)
-		glUseProgramObject (tmProg = tmShaderProgs [nShader]);
+		glUseProgramObject (tmProg = tmShaderProgs [nShader + bColored * 3]);
 	glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 	glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
 	glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
 	glUniform1f (glGetUniformLocation (tmProg, "grAlpha"), 1.0f);
-	glUniform1f (glGetUniformLocation (tmProg, "bColored"), bColored ? 1.0f : 0.0f);
 	}
 else if (!bColored) {
 	nShader = 99;
