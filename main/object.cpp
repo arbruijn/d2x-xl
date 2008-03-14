@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ai.h"
 #include "hostage.h"
 #include "morph.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "powerup.h"
 #include "fuelcen.h"
 #include "endlevel.h"

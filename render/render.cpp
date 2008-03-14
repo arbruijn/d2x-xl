@@ -55,7 +55,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "light.h"
 #include "dynlight.h"
 #include "headlight.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "newdemo.h"
 #include "automap.h"
 #include "endlevel.h"

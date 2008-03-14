@@ -2406,7 +2406,7 @@ typedef struct tBossData {
 
 //------------------------------------------------------------------------------
 
-#include "cntrlcen.h"
+#include "reactor.h"
 
 typedef struct tReactorStates {
 	int					nObject;

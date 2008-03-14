@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "powerup.h"
 #include "switch.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "hudmsg.h"
 #include "inferno.h"
 #include "globvars.h"

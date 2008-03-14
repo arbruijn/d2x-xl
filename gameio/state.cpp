@@ -66,7 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "piggy.h"
 #include "player.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "morph.h"
 #include "weapon.h"
 #include "render.h"

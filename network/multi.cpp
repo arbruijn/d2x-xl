@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mono.h"
 #include "gamesave.h"
 #include "wall.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "powerup.h"
 #include "polyobj.h"
 #include "bm.h"

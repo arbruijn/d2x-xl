@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "effects.h"
 #include "textures.h"
 #include "multi.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "fireball.h"
 #include "newdemo.h"
 #include "endlevel.h"

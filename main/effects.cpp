@@ -35,7 +35,7 @@ static char rcsid [] = "$Id: effects.c,v 1.5 2003/10/10 09:36:34 btb Exp $";
 #include "mono.h"
 #include "u_mem.h"
 #include "textures.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "ogl_defs.h"
 #include "error.h"
 #include "hudmsg.h"

@@ -49,7 +49,7 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "menu.h"
 #include "switch.h"
 #include "fuelcen.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "powerup.h"
 #include "weapon.h"
 #include "newdemo.h"

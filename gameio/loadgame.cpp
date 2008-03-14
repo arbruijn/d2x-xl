@@ -96,7 +96,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "config.h"
 #include "robot.h"
 #include "automap.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "powerup.h"
 #include "text.h"
 #include "cfile.h"

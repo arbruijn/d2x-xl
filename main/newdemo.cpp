@@ -81,7 +81,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "network.h"
 #include "text.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "aistruct.h"
 #include "mission.h"
 #include "piggy.h"

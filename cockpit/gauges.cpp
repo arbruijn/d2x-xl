@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network.h"
 #include "network_lib.h"
 #include "endlevel.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "controls.h"
 #include "weapon.h"
 #include "globvars.h"

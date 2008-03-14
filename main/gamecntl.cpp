@@ -93,7 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pa_enabl.h"
 #include "multi.h"
 #include "desc_id.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "pcx.h"
 #include "state.h"
 #include "piggy.h"

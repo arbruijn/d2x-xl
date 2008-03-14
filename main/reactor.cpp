@@ -32,7 +32,7 @@ static char rcsid[] = "$Id: cntrlcen.c,v 1.14 2003/11/26 12:26:29 btb Exp $";
 #include "mono.h"
 
 #include "inferno.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "game.h"
 #include "laser.h"
 #include "loadgame.h"

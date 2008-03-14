@@ -37,7 +37,7 @@ static char rcsid [] = "$Id: switch.c,v 1.9 2003/10/04 03:14:48 btb Exp $";
 #include "wall.h"
 #include "texmap.h"
 #include "fuelcen.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "newdemo.h"
 #include "player.h"
 #include "endlevel.h"

@@ -52,7 +52,7 @@ static char rcsid [] = "$Id: ai2.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #include "fuelcen.h"
 #include "timer.h"
 #include "sounds.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "multibot.h"
 #include "multi.h"
 #include "network.h"

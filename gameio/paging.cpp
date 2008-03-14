@@ -49,7 +49,7 @@ static char rcsid [] = "$Id: paging.c,v 1.3 2003/10/04 03:14:47 btb Exp $";
 #include "palette.h"
 #include "timer.h"
 #include "text.h"
-#include "cntrlcen.h"
+#include "reactor.h"
 #include "gauges.h"
 #include "powerup.h"
 #include "fuelcen.h"
