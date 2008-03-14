@@ -3298,7 +3298,7 @@
 						RelativePath="..\..\input\joy.cpp">
 					</File>
 					<File
-						RelativePath="..\..\input\joydefs.cpp">
+						RelativePath="..\..\input\win32\joydefs.cpp">
 					</File>
 					<File
 						RelativePath="..\..\input\key.cpp">

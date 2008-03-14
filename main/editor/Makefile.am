@@ -1,5 +1,5 @@
 noinst_LIBRARIES = libeditor.a
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/arch/include -I$(top_srcdir)/main
+INCLUDES = -I$(top_srcdir)/include
 
 libeditor_a_SOURCES = \
 autosave.cpp  centers.cpp   curves.cpp    eglobal.cpp   ehostage.cpp  \
