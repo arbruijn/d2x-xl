@@ -1,11 +1,5 @@
 noinst_LIBRARIES = lib2d.a
-INCLUDES = -I $(top_srcdir)/include  -I $(top_srcdir)/main -I $(top_srcdir)/3d
-
-if USE_ASM
-ASM_SRCS =
-else
-ASM_SRCS = tmerge.c
-endif
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/3d
 
 if MACDATA
 TRANSPARENCY_COLOR = 0
@@ -13,20 +7,11 @@ else
 TRANSPARENCY_COLOR = 255
 endif
 
-lib2d_a_SOURCES = ${ASM_SRCS} \
-2dsline.c  box.c     disc.c    ibitblt.c  pcx.c    rect.c   scalec.c \
-bitblt.c   canvas.c  font.c    line.c	  pixel.c  rle.c \
-bitmap.c   circle.c  gpixel.c  palette.c  poly.c
+lib2d_a_SOURCES = \
+	2dsline.cpp box.cpp disc.cpp ibitblt.cpp pcx.cpp rect.cpp scalec.cpp \
+	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
+	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp
 
 SUFFIXES = .asm
 %.o: %.asm
 	$(NASM) -dTRANSPARENCY_COLOR=${TRANSPARENCY_COLOR} $(NASMFLAGS) $< -o $@
-
-if USE_ASM
-lib2d_a_LIBADD = linear.o tmerge_a.o
-endif
-
-EXTRA_DIST = \
-linear.asm scalea.asm tmerge_a.asm \
-bitmap.h clip.h scalea.h \
-scale.c tmerge.c

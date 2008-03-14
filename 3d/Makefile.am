@@ -1,11 +1,7 @@
 noinst_LIBRARIES = lib3d.a
-INCLUDES = -I $(top_srcdir)/include  -I $(top_srcdir)/main
+INCLUDES = -I $(top_srcdir)/include-I $(top_srcdir)/main
 
 lib3d_a_SOURCES = \
-clipper.c  globvars.c  interp.c  points.c  setup.c \
-draw.c	   instance.c  matrix.c  rod.c shadows.c hitbox.c \
-fastmodels.c	buildmodel.c	ase2model.c	oof2model.c	pof2model.c
-
-EXTRA_DIST = \
-interp.asm \
-clipper.h globvars.h 3d.h interp.h buildmodel.h
+	clipper.cppglobvars.cppinterp.cpppoints.cppsetup.cpp \
+	draw.cpp  instance.cppmatrix.cpprod.cpp shadows.cpp hitbox.cpp \
+	fastmodels.cpp buildmodel.cpp ase2model.cpp oof2model.cpp pof2model.cpp

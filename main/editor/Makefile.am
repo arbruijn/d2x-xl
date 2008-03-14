@@ -2,14 +2,14 @@ noinst_LIBRARIES = libeditor.a
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/arch/include -I$(top_srcdir)/main
 
 libeditor_a_SOURCES = \
-autosave.c  centers.c   curves.c    eglobal.c   ehostage.c  \
-elight.c    eobject.c   eswitch.c   fixseg.c    func.c      \
-group.c     info.c      kbuild.c    kcurve.c    kfuncs.c    \
-kgame.c     kgroup.c    khelp.c     kmine.c     ksegmove.c  \
-ksegsel.c   ksegsize.c  ktmap.c     kview.c     macro.c     \
-med.c       meddraw.c   medmisc.c   medrobot.c  medsel.c    \
-medwall.c   mine.c      objpage.c   segment.c   seguvs.c    \
-texpage.c   texture.c
+autosave.cpp  centers.cpp   curves.cpp    eglobal.cpp   ehostage.cpp  \
+elight.cpp    eobject.cpp   eswitch.cpp   fixseg.cpp    func.cpp      \
+group.cpp     info.cpp      kbuild.cpp    kcurve.cpp    kfuncs.cpp    \
+kgame.cpp     kgroup.cpp    khelp.cpp     kmine.cpp     ksegmove.cpp  \
+ksegsel.cpp   ksegsize.cpp  ktmap.cpp     kview.cpp     macro.cpp     \
+med.cpp       meddraw.cpp   medmisc.cpp   medrobot.cpp  medsel.cpp    \
+medwall.cpp   mine.cpp      objpage.cpp   segment.cpp   seguvs.cpp    \
+texpage.cpp   texture.cpp
 
 EXTRA_DIST = \
 centers.h   editor.h    ehostage.h  eobject.h   eswitch.h   \

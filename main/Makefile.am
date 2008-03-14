@@ -11,51 +11,51 @@ noinst_LIBRARIES = libmain.a
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/arch/include -I$(top_srcdir)/3d
 
 if USE_NETWORK
-NETWORK_SRCS = highscores.c multi.c multibot.c network.c netmisc.c \
-network_init.c network_join.c network_lib.c network_phandler.c \
-network_process.c network_read.c network_send.c network_sync.c \
-dumpmine.c
+NETWORK_SRCS = highscores.cpp multi.cpp multibot.cpp network.cpp netmisc.cpp \
+network_init.cpp network_join.cpp network_lib.cpp network_phandler.cpp \
+network_process.cpp network_read.cpp network_send.cpp network_sync.cpp \
+dumpmine.cpp
 endif
 
 if EDITOR
-EDITOR_SRCS = bmread.c dumpmine.c
+EDITOR_SRCS = bmread.cpp dumpmine.cpp
 endif
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
-ai.c        aianimate.c	aiboss.c		aifire.c		aiframe.c	\
-aiinit.c		ailib.c		aimove.c		aipath.c		aisave.c		\		
-aisnipe.c	automap.c   bm.c        sparkeffect.c				\
-cmd.c       cntrlcen.c  collide.c   config.c    console.c   \
-controls.c  credits.c   crypt.c     digiobj.c   effects.c   \
-escort.c    fireball.c  fuelcen.c   fvi.c       game.c      \
-gamecntl.c  gamefont.c  gamemine.c  gamepal.c   gamerend.c  \
-gamesave.c  gameseg.c   loadgame.c  gauges.c    hostage.c   \
-hud.c       inferno.c   kconfig.c   kludge.c    laser.c     \
-light.c		menu.c      mglobal.c   mission.c   morph.c     \
-movie.c     particles.c aseread.c 	sphere.c 	input.c		\
-newdemo.c   newmenu.c   object.c    paging.c    physics.c   \
-piggy.c     player.c    playsave.c  polyobj.c   powerup.c   \
-render.c    robot.c     scores.c    segment.c   slew.c      \
-songs.c     state.c     switch.c    terrain.c   texmerge.c  \
-text.c      briefings.c vclip.c     wall.c      weapon.c	\
-autodl.c		cameras.c	lightmap.c	tracker.c	objsmoke.c	\
-netmenu.c	cheats.c		banlist.c	thief.c		endlevel.c	\
-multimsg.c	hoard.c		objrender.c lightning.c perlin.c		\
-tga.c			glare.c		radar.c		renderlib.c	transprender.c \
-fastrender.c	renderthreads.c		flightpath.c \
-rendershadows.c		objeffects.c	hiresmodels.c textdata.c \
-omega.c trackobject.c	monsterball.c	slowmotion.c	dropobject.c	\
-entropy.c	dynlight.c	headlight.c	marker.c	soundthreads.c \
-oofread.c	oofrender.c	oofmath.c	hudicons.c	statusbar.c \
-dropweapon.c pickupweapon.c weaponorder.c seismic.c
+ai.cpp        aianimate.cpp	aiboss.cpp		aifire.cpp		aiframe.cpp	\
+aiinit.cpp		ailib.cpp		aimove.cpp		aipath.cpp		aisave.cpp		\		
+aisnipe.cpp	automap.cpp   bm.cpp        sparkeffect.cpp				\
+cmd.cpp       cntrlcen.cpp  collide.cpp   config.cpp    console.cpp   \
+controls.cpp  credits.cpp   crypt.cpp     digiobj.cpp   effects.cpp   \
+escort.cpp    fireball.cpp  fuelcen.cpp   fvi.cpp       game.cpp      \
+gamecntl.cpp  gamefont.cpp  gamemine.cpp  gamepal.cpp   gamerend.cpp  \
+gamesave.cpp  gameseg.cpp   loadgame.cpp  gauges.cpp    hostage.cpp   \
+hud.cpp       inferno.cpp   kconfig.cpp   kludge.cpp    laser.cpp     \
+light.cpp		menu.cpp      mglobal.cpp   mission.cpp   morph.cpp     \
+movie.cpp     particles.cpp aseread.cpp 	sphere.cpp 	input.cpp		\
+newdemo.cpp   newmenu.cpp   object.cpp    paging.cpp    physics.cpp   \
+piggy.cpp     player.cpp    playsave.cpp  polyobj.cpp   powerup.cpp   \
+render.cpp    robot.cpp     scores.cpp    segment.cpp   slew.cpp      \
+songs.cpp     state.cpp     switch.cpp    terrain.cpp   texmerge.cpp  \
+text.cpp      briefings.cpp vclip.cpp     wall.cpp      weapon.cpp	\
+autodl.cpp		cameras.cpp	lightmap.cpp	tracker.cpp	objsmoke.cpp	\
+netmenu.cpp	cheats.cpp		banlist.cpp	thief.cpp		endlevel.cpp	\
+multimsg.cpp	hoard.cpp		objrender.cpp lightning.cpp perlin.cpp		\
+tga.cpp			glare.cpp		radar.cpp		renderlib.cpp	transprender.cpp \
+fastrender.cpp	renderthreads.cpp		flightpath.cpp \
+rendershadows.cpp		objeffects.cpp	hiresmodels.cpp textdata.cpp \
+omega.cpp trackobject.cpp	monsterball.cpp	slowmotion.cpp	dropobject.cpp	\
+entropy.cpp	dynlight.cpp	headlight.cpp	marker.cpp	soundthreads.cpp \
+oofread.cpp	oofrender.cpp	oofmath.cpp	hudicons.cpp	statusbar.cpp \
+dropweapon.cpp pickupweapon.cpp weaponorder.cpp seismic.cpp
 
 
 EXTRA_libmain_a_SOURCES = \
-highscores.c multi.c multibot.c network.c netmisc.c
+highscores.cpp multi.cpp multibot.cpp network.cpp netmisc.cpp
 
 
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
-descent.cfg inferno.ini \
+descent.cppfg inferno.ini \
 link.bat \
 ai.h aistruct.h automap.h bm.h bmread.h cntrlcen.h collide.h \
 config.h controls.h credits.h desc_id.h desw.h digi.h effects.h \
