@@ -54,11 +54,11 @@ missiondir = ${pkgdatadir}/missions
 CLEANFILES = @TARGETS@ Info.plist
 
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
-ChangeLog ChangeLog-old \
-D2X.make \
-MVEPlayer-Info.plist d2x-Info.plist d2xgl-Info.plist \
-README.utils \
-djgpp.bat djgpp.sh \
-autogen.sh \
-cvshowto.txt readme.txt installation.txt compilerdefs.txt \
-d2x-xl.sh
+	ChangeLog ChangeLog-old \
+	D2X.make \
+	MVEPlayer-Info.plist d2x-Info.plist d2xgl-Info.plist \
+	README.utils \
+	djgpp.bat djgpp.sh \
+	autogen.sh \
+	cvshowto.txt readme.txt installation.txt compilerdefs.txt \
+	d2x-xl.sh
