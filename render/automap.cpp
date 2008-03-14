@@ -608,12 +608,17 @@ levelNameCanv = PrintToCanvas (amLevelName, SMALL_FONT, automapColors.nMedGreen,
 int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 #ifndef _DEBUG
+char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
 #	define	MAP_BACKGROUND_FILENAME \
-				(amData.bHires?"\x01MAPB.PCX":"\x01MAP.PCX")	//load only from hog file
+				(amData.bHires?"\x01MAPB.PCX":)	//load only from hog file
+
+#	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires]
 #else
-#	define	MAP_BACKGROUND_FILENAME \
-				((amData.bHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0))?"MAPB.PCX":"MAP.PCX")
+char	*pszMapBackgroundFilename [2] = {"MAP.PCX", "MAPB.PCX"};
+
+#	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires && CFExist ("mapb.pcx",gameFolders.szDataDir,0)]
 #endif
+
 
 int InitAutomap (int bPauseGame, fix *pxEntryTime, vmsAngVec *pvTAngles)
 {
