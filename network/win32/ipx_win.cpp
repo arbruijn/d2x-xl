@@ -13,11 +13,12 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <windows.h>
 #include <wsipx.h>
 #include <errno.h>
 #include <stdio.h>
 
-#include "../include/win32/ipx_drv.h"
+#include "../win32/include/ipx_drv.h"
 #include "mono.h"
 
 extern int _CDECL_ Fail (const char *fmt, ...);

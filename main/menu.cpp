@@ -92,9 +92,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "objrender.h"
 #include "sparkeffect.h"
 #ifdef _WIN32
-#	include "../network/include/win32/ipx_udp.h"
+#	include "../network/win32/include/ipx_udp.h"
 #else
-#	include "../network/include/linux/ipx_udp.h"
+#	include "../network/linux/include/ipx_udp.h"
 #endif
 
 #ifdef EDITOR

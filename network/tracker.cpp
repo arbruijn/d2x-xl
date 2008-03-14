@@ -22,11 +22,11 @@
 #include "u_mem.h"
 #include "ipx.h"
 #ifdef _WIN32
-#	include "include/win32/ipx_udp.h"
-#	include "include/win32/ipx_drv.h"
+#	include "win32/include/ipx_udp.h"
+#	include "win32/include/ipx_drv.h"
 #else
-#	include "include/linux/include/ipx_udp.h"
-#	include "include/linux/include/ipx_drv.h"
+#	include "linux/include/include/ipx_udp.h"
+#	include "linux/include/include/ipx_drv.h"
 #endif
 #include "network.h"
 #include "key.h"

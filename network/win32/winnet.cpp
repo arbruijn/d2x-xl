@@ -97,9 +97,9 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "args.h"
 #include "error.h"
 #include "ipx.h"
-#include "../include/win32/ipx_drv.h"
-#include "../include/win32/ipx_udp.h"
-#include "../include/win32/ipx_mcast4.h"
+#include "../win32/include/ipx_drv.h"
+#include "../win32/include/ipx_udp.h"
+#include "../win32/include/ipx_mcast4.h"
 #include "network.h"
 #include "player.h"	/* for gameData.multiplayer.players */
 #include "multi.h"	/* for netPlayers */

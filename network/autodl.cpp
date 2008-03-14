@@ -16,9 +16,9 @@
 #include "inferno.h"
 #include "ipx.h"
 #ifdef _WIN32
-#	include "../network/include/win32/ipx_drv.h"
+#	include "../network/win32/include/ipx_drv.h"
 #else
-#	include "../network/include/linux/ipx_drv.h"
+#	include "../network/linux/include/ipx_drv.h"
 #endif
 #include "key.h"
 #include "network.h"

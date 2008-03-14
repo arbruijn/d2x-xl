@@ -23,7 +23,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "../include/linux/ipx_mcast4.h"
+#include "../linux/include/ipx_mcast4.h"
 #include "args.h"
 #include "error.h"
 #include "inferno.h"

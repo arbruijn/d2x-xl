@@ -152,8 +152,8 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #	include <sys/socket.h>
 #endif
 
-#include "../include/win32/ipx_drv.h"
-#include "../include/linux/ipx_udp.h"
+#include "../win32/include/ipx_drv.h"
+#include "../linux/include/ipx_udp.h"
 #include "ipx.h"
 #include "inferno.h"
 #include "network.h"

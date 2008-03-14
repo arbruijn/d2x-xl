@@ -90,11 +90,11 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "collide.h"
 #include "ipx.h"
 #ifdef _WIN32
-#	include "include/win32/ipx_udp.h"
-#	include "include/win32/ipx_drv.h"
+#	include "win32/include/ipx_udp.h"
+#	include "win32/include/ipx_drv.h"
 #else
-#	include "include/linux/ipx_udp.h"
-#	include "include/linux/ipx_drv.h"
+#	include "linux/include/ipx_udp.h"
+#	include "linux/include/ipx_drv.h"
 #endif
 
 //------------------------------------------------------------------------------

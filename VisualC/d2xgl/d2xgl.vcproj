@@ -25,7 +25,7 @@
 				Optimization="0"
 				FavorSizeOrSpeed="0"
 				OptimizeForProcessor="0"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\include\win32"
+				AdditionalIncludeDirectories="&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
 				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -116,7 +116,7 @@
 				WholeProgramOptimization="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\include\win32"
+				AdditionalIncludeDirectories="&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
 				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
 				StringPooling="TRUE"
 				MinimalRebuild="FALSE"
@@ -2153,18 +2153,6 @@
 					</File>
 					<File
 						RelativePath="..\..\network\win32\ipx_win.cpp">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\network\multi.cpp">
@@ -2519,6 +2507,9 @@
 						RelativePath="..\..\main\glare.h">
 					</File>
 					<File
+						RelativePath="..\..\include\morph.h">
+					</File>
+					<File
 						RelativePath="..\..\main\objeffects.h">
 					</File>
 					<File
@@ -2698,7 +2689,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\iff\iff.cpp">
+						RelativePath="..\..\gameio\iff.cpp">
 					</File>
 					<File
 						RelativePath="..\..\gameio\loadgame.cpp">
@@ -3323,6 +3314,9 @@
 						RelativePath="..\..\input\include\event.h">
 					</File>
 					<File
+						RelativePath="..\..\include\input.h">
+					</File>
+					<File
 						RelativePath="..\..\input\include\joy.h">
 					</File>
 					<File
@@ -3482,13 +3476,137 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
-			</File>
-			<File
 				RelativePath="..\..\descent.ico">
 			</File>
 			<File
+				RelativePath=".\descent.ico">
+			</File>
+			<File
 				RelativePath="..\..\icon1.ico">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
+			<File
+				RelativePath="..\..\include\ase.h">
+			</File>
+			<File
+				RelativePath="..\..\include\automap.h">
+			</File>
+			<File
+				RelativePath="..\..\include\bm.h">
+			</File>
+			<File
+				RelativePath="..\..\include\bmread.h">
+			</File>
+			<File
+				RelativePath="..\..\include\byteswap.h">
+			</File>
+			<File
+				RelativePath="..\..\include\cameras.h">
+			</File>
+			<File
+				RelativePath="..\..\include\checker.h">
+			</File>
+			<File
+				RelativePath="..\..\include\compbit.h">
+			</File>
+			<File
+				RelativePath="..\..\include\desc_id.h">
+			</File>
+			<File
+				RelativePath="..\..\include\desw.h">
+			</File>
+			<File
+				RelativePath="..\..\include\fvi_a.h">
+			</File>
+			<File
+				RelativePath="..\..\include\gamemine.h">
+			</File>
+			<File
+				RelativePath="..\..\include\gamepal.h">
+			</File>
+			<File
+				RelativePath="..\..\include\gamestat.h">
+			</File>
+			<File
+				RelativePath="..\..\include\glext.h">
+			</File>
+			<File
+				RelativePath="..\..\include\glxext.h">
+			</File>
+			<File
+				RelativePath="..\..\include\hash.h">
+			</File>
+			<File
+				RelativePath="..\..\include\hitbox.h">
+			</File>
+			<File
+				RelativePath="..\..\include\ibitblt.h">
+			</File>
+			<File
+				RelativePath="..\..\include\libmve.h">
+			</File>
+			<File
+				RelativePath="..\..\include\makesig.h">
+			</File>
+			<File
+				RelativePath="..\..\include\modex.h">
+			</File>
+			<File
+				RelativePath="..\..\include\nocfile.h">
+			</File>
+			<File
+				RelativePath="..\..\include\objeffects.h">
+			</File>
+			<File
+				RelativePath="..\..\include\objrender.h">
+			</File>
+			<File
+				RelativePath="..\..\include\objsmoke.h">
+			</File>
+			<File
+				RelativePath="..\..\include\ogl_hudstuff.h">
+			</File>
+			<File
+				RelativePath="..\..\include\omega.h">
+			</File>
+			<File
+				RelativePath="..\..\include\pa_enabl.h">
+			</File>
+			<File
+				RelativePath="..\..\include\pstypes.h">
+			</File>
+			<File
+				RelativePath="..\..\include\reorder.h">
+			</File>
+			<File
+				RelativePath="..\..\include\screens.h">
+			</File>
+			<File
+				RelativePath="..\..\include\segpoint.h">
+			</File>
+			<File
+				RelativePath="..\..\include\texmap.h">
+			</File>
+			<File
+				RelativePath="..\..\include\textures.h">
+			</File>
+			<File
+				RelativePath="..\..\include\u_dpmi.h">
+			</File>
+			<File
+				RelativePath="..\..\include\ui.h">
+			</File>
+			<File
+				RelativePath="..\..\include\vers_id.h">
+			</File>
+			<File
+				RelativePath="..\..\include\vesa.h">
+			</File>
+			<File
+				RelativePath="..\..\include\wglext.h">
 			</File>
 		</Filter>
 	</Files>
