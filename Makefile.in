@@ -37,8 +37,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 bin_PROGRAMS = @TARGETS@
-EXTRA_PROGRAMS = d2x$(EXEEXT) d2x-xl$(EXEEXT) d2x-sdl$(EXEEXT) \
-	d2x-gl$(EXEEXT) d2x-svga$(EXEEXT) d2x-ggi$(EXEEXT)
+EXTRA_PROGRAMS = d2x-xl$(EXEEXT)
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/conf.h.in \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
@@ -57,57 +56,32 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_d2x_OBJECTS =
-d2x_OBJECTS = $(am_d2x_OBJECTS)
-@MINGW32_TRUE@am__DEPENDENCIES_1 = main/inferno.o
-@EDITOR_TRUE@am__DEPENDENCIES_2 = main/editor/libeditor.a
-am__DEPENDENCIES_3 = $(foreach \
-	subdir,${D2X_ARCH_SUBDIRS},arch/${subdir}/libarch_${subdir}.a)
-@CONSOLE_TRUE@am__DEPENDENCIES_4 = console/libconsole.a
-d2x_DEPENDENCIES = $(am__DEPENDENCIES_1) main/libmain.a \
-	$(am__DEPENDENCIES_2) 3d/lib3d.a 2d/lib2d.a \
-	$(am__DEPENDENCIES_3) libmve/libmve.a mem/libmem.a \
-	iff/libiff.a texmap/libtexmap.a misc/libmisc.a \
-	maths/libmaths.a cfile/libcfile.a $(am__DEPENDENCIES_4)
-am_d2x_ggi_OBJECTS =
-d2x_ggi_OBJECTS = $(am_d2x_ggi_OBJECTS)
-am__DEPENDENCIES_5 = $(am__DEPENDENCIES_1) main/libmain.a \
-	$(am__DEPENDENCIES_2) 3d/lib3d.a 2d/lib2d.a \
-	$(am__DEPENDENCIES_3) libmve/libmve.a mem/libmem.a \
-	iff/libiff.a texmap/libtexmap.a misc/libmisc.a \
-	maths/libmaths.a cfile/libcfile.a $(am__DEPENDENCIES_4)
-@MINGW32_FALSE@am__DEPENDENCIES_6 = $(am__DEPENDENCIES_5)
-@MINGW32_TRUE@@USE_NETWORK_FALSE@am__DEPENDENCIES_6 =  \
-@MINGW32_TRUE@@USE_NETWORK_FALSE@	$(am__DEPENDENCIES_5)
-@MINGW32_TRUE@@USE_NETWORK_TRUE@am__DEPENDENCIES_6 =  \
-@MINGW32_TRUE@@USE_NETWORK_TRUE@	$(am__DEPENDENCIES_5)
-am__DEPENDENCIES_7 =
-d2x_ggi_DEPENDENCIES = $(am__DEPENDENCIES_6) $(am__DEPENDENCIES_7)
-am_d2x_gl_OBJECTS =
-d2x_gl_OBJECTS = $(am_d2x_gl_OBJECTS)
-d2x_gl_DEPENDENCIES = $(am__DEPENDENCIES_6) $(am__DEPENDENCIES_7)
-am_d2x_sdl_OBJECTS =
-d2x_sdl_OBJECTS = $(am_d2x_sdl_OBJECTS)
-@MINGW32_FALSE@d2x_sdl_DEPENDENCIES = $(am__DEPENDENCIES_5)
-@MINGW32_TRUE@@USE_NETWORK_FALSE@d2x_sdl_DEPENDENCIES =  \
-@MINGW32_TRUE@@USE_NETWORK_FALSE@	$(am__DEPENDENCIES_5)
-@MINGW32_TRUE@@USE_NETWORK_TRUE@d2x_sdl_DEPENDENCIES =  \
-@MINGW32_TRUE@@USE_NETWORK_TRUE@	$(am__DEPENDENCIES_5)
-am_d2x_svga_OBJECTS =
-d2x_svga_OBJECTS = $(am_d2x_svga_OBJECTS)
-d2x_svga_DEPENDENCIES = $(am__DEPENDENCIES_6) $(am__DEPENDENCIES_7)
 am_d2x_xl_OBJECTS =
 d2x_xl_OBJECTS = $(am_d2x_xl_OBJECTS)
-d2x_xl_DEPENDENCIES = $(am__DEPENDENCIES_6) $(am__DEPENDENCIES_7)
+@MINGW32_TRUE@am__DEPENDENCIES_1 = main/inferno.o
+@CONSOLE_TRUE@am__DEPENDENCIES_2 = console/libconsole.a
+am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) main/libmain.a 3d/lib3d.a \
+	2d/lib2d.a ai/libai.a audio/libaudio.a cockpit/libcockpit.a \
+	effects/libeffects.a gameio/libgameio.a \
+	gamemodes/libgamemodes.a input/libinput.a io/libio.a \
+	libmve/libmve.a lighting/liblighting.a maths/libmaths.a \
+	mem/libmem.a misc/libmisc.a models/libmodels.a \
+	network/libnetwork.a ogl/libogl.a render/librender.a \
+	texmap/libtexmap.a weapons/libweapons.a $(am__DEPENDENCIES_2)
+@MINGW32_FALSE@am__DEPENDENCIES_4 = $(am__DEPENDENCIES_3)
+@MINGW32_TRUE@@USE_NETWORK_FALSE@am__DEPENDENCIES_4 =  \
+@MINGW32_TRUE@@USE_NETWORK_FALSE@	$(am__DEPENDENCIES_3)
+@MINGW32_TRUE@@USE_NETWORK_TRUE@am__DEPENDENCIES_4 =  \
+@MINGW32_TRUE@@USE_NETWORK_TRUE@	$(am__DEPENDENCIES_3)
+am__DEPENDENCIES_5 =
+d2x_xl_DEPENDENCIES = $(am__DEPENDENCIES_4) $(am__DEPENDENCIES_5)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(d2x_SOURCES) $(d2x_ggi_SOURCES) $(d2x_gl_SOURCES) \
-	$(d2x_sdl_SOURCES) $(d2x_svga_SOURCES) $(d2x_xl_SOURCES)
-DIST_SOURCES = $(d2x_SOURCES) $(d2x_ggi_SOURCES) $(d2x_gl_SOURCES) \
-	$(d2x_sdl_SOURCES) $(d2x_svga_SOURCES) $(d2x_xl_SOURCES)
+SOURCES = $(d2x_xl_SOURCES)
+DIST_SOURCES = $(d2x_xl_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -268,29 +242,29 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-DIST_SUBDIRS = 2d 3d arch console iff libmve main maths mem misc texmap cfile
+DIST_SUBDIRS = \
+	2d 3d ai audio cockpit console effects gameio gamemodes input io libmve lighting \
+	main maths mem misc models network ogl render texmap weapons
+
 SUBDIRS = ${DIST_SUBDIRS} @D2X_SUBDIRS@
-EXTRA_SUBDIRS = include unused debian rpm VisualC VisualCE English.lproj d2x.xcode
-ARCH_LIBS = $(foreach subdir,${D2X_ARCH_SUBDIRS},arch/${subdir}/libarch_${subdir}.a)
+EXTRA_SUBDIRS = include
 @MINGW32_TRUE@LD_KLUDGE = main/inferno.o
 @MACOSX_TRUE@AM_LDFLAGS = -all_load
-@EDITOR_TRUE@EDITOR_LIBS = main/editor/libeditor.a
-#deprecated? ui/libui.a
 @CONSOLE_TRUE@CONSOLE_LIBS = console/libconsole.a
-d2x_SOURCES = 
-d2x_sdl_SOURCES = 
 d2x_xl_SOURCES = 
-d2x_gl_SOURCES = 
-d2x_svga_SOURCES = 
-d2x_ggi_SOURCES = 
-d2x_LDADD = ${LD_KLUDGE} main/libmain.a ${EDITOR_LIBS} 3d/lib3d.a 2d/lib2d.a ${ARCH_LIBS} libmve/libmve.a mem/libmem.a iff/libiff.a texmap/libtexmap.a misc/libmisc.a maths/libmaths.a cfile/libcfile.a ${CONSOLE_LIBS}
+d2x_LDADD = \
+	${LD_KLUDGE} \
+	main/libmain.a 3d/lib3d.a 2d/lib2d.a ai/libai.a audio/libaudio.a cockpit/libcockpit.a \
+	effects/libeffects.a gameio/libgameio.a gamemodes/libgamemodes.a input/libinput.a \
+	io/libio.a libmve/libmve.a lighting/liblighting.a maths/libmaths.a mem/libmem.a \
+	misc/libmisc.a models/libmodels.a network/libnetwork.a ogl/libogl.a render/librender.a \
+	texmap/libtexmap.a weapons/libweapons.a \
+	${CONSOLE_LIBS}
+
 @MINGW32_FALSE@d2x_sdl_LDADD = ${d2x_LDADD} -lm
 @MINGW32_TRUE@@USE_NETWORK_FALSE@d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm
 @MINGW32_TRUE@@USE_NETWORK_TRUE@d2x_sdl_LDADD = ${d2x_LDADD} -lwinmm -lwsock32
 d2x_xl_LDADD = ${d2x_sdl_LDADD} ${OGL_LIBS}
-d2x_gl_LDADD = ${d2x_sdl_LDADD} ${OGL_LIBS}
-d2x_svga_LDADD = ${d2x_sdl_LDADD} ${SVGA_LIBS}
-d2x_ggi_LDADD = ${d2x_sdl_LDADD} ${GGI_LIBS}
 missiondir = ${pkgdatadir}/missions
 CLEANFILES = @TARGETS@ Info.plist
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
@@ -301,7 +275,7 @@ README.utils \
 djgpp.bat djgpp.sh \
 autogen.sh \
 cvshowto.txt readme.txt installation.txt compilerdefs.txt \
-d2x-sdl.sh d2x-gl.sh  d2x-xl.sh
+d2x-xl.sh
 
 all: conf.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -380,21 +354,6 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-d2x$(EXEEXT): $(d2x_OBJECTS) $(d2x_DEPENDENCIES) 
-	@rm -f d2x$(EXEEXT)
-	$(LINK) $(d2x_LDFLAGS) $(d2x_OBJECTS) $(d2x_LDADD) $(LIBS)
-d2x-ggi$(EXEEXT): $(d2x_ggi_OBJECTS) $(d2x_ggi_DEPENDENCIES) 
-	@rm -f d2x-ggi$(EXEEXT)
-	$(LINK) $(d2x_ggi_LDFLAGS) $(d2x_ggi_OBJECTS) $(d2x_ggi_LDADD) $(LIBS)
-d2x-gl$(EXEEXT): $(d2x_gl_OBJECTS) $(d2x_gl_DEPENDENCIES) 
-	@rm -f d2x-gl$(EXEEXT)
-	$(LINK) $(d2x_gl_LDFLAGS) $(d2x_gl_OBJECTS) $(d2x_gl_LDADD) $(LIBS)
-d2x-sdl$(EXEEXT): $(d2x_sdl_OBJECTS) $(d2x_sdl_DEPENDENCIES) 
-	@rm -f d2x-sdl$(EXEEXT)
-	$(LINK) $(d2x_sdl_LDFLAGS) $(d2x_sdl_OBJECTS) $(d2x_sdl_LDADD) $(LIBS)
-d2x-svga$(EXEEXT): $(d2x_svga_OBJECTS) $(d2x_svga_DEPENDENCIES) 
-	@rm -f d2x-svga$(EXEEXT)
-	$(LINK) $(d2x_svga_LDFLAGS) $(d2x_svga_OBJECTS) $(d2x_svga_LDADD) $(LIBS)
 d2x-xl$(EXEEXT): $(d2x_xl_OBJECTS) $(d2x_xl_DEPENDENCIES) 
 	@rm -f d2x-xl$(EXEEXT)
 	$(LINK) $(d2x_xl_LDFLAGS) $(d2x_xl_OBJECTS) $(d2x_xl_LDADD) $(LIBS)

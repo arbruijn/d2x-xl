@@ -1,4 +1,5 @@
 noinst_LIBRARIES = lib2d.a
+
 INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/3d
 
 if MACDATA

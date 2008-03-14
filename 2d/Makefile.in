@@ -50,13 +50,9 @@ CONFIG_CLEAN_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 lib2d_a_AR = $(AR) $(ARFLAGS)
-@USE_ASM_TRUE@lib2d_a_DEPENDENCIES = linear.o tmerge_a.o
-am__lib2d_a_SOURCES_DIST = tmerge.c 2dsline.c box.c disc.c ibitblt.c \
-	pcx.c rect.c scalec.c bitblt.c canvas.c font.c line.c pixel.c \
-	rle.c bitmap.c circle.c gpixel.c palette.c poly.c
-@USE_ASM_FALSE@am__objects_1 = tmerge.$(OBJEXT)
-am_lib2d_a_OBJECTS = $(am__objects_1) 2dsline.$(OBJEXT) box.$(OBJEXT) \
-	disc.$(OBJEXT) ibitblt.$(OBJEXT) pcx.$(OBJEXT) rect.$(OBJEXT) \
+lib2d_a_LIBADD =
+am_lib2d_a_OBJECTS = 2dsline.$(OBJEXT) box.$(OBJEXT) disc.$(OBJEXT) \
+	ibitblt.$(OBJEXT) pcx.$(OBJEXT) rect.$(OBJEXT) \
 	scalec.$(OBJEXT) bitblt.$(OBJEXT) canvas.$(OBJEXT) \
 	font.$(OBJEXT) line.$(OBJEXT) pixel.$(OBJEXT) rle.$(OBJEXT) \
 	bitmap.$(OBJEXT) circle.$(OBJEXT) gpixel.$(OBJEXT) \
@@ -65,12 +61,13 @@ lib2d_a_OBJECTS = $(am_lib2d_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 SOURCES = $(lib2d_a_SOURCES)
-DIST_SOURCES = $(am__lib2d_a_SOURCES_DIST)
+DIST_SOURCES = $(lib2d_a_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -214,27 +211,19 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = lib2d.a
-INCLUDES = -I $(top_srcdir)/include  -I $(top_srcdir)/main -I $(top_srcdir)/3d
-@USE_ASM_FALSE@ASM_SRCS = tmerge.c
-@USE_ASM_TRUE@ASM_SRCS = 
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/3d
 @MACDATA_FALSE@TRANSPARENCY_COLOR = 255
 @MACDATA_TRUE@TRANSPARENCY_COLOR = 0
-lib2d_a_SOURCES = ${ASM_SRCS} \
-2dsline.c  box.c     disc.c    ibitblt.c  pcx.c    rect.c   scalec.c \
-bitblt.c   canvas.c  font.c    line.c	  pixel.c  rle.c \
-bitmap.c   circle.c  gpixel.c  palette.c  poly.c
+lib2d_a_SOURCES = \
+	2dsline.cpp box.cpp disc.cpp ibitblt.cpp pcx.cpp rect.cpp scalec.cpp \
+	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
+	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp
 
 SUFFIXES = .asm
-@USE_ASM_TRUE@lib2d_a_LIBADD = linear.o tmerge_a.o
-EXTRA_DIST = \
-linear.asm scalea.asm tmerge_a.asm \
-bitmap.h clip.h scalea.h \
-scale.c tmerge.c
-
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .asm .c .o .obj
+.SUFFIXES: .asm .cpp .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -296,21 +285,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalec.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tmerge.Po@am__quote@
 
-.c.o:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+.cpp.o:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
 
-.c.obj:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+.cpp.obj:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

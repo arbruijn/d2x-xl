@@ -34,7 +34,7 @@ typedef struct tUVL {
 
 //Stucture to store clipping codes in a word
 typedef struct g3sCodes {
-	ubyte or,and;   //or is low byte, and is high byte
+	ubyte ccOr, ccAnd;   //or is low byte, and is high byte
 } g3sCodes;
 
 //flags for point structure

@@ -53,8 +53,8 @@ libtexmap_a_AR = $(AR) $(ARFLAGS)
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@libtexmap_a_DEPENDENCIES = tmap_flt.o \
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@	tmap_lin.o tmap_ll.o \
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@	tmap_per.o tmapfade.o
-am__libtexmap_a_SOURCES_DIST = tmapflat.c tmappent.S tmapppro.S \
-	ntmap.c scanline.c
+am__libtexmap_a_SOURCES_DIST = tmapflat.cpp tmappent.S tmapppro.S \
+	ntmap.cpp scanline.cpp
 @USE_OPENGL_FALSE@am__objects_1 = tmapflat.$(OBJEXT)
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@am__objects_2 = tmappent.$(OBJEXT) \
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@	tmapppro.$(OBJEXT)
@@ -65,6 +65,11 @@ DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 CCASCOMPILE = $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS)
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -215,25 +220,25 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = libtexmap.a
-INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/main -I $(top_srcdir)/3d -DFL1_WITH_FLAT
-@USE_OPENGL_FALSE@NOGL_SRCS = tmapflat.c
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/3d -DFL1_WITH_FLAT
+@USE_OPENGL_FALSE@NOGL_SRCS = tmapflat.cpp
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@ASM_SRCS = tmappent.S tmapppro.S # more hacked in with LIBADD below
 libtexmap_a_SOURCES = ${NOGL_SRCS} ${ASM_SRCS} \
-ntmap.c scanline.c
+ntmap.cpp scanline.cpp
 
 SUFFIXES = .asm
 @USE_ASM_TRUE@@USE_OPENGL_FALSE@libtexmap_a_LIBADD = tmap_flt.o tmap_lin.o tmap_ll.o tmap_per.o tmapfade.o
-EXTRA_libtexmap_a_SOURCES = tmapflat.c tmappent.S tmapppro.S
+EXTRA_libtexmap_a_SOURCES = tmapflat.cpp tmappent.S tmapppro.S
 EXTRA_DIST = \
 tmap_flt.asm tmap_inc.asm tmap_lin.asm tmap_ll.asm tmap_per.asm tmapfade.asm \
 tmappent.S tmapppro.S \
 scanline.h texmapl.h \
-scanline.c
+scanline.cpp
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .asm .S .c .o .obj
+.SUFFIXES: .asm .S .cpp .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -287,19 +292,19 @@ distclean-compile:
 .S.obj:
 	$(CCASCOMPILE) -c `$(CYGPATH_W) '$<'`
 
-.c.o:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c $<
+.cpp.o:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
 
-.c.obj:
-@am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+.cpp.obj:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ `$(CYGPATH_W) '$<'`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)

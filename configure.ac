@@ -114,7 +114,7 @@ AC_ARG_ENABLE(debug,
     [  --enable-debug         Take out debug symbols, Asserts, Int3, etc ],,)
 if test x$enable_debug != xyes; then
     AC_DEFINE(NDEBUG,,[Define to disable asserts, int3, etc.])
-    CFLAGS="-O3 $CFLAGS"
+    CFLAGS="-O3 -g $CFLAGS"
 else
     CFLAGS="-g $CFLAGS"
     AC_DEFINE(_DEBUG,,[Define to enable asserts, int3, etc.])

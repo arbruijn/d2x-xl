@@ -31,6 +31,7 @@ static char rcsid[] = "$Id: weapon.c,v 1.9 2003/10/11 09:28:38 btb Exp $";
 #include "sounds.h"
 #include "text.h"
 #include "network.h"
+#include "hudmsg.h"
 
 //	-----------------------------------------------------------------------------
 

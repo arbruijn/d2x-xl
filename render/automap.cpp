@@ -1002,7 +1002,7 @@ for (i = 0; i <= nHighestEdgeIndex; i++)	{
 	distance = gameData.segs.points [e->verts [1]].p3_z;
 	if (minDistance>distance)
 		minDistance = distance;
-	if (!cc.and) 	{	//all off screen?
+	if (!cc.ccAnd) 	{	//all off screen?
 		nfacing = nnfacing = 0;
 		tv1 = gameData.segs.vertices + e->verts [0];
 		j = 0;
