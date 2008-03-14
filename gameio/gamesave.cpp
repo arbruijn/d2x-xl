@@ -1392,7 +1392,7 @@ for (i = 0; i < gameData.trigs.nTriggers; i++) {
 		//and if it requires a botGen that it has one
 		if (gameData.trigs.triggers [i].nType == TT_MATCEN) {
 			if (gameData.segs.segment2s [nSegment].special != SEGMENT_IS_ROBOTMAKER)
-				Int3();		//botGen tTrigger doesn'i point to botGen
+				continue;		//botGen tTrigger doesn'i point to botGen
 			}
 		else if ((gameData.trigs.triggers [i].nType != TT_LIGHT_OFF) && 
 					(gameData.trigs.triggers [i].nType != TT_LIGHT_ON)) { //light triggers don't require walls

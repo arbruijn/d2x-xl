@@ -120,7 +120,7 @@ bool MustClipFlatFace (int nv, g3sCodes cc)
 
 	bufptr = clip_polygon (Vbuf0, Vbuf1, &nv, &cc);
 
-	if (nv>0 && ! (cc.or&CC_BEHIND) && !cc.and) {
+	if (nv>0 && ! (cc.ccOr&CC_BEHIND) && !cc.ccAnd) {
 
 		for (i=0;i<nv;i++) {
 			g3sPoint *p = bufptr[i];

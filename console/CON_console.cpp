@@ -1,7 +1,7 @@
 /*  CON_console.c
- *  Written By: Garrett Banuk <mongoose@mongeese.org>
+ *  Written By: Garrett Banuk <mongoose@mongeese.ccOrg>
  *  Code Cleanup and heavily extended by: Clemens Wacha <reflex-2000@gmx.net>
- *  Ported to use native Descent interfaces by: Bradley Bell <btb@icculus.org>
+ *  Ported to use native Descent interfaces by: Bradley Bell <btb@icculus.ccOrg>
  *
  *  This is D2_FREE, just be sure to give us credit when using it
  *  in any of your programs.

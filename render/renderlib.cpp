@@ -758,7 +758,7 @@ void OutlineSegSide (tSegment *seg, int _side, int edge, int vert)
 	g3sCodes cc;
 
 cc = RotateVertexList (8, seg->verts);
-if (! cc.and) {		//all off screen?
+if (! cc.ccAnd) {		//all off screen?
 	g3sPoint *pnt;
 	//render curedge of curside of curseg in green
 	GrSetColorRGB (0, 255, 0, 255);
@@ -802,7 +802,7 @@ pc->color.alpha = 1;
 
 // -----------------------------------------------------------------------------------
 //Given a list of point numbers, rotate any that haven't been bRotated this frame
-//cc.and and cc.or will contain the position/orientation of the face that is determined 
+//cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined 
 //by the vertices passed relative to the viewer
 
 g3sCodes RotateVertexList (int nVertices, short *vertexIndexP)
@@ -811,8 +811,8 @@ g3sCodes RotateVertexList (int nVertices, short *vertexIndexP)
 	g3sPoint		*pnt;
 	g3sCodes		cc;
 
-cc.and = 0xff;  
-cc.or = 0;
+cc.ccAnd = 0xff;  
+cc.ccOr = 0;
 for (i = 0; i < nVertices; i++) {
 	j = vertexIndexP [i];
 	pnt = gameData.segs.points + j;
@@ -832,8 +832,8 @@ for (i = 0; i < nVertices; i++) {
 			}
 		gameData.render.mine.nRotatedLast [j] = gameStates.render.nFrameCount;
 		}
-	cc.and &= pnt->p3_codes;
-	cc.or |= pnt->p3_codes;
+	cc.ccAnd &= pnt->p3_codes;
+	cc.ccOr |= pnt->p3_codes;
 	pnt->p3_index = j;
 	}
 return cc;

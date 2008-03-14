@@ -1282,7 +1282,7 @@ if (gameStates.app.bPlayerIsDead) {
 			ExplodeObject (gameData.objs.console, 0);
 			gameData.objs.console->flags &= ~OF_SHOULD_BE_DEAD;		//don't really kill tPlayer
 			gameData.objs.console->renderType = RT_NONE;				//..just make him disappear
-			gameData.objs.console->nType = OBJ_GHOST;						//..and kill intersections
+			gameData.objs.console->nType = OBJ_GHOST;						//..ccAnd kill intersections
 			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 #if 0
 			if (gameOpts->gameplay.bFastRespawn)

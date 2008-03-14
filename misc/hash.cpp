@@ -47,8 +47,8 @@ if (ht->size==0)
 	Error( "Hashtable has size of 0" );
 if (!(ht->key = (char **) D2_ALLOC (size * sizeof (char *))))
 	Error( "Not enough memory to create a hash table of size %d", size );
-for (i=0; i<size; i++ )
-	ht->key[i] = NULL;
+for (i = 0; i < size; i++ )
+	ht->key [i] = NULL;
 // Use calloc cause we want zero'd array.
 ht->value = (int *) D2_ALLOC (size * sizeof (int));
 if (ht->value==NULL)	{

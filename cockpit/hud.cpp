@@ -256,7 +256,7 @@ if (!gameOpts->render.cockpit.bHUDMsgs)
 	return 0;
 nModexHUDMsgs = 2;
 if ((pMsgs->nLast < 0) || (pMsgs->nLast >= HUD_MAX_MSGS))
-	Int3 (); // Get Rob!!
+	return 0; // Get Rob!!
 pszMsg = pMsgs->szMsgs [pMsgs->nLast];
 vsprintf (pszMsg, format, args);
 /* Produce a colorised version and send it to the console */

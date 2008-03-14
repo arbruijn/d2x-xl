@@ -678,7 +678,7 @@ OglSetupTransform (0);
 cc = RotateVertexList (8, segP->verts);
 gameData.render.pVerts = gameData.segs.fVertices;
 //	return;
-if (cc.and /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap	
+if (cc.ccAnd /*&& !gameStates.render.automap.bDisplay*/)	//all off screen and not rendering the automap	
 	return 0;
 gameStates.render.nState = 0;
 #ifdef _DEBUG //convenient place for a debug breakpoint

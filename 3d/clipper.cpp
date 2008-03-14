@@ -165,7 +165,7 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc
 	src[*nv] = src[0];
 	src[*nv+1] = src[1];
 
-	cc->and = 0xff; cc->or = 0;
+	cc->ccAnd = 0xff; cc->ccOr = 0;
 
 	for (i=1;i<=*nv;i++) {
 
@@ -174,16 +174,16 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc
 			if (! (src[i-1]->p3_codes & planeFlag)) {	//prev not off?
 
 				*dest = clip_edge(planeFlag,src[i-1],src[i]);
-				cc->or  |= (*dest)->p3_codes;
-				cc->and &= (*dest)->p3_codes;
+				cc->ccOr  |= (*dest)->p3_codes;
+				cc->ccAnd &= (*dest)->p3_codes;
 				dest++;
 			}
 
 			if (! (src[i+1]->p3_codes & planeFlag)) {
 
 				*dest = clip_edge(planeFlag,src[i+1],src[i]);
-				cc->or  |= (*dest)->p3_codes;
-				cc->and &= (*dest)->p3_codes;
+				cc->ccOr  |= (*dest)->p3_codes;
+				cc->ccAnd &= (*dest)->p3_codes;
 				dest++;
 			}
 
@@ -196,8 +196,8 @@ int clip_plane(int planeFlag,g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc
 
 			*dest++ = src[i];
 
-			cc->or  |= src[i]->p3_codes;
-			cc->and &= src[i]->p3_codes;
+			cc->ccOr  |= src[i]->p3_codes;
+			cc->ccAnd &= src[i]->p3_codes;
 		}
 	}
 
@@ -212,11 +212,11 @@ g3sPoint **clip_polygon(g3sPoint **src,g3sPoint **dest,int *nv,g3sCodes *cc)
 
 	for (planeFlag=1;planeFlag<16;planeFlag<<=1)
 
-		if (cc->or & planeFlag) {
+		if (cc->ccOr & planeFlag) {
 
 			*nv = clip_plane(planeFlag,src,dest,nv,cc);
 
-			if (cc->and)		//clipped away
+			if (cc->ccAnd)		//clipped away
 				return dest;
 
 			t = src; src = dest; dest = t;

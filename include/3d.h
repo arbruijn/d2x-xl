@@ -17,7 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "fix.h"
 #include "vecmat.h" //the vector/matrix library
-#include "../3d/globvars.h" 
+#include "globvars.h" 
 #include "gr.h"
 
 extern int g3d_interp_outline;      //if on, polygon models outlined in white

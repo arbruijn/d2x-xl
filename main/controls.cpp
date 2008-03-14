@@ -150,7 +150,7 @@ void ReadFlyingControls (tObject *objP)
 	forwardThrustTime = Controls [0].forwardThrustTime;
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)	{
 		if (Controls [0].afterburnerState) {			//tPlayer has key down
-			//if (forwardThrustTime >= 0) { 		//..and isn't moving backward
+			//if (forwardThrustTime >= 0) { 		//..ccAnd isn't moving backward
 			{
 				fix afterburner_scale;
 				int oldCount,newCount;

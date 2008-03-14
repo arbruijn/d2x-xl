@@ -746,7 +746,7 @@ inline int SegmentIsVisible (tSegment *segP)
 {
 if (gameStates.render.automap.bDisplay)
 	return 1;
-return RotateVertexList (8, segP->verts).and == 0;
+return RotateVertexList (8, segP->verts).ccAnd == 0;
 }
 
 //------------------------------------------------------------------------------
