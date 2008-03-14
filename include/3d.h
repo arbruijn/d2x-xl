@@ -272,8 +272,8 @@ int G3DrawSphere(g3sPoint *pnt,fix rad, int bBigSphere);
 //is passed, this function works like G3CheckNormalFacing() plus
 //G3DrawPoly().
 //returns -1 if not facing, 1 if off screen, 0 if drew
-bool G3CheckAndDrawPoly(int nv,g3sPoint **pointlist,vmsVector *norm,vmsVector *pnt);
-bool G3CheckAndDrawTMap(int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm,vmsVector *norm,vmsVector *pnt);
+int G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, vmsVector *norm, vmsVector *pnt);
+int G3CheckAndDrawTMap (int nv, g3sPoint **pointlist, tUVL *uvl_list, grsBitmap *bmP, vmsVector *norm, vmsVector *pnt);
 
 //draws a line. takes two points.
 bool G3DrawLine(g3sPoint *p0,g3sPoint *p1);

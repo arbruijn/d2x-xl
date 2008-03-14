@@ -39,12 +39,12 @@ void c_tmap_scanline_flat(void);
 void c_tmap_scanline_shaded(void);
 
 //typedef struct tmap_scanline_funcs {
-void (*cur_tmap_scanline_per)(void);
-void (*cur_tmap_scanline_per_nolight)(void);
-void (*cur_tmap_scanline_lin)(void);
-void (*cur_tmap_scanline_lin_nolight)(void);
-void (*cur_tmap_scanline_flat)(void);
-void (*cur_tmap_scanline_shaded)(void);
+extern void (*cur_tmap_scanline_per)(void);
+extern void (*cur_tmap_scanline_per_nolight)(void);
+extern void (*cur_tmap_scanline_lin)(void);
+extern void (*cur_tmap_scanline_lin_nolight)(void);
+extern void (*cur_tmap_scanline_flat)(void);
+extern void (*cur_tmap_scanline_shaded)(void);
 //} tmap_scanline_funcs;
 
 //tmap_scanline_funcs tmap_funcs;

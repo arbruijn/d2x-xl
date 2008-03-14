@@ -21,7 +21,7 @@ void InitGrayScaleShader (void);
 
 static inline bool FaceIsAdditive (grsFace *faceP)
 {
-return (faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->bmFromPog) : faceP->bAdditive;
+return (bool) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->bmFromPog) : faceP->bAdditive);
 }
 
 //------------------------------------------------------------------------------

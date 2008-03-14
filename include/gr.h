@@ -333,25 +333,25 @@ gsrCanvas *GrCreateCanvas(int w, int h);
 // a window on the screen.  the canvas structure is malloc'd; the address of
 // the raw pixel data is inherited from the parent canvas.
 
-gsrCanvas *GrCreateSubCanvas(gsrCanvas *canv, int x, int y, int w, int h);
+gsrCanvas *GrCreateSubCanvas(gsrCanvas *canvP, int x, int y, int w, int h);
 
 // Initialize the specified canvas. the raw pixel data buffer is passed as
 // a parameter. no memory allocation is performed.
 
-void GrInitCanvas(gsrCanvas *canv, unsigned char *pixdata, int pixtype, int w, int h);
+void GrInitCanvas(gsrCanvas *canvP, unsigned char *pixdata, int pixtype, int w, int h);
 
 // Initialize the specified sub canvas. no memory allocation is performed.
 
-void GrInitSubCanvas(gsrCanvas *new, gsrCanvas *src, int x, int y, int w, int h);
+void GrInitSubCanvas(gsrCanvas *canvP, gsrCanvas *src, int x, int y, int w, int h);
 
 // Free up the canvas and its pixel data.
 
-void GrFreeCanvas(gsrCanvas *canv);
+void GrFreeCanvas(gsrCanvas *canvP);
 
 // Free up the canvas. do not free the pixel data, which belongs to the
 // parent canvas.
 
-void GrFreeSubCanvas(gsrCanvas *canv);
+void GrFreeSubCanvas(gsrCanvas *canvP);
 
 // Clear the current canvas to the specified color
 void GrClearCanvas(unsigned int color);
@@ -522,7 +522,7 @@ void GrRemapMonoFonts();
 void GrSetFontColor(int fg, int bg);
 void GrSetFontColorRGB (grsRgba *fg, grsRgba *bg);
 void GrSetFontColorRGBi (unsigned int fg, int bSetFG, unsigned int bg, int bSetBG);
-void GrSetCurFont (grsFont * new);
+void GrSetCurFont (grsFont * fontP);
 int GrString (int x, int y, char *s, int *idP);
 int GrUString (int x, int y, char *s);
 int _CDECL_ GrPrintF (int *idP, int x, int y, char * format, ...);
@@ -554,8 +554,8 @@ extern unsigned char Test_bitmap_data[64*64];
 
 extern unsigned int FixDivide(unsigned int x, unsigned int y);
 
-extern void GrShowCanvas(gsrCanvas *canv);
-extern void GrSetCurrentCanvas(gsrCanvas *canv);
+extern void GrShowCanvas(gsrCanvas *canvP);
+extern void GrSetCurrentCanvas(gsrCanvas *canvP);
 
 //flags for fonts
 #define FT_COLOR        1
