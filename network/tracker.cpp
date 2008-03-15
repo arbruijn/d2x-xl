@@ -21,14 +21,8 @@
 #include "args.h"
 #include "u_mem.h"
 #include "ipx.h"
-#ifdef _WIN32
-#	include "win32/include/ipx_udp.h"
-#	include "win32/include/ipx_drv.h"
-#else
-#	include "linux/include/include/ipx_udp.h"
-#	include "linux/include/include/ipx_drv.h"
-#endif
 #include "network.h"
+#include "network_lib.h"
 #include "key.h"
 #include "menu.h"
 #include "tracker.h"
@@ -134,8 +128,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-
-extern struct ipx_recv_data ipx_udpSrc;
 
 int ReceiveServerListFromTracker (ubyte *data)
 {

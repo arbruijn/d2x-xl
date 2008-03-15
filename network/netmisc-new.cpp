@@ -12,30 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Misc routines for network.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:28:41  allender
- * Initial revision
- *
- * Revision 2.0  1995/02/27  11:27:24  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.3  1994/11/19  15:19:34  mike
- * rip out unused code and data.
- *
- * Revision 1.2  1994/08/09  19:31:53  john
- * Networking changes.
- *
- * Revision 1.1  1994/08/08  11:06:07  john
- * Initial revision
- *
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
 #endif
@@ -57,11 +33,11 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 #include "segment.h"
 #include "gameseg.h"
 #include "network.h"
+#include "network_lib.h"
 #include "wall.h"
 
 #include "ipx.h"
 #include "multi.h"
-#include "network.h"
 #include "object.h"
 #include "powerup.h"
 #include "netmisc.h"
@@ -69,8 +45,6 @@ static char rcsid[] = "$Id: netmisc.c,v 1.9 2003/10/04 19:13:32 btb Exp $";
 
 static ubyte nmDataBuf [MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
 static ubyte *nmBufP = NULL;
-
-extern struct ipx_recv_data ipx_udpSrc;
 
 // if using the following macros in loops, the loop's body *must* be enclosed in curly braces,
 // or the macros won't work as intended, as the buffer pointer nmBufI will only be incremented

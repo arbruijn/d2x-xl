@@ -466,7 +466,7 @@ void NMInitBackground (char *filename, bkg *bg, int x, int y, int w, int h, int 
 
 GrPaletteStepUp (0, 0, 0);
 if (!pszMenuPcx)
-	pszMenuPcx = MENU_PCX_NAME;
+	pszMenuPcx = MENU_PCX_NAME ();
 bVerInfo = filename && !strcmp (filename, pszMenuPcx);
 bBlueBox = gameOpts->menus.nStyle && (!bVerInfo || (gameOpts->menus.altBg.bHave > 0));
 if (filename || gameOpts->menus.nStyle) {	// background image file present

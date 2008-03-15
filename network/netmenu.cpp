@@ -35,6 +35,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "loadgame.h"
 #include "fireball.h"
 #include "network.h"
+#include "network_lib.h"
 #include "game.h"
 #include "multi.h"
 #include "endlevel.h"
@@ -59,13 +60,6 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "playsave.h"
 #include "cfile.h"
 #include "ipx.h"
-#ifdef _WIN32
-#	include "win32/include/ipx_udp.h"
-#	include "win32/include/ipx_drv.h"
-#else
-#	include "linux/include/ipx_udp.h"
-#	include "linux/include/ipx_drv.h"
-#endif
 #include "autodl.h"
 #include "tracker.h"
 #include "newmenu.h"
@@ -90,8 +84,6 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 
 
 char szNMTextBuffer [MAX_ACTIVE_NETGAMES + 5][100];
-
-extern struct ipx_recv_data ipx_udpSrc;
 
 extern void SetFunctionMode (int);
 extern unsigned char ipx_MyAddress [10];
@@ -2152,7 +2144,7 @@ if (bAutoRun) {
 	}
 else {
 	gameStates.multi.bSurfingNet = 1;
-	NMLoadBackground ((char *) MENU_PCX_NAME, &bg, 0);             //load this here so if we abort after loading level, we restore the palette
+	NMLoadBackground (MENU_PCX_NAME (), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
 	GrPaletteStepLoad (NULL);
 	choice = ExecMenuTiny (TXT_NETGAMES, NULL, MAX_ACTIVE_NETGAMES + 2 + gameStates.multi.bUseTracker, m, NetworkJoinPoll);
 	NMRemoveBackground (&bg);

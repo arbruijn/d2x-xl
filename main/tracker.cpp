@@ -135,8 +135,6 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern struct ipx_recv_data ipx_udpSrc;
-
 int ReceiveServerListFromTracker (ubyte *data)
 {
 	tServerListTable	*pslt;

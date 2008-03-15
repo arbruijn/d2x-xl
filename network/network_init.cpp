@@ -54,6 +54,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "loadgame.h"
 #include "fireball.h"
 #include "network.h"
+#include "network_lib.h"
 #include "game.h"
 #include "multi.h"
 #include "endlevel.h"
@@ -88,17 +89,8 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "banlist.h"
 #include "collide.h"
 #include "ipx.h"
-#ifdef _WIN32
-#	include "win32/include/ipx_udp.h"
-#	include "win32/include/ipx_drv.h"
-#else
-#	include "linux/include/ipx_udp.h"
-#	include "linux/include/ipx_drv.h"
-#endif
 
 #define SECURITY_CHECK	1
-
-extern struct ipx_recv_data ipx_udpSrc;
 
 //-----------------------------------------------------------------------------
 

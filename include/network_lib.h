@@ -15,6 +15,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _NETWORK_LIB_H
 #define _NETWORK_LIB_H
 
+#include "ipx_udp.h"
+#include "ipx_drv.h"
+
 //------------------------------------------------------------------------------
 
 #define SECURITY_CHECK		1

@@ -15,13 +15,9 @@
 #endif
 #include "inferno.h"
 #include "ipx.h"
-#ifdef _WIN32
-#	include "../network/win32/include/ipx_drv.h"
-#else
-#	include "../network/linux/include/ipx_drv.h"
-#endif
 #include "key.h"
 #include "network.h"
+#include "network_lib.h"
 #include "menu.h"
 #include "newmenu.h"
 #include "byteswap.h"
@@ -31,8 +27,6 @@
 #include "autodl.h"
 
 //------------------------------------------------------------------------------
-
-extern struct ipx_recv_data ipx_udpSrc;
 
 extern unsigned char ipx_ServerAddress [10];
 extern unsigned char ipx_LocalAddress [10];

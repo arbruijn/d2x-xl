@@ -126,8 +126,6 @@ ushort NetMiscCalcCheckSum(void * vptr, int len)
 
 sbyte out_buffer[MAX_PACKETSIZE];    // used for tmp netgame packets as well as sending tObject data
 
-extern struct ipx_recv_data ipx_udpSrc;
-
 void BEReceiveNetPlayerInfo(ubyte *data, tNetPlayerInfo *info)
 {
 	int loc = 0;

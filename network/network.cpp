@@ -159,8 +159,6 @@ tPingStats pingStats [MAX_PLAYERS];
 
 tNetgameInfo tempNetInfo;
 
-extern struct ipx_recv_data ipx_udpSrc;
-
 char *pszRankStrings []={
 	" (unpatched) ", "Cadet ", "Ensign ", "Lieutenant ", "Lt.Commander ", 
    "Commander ", "Captain ", "Vice Admiral ", "Admiral ", "Demigod "

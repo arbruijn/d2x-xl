@@ -826,14 +826,6 @@ while (changed) {
 extern tObject *objP_find_first_ofType (int);
 char bMultiSuicide = 0;
 
-#ifdef _WIN32
-#	include "win32/include/ipx_drv.h"
-#else
-#	include "linux/include/ipx_drv.h"
-#endif
-
-extern struct ipx_recv_data ipx_udpSrc;
-
 void MultiComputeKill (int nKiller, int nKilled)
 {
 	// Figure out the results of a network kills and add it to the

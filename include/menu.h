@@ -42,16 +42,7 @@ int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
 			(CFExist (MENU_PCX_OEM,gameFolders.szDataDir,0) ? MENU_PCX_OEM : \
 			CFExist (MENU_PCX_SHAREWARE,gameFolders.szDataDir,0) ? MENU_PCX_SHAREWARE : MENU_PCX_MAC_SHARE))
 #else
-static inline char *MENU_PCX_NAME (void)
-{
-if (CFExist ((char *) MENU_PCX_FULL, gameFolders.szDataDir, 0))
-	return (char *) MENU_PCX_FULL;
-if (CFExist ((char *) MENU_PCX_OEM, gameFolders.szDataDir, 0))
-	return (char *) MENU_PCX_OEM;
-if (CFExist ((char *) MENU_PCX_SHAREWARE, gameFolders.szDataDir, 0))
-	return (char *) MENU_PCX_SHAREWARE;
-return (char *) MENU_PCX_MAC_SHARE;
-}
+char *MENU_PCX_NAME (void);
 #endif
 
 void InitDetailLevels(int detailLevel);
