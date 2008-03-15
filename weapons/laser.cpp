@@ -1419,8 +1419,6 @@ pWeaponHandler weaponHandlers [] = {
 
 int LaserFireObject (short nObject, ubyte nWeapon, int nLevel, int nFlags, int nFires)
 {
-	tObject	*objP = gameData.objs.objects + nObject;
-
 if (nWeapon > OMEGA_INDEX) {
 	gameData.weapons.nPrimary = 0;
 	nFires = 0;

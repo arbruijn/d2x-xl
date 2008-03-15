@@ -1956,7 +1956,7 @@ if (nClearWindow == 2) {
 	if (nFirstTerminalSeg < gameData.render.mine.nRenderSegs) {
 		int i;
 
-		if (nClearWindowColor == -1)
+		if (nClearWindowColor == (unsigned int) -1)
 			nClearWindowColor = BLACK_RGBA;
 		GrSetColor (nClearWindowColor);
 		for (i = nFirstTerminalSeg, rwP = renderWindows; i < gameData.render.mine.nRenderSegs; i++, rwP++) {

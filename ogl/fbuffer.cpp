@@ -32,7 +32,6 @@
 #include "lightmap.h"
 #include "texmerge.h"
 #include "error.h"
-#include "glext.h"
 
 #define FBO_STENCIL_BUFFER	0
 
@@ -260,7 +259,7 @@ gameStates.ogl.bRender2TextureOk = 2;
 #	endif
 	}
 #endif
-LogErr ((gameStates.ogl.bRender2TextureOk == 2) ? "Rendering to texture is available\n" : "No rendering to texture available\n");
+LogErr ((gameStates.ogl.bRender2TextureOk == 2) ? (char *) "Rendering to texture is available\n" : (char *) "No rendering to texture available\n");
 }
 
 //------------------------------------------------------------------------------

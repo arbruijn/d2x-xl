@@ -245,9 +245,11 @@ int bHaveThruster [2] = {0, 0};
 
 int LoadThruster (void)
 {
-	int nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0) == 2;
+	int nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0);
+	int b3D = (nStyle == 2);
+	char *pszTex = (nStyle == 1) ? (char *) "thrust2d.tga" : (char *) "thrust3d.tga";
 
-return LoadExtraBitmap (&bmpThruster [nStyle], (EGI_FLAG (bThrusterFlames, 1, 1, 0) == 1) ? "thrust2d.tga" : "thrust3d.tga", bHaveThruster + nStyle);
+return LoadExtraBitmap (&bmpThruster [b3D], pszTex, bHaveThruster + b3D);
 }
 
 //------------------------------------------------------------------------------

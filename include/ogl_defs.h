@@ -3,8 +3,10 @@
 #define _OGL_DEFS_H
 
 #ifdef _WIN32
-#include <windows.h>
-#include <stddef.h>
+#	include <windows.h>
+#	include <stddef.h>
+#else
+#	define GL_GLEXT_PROTOTYPES
 #endif
 
 #ifdef __macosx__
@@ -61,35 +63,6 @@
 extern double glFOV, glAspect;
 
 void OglSetFOV (double fov);
-
-#ifndef _WIN32
-#	define GL_GLEXT_PROTOTYPES
-#endif
-
-#ifdef OGL_RUNTIME_LOAD
-#	include "loadgl.h"
-int OglInitLoadLibrary (void);
-#else
-#	ifdef __macosx__
-#		include <OpenGL/gl.h>
-#		include <OpenGL/glu.h>
-#		include <OpenGL/glext.h>
-#	else
-#		include <GL/gl.h>
-#		include <GL/glu.h>
-#		ifdef _WIN32
-#			include <glext.h>
-#			include <wglext.h>
-#		else
-#			include <GL/glext.h>
-#			include <GL/glx.h>
-#			include <GL/glxext.h>
-#		endif
-#	endif
-//kludge: since multi texture support has been rewritten
-#	undef GL_ARB_multitexture
-#	undef GL_SGIS_multitexture
-#endif
 
 #ifndef GL_VERSION_1_1
 #	ifdef GL_EXT_texture
@@ -176,13 +149,13 @@ extern PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB;
 
 // vertex buffer objects -------------------------------------------------------
 
+#	ifdef _WIN32
 extern PFNGLGENBUFFERSPROC					glGenBuffers;
 extern PFNGLBINDBUFFERPROC					glBindBuffer;
 extern PFNGLBUFFERDATAPROC					glBufferData;
 extern PFNGLMAPBUFFERPROC					glMapBuffer;
 extern PFNGLUNMAPBUFFERPROC				glUnmapBuffer;
 extern PFNGLDELETEBUFFERSPROC				glDeleteBuffers;
-#	ifdef _WIN32
 extern PFNGLDRAWRANGEELEMENTSPROC		glDrawRangeElements;
 #	endif
 
