@@ -215,16 +215,16 @@ if (yOffs < 0)
 	yOffs = 0;
 creditsPalette = GrUsePaletteTable("credits.256", NULL);
 GrPaletteStepLoad (NULL);
-header_font = GrInitFont(gameStates.menus.bHires?"font1-1h.fnt":"font1-1.fnt");
-title_font = GrInitFont(gameStates.menus.bHires?"font2-3h.fnt":"font2-3.fnt");
-names_font = GrInitFont(gameStates.menus.bHires?"font2-2h.fnt":"font2-2.fnt");
+header_font = GrInitFont(gameStates.menus.bHires ? (char *) "font1-1h.fnt" : (char *) "font1-1.fnt");
+title_font = GrInitFont(gameStates.menus.bHires ? (char *) "font2-3h.fnt" : (char *) "font2-3.fnt");
+names_font = GrInitFont(gameStates.menus.bHires ? (char *) "font2-2h.fnt" : (char *) "font2-2.fnt");
 bmBackdrop.bmTexBuf = NULL;
 bmBackdrop.bmPalette = NULL;
 
 //MWA  Made bmBackdrop bitmap linear since it should always be.  the current canvas may not
 //MWA  be linear, so we can't rely on grdCurCanv->cvBitmap->bmProps.nType.
 
-nPcxError = PCXReadBitmap (CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
+nPcxError = PCXReadBitmap ((char *) CREDITS_BACKGROUND_FILENAME, &bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	CFClose(&cf);
 	return;

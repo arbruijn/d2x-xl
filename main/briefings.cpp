@@ -1135,7 +1135,7 @@ while (!done) {
 					Int3 (); // Hey ryan!!!!You gotta load a screen before you start
 					        // printing to it!You know, $Z !!!
 					//if (message > pj)
-		  			LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx", message <= pj);
+		  			LoadNewBriefingScreen (gameStates.menus.bHires ? (char *) "end01b.pcx" : (char *) "end01.pcx", message <= pj);
 					bHaveScreen = 1;
 					}
 				new_page = 1;
@@ -1183,7 +1183,7 @@ while (!done) {
 				Int3 (); // Hey ryan!!!!You gotta load a screen before you start
 				        // printing to it!You know, $Z !!!
 				//if (message > pj)
-					LoadNewBriefingScreen (gameStates.menus.bHires?"end01b.pcx":"end01.pcx", message <= pj);
+					LoadNewBriefingScreen (gameStates.menus.bHires ? (char *) "end01b.pcx" : (char *) "end01.pcx", message <= pj);
 				}
 			prev_ch = ch;
 			bRedraw = !delayCount || (message <= pj);
@@ -1331,10 +1331,10 @@ int LoadScreenText (char *filename, char **buf)
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission)) {
+if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? "rb" : "rt", gameStates.app.bD1Mission)) {
+	if (!CFOpen (&cf, filename, gameFolders.szDataDir, bHaveBinary ? (char *) "rb" : (char *) "rt", gameStates.app.bD1Mission)) {
 		LogErr ("can't open briefing '%s'!\n", filename);
 		return (0);
 		}

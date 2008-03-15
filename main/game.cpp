@@ -230,8 +230,8 @@ void LoadBackgroundBitmap ()
 if (bmBackground.bmTexBuf)
 	D2_FREE (bmBackground.bmTexBuf);
 bmBackground.bmTexBuf=NULL;
-pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? "johnhead.pcx" : BACKGROUND_NAME,
-									  &bmBackground, BM_LINEAR,0);
+pcx_error = PCXReadBitmap (gameStates.app.cheats.bJohnHeadOn ? (char *) "johnhead.pcx" : (char *) BACKGROUND_NAME,
+							&bmBackground, BM_LINEAR,0);
 if (pcx_error != PCX_ERROR_NONE)
 	Error ("File %s - PCX error: %s",BACKGROUND_NAME,pcx_errormsg (pcx_error));
 GrRemapBitmapGood (&bmBackground, NULL, -1, -1);

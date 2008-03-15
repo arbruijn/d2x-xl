@@ -3198,6 +3198,7 @@ int TIRUnload (void);
 #ifdef _WIN32
 #	define	G3_SLEEP(_t)	Sleep (_t)
 #else
+#	include <unistd.h>
 #	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
 #endif
 

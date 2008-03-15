@@ -151,7 +151,7 @@ static char *StrTok (char *delims)
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
 	ASE_Error ("missing data");
-return pszToken ? pszToken : "";
+return pszToken ? pszToken : (char *) "";
 }
 
 //------------------------------------------------------------------------------
