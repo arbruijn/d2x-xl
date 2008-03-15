@@ -11,5 +11,5 @@ endif
 lib2d_a_SOURCES = \
 	2dsline.cpp box.cpp disc.cpp ibitblt.cpp pcx.cpp rect.cpp scalec.cpp \
 	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
-	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp
+	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp tmerge.cpp
 

@@ -26,11 +26,11 @@ d2x_xl_SOURCES =
 
 d2x_LDADD = \
 	${LD_KLUDGE} \
-	2d/lib2d.a main/libmain.a audio/libaudio.a cockpit/libcockpit.a \
+	main/libmain.a audio/libaudio.a cockpit/libcockpit.a \
 	effects/libeffects.a gameio/libgameio.a gamemodes/libgamemodes.a input/libinput.a \
 	io/libio.a libmve/libmve.a lighting/liblighting.a maths/libmaths.a mem/libmem.a \
-	misc/libmisc.a models/libmodels.a network/libnetwork.a ogl/libogl.a \
-	texmap/libtexmap.a render/librender.a weapons/libweapons.a 3d/lib3d.a ai/libai.a main/libmain.a \
+	misc/libmisc.a models/libmodels.a network/libnetwork.a ogl/libogl.a texmap/libtexmap.a \
+	render/librender.a weapons/libweapons.a 2d/lib2d.a 3d/lib3d.a ai/libai.a main/libmain.a\
 	${CONSOLE_LIBS}
 
 if MINGW32

@@ -56,7 +56,7 @@ am_lib2d_a_OBJECTS = 2dsline.$(OBJEXT) box.$(OBJEXT) disc.$(OBJEXT) \
 	scalec.$(OBJEXT) bitblt.$(OBJEXT) canvas.$(OBJEXT) \
 	font.$(OBJEXT) line.$(OBJEXT) pixel.$(OBJEXT) rle.$(OBJEXT) \
 	bitmap.$(OBJEXT) circle.$(OBJEXT) gpixel.$(OBJEXT) \
-	palette.$(OBJEXT) poly.$(OBJEXT)
+	palette.$(OBJEXT) poly.$(OBJEXT) tmerge.$(OBJEXT)
 lib2d_a_OBJECTS = $(am_lib2d_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -217,7 +217,7 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 lib2d_a_SOURCES = \
 	2dsline.cpp box.cpp disc.cpp ibitblt.cpp pcx.cpp rect.cpp scalec.cpp \
 	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
-	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp
+	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp tmerge.cpp
 
 all: all-am
 
@@ -284,6 +284,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scalec.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tmerge.Po@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

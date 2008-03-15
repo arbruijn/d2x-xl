@@ -16,7 +16,7 @@ libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	newdemo.cpp newmenu.cpp object.cpp physics.cpp player.cpp powerup.cpp reactor.cpp \
 	robot.cpp scores.cpp segment.cpp slew.cpp switch.cpp terrain.cpp texmerge.cpp \
 	text.cpp briefings.cpp vclip.cpp wall.cpp cheats.cpp banlist.cpp endlevel.cpp \
-	flightpath.cpp textdata.cpp trackobject.cpp briefings.cpp sdl_init.cpp
+	flightpath.cpp textdata.cpp trackobject.cpp briefings.cpp sdl_init.cpp mingw_init.cpp
 	
 
 EXTRA_DIST = ${EXTRA_SUBDIRS} \
