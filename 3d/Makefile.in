@@ -51,8 +51,8 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 lib3d_a_AR = $(AR) $(ARFLAGS)
 lib3d_a_LIBADD =
-am_lib3d_a_OBJECTS =  \
-	clipper.cppglobvars.cppinterp.cpppoints.cppsetup.$(OBJEXT) \
+am_lib3d_a_OBJECTS = clipper.$(OBJEXT) globvars.$(OBJEXT) \
+	interp.$(OBJEXT) points.$(OBJEXT) setup.$(OBJEXT) \
 	draw.$(OBJEXT) instance.cppmatrix.cpprod.$(OBJEXT) \
 	shadows.$(OBJEXT) hitbox.$(OBJEXT) fastmodels.$(OBJEXT) \
 	buildmodel.$(OBJEXT) ase2model.$(OBJEXT) oof2model.$(OBJEXT) \
@@ -211,9 +211,9 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = lib3d.a
-INCLUDES = -I $(top_srcdir)/include-I $(top_srcdir)/main
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 lib3d_a_SOURCES = \
-	clipper.cppglobvars.cppinterp.cpppoints.cppsetup.cpp \
+	clipper.cpp globvars.cpp interp.cpp points.cpp setup.cpp \
 	draw.cpp  instance.cppmatrix.cpprod.cpp shadows.cpp hitbox.cpp \
 	fastmodels.cpp buildmodel.cpp ase2model.cpp oof2model.cpp pof2model.cpp
 
@@ -266,13 +266,17 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ase2model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildmodel.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clipper.cppglobvars.cppinterp.cpppoints.cppsetup.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/clipper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/draw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fastmodels.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/globvars.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hitbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instance.cppmatrix.cpprod.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oof2model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pof2model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/points.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/setup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shadows.Po@am__quote@
 
 .cpp.o:

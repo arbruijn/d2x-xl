@@ -1,5 +1,6 @@
 noinst_LIBRARIES = libtexmap.a
-INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/3d -DFL1_WITH_FLAT
+
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 if !USE_OPENGL
 NOGL_SRCS = tmapflat.cpp

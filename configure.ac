@@ -196,8 +196,7 @@ else
     CFLAGS="$SDL_CFLAGS $CFLAGS"
     LIBS="$SDL_LIBS $LIBS"
 
-    TARGETS=d2x-sdl
-    D2X_ARCH_SUBDIRS=sdl
+    TARGETS=d2x-xl
 
     AC_CHECK_HEADERS(netipx/ipx.h)
 
@@ -444,6 +443,7 @@ AC_OUTPUT(
 	 gamemodes/Makefile
 	 input/Makefile
 	 io/Makefile
+    lighting/Makefile
     libmve/Makefile
     main/Makefile
     maths/Makefile

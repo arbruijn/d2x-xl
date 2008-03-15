@@ -1,8 +1,6 @@
-EXTRA_SUBDIRS = include
-
 noinst_LIBRARIES = libcockpit.a
 
-INCLUDES = -I$(top_srcdir)/arch/include -I$(top_srcdir)/include -I$(top_srcdir)/3d
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 libcockpit_a_SOURCES = \
 	gauges.cpp hud.cpp hudicons.cpp statusbar.cpp 

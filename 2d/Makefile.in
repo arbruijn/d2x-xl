@@ -211,7 +211,7 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = lib2d.a
-INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/3d
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 @MACDATA_FALSE@TRANSPARENCY_COLOR = 255
 @MACDATA_TRUE@TRANSPARENCY_COLOR = 0
 lib2d_a_SOURCES = \
@@ -219,11 +219,10 @@ lib2d_a_SOURCES = \
 	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
 	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp
 
-SUFFIXES = .asm
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .asm .cpp .o .obj
+.SUFFIXES: .cpp .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -464,8 +463,6 @@ uninstall-am: uninstall-info-am
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-info-am
 
-%.o: %.asm
-	$(NASM) -dTRANSPARENCY_COLOR=${TRANSPARENCY_COLOR} $(NASMFLAGS) $< -o $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -4,11 +4,9 @@ if EDITOR
 DIST_SUBDIRS = editor
 endif
 
-EXTRA_SUBDIRS = old
-
 noinst_LIBRARIES = libmain.a
 
-INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/3d  -I$(top_srcdir)/audio/linux 
+INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	cmd.cpp cntrlcen.cpp collide.cpp config.cpp console.cpp controls.cpp credits.cpp \
