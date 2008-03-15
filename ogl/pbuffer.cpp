@@ -315,7 +315,9 @@ if (gameStates.ogl.bUseRender2Texture) {
 #endif
   
 #endif
-LogErr ((gameStates.ogl.bRender2TextureOk == 1) ? "Rendering to pixel buffers is available\n" : "No rendering to pixel buffers available\n");
+LogErr ((gameStates.ogl.bRender2TextureOk == 1) ? 
+		(char *) "Rendering to pixel buffers is available\n" : 
+		(char *) "No rendering to pixel buffers available\n");
 
 }
 

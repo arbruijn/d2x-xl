@@ -504,7 +504,7 @@ if (!gameData.render.ogl.palette)
 	gameData.render.ogl.palette = defaultPalette;
 if (!gameData.render.ogl.palette)
 	return nFormat;
-if (tWidth * tHeight * 4 > sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
+if (tWidth * tHeight * 4 > (int) sizeof (gameData.render.ogl.texBuf))//shouldn't happen, descent never uses textures that big.
 	Error ("texture too big %i %i",tWidth, tHeight);
 bTransp = (nTransp || bSuperTransp) && GrBitmapHasTransparency (bmP);
 if (!bTransp)

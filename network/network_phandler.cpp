@@ -139,8 +139,8 @@ if (gameStates.multi.nGameType == UDP_GAME)
 	 addressFilter [PID_EXTRA_GAMEINFO] =
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
-	 addressFilter [PID_TRACKER_ADD_SERVER] =
-	 addressFilter [PID_TRACKER_GET_SERVERLIST] = 1;
+	 addressFilter [(int) PID_TRACKER_ADD_SERVER] =
+	 addressFilter [(int) PID_TRACKER_GET_SERVERLIST] = 1;
 }
 
 //------------------------------------------------------------------------------

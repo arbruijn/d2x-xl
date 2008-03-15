@@ -378,7 +378,7 @@ else {
 	gameStates.ogl.bShadersOk = 1;
 #endif
 	}
-LogErr (gameStates.ogl.bShadersOk ? "Shaders are available\n" : "No shaders available\n");
+LogErr (gameStates.ogl.bShadersOk ? (char *) "Shaders are available\n" : (char *) "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------
