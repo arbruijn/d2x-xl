@@ -1877,8 +1877,9 @@ objP->nType = (ubyte) CFReadByte (cfp);
 #ifdef _DEBUG
 if (objP->nType == OBJ_REACTOR)
 	objP->nType = objP->nType;
+else 
 #endif
-else if ((sgVersion < 32) && IS_BOSS (objP))
+if ((sgVersion < 32) && IS_BOSS (objP))
 	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);
 objP->id = (ubyte) CFReadByte (cfp);
 objP->next = CFReadShort (cfp);

@@ -609,8 +609,6 @@ int SetSegmentDepths (int start_seg, ushort *pDepthBuf);
 
 #ifndef _DEBUG
 char	*pszMapBackgroundFilename [2] = {"\x01MAP.PCX", "\x01MAPB.PCX"};
-#	define	MAP_BACKGROUND_FILENAME \
-				(amData.bHires?"\x01MAPB.PCX":)	//load only from hog file
 
 #	define MAP_BACKGROUND_FILENAME pszMapBackgroundFilename [amData.bHires]
 #else
