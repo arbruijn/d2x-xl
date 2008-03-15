@@ -515,7 +515,7 @@ if (!pszFilenameOverride) {
 
 		sprintf (newname, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		CFSeek (&tfp, DESC_OFFSET, SEEK_SET);
-		CFWrite (" [autosave backup]", sizeof (char)*DESC_LENGTH, 1, &tfp);
+		CFWrite ((char *) " [autosave backup]", sizeof (char) * DESC_LENGTH, 1, &tfp);
 		CFClose (&tfp);
 		CFDelete (newname, gameFolders.szSaveDir);
 		CFRename (filename, newname, gameFolders.szSaveDir);

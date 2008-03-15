@@ -1199,7 +1199,7 @@ if (gameStates.render.cockpit.nShieldFlash) {
 			if (nBeep >= 0)
 				DigiStopSound ((int) nBeep);
 			nBeep = DigiStartSound (-1, F1_0 * 2 / 3, 0xFFFF / 2, -1, -1, -1, -1, F1_0, 
-											(gameStates.render.cockpit.nShieldFlash == 1) ? "lowping.wav" : "highping.wav", NULL, 0);
+											(gameStates.render.cockpit.nShieldFlash == 1) ? (char *) "lowping.wav" : (char *) "highping.wav", NULL, 0);
 			}
 		}
 	else if (nBeep >= 0) {

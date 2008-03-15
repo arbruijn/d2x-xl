@@ -1047,7 +1047,7 @@ int ReadHamFile ()
 	int nHAMId;
 	int nSoundOffset = 0;
 
-	if (!CFOpen (&cfHAM, DEFAULT_HAMFILE, gameFolders.szDataDir, "rb", 0)) {
+	if (!CFOpen (&cfHAM, (char *) DEFAULT_HAMFILE, gameFolders.szDataDir, "rb", 0)) {
 		bMustWriteHamFile = 1;
 		return 0;
 		}
@@ -1133,7 +1133,7 @@ int ReadSoundFile ()
 	int nSoundStart;
 	int size, length;
 
-	CFOpen (&cfSound, DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0);
+	CFOpen (&cfSound, (char *) DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0);
 
 	if (&cfSound == NULL)
 		return 0;
@@ -1220,7 +1220,7 @@ int PiggyInit (void)
 		gameStates.sound.digi.bLoMem = 1;
 /*---*/LogErr ("   Loading game data\n");
 #if 1 //def EDITOR //need for d1 mission briefings
-	PiggyInitPigFile (DEFAULT_PIGFILE);
+	PiggyInitPigFile ((char *) DEFAULT_PIGFILE);
 #endif
 /*---*/LogErr ("   Loading main ham file\n");
 	snd_ok = ham_ok = ReadHamFile ();
@@ -1289,7 +1289,7 @@ void PiggyReadSounds (void)
 
 ptr = gameData.pig.sound.data [gameStates.app.bD1Data];
 sbytes = 0;
-if (!CFOpen (&cf, gameStates.app.bD1Mission ? "descent.pig" : DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
+if (!CFOpen (&cf, gameStates.app.bD1Mission ? (char *) "descent.pig" : (char *) DEFAULT_SNDFILE, gameFolders.szDataDir, "rb", 0))
 	return;
 for (i = 0, j = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Data]; i < j; i++, soundP++) {
 	if (soundOffset [gameStates.app.bD1Data][i] > 0) {

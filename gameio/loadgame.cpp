@@ -1263,11 +1263,11 @@ sprintf (szTitle,
 Assert (c <= N_GLITZITEMS);
 GrPaletteFadeOut (NULL, 32, 0);
 if (network && (gameData.app.nGameMode & GM_NETWORK))
-	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, STARS_BACKGROUND);
+	ExecMenu2 (NULL, szTitle, c, m, NetworkEndLevelPoll2, 0, (char *) STARS_BACKGROUND);
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
-ExecMenu2 (NULL, szTitle, c, m, NULL, 0, STARS_BACKGROUND);
+ExecMenu2 (NULL, szTitle, c, m, NULL, 0, (char *) STARS_BACKGROUND);
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1326,7 +1326,7 @@ void DoSecretMessage (char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1609,7 +1609,7 @@ if (!IsMultiGame) {
 				}
 			else {
 				SongsPlaySong (SONG_ENDGAME, 0);
-				DoBriefingScreens (gameStates.app.bD1Mission ? "endreg.tex" : "ending2.tex", gameStates.app.bD1Mission ? 0x7e : 1);
+				DoBriefingScreens (gameStates.app.bD1Mission ? (char *) "endreg.tex" : (char *) "ending2.tex", gameStates.app.bD1Mission ? 0x7e : 1);
 				}
 			}
 		}
@@ -1700,7 +1700,7 @@ else {
 
 void LoadStars (bkg *bg, int bRedraw)
 {
-NMLoadBackground (STARS_BACKGROUND, bg, bRedraw);
+NMLoadBackground ((char *) STARS_BACKGROUND, bg, bRedraw);
 starsPalette = gameData.render.pal.pCurPal;
 }
 
@@ -1718,7 +1718,7 @@ SetScreenMode (SCREEN_MENU);		//go into menu mode
 GrSetCurrentCanvas (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
-ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
+ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, TXT_DIED_IN_MINE);
 SetFunctionMode (old_fmode);
 }
 
@@ -1742,7 +1742,7 @@ if (gameData.missions.nEnteredFromLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
-ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 StartTime (0);
 }
@@ -1765,7 +1765,7 @@ GrSetCurrentCanvas (NULL);
 old_fmode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", gameData.missions.nEnteredFromLevel + 1);
-ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
+ExecMessageBox (NULL, (char *) STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
 }
 
@@ -2010,7 +2010,7 @@ for (i = 0; i <= gameData.objs.nLastObject; i++) {
 
 //------------------------------------------------------------------------------
 
-struct {
+struct tIntroMovieInfo {
 	int	nLevel;
 	char	szMovieName [FILENAME_LEN];
 } szIntroMovies [] = {{ 1,"pla"},

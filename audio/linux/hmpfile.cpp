@@ -33,7 +33,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 
 	if (!CFOpen(&cf, (char *)filename, gameFolders.szDataDir, "rb", bUseD1Hog))
 		return NULL;
-	hmp = D2_ALLOC(sizeof(hmp_file));
+	hmp = (hmp_file *) D2_ALLOC(sizeof(hmp_file));
 	if (!hmp) {
 		CFClose(&cf);
 		return NULL;
@@ -65,7 +65,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 		    data += sizeof(hmp_tempo);
 #endif
 		hmp->trks [i].len = data;
-		if (!(p = hmp->trks [i].data = D2_ALLOC(data)))
+		if (!(p = hmp->trks [i].data = (unsigned char *) D2_ALLOC(data)))
 			goto err;
 #if 0
 		if (i == 0) { /* track 0: add tempo */
