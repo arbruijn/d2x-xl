@@ -909,9 +909,6 @@
 						RelativePath="..\..\include\cmd.h">
 					</File>
 					<File
-						RelativePath="..\..\include\cntrlcen.h">
-					</File>
-					<File
 						RelativePath="..\..\include\collide.h">
 					</File>
 					<File
@@ -997,6 +994,9 @@
 					</File>
 					<File
 						RelativePath="..\..\include\powerup.h">
+					</File>
+					<File
+						RelativePath="..\..\include\reactor.h">
 					</File>
 					<File
 						RelativePath="..\..\include\robot.h">
@@ -1088,21 +1088,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\cmd.cpp">
-						<FileConfiguration
-							Name="Debug|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32">
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\cntrlcen.cpp">
 						<FileConfiguration
 							Name="Debug|Win32">
 							<Tool
@@ -1583,6 +1568,9 @@
 								Name="VCCLCompilerTool"
 								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\reactor.cpp">
 					</File>
 					<File
 						RelativePath="..\..\main\robot.cpp">

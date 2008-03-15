@@ -2432,7 +2432,7 @@ NMFreeAllTextBms (item, nItems);
 gameStates.input.keys.bRepeat = old_keyd_repeat;
 GameFlushInputs ();
 if (time_stopped) {
-	StartTime ();
+	StartTime (0);
 #ifdef TACTILE
 		if (TactileStick)
 			EnableForces ();

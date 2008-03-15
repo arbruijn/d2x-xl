@@ -834,7 +834,7 @@ if (glErrCode == GL_NO_ERROR) {
 if (bTmpBuf)
 	D2_FREE (buf);
 //KeyFlush ();
-StartTime ();
+StartTime (0);
 }
 
 //------------------------------------------------------------------------------

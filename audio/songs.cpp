@@ -392,7 +392,7 @@ void SongsCheckRedbookRepeat ()
 
 				PlayLevelSong (1, 0);
 			}
-			StartTime ();
+			StartTime (0);
 		}
 		last_checkTime = currentTime;
 	}

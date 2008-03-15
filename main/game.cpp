@@ -308,7 +308,7 @@ if (grdCurScreen) {
 		}
 	gameData.menu.colorOverride = 0;
 	if (!((gameData.app.nGameMode & GM_MULTI) && (gameStates.app.nFunctionMode == FMODE_GAME)))
-		StartTime ();
+		StartTime (0);
 	}
 }
 
@@ -677,7 +677,7 @@ if (++gameData.time.nPaused == 1) {
 #if defined (TIMER_TEST) && defined (_DEBUG)
 	gameData.time.xStopped = xTime;
 	#endif
-}
+	}
 #if defined (TIMER_TEST) && defined (_DEBUG)
 gameData.time.xStops++;
 #endif
@@ -685,10 +685,12 @@ gameData.time.xStops++;
 
 //------------------------------------------------------------------------------
 
-void StartTime ()
+void StartTime (int bReset)
 {
 if (gameData.time.nPaused <= 0)
 	return;
+if (bReset)
+	gameData.time.nPaused = 1;
 if (!--gameData.time.nPaused) {
 	fix xTime = TimerGetFixedSeconds ();
 #if defined (TIMER_TEST) && defined (_DEBUG)
@@ -1854,7 +1856,7 @@ void flush_movie_buffer ()
 #if TRACE
 	//con_printf (CONDBG,"done   \n");
 #endif
-	StartTime ();
+	StartTime (0);
 }
 
 //-----------------------------------------------------------------------------

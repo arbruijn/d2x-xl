@@ -477,7 +477,7 @@ else {
 		}
 	else if (!(filenum = StateGetSaveFile (filename, szDesc, 0))) {
 		gameData.app.bGamePaused = 0;
-		StartTime ();
+		StartTime (1);
 		return 0;
 		}
 	}
@@ -523,7 +523,7 @@ if (!pszFilenameOverride) {
 	}
 rval = StateSaveAllSub (filename, szDesc, bBetweenLevels);
 gameData.app.bGamePaused = 0;
-StartTime ();
+StartTime (1);
 return rval;
 }
 
@@ -1311,7 +1311,7 @@ StopTime ();
 if (!CFOpen (&cf, filename, gameFolders.szSaveDir, "wb", 0)) {
 	if (!IsMultiGame)
 		ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
-	StartTime ();
+	StartTime (1);
 	return 0;
 	}
 
@@ -1386,7 +1386,7 @@ if (CFError (&cf)) {
 	}
 else 
 	CFClose (&cf);
-StartTime ();
+StartTime (1);
 return 1;
 }
 
@@ -1429,7 +1429,7 @@ if (pszFilenameOverride) {
 	}
 else if (!(nFile = StateGetRestoreFile (filename, 0))) {
 	gameData.app.bGamePaused = 0;
-	StartTime ();
+	StartTime (1);
 	return 0;
 	}
 //	MK, 1/1/96
@@ -1465,7 +1465,7 @@ if (!bSecretRestore && bInGame) {
 	int choice = ExecMessageBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 	if (choice != 0) {
 		gameData.app.bGamePaused = 0;
-		StartTime ();
+		StartTime (1);
 		return 0;
 		}
 	}
@@ -1476,7 +1476,7 @@ gameData.app.bGamePaused = 0;
 /*---*/LogErr ("      rebuilding effects\n");
 if (i)
 	RebuildRenderContext (1);
-StartTime ();
+StartTime (1);
 return i;
 }
 
@@ -1874,8 +1874,10 @@ void StateRestoreObject (tObject *objP, CFILE *cfp, int sgVersion)
 {
 objP->nSignature = CFReadInt (cfp);      
 objP->nType = (ubyte) CFReadByte (cfp); 
+#ifdef _DEBUG
 if (objP->nType == OBJ_REACTOR)
 	objP->nType = objP->nType;
+#endif
 else if ((sgVersion < 32) && IS_BOSS (objP))
 	gameData.boss [(int) extraGameInfo [0].nBossCount++].nObject = OBJ_IDX (objP);
 objP->id = (ubyte) CFReadByte (cfp);
@@ -2709,14 +2711,14 @@ StopTime ();
 CFRead (id, sizeof (char)*4, 1, &cf);
 if (memcmp (id, dgss_id, 4)) {
 	CFClose (&cf);
-	StartTime ();
+	StartTime (1);
 	return 0;
 	}
 //Read sgVersion
 CFRead (&sgVersion, sizeof (int), 1, &cf);
 if (sgVersion < STATE_COMPATIBLE_VERSION)	{
 	CFClose (&cf);
-	StartTime ();
+	StartTime (1);
 	return 0;
 	}
 // Read description
@@ -2729,9 +2731,11 @@ if (sgVersion < 27)
 	i = StateRestoreBinGameData (&cf, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
 else
 	i = StateRestoreUniGameData (&cf, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
-if (!i)
-	return 0;
 CFClose (&cf);
+if (!i) {
+	StartTime (1);
+	return 0;
+	}
 FixObjectSegs ();
 FixObjectSizes ();
 ComputeNearestLights (nLevel);
@@ -2751,7 +2755,7 @@ else {
 	}
 gameData.objs.viewer = 
 gameData.objs.console = gameData.objs.objects + LOCALPLAYER.nObject;
-StartTime ();
+StartTime (1);
 return 1;
 }
 

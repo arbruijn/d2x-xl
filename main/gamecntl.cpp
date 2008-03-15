@@ -1213,7 +1213,7 @@ switch (key) {
 		break;  // 0 means not between levels.
 
 	case KEY_ALTED+KEY_F3:
-		if (!gameStates.app.bPlayerIsDead && !(IsMultiGame && !IsCoopGame)) {
+		if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
 			FullPaletteSave ();
 			StateRestoreAll (1, 0, NULL);
 			if (gameData.app.bGamePaused)

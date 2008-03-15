@@ -140,9 +140,9 @@ extern int Auto_flythrough; // if set, start flythough automatically
 extern int MarkCount;      // number of debugging marks set
 extern char faded_in;
 
-void StopTime(void);
-void StartTime(void);
-void ResetTime(void);       // called when starting level
+void StopTime (void);
+void StartTime (int bReset);
+void ResetTime (void);       // called when starting level
 int TimeStopped (void);
 
 // If automapFlag == 1, then call automap routine to write message.

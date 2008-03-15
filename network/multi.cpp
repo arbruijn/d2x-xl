@@ -3160,8 +3160,10 @@ void MultiInitiateRestoreGame ()
 	ubyte slot;
 	char filename [128];
 
+#ifndef _DEBUG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
+#endif
 if (!MultiAllPlayersAlive ()) {
 	HUDInitMessage (TXT_LOAD_DEADPLRS);
 	return;
@@ -3169,14 +3171,14 @@ if (!MultiAllPlayersAlive ()) {
 //StopTime ();
 slot = StateGetRestoreFile (filename, 1);
 if (!slot) {
-	//StartTime ();
+	//StartTime (0);
 	return;
 	}
 gameData.app.nStateGameId = StateGetGameId (filename);
 if (!gameData.app.nStateGameId)
 	return;
 slot--;
-//StartTime ();
+//StartTime (0);
 MultiSendRestoreGame (slot, gameData.app.nStateGameId);
 MultiDoFrame ();
 MultiRestoreGame (slot, gameData.app.nStateGameId);
@@ -3201,13 +3203,15 @@ StateSaveAllSub (filename, desc, 0);
 
 void MultiRestoreGame (ubyte slot, uint id)
 {
-	char filename [128];
-	tPlayer nSavedPlayer;
-	int nPlayer, i;
-	uint thisid;
+	char		filename [128];
+	tPlayer	nSavedPlayer;
+	int		i;
+	uint		thisid;
 
+#ifndef _DEBUG
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	return;
+#endif
 nSavedPlayer = LOCALPLAYER;
 sprintf (filename, "%s.mg%d", LOCALPLAYER.callsign, slot);
 gameData.app.bGamePaused = 1;
@@ -3219,7 +3223,7 @@ if (thisid != id) {
 	gameData.app.bGamePaused = 0;
 	return;
 	}
-nPlayer = StateRestoreAllSub (filename, 1, 0);
+StateRestoreAllSub (filename, 1, 0);
 RebuildRenderContext (1);
 gameData.app.bGamePaused = 0;
 }

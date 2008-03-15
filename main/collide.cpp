@@ -1199,7 +1199,8 @@ return 1;
 int NetDestroyReactor (tObject *reactorP)
 {
 if (extraGameInfo [0].nBossCount && !gameData.reactor.bDestroyed) {
-	extraGameInfo [0].nBossCount--;
+	if (!reactorP || ROBOTINFO (reactorP->id).bossFlag)
+		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (reactorP);
 	if ((reactorP != NULL) && !(reactorP->flags & (OF_EXPLODING|OF_DESTROYED))) {
 		DigiLinkSoundToPos (SOUND_CONTROL_CENTER_DESTROYED, reactorP->nSegment, 0, &reactorP->position.vPos, 0, F1_0);
@@ -1245,6 +1246,7 @@ if (reactorP->shields >= 0)
 	reactorP->shields -= xDamage;
 if ((reactorP->shields < 0) && !(reactorP->flags & (OF_EXPLODING | OF_DESTROYED))) {
 	/*if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)*/
+	if (ROBOTINFO (reactorP->id).bossFlag)
 		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (reactorP);
 	if (IsMultiGame) {

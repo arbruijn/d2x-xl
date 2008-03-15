@@ -762,7 +762,7 @@ GameFlushInputs ();
 NMRemoveBackground (bg);
 SDL_ShowCursor (0);
 if (time_stopped)
-	StartTime ();
+	StartTime (0);
 gameStates.menus.nInMenu--;
 GrPaletteStepUp (0, 0, 0);
 }

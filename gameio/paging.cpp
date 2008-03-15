@@ -534,7 +534,7 @@ for (s = 0; s <= gameData.objs.nLastObject; s++) {
 		GrPaletteStepClear ();
 		GrClearCanvas (BLACK_RGBA);
 	}
-	StartTime ();
+	StartTime (0);
 	ResetCockpit ();		//force cockpit redraw next time
 
 }

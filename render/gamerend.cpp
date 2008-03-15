@@ -975,12 +975,12 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) {
 	gameData.render.window.w = gameData.render.window.wMax;
 	ToggleCockpit ();
 	HUDInitMessage (TXT_COCKPIT_F3);
-	StartTime ();
+	StartTime (0);
 	return;
 	}
 
 if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
-	StartTime ();
+	StartTime (0);
 	return;
 	}
 
@@ -1003,7 +1003,7 @@ else {
 	}
 HUDClearMessages ();	//	@mk, 11/11/94
 WritePlayerFile ();
-StartTime ();
+StartTime (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1097,7 +1097,7 @@ if (gameStates.render.cockpit.nMode == CM_FULL_COCKPIT && (gameStates.render.vr.
 //		ShrinkWindow ();
 	HUDInitMessage (TXT_COCKPIT_F3);
 	WritePlayerFile ();
-	StartTime ();
+	StartTime (0);
 	return;
 	}
 
@@ -1106,12 +1106,12 @@ if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN && (gameStates.render.vr.n
 	//gameData.render.window.h = gameData.render.window.hMax;
 	SelectCockpit (CM_STATUS_BAR);
 	WritePlayerFile ();
-	StartTime ();
+	StartTime (0);
 	return;
 	}
 
 if (gameStates.render.cockpit.nMode != CM_STATUS_BAR && (gameStates.render.vr.nScreenFlags & VRF_ALLOW_COCKPIT)) {
-	StartTime ();
+	StartTime (0);
 	return;
 	}
 
@@ -1142,7 +1142,7 @@ if (gameData.render.window.w > WINDOW_MIN_W) {
 	HUDClearMessages ();
 	WritePlayerFile ();
 	}
-StartTime ();
+StartTime (0);
 }
 
 //------------------------------------------------------------------------------
@@ -1235,7 +1235,7 @@ if (gameStates.render.vr.nRenderMode == VR_NONE)
 	GameRenderFrameMono ();	 
 StopTime ();
 GrPaletteFadeIn (NULL, 32, 0);
-StartTime ();
+StartTime (0);
 gameData.app.nFrameCount++;
 }
 

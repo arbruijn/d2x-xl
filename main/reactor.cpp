@@ -243,7 +243,7 @@ if (bFinalCountdown ||
 		if (gameData.missions.nCurrentLevel < 0)
 			CFDelete ("secret.sgc", gameFolders.szSaveDir);
 		}
-	InitCountdown (trigP, bFinalCountdown || bReactor, -1);
+	InitCountdown (trigP, bFinalCountdown, -1);
 	}
 if (bReactor) {
 	ExecObjTriggers (OBJ_IDX (objP), 0);
@@ -276,7 +276,8 @@ if (i < 0)
 	return;
 if (i < --gameStates.gameplay.nReactorCount) 
 	gameData.reactor.states [i] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
-memset (gameData.reactor.states + gameStates.gameplay.nReactorCount, 0, sizeof (gameData.reactor.states [gameStates.gameplay.nReactorCount]));
+memset (gameData.reactor.states + gameStates.gameplay.nReactorCount, 0, 
+		  sizeof (gameData.reactor.states [gameStates.gameplay.nReactorCount]));
 }
 
 //	-----------------------------------------------------------------------------
@@ -482,7 +483,8 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 					rStatP->bSeenPlayer = 0;
 					rStatP->nNextFireTime = 0;
 					}
-				extraGameInfo [0].nBossCount++;
+				if (ROBOTINFO (objP->id).bossFlag)
+					extraGameInfo [0].nBossCount++;
 				gameStates.gameplay.nLastReactor = gameStates.gameplay.nReactorCount;
 				gameStates.gameplay.nReactorCount++;
 				}
@@ -515,12 +517,14 @@ if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
 else if (BOSS_COUNT) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount; j++) {
-		BashToShield (gameData.reactor.states [j].nObject, "reactor");
-		gameData.reactor.states [j].nObject = -1;
+		if (ROBOTINFO (OBJECTS [gameData.reactor.states [j].nObject].id).bossFlag) {
+			BashToShield (gameData.reactor.states [j].nObject, "reactor");
+			if (j < --gameStates.gameplay.nReactorCount)
+			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
+			}
 		}
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
-	gameStates.gameplay.nReactorCount = 0;
 	extraGameInfo [0].nBossCount = 1;
 	}
 }

@@ -1246,7 +1246,7 @@ void DoEscortMenu (void)
 	GameFlushInputs ();
 	PaletteRestore ();
 	if (!gameOpts->menus.nStyle)
-		StartTime ();
+		StartTime (0);
 	DigiResumeDigiSounds ();
 }
 

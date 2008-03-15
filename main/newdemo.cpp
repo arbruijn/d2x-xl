@@ -1031,7 +1031,7 @@ NDWriteByte ((sbyte)gameData.weapons.nSecondary);
 gameData.demo.nStartFrame = gameData.app.nFrameCount;
 bJustStartedRecording = 1;
 NDSetNewLevel (gameData.missions.nCurrentLevel);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1053,7 +1053,7 @@ NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));        // from pr
 gameData.demo.nFrameBytesWritten = 3;
 NDWriteInt (nFrameNumber);
 NDWriteInt (xFrameTime);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1067,7 +1067,7 @@ if (gameData.demo.bViewWasRecorded [OBJ_IDX (objP)])
 StopTime ();
 NDWriteByte (ND_EVENT_RENDER_OBJECT);
 NDWriteObject (objP);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1088,7 +1088,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_VIEWER_OBJECT);
 NDWriteByte (gameStates.render.nRenderingType);
 NDWriteObject (objP);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1098,7 +1098,7 @@ void NDRecordSound (int soundno)
 StopTime ();
 NDWriteByte (ND_EVENT_SOUND);
 NDWriteInt (soundno);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1108,7 +1108,7 @@ void NDRecordCockpitChange (int mode)
 StopTime ();
 NDWriteByte (ND_EVENT_CHANGE_COCKPIT);
 NDWriteInt (mode);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1120,7 +1120,7 @@ NDWriteByte (ND_EVENT_SOUND_3D);
 NDWriteInt (soundno);
 NDWriteInt (angle);
 NDWriteInt (volume);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1132,7 +1132,7 @@ NDWriteByte (ND_EVENT_SOUND_3D_ONCE);
 NDWriteInt (soundno);
 NDWriteInt (angle);
 NDWriteInt (volume);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1147,7 +1147,7 @@ NDWriteInt (maxVolume);
 NDWriteInt (maxDistance);
 NDWriteInt (loop_start);
 NDWriteInt (loop_end);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1157,7 +1157,7 @@ void NDRecordKillSoundLinkedToObject (int nObject)
 StopTime ();
 NDWriteByte (ND_EVENT_KILL_SOUND_TO_OBJ);
 NDWriteInt (gameData.objs.objects [nObject].nSignature);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1174,7 +1174,7 @@ NDWriteInt (nSegment);
 NDWriteInt (nSide);
 NDWriteInt (damage);
 NDWriteInt (playernum);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1198,7 +1198,7 @@ void NDRecordSecretExitBlown (int truth)
 StopTime ();
 NDWriteByte (ND_EVENT_SECRET_THINGY);
 NDWriteInt (truth);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1211,7 +1211,7 @@ NDWriteInt (nSegment);
 NDWriteInt (nSide);
 NDWriteInt (nObject);
 NDWriteInt (shot);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1221,7 +1221,7 @@ void NDRecordHostageRescued (int hostage_number)
 StopTime ();
 NDWriteByte (ND_EVENT_HOSTAGE_RESCUED);
 NDWriteInt (hostage_number);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1231,7 +1231,7 @@ void NDRecordMorphFrame (tMorphInfo *md)
 StopTime ();
 NDWriteByte (ND_EVENT_MORPH_FRAME);
 NDWriteObject (md->objP);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1242,7 +1242,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_WALL_TOGGLE);
 NDWriteInt (nSegment);
 NDWriteInt (nSide);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1252,7 +1252,7 @@ void NDRecordControlCenterDestroyed ()
 StopTime ();
 NDWriteByte (ND_EVENT_CONTROL_CENTER_DESTROYED);
 NDWriteInt (gameData.reactor.countdown.nSecsLeft);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1262,7 +1262,7 @@ void NDRecordHUDMessage (char * message)
 StopTime ();
 NDWriteByte (ND_EVENT_HUD_MESSAGE);
 NDWriteString (message);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1274,7 +1274,7 @@ NDWriteByte (ND_EVENT_PALETTE_EFFECT);
 NDWriteShort (r);
 NDWriteShort (g);
 NDWriteShort (b);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1285,7 +1285,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_ENERGY);
 NDWriteByte ((sbyte) old_energy);
 NDWriteByte ((sbyte) energy);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1296,7 +1296,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_AFTERBURNER);
 NDWriteByte ((sbyte) (old_afterburner>>9));
 NDWriteByte ((sbyte) (afterburner>>9));
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1307,7 +1307,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_SHIELD);
 NDWriteByte ((sbyte)old_shield);
 NDWriteByte ((sbyte)shield);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1317,7 +1317,7 @@ void NDRecordPlayerFlags (uint oflags, uint flags)
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_FLAGS);
 NDWriteInt (( (short)oflags << 16) | (short)flags);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1332,7 +1332,7 @@ if (nWeaponType)
 	NDWriteByte ((sbyte)gameData.weapons.nSecondary);
 else
 	NDWriteByte ((sbyte)gameData.weapons.nPrimary);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1344,7 +1344,7 @@ NDWriteByte (ND_EVENT_EFFECT_BLOWUP);
 NDWriteShort (tSegment);
 NDWriteByte ((sbyte)nSide);
 NDWriteVector (pnt);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1354,7 +1354,7 @@ void NDRecordHomingDistance (fix distance)
 StopTime ();
 NDWriteByte (ND_EVENT_HOMING_DISTANCE);
 NDWriteShort ((short) (distance>>16));
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1363,7 +1363,7 @@ void NDRecordLetterbox (void)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_LETTERBOX);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1372,7 +1372,7 @@ void NDRecordRearView (void)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_REARVIEW);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1381,7 +1381,7 @@ void NDRecordRestoreCockpit (void)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_RESTORE_COCKPIT);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1390,7 +1390,7 @@ void NDRecordRestoreRearView (void)
 {
 StopTime ();
 NDWriteByte (ND_EVENT_RESTORE_REARVIEW);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1404,7 +1404,7 @@ NDWriteByte (nSide);
 NDWriteShort (nConnSeg);
 NDWriteByte (nConnSide);
 NDWriteShort (tmap);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1418,7 +1418,7 @@ NDWriteByte (nSide);
 NDWriteShort (nConnSeg);
 NDWriteByte (nConnSide);
 NDWriteShort (tmap);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1428,7 +1428,7 @@ void NDRecordMultiCloak (int nPlayer)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_CLOAK);
 NDWriteByte ((sbyte)nPlayer);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1438,7 +1438,7 @@ void NDRecordMultiDeCloak (int nPlayer)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DECLOAK);
 NDWriteByte ((sbyte)nPlayer);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1448,7 +1448,7 @@ void NDRecordMultiDeath (int nPlayer)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DEATH);
 NDWriteByte ((sbyte)nPlayer);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1459,7 +1459,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_MULTI_KILL);
 NDWriteByte ((sbyte)nPlayer);
 NDWriteByte (kill);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1476,7 +1476,7 @@ if (!nNewPlayer) {
 	NDWriteInt (gameData.multiplayer.players [nPlayer].netKillsTotal);
 	}
 NDWriteString (pszNewCallsign);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1486,7 +1486,7 @@ void NDRecordMultiReconnect (int nPlayer)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_RECONNECT);
 NDWriteByte ((sbyte)nPlayer);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1496,7 +1496,7 @@ void NDRecordMultiDisconnect (int nPlayer)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_DISCONNECT);
 NDWriteByte ((sbyte)nPlayer);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1506,7 +1506,7 @@ void NDRecordPlayerScore (int score)
 StopTime ();
 NDWriteByte (ND_EVENT_PLAYER_SCORE);
 NDWriteInt (score);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1517,7 +1517,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_MULTI_SCORE);
 NDWriteByte ((sbyte)nPlayer);
 NDWriteInt (score - gameData.multiplayer.players [nPlayer].score);      // called before score is changed!!!!
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1531,7 +1531,7 @@ if (nOldAmmo < 0)
 else
 	NDWriteShort ((short)nOldAmmo);
 NDWriteShort ((short)nNewAmmo);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1545,7 +1545,7 @@ if (nOldAmmo < 0)
 else
 	NDWriteShort ((short)nOldAmmo);
 NDWriteShort ((short)nNewAmmo);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1556,7 +1556,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_DOOR_OPENING);
 NDWriteShort ((short)nSegment);
 NDWriteByte ((sbyte)nSide);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1567,7 +1567,7 @@ StopTime ();
 NDWriteByte (ND_EVENT_LASER_LEVEL);
 NDWriteByte (oldLevel);
 NDWriteByte (newLevel);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1586,7 +1586,7 @@ NDWriteShort ((short) (l0>>8));
 NDWriteShort ((short) (l1>>8));
 NDWriteShort ((short) (l2>>8));
 NDWriteShort ((short) (l3>>8));
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1615,7 +1615,7 @@ if (bJustStartedRecording==1) {
 		bJustStartedRecording=0;
 		}
 	}
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -2647,7 +2647,7 @@ while (!bDone) {
 				bJustStartedPlayback = 0;
 				}
 			ResetPaletteAdd ();                // get palette back to normal
-			StartTime ();
+			StartTime (0);
 			}
 			break;
 
@@ -3523,7 +3523,7 @@ if (!gameData.demo.bFirstTimePlayback) {
 	if (xDelay >= f0_0) {
 		StopTime ();
 		timer_delay (xDelay);
-		StartTime ();
+		StartTime (0);
 		}
 	else {
 		while (gameData.demo.xJasonPlaybackTotal > gameData.demo.xRecordedTotal)

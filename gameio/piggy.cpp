@@ -1695,7 +1695,7 @@ if (!bmP->bmTexBuf) {
 		}
 	if (!altBmP) {
 		if (nIndex < 0) {
-			StartTime ();
+			StartTime (0);
 			return;
 			}
 		pcf = cfPiggy + bD1;
@@ -1707,8 +1707,8 @@ reloadTextures:
 
 	if (bRedone) {
 		Error ("Not enough memory for textures.\nTry to decrease texture quality\nin the advanced render options menu.");
-		StartTime ();
 #ifndef _DEBUG
+		StartTime (0);
 		if (!bDefault)
 			CFClose (pcf);
 		return;
@@ -1802,7 +1802,7 @@ reloadTextures:
 	if (!bTGA && IsMacDataFile (pcf, bD1))
 		swap_0_255 (bmP);
 #endif
-	StartTime ();
+	StartTime (0);
 	}
 if (!bDefault)
 	CFClose (pcf);

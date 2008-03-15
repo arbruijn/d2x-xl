@@ -1100,6 +1100,7 @@ if (!bRestore) {
 	ComputeNearestLights (nLevel);
 	ComputeStaticDynLighting ();
 	SetEquipGenStates ();
+	gameData.time.nPaused = 0;
 	}
 LoadExtraImages ();
 CreateShieldSphere ();
@@ -1327,7 +1328,7 @@ StopTime ();
 SetFunctionMode (FMODE_MENU);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (fMode);
-StartTime ();
+StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------------------------------
@@ -1743,7 +1744,7 @@ else
 	sprintf (msg, TXT_RETURN_LVL, gameData.missions.nEnteredFromLevel);
 ExecMessageBox (NULL, STARS_BACKGROUND, 1, TXT_OK, msg);
 SetFunctionMode (old_fmode);
-StartTime ();
+StartTime (0);
 }
 
 //------------------------------------------------------------------------------
