@@ -564,7 +564,7 @@ s,@RANLIB@,ranlib,;t t
 s,@ac_ct_RANLIB@,ranlib,;t t
 s,@AR@,ar,;t t
 s,@ac_ct_AR@,ar,;t t
-s,@CXXFLAGS@,-g -O2,;t t
+s,@CXXFLAGS@,-I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -O3 -g -Wall -Wno-char-subscripts  ,;t t
 s,@CXXDEPMODE@,depmode=gcc3,;t t
 s,@am__fastdepCXX_TRUE@,,;t t
 s,@am__fastdepCXX_FALSE@,#,;t t

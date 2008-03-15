@@ -26,6 +26,7 @@ AM_MAINTAINER_MODE
 
 #kludge to keep autoconf from adding -g -O2
 CFLAGS=" $CFLAGS"
+CXXFLAGS=" $CXXFLAGS"
 
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -87,6 +88,7 @@ dnl Set default locations to find data files.
 default_sharepath="$datadir/$PACKAGE"
 
 CFLAGS="-Wall -Wno-char-subscripts $CFLAGS"
+CXXFLAGS="-Wall -Wno-char-subscripts $CXXFLAGS"
 
 D2X_SUBDIRS=""
 D2X_MAIN_SUBDIRS=""
@@ -116,8 +118,10 @@ AC_ARG_ENABLE(debug,
 if test x$enable_debug != xyes; then
     AC_DEFINE(NDEBUG,,[Define to disable asserts, int3, etc.])
     CFLAGS="-O3 -g $CFLAGS"
+    CXXFLAGS="-O3 -g $CXXFLAGS"
 else
     CFLAGS="-g $CFLAGS"
+    CXXFLAGS="-g $CXXFLAGS"
     AC_DEFINE(_DEBUG,,[Define to enable asserts, int3, etc.])
     D2X_FEATURES="debug ${D2X_FEATURES}"
 fi
@@ -194,6 +198,7 @@ else
         AC_MSG_ERROR(SDL not found. Make sure sdl-config is in your PATH, or specify with --with-sdl-prefix)
     )
     CFLAGS="$SDL_CFLAGS $CFLAGS"
+    CXXFLAGS="$SDL_CFLAGS $CXXFLAGS"
     LIBS="$SDL_LIBS $LIBS"
 
     TARGETS=d2x-xl
@@ -429,6 +434,8 @@ AC_SUBST(TARGETS)
 AC_SUBST(NASMFLAGS)
 
 AC_SUBST(CFLAGS)
+
+AC_SUBST(CXXFLAGS)
 
 AC_OUTPUT(
     Makefile

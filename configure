@@ -1930,6 +1930,7 @@ fi
 
 #kludge to keep autoconf from adding -g -O2
 CFLAGS=" $CFLAGS"
+CXXFLAGS=" $CXXFLAGS"
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -5933,6 +5934,7 @@ test "x$exec_prefix" = "xNONE" && exec_prefix="${prefix}"
 default_sharepath="$datadir/$PACKAGE"
 
 CFLAGS="-Wall -Wno-char-subscripts $CFLAGS"
+CXXFLAGS="-Wall -Wno-char-subscripts $CXXFLAGS"
 
 D2X_SUBDIRS=""
 D2X_MAIN_SUBDIRS=""
@@ -5998,8 +6000,10 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
     CFLAGS="-O3 -g $CFLAGS"
+    CXXFLAGS="-O3 -g $CXXFLAGS"
 else
     CFLAGS="-g $CFLAGS"
+    CXXFLAGS="-g $CXXFLAGS"
 
 cat >>confdefs.h <<\_ACEOF
 #define _DEBUG
@@ -6427,6 +6431,7 @@ echo "$as_me: error: SDL not found. Make sure sdl-config is in your PATH" >&2;}
   rm -f conf.sdltest
 
     CFLAGS="$SDL_CFLAGS $CFLAGS"
+    CXXFLAGS="$SDL_CFLAGS $CXXFLAGS"
     LIBS="$SDL_LIBS $LIBS"
 
     TARGETS=d2x-xl
@@ -7505,6 +7510,8 @@ TARGETS="$TARGETS$ac_cv_exeext"
 
 test "${CCAS+set}" = set || CCAS=$CC
 test "${CCASFLAGS+set}" = set || CCASFLAGS=$CFLAGS
+
+
 
 
 
