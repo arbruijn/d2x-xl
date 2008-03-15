@@ -3286,7 +3286,7 @@
 						RelativePath="..\..\input\joy.cpp">
 					</File>
 					<File
-						RelativePath="..\..\input\win32\joydefs.cpp">
+						RelativePath="..\..\input\joydefs.cpp">
 					</File>
 					<File
 						RelativePath="..\..\input\key.cpp">
@@ -3316,7 +3316,7 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="opengl"
+				Name="ogl"
 				Filter="">
 				<Filter
 					Name="Source Files"
@@ -3464,10 +3464,10 @@
 				RelativePath="..\..\d2x.w32.rc">
 			</File>
 			<File
-				RelativePath=".\descent.ico">
+				RelativePath="..\..\descent.ico">
 			</File>
 			<File
-				RelativePath="..\..\descent.ico">
+				RelativePath=".\descent.ico">
 			</File>
 			<File
 				RelativePath="..\..\icon1.ico">

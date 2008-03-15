@@ -2,7 +2,7 @@
 
 define([D2X_MAJOR],1)
 define([D2X_MINOR],12)
-define([D2X_MICRO],58)
+define([D2X_MICRO],59)
 
 AC_INIT(d2x-xl,[D2X_MAJOR.D2X_MINOR.D2X_MICRO],[karx11erx@hotmail.com])
 AC_PREREQ(2.52)
@@ -30,7 +30,8 @@ CFLAGS=" $CFLAGS"
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_ISC_POSIX
-AC_CHECK_TOOL(CC, g++, :)
+AC_CHECK_TOOL(CC, gcc, :)
+AC_CHECK_TOOL(CXX, g++, :)
 AC_CHECK_TOOL(RANLIB, ranlib, :)
 AC_CHECK_TOOL(STRIP, strip, :)
 AC_CHECK_TOOL(AR, ar, :)

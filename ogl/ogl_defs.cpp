@@ -75,12 +75,12 @@ PFNGLPOINTPARAMETERFARBPROC		glPointParameterfARB = NULL;
 
 #ifndef GL_VERSION_20
 #	ifdef _WIN32
-PFNGLGENBUFFERSPROC					glGenBuffers = NULL;
-PFNGLBINDBUFFERPROC					glBindBuffer = NULL;
-PFNGLBUFFERDATAPROC					glBufferData = NULL;
-PFNGLMAPBUFFERPROC					glMapBuffer = NULL;
-PFNGLUNMAPBUFFERPROC					glUnmapBuffer = NULL;
-PFNGLDELETEBUFFERSPROC				glDeleteBuffers = NULL;
+PFNGLGENBUFFERSPROC					glGenBuffersARB = NULL;
+PFNGLBINDBUFFERPROC					glBindBufferARB = NULL;
+PFNGLBUFFERDATAPROC					glBufferDataARB = NULL;
+PFNGLMAPBUFFERPROC					glMapBufferARB = NULL;
+PFNGLUNMAPBUFFERPROC					glUnmapBufferARB = NULL;
+PFNGLDELETEBUFFERSPROC				glDeleteBuffersARB = NULL;
 PFNGLDRAWRANGEELEMENTSPROC			glDrawRangeElements = NULL;
 #	endif
 #endif
@@ -157,14 +157,14 @@ void OglInitVBOs (void)
 {
 #ifndef GL_VERSION_20
 #	ifdef _WIN32
-glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB");
-glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB");
-glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB");
-glMapBuffer = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("glMapBufferARB");
-glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB");
-glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB");
+glGenBuffersARB = (PFNGLGENBUFFERSPROC) wglGetProcAddress ("glGenBuffersARB");
+glBindBufferARB = (PFNGLBINDBUFFERPROC) wglGetProcAddress ("glBindBufferARB");
+glBufferDataARB = (PFNGLBUFFERDATAPROC) wglGetProcAddress ("glBufferDataARB");
+glMapBufferARB = (PFNGLMAPBUFFERPROC) wglGetProcAddress ("glMapBufferARB");
+glUnmapBufferARB = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress ("glUnmapBufferARB");
+glDeleteBuffersARB = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress ("glDeleteBuffersARB");
 glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC) wglGetProcAddress ("glDrawRangeElements");
-gameStates.ogl.bHaveVBOs = glGenBuffers && glBindBuffer && glBufferData && glMapBuffer && glUnmapBuffer;
+gameStates.ogl.bHaveVBOs = glGenBuffersARB && glBindBufferARB && glBufferDataARB && glMapBufferARB && glUnmapBufferARB;
 #	endif
 #else
 gameStates.ogl.bHaveVBOs = 1;
