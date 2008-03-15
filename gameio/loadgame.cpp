@@ -1605,7 +1605,7 @@ if (!IsMultiGame) {
 		if (!bPlayed) {
 			if (IS_D2_OEM) {
 				SongsPlaySong (SONG_TITLE, 0);
-				DoBriefingScreens ("end2oem.tex",1);
+				DoBriefingScreens ((char *) "end2oem.tex",1);
 				}
 			else {
 				SongsPlaySong (SONG_ENDGAME, 0);
@@ -2033,11 +2033,11 @@ if (!IsMultiGame) {
 	if (!gameStates.app.bD1Mission && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)) {
 		if (IS_SHAREWARE) {
 			if (nLevel == 1)
-				DoBriefingScreens ("brief2.tex", 1);
+				DoBriefingScreens ((char *) "brief2.tex", 1);
 			}
 		else if (IS_D2_OEM) {
 			if ((nLevel == 1) && !gameStates.movies.bIntroPlayed)
-				DoBriefingScreens ("brief2o.tex", 1);
+				DoBriefingScreens ((char *) "brief2o.tex", 1);
 			}
 		else { // full version
 			if (gameStates.app.bHaveExtraMovies && (nLevel == 1)) {
@@ -2058,7 +2058,7 @@ if (!IsMultiGame) {
 					if (hires_save != gameStates.menus.bHiresAvailable)
 						gameStates.video.nScreenMode = -1;		//force reset
 					}
-				DoBriefingScreens ("robot.tex", nLevel);
+				DoBriefingScreens ((char *) "robot.tex", nLevel);
 				gameStates.menus.bHiresAvailable = hires_save;
 				}
 			}

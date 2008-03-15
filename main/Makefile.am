@@ -10,7 +10,7 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	cmd.cpp collide.cpp config.cpp console.cpp controls.cpp credits.cpp \
-	crypt.cpp effects.cpp fuelcen.cpp fvi.cpp game.cpp gamecntl.cpp \
+	crypt.cpp effects.cpp fuelcen.cpp fvi.cpp game.cpp gamecntl.cpp highscores.cpp \
 	gamefont.cpp gameseg.cpp hostage.cpp inferno.cpp kconfig.cpp kludge.cpp \
 	menu.cpp mglobal.cpp movie.cpp marker.cpp slowmotion.cpp dropobject.cpp \
 	newdemo.cpp newmenu.cpp object.cpp physics.cpp player.cpp powerup.cpp reactor.cpp \
