@@ -48,16 +48,16 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ipx_udp.h"
 #include "ipx_mcast4.h"
 #include "error.h"
-#include "../../main/player.h"	/* for gameData.multiplayer.players */
-#include "../../main/multi.h"	/* for netPlayers */
+#include "player.h"	/* for gameData.multiplayer.players */
+#include "multi.h"	/* for netPlayers */
 //added 05/17/99 Matt Mueller - needed to redefine FD_* so that no asm is used
 //#include "checker.h"
 //end addition -MM
 #include "byteswap.h"
 #include "network.h"
 #include "network_lib.h"
-#include "../../main/player.h"	/* for gameData.multiplayer.players */
-#include "../../main/multi.h"	/* for netPlayers */
+#include "player.h"	/* for gameData.multiplayer.players */
+#include "multi.h"	/* for netPlayers */
 #include "tracker.h"
 #include "hudmsg.h"
 

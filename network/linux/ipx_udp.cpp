@@ -390,7 +390,7 @@ static void chkbroadsize (void)
 if (broadnum < broadsize)
 	return;
 broadsize = broadsize ? broadsize * 2 : 8;
-chk (broads = D2_REALLOC (broads, sizeof (*broads) * broadsize));
+chk (broads = (sockaddr_in *) D2_REALLOC (broads, sizeof (*broads) * broadsize));
 }
 
 //------------------------------------------------------------------------------
@@ -550,7 +550,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 		cnt = cnt * 2 + 2;
 #	endif
 	ifconf.ifc_len = cnt * sizeof (struct ifreq);
-	chk (ifconf.ifc_req = D2_ALLOC (ifconf.ifc_len));
+	chk (ifconf.ifc_req = (ifreq *) D2_ALLOC (ifconf.ifc_len));
 #ifdef _DEBUG
 	memset (ifconf.ifc_req, 0, ifconf.ifc_len);
 	ioRes = ioctl (sock, SIOCGIFCONF, &ifconf);
@@ -566,7 +566,7 @@ for (ifa = ifap; ifa != NULL; ifa = ifa->ifa_next) {
 		FAIL ("ioctl (SIOCGIFCONF)\nIP interface detection failed:\n%m");
 		}
 cnt = ifconf.ifc_len / sizeof (struct ifreq);
-chk (broads = D2_ALLOC (cnt * sizeof (*broads)));
+chk (broads = (sockaddr_in *) D2_ALLOC (cnt * sizeof (*broads)));
 broadsize = cnt;
 for (i = j = 0; i < cnt; i++) {
 	if (!_IOCTL (sock, SIOCGIFFLAGS, ifconf.ifc_req + i)) {
@@ -788,7 +788,7 @@ else {
 			break;
 		for (s2=s;*s2 && *s2!=',';s2++)
 			;
-		chk (ns=D2_ALLOC (s2-s+1));
+		chk (ns = (char *) D2_ALLOC (s2-s+1));
 		memcpy (ns,s,s2-s);
 		ns [s2-s]='\0';
 		if (!queryhost (ns)) 
