@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "key.h"
 #include "text.h"
 #include "error.h"
+#include "strutil.h"
 #include "ogl_lib.h"
 #include "ogl_color.h"
 #include "newmenu.h"

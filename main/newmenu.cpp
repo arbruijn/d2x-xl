@@ -330,8 +330,8 @@ if (!(bRedraw && gameOpts->menus.nStyle && bg && bmP)) {
 	else if (!pszCurBg)
 		pszCurBg = filename;
 	if (!filename)
-		filename = gameStates.app.bDemoData ? MENU_PCX_SHAREWARE : MENU_PCX_FULL;
-	if (!(filename && strcmp (filename, MENU_PCX_FULL) && strcmp (filename, MENU_PCX_SHAREWARE))) {
+		filename = gameStates.app.bDemoData ? (char *) MENU_PCX_SHAREWARE : (char *) MENU_PCX_FULL;
+	if (!(filename && strcmp (filename, (char *) MENU_PCX_FULL) && strcmp (filename, (char *) MENU_PCX_SHAREWARE))) {
 		NMLoadAltBg ();
 		if (gameOpts->menus.altBg.bHave > 0)
 			bmP = pAltBg;
@@ -412,7 +412,7 @@ else {
 			if (nmBackground.bmTexBuf)
 				D2_FREE (nmBackground.bmTexBuf);
 			}
-		nPCXResult = PCXReadBitmap (MENU_BACKGROUND_BITMAP, &nmBackgroundSave, BM_LINEAR, 0);
+		nPCXResult = PCXReadBitmap ((char *) MENU_BACKGROUND_BITMAP, &nmBackgroundSave, BM_LINEAR, 0);
 		Assert (nPCXResult == PCX_ERROR_NONE);
 		nmBackground = nmBackgroundSave;
 		nmBackground.bmTexBuf = NULL;	

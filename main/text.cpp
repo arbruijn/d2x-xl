@@ -2548,14 +2548,14 @@ return pszTexts;
 
 void InitGameTexts (void)
 {
-pszGameTexts = InitTexts (gameStates.app.bEnglish ? "descent.tex.eng" : "descent.tex.ger", 1);
+pszGameTexts = InitTexts (gameStates.app.bEnglish ? (char *) "descent.tex.eng" : (char *) "descent.tex.ger", 1);
 }
 
 //------------------------------------------------------------------------------
 
 void InitHelpTexts (void)
 {
-pszHelpTexts = InitTexts (gameStates.app.bEnglish ? "descent.hlp.eng" : "descent.hlp.ger", 0);
+pszHelpTexts = InitTexts (gameStates.app.bEnglish ? (char *) "descent.hlp.eng" : (char *) "descent.hlp.ger", 0);
 }
 
 //------------------------------------------------------------------------------

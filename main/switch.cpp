@@ -493,7 +493,7 @@ else {
 		return;
 	triggers = gameData.trigs.triggers;
 	}
-pl = (triggers [trig].nLinks > 1) ? "s" : "";
+pl = (triggers [trig].nLinks > 1) ? (char *) "s" : (char *) "";
 if (!(triggers [trig].flags & TF_NO_MESSAGE) && shot)
 	HUDInitMessage (message, pl);
 }

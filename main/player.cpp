@@ -122,8 +122,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 
 void UpdateFiringState (void)
 {
-	int	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX),
-			bGatlingSound = (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling;
+	int	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
 
 if ((Controls [0].firePrimaryState != 0) || (Controls [0].firePrimaryDownCount != 0)) {
 	if (gameData.weapons.firing [0].nStart <= 0) {
