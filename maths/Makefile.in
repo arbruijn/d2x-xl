@@ -52,7 +52,7 @@ ARFLAGS = cru
 libmaths_a_AR = $(AR) $(ARFLAGS)
 libmaths_a_LIBADD =
 am_libmaths_a_OBJECTS = vecmat.$(OBJEXT) rand.$(OBJEXT) \
-	tables.$(OBJEXT)
+	tables.$(OBJEXT) fixc.$(OBJEXT)
 libmaths_a_OBJECTS = $(am_libmaths_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -208,7 +208,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 noinst_LIBRARIES = libmaths.a
 INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcdir)/network/linux/include -I $(top_srcdir)/audio/linux/include -I /usr/local/include/SDL
-libmaths_a_SOURCES = vecmat.cpp rand.cpp tables.cpp
+libmaths_a_SOURCES = vecmat.cpp rand.cpp tables.cpp fixc.cpp
 all: all-am
 
 .SUFFIXES:
@@ -256,6 +256,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fixc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rand.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tables.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vecmat.Po@am__quote@
