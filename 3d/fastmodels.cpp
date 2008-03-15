@@ -791,9 +791,9 @@ if (!(gameStates.render.bCloaked ?
 	return 0;
 if (bUseVBO) {
 	int i;
-	glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
+	glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
 	if ((i = glGetError ())) {
-		glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
+		glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
 		if ((i = glGetError ()))
 			return 0;
 		}
@@ -822,7 +822,7 @@ if (bUseVBO) {
 		}
 	glVertexPointer (3, GL_FLOAT, 0, G3_BUFFER_OFFSET (0));
 	if (pm->vboIndexHandle)
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
+		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
 	}
 else 
 	{
@@ -843,8 +843,8 @@ if ((objP->nType != OBJ_DEBRIS) && bHires && pm->bHasTransparency)
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, pAnimAngles, vOffset, bHires, bUseVBO, 1,
 					 nGunId, nBombId, nMissileId, nMissiles);
 glDisable (GL_TEXTURE_2D);
-glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
-glBindBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
+glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 if (gameStates.render.bCloaked)
 	G3DisableClientStates (0, 0, 0, -1);
 else

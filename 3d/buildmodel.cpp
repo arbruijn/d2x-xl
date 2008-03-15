@@ -64,33 +64,33 @@ G3_ALLOC (pm->pVerts, pm->nVerts, fVector3, 0);
 G3_ALLOC (pm->pColor, pm->nVerts, tFaceColor, 0xff);
 if (gameStates.ogl.bHaveVBOs) {
 	int i;
-	glGenBuffers (1, &pm->vboDataHandle);
+	glGenBuffersARB (1, &pm->vboDataHandle);
 	if ((i = glGetError ())) {
-		glGenBuffers (1, &pm->vboDataHandle);
+		glGenBuffersARB (1, &pm->vboDataHandle);
 		if ((i = glGetError ())) {
 #	ifdef _DEBUG
-			HUDMessage (0, "glGenBuffers failed (%d)", i);
+			HUDMessage (0, "glGenBuffersARB failed (%d)", i);
 #	endif
 			gameStates.ogl.bHaveVBOs = 0;
 			return G3FreeModelItems (pm);
 			}
 		}
-	glBindBuffer (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
+	glBindBufferARB (GL_ARRAY_BUFFER_ARB, pm->vboDataHandle);
 	if ((i = glGetError ())) {
 #	ifdef _DEBUG
-		HUDMessage (0, "glBindBuffer failed (%d)", i);
+		HUDMessage (0, "glBindBufferARB failed (%d)", i);
 #	endif
 		gameStates.ogl.bHaveVBOs = 0;
 		return G3FreeModelItems (pm);
 		}
-	glBufferData (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (tG3RenderVertex), NULL, GL_STATIC_DRAW_ARB);
-	pm->pVertBuf [1] = (tG3RenderVertex *) glMapBuffer (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+	glBufferDataARB (GL_ARRAY_BUFFER, pm->nFaceVerts * sizeof (tG3RenderVertex), NULL, GL_STATIC_DRAW_ARB);
+	pm->pVertBuf [1] = (tG3RenderVertex *) glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
 	pm->vboIndexHandle = 0;
-	glGenBuffers (1, &pm->vboIndexHandle);
+	glGenBuffersARB (1, &pm->vboIndexHandle);
 	if (pm->vboIndexHandle) {
-		glBindBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
-		glBufferData (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
-		pm->pIndex [1] = (short *) glMapBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->vboIndexHandle);
+		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, pm->nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
+		pm->pIndex [1] = (short *) glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
 		}
 	}
 G3_ALLOC (pm->pVertBuf [0], pm->nFaceVerts, tG3RenderVertex, 0);
@@ -112,7 +112,7 @@ int G3FreeModelItems (tG3Model *pm)
 G3_FREE (pm->pFaces);
 G3_FREE (pm->pSubModels);
 if (gameStates.ogl.bHaveVBOs && pm->vboDataHandle)
-	glDeleteBuffers (1, &pm->vboDataHandle);
+	glDeleteBuffersARB (1, &pm->vboDataHandle);
 G3_FREE (pm->pVertBuf [0]);
 G3_FREE (pm->pFaceVerts);
 G3_FREE (pm->pColor);
@@ -120,7 +120,7 @@ G3_FREE (pm->pVertNorms);
 G3_FREE (pm->pVerts);
 G3_FREE (pm->pSortedVerts);
 if (gameStates.ogl.bHaveVBOs && pm->vboIndexHandle)
-	glDeleteBuffers (1, &pm->vboIndexHandle);
+	glDeleteBuffersARB (1, &pm->vboIndexHandle);
 G3_FREE (pm->pIndex [0]);
 memset (pm, 0, sizeof (*pm));
 return 0;
@@ -306,10 +306,10 @@ else
 	memcpy (pSortedVerts, pm->pFaceVerts, pm->nFaceVerts * sizeof (tG3ModelVertex));
 pm->bValid = 1;
 if (gameStates.ogl.bHaveVBOs) {
-	glUnmapBuffer (GL_ARRAY_BUFFER_ARB);
-	glBindBuffer (GL_ARRAY_BUFFER_ARB, 0);
-	glUnmapBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB);
-	glBindBuffer (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+	glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
+	glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
+	glUnmapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB);
+	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	}
 G3_FREE (pm->pSortedVerts);
 }

@@ -13,6 +13,3 @@ lib2d_a_SOURCES = \
 	bitblt.cpp canvas.cpp font.cpp line.cpp pixel.cpp rle.cpp \
 	bitmap.cpp circle.cpp gpixel.cpp palette.cpp poly.cpp
 
-SUFFIXES = .asm
-%.o: %.asm
-	$(NASM) -dTRANSPARENCY_COLOR=${TRANSPARENCY_COLOR} $(NASMFLAGS) $< -o $@
