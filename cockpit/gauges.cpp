@@ -2464,10 +2464,10 @@ void ShowHUDNames ()
 	int w, h, aw;
 	int x1, y1;
 	int nColor;
-	static int nIdNames [MAX_PLAYERS] = {0,0,0,0,0,0,0,0};
+	static int nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || 
-						 (netGame.ShowAllNames && gameData.multigame.bShowReticleName));
+						 (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName &&
 						 ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
@@ -2514,7 +2514,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 						colorP = typingColors + nCurColor;
 						}
 					else {
-						nColor = (gameData.app.nGameMode & GM_TEAM)? GetTeam (p) : p;
+						nColor = IsTeamGame ? GetTeam (p) : p;
 						colorP = playerColors + nColor;
 						}
 
@@ -2524,7 +2524,7 @@ for (p = 0; p < gameData.multiplayer.nPlayers; p++) {	//check all players
 					x1 = f2i (x) - w / 2;
 					y1 = f2i (y) - h / 2;
 					//glBlendFunc (GL_ONE, GL_ONE);
-					nIdNames [p] = GrString (x1, y1, s, nIdNames + p);
+					nIdNames [nCurColor][p] = GrString (x1, y1, s, nIdNames [nCurColor] + p);
 					GrSetColorRGBi (RGBA_PAL2 (colorP->r, colorP->g, colorP->b));
 					glLineWidth ((GLfloat) 2.0f);
 					GrUBox (x1 - 4, y1 - 3, x1 + w + 2, y1 + h + 3);

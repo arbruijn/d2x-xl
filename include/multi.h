@@ -354,7 +354,7 @@ typedef struct tNetgameInfo {
 	short DoHoming:1;
 	short DoLaserUpgrade:1;
 	short DoQuadLasers:1;
-	short ShowAllNames:1;
+	short bShowAllNames:1;
 	short BrightPlayers:1;
 	short invul:1;
 	short FriendlyFireOff:1;
@@ -378,7 +378,7 @@ typedef struct tNetgameInfo {
 	short FriendlyFireOff:1;
 	short invul:1;
 	short BrightPlayers:1;
-	short ShowAllNames:1;
+	short bShowAllNames:1;
 	short DoQuadLasers:1;
 	short DoLaserUpgrade:1;
 	short DoHoming:1;

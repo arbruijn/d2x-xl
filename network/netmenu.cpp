@@ -606,8 +606,8 @@ mpParams.bInvul = (ubyte) netGame.invul;
 netGame.BrightPlayers = m [optBrightPlayers].value ? 0 : 1;
 mpParams.bBrightPlayers = (ubyte) netGame.BrightPlayers;
 mpParams.bShortPackets = netGame.bShortPackets = m [optShortPkts].value;
-netGame.ShowAllNames = m [optShowNames].value;
-mpParams.bShowAllNames = (ubyte) netGame.ShowAllNames;
+netGame.bShowAllNames = m [optShowNames].value;
+mpParams.bShowAllNames = (ubyte) netGame.bShowAllNames;
 NetworkAdjustMaxDataSize ();
 //  extraGameInfo [0].bEnhancedCTF = (m [optEnhancedCTF].value != 0);
 
