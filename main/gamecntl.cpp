@@ -410,13 +410,13 @@ if (!gameData.app.bGamePaused) {
 
 void ResumeGame (void)
 {
-GameFlushInputs();
-ResetCockpit();
-PaletteRestore();
-StartTime();
+GameFlushInputs ();
+ResetCockpit ();
+PaletteRestore ();
+StartTime (0);
 if (gameStates.sound.bRedbookPlaying)
-	RBAResume();
-DigiResumeAll();
+	RBAResume ();
+DigiResumeAll ();
 gameData.app.bGamePaused = 0;
 }
 
