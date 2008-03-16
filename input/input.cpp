@@ -1298,16 +1298,16 @@ if (!gameOpts->legacy.bInput)
 #endif
 
 SetControlType ();
-bUseJoystick = gameOpts->input.joystick.bUse && ControlsReadJoystick (joyAxis);
+bUseJoystick = gameOpts->input.joystick.bUse && ControlsReadJoystick ((int *) &joyAxis [0]);
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
 //		ReadOWL (kc_external_control);
 //		CybermouseAdjust ();
 		} 
 	else if (gameStates.input.nMouseType == CONTROL_CYBERMAN)
-		bUseMouse = ControlsReadCyberman (mouseAxis, &nMouseButtons);
+		bUseMouse = ControlsReadCyberman ((int *) &mouseAxis [0], &nMouseButtons);
 	else
-		bUseMouse = ControlsReadMouse (mouseAxis, &nMouseButtons);
+		bUseMouse = ControlsReadMouse ((int *) &mouseAxis [0], &nMouseButtons);
 else {
 	mouseAxis [0] =
 	mouseAxis [1] =
@@ -1318,11 +1318,11 @@ else {
 pitchTime = headingTime = 0;
 memset (Controls + 1, 0, 3 * sizeof (tControlInfo));
 for (i = 0; i < 3; i++) {
-	ControlsDoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
+	ControlsDoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
 	if (bUseJoystick)
-		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
+		ControlsDoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
 	if (bUseMouse)
-		ControlsDoMouse (mouseAxis, nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
+		ControlsDoMouse ((int *) &mouseAxis [0], nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
 	Controls [0].pitchTime = Controls [1].pitchTime + Controls [2].pitchTime + Controls [3].pitchTime;
 	Controls [0].headingTime = Controls [1].headingTime + Controls [2].headingTime + Controls [3].headingTime;
 	Controls [0].bankTime = Controls [1].bankTime + Controls [2].bankTime + Controls [3].bankTime;
@@ -1331,7 +1331,7 @@ for (i = 0; i < 3; i++) {
 		}
 	}
 if (gameOpts->input.bUseHotKeys)
-	ControlsDoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, &gameStates.input.nCruiseSpeed, i);
+	ControlsDoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, (int *) &gameStates.input.nCruiseSpeed, i);
 #ifdef WIN32
 if (ControlsReadTrackIR ())
 	ControlsDoTrackIR ();

@@ -206,7 +206,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 #if 0
 		MixSoundSlot (sl, sl->sampleP + sl->nPosition, stream, len);
 #else
-		Uint8 *sldata = sl->sampleP + sl->nPosition, *slend = sl->sampleP + sl->nLength;
+		Uint8 *sldata = (Uint8 *) sl->sampleP + sl->nPosition, *slend = sl->sampleP + sl->nLength;
 		Uint8 *sp = stream, s;
 		signed char v;
 		fix vl, vr;
@@ -228,7 +228,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 					sl->bPlaying = 0;
 					break;
 					}
-				sldata = sl->sampleP;
+				sldata = (Uint8 *) sl->sampleP;
 				}
 			v = *(sldata++) - 0x80;
 			s = *sp;
@@ -728,7 +728,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			if (nSpeed < F1_0)
 				l = DigiSpeedupSound (dsP, ssP, nSpeed);
 			}
-		ssP->mixChunkP = Mix_QuickLoad_RAW (ssP->sampleP, l);
+		ssP->mixChunkP = Mix_QuickLoad_RAW ((Uint8 *) ssP->sampleP, l);
 		}
 	Mix_VolPan (gameStates.sound.digi.nFreeChannel, xVolume, xPan);
 	Mix_PlayChannel (gameStates.sound.digi.nFreeChannel, ssP->mixChunkP, bLooping ? -1 : nLoopEnd - nLoopStart);
