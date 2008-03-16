@@ -86,23 +86,23 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\libmve\decoder16.c
+SOURCE=..\..\libmve\decoder16.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\libmve\decoder8.c
+SOURCE=..\..\libmve\decoder8.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\libmve\mve_audio.c
+SOURCE=..\..\libmve\mve_audio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\libmve\mvelib.c
+SOURCE=..\..\libmve\mvelib.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\libmve\mveplay.c
+SOURCE=..\..\libmve\mveplay.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
