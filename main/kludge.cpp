@@ -23,7 +23,7 @@ int nWindowClipLeft,nWindowClipTop,nWindowClipRight,nWindowClipBot;
 char CDROM_dir[40] = ".";
 
 #ifndef __DJGPP__
-void JoySetBtnValues( int btn, int state, int timeDown, int downcount, int upcount )
+void JoySetBtnValues( int btn, int state, fix timeDown, int downcount, int upcount )
 {
 
 }

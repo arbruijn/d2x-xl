@@ -206,7 +206,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 #if 0
 		MixSoundSlot (sl, sl->sampleP + sl->nPosition, stream, len);
 #else
-		Uint8 *sldata = (Uint8 *) sl->sampleP + sl->nPosition, *slend = sl->sampleP + sl->nLength;
+		Uint8 *sldata = (Uint8 *) sl->sampleP + sl->nPosition, *slend = (Uint8 *) sl->sampleP + sl->nLength;
 		Uint8 *sp = stream, s;
 		signed char v;
 		fix vl, vr;
@@ -236,7 +236,7 @@ for (sl = soundSlots; sl < soundSlots + MAX_SOUND_SLOTS; sl++) {
 			s = *sp;
 			*(sp++) = mix8 [s + FixMul (v, vr) + 0x80];
 			}
-		sl->nPosition = (int) (sldata - sl->sampleP);
+		sl->nPosition = (int) (sldata - (Uint8 *) sl->sampleP);
 #endif
 		}
 	}
