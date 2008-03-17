@@ -386,7 +386,7 @@ if (gameStates.render.nType == 2) {
 	return;
 	}
 nCamNum = IsMonitorFace (props.segNum, props.sideNum);
-if ((bIsMonitor = (nCamNum >= 0))) {
+if ((bIsMonitor = gameStates.render.bUseCameras && (nCamNum >= 0))) {
 	pc = gameData.cameras.cameras + nCamNum;
 	pc->bVisible = 1;
 	bIsTeleCam = pc->bTeleport;

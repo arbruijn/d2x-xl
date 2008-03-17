@@ -1224,31 +1224,32 @@ szAllHostages [0] = 0;
 szEndGame [0] = 0;
 if (!gameStates.app.cheats.bEnabled && (LOCALPLAYER.hostages.nOnBoard == LOCALPLAYER.hostages.nLevel)) {
 	nAllHostagePoints = LOCALPLAYER.hostages.nOnBoard * 1000 * (gameStates.app.nDifficultyLevel+1);
-	sprintf (szAllHostages, "%s%i\n", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
+	sprintf (szAllHostages, "%s%i", TXT_FULL_RESCUE_BONUS, nAllHostagePoints);
 	}
 else
 	nAllHostagePoints = 0;
 if (!gameStates.app.cheats.bEnabled && !IsMultiGame && LOCALPLAYER.lives && 
 	 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
 	nEndGamePoints = LOCALPLAYER.lives * 10000;
-	sprintf (szEndGame, "%s%i\n", TXT_SHIP_BONUS, nEndGamePoints);
+	sprintf (szEndGame, "%s%i  ", TXT_SHIP_BONUS, nEndGamePoints);
 	bIsLastLevel=1;
 	}
 else
 	nEndGamePoints = bIsLastLevel = 0;
 AddBonusPointsToScore (nSkillPoints + nEnergyPoints + nShieldPoints + nHostagePoints + nAllHostagePoints + nEndGamePoints);
 c = 0;
-sprintf (szMenu [c++], "%s%i", TXT_SHIELD_BONUS, nShieldPoints);		// Return at start to lower menu...
-sprintf (szMenu [c++], "%s%i", TXT_ENERGY_BONUS, nEnergyPoints);
-sprintf (szMenu [c++], "%s%i", TXT_HOSTAGE_BONUS, nHostagePoints);
-sprintf (szMenu [c++], "%s%i", TXT_SKILL_BONUS, nSkillPoints);
-sprintf (szMenu [c++], "%s", szAllHostages);
-if (!(gameData.app.nGameMode & GM_MULTI) && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
-	sprintf (szMenu [c++], "%s", szEndGame);
-sprintf (szMenu [c++], "%s%i\n", TXT_TOTAL_BONUS, nShieldPoints+nEnergyPoints+nHostagePoints+nSkillPoints+nAllHostagePoints+nEndGamePoints);
-sprintf (szMenu [c++], "%s%i", TXT_TOTAL_SCORE, LOCALPLAYER.score);
+sprintf (szMenu [c++], "%s%i  ", TXT_SHIELD_BONUS, nShieldPoints);		// Return at start to lower menu...
+sprintf (szMenu [c++], "%s%i  ", TXT_ENERGY_BONUS, nEnergyPoints);
+sprintf (szMenu [c++], "%s%i  ", TXT_HOSTAGE_BONUS, nHostagePoints);
+sprintf (szMenu [c++], "%s%i  ", TXT_SKILL_BONUS, nSkillPoints);
+sprintf (szMenu [c++], "%s  ", szAllHostages);
+if (!IsMultiGame && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
+	sprintf (szMenu [c++], "%s  ", szEndGame);
+sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS, 
+			nShieldPoints + nEnergyPoints + nHostagePoints + nSkillPoints + nAllHostagePoints + nEndGamePoints);
+sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_SCORE, LOCALPLAYER.score);
 memset (m, 0, sizeof (m));
-for (i=0; i<c; i++) {
+for (i = 0; i < c; i++) {
 	m [i].nType = NM_TYPE_TEXT;
 	m [i].text = szMenu [i];
 	}

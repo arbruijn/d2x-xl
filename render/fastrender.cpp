@@ -88,6 +88,8 @@ if (gameOpts->ogl.bGlTexMerge && gameStates.render.textures.bGlsTexMergeOk) {
 		nFrame = nFrame;
 	if (faceP->nOvlTex)
 		faceP->bmTop = LoadFaceBitmap ((short) (faceP->nOvlTex), nFrame);
+	else
+		faceP->bmTop = NULL;
 	}
 else {
 	if (faceP->nOvlTex != 0) {
