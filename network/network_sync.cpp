@@ -447,10 +447,13 @@ if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit
 	*key = -2;
 	return;
 	}
+#if 1 //ndef _DEBUG
 if (nPackets || (networkData.nJoinState >= 4)) {
-	ResetSyncTimeout ();
+	if (networkData.nJoinState)
+		ResetSyncTimeout ();
 	return;
 	}
+#endif
 if ((time_t) SDL_GetTicks () > networkData.toSyncPoll) {	// Poll time expired, re-send request
 #if 1			
 	con_printf (CONDBG, "Re-sending join request.\n");
@@ -488,7 +491,7 @@ if (i < 0) {
 	return -1;
 	}
 sprintf (m [0].text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers.players [i].callsign, TXT_NET_TO_ENTER);
-ResetSyncTimeout ();
+networkData.toSyncPoll = 0;
 do {
 	choice = ExecMenu (NULL, TXT_WAIT, 2, m, NetworkSyncPoll, NULL);
 	} while (choice > -1);

@@ -313,14 +313,6 @@ short LoadHiresModel (int nModel, short i, int bCustom)
 if (replacementModels [i].pszHires)
 	LogErr ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
-#ifdef _DEBUG
-if (replacementModels [i].pszHires && !strcmp (replacementModels [i].pszHires, "pyrogl.oof"))
-	;
-#endif
-#if OOF_TEST_CUBE
-if (!strcmp (replacementModels [i].pszHires + 1, "pyrogl.oof"))
-	replacementModels [i].pszHires = "cube.oof";
-#endif
 if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + gameData.models.nHiresModels, i, bCustom)))
 	return j;
 #if 1

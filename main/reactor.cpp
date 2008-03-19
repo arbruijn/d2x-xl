@@ -483,8 +483,10 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 					rStatP->bSeenPlayer = 0;
 					rStatP->nNextFireTime = 0;
 					}
+#if CHECK_REACTOR_BOSSFLAG
 				if (ROBOTINFO (objP->id).bossFlag)
 					extraGameInfo [0].nBossCount++;
+#endif
 				gameStates.gameplay.nLastReactor = gameStates.gameplay.nReactorCount;
 				gameStates.gameplay.nReactorCount++;
 				}
@@ -517,10 +519,13 @@ if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
 else if (BOSS_COUNT) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount; j++) {
-		if (ROBOTINFO (OBJECTS [gameData.reactor.states [j].nObject].id).bossFlag) {
+#if CHECK_REACTOR_BOSSFLAG
+		if (ROBOTINFO (OBJECTS [gameData.reactor.states [j].nObject].id).bossFlag)
+#endif
+			{
 			BashToShield (gameData.reactor.states [j].nObject, "reactor");
 			if (j < --gameStates.gameplay.nReactorCount)
-			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
+				gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount];
 			}
 		}
 	gameData.reactor.bPresent = 0;

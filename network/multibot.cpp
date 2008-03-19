@@ -82,6 +82,7 @@ extern int MultiPowerupIsAllowed (int);
 int MultiCanRemoveRobot (int nObject, int agitation)
 {
 	int nRemOwner;
+	tObject *objP = OBJECTS + nObject;
 
 	// Claim robot if necessary.
 if (gameStates.app.bPlayerExploded)
@@ -91,20 +92,20 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject)) {
 	Int3 ();
 	return 0;
 	}
-else if (gameData.objs.objects [nObject].nType != OBJ_ROBOT) {
+else if (objP->nType != OBJ_ROBOT) {
 	Int3 ();
 	return 0;
 	}
 #endif
-else if (ROBOTINFO (gameData.objs.objects [nObject].id).bossFlag) {
+else if (ROBOTINFO (objP->id).bossFlag) {
 	int i = FindBoss (nObject);
 	if ((i >= 0) && gameData.boss [i].nDying == 1)
 		return 0;
 	return 1;
 	}
-nRemOwner = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_OWNER;
+nRemOwner = objP->cType.aiInfo.REMOTE_OWNER;
 if (nRemOwner == gameData.multiplayer.nLocalPlayer) { // Already my robot!
-	int nSlot = gameData.objs.objects [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
+	int nSlot = objP->cType.aiInfo.REMOTE_SLOT_NUM;
    if ((nSlot < 0) || (nSlot >= MAX_ROBOTS_CONTROLLED))
 		return 0;
 	if (gameData.multigame.robots.fired [nSlot])

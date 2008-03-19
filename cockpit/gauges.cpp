@@ -2468,8 +2468,7 @@ void ShowHUDNames ()
 
 bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || 
 						 (netGame.bShowAllNames && gameData.multigame.bShowReticleName));
-bShowTeamNames = (gameData.multigame.bShowReticleName &&
-						 ((gameData.app.nGameMode & GM_MULTI_COOP) || (gameData.app.nGameMode & GM_TEAM)));
+bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 bShowFlags = (gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD | GM_ENTROPY));
 
 nTeam = GetTeam (gameData.multiplayer.nLocalPlayer);

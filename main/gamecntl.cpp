@@ -1143,11 +1143,11 @@ switch (key) {
 		break;
 #endif
 	case KEY_ALTED+KEY_F4:
-		gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName+1)%2;
+		gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
 
 	case KEY_F7:
-		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % ((gameData.app.nGameMode & GM_TEAM) ? 4 : 3);
-		if (gameData.app.nGameMode & GM_MULTI)
+		gameData.multigame.kills.bShowList = (gameData.multigame.kills.bShowList+1) % (IsTeamGame ? 4 : 3);
+		if (IsMultiGame)
 			MultiSortKillList();
 		bStopPlayerMovement = 0;
 		break;

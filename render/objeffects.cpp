@@ -1679,7 +1679,7 @@ if (!gameData.objs.bIsSlowWeapon [objP->id] && gameStates.app.bHaveExtraGameInfo
 			l = f2fl (phb->vMax.p.z - phb->vMin.p.z);
 			dx = f2fl (phb->vMax.p.x - phb->vMin.p.x);
 			dy = f2fl (phb->vMax.p.y - phb->vMin.p.y);
-			r = (sqrt (dx * dx + dy * dy) / sqrt (2.0f));
+			r = (float) (sqrt (dx * dx + dy * dy) / sqrt (2.0f));
 			if (objP->id == FUSION_ID) {
 				l *= 1.5f;
 				r /= 1.5f;

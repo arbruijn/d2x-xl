@@ -146,9 +146,7 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 	sin.sin_port = htons(baseport);
 	if (bind(sk->fd, (struct sockaddr *)&sin, sizeof(sin)))
 	{
-		if (closesocket(sk->fd))
-			//msg("close() failed during error recovery: %m")
-			;
+		closesocket(sk->fd);
 		sk->fd = -1;
 #ifdef _GNUC
 		FAIL("bind() to UDP port %d failed: %m", baseport);
@@ -182,9 +180,7 @@ static int ipx_mcast4_OpenSocket(ipx_socket_t *sk, int port)
 
 static void ipx_mcast4_CloseSocket(ipx_socket_t *sk)
 {
-	if(closesocket(sk->fd) < 0)
-		//msg("Close failed")
-		;
+	closesocket(sk->fd);
 	sk->fd = -1;
 }
 
@@ -340,9 +336,7 @@ static void ipx_mcast4_HandleLeaveGame(ipx_socket_t *sk)
 
 	mreq.imr_multiaddr = game_addr;
 	mreq.imr_interface.s_addr = INADDR_ANY;
-	if(setsockopt(sk->fd, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const char *) &mreq, sizeof(mreq)) < 0)
-		//msg("setsockopt() failed unsubscribing from previous group!")
-		;
+	setsockopt(sk->fd, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const char *) &mreq, sizeof(mreq));
 	game_addr.s_addr = 0;
 }
 

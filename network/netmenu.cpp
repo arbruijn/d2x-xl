@@ -461,7 +461,8 @@ if (nLastReactorLife != menus [optReactorLife].value)   {
 	menus [optReactorLife].rebuild = 1;
    }
   
-if (menus [optPlayTime].value != LastPTA) {
+if ((optPlayTime >= 0) && (menus [optPlayTime].value != LastPTA)) {
+#if 0
 	if (gameData.app.nGameMode & GM_MULTI_COOP) {
 		LastPTA = 0;
 		ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
@@ -469,13 +470,14 @@ if (menus [optPlayTime].value != LastPTA) {
 		menus [optPlayTime].rebuild = 1;
 		return;
 		}
-
+#endif
 	netGame.xPlayTimeAllowed = mpParams.nMaxTime = menus [optPlayTime].value;
-	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
+	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.xPlayTimeAllowed * 5, TXT_MINUTES_ABBREV);
 	LastPTA = netGame.xPlayTimeAllowed;
 	menus [optPlayTime].rebuild = 1;
 	}
-if (menus [optKillGoal].value!= LastKillGoal) {
+if ((optKillGoal >= 0) && (menus [optKillGoal].value != LastKillGoal)) {
+#if 0
 	if (gameData.app.nGameMode & GM_MULTI_COOP) {
 		ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
 		menus [optKillGoal].value = 0;
@@ -483,8 +485,8 @@ if (menus [optKillGoal].value!= LastKillGoal) {
 		LastKillGoal = 0;
 		return;
 		}
-
-mpParams.nKillGoal = netGame.KillGoal = menus [optKillGoal].value;
+#endif
+	mpParams.nKillGoal = netGame.KillGoal = menus [optKillGoal].value;
 	sprintf (menus [optKillGoal].text, TXT_KILLGOAL, netGame.KillGoal*5);
 	LastKillGoal = netGame.KillGoal;
 	menus [optKillGoal].rebuild = 1;
@@ -510,14 +512,22 @@ do {
 	*szInvul = * (TXT_REACTOR_LIFE - 1);
 	ADD_SLIDER (opt, szInvul + 1, mpParams.nReactorLife, 0, 10, KEY_R, HTX_MULTI2_REACTOR); 
 	optReactorLife = opt++;
-	sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
-	*szPlayTime = * (TXT_MAXTIME - 1);
-	ADD_SLIDER (opt, szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
-	optPlayTime = opt++;
-	sprintf (szKillGoal + 1, TXT_KILLGOAL, netGame.KillGoal*5);
-	*szKillGoal = * (TXT_KILLGOAL - 1);
-	ADD_SLIDER (opt, szKillGoal + 1, mpParams.nKillGoal, 0, 10, KEY_K, HTX_MULTI2_KILLGOAL);
-	optKillGoal = opt++;
+	if (IsCoopGame) {
+		optPlayTime =
+		optKillGoal = -1;
+		LastPTA =
+		LastKillGoal = 0;
+		}
+	else {
+		sprintf (szPlayTime + 1, TXT_MAXTIME, netGame.xPlayTimeAllowed*5, TXT_MINUTES_ABBREV);
+		*szPlayTime = * (TXT_MAXTIME - 1);
+		ADD_SLIDER (opt, szPlayTime + 1, mpParams.nMaxTime, 0, 10, KEY_T, HTX_MULTI2_LVLTIME); 
+		optPlayTime = opt++;
+		sprintf (szKillGoal + 1, TXT_KILLGOAL, netGame.KillGoal * 5);
+		*szKillGoal = * (TXT_KILLGOAL - 1);
+		ADD_SLIDER (opt, szKillGoal + 1, mpParams.nKillGoal, 0, 10, KEY_K, HTX_MULTI2_KILLGOAL);
+		optKillGoal = opt++;
+		}
 	ADD_CHECK (opt, TXT_INVUL_RESPAWN, mpParams.bInvul, KEY_I, HTX_MULTI2_INVUL);
 	optStartInvul = opt++;
 	ADD_CHECK (opt, TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS);
@@ -538,7 +548,8 @@ do {
 	optSetPower = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	sprintf (socket_string, "%d", (gameStates.multi.nGameType == UDP_GAME) ? udpBasePort [1] + networkData.nSocket : networkData.nSocket);
+	sprintf (socket_string, "%d", (gameStates.multi.nGameType == UDP_GAME) ? 
+				udpBasePort [1] + networkData.nSocket : networkData.nSocket);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		ADD_TEXT (opt, TXT_SOCKET2, KEY_N);
 		opt++;
@@ -1437,17 +1448,17 @@ if (key == -1)
 else if (choice == optMoreOpts) {
 	if (m [optGameTypes + 3].value)
 		gameData.app.nGameMode = GM_MULTI_COOP;
-		NetworkMoreGameOptions ();
-		gameData.app.nGameMode = 0;
-		if (gameStates.multi.nGameType == UDP_GAME) {
-			sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
-			ipx_MyAddress [4], 
-			ipx_MyAddress [5], 
-			ipx_MyAddress [6], 
-			ipx_MyAddress [7], 
-			udpBasePort [1]);
-			}
-		goto doMenu;
+	NetworkMoreGameOptions ();
+	gameData.app.nGameMode = 0;
+	if (gameStates.multi.nGameType == UDP_GAME) {
+		sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
+		ipx_MyAddress [4], 
+		ipx_MyAddress [5], 
+		ipx_MyAddress [6], 
+		ipx_MyAddress [7], 
+		udpBasePort [1]);
+		}
+	goto doMenu;
 	}
 else if (!gameStates.app.bNostalgia && (optD2XOpts >= 0) && (choice == optD2XOpts)) {
 	NetworkGetGameType (m, bAnarchyOnly);

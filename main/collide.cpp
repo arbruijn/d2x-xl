@@ -98,15 +98,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-------------------------------------------------------------------------------------------------------------
 //	The only reason this routine is called (as of 10/12/94) is so Brain guys can open doors.
-void CollideRobotAndWall (tObject *robot, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
+void CollideRobotAndWall (tObject *robotP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
-	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (robot);
-	tRobotInfo	*botInfoP = &ROBOTINFO (robot->id);
+	tAILocal		*ailp = gameData.ai.localInfo + OBJ_IDX (robotP);
+	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->id);
 
-if ((robot->id == ROBOT_BRAIN) || 
-	 (robot->cType.aiInfo.behavior == AIB_RUN_FROM) || 
+if ((robotP->id == ROBOT_BRAIN) || 
+	 (robotP->cType.aiInfo.behavior == AIB_RUN_FROM) || 
 	 botInfoP->companion || 
-	 (robot->cType.aiInfo.behavior == AIB_SNIPE)) {
+	 (robotP->cType.aiInfo.behavior == AIB_SNIPE)) {
 	int	nWall = WallNumI (hitseg, hitwall);
 	if (nWall != -1) {
 		tWall *wallP = gameData.walls.walls + nWall;
@@ -191,7 +191,7 @@ if ((otherObjP->nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 			break;
 
 		case OBJ_PLAYER:
-			//	If colliding with a claw nType robot, do damage proportional to gameData.time.xFrame because you can Collide with those
+			//	If colliding with a claw nType robotP, do damage proportional to gameData.time.xFrame because you can Collide with those
 			//	bots every frame since they don't move.
 			if ((otherObjP->nType == OBJ_ROBOT) && (ROBOTINFO (otherObjP->id).attackType))
 				damage = FixMul (damage, gameData.time.xFrame*2);
@@ -321,7 +321,7 @@ if (!(objP->mType.physInfo.flags & PF_PERSISTENT)) {
 
 //	-----------------------------------------------------------------------------
 //deal with two gameData.objs.objects bumping into each other.  Apply vForce from collision
-//to each robot.  The flags tells whether the objects should take damage from
+//to each robotP.  The flags tells whether the objects should take damage from
 //the collision.
 
 #define SIGN(_i)	((_i) ? (_i) / labs (_i) : 1)
@@ -1043,7 +1043,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || bEscort) {
 		} 
 	}
 else {
-	// This is a robot's laser
+	// This is a robotP's laser
 	if (!(weaponP->mType.physInfo.flags & PF_BOUNCE))
 		KillObject (weaponP);
 	}
@@ -1076,7 +1076,7 @@ return 1;
 //##	return; 
 //##}
 
-//##void CollideFireballAndRobot (tObject *fireball, tObject *robot, vmsVector *vHitPt) {
+//##void CollideFireballAndRobot (tObject *fireball, tObject *robotP, vmsVector *vHitPt) {
 //##	return; 
 //##}
 
@@ -1137,7 +1137,7 @@ return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//##void CollideRobotAndHostage (tObject *robot, tObject *hostage, vmsVector *vHitPt) { 
+//##void CollideRobotAndHostage (tObject *robotP, tObject *hostage, vmsVector *vHitPt) { 
 //##	return; 
 //##}
 
@@ -1145,28 +1145,28 @@ return 1;
 
 fix xLastThiefHitTime;
 
-int  CollideRobotAndPlayer (tObject *robot, tObject *playerObjP, vmsVector *vHitPt)
+int  CollideRobotAndPlayer (tObject *robotP, tObject *playerObjP, vmsVector *vHitPt)
 { 
 	int	bTheftAttempt = 0;
 	short	nCollisionSeg;
 
-if (robot->flags & OF_EXPLODING)
+if (robotP->flags & OF_EXPLODING)
 	return 1;
 nCollisionSeg = FindSegByPoint (vHitPt, playerObjP->nSegment, 1, 0);
 if (nCollisionSeg != -1)
 	ObjectCreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].impact_size, gameData.weapons.info [0].wall_hit_vclip);
 if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
-	if (ROBOTINFO (robot->id).companion)	//	Player and companion don't Collide.
+	if (ROBOTINFO (robotP->id).companion)	//	Player and companion don't Collide.
 		return 1;
-	if (ROBOTINFO (robot->id).kamikaze) {
-		ApplyDamageToRobot (robot, robot->shields + 1, OBJ_IDX (playerObjP));
+	if (ROBOTINFO (robotP->id).kamikaze) {
+		ApplyDamageToRobot (robotP, robotP->shields + 1, OBJ_IDX (playerObjP));
 		if (playerObjP == gameData.objs.console)
-			AddPointsToScore (ROBOTINFO (robot->id).scoreValue);
+			AddPointsToScore (ROBOTINFO (robotP->id).scoreValue);
 		}
-	if (ROBOTINFO (robot->id).thief) {
-		if (gameData.ai.localInfo [OBJ_IDX (robot)].mode == AIM_THIEF_ATTACK) {
+	if (ROBOTINFO (robotP->id).thief) {
+		if (gameData.ai.localInfo [OBJ_IDX (robotP)].mode == AIM_THIEF_ATTACK) {
 			xLastThiefHitTime = gameData.time.xGame;
-			AttemptToStealItem (robot, playerObjP->id);
+			AttemptToStealItem (robotP, playerObjP->id);
 			bTheftAttempt = 1;
 			} 
 		else if (gameData.time.xGame - xLastThiefHitTime < F1_0*2)
@@ -1175,18 +1175,18 @@ if (playerObjP->id == gameData.multiplayer.nLocalPlayer) {
 		else
 			xLastThiefHitTime = gameData.time.xGame;
 		}
-	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// tObject robot can attract attention to tPlayer
-	DoAiRobotHitAttack (robot, playerObjP, vHitPt);
-	DoAiRobotHit (robot, PA_WEAPON_ROBOT_COLLISION);
+	CreateAwarenessEvent (playerObjP, PA_PLAYER_COLLISION);			// tObject robotP can attract attention to tPlayer
+	DoAiRobotHitAttack (robotP, playerObjP, vHitPt);
+	DoAiRobotHit (robotP, PA_WEAPON_ROBOT_COLLISION);
 	} 
 else
-	MultiRobotRequestChange (robot, playerObjP->id);
+	MultiRobotRequestChange (robotP, playerObjP->id);
 // added this if to remove the bump sound if it's the thief.
 // A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
-//	Changed by MK to make this sound unless the robot stole.
-if (!(bTheftAttempt || ROBOTINFO (robot->id).energyDrain))
+//	Changed by MK to make this sound unless the robotP stole.
+if (!(bTheftAttempt || ROBOTINFO (robotP->id).energyDrain))
 	DigiLinkSoundToPos (SOUND_ROBOT_HIT_PLAYER, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
-BumpTwoObjects (robot, playerObjP, 1, vHitPt);
+BumpTwoObjects (robotP, playerObjP, 1, vHitPt);
 return 1; 
 }
 
@@ -1199,10 +1199,12 @@ return 1;
 int NetDestroyReactor (tObject *reactorP)
 {
 if (extraGameInfo [0].nBossCount && !gameData.reactor.bDestroyed) {
+#if CHECK_REACTOR_BOSSFLAG
 	if (!reactorP || ROBOTINFO (reactorP->id).bossFlag)
+#endif	
 		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (reactorP);
-	if ((reactorP != NULL) && !(reactorP->flags & (OF_EXPLODING|OF_DESTROYED))) {
+	if (reactorP && !(reactorP->flags & (OF_EXPLODING|OF_DESTROYED))) {
 		DigiLinkSoundToPos (SOUND_CONTROL_CENTER_DESTROYED, reactorP->nSegment, 0, &reactorP->position.vPos, 0, F1_0);
 		ExplodeObject (reactorP, 0);
 		}
@@ -1246,7 +1248,10 @@ if (reactorP->shields >= 0)
 	reactorP->shields -= xDamage;
 if ((reactorP->shields < 0) && !(reactorP->flags & (OF_EXPLODING | OF_DESTROYED))) {
 	/*if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)*/
+	if (!reactorP || ROBOTINFO (reactorP->id).bossFlag)
+#if CHECK_REACTOR_BOSSFLAG
 	if (ROBOTINFO (reactorP->id).bossFlag)
+#endif	
 		extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (reactorP);
 	if (IsMultiGame) {
@@ -1350,7 +1355,7 @@ if (weaponP->cType.laserInfo.parentType == OBJ_PLAYER) {
 	ApplyDamageToReactor (reactorP, damage, weaponP->cType.laserInfo.nParentObj);
 	MaybeKillWeapon (weaponP, reactorP);
 	} 
-else {	//	If robot weaponP hits control center, blow it up, make it go away, but do no damage to control center.
+else {	//	If robotP weaponP hits control center, blow it up, make it go away, but do no damage to control center.
 	ObjectCreateExplosion (reactorP->nSegment, vHitPt, reactorP->size*3/20, VCLIP_SMALL_EXPLOSION);
 	MaybeKillWeapon (weaponP, reactorP);
 	}
@@ -1372,7 +1377,7 @@ MaybeKillWeapon (weaponP, clutterP);
 return 1;
 }
 
-//--mk, 121094 -- extern void spinRobot (tObject *robot, vmsVector *vHitPt);
+//--mk, 121094 -- extern void spinRobot (tObject *robotP, vmsVector *vHitPt);
 
 extern tObject *ExplodeBadassObject (tObject *objP, fix damage, fix distance, fix vForce);
 
@@ -1421,7 +1426,7 @@ extern int MultiAllPlayersAlive ();
 void MultiSendFinishGame ();
 
 //	------------------------------------------------------------------------------------------------------
-//	Return 1 if robot died, else return 0
+//	Return 1 if robotP died, else return 0
 int ApplyDamageToRobot (tObject *robotP, fix damage, int nKillerObj)
 {
 	char		bIsThief, bIsBoss;
@@ -1522,25 +1527,25 @@ int	nBuddyGaveHintCount = 5;
 fix	xLastTimeBuddyGameHint = 0;
 
 //	Return true if damage done to boss, else return false.
-int DoBossWeaponCollision (tObject *robot, tObject *weaponP, vmsVector *vHitPt)
+int DoBossWeaponCollision (tObject *robotP, tObject *weaponP, vmsVector *vHitPt)
 {
 	int	d2BossIndex;
 	int	bDamage = 1;
 	int	bKinetic = WI_matter (weaponP->id);
 
-d2BossIndex = ROBOTINFO (robot->id).bossFlag - BOSS_D2;
+d2BossIndex = ROBOTINFO (robotP->id).bossFlag - BOSS_D2;
 Assert ((d2BossIndex >= 0) && (d2BossIndex < NUM_D2_BOSSES));
 
 //	See if should spew a bot.
 if (weaponP->cType.laserInfo.parentType == OBJ_PLAYER) {
 	if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsKinetic) || 
 		 (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewBotsEnergy)) {
-		int i = FindBoss (OBJ_IDX (robot));
+		int i = FindBoss (OBJ_IDX (robotP));
 		if (i >= 0) {
 			if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bSpewMore && (d_rand () > 16384) &&
-				 (BossSpewRobot (robot, vHitPt, -1, 0) != -1))
+				 (BossSpewRobot (robotP, vHitPt, -1, 0) != -1))
 				gameData.boss [i].nLastGateTime = gameData.time.xGame - gameData.boss [i].nGateInterval - 1;	//	Force allowing spew of another bot.
-			BossSpewRobot (robot, vHitPt, -1, 0);
+			BossSpewRobot (robotP, vHitPt, -1, 0);
 			}
 		}
 	}
@@ -1550,9 +1555,9 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 	vmsVector	tvec1;
 
 	//	Boss only vulnerable in back.  See if hit there.
-	VmVecSub (&tvec1, vHitPt, &robot->position.vPos);
+	VmVecSub (&tvec1, vHitPt, &robotP->position.vPos);
 	VmVecNormalizeQuick (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
-	dot = VmVecDot (&tvec1, &robot->position.mOrient.fVec);
+	dot = VmVecDot (&tvec1, &robotP->position.mOrient.fVec);
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
 #endif
@@ -1560,7 +1565,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		short	nNewObj;
 		short	nSegment;
 
-		nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1, 0);
+		nSegment = FindSegByPoint (vHitPt, robotP->nSegment, 1, 0);
 		DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 		bDamage = 0;
 
@@ -1613,7 +1618,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				newObjP->mType.physInfo.drag = WI_drag (weaponP->nType);
 				VmVecZero (&newObjP->mType.physInfo.thrust);
 
-				VmVecSub (&vec_to_point, vHitPt, &robot->position.vPos);
+				VmVecSub (&vec_to_point, vHitPt, &robotP->position.vPos);
 				VmVecNormalizeQuick (&vec_to_point);
 				weap_vec = weaponP->mType.physInfo.velocity;
 				speed = VmVecNormalizeQuick (&weap_vec);
@@ -1628,7 +1633,7 @@ else if ((bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulK
 		   (!bKinetic && bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulEnergy)) {
 	short	nSegment;
 
-	nSegment = FindSegByPoint (vHitPt, robot->nSegment, 1, 0);
+	nSegment = FindSegByPoint (vHitPt, robotP->nSegment, 1, 0);
 	DigiLinkSoundToPos (SOUND_WEAPON_HIT_DOOR, nSegment, 0, vHitPt, 0, F1_0);
 	bDamage = 0;
 	}
@@ -1799,15 +1804,15 @@ MaybeKillWeapon (weaponP, robotP);
 return 1; 
 }
 
-//##void CollideRobotAndCamera (tObject *robot, tObject *camera, vmsVector *vHitPt) { 
+//##void CollideRobotAndCamera (tObject *robotP, tObject *camera, vmsVector *vHitPt) { 
 //##	return; 
 //##}
 
-//##void CollideRobotAndPowerup (tObject *robot, tObject *powerup, vmsVector *vHitPt) { 
+//##void CollideRobotAndPowerup (tObject *robotP, tObject *powerup, vmsVector *vHitPt) { 
 //##	return; 
 //##}
 
-//##void CollideRobotAndDebris (tObject *robot, tObject *debris, vmsVector *vHitPt) { 
+//##void CollideRobotAndDebris (tObject *robotP, tObject *debris, vmsVector *vHitPt) { 
 //##	return; 
 //##}
 
@@ -2040,13 +2045,13 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
-int CollidePlayerAndNastyRobot (tObject *playerObjP, tObject *robot, vmsVector *vHitPt)
+int CollidePlayerAndNastyRobot (tObject *playerObjP, tObject *robotP, vmsVector *vHitPt)
 {
 //	if (!(ROBOTINFO (objP->id).energyDrain && gameData.multiplayer.players [playerObjP->id].energy))
 ObjectCreateExplosion (playerObjP->nSegment, vHitPt, i2f (10) / 2, VCLIP_PLAYER_HIT);
-if (BumpTwoObjects (playerObjP, robot, 0, vHitPt))	{//no damage from bump
-	DigiLinkSoundToPos (ROBOTINFO (robot->id).clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
-	ApplyDamageToPlayer (playerObjP, robot, F1_0* (gameStates.app.nDifficultyLevel+1));
+if (BumpTwoObjects (playerObjP, robotP, 0, vHitPt))	{//no damage from bump
+	DigiLinkSoundToPos (ROBOTINFO (robotP->id).clawSound, playerObjP->nSegment, 0, vHitPt, 0, F1_0);
+	ApplyDamageToPlayer (playerObjP, robotP, F1_0* (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;
 }
