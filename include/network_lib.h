@@ -202,6 +202,7 @@ typedef struct tNetworkData {
 	short					nPrevFrame;
 	int					bTraceFrames;
 	int					bSyncMissingFrames;
+	int					bSyncExtraGameInfo;
 	short					nSyncExtras;
 	short					nSyncPlayer;
 	tMissingObjFrames	missingObjFrames;

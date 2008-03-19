@@ -636,8 +636,10 @@ if (gameData.demo.nVersion > DEMO_VERSION + 1) {
 objP->flags = NDReadByte ();
 objP->nSignature = NDReadShort ();
 NDReadPosition (objP, bSkip);
+#ifdef _DEBUG
 if ((objP->nType == OBJ_ROBOT) && (objP->id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
+#endif
 objP->attachedObj = -1;
 switch (objP->nType) {
 	case OBJ_HOSTAGE:
@@ -838,8 +840,10 @@ void NDWriteObject (tObject *objP)
 
 if ((o.renderType > RT_WEAPON_VCLIP) && ((gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)))
 	return;
+#ifdef _DEBUG
 if ((o.nType == OBJ_ROBOT) && (o.id == SPECIAL_REACTOR_ROBOT))
 	Int3 ();
+#endif
 if (o.cType.aiInfo.behavior == AIB_STATIC)
 	o.movementType = MT_PHYSICS;
 // Do renderType first so on read, we can make determination of

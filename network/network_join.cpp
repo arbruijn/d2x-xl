@@ -458,6 +458,7 @@ gameData.multiplayer.players [nPlayer].connected = 0;
 // Send updated gameData.objs.objects data to the new/returning tPlayer
 networkData.playerRejoining = *their;
 networkData.playerRejoining.player.connected = nPlayer;
+networkData.bSyncExtraGameInfo = 0;
 networkData.nSyncState = 1;
 networkData.nSentObjs = -1;
 networkData.toSyncFrame = 0;

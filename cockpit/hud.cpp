@@ -116,7 +116,7 @@ void HUDRenderMessages (ubyte nType)
 	tHUDMessage *pMsgs = gameData.hud.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
-	Int3 (); // Get Rob!
+	return; // Get Rob!
 if ((pMsgs->nMessages < 1) && (nModexHUDMsgs == 0))
 	return;
 pMsgs->xTimer -= gameData.time.xFrame;
@@ -203,9 +203,9 @@ if (pMsgs->nMessages > 0) {
 		for (i = 0, y = yStart; i < pMsgs->nMessages; i++)	{
 			n = (pMsgs->nFirst + i) % HUD_MAX_MSGS;
 			if ((n < 0) || (n >= HUD_MAX_MSGS))
-				Int3 (); // Get Rob!!
+				return; // Get Rob!!
 			if (!strcmp (pMsgs->szMsgs [n], "This is a bug."))
-				Int3 (); // Get Rob!!
+				return; // Get Rob!!
 			GrGetStringSize (pMsgs->szMsgs [n], &w, &h, &aw);
 			GrSetFontColorRGBi (pMsgs->nColor, 1, 0, 0);
 			y = yStart + i * (h + 1);

@@ -66,14 +66,17 @@ static char rcsid [] = "$Id: lighting.c,v 1.4 2003/10/04 03:14:47 btb Exp $";
 #define	LIGHTING_CACHE_SIZE	4096	//	Must be power of 2!
 #define	LIGHTING_FRAME_DELTA	256	//	Recompute cache value every 8 frames.
 #define	LIGHTING_CACHE_SHIFT	8
-int	Lighting_frame_delta = 1;
-int	Lighting_cache [LIGHTING_CACHE_SIZE];
-int Cache_hits=0, Cache_lookups=1;
+
+int	nLightingFrameDelta = 1;
+int	lightingCache [LIGHTING_CACHE_SIZE];
+int	nCacheHits = 0, nCacheLookups = 1;
 extern vmsVector playerThrust;
+
 typedef struct {
   int    nTexture;
   int		nBrightness;
 } tTexBright;
+
 #define	NUM_LIGHTS_D1     49
 #define	NUM_LIGHTS_D2     85
 #define	MAX_BRIGHTNESS		F2_0
@@ -152,54 +155,53 @@ for (i = h; --i; ) {
 
 int LightingCacheVisible (int nVertex, int nSegment, int nObject, vmsVector *vObjPos, int nObjSeg, vmsVector *vVertPos)
 {
-	int	cache_val, cache_frame, cache_vis;
-	cache_val = Lighting_cache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
-	cache_frame = cache_val >> 1;
-	cache_vis = cache_val & 1;
-	Cache_lookups++;
-	if ((cache_frame == 0) || (cache_frame + Lighting_frame_delta <= gameData.app.nFrameCount)) {
-		int			bApplyLight = 0;
-		tVFIQuery	fq;
-		tFVIData		hit_data;
-		int			nSegment, hitType;
-		nSegment = -1;
-		#ifdef _DEBUG
-		nSegment = FindSegByPoint (vObjPos, nObjSeg, 1, 0);
-		if (nSegment == -1) {
-			Int3 ();		//	Obj_pos is not in nObjSeg!
-			return 0;		//	Done processing this tObject.
-		}
-		#endif
-		fq.p0					= vObjPos;
-		fq.startSeg			= nObjSeg;
-		fq.p1					= vVertPos;
-		fq.radP0				=
-		fq.radP1				= 0;
-		fq.thisObjNum		= nObject;
-		fq.ignoreObjList	= NULL;
-		fq.flags				= FQ_TRANSWALL;
-		hitType = FindVectorIntersection (&fq, &hit_data);
-		// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
-		// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
-		if (hitType == HIT_OBJECT)
-			Int3 ();	//	Hey, we're not supposed to be checking gameData.objs.objects!
-		if (hitType == HIT_NONE)
+	int	cache_val = lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
+	int	cache_frame = cache_val >> 1;
+	int	cache_vis = cache_val & 1;
+
+nCacheLookups++;
+if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFrameCount)) {
+	int			bApplyLight = 0;
+	tVFIQuery	fq;
+	tFVIData		hit_data;
+	int			nSegment, hitType;
+	nSegment = -1;
+	#ifdef _DEBUG
+	nSegment = FindSegByPoint (vObjPos, nObjSeg, 1, 0);
+	if (nSegment == -1) {
+		Int3 ();		//	Obj_pos is not in nObjSeg!
+		return 0;		//	Done processing this tObject.
+	}
+	#endif
+	fq.p0					= vObjPos;
+	fq.startSeg			= nObjSeg;
+	fq.p1					= vVertPos;
+	fq.radP0				=
+	fq.radP1				= 0;
+	fq.thisObjNum		= nObject;
+	fq.ignoreObjList	= NULL;
+	fq.flags				= FQ_TRANSWALL;
+	hitType = FindVectorIntersection (&fq, &hit_data);
+	// gameData.ai.vHitPos = gameData.ai.hitData.hit.vPoint;
+	// gameData.ai.nHitSeg = gameData.ai.hitData.hit_seg;
+	if (hitType == HIT_OBJECT)
+		return bApplyLight;	//	Hey, we're not supposed to be checking objects!
+	if (hitType == HIT_NONE)
+		bApplyLight = 1;
+	else if (hitType == HIT_WALL) {
+		fix distDist = VmVecDistQuick (&hit_data.hit.vPoint, vObjPos);
+		if (distDist < F1_0/4) {
 			bApplyLight = 1;
-		else if (hitType == HIT_WALL) {
-			fix	distDist;
-			distDist = VmVecDistQuick (&hit_data.hit.vPoint, vObjPos);
-			if (distDist < F1_0/4) {
-				bApplyLight = 1;
-				// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
+			// -- Int3 ();	//	Curious, did fvi detect intersection with tWall containing vertex?
 			}
 		}
-		Lighting_cache [ ((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
-		return bApplyLight;
-	} else {
-Cache_hits++;
-		return cache_vis;
-	}
+	lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)] = bApplyLight + (gameData.app.nFrameCount << 1);
+	return bApplyLight;
+	} 
+nCacheHits++;
+return cache_vis;
 }
+
 // ----------------------------------------------------------------------------------------------
 
 void InitDynColoring (void)

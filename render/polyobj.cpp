@@ -96,7 +96,7 @@ void _pof_CFSeek (int len, int nType)
 	}
 
 	if (Pof_addr > MODEL_BUF_SIZE)
-		Int3 ();
+		return;
 }
 
 int pof_read_int (ubyte *bufp)
@@ -123,7 +123,7 @@ size_t pof_cfread (void *dst, size_t elsize, size_t nelem, ubyte *bufp)
 	Pof_addr += (int) (elsize * nelem);
 
 	if (Pof_addr > MODEL_BUF_SIZE)
-		Int3 ();
+		return 0;
 
 	return nelem;
 }
@@ -158,30 +158,22 @@ void pof_read_vecs (vmsVector *vecs, int n, ubyte *bufp)
 {
 //	CFRead (vecs, sizeof (vmsVector), n, f);
 
-	memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
-	Pof_addr += n*sizeof (*vecs);
-
+memcpy (vecs, &bufp [Pof_addr], n*sizeof (*vecs));
+Pof_addr += n*sizeof (*vecs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	while (n > 0)
-		VmsVectorSwap (&vecs [--n]);
+while (n > 0)
+	VmsVectorSwap (&vecs [--n]);
 #endif
-
-	if (Pof_addr > MODEL_BUF_SIZE)
-		Int3 ();
 }
 
 void pof_read_angs (vmsAngVec *angs, int n, ubyte *bufp)
 {
-	memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
-	Pof_addr += n*sizeof (*angs);
-
+memcpy (angs, &bufp [Pof_addr], n*sizeof (*angs));
+Pof_addr += n*sizeof (*angs);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	while (n > 0)
-		VmsAngVecSwap (&angs [--n]);
+while (n > 0)
+	VmsAngVecSwap (&angs [--n]);
 #endif
-
-	if (Pof_addr > MODEL_BUF_SIZE)
-		Int3 ();
 }
 
 #ifdef DRIVE

@@ -1494,10 +1494,10 @@ void CreateSmartChildren (tObject *objP, int num_smart_children)
 	if (objP->id == EARTHSHAKER_ID)
 		BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
 
-// -- DEBUG --
-	if ((objP->nType == OBJ_WEAPON) && ((objP->id == SMARTMSL_ID) || (objP->id == SMARTMINE_ID) || (objP->id == ROBOT_SMARTMINE_ID) || (objP->id == EARTHSHAKER_ID)))
-		Assert (gameData.weapons.info [objP->id].children != -1);
-// -- DEBUG --
+	if ((objP->nType == OBJ_WEAPON) && 
+		 ((objP->id == SMARTMSL_ID) || (objP->id == SMARTMINE_ID) || (objP->id == ROBOT_SMARTMINE_ID) || (objP->id == EARTHSHAKER_ID)) &&
+		 (gameData.weapons.info [objP->id].children == -1))
+		return;
 
 	if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children != -1)) || (objP->nType == OBJ_ROBOT)) {
 		int	i, nObject;

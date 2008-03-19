@@ -5,6 +5,7 @@
 #include "inferno.h"
 #include "error.h"
 #include "text.h"
+#include "u_mem.h"
 #include "timer.h"
 #include "gameseg.h"
 #include "network.h"
@@ -101,7 +102,24 @@ return 1;
 //	Return a tSegment %i segments away from initial tSegment.
 //	Returns -1 if can't find a tSegment that distance away.
 
-#define	QUEUE_SIZE	64
+// --------------------------------------------------------------------------------------------------------------------
+
+static int	nQueueSize = 64;
+static int	*segQueue = NULL;
+
+static int AllocQueue (int bResize)
+{
+if (bResize) {
+	if (!(segQueue = (int *) D2_REALLOC ((void *) segQueue, (size_t) nQueueSize * 4)))
+		return 0;
+	nQueueSize *= 2;
+	}
+else if (!(segQueue || (segQueue = (int *) D2_ALLOC (nQueueSize * 2))))
+	return 0;
+return 1;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 
 int PickConnectedSegment (tObject *objP, int max_depth)
 {
@@ -109,31 +127,32 @@ int PickConnectedSegment (tObject *objP, int max_depth)
 	int		cur_depth;
 	int		start_seg;
 	int		head, tail;
-	int		seg_queue [QUEUE_SIZE*2];
 	sbyte		bVisited [MAX_SEGMENTS_D2X];
 	sbyte		depth [MAX_SEGMENTS_D2X];
-	sbyte		side_rand [MAX_SIDES_PER_SEGMENT];
+	sbyte		rndSide [MAX_SIDES_PER_SEGMENT];
 
+if (!AllocQueue (0))
+	return -1;
 start_seg = objP->nSegment;
 head = 0;
 tail = 0;
-seg_queue [head++] = start_seg;
+segQueue [head++] = start_seg;
 
 memset (bVisited, 0, gameData.segs.nLastSegment+1);
 memset (depth, 0, gameData.segs.nLastSegment+1);
 cur_depth = 0;
 
 for (i = 0; i < MAX_SIDES_PER_SEGMENT; i++)
-	side_rand [i] = i;
+	rndSide [i] = i;
 
 //	Now, randomize a bit to start, so we don't always get started in the same direction.
 for (i = 0; i < 4; i++) {
 	int	ind1, temp;
 
 	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-	temp = side_rand [ind1];
-	side_rand [ind1] = side_rand [i];
-	side_rand [i] = temp;
+	temp = rndSide [ind1];
+	rndSide [ind1] = rndSide [i];
+	rndSide [i] = temp;
 	}
 
 
@@ -143,45 +162,47 @@ while (tail != head) {
 	int		ind1, ind2, temp;
 
 	if (cur_depth >= max_depth)
-		return seg_queue [tail];
-	segP = gameData.segs.segments + seg_queue [tail++];
-	tail &= QUEUE_SIZE-1;
+		return segQueue [tail];
+	segP = gameData.segs.segments + segQueue [tail++];
+	tail &= nQueueSize - 1;
 
-	//	to make random, switch a pair of entries in side_rand.
+	//	to make random, switch a pair of entries in rndSide.
 	ind1 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
 	ind2 = (d_rand () * MAX_SIDES_PER_SEGMENT) >> 15;
-	temp = side_rand [ind1];
-	side_rand [ind1] = side_rand [ind2];
-	side_rand [ind2] = temp;
+	temp = rndSide [ind1];
+	rndSide [ind1] = rndSide [ind2];
+	rndSide [ind2] = temp;
 
 	count = 0;
 	for (nSide = ind1; count < MAX_SIDES_PER_SEGMENT; count++) {
 		short	snrand, nWall;
 		if (nSide == MAX_SIDES_PER_SEGMENT)
 			nSide = 0;
-		snrand = side_rand [nSide];
+		snrand = rndSide [nSide];
 		nWall = WallNumP (segP, snrand);
 		nSide++;
 		if (((!IS_WALL (nWall)) && (segP->children [snrand] > -1)) || PlayerCanOpenDoor (segP, snrand)) {
 			if (!bVisited [segP->children [snrand]]) {
-				seg_queue [head++] = segP->children [snrand];
+				segQueue [head++] = segP->children [snrand];
 				bVisited [segP->children [snrand]] = 1;
 				depth [segP->children [snrand]] = cur_depth+1;
-				head &= QUEUE_SIZE-1;
+				head &= nQueueSize - 1;
 				if (head > tail) {
-					if (head == tail + QUEUE_SIZE-1)
-						Int3 ();	//	queue overflow.  Make it bigger!
+					if ((head == tail + nQueueSize - 1) && !AllocQueue (1))
+						return -1;	//	queue overflow.  Make it bigger!
 					}
-				else if (head+QUEUE_SIZE == tail + QUEUE_SIZE-1)
-					Int3 ();	//	queue overflow.  Make it bigger!
+				else {
+					if ((head + nQueueSize == tail + nQueueSize - 1) && !AllocQueue (1))
+						return -1;	//	queue overflow.  Make it bigger!
+					}
 				}
 			}
 		}
-	if ((seg_queue [tail] < 0) || (seg_queue [tail] > gameData.segs.nLastSegment)) {
+	if ((segQueue [tail] < 0) || (segQueue [tail] > gameData.segs.nLastSegment)) {
 		// -- Int3 ();	//	Something bad has happened.  Queue is trashed.  --MK, 12/13/94
 		return -1;
 		}
-	cur_depth = depth [seg_queue [tail]];
+	cur_depth = depth [segQueue [tail]];
 	}
 #if TRACE
 con_printf (CONDBG, "...failed at depth %i, returning -1\n", cur_depth);

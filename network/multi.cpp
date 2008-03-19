@@ -330,9 +330,7 @@ if ((*nOwner >= gameData.multiplayer.nPlayers) || (*nOwner < -1)) {
 	*nOwner = -1;
 	return nLocalObj;
 	}
-if (0 > (nRemoteObj = gameData.multigame.localToRemote [nLocalObj]))
-	Int3 (); // See Rob, object has no remote number!
-return nRemoteObj;
+return nRemoteObj = gameData.multigame.localToRemote [nLocalObj];
 }
 
 //-----------------------------------------------------------------------------
@@ -780,8 +778,6 @@ int MultiGetKillList (int *plist)
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	plist [n++] = gameData.multigame.kills.nSorted [i];
-if (n == 0)
-	Int3 (); // SEE ROB OR MATT
 return  n;
 }
 
@@ -1067,8 +1063,8 @@ if (len != multiMessageLengths [(int)buf [0]])
 Assert (buf [0] <= MULTI_MAX_TYPE);
 //      Assert (buf [0]  >= 0);
 
-if (gameData.app.nGameMode & GM_NETWORK)
-	Assert (buf [0] > 0);
+if ((gameData.app.nGameMode & GM_NETWORK) && (buf [0] < 1))
+	return;
 if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
 	com_send_data (buf, len, repeat);
 else if (gameData.app.nGameMode & GM_NETWORK)
@@ -1645,7 +1641,7 @@ if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
 	Int3 ();
 	return;
 	}
-memcpy (&vNewPos, buf+count, sizeof (vmsVector)); 
+memcpy (&vNewPos, buf + count, sizeof (vmsVector)); 
 count += sizeof (vmsVector);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 INTEL_VECTOR (&vNewPos);
@@ -2040,53 +2036,55 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 
 void MultiSendPlayerExplode (char nType)
 {
-	int count = 0;
+	int bufI = 0;
 	int i;
 
 Assert ((nType == MULTI_PLAYER_DROP) || (nType == MULTI_PLAYER_EXPLODE));
 MultiSendPosition (LOCALPLAYER.nObject);
 if (networkData.bSendObjects)
 	networkData.nSentObjs = -1;
-gameData.multigame.msg.buf [count++] = nType;
-gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, LOCALPLAYER.primaryWeaponFlags);
-count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, LOCALPLAYER.secondaryWeaponFlags);
-count += 2;
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.laserLevel;
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [HOMING_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [SMART_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [MEGA_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [FLASHMSL_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [GUIDED_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [MERCURY_INDEX];
-gameData.multigame.msg.buf [count++] = (char)LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX];
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
-count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, LOCALPLAYER.primaryAmmo [GAUSS_INDEX]);
-count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf+count, LOCALPLAYER.flags);
-count += 4;
-gameData.multigame.msg.buf [count++] = gameData.multigame.create.nLoc;
+gameData.multigame.msg.buf [bufI++] = nType;
+gameData.multigame.msg.buf [bufI++] = gameData.multiplayer.nLocalPlayer;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryWeaponFlags);
+bufI += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.secondaryWeaponFlags);
+bufI += 2;
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.laserLevel;
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [HOMING_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [CONCUSSION_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [SMART_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [MEGA_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [FLASHMSL_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [GUIDED_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [SMARTMINE_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [MERCURY_INDEX];
+gameData.multigame.msg.buf [bufI++] = (char) LOCALPLAYER.secondaryAmmo [EARTHSHAKER_INDEX];
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
+bufI += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.primaryAmmo [GAUSS_INDEX]);
+bufI += 2;
+PUT_INTEL_INT (gameData.multigame.msg.buf + bufI, LOCALPLAYER.flags);
+bufI += 4;
+gameData.multigame.msg.buf [bufI++] = gameData.multigame.create.nLoc;
 Assert (gameData.multigame.create.nLoc <= MAX_NET_CREATE_OBJECTS);
-memset (gameData.multigame.msg.buf+count, -1, MAX_NET_CREATE_OBJECTS*sizeof (short));
+memset (gameData.multigame.msg.buf + bufI, -1, MAX_NET_CREATE_OBJECTS*sizeof (short));
 for (i = 0; i < gameData.multigame.create.nLoc; i++) {
 	if (gameData.multigame.create.nObjNums [i] <= 0) {
 		Int3 (); // Illegal value in created egg tObject numbers
-		count += 2;
+		bufI += 2;
 		continue;
 		}
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, gameData.multigame.create.nObjNums [i]); 
-	count += 2;
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameData.multigame.create.nObjNums [i]); 
+	bufI += 2;
 	// We created these objs so our local number = the network number
 	MapObjnumLocalToLocal ((short)gameData.multigame.create.nObjNums [i]);
 	}
 gameData.multigame.create.nLoc = 0;
-if (count > multiMessageLengths [MULTI_PLAYER_EXPLODE])
-	Int3 (); // See Rob
+#ifdef _DEBUG
+if (bufI > multiMessageLengths [MULTI_PLAYER_EXPLODE])
+	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
+#endif
 MultiSendData (gameData.multigame.msg.buf, multiMessageLengths [MULTI_PLAYER_EXPLODE], 2);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
@@ -2297,7 +2295,7 @@ if (gameData.app.nGameMode & GM_NETWORK)
 	return;
 gameData.multigame.msg.buf [count++] = (char)MULTI_POSITION;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf+count), gameData.objs.objects+nObject, 0);
+CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf + count), gameData.objs.objects+nObject, 0);
 count += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, gameData.objs.objects+nObject, 1);
@@ -2531,17 +2529,17 @@ void MultiSendCtrlcenFire (vmsVector *to_goal, int nBestGun, int nObject)
 
 gameData.multigame.msg.buf [count++] = MULTI_CONTROLCEN_FIRE;                
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf+count, to_goal, 12);                    
+memcpy (gameData.multigame.msg.buf + count, to_goal, 12);                    
 count += 12;
 #else
 swapped_vec.p.x = (fix)INTEL_INT ((int)to_goal->p.x);
 swapped_vec.p.y = (fix)INTEL_INT ((int)to_goal->p.y);
 swapped_vec.p.z = (fix)INTEL_INT ((int)to_goal->p.z);
-memcpy (gameData.multigame.msg.buf+count, &swapped_vec, 12);			
+memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);			
 count += 12;
 #endif
 gameData.multigame.msg.buf [count++] = (char)nBestGun;                   
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, nObject);     
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);     
 count += 2;
 MultiSendData (gameData.multigame.msg.buf, count, 0);
 }
@@ -2566,18 +2564,18 @@ if (gameData.app.nGameMode & GM_NETWORK)
 gameData.multigame.msg.buf [count++] = MULTI_CREATE_POWERUP;         
 gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;                                      
 gameData.multigame.msg.buf [count++] = powerupType;                                 
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, nSegment);     
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nSegment);     
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, nObject);     
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);     
 count += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf+count, pos, sizeof (vmsVector));  
+memcpy (gameData.multigame.msg.buf + count, pos, sizeof (vmsVector));  
 count += sizeof (vmsVector);
 #else
 swapped_vec.p.x = (fix)INTEL_INT ((int)pos->p.x);
 swapped_vec.p.y = (fix)INTEL_INT ((int)pos->p.y);
 swapped_vec.p.z = (fix)INTEL_INT ((int)pos->p.z);
-memcpy (gameData.multigame.msg.buf+count, &swapped_vec, 12);			
+memcpy (gameData.multigame.msg.buf + count, &swapped_vec, 12);			
 count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 2);
@@ -2630,7 +2628,7 @@ if (gameData.app.nGameMode & GM_MULTI_COOP) {
 	MultiSortKillList ();
 	gameData.multigame.msg.buf [count++] = MULTI_SCORE;                  
 	gameData.multigame.msg.buf [count++] = gameData.multiplayer.nLocalPlayer;                           
-	PUT_INTEL_INT (gameData.multigame.msg.buf+count, LOCALPLAYER.score);  
+	PUT_INTEL_INT (gameData.multigame.msg.buf + count, LOCALPLAYER.score);  
 	count += 4;
 	MultiSendData (gameData.multigame.msg.buf, count, 0);
 	}
@@ -2644,7 +2642,7 @@ void MultiSendSaveGame (ubyte slot, uint id, char * desc)
 
 gameData.multigame.msg.buf [count++] = MULTI_SAVE_GAME;              
 gameData.multigame.msg.buf [count++] = slot;                        
-PUT_INTEL_INT (gameData.multigame.msg.buf+count, id);           
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, id);           
 count += 4;             // Save id
 memcpy (&gameData.multigame.msg.buf [count], desc, 20); 
 count += 20;
@@ -2659,7 +2657,7 @@ void MultiSendRestoreGame (ubyte slot, uint id)
 
 gameData.multigame.msg.buf [count++] = MULTI_RESTORE_GAME;   
 gameData.multigame.msg.buf [count++] = slot;                                                 
-PUT_INTEL_INT (gameData.multigame.msg.buf+count, id);         
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, id);         
 count += 4;             // Save id
 MultiSendData (gameData.multigame.msg.buf, count, 2);
 }
@@ -2729,9 +2727,9 @@ void MultiSendHostageDoorStatus (int wallnum)
 Assert (gameData.walls.walls [wallnum].nType == WALL_BLASTABLE);
 gameData.multigame.msg.buf [count] = MULTI_HOSTAGE_DOOR;           
 count += 1;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, wallnum);           
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);           
 count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf+count, gameData.walls.walls [wallnum].hps);  
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameData.walls.walls [wallnum].hps);  
 count += 4;
 MultiSendData (gameData.multigame.msg.buf, count, 0);
 }
@@ -3309,13 +3307,13 @@ if (objP->id == POW_OMEGA && ammoCount == F1_0)
 Assert (ammoCount < F1_0); //make sure fits in short
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
 gameData.multigame.msg.buf [count++] = (char)objP->id;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, gameData.multiplayer.nLocalPlayer); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer); 
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, nObject); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject); 
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, ammoCount); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, ammoCount); 
 count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf+count, seed);
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
 MapObjnumLocalToLocal (nObject);
 #if 0
 if (gameData.app.nGameMode & GM_NETWORK)
@@ -3361,7 +3359,7 @@ gameData.multigame.msg.buf [count++] = (char)MULTI_GUIDED;
 gameData.multigame.msg.buf [count++] = (char)gameData.multiplayer.nLocalPlayer;
 gameData.multigame.msg.buf [count++] = done;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf+count), miss, 0);
+CreateShortPos ((tShortPos *) (gameData.multigame.msg.buf + count), miss, 0);
 count += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, miss, 1);
@@ -3402,7 +3400,7 @@ else if (++fun >= 50)
 		return;
 		}
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (gmObj, (tShortPos *) (buf+count), 0);
+ExtractShortPos (gmObj, (tShortPos *) (buf + count), 0);
 #else
 memcpy ((ubyte *) (sp.bytemat), (ubyte *) (buf + count), 9);
 memcpy ((ubyte *)& (sp.xo), (ubyte *) (buf + count + 9), 14);
@@ -3443,7 +3441,7 @@ void MultiSendWallStatus (int wallnum, ubyte nType, ubyte flags, ubyte state)
 	int count = 0;
 
 gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, wallnum);   
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);   
 count += 2;
 gameData.multigame.msg.buf [count++] = nType;
 gameData.multigame.msg.buf [count++] = flags;
@@ -3461,7 +3459,7 @@ void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ubyte f
 
 Assert (gameData.app.nGameMode & GM_NETWORK);
 gameData.multigame.msg.buf [count++] = MULTI_WALL_STATUS;        
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, wallnum);  
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, wallnum);  
 count += 2;
 gameData.multigame.msg.buf [count++] = nType;
 gameData.multigame.msg.buf [count++] = flags;
@@ -3658,7 +3656,7 @@ PUT_INTEL_INT (gameData.multigame.msg.buf + count, nSegment);
 count += sizeof (int);
 gameData.multigame.msg.buf [count++] = val;
 for (i = 0; i < 6; i++,  count += 2)
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, gameData.segs.segments [nSegment].sides [i].nOvlTex);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.segs.segments [nSegment].sides [i].nOvlTex);
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 }
 
@@ -4244,7 +4242,7 @@ void DropOrb ()
 	int nObject, seed;
 
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))
-	Int3 (); // How did we get here? Get Leighton!
+	return; // How did we get here? Get Leighton!
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]) {
 	HUDInitMessage ((gameData.app.nGameMode & GM_HOARD) ? TXT_NO_ORBS : TXT_NO_VIRUS);
 	return;
@@ -4300,13 +4298,13 @@ void MultiSendDropFlag (int nObject, int seed)
 objP = &gameData.objs.objects [nObject];
 gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_FLAG;
 gameData.multigame.msg.buf [count++] = (char)objP->id;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, gameData.multiplayer.nLocalPlayer); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, gameData.multiplayer.nLocalPlayer); 
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, nObject); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject); 
 count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+count, objP->cType.powerupInfo.count); 
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, objP->cType.powerupInfo.count); 
 count += 2;
-PUT_INTEL_INT (gameData.multigame.msg.buf+count, seed);
+PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
 MapObjnumLocalToLocal (nObject);
 #if 0
 if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY)))

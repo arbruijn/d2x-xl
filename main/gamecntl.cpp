@@ -635,9 +635,10 @@ void HandleEndlevelKey(int key)
 		gameStates.render.cockpit.nLastDrawn[1] = -1;
 		return;
 	}
-
+#ifdef _DEBUG
 	if (key == KEY_BACKSP)
 		Int3();
+#endif
 }
 
 //------------------------------------------------------------------------------

@@ -250,7 +250,7 @@ for (i = 1, --j; i < j; i++) {
 			count = 0;
 		else {
 			if ((count == 3) && (nHitType == HIT_BAD_P0))
-				Int3 ();
+				return;
 			vGoalPos.p.x = (fq.p0->p.x + hit_data.hit.vPoint.p.x)/2;
 			vGoalPos.p.y = (fq.p0->p.y + hit_data.hit.vPoint.p.y)/2;
 			vGoalPos.p.z = (fq.p0->p.z + hit_data.hit.vPoint.p.z)/2;
