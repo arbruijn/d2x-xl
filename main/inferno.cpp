@@ -240,68 +240,54 @@ SDL_WM_SetCaption (szCaption, "Descent II");
 
 // ----------------------------------------------------------------------------
 
-#define SUBVER_XOFFS	 (gameStates.menus.bHires?45:25)
+#define SUBVER_XOFFS	 (gameStates.menus.bHires ? 45 : 25)
 
 void PrintVersionInfo (void)
 {
 	static int bVertigo = -1;
-	int yOffs;
 
-	if (gameStates.menus.bHires) {
-		if (gameOpts->menus.altBg.bHave > 0)
-			yOffs = 8; //102
-		else {
-			yOffs = (88 * (gameStates.render.vr.nScreenMode % 65536)) / 480;
-			if (yOffs < 88)
-				yOffs = 88;
-			}
+	int y, w, ws, h, hs, aw;
+
+if (gameStates.menus.bHires) {
+	if (gameOpts->menus.altBg.bHave > 0)
+		y = 8; //102
+	else {
+		y = (88 * (gameStates.render.vr.nScreenMode % 65536)) / 480;
+		if (y < 88)
+			y = 88;
 		}
-	else
-		yOffs = 37;
-
-	//draw copyright message
-	//if ( gameStates.menus.bDrawCopyright )  
-	{
-		int w, ws, h, hs, aw;
-
-		gameStates.menus.bDrawCopyright = 0;
-		GrSetCurrentCanvas (NULL);
-		GrSetCurFont (GAME_FONT);
-		GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
-
-		GrGetStringSize ("V2.2", &w, &h, &aw);
-
-	   GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, TXT_COPYRIGHT);
-		GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w-w-2, grdCurCanv->cvBitmap.bmProps.h-GAME_FONT->ftHeight-2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
-		if (bVertigo < 0)
-			bVertigo = CFExist ("d2x.hog", gameFolders.szMissionDir, 0);
-		if (bVertigo) {
-			GrSetCurFont (MEDIUM2_FONT);
-			GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
-			GrPrintF (NULL, 
-				//gameStates.menus.bHires?495:248, 
-				grdCurCanv->cvBitmap.bmProps.w-w-SUBVER_XOFFS, 
-				yOffs+ (gameOpts->menus.altBg.bHave?h+2:0), 
-				TXT_VERTIGO);
-			}
-		GrSetCurFont (MEDIUM2_FONT);
-		GrGetStringSize (D2X_NAME, &w, &h, &aw);
-		GrPrintF (NULL, 
-			grdCurCanv->cvBitmap.bmProps.w-w-SUBVER_XOFFS, 
-			yOffs+ ((bVertigo&&!gameOpts->menus.altBg.bHave)?h+2:0), 
-//			grdCurCanv->cvBitmap.bmProps.h-2*h-2, 
-			D2X_NAME);
-		GrSetCurFont (SMALL_FONT);
-		GrGetStringSize (VERSION, &ws, &hs, &aw);
-		GrSetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
-		GrPrintF (NULL, 
-			grdCurCanv->cvBitmap.bmProps.w-ws-1, // (gameStates.menus.bHires? (bVertigo?38:8): (bVertigo?18:3)), //ws, //- (w-ws)/2- (gameStates.menus.bHires?bVertigo?30:5:bVertigo?15:0), 
-			yOffs+ ((bVertigo&&!gameOpts->menus.altBg.bHave)?h+2:0)+ (h-hs)/2, 
-//			grdCurCanv->cvBitmap.bmProps.h-2*h-2, 
-			VERSION);
-		GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
-		//say this is vertigo version
 	}
+else
+	y = 37;
+
+gameStates.menus.bDrawCopyright = 0;
+GrSetCurrentCanvas (NULL);
+GrSetCurFont (GAME_FONT);
+GrGetStringSize ("V2.2", &w, &h, &aw);
+GrSetFontColorRGBi (RGBA_PAL (63, 47, 0), 1, 0, 0);
+GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - 2, "visit www.descent2.de");
+GrSetFontColorRGBi (RGBA_PAL (23, 23, 23), 1, 0, 0);
+GrPrintF (NULL, 0x8000, grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - h - 6, TXT_COPYRIGHT);
+GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - 2, 
+			 grdCurCanv->cvBitmap.bmProps.h - GAME_FONT->ftHeight - h - 6, "V%d.%d", D2X_MAJOR, D2X_MINOR);
+if (bVertigo < 0)
+	bVertigo = CFExist ("d2x.hog", gameFolders.szMissionDir, 0);
+if (bVertigo) {
+	GrSetCurFont (MEDIUM2_FONT);
+	GrGetStringSize (TXT_VERTIGO, &w, &h, &aw);
+	GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - SUBVER_XOFFS, 
+				 y + (gameOpts->menus.altBg.bHave ? h + 2 : 0), TXT_VERTIGO);
+	}
+GrSetCurFont (MEDIUM2_FONT);
+GrGetStringSize (D2X_NAME, &w, &h, &aw);
+GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - w - SUBVER_XOFFS, 
+			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
+GrSetCurFont (SMALL_FONT);
+GrGetStringSize (VERSION, &ws, &hs, &aw);
+GrSetFontColorRGBi (D2BLUE_RGBA, 1, 0, 0);
+GrPrintF (NULL, grdCurCanv->cvBitmap.bmProps.w - ws - 1, 
+			 y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0) + (h - hs) / 2, VERSION);
+GrSetFontColorRGBi (RGBA_PAL (6, 6, 6), 1, 0, 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -2832,7 +2818,7 @@ GrSetMode (
 		: SM (320, 200));
 SetScreenMode (SCREEN_MENU);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-if ((pcx_error = PcxReadFullScrImage (filename, 0))==PCX_ERROR_NONE)	{
+if ((pcx_error = PcxReadFullScrImage (filename, 0)) == PCX_ERROR_NONE)	{
 	GrPaletteStepClear ();
 	GrPaletteFadeIn (gameData.render.pal.pCurPal, 32, 0);
 	} 
@@ -2947,7 +2933,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 #endif
 				check_joystick_calibration ();
 				GrPaletteStepClear ();		//I'm not sure why we need this, but we do
-				CallMenu ();
+				MainMenu ();
 #ifdef EDITOR
 				if (gameStates.app.nFunctionMode == FMODE_EDITOR)	{
 					create_new_mine ();
@@ -3201,6 +3187,7 @@ _3dfx_Init ();
 /*---*/LogErr ("Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
+
 if ((i = FindArg ("-xcontrol")) > 0)
 	KCInitExternalControls (strtol (Args[i+1], NULL, 0), strtol (Args[i+2], NULL, 0));
 
@@ -3239,6 +3226,7 @@ if (!gameStates.app.bAutoRunMission) {
 	ShowTitleScreens ();
 	}
 /*---*/LogErr ("Showing loading screen\n");
+
 ShowLoadingScreen ();
 g3_init ();
 /*---*/LogErr ("Initializing texture merge buffer\n");

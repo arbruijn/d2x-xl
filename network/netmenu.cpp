@@ -462,30 +462,12 @@ if (nLastReactorLife != menus [optReactorLife].value)   {
    }
   
 if ((optPlayTime >= 0) && (menus [optPlayTime].value != LastPTA)) {
-#if 0
-	if (gameData.app.nGameMode & GM_MULTI_COOP) {
-		LastPTA = 0;
-		ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
-		menus [optPlayTime].value = 0;
-		menus [optPlayTime].rebuild = 1;
-		return;
-		}
-#endif
 	netGame.xPlayTimeAllowed = mpParams.nMaxTime = menus [optPlayTime].value;
 	sprintf (menus [optPlayTime].text, TXT_MAXTIME, netGame.xPlayTimeAllowed * 5, TXT_MINUTES_ABBREV);
 	LastPTA = netGame.xPlayTimeAllowed;
 	menus [optPlayTime].rebuild = 1;
 	}
 if ((optKillGoal >= 0) && (menus [optKillGoal].value != LastKillGoal)) {
-#if 0
-	if (gameData.app.nGameMode & GM_MULTI_COOP) {
-		ExecMessageBox ("Sorry", NULL, 1, TXT_OK, TXT_COOP_ERROR);
-		menus [optKillGoal].value = 0;
-		menus [optKillGoal].rebuild = 1;
-		LastKillGoal = 0;
-		return;
-		}
-#endif
 	mpParams.nKillGoal = netGame.KillGoal = menus [optKillGoal].value;
 	sprintf (menus [optKillGoal].text, TXT_KILLGOAL, netGame.KillGoal*5);
 	LastKillGoal = netGame.KillGoal;
@@ -596,8 +578,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	int newSocket = atoi (socket_string);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
 		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, 
-							TXT_INV_SOCKET, 
-							(gameStates.multi.nGameType == UDP_GAME) ? udpBasePort [1] : networkData.nSocket);
+							 TXT_INV_SOCKET, 
+							 (gameStates.multi.nGameType == UDP_GAME) ? udpBasePort [1] : networkData.nSocket);
 	else if (newSocket != networkData.nSocket) {
 		networkData.nSocket = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - UDP_BASEPORT : newSocket;
 		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));

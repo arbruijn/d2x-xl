@@ -372,7 +372,7 @@ if (!(gameStates.app.bGameRunning && gameOpts->menus.nStyle))
 	ShowFullscreenImage (bmP);
 if (bg)
 	bg->background = bmP;
-else
+else if (bmP != pAltBg)
 	GrFreeBitmap (bmP);
 }
 
@@ -434,6 +434,7 @@ else {
 		GrBmBitBlt (w, h, x1, y1, LHX (10), LHY (10), &nmBackground, &(grdCurCanv->cvBitmap));
 	else
 		GrBmBitBlt (w, h, x1, y1, 0, 0, &nmBackground, &(grdCurCanv->cvBitmap));
+	PrintVersionInfo ();
 	glEnable (GL_BLEND);
 	if (!bNoDarkening) {
 		// give the menu background box a 3D look by changing its edges' brightness
@@ -471,13 +472,13 @@ bVerInfo = filename && !strcmp (filename, pszMenuPcx);
 bBlueBox = gameOpts->menus.nStyle && (!bVerInfo || (gameOpts->menus.altBg.bHave > 0));
 if (filename || gameOpts->menus.nStyle) {	// background image file present
 	NMLoadBackground (filename, bg, bRedraw);
+	PrintVersionInfo ();
 	if (bVerInfo)
-		PrintVersionInfo ();
+		;
 	else if (bBlueBox) {
 		if (bg && (bg->menu_canvas || bg->bIgnoreCanv)) {
 			if (bg->menu_canvas)
 				GrSetCurrentCanvas (bg->menu_canvas);
-//			NMLoadBackground (filename, bg, bRedraw);
 			if (bVerInfo)
 				PrintVersionInfo ();
 			}
@@ -1529,10 +1530,10 @@ int ExecMenu4 (char *title, char *subtitle, int nItems, tMenuItem *item,
 					 void (*subfunction) (int nItems, tMenuItem *items, int *last_key, int cItem), 
 					 int *cItemP, char *filename, int width, int height, int bTinyMode)
 {
-	int			old_keyd_repeat, done, cItem = cItemP ? *cItemP : 0;
+	int			bKeyRepeat, done, cItem = cItemP ? *cItemP : 0;
 	int			choice, old_choice, i;
 	nm_control	ctrl;
-	int			k, nLastScrollCheck=-1, sx, sy;
+	int			k, nLastScrollCheck = -1, sx, sy;
 	grsFont		*saveFont;
 	bkg			bg;
 	int			bAllText=0;		//set true if all text items
@@ -1588,7 +1589,7 @@ if (!gameOpts->menus.nStyle && gameStates.app.bGameRunning) {
 	GrUpdate (0);
 	}
 NMSaveScreen (&save_canvas, &game_canvas, &saveFont);
-old_keyd_repeat = gameStates.input.keys.bRepeat;
+bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;
 if (cItem == -1)
 	choice = -1;
@@ -2429,7 +2430,7 @@ SDL_ShowCursor (0);
 // Restore everything...
 NMRestoreScreen (filename, &bg, save_canvas, saveFont, bDontRestore);
 NMFreeAllTextBms (item, nItems);
-gameStates.input.keys.bRepeat = old_keyd_repeat;
+gameStates.input.keys.bRepeat = bKeyRepeat;
 GameFlushInputs ();
 if (time_stopped) {
 	StartTime (0);
@@ -2442,8 +2443,8 @@ if (sound_stopped)
 	DigiResumeDigiSounds ();
 gameStates.menus.nInMenu--;
 GrPaletteStepUp (0, 0, 0);
-SDL_EnableKeyRepeat(0, 0);
-if (gameStates.app.bGameRunning && (gameData.app.nGameMode && GM_MULTI))
+SDL_EnableKeyRepeat (0, 0);
+if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();
 return choice;
 }
@@ -2580,7 +2581,7 @@ int ExecMenuFileSelector (char * title, char * filespec, char * filename, int al
 	char *filenames = NULL;
 	int NumFiles_displayed = 8;
 	int first_item = -1, ofirst_item;
-	int old_keyd_repeat = gameStates.input.keys.bRepeat;
+	int bKeyRepeat = gameStates.input.keys.bRepeat;
 	int bPlayerMode=0;
 	int bDemoMode=0;
 	int demos_deleted=0;
@@ -3096,7 +3097,7 @@ ReadFileNames:
 	}											 
 
 ExitFileMenu:
-	gameStates.input.keys.bRepeat = old_keyd_repeat;
+	gameStates.input.keys.bRepeat = bKeyRepeat;
 
 	if (initialized) {
 		if (gameOpts->menus.nStyle) {
@@ -3158,7 +3159,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 {
 	int i;
 	int done, ocitem, cItem, ofirst_item, first_item, key, redraw;
-	int old_keyd_repeat = gameStates.input.keys.bRepeat;
+	int bKeyRepeat = gameStates.input.keys.bRepeat;
 	int width, height, wx, wy, title_height, border_size;
 	int total_width, total_height;
 	bkg bg;
@@ -3495,7 +3496,7 @@ int ExecMenuListBox1 (char * title, int nItems, char * items [], int allow_abort
 		}
 	}
 
-	gameStates.input.keys.bRepeat = old_keyd_repeat;
+	gameStates.input.keys.bRepeat = bKeyRepeat;
 
 	if (gameOpts->menus.nStyle) {
 		NMRemoveBackground (&bg);

@@ -507,7 +507,7 @@ for (i = 0, objP = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, o
 	}
 
 #ifdef _DEBUG
-if (!(BOSS_COUNT || gameStates.gameplay.nReactorCount)) {
+if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount) {
 #if TRACE
 	con_printf (1, "Warning: No control center.\n");
 #endif
@@ -517,7 +517,7 @@ if (!(BOSS_COUNT || gameStates.gameplay.nReactorCount)) {
 
 if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
-else if (BOSS_COUNT) {
+else if (BOSS_COUNT > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount; j++) {
 #if CHECK_REACTOR_BOSSFLAG
 		if (ROBOTINFO (OBJECTS [gameData.reactor.states [j].nObject].id).bossFlag)

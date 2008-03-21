@@ -486,7 +486,7 @@ extern unsigned char ipx_LocalAddress [10];
 
 //------------------------------------------------------------------------------
 //returns number of item chosen
-int CallMenu () 
+int MainMenu () 
 {
 	tMenuItem m [25];
 	int i, nChoice = 0, nOptions = 0;

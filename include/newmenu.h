@@ -119,6 +119,9 @@ extern int Max_linear_depthObjects;
 
 extern char *nmAllowedChars;
 
+void NMInitBackground (char *filename, bkg *bg, int x, int y, int w, int h, int bRedraw);
+void NMDrawBackground (bkg *bg, int x1, int y1, int x2, int y2, int bRedraw);
+
 int ExecMenuListBox(char *title, int nitems, char *items[], int allow_abortFlag, 
 						  int (*listbox_callback)(int *citem, int *nitems, char *items[], int *keypress));
 int ExecMenuListBox1(char *title, int nitems, char *items[], int allow_abortFlag, int default_item, 

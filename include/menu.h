@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _MENU_H
 
 // returns number of item chosen
-int CallMenu ();
+int MainMenu ();
 void ConfigMenu ();
 void RenderOptionsMenu ();
 void GameplayOptionsMenu ();

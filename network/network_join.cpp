@@ -560,13 +560,13 @@ if (!networkData.refuse.bWaitForAnswer) {
 			*szRank = '\0';
 		else
 			sprintf (szRank, "%s ", pszRankStrings [their->player.rank]);
-		sprintf (szJoinMsg, "%s%s wants to join.\nAlt-1 assigns to team %s.\nAlt-2 to team %s.", 
+		sprintf (szJoinMsg, " \n  %s%s wants to join.  \n  Alt-1 assigns to team %s.  \n  Alt-2 to team %s.  \n ", 
 					szRank, their->player.callsign, netGame.team_name [0], netGame.team_name [1]);
-		joinMsgIndex.nLines = 3;
+		joinMsgIndex.nLines = 5;
 		}
 	else {
-		sprintf (szJoinMsg, "%s wants to join.\nPress F6 to accept.", their->player.callsign);
-		joinMsgIndex.nLines = 2;
+		sprintf (szJoinMsg, " \n  %s wants to join.  \n  Press F6 to accept.  \n ", their->player.callsign);
+		joinMsgIndex.nLines = 4;
 		}
 	joinMsgIndex.pszText = szJoinMsg;
 	joinMsgIndex.nId = 1;

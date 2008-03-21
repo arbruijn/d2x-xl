@@ -872,7 +872,7 @@ if(dest->bmProps.nType != BM_LINEAR) {
 	grsBitmap *tmp = GrCreateBitmap (dest->bmProps.w, dest->bmProps.h, 1);
 	GrBitmapScaleTo(src, tmp);
 	GrBitmap(0, 0, tmp);
-	GrFreeBitmap(tmp);
+	GrFreeBitmap (tmp);
 	return;
 	}
 GrBitmapScaleTo (src, dest);
