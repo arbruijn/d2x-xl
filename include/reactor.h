@@ -26,8 +26,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_CONTROLCEN_LINKS    10
 
-#define CHECK_REACTOR_BOSSFLAG	0
-
 typedef struct tReactorTriggers {
 	short   nLinks;
 	short   nSegment [MAX_CONTROLCEN_LINKS];
