@@ -833,9 +833,11 @@ VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
 
 //-------------------------------------------------------------------------------------------
 
-static inline fix HomingMslStraightTime (void)
+static inline fix HomingMslStraightTime (int id)
 {
-return extraGameInfo [IsMultiGame].nMslStartSpeed ? HOMINGMSL_STRAIGHT_TIME * 2 : HOMINGMSL_STRAIGHT_TIME;
+	int i = ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID)) ? 1 : nMslSlowDown [extraGameInfo [IsMultiGame].nMslStartSpeed];
+
+return i * HOMINGMSL_STRAIGHT_TIME;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -881,13 +883,13 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 	 !((objP->id == GUIDEDMSL_ID) && 
 	   (objP == (gmObjP = gameData.objs.guidedMissile [gameData.objs.objects [objP->cType.laserInfo.nParentObj].id])) && 
 	   (objP->nSignature == gmObjP->nSignature))) {
-	vmsVector		vVecToObject, vTemp;
-	fix				dot = F1_0;
-	fix				speed, xMaxSpeed;
+	vmsVector	vVecToObject, vTemp;
+	fix			dot = F1_0;
+	fix			speed, xMaxSpeed;
+	int			id = objP->id;
 	//	For first 1/2 second of life, missile flies straight.
-	if (objP->cType.laserInfo.creationTime + HomingMslStraightTime () < gameData.time.xGame) {
+	if (objP->cType.laserInfo.creationTime + HomingMslStraightTime (id) < gameData.time.xGame) {
 		int	nMslLock = objP->cType.laserInfo.nMslLock;
-		int	id = objP->id;
 
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
 		if ((id == ROBOT_SMARTMINE_BLOB_ID) || 
@@ -1436,7 +1438,7 @@ return nFires;
 
 //	-------------------------------------------------------------------------------------------
 //	if nGoalObj == -1, then create random vector
-int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSound)
+int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
 {
 	short			nObject;
 	vmsVector	vGoal;
@@ -1454,7 +1456,7 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 
 	//	Create a vector towards the goal, then add some noise to it.
 	nObject = CreateNewLaser (&vGoal, &objP->position.vPos, objP->nSegment, 
-									  OBJ_IDX (objP), objtype, bMakeSound);
+									  OBJ_IDX (objP), objType, bMakeSound);
 	if (nObject == -1)
 		return -1;
 
@@ -1471,132 +1473,93 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objtype, int bMakeSo
 
 //-----------------------------------------------------------------------------
 // Create the children of a smart bomb, which is a bunch of homing missiles.
-void CreateSmartChildren (tObject *objP, int num_smart_children)
+void CreateSmartChildren (tObject *objP, int nSmartChildren)
 {
 	int	parentType, nParentObj;
 	int	bMakeSound;
-	int	numobjs=0;
-	int	objlist [MAX_OBJDISTS];
-	ubyte	blob_id;
+	int	nObjects = 0;
+	int	objList [MAX_OBJDISTS];
+	ubyte	nBlobId;
 
-	if (objP->nType == OBJ_WEAPON) {
-		parentType = objP->cType.laserInfo.parentType;
-		nParentObj = objP->cType.laserInfo.nParentObj;
-	} else if (objP->nType == OBJ_ROBOT) {
-		parentType = OBJ_ROBOT;
-		nParentObj = OBJ_IDX (objP);
-	} else {
-		Int3 ();	//	Hey, what kind of tObject is this!?
-		parentType = 0;
-		nParentObj = 0;
+if (objP->nType == OBJ_WEAPON) {
+	parentType = objP->cType.laserInfo.parentType;
+	nParentObj = objP->cType.laserInfo.nParentObj;
+	}
+else if (objP->nType == OBJ_ROBOT) {
+	parentType = OBJ_ROBOT;
+	nParentObj = OBJ_IDX (objP);
+	}
+else {
+	Int3 ();	//	Hey, what kind of tObject is this!?
+	parentType = 0;
+	nParentObj = 0;
 	}
 
-	if (objP->id == EARTHSHAKER_ID)
-		BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
+if (objP->id == EARTHSHAKER_ID)
+	BlastNearbyGlass (objP, gameData.weapons.info [EARTHSHAKER_ID].strength [gameStates.app.nDifficultyLevel]);
 
-	if ((objP->nType == OBJ_WEAPON) && 
-		 ((objP->id == SMARTMSL_ID) || (objP->id == SMARTMINE_ID) || (objP->id == ROBOT_SMARTMINE_ID) || (objP->id == EARTHSHAKER_ID)) &&
-		 (gameData.weapons.info [objP->id].children == -1))
-		return;
+if ((objP->nType == OBJ_WEAPON) && 
+		((objP->id == SMARTMSL_ID) || (objP->id == SMARTMINE_ID) || (objP->id == ROBOT_SMARTMINE_ID) || (objP->id == EARTHSHAKER_ID)) &&
+		(gameData.weapons.info [objP->id].children == -1))
+	return;
 
-	if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children != -1)) || (objP->nType == OBJ_ROBOT)) {
-		int	i, nObject;
+if (((objP->nType == OBJ_WEAPON) && (gameData.weapons.info [objP->id].children != -1)) || (objP->nType == OBJ_ROBOT)) {
+	int	i, nObject;
+	tObject	*curObjP;
 
-		if (IsMultiGame)
-			d_srand (8321L);
+	if (IsMultiGame)
+		d_srand (8321L);
 
-		for (nObject=0; nObject<=gameData.objs.nLastObject; nObject++) {
-			tObject	*curObjP = gameData.objs.objects + nObject;
-
-			if ((((curObjP->nType == OBJ_ROBOT) && (!curObjP->cType.aiInfo.CLOAKED)) || (curObjP->nType == OBJ_PLAYER)) && (nObject != nParentObj)) {
-				fix	dist;
-
-				if (curObjP->nType == OBJ_PLAYER)
-				{
-					if ((parentType == OBJ_PLAYER) && (IsCoopGame))
-						continue;
-					if (IsTeamGame && (GetTeam (curObjP->id) == GetTeam (gameData.objs.objects [nParentObj].id)))
-						continue;
-					if (gameData.multiplayer.players [curObjP->id].flags & PLAYER_FLAGS_CLOAKED)
-						continue;
+	for (nObject = 0, curObjP = OBJECTS; nObject <= gameData.objs.nLastObject; nObject++, curObjP++) {
+		if ((((curObjP->nType == OBJ_ROBOT) && (!curObjP->cType.aiInfo.CLOAKED)) || (curObjP->nType == OBJ_PLAYER)) && (nObject != nParentObj)) {
+			fix	dist;
+			if (curObjP->nType == OBJ_PLAYER) {
+				if ((parentType == OBJ_PLAYER) && (IsCoopGame))
+					continue;
+				if (IsTeamGame && (GetTeam (curObjP->id) == GetTeam (gameData.objs.objects [nParentObj].id)))
+					continue;
+				if (gameData.multiplayer.players [curObjP->id].flags & PLAYER_FLAGS_CLOAKED)
+					continue;
 				}
 
-				//	Robot blobs can't track robots.
-				if (curObjP->nType == OBJ_ROBOT) {
-					if (parentType == OBJ_ROBOT)
+			//	Robot blobs can't track robots.
+			if (curObjP->nType == OBJ_ROBOT) {
+				if (parentType == OBJ_ROBOT)
+					continue;
+				//	Your shots won't track the buddy.
+				if (parentType == OBJ_PLAYER)
+					if (ROBOTINFO (curObjP->id).companion)
 						continue;
-
-					//	Your shots won't track the buddy.
-					if (parentType == OBJ_PLAYER)
-						if (ROBOTINFO (curObjP->id).companion)
-							continue;
 				}
-
-				dist = VmVecDistQuick (&objP->position.vPos, &curObjP->position.vPos);
-				if (dist < MAX_SMART_DISTANCE) {
-					int	oovis;
-
-					oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
-
-					if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
-						objlist [numobjs] = nObject;
-						numobjs++;
-						if (numobjs >= MAX_OBJDISTS) {
-							numobjs = MAX_OBJDISTS;
-							break;
+			dist = VmVecDistQuick (&objP->position.vPos, &curObjP->position.vPos);
+			if (dist < MAX_SMART_DISTANCE) {
+				int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
+				if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
+					objList [nObjects] = nObject;
+					nObjects++;
+					if (nObjects >= MAX_OBJDISTS) {
+						nObjects = MAX_OBJDISTS;
+						break;
 						}
 					}
 				}
 			}
 		}
 
-		//	Get nType of weapon for child from parent.
-		if (objP->nType == OBJ_WEAPON) {
-			blob_id = gameData.weapons.info [objP->id].children;
-			Assert (blob_id != -1);		//	Hmm, missing data in bitmaps.tbl.  Need "children=NN" parameter.
-		} else {
-			Assert (objP->nType == OBJ_ROBOT);
-			blob_id = ROBOT_SMARTMSL_BLOB_ID;
+	//	Get nType of weapon for child from parent.
+	if (objP->nType == OBJ_WEAPON) {
+		nBlobId = gameData.weapons.info [objP->id].children;
+		Assert (nBlobId != -1);		//	Hmm, missing data in bitmaps.tbl.  Need "children=NN" parameter.
 		}
-
-// -- 		//determine what kind of blob to drop
-// -- 		//	Note: parentType is not the nType of the weapon's parent.  It is actually the nType of the weapon's
-// -- 		//	earliest ancestor.  This deals with the issue of weapons spewing weapons which spew weapons.
-// -- 		switch (parentType) {
-// -- 			case OBJ_WEAPON:
-// -- 				Int3 ();	//	Should this ever happen?
-// -- 				switch (objP->id) {
-// -- 					case SMARTMINE_ID:			blob_id = SMARTMINE_BLOB_ID; break;
-// -- 					case ROBOT_SMARTMINE_ID:	blob_id = ROBOT_SMARTMINE_BLOB_ID; break;
-// -- 					case EARTHSHAKER_ID:			blob_id = EARTHSHAKER_MEGA_ID; break;
-// -- 					default:							Int3 ();	//bogus id for weapon  
-// -- 				}
-// -- 				break;
-// -- 			case OBJ_PLAYER:
-// -- 				switch (objP->id) {
-// -- 					case SMARTMINE_ID:			blob_id = SMARTMINE_BLOB_ID; break;
-// -- 					case ROBOT_SMARTMINE_ID:	Int3 ();	break;
-// -- 					case EARTHSHAKER_ID:			blob_id = EARTHSHAKER_MEGA_ID; break;
-// -- 					case SMARTMSL_ID:					blob_id = SMARTMSL_BLOB_ID; break;
-// -- 					default:							Int3 ();	//bogus id for weapon  
-// -- 				}
-// -- 				break;
-// -- 			case OBJ_ROBOT:
-// -- 				switch (objP->id) {
-// -- 					case ROBOT_SMARTMINE_ID:	blob_id = ROBOT_SMARTMINE_BLOB_ID; break;
-// -- 					// -- case EARTHSHAKER_ID:			blob_id = EARTHSHAKER_MEGA_ID; break;
-// -- 					case SMARTMSL_ID:					blob_id = ROBOT_SMARTMSL_BLOB_ID; break;
-// -- 					default:							blob_id = ROBOT_SMARTMSL_BLOB_ID; break;
-// -- 				}
-// -- 				break;
-// -- 			default:					Int3 ();	//bogus nType for parent tObject
-// -- 		}
-
-		bMakeSound = 1;
-		for (i=0; i<num_smart_children; i++) {
-			short nObject = (numobjs==0)?-1:objlist [ (d_rand () * numobjs) >> 15];
-			CreateHomingMissile (objP, nObject, blob_id, bMakeSound);
-			bMakeSound = 0;
+	else {
+		Assert (objP->nType == OBJ_ROBOT);
+		nBlobId = ROBOT_SMARTMSL_BLOB_ID;
+		}
+	bMakeSound = 1;
+	for (i = 0; i < nSmartChildren; i++) {
+		short nObject = (nObjects==0) ? -1 : objList [(d_rand () * nObjects) >> 15];
+		CreateHomingMissile (objP, nObject, nBlobId, bMakeSound);
+		bMakeSound = 0;
 		}
 	}
 }

@@ -579,7 +579,7 @@ else
 nTries = 0;
 do {
 	//Move the tObject
-	float fScale = IS_MISSILE (objP) ? MissileSpeedScale (objP) : 1;
+	float fScale = (IS_MISSILE (objP) && (objP->id != EARTHSHAKER_MEGA_ID) && (objP->id != ROBOT_SHAKER_MEGA_ID)) ? MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
 		VmVecSub (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);

@@ -850,22 +850,23 @@ return 0;
 
 int CollideWeaponAndWall (tObject *weaponP, fix hitspeed, short hitseg, short hitwall, vmsVector * vHitPt)
 {
-	tSegment *segP = gameData.segs.segments + hitseg;
-	tSide *sideP = segP->sides + hitwall;
+	tSegment		*segP = gameData.segs.segments + hitseg;
+	tSide			*sideP = segP->sides + hitwall;
 	tWeaponInfo *wInfoP = gameData.weapons.info + weaponP->id;
-	tObject *wObjP = gameData.objs.objects + weaponP->cType.laserInfo.nParentObj;
+	tObject		*wObjP = gameData.objs.objects + weaponP->cType.laserInfo.nParentObj;
 
-	int bBlewUp, bEscort, wallType, nPlayer;
-	fix nStrength = WI_strength (weaponP->id, gameStates.app.nDifficultyLevel);
+	int	bBlewUp, bEscort, wallType, nPlayer;
+	int	bBounce = (weaponP->mType.physInfo.flags & PF_BOUNCE) != 0;
+	fix	nStrength = WI_strength (weaponP->id, gameStates.app.nDifficultyLevel);
 
 if (weaponP->id == OMEGA_ID)
 	if (!OkToDoOmegaDamage (weaponP))
 		return 1;
 
-CreateWeaponEffects (weaponP, 1);
+if (!bBounce)
+	CreateWeaponEffects (weaponP, 1);
 //	If this is a guided missile and it strikes fairly directly, clear bounce flag.
 if (weaponP->id == GUIDEDMSL_ID) {
-
 	fix dot = VmVecDot (&weaponP->position.mOrient.fVec, sideP->normals);
 #if TRACE
 	con_printf (CONDBG, "Guided missile dot = %7.3f \n", f2fl (dot));
@@ -980,10 +981,7 @@ else if ((gameData.pig.tex.pTMapInfo [sideP->nBaseTex].flags & TMI_WATER) ||
 	KillObject (weaponP);		//make flares die in water
 	}
 else {
-	if (weaponP->mType.physInfo.flags & PF_BOUNCE) {
-		//do special bound sound & effect
-		}
-	else {
+	if (!bBounce) {
 		//if it's not the tPlayer's weaponP, or it is the tPlayer's and there
 		//is no tWall, and no blowing up monitor, then play sound
 		if ((weaponP->cType.laserInfo.parentType != OBJ_PLAYER) ||
@@ -1007,8 +1005,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || bEscort) {
 //		if (weaponP->id != FLARE_ID) {
 //	We now allow flares to open doors.
 
-	if (((weaponP->id != FLARE_ID) || (weaponP->cType.laserInfo.parentType != OBJ_PLAYER)) && 
-		 !(weaponP->mType.physInfo.flags & PF_BOUNCE)) {
+	if (!bBounce && ((weaponP->id != FLARE_ID) || (weaponP->cType.laserInfo.parentType != OBJ_PLAYER))) {
 		KillObject (weaponP);
 		}
 
@@ -1044,7 +1041,7 @@ if ((weaponP->cType.laserInfo.parentType == OBJ_PLAYER) || bEscort) {
 	}
 else {
 	// This is a robotP's laser
-	if (!(weaponP->mType.physInfo.flags & PF_BOUNCE))
+	if (!bBounce)
 		KillObject (weaponP);
 	}
 return 1;
