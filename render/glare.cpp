@@ -759,7 +759,7 @@ if (gameStates.ogl.bDepthBlending) {
 			glUniform3fv (glGetUniformLocation (h, "depthScale"), 1, (GLfloat *) &gameData.render.ogl.depthScale);
 		else {
 			glUniform1f (glGetUniformLocation (h, "depthScale"), (GLfloat) gameData.render.ogl.depthScale.p.z);
-			glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) 100.0f);
+			glUniform1f (glGetUniformLocation (h, "dMax"), (GLfloat) 20.0f);
 			}
 		glDisable (GL_DEPTH_TEST);
 		}
