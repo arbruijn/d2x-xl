@@ -1794,8 +1794,8 @@ for (i = 0; i < nSavePlayers; i++) {
 			memcpy (
 				netPlayers.players [gameData.multiplayer.nPlayers].callsign, 
 				netPlayers.players [i].callsign, CALLSIGN_LEN+1);
-			netPlayers.players [gameData.multiplayer.nPlayers].version_major = netPlayers.players [i].version_major;
-			netPlayers.players [gameData.multiplayer.nPlayers].version_minor = netPlayers.players [i].version_minor;
+			netPlayers.players [gameData.multiplayer.nPlayers].versionMajor = netPlayers.players [i].versionMajor;
+			netPlayers.players [gameData.multiplayer.nPlayers].versionMinor = netPlayers.players [i].versionMinor;
 			netPlayers.players [gameData.multiplayer.nPlayers].rank = netPlayers.players [i].rank;
 			ClipRank ((char *) &netPlayers.players [gameData.multiplayer.nPlayers].rank);
 			NetworkCheckForOldVersion ((char)i);
@@ -1820,8 +1820,8 @@ for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 		netPlayers.players [i].network.appletalk.socket = 0;
 	   }
 	memset (netPlayers.players [i].callsign, 0, CALLSIGN_LEN+1);
-	netPlayers.players [i].version_major = 0;
-	netPlayers.players [i].version_minor = 0;
+	netPlayers.players [i].versionMajor = 0;
+	netPlayers.players [i].versionMinor = 0;
 	netPlayers.players [i].rank = 0;
 	}
 #if 1			
@@ -2160,17 +2160,17 @@ if (AGI.gameStatus == NETSTAT_ENDLEVEL) {
 	ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
 	goto doMenu;
 	}
-if (AGI.protocol_version != MULTI_PROTO_VERSION) {
-	if (AGI.protocol_version == 3) {
+if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
+	if (AGI.protocolVersion == 3) {
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
 		}
-	else if (AGI.protocol_version == 4) {
+	else if (AGI.protocolVersion == 4) {
 		}
 	else {
 		char	szFmt [200], szError [200];
 
 		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
-		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.protocol_version);
+		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.protocolVersion);
 		ExecMessageBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
 		}
 	goto doMenu;

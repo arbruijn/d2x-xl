@@ -312,7 +312,7 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #endif
 if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
+		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
 			ExecMessageBox ("Warning!", NULL, 1, TXT_OK,
 								 "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -320,7 +320,7 @@ if (IS_D2_OEM && IsMultiGame && (gameData.missions.nCurrentMission == gameData.m
 	}
 if (IS_MAC_SHARE && IsMultiGame && (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission) && (gameData.missions.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].version_minor & 0xF0)) {
+		if (gameData.multiplayer.players [i].connected && !(netPlayers.players [i].versionMinor & 0xF0)) {
 			ExecMessageBox ("Warning!", NULL, 1 , TXT_OK, 
 								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -1033,7 +1033,7 @@ if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
 LoadHiresModels (1);
 /*---*/LogErr ("   initializing cambot\n");
 InitCamBots (0);
-networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);
+networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
 ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);

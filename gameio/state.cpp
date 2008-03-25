@@ -705,9 +705,9 @@ CFWriteByte ((sbyte) netGame.nNumPlayers, cfp);
 CFWriteByte ((sbyte) netGame.nMaxPlayers, cfp);
 CFWriteByte ((sbyte) netGame.nConnected, cfp);
 CFWriteByte ((sbyte) netGame.gameFlags, cfp);
-CFWriteByte ((sbyte) netGame.protocol_version, cfp);
-CFWriteByte ((sbyte) netGame.version_major, cfp);
-CFWriteByte ((sbyte) netGame.version_minor, cfp);
+CFWriteByte ((sbyte) netGame.protocolVersion, cfp);
+CFWriteByte ((sbyte) netGame.versionMajor, cfp);
+CFWriteByte ((sbyte) netGame.versionMinor, cfp);
 CFWriteByte ((sbyte) netGame.teamVector, cfp);
 CFWriteByte ((sbyte) netGame.DoMegas, cfp);
 CFWriteByte ((sbyte) netGame.DoSmarts, cfp);
@@ -748,7 +748,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
 		CFWriteShort (netGame.kills [i] [j], cfp);			// 128 bytes
-CFWriteShort (netGame.segments_checksum, cfp);				// 2 bytes
+CFWriteShort (netGame.nSegmentCheckSum, cfp);				// 2 bytes
 for (i = 0; i < 2; i++)
 	CFWriteShort (netGame.teamKills [i], cfp);				// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -783,8 +783,8 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFWrite (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1, cfp);
 	CFWrite (netPlayers.players [i].network.ipx.server, 1, 4, cfp);
 	CFWrite (netPlayers.players [i].network.ipx.node, 1, 6, cfp);
-	CFWriteByte ((sbyte) netPlayers.players [i].version_major, cfp);
-	CFWriteByte ((sbyte) netPlayers.players [i].version_minor, cfp);
+	CFWriteByte ((sbyte) netPlayers.players [i].versionMajor, cfp);
+	CFWriteByte ((sbyte) netPlayers.players [i].versionMinor, cfp);
 	CFWriteByte ((sbyte) netPlayers.players [i].computerType, cfp);
 	CFWriteByte (netPlayers.players [i].connected, cfp);
 	CFWriteShort ((short) netPlayers.players [i].socket, cfp);
@@ -1725,9 +1725,9 @@ netGame.nNumPlayers = (ubyte) CFReadByte (cfp);
 netGame.nMaxPlayers = (ubyte) CFReadByte (cfp);
 netGame.nConnected = (ubyte) CFReadByte (cfp);
 netGame.gameFlags = (ubyte) CFReadByte (cfp);
-netGame.protocol_version = (ubyte) CFReadByte (cfp);
-netGame.version_major = (ubyte) CFReadByte (cfp);
-netGame.version_minor = (ubyte) CFReadByte (cfp);
+netGame.protocolVersion = (ubyte) CFReadByte (cfp);
+netGame.versionMajor = (ubyte) CFReadByte (cfp);
+netGame.versionMinor = (ubyte) CFReadByte (cfp);
 netGame.teamVector = (ubyte) CFReadByte (cfp);
 netGame.DoMegas = (ubyte) CFReadByte (cfp);
 netGame.DoSmarts = (ubyte) CFReadByte (cfp);
@@ -1768,7 +1768,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 for (i = 0; i < MAX_PLAYERS; i++)
 	for (j = 0; j < MAX_PLAYERS; j++)
 		netGame.kills [i] [j] = CFReadShort (cfp);			// 128 bytes
-netGame.segments_checksum = CFReadShort (cfp);				// 2 bytes
+netGame.nSegmentCheckSum = CFReadShort (cfp);				// 2 bytes
 for (i = 0; i < 2; i++)
 	netGame.teamKills [i] = CFReadShort (cfp);				// 4 bytes
 for (i = 0; i < MAX_PLAYERS; i++)
@@ -1803,8 +1803,8 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	CFRead (netPlayers.players [i].callsign, 1, CALLSIGN_LEN + 1, cfp);
 	CFRead (netPlayers.players [i].network.ipx.server, 1, 4, cfp);
 	CFRead (netPlayers.players [i].network.ipx.node, 1, 6, cfp);
-	netPlayers.players [i].version_major = (ubyte) CFReadByte (cfp);
-	netPlayers.players [i].version_minor = (ubyte) CFReadByte (cfp);
+	netPlayers.players [i].versionMajor = (ubyte) CFReadByte (cfp);
+	netPlayers.players [i].versionMinor = (ubyte) CFReadByte (cfp);
 	netPlayers.players [i].computerType = (enum compType) CFReadByte (cfp);
 	netPlayers.players [i].connected = CFReadByte (cfp);
 	netPlayers.players [i].socket = (ushort) CFReadShort (cfp);

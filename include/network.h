@@ -468,9 +468,9 @@ typedef struct tLiteInfo {
 	ubyte                           nMaxPlayers;
 	ubyte                           nConnected;
 	ubyte                           gameFlags;
-	ubyte                           protocol_version;
-	ubyte                           version_major;
-	ubyte                           version_minor;
+	ubyte                           protocolVersion;
+	ubyte                           versionMajor;
+	ubyte                           versionMinor;
 	ubyte                           teamVector;
 } __pack__ tLiteInfo;
 

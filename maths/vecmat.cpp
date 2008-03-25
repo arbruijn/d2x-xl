@@ -790,56 +790,13 @@ v.p.z >>= cnt;
 //quite easy for this routine to overflow and underflow.  Be careful that
 //your inputs are ok.
 //#ifndef __powerc
+
+vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
+{
 #if 0
-vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
-{
-	double d;
-	Assert(dest!=src0 && dest!=src1);
-
-	d = (double)(src0->p.y) * (double)(src1->p.z);
-	d += (double)-(src0->p.z) * (double)(src1->p.y);
-	d /= 65536.0;
-	if (d < 0.0)
-		d = d - 1.0;
-	dest->p.x = (fix)d;
-
-	d = (double)(src0->p.z) * (double)(src1->p.x);
-	d += (double)-(src0->p.x) * (double)(src1->p.z);
-	d /= 65536.0;
-	if (d < 0.0)
-		d = d - 1.0;
-	dest->p.y = (fix)d;
-
-	d = (double)(src0->p.x) * (double)(src1->p.y);
-	d += (double)-(src0->p.y) * (double)(src1->p.x);
-	d /= 65536.0;
-	if (d < 0.0)
-		d = d - 1.0;
-	dest->p.z = (fix)d;
-
-	return dest;
-}
-#else
-
-// ------------------------------------------------------------------------
-
-vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1)
-{
-#if 1
-#	if 0
-	fVector	srcf [2], destf;
-
-VmVecFixToFloat (srcf, src0);
-VmVecFixToFloat (srcf + 1, src1);
-VmVecCrossProdf (&destf, srcf, srcf + 1);
-dest->p.x = fl2f (destf.p.x);
-dest->p.y = fl2f (destf.p.y);
-dest->p.z = fl2f (destf.p.z);
-#	else
 dest->p.x = (fix) (((double) src0->p.y * (double) src1->p.z - (double) src0->p.z * (double) src1->p.y) / 65536.0);
 dest->p.y = (fix) (((double) src0->p.z * (double) src1->p.x - (double) src0->p.x * (double) src1->p.z) / 65536.0);
 dest->p.z = (fix) (((double) src0->p.x * (double) src1->p.y - (double) src0->p.y * (double) src1->p.x) / 65536.0);
-#	endif
 #else
 QLONG q = mul64 (src0->p.y, src1->p.z);
 Assert(dest!=src0 && dest!=src1);
@@ -854,8 +811,6 @@ dest->p.z = (fix) (q >> 16);
 #endif
 return dest;
 }
-
-#endif
 
 // ------------------------------------------------------------------------
 

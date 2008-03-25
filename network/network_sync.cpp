@@ -795,9 +795,9 @@ else if (choice != -2)
 int NetworkLevelSync (void)
 {
 	int result;
-	networkData.mySyncPackInited = 0;
+	networkData.bSyncPackInited = 0;
 
-//networkData.nMySegsCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1);
+//networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment)* (gameData.segs.nLastSegment+1);
 NetworkFlush (); // Flush any old packets
 if (!gameData.multiplayer.nPlayers)
 	result = NetworkWaitForSync ();

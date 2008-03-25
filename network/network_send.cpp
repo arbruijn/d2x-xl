@@ -375,8 +375,8 @@ old_status = netGame.gameStatus;
 netGame.nType = PID_GAME_INFO;
 netPlayers.nType = PID_PLAYERSINFO;
 netPlayers.nSecurity = netGame.nSecurity;
-netGame.version_major = D2X_MAJOR;
-netGame.version_minor = D2X_MINOR;
+netGame.versionMajor = D2X_MAJOR;
+netGame.versionMinor = D2X_MINOR;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.gameStatus = NETSTAT_ENDLEVEL;
 if (netGame.xPlayTimeAllowed) {
@@ -607,7 +607,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 NetworkUpdateNetGame ();
 netGame.gameStatus = NETSTAT_PLAYING;
 netGame.nType = PID_SYNC;
-netGame.segments_checksum = networkData.nMySegsCheckSum;
+netGame.nSegmentCheckSum = networkData.nSegmentCheckSum;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((!gameData.multiplayer.players [i].connected) || (i == gameData.multiplayer.nLocalPlayer))
 		continue;
@@ -639,18 +639,18 @@ fflush (SendLogFile);
    
 if (gameStates.app.bEndLevelSequence)
 	return;
-if (!networkData.mySyncPackInited) {
-	networkData.mySyncPackInited = 1;
-	memset (&networkData.mySyncPack, 0, sizeof (tFrameInfo));
+if (!networkData.bSyncPackInited) {
+	networkData.bSyncPackInited = 1;
+	memset (&networkData.syncPack, 0, sizeof (tFrameInfo));
 	}
 if (urgent)
 	networkData.bPacketUrgent = 1;
-if ((networkData.mySyncPack.data_size + len) > networkData.nMaxXDataSize) {
+if ((networkData.syncPack.data_size + len) > networkData.nMaxXDataSize) {
 	bCheck = ptr [0];
 	NetworkDoFrame (1, 0);
-	if (networkData.mySyncPack.data_size != 0) {
+	if (networkData.syncPack.data_size != 0) {
 #if 1			
-	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.mySyncPack.data_size);
+	con_printf (CONDBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.data_size);
 #endif
 	Int3 ();
 	}
@@ -668,13 +668,13 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 	bD2XData = (*ptr > MULTI_MAX_TYPE_D2);
 	if (bD2XData && (gameStates.app.bNostalgia > 1))
 		return;
-	if (networkData.mySyncPack.data_size && !bD2XData && networkData.bD2XData)
+	if (networkData.syncPack.data_size && !bD2XData && networkData.bD2XData)
 		NetworkDoFrame (1, 0);
 	networkData.bD2XData = bD2XData;
 	}
-Assert (networkData.mySyncPack.data_size + len <= networkData.nMaxXDataSize);
-memcpy (networkData.mySyncPack.data + networkData.mySyncPack.data_size, ptr, len);
-networkData.mySyncPack.data_size += len;
+Assert (networkData.syncPack.data_size + len <= networkData.nMaxXDataSize);
+memcpy (networkData.syncPack.data + networkData.syncPack.data_size, ptr, len);
+networkData.syncPack.data_size += len;
 }
 
 //------------------------------------------------------------------------------

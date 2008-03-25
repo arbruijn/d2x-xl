@@ -88,7 +88,7 @@ hli highestLevels [MAX_MISSIONS];
 //version 5  ->  6: added new highest level information
 //version 6  ->  7: stripped out the old saved_game array.
 //version 7  ->  8: added reticle flag, & window size
-//version 8  ->  9: removed player_struct_version
+//version 8  ->  9: removed player_structVersion
 //version 9  -> 10: added default display mode
 //version 10 -> 11: added all toggles in toggle menu
 //version 11 -> 12: added weapon ordering

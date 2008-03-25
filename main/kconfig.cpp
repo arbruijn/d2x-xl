@@ -1721,7 +1721,7 @@ ubyte				kc_enable_external_control = 0;
 ubyte 			kc_external_intno = 0;
 ext_control_info	*kc_external_control = NULL;
 ubyte				*kc_external_name = NULL;
-ubyte				kc_external_version = 0;
+ubyte				kc_externalVersion = 0;
 
 void KCInitExternalControls (int intno, int address)
 {
@@ -1743,7 +1743,7 @@ void KCInitExternalControls (int intno, int address)
 
 	i = FindArg ("-xver");
 	if (i)
-		kc_external_version = atoi (Args [i+1]);
+		kc_externalVersion = atoi (Args [i+1]);
 }
 
 /*void KCReadExternalControls ()
@@ -1753,11 +1753,11 @@ void KCInitExternalControls (int intno, int address)
 	if (!kc_enable_external_control && !gameStates.input.bCybermouseActive) 
 		return;
 
-	if (kc_external_version == 0) 
+	if (kc_externalVersion == 0) 
 		memset (kc_external_control, 0, sizeof (tControlInfo);
-	else if (kc_external_version > 0) 	{
+	else if (kc_externalVersion > 0) 	{
 		memset (kc_external_control, 0, sizeof (tControlInfo)+sizeof (vmsAngVec) + 64);
-		if (kc_external_version > 1) {
+		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = (ubyte *)kc_external_control;
 			vmsVector *ship_pos;
@@ -1788,7 +1788,7 @@ void KCInitExternalControls (int intno, int address)
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_external_version > 0) {	
+		if (kc_externalVersion > 0) {	
 			vmsMatrix tempm, ViewMatrix;
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
@@ -1833,18 +1833,18 @@ void KCReadExternalControls ()
 
 	if (!kc_enable_external_control) return;
 
-	if (kc_external_version == 0) 
+	if (kc_externalVersion == 0) 
 		memset (kc_external_control, 0, sizeof (ext_control_info));
-	else if (kc_external_version > 0) 	{
+	else if (kc_externalVersion > 0) 	{
     
-		if (kc_external_version>=4)
+		if (kc_externalVersion>=4)
 			memset (kc_external_control, 0, sizeof (advanced_ext_control_info));
-      else if (kc_external_version>0)     
+      else if (kc_externalVersion>0)     
 			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64);
-		else if (kc_external_version>2)
+		else if (kc_externalVersion>2)
 			memset (kc_external_control, 0, sizeof (ext_control_info)+sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix) +4);
 
-		if (kc_external_version > 1) {
+		if (kc_externalVersion > 1) {
 			// Write ship pos and angles to external controls...
 			ubyte *temp_ptr = (ubyte *)kc_external_control;
 			vmsVector *ship_pos;
@@ -1859,7 +1859,7 @@ void KCReadExternalControls ()
 			// Fill in ship orientation...
 			*ship_orient = gameData.objs.objects [LOCALPLAYER.nObject].position.mOrient;
 		}
-    if (kc_external_version>=4)
+    if (kc_externalVersion>=4)
 	  {
 	   advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
  
@@ -1904,7 +1904,7 @@ void KCReadExternalControls ()
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_external_version > 0) {	
+		if (kc_externalVersion > 0) {	
 			vmsMatrix tempm, ViewMatrix;
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;
@@ -1939,7 +1939,7 @@ void KCReadExternalControls ()
 	Controls [0].automapDownCount += kc_external_control->automapDownCount;
 	Controls [0].automapState |= kc_external_control->automapState;
 
-   if (kc_external_version>=3)
+   if (kc_externalVersion>=3)
 	 {
 		ubyte *temp_ptr = (ubyte *)kc_external_control;
 		temp_ptr += (sizeof (ext_control_info) + sizeof (vmsAngVec) + 64 + sizeof (vmsVector) + sizeof (vmsMatrix));
@@ -1954,7 +1954,7 @@ void KCReadExternalControls ()
 		if (* (temp_ptr+3))
 		 Controls [0].headlightCount= (* (temp_ptr+3));
   	 }
-   if (kc_external_version>=4)
+   if (kc_externalVersion>=4)
 	 {
 	  advanced_ext_control_info *temp_ptr= (advanced_ext_control_info *)kc_external_control;
      

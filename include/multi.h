@@ -281,8 +281,8 @@ typedef union {
 typedef struct tNetPlayerInfo {
 	char    callsign [CALLSIGN_LEN+1];
 	tNetworkInfo network;
-	ubyte   version_major;
-	ubyte   version_minor;
+	ubyte   versionMajor;
+	ubyte   versionMinor;
 #ifdef _WIN32
 	ubyte   computerType;
 #else
@@ -316,9 +316,9 @@ typedef struct tNetgameInfo {
 	ubyte   nMaxPlayers;
 	ubyte   nConnected;
 	ubyte   gameFlags;
-	ubyte   protocol_version;
-	ubyte   version_major;
-	ubyte   version_minor;
+	ubyte   protocolVersion;
+	ubyte   versionMajor;
+	ubyte   versionMinor;
 	ubyte   teamVector;
 // 72 bytes
 // change the order of the bit fields for the mac compiler.
@@ -396,14 +396,14 @@ typedef struct tNetgameInfo {
 	char    team_name[2][CALLSIGN_LEN+1];		// 18 bytes
 	int     locations[MAX_PLAYERS];				// 32 bytes
 	short   kills[MAX_PLAYERS][MAX_PLAYERS];	// 128 bytes
-	ushort  segments_checksum;						// 2 bytes
+	ushort  nSegmentCheckSum;						// 2 bytes
 	short   teamKills[2];							// 4 bytes
 	short   killed[MAX_PLAYERS];					// 16 bytes
 	short   playerKills[MAX_PLAYERS];			// 16 bytes
 	int     KillGoal;									// 4 bytes
 	fix     xPlayTimeAllowed;						// 4 bytes
 	fix     xLevelTime;								// 4 bytes
-	int     control_invulTime;					// 4 bytes
+	int     control_invulTime;						// 4 bytes
 	int     monitor_vector;							// 4 bytes
 	int     player_score[MAX_PLAYERS];			// 32 bytes
 	ubyte   playerFlags[MAX_PLAYERS];			// 8 bytes

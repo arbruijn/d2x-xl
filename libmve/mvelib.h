@@ -42,13 +42,13 @@ int mvefile_get_next_segment_size(MVEFILE *movie);
 /*
  * get nType of next tSegment in chunk (0xff if no more segments in chunk)
  */
-unsigned char mvefile_get_next_segment_major(MVEFILE *movie);
+unsigned char mvefile_get_next_segmentMajor(MVEFILE *movie);
 
 /*
  * get subtype (version) of next tSegment in chunk (0xff if no more segments in
  * chunk)
  */
-unsigned char mvefile_get_next_segment_minor(MVEFILE *movie);
+unsigned char mvefile_get_next_segmentMinor(MVEFILE *movie);
 
 /*
  * see next tSegment (return NULL if no next tSegment)

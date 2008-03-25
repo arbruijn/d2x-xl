@@ -104,7 +104,7 @@ typedef struct v16_segment {
 
 struct mfi_v19 {
 	ushort  fileinfo_signature;
-	ushort  fileinfo_version;
+	ushort  fileinfoVersion;
 	int     fileinfo_sizeof;
 	int     header_offset;      // Stuff common to game & editor
 	int     header_size;
@@ -474,7 +474,7 @@ int load_mine_data (CFILE *loadFile)
 	mine_fileinfo.level_shake_duration		=	0;
 
 	//	Delta light stuff for blowing out light sources.
-//	if (mine_top_fileinfo.fileinfo_version >= 19) {
+//	if (mine_top_fileinfo.fileinfoVersion >= 19) {
 		mine_fileinfo.gameData.render.lights.deltaIndices.offset		=	-1;
 		mine_fileinfo.gameData.render.lights.deltaIndices.count		=	0;
 		mine_fileinfo.gameData.render.lights.deltaIndices.size		=	sizeof (tLightDeltaIndex);  
@@ -503,7 +503,7 @@ int load_mine_data (CFILE *loadFile)
 		return -1;
 
 	// Check version number
-	if (mine_top_fileinfo.fileinfo_version < COMPATIBLE_VERSION )
+	if (mine_top_fileinfo.fileinfoVersion < COMPATIBLE_VERSION )
 		return -1;
 
 	// Now, Read in the fileinfo
@@ -513,7 +513,7 @@ int load_mine_data (CFILE *loadFile)
 	if (CFRead ( &mine_fileinfo, mine_top_fileinfo.fileinfo_sizeof, 1, loadFile )!=1)
 		Error ( "Error reading mine_fileinfo in gamemine.c" );
 
-	if (mine_top_fileinfo.fileinfo_version < 18) {
+	if (mine_top_fileinfo.fileinfoVersion < 18) {
 #if TRACE
 		con_printf (1, "Old version, setting shake intensity to 0.\n");
 #endif
@@ -679,7 +679,7 @@ int load_mine_data (CFILE *loadFile)
 			// Set the default values for this tSegment (clear to zero )
 			//memset ( &gameData.segs.segments [i], 0, sizeof (tSegment) );
 
-			if (mine_top_fileinfo.fileinfo_version < 20) {
+			if (mine_top_fileinfo.fileinfoVersion < 20) {
 				v16_segment v16_seg;
 
 				Assert (mine_fileinfo.segment_sizeof == sizeof (v16_seg);
@@ -718,7 +718,7 @@ int load_mine_data (CFILE *loadFile)
 			gameData.segs.segments [i].group = -1;
 			#endif
 
-			if (mine_top_fileinfo.fileinfo_version < 15) {	//used old tUVL ranges
+			if (mine_top_fileinfo.fileinfoVersion < 15) {	//used old tUVL ranges
 				int sn, uvln;
 
 				for (sn=0;sn<MAX_SIDES_PER_SEGMENT;sn++)
@@ -760,7 +760,7 @@ int load_mine_data (CFILE *loadFile)
 		}
 
 
-		if (mine_top_fileinfo.fileinfo_version >= 20)
+		if (mine_top_fileinfo.fileinfoVersion >= 20)
 			for (i = 0; i<=gameData.segs.nLastSegment; i++) {
 				CFRead (gameData.segs.segment2s + i, sizeof (tSegment2), 1, loadFile);
 				FuelCenActivate (gameData.segs.segments + i, gameData.segs.segment2s [i].special );
@@ -857,7 +857,7 @@ int load_mine_data (CFILE *loadFile)
 
 	//gamemine_find_textures ();
 
-	if (mine_top_fileinfo.fileinfo_version < MINE_VERSION )
+	if (mine_top_fileinfo.fileinfoVersion < MINE_VERSION )
 		return 1;		//old version
 	else
 		return 0;
@@ -1223,7 +1223,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFa
 			faceP->nType = -1;
 			faceP->nSegment = nSegment;
 			faceP->nSide = nSide;
-			faceP->nWall = nWall;
+			faceP->nWall = gameStates.app.bD2XLevel ? nWall : IS_WALL (nWall) ? nWall : (ushort) -1;
 			faceP->bAnimation = IsAnimatedTexture (faceP->nBaseTex) || IsAnimatedTexture (faceP->nOvlTex);
 			faceP->nIndex = 4 * gameData.segs.nFaces++;
 			memcpy (faceP->index, sideVerts, sizeof (faceP->index));
@@ -1333,7 +1333,7 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 	else
 		bit_mask = 0x3f; // read all six sides
 	for (nSide = 0, sideP = segP->sides; nSide < MAX_SIDES_PER_SEGMENT; nSide++, sideP++) {
-		sideP->nWall = NO_WALL;
+		sideP->nWall = (ushort) -1;
 		if (bit_mask & (1 << nSide)) {
 			if (gameData.segs.nLevelVersion >= 13)
 				nWall = (ushort) CFReadShort (loadFile);

@@ -20,13 +20,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 struct mtfi {
 	ushort  fileinfo_signature;
-	ushort  fileinfo_version;
+	ushort  fileinfoVersion;
 	int     fileinfo_sizeof;
 };    // Should be same as first two fields below...
 
 struct mfi {
 	ushort  fileinfo_signature;
-	ushort  fileinfo_version;
+	ushort  fileinfoVersion;
 	int     fileinfo_sizeof;
 	int     header_offset;      // Stuff common to game & editor
 	int     header_size;

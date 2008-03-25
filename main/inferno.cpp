@@ -1184,7 +1184,7 @@ if ((t = FindArg ("-alt_models")))
 	gameStates.app.bAltModels = NumArg (t, 1);
 if ((t = FindArg ("-lores_shadows")))
 	gameStates.render.bLoResShadows = NumArg (t, 1);
-if ((t = FindArg ("-print_version")))
+if ((t = FindArg ("-printVersion")))
 	PrintVersion ();
 if ((t = FindArg ("-altLanguage")))
 	gameStates.app.bEnglish = (NumArg (t, 1) == 0);

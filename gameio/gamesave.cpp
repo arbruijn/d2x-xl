@@ -819,19 +819,19 @@ gameFileInfo.lightDeltas.size		=	sizeof(tLightDelta);
 static int ReadGameFileInfo (CFILE *cfp, int nStartOffset)
 {
 gameTopFileInfo.fileinfo_signature = CFReadShort (cfp);
-gameTopFileInfo.fileinfo_version = CFReadShort (cfp);
+gameTopFileInfo.fileinfoVersion = CFReadShort (cfp);
 gameTopFileInfo.fileinfo_sizeof = CFReadInt (cfp);
 // Check signature
 if (gameTopFileInfo.fileinfo_signature != 0x6705)
 	return -1;
 // Check version number
-if (gameTopFileInfo.fileinfo_version < GAME_COMPATIBLE_VERSION)
+if (gameTopFileInfo.fileinfoVersion < GAME_COMPATIBLE_VERSION)
 	return -1;
 // Now, Read in the fileinfo
 if (CFSeek (cfp, nStartOffset, SEEK_SET)) 
 	Error ("Error seeking to gameFileInfo in gamesave.c");
 gameFileInfo.fileinfo_signature = CFReadShort (cfp);
-gameFileInfo.fileinfo_version = CFReadShort (cfp);
+gameFileInfo.fileinfoVersion = CFReadShort (cfp);
 gameFileInfo.fileinfo_sizeof = CFReadInt (cfp);
 CFRead (gameFileInfo.mine_filename, sizeof (char), 15, cfp);
 gameFileInfo.level = CFReadInt (cfp);
@@ -858,7 +858,7 @@ gameFileInfo.control.size = CFReadInt (cfp);
 gameFileInfo.botGen.offset = CFReadInt (cfp);
 gameFileInfo.botGen.count = CFReadInt (cfp);
 gameFileInfo.botGen.size = CFReadInt (cfp);
-if (gameTopFileInfo.fileinfo_version >= 29) {
+if (gameTopFileInfo.fileinfoVersion >= 29) {
 	gameFileInfo.lightDeltaIndices.offset = CFReadInt (cfp);
 	gameFileInfo.lightDeltaIndices.count = CFReadInt (cfp);
 	gameFileInfo.lightDeltaIndices.size = CFReadInt (cfp);
@@ -879,14 +879,14 @@ return 0;
 
 static int ReadLevelInfo (CFILE *cfp)
 {
-if (gameTopFileInfo.fileinfo_version >= 31) { //load mine filename
+if (gameTopFileInfo.fileinfoVersion >= 31) { //load mine filename
 	// read newline-terminated string, not sure what version this changed.
 	CFGetS (gameData.missions.szCurrentLevel, sizeof (gameData.missions.szCurrentLevel), cfp);
 
 	if (gameData.missions.szCurrentLevel [strlen (gameData.missions.szCurrentLevel) - 1] == '\n')
 		gameData.missions.szCurrentLevel [strlen (gameData.missions.szCurrentLevel) - 1] = 0;
 }
-else if (gameTopFileInfo.fileinfo_version >= 14) { //load mine filename
+else if (gameTopFileInfo.fileinfoVersion >= 14) { //load mine filename
 	// read null-terminated string
 	char *p = gameData.missions.szCurrentLevel;
 	//must do read one char at a time, since no CFGetS()
@@ -896,7 +896,7 @@ else if (gameTopFileInfo.fileinfo_version >= 14) { //load mine filename
 }
 else
 	gameData.missions.szCurrentLevel [0] = 0;
-if (gameTopFileInfo.fileinfo_version >= 19) {	//load pof names
+if (gameTopFileInfo.fileinfoVersion >= 19) {	//load pof names
 	nSavePOFNames = CFReadShort (cfp);
 	if ((nSavePOFNames != 0x614d) && (nSavePOFNames != 0x5547)) { // "Ma"de w/DMB beta/"GU"ILE
 		if (nSavePOFNames >= MAX_POLYGON_MODELS)
@@ -920,7 +920,7 @@ if (gameFileInfo.objects.offset > -1) {
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
-		ReadObject (objP, cfp, gameTopFileInfo.fileinfo_version);
+		ReadObject (objP, cfp, gameTopFileInfo.fileinfoVersion);
 		objP->nSignature = gameData.objs.nNextSignature++;
 		VerifyObject (objP);
 		gameData.objs.init [i] = *objP;
@@ -946,9 +946,9 @@ if (gameFileInfo.walls.offset > -1) {
 		return -1;
 		}
 	for (i = 0; i <gameFileInfo.walls.count; i++) {
-		if (gameTopFileInfo.fileinfo_version >= 20)
+		if (gameTopFileInfo.fileinfoVersion >= 20)
 			ReadWall(&gameData.walls.walls [i], cfp); // v20 walls and up.
-		else if (gameTopFileInfo.fileinfo_version >= 17) {
+		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
 			ReadWallV19(&w, cfp);
@@ -991,7 +991,7 @@ if (gameFileInfo.doors.offset > -1) {
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.doors.count; i++) {
-		if (gameTopFileInfo.fileinfo_version >= 20)
+		if (gameTopFileInfo.fileinfoVersion >= 20)
 			ReadActiveDoor (&gameData.walls.activeDoors [i], cfp); // version 20 and up
 		else {
 			v19_door d;
@@ -1028,12 +1028,12 @@ if (gameFileInfo.triggers.offset > -1) {
 		return -1;
 		}
 	for (i = 0, trigP = gameData.trigs.triggers; i < gameFileInfo.triggers.count; i++, trigP++) {
-		if (gameTopFileInfo.fileinfo_version >= 31) 
+		if (gameTopFileInfo.fileinfoVersion >= 31) 
 			TriggerRead (trigP, cfp, 0);
 		else {
 			tTriggerV30 trig;
 			int t, nType = 0, flags = 0;
-			if (gameTopFileInfo.fileinfo_version == 30)
+			if (gameTopFileInfo.fileinfoVersion == 30)
 				V30TriggerRead (&trig, cfp);
 			else {
 				tTriggerV29 trig29;
@@ -1104,7 +1104,7 @@ if (gameFileInfo.triggers.offset > -1) {
 			}
 		trigP->nLinks = h;
 		}
-	if (gameTopFileInfo.fileinfo_version >= 33) {
+	if (gameTopFileInfo.fileinfoVersion >= 33) {
 		gameData.trigs.nObjTriggers = CFReadInt (cfp);
 		if (gameData.trigs.nObjTriggers) {
 			for (i = 0; i < gameData.trigs.nObjTriggers; i++)
@@ -1115,7 +1115,7 @@ if (gameFileInfo.triggers.offset > -1) {
 				gameData.trigs.objTriggerRefs [i].nObject = CFReadShort (cfp);
 				}
 			}
-		if (gameTopFileInfo.fileinfo_version < 36) {
+		if (gameTopFileInfo.fileinfoVersion < 36) {
 			for (i = 0; i < 700; i++)
 				gameData.trigs.firstObjTrigger [i] = CFReadShort (cfp);
 			}
@@ -1166,7 +1166,7 @@ if (gameFileInfo.botGen.offset > -1) {
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.botGen.count; i++) {
-		if (gameTopFileInfo.fileinfo_version < 27) {
+		if (gameTopFileInfo.fileinfoVersion < 27) {
 			old_tMatCenInfo m;
 
 			OldMatCenInfoRead (&m, cfp);
@@ -1228,7 +1228,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 		return -1;
 		}
 	gameData.render.lights.nStatic = gameFileInfo.lightDeltaIndices.count;
-	if (gameTopFileInfo.fileinfo_version < 29) {
+	if (gameTopFileInfo.fileinfoVersion < 29) {
 #if TRACE
 		con_printf (CONDBG, "Warning: Old mine version.  Not reading gameData.render.lights.deltaIndices info.\n");
 #endif
@@ -1261,7 +1261,7 @@ if (gameFileInfo.lightDeltas.offset > -1) {
 		return -1;
 		}
 	for (i = 0; i < gameFileInfo.lightDeltas.count; i++) {
-		if (gameTopFileInfo.fileinfo_version >= 29) 
+		if (gameTopFileInfo.fileinfoVersion >= 29) 
 			ReadLightDelta (gameData.render.lights.deltas + i, cfp);
 		else {
 #if TRACE
@@ -1332,7 +1332,7 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 #endif
 		gameData.walls.walls [i].nTrigger = NO_TRIGGER;	//kill tTrigger
 		}
-if (gameTopFileInfo.fileinfo_version < 17) {
+if (gameTopFileInfo.fileinfoVersion < 17) {
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
 		for (nSide = 0; nSide < 6; nSide++)
 			if (IS_WALL (nWall = WallNumI (nSegment, nSide))) {
@@ -1422,7 +1422,7 @@ if (ReadGameFileInfo (cfp, nStartOffset))
 	return -1;
 if (ReadLevelInfo (cfp))
 	return -1;
-gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.fileinfo_version >= 34);
+gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.fileinfoVersion >= 34);
 if (bFileInfo)
 	return 0;
 
@@ -1471,8 +1471,8 @@ FixObjectSegs();
 dump_mine_info();
 #endif
 
-if ((gameTopFileInfo.fileinfo_version < GAME_VERSION) && 
-	 ((gameTopFileInfo.fileinfo_version != 25) || (GAME_VERSION != 26)))
+if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
+	 ((gameTopFileInfo.fileinfoVersion != 25) || (GAME_VERSION != 26)))
 	return 1;		//means old version
 return 0;
 }
@@ -1794,7 +1794,7 @@ int SaveGameData(FILE * SaveFile)
 	//===================== SAVE FILE INFO ========================
 
 	gameFileInfo.fileinfo_signature =	0x6705;
-	gameFileInfo.fileinfo_version	=	GAME_VERSION;
+	gameFileInfo.fileinfoVersion	=	GAME_VERSION;
 	gameFileInfo.level					=  gameData.missions.nCurrentLevel;
 	gameFileInfo.fileinfo_sizeof		=	sizeof(gameFileInfo);
 	gameFileInfo.player.offset		=	-1;
@@ -1913,14 +1913,14 @@ int save_mine_data(FILE * SaveFile);
 
 // -----------------------------------------------------------------------------
 // Save game
-int saveLevel_sub(char * filename, int compiled_version)
+int saveLevel_sub(char * filename, int compiledVersion)
 {
 	FILE * SaveFile;
 	char temp_filename [128];
 	int sig = MAKE_SIG('P','L','V','L'),version=LEVEL_FILE_VERSION;
 	int minedata_offset=0,gamedata_offset=0;
 
-	if (!compiled_version)	{
+	if (!compiledVersion)	{
 		write_game_text_file(filename);
 
 		if (Errors_in_mine) {
@@ -2016,7 +2016,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 	gs_write_int(gameData.segs.secret.returnOrient.uVec.p.z, SaveFile);
 
 	minedata_offset = ftell(SaveFile);
-	if (!compiled_version)
+	if (!compiledVersion)
 		save_mine_data(SaveFile);
 	else
 		save_mine_data_compiled(SaveFile);
@@ -2030,7 +2030,7 @@ int saveLevel_sub(char * filename, int compiled_version)
 	//==================== CLOSE THE FILE =============================
 	fclose(SaveFile);
 
-	if (!compiled_version)	{
+	if (!compiledVersion)	{
 		if (gameStates.app.nFunctionMode == FMODE_EDITOR)
 			editor_status("Saved mine %s, \"%s\"",filename,gameData.missions.szCurrentLevel);
 	}

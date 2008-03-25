@@ -180,10 +180,10 @@ typedef struct tNetworkData {
 	int					nTotalPacketsGot;
 	int					nMissedPackets;
 	int					nConsistencyErrorCount;
-	tFrameInfo			mySyncPack;
+	tFrameInfo			syncPack;
 	tFrameInfo			urgentSyncPack;
-	ubyte					mySyncPackInited;       
-	ushort				nMySegsCheckSum;
+	ubyte					bSyncPackInited;       
+	ushort				nSegmentCheckSum;
 	tSequencePacket	mySeq;
 	tSequencePacket	joinSeq;
 	char					bWantPlayersInfo;

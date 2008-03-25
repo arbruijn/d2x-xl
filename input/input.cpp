@@ -1422,7 +1422,7 @@ void CybermouseAdjust ()
 		gameData.objs.objects [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest tSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
-		if (kc_external_version > 0) {	
+		if (kc_externalVersion > 0) {	
 			vmsMatrix tempm, ViewMatrix;
 			vmsAngVec * Kconfig_abs_movement;
 			char * oem_message;

@@ -136,9 +136,9 @@ void BEReceiveNetPlayerInfo(ubyte *data, tNetPlayerInfo *info)
   loc += 4;
   memcpy(&(info->network.ipx.node), data + loc, 6);         
   loc += 6;
-	info->version_major = data[loc];                            
+	info->versionMajor = data[loc];                            
 	loc++;
-	info->version_minor = data[loc];                            
+	info->versionMinor = data[loc];                            
 	loc++;
 	memcpy(&(info->computerType), data + loc, 1);            
 	loc++;      // memcpy to avoid compile time warning about enum
@@ -169,9 +169,9 @@ void BESendNetPlayersPacket(ubyte *server, ubyte *node)
 		loc += 4;
 		memcpy(out_buffer + loc, netPlayers.players[i].network.ipx.node, 6);      
 		loc += 6;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].version_major), 1);      
+		memcpy(out_buffer + loc, &(netPlayers.players[i].versionMajor), 1);      
 		loc++;
-		memcpy(out_buffer + loc, &(netPlayers.players[i].version_minor), 1);      
+		memcpy(out_buffer + loc, &(netPlayers.players[i].versionMinor), 1);      
 		loc++;
 		memcpy(out_buffer + loc, &(netPlayers.players[i].computerType), 1);      
 		loc++;
@@ -225,9 +225,9 @@ void BESendSequencePacket(tSequencePacket seq, ubyte *server, ubyte *node, ubyte
 	loc += 4;
 	memcpy(out_buffer + loc, seq.player.network.ipx.node, 6);     
 	loc += 6;
-	out_buffer[loc] = seq.player.version_major;                     
+	out_buffer[loc] = seq.player.versionMajor;                     
 	loc++;
-	out_buffer[loc] = seq.player.version_minor;                     
+	out_buffer[loc] = seq.player.versionMinor;                     
 	loc++;
 	out_buffer[loc] = seq.player.computerType;                     
 	loc++;
@@ -295,11 +295,11 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.gameFlags), 1);           
 	loc++;
-	memcpy(out_buffer + loc, &(netGame.protocol_version), 1);     
+	memcpy(out_buffer + loc, &(netGame.protocolVersion), 1);     
 	loc++;
-	memcpy(out_buffer + loc, &(netGame.version_major), 1);        
+	memcpy(out_buffer + loc, &(netGame.versionMajor), 1);        
 	loc++;
-	memcpy(out_buffer + loc, &(netGame.version_minor), 1);        
+	memcpy(out_buffer + loc, &(netGame.versionMinor), 1);        
 	loc++;
 	memcpy(out_buffer + loc, &(netGame.teamVector), 1);          
 	loc++;
@@ -358,7 +358,7 @@ void BESendNetGamePacket(ubyte *server, ubyte *node, ubyte *netAddress, int lite
 		}
 	}
 
-	tmps = INTEL_SHORT(netGame.segments_checksum);
+	tmps = INTEL_SHORT(netGame.nSegmentCheckSum);
 	memcpy(out_buffer + loc, &tmps, 2);           
 	loc += 2;   // SWAP_HERE
 	tmps = INTEL_SHORT(netGame.teamKills[0]);
@@ -452,11 +452,11 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 	loc++;
 	memcpy(&(netgame->gameFlags), data + loc, 1);                
 	loc++;
-	memcpy(&(netgame->protocol_version), data + loc, 1);          
+	memcpy(&(netgame->protocolVersion), data + loc, 1);          
 	loc++;
-	memcpy(&(netgame->version_major), data + loc, 1);             
+	memcpy(&(netgame->versionMajor), data + loc, 1);             
 	loc++;
-	memcpy(&(netgame->version_minor), data + loc, 1);             
+	memcpy(&(netgame->versionMinor), data + loc, 1);             
 	loc++;
 	memcpy(&(netgame->teamVector), data + loc, 1);               
 	loc++;
@@ -512,9 +512,9 @@ void BEReceiveNetGamePacket(ubyte *data, tNetgameInfo *netgame, int liteFlag)
 		}
 	}
 
-	memcpy(&(netgame->segments_checksum), data + loc, 2);         
+	memcpy(&(netgame->nSegmentCheckSum), data + loc, 2);         
 	loc += 2;
-	netgame->segments_checksum = INTEL_SHORT(netgame->segments_checksum);
+	netgame->nSegmentCheckSum = INTEL_SHORT(netgame->nSegmentCheckSum);
 	memcpy(&(netgame->teamKills[0]), data + loc, 2);             
 	loc += 2;
 	netgame->teamKills[0] = INTEL_SHORT(netgame->teamKills[0]);

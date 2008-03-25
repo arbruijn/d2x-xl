@@ -151,14 +151,14 @@ if (game->gameStatus != NETSTAT_PLAYING) {
 	return 0;
     }
 
-if (game->version_major == 0 && D2X_MAJOR>0) {
+if (game->versionMajor == 0 && D2X_MAJOR>0) {
 #if 1      
 	con_printf (CONDBG, "Error:Can't join because version majors don't match!\n");
 #endif
 	return 0;
 	}
 
-if (game->version_major>0 && D2X_MAJOR == 0) {
+if (game->versionMajor>0 && D2X_MAJOR == 0) {
 #if 1      
 	con_printf (CONDBG, "Error:Can't join because version majors2 don't match!\n");
 #endif
@@ -238,8 +238,8 @@ memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign,
 memcpy (netPlayers.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN+1);
 ClipRank ((char *) &their->player.rank);
 netPlayers.players [nPlayer].rank = their->player.rank;
-netPlayers.players [nPlayer].version_major = their->player.version_major;
-netPlayers.players [nPlayer].version_minor = their->player.version_minor;
+netPlayers.players [nPlayer].versionMajor = their->player.versionMajor;
+netPlayers.players [nPlayer].versionMinor = their->player.versionMinor;
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -287,7 +287,7 @@ void NetworkWelcomePlayer (tSequencePacket *their)
 
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
-	if ((their->player.version_minor & 0x0F) < 3) {
+	if ((their->player.versionMinor & 0x0F) < 3) {
 		NetworkDumpPlayer (
 			their->player.network.ipx.server, 
 			their->player.network.ipx.node, 
@@ -297,7 +297,7 @@ if (FindArg ("-NoMatrixCheat")) {
 	}
 if (HoardEquipped ()) {
 // If hoard game, and this guy isn't D2 Christmas (v1.2), dump him
-	if ((gameData.app.nGameMode & GM_HOARD) && ((their->player.version_minor & 0x0F)<2)) {
+	if ((gameData.app.nGameMode & GM_HOARD) && ((their->player.versionMinor & 0x0F)<2)) {
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			NetworkDumpPlayer (
 				their->player.network.ipx.server, 
@@ -478,8 +478,8 @@ playerP = netPlayers.players + gameData.multiplayer.nPlayers;
 memcpy (&playerP->network, &seqP->player.network, sizeof (tNetworkInfo));
 ClipRank ((char *) &seqP->player.rank);
 memcpy (playerP->callsign, seqP->player.callsign, CALLSIGN_LEN+1);
-playerP->version_major = seqP->player.version_major;
-playerP->version_minor = seqP->player.version_minor;
+playerP->versionMajor = seqP->player.versionMajor;
+playerP->versionMinor = seqP->player.versionMinor;
 playerP->rank = seqP->player.rank;
 playerP->connected = 1;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
@@ -508,8 +508,8 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
 	memcpy (&netPlayers.players [j].network, &netPlayers.players [i].network.ipx.node, 
 			  sizeof (tNetworkInfo));
 	memcpy (netPlayers.players [j].callsign, netPlayers.players [i].callsign, CALLSIGN_LEN+1);
-	netPlayers.players [j].version_major = netPlayers.players [i].version_major;
-	netPlayers.players [j].version_minor = netPlayers.players [i].version_minor;
+	netPlayers.players [j].versionMajor = netPlayers.players [i].versionMajor;
+	netPlayers.players [j].versionMinor = netPlayers.players [i].versionMinor;
    netPlayers.players [j].rank=netPlayers.players [i].rank;
 	ClipRank ((char *) &netPlayers.players [j].rank);
    NetworkCheckForOldVersion ((char) i);

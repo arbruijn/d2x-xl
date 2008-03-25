@@ -134,8 +134,8 @@ networkData.bPacketUrgent = 0;
 networkData.nGameType = 0;
 networkData.nTotalMissedPackets = 0;
 networkData.nTotalPacketsGot = 0;
-networkData.mySyncPackInited = 1;		// Set to 1 if the networkData.mySyncPack is zeroed.
-networkData.nMySegsCheckSum = 0;
+networkData.bSyncPackInited = 1;		// Set to 1 if the networkData.syncPack is zeroed.
+networkData.nSegmentCheckSum = 0;
 networkData.bWantPlayersInfo = 0;
 networkData.bWaitingForPlayerInfo = 0;
 }
@@ -164,8 +164,8 @@ memset (&netGame, 0, sizeof (tNetgameInfo));
 memset (&netPlayers, 0, sizeof (tAllNetPlayersInfo));
 networkData.mySeq.nType = PID_REQUEST;
 memcpy (networkData.mySeq.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-networkData.mySeq.player.version_major=D2X_MAJOR;
-networkData.mySeq.player.version_minor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
+networkData.mySeq.player.versionMajor=D2X_MAJOR;
+networkData.mySeq.player.versionMinor=D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 0);
 networkData.mySeq.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.mySeq.player.network.ipx.node, IpxGetMyLocalAddress (), 6);

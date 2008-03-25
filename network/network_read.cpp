@@ -180,11 +180,11 @@ if (sp != &netGame) {
 	int i, s;
 	for (i = 0, h = -1; i < sizeof (tNetgameInfo) - 1; i++, p++) {
 		s = *((ushort *) p);
-		if (s == networkData.nMySegsCheckSum) {
+		if (s == networkData.nSegmentCheckSum) {
 			h = i;
 			break;
 			}
-		else if (((s / 256) + (s % 256) * 256) == networkData.nMySegsCheckSum) {
+		else if (((s / 256) + (s % 256) * 256) == networkData.nSegmentCheckSum) {
 			h = i;
 			break;
 			}
@@ -199,16 +199,16 @@ networkData.nStatus = sp->gameStatus;
 // New code, 11/27
 #if 1			
 con_printf (1, "netGame.checksum = %d, calculated checksum = %d.\n", 
-			   netGame.segments_checksum, networkData.nMySegsCheckSum);
+			   netGame.nSegmentCheckSum, networkData.nSegmentCheckSum);
 #endif
-if (netGame.segments_checksum != networkData.nMySegsCheckSum) {
+if (netGame.nSegmentCheckSum != networkData.nSegmentCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
 		networkData.nStatus = NETSTAT_AUTODL;
 	else {
 		short nInMenu = gameStates.menus.nInMenu;
 		gameStates.menus.nInMenu = 0;
 		networkData.nStatus = NETSTAT_MENU;
-		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NETLEVEL_NMATCH);
+		ExecMessageBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
 		gameStates.menus.nInMenu = nInMenu;
 		}
 #if 1//def RELEASE
@@ -411,7 +411,9 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	if (gameOpts->multi.bNoRankings)      
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nTheirPlayer].rank], gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", 
+							 pszRankStrings [netPlayers.players [nTheirPlayer].rank], 
+							 gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
 //------------ Parse the extra dataP at the end ---------------
@@ -546,7 +548,9 @@ if (!gameData.multiplayer.players [nTheirPlayer].connected) {
 	if (gameOpts->multi.bNoRankings)
 		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers.players [nTheirPlayer].rank], gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", 
+							 pszRankStrings [netPlayers.players [nTheirPlayer].rank], 
+							 gameData.multiplayer.players [nTheirPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
 //------------ Parse the extra dataP at the end ---------------

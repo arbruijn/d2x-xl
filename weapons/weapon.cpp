@@ -860,7 +860,7 @@ if (TactileStick) {
 /*
  * reads n tWeaponInfo structs from a CFILE
  */
-extern int WeaponInfoReadN(tWeaponInfo *pwi, int n, CFILE *fp, int file_version)
+extern int WeaponInfoReadN(tWeaponInfo *pwi, int n, CFILE *fp, int fileVersion)
 {
 	int i, j;
 
@@ -890,7 +890,7 @@ for (i = 0; i < n; i++, pwi++) {
 	pwi->flash = CFReadByte (fp);
 	pwi->afterburner_size = CFReadByte (fp);
 
-	if (file_version >= 3)
+	if (fileVersion >= 3)
 		pwi->children = CFReadByte (fp);
 	else
 		// Set the nType of children correctly when using old datafiles.  
@@ -916,7 +916,7 @@ for (i = 0; i < n; i++, pwi++) {
 			}
 	pwi->energy_usage = CFReadFix (fp);
 	pwi->fire_wait = CFReadFix (fp);
-	if (file_version >= 3)
+	if (fileVersion >= 3)
 		pwi->multi_damage_scale = CFReadFix (fp);
 	else /* FIXME: hack this to set the real values */
 		pwi->multi_damage_scale = F1_0;
@@ -942,7 +942,7 @@ for (i = 0; i < n; i++, pwi++) {
 	pwi->lifetime = CFReadFix (fp);
 	pwi->damage_radius = CFReadFix (fp);
 	BitmapIndexRead (&pwi->picture, fp);
-	if (file_version >= 3)
+	if (fileVersion >= 3)
 		BitmapIndexRead (&pwi->hires_picture, fp);
 	else
 		pwi->hires_picture.index = pwi->picture.index;

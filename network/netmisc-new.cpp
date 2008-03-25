@@ -144,8 +144,8 @@ nmBufP = data;
 BE_GET_BYTES (info->callsign, CALLSIGN_LEN + 1);       
 BE_GET_BYTES (info->network.ipx.server, 4);       
 BE_GET_BYTES (info->network.ipx.node, 6);         
-BE_GET_BYTE (info->version_major);                            
-BE_GET_BYTE (info->version_minor);                            
+BE_GET_BYTE (info->versionMajor);                            
+BE_GET_BYTE (info->versionMinor);                            
 BE_GET_BYTE (info->computerType);            
 BE_GET_BYTE (info->connected);
 //BE_GET_SHORT (info->socket);
@@ -170,8 +170,8 @@ for (i = 0; i < MAX_PLAYERS + 4; i++) {
 	BE_SET_BYTES (netPlayers.players [i].callsign, CALLSIGN_LEN + 1); 
 	BE_SET_BYTES (netPlayers.players [i].network.ipx.server, 4);    
 	BE_SET_BYTES (netPlayers.players [i].network.ipx.node, 6);      
-	BE_SET_BYTE (netPlayers.players [i].version_major);      
-	BE_SET_BYTE (netPlayers.players [i].version_minor);      
+	BE_SET_BYTE (netPlayers.players [i].versionMajor);      
+	BE_SET_BYTE (netPlayers.players [i].versionMinor);      
 	BE_SET_BYTE (netPlayers.players [i].computerType);      
 	BE_SET_BYTE (netPlayers.players [i].connected);          
 	BE_SET_SHORT (netPlayers.players [i].socket);
@@ -214,8 +214,8 @@ nmBufI += 3;
 BE_SET_BYTES (seq.player.callsign, CALLSIGN_LEN + 1);
 BE_SET_BYTES (seq.player.network.ipx.server, 4);   
 BE_SET_BYTES (seq.player.network.ipx.node, 6);     
-BE_SET_BYTE (seq.player.version_major);                     
-BE_SET_BYTE (seq.player.version_minor);                     
+BE_SET_BYTE (seq.player.versionMajor);                     
+BE_SET_BYTE (seq.player.versionMinor);                     
 BE_SET_BYTE (seq.player.computerType);                     
 BE_SET_BYTE (seq.player.connected);                         
 BE_SET_SHORT (seq.player.socket);                           
@@ -267,9 +267,9 @@ BE_SET_BYTE (netGame.numplayers);
 BE_SET_BYTE (netGame.max_numplayers);       
 BE_SET_BYTE (netGame.numconnected);         
 BE_SET_BYTE (netGame.gameFlags);           
-BE_SET_BYTE (netGame.protocol_version);     
-BE_SET_BYTE (netGame.version_major);        
-BE_SET_BYTE (netGame.version_minor);        
+BE_SET_BYTE (netGame.protocolVersion);     
+BE_SET_BYTE (netGame.versionMajor);        
+BE_SET_BYTE (netGame.versionMinor);        
 BE_SET_BYTE (netGame.teamVector);          
 if (bLiteData)
 	goto do_send;
@@ -293,7 +293,7 @@ for (i = 0; i < MAX_PLAYERS; i++) {
 	}
 }
 #endif
-BE_SET_SHORT (netGame.segments_checksum);
+BE_SET_SHORT (netGame.nSegmentCheckSum);
 BE_SET_SHORT (netGame.teamKills [0]);
 BE_SET_SHORT (netGame.teamKills [1]);
 for (i = 0; i < MAX_PLAYERS; i++) {
@@ -347,9 +347,9 @@ BE_GET_BYTE (netgame->numplayers);
 BE_GET_BYTE (netgame->max_numplayers);            
 BE_GET_BYTE (netgame->numconnected);              
 BE_GET_BYTE (netgame->gameFlags);                
-BE_GET_BYTE (netgame->protocol_version);          
-BE_GET_BYTE (netgame->version_major);             
-BE_GET_BYTE (netgame->version_minor);             
+BE_GET_BYTE (netgame->protocolVersion);          
+BE_GET_BYTE (netgame->versionMajor);             
+BE_GET_BYTE (netgame->versionMinor);             
 BE_GET_BYTE (netgame->teamVector);               
 if (bLiteData)
 	return;
@@ -372,7 +372,7 @@ for (i = 0; i < MAX_PLAYERS; i++)
 		}
 	}
 #endif
-BE_GET_SHORT (netgame->segments_checksum);         
+BE_GET_SHORT (netgame->nSegmentCheckSum);         
 BE_GET_SHORT (netgame->teamKills [0]);             
 BE_GET_SHORT (netgame->teamKills [1]);             
 for (i = 0; i < MAX_PLAYERS; i++) {

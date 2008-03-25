@@ -88,8 +88,13 @@ typedef struct tSide {
 	sbyte   		nFrame;      //keep us longword aligned
 	ushort  		nWall;
 	short   		nBaseTex;
+#ifndef WORDS_BIGENDIAN
+	ushort		nOvlTex : 14;
+	ushort		nOvlOrient : 2;
+#else
 	ushort		nOvlOrient : 2;
 	ushort		nOvlTex : 14;
+#endif
 	tUVL     	uvls [4];
 	vmsVector	normals [2];  // 2 normals, if quadrilateral, both the same.
 } tSide;

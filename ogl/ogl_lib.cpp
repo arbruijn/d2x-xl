@@ -801,19 +801,19 @@ gameStates.ogl.bLastFullScreen = gameStates.ogl.bFullScreen;
 
 //------------------------------------------------------------------------------
 
-const char *gl_vendor,*gl_renderer,*gl_version,*gl_extensions;
+const char *gl_vendor,*gl_renderer,*glVersion,*gl_extensions;
 
 void OglGetVerInfo (void)
 {
 gl_vendor = (char *) glGetString (GL_VENDOR);
 gl_renderer = (char *) glGetString (GL_RENDERER);
-gl_version = (char *) glGetString (GL_VERSION);
+glVersion = (char *) glGetString (GL_VERSION);
 gl_extensions = (char *) glGetString (GL_EXTENSIONS);
 #if 0 //TRACE
 con_printf(
 	CON_VERBOSE, 
 	"\ngl vendor:%s\nrenderer:%s\nversion:%s\nextensions:%s\n",
-	gl_vendor,gl_renderer,gl_version,gl_extensions);
+	gl_vendor,gl_renderer,glVersion,gl_extensions);
 #endif
 #if 0 //WGL only, I think
 	dglMultiTexCoord2fARB = (glMultiTexCoord2fARB_fp)wglGetProcAddress("glMultiTexCoord2fARB");
@@ -838,7 +838,7 @@ con_printf (CONDBG,"a:%p b:%p\n",strstr(gl_extensions,"GL_SGIS_multitexture"),gl
 
 //add driver specific hacks here.  whee.
 if (gl_renderer) {
-	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(gl_version,"1.2 Mesa 3.0")==0){
+	if ((stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.0\n")==0 || stricmp(gl_renderer,"Mesa NVIDIA RIVA 1.2\n")==0) && stricmp(glVersion,"1.2 Mesa 3.0")==0){
 		gameStates.ogl.bIntensity4 = 0;	//ignores alpha, always black background instead of transparent.
 		gameStates.ogl.bReadPixels = 0;	//either just returns all black, or kills the X server entirely
 		gameStates.ogl.bGetTexLevelParam = 0;	//returns random data..

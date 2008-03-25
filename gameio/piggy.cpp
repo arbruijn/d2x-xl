@@ -644,8 +644,8 @@ if (!CFOpen (cfPiggy + gameStates.app.bD1Data, szPigName, gameFolders.szDataDir,
 	}
 if (cfPiggy [gameStates.app.bD1Data].file) {                        //make sure pig is valid nType file & is up-to-date
 	int pig_id = CFReadInt (cfPiggy + gameStates.app.bD1Data);
-	int pig_version = CFReadInt (cfPiggy + gameStates.app.bD1Data);
-	if (pig_id != PIGFILE_ID || pig_version != PIGFILE_VERSION) {
+	int pigVersion = CFReadInt (cfPiggy + gameStates.app.bD1Data);
+	if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
 		CFClose (cfPiggy + gameStates.app.bD1Data);              //out of date pig
 		}
 	}
@@ -800,11 +800,11 @@ void piggy_new_pigfile (char *pigname)
 		CopyPigFileFromCD (cfPiggy, pigname);
 	#endif
 	if (cfPiggy [0].file) {  //make sure pig is valid nType file & is up-to-date
-		int pig_id,pig_version;
+		int pig_id,pigVersion;
 
 		pig_id = CFReadInt (cfPiggy);
-		pig_version = CFReadInt (cfPiggy);
-		if (pig_id != PIGFILE_ID || pig_version != PIGFILE_VERSION) {
+		pigVersion = CFReadInt (cfPiggy);
+		if (pig_id != PIGFILE_ID || pigVersion != PIGFILE_VERSION) {
 			CFClose (cfPiggy);              //out of date pig
 		}
 	}
@@ -1128,7 +1128,7 @@ int ReadHamFile ()
 int ReadSoundFile ()
 {
 	CFILE cfSound;
-	int snd_id,snd_version;
+	int snd_id,sndVersion;
 	int nSoundNum;
 	int nSoundStart;
 	int size, length;
@@ -1140,8 +1140,8 @@ int ReadSoundFile ()
 
 	//make sure soundfile is valid nType file & is up-to-date
 	snd_id = CFReadInt (&cfSound);
-	snd_version = CFReadInt (&cfSound);
-	if (snd_id != SNDFILE_ID || snd_version != SNDFILE_VERSION) {
+	sndVersion = CFReadInt (&cfSound);
+	if (snd_id != SNDFILE_ID || sndVersion != SNDFILE_VERSION) {
 		CFClose (&cfSound);						//out of date sound file
 		return 0;
 	}

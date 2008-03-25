@@ -66,7 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct {
 	ushort  fileinfo_signature;
-	ushort  fileinfo_version;
+	ushort  fileinfoVersion;
 	int     fileinfo_sizeof;
 } game_top_fileinfo;    // Should be same as first two fields below...
 
@@ -78,7 +78,7 @@ typedef struct tGameItemInfo {
 
 typedef struct {
 	ushort  fileinfo_signature;
-	ushort  fileinfo_version;
+	ushort  fileinfoVersion;
 	int     fileinfo_sizeof;
 	char    mine_filename[15];
 	int     level;

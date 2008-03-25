@@ -196,7 +196,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	ResetPlayerTimeout (i, t);
 NetworkSendEndLevelPacket ();
 NetworkSendEndLevelPacket ();
-networkData.mySyncPackInited = 0;
+networkData.bSyncPackInited = 0;
 NetworkUpdateNetGame ();
 return 0;
 }
@@ -245,7 +245,7 @@ netGame.gameStatus = NETSTAT_STARTING;
 netGame.nNumPlayers = 0;
 netGame.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 netGame.nLevel = mpParams.nLevel;
-netGame.protocol_version = MULTI_PROTO_VERSION;
+netGame.protocolVersion = MULTI_PROTO_VERSION;
 strcpy (netGame.szGameName, mpParams.szGameName);
 networkData.nStatus = NETSTAT_STARTING;
 // Have the network driver initialize whatever data it wants to
@@ -460,50 +460,50 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				ShortSyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
 				ShortSyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
 				ShortSyncPack.level_num = gameData.missions.nCurrentLevel;
-				ShortSyncPack.data_size = networkData.mySyncPack.data_size;
-				memcpy (ShortSyncPack.data, networkData.mySyncPack.data, networkData.mySyncPack.data_size);
-				networkData.mySyncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
-				ShortSyncPack.numpackets = networkData.mySyncPack.numpackets;
+				ShortSyncPack.data_size = networkData.syncPack.data_size;
+				memcpy (ShortSyncPack.data, networkData.syncPack.data, networkData.syncPack.data_size);
+				networkData.syncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
+				ShortSyncPack.numpackets = networkData.syncPack.numpackets;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 				IpxSendGamePacket (
 					(ubyte*)&ShortSyncPack, 
-					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.mySyncPack.data_size);
+					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.syncPack.data_size);
 #else
 				SquishShortFrameInfo (ShortSyncPack, send_data);
 				IpxSendGamePacket (
 					(ubyte*)send_data, 
-					IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.mySyncPack.data_size);
+					IPX_SHORT_INFO_SIZE-networkData.nMaxXDataSize+networkData.syncPack.data_size);
 #endif
 				}
 			else {// If long packets
 					int send_data_size;
 
-				networkData.mySyncPack.nType = PID_PDATA;
-				networkData.mySyncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
-				networkData.mySyncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
-				networkData.mySyncPack.level_num = gameData.missions.nCurrentLevel;
-				networkData.mySyncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
-				networkData.mySyncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
-				networkData.mySyncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
-				networkData.mySyncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;
-				networkData.mySyncPack.phys_rotvel = gameData.objs.objects [nObject].mType.physInfo.rotVel;
-				send_data_size = networkData.mySyncPack.data_size;                  // do this so correct size data is sent
+				networkData.syncPack.nType = PID_PDATA;
+				networkData.syncPack.nPlayer = gameData.multiplayer.nLocalPlayer;
+				networkData.syncPack.obj_renderType = gameData.objs.objects [nObject].renderType;
+				networkData.syncPack.level_num = gameData.missions.nCurrentLevel;
+				networkData.syncPack.obj_segnum = gameData.objs.objects [nObject].nSegment;
+				networkData.syncPack.obj_pos = gameData.objs.objects [nObject].position.vPos;
+				networkData.syncPack.obj_orient = gameData.objs.objects [nObject].position.mOrient;
+				networkData.syncPack.phys_velocity = gameData.objs.objects [nObject].mType.physInfo.velocity;
+				networkData.syncPack.phys_rotvel = gameData.objs.objects [nObject].mType.physInfo.rotVel;
+				send_data_size = networkData.syncPack.data_size;                  // do this so correct size data is sent
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)                        // do the swap stuff
 				if (gameStates.multi.nGameType >= IPX_GAME) {
-					networkData.mySyncPack.obj_segnum = INTEL_SHORT (networkData.mySyncPack.obj_segnum);
-					INTEL_VECTOR (&networkData.mySyncPack.obj_pos);
-					INTEL_MATRIX (&networkData.mySyncPack.obj_orient);
-					INTEL_VECTOR (&networkData.mySyncPack.phys_velocity);
-					INTEL_VECTOR (&networkData.mySyncPack.phys_rotvel);
-					networkData.mySyncPack.data_size = INTEL_SHORT (networkData.mySyncPack.data_size);
+					networkData.syncPack.obj_segnum = INTEL_SHORT (networkData.syncPack.obj_segnum);
+					INTEL_VECTOR (&networkData.syncPack.obj_pos);
+					INTEL_MATRIX (&networkData.syncPack.obj_orient);
+					INTEL_VECTOR (&networkData.syncPack.phys_velocity);
+					INTEL_VECTOR (&networkData.syncPack.phys_rotvel);
+					networkData.syncPack.data_size = INTEL_SHORT (networkData.syncPack.data_size);
 					}
 #endif
-				networkData.mySyncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
+				networkData.syncPack.numpackets = INTEL_INT (gameData.multiplayer.players [0].nPacketsSent++);
 				IpxSendGamePacket (
-					(ubyte*)&networkData.mySyncPack, 
+					(ubyte*)&networkData.syncPack, 
 					sizeof (tFrameInfo) - networkData.nMaxXDataSize + send_data_size);
 				}
-			networkData.mySyncPack.data_size = 0;               // Start data over at 0 length.
+			networkData.syncPack.data_size = 0;               // Start data over at 0 length.
 			networkData.bD2XData = 0;
 			if (gameData.reactor.bDestroyed) {
 				if (gameStates.app.bPlayerIsDead)
@@ -541,7 +541,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	}
 
 if (!bListen) {
-	networkData.mySyncPack.data_size = 0;
+	networkData.syncPack.data_size = 0;
 	return;
 	}
 NetworkListen ();
@@ -666,8 +666,8 @@ return (rank+1);
 
 void NetworkCheckForOldVersion (char pnum)
 {  
-if ((netPlayers.players [(int) pnum].version_major == 1) && 
-	 !(netPlayers.players [(int) pnum].version_minor & 0x0F))
+if ((netPlayers.players [(int) pnum].versionMajor == 1) && 
+	 !(netPlayers.players [(int) pnum].versionMinor & 0x0F))
 	netPlayers.players [ (int) pnum].rank = 0;
 }
 

@@ -138,20 +138,20 @@ tBitmapIndex mpTextureIndex [MAX_NUM_NET_PLAYERS][N_PLAYER_SHIP_TEXTURES];
 
 typedef struct tNetPlayerStats {
 	ubyte  messageType;
-	ubyte  local_player;              // Who am i?
-	uint   flags;                   // Powerup flags, see below...
-	fix    energy;                  // Amount of energy remaining.
-	fix    shields;                 // shields remaining (protection)
-	ubyte  lives;                   // Lives remaining, 0 = game over.
-	ubyte  laserLevel;             // Current level of the laser.
-	ubyte  primaryWeaponFlags;    // bit set indicates the tPlayer has this weapon.
+	ubyte  nLocalPlayer;          // Who am i?
+	uint   flags;                 // Powerup flags, see below...
+	fix    energy;                // Amount of energy remaining.
+	fix    shields;               // shields remaining (protection)
+	ubyte  lives;                 // Lives remaining, 0 = game over.
+	ubyte  laserLevel;				// Current level of the laser.
+	ubyte  primaryWeaponFlags;		// bit set indicates the tPlayer has this weapon.
 	ubyte  secondaryWeaponFlags;  // bit set indicates the tPlayer has this weapon.
 	ushort primaryAmmo [MAX_PRIMARY_WEAPONS];     // How much ammo of each nType.
 	ushort secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
-	int    lastScore;              // Score at beginning of current level.
-	int    score;                   // Current score.
-	fix    cloakTime;              // Time cloaked
-	fix    invulnerableTime;       // Time invulnerable
+	int    lastScore;             // Score at beginning of current level.
+	int    score;                 // Current score.
+	fix    cloakTime;             // Time cloaked
+	fix    invulnerableTime;      // Time invulnerable
 	fix    homingObjectDist;      // Distance of nearest homing tObject.
 	short  nKillGoalCount;
 	short  netKilledTotal;        // Number of times nKilled total
@@ -160,9 +160,9 @@ typedef struct tNetPlayerStats {
 	short  numKillsTotal;         // Number of kills total
 	short  numRobotsLevel;        // Number of initial robots this level
 	short  numRobotsTotal;        // Number of robots total
-	ushort nHostagesRescued;  // Total number of hostages rescued.
-	ushort nHostagesTotal;          // Total number of hostages.
-	ubyte  nHostagesOnBoard;       // Number of hostages on ship.
+	ushort nHostagesRescued;		// Total number of hostages rescued.
+	ushort nHostagesTotal;        // Total number of hostages.
+	ubyte  nHostagesOnBoard;      // Number of hostages on ship.
 	ubyte  unused [16];
 } tNetPlayerStats;
 
@@ -1832,7 +1832,7 @@ ubyte player_n;
 player_n = *(ubyte *) (buf+1);
 if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
 	extract_netplayer_stats (&ps, gameData.multiplayer.players + gameData.multiplayer.nLocalPlayer);
-	ps.local_player = gameData.multiplayer.nLocalPlayer;
+	ps.nLocalPlayer = gameData.multiplayer.nLocalPlayer;
 	ps.messageType = MULTI_SEND_PLAYER;            // SET
 	MultiSendData ((char *)&ps, sizeof (tNetPlayerStats), 0);
 	}
@@ -1844,8 +1844,8 @@ if ((player_n == gameData.multiplayer.nLocalPlayer) || (player_n == 255)) {
 void MultiDoSendPlayer (char *buf)
 {
 tNetPlayerStats *p = (tNetPlayerStats *)buf;
-Assert (p->local_player <= gameData.multiplayer.nPlayers);
-use_netplayer_stats (gameData.multiplayer.players  + p->local_player, p);
+Assert (p->nLocalPlayer <= gameData.multiplayer.nPlayers);
+use_netplayer_stats (gameData.multiplayer.players  + p->nLocalPlayer, p);
 }
 
 //-----------------------------------------------------------------------------

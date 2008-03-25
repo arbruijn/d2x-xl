@@ -309,7 +309,7 @@ extern void tactile_set_button_jolt (void);
 /*
  * reads n tWeaponInfo structs from a CFILE
  */
-extern int WeaponInfoReadN(tWeaponInfo *wi, int n, CFILE *fp, int file_version);
+extern int WeaponInfoReadN(tWeaponInfo *wi, int n, CFILE *fp, int fileVersion);
 
 extern ubyte nWeaponOrder [2][11];
 extern ubyte nDefaultWeaponOrder [2][11];
