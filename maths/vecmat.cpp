@@ -833,10 +833,8 @@ vmsVector *VmVecPerp (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *
 {
 	vmsVector t0, t1;
 
-VmVecSub (&t0, p1, p0);
-VmVecSub (&t1, p2, p1);
-VmVecNormalize (&t0);
-VmVecNormalize (&t1);
+VmVecNormalize (VmVecSub (&t0, p1, p0));
+VmVecNormalize (VmVecSub (&t1, p2, p1));
 return VmVecCrossProd (dest, &t0, &t1);
 }
 
