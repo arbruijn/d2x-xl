@@ -100,7 +100,7 @@ if (dot < (F1_0 - gameData.time.xFrame/2)) {
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
 	VmVecScale (&new_fvec, new_scale);
 	VmVecInc (&new_fvec, &objP->position.mOrient.fVec);
-	mag = VmVecNormalizeQuick (&new_fvec);
+	mag = VmVecNormalize (&new_fvec);
 	if (mag < F1_0/256) {
 #if TRACE
 		con_printf (1, "Degenerate vector in AITurnTowardsVector (mag = %7.3f)\n", f2fl (mag));
@@ -133,7 +133,7 @@ void MoveTowardsVector (tObject *objP, vmsVector *vGoalVec, int bDotBased)
 	//	bash velocity vector twice as much towards tPlayer as usual.
 
 vel = pptr->velocity;
-VmVecNormalizeQuick (&vel);
+VmVecNormalize (&vel);
 dot = VmVecDot (&vel, &objP->position.mOrient.fVec);
 
 if (botInfoP->thief)
@@ -341,7 +341,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 
 		fieldOfView = ROBOTINFO (objP->id).fieldOfView [gameStates.app.nDifficultyLevel];
 		VmVecSub (&vVecToLaser, &dObjP->position.vPos, &objP->position.vPos);
-		xDistToLaser = VmVecNormalizeQuick (&vVecToLaser);
+		xDistToLaser = VmVecNormalize (&vVecToLaser);
 		dot = VmVecDot (&vVecToLaser, &objP->position.mOrient.fVec);
 
 		if ((dot > fieldOfView) || (botInfoP->companion)) {
@@ -354,10 +354,10 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 				fVecLaser = dObjP->position.mOrient.fVec;
 			else {		//	Not a polyobjP, get velocity and normalize.
 				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->position.mOrient.fVec;
-				VmVecNormalizeQuick (&fVecLaser);
+				VmVecNormalize (&fVecLaser);
 				}
 			VmVecSub (&vLaserToRobot, &objP->position.vPos, &dObjP->position.vPos);
-			VmVecNormalizeQuick (&vLaserToRobot);
+			VmVecNormalize (&vLaserToRobot);
 			dotLaserRobot = VmVecDot (&fVecLaser, &vLaserToRobot);
 
 			if ((dotLaserRobot > F1_0*7/8) && (xDistToLaser < F1_0*80)) {
@@ -420,7 +420,7 @@ fix MoveObjectToLegalPoint (tObject *objP, vmsVector *vGoal)
 	fix			xDistToGoal;
 
 VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
-xDistToGoal = VmVecNormalizeQuick (&vGoalDir);
+xDistToGoal = VmVecNormalize (&vGoalDir);
 VmVecScale (&vGoalDir, objP->size / 2);
 VmVecInc (&objP->position.vPos, &vGoalDir);
 return xDistToGoal;
@@ -479,7 +479,7 @@ fix MoveTowardsPoint (tObject *objP, vmsVector *vGoal, fix xMinDist)
 	vmsVector	vGoalDir;
 
 VmVecSub (&vGoalDir, vGoal, &objP->position.vPos);
-xDistToGoal = VmVecNormalizeQuick (&vGoalDir);
+xDistToGoal = VmVecNormalize (&vGoalDir);
 if (xDistToGoal - objP->size <= xMinDist) {
 	//	Center is nearer than the distance we want to move, so move to center.
 	if (!xMinDist) {

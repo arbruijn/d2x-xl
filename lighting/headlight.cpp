@@ -71,7 +71,7 @@ fix ComputeHeadlightLightOnObject (tObject *objP)
 		tObject		*lightObjP;
 		lightObjP = Headlights [i];
 		VmVecSub (&vecToObj, &objP->position.vPos, &lightObjP->position.vPos);
-		dist = VmVecNormalizeQuick (&vecToObj);
+		dist = VmVecNormalize (&vecToObj);
 		if (dist > 0) {
 			dot = VmVecDot (&lightObjP->position.mOrient.fVec, &vecToObj);
 			if (dot < F1_0/2)

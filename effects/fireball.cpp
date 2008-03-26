@@ -200,7 +200,7 @@ for (i = 0, obj0P = gameData.objs.objects; i <= gameData.objs.nLastObject; i++, 
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the tObject
-	VmVecNormalizedDirQuick (&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
+	VmVecNormalizedDir (&vForce, &obj0P->position.vPos, &explObjP->position.vPos);
 	VmVecScale (&vForce, force);
 	// Find where the point of impact is... (pos_hit)
 	VmVecSub (&pos_hit, &explObjP->position.vPos, &obj0P->position.vPos);
@@ -433,7 +433,7 @@ debrisP->mType.physInfo.velocity.p.x = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity.p.y = RAND_MAX/2 - d_rand ();
 debrisP->mType.physInfo.velocity.p.z = RAND_MAX/2 - d_rand ();
 VmVecScale (&debrisP->mType.physInfo.velocity, F1_0 * 10);
-VmVecNormalizeQuick (&debrisP->mType.physInfo.velocity);
+VmVecNormalize (&debrisP->mType.physInfo.velocity);
 VmVecScale (&debrisP->mType.physInfo.velocity, i2f (10 + (30 * d_rand () / RAND_MAX)));
 VmVecInc (&debrisP->mType.physInfo.velocity, &parentObjP->mType.physInfo.velocity);
 // -- used to be: Notice, not random!VmVecMake (&debrisP->mType.physInfo.rotVel, 10*0x2000/3, 10*0x4000/3, 10*0x7000/3);

@@ -671,13 +671,13 @@ switch (nType) {
 			int	rand_scale;
 			new_velocity = *init_vel;
 			old_mag = VmVecMagQuick (init_vel);
-			VmVecNormalizeQuick (&new_velocity);
+			VmVecNormalize (&new_velocity);
 			//	We want powerups to move more in network mode.
 			rand_scale = 2;
 			new_velocity.p.x += (d_rand ()-16384)*2;
 			new_velocity.p.y += (d_rand ()-16384)*2;
 			new_velocity.p.z += (d_rand ()-16384)*2;
-			VmVecNormalizeQuick (&new_velocity);
+			VmVecNormalize (&new_velocity);
 			VmVecScale (&new_velocity, (F1_0*32 + old_mag) * rand_scale);
 			vNewPos = *pos;
 			//	This is dangerous, could be outside mine.

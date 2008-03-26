@@ -43,7 +43,7 @@ if (objP->nType == OBJ_ROBOT) {
 		return 0;
 	}
 VmVecSub (&vGoal, &objP->position.vPos, &tracker->position.vPos);
-VmVecNormalizeQuick (&vGoal);
+VmVecNormalize (&vGoal);
 *xDot = VmVecDot (&vGoal, &tracker->position.mOrient.fVec);
 if ((*xDot < xMinTrackableDot) && (*xDot > 9 * F1_0 / 10)) {
 	VmVecNormalize (&vGoal);
@@ -159,7 +159,7 @@ else {
 		else if (curObjP->nType != OBJ_PLAYER)
 			continue;
 		VmVecSub (&vecToCurObj, &curObjP->position.vPos, vTrackerPos);
-		dist = VmVecNormalizeQuick (&vecToCurObj);
+		dist = VmVecNormalize (&vecToCurObj);
 		if (dist < maxTrackableDist) {
 			dot = VmVecDot (&vecToCurObj, bSpectate ? &gameStates.app.playerPos.mOrient.fVec : &trackerP->position.mOrient.fVec);
 
@@ -264,7 +264,7 @@ for (nObject = 0; nObject <= gameData.objs.nLastObject; nObject++) {
 	dist = VmVecMagQuick (&vecToCurObj);
 
 	if (dist < maxTrackableDist) {
-		VmVecNormalizeQuick (&vecToCurObj);
+		VmVecNormalize (&vecToCurObj);
 		dot = VmVecDot (&vecToCurObj, &trackerP->position.mOrient.fVec);
 		if (bIsProximity)
 			dot = ((dot << 3) + dot) >> 3;		//	I suspect Watcom would be too stupid to figure out the obvious...

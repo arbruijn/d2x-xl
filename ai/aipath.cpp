@@ -200,7 +200,7 @@ for (i = 1, --j; i < j; i++) {
 				e.p.x = (d_rand ()- 16384) / 2;
 				e.p.y = (d_rand ()- 16384) / 2;
 				e.p.z = abs (e.p.x) + abs (e.p.y) + 1;
-				VmVecNormalizeQuick (&e);
+				VmVecNormalize (&e);
 				} 
 			else {
 				e.p.x =
@@ -1215,11 +1215,11 @@ xMaxSpeed = robptr->xMaxSpeed [gameStates.app.nDifficultyLevel];
 if ((gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_RUN_FROM_OBJECT) || (objP->cType.aiInfo.behavior == AIB_SNIPE))
 	xMaxSpeed = xMaxSpeed*3/2;
 VmVecSub (&vNormToGoal, vGoalPoint, &vCurPos);
-VmVecNormalizeQuick (&vNormToGoal);
+VmVecNormalize (&vNormToGoal);
 vNormCurVel = vCurVel;
-VmVecNormalizeQuick (&vNormCurVel);
+VmVecNormalize (&vNormCurVel);
 vNormFwd = objP->position.mOrient.fVec;
-VmVecNormalizeQuick (&vNormFwd);
+VmVecNormalize (&vNormFwd);
 dot = VmVecDot (&vNormToGoal, &vNormFwd);
 //	If very close to facing opposite desired vector, perturb vector
 if (dot < -15*F1_0/16) {
@@ -1230,7 +1230,7 @@ else {
 	vNormCurVel.p.y += vNormToGoal.p.y/2;
 	vNormCurVel.p.z += vNormToGoal.p.z/2;
 	}
-VmVecNormalizeQuick (&vNormCurVel);
+VmVecNormalize (&vNormCurVel);
 //	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 //	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)
 //	Note that since 3*F1_0/4 is added to dot product, it is possible for the robot to back up.
@@ -1555,13 +1555,13 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 	xMaxSpeed = ROBOTINFO (objP->id).xMaxSpeed [gameStates.app.nDifficultyLevel];
 
 	VmVecSub (&vNormToGoal, vGoalPoint, &vCurPos);
-	VmVecNormalizeQuick (&vNormToGoal);
+	VmVecNormalize (&vNormToGoal);
 
 	vNormCurVel = vCurVel;
-	VmVecNormalizeQuick (&vNormCurVel);
+	VmVecNormalize (&vNormCurVel);
 
 	vNormFwd = objP->position.mOrient.fVec;
-	VmVecNormalizeQuick (&vNormFwd);
+	VmVecNormalize (&vNormFwd);
 
 	dot = VmVecDot (&vNormToGoal, &vNormFwd);
 	if (gameData.ai.localInfo [OBJ_IDX (objP)].mode == AIM_SNIPE_RETREAT_BACKWARDS) {
@@ -1577,7 +1577,7 @@ void player_path_set_orient_and_vel (tObject *objP, vmsVector *vGoalPoint)
 		vNormCurVel.p.z += vNormToGoal.p.z/2;
 	}
 
-	VmVecNormalizeQuick (&vNormCurVel);
+	VmVecNormalize (&vNormCurVel);
 
 	//	Set speed based on this robot nType's maximum allowed speed and how hard it is turning.
 	//	How hard it is turning is based on the dot product of (vector to goal) and (current velocity vector)

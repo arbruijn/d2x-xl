@@ -2769,15 +2769,15 @@ if (FindArg ("-?") || FindArg ("-help") || FindArg ("?") || FindArg ("-h")) {
 
 // ----------------------------------------------------------------------------
 
-void ShowTitleScreens (void)
+int ShowTitleScreens (void)
 {
+	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
 #ifdef _DEBUG
 if (FindArg ("-notitles"))
 	SongsPlaySong (SONG_TITLE, 1);
 else
 #endif
 	{	//NOTE LINK TO ABOVE!
-	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
 	int bSongPlaying = 0;
 	if (gameStates.app.bHaveExtraMovies) {
 		nPlayed = PlayMovie ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
@@ -2793,41 +2793,49 @@ else
 	if (!bSongPlaying)
 		SongsPlaySong (SONG_TITLE, 1);
 	}
+return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 }
 
 // ----------------------------------------------------------------------------
 
 void ShowLoadingScreen (void)
 {
-	int pcx_error;
-	char filename[14];
+if (!gameStates.app.bNostalgia) {
+		bkg	bg;
+
+	memset (&bg, 0, sizeof (bg));
+	NMInitBackground (NULL, &bg, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight, -1);
+	GrUpdate (0);
+	}
+else {
+		int pcx_error;
+		char filename [14];
 
 #if TRACE	
-con_printf(CONDBG, "\nShowing loading screen...\n"); fflush (fErr);
+	con_printf(CONDBG, "\nShowing loading screen...\n"); fflush (fErr);
 #endif
-strcpy (filename, gameStates.menus.bHires?"descentb.pcx":"descent.pcx");
-if (! CFExist (filename, gameFolders.szDataDir, 0))
-	strcpy (filename, gameStates.menus.bHires?"descntob.pcx":"descento.pcx"); // OEM
-if (! CFExist (filename, gameFolders.szDataDir, 0))
-	strcpy (filename, "descentd.pcx"); // SHAREWARE
-if (! CFExist (filename, gameFolders.szDataDir, 0))
-	strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
-GrSetMode (
-	gameStates.menus.bHires ? 
-		(gameStates.gfx.nStartScrSize < 0) ? 
-			SM (640, 480) 
-			: SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y) 
-		: SM (320, 200));
-SetScreenMode (SCREEN_MENU);
-gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-if ((pcx_error = PcxReadFullScrImage (filename, 0)) == PCX_ERROR_NONE)	{
-	GrPaletteStepClear ();
-	GrPaletteFadeIn (gameData.render.pal.pCurPal, 32, 0);
-	} 
-else
-	Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcx_error));
-//the bitmap loading code changes grPalette, so restore it
-//memcpy (grPalette, titlePal, sizeof (grPalette));
+	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
+	if (!CFExist (filename, gameFolders.szDataDir, 0))
+		strcpy (filename, gameStates.menus.bHires ? "descntob.pcx" : "descento.pcx"); // OEM
+	if (!CFExist (filename, gameFolders.szDataDir, 0))
+		strcpy (filename, "descentd.pcx"); // SHAREWARE
+	if (!CFExist (filename, gameFolders.szDataDir, 0))
+		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
+	GrSetMode (
+		gameStates.menus.bHires ? 
+			(gameStates.gfx.nStartScrSize < 0) ? 
+				SM (640, 480) 
+				: SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y) 
+			: SM (320, 200));
+	SetScreenMode (SCREEN_MENU);
+	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
+	if ((pcx_error = PcxReadFullScrImage (filename, 0)) == PCX_ERROR_NONE)	{
+		GrPaletteStepClear ();
+		GrPaletteFadeIn (gameData.render.pal.pCurPal, 32, 0);
+		} 
+	else
+		Error ("Couldn't load pcx file '%s', \nPCX load error: %s\n", filename, pcx_errormsg (pcx_error));
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -3095,11 +3103,159 @@ return gameStates.input.bHaveTrackIR = 0;
 
 // ----------------------------------------------------------------------------
 
+int InitGraphics (void)
+{
+	u_int32_t	nScreenMode;
+	int			t;
+
+/*---*/LogErr ("Initializing graphics\n");
+if ((t = GrInit ())) {		//doesn't do much
+	LogErr ("Cannot initialize graphics\n");
+	Error (TXT_CANT_INIT_GFX, t);
+	return 0;
+	}
+nScreenMode = SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y);
+#ifdef _3DFX
+_3dfx_Init ();
+#endif
+
+/*---*/LogErr ("Initializing render buffers\n");
+if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
+	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
+/*---*/LogErr ("Loading default palette\n");
+defaultPalette = GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
+grdCurCanv->cvBitmap.bmPalette = defaultPalette;	//just need some valid palette here
+/*---*/LogErr ("Initializing game fonts\n");
+GameFontInit ();	// must load after palette data loaded.
+/*---*/LogErr ("Setting screen mode\n");
+SetScreenMode (SCREEN_MENU);
+/*---*/LogErr ("Showing loading screen\n");
+ShowLoadingScreen ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+static inline int InitGaugeSize (void)
+{
+return 20;
+}
+
+//------------------------------------------------------------------------------
+
+static int loadOp = 0;
+
+static void InitializePoll (int nItems, tMenuItem *m, int *key, int cItem)
+{
+GrPaletteStepLoad (NULL);
+switch (loadOp) {
+	case 0:
+		/*---*/LogErr ("Creating default tracker list\n");
+		CreateTrackerList ();
+		break;
+	case 1:
+		/*---*/LogErr ("Loading ban list\n");
+		LoadBanList ();
+		break;
+	case 2:
+		/*---*/LogErr ("Initializing i/o\n");
+		arch_init ();
+		gameStates.render.nLighting = 1;
+		break;
+	case 3:
+		/*---*/LogErr ("Initializing control types\n");
+		SetControlType ();
+		break;
+	case 4:
+		/*---*/LogErr ("Initializing joystick\n");
+		DoJoystickInit ();
+		break;
+	case 5:
+		int i;
+		if ((i = FindArg ("-xcontrol")) > 0)
+			KCInitExternalControls (strtol (Args [i+1], NULL, 0), strtol (Args [i+2], NULL, 0));
+		break;
+	case 6:
+		/*---*/LogErr ("Initializing movies\n");
+		if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || bDisableHires)
+			gameOpts->movies.bHires = 
+			gameStates.menus.bHires = 
+			gameStates.menus.bHiresAvailable = 0;
+		else
+			gameStates.menus.bHires = gameStates.menus.bHiresAvailable = 1;
+		InitMovies ();		//init movie libraries
+		break;
+	case 7:
+		/*---*/LogErr ("Initializing game data\n");
+		InitWeaponFlags ();
+		break;
+	case 8:
+		BMInit ();
+		break;
+	case 9:
+		/*---*/LogErr ("Initializing sound\n");
+		DigiInit (1);
+		break;
+	case 10:
+		/*---*/LogErr ("Loading hoard data\n");
+		LoadHoardData ();
+		break;
+	case 11:
+		error_init (ShowInGameWarning, NULL);
+		break;
+	case 12:
+		if (!gameStates.app.bAutoRunMission) {
+			/*---*/LogErr ("Showing title screens\n");
+			if (!ShowTitleScreens ())
+				ShowLoadingScreen ();
+			}
+		break;
+	case 13:
+		break;
+		g3_init ();
+	case 14:
+		/*---*/LogErr ("Initializing texture merge buffer\n");
+		TexMergeInit (100); // 100 cache bitmaps
+		break;
+	case 15:
+		InitPowerupTables ();
+		break;
+	case 16:
+		InitGame ();
+		break;
+	case 17:
+		InitThreads ();
+		break;
+	case 18:
+		PiggyInitMemory ();
+		break;
+	case 19:
+		/*---*/LogErr ("Enabling TrackIR support\n");
+		TIRLoad ();
+		break;
+	}
+if (++loadOp == InitGaugeSize ())
+	*key = -2;
+else {
+	m [0].value++;
+	m [0].rebuild = 1;
+	*key = 0;
+	}
+GrPaletteStepLoad (NULL);
+}
+
+//------------------------------------------------------------------------------
+
+void InitializeGauge (void)
+{
+loadOp = 0;
+NMProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll); 
+}
+
+// ----------------------------------------------------------------------------
+
 int Initialize (int argc, char *argv[])
 {
-	int			i, t;
-	u_int32_t	nScreenMode;
-
 /*---*/LogErr ("Initializing data\n");
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
@@ -3141,9 +3297,10 @@ error_init (NULL, NULL);
 *szAutoMission = '\0';
 EvalArgs ();
 InitGameOptions (1);
+gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 AllocGameData ();
-/*---*/LogErr ("Creating default tracker list\n");
-CreateTrackerList ();
+/*---*/LogErr ("Loading text resources\n");
+LoadGameTexts ();
 CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
 /*---*/LogErr ("Loading main hog file\n");
 if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) || 
@@ -3155,94 +3312,21 @@ if (*szAutoHogFile && *szAutoMission) {
 	CFUseAltHogFile (szAutoHogFile);
 	gameStates.app.bAutoRunMission = gameHogFiles.AltHogFiles.bInitialized;
 	}
-/*---*/LogErr ("Loading text resources\n");
-LoadGameTexts ();
-/*---*/LogErr ("Loading ban list\n");
-LoadBanList ();
-PrintBanner ();
-/*---*/LogErr ("Initializing i/o\n");
-arch_init ();
-gameStates.render.nLighting = 1;
-#ifdef EDITOR
-if (!Inferno_is_800x600_available)	{
-	SetFunctionMode (FMODE_MENU);
-	}
-#endif
-
 /*---*/LogErr ("Reading configuration file\n");
 ReadConfigFile ();
-/*---*/LogErr ("Initializing control types\n");
-SetControlType ();
-/*---*/LogErr ("Initializing joystick\n");
-DoJoystickInit ();
-/*---*/LogErr ("Initializing graphics\n");
-if ((t = GrInit ())) {		//doesn't do much
-	LogErr ("Cannot initialize graphics\n");
-	Error (TXT_CANT_INIT_GFX, t);
+if (!InitGraphics ())
 	return 1;
+if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
+	InitializeGauge ();
+else {
+	for (loadOp = 0; loadOp < InitGaugeSize (); )
+		InitializePoll (0, NULL, NULL, 0);
 	}
-nScreenMode = SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameStates.gfx.nStartScrSize].y);
-#ifdef _3DFX
-_3dfx_Init ();
-#endif
-
-/*---*/LogErr ("Initializing render buffers\n");
-if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
-	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
-
-if ((i = FindArg ("-xcontrol")) > 0)
-	KCInitExternalControls (strtol (Args[i+1], NULL, 0), strtol (Args[i+2], NULL, 0));
-
-if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || bDisableHires)
-	gameOpts->movies.bHires = 
-	gameStates.menus.bHires = 
-	gameStates.menus.bHiresAvailable = 0;
-else
-	gameStates.menus.bHires = gameStates.menus.bHiresAvailable = 1;
-
-/*---*/LogErr ("Loading default palette\n");
-defaultPalette = GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
-grdCurCanv->cvBitmap.bmPalette = defaultPalette;	//just need some valid palette here
-/*---*/LogErr ("Initializing game fonts\n");
-GameFontInit ();	// must load after palette data loaded.
-/*---*/LogErr ("Initializing movies\n");
-InitMovies ();		//init movie libraries
-
-/*---*/LogErr ("Initializing game data\n");
-InitWeaponFlags ();
-#ifdef EDITOR
-bm_init_use_tbl ();
-#else
-BMInit ();
-#endif
-
-/*---*/LogErr ("Initializing sound\n");
-DigiInit (1);
-/*---*/LogErr ("Loading hoard data\n");
-LoadHoardData ();
-error_init (ShowInGameWarning, NULL);
+PrintBanner ();
 if (FindArg ("-norun"))
-	return (0);
-if (!gameStates.app.bAutoRunMission) {
-	/*---*/LogErr ("Showing title screens\n");
-	ShowTitleScreens ();
-	}
-/*---*/LogErr ("Showing loading screen\n");
-
-ShowLoadingScreen ();
-g3_init ();
-/*---*/LogErr ("Initializing texture merge buffer\n");
-TexMergeInit (100);		// 100 cache bitmaps
-/*---*/LogErr ("Setting screen mode\n");
-SetScreenMode (SCREEN_MENU);
-InitPowerupTables ();
-InitGame ();
-InitThreads ();
-PiggyInitMemory ();
+	return 0;
 /*---*/LogErr ("Loading hires models\n");
 LoadHiresModels (0);
-/*---*/LogErr ("Enabling TrackIR support\n");
-TIRLoad ();
 return 0;
 }
 

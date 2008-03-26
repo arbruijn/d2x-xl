@@ -371,7 +371,7 @@ if (nObject != -1) {
 
 		//	Now, give a big initial velocity to get moving away from boss.
 		VmVecSub (&newObjP->mType.physInfo.velocity, pos, &objP->position.vPos);
-		VmVecNormalizeQuick (&newObjP->mType.physInfo.velocity);
+		VmVecNormalize (&newObjP->mType.physInfo.velocity);
 		VmVecScale (&newObjP->mType.physInfo.velocity, F1_0*128);
 		}
 	}

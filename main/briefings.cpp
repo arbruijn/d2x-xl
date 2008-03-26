@@ -407,20 +407,20 @@ briefing_screen briefingScreens [] = {
 
 #endif
 
-int	Briefing_text_x, Briefing_text_y;
+int	briefingTextX, briefingTextY;
 
-gsrCanvas	*robotCanv = NULL;
-vmsAngVec	Robot_angles;
+gsrCanvas	*robotCanvP = NULL;
+vmsAngVec	vRobotAngles;
 
 char    szBitmapName [32] = "";
 #define EXIT_DOOR_MAX   14
 #define OTHER_THING_MAX 10      //  Adam: This is the number of frames in your new animating thing.
 #define DOOR_DIV_INIT   6
-sbyte   Door_dir=1, Door_divCount=0, Animating_bitmapType=0;
+sbyte   nDoorDir = 1, nDoorDivCount = 0, nAnimatingBitmapType = 0;
 
 //-----------------------------------------------------------------------------
 
-void init_char_pos (briefing_screen *bsp, int bRescale)
+void InitCharPos (briefing_screen *bsp, int bRescale)
 {
 if (bRescale) {
 	bsp->text_ulx = rescale_x (bsp->text_ulx);
@@ -428,8 +428,8 @@ if (bRescale) {
 	bsp->text_width = rescale_x (bsp->text_width);
 	bsp->text_height = RescaleY (bsp->text_height);
 	}
-Briefing_text_x = bsp->text_ulx;
-Briefing_text_y = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8 * (1 + gameStates.menus.bHires));
+briefingTextX = bsp->text_ulx;
+briefingTextY = gameStates.app.bD1Mission ? bsp->text_uly : bsp->text_uly - (8 * (1 + gameStates.menus.bHires));
 }
 
 //-----------------------------------------------------------------------------
@@ -446,8 +446,8 @@ void ShowBitmapFrame (int bRedraw)
 	int h = RescaleY (138);
 
 	//	Only plot every nth frame.
-	if (!bRedraw && Door_divCount) {
-		Door_divCount--;
+	if (!bRedraw && nDoorDivCount) {
+		nDoorDivCount--;
 		if (!gameOpts->menus.nStyle)
 			return;
 	}
@@ -456,7 +456,7 @@ void ShowBitmapFrame (int bRedraw)
 		char		*pound_signp;
 		int		num, dig1, dig2;
 		//	Set supertransparency color to black
-		switch (Animating_bitmapType) {
+		switch (nAnimatingBitmapType) {
 			case 0: 
 				bitmap_canv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
 				break;
@@ -465,7 +465,7 @@ void ShowBitmapFrame (int bRedraw)
 				break;
 			// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 			default:
-				Int3 (); // Impossible, illegal value for Animating_bitmapType
+				Int3 (); // Impossible, illegal value for nAnimatingBitmapType
 			}
 		curCanvSave = grdCurCanv; 
 		grdCurCanv = bitmap_canv;
@@ -481,21 +481,21 @@ void ShowBitmapFrame (int bRedraw)
 			else
 				num = (dig1-'0')*10 + (dig2-'0');
 
-			switch (Animating_bitmapType) {
+			switch (nAnimatingBitmapType) {
 				case 0:
-					if (!Door_divCount) {
-						num += Door_dir;
+					if (!nDoorDivCount) {
+						num += nDoorDir;
 						if (num > EXIT_DOOR_MAX) {
 							num = EXIT_DOOR_MAX;
-							Door_dir = -1;
+							nDoorDir = -1;
 						} else if (num < 0) {
 							num = 0;
-							Door_dir = 1;
+							nDoorDir = 1;
 						}
 					}
 					break;
 				case 1:
-					if (!Door_divCount)
+					if (!nDoorDivCount)
 						num++;
 					if (num > OTHER_THING_MAX)
 						num = 0;
@@ -537,19 +537,19 @@ void ShowBitmapFrame (int bRedraw)
 		GrPaletteStepLoad (NULL);
 		grdCurCanv = curCanvSave;
 		D2_FREE (bitmap_canv);
-		if (!(bRedraw || Door_divCount)) {
+		if (!(bRedraw || nDoorDivCount)) {
 #if 1
-		Door_divCount = DOOR_DIV_INIT;
+		nDoorDivCount = DOOR_DIV_INIT;
 #else
-		switch (Animating_bitmapType) {
+		switch (nAnimatingBitmapType) {
 			case 0:
 				if (num == EXIT_DOOR_MAX) {
-					Door_dir = -1;
-					Door_divCount = DOOR_DIV_INIT;
+					nDoorDir = -1;
+					nDoorDivCount = DOOR_DIV_INIT;
 					} 
 				else if (num == 0) {
-					Door_dir = 1;
-					Door_divCount = DOOR_DIV_INIT;
+					nDoorDir = 1;
+					nDoorDivCount = DOOR_DIV_INIT;
 				}
 				break;
 			case 1:
@@ -562,7 +562,7 @@ void ShowBitmapFrame (int bRedraw)
 
 //-----------------------------------------------------------------------------
 
-void show_briefing_bitmap (grsBitmap *bmp)
+void ShowBriefingBitmap (grsBitmap *bmp)
 {
 	gsrCanvas	*curCanvSave, *bitmap_canv;
 
@@ -581,10 +581,10 @@ void ShowSpinningRobotFrame (int nRobot)
 	gsrCanvas	*curCanvSave;
 
 if (nRobot != -1) {
-	Robot_angles.h += 150;
+	vRobotAngles.h += 150;
 
 	curCanvSave = grdCurCanv;
-	grdCurCanv = robotCanv;
+	grdCurCanv = robotCanvP;
 	Assert (ROBOTINFO (nRobot).nModel != -1);
 	if (bInitRobot) {
 		LoadPalette ("", "", 0, 0, 1);
@@ -592,7 +592,7 @@ if (nRobot != -1) {
 		GrPaletteStepLoad (NULL);
 		bInitRobot = 0;
 		}
-	DrawModelPicture (ROBOTINFO (nRobot).nModel, &Robot_angles);
+	DrawModelPicture (ROBOTINFO (nRobot).nModel, &vRobotAngles);
 	grdCurCanv = curCanvSave;
 	}
 }
@@ -602,7 +602,7 @@ if (nRobot != -1) {
 void RotateBriefingRobot (void)
 {
 gsrCanvas	*curCanvSave = grdCurCanv;
-grdCurCanv = robotCanv;
+grdCurCanv = robotCanvP;
 RotateRobot ();
 grdCurCanv = curCanvSave;
 }
@@ -611,16 +611,16 @@ grdCurCanv = curCanvSave;
 
 void InitSpinningRobot (void) // (int x, int y, int w, int h)
 {
-	//Robot_angles.p += 0;
-	//Robot_angles.b += 0;
-	//Robot_angles.h += 0;
+	//vRobotAngles.p += 0;
+	//vRobotAngles.b += 0;
+	//vRobotAngles.h += 0;
 
 	int x = rescale_x (138);
 	int y = RescaleY (55);
 	int w = rescale_x (163);
 	int h = RescaleY (136);
 
-	robotCanv = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
+	robotCanvP = GrCreateSubCanvas (grdCurCanv, x, y, w, h);
 	bInitRobot = 1;
 	// 138, 55, 166, 138
 }
@@ -650,7 +650,7 @@ Assert ((nCurrentColor >= 0) && (nCurrentColor < MAX_BRIEFING_COLORS));
 //	Draw cursor if there is some delay and caller says to draw cursor
 if (cursorFlag && !bRedraw) {
 	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
-	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
+	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	if (!gameOpts->menus.nStyle)
 		GrUpdate (0);
 }
@@ -681,14 +681,14 @@ tText = SDL_GetTicks ();
 //	Erase cursor
 if (cursorFlag && (delay > 0) && !bRedraw) {
 	GrSetFontColorRGBi (nEraseColor, 1, 0, 0);
-	GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
+	GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 	//	erase the character
 	GrSetFontColorRGB (briefBgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
-	GrPrintF (NULL, Briefing_text_x, Briefing_text_y, message);
+	GrPrintF (NULL, briefingTextX, briefingTextY, message);
 }
 //draw the character
 GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
-GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, message);
+GrPrintF (NULL, briefingTextX+1, briefingTextY, message);
 
 if (!(bRedraw || gameOpts->menus.nStyle)) 
 	GrUpdate (0);
@@ -791,7 +791,7 @@ if ((TimerGetFixedSeconds () % (F1_0/2)) > (F1_0/4))
 	GrSetFontColorRGB (briefFgColors [gameStates.app.bD1Mission] + nCurrentColor, NULL);
 else
 	GrSetFontColorRGB (&eraseColorRgb, NULL);
-GrPrintF (NULL, Briefing_text_x+1, Briefing_text_y, "_");
+GrPrintF (NULL, briefingTextX+1, briefingTextY, "_");
 if (curDrawBuffer == GL_FRONT)
 	GrUpdate (0);
 }
@@ -834,15 +834,15 @@ while (*message && (!pEnd || (message < pEnd))) {
 		ch = *message++;
 		if (ch == 'D') {
 			nScreen = DefineBriefingBox (&message, pBriefBuf);
-			x = Briefing_text_x;
-			y = Briefing_text_y;
+			x = briefingTextX;
+			y = briefingTextY;
 			}
 		else if (ch == 'U') {
 			nScreen = GetMessageNum (&message);
 			*pBriefBuf = briefingScreens [nScreen];
-			init_char_pos (pBriefBuf, 1);
-			x = Briefing_text_x;
-			y = Briefing_text_y;
+			InitCharPos (pBriefBuf, 1);
+			x = briefingTextX;
+			y = briefingTextY;
 			}
 		}
 	}
@@ -910,10 +910,10 @@ briefBuf = briefingScreens [nScreen];
 bsp = &briefBuf;
 if (gameStates.app.bD1Mission)
 	GotZ = 1;
-init_char_pos (bsp, gameStates.app.bD1Mission);
+InitCharPos (bsp, gameStates.app.bD1Mission);
 
-x = Briefing_text_x;
-y = Briefing_text_y;
+x = briefingTextX;
+y = briefingTextY;
 *szBriefScreen = *szBriefScreenB = '\0';
 if (bOnlyRobots) {
 	while (message && !PageHasRobot (message))
@@ -933,13 +933,13 @@ while (!done) {
 		GrUpdate (0);
 		//StopBriefingSound (&nPrintingChannel);
 		message = pi;
-		Briefing_text_x = x;
-		Briefing_text_y = y;
+		briefingTextX = x;
+		briefingTextY = y;
 		//if (bHaveScreen)
 		LoadBriefingScreen (nScreen);
 		briefBuf = briefingScreens [nScreen];
 		bsp = &briefBuf;
-		init_char_pos (bsp, 1);
+		InitCharPos (bsp, 1);
 		}
 
 	bRedraw = 1;
@@ -954,8 +954,8 @@ while (!done) {
 		    	//LoadNewBriefingScreen (briefingScreens [nScreen].bs_name);
 
 				bsp = &briefBuf;
-				x = Briefing_text_x;
-				y = Briefing_text_y;
+				x = briefingTextX;
+				y = briefingTextY;
 				LineAdjustment = 0;
 				prev_ch = 10;                                   // read to eoln
 				}
@@ -963,9 +963,9 @@ while (!done) {
 				nScreen = GetMessageNum (&message);
 				briefBuf = briefingScreens [nScreen];
 				bsp = &briefBuf;
-				init_char_pos (bsp, 1);
-				x = Briefing_text_x;
-				y = Briefing_text_y;
+				InitCharPos (bsp, 1);
+				x = briefingTextX;
+				y = briefingTextY;
 				prev_ch = 10;                                   // read to eoln
 				}
 			else if (ch == 'C') {
@@ -985,9 +985,9 @@ while (!done) {
 				}
 			else if (ch == 'R') {
 				if (message > pj) {
-					if (robotCanv != NULL) {
-						D2_FREE (robotCanv);
-						robotCanv = NULL;
+					if (robotCanvP != NULL) {
+						D2_FREE (robotCanvP);
+						robotCanvP = NULL;
 						}
 					if (bRobotPlaying) {
 						DeInitRobotMovie ();
@@ -1010,7 +1010,7 @@ while (!done) {
 					spinRobotName [2] = kludge; // ugly but proud
 					if (message > pj) {
 						gsrCanvas *curCanvSave = grdCurCanv;
-						grdCurCanv = robotCanv;
+						grdCurCanv = robotCanvP;
 						bRobotPlaying = InitRobotMovie (spinRobotName);
 						grdCurCanv = curCanvSave;
 						if (bRobotPlaying) {
@@ -1024,22 +1024,22 @@ while (!done) {
 			else if (ch == 'N') {
 				if (message > pj) {
 				//--grsBitmap *bmP;
-					if (robotCanv != NULL)
-						D2_FREE (robotCanv);
+					if (robotCanvP != NULL)
+						D2_FREE (robotCanvP);
 					StopBriefingSound (&nBotChannel);
 					GetMessageName (&message, szBitmapName);
 					strcat (szBitmapName, "#0");
-					Animating_bitmapType = 0;
+					nAnimatingBitmapType = 0;
 					}
 				prev_ch = 10;
 				}
 			else if (ch == 'O') {
 				if (message > pj) {
-					if (robotCanv != NULL)
-						D2_FREE (robotCanv);
+					if (robotCanvP != NULL)
+						D2_FREE (robotCanvP);
 					GetMessageName (&message, szBitmapName);
 					strcat (szBitmapName, "#0");
-					Animating_bitmapType = 1;
+					nAnimatingBitmapType = 1;
 					}
 				prev_ch = 10;
 				}
@@ -1075,9 +1075,9 @@ while (!done) {
 				int         iff_error;
 
 				if (message > pj) {
-					if (robotCanv != NULL) {
-						D2_FREE (robotCanv);
-						robotCanv=NULL;
+					if (robotCanvP != NULL) {
+						D2_FREE (robotCanvP);
+						robotCanvP=NULL;
 						}
 					}
 				GetMessageName (&message, bitmap_name);
@@ -1086,7 +1086,7 @@ while (!done) {
 				iff_error = iff_read_bitmap (bitmap_name, &guy_bitmap, BM_LINEAR);
 				Assert (iff_error == IFF_NO_ERROR);
 
-				show_briefing_bitmap (&guy_bitmap);
+				ShowBriefingBitmap (&guy_bitmap);
 				D2_FREE (guy_bitmap.bmTexBuf);
 				prev_ch = 10;
 				}
@@ -1147,8 +1147,8 @@ while (!done) {
 				}
 			}
 		else if (ch == '\t') {		//	Tab
-			if (Briefing_text_x - bsp->text_ulx < tab_stop)
-				Briefing_text_x = bsp->text_ulx + tab_stop;
+			if (briefingTextX - bsp->text_ulx < tab_stop)
+				briefingTextX = bsp->text_ulx + tab_stop;
 			}
 		else if ((ch == ';') && (prev_ch == 10)) {
 			while (*message++ != 10)
@@ -1162,14 +1162,14 @@ while (!done) {
 			if (prev_ch != '\\') {
 				prev_ch = ch;
 				if (bDumbAdjust == 0)
-					Briefing_text_y += (8* (gameStates.menus.bHires+1));
+					briefingTextY += (8* (gameStates.menus.bHires+1));
 				else
 					bDumbAdjust--;
-				Briefing_text_x = bsp->text_ulx;
-				if (Briefing_text_y > bsp->text_uly + bsp->text_height) {
+				briefingTextX = bsp->text_ulx;
+				if (briefingTextY > bsp->text_uly + bsp->text_height) {
 					LoadBriefingScreen (nScreen);
-					Briefing_text_x = bsp->text_ulx;
-					Briefing_text_y = bsp->text_uly;
+					briefingTextX = bsp->text_ulx;
+					briefingTextY = bsp->text_uly;
 					}
 				}
 			else {
@@ -1191,7 +1191,7 @@ while (!done) {
 		 		nPrintingChannel = StartBriefingSound (nPrintingChannel, SOUND_BRIEFING_PRINTING, F1_0, NULL);
 				chattering = 1;
 				}
-			Briefing_text_x += PrintCharDelayed ((char) ch, delayCount, nRobot, flashing_cursor, bRedraw);
+			briefingTextX += PrintCharDelayed ((char) ch, delayCount, nRobot, flashing_cursor, bRedraw);
 			}
 
 		//	Check for Esc -> abort.
@@ -1211,12 +1211,12 @@ while (!done) {
 				 (key_check == KEY_ALTED+KEY_PADENTER))
 				GrToggleFullScreen ();
 			}
-		if (Briefing_text_x > bsp->text_ulx + bsp->text_width) {
-			Briefing_text_x = bsp->text_ulx;
-			Briefing_text_y += bsp->text_uly;
+		if (briefingTextX > bsp->text_ulx + bsp->text_width) {
+			briefingTextX = bsp->text_ulx;
+			briefingTextY += bsp->text_uly;
 		}
 
-		if (new_page || (Briefing_text_y > bsp->text_uly + bsp->text_height)) {
+		if (new_page || (briefingTextY > bsp->text_uly + bsp->text_height)) {
 			int		keypress = 0;
 
 			new_page = 0;
@@ -1267,8 +1267,8 @@ while (!done) {
 							LoadBriefingScreen (nScreen);
 							GrUpdate (0);
 							}
-						Briefing_text_x = bsp->text_ulx;
-						Briefing_text_y = bsp->text_uly;
+						briefingTextX = bsp->text_ulx;
+						briefingTextY = bsp->text_uly;
 						delayCount = KEY_DELAY_DEFAULT;
 						goto redrawPage;
 						}
@@ -1286,8 +1286,8 @@ if (bRobotPlaying) {
 	DeInitRobotMovie ();
 	bRobotPlaying = 0;
 	}
-if (robotCanv)
-	D2_FREE (robotCanv);
+if (robotCanvP)
+	D2_FREE (robotCanvP);
 if (!gameData.songs.bPlaying)
 	StopBriefingSound (&nHumChannel);
 StopBriefingSound (&nPrintingChannel);
@@ -1566,7 +1566,7 @@ pBriefBuf->text_ulx = GetNewMessageNum (buf);
 pBriefBuf->text_uly = GetNewMessageNum (buf);
 pBriefBuf->text_width = GetNewMessageNum (buf);
 pBriefBuf->text_height = GetMessageNum (buf);  // NOTICE!!!
-init_char_pos (pBriefBuf, 1);
+InitCharPos (pBriefBuf, 1);
 return (n);
 }
 

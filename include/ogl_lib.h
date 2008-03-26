@@ -93,7 +93,7 @@ return pPoint->p3_normal.nFaces ? &pPoint->p3_normal.vNormal : pvNormal;
 
 static inline void OglCullFace (int bFront)
 {
-if (gameStates.render.bRearView && (gameStates.render.nWindow != 0))
+if (gameStates.render.bRearView /*&& (gameStates.render.nWindow != 0)*/)
 	glCullFace (bFront ? GL_BACK : GL_FRONT);
 else
 	glCullFace (bFront ? GL_FRONT : GL_BACK);

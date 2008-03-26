@@ -216,7 +216,7 @@ else {
 			MakeRandomVector (&vRand);
 			VmVecScaleInc (&gameData.ai.cloakInfo [cloak_index].vLastPos, &vRand, 8*deltaTime);
 			}
-		dist = VmVecNormalizedDirQuick (&gameData.ai.vVecToPlayer, &gameData.ai.cloakInfo [cloak_index].vLastPos, pos);
+		dist = VmVecNormalizedDir (&gameData.ai.vVecToPlayer, &gameData.ai.cloakInfo [cloak_index].vLastPos, pos);
 		gameData.ai.nPlayerVisibility = ObjectCanSeePlayer (objP, pos, botInfoP->fieldOfView [gameStates.app.nDifficultyLevel], &gameData.ai.vVecToPlayer);
 		LimitPlayerVisibility (xMaxVisibleDist, ailP);
 #ifdef _DEBUG
@@ -230,7 +230,7 @@ else {
 		}
 	else {
 		//	Compute expensive stuff -- gameData.ai.vVecToPlayer and gameData.ai.nPlayerVisibility
-		VmVecNormalizedDirQuick (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, pos);
+		VmVecNormalizedDir (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, pos);
 		if (!(gameData.ai.vVecToPlayer.p.x || gameData.ai.vVecToPlayer.p.y || gameData.ai.vVecToPlayer.p.z)) {
 			gameData.ai.vVecToPlayer.p.x = F1_0;
 			}

@@ -1846,10 +1846,10 @@ void LoadGameTexts(void);
 #define TXT_SHIPCOLOR_HEADER		GT(1053)
 #define TXT_SHIPCOLOR				GT(1054)
 #define TXT_AUTOMAP_GRAYOUT		GT(1055)
+#define TXT_INITIALIZING			GT(1056)
 
 #if 0
 
-#define TXT_				GT(1056)
 #define TXT_				GT(1057)
 #define TXT_				GT(1058)
 #define TXT_				GT(1059)

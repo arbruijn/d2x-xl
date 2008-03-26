@@ -709,7 +709,7 @@ switch (gameStates.app.bEndLevelSequence) {
 		if ((mask & 5) == 5) {
 			vmsVector tvec;
 			gameStates.app.bEndLevelSequence = EL_CHASING;
-			VmVecNormalizedDirQuick (&tvec, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
+			VmVecNormalizedDir (&tvec, &gameData.endLevel.station.vPos, &gameData.objs.console->position.vPos);
 			VmVector2Matrix (&gameData.objs.console->position.mOrient, &tvec, &mSurfaceOrient.uVec, NULL);
 			gameData.endLevel.xDesiredFlightSpeed *= 2;
 			}
@@ -763,7 +763,7 @@ int FindExitSide (tObject *objP)
 
 	//find exit tSide
 
-	VmVecNormalizedDirQuick (&prefvec, &objP->position.vPos, &objP->vLastPos);
+	VmVecNormalizedDir (&prefvec, &objP->position.vPos, &objP->vLastPos);
 
 	COMPUTE_SEGMENT_CENTER (&segcenter, pseg);
 
@@ -774,7 +774,7 @@ int FindExitSide (tObject *objP)
 		if (pseg->children [i]!=-1) {
 
 			COMPUTE_SIDE_CENTER (&sidevec, pseg, i);
-			VmVecNormalizedDirQuick (&sidevec, &sidevec, &segcenter);
+			VmVecNormalizedDir (&sidevec, &sidevec, &segcenter);
 			d = VmVecDotProd (&sidevec, &prefvec);
 
 			if (labs (d) < MIN_D) d=0;
@@ -1060,7 +1060,7 @@ if (flydata->firstTime || (objP->nSegment != old_player_seg)) {		//moved into ne
 		VmVecScaleInc (&dest_point, &objP->position.mOrient.rVec, dist);
 		}
 	VmVecSub (&flydata->step, &dest_point, &objP->position.vPos);
-	step_size = VmVecNormalizeQuick (&flydata->step);
+	step_size = VmVecNormalize (&flydata->step);
 	VmVecScale (&flydata->step, flydata->speed);
 	COMPUTE_SEGMENT_CENTER (&curcenter, segP);
 	COMPUTE_SEGMENT_CENTER_I (&nextcenter, segP->children [nExitSide]);

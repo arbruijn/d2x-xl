@@ -827,7 +827,7 @@ frameTime = gameStates.limitFPS.bHomers ? secs2f (gameStates.app.tick40fps.nTime
 vNewDir = *vNormVel;
 VmVecScale (&vNewDir, (fix) (frameTime * 16 / gameStates.gameplay.slowmo [0].fSpeed));
 VmVecInc (&vNewDir, &objP->position.mOrient.fVec);
-VmVecNormalizeQuick (&vNewDir);
+VmVecNormalize (&vNewDir);
 VmVector2Matrix (&objP->position.mOrient, &vNewDir, NULL, NULL);
 }
 
@@ -873,7 +873,7 @@ if (!((gameData.app.nFrameCount ^ objP->nSignature) & 3) &&
 	return;
 	}
 if ((objP->nType == OBJ_WEAPON) && (objP->id == FUSION_ID)) {		//always set fusion weapon to max vel
-	VmVecNormalizeQuick (&objP->mType.physInfo.velocity);
+	VmVecNormalize (&objP->mType.physInfo.velocity);
 	VmVecScale (&objP->mType.physInfo.velocity, WI_speed (objP->id,gameStates.app.nDifficultyLevel));
 	}
 //	For homing missiles, turn towards target. (unless it's the guided missile)
@@ -909,9 +909,9 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			}
 		if (nMslLock != -1) {
 			VmVecSub (&vVecToObject, &gameData.objs.objects [nMslLock].position.vPos, &objP->position.vPos);
-			VmVecNormalizeQuick (&vVecToObject);
+			VmVecNormalize (&vVecToObject);
 			vTemp = objP->mType.physInfo.velocity;
-			speed = VmVecNormalizeQuick (&vTemp);
+			speed = VmVecNormalize (&vTemp);
 			xMaxSpeed = WI_speed (objP->id,gameStates.app.nDifficultyLevel);
 			if (speed + F1_0 < xMaxSpeed) {
 				speed += FixMul (xMaxSpeed, gameData.time.xFrame / 2);
@@ -930,7 +930,7 @@ if ((gameOpts->legacy.bHomers || !gameStates.limitFPS.bHomers || gameStates.app.
 			//	The boss' smart children track better...
 			if (gameData.weapons.info [objP->id].renderType != WEAPON_RENDER_POLYMODEL)
 				VmVecInc (&vTemp, &vVecToObject);
-			VmVecNormalizeQuick (&vTemp);
+			VmVecNormalize (&vTemp);
 			objP->mType.physInfo.velocity = vTemp;
 			VmVecScale (&objP->mType.physInfo.velocity, speed);
 
@@ -1124,7 +1124,7 @@ return rVal;
 // -- 
 // -- 	norm_dir = *vDirection;
 // -- 
-// -- 	VmVecNormalizeQuick (&norm_dir);
+// -- 	VmVecNormalize (&norm_dir);
 // -- 	VmVecScaleAdd (&vEndPos, start_pos, &norm_dir, MAX_LIGHTNING_DISTANCE);
 // -- 
 // -- 	fq.p0						= start_pos;
@@ -1448,10 +1448,10 @@ int CreateHomingMissile (tObject *objP, int nGoalObj, ubyte objType, int bMakeSo
 	if (nGoalObj == -1) {
 		MakeRandomVector (&vGoal);
 	} else {
-		VmVecNormalizedDirQuick (&vGoal, &gameData.objs.objects [nGoalObj].position.vPos, &objP->position.vPos);
+		VmVecNormalizedDir (&vGoal, &gameData.objs.objects [nGoalObj].position.vPos, &objP->position.vPos);
 		MakeRandomVector (&random_vector);
 		VmVecScaleInc (&vGoal, &random_vector, F1_0/4);
-		VmVecNormalizeQuick (&vGoal);
+		VmVecNormalize (&vGoal);
 	}	
 
 	//	Create a vector towards the goal, then add some noise to it.

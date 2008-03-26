@@ -184,7 +184,7 @@ if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
 CreateOmegaLightnings (vTargetPos, parentObjP, targetObjP);
 VmVecSub (&vGoal, vTargetPos, vMuzzle);
-xGoalDist = VmVecNormalizeQuick (&vGoal);
+xGoalDist = VmVecNormalize (&vGoal);
 if (xGoalDist < MIN_OMEGA_BLOBS * MIN_OMEGA_DIST) {
 	xOmegaBlobDist = MIN_OMEGA_DIST;
 	nOmegaBlobs = xGoalDist / xOmegaBlobDist;

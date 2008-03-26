@@ -392,7 +392,7 @@ if (xObjIntensity) {
 							int			spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 							vmsVector	vecToPoint;
 							VmVecSub (&vecToPoint, vVertPos, vObjPos);
-							VmVecNormalizeQuick (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
+							VmVecNormalize (&vecToPoint);		//	MK, Optimization note: You compute distance about 15 lines up, this is partially redundant
 							dot = VmVecDot (&vecToPoint, &objP->position.mOrient.fVec);
 							if (gameData.render.vertColor.bDarkness)
 								maxDot = F1_0 / spotSize;

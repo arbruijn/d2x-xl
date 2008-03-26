@@ -653,7 +653,7 @@ switch (objP->nType) {
 				vHit = gameData.segs.segments [hitseg].sides [hitside].normals [0];
 				MakeRandomVector (&vRand);
 				VmVecScaleInc (&vHit, &vRand, F1_0/8);
-				VmVecNormalizeQuick (&vHit);
+				VmVecNormalize (&vHit);
 				BumpOneObject (objP, &vHit, F1_0*8);
 				}
 			}
@@ -1121,13 +1121,13 @@ int CollideRobotAndReactor (tObject *objP1, tObject *obj2, vmsVector *vHitPt)
 if (objP1->nType == OBJ_ROBOT) {
 	vmsVector	hitvec;
 	VmVecSub (&hitvec, &obj2->position.vPos, &objP1->position.vPos);
-	VmVecNormalizeQuick (&hitvec);
+	VmVecNormalize (&hitvec);
 	BumpOneObject (objP1, &hitvec, 0);
 	} 
 else {
 	vmsVector	hitvec;
 	VmVecSub (&hitvec, &objP1->position.vPos, &obj2->position.vPos);
-	VmVecNormalizeQuick (&hitvec);
+	VmVecNormalize (&hitvec);
 	BumpOneObject (obj2, &hitvec, 0);
 	}
 return 1;
@@ -1547,7 +1547,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 
 	//	Boss only vulnerable in back.  See if hit there.
 	VmVecSub (&tvec1, vHitPt, &robotP->position.vPos);
-	VmVecNormalizeQuick (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
+	VmVecNormalize (&tvec1);	//	Note, if BOSS_INVULNERABLE_DOT is close to F1_0 (in magnitude), then should probably use non-quick version.
 	dot = VmVecDot (&tvec1, &robotP->position.mOrient.fVec);
 #if TRACE
 	con_printf (CONDBG, "Boss hit vec dot = %7.3f \n", f2fl (dot));
@@ -1610,9 +1610,9 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				VmVecZero (&newObjP->mType.physInfo.thrust);
 
 				VmVecSub (&vec_to_point, vHitPt, &robotP->position.vPos);
-				VmVecNormalizeQuick (&vec_to_point);
+				VmVecNormalize (&vec_to_point);
 				weap_vec = weaponP->mType.physInfo.velocity;
-				speed = VmVecNormalizeQuick (&weap_vec);
+				speed = VmVecNormalize (&weap_vec);
 				VmVecScaleInc (&vec_to_point, &weap_vec, -F1_0*2);
 				VmVecScale (&vec_to_point, speed/4);
 				newObjP->mType.physInfo.velocity = vec_to_point;
@@ -2066,13 +2066,13 @@ for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
 
 		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
 		VmVecSub (&exit_dir, &exit_point, &objP->position.vPos);
-		VmVecNormalizeQuick (&exit_dir);
+		VmVecNormalize (&exit_dir);
 		MakeRandomVector (&rand_vec);
 		rand_vec.p.x /= 4;
 		rand_vec.p.y /= 4;
 		rand_vec.p.z /= 4;
 		VmVecInc (&exit_dir, &rand_vec);
-		VmVecNormalizeQuick (&exit_dir);
+		VmVecNormalize (&exit_dir);
 		}
 BumpOneObject (objP, &exit_dir, 64*F1_0);
 ApplyDamageToPlayer (objP, objP, 4*F1_0);	//	Changed, MK, 2/19/96, make killer the tPlayer, so if you die in matcen, will say you killed yourself
@@ -2098,7 +2098,7 @@ for (tSide=0; tSide<MAX_SIDES_PER_SEGMENT; tSide++)
 
 		COMPUTE_SIDE_CENTER (&exit_point, segp, tSide);
 		VmVecSub (&exit_dir, &exit_point, &objP->position.vPos);
-		VmVecNormalizeQuick (&exit_dir);
+		VmVecNormalize (&exit_dir);
 	}
 BumpOneObject (objP, &exit_dir, 8*F1_0);
 ApplyDamageToRobot (objP, F1_0, -1);

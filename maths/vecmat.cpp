@@ -58,7 +58,7 @@ return dest;
 // ------------------------------------------------------------------------
 //subs two vectors, fills in dest, returns ptr to dest
 //ok for dest to equal either source, but should use VmVecDec() if so
-vmsVector *VmVecSub(vmsVector *dest, vmsVector *src0, vmsVector *src1)
+vmsVector *VmVecSub (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
 dest->p.x = src0->p.x - src1->p.x;
 dest->p.y = src0->p.y - src1->p.y;
@@ -90,7 +90,7 @@ return dest;
 // ------------------------------------------------------------------------
 //subs one vector from another, returns ptr to dest
 //dest can equal source
-vmsVector *VmVecDec(vmsVector *dest, vmsVector *src)
+vmsVector *VmVecDec (vmsVector *dest, vmsVector *src)
 {
 dest->p.x -= src->p.x;
 dest->p.y -= src->p.y;
@@ -102,7 +102,7 @@ return dest;
 // ------------------------------------------------------------------------
 //averages two vectors. returns ptr to dest
 //dest can equal either source
-vmsVector *VmVecAvg(vmsVector *dest, vmsVector *src0, vmsVector *src1)
+vmsVector *VmVecAvg (vmsVector *dest, vmsVector *src0, vmsVector *src1)
 {
 dest->p.x = (src0->p.x + src1->p.x) / 2;
 dest->p.y = (src0->p.y + src1->p.y) / 2;
@@ -113,7 +113,7 @@ return dest;
 // ------------------------------------------------------------------------
 //averages four vectors. returns ptr to dest
 //dest can equal any source
-vmsVector *VmVecAvg4(vmsVector *dest, 
+vmsVector *VmVecAvg4 (vmsVector *dest, 
 								vmsVector *src0, vmsVector *src1, 
 								vmsVector *src2, vmsVector *src3)
 {
@@ -278,6 +278,7 @@ return dest;
 
 fix VmVecDotProd (vmsVector *v0, vmsVector *v1)
 {
+#if 0
 #if ENABLE_SSE
 if (gameStates.render.bEnableSSE) {
 		fVector	v0h, v1h;
@@ -309,7 +310,9 @@ if (gameOpts->render.nMathFormat == 2)
 						(double) v0->p.y * (double) v1->p.y + 
 						(double) v0->p.z * (double) v1->p.z) 
 					  / 65536.0);
-else {
+else 
+#endif
+	{
 	QLONG q = mul64 (v0->p.x, v1->p.x);
 	q += mul64 (v0->p.y, v1->p.y);
 	q += mul64 (v0->p.z, v1->p.z);
@@ -357,9 +360,12 @@ return v0->p.x * v1->p.x + v0->p.y * v1->p.y + v0->p.z * v1->p.z;
 
 fix VmVecDot3(fix x, fix y, fix z, vmsVector *v)
 {
+#if 0
 if (gameOpts->render.nMathFormat == 2)
 	return (fix) (((double) x * (double) v->p.x + (double) y * (double) v->p.y + (double) z * (double) v->p.z) / 65536.0);
-else {
+else 
+#endif
+	{
 	QLONG q = mul64 (x, v->p.x);
 	q += mul64 (y, v->p.y);
 	q += mul64 (z, v->p.z);
@@ -520,7 +526,7 @@ return (float) sqrt (sqrd ((double) v->p.x) + sqrd ((double) v->p.y) + sqrd ((do
 //computes the distance between two points. (does sub and mag)
 #if !INLINE_VEC_ADD
 
-fix VmVecDist(vmsVector *v0, vmsVector *v1)
+fix VmVecDist (vmsVector *v0, vmsVector *v1)
 {
 	vmsVector d;
 
@@ -612,7 +618,7 @@ return m;
 //normalize a vector. returns mag of source vec. uses approx mag
 
 #if EXACT_VEC_MAG
-fix VmVecCopyNormalizeQuick(vmsVector *dest, vmsVector *src)
+fix VmVecCopyNormalizeQuick (vmsVector *dest, vmsVector *src)
 {
 fix m = VmVecMag (src);
 if (m) {
@@ -628,7 +634,7 @@ return m;
 
 // ------------------------------------------------------------------------
 //returns approximation of 1/magnitude of a vector
-fix VmVecInvMag(vmsVector *v)
+fix VmVecInvMag (vmsVector *v)
 {
 #if FLOAT_COORD
 return 1.0f / VmVecMag (v);
@@ -674,39 +680,9 @@ return im;
 #endif
 
 // ------------------------------------------------------------------------
-//normalize a vector. returns 1/mag of source vec. uses approx 1/mag
-fix VmVecNormalizeQuick (vmsVector *v)
-{
-return VmVecCopyNormalizeQuick(v, v);
-}
-
-// ------------------------------------------------------------------------
-//return the normalized direction vector between two points
-//dest = normalized(end - start).  Returns 1/mag of direction vector
-//NOTE: the order of the parameters matches the vector subtraction
-fix VmVecNormalizedDirQuick(vmsVector *dest, vmsVector *end, vmsVector *start)
-{
-return VmVecNormalizeQuick (VmVecSub (dest, end, start));
-}
-
-// ------------------------------------------------------------------------
-//return the normalized direction vector between two points
-//dest = normalized(end - start).  Returns mag of direction vector
-//NOTE: the order of the parameters matches the vector subtraction
-fix VmVecNormalizedDir(vmsVector *dest, vmsVector *end, vmsVector *start)
-{
-return VmVecNormalize (VmVecSub (dest, end, start));
-}
-
-// ------------------------------------------------------------------------
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
-vmsVector *VmVecNormal (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
-{
-VmVecNormalize (VmVecPerp (dest, p0, p1, p2));
-return dest;
-}
 
 vmsVector *VmVecNormalChecked (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
 {
@@ -802,7 +778,6 @@ dest->p.y = (fix) (((double) src0->p.z * (double) src1->p.x - (double) src0->p.x
 dest->p.z = (fix) (((double) src0->p.x * (double) src1->p.y - (double) src0->p.y * (double) src1->p.x) / 65536.0);
 #else
 QLONG q = mul64 (src0->p.y, src1->p.z);
-Assert(dest!=src0 && dest!=src1);
 q += mul64 (-src0->p.z, src1->p.y);
 dest->p.x = (fix) (q >> 16);
 q = mul64 (src0->p.z, src1->p.x);
@@ -1801,7 +1776,7 @@ else {
 	v->p.x = (d_rand () - 16384) | 1;	// make sure we don't create null vector
 	v->p.y = d_rand () - 16384;
 	}
-VmVecNormalizeQuick (v);
+VmVecNormalize (v);
 return v;
 }
 

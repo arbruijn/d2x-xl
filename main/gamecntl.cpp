@@ -1866,7 +1866,7 @@ void SpeedtestFrame(void)
 
 	RelinkObject(OBJ_IDX (gameData.objs.viewer), gameData.speedtest.nSegment);
 	COMPUTE_SIDE_CENTER(&center_point, &gameData.segs.segments[gameData.speedtest.nSegment], gameData.speedtest.nSide);
-	VmVecNormalizedDirQuick(&view_dir, &center_point, &gameData.objs.viewer->position.vPos);
+	VmVecNormalizedDir(&view_dir, &center_point, &gameData.objs.viewer->position.vPos);
 	VmVector2Matrix(&gameData.objs.viewer->position.mOrient, &view_dir, NULL, NULL);
 
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {

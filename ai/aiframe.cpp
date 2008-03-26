@@ -536,7 +536,7 @@ if (gameData.ai.nPlayerVisibility == 2) {
 	MakeRandomVector (&vRand);
 	VmVecScaleInc (&goal_point, &vRand, F1_0 * 8);
 	VmVecSub (&vec_to_goal, &goal_point, &objP->position.vPos);
-	VmVecNormalizeQuick (&vec_to_goal);
+	VmVecNormalize (&vec_to_goal);
 	MoveTowardsVector (objP, &vec_to_goal, 0);
 	AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 	AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -626,7 +626,7 @@ if (!AIMultiplayerAwareness (objP, 62))
 	return 1;
 COMPUTE_SIDE_CENTER (&vCenter, &gameData.segs.segments [objP->nSegment], siP->aiP->GOALSIDE);
 VmVecSub (&vGoal, &vCenter, &objP->position.vPos);
-VmVecNormalizeQuick (&vGoal);
+VmVecNormalize (&vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
 MoveTowardsVector (objP, &vGoal, 0);
 AIMultiSendRobotPos (siP->nObject, -1);
@@ -1072,7 +1072,7 @@ if (gameStates.app.cheats.bRobotsKillRobots) {
 		if (nMinObj >= 0) {
 			gameData.ai.vBelievedPlayerPos = gameData.objs.objects [nMinObj].position.vPos;
 			gameData.ai.nBelievedPlayerSeg = gameData.objs.objects [nMinObj].nSegment;
-			VmVecNormalizedDirQuick (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
+			VmVecNormalizedDir (&gameData.ai.vVecToPlayer, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 			return 0;
 			}
 		}

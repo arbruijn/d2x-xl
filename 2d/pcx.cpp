@@ -370,7 +370,7 @@ char *pcx_errormsg(int error_number)
 while (error_number--) {
 	if (!p)
 		return NULL;
-	p += (int) strlen(p)+1;
+	p += (int) strlen (p) + 1;
 	}
 return p;
 }
@@ -378,7 +378,7 @@ return p;
 //------------------------------------------------------------------------------
 // fullscreen loading, 10/14/99 Jan Bobrowski
 
-int PcxReadFullScrImage(char * filename, int bD1Mission)
+int PcxReadFullScrImage (char * filename, int bD1Mission)
 {
 		int			pcxError;
 		grsBitmap	bm;

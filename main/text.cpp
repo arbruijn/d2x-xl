@@ -1805,6 +1805,7 @@ char *defaultGameTexts [][2] = {
 	{"Einzelspieler-Schiffsfarbe:", "single player ship color:"},
 	{"%s", "%s"},
 	{"unerforschte Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
+	{"Initialisiere...", "Initializing..."},
 #if 0
 	{"", ""},
 #endif

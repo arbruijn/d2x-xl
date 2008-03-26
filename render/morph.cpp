@@ -141,7 +141,7 @@ while (nVerts--) {
 	else
 		k = 0;
 	VmVecCopyScale (mdP->vecs + i, vp, k);
-	dist = VmVecNormalizedDirQuick (mdP->deltas + i, vp, mdP->vecs + i);
+	dist = VmVecNormalizedDir (mdP->deltas + i, vp, mdP->vecs + i);
 	mdP->times [i] = FixDiv (dist, gameData.render.morph.xRate);
 	if (mdP->times [i] != 0)
 		mdP->nMorphingPoints [nSubModel]++;

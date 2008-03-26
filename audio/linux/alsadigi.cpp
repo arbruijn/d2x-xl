@@ -529,8 +529,8 @@ void DigiGetSoundLoc (vmsMatrix * listener, vmsVector * vListenerPos, int nListe
 
 	maxDistance = (maxDistance*5)/4;		// Make all sounds travel 1.25 times as far.
 
-	//	Warning: Made the VmVecNormalizedDir be VmVecNormalizedDirQuick and got illegal values to acos in the fang computation.
-	distance = VmVecNormalizedDirQuick(&vector_toSound, vSoundPos, vListenerPos);
+	//	Warning: Made the VmVecNormalizedDir be VmVecNormalizedDir and got illegal values to acos in the fang computation.
+	distance = VmVecNormalizedDir(&vector_toSound, vSoundPos, vListenerPos);
 	
 	if (distance < maxDistance)	{
 		int nSearchSegs = f2i(maxDistance/20);

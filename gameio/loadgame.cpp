@@ -1177,11 +1177,11 @@ void DoEndLevelScoreGlitz (int network)
 	int			nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
 	char			szAllHostages [64];
 	char			szEndGame [64];
-	char			szMenu [N_GLITZITEMS][30];
+	char			szMenu [N_GLITZITEMS+1][40];
 	tMenuItem	m [N_GLITZITEMS+1];
-	int			i,c;
+	int			i, c;
 	char			szTitle [128];
-	int			bIsLastLevel;
+	int			bIsLastLevel = 0;
 	int			nMineLevel = 0;
 
 DigiKillSoundLinkedToObject (LOCALPLAYER.nObject);
@@ -1232,7 +1232,7 @@ if (!gameStates.app.cheats.bEnabled && !IsMultiGame && LOCALPLAYER.lives &&
 	 (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel)) {		//tPlayer has finished the game!
 	nEndGamePoints = LOCALPLAYER.lives * 10000;
 	sprintf (szEndGame, "%s%i  ", TXT_SHIP_BONUS, nEndGamePoints);
-	bIsLastLevel=1;
+	bIsLastLevel = 1;
 	}
 else
 	nEndGamePoints = bIsLastLevel = 0;
@@ -1243,7 +1243,7 @@ sprintf (szMenu [c++], "%s%i  ", TXT_ENERGY_BONUS, nEnergyPoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_HOSTAGE_BONUS, nHostagePoints);
 sprintf (szMenu [c++], "%s%i  ", TXT_SKILL_BONUS, nSkillPoints);
 sprintf (szMenu [c++], "%s  ", szAllHostages);
-if (!IsMultiGame && (LOCALPLAYER.lives) && (gameData.missions.nCurrentLevel == gameData.missions.nLastLevel))
+if (bIsLastLevel)
 	sprintf (szMenu [c++], "%s  ", szEndGame);
 sprintf (szMenu [c++], "%s%i  ", TXT_TOTAL_BONUS, 
 			nShieldPoints + nEnergyPoints + nHostagePoints + nSkillPoints + nAllHostagePoints + nEndGamePoints);

@@ -262,17 +262,6 @@ float VmVecNormalizef (fVector *dest, fVector *src);
 //normalize a vector. returns mag of source vec. uses approx mag
 fix VmVecCopyNormalizeQuick (vmsVector *dest, vmsVector *src);
 
-fix VmVecNormalizeQuick (vmsVector *v);
-
-
-//return the normalized direction vector between two points
-//dest = normalized(end - start).  Returns mag of direction vector
-//NOTE: the order of the parameters matches the vector subtraction
-fix VmVecNormalizedDir (vmsVector *dest, vmsVector *end, vmsVector *start);
-
-fix VmVecNormalizedDirQuick (vmsVector *dest, vmsVector *end, vmsVector *start);
-
-
 ////returns dot product of two vectors
 fix VmVecDotProd (vmsVector *v0, vmsVector *v1);
 float VmVecDotf (fVector *v0, fVector *v1);
@@ -288,7 +277,6 @@ vmsVector *VmVecCrossProd (vmsVector *dest, vmsVector *src0, vmsVector *src1);
 //computes surface normal from three points. result is normalized
 //returns ptr to dest
 //dest CANNOT equal either source
-vmsVector *VmVecNormal (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2);
 vmsVector *VmVecNormalChecked (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2);
 
 //computes non-normalized surface normal from three points. 
@@ -393,6 +381,26 @@ fMatrix *VmInvertMatrixf (fMatrix *pDest, fMatrix *pSrc);
 
 //fills in fields of an angle vector
 #define VmAngVecMake(v,_p,_b,_h) (((v)->p=(_p), (v)->b=(_b), (v)->h=(_h)), (v))
-#endif	/* 
- */
 
+// ------------------------------------------------------------------------
+//return the normalized direction vector between two points
+//dest = normalized(end - start).  Returns mag of direction vector
+//NOTE: the order of the parameters matches the vector subtraction
+static inline fix VmVecNormalizedDir (vmsVector *dest, vmsVector *end, vmsVector *start)
+{
+return VmVecNormalize (VmVecSub (dest, end, start));
+}
+
+// ------------------------------------------------------------------------
+//computes surface normal from three points. result is normalized
+//returns ptr to dest
+//dest CANNOT equal either source
+static inline vmsVector *VmVecNormal (vmsVector *dest, vmsVector *p0, vmsVector *p1, vmsVector *p2)
+{
+VmVecNormalize (VmVecPerp (dest, p0, p1, p2));
+return dest;
+}
+
+// ------------------------------------------------------------------------
+
+#endif //_VECMAT_H

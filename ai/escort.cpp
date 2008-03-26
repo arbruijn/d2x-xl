@@ -893,7 +893,7 @@ int MaybeBuddyFireMega (short nObject)
 	int			nWeaponObj;
 
 VmVecSub (&vVecToRobot, &buddyObjP->position.vPos, &objP->position.vPos);
-dist = VmVecNormalizeQuick (&vVecToRobot);
+dist = VmVecNormalize (&vVecToRobot);
 if (dist > F1_0*100)
 	return 0;
 dot = VmVecDot (&vVecToRobot, &buddyObjP->position.mOrient.fVec);

@@ -2863,14 +2863,14 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 				fvec2 = objP->position.mOrient.fVec;
 				VmVecScale (&fvec2, factor);
 				VmVecInc (&fvec1, &fvec2);
-				mag1 = VmVecNormalizeQuick (&fvec1);
+				mag1 = VmVecNormalize (&fvec1);
 				if (mag1 > F1_0/256) {
 					rvec1 = curObjP->position.mOrient.rVec;
 					VmVecScale (&rvec1, F1_0-factor);
 					rvec2 = objP->position.mOrient.rVec;
 					VmVecScale (&rvec2, factor);
 					VmVecInc (&rvec1, &rvec2);
-					VmVecNormalizeQuick (&rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
+					VmVecNormalize (&rvec1); // Note: Doesn't matter if this is null, if null, VmVector2Matrix will just use fvec1
 					VmVector2Matrix (&curObjP->position.mOrient, &fvec1, NULL, &rvec1);
 					}
 				}

@@ -172,13 +172,13 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 		return 0;
 
 	player_movement_dir = gameData.objs.console->mType.physInfo.velocity;
-	player_speed = VmVecNormalizeQuick (&player_movement_dir);
+	player_speed = VmVecNormalize (&player_movement_dir);
 
 	if (player_speed < MIN_LEAD_SPEED)
 		return 0;
 
 	VmVecSub (&vVecToPlayer, vBelievedPlayerPos, vFirePoint);
-	xDistToPlayer = VmVecNormalizeQuick (&vVecToPlayer);
+	xDistToPlayer = VmVecNormalize (&vVecToPlayer);
 	if (xDistToPlayer > MAX_LEAD_DISTANCE)
 		return 0;
 
@@ -216,7 +216,7 @@ int LeadPlayer (tObject *objP, vmsVector *vFirePoint, vmsVector *vBelievedPlayer
 	fire_vec->p.y = ComputeLeadComponent (vBelievedPlayerPos->p.y, vFirePoint->p.y, gameData.objs.console->mType.physInfo.velocity.p.y, projectedTime);
 	fire_vec->p.z = ComputeLeadComponent (vBelievedPlayerPos->p.z, vFirePoint->p.z, gameData.objs.console->mType.physInfo.velocity.p.z, projectedTime);
 
-	VmVecNormalizeQuick (fire_vec);
+	VmVecNormalize (fire_vec);
 
 	Assert (VmVecDot (fire_vec, &objP->position.mOrient.fVec) < 3*F1_0/2);
 
@@ -341,7 +341,7 @@ while ((count < 4) && (dot < F1_0/4)) {
 	bpp_diff.p.x = vBelievedPlayerPos->p.x + FixMul ((d_rand ()-16384) * i, aim);
 	bpp_diff.p.y = vBelievedPlayerPos->p.y + FixMul ((d_rand ()-16384) * i, aim);
 	bpp_diff.p.z = vBelievedPlayerPos->p.z + FixMul ((d_rand ()-16384) * i, aim);
-	VmVecNormalizedDirQuick (&fire_vec, &bpp_diff, vFirePoint);
+	VmVecNormalizedDir (&fire_vec, &bpp_diff, vFirePoint);
 	dot = VmVecDot (&objP->position.mOrient.fVec, &fire_vec);
 	count++;
 	}
@@ -560,7 +560,7 @@ else {	//	---------------------------------------------------------------
 	if (d_rand ()/2 < FixMul (gameData.time.xFrame, (gameStates.app.nDifficultyLevel << 12) + 0x4000)) {
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) && 
 			 (gameData.ai.nDistToLastPlayerPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
-			VmVecNormalizedDirQuick (&vLastPos, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
+			VmVecNormalizedDir (&vLastPos, &gameData.ai.vBelievedPlayerPos, &objP->position.vPos);
 			dot = VmVecDot (&objP->position.mOrient.fVec, &vLastPos);
 			if (dot >= 7 * F1_0 / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {

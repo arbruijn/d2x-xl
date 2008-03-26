@@ -1182,7 +1182,8 @@ else {
 		VmAngles2Matrix (&mHead, &viewInfo.playerHeadAngles);
 		VmMatMul (&mView, &gameData.objs.viewer->position.mOrient, &mHead);
 #endif
-		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
+		G3SetViewMatrix (&gameData.render.mine.viewerEye, &mView, 
+							  FixDiv (gameStates.render.xZoom, gameStates.render.nZoomFactor), bOglScale);
 		} 
 	else if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) {
 		gameStates.render.nMinZoomFactor = (fix) (F1_0 * gameStates.render.glAspect); //(((gameStates.render.cockpit.nMode == CM_FULL_COCKPIT) ? 2 * F1_0  / 3 : F1_0) * glAspect);
@@ -1299,7 +1300,7 @@ if (SHOW_SHADOWS &&
 		RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 #else
 		if (FAST_SHADOWS)
-			RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
+			;//RenderFastShadows (nEyeOffset, nWindow, nStartSeg);
 		else
 			RenderNeatShadows (nEyeOffset, nWindow, nStartSeg);
 #endif

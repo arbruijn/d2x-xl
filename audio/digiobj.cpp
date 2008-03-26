@@ -143,7 +143,7 @@ if (nDecay)
 	maxDistance *= 2;
 else
 	maxDistance = (5 * maxDistance) / 4;	// Make all sounds travel 1.25 times as far.
-distance = VmVecNormalizedDirQuick (&vecToSound, vSoundPos, vListenerPos);
+distance = VmVecNormalizedDir (&vecToSound, vSoundPos, vListenerPos);
 if (distance < maxDistance) {
 	int nSearchSegs = f2i (maxDistance / 10);
 	if (nSearchSegs < 1)

@@ -308,7 +308,7 @@ HUDMessage (0, "BUMP HACK");
 COMPUTE_SEGMENT_CENTER_I (&vCenter, objP->nSegment);
 //HUDMessage (0, "BUMP! %d %d", d1, d2);
 //don't bump tPlayer towards center of reactor tSegment
-VmVecNormalizedDirQuick (&vBump, &vCenter, &objP->position.vPos);
+VmVecNormalizedDir (&vBump, &vCenter, &objP->position.vPos);
 if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_CONTROLCEN)
 	VmVecNegate (&vBump);
 VmVecScaleInc (&objP->position.vPos, &vBump, objP->size / 5);

@@ -120,8 +120,8 @@ int32_t FixDivQuadLong (u_int32_t nl, u_int32_t nh, u_int32_t d)
 
 	r = 0;
 
-Q = ((nh&0x80000000) != 0);
-M = ((d&0x80000000) != 0);
+Q = ((nh & 0x80000000) != 0);
+M = ((d & 0x80000000) != 0);
 T = (M != Q);
 
 if (M == 0)	{
@@ -201,7 +201,7 @@ return (unsigned int) (((u_int64_t) nl | (((u_int64_t) nh) << 32)) / ((u_int64_t
 u_int32_t QuadSqrt (u_int32_t low,int32_t high)
 {
 	int			i, cnt;
-	u_int32_t	r, r2, old_r, t;
+	u_int32_t	r, old_r, t;
 	tQuadInt		tq;
 
 if (high < 0)
@@ -228,11 +228,10 @@ else {
 	}
 
 r = guess_table [i] << cnt;
-r2 = r / 2;
 //quad loop usually executed 4 times
-r = FixDivQuadLongU (low,high, r) / 2 + r2;
-r = FixDivQuadLongU (low,high, r) / 2 + r2;
-r = FixDivQuadLongU (low,high, r) / 2 + r2;
+r = FixDivQuadLongU (low, high, r) / 2 + r / 2;
+r = FixDivQuadLongU (low, high, r) / 2 + r / 2;
+r = FixDivQuadLongU (low, high, r) / 2 + r / 2;
 do {
 	old_r = r;
 	t = FixDivQuadLongU (low, high, r);

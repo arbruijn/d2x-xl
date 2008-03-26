@@ -667,7 +667,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
 {
-	int				i, bAutomap = (nType == 0), bLighting = GEO_LIGHTING && (nType < 3) && !bDepthOnly;
+	int	i, bAutomap = (nType == 0), bLighting = GEO_LIGHTING && (nType < 3) && !bDepthOnly;
 
 if (nType) {
 	for (i = gameData.render.mine.nRenderSegs; i; )

@@ -85,7 +85,7 @@ for (i = 0; i < nGunCount; i++) {
 	vmsVector	vGun;
 
 	VmVecSub (&vGun, vObjPos, vGunPos + i);
-	VmVecNormalizeQuick (&vGun);
+	VmVecNormalize (&vGun);
 	dot = VmVecDot (vGunDir + i, &vGun);
 	if (dot > xBestDot) {
 		xBestDot = dot;
@@ -136,9 +136,6 @@ if (!gameData.reactor.bDestroyed) {
 	cdtFrameTime = 0;
 	return;
 	}
-#if 0//def _DEBUG
-return;
-#endif
 cdtFrameTime += gameData.time.xRealFrame;
 if (gameStates.limitFPS.bCountDown && !gameStates.app.tick40fps.bTick)
 	return;
@@ -172,9 +169,8 @@ if (IsMultiGame &&  NetworkIAmMaster ())
 	MultiSendCountdown ();
 cdtFrameTime = 0;
 gameData.reactor.countdown.nSecsLeft = f2i (gameData.reactor.countdown.nTimer + F1_0 * 7 / 8);
-if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME))	{
+if ((oldTime > COUNTDOWN_VOICE_TIME) && (gameData.reactor.countdown.nTimer <= COUNTDOWN_VOICE_TIME)) 
 	DigiPlaySample (SOUND_COUNTDOWN_13_SECS, F3_0);
-	}
 if (f2i (oldTime + F1_0 * 7 / 8) != gameData.reactor.countdown.nSecsLeft) {
 	if ((gameData.reactor.countdown.nSecsLeft >= 0) && (gameData.reactor.countdown.nSecsLeft < 10))
 		DigiPlaySample ((short) (SOUND_COUNTDOWN_0_SECS + gameData.reactor.countdown.nSecsLeft), F3_0);
@@ -209,7 +205,8 @@ void InitCountdown (tTrigger *trigP, int bReactorDestroyed, int nTimer)
 if (trigP && (trigP->time > 0))
 	gameData.reactor.countdown.nTotalTime = trigP->time;
 else if (gameStates.app.nBaseCtrlCenExplTime != DEFAULT_CONTROL_CENTER_EXPLOSION_TIME)
-	gameData.reactor.countdown.nTotalTime = gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL-gameStates.app.nDifficultyLevel-1)/2;
+	gameData.reactor.countdown.nTotalTime = 
+		gameStates.app.nBaseCtrlCenExplTime + gameStates.app.nBaseCtrlCenExplTime * (NDL - gameStates.app.nDifficultyLevel - 1) / 2;
 else
 	gameData.reactor.countdown.nTotalTime = nAlanPavlishReactorTimes [gameStates.app.bD1Mission][gameStates.app.nDifficultyLevel];
 gameData.reactor.countdown.nTimer = (nTimer < 0) ? i2f (gameData.reactor.countdown.nTotalTime) : (nTimer ? nTimer : i2f (1));
@@ -329,7 +326,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 			return;
 
 		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
-		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
+		xDistToPlayer = VmVecNormalize (&vecToPlayer);
 		if (xDistToPlayer < F1_0 * 200) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
 			rStatP->nNextFireTime = 0;
@@ -346,7 +343,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		fix			xDistToPlayer;
 
 		VmVecSub (&vecToPlayer, &gameData.objs.console->position.vPos, &objP->position.vPos);
-		xDistToPlayer = VmVecNormalizeQuick (&vecToPlayer);
+		xDistToPlayer = VmVecNormalize (&vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < F1_0 * 120) {
 			rStatP->bSeenPlayer = ObjectCanSeePlayer (objP, &objP->position.vPos, 0, &vecToPlayer);
@@ -358,11 +355,8 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 
 if ((rStatP->nNextFireTime < 0) && 
 	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + F1_0 * 2))) {
-	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
-		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.ai.vBelievedPlayerPos);
-	else
-		nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, &gameData.objs.console->position.vPos);
-
+	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->id].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
+											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.vBelievedPlayerPos : &gameData.objs.console->position.vPos);
 	if (nBestGun != -1) {
 		int			nRandProb, count;
 		vmsVector	vecToGoal;
@@ -371,11 +365,11 @@ if ((rStatP->nNextFireTime < 0) &&
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 			VmVecSub (&vecToGoal, &gameData.ai.vBelievedPlayerPos, &rStatP->vGunPos [nBestGun]);
-			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
+			xDistToPlayer = VmVecNormalize (&vecToGoal);
 			} 
 		else {
 			VmVecSub (&vecToGoal, &gameData.objs.console->position.vPos, &rStatP->vGunPos [nBestGun]);
-			xDistToPlayer = VmVecNormalizeQuick (&vecToGoal);
+			xDistToPlayer = VmVecNormalize (&vecToGoal);
 			}
 		if (xDistToPlayer > F1_0 * 300) {
 			rStatP->bHit = 0;
@@ -393,7 +387,7 @@ if ((rStatP->nNextFireTime < 0) &&
 
 			MakeRandomVector (&vRand);
 			VmVecScaleInc (&vecToGoal, &vRand, F1_0/6);
-			VmVecNormalizeQuick (&vecToGoal);
+			VmVecNormalize (&vecToGoal);
 			if (IsMultiGame)
 				MultiSendCtrlcenFire (&vecToGoal, nBestGun, OBJ_IDX (objP));
 			CreateNewLaserEasy (&vecToGoal, &rStatP->vGunPos[nBestGun], OBJ_IDX (objP), CONTROLCEN_WEAPON_NUM, 0);
@@ -534,8 +528,9 @@ void SpecialReactorStuff (void)
 con_printf (CONDBG, "Mucking with reactor countdown time.\n");
 #endif
 if (gameData.reactor.bDestroyed) {
-	gameData.reactor.countdown.nTimer += i2f (gameStates.app.nBaseCtrlCenExplTime + (NDL-1-gameStates.app.nDifficultyLevel)*gameStates.app.nBaseCtrlCenExplTime/ (NDL-1));
-	gameData.reactor.countdown.nTotalTime = f2i (gameData.reactor.countdown.nTimer)+2;	//	Will prevent "Self destruct sequence activated" message from replaying.
+	gameData.reactor.countdown.nTimer += 
+		i2f (gameStates.app.nBaseCtrlCenExplTime + (NDL - 1 - gameStates.app.nDifficultyLevel) * gameStates.app.nBaseCtrlCenExplTime / (NDL-1));
+	gameData.reactor.countdown.nTotalTime = f2i (gameData.reactor.countdown.nTimer) + 2;	//	Will prevent "Self destruct sequence activated" message from replaying.
 	}
 }
 
@@ -552,9 +547,9 @@ for (i = 0; i < n; i++) {
 	r[i].nModel = CFReadInt (fp);
 	r[i].nGuns = CFReadInt (fp);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r[i].gunPoints + j, fp);
+		CFReadVector (r [i].gunPoints + j, fp);
 	for (j = 0; j < MAX_CONTROLCEN_GUNS; j++)
-		CFReadVector (r[i].gun_dirs + j, fp);
+		CFReadVector (r [i].gun_dirs + j, fp);
 	}
 return i;
 }
