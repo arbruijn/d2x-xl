@@ -800,7 +800,7 @@ if  (dist < xSphereRad) {
 
 	dist2 = FixMul (dist, dist);
 	radius2 = FixMul (xSphereRad, xSphereRad);
-	nShorten = fix_sqrt (radius2 - dist2);
+	nShorten = FixSqrt (radius2 - dist2);
 	intDist = wDist - nShorten;
 	if ((intDist > mag_d) || (intDist < 0)) {
 		//past one or the other end of vector, which means we're inside

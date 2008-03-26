@@ -111,7 +111,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="FALSE"
 				FavorSizeOrSpeed="1"
-				OmitFramePointers="FALSE"
+				OmitFramePointers="TRUE"
 				EnableFiberSafeOptimizations="TRUE"
 				WholeProgramOptimization="TRUE"
 				OptimizeForProcessor="3"

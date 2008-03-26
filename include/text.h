@@ -1845,10 +1845,10 @@ void LoadGameTexts(void);
 #define TXT_SHIP_CYAN				GT(1052)
 #define TXT_SHIPCOLOR_HEADER		GT(1053)
 #define TXT_SHIPCOLOR				GT(1054)
+#define TXT_AUTOMAP_GRAYOUT		GT(1055)
 
 #if 0
 
-#define TXT_				GT(1055)
 #define TXT_				GT(1056)
 #define TXT_				GT(1057)
 #define TXT_				GT(1058)
@@ -2366,10 +2366,10 @@ void LoadGameTexts(void);
 #define HTX_GATLING_SOUND			HT(352)			
 #define HTX_SPINUP_SOUND			HT(353)			
 #define HTX_SHIPCOLOR				HT(354)			
+#define HTX_AUTOMAP_GRAYOUT		HT(355)			
 
 #if 0
 
-#define HTX_					HT(355)			
 #define HTX_					HT(356)			
 #define HTX_					HT(357)			
 #define HTX_					HT(358)			

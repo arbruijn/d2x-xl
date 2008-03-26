@@ -41,20 +41,20 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 	*r = (fix) q;
 	return 1;
 #else
-	quadint q,qt;
+	tQuadInt q,qt;
 
 	q.low=q.high=0;
-	fixmulaccum (&q,a,b);
+	FixMulAccum (&q,a,b);
 	qt = q;
 	if (qt.high < 0)
-		fixquadnegate (&qt);
+		FixQuadNegate (&qt);
 	qt.high *= 2;
 	if (qt.low > 0x7fff)
 		qt.high++;
 	if (qt.high >= c)
 		return 0;
 	else {
-		*r = fixdivquadlong (q.low,q.high,c);
+		*r = FixDivQuadLong (q.low,q.high,c);
 		return 1;
 	}
 #endif
@@ -171,13 +171,13 @@ fix G3CalcPointDepth (vmsVector *pnt)
 	q += mul64 (pnt->p.z - viewInfo.pos.p.z, viewInfo.view [0].fVec.p.z);
 	return (fix) (q >> 16);
 #else
-	quadint q;
+	tQuadInt q;
 
 	q.low=q.high=0;
-	fixmulaccum (&q, (pnt->p.x - viewInfo.pos.p.x),viewInfo.view [0].fVec.p.x);
-	fixmulaccum (&q, (pnt->p.y - viewInfo.pos.p.y),viewInfo.view [0].fVec.p.y);
-	fixmulaccum (&q, (pnt->p.z - viewInfo.pos.p.z),viewInfo.view [0].fVec.p.z);
-	return fixquadadjust (&q);
+	FixMulAccum (&q, (pnt->p.x - viewInfo.pos.p.x),viewInfo.view [0].fVec.p.x);
+	FixMulAccum (&q, (pnt->p.y - viewInfo.pos.p.y),viewInfo.view [0].fVec.p.y);
+	FixMulAccum (&q, (pnt->p.z - viewInfo.pos.p.z),viewInfo.view [0].fVec.p.z);
+	return FixQuadAdjust (&q);
 #endif
 }
 

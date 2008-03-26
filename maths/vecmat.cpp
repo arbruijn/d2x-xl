@@ -430,7 +430,7 @@ else if (gameOpts->render.nMathFormat == 1) {
 		}
 	}
 else {
-	return quad_sqrt ((u_int32_t) (a & 0xFFFFFFFF), (u_int32_t) (a >> 32));
+	return QuadSqrt ((u_int32_t) (a & 0xFFFFFFFF), (u_int32_t) (a >> 32));
 	}
 }
 
@@ -438,6 +438,7 @@ else {
 //returns magnitude of a vector
 fix VmVecMag (vmsVector *v)
 {
+#if 0
 if (gameOpts->render.nMathFormat == 2) {
 #if ENABLE_SSE
 		fVector	h;
@@ -465,19 +466,21 @@ if (gameOpts->render.nMathFormat == 2) {
 	return fl2f (sqrt (sqrd ((double) f2fl (v->p.x)) + sqrd ((double) f2fl (v->p.y)) + sqrd ((double) f2fl (v->p.z)))); 
 #endif
 	}
-else {
-#if 0//def _WIN32
-	QLONG q = mul64 (v->p.x, v->p.x);
-	q += mul64 (v->p.y, v->p.y);
-	q += mul64 (v->p.z, v->p.z);
-	return sqrt64 ((unsigned QLONG) q);
+else 
+#endif
+{
+#if 1//def _WIN32
+	QLONG h = mul64 (v->p.x, v->p.x);
+	h += mul64 (v->p.y, v->p.y);
+	h += mul64 (v->p.z, v->p.z);
+	return (fix) sqrt64 ((unsigned QLONG) h);
 #else
-	quadint q;
+	tQuadInt q;
 	q.low = q.high = 0;
-	fixmulaccum(&q, v->p.x, v->p.x);
-	fixmulaccum(&q, v->p.y, v->p.y);
-	fixmulaccum(&q, v->p.z, v->p.z);
-	return quad_sqrt(q.low, q.high);
+	FixMulAccum (&q, v->p.x, v->p.x);
+	FixMulAccum (&q, v->p.y, v->p.y);
+	FixMulAccum (&q, v->p.z, v->p.z);
+	return (fix) QuadSqrt (q.low, q.high);
 #endif
 	}
 }
@@ -637,22 +640,22 @@ q += mul64 (v->p.y, v->p.y);
 q += mul64 (v->p.z, v->p.z);
 h = q >> 32;
 if (h >= 0x800000)
-	return (fix_isqrt (h) >> 8);
+	return (FixISqrt (h) >> 8);
 l = q & (QLONG) 0xFFFFFFFF;
 if (!h)
-	return fix_isqrt (l);
-return (fix_isqrt ((h << 8) + (l >> 24)) >> 4);
+	return FixISqrt (l);
+return (FixISqrt ((h << 8) + (l >> 24)) >> 4);
 #	else
-quadint q;
+tQuadInt q;
 q.low = q.high = 0;
-fixmulaccum(&q, v->p.x, v->p.x);
-fixmulaccum(&q, v->p.y, v->p.y);
-fixmulaccum(&q, v->p.z, v->p.z);
+FixMulAccum(&q, v->p.x, v->p.x);
+FixMulAccum(&q, v->p.y, v->p.y);
+FixMulAccum(&q, v->p.z, v->p.z);
 if (!q.high)
-	return fix_isqrt(fixquadadjust(&q));
+	return FixISqrt(FixQuadAdjust(&q));
 if (q.high >= 0x800000)
-	return (fix_isqrt(q.high) >> 8);
-return (fix_isqrt((q.high<<8) + (q.low>>24)) >> 4);
+	return (FixISqrt(q.high) >> 8);
+return (FixISqrt((q.high<<8) + (q.low>>24)) >> 4);
 #	endif
 #endif
 }
@@ -857,7 +860,7 @@ return VmVecDeltaAngNorm (&t0, &t1, fVec);
 //computes the delta angle between two normalized vectors. 
 fixang VmVecDeltaAngNorm (vmsVector *v0, vmsVector *v1, vmsVector *fVec)
 {
-fixang a = fix_acos (VmVecDot (v0, v1));
+fixang a = FixACos (VmVecDot (v0, v1));
 if (fVec) {
 	vmsVector t;
 	if (VmVecDot (VmVecCrossProd (&t, v0, v1), fVec) < 0)
@@ -982,7 +985,7 @@ vmsMatrix *VmVecAng2Matrix (vmsMatrix *m, vmsVector *v, fixang a)
 
 FixSinCos (a, &sinb, &cosb);
 sinp = -v->p.y;
-cosp = fix_sqrt (f1_0 - FixMul (sinp, sinp));
+cosp = FixSqrt (f1_0 - FixMul (sinp, sinp));
 return VmSinCos2Matrix (m, sinp, cosp, sinb, cosb, FixDiv(v->p.x, cosp), FixDiv(v->p.z, cosp));
 }
 
@@ -1425,7 +1428,7 @@ vmsAngVec *VmExtractAnglesMatrix (vmsAngVec *a, vmsMatrix *m)
 if (m->fVec.p.x==0 && m->fVec.p.z==0)		//zero head
 	a->h = 0;
 else
-	a->h = fix_atan2(m->fVec.p.z, m->fVec.p.x);
+	a->h = FixAtan2(m->fVec.p.z, m->fVec.p.x);
 FixSinCos(a->h, &sinh, &cosh);
 if (abs(sinh) > abs(cosh))				//sine is larger, so use it
 	cosp = FixDiv(m->fVec.p.x, sinh);
@@ -1434,7 +1437,7 @@ else											//cosine is larger, so use it
 if (cosp==0 && m->fVec.p.y==0)
 	a->p = 0;
 else
-	a->p = fix_atan2(cosp, -m->fVec.p.y);
+	a->p = FixAtan2(cosp, -m->fVec.p.y);
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 	a->b = 0;
 else {
@@ -1445,7 +1448,7 @@ else {
 	if (sinb==0 && cosb==0)
 		a->b = 0;
 	else
-		a->b = fix_atan2(cosb, sinb);
+		a->b = FixAtan2(cosb, sinb);
 	}
 return a;
 }
@@ -1498,8 +1501,8 @@ return m->rVec.p.x * m->uVec.p.y * m->fVec.p.z -
 vmsAngVec *VmExtractAnglesVecNorm (vmsAngVec *a, vmsVector *v)
 {
 a->b = 0;		//always zero bank
-a->p = fix_asin (-v->p.y);
-a->h = (v->p.x || v->p.z) ? fix_atan2 (v->p.z, v->p.x) : 0;
+a->p = FixASin (-v->p.y);
+a->h = (v->p.x || v->p.z) ? FixAtan2 (v->p.z, v->p.x) : 0;
 return a;
 }
 

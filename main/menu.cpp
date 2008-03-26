@@ -2567,7 +2567,7 @@ void AutomapOptionsMenu ()
 	tMenuItem m [20];
 	int	i, j, choice = 0;
 	int	opt;
-	int	optBright, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
+	int	optBright, optGrayOut, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
 	char	szRadarRange [50];
 
 pszRadarRange [0] = TXT_SHORT;
@@ -2582,6 +2582,8 @@ do {
 	if (gameOpts->render.automap.bTextured) {
 		ADD_CHECK (opt, TXT_AUTOMAP_BRIGHT, gameOpts->render.automap.bBright, KEY_B, HTX_AUTOMAP_BRIGHT);
 		optBright = opt++;
+		ADD_CHECK (opt, TXT_AUTOMAP_GRAYOUT, gameOpts->render.automap.bGrayOut, KEY_Y, HTX_AUTOMAP_GRAYOUT);
+		optGrayOut = opt++;
 		ADD_CHECK (opt, TXT_AUTOMAP_CORONAS, gameOpts->render.automap.bCoronas, KEY_C, HTX_AUTOMAP_CORONAS);
 		optCoronas = opt++;
 		ADD_CHECK (opt, TXT_RENDER_SPARKS, gameOpts->render.automap.bSparks, KEY_P, HTX_RENDER_SPARKS);
@@ -2646,6 +2648,7 @@ do {
 		} 
 	//gameOpts->render.automap.bTextured = m [automapOpts.nOptTextured].value;
 	GET_VAL (gameOpts->render.automap.bBright, optBright);
+	GET_VAL (gameOpts->render.automap.bGrayOut, optGrayOut);
 	GET_VAL (gameOpts->render.automap.bCoronas, optCoronas);
 	GET_VAL (gameOpts->render.automap.bSparks, optSparks);
 	GET_VAL (gameOpts->render.automap.bSmoke, optSmoke);

@@ -21,12 +21,12 @@
 typedef int32_t fix;		//16 bits int, 16 bits frac
 typedef int16_t fixang;		//angles
 
-typedef struct quadint // integer 64 bit, previously called "quad"
+typedef struct tQuadInt // integer 64 bit, previously called "quad"
   {
     u_int32_t low;
     int32_t high;
   }
-quadint;
+tQuadInt;
 
 //Convert an int to a fix
 #define i2f(i) (((fix) (i)) << 16)
@@ -68,38 +68,17 @@ quadint;
 #endif
 
 
-//#if defined(NO_FIX_INLINE) || (!defined(__GNUC__) && !defined(__WATCOMC__))
-#if NO_FIX_INLINE
-//multiply two fixes, return a fix
-fix FixMul (fix a, fix b);
-
-//divide two fixes, return a fix
-fix FixDiv (fix a, fix b);
-
-//multiply two fixes, then divide by a third, return a fix
-fix FixMulDiv (fix a, fix b, fix c);
-
-#else
-
 #define FixMul(_a, _b)	((fix) ((((QLONG) (_a)) * ((QLONG) (_b))) / 65536))
 #define FixDiv(_a, _b)	((fix) ((_b) ? ((((QLONG) (_a)) * 65536) / ((QLONG) (_b))) : 1))
 #define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? ((((QLONG) (_a)) * ((QLONG) (_b))) / ((QLONG) (_c))) : 1))
 
-#endif
-
-//extract a fix from a quadint product
-fix fixquadadjust (quadint * q);
-
-//divide a quadint by a long
-int32_t fixdivquadlong (u_int32_t qlow, u_int32_t qhigh, u_int32_t d);
-
-//negate a quadint
-void fixquadnegate (quadint * q);
+//divide a tQuadInt by a long
+int32_t FixDivQuadLong (u_int32_t qlow, u_int32_t qhigh, u_int32_t d);
 
 //computes the square root of a long, returning a short
-ushort long_sqrt (int32_t a);
+ushort LongSqrt (int32_t a);
 
-//computes the square root of a quadint, returning a long
+//computes the square root of a tQuadInt, returning a long
 extern int nMathFormat;
 extern int nDefMathFormat;
 
@@ -107,14 +86,14 @@ unsigned int sqrt64 (unsigned QLONG a);
 
 #define mul64(_a,_b)	((QLONG) (_a) * (QLONG) (_b))
 
-//multiply two fixes, and add 64-bit product to a quadint
-void fixmulaccum (quadint * q, fix a, fix b);
+//multiply two fixes, and add 64-bit product to a tQuadInt
+void FixMulAccum (tQuadInt * q, fix a, fix b);
 
-u_int32_t quad_sqrt (u_int32_t low, int32_t high);
-//unsigned long quad_sqrt (long low, long high);
+u_int32_t QuadSqrt (u_int32_t low, int32_t high);
+//unsigned long QuadSqrt (long low, long high);
 
 //computes the square root of a fix, returning a fix
-fix fix_sqrt (fix a);
+fix FixSqrt (fix a);
 
 //compute sine and cosine of an angle, filling in the variables
 //either of the pointers can be NULL
@@ -123,19 +102,19 @@ void FixSinCos (fix a, fix * s, fix * c);	//with interpolation
 void FixFastSinCos (fix a, fix * s, fix * c);	//no interpolation
 
 //compute inverse sine & cosine
-fixang fix_asin (fix v);
+fixang FixASin (fix v);
 
-fixang fix_acos (fix v);
+fixang FixACos (fix v);
 
 //given cos & sin of an angle, return that angle.
 //parms need not be normalized, that is, the ratio of the parms cos/sin must
 //equal the ratio of the actual cos & sin for the result angle, but the parms 
 //need not be the actual cos & sin.  
 //NOTE: this is different from the standard C atan2, since it is left-handed.
-fixang fix_atan2 (fix cos, fix sin);
+fixang FixAtan2 (fix cos, fix sin);
 
 //for passed value a, returns 1/sqrt(a) 
-fix fix_isqrt (fix a);
+fix FixISqrt (fix a);
 
 #define fabsf(_f)	(float) fabs (_f)
 

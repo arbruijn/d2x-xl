@@ -439,6 +439,7 @@ for (i = 0; i < 2; i++) {
 
 		RP (gameOptions [i].render.automap.bBright, i, 0);
 		RP (gameOptions [i].render.automap.bCoronas, i, 0);
+		RP (gameOptions [i].render.automap.bGrayOut, i, 0);
 		RP (gameOptions [i].render.automap.bSparks, i, 0);
 		RP (gameOptions [i].render.automap.bSmoke, i, 0);
 		RP (gameOptions [i].render.automap.bLightnings, i, 0);
@@ -992,6 +993,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.cameras.nFPS", "0"},
 	{"gameOptions[0].render.cameras.nSpeed", "5000"},
 	{"gameOptions[0].render.automap.bBright", "0"},
+	{"gameOptions[0].render.automap.bGrayOut", "1"},
 	{"gameOptions[0].render.automap.bCoronas", "1"},
 	{"gameOptions[0].render.automap.bSparks", "1"},
 	{"gameOptions[0].render.automap.bSmoke", "1"},
