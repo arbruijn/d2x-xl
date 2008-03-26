@@ -96,6 +96,7 @@
 				MapFileName="./debug\d2x-xl-dbg.map"
 				MapExports="false"
 				SubSystem="2"
+				LinkTimeCodeGeneration="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -132,6 +133,7 @@
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
 			ManagedExtensions="0"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -180,7 +182,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				CallingConvention="1"
 				CompileAs="0"
 			/>
@@ -202,7 +204,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release&quot;"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

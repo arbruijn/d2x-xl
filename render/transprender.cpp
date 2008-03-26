@@ -620,24 +620,21 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 		glColorPointer (4, GL_FLOAT, 0, item->color);
 	else
 		glColor3d (1, 1, 1);
-	if (item->bAdditive == 1) {
-		RIResetShader ();
+	i = item->bAdditive;
+	if (i == 1)
 		glBlendFunc (GL_ONE, GL_ONE);
-		}
-	else if (item->bAdditive == 2) {
-		RIResetShader ();
+	else if (i == 2)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_COLOR);
-		}
-	else if (item->bAdditive == 3) {
-		RIResetShader ();
+	else if (i == 3)
 		glBlendFunc (GL_ONE, GL_ONE_MINUS_DST_ALPHA);
-		}
-	else {
+	else 
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	if (i && !gameStates.render.automap.bDisplay)
+		RIResetShader ();
+	else
 		G3SetupShader (0, 0, item->bmP != NULL, 
 							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 							item->bmP ? NULL : item->color);
-		}
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
 	}
 else 
