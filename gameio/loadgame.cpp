@@ -29,11 +29,10 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #endif
 #include <time.h>
 
+#include "inferno.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
-
 #include "console.h"
-#include "inferno.h"
 #include "game.h"
 #include "player.h"
 #include "key.h"
@@ -769,7 +768,7 @@ if (bAutoPlr) {
 	strlwr (filename);
 	if (!(psz = strchr (filename, '.')))
 		for (psz = filename; psz - filename < 8; psz++)
-			if (!*psz || isspace (*psz))
+			if (!*psz || ::isspace (*psz))
 				break;
 		*psz = '\0';
 	goto got_player;

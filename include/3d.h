@@ -156,7 +156,7 @@ void g3_getView_vectors(vmsVector *forward,vmsVector *up,vmsVector *right);
 
 //returns true if a plane is facing the viewer. takes the unrotated surface
 //normal of the plane, and a point on it.  The normal need not be normalized
-bool G3CheckNormalFacing(vmsVector *v,vmsVector *norm);
+int G3CheckNormalFacing(vmsVector *v,vmsVector *norm);
 
 //Point definition and rotation functions:
 
@@ -252,11 +252,11 @@ ubyte G3AddDeltaVec(g3sPoint *dest,g3sPoint *src,vmsVector *deltav);
 
 //draw a flat-shaded face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawPoly(int nv,g3sPoint **pointlist);
+int G3DrawPoly(int nv,g3sPoint **pointlist);
 
 //draw a texture-mapped face.
 //returns 1 if off screen, 0 if drew
-bool G3DrawTMap(int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm, int bBlend);
+int G3DrawTMap(int nv,g3sPoint **pointlist,tUVL *uvl_list,grsBitmap *bm, int bBlend);
 
 //draw a sortof sphere - i.e., the 2d radius is proportional to the 3d
 //radius, but not to the distance from the eye
@@ -276,21 +276,21 @@ int G3CheckAndDrawPoly (int nv, g3sPoint **pointlist, vmsVector *norm, vmsVector
 int G3CheckAndDrawTMap (int nv, g3sPoint **pointlist, tUVL *uvl_list, grsBitmap *bmP, vmsVector *norm, vmsVector *pnt);
 
 //draws a line. takes two points.
-bool G3DrawLine(g3sPoint *p0,g3sPoint *p1);
+int G3DrawLine(g3sPoint *p0,g3sPoint *p1);
 
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodPoly(g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width);
+int G3DrawRodPoly(g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width);
 
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
+int G3DrawRodTexPoly(grsBitmap *bitmap,g3sPoint *bot_point,fix bot_width,g3sPoint *top_point,fix top_width,fix light, tUVL *uvlList);
 
 //draws a bitmap with the specified 3d width & height
 //returns 1 if off screen, 0 if drew
-bool G3DrawBitmap (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
+int G3DrawBitmap (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int nTransp);
 
-bool G3DrawSprite (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive);
+int G3DrawSprite (vmsVector *vPos, fix xWidth, fix xHeight, grsBitmap *bmP, tRgbaColorf *color, float alpha, int bAdditive);
 
 //specifies 2d drawing routines to use instead of defaults.  Passing
 //NULL for either or both restores defaults

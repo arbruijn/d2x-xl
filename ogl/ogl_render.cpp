@@ -120,7 +120,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawLine (g3sPoint *p0, g3sPoint *p1)
+int G3DrawLine (g3sPoint *p0, g3sPoint *p1)
 {
 glDisable (GL_TEXTURE_2D);
 OglGrsColor (&grdCurCanv->cvColor);
@@ -229,7 +229,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
+int G3DrawWhitePoly (int nVertices, g3sPoint **pointList)
 {
 #if 1
 	int i;
@@ -248,7 +248,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPoly (int nVertices, g3sPoint **pointList)
+int G3DrawPoly (int nVertices, g3sPoint **pointList)
 {
 	int i;
 
@@ -274,7 +274,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask, short nSegment)
+int G3DrawPolyAlpha (int nVertices, g3sPoint **pointList, tRgbaColorf *color, char bDepthMask, short nSegment)
 {
 	int		i;
 	GLint		depthFunc; 
@@ -340,7 +340,7 @@ con_printf (CONDBG, "DrawTexPolyFlat: unhandled\n");//should never get called
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPolyFlat (
+int G3DrawTexPolyFlat (
 	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -388,7 +388,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPolyMulti (
+int G3DrawTexPolyMulti (
 	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -721,7 +721,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPolyLightmap (
+int G3DrawTexPolyLightmap (
 	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -817,7 +817,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawTexPolySimple (
+int G3DrawTexPolySimple (
 	int			nVertices, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -927,7 +927,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawSprite (
+int G3DrawSprite (
 	vmsVector	*vPos, 
 	fix			xWidth, 
 	fix			xHeight, 

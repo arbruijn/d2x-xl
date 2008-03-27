@@ -22,11 +22,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <ctype.h>
 #include <limits.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "cfile.h"
-
 #include "strutil.h"
-#include "inferno.h"
 #include "mission.h"
 #include "loadgame.h"
 #include "briefings.h"
@@ -249,7 +248,7 @@ char *t = strchr(buf, '=');
 
 if (t) {
 	t++;
-	while (*t && isspace (*t)) 
+	while (*t && ::isspace (*t)) 
 		t++;
 	if (*t)
 		return t;
@@ -352,7 +351,7 @@ if (p) {
 		*t-- = 0;
 	else
 		t = p + strlen (p) - 1;
-	while (isspace (*t) || (t - p > MISSION_NAME_LEN)) 
+	while (::isspace (*t) || (t - p > MISSION_NAME_LEN)) 
 		*t-- = '\0';
 	if (gameOpts->menus.bShowLevelVersion) {
 		sprintf (gameData.missions.list [count].szMissionName, "[%d] %s", gameData.missions.list [count].nDescentVersion, p);
@@ -691,7 +690,7 @@ char *MsnTrimComment (char *buf)
 if ((ps = strchr (buf, ';'))) {
 	while (ps > buf) {
 		--ps;
-		if (!isspace ((unsigned char) *ps)) {
+		if (!::isspace ((unsigned char) *ps)) {
 			++ps;
 			break;
 			}

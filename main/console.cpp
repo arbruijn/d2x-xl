@@ -23,10 +23,8 @@
 #else
 # include <SDL.h>
 #endif
-#ifdef CONSOLE
-#include "CON_console.h"
-#endif
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "u_mem.h"
 #include "error.h"
@@ -35,8 +33,10 @@
 #include "gr.h"
 #include "gamefont.h"
 #include "pcx.h"
-#include "inferno.h"
 #include "cfile.h"
+#ifdef CONSOLE
+#include "CON_console.h"
+#endif
 
 #ifndef __unix__
 static int con_initialized = 0;

@@ -3191,7 +3191,7 @@ if (filename [0] != '\0') {
 	int num, i = (int) strlen (filename) - 1;
 	char newfile [15];
 
-	while (isdigit (filename [i])) {
+	while (::isdigit (filename [i])) {
 		i--;
 		if (i == -1)
 			break;

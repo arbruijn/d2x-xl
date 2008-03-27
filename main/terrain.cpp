@@ -20,6 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "3d.h"
 #include "error.h"
 #include "gr.h"
@@ -27,8 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "iff.h"
 #include "u_mem.h"
 #include "mono.h"
-
-#include "inferno.h"
 #include "textures.h"
 #include "object.h"
 #include "endlevel.h"

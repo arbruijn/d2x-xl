@@ -20,9 +20,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: mglobal.c,v 1.4 2003/10/10 09:36:35 btb Exp $";
 #endif
 
+#include "inferno.h"
 #include "fix.h"
 #include "vecmat.h"
-#include "inferno.h"
 #include "segment.h"
 #include "object.h"
 #include "bm.h"

@@ -159,39 +159,23 @@ int ReadConfigFile()
 		return 1;
 	}
 	while (!CFEoF(&cf)) {
-		memset(line, 0, 80);
-		CFGetS(line, 80, &cf);
-		ptr = &(line[0]);
-		while (isspace(*ptr))
+		memset (line, 0, 80);
+		CFGetS (line, 80, &cf);
+		ptr = &line [0];
+		while (::isspace (*ptr))
 			ptr++;
 		if (*ptr != '\0') {
-			token = strtok(ptr, "=");
-			value = strtok(NULL, "=");
+			token = strtok (ptr, "=");
+			value = strtok (NULL, "=");
 			if (!(value && token)) {
 				LogErr ("configuration file (descent.cfg) looks messed up.\n");
 				continue;
 				}
 			if (value[strlen(value)-1] == '\n')
 				value[strlen(value)-1] = 0;
-/*			if (!strcmp(token, digi_dev8_str))
-				digi_driver_board = strtol(value, NULL, 16);
-			else if (!strcmp(token, digi_dev16_str))
-				digi_driver_board_16 = strtol(value, NULL, 16);
-			else if (!strcmp(token, digi_port_str))
-				digi_driver_port = strtol(value, NULL, 16);
-			else if (!strcmp(token, digi_irq_str))
-				digi_driver_irq = strtol(value, NULL, 10);
-			else if (!strcmp(token, digi_dma8_str))
-				digi_driver_dma = strtol(value, NULL, 10);
-			else if (!strcmp(token, digi_dma16_str))
-				digi_driver_dma_16 = strtol(value, NULL, 10);
-			else*/ if (!strcmp(token, pszDigiVolume))
+			if (!strcmp(token, pszDigiVolume))
 				gameConfig.nDigiVolume = (ubyte) strtol(value, NULL, 10);
-			else/* if (!strcmp(token, midi_dev_str))
-				digi_midiType = strtol(value, NULL, 16);
-			else if (!strcmp(token, midi_port_str))
-				digi_midi_port = strtol(value, NULL, 16);
-			else*/ if (!strcmp(token, pszMidiVolume))
+			else if (!strcmp(token, pszMidiVolume))
 				gameConfig.nMidiVolume = (ubyte) strtol(value, NULL, 10);
 			else if (!strcmp(token, pszRedbookEnabled))
 				gameStates.sound.bRedbookEnabled = bRedbookEnabledSave = strtol(value, NULL, 10);
@@ -325,7 +309,7 @@ int ReadConfigFile()
 			memset(line, 0, 80);
 			CFGetS(line, 80, &cf);
 			ptr = &(line[0]);
-			while (isspace(*ptr))
+			while (::isspace(*ptr))
 				ptr++;
 			if (*ptr != '\0') {
 				token = strtok(ptr, "=");

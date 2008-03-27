@@ -23,10 +23,10 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "../linux/include/ipx_mcast4.h"
+#include "inferno.h"
+#include "ipx_mcast4.h"
 #include "args.h"
 #include "error.h"
-#include "inferno.h"
 #include "multi.h"
 #include "newmenu.h"
 
@@ -222,13 +222,13 @@ static int ipx_mcast4_SendPacket(ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_cha
 	return i;
 }
 
-static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int outbufsize, struct ipx_recv_data *rd)
+static int ipx_mcast4_ReceivePacket(ipx_socket_t *sk, ubyte *outbuf, int outbufsize, struct ipx_recv_data *rd)
 {
 	int size;
 	struct sockaddr_in fromaddr;
 	int fromaddrsize = sizeof(fromaddr);
 
-	if((size = recvfrom(sk->fd, outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize)) < 0)
+	if((size = recvfrom(sk->fd, (char *) outbuf, outbufsize, 0, (struct sockaddr*)&fromaddr, &fromaddrsize)) < 0)
 		return -1;
 
 #ifdef IPX_MCAST4DBG

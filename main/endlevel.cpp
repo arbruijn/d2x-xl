@@ -1231,9 +1231,9 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 		}
 	if ((p=strchr (line, ';')))
 		*p = 0;		//cut off comment
-	for (p = line + strlen (line) - 1; p > line && isspace (*p); *p-- = 0)
+	for (p = line + strlen (line) - 1; p > line && ::isspace (*p); *p-- = 0)
 		;
-	for (p = line; isspace (*p); p++)
+	for (p = line; ::isspace (*p); p++)
 		;
 	if (!*p)		//empty line
 		continue;

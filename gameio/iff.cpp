@@ -29,9 +29,9 @@ static char rcsid[] = "$Id: iff.c,v 1.7 2003/10/04 03:14:47 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "u_mem.h"
 #include "iff.h"
-#include "inferno.h"
 #include "cfile.h"
 #include "error.h"
 

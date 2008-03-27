@@ -93,20 +93,6 @@ extern int Cockpit_rearView;
 			(_j) = (_max); \
 		}
 
-
-typedef struct {
-	int	VGA_mode;
-	short	w,h;
-	short	render_method;
-	short	flags;
-	char	isWideScreen;
-	char	isAvailable;
-} dmi;
-
-#define NUM_DISPLAY_MODES	21
-
-extern dmi displayModeInfo [NUM_DISPLAY_MODES + 1];
-
 int stoip (char *szServerIpAddr, unsigned char *pIpAddr);
 int stoport (char *szPort, int *pPort, int *pSign);
 int SetCustomDisplayMode (int x, int y);

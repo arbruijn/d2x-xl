@@ -488,7 +488,7 @@ if (!mtP->nCount++) {
 
 #define CHECK_NORMAL_FACING	0
 
-bool G3DrawPolyModel (
+int G3DrawPolyModel (
 	tObject		*objP, 
 	void			*modelP, 
 	grsBitmap	**modelBitmaps, 
@@ -689,7 +689,7 @@ int nestCount;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing tObject
-bool G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset,
+int G3DrawMorphingModel (void *modelP, grsBitmap **modelBitmaps, vmsAngVec *pAnimAngles, vmsVector *vOffset,
 								  fix xModelLight, vmsVector *new_points, int nModel)
 {
 	ubyte *p = (ubyte *) modelP;

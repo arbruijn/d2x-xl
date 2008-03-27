@@ -18,13 +18,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include <string.h>
 
+#include "inferno.h"
 #include "u_mem.h"
-
 #include "gr.h"
 #include "grdef.h"
 #include "error.h"
-
-#include "inferno.h"
 #include "ogl_defs.h"
 
 void gr_linear_darken(ubyte * dest, int darkeningLevel, int count, ubyte * fade_table) {

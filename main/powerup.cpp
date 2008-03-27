@@ -20,14 +20,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "fix.h"
 #include "vecmat.h"
 #include "gr.h"
 #include "3d.h"
 #include "mono.h"
 #include "error.h"
-
-#include "inferno.h"
 #include "object.h"
 #include "objrender.h"
 #include "game.h"

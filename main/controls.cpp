@@ -24,18 +24,16 @@ static char rcsid[] = "$Id: controls.c,v 1.5 2003/08/02 20:36:12 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "mono.h"
 #include "key.h"
 #include "joy.h"
 #include "timer.h"
 #include "error.h"
-
-#include "inferno.h"
 #include "game.h"
 #include "object.h"
 #include "player.h"
-
 #include "controls.h"
 #include "joydefs.h"
 #include "render.h"

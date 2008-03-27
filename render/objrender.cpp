@@ -790,7 +790,7 @@ return bOk;
 
 // -----------------------------------------------------------------------------
 
-bool G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
+int G3DrawSphere3D  (g3sPoint *p0, int nSides, int rad);
 
 time_t tRenderObject;
 

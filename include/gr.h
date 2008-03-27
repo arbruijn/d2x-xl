@@ -725,4 +725,17 @@ typedef struct grsString {
 	short					nLength;
 	} grsString;
 
+typedef struct tDisplayModeInfo {
+	int	VGA_mode;
+	short	w,h;
+	short	render_method;
+	short	flags;
+	char	isWideScreen;
+	char	isAvailable;
+} tDisplayModeInfo;
+
+#define NUM_DISPLAY_MODES	21
+
+extern tDisplayModeInfo displayModeInfo [NUM_DISPLAY_MODES + 1];
+
 #endif /* def _GR_H */

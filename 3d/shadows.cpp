@@ -145,7 +145,7 @@ return ((v1->x - v0->x) * (v2->y - v1->y) < 0) ? GL_CW : GL_CCW;
 
 //------------------------------------------------------------------------------
 
-bool POFCountPolyModelItems (void *modelP, short *pnSubObjs, short *pnVerts, short *pnFaces, short *pnFaceVerts, short *pnAdjFaces)
+int POFCountPolyModelItems (void *modelP, short *pnSubObjs, short *pnVerts, short *pnFaces, short *pnFaceVerts, short *pnAdjFaces)
 {
 	ubyte *p = (ubyte *) modelP;
 
@@ -602,7 +602,7 @@ for (i = po->subObjs.nSubObjs; i; i--, pso++)
 
 //------------------------------------------------------------------------------
 
-bool POFGetPolyModelItems (void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, 
+int POFGetPolyModelItems (void *modelP, vmsAngVec *pAnimAngles, tPOFObject *po, 
 								  int bInitModel, int bShadowData, int nThis, int nParent)
 {
 	ubyte				*p = (ubyte *) modelP;

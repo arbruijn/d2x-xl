@@ -17,12 +17,12 @@
 # include <SDL.h>
 #endif
 
+#include "inferno.h"
 #include "joy.h"
 #include "error.h"
 #include "timer.h"
 #include "console.h"
 #include "event.h"
-#include "inferno.h"
 #include "text.h"
 
 extern int joybutton_text []; //from KConfig.c

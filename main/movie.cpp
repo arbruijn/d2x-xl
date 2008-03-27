@@ -42,13 +42,13 @@ static char rcsid [] = "$Id: movie.c, v 1.33 2003/11/26 12:26:30 btb Exp $";
 # endif
 #endif
 
+#include "inferno.h"
 #include "movie.h"
 #include "console.h"
 #include "args.h"
 #include "key.h"
 #include "digi.h"
 #include "songs.h"
-#include "inferno.h"
 #include "palette.h"
 #include "strutil.h"
 #include "error.h"
@@ -488,11 +488,11 @@ return 1;
 //search for next field following whitespace 
 ubyte *next_field (ubyte *p)
 {
-while (*p && !isspace (*p))
+	while (*p && !::isspace (*p))
 	p++;
 if (!*p)
 	return NULL;
-while (*p && isspace (*p))
+while (*p && ::isspace (*p))
 	p++;
 if (!*p)
 	return NULL;

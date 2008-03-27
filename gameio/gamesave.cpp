@@ -23,6 +23,7 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include <stdio.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "strutil.h"
 #include "mono.h"
@@ -30,10 +31,8 @@ char gamesave_rcsid [] = "$Id: gamesave.c,v 1.21 2003/06/16 07:15:59 btb Exp $";
 #include "gr.h"
 #include "palette.h"
 #include "newmenu.h"
-
-#include "inferno.h"
 #ifdef EDITOR
-#include "editor/editor.h"
+#	include "editor/editor.h"
 #endif
 #include "error.h"
 #include "object.h"

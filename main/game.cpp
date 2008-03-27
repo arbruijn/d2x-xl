@@ -27,13 +27,13 @@ char game_rcsid[] = "$Id: game.c,v 1.25 2003/12/08 22:32:56 btb Exp $";
 #include <ctype.h>
 #include <time.h>
 
+#include "inferno.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 #include "ogl_render.h"
 #include "pstypes.h"
 #include "console.h"
 #include "gr.h"
-#include "inferno.h"
 #include "game.h"
 #include "key.h"
 #include "object.h"
@@ -474,189 +474,6 @@ else {
 	GrInitSubCanvas (&gameStates.render.vr.buffers.render[1], gameStates.render.vr.buffers.offscreen, 0, 0, render_w, render_h);
 	}
 GameInitRenderSubBuffers (0, 0, render_w, render_h);
-}
-
-//------------------------------------------------------------------------------
-
-//called to get the screen in a mode compatible with popup menus.
-//if we can't have popups over the game screen, switch to menu mode.
-
-void SetPopupScreenMode (void)
-{
-if (!gameOpts->menus.nStyle)
-	SetScreenMode (SCREEN_MENU);		//must switch to menu mode
-}
-
-//------------------------------------------------------------------------------
-//called to change the screen mode. Parameter sm is the new mode, one of
-//SMODE_GAME or SMODE_EDITOR. returns mode acutally set (could be other
-//mode if cannot init requested mode)
-int SetScreenMode (u_int32_t sm)
-{
-#ifdef EDITOR
-	if ((sm==SCREEN_MENU) && (gameStates.video.nScreenMode==SCREEN_EDITOR))	{
-		GrSetCurrentCanvas (Canv_editor);
-		return 1;
-	}
-#endif
-if ((gameStates.video.nScreenMode == sm) && (nCurrentVGAMode == gameStates.render.vr.nScreenMode) && 
-		(/* (sm != SCREEN_GAME) ||*/ (grdCurScreen->scMode == gameStates.render.vr.nScreenMode))) {
-	GrSetCurrentCanvas (gameStates.render.vr.buffers.screenPages + gameStates.render.vr.nCurrentPage);
-	OglSetScreenMode ();
-	return 1;
-	}
-#ifdef EDITOR
-	Canv_editor = NULL;
-#endif
-
-	gameStates.video.nScreenMode = sm;
-
-	switch (gameStates.video.nScreenMode) {
-		case SCREEN_MENU:
-		{
-			u_int32_t nMenuMode;
-
-			gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
-
-            nMenuMode = 
-					gameStates.gfx.bOverride ?
-						gameStates.gfx.nStartScrMode
-						: gameStates.menus.bHires ?
-							 (gameStates.render.vr.nScreenMode >= SM (640,480)) ?
-								gameStates.render.vr.nScreenMode
-								: SM (640,480)
-							: SM (320,200);
-			gameStates.video.nLastScreenMode = -1;
-			if (nCurrentVGAMode != nMenuMode) {
-				if (GrSetMode (nMenuMode))
-					Error ("Cannot set screen mode for menu");
-				if (!gameStates.render.bPaletteFadedOut)
-					GrPaletteStepLoad (NULL);
-				gameStates.menus.bInitBG = 1;
-				RebuildRenderContext (gameStates.app.bGameRunning);
-			}
-
-			GrInitSubCanvas (
-				gameStates.render.vr.buffers.screenPages, &grdCurScreen->scCanvas, 0, 0, 
-				grdCurScreen->scWidth, grdCurScreen->scHeight);
-			GrInitSubCanvas (
-				gameStates.render.vr.buffers.screenPages + 1, &grdCurScreen->scCanvas, 0, 0, 
-				grdCurScreen->scWidth, grdCurScreen->scHeight);
-
-			gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-
-		}
-		break;
-
-	case SCREEN_GAME:
-		if (nCurrentVGAMode != gameStates.render.vr.nScreenMode) {
-			if (GrSetMode (gameStates.render.vr.nScreenMode))	{
-				Error ("Cannot set desired screen mode for game!");
-				//we probably should do something else here, like select a standard mode
-			}
-			#ifdef MACINTOSH
-			if ((gameConfig.nControlType == 1) && (gameStates.app.nFunctionMode == FMODE_GAME))
-				JoyDefsCalibrate ();
-			#endif
-			ResetCockpit ();
-		}
-			{
-			gameData.render.window.wMax = grdCurScreen->scWidth;
-			gameData.render.window.hMax = grdCurScreen->scHeight;
-	      if (!gameData.render.window.h || (gameData.render.window.h > gameData.render.window.hMax) || 
-				 !gameData.render.window.w || (gameData.render.window.w > gameData.render.window.wMax)) {
-				gameData.render.window.w = gameData.render.window.wMax;
-				gameData.render.window.h = gameData.render.window.hMax;
-				}
-			}
-		InitCockpit ();
-
-	//	Define screen pages for game mode
-	// If we designate through screenFlags to use paging, then do so.
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], &grdCurScreen->scCanvas, 
-								  0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
-
-		if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING) {
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 0, 
-								  grdCurScreen->scHeight, grdCurScreen->scWidth, grdCurScreen->scHeight);
-		}
-		else {
-			GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], &grdCurScreen->scCanvas, 
-								  0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
-			}
-		InitCockpit ();
-		gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-		if (gameStates.render.vr.nRenderMode != VR_NONE)	{
-			// for 640x480 or higher, use hires font.
-			if (gameStates.render.fonts.bHiresAvailable && (grdCurScreen->scHeight > 400))
-				gameStates.render.fonts.bHires = 1;
-			else
-				gameStates.render.fonts.bHires = 0;
-		}
-		con_resize ();
-		break;
-
-	#ifdef EDITOR
-	case SCREEN_EDITOR:
-		if (grdCurScreen->scMode != SM (800,600))	{
-			int gr_error;
-			if ((gr_error=GrSetMode (SM (800,600)))!=0) { //force into game scrren
-				Warning ("Cannot init editor screen (error=%d)",gr_error);
-				return 0;
-			}
-		}
-		GrPaletteStepLoad (NULL);
-
-		GrInitSubCanvas (&gameStates.render.vr.buffers.editorCanvas, &grdCurScreen->scCanvas, 0, 0, grdCurScreen->scWidth, grdCurScreen->scHeight);
-		Canv_editor = &gameStates.render.vr.buffers.editorCanvas;
-		GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[0], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
-		GrInitSubCanvas (&gameStates.render.vr.buffers.screenPages[1], Canv_editor, 0, 0, Canv_editor->cv_w, Canv_editor->cv_h);
-		GrSetCurrentCanvas (Canv_editor);
-		init_editor_screen ();   //setup other editor stuff
-		break;
-	#endif
-	default:
-		Error ("Invalid screen mode %d",sm);
-	}
-gameStates.render.vr.nCurrentPage = 0;
-GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage]);
-if (gameStates.render.vr.nScreenFlags&VRF_USE_PAGING)
-	GrShowCanvas (&gameStates.render.vr.buffers.screenPages[gameStates.render.vr.nCurrentPage]);
-OglSetScreenMode ();
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int GrToggleFullScreenGame (void)
-{
-int i=GrToggleFullScreen ();
-FlushInput ();
-if (gameStates.app.bGameRunning) {
-	HUDMessage (MSGC_GAME_FEEDBACK, "toggling fullscreen mode %s",i?"on":"off");
-	StopPlayerMovement ();
-	}
-return i;
-}
-
-//------------------------------------------------------------------------------
-
-int arch_toggle_fullscreen_menu (void);
-
-int GrToggleFullScreenMenu (void)
-{
-#ifdef GR_SUPPORTS_FULLSCREEN_MENU_TOGGLE
-	int i;
-	i=arch_toggle_fullscreen_menu ();
-
-//	generic_key_handler (KEY_PADENTER,0);
-	FlushInput ();
-	StopPlayerMovement ();
-	RebuildRenderContext (gameStates.app.bGameRunning);
-	return i;
-#else
-	return -1;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1881,7 +1698,7 @@ void toggle_movie_saving ()
 			return;
 		}
 
-		while (isspace (movie_path[strlen (movie_path)-1]))
+		while (::isspace (movie_path [strlen (movie_path)-1]))
 			movie_path[strlen (movie_path)-1] = 0;
 		if (movie_path[strlen (movie_path)-1]!='\\' && movie_path[strlen (movie_path)-1]!=':')
 			strcat (movie_path,"\\");

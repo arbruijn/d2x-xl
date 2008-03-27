@@ -25,12 +25,12 @@ static char rcsid[] = "$Id: error.c,v 1.6 2003/04/08 00:59:17 btb Exp $";
 #include <stdarg.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "console.h"
 #include "mono.h"
 #include "error.h"
 #include "gr.h"
-#include "inferno.h"
 #include "text.h"
 #include "cfile.h"
 #ifdef __macosx__

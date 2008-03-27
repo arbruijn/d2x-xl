@@ -20,13 +20,13 @@
 # include <SDL.h>
 #endif
 
+#include "inferno.h"
 #include "event.h"
 #include "error.h"
 #include "key.h"
 #include "timer.h"
 #include "hudmsg.h"
 #include "maths.h"
-#include "inferno.h"
 
 #define KEY_BUFFER_SIZE 16
 

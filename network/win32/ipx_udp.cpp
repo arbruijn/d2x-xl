@@ -594,7 +594,7 @@ if (gethostname (buf, sizeof (buf)))
 if (s) 
 	while (*s=='@') {
 		portshift (++s);
-		while (isdigit (*s)) 
+		while (::isdigit (*s)) 
 			s++;
 		}
 memset(ipx_MyAddress, 0, 4);
@@ -608,14 +608,14 @@ else {
 		addiflist ();
 	s++;
 	for (;;) {
-		while (isspace (*s)) 
+		while (::isspace (*s)) 
 			s++;
 		if (!*s) 
 			break;
 		for (s2 = s; *s2 && *s2 != ','; s2++)
 			;
 		chk (ns = (char *) D2_ALLOC ((unsigned int) (s2 - s + 1)));
-		memcpy(ns,s,s2-s);
+		memcpy(ns, s, s2 - s);
 		ns[s2-s]='\0';
 		if (!queryhost(ns)) 
 			msg ("Ignored broadcast-destination \"%s\" as being invalid", ns);

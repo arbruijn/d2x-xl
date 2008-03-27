@@ -86,7 +86,7 @@ typedef unsigned int uint;
 
 #if !defined(__cplusplus) && !defined(__obj_c)
 //define a boolean
-typedef ubyte bool;
+typedef ubyte int;
 #endif
 
 #ifndef NULL

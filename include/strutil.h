@@ -16,19 +16,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _STRUTILS_H
 
 #if defined(__unix__) || defined(__macosx__)
-# include <string.h>
-# define stricmp(a,b) strcasecmp(a,b)
-# define strnicmp(a,b,c) strncasecmp(a,b,c)
-#elif 0
-extern int stricmp(char *str1, char *str2);
-extern int strnicmp(char *str1, char *str2, int n);
-#endif
-
-#ifdef _WIN32_WCE
-# define stricmp _stricmp
-# define strnicmp _strnicmp
-# define strlwr _strlwr
-# define strrev _strrev
+#	include <string.h>
+#	define stricmp(a,b) strcasecmp(a,b)
+#	define strnicmp(a,b,c) strncasecmp(a,b,c)
+#else
+#	define stricmp		_stricmp
+#	define strlwr		_strlwr
+#	define strnicmp	_strnicmp
+#	define strlwr 		_strlwr
+#	define strupr 		_strupr
+#	define strdup 		_strdup
+#	define strrev 		_strrev
 #endif
 
 #ifndef _WIN32

@@ -11,22 +11,22 @@
 
 //------------------------------------------------------------------------------
 
-bool G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
-bool G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
+int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
 int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP);
 void InitGrayScaleShader (void);
 
 //------------------------------------------------------------------------------
 
-static inline bool FaceIsAdditive (grsFace *faceP)
+static inline int FaceIsAdditive (grsFace *faceP)
 {
-return (bool) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->bmFromPog) : faceP->bAdditive);
+return (int) ((faceP->bAdditive == 1) ? !(faceP->bmBot && faceP->bmBot->bmFromPog) : faceP->bAdditive);
 }
 
 //------------------------------------------------------------------------------
 
-static inline bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, 
+static inline int G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, 
 										 int bBlend, int bTextured, int bDepthOnly, int bVertexArrays)
 {
 return bVertexArrays ?

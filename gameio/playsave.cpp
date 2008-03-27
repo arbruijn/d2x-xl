@@ -27,10 +27,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #include <limits.h>
 
-#include "error.h"
-
-#include "pa_enabl.h"
 #include "inferno.h"
+#include "error.h"
+#include "pa_enabl.h"
 #include "strutil.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"
@@ -687,17 +686,17 @@ if (!(pp = FindParam (pszIdent))) {
 nVal = atoi (pszValue);
 switch (pp->nSize) {
 	case 1:
-		if (!(isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
+		if (!(::isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
 			return 0;
 		*((sbyte *) pp->valP) = (sbyte) nVal;
 		break;
 	case 2:
-		if (!(isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
+		if (!(::isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
 			return 0;
 		*((short *) pp->valP) = (short) nVal;
 		break;
 	case 4:
-		if (!(isdigit (*pszValue) || issign (*pszValue)))
+		if (!(::isdigit (*pszValue) || issign (*pszValue)))
 			return 0;
 		*((int *) pp->valP) = (int) nVal;
 		break;

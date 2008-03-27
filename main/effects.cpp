@@ -25,8 +25,8 @@ static char rcsid [] = "$Id: effects.c,v 1.5 2003/10/10 09:36:34 btb Exp $";
 #include <stdarg.h>
 #include <string.h>
 
-#include "gr.h"
 #include "inferno.h"
+#include "gr.h"
 #include "game.h"
 #include "vclip.h"
 #include "effects.h"

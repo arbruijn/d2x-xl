@@ -34,7 +34,7 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 
 //------------------------------------------------------------------------------
 
-bool G3CountPOFModelItems (void *modelP, short *pnSubModels, short *pnVerts, short *pnFaces, short *pnFaceVerts)
+int G3CountPOFModelItems (void *modelP, short *pnSubModels, short *pnVerts, short *pnFaces, short *pnFaceVerts)
 {
 	ubyte *p = (ubyte *) modelP;
 
@@ -177,7 +177,7 @@ return pmf;
 
 //------------------------------------------------------------------------------
 
-bool G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent, 
+int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent, 
 								 grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
 	ubyte				*p = (ubyte *) modelP;

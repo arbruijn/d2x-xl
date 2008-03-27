@@ -117,7 +117,7 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 		pi->nId = atoi (p);
 		if (!pi->nId)
 			continue;
-		while (isdigit (*p))
+		while (::isdigit (*p))
 			p++;
 		pi->pszText = q;
 		pi++;

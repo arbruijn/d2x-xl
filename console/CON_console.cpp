@@ -16,14 +16,14 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "CON_console.h"
-
+#include "inferno.h"
+#include "strutil.h"
 #include "u_mem.h"
 #include "gr.h"
 #include "timer.h"
-#include "inferno.h"
 #include "gamefont.h"
 #include "newmenu.h"
+#include "CON_console.h"
 
 #define FG_COLOR    grdCurCanv->cvFontFgColor
 #define get_msecs() approx_fsec_to_msec(TimerGetApproxSeconds())

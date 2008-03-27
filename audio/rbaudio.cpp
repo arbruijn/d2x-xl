@@ -24,13 +24,13 @@
 #include <linux/cdrom.h>
 #endif
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "strutil.h"
 #include "error.h"
 #include "args.h"
 #include "cfile.h"
 #include "rbaudio.h"
-#include "inferno.h"
 #include "text.h"
 
 static SDL_CD *s_cd = NULL;

@@ -49,8 +49,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				FavorSizeOrSpeed="0"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
-				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
+				AdditionalIncludeDirectories="&quot;..\..\..\..\irrlicht-1.4\include&quot;;&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
+				PreprocessorDefinitions="DBG=1;_DEBUG;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,7 +66,7 @@
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 				CallingConvention="1"
 				CompileAs="0"
@@ -165,8 +165,8 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
-				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL"
+				AdditionalIncludeDirectories="&quot;..\..\..\..\irrlicht-1.4\include&quot;;&quot;..\..\..\..\SDL-1.2.13\include&quot;;&quot;..\..\..\..\SDL_mixer-1.2.8&quot;;&quot;\Projekte\OpenAL 1.1 SDK\include&quot;;&quot;..\..\d2x-trackir&quot;;..\..\3d;..\..\include;..\..\input\include;..\..\audio\win32\include;..\..\network\win32\include"
+				PreprocessorDefinitions="NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				MinimalRebuild="false"
 				RuntimeLibrary="2"
@@ -1265,6 +1265,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\include\irrstuff.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\include\kconfig.h"
 						>
 					</File>
@@ -1368,26 +1372,6 @@
 				<Filter
 					Name="Source Files"
 					>
-					<File
-						RelativePath="..\..\main\banlist.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
 					<File
 						RelativePath="..\..\main\briefings.cpp"
 						>
@@ -1827,6 +1811,10 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\main\irrstuff.cpp"
+						>
 					</File>
 					<File
 						RelativePath="..\..\main\kconfig.cpp"
@@ -2779,6 +2767,26 @@
 					<File
 						RelativePath="..\..\network\autodl.cpp"
 						>
+					</File>
+					<File
+						RelativePath="..\..\main\banlist.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\network\win32\ipx_mcast4.cpp"
@@ -4129,7 +4137,7 @@
 					Name="Header Files"
 					>
 					<File
-						RelativePath="..\..\main\digi.h"
+						RelativePath="..\..\include\digi.h"
 						>
 					</File>
 					<File
@@ -4373,6 +4381,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\ogl\ogl_draw.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\ogl\ogl_fastrender.cpp"
 						>
 					</File>
@@ -4382,6 +4394,10 @@
 					</File>
 					<File
 						RelativePath="..\..\ogl\ogl_lib.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ogl\ogl_palette.cpp"
 						>
 					</File>
 					<File
@@ -4402,6 +4418,10 @@
 					</File>
 					<File
 						RelativePath="..\..\ogl\pbuffer.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\ogl\screenshot.cpp"
 						>
 					</File>
 					<File
@@ -4536,11 +4556,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

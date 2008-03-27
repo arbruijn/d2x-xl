@@ -20,6 +20,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: rod.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #endif
 
+#include "inferno.h"
 #include "3d.h"
 #include "globvars.h"
 #include "fix.h"
@@ -94,7 +95,7 @@ return 0;
 //------------------------------------------------------------------------------
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodPoly (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
+int G3DrawRodPoly (g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -104,7 +105,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap tObject that is always facing you
 //returns 1 if off screen, 0 if drew
-bool G3DrawRodTexPoly (grsBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList)
+int G3DrawRodTexPoly (grsBitmap *bmP, g3sPoint *btmPoint, fix xBtmWidth, g3sPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;

@@ -23,12 +23,11 @@ static char rcsid[] = "$Id: text.c,v 1.11 2003/11/26 12:26:33 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "cfile.h"
 #include "u_mem.h"
 #include "error.h"
-
-#include "inferno.h"
 #include "text.h"
 #include "args.h"
 #include "compbit.h"

@@ -21,9 +21,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <string.h>
 #include <ctype.h>
 
+#include "inferno.h"
 #include "scores.h"
 #include "error.h"
-#include "inferno.h"
 #include "gr.h"
 #include "mono.h"
 #include "key.h"

@@ -277,7 +277,7 @@ return nShader;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			h, i, j, nTextures, nRemainingLights, nLights [4], nPass = 0;
 	int			bOverlay, bTransparent, 
@@ -463,7 +463,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
+int G3DrawFaceArrays (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bTextured, int bDepthOnly)
 {
 	int			bOverlay, bColored, bTransparent, bColorKey = 0, bMonitor = 0, bMultiTexture = 0;
 	grsBitmap	*bmMask = NULL;

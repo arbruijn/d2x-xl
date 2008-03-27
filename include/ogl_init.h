@@ -350,10 +350,10 @@ void OglSetScreenMode (void);
 int OglCacheLevelTextures (void);
 
 void OglURect(int left,int top,int right,int bot);
-bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grsColor *c, int scale, int orient);
-bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp);
-bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
-bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+int OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grsColor *c, int scale, int orient);
+int OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp);
+int OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 void OglUPixelC (int x, int y, grsColor *c);
 void OglULineC (int left,int top,int right,int bot, grsColor *c);
 void OglUPolyC (int left, int top, int right, int bot, grsColor *c);
@@ -371,12 +371,12 @@ extern GLenum curDrawBuffer;
 #include "3d.h"
 #include "gr.h"
 
-bool G3DrawWhitePoly (int nv, g3sPoint **pointList);
-bool G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask);
-bool G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bDrawArrays, int bTextured, int bDepthOnly);
+int G3DrawWhitePoly (int nv, g3sPoint **pointList);
+int G3DrawPolyAlpha (int nv, g3sPoint **pointlist, tRgbaColorf *color, char bDepthMask);
+int G3DrawFace (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bBlend, int bDrawArrays, int bTextured, int bDepthOnly);
 void G3FlushFaceBuffer (int bForce);
 
-bool G3DrawTexPolyMulti (
+int G3DrawTexPolyMulti (
 	int			nVerts, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -388,7 +388,7 @@ bool G3DrawTexPolyMulti (
 	int			orient, 
 	int			bBlend);
 
-bool G3DrawTexPolyLightmap (
+int G3DrawTexPolyLightmap (
 	int			nVerts, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -400,7 +400,7 @@ bool G3DrawTexPolyLightmap (
 	int			orient, 
 	int			bBlend);
 
-bool G3DrawTexPolyFlat (
+int G3DrawTexPolyFlat (
 	int			nVerts, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 
@@ -532,10 +532,10 @@ else if (!handle || (boundHandles [nTMU] != handle)) {
 
 extern GLhandleARB	genShaderProg;
 
-typedef	bool tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int);
+typedef	int tTexPolyMultiDrawer (int, g3sPoint **, tUVL *, tUVL *, grsBitmap *, grsBitmap *, tOglTexture *, vmsVector *, int, int);
 extern tTexPolyMultiDrawer	*fpDrawTexPolyMulti;
 
-bool G3DrawTexPolySimple (
+int G3DrawTexPolySimple (
 	int			nVerts, 
 	g3sPoint		**pointList, 
 	tUVL			*uvlList, 

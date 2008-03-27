@@ -1201,11 +1201,11 @@ extern char *OglLibPath;
 #ifndef DECLARE_VARS
 // pass true to load the library
 // pass false to unload it
-bool OpenGL_LoadLibrary(bool load);//load=true removed because not c++
+int OpenGL_LoadLibrary(int load);//load=true removed because not c++
 #else
 void *OpenGLModuleHandle=NULL;
 //char *OglLibPath="opengl32.dll";
-bool OpenGL_LoadLibrary(bool load)
+int OpenGL_LoadLibrary(int load)
 {
 	if(load && OpenGLModuleHandle)
 		return true;

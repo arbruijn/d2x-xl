@@ -38,8 +38,8 @@ static char rcsid[] = "$Id: credits.c,v 1.8 2003/10/10 09:36:34 btb Exp $";
 #include <stdarg.h>
 #include <ctype.h>
 
-#include "error.h"
 #include "inferno.h"
+#include "error.h"
 #include "gr.h"
 #include "mono.h"
 #include "key.h"

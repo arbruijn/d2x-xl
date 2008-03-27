@@ -18,11 +18,11 @@
 # include <SDL.h>
 #endif
 
+#include "inferno.h"
 #include "fix.h"
 #include "timer.h"
 #include "event.h"
 #include "mouse.h"
-#include "inferno.h"
 
 #ifdef WIN32_WCE
 # define LANDSCAPE

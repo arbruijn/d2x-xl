@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
+
+#include "inferno.h"
 #include "hmpfile.h"
 #include "cfile.h"
 #include "digi.h"

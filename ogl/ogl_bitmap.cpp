@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 
-bool G3DrawBitmap (
+int G3DrawBitmap (
 	vmsVector	*vPos, 
 	fix			width, 
 	fix			height, 
@@ -137,7 +137,7 @@ switch (orient) {
 
 //------------------------------------------------------------------------------
 
-bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, int scale, int orient)
+int OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bmP, grsColor *c, int scale, int orient)
 {
 	GLint depthFunc, bBlend;
 	GLfloat xo, yo, xf, yf;
@@ -239,7 +239,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool OglUBitBltI (
+int OglUBitBltI (
 	int dw, int dh, int dx, int dy, 
 	int sw, int sh, int sx, int sy, 
 	grsBitmap *src, grsBitmap *dest, 
@@ -310,7 +310,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy, 
+int OglUBitBltToLinear (int w, int h, int dx, int dy, int sx, int sy, 
 								 grsBitmap * src, grsBitmap * dest)
 {
 	unsigned char *d, *s;
@@ -373,7 +373,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
+int OglUBitBltCopy (int w, int h, int dx, int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest)
 {
 #if 0 //just seems to cause a mess.
 	GLdouble xo, yo;//, xs, ys;

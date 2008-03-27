@@ -17,11 +17,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #include <stdlib.h>
-#include "error.h"
 
+#include "inferno.h"
+#include "error.h"
 #include "3d.h"
 #include "globvars.h"
-#include "inferno.h"
 #include "ogl_defs.h"
 #include "vecmat.h"
 #include "interp.h"

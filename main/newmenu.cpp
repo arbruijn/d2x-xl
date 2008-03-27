@@ -1085,7 +1085,7 @@ void NMTrimWhitespace (char * text)
 {
 	int i, l = (int) strlen (text);
 	for (i=l-1; i>=0; i--)	{
-		if (isspace (text [i]))
+		if (::isspace (text [i]))
 			text [i] = 0;
 		else
 			return;

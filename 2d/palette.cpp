@@ -20,6 +20,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdio.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "u_mem.h"
 #include "gr.h"
@@ -28,7 +29,6 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "mono.h"
 #include "fix.h"
-#include "inferno.h"
 #include "text.h"
 //added/remove by dph on 1/9/99
 //#include "key.h"

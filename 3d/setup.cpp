@@ -22,11 +22,10 @@ static char rcsid[] = "$Id: setup.c,v 1.5 2003/03/19 19:21:34 btb Exp $";
 
 #include <stdlib.h>
 
+#include "inferno.h"
 #include "error.h"
-
 #include "3d.h"
 #include "globvars.h"
-#include "inferno.h"
 #include "clipper.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"

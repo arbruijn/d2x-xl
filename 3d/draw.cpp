@@ -25,10 +25,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static char rcsid[] = "$Id: draw.c, v 1.4 2002/07/17 21:55:19 bradleyb Exp $";
 #endif
 
-#include "error.h"
-
-#include "3d.h"
 #include "inferno.h"
+#include "error.h"
+#include "3d.h"
 #include "globvars.h"
 #include "texmap.h"
 #include "clipper.h"
@@ -63,7 +62,7 @@ else
 //------------------------------------------------------------------------------
 //returns true if a plane is facing the viewer. takes the unrotated surface 
 //normal of the plane, and a point on it.  The normal need not be normalized
-bool G3CheckNormalFacing (vmsVector *pv, vmsVector *pnorm)
+int G3CheckNormalFacing (vmsVector *pv, vmsVector *pnorm)
 {
 vmsVector v;
 return (VmVecDot (VmVecSub (&v, &viewInfo.pos, pv), pnorm) > 0);
@@ -71,7 +70,7 @@ return (VmVecDot (VmVecSub (&v, &viewInfo.pos, pv), pnorm) > 0);
 
 //------------------------------------------------------------------------------
 
-bool DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
+int DoFacingCheck (vmsVector *norm, g3sPoint **vertlist, vmsVector *p)
 {
 if (norm) {		//have normal
 	Assert (norm->p.x || norm->p.y || norm->p.z);
@@ -112,10 +111,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 //deal with face that must be clipped
-bool MustClipFlatFace (int nv, g3sCodes cc)
+int MustClipFlatFace (int nv, g3sCodes cc)
 {
 	int i;
-        bool ret=0;
+        int ret=0;
 	g3sPoint **bufptr;
 
 	bufptr = clip_polygon (Vbuf0, Vbuf1, &nv, &cc);

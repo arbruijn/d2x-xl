@@ -24,9 +24,8 @@ static char rcsid[] = "$Id: hostage.c,v 1.3 2003/10/10 09:36:35 btb Exp $";
 #include <stdlib.h>
 #include <string.h>
 
-#include "error.h"
-
 #include "inferno.h"
+#include "error.h"
 #include "object.h"
 #include "objrender.h"
 #include "game.h"

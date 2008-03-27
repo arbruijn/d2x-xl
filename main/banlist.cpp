@@ -5,10 +5,10 @@
 #	include <conf.h>
 #endif 
 
+#include "inferno.h"
 #include "strutil.h"
 #include "u_mem.h"
 #include "cfile.h"
-#include "inferno.h"
 #include "banlist.h"
 
 //-----------------------------------------------------------------------------

@@ -858,7 +858,7 @@ if (ch == '$') {
 		return NULL;
 	do {
 		message++;
-		} while (isdigit (*message) || isspace (*message));
+		} while (::isdigit (*message) || ::isspace (*message));
 	}
 return message;
 }

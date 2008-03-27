@@ -17,10 +17,11 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 #include <stdlib.h>
+
+#include "inferno.h"
 #include "gr.h"
 #include "grdef.h"
 #include "rle.h"
-#include "inferno.h"
 
 // John's new stuff below here....
 

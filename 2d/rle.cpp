@@ -24,18 +24,15 @@ static char rcsid[] = "$Id: rle.c,v 1.17 2004/01/08 20:31:35 schaffner Exp $";
 #include <stdio.h>
 #include <string.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "u_mem.h"
 #include "mono.h"
-
-
 #include "gr.h"
 #include "grdef.h"
 #include "error.h"
-//#include "key.h"
 #include "rle.h"
 #include "byteswap.h"
-#include "inferno.h"
 
 #define RLE_CODE        0xE0
 #define NOT_RLE_CODE    31

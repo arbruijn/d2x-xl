@@ -5482,7 +5482,7 @@ extern wglGetCurrentReadDCARBPROC wglGetCurrentReadDCARB;
 
 /* helper stuff */
 
-/* I use int here because C does not know bool */
+/* I use int here because C does not know int */
 
 #if defined(_WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 

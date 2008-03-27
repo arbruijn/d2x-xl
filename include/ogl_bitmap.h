@@ -10,11 +10,11 @@
 #include "ogl_defs.h"
 #include "ogl_lib.h"
 
-bool OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grsColor *c, int scale, int orient);
-bool OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, 
+int OglUBitMapMC (int x, int y, int dw, int dh, grsBitmap *bm, grsColor *c, int scale, int orient);
+int OglUBitBltI (int dw,int dh,int dx,int dy, int sw, int sh, int sx, int sy, 
 						grsBitmap * src, grsBitmap * dest, int bMipMaps, int bTransp, float fAlpha);
-bool OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
-bool OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+int OglUBitBltToLinear (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
+int OglUBitBltCopy (int w,int h,int dx,int dy, int sx, int sy, grsBitmap * src, grsBitmap * dest);
 
 //------------------------------------------------------------------------------
 

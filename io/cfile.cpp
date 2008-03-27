@@ -25,6 +25,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	include <sys/stat.h>
 #endif
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "u_mem.h"
 #include "strutil.h"
@@ -32,7 +33,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "cfile.h"
 #include "byteswap.h"
-#include "inferno.h"
 #include "mission.h"
 #include "console.h"
 #include "findfile.h"
@@ -1015,7 +1015,7 @@ time_t CFDate (char *filename, char *folder, int bUseD1Hog)
 //	sprintf (fn, "%s/%s", folder, hogname);
 if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 	return -1;
-fstat (fileno (cf.file), &statbuf);
+fstat (_fileno (cf.file), &statbuf);
 CFClose (&cf);
 return statbuf.st_mtime;
 }

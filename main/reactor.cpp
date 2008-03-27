@@ -27,11 +27,12 @@ static char rcsid[] = "$Id: cntrlcen.c,v 1.14 2003/11/26 12:26:29 btb Exp $";
 #include <unistd.h>
 #endif
 
+#include "inferno.h"
+
 #include "pstypes.h"
 #include "error.h"
 #include "mono.h"
 
-#include "inferno.h"
 #include "reactor.h"
 #include "game.h"
 #include "laser.h"

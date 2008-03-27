@@ -20,13 +20,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "inferno.h"
 #include "u_mem.h"
 #include "gr.h"
 #include "grdef.h"
 #include "u_dpmi.h"
 #include "error.h"
-#include "inferno.h"
-
 #include "ogl_defs.h"
 
 //------------------------------------------------------------------------------

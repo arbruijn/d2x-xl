@@ -23,11 +23,10 @@ static char rcsid [] = "$Id: physics.c, v 1.4 2003/10/10 09:36:35 btb Exp $";
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "inferno.h"
 #include "joy.h"
 #include "mono.h"
 #include "error.h"
-
-#include "inferno.h"
 #include "segment.h"
 #include "object.h"
 #include "physics.h"

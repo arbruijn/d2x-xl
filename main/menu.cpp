@@ -307,36 +307,6 @@ void IpxSetDriver (int ipx_driver);
 //returns the number of demo files on the disk
 int NDCountDemos ();
 
-//------------------------------------------------------------------------------
-
-dmi displayModeInfo [NUM_DISPLAY_MODES + 1] = {
-	{SM ( 320,  200),  320,  200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 640,  400),  640,  400, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 640,  480),  640,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM ( 800,  600),  800,  600, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (1024,  768), 1024,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (1152,  864), 1152,  864, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (1280,  960), 1280,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (1280, 1024), 1280, 1024, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (1600, 1200), 1600, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	{SM (2048, 1536), 2048, 1536, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	//test>>>
-	{SM (4096, 3072), 4096, 3072, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0}, 
-	//<<<test
-	{SM ( 720,  480),  720,  480, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1280,  768), 1280,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1280,  800), 1280,  800, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1280,  854), 1280,  854, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1360,  768), 1360,  768, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1400, 1050), 1400, 1050, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1440,  900), 1440,  900, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1440,  960), 1440,  960, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1680, 1050), 1680, 1050, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0}, 
-	{SM (1920, 1200), 1920, 1200, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 1, 0},
-	//placeholder for custom resolutions
-	{              0,    0,    0, VR_NONE, VRF_COMPATIBLE_MENUS+VRF_ALLOW_COCKPIT, 0, 0} 
-	};
-
 // ------------------------------------------------------------------------
 
 void AutoDemoMenuCheck (int nitems, tMenuItem * items, int *nLastKey, int citem)
@@ -1278,64 +1248,6 @@ do {
 		} while (i >= 0);
 	} while (i == -2);
 UseDefaultPerformanceSettings ();
-}
-
-//------------------------------------------------------------------------------
-
-int SetCustomDisplayMode (int w, int h)
-{
-displayModeInfo [NUM_DISPLAY_MODES].VGA_mode = SM (w, h);
-displayModeInfo [NUM_DISPLAY_MODES].w = w;
-displayModeInfo [NUM_DISPLAY_MODES].h = h;
-if (!(displayModeInfo [NUM_DISPLAY_MODES].isAvailable = 
-	   GrVideoModeOK (displayModeInfo [NUM_DISPLAY_MODES].VGA_mode)))
-	return 0;
-SetDisplayMode (NUM_DISPLAY_MODES, 0);
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int GetDisplayMode (int mode)
-{
-	int h, i;
-
-for (i = 0, h = NUM_DISPLAY_MODES; i < h; i++)
-	if (mode == displayModeInfo [i].VGA_mode)
-		return i;
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
-#if VR_NONE
-#   undef VR_NONE			//undef if != 0
-#endif
-#ifndef VR_NONE
-#   define VR_NONE 0		//make sure VR_NONE is defined and 0 here
-#endif
-
-void SetDisplayMode (int mode, int bOverride)
-{
-	dmi *dmi;
-
-if ((gameStates.video.nDisplayMode == -1) || (gameStates.render.vr.nRenderMode != VR_NONE))	//special VR mode
-	return;								//...don't change
-if (bOverride && gameStates.gfx.bOverride)
-	mode = gameStates.gfx.nStartScrSize;
-else
-	gameStates.gfx.bOverride = 0;
-if (!gameStates.menus.bHiresAvailable && (mode != 1))
-	mode = 0;
-if (!GrVideoModeOK (displayModeInfo [mode].VGA_mode))		//can't do mode
-	mode = 0;
-gameStates.video.nDisplayMode = mode;
-dmi = displayModeInfo + mode;
-if (gameStates.video.nDisplayMode != -1) {
-	GameInitRenderBuffers (dmi->VGA_mode, dmi->w, dmi->h, dmi->render_method, dmi->flags);
-	gameStates.video.nDefaultDisplayMode = gameStates.video.nDisplayMode;
-	}
-gameStates.video.nScreenMode = -1;		//force screen reset
 }
 
 //------------------------------------------------------------------------------

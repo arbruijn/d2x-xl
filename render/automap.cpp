@@ -222,7 +222,7 @@ gsrCanvas *levelNumCanv, *levelNameCanv;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
+int G3DrawSphere3D (g3sPoint *p0, int nSides, int rad)
 {
 	grsColor	c = grdCurCanv->cvColor;
 	g3sPoint	p = *p0;
@@ -251,7 +251,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-bool G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
+int G3DrawCircle3D (g3sPoint *p0, int nSides, int rad)
 {
 	g3sPoint		p = *p0;
 	int			i, j;
