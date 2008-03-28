@@ -22,8 +22,7 @@ static SDL_Surface *g_screen;
 #ifdef LANDSCAPE
 static SDL_Surface *real_screen;
 #endif
-static unsigned char g_palette[7
-];
+static unsigned char g_palette[768];
 static int g_truecolor;
 
 static int doPlay(const char *filename);
@@ -220,8 +219,7 @@ static int doPlay(const char *filename)
 		return 1;
 	}
 
-	memset(g_palette, 0, 7
-);
+	memset(g_palette, 0, 768);
 
 	MVE_sndInit(1);
 	MVE_memCallbacks(D2_ALLOC, D2_FREE);

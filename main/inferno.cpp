@@ -3322,6 +3322,7 @@ if (!InitGraphics ())
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {
+	ShowBoxedMessage (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
 		InitializePoll (0, NULL, NULL, 0);
 	}
@@ -3442,8 +3443,7 @@ void ShowOrderForm ()
 {
 #ifndef EDITOR
 	int 	pcx_error;
-	ubyte titlePal [7
-];
+	ubyte titlePal [768];
 	char	exit_screen[16];
 
 	GrSetCurrentCanvas (NULL);

@@ -20,8 +20,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <stdlib.h>
 #include <string.h>
 
-#include "pstypes.h"
 #include "inferno.h"
+#include "pstypes.h"
 #include "strutil.h"
 #include "text.h"
 #include "gr.h"

@@ -2727,8 +2727,7 @@ CFRead (szDesc, sizeof (char) * DESC_LENGTH, 1, &cf);
 // Skip the current screen shot...
 CFSeek (&cf, (sgVersion < 26) ? THUMBNAIL_W * THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
 // And now...skip the goddamn palette stuff that somebody forgot to add
-CFSeek (&cf, 7
-, SEEK_CUR);
+CFSeek (&cf, 768, SEEK_CUR);
 if (sgVersion < 27)
 	i = StateRestoreBinGameData (&cf, sgVersion, bMulti, bSecretRestore, xOldGameTime, &nLevel);
 else
@@ -2818,8 +2817,7 @@ CFRead (szDesc, sizeof (char)*DESC_LENGTH, 1, &cf);
 // Skip the current screen shot...
 CFSeek (&cf, (sgVersion < 26) ? THUMBNAIL_W * THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
 // And now...skip the palette stuff that somebody forgot to add
-CFSeek (&cf, 7
-, SEEK_CUR);
+CFSeek (&cf, 768, SEEK_CUR);
 // Read the Between levels flag...
 CFRead (&bBetweenLevels, sizeof (int), 1, &cf);
 Assert (bBetweenLevels == 0);	//between levels save ripped out

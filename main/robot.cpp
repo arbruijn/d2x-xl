@@ -31,8 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	-----------------------------------------------------------------------------------------------------------
 //Big array of joint positions.  All robots index into this array
 
-#define deg(a) ((int) (a) * 327
- / 180)
+#define deg(a) ((int) (a) * 32768 / 180)
 
 //test data for one robot
 tJointPos test_joints [MAX_ROBOT_JOINTS] = {

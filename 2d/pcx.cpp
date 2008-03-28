@@ -115,8 +115,7 @@ int PCXReadBitmap (char * filename, grsBitmap * bmP, int bitmapType, int bD1Miss
 	CFILE cfPCX;
 	int i, row, col, count, xsize, ysize;
 	ubyte data, *pixdata;
-    ubyte palette [7
-];
+    ubyte palette [768];
 
 if (!CFOpen(&cfPCX, filename, gameFolders.szDataDir, "rb", bD1Mission))
 	return PCX_ERROR_OPENING;
@@ -139,12 +138,10 @@ ysize = header.Ymax - header.Ymin + 1;
 
 	if (palette && !bmP)
     {
-        CFSeek( &cfPCX, -7
-, SEEK_END );
+        CFSeek( &cfPCX, -768, SEEK_END );
         CFRead( palette, 3, 256, &cfPCX );
         CFSeek( &cfPCX, PCXHEADER_SIZE, SEEK_SET );
-        for (i=0; i<7
-; i++ )
+        for (i=0; i<768; i++ )
             palette [i] >>= 2;
 		CFClose(&cfPCX);
 		return PCX_ERROR_NONE;
@@ -207,13 +204,11 @@ ysize = header.Ymax - header.Ymin + 1;
 // Read in a character which should be 12 to be extended palette file
 if (CFRead( &data, 1, 1, &cfPCX )==1)	{
 	if ( data == 12 )	{
-		if (CFRead(palette,7
-, 1, &cfPCX)!=1)	{
+		if (CFRead(palette,768, 1, &cfPCX)!=1)	{
 			CFClose( &cfPCX );
 			return PCX_ERROR_READING;
 			}
-		for (i=0; i<7
-; i++ )
+		for (i=0; i<768; i++ )
 			palette[i] >>= 2;
 		}
 	}
@@ -273,15 +268,12 @@ int pcx_write_bitmap( char * filename, grsBitmap * bmP)
 	}
 
 	// Write the extended palette
-	for (i=0; i<7
-; i++ )
+	for (i=0; i<768; i++ )
 		palette[i] = bmP->bmPalette [i] << 2;
 
-	retval = CFWrite(palette, 7
-, 1, &cfPCX);
+	retval = CFWrite(palette, 768, 1, &cfPCX);
 
-	for (i=0; i<7
-; i++ )
+	for (i=0; i<768; i++ )
 		palette[i] >>= 2;
 
 	if (retval !=1)	{

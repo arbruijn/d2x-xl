@@ -13,7 +13,7 @@ using namespace gui;
 using namespace video;
 using namespace core;
 
-#pragma comment(lib, "..\..\irrlicht-1.4\lib\Irrlicht.lib")
+//#pragma comment(lib, "..\..\irrlicht-1.4\lib\Irrlicht.lib")
 
 typedef struct tIrrData {
 	IrrlichtDevice		*deviceP;

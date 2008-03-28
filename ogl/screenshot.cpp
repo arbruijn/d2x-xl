@@ -118,6 +118,10 @@ else {
 
 //------------------------------------------------------------------------------
 
+#ifdef _WIN32
+#  define   access   _access
+#endif
+
 extern int bSaveScreenShot;
 extern char *pszSystemNames [];
 
@@ -159,7 +163,7 @@ i = (int) strlen (szSaveName);
 do {
 	sprintf (szSaveName + i, "/%s%04d.tga", szLevelName, nSaveNum++);
 	nSaveNum %= 9999;
-	} while (!_access (szSaveName, 0));
+	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
 	buf = (unsigned char *) D2_ALLOC (grdCurScreen->scWidth * grdCurScreen->scHeight * 3);

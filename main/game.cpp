@@ -1640,8 +1640,7 @@ int __Movie_frame_num=0;
 
 ubyte *Movie_frame_buffer;
 int nMovieFrames;
-ubyte Movie_pal[7
-];
+ubyte Movie_pal[768];
 char movie_path[50] = ".\\";
 
 grsBitmap bmMovie;

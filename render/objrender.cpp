@@ -737,7 +737,7 @@ else {
 				if (objP->cType.aiInfo.behavior == AIB_SNIPE)
 					xLight = 2 * xLight + F1_0;
 				}
-			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
+				bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
 			bBrightPolys = bBlendPolys && WI_energy_usage (id);
 			if (bEnergyWeapon) {
 				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
@@ -745,8 +745,10 @@ else {
 					OglBlendFunc (GL_ONE, GL_ONE);
 				}
 			if (bBlendPolys) {
+#if 0
 				fix xDistToEye = VmVecDistQuick (&gameData.objs.viewer->position.vPos, &objP->position.vPos);
-				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0*2)
+				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * F1_0 * 2)
+#endif
 					bOk = DrawPolygonModel (
 						objP, &objP->position.vPos, &objP->position.mOrient, 
 						(vmsAngVec *) &objP->rType.polyObjInfo.animAngles, 
@@ -798,6 +800,7 @@ int RenderObject (tObject *objP, int nWindowNum, int bForce)
 {
 	short			nObject = OBJ_IDX (objP);
 	int			mldSave, bSpectate = 0, bDepthSort = gameOpts->render.nPath || (gameOpts->render.bDepthSort > 0);
+	int			bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	tPosition	savePos;
 #if 0
 	float			fLight [3];
@@ -821,6 +824,8 @@ if (objP->nType == 255) {
 	KillObject (objP);
 	return 0;
 	}
+if (bEmissive && gameStates.render.bQueryCoronas)
+	return 0;
 if ((objP == gameData.objs.guidedMissile [gameData.multiplayer.nLocalPlayer]) && 
 	 (objP->nSignature == gameData.objs.guidedMissileSig [gameData.multiplayer.nLocalPlayer]) &&
 	 (gameStates.render.nShadowPass != 2)) {
@@ -906,9 +911,11 @@ switch (objP->renderType) {
 			DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
 			gameOpts->ogl.bLightObjects = bDynObjLight;
-			RenderThrusterFlames (objP);
-			RenderPlayerShield (objP);
-			RenderTargetIndicator (objP, NULL);
+			if (!gameStates.render.bQueryCoronas) {
+				RenderThrusterFlames (objP);
+				RenderPlayerShield (objP);
+				RenderTargetIndicator (objP, NULL);
+				}
 			RenderTowedFlag (objP);
 			if (bSpectate)
 				objP->position = savePos;
@@ -920,11 +927,13 @@ switch (objP->renderType) {
 				return 0;
 			DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
-			RenderThrusterFlames (objP);
-			if (gameStates.render.nShadowPass != 2) {
-				RenderRobotShield (objP);
-				RenderTargetIndicator (objP, NULL);
-				SetRobotLocationInfo (objP);
+			if (!gameStates.render.bQueryCoronas) {
+				RenderThrusterFlames (objP);
+				if (gameStates.render.nShadowPass != 2) {
+					RenderRobotShield (objP);
+					RenderTargetIndicator (objP, NULL);
+					SetRobotLocationInfo (objP);
+					}
 				}
 			}
 		else if (objP->nType == OBJ_WEAPON) {
@@ -967,7 +976,7 @@ switch (objP->renderType) {
 #endif
 					if (objP->nType != OBJ_WEAPON)
 						DrawPolygonObject (objP, bDepthSort, 0);
-					if (objP->id != SMALLMINE_ID)
+					if ((objP->id != SMALLMINE_ID) && !gameStates.render.bQueryCoronas)
 						RenderLightTrail (objP);
 					if (objP->nType == OBJ_WEAPON) {
 						DoObjectSmoke (objP);
@@ -981,7 +990,8 @@ switch (objP->renderType) {
 				return 0;
 			DoObjectSmoke (objP);
 			DrawPolygonObject (objP, bDepthSort, 0);
-			RenderTargetIndicator (objP, NULL);
+			if (!gameStates.render.bQueryCoronas)
+				RenderTargetIndicator (objP, NULL);
 			}
 		else if (objP->nType == OBJ_POWERUP) {
 			if (gameStates.render.automap.bDisplay && !AM_SHOW_POWERUPS (1))
@@ -1035,13 +1045,13 @@ switch (objP->renderType) {
 		break;
 
 	case RT_THRUSTER: 
-		if (gameStates.render.nType != 1)
+		if (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1))
 			return 0;
 		if (nWindowNum && (objP->mType.physInfo.flags & PF_WIGGLE))
 			break;
 		
 	case RT_FIREBALL: 
-		if (!bForce && (gameStates.render.nType != 1))
+		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			DrawFireball (objP); 
@@ -1052,14 +1062,14 @@ switch (objP->renderType) {
 		break;
 
 	case RT_EXPLBLAST: 
-		if (!bForce && (gameStates.render.nType != 1))
+		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
 			DrawExplBlast (objP); 
 		break;
 
 	case RT_SHRAPNELS: 
-		if (!bForce && (gameStates.render.nType != 1))
+		if (!bForce && (gameStates.render.bQueryCoronas || (gameStates.render.nType != 1)))
 			return 0;
 		if (gameStates.render.nShadowPass != 2)
 			DrawShrapnels (objP); 
@@ -1116,7 +1126,7 @@ switch (objP->renderType) {
 		break;
 
 	case RT_LASER: 
-		if (gameStates.render.nType != 1)
+		if (gameStates.render.bQueryCoronas && (gameStates.render.nType != 1))
 			return 0;
 		if (gameStates.render.nShadowPass != 2) {
 			RenderLaser (objP); 

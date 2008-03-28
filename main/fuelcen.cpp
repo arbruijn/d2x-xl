@@ -514,8 +514,7 @@ if (!nTypes)
 	return -1;
 if (nTypes == 1)
 	return objTypes [0];
-return objTypes [(d_rand () * nTypes) / 327
-];
+return objTypes [(d_rand () * nTypes) / 32768];
 }
 
 //	----------------------------------------------------------------------------------------------------------

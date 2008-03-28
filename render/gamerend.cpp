@@ -1284,7 +1284,7 @@ void ShowBoxedMessage (char *msg)
 	int x, y;
 	//ubyte save_pal [256*3];
 
-//memcpy (save_pal, grPalette, sizeof (save_pal));
+	//memcpy (save_pal, grPalette, sizeof (save_pal));
 if (bg.bmp) {
 	GrFreeBitmap (bg.bmp);
 	bg.bmp = NULL;
@@ -1292,8 +1292,8 @@ if (bg.bmp) {
 GrSetCurrentCanvas (&gameStates.render.vr.buffers.screenPages [gameStates.render.vr.nCurrentPage]);
 GrSetCurFont (MEDIUM1_FONT);
 GrGetStringSize (msg, &w, &h, &aw);
-x = (grdCurScreen->scWidth - w) / 2;
-y = (grdCurScreen->scHeight - h) / 2;
+x = (grdCurScreen->scWidth-w)/2;
+y = (grdCurScreen->scHeight-h)/2;
 // Save the background of the display
 bg.x = x; 
 bg.y = y; 
@@ -1306,7 +1306,6 @@ if (!gameOpts->menus.nStyle) {
 NMDrawBackground (&bg, x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1, 0);
 GrSetFontColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 GrSetCurFont (MEDIUM1_FONT);
-//GrUString (0x8000, y, msg);
 GrPrintF (NULL, 0x8000, y, msg);
 GrUpdate (0);
 NMRemoveBackground (&bg);

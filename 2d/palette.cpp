@@ -251,12 +251,10 @@ ubyte *FindPalette (ubyte *palette)
 for (plP = gameData.render.pal.palettes; plP; plP = plP->pNextPal)
 #ifdef _DEBUG
 	{
-	for (i = 0; i < 7
-; i++)
+	for (i = 0; i < 768; i++)
 		if (palette [i] != plP->palette [i])
 			break;
-	if (i == 7
-)
+	if (i == 768)
 		return gameData.render.pal.pCurPal = plP->palette;
 	}
 #else

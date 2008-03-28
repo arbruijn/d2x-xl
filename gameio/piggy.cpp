@@ -89,8 +89,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 #define MAC_ALIEN1_PIGSIZE      5013035
 #define MAC_ALIEN2_PIGSIZE      4909916
 #define MAC_FIRE_PIGSIZE        4969035
-#define MAC_GROUPA_PIGSIZE      4929
-4 // also used for mac shareware
+#define MAC_GROUPA_PIGSIZE      4929684 // also used for mac shareware
 #define MAC_ICE_PIGSIZE         4923425
 #define MAC_WATER_PIGSIZE       4832403
 
@@ -106,8 +105,7 @@ char *szAddonTextures [MAX_ADDON_BITMAP_FILES] = {
 static short d2OpaqueDoors [] = {
 	440, 451, 463, 477, /*483,*/ 488, 
 	500, 508, 523, 550, 556, 564, 572, 579, 585, 593, 536, 
-	600, 608, 615, 628, 635, 642, 649, 664, /*672,*/ 
-7, 
+	600, 608, 615, 628, 635, 642, 649, 664, /*672,*/ 687, 
 	702, 717, 725, 731, 738, 745, 754, 763, 772, 780, 790,
 	806, 817, 827, 838, 849, /*858,*/ 863, 871, 886,
 	901,
@@ -863,8 +861,7 @@ void piggy_new_pigfile (char *pigname)
 				int fnum;
 				grsBitmap * bm [MAX_BITMAPS_PER_BRUSH];
 				int iff_error;          //reference parm to avoid warning message
-				ubyte newpal [7
-];
+				ubyte newpal [768];
 				char basename [SHORT_FILENAME_LEN];
 				int nframes;
 				strcpy (basename, gameData.pig.tex.bitmapFiles [0][i].name);

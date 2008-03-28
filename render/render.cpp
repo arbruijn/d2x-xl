@@ -2153,11 +2153,9 @@ void CheckFace(int nSegment, int nSide, int facenum, int nVertices, short *vp, i
 		}
 	}
 }
-#endif
 
 //------------------------------------------------------------------------------
 
-#ifdef EDITOR
 void RenderObjectSearch(tObject *objP)
 {
 	int changed=0;

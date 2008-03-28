@@ -23,8 +23,7 @@ tReplacementModel replacementModels [] = {
 	{"thresherboss", NULL, 39, 1, 0, -1}, 
 	{"orbot", NULL, 58, 1, 0, -1}, 
 	{"thresh", NULL, 60, 1, 0, -1}, 
-	{"squid", NULL, 
-, 1, 0, -1}, 
+	{"squid", NULL, 68, 1, 0, -1}, 
 */
 	{"pumpingpipesmall", NULL, 56, 1, 0, -1}, 
 #endif
@@ -70,8 +69,7 @@ tReplacementModel replacementModels [] = {
 	{"redhornet", NULL, 64, 1, 0, -1}, 
 	{"thief", NULL, 65, 1, 0, -1}, 
 	{"seeker", NULL, 67, 1, 0, -1}, 
-	{"e-bandit", NULL, 
-, 1, 0, -1}, 
+	{"e-bandit", NULL, 68, 1, 0, -1}, 
 	{"fireboss", NULL, 69, 1, 0, -1}, 
 	{"waterboss", NULL, 70, 1, 0, -1}, 
 	{"boarshead", NULL, 71, 1, 0, -1}, 
@@ -96,8 +94,7 @@ tReplacementModel replacementModels [] = {
 	// Vertigo robots
 	{"compactlifter", NULL, 166, 1, 0, -1}, 
 	{"fervid99", NULL, 167, 1, 0, -1}, 
-	{"fiddler", NULL, 1
-, 1, 0, -1}, 
+	{"fiddler", NULL, 168, 1, 0, -1}, 
 	{"class2heavydriller", NULL, 169, 1, 0, -1}, 
 	{"smelter2", NULL, 170, 1, 0, -1}, 
 	{"max", NULL, 171, 1, 0, -1}, 

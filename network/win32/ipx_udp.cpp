@@ -42,8 +42,7 @@
  * ./d1x -udp [@SHIFT]+HOST_LIST   Broadcast both to local ifaces & to HOST_LIST
  *
  * HOST_LIST is a comma (',') separated list of HOSTs:
- * HOST is an IPv4 address (so-called quad like 192.1
-.1.2) or regular hostname
+ * HOST is an IPv4 address (so-called quad like 192.168.1.2) or regular hostname
  * HOST can also be in form 'address:SHIFT'
  * SHIFT sets the UDP port base offset (e.g. +2), can be used to run multiple
  *       clients on one host simultaneously. This SHIFT has nothing to do
@@ -58,12 +57,9 @@
  * ./d1x -udp @1=localhost:2 & ./d1x -udp @2=localhost:1
  *  - Run two clients simultaneously fighting each other (only each other)
  *
- * ./d1x -udp =192.1
-.4.255
+ * ./d1x -udp =192.168.4.255
  *  - Run distant Descent which will participate with remote network
- *    192.1
-.4.0 with netmask 255.255.255.0 (broadcast has 192.1
-.4.255)
+ *    192.168.4.0 with netmask 255.255.255.0 (broadcast has 192.168.4.255)
  *  - You'll have to also setup hosts in that network accordingly:
  * ./d1x -udp +UPPER_DISTANT_MACHINE_NAME
  *
@@ -404,8 +400,7 @@ destListSize = 0;
 // This function is called during init and has to grab all system interfaces
 // and collect their broadcast-destination addresses (and their netmasks).
 // Typically it founds only one ethernet card and so returns address in
-// the style "192.1
-.1.255" with netmask "255.255.255.0".
+// the style "192.168.1.255" with netmask "255.255.255.0".
 // Broadcast addresses are filled into "destList", netmasks to "broadmasks".
 
 /* Stolen from my GGN */

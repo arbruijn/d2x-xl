@@ -565,7 +565,7 @@ if (objP->mType.physInfo.drag) {
 
 //moveIt:
 
-if (!gameStates.app.bNostalgia && extraGameInfo [IsMultiGame].bFluidPhysics) {
+if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_WATER)
 		xTimeScale = 75;
 	else if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_LAVA)

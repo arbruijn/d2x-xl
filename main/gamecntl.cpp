@@ -1623,18 +1623,15 @@ void HandleTestKey(int key)
 			break;
 	case KEY_Q + KEY_SHIFTED + KEYDBGGED:
 		{
-			char pal_save[7
-];
-			memcpy(pal_save, grPalette, 7
-);
+			char pal_save[768];
+			memcpy(pal_save, grPalette, 768);
 			InitSubTitles("end.tex");	//ingore errors
 			PlayMovie ("end.mve", MOVIE_ABORT_ON, 0, gameOpts->movies.bResize);
 			CloseSubTitles();
 			gameStates.video.nScreenMode = -1;
 			SetScreenMode(SCREEN_GAME);
 			ResetCockpit();
-			memcpy(grPalette, pal_save, 7
-);
+			memcpy(grPalette, pal_save, 768);
 			GrPaletteStepLoad (NULL);
 			break;
 		}
@@ -1763,8 +1760,7 @@ void HandleTestKey(int key)
 			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 62259); 
 			break;
 		case KEYDBGGED+KEY_PERIOD: 
-			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 
-985); 
+			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 68985); 
 			break;
 
 		case KEYDBGGED+KEY_P+KEY_SHIFTED: 

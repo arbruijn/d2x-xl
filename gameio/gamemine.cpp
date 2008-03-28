@@ -158,8 +158,7 @@ int d1_tmap_num_unique (short nD1Texture)
 		 50,  55,  57,  88, 
 		132, 141, 147, 
 		154, 155, 158, 159, 
-		160, 161, 167, 1
-, 169, 
+		160, 161, 167, 168, 169, 
 		170, 171, 174, 175, 185, 
 		193, 194, 195, 198, 199, 
 		200, 202, 210, 211, 
@@ -262,9 +261,7 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 		{161, 161, {114, 152}}, 
 		{162, 166, {-1, 202 - 162}}, 
 		{167, 167, {206, 153}}, 
-		{1
-, 1
-, {206, 154}}, 
+		{168, 168, {206, 154}}, 
 		{169, 169, {206, 155}}, 
 		{170, 170, {227, 156}}, 
 		{171, 171, {206, 157}}, 
@@ -279,8 +276,7 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 		{195, 195, {234, 166}}, 
 		{196, 197, {-1, 225 - 196}}, 
 		{198, 198, {225, 167}}, 
-		{199, 199, {206, 1
-}}, 
+		{199, 199, {206, 168}}, 
 		{200, 200, {206, 169}}, 
 		{201, 201, {227, 227}}, 
 		{202, 202, {206, 170}}, 
@@ -376,8 +372,7 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 			}
 		// d1 shareware needs special treatment:
 		if (nD1Texture < 410) 
-			return nD1Texture + 
-;
+			return nD1Texture + 68;
 		if (nD1Texture < 417) 
 			return nD1Texture + 73;
 		if (nD1Texture < 446) 

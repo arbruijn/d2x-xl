@@ -70,11 +70,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GFONT_MEDIUM_3  6
 #define GFONT_SMALL     8
 
-#define SMALL_FONT      (Gamefonts [GFONT_SMALL + gameStates.render.fonts.bHires])
-#define MEDIUM1_FONT    (Gamefonts [GFONT_MEDIUM_1 + gameStates.render.fonts.bHires])
-#define MEDIUM2_FONT    (Gamefonts [GFONT_MEDIUM_2 + gameStates.render.fonts.bHires])
-#define MEDIUM3_FONT    (Gamefonts [GFONT_MEDIUM_3 + gameStates.render.fonts.bHires])
-#define HUGE_FONT       (Gamefonts [GFONT_BIG_1 + gameStates.render.fonts.bHires])
+#define SMALL_FONT      (Gamefonts[GFONT_SMALL + gameStates.render.fonts.bHires])
+#define MEDIUM1_FONT    (Gamefonts[GFONT_MEDIUM_1 + gameStates.render.fonts.bHires])
+#define MEDIUM2_FONT    (Gamefonts[GFONT_MEDIUM_2 + gameStates.render.fonts.bHires])
+#define MEDIUM3_FONT    (Gamefonts[GFONT_MEDIUM_3 + gameStates.render.fonts.bHires])
+#define HUGE_FONT       (Gamefonts[GFONT_BIG_1 + gameStates.render.fonts.bHires])
 
 #define GAME_FONT       SMALL_FONT
 

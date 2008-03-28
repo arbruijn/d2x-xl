@@ -426,10 +426,10 @@ void G3DrawSubModel (tObject *objP, short nModel, short nSubModel, short nExclus
 						bGetThruster = !nPass && ObjectHasThruster (objP);
 	short				nId, nFaceVerts, nVerts, nIndex, nBitmap = -1, nTeamColor;
 
-if ((objP->nType == OBJ_PLAYER) && IsMultiGame)
-	nTeamColor = (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1;
+if (objP->nType == OBJ_PLAYER)
+	nTeamColor = IsMultiGame ? (IsTeamGame ? GetTeam (objP->id) : objP->id) + 1 : gameOpts->render.ship.nColor;
 else
-	nTeamColor = gameOpts->render.ship.nColor;
+	nTeamColor = 0;
 #if 1
 if (psm->bThruster) {
 	if (!nPass)
@@ -747,13 +747,14 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 						 vmsAngVec *pAnimAngles, vmsVector *vOffset, fix xModelLight, fix *xGlowValues, tRgbaColorf *pObjColor)
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
-	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting;
+	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting,
+				bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 	int		nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)
 	return 0;
-if (gameStates.render.bQueryCoronas && gameStates.render.bCloaked)
-	return 0;
+if (gameStates.render.bQueryCoronas && (bEmissive || gameStates.render.bCloaked))
+	return 1;
 #if G3_FAST_MODELS
 if (!gameOpts->render.nPath)
 #endif

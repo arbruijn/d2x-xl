@@ -74,8 +74,7 @@ static char rcsid [] = "$Id: polyobj.c, v 1.16 2003/10/10 09:36:35 btb Exp $";
 #define ID_IDTA 0x41544449 // 'ATDI'  //Interpreter data
 #define ID_TXTR 0x52545854 // 'RTXT'  //Texture filename list
 
-#define	MODEL_BUF_SIZE	327
-
+#define	MODEL_BUF_SIZE	32768
 
 #define TEMP_CANV	0
 

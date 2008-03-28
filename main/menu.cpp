@@ -4849,8 +4849,7 @@ if (gameOpts->sound.bGatling != m [soundOpts.nGatling].value) {
 	}
 if (gameConfig.nDigiVolume != m [soundOpts.nDigiVol].value) {
 	gameConfig.nDigiVolume = m [soundOpts.nDigiVol].value;
-	DigiSetFxVolume ((gameConfig.nDigiVolume*327
-)/8);
+	DigiSetFxVolume ((gameConfig.nDigiVolume*32768)/8);
 	DigiPlaySampleOnce (SOUND_DROP_BOMB, F1_0);
 	}
 if ((soundOpts.nChannels >= 0) && (gameStates.sound.nSoundChannels != m [soundOpts.nChannels].value)) {
