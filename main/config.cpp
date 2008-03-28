@@ -259,7 +259,8 @@ int ReadConfigFile()
 	if ( gameConfig.nMidiVolume > 8 ) gameConfig.nMidiVolume = 8;
 	if ( gameConfig.nRedbookVolume > 8 ) gameConfig.nRedbookVolume = 8;
 
-	DigiMidiVolume( (gameConfig.nDigiVolume*32768)/8, (gameConfig.nMidiVolume*128)/8 );
+	DigiMidiVolume( (gameConfig.nDigiVolume*327
+)/8, (gameConfig.nMidiVolume*128)/8 );
 /*
 	//printf( "DigiDeviceID: 0x%x\n", digi_driver_board );
 	//printf( "DigiPort: 0x%x\n", digi_driver_port		);

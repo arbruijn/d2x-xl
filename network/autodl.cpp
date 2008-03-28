@@ -42,7 +42,8 @@ int iDlTimeout = 5;
 int iDlTimeout = 4;
 #endif
 
-#define PID_DL_START		68
+#define PID_DL_START		
+
 #define PID_DL_OPEN		69
 #define PID_DL_DATA     70
 #define PID_DL_CLOSE		71

@@ -565,7 +565,7 @@ if (objP->mType.physInfo.drag) {
 
 //moveIt:
 
-if (extraGameInfo [IsMultiGame].bFluidPhysics) {
+if (!gameStates.app.bNostalgia && extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_WATER)
 		xTimeScale = 75;
 	else if (gameData.segs.segment2s [objP->nSegment].special == SEGMENT_IS_LAVA)
@@ -578,7 +578,8 @@ else
 nTries = 0;
 do {
 	//Move the tObject
-	float fScale = (IS_MISSILE (objP) && (objP->id != EARTHSHAKER_MEGA_ID) && (objP->id != ROBOT_SHAKER_MEGA_ID)) ? MissileSpeedScale (objP) : 1;
+	float fScale = !gameStates.app.bNostalgia && (IS_MISSILE (objP) && (objP->id != EARTHSHAKER_MEGA_ID) && (objP->id != ROBOT_SHAKER_MEGA_ID)) ? 
+						MissileSpeedScale (objP) : 1;
 	bRetry = 0;
 	if (fScale < 1) {
 		VmVecSub (&vFrame, &objP->mType.physInfo.velocity, gameData.objs.vStartVel + nObject);

@@ -264,7 +264,8 @@ void ab_load( char * filename, tBitmapIndex bmp[], int *nframes )
 	tBitmapIndex bi;
 	int i;
 	int iff_error;		//reference parm to avoid warning message
-	ubyte newpal[768];
+	ubyte newpal[7
+];
 	char fname[20];
 	char tempname[20];
 

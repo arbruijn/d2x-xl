@@ -693,7 +693,8 @@ int AISLockHandler1 (tObject *objP, tAIStateInfo *siP)
 {
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
 if (!siP->bMultiGame || (gameData.ai.nPlayerVisibility)) {
-	if (!AIMultiplayerAwareness (objP, 68))
+	if (!AIMultiplayerAwareness (objP, 
+))
 		return 1;
 	if (gameData.ai.nPlayerVisibility == 2) {   // @mk, 09/21/95, require that they be looking towards you to turn towards you.
 		AITurnTowardsVector (&gameData.ai.vVecToPlayer, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);

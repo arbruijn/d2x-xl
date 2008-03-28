@@ -3234,12 +3234,15 @@ switch (loadOp) {
 		TIRLoad ();
 		break;
 	}
-if (++loadOp == InitGaugeSize ())
-	*key = -2;
-else {
-	m [0].value++;
-	m [0].rebuild = 1;
-	*key = 0;
+loadOp++;
+if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+	if (loadOp == InitGaugeSize ())
+		*key = -2;
+	else {
+		m [0].value++;
+		m [0].rebuild = 1;
+		*key = 0;
+		}
 	}
 GrPaletteStepLoad (NULL);
 }
@@ -3439,7 +3442,8 @@ void ShowOrderForm ()
 {
 #ifndef EDITOR
 	int 	pcx_error;
-	ubyte titlePal [768];
+	ubyte titlePal [7
+];
 	char	exit_screen[16];
 
 	GrSetCurrentCanvas (NULL);

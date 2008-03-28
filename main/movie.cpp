@@ -221,7 +221,8 @@ bmFrame.bmPalette = movies.palette;
 
 TRANSPARENCY_COLOR = -1;
 if (gameOpts->menus.nStyle) {
-	//memset (grPalette, 0, 768);
+	//memset (grPalette, 0, 7
+);
 	//GrPaletteStepLoad (NULL);
 	}
 if (gameOpts->movies.bFullScreen) {

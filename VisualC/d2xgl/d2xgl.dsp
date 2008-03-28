@@ -371,6 +371,10 @@ SOURCE=..\..\main\inferno.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\main\irrstuff.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\main\kconfig.cpp
 # End Source File
 # Begin Source File
@@ -915,6 +919,10 @@ SOURCE=..\..\ogl\ogl_defs.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\ogl\ogl_draw.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\ogl\ogl_fastrender.cpp
 # End Source File
 # Begin Source File
@@ -924,6 +932,10 @@ SOURCE=..\..\ogl\ogl_hudstuff.cpp
 # Begin Source File
 
 SOURCE=..\..\ogl\ogl_lib.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\ogl\ogl_palette.cpp
 # End Source File
 # Begin Source File
 
@@ -944,6 +956,10 @@ SOURCE=..\..\ogl\ogl_texture.cpp
 # Begin Source File
 
 SOURCE=..\..\ogl\pbuffer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\ogl\screenshot.cpp
 # End Source File
 # Begin Source File
 

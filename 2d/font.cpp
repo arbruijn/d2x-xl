@@ -1502,7 +1502,7 @@ if (bSetBG) {
 
 void GrSetCurFont (grsFont * newFont)
 {
-	FONT = newFont;
+FONT = newFont;
 }
 
 

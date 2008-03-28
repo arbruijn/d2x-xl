@@ -22,6 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "pstypes.h"
 #include "inferno.h"
+#include "strutil.h"
 #include "text.h"
 #include "gr.h"
 #include "ogl_defs.h"

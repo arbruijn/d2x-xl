@@ -1617,7 +1617,8 @@ for (i = 0; i < 2; i++) {
 	if (gameStates.input.nPlrFileVersion >= 67)
 		gameOptions [i].app.nVersionFilter = (int) CFReadByte (pcf);
 	if (!i) {
-		if (gameStates.input.nPlrFileVersion >= 68)
+		if (gameStates.input.nPlrFileVersion >= 
+)
 			extraGameInfo [0].bSmartWeaponSwitch = (int) CFReadByte (pcf);
 		if (gameStates.input.nPlrFileVersion >= 69)
 			extraGameInfo [0].bFluidPhysics = (int) CFReadByte (pcf);

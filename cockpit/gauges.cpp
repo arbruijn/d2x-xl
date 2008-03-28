@@ -999,7 +999,8 @@ if (gameStates.render.cockpit.nMode == CM_STATUS_BAR) {		//draw background
 	if (!gameStates.video.nDisplayMode) {
 		HUDRect (169, 189, 189, 196);
 		GrSetColorRGBi (RGBA_PAL (0, 0, 0));
-		GrScanLine (168, 189, 189);
+		GrScanLine (1
+, 189, 189);
 		} 
 	else {
 		GrRect (HUD_SCALE_X (338), HUD_SCALE_Y (453), HUD_SCALE_X (378), HUD_SCALE_Y (470));
