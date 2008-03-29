@@ -1007,6 +1007,10 @@ if (i < 123) {
 
 // ----------------------------------------------------------------------------
 
+#ifdef _WIN32
+#	define fileno	_fileno
+#endif
+
 time_t CFDate (char *filename, char *folder, int bUseD1Hog)
 {
 	CFILE cf;
@@ -1015,7 +1019,7 @@ time_t CFDate (char *filename, char *folder, int bUseD1Hog)
 //	sprintf (fn, "%s/%s", folder, hogname);
 if (!CFOpen (&cf, filename, folder, "rb", bUseD1Hog))
 	return -1;
-fstat (_fileno (cf.file), &statbuf);
+fstat (fileno (cf.file), &statbuf);
 CFClose (&cf);
 return statbuf.st_mtime;
 }

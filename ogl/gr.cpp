@@ -615,7 +615,7 @@ int GrToggleFullScreenGame (void)
 int i = GrToggleFullScreen ();
 FlushInput ();
 if (gameStates.app.bGameRunning) {
-	HUDMessage (MSGC_GAME_FEEDBACK, i ? "toggling fullscreen mode on" : "toggling fullscreen mode off");
+	HUDMessage (MSGC_GAME_FEEDBACK, i ? (char *) "toggling fullscreen mode on" : (char *) "toggling fullscreen mode off");
 	StopPlayerMovement ();
 	}
 return i;
