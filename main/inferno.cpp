@@ -1,4 +1,3 @@
-/* $Id: inferno.c, v 1.71 2004/04/15 07:34:28 btb Exp $ */
 /*
 THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
 SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
@@ -3138,7 +3137,7 @@ return 1;
 
 static inline int InitGaugeSize (void)
 {
-return 20;
+return 19;
 }
 
 //------------------------------------------------------------------------------
@@ -3204,32 +3203,25 @@ switch (loadOp) {
 		error_init (ShowInGameWarning, NULL);
 		break;
 	case 12:
-		if (!gameStates.app.bAutoRunMission) {
-			/*---*/LogErr ("Showing title screens\n");
-			if (!ShowTitleScreens ())
-				ShowLoadingScreen ();
-			}
-		break;
-	case 13:
 		break;
 		g3_init ();
-	case 14:
+	case 13:
 		/*---*/LogErr ("Initializing texture merge buffer\n");
 		TexMergeInit (100); // 100 cache bitmaps
 		break;
-	case 15:
+	case 14:
 		InitPowerupTables ();
 		break;
-	case 16:
+	case 15:
 		InitGame ();
 		break;
-	case 17:
+	case 16:
 		InitThreads ();
 		break;
-	case 18:
+	case 17:
 		PiggyInitMemory ();
 		break;
-	case 19:
+	case 18:
 		/*---*/LogErr ("Enabling TrackIR support\n");
 		TIRLoad ();
 		break;
@@ -3327,6 +3319,11 @@ else {
 		InitializePoll (0, NULL, NULL, 0);
 	}
 PrintBanner ();
+if (!gameStates.app.bAutoRunMission) {
+	/*---*/LogErr ("Showing title screens\n");
+	if (!ShowTitleScreens ())
+		ShowLoadingScreen ();
+	}
 if (FindArg ("-norun"))
 	return 0;
 /*---*/LogErr ("Loading hires models\n");
