@@ -454,7 +454,7 @@ void DoJoystickInit ()
 {
 
 if (!FindArg ("-nojoystick"))	{
-	joy_init ();
+	JoyInit ();
 	if (FindArg ("-joyslow"))
 		JoySetSlowReading (JOY_SLOW_READINGS);
 	if (FindArg ("-joypolled"))
@@ -3136,7 +3136,7 @@ return 1;
 
 static inline int InitGaugeSize (void)
 {
-return 19;
+return 21;
 }
 
 //------------------------------------------------------------------------------
@@ -3156,13 +3156,12 @@ switch (loadOp) {
 		LoadBanList ();
 		break;
 	case 2:
-		/*---*/LogErr ("Initializing i/o\n");
-		arch_init ();
-		gameStates.render.nLighting = 1;
-		break;
-	case 3:
 		/*---*/LogErr ("Initializing control types\n");
 		SetControlType ();
+		break;
+	case 3:
+		/*---*/LogErr ("Initializing keyboard\n");
+		KeyInit ();
 		break;
 	case 4:
 		/*---*/LogErr ("Initializing joystick\n");
@@ -3221,6 +3220,10 @@ switch (loadOp) {
 		PiggyInitMemory ();
 		break;
 	case 18:
+		if (!FindArg("-nomouse"))
+			MouseInit ();
+		break;
+	case 19:
 		/*---*/LogErr ("Enabling TrackIR support\n");
 		TIRLoad ();
 		break;

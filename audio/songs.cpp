@@ -38,8 +38,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "mission.h"
 #include "u_mem.h"
 
-extern void DigiStopCurrentSong ();
+char CDROM_dir[40] = ".";
 
+
+extern void DigiStopCurrentSong ();
 
 //0 if redbook is no playing, else the track number
 
@@ -50,11 +52,9 @@ extern int CD_blast_mixer ();
 //takes volume in range 0..8
 void SetRedbookVolume(int volume)
 {
-	RBASetVolume(0);		// makes the macs sound really funny
-	RBASetVolume(volume*REDBOOK_VOLUME_SCALE/8);
+RBASetVolume(0);		// makes the macs sound really funny
+RBASetVolume(volume*REDBOOK_VOLUME_SCALE/8);
 }
-
-extern char CDROM_dir [];
 
 //------------------------------------------------------------------------------
 

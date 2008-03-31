@@ -60,33 +60,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Check for mouse driver, reset driver if installed. returns number of
 // buttons if driver is present.
 
-#ifdef SVGALIB_INPUT
-extern int d_mouse_init(int enable_cyberman); /* conflict with <vgamouse.h> */
-#else
-extern int MouseInit (int enable_cyberman);
-#endif
-/* changed from int to void */
-extern void mouse_set_limits (int x1, int y1, int x2, int y2);
-extern void MouseFlush (void);	// clears all mice events...
+void MouseInit (void);
+void MouseFlush (void);	// clears all mice events...
 
 //========================================================================
 // Shutdowns mouse system.
-#ifdef SVGALIB_INPUT
-extern void d_mouse_close(); /* conflict with <vgamouse.h> */
-#else
-extern void mouse_close();
-#endif
-
-//========================================================================
-extern void MouseGetPos (int *x, int *y);
-extern void MouseGetDelta (int *dx, int *dy);
+void MouseGetPos (int *x, int *y);
+void MouseGetDelta (int *dx, int *dy);
 #ifdef SDL_INPUT
-extern void MouseGetPosZ (int *x, int *y, int *z);
-extern void MouseGetDeltaZ (int *dx, int *dy, int *dz);
+void MouseGetPosZ (int *x, int *y, int *z);
+void MouseGetDeltaZ (int *dx, int *dy, int *dz);
 #endif
-extern int MouseGetButtons (void);
-extern void mouse_set_pos (int x, int y);
-extern void mouse_get_cyberman_pos (int *x, int *y);
+int MouseGetButtons (void);
+void MouseGetCybermanPos (int *x, int *y);
 
 // Returns how long this button has been down since last call.
 extern fix MouseButtonDownTime(int button);

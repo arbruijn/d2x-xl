@@ -112,10 +112,6 @@ typedef struct window {
 
 extern int criticalErrorCounterPtr, nDescentCriticalError;
 
-extern int Num_tmaps_drawn;
-extern int nTotalPixels;
-//--unused-- int Total_num_tmaps_drawn=0;
-
 void StartLightingFrame (tObject *viewer);
 void ShowReticle(int force_big);
 
@@ -130,7 +126,7 @@ gsrCanvas * reticleCanvas = NULL;
 
 void _CDECL_ FreeReticleCanvas (void)
 {
-if (reticleCanvas)	{
+if (reticleCanvas) {
 	LogErr ("unloading reticle data\n");
 	D2_FREE( reticleCanvas->cvBitmap.bmTexBuf);
 	D2_FREE( reticleCanvas);
@@ -207,7 +203,7 @@ gameStates.render.nInterpolationMethod	= saved_interp_method;
 //------------------------------------------------------------------------------
 
 //cycle the flashing light for when mine destroyed
-void FlashFrame()
+void FlashFrame (void)
 {
 	static fixang flash_ang = 0;
 

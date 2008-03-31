@@ -883,7 +883,7 @@ memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.we
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
-memset (gameData.laser.nLightning, 0xff, sizeof (gameData.laser.nLightning));
+gameData.omega.lightnings.nHandles = 0;
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/LogErr ("   stopping music\n");

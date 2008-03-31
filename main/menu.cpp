@@ -172,6 +172,7 @@ static struct {
 	int	nUse;
 	int	nQuality;
 	int	nStyle;
+	int	nOmega;
 } lightningOpts;
 
 static struct {
@@ -574,10 +575,6 @@ int ExecMultiMenuOption (int nChoice)
 	int	bUDP = 0, bStart = 0;
 
 gameStates.multi.bUseTracker = 0;
-if (nChoice == multiOpts.nSerial) {
-	com_main_menu ();
-	return 1;
-	}
 if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTracker)) {
 	if (gameStates.app.bNostalgia > 1)
 		return 0;
@@ -3627,6 +3624,12 @@ if (extraGameInfo [0].bUseLightnings) {
 		sprintf (m->text, TXT_LIGHTNING_STYLE, pszLightningStyle [v]);
 		m->rebuild = 1;
 		}
+	m = menus + lightningOpts.nOmega;
+	v = m->value;
+	if (gameOpts->render.lightnings.bOmega != v) {
+		gameOpts->render.lightnings.bOmega = v;
+		m->rebuild = 1;
+		}
 	}
 }
 
@@ -3637,7 +3640,7 @@ void LightningOptionsMenu ()
 	tMenuItem m [15];
 	int	i, choice = 0;
 	int	opt;
-	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optOmega, optPlasma, optAuxViews;
+	int	optDamage, optExplosions, optPlayers, optRobots, optStatic, optRobotOmega, optPlasma, optAuxViews;
 	char	szQuality [50], szStyle [100];
 
 	pszLightningQuality [0] = TXT_LOW;
@@ -3655,7 +3658,7 @@ do {
 	optPlayers = 
 	optRobots = 
 	optStatic = 
-	optOmega = 
+	optRobotOmega = 
 	optPlasma = 
 	optAuxViews = -1;
 
@@ -3685,7 +3688,11 @@ do {
 		ADD_CHECK (opt, TXT_LIGHTNING_STATIC, gameOpts->render.lightnings.bStatic, KEY_T, HTX_LIGHTNING_STATIC);
 		optStatic = opt++;
 		ADD_CHECK (opt, TXT_LIGHTNING_OMEGA, gameOpts->render.lightnings.bOmega, KEY_O, HTX_LIGHTNING_OMEGA);
-		optOmega = opt++;
+		lightningOpts.nOmega = opt++;
+		if (gameOpts->render.lightnings.bOmega) {
+			ADD_CHECK (opt, TXT_LIGHTNING_ROBOT_OMEGA, gameOpts->render.lightnings.bRobotOmega, KEY_B, HTX_LIGHTNING_ROBOT_OMEGA);
+			optRobotOmega = opt++;
+			}
 		ADD_CHECK (opt, TXT_LIGHTNING_AUXVIEWS, gameOpts->render.lightnings.bAuxViews, KEY_D, HTX_LIGHTNING_AUXVIEWS);
 		optAuxViews = opt++;
 		}
@@ -3702,7 +3709,7 @@ do {
 		GET_VAL (gameOpts->render.lightnings.bPlayers, optPlayers);
 		GET_VAL (gameOpts->render.lightnings.bRobots, optRobots);
 		GET_VAL (gameOpts->render.lightnings.bStatic, optStatic);
-		GET_VAL (gameOpts->render.lightnings.bOmega, optOmega);
+		GET_VAL (gameOpts->render.lightnings.bRobotOmega, optRobotOmega);
 		GET_VAL (gameOpts->render.lightnings.bAuxViews, optAuxViews);
 		}
 	} while (i == -2);

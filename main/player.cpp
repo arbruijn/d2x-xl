@@ -111,7 +111,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
 			DigiLinkSoundToObject3 (-1, (short) gameData.multiplayer.players [i].nObject, 0, 
-											F1_0, 256 * F1_0, -1, -1, "gatling-speedup.wav", 0, SOUNDCLASS_PLAYER);
+											F1_0, 256 * F1_0, -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0, SOUNDCLASS_PLAYER);
 			fP->bSound = 0;
 			}
 		}

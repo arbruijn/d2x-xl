@@ -473,8 +473,6 @@ memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.pow
 
 short GetTeam (int nPlayer)
 {
-if ((gameData.app.nGameMode & GM_CAPTURE) && ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)))
-	return nPlayer;
 if (netGame.teamVector & (1 << nPlayer))
 	return 1;
 else
@@ -606,9 +604,6 @@ void StartPlayerDeathSequence (tObject *player);
 
 void SwitchTeam (int nPlayer, int bForce)
 {
-if ((gameData.app.nGameMode & GM_CAPTURE) && 
-	 ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)))
-	return;
 if (gameStates.app.bHaveExtraGameInfo [1] && (!extraGameInfo [1].bAutoBalanceTeams || bForce)) {
 	int t = !GetTeam (nPlayer);
 	SetTeam (nPlayer, t);
@@ -1042,10 +1037,7 @@ if (!gameData.multigame.menu.bInvoked)
 if (gameData.app.nGameMode & GM_MULTI_ROBOTS) {
 	MultiCheckRobotTimeout ();
 	}
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
-	com_do_frame ();
-else
-	NetworkDoFrame (0, 1);
+NetworkDoFrame (0, 1);
 if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)) {
 	gameData.multigame.bQuitGame = 0;
 	longjmp (gameExitPoint, 0);
@@ -1065,8 +1057,6 @@ Assert (buf [0] <= MULTI_MAX_TYPE);
 
 if ((gameData.app.nGameMode & GM_NETWORK) && (buf [0] < 1))
 	return;
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
-	com_send_data (buf, len, repeat);
 else if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkSendData ((ubyte *) buf, len, repeat);
 }
@@ -1091,8 +1081,6 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
 MultiSendQuit (MULTI_QUIT);
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
-	serial_leave_game ();
 if (gameData.app.nGameMode & GM_NETWORK)
 	NetworkLeaveGame ();
 gameData.app.nGameMode |= GM_GAME_OVER;
@@ -1116,13 +1104,7 @@ gameData.multigame.kills.bShowList = 1;
 
 int MultiEndLevel (int *secret)
 {
-	int result = 0;
-
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM))
-	com_endlevel (secret);          // an opportunity to re-sync or whatever
-else if (gameData.app.nGameMode & GM_NETWORK)
-	result = NetworkEndLevel (secret);
-return result;
+return (gameData.app.nGameMode & GM_NETWORK) ? NetworkEndLevel (secret) : 0;
 }
 
 //
@@ -1486,14 +1468,6 @@ if (gameData.app.nGameMode & GM_NETWORK) {
 		MultiOnlyPlayerMsg (0);
 	}
 
-if ((gameData.app.nGameMode & GM_SERIAL) || (gameData.app.nGameMode & GM_MODEM)) {
-	SetFunctionMode (FMODE_MENU);
-	gameData.multigame.bQuitGame = 1;
-	gameData.multigame.menu.bLeave = 1;
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_OPPONENT_LEFT);
-	SetFunctionMode (FMODE_GAME);
-	MultiResetStuff ();
-	}
 return;
 }
 

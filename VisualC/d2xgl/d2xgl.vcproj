@@ -86,7 +86,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
-				OutputFile="..\..\..\..\..\programme\d2\d2x-xl-dbg.exe"
+				OutputFile="\programme\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\sdl-1.2.13\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.8\VisualC\Debug&quot;"
@@ -96,7 +96,7 @@
 				MapFileName="./debug\d2x-xl-dbg.map"
 				MapExports="false"
 				SubSystem="2"
-				LinkTimeCodeGeneration="1"
+				LinkTimeCodeGeneration="0"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -1168,6 +1168,90 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="maths"
+					>
+					<Filter
+						Name="Header Files"
+						>
+						<File
+							RelativePath="..\..\include\fix.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\include\maths.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\include\vecmat.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="Source Files"
+						>
+						<File
+							RelativePath="..\..\maths\fixc.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath="..\..\maths\tables.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"
+								/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath="..\..\maths\vecmat.cpp"
+							>
+							<FileConfiguration
+								Name="Debug|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"
+								/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"
+								/>
+							</FileConfiguration>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="main"
@@ -1837,26 +1921,6 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\main\kludge.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
 						RelativePath="..\..\main\marker.cpp"
 						>
 						<FileConfiguration
@@ -1915,10 +1979,6 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\mingw_init.cpp"
-						>
 					</File>
 					<File
 						RelativePath="..\..\main\movie.cpp"
@@ -2103,10 +2163,6 @@
 								ObjectFile="$(IntDir)/$(InputName)1.obj"
 							/>
 						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\main\sdl_init.cpp"
-						>
 					</File>
 					<File
 						RelativePath="..\..\main\segment.cpp"
@@ -2310,90 +2366,6 @@
 					</File>
 					<File
 						RelativePath="..\..\main\wall.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="maths"
-				>
-				<Filter
-					Name="Header Files"
-					>
-					<File
-						RelativePath="..\..\include\fix.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\maths.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\include\vecmat.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="Source Files"
-					>
-					<File
-						RelativePath="..\..\maths\fixc.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\maths\tables.cpp"
-						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)/$(InputName)1.obj"
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\maths\vecmat.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
@@ -3553,6 +3525,14 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\gameio\loadsounds.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\gameio\loadtextures.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\gameio\mission.cpp"
 						>
 						<FileConfiguration
@@ -3713,7 +3693,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\piggy.h"
+						RelativePath="..\..\include\piggy.h"
 						>
 					</File>
 					<File
@@ -3941,26 +3921,6 @@
 			<Filter
 				Name="gamemodes"
 				>
-				<File
-					RelativePath="..\..\weapons\laser.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"
-						/>
-					</FileConfiguration>
-				</File>
 				<Filter
 					Name="Source Files"
 					>
@@ -4162,6 +4122,26 @@
 					>
 					<File
 						RelativePath="..\..\weapons\dropweapon.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\weapons\laser.cpp"
 						>
 						<FileConfiguration
 							Name="Debug|Win32"

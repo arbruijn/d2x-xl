@@ -130,6 +130,7 @@ typedef struct tSoundSlot {
 	ubyte				bLooped;			// Play this sample looped?
 	ubyte				bPersistent;	// This can't be pre-empted
 	ubyte				bResampled;
+	ubyte				bAddon;
 #if USE_SDL_MIXER
 	Mix_Chunk		*mixChunkP;
 	int				nChannel;
@@ -685,7 +686,10 @@ if (ssP->source == 0xFFFFFFFF) {
 #if USE_SDL_MIXER
 if (ssP->mixChunkP) {
 	Mix_HaltChannel (ssP->nChannel);
-	Mix_FreeChunk (ssP->mixChunkP);
+	if (ssP->bAddon)
+		ssP->bAddon = 0;
+	else
+		Mix_FreeChunk (ssP->mixChunkP);
 	ssP->mixChunkP = NULL;
 	}
 #endif
@@ -701,18 +705,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 	//resample to two channels
 	ssP->nChannel = gameStates.sound.digi.nFreeChannel;
 	if (pszWAV && *pszWAV) {
-#if 0
-		if (!(ssP->sampleP = CFReadData (pszWAV, gameFolders.szDataDir, 0)))
+		if (!(ssP->mixChunkP = LoadAddonSound (pszWAV)))
 			return -1;
-		ssP->mixChunkP = Mix_QuickLoad_WAV ((Uint8 *) ssP->sampleP);
-#else
-		char	szWAV [FILENAME_LEN];
-		if (!(CFExtract (pszWAV, gameFolders.szDataDir, 0, "d2x-temp.wav") ||
-			   CFExtract (pszWAV, gameFolders.szSoundDir [gameOpts->sound.bHires - 1], 0, "d2x-temp.wav")))
-			return -1;
-		sprintf (szWAV, "%s%sd2x-temp.wav", gameFolders.szTempDir, *gameFolders.szTempDir ? "/" : "");
-		ssP->mixChunkP = Mix_LoadWAV (szWAV);
-#endif
+		ssP->bAddon = 1;
 		}
 	else {
 		int l;

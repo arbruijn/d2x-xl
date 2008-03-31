@@ -293,8 +293,8 @@ int CreateNewLaser (vmsVector *vDirection, vmsVector *vPosition, short nSegment,
 	fix		volume;
 	fix		xLaserLength = 0;
 
-	static char *szMslSounds [2] = {"missileflight-small.wav", "missileflight-big.wav"};
-	static char *szGatlingSounds [2] = {"vulcan-firing.wav", "gauss-firing.wav"};
+	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
+	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
 Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
@@ -458,7 +458,7 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
 	if (nParent != nViewer) {
 		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (pParent->nType == OBJ_PLAYER) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
 			DigiLinkSoundToPos2 (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume, F1_0 * 256,
-										szGatlingSounds [nWeaponType == GAUSS_ID]);
+										AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
 		else
 			DigiLinkSoundToPos (gameData.weapons.info [objP->id].flashSound, objP->nSegment, 0, &objP->position.vPos, 0, volume);
 		}
@@ -466,7 +466,7 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
 		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
 			volume = F1_0 / 2;
 		if (((nWeaponType == VULCAN_ID) || (nWeaponType == GAUSS_ID)) && (gameOpts->sound.bHires == 2) && gameOpts->sound.bGatling)
-			DigiPlaySampleClass (-1, szGatlingSounds [nWeaponType == GAUSS_ID], volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
+			DigiPlaySampleClass (-1, AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]), volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		else
 			DigiPlaySampleClass (gameData.weapons.info [objP->id].flashSound, NULL, volume, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER);
 		}
@@ -478,10 +478,10 @@ if (bMakeSound && (gameData.weapons.info [objP->id].flashSound > -1)) {
 					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
 					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
 		DigiLinkSoundToObject3 (-1, nObject, 1, (gameOpts->sound.xCustomSoundVolume * F1_0) / 10, i2f (256), -1, -1, 
-										szMslSounds [bBigMsl], 1, SOUNDCLASS_MISSILE);
+										AddonSoundName (nMslSounds [bBigMsl]), 1, SOUNDCLASS_MISSILE);
 		}
 	else if (nWeaponType == FLARE_ID)
-		DigiSetObjectSound (nObject, -1, "flareburning.wav");
+		DigiSetObjectSound (nObject, -1, AddonSoundName (SND_ADDON_FLARE));
 	}
 //	Fire the laser from the gun tip so that the back end of the laser bolt is at the gun tip.
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.

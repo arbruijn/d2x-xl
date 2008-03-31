@@ -376,7 +376,7 @@ return pfRoot;
 void CreateLightningSound (tLightningBundle *plb, int bSound)
 {
 if ((plb->bSound = bSound)) {
-	DigiSetObjectSound (plb->nObject, -1, "lightng.wav");
+	DigiSetObjectSound (plb->nObject, -1, AddonSoundName (SND_ADDON_LIGHTNING));
 	if (plb->bForcefield) {
 		if (0 <= (plb->nSound = DigiGetSoundByName ("ff_amb_1")))
 			DigiSetObjectSound (plb->nObject, plb->nSound, NULL);

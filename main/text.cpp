@@ -1805,6 +1805,7 @@ char *defaultGameTexts [][2] = {
 	{"%s", "%s"},
 	{"unerforschte Bereiche schwarz/weiss", "gra~Y out unexplored areas"},
 	{"Initialisiere...", "Initializing..."},
+	{"ro~Boter-Omega schiesst blitze", "ro~Bot omega fires lightnings"},
 #if 0
 	{"", ""},
 #endif
@@ -2429,6 +2430,7 @@ char *defaultHelpTexts [][2] = {
 	{"Wenn angekreuzt, wird ein Hochlaufgeraeusch fuer Maschin-\nnenkanonen abgespielt.", "If checked, a spinup sound is played for gatling guns."},
 	{"Hier kann die Lieblings-Schiffsfarbe ausgesucht werden\n(nur Einzelspieler).", "Chose your favorite ship color here (singleplayer only)."},
 	{"Wenn angekreuzt, werden unerforschte Minenbereiche\nschwarz/weiss dargestellt", "If checked, unexplored mine areas are drawn black and white."},
+	{"Wenn angekreuzt, erzeugen auch von Robotern abgefeuerte\nOmega-Kanonen Blitzeffekte.", "If checked, omega cannons fired by robots\nwill create lightning effects, too."},
 #if 0
 	{"", ""},
 #endif

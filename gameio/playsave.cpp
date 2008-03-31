@@ -427,6 +427,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.lightnings.bDamage, i, 0);
 		RP (gameOptions [i].render.lightnings.bExplosions, i, 0);
 		RP (gameOptions [i].render.lightnings.bOmega, i, 0);
+		RP (gameOptions [i].render.lightnings.bRobotOmega, i, 0);
 		RP (gameOptions [i].render.lightnings.bPlayers, i, 0);
 		RP (gameOptions [i].render.lightnings.bRobots, i, 0);
 		RP (gameOptions [i].render.lightnings.bStatic, i, 0);
@@ -1024,6 +1025,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].render.lightnings.bDamage", "1"},
 	{"gameOptions[0].render.lightnings.bExplosions", "1"},
 	{"gameOptions[0].render.lightnings.bOmega", "1"},
+	{"gameOptions[0].render.lightnings.bRobotOmega", "0"},
 	{"gameOptions[0].render.lightnings.bPlayers", "1"},
 	{"gameOptions[0].render.lightnings.bRobots", "1"},
 	{"gameOptions[0].render.lightnings.bStatic", "1"},

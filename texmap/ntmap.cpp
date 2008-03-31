@@ -55,7 +55,7 @@ grsBitmap Texmap4_ptrs[NUM_TMAPS];
 
 int	nCurrentSegDepth;		// HACK INTERFACE: how far away the current tSegment (& thus texture) is
 
-extern int nWindowClipLeft, nWindowClipBot, nWindowClipRight, nWindowClipTop;
+int nWindowClipLeft, nWindowClipTop, nWindowClipRight, nWindowClipBot;
 
 // These variables are the interface to assembler.  They get set for each texture map, which is a real waste of time.
 //	They should be set only when they change, which is generally when the window bounds change.  And, even still, it's

@@ -1847,10 +1847,10 @@ void LoadGameTexts(void);
 #define TXT_SHIPCOLOR				GT(1054)
 #define TXT_AUTOMAP_GRAYOUT		GT(1055)
 #define TXT_INITIALIZING			GT(1056)
+#define TXT_LIGHTNING_ROBOT_OMEGA	GT(1057)
 
 #if 0
 
-#define TXT_				GT(1057)
 #define TXT_				GT(1058)
 #define TXT_				GT(1059)
 #define TXT_				GT(1060)
@@ -2367,10 +2367,10 @@ void LoadGameTexts(void);
 #define HTX_SPINUP_SOUND			HT(353)			
 #define HTX_SHIPCOLOR				HT(354)			
 #define HTX_AUTOMAP_GRAYOUT		HT(355)			
+#define HTX_LIGHTNING_ROBOT_OMEGA	HT(356)			
 
 #if 0
 
-#define HTX_					HT(356)			
 #define HTX_					HT(357)			
 #define HTX_					HT(358)			
 #define HTX_					HT(359)			

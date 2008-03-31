@@ -115,7 +115,7 @@ void joy_axis_handler(SDL_JoyAxisEvent *jae)
 
 //------------------------------------------------------------------------------
 
-int joy_init()
+int JoyInit()
 {
 	int				i, j, n;
 	tSdlJoystick	*joyP = sdlJoysticks;

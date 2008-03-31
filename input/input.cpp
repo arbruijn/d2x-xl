@@ -317,7 +317,6 @@ else {
 	else
 		upcount=1;
 	}			
-JoySetBtnValues (btn, state, timeDown, downcount, upcount);		
 }
 
 //------------------------------------------------------------------------------
@@ -355,7 +354,7 @@ int ControlsReadCyberman (int *mouseAxis, int *nMouseButtons)
 {
 	int idx, idy;
 
-mouse_get_cyberman_pos (&idx, &idy);
+MouseGetCybermanPos (&idx, &idy);
 mouseAxis [0] = (int) ((idx * gameStates.input.kcPollTime) / 128);
 mouseAxis [1] = (int) ((idy * gameStates.input.kcPollTime) / 128);
 *nMouseButtons = MouseGetButtons ();

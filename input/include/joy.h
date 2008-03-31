@@ -95,9 +95,9 @@ extern struct tSdlJoystick /*SDL_Joystick*/ sdlJoysticks [MAX_JOYSTICKS];
 // assumes the stick is centered and sets the minimum value to 0 and
 // the maximum value to 2 times the centered reading. Returns 0 if no
 // joystick was detected, 1 if everything is ok.
-// joy_init() is called.
+// JoyInit() is called.
 
-int joy_init();
+int JoyInit();
 void joy_close();
 
 extern char bJoyInstalled;
@@ -109,7 +109,7 @@ extern char bJoyPresent;
 // in either the upper left, lower right, or center and then have them
 // press a key or button and then call the appropriate one of these
 // routines, and it will read the stick and update the calibration factors.
-// Usually, assuming that the stick was centered when joy_init was
+// Usually, assuming that the stick was centered when JoyInit was
 // called, you really only need to call joy_set_lr, since the upper
 // left position is usually always 0,0 on most joys.  But, the safest
 // bet is to do all three, or let the user choose which ones to set.

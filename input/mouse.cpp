@@ -34,9 +34,9 @@ tMouseInfo mouseData;
 
 //------------------------------------------------------------------------------
 
-void d_mouse_init(void)
+void MouseInit (void)
 {
-	memset(&mouseData,0,sizeof(mouseData));
+memset (&mouseData, 0, sizeof (mouseData));
 }
 
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ return status;
 
 //------------------------------------------------------------------------------
 
-void mouse_get_cyberman_pos (int *x, int *y)
+void MouseGetCybermanPos (int *x, int *y)
 {
 }
 

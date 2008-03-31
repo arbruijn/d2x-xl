@@ -1503,7 +1503,7 @@ if (pfnTIRStop)
 //-----------------------------------------------------------------------------
 //called at the end of the program
 
-void _CDECL_ sdl_close(void);
+void _CDECL_ D2X_SDL_Close(void);
 
 void _CDECL_ CloseGame (void)
 {
@@ -1561,6 +1561,8 @@ LogErr ("unloading shield data\n");
 FreeSphereCoord ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
+LogErr ("unloading addon sounds\n");
+FreeAddonSounds ();
 FreeSkyBoxSegList ();
 CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen)	{
@@ -1584,7 +1586,7 @@ LogErr ("unloading custom background data\n");
 NMFreeAltBg (1);
 SaveBanList ();
 FreeBanList ();
-sdl_close ();
+SDL_Quit ();
 #if 0
 if (fErr) {
 	fclose (fErr);

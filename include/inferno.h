@@ -233,6 +233,7 @@ typedef struct tLightningOptions {
 	int bExplosions;
 	int bStatic;
 	int bOmega;
+	int bRobotOmega;
 	int bAuxViews;
 } tLightningOptions;
 
@@ -2891,10 +2892,7 @@ typedef struct tLaserData {
 	fix		xNextFireTime;
 	int		nGlobalFiringCount;
 	int		nMissileGun;
-	int		nLightning [MAX_OBJECTS_D2X];
 	int		nOffset;
-	tObject	*parentObjP;
-	tObject	*targetObjP [MAX_OBJECTS_D2X];
 } tLaserData;
 
 //------------------------------------------------------------------------------
@@ -2908,10 +2906,22 @@ typedef struct tFusionData {
 
 //------------------------------------------------------------------------------
 
+typedef struct tOmegaLightningHandles {
+	int		nLightning;
+	short		nParentObj;
+	short		nTargetObj;
+} tOmegaLightningHandles;
+
+typedef struct tOmegaLightningData {
+	tOmegaLightningHandles	handles [MAX_OBJECTS_D2X];
+	int							nHandles;
+} tOmegaLightningData;
+
 typedef struct tOmegaData {
 	fix		xCharge [2];
 	fix		xMaxCharge;
 	int		nLastFireFrame;
+	tOmegaLightningData	lightnings;
 } tOmegaData;
 
 //------------------------------------------------------------------------------

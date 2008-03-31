@@ -42,8 +42,6 @@ extern void NetworkSendPing (ubyte);
 extern int NetworkWhoIsMaster ();
 extern char bNameReturning;
 
-void network_dump_appletalk_player (ubyte node, ushort net, ubyte socket, int why);
-
 //-----------------------------------------------------------------------------
 
 void MultiSendMessage (void)
@@ -295,12 +293,6 @@ kick_player:;
 			NetworkDumpPlayer (
 				netPlayers.players [i].network.ipx.server, 
 				netPlayers.players [i].network.ipx.node, 
-				7);
-		else
-			network_dump_appletalk_player (
-				netPlayers.players [i].network.appletalk.node, 
-				netPlayers.players [i].network.appletalk.net, 
-				netPlayers.players [i].network.appletalk.socket, 
 				7);
 
 		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);
