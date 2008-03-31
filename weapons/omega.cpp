@@ -94,6 +94,7 @@ if (gameData.omega.lightnings.nHandles) {
 	DestroyLightnings (gameData.omega.lightnings.handles [nHandle].nLightning, NULL, 0);
 	if (nHandle < --gameData.omega.lightnings.nHandles)
 		gameData.omega.lightnings.handles [nHandle] = gameData.omega.lightnings.handles [gameData.omega.lightnings.nHandles];
+	memset (gameData.omega.lightnings.handles + gameData.omega.lightnings.nHandles, 0xff, sizeof (tOmegaLightningHandles));
 	}
 }
 
@@ -159,11 +160,12 @@ else {
 	if (i < 0)
 		return 0;
 	j = 1;
+	gameData.omega.lightnings.handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
 for (handleP = gameData.omega.lightnings.handles + i; j; j--, handleP++) {
 	if ((nLightning = handleP->nLightning) >= 0) {
 		parentObjP = OBJECTS + handleP->nParentObj;
-		targetObjP = OBJECTS + handleP->nTargetObj;
+		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
 		GetOmegaGunPoint (parentObjP, &vMuzzle);
 		MoveLightnings (nLightning, NULL, &vMuzzle, 
 							 SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->nSegment, 1, 0);
@@ -200,7 +202,7 @@ else {
 	GetOmegaGunPoint (parentObjP, &vMuzzle);
 	handleP = gameData.omega.lightnings.handles + gameData.omega.lightnings.nHandles++;
 	handleP->nParentObj = nObject;
-	handleP->nTargetObj = OBJ_IDX (targetObjP);
+	handleP->nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	vTarget = targetObjP ? &targetObjP->position.vPos : vTargetPos;
 #if OMEGA_PLASMA
 	color.alpha = gameOpts->render.lightnings.bPlasma ? 0.5f : 0.3f;

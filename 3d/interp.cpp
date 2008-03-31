@@ -486,7 +486,7 @@ if (!mtP->nCount++) {
 
 //------------------------------------------------------------------------------
 
-#define TRACE_TAGS 0
+#define TRACE_TAGS 1
 
 #define CHECK_NORMAL_FACING	0
 
@@ -508,7 +508,7 @@ int G3DrawPolyModel (
 	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (ObjectDamage (objP) < 0.5f);
 
 	static int nDepth = -1;
-#if TRACE_TACS
+#if TRACE_TAGS
 	static int nTags = 0;
 	static ubyte *modelDataP = NULL;
 #endif
@@ -522,7 +522,7 @@ if (bShadowTest)
 	return 1;
 #endif
 nDepth++;
-#if TRACE_TACS
+#if TRACE_TAGS
 if (!nDepth) {
 	nTags = 0;
 	modelDataP = (ubyte *) modelP;
@@ -539,8 +539,8 @@ glEnable (GL_CULL_FACE);
 OglCullFace (0);
 for (;;) {
 	nTag = WORDVAL (p);
-#if TRACE_TACS
-	LogErr ("   %d: %d @ %d\r\n", ++nTags, nTag, p - modelDataP);
+#if TRACE_TAGS
+	LogErr ("   %d: %d @ %d\n", ++nTags, nTag, p - modelDataP);
 #endif
 	if (nTag == OP_EOF)
 		break;

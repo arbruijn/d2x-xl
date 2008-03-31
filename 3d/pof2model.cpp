@@ -39,7 +39,7 @@ int G3CountPOFModelItems (void *modelP, short *pnSubModels, short *pnVerts, shor
 	ubyte *p = (ubyte *) modelP;
 
 G3CheckAndSwap (modelP);
-for (;;)
+for (;;) {
 	switch (WORDVAL (p)) {
 		case OP_EOF:
 			return 1;
@@ -62,7 +62,7 @@ for (;;)
 			int nVerts = WORDVAL (p+2);
 			(*pnFaces)++;
 			(*pnFaceVerts) += nVerts;
-			p += 30 + ((nVerts & ~ 1) + 1) * 2;
+			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
@@ -70,13 +70,15 @@ for (;;)
 			int nVerts = WORDVAL (p + 2);
 			(*pnFaces)++;
 			(*pnFaceVerts) += nVerts;
-			p += 30 + ((nVerts & ~1) + 1) * 2 + nVerts * 12;
+			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
 			}
 
 		case OP_SORTNORM:
-			G3CountPOFModelItems (p + WORDVAL (p+28), pnSubModels, pnVerts, pnFaces, pnFaceVerts);
-			G3CountPOFModelItems (p + WORDVAL (p+30), pnSubModels, pnVerts, pnFaces, pnFaceVerts);
+			if (!G3CountPOFModelItems (p + WORDVAL (p+28), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
+				return 0;
+			if (!G3CountPOFModelItems (p + WORDVAL (p+30), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
+				return 0;
 			p += 32;
 			break;
 
@@ -88,7 +90,8 @@ for (;;)
 
 		case OP_SUBCALL: {
 			(*pnSubModels)++;
-			G3CountPOFModelItems (p + WORDVAL (p+16), pnSubModels, pnVerts, pnFaces, pnFaceVerts);
+			if (!G3CountPOFModelItems (p + WORDVAL (p+16), pnSubModels, pnVerts, pnFaces, pnFaceVerts))
+				return 0;
 			p += 20;
 			break;
 			}
@@ -99,6 +102,8 @@ for (;;)
 
 		default:
 			Error ("invalid polygon model\n");
+			return 0;
+		}
 	}
 return 1;
 }
@@ -119,6 +124,8 @@ tG3ModelFace *G3AddModelFace (tG3Model *pm, tG3SubModel *psm, tG3ModelFace *pmf,
 	ushort			c;
 	char				bTextured;
 
+if (!psm->pFaces)
+	psm->pFaces = pmf;
 Assert (pmf - pm->pFaces < pm->nFaces);
 if (modelBitmaps && *modelBitmaps) {
 	bTextured = 1;
@@ -177,31 +184,19 @@ return pmf;
 
 //------------------------------------------------------------------------------
 
-#define TRACE_TAGS 0
-
 int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent, 
-								 grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
+								int bSubObject, grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
 	ubyte				*p = (ubyte *) modelP;
 	tG3SubModel		*psm = pm->pSubModels + nThis;
 	tG3ModelFace	*pmf = pm->pFaces + pm->iFace;
 	int				nChild;
 	short				nTag;
-#if TRACE_TAGS
-	static			int nDepth = -1;
-	static			int nTags = 0;
-	static			ubyte *modelDataP = NULL;
 
-if (!++nDepth) {
-	modelDataP = (ubyte *) modelP;
-	nTags = 0;
-	}
-#endif
 G3CheckAndSwap (modelP);
 nGlow = -1;
-if (!psm->pFaces) {
+if (bSubObject) {
 	G3InitSubModelMinMax (psm);
-	psm->pFaces = pmf;
 	psm->nIndex = -1;
 	psm->nParent = nParent;
 	psm->nBomb = -1;
@@ -215,12 +210,8 @@ if (!psm->pFaces) {
 	}
 for (;;) {
 	nTag = WORDVAL (p);
-	//LogErr ("   %d: %d @ %d\r\n", ++nTags, nTag, p - modelDataP);
 	switch (nTag) {
 		case OP_EOF:
-#if TRACE_TAGS
-			nDepth--;
-#endif
 			return 1;
 
 		case OP_DEFPOINTS: {
@@ -259,20 +250,12 @@ for (;;) {
 			}
 
 		case OP_SORTNORM:
-			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor)) {
-#if TRACE_TAGS
-				nDepth--;
-#endif
-				return 0;
-				}
 			pmf = pm->pFaces + pm->iFace;
-			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor)) {
-#if TRACE_TAGS
-				nDepth--;
-#endif
+			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, pObjColor))
 				return 0;
-				}
 			pmf = pm->pFaces + pm->iFace;
+			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, 0, modelBitmaps, pObjColor))
+				return 0;
 			p += 32;
 			break;
 
@@ -285,12 +268,8 @@ for (;;) {
 			pm->pSubModels [nChild].vOffset = *VECPTR (p+4);
 			pm->pSubModels [nChild].nAngles = WORDVAL (p+2);
 			G3InitSubModelMinMax (pm->pSubModels + nChild);
-			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, modelBitmaps, pObjColor)) {
-#if TRACE_TAGS
-				nDepth--;
-#endif
+			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, 1, modelBitmaps, pObjColor))
 				return 0;
-				}
 			pmf = pm->pFaces + pm->iFace;
 			p += 20;
 			break;
@@ -301,16 +280,10 @@ for (;;) {
 			break;
 
 		default:
-#if TRACE_TAGS
-			nDepth--;
-#endif
 			Error ("invalid polygon model\n");
 			return 0;
 		}
 	}
-#if TRACE_TAGS
-nDepth--;
-#endif
 return 1;
 }
 
@@ -326,11 +299,15 @@ pm->nSubModels = 1;
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");
 #endif
-G3CountPOFModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts);
+if (!G3CountPOFModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts))
+	return 0;
 if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
-if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor))
+#if TRACE_TAGS
+LogErr ("building model for object type %d, id %d\n", objP->nType, objP->id);
+#endif
+if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, 1, modelBitmaps, pObjColor))
 	return 0;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
