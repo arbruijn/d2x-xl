@@ -85,6 +85,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tracker.h"
 #include "particles.h"
 #include "laser.h"
+#include "omega.h"
 #include "lightning.h"
 #include "vers_id.h"
 #include "input.h"

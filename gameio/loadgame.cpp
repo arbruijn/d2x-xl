@@ -50,6 +50,7 @@ char gameseq_rcsid [] = "$Id: gameseq.c,v 1.33 2003/11/26 12:26:30 btb Exp $";
 #include "cameras.h"
 #include "render.h"
 #include "laser.h"
+#include "omega.h"
 #include "screens.h"
 #include "textures.h"
 #include "slew.h"
@@ -882,6 +883,7 @@ memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.we
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
+memset (gameData.laser.nLightning, 0xff, sizeof (gameData.laser.nLightning));
 gameData.multiplayer.bMoving = -1;
 #if 1
 /*---*/LogErr ("   stopping music\n");
@@ -943,7 +945,7 @@ DestroyCameras ();
 DestroyAllSmoke ();
 /*---*/LogErr ("   Destroying lightning data\n");
 DestroyAllLightnings (1);
-DestroyOmegaLightnings ();
+DestroyOmegaLightnings (-1);
 /*---*/LogErr ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));

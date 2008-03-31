@@ -574,6 +574,9 @@ return CreateNewLaser (vDirection, &hitData.hit.vPoint, (short) hitData.hit.nSeg
 
 vmsVector *GetGunPoints (tObject *objP, int nGun)
 {
+if (!objP)
+	return NULL;
+
 	tGunInfo		*giP = gameData.models.gunInfo + objP->rType.polyObjInfo.nModel;
 	vmsVector	*vDefaultGunPoints, *vGunPoints;
 	int			nDefaultGuns, nGuns;

@@ -87,6 +87,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "controls.h"
 #include "laser.h"
+#include "omega.h"
 #include "multibot.h"
 #include "ogl_defs.h"
 #include "ogl_lib.h"

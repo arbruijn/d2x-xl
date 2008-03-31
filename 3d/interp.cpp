@@ -486,6 +486,8 @@ if (!mtP->nCount++) {
 
 //------------------------------------------------------------------------------
 
+#define TRACE_TAGS 0
+
 #define CHECK_NORMAL_FACING	0
 
 int G3DrawPolyModel (
@@ -501,11 +503,15 @@ int G3DrawPolyModel (
 	int			nModel)
 {
 	ubyte *p = (ubyte *) modelP;
-	short	h;
+	short	nTag;
 	short bGetThrusterPos = !objP || ((objP->nType == OBJ_PLAYER) || (objP->nType == OBJ_ROBOT) || ((objP->nType == OBJ_WEAPON) && gameData.objs.bIsMissile [objP->id]));
 	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (ObjectDamage (objP) < 0.5f);
 
 	static int nDepth = -1;
+#if TRACE_TACS
+	static int nTags = 0;
+	static ubyte *modelDataP = NULL;
+#endif
 
 #if DBG_SHADOWS
 if (bShadowTest)
@@ -516,6 +522,12 @@ if (bShadowTest)
 	return 1;
 #endif
 nDepth++;
+#if TRACE_TACS
+if (!nDepth) {
+	nTags = 0;
+	modelDataP = (ubyte *) modelP;
+	}
+#endif
 G3CheckAndSwap (modelP);
 if (SHOW_DYN_LIGHT && 
 	!nDepth && !po && objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))) {
@@ -526,23 +538,26 @@ nGlow = -1;		//glow off by default
 glEnable (GL_CULL_FACE);
 OglCullFace (0);
 for (;;) {
-	h = WORDVAL (p);
-	if (h == OP_EOF)
+	nTag = WORDVAL (p);
+#if TRACE_TACS
+	LogErr ("   %d: %d @ %d\r\n", ++nTags, nTag, p - modelDataP);
+#endif
+	if (nTag == OP_EOF)
 		break;
-	else if (h == OP_DEFPOINTS) {
+	else if (nTag == OP_DEFPOINTS) {
 		int n = WORDVAL (p+2);
 		RotatePointList (modelPointList, VECPTR (p+4), po ? po->pVertNorms : NULL, n, 0);
 		p += n * sizeof (vmsVector) + 4;
 		break;
 		}
-	else if (h == OP_DEFP_START) {
+	else if (nTag == OP_DEFP_START) {
 		int n = WORDVAL (p+2);
 		int s = WORDVAL (p+4);
 
 		RotatePointList (modelPointList, VECPTR (p+8), po ? po->pVertNorms : NULL, n, s);
 		p += n * sizeof (vmsVector) + 8;
 		}
-	else if (h == OP_FLATPOLY) {
+	else if (nTag == OP_FLATPOLY) {
 		int nVerts = WORDVAL (p+2);
 		Assert (nVerts < MAX_POINTS_PER_POLY);
 #if CHECK_NORMAL_FACING
@@ -569,7 +584,7 @@ for (;;) {
 #endif
 		p += (nVerts | 1) * 2;
 		}
-	else if (h == OP_TMAPPOLY) {
+	else if (nTag == OP_TMAPPOLY) {
 		int nVerts = WORDVAL (p+2);
 		Assert ( nVerts < MAX_POINTS_PER_POLY );
 #if CHECK_NORMAL_FACING
@@ -623,7 +638,7 @@ for (;;) {
 #endif
 		p += (nVerts | 1) * 2 + nVerts * 12;
 		}
-	else if (h == OP_SORTNORM) {
+	else if (nTag == OP_SORTNORM) {
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (VECPTR (p+16), VECPTR (p+4)) > 0) 
 #endif
@@ -642,14 +657,14 @@ for (;;) {
 #endif
 		p += 32;
 		}
-	else if (h == OP_RODBM) {
+	else if (nTag == OP_RODBM) {
 		g3sPoint rodBotP, rodTopP;
 		G3TransformAndEncodePoint (&rodBotP, VECPTR (p+20));
 		G3TransformAndEncodePoint (&rodTopP, VECPTR (p+4));
 		G3DrawRodTexPoly (modelBitmaps [WORDVAL (p+2)], &rodBotP, WORDVAL (p+16), &rodTopP, WORDVAL (p+32), f1_0, NULL);
 		p += 36;
 		}
-	else if (h == OP_SUBCALL) {
+	else if (nTag == OP_SUBCALL) {
 		vmsAngVec	*va;
 		vmsVector	vo;
 
@@ -667,7 +682,7 @@ for (;;) {
 		G3DoneInstance ();
 		p += 20;
 		}
-	else if (h == OP_GLOW) {
+	else if (nTag == OP_GLOW) {
 		if (xGlowValues)
 			nGlow = WORDVAL (p+2);
 		p += 4;

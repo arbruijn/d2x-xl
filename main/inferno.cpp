@@ -2350,7 +2350,6 @@ gameData.lightnings.iUsed = -1;
 gameData.omega.xCharge [0] = 
 gameData.omega.xCharge [1] = 
 gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE;
-gameData.laser.nLightning = -1;
 memset (gameData.cockpit.gauges, 0xff, sizeof (gameData.cockpit.gauges));
 gameData.render.ogl.zNear = 1.0f;
 gameData.render.ogl.zFar = 5000.0f;

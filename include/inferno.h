@@ -2891,10 +2891,10 @@ typedef struct tLaserData {
 	fix		xNextFireTime;
 	int		nGlobalFiringCount;
 	int		nMissileGun;
-	int		nLightning;
+	int		nLightning [MAX_OBJECTS_D2X];
 	int		nOffset;
 	tObject	*parentObjP;
-	tObject	*targetObjP;
+	tObject	*targetObjP [MAX_OBJECTS_D2X];
 } tLaserData;
 
 //------------------------------------------------------------------------------

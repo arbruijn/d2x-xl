@@ -294,12 +294,19 @@ void FreeDeadzone ();
 void LoadExtraImages (void)
 {
 LogErr ("Loading extra images\n");
+LogErr ("   Loading corona images\n");
 LoadCorona ();
+LogErr ("   Loading glare images\n");
 LoadGlare ();
+LogErr ("   Loading halo images\n");
 LoadHalo ();
+LogErr ("   Loading thruster images\n");
 LoadThruster ();
+LogErr ("   Loading shield images\n");
 LoadShield ();
+LogErr ("   Loading explosion blast images\n");
 LoadExplBlast ();
+LogErr ("   Loading deadzone images\n");
 LoadDeadzone ();
 }
 

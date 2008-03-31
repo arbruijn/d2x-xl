@@ -177,6 +177,8 @@ return pmf;
 
 //------------------------------------------------------------------------------
 
+#define TRACE_TAGS 0
+
 int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int nThis, int nParent, 
 								 grsBitmap **modelBitmaps, tRgbaColorf *pObjColor)
 {
@@ -184,7 +186,17 @@ int G3GetPOFModelItems (void *modelP, vmsAngVec *pAnimAngles, tG3Model *pm, int 
 	tG3SubModel		*psm = pm->pSubModels + nThis;
 	tG3ModelFace	*pmf = pm->pFaces + pm->iFace;
 	int				nChild;
+	short				nTag;
+#if TRACE_TAGS
+	static			int nDepth = -1;
+	static			int nTags = 0;
+	static			ubyte *modelDataP = NULL;
 
+if (!++nDepth) {
+	modelDataP = (ubyte *) modelP;
+	nTags = 0;
+	}
+#endif
 G3CheckAndSwap (modelP);
 nGlow = -1;
 if (!psm->pFaces) {
@@ -201,9 +213,14 @@ if (!psm->pFaces) {
 	psm->bGlow = 0;
 	psm->bRender = 1;
 	}
-for (;;)
-	switch (WORDVAL (p)) {
+for (;;) {
+	nTag = WORDVAL (p);
+	//LogErr ("   %d: %d @ %d\r\n", ++nTags, nTag, p - modelDataP);
+	switch (nTag) {
 		case OP_EOF:
+#if TRACE_TAGS
+			nDepth--;
+#endif
 			return 1;
 
 		case OP_DEFPOINTS: {
@@ -220,7 +237,7 @@ for (;;)
 			int i, n = WORDVAL (p+2);
 			int s = WORDVAL (p+4);
 			fVector3 *pfv = pm->pVerts + s;
-			vmsVector *pv = VECPTR(p+8);
+			vmsVector *pv = VECPTR (p+8);
 			for (i = n; i; i--)
 				VmVecFixToFloat3 (pfv++, pv++);
 			p += n * sizeof (vmsVector) + 8;
@@ -242,27 +259,41 @@ for (;;)
 			}
 
 		case OP_SORTNORM:
-			G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor);
+			if (!G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor)) {
+#if TRACE_TAGS
+				nDepth--;
+#endif
+				return 0;
+				}
 			pmf = pm->pFaces + pm->iFace;
-			G3GetPOFModelItems (p + WORDVAL (p+30), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor);
+			if (!G3GetPOFModelItems (p + WORDVAL (p+28), pAnimAngles, pm, nThis, nParent, modelBitmaps, pObjColor)) {
+#if TRACE_TAGS
+				nDepth--;
+#endif
+				return 0;
+				}
 			pmf = pm->pFaces + pm->iFace;
 			p += 32;
 			break;
 
 		case OP_RODBM:
-			p+=36;
+			p += 36;
 			break;
 
-		case OP_SUBCALL: {
+		case OP_SUBCALL:
 			nChild = ++pm->iSubModel;
 			pm->pSubModels [nChild].vOffset = *VECPTR (p+4);
 			pm->pSubModels [nChild].nAngles = WORDVAL (p+2);
 			G3InitSubModelMinMax (pm->pSubModels + nChild);
-			G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, modelBitmaps, pObjColor);
+			if (!G3GetPOFModelItems (p + WORDVAL (p+16), pAnimAngles, pm, nChild, nThis, modelBitmaps, pObjColor)) {
+#if TRACE_TAGS
+				nDepth--;
+#endif
+				return 0;
+				}
 			pmf = pm->pFaces + pm->iFace;
 			p += 20;
 			break;
-			}
 
 		case OP_GLOW:
 			nGlow = WORDVAL (p+2);
@@ -270,8 +301,16 @@ for (;;)
 			break;
 
 		default:
+#if TRACE_TAGS
+			nDepth--;
+#endif
 			Error ("invalid polygon model\n");
+			return 0;
 		}
+	}
+#if TRACE_TAGS
+nDepth--;
+#endif
 return 1;
 }
 
@@ -291,7 +330,8 @@ G3CountPOFModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, 
 if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
-G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor);
+if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, modelBitmaps, pObjColor))
+	return 0;
 memset (pm->teamTextures, 0xFF, sizeof (pm->teamTextures));
 gameData.models.polyModels [nModel].rad = G3ModelSize (objP, pm, nModel, 0);
 G3SetupModel (pm, 0, 1);

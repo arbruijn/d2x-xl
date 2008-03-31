@@ -235,7 +235,7 @@ for (i = 0; i < n; i++)
 
 void BMReadAll (CFILE * fp)
 {
-	int i,t;
+	int i, t;
 
 gameData.pig.tex.nTextures [0] = CFReadInt (fp);
 /*---*/LogErr ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
@@ -1324,11 +1324,6 @@ for (j = 0; j < t; j++) {
 t = CFReadInt (&cf);			//read number of polygon models
 for (j = 0; j < t; j++) {
 	i = CFReadInt (&cf);		//read model number
-	if (bAltModels) {
-		i = i;
-		if (i == 50)
-			i = i;
-		}
 	if (bAddBots) {
 		if (gameData.models.nPolyModels >= MAX_POLYGON_MODELS) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
@@ -1390,7 +1385,7 @@ for (j = 0; j < t; j++) {
 	i = CFReadInt (&cf);		//read objbitmap number
 	if (bAddBots) {
 		}
-	else if (i < 0 || i >= MAX_OBJ_BITMAPS) {
+	else if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap number (%d) out of range (valid range = 0 - %d).",
 					szLevelName, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;
@@ -1403,7 +1398,7 @@ for (j = 0; j < t; j++) {
 t = CFReadInt (&cf);			//read number of objbitmapptrs
 for (j = 0; j < t; j++) {
 	i = CFReadInt (&cf);		//read objbitmapptr number
-	if (i<0 || i>=MAX_OBJ_BITMAPS) {
+	if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap pointer (%d) out of range (valid range = 0 - %d).",
 					szLevelName, i, MAX_OBJ_BITMAPS - 1);
 		gameData.bots.nTypes [0] = nBotTypeSave;

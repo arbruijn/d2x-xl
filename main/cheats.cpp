@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "gameseg.h"
 #include "laser.h"
+#include "omega.h"
 #include "network.h"
 #include "multi.h"
 #include "newdemo.h"

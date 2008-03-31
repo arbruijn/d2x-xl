@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DoOmegaStuff (tObject *parentObjP, vmsVector *vFiringPos, tObject *weaponObjP);
 int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP);
-void DestroyOmegaLightnings (void);
+void DestroyOmegaLightnings (short nObject);
 void SetMaxOmegaCharge (void);
 
 #define MAX_OMEGA_CHARGE (gameStates.app.bHaveExtraGameInfo [IsMultiGame] ? gameData.omega.xMaxCharge : DEFAULT_MAX_OMEGA_CHARGE)
