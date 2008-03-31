@@ -455,8 +455,8 @@ if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;
 	if (IsMultiGame) // Added by Rob, take this out if it turns out to be not good for net games!
-		MultiSendPlaySound (gameData.objs.pwrUp.info[id].hitSound, F1_0);
-	DigiPlaySample ((short) gameData.objs.pwrUp.info[id].hitSound, F1_0 );
+		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, F1_0);
+	DigiPlaySample ((short) gameData.objs.pwrUp.info [id].hitSound, F1_0);
 	}
 MultiSendWeapons (1);
 }

@@ -920,7 +920,10 @@ if (gameOpts->sound.bUseOpenAL) {
 if (gameStates.sound.digi.bAvailable && gameOpts->sound.bUseSDLMixer) {
 	if (ssP->mixChunkP) {
 		Mix_HaltChannel (nChannel);
-		Mix_FreeChunk (ssP->mixChunkP);
+		if (ssP->bAddon)
+			ssP->bAddon = 0;
+		else
+			Mix_FreeChunk (ssP->mixChunkP);
 		ssP->mixChunkP = NULL;
 		}
 	//Mix_FadeOutChannel (nChannel, 500);

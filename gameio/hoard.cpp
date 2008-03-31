@@ -166,7 +166,7 @@ if (!gameData.hoard.bInitialized) {
 	//Create hoard orb powerup
 	ptP = gameData.objs.pwrUp.info + POW_HOARD_ORB;
 	ptP->nClipIndex = gameData.hoard.orb.nClip;
-	ptP->hitSound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
+	ptP->hitSound = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
 	ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size;
 	ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
 	//Create orb goal tWall effect

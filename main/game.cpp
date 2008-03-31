@@ -1519,6 +1519,8 @@ if (gameStates.app.bMultiThreaded) {
 	}
 EndSoundThread ();
 GrClose ();
+LogErr ("unloading addon sounds\n");
+FreeAddonSounds ();
 DigiClose ();
 FreeUserSongs ();
 RLECacheClose ();
@@ -1561,8 +1563,6 @@ LogErr ("unloading shield data\n");
 FreeSphereCoord ();
 LogErr ("unloading palettes\n");
 FreePalettes ();
-LogErr ("unloading addon sounds\n");
-FreeAddonSounds ();
 FreeSkyBoxSegList ();
 CloseDynLighting ();
 if (gameStates.render.vr.buffers.offscreen)	{
