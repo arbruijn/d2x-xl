@@ -486,8 +486,6 @@ if (!mtP->nCount++) {
 
 //------------------------------------------------------------------------------
 
-#define TRACE_TAGS 1
-
 #define CHECK_NORMAL_FACING	0
 
 int G3DrawPolyModel (
@@ -508,10 +506,6 @@ int G3DrawPolyModel (
 	short bLightnings = SHOW_LIGHTNINGS && gameOpts->render.lightnings.bDamage && objP && (ObjectDamage (objP) < 0.5f);
 
 	static int nDepth = -1;
-#if TRACE_TAGS
-	static int nTags = 0;
-	static ubyte *modelDataP = NULL;
-#endif
 
 #if DBG_SHADOWS
 if (bShadowTest)
@@ -522,12 +516,6 @@ if (bShadowTest)
 	return 1;
 #endif
 nDepth++;
-#if TRACE_TAGS
-if (!nDepth) {
-	nTags = 0;
-	modelDataP = (ubyte *) modelP;
-	}
-#endif
 G3CheckAndSwap (modelP);
 if (SHOW_DYN_LIGHT && 
 	!nDepth && !po && objP && ((objP->nType == OBJ_ROBOT) || (objP->nType == OBJ_PLAYER))) {
@@ -539,9 +527,6 @@ glEnable (GL_CULL_FACE);
 OglCullFace (0);
 for (;;) {
 	nTag = WORDVAL (p);
-#if TRACE_TAGS
-	LogErr ("   %d: %d @ %d\n", ++nTags, nTag, p - modelDataP);
-#endif
 	if (nTag == OP_EOF)
 		break;
 	else if (nTag == OP_DEFPOINTS) {

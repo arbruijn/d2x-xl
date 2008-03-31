@@ -143,6 +143,7 @@ int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP)
 {
 	vmsVector					vMuzzle;
 	tOmegaLightningHandles	*handleP;
+	tWeaponState				*wsP;
 	int							i, j, nHandle, nLightning;
 	short							nObject = parentObjP ? OBJ_IDX (parentObjP) : -1;
 
@@ -162,9 +163,16 @@ else {
 	j = 1;
 	gameData.omega.lightnings.handles [i].nTargetObj = targetObjP ? OBJ_IDX (targetObjP) : -1;
 	}
-for (handleP = gameData.omega.lightnings.handles + i; j; j--, handleP++) {
+for (handleP = gameData.omega.lightnings.handles + i; j; j--) {
 	if ((nLightning = handleP->nLightning) >= 0) {
 		parentObjP = OBJECTS + handleP->nParentObj;
+		if (parentObjP->nType == OBJ_PLAYER) {
+			wsP = gameData.multiplayer.weaponStates + parentObjP->id;
+			if ((wsP->nPrimary != OMEGA_INDEX) || !wsP->firing [0].nStart) {
+				DeleteOmegaLightning (handleP - gameData.omega.lightnings.handles);
+				continue;
+				}
+			}
 		targetObjP = (handleP->nTargetObj >= 0) ? OBJECTS + handleP->nTargetObj : NULL;
 		GetOmegaGunPoint (parentObjP, &vMuzzle);
 		MoveLightnings (nLightning, NULL, &vMuzzle, 
@@ -172,6 +180,7 @@ for (handleP = gameData.omega.lightnings.handles + i; j; j--, handleP++) {
 		if (targetObjP)
 			MoveLightnings (nLightning, NULL, &targetObjP->position.vPos, targetObjP->nSegment, 1, 1);
 		}
+	handleP++;
 	}
 return 1;
 }
