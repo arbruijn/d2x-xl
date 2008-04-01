@@ -45,9 +45,9 @@ int ASE_Error (char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)
-		LogErr ("   %s: error in line %d (%s)\n", aseFile->filename, nLine, pszMsg);
+		PrintLog ("   %s: error in line %d (%s)\n", aseFile->filename, nLine, pszMsg);
 	else
-		LogErr ("   %s: error in line %d\n", aseFile->filename, nLine);
+		PrintLog ("   %s: error in line %d\n", aseFile->filename, nLine);
 	bErrMsg = 1;
 	}
 return 0;
@@ -60,6 +60,7 @@ int ASE_ReleaseTextures (void)
 	tASEModel	*pm;
 	int			bCustom, i;
 
+PrintLog ("releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
 		ReleaseModelTextures (&pm->textures);
@@ -73,6 +74,7 @@ int ASE_ReloadTextures (void)
 	tASEModel	*pm;
 	int			bCustom, i;
 
+PrintLog ("reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, pm = gameData.models.aseModels [bCustom]; i; i--, pm++)
 		if (!ReadModelTextures (&pm->textures, pm->nType, bCustom)) {

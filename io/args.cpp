@@ -57,7 +57,7 @@ void _CDECL_ args_exit (void)
 {
 	int i;
 
-LogErr ("unloading program arguments\n");
+PrintLog ("unloading program arguments\n");
 for (i = 0; i < Num_args; i++)
 	if (Args [i])
 		D2_FREE (Args [i]);
@@ -117,7 +117,7 @@ else if (pszArgs) {
 	}
 else
 	return;
-LogErr ("Loading program arguments\n");
+PrintLog ("Loading program arguments\n");
 args_exit ();
 for (i = 0; i < argc; i++)
 	Args [Num_args++] = D2_STRDUP (argv [i]);
@@ -150,7 +150,7 @@ if (cf.file) {
 			Args [Num_args++] = pszToken;
 			if (pszLine) {
 				if (Num_args >= MAX_ARGS) {
-					LogErr ("too many program arguments\n");
+					PrintLog ("too many program arguments\n");
 					break;
 					}
 				Args [Num_args++] = *pszLine ? D2_STRDUP (pszLine) : NULL;
@@ -160,18 +160,18 @@ if (cf.file) {
 		}
 	CFClose (&cf);
 	}
-LogErr ("   ");
+PrintLog ("   ");
 for (i = j = 0; i < Num_args; i++, j++) {
 	if (!Args [i]) 
 		continue;
 	if ((Args [i][0] == '-') && (isalpha (Args [i][1]) || (j == 2))) {
-		LogErr ("\n   ");
+		PrintLog ("\n   ");
 		j = 0;
 		}
-	LogErr (Args [i]);
-	LogErr (" ");
+	PrintLog (Args [i]);
+	PrintLog (" ");
 	}
-LogErr ("\n");
+PrintLog ("\n");
 atexit (args_exit);
 }
 

@@ -1135,6 +1135,7 @@ int OOF_ReleaseTextures (void)
 	tOOFObject	*po;
 	int			bCustom, i;
 
+PrintLog ("releasing OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
 		ReleaseModelTextures (&po->textures);
@@ -1148,6 +1149,7 @@ int OOF_ReloadTextures (void)
 	tOOFObject *po;
 	int			bCustom, i;
 
+PrintLog ("reloading OOF model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
 	for (i = gameData.models.nHiresModels, po = gameData.models.oofModels [bCustom]; i; i--, po++)
 		if (!ReadModelTextures (&po->textures, po->nType, bCustom)) {

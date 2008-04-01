@@ -205,7 +205,7 @@ return (r);
 
 void _CDECL_ FreeEndLevelData (void)
 {
-LogErr ("unloading endlevel data\n");
+PrintLog ("unloading endlevel data\n");
 if (gameData.endLevel.terrain.bmInstance.bmTexBuf) {
 	OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
 	D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
@@ -1221,7 +1221,7 @@ if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Missi
 //ok...this parser is pretty simple.  It ignores comments, but
 //everything else must be in the right place
 var = 0;
-LogErr ("      parsing endlevel description\n");
+PrintLog ("      parsing endlevel description\n");
 while (CFGetS (line, LINE_LEN, &cf)) {
 	if (bHaveBinary) {
 		int l = (int) strlen (line) - 1;
@@ -1241,7 +1241,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 		case 0: {						//ground terrain
 			int iff_error;
 
-			LogErr ("         loading terrain bitmap\n");
+			PrintLog ("         loading terrain bitmap\n");
 			if (gameData.endLevel.terrain.bmInstance.bmTexBuf) {
 				OglFreeBmTexture (&gameData.endLevel.terrain.bmInstance);
 				D2_FREE (gameData.endLevel.terrain.bmInstance.bmTexBuf);
@@ -1261,24 +1261,24 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 		}
 
 		case 1:							//height map
-			LogErr ("         loading endlevel terrain\n");
+			PrintLog ("         loading endlevel terrain\n");
 			LoadTerrain (p);
 			break;
 
 		case 2:
-			LogErr ("         loading exit point\n");
+			PrintLog ("         loading exit point\n");
 			sscanf (p, "%d, %d", &exit_point_bmx, &exit_point_bmy);
 			break;
 
 		case 3:							//exit heading
-			LogErr ("         loading exit angle\n");
+			PrintLog ("         loading exit angle\n");
 			exit_angles.h = i2f (atoi (p))/360;
 			break;
 
 		case 4: {						//planet bitmap
 			int iff_error;
 
-			LogErr ("         loading satellite bitmap\n");
+			PrintLog ("         loading satellite bitmap\n");
 			if (gameData.endLevel.satellite.bmInstance.bmTexBuf) {
 				OglFreeBmTexture (&gameData.endLevel.satellite.bmInstance);
 				D2_FREE (gameData.endLevel.satellite.bmInstance.bmTexBuf);
@@ -1300,7 +1300,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 			vmsAngVec ta;
 			int pitch, head;
 
-			LogErr ("         loading satellite and station position\n");
+			PrintLog ("         loading satellite and station position\n");
 			sscanf (p, "%d, %d", &head, &pitch);
 			ta.h = i2f (head)/360;
 			ta.p = -i2f (pitch)/360;
@@ -1315,7 +1315,7 @@ while (CFGetS (line, LINE_LEN, &cf)) {
 		}
 
 		case 6:						//planet size
-			LogErr ("         loading satellite size\n");
+			PrintLog ("         loading satellite size\n");
 			satellite_size = i2f (atoi (p));
 			break;
 	}
@@ -1337,7 +1337,7 @@ for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 			}
 
 Assert (gameData.endLevel.exit.nSegNum!=-1);
-LogErr ("      computing endlevel element orientation\n");
+PrintLog ("      computing endlevel element orientation\n");
 COMPUTE_SEGMENT_CENTER_I (&gameData.endLevel.exit.vMineExit, gameData.endLevel.exit.nSegNum);
 ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, &gameData.segs.segments [gameData.endLevel.exit.nSegNum]);
 COMPUTE_SIDE_CENTER_I (&gameData.endLevel.exit.vSideExit, gameData.endLevel.exit.nSegNum, nExitSide);

@@ -91,7 +91,7 @@ void _CDECL_ TexMergeClose (void)
 {
 	int i;
 
-LogErr ("shutting down merged textures cache\n");
+PrintLog ("shutting down merged textures cache\n");
 for (i = 0; i < nCacheEntries; i++) {
 	if (texCache [i].bitmap) {
 		GrFreeBitmap (texCache [i].bitmap);
@@ -519,7 +519,7 @@ if (!gameStates.ogl.bShadersOk)
 if (!gameOpts->ogl.bGlTexMerge)
 	gameStates.render.textures.bGlsTexMergeOk = 0;
 else {
-	LogErr ("building texturing shader programs\n");
+	PrintLog ("building texturing shader programs\n");
 	for (i = 0; i < 6; i++) {
 		if (tmShaderProgs [i])
 			DeleteShaderProg (tmShaderProgs + i);

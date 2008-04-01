@@ -38,7 +38,7 @@ static int initialised = 0;
 
 void _CDECL_ RBAExit(void)
 {
-LogErr ("shutting down SDL CD service\n");
+PrintLog ("shutting down SDL CD service\n");
 if (initialised) {
 	SDL_CDStop(s_cd);
 	SDL_CDClose(s_cd);

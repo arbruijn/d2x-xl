@@ -49,7 +49,7 @@ void _CDECL_ GameFontClose(void)
 
 if (!gameStates.render.fonts.bInstalled)
 	return;
-LogErr ("unloading game fonts\n");
+PrintLog ("unloading game fonts\n");
 gameStates.render.fonts.bInstalled = 0;
 for (i = 0; i < MAX_FONTS; i++) {
 	GrCloseFont(Gamefonts[i]);

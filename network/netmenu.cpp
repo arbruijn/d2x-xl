@@ -2059,7 +2059,7 @@ int NetworkBrowseGames (void)
 	bkg			bg;
 	char			callsign [CALLSIGN_LEN+1];
 
-//LogErr ("launching netgame browser\n");
+//PrintLog ("launching netgame browser\n");
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
 memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
@@ -2069,7 +2069,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		return 0;
 		}
 	}
-//LogErr ("   NetworkInit\n");
+//PrintLog ("   NetworkInit\n");
 NetworkInit ();
 gameData.multiplayer.nPlayers = 0;
 setjmp (gameExitPoint);
@@ -2077,11 +2077,11 @@ networkData.nSyncState = 0;
 networkData.nJoinState = 0;
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nSocket));
-//LogErr ("   NetworkFlush\n");
+//PrintLog ("   NetworkFlush\n");
 NetworkFlush ();
-//LogErr ("   NetworkListen\n");
+//PrintLog ("   NetworkListen\n");
 NetworkListen ();  // Throw out old info
-//LogErr ("   NetworkSendGameListRequest\n");
+//PrintLog ("   NetworkSendGameListRequest\n");
 NetworkSendGameListRequest (); // broadcast a request for lists
 networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;
@@ -2177,7 +2177,7 @@ if (AGI.protocolVersion != MULTI_PROTO_VERSION) {
 	}
 
 if (gameStates.multi.bUseTracker) {
-	//LogErr ("   getting server lists from trackers\n");
+	//PrintLog ("   getting server lists from trackers\n");
 	GetServerFromList (choice);
 	}
 // Check for valid mission name
@@ -2185,7 +2185,7 @@ con_printf (CONDBG, TXT_LOADING_MSN, AGI.szMissionName);
 if (!(LoadMissionByName (AGI.szMissionName, -1) ||
 		(DownloadMission (AGI.szMissionName) &&
 		 LoadMissionByName (AGI.szMissionName, -1)))) {
-	LogErr ("Mission '%s' not found%s\n", AGI.szMissionName);
+	PrintLog ("Mission '%s' not found%s\n", AGI.szMissionName);
 	ExecMessageBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
@@ -2227,9 +2227,9 @@ if (IpxHandleNetGameAuxData (netGame.AuxData) < 0) {
 	}
 NetworkSetGameMode (netGame.gameMode);
 NetworkAdjustMaxDataSize ();
-//LogErr ("loading level\n");
+//PrintLog ("loading level\n");
 StartNewLevel (netGame.nLevel, 0);
-//LogErr ("exiting netgame browser\n");
+//PrintLog ("exiting netgame browser\n");
 NMRemoveBackground (&bg);
 return 1;         // look ma, we're in a game!!!
 }

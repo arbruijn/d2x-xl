@@ -127,7 +127,7 @@ gsrCanvas * reticleCanvas = NULL;
 void _CDECL_ FreeReticleCanvas (void)
 {
 if (reticleCanvas) {
-	LogErr ("unloading reticle data\n");
+	PrintLog ("unloading reticle data\n");
 	D2_FREE( reticleCanvas->cvBitmap.bmTexBuf);
 	D2_FREE( reticleCanvas);
 	reticleCanvas	= NULL;
@@ -1728,7 +1728,7 @@ dontAdd:
 				gameData.render.mine.nSegDepth [lCnt] = l;
 				lCnt++;
 				if (lCnt >= MAX_SEGMENTS_D2X) {
-					LogErr ("Too many segments in tSegment render list!!!\n"); 
+					PrintLog ("Too many segments in tSegment render list!!!\n"); 
 					goto listDone;
 					}
 				VISIT (nChildSeg);

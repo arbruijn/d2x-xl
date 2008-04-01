@@ -328,7 +328,7 @@ void DigiClose()
 {
 if (!gameStates.sound.digi.bInitialized) 
  	return;
-LogErr ("shutting down sound system\n");
+PrintLog ("shutting down sound system\n");
 gameStates.sound.digi.bInitialized = 0;
 snd_pcm_close(snd_devhandle);
 pthread_mutex_destroy(&mutex);

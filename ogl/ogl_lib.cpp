@@ -867,7 +867,7 @@ void OglCreateDrawBuffer (void)
 {
 #if FBO_DRAW_BUFFER
 if (gameStates.render.bRenderIndirect && gameStates.ogl.bRender2TextureOk && !gameData.render.ogl.drawBuffer.hFBO) {
-	LogErr ("creating draw buffer\n");
+	PrintLog ("creating draw buffer\n");
 	OglCreateFBuffer (&gameData.render.ogl.drawBuffer, gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, 1);
 	}
 #endif

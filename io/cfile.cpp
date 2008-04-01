@@ -54,7 +54,7 @@ if (!(szName && *szName))
 	return 1;
 i = (int) strlen (szRootDir);
 bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
-LogErr ("GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
+PrintLog ("GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
 sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
 if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
 	if (szFolder != szName)
@@ -62,7 +62,7 @@ if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
 	}
 else if (*szRootDir)
 	strcpy (szFolder, szRootDir);
-LogErr ("GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);
+PrintLog ("GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);
 FFC (&ffs);
 return i;
 }
@@ -126,7 +126,7 @@ fp = fopen (pfn, mode);
    pfn = fn;
    fp = fopen (pfn, mode);
 	}
-//if (!fp) LogErr ("CFGetFileHandle(): error opening %s\n", pfn);
+//if (!fp) PrintLog ("CFGetFileHandle(): error opening %s\n", pfn);
 CFCriticalError (fp == NULL);
 return fp;
 }
@@ -202,7 +202,7 @@ if (name) {
 		*name && 
 		CFInitHogFile (hogP->szName, folder, hogP->files, &hogP->nFiles);
 	if (*(hogP->szName))
-		LogErr ("   found hogP file '%s'\n", hogP->szName);
+		PrintLog ("   found hogP file '%s'\n", hogP->szName);
 	return hogP->bInitialized && (hogP->nFiles > 0);
 	} 
 return 0;
@@ -326,7 +326,7 @@ for (i = hog->nFiles, phf = hog->files; i; i--, phf++) {
 		*length = phf->length;
 	return fp;
 	}
-//LogErr ("CFFindHogFile(): '%s:%s' not found\n", hogFilename, name);
+//PrintLog ("CFFindHogFile(): '%s:%s' not found\n", hogFilename, name);
 return NULL;
 }
 
@@ -352,7 +352,7 @@ else {
 	if ((fp = CFFindHogFile (&gameHogFiles.D2HogFiles, gameFolders.szDataDir, name, length)))
 		return fp;
 	}
-//LogErr ("File '%s' not found\n", name);
+//PrintLog ("File '%s' not found\n", name);
 return NULL;
 }
 

@@ -674,7 +674,7 @@ for (;;) {
 		}
 	else {
 #ifdef _DEBUG
-		LogErr ("invalid polygon model\n");
+		PrintLog ("invalid polygon model\n");
 #endif
 		return 0;
 		}

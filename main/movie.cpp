@@ -849,7 +849,7 @@ void _CDECL_ CloseMovies (void)
 {
 	int i;
 
-LogErr ("unloading movies\n");
+PrintLog ("unloading movies\n");
 for (i=0;i<N_MOVIE_LIBS;i++)
 	close_movie (i);
 }
@@ -869,7 +869,7 @@ void InitMovies ()
 		isRobots = !strnicmp (pszMovieLibs[i], "robot", 5);
 		init_movie (pszMovieLibs[i], i, isRobots, 1);
 		if (movies.libs [i])
-			LogErr ("   found movie lib '%s'\n", pszMovieLibs[i]);
+			PrintLog ("   found movie lib '%s'\n", pszMovieLibs[i]);
 		else if ((i >= FIRST_EXTRA_MOVIE_LIB) && 
 			 (i < FIRST_EXTRA_MOVIE_LIB + N_EXTRA_MOVIE_LIBS))
 			gameStates.app.bHaveExtraMovies = 0;

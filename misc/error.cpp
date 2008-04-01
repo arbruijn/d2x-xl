@@ -168,7 +168,7 @@ sprintf (szExitMsg, "\n%s", TXT_TITLE_ERROR);
 va_start (arglist,fmt);
 vsprintf (szExitMsg + strlen (szExitMsg), fmt, arglist);
 va_end(arglist);
-LogErr ("ERROR: %s\n", szExitMsg);
+PrintLog ("ERROR: %s\n", szExitMsg);
 D2MsgBox (szExitMsg, MB_ICONERROR);
 Int3();
 if (!err_initialized) 
@@ -180,7 +180,7 @@ exit (1);
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ LogErr (char *fmt, ...)
+void _CDECL_ PrintLog (char *fmt, ...)
 {
  if (fErr) {
 		va_list arglist;
@@ -204,7 +204,7 @@ void _CDECL_ Warning (char *fmt, ...)
 va_start (arglist, fmt);
 vsprintf (szWarnMsg + strlen (szWarnMsg), fmt, arglist);
 va_end (arglist);
-	//LogErr (szWarnMsg);
+	//PrintLog (szWarnMsg);
 D2MsgBox (szWarnMsg, MB_ICONWARNING);
 }
 

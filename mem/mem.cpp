@@ -150,7 +150,7 @@ if (!bMemInitialized) {
 
 void PrintInfo (int id)
 {
-LogErr ("\tBlock '%s' created in %s, nLine %d.\n",
+PrintLog ("\tBlock '%s' created in %s, nLine %d.\n",
 			szVarname [id], szFilename [id], nLineNum [id]);
 }
 
@@ -166,15 +166,15 @@ pCheckData = (ubyte*) (((int *) buffer) + 1) + nSize;
 for (i = 0, nErrors = 0; i < CHECKSIZE; i++)
 	if (pCheckData [i] != CHECKBYTE) {
 		nErrors++;
-		LogErr ("OA: %p ", pCheckData + i);
+		PrintLog ("OA: %p ", pCheckData + i);
 		}
 
 if (nErrors && !bOutOfMemory)	{
-	LogErr ("\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
+	PrintLog ("\nMEM_OVERWRITE: Memory after the end of allocated block overwritten.\n");
 #if LONG_MEM_ID
-	LogErr ("%s\n", (char *) buffer - 256);
+	PrintLog ("%s\n", (char *) buffer - 256);
 #endif
-	LogErr ("\t%d/%d check bytes were overwritten.\n", nErrors, CHECKSIZE);
+	PrintLog ("\t%d/%d check bytes were overwritten.\n", nErrors, CHECKSIZE);
 	Int3 ();
 	}
 return nErrors;
@@ -191,9 +191,9 @@ if (!bMemInitialized)
 	return;
 
 if (nMemBlocks) {
-	LogErr ("\nMEMORY LEAKS:\n");
+	PrintLog ("\nMEMORY LEAKS:\n");
 	for (i = 0; i < nMemBlocks; i++)
-		LogErr ("%s:%d\n", memBlocks [i].pszFile, memBlocks [i].nLine);
+		PrintLog ("%s:%d\n", memBlocks [i].pszFile, memBlocks [i].nLine);
 	for (i = 0; i < nMemBlocks; i++)
 		D2_FREE (memBlocks [i].p);
 	}
@@ -288,7 +288,7 @@ void *MemAlloc (unsigned int size, char * var, char * pszFile, int nLine, int bZ
 if (!(ptr = (int *) malloc (size))) {
 #if 1//TRACE
 	if (size)
-		LogErr ("allocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
+		PrintLog ("allocating %d bytes in %s:%d failed.\n", size, pszFile, nLine);
 #endif
 	}
 else if (bZeroFill)
@@ -313,8 +313,8 @@ ptr = malloc (size + CHECKSIZE + sizeof (int) + 256);
 ptr = malloc (size + CHECKSIZE + sizeof (int));
 #endif
 if (!ptr) {
-	LogErr ("\nMEM_OUT_OF_MEMORY: Malloc returned NULL\n");
-	LogErr ("\tVar %s, file %s, nLine %d.\n", var, pszFile, nLine);
+	PrintLog ("\nMEM_OUT_OF_MEMORY: Malloc returned NULL\n");
+	PrintLog ("\tVar %s, file %s, nLine %d.\n", var, pszFile, nLine);
 	Int3 ();
 	return NULL;
 	}

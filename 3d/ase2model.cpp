@@ -139,6 +139,7 @@ if (!pa) {
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");
 #endif
+PrintLog ("   optimizing ASE model %d\n", nModel);
 pm = gameData.models.g3Models [1] + nModel;
 G3CountASEModelItems (pa, pm);
 if (!G3AllocModel (pm))

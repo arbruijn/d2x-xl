@@ -150,12 +150,12 @@ int NetworkBadPacketSize (int nLength, int nExpectedLength, char *pszId)
 if (!nExpectedLength || (nLength == nExpectedLength))
 	return 0;
 con_printf (CONDBG, "WARNING! Received invalid size for %s\n", pszId);
-LogErr ("Networking: Bad size for %s\n", pszId);
+PrintLog ("Networking: Bad size for %s\n", pszId);
 #ifdef _DEBUG
 HUDMessage (0, "invalid %s", pszId);
 #endif
 if (nLength == nExpectedLength - 4)
-	LogErr ("   (Probably due to mismatched UDP/IP connection quality improvement settings)\n");
+	PrintLog ("   (Probably due to mismatched UDP/IP connection quality improvement settings)\n");
 return 1;
 }
 
@@ -168,7 +168,7 @@ if (nSecurity == netGame.nSecurity)
 #endif
 	return 0;
 con_printf (CONDBG, "Bad security for %s\n", pszId);
-LogErr ("Networking: Bad security for %s\n", pszId);
+PrintLog ("Networking: Bad security for %s\n", pszId);
 return 1;
 }
 
@@ -517,9 +517,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 #endif
 
 if (!piP->packetHandler)
-	LogErr ("invalid packet id %d\n", pId);
+	PrintLog ("invalid packet id %d\n", pId);
 else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
-	LogErr ("invalid status %d for packet id %d\n", networkData.nStatus, pId);
+	PrintLog ("invalid status %d for packet id %d\n", networkData.nStatus, pId);
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	con_printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])

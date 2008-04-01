@@ -11,12 +11,12 @@ INCLUDES = -I $(top_srcdir)/include -I $(top_srcdir)/input/include -I $(top_srcd
 libmain_a_SOURCES = ${EDITOR_SRCS} ${NETWORK_SRCS} \
 	cmd.cpp collide.cpp config.cpp console.cpp controls.cpp credits.cpp \
 	crypt.cpp effects.cpp fuelcen.cpp fvi.cpp game.cpp gamecntl.cpp highscores.cpp \
-	gamefont.cpp gameseg.cpp hostage.cpp inferno.cpp kconfig.cpp kludge.cpp \
+	gamefont.cpp gameseg.cpp hostage.cpp inferno.cpp kconfig.cpp \
 	menu.cpp mglobal.cpp movie.cpp marker.cpp slowmotion.cpp dropobject.cpp \
 	newdemo.cpp newmenu.cpp object.cpp physics.cpp player.cpp powerup.cpp reactor.cpp \
 	robot.cpp scores.cpp segment.cpp slew.cpp switch.cpp terrain.cpp texmerge.cpp \
 	text.cpp briefings.cpp vclip.cpp wall.cpp cheats.cpp banlist.cpp endlevel.cpp \
-	flightpath.cpp textdata.cpp trackobject.cpp briefings.cpp sdl_init.cpp mingw_init.cpp
+	flightpath.cpp textdata.cpp trackobject.cpp briefings.cpp 
 	
 
 EXTRA_DIST = ${EXTRA_SUBDIRS} \

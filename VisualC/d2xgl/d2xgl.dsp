@@ -375,10 +375,6 @@ SOURCE=..\..\main\kconfig.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\main\kludge.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\main\marker.cpp
 # End Source File
 # Begin Source File
@@ -388,10 +384,6 @@ SOURCE=..\..\main\menu.cpp
 # Begin Source File
 
 SOURCE=..\..\main\mglobal.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\mingw_init.cpp
 # End Source File
 # Begin Source File
 
@@ -432,10 +424,6 @@ SOURCE=..\..\main\robot.cpp
 # Begin Source File
 
 SOURCE=..\..\main\scores.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\main\sdl_init.cpp
 # End Source File
 # Begin Source File
 
@@ -764,6 +752,14 @@ SOURCE=..\..\gameio\iff.cpp
 # Begin Source File
 
 SOURCE=..\..\gameio\loadgame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\gameio\loadsounds.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\gameio\loadtextures.cpp
 # End Source File
 # Begin Source File
 

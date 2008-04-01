@@ -243,19 +243,19 @@ GrRemapBitmapGood (&bmBackground, NULL, -1, -1);
 void InitGame ()
 {
 atexit (CloseGame);             //for cleanup
-/*---*/LogErr ("Initializing game data\n  Objects ...\n");
+/*---*/PrintLog ("Initializing game data\n  Objects ...\n");
 InitObjects ();
-/*---*/LogErr ("  Special effects...\n");
+/*---*/PrintLog ("  Special effects...\n");
 InitSpecialEffects ();
-/*---*/LogErr ("  AI system...\n");
+/*---*/PrintLog ("  AI system...\n");
 InitAISystem ();
-//*---*/LogErr ("  gauge canvases...\n");
+//*---*/PrintLog ("  gauge canvases...\n");
 //	InitGaugeCanvases ();
-/*---*/LogErr ("  exploding walls...\n");
+/*---*/PrintLog ("  exploding walls...\n");
 InitExplodingWalls ();
-/*---*/LogErr ("  particle systems...\n");
+/*---*/PrintLog ("  particle systems...\n");
 InitSmoke ();
-/*---*/LogErr ("  loading background bitmap...\n");
+/*---*/PrintLog ("  loading background bitmap...\n");
 LoadBackgroundBitmap ();
 nClearWindow = 2;		//	do portal only window clear.
 InitDetailLevels (gameStates.app.nDetailLevel);
@@ -1519,49 +1519,49 @@ if (gameStates.app.bMultiThreaded) {
 	}
 EndSoundThread ();
 GrClose ();
-LogErr ("unloading addon sounds\n");
+PrintLog ("unloading addon sounds\n");
 FreeAddonSounds ();
 DigiClose ();
 FreeUserSongs ();
 RLECacheClose ();
 BMFreeExtraObjBitmaps ();
 BMFreeExtraModels ();
-LogErr ("unloading render buffers\n");
+PrintLog ("unloading render buffers\n");
 FreeRenderItems ();
-LogErr ("unloading string pool\n");
+PrintLog ("unloading string pool\n");
 FreeStringPool ();
-LogErr ("unloading level messages\n");
+PrintLog ("unloading level messages\n");
 FreeTextData (gameData.messages);
 FreeTextData (&gameData.sounds);
-LogErr ("unloading hires animations\n");
+PrintLog ("unloading hires animations\n");
 PiggyFreeHiresAnimations ();
 PiggyBitmapPageOutAll (0);
-LogErr ("freeing sound buffers\n");
+PrintLog ("freeing sound buffers\n");
 DigiFreeSoundBufs ();
 FreeSoundReplacements ();
-LogErr ("unloading hoard data\n");
+PrintLog ("unloading hoard data\n");
 FreeHoardData ();
-LogErr ("unloading auxiliary poly model data\n");
+PrintLog ("unloading auxiliary poly model data\n");
 G3FreeAllPolyModelItems ();
-LogErr ("unloading hires models\n");
+PrintLog ("unloading hires models\n");
 FreeHiresModels (0);
-LogErr ("unloading tracker list\n");
+PrintLog ("unloading tracker list\n");
 DestroyTrackerList ();
-LogErr ("unloading lightmap data\n");
+PrintLog ("unloading lightmap data\n");
 DestroyLightMaps ();
-LogErr ("unloading particle data\n");
+PrintLog ("unloading particle data\n");
 DestroyAllSmoke ();
-LogErr ("unloading shield sphere data\n");
+PrintLog ("unloading shield sphere data\n");
 DestroySphere (&gameData.render.shield);
 DestroySphere (&gameData.render.monsterball);
-LogErr ("unloading HUD icons\n");
+PrintLog ("unloading HUD icons\n");
 FreeInventoryIcons ();
 FreeObjTallyIcons ();
-LogErr ("unloading extra texture data\n");
+PrintLog ("unloading extra texture data\n");
 FreeExtraImages ();
-LogErr ("unloading shield data\n");
+PrintLog ("unloading shield data\n");
 FreeSphereCoord ();
-LogErr ("unloading palettes\n");
+PrintLog ("unloading palettes\n");
 FreePalettes ();
 FreeSkyBoxSegList ();
 CloseDynLighting ();
@@ -1569,20 +1569,20 @@ if (gameStates.render.vr.buffers.offscreen)	{
 	GrFreeCanvas (gameStates.render.vr.buffers.offscreen);
 	gameStates.render.vr.buffers.offscreen = NULL;
 }
-LogErr ("unloading gauge data\n");
+PrintLog ("unloading gauge data\n");
 CloseGaugeCanvases ();
-LogErr ("restoring effect bitmaps\n");
+PrintLog ("restoring effect bitmaps\n");
 RestoreEffectBitmapIcons ();
 if (bGameCockpitCopyCode) {
 	D2_FREE (bGameCockpitCopyCode);
 	bGameCockpitCopyCode = NULL;
 }
 if (bmBackground.bmTexBuf) {
-	LogErr ("unloading background bitmap\n");
+	PrintLog ("unloading background bitmap\n");
 	D2_FREE (bmBackground.bmTexBuf);
 	}
 ClearWarnFunc (ShowInGameWarning);     //don't use this func anymore
-LogErr ("unloading custom background data\n");
+PrintLog ("unloading custom background data\n");
 NMFreeAltBg (1);
 SaveBanList ();
 FreeBanList ();
@@ -1962,17 +1962,17 @@ if (nDebugSlowdown) {
 	UpdatePlayerStats ();
 	UpdatePlayerWeaponInfo ();
 	DiminishPaletteTowardsNormal ();		//	Should leave palette effect up for as long as possible by putting right before render.
-//LogErr ("DoAfterburnerStuff\n");
+//PrintLog ("DoAfterburnerStuff\n");
 	DoAfterburnerStuff ();
-//LogErr ("DoCloakStuff\n");
+//PrintLog ("DoCloakStuff\n");
 	DoCloakStuff ();
-//LogErr ("DoInvulnerableStuff\n");
+//PrintLog ("DoInvulnerableStuff\n");
 	DoInvulnerableStuff ();
-//LogErr ("DoInvulnerableStuff \n");
+//PrintLog ("DoInvulnerableStuff \n");
 	RemoveObsoleteStuckObjects ();
-//LogErr ("RemoveObsoleteStuckObjects \n");
+//PrintLog ("RemoveObsoleteStuckObjects \n");
 	InitAIFrame ();
-//LogErr ("InitAIFrame \n");
+//PrintLog ("InitAIFrame \n");
 	DoFinalBossFrame ();
 // -- lightning_frame ();
 	// -- recharge_energy_frame ();
@@ -1999,7 +1999,7 @@ DrainHeadLightPower ();
 			InitCockpit ();
 			gameStates.render.cockpit.bRedraw = 0;
 		}
-//LogErr ("GameRenderFrame\n");
+//PrintLog ("GameRenderFrame\n");
 		GameRenderFrame ();
 		gameStates.app.bUsingConverter = 0;
 		//show_extraViews ();		//missile view, buddy bot, etc.
@@ -2015,28 +2015,28 @@ DrainHeadLightPower ();
 	if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 		DoReactorDeadFrame ();
 		}
-//LogErr ("ProcessSmartMinesFrame \n");
+//PrintLog ("ProcessSmartMinesFrame \n");
 	ProcessSmartMinesFrame ();
-//LogErr ("DoSeismicStuff\n");
+//PrintLog ("DoSeismicStuff\n");
 	DoSeismicStuff ();
-//LogErr ("DoSmokeFrame \n");
+//PrintLog ("DoSmokeFrame \n");
 	DoSmokeFrame ();
 	DoEnergySparkFrame ();
-//LogErr ("DoFlashFrame \n");
+//PrintLog ("DoFlashFrame \n");
 	DoLightningFrame ();
-//LogErr ("DoAmbientSounds\n");
+//PrintLog ("DoAmbientSounds\n");
 	DoAmbientSounds ();
 #ifdef _DEBUG
 	if (gameData.speedtest.bOn)
 		SpeedtestFrame ();
 #endif
 	if (bReadControls) {
-//LogErr ("ReadControls\n");
+//PrintLog ("ReadControls\n");
 		ReadControls ();
 		}
 	else
 		memset (&Controls, 0, sizeof (Controls));
-//LogErr ("DropPowerups\n");
+//PrintLog ("DropPowerups\n");
 	DropPowerups ();
 	gameData.time.xGame += gameData.time.xFrame;
 	if (f2i (gameData.time.xGame)/10 != f2i (gameData.time.xGame-gameData.time.xFrame)/10) {
@@ -2053,7 +2053,7 @@ DrainHeadLightPower ();
    if ((gameData.app.nGameMode & GM_MULTI) && netGame.xPlayTimeAllowed)
        gameStates.app.xThisLevelTime +=gameData.time.xFrame;
 #endif
-//LogErr ("DigiSyncSounds\n");
+//PrintLog ("DigiSyncSounds\n");
 	DigiSyncSounds ();
 	if (gameStates.app.bEndLevelSequence) {
 		DoEndLevelFrame ();
@@ -2062,21 +2062,21 @@ DrainHeadLightPower ();
 		return 1;					//skip everything else
 		}
 	if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-//LogErr ("DoExplodingWallFrame\n");
+//PrintLog ("DoExplodingWallFrame\n");
 		DoExplodingWallFrame ();
 		}
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) || (gameData.demo.nVcrState != ND_STATE_PAUSED)) {
-//LogErr ("DoSpecialEffects\n");
+//PrintLog ("DoSpecialEffects\n");
 		DoSpecialEffects ();
-//LogErr ("WallFrameProcess\n");
+//PrintLog ("WallFrameProcess\n");
 		WallFrameProcess ();
-//LogErr ("TriggersFrameProcess\n");
+//PrintLog ("TriggersFrameProcess\n");
 		TriggersFrameProcess ();
 		}
 	if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING)) {
 			NDRecordControlCenterDestroyed ();
 		}
-//LogErr ("FlashFrame\n");
+//PrintLog ("FlashFrame\n");
 	UpdateFlagClips ();
 	MultiSetFlagPos ();
 	SetPlayerPaths ();
@@ -2089,19 +2089,19 @@ DrainHeadLightPower ();
 		}
 	else { // Note the link to above!
 		LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  LaserDoWeaponSequence modifies this.
-//LogErr ("UpdateAllObjects\n");
+//PrintLog ("UpdateAllObjects\n");
 		if (!UpdateAllObjects ())
 			return 0;
-//LogErr ("PowerupGrabCheatAll \n");
+//PrintLog ("PowerupGrabCheatAll \n");
 		PowerupGrabCheatAll ();
 		if (gameStates.app.bEndLevelSequence)	//might have been started during move
 			return 1;
-//LogErr ("FuelcenUpdateAll\n");
+//PrintLog ("FuelcenUpdateAll\n");
 		FuelcenUpdateAll ();
-//LogErr ("DoAIFrameAll\n");
+//PrintLog ("DoAIFrameAll\n");
 		DoAIFrameAll ();
 		if (AllowedToFireLaser ()) {
-//LogErr ("FireLaser\n");
+//PrintLog ("FireLaser\n");
 			FireLaser ();				// Fire Laser!
 			}
 		if (!FusionBump ())
@@ -2129,13 +2129,13 @@ DrainHeadLightPower ();
 	}
 DoSlowMotionFrame ();
 CheckInventory ();
-//LogErr ("OmegaChargeFrame \n");
+//PrintLog ("OmegaChargeFrame \n");
 OmegaChargeFrame ();
-//LogErr ("SlideTextures \n");
+//PrintLog ("SlideTextures \n");
 SlideTextures ();
-//LogErr ("FlickerLights \n");
+//PrintLog ("FlickerLights \n");
 FlickerLights ();
-//LogErr ("\n");
+//PrintLog ("\n");
 AutoScreenshot ();
 return 1;
 }

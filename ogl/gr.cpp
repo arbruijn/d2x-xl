@@ -172,13 +172,13 @@ grdCurScreen->scCanvas.cvBitmap.bmProps.nType = BM_OGL;
 //grdCurScreen->scCanvas.cvBitmap.bmTexBuf = (unsigned char *)screen->pixels;
 grdCurScreen->scCanvas.cvBitmap.bmTexBuf = (ubyte *) D2_REALLOC (gr_bm_data, w * h);
 GrSetCurrentCanvas (NULL);
-/***/LogErr ("   initializing OpenGL window\n");
+/***/PrintLog ("   initializing OpenGL window\n");
 if (!OglInitWindow (w, h, 0))	//platform specific code
 	return 0;
 OglGetVerInfo ();
-/***/LogErr ("   initializing OpenGL view port\n");
+/***/PrintLog ("   initializing OpenGL view port\n");
 OglViewport (0,0,w,h);
-/***/LogErr ("   initializing OpenGL screen mode\n");
+/***/PrintLog ("   initializing OpenGL screen mode\n");
 OglSetScreenMode ();
 GrUpdate (0);
 #endif
@@ -230,14 +230,14 @@ if (gameStates.gfx.bInstalled)
 #ifdef OGL_RUNTIME_LOAD
 OglInitLoadLibrary();
 #endif
-/***/LogErr ("   initializing SDL\n");
+/***/PrintLog ("   initializing SDL\n");
 #ifdef _DEBUG
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 #else
 if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
 #endif
 {
-	LogErr ("SDL library video initialisation failed: %s.\n", SDL_GetError());
+	PrintLog ("SDL library video initialisation failed: %s.\n", SDL_GetError());
 	Error("SDL library video initialisation failed: %s.", SDL_GetError());
 }
 if ((t = FindArg ("-gl_voodoo"))) {
@@ -246,7 +246,7 @@ if ((t = FindArg ("-gl_voodoo"))) {
 	//GrToggleFullScreen();
 	}
 if ((t = FindArg("-fullscreen"))) {
-	/***/LogErr ("   switching to fullscreen\n");
+	/***/PrintLog ("   switching to fullscreen\n");
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
 	//GrToggleFullScreen();
 	}
@@ -257,9 +257,9 @@ if ((t=FindArg ("-gl_vidmem"))){
 if ((t=FindArg ("-gl_reticle"))){
 	gameStates.ogl.nReticle=atoi(Args[t+1]);
 }
-/***/LogErr ("   initializing internal texture list\n");
+/***/PrintLog ("   initializing internal texture list\n");
 OglInitTextureListInternal();
-/***/LogErr ("   allocating screen buffer\n");
+/***/PrintLog ("   allocating screen buffer\n");
 MALLOC (grdCurScreen, grsScreen, 1);
 memset (grdCurScreen, 0, sizeof (grsScreen));
 grdCurScreen->scCanvas.cvBitmap.bmTexBuf = NULL;
@@ -289,7 +289,7 @@ GrSetCurrentCanvas( &grdCurScreen->scCanvas );
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();
 //atexit(GrClose);
-/***/LogErr ("   initializing OpenGL extensions\n");
+/***/PrintLog ("   initializing OpenGL extensions\n");
 OglInitExtensions ();
 OglDestroyDrawBuffer ();
 OglCreateDrawBuffer ();
@@ -301,7 +301,7 @@ return 0;
 
 void _CDECL_ GrClose (void)
 {
-LogErr ("shutting down graphics subsystem\n");
+PrintLog ("shutting down graphics subsystem\n");
 OglClose();//platform specific code
 if (grdCurScreen) {
 	if (grdCurScreen->scCanvas.cvBitmap.bmTexBuf)

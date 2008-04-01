@@ -479,7 +479,7 @@ if (gameData.multiplayer.autoNG.bValid) {
 	ExecMultiMenuOption (mainOpts.nMulti);
 	return 0;
 	}
-LogErr ("launching main menu\n");
+PrintLog ("launching main menu\n");
 do {
 	nOptions = CreateMainMenu (m); // may have to change, eg, maybe selected pilot and no save games.
 	gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();                // .. 20 seconds from now!
@@ -1536,7 +1536,7 @@ gameStates.app.bD1Mission = (gameData.missions.list [nMission].nDescentVersion =
 gameData.missions.nLastMission = nMission;
 nNewLevel = 1;
 
-LogErr ("   getting highest level allowed to play\n");
+PrintLog ("   getting highest level allowed to play\n");
 nHighestPlayerLevel = GetHighestLevel ();
 
 if (nHighestPlayerLevel > gameData.missions.nLastLevel)
@@ -1687,7 +1687,7 @@ for (;;) {
 			bMsnLoaded = 1;
 			nMission = i;
 			nLevel = 1;
-			LogErr ("   getting highest level allowed to play\n");
+			PrintLog ("   getting highest level allowed to play\n");
 			nPlayerMaxLevel = GetHighestLevel ();
 			if (nPlayerMaxLevel > gameData.missions.nLastLevel)
 				nPlayerMaxLevel = gameData.missions.nLastLevel;

@@ -155,9 +155,9 @@ for (i = 0; i < MAX_OBJECTS; i++)
 InitPolygonModels ();
 if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");
-/*---*/LogErr ("   Loading sound data\n");
+/*---*/PrintLog ("   Loading sound data\n");
 PiggyReadSounds ();
-/*---*/LogErr ("   Initializing endlevel data\n");
+/*---*/PrintLog ("   Initializing endlevel data\n");
 InitEndLevel ();		//this is in bm_init_use_tbl (), so I gues it goes here
 return 0;
 }
@@ -238,58 +238,58 @@ void BMReadAll (CFILE * fp)
 	int i, t;
 
 gameData.pig.tex.nTextures [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
+/*---*/PrintLog ("      Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
 BitmapIndexReadN (gameData.pig.tex.bmIndex [0], gameData.pig.tex.nTextures [0], fp);
 BuildTextureIndex (0, gameData.pig.tex.nTextures [0]);
 ReadTMapInfoN (gameData.pig.tex.tMapInfo [0], gameData.pig.tex.nTextures [0], fp);
 
 t = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d sound indices\n", t);
+/*---*/PrintLog ("      Loading %d sound indices\n", t);
 CFRead (Sounds [0], sizeof (ubyte), t, fp);
 CFRead (AltSounds [0], sizeof (ubyte), t, fp);
 
 gameData.eff.nClips [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d animation clips\n", gameData.eff.nClips [0]);
+/*---*/PrintLog ("      Loading %d animation clips\n", gameData.eff.nClips [0]);
 VClipReadN (gameData.eff.vClips [0], gameData.eff.nClips [0], fp);
 
 gameData.eff.nEffects [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
+/*---*/PrintLog ("      Loading %d animation descriptions\n", gameData.eff.nEffects [0]);
 EClipReadN (gameData.eff.effects [0], gameData.eff.nEffects [0], fp);
 // red glow texture animates way too fast
 gameData.eff.effects [0][32].vc.xTotalTime *= 10;
 gameData.eff.effects [0][32].vc.xFrameTime *= 10;
 gameData.walls.nAnims [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d tWall animations\n", gameData.walls.nAnims [0]);
+/*---*/PrintLog ("      Loading %d tWall animations\n", gameData.walls.nAnims [0]);
 WClipReadN (gameData.walls.anims [0], gameData.walls.nAnims [0], fp);
 
 gameData.bots.nTypes [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
+/*---*/PrintLog ("      Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
 RobotInfoReadN (gameData.bots.info [0], gameData.bots.nTypes [0], fp);
 gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
 memcpy (gameData.bots.defaultInfo, gameData.bots.info [0], gameData.bots.nTypes [0] * sizeof (*gameData.bots.defaultInfo));
 
 gameData.bots.nJoints = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d robot joint descriptions\n", gameData.bots.nJoints);
+/*---*/PrintLog ("      Loading %d robot joint descriptions\n", gameData.bots.nJoints);
 JointPosReadN (gameData.bots.joints, gameData.bots.nJoints, fp);
 gameData.bots.nDefaultJoints = gameData.bots.nJoints;
 memcpy (gameData.bots.defaultJoints, gameData.bots.joints, gameData.bots.nJoints * sizeof (*gameData.bots.defaultJoints));
 
 gameData.weapons.nTypes [0] = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
+/*---*/PrintLog ("      Loading %d weapon descriptions\n", gameData.weapons.nTypes [0]);
 WeaponInfoReadN (gameData.weapons.info, gameData.weapons.nTypes [0], fp, gameData.pig.tex.nHamFileVersion);
 BMSetAfterburnerSizes ();
 
 gameData.objs.pwrUp.nTypes = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
+/*---*/PrintLog ("      Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
 PowerupTypeInfoReadN (gameData.objs.pwrUp.info, gameData.objs.pwrUp.nTypes, fp);
 
 gameData.models.nPolyModels = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d tPolyModel descriptions\n", gameData.models.nPolyModels);
+/*---*/PrintLog ("      Loading %d tPolyModel descriptions\n", gameData.models.nPolyModels);
 PolyModelReadN (gameData.models.polyModels, gameData.models.nPolyModels, fp);
 gameData.models.nDefPolyModels = gameData.models.nPolyModels;
 memcpy (gameData.models.defPolyModels, gameData.models.polyModels, gameData.models.nPolyModels * sizeof (*gameData.models.defPolyModels));
 
-/*---*/LogErr ("      Loading poly model data\n");
+/*---*/PrintLog ("      Loading poly model data\n");
 for (i = 0; i < gameData.models.nPolyModels; i++) {
 	gameData.models.polyModels [i].modelData = 
 	gameData.models.defPolyModels [i].modelData = NULL;
@@ -302,26 +302,26 @@ for (i = 0; i < gameData.models.nPolyModels; i++)
 	gameData.models.nDeadModels [i] = CFReadInt (fp);
 
 t = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d cockpit gauges\n", t);
+/*---*/PrintLog ("      Loading %d cockpit gauges\n", t);
 BitmapIndexReadN (gameData.cockpit.gauges [1], t, fp);
 BitmapIndexReadN (gameData.cockpit.gauges [0], t, fp);
 
 gameData.pig.tex.nObjBitmaps = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d tObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
+/*---*/PrintLog ("      Loading %d tObject bitmap indices\n", gameData.pig.tex.nObjBitmaps);
 BitmapIndexReadN (gameData.pig.tex.objBmIndex, gameData.pig.tex.nObjBitmaps, fp);
 for (i = 0; i < gameData.pig.tex.nObjBitmaps; i++)
 	gameData.pig.tex.pObjBmIndex [i] = CFReadShort (fp);
 
-/*---*/LogErr ("      Loading tPlayer ship description\n");
+/*---*/PrintLog ("      Loading tPlayer ship description\n");
 PlayerShipRead (&gameData.pig.ship.only, fp);
 
 gameData.models.nCockpits = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d cockpit bitmaps\n", gameData.models.nCockpits);
+/*---*/PrintLog ("      Loading %d cockpit bitmaps\n", gameData.models.nCockpits);
 BitmapIndexReadN (gameData.pig.tex.cockpitBmIndex, gameData.models.nCockpits, fp);
 gameData.pig.tex.nFirstMultiBitmap = CFReadInt (fp);
 
 gameData.reactor.nReactors = CFReadInt (fp);
-/*---*/LogErr ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
+/*---*/PrintLog ("      Loading %d reactor descriptions\n", gameData.reactor.nReactors);
 ReactorReadN (gameData.reactor.props, gameData.reactor.nReactors, fp);
 
 gameData.models.nMarkerModel = CFReadInt (fp);
@@ -590,11 +590,11 @@ void BMReadGameDataD1 (CFILE *cfp)
 CFSeek (cfp, sizeof (int), SEEK_CUR);
 CFRead (&gameData.pig.tex.nTextures [1], sizeof (int), 1, cfp);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
-/*---*/LogErr ("         Loading %d texture indices\n", j);
+/*---*/PrintLog ("         Loading %d texture indices\n", j);
 //CFRead (gameData.pig.tex.bmIndex [1], sizeof (tBitmapIndex), D1_MAX_TEXTURES, cfp);
 BitmapIndexReadN (gameData.pig.tex.bmIndex [1], D1_MAX_TEXTURES, cfp);
 BuildTextureIndex (1, D1_MAX_TEXTURES);
-/*---*/LogErr ("         Loading %d texture descriptions\n", j);
+/*---*/PrintLog ("         Loading %d texture descriptions\n", j);
 for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 	CFSeek (cfp, sizeof (t.filename), SEEK_CUR);
 	pt->flags = (ubyte) CFReadByte (cfp);
@@ -607,7 +607,7 @@ for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 	}
 CFRead (Sounds [1], sizeof (ubyte), D1_MAX_SOUNDS, cfp);
 CFRead (AltSounds [1], sizeof (ubyte), D1_MAX_SOUNDS, cfp);
-/*---*/LogErr ("         Initializing %d sounds\n", D1_MAX_SOUNDS);
+/*---*/PrintLog ("         Initializing %d sounds\n", D1_MAX_SOUNDS);
 if (gameOpts->sound.bUseD1Sounds) {
 memcpy (Sounds [1] + D1_MAX_SOUNDS, Sounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
 	memcpy (AltSounds [1] + D1_MAX_SOUNDS, AltSounds [0] + D1_MAX_SOUNDS, MAX_SOUNDS - D1_MAX_SOUNDS);
@@ -623,13 +623,13 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 		AltSounds [1][i] = AltSounds [0][i];
 	}
 gameData.eff.nClips [1] = CFReadInt (cfp);
-/*---*/LogErr ("         Loading %d animation clips\n", gameData.eff.nClips [1]);
+/*---*/PrintLog ("         Loading %d animation clips\n", gameData.eff.nClips [1]);
 VClipReadN (gameData.eff.vClips [1], D1_VCLIP_MAXNUM, cfp);
 gameData.eff.nEffects [1] = CFReadInt (cfp);
-/*---*/LogErr ("         Loading %d animation descriptions\n", gameData.eff.nClips [1]);
+/*---*/PrintLog ("         Loading %d animation descriptions\n", gameData.eff.nClips [1]);
 EClipReadN (gameData.eff.effects [1], D1_MAX_EFFECTS, cfp);
 gameData.walls.nAnims [1] = CFReadInt (cfp);
-/*---*/LogErr ("         Loading %d tWall animations\n", gameData.walls.nAnims [1]);
+/*---*/PrintLog ("         Loading %d tWall animations\n", gameData.walls.nAnims [1]);
 for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++) {
 	//CFRead (&w, sizeof (w), 1, cfp);
 	pw->xTotalTime = CFReadFix (cfp);
@@ -643,7 +643,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	pw->pad = (char) CFReadByte (cfp);
 	}
 CFRead (&gameData.bots.nTypes [1], sizeof (int), 1, cfp);
-/*---*/LogErr ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
+/*---*/PrintLog ("         Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
 memcpy (gameData.bots.info [1], gameData.bots.info [0], MAX_ROBOT_TYPES * sizeof (tRobotInfo));
 if (!gameOpts->sound.bUseD1Sounds)
 	return;
@@ -729,7 +729,7 @@ CFSeek (cfp,
 	POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,
 	SEEK_CUR);
 i = CFReadInt (cfp);
-/*---*/LogErr ("         Acquiring model data size of %d polymodels\n", i);
+/*---*/PrintLog ("         Acquiring model data size of %d polymodels\n", i);
 for (h = 0; i; i--) {
 	CFSeek (cfp, MODEL_DATA_SIZE_OFFS, SEEK_CUR);
 	pm.nDataSize = CFReadInt (cfp);
@@ -746,11 +746,11 @@ CFSeek (cfp,
 	sizeof (int) +
 	sizeof (tBitmapIndex) * D1_N_COCKPIT_BITMAPS,
 	SEEK_CUR);
-/*---*/LogErr ("         Loading sound data\n", i);
+/*---*/PrintLog ("         Loading sound data\n", i);
 CFRead (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS, cfp);
 //for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) 
 pr = gameData.bots.info [1] + 17;
-/*---*/LogErr ("         Initializing sound data\n", i);
+/*---*/PrintLog ("         Initializing sound data\n", i);
 for (i = 0; i < D1_MAX_SOUNDS; i++)	{
 	if (Sounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
@@ -796,7 +796,7 @@ CFSeek (cfp,
 	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS,
 	SEEK_CUR);
 gameData.weapons.nTypes [1] = CFReadInt (cfp);
-/*---*/LogErr ("         Loading %d weapon descriptions\n", gameData.weapons.nTypes [1]);
+/*---*/PrintLog ("         Loading %d weapon descriptions\n", gameData.weapons.nTypes [1]);
 for (i = 0; i < gameData.weapons.nTypes [1]; i++) 
 	BMReadWeaponInfoD1N (cfp, i);
 #endif
@@ -1103,7 +1103,7 @@ void _CDECL_ BMFreeExtraObjBitmaps (void)
 	int			i;
 	grsBitmap	*bmP;
 
-LogErr ("unloading extra bitmaps\n");
+PrintLog ("unloading extra bitmaps\n");
 if (!gameData.pig.tex.nExtraBitmaps)
 	gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
 for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i; 
@@ -1123,7 +1123,7 @@ gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
 void BMFreeExtraModels ()
 {
 	//return;
-LogErr ("unloading extra poly models\n");
+PrintLog ("unloading extra poly models\n");
 while (gameData.models.nPolyModels > N_D2_POLYGON_MODELS) {
 	FreeModel (gameData.models.polyModels + --gameData.models.nPolyModels);
 	FreeModel (gameData.models.defPolyModels + gameData.models.nPolyModels);

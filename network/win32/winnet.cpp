@@ -211,7 +211,7 @@ return IPX_INIT_OK;
 
 void _CDECL_ IpxClose (void)
 {
-LogErr ("closing IPX socket\n");
+PrintLog ("closing IPX socket\n");
 if (bIpxInstalled) {
    WSACleanup ();
 	driver->CloseSocket (&ipxSocketData);

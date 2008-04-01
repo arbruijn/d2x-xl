@@ -52,7 +52,7 @@ tiRender.nTask = (tRenderTask) nTask;
 tiRender.ti [0].bExec =
 tiRender.ti [1].bExec = 1;
 #if 0
-LogErr ("running render threads (task: %d)\n", nTask);
+PrintLog ("running render threads (task: %d)\n", nTask);
 #endif
 t1 = clock ();
 while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000)) {
@@ -64,7 +64,7 @@ while ((tiRender.ti [0].bExec || tiRender.ti [1].bExec) && (clock () - t1 < 1000
 #if 1//ndef _DEBUG
 			t2 = clock ();
 #else
-			LogErr ("threads locked up (task: %d)\n", nTask);
+			PrintLog ("threads locked up (task: %d)\n", nTask);
 			tiRender.ti [0].bExec =
 			tiRender.ti [1].bExec = 0;
 			if (++nLockups > 100)

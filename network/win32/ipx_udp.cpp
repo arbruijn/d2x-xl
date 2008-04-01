@@ -550,14 +550,14 @@ static void dumpraddr(unsigned char *a)
 {
 short port;
 
-LogErr ("[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
+PrintLog ("[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
 con_printf (0, "[%u.%u.%u.%u]", a[0],a[1],a[2],a[3]);
 port=(signed short)ntohs (*(unsigned short *)(a+4));
 if (port) {
-	LogErr (":%+d",port);
+	PrintLog (":%+d",port);
 	con_printf (0, ":%+d",port);
 	}
-LogErr ("\n");
+PrintLog ("\n");
 }
 
 //------------------------------------------------------------------------------

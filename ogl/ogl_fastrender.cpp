@@ -69,7 +69,7 @@ void InitGrayScaleShader (void)
 if (!gameStates.ogl.bShadersOk)
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
-	LogErr ("building grayscale shader programs\n");
+	PrintLog ("building grayscale shader programs\n");
 	if (gsShaderProg)
 		DeleteShaderProg (&gsShaderProg);
 	gameStates.render.textures.bHaveGrayScaleShader = 

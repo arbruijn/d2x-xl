@@ -846,7 +846,7 @@ if (gameStates.ogl.bVertexLighting)
 void CloseDynLighting (void)
 {
 if (gameStates.ogl.bVertexLighting) {
-	LogErr ("unloading dynamic lighting buffers\n");
+	PrintLog ("unloading dynamic lighting buffers\n");
 	OglDestroyFBuffer (&gameData.render.lights.dynamic.fb);
 	}
 }
@@ -1564,7 +1564,7 @@ if (!gameStates.ogl.bVertexLighting)
 gameStates.ogl.bVertexLighting = 0;
 #if SHADER_VERTEX_LIGHTING
 if (gameStates.ogl.bRender2TextureOk && gameStates.ogl.bShadersOk && gameOpts->render.nPath) {
-	LogErr ("building vertex lighting shader program\n");
+	PrintLog ("building vertex lighting shader program\n");
 	gameStates.ogl.bVertexLighting = 1;
 	if (hVertLightShader)
 		DeleteShaderProg (&hVertLightShader);

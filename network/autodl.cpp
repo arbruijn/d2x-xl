@@ -576,7 +576,7 @@ int DownloadMission (char *pszMission)
 	char			szProgress [30];
 	int			i;
 
-LogErr ("   trying to download mission '%s'\n", pszMission);
+PrintLog ("   trying to download mission '%s'\n", pszMission);
 gameStates.multi.bTryAutoDL = 0;
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
 	return 0;

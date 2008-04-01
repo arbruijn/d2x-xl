@@ -19,21 +19,21 @@ int FileFindNext (FILEFINDSTRUCT *ffsP, int nFlags)
 	int				i;
 
 while ((deP = readdir (ffsP->dirP))) {
-	//LogErr ("FileFindNext (readdir() = %s, %d)\n", deP->d_name, nFlags);
+	//PrintLog ("FileFindNext (readdir() = %s, %d)\n", deP->d_name, nFlags);
 	if ((i = regexec (&ffsP->filter, deP->d_name, 0, 0, 0))) {
-		//LogErr ("regexec = %d\n", i);
+		//PrintLog ("regexec = %d\n", i);
 		continue;
 		}
-	//LogErr ("   regexec: match\n", deP->d_name);
+	//PrintLog ("   regexec: match\n", deP->d_name);
 	sprintf (szFile, "%s/%s", ffsP->szDir, deP->d_name);
 	i = stat (szFile, &statBuf);
-	//LogErr ("   stat (%s) = %d [%d]\n", szFile, i, (statBuf.st_mode & S_IFDIR) ? FF_DIRECTORY : FF_NORMAL);
+	//PrintLog ("   stat (%s) = %d [%d]\n", szFile, i, (statBuf.st_mode & S_IFDIR) ? FF_DIRECTORY : FF_NORMAL);
 	i = (statBuf.st_mode & S_IFDIR) ? FF_DIRECTORY : FF_NORMAL;
-	//LogErr ("mode = %d, flags = %d\n", i, nFlags);
+	//PrintLog ("mode = %d, flags = %d\n", i, nFlags);
 	if (nFlags != i)
 		continue;
 	strcpy (ffsP->name, deP->d_name);
-	//LogErr ("FileFindNext (%s [%c])\n", deP->d_name, (i == FF_NORMAL) ? 'f' : 'd');
+	//PrintLog ("FileFindNext (%s [%c])\n", deP->d_name, (i == FF_NORMAL) ? 'f' : 'd');
 	return 0;
 	}
 return -1;
@@ -52,7 +52,7 @@ int FileFindFirst (char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags)
   
 if (!pszFilter)
 	return -1;
-//LogErr ("FileFindFirst (%s, %s)\n", gameFolders.szGameDir, pszFilter);
+//PrintLog ("FileFindFirst (%s, %s)\n", gameFolders.szGameDir, pszFilter);
 memset (ffsP, 0, sizeof (*ffsP));
 if (*pszFilter && (*pszFilter != ',') && (*pszFilter != '/'))
 	sprintf (ffsP->szDir, "%s/", gameFolders.szGameDir);
@@ -63,7 +63,7 @@ for (i = (int) strlen (ffsP->szDir), j = (int) strlen (pszFilter); i; j--)
 	if (ffsP->szDir [--i] == '/')
 		break;
 ffsP->szDir [i] = '\0';
-//LogErr ("FileFindFirst (%s, %s)\n", ffsP->szDir, pszFilter);
+//PrintLog ("FileFindFirst (%s, %s)\n", ffsP->szDir, pszFilter);
 for (i = 0; pszFilter [j]; i++, j++) {
 	if (pszFilter [j] == '*') {
 		szFilter [i++] = '.';
@@ -77,14 +77,14 @@ for (i = 0; pszFilter [j]; i++, j++) {
 		szFilter [i] = pszFilter [j];
 	}
 szFilter [i] = '\0';
-//LogErr ("regcomp (%s)\n", szFilter);
+//PrintLog ("regcomp (%s)\n", szFilter);
 if ((i = regcomp (&ffsP->filter, szFilter, flags))) {
 	char szError [200];
 	regerror (i, &ffsP->filter, szError, 200);
-	//LogErr ("regcomp : error %s\n", szError);
+	//PrintLog ("regcomp : error %s\n", szError);
 	return -1;
 	}
-//LogErr ("opendir (%s)\n", ffsP->szDir);
+//PrintLog ("opendir (%s)\n", ffsP->szDir);
 if (!(ffsP->dirP = opendir (ffsP->szDir)))
 	return -1;
 return FileFindNext (ffsP, nFlags);

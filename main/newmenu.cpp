@@ -219,7 +219,7 @@ if (gameStates.app.bGameRunning) {
 
 void _CDECL_ NewMenuClose (void)
 {
-LogErr ("unloading menu data\n");
+PrintLog ("unloading menu data\n");
 if (nmBackground.bmTexBuf)
 	D2_FREE (nmBackground.bmTexBuf);
 if (nmBackgroundSave.bmTexBuf)

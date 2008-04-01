@@ -280,7 +280,7 @@ for (i = iHigh - 1; i >= iViewer; i--) {
 void _CDECL_ FreeTerrainHeightMap (void)
 {
 if (gameData.render.terrain.pHeightMap) {
-	LogErr ("unloading terrain height map\n");
+	PrintLog ("unloading terrain height map\n");
 	D2_FREE (gameData.render.terrain.pHeightMap);
 	}
 }
@@ -294,7 +294,7 @@ void LoadTerrain (char *filename)
 	int			i, j;
 	ubyte			h, hMin, hMax;
 
-LogErr ("            loading terrain height map\n");
+PrintLog ("            loading terrain height map\n");
 iff_error = iff_read_bitmap (filename, &bmHeight, BM_LINEAR);
 if (iff_error != IFF_NO_ERROR) {
 #if TRACE	
@@ -310,7 +310,7 @@ gameData.render.terrain.nGridW = bmHeight.bmProps.w;
 gameData.render.terrain.nGridH = bmHeight.bmProps.h;
 Assert (gameData.render.terrain.nGridW <= TERRAIN_GRID_MAX_SIZE);
 Assert (gameData.render.terrain.nGridH <= TERRAIN_GRID_MAX_SIZE);
-LogErr ("heightmap loaded, size=%dx%d\n", gameData.render.terrain.nGridW, gameData.render.terrain.nGridH);
+PrintLog ("heightmap loaded, size=%dx%d\n", gameData.render.terrain.nGridW, gameData.render.terrain.nGridH);
 gameData.render.terrain.pHeightMap = bmHeight.bmTexBuf;
 hMax = 0;
 hMin = 255;
@@ -336,7 +336,7 @@ D2_FREE (gameData.render.terrain.bmP->bmTexBuf);
 gameData.render.terrain.bmP->bmTexBuf = D2_ALLOC (gameData.render.terrain.bmP->bmProps.h * gameData.render.terrain.bmP->bmProps.rowSize);
 memset (gameData.render.terrain.bmP->bmTexBuf, 0xFF, gameData.render.terrain.bmP->bmProps.h * gameData.render.terrain.bmP->bmProps.rowSize);
 #endif
-LogErr ("            building terrain light map\n");
+PrintLog ("            building terrain light map\n");
 BuildTerrainLightMap ();
 }
 
@@ -346,7 +346,7 @@ BuildTerrainLightMap ();
 static void GetTerrainPoint (vmsVector *p, int i, int j)
 {
 if (!gameData.render.terrain.pHeightMap) {
-	LogErr ("no heightmap available\n");
+	PrintLog ("no heightmap available\n");
 	return;
 	}
 if (i < 0)
@@ -396,7 +396,7 @@ return totalLight / 6;
 void _CDECL_ FreeTerrainLightMap ()
 {
 if (gameData.render.terrain.pLightMap) {
-	LogErr ("unloading terrain light map\n");
+	PrintLog ("unloading terrain light map\n");
 	D2_FREE (gameData.render.terrain.pLightMap);
 	}
 }

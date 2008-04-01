@@ -293,20 +293,20 @@ void FreeDeadzone ();
 
 void LoadExtraImages (void)
 {
-LogErr ("Loading extra images\n");
-LogErr ("   Loading corona images\n");
+PrintLog ("Loading extra images\n");
+PrintLog ("   Loading corona images\n");
 LoadCorona ();
-LogErr ("   Loading glare images\n");
+PrintLog ("   Loading glare images\n");
 LoadGlare ();
-LogErr ("   Loading halo images\n");
+PrintLog ("   Loading halo images\n");
 LoadHalo ();
-LogErr ("   Loading thruster images\n");
+PrintLog ("   Loading thruster images\n");
 LoadThruster ();
-LogErr ("   Loading shield images\n");
+PrintLog ("   Loading shield images\n");
 LoadShield ();
-LogErr ("   Loading explosion blast images\n");
+PrintLog ("   Loading explosion blast images\n");
 LoadExplBlast ();
-LogErr ("   Loading deadzone images\n");
+PrintLog ("   Loading deadzone images\n");
 LoadDeadzone ();
 }
 

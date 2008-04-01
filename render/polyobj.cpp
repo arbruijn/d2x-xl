@@ -833,7 +833,7 @@ void _CDECL_ FreePolygonModels (void)
 {
 	int i;
 
-LogErr ("unloading poly models\n");
+PrintLog ("unloading poly models\n");
 for (i = 0; i < MAX_POLYGON_MODELS; i++) {
 	FreeModel (gameData.models.polyModels + i);
 	FreeModel (gameData.models.defPolyModels + i);

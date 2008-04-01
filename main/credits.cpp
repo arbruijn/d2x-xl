@@ -301,7 +301,7 @@ get_line:;
 		} while (nExtraInc--);
 	nExtraInc = 0;
 
-	//LogErr ("%s\n", buffer [nLine]);
+	//PrintLog ("%s\n", buffer [nLine]);
 	for (i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 		int y;
 

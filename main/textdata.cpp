@@ -70,7 +70,7 @@ void LoadTextData (char *pszLevelName, char *pszExt, tTextData *msgP)
 	tTextIndex	*pi;
 
 	//first, D2_FREE up data allocated for old bitmaps
-LogErr ("   loading mission messages\n");
+PrintLog ("   loading mission messages\n");
 FreeTextData (msgP);
 ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
 bufSize = CFSize (szFilename, gameFolders.szDataDir, 0);

@@ -1001,7 +1001,7 @@ int ComputeNearestSegmentLights (int i)
 	vmsVector			center;
 	struct tLightDist	*pDists;
 
-LogErr ("computing nearest segment lights (%d)\n", i);
+PrintLog ("computing nearest segment lights (%d)\n", i);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
@@ -1055,7 +1055,7 @@ int ComputeNearestVertexLights (int nVertex)
 	vmsVector			vLightToVert, v;
 	struct tLightDist	*pDists;
 
-LogErr ("computing nearest vertex lights (%d)\n", nVertex);
+PrintLog ("computing nearest vertex lights (%d)\n", nVertex);
 if (!gameData.render.lights.dynamic.nLights)
 	return 0;
 if (!(pDists = (tLightDist *) D2_ALLOC (gameData.render.lights.dynamic.nLights * sizeof (tLightDist)))) {
@@ -1161,7 +1161,7 @@ void CreateFaceList (void)
 	ubyte			nSide, bColoredSeg, bWall;
 	char			*pszName;
 
-LogErr ("   Creating face list\n");
+PrintLog ("   Creating face list\n");
 gameData.segs.nFaces = 0;
 for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++, segFaceP++) {
 	bColoredSeg = ((gameData.segs.segment2s [nSegment].special >= SEGMENT_IS_WATER) &&
@@ -1649,7 +1649,7 @@ void ComputeSingleSegmentVisibility (short nStartSeg)
 	vmsAngVec	vAngles;
 	tObject		viewer;
 
-//LogErr ("computing visibility of segment %d\n", nStartSeg);
+//PrintLog ("computing visibility of segment %d\n", nStartSeg);
 gameStates.ogl.bUseTransform = 1;
 #ifdef _DEBUG
 if (nStartSeg == nDbgSeg)
@@ -1668,7 +1668,7 @@ for (sideP = SEGMENTS [nStartSeg].sides, nSide = 6; nSide; nSide--, sideP++) {
 	G3SetViewMatrix (&viewer.position.vPos, &viewer.position.mOrient, gameStates.render.xZoom, 1);
 	BuildRenderSegList (nStartSeg, 0);	
 	G3EndFrame ();
-	//LogErr ("   flagging visible segments\n");
+	//PrintLog ("   flagging visible segments\n");
 	for (i = 0; i < gameData.render.mine.nRenderSegs; i++) {
 		if (0 > (nSegment = gameData.render.mine.nSegRenderList [i]))
 			continue;
@@ -1699,7 +1699,7 @@ void ComputeSegmentVisibility (int startI)
 {
 	int			i, endI;
 
-LogErr ("computing segment visibility (%d)\n", startI);
+PrintLog ("computing segment visibility (%d)\n", startI);
 if (startI <= 0) {
 	i = sizeof (*gameData.segs.bVertVis) * gameData.segs.nVertices * VERTVIS_FLAGS;
 	if (!(gameData.segs.bVertVis = (ubyte *) D2_ALLOC (i)))
@@ -2053,18 +2053,18 @@ if (!(SHOW_DYN_LIGHT ||
 	return;
 loadOp = 0;
 loadIdx = 0;
-LogErr ("Looking for precompiled light data\n");
+PrintLog ("Looking for precompiled light data\n");
 if (LoadPrecompiledLights (nLevel))
 	return;
 else 
 #if MULTI_THREADED_PRECALC
 if (gameStates.app.bMultiThreaded && (gameData.segs.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
-	LogErr ("Computing segment visibility\n");
+	PrintLog ("Computing segment visibility\n");
 	ComputeSegmentVisibility (-1);
-	LogErr ("Starting segment light calculation threads\n");
+	PrintLog ("Starting segment light calculation threads\n");
 	StartOglLightThreads (SegLightsThread);
-	LogErr ("Starting vertex light calculation threads\n");
+	PrintLog ("Starting vertex light calculation threads\n");
 	StartOglLightThreads (VertLightsThread);
 	gameData.physics.side.bCache = 1;
 	}
@@ -2077,17 +2077,17 @@ else {
 							LoadMineGaugeSize () + PagingGaugeSize (), 
 							LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize (), SortLightsPoll); 
 	else {
-		LogErr ("Computing segment visibility\n");
+		PrintLog ("Computing segment visibility\n");
 		ComputeSegmentVisibility (-1);
-		LogErr ("Computing segment lights\n");
+		PrintLog ("Computing segment lights\n");
 		ComputeNearestSegmentLights (-1);
-		LogErr ("Computing vertex lights\n");
+		PrintLog ("Computing vertex lights\n");
 		ComputeNearestVertexLights (-1);
 		}
 	gameStates.app.bMultiThreaded = bMultiThreaded;
 	}
 D2_FREE (gameData.segs.bVertVis);
-LogErr ("Saving precompiled light data\n");
+PrintLog ("Saving precompiled light data\n");
 SavePrecompiledLights (nLevel);
 }
 

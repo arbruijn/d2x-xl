@@ -861,7 +861,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	tPlayer	save_player;
 	int		nRooms, bRetry = 0, nLoadRes;
 
-/*---*/LogErr ("Loading level...\n");
+/*---*/PrintLog ("Loading level...\n");
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
 gameData.physics.side.nSegment = -1;
@@ -886,36 +886,36 @@ memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.omega.lightnings.nHandles = 0;
 gameData.multiplayer.bMoving = -1;
 #if 1
-/*---*/LogErr ("   stopping music\n");
+/*---*/PrintLog ("   stopping music\n");
 SongsStopAll ();
-/*---*/LogErr ("   stopping sounds\n");
+/*---*/PrintLog ("   stopping sounds\n");
 DigiStopAllChannels ();
-/*---*/LogErr ("   unloading textures\n");
+/*---*/PrintLog ("   unloading textures\n");
 PiggyBitmapPageOutAll (0);
-/*---*/LogErr ("   unloading custom sounds\n");
+/*---*/PrintLog ("   unloading custom sounds\n");
 FreeSoundReplacements ();
-/*---*/LogErr ("   unloading hardware lights\n");
+/*---*/PrintLog ("   unloading hardware lights\n");
 RemoveDynLights ();
-/*---*/LogErr ("   unloading hires models\n");
+/*---*/PrintLog ("   unloading hires models\n");
 FreeHiresModels (1);
-/*---*/LogErr ("   unloading cambot\n");
+/*---*/PrintLog ("   unloading cambot\n");
 UnloadCamBot ();
-/*---*/LogErr ("   unloading additional models\n");
+/*---*/PrintLog ("   unloading additional models\n");
 BMFreeExtraModels ();
-/*---*/LogErr ("   unloading additional model textures\n");
+/*---*/PrintLog ("   unloading additional model textures\n");
 BMFreeExtraObjBitmaps ();
-/*---*/LogErr ("   unloading additional model textures\n");
+/*---*/PrintLog ("   unloading additional model textures\n");
 PiggyFreeHiresAnimations ();
-/*---*/LogErr ("   freeing spark effect buffers\n");
+/*---*/PrintLog ("   freeing spark effect buffers\n");
 FreeEnergySparks ();
-/*---*/LogErr ("   freeing sound buffers\n");
+/*---*/PrintLog ("   freeing sound buffers\n");
 DigiFreeSoundBufs ();
-/*---*/LogErr ("   freeing auxiliary poly model data\n");
+/*---*/PrintLog ("   freeing auxiliary poly model data\n");
 G3FreeAllPolyModelItems ();
-/*---*/LogErr ("   restoring default robot settings\n");
+/*---*/PrintLog ("   restoring default robot settings\n");
 RestoreDefaultRobots ();
 if (gameData.bots.bReplacementsLoaded) {
-	/*---*/LogErr ("   loading default robot settings\n");
+	/*---*/PrintLog ("   loading default robot settings\n");
 	ReadHamFile ();		//load original data
 	gameData.bots.bReplacementsLoaded = 0;
 	}
@@ -923,7 +923,7 @@ if (gameData.missions.nEnhancedMission) {
 	char t [FILENAME_LEN];
 
 	sprintf (t,"%s.ham", gameStates.app.szCurrentMissionFile);
-	/*---*/LogErr ("   reading additional robots\n");
+	/*---*/PrintLog ("   reading additional robots\n");
 	switch (BMReadExtraRobots (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
 		case -1:
 			return 0;
@@ -935,18 +935,18 @@ if (gameData.missions.nEnhancedMission) {
 		}
 	strncpy (t, gameStates.app.szCurrentMissionFile, 6);
 	strcat (t, "-l.mvl");
-	/*---*/LogErr ("   initializing additional robot movies\n");
+	/*---*/PrintLog ("   initializing additional robot movies\n");
 	InitExtraRobotMovie (t);
 	}
 #endif
-/*---*/LogErr ("   Destroying camera objects\n");
+/*---*/PrintLog ("   Destroying camera objects\n");
 DestroyCameras ();
-/*---*/LogErr ("   Destroying particle data\n");
+/*---*/PrintLog ("   Destroying particle data\n");
 DestroyAllSmoke ();
-/*---*/LogErr ("   Destroying lightning data\n");
+/*---*/PrintLog ("   Destroying lightning data\n");
 DestroyAllLightnings (1);
 DestroyOmegaLightnings (-1);
-/*---*/LogErr ("   Initializing smoke manager\n");
+/*---*/PrintLog ("   Initializing smoke manager\n");
 InitObjectSmoke ();
 memset (gameData.pig.tex.bitmapColors, 0, sizeof (gameData.pig.tex.bitmapColors));
 memset (gameData.models.thrusters, 0, sizeof (gameData.models.thrusters));
@@ -964,24 +964,24 @@ if (!gameStates.app.bAutoRunMission &&
 	return 0;
 	}
 strlwr (pszLevelName = LevelName (nLevel));
-/*---*/LogErr ("   loading level '%s'\n", pszLevelName);
+/*---*/PrintLog ("   loading level '%s'\n", pszLevelName);
 #if 0
 GrSetCurrentCanvas (NULL);
 GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
 #endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
-/*---*/LogErr ("   loading palette\n");
+/*---*/PrintLog ("   loading palette\n");
 GrPaletteStepLoad (NULL);
  //LoadPalette ("groupa.256", NULL, 0, 0, 1);		//don't change screen
 if (!gameOpts->menus.nStyle)
 	NMLoadBackground (NULL, NULL, 0);
 ShowBoxedMessage (TXT_LOADING);
-/*---*/LogErr ("   loading level data\n");
+/*---*/PrintLog ("   loading level data\n");
 gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMission, "rdl") != NULL) :
 									 (gameData.missions.list [gameData.missions.nCurrentMission].nDescentVersion == 1);
 memset (gameData.segs.xSegments, 0xff, sizeof (*gameData.segs.xSegments) * MAX_SEGMENTS);
 memset (gameData.objs.xCreationTime, 0, sizeof (*gameData.objs.xCreationTime) * MAX_OBJECTS);
-/*---*/LogErr ("   loading texture brightness info\n");
+/*---*/PrintLog ("   loading texture brightness info\n");
 SetDataVersion (-1);
 LoadTextureBrightness (pszLevelName);
 for (;;) {
@@ -1000,7 +1000,7 @@ for (;;) {
 	bRetry = 1;
 	};
 if (nLoadRes) {
-	/*---*/LogErr ("Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
+	/*---*/PrintLog ("Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
 	Warning (TXT_LOAD_ERROR, pszLevelName);
 	return 0;
 	}
@@ -1010,7 +1010,7 @@ gamePalette = LoadPalette (szCurrentLevelPalette, pszLevelName, 1, 1, 1);		//don
 InitGaugeCanvases ();
 ResetPogEffects ();
 if (gameStates.app.bD1Mission) {
-	/*---*/LogErr ("   loading Descent 1 textures\n");
+	/*---*/PrintLog ("   loading Descent 1 textures\n");
 	LoadD1BitmapReplacements ();
 	if (bPageInTextures)
 		PiggyLoadLevelData ();
@@ -1023,16 +1023,16 @@ else {
 	LoadBitmapReplacements (pszLevelName);
 	LoadSoundReplacements (pszLevelName);
 	}
-/*---*/LogErr ("   loading endlevel data\n");
+/*---*/PrintLog ("   loading endlevel data\n");
 LoadEndLevelData (nLevel);
-/*---*/LogErr ("   loading cambot\n");
+/*---*/PrintLog ("   loading cambot\n");
 gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
 gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
-/*---*/LogErr ("   loading replacement robots\n");
+/*---*/PrintLog ("   loading replacement robots\n");
 if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
 	return 0;
 LoadHiresModels (1);
-/*---*/LogErr ("   initializing cambot\n");
+/*---*/PrintLog ("   initializing cambot\n");
 InitCamBots (0);
 networkData.nSegmentCheckSum = NetMiscCalcCheckSum (gameData.segs.segments, sizeof (tSegment) * gameData.segs.nSegments);
 ResetNetworkObjects ();
@@ -1040,7 +1040,7 @@ ResetChildObjects ();
 ResetFlightPath (&externalView, -1, -1);
 ResetPlayerPaths ();
 FixObjectSizes ();
-/*---*/LogErr ("   counting entropy rooms\n");
+/*---*/PrintLog ("   counting entropy rooms\n");
 nRooms = CountRooms ();
 if (gameData.app.nGameMode & GM_ENTROPY) {
 	if (!nRooms) {
@@ -1051,7 +1051,7 @@ if (gameData.app.nGameMode & GM_ENTROPY) {
 	}
 else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) || 
 			((gameData.app.nGameMode & GM_MONSTERBALL) == GM_MONSTERBALL)) {
-/*---*/LogErr ("   gathering CTF+ flag goals\n");
+/*---*/PrintLog ("   gathering CTF+ flag goals\n");
 	if (GatherFlagGoals () != 3) {
 		Warning (TXT_NO_CTF);
 		gameData.app.nGameMode &= ~GM_CAPTURE;
@@ -1059,19 +1059,19 @@ else if ((gameData.app.nGameMode & (GM_CAPTURE | GM_HOARD)) ||
 		}
 	}
 memset (gameData.render.lights.segDeltas, 0, sizeof (*gameData.render.lights.segDeltas) * MAX_SEGMENTS * 6);
-/*---*/LogErr ("   initializing door animations\n");
+/*---*/PrintLog ("   initializing door animations\n");
 InitDoorAnims ();
 LOCALPLAYER = save_player;
 gameData.hoard.nMonsterballSeg = -1;
-/*---*/LogErr ("   initializing sound sources\n");
+/*---*/PrintLog ("   initializing sound sources\n");
 SetSoundSources ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 PlayLevelSong (gameData.missions.nCurrentLevel, 1);
 ClearBoxedMessage ();		//remove message before new palette loaded
 GrPaletteStepLoad (NULL);		//actually load the palette
-/*---*/LogErr ("   rebuilding OpenGL texture data\n");
-/*---*/LogErr ("      rebuilding effects\n");
+/*---*/PrintLog ("   rebuilding OpenGL texture data\n");
+/*---*/PrintLog ("      rebuilding effects\n");
 if (!bRestore)
 	RebuildRenderContext (1);
 ResetPingStats ();

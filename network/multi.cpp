@@ -958,7 +958,7 @@ else {
 		}
 	else {
 		static int nKillMsgs = 0;
-	LogErr ("received kill message %d from %d.%d.%d.%d:%u\n", 
+	PrintLog ("received kill message %d from %d.%d.%d.%d:%u\n", 
 				++nKillMsgs,
 					ipx_udpSrc.src_node [0],
 					ipx_udpSrc.src_node [1],

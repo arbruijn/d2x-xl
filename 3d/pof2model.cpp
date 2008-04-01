@@ -299,13 +299,14 @@ pm->nSubModels = 1;
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");
 #endif
+PrintLog ("   optimizing POF model %d\n", nModel);
 if (!G3CountPOFModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts))
 	return 0;
 if (!G3AllocModel (pm))
 	return 0;
 G3InitSubModelMinMax (pm->pSubModels);
 #if TRACE_TAGS
-LogErr ("building model for object type %d, id %d\n", objP->nType, objP->id);
+PrintLog ("building model for object type %d, id %d\n", objP->nType, objP->id);
 #endif
 if (!G3GetPOFModelItems (pp->modelData, NULL, pm, 0, -1, 1, modelBitmaps, pObjColor))
 	return 0;

@@ -402,7 +402,7 @@ glLightf (pl->handle, GL_LINEAR_ATTENUATION, pl->fAttenuation [1]);
 glLightf (pl->handle, GL_QUADRATIC_ATTENUATION, pl->fAttenuation [2]);
 #endif
 #if 0
-LogErr ("adding light %d,%d\n", 
+PrintLog ("adding light %d,%d\n", 
 		  gameData.render.lights.dynamic.nLights, pl - gameData.render.lights.dynamic.lights);
 #endif
 pl->bOn = 1;
@@ -415,7 +415,7 @@ return gameData.render.lights.dynamic.nLights++;
 
 void RemoveDynLightFromList (tDynLight *pl, short nLight)
 {
-//LogErr ("removing light %d,%d\n", nLight, pl - gameData.render.lights.dynamic.lights);
+//PrintLog ("removing light %d,%d\n", nLight, pl - gameData.render.lights.dynamic.lights);
 // if not removing last light in list, move last light down to the now free list entry
 // and keep the freed light handle thus avoiding gaps in used handles
 if (nLight < --gameData.render.lights.dynamic.nLights) {
@@ -1034,7 +1034,7 @@ if (gameOpts->render.bDynLighting || (gameOpts->render.color.bAmbientLight && !g
 		tFaceColor		*pfh, *pf = gameData.render.color.ambient;
 		tSegment2		*seg2P;
 
-	LogErr ("Computing static lighting\n");
+	PrintLog ("Computing static lighting\n");
 	gameStates.ogl.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 	gameData.render.vertColor.bDarkness = IsMultiGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [IsMultiGame].bDarkness;
 	gameStates.render.nState = 0;

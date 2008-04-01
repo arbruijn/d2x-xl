@@ -132,6 +132,7 @@ void G3FreeAllPolyModelItems (void)
 {
 	int	i, j;
 
+PrintLog ("unloading polygon model data\n");
 for (j = 0; j < 2; j++)
 	for (i = 0; i < MAX_POLYGON_MODELS; i++)
 		G3FreeModelItems (gameData.models.g3Models [j] + i);

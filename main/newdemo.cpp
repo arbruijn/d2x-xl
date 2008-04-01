@@ -1829,7 +1829,7 @@ while (!bDone) {
 			short nPrevFrameLength;
 
 			bDone = 1;
-			//LogErr ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (&ndOutFile);
+			//PrintLog ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (&ndOutFile);
 			if (bRevertFormat > 0)
 				bRevertFormat = 0;
 			nPrevFrameLength = NDReadShort ();
@@ -3402,7 +3402,7 @@ if (bRevertFormat > 0) {
 	if (p) {
 		bRevertFormat = 0;
 		NDRead (p, h, 1);
-		//LogErr ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (&ndOutFile);
+		//PrintLog ("%4d %4d %d\n", gameData.demo.nFrameCount, gameData.demo.nFrameBytesWritten - 1, CFTell (&ndOutFile);
 		NDWriteShort ((short) (gameData.demo.nFrameBytesWritten - 1));
 		NDWrite (p + 3, h - 3, 1);
 		D2_FREE (p);

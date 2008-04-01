@@ -563,7 +563,7 @@ for (j = 1; j < hmp->num_trks; j++) {
 //return !fclose (f);
 if (!fclose (f))
 	return 1;
-LogErr ("hmp_to_midi (%s) failed\n", pszFn);
+PrintLog ("hmp_to_midi (%s) failed\n", pszFn);
 return 0;
 }
 

@@ -33,7 +33,7 @@ void com_done(void)
 {
 if (!commlib_initialised) 
 	return;
-LogErr ("shutting down serial communications\n");
+PrintLog ("shutting down serial communications\n");
 commlib_initialised=0;
 tcsetattr(fd, TCSANOW, &oldtio);
 close(fd);

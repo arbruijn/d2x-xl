@@ -1236,7 +1236,7 @@ if (gameFileInfo.lightDeltaIndices.offset > -1) {
 		}
 	else {
 		for (i = 0; i < gameFileInfo.lightDeltaIndices.count; i++) {
-			//LogErr ("reading DL index %d\n", i);
+			//PrintLog ("reading DL index %d\n", i);
 			ReadLightDeltaIndex (gameData.render.lights.deltaIndices + i, cfp);
 			}
 		}

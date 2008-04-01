@@ -75,7 +75,7 @@ return SDL_SetGammaRamp (gammaRamp + gameStates.ogl.bright.red * 4,
 int OglVideoModeOK (int w, int h)
 {
 int nColorBits = SDL_VideoModeOK (w, h, FindArg ("-gl_16bpp") ? 16 : 32, SDL_VIDEO_FLAGS);
-LogErr ("SDL suggests %d bits/pixel\n", nColorBits);
+PrintLog ("SDL suggests %d bits/pixel\n", nColorBits);
 if (!nColorBits)
 	return 0;
 gameStates.ogl.nColorBits = nColorBits;
@@ -91,7 +91,7 @@ int OglSetAttribute (char *szSwitch, char *szAttr, SDL_GLattr attr, int value)
 if (szSwitch && (i = FindArg (szSwitch)) && Args [i + 1])
 	attr = (SDL_GLattr) atoi (Args [i + 1]);
 i = SDL_GL_SetAttribute (attr, value);
-/***/LogErr ("   setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
+/***/PrintLog ("   setting %s to %d %s\n", szAttr, value, (i == -1) ? "failed" : "succeeded");
 return i;
 }
 
@@ -101,7 +101,7 @@ void OglInitAttributes (void)
 {
 	int t;
 
-/***/LogErr ("setting OpenGL attributes\n");
+/***/PrintLog ("setting OpenGL attributes\n");
 OglSetAttribute ("-gl_red", "SDL_GL_RED_SIZE", SDL_GL_RED_SIZE, 8);
 OglSetAttribute ("-gl_green", "SDL_GL_GREEN_SIZE", SDL_GL_GREEN_SIZE, 8);
 OglSetAttribute ("-gl_blue", "SDL_GL_BLUE_SIZE", SDL_GL_BLUE_SIZE, 8);
@@ -147,7 +147,7 @@ if ((w < 0) || (h < 0))
 	return -1;
 D2SetCaption ();
 OglInitAttributes ();
-/***/LogErr ("setting SDL video mode (%dx%dx%d, %s)\n",
+/***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
 #if 1//def RELEASE
 SDL_putenv ("SDL_VIDEO_CENTERED=1");

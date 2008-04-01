@@ -168,7 +168,7 @@ int ReadConfigFile()
 			token = strtok (ptr, "=");
 			value = strtok (NULL, "=");
 			if (!(value && token)) {
-				LogErr ("configuration file (descent.cfg) looks messed up.\n");
+				PrintLog ("configuration file (descent.cfg) looks messed up.\n");
 				continue;
 				}
 			if (value[strlen(value)-1] == '\n')
@@ -315,7 +315,7 @@ int ReadConfigFile()
 				token = strtok(ptr, "=");
 				value = strtok(NULL, "=");
 				if (!(value && token)) {
-					LogErr ("configuration file (descentw.cfg) looks messed up.\n");
+					PrintLog ("configuration file (descentw.cfg) looks messed up.\n");
 					continue;
 					}
 				if (value[strlen(value)-1] == '\n')

@@ -1981,7 +1981,7 @@ Assert(gameData.multiplayer.nLocalPlayer>=0 && gameData.multiplayer.nLocalPlayer
 
 sprintf(filename, "%.8s.plr", LOCALPLAYER.callsign);
 if (!CFOpen (&cf, filename, gameFolders.szProfDir, "rb", 0)) {
-	LogErr ("   couldn't read player file '%s'\n", filename);
+	PrintLog ("   couldn't read player file '%s'\n", filename);
 	return errno;
 	}
 id = CFReadInt (&cf);

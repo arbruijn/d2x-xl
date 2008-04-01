@@ -199,7 +199,7 @@ int CreateSphere (tSphereData *sdP)
 	int			nFaces, i, j;
 	tOOF_vector	*buf [2];
 
-LogErr ("Creating shield sphere\n");
+PrintLog ("Creating shield sphere\n");
 if (sdP->nFaceNodes == 3) {
 	nFaces = 8;
 	j = 6;
@@ -729,6 +729,7 @@ pPulse->fDir = fSpeed;
 
 void InitSpheres (void)
 {
+PrintLog ("   creating spheres\n");
 CreateShieldSphere ();
 #if SIMPLE_SPHERE
 CreateSphereSimple (32);

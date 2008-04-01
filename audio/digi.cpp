@@ -252,7 +252,7 @@ int DigiInit (float fSlowDown)
 if (!gameStates.app.bUseSound)
 	return 1;
 if (SDL_InitSubSystem (SDL_INIT_AUDIO) < 0) {
-	LogErr (TXT_SDL_INIT_AUDIO, SDL_GetError ()); LogErr ("\n");
+	PrintLog (TXT_SDL_INIT_AUDIO, SDL_GetError ()); PrintLog ("\n");
 	Error (TXT_SDL_INIT_AUDIO, SDL_GetError ());
 	return 1;
 	}
@@ -285,7 +285,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 		h = Mix_OpenAudio ((int) (gameOpts->sound.digiSampleRate / fSlowDown), D2_SOUND_FORMAT, SDL_MIXER_CHANNELS, 
 								SOUND_BUFFER_SIZE);
 	if (h < 0) {
-		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
+		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;
 		}
@@ -305,7 +305,7 @@ else
 	WaveSpec.samples = SOUND_BUFFER_SIZE * (gameOpts->sound.digiSampleRate / SAMPLE_RATE_11K);
 	WaveSpec.callback = AudioMixCallback;
 	if (SDL_OpenAudio (&WaveSpec, NULL) < 0) {
-		LogErr (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); LogErr ("\n");
+		PrintLog (TXT_SDL_OPEN_AUDIO, SDL_GetError ()); PrintLog ("\n");
 		Warning (TXT_SDL_OPEN_AUDIO, SDL_GetError ());
 		return 1;
 		}

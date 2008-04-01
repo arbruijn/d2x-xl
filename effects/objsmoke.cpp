@@ -286,7 +286,7 @@ else {
 			nScale /= 2;
 			}
 		if (0 > (h = gameData.smoke.objects [j])) {
-			//LogErr ("creating tPlayer smoke\n");
+			//PrintLog ("creating tPlayer smoke\n");
 			h = SetSmokeObject (j, 
 					CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 2, nParts, nScale,
 									 gameOpts->render.smoke.nSize [1],
@@ -348,7 +348,7 @@ if (nParts > 0) {
 		nScale = PARTICLE_SIZE (gameOpts->render.smoke.nSize [2], nScale);
 		}
 	if (gameData.smoke.objects [i] < 0) {
-		//LogErr ("creating robot %d smoke\n", i);
+		//PrintLog ("creating robot %d smoke\n", i);
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts, nScale,
 												  gameOpts->render.smoke.bSyncSizes ? -1 : gameOpts->render.smoke.nSize [2],
 												  1, BOT_PART_LIFE, BOT_PART_SPEED, 0, i, NULL, 1, -1));
@@ -392,7 +392,7 @@ nParts = 10 - h / 10;
 if (nParts > 0) {
 	nParts = REACTOR_MAX_PARTS;
 	if (gameData.smoke.objects [i] < 0) {
-		//LogErr ("creating robot %d smoke\n", i);
+		//PrintLog ("creating robot %d smoke\n", i);
 		SetSmokeObject (i, CreateSmoke (&objP->position.vPos, NULL, NULL, objP->nSegment, 1, nParts, fl2f (-4.0),
 												  -1, 1, BOT_PART_LIFE * 2, BOT_PART_SPEED, 0, i, NULL, 1, -1));
 		}

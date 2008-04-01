@@ -262,7 +262,7 @@ int CreateCameras (void)
 
 if (!gameStates.app.bD2XLevel)
 	return 0;
-
+PrintLog ("   creating cameras\n");
 memset (gameData.cameras.nSides, 0xFF, MAX_SEGMENTS * 6 * sizeof (*gameData.cameras.nSides));
 for (i = 0, wallP = gameData.walls.walls; i < gameData.walls.nWalls; i++, wallP++) {
 	t = wallP->nTrigger;
@@ -332,7 +332,7 @@ if (gameStates.ogl.bRender2TextureOk)
 	glXMakeCurrent (hGlDC, hGlWindow, hGlRC);
 #	endif
 #endif
-LogErr ("Destroying cameras\n");
+PrintLog ("Destroying cameras\n");
 for (i = gameData.cameras.nCameras; i; i--, pc++)
 	DestroyCamera (pc);
 if (gameData.cameras.nSides)

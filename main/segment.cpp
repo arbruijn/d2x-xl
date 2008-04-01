@@ -34,7 +34,7 @@ dlP->nSegment = CFReadShort (fp);
 dlP->nSide = CFReadByte (fp);
 CFReadByte (fp);
 if (!(dlP->bValid = (dlP->nSegment >= 0) && (dlP->nSegment < gameData.segs.nSegments) && (dlP->nSide >= 0) && (dlP->nSide < 6)))
-	LogErr ("Invalid delta light data %d (%d,%d)\n", dlP - gameData.render.lights.deltas, dlP->nSegment, dlP->nSide);
+	PrintLog ("Invalid delta light data %d (%d,%d)\n", dlP - gameData.render.lights.deltas, dlP->nSegment, dlP->nSide);
 CFRead (dlP->vertLight, sizeof (dlP->vertLight [0]), sizeofa (dlP->vertLight), fp);
 }
 

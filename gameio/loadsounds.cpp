@@ -137,7 +137,7 @@ void FreeSoundReplacements (void)
 	tDigiSound	*dsP;
 	int			i, j;
 
-LogErr ("unloading custom sounds\n");
+PrintLog ("unloading custom sounds\n");
 for (i = 0; i < 2; i++)
 	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bDTX) {
@@ -164,7 +164,7 @@ int LoadSoundReplacements (char *pszFilename)
 if (gameOpts->sound.bHires)
 	return -1;
 //first, D2_FREE up data allocated for old bitmaps
-LogErr ("   loading replacement sounds\n");
+PrintLog ("   loading replacement sounds\n");
 FreeSoundReplacements ();
 ChangeFilenameExtension (szFilename, pszFilename, ".dtx");
 if (!CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0))
@@ -246,7 +246,7 @@ int LoadSounds (CFILE *fpSound, int nSoundNum, int nSoundStart)
 	char					szSoundName [16];
 
 
-/*---*/LogErr ("      Loading sound data (%d sounds)\n", nSoundNum);
+/*---*/PrintLog ("      Loading sound data (%d sounds)\n", nSoundNum);
 CFSeek (fpSound, nSoundStart, SEEK_SET);
 memset (&sound, 0, sizeof (sound));
 #if USE_OPENAL

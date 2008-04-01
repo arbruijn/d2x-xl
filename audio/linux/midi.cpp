@@ -91,7 +91,7 @@ int DigiPlayMidiSong (char *pszSong, char *melodic_bank, char *drum_bank, int lo
 if (!gameStates.sound.digi.bInitialized)
 	return 0;
 #endif
-LogErr ("DigiPlayMidiSong (%s)\n", pszSong);
+PrintLog ("DigiPlayMidiSong (%s)\n", pszSong);
 DigiStopCurrentSong ();
 if (!(pszSong && *pszSong))
 	return 0;
@@ -109,20 +109,20 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else {
 		sprintf (fnSong, "%s/d2x-temp.mid", gameFolders.szHomeDir);
 		if (!hmp_to_midi (hmp, fnSong)) {
-			LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+			PrintLog ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 			return 0;
 			}
 		pfnSong = fnSong;
 		}
 	if (!(mixMusic = Mix_LoadMUS (pfnSong))) {
-		LogErr ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
+		PrintLog ("SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());
 		return 0;
 		}
 	if (-1 == Mix_PlayMusic (mixMusic, loop ? -1 : 1)) {
-		LogErr ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
+		PrintLog ("SDL_mixer cannot play %s\n(%s)\n", pszSong, Mix_GetError ());
 		return 0;
 		}
-	LogErr ("SDL_mixer playing %s\n", pszSong);
+	PrintLog ("SDL_mixer playing %s\n", pszSong);
 	gameData.songs.bPlaying = 1;
 	DigiSetMidiVolume (midiVolume);
 	return 1;
@@ -130,7 +130,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 #endif
 #if defined (_WIN32)
 if (bCustom) {
-	LogErr ("Cannot play %s - enable SDL_mixer\n", pszSong);
+	PrintLog ("Cannot play %s - enable SDL_mixer\n", pszSong);
 	return 0;
 	}
 hmp_play (hmp, loop);

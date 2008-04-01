@@ -311,7 +311,7 @@ short LoadHiresModel (int nModel, short i, int bCustom)
 	char	szModel [FILENAME_LEN];
 
 if (replacementModels [i].pszHires)
-	LogErr ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
+	PrintLog ("Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 sprintf (szModel, "\001model%d.oof", replacementModels [i].nModel);
 if ((j = LoadASEModel (gameData.models.aseModels [bCustom] + gameData.models.nHiresModels, i, bCustom)))
 	return j;

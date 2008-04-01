@@ -736,7 +736,7 @@ retryMove:
 #else
 		for (i = 0; (i < hi.nSegments) && (nPhysSegs < MAX_FVI_SEGS-1); ) {
 			if (hi.segList [i] > gameData.segs.nLastSegment)
-				LogErr ("Invalid segment in segment list #1\n");
+				PrintLog ("Invalid segment in segment list #1\n");
 			physSegList [nPhysSegs++] = hi.segList [i++];
 			}
 #endif

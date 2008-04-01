@@ -199,19 +199,19 @@ void __cdecl D2SignalHandler (int nSignal)
 #endif
 {
 if (nSignal == SIGABRT)
-	LogErr ("Abnormal program termination\n");
+	PrintLog ("Abnormal program termination\n");
 else if (nSignal == SIGFPE)
-	LogErr ("Floating point error\n");
+	PrintLog ("Floating point error\n");
 else if (nSignal == SIGILL)
-	LogErr ("Illegal instruction\n");
+	PrintLog ("Illegal instruction\n");
 else if (nSignal == SIGINT)
-	LogErr ("Ctrl+C signal\n");
+	PrintLog ("Ctrl+C signal\n");
 else if (nSignal == SIGSEGV)
-	LogErr ("Memory access violation\n");
+	PrintLog ("Memory access violation\n");
 else if (nSignal == SIGTERM)
-	LogErr ("Termination request\n");
+	PrintLog ("Termination request\n");
 else
-	LogErr ("Unknown signal\n");
+	PrintLog ("Unknown signal\n");
 #ifndef _DEBUG
 //exit (1);
 #endif
@@ -652,8 +652,8 @@ if (psz && !*(psz + 4)) {
 	}
 else 
 	strcpy (szDataRootDir, gameFolders.szDataDir);
-/*---*/LogErr ("expected game app folder = '%s'\n", gameFolders.szGameDir);
-/*---*/LogErr ("expected game data folder = '%s'\n", gameFolders.szDataDir);
+/*---*/PrintLog ("expected game app folder = '%s'\n", gameFolders.szGameDir);
+/*---*/PrintLog ("expected game data folder = '%s'\n", gameFolders.szDataDir);
 if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.oof"))
 	GetAppFolder (szDataRootDir, gameFolders.szModelDir [0], MODELDIR, "*.ase");
 if (GetAppFolder (szDataRootDir, gameFolders.szModelDir [1], ROBOTDIR, "*.oof"))
@@ -2624,7 +2624,7 @@ FREEMEM (time_t, gameData.smoke.objExplTime, MAX_OBJECTS);
 
 void FreeLightningData (void)
 {
-LogErr ("unloading lightning data\n");
+PrintLog ("unloading lightning data\n");
 DestroyAllLightnings (1);
 FREEMEM (tLightningLight, gameData.lightnings.lights, MAX_SEGMENTS);
 FREEMEM (short, gameData.lightnings.objects, MAX_OBJECTS);
@@ -3106,9 +3106,9 @@ int InitGraphics (void)
 	u_int32_t	nScreenMode;
 	int			t;
 
-/*---*/LogErr ("Initializing graphics\n");
+/*---*/PrintLog ("Initializing graphics\n");
 if ((t = GrInit ())) {		//doesn't do much
-	LogErr ("Cannot initialize graphics\n");
+	PrintLog ("Cannot initialize graphics\n");
 	Error (TXT_CANT_INIT_GFX, t);
 	return 0;
 	}
@@ -3117,17 +3117,17 @@ nScreenMode = SM (scrSizes [gameStates.gfx.nStartScrSize].x, scrSizes [gameState
 _3dfx_Init ();
 #endif
 
-/*---*/LogErr ("Initializing render buffers\n");
+/*---*/PrintLog ("Initializing render buffers\n");
 if (!gameStates.render.vr.buffers.offscreen)	//if hasn't been initialied (by headset init)
 	SetDisplayMode (gameStates.gfx.nStartScrMode, gameStates.gfx.bOverride);		//..then set default display mode
-/*---*/LogErr ("Loading default palette\n");
+/*---*/PrintLog ("Loading default palette\n");
 defaultPalette = GrUsePaletteTable (D2_DEFAULT_PALETTE, NULL);
 grdCurCanv->cvBitmap.bmPalette = defaultPalette;	//just need some valid palette here
-/*---*/LogErr ("Initializing game fonts\n");
+/*---*/PrintLog ("Initializing game fonts\n");
 GameFontInit ();	// must load after palette data loaded.
-/*---*/LogErr ("Setting screen mode\n");
+/*---*/PrintLog ("Setting screen mode\n");
 SetScreenMode (SCREEN_MENU);
-/*---*/LogErr ("Showing loading screen\n");
+/*---*/PrintLog ("Showing loading screen\n");
 ShowLoadingScreen ();
 return 1;
 }
@@ -3148,23 +3148,23 @@ static void InitializePoll (int nItems, tMenuItem *m, int *key, int cItem)
 GrPaletteStepLoad (NULL);
 switch (loadOp) {
 	case 0:
-		/*---*/LogErr ("Creating default tracker list\n");
+		/*---*/PrintLog ("Creating default tracker list\n");
 		CreateTrackerList ();
 		break;
 	case 1:
-		/*---*/LogErr ("Loading ban list\n");
+		/*---*/PrintLog ("Loading ban list\n");
 		LoadBanList ();
 		break;
 	case 2:
-		/*---*/LogErr ("Initializing control types\n");
+		/*---*/PrintLog ("Initializing control types\n");
 		SetControlType ();
 		break;
 	case 3:
-		/*---*/LogErr ("Initializing keyboard\n");
+		/*---*/PrintLog ("Initializing keyboard\n");
 		KeyInit ();
 		break;
 	case 4:
-		/*---*/LogErr ("Initializing joystick\n");
+		/*---*/PrintLog ("Initializing joystick\n");
 		DoJoystickInit ();
 		break;
 	case 5:
@@ -3173,7 +3173,7 @@ switch (loadOp) {
 			KCInitExternalControls (strtol (Args [i+1], NULL, 0), strtol (Args [i+2], NULL, 0));
 		break;
 	case 6:
-		/*---*/LogErr ("Initializing movies\n");
+		/*---*/PrintLog ("Initializing movies\n");
 		if (FindArg ("-nohires") || FindArg ("-nohighres") || !GrVideoModeOK (MENU_HIRES_MODE) || bDisableHires)
 			gameOpts->movies.bHires = 
 			gameStates.menus.bHires = 
@@ -3183,18 +3183,18 @@ switch (loadOp) {
 		InitMovies ();		//init movie libraries
 		break;
 	case 7:
-		/*---*/LogErr ("Initializing game data\n");
+		/*---*/PrintLog ("Initializing game data\n");
 		InitWeaponFlags ();
 		break;
 	case 8:
 		BMInit ();
 		break;
 	case 9:
-		/*---*/LogErr ("Initializing sound\n");
+		/*---*/PrintLog ("Initializing sound\n");
 		DigiInit (1);
 		break;
 	case 10:
-		/*---*/LogErr ("Loading hoard data\n");
+		/*---*/PrintLog ("Loading hoard data\n");
 		LoadHoardData ();
 		break;
 	case 11:
@@ -3204,7 +3204,7 @@ switch (loadOp) {
 		break;
 		g3_init ();
 	case 13:
-		/*---*/LogErr ("Initializing texture merge buffer\n");
+		/*---*/PrintLog ("Initializing texture merge buffer\n");
 		TexMergeInit (100); // 100 cache bitmaps
 		break;
 	case 14:
@@ -3224,7 +3224,7 @@ switch (loadOp) {
 			MouseInit ();
 		break;
 	case 19:
-		/*---*/LogErr ("Enabling TrackIR support\n");
+		/*---*/PrintLog ("Enabling TrackIR support\n");
 		TIRLoad ();
 		break;
 	}
@@ -3253,7 +3253,7 @@ NMProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 
 int Initialize (int argc, char *argv[])
 {
-/*---*/LogErr ("Initializing data\n");
+/*---*/PrintLog ("Initializing data\n");
 signal (SIGABRT, D2SignalHandler);
 signal (SIGFPE, D2SignalHandler);
 signal (SIGILL, D2SignalHandler);
@@ -3284,7 +3284,7 @@ if (FindArg ("-debug-printlog") || FindArg ("-printlog")) {
 	fErr = fopen (fnErr, "wt");
 #endif
 	}
-LogErr ("%s\n", DESCENT_VERSION);
+PrintLog ("%s\n", DESCENT_VERSION);
 con_init ();  // Initialise the console
 #ifdef D2X_MEM_HANDLER
 MemInit ();
@@ -3296,20 +3296,20 @@ EvalArgs ();
 InitGameOptions (1);
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 AllocGameData ();
-/*---*/LogErr ("Loading text resources\n");
+/*---*/PrintLog ("Loading text resources\n");
 LoadGameTexts ();
 CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
-/*---*/LogErr ("Loading main hog file\n");
+/*---*/PrintLog ("Loading main hog file\n");
 if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) || 
 	  (gameStates.app.bDemoData = CFileInit ("d2demo.hog", gameFolders.szDataDir)))) {
-	/*---*/LogErr ("Descent 2 data not found\n");
+	/*---*/PrintLog ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
 if (*szAutoHogFile && *szAutoMission) {
 	CFUseAltHogFile (szAutoHogFile);
 	gameStates.app.bAutoRunMission = gameHogFiles.AltHogFiles.bInitialized;
 	}
-/*---*/LogErr ("Reading configuration file\n");
+/*---*/PrintLog ("Reading configuration file\n");
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
@@ -3322,13 +3322,13 @@ else {
 	}
 PrintBanner ();
 if (!gameStates.app.bAutoRunMission) {
-	/*---*/LogErr ("Showing title screens\n");
+	/*---*/PrintLog ("Showing title screens\n");
 	if (!ShowTitleScreens ())
 		ShowLoadingScreen ();
 	}
 if (FindArg ("-norun"))
 	return 0;
-/*---*/LogErr ("Loading hires models\n");
+/*---*/PrintLog ("Loading hires models\n");
 LoadHiresModels (0);
 return 0;
 }
@@ -3343,11 +3343,11 @@ if (gameStates.input.bHaveTrackIR) {
 	}
 SongsStopAll ();
 DigiStopCurrentSong ();
-/*---*/LogErr ("Saving configuration file\n");
+/*---*/PrintLog ("Saving configuration file\n");
 WriteConfigFile ();
-/*---*/LogErr ("Saving player profile\n");
+/*---*/PrintLog ("Saving player profile\n");
 WritePlayerFile ();
-/*---*/LogErr ("Releasing tracker list\n");
+/*---*/PrintLog ("Releasing tracker list\n");
 DestroyTrackerList ();
 FreeParams ();
 #ifdef _DEBUG
@@ -3382,7 +3382,7 @@ if (Auto_exit) {
 	} 
 else
 #endif
-/*---*/LogErr ("Loading player profile\n");
+/*---*/PrintLog ("Loading player profile\n");
 DoSelectPlayer ();
 GrPaletteFadeOut (NULL, 32, 0);
 // handle direct loading and starting of a mission specified via the command line
@@ -3399,7 +3399,7 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 //do this here because the demo code can do a __asm int 3; longjmp when trying to
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
-/*---*/LogErr ("Invoking main menu\n");
+/*---*/PrintLog ("Invoking main menu\n");
 gameStates.app.bInitialized = 1;
 MainLoop ();
 CleanUp ();

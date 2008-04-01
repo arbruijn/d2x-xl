@@ -35,7 +35,7 @@ void ClearWarnFunc(void (*f)(char *s));//say this function no longer valid
 void _Assert(int expr,char *expr_text,char *filename,int linenum);	//assert func
 void _CDECL_ Error(char *fmt,...) __noreturn __format;				//exit with error code=1, print message
 void Assert(int expr);
-void _CDECL_ LogErr (char *fmt, ...);
+void _CDECL_ PrintLog (char *fmt, ...);
 void Int3();
 
 #ifdef _DEBUG

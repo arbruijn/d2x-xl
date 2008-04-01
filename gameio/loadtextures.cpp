@@ -521,7 +521,7 @@ if (!bmP->bmTexBuf) {
 #endif
 		if ((gameStates.app.bCacheTextures && (nShrinkFactor > 1) && *fnShrunk && CFOpen (pcf, fnShrunk, "", "rb", 0)) || 
 			 CFOpen (pcf, fn, "", "rb", 0)) {
-			LogErr ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
+			PrintLog ("loading hires texture '%s' (quality: %d)\n", fn, gameOpts->render.nTextureQuality);
 			bTGA = 1;
 			if (nIndex < 0)
 				altBmP = gameData.pig.tex.addonBitmaps - nIndex - 1;
@@ -557,7 +557,7 @@ if (!bmP->bmTexBuf) {
 							vcP->flags |= WCF_ALTFMT;
 							}
 						else {
-							LogErr ("   couldn't find animation for '%s'\n", bmName);
+							PrintLog ("   couldn't find animation for '%s'\n", bmName);
 							}
 						}
 					}
@@ -742,7 +742,7 @@ void LoadBitmapReplacements (char *pszLevelName)
 	grsBitmap	bm;
 
 	//first, D2_FREE up data allocated for old bitmaps
-LogErr ("   loading replacement textures\n");
+PrintLog ("   loading replacement textures\n");
 ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
 if (CFOpen (&cf, szFilename, gameFolders.szDataDir, "rb", 0)) {
 	int					id, version, nBitmapNum, bTGA;

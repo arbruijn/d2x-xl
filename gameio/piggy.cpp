@@ -630,7 +630,7 @@ int ReadHamFile (void)
 	{
 		//int i;
 		BMReadAll (&cfHAM);
-/*---*/LogErr ("      Loading bitmap index translation table\n");
+/*---*/PrintLog ("      Loading bitmap index translation table\n");
 		CFRead (gameData.pig.tex.bitmapXlat, sizeof (ushort)*MAX_BITMAP_FILES, 1, &cfHAM);
 		// no swap here?
 		//for (i = 0; i < MAX_BITMAP_FILES; i++) {
@@ -644,19 +644,19 @@ int ReadHamFile (void)
 		CFSeek (&cfHAM, nSoundOffset, SEEK_SET);
 		int nSoundNum = CFReadInt (&cfHAM);
 		int nSoundStart = CFTell (&cfHAM);
-/*---*/LogErr ("      Loading %d sounds\n", nSoundNum);
+/*---*/PrintLog ("      Loading %d sounds\n", nSoundNum);
 		LoadSounds (&cfHAM, nSoundNum, nSoundStart);
 		}
 
 	CFClose (&cfHAM);
 #if 1
-/*---*/LogErr ("      Looking for Descent 1 data files\n");
+/*---*/PrintLog ("      Looking for Descent 1 data files\n");
 		strcpy (szD1PigFileName, "descent.pig");
 		if (!cfPiggy [1].file)
 			CFOpen (cfPiggy + 1, szD1PigFileName, gameFolders.szDataDir, "rb", 0);
 		if (cfPiggy [1].file) {
 			gameStates.app.bHaveD1Data = 1;
-/*---*/LogErr ("      Loading Descent 1 data\n");
+/*---*/PrintLog ("      Loading Descent 1 data\n");
 			BMReadGameDataD1 (cfPiggy + 1);
 			//CFClose (cfPiggy);
 			}
@@ -688,13 +688,13 @@ int PiggyInit (void)
 	int bHamOk=0,bSoundOk=0;
 	int i;
 
-/*---*/LogErr ("   Initializing hash tables\n");
+/*---*/PrintLog ("   Initializing hash tables\n");
 hashtable_init (bitmapNames, MAX_BITMAP_FILES);
 hashtable_init (bitmapNames + 1, D1_MAX_BITMAP_FILES);
 hashtable_init (soundNames, MAX_SOUND_FILES);
 hashtable_init (soundNames + 1, MAX_SOUND_FILES);
 
-/*---*/LogErr ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
+/*---*/PrintLog ("   Initializing sound data (%d sounds)\n", MAX_SOUND_FILES);
 for (i=0; i<MAX_SOUND_FILES; i++)	{
 	gameData.pig.sound.sounds [0][i].nLength [0] =
 	gameData.pig.sound.sounds [0][i].nLength [1] = 0;
@@ -702,14 +702,14 @@ for (i=0; i<MAX_SOUND_FILES; i++)	{
 	gameData.pig.sound.sounds [0][i].data [1] = NULL;
 	soundOffset [0][i] = 0;
 }
-/*---*/LogErr ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
+/*---*/PrintLog ("   Initializing bitmap index (%d indices)\n", MAX_BITMAP_FILES);
 for (i = 0; i < MAX_BITMAP_FILES; i++)     
 	gameData.pig.tex.bitmapXlat [i] = i;
 
 if (!bogus_bitmap_initialized) {
 	int i;
 	ubyte c;
-/*---*/LogErr ("   Initializing placeholder bitmap\n");
+/*---*/PrintLog ("   Initializing placeholder bitmap\n");
 	bogus_bitmap_initialized = 1;
 	memset (&bogus_bitmap, 0, sizeof (grsBitmap));
 	bogus_bitmap.bmProps.w = 
@@ -743,15 +743,15 @@ if (FindArg ("-nolowmem"))
 
 if (bLowMemory)
 	gameStates.sound.digi.bLoMem = 1;
-/*---*/LogErr ("   Loading game data\n");
+/*---*/PrintLog ("   Loading game data\n");
 #if 1 //def EDITOR //need for d1 mission briefings
 PiggyInitPigFile ((char *) DEFAULT_PIGFILE);
 #endif
-/*---*/LogErr ("   Loading main ham file\n");
+/*---*/PrintLog ("   Loading main ham file\n");
 bSoundOk = bHamOk = ReadHamFile ();
 
 if (gameData.pig.tex.nHamFileVersion >= 3) {
-/*---*/LogErr ("   Loading sound file\n");
+/*---*/PrintLog ("   Loading sound file\n");
 	bSoundOk = ReadSoundFile ();
 	}
 if (gameStates.app.bFixModels)
@@ -808,7 +808,7 @@ return 0;
 
 void PiggyLoadLevelData (void)
 {
-LogErr ("   loading level textures\n");
+PrintLog ("   loading level textures\n");
 PiggyBitmapPageOutAll (0);
 PagingTouchAll ();
 }
@@ -907,7 +907,7 @@ GrRemapBitmapGood (bmP, d1Palette, TRANSPARENCY_COLOR, -1);
 void _CDECL_ FreeD1TMapNums (void) 
 {
 if (d1_tmap_nums) {
-	LogErr ("unloading D1 texture ids\n");
+	PrintLog ("unloading D1 texture ids\n");
 	D2_FREE (d1_tmap_nums);
 	d1_tmap_nums = NULL;
 	}
@@ -1209,9 +1209,9 @@ void _CDECL_ PiggyClose (void)
 	int			i, j;
 	tDigiSound	*dsP;
 
-LogErr ("unloading textures\n");
+PrintLog ("unloading textures\n");
 PiggyCloseFile ();
-LogErr ("unloading sounds\n");
+PrintLog ("unloading sounds\n");
 for (i = 0; i < 2; i++) {
 	for (j = 0, dsP = gameData.pig.sound.sounds [i]; j < MAX_SOUND_FILES; j++, dsP++)
 		if (dsP->bHires) {

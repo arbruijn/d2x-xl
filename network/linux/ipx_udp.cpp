@@ -352,11 +352,11 @@ static void dumpraddr (unsigned char *a)
 {
 unsigned short port;
 
-LogErr (" [%u.%u.%u.%u",a [0],a [1],a [2],a [3]);
+PrintLog (" [%u.%u.%u.%u",a [0],a [1],a [2],a [3]);
 port= (unsigned short)ntohs (* (unsigned short *) (a+4));
 if (port) 
-	LogErr (":%u",port);
-LogErr ("]");
+	PrintLog (":%u",port);
+PrintLog ("]");
 }
 
 #endif
@@ -1084,7 +1084,7 @@ static void RequestResend (struct tDestListEntry *pdl, int nLastPacket)
 {
 	ubyte buf [40];
 
-//LogErr ("RequestResend (%d, %d)\n", pdl->nReceived, nLastPacket);
+//PrintLog ("RequestResend (%d, %d)\n", pdl->nReceived, nLastPacket);
 memcpy (buf, RESEND_ID, RESEND_ID_LEN);
 * ((int *) (buf + RESEND_ID_LEN)) = INTEL_INT (pdl->nReceived);
 * ((int *) (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
@@ -1157,7 +1157,7 @@ if (nFirst < (nDrop = ppp->id)) {
 nDrop = -1;
 t = SDL_GetTicks ();
 #ifdef _DEBUG
-//LogErr ("resending packets %d - %d to", nFirst, nLast); dumpaddr (&pdl->addr); //LogErr ("\n");
+//PrintLog ("resending packets %d - %d to", nFirst, nLast); dumpaddr (&pdl->addr); //PrintLog ("\n");
 #endif
 for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
 	j %= MAX_BUF_PACKETS;
@@ -1176,7 +1176,7 @@ for (i = pdl->numPackets, j = pdl->firstPacket; i; i--, j++) {
 		}
 //	nDrop = * ((int *) (ppp->data + ppp->len - 4));
 //	nDrop = INTEL_INT (nDrop);
-//LogErr ("   resending packet %d (%d)\n", ppp - pdl->packetProps, pdl->numPackets);
+//PrintLog ("   resending packet %d (%d)\n", ppp - pdl->packetProps, pdl->numPackets);
 	sendto (pdl->fd, ppp->data, ppp->len, 0, (struct sockaddr *) &pdl->addr, sizeof (pdl->addr));
 	}
 return 1;
@@ -1252,7 +1252,7 @@ if (!(bTracker
 			bSafeMode = 1;
 			packetId = *((int *) (outBuf + dataLen - 14));
 			packetId = INTEL_INT (packetId);
-			//LogErr ("received packet %d (%d) from ", packetId, pdl->nReceived); dumpaddr (&pdl->addr); //LogErr ("\n");
+			//PrintLog ("received packet %d (%d) from ", packetId, pdl->nReceived); dumpaddr (&pdl->addr); //PrintLog ("\n");
 			if (packetId == pdl->nReceived)
 				pdl->nReceived++;
 			else if (packetId > pdl->nReceived) {

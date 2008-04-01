@@ -1828,14 +1828,14 @@ nOldLevel = gameData.missions.nCurrentLevel;
 for (i = 0; i < nPhysSegs - 1; i++) {
 #ifdef _DEBUG
 	if (physSegList [i] > gameData.segs.nLastSegment)
-		LogErr ("invalid segment in physSegList\n");
+		PrintLog ("invalid segment in physSegList\n");
 #endif
 	nConnSide = FindConnectedSide (gameData.segs.segments + physSegList [i+1], gameData.segs.segments + physSegList [i]);
 	if (nConnSide != -1)
 		CheckTrigger (gameData.segs.segments + physSegList [i], nConnSide, OBJ_IDX (objP), 0);
 #ifdef _DEBUG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
-		LogErr ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
+		PrintLog ("UNCONNECTED SEGMENTS %d, %d\n", physSegList [i+1], physSegList [i]);
 #endif
 	//maybe we've gone on to the next level.  if so, bail!
 	if (gameData.missions.nCurrentLevel != nOldLevel)
@@ -2637,6 +2637,7 @@ if (!gameOpts->render.nPath)
 	return;
 if (!gameData.objs.nLastObject)
 	return;
+PrintLog ("   building optimized polygon model data\n");
 gameStates.render.nType = 1;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;

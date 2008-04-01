@@ -667,7 +667,7 @@ if (!i) {
 else if (i < 0)
 	return;
 #ifdef _DEBUG
-//LogErr ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.nSyncFrame);
+//PrintLog ("Receiving object packet %d (prev: %d)\n", networkData.nPrevFrame, networkData.nSyncFrame);
 #endif
  for (i = 0; i < nObjects; i++) {
 	NW_GET_SHORT (dataP, bufI, nObject);                   
@@ -684,7 +684,7 @@ else if (i < 0)
 			if (networkData.nJoinState != 2)
 				return;
 #ifdef _DEBUG
-			LogErr ("Receiving missing object packets\n");
+			PrintLog ("Receiving missing object packets\n");
 #endif
 			networkData.nJoinState = 3;
 			}

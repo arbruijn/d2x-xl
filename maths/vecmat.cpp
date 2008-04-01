@@ -1434,21 +1434,21 @@ fix VmMatrixDetValue (vmsMatrix *m)
 {
 #if 1
 	fix	xDet;
-//LogErr ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", m->rVec.p.x, m->rVec.p.y, m->rVec.p.z, m->fVec.p.x, m->fVec.p.y, m->fVec.p.z, m->uVec.p.x, m->uVec.p.y, m->uVec.p.z);
-//LogErr ("               xDet = FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z))\n");
+//PrintLog ("            CalcDetValue (R: %d, %d, %d; F: %d, %d, %d; U: %d, %d, %d)\n", m->rVec.p.x, m->rVec.p.y, m->rVec.p.z, m->fVec.p.x, m->fVec.p.y, m->fVec.p.z, m->uVec.p.x, m->uVec.p.y, m->uVec.p.z);
+//PrintLog ("               xDet = FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z))\n");
 xDet = FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z));
-//LogErr ("               xDet -= FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y))\n");
+//PrintLog ("               xDet -= FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y))\n");
 xDet -= FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y));
-//LogErr ("               xDet -= FixMul (m->rVec.p.y, FixMul (m->uVec.p.x, m->fVec.p.z))\n");
+//PrintLog ("               xDet -= FixMul (m->rVec.p.y, FixMul (m->uVec.p.x, m->fVec.p.z))\n");
 xDet -= FixMul (m->rVec.p.y, FixMul (m->uVec.p.x, m->fVec.p.z));
-//LogErr ("               xDet += FixMul (m->rVec.p.y, FixMul (m->uVec.p.z, m->fVec.p.x))\n");
+//PrintLog ("               xDet += FixMul (m->rVec.p.y, FixMul (m->uVec.p.z, m->fVec.p.x))\n");
 xDet += FixMul (m->rVec.p.y, FixMul (m->uVec.p.z, m->fVec.p.x));
-//LogErr ("               xDet += FixMul (m->rVec.p.z, FixMul (m->uVec.p.x, m->fVec.p.y))\n");
+//PrintLog ("               xDet += FixMul (m->rVec.p.z, FixMul (m->uVec.p.x, m->fVec.p.y))\n");
 xDet += FixMul (m->rVec.p.z, FixMul (m->uVec.p.x, m->fVec.p.y));
-//LogErr ("               xDet -= FixMul (m->rVec.p.z, FixMul (m->uVec.p.y, m->fVec.p.x))\n");
+//PrintLog ("               xDet -= FixMul (m->rVec.p.z, FixMul (m->uVec.p.y, m->fVec.p.x))\n");
 xDet -= FixMul (m->rVec.p.z, FixMul (m->uVec.p.y, m->fVec.p.x));
 return xDet;
-//LogErr ("             m = %d\n", xDet);
+//PrintLog ("             m = %d\n", xDet);
 #else
 return FixMul (m->rVec.p.x, FixMul (m->uVec.p.y, m->fVec.p.z)) -
 		 FixMul (m->rVec.p.x, FixMul (m->uVec.p.z, m->fVec.p.y)) -

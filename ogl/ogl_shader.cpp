@@ -125,7 +125,7 @@ if (bProgram) {
 		infoLog = (char *) D2_ALLOC (nLogLen);
 		glGetProgramInfoLog (handle, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
-			LogErr ("\n%s\n\n", infoLog);
+			PrintLog ("\n%s\n\n", infoLog);
 		D2_FREE (infoLog);
 		}
 	}
@@ -134,7 +134,7 @@ else {
 	if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
 		glGetShaderInfoLog (handle, nLogLen, &charsWritten, infoLog);
 		if (*infoLog)
-			LogErr ("\n%s\n\n", infoLog);
+			PrintLog ("\n%s\n\n", infoLog);
 		D2_FREE (infoLog);
 		}
 	}
@@ -152,7 +152,7 @@ glGetObjectParameteriv (handle, GL_OBJECT_INFO_LOG_LENGTH_ARB, &nLogLen);
 if ((nLogLen > 0) && (infoLog = (char *) D2_ALLOC (nLogLen))) {
 	glGetInfoLog (handle, nLogLen, &charsWritten, infoLog);
 	if (*infoLog)
-		LogErr ("\n%s\n\n", infoLog);
+		PrintLog ("\n%s\n\n", infoLog);
 	D2_FREE (infoLog);
 	}
 }
@@ -201,7 +201,7 @@ if (*progP)
 *progP = glCreateProgramObject (); 
 if (*progP)
 	return 1;
-LogErr ("   Couldn't create shader program tObject\n");
+PrintLog ("   Couldn't create shader program tObject\n");
 return 0; 
 }
 
@@ -266,11 +266,11 @@ glGetObjectParameteriv (vs, GL_OBJECT_COMPILE_STATUS_ARB, &bVertCompiled);
 glGetObjectParameteriv (fs, GL_OBJECT_COMPILE_STATUS_ARB, &bFragCompiled); 
 if (!bVertCompiled || !bFragCompiled) {
 	if (!bVertCompiled) {
-		LogErr ("   Couldn't compile vertex shader\n   \"%s\"\n", vsName);
+		PrintLog ("   Couldn't compile vertex shader\n   \"%s\"\n", vsName);
 		PrintShaderInfoLog (vs, 0);
 		}
 	if (!bFragCompiled) {
-		LogErr ("   Couldn't compile fragment shader\n   \"%s\"\n", fsName);
+		PrintLog ("   Couldn't compile fragment shader\n   \"%s\"\n", fsName);
 		PrintShaderInfoLog (fs, 0);
 		}
 	return 0; 
@@ -308,7 +308,7 @@ glLinkProgram (*progP);
 glGetObjectParameteriv (*progP, GL_OBJECT_LINK_STATUS_ARB, &bLinked); 
 if (bLinked)
 	return 1;
-LogErr ("   Couldn't link shader programs\n");
+PrintLog ("   Couldn't link shader programs\n");
 PrintShaderInfoLog (*progP, 1);
 DeleteShaderProg (progP);
 return 0; 
@@ -320,19 +320,26 @@ void InitShaders (void)
 {
 	GLint	nTMUs;
 
+PrintLog ("initializing shader programs\n");
 glGetIntegerv (GL_MAX_TEXTURE_UNITS, &nTMUs);
 if (gameStates.ogl.bShadersOk)
 	gameStates.ogl.bShadersOk = (nTMUs > 1);
 if (gameStates.render.color.bLightMapsOk)
 	gameStates.render.color.bLightMapsOk = (nTMUs > 2);
 #if LIGHTMAPS
+PrintLog ("   initializing lightmap shader programs\n");
 InitLightmapShaders ();
 #endif
+PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
 gameData.render.ogl.nHeadLights = 0;
+PrintLog ("   initializing lighting shader programs\n");
 InitLightingShaders (1);
+PrintLog ("   initializing vertex lighting shader programs\n");
 InitVertLightShader ();
+PrintLog ("   initializing glare shader programs\n");
 InitGlareShader ();
+PrintLog ("   initializing gray scale shader programs\n");
 InitGrayScaleShader ();
 LinkShaderProg (NULL);
 }
@@ -378,7 +385,7 @@ else {
 	gameStates.ogl.bShadersOk = 1;
 #endif
 	}
-LogErr (gameStates.ogl.bShadersOk ? (char *) "Shaders are available\n" : (char *) "No shaders available\n");
+PrintLog (gameStates.ogl.bShadersOk ? (char *) "Shaders are available\n" : (char *) "No shaders available\n");
 }
 
 //------------------------------------------------------------------------------

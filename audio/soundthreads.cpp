@@ -77,7 +77,7 @@ while (tiSound.ti.bExec && (clock () - t1 < 1000))
 tiSound.nTask = nTask;
 tiSound.ti.bExec = 1;
 #if 0
-LogErr ("running render threads (task: %d)\n", nTask);
+PrintLog ("running render threads (task: %d)\n", nTask);
 #endif
 return 1;
 }

@@ -52,7 +52,7 @@ void _CDECL_ free_text(void)
 {
 	char	*p = pszGameTexts [0] - 1;
 
-LogErr ("unloading game texts\n");
+PrintLog ("unloading game texts\n");
 if (pszGameTexts && pszGameTexts [0]) {
 	p = pszGameTexts [0] - 1;
 	D2_FREE (text);

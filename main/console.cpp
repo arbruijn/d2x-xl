@@ -75,7 +75,7 @@ void con_parse(ConsoleInformation *console, char *command);
 void _CDECL_ con_free(void)
 {
 if (con_initialized) {
-	LogErr ("shutting down the console\n");
+	PrintLog ("shutting down the console\n");
 	CON_Free(Console);
 	con_initialized = 0;
 	}

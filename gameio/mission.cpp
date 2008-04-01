@@ -708,13 +708,13 @@ int ParseMissionFile (CFILE *cfp)
 	char	*t, *v;
 	char	buf [80], *bufP;
 
-LogErr ("   parsing mission file\n");
+PrintLog ("   parsing mission file\n");
 gameData.missions.nLastLevel = 0;
 gameData.missions.nLastSecretLevel = 0;
 *gameData.missions.szBriefingFilename = '\0';
 *gameData.missions.szEndingFilename = '\0';
 while (MsnGetS (buf, 80, cfp)) {
-	LogErr ("      '%s'\n", buf);
+	PrintLog ("      '%s'\n", buf);
 	MsnTrimComment (buf);
 	if (MsnIsTok (buf, "name"))
 		;						//already have name, go to next line
@@ -745,7 +745,7 @@ while (MsnGetS (buf, 80, cfp)) {
 			if (strlen (v) < 13)
 				strcpy (gameData.missions.szBriefingFilename, v);
 			else
-				LogErr ("      mission file: ignoring invalid briefing name\n");
+				PrintLog ("      mission file: ignoring invalid briefing name\n");
 			}
 		}
 	else if (MsnIsTok (buf, "ending")) {
@@ -754,20 +754,20 @@ while (MsnGetS (buf, 80, cfp)) {
 			if (strlen (v) < 13)
 				strcpy (gameData.missions.szEndingFilename, v);
 			else
-				LogErr ("      mission file: ignoring invalid end briefing name\n");
+				PrintLog ("      mission file: ignoring invalid end briefing name\n");
 			}
 		}
 	else if (MsnIsTok (buf, "num_levels")) {
 		if ((v = MsnGetValue (buf))) {
 			int nLevels = atoi (v);
 			if (nLevels)
-				LogErr ("      parsing level list\n");
+				PrintLog ("      parsing level list\n");
 			for (i = 0; (i < nLevels) && MsnGetS (buf, 80, cfp); i++) {
-				LogErr ("         '%s'\n", buf);
+				PrintLog ("         '%s'\n", buf);
 				MsnTrimComment (buf);
 				MsnAddStrTerm (buf);
 				if (strlen (buf) > 12) {
-					LogErr ("      mission file: invalid level name\n");
+					PrintLog ("      mission file: invalid level name\n");
 					return 0;
 					}
 				strcpy (gameData.missions.szLevelNames [i], buf);
@@ -776,28 +776,28 @@ while (MsnGetS (buf, 80, cfp)) {
 			}
 		}
 	else if (MsnIsTok (buf,"num_secrets")) {
-		LogErr ("      parsing secret level list\n");
+		PrintLog ("      parsing secret level list\n");
 		if ((v = MsnGetValue (buf))) {
 			gameData.missions.nSecretLevels = atoi (v);
 			Assert(gameData.missions.nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
 			for (i = 0; (i < gameData.missions.nSecretLevels) && MsnGetS (buf, 80, cfp); i++) {
-				LogErr ("         '%s'\n", buf);
+				PrintLog ("         '%s'\n", buf);
 				MsnTrimComment (buf);
 				if (!(t = strchr (buf, ','))) {
-					LogErr ("      mission file: secret level lacks link to base level\n");
+					PrintLog ("      mission file: secret level lacks link to base level\n");
 					return 0;
 					}
 				*t++ = 0;
 				MsnAddStrTerm (buf);
 				if (strlen (buf) > 12) {
-					LogErr ("      mission file: invalid level name\n");
+					PrintLog ("      mission file: invalid level name\n");
 					return 0;
 					}
 				strcpy (gameData.missions.szSecretLevelNames [i], buf);
 				gameData.missions.secretLevelTable [i] = atoi (t);
 				if ((gameData.missions.secretLevelTable [i] < 1) || 
 					 (gameData.missions.secretLevelTable [i] > gameData.missions.nLastLevel)) {
-					LogErr ("      mission file: invalid secret level base level number\n");
+					PrintLog ("      mission file: invalid secret level base level number\n");
 					return 0;
 					}
 				gameData.missions.nLastSecretLevel--;
@@ -973,7 +973,7 @@ int LoadMissionByName (char *szMissionName, int nSubFolder)
 
 if (nSubFolder < 0) {
 	*gameFolders.szMsnSubDir = '\0';
-	LogErr ("   searching mission '%s'\n", szMissionName);
+	PrintLog ("   searching mission '%s'\n", szMissionName);
 	}
 n = BuildMissionList (1, nSubFolder);
 for (i = 0; i < n; i++)

@@ -359,7 +359,7 @@ void _CDECL_ RLECacheClose (void)
 {
 if (rle_cache_initialized)	{
 	int i;
-	LogErr ("deleting RLE cache\n");
+	PrintLog ("deleting RLE cache\n");
 	rle_cache_initialized = 0;
 	for (i=0; i<MAX_CACHE_BITMAPS; i++)
 		GrFreeBitmap (rle_cache[i].expanded_bitmap);

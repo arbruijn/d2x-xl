@@ -153,7 +153,7 @@ void InitLightmapShaders (void)
 if (!gameStates.ogl.bShadersOk)
 	gameStates.render.color.bLightMapsOk = 0;
 if (gameStates.render.color.bLightMapsOk) {
-	LogErr ("building lightmap shader programs\n");
+	PrintLog ("building lightmap shader programs\n");
 	for (i = 0; i < 2; i++) {
 		if (lmShaderProgs [i])
 			DeleteShaderProg (lmShaderProgs + i);

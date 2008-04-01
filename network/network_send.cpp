@@ -527,11 +527,11 @@ old_status = netGame.gameStatus;
 netGame.nType = PID_GAME_UPDATE;
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.gameStatus = NETSTAT_ENDLEVEL;
-LogErr ("sending netgame update:\n");
+PrintLog ("sending netgame update:\n");
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected) && (i != gameData.multiplayer.nLocalPlayer)) {
 		if (gameStates.multi.nGameType >= IPX_GAME) {
-			LogErr ("   %s (%s)\n", netPlayers.players [i].callsign, 
+			PrintLog ("   %s (%s)\n", netPlayers.players [i].callsign, 
 				iptos (szIP, (char *) netPlayers.players [i].network.ipx.node));
 			SendLiteNetGamePacket (
 				netPlayers.players [i].network.ipx.server, 

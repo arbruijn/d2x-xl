@@ -508,7 +508,7 @@ if (nLights < 0) {
 if (nLights == gameData.render.ogl.nHeadLights)
 	return;
 gameStates.render.bHaveDynLights = 0;
-LogErr ("building lighting shader programs\n");
+PrintLog ("building lighting shader programs\n");
 if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 4; i++) {

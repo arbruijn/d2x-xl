@@ -881,6 +881,7 @@ void FreeStringPool (void)
 	int			i;
 	grsString	*ps;
 
+PrintLog ("unloading string pool\n");
 for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	D2_FREE (ps->pszText);
 	if (ps->pId)
@@ -888,6 +889,7 @@ for (i = nPoolStrings, ps = stringPool; i; i--, ps++) {
 	OglFreeBmTexture (ps->bmP);
 	GrFreeBitmap (ps->bmP);
 	}
+PrintLog ("initializing string pool\n");
 InitStringPool ();
 }
 

@@ -1699,7 +1699,7 @@ else
 if (gameData.smoke.iFree < 0)
 	return -1;
 else if (!LoadParticleImage (nType)) {
-	//LogErr ("cannot create gameData.smoke.buffer\n");
+	//PrintLog ("cannot create gameData.smoke.buffer\n");
 	return -1;
 	}
 else {
@@ -1715,7 +1715,7 @@ else {
 	srand (SDL_GetTicks ());
 	pSmoke = gameData.smoke.buffer + gameData.smoke.iFree;
 	if (!(pSmoke->pClouds = (tCloud *) D2_ALLOC (nMaxClouds * sizeof (tCloud)))) {
-		//LogErr ("cannot create gameData.smoke.buffer\n");
+		//PrintLog ("cannot create gameData.smoke.buffer\n");
 		return 0;
 		}
 	if ((pSmoke->nObject = nObject) != 0x7fffffff) {
@@ -1732,7 +1732,7 @@ else {
 			pSmoke->nClouds++;
 		else {
 			DestroySmoke (gameData.smoke.iFree);
-			//LogErr ("cannot create gameData.smoke.buffer\n");
+			//PrintLog ("cannot create gameData.smoke.buffer\n");
 			return -1;
 			}
 	pSmoke->nType = nType;
@@ -1740,7 +1740,7 @@ else {
 	gameData.smoke.iFree = pSmoke->nNext;
 	pSmoke->nNext = gameData.smoke.iUsed;
 	gameData.smoke.iUsed = i;
-	//LogErr ("CreateSmoke (%d) = %d,%d (%d)\n", nObject, i, nMaxClouds, nType);
+	//PrintLog ("CreateSmoke (%d) = %d,%d (%d)\n", nObject, i, nMaxClouds, nType);
 	return gameData.smoke.iUsed;
 	}
 }
@@ -1792,13 +1792,13 @@ else
 					return 0;
 				if (CloudIsDead (pCloud, t)) {
 					if (!RemoveCloud (i, j)) {
-						//LogErr ("killing gameData.smoke.buffer %d (%d)\n", i, pSmoke->nObject);
+						//PrintLog ("killing gameData.smoke.buffer %d (%d)\n", i, pSmoke->nObject);
 						DestroySmoke (i);
 						break;
 						}
 					}
 				else {
-					//LogErr ("moving %d (%d)\n", i, pSmoke->nObject);
+					//PrintLog ("moving %d (%d)\n", i, pSmoke->nObject);
 					if ((pSmoke->nObject < 0) || ((pSmoke->nObject != 0x7fffffff) && (gameData.objs.objects [pSmoke->nObject].nType == 255)))
 						SetCloudLife (pCloud, 0);
 					UpdateCloud (pCloud, t, -1);
@@ -2138,7 +2138,7 @@ if (IsUsedSmoke (i)) {
 #ifdef _DEBUG
 	else if (pSmoke->nObject >= 0) {
 		HUDMessage (0, "no smoke in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
-		//LogErr ("no gameData.smoke.buffer in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
+		//PrintLog ("no gameData.smoke.buffer in SetSmokePos (%d,%d)\n", i, pSmoke->nObject);
 		pSmoke->nObject = -1;
 		}
 #endif
@@ -2177,7 +2177,7 @@ void SetSmokeLife (int i, int nLife)
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (pSmoke->pClouds->nLife != nLife)) {
-		//LogErr ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
+		//PrintLog ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
 		int j;
 		for (j = 0; j < pSmoke->nClouds; j++)
 			SetCloudLife (pSmoke->pClouds, nLife);
@@ -2192,7 +2192,7 @@ void SetSmokeBrightness (int i, int nBrightness)
 if (IsUsedSmoke (i)) {
 	tSmoke *pSmoke = gameData.smoke.buffer + i;
 	if (pSmoke->pClouds && (pSmoke->pClouds->nDefBrightness != nBrightness)) {
-		//LogErr ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
+		//PrintLog ("SetSmokeLife (%d,%d) = %d\n", i, pSmoke->nObject, nLife);
 		int j;
 		for (j = 0; j < pSmoke->nClouds; j++)
 			SetCloudBrightness (pSmoke->pClouds, nBrightness);
