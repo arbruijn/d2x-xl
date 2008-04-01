@@ -105,7 +105,7 @@ int BuildSphereTri (tOOF_triangle **buf, int *pnFaces, int nTessDepth)
     int		i, j, nFaces = 0;
 	 float	l;
 
-l = sqrt (2.0f) / 2.0f;
+l = (float) sqrt (2.0f) / 2.0f;
 for (i = 0; i < 8; i++) {
 	for (j = 0; j < 3; j++) {
 		buf [0][i].p [j] = baseSphereOcta [i].p [j];
@@ -176,7 +176,7 @@ int BuildSphereQuad (tOOF_quad **buf, int *pnFaces, int nTessDepth)
     int		i, j, nFaces;
 	 float	l;
 
-l = sqrt (2.0f) / 2.0f;
+l = (float) sqrt (2.0f) / 2.0f;
 for (i = 0; i < 6; i++) {
 	for (j = 0; j < 4; j++) {
 		buf [0][i].p [j] = baseSphereCube [i].p [j];

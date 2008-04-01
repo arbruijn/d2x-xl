@@ -1286,8 +1286,8 @@ void BuildModelAngleMatrix (tOOF_matrix *pm, int a, tOOF_vector *pAxis)
 float x = pAxis->x;
 float y = pAxis->y;
 float z = pAxis->z;
-float s = sin ((float) a);
-float c = cos ((float) a);
+float s = (float) sin ((float) a);
+float c = (float) cos ((float) a);
 float t = 1.0f - c;
 float i = t * x;
 float j = s * z;

@@ -571,7 +571,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 			}
 		else {
 			float dl = f2fl (light);
-			dl = pow (dl, 1.0f / 3.0f);
+			dl = (float) pow (dl, 1.0f / 3.0f);
 			pc->color.red = pdc->red * dl;
 			pc->color.green = pdc->green * dl;
 			pc->color.blue = pdc->blue * dl;
