@@ -396,7 +396,7 @@ CFClose (&cf);
 
 #if USE_SDL_MIXER
 
-#include "sdl_mixer.h"
+#include "SDL_mixer.h"
 
 typedef struct tAddonSound {
 	Mix_Chunk		*chunkP;
@@ -421,7 +421,7 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 
 char *AddonSoundName (int nSound)
 {
-return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? "" : addonSounds [nSound].szSoundFile;
+return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? (char *) "" : addonSounds [nSound].szSoundFile;
 }
 
 //------------------------------------------------------------------------------

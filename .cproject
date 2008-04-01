@@ -512,7 +512,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.release.1290390794." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.1833377608" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.release.144011786" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.release"/>
-<builder buildPath="${workspace_loc:/d2x-xl/Release}" id="cdt.managedbuild.target.gnu.builder.exe.release.1056699651" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.exe.release"/>
+<builder autoBuildTarget="all" buildPath="${workspace_loc:/d2x-xl/Release}" cleanBuildTarget="clean" enableAutoBuild="false" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.release.1056699651" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.exe.release"/>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.295342136" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.1204676507" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release">
 <option id="gnu.cpp.compiler.exe.release.option.optimization.level.2107462777" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
@@ -522,6 +522,7 @@
 <listOptionValue builtIn="false" value=".."/>
 <listOptionValue builtIn="false" value="../../../../SDL-1.2.11/include"/>
 <listOptionValue builtIn="false" value="../../../SDL_mixer-1.2.7"/>
+<listOptionValue builtIn="false" value="../../SDL_mixer-1.2.7"/>
 <listOptionValue builtIn="false" value="../../../../SDL_mixer-1.2.7"/>
 <listOptionValue builtIn="false" value="./include"/>
 <listOptionValue builtIn="false" value="../include"/>
