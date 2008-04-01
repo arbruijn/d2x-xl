@@ -147,7 +147,7 @@ void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
 void DoEndGame (void);
 void AdvanceLevel (int bSecret, int bFromSecret);
-void FilterObjectsFromLevel ();
+void FilterObjectsFromLevel (void);
 
 // From allender -- you'll find these defines in state.c and cntrlcen.c
 // since I couldn't think of a good place to put them and i wanted to
@@ -161,31 +161,27 @@ void FilterObjectsFromLevel ();
 //0 means not a real level loaded
 // Global variables telling what sort of game we have
 
-void GrRemapMonoFonts ();
-void SetFunctionMode (int);
-void InitHoardData ();
-
-// Extern from game.c to fix a bug in the cockpit!
-
-extern int nLastLevelPathCreated;
-extern int nTimeLastMoved;
-
-//	HUDClearMessages external, declared in gauges.h
-#ifndef _GAUGES_H
-extern void HUDClearMessages (); // From hud.c
-#endif
-
 //	Extra prototypes declared for the sake of LINT
 void InitPlayerStatsNewShip (void);
 void CopyDefaultsToRobotsAll (void);
 
-extern int nDescentCriticalError;
+//	HUDClearMessages external, declared in gauges.h
+#ifndef _GAUGES_H
+void HUDClearMessages (); // From hud.c
+#endif
 
+void GrRemapMonoFonts ();
+void SetFunctionMode (int);
+void InitHoardData ();
+
+extern int nLastLevelPathCreated;
+extern int nTimeLastMoved;
+extern int nDescentCriticalError;
 extern int nLastMsgYCrd;
 
 //--------------------------------------------------------------------
 
-void VerifyConsoleObject ()
+void VerifyConsoleObject (void)
 {
 Assert (gameData.multiplayer.nLocalPlayer > -1);
 Assert (LOCALPLAYER.nObject > -1);
@@ -196,39 +192,35 @@ Assert (gameData.objs.console->id==gameData.multiplayer.nLocalPlayer);
 
 //------------------------------------------------------------------------------
 
-int CountRobotsInLevel ()
+int CountRobotsInLevel (void)
 {
-	int robotCount;
+	int robotCount = 0;
 	int i;
 
-	robotCount = 0;
-	for (i=0;i<=gameData.objs.nLastObject;i++) {
-		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			robotCount++;
+for (i = 0; i <= gameData.objs.nLastObject; i++) {
+	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+		robotCount++;
 	}
-
-	return robotCount;
+return robotCount;
 }
 
 //------------------------------------------------------------------------------
 
-int CountHostagesInLevel ()
+int CountHostagesInLevel (void)
 {
-	int count;
+	int count = 0;
 	int i;
 
-	count = 0;
-	for (i=0;i<=gameData.objs.nLastObject;i++) {
-		if (gameData.objs.objects [i].nType == OBJ_HOSTAGE)
-			count++;
+for (i = 0; i <= gameData.objs.nLastObject; i++) {
+	if (gameData.objs.objects [i].nType == OBJ_HOSTAGE)
+		count++;
 	}
-
-	return count;
+return count;
 }
 
 //------------------------------------------------------------------------------
 //added 10/12/95: delete buddy bot if coop game.  Probably doesn't really belong here. -MT
-void GameSeqInitNetworkPlayers ()
+void GameStartInitNetworkPlayers (void)
 {
 	int		i, j, t, bCoop = IsCoopGame,
 				segNum, segType, 
@@ -330,7 +322,7 @@ if (IS_MAC_SHARE && IsMultiGame && (gameData.missions.nCurrentMission == gameDat
 
 //------------------------------------------------------------------------------
 
-void GameSeqRemoveUnusedPlayers ()
+void GameStartRemoveUnusedPlayers (void)
 {
 	int i;
 
@@ -351,7 +343,7 @@ else {		// Note link to above if!!!
 //------------------------------------------------------------------------------
 
 // Setup tPlayer for new game
-void InitPlayerStatsGame ()
+void InitPlayerStatsGame (void)
 {
 LOCALPLAYER.score = 0;
 LOCALPLAYER.lastScore = 0;
@@ -525,7 +517,7 @@ InitAIForShip ();
 
 //------------------------------------------------------------------------------
 
-extern void InitStuckObjects (void);
+void InitStuckObjects (void);
 
 #ifdef EDITOR
 
@@ -534,7 +526,7 @@ extern int gameData.segs.bHaveSlideSegs;
 //reset stuff so game is semi-normal when playing from editor
 void editor_reset_stuff_onLevel ()
 {
-	GameSeqInitNetworkPlayers ();
+	GameStartInitNetworkPlayers ();
 	InitPlayerStatsLevel (0);
 	gameData.objs.viewer = gameData.objs.console;
 	gameData.objs.console = gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
@@ -545,7 +537,7 @@ void editor_reset_stuff_onLevel ()
 	VerifyConsoleObject ();
 	gameData.reactor.bDestroyed = 0;
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		GameSeqRemoveUnusedPlayers ();
+		GameStartRemoveUnusedPlayers ();
 	InitCockpit ();
 	InitRobotsForLevel ();
 	InitAIObjects ();
@@ -564,7 +556,7 @@ void editor_reset_stuff_onLevel ()
 //------------------------------------------------------------------------------
 
 //do whatever needs to be done when a tPlayer dies in multiplayer
-void DoGameOver ()
+void DoGameOver (void)
 {
 //	ExecMessageBox (TXT_GAME_OVER, 1, TXT_OK, "");
 if (gameData.missions.nCurrentMission == gameData.missions.nBuiltinMission)
@@ -577,10 +569,8 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 
 //------------------------------------------------------------------------------
 
-extern void do_save_game_menu ();
-
 //update various information about the tPlayer
-void UpdatePlayerStats ()
+void UpdatePlayerStats (void)
 {
 LOCALPLAYER.timeLevel += gameData.time.xFrame;	//the never-ending march of time...
 if (LOCALPLAYER.timeLevel > i2f (3600))	{
@@ -596,7 +586,7 @@ if (LOCALPLAYER.timeTotal > i2f (3600))	{
 
 //------------------------------------------------------------------------------
 
-//go through this level and start any tEffectClip sounds
+//go through this level and start any effect sounds
 void SetSoundSources (void)
 {
 	short			nSegment, nSide, nConnSeg, nConnSide, nSound;
@@ -648,166 +638,6 @@ if (0 <= (nSound = DigiGetSoundByName ("explode2"))) {
 //gameOpts->sound.bD1Sound = 0;
 gameStates.sound.bDontStartObjects = 0;
 }
-
-//------------------------------------------------------------------------------
-
-//fix flashDist=i2f (1);
-fix flashDist=fl2f (.9);
-//create flash for tPlayer appearance
-void CreatePlayerAppearanceEffect (tObject *playerObjP)
-{
-	vmsVector	pos;
-	tObject		*effectObjP;
-#ifdef _DEBUG
-	int			nObject = OBJ_IDX (playerObjP);
-
-	if ((nObject < 0) || (nObject > gameData.objs.nLastObject))
-		Int3 (); // See Rob, trying to track down weird network bug
-#endif
-if (playerObjP == gameData.objs.viewer)
-	VmVecScaleAdd (&pos, &playerObjP->position.vPos, &playerObjP->position.mOrient.fVec, FixMul (playerObjP->size,flashDist));
-else
-	pos = playerObjP->position.vPos;
-effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
-if (effectObjP) {
-	effectObjP->position.mOrient = playerObjP->position.mOrient;
-	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0, SOUNDCLASS_PLAYER);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-//
-// New Game sequencing functions
-//
-
-//pairs of chars describing ranges
-char playername_allowed_chars [] = "azAZ09__--";
-
-int MakeNewPlayerFile (int allow_abort)
-{
-	int x;
-	char filename [FILENAME_LEN];
-	tMenuItem m;
-	char text [CALLSIGN_LEN+1]="";
-#if 0
-	FILE *fp;
-#endif
-
-strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
-
-try_again:
-
-memset (&m, 0, sizeof (m));
-m.nType=NM_TYPE_INPUT; 
-m.text_len = 8; 
-m.text = text;
-
-nmAllowedChars = playername_allowed_chars;
-x = ExecMenu (NULL, TXT_ENTER_PILOT_NAME, 1, &m, NULL, NULL);
-nmAllowedChars = NULL;
-if (x < 0) {
-	if (allow_abort) return 0;
-	goto try_again;
-	}
-if (text [0]==0)	//null string
-	goto try_again;
-sprintf (filename, "%s.plr", text);
-
-if (CFExist (filename,gameFolders.szProfDir,0)) {
-	ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
-	goto try_again;
-	}
-if (!NewPlayerConfig ())
-	goto try_again;			// They hit Esc during New tPlayer config
-strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
-WritePlayerFile ();
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-//Inputs the tPlayer's name, without putting up the background screen
-int SelectPlayer ()
-{
-	static int bStartup = 1;
-	int 	i,j, bAutoPlr;
-	char 	filename [FILENAME_LEN];
-	char	filespec [FILENAME_LEN];
-	int 	bAllowAbort = !bStartup;
-
-if (LOCALPLAYER.callsign [0] == 0)	{
-	//---------------------------------------------------------------------
-	// Set default config options in case there is no config file
-	// kcKeyboard, kc_joystick, kcMouse are statically defined.
-	gameOpts->input.joystick.sensitivity [0] =
-	gameOpts->input.joystick.sensitivity [1] =
-	gameOpts->input.joystick.sensitivity [2] =
-	gameOpts->input.joystick.sensitivity [3] = 8;
-	gameOpts->input.mouse.sensitivity [0] =
-	gameOpts->input.mouse.sensitivity [1] =
-	gameOpts->input.mouse.sensitivity [2] = 8;
-	gameConfig.nControlType = CONTROL_NONE;
-	for (i = 0; i < CONTROL_MAX_TYPES; i++)
-		for (j = 0; j < MAX_CONTROLS; j++)
-			controlSettings.custom [i][j] = controlSettings.defaults [i][j];
-	KCSetControls (0);
-	//----------------------------------------------------------------
-
-	// Read the last tPlayer's name from config file, not lastplr.txt
-	strncpy (LOCALPLAYER.callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
-	if (gameConfig.szLastPlayer [0] == 0)
-		bAllowAbort = 0;
-	}
-if ((bAutoPlr = gameData.multiplayer.autoNG.bValid))
-	strncpy (filename, gameData.multiplayer.autoNG.szPlayer, 8);
-else if ((bAutoPlr = bStartup && (i = FindArg ("-player")) && *Args [++i]))
-	strncpy (filename, Args [i], 8);
-if (bAutoPlr) {
-	char *psz;
-	strlwr (filename);
-	if (!(psz = strchr (filename, '.')))
-		for (psz = filename; psz - filename < 8; psz++)
-			if (!*psz || ::isspace (*psz))
-				break;
-		*psz = '\0';
-	goto got_player;
-	}
-
-do_menu_again:
-
-bStartup = 0;
-sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : ""); 
-if (!ExecMenuFileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort))	{
-	if (bAllowAbort) {
-		return 0;
-		}
-	goto do_menu_again; //return 0;		// They hit Esc in file selector
-	}
-
-got_player:
-
-bStartup = 0;
-if (filename [0] == '<')	{
-	// They selected 'create new pilot'
-	if (!MakeNewPlayerFile (1))
-		//return 0;		// They hit Esc during enter name stage
-		goto do_menu_again;
-	}
-else
-	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);
-if (ReadPlayerFile (0) != EZERO)
-	goto do_menu_again;
-KCSetControls (0);
-SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);
-WriteConfigFile ();		// Update lastplr
-D2SetCaption ();
-return 1;
-}
-
-
-int NetworkVerifyObjects (int nRemoteObjNum, int nLocalObjs);
 
 //	------------------------------------------------------------------------------
 
@@ -1118,7 +948,7 @@ return 1;
 //------------------------------------------------------------------------------
 
 //sets up gameData.multiplayer.nLocalPlayer & gameData.objs.console
-void InitMultiPlayerObject ()
+void InitMultiPlayerObject (void)
 {
 Assert ((gameData.multiplayer.nLocalPlayer >= 0) && (gameData.multiplayer.nLocalPlayer < MAX_PLAYERS));
 if (gameData.multiplayer.nLocalPlayer != 0)	{
@@ -1282,7 +1112,7 @@ void DoEndlevelMenu ()
 
 //	-----------------------------------------------------------------------------------------------------
 //called when the tPlayer is starting a level (new game or new ship)
-void StartSecretLevel ()
+void StartSecretLevel (void)
 {
 Assert (!gameStates.app.bPlayerIsDead);
 InitPlayerPosition (0);
@@ -1324,7 +1154,7 @@ return 1;
 
 void DoSecretMessage (char *msg)
 {
-	int	fMode = gameStates.app.nFunctionMode;
+	int fMode = gameStates.app.nFunctionMode;
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
@@ -1339,12 +1169,12 @@ void InitSecretLevel (int nLevel)
 {
 Assert (gameData.missions.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
-GameSeqInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
+GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for this level
 HUDClearMessages ();
 AutomapClearVisited ();
 // --	InitPlayerStatsLevel ();
 gameData.objs.viewer = gameData.objs.objects + LOCALPLAYER.nObject;
-GameSeqRemoveUnusedPlayers ();
+GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 InitCockpit ();
@@ -1578,9 +1408,6 @@ PlayLevelMovie (".mvx", nLevel);
 
 #define MOVIE_REQUIRED 1
 
-void show_order_form ();
-extern void com_hangup (void);
-
 //called when the tPlayer has finished the last level
 void DoEndGame (void)
 {
@@ -1773,9 +1600,7 @@ SetFunctionMode (old_fmode);
 
 //------------------------------------------------------------------------------
 
-void DigiStopDigiSounds ();
-
-void DoPlayerDead ()
+void DoPlayerDead (void)
 {
 	int bSecret = (gameData.missions.nCurrentLevel < 0);
 
@@ -1873,7 +1698,7 @@ ClearWarnFunc (ShowInGameWarning);
 if (!funcRes)
 	return 0;
 Assert (gameStates.app.bAutoRunMission || (gameData.missions.nCurrentLevel == nLevel));	//make sure level set right
-GameSeqInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
+GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players array for
 #ifdef _DEBUG										  // this level
 InitHoardData ();
 SetMonsterballForces ();
@@ -1917,7 +1742,7 @@ if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
 	FindMonsterball (); //will simply remove all Monsterballs
-GameSeqRemoveUnusedPlayers ();
+GameStartRemoveUnusedPlayers ();
 gameStates.app.bGameSuspended = 0;
 gameData.reactor.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
@@ -1999,16 +1824,16 @@ objP->rType.vClipInfo.xFrameTime = gameData.eff.vClips [0][objP->rType.vClipInfo
 
 //------------------------------------------------------------------------------
 
-void FilterObjectsFromLevel ()
- {
+void FilterObjectsFromLevel (void)
+{
   int i;
 
 for (i = 0; i <= gameData.objs.nLastObject; i++) {
-	if (gameData.objs.objects [i].nType==OBJ_POWERUP)
-		if (gameData.objs.objects [i].id==POW_REDFLAG || gameData.objs.objects [i].id==POW_BLUEFLAG)
-			BashToShield (i,"Flag!!!!");
-		}
+	if ((gameData.objs.objects [i].nType == OBJ_POWERUP) &&
+		 ((gameData.objs.objects [i].id == POW_REDFLAG) || (gameData.objs.objects [i].id == POW_BLUEFLAG)))
+		BashToShield (i,"Flag!!!!");
   }
+}
 
 //------------------------------------------------------------------------------
 
@@ -2092,9 +1917,9 @@ void MaybeSetFirstSecretVisit (int nLevel)
 {
 	int	i;
 
-	for (i=0; i<gameData.missions.nSecretLevels; i++) {
-		if (gameData.missions.secretLevelTable [i] == nLevel) {
-			gameStates.app.bFirstSecretVisit = 1;
+for (i = 0; i < gameData.missions.nSecretLevels; i++) {
+	if (gameData.missions.secretLevelTable [i] == nLevel) {
+		gameStates.app.bFirstSecretVisit = 1;
 		}
 	}
 }
@@ -2287,9 +2112,9 @@ void CopyDefaultsToRobotsAll ()
 {
 	int	i;
 
-	for (i=0; i<=gameData.objs.nLastObject; i++)
-		if (gameData.objs.objects [i].nType == OBJ_ROBOT)
-			CopyDefaultsToRobot (&gameData.objs.objects [i]);
+for (i = 0; i <= gameData.objs.nLastObject; i++)
+	if (gameData.objs.objects [i].nType == OBJ_ROBOT)
+		CopyDefaultsToRobot (&gameData.objs.objects [i]);
 
 }
 
@@ -2333,10 +2158,8 @@ gameData.fusion.xAutoFireTime = 0;
 gameData.fusion.xCharge = 0;
 gameStates.app.cheats.bRobotsFiring = 1;
 gameStates.app.cheats.bD1CheatsEnabled = 0;
-//DigiClose ();
 gameOpts->sound.bD1Sound = gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && gameOpts->sound.bUseD1Sounds;
 SetDataVersion (-1);
-//DigiInit ();
 }
 
 //------------------------------------------------------------------------------

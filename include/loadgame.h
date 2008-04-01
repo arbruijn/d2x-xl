@@ -43,12 +43,6 @@ extern int Player_highestLevel;
 // New game sequencing functions
 //
 
-// called once at program startup to get the tPlayer's name
-int SelectPlayer();
-
-// Inputs the tPlayer's name, without putting up the background screen
-int SelectPlayerSub(int allow_abortFlag);
-
 // starts a new game on the given level
 int StartNewGame(int startLevel);
 
@@ -59,8 +53,8 @@ void StartLevel(int randomFlag);
 // Actually does the work to start new level
 int StartNewLevelSub(int nLevel, int bPageInTextures, int bSecret, int bRestore);
 
-void InitMultiPlayerObject();            //make sure tPlayer's tObject set up
-void InitPlayerStatsGame();      //clear all stats
+void InitMultiPlayerObject (void);            //make sure tPlayer's tObject set up
+void InitPlayerStatsGame (void);      //clear all stats
 
 // starts a resumed game loaded from disk
 void ResumeSavedGame(int startLevel);
@@ -70,13 +64,13 @@ void ResumeSavedGame(int startLevel);
 void PlayerFinishedLevel(int secretFlag);
 
 // called when the tPlayer has died
-void DoPlayerDead(void);
+void DoPlayerDead (void);
 
 // load a level off disk. level numbers start at 1.
 // Secret levels are -1,-2,-3
-int LoadLevel(int nLevel, int bPageInTextures, int bRestore);
+int LoadLevel (int nLevel, int bPageInTextures, int bRestore);
 
-extern void GameSeqRemoveUnusedPlayers();
+void GameStartRemoveUnusedPlayers ();
 
 extern void ShowHelp();
 extern void UpdatePlayerStats();
@@ -93,17 +87,14 @@ void InitPlayerStatsLevel(int secretFlag);
 void open_message_window(void);
 void close_message_window(void);
 
-// create flash for tPlayer appearance
-extern void CreatePlayerAppearanceEffect (tObject *playerObjP);
-
 // goto whatever secrect level is appropriate given the current level
-extern void goto_secretLevel();
+void goto_secretLevel();
 
 // reset stuff so game is semi-normal when playing from editor
 void editor_reset_stuff_onLevel();
 
 // Show endlevel bonus scores
-extern void DoEndLevelScoreGlitz(int network);
+void DoEndLevelScoreGlitz(int network);
 
 // stuff for multiplayer
 extern int MaxNumNetPlayers;

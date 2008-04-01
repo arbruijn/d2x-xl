@@ -165,6 +165,8 @@ void DigiChangeLoopingVolume (fix volume);
 void DigiStopLoopingSound ();
 void DigiFreeSoundBufs (void);
 
+void DigiStopDigiSounds (void);
+
 // Plays a queued voice sound.
 void DigiStartSoundQueued (short nSound, fix volume);
 

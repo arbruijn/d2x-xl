@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sphere.h"
 #include "flightpath.h"
 #include "marker.h"
+#include "fireball.h"
 #include "objsmoke.h"
 #include "objrender.h"
 #include "objeffects.h"
@@ -1794,6 +1795,28 @@ else if ((objP->nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 			}
 		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->size / 2, 1.5f, 1, 1, 0);
 		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+fix flashDist=fl2f (.9);
+
+//create flash for tPlayer appearance
+void CreatePlayerAppearanceEffect (tObject *playerObjP)
+{
+	vmsVector	pos;
+	tObject		*effectObjP;
+
+if (playerObjP == gameData.objs.viewer)
+	VmVecScaleAdd (&pos, &playerObjP->position.vPos, &playerObjP->position.mOrient.fVec, FixMul (playerObjP->size,flashDist));
+else
+	pos = playerObjP->position.vPos;
+effectObjP = ObjectCreateExplosion (playerObjP->nSegment, &pos, playerObjP->size, VCLIP_PLAYER_APPEARANCE);
+if (effectObjP) {
+	effectObjP->position.mOrient = playerObjP->position.mOrient;
+	if (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
+		DigiLinkSoundToObject (gameData.eff.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, OBJ_IDX (effectObjP), 0, F1_0, SOUNDCLASS_PLAYER);
 	}
 }
 

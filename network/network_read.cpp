@@ -53,6 +53,7 @@ static char rcsid [] = "$Id: network.c, v 1.24 2003/10/12 09:38:48 btb Exp $";
 #include "player.h"
 #include "loadgame.h"
 #include "fireball.h"
+#include "objeffects.h"
 #include "network.h"
 #include "network_lib.h"
 #include "game.h"

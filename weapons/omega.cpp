@@ -149,7 +149,7 @@ int UpdateOmegaLightnings (tObject *parentObjP, tObject *targetObjP)
 if (!(SHOW_LIGHTNINGS && gameOpts->render.lightnings.bOmega))
 	return -1;
 if (gameData.omega.lightnings.nHandles < 1)
-	return -1;
+	return 0;
 if ((gameData.omega.xCharge [IsMultiGame] >= MAX_OMEGA_CHARGE) &&
 	 (0 <= (nHandle = FindOmegaLightning (LOCALPLAYER.nObject))))
 	DestroyOmegaLightnings (nHandle);

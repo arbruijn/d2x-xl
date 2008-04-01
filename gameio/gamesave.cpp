@@ -180,15 +180,15 @@ if (objP->nType == OBJ_POWERUP) {
 		objP->size = gameData.objs.pwrUp.info [objP->id].size;
 		objP->cType.powerupInfo.creationTime = 0;
 		if (gameData.app.nGameMode & GM_NETWORK) {
-		if (MultiPowerupIs4Pack(objP->id)) {
-				gameData.multiplayer.powerupsInMine [objP->id-1]+=4;
-	 			gameData.multiplayer.maxPowerupsAllowed [objP->id-1]+=4;
+		if (MultiPowerupIs4Pack (objP->id)) {
+				gameData.multiplayer.powerupsInMine [objP->id-1] += 4;
+	 			gameData.multiplayer.maxPowerupsAllowed [objP->id-1] += 4;
 				}
 			gameData.multiplayer.powerupsInMine [objP->id]++;
 			gameData.multiplayer.maxPowerupsAllowed [objP->id]++;
 #if TRACE
-			con_printf (CONDBG,"PowerupLimiter: ID=%d\n",objP->id);
-			if (objP->id>MAX_POWERUP_TYPES)
+			con_printf (CONDBG, "PowerupLimiter: ID=%d\n", objP->id);
+			if (objP->id > MAX_POWERUP_TYPES)
 				con_printf (1,"POWERUP: Overwriting array bounds!\n");
 #endif
 			}

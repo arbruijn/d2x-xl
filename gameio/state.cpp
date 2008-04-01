@@ -82,6 +82,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 #include "u_mem.h"
 #include "network.h"
+#include "objeffects.h"
 #include "args.h"
 #include "ai.h"
 #include "fireball.h"

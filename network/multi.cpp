@@ -39,6 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "collide.h"
 #include "error.h"
 #include "fireball.h"
+#include "objeffects.h"
 #include "newmenu.h"
 #include "mono.h"
 #include "gamesave.h"
@@ -456,7 +457,6 @@ SetFunctionMode (FMODE_GAME);
 if (gameData.app.nGameMode & GM_NETWORK)
 	LOCALPLAYER.connected = old_connect;
 if (gameData.app.nGameMode & GM_MULTI_COOP) {
-	int i;
 	for (i = 0; i < gameData.multiplayer.nMaxPlayers; i++) // Reset keys
 		gameData.multiplayer.players [i].flags &= ~(PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY);
 	}
@@ -473,10 +473,7 @@ memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.pow
 
 short GetTeam (int nPlayer)
 {
-if (netGame.teamVector & (1 << nPlayer))
-	return 1;
-else
-	return 0;
+return (netGame.teamVector & (1 << nPlayer)) ? 1 : 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -2177,13 +2174,17 @@ if (!(gameData.app.nGameMode & GM_NETWORK))
 for (nIndex = 0; nIndex < MAX_PRIMARY_WEAPONS; nIndex++) {
 	nType = primaryWeaponToPowerup [nIndex];
 	if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << nIndex))
-	    gameData.multiplayer.maxPowerupsAllowed [(int)nType]++;
+	    gameData.multiplayer.maxPowerupsAllowed [(int) nType]++;
+	if (gameData.multiplayer.weaponStates [nPlayer].bTripleFusion)
+		gameData.multiplayer.maxPowerupsAllowed [primaryWeaponToPowerup [FUSION_INDEX]]++;
 	}
 for (nIndex = 0; nIndex < MAX_SECONDARY_WEAPONS; nIndex++) {
 	nType = secondaryWeaponToPowerup [nIndex];
 	gameData.multiplayer.maxPowerupsAllowed [(int)nType] += gameData.multiplayer.players [nPlayer].secondaryAmmo [nIndex];
 	}
 if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL)
+	gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER]++;
+if (gameData.multiplayer.players [nPlayer].laserLevel > MAX_LASER_LEVEL + 1)
 	gameData.multiplayer.maxPowerupsAllowed [POW_SUPERLASER]++;
 if (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_QUAD_LASERS)
 	gameData.multiplayer.maxPowerupsAllowed [POW_QUADLASER]++;

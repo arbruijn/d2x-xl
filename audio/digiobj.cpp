@@ -814,7 +814,7 @@ soundObjects [i].channel = -1;
 
 //------------------------------------------------------------------------------
 
-void DigiStopDigiSounds ()
+void DigiStopDigiSounds (void)
 {
 	int i;
 

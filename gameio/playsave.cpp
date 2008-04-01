@@ -2617,3 +2617,130 @@ return num;
   
 //------------------------------------------------------------------------------
 
+//
+// New Game sequencing functions
+//
+
+//pairs of chars describing ranges
+char playername_allowed_chars [] = "azAZ09__--";
+
+int MakeNewPlayerFile (int bAllowAbort)
+{
+	int x;
+	char filename [FILENAME_LEN];
+	tMenuItem m;
+	char text [CALLSIGN_LEN+1]="";
+
+strncpy (text, LOCALPLAYER.callsign,CALLSIGN_LEN);
+
+try_again:
+
+memset (&m, 0, sizeof (m));
+m.nType = NM_TYPE_INPUT; 
+m.text_len = 8; 
+m.text = text;
+
+nmAllowedChars = playername_allowed_chars;
+x = ExecMenu (NULL, TXT_ENTER_PILOT_NAME, 1, &m, NULL, NULL);
+nmAllowedChars = NULL;
+if (x < 0) {
+	if (bAllowAbort) return 0;
+	goto try_again;
+	}
+if (text [0] == 0)	//null string
+	goto try_again;
+sprintf (filename, "%s.plr", text);
+
+if (CFExist (filename,gameFolders.szProfDir,0)) {
+	ExecMessageBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
+	goto try_again;
+	}
+if (!NewPlayerConfig ())
+	goto try_again;			// They hit Esc during New tPlayer config
+strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
+WritePlayerFile ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+//Inputs the tPlayer's name, without putting up the background screen
+int SelectPlayer (void)
+{
+	static int bStartup = 1;
+	int 	i,j, bAutoPlr;
+	char 	filename [FILENAME_LEN];
+	char	filespec [FILENAME_LEN];
+	int 	bAllowAbort = !bStartup;
+
+if (LOCALPLAYER.callsign [0] == 0)	{
+	//---------------------------------------------------------------------
+	// Set default config options in case there is no config file
+	// kcKeyboard, kc_joystick, kcMouse are statically defined.
+	gameOpts->input.joystick.sensitivity [0] =
+	gameOpts->input.joystick.sensitivity [1] =
+	gameOpts->input.joystick.sensitivity [2] =
+	gameOpts->input.joystick.sensitivity [3] = 8;
+	gameOpts->input.mouse.sensitivity [0] =
+	gameOpts->input.mouse.sensitivity [1] =
+	gameOpts->input.mouse.sensitivity [2] = 8;
+	gameConfig.nControlType = CONTROL_NONE;
+	for (i = 0; i < CONTROL_MAX_TYPES; i++)
+		for (j = 0; j < MAX_CONTROLS; j++)
+			controlSettings.custom [i][j] = controlSettings.defaults [i][j];
+	KCSetControls (0);
+	//----------------------------------------------------------------
+
+	// Read the last tPlayer's name from config file, not lastplr.txt
+	strncpy (LOCALPLAYER.callsign, gameConfig.szLastPlayer, CALLSIGN_LEN);
+	if (gameConfig.szLastPlayer [0] == 0)
+		bAllowAbort = 0;
+	}
+if ((bAutoPlr = gameData.multiplayer.autoNG.bValid))
+	strncpy (filename, gameData.multiplayer.autoNG.szPlayer, 8);
+else if ((bAutoPlr = bStartup && (i = FindArg ("-player")) && *Args [++i]))
+	strncpy (filename, Args [i], 8);
+if (bAutoPlr) {
+	char *psz;
+	strlwr (filename);
+	if (!(psz = strchr (filename, '.')))
+		for (psz = filename; psz - filename < 8; psz++)
+			if (!*psz || ::isspace (*psz))
+				break;
+		*psz = '\0';
+	goto got_player;
+	}
+
+callMenu:
+
+bStartup = 0;
+sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : ""); 
+if (!ExecMenuFileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort))	{
+	if (bAllowAbort) {
+		return 0;
+		}
+	goto callMenu; //return 0;		// They hit Esc in file selector
+	}
+
+got_player:
+
+bStartup = 0;
+if (filename [0] == '<')	{
+	// They selected 'create new pilot'
+	if (!MakeNewPlayerFile (1))
+		//return 0;		// They hit Esc during enter name stage
+		goto callMenu;
+	}
+else
+	strncpy (LOCALPLAYER.callsign, filename, CALLSIGN_LEN);
+if (ReadPlayerFile (0) != EZERO)
+	goto callMenu;
+KCSetControls (0);
+SetDisplayMode (gameStates.video.nDefaultDisplayMode, 1);
+WriteConfigFile ();		// Update lastplr
+D2SetCaption ();
+return 1;
+}
+
+//------------------------------------------------------------------------------
+

@@ -156,7 +156,7 @@ OpenReceiveLog ();
 #endif
 InitAddressFilter ();
 InitPacketHandlers ();
-memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed ));
+memset (gameData.multiplayer.maxPowerupsAllowed, 0, sizeof (gameData.multiplayer.maxPowerupsAllowed));
 memset (gameData.multiplayer.powerupsInMine, 0, sizeof (gameData.multiplayer.powerupsInMine));
 networkData.nTotalMissedPackets = 0; 
 networkData.nTotalPacketsGot = 0;

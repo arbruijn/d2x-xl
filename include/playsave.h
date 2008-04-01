@@ -30,11 +30,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // update the tPlayer's highest level.  returns errno (0 == no error)
 int UpdatePlayerFile ();
-
 // Used to save KConfig values to disk.
 int WritePlayerFile ();
-
 int NewPlayerConfig ();
+
+// called once at program startup to get the tPlayer's name
+int SelectPlayer (void);
 
 int ReadPlayerFile (int bOnlyWindowSizes);
 

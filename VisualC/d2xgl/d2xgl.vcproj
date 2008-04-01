@@ -3273,11 +3273,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\objeffects.h"
+						RelativePath="..\..\include\objeffects.h"
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\objrender.h"
+						RelativePath="..\..\include\objsmoke.h"
 						>
 					</File>
 					<File
@@ -3697,7 +3697,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\main\playsave.h"
+						RelativePath="..\..\include\playsave.h"
 						>
 					</File>
 					<File
@@ -4536,11 +4536,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
@@ -4641,18 +4641,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\nocfile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\objeffects.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\objrender.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\objsmoke.h"
 				>
 			</File>
 			<File

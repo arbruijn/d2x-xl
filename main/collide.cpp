@@ -1242,7 +1242,6 @@ if (reactorP->shields >= 0)
 	reactorP->shields -= xDamage;
 if ((reactorP->shields < 0) && !(reactorP->flags & (OF_EXPLODING | OF_DESTROYED))) {
 	/*if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)*/
-	if (!reactorP || ROBOTINFO (reactorP->id).bossFlag)
 	extraGameInfo [0].nBossCount--;
 	DoReactorDestroyedStuff (reactorP);
 	if (IsMultiGame) {
