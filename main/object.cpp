@@ -2644,14 +2644,21 @@ gameStates.render.bBuildModels = 1;
 #if !BUILD_ALL_MODELS
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
-		 !G3HaveModel (objP->rType.polyObjInfo.nModel))
-		DrawPolygonObject (objP, 1, 0); //DrawPolygonObject (objP, 0);
+		 !G3HaveModel (objP->rType.polyObjInfo.nModel)) {
+		PrintLog ("      building model %d\n", objP->rType.polyObjInfo.nModel);
+#ifdef _DEBUG
+		if (objP->rType.polyObjInfo.nModel == nDbgModel)
+			nDbgModel = nDbgModel;
+#endif
+		DrawPolygonObject (objP, 1, 0); 
+		}
 	}
 #endif
 memset (&o, 0, sizeof (o));
 o.nType = OBJ_WEAPON;
 o.position = OBJECTS->position;
 o.rType.polyObjInfo.nTexOverride = -1;
+PrintLog ("   building optimized replacement model data\n");
 #if BUILD_ALL_MODELS
 j = 0;
 for (i = 0; i < MAX_POLYGON_MODELS; i++) {
@@ -2671,8 +2678,14 @@ for (; i < j; i++) {
 		}
 	o.id = (ubyte) replacementModels [i].nId;
 	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
-	if (!G3HaveModel (o.rType.polyObjInfo.nModel))
+	if (!G3HaveModel (o.rType.polyObjInfo.nModel)) {
+#ifdef _DEBUG
+		if (o.rType.polyObjInfo.nModel == nDbgModel)
+			nDbgModel = nDbgModel;
+#endif
+		PrintLog ("      building model %d\n", o.rType.polyObjInfo.nModel);
 		DrawPolygonObject (&o, 1, 0);
+		}
 	if (o.nType == OBJ_HOSTAGE)
 		o.nType = OBJ_POWERUP;
 	}

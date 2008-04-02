@@ -715,7 +715,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 									xEngineGlow, 
 									bmiP, 
 									NULL);
-}
+	}
 else {
 	if (bCloaked) {
 		if (objP->nType == OBJ_PLAYER) 

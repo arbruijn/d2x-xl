@@ -46,8 +46,6 @@ static char rcsid [] = "$Id: interp.c, v 1.14 2003/03/19 19:21:34 btb Exp $";
 #include "hiresmodels.h"
 #include "buildmodel.h"
 
-static int nDbgModel = -1;
-
 //------------------------------------------------------------------------------
 
 #define	G3_ALLOC(_buf,_count,_type,_fill) \

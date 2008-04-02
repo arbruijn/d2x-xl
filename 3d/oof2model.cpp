@@ -150,7 +150,7 @@ if (!po) {
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");
 #endif
-PrintLog ("   optimizing OOF model %d\n", nModel);
+PrintLog ("         optimizing OOF model %d\n", nModel);
 pm = gameData.models.g3Models [1] + nModel;
 G3CountOOFModelItems (po, pm);
 if (!G3AllocModel (pm))

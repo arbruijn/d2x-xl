@@ -299,7 +299,7 @@ pm->nSubModels = 1;
 #ifdef _DEBUG
 HUDMessage (0, "optimizing model");
 #endif
-PrintLog ("   optimizing POF model %d\n", nModel);
+PrintLog ("         optimizing POF model %d\n", nModel);
 if (!G3CountPOFModelItems (pp->modelData, &pm->nSubModels, &pm->nVerts, &pm->nFaces, &pm->nFaceVerts))
 	return 0;
 if (!G3AllocModel (pm))

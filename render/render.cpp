@@ -2086,9 +2086,11 @@ if (FAST_SHADOWS ? (gameStates.render.nShadowPass < 2) : (gameStates.render.nSha
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDepthFunc (GL_LEQUAL);
-		glDepthMask (0);
-		RenderSegmentList (3, 1);
-		glDepthMask (1);
+		if (!nWindow) {
+			glDepthMask (0);
+			RenderSegmentList (3, 1);
+			glDepthMask (1);
+			}
 		glDepthFunc (GL_LESS);
 		glDisable (GL_TEXTURE_2D);
 		}

@@ -683,6 +683,36 @@ else {
 
 //------------------------------------------------------------------------------
 
+int SetupCoronas (int nType)
+{
+	int	nFaces, bVertexArrays;
+
+#if RENDER_DEPTHMASK_FIRST
+if (SetupCoronaFaces ()) {
+	if ((CoronaStyle () == 1) && gameStates.ogl.bOcclusionQuery) {
+		glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
+		QueryCoronas (0, 1);
+		}
+	}
+#endif
+bVertexArrays = BeginRenderFaces (0, RENDER_DEPTHMASK_FIRST);
+RenderSegments (nType, bVertexArrays, RENDER_DEPTHMASK_FIRST);
+#if RENDER_DEPTHMASK_FIRST
+EndRenderFaces (0, bVertexArrays, 1);
+nFaces = SortFaces ();
+if (gameOpts->render.bCoronas && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && (CoronaStyle () == 1)) {
+	gameStates.render.bQueryCoronas = 2;
+	gameStates.render.nType = 1;
+	RenderMineObjects (1);
+	gameStates.render.nType = 0;
+	QueryCoronas (nFaces, 2);
+	}
+EndRenderFaces (0, bVertexArrays, 1);
+return nFaces;
+}
+
+//------------------------------------------------------------------------------
+
 void RenderFaceList (int nType)
 {
 	tFaceRef		*pfr;
@@ -690,35 +720,15 @@ void RenderFaceList (int nType)
 	int			i, j, bVertexArrays;
 
 if (nType) {	//back to front
-	//return;
 	bVertexArrays = BeginRenderFaces (nType, 0);
 	RenderSegments (nType, bVertexArrays, 0);
 	}
 else {	//front to back
-#if RENDER_DEPTHMASK_FIRST
-	if (SetupCoronaFaces ()) {
-		if ((CoronaStyle () == 1) && gameStates.ogl.bOcclusionQuery) {
-			glGenQueries (gameData.render.lights.nCoronas, gameData.render.lights.coronaQueries);
-			QueryCoronas (0, 1);
-			//return;
-			}
-		}
-#endif
-	bVertexArrays = BeginRenderFaces (0, RENDER_DEPTHMASK_FIRST);
-	RenderSegments (nType, bVertexArrays, RENDER_DEPTHMASK_FIRST);
-#if RENDER_DEPTHMASK_FIRST
-	EndRenderFaces (0, bVertexArrays, 1);
-	j = SortFaces ();
-	if (gameOpts->render.bCoronas && gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && (CoronaStyle () == 1)) {
-		gameStates.render.bQueryCoronas = 2;
-		gameStates.render.nType = 1;
-		RenderMineObjects (1);
-		gameStates.render.nType = 0;
-		QueryCoronas (j, 2);
-		}
-	EndRenderFaces (0, bVertexArrays, 1);
+	if (!gameStates.render.nWindow)
+		j = SetupCoronas (nType);
+	else
+		j = SortFaces ();
 	bVertexArrays = BeginRenderFaces (0, 0);
-	//glDepthMask (0);
 	glColorMask (1,1,1,1);
 	if (GEO_LIGHTING) {
 		gameData.render.mine.nVisited++;

@@ -20,6 +20,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 #include "grdef.h"
 #include "ogl_defs.h"
+#include "gr.h"
 
 void gr_ubox0(int left,int top,int right,int bot)
 {

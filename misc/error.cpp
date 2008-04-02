@@ -238,6 +238,7 @@ short nDbgFace = -1;
 short nDbgObj = -1;
 short nDbgObjType = -1;
 short nDbgObjId = -1;
+short nDbgModel = -1;
 int nDbgVertex = -1;
 int nDbgBaseTex = -1;
 int nDbgOvlTex = -1;
