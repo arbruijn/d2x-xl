@@ -3365,7 +3365,11 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
+#ifdef _WIN32
 int SDLCALL main (int argc, char *argv[])
+#else
+extern "C" int SDL_main (int argc, char *argv[])
+#endif
 {
 gameStates.app.bInitialized = 0;
 if (Initialize (argc, argv))

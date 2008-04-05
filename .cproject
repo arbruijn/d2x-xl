@@ -28,10 +28,10 @@
 <listOptionValue builtIn="false" value="HAVE_CONFIG_H"/>
 </option>
 <option id="gnu.cpp.compiler.option.include.paths.1690525078" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/usr/include/SDL"/>
 <listOptionValue builtIn="false" value="./include"/>
 <listOptionValue builtIn="false" value="../input/include"/>
 <listOptionValue builtIn="false" value="../../input/include"/>
-<listOptionValue builtIn="false" value="../../../SDL-1.2.11/include"/>
 <listOptionValue builtIn="false" value=".."/>
 <listOptionValue builtIn="false" value="../.."/>
 <listOptionValue builtIn="false" value="../include"/>
@@ -40,9 +40,6 @@
 <listOptionValue builtIn="false" value="../../network/linux/include"/>
 <listOptionValue builtIn="false" value="../audio/linux/include"/>
 <listOptionValue builtIn="false" value="../../audio/linux/include"/>
-<listOptionValue builtIn="false" value="../../../../SDL_mixer-1.2.7"/>
-<listOptionValue builtIn="false" value="../../../SDL_mixer-1.2.7"/>
-<listOptionValue builtIn="false" value="../../../../SDL-1.2.11/include"/>
 </option>
 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1123021442" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 </tool>
@@ -518,12 +515,8 @@
 <option id="gnu.cpp.compiler.exe.release.option.optimization.level.2107462777" name="Optimization Level" superClass="gnu.cpp.compiler.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.exe.release.option.debugging.level.1224788019" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 <option id="gnu.cpp.compiler.option.include.paths.1727120160" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-<listOptionValue builtIn="false" value="../../../SDL-1.2.11/include"/>
 <listOptionValue builtIn="false" value=".."/>
-<listOptionValue builtIn="false" value="../../../../SDL-1.2.11/include"/>
-<listOptionValue builtIn="false" value="../../../SDL_mixer-1.2.7"/>
-<listOptionValue builtIn="false" value="../../SDL_mixer-1.2.7"/>
-<listOptionValue builtIn="false" value="../../../../SDL_mixer-1.2.7"/>
+<listOptionValue builtIn="false" value="/usr/include/SDL"/>
 <listOptionValue builtIn="false" value="./include"/>
 <listOptionValue builtIn="false" value="../include"/>
 <listOptionValue builtIn="false" value="../../include"/>
