@@ -1168,90 +1168,6 @@
 						>
 					</File>
 				</Filter>
-				<Filter
-					Name="maths"
-					>
-					<Filter
-						Name="Header Files"
-						>
-						<File
-							RelativePath="..\..\include\fix.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\include\maths.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\include\vecmat.h"
-							>
-						</File>
-					</Filter>
-					<Filter
-						Name="Source Files"
-						>
-						<File
-							RelativePath="..\..\maths\fixc.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-						<File
-							RelativePath="..\..\maths\tables.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-						<File
-							RelativePath="..\..\maths\vecmat.cpp"
-							>
-							<FileConfiguration
-								Name="Debug|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-							<FileConfiguration
-								Name="Release|Win32"
-								>
-								<Tool
-									Name="VCCLCompilerTool"
-									ObjectFile="$(IntDir)/$(InputName)1.obj"
-								/>
-							</FileConfiguration>
-						</File>
-					</Filter>
-				</Filter>
 			</Filter>
 			<Filter
 				Name="main"
@@ -4518,6 +4434,90 @@
 					</File>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="maths"
+				>
+				<Filter
+					Name="Header Files"
+					>
+					<File
+						RelativePath="..\..\include\fix.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\maths.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\vecmat.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Source Files"
+					>
+					<File
+						RelativePath="..\..\maths\fixc.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\maths\tables.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\maths\vecmat.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"
+							/>
+						</FileConfiguration>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -4536,11 +4536,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File

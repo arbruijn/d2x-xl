@@ -318,41 +318,41 @@ static void gs_write_angvec(vmsAngVec *v,FILE *file)
 
 extern int MultiPowerupIs4Pack(int);
 //reads one tObject of the given version from the given file
-void ReadObject(tObject *objP,CFILE *f,int version)
+void ReadObject (tObject *objP, CFILE *cfP, int version)
 {
 	int	i;
 
-objP->nType = CFReadByte(f);
-objP->id = CFReadByte(f);
-objP->controlType = CFReadByte(f);
-objP->movementType = CFReadByte(f);
-objP->renderType = CFReadByte(f);
-objP->flags = CFReadByte(f);
-objP->nSegment = CFReadShort(f);
+objP->nType = CFReadByte (cfP);
+objP->id = CFReadByte (cfP);
+objP->controlType = CFReadByte (cfP);
+objP->movementType = CFReadByte (cfP);
+objP->renderType = CFReadByte (cfP);
+objP->flags = CFReadByte (cfP);
+objP->nSegment = CFReadShort (cfP);
 objP->attachedObj = -1;
-CFReadVector(&objP->position.vPos,f);
-CFReadMatrix(&objP->position.mOrient,f);
-objP->size = CFReadFix(f);
-objP->shields = CFReadFix(f);
-CFReadVector(&objP->vLastPos,f);
-objP->containsType = CFReadByte(f);
-objP->containsId = CFReadByte(f);
-objP->containsCount = CFReadByte(f);
+CFReadVector(&objP->position.vPos, cfP);
+CFReadMatrix(&objP->position.mOrient, cfP);
+objP->size = CFReadFix (cfP);
+objP->shields = CFReadFix (cfP);
+CFReadVector(&objP->vLastPos, cfP);
+objP->containsType = CFReadByte (cfP);
+objP->containsId = CFReadByte (cfP);
+objP->containsCount = CFReadByte (cfP);
 switch (objP->movementType) {
 	case MT_PHYSICS:
-		CFReadVector(&objP->mType.physInfo.velocity,f);
-		CFReadVector(&objP->mType.physInfo.thrust,f);
-		objP->mType.physInfo.mass		= CFReadFix(f);
-		objP->mType.physInfo.drag		= CFReadFix(f);
-		objP->mType.physInfo.brakes	= CFReadFix(f);
-		CFReadVector(&objP->mType.physInfo.rotVel,f);
-		CFReadVector(&objP->mType.physInfo.rotThrust,f);
-		objP->mType.physInfo.turnRoll	= CFReadFixAng(f);
-		objP->mType.physInfo.flags		= CFReadShort(f);
+		CFReadVector (&objP->mType.physInfo.velocity, cfP);
+		CFReadVector (&objP->mType.physInfo.thrust, cfP);
+		objP->mType.physInfo.mass = CFReadFix (cfP);
+		objP->mType.physInfo.drag = CFReadFix (cfP);
+		objP->mType.physInfo.brakes = CFReadFix (cfP);
+		CFReadVector (&objP->mType.physInfo.rotVel, cfP);
+		CFReadVector (&objP->mType.physInfo.rotThrust, cfP);
+		objP->mType.physInfo.turnRoll	= CFReadFixAng (cfP);
+		objP->mType.physInfo.flags	= CFReadShort (cfP);
 		break;
 
 	case MT_SPINNING:
-		CFReadVector(&objP->mType.spinRate,f);
+		CFReadVector (&objP->mType.spinRate, cfP);
 		break;
 
 	case MT_NONE:
@@ -364,39 +364,39 @@ switch (objP->movementType) {
 
 switch (objP->controlType) {
 	case CT_AI: 
-		objP->cType.aiInfo.behavior = CFReadByte(f);
+		objP->cType.aiInfo.behavior = CFReadByte (cfP);
 		for (i=0;i<MAX_AI_FLAGS;i++)
-			objP->cType.aiInfo.flags [i] = CFReadByte(f);
-		objP->cType.aiInfo.nHideSegment = CFReadShort(f);
-		objP->cType.aiInfo.nHideIndex = CFReadShort(f);
-		objP->cType.aiInfo.nPathLength = CFReadShort(f);
-		objP->cType.aiInfo.nCurPathIndex = (char) CFReadShort(f);
+			objP->cType.aiInfo.flags [i] = CFReadByte (cfP);
+		objP->cType.aiInfo.nHideSegment = CFReadShort (cfP);
+		objP->cType.aiInfo.nHideIndex = CFReadShort (cfP);
+		objP->cType.aiInfo.nPathLength = CFReadShort (cfP);
+		objP->cType.aiInfo.nCurPathIndex = (char) CFReadShort (cfP);
 		if (version <= 25) {
-			CFReadShort(f);	//				objP->cType.aiInfo.follow_path_start_seg	= 
-			CFReadShort(f);	//				objP->cType.aiInfo.follow_path_end_seg		= 
+			CFReadShort (cfP);	//				objP->cType.aiInfo.follow_path_start_seg	= 
+			CFReadShort (cfP);	//				objP->cType.aiInfo.follow_path_end_seg		= 
 			}
 		break;
 
 	case CT_EXPLOSION:
-		objP->cType.explInfo.nSpawnTime		= CFReadFix(f);
-		objP->cType.explInfo.nDeleteTime		= CFReadFix(f);
-		objP->cType.explInfo.nDeleteObj	= CFReadShort(f);
+		objP->cType.explInfo.nSpawnTime = CFReadFix (cfP);
+		objP->cType.explInfo.nDeleteTime	= CFReadFix (cfP);
+		objP->cType.explInfo.nDeleteObj = CFReadShort (cfP);
 		objP->cType.explInfo.nNextAttach = objP->cType.explInfo.nPrevAttach = objP->cType.explInfo.nAttachParent = -1;
 		break;
 
 	case CT_WEAPON: //do I really need to read these?  Are they even saved to disk?
-		objP->cType.laserInfo.parentType		= CFReadShort(f);
-		objP->cType.laserInfo.nParentObj		= CFReadShort(f);
-		objP->cType.laserInfo.nParentSig	= CFReadInt(f);
+		objP->cType.laserInfo.parentType = CFReadShort (cfP);
+		objP->cType.laserInfo.nParentObj	= CFReadShort (cfP);
+		objP->cType.laserInfo.nParentSig	= CFReadInt (cfP);
 		break;
 
 	case CT_LIGHT:
-		objP->cType.lightInfo.intensity = CFReadFix(f);
+		objP->cType.lightInfo.intensity = CFReadFix (cfP);
 		break;
 
 	case CT_POWERUP:
 		if (version >= 25)
-			objP->cType.powerupInfo.count = CFReadInt(f);
+			objP->cType.powerupInfo.count = CFReadInt (cfP);
 		else
 			objP->cType.powerupInfo.count = 1;
 		if (objP->id == POW_VULCAN)
@@ -432,11 +432,11 @@ switch (objP->renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		int i,tmo;
-		objP->rType.polyObjInfo.nModel = CFReadInt(f);
+		objP->rType.polyObjInfo.nModel = CFReadInt (cfP);
 		for (i=0;i<MAX_SUBMODELS;i++)
-			CFReadAngVec(&objP->rType.polyObjInfo.animAngles [i],f);
-		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt(f);
-		tmo = CFReadInt(f);
+			CFReadAngVec(&objP->rType.polyObjInfo.animAngles [i], cfP);
+		objP->rType.polyObjInfo.nSubObjFlags = CFReadInt (cfP);
+		tmo = CFReadInt (cfP);
 #ifndef EDITOR
 		objP->rType.polyObjInfo.nTexOverride = tmo;
 #else
@@ -454,7 +454,7 @@ switch (objP->renderType) {
 			objP->rType.polyObjInfo.nTexOverride	= xlated_tmo;
 			}
 #endif
-		objP->rType.polyObjInfo.nAltTextures	= 0;
+		objP->rType.polyObjInfo.nAltTextures = 0;
 		break;
 		}
 
@@ -462,9 +462,9 @@ switch (objP->renderType) {
 	case RT_HOSTAGE:
 	case RT_POWERUP:
 	case RT_FIREBALL:
-		objP->rType.vClipInfo.nClipIndex	= CFReadInt(f);
-		objP->rType.vClipInfo.xFrameTime	= CFReadFix(f);
-		objP->rType.vClipInfo.nCurFrame	= CFReadByte(f);
+		objP->rType.vClipInfo.nClipIndex	= CFReadInt (cfP);
+		objP->rType.vClipInfo.xFrameTime	= CFReadFix (cfP);
+		objP->rType.vClipInfo.nCurFrame	= CFReadByte (cfP);
 		break;
 
 	case RT_THRUSTER:
@@ -472,43 +472,43 @@ switch (objP->renderType) {
 		break;
 
 	case RT_SMOKE:
-		objP->rType.smokeInfo.nLife = CFReadInt (f);
-		objP->rType.smokeInfo.nSize [0] = CFReadInt (f);
-		objP->rType.smokeInfo.nParts = CFReadInt (f);
-		objP->rType.smokeInfo.nSpeed = CFReadInt (f);
-		objP->rType.smokeInfo.nDrift = CFReadInt (f);
-		objP->rType.smokeInfo.nBrightness = CFReadInt (f);
-		objP->rType.smokeInfo.color.red = CFReadByte (f);
-		objP->rType.smokeInfo.color.green = CFReadByte (f);
-		objP->rType.smokeInfo.color.blue = CFReadByte (f);
-		objP->rType.smokeInfo.color.alpha = CFReadByte (f);
-		objP->rType.smokeInfo.nSide = CFReadByte (f);
+		objP->rType.smokeInfo.nLife = CFReadInt (cfP);
+		objP->rType.smokeInfo.nSize [0] = CFReadInt (cfP);
+		objP->rType.smokeInfo.nParts = CFReadInt (cfP);
+		objP->rType.smokeInfo.nSpeed = CFReadInt (cfP);
+		objP->rType.smokeInfo.nDrift = CFReadInt (cfP);
+		objP->rType.smokeInfo.nBrightness = CFReadInt (cfP);
+		objP->rType.smokeInfo.color.red = CFReadByte (cfP);
+		objP->rType.smokeInfo.color.green = CFReadByte (cfP);
+		objP->rType.smokeInfo.color.blue = CFReadByte (cfP);
+		objP->rType.smokeInfo.color.alpha = CFReadByte (cfP);
+		objP->rType.smokeInfo.nSide = CFReadByte (cfP);
 		break;
 
 	case RT_LIGHTNING:
-		objP->rType.lightningInfo.nLife = CFReadInt (f);
-		objP->rType.lightningInfo.nDelay = CFReadInt (f);
-		objP->rType.lightningInfo.nLength = CFReadInt (f);
-		objP->rType.lightningInfo.nAmplitude = CFReadInt (f);
-		objP->rType.lightningInfo.nOffset = CFReadInt (f);
-		objP->rType.lightningInfo.nLightnings = CFReadShort (f);
-		objP->rType.lightningInfo.nId = CFReadShort (f);
-		objP->rType.lightningInfo.nTarget = CFReadShort (f);
-		objP->rType.lightningInfo.nNodes = CFReadShort (f);
-		objP->rType.lightningInfo.nChildren = CFReadShort (f);
-		objP->rType.lightningInfo.nSteps = CFReadShort (f);
-		objP->rType.lightningInfo.nAngle = CFReadByte (f);
-		objP->rType.lightningInfo.nStyle = CFReadByte (f);
-		objP->rType.lightningInfo.nSmoothe = CFReadByte (f);
-		objP->rType.lightningInfo.bClamp = CFReadByte (f);
-		objP->rType.lightningInfo.bPlasma = CFReadByte (f);
-		objP->rType.lightningInfo.bSound = CFReadByte (f);
-		objP->rType.lightningInfo.bRandom = CFReadByte (f);
-		objP->rType.lightningInfo.bInPlane = CFReadByte (f);
-		objP->rType.lightningInfo.color.red = CFReadByte (f);
-		objP->rType.lightningInfo.color.green = CFReadByte (f);
-		objP->rType.lightningInfo.color.blue = CFReadByte (f);
-		objP->rType.lightningInfo.color.alpha = CFReadByte (f);
+		objP->rType.lightningInfo.nLife = CFReadInt (cfP);
+		objP->rType.lightningInfo.nDelay = CFReadInt (cfP);
+		objP->rType.lightningInfo.nLength = CFReadInt (cfP);
+		objP->rType.lightningInfo.nAmplitude = CFReadInt (cfP);
+		objP->rType.lightningInfo.nOffset = CFReadInt (cfP);
+		objP->rType.lightningInfo.nLightnings = CFReadShort (cfP);
+		objP->rType.lightningInfo.nId = CFReadShort (cfP);
+		objP->rType.lightningInfo.nTarget = CFReadShort (cfP);
+		objP->rType.lightningInfo.nNodes = CFReadShort (cfP);
+		objP->rType.lightningInfo.nChildren = CFReadShort (cfP);
+		objP->rType.lightningInfo.nSteps = CFReadShort (cfP);
+		objP->rType.lightningInfo.nAngle = CFReadByte (cfP);
+		objP->rType.lightningInfo.nStyle = CFReadByte (cfP);
+		objP->rType.lightningInfo.nSmoothe = CFReadByte (cfP);
+		objP->rType.lightningInfo.bClamp = CFReadByte (cfP);
+		objP->rType.lightningInfo.bPlasma = CFReadByte (cfP);
+		objP->rType.lightningInfo.bSound = CFReadByte (cfP);
+		objP->rType.lightningInfo.bRandom = CFReadByte (cfP);
+		objP->rType.lightningInfo.bInPlane = CFReadByte (cfP);
+		objP->rType.lightningInfo.color.red = CFReadByte (cfP);
+		objP->rType.lightningInfo.color.green = CFReadByte (cfP);
+		objP->rType.lightningInfo.color.blue = CFReadByte (cfP);
+		objP->rType.lightningInfo.color.alpha = CFReadByte (cfP);
 		break;
 
 	default:
@@ -918,6 +918,7 @@ if (gameFileInfo.objects.offset > -1) {
 		Error ("Error seeking to object data\n(file damaged or invalid)");
 		return -1;
 		}
+	memset (OBJECTS, 0, gameFileInfo.objects.count * sizeof (tObject));
 	for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 		ReadObject (objP, cfp, gameTopFileInfo.fileinfoVersion);
 		objP->nSignature = gameData.objs.nNextSignature++;

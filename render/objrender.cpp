@@ -167,8 +167,6 @@ if (objP->controlType == CT_WEAPON)
 if ((objP->nType != OBJ_POWERUP) && (objP->nType != OBJ_WEAPON))
 	return 0;
 nModel = PowerupToModel (objP->id);
-if (objP->id == 33)
-	objP = objP;
 if (nModel) 
 	nId = objP->id;
 else {

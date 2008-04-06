@@ -24,6 +24,11 @@ typedef struct tIrrData {
 
 extern tIrrData irrData;
 
+#define IRRDEVICE	irrData.deviceP
+#define IRRVIDEO	irrData.videoP
+#define IRRSCENE	irrData.sceneP
+#define IRRGUI		irrData.guiP
+
 #endif //USE_IRRLICHT
 
 #endif //_IRRSTUFF_H

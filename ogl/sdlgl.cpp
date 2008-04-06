@@ -99,6 +99,7 @@ return i;
 
 void OglInitAttributes (void)
 {
+#if !USE_IRRLICHT
 	int t;
 
 /***/PrintLog ("setting OpenGL attributes\n");
@@ -122,6 +123,7 @@ OglSetAttribute (NULL, "SDL_GL_ACCUM_GREEN_SIZE", SDL_GL_ACCUM_GREEN_SIZE, 5);
 OglSetAttribute (NULL, "SDL_GL_ACCUM_BLUE_SIZE", SDL_GL_ACCUM_BLUE_SIZE, 5);
 OglSetAttribute (NULL, "SDL_GL_ACCUM_ALPHA_SIZE", SDL_GL_ACCUM_ALPHA_SIZE, 5);
 OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -145,18 +147,19 @@ if (h < 0)
 	h = gameStates.ogl.nCurHeight;
 if ((w < 0) || (h < 0))
 	return -1;
-D2SetCaption ();
 OglInitAttributes ();
+#if USE_IRRLICHT
+IrrInit ();
+#else
+SDL_putenv ("SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
 				 w, h, gameStates.ogl.nColorBits, gameStates.ogl.bFullScreen ? "fullscreen" : "windowed");
-#if 1//def RELEASE
-SDL_putenv ("SDL_VIDEO_CENTERED=1");
-#endif
 if (!OglVideoModeOK (w, h) ||
 	 !SDL_SetVideoMode (w, h, gameStates.ogl.nColorBits, SDL_VIDEO_FLAGS)) {
 	Error ("Could not set %dx%dx%d opengl video mode\n", w, h, gameStates.ogl.nColorBits);
 	return 0;
 	}
+#endif
 gameStates.ogl.nColorBits = 0;
 glGetIntegerv (GL_RED_BITS, &i);
 gameStates.ogl.nColorBits += i;
@@ -181,8 +184,8 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 		}
 	else
 		GrRemapMonoFonts ();
-	//FreeInventoryIcons ();
 	}
+D2SetCaption ();
 OglCreateDrawBuffer ();
 gameStates.ogl.bInitialized = 1;
 return 1;
@@ -194,7 +197,9 @@ void OglDestroyWindow (void)
 {
 if (gameStates.ogl.bInitialized) {
 	ResetTextures (0, 0);
+#if !USE_IRRLICHT
 	SDL_ShowCursor (1);
+#endif
 	}
 }
 
@@ -209,7 +214,9 @@ OglInitWindow (gameStates.ogl.nCurWidth, gameStates.ogl.nCurHeight, bForce);
 
 void OglSwapBuffersInternal (void)
 {
+#if !USE_IRRLICHT
 SDL_GL_SwapBuffers ();
+#endif
 }
 
 //------------------------------------------------------------------------------

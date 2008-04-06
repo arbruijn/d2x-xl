@@ -221,6 +221,22 @@ else
 
 void D2SetCaption (void)
 {
+#if USE_IRRLICHT
+	wchar	szCaption [200];
+
+strcpy (szCaption, DESCENT_VERSION);
+if (*LOCALPLAYER.callsign) {
+	strcat (szCaption, " [");
+	strcat (szCaption, LOCALPLAYER.callsign);
+	strcat (szCaption, "]");
+	strupr (szCaption);
+	}
+if (*gameData.missions.szCurrentLevel) {
+	strcat (szCaption, " - ");
+	strcat (szCaption, gameData.missions.szCurrentLevel);
+	}
+IRRDEVICE->setWindowCaption (szCaption);
+#else
 	char	szCaption [200];
 
 strcpy (szCaption, DESCENT_VERSION);
@@ -235,6 +251,7 @@ if (*gameData.missions.szCurrentLevel) {
 	strcat (szCaption, gameData.missions.szCurrentLevel);
 	}
 SDL_WM_SetCaption (szCaption, "Descent II");
+#endif
 }
 
 // ----------------------------------------------------------------------------

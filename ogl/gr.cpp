@@ -143,7 +143,6 @@ return OglVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 
 int GrSetMode (u_int32_t mode)
 {
-#if !USE_IRRLICHT
 	unsigned int w, h;
 	unsigned char *gr_bm_data;
 	//int bForce = (nCurrentVGAMode < 0);
@@ -181,7 +180,6 @@ OglViewport (0,0,w,h);
 /***/PrintLog ("   initializing OpenGL screen mode\n");
 OglSetScreenMode ();
 GrUpdate (0);
-#endif
 return 0;
 }
 

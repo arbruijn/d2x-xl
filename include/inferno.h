@@ -54,7 +54,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	endif
 #endif
 
-#define FBO_DRAW_BUFFER 1
+#if USE_IRRLICHT
+#	define FBO_DRAW_BUFFER 0
+#else
+#	define FBO_DRAW_BUFFER 1
+#endif
 
 #include "vers_id.h"
 #include "pstypes.h"

@@ -27,6 +27,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "pstypes.h"
 #include "strutil.h"

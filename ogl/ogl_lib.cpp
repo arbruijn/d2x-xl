@@ -369,7 +369,9 @@ y >>= gameStates.render.cameras.bActive;
 w >>= gameStates.render.cameras.bActive;
 h >>= gameStates.render.cameras.bActive;
 if ((x != gameStates.ogl.nLastX) || (y != gameStates.ogl.nLastY) || (w != gameStates.ogl.nLastW) || (h != gameStates.ogl.nLastH)) {
+#if !USE_IRRLICHT
 	glViewport ((GLint) x, (GLint) (grdCurScreen->scCanvas.cvBitmap.bmProps.h >> gameStates.render.cameras.bActive) - y - h, (GLsizei) w, (GLsizei) h);
+#endif
 	gameStates.ogl.nLastX = x; 
 	gameStates.ogl.nLastY = y; 
 	gameStates.ogl.nLastW = w; 
