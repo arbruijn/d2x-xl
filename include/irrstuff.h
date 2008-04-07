@@ -1,7 +1,11 @@
 #ifndef _IRRSTUFF_H
 #define _IRRSTUFF_H
 
-#define USE_IRRLICHT	1
+#ifdef RELEASE
+#	define USE_IRRLICHT	0
+#else
+#	define USE_IRRLICHT	1
+#endif
 
 #if USE_IRRLICHT
 #	include "irrlicht.h"

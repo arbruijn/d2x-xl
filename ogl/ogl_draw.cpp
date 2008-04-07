@@ -47,23 +47,23 @@
 
 extern int r_upixelc;
 
-void OglUPixelC (int x, int y, grsColor *c)
+void OglUPixelC (int x, int y, grsColor *colorP)
 {
 r_upixelc++;
 glDisable (GL_TEXTURE_2D);
 glPointSize(1.0);
 glBegin(GL_POINTS);
-OglGrsColor (c);
+OglGrsColor (colorP);
 glVertex2d ((x + grdCurCanv->cvBitmap.bmProps.x) / (double) gameStates.ogl.nLastW,
 				1.0 - (y + grdCurCanv->cvBitmap.bmProps.y) / (double) gameStates.ogl.nLastW);
-if (c->rgb)
+if (colorP->rgb)
 	glDisable (GL_BLEND);
 glEnd();
 }
 
 //------------------------------------------------------------------------------
 
-void OglURect(int left,int top,int right,int bot)
+void OglURect(int left, int top, int right, int bot)
 {
 	GLfloat		xo, yo, xf, yf;
 
