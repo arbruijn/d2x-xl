@@ -731,11 +731,11 @@ else {
 
 		//	Snipers get bright when they fire.
 		if (!gameStates.render.bBuildModels) {
-			if (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0 / 8) {
-				if (objP->cType.aiInfo.behavior == AIB_SNIPE)
-					xLight = 2 * xLight + F1_0;
-				}
-				bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
+			if ((objP->nType == OBJ_ROBOT) && 
+				 (gameData.ai.localInfo [OBJ_IDX (objP)].nextPrimaryFire < F1_0 / 8) &&
+				 (objP->cType.aiInfo.behavior == AIB_SNIPE))
+				xLight = 2 * xLight + F1_0;
+			bBlendPolys = bEnergyWeapon && (gameData.weapons.info [id].nInnerModel > -1);
 			bBrightPolys = bBlendPolys && WI_energy_usage (id);
 			if (bEnergyWeapon) {
 				gameStates.render.grAlpha = GR_ACTUAL_FADE_LEVELS - 2.0f;
