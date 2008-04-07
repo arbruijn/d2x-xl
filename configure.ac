@@ -441,27 +441,27 @@ AC_OUTPUT(
     Makefile
     2d/Makefile
     3d/Makefile
-	 ai/Makefile
-	 audio/Makefile
+    ai/Makefile
+    audio/Makefile
     cockpit/Makefile
     console/Makefile
-	 effects/Makefile
-	 gameio/Makefile
-	 gamemodes/Makefile
-	 input/Makefile
-	 io/Makefile
+    effects/Makefile
+    gameio/Makefile
+    gamemodes/Makefile
+    input/Makefile
+    io/Makefile
     lighting/Makefile
     libmve/Makefile
     main/Makefile
     maths/Makefile
     mem/Makefile
     misc/Makefile
-	 models/Makefile
-	 network/Makefile
-	 ogl/Makefile
+    models/Makefile
+    network/Makefile
+    ogl/Makefile
     texmap/Makefile
-	 render/Makefile
-	 weapons/Makefile
+    render/Makefile
+    weapons/Makefile
 )
 
 AC_MSG_RESULT([
