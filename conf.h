@@ -8,7 +8,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 72
+#define D2XMICRO 75
 
 /* d2x minor version */
 #define D2XMINOR 12
@@ -75,7 +75,7 @@
 #define NATIVE_IPX 
 
 /* Define to disable asserts, int3, etc. */
-#define NDEBUG 
+/* #undef NDEBUG */
 
 /* Define if you want a network build */
 #define NETWORK 
@@ -99,16 +99,16 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.12.72"
+#define PACKAGE_STRING "d2x-xl 1.12.75"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.12.72"
+#define PACKAGE_VERSION "1.12.75"
 
 /* Define for a "release" build */
-#define RELEASE 
+/* #undef RELEASE */
 
 /* Define this to be the shared game directory root */
 #define SHAREPATH "${prefix}/share/d2x-xl"
@@ -126,7 +126,7 @@
 #define USE_SDL_MIXER 1
 
 /* Version number of package */
-#define VERSION "1.12.72"
+#define VERSION "1.12.75"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -136,12 +136,12 @@
 /* #undef WORDS_NEED_ALIGNMENT */
 
 /* Define to enable asserts, int3, etc. */
-/* #undef _DEBUG */
+#define _DEBUG 
 
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.12.72"
+#define PACKAGE_STRING "d2x-xl 1.12.75"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1

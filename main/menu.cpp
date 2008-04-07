@@ -2474,7 +2474,7 @@ if (automapOpts.nOptRadarRange >= 0) {
 
 void AutomapOptionsMenu ()
 {
-	tMenuItem m [20];
+	tMenuItem m [30];
 	int	i, j, choice = 0;
 	int	opt;
 	int	optBright, optGrayOut, optShowRobots, optShowPowerups, optCoronas, optSmoke, optLightnings, optColor, optSkybox, optSparks;
