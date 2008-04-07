@@ -429,7 +429,7 @@ return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? (char *) "" : addon
 
 Mix_Chunk *LoadAddonSound (char *pszSoundFile)
 {
-if (!isdigit (*pszSoundFile))
+if (!::isdigit (*pszSoundFile))
 	return NULL;
 int i = atoi (pszSoundFile);
 if (i >= MAX_ADDON_SOUND_FILES)

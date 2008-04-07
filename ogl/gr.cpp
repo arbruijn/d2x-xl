@@ -174,11 +174,11 @@ GrSetCurrentCanvas (NULL);
 /***/PrintLog ("   initializing OpenGL window\n");
 if (!OglInitWindow (w, h, 0))	//platform specific code
 	return 0;
-OglGetVerInfo ();
 /***/PrintLog ("   initializing OpenGL view port\n");
-OglViewport (0,0,w,h);
+OglViewport (0, 0, w, h);
 /***/PrintLog ("   initializing OpenGL screen mode\n");
 OglSetScreenMode ();
+OglGetVerInfo ();
 GrUpdate (0);
 return 0;
 }

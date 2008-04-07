@@ -1,7 +1,7 @@
 #ifndef _IRRSTUFF_H
 #define _IRRSTUFF_H
 
-#define USE_IRRLICHT	0
+#define USE_IRRLICHT	1
 
 #if USE_IRRLICHT
 #	include "irrlicht.h"
@@ -28,6 +28,9 @@ extern tIrrData irrData;
 #define IRRVIDEO	irrData.videoP
 #define IRRSCENE	irrData.sceneP
 #define IRRGUI		irrData.guiP
+
+void IrrInit (int nWidth, int nHeight, bool bFullScreen);
+void IrrClose (void);
 
 #endif //USE_IRRLICHT
 

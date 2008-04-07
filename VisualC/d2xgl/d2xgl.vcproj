@@ -85,11 +85,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib wsock32.lib opengl32.lib glu32.lib winmm.lib Irrlicht.lib"
 				OutputFile="\programme\d2\d2x-xl-dbg.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\sdl-1.2.13\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.8\VisualC\Debug&quot;"
+				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\sdl-1.2.13\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\Projekte\irrlicht-1.4\lib\win32-visualstudio&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="./debug/d2x-xl-dbg.pdb"
 				GenerateMapFile="true"

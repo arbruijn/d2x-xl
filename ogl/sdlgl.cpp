@@ -149,7 +149,7 @@ if ((w < 0) || (h < 0))
 	return -1;
 OglInitAttributes ();
 #if USE_IRRLICHT
-IrrInit ();
+IrrInit (w, h, (bool) gameStates.ogl.bCurFullScreen);
 #else
 SDL_putenv ("SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",

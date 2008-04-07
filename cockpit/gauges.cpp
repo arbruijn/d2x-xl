@@ -1809,11 +1809,12 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, char *name, int text_x, 
+void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, char *pszName, int text_x, 
 								int text_y, int orient)
 {
-	grsBitmap *bmP;
-	char *p;
+	grsBitmap	*bmP;
+	char			szName [100], *p;
+	int			l;
 
 	static int nIdWeapon [3] = {0, 0, 0}, nIdLaser [2] = {0, 0};
 
@@ -1839,25 +1840,25 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, ch
 	if (gameStates.render.cockpit.nMode == CM_FULL_SCREEN)
 		return;
 	GrSetFontColorRGBi (GREEN_RGBA, 1, 0, 0);
-	if ((p = strchr (name, '\n'))) {
-		*p = 0;
-		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, name);
+	if ((p = strchr (pszName, '\n'))) {
+		memcpy (szName, pszName, l = p - pszName);
+		szName [l + 1] = '\0';
+		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);
 		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], text_x, text_y + grdCurCanv->cvFont->ftHeight + 1, p + 1);
 		*p='\n';
 		}
 	else {
-		nIdWeapon [2] = HUDPrintF (&nIdWeapon [2], text_x, text_y, name);
+		nIdWeapon [2] = HUDPrintF (&nIdWeapon [2], text_x, text_y, pszName);
 	}
 
 	//	For laser, show level and quadness
 	if (info_index == LASER_ID || info_index == SUPERLASER_ID) {
-		char	temp_str [7];
-		sprintf (temp_str, "%s: 0", TXT_LVL);
-		temp_str [5] = LOCALPLAYER.laserLevel + 1 + '0';
-		nIdLaser [0] = HUDPrintF (&nIdLaser [0], text_x, text_y + nHUDLineSpacing, temp_str);
+		sprintf (szName, "%s: 0", TXT_LVL);
+		szName [5] = LOCALPLAYER.laserLevel + 1 + '0';
+		nIdLaser [0] = HUDPrintF (&nIdLaser [0], text_x, text_y + nHUDLineSpacing, szName);
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
-			strcpy (temp_str, TXT_QUAD);
-			nIdLaser [1] = HUDPrintF (&nIdLaser [1], text_x, text_y + 2 * nHUDLineSpacing, temp_str);
+			strcpy (szName, TXT_QUAD);
+			nIdLaser [1] = HUDPrintF (&nIdLaser [1], text_x, text_y + 2 * nHUDLineSpacing, szName);
 		}
 	}
 }

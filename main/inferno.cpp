@@ -222,7 +222,8 @@ else
 void D2SetCaption (void)
 {
 #if USE_IRRLICHT
-	wchar	szCaption [200];
+	char		szCaption [200];
+	wchar_t	wszCaption [200];
 
 strcpy (szCaption, DESCENT_VERSION);
 if (*LOCALPLAYER.callsign) {
@@ -235,7 +236,9 @@ if (*gameData.missions.szCurrentLevel) {
 	strcat (szCaption, " - ");
 	strcat (szCaption, gameData.missions.szCurrentLevel);
 	}
-IRRDEVICE->setWindowCaption (szCaption);
+for (int i = 0; szCaption [i]; i++)
+	wszCaption [i] = (wchar_t) szCaption [i];
+IRRDEVICE->setWindowCaption (wszCaption);
 #else
 	char	szCaption [200];
 
@@ -2257,6 +2260,9 @@ void InitGameData (void)
 	int	i;
 
 memset (&gameData, 0, sizeof (gameData));
+#if USE_IRRLICHT
+memset (&irrData, 0, sizeof (irrData));
+#endif
 gameData.segs.nMaxSegments = MAX_SEGMENTS_D2X;
 for (i = 0; i < MAX_BOSS_COUNT; i++)
 	gameData.reactor.states [i].nDeadObj = -1;
