@@ -4322,7 +4322,7 @@ if (gameOpts->app.bExpertMode) {
 
 #define D2X_MENU_GAP 0
 
-void GameplayOptionsMenu ()
+void GameplayOptionsMenu (void)
 {
 	tMenuItem m [35];
 	int	i, j, opt = 0, choice = 0;
@@ -4578,7 +4578,7 @@ if (gameOpts->app.bExpertMode) {
 
 #define D2X_MENU_GAP 0
 
-void PhysicsOptionsMenu ()
+void PhysicsOptionsMenu (void)
 {
 	tMenuItem m [30];
 	int	i, opt = 0, choice = 0;
@@ -4727,12 +4727,12 @@ if (IsMultiGame)
 
 //------------------------------------------------------------------------------
 
-void ConfigMenu ()
+void ConfigMenu (void)
 {
-	tMenuItem m [20];
-	int i, opt, choice = 0;
-	int optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, 
-		 optToggles, optRender, optGameplay, optCockpit, optPhysics = -1;
+	tMenuItem	m [20];
+	int			i, opt, choice = 0;
+	int			optSound, optConfig, optJoyCal, optPerformance, optScrRes, optReorderPrim, optReorderSec, 
+					optToggles, optRender, optGameplay, optCockpit, optPhysics = -1;
 
 do {
 	memset (m, 0, sizeof (m));
@@ -4742,7 +4742,8 @@ do {
 	optSound = opt++;
 	ADD_TEXT (opt, "", 0);
 	opt++;
-	ADD_MENU (opt, strupr (TXT_CONTROLS_), KEY_O, HTX_OPTIONS_CONFIG);
+	ADD_MENU (opt, TXT_CONTROLS_, KEY_O, HTX_OPTIONS_CONFIG);
+	strupr (m [opt].text);
 	optConfig = opt++;
 #if defined (_WIN32) || defined (__linux__)
 	optJoyCal = -1;

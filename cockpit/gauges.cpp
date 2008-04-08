@@ -1845,7 +1845,6 @@ void DrawWeaponInfoSub (int info_index, tGaugeBox *box, int pic_x, int pic_y, ch
 		szName [l + 1] = '\0';
 		nIdWeapon [0] = HUDPrintF (&nIdWeapon [0], text_x, text_y, szName);
 		nIdWeapon [1] = HUDPrintF (&nIdWeapon [1], text_x, text_y + grdCurCanv->cvFont->ftHeight + 1, p + 1);
-		*p='\n';
 		}
 	else {
 		nIdWeapon [2] = HUDPrintF (&nIdWeapon [2], text_x, text_y, pszName);

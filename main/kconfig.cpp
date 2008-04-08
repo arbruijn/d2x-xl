@@ -422,7 +422,7 @@ kcItem kcHotkeys [] = {
 
 static int xOffs = 0, yOffs = 0;
 
-static int start_axis [JOY_MAX_AXES];
+static int startAxis [JOY_MAX_AXES];
 
 vmsVector ExtForceVec;
 vmsMatrix ExtApplyForceMatrix;
@@ -592,63 +592,62 @@ int KCGetItemHeight (kcItem *item)
 	int w, h, aw;
 	char btext [10];
 
-	if (item->value==255) {
-		strcpy (btext, "");
-	} else {
-		switch (item->nType)	{
-			case BT_KEY:
-				strncpy (btext, pszKeyText [item->value], 10); 
-				break;
-			case BT_MOUSE_BUTTON:
-				strncpy (btext, MouseTextString (item->value), 10); 
-				break;
-			case BT_MOUSE_AXIS:
-				strncpy (btext, baseGameTexts [mouseaxis_text [item->value]], 10); 
-				break;
-			case BT_JOY_BUTTON:
+if (item->value == 255)
+	strcpy (btext, "");
+else {
+	switch (item->nType)	{
+		case BT_KEY:
+			strncpy (btext, pszKeyText [item->value], 10); 
+			break;
+		case BT_MOUSE_BUTTON:
+			strncpy (btext, MouseTextString (item->value), 10); 
+			break;
+		case BT_MOUSE_AXIS:
+			strncpy (btext, baseGameTexts [mouseaxis_text [item->value]], 10); 
+			break;
+		case BT_JOY_BUTTON:
 #if defined (USE_LINUX_JOY)
-				sprintf (btext, "J%d B%d", j_button [item->value].joydev, 
-						  j_Get_joydev_button_number (item->value);
+			sprintf (btext, "J%d B%d", j_button [item->value].joydev, 
+					  j_Get_joydev_button_number (item->value);
 #else 
-				{
-					int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
-					int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
-					int	nHat = sdlJoysticks [nStick].n_buttons;
-					//static char szHatDirs [4] = {'U', 'L', 'D', 'R'};
-					static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
+			{
+				int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
+				int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
+				int	nHat = sdlJoysticks [nStick].n_buttons;
+				//static char szHatDirs [4] = {'U', 'L', 'D', 'R'};
+				static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 
-				if (nBtn < nHat)
-					sprintf (btext, "J%d B%d", nStick + 1, nBtn + 1);
-				else
-					sprintf (btext, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
-				}
+			if (nBtn < nHat)
+				sprintf (btext, "J%d B%d", nStick + 1, nBtn + 1);
+			else
+				sprintf (btext, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
+			}
 #endif
-				break;
-			case BT_JOY_AXIS:
+			break;
+		case BT_JOY_AXIS:
 #if defined (USE_LINUX_JOY)
-				sprintf (btext, "J%d A%d", j_axis [item->value].joydev, 
-						  j_Get_joydev_axis_number (item->value);
+			sprintf (btext, "J%d A%d", j_axis [item->value].joydev, 
+					  j_Get_joydev_axis_number (item->value);
 #else
-				{
-					int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
-					int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
-					static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
+			{
+				int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
+				int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
+				static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
 
-				if (nAxis < 4)
-					sprintf (btext, "J%d %c", nStick + 1, cAxis [nAxis]);
-				else
-					sprintf (btext, "J%d A%d", nStick + 1, nAxis + 1);
-				}
+			if (nAxis < 4)
+				sprintf (btext, "J%d %c", nStick + 1, cAxis [nAxis]);
+			else
+				sprintf (btext, "J%d A%d", nStick + 1, nAxis + 1);
+			}
 #endif
-				break;
-			case BT_INVERT:
-				strncpy (btext, baseGameTexts [invert_text [item->value]], 10); 
-				break;
+			break;
+		case BT_INVERT:
+			strncpy (btext, baseGameTexts [invert_text [item->value]], 10); 
+			break;
 		}
 	}
-	GrGetStringSize (btext, &w, &h, &aw);
-
-	return h;
+GrGetStringSize (btext, &w, &h, &aw);
+return h;
 }
 
 //------------------------------------------------------------------------------
@@ -797,7 +796,7 @@ return BT_NONE;
 
 void KCDrawQuestion (kcItem *item)
 {
-	static int looper=0;
+	static int looper = 0;
 
 	int x, w, h, aw;
 
@@ -892,22 +891,22 @@ return 255;
 
 ubyte KCJoyAxisCtrlFunc (void)
 {
-	int cur_axis [JOY_MAX_AXES];
+	int curAxis [JOY_MAX_AXES];
 	int i, hd, dd;
 	int bLinJoySensSave = gameOpts->input.joystick.bLinearSens;
 	ubyte code = 255;
 
-memset (cur_axis, 0, sizeof (cur_axis));
+memset (curAxis, 0, sizeof (curAxis));
 gameOpts->input.joystick.bLinearSens = 1;
 gameStates.input.kcPollTime = 128;
-ControlsReadJoystick (cur_axis);
+ControlsReadJoystick (curAxis);
 gameOpts->input.joystick.bLinearSens = bLinJoySensSave;
 for (i = dd = 0; i < JOY_MAX_AXES; i++) {
-	hd = abs (cur_axis [i] - start_axis [i]);
+	hd = abs (curAxis [i] - startAxis [i]);
   	if ((hd > (128 * 3 / 4)) && (hd > dd)) {
 		dd = hd;
 		code = i;
-		start_axis [i] = cur_axis [i];
+		startAxis [i] = curAxis [i];
 		}
 	}
 return code;
@@ -1199,7 +1198,7 @@ memset (&bg, 0, sizeof (bg));
 bg.bIgnoreBg = 1;
 GrPaletteStepUp (0, 0, 0);
 gameStates.menus.nInMenu++;
-memset (start_axis, 0, sizeof (start_axis));
+memset (startAxis, 0, sizeof (startAxis));
 
 if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.app.bEndLevelSequence) {
 	time_stopped = 1;
@@ -1267,7 +1266,7 @@ for (;;) {
 				break;
 			case BT_JOY_AXIS:
 				if (nChangeMode != nPrevMode)
-					ControlsReadJoystick (start_axis);
+					ControlsReadJoystick (startAxis);
 				nChangeMode = KCChangeJoyAxis (items + cItem);
 				break;
 			case BT_INVERT:
