@@ -3322,7 +3322,6 @@ InitGameOptions (1);
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 AllocGameData ();
 /*---*/PrintLog ("Loading text resources\n");
-LoadGameTexts ();
 CFSetCriticalErrorCounterPtr (&nDescentCriticalError);
 /*---*/PrintLog ("Loading main hog file\n");
 if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) || 
@@ -3330,6 +3329,7 @@ if (!(CFileInit ("descent2.hog", gameFolders.szDataDir) ||
 	/*---*/PrintLog ("Descent 2 data not found\n");
 	Error (TXT_NO_HOG2);
 	}
+LoadGameTexts ();
 if (*szAutoHogFile && *szAutoMission) {
 	CFUseAltHogFile (szAutoHogFile);
 	gameStates.app.bAutoRunMission = gameHogFiles.AltHogFiles.bInitialized;
