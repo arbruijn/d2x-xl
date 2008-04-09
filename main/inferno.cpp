@@ -224,6 +224,7 @@ void D2SetCaption (void)
 #if USE_IRRLICHT
 	char		szCaption [200];
 	wchar_t	wszCaption [200];
+	int		i;
 
 strcpy (szCaption, DESCENT_VERSION);
 if (*LOCALPLAYER.callsign) {
@@ -236,8 +237,9 @@ if (*gameData.missions.szCurrentLevel) {
 	strcat (szCaption, " - ");
 	strcat (szCaption, gameData.missions.szCurrentLevel);
 	}
-for (int i = 0; szCaption [i]; i++)
+for (i = 0; szCaption [i]; i++)
 	wszCaption [i] = (wchar_t) szCaption [i];
+wszCaption [i] = (wchar_t) 0;
 IRRDEVICE->setWindowCaption (wszCaption);
 #else
 	char	szCaption [200];

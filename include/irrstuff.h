@@ -4,7 +4,7 @@
 #ifdef RELEASE
 #	define USE_IRRLICHT	0
 #elif defined (WIN32)
-#	define USE_IRRLICHT 1
+#	define USE_IRRLICHT	0
 #else
 #	define USE_IRRLICHT	0
 #endif
@@ -35,7 +35,7 @@ extern tIrrData irrData;
 #define IRRSCENE	irrData.sceneP
 #define IRRGUI		irrData.guiP
 
-void IrrInit (int nWidth, int nHeight, bool bFullScreen);
+bool IrrInit (int nWidth, int nHeight, bool bFullScreen);
 void IrrClose (void);
 
 #endif //USE_IRRLICHT

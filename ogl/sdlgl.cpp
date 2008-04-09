@@ -128,6 +128,36 @@ OglSetAttribute (NULL, "SDL_GL_DOUBLEBUFFER", SDL_GL_DOUBLEBUFFER, 1);
 
 //------------------------------------------------------------------------------
 
+void OglInitState (void)
+{
+/* select clearing (background) color   */
+glClearColor (0, 0, 0, 0);
+glShadeModel (GL_SMOOTH);
+/* initialize viewing values */
+glMatrixMode (GL_PROJECTION);
+glLoadIdentity ();
+glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+glMatrixMode (GL_MODELVIEW);
+glLoadIdentity ();//clear matrix
+glScalef (1.0f, -1.0f, 1.0f);
+glTranslatef (0.0f, -1.0f, 0.0f);
+glDisable (GL_CULL_FACE);
+OglDrawBuffer (GL_BACK, 1);
+glDisable (GL_SCISSOR_TEST);
+glDisable (GL_ALPHA_TEST);
+glDisable (GL_DEPTH_TEST);
+glDisable (GL_CULL_FACE);
+glDisable (GL_STENCIL_TEST);
+glDisable (GL_LIGHTING);
+glDisable (GL_COLOR_MATERIAL);
+glDepthMask (1);
+glColorMask (1,1,1,1);
+if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
+	glDisable (GL_MULTISAMPLE_ARB);
+}
+
+//------------------------------------------------------------------------------
+
 int OglInitWindow (int w, int h, int bForce)
 {
 	int			bRebuild = 0;
@@ -149,7 +179,8 @@ if ((w < 0) || (h < 0))
 	return -1;
 OglInitAttributes ();
 #if USE_IRRLICHT
-IrrInit (w, h, (bool) gameStates.ogl.bCurFullScreen);
+if (!IrrInit (w, h, (bool) gameStates.ogl.bFullScreen))
+	return 0;
 #else
 SDL_putenv ("SDL_VIDEO_CENTERED=1");
 /***/PrintLog ("setting SDL video mode (%dx%dx%d, %s)\n",
@@ -187,6 +218,7 @@ if (gameStates.ogl.bInitialized && bRebuild) {
 	}
 D2SetCaption ();
 OglCreateDrawBuffer ();
+OglInitState ();
 gameStates.ogl.bInitialized = 1;
 return 1;
 }

@@ -106,22 +106,6 @@ tDisplayModeInfo displayModeInfo [NUM_DISPLAY_MODES + 1] = {
 
 //------------------------------------------------------------------------------
 
-void OglInitState(void)
-{
-/* select clearing (background) color   */
-glClearColor (0.0, 0.0, 0.0, 0.0);
-glShadeModel (GL_SMOOTH);
-/* initialize viewing values */
-glMatrixMode (GL_PROJECTION);
-glLoadIdentity ();
-glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-glScalef (1.0f, -1.0f, 1.0f);
-glTranslatef (0.0f, -1.0f, 0.0f);
-GrPaletteStepUp (0,0,0);//in case its left over from in game
-}
-
-//------------------------------------------------------------------------------
-
 void GrUpdate (int bClear)
 {
 if (gameStates.ogl.bInitialized) {
@@ -229,15 +213,12 @@ if (gameStates.gfx.bInstalled)
 OglInitLoadLibrary();
 #endif
 /***/PrintLog ("   initializing SDL\n");
-#ifdef _DEBUG
-if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
-#else
-if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0)
-#endif
-{
+#if !USE_IRRLICHT
+if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE) < 0) {
 	PrintLog ("SDL library video initialisation failed: %s.\n", SDL_GetError());
-	Error("SDL library video initialisation failed: %s.", SDL_GetError());
+	Error ("SDL library video initialisation failed: %s.", SDL_GetError());
 }
+#endif
 if ((t = FindArg ("-gl_voodoo"))) {
 	gameStates.ogl.bVoodooHack = 
 	gameStates.ogl.bFullScreen = NumArg (t, 1);
@@ -282,7 +263,7 @@ grdCurScreen->scCanvas.cvFontFgColor.index = 0;
 grdCurScreen->scCanvas.cvFontBgColor.index = 0;
 grdCurScreen->scCanvas.cvFontFgColor.rgb = 0;
 grdCurScreen->scCanvas.cvFontBgColor.rgb = 0;
-GrSetCurrentCanvas( &grdCurScreen->scCanvas );
+GrSetCurrentCanvas (&grdCurScreen->scCanvas);
 
 gameStates.gfx.bInstalled = 1;
 InitGammaRamp ();

@@ -718,7 +718,7 @@ if (!gameStates.menus.nInMenu || bForce) {
 		}
 #endif
 	//if (gameStates.app.bGameRunning && !gameStates.menus.nInMenu)
-		OglDoPalFx ();
+	OglDoPalFx ();
 	OglFlushDrawBuffer ();
 	SDL_GL_SwapBuffers ();
 	OglDrawBuffer (GL_BACK, 1);

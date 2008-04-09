@@ -88,13 +88,13 @@ ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte
 // Array used to 'blink' the cursor while waiting for a keypress.
 sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 
-//char * invert_text [2] = { "N", "Y" };
+//char * yesNoTextIndex [2] = { "N", "Y" };
 //char * joybutton_text [28] = { "TRIG", "BTN 1", "BTN 2", "BTN 3", "BTN 4", "", "LEFT", "HAT ", "RIGHT", "", "", "HAT ", "MID", "", "", "HAT ", "", "", "", "HAT ", "TRIG", "LEFT", "RIGHT", "", "UP","DOWN","LEFT", "RIGHT" };
 //char * JOYAXIS_TEXT [4] = { "X1", "Y1", "X2", "Y2" };
-//char * mouseaxis_text [2] = { "L/R", "F/B" };
-//char * mousebutton_text [3] = { "Left", "Right", "Mid" };
+//char * mouseAxisTextIndex [2] = { "L/R", "F/B" };
+//char * mouseButtonTextIndex [3] = { "Left", "Right", "Mid" };
 
-int invert_text [2] = { TNUM_N, TNUM_Y };
+int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 
 #ifndef USE_LINUX_JOY
 	int joybutton_text [28] = 
@@ -113,9 +113,9 @@ int invert_text [2] = { TNUM_N, TNUM_Y };
 #define JOYAXIS_TEXT (v)		joyaxis_text [ (v) % MAX_AXES_PER_JOYSTICK]
 #define JOYBUTTON_TEXT (v)	joybutton_text [ (v) % MAX_BUTTONS_PER_JOYSTICK]
 
-int mouseaxis_text [3] = { TNUM_L_R, TNUM_F_B, TNUM_Z1 };
-int mousebutton_text [3] = { TNUM_LEFT, TNUM_RIGHT, TNUM_MID };
-char * mousebutton_textra [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
+int mouseAxisTextIndex [3] = {TNUM_L_R, TNUM_F_B, TNUM_Z1};
+int mouseButtonTextIndex [3] = {TNUM_LEFT, TNUM_RIGHT, TNUM_MID};
+char * extraMouseButtonTextIndex [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
 
 // macros for drawing lo/hi res KConfig screens (see scores.c as well)
 
@@ -580,9 +580,33 @@ return pos [h].i;
 
 //------------------------------------------------------------------------------
 
-inline char *MouseTextString (int i)
+inline char *MouseButtonText (int i)
 {
-return (i < 3) ? baseGameTexts [mousebutton_text [i]] : mousebutton_textra [i - 3];
+if (i < 0)
+	return "";
+if (i < 3)
+	return baseGameTexts [mouseButtonTextIndex [i]];
+if (i - 3 < sizeofa (extraMouseButtonTextIndex))
+	return extraMouseButtonTextIndex [i - 3];
+return "";
+}
+
+//------------------------------------------------------------------------------
+
+inline char *MouseAxisText (int i)
+{
+if (i < 0)
+	return "";
+if (i < sizeofa (mouseAxisTextIndex))
+	return baseGameTexts [mouseAxisTextIndex [i]];
+return "";
+}
+
+//------------------------------------------------------------------------------
+
+inline char *YesNoText (int i)
+{
+return baseGameTexts [yesNoTextIndex [i != 0]];
 }
 
 //------------------------------------------------------------------------------
@@ -590,24 +614,27 @@ return (i < 3) ? baseGameTexts [mousebutton_text [i]] : mousebutton_textra [i - 
 int KCGetItemHeight (kcItem *item)
 {
 	int w, h, aw;
-	char btext [10];
+	char szText [10];
 
 if (item->value == 255)
-	strcpy (btext, "");
+	strcpy (szText, "");
 else {
 	switch (item->nType)	{
 		case BT_KEY:
-			strncpy (btext, pszKeyText [item->value], 10); 
+			strncpy (szText, (item->value < sizeofa (pszKeyText)) ? pszKeyText [item->value] : "", sizeof (szText)); 
 			break;
+
 		case BT_MOUSE_BUTTON:
-			strncpy (btext, MouseTextString (item->value), 10); 
+			strncpy (szText, MouseButtonText (item->value), sizeof (szText)); 
 			break;
+
 		case BT_MOUSE_AXIS:
-			strncpy (btext, baseGameTexts [mouseaxis_text [item->value]], 10); 
+			strncpy (szText, MouseAxisText (item->value), sizeof (szText)); 
 			break;
+
 		case BT_JOY_BUTTON:
 #if defined (USE_LINUX_JOY)
-			sprintf (btext, "J%d B%d", j_button [item->value].joydev, 
+			sprintf (szText, "J%d B%d", j_button [item->value].joydev, 
 					  j_Get_joydev_button_number (item->value);
 #else 
 			{
@@ -618,15 +645,16 @@ else {
 				static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 
 			if (nBtn < nHat)
-				sprintf (btext, "J%d B%d", nStick + 1, nBtn + 1);
+				sprintf (szText, "J%d B%d", nStick + 1, nBtn + 1);
 			else
-				sprintf (btext, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
+				sprintf (szText, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
 			}
 #endif
 			break;
+
 		case BT_JOY_AXIS:
 #if defined (USE_LINUX_JOY)
-			sprintf (btext, "J%d A%d", j_axis [item->value].joydev, 
+			sprintf (szText, "J%d A%d", j_axis [item->value].joydev, 
 					  j_Get_joydev_axis_number (item->value);
 #else
 			{
@@ -635,18 +663,19 @@ else {
 				static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
 
 			if (nAxis < 4)
-				sprintf (btext, "J%d %c", nStick + 1, cAxis [nAxis]);
+				sprintf (szText, "J%d %c", nStick + 1, cAxis [nAxis]);
 			else
-				sprintf (btext, "J%d A%d", nStick + 1, nAxis + 1);
+				sprintf (szText, "J%d A%d", nStick + 1, nAxis + 1);
 			}
 #endif
 			break;
+
 		case BT_INVERT:
-			strncpy (btext, baseGameTexts [invert_text [item->value]], 10); 
+			strncpy (szText, YesNoText (item->value), sizeof (szText)); 
 			break;
 		}
 	}
-GrGetStringSize (btext, &w, &h, &aw);
+GrGetStringSize (szText, &w, &h, &aw);
 return h;
 }
 
@@ -1497,7 +1526,7 @@ KCQuitMenu (save_canvas, save_font, &bg, time_stopped);
 void KCDrawItemExt (kcItem *item, int is_current, int bRedraw)
 {
 	int x, w, h, aw;
-	char btext [64];
+	char szText [64];
 
 if (bRedraw && gameOpts->menus.nStyle)
 	return;
@@ -1508,25 +1537,26 @@ if (bRedraw && gameOpts->menus.nStyle)
 		GrSetFontColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
    GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text, NULL);
 
-	*btext = '\0';
+	*szText = '\0';
 	if (item->value != 255) {
 		switch (item->nType)	{
 			case BT_KEY:
-				strncat (btext, pszKeyText [item->value], 10); 
+				if (item->value < sizeofa (pszKeyText))
+					strncat (szText, pszKeyText [item->value], 10); 
 				break;
 
 			case BT_MOUSE_BUTTON:
-				//strncpy (btext, baseGameTexts [mousebutton_text [item->value]], 10); break;
-				strncpy (btext, MouseTextString (item->value), 10); 
+				//strncpy (szText, baseGameTexts [mouseButtonTextIndex [item->value]], 10); break;
+				strncpy (szText, MouseButtonText (item->value), 10); 
 				break;
 
 			case BT_MOUSE_AXIS:
-				strncpy (btext, baseGameTexts [mouseaxis_text [item->value]], 10); 
+				strncpy (szText, MouseAxisText (item->value), 10); 
 				break;
 
 			case BT_JOY_BUTTON:
 #ifdef USE_LINUX_JOY
-				sprintf (btext, "J%d B%d", 
+				sprintf (szText, "J%d B%d", 
 						  j_button [item->value].joydev, j_Get_joydev_button_number (item->value);
 #else
 				{
@@ -1537,16 +1567,16 @@ if (bRedraw && gameOpts->menus.nStyle)
 					static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 
 				if (nBtn < nHat)
-					sprintf (btext, "J%d B%d", nStick + 1, nBtn + 1);
+					sprintf (szText, "J%d B%d", nStick + 1, nBtn + 1);
 				else
-					sprintf (btext, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
+					sprintf (szText, "HAT%d%c", nStick + 1, cHatDirs [nBtn - nHat]);
 				}
 #endif
 				break;
 
 			case BT_JOY_AXIS:
 #if defined (USE_LINUX_JOY)
-				sprintf (btext, "J%d A%d", j_axis [item->value].joydev, j_Get_joydev_axis_number (item->value));
+				sprintf (szText, "J%d A%d", j_axis [item->value].joydev, j_Get_joydev_axis_number (item->value));
 #elif 1//defined (_WIN32)
 				{
 					int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
@@ -1554,22 +1584,22 @@ if (bRedraw && gameOpts->menus.nStyle)
 					static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
 
 				if (nAxis < 4)
-					sprintf (btext, "J%d %c", nStick + 1, cAxis [nAxis]);
+					sprintf (szText, "J%d %c", nStick + 1, cAxis [nAxis]);
 				else
-					sprintf (btext, "J%d A%d", nStick + 1, nAxis + 1);
+					sprintf (szText, "J%d A%d", nStick + 1, nAxis + 1);
 				}
 #else
-				strncpy (btext, baseGameTexts [JOYAXIS_TEXT (item->value)], 10);
+				strncpy (szText, baseGameTexts [JOYAXIS_TEXT (item->value)], 10);
 #endif
 				break;
 
 			case BT_INVERT:
-				strncpy (btext, baseGameTexts [invert_text [item->value]], 10); 
+				strncpy (szText, YesNoText (item->value), 10); 
 				break;
 		}
 	}
 	if (item->w1) {
-		GrGetStringSize (btext, &w, &h, &aw);
+		GrGetStringSize (szText, &w, &h, &aw);
 
 		if (is_current)
 			GrSetColorRGBi (RGBA_PAL2 (21, 0, 24));
@@ -1579,7 +1609,7 @@ if (bRedraw && gameOpts->menus.nStyle)
 					KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 		GrSetFontColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
 		x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + xOffs;
-		GrString (x, KC_LHY (item->y), btext, NULL);
+		GrString (x, KC_LHY (item->y), szText, NULL);
 	}
 }
 

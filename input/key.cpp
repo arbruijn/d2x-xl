@@ -343,7 +343,7 @@ tKeyProps keyProperties [256] = {
 { "LCMD",   255,    255,    SDLK_LMETA         }
 };
 
-char *pszKeyText[256];
+char *pszKeyText [256];
 
 //------------------------------------------------------------------------------
 
@@ -456,20 +456,17 @@ void KeyInit()
 {
   int i;
   
-  if (bInstalled) return;
-
-  bInstalled=1;
-
-  gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
-  gameStates.input.keys.nBufferType = 1;
-  gameStates.input.keys.bRepeat = 1;
-  
-  for(i=0; i<256; i++)
-     pszKeyText[i] = keyProperties[i].pszKeyText;
-     
-  // Clear the tKeyboard array
-  KeyFlush();
-  atexit(KeyClose);
+if (bInstalled) 
+	return;
+bInstalled = 1;
+gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
+gameStates.input.keys.nBufferType = 1;
+gameStates.input.keys.bRepeat = 1;
+for(i = 0; i < 256; i++)
+	pszKeyText [i] = keyProperties [i].pszKeyText;
+// Clear the tKeyboard array
+KeyFlush();
+atexit(KeyClose);
 }
 
 //------------------------------------------------------------------------------
