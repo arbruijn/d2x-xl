@@ -748,11 +748,11 @@ int G3RenderModel (tObject *objP, short nModel, short nSubModel, tPolyModel *pp,
 {
 	tG3Model	*pm = gameData.models.g3Models [1] + nModel;
 	int		i, bHires = 1, bUseVBO = gameStates.ogl.bHaveVBOs && gameOpts->ogl.bObjLighting,
-				bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
-	int		nGunId, nBombId, nMissileId, nMissiles;
+				bEmissive, nGunId, nBombId, nMissileId, nMissiles;
 
 if (!objP)
 	return 0;
+bEmissive = (objP->nType == OBJ_WEAPON) && gameData.objs.bIsWeapon [objP->id] && !gameData.objs.bIsMissile [objP->id];
 if (gameStates.render.bQueryCoronas && (bEmissive || gameStates.render.bCloaked))
 	return 1;
 #if G3_FAST_MODELS

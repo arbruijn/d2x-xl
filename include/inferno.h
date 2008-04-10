@@ -3090,13 +3090,26 @@ static inline ushort WallNumS (tSide *sideP) { return (sideP)->nWall; }
 static inline ushort WallNumP (tSegment *segP, short nSide) { return WallNumS ((segP)->sides + (nSide)); }
 static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(gameData.segs.segments + (nSegment), nSide); }
 
+//	-----------------------------------------------------------------------------------------------------------
+
+static inline short ObjIdx (tObject *objP)
+{
+	size_t	i = (char *) objP - (char *) gameData.objs.objects;
+
+if ((i < 0) || (i > gameData.objs.nLastObject * sizeof (tObject)) || (i % sizeof (tObject)))
+	return -1;
+return (short) (i / sizeof (tObject));
+}
+
+//	-----------------------------------------------------------------------------------------------------------
+
 #define	NO_WALL		(gameStates.app.bD2XLevel ? 2047 : 255)
 #define  IS_WALL(_wallnum)	((ushort) (_wallnum) < NO_WALL)
 
 #define SEG_IDX(_segP)			((short) ((_segP) - gameData.segs.segments))
 #define SEG2_IDX(_seg2P)		((short) ((_seg2P) - gameData.segs.segment2s))
 #define WALL_IDX(_wallP)		((short) ((_wallP) - gameData.walls.walls))
-#define OBJ_IDX(_objP)			((short) ((_objP) - gameData.objs.objects))
+#define OBJ_IDX(_objP)			ObjIdx (_objP)
 #define TRIG_IDX(_trigP)		((short) ((_trigP) - gameData.trigs.triggers))
 #define FACE_IDX(_faceP)		((int) ((_faceP) - gameData.segs.faces.faces))
 

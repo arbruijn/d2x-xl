@@ -1177,14 +1177,14 @@ return 0;
 
 extern char szAutoMission [255];
 //called for each level to load & setup the exit sequence
-void LoadEndLevelData (int level_num)
+void LoadEndLevelData (int nLevel)
 {
-	char filename [13];
-	char line [LINE_LEN], *p;
-	CFILE cf;
-	int var, nSegment, nSide;
-	int nExitSide=0, i;
-	int bHaveBinary = 0;
+	char		filename [13];
+	char		line [LINE_LEN], *p;
+	CFILE		cf;
+	int		var, nSegment, nSide;
+	int		nExitSide = 0, i;
+	int		bHaveBinary = 0;
 
 gameStates.app.bEndLevelDataLoaded = 0;		//not loaded yet
 if (!gameOpts->movies.nLevel)
@@ -1194,16 +1194,16 @@ try_again:
 
 if (gameStates.app.bAutoRunMission)
 	strcpy (filename, szAutoMission);
-else if (level_num<0)		//secret level
-	strcpy (filename, gameData.missions.szSecretLevelNames [-level_num-1]);
+else if (nLevel<0)		//secret level
+	strcpy (filename, gameData.missions.szSecretLevelNames [-nLevel-1]);
 else					//normal level
-	strcpy (filename, gameData.missions.szLevelNames [level_num-1]);
+	strcpy (filename, gameData.missions.szLevelNames [nLevel-1]);
 if (!ConvertExt (filename, "end"))
 	Error ("Error converting filename\n'<%s>'\nfor endlevel data\n", filename);
 if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
 	ConvertExt (filename, "txb");
 	if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Mission)) {
-		if (level_num == 1) {
+		if (nLevel == 1) {
 #if TRACE
 			con_printf (CONDBG, "Cannot load file text\nof binary version of\n'<%s>'\n", filename);
 #endif
@@ -1211,7 +1211,7 @@ if (!CFOpen (&cf, filename, gameFolders.szDataDir, "rb", gameStates.app.bD1Missi
 			return;
 			}
 		else {
-			level_num = 1;
+			nLevel = 1;
 			goto try_again;
 			}
 		}
@@ -1224,16 +1224,16 @@ var = 0;
 PrintLog ("      parsing endlevel description\n");
 while (CFGetS (line, LINE_LEN, &cf)) {
 	if (bHaveBinary) {
-		int l = (int) strlen (line) - 1;
+		int l = (int) strlen (line);
 		for (i = 0; i < l; i++)
 			line [i] = EncodeRotateLeft ((char) (EncodeRotateLeft (line [i]) ^ BITMAP_TBL_XOR));
 		p = line;
 		}
-	if ((p=strchr (line, ';')))
+	if ((p = strchr (line, ';')))
 		*p = 0;		//cut off comment
-	for (p = line + strlen (line) - 1; p > line && ::isspace (*p); *p-- = 0)
+	for (p = line + strlen (line) - 1; (p > line) && ::isspace ((unsigned char) *p); *p-- = 0)
 		;
-	for (p = line; ::isspace (*p); p++)
+	for (p = line; ::isspace ((unsigned char) *p); p++)
 		;
 	if (!*p)		//empty line
 		continue;
