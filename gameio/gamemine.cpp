@@ -911,29 +911,25 @@ pc->color.alpha = 1;
 
 //------------------------------------------------------------------------------
 
-void read_verts (int nSegment, CFILE *loadFile)
+void ReadSegVerts (int nSegment, CFILE *loadFile)
 {
-	int i;
-	// Read short gameData.segs.segments [nSegment].verts [MAX_VERTICES_PER_SEGMENT]
-	for (i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
-		gameData.segs.segments [nSegment].verts [i] = CFReadShort (loadFile);
+for (int i = 0; i < MAX_VERTICES_PER_SEGMENT; i++)
+	gameData.segs.segments [nSegment].verts [i] = CFReadShort (loadFile);
 }
 
 //------------------------------------------------------------------------------
 
-void read_special (int nSegment, ubyte bit_mask, CFILE *loadFile)
+void ReadSegSpecialType (int nSegment, ubyte bit_mask, CFILE *loadFile)
 {
-	if (bit_mask & (1 << MAX_SIDES_PER_SEGMENT)) {
-		// Read ubyte	gameData.segs.segment2s [nSegment].special
-		gameData.segs.segment2s [nSegment].special = CFReadByte (loadFile);
-		// Read byte	gameData.segs.segment2s [nSegment].nMatCen
-		gameData.segs.segment2s [nSegment].nMatCen = CFReadByte (loadFile);
-		// Read short	gameData.segs.segment2s [nSegment].value
-		gameData.segs.segment2s [nSegment].value = (char) CFReadShort (loadFile);
-	} else {
-		gameData.segs.segment2s [nSegment].special = 0;
-		gameData.segs.segment2s [nSegment].nMatCen = -1;
-		gameData.segs.segment2s [nSegment].value = 0;
+if (bit_mask & (1 << MAX_SIDES_PER_SEGMENT)) {
+	gameData.segs.segment2s [nSegment].special = CFReadByte (loadFile);
+	gameData.segs.segment2s [nSegment].nMatCen = CFReadByte (loadFile);
+	gameData.segs.segment2s [nSegment].value = (char) CFReadShort (loadFile);
+	} 
+else {
+	gameData.segs.segment2s [nSegment].special = 0;
+	gameData.segs.segment2s [nSegment].nMatCen = -1;
+	gameData.segs.segment2s [nSegment].value = 0;
 	}
 }
 
@@ -1303,15 +1299,15 @@ for (segP = SEGMENTS + nSegment, segFaceP = SEGFACES + nSegment; nSegment < last
 		bit_mask = 0x7f; // read all six children and special stuff...
 
 	if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
-		read_special (nSegment, bit_mask, loadFile);
-		read_verts (nSegment, loadFile);
+		ReadSegSpecialType (nSegment, bit_mask, loadFile);
+		ReadSegVerts (nSegment, loadFile);
 		read_children (nSegment, bit_mask, loadFile);
 		}
 	else {
 		read_children (nSegment, bit_mask, loadFile);
-		read_verts (nSegment, loadFile);
+		ReadSegVerts (nSegment, loadFile);
 		if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
-			read_special (nSegment, bit_mask, loadFile);
+			ReadSegSpecialType (nSegment, bit_mask, loadFile);
 			}
 		}
 	segP->objects = -1;

@@ -90,6 +90,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Debug&quot;;&quot;\projekte\sdl-1.2.13\debug&quot;;&quot;\Projekte\SDL_mixer-1.2.8\VisualC\Debug&quot;;&quot;\Projekte\irrlicht-1.4\lib\win32-visualstudio&quot;"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="./debug/d2x-xl-dbg.pdb"
 				GenerateMapFile="true"
@@ -204,6 +205,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="&quot;\Projekte\OpenAL 1.1 SDK\libs\Win32&quot;;&quot;\Projekte\d2x-xl-svn\trunk\d2x-trackir\Release&quot;;&quot;..\..\..\d2x\sdl-1.2.13\Release&quot;;&quot;..\..\..\SDL_mixer-1.2.8\VisualC\Release&quot;"
+				IgnoreDefaultLibraryNames="msvcrtd.lib"
 				GenerateDebugInformation="false"
 				ProgramDatabaseFile=".\Release/d2x-gl.pdb"
 				SubSystem="2"
@@ -4537,11 +4539,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\descent.ico"
+				RelativePath="..\..\descent.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\descent.ico"
+				RelativePath=".\descent.ico"
 				>
 			</File>
 			<File
