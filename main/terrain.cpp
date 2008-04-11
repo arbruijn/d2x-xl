@@ -34,6 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fireball.h"
 #include "render.h"
 #include "vecmat.h"
+#include "ogl_render.h"
 
 #define TERRAIN_GRID_MAX_SIZE	64
 #define TERRAIN_GRID_SCALE    i2f (2*20)
@@ -78,9 +79,11 @@ gameData.render.terrain.uvlList [0][0].v =
 gameData.render.terrain.uvlList [0][2].v = (j) * f0_4;
 gameData.render.terrain.uvlList [0][1].v = (j + 1) * f0_4;
 gameData.render.terrain.uvlList [0][2].u = (i + 1) * f0_4;   
-
-G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [0], 
-						  gameData.render.terrain.bmP, NULL, NULL);
+#ifdef _DEBUG
+G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, 1, -1);
+#else
+G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, NULL);
+#endif
 if (gameData.render.terrain.bOutline) {
 	int lSave = gameStates.render.nLighting;
 	gameStates.render.nLighting = 0;
@@ -103,8 +106,11 @@ gameData.render.terrain.uvlList [1][0].v =
 gameData.render.terrain.uvlList [1][1].v = (j + 1) * f0_4;
 gameData.render.terrain.uvlList [1][2].v = (j) * f0_4;
 
-G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [1], 
-						  gameData.render.terrain.bmP, NULL, NULL);
+#ifdef _DEBUG
+G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, 1, -1);
+#else
+G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, NULL);
+#endif
 if (gameData.render.terrain.bOutline) {
 	int lSave = gameStates.render.nLighting;
 	gameStates.render.nLighting=0;
@@ -126,7 +132,7 @@ if ((i == gameData.render.terrain.orgI - 1) && (j == gameData.render.terrain.org
 
 if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 	RenderMine (gameData.endLevel.exit.nSegNum, 0, 0);
-	gameData.render.terrain.nMineTilesDrawn =  - 1;
+	gameData.render.terrain.nMineTilesDrawn = -1;
 	}
 }
 
@@ -158,7 +164,7 @@ int im=1;
 void RenderTerrain (vmsVector *vOrgPoint, int org_2dx, int org_2dy)
 {
 	vmsVector	tv, delta_i, delta_j;		//delta_y;
-	g3sPoint	p, p2, pLast, p2Last, pLowSave, pHighSave;
+	g3sPoint		p, p2, pLast, p2Last, pLowSave, pHighSave;
 	int			i, j, iLow, iHigh, jLow, jHigh, iViewer, jViewer;
 
 #if 1
@@ -181,9 +187,9 @@ G3RotateDeltaVec (&delta_i, &tv);
 VmVecCopyScale (&tv, &mSurfaceOrient.fVec, TERRAIN_GRID_SCALE);
 G3RotateDeltaVec (&delta_j, &tv);
 VmVecScaleAdd (&gameData.render.terrain.vStartPoint, vOrgPoint, &mSurfaceOrient.rVec,
-						-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
+					-(gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
 VmVecScaleInc (&gameData.render.terrain.vStartPoint, &mSurfaceOrient.fVec, 
-						-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
+					-(gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
 VmVecSub (&tv, &gameData.objs.viewer->position.vPos, &gameData.render.terrain.vStartPoint);
 iViewer = VmVecDot (&tv, &mSurfaceOrient.rVec) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)

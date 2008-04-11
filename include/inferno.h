@@ -1011,6 +1011,7 @@ typedef struct tApplicationStates {
 	int bGameRunning;
 	int bGameSuspended;
 	int bGameAborted;
+	int bBetweenLevels;
 	int bPlayerIsDead;
 	int bPlayerExploded;
 	int bPlayerEggsDropped;

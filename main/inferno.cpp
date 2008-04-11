@@ -269,7 +269,7 @@ void PrintVersionInfo (void)
 
 	int y, w, ws, h, hs, aw;
 
-if (gameStates.app.bGameRunning)
+if (gameStates.app.bGameRunning || gameStates.app.bBetweenLevels)
 	return;
 if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)

@@ -405,7 +405,7 @@ int G3DrawTexPolyMulti (
 	int			bShaderMerge = 0,
 					bSuperTransp = 0;
 	int			bLight = 1, 
-					bDynLight = gameStates.render.bApplyDynLight, // && !gameStates.app.bEndLevelSequence, 
+					bDynLight = gameStates.render.bApplyDynLight && (gameStates.app.bEndLevelSequence < EL_OUTSIDE), 
 					bDepthSort,
 					bResetColor = 0,
 					bOverlay = 0;
@@ -623,7 +623,7 @@ else
 	else if (bLight) {
 		if (bOverlay) {
 			for (i = 0, ppl = pointList; i < nVertices; i++, ppl++) {
-				if (gameStates.render.nState || !gameOpts->render.nPath)
+				if (gameStates.render.nState || !gameOpts->render.nPath || gameStates.app.bEndLevelSequence)
 					SetTMapColor (uvlList + i, i, bmBot, 1, NULL);
 				else {
 					pc = gameData.render.color.vertices + (*ppl)->p3_index;

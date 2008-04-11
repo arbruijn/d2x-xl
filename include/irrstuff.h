@@ -4,7 +4,7 @@
 #ifdef RELEASE
 #	define USE_IRRLICHT	0
 #elif defined (WIN32)
-#	define USE_IRRLICHT	1
+#	define USE_IRRLICHT	0
 #else
 #	define USE_IRRLICHT	0
 #endif

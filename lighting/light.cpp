@@ -292,7 +292,7 @@ if (objP && SHOW_DYN_LIGHT) {
 	else if (objP->nType == OBJ_ROBOT)
 		xObjIntensity /= 4;
 	else if ((objP->nType == OBJ_FIREBALL) || (objP->nType == OBJ_EXPLOSION))
-		xObjIntensity /= 2; //10;
+		xObjIntensity /= 2; 
 	AddDynLight (color, xObjIntensity, -1, -1, nObject, NULL);
 	return;
 	}
@@ -506,7 +506,7 @@ switch (nObjType) {
 				color->green =
 				color->blue = 0.0f;
 				for (i = j = 0; i < vcP->nFrameCount; i++) {
-					bmP = gameData.pig.tex.pBitmaps + vcP->frames [i].index;
+					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
 					if (bmP->bmAvgRGB.red + bmP->bmAvgRGB.green + bmP->bmAvgRGB.blue == 0)
 						if (!BitmapColor (bmP, bmP->bmTexBuf))
 							continue;

@@ -77,10 +77,10 @@ if (norm) {		//have normal
 	return G3CheckNormalFacing (p, norm);
 	}
 else {	//normal not specified, so must compute
-	vmsVector tempv;
+	vmsVector vTemp;
 	//get three points (rotated) and compute normal
-	VmVecPerp (&tempv, &vertlist[0]->p3_vec, &vertlist[1]->p3_vec, &vertlist[2]->p3_vec);
-	return (VmVecDot (&tempv, &vertlist[1]->p3_vec) < 0);
+	VmVecPerp (&vTemp, &vertlist [0]->p3_vec, &vertlist [1]->p3_vec, &vertlist [2]->p3_vec);
+	return (VmVecDot (&vTemp, &vertlist [1]->p3_vec) < 0);
 	}
 }
 
@@ -106,7 +106,8 @@ int G3CheckAndDrawTMap (
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, -1);
-return 0;
+else
+	return 0;
 }
 
 //------------------------------------------------------------------------------

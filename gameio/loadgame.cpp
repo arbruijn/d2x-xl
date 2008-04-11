@@ -488,7 +488,9 @@ LOCALPLAYER.flags &= ~
 	 PLAYER_FLAGS_FLAG);
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	LOCALPLAYER.primaryWeaponFlags |= extraGameInfo [IsMultiGame].loadout.nGuns;
-	if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX))
+	if (gameStates.app.bD1Mission)
+	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
+	if (!gameStates.app.bD1Mission && (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (SUPER_LASER_INDEX)))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL + 2;
 	else if (extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (LASER_INDEX))
 		LOCALPLAYER.laserLevel = MAX_LASER_LEVEL;
@@ -497,6 +499,10 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevices;
 	if (extraGameInfo [1].bDarkness)
 		LOCALPLAYER.flags |= PLAYER_FLAGS_HEADLIGHT;
+	if (gameStates.app.bD1Mission) {
+	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
+	   LOCALPLAYER.flags &= ~(PLAYER_FLAGS_FULLMAP | PLAYER_FLAGS_AMMO_RACK | PLAYER_FLAGS_CONVERTER | PLAYER_FLAGS_AFTERBURNER | PLAYER_FLAGS_HEADLIGHT);
+	   }
 	}
 LOCALPLAYER.cloakTime = 0;
 LOCALPLAYER.invulnerableTime = 0;
@@ -692,6 +698,7 @@ int LoadLevel (int nLevel, int bPageInTextures, int bRestore)
 	int		nRooms, bRetry = 0, nLoadRes;
 
 /*---*/PrintLog ("Loading level...\n");
+gameStates.app.bBetweenLevels = 1;
 gameStates.app.bFreeCam = 0;
 gameStates.app.bGameRunning = 0;
 gameData.physics.side.nSegment = -1;
@@ -756,12 +763,15 @@ if (gameData.missions.nEnhancedMission) {
 	/*---*/PrintLog ("   reading additional robots\n");
 	switch (BMReadExtraRobots (t, gameFolders.szMissionDirs [0], gameData.missions.nEnhancedMission)) {
 		case -1:
+			gameStates.app.bBetweenLevels = 0;
 			return 0;
 		case 1:
 			break;
 		default:
-			if (0 > BMReadExtraRobots ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission))
+			if (0 > BMReadExtraRobots ("d2x.ham", gameFolders.szMissionDir, gameData.missions.nEnhancedMission)) {
+				gameStates.app.bBetweenLevels = 0;
 				return 0;
+				}
 		}
 	strncpy (t, gameStates.app.szCurrentMissionFile, 6);
 	strcat (t, "-l.mvl");
@@ -790,6 +800,7 @@ Assert (gameStates.app.bAutoRunMission ||
 #endif
 if (!gameStates.app.bAutoRunMission && 
 	 (!nLevel || (nLevel > gameData.missions.nLastLevel) || (nLevel < gameData.missions.nLastSecretLevel))) {
+	gameStates.app.bBetweenLevels = 0;
 	Warning ("Invalid level number!");
 	return 0;
 	}
@@ -831,6 +842,7 @@ for (;;) {
 	};
 if (nLoadRes) {
 	/*---*/PrintLog ("Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
+	gameStates.app.bBetweenLevels = 0;
 	Warning (TXT_LOAD_ERROR, pszLevelName);
 	return 0;
 	}
@@ -859,8 +871,10 @@ LoadEndLevelData (nLevel);
 gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
 gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 /*---*/PrintLog ("   loading replacement robots\n");
-if (0 > LoadRobotReplacements (pszLevelName, 0, 0))
+if (0 > LoadRobotReplacements (pszLevelName, 0, 0)) {
+	gameStates.app.bBetweenLevels = 0;
 	return 0;
+	}
 LoadHiresModels (1);
 /*---*/PrintLog ("   initializing cambot\n");
 InitCamBots (0);
@@ -942,6 +956,7 @@ SetDebrisCollisions ();
 BuildSkyBoxSegList ();
 if (gameOpts->render.nPath)
 	gameOpts->render.bDepthSort = 1;
+gameStates.app.bBetweenLevels = 0;
 return 1;
 }
 
@@ -1485,6 +1500,7 @@ void AdvanceLevel (int bSecret, int bFromSecret)
 {
 	int result;
 
+gameStates.app.bBetweenLevels = 1;
 Assert (!bSecret);
 if ((!bFromSecret/* && gameStates.app.bD1Mission*/) &&
 	 ((gameData.missions.nCurrentLevel != gameData.missions.nLastLevel) || 
@@ -1503,6 +1519,7 @@ if (gameData.missions.nCurrentLevel == 0)
 #endif
 if (IsMultiGame) {
 	if ((result = MultiEndLevel (&bSecret))) { // Wait for other players to reach this point
+		gameStates.app.bBetweenLevels = 0;
 		if (gameData.missions.nCurrentLevel != gameData.missions.nLastLevel)		//tPlayer has finished the game!
 			return;
 		longjmp (gameExitPoint, 0);		// Exit out of game loop
@@ -1523,6 +1540,7 @@ else {
 		DoEndlevelMenu (); // Let user save their game
 	StartNewLevel (gameData.missions.nNextLevel, 0);
 	}
+gameStates.app.bBetweenLevels = 0;
 }
 
 //------------------------------------------------------------------------------

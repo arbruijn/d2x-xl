@@ -123,7 +123,8 @@ char movieTable [2][30] = {
 
 #define FLY_ACCEL i2f (5)
 
-static tUVL satUVL [4] = {{-F1_0/2,0,F1_0},{F1_0/2,0,F1_0},{F1_0/2,F1_0,F1_0},{-F1_0/2,F1_0,F1_0}};
+//static tUVL satUVL [4] = {{0,0,F1_0},{F1_0,0,F1_0},{F1_0,F1_0,F1_0},{0,F1_0,F1_0}};
+static tUVL satUVL [4] = {{0,0,F1_0},{F1_0,0,F1_0},{F1_0,F1_0,F1_0},{0,F1_0,F1_0}};
 
 extern int ELFindConnectedSide (int seg0, int seg1);
 
@@ -163,7 +164,7 @@ return -1;
 #define MOVIE_REQUIRED 1
 
 //returns movie played status.  see movie.h
-int StartEndLevelMovie ()
+int StartEndLevelMovie (void)
 {
 	char szMovieName [SHORT_FILENAME_LEN];
 	int r;
@@ -249,7 +250,7 @@ gameData.endLevel.satellite.bmInstance.bmTexBuf = NULL;
 
 tObject external_explosion;
 
-vmsAngVec exit_angles={-0xa00, 0, 0};
+vmsAngVec exit_angles = {-0xa00, 0, 0};
 
 vmsMatrix mSurfaceOrient;
 
@@ -307,7 +308,7 @@ if (!bSecret)
 
 //------------------------------------------------------------------------------
 
-void StartRenderedEndLevelSequence ()
+void StartRenderedEndLevelSequence (void)
 {
 	int nLastSeg, nExitSide, nTunnelLength;
 	int nSegment, nOldSeg, nEntrySide, i;
@@ -439,7 +440,7 @@ return mask;
 
 //------------------------------------------------------------------------------
 
-void StopEndLevelSequence ()
+void StopEndLevelSequence (void)
 {
 	gameStates.render.nInterpolationMethod = 0;
 
@@ -466,7 +467,7 @@ VmExtractAnglesVector (av, &tv);
 
 //------------------------------------------------------------------------------
 
-void DoEndLevelFrame ()
+void DoEndLevelFrame (void)
 {
 	static fix timer;
 	static fix bank_rate;
@@ -528,9 +529,9 @@ if (!gameStates.render.bOutsideMine) {
 		tObject		*expl;
 		static int	soundCount;
 
-		VmVecScaleAdd (&tpnt, &gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient.fVec, -gameData.objs.console->size*5);
-		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()-RAND_MAX/2)*15);
-		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.uVec, (d_rand ()-RAND_MAX/2)*15);
+		VmVecScaleAdd (&tpnt, &gameData.objs.console->position.vPos, &gameData.objs.console->position.mOrient.fVec, -gameData.objs.console->size * 5);
+		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.rVec, (d_rand ()- RAND_MAX / 2) * 15);
+		VmVecScaleInc (&tpnt, &gameData.objs.console->position.mOrient.uVec, (d_rand ()- RAND_MAX / 2) * 15);
 		nSegment = FindSegByPoint (&tpnt, gameData.objs.console->nSegment, 1, 0);
 		if (nSegment != -1) {
 			expl = ObjectCreateExplosion (nSegment, &tpnt, i2f (20), VCLIP_BIG_PLAYER_EXPLOSION);
@@ -610,7 +611,6 @@ switch (gameStates.app.bEndLevelSequence) {
 			}
 		break;
 		}
-
 
 	case EL_LOOKBACK: {
 		DoEndLevelFlyThrough (0);
@@ -755,51 +755,43 @@ switch (gameStates.app.bEndLevelSequence) {
 //find which tSide to fly out of
 int FindExitSide (tObject *objP)
 {
-	int i;
-	vmsVector prefvec, segcenter, sidevec;
-	fix best_val=-f2_0;
-	int best_side;
-	tSegment *pseg = &gameData.segs.segments [objP->nSegment];
+	vmsVector	prefvec, segcenter, sidevec;
+	fix			d, best_val = -f2_0;
+	int			best_side, i;
+	tSegment		*segP = gameData.segs.segments + objP->nSegment;
 
-	//find exit tSide
-
-	VmVecNormalizedDir (&prefvec, &objP->position.vPos, &objP->vLastPos);
-
-	COMPUTE_SEGMENT_CENTER (&segcenter, pseg);
-
-	best_side=-1;
-	for (i=MAX_SIDES_PER_SEGMENT;--i >= 0;) {
-		fix d;
-
-		if (pseg->children [i]!=-1) {
-
-			COMPUTE_SIDE_CENTER (&sidevec, pseg, i);
-			VmVecNormalizedDir (&sidevec, &sidevec, &segcenter);
-			d = VmVecDotProd (&sidevec, &prefvec);
-
-			if (labs (d) < MIN_D) d=0;
-
-			if (d > best_val) {best_val=d; best_side=i;}
-
+//find exit tSide
+VmVecNormalizedDir (&prefvec, &objP->position.vPos, &objP->vLastPos);
+COMPUTE_SEGMENT_CENTER (&segcenter, segP);
+best_side = -1;
+for (i = MAX_SIDES_PER_SEGMENT; --i >= 0;) {
+	if (segP->children [i] != -1) {
+		COMPUTE_SIDE_CENTER (&sidevec, segP, i);
+		VmVecNormalizedDir (&sidevec, &sidevec, &segcenter);
+		d = VmVecDotProd (&sidevec, &prefvec);
+		if (labs (d) < MIN_D) 
+			d = 0;
+		if (d > best_val) {
+			best_val = d; 
+			best_side = i;
+			}
 		}
 	}
-
-	Assert (best_side!=-1);
-
-	return best_side;
+Assert (best_side!=-1);
+return best_side;
 }
 
 //------------------------------------------------------------------------------
 
 void DrawExitModel ()
 {
-	vmsVector model_pos;
-	int f=15, u=0;	//21;
+	vmsVector	vModelPos;
+	int			f = 15, u = 0;	//21;
 
-VmVecScaleAdd (&model_pos, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.fVec, i2f (f));
-VmVecScaleInc (&model_pos, &gameData.endLevel.exit.mOrient.uVec, i2f (u));
+VmVecScaleAdd (&vModelPos, &gameData.endLevel.exit.vMineExit, &gameData.endLevel.exit.mOrient.fVec, i2f (f));
+VmVecScaleInc (&vModelPos, &gameData.endLevel.exit.mOrient.uVec, i2f (u));
 gameStates.app.bD1Model = gameStates.app.bD1Mission && gameStates.app.bD1Data;
-DrawPolygonModel (NULL, &model_pos, &gameData.endLevel.exit.mOrient, NULL, 
+DrawPolygonModel (NULL, &vModelPos, &gameData.endLevel.exit.mOrient, NULL, 
 						 (gameStates.gameplay.bMineDestroyed) ? gameData.endLevel.exit.nDestroyedModel : gameData.endLevel.exit.nModel, 
 						 0, f1_0, NULL, NULL, NULL);
 gameStates.app.bD1Model = 0;
@@ -832,14 +824,12 @@ G3DoneInstance ();
 G3TransformAndEncodePoint (&p, &gameData.endLevel.satellite.vPos);
 G3RotateDeltaVec (&vDelta, &gameData.endLevel.satellite.vUp);
 G3AddDeltaVec (&pTop, &p, &vDelta);
-if (!(p.p3_codes & CC_BEHIND)) {
-	if (!(p.p3_flags & PF_OVERFLOW)) {
-		int imSave = gameStates.render.nInterpolationMethod;
-		gameStates.render.nInterpolationMethod = 0;
-		if (!OglBindBmTex (gameData.endLevel.satellite.bmP, 1, 0))
-			G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, f1_0, satUVL);
-		gameStates.render.nInterpolationMethod = imSave;
-		}
+if (!(p.p3_codes & CC_BEHIND)&& !(p.p3_flags & PF_OVERFLOW)) {
+	int imSave = gameStates.render.nInterpolationMethod;
+	gameStates.render.nInterpolationMethod = 0;
+	if (!OglBindBmTex (gameData.endLevel.satellite.bmP, 1, 0))
+		G3DrawRodTexPoly (gameData.endLevel.satellite.bmP, &p, SATELLITE_WIDTH, &pTop, SATELLITE_WIDTH, f1_0, satUVL);
+	gameStates.render.nInterpolationMethod = imSave;
 	}
 #ifdef STATION_ENABLED
 DrawPolygonModel (NULL, &gameData.endLevel.station.vPos, &vmdIdentityMatrix, NULL, 
@@ -903,7 +893,7 @@ void RenderEndLevelMine (fix xEyeOffset, int nWindowNum)
 
 gameData.render.mine.viewerEye = gameData.objs.viewer->position.vPos;
 if (gameData.objs.viewer->nType == OBJ_PLAYER)
-	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, (gameData.objs.viewer->size*3)/4);
+	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.fVec, (gameData.objs.viewer->size * 3) / 4);
 if (xEyeOffset)
 	VmVecScaleInc (&gameData.render.mine.viewerEye, &gameData.objs.viewer->position.mOrient.rVec, xEyeOffset);
 #ifdef EDITOR
