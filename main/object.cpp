@@ -1958,6 +1958,8 @@ int UpdateObject (tObject * objP)
 {
 	short	nPrevSegment = (short) objP->nSegment;
 
+if ((objP->nType == OBJ_POWERUP) && (objP->id == POW_KEY_RED))
+	objP = objP;
 if (objP->nType == OBJ_ROBOT) {
 	fix xMaxShields = RobotDefaultShields (objP);
 	if (objP->shields > xMaxShields)
@@ -2237,8 +2239,7 @@ int UpdateObjectSeg (tObject * objP)
 {
 	int nNewSeg;
 
-nNewSeg = FindObjectSeg (objP);
-if (nNewSeg == -1)
+if (0 > (nNewSeg = FindObjectSeg (objP)))
 	return 0;
 if (nNewSeg != objP->nSegment)
 	RelinkObject (OBJ_IDX (objP), nNewSeg);
@@ -2247,20 +2248,19 @@ return 1;
 
 //------------------------------------------------------------------------------
 //go through all gameData.objs.objects and make sure they have the correct tSegment numbers
-void FixObjectSegs ()
+void FixObjectSegs (void)
 {
-	int i;
-return;
-for (i = 0; i <= gameData.objs.nLastObject; i++)
-	if (gameData.objs.objects [i].nType != OBJ_NONE)
-		if (UpdateObjectSeg (gameData.objs.objects + i) == 0) {
+	int		i;
+	tObject	*objP = OBJECTS;
+
+for (i = 0; i <= gameData.objs.nLastObject; i++, objP++)
+	if ((objP->nType != OBJ_NONE) && !UpdateObjectSeg (objP)) {
 #if TRACE			
-			con_printf (1, "Cannot find tSegment for tObject %d in FixObjectSegs ()\n");
+		con_printf (1, "Cannot find tSegment for tObject %d in FixObjectSegs ()\n");
 #endif
-			Int3 ();
-			COMPUTE_SEGMENT_CENTER_I (&gameData.objs.objects [i].position.vPos, 
-											  gameData.objs.objects [i].nSegment);
-			}
+		Int3 ();
+		COMPUTE_SEGMENT_CENTER_I (&objP->position.vPos, objP->nSegment);
+		}
 }
 
 //------------------------------------------------------------------------------

@@ -1705,6 +1705,8 @@ typedef struct tShrapnelData {
 
 //------------------------------------------------------------------------------
 
+#define MAX_WEAPONS	100
+
 typedef struct tObjectViewData {
 	vmsMatrix			mView;
 	int					nFrame;
@@ -1756,10 +1758,10 @@ typedef struct tObjectData {
 	tPowerupData		pwrUp;
 	ubyte					collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 	tObjectViewData	*viewData;
-	ubyte					bIsMissile [100];
-	ubyte					bIsWeapon [100];
-	ubyte					bIsSlowWeapon [100];
-	short					idToOOF [100];
+	ubyte					bIsMissile [MAX_WEAPONS];
+	ubyte					bIsWeapon [MAX_WEAPONS];
+	ubyte					bIsSlowWeapon [MAX_WEAPONS];
+	short					idToOOF [MAX_WEAPONS];
 	int					nFrameCount;
 } tObjectData;
 

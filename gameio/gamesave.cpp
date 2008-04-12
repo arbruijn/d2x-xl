@@ -330,11 +330,11 @@ objP->renderType = CFReadByte (cfP);
 objP->flags = CFReadByte (cfP);
 objP->nSegment = CFReadShort (cfP);
 objP->attachedObj = -1;
-CFReadVector(&objP->position.vPos, cfP);
-CFReadMatrix(&objP->position.mOrient, cfP);
+CFReadVector (&objP->position.vPos, cfP);
+CFReadMatrix (&objP->position.mOrient, cfP);
 objP->size = CFReadFix (cfP);
 objP->shields = CFReadFix (cfP);
-CFReadVector(&objP->vLastPos, cfP);
+CFReadVector (&objP->vLastPos, cfP);
 objP->containsType = CFReadByte (cfP);
 objP->containsId = CFReadByte (cfP);
 objP->containsCount = CFReadByte (cfP);
@@ -1460,17 +1460,10 @@ gameData.trigs.nTriggers = gameFileInfo.triggers.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
 gameData.matCens.nBotCenters = gameFileInfo.botGen.count;
-//fix old tWall structs
-
-
-//create_local_segment_data();
-
-FixObjectSegs();
-
+FixObjectSegs ();
 #ifdef _DEBUG
-dump_mine_info();
+dump_mine_info ();
 #endif
-
 if ((gameTopFileInfo.fileinfoVersion < GAME_VERSION) && 
 	 ((gameTopFileInfo.fileinfoVersion != 25) || (GAME_VERSION != 26)))
 	return 1;		//means old version
