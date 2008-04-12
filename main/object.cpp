@@ -2632,6 +2632,7 @@ void BuildObjectModels (void)
 {
 	int      i, j;
 	tObject	o, *objP = gameData.objs.objects;
+	char		*pszHires;
 
 if (!gameOpts->render.nPath)
 	return;
@@ -2666,24 +2667,24 @@ for (i = 0; i < MAX_POLYGON_MODELS; i++) {
 #else
 j = ReplacementModelCount ();
 for (i = 0; i < j; i++)
-	if (replacementModels [i].pszHires && (strstr (replacementModels [i].pszHires, "laser") == replacementModels [i].pszHires))
+	if ((pszHires = replacementModels [i].pszHires) && (strstr (pszHires, "laser") == pszHires))
 		break;
-for (; i < j; i++) {
+for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 #endif
-	if (replacementModels [i].pszHires) {
-		if (strstr (replacementModels [i].pszHires, "pminepack") == replacementModels [i].pszHires)
+	if ((pszHires = rmP->pszHires)) {
+		if (strstr (pszHires, "pminepack") == pszHires)
 			o.nType = OBJ_POWERUP;
-		else if (strstr (replacementModels [i].pszHires, "hostage") == replacementModels [i].pszHires)
+		else if (strstr (pszHires, "hostage") == pszHires)
 			o.nType = OBJ_HOSTAGE;
 		}
-	o.id = (ubyte) replacementModels [i].nId;
-	o.rType.polyObjInfo.nModel = replacementModels [i].nModel;
+	o.id = (ubyte) rmP->nId;
+	o.rType.polyObjInfo.nModel = rmP->nModel;
 	if (!G3HaveModel (o.rType.polyObjInfo.nModel)) {
 #ifdef _DEBUG
 		if (o.rType.polyObjInfo.nModel == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
-		PrintLog ("      building model %d\n", o.rType.polyObjInfo.nModel);
+		PrintLog ("      building model %d (%s)\n", o.rType.polyObjInfo.nModel, pszHires ? pszHires : "n/a");
 		DrawPolygonObject (&o, 1, 0);
 		}
 	if (o.nType == OBJ_HOSTAGE)

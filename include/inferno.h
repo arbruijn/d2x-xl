@@ -852,6 +852,7 @@ typedef struct tRenderStates {
 	int nEyeOffset;
 	int nStartSeg;
 	int nLighting;
+	int nMaxTextureQuality;
 	int bTransparency;
 	int bSplitPolys;
 	int bHaveDynLights;

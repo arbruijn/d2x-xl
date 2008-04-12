@@ -478,7 +478,7 @@ if (!bmName)
 #endif
 if (!bmP->bmTexBuf) {
 	StopTime ();
-	nShrinkFactor = 1 << (3 - gameOpts->render.textures.nQuality);
+	nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
 	nSize = (int) bmP->bmProps.h * (int) bmP->bmProps.rowSize;
 	if (nIndex >= 0)
 		GetFlagData (bmName, nIndex);

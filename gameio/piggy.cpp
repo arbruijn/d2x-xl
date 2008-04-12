@@ -68,7 +68,7 @@ static char rcsid [] = "$Id: piggy.c,v 1.51 2004/01/08 19:02:53 schaffner Exp $"
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
 #ifdef _DEBUG
-#	define PIGGY_MEM_QUOTA	4
+#	define PIGGY_MEM_QUOTA	8 //4
 #else
 #	define PIGGY_MEM_QUOTA	8
 #endif
@@ -309,8 +309,15 @@ Assert (bitmapCacheSize > 0);
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);
 	bitmapCacheSize = (int) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
+	if (bitmapCacheSize > 1024 * 1024 * 1024)
+		gameStates.render.nMaxTextureQuality = 3;
+	else if (bitmapCacheSize > 512 * 1024 * 1024)
+		gameStates.render.nMaxTextureQuality = 2;
+	else
+		gameStates.render.nMaxTextureQuality = 1;
 	}
 #else
+gameStates.render.nMaxTextureQuality = 3;
 bitmapCacheSize = PIGGY_BUFFER_SIZE;
 if (bLowMemory)
 	bitmapCacheSize = PIGGY_SMALL_BUFFER_SIZE;
