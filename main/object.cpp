@@ -2154,6 +2154,7 @@ void ConvertObjects (void)
 	tObject	*objP;
 	int		i;
 
+PrintLog ("   converting deprecated smoke objects\n");
 for (i = gameData.objs.nLastObject + 1, objP = OBJECTS; i; i--, objP++)
 	if (objP->nType == OBJ_SMOKE)
 		ConvertSmokeObject (objP);
@@ -2194,6 +2195,7 @@ void SetupEffects (void)
 	tObject	*objP;
 	int		i;
 
+PrintLog ("   setting up effects\n");
 for (i = gameData.objs.nLastObject + 1, objP = OBJECTS; i; i--, objP++)
 	if (objP->nType == OBJ_EFFECT)
 		if (objP->id == SMOKE_ID)
@@ -2630,7 +2632,7 @@ return &viewP->mView;
 
 void BuildObjectModels (void)
 {
-	int      i, j;
+	int      h, i, j;
 	tObject	o, *objP = gameData.objs.objects;
 	char		*pszHires;
 
@@ -2642,6 +2644,7 @@ PrintLog ("   building optimized polygon model data\n");
 gameStates.render.nType = 1;
 gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
+h = 0;
 #if !BUILD_ALL_MODELS
 for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 	if ((objP->nSegment >= 0) && (objP->nType != 255) && (objP->renderType == RT_POLYOBJ) && 
@@ -2651,7 +2654,8 @@ for (i = 0; i <= gameData.objs.nLastObject; i++, objP++) {
 		if (objP->rType.polyObjInfo.nModel == nDbgModel)
 			nDbgModel = nDbgModel;
 #endif
-		DrawPolygonObject (objP, 1, 0); 
+		if (DrawPolygonObject (objP, 1, 0))
+			h++;
 		}
 	}
 #endif
@@ -2685,12 +2689,14 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 			nDbgModel = nDbgModel;
 #endif
 		PrintLog ("      building model %d (%s)\n", o.rType.polyObjInfo.nModel, pszHires ? pszHires : "n/a");
-		DrawPolygonObject (&o, 1, 0);
+		if (DrawPolygonObject (&o, 1, 0))
+			h++;
 		}
 	if (o.nType == OBJ_HOSTAGE)
 		o.nType = OBJ_POWERUP;
 	}
 gameStates.render.bBuildModels = 0;
+PrintLog ("   finished building optimized polygon model data (%d models converted)\n", h);
 }
 
 //------------------------------------------------------------------------------

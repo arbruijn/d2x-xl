@@ -927,8 +927,10 @@ gameStates.render.bHaveSkyBox = -1;
 gameStates.app.cheats.nUnlockLevel = 0;
 gameStates.render.nFrameFlipFlop = 0;
 gameStates.app.bUsingConverter = 0;
+/*---*/PrintLog ("   resetting color information\n");
 memset (gameData.render.color.vertices, 0, sizeof (*gameData.render.color.vertices) * MAX_VERTICES);
 memset (gameData.render.color.segments, 0, sizeof (*gameData.render.color.segments) * MAX_SEGMENTS);
+/*---*/PrintLog ("   resetting speed boost information\n");
 memset (gameData.objs.speedBoost, 0, sizeof (*gameData.objs.speedBoost) * MAX_SEGMENTS);
 if (!gameStates.render.bHaveStencilBuffer)
 	extraGameInfo [0].bShadows = 0;
@@ -950,9 +952,13 @@ if (!bRestore) {
 LoadExtraImages ();
 CreateShieldSphere ();
 SetupEffects ();
+PrintLog ("   initializing energy spark render data\n");
 AllocEnergySparks ();
+PrintLog ("   setting robot generator vertigo robot flags\n");
 SetVertigoRobotFlags ();
+PrintLog ("   initializing debris collision handlers\n");
 SetDebrisCollisions ();
+PrintLog ("   building sky box segment list\n");
 BuildSkyBoxSegList ();
 if (gameOpts->render.nPath)
 	gameOpts->render.bDepthSort = 1;

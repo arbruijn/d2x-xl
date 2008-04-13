@@ -615,6 +615,7 @@ return 0;
 
 int CreateShieldSphere (void)
 {
+PrintLog ("   creating shield sphere\n");
 if (!LoadShield ())
 	return 0;
 #if !SIMPLE_SPHERE
