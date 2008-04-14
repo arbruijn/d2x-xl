@@ -309,12 +309,16 @@ Assert (bitmapCacheSize > 0);
 	MEMORYSTATUS	memStat;
 	GlobalMemoryStatus (&memStat);
 	bitmapCacheSize = (int) (memStat.dwAvailPhys / 10) * PIGGY_MEM_QUOTA;
+#	ifdef _DEBUG
+	gameStates.render.nMaxTextureQuality = 3;
+#	else
 	if (bitmapCacheSize > 1024 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 3;
 	else if (bitmapCacheSize > 512 * 1024 * 1024)
 		gameStates.render.nMaxTextureQuality = 2;
 	else
 		gameStates.render.nMaxTextureQuality = 1;
+#	endif
 	}
 #else
 gameStates.render.nMaxTextureQuality = 3;

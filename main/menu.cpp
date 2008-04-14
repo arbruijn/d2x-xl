@@ -159,7 +159,7 @@ static struct {
 
 static struct {
 	int	nMethod;
-	int	nGeoHWLighting;
+	int	nPerPixelLighting;
 	int	nObjHWLighting;
 	int	nHWHeadLight;
 	int	nMaxLights;
@@ -3340,11 +3340,11 @@ if (lightOpts.nMethod >= 0) {
 			}
 		}
 	}
-if (lightOpts.nGeoHWLighting >= 0) {
-	m = menus + lightOpts.nGeoHWLighting;
+if (lightOpts.nPerPixelLighting >= 0) {
+	m = menus + lightOpts.nPerPixelLighting;
 	v = m->value;
-	if (v != gameOpts->ogl.bGeoLighting) {
-		gameOpts->ogl.bGeoLighting = v;
+	if (v != gameOpts->ogl.bPerPixelLighting) {
+		gameOpts->ogl.bPerPixelLighting = v;
 		*key = -2;
 		return;
 		}
@@ -3432,7 +3432,7 @@ do {
 	lightOpts.nMethod =
 	lightOpts.nLMapRange =
 	lightOpts.nMaxLights = 
-	lightOpts.nGeoHWLighting =
+	lightOpts.nPerPixelLighting =
 	lightOpts.nObjHWLighting =
 	lightOpts.nHWHeadLight =
 	optColorSat = 
@@ -3463,8 +3463,10 @@ do {
 		opt++;
 #endif
 #ifdef _DEBUG
-		ADD_CHECK (opt, TXT_GEOMETRY_HWLIGHTING, gameOpts->ogl.bGeoLighting, KEY_A, HTX_GEOMETRY_HWLIGHTING);
-		lightOpts.nGeoHWLighting = opt++;
+		if (gameStates.ogl.bShadersOk && gameStates.ogl.bPerPixelLightingOk) {
+			ADD_CHECK (opt, TXT_PER_PIXEL_LIGHTING, gameOpts->ogl.bPerPixelLighting, KEY_P, HTX_PER_PIXEL_LIGHTING);
+			lightOpts.nPerPixelLighting = opt++;
+			}
 #endif
 		if (gameStates.ogl.bHeadLight) {
 			ADD_CHECK (opt, TXT_HW_HEADLIGHT, gameOpts->ogl.bHeadLight, KEY_H, HTX_HW_HEADLIGHT);
@@ -3486,7 +3488,7 @@ do {
 			ADD_SLIDER (opt, szMaxLights + 1, gameOpts->ogl.nMaxLights - 4, 0, sizeofa (nMaxNearestLights) - 5, KEY_I, HTX_OGL_MAXLIGHTS);
 			lightOpts.nMaxLights = opt++;
 			}
-		if (gameOpts->ogl.bGeoLighting)
+		if (gameOpts->ogl.bPerPixelLighting)
 			lightOpts.nLMapRange = -1;
 		else {
 			sprintf (szLightRange + 1, TXT_LIGHT_RANGE, pszLightRange [extraGameInfo [0].nLightRange], ' ');
@@ -3911,14 +3913,14 @@ if (gameOpts->app.bExpertMode) {
 
 //------------------------------------------------------------------------------
 
-void RenderOptionsMenu ()
+void RenderOptionsMenu (void)
 {
 	tMenuItem m [40];
 	int	h, i, choice = 0;
 	int	opt;
 	int	optSmokeOpts, optShadowOpts, optCameraOpts, optLightOpts, optMovieOpts,
-			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts;
-	int	optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts, optShipRenderOpts;
+			optAdvOpts, optEffectOpts, optPowerupOpts, optAutomapOpts, optLightningOpts,
+			optUseGamma, optColoredWalls, optDepthSort, optCoronaOpts, optShipRenderOpts;
 #ifdef _DEBUG
 	int	optWireFrame, optTextures, optObjects, optWalls, optDynLight;
 #endif

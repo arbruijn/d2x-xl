@@ -184,7 +184,7 @@ void _CDECL_ PrintLog (char *fmt, ...)
 {
  if (fErr) {
 		va_list arglist;
-		static char	szErr [1024];
+		static char	szErr [100000];
     
 	va_start (arglist, fmt);
 	vsprintf (szErr, fmt, arglist);

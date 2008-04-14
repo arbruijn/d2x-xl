@@ -258,7 +258,7 @@ return AddRenderItem (riObject, &item, sizeof (item), vPos.p.z, vPos.p.z);
 
 //------------------------------------------------------------------------------
 
-int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
+int RIAddPoly (grsFace *faceP, grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *texCoord, tRgbaColorf *color, 
 					tFaceColor *altColor, char nColors, char bDepthMask, int nPrimitive, int nWrap, int bAdditive,
 					short nSegment)
 {
@@ -268,7 +268,7 @@ int RIAddPoly (grsBitmap *bmP, fVector *vertices, char nVertices, tTexCoord2f *t
 #if RI_POLY_CENTER
 	float		zCenter;
 #endif
-
+item.faceP = faceP;
 item.bmP = bmP;
 item.nVertices = nVertices;
 item.nPrimitive = nPrimitive;
@@ -358,7 +358,7 @@ for (i = 0, j = faceP->nIndex; i < 4; i++, j++) {
 	else
 		VmVecFixToFloat (vertices + i, &gameData.segs.points [faceP->index [i]].p3_vec);
 	}
-return RIAddPoly (faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
+return RIAddPoly (faceP, faceP->bTextured ? bmP : NULL, vertices, 4, gameData.segs.faces.texCoord + faceP->nIndex, 
 						gameData.segs.faces.color + faceP->nIndex,
 						NULL, 4, 1, GL_TRIANGLE_FAN, GL_REPEAT, 
 						FaceIsAdditive (faceP), faceP->nSegment);
@@ -632,7 +632,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 1, 3, 1)) {
 	if (i && !gameStates.render.automap.bDisplay)
 		RIResetShader ();
 	else
-		G3SetupShader (0, 0, item->bmP != NULL, 
+		G3SetupShader (item->faceP, 0, 0, item->bmP != NULL, 
 							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment],
 							item->bmP ? NULL : item->color);
 	glDrawArrays (item->nPrimitive, 0, item->nVertices);
@@ -650,7 +650,7 @@ if (LoadRenderItemImage (item->bmP, item->nColors, 0, item->nWrap, 0, 3, 1)) {
 		}
 	else {
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		G3SetupShader (0, 0, item->bmP != NULL, 
+		G3SetupShader (item->faceP, 0, 0, item->bmP != NULL, 
 							(item->nSegment < 0) || !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [item->nSegment], 
 							item->bmP ? NULL : item->color);
 		}

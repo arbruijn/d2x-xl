@@ -39,7 +39,7 @@ int LightingMethod (void);
 fix ComputeHeadLight (vmsVector *point, fix xFaceLight);
 fix ComputeHeadlightLightOnObject (tObject *objP);
 void ToggleHeadLight (void);
-void InitLightingShaders (int nLights);
+void InitHeadlightShaders (int nLights);
 void SetupHeadLight (tDynLight *pl, tShaderLight *psl);
 void TransformHeadLights (void);
 int AddOglHeadLight (tObject *objP);

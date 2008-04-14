@@ -658,22 +658,22 @@ if (gameStates.ogl.bAntiAliasingOk && gameStates.ogl.bAntiAliasing)
 
 void OglEnableLighting (int bSpecular)
 {
-if (gameOpts->ogl.bObjLighting || GEO_LIGHTING) {
+if (gameOpts->ogl.bObjLighting || gameOpts->ogl.bPerPixelLighting) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
 		static GLfloat fWhite [] = {1.0f, 1.0f, 1.0f, 1.0f};
-#if 0		
-		static GLfloat fAmbient [] = {0.2f, 0.2f, 0.2f, 1.0f};
-		static GLfloat fDiffuse [] = {0.8f, 0.8f, 0.8f, 1.0f};
+#if 1		
+		static GLfloat fAmbient [] = {0.1f, 0.1f, 0.1f, 1.0f};
+		static GLfloat fDiffuse [] = {0.9f, 0.9f, 0.9f, 1.0f};
 #endif
 		static GLfloat fSpecular [] = {0.5f, 0.5f, 0.5f, 1.0f};
 
 	glEnable (GL_LIGHTING);
 	glShadeModel (GL_SMOOTH);
-	glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT, fBlack);
-	glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, fWhite);
+	glMaterialfv (GL_FRONT_AND_BACK, GL_AMBIENT, fAmbient);
+	glMaterialfv (GL_FRONT_AND_BACK, GL_DIFFUSE, fDiffuse);
 	if (bSpecular) {
 		glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, fSpecular);
-		glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, gameOpts->render.bHiresModels ? 127 : 8);
+		glMateriali (GL_FRONT_AND_BACK, GL_SHININESS, (bSpecular < 0) ? 8 : gameOpts->render.bHiresModels ? 127 : 8);
 		}
 	else
 		glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, fBlack);
@@ -686,7 +686,7 @@ if (gameOpts->ogl.bObjLighting || GEO_LIGHTING) {
 
 void OglDisableLighting (void)
 {
-if (gameOpts->ogl.bObjLighting) {
+if (gameOpts->ogl.bObjLighting || gameOpts->ogl.bPerPixelLighting) {
 	glDisable (GL_COLOR_MATERIAL);
 	glDisable (GL_LIGHTING);
 	}

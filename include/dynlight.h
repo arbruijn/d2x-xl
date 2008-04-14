@@ -30,12 +30,15 @@ void TransformDynLights (int bStatic, int bVariable);
 short FindDynLight (short nSegment, short nSide, short nObject);
 int ToggleDynLight (short nSegment, short nSide, short nObject, int bState);
 void SetDynLightMaterial (short nSegment, short nSide, short nObject);
-void SetNearestVertexLights (int nVertex, ubyte nType, int bStatic, int bVariable, int nThread);
+void SetNearestVertexLights (int nVertex, vmsVector *vNormalP, ubyte nType, int bStatic, int bVariable, int nThread);
+int SetNearestFaceLights (grsFace *faceP, int bTextured);
 void SetNearestStaticLights (int nSegment, int bStatic, ubyte nType, int nThread);
-short SetNearestDynamicLights (int nSegment, int bVariable, int nType, int nThread);
+short SetNearestSegmentLights (int nSegment, int bVariable, int nType, int nThread);
 void ComputeStaticVertexLights (int nVertex, int nMax, int nThread);
 void ComputeStaticDynLighting (void);
-void InitLightingShaders (int nLights);
+int InitPerPixelLightingShader (int nType, int nLights);
+void InitHeadlightShaders (int nLights);
+char *BuildLightingShader (char *pszTemplate, int nLights);
 tFaceColor *AvgSgmColor (int nSegment, vmsVector *vPos);
 int IsLight (int tMapNum);
 

@@ -705,7 +705,7 @@ if (iBuffer) {
 		if (gameData.smoke.nLastType)
 			glUseProgramObject (0);
 		else
-			G3SetupShader (0, 0, 1, 1, &color);
+			G3SetupShader (NULL, 0, 0, 1, 1, &color);
 		}
 	if (InitParticleBuffer ()) { //gameStates.render.bVertexArrays) {
 #if 1

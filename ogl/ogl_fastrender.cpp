@@ -42,6 +42,7 @@
 #include "ogl_tmu.h"
 #include "texmerge.h"
 #include "transprender.h"
+#include "gameseg.h"
 
 //------------------------------------------------------------------------------
 
@@ -155,22 +156,22 @@ for (iLight = 0; (iLight < 8) && nLights; iLight++, nLights--, iLightSource++) {
 #endif
 	hLight = GL_LIGHT0 + iLight;
 	glEnable (hLight);
-	color.red = psl->color.c.r * psl->brightness;
-	color.green = psl->color.c.g * psl->brightness;
-	color.blue = psl->color.c.b * psl->brightness;
+	color.red = psl->color.c.r;
+	color.green = psl->color.c.g;
+	color.blue = psl->color.c.b;
 //			sprintf (szLightSources + strlen (szLightSources), "%d ", (psl->nObject >= 0) ? -psl->nObject : psl->nSegment);
-	glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) psl->pos + 1);
 	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &color);
 	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &color);
 	if (psl->nType == 2) {
-		glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.1f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f);
+		glLightf (hLight, GL_CONSTANT_ATTENUATION,1.0f);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / psl->brightness);
 		}
 	else {
 		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
-		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.1f);
-		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.04f);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / psl->brightness);
 		}
 	}
 for (; iLight < 8; iLight++)
@@ -180,27 +181,85 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
-void G3SetupFaceLight (grsFace *faceP, int bTextured)
+int G3SetupFaceLight (grsFace *faceP, int bTextured)
 {
-	int	i, nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
+	int	h, i, nLights = gameData.render.lights.dynamic.shader.nActiveLights [0];
 
-for (i = 0; i < 4; i++) {
+for (h = i = 0; i < 4; i++) {
 	if (i) {
 		memcpy (gameData.render.lights.dynamic.shader.activeLights + i, 
 					gameData.render.lights.dynamic.shader.activeLights,
 					nLights * sizeof (void *));
 		gameData.render.lights.dynamic.shader.nActiveLights [i] = nLights;
 		}
-	SetNearestVertexLights (faceP->index [i], 0, 0, 1, i);
+	SetNearestVertexLights (faceP->index [i], NULL, 0, 0, 1, i);
+	h += gameData.render.lights.dynamic.shader.nActiveLights [i];
+	
 	}
-OglEnableLighting (0);
+if (h)
+   OglEnableLighting (0);
+return h;
 }
 
 //------------------------------------------------------------------------------
 
-extern GLhandleARB lightingShaderProgs [4];
+extern GLhandleARB headlightShaderProgs [4];
+extern GLhandleARB perPixelLightingShaderProgs [4];
 
-int G3SetupShader (int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
+//------------------------------------------------------------------------------
+
+int G3SetupPerPixelLighting (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured)
+{
+	int				i, nLights;
+	tRgbaColorf		ambient, diffuse;
+	tRgbaColorf		specular = {1,1,1,1};
+	GLenum			hLight;
+	tShaderLight	*psl;
+
+if (!(nLights = (faceP && gameOpts->ogl.bPerPixelLighting) ? SetNearestFaceLights (faceP, bTextured) : 0))
+	return 0;
+OglEnableLighting (0);
+glDisable (GL_LIGHTING);
+for (i = 0; i < nLights; i++) { 
+	psl = gameData.render.lights.dynamic.shader.activeLights [0][i];
+	gameData.render.ogl.lightRads [i] = psl->rad;
+	hLight = GL_LIGHT0 + i;
+	ambient.red = psl->color.c.r * 0.1f;
+	ambient.green = psl->color.c.g * 0.1f;
+	ambient.blue = psl->color.c.b * 0.1f;
+	ambient.alpha = 1.0f;
+	diffuse.red = psl->color.c.r * 0.9f;
+	diffuse.green = psl->color.c.g * 0.9f;
+	diffuse.blue = psl->color.c.b * 0.9f;
+	diffuse.alpha = 1.0f;
+	glEnable (hLight);
+	glLightfv (hLight, GL_POSITION, (GLfloat *) (psl->pos));
+	glLightfv (hLight, GL_DIFFUSE, (GLfloat *) &diffuse);
+	glLightfv (hLight, GL_SPECULAR, (GLfloat *) &specular);
+	glLightfv (hLight, GL_AMBIENT, (GLfloat *) &ambient);
+	if (psl->nType == 2) {
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / psl->brightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.002f / psl->brightness);
+		}
+	else {
+		glLightf (hLight, GL_CONSTANT_ATTENUATION, 1.0f);
+		glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / psl->brightness);
+		glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.01f / psl->brightness);
+		//gameData.render.ogl.lightRads [i] *= 10;
+		}
+	}
+for (; i < 8; i++)
+	glDisable (GL_LIGHT0 + i);
+if (InitPerPixelLightingShader (bColorKey ? 3 : bMultiTexture ? 2 : bTextured, nLights))
+	return nLights;
+OglDisableLighting ();
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int G3SetupShader (grsFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, tRgbaColorf *colorP)
 {
 	int			oglRes, nLights, nShader = gameStates.render.history.nShader;
 	tRgbaColorf	color;
@@ -209,13 +268,13 @@ if (!gameStates.ogl.bShadersOk)
 	return -1;
 if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.automap.bDisplay) {
 	nLights = IsMultiGame ? /*gameData.multiplayer.nPlayers*/gameData.render.lights.dynamic.headLights.nLights : 1;
-	InitLightingShaders (nLights);
-	nShader = (bColorKey ? 2 : bMultiTexture) + bTextured + 4;
+	InitHeadlightShaders (nLights);
+	nShader = (bColorKey ? 3 : bMultiTexture ? 2 : bTextured) + 20;
 	if (nShader != gameStates.render.history.nShader) {
 		glEnable (GL_TEXTURE_2D);
 		glActiveTexture (GL_TEXTURE0);
 		glUseProgramObject (0);
-		glUseProgramObject (tmProg = lightingShaderProgs [nShader - 4]);
+		glUseProgramObject (tmProg = headlightShaderProgs [nShader - 20]);
 		if (bTextured) {
 			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
 			if (bColorKey || bMultiTexture) {
@@ -252,6 +311,22 @@ if (gameData.render.lights.dynamic.headLights.nLights && !gameStates.render.auto
 		oglRes = glGetError ();
 		}
 	}
+else if (nLights = G3SetupPerPixelLighting (faceP, bColorKey, bMultiTexture, bTextured)) {
+	nShader = bColorKey ? 3 : bMultiTexture ? 2 : bTextured + 10;
+	if (nShader != gameStates.render.history.nShader) {
+		glUseProgramObject (0);
+		glUseProgramObject (tmProg = perPixelLightingShaderProgs [nShader - 10]);
+		glUniform1fv (glGetUniformLocation (tmProg, "lightRad"), nLights, (GLfloat *) gameData.render.ogl.lightRads);
+		if (bTextured) {
+			glUniform1i (glGetUniformLocation (tmProg, "btmTex"), 0);
+			if (bColorKey || bMultiTexture) {
+				glUniform1i (glGetUniformLocation (tmProg, "topTex"), 1);
+				if (bColorKey)
+					glUniform1i (glGetUniformLocation (tmProg, "maskTex"), 2);
+				}
+			}
+		}
+	}
 else if (bColorKey || bMultiTexture) {
 	nShader = bColorKey ? 2 : 0;
 	if (nShader != gameStates.render.history.nShader)
@@ -282,7 +357,7 @@ int G3DrawFaceSimple (grsFace *faceP, grsBitmap *bmBot, grsBitmap *bmTop, int bB
 	int			h, i, j, nTextures, nRemainingLights, nLights [4], nPass = 0;
 	int			bOverlay, bTransparent, 
 					bColorKey = 0, bMonitor = 0, 
-					bLighting = GEO_LIGHTING && !bDepthOnly, 
+					bLighting = HW_GEO_LIGHTING && !bDepthOnly, 
 					bMultiTexture = 0;
 	grsBitmap	*bmMask = NULL, *bmP [2];
 	tTexCoord2f	*texCoordP, *ovlTexCoordP;
@@ -331,7 +406,7 @@ if (bTextured) {
 		else
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bOverlay = (bColorKey && gameStates.ogl.bGlTexMerge) ? 1 : -1;
-		bMultiTexture = GEO_LIGHTING && (bOverlay > 0);
+		bMultiTexture = HW_GEO_LIGHTING && (bOverlay > 0);
 		}
 	else
 		bOverlay = 0;
@@ -356,7 +431,7 @@ if (bTextured) {
 				}
 			gameStates.render.history.bmMask = bmMask;
 			bmTop = NULL;
-			G3SetupShader (bColorKey, 1, 1, !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment], NULL);
+			G3SetupShader (faceP, bColorKey, 1, 1, !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment], NULL);
 			}
 		else {
 			if (gameStates.render.history.bOverlay > 0) {
@@ -374,7 +449,7 @@ if (bTextured) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, 0);
 				}
 			}
-		G3SetupShader (0, bMultiTexture, bmBot != NULL, 
+		G3SetupShader (faceP, 0, bMultiTexture, bmBot != NULL, 
 							!gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment],
 							bmBot ? NULL : &faceP->color);
 		}
@@ -454,7 +529,7 @@ for (h = 0; h < nTextures; ) {
 	}
 if (bLighting) {
 	for (i = 0; i < 4; i++)
-		gameData.render.lights.dynamic.shader.nActiveLights [i] = gameData.render.lights.dynamic.shader.iVariableLights [i];
+		gameData.render.lights.dynamic.shader.nActiveLights [i] = gameData.render.lights.dynamic.shader.iVertexLights [i];
 	}
 if (!bBlend)
 	glEnable (GL_BLEND);
@@ -521,6 +596,9 @@ else {
 #if G3_BUFFER_FACES
 	G3FlushFaceBuffer (bMonitor || (bTextured != faceBuffer.bTextured) || faceP->bmTop || (faceP->bmBot != faceBuffer.bmP) || (faceP->nType != SIDE_IS_QUAD));
 #endif
+#if 1
+glNormal3fv ((GLfloat *) (gameData.segs.faces.normals + faceP->nIndex));
+#endif
 if (bTextured) {
 	bColored = !gameStates.render.automap.bDisplay || gameData.render.mine.bAutomapVisited [faceP->nSegment];
 	if (bmTop && !bMonitor) {
@@ -531,7 +609,7 @@ if (bTextured) {
 		else
 			bColorKey = (bmTop->bmProps.flags & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bOverlay = (bColorKey && gameStates.ogl.bGlTexMerge) ? 1 : -1;
-		bMultiTexture = GEO_LIGHTING && ((bOverlay > 0) || ((bOverlay < 0) && !bMonitor));
+		bMultiTexture = HW_GEO_LIGHTING && ((bOverlay > 0) || ((bOverlay < 0) && !bMonitor));
 		}
 	else
 		bOverlay = 0;
@@ -568,7 +646,7 @@ if (bTextured) {
 			if (!G3EnableClientState (GL_TEXTURE_COORD_ARRAY, GL_TEXTURE2))
 				return 1;
 			gameStates.render.history.bmMask = bmMask;
-			G3SetupShader (bColorKey, 1, 1, bColored, NULL);
+			G3SetupShader (faceP, bColorKey, 1, 1, bColored, NULL);
 			}
 		else {
 			if (gameStates.render.history.bOverlay > 0) {
@@ -608,7 +686,7 @@ if (bTextured) {
 				INIT_TMU (InitTMU0, GL_TEXTURE0, bmBot, 1);
 				gameStates.render.history.bmBot = bmBot;
 				}
-			G3SetupShader (0, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
+			G3SetupShader (faceP, 0, bMultiTexture, bmBot != NULL, bColored, bmBot ? NULL : &faceP->color);
 			}
 		}
 	gameStates.render.history.bOverlay = bOverlay;
@@ -651,6 +729,25 @@ glEnd ();
 }
 #else
 glDrawArrays (GL_TRIANGLE_FAN, faceP->nIndex, 4);
+#if 0
+fVector vNormalf, vCenterf, vBasef;
+VmVecFixToFloat (&vBasef, SEGMENT_CENTER_I (faceP->nSegment));
+//G3RotatePointf (&vNormalf, (fVector *) (gameData.segs.faces.normals + faceP->nIndex), 0);
+memcpy (&vNormalf, gameData.segs.faces.normals + faceP->nIndex, sizeof (fVector3));
+//G3TransformPointf (&vBasef, &vCenterf, 0);
+VmVecScalef (&vNormalf, &vNormalf, 5);
+VmVecIncf (&vNormalf, &vBasef);
+glDisable (GL_TEXTURE_2D);
+glLineWidth (5);
+glColor3f (1,0,0);
+glBegin (GL_LINES);
+glVertex3fv ((GLfloat *) &vBasef);
+glVertex3fv ((GLfloat *) &vNormalf);
+glEnd ();
+glLineWidth (1);
+glEnable (GL_TEXTURE_2D);
+#endif
+
 #endif
 
 if (!bMultiTexture && (bOverlay || bMonitor)) {

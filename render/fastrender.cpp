@@ -115,7 +115,7 @@ void SplitFace (tSegFaces *segFaceP, grsFace *faceP)
 {
 	grsFace *newFaceP;
 
-if (GEO_LIGHTING)
+if (gameOpts->ogl.bPerPixelLighting)
 	return;
 if (!gameStates.ogl.bGlTexMerge)
 	return;
@@ -371,7 +371,7 @@ return tiRender.nFaces;
 
 int BeginRenderFaces (int nType, int bDepthOnly)
 {
-	int	bVertexArrays;
+	int	bVertexArrays, bNormals = 0 && !bDepthOnly && gameOpts->ogl.bPerPixelLighting;
 
 gameData.threads.vertColor.data.bDarkness = 0;
 gameStates.render.nType = nType;
@@ -397,38 +397,42 @@ if (nType == 3) {
 		LoadGlareShader ();
 	return 0;
 	}
+else if (gameOpts->ogl.bPerPixelLighting)
+	OglEnableLighting (1);
 OglSetupTransform (1);
-if (GEO_LIGHTING) {
+if (HW_GEO_LIGHTING) {
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE2);
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE1);
 	G3DisableClientStates (1, 1, 1, GL_TEXTURE0);
 	return 0;
 	}
-if ((bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, 0, GL_TEXTURE0))) {
+if ((bVertexArrays = G3EnableClientStates (!bDepthOnly, !bDepthOnly, bNormals, GL_TEXTURE0))) {
 	if (!bDepthOnly) {
 		glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.texCoord);
 		glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+		if (bNormals)
+			glNormalPointer (GL_FLOAT, 0, gameData.segs.faces.normals);
 		}
 	glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 
 	if (!bDepthOnly) {
 		if ((bVertexArrays = G3EnableClientStates (1, 1, 0, GL_TEXTURE1))) {
-			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 			}
 		else
 			G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
 		if (G3EnableClientStates (1, 1, 0, GL_TEXTURE2)) {
-			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 			glTexCoordPointer (2, GL_FLOAT, 0, gameData.segs.faces.ovlTexCoord);
 			glColorPointer (4, GL_FLOAT, 0, gameData.segs.faces.color);
+			glVertexPointer (3, GL_FLOAT, 0, gameData.segs.faces.vertices);
 			}
 		}
 	}
 else {
 	G3DisableClientStates (1, 1, 0, GL_TEXTURE1);
-	G3DisableClientStates (1, 1, 0, GL_TEXTURE0);
+	G3DisableClientStates (1, 1, bNormals, GL_TEXTURE0);
 	}
 return bVertexArrays;
 }
@@ -465,8 +469,11 @@ if (gameStates.ogl.bShadersOk) {
 	glUseProgramObject (0);
 	gameStates.render.history.nShader = -1;
 	}
-if (nType != 3)
+if (nType != 3) {
+	if (gameOpts->ogl.bPerPixelLighting)
+		OglDisableLighting ();
 	OglResetTransform (1);
+	}
 else 	if (CoronaStyle () == 2)
 	UnloadGlareShader ();
 else if (gameStates.ogl.bOcclusionQuery && gameData.render.lights.nCoronas && !gameStates.render.bQueryCoronas && (CoronaStyle () == 1))
@@ -655,7 +662,7 @@ if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
 if (bLighting)
-	SetNearestDynamicLights (nSegment, 0, 0, 0);
+	SetNearestSegmentLights (nSegment, 0, 0, 0);
 for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 #ifdef _DEBUG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->nSide == nDbgSide)))
@@ -669,7 +676,7 @@ for (i = segFaceP->nFaces, faceP = segFaceP->pFaces; i; i--, faceP++) {
 
 void RenderSegments (int nType, int bVertexArrays, int bDepthOnly)
 {
-	int	i, bAutomap = (nType == 0), bLighting = GEO_LIGHTING && (nType < 3) && !bDepthOnly;
+	int	i, bAutomap = (nType == 0), bLighting = gameOpts->ogl.bPerPixelLighting && (nType < 3) && !bDepthOnly;
 
 if (nType) {
 	for (i = gameData.render.mine.nRenderSegs; i; )
@@ -730,7 +737,7 @@ else {	//front to back
 		j = SortFaces ();
 	bVertexArrays = BeginRenderFaces (0, 0);
 	glColorMask (1,1,1,1);
-	if (GEO_LIGHTING) {
+	if (gameOpts->ogl.bPerPixelLighting) {
 		gameData.render.mine.nVisited++;
 		RenderSegments (nType, bVertexArrays, 0);
 		}
@@ -1124,7 +1131,7 @@ else if (nState == 1) {
 	fVector			vPos = gameData.segs.fVertices [nVertex],
 						vNormal = gameData.segs.points [nVertex].p3_normal.vNormal;
 		
-	SetNearestVertexLights (nVertex, 1, 0, 1, 0);
+	SetNearestVertexLights (nVertex, NULL, 1, 0, 1, 0);
 	if (!(h = gameData.render.lights.dynamic.shader.nActiveLights [0]))
 		return 1;
 	if (h > VLBUF_SIZE)
@@ -1159,7 +1166,7 @@ else if (nState == 1) {
 		vld.nLights += nLights;
 		}
 
-	gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVariableLights [0];
+	gameData.render.lights.dynamic.shader.nActiveLights [0] = gameData.render.lights.dynamic.shader.iVertexLights [0];
 	}	
 else if (nState == 2) {
 	RenderVertLightBuffers ();
@@ -1228,8 +1235,8 @@ for (i = nStart; i != nEnd; i += nIncr) {
 	if (nSegment == nDbgSeg)
 		nSegment = nSegment;
 #endif
-	if (!(gameStates.render.bFullBright || GEO_LIGHTING))
-		SetNearestDynamicLights (nSegment, 0, 0, nThread);
+	if (!(gameStates.render.bFullBright || gameOpts->ogl.bPerPixelLighting))
+		SetNearestSegmentLights (nSegment, 0, 0, nThread);
 	for (j = segFaceP->nFaces, faceP = segFaceP->pFaces; j; j--, faceP++) {
 		nSide = faceP->nSide;
 #ifdef _DEBUG
@@ -1272,7 +1279,7 @@ for (i = nStart; i != nEnd; i += nIncr) {
 								goto skipVertex;
 							}
 #endif
-						if (GEO_LIGHTING)
+						if (gameOpts->ogl.bPerPixelLighting)
 							c.color = gameData.render.color.ambient [nVertex].color;
 						else
 #	if SHADER_VERTEX_LIGHTING
@@ -1499,7 +1506,7 @@ for (nListPos = gameData.render.mine.nRenderSegs; nListPos; ) {
 			nSegment = nSegment;
 #endif
 		if (gameStates.render.bUseDynLight && !gameStates.render.bQueryCoronas) {
-			SetNearestDynamicLights (nSegment, 0, 1, 0);
+			SetNearestSegmentLights (nSegment, 0, 1, 0);
 			SetNearestStaticLights (nSegment, 1, 1, 0);
 			gameStates.render.bApplyDynLight = gameOpts->ogl.bLightObjects;
 			}

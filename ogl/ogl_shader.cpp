@@ -334,7 +334,7 @@ PrintLog ("   initializing texture merging shader programs\n");
 InitTexMergeShaders ();
 gameData.render.ogl.nHeadLights = 0;
 PrintLog ("   initializing lighting shader programs\n");
-InitLightingShaders (1);
+InitHeadlightShaders (1);
 PrintLog ("   initializing vertex lighting shader programs\n");
 InitVertLightShader ();
 PrintLog ("   initializing glare shader programs\n");

@@ -798,7 +798,7 @@ else {
 if ((bVertexLights = !(gameStates.render.nState || pVertColor))) {
 	VmVecFixToFloat (&vertPos, gameData.segs.vertices + nVertex);
 	pVertPos = &vertPos;
-	SetNearestVertexLights (nVertex, 1, 0, 1, nThread);
+	SetNearestVertexLights (nVertex, NULL, 1, 0, 1, nThread);
 	}
 vcd.pVertPos = pVertPos;
 //VmVecNegatef (&vertNorm);
@@ -871,7 +871,7 @@ if (!gameStates.render.nState && (nVertex == nDbgVertex))
 	nVertex = nVertex;
 #endif
 if (bVertexLights)
-	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = gameData.render.lights.dynamic.shader.iVariableLights [nThread];
+	gameData.render.lights.dynamic.shader.nActiveLights [nThread] = gameData.render.lights.dynamic.shader.iVertexLights [nThread];
 #if PROFILING
 tG3VertexColor += clock () - t;
 #endif

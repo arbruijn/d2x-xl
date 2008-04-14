@@ -26,55 +26,6 @@
 
 //-----------------------------------------------------------------------------
 
-static inline fix MinSegRad (short nSegment)
-{
-return gameData.segs.segRads [0][nSegment];
-}
-
-//-----------------------------------------------------------------------------
-
-static inline float MinSegRadf (short nSegment)
-{
-return f2fl (gameData.segs.segRads [0][nSegment]);
-}
-
-//-----------------------------------------------------------------------------
-
-static inline fix MaxSegRad (short nSegment)
-{
-return gameData.segs.segRads [1][nSegment];
-}
-
-//-----------------------------------------------------------------------------
-
-static inline float MaxSegRadf (short nSegment)
-{
-return f2fl (gameData.segs.segRads [1][nSegment]);
-}
-
-//-----------------------------------------------------------------------------
-
-static inline fix AvgSegRad (short nSegment)
-{
-return (MinSegRad (nSegment) + MaxSegRad (nSegment)) / 2;
-}
-
-//-----------------------------------------------------------------------------
-
-static inline float AvgSegRadf (short nSegment)
-{
-return f2fl (gameData.segs.segRads [0][nSegment] + gameData.segs.segRads [1][nSegment]) / 2;
-}
-
-//-----------------------------------------------------------------------------
-
-static inline fix SegmentVolume (short nSegment)
-{
-return (fix) (1.25 * Pi * pow (AvgSegRadf (nSegment), 3) + 0.5);
-}
-
-//-----------------------------------------------------------------------------
-
 void AllocSegmentSparks (short nSegment)
 {
 	int				nMatCen = nSegment;

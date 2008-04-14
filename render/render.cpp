@@ -681,7 +681,7 @@ gameStates.render.nState = 0;
 if (nSegment == nDbgSeg)
 	nSegment = nSegment;
 #endif
-SetNearestDynamicLights (nSegment, 0, 0, 0);
+SetNearestSegmentLights (nSegment, 0, 0, 0);
 for (nSide = 0; nSide < 6; nSide++) //segP->nFaces, faceP = segP->pFaces; nSide; nSide--, faceP++)
 	RenderSide (segP, nSide);
 OglResetTransform (0);

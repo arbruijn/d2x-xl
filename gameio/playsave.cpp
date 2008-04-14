@@ -396,7 +396,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].ogl.bLightObjects, i, 0);
 		RP (gameOptions [i].ogl.bHeadLight, i, 0);
 		RP (gameOptions [i].ogl.bLightPowerups, i, 0);
-		RP (gameOptions [i].ogl.bGeoLighting, i, 0);
+		RP (gameOptions [i].ogl.bPerPixelLighting, i, 0);
 		RP (gameOptions [i].ogl.bObjLighting, i, 0);
 		RP (gameOptions [i].ogl.nMaxLights, i, 0);
 		RP (gameOptions [i].render.bDynLighting, i, 0);
@@ -967,7 +967,7 @@ tParamValue defaultParams [] = {
 	{"gameOptions[0].ogl.bLightObjects", "1"},
 	{"gameOptions[0].ogl.bHeadLights", "0"},
 	{"gameOptions[0].ogl.bLightPowerups", "0"},
-	{"gameOptions[0].ogl.bGeoLighting", "0"},
+	{"gameOptions[0].ogl.bPerPixelLighting", "0"},
 	{"gameOptions[0].ogl.bObjLighting", "0"},
 	{"gameOptions[0].ogl.nMaxLights", "4"},
 	{"gameOptions[0].render.bDynLighting", "0"},

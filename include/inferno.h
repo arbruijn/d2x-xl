@@ -21,6 +21,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _INFERNO_H
 #define _INFERNO_H
 
+#include <math.h>
+
 #include "irrstuff.h"
 
 #define SHOW_EXIT_PATH  1
@@ -344,9 +346,9 @@ typedef struct tOglOptions {
 	int bGlTexMerge;
 	int bLightObjects;
 	int bLightPowerups;
-	int bGeoLighting;
 	int bObjLighting;
 	int bHeadLight;
+	int bPerPixelLighting;
 	int nMaxLights;
 	int bVoodooHack;
 } tOglOptions;
@@ -652,6 +654,7 @@ typedef struct tOglStates {
 	int bShadersOk;
 	int bMultiTexturingOk;
 	int bRender2TextureOk;
+	int bPerPixelLightingOk;
 	int bUseRender2Texture;
 	int bDrawBufferActive;
 	int bReadBufferActive;
@@ -1255,9 +1258,9 @@ typedef struct tShaderLightData {
 	tShaderLight	lights [MAX_OGL_LIGHTS];
 	int				nLights;
 	tShaderLight	*activeLights [4][MAX_OGL_LIGHTS];
-	int				nActiveLights [4];
-	int				iVariableLights [4];
-	int				iStaticLights [4];
+	short				nActiveLights [4];
+	short				iVertexLights [4];
+	short				iStaticLights [4];
 	GLuint			nTexHandle;
 } tShaderLightData;
 
@@ -1395,6 +1398,8 @@ typedef struct tOglData {
 	fVector3					depthScale;
 	struct {float x, y;}	screenScale;
 	tFrameBuffer			drawBuffer;
+	int						nPerPixelLights [8];
+	float						lightRads [8];
 	int						nHeadLights;
 } tOglData;
 
@@ -3094,6 +3099,29 @@ static inline ushort WallNumS (tSide *sideP) { return (sideP)->nWall; }
 static inline ushort WallNumP (tSegment *segP, short nSide) { return WallNumS ((segP)->sides + (nSide)); }
 static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(gameData.segs.segments + (nSegment), nSide); }
 
+//-----------------------------------------------------------------------------
+
+static inline fix MinSegRad (short nSegment)
+	{return gameData.segs.segRads [0][nSegment];}
+
+static inline float MinSegRadf (short nSegment)
+	{return f2fl (gameData.segs.segRads [0][nSegment]);}
+
+static inline fix MaxSegRad (short nSegment)
+	{return gameData.segs.segRads [1][nSegment];}
+
+static inline float MaxSegRadf (short nSegment)
+	{return f2fl (gameData.segs.segRads [1][nSegment]);}
+
+static inline fix AvgSegRad (short nSegment)
+	{return (MinSegRad (nSegment) + MaxSegRad (nSegment)) / 2;}
+
+static inline float AvgSegRadf (short nSegment)
+	{return f2fl (gameData.segs.segRads [0][nSegment] + gameData.segs.segRads [1][nSegment]) / 2;}
+
+static inline fix SegmentVolume (short nSegment)
+	{return (fix) (1.25 * Pi * pow (AvgSegRadf (nSegment), 3) + 0.5);}
+
 //	-----------------------------------------------------------------------------------------------------------
 
 static inline short ObjIdx (tObject *objP)
@@ -3236,7 +3264,7 @@ int TIRUnload (void);
 #	define	G3_SLEEP(_t)	usleep ((_t) * 1000)
 #endif
 
-#define GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting
+#define HW_GEO_LIGHTING 0 //gameOpts->ogl.bGeoLighting
 
 //	-----------------------------------------------------------------------------------------------------------
 

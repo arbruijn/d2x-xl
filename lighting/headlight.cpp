@@ -409,17 +409,17 @@ char *lightingFS [8] = {
 	"   vec4 btmColor = texture2D (btmTex, gl_TexCoord [0].xy);\r\n" \
 	"   vec4 topColor = texture2D (topTex, gl_TexCoord [1].xy);\r\n" \
 	"   vec3 lightVec, spotColor;\r\n" \
-	"float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
-	"int i;\r\n" \
-	"for (i = 0; i < X; i++) {\r\n" \
-	"   lightVec = vertPos - lightPos [i];\r\n" \
-	"   lightDist = length (lightVec);\r\n" \
-	"   spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
-	"   if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
-	"   	float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
-	" 	   spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
-	" 	   }\r\n" \
-	" 	}\r\n" \
+	"   float spotEffect, lightDist, spotBrightness = 0.0;\r\n" \
+	"   int i;\r\n" \
+	"   for (i = 0; i < X; i++) {\r\n" \
+	"      lightVec = vertPos - lightPos [i];\r\n" \
+	"      lightDist = length (lightVec);\r\n" \
+	"      spotEffect = dot (lightDir [i], lightVec / lightDist);\r\n" \
+	"      if (spotEffect >= 0.5 /*cutOff*/) {\r\n" \
+	"      	 float attenuation = min (100.0 /*brightness [i]*/ / lightDist, 1.0);\r\n" \
+	" 	       spotBrightness += pow (spotEffect * 1.1, 8.0 /*spotExp*/) * attenuation;\r\n" \
+	"    	    }\r\n" \
+	"      }\r\n" \
 	"   spotColor = max (vec3 (spotBrightness, spotBrightness, spotBrightness), gl_Color.rgb);\r\n" \
 	"   spotColor = min (spotColor, matColor.rgb);\r\n" \
 	"   gl_FragColor = vec4 (vec3 (mix (btmColor, topColor, topColor.a)), (btmColor.a + topColor.a) /** grAlpha*/) * vec4 (spotColor, gl_Color.a);\r\n" \
@@ -471,32 +471,11 @@ char *lightingVS [4] = {
 
 //-------------------------------------------------------------------------
 
-char *BuildLightingShader (char *pszTemplate, int nLights)
-{
-	int	l = (int) strlen (pszTemplate) + 1;
-	char	*pszFS, *p;
-
-if (!(pszFS = (char *) D2_ALLOC (l)))
-	return NULL;
-memcpy (pszFS, pszTemplate, l);
-while ((p = strstr (pszFS, "[X]"))) {
-	sprintf (p + 1, "%d", nLights);
-	p [2] = ']';
-	}
-if ((p = strstr (pszFS, "i < X"))) {
-	sprintf (p + 4, "%d", nLights);
-	p [5] = ';';
-	}
-return pszFS;
-}
-
-//-------------------------------------------------------------------------
-
-GLhandleARB lightingShaderProgs [4] = {0,0,0,0};
+GLhandleARB headlightShaderProgs [4] = {0,0,0,0};
 GLhandleARB lvs [4] = {0,0,0,0}; 
 GLhandleARB lfs [4] = {0,0,0,0}; 
 
-void InitLightingShaders (int nLights)
+void InitHeadlightShaders (int nLights)
 {
 	int	i, bOk;
 	char	*pszFS;
@@ -512,8 +491,8 @@ PrintLog ("building lighting shader programs\n");
 if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.nPath))) {
 	gameStates.render.bHaveDynLights = 1;
 	for (i = 0; i < 4; i++) {
-		if (lightingShaderProgs [i])
-			DeleteShaderProg (lightingShaderProgs + i);
+		if (headlightShaderProgs [i])
+			DeleteShaderProg (headlightShaderProgs + i);
 #ifndef _DEBUG
 		if (nLights == 1)
 			pszFS = lightingFS [i];
@@ -521,15 +500,15 @@ if ((gameStates.ogl.bHeadLight = (gameStates.ogl.bShadersOk && gameOpts->render.
 #endif
 			pszFS = BuildLightingShader (lightingFS [i + 4], nLights);
 		bOk = (pszFS != NULL) &&
-				CreateShaderProg (lightingShaderProgs + i) &&
-				CreateShaderFunc (lightingShaderProgs + i, lfs + i, lvs + i, pszFS, lightingVS [i % 4], 1) &&
-				LinkShaderProg (lightingShaderProgs + i);
+				CreateShaderProg (headlightShaderProgs + i) &&
+				CreateShaderFunc (headlightShaderProgs + i, lfs + i, lvs + i, pszFS, lightingVS [i % 4], 1) &&
+				LinkShaderProg (headlightShaderProgs + i);
 		if (pszFS && (nLights > 1))
 			D2_FREE (pszFS);
 		if (!bOk) {
 			gameStates.ogl.bHeadLight = 0;
 			while (i)
-				DeleteShaderProg (lightingShaderProgs + --i);
+				DeleteShaderProg (headlightShaderProgs + --i);
 			nLights = 0;
 			break;
 			}

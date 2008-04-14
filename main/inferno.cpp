@@ -1812,7 +1812,7 @@ if (i) {
 	gameOptions [1].ogl.bLightObjects = 0;
 	gameOptions [1].ogl.bHeadLight = 0;
 	gameOptions [1].ogl.bLightPowerups = 0;
-	gameOptions [1].ogl.bGeoLighting = 0;
+	gameOptions [1].ogl.bPerPixelLighting = 0;
 	gameOptions [1].ogl.bObjLighting = 0;
 	gameOptions [1].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [1].ogl.bSetGammaRamp = 0;
@@ -1828,7 +1828,7 @@ else {
 	gameOptions [0].ogl.bLightObjects = 0;
 	gameOptions [0].ogl.bHeadLight = 0;
 	gameOptions [0].ogl.bLightPowerups = 0;
-	gameOptions [0].ogl.bGeoLighting = 0;
+	gameOptions [0].ogl.bPerPixelLighting = 0;
 	gameOptions [0].ogl.bObjLighting = 0;
 	gameOptions [0].ogl.nMaxLights = MAX_NEAREST_LIGHTS / 2;
 	gameOptions [0].ogl.bSetGammaRamp = 0;
@@ -1979,6 +1979,7 @@ void InitOglStates (void)
 gameStates.ogl.bInitialized = 0;
 gameStates.ogl.bShadersOk = 0;
 gameStates.ogl.bRender2TextureOk = 0;
+gameStates.ogl.bPerPixelLightingOk = 1;
 gameStates.ogl.bUseRender2Texture = 1;
 gameStates.ogl.bVoodooHack = 0;
 gameStates.ogl.bBrightness = 0;
