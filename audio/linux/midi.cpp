@@ -8,11 +8,11 @@
 
 #include <stdio.h>
 
+#include "inferno.h"
 #include "digi.h"
 #include "cfile.h"
 #include "error.h"
 #include "hmpfile.h"
-#include "inferno.h"
 
 #if USE_SDL_MIXER
 #	ifdef __macosx__

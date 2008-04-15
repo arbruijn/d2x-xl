@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include "hmpfile.h"
+#include "inferno.h"
 #include "cfile.h"
 #include "digi.h"
 #include "cfile.h"

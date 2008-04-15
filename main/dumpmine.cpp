@@ -12,99 +12,6 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-/*
- *
- * Functions to dump text description of mine.
- * An editor-only function, called at mine load time.
- * To be read by a human to verify the correctness and completeness of a mine.
- *
- * Old Log:
- * Revision 1.1  1995/05/16  15:24:16  allender
- * Initial revision
- *
- * Revision 2.1  1995/04/06  12:21:50  mike
- * Add texture map information to txm files.
- *
- * Revision 2.0  1995/02/27  11:26:41  john
- * New version 2.0, which has no anonymous unions, builds with
- * Watcom 10.0, and doesn't require parsing BITMAPS.TBL.
- *
- * Revision 1.24  1995/01/23  15:34:43  mike
- * New diagnostic code, levels.all stuff.
- *
- * Revision 1.23  1994/12/20  17:56:36  yuan
- * Multiplayer tObject capability.
- *
- * Revision 1.22  1994/11/27  23:12:19  matt
- * Made changes for new con_printf calling convention
- *
- * Revision 1.21  1994/11/23  12:19:04  mike
- * move out level names, stick in gamesave.
- *
- * Revision 1.20  1994/11/21  16:54:36  mike
- * oops.
- *
- *
- * Revision 1.19  1994/11/20  22:12:55  mike
- * Lotsa new stuff in this fine debug file.
- *
- * Revision 1.18  1994/11/17  14:58:09  mike
- * moved tSegment validation functions from editor to main.
- *
- * Revision 1.17  1994/11/15  21:43:02  mike
- * texture usage system.
- *
- * Revision 1.16  1994/11/15  12:45:59  mike
- * debug code for dumping texture info.
- *
- * Revision 1.15  1994/11/14  20:47:50  john
- * Attempted to strip out all the code in the game
- * directory that uses any ui code.
- *
- * Revision 1.14  1994/10/14  17:33:38  mike
- * Fix error reporting for number of multiplayer gameData.objs.objects in mine.
- *
- * Revision 1.13  1994/10/14  13:37:46  mike
- * Forgot parameter in fprintf, was getting bogus number of excess keys.
- *
- * Revision 1.12  1994/10/12  08:05:33  mike
- * Detect keys contained in gameData.objs.objects for error checking (txm file).
- *
- * Revision 1.11  1994/10/10  17:02:08  mike
- * fix fix.
- *
- * Revision 1.10  1994/10/10  17:00:37  mike
- * Add checking for proper number of players.
- *
- * Revision 1.9  1994/10/03  23:37:19  mike
- * Adapt to clear and rational understanding of matcens as related to fuelcens as related to something that might work.
- *
- * Revision 1.8  1994/09/30  17:15:29  mike
- * Fix error message, was telling bogus filename.
- *
- * Revision 1.7  1994/09/30  11:50:55  mike
- * More diagnostics.
- *
- * Revision 1.6  1994/09/28  17:31:19  mike
- * More error checking.
- *
- * Revision 1.5  1994/09/28  11:14:05  mike
- * Better checking on bogus walls.
- *
- * Revision 1.4  1994/09/28  09:23:50  mike
- * Change some Error messages to Warnings.
- *
- * Revision 1.3  1994/09/27  17:08:31  mike
- * More mine validation stuff.
- *
- * Revision 1.2  1994/09/27  15:43:22  mike
- * The amazing code to tell you everything and more about our mines!
- *
- * Revision 1.1  1994/09/27  10:51:15  mike
- * Initial revision
- *
- *
- */
 
 #ifdef HAVE_CONFIG_H
 #include <conf.h>
@@ -119,13 +26,13 @@ static char rcsid[] = "$Id: dumpmine.c,v 1.4 2003/10/10 09:36:34 btb Exp $";
 #include <stdarg.h>
 #include <errno.h>
 
+#include "inferno.h"
 #include "pstypes.h"
 #include "mono.h"
 #include "key.h"
 #include "gr.h"
 #include "palette.h"
 
-#include "inferno.h"
 #ifdef EDITOR
 #include "editor/editor.h"
 #endif
